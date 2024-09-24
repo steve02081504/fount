@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>角色选择页面</title>
+	<style>
+		.role-container {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: center;
+		}
+
+		.role {
+			margin: 20px;
+			text-align: center;
+			border: 1px solid #ddd;
+			padding: 20px;
+			border-radius: 10px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+		}
+
+		.role img {
+			width: 100px;
+			height: 100px;
+			border-radius: 50%;
+			margin-bottom: 10px;
+		}
+
+		.role-btns {
+			margin-top: 10px;
+		}
+
+		.role-btns button {
+			margin: 0 10px;
+			padding: 5px 10px;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+		}
+
+		.role-btns button:hover {
+			background-color: #f0f0f0;
+		}
+	</style>
+</head>
+<body>
+	<h1>角色选择页面</h1>
+	<p>这是一个角色选择页面，你可以在其中添加你的角色信息。你可以修改角色的头像、名字和简介。</p>
+	<button>导入</button>
+	<br/>
+	<div class="role-container">
+		<div class="role">
+			<img src="https://via.placeholder.com/100" alt="角色1头像">
+			<h2>角色1名称</h2>
+			<p>这是角色1的简短介绍，这里可以写上角色的一些特点或者技能。</p>
+			<div class="role-btns">
+				<button>聊天</button>
+				<button>删除</button>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

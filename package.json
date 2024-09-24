@@ -1,0 +1,28 @@
+{
+	"name": "fount",
+	"version": "0.0.0",
+	"description": "better AI character chat platform",
+	"main": "src/server/index.mjs",
+	"scripts": {
+		"start": "node src/server/index.mjs",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/steve02081504/fount.git"
+	},
+	"keywords": [
+		"AI"
+	],
+	"author": "steve02081504",
+	"bugs": {
+		"url": "https://github.com/steve02081504/fount/issues"
+	},
+	"homepage": "https://github.com/steve02081504/fount#readme",
+	"dependencies": {
+		"express": "^4.21.0"
+	},
+	"devDependencies": {
+		"@types/express": "^4.17.21"
+	}
+}
