@@ -2,7 +2,7 @@ import { timeStamp_t } from './basedefs.ts';
 import { Shell_t } from './shellAPI.ts';
 import { AIsource_t } from './AIsource.ts';
 
-class charState_t {
+export class charState_t {
 	InitCount: number;
 	StartCount: number;
 	LastStart: timeStamp_t;

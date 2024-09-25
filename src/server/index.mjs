@@ -1,3 +1,3 @@
-import { init } from "./server.mjs";
+import { init } from "./server.mjs"
 
-init();
+init()
