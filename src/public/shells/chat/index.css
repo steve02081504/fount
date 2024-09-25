@@ -2,8 +2,6 @@ body {
 	font-family: Arial, sans-serif;
 }
 .chat-container {
-	width: 400px;
-	height: 600px;
 	border: 1px solid #ccc;
 	padding: 20px;
 }

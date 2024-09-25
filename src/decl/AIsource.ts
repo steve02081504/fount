@@ -7,7 +7,7 @@ class tokenizer_t<T> {
 	get_token_count_of_tree: (obj: any) => number;
 }
 
-class AIsource_t {
+export class AIsource_t {
 	avatar: string;
 	sourceName: string;
 	is_paid: boolean;

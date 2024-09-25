@@ -1,3 +1,7 @@
+import { timeStamp_t } from './basedefs.ts';
+import { Shell_t } from './shellAPI.ts';
+import { AIsource_t } from './AIsource.ts';
+
 class charState_t {
 	InitCount: number;
 	StartCount: number;
@@ -10,7 +14,7 @@ class charState_t {
 type EventType_t = 'chat'// maybe others in the future
 type EventData<T extends EventType_t> = {}
 type EventResponse<T extends EventType_t> = {}
-class charAPI_t {
+export class charAPI_t {
 	// calls only on char install, and if fail, all file under this char's folder will be deleted
 	Init: (stat: charState_t) => {
 		success: boolean;

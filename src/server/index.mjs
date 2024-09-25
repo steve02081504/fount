@@ -1,6 +1,6 @@
 import express from 'express';
 import path from 'path';
-const app = express();
+export const app = express();
 const port = 8931;
 
 let __dirname = path.resolve();

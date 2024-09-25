@@ -1,2 +1,2 @@
-type timeStamp_t = number;
+export type timeStamp_t = number;
 

@@ -1,0 +1,38 @@
+
+.role-container {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.role {
+	margin: 20px;
+	text-align: center;
+	border: 1px solid #ddd;
+	padding: 20px;
+	border-radius: 10px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.role img {
+	width: 100px;
+	height: 100px;
+	border-radius: 50%;
+	margin-bottom: 10px;
+}
+
+.role-btns {
+	margin-top: 10px;
+}
+
+.role-btns button {
+	margin: 0 10px;
+	padding: 5px 10px;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.role-btns button:hover {
+	background-color: #f0f0f0;
+}

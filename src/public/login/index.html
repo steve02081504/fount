@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Login</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			background-color: #f0f0f0;
+		}
+		.container {
+			width: 300px;
+			margin: 50px auto;
+			background-color: #fff;
+			padding: 20px;
+			border: 1px solid #ddd;
+			border-radius: 10px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+		}
+		.header {
+			text-align: center;
+			margin-bottom: 20px;
+		}
+		.form-group {
+			margin-bottom: 20px;
+		}
+		.form-group label {
+			display: block;
+			margin-bottom: 10px;
+		}
+		.form-group input {
+			width: 100%;
+			height: 40px;
+			padding: 10px;
+			border: 1px solid #ccc;
+			border-radius: 5px;
+		}
+		.btn {
+			width: 100%;
+			height: 40px;
+			background-color: #4CAF50;
+			color: #fff;
+			padding: 10px;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+		}
+		.btn:hover {
+			background-color: #3e8e41;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<form id="login-form">
+			<div class="header">
+				<h2>Login</h2>
+			</div>
+			<sub>all users data will be stored in local storage</sub>
+			<div class="form-group">
+				<label for="username">Username:</label>
+				<input type="text" id="username" name="username" required>
+			</div>
+			<div class="form-group">
+				<label for="password">Password:</label>
+				<input type="password" id="password" name="password" required>
+			</div>
+			<button class="btn" type="submit">Login</button>
+			<p>Don't have an account? <a href="#" id="create-account-link">Create one now</a></p>
+		</form>
+		<form id="create-account-form" style="display: none;">
+			<div class="header">
+				<h2>Create Account</h2>
+			</div>
+			<sub>all users data will be stored in local storage</sub>
+			<div class="form-group">
+				<label for="new-username">Username:</label>
+				<input type="text" id="new-username" name="new-username" required>
+			</div>
+			<div class="form-group">
+				<label for="new-password">Password:</label>
+				<input type="password" id="new-password" name="new-password" required>
+			</div>
+			<div class="form-group">
+				<label for="confirm-password">Confirm Password:</label>
+				<input type="password" id="confirm-password" name="confirm-password" required>
+			</div>
+			<button class="btn" type="submit">Create Account</button>
+			<p>Already have an account? <a href="#" id="login-link">Login now</a></p>
+		</form>
+	</div>
+
+	<script>
+		document.getElementById('create-account-link').addEventListener('click', function() {
+			document.getElementById('login-form').style.display = 'none';
+			document.getElementById('create-account-form').style.display = 'block';
+		});
+
+		document.getElementById('login-link').addEventListener('click', function() {
+			document.getElementById('login-form').style.display = 'block';
+			document.getElementById('create-account-form').style.display = 'none';
+		});
+	</script>
+</body>
+</html>
