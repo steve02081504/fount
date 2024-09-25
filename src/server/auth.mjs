@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import fs from 'fs';
 import bcrypt from 'bcrypt';
 import { config, save_config } from './server.mjs';
+import { __dirname } from './server.mjs';
 import path from 'path';
 
 /**

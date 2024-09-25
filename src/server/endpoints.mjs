@@ -1,4 +1,4 @@
-import { login, register, logout, authenticate, getUserByToken } from './auth.mjs';
+import { login, register, logout, authenticate, getUserByToken, getUserDictionary } from './auth.mjs';
 import fs from 'fs';
 import { __dirname } from './server.mjs';
 /**
@@ -27,15 +27,15 @@ export function registerEndpoints(app) {
 
 	let get_list_of_load_able_part = partname => (req, res) => {
 		const { username } = getUserByToken(req.cookies.token);
-		const char_dir = __dirname + '/data/users/' + username + '/' + partname
+		const char_dir = getUserDictionary(username) + '/' + partname
 		const charlist = fs.readdirSync(char_dir)
 			.filter(file => fs.existsSync(char_dir + '/' + file + '/main.mjs'));
 		res.status(200).json(charlist);
 	}
 	let match_user_files = (req, res) => {
 		const { username } = getUserByToken(req.cookies.token);
-		if (fs.existsSync(__dirname + '/data/users/' + username + '/' + req.path)) {
-			res.sendFile(__dirname + '/data/users/' + username + '/' + req.path);
+		if (fs.existsSync(getUserDictionary(username) + '/' + req.path)) {
+			res.sendFile(getUserDictionary(username) + '/' + req.path);
 		}
 		else if (fs.existsSync(__dirname + '/src/public/' + req.path)) {
 			res.sendFile(__dirname + '/src/public/' + req.path);
@@ -57,7 +57,7 @@ export function registerEndpoints(app) {
 	app.post(/^\/api\/AI\//, authenticate, (req, res) => {
 		const { username } = getUserByToken(req.cookies.token);
 		const ai_name = req.path.split('/')[2];
-		const ai_code = __dirname + '/data/users/' + username + '/AIsources/' + ai_name + '/main.mjs';
+		const ai_code = getUserDictionary(username) + '/AIsources/' + ai_name + '/main.mjs';
 		if (fs.existsSync(ai_code)) {
 			import(ai_code).then((module) => {
 				module.default(req.body);
