@@ -1,3 +1,5 @@
+import { timeStamp_t } from "./basedefs";
+
 class tokenizer_t<T> {
 	free: () => void;
 	encode: (prompt: string) => T[];
@@ -24,5 +26,35 @@ export class AIsource_t {
 	Unload: () => void;
 	Uninstall: () => void;
 	Call: (prompt: string) => string;
+	StructCall: (prompt_struct: {
+		user_prompt: {
+			text: {
+				common: string;
+				important: string;
+			};
+			extension: {};
+		}
+		char_prompt: {
+			text: {
+				common: string;
+				important: string;
+			};
+			extension: {};
+		}
+		world_prompt: {
+			text: {
+				common: string;
+				important: string;
+			};
+			extension: {};
+		}
+		chat_log: {
+			charName: string;
+			timeStamp: timeStamp_t;
+			role: string;
+			content: string;
+			extension: {};
+		}[];
+	}) => string;
 	Tokenizer: tokenizer_t<any>;
 }

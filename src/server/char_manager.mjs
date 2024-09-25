@@ -35,8 +35,7 @@ export async function LoadChar(username, charname) {
 }
 
 export function UnloadChar(username, charname, reason) {
-	charSet[username] ??= {}
-	if (charSet[username][charname]) {
+	if (charSet[username]?.[charname]) {
 		/** @type {import('../decl/charAPI.ts').charAPI_t} */
 		const char = charSet[username][charname]
 		char.Unload(reason)
@@ -67,9 +66,11 @@ export async function initChar(username, charname) {
 	/** @type {import('../decl/charAPI.ts').charAPI_t} */
 	const char = (await import(char_dir + '/main.mjs')).default
 	const result = char.Init(char_state)
-	if (result.success)
-		saveCharData(username)
-	else throw new Error(result.message)
+	if (result.success) saveCharData(username)
+	else {
+		fs.rmSync(char_dir, { recursive: true, force: true })
+		throw new Error(result.message)
+	}
 }
 
 export async function uninstallChar(username, charname, reason, from) {

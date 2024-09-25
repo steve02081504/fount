@@ -54,6 +54,9 @@ export function registerEndpoints(app) {
 	app.get('/api/worldslist', authenticate, get_list_of_load_able_part('worlds'))
 	app.get(/^\/worlds\//, authenticate, match_user_files)
 
+	app.get('/api/AIsourceslist', authenticate, get_list_of_load_able_part('AIsources'))
+	app.get(/^\/AIsources\//, authenticate, match_user_files)
+
 	app.post(/^\/api\/AI\//, authenticate, (req, res) => {
 		const { username } = getUserByToken(req.cookies.token)
 		const ai_name = req.path.split('/')[2]
