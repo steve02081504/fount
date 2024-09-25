@@ -14,6 +14,7 @@ app.use(express.static(__dirname + '/src/public'));
 
 function get_config() {
 	if (!fs.existsSync(__dirname + '/data/config.json'))
+		fs.mkdirSync(__dirname + '/data');
 		fs.copyFileSync(__dirname + '/default/config.json', __dirname + '/data/config.json');
 
 	return JSON.parse(fs.readFileSync(__dirname + '/data/config.json', 'utf8'));

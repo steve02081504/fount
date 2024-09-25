@@ -1,6 +1,8 @@
 import jwt from 'jsonwebtoken';
+import fs from 'fs';
 import bcrypt from 'bcrypt';
 import { config, save_config } from './server.mjs';
+import path from 'path';
 
 /**
  * 通过用户名获取用户信息
@@ -49,6 +51,9 @@ export function getUserByToken(token) {
 		return null;
 	}
 }
+export function getUserDictionary(username) {
+	return path.resolve(config.data.users[username].UserDictionary || __dirname + '/data/users/' + username);
+}
 
 /**
  * 用户登录
@@ -78,6 +83,11 @@ async function login(username, password) {
 
 		// 登录成功，重置登录尝试次数
 		user.loginAttempts = 0;
+
+		const userdir = getUserDictionary(username);
+		fs.mkdirSync(userdir, { recursive: true });
+		for (let subdir of ['AIsources','chars','personas','settings','shells','worlds'])
+			fs.mkdirSync(userdir + '/' + subdir, { recursive: true });
 
 		const token = generateToken({ username: user.username });
 		return { status: 200, message: 'Login successful', token };

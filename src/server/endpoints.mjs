@@ -25,13 +25,43 @@ export function registerEndpoints(app) {
 		res.status(200).json({ message: 'Authenticated' });
 	});
 
-	app.get(/^\/shells\//, authenticate, (req, res) => {
+	let get_list_of_load_able_part = partname => (req, res) => {
+		const { username } = getUserByToken(req.cookies.token);
+		const char_dir = __dirname + '/data/users/' + username + '/' + partname
+		const charlist = fs.readdirSync(char_dir)
+			.filter(file => fs.existsSync(char_dir + '/' + file + '/main.mjs'));
+		res.status(200).json(charlist);
+	}
+	let match_user_files = (req, res) => {
 		const { username } = getUserByToken(req.cookies.token);
 		if (fs.existsSync(__dirname + '/data/users/' + username + '/' + req.path)) {
 			res.sendFile(__dirname + '/data/users/' + username + '/' + req.path);
 		}
 		else if (fs.existsSync(__dirname + '/src/public/' + req.path)) {
 			res.sendFile(__dirname + '/src/public/' + req.path);
+		}
+	}
+
+	app.get('/api/shelllist', authenticate, get_list_of_load_able_part('shells'));
+	app.get(/^\/shells\//, authenticate, match_user_files);
+
+	app.get('/api/charlist', authenticate, get_list_of_load_able_part('chars'));
+	app.get(/^\/chars\//, authenticate, match_user_files);
+
+	app.get('/api/personalist', authenticate, get_list_of_load_able_part('personas'));
+	app.get(/^\/personas\//, authenticate, match_user_files);
+
+	app.get('/api/worldslist', authenticate, get_list_of_load_able_part('worlds'));
+	app.get(/^\/worlds\//, authenticate, match_user_files);
+
+	app.post(/^\/api\/AI\//, authenticate, (req, res) => {
+		const { username } = getUserByToken(req.cookies.token);
+		const ai_name = req.path.split('/')[2];
+		const ai_code = __dirname + '/data/users/' + username + '/AIsources/' + ai_name + '/main.mjs';
+		if (fs.existsSync(ai_code)) {
+			import(ai_code).then((module) => {
+				module.default(req.body);
+			})
 		}
 	});
 }
