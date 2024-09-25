@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Login Redirect</title>
+	<script>
+		// Check if login key is stored in local storage
+		if (document.cookie.includes("token")) {
+			fetch("/api/authenticate", {
+				method: "POST"
+			}).then(response => {
+				if (response.ok) {
+					window.location.href = "home";
+				} else {
+					window.location.href = "login";
+				}
+			})
+		} else {
+			window.location.href = "login";
+		}
+	</script>
+</head>
+
+<body>
+	<p>Loading...</p>
+</body>
+
+</html>
