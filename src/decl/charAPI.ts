@@ -15,6 +15,10 @@ type EventType_t = 'chat'// maybe others in the future
 type EventData<T extends EventType_t> = {}
 type EventResponse<T extends EventType_t> = {}
 export class charAPI_t {
+	charname: string;
+	avatar: string;
+	description: string;
+	description_markdown: string;
 	// calls only on char install, and if fail, all file under this char's folder will be deleted
 	Init: (stat: charState_t) => {
 		success: boolean;
@@ -33,6 +37,7 @@ export class charAPI_t {
 	// set the source of the AI so that char can use it by `source.Call(prompt)`
 	// the type is for extensibility. maybe youll use an API for sfw and an other API for nsfw, idc.
 	SetAISource: (source: AIsource_t, type: string) => void;
+	AISourceTypes: string[];
 
 	// send an event form a shell (maybe chat WebUI or cute Live2d or a kill machine, i don't care)
 	// => char process it and return a response

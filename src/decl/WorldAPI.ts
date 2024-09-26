@@ -1,6 +1,6 @@
 import { prompt_struct_t, single_part_prompt_t } from "./prompt_struct";
 
-export class UserAPI_t {
+export class WorldAPI_t {
 	name: string;
 	avatar: string;
 	description: string;

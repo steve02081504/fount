@@ -1,4 +1,5 @@
 import { timeStamp_t } from "./basedefs";
+import { prompt_struct_t } from "./prompt_struct";
 
 class tokenizer_t<T> {
 	free: () => void;
@@ -6,7 +7,7 @@ class tokenizer_t<T> {
 	decode: (tokens: T[]) => string;
 	decode_single: (token: T) => string;
 	get_token_count: (prompt: string) => number;
-	get_token_count_of_tree: (obj: any) => number;
+	get_token_count_of_struct: (obj: any) => number;
 }
 
 export class AIsource_t {
@@ -26,35 +27,6 @@ export class AIsource_t {
 	Unload: () => void;
 	Uninstall: () => void;
 	Call: (prompt: string) => string;
-	StructCall: (prompt_struct: {
-		user_prompt: {
-			text: {
-				common: string;
-				important: string;
-			};
-			extension: {};
-		}
-		char_prompt: {
-			text: {
-				common: string;
-				important: string;
-			};
-			extension: {};
-		}
-		world_prompt: {
-			text: {
-				common: string;
-				important: string;
-			};
-			extension: {};
-		}
-		chat_log: {
-			charName: string;
-			timeStamp: timeStamp_t;
-			role: string;
-			content: string;
-			extension: {};
-		}[];
-	}) => string;
+	StructCall: (prompt_struct: prompt_struct_t) => string;
 	Tokenizer: tokenizer_t<any>;
 }
