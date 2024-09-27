@@ -2,9 +2,10 @@ import { timeStamp_t } from "./basedefs";
 
 export type single_part_prompt_t = {
 	text: {
-		common: string;
-		important: string;
-	};
+		content: string;
+		description: string;
+		important: number;
+	}[];
 	extension: {};
 }
 export type prompt_struct_t = {
@@ -12,8 +13,10 @@ export type prompt_struct_t = {
 	char_prompt: single_part_prompt_t
 	other_chars_prompt: {
 		text: {
+			content: string;
 			description: string;
-		}
+			important: number;
+		}[];
 		charname: string;
 		isActive: boolean;
 		LastActive: timeStamp_t;
