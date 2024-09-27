@@ -1,6 +1,8 @@
 import { on_shutdown } from './server.mjs'
 
+/** @type {Record<string, Record<string, import('../decl/charAPI.ts').charAPI_t>>} */
 let charSet = {}
+/** @type {Record<string, Record<string, import('../decl/charAPI.ts').charState_t>>} */
 let userCharDataSet = {}
 function loadCharData(username) {
 	try {

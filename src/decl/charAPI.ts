@@ -15,7 +15,7 @@ type EventType_t = 'chat'// maybe others in the future
 type EventData<T extends EventType_t> = {}
 type EventResponse<T extends EventType_t> = {}
 export class charAPI_t {
-	charname: string;
+	name: string;
 	avatar: string;
 	description: string;
 	description_markdown: string;
@@ -36,7 +36,7 @@ export class charAPI_t {
 
 	// set the source of the AI so that char can use it by `source.Call(prompt)`
 	// the type is for extensibility. maybe youll use an API for sfw and an other API for nsfw, idc.
-	SetAISource: (source: AIsource_t, type: string) => void;
+	SetAISource: (source: AIsource_t<any, any>, type: string) => void;
 	AISourceTypes: string[];
 
 	// send an event form a shell (maybe chat WebUI or cute Live2d or a kill machine, i don't care)

@@ -39,7 +39,6 @@ export function registerEndpoints(app) {
 
 		else if (fs.existsSync(__dirname + '/src/public/' + req.path))
 			res.sendFile(__dirname + '/src/public/' + req.path)
-
 	}
 
 	app.get('/api/shelllist', authenticate, get_list_of_load_able_part('shells'))

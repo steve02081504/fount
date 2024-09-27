@@ -1,5 +1,6 @@
 import fs from 'fs'
 
+/** @type {Record<string, Record<string, import('../decl/AIsource.ts').AIsource_t>>} */
 let AIsources_set = {}
 export async function loadAIsource(username, AIsourcename) {
 	AIsources_set[username] ??= {}
@@ -34,9 +35,9 @@ export async function initAIsource(username, AIsourcename) {
 	}
 }
 
-export function uninstallAIsource(username, AIsourcename) {
+export async function uninstallAIsource(username, AIsourcename) {
 	/** @type {import('../decl/AIsource.ts').AIsource_t} */
-	const AIsource = loadAIsource(username, AIsourcename)
+	const AIsource = await loadAIsource(username, AIsourcename)
 	AIsource.Uninstall()
 	fs.rmSync(getUserDictionary(username) + '/AIsources/' + AIsourcename, { recursive: true, force: true })
 }
