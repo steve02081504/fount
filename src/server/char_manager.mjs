@@ -1,4 +1,5 @@
-import { on_shutdown } from './server.mjs'
+
+import { on_shutdown } from './on_shutdown.mjs'
 
 /** @type {Record<string, Record<string, import('../decl/charAPI.ts').charAPI_t>>} */
 let charSet = {}

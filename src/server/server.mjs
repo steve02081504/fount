@@ -4,10 +4,12 @@ import cookieParser from 'cookie-parser'
 import path from 'path'
 import fs from 'fs'
 import { registerEndpoints } from './endpoints.mjs'
+
 export const app = express()
 
 export const __dirname = path.resolve()
 
+app.use((req, res, next) => { console.log(`Request received: ${req.method} ${req.url}`); next() })
 app.use(bodyParser.json())
 app.use(cookieParser())
 app.use(express.static(__dirname + '/src/public'))
@@ -38,14 +40,3 @@ export async function init() {
 	})
 }
 
-const shutdowm_functions = []
-export function on_shutdown(func) {
-	shutdowm_functions.push(func)
-}
-function shutdown() {
-	shutdowm_functions.forEach(func => func())
-	app.close()
-}
-
-process.on('SIGINT', shutdown)
-process.on('SIGTERM', shutdown)

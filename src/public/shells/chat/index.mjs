@@ -15,6 +15,7 @@ async function createNewChat() {
 	})
 	const data = await response.json()
 	currentChatId = data.chatid
+	window.history.replaceState(null, null, '/shells/chat/#' + data.chatid)
 	return data.chatid
 }
 
@@ -110,11 +111,12 @@ sendButton.addEventListener('click', async () => {
 		const reply = await triggerCharacterReply('CharacterName') // Replace with actual character name
 		updateChatMessages([...reply.messages])
 	}
-});
+})
 
 // --- Initialization ---
 
-(async () => {
-	currentChatId = await createNewChat()
-	// Add initial character, set world, persona, etc. here if needed
-})()
+if (window.location.hash)
+	currentChatId = window.location.hash.substring(1)
+else
+	createNewChat()
+

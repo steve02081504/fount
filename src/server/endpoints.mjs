@@ -1,6 +1,7 @@
 import { login, register, logout, authenticate, getUserByToken, getUserDictionary } from './auth.mjs'
-import fs from 'fs'
 import { __dirname } from './server.mjs'
+import fs from 'fs'
+import { loadShell } from './shell_manager.mjs'
 /**
  * @param {import('express').Express} app
  */
@@ -43,6 +44,21 @@ export function registerEndpoints(app) {
 
 	app.get('/api/shelllist', authenticate, get_list_of_load_able_part('shells'))
 	app.get(/^\/shells\//, authenticate, match_user_files)
+	app.get(/^\/shells\/([^/]+)\/$/, authenticate, async (req, res, next) => {
+		const { username } = getUserByToken(req.cookies.token)
+		const shellName = req.params[0]
+		console.log(`Loading shell ${shellName} for user ${username}.`)
+
+		try {
+			loadShell(username, shellName)
+			console.log(`Shell ${shellName} set up.`)
+		} catch (error) {
+			console.error(`Failed to load shell ${shellName}:`, error)
+			return res.status(500).send('Internal Server Error')
+		}
+
+		next()
+	})
 
 	app.get('/api/charlist', authenticate, get_list_of_load_able_part('chars'))
 	app.get(/^\/chars\//, authenticate, match_user_files)

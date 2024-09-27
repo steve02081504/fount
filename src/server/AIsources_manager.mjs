@@ -1,4 +1,5 @@
 import fs from 'fs'
+import { on_shutdown } from './on_shutdown.mjs'
 
 /** @type {Record<string, Record<string, import('../decl/AIsource.ts').AIsource_t>>} */
 let AIsources_set = {}
@@ -23,6 +24,11 @@ export function unloadAIsource(username, AIsourcename) {
 		delete AIsources_set[username][AIsourcename]
 	}
 }
+on_shutdown(() => {
+	for (let username in AIsources_set)
+		for (let AIsourcename in AIsources_set[username])
+			unloadAIsource(username, AIsourcename)
+})
 
 export async function initAIsource(username, AIsourcename) {
 	let AIsources_dir = getUserDictionary(username) + '/AIsources/' + AIsourcename

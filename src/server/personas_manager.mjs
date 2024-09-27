@@ -1,4 +1,5 @@
 import fs from 'fs'
+import { on_shutdown } from './on_shutdown.mjs'
 
 /** @type {Record<string, Record<string, import('../decl/UserAPI.ts').UserAPI_t>>} */
 let personas_set = {}
@@ -24,6 +25,11 @@ export function unloadPersona(username, personaname) {
 		delete personas_set[username][personaname]
 	}
 }
+on_shutdown(() => {
+	for (let username in personas_set)
+		for (let personaname in personas_set[username])
+			unloadPersona(username, personaname)
+})
 
 export async function uninstallPersona(username, personaname) {
 	const persona_dir = getUserDictionary(username) + '/personas/' + personaname
