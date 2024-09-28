@@ -9,10 +9,10 @@ export async function loadPersona(username, personaname) {
 	if (!personas_set[username][personaname]) {
 		const personas_dir = getUserDictionary(username) + '/personas/' + personaname
 		/** @type {import('../decl/UserAPI.ts').UserAPI_t} */
-		const persona = (await import(personas_dir + '.mjs')).default
+		const persona = (await import(url.pathToFileURL(personas_dir + '.mjs'))).default
 		const result = persona.Load()
-		if (result.success) personas_set[username][personaname] = persona
-		else throw new Error(result.message)
+		if (result?.success) personas_set[username][personaname] = persona
+		else throw new Error(result?.message)
 	}
 	return personas_set[username][personaname]
 }

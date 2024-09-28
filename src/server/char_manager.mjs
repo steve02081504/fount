@@ -22,17 +22,17 @@ export async function LoadChar(username, charname) {
 	if (!charSet[username][charname]) {
 		const char_dir = getUserDictionary(username) + '/chars/' + charname
 		/** @type {import('../decl/charAPI.ts').charAPI_t} */
-		const char = (await import(char_dir + '/main.mjs')).default
+		const char = (await import(url.pathToFileURL(char_dir + '/main.mjs'))).default
 		/** @type {import('../decl/charAPI.ts').charState_t} */
 		let char_state = loadCharData(username)[charname].state
 		const result = char.Load(char_state)
-		if (result.success) {
+		if (result?.success) {
 			charSet[username][charname] = char
 			char_state.LastStart = Date.now()
 			char_state.StartCount++
 			saveCharData(username)
 		}
-		else throw new Error(result.message)
+		else throw new Error(result?.message)
 	}
 	return charSet[username][charname]
 }
@@ -67,12 +67,12 @@ export async function initChar(username, charname) {
 		}
 	}).state
 	/** @type {import('../decl/charAPI.ts').charAPI_t} */
-	const char = (await import(char_dir + '/main.mjs')).default
+	const char = (await import(url.pathToFileURL(char_dir + '/main.mjs'))).default
 	const result = char.Init(char_state)
-	if (result.success) saveCharData(username)
+	if (result?.success) saveCharData(username)
 	else {
 		fs.rmSync(char_dir, { recursive: true, force: true })
-		throw new Error(result.message)
+		throw new Error(result?.message)
 	}
 }
 

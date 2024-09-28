@@ -7,6 +7,7 @@ export default {
 	description_markdown: 'default description',
 	Load: (app) => {
 		setEndpoints(app)
+		return { success: true }
 	},
 	Unload: (app) => {
 		unsetEndpoints(app)

@@ -2,7 +2,7 @@
 /** @typedef {import('../../../../decl/worldAPI.ts').WorldAPI_t} WorldAPI_t */
 /** @typedef {import('../../../../decl/UserAPI.ts').UserAPI_t} UserAPI_t */
 
-import { loadCharData } from '../../../../server/char_manager.mjs'
+import { LoadChar } from '../../../../server/char_manager.mjs'
 import { loadPersona } from '../../../../server/personas_manager.mjs'
 
 /** @type {Record<string, chatMetadata_t>} */
@@ -66,7 +66,7 @@ export async function addchar(chatid, charname) {
 	const username = chatMetadatas[chatid].username
 	const timeSlice = chatMetadatas[chatid].chatLog[chatMetadatas[chatid].chatLog.length - 1].timeSlice
 	if (timeSlice.chars.some(char => char.name === charname)) return
-	timeSlice.chars.push(await loadCharData(username, charname))
+	timeSlice.chars.push(await LoadChar(username, charname))
 }
 
 export function removechar(chatid, charname) {

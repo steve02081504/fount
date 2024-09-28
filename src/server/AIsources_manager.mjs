@@ -8,10 +8,10 @@ export async function loadAIsource(username, AIsourcename) {
 	if (!AIsources_set[username][AIsourcename]) {
 		const AIsources_dir = getUserDictionary(username) + '/AIsources/' + AIsourcename
 		/** @type {import('../decl/AIsource.ts').AIsource_t} */
-		const AIsource = (await import(AIsources_dir + '/main.mjs')).default
+		const AIsource = (await import(url.pathToFileURL(AIsources_dir + '/main.mjs'))).default
 		const result = AIsource.Load()
-		if (result.success) AIsources_set[username][AIsourcename] = AIsource
-		else throw new Error(result.message)
+		if (result?.success) AIsources_set[username][AIsourcename] = AIsource
+		else throw new Error(result?.message)
 	}
 	return AIsources_set[username][AIsourcename]
 }
@@ -33,11 +33,11 @@ on_shutdown(() => {
 export async function initAIsource(username, AIsourcename) {
 	let AIsources_dir = getUserDictionary(username) + '/AIsources/' + AIsourcename
 	/** @type {import('../decl/AIsource.ts').AIsource_t} */
-	const AIsource = (await import(AIsources_dir + '/main.mjs')).default
+	const AIsource = (await import(url.pathToFileURL(AIsources_dir + '/main.mjs'))).default
 	const result = AIsource.Init()
-	if (!result.success) {
+	if (!result?.success) {
 		fs.rmSync(AIsources_dir, { recursive: true, force: true })
-		throw new Error(result.message)
+		throw new Error(result?.message)
 	}
 }
 
