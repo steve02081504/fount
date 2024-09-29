@@ -1,4 +1,4 @@
-import { getUserByToken } from "../../../../server/auth.mjs"
+import { getUserByToken } from "../../../../../server/auth.mjs"
 import { addchar, addUserReply, findEmptyChatid, newMetadata, removechar, setPersona, setWorld, triggerCharReply } from './chat.mjs'
 
 export function setEndpoints(app) {

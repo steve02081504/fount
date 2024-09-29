@@ -16,6 +16,10 @@ export class AIsource_t<InputType, OutputType> {
 	description: string;
 	description_markdown: string;
 	is_paid: boolean;
+	version: string;
+	author: string;
+	homepage: string;
+	tags: string[];
 	extension: {};
 
 	Init: () => {

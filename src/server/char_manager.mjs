@@ -1,5 +1,6 @@
-
+import { getUserDictionary } from './auth.mjs'
 import { on_shutdown } from './on_shutdown.mjs'
+import url from 'url'
 
 /** @type {Record<string, Record<string, import('../decl/charAPI.ts').charAPI_t>>} */
 let charSet = {}
@@ -15,6 +16,22 @@ function loadCharData(username) {
 }
 function saveCharData(username) {
 	fs.writeFileSync(getUserDictionary(username) + '/char_data.json', JSON.stringify(userCharDataSet[username], null, '\t'))
+}
+
+export async function getCharDetails(username, charname) {
+	const char_dir = getUserDictionary(username) + '/chars/' + charname
+	/** @type {import('../decl/charAPI.ts').charAPI_t} */
+	const char = (await import(url.pathToFileURL(char_dir + '/main.mjs'))).default
+	return {
+		name: char.name,
+		avatar: char.avatar,
+		description: char.description,
+		description_markdown: char.description_markdown,
+		version: char.version,
+		author: char.author,
+		homepage: char.homepage,
+		tags: char.tags
+	}
 }
 
 export async function LoadChar(username, charname) {

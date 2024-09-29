@@ -2,6 +2,7 @@ import { login, register, logout, authenticate, getUserByToken, getUserDictionar
 import { __dirname } from './server.mjs'
 import fs from 'fs'
 import { loadShell } from './shell_manager.mjs'
+import { getCharDetails } from './char_manager.mjs'
 /**
  * @param {import('express').Express} app
  */
@@ -61,6 +62,12 @@ export function registerEndpoints(app) {
 	app.get(/^\/shells\//, authenticate, match_user_files)
 
 	app.get('/api/charlist', authenticate, get_list_of_load_able_part('chars'))
+	app.post('/api/chardetails', authenticate, async (req, res) => {
+		const { username } = getUserByToken(req.cookies.token)
+		const charname = req.query.charname
+		const details = await getCharDetails(username, charname)
+		res.status(200).json(details)
+	})
 	app.get(/^\/chars\//, authenticate, match_user_files)
 
 	app.get('/api/personalist', authenticate, get_list_of_load_able_part('personas'))

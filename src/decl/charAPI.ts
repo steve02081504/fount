@@ -19,6 +19,10 @@ export class charAPI_t {
 	avatar: string;
 	description: string;
 	description_markdown: string;
+	version: string;
+	author: string;
+	homepage: string;
+	tags: string[];
 	// calls only on char install, and if fail, all file under this char's folder will be deleted
 	Init: (stat: charState_t) => {
 		success: boolean;

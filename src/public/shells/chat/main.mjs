@@ -1,4 +1,4 @@
-import { setEndpoints, unsetEndpoints } from "./src/endpoints.mjs"
+import { setEndpoints, unsetEndpoints } from "./src/server/endpoints.mjs"
 
 export default {
 	name: 'chat',

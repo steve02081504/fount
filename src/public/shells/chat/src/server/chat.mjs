@@ -1,9 +1,9 @@
-/** @typedef {import('../../../../decl/charAPI.ts').charAPI_t} charAPI_t */
-/** @typedef {import('../../../../decl/worldAPI.ts').WorldAPI_t} WorldAPI_t */
-/** @typedef {import('../../../../decl/UserAPI.ts').UserAPI_t} UserAPI_t */
+/** @typedef {import('../../../../../decl/charAPI.ts').charAPI_t} charAPI_t */
+/** @typedef {import('../../../../../decl/worldAPI.ts').WorldAPI_t} WorldAPI_t */
+/** @typedef {import('../../../../../decl/UserAPI.ts').UserAPI_t} UserAPI_t */
 
-import { LoadChar } from '../../../../server/char_manager.mjs'
-import { loadPersona } from '../../../../server/personas_manager.mjs'
+import { LoadChar } from '../../../../../server/char_manager.mjs'
+import { loadPersona } from '../../../../../server/personas_manager.mjs'
 
 /** @type {Record<string, chatMetadata_t>} */
 let chatMetadatas = {}
