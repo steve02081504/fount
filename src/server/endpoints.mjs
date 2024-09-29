@@ -44,14 +44,12 @@ export function registerEndpoints(app) {
 	}
 
 	app.get('/api/shelllist', authenticate, get_list_of_load_able_part('shells'))
-	app.get(/^\/shells\/([^/]+)\/$/, authenticate, async (req, res, next) => {
+	app.get(/^\/shells\/([^/]+)\//, authenticate, async (req, res, next) => {
 		const { username } = getUserByToken(req.cookies.token)
 		const shellName = req.params[0]
-		console.log(`Loading shell ${shellName} for user ${username}.`)
 
 		try {
 			await loadShell(username, shellName)
-			console.log(`Shell ${shellName} set up.`)
 		} catch (error) {
 			console.error(`Failed to load shell ${shellName}:`, error)
 			return res.status(500).send('Internal Server Error')

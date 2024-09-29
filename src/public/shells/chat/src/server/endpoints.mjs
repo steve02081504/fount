@@ -1,5 +1,5 @@
 import { getUserByToken } from "../../../../../server/auth.mjs"
-import { addchar, addUserReply, findEmptyChatid, newMetadata, removechar, setPersona, setWorld, triggerCharReply } from './chat.mjs'
+import { addchar, addUserReply, findEmptyChatid, getCharListOfChat, GetChatLog, GetUserPersonaName, GetWorldName, newMetadata, removechar, setPersona, setWorld, triggerCharReply } from './chat.mjs'
 
 export function setEndpoints(app) {
 	app.post('/api/shells/chat/new', async (req, res) => {
@@ -35,8 +35,28 @@ export function setEndpoints(app) {
 	})
 	app.post('/api/shells/chat/adduserreply', async (req, res) => {
 		const { chatid, content } = req.body
-		addUserReply(chatid, content)
-		res.status(200).json({ message: 'adduserreply ok' })
+		let result = addUserReply(chatid, content)
+		res.status(200).json(result)
+	})
+	app.post('/api/shells/chat/getcharlist', async (req, res) => {
+		const { chatid } = req.body
+		let charlist = getCharListOfChat(chatid)
+		res.status(200).json(charlist)
+	})
+	app.post('/api/shells/chat/getchatlog', async (req, res) => {
+		const { chatid } = req.body
+		let chatlog = GetChatLog(chatid)
+		res.status(200).json(chatlog)
+	})
+	app.post('/api/shells/chat/getpersonaname', async (req, res) => {
+		const { chatid } = req.body
+		let personaname = GetUserPersonaName(chatid)
+		res.status(200).json(personaname)
+	})
+	app.post('/api/shells/chat/getworldname', async (req, res) => {
+		const { chatid } = req.body
+		let worldname = GetWorldName(chatid)
+		res.status(200).json(worldname)
 	})
 }
 
@@ -60,6 +80,18 @@ export function unsetEndpoints(app) {
 		res.status(404)
 	})
 	app.post('/api/shells/chat/adduserreply', (req, res) => {
+		res.status(404)
+	})
+	app.post('/api/shells/chat/getcharlist', (req, res) => {
+		res.status(404)
+	})
+	app.post('/api/shells/chat/getchatlog', (req, res) => {
+		res.status(404)
+	})
+	app.post('/api/shells/chat/getpersonaname', (req, res) => {
+		res.status(404)
+	})
+	app.post('/api/shells/chat/getworldname', (req, res) => {
 		res.status(404)
 	})
 }

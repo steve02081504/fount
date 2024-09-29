@@ -8,6 +8,10 @@ export async function createNewChat() {
 		},
 	})
 	const data = await response.json()
+
+	if (!response.ok)
+		throw new Error(`API request failed with status ${response.status}`)
+
 	currentChatId = data.chatid
 	window.history.replaceState(null, null, '/shells/chat/#' + data.chatid)
 	return data.chatid
@@ -21,6 +25,10 @@ export async function addCharacter(charname) {
 		},
 		body: JSON.stringify({ chatid: currentChatId, charname }),
 	})
+
+	if (!response.ok)
+		throw new Error(`API request failed with status ${response.status}`)
+
 	return response.json()
 }
 
@@ -32,6 +40,10 @@ export async function removeCharacter(charname) {
 		},
 		body: JSON.stringify({ chatid: currentChatId, charname }),
 	})
+
+	if (!response.ok)
+		throw new Error(`API request failed with status ${response.status}`)
+
 	return response.json()
 }
 
@@ -43,6 +55,10 @@ export async function setWorld(worldname) {
 		},
 		body: JSON.stringify({ chatid: currentChatId, worldname }),
 	})
+
+	if (!response.ok)
+		throw new Error(`API request failed with status ${response.status}`)
+
 	return response.json()
 }
 
@@ -54,6 +70,10 @@ export async function setPersona(personaname) {
 		},
 		body: JSON.stringify({ chatid: currentChatId, personaname }),
 	})
+
+	if (!response.ok)
+		throw new Error(`API request failed with status ${response.status}`)
+
 	return response.json()
 }
 
@@ -65,6 +85,10 @@ export async function triggerCharacterReply(charname) {
 		},
 		body: JSON.stringify({ chatid: currentChatId, charname }),
 	})
+
+	if (!response.ok)
+		throw new Error(`API request failed with status ${response.status}`)
+
 	return response.json()
 }
 
@@ -76,7 +100,71 @@ export async function addUserReply(content) {
 		},
 		body: JSON.stringify({ chatid: currentChatId, content }),
 	})
+
+	if (!response.ok)
+		throw new Error(`API request failed with status ${response.status}`)
+
 	return response.json()
+}
+
+export async function getCharList() {
+	const response = await fetch('/api/shells/chat/getcharlist', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({ chatid: currentChatId }),
+	})
+
+	if (!response.ok)
+		throw new Error(`API request failed with status ${response.status}`)
+
+	return await response.json()
+}
+
+export async function getChatLog() {
+	const response = await fetch('/api/shells/chat/getchatlog', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({ chatid: currentChatId }),
+	})
+
+	if (!response.ok)
+		throw new Error(`API request failed with status ${response.status}`)
+
+	return await response.json()
+}
+
+export async function getPersonaName() {
+	const response = await fetch('/api/shells/chat/getpersonaname', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({ chatid: currentChatId }),
+	})
+
+	if (!response.ok)
+		throw new Error(`API request failed with status ${response.status}`)
+
+	return await response.json()
+}
+
+export async function getWorldName() {
+	const response = await fetch('/api/shells/chat/getworldname', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({ chatid: currentChatId }),
+	})
+
+	if (!response.ok)
+		throw new Error(`API request failed with status ${response.status}`)
+
+	return await response.json()
 }
 
 if (window.location.hash)

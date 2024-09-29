@@ -1,17 +1,29 @@
 import { getUserDictionary } from './auth.mjs'
 import { on_shutdown } from './on_shutdown.mjs'
 import url from 'url'
+import fs from 'fs'
 
 /** @type {Record<string, Record<string, import('../decl/charAPI.ts').charAPI_t>>} */
 let charSet = {}
 /** @type {Record<string, Record<string, import('../decl/charAPI.ts').charState_t>>} */
 let userCharDataSet = {}
-function loadCharData(username) {
+function loadCharData(username, charname) {
 	try {
-		return userCharDataSet[username] ??= JSON.parse(fs.readFileSync(getUserDictionary(username) + '/char_data.json', 'utf8'))
+		userCharDataSet[username] ??= JSON.parse(fs.readFileSync(getUserDictionary(username) + '/char_data.json', 'utf8'))
 	}
 	catch (error) {
-		return userCharDataSet[username] = {}
+		userCharDataSet[username] = {}
+	}
+	return userCharDataSet[username][charname] ??= {
+		/** @type {import('../decl/charAPI.ts').charState_t} */
+		state: {
+			InitCount: 0,
+			LastStart: 0,
+			StartCount: 0,
+			memorys: {
+				extension: {}
+			}
+		}
 	}
 }
 function saveCharData(username) {
@@ -41,7 +53,7 @@ export async function LoadChar(username, charname) {
 		/** @type {import('../decl/charAPI.ts').charAPI_t} */
 		const char = (await import(url.pathToFileURL(char_dir + '/main.mjs'))).default
 		/** @type {import('../decl/charAPI.ts').charState_t} */
-		let char_state = loadCharData(username)[charname].state
+		let char_state = loadCharData(username,charname).state
 		const result = char.Load(char_state)
 		if (result?.success) {
 			charSet[username][charname] = char
@@ -72,17 +84,7 @@ on_shutdown(() => {
 export async function initChar(username, charname) {
 	let char_dir = getUserDictionary(username) + '/chars/' + charname
 	/** @type {import('../decl/charAPI.ts').charState_t} */
-	const char_state = (loadCharData(username)[charname] ??= {
-		/** @type {import('../decl/charAPI.ts').charState_t} */
-		state: {
-			InitCount: 0,
-			LastStart: 0,
-			StartCount: 0,
-			memorys: {
-				extension: {}
-			}
-		}
-	}).state
+	const char_state = loadCharData(username,charname).state
 	/** @type {import('../decl/charAPI.ts').charAPI_t} */
 	const char = (await import(url.pathToFileURL(char_dir + '/main.mjs'))).default
 	const result = char.Init(char_state)
