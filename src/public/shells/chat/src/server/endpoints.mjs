@@ -10,8 +10,8 @@ export function setEndpoints(app) {
 	})
 	app.post('/api/shells/chat/addchar', async (req, res) => {
 		const { chatid, charname } = req.body
-		addchar(chatid, charname)
-		res.status(200).json({ message: 'addchar ok' })
+		let result = addchar(chatid, charname)
+		res.status(200).json(result)
 	})
 	app.post('/api/shells/chat/removechar', async (req, res) => {
 		const { chatid, charname } = req.body

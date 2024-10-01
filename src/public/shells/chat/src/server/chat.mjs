@@ -4,7 +4,6 @@
 
 import { LoadChar } from '../../../../../server/char_manager.mjs'
 import { loadPersona } from '../../../../../server/personas_manager.mjs'
-import * as thisShell from '../../main.mjs'
 
 /** @type {Record<string, chatMetadata_t>} */
 let chatMetadatas = {}
@@ -84,9 +83,23 @@ export async function addchar(chatid, charname) {
 	const username = chatMetadatas[chatid].username
 	const timeSlice = chatMetadatas[chatid].LastTimeSlice
 	if (timeSlice.chars[charname]) return
-	timeSlice.chars[charname] = await LoadChar(username, charname)
-	console.log(`loading char ${charname} for user ${username} at chat ${chatid}`)
-	console.log(timeSlice.chars)
+	const char = timeSlice.chars[charname] = await LoadChar(username, charname)
+	// GetGreetings
+	const greetings = (() => {
+		if (chatMetadatas[chatid].chatLog.length === 0)
+			return char.interfacies.chat.GetGreetings({
+				world: timeSlice.world,
+				user: timeSlice.player,
+			})
+		else
+			return char.interfacies.chat.GetGroupGreetings({
+				world: timeSlice.world,
+				user: timeSlice.player,
+				chatLog: chatMetadatas[chatid].chatLog,
+			})
+	})()
+
+	return addChatLogEntry(chatid, BuildChatLogEntryFromCharReply(greetings[0], timeSlice, char, charname))
 }
 
 export function removechar(chatid, charname) {
@@ -113,22 +126,11 @@ export function GetWorldName(chatid) {
 function addChatLogEntry(chatid, entry) {
 	chatMetadatas[chatid].chatLog.push(entry)
 	chatMetadatas[chatid].LastTimeSlice = entry.timeSlice
+
+	return entry
 }
 
-export function triggerCharReply(chatid, charname) {
-	const timeSlice = chatMetadatas[chatid].LastTimeSlice
-	const char = timeSlice.chars[charname]
-	console.log(timeSlice.chars, charname)
-	if (!char) throw new Error('char not found')
-	const new_timeSlice = timeSlice.copy()
-	let result = char.Request(thisShell, 'chat', {
-		EventName: 'reply',
-		char_log: chatMetadatas[chatid].chatLog,
-		world: timeSlice.world,
-		user: timeSlice.player,
-		chat_summary: timeSlice.summary,
-		chat_scoped_char_memory: new_timeSlice.chars_memorys[charname]
-	})
+function BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname) {
 	let newEntry = new chatLogEntry_t
 	newEntry.charName = result.name || char.name || charname
 	newEntry.avatar = result.avatar || char.avatar
@@ -138,24 +140,42 @@ export function triggerCharReply(chatid, charname) {
 	newEntry.timeStamp = Date.now()
 	newEntry.extension = result.extension
 
-	addChatLogEntry(chatid, newEntry)
-
 	return newEntry
 }
 
-export function addUserReply(chatid, content) {
-	const timeSlice = chatMetadatas[chatid].LastTimeSlice
-	const new_timeSlice = timeSlice.copy()
-	const user = timeSlice.player
+function BuildChatLogEntryFromUserMessage(content, new_timeSlice, user, username) {
 	let newEntry = new chatLogEntry_t
-	newEntry.charName = user?.name || timeSlice.player_id || chatMetadatas[chatid].username
+	newEntry.charName = user?.name || new_timeSlice.player_id || username
 	newEntry.avatar = user?.avatar
 	newEntry.content = content
 	newEntry.timeSlice = new_timeSlice
 	newEntry.role = 'user'
 	newEntry.timeStamp = Date.now()
 
-	addChatLogEntry(chatid, newEntry)
-
 	return newEntry
+}
+
+export function triggerCharReply(chatid, charname) {
+	const timeSlice = chatMetadatas[chatid].LastTimeSlice
+	const char = timeSlice.chars[charname]
+	console.log(timeSlice.chars, charname)
+	if (!char) throw new Error('char not found')
+	const new_timeSlice = timeSlice.copy()
+	let result = char.interfacies.chat.GetReply({
+		char_log: chatMetadatas[chatid].chatLog,
+		world: timeSlice.world,
+		user: timeSlice.player,
+		chat_summary: timeSlice.summary,
+		chat_scoped_char_memory: new_timeSlice.chars_memorys[charname]
+	})
+
+	return addChatLogEntry(chatid, BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname))
+}
+
+export function addUserReply(chatid, content) {
+	const timeSlice = chatMetadatas[chatid].LastTimeSlice
+	const new_timeSlice = timeSlice.copy()
+	const user = timeSlice.player
+
+	return addChatLogEntry(chatid, BuildChatLogEntryFromUserMessage(content, new_timeSlice, user, chatMetadatas[chatid].username))
 }
