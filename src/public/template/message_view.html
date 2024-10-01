@@ -2,7 +2,14 @@
 	<div class="avatar">
 		<img src="${avatar}" alt="${charName}">
 	</div>
-	<h2>${charName}</h2>
-	<div class="timestamp">${timeStamp}</div>
-	<div class="content">${content}</div>
+	<div class="message">
+		<div class="message-header">
+			<span class="char-name">${charName}</span>
+			<div class="timestamp">${timeStamp}</div>
+		</div>
+		<div class="message-content">
+			<!-- 使用 pre 元素保留换行符 -->
+			<pre>${content}</pre>
+		</div>
+	</div>
 </div>
