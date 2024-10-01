@@ -30,7 +30,7 @@ async function sendMessage() {
 
 sendButton.addEventListener('click', sendMessage)
 messageInput.addEventListener('keydown', (event) => {
-	if (event.key === 'Enter' && !event.shiftKey && !event.ctrlKey) {
+	if (event.key === 'Enter' && (event.shiftKey || event.ctrlKey)) {
 		event.preventDefault() // Prevent default newline behavior
 		sendMessage()
 	}
