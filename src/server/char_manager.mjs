@@ -1,20 +1,9 @@
-import { getUserDictionary } from './auth.mjs'
-import { on_shutdown } from './on_shutdown.mjs'
-import url from 'url'
-import fs from 'fs'
+import { loadData, saveData } from './setting_loader.mjs'
+import { baseloadPart, initPart, loadPart, uninstallPart, unloadPart } from './parts_loader.mjs'
 
-/** @type {Record<string, Record<string, import('../decl/charAPI.ts').charAPI_t>>} */
-let charSet = {}
-/** @type {Record<string, Record<string, import('../decl/charAPI.ts').charState_t>>} */
-let userCharDataSet = {}
 function loadCharData(username, charname) {
-	try {
-		userCharDataSet[username] ??= JSON.parse(fs.readFileSync(getUserDictionary(username) + '/char_data.json', 'utf8'))
-	}
-	catch (error) {
-		userCharDataSet[username] = {}
-	}
-	return userCharDataSet[username][charname] ??= {
+	let userCharDataSet = loadData(username, 'char_data')
+	return userCharDataSet[charname] ??= {
 		/** @type {import('../decl/charAPI.ts').charState_t} */
 		state: {
 			InitCount: 0,
@@ -27,13 +16,11 @@ function loadCharData(username, charname) {
 	}
 }
 function saveCharData(username) {
-	fs.writeFileSync(getUserDictionary(username) + '/char_data.json', JSON.stringify(userCharDataSet[username], null, '\t'))
+	saveData(username, 'char_data')
 }
 
 export async function getCharDetails(username, charname) {
-	const char_dir = getUserDictionary(username) + '/chars/' + charname
-	/** @type {import('../decl/charAPI.ts').charAPI_t} */
-	const char = (await import(url.pathToFileURL(char_dir + '/main.mjs'))).default
+	const char = await baseloadPart(username, 'chars', charname)
 	return {
 		name: char.name,
 		avatar: char.avatar,
@@ -47,58 +34,26 @@ export async function getCharDetails(username, charname) {
 }
 
 export async function LoadChar(username, charname) {
-	charSet[username] ??= {}
-	if (!charSet[username][charname]) {
-		const char_dir = getUserDictionary(username) + '/chars/' + charname
-		/** @type {import('../decl/charAPI.ts').charAPI_t} */
-		const char = (await import(url.pathToFileURL(char_dir + '/main.mjs'))).default
-		/** @type {import('../decl/charAPI.ts').charState_t} */
-		let char_state = loadCharData(username,charname).state
-		const result = char.Load(char_state)
-		if (result?.success) {
-			charSet[username][charname] = char
-			char_state.LastStart = Date.now()
-			char_state.StartCount++
-			saveCharData(username)
-		}
-		else throw new Error(result?.message)
-	}
-	return charSet[username][charname]
+	let char_state = loadCharData(username, charname).state
+	let char = await loadPart(username, 'chars', charname, char_state)
+	char_state.LastStart = Date.now()
+	char_state.StartCount++
+	saveCharData(username)
+	return char
 }
 
 export function UnloadChar(username, charname, reason) {
-	if (charSet[username]?.[charname]) {
-		/** @type {import('../decl/charAPI.ts').charAPI_t} */
-		const char = charSet[username][charname]
-		char.Unload(reason)
-		delete charSet[username][charname]
-		saveCharData(username)
-	}
+	unloadPart(username, 'chars', charname, reason)
+	saveCharData(username)
 }
-on_shutdown(() => {
-	for (let username in charSet)
-		for (let charname in charSet[username])
-			UnloadChar(username, charname, 'Server Shutdown')
-})
 
 export async function initChar(username, charname) {
-	let char_dir = getUserDictionary(username) + '/chars/' + charname
-	/** @type {import('../decl/charAPI.ts').charState_t} */
-	const char_state = loadCharData(username,charname).state
-	/** @type {import('../decl/charAPI.ts').charAPI_t} */
-	const char = (await import(url.pathToFileURL(char_dir + '/main.mjs'))).default
-	const result = char.Init(char_state)
-	if (result?.success) saveCharData(username)
-	else {
-		fs.rmSync(char_dir, { recursive: true, force: true })
-		throw new Error(result?.message)
-	}
+	let state = loadCharData(username, charname).state
+	await initPart(username, 'chars', charname, state)
+	state.InitCount++
+	saveCharData(username)
 }
 
 export async function uninstallChar(username, charname, reason, from) {
-	let char_dir = getUserDictionary(username) + '/chars/' + charname
-	/** @type {import('../decl/charAPI.ts').charAPI_t} */
-	const char = await LoadChar(username, charname)
-	char.Uninstall(reason, from)
-	fs.rmSync(char_dir, { recursive: true, force: true })
+	await uninstallPart(username, 'chars', charname, { reason, from })
 }

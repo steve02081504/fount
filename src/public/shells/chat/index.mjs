@@ -5,9 +5,10 @@ const chatMessages = document.querySelector('.chat-messages')
 const messageInput = document.getElementById('message-input')
 const sendButton = document.getElementById('send-button')
 
-function updateChatMessages(messages) {
+async function updateChatMessages(messages) {
 	chatMessages.innerHTML = '' // Clear existing messages
-	messages.forEach(addMessage)
+
+	for (const message of messages) await addMessage(message)
 }
 async function addMessage(message) {
 	const messageElement = document.createElement('div')
@@ -18,11 +19,11 @@ async function addMessage(message) {
 async function sendMessage() {
 	const message = messageInput.value
 	if (message.trim() !== '') {
-		addMessage(await addUserReply(message))
+		await addMessage(await addUserReply(message))
 		messageInput.value = ''
 
 		const reply = await triggerCharacterReply(charList[0])
-		addMessage(reply)
+		await addMessage(reply)
 	}
 }
 
