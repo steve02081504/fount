@@ -1,5 +1,6 @@
 import { renderTemplate } from "../../scripts/template.mjs"
 import { addUserReply, getCharList, getChatLog, triggerCharacterReply } from "./src/public/endpoints.mjs"
+import { renderMarkdown } from "./src/public/markdown.mjs"
 
 const chatMessages = document.querySelector('.chat-messages')
 const messageInput = document.getElementById('message-input')
@@ -12,7 +13,13 @@ async function updateChatMessages(messages) {
 }
 async function addMessage(message) {
 	const messageElement = document.createElement('div')
-	messageElement.innerHTML = await renderTemplate('message_view', message)
+	let renderdMessage = {
+		...message,
+		avatar: message.avatar || 'https://gravatar.com/avatar/0?d=mp&f=y',
+		timeStamp: new Date(message.timeStamp).toLocaleString(),
+		content: renderMarkdown(message.content)
+	}
+	messageElement.innerHTML = await renderTemplate('message_view', renderdMessage)
 	chatMessages.appendChild(messageElement)
 }
 
