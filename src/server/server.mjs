@@ -33,11 +33,14 @@ if (!config.secretKey) {
 }
 
 export async function init() {
+	var open = require('open')
 	registerEndpoints(app)
 	app.use(express.static(__dirname + '/src/public'))
 	const { port } = config
 	app.listen(port, () => {
 		console.log(`服务器运行在 http://localhost:${port}`)
+	open(`http://localhost:${port}`)
 	})
+
 }
 
