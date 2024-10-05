@@ -39,6 +39,4 @@ export async function init() {
 	app.listen(port, () => {
 		console.log(`服务器运行在 http://localhost:${port}`)
 	})
-
 }
-
