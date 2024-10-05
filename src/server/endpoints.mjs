@@ -36,14 +36,16 @@ export function registerEndpoints(app) {
 	}
 	let match_user_files = (req, res) => {
 		const { username } = getUserByToken(req.cookies.token)
-		if (fs.existsSync(getUserDictionary(username) + '/' + req.path))
-			res.sendFile(getUserDictionary(username) + '/' + req.path)
+		let path = req.path
+		if (path.endsWith('/')) path+='/index.html'
+		if (fs.existsSync(getUserDictionary(username) + '/' + path))
+			res.sendFile(getUserDictionary(username) + '/' + path)
 
-		else if (fs.existsSync(getUserDictionary(username) + '/chars/' + req.path))
-			res.sendFile(getUserDictionary(username) + '/chars/' + req.path)
+		else if (fs.existsSync(getUserDictionary(username) + '/chars/' + path))
+			res.sendFile(getUserDictionary(username) + '/chars/' + path)
 
-		else if (fs.existsSync(__dirname + '/src/public/' + req.path))
-			res.sendFile(__dirname + '/src/public/' + req.path)
+		else if (fs.existsSync(__dirname + '/src/public/' + path))
+			res.sendFile(__dirname + '/src/public/' + path)
 	}
 
 	app.get('/api/shelllist', authenticate, get_list_of_load_able_part('shells'))

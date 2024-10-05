@@ -2,8 +2,12 @@
 /** @typedef {import('../../../../../decl/worldAPI.ts').WorldAPI_t} WorldAPI_t */
 /** @typedef {import('../../../../../decl/UserAPI.ts').UserAPI_t} UserAPI_t */
 
+import { getUserDictionary } from '../../../../../server/auth.mjs'
 import { LoadChar } from '../../../../../server/char_manager.mjs'
+import { loadJsonFile, saveJsonFile } from '../../../../../server/json_loader.mjs'
+import { on_shutdown } from '../../../../../server/on_shutdown.mjs'
 import { loadPersona } from '../../../../../server/personas_manager.mjs'
+import fs from 'fs'
 
 /** @type {Record<string, chatMetadata_t>} */
 let chatMetadatas = {}
@@ -32,6 +36,33 @@ export class timeSlice_t {
 		new_timeSlice.chars_memorys = JSON.parse(JSON.stringify(this.chars_memorys))
 		return new_timeSlice
 	}
+	toJSON() {
+		return {
+			chars: Object.keys(this.chars),
+			summary: this.summary,
+			world: this.world_id,
+			player: this.player_id,
+			chars_memorys: this.chars_memorys
+		}
+	}
+	static async fromJSON(json, username) {
+		let new_timeSlice = new timeSlice_t
+		new_timeSlice.chars = {}
+		for (const charname of json.chars)
+			new_timeSlice.chars[charname] = await LoadChar(username, charname)
+		console.log(new_timeSlice.chars)
+		new_timeSlice.summary = json.summary
+		if (json.world) {
+			new_timeSlice.world_id = json.world
+			new_timeSlice.world = await loadWorld(username, json.world)
+		}
+		if (json.player) {
+			new_timeSlice.player_id = json.player
+			new_timeSlice.player = await loadPersona(username, json.player)
+		}
+		new_timeSlice.chars_memorys = json.chars_memorys
+		return new_timeSlice
+	}
 }
 export class chatLogEntry_t {
 	charName
@@ -41,6 +72,30 @@ export class chatLogEntry_t {
 	content
 	timeSlice = new timeSlice_t()
 	extension = {
+	}
+
+	toJSON() {
+		return {
+			charName: this.charName,
+			avatar: this.avatar,
+			timeStamp: this.timeStamp,
+			role: this.role,
+			content: this.content,
+			timeSlice: this.timeSlice.toJSON(),
+			extension: this.extension
+		}
+	}
+
+	static async fromJSON(json, username) {
+		let newEntry = new chatLogEntry_t
+		newEntry.charName = json.charName
+		newEntry.avatar = json.avatar
+		newEntry.timeStamp = json.timeStamp
+		newEntry.role = json.role
+		newEntry.content = json.content
+		newEntry.timeSlice = await timeSlice_t.fromJSON(json.timeSlice, username)
+		newEntry.extension = json.extension
+		return newEntry
 	}
 }
 class chatMetadata_t {
@@ -53,6 +108,26 @@ class chatMetadata_t {
 	constructor(username) {
 		this.username = username
 	}
+
+	toJSON() {
+		return {
+			username: this.username,
+			chatLog: this.chatLog.map((log) => log.toJSON()),
+			timeLines: this.timeLines
+		}
+	}
+
+	static async fromJSON(json) {
+		let newMetadata = new chatMetadata_t
+		newMetadata.username = json.username
+		newMetadata.chatLog = []
+		for (let data of json.chatLog)
+			newMetadata.chatLog.push(await chatLogEntry_t.fromJSON(data, json.username))
+		newMetadata.timeLines = json.timeLines
+		if (newMetadata.chatLog.length)
+			newMetadata.LastTimeSlice = newMetadata.chatLog[newMetadata.chatLog.length - 1].timeSlice
+		return newMetadata
+	}
 }
 export function newMetadata(chatid, username) {
 	chatMetadatas[chatid] = new chatMetadata_t(username)
@@ -63,6 +138,23 @@ export function findEmptyChatid() {
 		if (!chatMetadatas[uuid]) return uuid
 	}
 	while (true)
+}
+export function saveChat(chatid, username) {
+	fs.mkdirSync(getUserDictionary(username) + '/shells/chat/chats', { recursive: true })
+	saveJsonFile(getUserDictionary(username) + '/shells/chat/chats/' + chatid + '.json', chatMetadatas[chatid])
+}
+export async function loadChat(chatid, username) {
+	return chatMetadatas[chatid] = await chatMetadata_t.fromJSON(
+		loadJsonFile(getUserDictionary(username) + '/shells/chat/chats/' + chatid + '.json')
+	)
+}
+on_shutdown(() => {
+	Object.keys(chatMetadatas).forEach(chatid => saveChat(chatid, chatMetadatas[chatid].username))
+})
+
+export async function loadMetaData(chatid, username) {
+	if (!chatMetadatas[chatid]) await loadChat(chatid, username)
+	return chatMetadatas[chatid]
 }
 
 export async function setPersona(chatid, personaname) {
