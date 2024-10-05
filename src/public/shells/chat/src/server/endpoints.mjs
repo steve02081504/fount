@@ -1,5 +1,5 @@
 import { getUserByToken } from "../../../../../server/auth.mjs"
-import { addchar, addUserReply, findEmptyChatid, getCharListOfChat, GetChatLog, GetUserPersonaName, GetWorldName, newMetadata, removechar, setPersona, setWorld, triggerCharReply } from './chat.mjs'
+import { addchar, addUserReply, findEmptyChatid, getCharListOfChat, GetChatLog, GetUserPersonaName, GetWorldName, loadMetaData, newMetadata, removechar, setPersona, setWorld, triggerCharReply } from './chat.mjs'
 
 export function setEndpoints(app) {
 	app.post('/api/shells/chat/new', async (req, res) => {
@@ -40,11 +40,13 @@ export function setEndpoints(app) {
 	})
 	app.post('/api/shells/chat/getcharlist', async (req, res) => {
 		const { chatid } = req.body
+		await loadMetaData(chatid, getUserByToken(req.cookies.token).username)
 		let charlist = getCharListOfChat(chatid)
 		res.status(200).json(charlist)
 	})
 	app.post('/api/shells/chat/getchatlog', async (req, res) => {
 		const { chatid } = req.body
+		await loadMetaData(chatid, getUserByToken(req.cookies.token).username)
 		let chatlog = GetChatLog(chatid)
 		res.status(200).json(chatlog)
 	})

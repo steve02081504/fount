@@ -67,7 +67,12 @@ export function unloadPart(username, parttype, partname, unLoadargs, {
 	unLoader = (part) => part.Unload(unLoadargs),
 }={}) {
 	const part = parts_set[username][parttype][partname]
-	unLoader(part)
+	try {
+		unLoader(part)
+	}
+	catch (error) {
+		console.error(error)
+	}
 	delete parts_set[username][parttype][partname]
 }
 on_shutdown(() => {
@@ -86,6 +91,10 @@ export function uninstallPart(username, parttype, partname, unLoadargs, uninstal
 	}
 }={}) {
 	const part = parts_set[username][parttype][partname]
-	unloadPart(username, parttype, partname, unLoadargs, { unLoader })
+	try {
+		unloadPart(username, parttype, partname, unLoadargs, { unLoader })
+	} catch (error) {
+		console.error(error)
+	}
 	Uninstaller(part, pathGetter())
 }
