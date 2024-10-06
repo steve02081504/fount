@@ -1,8 +1,9 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
 
 export default async (config) => {
-	let genAI = new GoogleGenerativeAI(config.Key)
-	let model = await genAI.getGenerativeModel({ model: config.model })
+	console.log(config)
+	let genAI = new GoogleGenerativeAI(config.apikey)
+	let model = genAI.getGenerativeModel({ model: config.model })
 	return {
 		avatar: '',
 		name: 'gemini',
@@ -18,8 +19,7 @@ export default async (config) => {
 		Unload: () => {},
 		Call: async (prompt) => {
 			const result = await model.generateContent(prompt)
-			const response = await result.response
-			return response.text()
+			return result.response.text()
 		},
 		Tokenizer: {
 			free: () => 0,
