@@ -30,20 +30,14 @@ export async function loadPart(username, parttype, partname, Initargs, {
 	pathGetter = () => GetPartPath(username, parttype, partname),
 	Loader = async (path, Initargs) => {
 		const part = (await import(url.pathToFileURL(path + '/main.mjs'))).default
-		part.Load(Initargs)
+		if (part.Load) part.Load(Initargs)
 		return part
 	},
 	afterLoad = (part) => { },
 	Initer = async (path, Initargs) => {
 		const part = (await import(url.pathToFileURL(path + '/main.mjs'))).default
 		if (part.Init)
-			try {
-				part.Init(Initargs)
-			}
-			catch (error) {
-				fs.rmSync(path, { recursive: true, force: true })
-				throw error
-			}
+			await part.Init(Initargs)
 		return part
 	},
 	afterInit = (part) => { },
@@ -59,36 +53,30 @@ export async function loadPart(username, parttype, partname, Initargs, {
 	parts_set[username][parttype] ??= {}
 	let parts_init = loadData(username, 'parts_init')
 	if (!parts_init[parttype]?.[partname]) {
-		initPart(username, parttype, partname, Initargs, { pathGetter, Initer, afterInit })
+		await initPart(username, parttype, partname, Initargs, { pathGetter, Initer, afterInit })
 		parts_init[parttype] ??= {}
 		parts_init[parttype][partname] = true
 		saveData(username, 'parts_init')
 	}
 	if (!parts_set[username][parttype][partname]) {
 		parts_set[username][parttype][partname] = await Loader(pathGetter(), Initargs)
-		afterLoad(parts_set[username][parttype][partname])
+		await afterLoad(parts_set[username][parttype][partname])
 	}
 	return parts_set[username][parttype][partname]
 }
 
-export function initPart(username, parttype, partname, Initargs, {
+export async function initPart(username, parttype, partname, Initargs, {
 	pathGetter = () => GetPartPath(username, parttype, partname),
 	Initer = async (path, Initargs) => {
 		const part = (await import(url.pathToFileURL(path + '/main.mjs'))).default
 		if (part.Init)
-			try {
-				part.Init(Initargs)
-			}
-			catch (error) {
-				fs.rmSync(path, { recursive: true, force: true })
-				throw error
-			}
+			await part.Init(Initargs)
 		return part
 	},
 	afterInit = (part) => { },
 } = {}) {
-	let part = Initer(pathGetter(), Initargs)
-	afterInit(part)
+	let part = await Initer(pathGetter(), Initargs)
+	await afterInit(part)
 }
 
 export function unloadPart(username, parttype, partname, unLoadargs, {

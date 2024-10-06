@@ -50,7 +50,6 @@ export class timeSlice_t {
 		new_timeSlice.chars = {}
 		for (const charname of json.chars)
 			new_timeSlice.chars[charname] = await LoadChar(username, charname)
-		console.log(new_timeSlice.chars)
 		new_timeSlice.summary = json.summary
 		if (json.world) {
 			new_timeSlice.world_id = json.world
@@ -247,13 +246,12 @@ function BuildChatLogEntryFromUserMessage(content, new_timeSlice, user, username
 	return newEntry
 }
 
-export function triggerCharReply(chatid, charname) {
+export async function triggerCharReply(chatid, charname) {
 	const timeSlice = chatMetadatas[chatid].LastTimeSlice
 	const char = timeSlice.chars[charname]
-	console.log(timeSlice.chars, charname)
 	if (!char) throw new Error('char not found')
 	const new_timeSlice = timeSlice.copy()
-	let result = char.interfacies.chat.GetReply({
+	let result = await char.interfacies.chat.GetReply({
 		char_log: chatMetadatas[chatid].chatLog,
 		world: timeSlice.world,
 		user: timeSlice.player,

@@ -1,5 +1,4 @@
 import { timeStamp_t } from './basedefs.ts';
-import { Shell_t } from './shellAPI.ts';
 import { AIsource_t } from './AIsource.ts';
 
 export class charState_t {
@@ -21,15 +20,9 @@ export class charAPI_t {
 	homepage: string;
 	tags: string[];
 	// calls only on char install, and if fail, all file under this char's folder will be deleted
-	Init: (stat: charState_t) => {
-		success: boolean;
-		message: string;
-	};
+	Init: (stat: charState_t) => void;
 	// calls on every char start, pop a message if fail
-	Load: (stat: charState_t) => {
-		success: boolean;
-		message: string;
-	};
+	Load: (stat: charState_t) => void;
 	// calls on every char unload
 	Unload: (reason: string) => void;
 	// calls on char uninstall

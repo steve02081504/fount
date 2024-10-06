@@ -30,7 +30,7 @@ export function setEndpoints(app) {
 	})
 	app.post('/api/shells/chat/triggercharreply', async (req, res) => {
 		const { chatid, charname } = req.body
-		let result = triggerCharReply(chatid, charname)
+		let result = await triggerCharReply(chatid, charname)
 		res.status(200).json(result)
 	})
 	app.post('/api/shells/chat/adduserreply', async (req, res) => {
