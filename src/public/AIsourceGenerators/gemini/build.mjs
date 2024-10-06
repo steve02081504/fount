@@ -21,6 +21,9 @@ export default async (config) => {
 			const result = await model.generateContent(prompt)
 			return result.response.text()
 		},
+		StructCall: async (prompt_struct) => {
+			// TODO
+		},
 		Tokenizer: {
 			free: () => 0,
 			encode: (prompt) => prompt,

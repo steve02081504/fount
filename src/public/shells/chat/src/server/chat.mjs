@@ -252,7 +252,7 @@ export async function triggerCharReply(chatid, charname) {
 	if (!char) throw new Error('char not found')
 	const new_timeSlice = timeSlice.copy()
 	let result = await char.interfacies.chat.GetReply({
-		char_log: chatMetadatas[chatid].chatLog,
+		chat_log: chatMetadatas[chatid].chatLog,
 		world: timeSlice.world,
 		user: timeSlice.player,
 		chat_summary: timeSlice.summary,
