@@ -1,6 +1,6 @@
 import { timeStamp_t } from '../../../../decl/basedefs.ts';
 import { charAPI_t } from '../../../../decl/charAPI.ts';
-import { WorldAPI_t } from '../../../../decl/worldAPI.ts';
+import { WorldAPI_t } from '../../../../decl/WorldAPI.ts';
 import { UserAPI_t } from '../../../../decl/UserAPI.ts';
 
 export class chatLogEntry_t {
