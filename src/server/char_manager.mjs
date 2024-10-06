@@ -1,5 +1,6 @@
 import { loadData, saveData } from './setting_loader.mjs'
 import { baseloadPart, initPart, loadPart, uninstallPart, unloadPart } from './parts_loader.mjs'
+import { loadAIsource } from './AIsources_manager.mjs'
 
 function loadCharData(username, charname) {
 	let userCharDataSet = loadData(username, 'char_data')
@@ -9,6 +10,7 @@ function loadCharData(username, charname) {
 			InitCount: 0,
 			LastStart: 0,
 			StartCount: 0,
+			AIsources: {},
 			memorys: {
 				extension: {}
 			}
@@ -34,9 +36,12 @@ export async function getCharDetails(username, charname) {
 }
 
 export async function LoadChar(username, charname) {
-	let char_state = loadCharData(username, charname).state
+	let data = loadCharData(username, charname)
+	let char_state = data.state
 	let char = await loadPart(username, 'chars', charname, char_state, {
 		afterLoad: async (char) => {
+			for (const sourceType in char_state.AIsources)
+				char.SetAIsource(loadAIsource(username, char_state.AIsources[sourceType]), sourceType)
 			char_state.LastStart = Date.now()
 			char_state.StartCount++
 			saveCharData(username)
@@ -62,4 +67,13 @@ export async function initChar(username, charname) {
 
 export async function uninstallChar(username, charname, reason, from) {
 	await uninstallPart(username, 'chars', charname, { reason, from })
+}
+
+export async function setCharAIsource(username, charname, sourceType, sourcename) {
+	let char = await LoadChar(username, charname)
+	let AIsource = loadAIsource(username, sourcename)
+	char.SetAIsource(AIsource, sourceType)
+	let char_state = loadCharData(username, charname).state
+	char_state.AIsources[sourceType] = sourcename
+	saveCharData(username)
 }
