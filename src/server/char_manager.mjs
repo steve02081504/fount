@@ -41,7 +41,7 @@ export async function LoadChar(username, charname) {
 	let char = await loadPart(username, 'chars', charname, char_state, {
 		afterLoad: async (char) => {
 			for (const sourceType in char_state.AIsources)
-				char.SetAIsource(loadAIsource(username, char_state.AIsources[sourceType]), sourceType)
+				char.SetAISource(await loadAIsource(username, char_state.AIsources[sourceType]), sourceType)
 			char_state.LastStart = Date.now()
 			char_state.StartCount++
 			saveCharData(username)
@@ -72,7 +72,7 @@ export async function uninstallChar(username, charname, reason, from) {
 export async function setCharAIsource(username, charname, sourceType, sourcename) {
 	let char = await LoadChar(username, charname)
 	let AIsource = loadAIsource(username, sourcename)
-	char.SetAIsource(AIsource, sourceType)
+	char.SetAISource(AIsource, sourceType)
 	let char_state = loadCharData(username, charname).state
 	char_state.AIsources[sourceType] = sourcename
 	saveCharData(username)

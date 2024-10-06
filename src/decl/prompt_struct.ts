@@ -23,6 +23,7 @@ export type prompt_struct_t = {
 		extension: {};
 	}[]
 	world_prompt: single_part_prompt_t
+	plugin_prompts: Record<string, single_part_prompt_t>
 	chat_log: {
 		charName: string;
 		timeStamp: timeStamp_t;

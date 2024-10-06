@@ -1,5 +1,5 @@
 /** @typedef {import('../../../../../decl/charAPI.ts').charAPI_t} charAPI_t */
-/** @typedef {import('../../../../../decl/worldAPI.ts').WorldAPI_t} WorldAPI_t */
+/** @typedef {import('../../../../../decl/WorldAPI.ts').WorldAPI_t} WorldAPI_t */
 /** @typedef {import('../../../../../decl/UserAPI.ts').UserAPI_t} UserAPI_t */
 
 import { getUserDictionary } from '../../../../../server/auth.mjs'

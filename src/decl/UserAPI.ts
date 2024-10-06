@@ -1,3 +1,4 @@
+import { timeStamp_t } from "./basedefs";
 import { prompt_struct_t, single_part_prompt_t } from "./prompt_struct";
 
 export class UserAPI_t {
@@ -18,5 +19,9 @@ export class UserAPI_t {
 	// calls on uninstall
 	Uninstall: (reason: string, from: string) => void;
 
-	getPrompt: (prompt_struct: prompt_struct_t) => single_part_prompt_t;
+	interfacies: {
+		chat: {
+			GetPrompt: (prompt_struct: prompt_struct_t) => single_part_prompt_t;
+		}
+	};
 }
