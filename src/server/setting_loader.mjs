@@ -1,5 +1,4 @@
 import { getUserDictionary } from "./auth.mjs"
-import fs from 'fs'
 import { saveJsonFile, loadJsonFile } from "./json_loader.mjs"
 
 let userDataSet = {}

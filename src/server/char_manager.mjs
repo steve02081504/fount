@@ -35,10 +35,13 @@ export async function getCharDetails(username, charname) {
 
 export async function LoadChar(username, charname) {
 	let char_state = loadCharData(username, charname).state
-	let char = await loadPart(username, 'chars', charname, char_state)
-	char_state.LastStart = Date.now()
-	char_state.StartCount++
-	saveCharData(username)
+	let char = await loadPart(username, 'chars', charname, char_state, {
+		afterLoad: async (char) => {
+			char_state.LastStart = Date.now()
+			char_state.StartCount++
+			saveCharData(username)
+		}
+	})
 	return char
 }
 
@@ -49,9 +52,12 @@ export function UnloadChar(username, charname, reason) {
 
 export async function initChar(username, charname) {
 	let state = loadCharData(username, charname).state
-	await initPart(username, 'chars', charname, state)
-	state.InitCount++
-	saveCharData(username)
+	await initPart(username, 'chars', charname, state, {
+		afterInit: async (char) => {
+			state.InitCount++
+			saveCharData(username)
+		}
+	})
 }
 
 export async function uninstallChar(username, charname, reason, from) {
