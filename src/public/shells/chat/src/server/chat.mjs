@@ -255,8 +255,10 @@ export async function triggerCharReply(chatid, charname) {
 		chat_log: chatMetadatas[chatid].chatLog,
 		world: timeSlice.world,
 		user: timeSlice.player,
+		other_chars: Object.keys(timeSlice.chars).filter((name) => name !== charname).map((charname) => timeSlice.chars[charname]),
 		chat_summary: timeSlice.summary,
-		chat_scoped_char_memory: new_timeSlice.chars_memorys[charname]
+		chat_scoped_char_memory: new_timeSlice.chars_memorys[charname],
+		plugins: []
 	})
 
 	return addChatLogEntry(chatid, BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname))

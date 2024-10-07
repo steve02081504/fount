@@ -53,7 +53,7 @@ export class charAPI_t {
 				user: UserAPI_t
 				chat_summary: string
 				chat_scoped_char_memory: {}
-			}) => { content: string }
+			}) => Promise<{ content: string }>
 		}
 	};
 }

@@ -1,4 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
+import { structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
+/** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
 export default async (config) => {
 	console.log(config)
@@ -21,8 +23,21 @@ export default async (config) => {
 			const result = await model.generateContent(prompt)
 			return result.response.text()
 		},
-		StructCall: async (prompt_struct) => {
-			// TODO
+		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
+			let system_prompt = structPromptToSingleNoChatLog(prompt_struct)
+			let request = {
+				systemInstruction: system_prompt,
+				contents: []
+			}
+			prompt_struct.chat_log.forEach((chatLogEntry) => {
+				request.contents.push({
+					role: chatLogEntry.role === 'user' ? 'user' : 'model',
+					parts: [{ text: chatLogEntry.charName + ': ' + chatLogEntry.content }]
+				})
+			})
+
+			let result = await model.generateContent(request)
+			return result.response.text()
 		},
 		Tokenizer: {
 			free: () => 0,
