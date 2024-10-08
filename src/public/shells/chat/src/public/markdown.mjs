@@ -7,6 +7,7 @@ var converter = new showdown.Converter({
 	simpleLineBreaks: true,
 	emoji: true,
 	disableForced4SpacesIndentedSublists: true,
+	extensions: [showdown_highlight({ auto_detection: true })]
 })
 
 export function renderMarkdown(markdown) {

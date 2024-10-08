@@ -25,6 +25,7 @@
 		"cookie-parser": "^1.4.6",
 		"express": "^4.21.0",
 		"jsonwebtoken": "^9.0.2",
+		"jszip": "^3.10.1",
 		"vue-router": "^4.4.5"
 	},
 	"devDependencies": {
