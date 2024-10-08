@@ -1,6 +1,7 @@
 import { loadData, saveData } from './setting_loader.mjs'
 import { baseloadPart, getPartInfo, initPart, loadPart, uninstallPart, unloadPart } from './parts_loader.mjs'
 import { loadAIsource } from './AIsources_manager.mjs'
+import { unzipDirectory, zipDirectory } from './zip.mjs'
 
 function loadCharData(username, charname) {
 	let userCharDataSet = loadData(username, 'char_data')
@@ -67,4 +68,14 @@ export async function setCharAIsource(username, charname, sourceType, sourcename
 	let char_state = loadCharData(username, charname).state
 	char_state.AIsources[sourceType] = sourcename
 	saveCharData(username)
+}
+
+export async function exportChar(username, charname) {
+	let charPath = getPartPath(username, 'chars', charname)
+	return zipDirectory(charPath)
+}
+
+export async function importChar(username, charname, data) {
+	let charPath = getPartPath(username, 'chars', charname)
+	return unzipDirectory(data, charPath)
 }
