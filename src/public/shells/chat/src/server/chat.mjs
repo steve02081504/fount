@@ -1,11 +1,13 @@
 /** @typedef {import('../../../../../decl/charAPI.ts').charAPI_t} charAPI_t */
 /** @typedef {import('../../../../../decl/WorldAPI.ts').WorldAPI_t} WorldAPI_t */
 /** @typedef {import('../../../../../decl/UserAPI.ts').UserAPI_t} UserAPI_t */
+/** @typedef {import('../../../../../decl/basedefs.ts').locale_t} locale_t */
 
 import { getUserDictionary } from '../../../../../server/auth.mjs'
 import { LoadChar } from '../../../../../server/char_manager.mjs'
 import { loadJsonFile, saveJsonFile } from '../../../../../server/json_loader.mjs'
 import { on_shutdown } from '../../../../../server/on_shutdown.mjs'
+import { getPartInfo } from '../../../../../server/parts_loader.mjs'
 import { loadPersona } from '../../../../../server/personas_manager.mjs'
 import fs from 'fs'
 
@@ -64,7 +66,7 @@ export class timeSlice_t {
 	}
 }
 export class chatLogEntry_t {
-	charName
+	name
 	avatar
 	timeStamp
 	role
@@ -75,7 +77,7 @@ export class chatLogEntry_t {
 
 	toJSON() {
 		return {
-			charName: this.charName,
+			name: this.name,
 			avatar: this.avatar,
 			timeStamp: this.timeStamp,
 			role: this.role,
@@ -87,7 +89,7 @@ export class chatLogEntry_t {
 
 	static async fromJSON(json, username) {
 		let newEntry = new chatLogEntry_t
-		newEntry.charName = json.charName
+		newEntry.name = json.name
 		newEntry.avatar = json.avatar
 		newEntry.timeStamp = json.timeStamp
 		newEntry.role = json.role
@@ -221,10 +223,24 @@ function addChatLogEntry(chatid, entry) {
 	return entry
 }
 
-function BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname) {
+/**
+ * @param {{
+ * 	name: string,
+ * 	avatar: string,
+ * 	content: string,
+ * 	extension: any
+ * }} result
+ * @param {timeSlice_t} new_timeSlice
+ * @param {CharAPI_t} char
+ * @param {string} charname
+ * @param {locale_t} locale
+ * @returns {chatLogEntry_t}
+ */
+function BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, locale) {
 	let newEntry = new chatLogEntry_t
-	newEntry.charName = result.name || char.name || charname
-	newEntry.avatar = result.avatar || char.avatar
+	let info = getPartInfo(char, locale)
+	newEntry.name = result.name || info.name || charname
+	newEntry.avatar = result.avatar || info.avatar
 	newEntry.content = result.content
 	newEntry.timeSlice = new_timeSlice
 	newEntry.role = 'char'
@@ -234,10 +250,19 @@ function BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname) {
 	return newEntry
 }
 
-function BuildChatLogEntryFromUserMessage(content, new_timeSlice, user, username) {
+/**
+ * @param {string} content
+ * @param {timeSlice_t} new_timeSlice
+ * @param {UserAPI_t} user
+ * @param {string} username
+ * @param {locale_t} locale
+ * @returns {chatLogEntry_t}
+ */
+function BuildChatLogEntryFromUserMessage(content, new_timeSlice, user, username, locale) {
 	let newEntry = new chatLogEntry_t
-	newEntry.charName = user?.name || new_timeSlice.player_id || username
-	newEntry.avatar = user?.avatar
+	let info = getPartInfo(user, locale)
+	newEntry.name = info?.name || new_timeSlice.player_id || username
+	newEntry.avatar = info?.avatar
 	newEntry.content = content
 	newEntry.timeSlice = new_timeSlice
 	newEntry.role = 'user'
@@ -246,7 +271,7 @@ function BuildChatLogEntryFromUserMessage(content, new_timeSlice, user, username
 	return newEntry
 }
 
-export async function triggerCharReply(chatid, charname) {
+export async function triggerCharReply(chatid, charname, locale) {
 	const timeSlice = chatMetadatas[chatid].LastTimeSlice
 	const char = timeSlice.chars[charname]
 	if (!char) throw new Error('char not found')
@@ -261,13 +286,13 @@ export async function triggerCharReply(chatid, charname) {
 		plugins: []
 	})
 
-	return addChatLogEntry(chatid, BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname))
+	return addChatLogEntry(chatid, BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, locale))
 }
 
-export function addUserReply(chatid, content) {
+export function addUserReply(chatid, content, locale) {
 	const timeSlice = chatMetadatas[chatid].LastTimeSlice
 	const new_timeSlice = timeSlice.copy()
 	const user = timeSlice.player
 
-	return addChatLogEntry(chatid, BuildChatLogEntryFromUserMessage(content, new_timeSlice, user, chatMetadatas[chatid].username))
+	return addChatLogEntry(chatid, BuildChatLogEntryFromUserMessage(content, new_timeSlice, user, chatMetadatas[chatid].username, locale))
 }

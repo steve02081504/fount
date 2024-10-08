@@ -71,9 +71,9 @@ export function registerEndpoints(app) {
 
 	app.get('/api/charlist', authenticate, get_list_of_load_able_part('chars'))
 	app.post('/api/chardetails', authenticate, async (req, res) => {
-		const { username } = getUserByToken(req.cookies.token)
+		const { username, locale } = getUserByToken(req.cookies.token)
 		const charname = req.query.charname
-		const details = await getCharDetails(username, charname)
+		const details = await getCharDetails(username, charname, locale)
 		res.status(200).json(details)
 	})
 	app.get(/^\/chars\//, authenticate, match_user_files)

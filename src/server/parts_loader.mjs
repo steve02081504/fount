@@ -114,3 +114,9 @@ export function uninstallPart(username, parttype, partname, unLoadargs, uninstal
 	}
 	Uninstaller(part, pathGetter())
 }
+
+export function getPartInfo(part, locale) {
+	if (!part?.info) return
+	if (part.info[locale]) return part.info[locale]
+	return part.info[Object.keys(part.info)[0]]
+}

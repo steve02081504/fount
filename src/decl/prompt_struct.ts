@@ -17,7 +17,7 @@ export type prompt_struct_t = {
 			description: string;
 			important: number;
 		}[];
-		charname: string;
+		name: string;
 		isActive: boolean;
 		LastActive: timeStamp_t;
 		extension: {};
@@ -25,7 +25,7 @@ export type prompt_struct_t = {
 	world_prompt: single_part_prompt_t
 	plugin_prompts: Record<string, single_part_prompt_t>
 	chat_log: {
-		charName: string;
+		name: string;
 		timeStamp: timeStamp_t;
 		role: string;
 		content: string;

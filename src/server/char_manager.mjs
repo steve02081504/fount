@@ -1,5 +1,5 @@
 import { loadData, saveData } from './setting_loader.mjs'
-import { baseloadPart, initPart, loadPart, uninstallPart, unloadPart } from './parts_loader.mjs'
+import { baseloadPart, getPartInfo, initPart, loadPart, uninstallPart, unloadPart } from './parts_loader.mjs'
 import { loadAIsource } from './AIsources_manager.mjs'
 
 function loadCharData(username, charname) {
@@ -21,18 +21,9 @@ function saveCharData(username) {
 	saveData(username, 'char_data')
 }
 
-export async function getCharDetails(username, charname) {
+export async function getCharDetails(username, charname, locale) {
 	const char = await baseloadPart(username, 'chars', charname)
-	return {
-		name: char.name,
-		avatar: char.avatar,
-		description: char.description,
-		description_markdown: char.description_markdown,
-		version: char.version,
-		author: char.author,
-		homepage: char.homepage,
-		tags: char.tags
-	}
+	return getPartInfo(char, locale)
 }
 
 export async function LoadChar(username, charname) {

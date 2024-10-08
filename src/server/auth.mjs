@@ -84,7 +84,7 @@ async function login(username, password) {
 
 		const userdir = getUserDictionary(username)
 		fs.mkdirSync(userdir, { recursive: true })
-		for (let subdir of ['AIsources','chars','personas','settings','shells','worlds'])
+		for (let subdir of ['AIsources', 'chars', 'personas', 'settings', 'shells', 'worlds', 'charTemplates', 'AIsourceGenerators'])
 			fs.mkdirSync(userdir + '/' + subdir, { recursive: true })
 
 		const token = generateToken({ username: user.username })

@@ -1,3 +1,4 @@
+import { locale_t } from "./basedefs";
 import { prompt_struct_t } from "./prompt_struct";
 
 class tokenizer_t<InputType, TokenType> {
@@ -9,15 +10,18 @@ class tokenizer_t<InputType, TokenType> {
 }
 
 export class AIsource_t<InputType, OutputType> {
-	avatar: string;
-	name: string;
-	description: string;
-	description_markdown: string;
+	info: Record<locale_t, {
+		avatar: string;
+		name: string;
+		description: string;
+		description_markdown: string;
+		version: string;
+		author: string;
+		homepage: string;
+		issuepage: string;
+		tags: string[];
+	}>;
 	is_paid: boolean;
-	version: string;
-	author: string;
-	homepage: string;
-	tags: string[];
 	extension: {};
 
 	Unload: () => void;

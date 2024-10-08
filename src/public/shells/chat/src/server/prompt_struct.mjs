@@ -10,7 +10,7 @@ function getSinglePartPrompt() {
 	}
 }
 
-export function buildPromptStruct(
+export async function buildPromptStruct(
 	{
 		/** @type {UserAPI_t} */
 		user,
@@ -35,12 +35,12 @@ export function buildPromptStruct(
 		chat_log,
 	}
 
-	for (let i = 0; i < detail_level; i++) {
-		if (world) result.world_prompt = world.interfacies.chat.GetPrompt(result)
-		if (user) result.user_prompt = user.interfacies.chat.GetPrompt(result)
-		if (char) result.char_prompt = char.interfacies.chat.GetPrompt(result)
-		result.other_chars_prompt = other_chars.map(char => char.interfacies.chat?.GetPromptForOther?.(result)).filter(x => x)
-		result.plugin_prompts = plugins.map(plugin => plugin.interfacies.chat.GetPrompt(result))
+	while (detail_level--) {
+		if (world) result.world_prompt = await world.interfacies.chat.GetPrompt(result, detail_level)
+		if (user) result.user_prompt = await user.interfacies.chat.GetPrompt(result, detail_level)
+		if (char) result.char_prompt = await char.interfacies.chat.GetPrompt(result, detail_level)
+		result.other_chars_prompt = (await Promise.all(other_chars.map(char => char.interfacies.chat?.GetPromptForOther?.(result, detail_level)))).filter(x => x)
+		result.plugin_prompts = await Promise.all(plugins.map(plugin => plugin.interfacies.chat.GetPrompt(result, detail_level)))
 	}
 
 	return result
@@ -92,7 +92,6 @@ export function structPromptToSingleNoChatLog(/** @type {prompt_struct_t} */ pro
 		}
 	}
 
-	console.log(result.join('\n'))
 	return result.join('\n')
 }
 
@@ -102,7 +101,9 @@ export function structPromptToSingle(/** @type {prompt_struct_t} */ prompt) {
 	result.push('聊天记录如下：')
 	if (prompt.chat_log) {
 		prompt.chat_log.forEach((chatLogEntry) => {
-			result.push(chatLogEntry.charName + ': ' + chatLogEntry.content)
+			result.push(chatLogEntry.name + ': ' + chatLogEntry.content)
 		})
 	}
+
+	return result.join('\n')
 }
