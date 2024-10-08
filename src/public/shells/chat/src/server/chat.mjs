@@ -279,6 +279,7 @@ export async function triggerCharReply(chatid, charname, locale) {
 	let result = await char.interfacies.chat.GetReply({
 		chat_log: chatMetadatas[chatid].chatLog,
 		world: timeSlice.world,
+		char: char,
 		user: timeSlice.player,
 		other_chars: Object.keys(timeSlice.chars).filter((name) => name !== charname).map((charname) => timeSlice.chars[charname]),
 		chat_summary: timeSlice.summary,

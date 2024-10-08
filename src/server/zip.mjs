@@ -27,6 +27,6 @@ export async function readZipfile(buffer, path) {
 }
 
 export async function readZipfileAsJSON(buffer, path) {
-	let buffer = await readZipfile(buffer, path)
-	return JSON.parse(buffer.toString())
+	let filebuffer = await readZipfile(buffer, path)
+	return JSON.parse(filebuffer.toString())
 }

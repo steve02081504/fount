@@ -22,7 +22,7 @@ async function displayCharList() {
 		const chatButton = roleElement.querySelector('.role-btns button:first-of-type')
 		chatButton.addEventListener('click', () => {
 			console.log(`开始与 ${charDetails.name} 聊天`)
-			window.location = `/shells/chat/new?charname=${charDetails.name}`
+			window.location = `/shells/chat/new?charname=${char}`
 		})
 
 		const deleteButton = roleElement.querySelector('.role-btns button:last-of-type')
