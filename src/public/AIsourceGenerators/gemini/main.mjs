@@ -1,13 +1,6 @@
-import { exec } from 'child_process'
+import { exec } from '../../../server/exec.mjs'
 
 export default {
-	Init: async () => {
-		return await new Promise((resolve, reject) => {
-			exec('npm install --no-save @google/generative-ai', (err) => {
-				if (err) reject(err)
-				resolve()
-			})
-		})
-	},
+	Init: async () => exec('npm install --no-save @google/generative-ai'),
 	GetSource: async (config) => import('./build.mjs').then(({ default: build }) => build(config))
 }

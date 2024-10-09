@@ -11,20 +11,10 @@ function getSinglePartPrompt() {
 }
 
 export async function buildPromptStruct(
-	{
-		/** @type {UserAPI_t} */
-		user,
-		/** @type {charAPI_t} */
-		char,
-		/** @type {charAPI_t[]} */
-		other_chars,
-		/** @type {WorldAPI_t} */
-		world,
-		plugins,
-		chat_log,
-	},
+	args,
 	detail_level = 3
 ) {
+	const { char, user, world, other_chars, plugins, chat_log } = args
 	/** @type {prompt_struct_t} */
 	let result = {
 		char_prompt: getSinglePartPrompt(),
@@ -36,11 +26,11 @@ export async function buildPromptStruct(
 	}
 
 	while (detail_level--) {
-		if (world) result.world_prompt = await world.interfacies.chat.GetPrompt(result, detail_level)
-		if (user) result.user_prompt = await user.interfacies.chat.GetPrompt(result, detail_level)
-		if (char) result.char_prompt = await char.interfacies.chat.GetPrompt(result, detail_level)
-		result.other_chars_prompt = (await Promise.all(other_chars.map(char => char.interfacies.chat?.GetPromptForOther?.(result, detail_level)))).filter(x => x)
-		result.plugin_prompts = await Promise.all(plugins.map(plugin => plugin.interfacies.chat.GetPrompt(result, detail_level)))
+		if (world) result.world_prompt = await world.interfacies.chat.GetPrompt(args, result, detail_level)
+		if (user) result.user_prompt = await user.interfacies.chat.GetPrompt(args, result, detail_level)
+		if (char) result.char_prompt = await char.interfacies.chat.GetPrompt(args, result, detail_level)
+		result.other_chars_prompt = (await Promise.all(other_chars.map(char => char.interfacies.chat?.GetPromptForOther?.(args, result, detail_level)))).filter(x => x)
+		result.plugin_prompts = await Promise.all(plugins.map(plugin => plugin.interfacies.chat.GetPrompt(args, result, detail_level)))
 	}
 
 	return result
