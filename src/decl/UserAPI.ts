@@ -1,3 +1,4 @@
+import { chatReplyRequest_t } from "../public/shells/chat/decl/chatLog";
 import { locale_t } from "./basedefs";
 import { prompt_struct_t, single_part_prompt_t } from "./prompt_struct";
 
@@ -24,7 +25,7 @@ export class UserAPI_t {
 
 	interfacies: {
 		chat: {
-			GetPrompt: (prompt_struct: prompt_struct_t, detail_level: number) => Promise<single_part_prompt_t>;
+			GetPrompt: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, detail_level: number) => Promise<single_part_prompt_t>;
 		}
 	};
 }

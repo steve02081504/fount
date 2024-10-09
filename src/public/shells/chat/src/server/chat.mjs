@@ -153,6 +153,29 @@ on_shutdown(() => {
 	Object.keys(chatMetadatas).forEach(chatid => saveChat(chatid, chatMetadatas[chatid].username))
 })
 
+
+function getChatRequest(chatid, charname, locale, timeSlice = chatMetadatas[chatid].LastTimeSlice) {
+	const char = timeSlice.chars[charname]
+	const username = chatMetadatas[chatid].username
+	const userinfo = getPartInfo(timeSlice.player, locale)
+	const charinfo = getPartInfo(char, locale)
+	if (!char) throw new Error('char not found')
+	return {
+		username: username,
+		UserCharname: userinfo?.name || timeSlice.player_id || username,
+		Charname: charinfo?.name || charname,
+		chatid: chatid,
+		chat_log: chatMetadatas[chatid].chatLog,
+		world: timeSlice.world,
+		char: char,
+		user: timeSlice.player,
+		other_chars: Object.keys(timeSlice.chars).filter((name) => name !== charname).map((charname) => timeSlice.chars[charname]),
+		chat_summary: timeSlice.summary,
+		chat_scoped_char_memory: timeSlice.chars_memorys[charname],
+		plugins: []
+	}
+}
+
 export async function loadMetaData(chatid, username) {
 	if (!chatMetadatas[chatid]) await loadChat(chatid, username)
 	return chatMetadatas[chatid]
@@ -172,24 +195,18 @@ export async function setWorld(chatid, worldname) {
 	timeSlice.world_id = worldname
 }
 
-export async function addchar(chatid, charname) {
+export async function addchar(chatid, charname, locale) {
 	const username = chatMetadatas[chatid].username
 	const timeSlice = chatMetadatas[chatid].LastTimeSlice
 	if (timeSlice.chars[charname]) return
 	const char = timeSlice.chars[charname] = await LoadChar(username, charname)
 	// GetGreetings
 	const greetings = (() => {
+		let request = getChatRequest(chatid, charname, locale, timeSlice)
 		if (chatMetadatas[chatid].chatLog.length === 0)
-			return char.interfacies.chat.GetGreetings({
-				world: timeSlice.world,
-				user: timeSlice.player,
-			})
+			return char.interfacies.chat.GetGreetings(request)
 		else
-			return char.interfacies.chat.GetGroupGreetings({
-				world: timeSlice.world,
-				user: timeSlice.player,
-				chatLog: chatMetadatas[chatid].chatLog,
-			})
+			return char.interfacies.chat.GetGroupGreetings(request)
 	})()
 
 	return addChatLogEntry(chatid, BuildChatLogEntryFromCharReply(greetings[0], timeSlice, char, charname))
@@ -276,16 +293,7 @@ export async function triggerCharReply(chatid, charname, locale) {
 	const char = timeSlice.chars[charname]
 	if (!char) throw new Error('char not found')
 	const new_timeSlice = timeSlice.copy()
-	let result = await char.interfacies.chat.GetReply({
-		chat_log: chatMetadatas[chatid].chatLog,
-		world: timeSlice.world,
-		char: char,
-		user: timeSlice.player,
-		other_chars: Object.keys(timeSlice.chars).filter((name) => name !== charname).map((charname) => timeSlice.chars[charname]),
-		chat_summary: timeSlice.summary,
-		chat_scoped_char_memory: new_timeSlice.chars_memorys[charname],
-		plugins: []
-	})
+	let result = await char.interfacies.chat.GetReply(getChatRequest(chatid, charname, locale, new_timeSlice))
 
 	return addChatLogEntry(chatid, BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, locale))
 }

@@ -4,7 +4,27 @@ import { structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prom
 
 export default async (config) => {
 	let genAI = new GoogleGenerativeAI(config.apikey)
-	let model = genAI.getGenerativeModel({ model: config.model })
+	let model = genAI.getGenerativeModel({
+		safetySettings: [
+			{
+				category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+				threshold: 'BLOCK_NONE'
+			},
+			{
+				category: 'HARM_CATEGORY_HATE_SPEECH',
+				threshold: 'BLOCK_NONE'
+			},
+			{
+				category: 'HARM_CATEGORY_HARASSMENT',
+				threshold: 'BLOCK_NONE'
+			},
+			{
+				category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+				threshold: 'BLOCK_NONE'
+			}
+		],
+		model: config.model
+	})
 	/** @type {AIsource_t} */
 	let result = {
 		info: {
