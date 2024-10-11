@@ -12,7 +12,7 @@ export const __dirname = path.resolve()
 app.use((req, res, next) => { console.log(`Request received: ${req.method} ${req.url}`); next() })
 app.use(bodyParser.json())
 app.use(cookieParser())
-
+app.use('/node_modules', express.static(path.join(__dirname, '../node_modules')));
 function get_config() {
 	if (!fs.existsSync(__dirname + '/data/config.json')) {
 		fs.mkdirSync(__dirname + '/data')

@@ -1,45 +1,121 @@
-
 body {
-	font-family: Arial, sans-serif;
-	background-color: #f0f0f0;
+	font-family: 'Helvetica Neue', Arial, sans-serif; /* 使用更柔和的字体 */
+	background-color: #e9ecef; /* 更柔和的背景色 */
+	transition: background-color 0.3s, color 0.3s; /* 背景和字体颜色过渡效果 */
 }
+
 .container {
-	width: 300px;
-	margin: 50px auto;
-	background-color: #fff;
+	width: 400px; /* 增加宽度以匹配输入框 */
+	margin: auto; /* 使框水平居中 */
 	padding: 20px;
-	border: 1px solid #ddd;
 	border-radius: 10px;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+	position: absolute; /* 使用绝对定位 */
+	top: 50%; /* 垂直中心 */
+	left: 50%; /* 水平中心 */
+	transform: translate(-50%, -50%); /* 将框移动到中心 */
+	background-color: white; /* 背景色为白色 */
+	transition: background-color 0.3s, color 0.3s; /* 背景和字体颜色过渡效果 */
 }
-.header {
-	text-align: center;
-	margin-bottom: 20px;
+
+/* 在这里为暗色主题设置登录框的背景色 */
+.dark-theme .container {
+	background-color: #495057; /* 暗色模式下的框背景色 */
+	color: #ffffff; /* 暗色模式下的字体颜色 */
 }
+
 .form-group {
-	margin-bottom: 20px;
+	margin-bottom: 20px; /* 增加输入框之间的间距 */
+	position: relative; /* 设置相对定位 */
 }
-.form-group label {
-	display: block;
-	margin-bottom: 10px;
+
+.form-control {
+	border: none; /* 去掉边框 */
+	border-bottom: 2px solid #ccc; /* 下方增加灰色的横线 */
+	padding: 10px 0; /* 垂直内边距 */
+	outline: none; /* 去掉默认的聚焦外轮廓 */
+	background-color: transparent; /* 输入框背景透明 */
 }
-.form-group input {
-	width: 100%;
-	height: 40px;
-	padding: 10px;
-	border: 1px solid #ccc;
-	border-radius: 5px;
+
+.form-control:focus {
+	border-color: #007bff; /* 聚焦时边框颜色 */
 }
+
+.placeholder {
+	position: absolute; /* 使用绝对定位 */
+	left: 0; /* 左对齐 */
+	top: 12px; /* 初始位置 */
+	color: #aaa; /* 占位符颜色 */
+	transition: 0.2s ease all; /* 平滑过渡效果 */
+	pointer-events: none; /* 禁止鼠标事件 */
+}
+
+.form-control:focus + .placeholder,
+.form-control:not(:placeholder-shown) + .placeholder {
+	top: -10px; /* 聚焦或有内容时上移 */
+	font-size: 12px; /* 标签字体变小 */
+	color: #007bff; /* 聚焦时标签颜色 */
+}
+
 .btn {
-	width: 100%;
-	height: 40px;
-	background-color: #4CAF50;
-	color: #fff;
-	padding: 10px;
-	border: none;
-	border-radius: 5px;
 	cursor: pointer;
+	border-radius: 25px; /* 按钮圆角 */
+	padding: 10px; /* 按钮内边距 */
+	background-color: #007bff; /* 浅蓝色背景 */
+	color: white; /* 字体颜色为白色 */
+	border: none; /* 去掉边框 */
+	font-size: 16px; /* 字体大小 */
+	width: 100%; /* 按钮宽度为100% */
+	transition: background-color 0.3s; /* 背景颜色过渡效果 */
 }
+
 .btn:hover {
-	background-color: #3e8e41;
+	background-color: #0056b3; /* 悬停时的背景颜色变化 */
+}
+
+.dark-theme {
+	background-color: #343a40; /* 暗色背景 */
+	color: #ffffff; /* 暗色下的字体颜色 */
+}
+
+.theme-switcher {
+	position: absolute; /* 绝对定位 */
+	top: 20px; /* 距离顶部 */
+	right: 20px; /* 距离右侧 */
+	display: flex; /* 使其成为一个弹性容器 */
+	align-items: center; /* 垂直居中对齐 */
+}
+
+.switch {
+	width: 50px; /* 滑动按钮宽度 */
+	height: 24px; /* 滑动按钮高度 */
+	background-color: #ccc; /* 开关的背景色 */
+	border-radius: 50px; /* 圆角 */
+	position: relative; /* 相对定位 */
+	cursor: pointer; /* 鼠标悬停时为手型 */
+	transition: background-color 0.3s; /* 背景颜色过渡 */
+}
+
+.switch:before {
+	content: ""; /* 创建一个伪元素 */
+	position: absolute; /* 绝对定位 */
+	width: 20px; /* 滑动块宽度 */
+	height: 20px; /* 滑动块高度 */
+	background-color: white; /* 滑动块颜色 */
+	border-radius: 50%; /* 滑动块圆角 */
+	transition: transform 0.3s; /* 滑动块的过渡 */
+}
+
+input[type="checkbox"] {
+	display: none; /* 隐藏复选框 */
+}
+
+/* 当复选框被选中时，滑动块移动 */
+input[type="checkbox"]:checked + .switch:before {
+	transform: translateX(26px); /* 向右滑动 */
+}
+
+/* 当复选框被选中时，切换背景色 */
+input[type="checkbox"]:checked + .switch {
+	background-color: #007bff; /* 切换时的背景色 */
 }
