@@ -14,9 +14,11 @@ export async function buildPromptStruct(
 	args,
 	detail_level = 3
 ) {
-	const { char, user, world, other_chars, plugins, chat_log } = args
+	const { char, user, world, other_chars, plugins, chat_log, UserCharname, Charname } = args
 	/** @type {prompt_struct_t} */
 	let result = {
+		UserCharname,
+		Charname,
 		char_prompt: getSinglePartPrompt(),
 		user_prompt: getSinglePartPrompt(),
 		other_chars_prompt: [],
@@ -37,7 +39,7 @@ export async function buildPromptStruct(
 }
 
 export function structPromptToSingleNoChatLog(/** @type {prompt_struct_t} */ prompt) {
-	let result = ['续写以下聊天记录']
+	let result = []
 
 	if (prompt.char_prompt.text.length > 0) {
 		result.push('你需要扮演的角色设定如下：')
@@ -62,24 +64,20 @@ export function structPromptToSingleNoChatLog(/** @type {prompt_struct_t} */ pro
 
 	if (prompt.other_chars_prompt.length > 0) {
 		result.push('其他角色的设定如下：')
-		for (const char of prompt.other_chars_prompt) {
-			if (char.text.length > 0) {
+		for (const char of prompt.other_chars_prompt)
+			if (char.text.length > 0)
 				char.text.sort((a, b) => a.important - b.important).forEach((text) => {
 					result.push(text.content)
 				})
-			}
-		}
 	}
 
 	if (prompt.plugin_prompts.length > 0) {
 		result.push('你可以使用以下插件，方法如下：')
-		for (const plugin of prompt.plugin_prompts) {
-			if (plugin.text.length > 0) {
+		for (const plugin of prompt.plugin_prompts)
+			if (plugin.text.length > 0)
 				plugin.text.sort((a, b) => a.important - b.important).forEach((text) => {
 					result.push(text.content)
 				})
-			}
-		}
 	}
 
 	return result.join('\n')
@@ -89,11 +87,10 @@ export function structPromptToSingle(/** @type {prompt_struct_t} */ prompt) {
 	let result = [structPromptToSingleNoChatLog(prompt)]
 
 	result.push('聊天记录如下：')
-	if (prompt.chat_log) {
+	if (prompt.chat_log)
 		prompt.chat_log.forEach((chatLogEntry) => {
 			result.push(chatLogEntry.name + ': ' + chatLogEntry.content)
 		})
-	}
 
 	return result.join('\n')
 }
