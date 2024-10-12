@@ -9,6 +9,8 @@ export type single_part_prompt_t = {
 	extension: {};
 }
 export type prompt_struct_t = {
+	Charname: string
+	UserCharname: string
 	user_prompt: single_part_prompt_t
 	char_prompt: single_part_prompt_t
 	other_chars_prompt: {

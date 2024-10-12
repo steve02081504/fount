@@ -22,6 +22,11 @@ export default [
 					'ConditionalExpression'
 				]
 			}],
+			// 去除不必要小括号
+			"no-extra-parens": ["error", "all", {
+				"nestedBinaryExpressions": false, // 允许嵌套二元表达式中有括号
+				"returnAssign": false // 允许 return 语句中的赋值表达式中有括号
+			}],
 			"optimize-regex/optimize-regex": "warn"
 		}
 	}
