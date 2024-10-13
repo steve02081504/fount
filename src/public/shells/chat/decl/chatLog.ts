@@ -33,6 +33,12 @@ export class chatLogEntry_t {
 	timeStamp: timeStamp_t;
 	role: string;
 	content: string;
+	files: {
+		name: string;
+		mimeType: string;
+		buffer: Buffer;
+		description: string;
+	}[]
 	extension: {
 		timeSlice: {
 			chars: Map<string, charAPI_t>;

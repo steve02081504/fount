@@ -1,9 +1,7 @@
 import { locale_t, timeStamp_t } from './basedefs.ts';
 import { AIsource_t } from './AIsource.ts';
 import { prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts';
-import { chatLogEntry_t, chatReply_t, chatReplyRequest_t } from '../public/shells/chat/decl/chatLog.ts';
-import { WorldAPI_t } from './WorldAPI.ts';
-import { UserAPI_t } from './UserAPI.ts';
+import { chatReply_t, chatReplyRequest_t } from '../public/shells/chat/decl/chatLog.ts';
 
 export class charState_t {
 	InitCount: number;

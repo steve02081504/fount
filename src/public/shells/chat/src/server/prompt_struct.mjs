@@ -6,6 +6,7 @@
 function getSinglePartPrompt() {
 	return {
 		text: [],
+		additional_chat_log: [],
 		extension: {},
 	}
 }
@@ -83,14 +84,24 @@ export function structPromptToSingleNoChatLog(/** @type {prompt_struct_t} */ pro
 	return result.join('\n')
 }
 
+export function margeStructPromptChatLog(/** @type {prompt_struct_t} */ prompt) {
+	return [
+		...prompt.chat_log,
+		...prompt.user_prompt.additional_chat_log,
+		...prompt.world_prompt.additional_chat_log,
+		...prompt.other_chars_prompt.map(char => char.additional_chat_log).flat(),
+		...Object.values(prompt.plugin_prompts).map(plugin => plugin.additional_chat_log).flat(),
+		...prompt.char_prompt.additional_chat_log,
+	]
+}
+
 export function structPromptToSingle(/** @type {prompt_struct_t} */ prompt) {
 	let result = [structPromptToSingleNoChatLog(prompt)]
 
 	result.push('聊天记录如下：')
-	if (prompt.chat_log)
-		prompt.chat_log.forEach((chatLogEntry) => {
-			result.push(chatLogEntry.name + ': ' + chatLogEntry.content)
-		})
+	margeStructPromptChatLog(prompt).forEach((chatLogEntry) => {
+		result.push(chatLogEntry.name + ': ' + chatLogEntry.content)
+	})
 
 	return result.join('\n')
 }

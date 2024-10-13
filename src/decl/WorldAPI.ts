@@ -1,5 +1,5 @@
 import { chatReply_t, chatReplyRequest_t } from "../public/shells/chat/decl/chatLog";
-import { locale_t, timeStamp_t } from "./basedefs";
+import { locale_t } from "./basedefs";
 import { prompt_struct_t, single_part_prompt_t } from "./prompt_struct";
 
 export class WorldAPI_t {
