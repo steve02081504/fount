@@ -87,11 +87,11 @@ export function structPromptToSingleNoChatLog(/** @type {prompt_struct_t} */ pro
 export function margeStructPromptChatLog(/** @type {prompt_struct_t} */ prompt) {
 	return [
 		...prompt.chat_log,
-		...prompt.user_prompt.additional_chat_log,
-		...prompt.world_prompt.additional_chat_log,
+		...prompt.user_prompt?.additional_chat_log || [],
+		...prompt.world_prompt?.additional_chat_log || [],
 		...prompt.other_chars_prompt.map(char => char.additional_chat_log).flat(),
-		...Object.values(prompt.plugin_prompts).map(plugin => plugin.additional_chat_log).flat(),
-		...prompt.char_prompt.additional_chat_log,
+		...Object.values(prompt.plugin_prompts).map(plugin => plugin.additional_chat_log || []).flat(),
+		...prompt.char_prompt?.additional_chat_log || [],
 	]
 }
 

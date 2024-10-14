@@ -72,6 +72,7 @@ export class chatLogEntry_t {
 	role
 	content
 	timeSlice = new timeSlice_t()
+	files = []
 	extension = {
 	}
 
@@ -83,6 +84,14 @@ export class chatLogEntry_t {
 			role: this.role,
 			content: this.content,
 			timeSlice: this.timeSlice.toJSON(),
+			files: this.files.map((file) => {
+				return {
+					name: file.name,
+					mimeType: file.mimeType,
+					buffer: file.buffer.toString('base64'),
+					description: file.description
+				}
+			}),
 			extension: this.extension
 		}
 	}
@@ -95,6 +104,14 @@ export class chatLogEntry_t {
 		newEntry.role = json.role
 		newEntry.content = json.content
 		newEntry.timeSlice = await timeSlice_t.fromJSON(json.timeSlice, username)
+		newEntry.files = json.files.map((file) => {
+			return {
+				name: file.name,
+				mimeType: file.mimeType,
+				buffer: Buffer.from(file.buffer, 'base64'),
+				description: file.description
+			}
+		})
 		newEntry.extension = json.extension
 		return newEntry
 	}
