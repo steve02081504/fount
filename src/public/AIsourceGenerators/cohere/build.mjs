@@ -26,8 +26,8 @@ export default async (config) => {
 
 		Unload: () => { },
 		Call: async (prompt) => {
-			const result = await model.generateContent(prompt)
-			return result.response.text()
+			const result = await cohere.generate({prompt, model: config.model})
+			return result.generations.map((generation) => generation.text).join('\n')
 		},
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
 			let system_prompt = structPromptToSingleNoChatLog(prompt_struct)
