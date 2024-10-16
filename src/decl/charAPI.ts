@@ -1,6 +1,6 @@
 import { locale_t, timeStamp_t } from './basedefs.ts';
 import { AIsource_t } from './AIsource.ts';
-import { prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts';
+import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts';
 import { chatReply_t, chatReplyRequest_t } from '../public/shells/chat/decl/chatLog.ts';
 
 export class charState_t {
@@ -50,6 +50,8 @@ export class charAPI_t {
 			MessageEdit: (arg: {
 				original: string
 				edited: string
+				chat_log: chatLogEntry_t[]
+				chat_entry: chatLogEntry_t
 				extension?: any
 			}) => Promise<chatReply_t>
 		}

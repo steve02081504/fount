@@ -1,6 +1,6 @@
 import { chatReply_t, chatReplyRequest_t } from "../public/shells/chat/decl/chatLog";
 import { locale_t } from "./basedefs";
-import { prompt_struct_t, single_part_prompt_t } from "./prompt_struct";
+import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from "./prompt_struct";
 
 export class WorldAPI_t {
 	info: Record<locale_t, {
@@ -28,6 +28,15 @@ export class WorldAPI_t {
 			GetGreetings: (arg: chatReplyRequest_t) => Promise<chatReply_t[]>
 			GetGroupGreetings: (arg: chatReplyRequest_t) => Promise<chatReply_t[]>
 			GetPrompt: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, detail_level: number) => Promise<single_part_prompt_t>;
+			GetChatLogForCharname: (arg: chatReplyRequest_t, charname: string) => Promise<chatLogEntry_t[]>
+			AddChatLogEntry: (arg: chatReplyRequest_t, entry: chatLogEntry_t) => void
+			MessageEdit: (arg: {
+				original: string
+				edited: string
+				chat_log: chatLogEntry_t[]
+				chat_entry: chatLogEntry_t
+				extension?: any
+			}) => Promise<chatReply_t>
 		}
 	};
 }
