@@ -5,35 +5,55 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Login/Signup</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.css">
 	<link rel="stylesheet" href="./index.css">
 </head>
 
 <body>
+	<!-- 主题切换按钮 -->
+	<div class="theme-switcher">
+		<input type="checkbox" id="theme-toggle">
+		<label for="theme-toggle" class="switch"></label>
+	</div>
+
 	<div class="container">
-		<form id="auth-form">
-			<div class="header">
+		<form id="auth-form" class="bg-light p-4 rounded shadow">
+			<div class="header text-center mb-4">
 				<h2 id="form-title">Login</h2>
+				<i class="fas fa-user-circle fa-3x"></i>
 			</div>
-			<sub>all users data will be stored in local storage</sub>
-			<p id="error-message"></p>
+			<small class="text-muted d-block text-center mb-3">All users' data will be stored in local storage</small>
+			<p id="error-message" class="text-danger"></p>
+
 			<div class="form-group">
-				<label for="username">Username:</label>
-				<input type="text" id="username" name="username" required>
+				<input type="text" class="form-control" id="username" name="username" required placeholder=" ">
+				<label class="placeholder" for="username">Username</label>
 			</div>
+
 			<div class="form-group">
-				<label for="password">Password:</label>
-				<input type="password" id="password" name="password" required>
+				<input type="password" class="form-control" id="password" name="password" required placeholder=" ">
+				<label class="placeholder" for="password">Password</label>
 			</div>
+
 			<div class="form-group" id="confirm-password-group" style="display: none;">
-				<label for="confirm-password">Confirm Password:</label>
-				<input type="password" id="confirm-password" name="confirm-password">
+				<input type="password" class="form-control" id="confirm-password" name="confirm-password" placeholder=" ">
+				<label class="placeholder" for="confirm-password">Confirm Password</label>
 			</div>
-			<button class="btn" type="submit" id="submit-btn">Login</button>
-			<p id="toggle-link">Don't have an account? <a href="#">Create one now</a></p>
+
+			<button class="btn btn-success btn-block" type="submit" id="submit-btn">Login</button>
+			<p id="toggle-link" class="text-center mt-3">Don't have an account? <a href="#">Create one now</a></p>
 		</form>
 	</div>
 
 	<script type="module" src="./index.mjs"></script>
+	<script>
+		// 切换主题功能
+		const themeToggle = document.getElementById('theme-toggle');
+		themeToggle.addEventListener('change', () => {
+			document.body.classList.toggle('dark-theme');
+		});
+	</script>
 </body>
 
 </html>
