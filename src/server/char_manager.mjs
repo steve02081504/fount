@@ -12,7 +12,7 @@ function loadCharData(username, charname) {
 			LastStart: 0,
 			StartCount: 0,
 			AIsources: {},
-			memorys: {
+			memories: {
 				extension: {}
 			}
 		}

@@ -7,7 +7,7 @@ export class charState_t {
 	InitCount: number;
 	StartCount: number;
 	LastStart: timeStamp_t;
-	memorys: {
+	memories: {
 		extension: {};
 	};
 }
