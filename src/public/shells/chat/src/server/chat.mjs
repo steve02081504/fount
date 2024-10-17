@@ -27,7 +27,7 @@ export class timeSlice_t {
 	/** @type {string} */
 	player_id
 	/** @type {Record<string, any>} */
-	chars_memorys = {}
+	chars_memories = {}
 
 	copy() {
 		let new_timeSlice = new timeSlice_t
@@ -35,7 +35,7 @@ export class timeSlice_t {
 		new_timeSlice.summary = this.summary
 		new_timeSlice.world = this.world
 		new_timeSlice.player = this.player
-		new_timeSlice.chars_memorys = JSON.parse(JSON.stringify(this.chars_memorys))
+		new_timeSlice.chars_memories = JSON.parse(JSON.stringify(this.chars_memories))
 		return new_timeSlice
 	}
 	toJSON() {
@@ -44,7 +44,7 @@ export class timeSlice_t {
 			summary: this.summary,
 			world: this.world_id,
 			player: this.player_id,
-			chars_memorys: this.chars_memorys
+			chars_memories: this.chars_memories
 		}
 	}
 	static async fromJSON(json, username) {
@@ -61,7 +61,7 @@ export class timeSlice_t {
 			new_timeSlice.player_id = json.player
 			new_timeSlice.player = await loadPersona(username, json.player)
 		}
-		new_timeSlice.chars_memorys = json.chars_memorys
+		new_timeSlice.chars_memories = json.chars_memories
 		return new_timeSlice
 	}
 }
@@ -188,7 +188,7 @@ function getChatRequest(chatid, charname, locale, timeSlice = chatMetadatas[chat
 		user: timeSlice.player,
 		other_chars: Object.keys(timeSlice.chars).filter((name) => name !== charname).map((charname) => timeSlice.chars[charname]),
 		chat_summary: timeSlice.summary,
-		chat_scoped_char_memory: timeSlice.chars_memorys[charname],
+		chat_scoped_char_memory: timeSlice.chars_memories[charname],
 		plugins: []
 	}
 }
