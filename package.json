@@ -21,12 +21,10 @@
 	"homepage": "https://github.com/steve02081504/fount#readme",
 	"dependencies": {
 		"bcrypt": "^5.1.1",
-		"bootstrap": "^5.3.3",
 		"cookie-parser": "^1.4.6",
 		"express": "^4.21.0",
 		"jsonwebtoken": "^9.0.2",
-		"jszip": "^3.10.1",
-		"vue-router": "^4.4.5"
+		"jszip": "^3.10.1"
 	},
 	"devDependencies": {
 		"eslint-plugin-optimize-regex": "^1.2.1",
