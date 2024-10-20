@@ -1,3 +1,7 @@
+import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
+/** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
+/** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
+
 export default {
 	GetSource: async (config) => {
 		/** @type {AIsource_t} */
@@ -5,7 +9,7 @@ export default {
 			info: {
 				'': {
 					avatar: '',
-					name: 'proxy',
+					name: config.name || config.model,
 					description: 'proxy',
 					description_markdown: 'proxy',
 					version: '0.0.0',

@@ -1,4 +1,5 @@
 import { chatReplyRequest_t } from "../public/shells/chat/decl/chatLog";
+import { AIsource_t } from "./AIsource";
 import { locale_t } from "./basedefs";
 import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from "./prompt_struct";
 
@@ -22,6 +23,12 @@ export class UserAPI_t {
 	Unload: (reason: string) => void;
 	// calls on uninstall
 	Uninstall: (reason: string, from: string) => void;
+
+	// set the source of the AI so that persona can use it by `source.Call(prompt)`
+	// the type is for extensibility. maybe youll use an API for sfw and an other API for nsfw, idc.
+	SetAISource: (source: AIsource_t<any, any>, type: string) => void;
+	GetAISource: (type: string) => AIsource_t<any, any>;
+	AISourceTypes: string[];
 
 	interfacies: {
 		chat: {
