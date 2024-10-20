@@ -12,7 +12,7 @@ export default async (config) => {
 		info: {
 			'': {
 				avatar: '',
-				name: 'cohere',
+				name: config.name || config.model,
 				description: 'cohere',
 				description_markdown: 'cohere',
 				version: '0.0.0',

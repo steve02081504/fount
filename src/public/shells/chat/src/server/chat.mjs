@@ -250,8 +250,17 @@ export function GetWorldName(chatid) {
 	return chatMetadatas[chatid].LastTimeSlice.world_id
 }
 
-function addChatLogEntry(chatid, entry) {
-	chatMetadatas[chatid].chatLog.push(entry)
+/**
+ *
+ * @param {string} chatid
+ * @param {chatLogEntry_t} entry
+ * @returns
+ */
+function addChatLogEntry(chatid, entry, locale) {
+	if (entry.timeSlice.world)
+		entry.timeSlice.world.interfacies.chat.AddChatLogEntry(getChatRequest(chatid, undefined, locale, entry.timeSlice), entry)
+	else
+		chatMetadatas[chatid].chatLog.push(entry)
 	chatMetadatas[chatid].LastTimeSlice = entry.timeSlice
 
 	return entry
@@ -265,7 +274,7 @@ function addChatLogEntry(chatid, entry) {
  * 	extension: any
  * }} result
  * @param {timeSlice_t} new_timeSlice
- * @param {CharAPI_t} char
+ * @param {charAPI_t} char
  * @param {string} charname
  * @param {locale_t} locale
  * @returns {chatLogEntry_t}
@@ -312,7 +321,10 @@ export async function triggerCharReply(chatid, charname, locale) {
 	const new_timeSlice = timeSlice.copy()
 	let result = await char.interfacies.chat.GetReply(getChatRequest(chatid, charname, locale, new_timeSlice))
 
-	return addChatLogEntry(chatid, BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, locale))
+	return addChatLogEntry(chatid,
+		BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, locale),
+		locale
+	)
 }
 
 export function addUserReply(chatid, content, locale) {
@@ -320,5 +332,8 @@ export function addUserReply(chatid, content, locale) {
 	const new_timeSlice = timeSlice.copy()
 	const user = timeSlice.player
 
-	return addChatLogEntry(chatid, BuildChatLogEntryFromUserMessage(content, new_timeSlice, user, chatMetadatas[chatid].username, locale))
+	return addChatLogEntry(chatid,
+		BuildChatLogEntryFromUserMessage(content, new_timeSlice, user, chatMetadatas[chatid].username, locale),
+		locale
+	)
 }

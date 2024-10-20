@@ -37,7 +37,7 @@ export default async (config) => {
 		info: {
 			'': {
 				avatar: '',
-				name: 'gemini',
+				name: config.name || config.model,
 				description: 'gemini',
 				description_markdown: 'gemini',
 				version: '0.0.0',
