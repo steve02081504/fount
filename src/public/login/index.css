@@ -78,6 +78,23 @@ body {
 	color: #ffffff; /* 暗色下的字体颜色 */
 }
 
+.dark-theme a {
+	color: #f8f9fa; /* 设置为浅灰色或其他你喜欢的颜色 */
+	text-decoration: underline; /* 添加下划线（可选） */
+}
+
+.dark-theme input,
+.dark-theme textarea {
+	color: #ffffff; /* 输入框中的文字颜色为白色 */
+	border-bottom: 2px solid #ffffff; /* 底部边框颜色为白色 */
+	background-color: transparent; /* 保持背景透明 */
+}
+
+.dark-theme input:focus,
+.dark-theme textarea:focus {
+	border-color: #007bff; /* 聚焦时边框颜色 */
+}
+
 .theme-switcher {
 	position: absolute; /* 绝对定位 */
 	top: 20px; /* 距离顶部 */
