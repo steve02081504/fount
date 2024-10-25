@@ -9,6 +9,7 @@ export default async (config) => {
 	})
 	/** @type {AIsource_t} */
 	let result = {
+		type: 'text-chat',
 		info: {
 			'': {
 				avatar: '',
