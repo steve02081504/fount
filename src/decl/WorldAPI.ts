@@ -28,7 +28,7 @@ export class WorldAPI_t {
 	// the type is for extensibility. maybe youll use an API for sfw and an other API for nsfw, idc.
 	SetAISource: (source: AIsource_t<any, any>, type: string) => void;
 	GetAISource: (type: string) => AIsource_t<any, any>;
-	AISourceTypes: string[];
+	AISourceTypes: { name: string; type: string }[];
 
 	interfacies: {
 		chat: {

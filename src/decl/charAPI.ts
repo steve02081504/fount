@@ -37,7 +37,7 @@ export class charAPI_t {
 	// the type is for extensibility. maybe youll use an API for sfw and an other API for nsfw, idc.
 	SetAISource: (source: AIsource_t<any, any>, type: string) => void;
 	GetAISource: (type: string) => AIsource_t<any, any>;
-	AISourceTypes: string[];
+	AISourceTypes: { name: string; type: string }[];
 
 	// interface with shell (maybe chat WebUI or cute Live2d or a kill machine, i don't care)
 	interfacies: {
