@@ -288,7 +288,7 @@ function BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, l
 	newEntry.timeSlice = new_timeSlice
 	newEntry.role = 'char'
 	newEntry.timeStamp = Date.now()
-	newEntry.extension = result.extension
+	newEntry.extension = result.extension || {}
 
 	return newEntry
 }
