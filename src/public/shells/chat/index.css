@@ -5,17 +5,21 @@ body {
 .chat-container {
 	border: 1px solid #ccc;
 	padding: 20px;
+	border-radius: 5px; /* 让边角更加圆润 */
+	background-color: #fff; /* 背景颜色 */
 }
 
 .chat-header {
 	background-color: #f0f0f0;
 	padding: 10px;
 	border-bottom: 1px solid #ccc;
+	border-radius: 5px 5px 0 0; /* 上部边角圆润 */
 }
 
 .chat-messages {
 	padding: 20px;
 	overflow-y: auto;
+	max-height: 400px; /* 限制消息区域的最大高度 */
 }
 
 .chat-input {
@@ -29,13 +33,11 @@ body {
 	padding: 10px;
 	border: 1px solid #ccc;
 	resize: vertical;
-	/* 允许垂直调整大小 */
 }
 
 .chat-input button {
 	width: 100%;
-	height: 30px;
-	background-color: #4CAF50;
+	background-color: #4CAF50; /* 使用 Bootstrap 提供的颜色 */
 	color: #fff;
 	border: none;
 	border-radius: 5px;
@@ -48,12 +50,10 @@ body {
 	margin-bottom: 10px;
 	border-radius: 8px;
 	background-color: #f8f8f8;
-	/* 浅灰色背景 */
 }
 
 .message-container:hover {
-	background-color: #f0f0f0;
-	/* 鼠标悬停时颜色略微变深 */
+	background-color: #f0f0f0; /* 鼠标悬停时颜色略微变深 */
 }
 
 .avatar {
@@ -69,12 +69,9 @@ body {
 
 .message-content pre {
 	flex-grow: 1;
-	font-family: inherit;
-	/* 使用与其他文本相同的字体 */
-	line-height: 1.5;
-	/* 设置行高 */
-	white-space: pre-wrap;
-	/* 允许自动换行 */
+	font-family: inherit; /* 使用与其他文本相同的字体 */
+	line-height: 1.5; /* 设置行高 */
+	white-space: pre-wrap; /* 允许自动换行 */
 }
 
 .message-header {
@@ -97,4 +94,72 @@ body {
 .content {
 	font-size: 14px;
 	line-height: 1.5;
+}
+
+/* Bootstrap 类的使用 */
+.btn {
+	margin-top: 10px; /* 按钮与输入框的间距 */
+}
+
+.sidebar {
+	position: fixed;
+	top: 0;
+	right: -250px; /* 隐藏在视窗外 */
+	width: 250px;
+	height: 100%;
+	background-color: #333;
+	color: #fff;
+	transition: transform 0.3s ease;
+	overflow-y: auto;
+	padding: 20px;
+	z-index: 999; /* 确保侧边栏在按钮下层 */
+}
+
+.sidebar.open {
+	transform: translateX(-250px); /* 显示在视窗内 */
+}
+
+.sidebar.closed {
+	transform: translateX(0); /* 隐藏在视窗外 */
+}
+
+.sidebar button {
+	display: block;
+	margin: 20px auto; /* 上下20px，左右自动 */
+	width: 80%; /* 你可以调整宽度 */
+}
+
+.sidebar ul {
+	list-style: none;
+	padding: 0;
+}
+
+.icon-button {
+	position: fixed; /* 固定位置 */
+	top: 50%; /* 垂直居中 */
+	right: 0px; /* 初始状态，稍微在视窗外 */
+	transform: translateY(-50%); /* 垂直居中 */
+	z-index: 1000; /* 确保按钮在最上层 */
+	transition: right 0.3s ease; /* 平滑过渡 */
+}
+
+.icon-button.open {
+	right: 0; /* 按钮跟随侧边栏滑动 */
+}
+
+
+.role-avatar {
+	width: 50px; /* 设置宽度 */
+	height: 50px; /* 设置高度 */
+	object-fit: cover; /* 保持比例填充 */
+	border-radius: 50%; /* 圆形头像 */
+	margin-right: 10px; /* 头像与名字之间的间距 */
+}
+
+.role-container {
+	border: 1px solid #ccc; /* 边框颜色 */
+	border-radius: 8px; /* 圆角 */
+	padding: 10px; /* 内边距 */
+	margin-bottom: 15px; /* 角色间的间距 */
+	background-color: black; /* 背景颜色 */
 }

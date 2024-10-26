@@ -1,10 +1,15 @@
 import { renderTemplate } from "../../scripts/template.mjs"
-import { addUserReply, getCharList, getChatLog, triggerCharacterReply } from "./src/public/endpoints.mjs"
+import { addUserReply, getCharList,getChatLog, triggerCharacterReply } from "./src/public/endpoints.mjs"
 import { renderMarkdown } from "./src/public/markdown.mjs"
+import {displayCharList} from "../../home/index.mjs";
+
 
 const chatMessages = document.querySelector('.chat-messages')
 const messageInput = document.getElementById('message-input')
 const sendButton = document.getElementById('send-button')
+const navToggle = document.getElementById('nav-toggle');
+const sidebar = document.getElementById('sidebar');
+const iconButton = document.querySelector('.icon-button');
 
 async function updateChatMessages(messages) {
 	chatMessages.innerHTML = '' // Clear existing messages
@@ -44,5 +49,19 @@ messageInput.addEventListener('keydown', (event) => {
 	}
 })
 
+navToggle.addEventListener('click', () => {
+	sidebar.classList.toggle('open');
+
+	if (sidebar.classList.contains('open')) {
+		iconButton.style.right = '250px'; // 当侧边栏打开时，按钮向左移动250px
+		displayCharList()
+	} else {
+		iconButton.style.right = '0'; // 关闭时，按钮回到右侧
+	}
+});
+
 getChatLog().then(updateChatMessages)
+
+
+
 let charList = await getCharList()
