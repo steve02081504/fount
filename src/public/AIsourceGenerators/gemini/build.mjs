@@ -83,9 +83,17 @@ export default async (config) => {
 				})
 			})
 
-			let result = await model.generateContent(request)
+			let result
+			while (!result)
+				try {
+					result = await model.generateContent(request)
+				} catch (e) {
+					if (e.status == 429)
+						await new Promise(resolve => setTimeout(resolve, 1000))
+					else throw e
+				}
 			let text = result.response.text()
-			if (text.match(new RegExp(`^${prompt_struct.Charname}(:|：)\n`, 'ig')))
+			if (text.match(new RegExp(`^${prompt_struct.Charname}[^\\n]*(:|：)*\\n`, 'ig')))
 				text = text.split('\n').slice(1).join('\n')
 
 			return text

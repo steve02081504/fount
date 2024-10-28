@@ -27,6 +27,11 @@ export async function getCharDetails(username, charname, locale) {
 	return getPartInfo(char, locale)
 }
 
+/**
+ * @param {string} username
+ * @param {string} charname
+ * @returns {Promise<import('../decl/charAPI.ts').charAPI_t>}
+ */
 export async function LoadChar(username, charname) {
 	let data = loadCharData(username, charname)
 	let char_state = data.state
