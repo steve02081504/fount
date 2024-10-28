@@ -3,6 +3,8 @@ import { AIsource_t } from './AIsource.ts';
 import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts';
 import { chatReply_t, chatReplyRequest_t } from '../public/shells/chat/decl/chatLog.ts';
 
+import { Client as DiscordClient, GatewayIntentBits as DiscordGatewayIntentBits } from 'discord.js';
+
 export class charState_t {
 	InitCount: number;
 	StartCount: number;
@@ -54,6 +56,10 @@ export class charAPI_t {
 				chat_entry: chatLogEntry_t
 				extension?: any
 			}) => Promise<chatReply_t>
+		},
+		discord: {
+			Intents?: DiscordGatewayIntentBits[]
+			OnceClientReady: (client: DiscordClient, config: any) => void
 		}
 	};
 }

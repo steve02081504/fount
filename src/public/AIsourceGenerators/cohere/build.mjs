@@ -49,8 +49,12 @@ export default async (config) => {
 			let result = await cohere.chat(request)
 			let text = result?.message?.content?.map((message) => message?.text)?.filter((text) => text)?.join('\n')
 			if (!text) throw result
-			if (text.match(new RegExp(`^${prompt_struct.Charname}(:|：)\n`, 'ig')))
+			if (text.match(new RegExp(`^${prompt_struct.Charname}[^\\n]*(:|：)*\\n`, 'ig')))
 				text = text.split('\n').slice(1).join('\n')
+
+			let removeduplicate = [...new Set(text.split('\n'))].join('\n')
+			if (removeduplicate.length / text.length < 0.3)
+				text = removeduplicate
 
 			return text
 		},

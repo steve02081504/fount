@@ -23,12 +23,17 @@
 		"bcrypt": "^5.1.1",
 		"body-parser": "^1.20.3",
 		"cookie-parser": "^1.4.6",
+		"discord.js": "^14.16.3",
 		"express": "^4.21.0",
 		"jsonwebtoken": "^9.0.2",
 		"jszip": "^3.10.1"
 	},
 	"devDependencies": {
+		"@google/generative-ai": "^0.21.0",
+		"@types/express": "^4.17.21",
+		"cohere-ai": "^7.14.0",
 		"eslint-plugin-optimize-regex": "^1.2.1",
-		"@types/express": "^4.17.21"
+		"mime-types": "^2.1.35",
+		"opencc-js": "^1.0.5"
 	}
 }

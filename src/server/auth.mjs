@@ -52,7 +52,7 @@ export function getUserByToken(token) {
 	}
 }
 export function getUserDictionary(username) {
-	return path.resolve(config.data.users[username].UserDictionary || __dirname + '/data/users/' + username)
+	return path.resolve(config.data.users[username]?.UserDictionary || __dirname + '/data/users/' + username)
 }
 
 /**

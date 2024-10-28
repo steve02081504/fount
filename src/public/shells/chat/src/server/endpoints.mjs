@@ -1,8 +1,8 @@
-import { getUserByToken } from "../../../../../server/auth.mjs"
+import { authenticate, getUserByToken } from "../../../../../server/auth.mjs"
 import { addchar, addUserReply, findEmptyChatid, getCharListOfChat, GetChatLog, GetUserPersonaName, GetWorldName, loadMetaData, newMetadata, removechar, setPersona, setWorld, triggerCharReply } from './chat.mjs'
 
 export function setEndpoints(app) {
-	app.post('/api/shells/chat/new', async (req, res) => {
+	app.post('/api/shells/chat/new', authenticate ,async (req, res) => {
 		const { username } = getUserByToken(req.cookies.token)
 		let chatid = findEmptyChatid()
 		newMetadata(chatid, username)
@@ -34,19 +34,19 @@ export function setEndpoints(app) {
 		let result = await triggerCharReply(chatid, charname)
 		res.status(200).json(result)
 	})
-	app.post('/api/shells/chat/adduserreply', async (req, res) => {
+	app.post('/api/shells/chat/adduserreply', authenticate, async (req, res) => {
 		const { chatid, content } = req.body
 		const { locale } = getUserByToken(req.cookies.token)
 		let result = addUserReply(chatid, content, locale)
 		res.status(200).json(result)
 	})
-	app.post('/api/shells/chat/getcharlist', async (req, res) => {
+	app.post('/api/shells/chat/getcharlist', authenticate, async (req, res) => {
 		const { chatid } = req.body
 		await loadMetaData(chatid, getUserByToken(req.cookies.token).username)
 		let charlist = getCharListOfChat(chatid)
 		res.status(200).json(charlist)
 	})
-	app.post('/api/shells/chat/getchatlog', async (req, res) => {
+	app.post('/api/shells/chat/getchatlog', authenticate, async (req, res) => {
 		const { chatid } = req.body
 		await loadMetaData(chatid, getUserByToken(req.cookies.token).username)
 		let chatlog = GetChatLog(chatid)

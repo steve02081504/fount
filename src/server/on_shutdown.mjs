@@ -1,6 +1,6 @@
 const shutdowm_functions = []
 export function on_shutdown(func) {
-	shutdowm_functions.push(func)
+	shutdowm_functions.unshift(func)
 }
 function shutdown() {
 	shutdowm_functions.forEach(func => func())
