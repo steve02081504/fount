@@ -49,14 +49,13 @@ export function registerEndpoints(app) {
 	}
 
 	app.get('/api/shelllist', authenticate, get_list_of_load_able_part('shells'))
-	app.get(/^\/shells\//, authenticate, async (req, res, next) => {
+	let shell_auto_loader = async (req, res, next) => {
 		const { username } = getUserByToken(req.cookies.token)
 		const shellName = (() => {
 			let patharr = req.path.split('/')
-			let usershellpath = patharr[2] + '/' + patharr[3]
-			if (fs.existsSync(getUserDictionary(username) + '/shells/' + usershellpath + '/main.mjs'))
-				return usershellpath
-			return patharr[2]
+			let shellsIndex = patharr.indexOf('shells')
+			patharr = patharr.slice(shellsIndex+1)
+			return patharr[0]
 		})()
 
 		try {
@@ -67,7 +66,9 @@ export function registerEndpoints(app) {
 		}
 
 		next()
-	}, match_user_files)
+	}
+	app.get(/^\/shells\//, authenticate, shell_auto_loader, match_user_files)
+	app.post(/^\/api\/shells\//, authenticate, shell_auto_loader)
 
 	app.get('/api/charlist', authenticate, get_list_of_load_able_part('chars'))
 	app.post('/api/chardetails', authenticate, async (req, res) => {

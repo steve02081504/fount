@@ -2,7 +2,7 @@ import { getUserDictionary } from './auth.mjs'
 import { on_shutdown } from './on_shutdown.mjs'
 import fs from 'fs'
 import url from 'url'
-import { __dirname } from './server.mjs'
+import { __dirname, setDefaultWindowTitle } from './server.mjs'
 import { loadData, saveData } from './setting_loader.mjs'
 
 let parts_set = {}
@@ -62,6 +62,7 @@ export async function loadPart(username, parttype, partname, Initargs, {
 		parts_set[username][parttype][partname] = await Loader(pathGetter(), Initargs)
 		await afterLoad(parts_set[username][parttype][partname])
 	}
+	setDefaultWindowTitle()
 	return parts_set[username][parttype][partname]
 }
 

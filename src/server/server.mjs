@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser'
 import path from 'path'
 import fs from 'fs'
 import { registerEndpoints } from './endpoints.mjs'
+import { on_shutdown } from './on_shutdown.mjs'
 
 export const app = express()
 
@@ -32,6 +33,21 @@ if (!config.secretKey) {
 	save_config()
 }
 
+/**
+ * Set the title of the terminal window
+ * @param {string} title Desired title for the window
+ */
+function setWindowTitle(title) {
+	if (process.platform === 'win32')
+		process.title = title
+	else
+		process.stdout.write(`\x1b]2;${title}\x1b\x5c`)
+}
+
+export function setDefaultWindowTitle() {
+	setWindowTitle(`fount`)
+}
+
 export async function init() {
 	registerEndpoints(app)
 	app.use(express.static(__dirname + '/src/public'))
@@ -39,4 +55,7 @@ export async function init() {
 	app.listen(port, () => {
 		console.log(`服务器运行在 http://localhost:${port}`)
 	})
+	let titleBackup = process.title
+	on_shutdown(() => setWindowTitle(titleBackup))
+	setDefaultWindowTitle()
 }

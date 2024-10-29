@@ -27,7 +27,8 @@ export default {
 				const result = await fetch(config.url, {
 					method: 'POST',
 					headers: {
-						'Content-Type': 'application/json'
+						'Content-Type': 'application/json',
+						'Authorization': config.apikey ? 'Bearer ' + config.apikey : undefined
 					},
 					body: JSON.stringify({
 						model: config.model,
@@ -36,14 +37,25 @@ export default {
 								role: "system",
 								content: prompt
 							}
-						]
+						],
+						temperature: config.temperature || 0.7,
+						max_tokens: config.max_tokens || 800,
+						top_p: config.top_p || 0.35,
+						repetition_penalty: config.repetition_penalty || 1.05,
+						stream: false
 					})
 				})
 
 				if (!result.ok)
 					throw result
 
-				return result.json().choices[0].message.content
+				let text = await result.text()
+				if (text.startsWith('data:'))
+					text = text.split('\n').filter((line) => line.startsWith('data:')).map(line => line.slice(5).trim()).map(JSON.parse).map((json) => json.choices[0].delta.content).join('')
+				else
+					text = JSON.parse(result).choices[0].message.content
+
+				return result.choices[0].message.content
 			},
 			StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
 				let system_prompt = structPromptToSingleNoChatLog(prompt_struct)
@@ -52,7 +64,12 @@ export default {
 					messages: [{
 						role: 'system',
 						content: system_prompt
-					}]
+					}],
+					temperature: config.temperature || 0.7,
+					max_tokens: config.max_tokens || 800,
+					top_p: config.top_p || 0.35,
+					repetition_penalty: config.repetition_penalty || 1.05,
+					stream: false
 				}
 				margeStructPromptChatLog(prompt_struct).forEach((chatLogEntry) => {
 					request.messages.push({
@@ -64,7 +81,8 @@ export default {
 				let result = await fetch(config.url, {
 					method: 'POST',
 					headers: {
-						'Content-Type': 'application/json'
+						'Content-Type': 'application/json',
+						'Authorization': config.apikey ? 'Bearer ' + config.apikey : undefined
 					},
 					body: JSON.stringify(request)
 				})
@@ -72,8 +90,13 @@ export default {
 				if (!result.ok)
 					throw result
 
-				let text = result.json().choices[0].message.content
-				if (text.match(new RegExp(`^${prompt_struct.Charname}(:|：)\n`, 'ig')))
+				let text = await result.text()
+				if (text.startsWith('data:'))
+					text = text.split('\n').filter((line) => line.startsWith('data:')).map(line => line.slice(5).trim()).map(JSON.parse).map((json) => json.choices[0].delta.content).join('')
+				else
+					text = JSON.parse(result).choices[0].message.content
+
+				if (text.match(new RegExp(`^(|${prompt_struct.Charname}[^\\n]*)(:|：)*\\n`, 'ig')))
 					text = text.split('\n').slice(1).join('\n')
 
 				return text
