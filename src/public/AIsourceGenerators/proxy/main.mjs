@@ -52,19 +52,19 @@ export default {
 				let text = await result.text()
 				if (text.startsWith('data:'))
 					text = text.split('\n').filter((line) => line.startsWith('data:')).map(line => line.slice(5).trim()).map(JSON.parse).map((json) => json.choices[0].delta.content).join('')
-				else
-					text = JSON.parse(result).choices[0].message.content
+				else {
+					let json
+					try { json = JSON.parse(text) }
+					catch { json = await result.json() }
+					text = json.choices[0].message.content
+				}
 
-				return result.choices[0].message.content
+				return text
 			},
 			StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
-				let system_prompt = structPromptToSingleNoChatLog(prompt_struct)
 				let request = {
 					model: config.model,
-					messages: [{
-						role: 'system',
-						content: system_prompt
-					}],
+					messages: [],
 					temperature: config.temperature || 0.7,
 					max_tokens: config.max_tokens || 800,
 					top_p: config.top_p || 0.35,
@@ -76,6 +76,12 @@ export default {
 						role: chatLogEntry.role === 'user' ? 'user' : chatLogEntry.role === 'system' ? 'system' : 'assistant',
 						content: chatLogEntry.name + ':\n' + chatLogEntry.content
 					})
+				})
+
+				let system_prompt = structPromptToSingleNoChatLog(prompt_struct)
+				request.messages.splice(Math.max(request.messages.length - 10, 0), 0, {
+					role: 'system',
+					content: system_prompt
 				})
 
 				let result = await fetch(config.url, {
@@ -93,8 +99,12 @@ export default {
 				let text = await result.text()
 				if (text.startsWith('data:'))
 					text = text.split('\n').filter((line) => line.startsWith('data:')).map(line => line.slice(5).trim()).map(JSON.parse).map((json) => json.choices[0].delta.content).join('')
-				else
-					text = JSON.parse(result).choices[0].message.content
+				else {
+					let json
+					try { json = JSON.parse(text) }
+					catch { json = await result.json() }
+					text = json.choices[0].message.content
+				}
 
 				if (text.match(new RegExp(`^(|${prompt_struct.Charname}[^\\n]*)(:|：)*\\n`, 'ig')))
 					text = text.split('\n').slice(1).join('\n')
