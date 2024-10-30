@@ -38,11 +38,12 @@ export default {
 								content: prompt
 							}
 						],
-						temperature: config.temperature || 0.7,
-						max_tokens: config.max_tokens || 800,
-						top_p: config.top_p || 0.35,
-						repetition_penalty: config.repetition_penalty || 1.05,
-						stream: false
+						stream: false,
+						...config.model_arguments || {
+							temperature: 1,
+							max_tokens: 800,
+							n: 1
+						},
 					})
 				})
 
@@ -65,11 +66,12 @@ export default {
 				let request = {
 					model: config.model,
 					messages: [],
-					temperature: config.temperature || 0.7,
-					max_tokens: config.max_tokens || 800,
-					top_p: config.top_p || 0.35,
-					repetition_penalty: config.repetition_penalty || 1.05,
-					stream: false
+					stream: false,
+					...config.model_arguments || {
+						temperature: 1,
+						max_tokens: 800,
+						n: 1
+					},
 				}
 				margeStructPromptChatLog(prompt_struct).forEach((chatLogEntry) => {
 					request.messages.push({
