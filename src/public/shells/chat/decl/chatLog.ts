@@ -16,6 +16,7 @@ export class chatReplyRequest_t {
 	username: string
 	Charname: string
 	UserCharname: string
+	ReplyToCharname?: string
 	locale: locale_t
 	time: timeStamp_t
 	chat_log: chatLogEntry_t[]
