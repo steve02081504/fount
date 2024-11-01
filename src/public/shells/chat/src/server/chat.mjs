@@ -177,9 +177,10 @@ function getChatRequest(chatid, charname, locale, timeSlice = chatMetadatas[chat
 	const userinfo = getPartInfo(timeSlice.player, locale)
 	const charinfo = getPartInfo(char, locale)
 	if (!char) throw new Error('char not found')
+	let UserCharname = userinfo?.name || timeSlice.player_id || username
 	return {
-		username: username,
-		UserCharname: userinfo?.name || timeSlice.player_id || username,
+		username,
+		UserCharname,
 		Charname: charinfo?.name || charname,
 		chatid: chatid,
 		chat_log: chatMetadatas[chatid].chatLog,
