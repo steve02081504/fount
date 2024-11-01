@@ -15,10 +15,11 @@ export async function buildPromptStruct(
 	args,
 	detail_level = 3
 ) {
-	const { char, user, world, other_chars, plugins, chat_log, UserCharname, Charname } = args
+	const { char, user, world, other_chars, plugins, chat_log, UserCharname, ReplyToCharname, Charname } = args
 	/** @type {prompt_struct_t} */
 	let result = {
 		UserCharname,
+		ReplyToCharname,
 		Charname,
 		char_prompt: getSinglePartPrompt(),
 		user_prompt: getSinglePartPrompt(),
