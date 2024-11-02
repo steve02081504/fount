@@ -1,7 +1,8 @@
 import { locale_t } from "./basedefs";
+import { Express } from "express";
 
 // no idea but it's necessary now
-export class Shell_t {
+export class shellAPI_t {
 	info: Record<locale_t, {
 		name: string;
 		avatar: string;
@@ -13,4 +14,9 @@ export class Shell_t {
 		issuepage: string;
 		tags: string[];
 	}>;
+	Init: () => Promise<void>;
+	Load: (app: Express) => Promise<void>;
+	Unload: (app: Express) => Promise<void>;
+	Uninstall: (reason: string, from: string) => Promise<void>;
+	ArgumentsHandler: (user: string, args: string[]) => Promise<void>;
 }
