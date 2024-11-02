@@ -1,5 +1,6 @@
-import { setEndpoints, unsetEndpoints } from "./src/server/endpoints.mjs"
+import { exec } from '../../../server/exec.mjs'
 
+let endpoints
 export default {
 	info: {
 		'': {
@@ -13,10 +14,12 @@ export default {
 			tags: []
 		}
 	},
-	Load: (app) => {
-		setEndpoints(app)
+	Init: async () => { await exec('npm install --save-optional discord.js') },
+	Load: async (app) => {
+		endpoints = await import('./src/server/endpoints.mjs')
+		endpoints.setEndpoints(app)
 	},
-	Unload: (app) => {
-		unsetEndpoints(app)
+	Unload: async (app) => {
+		endpoints.unsetEndpoints(app)
 	}
 }

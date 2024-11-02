@@ -1,6 +1,6 @@
 import { exec } from 'child_process'
 import { promisify } from 'util'
-let PromiseExec = promisify(exec)
+const PromiseExec = promisify(exec)
 
 export default PromiseExec
 export {

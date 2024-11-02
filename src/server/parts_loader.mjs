@@ -30,7 +30,7 @@ export async function loadPart(username, parttype, partname, Initargs, {
 	pathGetter = () => GetPartPath(username, parttype, partname),
 	Loader = async (path, Initargs) => {
 		const part = (await import(url.pathToFileURL(path + '/main.mjs'))).default
-		if (part.Load) part.Load(Initargs)
+		if (part.Load) await part.Load(Initargs)
 		return part
 	},
 	afterLoad = (part) => { },
