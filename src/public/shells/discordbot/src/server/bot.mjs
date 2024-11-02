@@ -34,6 +34,7 @@ function getBotCongfig(username, botname) {
 
 export async function runBot(username, botname) {
 	let config = getBotCongfig(username, botname)
+	if (!Object.keys(config).length) throw new Error(`Bot ${botname} not found`)
 	let char = await LoadChar(username, config.char)
 	await startBot(config, char)
 }

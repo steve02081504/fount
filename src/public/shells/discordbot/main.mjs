@@ -21,5 +21,9 @@ export default {
 	},
 	Unload: async (app) => {
 		endpoints.unsetEndpoints(app)
+	},
+	ArgumentsHandler: async (user, args) => {
+		let module = await import('./args.mjs')
+		await module.default(user, args)
 	}
 }

@@ -52,15 +52,22 @@ export async function loadPart(username, parttype, partname, Initargs, {
 	}
 	parts_set[username][parttype] ??= {}
 	let parts_init = loadData(username, 'parts_init')
-	if (!parts_init[parttype]?.[partname]) {
-		await initPart(username, parttype, partname, Initargs, { pathGetter, Initer, afterInit })
-		parts_init[parttype] ??= {}
-		parts_init[parttype][partname] = true
-		saveData(username, 'parts_init')
+	try{
+		if (!parts_init[parttype]?.[partname]) {
+			await initPart(username, parttype, partname, Initargs, { pathGetter, Initer, afterInit })
+			parts_init[parttype] ??= {}
+			parts_init[parttype][partname] = true
+			saveData(username, 'parts_init')
+		}
+		if (!parts_set[username][parttype][partname]) {
+			parts_set[username][parttype][partname] = await Loader(pathGetter(), Initargs)
+			await afterLoad(parts_set[username][parttype][partname])
+		}
 	}
-	if (!parts_set[username][parttype][partname]) {
-		parts_set[username][parttype][partname] = await Loader(pathGetter(), Initargs)
-		await afterLoad(parts_set[username][parttype][partname])
+	catch (error) {
+		console.log(username, parttype, partname)
+		console.trace()
+		throw error
 	}
 	setDefaultWindowTitle()
 	return parts_set[username][parttype][partname]
