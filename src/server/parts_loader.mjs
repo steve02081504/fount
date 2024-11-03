@@ -4,6 +4,7 @@ import fs from 'fs'
 import url from 'url'
 import { __dirname, setDefaultWindowTitle } from './server.mjs'
 import { loadData, saveData } from './setting_loader.mjs'
+import { exec } from './exec.mjs'
 
 let parts_set = {}
 
@@ -14,12 +15,29 @@ function GetPartPath(username, parttype, partname) {
 	return __dirname + '/src/public/' + parttype + '/' + partname
 }
 
+export async function baseMjsPartLoader(path) {
+	while (true)
+		try {
+			const part = (await import(url.pathToFileURL(path + `/main.mjs`))).default
+			return part
+		} catch (e) {
+			if (e.code === 'ERR_MODULE_NOT_FOUND') {
+				let missingModule = `${e}`.match(/Cannot find package '(?<module>.*)'/)?.groups?.module
+				if (!missingModule)
+					console.log(`cannot find module name form ${e}`)
+				else {
+					console.log('auto installing missing module ' + missingModule)
+					await exec(`npm install --save-optional ${missingModule}`)
+					continue
+				}
+			}
+			throw e
+		}
+}
+
 export async function baseloadPart(username, parttype, partname, {
 	pathGetter = () => GetPartPath(username, parttype, partname),
-	Loader = async (path) => {
-		const part = (await import(url.pathToFileURL(path + '/main.mjs'))).default
-		return part
-	},
+	Loader = baseMjsPartLoader,
 } = {}) {
 	if (!parts_set?.[username]?.[parttype])
 		return await Loader(pathGetter())
@@ -29,15 +47,14 @@ export async function baseloadPart(username, parttype, partname, {
 export async function loadPart(username, parttype, partname, Initargs, {
 	pathGetter = () => GetPartPath(username, parttype, partname),
 	Loader = async (path, Initargs) => {
-		const part = (await import(url.pathToFileURL(path + '/main.mjs'))).default
-		if (part.Load) await part.Load(Initargs)
+		const part = baseMjsPartLoader(path)
+		await part.Load?.(Initargs)
 		return part
 	},
 	afterLoad = (part) => { },
 	Initer = async (path, Initargs) => {
-		const part = (await import(url.pathToFileURL(path + '/main.mjs'))).default
-		if (part.Init)
-			await part.Init(Initargs)
+		const part = baseMjsPartLoader(path)
+		await part.Init?.(Initargs)
 		return part
 	},
 	afterInit = (part) => { },
@@ -52,7 +69,7 @@ export async function loadPart(username, parttype, partname, Initargs, {
 	}
 	parts_set[username][parttype] ??= {}
 	let parts_init = loadData(username, 'parts_init')
-	try{
+	try {
 		if (!parts_init[parttype]?.[partname]) {
 			await initPart(username, parttype, partname, Initargs, { pathGetter, Initer, afterInit })
 			parts_init[parttype] ??= {}
@@ -76,9 +93,8 @@ export async function loadPart(username, parttype, partname, Initargs, {
 export async function initPart(username, parttype, partname, Initargs, {
 	pathGetter = () => GetPartPath(username, parttype, partname),
 	Initer = async (path, Initargs) => {
-		const part = (await import(url.pathToFileURL(path + '/main.mjs'))).default
-		if (part.Init)
-			await part.Init(Initargs)
+		const part = baseMjsPartLoader(path)
+		await part.Init?.(Initargs)
 		return part
 	},
 	afterInit = (part) => { },
@@ -88,7 +104,7 @@ export async function initPart(username, parttype, partname, Initargs, {
 }
 
 export function unloadPart(username, parttype, partname, unLoadargs, {
-	unLoader = (part) => part.Unload(unLoadargs),
+	unLoader = (part) => part.Unload?.(unLoadargs),
 } = {}) {
 	const part = parts_set[username][parttype][partname]
 	try {
@@ -107,10 +123,10 @@ on_shutdown(() => {
 })
 
 export function uninstallPart(username, parttype, partname, unLoadargs, uninstallArgs, {
-	unLoader = (part) => part.Unload(unLoadargs),
+	unLoader = (part) => part.Unload?.(unLoadargs),
 	pathGetter = () => GetPartPath(username, parttype, partname),
 	Uninstaller = (part, path) => {
-		part.Uninstall(uninstallArgs)
+		part.Uninstall?.(uninstallArgs)
 		fs.rmSync(path, { recursive: true, force: true })
 	}
 } = {}) {
@@ -125,6 +141,5 @@ export function uninstallPart(username, parttype, partname, unLoadargs, uninstal
 
 export function getPartInfo(part, locale) {
 	if (!part?.info) return
-	if (part.info[locale]) return part.info[locale]
-	return part.info[Object.keys(part.info)[0]]
+	return part.info[locale] || part.info[Object.keys(part.info)[0]]
 }
