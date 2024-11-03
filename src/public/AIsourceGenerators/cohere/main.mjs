@@ -1,4 +1,4 @@
-import { CohereClientV2 } from 'cohere-ai'
+import { CohereClientV2 } from 'npm:cohere-ai'
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */

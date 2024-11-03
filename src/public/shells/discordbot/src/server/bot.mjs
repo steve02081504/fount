@@ -1,4 +1,4 @@
-import { Client, Events, GatewayIntentBits } from 'discord.js'
+import { Client, Events, GatewayIntentBits } from 'npm:discord.js'
 import { on_shutdown } from '../../../../../server/on_shutdown.mjs'
 import { loadData } from '../../../../../server/setting_loader.mjs'
 import { LoadChar } from '../../../../../server/char_manager.mjs'
