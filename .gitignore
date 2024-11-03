@@ -1,5 +1,5 @@
 /data/
-/.esh/shell-history.txt
 package-lock.json
 /node_modules
 /.idea
+*.lock

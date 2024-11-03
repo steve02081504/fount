@@ -1,7 +1,7 @@
 import { getUserDictionary } from './auth.mjs'
 import { on_shutdown } from './on_shutdown.mjs'
-import fs from 'fs'
-import url from 'url'
+import fs from 'node:fs'
+import url from 'node:url'
 import { __dirname, setDefaultWindowTitle } from './server.mjs'
 import { loadData, saveData } from './setting_loader.mjs'
 import { exec } from './exec.mjs'
@@ -16,23 +16,8 @@ function GetPartPath(username, parttype, partname) {
 }
 
 export async function baseMjsPartLoader(path) {
-	while (true)
-		try {
-			const part = (await import(url.pathToFileURL(path + `/main.mjs`))).default
-			return part
-		} catch (e) {
-			if (e.code === 'ERR_MODULE_NOT_FOUND') {
-				let missingModule = `${e}`.match(/Cannot find package '(?<module>.*)'/)?.groups?.module
-				if (!missingModule)
-					console.log(`cannot find module name form ${e}`)
-				else {
-					console.log('auto installing missing module ' + missingModule)
-					await exec(`npm install --save-optional ${missingModule}`)
-					continue
-				}
-			}
-			throw e
-		}
+	const part = (await import(url.pathToFileURL(path + `/main.mjs`))).default
+	return part
 }
 
 export async function baseloadPart(username, parttype, partname, {

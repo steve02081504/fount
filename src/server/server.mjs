@@ -1,14 +1,14 @@
-import express from 'express'
-import bodyParser from 'body-parser'
-import cookieParser from 'cookie-parser'
-import path from 'path'
-import fs from 'fs'
+import express from 'npm:express'
+import bodyParser from 'npm:body-parser'
+import cookieParser from 'npm:cookie-parser'
+import path from 'node:path'
+import fs from 'node:fs'
 import { registerEndpoints } from './endpoints.mjs'
 import { on_shutdown } from './on_shutdown.mjs'
 
 export const app = express()
 
-export const __dirname = path.resolve()
+export const __dirname = import.meta.dirname + '/../../'
 
 app.use((req, res, next) => { console.log(`Request received: ${req.method} ${req.url}`); next() })
 app.use(bodyParser.json())

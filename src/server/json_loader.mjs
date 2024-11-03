@@ -1,4 +1,4 @@
-import fs from 'fs'
+import fs from 'node:fs'
 
 export function loadJsonFile(filename) {
 	return JSON.parse(fs.readFileSync(filename, 'utf8'))

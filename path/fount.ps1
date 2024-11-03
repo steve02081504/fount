@@ -1,7 +1,7 @@
 $FOUNT_DIR = Split-Path -Parent $PSScriptRoot
 
 if (!(Test-Path -Path "$FOUNT_DIR/node_modules")) {
-	npm install --prefix "$FOUNT_DIR" --omit=optional
+	deno install --allow-all --entrypoint=$FOUNT_DIR/src/server/index.mjs --node-modules-dir=auto
 }
 
-npm run --prefix "$FOUNT_DIR" start @args
+deno run --allow-all $FOUNT_DIR/src/server/index.mjs @args

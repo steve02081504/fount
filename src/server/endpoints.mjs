@@ -1,6 +1,6 @@
 import { login, register, logout, authenticate, getUserByToken, getUserDictionary } from './auth.mjs'
 import { __dirname } from './server.mjs'
-import fs from 'fs'
+import fs from 'node:fs'
 import { loadShell } from './shell_manager.mjs'
 import { getCharDetails } from './char_manager.mjs'
 /**

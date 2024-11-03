@@ -1,9 +1,9 @@
-import jwt from 'jsonwebtoken'
-import fs from 'fs'
-import bcrypt from 'bcrypt'
+import jwt from 'npm:jsonwebtoken'
+import fs from 'node:fs'
+import bcrypt from 'npm:bcrypt'
 import { config, save_config } from './server.mjs'
 import { __dirname } from './server.mjs'
-import path from 'path'
+import path from 'node:path'
 
 /**
  * 通过用户名获取用户信息
