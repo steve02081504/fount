@@ -38,10 +38,7 @@ if (!config.secretKey) {
  * @param {string} title Desired title for the window
  */
 function setWindowTitle(title) {
-	if (process.platform === 'win32')
-		process.title = title
-	else
-		process.stdout.write(`\x1b]2;${title}\x1b\x5c`)
+	process.stdout.write(`\x1b]2;${title}\x1b\x5c`)
 }
 
 export function setDefaultWindowTitle() {
