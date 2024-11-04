@@ -32,13 +32,13 @@ export async function baseloadPart(username, parttype, partname, {
 export async function loadPart(username, parttype, partname, Initargs, {
 	pathGetter = () => GetPartPath(username, parttype, partname),
 	Loader = async (path, Initargs) => {
-		const part = baseMjsPartLoader(path)
+		const part = await baseMjsPartLoader(path)
 		await part.Load?.(Initargs)
 		return part
 	},
 	afterLoad = (part) => { },
 	Initer = async (path, Initargs) => {
-		const part = baseMjsPartLoader(path)
+		const part = await baseMjsPartLoader(path)
 		await part.Init?.(Initargs)
 		return part
 	},
@@ -78,7 +78,7 @@ export async function loadPart(username, parttype, partname, Initargs, {
 export async function initPart(username, parttype, partname, Initargs, {
 	pathGetter = () => GetPartPath(username, parttype, partname),
 	Initer = async (path, Initargs) => {
-		const part = baseMjsPartLoader(path)
+		const part = await baseMjsPartLoader(path)
 		await part.Init?.(Initargs)
 		return part
 	},
