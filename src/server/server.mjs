@@ -8,7 +8,7 @@ import { on_shutdown } from './on_shutdown.mjs'
 
 export const app = express()
 
-export const __dirname = import.meta.dirname + '/../../'
+export const __dirname = path.resolve(import.meta.dirname + '/../../')
 
 app.use((req, res, next) => { console.log(`Request received: ${req.method} ${req.url}`); next() })
 app.use(bodyParser.json())

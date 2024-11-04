@@ -9,7 +9,7 @@ import { loadJsonFile, saveJsonFile } from '../../../../../server/json_loader.mj
 import { on_shutdown } from '../../../../../server/on_shutdown.mjs'
 import { getPartInfo } from '../../../../../server/parts_loader.mjs'
 import { loadPersona } from '../../../../../server/personas_manager.mjs'
-import fs from 'fs'
+import fs from 'node:fs'
 
 /** @type {Record<string, chatMetadata_t>} */
 let chatMetadatas = {}
