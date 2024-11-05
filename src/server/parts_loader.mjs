@@ -128,3 +128,17 @@ export function getPartInfo(part, locale) {
 	if (!part?.info) return
 	return part.info[locale] || part.info[Object.keys(part.info)[0]]
 }
+
+export function getPartList(username, parttype, {
+	PathFilter = (path_dir, file) => fs.existsSync(path_dir + '/' + file + '/main.mjs'),
+} = {}) {
+	const part_dir = getUserDictionary(username) + '/' + parttype
+	const partlist = fs.readdirSync(part_dir).filter(file => PathFilter(part_dir, file))
+	return partlist
+}
+
+export async function getPartDetails(username, parttype,partname, locale) {
+	console.log('getPartDetails',username, parttype, partname)
+	const char = await baseloadPart(username, parttype, partname)
+	return getPartInfo(char, locale)
+}

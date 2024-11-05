@@ -22,11 +22,6 @@ function saveCharData(username) {
 	saveData(username, 'char_data')
 }
 
-export async function getCharDetails(username, charname, locale) {
-	const char = await baseloadPart(username, 'chars', charname)
-	return getPartInfo(char, locale)
-}
-
 /**
  * @param {string} username
  * @param {string} charname

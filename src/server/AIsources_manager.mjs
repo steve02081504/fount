@@ -6,12 +6,16 @@ function GetPath(username, partname) {
 	return getUserDictionary(username) + '/AIsources/' + partname
 }
 
+export async function loadAIsourceGenerator(username, AIsourcename) {
+	return loadPart(username, 'AIsourceGenerators', AIsourcename)
+}
+
 export async function loadAIsource(username, AIsourcename) {
 	return loadPart(username, 'AIsources', AIsourcename, null, {
 		pathGetter: () => GetPath(username, AIsourcename),
 		Loader: async (path) => {
 			const data = loadJsonFile(path + '.json')
-			let generator = await loadPart(username, 'AIsourceGenerators', data.generator)
+			let generator = await loadAIsourceGenerator(username, data.generator)
 			let AIsource = await generator.GetSource(data.config)
 			return AIsource
 		},
