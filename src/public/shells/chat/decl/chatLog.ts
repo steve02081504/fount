@@ -2,12 +2,21 @@ import { locale_t, role_t, timeStamp_t } from '../../../../decl/basedefs.ts';
 import { charAPI_t } from '../../../../decl/charAPI.ts';
 import { WorldAPI_t } from '../../../../decl/WorldAPI.ts';
 import { UserAPI_t } from '../../../../decl/UserAPI.ts';
+import { pluginAPI_t } from '../../../../decl/PluginAPI.ts';
 
 export class chatReply_t {
 	name?: string;
 	avatar?: string;
 	content: string;
 	content_for_edit?: string;
+	files?: {
+		name: string;
+		mimeType: string;
+		buffer: Buffer;
+		description: string;
+	}[]
+	logContextBefore?: chatLogEntry_t[];
+	logContextAfter?: chatLogEntry_t[];
 	extension?: any;
 }
 
@@ -24,6 +33,7 @@ export class chatReplyRequest_t {
 	user: UserAPI_t
 	char: charAPI_t
 	other_chars: charAPI_t[]
+	plugins: pluginAPI_t[]
 	chat_summary: string
 	chat_scoped_char_memory: {}
 }
@@ -34,12 +44,15 @@ export class chatLogEntry_t {
 	timeStamp: timeStamp_t;
 	role: role_t;
 	content: string;
+	content_for_edit?: string;
 	files: {
 		name: string;
 		mimeType: string;
 		buffer: Buffer;
 		description: string;
 	}[]
+	logContextBefore: chatLogEntry_t[]
+	logContextAfter: chatLogEntry_t[]
 	extension: {
 		timeSlice: {
 			chars: Map<string, charAPI_t>;
