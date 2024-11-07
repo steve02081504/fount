@@ -290,6 +290,8 @@ function BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, l
 	newEntry.role = 'char'
 	newEntry.timeStamp = Date.now()
 	newEntry.extension = result.extension || {}
+	newEntry.logContextBefore = result.logContextBefore
+	newEntry.logContextAfter = result.logContextAfter
 
 	return newEntry
 }

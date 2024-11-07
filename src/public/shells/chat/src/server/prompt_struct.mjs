@@ -25,7 +25,7 @@ export async function buildPromptStruct(
 		user_prompt: getSinglePartPrompt(),
 		other_chars_prompt: [],
 		world_prompt: getSinglePartPrompt(),
-		plugin_prompts: plugins.map((plugin) => plugin.GetPrompt()),
+		plugin_prompts: {},
 		chat_log,
 	}
 
@@ -34,7 +34,8 @@ export async function buildPromptStruct(
 		if (user) result.user_prompt = await user.interfacies.chat.GetPrompt(args, result, detail_level)
 		if (char) result.char_prompt = await char.interfacies.chat.GetPrompt(args, result, detail_level)
 		result.other_chars_prompt = (await Promise.all(other_chars.map(char => char.interfacies.chat?.GetPromptForOther?.(args, result, detail_level)))).filter(x => x)
-		result.plugin_prompts = await Promise.all(plugins.map(plugin => plugin.interfacies.chat.GetPrompt(args, result, detail_level)))
+		for (let plugin of Object.keys(plugins))
+			result.plugin_prompts[plugin] = await plugins[plugin].interfacies.chat?.GetPrompt?.(args, result, detail_level)
 	}
 
 	return result
@@ -43,57 +44,69 @@ export async function buildPromptStruct(
 export function structPromptToSingleNoChatLog(/** @type {prompt_struct_t} */ prompt) {
 	let result = []
 
-	if (prompt.char_prompt.text.length > 0) {
-		result.push('你需要扮演的角色设定如下：')
-		prompt.char_prompt.text.sort((a, b) => a.important - b.important).forEach((text) => {
-			result.push(text.content)
-		})
+	{
+		let sorted = prompt.char_prompt.text.sort((a, b) => a.important - b.important).map(text => text.content).filter(text => text)
+		if (sorted.length > 0) {
+			result.push('你需要扮演的角色设定如下：')
+			result.push(...sorted)
+		}
 	}
 
-	if (prompt.user_prompt.text.length > 0) {
-		result.push('用户的设定如下：')
-		prompt.user_prompt.text.sort((a, b) => a.important - b.important).forEach((text) => {
-			result.push(text.content)
-		})
+	{
+		let sorted = prompt.user_prompt.text.sort((a, b) => a.important - b.important).map(text => text.content).filter(text => text)
+		if (sorted.length > 0) {
+			result.push('用户的设定如下：')
+			result.push(...sorted)
+		}
 	}
 
-	if (prompt.world_prompt.text.length > 0) {
-		result.push('当前环境的设定如下：')
-		prompt.world_prompt.text.sort((a, b) => a.important - b.important).forEach((text) => {
-			result.push(text.content)
-		})
+	{
+		let sorted = prompt.world_prompt.text.sort((a, b) => a.important - b.important).map(text => text.content).filter(text => text)
+		if (sorted.length > 0) {
+			result.push('当前环境的设定如下：')
+			result.push(...sorted)
+		}
 	}
 
-	if (prompt.other_chars_prompt.length > 0) {
-		result.push('其他角色的设定如下：')
-		for (const char of prompt.other_chars_prompt)
-			if (char.text.length > 0)
-				char.text.sort((a, b) => a.important - b.important).forEach((text) => {
-					result.push(text.content)
-				})
+	{
+		let sorted = prompt.other_chars_prompt.map(char => char.text).filter(text => text).map(
+			char => char.sort((a, b) => a.important - b.important).map(text => text.content).filter(text => text)
+		).flat().filter(text => text)
+		if (sorted.length > 0) {
+			result.push('其他角色的设定如下：')
+			result.push(...sorted)
+		}
 	}
 
-	if (prompt.plugin_prompts.length > 0) {
-		result.push('你可以使用以下插件，方法如下：')
-		for (const plugin of prompt.plugin_prompts)
-			if (plugin.text.length > 0)
-				plugin.text.sort((a, b) => a.important - b.important).forEach((text) => {
-					result.push(text.content)
-				})
+	{
+		let sorted = Object.values(prompt.plugin_prompts).map(plugin => plugin.text).filter(text => text).map(
+			plugin => plugin.sort((a, b) => a.important - b.important).map(text => text.content).filter(text => text)
+		).flat().filter(text => text)
+		if (sorted.length > 0) {
+			result.push('你可以使用以下插件，方法如下：')
+			result.push(...sorted)
+		}
 	}
 
 	return result.join('\n')
 }
 
 export function margeStructPromptChatLog(/** @type {prompt_struct_t} */ prompt) {
-	return [
+	let result = [
 		...prompt.chat_log,
 		...prompt.user_prompt?.additional_chat_log || [],
 		...prompt.world_prompt?.additional_chat_log || [],
-		...prompt.other_chars_prompt.map(char => char.additional_chat_log).flat(),
+		...prompt.other_chars_prompt.map(char => char.additional_chat_log || []).flat(),
 		...Object.values(prompt.plugin_prompts).map(plugin => plugin.additional_chat_log || []).flat(),
 		...prompt.char_prompt?.additional_chat_log || [],
 	]
+	let flat_result = []
+	for (const entry of result) {
+		if (entry.logContextBefore) flat_result.push(...entry.logContextBefore)
+		flat_result.push(entry)
+		if (entry.logContextAfter) flat_result.push(...entry.logContextAfter)
+	}
+	return flat_result
 }
 
 export function structPromptToSingle(/** @type {prompt_struct_t} */ prompt) {
