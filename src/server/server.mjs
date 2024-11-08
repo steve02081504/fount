@@ -55,4 +55,8 @@ export async function init() {
 	let titleBackup = process.title
 	on_shutdown(() => setWindowTitle(titleBackup))
 	setDefaultWindowTitle()
+	globalThis.addEventListener("error", (e)=>{
+		console.log(e.error)
+		e.preventDefault()
+	})
 }
