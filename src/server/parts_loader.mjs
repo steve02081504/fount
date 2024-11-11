@@ -4,7 +4,6 @@ import fs from 'node:fs'
 import url from 'node:url'
 import { __dirname, setDefaultWindowTitle } from './server.mjs'
 import { loadData, saveData } from './setting_loader.mjs'
-import { exec } from './exec.mjs'
 
 let parts_set = {}
 
@@ -24,7 +23,7 @@ export async function baseloadPart(username, parttype, partname, {
 	pathGetter = () => GetPartPath(username, parttype, partname),
 	Loader = baseMjsPartLoader,
 } = {}) {
-	if (!parts_set?.[username]?.[parttype])
+	if (!parts_set?.[username]?.[parttype]?.[partname])
 		return await Loader(pathGetter())
 	return parts_set[username][parttype][partname]
 }
@@ -138,7 +137,6 @@ export function getPartList(username, parttype, {
 }
 
 export async function getPartDetails(username, parttype,partname, locale) {
-	console.log('getPartDetails',username, parttype, partname)
-	const char = await baseloadPart(username, parttype, partname)
-	return getPartInfo(char, locale)
+	const part = await baseloadPart(username, parttype, partname)
+	return getPartInfo(part, locale)
 }
