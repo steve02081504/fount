@@ -1,3 +1,4 @@
+import { Buffer } from "node:buffer";
 import { role_t, timeStamp_t } from "./basedefs";
 
 export class single_part_prompt_t {
@@ -32,7 +33,7 @@ export type prompt_struct_t = {
 	UserCharname: string
 	user_prompt: single_part_prompt_t
 	char_prompt: single_part_prompt_t
-	other_chars_prompt: other_chars_prompt_t[]
+	other_chars_prompt: Record<string, other_chars_prompt_t>
 	world_prompt: single_part_prompt_t
 	plugin_prompts: Record<string, single_part_prompt_t>
 	chat_log: chatLogEntry_t[];

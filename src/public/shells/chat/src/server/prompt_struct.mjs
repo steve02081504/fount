@@ -24,7 +24,7 @@ export async function buildPromptStruct(
 		Charname,
 		char_prompt: getSinglePartPrompt(),
 		user_prompt: getSinglePartPrompt(),
-		other_chars_prompt: [],
+		other_chars_prompt: {},
 		world_prompt: getSinglePartPrompt(),
 		plugin_prompts: {},
 		chat_log,
@@ -34,7 +34,8 @@ export async function buildPromptStruct(
 		if (world) result.world_prompt = await world.interfacies.chat.GetPrompt(args, result, detail_level)
 		if (user) result.user_prompt = await user.interfacies.chat.GetPrompt(args, result, detail_level)
 		if (char) result.char_prompt = await char.interfacies.chat.GetPrompt(args, result, detail_level)
-		result.other_chars_prompt = (await Promise.all(other_chars.map(char => char.interfacies.chat?.GetPromptForOther?.(args, result, detail_level)))).filter(x => x)
+		for (let other_char of Object.keys(other_chars))
+			result.other_chars_prompt[other_char] = await other_chars[other_char].interfacies.chat?.GetPrompt?.(args, result, detail_level)
 		for (let plugin of Object.keys(plugins))
 			result.plugin_prompts[plugin] = await plugins[plugin].interfacies.chat?.GetPrompt?.(args, result, detail_level)
 	}
@@ -70,7 +71,7 @@ export function structPromptToSingleNoChatLog(/** @type {prompt_struct_t} */ pro
 	}
 
 	{
-		let sorted = prompt.other_chars_prompt.map(char => char.text).filter(text => text).map(
+		let sorted = Object.values(prompt.other_chars_prompt).map(char => char.text).filter(text => text).map(
 			char => char.sort((a, b) => a.important - b.important).map(text => text.content).filter(text => text)
 		).flat().filter(text => text)
 		if (sorted.length > 0) {
@@ -101,7 +102,7 @@ export function margeStructPromptChatLog(/** @type {prompt_struct_t} */ prompt) 
 		...prompt.chat_log,
 		...prompt.user_prompt?.additional_chat_log || [],
 		...prompt.world_prompt?.additional_chat_log || [],
-		...prompt.other_chars_prompt.map(char => char.additional_chat_log || []).flat(),
+		...Object.values(prompt.other_chars_prompt).map(char => char.additional_chat_log || []).flat(),
 		...Object.values(prompt.plugin_prompts).map(plugin => plugin.additional_chat_log || []).flat(),
 		...prompt.char_prompt?.additional_chat_log || [],
 	]
