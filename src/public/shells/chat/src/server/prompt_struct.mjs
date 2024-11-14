@@ -2,6 +2,7 @@
 /** @typedef {import('../../../../../decl/charAPI.ts').charAPI_t} charAPI_t */
 /** @typedef {import('../../../../../decl/UserAPI.ts').UserAPI_t} UserAPI_t */
 /** @typedef {import('../../../../../decl/WorldAPI.ts').WorldAPI_t} WorldAPI_t */
+/** @typedef {import('../../decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t */
 
 function getSinglePartPrompt() {
 	return {
@@ -91,6 +92,10 @@ export function structPromptToSingleNoChatLog(/** @type {prompt_struct_t} */ pro
 	return result.join('\n')
 }
 
+/**
+ * @param {prompt_struct_t} prompt
+ * @return {chatLogEntry_t[]}
+ */
 export function margeStructPromptChatLog(/** @type {prompt_struct_t} */ prompt) {
 	let result = [
 		...prompt.chat_log,
