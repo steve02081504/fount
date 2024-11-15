@@ -1,4 +1,4 @@
-import { Client, Events, GatewayIntentBits } from 'npm:discord.js'
+import { Client, Events, GatewayIntentBits, Partials } from 'npm:discord.js'
 import { on_shutdown } from '../../../../../server/on_shutdown.mjs'
 import { loadData } from '../../../../../server/setting_loader.mjs'
 import { LoadChar } from '../../../../../server/char_manager.mjs'
@@ -11,10 +11,30 @@ import { LoadChar } from '../../../../../server/char_manager.mjs'
  * 	config: any
  * }} config
  * @param {charAPI_t} char
- * @returns {Promise<import('discord.js').Client>}
+ * @returns {Promise<import('npm:discord.js').Client>}
  */
 async function startBot(config, char) {
-	const client = new Client({ intents: char.interfacies.discord.Intents || [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] })
+	const client = new Client({
+		intents: char.interfacies.discord.Intents || [
+			GatewayIntentBits.Guilds,
+			GatewayIntentBits.GuildMessages,
+			GatewayIntentBits.GuildPresences,
+			GatewayIntentBits.GuildMessageReactions,
+			GatewayIntentBits.GuildMessageTyping,
+			GatewayIntentBits.GuildMembers,
+			GatewayIntentBits.MessageContent,
+			GatewayIntentBits.DirectMessages,
+			GatewayIntentBits.DirectMessageReactions,
+			GatewayIntentBits.DirectMessageTyping,
+		],
+		partials: char.interfacies.discord.Partials || [
+			Partials.Channel,
+			Partials.Message,
+			Partials.User,
+			Partials.GuildMember,
+			Partials.Reaction
+		],
+	})
 
 	client.once(Events.ClientReady, client => char.interfacies.discord.OnceClientReady(client, config.config))
 
