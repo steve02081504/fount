@@ -3,8 +3,10 @@ import bodyParser from 'npm:body-parser'
 import cookieParser from 'npm:cookie-parser'
 import path from 'node:path'
 import fs from 'node:fs'
+import process from 'node:process'
 import { registerEndpoints } from './endpoints.mjs'
 import { on_shutdown } from './on_shutdown.mjs'
+import { IPCManager } from './ipc_manager.mjs'
 
 export const app = express()
 
@@ -46,6 +48,8 @@ export function setDefaultWindowTitle() {
 }
 
 export async function init() {
+	if (!await new IPCManager().startServer()) return false
+
 	registerEndpoints(app)
 	app.use(express.static(__dirname + '/src/public'))
 	const { port } = config
@@ -59,4 +63,6 @@ export async function init() {
 		console.log(e.error)
 		e.preventDefault()
 	})
+	console.log(Array(Math.floor(Math.random() * 7)).fill('fo-').join('')+'fount!')
+	return true
 }
