@@ -1,8 +1,18 @@
 $FOUNT_DIR = Split-Path -Parent $PSScriptRoot
 $ErrorCount = $Error.Count
 
+if (!(Get-Command fount -ErrorAction SilentlyContinue)) {
+	$path = $env:PATH -split ';'
+	if ($path -notcontains "$FOUNT_DIR\path") {
+		$path += "$FOUNT_DIR\path"
+	}
+	$path = $path -join ';'
+	[System.Environment]::SetEnvironmentVariable('PATH', $path, [System.EnvironmentVariableTarget]::User)
+}
+
 if (!(Get-Command git -ErrorAction SilentlyContinue)) {
 	if (!(Get-Command winget -ErrorAction SilentlyContinue)) {
+		Import-Module Appx
 		Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe
 	}
 	winget install --id Git.Git -e --source winget

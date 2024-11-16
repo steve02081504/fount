@@ -3,6 +3,13 @@
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 FOUNT_DIR=$(dirname "$SCRIPT_DIR")
 
+if ! command -v fount &> /dev/null; then
+	if ! grep -q "export PATH=\"\$PATH:$FOUNT_DIR/path\"" "$HOME/.bashrc"; then
+		echo "export PATH=\"\$PATH:$FOUNT_DIR/path\"" >> "$HOME/.bashrc"
+	fi
+	export PATH="$PATH:$FOUNT_DIR/path"
+fi
+
 if ! command -v git &> /dev/null; then
 	if command -v apt-get &> /dev/null; then
 		sudo apt-get update
