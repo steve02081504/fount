@@ -1,4 +1,3 @@
-#_pragma Console 0
 #_pragma icon $PSScriptRoot/../public/icon.ico
 #_pragma title "fount"
 
