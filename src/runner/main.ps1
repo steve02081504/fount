@@ -1,7 +1,7 @@
 #_pragma icon $PSScriptRoot/../public/icon.ico
 #_pragma title "fount"
 
-if (!(Get-Command fount.ps1)) {
+if (!(Get-Command fount.ps1 -ErrorAction Ignore)) {
 	Remove-Item $env:LOCALAPPDATA/fount -Confirm -ErrorAction Ignore -Recurse
 	if (Get-Command git -ErrorAction Ignore) {
 		try { git clone https://github.com/steve02081504/fount $env:LOCALAPPDATA/fount --depth 1 }
