@@ -1,4 +1,4 @@
-import net from 'node:net'
+import net from 'net'
 import { loadShell } from './shell_manager.mjs'
 
 const IPC_PORT = 16698  // 选择一个不太可能冲突的端口
@@ -18,18 +18,19 @@ export class IPCManager {
 
 			socket.on('end', async () => {
 				try {
-					const command = JSON.parse(data)
-					if (command.type === 'shell') {
-						const { username, shellname, args } = command.data
-						console.log(`运行 shell ${shellname} 作为 ${username}，参数：${JSON.stringify(args)}!`)
-						const shell = await loadShell(username, shellname)
-						await shell.ArgumentsHandler(username, args)
+					if (data) {
+						const command = JSON.parse(data)
+						if (command.type === 'shell') {
+							const { username, shellname, args } = command.data
+							console.log(`运行 shell ${shellname} 作为 ${username}，参数：${JSON.stringify(args)}!`)
+							const shell = await loadShell(username, shellname)
+							await shell.ArgumentsHandler(username, args)
+						}
 					}
 					// 发送确认消息
 					socket.end('ok')
 				} catch (err) {
 					console.error('处理 IPC 消息时出错：', err)
-					socket.end('error')
 				}
 			})
 		})
@@ -38,7 +39,7 @@ export class IPCManager {
 			this.server.on('error', (err) => {
 				if (err.code === 'EADDRINUSE')
 					resolve(false)  // 服务器已在运行
-				 else
+				else
 					reject(err)
 			})
 

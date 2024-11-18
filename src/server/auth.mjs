@@ -1,9 +1,21 @@
-import jwt from 'npm:jsonwebtoken'
-import fs from 'node:fs'
-import bcrypt from 'npm:bcrypt'
+import jwt from 'jsonwebtoken'
+import fs from 'fs'
 import { config, save_config } from './server.mjs'
 import { __dirname } from './server.mjs'
-import path from 'node:path'
+import path from 'path'
+
+function pass_hash(password) {
+	return Bun.password.hash(password, {
+		algorithm: 'bcrypt',
+		cost: 10
+	})
+}
+function pass_verify(password, hash) {
+	return Bun.password.verify(password, hash, {
+		algorithm: 'bcrypt',
+		cost: 10
+	})
+}
 
 /**
  * 通过用户名获取用户信息
@@ -30,7 +42,7 @@ function createUser(username, hashedPassword) {
  * 验证密码
  */
 async function verifyPassword(password, hashedPassword) {
-	return await bcrypt.compare(password, hashedPassword)
+	return await pass_verify(password, hashedPassword)
 }
 
 /**
@@ -104,9 +116,7 @@ async function register(username, password) {
 		if (existingUser)
 			return { status: 409, message: 'Username already exists' }
 
-		// 对密码进行加密
-		const saltRounds = 10
-		const hashedPassword = await bcrypt.hash(password, saltRounds)
+		const hashedPassword = await pass_hash(password)
 
 		const newUser = createUser(username, hashedPassword)
 		return { status: 201, user: newUser }

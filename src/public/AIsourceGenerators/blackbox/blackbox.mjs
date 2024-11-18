@@ -1,4 +1,4 @@
-import axios from 'npm:axios'
+import axios from 'axios'
 
 export class BlackboxAI {
 	constructor(config) {

@@ -1,4 +1,4 @@
-import jszip from 'npm:jszip'
+import jszip from 'jszip'
 
 export async function zipDirectory(path) {
 	const zip = new jszip()

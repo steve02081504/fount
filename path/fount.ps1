@@ -29,15 +29,11 @@ if (!(Test-Path -Path "$FOUNT_DIR/.git")) {
 }
 git -C "$FOUNT_DIR" pull
 
-if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
-	Invoke-RestMethod https://deno.land/install.ps1 | Invoke-Expression
+if (!(Get-Command bun -ErrorAction SilentlyContinue)) {
+	Invoke-RestMethod bun.sh/install.ps1 | Invoke-Expression
 }
 
-if (!(Test-Path -Path "$FOUNT_DIR/node_modules")) {
-	deno install --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
-}
-
-deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" @args
+bun run "$FOUNT_DIR/src/server/index.mjs" @args
 
 if ($ErrorCount -ne $Error.Count -or $LASTEXITCODE -ne 0) {
 	Pause

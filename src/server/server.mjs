@@ -1,9 +1,9 @@
-import express from 'npm:express'
-import bodyParser from 'npm:body-parser'
-import cookieParser from 'npm:cookie-parser'
-import path from 'node:path'
-import fs from 'node:fs'
-import process from 'node:process'
+import express from 'express'
+import bodyParser from 'body-parser'
+import cookieParser from 'cookie-parser'
+import path from 'path'
+import fs from 'fs'
+import process from 'process'
 import { registerEndpoints } from './endpoints.mjs'
 import { on_shutdown } from './on_shutdown.mjs'
 import { IPCManager } from './ipc_manager.mjs'
@@ -59,10 +59,6 @@ export async function init() {
 	let titleBackup = process.title
 	on_shutdown(() => setWindowTitle(titleBackup))
 	setDefaultWindowTitle()
-	globalThis.addEventListener("error", (e)=>{
-		console.log(e.error)
-		e.preventDefault()
-	})
 	console.log(Array(Math.floor(Math.random() * 7)).fill('fo-').join('')+'fount!')
 	return true
 }

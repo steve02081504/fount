@@ -40,12 +40,8 @@ if [ ! -d "$FOUNT_DIR/.git" ]; then
 fi
 git -C "$FOUNT_DIR" pull
 
-if ! command -v deno &> /dev/null; then
-	curl -fsSL https://deno.land/install.sh | sh
+if ! command -v bun &> /dev/null; then
+	curl -fsSL https://bun.sh/install | sh
 fi
 
-if [ ! -d "$FOUNT_DIR/node_modules" ]; then
-	deno install --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
-fi
-
-deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" $@
+bun run "$FOUNT_DIR/src/server/index.mjs" $@
