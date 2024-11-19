@@ -41,7 +41,48 @@ fi
 git -C "$FOUNT_DIR" pull
 
 if ! command -v deno &> /dev/null; then
-	curl -fsSL https://deno.land/install.sh | sh
+	if [[ -d "/data/data/com.termux" ]]; then
+		# Termux 环境下的特殊处理
+		pkg install pacman patchelf which time ldd tree
+
+		# 初始化和更新 pacman
+		pacman-key --init
+		pacman-key --populate
+		pacman -Syu
+
+		# 安装 glibc-runner
+		pacman -Sy glibc-runner --assume-installed bash,patchelf,resolv-conf
+
+		# 安装 Deno.js
+		curl -fsSL https://deno.land/install.sh | bash
+
+		# 设置环境变量
+		export DENO_INSTALL="${HOME}/.deno"
+		export PATH="${PATH}:${DENO_INSTALL}/bin"
+
+		# Patch Deno.js
+		patchelf --set-rpath "${PREFIX}/glibc/lib" --set-interpreter "${PREFIX}/glibc/lib/ld-linux-aarch64.so.1" "$(which deno)"
+
+		# 创建包装脚本
+		cat > ~/.deno/bin/deno.glibc.sh << 'EOF'
+#!/usr/bin/env sh
+_oldpwd="${PWD}"
+_dir="$(dirname "${0}")"
+cd "${_dir}"
+if ! [ -h "deno" ] ; then
+	mv -f "deno" "deno.orig"
+	ln -sf "deno.glibc.sh" "deno"
+fi
+cd "${_oldpwd}"
+LD_PRELOAD= exec "${_dir}/deno.orig" "${@}"
+EOF
+
+		chmod u+x ~/.deno/bin/deno.glibc.sh
+		~/.deno/bin/deno.glibc.sh --version
+	else
+		# 非 Termux 环境下的普通安装
+		curl -fsSL https://deno.land/install.sh | sh
+	fi
 fi
 
 if [ ! -d "$FOUNT_DIR/node_modules" ]; then
