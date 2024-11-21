@@ -13,6 +13,7 @@ export default {
 				'': {
 					avatar: '',
 					name: config.name || config.model,
+					provider: 'blackbox',
 					description: 'Blackbox',
 					description_markdown: 'Blackbox',
 					version: '0.0.0',

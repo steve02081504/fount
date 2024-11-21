@@ -24,6 +24,7 @@ export default {
 				'': {
 					avatar: '',
 					name: config.name || config.model,
+					provider: 'notdiamond',
 					description: 'notdiamond',
 					description_markdown: 'notdiamond',
 					version: '0.0.0',
