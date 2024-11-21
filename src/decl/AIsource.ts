@@ -13,6 +13,7 @@ export class AIsource_t<InputType, OutputType> {
 	info: Record<locale_t, {
 		avatar: string;
 		name: string;
+		provider: string;
 		description: string;
 		description_markdown: string;
 		version: string;
