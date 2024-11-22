@@ -40,6 +40,7 @@ export default {
 				'': {
 					avatar: '',
 					name: config.name || config.model,
+					provider: 'gemini',
 					description: 'gemini',
 					description_markdown: 'gemini',
 					version: '0.0.0',

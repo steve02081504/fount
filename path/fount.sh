@@ -41,7 +41,49 @@ fi
 git -C "$FOUNT_DIR" pull
 
 if ! command -v bun &> /dev/null; then
-	curl -fsSL https://bun.sh/install | sh
+	if [[ -d "/data/data/com.termux" ]]; then
+		# Termux 环境下的特殊处理
+		pkg install pacman patchelf which time ldd tree
+
+		# 初始化和更新 pacman
+		pacman-key --init
+		pacman-key --populate
+		pacman -Syu
+
+		# 安装 glibc-runner
+		pacman -Sy glibc-runner --assume-installed bash,patchelf,resolv-conf
+
+		# 安装 Bun
+		curl -fsSL https://bun.sh/install | bash
+
+		# 设置环境变量
+		export BUN_INSTALL="$HOME/.bun"
+		export PATH="${PATH}:${BUN_INSTALL}/bin"
+
+		# 检查并修补 Bun
+		patchelf --print-interpreter --print-needed "$(which bun)"
+		patchelf --set-rpath "${PREFIX}/glibc/lib" --set-interpreter "${PREFIX}/glibc/lib/ld-linux-aarch64.so.1" "$(which bun)"
+		ldd "$(which bun)"
+
+		# 创建包装脚本
+		cat > ~/.bun/bin/bun.glibc.sh << 'EOF'
+#!/usr/bin/env sh
+_oldpwd="${PWD}"
+_dir="$(dirname "${0}")"
+cd "${_dir}"
+if ! [ -h "bun" ] ; then
+  >&2 mv -fv "bun" "bun.orig"
+  >&2 ln -sfv "bun.glibc.sh" "bun"
+fi
+cd "${_oldpwd}"
+LD_PRELOAD= exec "${_dir}/bun.orig" "${@}"
+EOF
+
+		chmod u+x ~/.bun/bin/bun.glibc.sh
+	else
+		# 非 Termux 环境下的普通安装
+		curl -fsSL https://bun.sh/install | sh
+	fi
 fi
 
 bun run "$FOUNT_DIR/src/server/index.mjs" $@

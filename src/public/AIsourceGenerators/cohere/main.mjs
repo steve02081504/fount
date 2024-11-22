@@ -15,6 +15,7 @@ export default {
 				'': {
 					avatar: '',
 					name: config.name || config.model,
+					provider: 'cohere',
 					description: 'cohere',
 					description_markdown: 'cohere',
 					version: '0.0.0',

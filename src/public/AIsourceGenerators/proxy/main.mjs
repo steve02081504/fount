@@ -47,6 +47,7 @@ export default {
 				'': {
 					avatar: '',
 					name: config.name || config.model,
+					provider: config.provider || 'unknown',
 					description: 'proxy',
 					description_markdown: 'proxy',
 					version: '0.0.0',
