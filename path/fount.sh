@@ -78,7 +78,6 @@ LD_PRELOAD= exec "${_dir}/deno.orig" "${@}"
 EOF
 
 		chmod u+x ~/.deno/bin/deno.glibc.sh
-		~/.deno/bin/deno.glibc.sh --version
 	else
 		# 非 Termux 环境下的普通安装
 		curl -fsSL https://deno.land/install.sh | sh
