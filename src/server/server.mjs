@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser'
 import path from 'path'
 import fs from 'fs'
 import process from 'process'
+import { console } from './console.mjs'
 import { registerEndpoints } from './endpoints.mjs'
 import { on_shutdown } from './on_shutdown.mjs'
 import { IPCManager } from './ipc_manager.mjs'
@@ -48,17 +49,20 @@ export function setDefaultWindowTitle() {
 }
 
 export async function init() {
+	console.freshLine('server start', 'start up')
 	if (!await new IPCManager().startServer()) return false
 
+	console.freshLine('server start', 'server starting')
 	registerEndpoints(app)
 	app.use(express.static(__dirname + '/src/public'))
 	const { port } = config
 	app.listen(port, () => {
 		console.log(`服务器运行在 http://localhost:${port}`)
 	})
+	console.freshLine('server start', 'server ready')
 	let titleBackup = process.title
 	on_shutdown(() => setWindowTitle(titleBackup))
 	setDefaultWindowTitle()
-	console.log(Array(Math.floor(Math.random() * 7)).fill('fo-').join('')+'fount!')
+	console.freshLine('server start', Array(Math.floor(Math.random() * 7)).fill('fo-').join('')+'fount!')
 	return true
 }

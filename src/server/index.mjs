@@ -1,6 +1,9 @@
 import process from 'node:process'
+import { console } from './console.mjs'
 import { init } from "./server.mjs"
 import { IPCManager } from "./ipc_manager.mjs"
+
+console.log('standing by...')
 
 let args = process.argv.slice(2)
 
