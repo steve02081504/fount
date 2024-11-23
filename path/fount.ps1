@@ -17,20 +17,29 @@ if (!(Get-Command git -ErrorAction SilentlyContinue)) {
 	}
 	winget install --id Git.Git -e --source winget
 }
-if (!(Test-Path -Path "$FOUNT_DIR/.git")) {
-	Remove-Item -Path "$FOUNT_DIR/.git-clone" -Recurse -Force -ErrorAction SilentlyContinue
-	New-Item -ItemType Directory -Path "$FOUNT_DIR/.git-clone"
-	git clone https://github.com/steve02081504/fount.git "$FOUNT_DIR/.git-clone" --no-checkout --depth 1
-	Move-Item -Path "$FOUNT_DIR/.git-clone/.git" -Destination "$FOUNT_DIR/.git"
-	Remove-Item -Path "$FOUNT_DIR/.git-clone" -Recurse -Force
-	git -C "$FOUNT_DIR" fetch origin
-	git -C "$FOUNT_DIR" reset --hard origin/master
-	git -C "$FOUNT_DIR" checkout origin/master
+if (Get-Command git -ErrorAction SilentlyContinue) {
+	if (!(Test-Path -Path "$FOUNT_DIR/.git")) {
+		Remove-Item -Path "$FOUNT_DIR/.git-clone" -Recurse -Force -ErrorAction SilentlyContinue
+		New-Item -ItemType Directory -Path "$FOUNT_DIR/.git-clone"
+		git clone https://github.com/steve02081504/fount.git "$FOUNT_DIR/.git-clone" --no-checkout --depth 1
+		Move-Item -Path "$FOUNT_DIR/.git-clone/.git" -Destination "$FOUNT_DIR/.git"
+		Remove-Item -Path "$FOUNT_DIR/.git-clone" -Recurse -Force
+		git -C "$FOUNT_DIR" fetch origin
+		git -C "$FOUNT_DIR" reset --hard origin/master
+		git -C "$FOUNT_DIR" checkout origin/master
+	}
+	git -C "$FOUNT_DIR" pull
 }
-git -C "$FOUNT_DIR" pull
+else {
+	Write-Host "Git is not installed, skipping git pull"
+}
 
 if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
 	Invoke-RestMethod https://deno.land/install.ps1 | Invoke-Expression
+	if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
+		Write-Host "Deno missing, you cant run fount without deno"
+		exit 1
+	}
 }
 
 if (!(Test-Path -Path "$FOUNT_DIR/node_modules")) {
