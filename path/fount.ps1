@@ -15,7 +15,9 @@ if (!(Get-Command git -ErrorAction SilentlyContinue)) {
 		Import-Module Appx
 		Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe
 	}
-	winget install --id Git.Git -e --source winget
+	if (Get-Command winget -ErrorAction SilentlyContinue) {
+		winget install --id Git.Git -e --source winget
+	}
 }
 if (Get-Command git -ErrorAction SilentlyContinue) {
 	if (!(Test-Path -Path "$FOUNT_DIR/.git")) {
