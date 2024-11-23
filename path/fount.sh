@@ -28,17 +28,21 @@ if ! command -v git &> /dev/null; then
 		exit 1
 	fi
 fi
-if [ ! -d "$FOUNT_DIR/.git" ]; then
-	rm -rf "$FOUNT_DIR/.git-clone"
-	mkdir -p "$FOUNT_DIR/.git-clone"
-	git clone https://github.com/steve02081504/fount.git "$FOUNT_DIR/.git-clone" --no-checkout --depth 1
-	mv "$FOUNT_DIR/.git-clone/.git" "$FOUNT_DIR/.git"
-	rm -rf "$FOUNT_DIR/.git-clone"
-	git -C "$FOUNT_DIR" fetch origin
-	git -C "$FOUNT_DIR" reset --hard origin/master
-	git -C "$FOUNT_DIR" checkout origin/master
+if command -v git &> /dev/null; then
+	if [ ! -d "$FOUNT_DIR/.git" ]; then
+		rm -rf "$FOUNT_DIR/.git-clone"
+		mkdir -p "$FOUNT_DIR/.git-clone"
+		git clone https://github.com/steve02081504/fount.git "$FOUNT_DIR/.git-clone" --no-checkout --depth 1
+		mv "$FOUNT_DIR/.git-clone/.git" "$FOUNT_DIR/.git"
+		rm -rf "$FOUNT_DIR/.git-clone"
+		git -C "$FOUNT_DIR" fetch origin
+		git -C "$FOUNT_DIR" reset --hard origin/master
+		git -C "$FOUNT_DIR" checkout origin/master
+	fi
+	git -C "$FOUNT_DIR" pull
+else
+	echo "Git is not installed, skipping git pull"
 fi
-git -C "$FOUNT_DIR" pull
 
 if ! command -v deno &> /dev/null; then
 	if [[ -d "/data/data/com.termux" ]]; then
@@ -81,6 +85,10 @@ EOF
 	else
 		# 非 Termux 环境下的普通安装
 		curl -fsSL https://deno.land/install.sh | sh
+	fi
+	if ! command -v deno &> /dev/null; then
+		echo "Deno missing, you cant run fount without deno"
+		exit 1
 	fi
 fi
 
