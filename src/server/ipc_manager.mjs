@@ -1,4 +1,5 @@
 import net from 'node:net'
+import { console } from './console.mjs'
 import { loadShell } from './shell_manager.mjs'
 
 const IPC_PORT = 16698  // 选择一个不太可能冲突的端口
@@ -36,13 +37,16 @@ export class IPCManager {
 
 		return new Promise((resolve, reject) => {
 			this.server.on('error', (err) => {
-				if (err.code === 'EADDRINUSE')
+				if (err.code === 'EADDRINUSE') {
+					console.log('another fount is running')
 					resolve(false)  // 服务器已在运行
-				 else
+				}
+				else
 					reject(err)
 			})
 
 			this.server.listen(IPC_PORT, () => {
+				console.freshLine('server start', 'IPC server ready')
 				resolve(true)  // 成功启动服务器
 			})
 		})
