@@ -96,4 +96,9 @@ if [ ! -d "$FOUNT_DIR/node_modules" ]; then
 	deno install --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
 fi
 
-deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" $@
+if [ $# -gt 0 -a $1 = 'debug' ]; then
+	newargs=($@[1:])
+	deno run --allow-scripts --allow-all --inspect-brk "$FOUNT_DIR/src/server/index.mjs" @newargs
+else
+	deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" $@
+fi
