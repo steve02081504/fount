@@ -47,8 +47,13 @@ if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
 if (!(Test-Path -Path "$FOUNT_DIR/node_modules")) {
 	deno install --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
 }
-
-deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" @args
+if ($args.Count -gt 0 -and $args[0] -eq 'debug') {
+	$newargs = $args[1..$args.Count]
+	deno run --allow-scripts --allow-all --inspect-brk "$FOUNT_DIR/src/server/index.mjs" @newargs
+}
+else {
+	deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" @args
+}
 
 if ($ErrorCount -ne $Error.Count -or $LASTEXITCODE -ne 0) {
 	Pause
