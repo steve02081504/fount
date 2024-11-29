@@ -78,10 +78,16 @@ export default {
 				})
 
 				let system_prompt = structPromptToSingleNoChatLog(prompt_struct)
-				messages.splice(Math.max(messages.length - 10, 0), 0, {
-					role: 'system',
-					content: system_prompt
-				})
+				if (config.system_prompt_at_depth)
+					messages.splice(Math.max(messages.length - config.system_prompt_at_depth, 0), 0, {
+						role: 'system',
+						content: system_prompt
+					})
+				else
+					messages.unshift({
+						role: 'system',
+						content: system_prompt
+					})
 
 				let text = await callBase(messages)
 

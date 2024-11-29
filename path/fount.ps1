@@ -44,7 +44,13 @@ if (!(Get-Command bun -ErrorAction SilentlyContinue)) {
 	}
 }
 
-bun run "$FOUNT_DIR/src/server/index.mjs" @args
+if ($args.Count -gt 0 -and $args[0] -eq 'debug') {
+	$newargs = $args[1..$args.Count]
+	bun run --inspect-brk "$FOUNT_DIR/src/server/index.mjs" @newargs
+}
+else {
+	bun run "$FOUNT_DIR/src/server/index.mjs" @args
+}
 
 if ($ErrorCount -ne $Error.Count -or $LASTEXITCODE -ne 0) {
 	Pause

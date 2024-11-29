@@ -94,4 +94,9 @@ EOF
 	fi
 fi
 
-bun run "$FOUNT_DIR/src/server/index.mjs" $@
+if [ $# -gt 0 -a $1 = 'debug' ]; then
+	newargs=($@[1:])
+	bun run --inspect-brk "$FOUNT_DIR/src/server/index.mjs" @newargs
+else
+	bun run "$FOUNT_DIR/src/server/index.mjs" $@
+fi
