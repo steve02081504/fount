@@ -85,11 +85,15 @@ ${system_prompt}
 				request.contents = request.contents.concat([
 					{
 						role: 'user',
-						parts: [{ text: `暂停扮演，请你重新整理并回复你的目标，随后继续扮演。` }]
+						parts: [{ text: `system:\n暂停扮演，请你在xml标签<pause>中重新整理并回复你的目标，随后继续扮演。` }]
 					},
 					{
 						role: 'model',
-						parts: [{ text: `好的。我的目标是深入理解并扮演角色${prompt_struct.Charname}，我会在接下来的回复中严格遵循角色设定。\n接下来我会继续扮演。` }]
+						parts: [{ text: `\
+<pause>
+我的目标是深入理解并扮演角色${prompt_struct.Charname}，我会在接下来的回复中严格遵循角色设定，给${prompt_struct.UserCharname}带来更好的体验。
+接下来我会继续扮演。
+</pause>` }]
 					}
 				])
 
