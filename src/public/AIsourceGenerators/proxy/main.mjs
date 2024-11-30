@@ -78,7 +78,7 @@ export default {
 				})
 
 				let system_prompt = structPromptToSingleNoChatLog(prompt_struct)
-				if (config.system_prompt_at_depth)
+				if (config.system_prompt_at_depth ?? 10)
 					messages.splice(Math.max(messages.length - config.system_prompt_at_depth, 0), 0, {
 						role: 'system',
 						content: system_prompt
