@@ -40,10 +40,16 @@ export default {
 				})
 
 				let system_prompt = structPromptToSingleNoChatLog(prompt_struct)
-				messages.splice(Math.max(messages.length - 10, 0), 0, {
-					role: 'system',
-					content: system_prompt
-				})
+				if (config.system_prompt_at_depth ?? 10)
+					messages.splice(Math.max(messages.length - config.system_prompt_at_depth, 0), 0, {
+						role: 'system',
+						content: system_prompt
+					})
+				else
+					messages.unshift({
+						role: 'system',
+						content: system_prompt
+					})
 
 				let text = await blackbox.call(messages, config.model)
 
