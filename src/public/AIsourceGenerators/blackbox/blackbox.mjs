@@ -2,7 +2,7 @@ import axios from 'npm:axios'
 
 export class BlackboxAI {
 	constructor(config) {
-		this.apiUrl = 'https://www.blackbox.ai/api/chat'
+		this.apiUrl = 'https://api.blackbox.ai/api/chat'
 		this.headers = {
 			'Content-Type': 'application/json',
 		}
@@ -50,7 +50,7 @@ export class BlackboxAI {
 		}
 
 		try {
-			const response = await axios.post('https://www.blackbox.ai/api/token-count', payload, { headers: this.headers })
+			const response = await axios.post('https://api.blackbox.ai/api/token-count', payload, { headers: this.headers })
 			return response.data.tokenCount
 		} catch (error) {
 			console.error('Error communicating with Blackbox.ai:', error)
