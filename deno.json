@@ -1,3 +1,4 @@
 {
-  "nodeModulesDir": "auto"
+	"nodeModulesDir": "auto",
+	"lock": false
 }
