@@ -1,9 +1,9 @@
-import { initPart, loadPart, uninstallPart, unloadPart } from './parts_loader.mjs'
+import { initPart, loadPart, uninstallPart, unloadPart } from '../../../../../server/parts_loader.mjs'
 
 /**
  * @param {string} username
  * @param {string} tempname
- * @returns {Promise<import('../decl/charTemplateAPI.ts').charTemplateAPI_t>}
+ * @returns {Promise<import('../../../../../decl/charTemplateAPI.ts').charTemplateAPI_t>}
  */
 export async function LoadCharTemplate(username, tempname) {
 	return await loadPart(username, 'charTemplates', tempname)

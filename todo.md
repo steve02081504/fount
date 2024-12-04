@@ -1,8 +1,8 @@
 1. home处的char导入导出按钮
   * 导入按钮
     - 1.1.1 前端需求：
-      * 点击后弹出窗口 上半部分多行文本输入框，下半部分文件拖拽选择，再加一个确认按钮
-      * 确认按钮点击后，后端使用`src\server\Installer_handler.mjs`的逻辑进行导入
+      * 点击后跳转至install shell主界面：上半部分多行文本输入框，下半部分文件拖拽选择，再加一个确认按钮
+      * 确认按钮点击后，后端使用`src\public\shells\install\src\server\Installer_handler.mjs`的逻辑进行导入
     - 1.1.2 后端需求：
       * 在`src\public\charTemplates\fount\main.mjs`中实现zip解压（文件）和自github url clone（文本）的逻辑
 	  * 现有的char用于测试导入：`https://github.com/steve02081504/GentianAphrodite`
