@@ -157,12 +157,17 @@ export function findEmptyChatid() {
 	}
 	while (true)
 }
+export function newChat(username) {
+	let chatid = findEmptyChatid()
+	newMetadata(chatid, username)
+	return chatid
+}
 export function saveChat(chatid, username) {
 	fs.mkdirSync(getUserDictionary(username) + '/shells/chat/chats', { recursive: true })
 	saveJsonFile(getUserDictionary(username) + '/shells/chat/chats/' + chatid + '.json', chatMetadatas[chatid])
 }
 export async function loadChat(chatid, username) {
-	return chatMetadatas[chatid] = await chatMetadata_t.fromJSON(
+	return chatMetadatas[chatid] ??= await chatMetadata_t.fromJSON(
 		loadJsonFile(getUserDictionary(username) + '/shells/chat/chats/' + chatid + '.json')
 	)
 }
