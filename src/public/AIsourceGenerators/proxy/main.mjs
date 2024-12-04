@@ -89,6 +89,15 @@ export default {
 						content: system_prompt
 					})
 
+				if (config.roleReminding ?? true) {
+					let isMutiChar = new Set(...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name)).size > 2
+					if (isMutiChar)
+						messages.push({
+							role: 'system',
+							content: `现在请以${prompt_struct.Charname}的身份续写对话。`
+						})
+				}
+
 				let text = await callBase(messages)
 
 				if (text.match(new RegExp(`^(|${prompt_struct.Charname}[^\\n]*)(:|：)*\\n`, 'ig')))

@@ -8,7 +8,7 @@ import { loadPersona } from './personas_manager.mjs'
 import { loadAIsource, loadAIsourceGenerator } from './AIsources_manager.mjs'
 import { LoadCharTemplate } from './charTemplate_manager.mjs'
 /**
- * @param {import('express').Express} app
+ * @param {import('npm:express').Express} app
  */
 export function registerEndpoints(app) {
 	// 注册路由
