@@ -194,7 +194,7 @@ function getChatRequest(chatid, charname, locale, timeSlice = chatMetadatas[chat
 		user: timeSlice.player,
 		other_chars: Object.keys(timeSlice.chars).filter((name) => name !== charname).map((charname) => timeSlice.chars[charname]),
 		chat_summary: timeSlice.summary,
-		chat_scoped_char_memory: timeSlice.chars_memories[charname],
+		chat_scoped_char_memory: (timeSlice.chars_memories[charname] ??= {}),
 		plugins: []
 	}
 }
