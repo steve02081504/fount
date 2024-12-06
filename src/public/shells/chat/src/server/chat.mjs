@@ -224,7 +224,7 @@ export async function addchar(chatid, charname, locale) {
 	if (timeSlice.chars[charname]) return
 	const char = timeSlice.chars[charname] = await LoadChar(username, charname)
 	// GetGreetings
-	const greetings = (() => {
+	const greetings = await (() => {
 		let request = getChatRequest(chatid, charname, locale, timeSlice)
 		if (chatMetadatas[chatid].chatLog.length === 0)
 			return char.interfacies.chat.GetGreetings(request)
