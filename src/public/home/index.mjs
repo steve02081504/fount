@@ -8,7 +8,7 @@ async function renderCharView(charDetails) {
 
 	return roleElement
 }
-async function displayCharList() {
+export async function displayCharList() {
 	const charList = await getCharList()
 	const roleContainer = document.querySelector('.role-container')
 	roleContainer.innerHTML = '' // 清空容器
