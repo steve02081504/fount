@@ -50,7 +50,7 @@ export function setDefaultWindowTitle() {
 
 export async function init() {
 	console.freshLine('server start', 'start up')
-	globalThis.addEventListener("error", (e)=>{
+	globalThis.addEventListener("error", (e) => {
 		console.log(e.error)
 		e.preventDefault()
 	})
@@ -67,6 +67,6 @@ export async function init() {
 	let titleBackup = process.title
 	on_shutdown(() => setWindowTitle(titleBackup))
 	setDefaultWindowTitle()
-	console.freshLine('server start', Array(Math.floor(Math.random() * 7)).fill('fo-').join('')+'fount!')
+	console.freshLine('server start', Array(Math.floor(Math.random() * 7)).fill('fo-').join('') + 'fount!')
 	return true
 }

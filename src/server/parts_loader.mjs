@@ -136,7 +136,7 @@ export function getPartList(username, parttype, {
 	return partlist
 }
 
-export async function getPartDetails(username, parttype,partname, locale) {
+export async function getPartDetails(username, parttype, partname, locale) {
 	const part = await baseloadPart(username, parttype, partname)
 	return getPartInfo(part, locale)
 }

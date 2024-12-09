@@ -120,7 +120,7 @@ export class DuckDuckGoAPI {
 						} else {
 							if (returnStream)
 								controller.enqueue(encoder.encode(`data: ${JSON.stringify(this.newStopChunkWithModel('stop', model))}\n\n`))
-							 else
+							else
 								controller.enqueue(encoder.encode(JSON.stringify(this.newChatCompletionWithModel(previousText, model))))
 
 							return controller.close()
@@ -161,7 +161,7 @@ export class DuckDuckGoAPI {
 		const response = await this.createCompletion(model, content, returnStream)
 		if (returnStream)
 			return response // 返回 ReadableStream
-		 else
+		else
 			return await response.text() // 返回完整文本
 
 	}

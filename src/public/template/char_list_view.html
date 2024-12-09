@@ -1,9 +1,11 @@
-<div class="role">
-	<img src="${avatar}" alt="${name}">
-	<h2>${name}</h2>
-	<p>${description}</p>
-	<div class="role-btns">
-		<button>聊天</button>
-		<button>删除</button>
+<div class="card bg-base-100 shadow-xl image-full">
+	<figure><img class="object-cover" src="${avatar}" alt="${name}" /></figure>
+	<div class="card-body">
+		<h2 class="card-title">${name}</h2>
+		<p class="line-clamp-3">${description}</p>
+		<div class="card-actions justify-end">
+			<button class="btn btn-primary chat-button">聊天</button>
+			<button class="btn btn-error delete-button">删除</button>
+		</div>
 	</div>
 </div>
