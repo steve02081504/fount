@@ -63,8 +63,12 @@ export default {
 
 				let text = await callBase(messages)
 
-				if (text.match(new RegExp(`^(|${prompt_struct.Charname}[^\\n]*)(:|：)*\\n`, 'ig')))
-					text = text.split('\n').slice(1).join('\n')
+				{
+					text = text.split('\n')
+					let reg = new RegExp(`^(|${prompt_struct.Charname}[^\\n]*)(:|：)*$`, 'i')
+					while(text[0].trim().match(reg)) text.shift()
+					text = text.join('\n')
+				}
 
 				return text
 			},

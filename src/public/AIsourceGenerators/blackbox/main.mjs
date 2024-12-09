@@ -1,4 +1,4 @@
-import { with_timeout } from "../../../server/await_timeout.mjs";
+import { with_timeout } from "../../../server/await_timeout.mjs"
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
 import { BlackboxAI } from './blackbox.mjs'
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
@@ -63,8 +63,12 @@ export default {
 
 				let text = await with_timeout(config.timeout || 10000, blackbox.call(messages, config.model))
 
-				if (text.match(new RegExp(`^(|${prompt_struct.Charname}[^\\n]*)(:|：)*\\n`, 'ig')))
-					text = text.split('\n').slice(1).join('\n')
+				{
+					text = text.split('\n')
+					let reg = new RegExp(`^(|${prompt_struct.Charname}[^\\n]*)(:|：)*$`, 'i')
+					while(text[0].trim().match(reg)) text.shift()
+					text = text.join('\n')
+				}
 
 				return text
 			},
