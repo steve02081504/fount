@@ -63,8 +63,8 @@ export default {
 					contents: [{
 						role: 'user',
 						parts: [{ text: `\
-我需要你进行以下扮演：
-${system_prompt}
+system:
+用户需要你进行角色扮演。
 如果你理解了，请回复“我理解了”。
 ` }]
 					},
@@ -82,6 +82,16 @@ ${system_prompt}
 						],
 					})
 				})
+				if (config.system_prompt_at_depth ?? 10)
+					request.contents.splice(Math.max(request.contents.length - config.system_prompt_at_depth, 2), 0, {
+						role: 'user',
+						parts: [{ text: 'system:\n由于上下文有限，请再次回顾设定:\n' + system_prompt }]
+					})
+				else
+					request.contents.splice(2, 0, {
+						role: 'user',
+						parts: [{ text: 'system:\n由于上下文有限，请再次回顾设定:\n' + system_prompt }]
+					})
 				request.contents = request.contents.concat([
 					{
 						role: 'user',
@@ -99,8 +109,13 @@ ${system_prompt}
 
 				let result = await model.generateContent(request)
 				let text = result.response.text()
-				if (text.match(new RegExp(`^(|${prompt_struct.Charname}[^\\n]*)(:|：)*\\n`, 'ig')))
-					text = text.split('\n').slice(1).join('\n')
+
+				{
+					text = text.split('\n')
+					let reg = new RegExp(`^(|${prompt_struct.Charname}[^\\n]*)(:|：)*$`, 'i')
+					while(text[0].trim().match(reg)) text.shift()
+					text = text.join('\n')
+				}
 
 				return text
 			},

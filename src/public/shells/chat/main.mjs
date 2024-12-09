@@ -1,3 +1,5 @@
+import { addchar, newChat, setPersona, setWorld } from "./src/server/chat.mjs";
+import { loadChat } from "./src/server/chat.mjs";
 import { setEndpoints, unsetEndpoints } from "./src/server/endpoints.mjs"
 
 export default {
@@ -18,5 +20,20 @@ export default {
 	},
 	Unload: (app) => {
 		unsetEndpoints(app)
+	},
+	ArgumentsHandler: async (user, args) => {
+		const chatinfo = JSON.parse(args[0])
+		let chatid
+		if (chatinfo.id)
+			await loadChat(chatid = chatinfo.id, user)
+		else
+			chatid = newChat(user)
+		if (chatinfo.world)
+			await setWorld(chatid, chatinfo.world, chatinfo.locale)
+		if (chatinfo.persona)
+			await setPersona(chatid, chatinfo.persona)
+		if (chatinfo.chars)
+			for (const charname of chatinfo.chars)
+				await addchar(chatid, charname, chatinfo.locale)
 	}
 }

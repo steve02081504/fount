@@ -1,5 +1,5 @@
 import { LoadCharTemplate } from "./charTemplate_manager.mjs"
-import { getPartList } from "./parts_loader.mjs"
+import { getPartList } from '../../../../../server/parts_loader.mjs'
 
 export async function importChar(username, data) {
 	let charTemplates = getPartList(username, 'charTemplates')

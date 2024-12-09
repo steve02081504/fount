@@ -6,9 +6,9 @@ import { getPartList, getPartDetails, loadPart } from './parts_loader.mjs'
 import { LoadChar } from './char_manager.mjs'
 import { loadPersona } from './personas_manager.mjs'
 import { loadAIsource, loadAIsourceGenerator } from './AIsources_manager.mjs'
-import { LoadCharTemplate } from './charTemplate_manager.mjs'
+import { LoadCharTemplate } from '../public/shells/install/src/server/charTemplate_manager.mjs'
 /**
- * @param {import('express').Express} app
+ * @param {import('npm:express').Express} app
  */
 export function registerEndpoints(app) {
 	// 注册路由

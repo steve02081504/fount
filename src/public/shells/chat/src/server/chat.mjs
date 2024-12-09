@@ -157,12 +157,17 @@ export function findEmptyChatid() {
 	}
 	while (true)
 }
+export function newChat(username) {
+	let chatid = findEmptyChatid()
+	newMetadata(chatid, username)
+	return chatid
+}
 export function saveChat(chatid, username) {
 	fs.mkdirSync(getUserDictionary(username) + '/shells/chat/chats', { recursive: true })
 	saveJsonFile(getUserDictionary(username) + '/shells/chat/chats/' + chatid + '.json', chatMetadatas[chatid])
 }
 export async function loadChat(chatid, username) {
-	return chatMetadatas[chatid] = await chatMetadata_t.fromJSON(
+	return chatMetadatas[chatid] ??= await chatMetadata_t.fromJSON(
 		loadJsonFile(getUserDictionary(username) + '/shells/chat/chats/' + chatid + '.json')
 	)
 }
@@ -189,7 +194,7 @@ function getChatRequest(chatid, charname, locale, timeSlice = chatMetadatas[chat
 		user: timeSlice.player,
 		other_chars: Object.keys(timeSlice.chars).filter((name) => name !== charname).map((charname) => timeSlice.chars[charname]),
 		chat_summary: timeSlice.summary,
-		chat_scoped_char_memory: timeSlice.chars_memories[charname],
+		chat_scoped_char_memory: (timeSlice.chars_memories[charname] ??= {}),
 		plugins: []
 	}
 }
@@ -219,7 +224,7 @@ export async function addchar(chatid, charname, locale) {
 	if (timeSlice.chars[charname]) return
 	const char = timeSlice.chars[charname] = await LoadChar(username, charname)
 	// GetGreetings
-	const greetings = (() => {
+	const greetings = await (() => {
 		let request = getChatRequest(chatid, charname, locale, timeSlice)
 		if (chatMetadatas[chatid].chatLog.length === 0)
 			return char.interfacies.chat.GetGreetings(request)

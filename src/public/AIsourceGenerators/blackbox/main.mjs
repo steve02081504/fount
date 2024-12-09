@@ -1,3 +1,4 @@
+import { with_timeout } from "../../../server/await_timeout.mjs"
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
 import { BlackboxAI } from './blackbox.mjs'
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
@@ -27,7 +28,7 @@ export default {
 
 			Unload: () => { },
 			Call: async (prompt) => {
-				const result = await blackbox.call(prompt, config.model)
+				const result = await with_timeout(config.timeout || 10000, blackbox.call(prompt, config.model))
 				return result
 			},
 			StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
@@ -40,15 +41,34 @@ export default {
 				})
 
 				let system_prompt = structPromptToSingleNoChatLog(prompt_struct)
-				messages.splice(Math.max(messages.length - 10, 0), 0, {
-					role: 'system',
-					content: system_prompt
-				})
+				if (config.system_prompt_at_depth ?? 10)
+					messages.splice(Math.max(messages.length - config.system_prompt_at_depth, 0), 0, {
+						role: 'system',
+						content: system_prompt
+					})
+				else
+					messages.unshift({
+						role: 'system',
+						content: system_prompt
+					})
 
-				let text = await blackbox.call(messages, config.model)
+				if (config.roleReminding ?? true) {
+					let isMutiChar = new Set(...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name)).size > 2
+					if (isMutiChar)
+						messages.push({
+							role: 'system',
+							content: `现在请以${prompt_struct.Charname}的身份续写对话。`
+						})
+				}
 
-				if (text.match(new RegExp(`^(|${prompt_struct.Charname}[^\\n]*)(:|：)*\\n`, 'ig')))
-					text = text.split('\n').slice(1).join('\n')
+				let text = await with_timeout(config.timeout || 10000, blackbox.call(messages, config.model))
+
+				{
+					text = text.split('\n')
+					let reg = new RegExp(`^(|${prompt_struct.Charname}[^\\n]*)(:|：)*$`, 'i')
+					while(text[0].trim().match(reg)) text.shift()
+					text = text.join('\n')
+				}
 
 				return text
 			},

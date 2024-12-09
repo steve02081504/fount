@@ -59,10 +59,25 @@ export default {
 				})
 
 				let system_prompt = structPromptToSingleNoChatLog(prompt_struct)
-				messages.splice(Math.max(messages.length - 10, 0), 0, {
-					role: 'system',
-					content: system_prompt
-				})
+				if (config.system_prompt_at_depth ?? 10)
+					messages.splice(Math.max(messages.length - config.system_prompt_at_depth, 0), 0, {
+						role: 'system',
+						content: system_prompt
+					})
+				else
+					messages.unshift({
+						role: 'system',
+						content: system_prompt
+					})
+
+				if (config.roleReminding ?? true) {
+					let isMutiChar = new Set(...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name)).size > 2
+					if (isMutiChar)
+						messages.push({
+							role: 'system',
+							content: `现在请以${prompt_struct.Charname}的身份续写对话。`
+						})
+				}
 
 				const model = options?.model || config.model || 'gpt-4o-mini'
 				let text = await duckduckgo.call(messages, model)
