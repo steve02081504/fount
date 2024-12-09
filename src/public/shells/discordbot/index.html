@@ -1,20 +1,24 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN" data-theme="light">
 
 <head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Discord Bots</title>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="./index.css">
+	<link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.min.css" rel="stylesheet" type="text/css" />
+	<script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body>
-	<div class="container">
-		<div class="row">
-			<div class="col-md-6">
-				<select id="bot-list" class="form-select">
-				</select>
-			</div>
-			<div class="col-md-6">
-				<button id="start-bot" class="btn btn-primary">启动</button>
+<body class="bg-base-200 flex justify-center items-start h-screen">
+	<div class="container mx-auto p-4 w-full lg:w-1/2">
+		<div class="card bg-base-100 shadow-xl">
+			<div class="card-body">
+				<h2 class="card-title mb-4">Discord Bots</h2>
+				<div class="flex flex-col lg:flex-row gap-4">
+					<select id="bot-list" class="select select-bordered w-full"></select>
+					<button id="start-bot" class="btn btn-primary w-full lg:w-auto">启动</button>
+				</div>
 			</div>
 		</div>
 	</div>

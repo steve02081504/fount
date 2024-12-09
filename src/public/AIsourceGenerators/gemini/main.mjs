@@ -62,7 +62,8 @@ export default {
 				let request = {
 					contents: [{
 						role: 'user',
-						parts: [{ text: `\
+						parts: [{
+							text: `\
 system:
 用户需要你进行角色扮演。
 如果你理解了，请回复“我理解了”。
@@ -99,7 +100,8 @@ system:
 					},
 					{
 						role: 'model',
-						parts: [{ text: `\
+						parts: [{
+							text: `\
 <pause>
 我的目标是深入理解并扮演角色${prompt_struct.Charname}，我会在接下来的回复中严格遵循角色设定，给${prompt_struct.UserCharname}带来更好的体验。
 接下来我会继续扮演。
@@ -113,7 +115,7 @@ system:
 				{
 					text = text.split('\n')
 					let reg = new RegExp(`^(|${prompt_struct.Charname}[^\\n]*)(:|：)*$`, 'i')
-					while(text[0].trim().match(reg)) text.shift()
+					while (text[0].trim().match(reg)) text.shift()
 					text = text.join('\n')
 				}
 

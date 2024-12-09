@@ -1,18 +1,49 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="light">
+
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>角色选择页面</title>
 	<link rel="stylesheet" href="./index.css">
+	<link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.min.css" rel="stylesheet" type="text/css" />
+	<script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-	<h1>角色选择页面</h1>
-	<p>选择一个角色——然后开启聊天！</p>
-	<button>导入</button>
-	<br/>
-	<div class="role-container">
+
+<body class="bg-base-200">
+	<div class="drawer drawer-end lg:drawer-open">
+		<input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
+		<div class="drawer-content flex flex-col items-center">
+			<!-- 页面内容 -->
+			<div class="container mx-auto p-4 w-full lg:w-3/4">
+				<div class="flex justify-between items-center mb-4">
+					<h1 class="text-2xl">角色选择页面</h1>
+					<button class="btn btn-primary">导入</button>
+				</div>
+				<p class="mb-4">选择一个角色——然后开启聊天！</p>
+
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="role-container">
+				</div>
+			</div>
+			<label for="my-drawer-2" class="btn btn-primary drawer-button lg:hidden">
+				预览
+			</label>
+		</div>
+		<div class="drawer-side">
+			<label for="my-drawer-2" aria-label="close sidebar" class="drawer-overlay"></label>
+			<div class="menu p-4 w-80 min-h-full bg-base-300 text-base-content border-l-2 border-base-content">
+				<!-- 侧边栏内容 -->
+				<h2 class="text-xl mb-2">角色信息</h2>
+				<div id="character-description"></div>
+			</div>
+		</div>
 	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/showdown"></script>
+	<script src="https://cdn.jsdelivr.net/gh/steve02081504/bundle-cdn/dist/showdown-highlight.js"></script>
+	<link rel="stylesheet"
+		href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/default.min.css">
 	<script type="module" src="./index.mjs"></script>
 </body>
+
 </html>

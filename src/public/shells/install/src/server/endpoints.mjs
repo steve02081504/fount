@@ -1,7 +1,7 @@
 import { authenticate, getUserByToken } from "../../../../../server/auth.mjs"
 
 export function setEndpoints(app) {
-	app.post('/api/shells/install/new', authenticate ,async (req, res) => {
+	app.post('/api/shells/install/new', authenticate, async (req, res) => {
 		// not implement
 		res.status(500).json({ message: 'not implement' })
 	})

@@ -1,7 +1,14 @@
 import { getDiscordBotList, startDiscordBot } from './src/public/endpoints.mjs'
 
+// 设置主题
+function setTheme() {
+	const prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+	document.documentElement.setAttribute('data-theme', prefersDarkMode ? 'dark' : 'light')
+}
+
 // 获取 bot 列表
-getDiscordBotList().then((botList) => {
+async function populateBotList() {
+	const botList = await getDiscordBotList()
 	const botSelect = document.getElementById('bot-list')
 	botList.forEach((bot) => {
 		const option = document.createElement('option')
@@ -9,14 +16,31 @@ getDiscordBotList().then((botList) => {
 		option.text = bot
 		botSelect.appendChild(option)
 	})
-})
+}
 
-// 点击运行按钮
-document.getElementById('start-bot').addEventListener('click', () => {
+// 启动 bot
+async function handleStartBot() {
 	const selectedBot = document.getElementById('bot-list').value
-	startDiscordBot(selectedBot).then((response) => {
+	try {
+		const response = await startDiscordBot(selectedBot)
 		console.log(`Bot ${selectedBot} started successfully!`)
-	}).catch((error) => {
+		// 这里可以添加一些 UI 提示，例如弹窗或 Toast 提示
+	} catch (error) {
 		console.error(`Error starting bot ${selectedBot}: ${error.message}`)
-	})
-})
+		// 这里可以添加一些 UI 提示，例如弹窗或 Toast 提示
+	}
+}
+
+// 设置事件监听器
+function setupEventListeners() {
+	document.getElementById('start-bot').addEventListener('click', handleStartBot)
+}
+
+// 初始化
+function initializeApp() {
+	setTheme()
+	populateBotList()
+	setupEventListeners()
+}
+
+initializeApp()

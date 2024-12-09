@@ -1,15 +1,16 @@
-<div class="message-container">
+<div class="chat-message ${isSelf ? 'chat-message-right' : ''} w-full flex items-start mb-4">
 	<div class="avatar">
-		<img src="${avatar}" alt="${name}">
-	</div>
-	<div class="message">
-		<div class="message-header">
-			<span class="char-name">${name}</span>
-			<div class="timestamp">${timeStamp}</div>
+		<div class="w-10 h-10 rounded-full">
+			<img src="${avatar}" alt="${name}" />
 		</div>
-		<div class="message-content">
-			<!-- 使用 pre 元素保留换行符 -->
-			<pre>${content}</pre>
+	</div>
+	<div class="content ml-2 p-4 rounded-lg bg-base-200">
+		<div class="info font-bold text-sm">
+			${name}
+			<span class="timestamp text-xs text-gray-400 ml-2">${timeStamp}</span>
+		</div>
+		<div class="message-content mt-1">
+			${content}
 		</div>
 	</div>
 </div>
