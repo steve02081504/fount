@@ -1,5 +1,5 @@
-import { addchar, newChat, setPersona, setWorld } from "./src/server/chat.mjs";
-import { loadChat } from "./src/server/chat.mjs";
+import { addchar, newChat, setPersona, setWorld } from "./src/server/chat.mjs"
+import { loadChat } from "./src/server/chat.mjs"
 import { setEndpoints, unsetEndpoints } from "./src/server/endpoints.mjs"
 
 export default {

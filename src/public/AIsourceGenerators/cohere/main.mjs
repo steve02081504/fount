@@ -48,6 +48,15 @@ export default {
 					})
 				})
 
+				if (config.roleReminding ?? true) {
+					let isMutiChar = new Set([...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name)]).size > 2
+					if (isMutiChar)
+						messages.push({
+							role: 'system',
+							content: `现在请以${prompt_struct.Charname}的身份续写对话。`
+						})
+				}
+
 				let result = await cohere.chat(request)
 				let text = result?.message?.content?.map((message) => message?.text)?.filter((text) => text)?.join('\n')
 				if (!text) throw result
