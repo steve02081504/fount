@@ -53,7 +53,7 @@ export default {
 					})
 
 				if (config.roleReminding ?? true) {
-					let isMutiChar = new Set(...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name)).size > 2
+					let isMutiChar = new Set([...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name)]).size > 2
 					if (isMutiChar)
 						messages.push({
 							role: 'system',
