@@ -26,6 +26,27 @@ async function renderCharView(charDetails) {
 	return roleElement
 }
 
+async function setLocale(locale) {
+	try {
+		const response = await fetch('/api/setlocale', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ locale }),
+		})
+
+		const data = await response.json()
+
+		if (response.ok)
+			console.log(data.message)
+		 else
+			console.error(data.error)
+	} catch (error) {
+		console.error(error)
+	}
+}
+
 async function displayCharList() {
 	const charList = await getCharList()
 	roleContainer.innerHTML = ''
@@ -56,6 +77,7 @@ function displayCharacterInfo(charDetails) {
 // 初始化
 function initializeApp() {
 	setTheme()
+	setLocale(navigator.language || navigator.userLanguage)
 	displayCharList()
 }
 

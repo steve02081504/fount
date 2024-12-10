@@ -1,0 +1,23 @@
+body {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 100vh;
+	margin: 0;
+}
+
+.chat-list-item {
+	border-bottom: 1px solid #e0e0e0;
+	padding: 10px 0;
+}
+
+.chat-list-item:last-child {
+	border-bottom: none;
+}
+
+.avatar-group img {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	margin-right: 5px;
+}

@@ -105,7 +105,8 @@ system:
 <pause>
 我的目标是深入理解并扮演角色${prompt_struct.Charname}，我会在接下来的回复中严格遵循角色设定，给${prompt_struct.UserCharname}带来更好的体验。
 接下来我会继续扮演。
-</pause>` }]
+</pause>
+` }]
 					}
 				])
 
@@ -116,6 +117,7 @@ system:
 					text = text.split('\n')
 					let reg = new RegExp(`^(|${prompt_struct.Charname}[^\\n]*)(:|：)*$`, 'i')
 					while (text[0].trim().match(reg)) text.shift()
+					if (text[text.length - 1].trim() == '</pause>') text.pop() //?
 					text = text.join('\n')
 				}
 

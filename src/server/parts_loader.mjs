@@ -1,4 +1,4 @@
-import { getUserDictionary } from './auth.mjs'
+import { getUserByUsername, getUserDictionary } from './auth.mjs'
 import { on_shutdown } from './on_shutdown.mjs'
 import fs from 'node:fs'
 import url from 'node:url'
@@ -136,7 +136,8 @@ export function getPartList(username, parttype, {
 	return partlist
 }
 
-export async function getPartDetails(username, parttype, partname, locale) {
+export async function getPartDetails(username, parttype, partname) {
 	const part = await baseloadPart(username, parttype, partname)
+	const { locale } = getUserByUsername(username)
 	return getPartInfo(part, locale)
 }

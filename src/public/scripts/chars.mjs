@@ -3,11 +3,6 @@ export async function getCharList() {
 	return response.json()
 }
 export async function getCharDetails(charname) {
-	const response = await fetch('/api/getdetails/chars?name=' + charname, {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		}
-	})
+	const response = await fetch('/api/getdetails/chars?name=' + charname)
 	return response.json()
 }

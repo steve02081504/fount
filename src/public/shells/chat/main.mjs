@@ -29,11 +29,11 @@ export default {
 		else
 			chatid = newChat(user)
 		if (chatinfo.world)
-			await setWorld(chatid, chatinfo.world, chatinfo.locale)
+			await setWorld(chatid, chatinfo.world)
 		if (chatinfo.persona)
 			await setPersona(chatid, chatinfo.persona)
 		if (chatinfo.chars)
 			for (const charname of chatinfo.chars)
-				await addchar(chatid, charname, chatinfo.locale)
+				await addchar(chatid, charname)
 	}
 }

@@ -8,7 +8,7 @@ import path from 'node:path'
 /**
  * 通过用户名获取用户信息
  */
-function getUserByUsername(username) {
+export function getUserByUsername(username) {
 	return config.data.users[username]
 }
 
