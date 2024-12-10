@@ -31,6 +31,14 @@ export function registerEndpoints(app) {
 		res.status(200).json({ message: 'Authenticated' })
 	})
 
+	app.post('/api/setlocale', authenticate, (req, res) => {
+		const user = getUserByToken(req.cookies.token)
+		const { locale } = req.body
+		user.locale = locale
+		console.log(user.username + ' set locale to ' + locale)
+		res.status(200).json({ message: 'setlocale ok' })
+	})
+
 	let partsList = [
 		'shells', 'chars', 'personas', 'worlds', 'AIsources', 'AIsourceGenerators',
 		'charTemplates'
@@ -50,10 +58,10 @@ export function registerEndpoints(app) {
 			const { username } = getUserByToken(req.cookies.token)
 			res.status(200).json(getPartList(username, part))
 		})
-		app.post('/api/getdetails/' + part, authenticate, async (req, res) => {
-			const { username, locale } = getUserByToken(req.cookies.token)
+		app.get('/api/getdetails/' + part, authenticate, async (req, res) => {
+			const { username } = getUserByToken(req.cookies.token)
 			const name = req.query.name
-			const details = await getPartDetails(username, part, name, locale)
+			const details = await getPartDetails(username, part, name)
 			res.status(200).json(details)
 		})
 		let autoloader = async (req, res, next) => {

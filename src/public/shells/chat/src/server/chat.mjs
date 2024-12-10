@@ -3,7 +3,7 @@
 /** @typedef {import('../../../../../decl/UserAPI.ts').UserAPI_t} UserAPI_t */
 /** @typedef {import('../../../../../decl/basedefs.ts').locale_t} locale_t */
 
-import { getUserDictionary } from '../../../../../server/auth.mjs'
+import { getUserByUsername, getUserDictionary } from '../../../../../server/auth.mjs'
 import { LoadChar } from '../../../../../server/char_manager.mjs'
 import { loadJsonFile, saveJsonFile } from '../../../../../server/json_loader.mjs'
 import { on_shutdown } from '../../../../../server/on_shutdown.mjs'
@@ -176,18 +176,19 @@ on_shutdown(() => {
 })
 
 
-function getChatRequest(chatid, charname, locale, timeSlice = chatMetadatas[chatid].LastTimeSlice) {
+function getChatRequest(chatid, charname, timeSlice = chatMetadatas[chatid].LastTimeSlice) {
 	const char = timeSlice.chars[charname]
 	const username = chatMetadatas[chatid].username
+	const { locale } = getUserByUsername(username)
 	const userinfo = getPartInfo(timeSlice.player, locale)
 	const charinfo = getPartInfo(char, locale)
-	if (!char) throw new Error('char not found')
 	let UserCharname = userinfo?.name || timeSlice.player_id || username
 	return {
 		username,
 		UserCharname,
 		Charname: charinfo?.name || charname,
 		chatid: chatid,
+		locale,
 		chat_log: chatMetadatas[chatid].chatLog,
 		world: timeSlice.world,
 		char: char,
@@ -218,14 +219,14 @@ export async function setWorld(chatid, worldname) {
 	timeSlice.world_id = worldname
 }
 
-export async function addchar(chatid, charname, locale) {
+export async function addchar(chatid, charname) {
 	const username = chatMetadatas[chatid].username
 	const timeSlice = chatMetadatas[chatid].LastTimeSlice
 	if (timeSlice.chars[charname]) return
 	const char = timeSlice.chars[charname] = await LoadChar(username, charname)
 	// GetGreetings
 	const greetings = await (() => {
-		let request = getChatRequest(chatid, charname, locale, timeSlice)
+		let request = getChatRequest(chatid, charname, timeSlice)
 		if (chatMetadatas[chatid].chatLog.length === 0)
 			return char.interfacies.chat.GetGreetings(request)
 		else
@@ -262,9 +263,9 @@ export function GetWorldName(chatid) {
  * @param {chatLogEntry_t} entry
  * @returns
  */
-function addChatLogEntry(chatid, entry, locale) {
+function addChatLogEntry(chatid, entry) {
 	if (entry.timeSlice.world)
-		entry.timeSlice.world.interfacies.chat.AddChatLogEntry(getChatRequest(chatid, undefined, locale, entry.timeSlice), entry)
+		entry.timeSlice.world.interfacies.chat.AddChatLogEntry(getChatRequest(chatid, undefined, entry.timeSlice), entry)
 	else
 		chatMetadatas[chatid].chatLog.push(entry)
 	chatMetadatas[chatid].LastTimeSlice = entry.timeSlice
@@ -282,11 +283,11 @@ function addChatLogEntry(chatid, entry, locale) {
  * @param {timeSlice_t} new_timeSlice
  * @param {charAPI_t} char
  * @param {string} charname
- * @param {locale_t} locale
  * @returns {chatLogEntry_t}
  */
-function BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, locale) {
+function BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname) {
 	let newEntry = new chatLogEntry_t
+	let { locale } = getUserByUsername(new_timeSlice.player_id)
 	let info = getPartInfo(char, locale)
 	newEntry.name = result.name || info.name || charname
 	newEntry.avatar = result.avatar || info.avatar
@@ -306,11 +307,11 @@ function BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, l
  * @param {timeSlice_t} new_timeSlice
  * @param {UserAPI_t} user
  * @param {string} username
- * @param {locale_t} locale
  * @returns {chatLogEntry_t}
  */
-function BuildChatLogEntryFromUserMessage(content, new_timeSlice, user, username, locale) {
+function BuildChatLogEntryFromUserMessage(content, new_timeSlice, user, username) {
 	let newEntry = new chatLogEntry_t
+	let { locale } = getUserByUsername(new_timeSlice.player_id)
 	let info = getPartInfo(user, locale)
 	newEntry.name = info?.name || new_timeSlice.player_id || username
 	newEntry.avatar = info?.avatar
@@ -322,26 +323,98 @@ function BuildChatLogEntryFromUserMessage(content, new_timeSlice, user, username
 	return newEntry
 }
 
-export async function triggerCharReply(chatid, charname, locale) {
+export async function triggerCharReply(chatid, charname) {
 	const timeSlice = chatMetadatas[chatid].LastTimeSlice
 	const char = timeSlice.chars[charname]
 	if (!char) throw new Error('char not found')
 	const new_timeSlice = timeSlice.copy()
-	let result = await char.interfacies.chat.GetReply(getChatRequest(chatid, charname, locale, new_timeSlice))
+	let result = await char.interfacies.chat.GetReply(getChatRequest(chatid, charname, new_timeSlice))
 
 	return addChatLogEntry(chatid,
-		BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, locale),
-		locale
+		BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname),
 	)
 }
 
-export function addUserReply(chatid, content, locale) {
+export function addUserReply(chatid, content) {
 	const timeSlice = chatMetadatas[chatid].LastTimeSlice
 	const new_timeSlice = timeSlice.copy()
 	const user = timeSlice.player
 
 	return addChatLogEntry(chatid,
-		BuildChatLogEntryFromUserMessage(content, new_timeSlice, user, chatMetadatas[chatid].username, locale),
-		locale
+		BuildChatLogEntryFromUserMessage(content, new_timeSlice, user, chatMetadatas[chatid].username),
 	)
+}
+
+export async function getChatList(username) {
+	const userDir = getUserDictionary(username) + '/shells/chat/chats/'
+	const chatFiles = fs.readdirSync(userDir).filter(file => file.endsWith('.json'))
+	const chatList = []
+
+	for (const file of chatFiles) {
+		const chatid = file.replace('.json', '')
+		try {
+			const chatMetadata = await loadChat(chatid, username)
+			if (chatMetadata.chatLog.length > 0) {
+				const lastEntry = chatMetadata.chatLog[chatMetadata.chatLog.length - 1]
+				chatList.push({
+					chatid: chatid,
+					chars: Object.keys(chatMetadata.LastTimeSlice.chars),
+					lastMessageSender: lastEntry.name,
+					lastMessageContent: lastEntry.content,
+					lastMessageTime: lastEntry.timeStamp,
+				})
+			}
+		} catch (error) {
+			console.error(`Error loading chat ${chatid}:`, error)
+		}
+	}
+
+	return chatList
+}
+
+export async function deleteChat(chatids, username) {
+	let basedir = getUserDictionary(username) + '/shells/chat/chats/'
+	let result = []
+	for (const chatid of chatids)
+		try {
+			await fs.promises.unlink(basedir + chatid + '.json')
+			result.push({ chatid: chatid, success: true, message: 'Chat deleted successfully' })
+		} catch (error) {
+			console.error(`Error deleting chat ${chatid}:`, error)
+			result.push({ chatid: chatid, success: false, message: 'Error deleting chat', error: error.message })
+		}
+
+
+	return result
+}
+
+export function copyChat(chatids, username) {
+	let result = []
+	for (const chatid of chatids) {
+		const originalChat = chatMetadatas[chatid]
+		if (!originalChat) {
+			result.push({ chatid: chatid, success: false, message: 'Original chat not found' })
+			continue
+		}
+
+		const newChatId = newChat(username)
+		chatMetadatas[newChatId] = JSON.parse(JSON.stringify(originalChat))
+		chatMetadatas[newChatId].LastTimeSlice = chatMetadatas[newChatId].chatLog[chatMetadatas[newChatId].chatLog.length - 1].timeSlice
+		saveChat(newChatId, username)
+		result.push({ chatid: chatid, success: true, newChatId: newChatId, message: 'Chat copied successfully' })
+	}
+	return result
+}
+
+export async function exportChat(chatids, username) {
+	let result = []
+	for (const chatid of chatids)
+		try {
+			let chat = await loadChat(chatid, username)
+			result.push({ chatid: chatid, success: true, data: chat })
+		} catch (error) {
+			console.error(`Error exporting chat ${chatid}:`, error)
+			result.push({ chatid: chatid, success: false, message: 'Error exporting chat', error: error.message })
+		}
+	return result
 }
