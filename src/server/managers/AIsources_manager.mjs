@@ -1,6 +1,6 @@
-import { getUserDictionary } from './auth.mjs'
-import { loadJsonFile } from './json_loader.mjs'
-import { loadPart, unloadPart } from './parts_loader.mjs'
+import { getUserDictionary } from '../auth.mjs'
+import { loadJsonFile } from '../../scripts/json_loader.mjs'
+import { loadPart, unloadPart } from '../parts_loader.mjs'
 
 function GetPath(username, partname) {
 	return getUserDictionary(username) + '/AIsources/' + partname

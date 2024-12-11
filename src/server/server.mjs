@@ -4,10 +4,12 @@ import cookieParser from 'npm:cookie-parser'
 import path from 'node:path'
 import fs from 'node:fs'
 import process from 'node:process'
-import { console } from './console.mjs'
+import { console } from '../scripts/console.mjs'
 import { registerEndpoints } from './endpoints.mjs'
 import { on_shutdown } from './on_shutdown.mjs'
-import { IPCManager } from './ipc_manager.mjs'
+import { IPCManager } from './ipc_server.mjs'
+import https from 'node:https' // 引入 https 模块
+import { initAuth } from './auth.mjs' // 引入新的身份验证模块
 
 export const app = express()
 
@@ -31,10 +33,9 @@ export function save_config() {
 
 //读取confing文件
 export const config = get_config()
-if (!config.secretKey) {
-	config.secretKey = Math.random().toString(36).slice(2)
-	save_config()
-}
+
+// 初始化身份验证模块
+initAuth(config)
 
 /**
  * Set the title of the terminal window
@@ -59,10 +60,25 @@ export async function init() {
 	console.freshLine('server start', 'server starting')
 	registerEndpoints(app)
 	app.use(express.static(__dirname + '/src/public'))
-	const { port } = config
-	app.listen(port, () => {
-		console.log(`服务器运行在 http://localhost:${port}`)
-	})
+	const { port, https: httpsConfig } = config // 获取 HTTPS 配置
+
+	let server
+	if (httpsConfig && httpsConfig.enabled) {
+		// 启用 HTTPS
+		const options = {
+			key: fs.readFileSync(httpsConfig.keyFile),
+			cert: fs.readFileSync(httpsConfig.certFile),
+		}
+		server = https.createServer(options, app)
+		server.listen(port, () => {
+			console.log(`HTTPS 服务器运行在 https://localhost:${port}`)
+		})
+	} else
+		// 使用 HTTP
+		server = app.listen(port, () => {
+			console.log(`HTTP 服务器运行在 http://localhost:${port}`)
+		})
+
 	console.freshLine('server start', 'server ready')
 	let titleBackup = process.title
 	on_shutdown(() => setWindowTitle(titleBackup))

@@ -1,7 +1,7 @@
 import process from 'node:process'
-import { console } from './console.mjs'
+import { console } from '../scripts/console.mjs'
 import { init } from "./server.mjs"
-import { IPCManager } from "./ipc_manager.mjs"
+import { IPCManager } from "./ipc_server.mjs"
 
 console.log('standing by...')
 

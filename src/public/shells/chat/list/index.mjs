@@ -92,7 +92,7 @@ async function renderChatListItem(chat) {
 
 	// 继续聊天
 	chatElement.querySelector('.continue-button').addEventListener('click', () => {
-		window.location = `/shells/chat?chatid=${chat.chatid}`
+		window.location = `/shells/chat#${chat.chatid}`
 	})
 
 	// 复制聊天
@@ -107,8 +107,8 @@ async function renderChatListItem(chat) {
 		if (response.ok) {
 			const datas = await response.json()
 			const data = datas[0]
-			if (data.success)
-				window.location = `/shells/chat?chatid=${data.newChatId}`
+			if (data.success) // refresh chat list
+				fetchChatList().then(renderChatList)
 			else
 				alert(data.message)
 		}

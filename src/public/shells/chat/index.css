@@ -6,3 +6,40 @@ body {
 	width: 40px;
 	height: 40px;
 }
+
+.chat-message {
+	position: relative;
+	transition: transform 0.3s ease;
+	/* Add transition for smooth animation */
+}
+
+.chat-message:hover {
+	transform: translateX(5px);
+	/* Smaller, opposite-direction movement */
+}
+
+.chat-message .arrow {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	cursor: pointer;
+	opacity: 0;
+	transition: opacity 0.2s ease;
+	z-index: 10;
+}
+
+.chat-message:hover .arrow {
+	opacity: 0.8;
+}
+
+.chat-message .arrow.left {
+	left: 10px;
+}
+
+.chat-message .arrow.right {
+	right: 10px;
+}
+
+.smooth-transition {
+	transition: opacity 0.5s ease-in-out;
+}

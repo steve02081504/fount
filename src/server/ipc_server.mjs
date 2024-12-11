@@ -1,6 +1,6 @@
 import net from 'node:net'
-import { console } from './console.mjs'
-import { loadShell } from './shell_manager.mjs'
+import { console } from '../scripts/console.mjs'
+import { loadShell } from './managers/shell_manager.mjs'
 
 const IPC_PORT = 16698  // 选择一个不太可能冲突的端口
 

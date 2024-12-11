@@ -1,26 +1,52 @@
 import { login, register, logout, authenticate, getUserByToken, getUserDictionary } from './auth.mjs'
 import { __dirname } from './server.mjs'
 import fs from 'node:fs'
-import { loadShell } from './shell_manager.mjs'
-import { getPartList, getPartDetails, loadPart } from './parts_loader.mjs'
-import { LoadChar } from './char_manager.mjs'
-import { loadPersona } from './personas_manager.mjs'
-import { loadAIsource, loadAIsourceGenerator } from './AIsources_manager.mjs'
+import { loadShell } from './managers/shell_manager.mjs'
+import { getPartList, getPartDetails } from './parts_loader.mjs'
+import { LoadChar } from './managers/char_manager.mjs'
+import { loadPersona } from './managers/personas_manager.mjs'
+import { loadAIsource, loadAIsourceGenerator } from './managers/AIsources_manager.mjs'
 import { LoadCharTemplate } from '../public/shells/install/src/server/charTemplate_manager.mjs'
+import { loadWorld } from "./managers/world_manager.mjs"
+import { generateVerificationCode, verifyVerificationCode } from "../scripts/verifycode.mjs"
 /**
  * @param {import('npm:express').Express} app
  */
 export function registerEndpoints(app) {
 	// 注册路由
 	app.post('/api/login', async (req, res) => {
-		const { username, password } = req.body
-		const result = await login(username, password)
-		res.cookie('token', result.token, { secure: true })
+		const { username, password, deviceid } = req.body
+		const result = await login(username, password, deviceid)
+		// 在登录成功时设置 Cookie
+		if (result.status === 200) {
+			res.cookie('accessToken', result.accessToken, { httpOnly: true, secure: false }) // 短效
+			res.cookie('refreshToken', result.refreshToken, { httpOnly: true, secure: false }) // 长效
+		}
 		res.status(result.status).json(result)
 	})
 
+	app.post('/api/register/generateverificationcode', async (req, res) => {
+		// get ip
+		const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress
+		generateVerificationCode(ip)
+		res.status(200).json({ message: 'verification code generated' })
+	})
+	let regrquesttimes = []
+	const registerRequestLimit = 5
+	const registerRequestInterval = 60 * 1000 // 1 minute
 	app.post('/api/register', async (req, res) => {
-		const { username, password } = req.body
+		const { username, password, verificationcode } = req.body
+		const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress
+		regrquesttimes = regrquesttimes.filter(entry => entry.time > Date.now())
+		regrquesttimes.push({ ip, time: Date.now() + registerRequestInterval })
+		if (regrquesttimes.filter(entry => entry.ip === ip).length > registerRequestLimit) {
+			res.status(429).json({ message: 'Too many requests' })
+			return
+		}
+		if (verifyVerificationCode(verificationcode, ip) === false) {
+			res.status(401).json({ message: 'verification code incorrect' })
+			return
+		}
 		const result = await register(username, password)
 		res.status(result.status).json(result)
 	})
@@ -31,8 +57,8 @@ export function registerEndpoints(app) {
 		res.status(200).json({ message: 'Authenticated' })
 	})
 
-	app.post('/api/setlocale', authenticate, (req, res) => {
-		const user = getUserByToken(req.cookies.token)
+	app.post('/api/setlocale', authenticate, async (req, res) => {
+		const user = await getUserByToken(req.cookies.accessToken)
 		const { locale } = req.body
 		user.locale = locale
 		console.log(user.username + ' set locale to ' + locale)
@@ -47,19 +73,19 @@ export function registerEndpoints(app) {
 		'shells': loadShell,
 		'chars': LoadChar,
 		'personas': loadPersona,
-		'worlds': (username, worldname) => loadPart(username, 'worlds', worldname),
+		'worlds': loadWorld,
 		'AIsources': loadAIsource,
 		'AIsourceGenerators': loadAIsourceGenerator,
 		'charTemplates': LoadCharTemplate
 	}
 
 	for (const part of partsList) {
-		app.get('/api/getlist/' + part, authenticate, (req, res) => {
-			const { username } = getUserByToken(req.cookies.token)
+		app.get('/api/getlist/' + part, authenticate, async (req, res) => {
+			const { username } = await getUserByToken(req.cookies.accessToken)
 			res.status(200).json(getPartList(username, part))
 		})
 		app.get('/api/getdetails/' + part, authenticate, async (req, res) => {
-			const { username } = getUserByToken(req.cookies.token)
+			const { username } = await getUserByToken(req.cookies.accessToken)
 			const name = req.query.name
 			const details = await getPartDetails(username, part, name)
 			res.status(200).json(details)
@@ -70,7 +96,7 @@ export function registerEndpoints(app) {
 				let pathext = req.path.split('.').pop()
 				if (['png', 'jpg', 'jpeg', 'gif', 'svg', 'css'].includes(pathext)) return next()
 			}
-			const { username } = getUserByToken(req.cookies.token)
+			const { username } = await getUserByToken(req.cookies.accessToken)
 			const partName = (() => {
 				let patharr = req.path.split('/')
 				let partIndex = patharr.indexOf(part)
@@ -88,8 +114,8 @@ export function registerEndpoints(app) {
 			next()
 		}
 		app.post(new RegExp('^/api/' + part + '/'), authenticate, autoloader)
-		app.get(new RegExp('^/' + part + '/'), authenticate, autoloader, (req, res) => {
-			const { username } = getUserByToken(req.cookies.token)
+		app.get(new RegExp('^/' + part + '/'), authenticate, autoloader, async (req, res) => {
+			const { username } = await getUserByToken(req.cookies.accessToken)
 			let path = req.path
 			if (path.endsWith('/')) path += '/index.html'
 			if (fs.existsSync(getUserDictionary(username) + '/' + path))

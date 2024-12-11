@@ -1,4 +1,4 @@
-let currentChatId = null
+export let currentChatId = null
 
 export async function createNewChat() {
 	const response = await fetch('/api/shells/chat/new', {
@@ -13,7 +13,6 @@ export async function createNewChat() {
 		throw new Error(`API request failed with status ${response.status}`)
 
 	currentChatId = data.chatid
-	window.history.replaceState(null, null, '/shells/chat/#' + data.chatid)
 	return data.chatid
 }
 
@@ -167,7 +166,20 @@ export async function getWorldName() {
 	return await response.json()
 }
 
+export async function modifyTimeLine(delta) {
+	const response = await fetch('/api/shells/chat/modifytimeline', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({ chatid: currentChatId, delta }),
+	})
+
+	if (!response.ok)
+		throw new Error(`API request failed with status ${response.status}`)
+
+	return await response.json()
+}
+
 if (window.location.hash)
 	currentChatId = window.location.hash.substring(1)
-else
-	createNewChat()

@@ -1,4 +1,4 @@
-<div class="chat-message ${isSelf ? 'chat-message-right' : ''} w-full flex items-start mb-4">
+<div class="chat-message ${isSelf ? 'chat-message-right' : ''} w-full flex items-start mb-4" id="message-${timeStamp}">
 	<div class="avatar">
 		<div class="w-10 h-10 rounded-full">
 			<img src="${avatar}" alt="${name}" />
@@ -13,4 +13,6 @@
 			${content}
 		</div>
 	</div>
+	<div class="arrow left">❮</div>
+	<div class="arrow right">❯</div>
 </div>
