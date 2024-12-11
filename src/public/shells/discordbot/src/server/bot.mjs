@@ -1,7 +1,7 @@
 import { Client, Events, GatewayIntentBits, Partials } from 'npm:discord.js'
 import { on_shutdown } from '../../../../../server/on_shutdown.mjs'
 import { loadData } from '../../../../../server/setting_loader.mjs'
-import { LoadChar } from '../../../../../server/char_manager.mjs'
+import { LoadChar } from '../../../../../server/managers/char_manager.mjs'
 /** @typedef {import('../../../../../decl/charAPI.ts').charAPI_t} charAPI_t */
 
 /**

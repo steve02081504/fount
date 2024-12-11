@@ -1,4 +1,4 @@
-import { with_timeout } from "../../../server/await_timeout.mjs"
+import { with_timeout } from "../../../scripts/await_timeout.mjs"
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
 import { BlackboxAI } from './blackbox.mjs'
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */

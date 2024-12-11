@@ -1,9 +1,10 @@
 import { renderTemplate } from '../scripts/template.mjs'
 import { getCharDetails, getCharList } from '../scripts/chars.mjs'
-import { renderMarkdown } from './markdown.mjs'
+import { renderMarkdown } from '../scripts/markdown.mjs'
 
 const roleContainer = document.getElementById('role-container')
 const characterDescription = document.getElementById('character-description')
+const drawerToggle = document.getElementById('my-drawer-2')
 
 // 设置主题
 function setTheme() {
@@ -18,33 +19,39 @@ async function renderCharView(charDetails) {
 	roleElement.classList.add('role-card')
 	roleElement.dataset.charname = charDetails.name
 
-	// 添加悬浮事件监听
+	// 移动端点击卡片非按钮区域时显示侧边栏
+	roleElement.addEventListener('click', (event) => {
+		if (window.innerWidth < 1024 && !event.target.closest('button')) {
+			displayCharacterInfo(charDetails)
+			drawerToggle.checked = true
+		}
+	})
+
+	// 桌面端添加悬浮事件监听
 	roleElement.addEventListener('mouseover', () => {
-		displayCharacterInfo(charDetails)
+		if (window.innerWidth >= 1024)
+			displayCharacterInfo(charDetails)
+
 	})
 
 	return roleElement
 }
 
 async function setLocale(locale) {
-	try {
-		const response = await fetch('/api/setlocale', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({ locale }),
-		})
+	const response = await fetch('/api/setlocale', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({ locale }),
+	})
 
-		const data = await response.json()
+	const data = await response.json()
 
-		if (response.ok)
-			console.log(data.message)
-		 else
-			console.error(data.error)
-	} catch (error) {
-		console.error(error)
-	}
+	if (response.ok)
+		console.log(data.message)
+	else
+		throw new Error(data.message)
 }
 
 async function displayCharList() {
@@ -75,9 +82,15 @@ function displayCharacterInfo(charDetails) {
 }
 
 // 初始化
-function initializeApp() {
+async function initializeApp() {
 	setTheme()
-	setLocale(navigator.language || navigator.userLanguage)
+	try {
+		await setLocale(navigator.language || navigator.userLanguage)
+	}
+	catch (error) {
+		// jump to login page
+		window.location = '/login'
+	}
 	displayCharList()
 }
 

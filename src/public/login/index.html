@@ -37,6 +37,17 @@
 						<input type="password" id="confirm-password" name="confirm-password"
 							class="input input-bordered">
 					</div>
+					<div class="form-control" id="verification-code-group">
+						<label class="label" for="verification-code">
+							<span class="label-text">Verification Code:</span>
+						</label>
+						<div class="flex space-x-2">
+							<input type="text" id="verification-code" name="verification-code"
+								class="input input-bordered w-full" required>
+							<button class="btn btn-primary" type="button" id="send-verification-code-btn">Send
+								Code</button>
+						</div>
+					</div>
 					<div class="card-actions justify-end mt-4">
 						<button class="btn btn-primary" type="submit" id="submit-btn"></button>
 					</div>

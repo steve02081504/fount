@@ -1,4 +1,4 @@
-import { loadPart, uninstallPart, unloadPart } from './parts_loader.mjs'
+import { loadPart, uninstallPart, unloadPart } from '../parts_loader.mjs'
 
 export async function loadPersona(username, personaname) {
 	loadPart(username, 'personas', personaname)

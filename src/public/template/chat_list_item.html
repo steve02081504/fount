@@ -1,9 +1,12 @@
 <div class="flex items-center justify-between gap-4 p-4 rounded-lg bg-base-100 shadow-md">
-    <input type="checkbox" class="checkbox select-checkbox" />
+	<input type="checkbox" class="checkbox select-checkbox" />
 	<div class="flex-1 min-w-0">
 		<div class="flex items-center gap-2 mb-1">
 			<div class="avatar-group -space-x-6 rtl:space-x-reverse">
-				${avatars.map(avatar => `<div class="avatar"><div class="w-8"><img src="${avatar.url || 'https://gravatar.com/avatar/0?d=mp&f=y'}" alt="${avatar.name}" /></div></div>`).join('')}
+				${avatars.map(avatar => `<div class="avatar">
+					<div class="w-8"><img src="${avatar.url || 'https://gravatar.com/avatar/0?d=mp&f=y'}"
+							alt="${avatar.name}" /></div>
+				</div>`).join('')}
 			</div>
 			<p class="text-sm font-semibold text-gray-900 dark:text-white">${chars.join(', ')}</p>
 		</div>

@@ -1,11 +1,13 @@
-import { createNewChat, addCharacter } from "../src/public/endpoints.mjs"
+import { currentChatId, addCharacter, createNewChat } from "../src/public/endpoints.mjs"
+
+await createNewChat()
 
 let serchParams = new URLSearchParams(window.location.search)
-let chatid = await createNewChat()
 
 if (serchParams.has('charname'))
 	await addCharacter(serchParams.get('charname'))
 
 // jump to chat
-window.location.href = '/shells/chat/#' + chatid
+window.history.replaceState(null, null, '/shells/chat/#' + currentChatId)
+window.location = '/shells/chat/#' + currentChatId
 window.location.reload()

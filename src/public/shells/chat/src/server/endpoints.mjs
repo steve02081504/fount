@@ -1,4 +1,3 @@
-// endpoint file (modify this file)
 import { authenticate, getUserByToken } from "../../../../../server/auth.mjs"
 import {
 	addchar,
@@ -12,9 +11,9 @@ import {
 	getChatList,
 	GetUserPersonaName,
 	GetWorldName,
-	loadMetaData,
 	newChat,
 	newMetadata,
+	modifyTimeLine,
 	removechar,
 	setPersona,
 	setWorld,
@@ -23,7 +22,7 @@ import {
 
 export function setEndpoints(app) {
 	app.post('/api/shells/chat/new', authenticate, async (req, res) => {
-		const { username } = getUserByToken(req.cookies.token)
+		const { username } = await getUserByToken(req.cookies.accessToken)
 		res.status(200).json({ chatid: newChat(username) })
 	})
 
@@ -32,17 +31,17 @@ export function setEndpoints(app) {
 	})
 
 	app.post('/api/shells/chat/removechar', async (req, res) => {
-		removechar(req.body.chatid, req.body.charname)
+		await removechar(req.body.chatid, req.body.charname)
 		res.status(200).json({ message: 'removechar ok' })
 	})
 
 	app.post('/api/shells/chat/setworld', async (req, res) => {
-		setWorld(req.body.chatid, req.body.worldname)
+		await setWorld(req.body.chatid, req.body.worldname)
 		res.status(200).json({ message: 'setworld ok' })
 	})
 
 	app.post('/api/shells/chat/setpersona', async (req, res) => {
-		setPersona(req.body.chatid, req.body.personaname)
+		await setPersona(req.body.chatid, req.body.personaname)
 		res.status(200).json({ message: 'setpersona ok' })
 	})
 
@@ -51,43 +50,46 @@ export function setEndpoints(app) {
 	})
 
 	app.post('/api/shells/chat/adduserreply', authenticate, async (req, res) => {
-		res.status(200).json(addUserReply(req.body.chatid, req.body.content))
+		res.status(200).json(await addUserReply(req.body.chatid, req.body.content))
+	})
+
+	app.post('/api/shells/chat/modifytimeline', authenticate, async (req, res) => {
+		const { chatid, delta } = req.body
+		const entry = await modifyTimeLine(chatid, delta)
+		res.status(200).json(entry)
 	})
 
 	app.post('/api/shells/chat/getcharlist', authenticate, async (req, res) => {
-		res.status(200).json(getCharListOfChat(req.body.chatid))
+		res.status(200).json(await getCharListOfChat(req.body.chatid))
 	})
 
 	app.post('/api/shells/chat/getchatlog', authenticate, async (req, res) => {
-		res.status(200).json(GetChatLog(req.body.chatid))
+		res.status(200).json(await GetChatLog(req.body.chatid))
 	})
 
 	app.post('/api/shells/chat/getpersonaname', async (req, res) => {
-		res.status(200).json(GetUserPersonaName(req.body.chatid))
+		res.status(200).json(await GetUserPersonaName(req.body.chatid))
 	})
 
 	app.post('/api/shells/chat/getworldname', async (req, res) => {
-		res.status(200).json(GetWorldName(req.body.chatid))
+		res.status(200).json(await GetWorldName(req.body.chatid))
 	})
 	app.post('/api/shells/chat/list', authenticate, async (req, res) => {
-		res.status(200).json(await getChatList(getUserByToken(req.cookies.token).username))
+		res.status(200).json(await getChatList(await getUserByToken(req.cookies.accessToken).username))
 	})
 
 	app.delete('/api/shells/chat/delete', authenticate, async (req, res) => {
-		// req.body.chatids is already an array
-		const result = await deleteChat(req.body.chatids, getUserByToken(req.cookies.token).username)
+		const result = await deleteChat(req.body.chatids, await getUserByToken(req.cookies.accessToken).username)
 		res.status(200).json(result)
 	})
 
 	app.post('/api/shells/chat/copy', authenticate, async (req, res) => {
-		// req.body.chatids is already an array
-		const result = await copyChat(req.body.chatids, getUserByToken(req.cookies.token).username)
+		const result = await copyChat(req.body.chatids, await getUserByToken(req.cookies.accessToken).username)
 		res.status(200).json(result)
 	})
 
 	app.post('/api/shells/chat/export', authenticate, async (req, res) => {
-		// req.body.chatids is already an array
-		const result = await exportChat(req.body.chatids, getUserByToken(req.cookies.token).username)
+		const result = await exportChat(req.body.chatids)
 		res.status(200).json(result)
 	})
 }
@@ -118,6 +120,10 @@ export function unsetEndpoints(app) {
 	})
 
 	app.post('/api/shells/chat/adduserreply', (req, res) => {
+		res.status(404)
+	})
+
+	app.post('/api/shells/chat/modifytimeline', (req, res) => {
 		res.status(404)
 	})
 
