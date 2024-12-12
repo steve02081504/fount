@@ -1,0 +1,13 @@
+<div class="attachment" id="attachment-${safeName}-${index}" data-template-type="attachment_preview">
+	<span class="preview-container"></span>
+	<span class="file-name">${file.name}</span>
+	<span class="attachment-button-group">
+		${showDownloadButton ? `
+		<button class="download-button btn btn-xs btn-primary"><img
+				src="https://api.iconify.design/line-md/download.svg" title="下载" /></button>
+		`: ''}
+		${showDeleteButton ? `
+		<button class="delete-button btn btn-xs btn-error"><img
+				src="https://api.iconify.design/line-md/document-delete.svg" title="删除" /></button>`: ''}
+	</span>
+</div>

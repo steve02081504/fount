@@ -91,13 +91,13 @@ export async function triggerCharacterReply(charname) {
 	return response.json()
 }
 
-export async function addUserReply(content) {
+export async function addUserReply(reply) {
 	const response = await fetch('/api/shells/chat/adduserreply', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
 		},
-		body: JSON.stringify({ chatid: currentChatId, content }),
+		body: JSON.stringify({ chatid: currentChatId, reply }),
 	})
 
 	if (!response.ok)

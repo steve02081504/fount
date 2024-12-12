@@ -16,6 +16,8 @@ export const app = express()
 export const __dirname = path.resolve(import.meta.dirname + '/../../')
 
 app.use((req, res, next) => { console.log(`Request received: ${req.method} ${req.url}`); next() })
+app.use(express.json({ limit: Infinity }))
+app.use(express.urlencoded({ limit: Infinity, extended: true }))
 app.use(bodyParser.json())
 app.use(cookieParser())
 
