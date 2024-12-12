@@ -5,17 +5,20 @@
 		</div>
 	</div>
 	<div class="content ml-2 p-4 rounded-lg bg-base-200 relative">
-		<div class="info font-bold text-sm">
+		<div class="info font-bold text-sm flex items-center gap-2">
 			${name}
-			<span class="timestamp text-xs text-gray-400 ml-2">${timeStamp}</span>
+			<span class="timestamp text-xs text-gray-400">${timeStamp}</span>
 		</div>
 		<div class="message-content mt-1">
 			${content}
 		</div>
-        <span class="button-group">
-		    <button class="edit-button btn btn-xs btn-primary"><img src="https://api.iconify.design/line-md/edit.svg" title="编辑" /></button>
-		    <button class="delete-button btn btn-xs btn-error"><img src="https://api.iconify.design/line-md/remove.svg" title="删除" /></button>
-        </span>
+		<div class="attachments"></div>
+		<span class="button-group">
+			<button class="edit-button btn btn-xs btn-primary"><img src="https://api.iconify.design/line-md/edit.svg"
+					title="编辑" /></button>
+			<button class="delete-button btn btn-xs btn-error"><img src="https://api.iconify.design/line-md/remove.svg"
+					title="删除" /></button>
+		</span>
 	</div>
 	<div class="arrow left">❮</div>
 	<div class="arrow right">❯</div>

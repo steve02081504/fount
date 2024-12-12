@@ -21,6 +21,7 @@ import {
 	deleteMessage,
 	editMessage
 } from './chat.mjs'
+import { Buffer } from "node:buffer"
 
 export function setEndpoints(app) {
 	app.post('/api/shells/chat/new', authenticate, async (req, res) => {
@@ -52,7 +53,12 @@ export function setEndpoints(app) {
 	})
 
 	app.post('/api/shells/chat/adduserreply', authenticate, async (req, res) => {
-		res.status(200).json(await addUserReply(req.body.chatid, req.body.content))
+		let reply = req.body.reply
+		reply.files = reply?.files?.map((file) => ({
+			...file,
+			buffer: Buffer.from(file.buffer, 'base64')
+		}))
+		res.status(200).json(await addUserReply(req.body.chatid, req.body.reply))
 	})
 
 	app.post('/api/shells/chat/modifytimeline', authenticate, async (req, res) => {
@@ -69,6 +75,10 @@ export function setEndpoints(app) {
 
 	app.post('/api/shells/chat/editmessage', async (req, res) => {
 		const { chatid, index, content } = req.body
+		content.files = content?.files?.map((file) => ({
+			...file,
+			buffer: Buffer.from(file.buffer, 'base64')
+		}))
 		let entry = await editMessage(chatid, index, content)
 		res.status(200).json(entry)
 	})

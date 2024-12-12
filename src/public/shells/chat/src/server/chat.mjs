@@ -12,7 +12,6 @@ import { loadPersona } from '../../../../../server/managers/personas_manager.mjs
 import { loadWorld } from "../../../../../server/managers/world_manager.mjs"
 import { Buffer } from "node:buffer"
 import fs from 'node:fs'
-import { get } from "node:http"
 
 /**
  * Structure of the chat metadata map:
@@ -397,6 +396,7 @@ function BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, u
 		timeSlice: new_timeSlice,
 		role: 'char',
 		timeStamp: new Date(),
+		files: result.files || [],
 		extension: result.extension || {},
 		logContextBefore: result.logContextBefore,
 		logContextAfter: result.logContextAfter
@@ -427,6 +427,7 @@ function BuildChatLogEntryFromUserMessage(result, new_timeSlice, user, username)
 		timeSlice: new_timeSlice,
 		role: 'user',
 		timeStamp: new Date(),
+		files: result.files || [],
 		extension: result.extension || {}
 	})
 }
@@ -445,7 +446,7 @@ export async function triggerCharReply(chatid, charname) {
 	return addChatLogEntry(chatid, BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, chatMetadata.username))
 }
 
-export async function addUserReply(chatid, content) {
+export async function addUserReply(chatid, object) {
 	const chatMetadata = await loadChat(chatid)
 	if (!chatMetadata) throw new Error('Chat not found')
 
@@ -453,7 +454,7 @@ export async function addUserReply(chatid, content) {
 	const new_timeSlice = timeSlice.copy()
 	const user = timeSlice.player
 
-	return addChatLogEntry(chatid, BuildChatLogEntryFromUserMessage({content}, new_timeSlice, user, chatMetadata.username))
+	return addChatLogEntry(chatid, BuildChatLogEntryFromUserMessage(object, new_timeSlice, user, chatMetadata.username))
 }
 
 export async function getChatList(username) {
@@ -575,10 +576,10 @@ export async function editMessage(chatid, index, new_content) {
 
 	function geneRequest() {
 		return {
-			original: chatMetadata.chatLog[index].content,
+			index,
+			original: chatMetadata.chatLog[index],
 			edited: new_content,
 			chat_log: chatMetadata.chatLog,
-			chat_entry: chatMetadata.chatLog[index],
 		}
 	}
 	// 若有world,让world处理消息编辑
@@ -592,29 +593,18 @@ export async function editMessage(chatid, index, new_content) {
 			let char = entry.timeSlice.chars[entry.timeSlice.charname]
 			editresult = await char.interfacies.chat?.MessageEdit?.(geneRequest())
 		}
-		else if(entry.timeSlice.playername)
+		else if (entry.timeSlice.playername)
 			editresult = await entry.timeSlice?.player?.interfacies?.chat?.MessageEdit?.(geneRequest())
-		editresult ??= {
-			content: new_content,
-		}
+		editresult ??= new_content
 
 		// 通知其他人消息被编辑
-		// deno-lint-ignore no-inner-declarations
-		function geneEditedRequest() {
-			return {
-				index,
-				chat_log: chatMetadata.chatLog,
-				chat_entry: chatMetadata.chatLog[index],
-				edited: editresult,
-			}
-		}
 		if (chatMetadata.LastTimeSlice.world?.interfacies?.chat?.MessageEditting)
-			await chatMetadata.LastTimeSlice.world.interfacies.chat.MessageEditting(geneEditedRequest())
+			await chatMetadata.LastTimeSlice.world.interfacies.chat.MessageEditting(geneRequest())
 		else {
 			for (const char of Object.values(chatMetadata.LastTimeSlice.chars))
-				await char.interfacies?.chat?.MessageEditting?.(geneEditedRequest())
+				await char.interfacies?.chat?.MessageEditting?.(geneRequest())
 
-			await chatMetadata.LastTimeSlice.player?.interfacies?.chat?.MessageEditting?.(geneEditedRequest())
+			await chatMetadata.LastTimeSlice.player?.interfacies?.chat?.MessageEditting?.(geneRequest())
 		}
 	}
 

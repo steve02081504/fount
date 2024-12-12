@@ -38,17 +38,18 @@ export class WorldAPI_t {
 			GetChatLogForCharname: (arg: chatReplyRequest_t, charname: string) => Promise<chatLogEntry_t[]>
 			AddChatLogEntry: (arg: chatReplyRequest_t, entry: chatLogEntry_t) => void
 			MessageEdit: (arg: {
-				original: string
-				edited: string
+				index: number
+				original: chatLogEntry_t
+				edited: chatReply_t
 				chat_log: chatLogEntry_t[]
-				chat_entry: chatLogEntry_t
 				extension?: any
 			}) => Promise<chatReply_t>
 			MessageEditting: (arg: {
 				index: number
-				chat_log: chatLogEntry_t[]
-				chat_entry: chatLogEntry_t
+				original: chatLogEntry_t
 				edited: chatReply_t
+				chat_log: chatLogEntry_t[]
+				extension?: any
 			}) => Promise<void>
 			MessageDelete: (arg: {
 				index: number
