@@ -56,6 +56,18 @@ export class charAPI_t {
 				chat_entry: chatLogEntry_t
 				extension?: any
 			}) => Promise<chatReply_t>
+			MessageEditting: (arg: {
+				index: number
+				chat_log: chatLogEntry_t[]
+				chat_entry: chatLogEntry_t
+				edited: chatReply_t
+			}) => Promise<void>
+			MessageDelete: (arg: {
+				index: number
+				chat_log: chatLogEntry_t[]
+				chat_entry: chatLogEntry_t
+				extension?: any
+			}) => Promise<void>
 		},
 		discord: {
 			Intents?: DiscordGatewayIntentBits[]

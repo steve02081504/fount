@@ -1,4 +1,4 @@
-<div class="chat-message w-full flex items-start mb-4" id="message-${timeStamp}">
+<div class="chat-message w-full flex items-start mb-4" id="message-${safeTimeStamp}" data-template-type="message">
 	<div class="avatar">
 		<div class="w-10 h-10 rounded-full">
 			<img src="${avatar}" alt="${name}" />
@@ -12,8 +12,10 @@
 		<div class="message-content mt-1">
 			${content}
 		</div>
-		<button class="delete-button btn btn-xs btn-error"><img src="https://api.iconify.design/line-md/remove.svg"
-				title="删除" /></button>
+        <span class="button-group">
+		    <button class="edit-button btn btn-xs btn-primary"><img src="https://api.iconify.design/line-md/edit.svg" title="编辑" /></button>
+		    <button class="delete-button btn btn-xs btn-error"><img src="https://api.iconify.design/line-md/remove.svg" title="删除" /></button>
+        </span>
 	</div>
 	<div class="arrow left">❮</div>
 	<div class="arrow right">❯</div>

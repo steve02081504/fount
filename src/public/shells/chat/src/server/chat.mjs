@@ -12,6 +12,7 @@ import { loadPersona } from '../../../../../server/managers/personas_manager.mjs
 import { loadWorld } from "../../../../../server/managers/world_manager.mjs"
 import { Buffer } from "node:buffer"
 import fs from 'node:fs'
+import { get } from "node:http"
 
 /**
  * Structure of the chat metadata map:
@@ -60,9 +61,12 @@ class timeSlice_t {
 	chars_memories = {}
 
 	charname
+	playername
 
 	copy() {
 		return Object.assign(new timeSlice_t(), this, {
+			charname: undefined,
+			playername: undefined,
 			chars_memories: structuredClone(this.chars_memories)
 		})
 	}
@@ -100,6 +104,7 @@ class chatLogEntry_t {
 	timeStamp
 	role
 	content
+	content_for_edit
 	timeSlice = new timeSlice_t()
 	files = []
 	extension = {}
@@ -388,6 +393,7 @@ function BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, u
 		name: result.name || info.name || charname,
 		avatar: result.avatar || info.avatar,
 		content: result.content,
+		content_for_edit: result.content_for_edit,
 		timeSlice: new_timeSlice,
 		role: 'char',
 		timeStamp: new Date(),
@@ -398,23 +404,30 @@ function BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, u
 }
 
 /**
- * @param {string} content
+ * @param {{
+ *  name: string,
+ *  avatar: string,
+ *  content: string,
+ *  extension: any
+ * }} result
  * @param {timeSlice_t} new_timeSlice
  * @param {UserAPI_t} user
  * @param {string} username
  * @returns {chatLogEntry_t}
  */
-function BuildChatLogEntryFromUserMessage(content, new_timeSlice, user, username) {
+function BuildChatLogEntryFromUserMessage(result, new_timeSlice, user, username) {
 	const { locale } = getUserByUsername(username)
+	new_timeSlice.playername = new_timeSlice.player_id
 	const info = getPartInfo(user, locale) || {}
 
 	return Object.assign(new chatLogEntry_t(), {
-		name: info.name || new_timeSlice.player_id || username,
-		avatar: info.avatar,
-		content: content,
+		name: result.name || info.name || new_timeSlice.player_id || username,
+		avatar: result.avatar || info.avatar,
+		content: result.content,
 		timeSlice: new_timeSlice,
 		role: 'user',
-		timeStamp: new Date()
+		timeStamp: new Date(),
+		extension: result.extension || {}
 	})
 }
 
@@ -440,7 +453,7 @@ export async function addUserReply(chatid, content) {
 	const new_timeSlice = timeSlice.copy()
 	const user = timeSlice.player
 
-	return addChatLogEntry(chatid, BuildChatLogEntryFromUserMessage(content, new_timeSlice, user, chatMetadata.username))
+	return addChatLogEntry(chatid, BuildChatLogEntryFromUserMessage({content}, new_timeSlice, user, chatMetadata.username))
 }
 
 export async function getChatList(username) {
@@ -523,7 +536,24 @@ export async function deleteMessage(chatid, index) {
 	if (!chatMetadata) throw new Error('Chat not found')
 	if (index < 0 || index >= chatMetadata.chatLog.length) throw new Error('Invalid index')
 
-	chatMetadata.chatLog.splice(index, 1)
+	function geneRequest() {
+		return {
+			index,
+			chat_log: chatMetadata.chatLog,
+			chat_entry: chatMetadata.chatLog[index],
+		}
+	}
+	// 若有world,让world处理消息删除
+	if (chatMetadata.LastTimeSlice.world?.interfacies?.chat?.MessageDelete)
+		await chatMetadata.LastTimeSlice.world.interfacies.chat.MessageDelete(geneRequest())
+	else {
+		// 通知每个char消息将被删除
+		for (const char of Object.values(chatMetadata.LastTimeSlice.chars))
+			await char.interfacies.chat?.MessageDelete?.(geneRequest())
+		// 还有user
+		await chatMetadata.LastTimeSlice.player?.interfacies?.chat?.MessageDelete?.(geneRequest())
+		chatMetadata.chatLog.splice(index, 1)
+	}
 
 	let last = chatMetadata.chatLog[chatMetadata.chatLog.length - 1]
 
@@ -536,4 +566,66 @@ export async function deleteMessage(chatid, index) {
 		chatMetadata.LastTimeSlice = last.timeSlice
 	else
 		chatMetadata.LastTimeSlice = new timeSlice_t()
+}
+
+export async function editMessage(chatid, index, new_content) {
+	const chatMetadata = await loadChat(chatid)
+	if (!chatMetadata) throw new Error('Chat not found')
+	if (index < 0 || index >= chatMetadata.chatLog.length) throw new Error('Invalid index')
+
+	function geneRequest() {
+		return {
+			original: chatMetadata.chatLog[index].content,
+			edited: new_content,
+			chat_log: chatMetadata.chatLog,
+			chat_entry: chatMetadata.chatLog[index],
+		}
+	}
+	// 若有world,让world处理消息编辑
+	let editresult
+	if (chatMetadata.LastTimeSlice.world?.interfacies?.chat?.MessageEdit)
+		editresult = await chatMetadata.LastTimeSlice.world.interfacies.chat.MessageEdit(geneRequest())
+	else {
+		// 通知消息原作者处理消息编辑
+		let entry = chatMetadata.chatLog[index]
+		if (entry.timeSlice.charname) {
+			let char = entry.timeSlice.chars[entry.timeSlice.charname]
+			editresult = await char.interfacies.chat?.MessageEdit?.(geneRequest())
+		}
+		else if(entry.timeSlice.playername)
+			editresult = await entry.timeSlice?.player?.interfacies?.chat?.MessageEdit?.(geneRequest())
+		editresult ??= {
+			content: new_content,
+		}
+
+		// 通知其他人消息被编辑
+		// deno-lint-ignore no-inner-declarations
+		function geneEditedRequest() {
+			return {
+				index,
+				chat_log: chatMetadata.chatLog,
+				chat_entry: chatMetadata.chatLog[index],
+				edited: editresult,
+			}
+		}
+		if (chatMetadata.LastTimeSlice.world?.interfacies?.chat?.MessageEditting)
+			await chatMetadata.LastTimeSlice.world.interfacies.chat.MessageEditting(geneEditedRequest())
+		else {
+			for (const char of Object.values(chatMetadata.LastTimeSlice.chars))
+				await char.interfacies?.chat?.MessageEditting?.(geneEditedRequest())
+
+			await chatMetadata.LastTimeSlice.player?.interfacies?.chat?.MessageEditting?.(geneEditedRequest())
+		}
+	}
+
+	let timeSlice = chatMetadata.chatLog[index].timeSlice
+	let entry
+	if (timeSlice.charname) {
+		let char = timeSlice.chars[timeSlice.charname]
+		entry = BuildChatLogEntryFromCharReply(editresult, timeSlice, char, timeSlice.charname, chatMetadata.username)
+	}
+	else
+		entry = BuildChatLogEntryFromUserMessage(editresult, timeSlice, chatMetadata.LastTimeSlice, chatMetadata.username)
+
+	return chatMetadata.chatLog[index] = entry
 }

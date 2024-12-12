@@ -18,7 +18,8 @@ import {
 	setPersona,
 	setWorld,
 	triggerCharReply,
-	deleteMessage
+	deleteMessage,
+	editMessage
 } from './chat.mjs'
 
 export function setEndpoints(app) {
@@ -66,6 +67,12 @@ export function setEndpoints(app) {
 		res.status(200).json({ message: 'deletemessage ok' })
 	})
 
+	app.post('/api/shells/chat/editmessage', async (req, res) => {
+		const { chatid, index, content } = req.body
+		let entry = await editMessage(chatid, index, content)
+		res.status(200).json(entry)
+	})
+
 	app.post('/api/shells/chat/getcharlist', authenticate, async (req, res) => {
 		res.status(200).json(await getCharListOfChat(req.body.chatid))
 	})
@@ -82,16 +89,16 @@ export function setEndpoints(app) {
 		res.status(200).json(await GetWorldName(req.body.chatid))
 	})
 	app.post('/api/shells/chat/list', authenticate, async (req, res) => {
-		res.status(200).json(await getChatList(await getUserByToken(req.cookies.accessToken).username))
+		res.status(200).json(await getChatList((await getUserByToken(req.cookies.accessToken)).username))
 	})
 
 	app.delete('/api/shells/chat/delete', authenticate, async (req, res) => {
-		const result = await deleteChat(req.body.chatids, await getUserByToken(req.cookies.accessToken).username)
+		const result = await deleteChat(req.body.chatids, (await getUserByToken(req.cookies.accessToken)).username)
 		res.status(200).json(result)
 	})
 
 	app.post('/api/shells/chat/copy', authenticate, async (req, res) => {
-		const result = await copyChat(req.body.chatids, await getUserByToken(req.cookies.accessToken).username)
+		const result = await copyChat(req.body.chatids, (await getUserByToken(req.cookies.accessToken)).username)
 		res.status(200).json(result)
 	})
 
@@ -131,6 +138,14 @@ export function unsetEndpoints(app) {
 	})
 
 	app.post('/api/shells/chat/modifytimeline', (req, res) => {
+		res.status(404)
+	})
+
+	app.post('/api/shells/chat/deletemessage', (req, res) => {
+		res.status(404)
+	})
+
+	app.post('/api/shells/chat/editmessage', (req, res) => {
 		res.status(404)
 	})
 
