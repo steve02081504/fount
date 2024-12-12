@@ -1,10 +1,10 @@
-<div class="chat-message ${isSelf ? 'chat-message-right' : ''} w-full flex items-start mb-4" id="message-${timeStamp}">
+<div class="chat-message w-full flex items-start mb-4" id="message-${timeStamp}">
 	<div class="avatar">
 		<div class="w-10 h-10 rounded-full">
 			<img src="${avatar}" alt="${name}" />
 		</div>
 	</div>
-	<div class="content ml-2 p-4 rounded-lg bg-base-200">
+	<div class="content ml-2 p-4 rounded-lg bg-base-200 relative">
 		<div class="info font-bold text-sm">
 			${name}
 			<span class="timestamp text-xs text-gray-400 ml-2">${timeStamp}</span>
@@ -12,6 +12,8 @@
 		<div class="message-content mt-1">
 			${content}
 		</div>
+		<button class="delete-button btn btn-xs btn-error"><img src="https://api.iconify.design/line-md/remove.svg"
+				title="删除" /></button>
 	</div>
 	<div class="arrow left">❮</div>
 	<div class="arrow right">❯</div>

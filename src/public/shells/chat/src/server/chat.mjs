@@ -510,3 +510,30 @@ export async function exportChat(chatids) {
 
 	return Promise.all(exportPromises)
 }
+
+/**
+ * Deletes a specific chat log entry from a chat.
+ *
+ * @param {string} chatid The ID of the chat.
+ * @param {number} index The index of the chat log entry to delete.
+ * @returns {Promise<{ success: boolean, message: string, error?: string }>}  An object indicating success or failure.
+ */
+export async function deleteMessage(chatid, index) {
+	const chatMetadata = await loadChat(chatid)
+	if (!chatMetadata) throw new Error('Chat not found')
+	if (index < 0 || index >= chatMetadata.chatLog.length) throw new Error('Invalid index')
+
+	chatMetadata.chatLog.splice(index, 1)
+
+	let last = chatMetadata.chatLog[chatMetadata.chatLog.length - 1]
+
+	if (index == chatMetadata.chatLog.length) {
+		chatMetadata.timeLines = [last]
+		chatMetadata.timeLineIndex = 0
+	}
+
+	if (chatMetadata.chatLog.length > 0)
+		chatMetadata.LastTimeSlice = last.timeSlice
+	else
+		chatMetadata.LastTimeSlice = new timeSlice_t()
+}

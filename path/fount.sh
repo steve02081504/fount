@@ -92,6 +92,7 @@ EOF
 	fi
 fi
 
+deno upgrade
 if [ ! -d "$FOUNT_DIR/node_modules" ]; then
 	deno install --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
 fi

@@ -44,6 +44,7 @@ if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
 	}
 }
 
+deno upgrade
 if (!(Test-Path -Path "$FOUNT_DIR/node_modules")) {
 	deno install --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
 }
@@ -55,7 +56,7 @@ else {
 	deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" @args
 }
 
-if ($ErrorCount -ne $Error.Count -or $LASTEXITCODE -ne 0) {
+if ($ErrorCount -ne $Error.Count -or ($LASTEXITCODE -ne 0) -and ($LASTEXITCODE -ne 255)) {
 	Pause
 	exit $LASTEXITCODE
 }
