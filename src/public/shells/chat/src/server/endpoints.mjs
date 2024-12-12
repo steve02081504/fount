@@ -17,7 +17,8 @@ import {
 	removechar,
 	setPersona,
 	setWorld,
-	triggerCharReply
+	triggerCharReply,
+	deleteMessage
 } from './chat.mjs'
 
 export function setEndpoints(app) {
@@ -57,6 +58,12 @@ export function setEndpoints(app) {
 		const { chatid, delta } = req.body
 		const entry = await modifyTimeLine(chatid, delta)
 		res.status(200).json(entry)
+	})
+
+	app.post('/api/shells/chat/deletemessage', async (req, res) => {
+		const { chatid, index } = req.body
+		await deleteMessage(chatid, index)
+		res.status(200).json({ message: 'deletemessage ok' })
 	})
 
 	app.post('/api/shells/chat/getcharlist', authenticate, async (req, res) => {
@@ -124,6 +131,10 @@ export function unsetEndpoints(app) {
 	})
 
 	app.post('/api/shells/chat/modifytimeline', (req, res) => {
+		res.status(404)
+	})
+
+	app.post('/api/shells/chat/deletelogentry', (req, res) => {
 		res.status(404)
 	})
 

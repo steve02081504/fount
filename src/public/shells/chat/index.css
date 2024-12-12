@@ -43,3 +43,15 @@ body {
 .smooth-transition {
 	transition: opacity 0.5s ease-in-out;
 }
+
+.chat-message .delete-button {
+    display: none;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    cursor: pointer;
+}
+
+.chat-message:hover .delete-button {
+	display: inline-block; /* Shown on hover */
+}

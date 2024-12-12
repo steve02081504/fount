@@ -1,5 +1,5 @@
 import { renderTemplate } from "../../scripts/template.mjs"
-import { addUserReply, getCharList, getChatLog, triggerCharacterReply, modifyTimeLine } from "./src/public/endpoints.mjs"
+import { addUserReply, getCharList, getChatLog, triggerCharacterReply, modifyTimeLine, deleteMessage } from "./src/public/endpoints.mjs"
 import { renderMarkdown } from "../../scripts/markdown.mjs"
 
 // 获取聊天消息容器元素
@@ -20,25 +20,37 @@ const TRANSITION_DURATION = 500
 function applyTheme() {
 	document.documentElement.setAttribute('data-theme', window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
 }
-
 // 渲染单条消息
 async function renderMessage(message) {
 	const renderedMessage = {
 		...message,
 		avatar: message.avatar || DEFAULT_AVATAR,
 		timeStamp: new Date(message.timeStamp).toLocaleString(),
-		content: renderMarkdown(message.content),
+		content: renderMarkdown(message.content)
 	}
 	document.querySelectorAll('.arrow').forEach(arrow => arrow.remove())
 	const messageElement = document.createElement('div')
 	messageElement.innerHTML = await renderTemplate('message_view', renderedMessage)
-	// 如果不是角色消息，移除左右箭头
+	// 为消息元素添加鼠标悬停事件监听器
+	messageElement.addEventListener('mouseover', () => {
+		messageElement.querySelector('.delete-button').style.display = 'inline-block'
+	})
+	messageElement.addEventListener('mouseout', () => {
+		messageElement.querySelector('.delete-button').style.display = 'none'
+	})
+	// 删除按钮点击事件
+	messageElement.querySelector('.delete-button').addEventListener('click', async () => {
+		if (confirm("确认删除此消息？")) {
+			let index = Array.from(chatMessagesContainer.children).indexOf(messageElement)
+			await deleteMessage(index)
+			messageElement.remove()
+		}
+	})
+
 	if (message.role !== 'char')
 		messageElement.querySelectorAll('.arrow').forEach(arrow => arrow.remove())
 	else {
-		// 为消息元素启用滑动切换功能
 		enableSwipe(messageElement)
-		// 为箭头添加点击事件监听器
 		messageElement.querySelectorAll('.arrow').forEach(arrow => {
 			arrow.addEventListener('click', async (event) => {
 				const direction = arrow.classList.contains('left') ? -1 : 1
