@@ -117,7 +117,7 @@ system:
 					text = text.split('\n')
 					let reg = new RegExp(`^(|${prompt_struct.Charname}[^\\n]*)(:|：)*$`, 'i')
 					while (text[0].trim().match(reg)) text.shift()
-					if (text[text.length - 1].trim() == '</pause>') text.pop() //?
+					while (['','</pause>'].includes(text[text.length - 1].trim())) text.pop() //?
 					text = text.join('\n')
 				}
 
