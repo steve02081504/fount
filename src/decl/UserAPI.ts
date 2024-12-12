@@ -1,7 +1,8 @@
-import { chatReplyRequest_t } from "../public/shells/chat/decl/chatLog";
-import { AIsource_t } from "./AIsource";
-import { locale_t } from "./basedefs";
-import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from "./prompt_struct";
+import { chatReplyRequest_t } from "../public/shells/chat/decl/chatLog.ts";
+import { chatReply_t } from "../public/shells/chat/decl/chatLog.ts";
+import { AIsource_t } from "./AIsource.ts";
+import { locale_t } from "./basedefs.ts";
+import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from "./prompt_struct.ts";
 
 export class UserAPI_t {
 	info: Record<locale_t, {
@@ -40,13 +41,19 @@ export class UserAPI_t {
 				chat_log: chatLogEntry_t[]
 				chat_entry: chatLogEntry_t
 				extension?: any
-			}) => Promise<{
-				original: string
-				edited: string
+			}) => Promise<chatReply_t>
+			MessageEditting: (arg: {
+				index: number
+				chat_log: chatLogEntry_t[]
+				chat_entry: chatLogEntry_t
+				edited: chatReply_t
+			}) => Promise<void>
+			MessageDelete: (arg: {
+				index: number
 				chat_log: chatLogEntry_t[]
 				chat_entry: chatLogEntry_t
 				extension?: any
-			}>
+			}) => Promise<void>
 		}
 	};
 }

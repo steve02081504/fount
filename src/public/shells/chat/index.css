@@ -44,14 +44,22 @@ body {
 	transition: opacity 0.5s ease-in-out;
 }
 
-.chat-message .delete-button {
-    display: none;
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    cursor: pointer;
+/* Styles for the button container */
+.chat-message .button-group {
+	display: none;
+	position: absolute;
+	top: 5px;
+	right: 5px;
 }
 
-.chat-message:hover .delete-button {
-	display: inline-block; /* Shown on hover */
+.chat-message:hover .button-group {
+	display: inline-block;
+}
+
+.chat-message .edit-area .edit-button-group {
+	display: flex;
+	flex-direction: column;
+	/* Stack buttons vertically */
+	gap: 4px;
+	/* Add spacing between buttons */
 }

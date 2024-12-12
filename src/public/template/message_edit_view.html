@@ -1,0 +1,25 @@
+<div class="chat-message w-full flex items-start mb-4" id="message-${safeTimeStamp}" data-template-type="edit">
+	<div class="avatar">
+		<div class="w-10 h-10 rounded-full">
+			<img src="${avatar}" alt="${name}" />
+		</div>
+	</div>
+	<div class="content ml-2 p-4 rounded-lg bg-base-200 relative flex flex-col">
+		<div class="info font-bold text-sm">
+			${name}
+			<span class="timestamp text-xs text-gray-400 ml-2">${timeStamp}</span>
+		</div>
+		<div class="edit-area mt-1 flex gap-2">
+			<textarea id="edit-input-${safeTimeStamp}" class="textarea textarea-bordered flex-grow"
+				placeholder="Type a message...">${content_for_edit}</textarea>
+			<div class="edit-button-group">
+				<button id="confirm-button-${safeTimeStamp}" class="btn btn-sm btn-success"><img
+						src="https://api.iconify.design/line-md/confirm.svg" title="确认" /></button>
+				<button id="cancel-button-${safeTimeStamp}" class="btn btn-sm btn-error"><img
+						src="https://api.iconify.design/line-md/close.svg" title="取消" /></button>
+			</div>
+		</div>
+	</div>
+	<div class="arrow left">❮</div>
+	<div class="arrow right">❯</div>
+</div>

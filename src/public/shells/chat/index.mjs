@@ -1,5 +1,5 @@
 import { renderTemplate } from "../../scripts/template.mjs"
-import { addUserReply, getCharList, getChatLog, triggerCharacterReply, modifyTimeLine, deleteMessage } from "./src/public/endpoints.mjs"
+import { addUserReply, getCharList, getChatLog, triggerCharacterReply, modifyTimeLine, deleteMessage, editMessage } from "./src/public/endpoints.mjs"
 import { renderMarkdown } from "../../scripts/markdown.mjs"
 
 // 获取聊天消息容器元素
@@ -16,37 +16,49 @@ const SWIPE_THRESHOLD = 50
 // 过渡动画持续时间 (毫秒)
 const TRANSITION_DURATION = 500
 
+// 处理时间戳，使其可以用作 ID
+function processTimeStampForId(timeStamp) {
+	return timeStamp.replaceAll(/[\s./:]/g, '_') // 添加 \s 匹配空格
+}
+
 // 应用主题
 function applyTheme() {
 	document.documentElement.setAttribute('data-theme', window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
 }
 // 渲染单条消息
 async function renderMessage(message) {
-	const renderedMessage = {
+	const preprocessedMessage = {
 		...message,
 		avatar: message.avatar || DEFAULT_AVATAR,
 		timeStamp: new Date(message.timeStamp).toLocaleString(),
-		content: renderMarkdown(message.content)
+		content: renderMarkdown(message.content),
+		content_for_edit: message.content_for_edit || message.content,
+		safeTimeStamp: processTimeStampForId(new Date(message.timeStamp).toLocaleString())
 	}
-	document.querySelectorAll('.arrow').forEach(arrow => arrow.remove())
-	const messageElement = document.createElement('div')
-	messageElement.innerHTML = await renderTemplate('message_view', renderedMessage)
-	// 为消息元素添加鼠标悬停事件监听器
-	messageElement.addEventListener('mouseover', () => {
-		messageElement.querySelector('.delete-button').style.display = 'inline-block'
-	})
-	messageElement.addEventListener('mouseout', () => {
-		messageElement.querySelector('.delete-button').style.display = 'none'
-	})
-	// 删除按钮点击事件
-	messageElement.querySelector('.delete-button').addEventListener('click', async () => {
-		if (confirm("确认删除此消息？")) {
-			let index = Array.from(chatMessagesContainer.children).indexOf(messageElement)
-			await deleteMessage(index)
-			messageElement.remove()
-		}
-	})
 
+	const messageElement = document.createElement('div')
+	messageElement.innerHTML = await renderTemplate('message_view', preprocessedMessage)
+
+	// 获取模板类型
+	const templateType = messageElement.firstChild.dataset.templateType
+
+	// 根据模板类型执行不同的操作
+	if (templateType === 'message') {
+		// 删除按钮点击事件
+		messageElement.querySelector('.delete-button').addEventListener('click', async () => {
+			if (confirm("确认删除此消息？")) {
+				let index = Array.from(chatMessagesContainer.children).indexOf(messageElement)
+				await deleteMessage(index)
+				messageElement.remove()
+			}
+		})
+		// 编辑按钮点击事件
+		messageElement.querySelector('.edit-button').addEventListener('click', async () => {
+			let index = Array.from(chatMessagesContainer.children).indexOf(messageElement)
+			await editMessageStart(message, index) // 这里应传入原始的 message 对象
+		})
+
+	}
 	if (message.role !== 'char')
 		messageElement.querySelectorAll('.arrow').forEach(arrow => arrow.remove())
 	else {
@@ -54,13 +66,43 @@ async function renderMessage(message) {
 		messageElement.querySelectorAll('.arrow').forEach(arrow => {
 			arrow.addEventListener('click', async (event) => {
 				const direction = arrow.classList.contains('left') ? -1 : 1
-				await replaceLastMessage(await modifyTimeLine(direction))
+				await replaceMessage(Array.from(chatMessagesContainer.children).indexOf(messageElement), await modifyTimeLine(direction))
 			})
 		})
 	}
 	return messageElement
 }
 
+// 进入编辑模式
+async function editMessageStart(message, index) {
+	const editRenderedMessage = {
+		...message,
+		avatar: message.avatar || DEFAULT_AVATAR,
+		timeStamp: new Date(message.timeStamp).toLocaleString(),
+		content_for_edit: message.content_for_edit || message.content,
+		safeTimeStamp: processTimeStampForId(new Date(message.timeStamp).toLocaleString()) // 使用预处理函数
+	}
+	const messageElement = chatMessagesContainer.children[index]
+	messageElement.innerHTML = await renderTemplate('message_edit_view', editRenderedMessage)
+
+	// 获取模板类型
+	const templateType = messageElement.firstChild.dataset.templateType
+
+	if (templateType === 'edit') {
+		// 绑定确认按钮点击事件
+		messageElement.querySelector(`#confirm-button-${editRenderedMessage.safeTimeStamp}`).addEventListener('click', async () => {
+			const newContent = messageElement.querySelector(`#edit-input-${editRenderedMessage.safeTimeStamp}`).value
+			await replaceMessage(index, await editMessage(index, newContent))
+		})
+		// 绑定取消按钮点击事件
+		messageElement.querySelector(`#cancel-button-${editRenderedMessage.safeTimeStamp}`).addEventListener('click', async () => {
+			await replaceMessage(index, message)
+		})
+	}
+
+	// 设置编辑框焦点
+	messageElement.querySelector(`#edit-input-${editRenderedMessage.safeTimeStamp}`).focus()
+}
 // 追加消息到聊天窗口
 async function appendMessage(message) {
 	const messageElement = await renderMessage(message)
@@ -68,24 +110,24 @@ async function appendMessage(message) {
 	chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight
 }
 
-// 替换最后一条消息
-async function replaceLastMessage(message) {
-	const lastMessageElement = chatMessagesContainer.lastElementChild
+// 替换指定位置的消息
+async function replaceMessage(index, message) {
+	const MessageElement = chatMessagesContainer.children[index]
 	// 如果没有最后一条消息，则直接返回
-	if (!lastMessageElement) return
+	if (!MessageElement) return
 
 	const newMessageElement = await renderMessage(message)
 	// 添加平滑过渡的 CSS 类
-	lastMessageElement.classList.add('smooth-transition')
-	newMessageElement.classList.add('smooth-transition')
+	MessageElement.classList.add('smooth-transition')
+	MessageElement.classList.add('smooth-transition')
 	// 淡出旧消息
-	lastMessageElement.style.opacity = '0'
+	MessageElement.style.opacity = '0'
 
 	// 等待过渡动画完成
 	await new Promise(resolve => setTimeout(resolve, TRANSITION_DURATION))
 
 	// 用新消息替换旧消息
-	lastMessageElement.replaceWith(newMessageElement)
+	MessageElement.replaceWith(newMessageElement)
 	// 淡入新消息
 	newMessageElement.style.opacity = '1'
 }
@@ -107,8 +149,8 @@ function enableSwipe(messageElement) {
 		if (Math.abs(deltaX) > SWIPE_THRESHOLD) {
 			// 确定滑动方向，向左为 1，向右为 -1
 			const direction = deltaX > 0 ? -1 : 1
-			// 调用 modifyTimeLine API 并替换最后一条消息
-			await replaceLastMessage(await modifyTimeLine(direction))
+			// 调用 modifyTimeLine API 并替换消息
+			await replaceMessage(Array.from(chatMessagesContainer.children).indexOf(messageElement), await modifyTimeLine(direction))
 		}
 	}, { passive: true })
 }

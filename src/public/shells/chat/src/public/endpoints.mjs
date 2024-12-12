@@ -121,6 +121,21 @@ export async function deleteMessage(index) {
 	return response.json()
 }
 
+export async function editMessage(index, content) {
+	const response = await fetch('/api/shells/chat/editmessage', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({ chatid: currentChatId, index, content }),
+	})
+
+	if (!response.ok)
+		throw new Error(`API request failed with status ${response.status}`)
+
+	return response.json()
+}
+
 export async function getCharList() {
 	const response = await fetch('/api/shells/chat/getcharlist', {
 		method: 'POST',
