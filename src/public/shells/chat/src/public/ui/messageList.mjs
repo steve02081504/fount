@@ -6,7 +6,8 @@ import {
 	editMessage,
 } from '../endpoints.mjs'
 import { renderAttachmentPreview } from '../fileHandling.mjs'
-import { processTimeStampForId, SWIPE_THRESHOLD, TRANSITION_DURATION, DEFAULT_AVATAR } from '../utils.mjs'
+import { processTimeStampForId, SWIPE_THRESHOLD, DEFAULT_AVATAR } from '../utils.mjs'
+import { appendMessageToQueue, getQueueIndex, replaceMessageInQueue } from './virtualQueue.mjs'
 
 const chatMessagesContainer = document.getElementById('chat-messages')
 
@@ -16,7 +17,7 @@ export async function renderMessage(message) {
 		avatar: message.avatar || DEFAULT_AVATAR,
 		timeStamp: new Date(message.timeStamp).toLocaleString(),
 		content: renderMarkdown(message.content),
-		safeTimeStamp: processTimeStampForId(message.timeStamp),
+		safeTimeStamp: processTimeStampForId(message.timeStamp)
 	}
 
 	const messageElement = document.createElement('div')
@@ -31,20 +32,21 @@ export async function renderMessage(message) {
 			.querySelector('.delete-button')
 			.addEventListener('click', async () => {
 				if (confirm('确认删除此消息？')) {
-					const index = Array.from(chatMessagesContainer.children).indexOf(
-						messageElement
-					)
-					await deleteMessage(index)
+					const index = getQueueIndex(messageElement)
+					await deleteMessage(startIndex + index)
 					messageElement.remove()
+					// 虚拟队列中删除该消息
+					queue.splice(index, 1)
+					if (queue.length < BUFFER_SIZE)
+						startIndex = Math.max(0, startIndex - (BUFFER_SIZE - queue.length))
+					await renderQueue()
 				}
 			})
 
 		messageElement
 			.querySelector('.edit-button')
 			.addEventListener('click', async () => {
-				const index = Array.from(chatMessagesContainer.children).indexOf(
-					messageElement
-				)
+				const index = getQueueIndex(messageElement)
 				await editMessageStart(message, index)
 			})
 
@@ -58,22 +60,8 @@ export async function renderMessage(message) {
 		}
 	}
 
-	if (message.role !== 'char')
-		messageElement.querySelectorAll('.arrow').forEach((arrow) => arrow.remove())
-	else {
+	if (message.role == 'char')
 		enableSwipe(messageElement)
-		messageElement.querySelectorAll('.arrow').forEach((arrow) => {
-			arrow.addEventListener('click', async () => {
-				const index = Array.from(chatMessagesContainer.children).indexOf(
-					messageElement
-				)
-				await replaceMessage(
-					index,
-					await modifyTimeLine(arrow.classList.contains('left') ? -1 : 1)
-				)
-			})
-		})
-	}
 
 	return messageElement
 }
@@ -115,16 +103,16 @@ export async function editMessageStart(message, index) {
 				const newContent = messageElement.querySelector(
 					`#edit-input-${editRenderedMessage.safeTimeStamp}`
 				).value
-				await replaceMessage(
+				await replaceMessageInQueue(
 					index,
-					await editMessage(index, { content: newContent, files: selectedFiles })
+					await editMessage(startIndex + index, { content: newContent, files: selectedFiles })
 				)
 			})
 
 		messageElement
 			.querySelector(`#cancel-button-${editRenderedMessage.safeTimeStamp}`)
 			.addEventListener('click', async () => {
-				await replaceMessage(index, message)
+				await replaceMessageInQueue(index, message)
 			})
 
 		selectedFiles.forEach(async (file, i) => {
@@ -146,27 +134,11 @@ export async function editMessageStart(message, index) {
 }
 
 export async function appendMessage(message) {
-	chatMessagesContainer.querySelectorAll('.arrow').forEach((arrow) => arrow.remove())
-	const messageElement = await renderMessage(message)
-	chatMessagesContainer.appendChild(messageElement)
-	chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight
+	await appendMessageToQueue(message)
 }
 
 export async function replaceMessage(index, message) {
-	const oldMessageElement = chatMessagesContainer.children[index]
-	if (!oldMessageElement) return
-
-	const newMessageElement = await renderMessage(message)
-	if (index != chatMessagesContainer.children.length - 1)
-		// 不是最后一条消息
-		newMessageElement.querySelectorAll('.arrow').forEach((arrow) => arrow.remove())
-	oldMessageElement.classList.add('smooth-transition')
-	oldMessageElement.style.opacity = '0'
-
-	await new Promise((resolve) => setTimeout(resolve, TRANSITION_DURATION))
-
-	oldMessageElement.replaceWith(newMessageElement)
-	newMessageElement.style.opacity = '1'
+	await replaceMessageInQueue(index, message)
 }
 
 export function enableSwipe(messageElement) {
@@ -184,10 +156,8 @@ export function enableSwipe(messageElement) {
 		async (event) => {
 			const deltaX = event.changedTouches[0].clientX - touchStartX
 			if (Math.abs(deltaX) > SWIPE_THRESHOLD) {
-				const index = Array.from(chatMessagesContainer.children).indexOf(
-					messageElement
-				)
-				await replaceMessage(
+				const index = getQueueIndex(messageElement)
+				await replaceMessageInQueue(
 					index,
 					await modifyTimeLine(deltaX > 0 ? -1 : 1)
 				)

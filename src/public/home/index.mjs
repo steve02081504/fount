@@ -17,7 +17,6 @@ async function renderCharView(charDetails) {
 	const roleElement = document.createElement('div')
 	roleElement.innerHTML = html
 	roleElement.classList.add('role-card')
-	roleElement.dataset.charname = charDetails.name
 
 	// 移动端点击卡片非按钮区域时显示侧边栏
 	roleElement.addEventListener('click', (event) => {
