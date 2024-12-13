@@ -1,19 +1,11 @@
 import { renderTemplate } from '../../../../scripts/template.mjs'
 import { processTimeStampForId, arrayBufferToBase64 } from './utils.mjs'
 import { openModal } from './ui/modal.mjs'
+import { onElementRemoved } from "../../../../scripts/onElementRemoved.mjs"
 
-export const fileInputElement = document.getElementById('file-input')
-export const attachmentPreviewContainer = document.getElementById('attachment-preview')
-export let selectedFiles = []
 export const attachmentPreviewMap = new Map()
 
-export function initializeFileHandling() {
-	const uploadButtonElement = document.getElementById('upload-button')
-	uploadButtonElement.addEventListener('click', () => fileInputElement.click())
-	fileInputElement.addEventListener('change', handleFilesSelect)
-}
-
-export async function handleFilesSelect(event) {
+export async function handleFilesSelect(event, selectedFiles, attachmentPreviewContainer) {
 	const files = event.target.files || event.dataTransfer.files
 	if (!files) return
 
@@ -31,27 +23,23 @@ export async function handleFilesSelect(event) {
 				await renderAttachmentPreview(
 					newFile,
 					selectedFiles.length - 1,
+					selectedFiles,
 					attachmentPreviewContainer
 				)
 			)
 		}
 		reader.readAsArrayBuffer(file)
 	}
-	if (event.target === fileInputElement) fileInputElement.value = ''
 }
 
-export async function renderAttachmentPreview(file, index, container) {
-	const isMessageArea =
-		!container.classList.contains('attachment-preview') &&
-		!container.classList.contains('attachment-edit-preview')
-
+export async function renderAttachmentPreview(file, index, selectedFiles) {
 	const attachmentElement = document.createElement('div')
 	attachmentElement.innerHTML = await renderTemplate('attachment_preview', {
 		file,
 		index,
 		safeName: processTimeStampForId(file.name),
-		showDownloadButton: isMessageArea,
-		showDeleteButton: !isMessageArea,
+		showDownloadButton: !selectedFiles,
+		showDeleteButton: selectedFiles,
 	})
 
 	const previewContainer = attachmentElement.querySelector('.preview-container')
@@ -94,10 +82,12 @@ export async function renderAttachmentPreview(file, index, container) {
 		?.addEventListener('click', () => {
 			selectedFiles.splice(index, 1)
 			attachmentElement.remove()
-			// 从映射中删除
-			const previewImg = attachmentElement.querySelector('.preview-img')
-			if (previewImg) attachmentPreviewMap.delete(previewImg)
 		})
+	onElementRemoved(attachmentElement, () => {
+		// 从映射中删除
+		const previewImg = attachmentElement.querySelector('.preview-img')
+		if (previewImg) attachmentPreviewMap.delete(previewImg)
+	})
 
 	return attachmentElement
 }
@@ -107,8 +97,4 @@ export function downloadFile(file) {
 	link.href = `data:${file.mimeType};base64,${file.buffer}`
 	link.download = file.name
 	link.click()
-}
-
-export function clearSelectedFiles() {
-	selectedFiles = []
 }

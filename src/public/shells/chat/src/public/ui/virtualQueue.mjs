@@ -7,8 +7,10 @@ const BUFFER_SIZE = 20
 const THRESHOLD = 10
 let startIndex = 0
 let queue = []
+let chatLogLength = 0
 
-export async function initializeVirtualQueue(chatLogLength) {
+export async function initializeVirtualQueue() {
+	chatLogLength = await getChatLogLength()
 	startIndex = Math.max(0, chatLogLength - BUFFER_SIZE)
 	queue = await getChatLog(-BUFFER_SIZE)
 
@@ -27,14 +29,14 @@ async function renderQueue() {
 }
 
 async function handleScroll() {
+	if (chatLogLength === null) return
 	if (chatMessagesContainer.scrollTop < THRESHOLD && startIndex > 0)
 		await prependMessages()
 	else if (
 		chatMessagesContainer.scrollHeight - chatMessagesContainer.scrollTop - chatMessagesContainer.clientHeight < THRESHOLD &&
-		startIndex + queue.length < await getChatLogLength()
+		startIndex + queue.length < chatLogLength
 	)
 		await appendMessages()
-
 }
 
 async function prependMessages() {
@@ -97,6 +99,7 @@ export async function appendMessageToQueue(message) {
 		startIndex += 1
 
 	queue = queue.concat(message).slice(-2 * BUFFER_SIZE)
+	chatLogLength++
 	await renderQueue()
 	chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight
 }
@@ -116,4 +119,18 @@ export async function replaceMessageInQueue(index, message) {
 export function getQueueIndex(element) {
 	const index = Array.from(chatMessagesContainer.children).indexOf(element)
 	return index > queue.length || index < 0 ? -1 : index
+}
+
+export async function getMessageIndexByIndex(index) {
+	return startIndex + index
+}
+
+export async function deleteMessageInQueue(index) {
+	if (index < 0 || index >= queue.length) return
+	queue.splice(index, 1)
+	chatLogLength--
+	if (queue.length < BUFFER_SIZE)
+		startIndex = Math.max(0, startIndex - (BUFFER_SIZE - queue.length))
+
+	await renderQueue()
 }

@@ -5,9 +5,10 @@ import {
 	deleteMessage,
 	editMessage,
 } from '../endpoints.mjs'
-import { renderAttachmentPreview } from '../fileHandling.mjs'
+import { handleFilesSelect, renderAttachmentPreview } from '../fileHandling.mjs'
 import { processTimeStampForId, SWIPE_THRESHOLD, DEFAULT_AVATAR } from '../utils.mjs'
-import { appendMessageToQueue, getQueueIndex, replaceMessageInQueue } from './virtualQueue.mjs'
+import { appendMessageToQueue, getQueueIndex, replaceMessageInQueue, getMessageIndexByIndex, deleteMessageInQueue } from './virtualQueue.mjs'
+import { addDragAndDropSupport } from "./dragAndDrop.mjs"
 
 const chatMessagesContainer = document.getElementById('chat-messages')
 
@@ -33,13 +34,11 @@ export async function renderMessage(message) {
 			.addEventListener('click', async () => {
 				if (confirm('确认删除此消息？')) {
 					const index = getQueueIndex(messageElement)
-					await deleteMessage(startIndex + index)
+					if (index === -1) return
+					const messageIndex = await getMessageIndexByIndex(index)
+					await deleteMessage(messageIndex)
 					messageElement.remove()
-					// 虚拟队列中删除该消息
-					queue.splice(index, 1)
-					if (queue.length < BUFFER_SIZE)
-						startIndex = Math.max(0, startIndex - (BUFFER_SIZE - queue.length))
-					await renderQueue()
+					await deleteMessageInQueue(index)
 				}
 			})
 
@@ -47,14 +46,16 @@ export async function renderMessage(message) {
 			.querySelector('.edit-button')
 			.addEventListener('click', async () => {
 				const index = getQueueIndex(messageElement)
-				await editMessageStart(message, index)
+				if (index === -1) return
+				const messageIndex = await getMessageIndexByIndex(index)
+				await editMessageStart(message, index, messageIndex)
 			})
 
 		if (message.files?.length > 0) {
 			const attachmentsContainer = messageElement.querySelector('.attachments')
 			message.files.forEach(async (file, index) => {
 				attachmentsContainer.appendChild(
-					await renderAttachmentPreview(file, index, attachmentsContainer)
+					await renderAttachmentPreview(file, index, null)
 				)
 			})
 		}
@@ -66,7 +67,7 @@ export async function renderMessage(message) {
 	return messageElement
 }
 
-export async function editMessageStart(message, index) {
+export async function editMessageStart(message, index, messageIndex) {
 	let selectedFiles = message.files || []
 	const editRenderedMessage = {
 		...message,
@@ -81,19 +82,21 @@ export async function editMessageStart(message, index) {
 		editRenderedMessage
 	)
 
-	// 添加拖拽上传支持
-	addDragAndDropSupport(
-		messageElement.querySelector(
-			`#edit-input-${editRenderedMessage.safeTimeStamp}`
-		)
-	)
-
 	const templateType = messageElement.firstChild.dataset.templateType
 	const fileEditInputElement = messageElement.querySelector(
 		`#file-edit-input-${editRenderedMessage.safeTimeStamp}`
 	)
 	const attachmentEditPreviewContainer = messageElement.querySelector(
 		`#attachment-edit-preview-${editRenderedMessage.safeTimeStamp}`
+	)
+
+	// 添加拖拽上传支持
+	addDragAndDropSupport(
+		messageElement.querySelector(
+			`#edit-input-${editRenderedMessage.safeTimeStamp}`
+		),
+		selectedFiles,
+		attachmentEditPreviewContainer
 	)
 
 	if (templateType === 'edit') {
@@ -105,7 +108,7 @@ export async function editMessageStart(message, index) {
 				).value
 				await replaceMessageInQueue(
 					index,
-					await editMessage(startIndex + index, { content: newContent, files: selectedFiles })
+					await editMessage(messageIndex, { content: newContent, files: selectedFiles })
 				)
 			})
 
@@ -117,7 +120,7 @@ export async function editMessageStart(message, index) {
 
 		selectedFiles.forEach(async (file, i) => {
 			attachmentEditPreviewContainer.appendChild(
-				await renderAttachmentPreview(file, i, attachmentEditPreviewContainer)
+				await renderAttachmentPreview(file, i, selectedFiles)
 			)
 		})
 
@@ -125,7 +128,9 @@ export async function editMessageStart(message, index) {
 			.querySelector(`#upload-edit-button-${editRenderedMessage.safeTimeStamp}`)
 			.addEventListener('click', () => fileEditInputElement.click())
 
-		fileEditInputElement.addEventListener('change', handleFilesSelect)
+		fileEditInputElement.addEventListener('change', (event) => {
+			handleFilesSelect(event, selectedFiles, attachmentEditPreviewContainer)
+		})
 	}
 
 	messageElement
@@ -157,6 +162,7 @@ export function enableSwipe(messageElement) {
 			const deltaX = event.changedTouches[0].clientX - touchStartX
 			if (Math.abs(deltaX) > SWIPE_THRESHOLD) {
 				const index = getQueueIndex(messageElement)
+				if (index === -1) return
 				await replaceMessageInQueue(
 					index,
 					await modifyTimeLine(deltaX > 0 ? -1 : 1)
