@@ -19,7 +19,8 @@ import {
 	setWorld,
 	triggerCharReply,
 	deleteMessage,
-	editMessage
+	editMessage,
+	GetChatLogLength
 } from './chat.mjs'
 import { Buffer } from "node:buffer"
 
@@ -88,7 +89,13 @@ export function setEndpoints(app) {
 	})
 
 	app.post('/api/shells/chat/getchatlog', authenticate, async (req, res) => {
-		res.status(200).json(await GetChatLog(req.body.chatid))
+		const { chatid, start, end } = req.body
+		res.status(200).json(await GetChatLog(chatid, start, end))
+	})
+
+	app.post('/api/shells/chat/getchatloglength', authenticate, async (req, res) => {
+		const { chatid } = req.body
+		res.status(200).json(await GetChatLogLength(chatid))
 	})
 
 	app.post('/api/shells/chat/getpersonaname', async (req, res) => {

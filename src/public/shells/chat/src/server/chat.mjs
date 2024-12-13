@@ -297,9 +297,26 @@ export async function getCharListOfChat(chatid) {
 	return Object.keys(chatMetadata.LastTimeSlice.chars)
 }
 
-export async function GetChatLog(chatid) {
+/**
+ * 获取聊天记录
+ * @param {string} chatid 聊天 ID
+ * @param {number} start 起始索引
+ * @param {number} end 结束索引
+ * @returns {Promise<Array>} 聊天记录数组
+ */
+export async function GetChatLog(chatid, start, end) {
 	const chatMetadata = await loadChat(chatid)
-	return chatMetadata.chatLog
+	return chatMetadata.chatLog.slice(start, end)
+}
+
+/**
+ * 获取聊天记录长度
+ * @param {string} chatid 聊天 ID
+ * @returns
+ */
+export async function GetChatLogLength(chatid) {
+	const chatMetadata = await loadChat(chatid)
+	return chatMetadata.chatLog.length
 }
 
 export async function GetUserPersonaName(chatid) {

@@ -1,4 +1,3 @@
-// chat/chat.mjs
 import { appendMessage } from './ui/messageList.mjs'
 import { getCharList, getChatLog } from '../public/endpoints.mjs'
 
