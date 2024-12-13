@@ -151,8 +151,23 @@ export async function getCharList() {
 	return await response.json()
 }
 
-export async function getChatLog() {
+export async function getChatLog(start, end) {
 	const response = await fetch('/api/shells/chat/getchatlog', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({ chatid: currentChatId, start, end }),
+	})
+
+	if (!response.ok)
+		throw new Error(`API request failed with status ${response.status}`)
+
+	return await response.json()
+}
+
+export async function getChatLogLength() {
+	const response = await fetch('/api/shells/chat/getchatloglength', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',

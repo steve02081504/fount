@@ -75,7 +75,8 @@ export async function init() {
 		server.listen(port, () => {
 			console.log(`HTTPS 服务器运行在 https://localhost:${port}`)
 		})
-	} else
+	}
+	else
 		// 使用 HTTP
 		server = app.listen(port, () => {
 			console.log(`HTTP 服务器运行在 http://localhost:${port}`)

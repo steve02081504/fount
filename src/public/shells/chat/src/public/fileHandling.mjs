@@ -1,7 +1,6 @@
 import { renderTemplate } from '../../../../scripts/template.mjs'
 import { processTimeStampForId, arrayBufferToBase64 } from './utils.mjs'
 import { openModal } from './ui/modal.mjs'
-import { addDragAndDropSupport } from './ui/dragAndDrop.mjs'
 
 export const fileInputElement = document.getElementById('file-input')
 export const attachmentPreviewContainer = document.getElementById('attachment-preview')

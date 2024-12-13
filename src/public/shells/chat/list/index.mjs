@@ -134,8 +134,8 @@ async function renderChatListItem(chat) {
 					a.download = `chat-${chat.chatid}.json`
 					a.click()
 					URL.revokeObjectURL(url)
-				} else
-					alert(data.message)
+				}
+				else alert(data.message)
 		}
 	})
 
@@ -154,8 +154,8 @@ async function renderChatListItem(chat) {
 				if (data[0].success) {
 					chatList = chatList.filter(c => c.chatid !== chat.chatid)
 					renderChatList()
-				} else
-					alert(data[0].message)
+				}
+				else alert(data[0].message)
 			}
 		}
 	})
@@ -217,8 +217,8 @@ deleteSelectedButton.addEventListener('click', async () => {
 					// Remove only successfully deleted chats from the UI
 					chatList = chatList.filter(c => c.chatid !== result.chatid)
 					selectedChats.delete(result.chatid) // Also remove from selectedChats
-				} else
-					alert(result.message)
+				}
+				else alert(result.message)
 
 			})
 			renderChatList()
@@ -250,8 +250,8 @@ exportSelectedButton.addEventListener('click', async () => {
 				a.download = `chat-${result.chatid}.json`
 				a.click()
 				URL.revokeObjectURL(url)
-			} else
-				alert(result.message)
+			}
+			else alert(result.message)
 	}
 })
 
