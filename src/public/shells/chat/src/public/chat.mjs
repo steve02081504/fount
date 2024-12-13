@@ -5,6 +5,5 @@ export let charList = []
 
 export async function initializeChat() {
 	charList = await getCharList()
-	const chatLogLength = await getChatLogLength()
-	await initializeVirtualQueue(chatLogLength)
+	await initializeVirtualQueue()
 }

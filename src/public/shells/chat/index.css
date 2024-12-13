@@ -58,6 +58,11 @@ body {
 	display: inline-block;
 }
 
+/* 编辑区域 */
+.chat-message .edit-area {
+	min-width: 80%;
+}
+
 /* 编辑区域按钮组 */
 .chat-message .edit-area .edit-button-group {
 	display: flex;
