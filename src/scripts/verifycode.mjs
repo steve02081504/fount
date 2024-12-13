@@ -1,10 +1,11 @@
 import cryptoRandomString from 'npm:crypto-random-string'
+import { ms } from "./ms.mjs"
 
 // 用于存储验证码、过期时间和ID
 let verificationCodes = []
 
 // 验证码过期时间 (60秒)
-const CODE_EXPIRATION_TIME = 60 * 1000
+const CODE_EXPIRATION_TIME = ms('60s')
 
 /**
  * 生成验证码的函数

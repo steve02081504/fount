@@ -9,6 +9,7 @@ import { loadAIsource, loadAIsourceGenerator } from './managers/AIsources_manage
 import { LoadCharTemplate } from '../public/shells/install/src/server/charTemplate_manager.mjs'
 import { loadWorld } from "./managers/world_manager.mjs"
 import { generateVerificationCode, verifyVerificationCode } from "../scripts/verifycode.mjs"
+import { ms } from "../scripts/ms.mjs"
 /**
  * @param {import('npm:express').Express} app
  */
@@ -33,7 +34,7 @@ export function registerEndpoints(app) {
 	})
 	let regrquesttimes = []
 	const registerRequestLimit = 5
-	const registerRequestInterval = 60 * 1000 // 1 minute
+	const registerRequestInterval = ms('1m')
 	app.post('/api/register', async (req, res) => {
 		const { username, password, verificationcode } = req.body
 		const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress
