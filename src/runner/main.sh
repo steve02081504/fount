@@ -1,7 +1,16 @@
 #!/bin/bash
 
-# 定义 fount 安装目录
-FOUNT_DIR="$HOME/.local/share/fount"
+# 若是 Windows 环境，则使用 fount.ps1
+if [[ "$OSTYPE" == "msys" ]]; then
+	powerShell.exe -noprofile -executionpolicy bypass -command "{
+	\$env:FOUNT_DIR = '$FOUNT_DIR' # 空字符串也是假 所以不需要空判断
+	irm https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1 | iex
+	}" $@
+	exit $?
+fi
+
+# 若未定义，则默认 fount 安装目录
+FOUNT_DIR="${$FOUNT_DIR:-"$HOME/.local/share/fount"}"
 
 # 检查 fount.sh 是否已存在
 if ! command -v fount.sh &> /dev/null; then
@@ -29,6 +38,8 @@ if ! command -v fount.sh &> /dev/null; then
 			exit 1
 		fi
 		rm /tmp/fount.zip
+		# 保证父目录存在
+		mkdir -p "$FOUNT_DIR"
 		mv /tmp/fount-master "$FOUNT_DIR"
 	fi
 else

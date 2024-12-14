@@ -1,7 +1,7 @@
-import { chatReply_t, chatReplyRequest_t } from "../public/shells/chat/decl/chatLog";
-import { AIsource_t } from "./AIsource";
-import { locale_t } from "./basedefs";
-import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from "./prompt_struct";
+import { chatReply_t, chatReplyRequest_t } from "../public/shells/chat/decl/chatLog.ts";
+import { AIsource_t } from "./AIsource.ts";
+import { locale_t } from "./basedefs.ts";
+import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from "./prompt_struct.ts";
 
 export class WorldAPI_t {
 	info: Record<locale_t, {
@@ -32,8 +32,8 @@ export class WorldAPI_t {
 
 	interfacies: {
 		chat: {
-			GetGreetings: (arg: chatReplyRequest_t) => Promise<chatReply_t[]>
-			GetGroupGreetings: (arg: chatReplyRequest_t) => Promise<chatReply_t[]>
+			GetGreeting: (arg: chatReplyRequest_t, index: number) => Promise<chatReply_t>
+			GetGroupGreeting: (arg: chatReplyRequest_t, index: number) => Promise<chatReply_t>
 			GetPrompt: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, detail_level: number) => Promise<single_part_prompt_t>;
 			GetChatLogForCharname: (arg: chatReplyRequest_t, charname: string) => Promise<chatLogEntry_t[]>
 			AddChatLogEntry: (arg: chatReplyRequest_t, entry: chatLogEntry_t) => void

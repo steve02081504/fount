@@ -30,7 +30,7 @@ if (Get-Command git -ErrorAction SilentlyContinue) {
 		git -C "$FOUNT_DIR" reset --hard origin/master
 		git -C "$FOUNT_DIR" checkout origin/master
 	}
-	git -C "$FOUNT_DIR" pull
+	git -C "$FOUNT_DIR" pull -f
 }
 else {
 	Write-Host "Git is not installed, skipping git pull"

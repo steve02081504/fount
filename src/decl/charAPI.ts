@@ -3,7 +3,7 @@ import { AIsource_t } from './AIsource.ts';
 import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts';
 import { chatReply_t, chatReplyRequest_t } from '../public/shells/chat/decl/chatLog.ts';
 
-import { Client as DiscordClient, GatewayIntentBits as DiscordGatewayIntentBits, Partials as DiscordPartials } from 'discord.js';
+import { Client as DiscordClient, GatewayIntentBits as DiscordGatewayIntentBits, Partials as DiscordPartials } from 'npm:discord.js';
 
 export class charState_t {
 	InitCount: number;
@@ -44,8 +44,8 @@ export class charAPI_t {
 	// interface with shell (maybe chat WebUI or cute Live2d or a kill machine, i don't care)
 	interfacies: {
 		chat: {
-			GetGreetings: (arg: chatReplyRequest_t) => Promise<chatReply_t[]>
-			GetGroupGreetings: (arg: chatReplyRequest_t) => Promise<chatReply_t[]>
+			GetGreeting: (arg: chatReplyRequest_t, index: number) => Promise<chatReply_t>
+			GetGroupGreeting: (arg: chatReplyRequest_t, index: number) => Promise<chatReply_t>
 			GetPrompt: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, detail_level: number) => Promise<single_part_prompt_t>;
 			GetPromptForOther: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, detail_level: number) => Promise<single_part_prompt_t>;
 			GetReply: (arg: chatReplyRequest_t) => Promise<chatReply_t>

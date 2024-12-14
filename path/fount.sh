@@ -39,7 +39,7 @@ if command -v git &> /dev/null; then
 		git -C "$FOUNT_DIR" reset --hard origin/master
 		git -C "$FOUNT_DIR" checkout origin/master
 	fi
-	git -C "$FOUNT_DIR" pull
+	git -C "$FOUNT_DIR" pull -f
 else
 	echo "Git is not installed, skipping git pull"
 fi

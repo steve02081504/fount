@@ -1,6 +1,7 @@
 import { renderMessage } from './messageList.mjs'
 import { getChatLog, getChatLogLength } from '../../public/endpoints.mjs'
 import { modifyTimeLine } from '../endpoints.mjs'
+import { TRANSITION_DURATION } from "../utils.mjs";
 
 const chatMessagesContainer = document.getElementById('chat-messages')
 const BUFFER_SIZE = 20
@@ -95,6 +96,7 @@ function updateLastCharMessageArrows() {
 }
 
 export async function appendMessageToQueue(message) {
+	if (!message) return
 	if (queue.length >= 2 * BUFFER_SIZE)
 		startIndex += 1
 
@@ -111,6 +113,11 @@ export async function replaceMessageInQueue(index, message) {
 	if (!oldMessageElement) return
 
 	const newMessageElement = await renderMessage(message)
+
+	oldMessageElement.classList.add('smooth-transition')
+	oldMessageElement.style.opacity = '0'
+
+	await new Promise((resolve) => setTimeout(resolve, TRANSITION_DURATION))
 
 	oldMessageElement.replaceWith(newMessageElement)
 	updateLastCharMessageArrows()

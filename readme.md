@@ -10,6 +10,24 @@
 > 4. 缺少 css 美化
 > 5. 角色可以随意运行 js 命令操作计算机本地文件
 
+## 安装
+
+Linux/macOS：
+
+```bash
+# 若需要，定义环境变量$FOUNT_DIR来指定fount目录
+curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.sh | bash
+```
+
+Windows：
+
+```pwsh
+# 若需要，定义环境变量$env:FOUNT_DIR来指定fount目录
+irm https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1 | iex
+```
+
+或者下载[release](https://github.com/steve02081504/fount/releases)中的exe文件，直接运行即可。
+
 ## fount 是什么？
 
 fount 是一个角色卡前端页面，解耦合了AI来源、AI角色、用户人设、对话环境、AI插件。
