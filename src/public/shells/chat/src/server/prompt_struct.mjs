@@ -3,6 +3,7 @@
 /** @typedef {import('../../../../../decl/UserAPI.ts').UserAPI_t} UserAPI_t */
 /** @typedef {import('../../../../../decl/WorldAPI.ts').WorldAPI_t} WorldAPI_t */
 /** @typedef {import('../../decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t */
+/** @typedef {import('../../decl/chatLog.ts').chatReplyRequest_t} chatReplyRequest_t */
 
 function getSinglePartPrompt() {
 	return {
@@ -12,6 +13,12 @@ function getSinglePartPrompt() {
 	}
 }
 
+/**
+ *
+ * @param {chatReplyRequest_t} args
+ * @param {number} detail_level
+ * @returns
+ */
 export async function buildPromptStruct(
 	args,
 	detail_level = 3
