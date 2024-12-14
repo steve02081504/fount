@@ -8,6 +8,7 @@ export function setEndpoints(app) {
 }
 
 export function unsetEndpoints(app) {
+	if (!app) return
 	app.post('/api/shells/install/new', (req, res) => {
 		res.status(404)
 	})

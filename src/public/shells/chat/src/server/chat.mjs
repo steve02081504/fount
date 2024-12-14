@@ -61,11 +61,13 @@ class timeSlice_t {
 
 	charname
 	playername
+	greeting_type
 
 	copy() {
 		return Object.assign(new timeSlice_t(), this, {
 			charname: undefined,
 			playername: undefined,
+			greeting_type: undefined,
 			chars_memories: structuredClone(this.chars_memories)
 		})
 	}
@@ -260,31 +262,70 @@ export async function setPersona(chatid, personaname) {
 
 export async function setWorld(chatid, worldname) {
 	const chatMetadata = await loadChat(chatid)
-	const { LastTimeSlice: timeSlice, username } = chatMetadata
-	timeSlice.world = await loadWorld(username, worldname)
+	const { username, chatLog } = chatMetadata
+	let timeSlice = chatMetadata.LastTimeSlice.copy()
+	const world = timeSlice.world = await loadWorld(username, worldname)
 	timeSlice.world_id = worldname
+	if (world.interfacies.chat.GetGreeting && chatLog.length === 0)
+		timeSlice.greeting_type = 'world_single'
+	else if (world.interfacies.chat.GetGroupGreeting && chatLog.length > 0)
+		timeSlice.greeting_type = 'world_group'
+
+	try {
+		let request = await getChatRequest(chatid, undefined)
+		let result
+		switch (timeSlice.greeting_type) {
+			case 'world_single':
+				result = await world.interfacies.chat.GetGreeting(request, 0)
+				break
+			case 'world_group':
+				result = await world.interfacies.chat.GetGroupGreeting(request, 0)
+				break
+		}
+		let greeting_entrie = BuildChatLogEntryFromCharReply(greeting, timeSlice, null, undefined, username)
+		await addChatLogEntry(chatid, greeting_entrie)
+		return greeting_entrie
+	} catch (error) {
+		chatMetadata.LastTimeSlice.world = timeSlice.world
+		chatMetadata.LastTimeSlice.world_id = timeSlice.world_id
+	}
+	return null
 }
 
 export async function addchar(chatid, charname) {
 	const chatMetadata = await loadChat(chatid)
 
-	const { username, LastTimeSlice: timeSlice, chatLog } = chatMetadata
+	const { username, chatLog } = chatMetadata
+	let timeSlice = chatMetadata.LastTimeSlice.copy()
+	if (chatLog.length > 0)
+		timeSlice.greeting_type = 'group'
+	else
+		timeSlice.greeting_type = 'single'
+
 	if (timeSlice.chars[charname]) return
 
 	const char = timeSlice.chars[charname] = await LoadChar(username, charname)
 
 	// Get Greetings
 	const request = await getChatRequest(chatid, charname)
-	let greetings = await (chatLog.length === 0
-		? char.interfacies.chat.GetGreetings
-		: char.interfacies.chat.GetGroupGreetings)(request)
 
-	let greeting_entries = greetings.map(greeting => BuildChatLogEntryFromCharReply(greeting, timeSlice, char, charname, username))
-
-	await addChatLogEntry(chatid, greeting_entries[0])
-	chatMetadata.timeLines = greeting_entries
-
-	return greetings[0]
+	try {
+		let result
+		switch (timeSlice.greeting_type) {
+			case 'single':
+				result = await char.interfacies.chat.GetGreeting(request, 0)
+				break
+			case 'group':
+				result = await char.interfacies.chat.GetGroupGreeting(request, 0)
+				break
+		}
+		let greeting_entrie = BuildChatLogEntryFromCharReply(result, timeSlice, char, charname, username)
+		await addChatLogEntry(chatid, greeting_entrie)
+		return greeting_entrie
+	} catch (error) {
+		chatMetadata.LastTimeSlice.chars[charname] = timeSlice.chars[charname]
+	}
+	return null
 }
 
 export async function removechar(chatid, charname) {
@@ -361,11 +402,32 @@ export async function modifyTimeLine(chatid, delta) {
 		const charname = chatMetadata.LastTimeSlice.charname
 		let poped = chatMetadata.chatLog.pop()
 		try {
-			chatMetadata.LastTimeSlice = chatMetadata.chatLog[chatMetadata.chatLog.length - 1].timeSlice
+			chatMetadata.LastTimeSlice = chatMetadata.chatLog[chatMetadata.chatLog.length - 1]?.timeSlice || chatMetadata.LastTimeSlice
 			let new_timeSlice = chatMetadata.LastTimeSlice.copy()
 			const char = new_timeSlice.chars[charname]
-			const result = await char.interfacies.chat.GetReply(await getChatRequest(chatid, charname))
-			const entry = BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, chatMetadata.username)
+			const world = new_timeSlice.world
+			let result
+			switch (new_timeSlice.greeting_type = chatMetadata.LastTimeSlice.greeting_type) {
+				case 'single':
+					result = await char.interfacies.chat.GetGreeting(await getChatRequest(chatid, charname), newTimeLineIndex)
+					break
+				case 'group':
+					result = await char.interfacies.chat.GetGroupGreeting(await getChatRequest(chatid, charname), newTimeLineIndex)
+					break
+				case 'world_single':
+					result = await world.interfacies.chat.GetGreeting(await getChatRequest(chatid, undefined), newTimeLineIndex)
+					break
+				case 'world_group':
+					result = await world.interfacies.chat.GetGroupGreeting(await getChatRequest(chatid, undefined), newTimeLineIndex)
+					break
+				default:
+					result = await char.interfacies.chat.GetReply(await getChatRequest(chatid, charname))
+			}
+			let entry
+			if (new_timeSlice.greeting_type.startsWith('world_'))
+				entry = BuildChatLogEntryFromCharReply(result, new_timeSlice, null, undefined, chatMetadata.username)
+			else
+				entry = BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, chatMetadata.username)
 
 			if (entry.timeSlice.world)
 				entry.timeSlice.world.interfacies.chat.AddChatLogEntry(await getChatRequest(chatid, undefined), entry)
@@ -377,6 +439,7 @@ export async function modifyTimeLine(chatid, delta) {
 			newTimeLineIndex = chatMetadata.timeLines.length - 1
 		}
 		catch (e) {
+			console.error(e)
 			chatMetadata.chatLog.push(poped)
 			newTimeLineIndex %= chatMetadata.timeLines.length
 		}
