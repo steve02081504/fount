@@ -1,5 +1,24 @@
 #!/bin/bash
 
+install_package() {
+	if command -v apt-get &> /dev/null; then
+		sudo apt-get update
+		sudo apt-get install -y "$1"
+	elif command -v brew &> /dev/null; then
+		brew install "$1"
+	elif command -v pacman &> /dev/null; then
+		sudo pacman -Syy
+		sudo pacman -S --needed "$1"
+	elif command -v dnf &> /dev/null; then
+		sudo dnf install -y "$1"
+	elif command -v zypper &> /dev/null; then
+		sudo zypper install -y "$1"
+	else
+		echo "无法安装 $1"
+		exit 1
+	fi
+}
+
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 FOUNT_DIR=$(dirname "$SCRIPT_DIR")
 
@@ -11,22 +30,7 @@ if ! command -v fount &> /dev/null; then
 fi
 
 if ! command -v git &> /dev/null; then
-	if command -v apt-get &> /dev/null; then
-		sudo apt-get update
-		sudo apt-get install -y git
-	elif command -v brew &> /dev/null; then
-		brew install git
-	elif command -v pacman &> /dev/null; then
-		sudo pacman -Syy
-		sudo pacman -S --needed git
-	elif command -v dnf &> /dev/null; then
-		sudo dnf install -y git
-	elif command -v zypper &> /dev/null; then
-		sudo zypper install -y git
-	else
-		echo "git could not be found"
-		exit 1
-	fi
+	install_package git
 fi
 if command -v git &> /dev/null; then
 	if [ ! -d "$FOUNT_DIR/.git" ]; then
@@ -58,7 +62,7 @@ if ! command -v deno &> /dev/null; then
 		pacman -Sy glibc-runner --assume-installed bash,patchelf,resolv-conf
 
 		# 安装 Deno.js
-		curl -fsSL https://deno.land/install.sh | bash
+		curl -fsSL https://deno.land/install.sh | sh -s -- -y
 
 		# 设置环境变量
 		export DENO_INSTALL="${HOME}/.deno"
@@ -84,7 +88,12 @@ EOF
 		chmod u+x ~/.deno/bin/deno.glibc.sh
 	else
 		# 非 Termux 环境下的普通安装
-		curl -fsSL https://deno.land/install.sh | sh
+		curl -fsSL https://deno.land/install.sh | sh -s -- -y
+		if [[ "$SHELL" == *"/zsh" ]]; then
+			source "$HOME/.zshrc"
+		else
+			source "$HOME/.bashrc"
+		fi
 	fi
 	if ! command -v deno &> /dev/null; then
 		echo "Deno missing, you cant run fount without deno"
