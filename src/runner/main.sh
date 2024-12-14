@@ -10,7 +10,7 @@ if [[ "$OSTYPE" == "msys" ]]; then
 fi
 
 # 若未定义，则默认 fount 安装目录
-FOUNT_DIR="${$FOUNT_DIR:-"$HOME/.local/share/fount"}"
+FOUNT_DIR="${FOUNT_DIR:-"$HOME/.local/share/fount"}"
 
 # 检查 fount.sh 是否已存在
 if ! command -v fount.sh &> /dev/null; then
@@ -42,6 +42,11 @@ if ! command -v fount.sh &> /dev/null; then
 		mkdir -p "$FOUNT_DIR"
 		mv /tmp/fount-master "$FOUNT_DIR"
 	fi
+	# 移除隔离属性 (仅限 macOS)
+	if [[ "$OSTYPE" == "darwin"* ]]; then
+		xattr -dr com.apple.quarantine "$FOUNT_DIR"
+	fi
+	find "$FOUNT_DIR" -name "*.sh" -exec chmod +x {} \;
 else
 	# fount.sh 已存在，获取其所在目录
 	FOUNT_DIR="$(dirname "$(dirname "$(command -v fount.sh)")")"
