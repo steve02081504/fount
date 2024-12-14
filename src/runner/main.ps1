@@ -1,6 +1,7 @@
 #!pwsh
 #_pragma icon $PSScriptRoot/../public/icon.ico
 #_pragma title "fount"
+#_pragma outputfile $PSScriptRoot/fount.exe
 
 if (!$env:FOUNT_DIR) {
 	$env:FOUNT_DIR = "$env:LOCALAPPDATA/fount"
