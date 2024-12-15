@@ -82,8 +82,15 @@ export default {
 				const model = options?.model || config.model || 'gpt-4o-mini'
 				let text = await duckduckgo.call(messages, model)
 
-				if (text.match(new RegExp(`^(|${prompt_struct.Charname}[^\\n]*)(:|：)*\\n`, 'ig')))
-					text = text.split('\n').slice(1).join('\n')
+				{
+					text = text.split('\n')
+					let base_reg = `^(|${prompt_struct.Charname}[^\\n：:]*)(:|：)\\s*`
+					let reg = new RegExp(`${base_reg}$`, 'i')
+					while (text[0].trim().match(reg)) text.shift()
+					reg = new RegExp(`${base_reg}`, 'i')
+					text[0] = text[0].replace(reg, '')
+					text = text.join('\n')
+				}
 
 				return text
 			},

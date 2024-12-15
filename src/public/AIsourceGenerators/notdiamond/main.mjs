@@ -74,8 +74,11 @@ export default {
 
 				{
 					text = text.split('\n')
-					let reg = new RegExp(`^(|${prompt_struct.Charname}[^\\n：:]*)(:|：)\\s*$`, 'i')
+					let base_reg = `^(|${prompt_struct.Charname}[^\\n：:]*)(:|：)\\s*`
+					let reg = new RegExp(`${base_reg}$`, 'i')
 					while (text[0].trim().match(reg)) text.shift()
+					reg = new RegExp(`${base_reg}`, 'i')
+					text[0] = text[0].replace(reg, '')
 					text = text.join('\n')
 				}
 
