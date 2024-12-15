@@ -5,6 +5,7 @@ import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../s
 
 export default {
 	GetSource: async (config) => {
+		config.system_prompt_at_depth ??= 10
 		let genAI = new GoogleGenerativeAI(config.apikey)
 		//fileManager is unable to upload buffer, for now we just use inlineData
 		// let fileManager = new GoogleAIFileManager(config.apikey)
@@ -83,7 +84,7 @@ system:
 						],
 					})
 				})
-				if (config.system_prompt_at_depth ?? 10)
+				if (config.system_prompt_at_depth)
 					request.contents.splice(Math.max(request.contents.length - config.system_prompt_at_depth, 2), 0, {
 						role: 'user',
 						parts: [{ text: 'system:\n由于上下文有限，请再次回顾设定:\n' + system_prompt }]
@@ -117,7 +118,7 @@ system:
 
 				{
 					text = text.split('\n')
-					let reg = new RegExp(`^(|${prompt_struct.Charname}[^\\n]*)(:|：)*$`, 'i')
+					let reg = new RegExp(`^(|${prompt_struct.Charname}[^\\n]*)(:|：)$`, 'i')
 					while (text[0].trim().match(reg)) text.shift()
 					while (['','</pause>'].includes(text[text.length - 1].trim())) text.pop() //?
 					text = text.join('\n')
