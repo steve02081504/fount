@@ -118,8 +118,11 @@ system:
 
 				{
 					text = text.split('\n')
-					let reg = new RegExp(`^(|${prompt_struct.Charname}[^\\n]*)(:|：)$`, 'i')
+					let base_reg = `^(|${prompt_struct.Charname}[^\\n：:]*)(:|：)\\s*`
+					let reg = new RegExp(`${base_reg}$`, 'i')
 					while (text[0].trim().match(reg)) text.shift()
+					reg = new RegExp(`${base_reg}`, 'i')
+					text[0] = text[0].replace(reg, '')
 					while (['','</pause>'].includes(text[text.length - 1].trim())) text.pop() //?
 					text = text.join('\n')
 				}
