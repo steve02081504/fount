@@ -88,7 +88,6 @@ async function verifyToken(token) {
 
 		return payload
 	} catch (error) {
-		console.error('Token verification error:', error)
 		return null
 	}
 }
