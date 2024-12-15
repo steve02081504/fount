@@ -126,8 +126,8 @@ export function uninstallPart(username, parttype, partname, unLoadargs, uninstal
 export function getPartInfo(part, locale) {
 	if (!part?.info) return
 	return part.info[locale] ||
-		part.info[locale.split('-')[0]] ||
-		part.info[Object.keys(part.info).find(key => key.startsWith(locale.split('-')[0] + '-'))] ||
+		part.info[locale?.split('-')?.[0]] ||
+		part.info[Object.keys(part.info).find(key => key.startsWith(locale?.split('-')?.[0] + '-'))] ||
 		part.info[Object.keys(part.info)[0]]
 }
 
