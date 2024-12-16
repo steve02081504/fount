@@ -42,19 +42,17 @@ let isLoginForm = true
 let verificationCodeSent = false
 let sendCodeCooldown = false
 
+let hasLoggedIn = localStorage.getItem('hasLoggedIn') == 'true'
+
 // 初始化表单状态
-async function initializeForm() {
-	const isValid = await fetch("/api/authenticate", {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-	})
-	if (isValid.ok) {
-		window.location.href = '/home'
-		return
-	}
-	toggleForm() // 确保初始状态正确
+function initializeForm() {
+	isLoginForm = hasLoggedIn
+	updateFormDisplay()
+}
+
+function toggleForm() {
+	isLoginForm = !isLoginForm
+	updateFormDisplay()
 }
 
 // 切换表单类型（登录/注册）
@@ -63,8 +61,7 @@ function handleToggleClick(event) {
 	toggleForm()
 }
 
-function toggleForm() {
-	// isLoginForm = !isLoginForm
+function updateFormDisplay() {
 	const currentForm = isLoginForm ? formContent.login : formContent.register
 
 	formTitle.textContent = currentForm.title
@@ -106,9 +103,9 @@ async function handleSendVerificationCode() {
 		if (response.ok) {
 			errorMessage.textContent = formContent.error.verificationCodeSent
 			verificationCodeSent = true
-			sendVerificationCodeBtn.disabled = true
 			sendCodeCooldown = true
 			let timeLeft = 60
+			sendVerificationCodeBtn.disabled = true
 			sendVerificationCodeBtn.textContent = `${timeLeft}s`
 			const countdown = setInterval(() => {
 				timeLeft--
@@ -174,8 +171,7 @@ async function handleFormSubmit(event) {
 		if (response.ok)
 			if (isLoginForm) {
 				console.log('Login successful!')
-				// 登录成功后存储 refreshToken (可选，你也可以只通过 Cookie 传输)
-				localStorage.setItem('refreshToken', data.refreshToken)
+				localStorage.setItem('hasLoggedIn', 'true')
 				window.location.href = '/home'
 			} else {
 				console.log('Registration successful!')
@@ -183,7 +179,6 @@ async function handleFormSubmit(event) {
 			}
 		else
 			errorMessage.textContent = data.message
-
 	} catch (error) {
 		console.error('Error during form submission:', error)
 		errorMessage.textContent = isLoginForm
