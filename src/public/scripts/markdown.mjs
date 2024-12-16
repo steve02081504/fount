@@ -1,5 +1,7 @@
 var converter = markdownit({
-	html: true
+	html: true,
+	breaks: true,
+	linkify: true,
 }).use(
 	markdown_it_katex
 ).use(
