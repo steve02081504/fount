@@ -1,13 +1,13 @@
-import rehypeKatex from 'https://esm.sh/rehype-katex'
-import rehypeStringify from 'https://esm.sh/rehype-stringify'
-import remarkParse from 'https://esm.sh/remark-parse'
-import remarkRehype from 'https://esm.sh/remark-rehype'
-import remarkMath from 'https://esm.sh/remark-math'
-import { unified } from 'https://esm.sh/unified'
-// import rehypeShiki from 'https://esm.sh/@shikijs/rehype'
-import remarkGfm from 'https://esm.sh/remark-gfm'
-import remarkBreaks from 'https://esm.sh/remark-breaks'
-import rehypeHighlight from 'https://esm.sh/rehype-highlight'
+import rehypeKatex from 'https://esm.run/rehype-katex'
+import rehypeStringify from 'https://esm.run/rehype-stringify'
+import remarkParse from 'https://esm.run/remark-parse'
+import remarkRehype from 'https://esm.run/remark-rehype'
+import remarkMath from 'https://esm.run/remark-math'
+import { unified } from 'https://esm.run/unified'
+// import rehypeShiki from 'https://esm.run/@shikijs/rehype'
+import remarkGfm from 'https://esm.run/remark-gfm'
+import remarkBreaks from 'https://esm.run/remark-breaks'
+import rehypeHighlight from 'https://esm.run/rehype-highlight'
 
 const convertor = unified()
 	.use(remarkParse)
