@@ -76,8 +76,8 @@ async function displayCharList() {
 	}
 }
 
-function displayCharacterInfo(charDetails) {
-	characterDescription.innerHTML = renderMarkdown(charDetails.description_markdown) || '无描述信息'
+async function displayCharacterInfo(charDetails) {
+	characterDescription.innerHTML = await renderMarkdown(charDetails.description_markdown) || '无描述信息'
 }
 
 // 初始化
