@@ -1,10 +1,7 @@
 body {
 	margin: 0;
 }
-.katex-display { 
-    display: block !important;
-    margin: 1em 0 !important;
-}
+
 /* 聊天消息容器 */
 .chat-messages .avatar img {
 	width: 40px;
