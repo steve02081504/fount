@@ -4,9 +4,10 @@ import remarkParse from 'https://esm.sh/remark-parse'
 import remarkRehype from 'https://esm.sh/remark-rehype'
 import remarkMath from 'https://esm.sh/remark-math'
 import { unified } from 'https://esm.sh/unified'
-import rehypeShiki from 'https://esm.sh/@shikijs/rehype'
+// import rehypeShiki from 'https://esm.sh/@shikijs/rehype'
 import remarkGfm from 'https://esm.sh/remark-gfm'
 import remarkBreaks from 'https://esm.sh/remark-breaks'
+import rehypeHighlight from 'https://esm.sh/rehype-highlight'
 
 const convertor = unified()
 	.use(remarkParse)
@@ -16,6 +17,9 @@ const convertor = unified()
 		allowDangerousHtml: true,
 	})
 	.use(remarkGfm)
+	//*
+	.use(rehypeHighlight)
+	/*/ // toooo slow
 	.use(rehypeShiki, {
 		// or `theme` for a single theme
 		themes: {
@@ -24,6 +28,7 @@ const convertor = unified()
 		},
 		inline: 'tailing-curly-colon', // or other options
 	})
+	*/
 	.use(rehypeKatex)
 	.use(rehypeStringify, {
 		allowDangerousCharacters: true,
