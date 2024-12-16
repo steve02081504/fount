@@ -31,18 +31,19 @@
 		</div>
 		<div class="drawer-side z-50">
 			<label for="my-drawer-2" aria-label="close sidebar" class="drawer-overlay"></label>
-			<div class="menu p-4 w-80 min-h-full bg-base-300 text-base-content border-l-2 border-base-content">
-				<!-- 侧边栏内容 -->
+			<div class="p-4 w-80 min-h-full bg-base-300 text-base-content border-l-2 border-base-content">
 				<h2 class="text-xl mb-2">角色信息</h2>
-				<div id="character-description"></div>
+				<article id="character-description"></article>
 			</div>
 		</div>
 	</div>
 
-	<script src="https://cdn.jsdelivr.net/npm/showdown"></script>
-	<script src="https://cdn.jsdelivr.net/gh/steve02081504/bundle-cdn/dist/showdown-highlight.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/gh/steve02081504/bundle-cdn/dist/markdown-it-katex.js"></script>
+	<script src="https://cdn.jsdelivr.net/gh/steve02081504/bundle-cdn/dist/markdown-it-highlightjs.js"></script>
 	<link rel="stylesheet"
-		href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/default.min.css">
+		href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/styles/default.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 	<script type="module" src="./index.mjs"></script>
 </body>
 
