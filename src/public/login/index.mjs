@@ -43,7 +43,17 @@ let verificationCodeSent = false
 let sendCodeCooldown = false
 
 // 初始化表单状态
-function initializeForm() {
+async function initializeForm() {
+	const isValid = await fetch("/api/authenticate", {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	})
+	if (isValid.ok) {
+		window.location.href = '/home'
+		return
+	}
 	toggleForm() // 确保初始状态正确
 }
 
@@ -54,7 +64,7 @@ function handleToggleClick(event) {
 }
 
 function toggleForm() {
-	isLoginForm = !isLoginForm
+	// isLoginForm = !isLoginForm
 	const currentForm = isLoginForm ? formContent.login : formContent.register
 
 	formTitle.textContent = currentForm.title

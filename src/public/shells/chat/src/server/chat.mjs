@@ -539,6 +539,7 @@ export async function addUserReply(chatid, object) {
 
 export async function getChatList(username) {
 	const userDir = getUserDictionary(username) + '/shells/chat/chats/'
+	if (!fs.existsSync(userDir)) fs.mkdirSync(userDir, { recursive: true })
 	const chatFiles = fs.readdirSync(userDir).filter(file => file.endsWith('.json'))
 
 	for (const file of chatFiles)
