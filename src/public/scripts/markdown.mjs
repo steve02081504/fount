@@ -1,15 +1,11 @@
-var converter = new showdown.Converter({
-	strikethrough: true,
-	tables: true,
-	tasklists: true,
-	openLinksInNewWindows: true,
-	underline: true,
-	simpleLineBreaks: true,
-	emoji: true,
-	disableForced4SpacesIndentedSublists: true,
-	extensions: [showdown_highlight({ auto_detection: true })]
-})
+var converter = markdownit({
+	html: true
+}).use(
+	markdown_it_katex
+).use(
+	markdown_it_highlightjs
+)
 
 export function renderMarkdown(markdown) {
-	return converter.makeHtml(markdown)
+	return converter.render(markdown)
 }
