@@ -1,7 +1,7 @@
 import { renderMessage } from './messageList.mjs'
-import { getChatLog, getChatLogLength } from '../../public/endpoints.mjs'
+import { getChatLog, getChatLogLength, triggerHeartbeat } from '../../public/endpoints.mjs'
 import { modifyTimeLine } from '../endpoints.mjs'
-import { TRANSITION_DURATION } from "../utils.mjs";
+import { TRANSITION_DURATION } from "../utils.mjs"
 
 const chatMessagesContainer = document.getElementById('chat-messages')
 const BUFFER_SIZE = 20
@@ -18,6 +18,51 @@ export async function initializeVirtualQueue() {
 	await renderQueue()
 	chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight
 	chatMessagesContainer.addEventListener('scroll', handleScroll)
+}
+
+function messageIsEqual(a, b) {
+	if (
+		a.content != b.content ||
+		a.timeStamp != b.timeStamp ||
+		a.role != b.role
+	) return false
+	// 比较文件
+	if (a.files.length != b.files.length) return false
+	for (let i = 0; i < a.files.length; i++)
+		for (let key of ['name', 'buffer', 'mimeType', 'description'])
+			if (a.files[i][key] != b.files[i][key]) return false
+
+	return true
+}
+
+export async function triggerVirtualQueueHeartbeat() {
+	if (chatLogLength === null) return
+	let data = await triggerHeartbeat(startIndex)
+	let { Messages } = data // 自index开始的全部消息内容
+	delete data.Messages
+
+	if (Messages.length != queue.length) {
+		let its_in_buttom = chatMessagesContainer.scrollTop == chatMessagesContainer.scrollHeight || // 本来就在底部
+			chatMessagesContainer.scrollHeight - chatMessagesContainer.scrollTop - chatMessagesContainer.clientHeight <= 0 // 列表不够长，碰不到底部也算在底部
+
+		queue = Messages
+		await renderQueue()
+		if (its_in_buttom) {
+			chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight
+			chatLogLength = startIndex + queue.length
+			startIndex = Math.max(0, chatLogLength - BUFFER_SIZE)
+			queue = queue.slice(-BUFFER_SIZE)
+		}
+		return data
+	}
+
+	// update queue
+	for (let i = 0; i < queue.length; i++) {
+		if (messageIsEqual(queue[i], Messages[i])) continue
+		await replaceMessageInQueue(i, Messages[i])
+	}
+
+	return data
 }
 
 async function renderQueue() {

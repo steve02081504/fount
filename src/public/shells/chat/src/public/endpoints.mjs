@@ -166,6 +166,24 @@ export async function getChatLog(start, end) {
 	return await response.json()
 }
 
+/**
+ * @returns {Promise<{ charlist: string[], worldname: string, personaname: string, Messages: any[] }>}
+ */
+export async function triggerHeartbeat(start) {
+	const response = await fetch('/api/shells/chat/heartbeat', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({ chatid: currentChatId, start }),
+	})
+
+	if (!response.ok)
+		throw new Error(`API request failed with status ${response.status}`)
+
+	return await response.json()
+}
+
 export async function getChatLogLength() {
 	const response = await fetch('/api/shells/chat/getchatloglength', {
 		method: 'POST',
