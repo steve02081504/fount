@@ -93,6 +93,16 @@ export function setEndpoints(app) {
 		res.status(200).json(await GetChatLog(chatid, start, end))
 	})
 
+	app.post('/api/shells/chat/heartbeat', authenticate, async (req, res) => {
+		const { chatid, start } = req.body
+		res.status(200).json({
+			charlist: await getCharListOfChat(chatid),
+			worldname: await GetWorldName(chatid),
+			personaname: await GetUserPersonaName(chatid),
+			Messages: await GetChatLog(chatid, start)
+		})
+	})
+
 	app.post('/api/shells/chat/getchatloglength', authenticate, async (req, res) => {
 		const { chatid } = req.body
 		res.status(200).json(await GetChatLogLength(chatid))
@@ -176,6 +186,10 @@ export function unsetEndpoints(app) {
 	})
 
 	app.post('/api/shells/chat/getchatlog', (req, res) => {
+		res.status(404)
+	})
+
+	app.post('/api/shells/chat/heartbeat', (req, res) => {
 		res.status(404)
 	})
 
