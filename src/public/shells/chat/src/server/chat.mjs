@@ -216,16 +216,10 @@ export async function loadChat(chatid) {
 
 function is_VividChat(chatMetadata) {
 	return chatMetadata && (
-		chatMetadata.chatLog.filter(entry => entry.role == 'user').length ||
-		chatMetadata.chatLog.length > 1
+		chatMetadata.chatLog.length > 1 ||
+		chatMetadata.chatLog.filter(entry => entry.role == 'user').length
 	)
 }
-on_shutdown(() => {
-	chatMetadatas.forEach(({ chatMetadata }, chatid) => {
-		if (is_VividChat(chatMetadata))
-			saveChat(chatid)
-	})
-})
 
 async function getChatRequest(chatid, charname) {
 	const chatMetadata = await loadChat(chatid)
@@ -258,6 +252,8 @@ export async function setPersona(chatid, personaname) {
 	const { LastTimeSlice: timeSlice, username } = chatMetadata
 	timeSlice.player = await loadPersona(username, personaname)
 	timeSlice.player_id = personaname
+
+	if (is_VividChat(chatMetadata)) saveChat(chatid)
 }
 
 export async function setWorld(chatid, worldname) {
@@ -282,13 +278,15 @@ export async function setWorld(chatid, worldname) {
 				result = await world.interfacies.chat.GetGroupGreeting(request, 0)
 				break
 		}
-		let greeting_entrie = BuildChatLogEntryFromCharReply(greeting, timeSlice, null, undefined, username)
-		await addChatLogEntry(chatid, greeting_entrie)
+		let greeting_entrie = BuildChatLogEntryFromCharReply(result, timeSlice, null, undefined, username)
+		await addChatLogEntry(chatid, greeting_entrie) // saved, no need for another call
 		return greeting_entrie
 	} catch (error) {
 		chatMetadata.LastTimeSlice.world = timeSlice.world
 		chatMetadata.LastTimeSlice.world_id = timeSlice.world_id
 	}
+
+	if (is_VividChat(chatMetadata)) saveChat(chatid)
 	return null
 }
 
@@ -320,17 +318,19 @@ export async function addchar(chatid, charname) {
 				break
 		}
 		let greeting_entrie = BuildChatLogEntryFromCharReply(result, timeSlice, char, charname, username)
-		await addChatLogEntry(chatid, greeting_entrie)
+		await addChatLogEntry(chatid, greeting_entrie) // saved, no need for another call
 		return greeting_entrie
 	} catch (error) {
 		chatMetadata.LastTimeSlice.chars[charname] = timeSlice.chars[charname]
 	}
+	if (is_VividChat(chatMetadata)) saveChat(chatid)
 	return null
 }
 
 export async function removechar(chatid, charname) {
 	const chatMetadata = await loadChat(chatid)
 	delete chatMetadata.LastTimeSlice.chars[charname]
+	if (is_VividChat(chatMetadata)) saveChat(chatid)
 }
 
 export async function getCharListOfChat(chatid) {
@@ -387,6 +387,9 @@ async function addChatLogEntry(chatid, entry) {
 	chatMetadata.timeLines = [entry]
 	chatMetadata.timeLineIndex = 0
 	chatMetadata.LastTimeSlice = entry.timeSlice
+
+	if (is_VividChat(chatMetadata)) saveChat(chatid)
+
 	return entry
 }
 /**
@@ -447,6 +450,8 @@ export async function modifyTimeLine(chatid, delta) {
 	let entry = chatMetadata.timeLines[newTimeLineIndex]
 	chatMetadata.timeLineIndex = newTimeLineIndex
 	chatMetadata.LastTimeSlice = entry.timeSlice
+
+	if (is_VividChat(chatMetadata)) saveChat(chatid)
 
 	return chatMetadata.chatLog[chatMetadata.chatLog.length - 1] = entry
 }
