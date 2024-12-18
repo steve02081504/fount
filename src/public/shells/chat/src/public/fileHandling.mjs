@@ -33,8 +33,7 @@ export async function handleFilesSelect(event, selectedFiles, attachmentPreviewC
 }
 
 export async function renderAttachmentPreview(file, index, selectedFiles) {
-	const attachmentElement = document.createElement('div')
-	attachmentElement.innerHTML = await renderTemplate('attachment_preview', {
+	const attachmentElement = await renderTemplate('attachment_preview', {
 		file,
 		index,
 		safeName: processTimeStampForId(file.name),

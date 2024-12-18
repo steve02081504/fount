@@ -1,4 +1,5 @@
 import { renderTemplate } from '../../../scripts/template.mjs'
+import { applyTheme } from "../../../scripts/theme.mjs"
 
 const chatListContainer = document.getElementById('chat-list-container')
 const sortSelect = document.getElementById('sort-select')
@@ -10,12 +11,6 @@ const exportSelectedButton = document.getElementById('export-selected-button')
 
 let chatList = []
 let selectedChats = new Set()
-
-// 设置主题
-function setTheme() {
-	const prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-	document.documentElement.setAttribute('data-theme', prefersDarkMode ? 'dark' : 'light')
-}
 
 async function fetchChatList() {
 	const response = await fetch('/api/shells/chat/list', {
@@ -72,10 +67,7 @@ async function renderChatListItem(chat) {
 			return { name: details.name, url: details.avatar }
 		}))
 	}
-	const html = await renderTemplate('chat_list_item', data)
-	const chatElement = document.createElement('div')
-	chatElement.innerHTML = html
-	chatElement.classList.add('chat-list-item')
+	const chatElement = await renderTemplate('chat_list_view', data)
 	chatElement.setAttribute('data-chatid', chat.chatid)
 
 	// 添加选择框
@@ -256,7 +248,7 @@ exportSelectedButton.addEventListener('click', async () => {
 })
 
 async function initializeApp() {
-	setTheme()
+	applyTheme()
 	await fetchChatList()
 	renderChatList()
 }

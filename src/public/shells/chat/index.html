@@ -10,33 +10,119 @@
 	<script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-base-200 flex justify-center items-start h-screen">
-	<div class="container mx-auto p-4 w-full lg:w-3/4 flex flex-col h-full">
-		<div class="chat-container card bg-base-100 shadow-xl h-full flex flex-col">
-			<div class="chat-header card-title">
-				<h2>Chat</h2>
-			</div>
-			<div class="chat-messages flex-grow overflow-y-auto flex flex-col p-8" id="chat-messages">
-			</div>
-			<div class="chat-input p-4 flex gap-4">
-				<textarea id="message-input" class="textarea textarea-bordered flex-grow"
-					placeholder="Type a message..."></textarea>
-				<div class="flex flex-col gap-2">
-					<button id="send-button" class="btn btn-primary"><img
-							src="https://api.iconify.design/line-md/chat-round-twotone.svg" title="发送" /></button>
-					<button id="upload-button" class="btn btn-secondary"><img
-							src="https://api.iconify.design/line-md/upload.svg" title="上传" /></button>
+<body class="bg-base-200 flex h-screen">
+	<!-- Left Sidebar -->
+	<div class="absolute top-0 left-0 z-40">
+		<div class="drawer h-full">
+			<input id="left-drawer" type="checkbox" class="drawer-toggle" />
+			<div class="drawer-side z-40">
+				<label for="left-drawer" class="drawer-overlay"></label>
+				<div class="w-80 bg-base-200 text-base-content p-4 overflow-y-auto">
+					<ul class="menu">
+						<!-- Sidebar content here -->
+						<li id="world-info">
+							<div class="flex items-center justify-between mb-2">
+								<div class="flex items-center">
+									<img src="https://api.iconify.design/line-md/map-marker.svg"
+										class="w-8 h-8 mr-2 dark:invert" />
+									<h3 class="text-lg font-bold">世界</h3>
+								</div>
+							</div>
+							<select class="select select-bordered w-full" id="world-select">
+								<!-- 世界信息选项 -->
+							</select>
+							<div id="world-details" class="sidebar-item-details">
+								<!-- 世界信息详情 -->
+							</div>
+						</li>
+						<li id="persona-info">
+							<div class="flex items-center justify-between mt-6 mb-2">
+								<div class="flex items-center">
+									<img src="https://api.iconify.design/line-md/emoji-grin.svg"
+										class="w-8 h-8 mr-2 dark:invert" />
+									<h3 class="text-lg font-bold">用户角色</h3>
+								</div>
+							</div>
+							<select class="select select-bordered w-full" id="persona-select">
+								<!-- 角色信息选项 -->
+							</select>
+							<div id="persona-details" class="sidebar-item-details">
+								<!-- 角色信息详情 -->
+							</div>
+						</li>
+						<li id="char-list">
+							<div class="flex items-center justify-between mt-6 mb-2">
+								<div class="flex items-center">
+									<img src="https://api.iconify.design/line-md/person.svg"
+										class="w-8 h-8 mr-2 dark:invert" />
+									<h3 class="text-lg font-bold">角色列表</h3>
+								</div>
+							</div>
+							<div class="flex justify-between">
+								<select class="select select-bordered w-full" id="char-select">
+									<!-- 角色信息选项 -->
+								</select>
+								<button id="add-char-button" class="btn btn-sm btn-primary">
+									<img src="https://api.iconify.design/line-md:account-add.svg" title="添加角色" />
+								</button>
+							</div>
+							<div id="char-details" class="flex flex-col gap-2 sidebar-item-details">
+								<!-- 角色信息详情 -->
+							</div>
+						</li>
+					</ul>
 				</div>
-				<input type="file" id="file-input" class="hidden" multiple />
-			</div>
-			<div id="attachment-preview" class="p-4 flex gap-4 overflow-x-auto">
-				<!-- 附件预览 -->
 			</div>
 		</div>
 	</div>
 
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css"/>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.min.css"/>
+	<!-- Main Content -->
+	<div class="flex-grow flex flex-col items-center justify-start h-full pt-4">
+		<!-- Chat Area -->
+		<div class="container mx-auto p-4 w-full lg:w-3/4 flex flex-col h-full">
+			<div class="chat-container card bg-base-100 shadow-xl h-full flex flex-col">
+				<div class="chat-header card-title lg:flex justify-between items-center">
+					<h2 class="flex-grow">Chat</h2>
+					<!-- **Modified Trigger Button for Large Screens Here** -->
+					<div class="flex-none">
+						<label for="left-drawer" class="btn btn-square btn-ghost">
+							<img src="https://api.iconify.design/line-md/list-3-solid.svg" title="菜单"
+								class="dark:invert" />
+						</label>
+					</div>
+				</div>
+				<div class="chat-messages flex-grow overflow-y-auto flex flex-col p-8" id="chat-messages">
+				</div>
+				<div class="chat-input p-4 flex gap-4">
+					<textarea id="message-input" class="textarea textarea-bordered flex-grow"
+						placeholder="Type a message..."></textarea>
+					<div class="flex flex-col gap-2">
+						<button id="send-button" class="btn btn-primary"><img
+								src="https://api.iconify.design/line-md/chat-round-twotone.svg" title="发送" /></button>
+						<button id="upload-button" class="btn btn-secondary"><img
+								src="https://api.iconify.design/line-md/upload.svg" title="上传" /></button>
+					</div>
+					<input type="file" id="file-input" class="hidden" multiple />
+				</div>
+				<div id="attachment-preview" class="p-4 flex gap-4 overflow-x-auto">
+					<!-- 附件预览 -->
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Right Sidebar (Description) -->
+	<div class="absolute top-0 right-0 z-40 w-80 h-full" id="right-sidebar-container">
+		<div class="bg-base-300 text-base-content border-l-2 border-base-content h-full hidden" id="right-sidebar">
+			<div class="p-4 h-full overflow-y-auto">
+				<h2 class="text-xl mb-2">描述信息</h2>
+				<article id="item-description"></article>
+			</div>
+		</div>
+	</div>
+
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.min.css" />
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/styles/default.min.css">
 	<script type="module" src="./index.mjs"></script>
 </body>
