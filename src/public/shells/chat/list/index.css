@@ -9,9 +9,6 @@ body {
 .chat-list-item {
 	border-bottom: 1px solid #e0e0e0;
 	padding: 10px 0;
-}
-
-.chat-list-item:last-child {
 	border-bottom: none;
 }
 

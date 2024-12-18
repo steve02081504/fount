@@ -21,12 +21,11 @@ export async function renderMessage(message) {
 		safeTimeStamp: processTimeStampForId(message.timeStamp)
 	}
 
-	const messageElement = document.createElement('div')
-	messageElement.innerHTML = await renderTemplate(
+	const messageElement = await renderTemplate(
 		'message_view',
 		preprocessedMessage
 	)
-	const templateType = messageElement.firstChild.dataset.templateType
+	const templateType = messageElement.dataset.templateType
 
 	if (templateType === 'message') {
 		messageElement
@@ -76,13 +75,14 @@ export async function editMessageStart(message, index, messageIndex) {
 		content_for_edit: message.content_for_edit || message.content,
 		safeTimeStamp: processTimeStampForId(message.timeStamp),
 	}
-	const messageElement = chatMessagesContainer.children[index]
-	messageElement.innerHTML = await renderTemplate(
+	const messageElement = await renderTemplate(
 		'message_edit_view',
 		editRenderedMessage
 	)
+	chatMessagesContainer.children[index].replaceWith(messageElement)
+	chatMessagesContainer.children[index] = messageElement
 
-	const templateType = messageElement.firstChild.dataset.templateType
+	const templateType = messageElement.dataset.templateType
 	const fileEditInputElement = messageElement.querySelector(
 		`#file-edit-input-${editRenderedMessage.safeTimeStamp}`
 	)

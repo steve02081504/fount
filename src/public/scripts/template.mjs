@@ -1,6 +1,6 @@
 let template_cache = {}
 
-export async function renderTemplate(template, data) {
+export async function renderTemplateAsHtmlString(template, data) {
 	template_cache[template] ??= fetch('/template/' + template + '.html').then(response => response.text())
 	let html = template_cache[template] = await template_cache[template]
 
@@ -25,4 +25,11 @@ export async function renderTemplate(template, data) {
 	}
 
 	return result + html
+}
+
+export async function renderTemplate(template, data) {
+	var div = document.createElement('div')
+	div.innerHTML = await renderTemplateAsHtmlString(template, data)
+
+	return div.firstChild
 }

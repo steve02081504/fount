@@ -1,22 +1,15 @@
 import { renderTemplate } from '../scripts/template.mjs'
-import { getCharDetails, getCharList } from '../scripts/chars.mjs'
+import { getCharDetails, getCharList } from '../scripts/parts.mjs'
 import { renderMarkdown } from '../scripts/markdown.mjs'
+import { applyTheme } from "../scripts/theme.mjs"
 
 const roleContainer = document.getElementById('role-container')
 const characterDescription = document.getElementById('character-description')
 const drawerToggle = document.getElementById('my-drawer-2')
-
-// 设置主题
-function setTheme() {
-	const prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-	document.documentElement.setAttribute('data-theme', prefersDarkMode ? 'dark' : 'light')
-}
+const importButton = document.getElementById('import-button')
 
 async function renderCharView(charDetails) {
-	const html = await renderTemplate('char_list_view', charDetails)
-	const roleElement = document.createElement('div')
-	roleElement.innerHTML = html
-	roleElement.classList.add('role-card')
+	const roleElement = await renderTemplate('char_list_view', charDetails)
 
 	// 移动端点击卡片非按钮区域时显示侧边栏
 	roleElement.addEventListener('click', (event) => {
@@ -34,6 +27,10 @@ async function renderCharView(charDetails) {
 	})
 
 	return roleElement
+}
+
+async function displayCharacterInfo(charDetails) {
+	characterDescription.innerHTML = await renderMarkdown(charDetails.description_markdown) || '无描述信息'
 }
 
 async function setLocale(locale) {
@@ -71,18 +68,15 @@ async function displayCharList() {
 		const deleteButton = roleElement.querySelector('.delete-button')
 		deleteButton.addEventListener('click', () => {
 			// TODO: 发送删除角色请求
-			console.log(`删除角色 ${charDetails.name}`)
+			if (confirm(`确定要删除角色 ${charDetails.name} 吗?`))
+				alert('逻辑未完成')
 		})
 	}
 }
 
-async function displayCharacterInfo(charDetails) {
-	characterDescription.innerHTML = await renderMarkdown(charDetails.description_markdown) || '无描述信息'
-}
-
 // 初始化
 async function initializeApp() {
-	setTheme()
+	applyTheme()
 	try {
 		await setLocale(navigator.language || navigator.userLanguage)
 	}
@@ -91,6 +85,10 @@ async function initializeApp() {
 		window.location = '/login'
 	}
 	displayCharList()
+	importButton.addEventListener('click', () => {
+		// TODO: 发送导入角色请求
+		alert('逻辑未完成')
+	})
 }
 
 initializeApp()

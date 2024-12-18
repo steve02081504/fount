@@ -1,3 +1,4 @@
+import { setupSidebar, triggerSidebarHeartbeat } from "./ui/sidebar.mjs"
 import { initializeVirtualQueue, triggerVirtualQueueHeartbeat } from './ui/virtualQueue.mjs'
 
 export const heartbeat_interval = 1000 // 1s
@@ -13,6 +14,8 @@ export async function doHeartbeat() {
 		charList = data.charlist
 		worldName = data.worldname
 		personaName = data.personaname
+
+		await triggerSidebarHeartbeat()
 	}
 	finally{
 		heartbeatTimeout = setTimeout(doHeartbeat, heartbeat_interval)
@@ -32,4 +35,6 @@ export async function initializeChat() {
 		if (document.visibilityState == 'visible') doHeartbeat()
 		else stopHeartbeat()
 	})
+
+	setupSidebar()
 }

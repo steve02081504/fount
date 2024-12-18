@@ -1,10 +1,5 @@
+import { applyTheme } from "../../scripts/theme.mjs"
 import { getDiscordBotList, startDiscordBot } from './src/public/endpoints.mjs'
-
-// 设置主题
-function setTheme() {
-	const prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-	document.documentElement.setAttribute('data-theme', prefersDarkMode ? 'dark' : 'light')
-}
 
 // 获取 bot 列表
 async function populateBotList() {
@@ -38,7 +33,7 @@ function setupEventListeners() {
 
 // 初始化
 function initializeApp() {
-	setTheme()
+	applyTheme()
 	populateBotList()
 	setupEventListeners()
 }

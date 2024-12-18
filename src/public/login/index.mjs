@@ -1,3 +1,5 @@
+import { applyTheme } from "../scripts/theme.mjs"
+
 const form = document.getElementById('auth-form')
 const formTitle = document.getElementById('form-title')
 const formSubtitle = document.getElementById('form-subtitle')
@@ -194,15 +196,9 @@ function setupEventListeners() {
 	sendVerificationCodeBtn.addEventListener('click', handleSendVerificationCode)
 }
 
-// 设置主题
-function setTheme() {
-	const prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-	document.documentElement.setAttribute('data-theme', prefersDarkMode ? 'dark' : 'light')
-}
-
 // 页面加载完成后的初始化工作
 function initializeApp() {
-	setTheme()
+	applyTheme()
 	initializeForm()
 	setupEventListeners()
 }
