@@ -22,7 +22,8 @@ const addCharButton = document.getElementById('add-char-button')
 const itemDescription = document.getElementById('item-description')
 const rightSidebar = document.getElementById('right-sidebar')
 const rightSidebarContainer = document.getElementById('right-sidebar-container')
-const leftDrawer = document.getElementById('left-drawer')
+const leftDrawerCheckbox = document.getElementById('left-drawer')
+const leftSidebarContainer = document.getElementById('left-sidebar-container')
 const chatContainer = document.querySelector('.chat-container')
 
 // 缓存DOM
@@ -160,14 +161,14 @@ async function displayItemDescription(markdown) {
  * 显示右侧边栏
  */
 function showRightSidebar() {
-	rightSidebar.classList.remove('hidden')
+	rightSidebarContainer.classList.remove('hidden')
 }
 
 /**
  * 隐藏右侧边栏
  */
 function hideRightSidebar() {
-	rightSidebar.classList.add('hidden')
+	rightSidebarContainer.classList.add('hidden')
 }
 
 /**
@@ -196,10 +197,10 @@ export async function setupSidebar() {
 		}
 	})
 
-	// 点击聊天区域关闭侧边栏
-	chatContainer.addEventListener('click', () => {
-		leftDrawer.checked = false
-		hideRightSidebar()
+	// 点击非右侧边栏关闭右侧边栏
+	document.addEventListener('click', (event) => {
+		if (!rightSidebarContainer.contains(event.target))
+			hideRightSidebar()
 	})
 
 	// 鼠标移出右侧边栏区域隐藏右侧边栏
@@ -214,6 +215,7 @@ export async function setupSidebar() {
 }
 
 export async function triggerSidebarHeartbeat() {
+	if (!leftDrawerCheckbox.checked) return
 	await renderWorldList()
 	await renderPersonaList()
 	await renderCharList()

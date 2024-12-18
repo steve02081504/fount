@@ -201,3 +201,8 @@ html[data-theme="dark"] {
 	max-height: 90%;
 	object-fit: contain;
 }
+
+article img {
+	display: inline-block;
+	margin-right: 2px;
+}

@@ -6,7 +6,7 @@ body {
 	margin: 0;
 }
 
-#character-description img {
+article img {
 	display: inline-block;
 	margin-right: 2px;
 }

@@ -12,7 +12,7 @@
 
 <body class="bg-base-200 flex h-screen">
 	<!-- Left Sidebar -->
-	<div class="absolute top-0 left-0 z-40">
+	<div class="absolute top-0 left-0 z-40" id="left-drawer-container">
 		<div class="drawer h-full">
 			<input id="left-drawer" type="checkbox" class="drawer-toggle" />
 			<div class="drawer-side z-40">
@@ -83,7 +83,6 @@
 			<div class="chat-container card bg-base-100 shadow-xl h-full flex flex-col">
 				<div class="chat-header card-title lg:flex justify-between items-center">
 					<h2 class="flex-grow">Chat</h2>
-					<!-- **Modified Trigger Button for Large Screens Here** -->
 					<div class="flex-none">
 						<label for="left-drawer" class="btn btn-square btn-ghost">
 							<img src="https://api.iconify.design/line-md/list-3-solid.svg" title="菜单"
@@ -113,7 +112,7 @@
 
 	<!-- Right Sidebar (Description) -->
 	<div class="absolute top-0 right-0 z-40 w-80 h-full hidden" id="right-sidebar-container">
-		<div class="bg-base-300 text-base-content border-l-2 border-base-content h-full " id="right-sidebar">
+		<div class="bg-base-300 text-base-content border-l-2 border-base-content h-full" id="right-sidebar">
 			<div class="p-4 h-full overflow-y-auto">
 				<h2 class="text-xl mb-2">描述信息</h2>
 				<article id="item-description"></article>
