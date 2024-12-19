@@ -250,25 +250,27 @@ async function getChatRequest(chatid, charname) {
 export async function setPersona(chatid, personaname) {
 	const chatMetadata = await loadChat(chatid)
 	const { LastTimeSlice: timeSlice, username } = chatMetadata
-	if (personaname) {
-		timeSlice.player = await loadPersona(username, personaname)
-		timeSlice.player_id = personaname
-	}
-	else {
+	if (!personaname) {
 		timeSlice.player = undefined
 		timeSlice.player_id = undefined
+		if (is_VividChat(chatMetadata)) saveChat(chatid)
+		return
 	}
+	timeSlice.player = await loadPersona(username, personaname)
+	timeSlice.player_id = personaname
 
 	if (is_VividChat(chatMetadata)) saveChat(chatid)
 }
 
 export async function setWorld(chatid, worldname) {
 	const chatMetadata = await loadChat(chatid)
-	const { username, chatLog } = chatMetadata
 	if (!worldname) {
 		chatMetadata.LastTimeSlice.world = undefined
 		chatMetadata.LastTimeSlice.world_id = undefined
+		if (is_VividChat(chatMetadata)) saveChat(chatid)
+		return null
 	}
+	const { username, chatLog } = chatMetadata
 	let timeSlice = chatMetadata.LastTimeSlice.copy()
 	const world = timeSlice.world = await loadWorld(username, worldname)
 	timeSlice.world_id = worldname

@@ -34,7 +34,8 @@ export async function initAuth(config) {
 	config.data.revokedTokens ??= {}
 	config.data.users ??= {}
 	for (const user in config.data.users)
-		config.data.users[user].auth.refreshTokens ??= []
+		if (config.data.users[user].auth)
+			config.data.users[user].auth.refreshTokens ??= []
 
 	// 清理过期的 revokedTokens 和 refreshTokens
 	cleanupRevokedTokens()
