@@ -174,7 +174,7 @@ async function handleFormSubmit(event) {
 			if (isLoginForm) {
 				console.log('Login successful!')
 				localStorage.setItem('hasLoggedIn', 'true')
-				window.location.href = '/home'
+				window.location.href = hasLoggedIn ? '/home' : '/tutorial'
 			} else {
 				console.log('Registration successful!')
 				toggleForm() // 注册成功后自动切换到登录表单

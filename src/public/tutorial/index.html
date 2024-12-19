@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>来点教程？</title>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.min.css" rel="stylesheet" type="text/css" />
+	<script src="https://cdn.tailwindcss.com"></script>
+	<link rel="stylesheet" href="./index.css">
+</head>
+
+<body>
+	<div id="confetti-container"></div>
+
+	<div id="tutorialModal" class="modal modal-open">
+		<div class="modal-box">
+			<h3 class="font-bold text-lg">欢迎使用fount！</h3>
+			<p class="py-4">走一遍新手教程吗？</p>
+			<div class="modal-action">
+				<button id="startTutorial" class="btn btn-primary">开始教程</button>
+				<a href="/home" class="btn">跳过</a>
+			</div>
+		</div>
+	</div>
+
+	<div id="progressBar" class="hidden">
+		<progress class="progress w-56" value="0" max="100"></progress>
+		<p id="progressText"></p>
+	</div>
+
+	<div id="tutorialEnd" class="hidden text-center">
+		<h2 class="text-2xl">太棒啦！教程完成！</h2>
+		<h2 class="text-2xl">现在你已经学会操作啦！</h2>
+		<a href="/home" class="btn btn-primary">前往主页</a>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+	<script src="./index.js"></script>
+</body>
+
+</html>
