@@ -6,4 +6,17 @@
 			<p>${description}</p>
 		</div>
 	</div>
+	<div class="card-actions justify-end p-2">
+		<div class="flex items-center mr-4">
+			<label class="mr-2 text-sm">频率:</label>
+			<input type="range" min="0" max="100" value="${Math.round(frequency_num * 100)}"
+				class="range range-xs frequency-slider" />
+		</div>
+		<button class="btn btn-xs btn-error mr-2 remove-char-button" title="移出对话">
+			<img src="https://api.iconify.design/line-md/person-remove.svg" />
+		</button>
+		<button class="btn btn-xs btn-primary force-reply-button" title="强制回复">
+			<img src="https://api.iconify.design/line-md/chat-round-dots.svg" />
+		</button>
+	</div>
 </div>

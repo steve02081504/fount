@@ -8,16 +8,16 @@ export let personaName = null
 let heartbeatTimeout
 
 export async function doHeartbeat() {
-	try{
+	try {
 		let data = await triggerVirtualQueueHeartbeat()
 
 		charList = data.charlist
 		worldName = data.worldname
 		personaName = data.personaname
 
-		await triggerSidebarHeartbeat()
+		await triggerSidebarHeartbeat(data)
 	}
-	finally{
+	finally {
 		heartbeatTimeout = setTimeout(doHeartbeat, heartbeat_interval)
 	}
 }

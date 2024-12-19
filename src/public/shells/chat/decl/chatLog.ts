@@ -32,7 +32,7 @@ export class chatReplyRequest_t {
 	world: WorldAPI_t
 	user: UserAPI_t
 	char: charAPI_t
-	other_chars: charAPI_t[]
+	other_chars: Record<string, charAPI_t>
 	plugins: pluginAPI_t[]
 	chat_summary: string
 	chat_scoped_char_memory: {}

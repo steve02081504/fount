@@ -6,7 +6,6 @@
 import { getUserByUsername, getUserDictionary, getAllUserNames } from '../../../../../server/auth.mjs'
 import { LoadChar } from '../../../../../server/managers/char_manager.mjs'
 import { loadJsonFile, saveJsonFile } from '../../../../../scripts/json_loader.mjs'
-import { on_shutdown } from '../../../../../server/on_shutdown.mjs'
 import { getPartInfo } from '../../../../../server/parts_loader.mjs'
 import { loadPersona } from '../../../../../server/managers/personas_manager.mjs'
 import { loadWorld } from "../../../../../server/managers/world_manager.mjs"
@@ -58,6 +57,8 @@ class timeSlice_t {
 	player_id
 	/** @type {Record<string, any>} */
 	chars_memories = {}
+	/** @type {Record<string, number>} */
+	chars_speaking_frequency = {}
 
 	charname
 	playername
@@ -230,6 +231,9 @@ async function getChatRequest(chatid, charname) {
 	const charinfo = getPartInfo(timeSlice.chars[charname], locale) || {}
 	const UserCharname = userinfo.name || timeSlice.player_id || username
 
+	const other_chars = { ...timeSlice.chars }
+	delete other_chars[charname]
+
 	return {
 		username,
 		UserCharname,
@@ -240,7 +244,7 @@ async function getChatRequest(chatid, charname) {
 		world: timeSlice.world,
 		char: timeSlice.chars[charname],
 		user: timeSlice.player,
-		other_chars: Object.values(timeSlice.chars).filter((char) => char.name !== charname),
+		other_chars,
 		chat_summary: timeSlice.summary,
 		chat_scoped_char_memory: timeSlice.chars_memories[charname] ??= {},
 		plugins: []
@@ -345,6 +349,12 @@ export async function removechar(chatid, charname) {
 	if (is_VividChat(chatMetadata)) saveChat(chatid)
 }
 
+export async function setCharSpeakingFrequency(chatid, charname, frequency) {
+	const chatMetadata = await loadChat(chatid)
+	chatMetadata.LastTimeSlice.chars_speaking_frequency[charname] = frequency
+	if (is_VividChat(chatMetadata)) saveChat(chatid)
+}
+
 export async function getCharListOfChat(chatid) {
 	const chatMetadata = await loadChat(chatid)
 	return Object.keys(chatMetadata.LastTimeSlice.chars)
@@ -401,6 +411,13 @@ async function addChatLogEntry(chatid, entry) {
 	chatMetadata.LastTimeSlice = entry.timeSlice
 
 	if (is_VividChat(chatMetadata)) saveChat(chatid)
+
+	{
+		let char = entry.timeSlice.charname ?? null
+		let freq_data = (await getCharReplyFrequency(chatid)).filter(f => f.charname !== char)
+		let nextreply = await getNextCharForReply(freq_data)
+		if (nextreply) triggerCharReply(chatid, nextreply)
+	}
 
 	return entry
 }
@@ -529,16 +546,60 @@ function BuildChatLogEntryFromUserMessage(result, new_timeSlice, user, username)
 	})
 }
 
+async function getCharReplyFrequency(chatid) {
+	const chatMetadata = await loadChat(chatid)
+	if (!chatMetadata) throw new Error('Chat not found')
+	let result = [
+		{
+			charname: null, // user
+			frequency: 1
+		}
+	]
+
+	for (let charname in chatMetadata.LastTimeSlice.chars) {
+		let char = chatMetadata.LastTimeSlice.chars[charname]
+		result.push({
+			charname,
+			frequency: (
+				(char.interfacies?.chat?.GetReplyFequency?.(await getChatRequest(chatid, charname)) || 1) *
+				(chatMetadata.LastTimeSlice.chars_speaking_frequency[charname] || 1)
+			)
+		})
+	}
+
+	return result
+}
+
+async function getNextCharForReply(frequency_data) {
+	let all_freq = frequency_data.map((x) => x.frequency).reduce((a, b) => a + b, 0)
+	let random = Math.random() * all_freq
+
+	for (let { charname, frequency } of frequency_data)
+		if (random < frequency) return charname
+		else random -= frequency
+}
+
 export async function triggerCharReply(chatid, charname) {
 	const chatMetadata = await loadChat(chatid)
 	if (!chatMetadata) throw new Error('Chat not found')
 
 	const timeSlice = chatMetadata.LastTimeSlice
+	let result
+	if (!charname) {
+		let frequency_data = (await getCharReplyFrequency(chatid)).filter(x => x.charname !== null) // 过滤掉用户
+		charname = await getNextCharForReply(frequency_data)
+		if (!charname) return
+	}
+	let request = await getChatRequest(chatid, charname)
+
+	if (timeSlice?.world?.interfacies?.chat?.GetCharReply)
+		return timeSlice.world.interfacies.chat.GetCharReply(request, charname)
+
 	const char = timeSlice.chars[charname]
-	if (!char) throw new Error('char not found')
+	if (!char) throw new Error(`char not found`)
 
 	const new_timeSlice = timeSlice.copy()
-	const result = await char.interfacies.chat.GetReply(await getChatRequest(chatid, charname))
+	result = await char.interfacies.chat.GetReply(request)
 
 	return addChatLogEntry(chatid, BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, chatMetadata.username))
 }
@@ -717,3 +778,16 @@ export async function editMessage(chatid, index, new_content) {
 
 	return chatMetadata.chatLog[index] = entry
 }
+
+export async function getHeartbeatData(chatid, start) {
+	let chatMetadata = await loadChat(chatid)
+	let timeSlice = chatMetadata.LastTimeSlice
+	return {
+		charlist: Object.keys(timeSlice.chars),
+		worldname: timeSlice.world_id,
+		personaname: timeSlice.player_id,
+		frequency_data: timeSlice.chars_speaking_frequency,
+		Messages: chatMetadata.chatLog.slice(start)
+	}
+}
+

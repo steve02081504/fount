@@ -36,5 +36,4 @@ async function sendMessage() {
 	await appendMessage(await addUserReply({ content: messageText, files: SelectedFiles }))
 	SelectedFiles.length = 0
 	attachmentPreviewContainer.innerHTML = ''
-	await appendMessage(await triggerCharacterReply(charList[0]))
 }

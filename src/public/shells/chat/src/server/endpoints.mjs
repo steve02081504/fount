@@ -20,7 +20,9 @@ import {
 	triggerCharReply,
 	deleteMessage,
 	editMessage,
-	GetChatLogLength
+	GetChatLogLength,
+	setCharSpeakingFrequency,
+	getHeartbeatData
 } from './chat.mjs'
 import { Buffer } from "node:buffer"
 
@@ -48,6 +50,11 @@ export function setEndpoints(app) {
 
 	app.post('/api/shells/chat/triggercharreply', async (req, res) => {
 		res.status(200).json(await triggerCharReply(req.body.chatid, req.body.charname))
+	})
+
+	app.post('/api/shells/chat/setcharreplyfrequency', authenticate, async (req, res) => {
+		const { chatid, charname, frequency } = req.body
+		res.status(200).json(await setCharSpeakingFrequency(chatid, charname, frequency))
 	})
 
 	app.post('/api/shells/chat/adduserreply', authenticate, async (req, res) => {
@@ -92,12 +99,7 @@ export function setEndpoints(app) {
 
 	app.post('/api/shells/chat/heartbeat', authenticate, async (req, res) => {
 		const { chatid, start } = req.body
-		res.status(200).json({
-			charlist: await getCharListOfChat(chatid),
-			worldname: await GetWorldName(chatid),
-			personaname: await GetUserPersonaName(chatid),
-			Messages: await GetChatLog(chatid, start)
-		})
+		res.status(200).json(await getHeartbeatData(chatid, start))
 	})
 
 	app.post('/api/shells/chat/getchatloglength', authenticate, async (req, res) => {
@@ -155,6 +157,10 @@ export function unsetEndpoints(app) {
 	})
 
 	app.post('/api/shells/chat/triggercharreply', (req, res) => {
+		res.status(404)
+	})
+
+	app.post('/api/shells/chat/setcharreplyfrequency', (req, res) => {
 		res.status(404)
 	})
 

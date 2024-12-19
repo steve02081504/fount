@@ -114,7 +114,6 @@ system:
 
 				let result = await model.generateContent(request)
 				let text = result.response.text()
-				console.dir(text)
 
 				{
 					text = text.split('\n')
