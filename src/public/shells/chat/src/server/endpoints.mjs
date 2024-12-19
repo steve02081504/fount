@@ -35,18 +35,15 @@ export function setEndpoints(app) {
 	})
 
 	app.post('/api/shells/chat/removechar', async (req, res) => {
-		await removechar(req.body.chatid, req.body.charname)
-		res.status(200).json({ message: 'removechar ok' })
+		res.status(200).json(await removechar(req.body.chatid, req.body.charname))
 	})
 
 	app.post('/api/shells/chat/setworld', async (req, res) => {
-		await setWorld(req.body.chatid, req.body.worldname)
-		res.status(200).json({ message: 'setworld ok' })
+		res.status(200).json(await setWorld(req.body.chatid, req.body.worldname))
 	})
 
 	app.post('/api/shells/chat/setpersona', async (req, res) => {
-		await setPersona(req.body.chatid, req.body.personaname)
-		res.status(200).json({ message: 'setpersona ok' })
+		res.status(200).json(await setPersona(req.body.chatid, req.body.personaname))
 	})
 
 	app.post('/api/shells/chat/triggercharreply', async (req, res) => {
