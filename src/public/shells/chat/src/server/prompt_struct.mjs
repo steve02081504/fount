@@ -42,7 +42,7 @@ export async function buildPromptStruct(
 		if (user) result.user_prompt = await user.interfacies.chat.GetPrompt(args, result, detail_level)
 		if (char) result.char_prompt = await char.interfacies.chat.GetPrompt(args, result, detail_level)
 		for (let other_char of Object.keys(other_chars))
-			result.other_chars_prompt[other_char] = await other_chars[other_char].interfacies.chat?.GetPrompt?.(args, result, detail_level)
+			result.other_chars_prompt[other_char] = await other_chars[other_char].interfacies.chat?.GetPromptForOther?.(args, result, detail_level)
 		for (let plugin of Object.keys(plugins))
 			result.plugin_prompts[plugin] = await plugins[plugin].interfacies.chat?.GetPrompt?.(args, result, detail_level)
 	}

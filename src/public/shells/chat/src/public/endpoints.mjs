@@ -91,6 +91,21 @@ export async function triggerCharacterReply(charname) {
 	return response.json()
 }
 
+export async function setCharReplyFrequency(charname, frequency) {
+	const response = await fetch('/api/shells/chat/setcharreplyfrequency', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({ chatid: currentChatId, charname, frequency }),
+	})
+
+	if (!response.ok)
+		throw new Error(`API request failed with status ${response.status}`)
+
+	return response.json()
+}
+
 export async function addUserReply(reply) {
 	const response = await fetch('/api/shells/chat/adduserreply', {
 		method: 'POST',

@@ -8,7 +8,7 @@ import {
 	getPersonaDetails,
 } from '../../../../../scripts/parts.mjs'
 import { charList, worldName, personaName } from '../chat.mjs'
-import { addCharacter, setPersona, setWorld } from "../endpoints.mjs"
+import { addCharacter, setPersona, setWorld, removeCharacter, triggerCharacterReply, setCharReplyFrequency } from "../endpoints.mjs"
 import { appendMessage } from "./messageList.mjs"
 import { renderMarkdown } from "../../../../../scripts/markdown.mjs"
 
@@ -102,16 +102,28 @@ async function renderPersonaDetails(personaName) {
 /**
  * 渲染聊天角色列表
  */
-async function renderCharList() {
+async function renderCharList(data) {
 	const allChars = await getCharList()
 	const availableChars = allChars.filter((char) => !charList.includes(char))
 	charSelect.innerHTML = availableChars
 		.map((char) => `<option value="${char}">${char}</option>`)
 		.join('')
 
-	charDetailsContainer.innerHTML = ''
+	// 处理角色详情
+	const currentCharsRendered = Array.from(charDetailsContainer.children).map(child => child.getAttribute('data-char-name'))
+	// 删除已经移除的角色
+	currentCharsRendered.forEach(char => {
+		if (!charList.includes(char)) {
+			const charCardToRemove = charDetailsContainer.querySelector(`[data-char-name="${char}"]`)
+			if (charCardToRemove)
+				charDetailsContainer.removeChild(charCardToRemove)
+		}
+	})
+
+	// 添加新的角色
 	for (const char of charList)
-		await renderCharDetails(char)
+		if (!currentCharsRendered.includes(char))
+			await renderCharDetails(char, data.frequency_data[char])
 
 }
 
@@ -119,16 +131,44 @@ async function renderCharList() {
  * 渲染聊天角色详情
  * @param {string} charName 角色名称
  */
-async function renderCharDetails(charName) {
+async function renderCharDetails(charName, frequency_num) {
 	let charData
 	if (!cachedDom.character[charName]) {
 		charData = await getCharDetails(charName)
 		if (!charData) throw new Error(`角色 ${charName} 不存在`)
-		const charCard = cachedDom.character[charName] = await renderTemplate('char_info_chat_view', charData)
+		const charCard = cachedDom.character[charName] = await renderTemplate('char_info_chat_view', {
+			...charData,
+			frequency_num
+		})
+		charCard.setAttribute('data-char-name', charName)
 		addCardEventListeners(charCard, charData)
+		// 添加滑动条的事件监听
+		const frequencySlider = charCard.querySelector(`.frequency-slider`)
+		frequencySlider.addEventListener('input', (event) => {
+			const frequency = event.target.value / 100
+			setCharReplyFrequency(charName, frequency)
+		})
+
+		// 添加移除按钮的事件监听
+		const removeCharButton = charCard.querySelector(`.remove-char-button`)
+		removeCharButton.addEventListener('click', async () => {
+			await appendMessage(await removeCharacter(charName))
+			charList.splice(charList.indexOf(charName), 1)
+			delete cachedDom.character[charName]
+			const charCardToRemove = charDetailsContainer.querySelector(`[data-char-name="${charName}"]`)
+			if (charCardToRemove)
+				charDetailsContainer.removeChild(charCardToRemove)
+			await renderCharList()
+		})
+
+		// 添加强制回复按钮的事件监听
+		const forceReplyButton = charCard.querySelector(`.force-reply-button`)
+		forceReplyButton.addEventListener('click', async () => {
+			appendMessage(await triggerCharacterReply(charName))
+		})
 	}
 
-	if (cachedDom.character[charName])
+	if (cachedDom.character[charName] && !charDetailsContainer.querySelector(`[data-char-name="${charName}"]`))
 		charDetailsContainer.appendChild(cachedDom.character[charName])
 }
 
@@ -207,16 +247,11 @@ export async function setupSidebar() {
 	rightSidebarContainer.addEventListener('mouseleave', () => {
 		hideRightSidebar()
 	})
-
-	//阻止右侧边栏事件冒泡
-	rightSidebar.addEventListener('click', (event) => {
-		event.stopPropagation()
-	})
 }
 
-export async function triggerSidebarHeartbeat() {
+export async function triggerSidebarHeartbeat(data) {
 	if (!leftDrawerCheckbox.checked) return
 	await renderWorldList()
 	await renderPersonaList()
-	await renderCharList()
+	await renderCharList(data)
 }
