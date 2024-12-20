@@ -122,7 +122,7 @@ system:
 					while (text[0].trim().match(reg)) text.shift()
 					reg = new RegExp(`${base_reg}`, 'i')
 					text[0] = text[0].replace(reg, '')
-					while (['','</pause>'].includes(text[text.length - 1].trim())) text.pop() //?
+					while (['', '</pause>'].includes(text[text.length - 1].trim())) text.pop() //?
 					text = text.join('\n')
 				}
 
@@ -130,7 +130,7 @@ system:
 				text = text.replace(/<declare>([^<]*)<\/declare>\s*$/g, '')
 
 				text = text.split('\n')
-				while (['','</pause>','</declare>'].includes(text[text.length - 1].trim())) text.pop() //?
+				while (['', '</pause>', '</declare>'].includes(text[text.length - 1].trim())) text.pop() //?
 				text = text.join('\n')
 
 				return text
