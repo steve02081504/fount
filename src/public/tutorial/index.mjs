@@ -1,3 +1,6 @@
+import { applyTheme } from "../scripts/theme.mjs"
+applyTheme()
+
 const tutorialModal = document.getElementById('tutorialModal')
 const startTutorialBtn = document.getElementById('startTutorial')
 const progressBar = document.getElementById('progressBar')
