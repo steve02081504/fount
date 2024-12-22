@@ -1,4 +1,4 @@
-import { handleFilesSelect } from '../fileHandling.mjs'
+import { handleFilesSelect, handlePaste } from '../fileHandling.mjs'
 
 // 添加拖拽上传支持函数
 export function addDragAndDropSupport(element, selectedFiles, attachmentPreviewContainer) {
@@ -17,5 +17,9 @@ export function addDragAndDropSupport(element, selectedFiles, attachmentPreviewC
 		event.stopPropagation()
 		element.classList.remove('dragover')
 		handleFilesSelect(event, selectedFiles, attachmentPreviewContainer)
+	})
+
+	element.addEventListener('paste', (event) => {
+		handlePaste(event, selectedFiles, attachmentPreviewContainer)
 	})
 }

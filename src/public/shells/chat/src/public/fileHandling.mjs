@@ -32,6 +32,37 @@ export async function handleFilesSelect(event, selectedFiles, attachmentPreviewC
 	}
 }
 
+/**
+ * 处理粘贴事件，将剪贴板中的图片添加到附件列表。
+ *
+ * @param {ClipboardEvent} event - 粘贴事件对象。
+ * @param {Array} selectedFiles - 已选择的文件数组，用于存储新添加的文件。
+ * @param {HTMLElement} attachmentPreviewContainer - 附件预览区域的 DOM 元素，用于显示新添加的附件。
+ */
+export async function handlePaste(event, selectedFiles, attachmentPreviewContainer) {
+	const items = (event.clipboardData || window.clipboardData).items
+	for (const item of items)
+		if (item.type.indexOf('image') === 0) {
+			const blob = item.getAsFile()
+			if (blob) {
+				// 为 blob 创建一个唯一的文件名，例如使用时间戳和随机数
+				const fileName = `pasted-image-${Date.now()}-${Math.floor(Math.random() * 1000)}.png`
+
+				// 将 Blob 转换为 File 对象
+				const file = new File([blob], fileName, { type: blob.type })
+
+				// 创建一个假的 event 对象，模拟 file input 的 change 事件
+				const fakeEvent = {
+					target: {
+						files: [file],
+					},
+				}
+				// 使用 handleFilesSelect 函数处理图片文件
+				await handleFilesSelect(fakeEvent, selectedFiles, attachmentPreviewContainer)
+			}
+		}
+}
+
 export async function renderAttachmentPreview(file, index, selectedFiles) {
 	const attachmentElement = await renderTemplate('attachment_preview', {
 		file,

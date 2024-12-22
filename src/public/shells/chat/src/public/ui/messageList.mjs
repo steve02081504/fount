@@ -1,4 +1,4 @@
-import { renderTemplate } from '../../../../../scripts/template.mjs'
+import { renderTemplate, renderTemplateAsHtmlString } from '../../../../../scripts/template.mjs'
 import { renderMarkdown } from '../../../../../scripts/markdown.mjs'
 import {
 	modifyTimeLine,
@@ -7,10 +7,8 @@ import {
 } from '../endpoints.mjs'
 import { handleFilesSelect, renderAttachmentPreview } from '../fileHandling.mjs'
 import { processTimeStampForId, SWIPE_THRESHOLD, DEFAULT_AVATAR } from '../utils.mjs'
-import { appendMessageToQueue, getQueueIndex, replaceMessageInQueue, getMessageIndexByIndex, deleteMessageInQueue } from './virtualQueue.mjs'
+import { appendMessageToQueue, getQueueIndex, replaceMessageInQueue, getMessageIndexByIndex, deleteMessageInQueue, getMessageElementByMessageIndex } from './virtualQueue.mjs'
 import { addDragAndDropSupport } from "./dragAndDrop.mjs"
-
-const chatMessagesContainer = document.getElementById('chat-messages')
 
 export async function renderMessage(message) {
 	const preprocessedMessage = {
@@ -25,39 +23,35 @@ export async function renderMessage(message) {
 		'message_view',
 		preprocessedMessage
 	)
-	const templateType = messageElement.dataset.templateType
-
-	if (templateType === 'message') {
-		messageElement
-			.querySelector('.delete-button')
-			.addEventListener('click', async () => {
-				if (confirm('确认删除此消息？')) {
-					const index = getQueueIndex(messageElement)
-					if (index === -1) return
-					const messageIndex = await getMessageIndexByIndex(index)
-					await deleteMessage(messageIndex)
-					messageElement.remove()
-					await deleteMessageInQueue(index)
-				}
-			})
-
-		messageElement
-			.querySelector('.edit-button')
-			.addEventListener('click', async () => {
+	messageElement
+		.querySelector('.delete-button')
+		.addEventListener('click', async () => {
+			if (confirm('确认删除此消息？')) {
 				const index = getQueueIndex(messageElement)
 				if (index === -1) return
 				const messageIndex = await getMessageIndexByIndex(index)
-				await editMessageStart(message, index, messageIndex)
-			})
+				await deleteMessage(messageIndex)
+				messageElement.remove()
+				await deleteMessageInQueue(index)
+			}
+		})
 
-		if (message.files?.length > 0) {
-			const attachmentsContainer = messageElement.querySelector('.attachments')
-			message.files.forEach(async (file, index) => {
-				attachmentsContainer.appendChild(
-					await renderAttachmentPreview(file, index, null)
-				)
-			})
-		}
+	messageElement
+		.querySelector('.edit-button')
+		.addEventListener('click', async () => {
+			const index = getQueueIndex(messageElement)
+			if (index === -1) return
+			const messageIndex = await getMessageIndexByIndex(index)
+			await editMessageStart(message, index, messageIndex)
+		})
+
+	if (message.files?.length > 0) {
+		const attachmentsContainer = messageElement.querySelector('.attachments')
+		message.files.forEach(async (file, index) => {
+			attachmentsContainer.appendChild(
+				await renderAttachmentPreview(file, index, null)
+			)
+		})
 	}
 
 	if (message.role == 'char')
@@ -75,14 +69,12 @@ export async function editMessageStart(message, index, messageIndex) {
 		content_for_edit: message.content_for_edit || message.content,
 		safeTimeStamp: processTimeStampForId(message.timeStamp),
 	}
-	const messageElement = await renderTemplate(
+	const messageElement = await getMessageElementByMessageIndex(messageIndex)
+	messageElement.innerHTML = await renderTemplateAsHtmlString(
 		'message_edit_view',
 		editRenderedMessage
 	)
-	chatMessagesContainer.children[index].replaceWith(messageElement)
-	chatMessagesContainer.children[index] = messageElement
 
-	const templateType = messageElement.dataset.templateType
 	const fileEditInputElement = messageElement.querySelector(
 		`#file-edit-input-${editRenderedMessage.safeTimeStamp}`
 	)
@@ -99,39 +91,40 @@ export async function editMessageStart(message, index, messageIndex) {
 		attachmentEditPreviewContainer
 	)
 
-	if (templateType === 'edit') {
-		messageElement
-			.querySelector(`#confirm-button-${editRenderedMessage.safeTimeStamp}`)
-			.addEventListener('click', async () => {
-				const newContent = messageElement.querySelector(
-					`#edit-input-${editRenderedMessage.safeTimeStamp}`
-				).value
-				await replaceMessageInQueue(
-					index,
-					await editMessage(messageIndex, { content: newContent, files: selectedFiles })
-				)
-			})
-
-		messageElement
-			.querySelector(`#cancel-button-${editRenderedMessage.safeTimeStamp}`)
-			.addEventListener('click', async () => {
-				await replaceMessageInQueue(index, message)
-			})
-
-		selectedFiles.forEach(async (file, i) => {
-			attachmentEditPreviewContainer.appendChild(
-				await renderAttachmentPreview(file, i, selectedFiles)
-			)
+	messageElement
+		.querySelector(`#confirm-button-${editRenderedMessage.safeTimeStamp}`)
+		.addEventListener('click', async () => {
+			const newContent = messageElement.querySelector(
+				`#edit-input-${editRenderedMessage.safeTimeStamp}`
+			).value
+			const newMessage = {
+				...message,
+				content: newContent,
+				files: selectedFiles
+			}
+			const updatedMessage = await editMessage(messageIndex, newMessage)
+			await replaceMessageInQueue(index, updatedMessage)
 		})
 
-		messageElement
-			.querySelector(`#upload-edit-button-${editRenderedMessage.safeTimeStamp}`)
-			.addEventListener('click', () => fileEditInputElement.click())
-
-		fileEditInputElement.addEventListener('change', (event) => {
-			handleFilesSelect(event, selectedFiles, attachmentEditPreviewContainer)
+	messageElement
+		.querySelector(`#cancel-button-${editRenderedMessage.safeTimeStamp}`)
+		.addEventListener('click', async () => {
+			await replaceMessageInQueue(index, message)
 		})
-	}
+
+	selectedFiles.forEach(async (file, i) => {
+		attachmentEditPreviewContainer.appendChild(
+			await renderAttachmentPreview(file, i, selectedFiles)
+		)
+	})
+
+	messageElement
+		.querySelector(`#upload-edit-button-${editRenderedMessage.safeTimeStamp}`)
+		.addEventListener('click', () => fileEditInputElement.click())
+
+	fileEditInputElement.addEventListener('change', (event) =>
+		handleFilesSelect(event, selectedFiles, attachmentEditPreviewContainer)
+	)
 
 	messageElement
 		.querySelector(`#edit-input-${editRenderedMessage.safeTimeStamp}`)
