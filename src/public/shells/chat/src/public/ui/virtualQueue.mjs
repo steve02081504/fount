@@ -151,26 +151,35 @@ export async function appendMessageToQueue(message) {
 	chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight
 }
 
-export async function replaceMessageInQueue(index, message) {
+export async function replaceMessageInQueue(index, message, element = null) {
 	queue[index] = message
 
 	const oldMessageElement = chatMessagesContainer.children[index]
-	if (!oldMessageElement) return
+	if (!oldMessageElement) throw new Error('Message not found in queue')
 
-	const newMessageElement = await renderMessage(message)
+	element ??= await renderMessage(message)
 
 	oldMessageElement.classList.add('smooth-transition')
 	oldMessageElement.style.opacity = '0'
 
 	await new Promise((resolve) => setTimeout(resolve, TRANSITION_DURATION))
 
-	oldMessageElement.replaceWith(newMessageElement)
+	oldMessageElement.replaceWith(element)
 	updateLastCharMessageArrows()
 }
 
 export function getQueueIndex(element) {
 	const index = Array.from(chatMessagesContainer.children).indexOf(element)
 	return index > queue.length || index < 0 ? -1 : index
+}
+
+export async function getMessageElementByIndex(index) {
+	const messageIndex = await getMessageIndexByIndex(index)
+	return chatMessagesContainer.children[messageIndex]
+}
+
+export async function getMessageElementByMessageIndex(messageIndex) {
+	return chatMessagesContainer.children[messageIndex]
 }
 
 export async function getMessageIndexByIndex(index) {

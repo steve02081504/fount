@@ -1,6 +1,5 @@
-import { addUserReply, triggerCharacterReply } from '../endpoints.mjs'
+import { addUserReply } from '../endpoints.mjs'
 import { appendMessage } from './messageList.mjs'
-import { charList } from '../chat.mjs'
 import { addDragAndDropSupport } from './dragAndDrop.mjs'
 import { handleFilesSelect } from "../fileHandling.mjs"
 
