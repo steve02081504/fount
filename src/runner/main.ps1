@@ -1,5 +1,5 @@
 #!pwsh
-#_pragma icon $PSScriptRoot/../public/icon.ico
+#_pragma icon $PSScriptRoot/../public/favicon.ico
 #_pragma title "fount"
 #_pragma outputfile $PSScriptRoot/fount.exe
 
