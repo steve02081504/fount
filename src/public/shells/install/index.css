@@ -1,0 +1,19 @@
+.drop-area {
+	border: 2px dashed #ccc;
+	border-radius: 8px;
+	padding: 20px;
+	text-align: center;
+	cursor: pointer;
+}
+
+.drop-area.dragover {
+	background-color: #f0f0f0;
+}
+
+.file-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 8px;
+	border-bottom: 1px solid #eee;
+}

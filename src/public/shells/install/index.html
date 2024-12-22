@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>导入</title>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.min.css" rel="stylesheet" type="text/css" />
+	<script src="https://cdn.tailwindcss.com"></script>
+	<link rel="stylesheet" href="./index.css">
+</head>
+
+<body class="flex flex-col h-screen">
+	<div class="navbar bg-base-100">
+		<div class="navbar-start">
+			<ul class="menu menu-horizontal p-0">
+				<li id="file-import-tab" class="tab tab-active">文件导入</li>
+				<li id="text-import-tab" class="tab">文本导入</li>
+			</ul>
+		</div>
+	</div>
+
+	<div id="import-content" class="p-4 flex flex-col flex-grow overflow-auto">
+		<!-- 文件导入内容 -->
+		<div id="file-import-content" class="flex flex-col h-full">
+			<div id="drop-area" class="drop-area flex flex-col items-center justify-center">
+				<img src="https://api.iconify.design/line-md/upload-outline-loop.svg" width="50" height="50" class="dark:invert"/>
+				<span>拖放文件到此处或点击选择文件</span>
+			</div>
+			<div id="file-list" class="mt-4 overflow-auto flex-grow">
+				<!-- 文件列表将在此处显示 -->
+			</div>
+		</div>
+
+		<!-- 文本导入内容 -->
+		<div id="text-import-content" class="hidden flex flex-col">
+			<textarea id="text-input" class="textarea textarea-bordered w-full flex-grow" placeholder="输入要导入的文本..."></textarea>
+		</div>
+	</div>
+
+	<div class="flex justify-center mt-4 p-4">
+		<button id="import-button" class="btn btn-primary">导入</button>
+	</div>
+
+	<script type="module" src="./index.mjs"></script>
+</body>
+
+</html>
