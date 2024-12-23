@@ -5,10 +5,11 @@ export const heartbeat_interval = 1000 // 1s
 export let charList = []
 export let worldName = null
 export let personaName = null
-let heartbeatTimeout
+let stopHeartbeatting = false
 
-export async function doHeartbeat() {
+async function doHeartbeat() {
 	try {
+		if (stopHeartbeatting) return
 		let data = await triggerVirtualQueueHeartbeat()
 
 		charList = data.charlist
@@ -18,12 +19,16 @@ export async function doHeartbeat() {
 		await triggerSidebarHeartbeat(data)
 	}
 	finally {
-		heartbeatTimeout = setTimeout(doHeartbeat, heartbeat_interval)
+		setTimeout(doHeartbeat, heartbeat_interval)
 	}
 }
 
-function stopHeartbeat() {
-	heartbeatTimeout = clearTimeout(heartbeatTimeout)
+export function startHeartbeat() {
+	stopHeartbeatting = false
+}
+
+export function stopHeartbeat() {
+	stopHeartbeatting = true
 }
 
 export async function initializeChat() {

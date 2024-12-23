@@ -2,6 +2,7 @@ import { renderMessage } from './messageList.mjs'
 import { getChatLog, getChatLogLength, triggerHeartbeat } from '../../public/endpoints.mjs'
 import { modifyTimeLine } from '../endpoints.mjs'
 import { TRANSITION_DURATION } from "../utils.mjs"
+import { startHeartbeat, stopHeartbeat } from "../chat.mjs";
 
 const chatMessagesContainer = document.getElementById('chat-messages')
 const BUFFER_SIZE = 20
@@ -126,16 +127,27 @@ function updateLastCharMessageArrows() {
 		rightArrow.textContent = '❯'
 		leftArrow.after(rightArrow)
 
+		function removeArrows() {
+			leftArrow.remove()
+			rightArrow.remove()
+		}
+
 		leftArrow.addEventListener('click', async () => {
+			removeArrows()
 			const index = getQueueIndex(messageElement)
 			if (index === -1) return
+			await stopHeartbeat()
 			await replaceMessageInQueue(index, await modifyTimeLine(-1))
+			await startHeartbeat()
 		})
 
 		rightArrow.addEventListener('click', async () => {
+			removeArrows()
 			const index = getQueueIndex(messageElement)
 			if (index === -1) return
+			await stopHeartbeat()
 			await replaceMessageInQueue(index, await modifyTimeLine(1))
+			await startHeartbeat()
 		})
 	}
 }
