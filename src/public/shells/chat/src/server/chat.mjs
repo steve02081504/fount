@@ -456,7 +456,7 @@ export async function modifyTimeLine(chatid, delta) {
 					result = await char.interfacies.chat.GetReply(await getChatRequest(chatid, charname))
 			}
 			let entry
-			if (new_timeSlice.greeting_type.startsWith('world_'))
+			if (new_timeSlice.greeting_type?.startsWith?.('world_'))
 				entry = BuildChatLogEntryFromCharReply(result, new_timeSlice, null, undefined, chatMetadata.username)
 			else
 				entry = BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, chatMetadata.username)
@@ -776,7 +776,11 @@ export async function editMessage(chatid, index, new_content) {
 	else
 		entry = BuildChatLogEntryFromUserMessage(editresult, timeSlice, chatMetadata.LastTimeSlice, chatMetadata.username)
 
-	return chatMetadata.chatLog[index] = entry
+	chatMetadata.chatLog[index] = entry
+
+	if (is_VividChat(chatMetadata)) saveChat(chatid)
+
+	return entry
 }
 
 export async function getHeartbeatData(chatid, start) {
