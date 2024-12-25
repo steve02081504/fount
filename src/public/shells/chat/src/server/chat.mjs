@@ -726,6 +726,8 @@ export async function deleteMessage(chatid, index) {
 		chatMetadata.LastTimeSlice = last.timeSlice
 	else
 		chatMetadata.LastTimeSlice = new timeSlice_t()
+
+	if (is_VividChat(chatMetadata)) saveChat(chatid)
 }
 
 export async function editMessage(chatid, index, new_content) {
