@@ -37,15 +37,21 @@ else {
 }
 
 if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
+	Write-Host "Deno missing, auto installing..."
 	Invoke-RestMethod https://deno.land/install.ps1 | Invoke-Expression
 	if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
 		Write-Host "Deno missing, you cant run fount without deno"
 		exit 1
 	}
+	else {
+		Write-Host "Deno installed"
+	}
 }
 
-deno upgrade
+deno upgrade -q
+deno -V
 if (!(Test-Path -Path "$FOUNT_DIR/node_modules")) {
+	Write-Host "Installing dependencies..."
 	deno install --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
 }
 if ($args.Count -gt 0 -and $args[0] -eq 'debug') {
