@@ -98,11 +98,15 @@ EOF
 	if ! command -v deno &> /dev/null; then
 		echo "Deno missing, you cant run fount without deno"
 		exit 1
+	else
+		echo "Deno installed"
 	fi
 fi
 
-deno upgrade
+deno upgrade -q
+deno -V
 if [ ! -d "$FOUNT_DIR/node_modules" ]; then
+	echo "Installing dependencies..."
 	deno install --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
 fi
 
