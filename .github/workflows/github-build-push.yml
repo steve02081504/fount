@@ -1,8 +1,12 @@
 name: Build and Push Container
 
+permissions:
+  contents: read
+  packages: write
+
 on:
   push:
-  workflow_dispatch:    
+  workflow_dispatch:
 jobs:
   build-and-push:
     runs-on: [ubuntu-latest]
@@ -49,4 +53,4 @@ jobs:
           push: true
           tags: |
             ghcr.io/steve02081504/fount:latest
-            ghcr.io/steve02081504/fount:${{ github.sha }}  
+            ghcr.io/steve02081504/fount:${{ github.sha }}
