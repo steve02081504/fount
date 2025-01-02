@@ -2,17 +2,35 @@
 
 install_package() {
 	if command -v apt-get &> /dev/null; then
-		sudo apt-get update
-		sudo apt-get install -y "$1"
+		if command -v sudo &> /dev/null; then
+			sudo apt-get update
+			sudo apt-get install -y "$1"
+		else
+			apt-get update
+			apt-get install -y "$1"
+		fi
 	elif command -v brew &> /dev/null; then
 		brew install "$1"
 	elif command -v pacman &> /dev/null; then
-		sudo pacman -Syy
-		sudo pacman -S --needed "$1"
+		if command -v sudo &> /dev/null; then
+			sudo pacman -Syy
+			sudo pacman -S --needed "$1"
+		else
+			pacman -Syy
+			pacman -S --needed "$1"
+		fi
 	elif command -v dnf &> /dev/null; then
-		sudo dnf install -y "$1"
+		if command -v sudo &> /dev/null; then
+			sudo dnf install -y "$1"
+		else
+			dnf install -y "$1"
+		fi
 	elif command -v zypper &> /dev/null; then
-		sudo zypper install -y "$1"
+		if command -v sudo &> /dev/null; then
+			sudo zypper install -y "$1"
+		else
+			zypper install -y "$1"
+		fi
 	else
 		echo "无法安装 $1"
 		exit 1
