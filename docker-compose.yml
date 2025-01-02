@@ -2,13 +2,9 @@ version: "3"
 
 services:
   fount:
-    # 本地构建
-    # build: .
-    # 远程构建
     image: steve02081504/fount:latest
     ports:
       - "8931:8931"
     volumes:
       - ./data:/app/data:rw
-      - ./imgs:/app/imgs:rw
-      - ./default:/app/default:rw
+    restart: unless-stopped
