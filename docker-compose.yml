@@ -1,0 +1,10 @@
+version: "3"
+
+services:
+  fount:
+    image: steve02081504/fount:latest
+    ports:
+      - "8931:8931"
+    volumes:
+      - ./data:/app/data:rw
+    restart: unless-stopped
