@@ -27,7 +27,7 @@ app.use(cookieParser())
 
 function get_config() {
 	if (!fs.existsSync(__dirname + '/data/config.json')) {
-		fs.mkdirSync(__dirname + '/data')
+		try { fs.mkdirSync(__dirname + '/data') } catch { }
 		fs.copyFileSync(__dirname + '/default/config.json', __dirname + '/data/config.json')
 	}
 

@@ -300,9 +300,9 @@ export async function login(username, password, deviceId = 'unknown') {
 	authData.loginAttempts = 0
 
 	const userdir = getUserDictionary(username)
-	fs.mkdirSync(userdir, { recursive: true })
+	try { fs.mkdirSync(userdir, { recursive: true }) } catch { }
 	for (let subdir of ['AIsources', 'chars', 'personas', 'settings', 'shells', 'worlds', 'charTemplates', 'AIsourceGenerators'])
-		fs.mkdirSync(userdir + '/' + subdir, { recursive: true })
+		try{ fs.mkdirSync(userdir + '/' + subdir, { recursive: true }) } catch { }
 
 	// 生成访问令牌和刷新令牌
 	const accessToken = await generateAccessToken({ username: user.username, userId: authData.userId })
