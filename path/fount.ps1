@@ -1,4 +1,4 @@
-$FOUNT_DIR = Split-Path -Parent $PSScriptRoot
+﻿$FOUNT_DIR = Split-Path -Parent $PSScriptRoot
 $ErrorCount = $Error.Count
 
 # Docker 检测
