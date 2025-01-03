@@ -31,6 +31,8 @@ install_package() {
 		else
 			zypper install -y "$1"
 		fi
+	elif command -v apk &> /dev/null; then
+		apk add --update "$1"
 	else
 		echo "无法安装 $1"
 		exit 1
@@ -39,6 +41,10 @@ install_package() {
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 FOUNT_DIR=$(dirname "$SCRIPT_DIR")
+IN_DOCKER=0
+if [ -f "/.dockerenv" ] || grep -q 'docker\|containerd' /proc/1/cgroup 2>/dev/null; then
+	IN_DOCKER=1
+fi
 
 if ! command -v fount &> /dev/null; then
 	if ! grep -q "export PATH=\"\$PATH:$FOUNT_DIR/path\"" "$HOME/.bashrc"; then
@@ -61,7 +67,7 @@ if command -v git &> /dev/null; then
 		git -C "$FOUNT_DIR" reset --hard origin/master
 		git -C "$FOUNT_DIR" checkout origin/master
 	fi
-	if [ -f "/.dockerenv" ] || grep -q 'docker\|containerd' /proc/1/cgroup 2>/dev/null; then
+	if [ $IN_DOCKER -eq 1 ]; then
 		echo "Skipping git pull in Docker environment"
 	else
 		git -C "$FOUNT_DIR" pull -f
@@ -125,14 +131,20 @@ EOF
 	fi
 fi
 
-deno upgrade -q
+if [ $IN_DOCKER -eq 1 ]; then
+	echo "Skipping deno upgrade in Docker environment"
+else
+	deno upgrade -q
+fi
 deno -V
-if [ ! -d "$FOUNT_DIR/node_modules" ]; then
+if [[ ! -d "$FOUNT_DIR/node_modules" || ($# -gt 0 && $1 = 'init') ]]; then
 	echo "Installing dependencies..."
 	deno install --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
 fi
 
-if [ $# -gt 0 -a $1 = 'debug' ]; then
+if [[ $# -gt 0 && $1 = 'init' ]]; then
+	exit 0
+elif [[ $# -gt 0 && $1 = 'debug' ]]; then
 	newargs=($@[1:])
 	deno run --allow-scripts --allow-all --inspect-brk "$FOUNT_DIR/src/server/index.mjs" @newargs
 else

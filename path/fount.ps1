@@ -1,6 +1,10 @@
 $FOUNT_DIR = Split-Path -Parent $PSScriptRoot
 $ErrorCount = $Error.Count
 
+# Docker 检测
+$IN_DOCKER = $false
+
+# fount 路径设置
 if (!(Get-Command fount -ErrorAction SilentlyContinue)) {
 	$path = $env:PATH -split ';'
 	if ($path -notcontains "$FOUNT_DIR\path") {
@@ -10,7 +14,9 @@ if (!(Get-Command fount -ErrorAction SilentlyContinue)) {
 	[System.Environment]::SetEnvironmentVariable('PATH', $path, [System.EnvironmentVariableTarget]::User)
 }
 
+# Git 安装和更新
 if (!(Get-Command git -ErrorAction SilentlyContinue)) {
+	Write-Host "Git is not installed, attempting to install..."
 	if (!(Get-Command winget -ErrorAction SilentlyContinue)) {
 		Import-Module Appx
 		Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe
@@ -18,7 +24,11 @@ if (!(Get-Command git -ErrorAction SilentlyContinue)) {
 	if (Get-Command winget -ErrorAction SilentlyContinue) {
 		winget install --id Git.Git -e --source winget
 	}
+	if (!(Get-Command git -ErrorAction SilentlyContinue)) {
+		Write-Host "Failed to install Git, please install it manually."
+	}
 }
+
 if (Get-Command git -ErrorAction SilentlyContinue) {
 	if (!(Test-Path -Path "$FOUNT_DIR/.git")) {
 		Remove-Item -Path "$FOUNT_DIR/.git-clone" -Recurse -Force -ErrorAction SilentlyContinue
@@ -30,12 +40,19 @@ if (Get-Command git -ErrorAction SilentlyContinue) {
 		git -C "$FOUNT_DIR" reset --hard origin/master
 		git -C "$FOUNT_DIR" checkout origin/master
 	}
-	git -C "$FOUNT_DIR" pull -f
+
+	if ($IN_DOCKER) {
+		Write-Host "Skipping git pull in Docker environment"
+	}
+	else {
+		git -C "$FOUNT_DIR" pull -f
+	}
 }
 else {
 	Write-Host "Git is not installed, skipping git pull"
 }
 
+# Deno 安装
 if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
 	Write-Host "Deno missing, auto installing..."
 	Invoke-RestMethod https://deno.land/install.ps1 | Invoke-Expression
@@ -43,18 +60,29 @@ if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
 		Write-Host "Deno missing, you cant run fount without deno"
 		exit 1
 	}
-	else {
-		Write-Host "Deno installed"
-	}
 }
 
-deno upgrade -q
+# Deno 更新
+if ($IN_DOCKER) {
+	Write-Host "Skipping deno upgrade in Docker environment"
+}
+else {
+	deno upgrade -q
+}
+
 deno -V
-if (!(Test-Path -Path "$FOUNT_DIR/node_modules")) {
+
+# 安装依赖
+if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $args[0] -eq 'init')) {
 	Write-Host "Installing dependencies..."
 	deno install --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
 }
-if ($args.Count -gt 0 -and $args[0] -eq 'debug') {
+
+# 执行 fount
+if ($args.Count -gt 0 -and $args[0] -eq 'init') {
+	exit 0
+}
+elseif ($args.Count -gt 0 -and $args[0] -eq 'debug') {
 	$newargs = $args[1..$args.Count]
 	deno run --allow-scripts --allow-all --inspect-brk "$FOUNT_DIR/src/server/index.mjs" @newargs
 }
