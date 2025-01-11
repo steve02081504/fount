@@ -79,18 +79,25 @@ if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $ar
 }
 
 # 执行 fount
+function run {
+	if ($args.Count -gt 0 -and $args[0] -eq 'debug') {
+		$newargs = $args[1..$args.Count]
+		deno run --allow-scripts --allow-all --inspect-brk "$FOUNT_DIR/src/server/index.mjs" @newargs
+	}
+	else {
+		deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" @args
+	}
+}
 if ($args.Count -gt 0 -and $args[0] -eq 'init') {
 	exit 0
 }
-elseif ($args.Count -gt 0 -and $args[0] -eq 'debug') {
-	$newargs = $args[1..$args.Count]
-	deno run --allow-scripts --allow-all --inspect-brk "$FOUNT_DIR/src/server/index.mjs" @newargs
+elseif ($args.Count -gt 0 -and $args[0] -eq 'keepalive') {
+	$runargs = $args[1..$args.Count]
+	while($true) { run @runargs }
 }
 else {
-	deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" @args
+	run @args
 }
 
-if ($ErrorCount -ne $Error.Count -or ($LASTEXITCODE -ne 0) -and ($LASTEXITCODE -ne 255)) {
-	Pause
-	exit $LASTEXITCODE
-}
+if ($ErrorCount -ne $Error.Count) { exit 1 }
+exit $LastExitCode
