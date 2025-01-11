@@ -142,11 +142,19 @@ if [[ ! -d "$FOUNT_DIR/node_modules" || ($# -gt 0 && $1 = 'init') ]]; then
 	deno install --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
 fi
 
+run() {
+	if [[ $# -gt 0 && $1 = 'debug' ]]; then
+		newargs=($@[1:])
+		deno run --allow-scripts --allow-all --inspect-brk "$FOUNT_DIR/src/server/index.mjs" @newargs
+	else
+		deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" $@
+	fi
+}
 if [[ $# -gt 0 && $1 = 'init' ]]; then
 	exit 0
-elif [[ $# -gt 0 && $1 = 'debug' ]]; then
-	newargs=($@[1:])
-	deno run --allow-scripts --allow-all --inspect-brk "$FOUNT_DIR/src/server/index.mjs" @newargs
+elif [[ $# -gt 0 && $1 = 'keepalive' ]]; then
+	runargs=($@[1:])
+	while true; do run @runargs; done
 else
-	deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" $@
+	run $@
 fi
