@@ -1,6 +1,6 @@
 import { locale_t } from "./basedefs";
 
-export class charTemplateAPI_t {
+export class importHanlderAPI_t {
 	info: Record<locale_t, {
 		name: string;
 		avatar: string;

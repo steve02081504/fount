@@ -1,6 +1,7 @@
 import express from 'npm:express'
 import bodyParser from 'npm:body-parser'
 import cookieParser from 'npm:cookie-parser'
+import fileUpload from 'npm:express-fileupload'
 import path from 'node:path'
 import fs from 'node:fs'
 import process from 'node:process'
@@ -22,6 +23,7 @@ app.use((req, res, next) => {
 })
 app.use(express.json({ limit: Infinity }))
 app.use(express.urlencoded({ limit: Infinity, extended: true }))
+app.use(fileUpload())
 app.use(bodyParser.json())
 app.use(cookieParser())
 

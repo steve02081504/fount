@@ -135,7 +135,11 @@ export function getPartList(username, parttype, {
 	PathFilter = (path_dir, file) => fs.existsSync(path_dir + '/' + file + '/main.mjs'),
 } = {}) {
 	const part_dir = getUserDictionary(username) + '/' + parttype
-	const partlist = fs.readdirSync(part_dir).filter(file => PathFilter(part_dir, file))
+	let partlist = fs.readdirSync(part_dir).filter(file => PathFilter(part_dir, file))
+	try{
+		let publiclist = fs.readdirSync(__dirname + '/src/public/' + parttype).filter(file => PathFilter(__dirname + '/src/public/' + parttype, file))
+		partlist = [...new Set(partlist.concat(publiclist))]
+	} catch (e) {}
 	return partlist
 }
 

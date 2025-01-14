@@ -86,8 +86,7 @@ async function initializeApp() {
 	}
 	displayCharList()
 	importButton.addEventListener('click', () => {
-		// TODO: 发送导入角色请求
-		alert('逻辑未完成')
+		window.location = '/shells/install'
 	})
 }
 

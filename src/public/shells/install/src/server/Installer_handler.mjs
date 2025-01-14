@@ -1,22 +1,40 @@
-import { LoadCharTemplate } from "./charTemplate_manager.mjs"
+import { LoadImportHanlder } from "./importHanlder_manager.mjs"
 import { getPartList } from '../../../../../server/parts_loader.mjs'
 
-export async function importChar(username, data) {
-	let charTemplates = getPartList(username, 'charTemplates')
-	for (let charTemplate of charTemplates) try {
-		let template = await LoadCharTemplate(username, charTemplate)
-		await template.ImportChar(username, data)
-	} catch (err) {
-		console.log(err)
-	}
+export async function importPart(username, data) {
+	let ImportHanlders = getPartList(username, 'ImportHanlders')
+	const errors = []
+
+	for (let importHanlder of ImportHanlders)
+		try {
+			let hanlder = await LoadImportHanlder(username, importHanlder)
+			await hanlder.ImportAsData(username, data)
+			return
+		} catch (err) {
+			errors.push({ hanlder: importHanlder, error: err.message || String(err) })
+			console.log(`hanlder ${importHanlder} failed:`, err)
+		}
+
+	// 如果所有模板都失败，抛出包含所有错误的异常
+	if (errors.length > 0)
+		throw Object.assign(new Error("All hanlders failed"), { errors })
 }
 
-export async function importCharByText(username, text) {
-	let charTemplates = getPartList(username, 'charTemplates')
-	for (let charTemplate of charTemplates) try {
-		let template = await LoadCharTemplate(username, charTemplate)
-		await template.ImportCharByText(username, text)
-	} catch (err) {
-		console.log(err)
-	}
+export async function importPartByText(username, text) {
+	let ImportHanlders = getPartList(username, 'ImportHanlders')
+	const errors = []
+
+	for (let importHanlder of ImportHanlders)
+		try {
+			let hanlder = await LoadImportHanlder(username, importHanlder)
+			await hanlder.ImportByText(username, text)
+			return
+		} catch (err) {
+			errors.push({ hanlder: importHanlder, error: err.message || String(err) })
+			console.log(`hanlder ${importHanlder} failed:`, err)
+		}
+
+
+	if (errors.length > 0)
+		throw Object.assign(new Error("All hanlders failed"), { errors })
 }
