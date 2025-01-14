@@ -59,7 +59,6 @@ function handleFiles(files) {
 		if (!selectedFiles.find(f => f.name === file.name))
 			selectedFiles.push(file)
 
-
 	renderFileList()
 }
 
@@ -79,14 +78,66 @@ async function renderFileList() {
 }
 
 // 导入按钮点击事件
-importButton.addEventListener('click', () => {
+importButton.addEventListener('click', async () => {
 	const isFileImport = !fileImportContent.classList.contains('hidden')
-	if (isFileImport)
-		// 处理文件导入逻辑
-		console.log('导入文件:', selectedFiles)
-	else
-		// 处理文本导入逻辑
-		console.log('导入文本:', textInput.value)
+	try {
+		if (isFileImport)
+			await handleFileImport()
+		else
+			await handleTextImport()
 
-	// 在这里调用你的导入函数入口
+		alert('导入成功')
+	} catch (error) {
+		let errorMessage = error.message || 'Unknown error'
+		if (error.errors)
+			errorMessage += `\n${formatErrors(error.errors)}`
+
+		alert(`导入失败: ${errorMessage}`)
+	}
 })
+
+
+async function handleFileImport() {
+	if (selectedFiles.length === 0)
+		throw new Error('请选择文件')
+
+	const formData = new FormData()
+	for (const file of selectedFiles)
+		formData.append('files', file)
+
+	const response = await fetch('/api/shells/install/file', {
+		method: 'POST',
+		body: formData
+	})
+
+	if (!response.ok) {
+		const result = await response.json()
+		const error = new Error(`文件导入失败: ${result.message || 'Unknown error'}`)
+		error.errors = result.errors
+		throw error
+	}
+}
+async function handleTextImport() {
+	const text = textInput.value
+	if (!text)
+		throw new Error('请输入文本内容')
+
+	const response = await fetch('/api/shells/install/text', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({ text })
+	})
+
+	if (!response.ok) {
+		const result = await response.json()
+		const error = new Error(`文本导入失败: ${result.message || 'Unknown error'}`)
+		error.errors = result.errors
+		throw error
+	}
+}
+
+function formatErrors(errors) {
+	return errors.map(err => `handler: ${err.hanlder}, Error: ${err.error}`).join(';\n')
+}

@@ -6,7 +6,7 @@ import { getPartList, getPartDetails } from './parts_loader.mjs'
 import { LoadChar } from './managers/char_manager.mjs'
 import { loadPersona } from './managers/personas_manager.mjs'
 import { loadAIsource, loadAIsourceGenerator } from './managers/AIsources_manager.mjs'
-import { LoadCharTemplate } from '../public/shells/install/src/server/charTemplate_manager.mjs'
+import { LoadImportHanlder } from '../public/shells/install/src/server/importHanlder_manager.mjs'
 import { loadWorld } from "./managers/world_manager.mjs"
 import { generateVerificationCode, verifyVerificationCode } from "../scripts/verifycode.mjs"
 import { ms } from "../scripts/ms.mjs"
@@ -68,7 +68,7 @@ export function registerEndpoints(app) {
 
 	let partsList = [
 		'shells', 'chars', 'personas', 'worlds', 'AIsources', 'AIsourceGenerators',
-		'charTemplates'
+		'ImportHanlders'
 	]
 	let loadMethods = {
 		'shells': loadShell,
@@ -77,7 +77,7 @@ export function registerEndpoints(app) {
 		'worlds': loadWorld,
 		'AIsources': loadAIsource,
 		'AIsourceGenerators': loadAIsourceGenerator,
-		'charTemplates': LoadCharTemplate
+		'ImportHanlders': LoadImportHanlder
 	}
 
 	for (const part of partsList) {

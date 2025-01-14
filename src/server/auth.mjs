@@ -301,7 +301,7 @@ export async function login(username, password, deviceId = 'unknown') {
 
 	const userdir = getUserDictionary(username)
 	try { fs.mkdirSync(userdir, { recursive: true }) } catch { }
-	for (let subdir of ['AIsources', 'chars', 'personas', 'settings', 'shells', 'worlds', 'charTemplates', 'AIsourceGenerators'])
+	for (let subdir of ['AIsources', 'chars', 'personas', 'settings', 'shells', 'worlds', 'ImportHanlders', 'AIsourceGenerators'])
 		try{ fs.mkdirSync(userdir + '/' + subdir, { recursive: true }) } catch { }
 
 	// 生成访问令牌和刷新令牌
