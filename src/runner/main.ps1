@@ -35,4 +35,5 @@ else {
 	$Script:fountDir = (Get-Command fount.ps1).Path | Split-Path -Parent | Split-Path -Parent
 }
 
-. "$Script:fountDir/path/fount.ps1" @args
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -Force -ErrorAction Ignore
+& "$Script:fountDir/run.bat" @args
