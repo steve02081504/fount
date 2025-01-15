@@ -24,6 +24,7 @@ if (!(Get-Command git -ErrorAction SilentlyContinue)) {
 	if (Get-Command winget -ErrorAction SilentlyContinue) {
 		winget install --id Git.Git -e --source winget
 	}
+	$env:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 	if (!(Get-Command git -ErrorAction SilentlyContinue)) {
 		Write-Host "Failed to install Git, please install it manually."
 	}
@@ -56,6 +57,7 @@ else {
 if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
 	Write-Host "Deno missing, auto installing..."
 	Invoke-RestMethod https://deno.land/install.ps1 | Invoke-Expression
+	$env:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 	if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
 		Write-Host "Deno missing, you cant run fount without deno"
 		exit 1
