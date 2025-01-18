@@ -34,16 +34,66 @@ const cachedDom = {
 }
 
 /**
+ * 比较两个数组的差异
+ * @param {Array} oldList 旧数组
+ * @param {Array} newList 新数组
+ * @returns {{ added: Array, removed: Array, unchanged: Array }} 包含 added, removed, unchanged 三个数组的对象
+ */
+function compareLists(oldList, newList) {
+	const added = newList.filter(item => !oldList.includes(item))
+	const removed = oldList.filter(item => !newList.includes(item))
+	const unchanged = newList.filter(item => oldList.includes(item))
+
+	return { added, removed, unchanged }
+}
+
+/**
+ * 更新选择列表
+ * @param {HTMLSelectElement} selectElement 选择列表元素
+ * @param {string} currentName 当前选中项的名称
+ * @param {Function} listGetter 获取列表数据的函数
+ * @param {Function} detailsRenderer 渲染详情的函数
+ * @param {boolean} forceUpdate 是否强制更新详情, 为 true 时强制更新
+ */
+async function updateSelectList(selectElement, currentName, listGetter, detailsRenderer, forceUpdate = false) {
+	const newList = await listGetter()
+	newList.unshift('') // 添加一个空选项
+
+	const oldList = Array.from(selectElement.options).map(option => option.value)
+	const { added, removed, unchanged } = compareLists(oldList, newList)
+
+	// 删除已移除的选项
+	removed.forEach(name => {
+		const optionToRemove = selectElement.querySelector(`option[value="${name}"]`)
+		if (optionToRemove) selectElement.removeChild(optionToRemove)
+	})
+
+	// 添加新增的选项
+	added.forEach(name => {
+		const option = document.createElement('option')
+		option.value = name || ''
+		option.text = name || '无'
+		selectElement.add(option)
+	})
+
+	// 更新当前选中项 (如果需要)
+	if (currentName !== selectElement.value)
+		selectElement.value = currentName || ''
+
+
+	// 更新详情 (仅当选中项改变或强制更新时)
+	if (selectElement.value !== (selectElement.previousValue || '') || forceUpdate)
+		await detailsRenderer(selectElement.value)
+
+
+	selectElement.previousValue = selectElement.value
+}
+
+/**
  * 渲染世界信息列表
  */
 async function renderWorldList() {
-	const worlds = await getWorldList()
-	worlds.unshift('') // 添加一个空选项
-	worldSelect.innerHTML = worlds
-		.map((world) => `<option value="${world ?? ''}" ${world === worldName ? 'selected' : ''}>${world || '无'}</option>`)
-		.join('')
-
-	await renderWorldDetails(worldName)
+	await updateSelectList(worldSelect, worldName, getWorldList, renderWorldDetails)
 }
 
 /**
@@ -70,13 +120,7 @@ async function renderWorldDetails(worldName) {
  * 渲染角色信息列表
  */
 async function renderPersonaList() {
-	const personas = await getPersonaList()
-	personas.unshift('') // 添加一个空选项
-	personaSelect.innerHTML = personas
-		.map((persona) => `<option value="${persona ?? ''}" ${persona === personaName ? 'selected' : ''}>${persona || '无'}</option>`)
-		.join('')
-
-	await renderPersonaDetails(personaName)
+	await updateSelectList(personaSelect, personaName, getPersonaList, renderPersonaDetails)
 }
 
 /**
@@ -104,32 +148,55 @@ async function renderPersonaDetails(personaName) {
  */
 async function renderCharList(data) {
 	const allChars = await getCharList()
-	const availableChars = allChars.filter((char) => !charList.includes(char))
-	charSelect.innerHTML = availableChars
-		.map((char) => `<option value="${char}">${char}</option>`)
-		.join('')
-
-	// 处理角色详情
 	const currentCharsRendered = Array.from(charDetailsContainer.children).map(child => child.getAttribute('data-char-name'))
+	const { added, removed, unchanged } = compareLists(currentCharsRendered, charList)
+
 	// 删除已经移除的角色
-	currentCharsRendered.forEach(char => {
-		if (!charList.includes(char)) {
-			const charCardToRemove = charDetailsContainer.querySelector(`[data-char-name="${char}"]`)
-			if (charCardToRemove)
-				charDetailsContainer.removeChild(charCardToRemove)
+	removed.forEach(char => {
+		const charCardToRemove = charDetailsContainer.querySelector(`[data-char-name="${char}"]`)
+		if (charCardToRemove) {
+			charDetailsContainer.removeChild(charCardToRemove)
+			delete cachedDom.character[char] // 清理缓存
 		}
 	})
 
 	// 添加新的角色
-	for (const char of charList)
-		if (!currentCharsRendered.includes(char))
-			await renderCharDetails(char, data.frequency_data[char])
+	for (const char of added)
+		await renderCharDetails(char, data.frequency_data[char])
 
+	// 更新已存在的角色 (如果频率数据有更新)
+	for (const char of unchanged) {
+		const charCard = charDetailsContainer.querySelector(`[data-char-name="${char}"]`)
+		const frequencySlider = charCard.querySelector('.frequency-slider')
+		const currentFrequency = parseInt(frequencySlider.value)
+		const newFrequency = Math.round(data.frequency_data[char] * 100)
+
+		if (currentFrequency !== newFrequency)
+			frequencySlider.value = newFrequency
+	}
+
+	// 更新可用角色列表
+	const availableChars = allChars.filter((char) => !charList.includes(char))
+	const charSelectOldList = Array.from(charSelect.options).map(option => option.value)
+	const { added: charSelectAdded, removed: charSelectRemoved } = compareLists(charSelectOldList, availableChars)
+
+	charSelectRemoved.forEach(name => {
+		const optionToRemove = charSelect.querySelector(`option[value="${name}"]`)
+		if (optionToRemove) charSelect.removeChild(optionToRemove)
+	})
+
+	charSelectAdded.forEach(name => {
+		const option = document.createElement('option')
+		option.value = name
+		option.text = name
+		charSelect.add(option)
+	})
 }
 
 /**
  * 渲染聊天角色详情
  * @param {string} charName 角色名称
+ * @param {number} frequency_num
  */
 async function renderCharDetails(charName, frequency_num) {
 	let charData
@@ -251,6 +318,8 @@ export async function setupSidebar() {
 
 export async function triggerSidebarHeartbeat(data) {
 	if (!leftDrawerCheckbox.checked) return
+
+	// 尝试更新数据
 	await renderWorldList()
 	await renderPersonaList()
 	await renderCharList(data)

@@ -17,7 +17,7 @@ async function getHomeRegistry() {
 		throw new Error('Failed to fetch home registry')
 }
 
-const homeRegistry = await getHomeRegistry()
+let homeRegistry
 const currentLocale = navigator.language || navigator.userLanguage
 
 // Function to handle mouse wheel scrolling
@@ -159,6 +159,7 @@ async function initializeApp() {
 		// jump to login page
 		window.location = '/login'
 	}
+	homeRegistry = await getHomeRegistry()
 	displayFunctionButtons()
 	displayCharList()
 }

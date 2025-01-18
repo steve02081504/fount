@@ -1,6 +1,5 @@
 /* 自定义样式 */
 .file-list {
-	max-height: 80vh;
 	overflow-y: auto;
 }
 

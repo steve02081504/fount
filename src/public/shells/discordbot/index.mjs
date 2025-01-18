@@ -18,6 +18,7 @@ let configEditor = null
 let botList = []
 let charList = []
 let selectedBot = null
+let isDirty = false // 标记是否有未保存的更改
 
 // 抽象的 API 请求函数 (使用前面定义的 fetchData 函数)
 async function fetchData(url, options = {}) {
@@ -100,6 +101,13 @@ function populateCharList() {
 }
 
 async function loadBotConfig(botname) {
+	// 如果有未保存的更改，提示用户
+	if (isDirty)
+		if (!confirm('You have unsaved changes. Do you want to discard them?')) {
+			botListSelect.value = selectedBot // 如果取消则还原选择
+			return
+		}
+
 	selectedBot = botname
 	try {
 		const config = await botConfigGet(botname)
@@ -116,15 +124,16 @@ async function loadBotConfig(botname) {
 					mode: 'code',
 					indentation: '\t',
 					onChange: (updatedContent, previousContent, { error, patchResult }) => {
-						if (!error)
+						if (!error) {
 							config.config = updatedContent.json
-
+							isDirty = true // 标记为有未保存的更改
+						}
 					}
 				}
 			})
 
-
 		configEditor.set({ json: config.config || {} })
+		isDirty = false // 重置未保存标记
 	} catch (error) {
 		console.error(error)
 	}
@@ -154,14 +163,29 @@ async function handleNewBot() {
 async function handleDeleteBot() {
 	if (!selectedBot) return
 
+	if (isDirty)
+		if (!confirm('You have unsaved changes. Do you want to discard them?'))
+			return
+
 	try {
 		await botConfigDelete(selectedBot)
 		botList = await botListGet()
 		populateBotList()
-		selectedBot = null
-		tokenInput.value = ''
-		charSelect.value = ''
-		configEditor.set({ json: {} })
+
+		// 如果删除的是当前选中的 bot，则 selectedBot 设为 null，否则保持不变
+		if (selectedBot === botListSelect.value) {
+			selectedBot = null
+			tokenInput.value = ''
+			charSelect.value = ''
+			if (configEditor)
+				configEditor.set({ json: {} })
+		} else {
+			// 如果删除的不是当前选中的 bot，则重新加载当前选中的 bot 的配置
+			await loadBotConfig(botListSelect.value)
+		}
+
+		// 无论如何，都要更新 isDirty 状态
+		isDirty = false
 	} catch (error) {
 		console.error(error)
 	}
@@ -186,7 +210,15 @@ async function checkCharSupport(charName) {
 }
 
 async function handleCharSelectChange() {
+	// 如果有未保存的更改，提示用户
+	if (isDirty)
+		if (!confirm('You have unsaved changes. Do you want to discard them?')) {
+			charSelect.value = configEditor.get().json.char || '' // 如果取消则还原选择
+			return
+		}
+
 	await checkCharSupport(charSelect.value)
+	isDirty = true // 更改了选项，标记为 dirty
 }
 
 function handleToggleToken() {
@@ -200,12 +232,13 @@ async function handleSaveConfig() {
 	const config = {
 		token: tokenInput.value,
 		char: charSelect.value,
-		config: configEditor.get().json,
+		config: configEditor.get().json || JSON.parse(configEditor.get().text),
 	}
 
 	try {
 		await botConfigSet(selectedBot, config)
 		console.log('Config saved successfully')
+		isDirty = false // 重置未保存标记
 	} catch (error) {
 		console.error(error)
 	}
@@ -281,3 +314,11 @@ charSelect.addEventListener('change', handleCharSelectChange)
 toggleTokenButton.addEventListener('click', handleToggleToken)
 saveConfigButton.addEventListener('click', handleSaveConfig)
 startBotButton.addEventListener('click', handleStartBot)
+
+// 离开页面时提醒
+window.addEventListener('beforeunload', (event) => {
+	if (isDirty) {
+		event.preventDefault()
+		event.returnValue = 'You have unsaved changes. Are you sure you want to leave?'
+	}
+})

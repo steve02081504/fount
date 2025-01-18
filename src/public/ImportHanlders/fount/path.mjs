@@ -1,6 +1,7 @@
 import path from 'node:path'
 import fs from 'node:fs'
 import { getUserDictionary } from '../../../server/auth.mjs'
+import { uninstallPartBase } from '../../../server/parts_loader.mjs'
 
 export function resolvePath(username, type, name) {
 	let userPath = getUserDictionary(username)
@@ -8,9 +9,9 @@ export function resolvePath(username, type, name) {
 	return partPath
 }
 
-export function getAvailablePath(username, type, name) {
+export async function getAvailablePath(username, type, name) {
 	let targetPath = resolvePath(username, type, name)
 	if (fs.existsSync(targetPath))
-		fs.rmSync(targetPath, { recursive: true, force: true })
+		await uninstallPartBase(username, type, name)
 	return targetPath
 }
