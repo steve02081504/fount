@@ -1,3 +1,4 @@
+import { Buffer } from "node:buffer";
 import { locale_t } from "./basedefs";
 
 export class importHanlderAPI_t {
@@ -21,5 +22,6 @@ export class importHanlderAPI_t {
 	// calls on char uninstall
 	Uninstall: (reason: string, from: string) => void;
 
-	ImportChar: (username: string, chardata: Buffer) => Promise<void>;
+	ImportAsData: (username: string, chardata: Buffer) => Promise<void>;
+	ImportByText: (username: string, text: string) => Promise<void>
 }

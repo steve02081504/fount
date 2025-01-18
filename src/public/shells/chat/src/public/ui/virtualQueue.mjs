@@ -1,8 +1,8 @@
 import { renderMessage } from './messageList.mjs'
 import { getChatLog, getChatLogLength, triggerHeartbeat } from '../../public/endpoints.mjs'
 import { modifyTimeLine } from '../endpoints.mjs'
-import { TRANSITION_DURATION } from "../utils.mjs"
-import { startHeartbeat, stopHeartbeat } from "../chat.mjs";
+import { TRANSITION_DURATION } from '../utils.mjs'
+import { startHeartbeat, stopHeartbeat } from '../chat.mjs'
 
 const chatMessagesContainer = document.getElementById('chat-messages')
 const BUFFER_SIZE = 20

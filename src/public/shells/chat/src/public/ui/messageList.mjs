@@ -8,7 +8,7 @@ import {
 import { handleFilesSelect, renderAttachmentPreview } from '../fileHandling.mjs'
 import { processTimeStampForId, SWIPE_THRESHOLD, DEFAULT_AVATAR } from '../utils.mjs'
 import { appendMessageToQueue, getQueueIndex, replaceMessageInQueue, getMessageIndexByIndex, deleteMessageInQueue, getMessageElementByMessageIndex } from './virtualQueue.mjs'
-import { addDragAndDropSupport } from "./dragAndDrop.mjs"
+import { addDragAndDropSupport } from './dragAndDrop.mjs'
 
 export async function renderMessage(message) {
 	const preprocessedMessage = {

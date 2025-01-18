@@ -1,15 +1,11 @@
 import { login, register, logout, authenticate, getUserByToken, getUserDictionary } from './auth.mjs'
 import { __dirname } from './server.mjs'
 import fs from 'node:fs'
-import { loadShell } from './managers/shell_manager.mjs'
-import { getPartList, getPartDetails } from './parts_loader.mjs'
-import { LoadChar } from './managers/char_manager.mjs'
-import { loadPersona } from './managers/personas_manager.mjs'
-import { loadAIsource, loadAIsourceGenerator } from './managers/AIsources_manager.mjs'
-import { LoadImportHanlder } from '../public/shells/install/src/server/importHanlder_manager.mjs'
-import { loadWorld } from "./managers/world_manager.mjs"
-import { generateVerificationCode, verifyVerificationCode } from "../scripts/verifycode.mjs"
-import { ms } from "../scripts/ms.mjs"
+import { getPartDetails } from './parts_loader.mjs'
+import { generateVerificationCode, verifyVerificationCode } from '../scripts/verifycode.mjs'
+import { ms } from '../scripts/ms.mjs'
+import { getPartList, loadPart, partsList } from './managers/index.mjs'
+import { expandHomeRegistry } from './home.mjs'
 /**
  * @param {import('npm:express').Express} app
  */
@@ -65,20 +61,15 @@ export function registerEndpoints(app) {
 		console.log(user.username + ' set locale to ' + locale)
 		res.status(200).json({ message: 'setlocale ok' })
 	})
+	app.get('/api/gethomeregistry', authenticate, async (req, res) => {
+		const { username } = await getUserByToken(req.cookies.accessToken)
+		const expandedRegistry = await expandHomeRegistry(username)
+		res.status(200).json(expandedRegistry)
+	})
 
-	let partsList = [
-		'shells', 'chars', 'personas', 'worlds', 'AIsources', 'AIsourceGenerators',
-		'ImportHanlders'
-	]
-	let loadMethods = {
-		'shells': loadShell,
-		'chars': LoadChar,
-		'personas': loadPersona,
-		'worlds': loadWorld,
-		'AIsources': loadAIsource,
-		'AIsourceGenerators': loadAIsourceGenerator,
-		'ImportHanlders': LoadImportHanlder
-	}
+	app.get('/api/getparttypelist', authenticate, async (req, res) => {
+		res.status(200).json(partsList)
+	})
 
 	for (const part of partsList) {
 		app.get('/api/getlist/' + part, authenticate, async (req, res) => {
@@ -92,10 +83,9 @@ export function registerEndpoints(app) {
 			res.status(200).json(details)
 		})
 		let autoloader = async (req, res, next) => {
-			// skip if path is just png/jpg etc
 			{
 				let pathext = req.path.split('.').pop()
-				if (['png', 'jpg', 'jpeg', 'gif', 'svg', 'css'].includes(pathext)) return next()
+				if (pathext != req.path && !['js', 'html'].includes(pathext)) return next() // 跳过纯资源路径
 			}
 			const { username } = await getUserByToken(req.cookies.accessToken)
 			const partName = (() => {
@@ -106,7 +96,7 @@ export function registerEndpoints(app) {
 			})()
 
 			try {
-				await loadMethods[part](username, partName)
+				await loadPart(username, part, partName)
 			} catch (error) {
 				console.error(`Failed to load part ${partName}:`, error)
 				return res.status(500).send('Internal Server Error')

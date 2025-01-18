@@ -1,4 +1,4 @@
-import { currentChatId, addCharacter, createNewChat } from "../src/public/endpoints.mjs"
+import { currentChatId, addCharacter, createNewChat } from '../src/public/endpoints.mjs'
 
 await createNewChat()
 

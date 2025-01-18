@@ -22,7 +22,7 @@ export class DuckDuckGoAPI {
 
 	async requestToken() {
 		try {
-			const response = await fetch(`https://duckduckgo.com/duckchat/v1/status`, {
+			const response = await fetch('https://duckduckgo.com/duckchat/v1/status', {
 				method: 'GET',
 				headers: {
 					...this.fake_headers,
@@ -31,14 +31,14 @@ export class DuckDuckGoAPI {
 			})
 			return response.headers.get('x-vqd-4')
 		} catch (error) {
-			console.error("Request token error: ", error)
+			console.error('Request token error: ', error)
 			throw error
 		}
 	}
 
 	async createCompletion(model, content, returnStream) {
 		const token = await this.requestToken()
-		const response = await fetch(`https://duckduckgo.com/duckchat/v1/chat`, {
+		const response = await fetch('https://duckduckgo.com/duckchat/v1/chat', {
 			method: 'POST',
 			headers: {
 				...this.fake_headers,

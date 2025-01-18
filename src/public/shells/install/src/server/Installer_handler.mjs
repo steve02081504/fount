@@ -1,8 +1,8 @@
-import { LoadImportHanlder } from "./importHanlder_manager.mjs"
-import { getPartList } from '../../../../../server/parts_loader.mjs'
+import { LoadImportHanlder } from './importHanlder_manager.mjs'
+import { getPartListBase } from '../../../../../server/parts_loader.mjs'
 
 export async function importPart(username, data) {
-	let ImportHanlders = getPartList(username, 'ImportHanlders')
+	let ImportHanlders = getPartListBase(username, 'ImportHanlders')
 	const errors = []
 
 	for (let importHanlder of ImportHanlders)
@@ -17,11 +17,11 @@ export async function importPart(username, data) {
 
 	// 如果所有模板都失败，抛出包含所有错误的异常
 	if (errors.length > 0)
-		throw Object.assign(new Error("All hanlders failed"), { errors })
+		throw Object.assign(new Error('All hanlders failed'), { errors })
 }
 
 export async function importPartByText(username, text) {
-	let ImportHanlders = getPartList(username, 'ImportHanlders')
+	let ImportHanlders = getPartListBase(username, 'ImportHanlders')
 	const errors = []
 
 	for (let importHanlder of ImportHanlders)
@@ -36,5 +36,5 @@ export async function importPartByText(username, text) {
 
 
 	if (errors.length > 0)
-		throw Object.assign(new Error("All hanlders failed"), { errors })
+		throw Object.assign(new Error('All hanlders failed'), { errors })
 }

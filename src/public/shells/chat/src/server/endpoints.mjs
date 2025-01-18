@@ -1,4 +1,4 @@
-import { authenticate, getUserByToken } from "../../../../../server/auth.mjs"
+import { authenticate, getUserByToken } from '../../../../../server/auth.mjs'
 import {
 	addchar,
 	addUserReply,
@@ -24,7 +24,7 @@ import {
 	setCharSpeakingFrequency,
 	getHeartbeatData
 } from './chat.mjs'
-import { Buffer } from "node:buffer"
+import { Buffer } from 'node:buffer'
 
 export function setEndpoints(app) {
 	app.post('/api/shells/chat/new', authenticate, async (req, res) => {

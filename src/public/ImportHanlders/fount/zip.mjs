@@ -1,7 +1,7 @@
 import jszip from 'npm:jszip'
 import { writeFile, mkdir, readdir, stat, readFile } from 'node:fs/promises'
 import path from 'node:path'
-import { Buffer } from "node:buffer"
+import { Buffer } from 'node:buffer'
 
 async function zipDirectory(dirPath, zip) {
 
@@ -46,7 +46,7 @@ export async function unzipDirectory(buffer, targetPath) {
 				console.log(`Wrote file: ${filePath}`)
 			}
 	} catch (err) {
-		console.error('unzip error:',err)
+		console.error('unzip error:', err)
 		throw err
 	}
 }
@@ -66,6 +66,6 @@ export async function readZipfileAsJSON(buffer, zipPath) {
 		let filebuffer = await readZipfile(buffer, zipPath)
 		return JSON.parse(filebuffer.toString())
 	} catch (err) {
-		throw new Error(`Failed to parse JSON file in ZIP ${zipPath}, ${err.message||err}`)
+		throw new Error(`Failed to parse JSON file in ZIP ${zipPath}, ${err.message || err}`)
 	}
 }

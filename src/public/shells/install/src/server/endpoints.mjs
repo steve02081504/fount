@@ -1,5 +1,6 @@
-import { authenticate, getUserByToken } from "../../../../../server/auth.mjs"
-import { importPart, importPartByText } from "./Installer_handler.mjs"
+import { authenticate, getUserByToken } from '../../../../../server/auth.mjs'
+import { uninstallPartBase } from '../../../../../server/parts_loader.mjs'
+import { importPart, importPartByText } from './Installer_handler.mjs'
 
 export function setEndpoints(app) {
 	// 文件上传接口
@@ -41,6 +42,15 @@ export function setEndpoints(app) {
 			console.error('文本导入失败:', error)
 			res.status(500).json({ message: '文本导入失败', errors: error.errors, error: error.message })
 		}
+	})
+
+	// 删除请求发送
+	app.post('/api/shells/install/uninstall', authenticate, async (req, res) => {
+		const { username } = await getUserByToken(req.cookies.accessToken)
+		let parttype = req.body.type
+		let partname = req.body.name
+		await uninstallPartBase(username, parttype, partname)
+		res.status(200).json({ message: '删除成功' })
 	})
 }
 

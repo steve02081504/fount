@@ -24,13 +24,11 @@ export class WorldAPI_t {
 	// calls on uninstall
 	Uninstall: (reason: string, from: string) => void;
 
-	// set the source of the AI so that persona can use it by `source.Call(prompt)`
-	// the type is for extensibility. maybe youll use an API for sfw and an other API for nsfw, idc.
-	SetAISource: (source: AIsource_t<any, any>, type: string) => void;
-	GetAISource: (type: string) => AIsource_t<any, any>;
-	AISourceTypes: { name: string; type: string }[];
-
-	interfacies: {
+	interfaces: {
+		config: {
+			GetData: () => Promise<any>
+			SetData: (data: any) => Promise<void>
+		},
 		chat: {
 			GetGreeting: (arg: chatReplyRequest_t, index: number) => Promise<chatReply_t>
 			GetGroupGreeting: (arg: chatReplyRequest_t, index: number) => Promise<chatReply_t>

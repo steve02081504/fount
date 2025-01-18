@@ -54,12 +54,12 @@ function setWindowTitle(title) {
 }
 
 export function setDefaultWindowTitle() {
-	setWindowTitle(`fount`)
+	setWindowTitle('fount')
 }
 
 export async function init() {
 	console.freshLine('server start', 'start up')
-	globalThis.addEventListener("error", (e) => {
+	globalThis.addEventListener('error', (e) => {
 		console.log(e.error)
 		e.preventDefault()
 	})

@@ -1,6 +1,6 @@
 import path from 'node:path'
 import fs from 'node:fs'
-import { getUserDictionary } from "../../../server/auth.mjs"
+import { getUserDictionary } from '../../../server/auth.mjs'
 
 export function resolvePath(username, type, name) {
 	let userPath = getUserDictionary(username)

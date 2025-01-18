@@ -1,0 +1,18 @@
+{
+	"home_function_buttons": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "管理AI源"
+				},
+				"en": {
+					"title": "Manage AI Sources"
+				}
+			},
+			"level": 1,
+			"url": "/shells/AIsourceManage",
+			"button": "<img src=\"https://api.iconify.design/line-md/engine.svg\" class=\"dark:invert\"/>"
+		}
+	],
+	"home_char_interfaces": []
+}

@@ -4,10 +4,11 @@ import fs from 'node:fs'
 import url from 'node:url'
 import { __dirname, setDefaultWindowTitle } from './server.mjs'
 import { loadData, saveData } from './setting_loader.mjs'
+import { loadPart } from './managers/index.mjs'
 
 let parts_set = {}
 
-function GetPartPath(username, parttype, partname) {
+export function GetPartPath(username, parttype, partname) {
 	let userPath = getUserDictionary(username) + '/' + parttype + '/' + partname
 	if (fs.existsSync(userPath + '/main.mjs'))
 		return userPath
@@ -15,7 +16,7 @@ function GetPartPath(username, parttype, partname) {
 }
 
 export async function baseMjsPartLoader(path) {
-	const part = (await import(url.pathToFileURL(path + `/main.mjs`))).default
+	const part = (await import(url.pathToFileURL(path + '/main.mjs'))).default
 	return part
 }
 
@@ -28,7 +29,7 @@ export async function baseloadPart(username, parttype, partname, {
 	return parts_set[username][parttype][partname]
 }
 
-export async function loadPart(username, parttype, partname, Initargs, {
+export async function loadPartBase(username, parttype, partname, Initargs, {
 	pathGetter = () => GetPartPath(username, parttype, partname),
 	Loader = async (path, Initargs) => {
 		const part = await baseMjsPartLoader(path)
@@ -106,45 +107,65 @@ on_shutdown(() => {
 				unloadPart(username, parttype, partname)
 })
 
-export function uninstallPart(username, parttype, partname, unLoadargs, uninstallArgs, {
+export async function uninstallPartBase(username, parttype, partname, unLoadargs, uninstallArgs, {
+	Loader = baseMjsPartLoader,
 	unLoader = (part) => part.Unload?.(unLoadargs),
 	pathGetter = () => GetPartPath(username, parttype, partname),
-	Uninstaller = (part, path) => {
-		part.Uninstall?.(uninstallArgs)
+	Uninstaller = async (part, path) => {
+		await part.Uninstall?.(uninstallArgs)
 		fs.rmSync(path, { recursive: true, force: true })
 	}
 } = {}) {
-	const part = parts_set[username][parttype][partname]
+	let part = parts_set[username][parttype][partname]
 	try {
 		unloadPart(username, parttype, partname, unLoadargs, { unLoader })
 	} catch (error) {
 		console.error(error)
 	}
-	Uninstaller(part, pathGetter())
+	part ??= await baseloadPart(username, parttype, partname, { Loader, pathGetter })
+	await Uninstaller(part, pathGetter())
+}
+
+export function getPartListBase(username, parttype, {
+	PathFilter = (file) => file.isDirectory() && fs.existsSync(file.parentPath + '/' + file.name + '/main.mjs'),
+	ResultMapper = (file) => file.name
+} = {}) {
+	const part_dir = getUserDictionary(username) + '/' + parttype
+	let partlist = fs.readdirSync(part_dir, { withFileTypes: true }).filter(PathFilter)
+	try {
+		let publiclist = fs.readdirSync(__dirname + '/src/public/' + parttype, { withFileTypes: true }).filter(PathFilter)
+		partlist = [...new Set(partlist.concat(publiclist))]
+	} catch (e) { }
+	return partlist.map(ResultMapper)
+}
+
+function getLocalizedInfo(info, locale) {
+	if (!info) return
+	return info[locale] ||
+		info[locale?.split('-')?.[0]] ||
+		info[Object.keys(info).find(key => key.startsWith(locale?.split('-')?.[0] + '-'))] ||
+		info[Object.keys(info)[0]]
 }
 
 export function getPartInfo(part, locale) {
-	if (!part?.info) return
-	return part.info[locale] ||
-		part.info[locale?.split('-')?.[0]] ||
-		part.info[Object.keys(part.info).find(key => key.startsWith(locale?.split('-')?.[0] + '-'))] ||
-		part.info[Object.keys(part.info)[0]]
-}
-
-export function getPartList(username, parttype, {
-	PathFilter = (path_dir, file) => fs.existsSync(path_dir + '/' + file + '/main.mjs'),
-} = {}) {
-	const part_dir = getUserDictionary(username) + '/' + parttype
-	let partlist = fs.readdirSync(part_dir).filter(file => PathFilter(part_dir, file))
-	try{
-		let publiclist = fs.readdirSync(__dirname + '/src/public/' + parttype).filter(file => PathFilter(__dirname + '/src/public/' + parttype, file))
-		partlist = [...new Set(partlist.concat(publiclist))]
-	} catch (e) {}
-	return partlist
+	return getLocalizedInfo(part?.info, locale)
 }
 
 export async function getPartDetails(username, parttype, partname) {
-	const part = await baseloadPart(username, parttype, partname)
+	let parts_details_cache = loadData(username, 'parts_details_cache')
+	let details = parts_details_cache?.[parttype]?.[partname]
+	if (parts_set?.[username]?.[parttype]?.[partname]) details = undefined
+	if (details === undefined) {
+		const part = await baseloadPart(username, parttype, partname).catch(() => loadPart(username, parttype, partname))
+		parts_details_cache[parttype] ??= {}
+		details = parts_details_cache[parttype][partname] = {
+			info: JSON.parse(JSON.stringify(part.info)),
+			supportedInterfaces: Object.keys(part.interfaces || {}),
+		}
+	}
 	const { locale } = getUserByUsername(username)
-	return getPartInfo(part, locale)
+	return {
+		...details,
+		info: getLocalizedInfo(details.info, locale)
+	}
 }

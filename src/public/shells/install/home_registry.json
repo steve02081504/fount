@@ -1,0 +1,33 @@
+{
+	"home_function_buttons": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "导入"
+				},
+				"en": {
+					"title": "Import"
+				}
+			},
+			"level": 0,
+			"url": "/shells/install",
+			"button": "<img src=\"https://api.iconify.design/line-md/document-add.svg\" class=\"dark:invert\"/>"
+		}
+	],
+	"home_char_interfaces": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "删除"
+				},
+				"en": {
+					"title": "Delete"
+				}
+			},
+			"level": 0,
+			"url": "/shells/install/uninstall?type=chars&name=${charname}",
+			"button": "<img src=\"https://api.iconify.design/line-md/account-delete.svg\"/>",
+			"type": "error"
+		}
+	]
+}

@@ -1,4 +1,4 @@
-import { applyTheme } from "../scripts/theme.mjs"
+import { applyTheme } from '../scripts/theme.mjs'
 
 const form = document.getElementById('auth-form')
 const formTitle = document.getElementById('form-title')
@@ -16,7 +16,7 @@ const formContent = {
 		subtitle: 'User data will be stored in local storage',
 		submitBtn: 'Login',
 		toggleLink: {
-			text: "Don't have an account? ",
+			text: 'Don\'t have an account? ',
 			link: 'Create one now',
 		},
 	},

@@ -4,7 +4,7 @@ import { getAvailablePath } from './path.mjs'
 import { mkdir, rename, rm } from 'node:fs/promises'
 import path from 'node:path'
 import { tmpdir } from 'node:os'
-import { loadJsonFile } from "../../../scripts/json_loader.mjs"
+import { loadJsonFile } from '../../../scripts/json_loader.mjs'
 
 export default {
 	info: {

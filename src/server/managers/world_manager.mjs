@@ -1,4 +1,4 @@
-import { loadPart } from "../parts_loader.mjs"
+import { loadPartBase } from '../parts_loader.mjs'
 
 /**
  *
@@ -7,5 +7,5 @@ import { loadPart } from "../parts_loader.mjs"
  * @returns {Promise<import('../../decl/worldAPI.ts').WorldAPI_t>}
  */
 export function loadWorld(username, worldname) {
-	return loadPart(username, 'worlds', worldname)
+	return loadPartBase(username, 'worlds', worldname)
 }

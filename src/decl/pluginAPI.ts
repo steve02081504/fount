@@ -20,11 +20,11 @@ export class pluginAPI_t {
 	Unload: (reason: string) => void;
 	Uninstall: (reason: string, from: string) => void;
 
-	SetAISource: (source: AIsource_t<any, any>, type: string) => void;
-	GetAISource: (type: string) => AIsource_t<any, any>;
-	AISourceTypes: { name: string; type: string }[];
-
-	interfacies: {
+	interfaces: {
+		config: {
+			GetData: () => Promise<any>
+			SetData: (data: any) => Promise<void>
+		},
 		chat: {
 			GetPrompt: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, detail_level: number) => Promise<single_part_prompt_t>;
 			RepalyHandler: (repaly: chatLogEntry_t, functions: {

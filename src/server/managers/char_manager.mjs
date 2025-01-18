@@ -1,6 +1,5 @@
 import { loadData, saveData } from '../setting_loader.mjs'
-import { baseloadPart, getPartInfo, initPart, loadPart, uninstallPart, unloadPart } from '../parts_loader.mjs'
-import { loadAIsource } from './AIsources_manager.mjs'
+import { initPart, loadPartBase, uninstallPartBase, unloadPart } from '../parts_loader.mjs'
 
 function loadCharData(username, charname) {
 	let userCharDataSet = loadData(username, 'char_data')
@@ -10,11 +9,8 @@ function loadCharData(username, charname) {
 			InitCount: 0,
 			LastStart: 0,
 			StartCount: 0,
-			AIsources: {},
-			memories: {
-				extension: {}
-			}
-		}
+		},
+		config: {},
 	}
 }
 function saveCharData(username) {
@@ -29,14 +25,12 @@ function saveCharData(username) {
 export async function LoadChar(username, charname) {
 	let data = loadCharData(username, charname)
 	let char_state = data.state
-	let char = await loadPart(username, 'chars', charname, char_state, {
-		afterLoad: async (char) => {
-			for (const sourceType in char_state.AIsources)
-				char.SetAISource(await loadAIsource(username, char_state.AIsources[sourceType]), sourceType)
-			char_state.LastStart = Date.now()
-			char_state.StartCount++
-			saveCharData(username)
-		}
+	let char = await loadPartBase(username, 'chars', charname, {
+		username,
+		charname,
+		state: char_state,
+	}, {
+		afterLoad: (char) => char.interfaces?.config?.SetData?.(data.config)
 	})
 	return char
 }
@@ -48,7 +42,11 @@ export function UnloadChar(username, charname, reason) {
 
 export async function initChar(username, charname) {
 	let state = loadCharData(username, charname).state
-	await initPart(username, 'chars', charname, state, {
+	await initPart(username, 'chars', charname, {
+		username,
+		charname,
+		state,
+	}, {
 		afterInit: async (char) => {
 			state.InitCount++
 			saveCharData(username)
@@ -57,14 +55,5 @@ export async function initChar(username, charname) {
 }
 
 export async function uninstallChar(username, charname, reason, from) {
-	await uninstallPart(username, 'chars', charname, { reason, from })
-}
-
-export async function setCharAIsource(username, charname, sourceType, sourcename) {
-	let char = await LoadChar(username, charname)
-	let AIsource = loadAIsource(username, sourcename)
-	char.SetAISource(AIsource, sourceType)
-	let char_state = loadCharData(username, charname).state
-	char_state.AIsources[sourceType] = sourcename
-	saveCharData(username)
+	await uninstallPartBase(username, 'chars', charname, { reason, from })
 }

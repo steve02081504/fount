@@ -1,15 +1,67 @@
 import { renderTemplate } from '../scripts/template.mjs'
 import { getCharDetails, getCharList } from '../scripts/parts.mjs'
 import { renderMarkdown } from '../scripts/markdown.mjs'
-import { applyTheme } from "../scripts/theme.mjs"
+import { applyTheme } from '../scripts/theme.mjs'
 
 const roleContainer = document.getElementById('role-container')
 const characterDescription = document.getElementById('character-description')
 const drawerToggle = document.getElementById('my-drawer-2')
-const importButton = document.getElementById('import-button')
+const functionButtonsContainer = document.getElementById('function-buttons-container')
 
-async function renderCharView(charDetails) {
+// 获取已展开的注册项
+async function getHomeRegistry() {
+	const response = await fetch('/api/gethomeregistry')
+	if (response.ok)
+		return await response.json()
+	else
+		throw new Error('Failed to fetch home registry')
+}
+
+const homeRegistry = await getHomeRegistry()
+const currentLocale = navigator.language || navigator.userLanguage
+
+// Function to handle mouse wheel scrolling
+function handleMouseWheelScroll(event) {
+	const scrollContainer = event.currentTarget
+	const delta = Math.sign(event.deltaY) // Get the direction of scrolling
+
+	// Adjust the scrollLeft property based on the scroll direction
+	scrollContainer.scrollLeft += delta * 40 // Adjust the scroll amount as needed
+
+	event.preventDefault() // Prevent the default page scrolling behavior
+}
+
+async function renderCharView(charDetails, charname) {
 	const roleElement = await renderTemplate('char_list_view', charDetails)
+	const actionsContainer = roleElement.querySelector('.card-actions > div') // Target the inner div
+	actionsContainer.innerHTML = ''
+
+	// Add mouse wheel event listener to the scrollable container
+	actionsContainer.addEventListener('wheel', handleMouseWheelScroll)
+
+	// 检查并添加按钮
+	for (const interfaceItem of homeRegistry.home_char_interfaces)
+		if (!interfaceItem.interface || charDetails.supportedInterfaces.includes(interfaceItem.interface)) {
+			const button = document.createElement('button')
+			const classes = ['btn']
+			classes.push(`btn-${interfaceItem.type ?? 'primary'}`)
+			if (interfaceItem.classes) classes.push(...interfaceItem.classes.split(' '))
+			button.classList.add(...classes)
+
+			if (interfaceItem.style) button.style.cssText = interfaceItem.style
+
+			const localizedInfo = interfaceItem.info[currentLocale] || interfaceItem.info[Object.keys(interfaceItem.info)[0]]
+			button.innerHTML = interfaceItem.button ?? '<img src="https://api.iconify.design/line-md/question-circle.svg" />'
+			button.title = localizedInfo.title
+			button.addEventListener('click', () => {
+				if (interfaceItem.onclick)
+					eval(interfaceItem.onclick)
+				else
+					window.open(interfaceItem.url.replaceAll('${charname}', charname))
+			})
+
+			actionsContainer.appendChild(button)
+		}
 
 	// 移动端点击卡片非按钮区域时显示侧边栏
 	roleElement.addEventListener('click', (event) => {
@@ -30,7 +82,7 @@ async function renderCharView(charDetails) {
 }
 
 async function displayCharacterInfo(charDetails) {
-	characterDescription.innerHTML = await renderMarkdown(charDetails.description_markdown) || '无描述信息'
+	characterDescription.innerHTML = await renderMarkdown(charDetails.info.description_markdown) || '无描述信息'
 }
 
 async function setLocale(locale) {
@@ -56,21 +108,44 @@ async function displayCharList() {
 
 	for (const char of charList) {
 		const charDetails = await getCharDetails(char)
-		const roleElement = await renderCharView(charDetails)
+		const roleElement = await renderCharView(charDetails, char)
 		roleContainer.appendChild(roleElement)
+	}
+}
 
-		const chatButton = roleElement.querySelector('.chat-button')
-		chatButton.addEventListener('click', () => {
-			console.log(`开始与 ${charDetails.name} 聊天`)
-			window.location = `/shells/chat/new?charname=${char}`
-		})
+// 添加功能按钮
+async function displayFunctionButtons() {
+	for (const buttonItem of homeRegistry.home_function_buttons) {
+		const li = document.createElement('li')
+		const button = document.createElement('a')
+		const classes = ['flex', 'items-center', 'justify-start']
+		if (buttonItem.classes)
+			classes.push(...buttonItem.classes.split(' '))
+		button.classList.add(...classes)
 
-		const deleteButton = roleElement.querySelector('.delete-button')
-		deleteButton.addEventListener('click', () => {
-			// TODO: 发送删除角色请求
-			if (confirm(`确定要删除角色 ${charDetails.name} 吗?`))
-				alert('逻辑未完成')
+		if (buttonItem.style) button.style.cssText = buttonItem.style
+
+		const localizedInfo = buttonItem.info[currentLocale] || buttonItem.info[Object.keys(buttonItem.info)[0]]
+
+		// 添加图标和标题
+		const iconSpan = document.createElement('span')
+		iconSpan.classList.add('mr-2') // 图标和文字之间添加一些间距
+		iconSpan.innerHTML = buttonItem.button ?? '<img src="https://api.iconify.design/line-md/question-circle.svg" class="dark:invert" />'
+
+		const titleSpan = document.createElement('span')
+		titleSpan.textContent = localizedInfo.title
+
+		button.appendChild(iconSpan)
+		button.appendChild(titleSpan)
+
+		button.addEventListener('click', () => {
+			if (buttonItem.onclick)
+				eval(buttonItem.onclick)
+			else
+				window.open(buttonItem.url)
 		})
+		li.appendChild(button)
+		functionButtonsContainer.appendChild(li)
 	}
 }
 
@@ -84,10 +159,8 @@ async function initializeApp() {
 		// jump to login page
 		window.location = '/login'
 	}
+	displayFunctionButtons()
 	displayCharList()
-	importButton.addEventListener('click', () => {
-		window.location = '/shells/install'
-	})
 }
 
 initializeApp()

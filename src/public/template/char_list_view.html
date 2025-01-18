@@ -1,13 +1,11 @@
 <div class="card bg-base-100 shadow-xl image-full">
-	<figure><img class="object-cover" src="${avatar}" alt="${name}" /></figure>
+	<figure><img class="object-cover" src="${info.avatar}" alt="${info.name}" /></figure>
 	<div class="card-body">
-		<h2 class="card-title">${name}</h2>
-		<p class="line-clamp-3">${description}</p>
-		<div class="card-actions justify-end">
-			<button class="btn btn-primary chat-button" title="聊天"><img
-					src="https://api.iconify.design/line-md/chat-round.svg" /></button>
-			<button class="btn btn-error delete-button" title="删除"><img
-					src="https://api.iconify.design/line-md/account-delete.svg" /></button>
+		<h2 class="card-title">${info.name}</h2>
+		<p class="line-clamp-3">${info.description}</p>
+		<div class="card-actions justify-end w-full">
+			<div class="flex flex-nowrap overflow-x-auto gap-2">
+			</div>
 		</div>
 	</div>
 </div>
