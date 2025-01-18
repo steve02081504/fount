@@ -8,8 +8,8 @@ import { LoadChar } from '../../../../../server/managers/char_manager.mjs'
 import { loadJsonFile, saveJsonFile } from '../../../../../scripts/json_loader.mjs'
 import { getPartInfo } from '../../../../../server/parts_loader.mjs'
 import { loadPersona } from '../../../../../server/managers/personas_manager.mjs'
-import { loadWorld } from "../../../../../server/managers/world_manager.mjs"
-import { Buffer } from "node:buffer"
+import { loadWorld } from '../../../../../server/managers/world_manager.mjs'
+import { Buffer } from 'node:buffer'
 import fs from 'node:fs'
 
 /**
@@ -278,9 +278,9 @@ export async function setWorld(chatid, worldname) {
 	let timeSlice = chatMetadata.LastTimeSlice.copy()
 	const world = timeSlice.world = await loadWorld(username, worldname)
 	timeSlice.world_id = worldname
-	if (world.interfacies.chat.GetGreeting && chatLog.length === 0)
+	if (world.interfaces.chat.GetGreeting && chatLog.length === 0)
 		timeSlice.greeting_type = 'world_single'
-	else if (world.interfacies.chat.GetGroupGreeting && chatLog.length > 0)
+	else if (world.interfaces.chat.GetGroupGreeting && chatLog.length > 0)
 		timeSlice.greeting_type = 'world_group'
 
 	try {
@@ -288,10 +288,10 @@ export async function setWorld(chatid, worldname) {
 		let result
 		switch (timeSlice.greeting_type) {
 			case 'world_single':
-				result = await world.interfacies.chat.GetGreeting(request, 0)
+				result = await world.interfaces.chat.GetGreeting(request, 0)
 				break
 			case 'world_group':
-				result = await world.interfacies.chat.GetGroupGreeting(request, 0)
+				result = await world.interfaces.chat.GetGroupGreeting(request, 0)
 				break
 		}
 		let greeting_entrie = BuildChatLogEntryFromCharReply(result, timeSlice, null, undefined, username)
@@ -327,10 +327,10 @@ export async function addchar(chatid, charname) {
 		let result
 		switch (timeSlice.greeting_type) {
 			case 'single':
-				result = await char.interfacies.chat.GetGreeting(request, 0)
+				result = await char.interfaces.chat.GetGreeting(request, 0)
 				break
 			case 'group':
-				result = await char.interfacies.chat.GetGroupGreeting(request, 0)
+				result = await char.interfaces.chat.GetGroupGreeting(request, 0)
 				break
 		}
 		let greeting_entrie = BuildChatLogEntryFromCharReply(result, timeSlice, char, charname, username)
@@ -401,7 +401,7 @@ export async function GetWorldName(chatid) {
 async function addChatLogEntry(chatid, entry) {
 	const chatMetadata = await loadChat(chatid)
 	if (entry.timeSlice.world)
-		entry.timeSlice.world.interfacies.chat.AddChatLogEntry(await getChatRequest(chatid, undefined), entry)
+		entry.timeSlice.world.interfaces.chat.AddChatLogEntry(await getChatRequest(chatid, undefined), entry)
 	else
 		chatMetadata.chatLog.push(entry)
 
@@ -441,19 +441,19 @@ export async function modifyTimeLine(chatid, delta) {
 			let result
 			switch (new_timeSlice.greeting_type = chatMetadata.LastTimeSlice.greeting_type) {
 				case 'single':
-					result = await char.interfacies.chat.GetGreeting(await getChatRequest(chatid, charname), newTimeLineIndex)
+					result = await char.interfaces.chat.GetGreeting(await getChatRequest(chatid, charname), newTimeLineIndex)
 					break
 				case 'group':
-					result = await char.interfacies.chat.GetGroupGreeting(await getChatRequest(chatid, charname), newTimeLineIndex)
+					result = await char.interfaces.chat.GetGroupGreeting(await getChatRequest(chatid, charname), newTimeLineIndex)
 					break
 				case 'world_single':
-					result = await world.interfacies.chat.GetGreeting(await getChatRequest(chatid, undefined), newTimeLineIndex)
+					result = await world.interfaces.chat.GetGreeting(await getChatRequest(chatid, undefined), newTimeLineIndex)
 					break
 				case 'world_group':
-					result = await world.interfacies.chat.GetGroupGreeting(await getChatRequest(chatid, undefined), newTimeLineIndex)
+					result = await world.interfaces.chat.GetGroupGreeting(await getChatRequest(chatid, undefined), newTimeLineIndex)
 					break
 				default:
-					result = await char.interfacies.chat.GetReply(await getChatRequest(chatid, charname))
+					result = await char.interfaces.chat.GetReply(await getChatRequest(chatid, charname))
 			}
 			let entry
 			if (new_timeSlice.greeting_type?.startsWith?.('world_'))
@@ -462,7 +462,7 @@ export async function modifyTimeLine(chatid, delta) {
 				entry = BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, chatMetadata.username)
 
 			if (entry.timeSlice.world)
-				entry.timeSlice.world.interfacies.chat.AddChatLogEntry(await getChatRequest(chatid, undefined), entry)
+				entry.timeSlice.world.interfaces.chat.AddChatLogEntry(await getChatRequest(chatid, undefined), entry)
 			else
 				chatMetadata.chatLog.push(entry)
 
@@ -560,10 +560,10 @@ async function getCharReplyFrequency(chatid) {
 		let char = chatMetadata.LastTimeSlice.chars[charname]
 		result.push({
 			charname,
-			frequency: (
-				(char.interfacies?.chat?.GetReplyFequency?.(await getChatRequest(chatid, charname)) || 1) *
+			frequency:
+				(char.interfaces?.chat?.GetReplyFequency?.(await getChatRequest(chatid, charname)) || 1) *
 				(chatMetadata.LastTimeSlice.chars_speaking_frequency[charname] || 1)
-			)
+
 		})
 	}
 
@@ -592,14 +592,14 @@ export async function triggerCharReply(chatid, charname) {
 	}
 	let request = await getChatRequest(chatid, charname)
 
-	if (timeSlice?.world?.interfacies?.chat?.GetCharReply)
-		return timeSlice.world.interfacies.chat.GetCharReply(request, charname)
+	if (timeSlice?.world?.interfaces?.chat?.GetCharReply)
+		return timeSlice.world.interfaces.chat.GetCharReply(request, charname)
 
 	const char = timeSlice.chars[charname]
-	if (!char) throw new Error(`char not found`)
+	if (!char) throw new Error('char not found')
 
 	const new_timeSlice = timeSlice.copy()
-	result = await char.interfacies.chat.GetReply(request)
+	result = await char.interfaces.chat.GetReply(request)
 
 	return addChatLogEntry(chatid, BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, chatMetadata.username))
 }
@@ -704,14 +704,14 @@ export async function deleteMessage(chatid, index) {
 		}
 	}
 	// 若有world,让world处理消息删除
-	if (chatMetadata.LastTimeSlice.world?.interfacies?.chat?.MessageDelete)
-		await chatMetadata.LastTimeSlice.world.interfacies.chat.MessageDelete(geneRequest())
+	if (chatMetadata.LastTimeSlice.world?.interfaces?.chat?.MessageDelete)
+		await chatMetadata.LastTimeSlice.world.interfaces.chat.MessageDelete(geneRequest())
 	else {
 		// 通知每个char消息将被删除
 		for (const char of Object.values(chatMetadata.LastTimeSlice.chars))
-			await char.interfacies.chat?.MessageDelete?.(geneRequest())
+			await char.interfaces.chat?.MessageDelete?.(geneRequest())
 		// 还有user
-		await chatMetadata.LastTimeSlice.player?.interfacies?.chat?.MessageDelete?.(geneRequest())
+		await chatMetadata.LastTimeSlice.player?.interfaces?.chat?.MessageDelete?.(geneRequest())
 		chatMetadata.chatLog.splice(index, 1)
 	}
 
@@ -745,27 +745,27 @@ export async function editMessage(chatid, index, new_content) {
 	}
 	// 若有world,让world处理消息编辑
 	let editresult
-	if (chatMetadata.LastTimeSlice.world?.interfacies?.chat?.MessageEdit)
-		editresult = await chatMetadata.LastTimeSlice.world.interfacies.chat.MessageEdit(geneRequest())
+	if (chatMetadata.LastTimeSlice.world?.interfaces?.chat?.MessageEdit)
+		editresult = await chatMetadata.LastTimeSlice.world.interfaces.chat.MessageEdit(geneRequest())
 	else {
 		// 通知消息原作者处理消息编辑
 		let entry = chatMetadata.chatLog[index]
 		if (entry.timeSlice.charname) {
 			let char = entry.timeSlice.chars[entry.timeSlice.charname]
-			editresult = await char.interfacies.chat?.MessageEdit?.(geneRequest())
+			editresult = await char.interfaces.chat?.MessageEdit?.(geneRequest())
 		}
 		else if (entry.timeSlice.playername)
-			editresult = await entry.timeSlice?.player?.interfacies?.chat?.MessageEdit?.(geneRequest())
+			editresult = await entry.timeSlice?.player?.interfaces?.chat?.MessageEdit?.(geneRequest())
 		editresult ??= new_content
 
 		// 通知其他人消息被编辑
-		if (chatMetadata.LastTimeSlice.world?.interfacies?.chat?.MessageEditting)
-			await chatMetadata.LastTimeSlice.world.interfacies.chat.MessageEditting(geneRequest())
+		if (chatMetadata.LastTimeSlice.world?.interfaces?.chat?.MessageEditting)
+			await chatMetadata.LastTimeSlice.world.interfaces.chat.MessageEditting(geneRequest())
 		else {
 			for (const char of Object.values(chatMetadata.LastTimeSlice.chars))
-				await char.interfacies?.chat?.MessageEditting?.(geneRequest())
+				await char.interfaces?.chat?.MessageEditting?.(geneRequest())
 
-			await chatMetadata.LastTimeSlice.player?.interfacies?.chat?.MessageEditting?.(geneRequest())
+			await chatMetadata.LastTimeSlice.player?.interfaces?.chat?.MessageEditting?.(geneRequest())
 		}
 	}
 

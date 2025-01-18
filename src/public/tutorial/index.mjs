@@ -1,4 +1,4 @@
-import { applyTheme } from "../scripts/theme.mjs"
+import { applyTheme } from '../scripts/theme.mjs'
 applyTheme()
 
 const tutorialModal = document.getElementById('tutorialModal')

@@ -10,6 +10,7 @@ class tokenizer_t<InputType, TokenType> {
 }
 
 export class AIsource_t<InputType, OutputType> {
+	filename: string;
 	info: Record<locale_t, {
 		avatar: string;
 		name: string;

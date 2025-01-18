@@ -1,0 +1,25 @@
+/* 自定义样式 */
+.file-list {
+	max-height: 80vh;
+	overflow-y: auto;
+}
+
+.file-list-item {
+	cursor: pointer;
+	padding: 0.5rem;
+	border-bottom: 1px solid #4a4a4a;
+	transition: background-color 0.2s;
+}
+
+.file-list-item:hover {
+	background-color: #374151;
+}
+
+.file-list-item.active {
+	background-color: #1f2937;
+	color: #ffffff;
+}
+
+.jsoneditor-container {
+	width: 100%;
+}

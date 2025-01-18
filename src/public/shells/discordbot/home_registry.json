@@ -1,0 +1,33 @@
+{
+	"home_function_buttons": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "配置discord bot"
+				},
+				"en": {
+					"title": "Config Discord Bot"
+				}
+			},
+			"level": 1,
+			"url": "/shells/discordbot",
+			"button": "<img src=\"https://api.iconify.design/line-md/discord.svg\" class=\"dark:invert\"/>"
+		}
+	],
+	"home_char_interfaces": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "配置discord bot"
+				},
+				"en": {
+					"title": "Config Discord Bot"
+				}
+			},
+			"level": 0,
+			"interface": "config",
+			"url": "/shells/discordbot?name=${charname}&char=${charname}",
+			"button": "<img src=\"https://api.iconify.design/line-md/discord.svg\"/>"
+		}
+	]
+}

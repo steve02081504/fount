@@ -1,5 +1,5 @@
 import { mkdir, rm } from 'node:fs/promises'
-import { exec } from "../../../scripts/exec.mjs"
+import { exec } from '../../../scripts/exec.mjs'
 
 export async function cloneRepo(repoUrl, targetDir) {
 	await mkdir(targetDir, { recursive: true })

@@ -1,4 +1,4 @@
-import { initPart, loadPart, uninstallPart, unloadPart } from '../../../../../server/parts_loader.mjs'
+import { initPart, loadPartBase, uninstallPartBase, unloadPart } from '../../../../../server/parts_loader.mjs'
 
 /**
  * @param {string} username
@@ -6,7 +6,7 @@ import { initPart, loadPart, uninstallPart, unloadPart } from '../../../../../se
  * @returns {Promise<import('../../../../../decl/importHanlderAPI.ts').importHanlderAPI_t>}
  */
 export async function LoadImportHanlder(username, tempname) {
-	return await loadPart(username, 'ImportHanlders', tempname)
+	return await loadPartBase(username, 'ImportHanlders', tempname)
 }
 
 export function UnloadImportHanlder(username, tempname, reason) {
@@ -18,5 +18,5 @@ export async function initImportHanlder(username, tempname) {
 }
 
 export async function uninstallImportHanlder(username, tempname) {
-	await uninstallPart(username, 'ImportHanlders', tempname)
+	await uninstallPartBase(username, 'ImportHanlders', tempname)
 }

@@ -16,7 +16,9 @@ const convertor = unified()
 	.use(remarkRehype, {
 		allowDangerousHtml: true,
 	})
-	.use(remarkGfm)
+	.use(remarkGfm, {
+		singleTilde: false,
+	})
 	//*
 	.use(rehypeHighlight)
 	/*/ // toooo slow

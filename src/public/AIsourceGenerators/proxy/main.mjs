@@ -63,7 +63,7 @@ export default {
 			Call: async (prompt) => {
 				return await callBase([
 					{
-						role: "system",
+						role: 'system',
 						content: prompt
 					}
 				])

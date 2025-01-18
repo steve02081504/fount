@@ -80,7 +80,7 @@ system:
 						role: chatLogEntry.role === 'user' ? 'user' : 'model',
 						parts: [
 							{ text: chatLogEntry.name + ':\n' + chatLogEntry.content },
-							...(chatLogEntry.files || []).map(file => ({ inlineData: { data: file.buffer.toString("base64"), mimeType: file.mimeType } }))
+							...(chatLogEntry.files || []).map(file => ({ inlineData: { data: file.buffer.toString('base64'), mimeType: file.mimeType } }))
 						],
 					})
 				})
@@ -97,7 +97,7 @@ system:
 				request.contents = request.contents.concat([
 					{
 						role: 'user',
-						parts: [{ text: `system:\n暂停扮演，请你在xml标签<pause>中重新整理并回复你的目标，随后继续扮演。` }]
+						parts: [{ text: 'system:\n暂停扮演，请你在xml标签<pause>中重新整理并回复你的目标，随后继续扮演。' }]
 					},
 					{
 						role: 'model',
@@ -127,7 +127,7 @@ system:
 				}
 
 				// 移除<declare></declare>
-				text = text.replace(/<declare>([^<]*)<\/declare>\s*$/g, '')
+				text = text.replace(/<\/?declare>([^<]*)<\/?declare>\s*$/g, '')
 
 				text = text.split('\n')
 				while (['', '</pause>', '</declare>'].includes(text[text.length - 1].trim())) text.pop() //?

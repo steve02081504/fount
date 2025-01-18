@@ -1,5 +1,5 @@
 import { renderTemplate } from '../../../scripts/template.mjs'
-import { applyTheme } from "../../../scripts/theme.mjs"
+import { applyTheme } from '../../../scripts/theme.mjs'
 
 const chatListContainer = document.getElementById('chat-list-container')
 const sortSelect = document.getElementById('sort-select')
@@ -64,7 +64,7 @@ async function renderChatListItem(chat) {
 		lastMessageTime: lastMsgTime,
 		avatars: await Promise.all(chat.chars.map(async charName => {
 			const details = await getCharDetails(charName)
-			return { name: details.name, url: details.avatar }
+			return { name: details.info.name, url: details.info.avatar }
 		}))
 	}
 	const chatElement = await renderTemplate('chat_list_view', data)

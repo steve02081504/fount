@@ -8,9 +8,9 @@ import {
 	getPersonaDetails,
 } from '../../../../../scripts/parts.mjs'
 import { charList, worldName, personaName } from '../chat.mjs'
-import { addCharacter, setPersona, setWorld, removeCharacter, triggerCharacterReply, setCharReplyFrequency } from "../endpoints.mjs"
-import { appendMessage } from "./messageList.mjs"
-import { renderMarkdown } from "../../../../../scripts/markdown.mjs"
+import { addCharacter, setPersona, setWorld, removeCharacter, triggerCharacterReply, setCharReplyFrequency } from '../endpoints.mjs'
+import { appendMessage } from './messageList.mjs'
+import { renderMarkdown } from '../../../../../scripts/markdown.mjs'
 
 const worldSelect = document.getElementById('world-select')
 const worldDetailsContainer = document.getElementById('world-details')
@@ -137,20 +137,20 @@ async function renderCharDetails(charName, frequency_num) {
 		charData = await getCharDetails(charName)
 		if (!charData) throw new Error(`角色 ${charName} 不存在`)
 		const charCard = cachedDom.character[charName] = await renderTemplate('char_info_chat_view', {
-			...charData,
+			...charData.info,
 			frequency_num
 		})
 		charCard.setAttribute('data-char-name', charName)
 		addCardEventListeners(charCard, charData)
 		// 添加滑动条的事件监听
-		const frequencySlider = charCard.querySelector(`.frequency-slider`)
+		const frequencySlider = charCard.querySelector('.frequency-slider')
 		frequencySlider.addEventListener('input', (event) => {
 			const frequency = event.target.value / 100
 			setCharReplyFrequency(charName, frequency)
 		})
 
 		// 添加移除按钮的事件监听
-		const removeCharButton = charCard.querySelector(`.remove-char-button`)
+		const removeCharButton = charCard.querySelector('.remove-char-button')
 		removeCharButton.addEventListener('click', async () => {
 			await appendMessage(await removeCharacter(charName))
 			charList.splice(charList.indexOf(charName), 1)
@@ -162,7 +162,7 @@ async function renderCharDetails(charName, frequency_num) {
 		})
 
 		// 添加强制回复按钮的事件监听
-		const forceReplyButton = charCard.querySelector(`.force-reply-button`)
+		const forceReplyButton = charCard.querySelector('.force-reply-button')
 		forceReplyButton.addEventListener('click', async () => {
 			appendMessage(await triggerCharacterReply(charName))
 		})
@@ -179,12 +179,12 @@ async function renderCharDetails(charName, frequency_num) {
  */
 function addCardEventListeners(card, data) {
 	card.addEventListener('mouseover', () => {
-		displayItemDescription(data.description_markdown)
+		displayItemDescription(data.info.description_markdown)
 		showRightSidebar()
 	})
 
 	card.addEventListener('click', () => {
-		displayItemDescription(data.description_markdown)
+		displayItemDescription(data.info.description_markdown)
 		showRightSidebar()
 	})
 }

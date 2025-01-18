@@ -1,5 +1,5 @@
 import cryptoRandomString from 'npm:crypto-random-string'
-import { ms } from "./ms.mjs"
+import { ms } from './ms.mjs'
 
 // 用于存储验证码、过期时间和ID
 let verificationCodes = []

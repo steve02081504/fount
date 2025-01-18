@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>AI 来源编辑器</title>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.min.css" rel="stylesheet" type="text/css" />
+	<script src="https://cdn.tailwindcss.com"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanilla-jsoneditor@2/themes/jse-theme-dark.min.css">
+	<link rel="stylesheet" href="./index.css">
+</head>
+
+<body class="bg-base-200">
+	<div class="container mx-auto p-4 flex">
+		<!-- 文件列表区域 -->
+		<div class="w-1/4 pr-4">
+			<div class="flex justify-between items-center mb-2">
+				<h2 class="text-xl font-semibold">AI 来源列表</h2>
+				<button id="addFileButton" class="btn btn-sm btn-circle btn-primary">+</button>
+			</div>
+			<div id="fileList" class="file-list bg-base-100 rounded-lg">
+				<!-- 文件列表项将会动态生成 -->
+			</div>
+		</div>
+
+		<!-- 编辑区域 -->
+		<div class="w-3/4 pl-4">
+			<h2 class="text-xl font-semibold mb-2">AI 来源配置</h2>
+			<!-- 生成器选择 -->
+			<div class="mb-4">
+				<label for="generatorSelect" class="label">
+					<span class="label-text">选择生成器</span>
+				</label>
+				<select id="generatorSelect" class="select select-bordered w-full">
+					<option disabled selected>请选择</option>
+				</select>
+			</div>
+			<!-- JSON 编辑器容器 -->
+			<div id="jsonEditor" class="jsoneditor-container" style="height: 400px; overflow: auto"></div>
+
+			<div class="mt-4 flex justify-end">
+				<button id="saveButton" class="btn btn-primary mr-2">保存</button>
+				<button id="deleteButton" class="btn btn-error ml-2">删除</button>
+			</div>
+		</div>
+	</div>
+
+	<script type="module" src="./index.mjs"></script>
+</body>
+
+</html>

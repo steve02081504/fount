@@ -1,4 +1,4 @@
-import { setupSidebar, triggerSidebarHeartbeat } from "./ui/sidebar.mjs"
+import { setupSidebar, triggerSidebarHeartbeat } from './ui/sidebar.mjs'
 import { initializeVirtualQueue, triggerVirtualQueueHeartbeat } from './ui/virtualQueue.mjs'
 
 export const heartbeat_interval = 1000 // 1s

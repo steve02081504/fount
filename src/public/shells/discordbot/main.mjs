@@ -1,5 +1,5 @@
-import { runBot } from "./src/server/bot.mjs"
-import { setEndpoints, unsetEndpoints } from "./src/server/endpoints.mjs"
+import { runBot } from './src/server/bot.mjs'
+import { setEndpoints, unsetEndpoints } from './src/server/endpoints.mjs'
 
 export default {
 	info: {

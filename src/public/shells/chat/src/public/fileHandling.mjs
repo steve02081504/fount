@@ -1,7 +1,7 @@
 import { renderTemplate } from '../../../../scripts/template.mjs'
 import { processTimeStampForId, arrayBufferToBase64 } from './utils.mjs'
 import { openModal } from './ui/modal.mjs'
-import { onElementRemoved } from "../../../../scripts/onElementRemoved.mjs"
+import { onElementRemoved } from '../../../../scripts/onElementRemoved.mjs'
 
 export const attachmentPreviewMap = new Map()
 

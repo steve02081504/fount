@@ -1,0 +1,33 @@
+{
+	"home_function_buttons": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "浏览历史记录"
+				},
+				"en": {
+					"title": "View History"
+				}
+			},
+			"level": 1,
+			"url": "/shells/chat/list",
+			"button": "<img src=\"https://api.iconify.design/line-md/chat-round.svg\" class=\"dark:invert\"/>"
+		}
+	],
+	"home_char_interfaces": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "聊天"
+				},
+				"en": {
+					"title": "Chat"
+				}
+			},
+			"level": 0,
+			"interface": "chat",
+			"url": "/shells/chat/new?char=${charname}",
+			"button": "<img src=\"https://api.iconify.design/line-md/chat-round.svg\"/>"
+		}
+	]
+}

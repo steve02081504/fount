@@ -1,0 +1,33 @@
+{
+	"home_function_buttons": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "配置模块"
+				},
+				"en": {
+					"title": "Config Module"
+				}
+			},
+			"level": 1,
+			"url": "/shells/config",
+			"button": "<img src=\"https://api.iconify.design/line-md/cog.svg\" class=\"dark:invert\"/>"
+		}
+	],
+	"home_char_interfaces": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "配置"
+				},
+				"en": {
+					"title": "Config"
+				}
+			},
+			"level": 0,
+			"interface": "config",
+			"url": "/shells/config?type=chars&name=${charname}",
+			"button": "<img src=\"https://api.iconify.design/line-md/cog.svg\"/>"
+		}
+	]
+}

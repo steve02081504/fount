@@ -8,21 +8,61 @@
 	<link rel="stylesheet" href="./index.css">
 	<link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.min.css" rel="stylesheet" type="text/css" />
 	<script src="https://cdn.tailwindcss.com"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanilla-jsoneditor@2/themes/jse-theme-dark.min.css">
 </head>
 
-<body class="bg-base-200 flex justify-center items-start h-screen">
-	<div class="container mx-auto p-4 w-full lg:w-1/2">
-		<div class="card bg-base-100 shadow-xl">
+<body class="bg-base-200 flex justify-center items-start h-screen p-4">
+	<div class="container mx-auto w-full lg:w-2/3">
+		<div class="card bg-base-100 shadow-xl mb-4">
 			<div class="card-body">
 				<h2 class="card-title mb-4">Discord Bots</h2>
-				<div class="flex flex-col lg:flex-row gap-4">
+				<div class="flex flex-col lg:flex-row gap-4 mt-4">
 					<select id="bot-list" class="select select-bordered w-full"></select>
-					<button id="start-bot" class="btn btn-primary w-full lg:w-auto">启动</button>
+					<button id="new-bot" class="btn btn-accent w-full lg:w-auto">新建</button>
+					<button id="delete-bot" class="btn btn-error w-full lg:w-auto">删除</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="card bg-base-100 shadow-xl">
+			<div class="card-body">
+				<h2 class="card-title mb-4">Bot Config</h2>
+				<div class="mb-4">
+					<label for="char-select" class="label">
+						<span class="label-text">Character</span>
+					</label>
+					<select id="char-select" class="select select-bordered w-full">
+						<option value="" disabled selected>Select Character</option>
+					</select>
+					<p id="char-support-message" class="text-sm text-error mt-1 hidden">This character does not support
+						the
+						Discord interface.</p>
+				</div>
+				<div class="mb-4">
+					<label for="token-input" class="label">
+						<span class="label-text">Discord API Key</span>
+					</label>
+					<div class="relative">
+						<input id="token-input" type="password" placeholder="Enter API Key"
+							class="input input-bordered w-full pr-10" />
+						<button id="toggle-token" type="button" class="absolute top-0 right-0 h-full px-4">
+							<img src="https://api.iconify.design/line-md/watch-off.svg" class="dark:invert" />
+						</button>
+					</div>
+				</div>
+				<div class="mb-4">
+					<label for="config-editor" class="label">
+						<span class="label-text">Config</span>
+					</label>
+					<div id="config-editor" class="jsoneditor-container" style="height: 400px; overflow: auto"></div>
+				</div>
+				<div class="flex justify-end gap-4">
+					<button id="save-config" class="btn btn-primary">保存配置</button>
+					<button id="start-bot" class="btn btn-success">启动</button>
 				</div>
 			</div>
 		</div>
 	</div>
-
 	<script type="module" src="./index.mjs"></script>
 </body>
 

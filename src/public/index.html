@@ -1,8 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN" data-theme="dark">
 
 <head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Login Redirect</title>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.min.css" rel="stylesheet" type="text/css" />
+	<script src="https://cdn.tailwindcss.com"></script>
 	<script>
 		// Check if login key is stored in local storage
 		if (document.cookie.includes("token")) {
@@ -21,8 +25,10 @@
 	</script>
 </head>
 
-<body>
-	<p>Loading...</p>
+<body class="bg-base-200">
+	<div class="flex justify-center items-center h-screen">
+		<p class="text-lg">Loading...</p>
+	</div>
 </body>
 
 </html>
