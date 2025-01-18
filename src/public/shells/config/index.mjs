@@ -14,6 +14,7 @@ let partTypes = []
 let parts = []
 let activePartType = null
 let activePart = null
+let isDirty = false // 标记是否有未保存的更改
 
 /**
  * 抽象的API请求函数
@@ -102,16 +103,37 @@ function renderPartSelect() {
  * @param {string} partName 部分名称
  */
 async function loadEditor(partType, partName) {
+	// 如果有未保存的更改，提示用户
+	if (isDirty)
+		if (!confirm('You have unsaved changes. Do you want to discard them?'))
+			return
+
 	const partDetailsData = await partDetails(partType, partName)
-	disabledIndicator.classList.add('hidden')
-	saveButton.disabled = false
-	jsonEditor?.enable()
+
+	// Create jsonEditor instance if it doesn't exist
+	if (!jsonEditor)
+		jsonEditor = createJSONEditor({
+			target: jsonEditorContainer,
+			props: {
+				mode: 'code',
+				indentation: '\t',
+				readOnly: true, // 初始状态应为只读
+				onChange: (updatedContent, previousContent, { error, patchResult }) => {
+					isDirty = true // 标记为有未保存的更改
+				},
+			}
+		})
 
 	if (!partDetailsData || !partDetailsData.supportedInterfaces.includes('config')) {
 		disabledIndicator.classList.remove('hidden')
 		saveButton.disabled = true
-		jsonEditor?.disable()
+		jsonEditor.updateProps({ readOnly: true, content: { json: {} } })
+		isDirty = false // 重置未保存标记
 		return
+	} else {
+		disabledIndicator.classList.add('hidden')
+		saveButton.disabled = false
+		jsonEditor.updateProps({ readOnly: false })
 	}
 
 	activePart = partName
@@ -123,17 +145,8 @@ async function loadEditor(partType, partName) {
 			},
 			body: JSON.stringify({ parttype: partType, partname: partName }),
 		})
-
-		if (!jsonEditor)
-			jsonEditor = createJSONEditor({
-				target: jsonEditorContainer,
-				props: {
-					mode: 'code',
-					indentation: '\t',
-				}
-			})
-
-		jsonEditor.set({ json: data })
+		jsonEditor.updateProps({ content: { json: data } })
+		isDirty = false // 重置未保存标记
 	} catch (error) {
 		console.error('Failed to fetch part data:', error)
 	}
@@ -147,7 +160,7 @@ async function saveConfig() {
 		console.warn('No part selected to save.')
 		return
 	}
-	const data = jsonEditor.get().json
+	const data = jsonEditor.get().json || JSON.parse(jsonEditor.get().text)
 	try {
 		await fetchData('/api/shells/config/setdata', {
 			method: 'POST',
@@ -161,6 +174,7 @@ async function saveConfig() {
 			}),
 		})
 		console.log('Part config saved successfully.')
+		isDirty = false // 重置未保存标记
 	} catch (error) {
 		console.error('Failed to save part config:', error)
 	}
@@ -192,9 +206,23 @@ async function initializeFromURLParams() {
 			partSelect.value = partName
 			activePart = partName
 			await loadEditor(partType, partName)
+		} else {
+			// 如果提供了 partType 但没有 partName，禁用编辑器
+			if (jsonEditor)
+				jsonEditor.updateProps({ readOnly: true, content: { json: {} } })
+
+			disabledIndicator.classList.remove('hidden')
+			saveButton.disabled = true
 		}
-	} else
+	} else {
 		await partTypesList()
+		// 初始状态下禁用编辑器
+		if (jsonEditor)
+			jsonEditor.updateProps({ readOnly: true, content: { json: {} } })
+
+		disabledIndicator.classList.remove('hidden')
+		saveButton.disabled = true
+	}
 }
 
 // 初始化
@@ -202,19 +230,81 @@ initializeFromURLParams()
 
 // 事件监听
 partTypeSelect.addEventListener('change', async () => {
+	// 如果有未保存的更改，提示用户
+	if (isDirty)
+		if (!confirm('You have unsaved changes. Do you want to discard them?')) {
+			partTypeSelect.value = activePartType
+			return
+		}
+
 	activePartType = partTypeSelect.value
 	await partsList(activePartType)
 	partSelect.selectedIndex = 0 // 重置部分选择器
-	activePart = null
-	disabledIndicator.classList.add('hidden')
-	saveButton.disabled = false
-	jsonEditor?.enable()
+	activePart = null // 关键：重置 activePart
+
+	// 禁用编辑器和保存按钮，直到选择了部件
+	if (jsonEditor)
+		jsonEditor.updateProps({ readOnly: true, content: { json: {} } })
+
+	disabledIndicator.classList.remove('hidden')
+	saveButton.disabled = true
+
+	// 检查新的 PartType 是否有 Parts
+	if (parts.length > 0) {
+		// 检查第一个 Part 是否支持配置（可选，根据你的需求）
+		const firstPartName = parts[0]
+		const firstPartDetails = await partDetails(activePartType, firstPartName)
+
+		if (!jsonEditor)
+			jsonEditor = createJSONEditor({
+				target: jsonEditorContainer,
+				props: {
+					mode: 'code',
+					indentation: '\t',
+					readOnly: true,
+					onChange: (updatedContent, previousContent, { error, patchResult }) => {
+						isDirty = true // 标记为有未保存的更改
+					},
+				}
+			})
+
+		if (!firstPartDetails || !firstPartDetails.supportedInterfaces.includes('config')) {
+			// 第一个 Part 不支持配置，保持禁用状态
+		} else {
+			// 第一个 Part 支持配置，但由于 activePart 仍然是 null，编辑器保持禁用
+		}
+	} else {
+		// 新的 PartType 没有 Parts，保持禁用状态
+	}
+	isDirty = false // 重置未保存标记
 })
 
 partSelect.addEventListener('change', async () => {
+	// 如果有未保存的更改，提示用户
+	if (isDirty)
+		if (!confirm('You have unsaved changes. Do you want to discard them?')) {
+			partSelect.value = activePart
+			return
+		}
 	activePart = partSelect.value
 	if (activePart)
 		await loadEditor(activePartType, activePart)
+	else {
+		// 如果取消选择部件，禁用编辑器
+		if (jsonEditor)
+			jsonEditor.updateProps({ readOnly: true, content: { json: {} } })
+
+		disabledIndicator.classList.remove('hidden')
+		saveButton.disabled = true
+	}
 })
 
 saveButton.addEventListener('click', saveConfig)
+
+// 离开页面时提醒
+window.addEventListener('beforeunload', (event) => {
+	if (isDirty) {
+		event.preventDefault()
+		event.returnValue = 'You have unsaved changes. Are you sure you want to leave?'
+	}
+})

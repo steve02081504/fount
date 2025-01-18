@@ -112,7 +112,7 @@ export async function uninstallPartBase(username, parttype, partname, unLoadargs
 	unLoader = (part) => part.Unload?.(unLoadargs),
 	pathGetter = () => GetPartPath(username, parttype, partname),
 	Uninstaller = async (part, path) => {
-		await part.Uninstall?.(uninstallArgs)
+		await part?.Uninstall?.(uninstallArgs)
 		fs.rmSync(path, { recursive: true, force: true })
 	}
 } = {}) {
@@ -122,8 +122,15 @@ export async function uninstallPartBase(username, parttype, partname, unLoadargs
 	} catch (error) {
 		console.error(error)
 	}
-	part ??= await baseloadPart(username, parttype, partname, { Loader, pathGetter })
+	try {
+		part ??= await baseloadPart(username, parttype, partname, { Loader, pathGetter })
+	} catch (error) {
+		console.error(error)
+	}
 	await Uninstaller(part, pathGetter())
+	delete parts_set[username][parttype][partname]
+	let parts_details_cache = loadData(username, 'parts_details_cache')
+	delete parts_details_cache[parttype][partname]
 }
 
 export function getPartListBase(username, parttype, {
@@ -155,12 +162,23 @@ export async function getPartDetails(username, parttype, partname) {
 	let parts_details_cache = loadData(username, 'parts_details_cache')
 	let details = parts_details_cache?.[parttype]?.[partname]
 	if (parts_set?.[username]?.[parttype]?.[partname]) details = undefined
-	if (details === undefined) {
+	if (details === undefined) try {
 		const part = await baseloadPart(username, parttype, partname).catch(() => loadPart(username, parttype, partname))
 		parts_details_cache[parttype] ??= {}
 		details = parts_details_cache[parttype][partname] = {
 			info: JSON.parse(JSON.stringify(part.info)),
 			supportedInterfaces: Object.keys(part.interfaces || {}),
+		}
+	}
+	catch (error) {
+		return {
+			info: {
+				name: partname,
+				avatar: 'https://api.iconify.design/line-md/emoji-frown-open.svg',
+				description: 'error loading part',
+				description_markdown: `# error loading part\n\n\`\`\`\`\n${error.message}\n${error.stack}\`\`\`\``,
+			},
+			supportedInterfaces: [],
 		}
 	}
 	const { locale } = getUserByUsername(username)

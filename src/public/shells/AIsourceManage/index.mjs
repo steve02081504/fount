@@ -14,6 +14,7 @@ let activeFile = null
 let jsonEditor = null
 let fileList = []
 let generatorList = []
+let isDirty = false // 标记是否有未保存的更改
 
 async function fetchFileList() {
 	try {
@@ -25,8 +26,10 @@ async function fetchFileList() {
 		renderFileList()
 	} catch (error) {
 		console.error('Failed to fetch file list:', error)
+		alert('Failed to fetch file list: ' + error.message)
 	}
 }
+
 async function fetchGeneratorList() {
 	try {
 		const response = await fetch('/api/getlist/AIsourceGenerators')
@@ -37,6 +40,7 @@ async function fetchGeneratorList() {
 		renderGeneratorSelect()
 	} catch (error) {
 		console.error('Failed to fetch generator list:', error)
+		alert('Failed to fetch generator list: ' + error.message)
 	}
 }
 
@@ -52,10 +56,13 @@ function renderFileList() {
 
 		fileListDiv.appendChild(listItem)
 	})
-	if (fileList.length > 0)
+	if (fileList.length > 0 && !activeFile)
 		loadEditor(fileList[0])
+	else if (fileList.length > 0 && activeFile)
+		loadEditor(activeFile)
 
 }
+
 function renderGeneratorSelect() {
 	generatorSelect.innerHTML = '<option disabled selected>请选择</option>'
 	generatorList.forEach(generator => {
@@ -64,18 +71,29 @@ function renderGeneratorSelect() {
 		option.textContent = generator
 		generatorSelect.appendChild(option)
 	})
-
 }
 
 async function loadEditor(fileName) {
 	if (!fileName) return
+
+	// 如果有未保存的更改，提示用户
+	if (isDirty)
+		if (!confirm('You have unsaved changes. Do you want to discard them?'))
+			return
+
+
+
 	// 更新高亮
 	document.querySelectorAll('.file-list-item').forEach(item => {
 		item.classList.remove('active')
 	})
-	const fileItem = document.querySelector(`#fileList .file-list-item:nth-child(${fileList.indexOf(fileName) + 1})`)
+	const activeItemIndex = fileList.indexOf(fileName)
+	if (activeItemIndex !== -1) {
+		const fileItem = document.querySelector(`#fileList .file-list-item:nth-child(${activeItemIndex + 1})`)
+		if (fileItem)
+			fileItem.classList.add('active')
+	}
 
-	fileItem.classList.add('active')
 	activeFile = fileName
 	try {
 		const response = await fetch('/api/shells/AIsourceManage/getfile', {
@@ -89,28 +107,34 @@ async function loadEditor(fileName) {
 			throw new Error(`HTTP error! status: ${response.status}`)
 
 		const data = await response.json()
-		generatorSelect.value = data.generator
+		generatorSelect.value = data.generator || ''
 
 		if (!jsonEditor)
 			jsonEditor = createJSONEditor({
 				target: jsonEditorContainer,
 				props: {
 					mode: 'code',
-					indentation: '\t'
+					indentation: '\t',
+					onChange: (updatedContent, previousContent, { error, patchResult }) => {
+						isDirty = true // 标记为有未保存的更改
+					},
 				}
 			})
+
 		jsonEditor.set({ json: data.config })
+		isDirty = false // 重置未保存标记
 	} catch (error) {
 		console.error('Failed to fetch file data:', error)
+		alert('Failed to fetch file data: ' + error.message)
 	}
 }
 
 async function saveFile() {
 	if (!activeFile) {
-		console.warn('No file selected to save.')
+		alert('No file selected to save.')
 		return
 	}
-	const config = jsonEditor.get().json
+	const config = jsonEditor.get().json || JSON.parse(jsonEditor.get().text)
 	const generator = generatorSelect.value
 	try {
 		const response = await fetch('/api/shells/AIsourceManage/setfile', {
@@ -130,17 +154,21 @@ async function saveFile() {
 			throw new Error(`HTTP error! status: ${response.status}`)
 
 		console.log('File saved successfully.')
-		await fetchFileList()
+		isDirty = false // 重置未保存标记
 	} catch (error) {
 		console.error('Failed to save file:', error)
+		alert('Failed to save file: ' + error.message)
 	}
 }
 
 async function deleteFile() {
 	if (!activeFile) {
-		console.warn('No file selected to delete')
+		alert('No file selected to delete')
 		return
 	}
+	if (!confirm('确定要删除文件吗?'))
+		return
+
 	try {
 		const response = await fetch('/api/shells/AIsourceManage/deletefile', {
 			method: 'POST',
@@ -153,12 +181,20 @@ async function deleteFile() {
 			throw new Error(`HTTP error! status: ${response.status}`)
 
 		console.log('File delete successfully.')
-		activeFile = null
-		jsonEditor.destroy()
-		jsonEditor = null
+
 		await fetchFileList()
+		activeFile = fileList.length > 0 ? fileList[0] : null
+		if (activeFile)
+			loadEditor(activeFile)
+		else
+			if (jsonEditor) {
+				jsonEditor.destroy()
+				jsonEditor = null
+			}
+
 	} catch (error) {
 		console.error('Failed to delete file:', error)
+		alert('Failed to delete file: ' + error.message)
 	}
 }
 
@@ -167,28 +203,37 @@ async function addFile() {
 	if (!newFileName) return
 
 	try {
+		const newFileFullName = newFileName + '.json'
 		const response = await fetch('/api/shells/AIsourceManage/addfile', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({ AISourceFile: newFileName + '.json' }),
+			body: JSON.stringify({ AISourceFile: newFileFullName }),
 		})
 		if (!response.ok)
 			throw new Error(`HTTP error! status: ${response.status}`)
 		await fetchFileList()
 		console.log('File add successfully.')
+		loadEditor(newFileFullName)
 	} catch (error) {
 		console.error('Failed to add file:', error)
+		alert('Failed to add file: ' + error.message)
 	}
-
 }
+
 // 初始化
 fetchFileList()
 fetchGeneratorList()
+
 saveButton.addEventListener('click', saveFile)
-deleteButton.addEventListener('click', () => {
-	if (confirm('确定要删除文件吗?'))
-		deleteFile()
-})
+deleteButton.addEventListener('click', deleteFile)
 addFileButton.addEventListener('click', addFile)
+
+// 离开页面时提醒
+window.addEventListener('beforeunload', (event) => {
+	if (isDirty) {
+		event.preventDefault()
+		event.returnValue = 'You have unsaved changes. Are you sure you want to leave?'
+	}
+})

@@ -4,8 +4,8 @@ await createNewChat()
 
 let serchParams = new URLSearchParams(window.location.search)
 
-if (serchParams.has('charname'))
-	await addCharacter(serchParams.get('charname'))
+if (serchParams.has('char'))
+	await addCharacter(serchParams.get('char'))
 
 // jump to chat
 window.history.replaceState(null, null, '/shells/chat/#' + currentChatId)
