@@ -1,17 +1,23 @@
-<div class="card bg-base-100 shadow-xl group">
-	<div class="card-content">
-		<figure><img src="${info.avatar}" alt="${info.name}" /></figure>
-		<div class="card-body">
+<div class="card-container bg-base-100 shadow-xl group">
+	<div class="card-content"
+		style="background-image: url(${info.avatar}); background-size: contain; background-position: center; background-repeat: no-repeat;">
+		<div class="text-content">
 			<h2 class="card-title">${info.name}</h2>
 			<p class="line-clamp-3">${info.description}</p>
-			<div class="card-actions justify-end w-full mt-auto">
+			<div class="card-actions justify-end w-full">
 				<div class="flex flex-nowrap overflow-x-auto gap-2"></div>
 			</div>
 		</div>
 	</div>
 	<div class="tags-container z-[50]">
+		${(info.tags && info.tags.length > 0) ? `
 		<div class="tags-list-container h-full overflow-y-auto p-4">
 			${info.tags.map((tag) => `<span class="badge badge-primary">${tag}</span>`).join(' ')}
 		</div>
+		` : `
+		<div class="h-full overflow-y-auto p-4">
+			No tags
+		</div>
+		`}
 	</div>
 </div>
