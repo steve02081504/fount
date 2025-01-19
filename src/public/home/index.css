@@ -11,183 +11,84 @@ article img {
 	margin-right: 2px;
 }
 
-/* 电脑端卡片样式 */
-.card {
-	height: 300px;
-	position: relative;
-	/* 为绝对定位的 tags 容器提供参考 */
-}
-
-.card>.card-content {
-	height: 100%;
-	position: relative;
-	/* 添加 position: relative */
-	z-index: 5;
-}
-
-.card>.card-content::before {
-	content: "";
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background-color: rgba(0, 0, 0, 0.5);
-	/* 遮罩层 */
-	z-index: 1;
-	/* 确保遮罩在图片上方 */
-}
-
-.card>.card-content>figure {
-	position: absolute;
-	left: 0;
-	top: 0;
-	width: 100%;
-	height: 100%;
-	z-index: 0;
-}
-
-.card>.card-content>figure>img {
-	object-fit: contain;
-	object-position: center;
-	width: 100%;
-	height: 100%;
-}
-
-.card>.card-content>.card-body {
-	position: relative;
-	z-index: 10;
-	color: white;
-	/* 将文字颜色设置为白色 */
-	display: flex;
-	flex-direction: column;
-	justify-content: flex-end;
-	height: 100%;
-	/* 使 card-body 撑满 card-content */
-	padding-bottom: 1rem;
-	/* 调整底部边距 */
-}
-
-/* 电脑端 tags 容器样式 */
-.tags-container {
-	top: 0;
-	/* 与卡片顶部对齐 */
-	left: 100%;
-	/* 位于卡片右侧 */
-	width: 100%;
-	/* 宽度与卡片相同 */
-	height: 100%;
-	/* 高度与卡片相同 */
-	background-color: rgba(220, 220, 220, 0.5);
-	/* 设置背景色和透明度 */
-	border-radius: 10px;
-	/* 添加圆角 */
-}
-
-/* 关键：电脑端样式 */
-@media (min-width: 1024px) {
-	.tags-container {
-		position: absolute;
-		/* 电脑端添加绝对定位 */
-		display: none;
-		/* 电脑端默认隐藏 */
-	}
-
-	/* 鼠标悬停时显示 */
-	.group:hover .tags-container {
-		display: block;
-	}
-}
-
-.tags-container .badge {
-	margin-bottom: 5px;
-}
-
-/* 手机端卡片样式 */
-@media (max-width: 1023px) {
-	:root {
-		--scrollbar-width: 0px;
-		/* 默认滚动条宽度为 0 */
-	}
-
-	@supports (width: 100vw) {
-		:root {
-			--scrollbar-width: calc(100vw - 100%);
-			/* 动态计算滚动条宽度 */
-		}
-	}
-
-	.card {
-		display: flex;
-		/* 使用 Flex 布局 */
-		width: 100%;
-		/* 宽度充满 */
-		flex-wrap: wrap;
-		/* 允许换行 */
-	}
-
-	/* 使 card-content 和 tags-container 水平排列 */
-	.card>.card-content,
-	.card>.tags-container {
-		box-sizing: border-box;
-		/* 避免宽度计算错误 */
-	}
-
-	.card>.card-content {
-		flex: 0 0 50%;
-		/* 占据 50% 宽度 */
-		position: relative;
-		/* 允许其中的 figure 使用绝对定位 */
-		aspect-ratio: 3 / 4;
-		/* 设置宽高比为 3:4 */
-	}
-
-	.card>.card-content>figure {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-	}
-
-	.card>.card-content>figure img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		object-position: center;
-	}
-
-	.card>.card-content>.card-body {
-		position: relative;
-		z-index: 5;
-		color: white;
-		padding: 0.5rem;
-		/* 调整 padding */
-	}
-
-	.card>.tags-container {
-		flex: 0 0 calc(50% - var(--scrollbar-width) / 2);
-		/* 占据 50% 宽度，减去滚动条宽度的一半 */
-		max-width: 50%;
-		/* 添加最大宽度限制 */
-		display: block !important;
-		background-color: rgb(220, 220, 220);
-		aspect-ratio: 3 / 4;
-		/* 设置宽高比为 3:4 */
-	}
-
-	.card>.tags-container>.tags-list-container {
-		margin: 0;
-		padding: 0.5rem;
-		border: none;
-		height: 100%;
-	}
-}
-
 .markdown-body pre {
 	overflow-x: auto;
 }
 
 .markdown-body code {
 	white-space: pre-wrap;
+}
+
+/* 卡片容器 */
+.card-container {
+	display: flex;
+	overflow: hidden;
+	/* 隐藏溢出部分 */
+	transition: width 0.3s ease;
+	/* 添加宽度过渡效果 */
+	width: 300px;
+	/* 桌面端初始宽度 */
+}
+
+/* 卡片内容区域，用于添加图片和介绍 */
+.card-content {
+	width: 300px;
+	/* 桌面端初始宽度 */
+	height: 300px;
+	/* 桌面端初始高度 */
+	position: relative;
+	/* 为 card-body 提供定位 */
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	padding: 0.5rem;
+}
+
+.text-content {
+	color: white;
+	background-color: rgba(0, 0, 0, 0.5);
+	padding-top: 0.5rem;
+}
+
+/* 标签容器 */
+.tags-container {
+	width: 300px;
+	/* 桌面端宽度，与卡片相同 */
+	display: none;
+	/* 默认隐藏 */
+}
+
+/* 桌面端悬浮效果 */
+@media (min-width: 1024px) {
+	.card-container:hover {
+		width: 600px;
+		/* 鼠标悬浮时宽度翻倍 */
+	}
+
+	.card-container:hover .tags-container {
+		display: block;
+		/* 鼠标悬浮时显示标签 */
+	}
+}
+
+/* 移动端样式 */
+@media (max-width: 1023px) {
+	.card-container {
+		width: 100%;
+		/* 移动端宽度占满 */
+		flex-wrap: wrap;
+	}
+
+	.card-content {
+		width: 50%;
+		/* 卡片宽度占据一半 */
+		aspect-ratio: 1 / 1;
+	}
+
+	.tags-container {
+		width: 50%;
+		/* 标签容器占据一半 */
+		display: block;
+		/* 移动端始终显示标签 */
+	}
 }

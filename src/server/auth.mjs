@@ -43,7 +43,7 @@ export async function initAuth(config) {
 }
 
 /**
- * 生成 JWT
+ * 生成 JWT (Access Token)
  */
 async function generateAccessToken(payload) {
 	const jti = crypto.randomUUID() // Generate a unique identifier for the access token
@@ -55,55 +55,53 @@ async function generateAccessToken(payload) {
 }
 
 /**
- * 生成刷新令牌
+ * 生成刷新令牌 (Refresh Token)
  */
 async function generateRefreshToken(payload, deviceId = 'unknown') {
 	const refreshTokenId = crypto.randomUUID()
-	const refreshToken = crypto.randomBytes(64).toString('hex') // Not used directly in JWT
 	return {
+		// 直接使用 JWT 作为 refreshToken
 		token: await new jose.SignJWT({ ...payload, jti: refreshTokenId })
 			.setProtectedHeader({ alg: 'ES256' })
 			.setIssuedAt()
 			.setExpirationTime(REFRESH_TOKEN_EXPIRY)
 			.sign(privateKey),
 		id: refreshTokenId,
-		hashedToken: hashToken(refreshToken), // Hashed during storage, not in JWT
 		deviceId,
 	}
 }
 
 /**
- * 验证 JWT
+ * 验证 JWT (包括 Access Token 和 Refresh Token)
  */
 async function verifyToken(token) {
 	try {
 		const { payload } = await jose.jwtVerify(token, publicKey, {
 			algorithms: ['ES256'],
 		})
-
-		// 检查令牌是否在撤销列表中
-		const tokenHash = hashToken(token)
-		const revokedToken = config.data.revokedTokens[tokenHash]
-		if (revokedToken && revokedToken.expiry > Date.now())
-			throw new Error('Token revoked')
-
+		// 这里不再检查 revokedTokens 列表，因为只撤销 accessToken，refreshToken 不应被撤销
 		return payload
 	} catch (error) {
 		return null
 	}
 }
 
+/**
+ * 刷新 Access Token
+ */
 async function refresh(refreshToken) {
 	try {
 		const decoded = await verifyToken(refreshToken)
 		if (!decoded) return { status: 401, message: 'Invalid refresh token' }
+
 		const user = getUserByUsername(decoded.username)
+		// 通过 jti 查找用户的 refreshToken
 		const userRefreshToken = user?.auth.refreshTokens.find((token) => token.jti === decoded.jti)
 
 		if (!user || !userRefreshToken || userRefreshToken.expiry < Date.now())
 			return { status: 401, message: 'Invalid refresh token' }
 
-		// 生成新的访问令牌和刷新令牌
+		// 生成新的 access token 和 refresh token
 		const accessToken = await generateAccessToken({ username: decoded.username, userId: decoded.userId })
 		const newRefreshToken = await generateRefreshToken({ username: decoded.username, userId: decoded.userId }, userRefreshToken.deviceId)
 
@@ -111,7 +109,6 @@ async function refresh(refreshToken) {
 		user.auth.refreshTokens = user.auth.refreshTokens.filter((token) => token.jti !== decoded.jti)
 		user.auth.refreshTokens.push({
 			jti: newRefreshToken.id,
-			hashedToken: newRefreshToken.hashedToken,
 			deviceId: userRefreshToken.deviceId,
 			expiry: Date.now() + ms(REFRESH_TOKEN_EXPIRY),
 		})
@@ -132,16 +129,16 @@ export async function logout(req, res) {
 	const refreshToken = req.cookies.refreshToken
 	const user = req.user
 
-	if (accessToken) revokeToken(accessToken)
+	if (accessToken) revokeToken(accessToken) // 撤销 accessToken
 
 	if (refreshToken)
 		try {
 			const decoded = await verifyToken(refreshToken)
 			if (decoded) {
+				// 从用户的 refreshToken 列表中移除当前的 refreshToken
 				const userRefreshTokenIndex = user.auth.refreshTokens.findIndex((token) => token.jti === decoded.jti)
 				if (userRefreshTokenIndex !== -1)
 					user.auth.refreshTokens.splice(userRefreshTokenIndex, 1)
-
 			}
 		} catch (error) {
 			console.error('Error during logout refresh token processing:', error)
@@ -162,13 +159,11 @@ export async function authenticate(req, res, next) {
 
 	if (!accessToken) return res.status(401).json({ message: 'Unauthorized' })
 
-
 	let decoded = await verifyToken(accessToken)
 
 	if (!decoded) {
 		// accessToken 无效，尝试使用 refreshToken 刷新
 		if (!refreshToken) return res.status(401).json({ message: 'Unauthorized' })
-
 
 		const refreshResult = await refresh(refreshToken)
 		if (refreshResult.status !== 200)
@@ -192,7 +187,7 @@ export async function authenticate(req, res, next) {
 }
 
 /**
- * 撤销令牌 (将令牌添加到撤销列表)
+ * 撤销令牌 (将 Access Token 添加到撤销列表)
  */
 async function revokeToken(token) {
 	const tokenHash = hashToken(token)
@@ -254,7 +249,7 @@ async function verifyPassword(password, hashedPassword) {
 }
 
 /**
- * 计算 token 的 SHA-256 哈希值
+ * 计算 token 的 SHA-256 哈希值 (只用于撤销 Access Token)
  */
 function hashToken(token) {
 	return crypto.createHash('sha256').update(token).digest('hex')
@@ -292,7 +287,6 @@ export async function login(username, password, deviceId = 'unknown') {
 		if (authData.loginAttempts >= 3)
 			authData.lockedUntil = Date.now() + ms('10m')
 
-
 		save_config()
 		return { status: 401, message: 'Invalid password' }
 	}
@@ -304,14 +298,13 @@ export async function login(username, password, deviceId = 'unknown') {
 	for (let subdir of ['AIsources', 'chars', 'personas', 'settings', 'shells', 'worlds', 'ImportHanlders', 'AIsourceGenerators'])
 		try { fs.mkdirSync(userdir + '/' + subdir, { recursive: true }) } catch { }
 
-	// 生成访问令牌和刷新令牌
+	// 生成 access token 和 refresh token
 	const accessToken = await generateAccessToken({ username: user.username, userId: authData.userId })
 	const refreshToken = await generateRefreshToken({ username: user.username, userId: authData.userId }, deviceId)
 
-	// 存储刷新令牌
+	// 存储 refresh token (不再存储 hashedToken)
 	authData.refreshTokens.push({
 		jti: refreshToken.id,
-		hashedToken: refreshToken.hashedToken,
 		deviceId,
 		expiry: Date.now() + ms(REFRESH_TOKEN_EXPIRY),
 	})
@@ -333,7 +326,7 @@ export async function register(username, password) {
 }
 
 /**
- * 清理过期的已撤销 token
+ * 清理过期的已撤销 access token
  */
 function cleanupRevokedTokens() {
 	const now = Date.now()
