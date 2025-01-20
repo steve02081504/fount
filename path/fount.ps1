@@ -46,7 +46,7 @@ if (Get-Command git -ErrorAction SilentlyContinue) {
 		Write-Host "Skipping git pull in Docker environment"
 	}
 	else {
-		git -C "$FOUNT_DIR" pull -f
+		git -C "$FOUNT_DIR" pull -f --allow-unrelated-histories
 	}
 }
 else {
