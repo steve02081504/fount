@@ -9,8 +9,7 @@ function loadCharData(username, charname) {
 			InitCount: 0,
 			LastStart: 0,
 			StartCount: 0,
-		},
-		config: {},
+		}
 	}
 }
 function saveCharData(username) {
@@ -29,8 +28,6 @@ export async function LoadChar(username, charname) {
 		username,
 		charname,
 		state: char_state,
-	}, {
-		afterLoad: (char) => char.interfaces?.config?.SetData?.(data.config)
 	})
 	return char
 }
