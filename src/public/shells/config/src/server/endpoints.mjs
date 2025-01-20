@@ -3,15 +3,23 @@ import { getPartData, setPartData } from './manager.mjs'
 
 export function setEndpoints(app) {
 	app.post('/api/shells/config/getdata', authenticate, async (req, res) => {
-		const { username } = await getUserByToken(req.cookies.accessToken)
-		const data = await getPartData(username, req.body.parttype, req.body.partname)
-		res.status(200).json(data)
-
+		try {
+			const { username } = await getUserByToken(req.cookies.accessToken)
+			const data = await getPartData(username, req.body.parttype, req.body.partname)
+			res.status(200).json(data)
+		} catch (error) {
+			res.status(500).json({ error: error.message })
+		}
 	})
+
 	app.post('/api/shells/config/setdata', authenticate, async (req, res) => {
-		const { username } = await getUserByToken(req.cookies.accessToken)
-		await setPartData(username, req.body.parttype, req.body.partname, req.body.data)
-		res.status(200).json({ message: 'new data setted' })
+		try {
+			const { username } = await getUserByToken(req.cookies.accessToken)
+			await setPartData(username, req.body.parttype, req.body.partname, req.body.data)
+			res.status(200).json({ message: 'new data setted' })
+		} catch (error) {
+			res.status(500).json({ error: error.message })
+		}
 	})
 }
 
