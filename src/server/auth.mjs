@@ -8,6 +8,8 @@ import { ms } from '../scripts/ms.mjs'
 
 const ACCESS_TOKEN_EXPIRY = '15m'
 const REFRESH_TOKEN_EXPIRY = '30d'
+const ACCOUNT_LOCK_TIME = '10m'
+const MAX_LOGIN_ATTEMPTS = 3
 
 let privateKey, publicKey
 
@@ -25,8 +27,7 @@ export async function initAuth(config) {
 		privateKey = await jose.importPKCS8(newPrivateKeyPEM, 'ES256')
 		publicKey = await jose.importSPKI(newPublicKeyPEM, 'ES256')
 		save_config()
-	}
-	else {
+	} else {
 		privateKey = await jose.importPKCS8(config.privateKey, 'ES256')
 		publicKey = await jose.importSPKI(config.publicKey, 'ES256')
 	}
@@ -37,7 +38,6 @@ export async function initAuth(config) {
 		if (config.data.users[user].auth)
 			config.data.users[user].auth.refreshTokens ??= []
 
-	// 清理过期的 revokedTokens 和 refreshTokens
 	cleanupRevokedTokens()
 	cleanupRefreshTokens()
 }
@@ -56,19 +56,16 @@ async function generateAccessToken(payload) {
 
 /**
  * 生成刷新令牌 (Refresh Token)
+ * @param {object} payload - 令牌的有效载荷
+ * @param {string} deviceId - 设备的唯一标识符
  */
 async function generateRefreshToken(payload, deviceId = 'unknown') {
 	const refreshTokenId = crypto.randomUUID()
-	return {
-		// 直接使用 JWT 作为 refreshToken
-		token: await new jose.SignJWT({ ...payload, jti: refreshTokenId })
-			.setProtectedHeader({ alg: 'ES256' })
-			.setIssuedAt()
-			.setExpirationTime(REFRESH_TOKEN_EXPIRY)
-			.sign(privateKey),
-		id: refreshTokenId,
-		deviceId,
-	}
+	return await new jose.SignJWT({ ...payload, jti: refreshTokenId, deviceId })
+		.setProtectedHeader({ alg: 'ES256' })
+		.setIssuedAt()
+		.setExpirationTime(REFRESH_TOKEN_EXPIRY)
+		.sign(privateKey)
 }
 
 /**
@@ -79,9 +76,9 @@ async function verifyToken(token) {
 		const { payload } = await jose.jwtVerify(token, publicKey, {
 			algorithms: ['ES256'],
 		})
-		// 这里不再检查 revokedTokens 列表，因为只撤销 accessToken，refreshToken 不应被撤销
 		return payload
 	} catch (error) {
+		console.error('Token verification error:', error)
 		return null
 	}
 }
@@ -95,26 +92,27 @@ async function refresh(refreshToken) {
 		if (!decoded) return { status: 401, message: 'Invalid refresh token' }
 
 		const user = getUserByUsername(decoded.username)
-		// 通过 jti 查找用户的 refreshToken
 		const userRefreshToken = user?.auth.refreshTokens.find((token) => token.jti === decoded.jti)
 
-		if (!user || !userRefreshToken || userRefreshToken.expiry < Date.now())
+		// 验证 refreshToken 是否存在、是否过期、是否被撤销以及 deviceId 是否匹配
+		if (!user || !userRefreshToken || userRefreshToken.expiry < Date.now() || config.data.revokedTokens[decoded.jti] || userRefreshToken.deviceId !== decoded.deviceId)
 			return { status: 401, message: 'Invalid refresh token' }
 
 		// 生成新的 access token 和 refresh token
 		const accessToken = await generateAccessToken({ username: decoded.username, userId: decoded.userId })
 		const newRefreshToken = await generateRefreshToken({ username: decoded.username, userId: decoded.userId }, userRefreshToken.deviceId)
+		const decodedNewRefreshToken = jose.decodeJwt(newRefreshToken) // 解码 newRefreshToken
 
 		// 移除旧的 refreshToken，添加新的 refreshToken
 		user.auth.refreshTokens = user.auth.refreshTokens.filter((token) => token.jti !== decoded.jti)
 		user.auth.refreshTokens.push({
-			jti: newRefreshToken.id,
+			jti: decodedNewRefreshToken.jti,
 			deviceId: userRefreshToken.deviceId,
 			expiry: Date.now() + ms(REFRESH_TOKEN_EXPIRY),
 		})
 		save_config()
 
-		return { status: 200, accessToken, refreshToken: newRefreshToken.token }
+		return { status: 200, accessToken, refreshToken: newRefreshToken }
 	} catch (error) {
 		console.error('Refresh token error:', error)
 		return { status: 401, message: 'Invalid refresh token' }
@@ -129,16 +127,24 @@ export async function logout(req, res) {
 	const refreshToken = req.cookies.refreshToken
 	const user = req.user
 
-	if (accessToken) revokeToken(accessToken) // 撤销 accessToken
+	if (accessToken) {
+		// 将 accessToken 添加到 revokedTokens 中
+		const decodedAccessToken = await jose.decodeJwt(accessToken)
+		if (decodedAccessToken && decodedAccessToken.exp)
+			config.data.revokedTokens[decodedAccessToken.jti] = { expiry: decodedAccessToken.exp * 1000, type: 'access' }
 
-	if (refreshToken)
+	}
+
+	if (refreshToken && user)
 		try {
-			const decoded = await verifyToken(refreshToken)
-			if (decoded) {
-				// 从用户的 refreshToken 列表中移除当前的 refreshToken
-				const userRefreshTokenIndex = user.auth.refreshTokens.findIndex((token) => token.jti === decoded.jti)
-				if (userRefreshTokenIndex !== -1)
+			const decodedRefreshToken = await verifyToken(refreshToken)
+			if (decodedRefreshToken) {
+				// 从用户的 refreshToken 列表中移除当前的 refreshToken，并将其添加到 revokedTokens
+				const userRefreshTokenIndex = user.auth.refreshTokens.findIndex((token) => token.jti === decodedRefreshToken.jti)
+				if (userRefreshTokenIndex !== -1) {
 					user.auth.refreshTokens.splice(userRefreshTokenIndex, 1)
+					config.data.revokedTokens[decodedRefreshToken.jti] = { expiry: Date.now() + ms(REFRESH_TOKEN_EXPIRY), type: 'refresh' }
+				}
 			}
 		} catch (error) {
 			console.error('Error during logout refresh token processing:', error)
@@ -166,9 +172,12 @@ export async function authenticate(req, res, next) {
 		if (!refreshToken) return res.status(401).json({ message: 'Unauthorized' })
 
 		const refreshResult = await refresh(refreshToken)
-		if (refreshResult.status !== 200)
+		if (refreshResult.status !== 200) {
 			// refreshToken 也无效，需要重新登录
+			res.clearCookie('accessToken')
+			res.clearCookie('refreshToken')
 			return res.status(401).json({ message: 'Invalid token' })
+		}
 
 		// 刷新成功，设置新的 accessToken 和 refreshToken 到 Cookie
 		const newAccessToken = refreshResult.accessToken
@@ -181,20 +190,21 @@ export async function authenticate(req, res, next) {
 		// 使用新的 accessToken 重新验证
 		decoded = await verifyToken(newAccessToken)
 	}
-	req.user = decoded
 
+	req.user = decoded
 	next()
 }
 
 /**
- * 撤销令牌 (将 Access Token 添加到撤销列表)
+ * 撤销令牌 (将 Access Token 或 Refresh Token 添加到撤销列表)
  */
 async function revokeToken(token) {
-	const tokenHash = hashToken(token)
 	const decoded = await jose.decodeJwt(token)
+	if (!decoded || !decoded.jti) return console.error('Cannot revoke token without jti')
+	const tokenType = decoded.exp ? decoded.exp * 1000 - Date.now() > ms(ACCESS_TOKEN_EXPIRY) ? 'refresh' : 'access' : 'unknown'
 
 	if (decoded && decoded.exp) {
-		config.data.revokedTokens[tokenHash] = { expiry: decoded.exp * 1000 }
+		config.data.revokedTokens[decoded.jti] = { expiry: decoded.exp * 1000, type: tokenType }
 		save_config()
 	}
 }
@@ -231,7 +241,7 @@ async function createUser(username, password) {
 		},
 	}
 	save_config()
-	return config.data.users[username]
+	return { ...config.data.users[username], userId }
 }
 
 /**
@@ -246,13 +256,6 @@ async function hashPassword(password) {
  */
 async function verifyPassword(password, hashedPassword) {
 	return await argon2.verify(hashedPassword, password)
-}
-
-/**
- * 计算 token 的 SHA-256 哈希值 (只用于撤销 Access Token)
- */
-function hashToken(token) {
-	return crypto.createHash('sha256').update(token).digest('hex')
 }
 
 export async function getUserByToken(token) {
@@ -284,14 +287,22 @@ export async function login(username, password, deviceId = 'unknown') {
 	const isValidPassword = await verifyPassword(password, authData.password)
 	if (!isValidPassword) {
 		authData.loginAttempts++
-		if (authData.loginAttempts >= 3)
-			authData.lockedUntil = Date.now() + ms('10m')
-
+		if (authData.loginAttempts >= MAX_LOGIN_ATTEMPTS) {
+			authData.lockedUntil = Date.now() + ms(ACCOUNT_LOCK_TIME)
+			authData.loginAttempts = 0 // 达到最大尝试次数后重置尝试次数
+			// 账户锁定逻辑：如果登录尝试次数超过限制，锁定账户一段时间
+			// 此处记录日志或发送通知
+			console.log(`用户 ${username} 账户因多次登录失败被锁定`)
+		}
 		save_config()
 		return { status: 401, message: 'Invalid password' }
 	}
 
-	authData.loginAttempts = 0
+	// 重置登录尝试次数
+	if (authData.loginAttempts !== 0 || authData.lockedUntil !== null) {
+		authData.loginAttempts = 0
+		authData.lockedUntil = null
+	}
 
 	const userdir = getUserDictionary(username)
 	try { fs.mkdirSync(userdir, { recursive: true }) } catch { }
@@ -301,16 +312,19 @@ export async function login(username, password, deviceId = 'unknown') {
 	// 生成 access token 和 refresh token
 	const accessToken = await generateAccessToken({ username: user.username, userId: authData.userId })
 	const refreshToken = await generateRefreshToken({ username: user.username, userId: authData.userId }, deviceId)
+	const decodedRefreshToken = jose.decodeJwt(refreshToken) // 解码 refreshToken 以获取 jti
 
-	// 存储 refresh token (不再存储 hashedToken)
+	// 移除同一个设备上的旧的 refresh token
+	authData.refreshTokens = authData.refreshTokens.filter((token) => token.deviceId !== deviceId)
+	// 存储 refresh token
 	authData.refreshTokens.push({
-		jti: refreshToken.id,
+		jti: decodedRefreshToken.jti,
 		deviceId,
 		expiry: Date.now() + ms(REFRESH_TOKEN_EXPIRY),
 	})
 	save_config()
 
-	return { status: 200, message: 'Login successful', accessToken, refreshToken: refreshToken.token }
+	return { status: 200, message: 'Login successful', accessToken, refreshToken: refreshToken }
 }
 
 /**
@@ -326,22 +340,23 @@ export async function register(username, password) {
 }
 
 /**
- * 清理过期的已撤销 access token
+ * 清理过期的已撤销 token (每小时调用一次)
  */
 function cleanupRevokedTokens() {
 	const now = Date.now()
 	let cleaned = false
-	for (const tokenHash in config.data.revokedTokens)
-		if (config.data.revokedTokens[tokenHash].expiry <= now) {
-			delete config.data.revokedTokens[tokenHash]
+	for (const jti in config.data.revokedTokens)
+		if (config.data.revokedTokens[jti].expiry <= now) {
+			delete config.data.revokedTokens[jti]
 			cleaned = true
 		}
+
 
 	if (cleaned) save_config()
 }
 
 /**
- * 清理过期的 refresh token
+ * 清理过期的 refresh token (每小时调用一次)
  */
 function cleanupRefreshTokens() {
 	const now = Date.now()
@@ -349,12 +364,16 @@ function cleanupRefreshTokens() {
 	for (const username in config.data.users) {
 		const user = config.data.users[username]
 		const initialLength = user.auth.refreshTokens.length
-		user.auth.refreshTokens = user.auth.refreshTokens.filter((token) => token.expiry > now)
+		user.auth.refreshTokens = user.auth.refreshTokens.filter((token) =>
+			token.expiry > now && !config.data.revokedTokens[token.jti]
+		)
 		if (user.auth.refreshTokens.length !== initialLength) cleaned = true
 	}
 
 	if (cleaned) save_config()
 }
 
-setInterval(cleanupRevokedTokens, ms('1h'))
-setInterval(cleanupRefreshTokens, ms('1h'))
+setInterval(() => {
+	cleanupRevokedTokens()
+	cleanupRefreshTokens()
+}, ms('1h'))
