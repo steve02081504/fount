@@ -70,7 +70,7 @@ if command -v git &> /dev/null; then
 	if [ $IN_DOCKER -eq 1 ]; then
 		echo "Skipping git pull in Docker environment"
 	else
-		git -C "$FOUNT_DIR" pull -f
+		git -C "$FOUNT_DIR" pull -f --allow-unrelated-histories
 	fi
 else
 	echo "Git is not installed, skipping git pull"

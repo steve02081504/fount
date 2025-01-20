@@ -1,7 +1,8 @@
 import { unzipDirectory } from './zip.mjs'
 import { cloneRepo } from './git.mjs'
 import { getAvailablePath } from './path.mjs'
-import { mkdir, rename, rm } from 'node:fs/promises'
+import { mkdir, rm } from 'node:fs/promises'
+import { move } from 'npm:fs-extra'
 import path from 'node:path'
 import { tmpdir } from 'node:os'
 import { loadJsonFile } from '../../../scripts/json_loader.mjs'
@@ -33,7 +34,7 @@ export default {
 			let metaPath = path.join(tempDir, 'fount.json')
 			let meta = await loadJsonFile(metaPath)
 			let targetPath = await getAvailablePath(username, meta.type, meta.dirname)
-			await rename(tempDir, targetPath)
+			await move(tempDir, targetPath, { overwrite: true })
 		} catch (err) {
 			await rm(tempDir, { recursive: true, force: true })
 			throw new Error(`loadMeta failed: ${err.message || err}`)
@@ -49,7 +50,7 @@ export default {
 					let metaPath = path.join(tempDir, 'fount.json')
 					let meta = await loadJsonFile(metaPath)
 					let targetPath = await getAvailablePath(username, meta.type, meta.dirname)
-					await rename(tempDir, targetPath)
+					await move(tempDir, targetPath, { overwrite: true })
 				} catch (err) {
 					console.error(`Git clone failed for ${line}:`, err)
 					await rm(tempDir, { recursive: true, force: true })
