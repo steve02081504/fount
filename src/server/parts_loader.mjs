@@ -54,6 +54,7 @@ export async function loadPartBase(username, parttype, partname, Initargs, {
 	}
 	parts_set[username][parttype] ??= {}
 	let parts_init = loadData(username, 'parts_init')
+	let parts_config = loadData(username, 'parts_config')
 	try {
 		if (!parts_init[parttype]?.[partname]) {
 			await initPart(username, parttype, partname, Initargs, { pathGetter, Initer, afterInit })
@@ -62,8 +63,10 @@ export async function loadPartBase(username, parttype, partname, Initargs, {
 			saveData(username, 'parts_init')
 		}
 		if (!parts_set[username][parttype][partname]) {
-			parts_set[username][parttype][partname] = await Loader(pathGetter(), Initargs)
-			await afterLoad(parts_set[username][parttype][partname])
+			let part = parts_set[username][parttype][partname] = await Loader(pathGetter(), Initargs)
+			parts_config[parttype] ??= {}
+			part.interfaces?.config?.SetData?.(parts_config[parttype][partname] ?? {})
+			await afterLoad(part)
 		}
 	}
 	catch (error) {
@@ -131,6 +134,8 @@ export async function uninstallPartBase(username, parttype, partname, unLoadargs
 	delete parts_set[username][parttype][partname]
 	let parts_details_cache = loadData(username, 'parts_details_cache')
 	delete parts_details_cache[parttype][partname]
+	let parts_init = loadData(username, 'parts_init')
+	delete parts_init[parttype][partname]
 }
 
 export function getPartListBase(username, parttype, {
