@@ -2,6 +2,8 @@
 
 ![repo img](https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa)
 
+[![Discord](https://img.shields.io/discord/1288934771153440768)](https://discord.gg/GtR9Quzq2v)
+
 > [!CAUTION]
 >
 > 1. 开发版本的接口没有固定
