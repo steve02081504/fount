@@ -203,19 +203,18 @@ async function addFile() {
 	if (!newFileName) return
 
 	try {
-		const newFileFullName = newFileName + '.json'
 		const response = await fetch('/api/shells/AIsourceManage/addfile', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({ AISourceFile: newFileFullName }),
+			body: JSON.stringify({ AISourceFile: newFileName }),
 		})
 		if (!response.ok)
 			throw new Error(`HTTP error! status: ${response.status}`)
 		await fetchFileList()
 		console.log('File add successfully.')
-		loadEditor(newFileFullName)
+		loadEditor(newFileName)
 	} catch (error) {
 		console.error('Failed to add file:', error)
 		alert('Failed to add file: ' + error.message)
