@@ -1,4 +1,4 @@
-import { runBot } from './src/server/bot.mjs'
+import { runBot, stopBot } from './src/server/bot.mjs'
 import { setEndpoints, unsetEndpoints } from './src/server/endpoints.mjs'
 
 export default {
@@ -22,6 +22,12 @@ export default {
 	},
 	ArgumentsHandler: async (user, args) => {
 		const botname = args[0]
-		await runBot(user, botname)
+		const action = args[1] ?? 'start'
+		if (action === 'stop')
+			await stopBot(user, botname)
+		else if(action === 'start')
+			await runBot(user, botname)
+		else
+			console.error(`Unknown action: ${action}`)
 	}
 }

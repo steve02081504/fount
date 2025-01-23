@@ -8,20 +8,11 @@
 	<link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.min.css" rel="stylesheet" type="text/css" />
 	<script src="https://cdn.tailwindcss.com"></script>
 	<script>
-		// Check if login key is stored in local storage
-		if (document.cookie.includes("token")) {
-			fetch("/api/authenticate", {
-				method: "POST"
-			}).then(response => {
-				if (response.ok) {
-					window.location.href = "home";
-				} else {
-					window.location.href = "login";
-				}
-			})
-		} else {
-			window.location.href = "login";
-		}
+		let hosturl = window.location.origin
+		window.location.href = 'https://steve02081504.github.io/fount/protocol?hostUrl=' + hosturl
+		setTimeout(() => {
+			window.location.href = "home"
+		}, 7000) // 避免网很烂？
 	</script>
 </head>
 

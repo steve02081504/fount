@@ -10,14 +10,23 @@ let args = process.argv.slice(2)
 const isFirstInstance = await init()
 
 if (args.length) {
-	let username = args[0]
-	let shellname = args[1]
-	args = args.slice(2)
+	const command = args[0]
+	args = args.slice(1)
 
-	try {
-		await IPCManager.sendCommand('shell', { username, shellname, args })
-	} catch (err) {
-		console.error('发送命令失败：', err)
+	if (command === 'runshell') {
+		const username = args[0]
+		const shellname = args[1]
+		args = args.slice(2)
+
+		try {
+			await IPCManager.sendCommand('shell', { username, shellname, args })
+		} catch (err) {
+			console.error('发送命令失败：', err)
+			process.exit(1)
+		}
+	}
+	else {
+		console.error('Invalid command. Use "fount runshell <username> <shellname> <args>".')
 		process.exit(1)
 	}
 }

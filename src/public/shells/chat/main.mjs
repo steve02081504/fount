@@ -1,3 +1,5 @@
+import { exec } from '../../../scripts/exec.mjs'
+import { hosturl } from '../../../server/server.mjs'
 import { addchar, newChat, setPersona, setWorld } from './src/server/chat.mjs'
 import { loadChat } from './src/server/chat.mjs'
 import { setEndpoints, unsetEndpoints } from './src/server/endpoints.mjs'
@@ -22,18 +24,42 @@ export default {
 		unsetEndpoints(app)
 	},
 	ArgumentsHandler: async (user, args) => {
-		const chatinfo = JSON.parse(args[0])
-		let chatid
-		if (chatinfo.id)
-			await loadChat(chatid = chatinfo.id, user)
+		const command = args[0]
+		let chatId
+
+		if (command === 'start') {
+			const charName = args[1]
+			chatId = newChat(user)
+			exec(hosturl+'/shells/chat/#'+chatId)
+			if (charName) await addchar(chatId, charName)
+
+			console.log(`Started new chat with ID: ${chatId}${charName ? `, added character: ${charName}` : ''}`)
+		} else if (command === 'asjson') {
+			const chatInfo = JSON.parse(args[1])
+			if (chatInfo.id)
+				await loadChat(chatId = chatInfo.id, user)
+			else
+				chatId = newChat(user)
+
+			if (chatInfo.world)
+				await setWorld(chatId, chatInfo.world)
+			if (chatInfo.persona)
+				await setPersona(chatId, chatInfo.persona)
+			if (chatInfo.chars)
+				for (const char of chatInfo.chars)
+					await addchar(chatId, char)
+
+			console.log(`Loaded chat from JSON: ${args[1]}`)
+		} else if (command === 'load') {
+			chatId = args[1]
+			if (!chatId) {
+				console.error('Error: Chat ID is required for load command.')
+				return
+			}
+			exec(hosturl+'/shells/chat/#'+chatId)
+			console.log(`Loaded chat with ID: ${chatId}`)
+		}
 		else
-			chatid = newChat(user)
-		if (chatinfo.world)
-			await setWorld(chatid, chatinfo.world)
-		if (chatinfo.persona)
-			await setPersona(chatid, chatinfo.persona)
-		if (chatinfo.chars)
-			for (const charname of chatinfo.chars)
-				await addchar(chatid, charname)
+			console.error('Invalid command. Use "start [charName]" or "asjson [json]" or "load [chatId]".')
 	}
 }

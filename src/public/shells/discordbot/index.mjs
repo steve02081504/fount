@@ -12,7 +12,7 @@ const charSupportMessage = document.getElementById('char-support-message')
 const tokenInput = document.getElementById('token-input')
 const toggleTokenButton = document.getElementById('toggle-token')
 const saveConfigButton = document.getElementById('save-config')
-const startBotButton = document.getElementById('start-bot')
+const startStopBotButton = document.getElementById('start-stop-bot')
 
 let configEditor = null
 let botList = []
@@ -79,6 +79,18 @@ async function botStart(botname) {
 	})
 }
 
+async function botStop(botname) {
+	await fetchData('/api/shells/discordbot/stop', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ botname }),
+	})
+}
+
+async function runningBotListGet() {
+	return await fetchData('/api/shells/discordbot/getrunningbotlist')
+}
+
 // UI 更新函数
 function populateBotList() {
 	botListSelect.innerHTML = ''
@@ -134,6 +146,8 @@ async function loadBotConfig(botname) {
 
 		configEditor.set({ json: config.config || {} })
 		isDirty = false // 重置未保存标记
+
+		await updateStartStopButtonState()
 	} catch (error) {
 		console.error(error)
 	}
@@ -179,10 +193,9 @@ async function handleDeleteBot() {
 			charSelect.value = ''
 			if (configEditor)
 				configEditor.set({ json: {} })
-		} else {
+		} else
 			// 如果删除的不是当前选中的 bot，则重新加载当前选中的 bot 的配置
 			await loadBotConfig(botListSelect.value)
-		}
 
 		// 无论如何，都要更新 isDirty 状态
 		isDirty = false
@@ -244,12 +257,47 @@ async function handleSaveConfig() {
 	}
 }
 
-async function handleStartBot() {
+async function handleStartStopBot() {
 	if (!selectedBot) return
 	try {
-		await botStart(selectedBot)
+		const runningBots = await runningBotListGet()
+		const isRunning = runningBots.includes(selectedBot)
+		if (isRunning) {
+			await botStop(selectedBot)
+			startStopBotButton.textContent = '启动'
+			startStopBotButton.classList.remove('btn-error')
+			startStopBotButton.classList.add('btn-success')
+		} else {
+			await botStart(selectedBot)
+			startStopBotButton.textContent = '停止'
+			startStopBotButton.classList.remove('btn-success')
+			startStopBotButton.classList.add('btn-error')
+		}
 	} catch (error) {
 		alert(error.message)
+	}
+}
+
+async function updateStartStopButtonState() {
+	if (!selectedBot) {
+		startStopBotButton.textContent = '启动'
+		startStopBotButton.classList.remove('btn-error')
+		startStopBotButton.classList.add('btn-success')
+		return
+	}
+	try {
+		const runningBots = await runningBotListGet()
+		if (runningBots.includes(selectedBot)) {
+			startStopBotButton.textContent = '停止'
+			startStopBotButton.classList.remove('btn-success')
+			startStopBotButton.classList.add('btn-error')
+		} else {
+			startStopBotButton.textContent = '启动'
+			startStopBotButton.classList.remove('btn-error')
+			startStopBotButton.classList.add('btn-success')
+		}
+	} catch (error) {
+		console.error('Failed to update start/stop button state:', error)
 	}
 }
 
@@ -313,7 +361,7 @@ botListSelect.addEventListener('change', () => loadBotConfig(botListSelect.value
 charSelect.addEventListener('change', handleCharSelectChange)
 toggleTokenButton.addEventListener('click', handleToggleToken)
 saveConfigButton.addEventListener('click', handleSaveConfig)
-startBotButton.addEventListener('click', handleStartBot)
+startStopBotButton.addEventListener('click', handleStartStopBot)
 
 // 离开页面时提醒
 window.addEventListener('beforeunload', (event) => {

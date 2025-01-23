@@ -57,6 +57,8 @@ export function setDefaultWindowTitle() {
 	setWindowTitle('fount')
 }
 
+export let hosturl = 'http://localhost:' + config.port
+
 export async function init() {
 	console.freshLine('server start', 'start up')
 	globalThis.addEventListener('error', (e) => {
@@ -79,6 +81,7 @@ export async function init() {
 		}
 		server = https.createServer(options, app)
 		server.listen(port, () => {
+			hosturl = 'https://localhost:' + port
 			console.log(`HTTPS 服务器运行在 https://localhost:${port}`)
 		})
 	}

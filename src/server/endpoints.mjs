@@ -1,4 +1,4 @@
-import { login, register, logout, authenticate, getUserByToken, getUserDictionary } from './auth.mjs'
+import { login, register, logout, authenticate, getUserByToken, getUserDictionary, getAllUserNames } from './auth.mjs'
 import { __dirname } from './server.mjs'
 import fs from 'node:fs'
 import { getPartDetails } from './parts_loader.mjs'
@@ -6,6 +6,8 @@ import { generateVerificationCode, verifyVerificationCode } from '../scripts/ver
 import { ms } from '../scripts/ms.mjs'
 import { getPartList, loadPart, partsList } from './managers/index.mjs'
 import { expandHomeRegistry } from './home.mjs'
+import { IPCManager } from './ipc_server.mjs'
+
 /**
  * @param {import('npm:express').Express} app
  */
@@ -69,6 +71,17 @@ export function registerEndpoints(app) {
 
 	app.get('/api/getparttypelist', authenticate, async (req, res) => {
 		res.status(200).json(partsList)
+	})
+
+	app.post('/api/runshell', authenticate, async (req, res) => {
+		const { username } = await getUserByToken(req.cookies.accessToken)
+		const { shellname, args } = req.body
+		try {
+			await IPCManager.sendCommand('shell', { username, shellname, args })
+			res.status(200).json({ message: 'Shell command sent successfully.' })
+		} catch (err) {
+			res.status(500).json({ message: 'Failed to send shell command.' })
+		}
 	})
 
 	for (const part of partsList) {

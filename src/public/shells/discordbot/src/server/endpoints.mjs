@@ -1,5 +1,5 @@
 import { authenticate, getUserByToken } from '../../../../../server/auth.mjs'
-import { getBotList, runBot, getBotConfig, setBotConfig, deleteBotConfig } from './bot.mjs'
+import { getBotList, runBot, getBotConfig, setBotConfig, deleteBotConfig, getRunningBotList, stopBot } from './bot.mjs'
 
 export function setEndpoints(app) {
 	app.post('/api/shells/discordbot/start', authenticate, async (req, res) => {
@@ -13,9 +13,25 @@ export function setEndpoints(app) {
 		}
 	})
 
+	app.post('/api/shells/discordbot/stop', authenticate, async (req, res) => {
+		const { username } = await getUserByToken(req.cookies.accessToken)
+		const { botname } = req.body
+		try {
+			await stopBot(username, botname)
+			res.status(200).json({ message: 'stop ok', botname })
+		} catch (error) {
+			res.status(500).json({ message: error.message })
+		}
+	})
+
 	app.get('/api/shells/discordbot/getbotlist', authenticate, async (req, res) => {
 		const { username } = await getUserByToken(req.cookies.accessToken)
 		res.status(200).json(getBotList(username))
+	})
+
+	app.get('/api/shells/discordbot/getrunningbotlist', authenticate, async (req, res) => {
+		const { username } = await getUserByToken(req.cookies.accessToken)
+		res.status(200).json(getRunningBotList(username))
 	})
 
 	app.post('/api/shells/discordbot/getbotconfig', authenticate, async (req, res) => {
@@ -52,7 +68,15 @@ export function unsetEndpoints(app) {
 		res.status(404)
 	})
 
+	app.post('/api/shells/discordbot/stop', (req, res) => {
+		res.status(404)
+	})
+
 	app.post('/api/shells/discordbot/getbotlist', (req, res) => {
+		res.status(404)
+	})
+
+	app.get('/api/shells/discordbot/getrunningbotlist', (req, res) => {
 		res.status(404)
 	})
 
