@@ -173,8 +173,14 @@ async function handleFormSubmit(event) {
 		if (response.ok)
 			if (isLoginForm) {
 				console.log('Login successful!')
-				localStorage.setItem('hasLoggedIn', 'true')
-				window.location.href = hasLoggedIn ? '/home' : '/tutorial'
+				// 跳转参数？
+				const urlParams = new URLSearchParams(window.location.search)
+				const redirect = urlParams.get('redirect')
+				if (redirect) window.location.href = decodeURIComponent(redirect)
+				else {
+					localStorage.setItem('hasLoggedIn', 'true')
+					window.location.href = hasLoggedIn ? '/home' : '/tutorial'
+				}
 			} else {
 				console.log('Registration successful!')
 				toggleForm() // 注册成功后自动切换到登录表单

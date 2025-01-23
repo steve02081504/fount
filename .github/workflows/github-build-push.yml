@@ -5,7 +5,8 @@ permissions:
   packages: write
 
 on:
-  push:
+  schedule:
+    - cron: '0 8 * * *'
   workflow_dispatch:
 jobs:
   build-and-push:
