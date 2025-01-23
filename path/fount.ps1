@@ -90,7 +90,17 @@ function run {
 		deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" @args
 	}
 }
-if ($args.Count -gt 0 -and $args[0] -eq 'init') {
+if ($args.Count -gt 0 -and $args[0] -eq 'geneexe') {
+	$exepath = $args[1]
+	if (!$exepath) { $exepath = "fount.exe" }
+	$exepath = Join-Path $pwd $exepath
+	if (!(Get-Command ps12exe -ErrorAction Ignore)) {
+		Install-Module -Name ps12exe -Scope CurrentUser -Force
+	}
+	ps12exe -inputFile "$FOUNT_DIR/src/runner/main.ps1" -outputFile $exepath
+	exit $LastExitCode
+}
+elseif ($args.Count -gt 0 -and $args[0] -eq 'init') {
 	exit 0
 }
 elseif ($args.Count -gt 0 -and $args[0] -eq 'keepalive') {

@@ -1,7 +1,6 @@
 #!pwsh
 #_pragma icon $PSScriptRoot/../public/favicon.ico
 #_pragma title "fount"
-#_pragma outputfile $PSScriptRoot/fount.exe
 
 if (!$env:FOUNT_DIR) {
 	$env:FOUNT_DIR = "$env:LOCALAPPDATA/fount"
@@ -37,3 +36,6 @@ else {
 
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -Force -ErrorAction Ignore
 & "$Script:fountDir/run.bat" @args
+#_if PSEXE
+	#_!! exit $LastExitCode
+#_endif
