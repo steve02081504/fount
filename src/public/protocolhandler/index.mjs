@@ -1,4 +1,4 @@
-import { applyTheme } from '../public/scripts/theme.mjs'
+import { applyTheme } from '../scripts/theme.mjs'
 
 async function handleProtocol() {
 	const urlParams = new URL(window.location.href)
@@ -9,19 +9,14 @@ async function handleProtocol() {
 		return
 	}
 
-	const parts = protocol.substring(8).split('/') // Remove "fount://" and split
+	const parts = protocol.substring(8).split('/')
 	const command = parts[0]
 
-	if (document.cookie.includes('accessToken')) {
-		const authResponse = await fetch('/api/authenticate', {
-			method: 'POST'
-		})
-		if (!authResponse.ok) {
-			window.location.href = `/login?redirect=${encodeURIComponent(protocol)}`
-			return
-		}
-	} else {
-		window.location.href = `/login?redirect=${encodeURIComponent(protocol)}`
+	const authResponse = await fetch('/api/authenticate', {
+		method: 'POST'
+	})
+	if (!authResponse.ok) {
+		window.location.href = `/login?redirect=${encodeURIComponent(window.location.href)}`
 		return
 	}
 
@@ -40,7 +35,7 @@ async function handleRunShell(parts) {
 		return
 	}
 	const shellname = parts[1]
-	const args = parts[2].split(';').map(decodeURIComponent)
+	const args = parts.slice(2).join('/').split(';').map(decodeURIComponent)
 	try {
 		const response = await fetch('/api/runshell', {
 			method: 'POST',
@@ -60,7 +55,7 @@ async function handleRunShell(parts) {
 		document.getElementById('message').textContent = '发送 Shell 命令时出错'
 	}
 	setTimeout(() => {
-		window.location.href = '/home'
+		history.back()
 	}, 1000)
 }
 
