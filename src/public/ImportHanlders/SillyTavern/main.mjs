@@ -10,8 +10,5 @@ export default {
 			homepage: '',
 			tags: []
 		}
-	},
-	GetTemplatedChar: (path, data) => {
-
 	}
 }

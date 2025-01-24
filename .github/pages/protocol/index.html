@@ -16,10 +16,10 @@
 		const fountProtocolUrl = urlParams.get('url');
 
 		if (fountProtocolUrl && hostUrl) {
-			const redirectUrl = `${storedHostUrl}/protocolhandler?url=${encodeURIComponent(fountProtocolUrl)}`;
+			const redirectUrl = `${hostUrl}/protocolhandler?url=${fountProtocolUrl}`;
 			window.location.href = redirectUrl;
 		}
-		if (hostUrl) {
+		else if (hostUrl) {
 			localStorage.setItem('fountHostUrl', hostUrl);
 			window.location.href = `${hostUrl}/home`;
 		}

@@ -1,4 +1,4 @@
-import { exec } from '../../../scripts/exec.mjs'
+import open from 'npm:open'
 import { hosturl } from '../../../server/server.mjs'
 import { addchar, newChat, setPersona, setWorld } from './src/server/chat.mjs'
 import { loadChat } from './src/server/chat.mjs'
@@ -30,7 +30,7 @@ export default {
 		if (command === 'start') {
 			const charName = args[1]
 			chatId = newChat(user)
-			exec(hosturl+'/shells/chat/#'+chatId)
+			open(hosturl+'/shells/chat/#'+chatId)
 			if (charName) await addchar(chatId, charName)
 
 			console.log(`Started new chat with ID: ${chatId}${charName ? `, added character: ${charName}` : ''}`)
@@ -56,7 +56,7 @@ export default {
 				console.error('Error: Chat ID is required for load command.')
 				return
 			}
-			exec(hosturl+'/shells/chat/#'+chatId)
+			open(hosturl+'/shells/chat/#'+chatId)
 			console.log(`Loaded chat with ID: ${chatId}`)
 		}
 		else
