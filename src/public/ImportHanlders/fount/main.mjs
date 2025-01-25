@@ -31,28 +31,42 @@ async function ImportByText(username, text) {
 	const lines = text.trim().split('\n').map(line => line.trim()).filter(line => line)
 	for (const line of lines)
 		if (line.startsWith('http')) {
-			const tempDir = path.join(tmpdir(), 'fount_import_git_' + Date.now())
-			try {
-				await cloneRepo(line, tempDir)
-				let metaPath = path.join(tempDir, 'fount.json')
-				let meta = await loadJsonFile(metaPath)
-				let targetPath = await getAvailablePath(username, meta.type, meta.dirname)
-				await move(tempDir, targetPath, { overwrite: true })
-			} catch (err) {
-				console.error(`Git clone failed for ${line}:`, err)
-				await rm(tempDir, { recursive: true, force: true })
-				// 尝试作为文件导入
+			let errors = []
+			if (line.match(/\/\/git/i) || line.match(/.git(#.*|)$/i)) {
+				const tempDir = path.join(tmpdir(), 'fount_import_git_' + Date.now())
 				try {
-					let request = await fetch(line)
-					if (request.ok) {
-						let buffer = await request.arrayBuffer()
-						await ImportAsData(username, buffer)
-					}
-				} catch (err1) {
-					console.error(`Fetch and install as file failed for ${line}:`, err1)
-					throw new Error(`${line} failed as git clone: ${err.message || err}\nand filed as file: ${err1.message || err1}`)
+					await cloneRepo(line, tempDir)
+					let metaPath = path.join(tempDir, 'fount.json')
+					let meta = await loadJsonFile(metaPath)
+					let targetPath = await getAvailablePath(username, meta.type, meta.dirname)
+					await move(tempDir, targetPath, { overwrite: true })
+					continue
+				} catch (err) {
+					errors.push(err)
+					console.error(`Git clone failed for ${line}:`, err)
 				}
+				await rm(tempDir, { recursive: true, force: true })
 			}
+			// 尝试作为文件导入
+			try {
+				// 发送head先获取文件类型，不是zip/png/apng/jpng直接跳过
+				let request = await fetch(line, { method: 'HEAD' })
+				if (request.ok) {
+					let type = request.headers.get('content-type')
+					let allowedTypes = ['application/zip', 'image/png', 'image/apng', 'image/jpng']
+					if (!allowedTypes.includes(type))
+						throw new Error(`Unsupported file type: ${type}`)
+				}
+				request = await fetch(line)
+				if (request.ok) {
+					let buffer = await request.arrayBuffer()
+					await ImportAsData(username, buffer)
+					continue
+				}
+			} catch (err) {
+				errors.push(err)
+			}
+			throw new Error(`Failed to import from ${line}: ${errors.map(err => err.message || err).join('\n')}`)
 		}
 }
 

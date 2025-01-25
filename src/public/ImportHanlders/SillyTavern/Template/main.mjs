@@ -7,6 +7,7 @@ import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/ser
 import { runRegex } from '../../../../../src/public/ImportHanlders/SillyTavern/engine/regex.mjs'
 import { regex_placement } from '../../../../../src/public/ImportHanlders/SillyTavern/engine/charData.mjs'
 import { evaluateMacros } from '../../../../../src/public/ImportHanlders/SillyTavern/engine/marco.mjs'
+import { getCharacterSource } from '../../../../../src/public/ImportHanlders/SillyTavern/engine/data.mjs'
 
 /** @typedef {import('../../../../../src/decl/charAPI.ts').charAPI_t} charAPI_t */
 /** @typedef {import('../../../../../src/decl/AIsource.ts').AIsource_t} AIsource_t */
@@ -18,7 +19,7 @@ let AIsource = null
 let username = ''
 
 let chardir = import.meta.dirname
-let charurl = `/chars/${path.basename(chardir)}`
+let charurl = `/chars/${encodeURIComponent(path.basename(chardir))}`
 let charjson = path.join(chardir, 'chardata.json')
 
 /** @type {chardata_t} */
@@ -46,7 +47,7 @@ export default {
 			}),
 			version: chardata.character_version,
 			author: chardata.creator || chardata.create_by,
-			homepage: '',
+			homepage: getCharacterSource(chardata),
 			tags: chardata.tags
 		}
 	},
@@ -64,12 +65,12 @@ export default {
 				AIsource: AIsource.filename,
 				chardata,
 			}),
-			SetData: (data) => {
+			SetData: async (data) => {
 				if (data.chardata) {
 					chardata = data.chardata
 					saveJsonFile(charjson, chardata)
 				}
-				if (data.AIsource) AIsource = loadAIsource(username, data.AIsource)
+				if (data.AIsource) AIsource = await loadAIsource(username, data.AIsource)
 			}
 		},
 		chat: {
@@ -104,7 +105,10 @@ export default {
 			},
 			// no GetPromptForOther, ST card does not support it
 			GetReply: async (arg) => {
-				let reply = await AIsource?.Call?.(await buildPromptStruct(arg)) ?? ''
+				if (!AIsource) return {
+					content: 'this character does not have an AI source, set the AI source first',
+				}
+				let reply = await AIsource?.StructCall?.(await buildPromptStruct(arg)) ?? ''
 				return {
 					content: runRegex(chardata, regex_placement.AI_OUTPUT, reply),
 					content_for_edit: reply

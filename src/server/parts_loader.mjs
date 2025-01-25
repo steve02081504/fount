@@ -65,7 +65,7 @@ export async function loadPartBase(username, parttype, partname, Initargs, {
 		if (!parts_set[username][parttype][partname]) {
 			let part = parts_set[username][parttype][partname] = await Loader(pathGetter(), Initargs)
 			parts_config[parttype] ??= {}
-			part.interfaces?.config?.SetData?.(parts_config[parttype][partname] ?? {})
+			await part.interfaces?.config?.SetData?.(parts_config[parttype][partname] ?? {})
 			await afterLoad(part)
 		}
 	}

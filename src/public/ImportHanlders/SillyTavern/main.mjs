@@ -5,6 +5,8 @@ import path from 'node:path'
 import { saveJsonFile } from '../../../scripts/json_loader.mjs'
 import { GetV2CharDataFromV1 } from './engine/charData.mjs'
 import sanitizeFilename from 'npm:sanitize-filename'
+import { downloadCharacter } from './char-download.mjs'
+import { Buffer } from 'node:buffer'
 
 async function ImportAsData(username, data) {
 	const chardata = GetV2CharDataFromV1(JSON.parse(data_reader.read(data)))
@@ -25,7 +27,13 @@ async function ImportAsData(username, data) {
 }
 
 async function ImportByText(username, text) {
-	throw new Error('Not implemented')
+	let lines = text.split('\n').filter(line => line)
+	for (const line of lines)
+		if (line.startsWith('http')) {
+			let arrayBuffer = await downloadCharacter(line)
+			let buffer = Buffer.from(arrayBuffer)
+			await ImportAsData(username, buffer)
+		}
 }
 
 export default {
