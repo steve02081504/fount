@@ -198,6 +198,5 @@ export function evaluateMacros(content, env, memory = {}, chatLog = []) {
 	content = pickReplace(content, rawContent)
 	content = replaceVariableMacros(content, memory)
 
-
 	return content
 }
