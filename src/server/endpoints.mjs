@@ -96,13 +96,14 @@ export function registerEndpoints(app) {
 			res.status(200).json(details)
 		})
 		let autoloader = async (req, res, next) => {
+			let path = decodeURIComponent(req.path)
 			{
-				let pathext = req.path.split('.').pop()
-				if (pathext != req.path && !['js', 'html'].includes(pathext)) return next() // 跳过纯资源路径
+				let pathext = path.split('.').pop()
+				if (pathext != path && !['js', 'html'].includes(pathext)) return next() // 跳过纯资源路径
 			}
 			const { username } = await getUserByToken(req.cookies.accessToken)
 			const partName = (() => {
-				let patharr = req.path.split('/')
+				let patharr = path.split('/')
 				let partIndex = patharr.indexOf(part)
 				patharr = patharr.slice(partIndex + 1)
 				return patharr[0]
@@ -120,7 +121,7 @@ export function registerEndpoints(app) {
 		app.post(new RegExp('^/api/' + part + '/'), authenticate, autoloader)
 		app.get(new RegExp('^/' + part + '/'), authenticate, autoloader, async (req, res) => {
 			const { username } = await getUserByToken(req.cookies.accessToken)
-			let path = req.path
+			let path = decodeURIComponent(req.path)
 			if (path.endsWith('/')) path += '/index.html'
 			if (fs.existsSync(getUserDictionary(username) + '/' + path))
 				res.sendFile(getUserDictionary(username) + '/' + path)
