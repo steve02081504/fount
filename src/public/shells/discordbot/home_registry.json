@@ -25,7 +25,7 @@
 				}
 			},
 			"level": 0,
-			"interface": "config",
+			"interface": "discord",
 			"url": "/shells/discordbot?name=${charname}&char=${charname}",
 			"button": "<img src=\"https://api.iconify.design/line-md/discord.svg\"/>"
 		}
