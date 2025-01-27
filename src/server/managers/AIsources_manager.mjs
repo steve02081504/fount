@@ -15,8 +15,8 @@ export async function loadAIsource(username, AIsourcename) {
 		pathGetter: () => GetPath(username, AIsourcename),
 		Loader: async (path) => {
 			const data = loadJsonFile(path + '.json')
-			let generator = await loadAIsourceGenerator(username, data.generator)
-			let AIsource = await generator.GetSource(data.config)
+			const generator = await loadAIsourceGenerator(username, data.generator)
+			const AIsource = await generator.GetSource(data.config)
 			AIsource.filename = AIsourcename
 			return AIsource
 		},

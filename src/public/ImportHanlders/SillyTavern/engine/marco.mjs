@@ -28,7 +28,7 @@ function setVariable(memory, name, value, args = {}, isGlobal = false) {
 			current[args.index] = value
 			storage[name] = JSON.stringify(current)
 			return value
-		} catch {}
+		} catch { }
 
 
 	storage[name] = value
@@ -36,7 +36,7 @@ function setVariable(memory, name, value, args = {}, isGlobal = false) {
 }
 
 function modifyVariable(memory, name, value, isGlobal = false, operation = 'add') {
-	let currentValue = getVariable(memory, name, {}, isGlobal) || 0
+	const currentValue = getVariable(memory, name, {}, isGlobal) || 0
 	let newValue
 
 	try {
@@ -45,7 +45,7 @@ function modifyVariable(memory, name, value, isGlobal = false, operation = 'add'
 			parsedValue.push(value)
 			return setVariable(memory, name, JSON.stringify(parsedValue), {}, isGlobal)
 		}
-	} catch {}
+	} catch { }
 
 	const increment = Number(value)
 

@@ -1,4 +1,4 @@
-import { WorldInfoEntry, regex_placement, v2CharData, world_info_position, extension_prompt_roles } from './charData.mjs'
+import { regex_placement, world_info_position } from './charData.mjs'
 import { evaluateMacros } from './marco.mjs'
 import { GetActivedWorldInfoEntries } from './world_info.mjs'
 import { parseRegexFromString } from './tools.mjs'
@@ -33,7 +33,7 @@ export function promptBuilder(
 		char_version: charData.character_version,
 	}
 
-	let aret = {
+	const aret = {
 		system_prompt: charData.system_prompt,
 		personality: charData.personality,
 		user_description: username,
@@ -44,15 +44,15 @@ export function promptBuilder(
 		mes_examples: [],
 		chat_log: chatLog
 	}
-	for (let key in aret) if (Object(aret[key]) instanceof String) aret[key] = evaluateMacros(aret[key], env, arg.chat_scoped_char_memory, chatLog) // 传递 chatLog
+	for (const key in aret) if (Object(aret[key]) instanceof String) aret[key] = evaluateMacros(aret[key], env, arg.chat_scoped_char_memory, chatLog) // 传递 chatLog
 	let WIs = charData?.character_book?.entries ?
 		GetActivedWorldInfoEntries(charData.character_book.entries, chatLog, env, arg.chat_scoped_char_memory) :
 		[]
 	if (charData?.extensions?.regex_scripts) {
-		let WI_regex_scripts = charData.extensions.regex_scripts.filter(e => e.placement.includes(regex_placement.WORLD_INFO))
-		for (let script of WI_regex_scripts) script.findRegex = parseRegexFromString(String(script.findRegex))
-		for (let e of WIs)
-			for (let script of WI_regex_scripts)
+		const WI_regex_scripts = charData.extensions.regex_scripts.filter(e => e.placement.includes(regex_placement.WORLD_INFO))
+		for (const script of WI_regex_scripts) script.findRegex = parseRegexFromString(String(script.findRegex))
+		for (const e of WIs)
+			for (const script of WI_regex_scripts)
 				e.content = e.content.replace(script.findRegex, script.replaceString)
 		WIs = WIs.filter(e => e.content)
 	}
@@ -61,12 +61,12 @@ export function promptBuilder(
 	let after_EMEntries = []
 	let ANTopEntries = []
 	let ANBottomEntries = []
-	let WIDepthEntries = []
+	const WIDepthEntries = []
 	function add_WI(
 		/** @type {WorldInfoEntry} */
 		entry
 	) {
-		let content = entry.content
+		const content = entry.content
 		switch (entry.extensions.position) {
 			case world_info_position.atDepth: {
 				const existingDepthIndex = WIDepthEntries.findIndex((e) => e.depth === (entry.depth ?? DEFAULT_DEPTH) && e.role === entry.extensions.role)
@@ -94,10 +94,10 @@ export function promptBuilder(
 				break
 		}
 	}
-	let constant_WIs = WIs.filter(e => e.constant)
+	const constant_WIs = WIs.filter(e => e.constant)
 	WIs = WIs.filter(e => !e.constant).sort((a, b) => a.extensions.position - b.extensions.position || a.insertion_order - b.insertion_order)
-	for (let WI of constant_WIs) add_WI(WI)
-	for (let WI of WIs) add_WI(WI) // 简化 WI 添加，直接添加所有 WI，不再考虑 token 预算
+	for (const WI of constant_WIs) add_WI(WI)
+	for (const WI of WIs) add_WI(WI) // 简化 WI 添加，直接添加所有 WI，不再考虑 token 预算
 
 	before_EMEntries = before_EMEntries.map(e => e.content)
 	after_EMEntries = after_EMEntries.map(e => e.content)
@@ -110,11 +110,11 @@ export function promptBuilder(
 	if (aothr_notes)
 		aothr_notes = `${ANTopEntries.join('\n')}\n${aothr_notes}\n${ANBottomEntries.join('\n')}`.replace(/(^\n)|(\n$)/g, '')
 
-	let additional_chat_log = []
+	const additional_chat_log = []
 	for (let index = 0; index < chatLog.length; index++) {
-		let WIDepth = WIDepthEntries.filter((e) => e.depth === index)
-		for (let entrie of WIDepth) {
-			let role = ['system', 'user', 'assistant'][entrie.role]
+		const WIDepth = WIDepthEntries.filter((e) => e.depth === index)
+		for (const entrie of WIDepth) {
+			const role = ['system', 'user', 'assistant'][entrie.role]
 			additional_chat_log.push({
 				role: role,
 				content: entrie.entries.join('\n'),
@@ -142,7 +142,7 @@ export function promptBuilder(
 
 	if (aret.mes_examples.length > 0)
 		char_prompt_result.text.push({
-			content: '示例对话：'+aret.mes_examples.join('\n\n'),
+			content: '示例对话：' + aret.mes_examples.join('\n\n'),
 			description: 'mes_examples',
 			important: -1
 		})
@@ -156,7 +156,7 @@ export function promptBuilder(
 
 	if (aret.scenario)
 		char_prompt_result.text.push({
-			content: '场景：'+aret.scenario,
+			content: '场景：' + aret.scenario,
 			description: 'scenario',
 			important: 1
 		})
@@ -170,14 +170,14 @@ export function promptBuilder(
 
 	if (aret.personality)
 		char_prompt_result.text.push({
-			content: '人物个性：'+aret.personality,
+			content: '人物个性：' + aret.personality,
 			description: 'personality',
 			important: 2
 		})
 
 	if (aret.char_description)
 		char_prompt_result.text.push({
-			content: '人物简介：'+aret.char_description,
+			content: '人物简介：' + aret.char_description,
 			description: 'char_description',
 			important: 2
 		})

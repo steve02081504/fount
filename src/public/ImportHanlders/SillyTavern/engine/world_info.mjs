@@ -1,9 +1,9 @@
 import seedrandom from 'npm:seedrandom'
-import { world_info_logic, world_info_position, WorldInfoEntry, extension_prompt_roles } from './charData.mjs' // 假设 charData.mjs 定义了这些枚举和类型
+import { world_info_logic, world_info_position, extension_prompt_roles } from './charData.mjs' // 假设 charData.mjs 定义了这些枚举和类型
 import { escapeRegExp, parseRegexFromString } from './tools.mjs' // 假设 tools.mjs 包含这些工具函数
 import { evaluateMacros } from './marco.mjs' // 假设宏引擎已修改并接受 chat_scoped_char_memory
 
-export let WISettings = { // WI 设置，可以保持默认值或根据 Fount 环境调整
+export const WISettings = { // WI 设置，可以保持默认值或根据 Fount 环境调整
 	depth: 4, // 扫描深度，表示在多少轮对话中查找关键词
 	isSensitive: false, // 是否区分大小写
 	isFullWordMatch: true // 是否全词匹配
@@ -18,7 +18,7 @@ export let WISettings = { // WI 设置，可以保持默认值或根据 Fount �
  */
 function buildKeyList(keys, isSensitive, isFullWordMatch) {
 	return keys.map(key => {
-		let regtest = parseRegexFromString(key) // 尝试解析为正则表达式
+		const regtest = parseRegexFromString(key) // 尝试解析为正则表达式
 		if (regtest) return regtest // 如果解析成功，直接返回正则表达式
 		key = escapeRegExp(key) // 转义正则表达式特殊字符
 		if (isFullWordMatch) key = `\\b${key}\\b` // 如果是全词匹配，添加单词边界
@@ -33,7 +33,7 @@ function buildKeyList(keys, isSensitive, isFullWordMatch) {
  * @returns {boolean} 是否匹配
  */
 function isAnyMatch(/** @type {RegExp[]} */list, /** @type {string} */content) {
-	for (let key of list)
+	for (const key of list)
 		if (key.test(content)) return true // 如果任何一个正则表达式匹配，则返回 true
 	return false
 }
@@ -45,7 +45,7 @@ function isAnyMatch(/** @type {RegExp[]} */list, /** @type {string} */content) {
  * @returns {boolean} 是否匹配
  */
 function isAllMatch(/** @type {RegExp[]} */list, /** @type {string} */content) {
-	for (let key of list)
+	for (const key of list)
 		if (!key.test(content)) return false // 如果任何一个正则表达式不匹配，则返回 false
 	return true
 }
@@ -57,7 +57,7 @@ function isAllMatch(/** @type {RegExp[]} */list, /** @type {string} */content) {
  * @returns {boolean} 是否匹配
  */
 function notAnyMatch(/** @type {RegExp[]} */list, /** @type {string} */content) {
-	for (let key of list)
+	for (const key of list)
 		if (key.test(content)) return false // 如果任何一个正则表达式匹配，则返回 false
 	return true
 }
@@ -69,7 +69,7 @@ function notAnyMatch(/** @type {RegExp[]} */list, /** @type {string} */content) 
  * @returns {boolean} 是否匹配
  */
 function notAllMatch(/** @type {RegExp[]} */list, /** @type {string} */content) {
-	for (let key of list)
+	for (const key of list)
 		if (!key.test(content)) return true // 如果任何一个正则表达式不匹配，则返回 true
 	return false
 }
@@ -79,14 +79,14 @@ function notAllMatch(/** @type {RegExp[]} */list, /** @type {string} */content) 
  * @param {WorldInfoEntry[]} WIentries WI 条目数组
  */
 function preBuiltWIEntries(WIentries) {
-	for (let entrie of WIentries) {
-		let isSensitive = entrie.extensions.case_sensitive === undefined ? WISettings.isSensitive : entrie.extensions.case_sensitive // 获取是否区分大小写
-		let isFullWordMatch = entrie.extensions.match_whole_words === undefined ? WISettings.isFullWordMatch : entrie.extensions.match_whole_words // 获取是否全词匹配
+	for (const entrie of WIentries) {
+		const isSensitive = entrie.extensions.case_sensitive === undefined ? WISettings.isSensitive : entrie.extensions.case_sensitive // 获取是否区分大小写
+		const isFullWordMatch = entrie.extensions.match_whole_words === undefined ? WISettings.isFullWordMatch : entrie.extensions.match_whole_words // 获取是否全词匹配
 		entrie.keys = buildKeyList(entrie.keys, isSensitive, isFullWordMatch) // 构建关键词正则表达式列表
 		entrie.secondary_keys = buildKeyList(entrie.secondary_keys, isSensitive, isFullWordMatch) // 构建辅助关键词正则表达式列表
 
 		entrie.isActived = (chatLog, recursion_WIs, memory, entryIndex) => { // 传递 memory 和 entryIndex
-			let last_enabled_chat_length = memory?.enabled_WI_entries?.[entryIndex] ?? 0 // 使用 entryIndex 访问激活状态
+			const last_enabled_chat_length = memory?.enabled_WI_entries?.[entryIndex] ?? 0 // 使用 entryIndex 访问激活状态
 
 			if (entrie.extensions.delay && entrie.extensions.delay > chatLog.length) return false // 如果有延迟，并且延迟大于对话长度，则不激活
 			if (entrie.extensions.sticky && last_enabled_chat_length + entrie.extensions.sticky >= chatLog.length) return true // 如果是粘性的，并且上次激活时间加上粘性持续时间大于当前对话长度，则激活
@@ -134,7 +134,7 @@ export function GetActivedWorldInfoEntries(
 	// 初始化内存中的 enabled_WI_entries，如果不存在的话
 	memory.enabled_WI_entries ??= {}
 
-	for (let entrie of WIdata_copy) {
+	for (const entrie of WIdata_copy) {
 		entrie.keys = entrie.keys.map(k => evaluateMacros(k, env, memory)).filter(k => k) // 替换关键词中的宏
 		entrie.secondary_keys = entrie.secondary_keys.map(k => evaluateMacros(k, env, memory)).filter(k => k) // 替换辅助关键词中的宏
 		entrie.extensions ??= {} // 确保 extensions 存在
@@ -144,11 +144,11 @@ export function GetActivedWorldInfoEntries(
 
 	preBuiltWIEntries(WIdata_copy) // 预处理 WI 条目
 	let recursion_WIs = [] // 存储递归 WI 内容
-	let availableRecursionDelayLevels = [...new Set(
+	const availableRecursionDelayLevels = [...new Set(
 		WIdata_copy.map(entry => Number(entry.extensions.delay_until_recursion))
 	)].sort((a, b) => a - b) // 获取并排序所有延迟递归级别
 
-	for (let currentRecursionDelayLevel of availableRecursionDelayLevels) {
+	for (const currentRecursionDelayLevel of availableRecursionDelayLevels) {
 		let new_entries = []
 		do {
 			let WIdata_new = [...WIdata_copy]
@@ -171,6 +171,6 @@ export function GetActivedWorldInfoEntries(
 		} while (new_entries.length) // 如果有新的激活条目，则继续
 	}
 
-	for (let entrie of aret) delete entrie.isActived // 清理 isActived 函数
+	for (const entrie of aret) delete entrie.isActived // 清理 isActived 函数
 	return aret // 返回激活的 WI 条目列表
 }

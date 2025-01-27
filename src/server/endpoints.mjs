@@ -1,4 +1,4 @@
-import { login, register, logout, authenticate, getUserByToken, getUserDictionary, getAllUserNames } from './auth.mjs'
+import { login, register, logout, authenticate, getUserByToken, getUserDictionary } from './auth.mjs'
 import { __dirname } from './server.mjs'
 import fs from 'node:fs'
 import { getPartDetails } from './parts_loader.mjs'
@@ -95,16 +95,16 @@ export function registerEndpoints(app) {
 			const details = await getPartDetails(username, part, name)
 			res.status(200).json(details)
 		})
-		let autoloader = async (req, res, next) => {
-			let path = decodeURIComponent(req.path)
+		const autoloader = async (req, res, next) => {
+			const path = decodeURIComponent(req.path)
 			{
-				let pathext = path.split('.').pop()
+				const pathext = path.split('.').pop()
 				if (pathext != path && !['js', 'html'].includes(pathext)) return next() // 跳过纯资源路径
 			}
 			const { username } = await getUserByToken(req.cookies.accessToken)
 			const partName = (() => {
 				let patharr = path.split('/')
-				let partIndex = patharr.indexOf(part)
+				const partIndex = patharr.indexOf(part)
 				patharr = patharr.slice(partIndex + 1)
 				return patharr[0]
 			})()

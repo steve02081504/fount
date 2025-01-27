@@ -10,7 +10,7 @@ const deleteSelectedButton = document.getElementById('delete-selected-button')
 const exportSelectedButton = document.getElementById('export-selected-button')
 
 let chatList = []
-let selectedChats = new Set()
+const selectedChats = new Set()
 
 async function fetchChatList() {
 	const response = await fetch('/api/shells/chat/list', {
@@ -51,7 +51,7 @@ async function renderChatList() {
 	selectAllCheckbox.checked = false
 }
 
-let char_details_cache = {}
+const char_details_cache = {}
 async function getCharDetails(charname) {
 	char_details_cache[charname] ??= fetch('/api/getdetails/chars?name=' + charname).then(res => res.json())
 	return char_details_cache[charname] = await char_details_cache[charname]

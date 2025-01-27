@@ -8,7 +8,7 @@ const progressText = document.getElementById('progressText')
 const tutorialEnd = document.getElementById('tutorialEnd')
 const progress = progressBar.querySelector('.progress')
 
-let isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent)
+const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent)
 let progressValue = 0
 let clickCount = 0
 

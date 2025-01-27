@@ -6,10 +6,10 @@ import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../s
 export default {
 	GetSource: async (config) => {
 		config.system_prompt_at_depth ??= 10
-		let genAI = new GoogleGenerativeAI(config.apikey)
+		const genAI = new GoogleGenerativeAI(config.apikey)
 		//fileManager is unable to upload buffer, for now we just use inlineData
 		// let fileManager = new GoogleAIFileManager(config.apikey)
-		let model = genAI.getGenerativeModel({
+		const model = genAI.getGenerativeModel({
 			safetySettings: [
 				{
 					category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
@@ -35,7 +35,7 @@ export default {
 			model: config.model
 		})
 		/** @type {AIsource_t} */
-		let result = {
+		const result = {
 			type: 'text-chat',
 			info: {
 				'': {
@@ -59,8 +59,8 @@ export default {
 				return result.response.text()
 			},
 			StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
-				let system_prompt = structPromptToSingleNoChatLog(prompt_struct)
-				let request = {
+				const system_prompt = structPromptToSingleNoChatLog(prompt_struct)
+				const request = {
 					contents: [{
 						role: 'user',
 						parts: [{
@@ -112,12 +112,12 @@ system:
 					}
 				])
 
-				let result = await model.generateContent(request)
+				const result = await model.generateContent(request)
 				let text = result.response.text()
 
 				{
 					text = text.split('\n')
-					let base_reg = `^(|${prompt_struct.Charname}[^\\n：:]*)(:|：)\\s*`
+					const base_reg = `^(|${prompt_struct.Charname}[^\\n：:]*)(:|：)\\s*`
 					let reg = new RegExp(`${base_reg}$`, 'i')
 					while (text[0].trim().match(reg)) text.shift()
 					reg = new RegExp(`${base_reg}`, 'i')

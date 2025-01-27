@@ -25,7 +25,7 @@ export default {
 		const action = args[1] ?? 'start'
 		if (action === 'stop')
 			await stopBot(user, botname)
-		else if(action === 'start')
+		else if (action === 'start')
 			await runBot(user, botname)
 		else
 			console.error(`Unknown action: ${action}`)

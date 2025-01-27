@@ -6,10 +6,10 @@ import { __dirname, setDefaultWindowTitle } from './server.mjs'
 import { loadData, saveData } from './setting_loader.mjs'
 import { loadPart } from './managers/index.mjs'
 
-let parts_set = {}
+const parts_set = {}
 
 export function GetPartPath(username, parttype, partname) {
-	let userPath = getUserDictionary(username) + '/' + parttype + '/' + partname
+	const userPath = getUserDictionary(username) + '/' + parttype + '/' + partname
 	if (fs.existsSync(userPath + '/main.mjs'))
 		return userPath
 	return __dirname + '/src/public/' + parttype + '/' + partname
@@ -53,8 +53,8 @@ export async function loadPartBase(username, parttype, partname, Initargs, {
 		AIsourceGenerators: {},
 	}
 	parts_set[username][parttype] ??= {}
-	let parts_init = loadData(username, 'parts_init')
-	let parts_config = loadData(username, 'parts_config')
+	const parts_init = loadData(username, 'parts_init')
+	const parts_config = loadData(username, 'parts_config')
 	try {
 		if (!parts_init[parttype]?.[partname]) {
 			await initPart(username, parttype, partname, Initargs, { pathGetter, Initer, afterInit })
@@ -63,7 +63,7 @@ export async function loadPartBase(username, parttype, partname, Initargs, {
 			saveData(username, 'parts_init')
 		}
 		if (!parts_set[username][parttype][partname]) {
-			let part = parts_set[username][parttype][partname] = await Loader(pathGetter(), Initargs)
+			const part = parts_set[username][parttype][partname] = await Loader(pathGetter(), Initargs)
 			parts_config[parttype] ??= {}
 			await part.interfaces?.config?.SetData?.(parts_config[parttype][partname] ?? {})
 			await afterLoad(part)
@@ -87,7 +87,7 @@ export async function initPart(username, parttype, partname, Initargs, {
 	},
 	afterInit = (part) => { },
 } = {}) {
-	let part = await Initer(pathGetter(), Initargs)
+	const part = await Initer(pathGetter(), Initargs)
 	await afterInit(part)
 }
 
@@ -104,9 +104,9 @@ export function unloadPart(username, parttype, partname, unLoadargs, {
 	delete parts_set[username][parttype][partname]
 }
 on_shutdown(() => {
-	for (let username in parts_set)
-		for (let parttype in parts_set[username])
-			for (let partname in parts_set[username][parttype])
+	for (const username in parts_set)
+		for (const parttype in parts_set[username])
+			for (const partname in parts_set[username][parttype])
 				unloadPart(username, parttype, partname)
 })
 
@@ -132,9 +132,9 @@ export async function uninstallPartBase(username, parttype, partname, unLoadargs
 	}
 	await Uninstaller(part, pathGetter())
 	delete parts_set[username][parttype][partname]
-	let parts_details_cache = loadData(username, 'parts_details_cache')
+	const parts_details_cache = loadData(username, 'parts_details_cache')
 	delete parts_details_cache[parttype][partname]
-	let parts_init = loadData(username, 'parts_init')
+	const parts_init = loadData(username, 'parts_init')
 	delete parts_init[parttype][partname]
 }
 
@@ -145,7 +145,7 @@ export function getPartListBase(username, parttype, {
 	const part_dir = getUserDictionary(username) + '/' + parttype
 	let partlist = fs.readdirSync(part_dir, { withFileTypes: true }).filter(PathFilter)
 	try {
-		let publiclist = fs.readdirSync(__dirname + '/src/public/' + parttype, { withFileTypes: true }).filter(PathFilter)
+		const publiclist = fs.readdirSync(__dirname + '/src/public/' + parttype, { withFileTypes: true }).filter(PathFilter)
 		partlist = [...new Set(partlist.concat(publiclist))]
 	} catch (e) { }
 	return partlist.map(ResultMapper)
@@ -164,7 +164,7 @@ export function getPartInfo(part, locale) {
 }
 
 export async function getPartDetails(username, parttype, partname) {
-	let parts_details_cache = loadData(username, 'parts_details_cache')
+	const parts_details_cache = loadData(username, 'parts_details_cache')
 	let details = parts_details_cache?.[parttype]?.[partname]
 	if (parts_set?.[username]?.[parttype]?.[partname]) details = undefined
 	if (details === undefined) try {

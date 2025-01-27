@@ -13,25 +13,25 @@ async function ImportAsData(username, data) {
 
 	// make an dir for the character
 	// copy directory
-	let templateDir = path.join(import.meta.dirname, 'Template')
-	let targetPath = await getAvailablePath(username, 'chars', sanitizeFilename(chardata.name || 'unknown'))
+	const templateDir = path.join(import.meta.dirname, 'Template')
+	const targetPath = await getAvailablePath(username, 'chars', sanitizeFilename(chardata.name || 'unknown'))
 
 	await fs.copy(templateDir, targetPath)
 	// write chardata to the character
-	let chardataPath = path.join(targetPath, 'chardata.json')
+	const chardataPath = path.join(targetPath, 'chardata.json')
 	saveJsonFile(chardataPath, chardata)
 	// save image to the character
-	let image = data_reader.remove(data)
-	let imagePath = path.join(targetPath, 'image.png')
+	const image = data_reader.remove(data)
+	const imagePath = path.join(targetPath, 'image.png')
 	await fs.writeFile(imagePath, image)
 }
 
 async function ImportByText(username, text) {
-	let lines = text.split('\n').filter(line => line)
+	const lines = text.split('\n').filter(line => line)
 	for (const line of lines)
 		if (line.startsWith('http')) {
-			let arrayBuffer = await downloadCharacter(line)
-			let buffer = Buffer.from(arrayBuffer)
+			const arrayBuffer = await downloadCharacter(line)
+			const buffer = Buffer.from(arrayBuffer)
 			await ImportAsData(username, buffer)
 		}
 }

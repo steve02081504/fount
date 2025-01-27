@@ -61,7 +61,7 @@ export async function renderMessage(message) {
 }
 
 export async function editMessageStart(message, index, messageIndex) {
-	let selectedFiles = message.files || []
+	const selectedFiles = message.files || []
 	const editRenderedMessage = {
 		...message,
 		avatar: message.avatar || DEFAULT_AVATAR,

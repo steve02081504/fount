@@ -467,8 +467,8 @@ class v1CharData {
 	 */
 	data
 }
-var move_pepos = ['name', 'description', 'personality', 'scenario', 'first_mes', 'mes_example', 'tags', 'create_by', 'create_date']
-var extension_pepos = ['talkativeness', 'fav']
+const move_pepos = ['name', 'description', 'personality', 'scenario', 'first_mes', 'mes_example', 'tags', 'create_by', 'create_date']
+const extension_pepos = ['talkativeness', 'fav']
 /**
  * Retrieves V1 character data from V2 data.
  *
@@ -477,7 +477,7 @@ var extension_pepos = ['talkativeness', 'fav']
  */
 function GetV1CharDataFromV2(data) {
 	/** @type {v1CharData} */
-	var aret = {}
+	let aret = {}
 	for (const key of move_pepos) if (data[key]) aret[key] = data[key]
 	for (const key of extension_pepos) aret[key] = data.extensions[key]
 	aret = {
@@ -501,7 +501,7 @@ function GetV1CharDataFromV2(data) {
 function GetV2CharDataFromV1(data) {
 	if (data.data) return data.data
 	/** @type {v2CharData} */
-	var aret = { extensions: {} }
+	const aret = { extensions: {} }
 	for (const key of move_pepos) if (data[key]) aret[key] = data[key]
 	for (const key of extension_pepos) aret.extensions[key] = data[key]
 	aret.creator_notes = data.creatorcomment

@@ -19,7 +19,7 @@ export function reverseStr(/** @type {string} */str) {
  */
 export function parseRegexFromString(input) {
 	// Extracting the regex pattern and flags
-	let match = input.match(/^\/([\W\w]+?)\/([gimsuy]*)$/)
+	const match = input.match(/^\/([\W\w]+?)\/([gimsuy]*)$/)
 	if (!match) return null // Not a valid regex format
 
 	let [, pattern, flags] = match

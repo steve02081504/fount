@@ -92,7 +92,7 @@ export async function init() {
 		})
 
 	console.freshLine('server start', 'server ready')
-	let titleBackup = process.title
+	const titleBackup = process.title
 	on_shutdown(() => setWindowTitle(titleBackup))
 	setDefaultWindowTitle()
 	console.freshLine('server start', Array(Math.floor(Math.random() * 7)).fill('fo-').join('') + 'fount!')

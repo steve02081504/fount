@@ -10,7 +10,7 @@ let stopHeartbeatting = false
 async function doHeartbeat() {
 	try {
 		if (stopHeartbeatting) return
-		let data = await triggerVirtualQueueHeartbeat()
+		const data = await triggerVirtualQueueHeartbeat()
 
 		charList = data.charlist
 		worldName = data.worldname

@@ -1,9 +1,11 @@
-import optimizeRegex from 'eslint-plugin-optimize-regex'
+import optimizeRegex from 'npm:eslint-plugin-optimize-regex'
+import UnusedImports from 'npm:eslint-plugin-unused-imports'
 
 export default [
 	{
 		plugins: {
-			'optimize-regex': optimizeRegex
+			'optimize-regex': optimizeRegex,
+			'unused-imports': UnusedImports,
 		},
 		ignores: ['**/dist/*'],
 		rules: {
@@ -32,7 +34,18 @@ export default [
 			// if中的没有await的promise
 			'no-constant-condition': ['error', { checkLoops: false }],
 			// 优化正则
-			'optimize-regex/optimize-regex': 'warn'
+			'optimize-regex/optimize-regex': 'warn',
+			// 禁用未使用的导入
+			'unused-imports/no-unused-imports': 'error',
+			// 禁用未使用的变量
+			'no-unused-vars': 'off',
+			// 不要 var
+			'no-var': 'error',
+			// 偏好 const
+			'prefer-const': ['error', {
+				'destructuring': 'all',
+				'ignoreReadBeforeAssign': true
+			}]
 		}
 	}
 ]

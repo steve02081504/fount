@@ -5,11 +5,11 @@ import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../s
 
 export default {
 	GetSource: async (config) => {
-		let cohere = new CohereClientV2({
+		const cohere = new CohereClientV2({
 			token: config.apikey,
 		})
 		/** @type {AIsource_t} */
-		let result = {
+		const result = {
 			type: 'text-chat',
 			info: {
 				'': {
@@ -33,8 +33,8 @@ export default {
 				return result.generations.map((generation) => generation.text).join('\n')
 			},
 			StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
-				let system_prompt = structPromptToSingleNoChatLog(prompt_struct)
-				let request = {
+				const system_prompt = structPromptToSingleNoChatLog(prompt_struct)
+				const request = {
 					model: config.model,
 					messages: [{
 						role: 'system',
@@ -49,7 +49,7 @@ export default {
 				})
 
 				if (config.roleReminding ?? true) {
-					let isMutiChar = new Set([...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name)]).size > 2
+					const isMutiChar = new Set([...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name)]).size > 2
 					if (isMutiChar)
 						request.messages.push({
 							role: 'system',
@@ -57,13 +57,13 @@ export default {
 						})
 				}
 
-				let result = await cohere.chat(request)
+				const result = await cohere.chat(request)
 				let text = result?.message?.content?.map((message) => message?.text)?.filter((text) => text)?.join('\n')
 				if (!text) throw result
 
 				{
 					text = text.split('\n')
-					let base_reg = `^(|${prompt_struct.Charname}[^\\n：:]*)(:|：)\\s*`
+					const base_reg = `^(|${prompt_struct.Charname}[^\\n：:]*)(:|：)\\s*`
 					let reg = new RegExp(`${base_reg}$`, 'i')
 					while (text[0].trim().match(reg)) text.shift()
 					reg = new RegExp(`${base_reg}`, 'i')
@@ -71,7 +71,7 @@ export default {
 					text = text.join('\n')
 				}
 
-				let removeduplicate = [...new Set(text.split('\n'))].join('\n')
+				const removeduplicate = [...new Set(text.split('\n'))].join('\n')
 				if (removeduplicate.length / text.length < 0.3)
 					text = removeduplicate
 
