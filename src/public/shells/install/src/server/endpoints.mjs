@@ -47,8 +47,8 @@ export function setEndpoints(app) {
 	// 删除请求发送
 	app.post('/api/shells/install/uninstall', authenticate, async (req, res) => {
 		const { username } = await getUserByToken(req.cookies.accessToken)
-		let parttype = req.body.type
-		let partname = req.body.name
+		const parttype = req.body.type
+		const partname = req.body.name
 		await uninstallPartBase(username, parttype, partname)
 		res.status(200).json({ message: '删除成功' })
 	})

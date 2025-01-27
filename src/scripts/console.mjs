@@ -1,7 +1,7 @@
 import ansiEscapes from 'npm:ansi-escapes'
 
 let loggedFreshLine = ''
-let myConsole = {
+const myConsole = {
 	log: (...args) => {
 		loggedFreshLine = false
 		console.log(...args)

@@ -141,7 +141,7 @@ export class DuckDuckGoAPI {
 	messagesPrepare(messages) {
 		let content = ''
 		for (const message of messages) {
-			let role = message.role === 'system' ? 'user' : message.role
+			const role = message.role === 'system' ? 'user' : message.role
 
 			if (['user', 'assistant'].includes(role)) {
 				const contentStr = Array.isArray(message.content)

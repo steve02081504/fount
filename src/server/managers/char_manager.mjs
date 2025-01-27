@@ -2,7 +2,7 @@ import { loadData, saveData } from '../setting_loader.mjs'
 import { initPart, loadPartBase, uninstallPartBase, unloadPart } from '../parts_loader.mjs'
 
 function loadCharData(username, charname) {
-	let userCharDataSet = loadData(username, 'char_data')
+	const userCharDataSet = loadData(username, 'char_data')
 	return userCharDataSet[charname] ??= {
 		/** @type {import('../../decl/charAPI.ts').charState_t} */
 		state: {
@@ -22,9 +22,9 @@ function saveCharData(username) {
  * @returns {Promise<import('../../decl/charAPI.ts').charAPI_t>}
  */
 export async function LoadChar(username, charname) {
-	let data = loadCharData(username, charname)
-	let char_state = data.state
-	let char = await loadPartBase(username, 'chars', charname, {
+	const data = loadCharData(username, charname)
+	const char_state = data.state
+	const char = await loadPartBase(username, 'chars', charname, {
 		username,
 		charname,
 		state: char_state,
@@ -38,7 +38,7 @@ export function UnloadChar(username, charname, reason) {
 }
 
 export async function initChar(username, charname) {
-	let state = loadCharData(username, charname).state
+	const state = loadCharData(username, charname).state
 	await initPart(username, 'chars', charname, {
 		username,
 		charname,

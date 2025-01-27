@@ -7,7 +7,7 @@ export default {
 		async function callBase(messages) {
 			let text
 			while (!text) {
-				let result = await fetch(config.url, {
+				const result = await fetch(config.url, {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
@@ -41,7 +41,7 @@ export default {
 			return text
 		}
 		/** @type {AIsource_t} */
-		let result = {
+		const result = {
 			type: 'text-chat',
 			info: {
 				'': {
@@ -69,7 +69,7 @@ export default {
 				])
 			},
 			StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
-				let messages = []
+				const messages = []
 				margeStructPromptChatLog(prompt_struct).forEach((chatLogEntry) => {
 					messages.push({
 						role: chatLogEntry.role === 'user' ? 'user' : chatLogEntry.role === 'system' ? 'system' : 'assistant',
@@ -77,7 +77,7 @@ export default {
 					})
 				})
 
-				let system_prompt = structPromptToSingleNoChatLog(prompt_struct)
+				const system_prompt = structPromptToSingleNoChatLog(prompt_struct)
 				if (config.system_prompt_at_depth ?? 10)
 					messages.splice(Math.max(messages.length - config.system_prompt_at_depth, 0), 0, {
 						role: 'system',
@@ -90,7 +90,7 @@ export default {
 					})
 
 				if (config.roleReminding ?? true) {
-					let isMutiChar = new Set([...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name)]).size > 2
+					const isMutiChar = new Set([...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name)]).size > 2
 					if (isMutiChar)
 						messages.push({
 							role: 'system',
@@ -102,7 +102,7 @@ export default {
 
 				{
 					text = text.split('\n')
-					let base_reg = `^(|${prompt_struct.Charname}[^\\n：:]*)(:|：)\\s*`
+					const base_reg = `^(|${prompt_struct.Charname}[^\\n：:]*)(:|：)\\s*`
 					let reg = new RegExp(`${base_reg}$`, 'i')
 					while (text[0].trim().match(reg)) text.shift()
 					reg = new RegExp(`${base_reg}`, 'i')

@@ -216,7 +216,7 @@ class AuthManager {
 	 */
 	async _make_request(method, url, headers, data = null) {
 		try {
-			let options = {
+			const options = {
 				headers: headers
 			}
 			if (data) {

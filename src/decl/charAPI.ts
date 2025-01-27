@@ -44,11 +44,11 @@ export class charAPI_t {
 			SetData: (data: any) => Promise<void>
 		},
 		chat: {
-			GetGreeting: (arg: chatReplyRequest_t, index: number) => Promise<chatReply_t|null>
-			GetGroupGreeting: (arg: chatReplyRequest_t, index: number) => Promise<chatReply_t|null>
+			GetGreeting: (arg: chatReplyRequest_t, index: number) => Promise<chatReply_t | null>
+			GetGroupGreeting: (arg: chatReplyRequest_t, index: number) => Promise<chatReply_t | null>
 			GetPrompt: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, detail_level: number) => Promise<single_part_prompt_t>;
 			GetPromptForOther: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, detail_level: number) => Promise<single_part_prompt_t>;
-			GetReply: (arg: chatReplyRequest_t) => Promise<chatReply_t|null>
+			GetReply: (arg: chatReplyRequest_t) => Promise<chatReply_t | null>
 			GetReplyFequency: (arg: chatReplyRequest_t) => number
 			MessageEdit: (arg: {
 				index: number

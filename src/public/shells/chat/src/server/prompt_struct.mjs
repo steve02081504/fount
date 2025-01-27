@@ -25,7 +25,7 @@ export async function buildPromptStruct(
 ) {
 	const { char, user, world, other_chars, plugins, chat_log, UserCharname, ReplyToCharname, Charname } = args
 	/** @type {prompt_struct_t} */
-	let result = {
+	const result = {
 		UserCharname,
 		ReplyToCharname,
 		Charname,
@@ -41,9 +41,9 @@ export async function buildPromptStruct(
 		if (world) result.world_prompt = await world.interfaces.chat.GetPrompt(args, result, detail_level)
 		if (user) result.user_prompt = await user.interfaces.chat.GetPrompt(args, result, detail_level)
 		if (char) result.char_prompt = await char.interfaces.chat.GetPrompt(args, result, detail_level)
-		for (let other_char of Object.keys(other_chars))
+		for (const other_char of Object.keys(other_chars))
 			result.other_chars_prompt[other_char] = await other_chars[other_char].interfaces.chat?.GetPromptForOther?.(args, result, detail_level)
-		for (let plugin of Object.keys(plugins))
+		for (const plugin of Object.keys(plugins))
 			result.plugin_prompts[plugin] = await plugins[plugin].interfaces.chat?.GetPrompt?.(args, result, detail_level)
 	}
 
@@ -51,10 +51,10 @@ export async function buildPromptStruct(
 }
 
 export function structPromptToSingleNoChatLog(/** @type {prompt_struct_t} */ prompt) {
-	let result = []
+	const result = []
 
 	{
-		let sorted = prompt.char_prompt.text.sort((a, b) => a.important - b.important).map(text => text.content).filter(text => text)
+		const sorted = prompt.char_prompt.text.sort((a, b) => a.important - b.important).map(text => text.content).filter(text => text)
 		if (sorted.length > 0) {
 			result.push('你需要扮演的角色设定如下：')
 			result.push(...sorted)
@@ -62,7 +62,7 @@ export function structPromptToSingleNoChatLog(/** @type {prompt_struct_t} */ pro
 	}
 
 	{
-		let sorted = prompt.user_prompt.text.sort((a, b) => a.important - b.important).map(text => text.content).filter(text => text)
+		const sorted = prompt.user_prompt.text.sort((a, b) => a.important - b.important).map(text => text.content).filter(text => text)
 		if (sorted.length > 0) {
 			result.push('用户的设定如下：')
 			result.push(...sorted)
@@ -70,7 +70,7 @@ export function structPromptToSingleNoChatLog(/** @type {prompt_struct_t} */ pro
 	}
 
 	{
-		let sorted = prompt.world_prompt.text.sort((a, b) => a.important - b.important).map(text => text.content).filter(text => text)
+		const sorted = prompt.world_prompt.text.sort((a, b) => a.important - b.important).map(text => text.content).filter(text => text)
 		if (sorted.length > 0) {
 			result.push('当前环境的设定如下：')
 			result.push(...sorted)
@@ -78,7 +78,7 @@ export function structPromptToSingleNoChatLog(/** @type {prompt_struct_t} */ pro
 	}
 
 	{
-		let sorted = Object.values(prompt.other_chars_prompt).map(char => char.text).filter(text => text).map(
+		const sorted = Object.values(prompt.other_chars_prompt).map(char => char.text).filter(text => text).map(
 			char => char.sort((a, b) => a.important - b.important).map(text => text.content).filter(text => text)
 		).flat().filter(text => text)
 		if (sorted.length > 0) {
@@ -88,7 +88,7 @@ export function structPromptToSingleNoChatLog(/** @type {prompt_struct_t} */ pro
 	}
 
 	{
-		let sorted = Object.values(prompt.plugin_prompts).map(plugin => plugin.text).filter(text => text).map(
+		const sorted = Object.values(prompt.plugin_prompts).map(plugin => plugin.text).filter(text => text).map(
 			plugin => plugin.sort((a, b) => a.important - b.important).map(text => text.content).filter(text => text)
 		).flat().filter(text => text)
 		if (sorted.length > 0) {
@@ -105,7 +105,7 @@ export function structPromptToSingleNoChatLog(/** @type {prompt_struct_t} */ pro
  * @return {chatLogEntry_t[]}
  */
 export function margeStructPromptChatLog(/** @type {prompt_struct_t} */ prompt) {
-	let result = [
+	const result = [
 		...prompt.chat_log,
 		...prompt.user_prompt?.additional_chat_log || [],
 		...prompt.world_prompt?.additional_chat_log || [],
@@ -113,7 +113,7 @@ export function margeStructPromptChatLog(/** @type {prompt_struct_t} */ prompt) 
 		...Object.values(prompt.plugin_prompts).map(plugin => plugin.additional_chat_log || []).flat(),
 		...prompt.char_prompt?.additional_chat_log || [],
 	]
-	let flat_result = []
+	const flat_result = []
 	for (const entry of result) {
 		if (entry.logContextBefore) flat_result.push(...entry.logContextBefore)
 		flat_result.push(entry)
@@ -123,7 +123,7 @@ export function margeStructPromptChatLog(/** @type {prompt_struct_t} */ prompt) 
 }
 
 export function structPromptToSingle(/** @type {prompt_struct_t} */ prompt) {
-	let result = [structPromptToSingleNoChatLog(prompt)]
+	const result = [structPromptToSingleNoChatLog(prompt)]
 
 	result.push('聊天记录如下：')
 	margeStructPromptChatLog(prompt).forEach((chatLogEntry) => {

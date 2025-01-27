@@ -10,7 +10,7 @@ export const partsList = [
 	'shells', 'chars', 'personas', 'worlds', 'AIsources', 'AIsourceGenerators',
 	'ImportHanlders'
 ]
-let loadMethods = {
+const loadMethods = {
 	'shells': loadShell,
 	'chars': LoadChar,
 	'personas': loadPersona,
@@ -23,10 +23,10 @@ export function loadPart(username, parttype, partname) {
 	return loadMethods[parttype](username, partname)
 }
 
-let pathFilters = {
+const pathFilters = {
 	'AIsources': (file) => file.isFile() && file.name.endsWith('.json')
 }
-let ResultMappers = {
+const ResultMappers = {
 	'AIsources': (file) => file.name.slice(0, -5)
 }
 export function getPartList(username, parttype) {

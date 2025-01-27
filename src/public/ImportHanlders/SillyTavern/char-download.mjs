@@ -117,7 +117,7 @@ function parseAICC(url) {
 }
 
 async function downloadGenericPng(url) {
-	const response = await fetch(url, { method: 'GET', headers: { 'Accept': '*/*' }}) // Set Accept header to allow various content types
+	const response = await fetch(url, { method: 'GET', headers: { 'Accept': '*/*' } }) // Set Accept header to allow various content types
 	if (!response.ok)
 		throw new Error(`Generic download failed: ${response.statusText}`)
 

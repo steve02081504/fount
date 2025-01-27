@@ -5,14 +5,12 @@ import {
 	copyChat,
 	deleteChat,
 	exportChat,
-	findEmptyChatid,
 	getCharListOfChat,
 	GetChatLog,
 	getChatList,
 	GetUserPersonaName,
 	GetWorldName,
 	newChat,
-	newMetadata,
 	modifyTimeLine,
 	removechar,
 	setPersona,
@@ -58,7 +56,7 @@ export function setEndpoints(app) {
 	})
 
 	app.post('/api/shells/chat/adduserreply', authenticate, async (req, res) => {
-		let reply = req.body.reply
+		const reply = req.body.reply
 		reply.files = reply?.files?.map((file) => ({
 			...file,
 			buffer: Buffer.from(file.buffer, 'base64')
@@ -84,7 +82,7 @@ export function setEndpoints(app) {
 			...file,
 			buffer: Buffer.from(file.buffer, 'base64')
 		}))
-		let entry = await editMessage(chatid, index, content)
+		const entry = await editMessage(chatid, index, content)
 		res.status(200).json(entry)
 	})
 

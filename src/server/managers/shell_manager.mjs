@@ -1,5 +1,4 @@
 import { app } from '../server.mjs'
-import { __dirname } from '../server.mjs'
 import { initPart, loadPartBase, uninstallPartBase, unloadPart } from '../parts_loader.mjs'
 
 /**

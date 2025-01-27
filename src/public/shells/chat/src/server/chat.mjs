@@ -22,7 +22,7 @@ import fs from 'node:fs'
  * }
  * @type {Map<string, { username: string, chatMetadata: chatMetadata_t }>}
  */
-let chatMetadatas = new Map()
+const chatMetadatas = new Map()
 
 // Initialize chatMetadatas with placeholders for existing chat IDs
 function initializeChatMetadatas() {
@@ -181,13 +181,13 @@ export function newMetadata(chatid, username) {
 
 export function findEmptyChatid() {
 	while (true) {
-		let uuid = Math.random().toString(36).substring(2, 15)
+		const uuid = Math.random().toString(36).substring(2, 15)
 		if (!chatMetadatas.has(uuid)) return uuid
 	}
 }
 
 export function newChat(username) {
-	let chatid = findEmptyChatid()
+	const chatid = findEmptyChatid()
 	newMetadata(chatid, username)
 	return chatid
 }
@@ -235,7 +235,7 @@ async function getChatRequest(chatid, charname) {
 	const other_chars = { ...timeSlice.chars }
 	delete other_chars[charname]
 
-	let result = {
+	const result = {
 		username,
 		UserCharname,
 		Charname: charinfo.name || charname,
@@ -292,7 +292,7 @@ export async function setWorld(chatid, worldname) {
 		return null
 	}
 	const { username, chatLog } = chatMetadata
-	let timeSlice = chatMetadata.LastTimeSlice.copy()
+	const timeSlice = chatMetadata.LastTimeSlice.copy()
 	const world = timeSlice.world = await loadWorld(username, worldname)
 	timeSlice.world_id = worldname
 	if (world.interfaces.chat.GetGreeting && chatLog.length === 0)
@@ -301,7 +301,7 @@ export async function setWorld(chatid, worldname) {
 		timeSlice.greeting_type = 'world_group'
 
 	try {
-		let request = await getChatRequest(chatid, undefined)
+		const request = await getChatRequest(chatid, undefined)
 		let result
 		switch (timeSlice.greeting_type) {
 			case 'world_single':
@@ -312,7 +312,7 @@ export async function setWorld(chatid, worldname) {
 				break
 		}
 		if (!result) return
-		let greeting_entrie = BuildChatLogEntryFromCharReply(result, timeSlice, null, undefined, username)
+		const greeting_entrie = BuildChatLogEntryFromCharReply(result, timeSlice, null, undefined, username)
 		await addChatLogEntry(chatid, greeting_entrie) // saved, no need for another call
 		return greeting_entrie
 	} catch (error) {
@@ -329,7 +329,7 @@ export async function addchar(chatid, charname) {
 	if (!chatMetadata) throw new Error('Chat not found')
 
 	const { username, chatLog } = chatMetadata
-	let timeSlice = chatMetadata.LastTimeSlice.copy()
+	const timeSlice = chatMetadata.LastTimeSlice.copy()
 	if (chatLog.length > 0)
 		timeSlice.greeting_type = 'group'
 	else
@@ -353,7 +353,7 @@ export async function addchar(chatid, charname) {
 				break
 		}
 		if (!result) return
-		let greeting_entrie = BuildChatLogEntryFromCharReply(result, timeSlice, char, charname, username)
+		const greeting_entrie = BuildChatLogEntryFromCharReply(result, timeSlice, char, charname, username)
 		await addChatLogEntry(chatid, greeting_entrie) // saved, no need for another call
 		return greeting_entrie
 	} catch (error) {
@@ -433,9 +433,9 @@ async function addChatLogEntry(chatid, entry) {
 	if (is_VividChat(chatMetadata)) saveChat(chatid)
 
 	{
-		let char = entry.timeSlice.charname ?? null
-		let freq_data = (await getCharReplyFrequency(chatid)).filter(f => f.charname !== char)
-		let nextreply = await getNextCharForReply(freq_data)
+		const char = entry.timeSlice.charname ?? null
+		const freq_data = (await getCharReplyFrequency(chatid)).filter(f => f.charname !== char)
+		const nextreply = await getNextCharForReply(freq_data)
 		if (nextreply) triggerCharReply(chatid, nextreply)
 	}
 
@@ -452,10 +452,10 @@ export async function modifyTimeLine(chatid, delta) {
 	if (newTimeLineIndex < 0) newTimeLineIndex += chatMetadata.timeLines.length
 	if (newTimeLineIndex >= chatMetadata.timeLines.length) {
 		const charname = chatMetadata.LastTimeSlice.charname
-		let poped = chatMetadata.chatLog.pop()
+		const poped = chatMetadata.chatLog.pop()
 		try {
 			chatMetadata.LastTimeSlice = chatMetadata.chatLog[chatMetadata.chatLog.length - 1]?.timeSlice || chatMetadata.LastTimeSlice
-			let new_timeSlice = chatMetadata.LastTimeSlice.copy()
+			const new_timeSlice = chatMetadata.LastTimeSlice.copy()
 			const char = new_timeSlice.chars[charname]
 			const world = new_timeSlice.world
 			let result
@@ -497,7 +497,7 @@ export async function modifyTimeLine(chatid, delta) {
 			newTimeLineIndex %= chatMetadata.timeLines.length
 		}
 	}
-	let entry = chatMetadata.timeLines[newTimeLineIndex]
+	const entry = chatMetadata.timeLines[newTimeLineIndex]
 	chatMetadata.timeLineIndex = newTimeLineIndex
 	chatMetadata.LastTimeSlice = entry.timeSlice
 
@@ -570,15 +570,15 @@ function BuildChatLogEntryFromUserMessage(result, new_timeSlice, user, username)
 async function getCharReplyFrequency(chatid) {
 	const chatMetadata = await loadChat(chatid)
 	if (!chatMetadata) throw new Error('Chat not found')
-	let result = [
+	const result = [
 		{
 			charname: null, // user
 			frequency: 1
 		}
 	]
 
-	for (let charname in chatMetadata.LastTimeSlice.chars) {
-		let char = chatMetadata.LastTimeSlice.chars[charname]
+	for (const charname in chatMetadata.LastTimeSlice.chars) {
+		const char = chatMetadata.LastTimeSlice.chars[charname]
 		result.push({
 			charname,
 			frequency:
@@ -592,10 +592,10 @@ async function getCharReplyFrequency(chatid) {
 }
 
 async function getNextCharForReply(frequency_data) {
-	let all_freq = frequency_data.map((x) => x.frequency).reduce((a, b) => a + b, 0)
+	const all_freq = frequency_data.map((x) => x.frequency).reduce((a, b) => a + b, 0)
 	let random = Math.random() * all_freq
 
-	for (let { charname, frequency } of frequency_data)
+	for (const { charname, frequency } of frequency_data)
 		if (random < frequency) return charname
 		else random -= frequency
 }
@@ -607,11 +607,11 @@ export async function triggerCharReply(chatid, charname) {
 	const timeSlice = chatMetadata.LastTimeSlice
 	let result
 	if (!charname) {
-		let frequency_data = (await getCharReplyFrequency(chatid)).filter(x => x.charname !== null) // 过滤掉用户
+		const frequency_data = (await getCharReplyFrequency(chatid)).filter(x => x.charname !== null) // 过滤掉用户
 		charname = await getNextCharForReply(frequency_data)
 		if (!charname) return
 	}
-	let request = await getChatRequest(chatid, charname)
+	const request = await getChatRequest(chatid, charname)
 
 	const char = timeSlice.chars[charname]
 	if (!char) throw new Error('char not found')
@@ -738,7 +738,7 @@ export async function deleteMessage(chatid, index) {
 		chatMetadata.chatLog.splice(index, 1)
 	}
 
-	let last = chatMetadata.chatLog[chatMetadata.chatLog.length - 1]
+	const last = chatMetadata.chatLog[chatMetadata.chatLog.length - 1]
 
 	if (index == chatMetadata.chatLog.length) {
 		chatMetadata.timeLines = [last]
@@ -772,9 +772,9 @@ export async function editMessage(chatid, index, new_content) {
 		editresult = await chatMetadata.LastTimeSlice.world.interfaces.chat.MessageEdit(geneRequest())
 	else {
 		// 通知消息原作者处理消息编辑
-		let entry = chatMetadata.chatLog[index]
+		const entry = chatMetadata.chatLog[index]
 		if (entry.timeSlice.charname) {
-			let char = entry.timeSlice.chars[entry.timeSlice.charname]
+			const char = entry.timeSlice.chars[entry.timeSlice.charname]
 			editresult = await char.interfaces.chat?.MessageEdit?.(geneRequest())
 		}
 		else if (entry.timeSlice.playername)
@@ -792,10 +792,10 @@ export async function editMessage(chatid, index, new_content) {
 		}
 	}
 
-	let timeSlice = chatMetadata.chatLog[index].timeSlice
+	const timeSlice = chatMetadata.chatLog[index].timeSlice
 	let entry
 	if (timeSlice.charname) {
-		let char = timeSlice.chars[timeSlice.charname]
+		const char = timeSlice.chars[timeSlice.charname]
 		entry = BuildChatLogEntryFromCharReply(editresult, timeSlice, char, timeSlice.charname, chatMetadata.username)
 	}
 	else
@@ -809,8 +809,8 @@ export async function editMessage(chatid, index, new_content) {
 }
 
 export async function getHeartbeatData(chatid, start) {
-	let chatMetadata = await loadChat(chatid)
-	let timeSlice = chatMetadata.LastTimeSlice
+	const chatMetadata = await loadChat(chatid)
+	const timeSlice = chatMetadata.LastTimeSlice
 	return {
 		charlist: Object.keys(timeSlice.chars),
 		worldname: timeSlice.world_id,

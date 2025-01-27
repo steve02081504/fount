@@ -44,7 +44,7 @@ let isLoginForm = true
 let verificationCodeSent = false
 let sendCodeCooldown = false
 
-let hasLoggedIn = localStorage.getItem('hasLoggedIn') == 'true'
+const hasLoggedIn = localStorage.getItem('hasLoggedIn') == 'true'
 
 // 初始化表单状态
 function initializeForm() {

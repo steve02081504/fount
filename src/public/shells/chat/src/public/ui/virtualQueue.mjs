@@ -30,7 +30,7 @@ function messageIsEqual(a, b) {
 	// 比较文件
 	if (a.files.length != b.files.length) return false
 	for (let i = 0; i < a.files.length; i++)
-		for (let key of ['name', 'buffer', 'mimeType', 'description'])
+		for (const key of ['name', 'buffer', 'mimeType', 'description'])
 			if (a.files[i][key] != b.files[i][key]) return false
 
 	return true
@@ -38,12 +38,12 @@ function messageIsEqual(a, b) {
 
 export async function triggerVirtualQueueHeartbeat() {
 	if (chatLogLength === null) return
-	let data = await triggerHeartbeat(startIndex)
-	let { Messages } = data // 自index开始的全部消息内容
+	const data = await triggerHeartbeat(startIndex)
+	const { Messages } = data // 自index开始的全部消息内容
 	delete data.Messages
 
 	if (Messages.length != queue.length) {
-		let its_in_buttom = chatMessagesContainer.scrollTop == chatMessagesContainer.scrollHeight || // 本来就在底部
+		const its_in_buttom = chatMessagesContainer.scrollTop == chatMessagesContainer.scrollHeight || // 本来就在底部
 			chatMessagesContainer.scrollHeight - chatMessagesContainer.scrollTop - chatMessagesContainer.clientHeight <= 0 // 列表不够长，碰不到底部也算在底部
 
 		queue = Messages
@@ -112,7 +112,7 @@ async function appendMessages() {
 
 function updateLastCharMessageArrows() {
 	chatMessagesContainer.querySelectorAll('.arrow').forEach((arrow) => arrow.remove())
-	let lastCharMessageIndex = queue.length - 1
+	const lastCharMessageIndex = queue.length - 1
 	if (queue[lastCharMessageIndex]?.role == 'char') {
 		const messageElement = chatMessagesContainer.children[lastCharMessageIndex]
 		const messageContent = messageElement.querySelector('.content')

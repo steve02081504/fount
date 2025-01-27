@@ -66,17 +66,17 @@ export function deleteBotConfig(username, botname) {
 }
 
 export async function runBot(username, botname) {
-	let botCache = loadTempData(username, 'discordbot_cache')
+	const botCache = loadTempData(username, 'discordbot_cache')
 	if (botCache[botname]) return
-	let config = getBotConfig(username, botname)
+	const config = getBotConfig(username, botname)
 	if (!Object.keys(config).length) throw new Error(`Bot ${botname} not found`)
-	let char = await LoadChar(username, config.char)
+	const char = await LoadChar(username, config.char)
 	if (!char.interfaces.discord) throw new Error(`Char ${config.char} does not support discord interface`)
 	botCache[botname] = await startBot(config, char)
 }
 
 export async function stopBot(username, botname) {
-	let botCache = loadTempData(username, 'discordbot_cache')
+	const botCache = loadTempData(username, 'discordbot_cache')
 	if (botCache[botname]) {
 		botCache[botname].destroy()
 		delete botCache[botname]
@@ -88,8 +88,8 @@ export function getRunningBotList(username) {
 }
 
 on_shutdown(async () => {
-	for(const username in getAllUserNames())
-		for(const botname in getRunningBotList(username))
+	for (const username in getAllUserNames())
+		for (const botname in getRunningBotList(username))
 			await stopBot(username, botname)
 })
 

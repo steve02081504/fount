@@ -2,12 +2,12 @@ import { LoadImportHanlder } from './importHanlder_manager.mjs'
 import { getPartListBase } from '../../../../../server/parts_loader.mjs'
 
 export async function importPart(username, data) {
-	let ImportHanlders = getPartListBase(username, 'ImportHanlders')
+	const ImportHanlders = getPartListBase(username, 'ImportHanlders')
 	const errors = []
 
-	for (let importHanlder of ImportHanlders)
+	for (const importHanlder of ImportHanlders)
 		try {
-			let hanlder = await LoadImportHanlder(username, importHanlder)
+			const hanlder = await LoadImportHanlder(username, importHanlder)
 			await hanlder.ImportAsData(username, data)
 			return
 		} catch (err) {
@@ -21,12 +21,12 @@ export async function importPart(username, data) {
 }
 
 export async function importPartByText(username, text) {
-	let ImportHanlders = getPartListBase(username, 'ImportHanlders')
+	const ImportHanlders = getPartListBase(username, 'ImportHanlders')
 	const errors = []
 
-	for (let importHanlder of ImportHanlders)
+	for (const importHanlder of ImportHanlders)
 		try {
-			let hanlder = await LoadImportHanlder(username, importHanlder)
+			const hanlder = await LoadImportHanlder(username, importHanlder)
 			await hanlder.ImportByText(username, text)
 			return
 		} catch (err) {

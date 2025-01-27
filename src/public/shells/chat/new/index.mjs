@@ -2,7 +2,7 @@ import { currentChatId, addCharacter, createNewChat } from '../src/public/endpoi
 
 await createNewChat()
 
-let serchParams = new URLSearchParams(window.location.search)
+const serchParams = new URLSearchParams(window.location.search)
 
 if (serchParams.has('char'))
 	await addCharacter(serchParams.get('char'))

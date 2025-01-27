@@ -9,7 +9,7 @@ const fileInputElement = document.getElementById('file-input')
 const attachmentPreviewContainer = document.getElementById('attachment-preview')
 const uploadButtonElement = document.getElementById('upload-button')
 
-let SelectedFiles = []
+const SelectedFiles = []
 
 export function initializeMessageInput() {
 	uploadButtonElement.addEventListener('click', () => fileInputElement.click())

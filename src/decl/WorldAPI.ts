@@ -30,12 +30,12 @@ export class WorldAPI_t {
 			SetData: (data: any) => Promise<void>
 		},
 		chat: {
-			GetGreeting: (arg: chatReplyRequest_t, index: number) => Promise<chatReply_t|null>
-			GetGroupGreeting: (arg: chatReplyRequest_t, index: number) => Promise<chatReply_t|null>
+			GetGreeting: (arg: chatReplyRequest_t, index: number) => Promise<chatReply_t | null>
+			GetGroupGreeting: (arg: chatReplyRequest_t, index: number) => Promise<chatReply_t | null>
 			GetPrompt: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, detail_level: number) => Promise<single_part_prompt_t>;
 			GetChatLogForCharname: (arg: chatReplyRequest_t, charname: string) => Promise<chatLogEntry_t[]>
 			AddChatLogEntry: (arg: chatReplyRequest_t, entry: chatLogEntry_t) => void
-			GetCharReply: (arg: chatReplyRequest_t, charname: string) => Promise<chatReply_t|null>
+			GetCharReply: (arg: chatReplyRequest_t, charname: string) => Promise<chatReply_t | null>
 			MessageEdit: (arg: {
 				index: number
 				original: chatLogEntry_t

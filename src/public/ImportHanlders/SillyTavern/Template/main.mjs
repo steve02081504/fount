@@ -18,9 +18,9 @@ let AIsource = null
 
 let username = ''
 
-let chardir = import.meta.dirname
-let charurl = `/chars/${encodeURIComponent(path.basename(chardir))}`
-let charjson = path.join(chardir, 'chardata.json')
+const chardir = import.meta.dirname
+const charurl = `/chars/${encodeURIComponent(path.basename(chardir))}`
+const charjson = path.join(chardir, 'chardata.json')
 
 /** @type {chardata_t} */
 let chardata = JSON.parse(fs.readFileSync(charjson))
@@ -75,7 +75,7 @@ export default {
 		},
 		chat: {
 			GetGreeting: (arg, index) => {
-				let greetings = [chardata?.first_mes, ...chardata?.alternate_greetings ?? []].filter(x => x)
+				const greetings = [chardata?.first_mes, ...chardata?.alternate_greetings ?? []].filter(x => x)
 				if (index >= greetings.length) throw new Error('Invalid index')
 				return {
 					content: evaluateMacros(greetings[index], {
@@ -88,7 +88,7 @@ export default {
 				}
 			},
 			GetGroupGreeting: (arg, index) => {
-				let greetings = [...new Set([...chardata?.extensions?.group_greetings ?? [], ...chardata?.group_only_greetings ?? []].filter(x => x))]
+				const greetings = [...new Set([...chardata?.extensions?.group_greetings ?? [], ...chardata?.group_only_greetings ?? []].filter(x => x))]
 				if (index >= greetings.length) throw new Error('Invalid index')
 				return {
 					content: evaluateMacros(greetings[index], {
@@ -108,7 +108,7 @@ export default {
 				if (!AIsource) return {
 					content: 'this character does not have an AI source, set the AI source first',
 				}
-				let reply = await AIsource?.StructCall?.(await buildPromptStruct(arg)) ?? ''
+				const reply = await AIsource?.StructCall?.(await buildPromptStruct(arg)) ?? ''
 				return {
 					content: runRegex(chardata, regex_placement.AI_OUTPUT, reply),
 					content_for_edit: reply

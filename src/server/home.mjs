@@ -36,13 +36,13 @@ import { loadTempData } from './setting_loader.mjs'
 }
 */
 export async function loadHomeRegistry(username) {
-	let user_home_registry = loadTempData(username, 'home_registry')
+	const user_home_registry = loadTempData(username, 'home_registry')
 	user_home_registry.home_function_buttons ??= {}
 	user_home_registry.home_char_interfaces ??= {}
-	let shell_list = await getPartListBase(username, 'shells')
-	for (let shell of shell_list)
+	const shell_list = await getPartListBase(username, 'shells')
+	for (const shell of shell_list)
 		try {
-			let home_registry = loadJsonFile(GetPartPath(username, 'shells', shell) + '/home_registry.json')
+			const home_registry = loadJsonFile(GetPartPath(username, 'shells', shell) + '/home_registry.json')
 			user_home_registry.home_function_buttons[shell] = home_registry.home_function_buttons
 			user_home_registry.home_char_interfaces[shell] = home_registry.home_char_interfaces
 		} catch (e) { }
@@ -54,7 +54,7 @@ export async function loadHomeRegistry(username) {
  * @returns {Promise<{home_function_buttons: object[], home_char_interfaces: object[]}>} - 展开后的注册内容
  */
 export async function expandHomeRegistry(username) {
-	let user_home_registry = loadTempData(username, 'home_registry')
+	const user_home_registry = loadTempData(username, 'home_registry')
 	if (!Object.keys(user_home_registry).length) await loadHomeRegistry(username)
 	return {
 		home_function_buttons: Object.values(user_home_registry.home_function_buttons).flat().sort((a, b) => a.level - b.level),
