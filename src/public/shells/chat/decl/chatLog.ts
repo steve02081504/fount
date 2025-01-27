@@ -29,6 +29,8 @@ export class chatReplyRequest_t {
 	locale: locale_t
 	time: timeStamp_t
 	chat_log: chatLogEntry_t[]
+	AddChatLogEntry: (entry: chatReply_t) => Promise<chatLogEntry_t>
+	Update: () => Promise<chatReplyRequest_t>
 	world: WorldAPI_t
 	user: UserAPI_t
 	char: charAPI_t
