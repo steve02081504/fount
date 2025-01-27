@@ -224,6 +224,7 @@ function is_VividChat(chatMetadata) {
 
 async function getChatRequest(chatid, charname) {
 	const chatMetadata = await loadChat(chatid)
+	if (!chatMetadata) throw new Error('Chat not found')
 
 	const { username, LastTimeSlice: timeSlice } = chatMetadata
 	const { locale } = getUserByUsername(username)
@@ -234,13 +235,24 @@ async function getChatRequest(chatid, charname) {
 	const other_chars = { ...timeSlice.chars }
 	delete other_chars[charname]
 
-	return {
+	let result = {
 		username,
 		UserCharname,
 		Charname: charinfo.name || charname,
 		chatid,
 		locale,
 		chat_log: chatMetadata.chatLog,
+		Update: () => getChatRequest(chatid, charname),
+		AddChatLogEntry: (entry) => {
+			if (!chatMetadata.LastTimeSlice.chars[charname]) throw new Error('Char not in this chat')
+			return addChatLogEntry(chatid, BuildChatLogEntryFromCharReply(
+				entry,
+				chatMetadata.LastTimeSlice.copy(),
+				chatMetadata.LastTimeSlice.chars[charname],
+				charname,
+				chatMetadata.username
+			))
+		},
 		world: timeSlice.world,
 		char: timeSlice.chars[charname],
 		user: timeSlice.player,
@@ -249,6 +261,11 @@ async function getChatRequest(chatid, charname) {
 		chat_scoped_char_memory: timeSlice.chars_memories[charname] ??= {},
 		plugins: []
 	}
+
+	if (timeSlice.world?.interfaces?.chat?.GetChatLogForCharname)
+		result.chat_log = await timeSlice.world.interfaces.chat.GetChatLogForCharname(result, charname)
+
+	return result
 }
 
 export async function setPersona(chatid, personaname) {
@@ -294,6 +311,7 @@ export async function setWorld(chatid, worldname) {
 				result = await world.interfaces.chat.GetGroupGreeting(request, 0)
 				break
 		}
+		if (!result) return
 		let greeting_entrie = BuildChatLogEntryFromCharReply(result, timeSlice, null, undefined, username)
 		await addChatLogEntry(chatid, greeting_entrie) // saved, no need for another call
 		return greeting_entrie
@@ -308,6 +326,7 @@ export async function setWorld(chatid, worldname) {
 
 export async function addchar(chatid, charname) {
 	const chatMetadata = await loadChat(chatid)
+	if (!chatMetadata) throw new Error('Chat not found')
 
 	const { username, chatLog } = chatMetadata
 	let timeSlice = chatMetadata.LastTimeSlice.copy()
@@ -333,6 +352,7 @@ export async function addchar(chatid, charname) {
 				result = await char.interfaces.chat.GetGroupGreeting(request, 0)
 				break
 		}
+		if (!result) return
 		let greeting_entrie = BuildChatLogEntryFromCharReply(result, timeSlice, char, charname, username)
 		await addChatLogEntry(chatid, greeting_entrie) // saved, no need for another call
 		return greeting_entrie
@@ -455,6 +475,7 @@ export async function modifyTimeLine(chatid, delta) {
 				default:
 					result = await char.interfaces.chat.GetReply(await getChatRequest(chatid, charname))
 			}
+			if (!result) throw new Error('No reply')
 			let entry
 			if (new_timeSlice.greeting_type?.startsWith?.('world_'))
 				entry = BuildChatLogEntryFromCharReply(result, new_timeSlice, null, undefined, chatMetadata.username)
@@ -592,14 +613,16 @@ export async function triggerCharReply(chatid, charname) {
 	}
 	let request = await getChatRequest(chatid, charname)
 
-	if (timeSlice?.world?.interfaces?.chat?.GetCharReply)
-		return timeSlice.world.interfaces.chat.GetCharReply(request, charname)
-
 	const char = timeSlice.chars[charname]
 	if (!char) throw new Error('char not found')
 
+	if (timeSlice?.world?.interfaces?.chat?.GetCharReply)
+		result = timeSlice.world.interfaces.chat.GetCharReply(request, charname)
+	else
+		result = await char.interfaces.chat.GetReply(request)
+
+	if (!result) return
 	const new_timeSlice = timeSlice.copy()
-	result = await char.interfaces.chat.GetReply(request)
 
 	return addChatLogEntry(chatid, BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, chatMetadata.username))
 }

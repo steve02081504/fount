@@ -114,6 +114,10 @@ export default {
 					content_for_edit: reply
 				}
 			},
+			GetReplyFequency: async (arg) => {
+				if (chardata.extensions.talkativeness) return Number(chardata.extensions.talkativeness) * 2
+				return 1
+			},
 			MessageEdit: (arg) => {
 				return {
 					...arg.edited,
