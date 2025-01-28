@@ -105,7 +105,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'init') {
 }
 elseif ($args.Count -gt 0 -and $args[0] -eq 'keepalive') {
 	$runargs = $args[1..$args.Count]
-	while($true) { run @runargs }
+	do { run @runargs } while ($LastExitCode)
 }
 else {
 	run @args
