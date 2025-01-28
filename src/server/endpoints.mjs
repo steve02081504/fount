@@ -77,7 +77,7 @@ export function registerEndpoints(app) {
 		const { username } = await getUserByToken(req.cookies.accessToken)
 		const { shellname, args } = req.body
 		try {
-			await IPCManager.sendCommand('shell', { username, shellname, args })
+			await IPCManager.sendCommand('runshell', { username, shellname, args })
 			res.status(200).json({ message: 'Shell command sent successfully.' })
 		} catch (err) {
 			res.status(500).json({ message: 'Failed to send shell command.' })

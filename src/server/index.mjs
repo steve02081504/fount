@@ -19,7 +19,7 @@ if (args.length) {
 		args = args.slice(2)
 
 		try {
-			await IPCManager.sendCommand('shell', { username, shellname, args })
+			await IPCManager.sendCommand('runshell', { username, shellname, args })
 		} catch (err) {
 			console.error('发送命令失败：', err)
 			process.exit(1)
