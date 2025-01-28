@@ -1,4 +1,19 @@
 ﻿$FOUNT_DIR = Split-Path -Parent $PSScriptRoot
+
+if ($args.Count -gt 0 -and $args[0] -eq 'background') {
+	if (!(Get-Command ps12exe -ErrorAction Ignore)) {
+		Install-Module -Name ps12exe -Scope CurrentUser -Force
+	}
+	$TempDir = [System.IO.Path]::GetTempPath()
+	$exepath = Join-Path $TempDir "fount-background.exe"
+	if (!(Test-Path $exepath)) {
+		ps12exe -inputFile "$FOUNT_DIR/src/runner/background.ps1" -outputFile $exepath
+	}
+	$runargs = $args[1..$args.Count]
+	Start-Process -FilePath $exepath -ArgumentList $runargs
+	exit
+}
+
 $ErrorCount = $Error.Count
 
 # Docker 检测
