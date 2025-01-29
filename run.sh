@@ -9,4 +9,4 @@ if [[ $RETURN_CODE -ne 0 ]] && [[ $RETURN_CODE -ne 255 ]]; then
 	read -n 1 -s -r -p "Press any key to continue..."
 	echo
 fi
-exit $RETURN_CODE
+return $RETURN_CODE

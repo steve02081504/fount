@@ -35,7 +35,7 @@ install_package() {
 		apk add --update "$1"
 	else
 		echo "无法安装 $1"
-		exit 1
+		return 1
 	fi
 }
 
@@ -125,7 +125,7 @@ EOF
 	fi
 	if ! command -v deno &> /dev/null; then
 		echo "Deno missing, you cant run fount without deno"
-		exit 1
+		return 1
 	else
 		echo "Deno installed"
 	fi
@@ -151,7 +151,7 @@ run() {
 	fi
 }
 if [[ $# -gt 0 && $1 = 'init' ]]; then
-	exit 0
+	return 0
 elif [[ $# -gt 0 && $1 = 'keepalive' ]]; then
 	runargs=($@[1:])
 	run @runargs
