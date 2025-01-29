@@ -2,7 +2,7 @@ const shutdowm_functions = []
 export function on_shutdown(func) {
 	shutdowm_functions.unshift(func)
 }
-function shutdown() {
+export function shutdown() {
 	shutdowm_functions.forEach(func => func())
 	process.exit(0)
 }

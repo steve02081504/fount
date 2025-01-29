@@ -1,5 +1,6 @@
 import cryptoRandomString from 'npm:crypto-random-string'
 import { ms } from './ms.mjs'
+import { notify } from '../server/notify.mjs'
 
 // 用于存储验证码、过期时间和ID
 let verificationCodes = []
@@ -21,8 +22,8 @@ export function generateVerificationCode(id) {
 	// 将验证码、过期时间和ID添加到数组
 	verificationCodes.push({ code, expiresAt, id })
 
-	// 打印验证码到终端 (实际应用中应根据需求处理，例如发送给用户)
 	console.log(`Verification code: ${code} (expires in 60 seconds)`)
+	notify('Verification code', `Verification code: ${code} (expires in 60 seconds)`)
 }
 
 /**
