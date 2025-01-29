@@ -2,7 +2,8 @@
 
 ![repo img](https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa)
 
-[![Discord](https://img.shields.io/discord/1288934771153440768)](https://discord.gg/GtR9Quzq2v)
+寻找fount角色/组件/自定义教程？
+来[![Discord](https://img.shields.io/discord/1288934771153440768)这里](https://discord.gg/GtR9Quzq2v)聊天！
 
 > [!CAUTION]
 >
