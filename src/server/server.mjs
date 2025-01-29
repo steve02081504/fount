@@ -5,12 +5,13 @@ import fileUpload from 'npm:express-fileupload'
 import path from 'node:path'
 import fs from 'node:fs'
 import process from 'node:process'
+import https from 'node:https'
 import { console } from '../scripts/console.mjs'
 import { registerEndpoints } from './endpoints.mjs'
 import { on_shutdown } from './on_shutdown.mjs'
 import { IPCManager } from './ipc_server.mjs'
-import https from 'node:https' // 引入 https 模块
-import { initAuth } from './auth.mjs' // 引入新的身份验证模块
+import { initAuth } from './auth.mjs'
+import { createTray } from './tray.mjs'
 
 export const app = express()
 
@@ -94,6 +95,7 @@ export async function init() {
 	console.freshLine('server start', 'server ready')
 	const titleBackup = process.title
 	on_shutdown(() => setWindowTitle(titleBackup))
+	createTray()
 	setDefaultWindowTitle()
 	console.freshLine('server start', Array(Math.floor(Math.random() * 7)).fill('fo-').join('') + 'fount!')
 	return true

@@ -1,6 +1,7 @@
 import net from 'node:net'
 import { console } from '../scripts/console.mjs'
 import { loadShell } from './managers/shell_manager.mjs'
+import { shutdown } from './on_shutdown.mjs'
 
 const IPC_PORT = 16698 // 选择一个不太可能冲突的端口
 
@@ -34,9 +35,9 @@ export class IPCManager {
 				if (err.code === 'EADDRINUSE') {
 					console.log('另一个实例正在运行')
 					resolve(false) // 服务器已在运行
-				} else 
+				} else
 					reject(err)
-				
+
 			})
 
 			this.server.listen(IPC_PORT, () => {
@@ -56,12 +57,10 @@ export class IPCManager {
 				const result = await shell.ArgumentsHandler(username, args)
 				socket.write(JSON.stringify({ status: 'ok', result }) + '\n') // 添加换行符作为结束
 			}
-			else if (command.type === 'shutdown') 
-				process.exit(0)
-			
-			else 
+			else if (command.type === 'shutdown')
+				shutdown()
+			else
 				socket.write(JSON.stringify({ status: 'error', message: '不支持的命令类型' }) + '\n')
-			
 		} catch (err) {
 			console.error('处理 IPC 消息时出错：', err)
 			socket.write(JSON.stringify({ status: 'error', message: err.message }) + '\n')
@@ -87,11 +86,11 @@ export class IPCManager {
 
 					try {
 						const response = JSON.parse(message)
-						if (response.status === 'ok') 
+						if (response.status === 'ok')
 							resolve(response.result) // 返回结果
-						 else 
+						 else
 							reject(new Error(response.message || '未知错误'))
-						
+
 					} catch (err) {
 						console.error('解析服务器响应失败:', err)
 						reject(new Error('无法解析服务器响应'))
