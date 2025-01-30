@@ -25,13 +25,13 @@ export class pluginAPI_t {
 	Uninstall: (reason: string, from: string) => void;
 
 	interfaces: {
-		config: {
+		config?: {
 			GetData: () => Promise<any>
 			SetData: (data: any) => Promise<void>
 		},
-		chat: {
-			GetPrompt: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, detail_level: number) => Promise<single_part_prompt_t>;
-			RepalyHandler: RepalyHandler_t
+		chat?: {
+			GetPrompt?: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, detail_level: number) => Promise<single_part_prompt_t>;
+			RepalyHandler?: RepalyHandler_t
 		}
 	};
 }

@@ -22,5 +22,5 @@ export function addAISourceFile(username, fileName) {
 
 export function deleteAISourceFile(username, fileName) {
 	const fname = getUserDictionary(username) + '/AIsources/' + fileName + '.json'
-	fs.unlink(fname)
+	return fs.promises.unlink(fname)
 }

@@ -1,4 +1,4 @@
-import { locale_t, timeStamp_t } from './basedefs.ts';
+import { locale_t, role_t, timeStamp_t } from './basedefs.ts';
 import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts';
 import { chatReply_t, chatReplyRequest_t } from '../public/shells/chat/decl/chatLog.ts';
 
@@ -39,42 +39,62 @@ export class charAPI_t {
 
 	// interface with shell (maybe chat WebUI or cute Live2d or a kill machine, i don't care)
 	interfaces: {
-		config: {
+		config?: {
 			GetData: () => Promise<any>
 			SetData: (data: any) => Promise<void>
 		},
-		chat: {
+		chat?: {
 			GetGreeting: (arg: chatReplyRequest_t, index: number) => Promise<chatReply_t | null>
 			GetGroupGreeting: (arg: chatReplyRequest_t, index: number) => Promise<chatReply_t | null>
 			GetPrompt: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, detail_level: number) => Promise<single_part_prompt_t>;
 			GetPromptForOther: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, detail_level: number) => Promise<single_part_prompt_t>;
 			GetReply: (arg: chatReplyRequest_t) => Promise<chatReply_t | null>
-			GetReplyFequency: (arg: chatReplyRequest_t) => number
-			MessageEdit: (arg: {
+			GetReplyFequency?: (arg: chatReplyRequest_t) => number
+			MessageEdit?: (arg: {
 				index: number
 				original: chatLogEntry_t
 				edited: chatReply_t
 				chat_log: chatLogEntry_t[]
 				extension?: any
 			}) => Promise<chatReply_t>
-			MessageEditting: (arg: {
+			MessageEditting?: (arg: {
 				index: number
 				original: chatLogEntry_t
 				edited: chatReply_t
 				chat_log: chatLogEntry_t[]
 				extension?: any
 			}) => Promise<void>
-			MessageDelete: (arg: {
+			MessageDelete?: (arg: {
 				index: number
 				chat_log: chatLogEntry_t[]
 				chat_entry: chatLogEntry_t
 				extension?: any
 			}) => Promise<void>
 		},
-		discord: {
+		discord?: {
 			Intents?: DiscordGatewayIntentBits[]
 			Partials?: DiscordPartials[]
 			OnceClientReady: (client: DiscordClient, config: any) => void
+		},
+		shellassist?: {
+			Assist: (data: {
+				shelltype: string
+				shellhistory: ({
+					command: string
+					output: string
+					error: string
+					time: timeStamp_t
+				}|{
+					role: role_t
+					content: string
+				})[]
+				command_now: string
+				command_error: string
+				rejected_commands: string[]
+			}) => Promise<{
+				fixed_command: string
+				talk: string
+			}>
 		}
 	};
 }

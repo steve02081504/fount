@@ -26,7 +26,7 @@ export function setEndpoints(app) {
 	})
 	app.post('/api/shells/AIsourceManage/deletefile', authenticate, async (req, res) => {
 		const { username } = await getUserByToken(req.cookies.accessToken)
-		deleteAISourceFile(username, req.body.AISourceFile)
+		await deleteAISourceFile(username, req.body.AISourceFile)
 		res.status(200).json({ message: 'File deleted successfully' })
 	})
 }
