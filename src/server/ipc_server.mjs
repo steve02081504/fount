@@ -57,8 +57,17 @@ export class IPCManager {
 				const result = await shell.ArgumentsHandler(username, args)
 				socket.write(JSON.stringify({ status: 'ok', result }) + '\n') // 添加换行符作为结束
 			}
+			else if (command.type === 'invokeshell') {
+				const { username, shellname, data } = command.data
+				console.log(`调用 shell ${shellname} 作为 ${username}，参数：${JSON.stringify(data)}`)
+				const shell = await loadShell(username, shellname)
+				const result = await shell.IPCInvokeHandler(username, data)
+				socket.write(JSON.stringify({ status: 'ok', result }) + '\n')
+			}
 			else if (command.type === 'shutdown')
 				shutdown()
+			else if (command.type === 'ping')
+				socket.write(JSON.stringify({ status: 'ok', message: 'pong' }) + '\n')
 			else
 				socket.write(JSON.stringify({ status: 'error', message: '不支持的命令类型' }) + '\n')
 		} catch (err) {

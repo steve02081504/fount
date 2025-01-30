@@ -1,4 +1,7 @@
 import { renderTemplate } from '../../scripts/template.mjs'
+import { applyTheme } from '../../scripts/theme.mjs'
+
+applyTheme()
 
 const fileImportTab = document.getElementById('file-import-tab')
 const textImportTab = document.getElementById('text-import-tab')

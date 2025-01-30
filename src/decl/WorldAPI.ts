@@ -25,32 +25,32 @@ export class WorldAPI_t {
 	Uninstall: (reason: string, from: string) => void;
 
 	interfaces: {
-		config: {
+		config?: {
 			GetData: () => Promise<any>
 			SetData: (data: any) => Promise<void>
 		},
-		chat: {
-			GetGreeting: (arg: chatReplyRequest_t, index: number) => Promise<chatReply_t | null>
-			GetGroupGreeting: (arg: chatReplyRequest_t, index: number) => Promise<chatReply_t | null>
-			GetPrompt: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, detail_level: number) => Promise<single_part_prompt_t>;
-			GetChatLogForCharname: (arg: chatReplyRequest_t, charname: string) => Promise<chatLogEntry_t[]>
-			AddChatLogEntry: (arg: chatReplyRequest_t, entry: chatLogEntry_t) => void
-			GetCharReply: (arg: chatReplyRequest_t, charname: string) => Promise<chatReply_t | null>
-			MessageEdit: (arg: {
+		chat?: {
+			GetGreeting?: (arg: chatReplyRequest_t, index: number) => Promise<chatReply_t | null>
+			GetGroupGreeting?: (arg: chatReplyRequest_t, index: number) => Promise<chatReply_t | null>
+			GetPrompt?: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, detail_level: number) => Promise<single_part_prompt_t>;
+			GetChatLogForCharname?: (arg: chatReplyRequest_t, charname: string) => Promise<chatLogEntry_t[]>
+			AddChatLogEntry?: (arg: chatReplyRequest_t, entry: chatLogEntry_t) => void
+			GetCharReply?: (arg: chatReplyRequest_t, charname: string) => Promise<chatReply_t | null>
+			MessageEdit?: (arg: {
 				index: number
 				original: chatLogEntry_t
 				edited: chatReply_t
 				chat_log: chatLogEntry_t[]
 				extension?: any
 			}) => Promise<chatReply_t>
-			MessageEditting: (arg: {
+			MessageEditting?: (arg: {
 				index: number
 				original: chatLogEntry_t
 				edited: chatReply_t
 				chat_log: chatLogEntry_t[]
 				extension?: any
 			}) => Promise<void>
-			MessageDelete: (arg: {
+			MessageDelete?: (arg: {
 				index: number
 				chat_log: chatLogEntry_t[]
 				chat_entry: chatLogEntry_t

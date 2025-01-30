@@ -66,6 +66,10 @@ export async function init() {
 		console.log(e.error)
 		e.preventDefault()
 	})
+	globalThis.addEventListener('unhandledRejection', (e) => {
+		console.log(e.reason)
+		e.preventDefault()
+	})
 	if (!await new IPCManager().startServer()) return false
 
 	console.freshLine('server start', 'server starting')
