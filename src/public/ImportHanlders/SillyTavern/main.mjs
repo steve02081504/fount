@@ -1,6 +1,6 @@
 import { getAvailablePath } from './path.mjs'
 import data_reader from './data_reader.mjs'
-import fs from 'npm:fs-extra'
+import fs from 'npm:fs-extra@11.3.0'
 import path from 'node:path'
 import { saveJsonFile } from '../../../scripts/json_loader.mjs'
 import { GetV2CharDataFromV1 } from './engine/charData.mjs'
