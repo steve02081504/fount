@@ -87,15 +87,15 @@ class timeSlice_t {
 	static async fromJSON(json, username) {
 		const chars = {}
 		for (const charname of json.chars)
-			chars[charname] = await LoadChar(username, charname)
+			chars[charname] = await LoadChar(username, charname).catch(() => {})
 
 		return Object.assign(new timeSlice_t(), {
 			...json,
 			chars,
 			world_id: json.world,
-			world: json.world ? await loadWorld(username, json.world) : undefined,
+			world: json.world ? await loadWorld(username, json.world).catch(() => {}) : undefined,
 			player_id: json.player,
-			player: json.player ? await loadPersona(username, json.player) : undefined,
+			player: json.player ? await loadPersona(username, json.player).catch(() => {}) : undefined,
 		})
 	}
 }

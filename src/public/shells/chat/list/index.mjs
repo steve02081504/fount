@@ -1,5 +1,6 @@
 import { renderTemplate } from '../../../scripts/template.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
+import { parseRegexFromString, escapeRegExp } from '../../../scripts/regex.mjs'
 
 const chatListContainer = document.getElementById('chat-list-container')
 const sortSelect = document.getElementById('sort-select')
@@ -24,19 +25,72 @@ async function fetchChatList() {
 	}
 }
 
+/**
+ * Applies all filter conditions to a chat.
+ * @param {object} chat - The chat object.
+ * @param {RegExp[]} commonFilters - Array of common filters.
+ * @param {RegExp[]} forceFilters - Array of forced filters.
+ * @param {RegExp[]} excludeFilters - Array of excluded filters.
+ * @returns {boolean} - True if the chat matches all conditions, false otherwise.
+ */
+function applyFilters(chat, commonFilters, forceFilters, excludeFilters) {
+	const chatString = JSON.stringify(chat)
+
+	// Check for common filters (at least one must match)
+	const hasCommonMatch = commonFilters.length === 0 || commonFilters.some(filter => filter.test(chatString))
+
+	// Check for forced filters (all must match)
+	const hasForceMatch = forceFilters.every(filter => filter.test(chatString))
+
+	// Check for excluded filters (none must match)
+	const hasExcludeMatch = excludeFilters.some(filter => filter.test(chatString))
+
+	return hasCommonMatch && hasForceMatch && !hasExcludeMatch
+}
+
+/**
+ * Filters the chat list based on user input.
+ */
+function filterChatList() {
+	const filters = filterInput.value.toLowerCase().split(' ').filter(f => f)
+
+	const commonFilters = []
+	const forceFilters = []
+	const excludeFilters = []
+
+	function parseRegexFilter(filter) {
+		if (filter.startsWith('+') || filter.startsWith('-')) filter = filter.slice(1)
+		const parsed = parseRegexFromString(filter)
+		return parsed ? parsed : new RegExp(escapeRegExp(filter))
+	}
+
+	// Categorize filters
+	for (const filter of filters) {
+		const regex = parseRegexFilter(filter)
+
+		if (filter.startsWith('+'))
+			forceFilters.push(regex)
+		else if (filter.startsWith('-'))
+			excludeFilters.push(regex)
+		else
+			commonFilters.push(regex)
+
+	}
+
+	// Apply filters and get filtered chat list
+	const filteredChatList = chatList.filter(chat =>
+		applyFilters(chat, commonFilters, forceFilters, excludeFilters)
+	)
+
+	return filteredChatList
+}
+
 async function renderChatList() {
-	const filteredAndSortedList = chatList
-		.filter(chat => {
-			const filterText = filterInput.value.toLowerCase()
-			return chat.chatid.toLowerCase().includes(filterText) ||
-				chat.chars.some(char => char.toLowerCase().includes(filterText)) ||
-				chat.lastMessageSender.toLowerCase().includes(filterText) ||
-				chat.lastMessageContent.toLowerCase().includes(filterText)
-		})
+	const filteredAndSortedList = filterChatList()
 		.sort((a, b) => {
 			const sortValue = sortSelect.value
-			const timeA = new Date(a.lastMessageTime).getTime() // 将时间字符串转换为时间戳
-			const timeB = new Date(b.lastMessageTime).getTime() // 将时间字符串转换为时间戳
+			const timeA = new Date(a.lastMessageTime).getTime()
+			const timeB = new Date(b.lastMessageTime).getTime()
 			if (sortValue === 'time_asc')
 				return timeA - timeB
 			else
