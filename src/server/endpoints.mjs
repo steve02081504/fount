@@ -13,6 +13,12 @@ import { IPCManager } from './ipc_server.mjs'
  */
 export function registerEndpoints(app) {
 	// 注册路由
+	app.get('/api/test/error', (req, res) => {
+		throw new Error('test error')
+	})
+	app.get('/api/test/async_error', async (req, res) => {
+		throw new Error('test error')
+	})
 	app.post('/api/login', async (req, res) => {
 		const { username, password, deviceid } = req.body
 		const result = await login(username, password, deviceid)
@@ -76,12 +82,8 @@ export function registerEndpoints(app) {
 	app.post('/api/runshell', authenticate, async (req, res) => {
 		const { username } = await getUserByToken(req.cookies.accessToken)
 		const { shellname, args } = req.body
-		try {
-			await IPCManager.sendCommand('runshell', { username, shellname, args })
-			res.status(200).json({ message: 'Shell command sent successfully.' })
-		} catch (err) {
-			res.status(500).json({ message: 'Failed to send shell command.' })
-		}
+		await IPCManager.sendCommand('runshell', { username, shellname, args })
+		res.status(200).json({ message: 'Shell command sent successfully.' })
 	})
 
 	for (const part of partsList) {
@@ -109,12 +111,7 @@ export function registerEndpoints(app) {
 				return patharr[0]
 			})()
 
-			try {
-				await loadPart(username, part, partName)
-			} catch (error) {
-				console.error(`Failed to load part ${partName}:`, error)
-				return res.status(500).send('Internal Server Error')
-			}
+			await loadPart(username, part, partName)
 
 			next()
 		}

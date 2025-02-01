@@ -5,13 +5,8 @@ export function setEndpoints(app) {
 	// fount自带的/api/getlist/AIsources已经可以返回列表了，不用再次实现
 	app.post('/api/shells/AIsourceManage/getfile', authenticate, async (req, res) => {
 		const { username } = await getUserByToken(req.cookies.accessToken)
-		try {
-			const data = await getAISourceFile(username, req.body.AISourceFile)
-			res.status(200).json(data)
-		} catch (e) {
-			res.status(404).json({ error: 'file not found' })
-		}
-
+		const data = await getAISourceFile(username, req.body.AISourceFile)
+		res.status(200).json(data)
 	})
 	app.post('/api/shells/AIsourceManage/setfile', authenticate, async (req, res) => {
 		const { username } = await getUserByToken(req.cookies.accessToken)
@@ -21,7 +16,7 @@ export function setEndpoints(app) {
 	})
 	app.post('/api/shells/AIsourceManage/addfile', authenticate, async (req, res) => {
 		const { username } = await getUserByToken(req.cookies.accessToken)
-		addAISourceFile(username, req.body.AISourceFile)
+		await addAISourceFile(username, req.body.AISourceFile)
 		res.status(200).json({ message: 'File added successfully' })
 	})
 	app.post('/api/shells/AIsourceManage/deletefile', authenticate, async (req, res) => {

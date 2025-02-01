@@ -202,6 +202,12 @@ async function addFile() {
 	const newFileName = prompt('请输入新的 AI 来源文件名 (请勿包含后缀名):')
 	if (!newFileName) return
 
+	// 验证文件名是否有效
+	if (!isValidFileName(newFileName)) {
+		alert('文件名不能包含以下字符： / \\ : * ? " < > |')
+		return
+	}
+
 	try {
 		const response = await fetch('/api/shells/AIsourceManage/addfile', {
 			method: 'POST',
@@ -219,6 +225,11 @@ async function addFile() {
 		console.error('Failed to add file:', error)
 		alert('Failed to add file: ' + error.message)
 	}
+}
+
+function isValidFileName(fileName) {
+	const invalidChars = /["*/:<>?\\|]/
+	return !invalidChars.test(fileName)
 }
 
 // 初始化

@@ -2,7 +2,7 @@ import { getUserByUsername, getUserDictionary } from './auth.mjs'
 import { on_shutdown } from './on_shutdown.mjs'
 import fs from 'node:fs'
 import url from 'node:url'
-import { __dirname, setDefaultWindowTitle } from './server.mjs'
+import { __dirname, setDefaultStuff } from './server.mjs'
 import { loadData, saveData } from './setting_loader.mjs'
 import { loadPart } from './managers/index.mjs'
 
@@ -74,7 +74,7 @@ export async function loadPartBase(username, parttype, partname, Initargs, {
 		console.trace()
 		throw error
 	}
-	setDefaultWindowTitle()
+	setDefaultStuff()
 	return parts_set[username][parttype][partname]
 }
 
