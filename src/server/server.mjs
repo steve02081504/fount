@@ -1,7 +1,6 @@
-import express from 'npm:express'
-import bodyParser from 'npm:body-parser'
-import cookieParser from 'npm:cookie-parser'
-import fileUpload from 'npm:express-fileupload'
+import express from 'npm:express@^5.0.1'
+import cookieParser from 'npm:cookie-parser@^1.4.0'
+import fileUpload from 'npm:express-fileupload@^1.5.0'
 import path from 'node:path'
 import fs from 'node:fs'
 import process from 'node:process'
@@ -25,8 +24,11 @@ app.use((req, res, next) => {
 app.use(express.json({ limit: Infinity }))
 app.use(express.urlencoded({ limit: Infinity, extended: true }))
 app.use(fileUpload())
-app.use(bodyParser.json())
 app.use(cookieParser())
+const errorHandler = (err, req, res, next) => {
+	console.error(err)
+	res.status(500).json({ message: 'Internal Server Error', errors: err.errors, error: err.message })
+}
 
 function get_config() {
 	if (!fs.existsSync(__dirname + '/data/config.json')) {
@@ -54,8 +56,9 @@ function setWindowTitle(title) {
 	process.stdout.write(`\x1b]2;${title}\x1b\x5c`)
 }
 
-export function setDefaultWindowTitle() {
+export function setDefaultStuff() {
 	setWindowTitle('fount')
+	app.use(errorHandler)
 }
 
 export let hosturl = 'http://localhost:' + config.port
@@ -100,7 +103,7 @@ export async function init() {
 	const titleBackup = process.title
 	on_shutdown(() => setWindowTitle(titleBackup))
 	createTray()
-	setDefaultWindowTitle()
+	setDefaultStuff()
 	console.freshLine('server start', Array(Math.floor(Math.random() * 7)).fill('fo-').join('') + 'fount!')
 	return true
 }

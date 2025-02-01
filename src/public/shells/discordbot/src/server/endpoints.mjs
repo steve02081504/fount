@@ -5,23 +5,15 @@ export function setEndpoints(app) {
 	app.post('/api/shells/discordbot/start', authenticate, async (req, res) => {
 		const { username } = await getUserByToken(req.cookies.accessToken)
 		const { botname } = req.body
-		try {
-			await runBot(username, botname)
-			res.status(200).json({ message: 'start ok', botname })
-		} catch (error) {
-			res.status(500).json({ message: error.message })
-		}
+		await runBot(username, botname)
+		res.status(200).json({ message: 'start ok', botname })
 	})
 
 	app.post('/api/shells/discordbot/stop', authenticate, async (req, res) => {
 		const { username } = await getUserByToken(req.cookies.accessToken)
 		const { botname } = req.body
-		try {
-			await stopBot(username, botname)
-			res.status(200).json({ message: 'stop ok', botname })
-		} catch (error) {
-			res.status(500).json({ message: error.message })
-		}
+		await stopBot(username, botname)
+		res.status(200).json({ message: 'stop ok', botname })
 	})
 
 	app.get('/api/shells/discordbot/getbotlist', authenticate, async (req, res) => {
