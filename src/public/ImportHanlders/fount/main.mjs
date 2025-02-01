@@ -53,7 +53,7 @@ async function ImportByText(username, text) {
 				let request = await fetch(line, { method: 'HEAD' })
 				if (request.ok) {
 					const type = request.headers.get('content-type')
-					const allowedTypes = ['application/zip', 'image/png', 'image/apng', 'image/jpng']
+					const allowedTypes = ['application/octet-stream', 'application/zip', 'image/png', 'image/apng', 'image/jpng']
 					if (!allowedTypes.includes(type))
 						throw new Error(`Unsupported file type: ${type}`)
 				}

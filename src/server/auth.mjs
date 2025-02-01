@@ -1,5 +1,6 @@
 import * as jose from 'npm:jose'
 import fs from 'node:fs'
+import fse from 'npm:fs-extra@^11.0.0'
 import crypto from 'node:crypto'
 import { config, save_config, __dirname } from './server.mjs'
 import path from 'node:path'
@@ -305,7 +306,11 @@ export async function login(username, password, deviceId = 'unknown') {
 	}
 
 	const userdir = getUserDictionary(username)
-	try { fs.mkdirSync(userdir, { recursive: true }) } catch { }
+	if (!fs.existsSync(userdir)) try {
+		fs.mkdirSync(path.dirname(userdir), { recursive: true })
+		// 自`/default/user`复制到用户目录
+		fse.copySync(path.join(__dirname, '/default/user'), userdir)
+	} catch { }
 	for (const subdir of ['AIsources', 'chars', 'personas', 'settings', 'shells', 'worlds', 'ImportHanlders', 'AIsourceGenerators'])
 		try { fs.mkdirSync(userdir + '/' + subdir, { recursive: true }) } catch { }
 

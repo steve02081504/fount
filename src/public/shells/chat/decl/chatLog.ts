@@ -26,11 +26,11 @@ export class chatReplyRequest_t {
 	Charname: string
 	UserCharname: string
 	ReplyToCharname?: string
-	locale: locale_t
+	locale: locale_t // 常见用法：switch (args.locale.split('-')[0]) 来多语言info或开场白
 	time: timeStamp_t
 	chat_log: chatLogEntry_t[]
-	AddChatLogEntry: (entry: chatReply_t) => Promise<chatLogEntry_t>
-	Update: () => Promise<chatReplyRequest_t>
+	AddChatLogEntry: (entry: chatReply_t) => Promise<chatLogEntry_t> // 调用这个来主动或定时发信息
+	Update: () => Promise<chatReplyRequest_t> // 调用这个来在定时任务时获取最新args
 	world: WorldAPI_t
 	user: UserAPI_t
 	char: charAPI_t
@@ -53,8 +53,8 @@ export class chatLogEntry_t {
 		buffer: Buffer;
 		description: string;
 	}[]
-	logContextBefore: chatLogEntry_t[]
-	logContextAfter: chatLogEntry_t[]
+	logContextBefore: chatLogEntry_t[] // 内容会被展开到此信息前
+	logContextAfter: chatLogEntry_t[] // 展开到其后
 	extension: {
 		timeSlice: {
 			chars: Map<string, charAPI_t>;
