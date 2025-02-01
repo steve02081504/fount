@@ -37,7 +37,7 @@ export async function initializeChat() {
 	doHeartbeat()
 
 	document.addEventListener('visibilitychange', () => {
-		if (document.visibilityState == 'visible') doHeartbeat()
+		if (document.visibilityState == 'visible') startHeartbeat()
 		else stopHeartbeat()
 	})
 
