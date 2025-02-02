@@ -71,7 +71,7 @@ Some code comes from [GentianAphrodite](https://github.com/steve02081504/Gentian
 		config: {
 			// 获取角色的配置数据
 			GetData: () => ({
-				AIsource: AIsource?.filename, // 返回当前使用的AI源的文件名
+				AIsource: AIsource?.filename || "", // 返回当前使用的AI源的文件名
 			}),
 			// 设置角色的配置数据
 			SetData: async (data) => {
@@ -178,7 +178,7 @@ export default {
 		config: {
 			// 获取角色的配置数据
 			GetData: () => ({
-				AIsource: AIsource?.filename, // 返回当前使用的AI源的文件名
+				AIsource: AIsource?.filename || "", // 返回当前使用的AI源的文件名
 			}),
 			// 设置角色的配置数据
 			SetData: async (data) => {
