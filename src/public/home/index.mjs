@@ -40,9 +40,9 @@ async function getCharDetailsCached(char) {
 const CharDOMCache = {}
 async function renderCharView(charDetails, charname) {
 	// Check if data has changed before rendering
-	if (JSON.stringify(CharDOMCache[charname]?.info) === JSON.stringify(charDetails)) 
+	if (JSON.stringify(CharDOMCache[charname]?.info) === JSON.stringify(charDetails))
 		return CharDOMCache[charname].node
-	
+
 
 	const roleElement = await renderTemplate('char_list_view', charDetails)
 	const actionsContainer = roleElement.querySelector('.card-actions > div') // Target the inner div

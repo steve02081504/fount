@@ -22,7 +22,7 @@ export async function createTray() {
 
 		if (platform === 'win32')
 			iconPath = path.join(__dirname, '/src/public/favicon.ico')
-		 else
+		else
 			iconPath = path.join(__dirname, '/src/public/icon.png')
 
 		const base64Icon = await getBase64Icon(iconPath)

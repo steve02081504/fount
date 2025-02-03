@@ -3,5 +3,11 @@
 	"deno.lint": true,
 	"files.exclude": {
 		"node_modules": true
-	}
+	},
+	"html.format.wrapLineLength": 0,
+	"eslint.validate": [
+		"javascript",
+		"javascriptreact",
+		"html",
+	]
 }
