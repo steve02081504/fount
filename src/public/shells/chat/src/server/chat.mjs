@@ -236,10 +236,11 @@ async function getChatRequest(chatid, charname) {
 	delete other_chars[charname]
 
 	const result = {
+		chat_id: chatid,
+		char_id: charname,
 		username,
 		UserCharname,
 		Charname: charinfo.name || charname,
-		chatid,
 		locale,
 		chat_log: chatMetadata.chatLog,
 		Update: () => getChatRequest(chatid, charname),

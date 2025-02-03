@@ -26,6 +26,7 @@ export async function buildPromptStruct(
 	const { char, user, world, other_chars, plugins, chat_log, UserCharname, ReplyToCharname, Charname } = args
 	/** @type {prompt_struct_t} */
 	const result = {
+		char_id: args.char_id,
 		UserCharname,
 		ReplyToCharname,
 		Charname,
@@ -113,13 +114,14 @@ export function margeStructPromptChatLog(/** @type {prompt_struct_t} */ prompt) 
 		...Object.values(prompt.plugin_prompts).map(plugin => plugin.additional_chat_log || []).flat(),
 		...prompt.char_prompt?.additional_chat_log || [],
 	]
+	/** @type {chatLogEntry_t[]} */
 	const flat_result = []
 	for (const entry of result) {
 		if (entry.logContextBefore) flat_result.push(...entry.logContextBefore)
 		flat_result.push(entry)
 		if (entry.logContextAfter) flat_result.push(...entry.logContextAfter)
 	}
-	return flat_result
+	return flat_result.filter(entry => !entry.charVisibility || entry.charVisibility.includes(prompt.char_id))
 }
 
 export function structPromptToSingle(/** @type {prompt_struct_t} */ prompt) {

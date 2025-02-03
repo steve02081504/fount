@@ -29,6 +29,7 @@ export type chatLogEntry_t = {
 	extension: {};
 }
 export type prompt_struct_t = {
+	char_id: string
 	Charname: string
 	UserCharname: string
 	user_prompt: single_part_prompt_t
