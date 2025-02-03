@@ -51,7 +51,7 @@ article img {
 }
 
 /* 标签容器 */
-.tags-container {
+.details-container {
 	width: 300px;
 	/* 桌面端宽度，与卡片相同 */
 	display: none;
@@ -65,9 +65,11 @@ article img {
 		/* 鼠标悬浮时宽度翻倍 */
 	}
 
-	.card-container:hover .tags-container {
-		display: block;
+	.card-container:hover .details-container {
+		display: flex;
 		/* 鼠标悬浮时显示标签 */
+		flex-direction: column;
+		justify-content: space-between;
 	}
 }
 
@@ -85,10 +87,12 @@ article img {
 		aspect-ratio: 1 / 1;
 	}
 
-	.tags-container {
+	.details-container {
 		width: 50%;
 		/* 标签容器占据一半 */
-		display: block;
+		display: flex;
 		/* 移动端始终显示标签 */
+		flex-direction: column;
+		justify-content: space-between;
 	}
 }

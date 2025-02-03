@@ -1,12 +1,15 @@
 import optimizeRegex from 'npm:eslint-plugin-optimize-regex'
 import UnusedImports from 'npm:eslint-plugin-unused-imports'
+import html from 'npm:eslint-plugin-html'
 
 export default [
 	{
 		plugins: {
 			'optimize-regex': optimizeRegex,
 			'unused-imports': UnusedImports,
+			'html': html
 		},
+		files: ['**/*.html', '**/*.js', '**/*.mjs'],
 		ignores: ['**/dist/*'],
 		rules: {
 			// 移除多余的分号

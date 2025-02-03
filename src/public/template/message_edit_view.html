@@ -1,5 +1,4 @@
-<div class="chat-message w-full flex-grow overflow-y-auto items-start mb-4" id="message-${safeTimeStamp}"
-	data-template-type="edit">
+<div class="chat-message w-full flex-grow overflow-y-auto items-start mb-4" id="message-${safeTimeStamp}" data-template-type="edit">
 	<div class="avatar">
 		<div class="w-10 h-10 rounded-full">
 			<img src="${avatar}" alt="${name}" />
@@ -11,22 +10,17 @@
 			<span class="timestamp text-xs text-gray-400">${timeStamp}</span>
 		</div>
 		<div class="edit-area mt-1 flex gap-2">
-			<textarea id="edit-input-${safeTimeStamp}" class="textarea textarea-bordered flex-grow"
-				placeholder="Type a message...">${content_for_edit}</textarea>
+			<textarea id="edit-input-${safeTimeStamp}" class="textarea textarea-bordered flex-grow" placeholder="Type a message...">${content_for_edit}</textarea>
 			<div class="flex flex-col gap-2">
 				<div class="edit-button-group">
-					<button id="confirm-button-${safeTimeStamp}" class="btn btn-sm btn-success" title="确认"><img
-							src="https://api.iconify.design/line-md/confirm.svg" /></button>
-					<button id="cancel-button-${safeTimeStamp}" class="btn btn-sm btn-error" title="取消"><img
-							src="https://api.iconify.design/line-md/close.svg" /></button>
-					<button id="upload-edit-button-${safeTimeStamp}" class="btn btn-secondary" title="上传"><img
-							src="https://api.iconify.design/line-md/upload.svg" /></button>
+					<button id="confirm-button-${safeTimeStamp}" class="btn btn-sm btn-success" title="确认"><img src="https://api.iconify.design/line-md/confirm.svg" /></button>
+					<button id="cancel-button-${safeTimeStamp}" class="btn btn-sm btn-error" title="取消"><img src="https://api.iconify.design/line-md/close.svg" /></button>
+					<button id="upload-edit-button-${safeTimeStamp}" class="btn btn-secondary" title="上传"><img src="https://api.iconify.design/line-md/upload.svg" /></button>
 				</div>
 			</div>
 		</div>
 		<input type="file" id="file-edit-input-${safeTimeStamp}" class="hidden" multiple />
-		<div id="attachment-edit-preview-${safeTimeStamp}"
-			class="attachment-edit-preview p-4 flex gap-4 overflow-x-auto">
+		<div id="attachment-edit-preview-${safeTimeStamp}" class="attachment-edit-preview p-4 flex gap-4 overflow-x-auto">
 			<!-- 附件预览 -->
 		</div>
 		<div class="attachments"></div>

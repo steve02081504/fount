@@ -1,6 +1,5 @@
 <div class="card-container bg-base-100 shadow-xl group">
-	<div class="card-content"
-		style="background-image: url(${info.avatar}); background-size: contain; background-position: center; background-repeat: no-repeat;">
+	<div class="card-content" style="background-image: url(${info.avatar || 'https://api.iconify.design/line-md/person.svg'}); background-size: contain; background-position: center; background-repeat: no-repeat;">
 		<div class="text-content">
 			<h2 class="card-title">${info.name}</h2>
 			<p class="line-clamp-3">${info.description}</p>
@@ -9,15 +8,18 @@
 			</div>
 		</div>
 	</div>
-	<div class="tags-container z-[50]">
-		${(info.tags && info.tags.length > 0) ? `
-		<div class="tags-list-container h-full overflow-y-auto p-4">
+
+	<div class="details-container z-[50] h-full overflow-y-auto p-4 bg-neutral bg-opacity-50">
+		<div class="tags-container">
+			${(info.tags && info.tags.length > 0) ? `
 			${info.tags.map((tag) => `<span class="badge badge-primary">${tag}</span>`).join(' ')}
+			` : 'No tags'}
 		</div>
-		` : `
-		<div class="h-full overflow-y-auto p-4">
-			No tags
+		<div class="char-details-container">
+			${info.version ? `<div class="char-info-item">版本：<code>${info.version}</code></div>` : ''}
+			${info.author ? `<div class="char-info-item">作者：${info.author}</div>` : ''}
+			${info.homepage ? `<div class="char-info-item"><a href="${info.homepage}" target="_blank">主页</a></div>` : ''}
+			${info.issuepage ? `<div class="char-info-item"><a href="${info.issuepage}" target="_blank">问题反馈</a></div>` : ''}
 		</div>
-		`}
 	</div>
 </div>

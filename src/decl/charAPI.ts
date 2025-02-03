@@ -84,7 +84,7 @@ export class charAPI_t {
 					output: string
 					error: string
 					time: timeStamp_t
-				}|{
+				} | {
 					role: role_t
 					content: string
 				})[]

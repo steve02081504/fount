@@ -39,7 +39,7 @@ export async function initializeChat() {
 	document.addEventListener('visibilitychange', () => {
 		if (document.visibilityState == 'visible')
 			startHeartbeat()
-		 else if (Notification?.permission != 'granted')
+		else if (Notification?.permission != 'granted')
 			stopHeartbeat()
 	})
 

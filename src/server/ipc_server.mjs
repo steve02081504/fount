@@ -97,7 +97,7 @@ export class IPCManager {
 						const response = JSON.parse(message)
 						if (response.status === 'ok')
 							resolve(response.result) // 返回结果
-						 else
+						else
 							reject(new Error(response.message || '未知错误'))
 
 					} catch (err) {
