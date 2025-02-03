@@ -249,6 +249,7 @@ import path from 'node:path'
 					logContextBefore: [],
 				}
 				function AddLongTimeLog(entry) {
+					entry.charVisibility = [args.char_id]
 					result?.logContextBefore?.push?.(entry)
 					prompt_struct.char_prompt.additional_chat_log.push(entry)
 				}
@@ -406,6 +407,7 @@ ${fs.readFileSync(path.join(__dirname, 'src/decl/charAPI.ts'), 'utf-8')}
 					logContextBefore: [],
 				}
 				function AddLongTimeLog(entry) {
+					entry.charVisibility = [args.char_id]
 					result?.logContextBefore?.push?.(entry)
 					prompt_struct.char_prompt.additional_chat_log.push(entry)
 				}

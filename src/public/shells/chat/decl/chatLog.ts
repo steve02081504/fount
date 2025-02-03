@@ -22,6 +22,7 @@ export class chatReply_t {
 
 export class chatReplyRequest_t {
 	chat_id: string
+	char_id: string
 	username: string
 	Charname: string
 	UserCharname: string
@@ -55,6 +56,7 @@ export class chatLogEntry_t {
 	}[]
 	logContextBefore: chatLogEntry_t[] // 内容会被展开到此信息前
 	logContextAfter: chatLogEntry_t[] // 展开到其后
+	charVisibility?: string[] // 可见的角色的char_id列表，若无则全可见
 	extension: {
 		timeSlice: {
 			chars: Map<string, charAPI_t>;
