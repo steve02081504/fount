@@ -54,8 +54,14 @@ export async function renderMessage(message) {
 		})
 	}
 
-	if (message.role == 'char')
+	if (message.role == 'char') {
 		enableSwipe(messageElement)
+		if (document.visibilityState != 'visible' && Notification?.permission == 'granted')
+			new Notification(message.name, {
+				body: message.content,
+				icon: message.avatar
+			})
+	}
 
 	return messageElement
 }
