@@ -62,7 +62,7 @@ export default {
 	interfaces: {
 		config: {
 			GetData: () => ({
-				AIsource: AIsource?.filename || "",
+				AIsource: AIsource?.filename || '',
 				chardata,
 			}),
 			SetData: async (data) => {
