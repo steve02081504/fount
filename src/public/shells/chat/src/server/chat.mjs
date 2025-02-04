@@ -235,6 +235,7 @@ async function getChatRequest(chatid, charname) {
 	const other_chars = { ...timeSlice.chars }
 	delete other_chars[charname]
 
+	/** @type {import('../../decl/chatLog.ts').chatReplyRequest_t} */
 	const result = {
 		chat_id: chatid,
 		char_id: charname,
@@ -260,7 +261,8 @@ async function getChatRequest(chatid, charname) {
 		other_chars,
 		chat_summary: timeSlice.summary,
 		chat_scoped_char_memory: timeSlice.chars_memories[charname] ??= {},
-		plugins: []
+		plugins: [],
+		extension: {}
 	}
 
 	if (timeSlice.world?.interfaces?.chat?.GetChatLogForCharname)

@@ -3,6 +3,7 @@ import { charAPI_t } from '../../../../decl/charAPI.ts';
 import { WorldAPI_t } from '../../../../decl/WorldAPI.ts';
 import { UserAPI_t } from '../../../../decl/UserAPI.ts';
 import { pluginAPI_t } from '../../../../decl/PluginAPI.ts';
+import { Buffer } from "node:buffer";
 
 export class chatReply_t {
 	name?: string;
@@ -39,6 +40,7 @@ export class chatReplyRequest_t {
 	plugins: pluginAPI_t[]
 	chat_summary: string
 	chat_scoped_char_memory: {}
+	extension: {}
 }
 
 export class chatLogEntry_t {
