@@ -182,15 +182,14 @@ async function deleteFile() {
 
 		console.log('File delete successfully.')
 
+		activeFile = null
 		await fetchFileList()
-		activeFile = fileList.length > 0 ? fileList[0] : null
-		if (activeFile)
-			loadEditor(activeFile)
-		else
-			if (jsonEditor) {
-				jsonEditor.destroy()
-				jsonEditor = null
-			}
+		if (fileList.length > 0)
+			loadEditor(activeFile = fileList[0])
+		else if (jsonEditor) {
+			jsonEditor.destroy()
+			jsonEditor = null
+		}
 
 	} catch (error) {
 		console.error('Failed to delete file:', error)
