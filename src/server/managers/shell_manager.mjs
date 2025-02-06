@@ -12,13 +12,13 @@ export async function loadShell(username, shellname) {
 }
 
 export async function unloadShell(username, shellname) {
-	unloadPart(username, 'shells', shellname, app)
+	await unloadPart(username, 'shells', shellname, app)
 }
 
 export async function initShell(username, shellname) {
-	initPart(username, 'shells', shellname)
+	await initPart(username, 'shells', shellname)
 }
 
-export function uninstallShell(username, shellname) {
-	uninstallPartBase(username, 'shells', shellname)
+export async function uninstallShell(username, shellname) {
+	await uninstallPartBase(username, 'shells', shellname)
 }

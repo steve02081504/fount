@@ -32,8 +32,8 @@ export async function LoadChar(username, charname) {
 	return char
 }
 
-export function UnloadChar(username, charname, reason) {
-	unloadPart(username, 'chars', charname, reason)
+export async function UnloadChar(username, charname, reason) {
+	await unloadPart(username, 'chars', charname, reason)
 	saveCharData(username)
 }
 

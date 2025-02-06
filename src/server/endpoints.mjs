@@ -93,8 +93,8 @@ export function registerEndpoints(app) {
 		})
 		app.get('/api/getdetails/' + part, authenticate, async (req, res) => {
 			const { username } = await getUserByToken(req.cookies.accessToken)
-			const name = req.query.name
-			const details = await getPartDetails(username, part, name)
+			const { name, nocache } = req.query
+			const details = await getPartDetails(username, part, name, nocache)
 			res.status(200).json(details)
 		})
 		const autoloader = async (req, res, next) => {

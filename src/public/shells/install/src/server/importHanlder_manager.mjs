@@ -9,8 +9,8 @@ export async function LoadImportHanlder(username, tempname) {
 	return await loadPartBase(username, 'ImportHanlders', tempname)
 }
 
-export function UnloadImportHanlder(username, tempname, reason) {
-	unloadPart(username, 'ImportHanlders', tempname, reason)
+export async function UnloadImportHanlder(username, tempname, reason) {
+	await unloadPart(username, 'ImportHanlders', tempname, reason)
 }
 
 export async function initImportHanlder(username, tempname) {

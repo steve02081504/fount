@@ -5,6 +5,7 @@ import url from 'node:url'
 import { __dirname, setDefaultStuff } from './server.mjs'
 import { loadData, saveData } from './setting_loader.mjs'
 import { loadPart } from './managers/index.mjs'
+import { FullProxy } from '../scripts/proxy.mjs'
 
 const parts_set = {}
 
@@ -18,6 +19,10 @@ export function GetPartPath(username, parttype, partname) {
 export async function baseMjsPartLoader(path) {
 	const part = (await import(url.pathToFileURL(path + '/main.mjs'))).default
 	return part
+}
+
+export function isPartLoaded(username, parttype, partname) {
+	return !!parts_set?.[username]?.[parttype]?.[partname]
 }
 
 export async function baseloadPart(username, parttype, partname, {
@@ -75,7 +80,7 @@ export async function loadPartBase(username, parttype, partname, Initargs, {
 		throw error
 	}
 	setDefaultStuff()
-	return parts_set[username][parttype][partname]
+	return new FullProxy(() => parts_set[username][parttype][partname])
 }
 
 export async function initPart(username, parttype, partname, Initargs, {
@@ -91,23 +96,23 @@ export async function initPart(username, parttype, partname, Initargs, {
 	await afterInit(part)
 }
 
-export function unloadPart(username, parttype, partname, unLoadargs, {
+export async function unloadPart(username, parttype, partname, unLoadargs, {
 	unLoader = (part) => part.Unload?.(unLoadargs),
 } = {}) {
 	const part = parts_set[username][parttype][partname]
 	try {
-		unLoader(part)
+		await unLoader(part)
 	}
 	catch (error) {
 		console.error(error)
 	}
 	delete parts_set[username][parttype][partname]
 }
-on_shutdown(() => {
+on_shutdown(async () => {
 	for (const username in parts_set)
 		for (const parttype in parts_set[username])
 			for (const partname in parts_set[username][parttype])
-				unloadPart(username, parttype, partname)
+				await unloadPart(username, parttype, partname)
 })
 
 export async function uninstallPartBase(username, parttype, partname, unLoadargs, uninstallArgs, {
@@ -121,7 +126,7 @@ export async function uninstallPartBase(username, parttype, partname, unLoadargs
 } = {}) {
 	let part = parts_set[username][parttype][partname]
 	try {
-		unloadPart(username, parttype, partname, unLoadargs, { unLoader })
+		await unloadPart(username, parttype, partname, unLoadargs, { unLoader })
 	} catch (error) {
 		console.error(error)
 	}
@@ -163,11 +168,11 @@ export function getPartInfo(part, locale) {
 	return getLocalizedInfo(part?.info, locale)
 }
 
-export async function getPartDetails(username, parttype, partname) {
+export async function getPartDetails(username, parttype, partname, nocache = false) {
 	const parts_details_cache = loadData(username, 'parts_details_cache')
 	let details = parts_details_cache?.[parttype]?.[partname]
-	if (parts_set?.[username]?.[parttype]?.[partname]) details = undefined
-	if (details === undefined) try {
+	if (nocache || parts_set?.[username]?.[parttype]?.[partname]) details = undefined
+	if (!details) try {
 		const part = await baseloadPart(username, parttype, partname).catch(() => loadPart(username, parttype, partname))
 		parts_details_cache[parttype] ??= {}
 		details = parts_details_cache[parttype][partname] = {

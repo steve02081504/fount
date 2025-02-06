@@ -10,7 +10,7 @@ export function setEndpoints(app) {
 	})
 	app.post('/api/shells/AIsourceManage/setfile', authenticate, async (req, res) => {
 		const { username } = await getUserByToken(req.cookies.accessToken)
-		saveAISourceFile(username, req.body.AISourceFile, req.body.data)
+		await saveAISourceFile(username, req.body.AISourceFile, req.body.data)
 		res.status(200).json({ message: 'File saved successfully' })
 
 	})

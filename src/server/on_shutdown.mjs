@@ -1,9 +1,12 @@
+import process from 'node:process'
+
 const shutdowm_functions = []
 export function on_shutdown(func) {
 	shutdowm_functions.unshift(func)
 }
-export function shutdown() {
-	shutdowm_functions.forEach(func => func())
+export async function shutdown() {
+	for (const func of shutdowm_functions)
+		await func()
 	process.exit(0)
 }
 
