@@ -1,5 +1,8 @@
 <div class="card-container bg-base-100 shadow-xl group">
 	<div class="card-content" style="background-image: url(${info.avatar || 'https://api.iconify.design/line-md/person.svg'}); background-size: contain; background-position: center; background-repeat: no-repeat;">
+		<button class="refresh-button">
+			<img src="https://api.iconify.design/line-md/rotate-270.svg" alt="刷新" title="刷新" class="dark:invert">
+		</button>
 		<div class="text-content">
 			<h2 class="card-title">${info.name}</h2>
 			<p class="line-clamp-3">${info.description}</p>

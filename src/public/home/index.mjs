@@ -1,5 +1,5 @@
 import { renderTemplate } from '../scripts/template.mjs'
-import { getCharDetails, getCharList } from '../scripts/parts.mjs'
+import { getCharDetails, noCacheGetCharDetails, getCharList } from '../scripts/parts.mjs'
 import { renderMarkdown } from '../scripts/markdown.mjs'
 import { applyTheme } from '../scripts/theme.mjs'
 import { parseRegexFromString, escapeRegExp } from '../scripts/regex.mjs'
@@ -35,6 +35,9 @@ function handleMouseWheelScroll(event) {
 
 async function getCharDetailsCached(char) {
 	return charDetailsCache[char] ??= await getCharDetails(char)
+}
+async function getCharDetailsRefreshed(char) {
+	return charDetailsCache[char] = await noCacheGetCharDetails(char)
 }
 
 const CharDOMCache = {}
@@ -112,6 +115,11 @@ async function renderCharView(charDetails, charname) {
 	})
 
 	CharDOMCache[charname] = { info: charDetails, node: roleElement }
+
+	const refreshButton = roleElement.querySelector('.refresh-button')
+	refreshButton.addEventListener('click', async (event) => {
+		roleElement.replaceWith(await renderCharView(await getCharDetailsRefreshed(charname), charname))
+	})
 
 	return roleElement
 }

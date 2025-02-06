@@ -6,6 +6,10 @@ export async function getCharDetails(charname) {
 	const response = await fetch('/api/getdetails/chars?name=' + charname)
 	return response.json()
 }
+export async function noCacheGetCharDetails(charname) {
+	const response = await fetch('/api/getdetails/chars?name=' + charname + '&nocache=true')
+	return response.json()
+}
 export async function getWorldList() {
 	const response = await fetch('/api/getlist/worlds')
 	return response.json()
