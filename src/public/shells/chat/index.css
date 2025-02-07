@@ -98,17 +98,12 @@ body {
 	max-height: 100px;
 }
 
-/* 文件图标样式 */
-.attachment .preview.file-icon {
-	filter: invert(var(--file-icon-invert));
+[style*="--shiki-light"][style*="--shiki-dark"] {
+	color: var(--shiki-light) !important;
 }
 
-html {
-	--file-icon-invert: 100%;
-}
-
-html[data-theme="dark"] {
-	--file-icon-invert: 0%;
+[data-theme="dark"] [style*="--shiki-light"][style*="--shiki-dark"] {
+	color: var(--shiki-dark) !important;
 }
 
 /* 附件文件名 */

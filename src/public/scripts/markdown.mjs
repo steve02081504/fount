@@ -4,10 +4,10 @@ import remarkParse from 'https://esm.run/remark-parse'
 import remarkRehype from 'https://esm.run/remark-rehype'
 import remarkMath from 'https://esm.run/remark-math'
 import { unified } from 'https://esm.run/unified'
-// import rehypeShiki from 'https://esm.run/@shikijs/rehype'
 import remarkGfm from 'https://esm.run/remark-gfm'
 import remarkBreaks from 'https://esm.run/remark-breaks'
-import rehypeHighlight from 'https://esm.run/rehype-highlight'
+import rehypePrettyCode from 'https://esm.run/rehype-pretty-code'
+import { transformerCopyButton } from 'https://esm.run/@rehype-pretty/transformers'
 
 const convertor = unified()
 	.use(remarkParse)
@@ -19,18 +19,18 @@ const convertor = unified()
 	.use(remarkGfm, {
 		singleTilde: false,
 	})
-	//*
-	.use(rehypeHighlight)
-	/*/ // toooo slow
-	.use(rehypeShiki, {
-		// or `theme` for a single theme
-		themes: {
-			light: 'vitesse-light',
-			dark: 'vitesse-dark',
+	.use(rehypePrettyCode, {
+		theme: {
+			dark: "github-dark-dimmed",
+			light: "github-light",
 		},
-		inline: 'tailing-curly-colon', // or other options
+		transformers: [
+			transformerCopyButton({
+				visibility: 'always',
+				feedbackDuration: 3_000,
+			}),
+		],
 	})
-	*/
 	.use(rehypeKatex)
 	.use(rehypeStringify, {
 		allowDangerousCharacters: true,
