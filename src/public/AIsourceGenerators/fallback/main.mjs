@@ -5,7 +5,6 @@ import { loadAIsource } from '../../../server/managers/AIsources_manager.mjs'
 
 export default {
 	GetSource: async (config, { username }) => {
-		let index = -1
 		const sources = await Promise.all(config.sources.map(source => loadAIsource(username, source)))
 		/** @type {AIsource_t} */
 		const result = {
@@ -15,12 +14,12 @@ export default {
 					avatar: '',
 					name: config.name,
 					provider: config.provider || 'unknown',
-					description: 'polling',
-					description_markdown: 'polling',
+					description: 'fallback',
+					description_markdown: 'fallback',
 					version: '0.0.0',
 					author: 'steve02081504',
 					homepage: '',
-					tags: ['polling'],
+					tags: ['fallback'],
 				}
 			},
 			is_paid: false,
@@ -28,22 +27,24 @@ export default {
 
 			Unload: () => { },
 			Call: async (prompt) => {
+				let index = 0
 				while (true) try {
-					index++
-					index %= config.sources.length
 					return await sources[index].Call(prompt)
 				}
 				catch (e) {
+					index++
+					if (index >= config.sources.length) throw new Error('all sources failed')
 					console.error(e)
 				}
 			},
 			StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
+				let index = 0
 				while (true) try {
-					index++
-					index %= config.sources.length
 					return await sources[index].StructCall(prompt_struct)
 				}
 				catch (e) {
+					index++
+					if (index >= config.sources.length) throw new Error('all sources failed')
 					console.error(e)
 				}
 			},
