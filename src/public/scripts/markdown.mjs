@@ -21,8 +21,8 @@ const convertor = unified()
 	})
 	.use(rehypePrettyCode, {
 		theme: {
-			dark: "github-dark-dimmed",
-			light: "github-light",
+			dark: 'github-dark-dimmed',
+			light: 'github-light',
 		},
 		transformers: [
 			transformerCopyButton({
