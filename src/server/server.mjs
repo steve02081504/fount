@@ -18,7 +18,7 @@ export const __dirname = path.resolve(import.meta.dirname + '/../../')
 
 app.use((req, res, next) => {
 	if (!(req.url.includes('/heartbeat/') || req.url.endsWith('/heartbeat')))
-		console.log(`Request received: ${req.method} ${req.url}`)
+		console.log(`Request received: ${req.method}\t${req.url}`)
 	next()
 })
 app.use(express.json({ limit: Infinity }))

@@ -19,6 +19,14 @@ article img {
 	white-space: pre-wrap;
 }
 
+[style*="--shiki-light"][style*="--shiki-dark"] {
+	color: var(--shiki-light) !important;
+}
+
+[data-theme="dark"] [style*="--shiki-light"][style*="--shiki-dark"] {
+	color: var(--shiki-dark) !important;
+}
+
 /* 卡片容器 */
 .card-container {
 	display: flex;
@@ -106,10 +114,12 @@ article img {
 	padding: 0;
 	margin: 0;
 	cursor: pointer;
-	opacity: 0; /* Initially hidden */
+	opacity: 0;
+	/* Initially hidden */
 	transition: opacity 0.3s ease;
 }
 
 .card-container:hover .refresh-button {
-	opacity: 1; /* Visible on hover */
+	opacity: 1;
+	/* Visible on hover */
 }
