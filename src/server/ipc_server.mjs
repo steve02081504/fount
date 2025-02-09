@@ -55,14 +55,14 @@ export class IPCManager {
 				console.log(`运行 shell ${shellname} 作为 ${username}，参数：${JSON.stringify(args)}`)
 				const shell = await loadShell(username, shellname)
 				const result = await shell.ArgumentsHandler(username, args)
-				socket.write(JSON.stringify({ status: 'ok', result }) + '\n') // 添加换行符作为结束
+				socket.write(JSON.stringify({ status: 'ok', data: result }) + '\n') // 添加换行符作为结束
 			}
 			else if (command.type === 'invokeshell') {
 				const { username, shellname, data } = command.data
 				console.log(`调用 shell ${shellname} 作为 ${username}，参数：${JSON.stringify(data)}`)
 				const shell = await loadShell(username, shellname)
 				const result = await shell.IPCInvokeHandler(username, data)
-				socket.write(JSON.stringify({ status: 'ok', result }) + '\n')
+				socket.write(JSON.stringify({ status: 'ok', data: result }) + '\n')
 			}
 			else if (command.type === 'shutdown')
 				shutdown()
@@ -96,7 +96,7 @@ export class IPCManager {
 					try {
 						const response = JSON.parse(message)
 						if (response.status === 'ok')
-							resolve(response.result) // 返回结果
+							resolve(response.data) // 返回结果
 						else
 							reject(new Error(response.message || '未知错误'))
 
