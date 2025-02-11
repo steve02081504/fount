@@ -78,6 +78,8 @@ export class charAPI_t {
 		},
 		shellassist?: {
 			Assist: (data: {
+				username: string
+				UserCharname: string
 				shelltype: string
 				shellhistory: ({
 					command: string
@@ -88,12 +90,17 @@ export class charAPI_t {
 					role: role_t
 					content: string
 				})[]
+				pwd: string
 				command_now: string
 				command_error: string
 				rejected_commands: string[]
+				chat_scoped_char_memory: {}
 			}) => Promise<{
-				fixed_command: string
-				talk: string
+				name: string
+				avatar: string
+				recommend_command: string
+				content: string
+				chat_scoped_char_memory: {}
 			}>
 		}
 	};

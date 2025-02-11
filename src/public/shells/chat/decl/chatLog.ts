@@ -2,7 +2,7 @@ import { locale_t, role_t, timeStamp_t } from '../../../../decl/basedefs.ts';
 import { charAPI_t } from '../../../../decl/charAPI.ts';
 import { WorldAPI_t } from '../../../../decl/WorldAPI.ts';
 import { UserAPI_t } from '../../../../decl/UserAPI.ts';
-import { pluginAPI_t } from '../../../../decl/PluginAPI.ts';
+import { pluginAPI_t } from '../../../../decl/pluginAPI.ts';
 import { Buffer } from "node:buffer";
 
 export class chatReply_t {
@@ -22,6 +22,15 @@ export class chatReply_t {
 }
 
 export class chatReplyRequest_t {
+	// 一个传递当前shell所支持功能的结构
+	supported_functions: {
+		markdown: boolean;
+		mathjax: boolean;
+		html: boolean;
+		unsafe_html: boolean;
+		files: boolean;
+		add_message: boolean;
+	}
 	chat_id: string
 	char_id: string
 	username: string
@@ -31,13 +40,13 @@ export class chatReplyRequest_t {
 	locale: locale_t // 常见用法：switch (args.locale.split('-')[0]) 来多语言info或开场白
 	time: timeStamp_t
 	chat_log: chatLogEntry_t[]
-	AddChatLogEntry: (entry: chatReply_t) => Promise<chatLogEntry_t> // 调用这个来主动或定时发信息
-	Update: () => Promise<chatReplyRequest_t> // 调用这个来在定时任务时获取最新args
+	AddChatLogEntry?: (entry: chatReply_t) => Promise<chatLogEntry_t> // 调用这个来主动或定时发信息
+	Update?: () => Promise<chatReplyRequest_t> // 调用这个来在定时任务时获取最新args
 	world: WorldAPI_t
 	user: UserAPI_t
 	char: charAPI_t
 	other_chars: Record<string, charAPI_t>
-	plugins: pluginAPI_t[]
+	plugins: Record<string, pluginAPI_t>
 	chat_summary: string
 	chat_scoped_char_memory: {}
 	extension: {}

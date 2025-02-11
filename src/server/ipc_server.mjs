@@ -67,7 +67,7 @@ export class IPCManager {
 			else if (command.type === 'shutdown')
 				shutdown()
 			else if (command.type === 'ping')
-				socket.write(JSON.stringify({ status: 'ok', message: 'pong' }) + '\n')
+				socket.write(JSON.stringify({ status: 'ok', data: 'pong' }) + '\n')
 			else
 				socket.write(JSON.stringify({ status: 'error', message: '不支持的命令类型' }) + '\n')
 		} catch (err) {
