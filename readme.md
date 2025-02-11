@@ -12,21 +12,37 @@
 
 ## 安装
 
-Linux/macOS：
+### Linux/macOS
 
 ```bash
 # 若需要，定义环境变量$FOUNT_DIR来指定fount目录
 curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.sh | bash
 ```
 
-Windows：
+如果你不想在安装后立即打开fount，可以这样：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.sh | bash -s init
+```
+
+### Windows
+
+懒得思考？下载[release](https://github.com/steve02081504/fount/releases)中的exe文件，直接运行即可。
+
+若你喜欢使用shell，在powershell中也可以安装并运行fount：
 
 ```pwsh
 # 若需要，定义环境变量$env:FOUNT_DIR来指定fount目录
 irm https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1 | iex
 ```
 
-或者下载[release](https://github.com/steve02081504/fount/releases)中的exe文件，直接运行即可。
+如果你不想在安装后立即打开fount，可以这样：
+
+```pwsh
+$scriptContent = Invoke-RestMethod https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1
+Invoke-Expression "function fountInstaller { $scriptContent }"
+fountInstaller init
+```
 
 ## fount 是什么？
 
