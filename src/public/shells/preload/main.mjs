@@ -1,4 +1,4 @@
-import { loadPart } from "../../../server/managers/index.mjs";
+import { loadPart } from '../../../server/managers/index.mjs'
 
 export default {
 	info: {

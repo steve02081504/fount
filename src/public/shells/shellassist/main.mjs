@@ -15,10 +15,25 @@ export default {
 	},
 	Load: (app) => { },
 	Unload: (app) => { },
-	IPCInvokeHandler: async (user, data) => {
-		const char = await LoadChar(user, data.charname)
-		if (char?.interfaces?.shellassist)
-			return char.interfaces.shellassist.Assist(data)
+	IPCInvokeHandler: async (username, data) => {
+		const char = await LoadChar(username, data.charname)
+		if (char?.interfaces?.shellassist) {
+			const result = await char.interfaces.shellassist.Assist({
+				...data,
+				username,
+				UserCharname: data.UserCharname || username,
+				chat_scoped_char_memory: data.chat_scoped_char_memorys[data.charname] || {},
+				chat_scoped_char_memorys: undefined
+			})
+			return {
+				...result,
+				chat_scoped_char_memorys: {
+					...data.chat_scoped_char_memorys,
+					[data.charname]: result.chat_scoped_char_memory
+				},
+				chat_scoped_char_memory: undefined
+			}
+		}
 		else
 			throw new Error(`Char ${data.char} does not support shellassist interface`)
 	}

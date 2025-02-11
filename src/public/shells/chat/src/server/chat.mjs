@@ -237,6 +237,14 @@ async function getChatRequest(chatid, charname) {
 
 	/** @type {import('../../decl/chatLog.ts').chatReplyRequest_t} */
 	const result = {
+		supported_functions: {
+			markdown: true,
+			mathjax: true,
+			html: true,
+			unsafe_html: true,
+			files: true,
+			add_message: true,
+		},
 		chat_id: chatid,
 		char_id: charname,
 		username,
