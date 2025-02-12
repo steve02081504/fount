@@ -1,0 +1,18 @@
+{
+	"home_function_buttons": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "终端辅助"
+				},
+				"en": {
+					"title": "Terminal Assist"
+				}
+			},
+			"level": 2,
+			"url": "/shells/shellassist",
+			"button": "<img src=\"https://api.iconify.design/line-md/laptop.svg\" class=\"dark:invert\"/>"
+		}
+	],
+	"home_char_interfaces": []
+}
