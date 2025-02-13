@@ -29,5 +29,8 @@ export default {
 			await runBot(user, botname)
 		else
 			console.error(`Unknown action: ${action}`)
+	},
+	ReStartJob: async (user, botname) => {
+		await runBot(user, botname)
 	}
 }

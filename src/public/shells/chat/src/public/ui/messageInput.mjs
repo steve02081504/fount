@@ -21,7 +21,7 @@ export function initializeMessageInput() {
 }
 
 function handleKeyPress(event) {
-	if (event.key === 'Enter' && (event.shiftKey || event.ctrlKey)) {
+	if (event.key === 'Enter' && event.ctrlKey) {
 		event.preventDefault()
 		sendMessage()
 	}

@@ -3,6 +3,7 @@ import { on_shutdown } from '../../../../../server/on_shutdown.mjs'
 import { loadData, loadTempData, saveData } from '../../../../../server/setting_loader.mjs'
 import { LoadChar } from '../../../../../server/managers/char_manager.mjs'
 import { getAllUserNames } from '../../../../../server/auth.mjs'
+import { StartJob, EndJob } from "../../../../../server/jobs.mjs";
 /** @typedef {import('../../../../../decl/charAPI.ts').charAPI_t} charAPI_t */
 
 /**
@@ -73,6 +74,7 @@ export async function runBot(username, botname) {
 	const char = await LoadChar(username, config.char)
 	if (!char.interfaces.discord) throw new Error(`Char ${config.char} does not support discord interface`)
 	botCache[botname] = await startBot(config, char)
+	StartJob(username, 'discordbot', botname)
 }
 
 export async function stopBot(username, botname) {
@@ -81,6 +83,7 @@ export async function stopBot(username, botname) {
 		botCache[botname].destroy()
 		delete botCache[botname]
 	}
+	EndJob(username, 'discordbot', botname)
 }
 
 export function getRunningBotList(username) {

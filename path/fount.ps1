@@ -28,6 +28,27 @@ if (!(Get-Command fount -ErrorAction SilentlyContinue)) {
 	$path = $path -join ';'
 	[System.Environment]::SetEnvironmentVariable('PATH', $path, [System.EnvironmentVariableTarget]::User)
 }
+# fount Terminal注册
+$WTjsonDirPath = "$env:LOCALAPPDATA/Microsoft/Windows Terminal/Fragments/fount"
+if (!(Test-Path $WTjsonDirPath)) {
+	New-Item -ItemType Directory -Force -Path $WTjsonDirPath
+}
+$WTjsonPath = "$WTjsonDirPath/fount.json"
+$jsonContent = [ordered]@{
+	'$help'   = "https://aka.ms/terminal-documentation"
+	'$schema' = "https://aka.ms/terminal-profiles-schema"
+	profiles  = @(
+		[ordered]@{
+			name              = "fount"
+			commandline       = "fount.bat"
+			startingDirectory = $FOUNT_DIR
+			icon              = Join-Path $FOUNT_DIR src/public/favicon.ico
+		}
+	)
+} | ConvertTo-Json -Depth 100 -Compress
+if ($jsonContent -ne (Get-Content $WTjsonPath -ErrorAction Ignore)) {
+	Set-Content -Path $WTjsonPath -Value $jsonContent
+}
 
 # Git 安装和更新
 if (!(Get-Command git -ErrorAction SilentlyContinue)) {

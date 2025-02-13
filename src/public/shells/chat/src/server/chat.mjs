@@ -509,12 +509,24 @@ async function addChatLogEntry(chatid, entry) {
 
 	if (is_VividChat(chatMetadata)) saveChat(chatid)
 
-	{
-		const char = entry.timeSlice.charname ?? null
-		const freq_data = (await getCharReplyFrequency(chatid)).filter(f => f.charname !== char)
-		const nextreply = await getNextCharForReply(freq_data)
-		if (nextreply) triggerCharReply(chatid, nextreply)
-	}
+	let freq_data = await getCharReplyFrequency(chatid)
+	let char = entry.timeSlice.charname ?? null
+	;(async () => {
+		while(true) {
+			freq_data = freq_data.filter(f => f.charname !== char)
+			const nextreply = await getNextCharForReply(freq_data)
+			if (nextreply) try{
+				await triggerCharReply(chatid, nextreply)
+				return
+			}
+			catch (error) {
+				console.error(error)
+				char = nextreply
+			}
+			else
+				return
+		}
+	})()
 
 	return entry
 }
@@ -688,10 +700,10 @@ export async function triggerCharReply(chatid, charname) {
 		charname = await getNextCharForReply(frequency_data)
 		if (!charname) return
 	}
-	const request = await getChatRequest(chatid, charname)
-
 	const char = timeSlice.chars[charname]
 	if (!char) throw new Error('char not found')
+
+	const request = await getChatRequest(chatid, charname)
 
 	if (timeSlice?.world?.interfaces?.chat?.GetCharReply)
 		result = timeSlice.world.interfaces.chat.GetCharReply(request, charname)
