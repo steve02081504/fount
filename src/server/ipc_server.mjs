@@ -40,7 +40,7 @@ export class IPCManager {
 
 			})
 
-			this.server.listen(IPC_PORT, () => {
+			this.server.listen(IPC_PORT, '::', () => {
 				console.freshLine('server start', 'IPC 服务器已启动')
 				resolve(true) // 成功启动服务器
 			})
