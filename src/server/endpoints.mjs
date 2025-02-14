@@ -5,7 +5,6 @@ import { getPartDetails } from './parts_loader.mjs'
 import { generateVerificationCode, verifyVerificationCode } from '../scripts/verifycode.mjs'
 import { ms } from '../scripts/ms.mjs'
 import { getPartList, loadPart, partsList } from './managers/index.mjs'
-import { expandHomeRegistry } from './home.mjs'
 import { IPCManager } from './ipc_server.mjs'
 
 /**
@@ -42,15 +41,18 @@ export function registerEndpoints(app) {
 	app.post('/api/register', async (req, res) => {
 		const { username, password, verificationcode } = req.body
 		const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress
-		regrquesttimes = regrquesttimes.filter(entry => entry.time > Date.now())
-		regrquesttimes.push({ ip, time: Date.now() + registerRequestInterval })
-		if (regrquesttimes.filter(entry => entry.ip === ip).length > registerRequestLimit) {
-			res.status(429).json({ message: 'Too many requests' })
-			return
-		}
-		if (verifyVerificationCode(verificationcode, ip) === false) {
-			res.status(401).json({ message: 'verification code incorrect' })
-			return
+		const localIPs = ['127.0.0.1', '::1']
+		if (!localIPs.includes(ip)) {
+			regrquesttimes = regrquesttimes.filter(entry => entry.time > Date.now())
+			regrquesttimes.push({ ip, time: Date.now() + registerRequestInterval })
+			if (regrquesttimes.filter(entry => entry.ip === ip).length > registerRequestLimit) {
+				res.status(429).json({ message: 'Too many requests' })
+				return
+			}
+			if (verifyVerificationCode(verificationcode, ip) === false) {
+				res.status(401).json({ message: 'verification code incorrect' })
+				return
+			}
 		}
 		const result = await register(username, password)
 		res.status(result.status).json(result)
@@ -60,19 +62,6 @@ export function registerEndpoints(app) {
 
 	app.post('/api/authenticate', authenticate, (req, res) => {
 		res.status(200).json({ message: 'Authenticated' })
-	})
-
-	app.post('/api/setlocale', authenticate, async (req, res) => {
-		const user = await getUserByToken(req.cookies.accessToken)
-		const { locale } = req.body
-		user.locale = locale
-		console.log(user.username + ' set locale to ' + locale)
-		res.status(200).json({ message: 'setlocale ok' })
-	})
-	app.get('/api/gethomeregistry', authenticate, async (req, res) => {
-		const { username } = await getUserByToken(req.cookies.accessToken)
-		const expandedRegistry = await expandHomeRegistry(username)
-		res.status(200).json(expandedRegistry)
 	})
 
 	app.get('/api/getparttypelist', authenticate, async (req, res) => {

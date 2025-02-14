@@ -10,6 +10,8 @@ const errorMessage = document.getElementById('error-message')
 const verificationCodeGroup = document.getElementById('verification-code-group')
 const sendVerificationCodeBtn = document.getElementById('send-verification-code-btn')
 
+const isLocalOrigin = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname)
+
 const formContent = {
 	login: {
 		title: 'Login',
@@ -71,7 +73,8 @@ function updateFormDisplay() {
 	submitBtn.textContent = currentForm.submitBtn
 	toggleLink.innerHTML = `${currentForm.toggleLink.text}<a href="#" class="link link-primary">${currentForm.toggleLink.link}</a>`
 	confirmPasswordGroup.style.display = isLoginForm ? 'none' : 'flex'
-	verificationCodeGroup.style.display = isLoginForm ? 'none' : 'flex'
+	if (isLocalOrigin) verificationCodeGroup.style.display = 'none'
+	else verificationCodeGroup.style.display = isLoginForm ? 'none' : 'flex'
 	errorMessage.textContent = ''
 	if (isLoginForm) {
 		verificationCodeSent = false
@@ -138,20 +141,23 @@ async function handleFormSubmit(event) {
 	const password = document.getElementById('password').value
 	const deviceid = generateDeviceId()
 
+	let verificationcode = ''
 	if (!isLoginForm) {
 		const confirmPassword = document.getElementById('confirm-password').value
 		if (password !== confirmPassword) {
 			errorMessage.textContent = formContent.error.passwordMismatch
 			return
 		}
-		if (!verificationCodeSent) {
-			errorMessage.textContent = formContent.error.verificationCodeError
-			return
-		}
-		const verificationCode = document.getElementById('verification-code').value
-		if (!verificationCode) {
-			errorMessage.textContent = formContent.error.verificationCodeError
-			return
+		if (!isLocalOrigin) {
+			if (!verificationCodeSent) {
+				errorMessage.textContent = formContent.error.verificationCodeError
+				return
+			}
+			verificationcode = document.getElementById('verification-code').value.trim()
+			if (!verificationcode) {
+				errorMessage.textContent = formContent.error.verificationCodeError
+				return
+			}
 		}
 	}
 
@@ -159,7 +165,7 @@ async function handleFormSubmit(event) {
 	try {
 		const body = isLoginForm
 			? JSON.stringify({ username, password, deviceid })
-			: JSON.stringify({ username, password, deviceid, verificationcode: document.getElementById('verification-code').value })
+			: JSON.stringify({ username, password, deviceid, verificationcode })
 		const response = await fetch(endpoint, {
 			method: 'POST',
 			headers: {
@@ -179,7 +185,7 @@ async function handleFormSubmit(event) {
 				if (redirect) window.location.href = decodeURIComponent(redirect)
 				else {
 					localStorage.setItem('hasLoggedIn', 'true')
-					window.location.href = hasLoggedIn ? '/home' : '/tutorial'
+					window.location.href = `/shells/${hasLoggedIn ? 'home' : 'tutorial'}`
 				}
 			} else {
 				console.log('Registration successful!')

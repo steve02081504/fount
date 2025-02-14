@@ -3,7 +3,7 @@ import { on_shutdown } from '../../../../../server/on_shutdown.mjs'
 import { loadData, loadTempData, saveData } from '../../../../../server/setting_loader.mjs'
 import { LoadChar } from '../../../../../server/managers/char_manager.mjs'
 import { getAllUserNames } from '../../../../../server/auth.mjs'
-import { StartJob, EndJob } from "../../../../../server/jobs.mjs";
+import { StartJob, EndJob } from '../../../../../server/jobs.mjs'
 /** @typedef {import('../../../../../decl/charAPI.ts').charAPI_t} charAPI_t */
 
 /**

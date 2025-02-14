@@ -1,6 +1,6 @@
 import cryptoRandomString from 'npm:crypto-random-string'
 import { ms } from './ms.mjs'
-import { notify } from '../server/notify.mjs'
+import { notify } from './notify.mjs'
 
 // 用于存储验证码、过期时间和ID
 let verificationCodes = []

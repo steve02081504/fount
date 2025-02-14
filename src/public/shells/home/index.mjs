@@ -1,8 +1,8 @@
-import { renderTemplate } from '../scripts/template.mjs'
-import { getCharDetails, noCacheGetCharDetails, getCharList } from '../scripts/parts.mjs'
-import { renderMarkdown } from '../scripts/markdown.mjs'
-import { applyTheme } from '../scripts/theme.mjs'
-import { parseRegexFromString, escapeRegExp } from '../scripts/regex.mjs'
+import { renderTemplate } from '../../scripts/template.mjs'
+import { getCharDetails, noCacheGetCharDetails, getCharList } from '../../scripts/parts.mjs'
+import { renderMarkdown } from '../../scripts/markdown.mjs'
+import { applyTheme } from '../../scripts/theme.mjs'
+import { parseRegexFromString, escapeRegExp } from '../../scripts/regex.mjs'
 
 const roleContainer = document.getElementById('role-container')
 const characterDescription = document.getElementById('character-description')

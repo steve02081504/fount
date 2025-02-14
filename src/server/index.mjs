@@ -2,7 +2,7 @@ import process from 'node:process'
 import { console } from '../scripts/console.mjs'
 import { init } from './server.mjs'
 import { IPCManager } from './ipc_server.mjs'
-import { ReStartJobs } from "./jobs.mjs";
+import { ReStartJobs } from './jobs.mjs'
 
 console.log('standing by...')
 
