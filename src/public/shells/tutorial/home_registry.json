@@ -1,0 +1,18 @@
+{
+	"home_function_buttons": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "重玩教程"
+				},
+				"en": {
+					"title": "Replay Tutorial"
+				}
+			},
+			"level": 99,
+			"url": "/shells/tutorial",
+			"button": "<img src=\"https://api.iconify.design/line-md/backup-restore.svg\" class=\"dark:invert\"/>"
+		}
+	],
+	"home_char_interfaces": []
+}

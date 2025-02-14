@@ -1,6 +1,6 @@
-import { loadJsonFile } from '../scripts/json_loader.mjs'
-import { getPartListBase, GetPartPath } from './parts_loader.mjs'
-import { loadTempData } from './setting_loader.mjs'
+import { loadJsonFile } from '../../../../../scripts/json_loader.mjs'
+import { getPartListBase, GetPartPath } from '../../../../../server/parts_loader.mjs'
+import { loadTempData } from '../../../../../server/setting_loader.mjs'
 
 // 遍历shell中的home_registry.json文件，获取home_function_buttons和home_char_interfaces
 /*

@@ -1,5 +1,5 @@
-import { shutdown } from './on_shutdown.mjs'
-import { __dirname } from './server.mjs'
+import { shutdown } from '../server/on_shutdown.mjs'
+import { __dirname } from '../server/server.mjs'
 import path from 'node:path'
 import fs from 'node:fs'
 import os from 'node:os'

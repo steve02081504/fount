@@ -10,7 +10,7 @@ import { registerEndpoints } from './endpoints.mjs'
 import { on_shutdown } from './on_shutdown.mjs'
 import { IPCManager } from './ipc_server.mjs'
 import { initAuth } from './auth.mjs'
-import { createTray } from './tray.mjs'
+import { createTray } from '../scripts/tray.mjs'
 
 export const app = express()
 
