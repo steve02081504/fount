@@ -155,7 +155,7 @@ if [[ $# -gt 0 && $1 = 'init' ]]; then
 elif [[ $# -gt 0 && $1 = 'keepalive' ]]; then
 	runargs=($@[1:])
 	run @runargs
-	while $?; do run @runargs; done
+	while $?; do run; done
 else
 	run $@
 fi

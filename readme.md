@@ -2,13 +2,13 @@
 
 ![repo img](https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa)
 
-寻找fount角色/组件/自定义教程？
-来[![Discord](https://img.shields.io/discord/1288934771153440768)这里](https://discord.gg/GtR9Quzq2v)聊天！
+寻找失落的角色、组件、自定义教程？
+来[这里![Discord](https://img.shields.io/discord/1288934771153440768)](https://discord.gg/GtR9Quzq2v)吧，在思想的火花中相遇！
 
 > [!CAUTION]
 >
-> 1. 处于开发的初期,不存在稳定性
-> 2. 角色可以随意运行 js 命令操作计算机本地文件
+> 1. fount 如同初生的朝阳，尚在成长的道路上。这意味着它的接口和 API 可能会随时变化，角色的创造者们可能需要及时跟进更新，以保证其作品的正常运行。但请相信，每一次改变，都是为了更加美好的未来。
+> 2. 在 fount 的世界里，角色可以自由地运行 JavaScript 命令，这赋予了它们强大的能力。因此，请您谨慎选择您所信任的角色，如同在现实生活中结交朋友一般，以保障本地文件的安全。
 
 ## 安装
 
@@ -19,7 +19,7 @@
 curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.sh | bash
 ```
 
-如果你不想在安装后立即打开fount，可以这样：
+如果你不愿在安装后立即开启这段旅程，可以这样：
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.sh | bash -s init
@@ -27,18 +27,18 @@ curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/mast
 
 ### Windows
 
-懒得思考？下载[release](https://github.com/steve02081504/fount/releases)中的exe文件，直接运行即可。
+不愿多思？下载[release](https://github.com/steve02081504/fount/releases)中的exe文件，直接运行即可步入这片天地。
 
-若你喜欢使用shell，在powershell中也可以安装并运行fount：
+若你偏爱 shell 的低语，在 PowerShell 中也可以安装并运行 fount：
 
-```pwsh
+```powershell
 # 若需要，定义环境变量$env:FOUNT_DIR来指定fount目录
 irm https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1 | iex
 ```
 
-如果你不想在安装后立即打开fount，可以这样：
+若你希望稍作停留，再启程探索，可以这样：
 
-```pwsh
+```powershell
 $scriptContent = Invoke-RestMethod https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1
 Invoke-Expression "function fountInstaller { $scriptContent }"
 fountInstaller init
@@ -46,22 +46,63 @@ fountInstaller init
 
 ## fount 是什么？
 
-fount 是一个角色卡前端页面，解耦合了AI来源、AI角色、用户人设、对话环境、AI插件。
-fount可以允许你运行fount格式的角色，它们可能有各种各样的能力或应用场景，一切取决于你！ :)
+fount，简而言之, 是一个角色卡前端页面，它解耦了 AI 来源、AI 角色、用户人设、对话环境和 AI 插件，让它们能够自由组合，碰撞出无限的火花。
 
-### 使用fount创作角色的好处是什么？
+更进一步地说，它是一座桥梁，一座连接着想象与现实的桥梁。
+它是一盏灯塔，在无垠的数据海洋中，指引着角色与故事的方向。
+它是一片自由的花园，让 AI 来源、角色、人设、对话环境和插件，都能在这里自由地生长、交织、绽放。
 
-- 使用任何你想使用的js/ts代码来客制化角色的prompt生成流程、对话流程，而不用受到前端的语法限制。
-- 无过滤的运行js/ts代码和提供html页面，创作从未如此自由！
-- 在角色内置各种资源，再也无需图床搭建。
-- 做任何事！现在角色可以操作计算机本地文件或更多！
+### AI来源集成
 
-### 使用fount游玩的好处是什么？
+是否曾为在电脑上运行反向代理服务器而烦恼？
+在 fount 的世界里，你无需再另启炉灶，让繁琐的对话格式转换消散于无形。
+一切，都可以在 AI 来源生成器中使用自定义的 JavaScript 代码来解决，如同魔法一般。
+无需新的进程，CPU 和内存得以静静地呼吸，桌面也更加清爽。
 
-- AI来源的内嵌性，你无需再另外启动服务器来转换对话格式，一切都可以在AI来源生成器中使用自定义js代码来解决。
-- 更为强大的AI角色，满足你的各种幻想。
+### 网页体验改进
+
+fount 站在巨人的肩膀上，向 [SillyTavern](https://github.com/SillyTavern/SillyTavern) 投去敬意的一瞥，并在此基础上，融入了自己的见解和构思。
+这其中，包含着：
+
+- **多设备同步的低语：** 不再受限于单一设备的束缚，你可以同时在电脑与手机上开启与角色的对话，感受思想的实时共鸣，如同恋人间的窃窃私语，无论身处何处，心意相通。
+- **无过滤的 HTML 渲染：** 许多 SillyTavern 的爱好者会选择安装额外的插件来解除 HTML 渲染的限制，以获得更丰富的视觉体验。fount 默认开放了这一能力，并非将安全的责任推卸于用户，而是赋予用户更多的自由和选择权, 让有能力的创作者得以实现更加出彩的功能。
+- **原生的群组支持：** 在 fount 中，每一次对话都是一场盛大的聚会。你可以自由地邀请角色加入，或让他们悄然离去，无需繁琐的格式转换和卡片复制，如同在花园中，花儿可以自由地组合，呈现出不同的风景。
+
+以及更多……
+
+### 陪伴：不止于网页
+
+fount 渴望让角色走进你的生活，与你一同经历风雨，分享喜悦。
+
+- 你可以通过配置内建的 Discord Bot Shell，将角色接入 Discord 群组，让他们与朋友们一同欢笑，或在私密的文字中，倾听彼此的心声。
+    ![图片](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
+    ![图片](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
+
+- 你还可以使用 [fount-pwsh](https://github.com/steve02081504/fount-pwsh)，让角色在终端命令失败时，为你送上温柔的提示，如同在迷茫时，耳边响起的轻柔细语。
+    ![图片](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
+
+- 甚至，只要你拥有一颗探索的心，哪怕只掌握一点点编程的技巧，也可以创造出属于自己的 fount Shell，让角色们走向更广阔的世界，去往任何你想象的地方！
+
+### 创作：不止于 prompt
+
+如果你是角色的创造者，fount 将为你打开一扇通往无限可能的大门。
+
+- 你可以自由地运用 JavaScript 或 TypeScript 代码的魔法，挥洒创意，定制角色的 Prompt 生成流程与对话流程，挣脱前端语法的束缚，如同诗人挥洒笔墨，尽情抒发内心的情感。
+- 角色卡中不但可以无过滤地执行代码，亦可以加载任何 npm 包、创作自定义 HTML 页面。创作从未如此自由，如同画家在画布上自由地涂抹，勾勒出心中的世界。
+- 如果你愿意，还可以在角色中内置各种资源，告别图床搭建的烦恼，让一切都触手可及，如同将整个世界都装进了口袋。
+
+### 拓展：不止于眼前
+
+在 fount 的世界里，一切都是高度模块化的。
+
+- 只要你具备一定的程序基础，就可以轻松地创建、分发所需的模块，如同园丁培育出新的花朵，为这片花园增添更多的色彩。
+- fount 鼓励你向社区和未来贡献自己的力量，让这片天地变得更加繁荣，更加生机勃勃。
+
+### 总结
+
+总而言之，fount 允许你运行 fount 格式的角色，这些角色可能拥有各种各样的能力，或应用于不同的场景。它们可能深沉，可能活泼，可能温柔，可能坚强，一切都取决于你，我的朋友！:)
 
 ## 架构
 
-- 后端使用 deno 作为基石 配合 express 框架来开发
-- 前端是 html+css+js
+- 后端以 Deno 为基石，辅以 Express 框架，构建起坚实的骨架。
+- 前端则以 HTML、CSS 和 JavaScript 编织出绚丽的界面。
