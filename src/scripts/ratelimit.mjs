@@ -9,7 +9,7 @@ export function is_local_ip(ip) {
  * 生成一个速率限制中间件。
  * @param {object} options 配置选项
  * @param {number} options.maxRequests 最大请求次数
- * @param {string} options.windowMs 时间窗口（例如：'1m', '1h'）
+ * @param {string|number} options.windowMs 时间窗口（例如：'1m', '1h'）
  * @param {boolean} [options.byIP=true] 是否基于 IP 地址限制（默认为 true）
  * @param {boolean} [options.byUsername=false] 是否基于用户名限制（如果提供，优先级高于 IP）
  * @param {string} [options.message='Too many requests'] 超出限制时的消息
