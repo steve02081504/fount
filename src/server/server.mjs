@@ -12,27 +12,34 @@ import { IPCManager } from './ipc_server.mjs'
 import { initAuth } from './auth.mjs'
 import { createTray } from '../scripts/tray.mjs'
 
-export const app = express()
+const app = express()
+const mainRouter = express.Router()
+export const PartsRouter = express.Router()
+const FinalRouter = express.Router()
+
+app.use(mainRouter)
+app.use(PartsRouter)
+app.use(FinalRouter)
 
 export const __dirname = path.resolve(import.meta.dirname + '/../../')
 
-app.use((req, res, next) => {
+mainRouter.use((req, res, next) => {
 	if (!(req.url.includes('/heartbeat/') || req.url.endsWith('/heartbeat')))
 		console.log(`Request received: ${req.method}\t${req.url}`)
 	next()
 })
-app.use(express.json({ limit: Infinity }))
-app.use(express.urlencoded({ limit: Infinity, extended: true }))
-app.use(fileUpload())
-app.use(cookieParser())
-const errorHandler = (err, req, res, next) => {
+mainRouter.use(express.json({ limit: Infinity }))
+mainRouter.use(express.urlencoded({ limit: Infinity, extended: true }))
+mainRouter.use(fileUpload())
+mainRouter.use(cookieParser())
+FinalRouter.use((err, req, res, next) => {
 	console.error(err)
 	res.status(500).json({ message: 'Internal Server Error', errors: err.errors, error: err.message })
-}
-const The404Handler = (req, res) => {
+})
+FinalRouter.use((req, res) => {
 	if (req.accepts('html')) return res.status(404).sendFile(__dirname + '/src/public/404.html')
 	res.status(404).type('txt').send('Not found')
-}
+})
 
 function get_config() {
 	if (!fs.existsSync(__dirname + '/data/config.json')) {
@@ -62,8 +69,6 @@ function setWindowTitle(title) {
 
 export function setDefaultStuff() {
 	setWindowTitle('fount')
-	app.use(errorHandler)
-	// app.use(The404Handler)
 }
 
 export let hosturl = 'http://localhost:' + config.port
@@ -81,8 +86,8 @@ export async function init() {
 	if (!await new IPCManager().startServer()) return false
 
 	console.freshLine('server start', 'server starting')
-	registerEndpoints(app)
-	app.use(express.static(__dirname + '/src/public'))
+	registerEndpoints(mainRouter)
+	mainRouter.use(express.static(__dirname + '/src/public'))
 	const { port, https: httpsConfig } = config // 获取 HTTPS 配置
 
 	let server

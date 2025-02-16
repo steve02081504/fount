@@ -13,8 +13,8 @@ export default {
 			tags: []
 		}
 	},
-	Load: (app) => { },
-	Unload: (app) => { },
+	Load: (router) => { },
+	Unload: (router) => { },
 	ArgumentsHandler: async (user, args) => {
 		loadPart(user, args[0], args[1])
 	},

@@ -1,4 +1,4 @@
-import { setEndpoints, unsetEndpoints } from './src/server/endpoints.mjs'
+import { setEndpoints } from './src/server/endpoints.mjs'
 
 export default {
 	info: {
@@ -13,10 +13,8 @@ export default {
 			tags: []
 		}
 	},
-	Load: async (app) => {
-		setEndpoints(app)
+	Load: async (router) => {
+		setEndpoints(router)
 	},
-	Unload: async (app) => {
-		unsetEndpoints(app)
-	},
+	Unload: async () => { },
 }

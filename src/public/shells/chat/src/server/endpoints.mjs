@@ -24,38 +24,38 @@ import {
 } from './chat.mjs'
 import { Buffer } from 'node:buffer'
 
-export function setEndpoints(app) {
-	app.post('/api/shells/chat/new', authenticate, async (req, res) => {
+export function setEndpoints(router) {
+	router.post('/api/shells/chat/new', authenticate, async (req, res) => {
 		const { username } = await getUserByToken(req.cookies.accessToken)
 		res.status(200).json({ chatid: newChat(username) })
 	})
 
-	app.post('/api/shells/chat/addchar', async (req, res) => {
+	router.post('/api/shells/chat/addchar', async (req, res) => {
 		res.status(200).json(await addchar(req.body.chatid, req.body.charname))
 	})
 
-	app.post('/api/shells/chat/removechar', async (req, res) => {
+	router.post('/api/shells/chat/removechar', async (req, res) => {
 		res.status(200).json(await removechar(req.body.chatid, req.body.charname))
 	})
 
-	app.post('/api/shells/chat/setworld', async (req, res) => {
+	router.post('/api/shells/chat/setworld', async (req, res) => {
 		res.status(200).json(await setWorld(req.body.chatid, req.body.worldname))
 	})
 
-	app.post('/api/shells/chat/setpersona', async (req, res) => {
+	router.post('/api/shells/chat/setpersona', async (req, res) => {
 		res.status(200).json(await setPersona(req.body.chatid, req.body.personaname))
 	})
 
-	app.post('/api/shells/chat/triggercharreply', async (req, res) => {
+	router.post('/api/shells/chat/triggercharreply', async (req, res) => {
 		res.status(200).json(await triggerCharReply(req.body.chatid, req.body.charname))
 	})
 
-	app.post('/api/shells/chat/setcharreplyfrequency', authenticate, async (req, res) => {
+	router.post('/api/shells/chat/setcharreplyfrequency', authenticate, async (req, res) => {
 		const { chatid, charname, frequency } = req.body
 		res.status(200).json(await setCharSpeakingFrequency(chatid, charname, frequency))
 	})
 
-	app.post('/api/shells/chat/adduserreply', authenticate, async (req, res) => {
+	router.post('/api/shells/chat/adduserreply', authenticate, async (req, res) => {
 		const reply = req.body.reply
 		reply.files = reply?.files?.map((file) => ({
 			...file,
@@ -64,19 +64,19 @@ export function setEndpoints(app) {
 		res.status(200).json(await addUserReply(req.body.chatid, req.body.reply))
 	})
 
-	app.post('/api/shells/chat/modifytimeline', authenticate, async (req, res) => {
+	router.post('/api/shells/chat/modifytimeline', authenticate, async (req, res) => {
 		const { chatid, delta } = req.body
 		const entry = await modifyTimeLine(chatid, delta)
 		res.status(200).json(entry)
 	})
 
-	app.post('/api/shells/chat/deletemessage', async (req, res) => {
+	router.post('/api/shells/chat/deletemessage', async (req, res) => {
 		const { chatid, index } = req.body
 		await deleteMessage(chatid, index)
 		res.status(200).json({ message: 'deletemessage ok' })
 	})
 
-	app.post('/api/shells/chat/editmessage', async (req, res) => {
+	router.post('/api/shells/chat/editmessage', async (req, res) => {
 		const { chatid, index, content } = req.body
 		content.files = content?.files?.map((file) => ({
 			...file,
@@ -86,135 +86,48 @@ export function setEndpoints(app) {
 		res.status(200).json(entry)
 	})
 
-	app.post('/api/shells/chat/getcharlist', authenticate, async (req, res) => {
+	router.post('/api/shells/chat/getcharlist', authenticate, async (req, res) => {
 		res.status(200).json(await getCharListOfChat(req.body.chatid))
 	})
 
-	app.post('/api/shells/chat/getchatlog', authenticate, async (req, res) => {
+	router.post('/api/shells/chat/getchatlog', authenticate, async (req, res) => {
 		const { chatid, start, end } = req.body
 		res.status(200).json(await GetChatLog(chatid, start, end))
 	})
 
-	app.post('/api/shells/chat/heartbeat', authenticate, async (req, res) => {
+	router.post('/api/shells/chat/heartbeat', authenticate, async (req, res) => {
 		const { chatid, start } = req.body
 		res.status(200).json(await getHeartbeatData(chatid, start))
 	})
 
-	app.post('/api/shells/chat/getchatloglength', authenticate, async (req, res) => {
+	router.post('/api/shells/chat/getchatloglength', authenticate, async (req, res) => {
 		const { chatid } = req.body
 		res.status(200).json(await GetChatLogLength(chatid))
 	})
 
-	app.post('/api/shells/chat/getpersonaname', async (req, res) => {
+	router.post('/api/shells/chat/getpersonaname', async (req, res) => {
 		res.status(200).json(await GetUserPersonaName(req.body.chatid))
 	})
 
-	app.post('/api/shells/chat/getworldname', async (req, res) => {
+	router.post('/api/shells/chat/getworldname', async (req, res) => {
 		res.status(200).json(await GetWorldName(req.body.chatid))
 	})
-	app.post('/api/shells/chat/list', authenticate, async (req, res) => {
+	router.post('/api/shells/chat/list', authenticate, async (req, res) => {
 		res.status(200).json(await getChatList((await getUserByToken(req.cookies.accessToken)).username))
 	})
 
-	app.delete('/api/shells/chat/delete', authenticate, async (req, res) => {
+	router.delete('/api/shells/chat/delete', authenticate, async (req, res) => {
 		const result = await deleteChat(req.body.chatids, (await getUserByToken(req.cookies.accessToken)).username)
 		res.status(200).json(result)
 	})
 
-	app.post('/api/shells/chat/copy', authenticate, async (req, res) => {
+	router.post('/api/shells/chat/copy', authenticate, async (req, res) => {
 		const result = await copyChat(req.body.chatids, (await getUserByToken(req.cookies.accessToken)).username)
 		res.status(200).json(result)
 	})
 
-	app.post('/api/shells/chat/export', authenticate, async (req, res) => {
+	router.post('/api/shells/chat/export', authenticate, async (req, res) => {
 		const result = await exportChat(req.body.chatids)
 		res.status(200).json(result)
-	})
-}
-
-export function unsetEndpoints(app) {
-	if (!app) return
-	app.post('/api/shells/chat/new', (req, res) => {
-		res.status(404)
-	})
-
-	app.post('/api/shells/chat/addchar', (req, res) => {
-		res.status(404)
-	})
-
-	app.post('/api/shells/chat/removechar', (req, res) => {
-		res.status(404)
-	})
-
-	app.post('/api/shells/chat/setworld', (req, res) => {
-		res.status(404)
-	})
-
-	app.post('/api/shells/chat/setpersona', (req, res) => {
-		res.status(404)
-	})
-
-	app.post('/api/shells/chat/triggercharreply', (req, res) => {
-		res.status(404)
-	})
-
-	app.post('/api/shells/chat/setcharreplyfrequency', (req, res) => {
-		res.status(404)
-	})
-
-	app.post('/api/shells/chat/adduserreply', (req, res) => {
-		res.status(404)
-	})
-
-	app.post('/api/shells/chat/modifytimeline', (req, res) => {
-		res.status(404)
-	})
-
-	app.post('/api/shells/chat/deletemessage', (req, res) => {
-		res.status(404)
-	})
-
-	app.post('/api/shells/chat/editmessage', (req, res) => {
-		res.status(404)
-	})
-
-	app.post('/api/shells/chat/deletelogentry', (req, res) => {
-		res.status(404)
-	})
-
-	app.post('/api/shells/chat/getcharlist', (req, res) => {
-		res.status(404)
-	})
-
-	app.post('/api/shells/chat/getchatlog', (req, res) => {
-		res.status(404)
-	})
-
-	app.post('/api/shells/chat/heartbeat', (req, res) => {
-		res.status(404)
-	})
-
-	app.post('/api/shells/chat/getpersonaname', (req, res) => {
-		res.status(404)
-	})
-
-	app.post('/api/shells/chat/getworldname', (req, res) => {
-		res.status(404)
-	})
-
-	app.post('/api/shells/chat/list', (req, res) => {
-		res.status(404)
-	})
-
-	app.delete('/api/shells/chat/delete', (req, res) => {
-		res.status(404)
-	})
-
-	app.post('/api/shells/chat/copy', (req, res) => {
-		res.status(404)
-	})
-
-	app.post('/api/shells/chat/export', (req, res) => {
-		res.status(404)
 	})
 }

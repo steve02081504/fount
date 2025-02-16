@@ -2,7 +2,7 @@ import open from 'npm:open'
 import { hosturl } from '../../../server/server.mjs'
 import { addchar, newChat, setPersona, setWorld } from './src/server/chat.mjs'
 import { loadChat } from './src/server/chat.mjs'
-import { setEndpoints, unsetEndpoints } from './src/server/endpoints.mjs'
+import { setEndpoints } from './src/server/endpoints.mjs'
 
 export default {
 	info: {
@@ -17,12 +17,10 @@ export default {
 			tags: []
 		}
 	},
-	Load: (app) => {
-		setEndpoints(app)
+	Load: (router) => {
+		setEndpoints(router)
 	},
-	Unload: (app) => {
-		unsetEndpoints(app)
-	},
+	Unload: () => { },
 	ArgumentsHandler: async (user, args) => {
 		const command = args[0]
 		let chatId
