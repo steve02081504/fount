@@ -1,19 +1,5 @@
 ﻿$FOUNT_DIR = Split-Path -Parent $PSScriptRoot
 
-if ($args.Count -gt 0 -and $args[0] -eq 'background') {
-	if (!(Get-Command ps12exe -ErrorAction Ignore)) {
-		Install-Module -Name ps12exe -Scope CurrentUser -Force
-	}
-	$TempDir = [System.IO.Path]::GetTempPath()
-	$exepath = Join-Path $TempDir "fount-background.exe"
-	if (!(Test-Path $exepath)) {
-		ps12exe -inputFile "$FOUNT_DIR/src/runner/background.ps1" -outputFile $exepath
-	}
-	$runargs = $args[1..$args.Count]
-	Start-Process -FilePath $exepath -ArgumentList $runargs
-	exit
-}
-
 $ErrorCount = $Error.Count
 
 # Docker 检测
@@ -28,6 +14,21 @@ if (!(Get-Command fount -ErrorAction SilentlyContinue)) {
 	$path = $path -join ';'
 	[System.Environment]::SetEnvironmentVariable('PATH', $path, [System.EnvironmentVariableTarget]::User)
 }
+
+if ($args.Count -gt 0 -and $args[0] -eq 'background') {
+	if (!(Get-Command ps12exe -ErrorAction Ignore)) {
+		Install-Module -Name ps12exe -Scope CurrentUser -Force
+	}
+	$TempDir = [System.IO.Path]::GetTempPath()
+	$exepath = Join-Path $TempDir "fount-background.exe"
+	if (!(Test-Path $exepath)) {
+		ps12exe -inputFile "$FOUNT_DIR/src/runner/background.ps1" -outputFile $exepath
+	}
+	$runargs = $args[1..$args.Count]
+	Start-Process -FilePath $exepath -ArgumentList $runargs
+	exit
+}
+
 # fount Terminal注册
 $WTjsonDirPath = "$env:LOCALAPPDATA/Microsoft/Windows Terminal/Fragments/fount"
 if (!(Test-Path $WTjsonDirPath)) {
@@ -73,16 +74,45 @@ if (Get-Command git -ErrorAction SilentlyContinue) {
 		git clone https://github.com/steve02081504/fount.git "$FOUNT_DIR/.git-clone" --no-checkout --depth 1
 		Move-Item -Path "$FOUNT_DIR/.git-clone/.git" -Destination "$FOUNT_DIR/.git"
 		Remove-Item -Path "$FOUNT_DIR/.git-clone" -Recurse -Force
-		git -C "$FOUNT_DIR" fetch origin
-		git -C "$FOUNT_DIR" reset --hard origin/master
-		git -C "$FOUNT_DIR" checkout origin/master
 	}
 
 	if ($IN_DOCKER) {
 		Write-Host "Skipping git pull in Docker environment"
 	}
 	else {
-		git -C "$FOUNT_DIR" pull -f --allow-unrelated-histories
+		$currentBranch = git -C "$FOUNT_DIR" rev-parse --abbrev-ref HEAD
+		$remoteBranch = git -C "$FOUNT_DIR" rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>$null
+		if (-not $remoteBranch) {
+			Write-Warning "No upstream branch configured for '$currentBranch'.  Skipping update check."
+		}
+		else {
+			$mergeBase = git -C "$FOUNT_DIR" merge-base $currentBranch $remoteBranch
+			$localCommit = git -C "$FOUNT_DIR" rev-parse $currentBranch
+			$remoteCommit = git -C "$FOUNT_DIR" rev-parse $remoteBranch
+			$status = git -C "$FOUNT_DIR" status --porcelain
+			if ($status) {
+				Write-Warning "Working directory is not clean.  Stash or commit your changes before updating."
+			}
+
+			if ($localCommit -ne $remoteCommit) {
+				if ($mergeBase -eq $localCommit) {
+					Write-Host "Updating from remote repository..."
+					git -C "$FOUNT_DIR" fetch origin
+					git -C "$FOUNT_DIR" reset --hard $remoteBranch
+				}
+				elseif ($mergeBase -eq $remoteCommit) {
+					Write-Host "Local branch is ahead of remote. No update needed."
+				}
+				else {
+					Write-Host "Local and remote branches have diverged. Force updating..."
+					git -C "$FOUNT_DIR" fetch origin
+					git -C "$FOUNT_DIR" reset --hard $remoteBranch
+				}
+			}
+			else {
+				Write-Host "Already up to date."
+			}
+		}
 	}
 }
 else {
