@@ -164,20 +164,25 @@ export async function authenticate(req, res, next) {
 	const accessToken = req.cookies.accessToken
 	const refreshToken = req.cookies.refreshToken
 
-	if (!accessToken) return res.status(401).json({ message: 'Unauthorized' })
+	const Unauthorized = () => {
+		const path = encodeURIComponent(req.originalUrl)
+		if (req.accepts('html')) return res.redirect('/login?redirect=' + path)
+		return res.status(401).json({ message: 'Unauthorized' })
+	}
+	if (!accessToken) return Unauthorized()
 
 	let decoded = await verifyToken(accessToken)
 
 	if (!decoded) {
 		// accessToken 无效，尝试使用 refreshToken 刷新
-		if (!refreshToken) return res.status(401).json({ message: 'Unauthorized' })
+		if (!refreshToken) return Unauthorized()
 
 		const refreshResult = await refresh(refreshToken)
 		if (refreshResult.status !== 200) {
 			// refreshToken 也无效，需要重新登录
 			res.clearCookie('accessToken')
 			res.clearCookie('refreshToken')
-			return res.status(401).json({ message: 'Invalid token' })
+			return Unauthorized()
 		}
 
 		// 刷新成功，设置新的 accessToken 和 refreshToken 到 Cookie

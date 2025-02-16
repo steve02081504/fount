@@ -260,12 +260,7 @@ async function displayFunctionButtons() {
 // 初始化
 async function initializeApp() {
 	applyTheme()
-	try {
-		await setLocale(navigator.language || navigator.userLanguage)
-	} catch (error) {
-		// jump to login page
-		window.location = '/login'
-	}
+	await setLocale(navigator.language || navigator.userLanguage)
 	homeRegistry = await getHomeRegistry()
 	displayFunctionButtons()
 

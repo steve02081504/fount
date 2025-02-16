@@ -1,8 +1,9 @@
 export function ms(duration) {
+	if (Object(duration) instanceof Number) return duration
+
 	const match = /(\d+)\s*(\w+)/.exec(duration)
 	if (!match)
 		throw new Error('Invalid duration format')
-
 
 	const value = parseInt(match[1], 10)
 	const unit = match[2]
