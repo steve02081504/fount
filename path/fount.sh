@@ -53,9 +53,20 @@ if ! command -v fount &> /dev/null; then
 	export PATH="$PATH:$FOUNT_DIR/path"
 fi
 
+if [[ $# -gt 0 && $1 = 'background' ]]; then
+	if command -v fount &> /dev/null; then
+		nohup fount "${@:2}" > /dev/null 2>&1 &
+		exit 0
+	else
+		echo "this script requires fount installed"
+		exit 1
+	fi
+fi
+
 if ! command -v git &> /dev/null; then
 	install_package git
 fi
+
 if command -v git &> /dev/null; then
 	if [ ! -d "$FOUNT_DIR/.git" ]; then
 		rm -rf "$FOUNT_DIR/.git-clone"
@@ -63,14 +74,41 @@ if command -v git &> /dev/null; then
 		git clone https://github.com/steve02081504/fount.git "$FOUNT_DIR/.git-clone" --no-checkout --depth 1
 		mv "$FOUNT_DIR/.git-clone/.git" "$FOUNT_DIR/.git"
 		rm -rf "$FOUNT_DIR/.git-clone"
-		git -C "$FOUNT_DIR" fetch origin
-		git -C "$FOUNT_DIR" reset --hard origin/master
-		git -C "$FOUNT_DIR" checkout origin/master
 	fi
+
 	if [ $IN_DOCKER -eq 1 ]; then
 		echo "Skipping git pull in Docker environment"
 	else
-		git -C "$FOUNT_DIR" pull -f --allow-unrelated-histories
+		currentBranch=$(git -C "$FOUNT_DIR" rev-parse --abbrev-ref HEAD)
+		remoteBranch=$(git -C "$FOUNT_DIR" rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null)
+		if [ -z "$remoteBranch" ]; then
+			echo "Warning: No upstream branch configured for '$currentBranch'. Skipping update check." >&2
+		else
+			mergeBase=$(git -C "$FOUNT_DIR" merge-base "$currentBranch" "$remoteBranch")
+			localCommit=$(git -C "$FOUNT_DIR" rev-parse "$currentBranch")
+			remoteCommit=$(git -C "$FOUNT_DIR" rev-parse "$remoteBranch")
+			status=$(git -C "$FOUNT_DIR" status --porcelain)
+
+			if [ -n "$status" ]; then
+				echo "Warning: Working directory is not clean. Stash or commit your changes before updating." >&2
+			fi
+
+			if [ "$localCommit" != "$remoteCommit" ]; then
+				if [ "$mergeBase" = "$localCommit" ]; then
+					echo "Updating from remote repository..."
+					git -C "$FOUNT_DIR" fetch origin
+					git -C "$FOUNT_DIR" reset --hard "$remoteBranch"
+				elif [ "$mergeBase" = "$remoteCommit" ]; then
+					echo "Local branch is ahead of remote. No update needed."
+				else
+					echo "Local and remote branches have diverged. Force updating..."
+					git -C "$FOUNT_DIR" fetch origin
+					git -C "$FOUNT_DIR" reset --hard "$remoteBranch"
+				fi
+			else
+				echo "Already up to date."
+			fi
+		fi
 	fi
 else
 	echo "Git is not installed, skipping git pull"
@@ -144,18 +182,18 @@ fi
 
 run() {
 	if [[ $# -gt 0 && $1 = 'debug' ]]; then
-		newargs=($@[1:])
-		deno run --allow-scripts --allow-all --inspect-brk "$FOUNT_DIR/src/server/index.mjs" @newargs
+		newargs=("${@:2}")
+		deno run --allow-scripts --allow-all --inspect-brk "$FOUNT_DIR/src/server/index.mjs" "${newargs[@]}"
 	else
-		deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" $@
+		deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" "$@"
 	fi
 }
 if [[ $# -gt 0 && $1 = 'init' ]]; then
 	exit 0
 elif [[ $# -gt 0 && $1 = 'keepalive' ]]; then
-	runargs=($@[1:])
-	run @runargs
+	runargs=("${@:2}")
+	run "${runargs[@]}"
 	while $?; do run; done
 else
-	run $@
+	run "$@"
 fi
