@@ -6,6 +6,7 @@ import { generateVerificationCode, verifyVerificationCode } from '../scripts/ver
 import { ms } from '../scripts/ms.mjs'
 import { getPartList, loadPart, partsList } from './managers/index.mjs'
 import { IPCManager } from './ipc_server.mjs'
+import { is_local_ip, rateLimit } from '../scripts/ratelimit.mjs'
 
 /**
  * @param {import('npm:express').Express} app
@@ -18,7 +19,7 @@ export function registerEndpoints(app) {
 	app.get('/api/test/async_error', async (req, res) => {
 		throw new Error('test error')
 	})
-	app.post('/api/login', async (req, res) => {
+	app.post('/api/login', rateLimit({ maxRequests: 5, windowMs: ms('1m') }), async (req, res) => {
 		const { username, password, deviceid } = req.body
 		const result = await login(username, password, deviceid)
 		// 在登录成功时设置 Cookie
@@ -35,25 +36,14 @@ export function registerEndpoints(app) {
 		generateVerificationCode(ip)
 		res.status(200).json({ message: 'verification code generated' })
 	})
-	let regrquesttimes = []
-	const registerRequestLimit = 5
-	const registerRequestInterval = ms('1m')
-	app.post('/api/register', async (req, res) => {
+	app.post('/api/register', rateLimit({ maxRequests: 5, windowMs: ms('1m') }), async (req, res) => {
 		const { username, password, verificationcode } = req.body
 		const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress
-		const localIPs = ['127.0.0.1', '::1']
-		if (!localIPs.includes(ip)) {
-			regrquesttimes = regrquesttimes.filter(entry => entry.time > Date.now())
-			regrquesttimes.push({ ip, time: Date.now() + registerRequestInterval })
-			if (regrquesttimes.filter(entry => entry.ip === ip).length > registerRequestLimit) {
-				res.status(429).json({ message: 'Too many requests' })
-				return
-			}
+		if (!is_local_ip(ip))
 			if (verifyVerificationCode(verificationcode, ip) === false) {
 				res.status(401).json({ message: 'verification code incorrect' })
 				return
 			}
-		}
 		const result = await register(username, password)
 		res.status(result.status).json(result)
 	})
