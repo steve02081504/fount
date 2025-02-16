@@ -11,6 +11,6 @@ export default {
 			tags: []
 		}
 	},
-	Load: async (app) => { },
-	Unload: async (app) => { },
+	Load: async (router) => { },
+	Unload: async (router) => { },
 }

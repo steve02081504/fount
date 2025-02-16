@@ -1,4 +1,4 @@
-import { app } from '../server.mjs'
+import { PartsRouter } from '../server.mjs'
 import { initPart, loadPartBase, uninstallPartBase, unloadPart } from '../parts_loader.mjs'
 
 /**
@@ -8,11 +8,11 @@ import { initPart, loadPartBase, uninstallPartBase, unloadPart } from '../parts_
  * @returns {Promise<import('../../decl/shellAPI.ts').shellAPI_t>}
  */
 export async function loadShell(username, shellname) {
-	return loadPartBase(username, 'shells', shellname, app)
+	return loadPartBase(username, 'shells', shellname, PartsRouter)
 }
 
 export async function unloadShell(username, shellname) {
-	await unloadPart(username, 'shells', shellname, app)
+	await unloadPart(username, 'shells', shellname, PartsRouter)
 }
 
 export async function initShell(username, shellname) {

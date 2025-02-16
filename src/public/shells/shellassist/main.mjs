@@ -13,8 +13,8 @@ export default {
 			tags: []
 		}
 	},
-	Load: (app) => { },
-	Unload: (app) => { },
+	Load: (router) => { },
+	Unload: (router) => { },
 	IPCInvokeHandler: async (username, data) => {
 		const char = await LoadChar(username, data.charname)
 		if (char?.interfaces?.shellassist) {

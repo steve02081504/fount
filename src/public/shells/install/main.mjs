@@ -1,4 +1,4 @@
-import { setEndpoints, unsetEndpoints } from './src/server/endpoints.mjs'
+import { setEndpoints } from './src/server/endpoints.mjs'
 import { importPart, importPartByText } from './src/server/Installer_handler.mjs'
 import { uninstallPartBase } from '../../../server/parts_loader.mjs'
 import fs from 'node:fs/promises'
@@ -16,12 +16,10 @@ export default {
 			tags: []
 		}
 	},
-	Load: (app) => {
-		setEndpoints(app)
+	Load: (router) => {
+		setEndpoints(router)
 	},
-	Unload: (app) => {
-		unsetEndpoints(app)
-	},
+	Unload: () => { },
 	ArgumentsHandler: async (user, args) => {
 		const action = args[0]
 
