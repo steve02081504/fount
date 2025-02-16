@@ -9,6 +9,8 @@ const confirmPasswordGroup = document.getElementById('confirm-password-group')
 const errorMessage = document.getElementById('error-message')
 const verificationCodeGroup = document.getElementById('verification-code-group')
 const sendVerificationCodeBtn = document.getElementById('send-verification-code-btn')
+const passwordStrengthFeedback = document.getElementById('password-strength-feedback')
+
 
 const isLocalOrigin = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname)
 
@@ -39,6 +41,14 @@ const formContent = {
 		verificationCodeSent: 'Verification code sent successfully.',
 		verificationCodeSendError: 'Failed to send verification code.',
 		verificationCodeRateLimit: 'Sending verification code too frequently. Please try again later.',
+		lowPasswordStrength: 'Password strength too low.',
+	},
+	passwordStrength: {
+		veryWeak: 'Very Weak',
+		weak: 'Weak',
+		normal: 'Normal',
+		strong: 'Strong',
+		veryStrong: 'Very Strong',
 	},
 }
 
@@ -63,6 +73,39 @@ function toggleForm() {
 function handleToggleClick(event) {
 	event.preventDefault()
 	toggleForm()
+}
+function evaluatePasswordStrength(password) {
+	const result = zxcvbn(password)
+	let feedbackText = ''
+	let borderColorClass = ''
+
+	switch (result.score) {
+		case 0:
+			borderColorClass = 'border-red-500'
+			feedbackText = formContent.passwordStrength.veryWeak
+			break
+		case 1:
+			borderColorClass = 'border-orange-500'
+			feedbackText = formContent.passwordStrength.weak
+			break
+		case 2:
+			borderColorClass = 'border-yellow-500'
+			feedbackText = formContent.passwordStrength.normal
+			break
+		case 3:
+			borderColorClass = 'border-lime-500'
+			feedbackText = formContent.passwordStrength.strong
+			break
+		case 4:
+			borderColorClass = 'border-green-500'
+			feedbackText = formContent.passwordStrength.veryStrong
+			break
+	}
+	let fullFeedback = `<strong>${feedbackText}</strong><br/>`
+	if (result.feedback.warning) fullFeedback += result.feedback.warning + '<br/>'
+	if (result.feedback.suggestions) fullFeedback += result.feedback.suggestions.join('<br/>')
+
+	return { borderColorClass, fullFeedback }
 }
 
 function updateFormDisplay() {
@@ -148,6 +191,12 @@ async function handleFormSubmit(event) {
 			errorMessage.textContent = formContent.error.passwordMismatch
 			return
 		}
+		// 密码强度检查
+		const { borderColorClass, fullFeedback } = evaluatePasswordStrength(password)
+		if (borderColorClass === 'border-red-500' || borderColorClass === 'border-orange-500') {
+			errorMessage.textContent = formContent.error.lowPasswordStrength
+			return // 阻止表单提交
+		}
 		if (!isLocalOrigin) {
 			if (!verificationCodeSent) {
 				errorMessage.textContent = formContent.error.verificationCodeError
@@ -203,6 +252,19 @@ async function handleFormSubmit(event) {
 
 // 设置事件监听器
 function setupEventListeners() {
+	const passwordInput = document.getElementById('password')
+	passwordInput.addEventListener('input', () => {
+		const { borderColorClass, fullFeedback } = evaluatePasswordStrength(passwordInput.value)
+
+		// 更新边框颜色
+		passwordInput.classList.remove('border-red-500', 'border-orange-500', 'border-yellow-500', 'border-lime-500', 'border-green-500')
+		passwordInput.classList.add(borderColorClass)
+
+		// 更新密码强度提示文字
+		passwordStrengthFeedback.innerHTML = fullFeedback
+		passwordStrengthFeedback.classList.remove('text-red-500', 'text-orange-500', 'text-yellow-500', 'text-lime-500', 'text-green-500')
+		passwordStrengthFeedback.classList.add(borderColorClass.replace('border-', 'text-'))
+	})
 	toggleLink.addEventListener('click', handleToggleClick)
 	submitBtn.addEventListener('click', handleFormSubmit)
 	sendVerificationCodeBtn.addEventListener('click', handleSendVerificationCode)

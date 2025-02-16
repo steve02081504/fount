@@ -29,6 +29,7 @@
 							<span class="label-text">Password:</span>
 						</label>
 						<input type="password" id="password" name="password" class="input input-bordered" required>
+						<div id="password-strength-feedback" class="text-xs mt-1"></div>
 					</div>
 					<div class="form-control" id="confirm-password-group">
 						<label class="label" for="confirm-password">
@@ -42,8 +43,7 @@
 						</label>
 						<div class="flex space-x-2">
 							<input type="text" id="verification-code" name="verification-code" class="input input-bordered w-full" required>
-							<button class="btn btn-primary" type="button" id="send-verification-code-btn">Send
-								Code</button>
+							<button class="btn btn-primary" type="button" id="send-verification-code-btn">Send Code</button>
 						</div>
 					</div>
 					<div class="card-actions justify-end mt-4">
@@ -55,6 +55,7 @@
 		</div>
 	</div>
 
+	<script src="https://cdn.jsdelivr.net/gh/dropbox/zxcvbn@master/dist/zxcvbn.js"></script>
 	<script type="module" src="./index.mjs"></script>
 </body>
 
