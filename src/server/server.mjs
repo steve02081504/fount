@@ -29,6 +29,10 @@ const errorHandler = (err, req, res, next) => {
 	console.error(err)
 	res.status(500).json({ message: 'Internal Server Error', errors: err.errors, error: err.message })
 }
+const The404Handler = (req, res) => {
+	if (req.accepts('html')) return res.status(404).sendFile(__dirname + '/src/public/404.html')
+	res.status(404).type('txt').send('Not found')
+}
 
 function get_config() {
 	if (!fs.existsSync(__dirname + '/data/config.json')) {
@@ -59,6 +63,7 @@ function setWindowTitle(title) {
 export function setDefaultStuff() {
 	setWindowTitle('fount')
 	app.use(errorHandler)
+	// app.use(The404Handler)
 }
 
 export let hosturl = 'http://localhost:' + config.port
