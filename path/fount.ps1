@@ -29,6 +29,32 @@ if ($args.Count -gt 0 -and $args[0] -eq 'background') {
 	exit
 }
 
+# 新建一个背景job用于后台更新所需的pwsh模块
+Start-Job -ScriptBlock {
+	@('ps12exe', 'fount-pwsh') | ForEach-Object {
+		# 先获取本地模块的版本号，若是0.0.0则跳过更新（开发版本）
+		$localVersion = (Get-Module $_ -ListAvailable).Version
+		if ("$localVersion" -eq '0.0.0') { return }
+		$latestVersion = (Find-Module $_).Version
+		if ("$latestVersion" -ne "$localVersion") {
+			Install-Module -Name $_ -Scope CurrentUser -Force
+		}
+	}
+} | Out-Null
+
+# 向用户的$Profile中注册导入fount-pwsh
+if (Get-Module fount-pwsh -ListAvailable) {
+	$ProfileContent = Get-Content $Profile -ErrorAction Ignore
+	$ProfileContent = $ProfileContent -split "`n"
+	$ProfileContent = $ProfileContent | Where-Object { $_ -notmatch 'Import-Module fount-pwsh' }
+	$ProfileContent = $ProfileContent -join "`n"
+	$ProfileContent += "`nImport-Module fount-pwsh`n"
+	$ProfileContent = $ProfileContent -replace '\n+Import-Module fount-pwsh', "`nImport-Module fount-pwsh"
+	if ($ProfileContent -ne (Get-Content $Profile -ErrorAction Ignore)) {
+		Set-Content -Path $Profile -Value $ProfileContent
+	}
+}
+
 # fount Terminal注册
 $WTjsonDirPath = "$env:LOCALAPPDATA/Microsoft/Windows Terminal/Fragments/fount"
 if (!(Test-Path $WTjsonDirPath)) {
