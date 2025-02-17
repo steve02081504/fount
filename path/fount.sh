@@ -74,6 +74,8 @@ if command -v git &> /dev/null; then
 		git clone https://github.com/steve02081504/fount.git "$FOUNT_DIR/.git-clone" --no-checkout --depth 1
 		mv "$FOUNT_DIR/.git-clone/.git" "$FOUNT_DIR/.git"
 		rm -rf "$FOUNT_DIR/.git-clone"
+		git -C "$FOUNT_DIR" fetch origin
+		git -C "$FOUNT_DIR" reset --hard "origin/master"
 	fi
 
 	if [ $IN_DOCKER -eq 1 ]; then
