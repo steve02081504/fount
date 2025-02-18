@@ -67,7 +67,7 @@ $jsonContent = [ordered]@{
 	profiles  = @(
 		[ordered]@{
 			name              = "fount"
-			commandline       = "fount.bat"
+			commandline       = "fount.bat keepalive"
 			startingDirectory = $FOUNT_DIR
 			icon              = Join-Path $FOUNT_DIR src/public/favicon.ico
 		}

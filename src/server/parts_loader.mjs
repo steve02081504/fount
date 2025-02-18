@@ -6,6 +6,7 @@ import { __dirname, setDefaultStuff } from './server.mjs'
 import { loadData, saveData } from './setting_loader.mjs'
 import { loadPart } from './managers/index.mjs'
 import { FullProxy } from '../scripts/proxy.mjs'
+import { exec } from "../scripts/exec.mjs";
 
 const parts_set = {}
 
@@ -17,6 +18,44 @@ export function GetPartPath(username, parttype, partname) {
 }
 
 export async function baseMjsPartLoader(path) {
+	if (fs.existsSync(path + '/.git')) {
+		function git(...args) {
+			return exec('git -C "' + path + '" ' + args.join(' ')).then(r => r.stdout.trim())
+		}
+		let currentBranch = await git('rev-parse --abbrev-ref HEAD')
+		let remoteBranch = await git('rev-parse --abbrev-ref --symbolic-full-name "@{u}"')
+		if (!remoteBranch) {
+			console.warn("No upstream branch configured for '" + currentBranch + "'. Skipping update check.")
+		}
+		else {
+			let mergeBase = await git('merge-base ' + currentBranch + ' ' + remoteBranch)
+			let localCommit = await git('rev-parse ' + currentBranch)
+			let remoteCommit = await git('rev-parse ' + remoteBranch)
+			let status = await git('status --porcelain')
+			if (status) {
+				console.warn("Working directory is not clean. Stash or commit your changes before updating.")
+			}
+
+			if (localCommit !== remoteCommit) {
+				if (mergeBase === localCommit) {
+					console.log("Updating from remote repository...")
+					await git('fetch origin')
+					await git('reset --hard ' + remoteBranch)
+				}
+				else if (mergeBase === remoteCommit) {
+					console.log("Local branch is ahead of remote. No update needed.")
+				}
+				else {
+					console.log("Local and remote branches have diverged. Force updating...")
+					await git('fetch origin')
+					await git('reset --hard ' + remoteBranch)
+				}
+			}
+			else {
+				console.log("Already up to date.")
+			}
+		}
+	}
 	const part = (await import(url.pathToFileURL(path + '/main.mjs'))).default
 	return part
 }
