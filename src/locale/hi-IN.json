@@ -1,0 +1,375 @@
+{
+	"tutorial": {
+		"title": "क्या ट्यूटोरियल?",
+		"modal": {
+			"title": "फाउंट में आपका स्वागत है!",
+			"instruction": "क्या आप नौसिखिया ट्यूटोरियल लेना चाहेंगे?",
+			"buttons": {
+				"start": "ट्यूटोरियल शुरू करें",
+				"skip": "छोड़ें"
+			}
+		},
+		"endScreen": {
+			"title": "बहुत बढ़िया! ट्यूटोरियल पूरा हुआ!",
+			"subtitle": "अब आपने संचालन करना सीख लिया है!",
+			"homeButton": "होमपेज पर जाएं"
+		},
+		"progressMessages": {
+			"mouseMove": "कृपया अपने उंगली का उपयोग करके माउस ${mouseIcon} को पकड़ने का प्रयास करें<br/>और फिर इसे हिलाएं",
+			"keyboardPress": "कृपया अपना कीबोर्ड ${keyboardIcon} ढूंढें<br/>और अपनी उंगली से कीबोर्ड दबाने का प्रयास करें",
+			"mobileTouchMove": "कृपया अपना फोन ${phoneIcon} ढूंढें<br/>अपनी किसी भी उंगली से स्क्रीन को छूने का प्रयास करें, और फिर इसे हिलाएं",
+			"mobileClick": "कृपया अपनी किसी भी उंगली से फोन स्क्रीन ${phoneIcon} को छूने का प्रयास करें<br/>और फिर छोड़ें"
+		}
+	},
+	"home": {
+		"title": "चरित्र चयन पृष्ठ",
+		"pageTitle": "चरित्र चयन पृष्ठ",
+		"instruction": "एक चरित्र का चयन करें - और चैट शुरू करें!",
+		"filterInput": {
+			"placeholder": "खोजें..."
+		},
+		"sidebarTitle": "चरित्र जानकारी",
+		"characterDescription": {},
+		"noDescription": "कोई विवरण जानकारी नहीं",
+		"alerts": {
+			"fetchHomeRegistryFailed": "होमपेज पंजीकरण जानकारी प्राप्त करने में विफल"
+		},
+		"functionMenu": {
+			"icon": {
+				"alt": "फंक्शन मेनू"
+			}
+		},
+		"charCard": {
+			"refreshButton": {
+				"alt": "रीफ्रेश",
+				"title": "रीफ्रेश"
+			},
+			"noTags": "कोई टैग नहीं",
+			"version": "संस्करण",
+			"author": "लेखक",
+			"homepage": "होमपेज",
+			"issuepage": "समस्या प्रतिक्रिया"
+		}
+	},
+	"import": {
+		"title": "आयात",
+		"tabs": {
+			"fileImport": "फ़ाइल आयात",
+			"textImport": "टेक्स्ट आयात"
+		},
+		"dropArea": {
+			"icon": {
+				"alt": "अपलोड आइकन"
+			},
+			"text": "फ़ाइलों को यहां खींचें और छोड़ें या फ़ाइलों का चयन करने के लिए क्लिक करें"
+		},
+		"textArea": {
+			"placeholder": "आयात करने के लिए टेक्स्ट दर्ज करें..."
+		},
+		"buttons": {
+			"import": "आयात करें"
+		},
+		"alerts": {
+			"importSuccess": "आयात सफल",
+			"importFailed": "आयात विफल: ${error}",
+			"unknownError": "अज्ञात त्रुटि"
+		},
+		"errors": {
+			"noFileSelected": "कृपया एक फ़ाइल का चयन करें",
+			"fileImportFailed": "फ़ाइल आयात विफल: ${message}",
+			"noTextContent": "कृपया टेक्स्ट सामग्री दर्ज करें",
+			"textImportFailed": "टेक्स्ट आयात विफल: ${message}",
+			"handler": "हैंडलर",
+			"error": "त्रुटि"
+		},
+		"fileItem": {
+			"removeButton": {
+				"title": "हटाएं"
+			}
+		}
+	},
+	"aisource_editor": {
+		"title": "एआई स्रोत संपादक",
+		"fileList": {
+			"title": "एआई स्रोत सूची",
+			"addButton": {
+				"title": "+"
+			}
+		},
+		"configTitle": "एआई स्रोत कॉन्फ़िगरेशन",
+		"generatorSelect": {
+			"label": "जनरेटर का चयन करें",
+			"placeholder": "कृपया चयन करें"
+		},
+		"buttons": {
+			"save": "सहेजें",
+			"delete": "हटाएं"
+		},
+		"alerts": {
+			"fetchFileListFailed": "फ़ाइल सूची प्राप्त करने में विफल: ${error}",
+			"fetchGeneratorListFailed": "जनरेटर सूची प्राप्त करने में विफल: ${error}",
+			"fetchFileDataFailed": "फ़ाइल डेटा प्राप्त करने में विफल: ${error}",
+			"noFileSelectedSave": "सहेजने के लिए कोई फ़ाइल चयनित नहीं है।",
+			"saveFileFailed": "फ़ाइल सहेजने में विफल: ${error}",
+			"noFileSelectedDelete": "हटाने के लिए कोई फ़ाइल चयनित नहीं है।",
+			"deleteFileFailed": "फ़ाइल हटाने में विफल: ${error}",
+			"invalidFileName": "फ़ाइल नाम में निम्नलिखित वर्ण नहीं हो सकते: / \\ : * ? \" < > |",
+			"addFileFailed": "फ़ाइल जोड़ने में विफल: ${error}"
+		},
+		"confirm": {
+			"unsavedChanges": "आपके पास सहेजे नहीं गए बदलाव हैं। क्या आप बदलावों को त्यागना चाहते हैं?",
+			"deleteFile": "क्या आप वाकई फ़ाइल को हटाना चाहते हैं?",
+			"unsavedChangesBeforeUnload": "आपके पास सहेजे नहीं गए बदलाव हैं। क्या आप वाकई इस पृष्ठ को छोड़ना चाहते हैं?"
+		},
+		"prompts": {
+			"newFileName": "कृपया एक नया एआई स्रोत फ़ाइल नाम दर्ज करें (एक्सटेंशन के बिना):"
+		}
+	},
+	"part_config": {
+		"title": "पार्ट कॉन्फ़िगरेशन",
+		"pageTitle": "पार्ट कॉन्फ़िगरेशन",
+		"labels": {
+			"partType": "पार्ट प्रकार का चयन करें",
+			"part": "पार्ट का चयन करें"
+		},
+		"placeholders": {
+			"partTypeSelect": "कृपया चयन करें",
+			"partSelect": "कृपया चयन करें"
+		},
+		"editor": {
+			"title": "पार्ट कॉन्फ़िगरेशन",
+			"disabledIndicator": "यह पार्ट कॉन्फ़िगरेशन का समर्थन नहीं करता है",
+			"buttons": {
+				"save": "सहेजें"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "त्रुटि संकेत"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "पार्ट प्रकार प्राप्त करने में विफल",
+			"fetchPartsFailed": "पार्ट सूची प्राप्त करने में विफल",
+			"loadEditorFailed": "संपादक लोड करने में विफल",
+			"saveConfigFailed": "पार्ट कॉन्फ़िगरेशन सहेजने में विफल",
+			"unsavedChanges": "आपके पास सहेजे नहीं गए बदलाव हैं। क्या आप बदलावों को त्यागना चाहते हैं?",
+			"beforeUnload": "आपके पास सहेजे नहीं गए बदलाव हैं। क्या आप वाकई छोड़ना चाहते हैं?"
+		}
+	},
+	"chat": {
+		"title": "चैट",
+		"sidebar": {
+			"world": {
+				"icon": {
+					"alt": "विश्व आइकन"
+				},
+				"title": "विश्व"
+			},
+			"persona": {
+				"icon": {
+					"alt": "उपयोगकर्ता व्यक्तित्व आइकन"
+				},
+				"title": "उपयोगकर्ता व्यक्तित्व"
+			},
+			"charList": {
+				"icon": {
+					"alt": "चरित्र सूची आइकन"
+				},
+				"title": "चरित्र सूची",
+				"buttons": {
+					"addChar": {
+						"title": "चरित्र जोड़ें"
+					},
+					"addCharIcon": {
+						"alt": "चरित्र जोड़ें आइकन"
+					}
+				}
+			},
+			"noSelection": "कोई नहीं",
+			"noDescription": "कोई विवरण जानकारी नहीं"
+		},
+		"chatArea": {
+			"title": "चैट",
+			"menuButton": {
+				"title": "मेनू"
+			},
+			"menuButtonIcon": {
+				"alt": "मेनू आइकन"
+			},
+			"input": {
+				"placeholder": "संदेश दर्ज करें...\nCtrl+Enter भेजने के लिए"
+			},
+			"sendButton": {
+				"title": "भेजें"
+			},
+			"sendButtonIcon": {
+				"alt": "भेजें आइकन"
+			},
+			"uploadButton": {
+				"title": "अपलोड करें"
+			},
+			"uploadButtonIcon": {
+				"alt": "अपलोड आइकन"
+			}
+		},
+		"rightSidebar": {
+			"title": "विवरण जानकारी"
+		},
+		"messageList": {
+			"confirmDeleteMessage": "क्या इस संदेश को हटाना चाहते हैं?"
+		},
+		"messageView": {
+			"buttons": {
+				"edit": {
+					"title": "संपादित करें"
+				},
+				"editIcon": {
+					"alt": "संपादित करें आइकन"
+				},
+				"delete": {
+					"title": "हटाएं"
+				},
+				"deleteIcon": {
+					"alt": "हटाएं आइकन"
+				}
+			}
+		},
+		"messageEdit": {
+			"input": {
+				"placeholder": "सामग्री दर्ज करें..."
+			},
+			"buttons": {
+				"confirm": {
+					"title": "पुष्टि करें"
+				},
+				"confirmIcon": {
+					"alt": "पुष्टि करें आइकन"
+				},
+				"cancel": {
+					"title": "रद्द करें"
+				},
+				"cancelIcon": {
+					"alt": "रद्द करें आइकन"
+				},
+				"upload": {
+					"title": "अपलोड करें"
+				},
+				"uploadIcon": {
+					"alt": "अपलोड आइकन"
+				}
+			}
+		},
+		"attachment": {
+			"buttons": {
+				"download": {
+					"title": "डाउनलोड करें"
+				},
+				"downloadIcon": {
+					"alt": "डाउनलोड करें आइकन"
+				},
+				"delete": {
+					"title": "हटाएं"
+				},
+				"deleteIcon": {
+					"alt": "हटाएं आइकन"
+				}
+			}
+		},
+		"charCard": {
+			"frequencyLabel": "आवृत्ति",
+			"buttons": {
+				"removeChar": {
+					"title": "चैट से हटाएं"
+				},
+				"removeCharIcon": {
+					"alt": "चरित्र हटाएं आइकन"
+				},
+				"forceReply": {
+					"title": "उत्तर देने के लिए मजबूर करें"
+				},
+				"forceReplyIcon": {
+					"alt": "उत्तर देने के लिए मजबूर करें आइकन"
+				}
+			}
+		}
+	},
+	"chat_history": {
+		"title": "चैट इतिहास",
+		"pageTitle": "चैट इतिहास",
+		"sortOptions": {
+			"time_desc": "समय अवरोही",
+			"time_asc": "समय आरोही"
+		},
+		"filterInput": {
+			"placeholder": "खोजें..."
+		},
+		"selectAll": "सभी का चयन करें",
+		"buttons": {
+			"reverseSelect": "चयन उलटें",
+			"deleteSelected": "चयनित हटाएं",
+			"exportSelected": "चयनित निर्यात करें"
+		},
+		"confirmDeleteChat": "क्या आप वाकई ${chars} के साथ चैट इतिहास हटाना चाहते हैं?",
+		"confirmDeleteMultiChats": "क्या आप वाकई चयनित ${count} चैट इतिहास हटाना चाहते हैं?",
+		"alerts": {
+			"noChatSelectedForDeletion": "कृपया हटाने के लिए चैट इतिहास का चयन करें",
+			"noChatSelectedForExport": "कृपया निर्यात करने के लिए चैट इतिहास का चयन करें"
+		},
+		"chatItemButtons": {
+			"continue": "जारी रखें",
+			"copy": "कॉपी करें",
+			"export": "निर्यात करें",
+			"delete": "हटाएं"
+		}
+	},
+	"discord_bots": {
+		"title": "Discord Bots",
+		"cardTitle": "Discord Bots",
+		"buttons": {
+			"newBot": "नया",
+			"deleteBot": "हटाएं"
+		},
+		"configCard": {
+			"title": "बॉट कॉन्फ़िगरेशन",
+			"labels": {
+				"character": "चरित्र",
+				"apiKey": "Discord API कुंजी",
+				"config": "कॉन्फ़िगरेशन"
+			},
+			"charSelectPlaceholder": "चरित्र का चयन करें",
+			"charSupportMessage": "यह चरित्र Discord इंटरफ़ेस का समर्थन नहीं करता है।",
+			"apiKeyInput": {
+				"placeholder": "API कुंजी दर्ज करें"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "API कुंजी दृश्यता टॉगल करें"
+			},
+			"buttons": {
+				"saveConfig": "कॉन्फ़िगरेशन सहेजें",
+				"startBot": "शुरू करें",
+				"stopBot": "बंद करें"
+			}
+		},
+		"prompts": {
+			"newBotName": "कृपया एक नया बॉट नाम दर्ज करें:"
+		},
+		"alerts": {
+			"botExists": "\"${botname}\" नाम का बॉट पहले से मौजूद है, कृपया कोई दूसरा नाम उपयोग करें।",
+			"unsavedChanges": "आपके पास सहेजे नहीं गए बदलाव हैं। क्या आप बदलावों को त्यागना चाहते हैं?",
+			"configSaved": "कॉन्फ़िगरेशन सफलतापूर्वक सहेजा गया",
+			"httpError": "HTTP त्रुटि",
+			"beforeUnload": "आपके पास सहेजे नहीं गए बदलाव हैं। क्या आप वाकई छोड़ना चाहते हैं?"
+		}
+	},
+	"terminal_assistant": {
+		"title": "टर्मिनल सहायक",
+		"initialMessage": "फाउंट आपके पसंदीदा पात्रों को आपके टर्मिनल में तैनात करने का समर्थन करता है ताकि आपको कोडिंग में मदद मिल सके!",
+		"initialMessageLink": "अधिक जानने के लिए यहां क्लिक करें"
+	},
+	"404": {
+		"title": "404 - पृष्ठ नहीं मिला",
+		"pageNotFoundText": "ओह! आपके द्वारा खोजा जा रहा पृष्ठ नहीं मिला।",
+		"homepageButton": "होमपेज पर वापस जाएं"
+	}
+}

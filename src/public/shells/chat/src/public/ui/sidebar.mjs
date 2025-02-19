@@ -11,6 +11,7 @@ import { charList, worldName, personaName } from '../chat.mjs'
 import { addCharacter, setPersona, setWorld, removeCharacter, triggerCharacterReply, setCharReplyFrequency } from '../endpoints.mjs'
 import { appendMessage } from './messageList.mjs'
 import { renderMarkdown } from '../../../../../scripts/markdown.mjs'
+import { geti18n } from '../../../../../scripts/i18n.mjs'
 
 const worldSelect = document.getElementById('world-select')
 const worldDetailsContainer = document.getElementById('world-details')
@@ -72,7 +73,7 @@ async function updateSelectList(selectElement, currentName, listGetter, detailsR
 	added.forEach(name => {
 		const option = document.createElement('option')
 		option.value = name || ''
-		option.text = name || '无'
+		option.text = name || geti18n('chat.sidebar.noSelection') // i18n
 		selectElement.add(option)
 	})
 
@@ -80,11 +81,9 @@ async function updateSelectList(selectElement, currentName, listGetter, detailsR
 	if (currentName !== selectElement.value)
 		selectElement.value = currentName || ''
 
-
 	// 更新详情 (仅当选中项改变或强制更新时)
 	if (selectElement.value !== (selectElement.previousValue || '') || forceUpdate)
 		await detailsRenderer(selectElement.value)
-
 
 	selectElement.previousValue = selectElement.value
 }
@@ -261,7 +260,7 @@ function addCardEventListeners(card, data) {
  * @param {string} markdown 描述的markdown内容
  */
 async function displayItemDescription(markdown) {
-	itemDescription.innerHTML = await renderMarkdown(markdown) || '无描述信息'
+	itemDescription.innerHTML = await renderMarkdown(markdown) || geti18n('chat.sidebar.noDescription') // i18n
 }
 
 /**

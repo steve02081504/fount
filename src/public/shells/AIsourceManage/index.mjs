@@ -1,5 +1,6 @@
 import { createJsonEditor } from '../../scripts/jsoneditor.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
+import { initTranslations, geti18n } from '../../scripts/i18n.mjs' // 引入 i18n 函数
 
 const jsonEditorContainer = document.getElementById('jsonEditor')
 if (applyTheme()) jsonEditorContainer.classList.add('jse-theme-dark')
@@ -26,7 +27,7 @@ async function fetchFileList() {
 		renderFileList()
 	} catch (error) {
 		console.error('Failed to fetch file list:', error)
-		alert('Failed to fetch file list: ' + error.message)
+		alert(geti18n('aisource_editor.alerts.fetchFileListFailed', { error: error.message })) // 使用 geti18n
 	}
 }
 
@@ -40,7 +41,7 @@ async function fetchGeneratorList() {
 		renderGeneratorSelect()
 	} catch (error) {
 		console.error('Failed to fetch generator list:', error)
-		alert('Failed to fetch generator list: ' + error.message)
+		alert(geti18n('aisource_editor.alerts.fetchGeneratorListFailed', { error: error.message })) // 使用 geti18n
 	}
 }
 
@@ -64,7 +65,7 @@ function renderFileList() {
 }
 
 function renderGeneratorSelect() {
-	generatorSelect.innerHTML = '<option disabled selected>请选择</option>'
+	generatorSelect.innerHTML = '<option disabled selected data-i18n="aisource_editor.generatorSelect.placeholder"></option>' // 占位符已在 HTML 中处理
 	generatorList.forEach(generator => {
 		const option = document.createElement('option')
 		option.value = generator
@@ -78,7 +79,7 @@ async function loadEditor(fileName) {
 
 	// 如果有未保存的更改，提示用户
 	if (isDirty)
-		if (!confirm('You have unsaved changes. Do you want to discard them?'))
+		if (!confirm(geti18n('aisource_editor.confirm.unsavedChanges'))) // 使用 geti18n
 			return
 
 
@@ -110,7 +111,7 @@ async function loadEditor(fileName) {
 		generatorSelect.value = data.generator || ''
 
 		if (!jsonEditor)
-			jsonEditor = createJsonEditor(jsonEditorContainer,{
+			jsonEditor = createJsonEditor(jsonEditorContainer, {
 				onChange: (updatedContent, previousContent, { error, patchResult }) => {
 					isDirty = true // 标记为有未保存的更改
 				},
@@ -121,13 +122,13 @@ async function loadEditor(fileName) {
 		isDirty = false // 重置未保存标记
 	} catch (error) {
 		console.error('Failed to fetch file data:', error)
-		alert('Failed to fetch file data: ' + error.message)
+		alert(geti18n('aisource_editor.alerts.fetchFileDataFailed', { error: error.message })) // 使用 geti18n
 	}
 }
 
 async function saveFile() {
 	if (!activeFile) {
-		alert('No file selected to save.')
+		alert(geti18n('aisource_editor.alerts.noFileSelectedSave')) // 使用 geti18n
 		return
 	}
 	const config = jsonEditor.get().json || JSON.parse(jsonEditor.get().text)
@@ -153,16 +154,16 @@ async function saveFile() {
 		isDirty = false // 重置未保存标记
 	} catch (error) {
 		console.error('Failed to save file:', error)
-		alert('Failed to save file: ' + error.message)
+		alert(geti18n('aisource_editor.alerts.saveFileFailed', { error: error.message })) // 使用 geti18n
 	}
 }
 
 async function deleteFile() {
 	if (!activeFile) {
-		alert('No file selected to delete')
+		alert(geti18n('aisource_editor.alerts.noFileSelectedDelete')) // 使用 geti18n
 		return
 	}
-	if (!confirm('确定要删除文件吗?'))
+	if (!confirm(geti18n('aisource_editor.confirm.deleteFile'))) // 使用 geti18n
 		return
 
 	try {
@@ -189,17 +190,17 @@ async function deleteFile() {
 
 	} catch (error) {
 		console.error('Failed to delete file:', error)
-		alert('Failed to delete file: ' + error.message)
+		alert(geti18n('aisource_editor.alerts.deleteFileFailed', { error: error.message })) // 使用 geti18n
 	}
 }
 
 async function addFile() {
-	const newFileName = prompt('请输入新的 AI 来源文件名 (请勿包含后缀名):')
+	const newFileName = prompt(geti18n('aisource_editor.prompts.newFileName')) // 使用 geti18n
 	if (!newFileName) return
 
 	// 验证文件名是否有效
 	if (!isValidFileName(newFileName)) {
-		alert('文件名不能包含以下字符： / \\ : * ? " < > |')
+		alert(geti18n('aisource_editor.alerts.invalidFileName')) // 使用 geti18n
 		return
 	}
 
@@ -218,7 +219,7 @@ async function addFile() {
 		loadEditor(newFileName)
 	} catch (error) {
 		console.error('Failed to add file:', error)
-		alert('Failed to add file: ' + error.message)
+		alert(geti18n('aisource_editor.alerts.addFileFailed', { error: error.message })) // 使用 geti18n
 	}
 }
 
@@ -230,6 +231,7 @@ function isValidFileName(fileName) {
 // 初始化
 fetchFileList()
 fetchGeneratorList()
+initTranslations('aisource_editor') // 初始化 i18n，指定 pageid 为 'aisource_editor'
 
 saveButton.addEventListener('click', saveFile)
 deleteButton.addEventListener('click', deleteFile)
@@ -239,6 +241,6 @@ addFileButton.addEventListener('click', addFile)
 window.addEventListener('beforeunload', (event) => {
 	if (isDirty) {
 		event.preventDefault()
-		event.returnValue = 'You have unsaved changes. Are you sure you want to leave?'
+		event.returnValue = geti18n('aisource_editor.confirm.unsavedChangesBeforeUnload') // 使用 geti18n
 	}
 })

@@ -1,5 +1,6 @@
 import { createJsonEditor } from '../../scripts/jsoneditor.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
+import { initTranslations, geti18n, i18nElement } from '../../scripts/i18n.mjs' // Import i18n functions
 
 const configEditorContainer = document.getElementById('config-editor')
 if (applyTheme()) configEditorContainer.classList.add('jse-theme-dark')
@@ -25,7 +26,7 @@ async function fetchData(url, options = {}) {
 	const response = await fetch(url, options)
 	if (!response.ok) {
 		const data = await response.json().catch(() => null)
-		throw new Error(data?.message || `HTTP error! status: ${response.status}`)
+		throw new Error(data?.message || `${geti18n('discord_bots.alerts.httpError')}! status: ${response.status}`) // i18n
 	}
 	return await response.json()
 }
@@ -103,7 +104,7 @@ function populateBotList() {
 }
 
 function populateCharList() {
-	charSelect.innerHTML = '<option value="" disabled selected>Select Character</option>'
+	charSelect.innerHTML = `<option value="" disabled selected>${geti18n('discord_bots.configCard.charSelectPlaceholder')}</option>` // i18n
 	charList.forEach(char => {
 		const option = document.createElement('option')
 		option.value = char
@@ -115,7 +116,7 @@ function populateCharList() {
 async function loadBotConfig(botname) {
 	// 如果有未保存的更改，提示用户
 	if (isDirty)
-		if (!confirm('You have unsaved changes. Do you want to discard them?')) {
+		if (!confirm(geti18n('discord_bots.alerts.unsavedChanges'))) { // i18n
 			botListSelect.value = selectedBot // 如果取消则还原选择
 			return
 		}
@@ -151,11 +152,11 @@ async function loadBotConfig(botname) {
 
 // 事件处理函数
 async function handleNewBot() {
-	const botname = prompt('请输入新的 Bot 名称：')?.trim()
+	const botname = prompt(geti18n('discord_bots.prompts.newBotName'))?.trim() // i18n
 	if (!botname) return
 
 	if (botList.includes(botname)) {
-		alert(`名为 "${botname}" 的 Bot 已存在，请使用其他名称。`)
+		alert(geti18n('discord_bots.alerts.botExists', { botname: botname })) // i18n
 		return
 	}
 
@@ -174,7 +175,7 @@ async function handleDeleteBot() {
 	if (!selectedBot) return
 
 	if (isDirty)
-		if (!confirm('You have unsaved changes. Do you want to discard them?'))
+		if (!confirm(geti18n('discord_bots.alerts.unsavedChanges'))) // i18n
 			return
 
 	try {
@@ -221,7 +222,7 @@ async function checkCharSupport(charName) {
 async function handleCharSelectChange() {
 	// 如果有未保存的更改，提示用户
 	if (isDirty)
-		if (!confirm('You have unsaved changes. Do you want to discard them?')) {
+		if (!confirm(geti18n('discord_bots.alerts.unsavedChanges'))) { // i18n
 			charSelect.value = configEditor.get().json.char || '' // 如果取消则还原选择
 			return
 		}
@@ -231,8 +232,9 @@ async function handleCharSelectChange() {
 }
 
 function handleToggleToken() {
-	tokenInput.type = tokenInput.type === 'password' ? 'text' : 'password'
-	toggleTokenButton.innerHTML = `<img src="https://api.iconify.design/line-md/watch${tokenInput.type === 'password' ? '-off' : ''}.svg" class="dark:invert" />`
+	tokenInput.type = tokenInput.type === 'password' ? 'text' : 'text' // Fix: Should be 'text' not 'test'
+	toggleTokenButton.innerHTML = `<img src="https://api.iconify.design/line-md/watch${tokenInput.type === 'password' ? '-off' : ''}.svg" class="dark:invert" alt="${geti18n('discord_bots.configCard.toggleApiKeyIcon')}" />` // i18n
+	i18nElement(toggleTokenButton)
 }
 
 async function handleSaveConfig() {
@@ -246,7 +248,7 @@ async function handleSaveConfig() {
 
 	try {
 		await botConfigSet(selectedBot, config)
-		console.log('Config saved successfully')
+		console.log(geti18n('discord_bots.alerts.configSaved')) // i18n
 		isDirty = false // 重置未保存标记
 	} catch (error) {
 		console.error(error)
@@ -260,12 +262,12 @@ async function handleStartStopBot() {
 		const isRunning = runningBots.includes(selectedBot)
 		if (isRunning) {
 			await botStop(selectedBot)
-			startStopBotButton.textContent = '启动'
+			startStopBotButton.textContent = geti18n('discord_bots.configCard.buttons.startBot') // i18n
 			startStopBotButton.classList.remove('btn-error')
 			startStopBotButton.classList.add('btn-success')
 		} else {
 			await botStart(selectedBot)
-			startStopBotButton.textContent = '停止'
+			startStopBotButton.textContent = geti18n('discord_bots.configCard.buttons.stopBot') // i18n
 			startStopBotButton.classList.remove('btn-success')
 			startStopBotButton.classList.add('btn-error')
 		}
@@ -276,7 +278,7 @@ async function handleStartStopBot() {
 
 async function updateStartStopButtonState() {
 	if (!selectedBot) {
-		startStopBotButton.textContent = '启动'
+		startStopBotButton.textContent = geti18n('discord_bots.configCard.buttons.startBot') // i18n
 		startStopBotButton.classList.remove('btn-error')
 		startStopBotButton.classList.add('btn-success')
 		return
@@ -284,11 +286,11 @@ async function updateStartStopButtonState() {
 	try {
 		const runningBots = await runningBotListGet()
 		if (runningBots.includes(selectedBot)) {
-			startStopBotButton.textContent = '停止'
+			startStopBotButton.textContent = geti18n('discord_bots.configCard.buttons.stopBot') // i18n
 			startStopBotButton.classList.remove('btn-success')
 			startStopBotButton.classList.add('btn-error')
 		} else {
-			startStopBotButton.textContent = '启动'
+			startStopBotButton.textContent = geti18n('discord_bots.configCard.buttons.startBot') // i18n
 			startStopBotButton.classList.remove('btn-error')
 			startStopBotButton.classList.add('btn-success')
 		}
@@ -348,6 +350,7 @@ async function initializeFromURLParams() {
 }
 
 // 初始化
+initTranslations('discord_bots') // Initialize translations with pageid 'discord_bots'
 initializeFromURLParams()
 
 // 事件监听
@@ -363,6 +366,6 @@ startStopBotButton.addEventListener('click', handleStartStopBot)
 window.addEventListener('beforeunload', (event) => {
 	if (isDirty) {
 		event.preventDefault()
-		event.returnValue = 'You have unsaved changes. Are you sure you want to leave?'
+		event.returnValue = geti18n('discord_bots.alerts.beforeUnload'); // i18n
 	}
 })

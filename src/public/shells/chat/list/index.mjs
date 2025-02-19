@@ -1,6 +1,7 @@
 import { renderTemplate } from '../../../scripts/template.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
 import { parseRegexFromString, escapeRegExp } from '../../../scripts/regex.mjs'
+import { initTranslations, geti18n } from '../../../scripts/i18n.mjs' // Import i18n functions
 
 const chatListContainer = document.getElementById('chat-list-container')
 const sortSelect = document.getElementById('sort-select')
@@ -187,7 +188,7 @@ async function renderChatListItem(chat) {
 
 	// 删除聊天
 	chatElement.querySelector('.delete-button').addEventListener('click', async () => {
-		if (confirm(`确定要删除与 ${chat.chars.join(', ')} 的聊天记录吗？`)) {
+		if (confirm(geti18n('chat_history.confirmDeleteChat', { chars: chat.chars.join(', ') }))) { // i18n
 			const response = await fetch('/api/shells/chat/delete', {
 				method: 'DELETE',
 				headers: {
@@ -245,10 +246,10 @@ reverseSelectButton.addEventListener('click', () => {
 // 删除选中
 deleteSelectedButton.addEventListener('click', async () => {
 	if (selectedChats.size === 0) {
-		alert('请选择要删除的聊天记录')
+		alert(geti18n('chat_history.alerts.noChatSelectedForDeletion')) // i18n
 		return
 	}
-	if (confirm(`确定要删除选中的 ${selectedChats.size} 条聊天记录吗？`)) {
+	if (confirm(geti18n('chat_history.confirmDeleteMultiChats', { count: selectedChats.size }))) { // i18n
 		const response = await fetch('/api/shells/chat/delete', {
 			method: 'DELETE',
 			headers: {
@@ -275,7 +276,7 @@ deleteSelectedButton.addEventListener('click', async () => {
 // 导出选中
 exportSelectedButton.addEventListener('click', async () => {
 	if (selectedChats.size === 0) {
-		alert('请选择要导出的聊天记录')
+		alert(geti18n('chat_history.alerts.noChatSelectedForExport')) // i18n
 		return
 	}
 	const response = await fetch('/api/shells/chat/export', {
@@ -303,6 +304,7 @@ exportSelectedButton.addEventListener('click', async () => {
 
 async function initializeApp() {
 	applyTheme()
+	await initTranslations('chat_history') // Initialize translations for 'chat_history'
 	await fetchChatList()
 	renderChatList()
 }

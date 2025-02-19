@@ -1,0 +1,375 @@
+{
+	"tutorial": {
+		"title": "Tutorial",
+		"modal": {
+			"title": "Welcome to fount!",
+			"instruction": "Would you like to take the newbie tutorial?",
+			"buttons": {
+				"start": "Start Tutorial",
+				"skip": "Skip"
+			}
+		},
+		"endScreen": {
+			"title": "Awesome! Tutorial Completed!",
+			"subtitle": "Now you have learned how to operate!",
+			"homeButton": "Go to Homepage"
+		},
+		"progressMessages": {
+			"mouseMove": "Please use your finger to try to hold the mouse ${mouseIcon}<br/>and then move it",
+			"keyboardPress": "Please find your keyboard ${keyboardIcon}<br/>and try to press the keyboard with your finger",
+			"mobileTouchMove": "Please find your phone ${phoneIcon}<br/>Try to touch the screen with any of your fingers, and then move it",
+			"mobileClick": "Please try to touch the phone screen ${phoneIcon} with any of your fingers<br/>and then release"
+		}
+	},
+	"home": {
+		"title": "Character Selection Page",
+		"pageTitle": "Character Selection Page",
+		"instruction": "Select a character - and start chatting!",
+		"filterInput": {
+			"placeholder": "Search..."
+		},
+		"sidebarTitle": "Character Information",
+		"characterDescription": {},
+		"noDescription": "No description information",
+		"alerts": {
+			"fetchHomeRegistryFailed": "Failed to get homepage registration information"
+		},
+		"functionMenu": {
+			"icon": {
+				"alt": "Function Menu"
+			}
+		},
+		"charCard": {
+			"refreshButton": {
+				"alt": "Refresh",
+				"title": "Refresh"
+			},
+			"noTags": "No tags",
+			"version": "Version",
+			"author": "Author",
+			"homepage": "Homepage",
+			"issuepage": "Issue Feedback"
+		}
+	},
+	"import": {
+		"title": "Import",
+		"tabs": {
+			"fileImport": "File Import",
+			"textImport": "Text Import"
+		},
+		"dropArea": {
+			"icon": {
+				"alt": "Upload Icon"
+			},
+			"text": "Drag and drop files here or click to select files"
+		},
+		"textArea": {
+			"placeholder": "Enter text to import..."
+		},
+		"buttons": {
+			"import": "Import"
+		},
+		"alerts": {
+			"importSuccess": "Import successful",
+			"importFailed": "Import failed: ${error}",
+			"unknownError": "Unknown error"
+		},
+		"errors": {
+			"noFileSelected": "Please select a file",
+			"fileImportFailed": "File import failed: ${message}",
+			"noTextContent": "Please enter text content",
+			"textImportFailed": "Text import failed: ${message}",
+			"handler": "Handler",
+			"error": "Error"
+		},
+		"fileItem": {
+			"removeButton": {
+				"title": "Remove"
+			}
+		}
+	},
+	"aisource_editor": {
+		"title": "AI Source Editor",
+		"fileList": {
+			"title": "AI Source List",
+			"addButton": {
+				"title": "+"
+			}
+		},
+		"configTitle": "AI Source Config",
+		"generatorSelect": {
+			"label": "Select Generator",
+			"placeholder": "Please select"
+		},
+		"buttons": {
+			"save": "Save",
+			"delete": "Delete"
+		},
+		"alerts": {
+			"fetchFileListFailed": "Failed to get file list: ${error}",
+			"fetchGeneratorListFailed": "Failed to get generator list: ${error}",
+			"fetchFileDataFailed": "Failed to get file data: ${error}",
+			"noFileSelectedSave": "No file selected to save.",
+			"saveFileFailed": "Failed to save file: ${error}",
+			"noFileSelectedDelete": "No file selected to delete.",
+			"deleteFileFailed": "Failed to delete file: ${error}",
+			"invalidFileName": "File name cannot contain the following characters: / \\ : * ? \" < > |",
+			"addFileFailed": "Failed to add file: ${error}"
+		},
+		"confirm": {
+			"unsavedChanges": "You have unsaved changes. Do you want to discard changes?",
+			"deleteFile": "Are you sure you want to delete the file?",
+			"unsavedChangesBeforeUnload": "You have unsaved changes. Are you sure you want to leave this page?"
+		},
+		"prompts": {
+			"newFileName": "Please enter a new AI source file name (without extension):"
+		}
+	},
+	"part_config": {
+		"title": "Part Config",
+		"pageTitle": "Part Config",
+		"labels": {
+			"partType": "Select Part Type",
+			"part": "Select Part"
+		},
+		"placeholders": {
+			"partTypeSelect": "Please select",
+			"partSelect": "Please select"
+		},
+		"editor": {
+			"title": "Part Config",
+			"disabledIndicator": "This part does not support configuration",
+			"buttons": {
+				"save": "Save"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Error Prompt"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "Failed to get part types",
+			"fetchPartsFailed": "Failed to get part list",
+			"loadEditorFailed": "Failed to load editor",
+			"saveConfigFailed": "Failed to save part config",
+			"unsavedChanges": "You have unsaved changes. Do you want to discard changes?",
+			"beforeUnload": "You have unsaved changes. Are you sure you want to leave?"
+		}
+	},
+	"chat": {
+		"title": "Chat",
+		"sidebar": {
+			"world": {
+				"icon": {
+					"alt": "World Icon"
+				},
+				"title": "World"
+			},
+			"persona": {
+				"icon": {
+					"alt": "User Persona Icon"
+				},
+				"title": "User Persona"
+			},
+			"charList": {
+				"icon": {
+					"alt": "Character List Icon"
+				},
+				"title": "Character List",
+				"buttons": {
+					"addChar": {
+						"title": "Add Character"
+					},
+					"addCharIcon": {
+						"alt": "Add Character Icon"
+					}
+				}
+			},
+			"noSelection": "None",
+			"noDescription": "No description information"
+		},
+		"chatArea": {
+			"title": "Chat",
+			"menuButton": {
+				"title": "Menu"
+			},
+			"menuButtonIcon": {
+				"alt": "Menu Icon"
+			},
+			"input": {
+				"placeholder": "Enter message...\nCtrl+Enter to send"
+			},
+			"sendButton": {
+				"title": "Send"
+			},
+			"sendButtonIcon": {
+				"alt": "Send Icon"
+			},
+			"uploadButton": {
+				"title": "Upload"
+			},
+			"uploadButtonIcon": {
+				"alt": "Upload Icon"
+			}
+		},
+		"rightSidebar": {
+			"title": "Description Information"
+		},
+		"messageList": {
+			"confirmDeleteMessage": "Confirm delete this message?"
+		},
+		"messageView": {
+			"buttons": {
+				"edit": {
+					"title": "Edit"
+				},
+				"editIcon": {
+					"alt": "Edit Icon"
+				},
+				"delete": {
+					"title": "Delete"
+				},
+				"deleteIcon": {
+					"alt": "Delete Icon"
+				}
+			}
+		},
+		"messageEdit": {
+			"input": {
+				"placeholder": "Enter content..."
+			},
+			"buttons": {
+				"confirm": {
+					"title": "Confirm"
+				},
+				"confirmIcon": {
+					"alt": "Confirm Icon"
+				},
+				"cancel": {
+					"title": "Cancel"
+				},
+				"cancelIcon": {
+					"alt": "Cancel Icon"
+				},
+				"upload": {
+					"title": "Upload"
+				},
+				"uploadIcon": {
+					"alt": "Upload Icon"
+				}
+			}
+		},
+		"attachment": {
+			"buttons": {
+				"download": {
+					"title": "Download"
+				},
+				"downloadIcon": {
+					"alt": "Download Icon"
+				},
+				"delete": {
+					"title": "Delete"
+				},
+				"deleteIcon": {
+					"alt": "Delete Icon"
+				}
+			}
+		},
+		"charCard": {
+			"frequencyLabel": "Frequency",
+			"buttons": {
+				"removeChar": {
+					"title": "Remove from Chat"
+				},
+				"removeCharIcon": {
+					"alt": "Remove Character Icon"
+				},
+				"forceReply": {
+					"title": "Force Reply"
+				},
+				"forceReplyIcon": {
+					"alt": "Force Reply Icon"
+				}
+			}
+		}
+	},
+	"chat_history": {
+		"title": "Chat History",
+		"pageTitle": "Chat History",
+		"sortOptions": {
+			"time_desc": "Time Descending",
+			"time_asc": "Time Ascending"
+		},
+		"filterInput": {
+			"placeholder": "Search..."
+		},
+		"selectAll": "Select All",
+		"buttons": {
+			"reverseSelect": "Reverse Select",
+			"deleteSelected": "Delete Selected",
+			"exportSelected": "Export Selected"
+		},
+		"confirmDeleteChat": "Are you sure you want to delete the chat history with ${chars}?",
+		"confirmDeleteMultiChats": "Are you sure you want to delete the selected ${count} chat histories?",
+		"alerts": {
+			"noChatSelectedForDeletion": "Please select chat histories to delete",
+			"noChatSelectedForExport": "Please select chat histories to export"
+		},
+		"chatItemButtons": {
+			"continue": "Continue",
+			"copy": "Copy",
+			"export": "Export",
+			"delete": "Delete"
+		}
+	},
+	"discord_bots": {
+		"title": "Discord Bots",
+		"cardTitle": "Discord Bots",
+		"buttons": {
+			"newBot": "New",
+			"deleteBot": "Delete"
+		},
+		"configCard": {
+			"title": "Bot Config",
+			"labels": {
+				"character": "Character",
+				"apiKey": "Discord API Key",
+				"config": "Config"
+			},
+			"charSelectPlaceholder": "Select Character",
+			"charSupportMessage": "This character does not support Discord interface.",
+			"apiKeyInput": {
+				"placeholder": "Enter API Key"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "Toggle API Key Visibility"
+			},
+			"buttons": {
+				"saveConfig": "Save Config",
+				"startBot": "Start",
+				"stopBot": "Stop"
+			}
+		},
+		"prompts": {
+			"newBotName": "Please enter a new Bot name:"
+		},
+		"alerts": {
+			"botExists": "Bot named \"${botname}\" already exists, please use another name.",
+			"unsavedChanges": "You have unsaved changes. Do you want to discard changes?",
+			"configSaved": "Config saved successfully",
+			"httpError": "HTTP Error",
+			"beforeUnload": "You have unsaved changes. Are you sure you want to leave?"
+		}
+	},
+	"terminal_assistant": {
+		"title": "Terminal Assistant",
+		"initialMessage": "Fount supports deploying your favorite characters to your terminal to assist you in coding!",
+		"initialMessageLink": "Click here to learn more"
+	},
+	"404": {
+		"title": "404 - Page Not Found",
+		"pageNotFoundText": "Oops! The page you are looking for could not be found.",
+		"homepageButton": "Back to Homepage"
+	}
+}

@@ -3,10 +3,10 @@
 	<span class="file-name">${file.name}</span>
 	<span class="attachment-button-group">
 		${showDownloadButton ? `
-		<button class="download-button btn btn-xs btn-primary" title="下载"><img src="https://api.iconify.design/line-md/download.svg" /></button>
+		<button class="download-button btn btn-xs btn-primary" data-i18n="chat.attachment.buttons.download"><img src="https://api.iconify.design/line-md/download.svg" data-i18n="chat.attachment.buttons.downloadIcon" /></button>
 		`: ''}
 		${showDeleteButton ? `
-		<button class="delete-button btn btn-xs btn-error" title="删除"><img src="https://api.iconify.design/line-md/document-delete.svg" /></button>
+		<button class="delete-button btn btn-xs btn-error" data-i18n="chat.attachment.buttons.delete"><img src="https://api.iconify.design/line-md/document-delete.svg" data-i18n="chat.attachment.buttons.deleteIcon" /></button>
 		`: ''}
 	</span>
 </div>

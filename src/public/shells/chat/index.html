@@ -4,7 +4,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Chat</title>
+	<title data-i18n="chat.title"></title>
 	<link rel="stylesheet" href="./index.css">
 	<link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.min.css" rel="stylesheet" type="text/css" />
 	<script src="https://cdn.tailwindcss.com"></script>
@@ -23,8 +23,8 @@
 						<li id="world-info">
 							<div class="flex items-center justify-between mb-2">
 								<div class="flex items-center">
-									<img src="https://api.iconify.design/line-md/map-marker.svg" class="w-8 h-8 mr-2 dark:invert" />
-									<h3 class="text-lg font-bold">世界</h3>
+									<img src="https://api.iconify.design/line-md/map-marker.svg" class="w-8 h-8 mr-2 dark:invert" data-i18n="chat.sidebar.world.icon" />
+									<h3 class="text-lg font-bold" data-i18n="chat.sidebar.world.title"></h3>
 								</div>
 							</div>
 							<select class="select select-bordered w-full" id="world-select">
@@ -37,8 +37,8 @@
 						<li id="persona-info">
 							<div class="flex items-center justify-between mt-6 mb-2">
 								<div class="flex items-center">
-									<img src="https://api.iconify.design/line-md/emoji-grin.svg" class="w-8 h-8 mr-2 dark:invert" />
-									<h3 class="text-lg font-bold">用户角色</h3>
+									<img src="https://api.iconify.design/line-md/emoji-grin.svg" class="w-8 h-8 mr-2 dark:invert" data-i18n="chat.sidebar.persona.icon" />
+									<h3 class="text-lg font-bold" data-i18n="chat.sidebar.persona.title"></h3>
 								</div>
 							</div>
 							<select class="select select-bordered w-full" id="persona-select">
@@ -51,16 +51,16 @@
 						<li id="char-list">
 							<div class="flex items-center justify-between mt-6 mb-2">
 								<div class="flex items-center">
-									<img src="https://api.iconify.design/line-md/person.svg" class="w-8 h-8 mr-2 dark:invert" />
-									<h3 class="text-lg font-bold">角色列表</h3>
+									<img src="https://api.iconify.design/line-md/person.svg" class="w-8 h-8 mr-2 dark:invert" data-i18n="chat.sidebar.charList.icon" />
+									<h3 class="text-lg font-bold" data-i18n="chat.sidebar.charList.title"></h3>
 								</div>
 							</div>
 							<div class="flex justify-between">
 								<select class="select select-bordered w-full" id="char-select">
 									<!-- 角色信息选项 -->
 								</select>
-								<button id="add-char-button" class="btn btn-sm btn-primary" title="添加角色">
-									<img src="https://api.iconify.design/line-md:account-add.svg" />
+								<button id="add-char-button" class="btn btn-sm btn-primary" data-i18n="chat.sidebar.charList.buttons.addChar">
+									<img src="https://api.iconify.design/line-md:account-add.svg" data-i18n="chat.sidebar.charList.buttons.addCharIcon" />
 								</button>
 							</div>
 							<div id="char-details" class="flex flex-col gap-2 sidebar-item-details">
@@ -79,20 +79,20 @@
 		<div class="container mx-auto p-4 w-full lg:w-3/4 flex flex-col h-full">
 			<div class="chat-container card bg-base-100 shadow-xl h-full flex flex-col">
 				<div class="chat-header card-title lg:flex justify-between items-center">
-					<h2 class="flex-grow">Chat</h2>
+					<h2 class="flex-grow" data-i18n="chat.chatArea.title"></h2>
 					<div class="flex-none">
-						<label for="left-drawer" class="btn btn-square btn-ghost" title="菜单">
-							<img src="https://api.iconify.design/line-md/list-3-solid.svg" class="dark:invert" />
+						<label for="left-drawer" class="btn btn-square btn-ghost" data-i18n="chat.chatArea.menuButton">
+							<img src="https://api.iconify.design/line-md/list-3-solid.svg" class="dark:invert" data-i18n="chat.chatArea.menuButtonIcon" />
 						</label>
 					</div>
 				</div>
 				<div class="chat-messages flex-grow overflow-y-auto flex flex-col p-8" id="chat-messages">
 				</div>
 				<div class="chat-input p-4 flex gap-4">
-					<textarea id="message-input" class="textarea textarea-bordered flex-grow" placeholder="Type a message..."></textarea>
+					<textarea id="message-input" class="textarea textarea-bordered flex-grow" data-i18n="chat.chatArea.input"></textarea>
 					<div class="flex flex-col gap-2">
-						<button id="send-button" class="btn btn-primary" title="发送"><img src="https://api.iconify.design/line-md/chat-round-twotone.svg" /></button>
-						<button id="upload-button" class="btn btn-secondary" title="上传"><img src="https://api.iconify.design/line-md/upload.svg" /></button>
+						<button id="send-button" class="btn btn-primary" data-i18n="chat.chatArea.sendButton"><img src="https://api.iconify.design/line-md/chat-round-twotone.svg" data-i18n="chat.chatArea.sendButtonIcon" /></button>
+						<button id="upload-button" class="btn btn-secondary" data-i18n="chat.chatArea.uploadButton"><img src="https://api.iconify.design/line-md/upload.svg" data-i18n="chat.chatArea.uploadButtonIcon" /></button>
 					</div>
 					<input type="file" id="file-input" class="hidden" multiple />
 				</div>
@@ -107,7 +107,7 @@
 	<div class="absolute top-0 right-0 z-40 w-80 h-full hidden" id="right-sidebar-container">
 		<div class="bg-base-300 text-base-content border-l-2 border-base-content h-full" id="right-sidebar">
 			<div class="p-4 h-full overflow-y-auto">
-				<h2 class="text-xl mb-2">描述信息</h2>
+				<h2 class="text-xl mb-2" data-i18n="chat.rightSidebar.title"></h2>
 				<article id="item-description"></article>
 			</div>
 		</div>

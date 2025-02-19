@@ -1,6 +1,11 @@
 import { applyTheme } from '../../scripts/theme.mjs'
 applyTheme()
 
+import { Terminal } from 'https://esm.run/xterm'
+import { WebLinksAddon } from 'https://esm.run/@xterm/addon-web-links'
+import { ClipboardAddon } from 'https://esm.run/@xterm/addon-clipboard'
+import { initTranslations, geti18n } from '../../scripts/i18n.mjs' // Import i18n functions
+
 const tutorialModal = document.getElementById('tutorialModal')
 const startTutorialBtn = document.getElementById('startTutorial')
 const progressBar = document.getElementById('progressBar')
@@ -46,11 +51,10 @@ function hideTutorialEnd() {
 
 function startMouseTutorial() {
 	resetProgress()
-	showProgressBar(`\
-请使用您的手指尝试握住鼠标<img src="https://api.iconify.design/ph/mouse.svg" class="dark:invert">
-<br/>
-随后移动它
-`)
+	const message = geti18n('tutorial.progressMessages.mouseMove', {
+		mouseIcon: '<img src="https://api.iconify.design/ph/mouse.svg" class="dark:invert">',
+	})
+	showProgressBar(message)
 
 	document.addEventListener('mousemove', handleMouseMove)
 }
@@ -68,11 +72,10 @@ function handleMouseMove() {
 
 function startKeyboardTutorial() {
 	resetProgress()
-	showProgressBar(`\
-请找到您的键盘<img src="https://api.iconify.design/ph/keyboard.svg" class="dark:invert">
-<br/>
-尝试使用您的手指按压键盘
-`)
+	const message = geti18n('tutorial.progressMessages.keyboardPress', {
+		keyboardIcon: '<img src="https://api.iconify.design/ph/keyboard.svg" class="dark:invert">',
+	})
+	showProgressBar(message)
 
 	document.addEventListener('keydown', handleKeyDown)
 }
@@ -92,11 +95,10 @@ function handleKeyDown() {
 
 function startMobileTutorial() {
 	resetProgress()
-	showProgressBar(`\
-请找到您的手机<img src="https://api.iconify.design/proicons/phone.svg" class="dark:invert">
-<br/>
-尝试使用您的任意手指触摸屏幕，再移动它
-`)
+	const message = geti18n('tutorial.progressMessages.mobileTouchMove', {
+		phoneIcon: '<img src="https://api.iconify.design/proicons/phone.svg" class="dark:invert">',
+	})
+	showProgressBar(message)
 
 	document.addEventListener('touchmove', handleTouchMove)
 }
@@ -114,11 +116,10 @@ function handleTouchMove() {
 
 function startMobileClickTutorial() {
 	resetProgress()
-	showProgressBar(`\
-请尝试使用您的任意手指触碰手机屏幕<img src="https://api.iconify.design/proicons/phone.svg" class="dark:invert">
-<br/>
-之后松开
-`)
+	const message = geti18n('tutorial.progressMessages.mobileClick', {
+		phoneIcon: '<img src="https://api.iconify.design/proicons/phone.svg" class="dark:invert">',
+	})
+	showProgressBar(message)
 
 	document.addEventListener('click', handleMobileClick)
 }
@@ -146,3 +147,5 @@ startTutorialBtn.addEventListener('click', () => {
 		startMouseTutorial()
 
 })
+
+initTranslations('tutorial')

@@ -1,7 +1,7 @@
 <div class="card-container bg-base-100 shadow-xl group">
 	<div class="card-content" style="background-image: url(${info.avatar || 'https://api.iconify.design/line-md/person.svg'}); background-size: contain; background-position: center; background-repeat: no-repeat;">
 		<button class="refresh-button">
-			<img src="https://api.iconify.design/line-md/rotate-270.svg" alt="刷新" title="刷新" class="dark:invert">
+			<img src="https://api.iconify.design/line-md/rotate-270.svg" data-i18n="home.charCard.refreshButton" class="dark:invert">
 		</button>
 		<div class="text-content">
 			<h2 class="card-title">${info.name}</h2>
@@ -16,13 +16,13 @@
 		<div class="tags-container">
 			${(info.tags && info.tags.length > 0) ? `
 			${info.tags.map((tag) => `<span class="badge badge-primary">${tag}</span>`).join(' ')}
-			` : 'No tags'}
+			` : geti18n('home.charCard.noTags')}
 		</div>
 		<div class="char-details-container">
-			${info.version ? `<div class="char-info-item">版本：<code>${info.version}</code></div>` : ''}
-			${info.author ? `<div class="char-info-item">作者：${info.author}</div>` : ''}
-			${info.homepage ? `<div class="char-info-item"><a href="${info.homepage}" target="_blank">主页</a></div>` : ''}
-			${info.issuepage ? `<div class="char-info-item"><a href="${info.issuepage}" target="_blank">问题反馈</a></div>` : ''}
+			${info.version ? `<div class="char-info-item">${geti18n('home.charCard.version')}：<code>${info.version}</code></div>` : ''}
+			${info.author ? `<div class="char-info-item">${geti18n('home.charCard.author')}：${info.author}</div>` : ''}
+			${info.homepage ? `<div class="char-info-item"><a href="${info.homepage}" target="_blank">${geti18n('home.charCard.homepage')}</a></div>` : ''}
+			${info.issuepage ? `<div class="char-info-item"><a href="${info.issuepage}" target="_blank">${geti18n('home.charCard.issuepage')}</a></div>` : ''}
 		</div>
 	</div>
 </div>
