@@ -1,4 +1,4 @@
-import { createJSONEditor } from 'https://cdn.jsdelivr.net/npm/vanilla-jsoneditor@2/standalone.js'
+import { createJsonEditor } from '../../scripts/jsoneditor.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 
 const jsonEditorContainer = document.getElementById('jsonEditor')
@@ -110,15 +110,11 @@ async function loadEditor(fileName) {
 		generatorSelect.value = data.generator || ''
 
 		if (!jsonEditor)
-			jsonEditor = createJSONEditor({
-				target: jsonEditorContainer,
-				props: {
-					mode: 'code',
-					indentation: '\t',
-					onChange: (updatedContent, previousContent, { error, patchResult }) => {
-						isDirty = true // 标记为有未保存的更改
-					},
-				}
+			jsonEditor = createJsonEditor(jsonEditorContainer,{
+				onChange: (updatedContent, previousContent, { error, patchResult }) => {
+					isDirty = true // 标记为有未保存的更改
+				},
+				onSave: saveFile
 			})
 
 		jsonEditor.set({ json: data.config })
