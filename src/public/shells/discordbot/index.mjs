@@ -1,4 +1,4 @@
-import { createJSONEditor } from 'https://cdn.jsdelivr.net/npm/vanilla-jsoneditor@2/standalone.js'
+import { createJsonEditor } from '../../scripts/jsoneditor.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 
 const configEditorContainer = document.getElementById('config-editor')
@@ -130,18 +130,14 @@ async function loadBotConfig(botname) {
 		await checkCharSupport(config.char)
 
 		if (!configEditor)
-			configEditor = createJSONEditor({
-				target: configEditorContainer,
-				props: {
-					mode: 'code',
-					indentation: '\t',
-					onChange: (updatedContent, previousContent, { error, patchResult }) => {
-						if (!error) {
-							config.config = updatedContent.json
-							isDirty = true // 标记为有未保存的更改
-						}
+			configEditor = createJsonEditor(configEditorContainer, {
+				onChange: (updatedContent, previousContent, { error, patchResult }) => {
+					if (!error) {
+						config.config = updatedContent.json
+						isDirty = true // 标记为有未保存的更改
 					}
-				}
+				},
+				onSave: handleSaveConfig
 			})
 
 		configEditor.set({ json: config.config || {} })

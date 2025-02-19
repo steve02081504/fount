@@ -1,4 +1,4 @@
-import { createJSONEditor } from 'https://cdn.jsdelivr.net/npm/vanilla-jsoneditor@2/standalone.js'
+import { createJsonEditor } from '../../scripts/jsoneditor.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 import { getPartTypes, getParts, getPartDetails, saveConfigData, getConfigData } from './src/public/endpoints.mjs' // 导入 API 模块
 import { showErrorMessage } from './src/public/error.mjs'
@@ -115,16 +115,12 @@ async function loadEditor(partType, partName) {
 		const partDetailsData = await getPartDetails(partType, partName)
 
 		if (!jsonEditor)
-			jsonEditor = createJSONEditor({
-				target: jsonEditorContainer,
-				props: {
-					mode: 'code',
-					indentation: '\t',
-					readOnly: true,
-					onChange: (updatedContent, previousContent, { error, patchResult }) => {
-						isDirty = true
-					},
-				}
+			jsonEditor = createJsonEditor(jsonEditorContainer, {
+				readOnly: true,
+				onChange: (updatedContent, previousContent, { error, patchResult }) => {
+					isDirty = true
+				},
+				onSave: saveConfig
 			})
 
 		if (!partDetailsData || !partDetailsData.supportedInterfaces.includes('config')) {
