@@ -225,7 +225,7 @@ export async function getPartDetails(username, parttype, partname, nocache = fal
 				name: partname,
 				avatar: 'https://api.iconify.design/line-md/emoji-frown-open.svg',
 				description: 'error loading part',
-				description_markdown: `# error loading part\n\n\`\`\`\`\n${error.message}\n${error.stack}\`\`\`\``,
+				description_markdown: `# error loading part\n\n\`\`\`\`\n${error.message}\n${error.stack}\n\`\`\`\``,
 			},
 			supportedInterfaces: [],
 		}
