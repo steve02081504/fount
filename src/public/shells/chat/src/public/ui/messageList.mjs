@@ -9,6 +9,7 @@ import { handleFilesSelect, renderAttachmentPreview } from '../fileHandling.mjs'
 import { processTimeStampForId, SWIPE_THRESHOLD, DEFAULT_AVATAR } from '../utils.mjs'
 import { appendMessageToQueue, getQueueIndex, replaceMessageInQueue, getMessageIndexByIndex, deleteMessageInQueue, getMessageElementByMessageIndex } from './virtualQueue.mjs'
 import { addDragAndDropSupport } from './dragAndDrop.mjs'
+import { geti18n, i18nElement } from '../../../../../scripts/i18n.mjs' // Import i18n functions
 
 export async function renderMessage(message) {
 	const preprocessedMessage = {
@@ -26,7 +27,7 @@ export async function renderMessage(message) {
 	messageElement
 		.querySelector('.delete-button')
 		.addEventListener('click', async () => {
-			if (confirm('确认删除此消息？')) {
+			if (confirm(geti18n('chat.messageList.confirmDeleteMessage'))) { // i18n
 				const index = getQueueIndex(messageElement)
 				if (index === -1) return
 				const messageIndex = await getMessageIndexByIndex(index)
@@ -80,6 +81,7 @@ export async function editMessageStart(message, index, messageIndex) {
 		'message_edit_view',
 		editRenderedMessage
 	)
+	i18nElement(messageElement)
 
 	const fileEditInputElement = messageElement.querySelector(
 		`#file-edit-input-${editRenderedMessage.safeTimeStamp}`
@@ -110,12 +112,14 @@ export async function editMessageStart(message, index, messageIndex) {
 			}
 			const updatedMessage = await editMessage(messageIndex, newMessage)
 			await replaceMessageInQueue(index, updatedMessage)
+			await renderMessage(updatedMessage) // re-render the message to update view
 		})
 
 	messageElement
 		.querySelector(`#cancel-button-${editRenderedMessage.safeTimeStamp}`)
 		.addEventListener('click', async () => {
 			await replaceMessageInQueue(index, message)
+			await renderMessage(message) // re-render the message to update view
 		})
 
 	selectedFiles.forEach(async (file, i) => {

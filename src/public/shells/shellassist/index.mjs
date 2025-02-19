@@ -4,6 +4,7 @@ applyTheme()
 import { Terminal } from 'https://esm.run/xterm'
 import { WebLinksAddon } from 'https://esm.run/@xterm/addon-web-links'
 import { ClipboardAddon } from 'https://esm.run/@xterm/addon-clipboard'
+import { initTranslations, geti18n } from '../../scripts/i18n.mjs' // Import i18n functions
 
 const terminal = new Terminal({
 	linkHandler: {
@@ -32,5 +33,7 @@ terminal.element.addEventListener('contextmenu', async (event) => {
 		terminal.paste(await navigator.clipboard.readText())
 })
 
-terminal.writeln('Fount 支持将你喜欢的角色部署到你的终端中辅助你编码！')
-terminal.writeln('\x1b]8;;https://github.com/steve02081504/fount-pwsh\x07点击这里了解更多信息\x1b]8;;\x07')
+await initTranslations('terminal_assistant') // Initialize translations with pageid 'terminal_assistant'
+
+terminal.writeln(geti18n('terminal_assistant.initialMessage'))
+terminal.writeln(`\x1b]8;;https://github.com/steve02081504/fount-pwsh\x07${geti18n('terminal_assistant.initialMessageLink')}\x1b]8;;\x07`)

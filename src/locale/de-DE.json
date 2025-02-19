@@ -1,0 +1,375 @@
+{
+	"tutorial": {
+		"title": "Tutorial?",
+		"modal": {
+			"title": "Willkommen bei fount!",
+			"instruction": "Möchten Sie das Einsteiger-Tutorial durchgehen?",
+			"buttons": {
+				"start": "Tutorial starten",
+				"skip": "Überspringen"
+			}
+		},
+		"endScreen": {
+			"title": "Fantastisch! Tutorial abgeschlossen!",
+			"subtitle": "Jetzt wissen Sie, wie man es bedient!",
+			"homeButton": "Zur Startseite"
+		},
+		"progressMessages": {
+			"mouseMove": "Bitte versuchen Sie, die Maus ${mouseIcon} mit Ihrem Finger zu greifen<br/>und bewegen Sie sie dann",
+			"keyboardPress": "Bitte suchen Sie Ihre Tastatur ${keyboardIcon}<br/>und versuchen Sie, die Tastatur mit Ihrem Finger zu drücken",
+			"mobileTouchMove": "Bitte suchen Sie Ihr Telefon ${phoneIcon}<br/>Versuchen Sie, den Bildschirm mit einem Ihrer Finger zu berühren und ihn dann zu bewegen",
+			"mobileClick": "Bitte versuchen Sie, den Bildschirm des Telefons ${phoneIcon} mit einem Ihrer Finger zu berühren<br/>und dann loszulassen"
+		}
+	},
+	"home": {
+		"title": "Charakterauswahlseite",
+		"pageTitle": "Charakterauswahlseite",
+		"instruction": "Wählen Sie einen Charakter aus und starten Sie den Chat!",
+		"filterInput": {
+			"placeholder": "Suchen..."
+		},
+		"sidebarTitle": "Charakterinformationen",
+		"characterDescription": {},
+		"noDescription": "Keine Beschreibungsinformationen",
+		"alerts": {
+			"fetchHomeRegistryFailed": "Fehler beim Abrufen der Startseiten-Registrierungsinformationen"
+		},
+		"functionMenu": {
+			"icon": {
+				"alt": "Funktionsmenü"
+			}
+		},
+		"charCard": {
+			"refreshButton": {
+				"alt": "Aktualisieren",
+				"title": "Aktualisieren"
+			},
+			"noTags": "Keine Tags",
+			"version": "Version",
+			"author": "Autor",
+			"homepage": "Startseite",
+			"issuepage": "Problem melden"
+		}
+	},
+	"import": {
+		"title": "Importieren",
+		"tabs": {
+			"fileImport": "Datei importieren",
+			"textImport": "Text importieren"
+		},
+		"dropArea": {
+			"icon": {
+				"alt": "Upload-Symbol"
+			},
+			"text": "Dateien hierher ziehen oder zum Auswählen klicken"
+		},
+		"textArea": {
+			"placeholder": "Text zum Importieren eingeben..."
+		},
+		"buttons": {
+			"import": "Importieren"
+		},
+		"alerts": {
+			"importSuccess": "Import erfolgreich",
+			"importFailed": "Import fehlgeschlagen: ${error}",
+			"unknownError": "Unbekannter Fehler"
+		},
+		"errors": {
+			"noFileSelected": "Bitte wählen Sie eine Datei aus",
+			"fileImportFailed": "Dateiimport fehlgeschlagen: ${message}",
+			"noTextContent": "Bitte geben Sie Textinhalt ein",
+			"textImportFailed": "Textimport fehlgeschlagen: ${message}",
+			"handler": "Handler",
+			"error": "Fehler"
+		},
+		"fileItem": {
+			"removeButton": {
+				"title": "Entfernen"
+			}
+		}
+	},
+	"aisource_editor": {
+		"title": "KI-Quelleneditor",
+		"fileList": {
+			"title": "KI-Quellenliste",
+			"addButton": {
+				"title": "+"
+			}
+		},
+		"configTitle": "KI-Quellenkonfiguration",
+		"generatorSelect": {
+			"label": "Generator auswählen",
+			"placeholder": "Bitte auswählen"
+		},
+		"buttons": {
+			"save": "Speichern",
+			"delete": "Löschen"
+		},
+		"alerts": {
+			"fetchFileListFailed": "Fehler beim Abrufen der Dateiliste: ${error}",
+			"fetchGeneratorListFailed": "Fehler beim Abrufen der Generatorliste: ${error}",
+			"fetchFileDataFailed": "Fehler beim Abrufen der Dateidaten: ${error}",
+			"noFileSelectedSave": "Keine Datei zum Speichern ausgewählt.",
+			"saveFileFailed": "Fehler beim Speichern der Datei: ${error}",
+			"noFileSelectedDelete": "Keine Datei zum Löschen ausgewählt.",
+			"deleteFileFailed": "Fehler beim Löschen der Datei: ${error}",
+			"invalidFileName": "Der Dateiname darf folgende Zeichen nicht enthalten: / \\ : * ? \" < > |",
+			"addFileFailed": "Fehler beim Hinzufügen der Datei: ${error}"
+		},
+		"confirm": {
+			"unsavedChanges": "Sie haben ungespeicherte Änderungen. Möchten Sie die Änderungen verwerfen?",
+			"deleteFile": "Sind Sie sicher, dass Sie die Datei löschen möchten?",
+			"unsavedChangesBeforeUnload": "Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie diese Seite verlassen möchten?"
+		},
+		"prompts": {
+			"newFileName": "Bitte geben Sie einen neuen KI-Quelldatei-Namen ein (ohne Erweiterung):"
+		}
+	},
+	"part_config": {
+		"title": "Teilekonfiguration",
+		"pageTitle": "Teilekonfiguration",
+		"labels": {
+			"partType": "Teiletyp auswählen",
+			"part": "Teil auswählen"
+		},
+		"placeholders": {
+			"partTypeSelect": "Bitte auswählen",
+			"partSelect": "Bitte auswählen"
+		},
+		"editor": {
+			"title": "Teilekonfiguration",
+			"disabledIndicator": "Dieses Teil unterstützt keine Konfiguration",
+			"buttons": {
+				"save": "Speichern"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Fehlerhinweis"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "Fehler beim Abrufen der Teiletypen",
+			"fetchPartsFailed": "Fehler beim Abrufen der Teileliste",
+			"loadEditorFailed": "Fehler beim Laden des Editors",
+			"saveConfigFailed": "Fehler beim Speichern der Teilekonfiguration",
+			"unsavedChanges": "Sie haben ungespeicherte Änderungen. Möchten Sie die Änderungen verwerfen?",
+			"beforeUnload": "Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie verlassen möchten?"
+		}
+	},
+	"chat": {
+		"title": "Chat",
+		"sidebar": {
+			"world": {
+				"icon": {
+					"alt": "Weltsymbol"
+				},
+				"title": "Welt"
+			},
+			"persona": {
+				"icon": {
+					"alt": "Benutzer-Persona-Symbol"
+				},
+				"title": "Benutzer-Persona"
+			},
+			"charList": {
+				"icon": {
+					"alt": "Charakterlistensymbol"
+				},
+				"title": "Charakterliste",
+				"buttons": {
+					"addChar": {
+						"title": "Charakter hinzufügen"
+					},
+					"addCharIcon": {
+						"alt": "Charakter hinzufügen-Symbol"
+					}
+				}
+			},
+			"noSelection": "Keine",
+			"noDescription": "Keine Beschreibungsinformationen"
+		},
+		"chatArea": {
+			"title": "Chat",
+			"menuButton": {
+				"title": "Menü"
+			},
+			"menuButtonIcon": {
+				"alt": "Menüsymbol"
+			},
+			"input": {
+				"placeholder": "Nachricht eingeben...\nStrg+Enter zum Senden"
+			},
+			"sendButton": {
+				"title": "Senden"
+			},
+			"sendButtonIcon": {
+				"alt": "Senden-Symbol"
+			},
+			"uploadButton": {
+				"title": "Hochladen"
+			},
+			"uploadButtonIcon": {
+				"alt": "Hochladen-Symbol"
+			}
+		},
+		"rightSidebar": {
+			"title": "Beschreibungsinformationen"
+		},
+		"messageList": {
+			"confirmDeleteMessage": "Nachricht wirklich löschen?"
+		},
+		"messageView": {
+			"buttons": {
+				"edit": {
+					"title": "Bearbeiten"
+				},
+				"editIcon": {
+					"alt": "Bearbeiten-Symbol"
+				},
+				"delete": {
+					"title": "Löschen"
+				},
+				"deleteIcon": {
+					"alt": "Löschen-Symbol"
+				}
+			}
+		},
+		"messageEdit": {
+			"input": {
+				"placeholder": "Inhalt eingeben..."
+			},
+			"buttons": {
+				"confirm": {
+					"title": "Bestätigen"
+				},
+				"confirmIcon": {
+					"alt": "Bestätigen-Symbol"
+				},
+				"cancel": {
+					"title": "Abbrechen"
+				},
+				"cancelIcon": {
+					"alt": "Abbrechen-Symbol"
+				},
+				"upload": {
+					"title": "Hochladen"
+				},
+				"uploadIcon": {
+					"alt": "Hochladen-Symbol"
+				}
+			}
+		},
+		"attachment": {
+			"buttons": {
+				"download": {
+					"title": "Herunterladen"
+				},
+				"downloadIcon": {
+					"alt": "Herunterladen-Symbol"
+				},
+				"delete": {
+					"title": "Löschen"
+				},
+				"deleteIcon": {
+					"alt": "Löschen-Symbol"
+				}
+			}
+		},
+		"charCard": {
+			"frequencyLabel": "Frequenz",
+			"buttons": {
+				"removeChar": {
+					"title": "Aus Chat entfernen"
+				},
+				"removeCharIcon": {
+					"alt": "Charakter entfernen-Symbol"
+				},
+				"forceReply": {
+					"title": "Antwort erzwingen"
+				},
+				"forceReplyIcon": {
+					"alt": "Antwort erzwingen-Symbol"
+				}
+			}
+		}
+	},
+	"chat_history": {
+		"title": "Chatverlauf",
+		"pageTitle": "Chatverlauf",
+		"sortOptions": {
+			"time_desc": "Zeit absteigend",
+			"time_asc": "Zeit aufsteigend"
+		},
+		"filterInput": {
+			"placeholder": "Suchen..."
+		},
+		"selectAll": "Alle auswählen",
+		"buttons": {
+			"reverseSelect": "Auswahl umkehren",
+			"deleteSelected": "Auswahl löschen",
+			"exportSelected": "Auswahl exportieren"
+		},
+		"confirmDeleteChat": "Möchten Sie den Chatverlauf mit ${chars} wirklich löschen?",
+		"confirmDeleteMultiChats": "Möchten Sie die ausgewählten ${count} Chatverläufe wirklich löschen?",
+		"alerts": {
+			"noChatSelectedForDeletion": "Bitte wählen Sie Chatverläufe zum Löschen aus",
+			"noChatSelectedForExport": "Bitte wählen Sie Chatverläufe zum Exportieren aus"
+		},
+		"chatItemButtons": {
+			"continue": "Fortsetzen",
+			"copy": "Kopieren",
+			"export": "Exportieren",
+			"delete": "Löschen"
+		}
+	},
+	"discord_bots": {
+		"title": "Discord Bots",
+		"cardTitle": "Discord Bots",
+		"buttons": {
+			"newBot": "Neu",
+			"deleteBot": "Löschen"
+		},
+		"configCard": {
+			"title": "Bot-Konfiguration",
+			"labels": {
+				"character": "Charakter",
+				"apiKey": "Discord API-Schlüssel",
+				"config": "Konfiguration"
+			},
+			"charSelectPlaceholder": "Charakter auswählen",
+			"charSupportMessage": "Dieser Charakter unterstützt die Discord-Schnittstelle nicht.",
+			"apiKeyInput": {
+				"placeholder": "API-Schlüssel eingeben"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "API-Schlüssel-Sichtbarkeit umschalten"
+			},
+			"buttons": {
+				"saveConfig": "Konfiguration speichern",
+				"startBot": "Starten",
+				"stopBot": "Stoppen"
+			}
+		},
+		"prompts": {
+			"newBotName": "Bitte geben Sie einen neuen Bot-Namen ein:"
+		},
+		"alerts": {
+			"botExists": "Ein Bot namens \"${botname}\" existiert bereits, bitte verwenden Sie einen anderen Namen.",
+			"unsavedChanges": "Sie haben ungespeicherte Änderungen. Möchten Sie die Änderungen verwerfen?",
+			"configSaved": "Konfiguration erfolgreich gespeichert",
+			"httpError": "HTTP-Fehler",
+			"beforeUnload": "Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie verlassen möchten?"
+		}
+	},
+	"terminal_assistant": {
+		"title": "Terminal-Assistent",
+		"initialMessage": "Fount unterstützt die Bereitstellung Ihrer Lieblingscharaktere in Ihrem Terminal, um Sie beim Programmieren zu unterstützen!",
+		"initialMessageLink": "Klicken Sie hier, um mehr zu erfahren"
+	},
+	"404": {
+		"title": "404 - Seite nicht gefunden",
+		"pageNotFoundText": "Hoppla! Die Seite, die Sie suchen, wurde nicht gefunden.",
+		"homepageButton": "Zurück zur Startseite"
+	}
+}

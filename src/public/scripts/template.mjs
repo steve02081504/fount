@@ -1,3 +1,6 @@
+import { geti18n, i18nElement } from "./i18n.mjs"
+geti18n;
+
 const template_cache = {}
 
 export async function renderTemplateAsHtmlString(template, data) {
@@ -31,5 +34,5 @@ export async function renderTemplate(template, data) {
 	const div = document.createElement('div')
 	div.innerHTML = await renderTemplateAsHtmlString(template, data)
 
-	return div.firstChild
+	return i18nElement(div.firstChild)
 }

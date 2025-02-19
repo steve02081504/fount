@@ -1,0 +1,375 @@
+{
+	"tutorial": {
+		"title": "튜토리얼?",
+		"modal": {
+			"title": "fount에 오신 것을 환영합니다!",
+			"instruction": "신규 사용자 튜토리얼을 진행하시겠습니까?",
+			"buttons": {
+				"start": "튜토리얼 시작",
+				"skip": "건너뛰기"
+			}
+		},
+		"endScreen": {
+			"title": "훌륭합니다! 튜토리얼 완료!",
+			"subtitle": "이제 조작 방법을 배우셨습니다!",
+			"homeButton": "홈페이지로 이동"
+		},
+		"progressMessages": {
+			"mouseMove": "손가락으로 마우스 ${mouseIcon}를 잡아보세요<br/>그런 다음 움직여보세요",
+			"keyboardPress": "키보드 ${keyboardIcon}를 찾으세요<br/>손가락으로 키보드를 눌러보세요",
+			"mobileTouchMove": "휴대폰 ${phoneIcon}를 찾으세요<br/>손가락으로 화면을 터치한 다음 움직여보세요",
+			"mobileClick": "손가락으로 휴대폰 화면 ${phoneIcon}를 터치해보세요<br/>그런 다음 손을 떼세요"
+		}
+	},
+	"home": {
+		"title": "캐릭터 선택 페이지",
+		"pageTitle": "캐릭터 선택 페이지",
+		"instruction": "캐릭터를 선택하고 채팅을 시작하세요!",
+		"filterInput": {
+			"placeholder": "검색..."
+		},
+		"sidebarTitle": "캐릭터 정보",
+		"characterDescription": {},
+		"noDescription": "설명 정보 없음",
+		"alerts": {
+			"fetchHomeRegistryFailed": "홈페이지 등록 정보를 가져오지 못했습니다"
+		},
+		"functionMenu": {
+			"icon": {
+				"alt": "기능 메뉴"
+			}
+		},
+		"charCard": {
+			"refreshButton": {
+				"alt": "새로고침",
+				"title": "새로고침"
+			},
+			"noTags": "태그 없음",
+			"version": "버전",
+			"author": "작성자",
+			"homepage": "홈페이지",
+			"issuepage": "문제 보고"
+		}
+	},
+	"import": {
+		"title": "가져오기",
+		"tabs": {
+			"fileImport": "파일 가져오기",
+			"textImport": "텍스트 가져오기"
+		},
+		"dropArea": {
+			"icon": {
+				"alt": "업로드 아이콘"
+			},
+			"text": "파일을 여기로 드래그 앤 드롭하거나 파일을 선택하려면 클릭하세요"
+		},
+		"textArea": {
+			"placeholder": "가져올 텍스트를 입력하세요..."
+		},
+		"buttons": {
+			"import": "가져오기"
+		},
+		"alerts": {
+			"importSuccess": "가져오기 성공",
+			"importFailed": "가져오기 실패: ${error}",
+			"unknownError": "알 수 없는 오류"
+		},
+		"errors": {
+			"noFileSelected": "파일을 선택해주세요",
+			"fileImportFailed": "파일 가져오기 실패: ${message}",
+			"noTextContent": "텍스트 내용을 입력해주세요",
+			"textImportFailed": "텍스트 가져오기 실패: ${message}",
+			"handler": "핸들러",
+			"error": "오류"
+		},
+		"fileItem": {
+			"removeButton": {
+				"title": "제거"
+			}
+		}
+	},
+	"aisource_editor": {
+		"title": "AI 소스 편집기",
+		"fileList": {
+			"title": "AI 소스 목록",
+			"addButton": {
+				"title": "+"
+			}
+		},
+		"configTitle": "AI 소스 구성",
+		"generatorSelect": {
+			"label": "생성기 선택",
+			"placeholder": "선택해주세요"
+		},
+		"buttons": {
+			"save": "저장",
+			"delete": "삭제"
+		},
+		"alerts": {
+			"fetchFileListFailed": "파일 목록을 가져오지 못했습니다: ${error}",
+			"fetchGeneratorListFailed": "생성기 목록을 가져오지 못했습니다: ${error}",
+			"fetchFileDataFailed": "파일 데이터를 가져오지 못했습니다: ${error}",
+			"noFileSelectedSave": "저장할 파일을 선택하지 않았습니다.",
+			"saveFileFailed": "파일 저장에 실패했습니다: ${error}",
+			"noFileSelectedDelete": "삭제할 파일을 선택하지 않았습니다.",
+			"deleteFileFailed": "파일 삭제에 실패했습니다: ${error}",
+			"invalidFileName": "파일 이름에 다음 문자를 포함할 수 없습니다: / \\ : * ? \" < > |",
+			"addFileFailed": "파일 추가에 실패했습니다: ${error}"
+		},
+		"confirm": {
+			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까?",
+			"deleteFile": "파일을 삭제하시겠습니까?",
+			"unsavedChangesBeforeUnload": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 떠나시겠습니까?"
+		},
+		"prompts": {
+			"newFileName": "새 AI 소스 파일 이름을 입력하세요 (확장자 없이):"
+		}
+	},
+	"part_config": {
+		"title": "부품 구성",
+		"pageTitle": "부품 구성",
+		"labels": {
+			"partType": "부품 유형 선택",
+			"part": "부품 선택"
+		},
+		"placeholders": {
+			"partTypeSelect": "선택해주세요",
+			"partSelect": "선택해주세요"
+		},
+		"editor": {
+			"title": "부품 구성",
+			"disabledIndicator": "이 부품은 구성을 지원하지 않습니다",
+			"buttons": {
+				"save": "저장"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "오류 알림"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "부품 유형을 가져오지 못했습니다",
+			"fetchPartsFailed": "부품 목록을 가져오지 못했습니다",
+			"loadEditorFailed": "편집기를 로드하지 못했습니다",
+			"saveConfigFailed": "부품 구성 저장에 실패했습니다",
+			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까?",
+			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 떠나시겠습니까?"
+		}
+	},
+	"chat": {
+		"title": "채팅",
+		"sidebar": {
+			"world": {
+				"icon": {
+					"alt": "세계 아이콘"
+				},
+				"title": "세계"
+			},
+			"persona": {
+				"icon": {
+					"alt": "사용자 페르소나 아이콘"
+				},
+				"title": "사용자 페르소나"
+			},
+			"charList": {
+				"icon": {
+					"alt": "캐릭터 목록 아이콘"
+				},
+				"title": "캐릭터 목록",
+				"buttons": {
+					"addChar": {
+						"title": "캐릭터 추가"
+					},
+					"addCharIcon": {
+						"alt": "캐릭터 추가 아이콘"
+					}
+				}
+			},
+			"noSelection": "없음",
+			"noDescription": "설명 정보 없음"
+		},
+		"chatArea": {
+			"title": "채팅",
+			"menuButton": {
+				"title": "메뉴"
+			},
+			"menuButtonIcon": {
+				"alt": "메뉴 아이콘"
+			},
+			"input": {
+				"placeholder": "메시지 입력...\nCtrl+Enter로 보내기"
+			},
+			"sendButton": {
+				"title": "보내기"
+			},
+			"sendButtonIcon": {
+				"alt": "보내기 아이콘"
+			},
+			"uploadButton": {
+				"title": "업로드"
+			},
+			"uploadButtonIcon": {
+				"alt": "업로드 아이콘"
+			}
+		},
+		"rightSidebar": {
+			"title": "설명 정보"
+		},
+		"messageList": {
+			"confirmDeleteMessage": "이 메시지를 삭제하시겠습니까?"
+		},
+		"messageView": {
+			"buttons": {
+				"edit": {
+					"title": "편집"
+				},
+				"editIcon": {
+					"alt": "편집 아이콘"
+				},
+				"delete": {
+					"title": "삭제"
+				},
+				"deleteIcon": {
+					"alt": "삭제 아이콘"
+				}
+			}
+		},
+		"messageEdit": {
+			"input": {
+				"placeholder": "내용 입력..."
+			},
+			"buttons": {
+				"confirm": {
+					"title": "확인"
+				},
+				"confirmIcon": {
+					"alt": "확인 아이콘"
+				},
+				"cancel": {
+					"title": "취소"
+				},
+				"cancelIcon": {
+					"alt": "취소 아이콘"
+				},
+				"upload": {
+					"title": "업로드"
+				},
+				"uploadIcon": {
+					"alt": "업로드 아이콘"
+				}
+			}
+		},
+		"attachment": {
+			"buttons": {
+				"download": {
+					"title": "다운로드"
+				},
+				"downloadIcon": {
+					"alt": "다운로드 아이콘"
+				},
+				"delete": {
+					"title": "삭제"
+				},
+				"deleteIcon": {
+					"alt": "삭제 아이콘"
+				}
+			}
+		},
+		"charCard": {
+			"frequencyLabel": "빈도",
+			"buttons": {
+				"removeChar": {
+					"title": "채팅에서 제거"
+				},
+				"removeCharIcon": {
+					"alt": "캐릭터 제거 아이콘"
+				},
+				"forceReply": {
+					"title": "강제 답장"
+				},
+				"forceReplyIcon": {
+					"alt": "강제 답장 아이콘"
+				}
+			}
+		}
+	},
+	"chat_history": {
+		"title": "채팅 기록",
+		"pageTitle": "채팅 기록",
+		"sortOptions": {
+			"time_desc": "시간 내림차순",
+			"time_asc": "시간 오름차순"
+		},
+		"filterInput": {
+			"placeholder": "검색..."
+		},
+		"selectAll": "모두 선택",
+		"buttons": {
+			"reverseSelect": "선택 반전",
+			"deleteSelected": "선택 삭제",
+			"exportSelected": "선택 내보내기"
+		},
+		"confirmDeleteChat": "${chars}와의 채팅 기록을 삭제하시겠습니까?",
+		"confirmDeleteMultiChats": "선택한 ${count}개의 채팅 기록을 삭제하시겠습니까?",
+		"alerts": {
+			"noChatSelectedForDeletion": "삭제할 채팅 기록을 선택해주세요",
+			"noChatSelectedForExport": "내보낼 채팅 기록을 선택해주세요"
+		},
+		"chatItemButtons": {
+			"continue": "계속하기",
+			"copy": "복사",
+			"export": "내보내기",
+			"delete": "삭제"
+		}
+	},
+	"discord_bots": {
+		"title": "Discord Bots",
+		"cardTitle": "Discord Bots",
+		"buttons": {
+			"newBot": "새로 만들기",
+			"deleteBot": "삭제"
+		},
+		"configCard": {
+			"title": "봇 구성",
+			"labels": {
+				"character": "캐릭터",
+				"apiKey": "Discord API 키",
+				"config": "구성"
+			},
+			"charSelectPlaceholder": "캐릭터 선택",
+			"charSupportMessage": "이 캐릭터는 Discord 인터페이스를 지원하지 않습니다.",
+			"apiKeyInput": {
+				"placeholder": "API 키 입력"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "API 키 가시성 전환"
+			},
+			"buttons": {
+				"saveConfig": "구성 저장",
+				"startBot": "시작",
+				"stopBot": "중지"
+			}
+		},
+		"prompts": {
+			"newBotName": "새 봇 이름을 입력하세요:"
+		},
+		"alerts": {
+			"botExists": "\"${botname}\" 이름의 봇이 이미 있습니다. 다른 이름을 사용해주세요.",
+			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까?",
+			"configSaved": "구성이 성공적으로 저장되었습니다",
+			"httpError": "HTTP 오류",
+			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 떠나시겠습니까?"
+		}
+	},
+	"terminal_assistant": {
+		"title": "터미널 어시스턴트",
+		"initialMessage": "Fount는 코딩을 지원하기 위해 좋아하는 캐릭터를 터미널에 배포하는 것을 지원합니다!",
+		"initialMessageLink": "자세히 알아보려면 여기를 클릭하세요"
+	},
+	"404": {
+		"title": "404 - 페이지를 찾을 수 없습니다",
+		"pageNotFoundText": "죄송합니다! 찾으시는 페이지를 찾을 수 없습니다.",
+		"homepageButton": "홈페이지로 돌아가기"
+	}
+}

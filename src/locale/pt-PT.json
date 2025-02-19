@@ -1,0 +1,375 @@
+{
+	"tutorial": {
+		"title": "Tutorial?",
+		"modal": {
+			"title": "Bem-vindo ao fount!",
+			"instruction": "Gostaria de fazer o tutorial para iniciantes?",
+			"buttons": {
+				"start": "Iniciar Tutorial",
+				"skip": "Pular"
+			}
+		},
+		"endScreen": {
+			"title": "Incrível! Tutorial Concluído!",
+			"subtitle": "Agora você aprendeu como operar!",
+			"homeButton": "Ir para a Página Inicial"
+		},
+		"progressMessages": {
+			"mouseMove": "Por favor, use o seu dedo para tentar segurar o mouse ${mouseIcon}<br/>e depois movê-lo",
+			"keyboardPress": "Por favor, encontre o seu teclado ${keyboardIcon}<br/>e tente pressionar o teclado com o seu dedo",
+			"mobileTouchMove": "Por favor, encontre o seu telefone ${phoneIcon}<br/>Tente tocar no ecrã com qualquer um dos seus dedos e depois movê-lo",
+			"mobileClick": "Por favor, tente tocar no ecrã do telefone ${phoneIcon} com qualquer um dos seus dedos<br/>e depois solte"
+		}
+	},
+	"home": {
+		"title": "Página de Seleção de Personagem",
+		"pageTitle": "Página de Seleção de Personagem",
+		"instruction": "Selecione um personagem - e comece a conversar!",
+		"filterInput": {
+			"placeholder": "Pesquisar..."
+		},
+		"sidebarTitle": "Informações do Personagem",
+		"characterDescription": {},
+		"noDescription": "Sem informações de descrição",
+		"alerts": {
+			"fetchHomeRegistryFailed": "Falha ao obter informações de registro da página inicial"
+		},
+		"functionMenu": {
+			"icon": {
+				"alt": "Menu de Funções"
+			}
+		},
+		"charCard": {
+			"refreshButton": {
+				"alt": "Atualizar",
+				"title": "Atualizar"
+			},
+			"noTags": "Sem tags",
+			"version": "Versão",
+			"author": "Autor",
+			"homepage": "Página Inicial",
+			"issuepage": "Relato de Problemas"
+		}
+	},
+	"import": {
+		"title": "Importar",
+		"tabs": {
+			"fileImport": "Importar Arquivo",
+			"textImport": "Importar Texto"
+		},
+		"dropArea": {
+			"icon": {
+				"alt": "Ícone de Upload"
+			},
+			"text": "Arraste e solte arquivos aqui ou clique para selecionar arquivos"
+		},
+		"textArea": {
+			"placeholder": "Digite o texto para importar..."
+		},
+		"buttons": {
+			"import": "Importar"
+		},
+		"alerts": {
+			"importSuccess": "Importação bem-sucedida",
+			"importFailed": "Falha na importação: ${error}",
+			"unknownError": "Erro desconhecido"
+		},
+		"errors": {
+			"noFileSelected": "Por favor, selecione um arquivo",
+			"fileImportFailed": "Falha na importação do arquivo: ${message}",
+			"noTextContent": "Por favor, digite o conteúdo do texto",
+			"textImportFailed": "Falha na importação do texto: ${message}",
+			"handler": "Manipulador",
+			"error": "Erro"
+		},
+		"fileItem": {
+			"removeButton": {
+				"title": "Remover"
+			}
+		}
+	},
+	"aisource_editor": {
+		"title": "Editor de Fonte de IA",
+		"fileList": {
+			"title": "Lista de Fontes de IA",
+			"addButton": {
+				"title": "+"
+			}
+		},
+		"configTitle": "Configuração da Fonte de IA",
+		"generatorSelect": {
+			"label": "Selecionar Gerador",
+			"placeholder": "Por favor, selecione"
+		},
+		"buttons": {
+			"save": "Salvar",
+			"delete": "Excluir"
+		},
+		"alerts": {
+			"fetchFileListFailed": "Falha ao obter a lista de arquivos: ${error}",
+			"fetchGeneratorListFailed": "Falha ao obter a lista de geradores: ${error}",
+			"fetchFileDataFailed": "Falha ao obter os dados do arquivo: ${error}",
+			"noFileSelectedSave": "Nenhum arquivo selecionado para salvar.",
+			"saveFileFailed": "Falha ao salvar o arquivo: ${error}",
+			"noFileSelectedDelete": "Nenhum arquivo selecionado para excluir.",
+			"deleteFileFailed": "Falha ao excluir o arquivo: ${error}",
+			"invalidFileName": "O nome do arquivo não pode conter os seguintes caracteres: / \\ : * ? \" < > |",
+			"addFileFailed": "Falha ao adicionar o arquivo: ${error}"
+		},
+		"confirm": {
+			"unsavedChanges": "Você tem alterações não salvas. Deseja descartar as alterações?",
+			"deleteFile": "Tem certeza de que deseja excluir o arquivo?",
+			"unsavedChangesBeforeUnload": "Você tem alterações não salvas. Tem certeza de que deseja sair desta página?"
+		},
+		"prompts": {
+			"newFileName": "Por favor, insira um novo nome de arquivo de fonte de IA (sem extensão):"
+		}
+	},
+	"part_config": {
+		"title": "Configuração de Peça",
+		"pageTitle": "Configuração de Peça",
+		"labels": {
+			"partType": "Selecionar Tipo de Peça",
+			"part": "Selecionar Peça"
+		},
+		"placeholders": {
+			"partTypeSelect": "Por favor, selecione",
+			"partSelect": "Por favor, selecione"
+		},
+		"editor": {
+			"title": "Configuração de Peça",
+			"disabledIndicator": "Esta peça não suporta configuração",
+			"buttons": {
+				"save": "Salvar"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Aviso de Erro"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "Falha ao obter os tipos de peça",
+			"fetchPartsFailed": "Falha ao obter a lista de peças",
+			"loadEditorFailed": "Falha ao carregar o editor",
+			"saveConfigFailed": "Falha ao salvar a configuração da peça",
+			"unsavedChanges": "Você tem alterações não salvas. Deseja descartar as alterações?",
+			"beforeUnload": "Você tem alterações não salvas. Tem certeza de que deseja sair?"
+		}
+	},
+	"chat": {
+		"title": "Chat",
+		"sidebar": {
+			"world": {
+				"icon": {
+					"alt": "Ícone de Mundo"
+				},
+				"title": "Mundo"
+			},
+			"persona": {
+				"icon": {
+					"alt": "Ícone de Persona de Usuário"
+				},
+				"title": "Persona de Usuário"
+			},
+			"charList": {
+				"icon": {
+					"alt": "Ícone de Lista de Personagens"
+				},
+				"title": "Lista de Personagens",
+				"buttons": {
+					"addChar": {
+						"title": "Adicionar Personagem"
+					},
+					"addCharIcon": {
+						"alt": "Ícone de Adicionar Personagem"
+					}
+				}
+			},
+			"noSelection": "Nenhum",
+			"noDescription": "Sem informações de descrição"
+		},
+		"chatArea": {
+			"title": "Chat",
+			"menuButton": {
+				"title": "Menu"
+			},
+			"menuButtonIcon": {
+				"alt": "Ícone de Menu"
+			},
+			"input": {
+				"placeholder": "Digite a mensagem...\nCtrl+Enter para enviar"
+			},
+			"sendButton": {
+				"title": "Enviar"
+			},
+			"sendButtonIcon": {
+				"alt": "Ícone de Enviar"
+			},
+			"uploadButton": {
+				"title": "Upload"
+			},
+			"uploadButtonIcon": {
+				"alt": "Ícone de Upload"
+			}
+		},
+		"rightSidebar": {
+			"title": "Informações de Descrição"
+		},
+		"messageList": {
+			"confirmDeleteMessage": "Confirmar excluir esta mensagem?"
+		},
+		"messageView": {
+			"buttons": {
+				"edit": {
+					"title": "Editar"
+				},
+				"editIcon": {
+					"alt": "Ícone de Editar"
+				},
+				"delete": {
+					"title": "Excluir"
+				},
+				"deleteIcon": {
+					"alt": "Ícone de Excluir"
+				}
+			}
+		},
+		"messageEdit": {
+			"input": {
+				"placeholder": "Digite o conteúdo..."
+			},
+			"buttons": {
+				"confirm": {
+					"title": "Confirmar"
+				},
+				"confirmIcon": {
+					"alt": "Ícone de Confirmar"
+				},
+				"cancel": {
+					"title": "Cancelar"
+				},
+				"cancelIcon": {
+					"alt": "Ícone de Cancelar"
+				},
+				"upload": {
+					"title": "Upload"
+				},
+				"uploadIcon": {
+					"alt": "Ícone de Upload"
+				}
+			}
+		},
+		"attachment": {
+			"buttons": {
+				"download": {
+					"title": "Download"
+				},
+				"downloadIcon": {
+					"alt": "Ícone de Download"
+				},
+				"delete": {
+					"title": "Excluir"
+				},
+				"deleteIcon": {
+					"alt": "Ícone de Excluir"
+				}
+			}
+		},
+		"charCard": {
+			"frequencyLabel": "Frequência",
+			"buttons": {
+				"removeChar": {
+					"title": "Remover do Chat"
+				},
+				"removeCharIcon": {
+					"alt": "Ícone de Remover Personagem"
+				},
+				"forceReply": {
+					"title": "Forçar Resposta"
+				},
+				"forceReplyIcon": {
+					"alt": "Ícone de Forçar Resposta"
+				}
+			}
+		}
+	},
+	"chat_history": {
+		"title": "Histórico de Chat",
+		"pageTitle": "Histórico de Chat",
+		"sortOptions": {
+			"time_desc": "Tempo Decrescente",
+			"time_asc": "Tempo Crescente"
+		},
+		"filterInput": {
+			"placeholder": "Pesquisar..."
+		},
+		"selectAll": "Selecionar Tudo",
+		"buttons": {
+			"reverseSelect": "Inverter Seleção",
+			"deleteSelected": "Excluir Selecionados",
+			"exportSelected": "Exportar Selecionados"
+		},
+		"confirmDeleteChat": "Tem certeza de que deseja excluir o histórico de chat com ${chars}?",
+		"confirmDeleteMultiChats": "Tem certeza de que deseja excluir os ${count} históricos de chat selecionados?",
+		"alerts": {
+			"noChatSelectedForDeletion": "Por favor, selecione os históricos de chat para excluir",
+			"noChatSelectedForExport": "Por favor, selecione os históricos de chat para exportar"
+		},
+		"chatItemButtons": {
+			"continue": "Continuar",
+			"copy": "Copiar",
+			"export": "Exportar",
+			"delete": "Excluir"
+		}
+	},
+	"discord_bots": {
+		"title": "Bots Discord",
+		"cardTitle": "Bots Discord",
+		"buttons": {
+			"newBot": "Novo",
+			"deleteBot": "Excluir"
+		},
+		"configCard": {
+			"title": "Configuração do Bot",
+			"labels": {
+				"character": "Personagem",
+				"apiKey": "Chave API Discord",
+				"config": "Configuração"
+			},
+			"charSelectPlaceholder": "Selecionar Personagem",
+			"charSupportMessage": "Este personagem não suporta a interface Discord.",
+			"apiKeyInput": {
+				"placeholder": "Digite a Chave API"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "Alternar Visibilidade da Chave API"
+			},
+			"buttons": {
+				"saveConfig": "Salvar Configuração",
+				"startBot": "Iniciar",
+				"stopBot": "Parar"
+			}
+		},
+		"prompts": {
+			"newBotName": "Por favor, insira um novo nome de Bot:"
+		},
+		"alerts": {
+			"botExists": "Um bot chamado \"${botname}\" já existe, por favor, use outro nome.",
+			"unsavedChanges": "Você tem alterações não salvas. Deseja descartar as alterações?",
+			"configSaved": "Configuração salva com sucesso",
+			"httpError": "Erro HTTP",
+			"beforeUnload": "Você tem alterações não salvas. Tem certeza de que deseja sair?"
+		}
+	},
+	"terminal_assistant": {
+		"title": "Assistente de Terminal",
+		"initialMessage": "Fount suporta a implantação de seus personagens favoritos em seu terminal para ajudá-lo na codificação!",
+		"initialMessageLink": "Clique aqui para saber mais"
+	},
+	"404": {
+		"title": "404 - Página Não Encontrada",
+		"pageNotFoundText": "Ops! A página que você está procurando não foi encontrada.",
+		"homepageButton": "Voltar para a Página Inicial"
+	}
+}

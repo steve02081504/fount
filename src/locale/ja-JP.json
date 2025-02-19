@@ -1,0 +1,375 @@
+{
+	"tutorial": {
+		"title": "チュートリアル",
+		"modal": {
+			"title": "fountへようこそ！",
+			"instruction": "新手チュートリアルを開始しますか？",
+			"buttons": {
+				"start": "チュートリアル開始",
+				"skip": "スキップ"
+			}
+		},
+		"endScreen": {
+			"title": "素晴らしい！チュートリアル完了！",
+			"subtitle": "操作をマスターしました！",
+			"homeButton": "ホームへ"
+		},
+		"progressMessages": {
+			"mouseMove": "指でマウス${mouseIcon}を掴んで<br/>動かしてみてください",
+			"keyboardPress": "キーボード${keyboardIcon}を見つけて<br/>指でキーを押してみてください",
+			"mobileTouchMove": "スマートフォン${phoneIcon}を見つけて<br/>指で画面に触れて、そのまま動かしてみてください",
+			"mobileClick": "指でスマートフォン画面${phoneIcon}をタッチして<br/>離してみてください"
+		}
+	},
+	"home": {
+		"title": "キャラクター選択ページ",
+		"pageTitle": "キャラクター選択ページ",
+		"instruction": "キャラクターを選択してチャットを開始！",
+		"filterInput": {
+			"placeholder": "検索..."
+		},
+		"sidebarTitle": "キャラクター情報",
+		"characterDescription": {},
+		"noDescription": "説明情報なし",
+		"alerts": {
+			"fetchHomeRegistryFailed": "ホームレジストリ情報の取得に失敗しました"
+		},
+		"functionMenu": {
+			"icon": {
+				"alt": "機能メニュー"
+			}
+		},
+		"charCard": {
+			"refreshButton": {
+				"alt": "更新",
+				"title": "更新"
+			},
+			"noTags": "タグなし",
+			"version": "バージョン",
+			"author": "作者",
+			"homepage": "ホームページ",
+			"issuepage": "問題報告"
+		}
+	},
+	"import": {
+		"title": "インポート",
+		"tabs": {
+			"fileImport": "ファイルインポート",
+			"textImport": "テキストインポート"
+		},
+		"dropArea": {
+			"icon": {
+				"alt": "アップロードアイコン"
+			},
+			"text": "ファイルをドラッグ＆ドロップまたはクリックして選択"
+		},
+		"textArea": {
+			"placeholder": "インポートするテキストを入力..."
+		},
+		"buttons": {
+			"import": "インポート"
+		},
+		"alerts": {
+			"importSuccess": "インポート成功",
+			"importFailed": "インポート失敗: ${error}",
+			"unknownError": "不明なエラー"
+		},
+		"errors": {
+			"noFileSelected": "ファイルを選択してください",
+			"fileImportFailed": "ファイルインポート失敗: ${message}",
+			"noTextContent": "テキストコンテンツを入力してください",
+			"textImportFailed": "テキストインポート失敗: ${message}",
+			"handler": "ハンドラー",
+			"error": "エラー"
+		},
+		"fileItem": {
+			"removeButton": {
+				"title": "削除"
+			}
+		}
+	},
+	"aisource_editor": {
+		"title": "AIソースエディター",
+		"fileList": {
+			"title": "AIソースリスト",
+			"addButton": {
+				"title": "+"
+			}
+		},
+		"configTitle": "AIソース設定",
+		"generatorSelect": {
+			"label": "ジェネレーターを選択",
+			"placeholder": "選択してください"
+		},
+		"buttons": {
+			"save": "保存",
+			"delete": "削除"
+		},
+		"alerts": {
+			"fetchFileListFailed": "ファイルリストの取得に失敗しました: ${error}",
+			"fetchGeneratorListFailed": "ジェネレーターリストの取得に失敗しました: ${error}",
+			"fetchFileDataFailed": "ファイルデータの取得に失敗しました: ${error}",
+			"noFileSelectedSave": "保存するファイルが選択されていません。",
+			"saveFileFailed": "ファイルの保存に失敗しました: ${error}",
+			"noFileSelectedDelete": "削除するファイルが選択されていません。",
+			"deleteFileFailed": "ファイルの削除に失敗しました: ${error}",
+			"invalidFileName": "ファイル名に以下の文字は使用できません： / \\ : * ? \" < > |",
+			"addFileFailed": "ファイルの追加に失敗しました: ${error}"
+		},
+		"confirm": {
+			"unsavedChanges": "保存されていない変更があります。変更を破棄しますか？",
+			"deleteFile": "ファイルを削除してもよろしいですか？",
+			"unsavedChangesBeforeUnload": "保存されていない変更があります。このページから移動してもよろしいですか？"
+		},
+		"prompts": {
+			"newFileName": "新しいAIソースファイル名を入力してください (拡張子なし):"
+		}
+	},
+	"part_config": {
+		"title": "部品設定",
+		"pageTitle": "部品設定",
+		"labels": {
+			"partType": "部品タイプを選択",
+			"part": "部品を選択"
+		},
+		"placeholders": {
+			"partTypeSelect": "選択してください",
+			"partSelect": "選択してください"
+		},
+		"editor": {
+			"title": "部品設定",
+			"disabledIndicator": "この部品は設定をサポートしていません",
+			"buttons": {
+				"save": "保存"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "エラー提示"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "部品タイプの取得に失敗しました",
+			"fetchPartsFailed": "部品リストの取得に失敗しました",
+			"loadEditorFailed": "エディターのロードに失敗しました",
+			"saveConfigFailed": "部品設定の保存に失敗しました",
+			"unsavedChanges": "保存されていない変更があります。変更を破棄しますか？",
+			"beforeUnload": "保存されていない変更があります。移動してもよろしいですか？"
+		}
+	},
+	"chat": {
+		"title": "チャット",
+		"sidebar": {
+			"world": {
+				"icon": {
+					"alt": "世界アイコン"
+				},
+				"title": "世界"
+			},
+			"persona": {
+				"icon": {
+					"alt": "ユーザーロールアイコン"
+				},
+				"title": "ユーザーロール"
+			},
+			"charList": {
+				"icon": {
+					"alt": "キャラクターリストアイコン"
+				},
+				"title": "キャラクターリスト",
+				"buttons": {
+					"addChar": {
+						"title": "キャラクター追加"
+					},
+					"addCharIcon": {
+						"alt": "キャラクター追加アイコン"
+					}
+				}
+			},
+			"noSelection": "なし",
+			"noDescription": "説明情報なし"
+		},
+		"chatArea": {
+			"title": "チャット",
+			"menuButton": {
+				"title": "メニュー"
+			},
+			"menuButtonIcon": {
+				"alt": "メニューアイコン"
+			},
+			"input": {
+				"placeholder": "メッセージを入力...\nCtrl+Enterで送信"
+			},
+			"sendButton": {
+				"title": "送信"
+			},
+			"sendButtonIcon": {
+				"alt": "送信アイコン"
+			},
+			"uploadButton": {
+				"title": "アップロード"
+			},
+			"uploadButtonIcon": {
+				"alt": "アップロードアイコン"
+			}
+		},
+		"rightSidebar": {
+			"title": "説明情報"
+		},
+		"messageList": {
+			"confirmDeleteMessage": "このメッセージを削除してもよろしいですか？"
+		},
+		"messageView": {
+			"buttons": {
+				"edit": {
+					"title": "編集"
+				},
+				"editIcon": {
+					"alt": "編集アイコン"
+				},
+				"delete": {
+					"title": "削除"
+				},
+				"deleteIcon": {
+					"alt": "削除アイコン"
+				}
+			}
+		},
+		"messageEdit": {
+			"input": {
+				"placeholder": "内容を入力..."
+			},
+			"buttons": {
+				"confirm": {
+					"title": "確認"
+				},
+				"confirmIcon": {
+					"alt": "確認アイコン"
+				},
+				"cancel": {
+					"title": "キャンセル"
+				},
+				"cancelIcon": {
+					"alt": "キャンセルアイコン"
+				},
+				"upload": {
+					"title": "アップロード"
+				},
+				"uploadIcon": {
+					"alt": "アップロードアイコン"
+				}
+			}
+		},
+		"attachment": {
+			"buttons": {
+				"download": {
+					"title": "ダウンロード"
+				},
+				"downloadIcon": {
+					"alt": "ダウンロードアイコン"
+				},
+				"delete": {
+					"title": "削除"
+				},
+				"deleteIcon": {
+					"alt": "削除アイコン"
+				}
+			}
+		},
+		"charCard": {
+			"frequencyLabel": "頻度",
+			"buttons": {
+				"removeChar": {
+					"title": "会話から削除"
+				},
+				"removeCharIcon": {
+					"alt": "キャラクター削除アイコン"
+				},
+				"forceReply": {
+					"title": "強制返信"
+				},
+				"forceReplyIcon": {
+					"alt": "強制返信アイコン"
+				}
+			}
+		}
+	},
+	"chat_history": {
+		"title": "チャット履歴",
+		"pageTitle": "チャット履歴",
+		"sortOptions": {
+			"time_desc": "時間降順",
+			"time_asc": "時間昇順"
+		},
+		"filterInput": {
+			"placeholder": "検索..."
+		},
+		"selectAll": "全選択",
+		"buttons": {
+			"reverseSelect": "選択反転",
+			"deleteSelected": "選択削除",
+			"exportSelected": "選択エクスポート"
+		},
+		"confirmDeleteChat": "${chars}とのチャット履歴を削除してもよろしいですか？",
+		"confirmDeleteMultiChats": "選択した${count}件のチャット履歴を削除してもよろしいですか？",
+		"alerts": {
+			"noChatSelectedForDeletion": "削除するチャット履歴を選択してください",
+			"noChatSelectedForExport": "エクスポートするチャット履歴を選択してください"
+		},
+		"chatItemButtons": {
+			"continue": "続ける",
+			"copy": "コピー",
+			"export": "エクスポート",
+			"delete": "削除"
+		}
+	},
+	"discord_bots": {
+		"title": "Discord Bots",
+		"cardTitle": "Discord Bots",
+		"buttons": {
+			"newBot": "新規作成",
+			"deleteBot": "削除"
+		},
+		"configCard": {
+			"title": "Bot設定",
+			"labels": {
+				"character": "キャラクター",
+				"apiKey": "Discord APIキー",
+				"config": "設定"
+			},
+			"charSelectPlaceholder": "キャラクターを選択",
+			"charSupportMessage": "このキャラクターはDiscordインターフェースをサポートしていません。",
+			"apiKeyInput": {
+				"placeholder": "APIキーを入力"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "APIキーの表示/非表示を切り替え"
+			},
+			"buttons": {
+				"saveConfig": "設定を保存",
+				"startBot": "起動",
+				"stopBot": "停止"
+			}
+		},
+		"prompts": {
+			"newBotName": "新しいBot名を入力してください："
+		},
+		"alerts": {
+			"botExists": "\"${botname}\"という名前のBotは既に存在します。別の名前を使用してください。",
+			"unsavedChanges": "保存されていない変更があります。変更を破棄しますか？",
+			"configSaved": "設定が保存されました",
+			"httpError": "HTTPエラー",
+			"beforeUnload": "保存されていない変更があります。移動してもよろしいですか？"
+		}
+	},
+	"terminal_assistant": {
+		"title": "ターミナルアシスタント",
+		"initialMessage": "Fountはお気に入りのキャラクターをターミナルにデプロイしてコーディングを支援できます！",
+		"initialMessageLink": "詳細はこちらをクリック"
+	},
+	"404": {
+		"title": "404 - ページが見つかりません",
+		"pageNotFoundText": "申し訳ありません！お探しのページは見つかりませんでした。",
+		"homepageButton": "ホームに戻る"
+	}
+}

@@ -3,6 +3,7 @@ import { getCharDetails, noCacheGetCharDetails, getCharList } from '../../script
 import { renderMarkdown } from '../../scripts/markdown.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 import { parseRegexFromString, escapeRegExp } from '../../scripts/regex.mjs'
+import { initTranslations, geti18n } from '../../scripts/i18n.mjs' // 引入 i18n 函数
 
 const roleContainer = document.getElementById('role-container')
 const characterDescription = document.getElementById('character-description')
@@ -14,9 +15,9 @@ let charDetailsCache = {} // Cache for character details
 
 // 获取已展开的注册项
 async function getHomeRegistry() {
-	const response = await fetch('/api/gethomeregistry')
+	const response = await fetch('/api/shells/home/gethomeregistry')
 	if (response.ok) return await response.json()
-	else throw new Error('Failed to fetch home registry')
+	else throw new Error(geti18n('home.alerts.fetchHomeRegistryFailed')) // 使用 geti18n
 }
 
 let homeRegistry
@@ -126,7 +127,7 @@ async function renderCharView(charDetails, charname) {
 
 async function displayCharacterInfo(charDetails) {
 	characterDescription.innerHTML =
-		await renderMarkdown(charDetails.info.description_markdown) || '无描述信息'
+		await renderMarkdown(charDetails.info.description_markdown) || geti18n('home.noDescription') // 使用 geti18n
 }
 
 async function setLocale(locale) {
@@ -260,12 +261,11 @@ async function displayFunctionButtons() {
 // 初始化
 async function initializeApp() {
 	applyTheme()
-	await setLocale(navigator.language || navigator.userLanguage)
 	homeRegistry = await getHomeRegistry()
 	displayFunctionButtons()
+	initTranslations('home')
 
 	await refetchCharData()
-
 	filterCharList()
 }
 

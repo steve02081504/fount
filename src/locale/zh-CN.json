@@ -1,0 +1,375 @@
+{
+	"tutorial": {
+		"title": "来点教程？",
+		"modal": {
+			"title": "欢迎使用fount！",
+			"instruction": "走一遍新手教程吗？",
+			"buttons": {
+				"start": "开始教程",
+				"skip": "跳过"
+			}
+		},
+		"endScreen": {
+			"title": "太棒啦！教程完成！",
+			"subtitle": "现在你已经学会操作啦！",
+			"homeButton": "前往主页"
+		},
+		"progressMessages": {
+			"mouseMove": "请使用您的手指尝试握住鼠标${mouseIcon}<br/>随后移动它",
+			"keyboardPress": "请找到您的键盘${keyboardIcon}<br/>尝试使用您的手指按压键盘",
+			"mobileTouchMove": "请找到您的手机${phoneIcon}<br/>尝试使用您的任意手指触摸屏幕，再移动它",
+			"mobileClick": "请尝试使用您的任意手指触碰手机屏幕${phoneIcon}<br/>之后松开"
+		}
+	},
+	"home": {
+		"title": "角色选择页面",
+		"pageTitle": "角色选择页面",
+		"instruction": "选择一个角色——然后开启聊天！",
+		"filterInput": {
+			"placeholder": "搜索..."
+		},
+		"sidebarTitle": "角色信息",
+		"characterDescription": {},
+		"noDescription": "无描述信息",
+		"alerts": {
+			"fetchHomeRegistryFailed": "获取主页注册信息失败"
+		},
+		"functionMenu": {
+			"icon": {
+				"alt": "功能菜单"
+			}
+		},
+		"charCard": {
+			"refreshButton": {
+				"alt": "刷新",
+				"title": "刷新"
+			},
+			"noTags": "无标签",
+			"version": "版本",
+			"author": "作者",
+			"homepage": "主页",
+			"issuepage": "问题反馈"
+		}
+	},
+	"import": {
+		"title": "导入",
+		"tabs": {
+			"fileImport": "文件导入",
+			"textImport": "文本导入"
+		},
+		"dropArea": {
+			"icon": {
+				"alt": "上传图标"
+			},
+			"text": "拖放文件到此处或点击选择文件"
+		},
+		"textArea": {
+			"placeholder": "输入要导入的文本..."
+		},
+		"buttons": {
+			"import": "导入"
+		},
+		"alerts": {
+			"importSuccess": "导入成功",
+			"importFailed": "导入失败: ${error}",
+			"unknownError": "未知错误"
+		},
+		"errors": {
+			"noFileSelected": "请选择文件",
+			"fileImportFailed": "文件导入失败: ${message}",
+			"noTextContent": "请输入文本内容",
+			"textImportFailed": "文本导入失败: ${message}",
+			"handler": "处理器",
+			"error": "错误"
+		},
+		"fileItem": {
+			"removeButton": {
+				"title": "删除"
+			}
+		}
+	},
+	"aisource_editor": {
+		"title": "AI 来源编辑器",
+		"fileList": {
+			"title": "AI 来源列表",
+			"addButton": {
+				"title": "+"
+			}
+		},
+		"configTitle": "AI 来源配置",
+		"generatorSelect": {
+			"label": "选择生成器",
+			"placeholder": "请选择"
+		},
+		"buttons": {
+			"save": "保存",
+			"delete": "删除"
+		},
+		"alerts": {
+			"fetchFileListFailed": "获取文件列表失败: ${error}",
+			"fetchGeneratorListFailed": "获取生成器列表失败: ${error}",
+			"fetchFileDataFailed": "获取文件数据失败: ${error}",
+			"noFileSelectedSave": "没有选择要保存的文件。",
+			"saveFileFailed": "保存文件失败: ${error}",
+			"noFileSelectedDelete": "没有选择要删除的文件。",
+			"deleteFileFailed": "删除文件失败: ${error}",
+			"invalidFileName": "文件名不能包含以下字符： / \\ : * ? \" < > |",
+			"addFileFailed": "添加文件失败: ${error}"
+		},
+		"confirm": {
+			"unsavedChanges": "您有未保存的更改。是否要放弃更改？",
+			"deleteFile": "确定要删除文件吗?",
+			"unsavedChangesBeforeUnload": "您有未保存的更改。确定要离开此页面吗？"
+		},
+		"prompts": {
+			"newFileName": "请输入新的 AI 来源文件名 (请勿包含后缀名):"
+		}
+	},
+	"part_config": {
+		"title": "部件配置",
+		"pageTitle": "部件配置",
+		"labels": {
+			"partType": "选择部件类型",
+			"part": "选择部件"
+		},
+		"placeholders": {
+			"partTypeSelect": "请选择",
+			"partSelect": "请选择"
+		},
+		"editor": {
+			"title": "部件配置",
+			"disabledIndicator": "此部件不支持配置",
+			"buttons": {
+				"save": "保存"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "错误提示"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "获取部件类型失败",
+			"fetchPartsFailed": "获取部件列表失败",
+			"loadEditorFailed": "加载编辑器失败",
+			"saveConfigFailed": "保存部件配置失败",
+			"unsavedChanges": "您有未保存的更改。是否要放弃更改？",
+			"beforeUnload": "您有未保存的更改。确定要离开吗？"
+		}
+	},
+	"chat": {
+		"title": "聊天",
+		"sidebar": {
+			"world": {
+				"icon": {
+					"alt": "世界图标"
+				},
+				"title": "世界"
+			},
+			"persona": {
+				"icon": {
+					"alt": "用户角色图标"
+				},
+				"title": "用户角色"
+			},
+			"charList": {
+				"icon": {
+					"alt": "角色列表图标"
+				},
+				"title": "角色列表",
+				"buttons": {
+					"addChar": {
+						"title": "添加角色"
+					},
+					"addCharIcon": {
+						"alt": "添加角色图标"
+					}
+				}
+			},
+			"noSelection": "无",
+			"noDescription": "无描述信息"
+		},
+		"chatArea": {
+			"title": "聊天",
+			"menuButton": {
+				"title": "菜单"
+			},
+			"menuButtonIcon": {
+				"alt": "菜单图标"
+			},
+			"input": {
+				"placeholder": "输入信息...\nCtrl+Enter 发送"
+			},
+			"sendButton": {
+				"title": "发送"
+			},
+			"sendButtonIcon": {
+				"alt": "发送图标"
+			},
+			"uploadButton": {
+				"title": "上传"
+			},
+			"uploadButtonIcon": {
+				"alt": "上传图标"
+			}
+		},
+		"rightSidebar": {
+			"title": "描述信息"
+		},
+		"messageList": {
+			"confirmDeleteMessage": "确认删除此消息？"
+		},
+		"messageView": {
+			"buttons": {
+				"edit": {
+					"title": "编辑"
+				},
+				"editIcon": {
+					"alt": "编辑图标"
+				},
+				"delete": {
+					"title": "删除"
+				},
+				"deleteIcon": {
+					"alt": "删除图标"
+				}
+			}
+		},
+		"messageEdit": {
+			"input": {
+				"placeholder": "输入内容..."
+			},
+			"buttons": {
+				"confirm": {
+					"title": "确认"
+				},
+				"confirmIcon": {
+					"alt": "确认图标"
+				},
+				"cancel": {
+					"title": "取消"
+				},
+				"cancelIcon": {
+					"alt": "取消图标"
+				},
+				"upload": {
+					"title": "上传"
+				},
+				"uploadIcon": {
+					"alt": "上传图标"
+				}
+			}
+		},
+		"attachment": {
+			"buttons": {
+				"download": {
+					"title": "下载"
+				},
+				"downloadIcon": {
+					"alt": "下载图标"
+				},
+				"delete": {
+					"title": "删除"
+				},
+				"deleteIcon": {
+					"alt": "删除图标"
+				}
+			}
+		},
+		"charCard": {
+			"frequencyLabel": "频率",
+			"buttons": {
+				"removeChar": {
+					"title": "移出对话"
+				},
+				"removeCharIcon": {
+					"alt": "移除角色图标"
+				},
+				"forceReply": {
+					"title": "强制回复"
+				},
+				"forceReplyIcon": {
+					"alt": "强制回复图标"
+				}
+			}
+		}
+	},
+	"chat_history": {
+		"title": "聊天记录",
+		"pageTitle": "聊天记录",
+		"sortOptions": {
+			"time_desc": "时间降序",
+			"time_asc": "时间升序"
+		},
+		"filterInput": {
+			"placeholder": "搜索..."
+		},
+		"selectAll": "全选",
+		"buttons": {
+			"reverseSelect": "反选",
+			"deleteSelected": "删除选中",
+			"exportSelected": "导出选中"
+		},
+		"confirmDeleteChat": "确定要删除与 ${chars} 的聊天记录吗？",
+		"confirmDeleteMultiChats": "确定要删除选中的 ${count} 条聊天记录吗？",
+		"alerts": {
+			"noChatSelectedForDeletion": "请选择要删除的聊天记录",
+			"noChatSelectedForExport": "请选择要导出的聊天记录"
+		},
+		"chatItemButtons": {
+			"continue": "继续",
+			"copy": "复制",
+			"export": "导出",
+			"delete": "删除"
+		}
+	},
+	"discord_bots": {
+		"title": "Discord Bots",
+		"cardTitle": "Discord Bots",
+		"buttons": {
+			"newBot": "新建",
+			"deleteBot": "删除"
+		},
+		"configCard": {
+			"title": "Bot Config",
+			"labels": {
+				"character": "角色",
+				"apiKey": "Discord API Key",
+				"config": "Config"
+			},
+			"charSelectPlaceholder": "选择角色",
+			"charSupportMessage": "此角色不支持 Discord 接口。",
+			"apiKeyInput": {
+				"placeholder": "Enter API Key"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "切换显示 API 密钥"
+			},
+			"buttons": {
+				"saveConfig": "保存配置",
+				"startBot": "启动",
+				"stopBot": "停止"
+			}
+		},
+		"prompts": {
+			"newBotName": "请输入新的 Bot 名称："
+		},
+		"alerts": {
+			"botExists": "名为 \"${botname}\" 的 Bot 已存在，请使用其他名称。",
+			"unsavedChanges": "您有未保存的更改。是否要放弃更改？",
+			"configSaved": "配置保存成功",
+			"httpError": "HTTP 错误",
+			"beforeUnload": "您有未保存的更改。确定要离开吗？"
+		}
+	},
+	"terminal_assistant": {
+		"title": "终端辅助",
+		"initialMessage": "Fount 支持将你喜欢的角色部署到你的终端中辅助你编码！",
+		"initialMessageLink": "点击这里了解更多信息"
+	},
+	"404": {
+		"title": "404 - 页面未找到",
+		"pageNotFoundText": "糟糕！您要查找的页面不存在。",
+		"homepageButton": "返回首页"
+	}
+}

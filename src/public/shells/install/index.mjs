@@ -1,5 +1,6 @@
 import { renderTemplate } from '../../scripts/template.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
+import { initTranslations, geti18n } from '../../scripts/i18n.mjs' // Import i18n functions
 
 applyTheme()
 
@@ -89,20 +90,20 @@ importButton.addEventListener('click', async () => {
 		else
 			await handleTextImport()
 
-		alert('导入成功')
+		alert(geti18n('import.alerts.importSuccess')) // Using geti18n for alert
 	} catch (error) {
-		let errorMessage = error.message || 'Unknown error'
+		let errorMessage = error.message || geti18n('import.alerts.unknownError') // Using geti18n for default error message
 		if (error.errors)
 			errorMessage += `\n${formatErrors(error.errors)}`
 
-		alert(`导入失败: ${errorMessage}`)
+		alert(geti18n('import.alerts.importFailed', { error: errorMessage })) // Using geti18n for alert with error message
 	}
 })
 
 
 async function handleFileImport() {
 	if (selectedFiles.length === 0)
-		throw new Error('请选择文件')
+		throw new Error(geti18n('import.errors.noFileSelected')) // Using geti18n for error message
 
 	const formData = new FormData()
 	for (const file of selectedFiles)
@@ -115,7 +116,7 @@ async function handleFileImport() {
 
 	if (!response.ok) {
 		const result = await response.json()
-		const error = new Error(`文件导入失败: ${result.message || 'Unknown error'}`)
+		const error = new Error(geti18n('import.errors.fileImportFailed', { message: result.message || geti18n('import.errors.unknownError') })) // Using geti18n for error message
 		error.errors = result.errors
 		throw error
 	}
@@ -123,7 +124,7 @@ async function handleFileImport() {
 async function handleTextImport() {
 	const text = textInput.value
 	if (!text)
-		throw new Error('请输入文本内容')
+		throw new Error(geti18n('import.errors.noTextContent')) // Using geti18n for error message
 
 	const response = await fetch('/api/shells/install/text', {
 		method: 'POST',
@@ -135,12 +136,14 @@ async function handleTextImport() {
 
 	if (!response.ok) {
 		const result = await response.json()
-		const error = new Error(`文本导入失败: ${result.message || 'Unknown error'}`)
+		const error = new Error(geti18n('import.errors.textImportFailed', { message: result.message || geti18n('import.errors.unknownError') })) // Using geti18n for error message
 		error.errors = result.errors
 		throw error
 	}
 }
 
 function formatErrors(errors) {
-	return errors.map(err => `handler: ${err.hanlder}, Error: ${err.error}`).join(';\n')
+	return errors.map(err => `${geti18n('import.errors.handler')}: ${err.hanlder}, ${geti18n('import.errors.error')}: ${err.error}`).join(';\n') // Using geti18n for error labels
 }
+
+initTranslations('import') // Initialize translations with pageid 'import'

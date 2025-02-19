@@ -4,7 +4,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>AI 来源编辑器</title>
+	<title data-i18n="aisource_editor.title"></title>
 	<link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.min.css" rel="stylesheet" type="text/css" />
 	<script src="https://cdn.tailwindcss.com"></script>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanilla-jsoneditor@2/themes/jse-theme-dark.min.css">
@@ -16,8 +16,8 @@
 		<!-- 文件列表区域 -->
 		<div class="w-full md:w-1/4 mb-4 flex flex-col">
 			<div class="flex justify-between items-center m-2">
-				<h2 class="text-xl font-semibold">AI 来源列表</h2>
-				<button id="addFileButton" class="btn btn-sm btn-circle btn-primary">+</button>
+				<h2 class="text-xl font-semibold" data-i18n="aisource_editor.fileList.title"></h2>
+				<button id="addFileButton" class="btn btn-sm btn-circle btn-primary" data-i18n="aisource_editor.fileList.addButton.title">+</button>
 			</div>
 			<div id="fileList" class="file-list bg-base-100 rounded-lg flex-grow overflow-y-auto">
 				<!-- 文件列表项将会动态生成 -->
@@ -26,22 +26,22 @@
 
 		<!-- 编辑区域 -->
 		<div class="w-full md:w-3/4 mb-4">
-			<h2 class="text-xl font-semibold m-2">AI 来源配置</h2>
+			<h2 class="text-xl font-semibold m-2" data-i18n="aisource_editor.configTitle"></h2>
 			<!-- 生成器选择 -->
 			<div class="mb-4">
 				<label for="generatorSelect" class="label">
-					<span class="label-text">选择生成器</span>
+					<span class="label-text" data-i18n="aisource_editor.generatorSelect.label"></span>
 				</label>
 				<select id="generatorSelect" class="select select-bordered w-full">
-					<option disabled selected>请选择</option>
+					<option disabled selected data-i18n="aisource_editor.generatorSelect.placeholder"></option>
 				</select>
 			</div>
 			<!-- JSON 编辑器容器 -->
 			<div id="jsonEditor" class="jsoneditor-container" style="height: 400px; overflow: auto"></div>
 
 			<div class="mt-4 flex justify-end">
-				<button id="saveButton" class="btn btn-primary mr-2">保存</button>
-				<button id="deleteButton" class="btn btn-error ml-2">删除</button>
+				<button id="saveButton" class="btn btn-primary mr-2" data-i18n="aisource_editor.buttons.save"></button>
+				<button id="deleteButton" class="btn btn-error ml-2" data-i18n="aisource_editor.buttons.delete"></button>
 			</div>
 		</div>
 	</div>

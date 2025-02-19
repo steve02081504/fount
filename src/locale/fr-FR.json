@@ -1,0 +1,375 @@
+{
+	"tutorial": {
+		"title": "Tutoriel",
+		"modal": {
+			"title": "Bienvenue sur fount !",
+			"instruction": "Voulez-vous suivre le tutoriel pour les débutants ?",
+			"buttons": {
+				"start": "Commencer le tutoriel",
+				"skip": "Passer"
+			}
+		},
+		"endScreen": {
+			"title": "Génial ! Tutoriel terminé !",
+			"subtitle": "Vous savez maintenant comment utiliser l'application !",
+			"homeButton": "Aller à la page d'accueil"
+		},
+		"progressMessages": {
+			"mouseMove": "Veuillez utiliser votre doigt pour essayer de saisir la souris ${mouseIcon}<br/>puis déplacez-la",
+			"keyboardPress": "Veuillez trouver votre clavier ${keyboardIcon}<br/>et essayez d'appuyer sur le clavier avec votre doigt",
+			"mobileTouchMove": "Veuillez trouver votre téléphone ${phoneIcon}<br/>Essayez de toucher l'écran avec l'un de vos doigts, puis déplacez-le",
+			"mobileClick": "Veuillez essayer de toucher l'écran du téléphone ${phoneIcon} avec l'un de vos doigts<br/>puis relâchez"
+		}
+	},
+	"home": {
+		"title": "Page de sélection de personnage",
+		"pageTitle": "Page de sélection de personnage",
+		"instruction": "Sélectionnez un personnage - et commencez à chatter !",
+		"filterInput": {
+			"placeholder": "Rechercher..."
+		},
+		"sidebarTitle": "Informations sur le personnage",
+		"characterDescription": {},
+		"noDescription": "Aucune information de description",
+		"alerts": {
+			"fetchHomeRegistryFailed": "Échec de la récupération des informations d'enregistrement de la page d'accueil"
+		},
+		"functionMenu": {
+			"icon": {
+				"alt": "Menu de fonctions"
+			}
+		},
+		"charCard": {
+			"refreshButton": {
+				"alt": "Actualiser",
+				"title": "Actualiser"
+			},
+			"noTags": "Pas de tags",
+			"version": "Version",
+			"author": "Auteur",
+			"homepage": "Page d'accueil",
+			"issuepage": "Signalement de problème"
+		}
+	},
+	"import": {
+		"title": "Importer",
+		"tabs": {
+			"fileImport": "Importer un fichier",
+			"textImport": "Importer du texte"
+		},
+		"dropArea": {
+			"icon": {
+				"alt": "Icône de téléchargement"
+			},
+			"text": "Faites glisser et déposez des fichiers ici ou cliquez pour sélectionner des fichiers"
+		},
+		"textArea": {
+			"placeholder": "Saisissez le texte à importer..."
+		},
+		"buttons": {
+			"import": "Importer"
+		},
+		"alerts": {
+			"importSuccess": "Importation réussie",
+			"importFailed": "Importation échouée : ${error}",
+			"unknownError": "Erreur inconnue"
+		},
+		"errors": {
+			"noFileSelected": "Veuillez sélectionner un fichier",
+			"fileImportFailed": "Échec de l'importation de fichier : ${message}",
+			"noTextContent": "Veuillez saisir du contenu textuel",
+			"textImportFailed": "Échec de l'importation de texte : ${message}",
+			"handler": "Gestionnaire",
+			"error": "Erreur"
+		},
+		"fileItem": {
+			"removeButton": {
+				"title": "Supprimer"
+			}
+		}
+	},
+	"aisource_editor": {
+		"title": "Éditeur de source IA",
+		"fileList": {
+			"title": "Liste des sources IA",
+			"addButton": {
+				"title": "+"
+			}
+		},
+		"configTitle": "Configuration de la source IA",
+		"generatorSelect": {
+			"label": "Sélectionner un générateur",
+			"placeholder": "Veuillez sélectionner"
+		},
+		"buttons": {
+			"save": "Enregistrer",
+			"delete": "Supprimer"
+		},
+		"alerts": {
+			"fetchFileListFailed": "Échec de la récupération de la liste des fichiers : ${error}",
+			"fetchGeneratorListFailed": "Échec de la récupération de la liste des générateurs : ${error}",
+			"fetchFileDataFailed": "Échec de la récupération des données du fichier : ${error}",
+			"noFileSelectedSave": "Aucun fichier sélectionné à enregistrer.",
+			"saveFileFailed": "Échec de l'enregistrement du fichier : ${error}",
+			"noFileSelectedDelete": "Aucun fichier sélectionné à supprimer.",
+			"deleteFileFailed": "Échec de la suppression du fichier : ${error}",
+			"invalidFileName": "Le nom de fichier ne peut pas contenir les caractères suivants : / \\ : * ? \" < > |",
+			"addFileFailed": "Échec de l'ajout du fichier : ${error}"
+		},
+		"confirm": {
+			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous annuler les modifications ?",
+			"deleteFile": "Êtes-vous sûr de vouloir supprimer le fichier ?",
+			"unsavedChangesBeforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter cette page ?"
+		},
+		"prompts": {
+			"newFileName": "Veuillez saisir un nouveau nom de fichier source IA (sans extension) :"
+		}
+	},
+	"part_config": {
+		"title": "Configuration de pièce",
+		"pageTitle": "Configuration de pièce",
+		"labels": {
+			"partType": "Sélectionner le type de pièce",
+			"part": "Sélectionner la pièce"
+		},
+		"placeholders": {
+			"partTypeSelect": "Veuillez sélectionner",
+			"partSelect": "Veuillez sélectionner"
+		},
+		"editor": {
+			"title": "Configuration de pièce",
+			"disabledIndicator": "Cette pièce ne prend pas en charge la configuration",
+			"buttons": {
+				"save": "Enregistrer"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Invite d'erreur"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "Échec de la récupération des types de pièces",
+			"fetchPartsFailed": "Échec de la récupération de la liste des pièces",
+			"loadEditorFailed": "Échec du chargement de l'éditeur",
+			"saveConfigFailed": "Échec de l'enregistrement de la configuration de la pièce",
+			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous annuler les modifications ?",
+			"beforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter ?"
+		}
+	},
+	"chat": {
+		"title": "Chat",
+		"sidebar": {
+			"world": {
+				"icon": {
+					"alt": "Icône Monde"
+				},
+				"title": "Monde"
+			},
+			"persona": {
+				"icon": {
+					"alt": "Icône Persona Utilisateur"
+				},
+				"title": "Persona Utilisateur"
+			},
+			"charList": {
+				"icon": {
+					"alt": "Icône Liste de Personnages"
+				},
+				"title": "Liste de Personnages",
+				"buttons": {
+					"addChar": {
+						"title": "Ajouter un personnage"
+					},
+					"addCharIcon": {
+						"alt": "Icône Ajouter un personnage"
+					}
+				}
+			},
+			"noSelection": "Aucun",
+			"noDescription": "Aucune information de description"
+		},
+		"chatArea": {
+			"title": "Chat",
+			"menuButton": {
+				"title": "Menu"
+			},
+			"menuButtonIcon": {
+				"alt": "Icône Menu"
+			},
+			"input": {
+				"placeholder": "Saisir un message...\nCtrl+Entrée pour envoyer"
+			},
+			"sendButton": {
+				"title": "Envoyer"
+			},
+			"sendButtonIcon": {
+				"alt": "Icône Envoyer"
+			},
+			"uploadButton": {
+				"title": "Télécharger"
+			},
+			"uploadButtonIcon": {
+				"alt": "Icône Télécharger"
+			}
+		},
+		"rightSidebar": {
+			"title": "Informations de description"
+		},
+		"messageList": {
+			"confirmDeleteMessage": "Confirmer la suppression de ce message ?"
+		},
+		"messageView": {
+			"buttons": {
+				"edit": {
+					"title": "Modifier"
+				},
+				"editIcon": {
+					"alt": "Icône Modifier"
+				},
+				"delete": {
+					"title": "Supprimer"
+				},
+				"deleteIcon": {
+					"alt": "Icône Supprimer"
+				}
+			}
+		},
+		"messageEdit": {
+			"input": {
+				"placeholder": "Saisir le contenu..."
+			},
+			"buttons": {
+				"confirm": {
+					"title": "Confirmer"
+				},
+				"confirmIcon": {
+					"alt": "Icône Confirmer"
+				},
+				"cancel": {
+					"title": "Annuler"
+				},
+				"cancelIcon": {
+					"alt": "Icône Annuler"
+				},
+				"upload": {
+					"title": "Télécharger"
+				},
+				"uploadIcon": {
+					"alt": "Icône Télécharger"
+				}
+			}
+		},
+		"attachment": {
+			"buttons": {
+				"download": {
+					"title": "Télécharger"
+				},
+				"downloadIcon": {
+					"alt": "Icône Télécharger"
+				},
+				"delete": {
+					"title": "Supprimer"
+				},
+				"deleteIcon": {
+					"alt": "Icône Supprimer"
+				}
+			}
+		},
+		"charCard": {
+			"frequencyLabel": "Fréquence",
+			"buttons": {
+				"removeChar": {
+					"title": "Retirer du Chat"
+				},
+				"removeCharIcon": {
+					"alt": "Icône Retirer le Personnage"
+				},
+				"forceReply": {
+					"title": "Forcer la Réponse"
+				},
+				"forceReplyIcon": {
+					"alt": "Icône Forcer la Réponse"
+				}
+			}
+		}
+	},
+	"chat_history": {
+		"title": "Historique des Chats",
+		"pageTitle": "Historique des Chats",
+		"sortOptions": {
+			"time_desc": "Heure décroissante",
+			"time_asc": "Heure croissante"
+		},
+		"filterInput": {
+			"placeholder": "Rechercher..."
+		},
+		"selectAll": "Tout sélectionner",
+		"buttons": {
+			"reverseSelect": "Inverser la sélection",
+			"deleteSelected": "Supprimer la sélection",
+			"exportSelected": "Exporter la sélection"
+		},
+		"confirmDeleteChat": "Êtes-vous sûr de vouloir supprimer l'historique des chats avec ${chars} ?",
+		"confirmDeleteMultiChats": "Êtes-vous sûr de vouloir supprimer les ${count} historiques de chats sélectionnés ?",
+		"alerts": {
+			"noChatSelectedForDeletion": "Veuillez sélectionner les historiques de chats à supprimer",
+			"noChatSelectedForExport": "Veuillez sélectionner les historiques de chats à exporter"
+		},
+		"chatItemButtons": {
+			"continue": "Continuer",
+			"copy": "Copier",
+			"export": "Exporter",
+			"delete": "Supprimer"
+		}
+	},
+	"discord_bots": {
+		"title": "Bots Discord",
+		"cardTitle": "Bots Discord",
+		"buttons": {
+			"newBot": "Nouveau",
+			"deleteBot": "Supprimer"
+		},
+		"configCard": {
+			"title": "Configuration du Bot",
+			"labels": {
+				"character": "Personnage",
+				"apiKey": "Clé API Discord",
+				"config": "Config"
+			},
+			"charSelectPlaceholder": "Sélectionner un Personnage",
+			"charSupportMessage": "Ce personnage ne prend pas en charge l'interface Discord.",
+			"apiKeyInput": {
+				"placeholder": "Saisir la Clé API"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "Basculer la visibilité de la Clé API"
+			},
+			"buttons": {
+				"saveConfig": "Enregistrer la Config",
+				"startBot": "Démarrer",
+				"stopBot": "Arrêter"
+			}
+		},
+		"prompts": {
+			"newBotName": "Veuillez saisir un nouveau nom de Bot :"
+		},
+		"alerts": {
+			"botExists": "Un bot nommé \"${botname}\" existe déjà, veuillez utiliser un autre nom.",
+			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous annuler les modifications ?",
+			"configSaved": "Config enregistrée avec succès",
+			"httpError": "Erreur HTTP",
+			"beforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter ?"
+		}
+	},
+	"terminal_assistant": {
+		"title": "Assistant Terminal",
+		"initialMessage": "Fount prend en charge le déploiement de vos personnages préférés dans votre terminal pour vous aider à coder !",
+		"initialMessageLink": "Cliquez ici pour en savoir plus"
+	},
+	"404": {
+		"title": "404 - Page introuvable",
+		"pageNotFoundText": "Oups ! La page que vous recherchez est introuvable.",
+		"homepageButton": "Retour à la page d'accueil"
+	}
+}

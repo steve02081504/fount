@@ -8,14 +8,14 @@
 	</div>
 	<div class="card-actions justify-end p-2">
 		<div class="flex items-center mr-4">
-			<label class="mr-2 text-sm">频率:</label>
+			<label class="mr-2 text-sm" data-i18n="chat.charCard.frequencyLabel"></label>
 			<input type="range" min="0" max="100" value="${Math.round(frequency_num * 100)}" class="range range-xs frequency-slider" />
 		</div>
-		<button class="btn btn-xs btn-error mr-2 remove-char-button" title="移出对话">
-			<img src="https://api.iconify.design/line-md/person-remove.svg" />
+		<button class="btn btn-xs btn-error mr-2 remove-char-button" data-i18n="chat.charCard.buttons.removeChar">
+			<img src="https://api.iconify.design/line-md/person-remove.svg" data-i18n="chat.charCard.buttons.removeCharIcon" />
 		</button>
-		<button class="btn btn-xs btn-primary force-reply-button" title="强制回复">
-			<img src="https://api.iconify.design/line-md/chat-round-dots.svg" />
+		<button class="btn btn-xs btn-primary force-reply-button" data-i18n="chat.charCard.buttons.forceReply">
+			<img src="https://api.iconify.design/line-md/chat-round-dots.svg" data-i18n="chat.charCard.buttons.forceReplyIcon" />
 		</button>
 	</div>
 </div>

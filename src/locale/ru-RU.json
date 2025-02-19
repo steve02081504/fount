@@ -1,0 +1,375 @@
+{
+	"tutorial": {
+		"title": "Туториал?",
+		"modal": {
+			"title": "Добро пожаловать в fount!",
+			"instruction": "Хотите пройти обучение для новичков?",
+			"buttons": {
+				"start": "Начать обучение",
+				"skip": "Пропустить"
+			}
+		},
+		"endScreen": {
+			"title": "Отлично! Обучение завершено!",
+			"subtitle": "Теперь вы научились управлять!",
+			"homeButton": "Перейти на главную страницу"
+		},
+		"progressMessages": {
+			"mouseMove": "Пожалуйста, попробуйте схватить мышь ${mouseIcon} пальцем<br/>а затем переместите ее",
+			"keyboardPress": "Пожалуйста, найдите свою клавиатуру ${keyboardIcon}<br/>и попробуйте нажать на клавиатуру пальцем",
+			"mobileTouchMove": "Пожалуйста, найдите свой телефон ${phoneIcon}<br/>Попробуйте коснуться экрана любым пальцем, а затем переместите его",
+			"mobileClick": "Пожалуйста, попробуйте коснуться экрана телефона ${phoneIcon} любым пальцем<br/>а затем отпустите"
+		}
+	},
+	"home": {
+		"title": "Страница выбора персонажа",
+		"pageTitle": "Страница выбора персонажа",
+		"instruction": "Выберите персонажа и начните чат!",
+		"filterInput": {
+			"placeholder": "Поиск..."
+		},
+		"sidebarTitle": "Информация о персонаже",
+		"characterDescription": {},
+		"noDescription": "Нет информации об описании",
+		"alerts": {
+			"fetchHomeRegistryFailed": "Не удалось получить информацию о регистрации главной страницы"
+		},
+		"functionMenu": {
+			"icon": {
+				"alt": "Меню функций"
+			}
+		},
+		"charCard": {
+			"refreshButton": {
+				"alt": "Обновить",
+				"title": "Обновить"
+			},
+			"noTags": "Нет тегов",
+			"version": "Версия",
+			"author": "Автор",
+			"homepage": "Главная страница",
+			"issuepage": "Сообщить о проблеме"
+		}
+	},
+	"import": {
+		"title": "Импорт",
+		"tabs": {
+			"fileImport": "Импорт файла",
+			"textImport": "Импорт текста"
+		},
+		"dropArea": {
+			"icon": {
+				"alt": "Значок загрузки"
+			},
+			"text": "Перетащите файлы сюда или нажмите, чтобы выбрать файлы"
+		},
+		"textArea": {
+			"placeholder": "Введите текст для импорта..."
+		},
+		"buttons": {
+			"import": "Импорт"
+		},
+		"alerts": {
+			"importSuccess": "Импорт успешен",
+			"importFailed": "Ошибка импорта: ${error}",
+			"unknownError": "Неизвестная ошибка"
+		},
+		"errors": {
+			"noFileSelected": "Пожалуйста, выберите файл",
+			"fileImportFailed": "Ошибка импорта файла: ${message}",
+			"noTextContent": "Пожалуйста, введите текстовое содержимое",
+			"textImportFailed": "Ошибка импорта текста: ${message}",
+			"handler": "Обработчик",
+			"error": "Ошибка"
+		},
+		"fileItem": {
+			"removeButton": {
+				"title": "Удалить"
+			}
+		}
+	},
+	"aisource_editor": {
+		"title": "Редактор источников ИИ",
+		"fileList": {
+			"title": "Список источников ИИ",
+			"addButton": {
+				"title": "+"
+			}
+		},
+		"configTitle": "Конфигурация источника ИИ",
+		"generatorSelect": {
+			"label": "Выберите генератор",
+			"placeholder": "Пожалуйста, выберите"
+		},
+		"buttons": {
+			"save": "Сохранить",
+			"delete": "Удалить"
+		},
+		"alerts": {
+			"fetchFileListFailed": "Не удалось получить список файлов: ${error}",
+			"fetchGeneratorListFailed": "Не удалось получить список генераторов: ${error}",
+			"fetchFileDataFailed": "Не удалось получить данные файла: ${error}",
+			"noFileSelectedSave": "Не выбран файл для сохранения.",
+			"saveFileFailed": "Не удалось сохранить файл: ${error}",
+			"noFileSelectedDelete": "Не выбран файл для удаления.",
+			"deleteFileFailed": "Не удалось удалить файл: ${error}",
+			"invalidFileName": "Имя файла не может содержать следующие символы: / \\ : * ? \" < > |",
+			"addFileFailed": "Не удалось добавить файл: ${error}"
+		},
+		"confirm": {
+			"unsavedChanges": "У вас есть несохраненные изменения. Хотите отменить изменения?",
+			"deleteFile": "Вы уверены, что хотите удалить файл?",
+			"unsavedChangesBeforeUnload": "У вас есть несохраненные изменения. Вы уверены, что хотите покинуть эту страницу?"
+		},
+		"prompts": {
+			"newFileName": "Пожалуйста, введите новое имя файла источника ИИ (без расширения):"
+		}
+	},
+	"part_config": {
+		"title": "Конфигурация части",
+		"pageTitle": "Конфигурация части",
+		"labels": {
+			"partType": "Выберите тип части",
+			"part": "Выберите часть"
+		},
+		"placeholders": {
+			"partTypeSelect": "Пожалуйста, выберите",
+			"partSelect": "Пожалуйста, выберите"
+		},
+		"editor": {
+			"title": "Конфигурация части",
+			"disabledIndicator": "Эта часть не поддерживает конфигурацию",
+			"buttons": {
+				"save": "Сохранить"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Подсказка об ошибке"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "Не удалось получить типы частей",
+			"fetchPartsFailed": "Не удалось получить список частей",
+			"loadEditorFailed": "Не удалось загрузить редактор",
+			"saveConfigFailed": "Не удалось сохранить конфигурацию части",
+			"unsavedChanges": "У вас есть несохраненные изменения. Хотите отменить изменения?",
+			"beforeUnload": "У вас есть несохраненные изменения. Вы уверены, что хотите выйти?"
+		}
+	},
+	"chat": {
+		"title": "Чат",
+		"sidebar": {
+			"world": {
+				"icon": {
+					"alt": "Значок мира"
+				},
+				"title": "Мир"
+			},
+			"persona": {
+				"icon": {
+					"alt": "Значок пользовательской персоны"
+				},
+				"title": "Пользовательская персона"
+			},
+			"charList": {
+				"icon": {
+					"alt": "Значок списка персонажей"
+				},
+				"title": "Список персонажей",
+				"buttons": {
+					"addChar": {
+						"title": "Добавить персонажа"
+					},
+					"addCharIcon": {
+						"alt": "Значок добавления персонажа"
+					}
+				}
+			},
+			"noSelection": "Нет",
+			"noDescription": "Нет информации об описании"
+		},
+		"chatArea": {
+			"title": "Чат",
+			"menuButton": {
+				"title": "Меню"
+			},
+			"menuButtonIcon": {
+				"alt": "Значок меню"
+			},
+			"input": {
+				"placeholder": "Введите сообщение...\nCtrl+Enter для отправки"
+			},
+			"sendButton": {
+				"title": "Отправить"
+			},
+			"sendButtonIcon": {
+				"alt": "Значок отправки"
+			},
+			"uploadButton": {
+				"title": "Загрузить"
+			},
+			"uploadButtonIcon": {
+				"alt": "Значок загрузки"
+			}
+		},
+		"rightSidebar": {
+			"title": "Информация об описании"
+		},
+		"messageList": {
+			"confirmDeleteMessage": "Подтвердить удаление этого сообщения?"
+		},
+		"messageView": {
+			"buttons": {
+				"edit": {
+					"title": "Редактировать"
+				},
+				"editIcon": {
+					"alt": "Значок редактирования"
+				},
+				"delete": {
+					"title": "Удалить"
+				},
+				"deleteIcon": {
+					"alt": "Значок удаления"
+				}
+			}
+		},
+		"messageEdit": {
+			"input": {
+				"placeholder": "Введите содержимое..."
+			},
+			"buttons": {
+				"confirm": {
+					"title": "Подтвердить"
+				},
+				"confirmIcon": {
+					"alt": "Значок подтверждения"
+				},
+				"cancel": {
+					"title": "Отменить"
+				},
+				"cancelIcon": {
+					"alt": "Значок отмены"
+				},
+				"upload": {
+					"title": "Загрузить"
+				},
+				"uploadIcon": {
+					"alt": "Значок загрузки"
+				}
+			}
+		},
+		"attachment": {
+			"buttons": {
+				"download": {
+					"title": "Скачать"
+				},
+				"downloadIcon": {
+					"alt": "Значок скачивания"
+				},
+				"delete": {
+					"title": "Удалить"
+				},
+				"deleteIcon": {
+					"alt": "Значок удаления"
+				}
+			}
+		},
+		"charCard": {
+			"frequencyLabel": "Частота",
+			"buttons": {
+				"removeChar": {
+					"title": "Удалить из чата"
+				},
+				"removeCharIcon": {
+					"alt": "Значок удаления персонажа"
+				},
+				"forceReply": {
+					"title": "Принудительный ответ"
+				},
+				"forceReplyIcon": {
+					"alt": "Значок принудительного ответа"
+				}
+			}
+		}
+	},
+	"chat_history": {
+		"title": "История чатов",
+		"pageTitle": "История чатов",
+		"sortOptions": {
+			"time_desc": "Время убывания",
+			"time_asc": "Время возрастания"
+		},
+		"filterInput": {
+			"placeholder": "Поиск..."
+		},
+		"selectAll": "Выбрать все",
+		"buttons": {
+			"reverseSelect": "Инвертировать выбор",
+			"deleteSelected": "Удалить выбранное",
+			"exportSelected": "Экспортировать выбранное"
+		},
+		"confirmDeleteChat": "Вы уверены, что хотите удалить историю чата с ${chars}?",
+		"confirmDeleteMultiChats": "Вы уверены, что хотите удалить выбранные ${count} истории чатов?",
+		"alerts": {
+			"noChatSelectedForDeletion": "Пожалуйста, выберите истории чатов для удаления",
+			"noChatSelectedForExport": "Пожалуйста, выберите истории чатов для экспорта"
+		},
+		"chatItemButtons": {
+			"continue": "Продолжить",
+			"copy": "Копировать",
+			"export": "Экспортировать",
+			"delete": "Удалить"
+		}
+	},
+	"discord_bots": {
+		"title": "Discord Bots",
+		"cardTitle": "Discord Bots",
+		"buttons": {
+			"newBot": "Новый",
+			"deleteBot": "Удалить"
+		},
+		"configCard": {
+			"title": "Конфигурация бота",
+			"labels": {
+				"character": "Персонаж",
+				"apiKey": "API-ключ Discord",
+				"config": "Конфигурация"
+			},
+			"charSelectPlaceholder": "Выберите персонажа",
+			"charSupportMessage": "Этот персонаж не поддерживает интерфейс Discord.",
+			"apiKeyInput": {
+				"placeholder": "Введите API-ключ"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "Переключить видимость API-ключа"
+			},
+			"buttons": {
+				"saveConfig": "Сохранить конфигурацию",
+				"startBot": "Запустить",
+				"stopBot": "Остановить"
+			}
+		},
+		"prompts": {
+			"newBotName": "Пожалуйста, введите новое имя бота:"
+		},
+		"alerts": {
+			"botExists": "Бот с именем \"${botname}\" уже существует, пожалуйста, используйте другое имя.",
+			"unsavedChanges": "У вас есть несохраненные изменения. Хотите отменить изменения?",
+			"configSaved": "Конфигурация успешно сохранена",
+			"httpError": "Ошибка HTTP",
+			"beforeUnload": "У вас есть несохраненные изменения. Вы уверены, что хотите выйти?"
+		}
+	},
+	"terminal_assistant": {
+		"title": "Терминальный помощник",
+		"initialMessage": "Fount поддерживает развертывание ваших любимых персонажей в вашем терминале, чтобы помочь вам в программировании!",
+		"initialMessageLink": "Нажмите здесь, чтобы узнать больше"
+	},
+	"404": {
+		"title": "404 - Страница не найдена",
+		"pageNotFoundText": "Упс! Страница, которую вы ищете, не найдена.",
+		"homepageButton": "Вернуться на главную страницу"
+	}
+}

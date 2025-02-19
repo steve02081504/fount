@@ -7,6 +7,7 @@ import { ms } from '../scripts/ms.mjs'
 import { getPartList, loadPart, partsList } from './managers/index.mjs'
 import { IPCManager } from './ipc_server.mjs'
 import { is_local_ip, rateLimit } from '../scripts/ratelimit.mjs'
+import { loadJsonFile } from '../scripts/json_loader.mjs'
 
 /**
  * @param {import('npm:express').Router} router
@@ -18,6 +19,33 @@ export function registerEndpoints(router) {
 	})
 	router.get('/api/test/async_error', async (req, res) => {
 		throw new Error('test error')
+	})
+	router.post('/api/setlocale', authenticate, async (req, res) => {
+		const user = await getUserByToken(req.cookies.accessToken)
+		const { locale } = req.body
+		user.locale = locale
+		console.log(user.username + ' set locale to ' + locale)
+		res.status(200).json({ message: 'setlocale ok' })
+	})
+	const localeCache = {}
+	router.get('/api/getlocaledata', async (req, res) => {
+		let locale
+		try {
+			const user = await getUserByToken(req.cookies.accessToken)
+			locale = user?.locale
+		} catch (e) { }
+		locale ??= 'en-UK'
+
+		// if (localeCache[locale]) return res.status(200).json(localeCache[locale])
+
+		const localeList = fs.readdirSync(__dirname + '/src/locale').filter((file) => file.endsWith('.json')).map((file) => file.slice(0, -5))
+		let result
+
+		if (localeList.includes(locale)) result = locale
+		result ??= localeList.find((name) => name.startsWith(locale.split('-')[0])) // 确保 locale 不是 undefined
+		result ??= 'en-UK'
+
+		res.status(200).json(localeCache[locale] = loadJsonFile(__dirname + `/src/locale/${result}.json`))
 	})
 	router.post('/api/login', rateLimit({ maxRequests: 5, windowMs: ms('1m') }), async (req, res) => {
 		const { username, password, deviceid } = req.body
