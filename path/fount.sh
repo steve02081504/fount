@@ -46,6 +46,32 @@ if [ -f "/.dockerenv" ] || grep -q 'docker\|containerd' /proc/1/cgroup 2>/dev/nu
 	IN_DOCKER=1
 fi
 
+if [[ $# -gt 0 && $1 = 'remove' ]]; then
+	echo "removing fount..."
+
+	# Remove fount from PATH in .bashrc
+	echo "removing fount from PATH in .bashrc..."
+	if [ -f "$HOME/.bashrc" ]; then
+		sed -i '/export PATH="\$PATH:'"$FOUNT_DIR/path"'"/d' "$HOME/.bashrc"
+		echo "fount removed from PATH in .bashrc."
+	else
+		echo ".bashrc not found, skipping PATH removal from .bashrc."
+	fi
+
+	# Remove fount from current PATH
+	echo "removing fount from current PATH..."
+	export PATH=$(echo "$PATH" | tr ':' '\n' | grep -v "$FOUNT_DIR/path" | tr '\n' ':')
+	echo "fount removed from current PATH."
+
+	# Remove fount installation directory
+	echo "removing fount installation directory..."
+	rm -rf "$FOUNT_DIR"
+	echo "fount installation directory removed."
+
+	echo "fount uninstallation complete."
+	exit 0
+fi
+
 if ! command -v fount &> /dev/null; then
 	if ! grep -q "export PATH=\"\$PATH:$FOUNT_DIR/path\"" "$HOME/.bashrc"; then
 		echo "export PATH=\"\$PATH:$FOUNT_DIR/path\"" >> "$HOME/.bashrc"

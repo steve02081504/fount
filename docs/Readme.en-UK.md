@@ -2,16 +2,51 @@
 
 ![repo img](https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa)
 
-[![English (United Kingdom)](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/United-Kingdom.png)](./docs/Readme.en-UK.md)
-[![日本語](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Japan.png)](./docs/Readme.ja-JP.md)
-[![中文](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/China.png)](./docs/Readme.zh-CN.md)
-[![Français](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/France.png)](./docs/Readme.fr-FR.md)
-[![Español](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Spain.png)](./docs/Readme.es-ES.md)
-[![Deutsch](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Germany.png)](./docs/Readme.de-DE.md)
-[![русский](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Russia.png)](./docs/Readme.ru-RU.md)
-[![Português](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Portugal.png)](./docs/Readme.pt-BR.md)
-[![हिन्दी](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/India.png)](./docs/Readme.hi-IN.md)
-[![한국어](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/South-Korea.png)](./docs/Readme.ko-KR.md)
+Looking for lost characters, components, or custom tutorials?
+Come [here![Discord](https://img.shields.io/discord/1288934771153440768)](https://discord.gg/GtR9Quzq2v), and meet in the sparks of ideas!
+
+> [!CAUTION]
+>
+> 1. fount is like the rising sun, still on its path of growth. This means its interfaces and APIs may change at any time, and character creators may need to follow up with updates promptly to ensure their works function properly. But please believe that every change is for a better future.
+> 2. In the world of fount, characters can freely run JavaScript commands, which gives them powerful capabilities. Therefore, please choose the characters you trust with caution, just like making friends in real life, to ensure the security of local files.
+
+## Installation
+
+### Linux/macOS
+
+```bash
+# If needed, define the environment variable $FOUNT_DIR to specify the fount directory
+curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.sh | bash
+```
+
+If you don't want to start this journey immediately after installation, you can do this:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.sh | bash -s init
+```
+
+### Windows
+
+Don't want to think too much? Download the exe file from [release](https://github.com/steve02081504/fount/releases) and run it directly to step into this world.
+
+If you prefer the whisper of the shell, you can also install and run fount in PowerShell:
+
+```powershell
+# If needed, define the environment variable $env:FOUNT_DIR to specify the fount directory
+irm https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1 | iex
+```
+
+If you want to pause for a moment before embarking on your exploration, you can do this:
+
+```powershell
+$scriptContent = Invoke-RestMethod https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1
+Invoke-Expression "function fountInstaller { $scriptContent }"
+fountInstaller init
+```
+
+## Removal
+
+Removing fount is easy, just use `fount remove`.
 
 ## What is fount?
 
@@ -67,6 +102,11 @@ In the world of fount, everything is highly modularized.
 - As long as you have a certain programming foundation, you can easily create and distribute the modules you need, just like a gardener cultivating new flowers, adding more color to this garden.
 - fount encourages you to contribute your strength to the community and the future, making this world more prosperous and more vibrant.
 
-### More Information
+### Summary
 
-see [localed readme](https://steve02081504.github.io/fount/readme) for more details.
+In summary, fount allows you to run fount format characters, which may have various abilities or be applied to different scenarios. They may be deep, lively, gentle, or strong, it all depends on you, my friend! :)
+
+## Architecture
+
+- The backend is based on Deno, supplemented by the Express framework, to build a solid skeleton.
+- The frontend is woven with HTML, CSS, and JavaScript to create a gorgeous interface.
