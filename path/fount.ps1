@@ -2,6 +2,57 @@
 
 $ErrorCount = $Error.Count
 
+if ($args.Count -gt 0 -and $args[0] -eq 'remove') {
+	Write-Host "emoving fount..."
+
+	# Remove fount from PATH
+	Write-Host "removing fount from PATH..."
+	$path = $env:PATH -split ';'
+	$path = $path | Where-Object { !$_.StarsWith("$FOUNT_DIR") }
+	$env:Path = $path -join ';'
+	[System.Environment]::SetEnvironmentVariable('PATH', $env:Path, [System.EnvironmentVariableTarget]::User)
+	Write-Host "fount removed from PATH."
+
+	# Remove fount-pwsh from PowerShell Profile
+	Write-Host "removing fount-pwsh from PowerShell Profile..."
+	if (Test-Path $Profile) {
+		$ProfileContent = Get-Content $Profile -ErrorAction Ignore
+		$ProfileContent = $ProfileContent -split "`n"
+		$ProfileContent = $ProfileContent | Where-Object { $_ -notmatch 'Import-Module fount-pwsh' }
+		$ProfileContent = $ProfileContent -join "`n"
+		if ($ProfileContent -ne (Get-Content $Profile -ErrorAction Ignore)) {
+			Set-Content -Path $Profile -Value $ProfileContent
+		}
+		Write-Host "fount-pwsh removed from PowerShell Profile."
+	}
+	else {
+		Write-Host "powerShell Profile not found, skipping fount-pwsh removal from profile."
+	}
+
+	# uninstall fount-pwsh
+	Write-Host "Uninstalling fount-pwsh..."
+	try { Uninstall-Module -Name fount-pwsh -Scope CurrentUser -Force -ErrorAction Stop } catch {}
+
+	# Remove Windows Terminal Profile
+	Write-Host "removing Windows Terminal Profile..."
+	$WTjsonDirPath = "$env:LOCALAPPDATA/Microsoft/Windows Terminal/Fragments/fount"
+	if (Test-Path $WTjsonDirPath -PathType Container) {
+		Remove-Item -Path $WTjsonDirPath -Force -Recurse
+		Write-Host "Windows Terminal Profile directory removed."
+	}
+	else {
+		Write-Host "Windows Terminal Profile directory not found."
+	}
+
+	# Remove fount installation directory
+	Write-Host "removing fount installation directory..."
+	Remove-Item -Path $FOUNT_DIR -Recurse -Force -ErrorAction SilentlyContinue
+	Write-Host "fount installation directory removed."
+
+	Write-Host "fount uninstallation complete."
+	exit 0
+}
+
 # Docker 检测
 $IN_DOCKER = $false
 

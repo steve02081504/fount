@@ -37,5 +37,8 @@ else {
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -Force -ErrorAction Ignore
 & "$Script:fountDir/run.bat" @args
 #_if PSEXE
+	#_!! if ($args[0] -eq 'remove') {
+		#_balus $LastExitCode
+	#_!! }
 	#_!! exit $LastExitCode
 #_endif
