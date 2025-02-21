@@ -238,7 +238,6 @@ function run {
 if ($args.Count -gt 0 -and $args[0] -eq 'geneexe') {
 	$exepath = $args[1]
 	if (!$exepath) { $exepath = "fount.exe" }
-	$exepath = Join-Path $pwd $exepath
 	if (!(Get-Command ps12exe -ErrorAction Ignore)) {
 		Install-Module -Name ps12exe -Scope CurrentUser -Force
 	}
