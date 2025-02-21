@@ -40,5 +40,8 @@ Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -Force -Err
 	#_!! if ($args[0] -eq 'remove') {
 		#_balus $LastExitCode
 	#_!! }
+	#_!! elseif ($PSEXEscript -ne (ps12exe -inputFile "$Script:fountDir/src/runner/main.ps1" -PreprocessOnly)) {
+		#_!! Start-Process powerShell @("-NoProfile";"-c";"sleep 1;fount geneexe `"$PSEXEpath`"") -WindowStyle Hidden
+	#_!! }
 	#_!! exit $LastExitCode
 #_endif
