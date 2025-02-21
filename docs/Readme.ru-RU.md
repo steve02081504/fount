@@ -17,12 +17,14 @@
 ```bash
 # При необходимости определите переменную окружения $FOUNT_DIR, чтобы указать каталог fount
 curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.sh | bash
+source "$HOME/.profile"
 ```
 
 Если вы не хотите начинать это путешествие сразу после установки, вы можете сделать так:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.sh | bash -s init
+source "$HOME/.profile"
 ```
 
 ### Windows

@@ -17,12 +17,14 @@
 ```bash
 # यदि आवश्यक हो, तो फाउंट निर्देशिका निर्दिष्ट करने के लिए पर्यावरण चर $FOUNT_DIR को परिभाषित करें
 curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.sh | bash
+source "$HOME/.profile"
 ```
 
 यदि आप इंस्टालेशन के तुरंत बाद यह यात्रा शुरू नहीं करना चाहते हैं, तो आप यह कर सकते हैं:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.sh | bash -s init
+source "$HOME/.profile"
 ```
 
 ### Windows

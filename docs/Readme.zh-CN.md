@@ -17,12 +17,14 @@
 ```bash
 # 若需要，定义环境变量$FOUNT_DIR来指定fount目录
 curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.sh | bash
+source "$HOME/.profile"
 ```
 
 如果你不愿在安装后立即开启这段旅程，可以这样：
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.sh | bash -s init
+source "$HOME/.profile"
 ```
 
 ### Windows

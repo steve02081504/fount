@@ -17,12 +17,14 @@ Kommen Sie [hierher![Discord](https://img.shields.io/discord/1288934771153440768
 ```bash
 # Bei Bedarf definieren Sie die Umgebungsvariable $FOUNT_DIR, um das fount-Verzeichnis anzugeben
 curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.sh | bash
+source "$HOME/.profile"
 ```
 
 Wenn Sie diese Reise nicht sofort nach der Installation beginnen möchten, können Sie Folgendes tun:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.sh | bash -s init
+source "$HOME/.profile"
 ```
 
 ### Windows

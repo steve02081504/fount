@@ -47,6 +47,7 @@ if ! command -v fount.sh &> /dev/null; then
 		xattr -dr com.apple.quarantine "$FOUNT_DIR"
 	fi
 	find "$FOUNT_DIR" -name "*.sh" -exec chmod +x {} \;
+	find "$FOUNT_DIR/path" -type f -exec chmod +x {} \;
 else
 	# fount.sh 已存在，获取其所在目录
 	FOUNT_DIR="$(dirname "$(dirname "$(command -v fount.sh)")")"
