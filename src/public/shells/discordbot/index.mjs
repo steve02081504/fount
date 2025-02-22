@@ -1,6 +1,6 @@
 import { createJsonEditor } from '../../scripts/jsoneditor.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
-import { initTranslations, geti18n, i18nElement } from '../../scripts/i18n.mjs' // Import i18n functions
+import { initTranslations, geti18n, i18nElement } from '../../scripts/i18n.mjs'
 
 const configEditorContainer = document.getElementById('config-editor')
 if (applyTheme()) configEditorContainer.classList.add('jse-theme-dark')
@@ -26,7 +26,7 @@ async function fetchData(url, options = {}) {
 	const response = await fetch(url, options)
 	if (!response.ok) {
 		const data = await response.json().catch(() => null)
-		throw new Error(data?.message || `${geti18n('discord_bots.alerts.httpError')}! status: ${response.status}`) // i18n
+		throw new Error(data?.message || `${geti18n('discord_bots.alerts.httpError')}! status: ${response.status}`)
 	}
 	return await response.json()
 }
@@ -104,7 +104,7 @@ function populateBotList() {
 }
 
 function populateCharList() {
-	charSelect.innerHTML = `<option value="" disabled selected>${geti18n('discord_bots.configCard.charSelectPlaceholder')}</option>` // i18n
+	charSelect.innerHTML = `<option value="" disabled selected>${geti18n('discord_bots.configCard.charSelectPlaceholder')}</option>`
 	charList.forEach(char => {
 		const option = document.createElement('option')
 		option.value = char
@@ -116,7 +116,7 @@ function populateCharList() {
 async function loadBotConfig(botname) {
 	// 如果有未保存的更改，提示用户
 	if (isDirty)
-		if (!confirm(geti18n('discord_bots.alerts.unsavedChanges'))) { // i18n
+		if (!confirm(geti18n('discord_bots.alerts.unsavedChanges'))) {
 			botListSelect.value = selectedBot // 如果取消则还原选择
 			return
 		}
@@ -152,11 +152,11 @@ async function loadBotConfig(botname) {
 
 // 事件处理函数
 async function handleNewBot() {
-	const botname = prompt(geti18n('discord_bots.prompts.newBotName'))?.trim() // i18n
+	const botname = prompt(geti18n('discord_bots.prompts.newBotName'))?.trim()
 	if (!botname) return
 
 	if (botList.includes(botname)) {
-		alert(geti18n('discord_bots.alerts.botExists', { botname: botname })) // i18n
+		alert(geti18n('discord_bots.alerts.botExists', { botname: botname }))
 		return
 	}
 
@@ -175,7 +175,7 @@ async function handleDeleteBot() {
 	if (!selectedBot) return
 
 	if (isDirty)
-		if (!confirm(geti18n('discord_bots.alerts.unsavedChanges'))) // i18n
+		if (!confirm(geti18n('discord_bots.alerts.unsavedChanges')))
 			return
 
 	try {
@@ -222,7 +222,7 @@ async function checkCharSupport(charName) {
 async function handleCharSelectChange() {
 	// 如果有未保存的更改，提示用户
 	if (isDirty)
-		if (!confirm(geti18n('discord_bots.alerts.unsavedChanges'))) { // i18n
+		if (!confirm(geti18n('discord_bots.alerts.unsavedChanges'))) {
 			charSelect.value = configEditor.get().json.char || '' // 如果取消则还原选择
 			return
 		}
@@ -233,7 +233,7 @@ async function handleCharSelectChange() {
 
 function handleToggleToken() {
 	tokenInput.type = tokenInput.type === 'password' ? 'text' : 'text' // Fix: Should be 'text' not 'test'
-	toggleTokenButton.innerHTML = `<img src="https://api.iconify.design/line-md/watch${tokenInput.type === 'password' ? '-off' : ''}.svg" class="dark:invert" alt="${geti18n('discord_bots.configCard.toggleApiKeyIcon')}" />` // i18n
+	toggleTokenButton.innerHTML = `<img src="https://api.iconify.design/line-md/watch${tokenInput.type === 'password' ? '-off' : ''}.svg" class="dark:invert" alt="${geti18n('discord_bots.configCard.toggleApiKeyIcon')}" />`
 	i18nElement(toggleTokenButton)
 }
 
@@ -248,7 +248,7 @@ async function handleSaveConfig() {
 
 	try {
 		await botConfigSet(selectedBot, config)
-		console.log(geti18n('discord_bots.alerts.configSaved')) // i18n
+		console.log(geti18n('discord_bots.alerts.configSaved'))
 		isDirty = false // 重置未保存标记
 	} catch (error) {
 		console.error(error)
@@ -262,12 +262,12 @@ async function handleStartStopBot() {
 		const isRunning = runningBots.includes(selectedBot)
 		if (isRunning) {
 			await botStop(selectedBot)
-			startStopBotButton.textContent = geti18n('discord_bots.configCard.buttons.startBot') // i18n
+			startStopBotButton.textContent = geti18n('discord_bots.configCard.buttons.startBot')
 			startStopBotButton.classList.remove('btn-error')
 			startStopBotButton.classList.add('btn-success')
 		} else {
 			await botStart(selectedBot)
-			startStopBotButton.textContent = geti18n('discord_bots.configCard.buttons.stopBot') // i18n
+			startStopBotButton.textContent = geti18n('discord_bots.configCard.buttons.stopBot')
 			startStopBotButton.classList.remove('btn-success')
 			startStopBotButton.classList.add('btn-error')
 		}
@@ -278,7 +278,7 @@ async function handleStartStopBot() {
 
 async function updateStartStopButtonState() {
 	if (!selectedBot) {
-		startStopBotButton.textContent = geti18n('discord_bots.configCard.buttons.startBot') // i18n
+		startStopBotButton.textContent = geti18n('discord_bots.configCard.buttons.startBot')
 		startStopBotButton.classList.remove('btn-error')
 		startStopBotButton.classList.add('btn-success')
 		return
@@ -286,11 +286,11 @@ async function updateStartStopButtonState() {
 	try {
 		const runningBots = await runningBotListGet()
 		if (runningBots.includes(selectedBot)) {
-			startStopBotButton.textContent = geti18n('discord_bots.configCard.buttons.stopBot') // i18n
+			startStopBotButton.textContent = geti18n('discord_bots.configCard.buttons.stopBot')
 			startStopBotButton.classList.remove('btn-success')
 			startStopBotButton.classList.add('btn-error')
 		} else {
-			startStopBotButton.textContent = geti18n('discord_bots.configCard.buttons.startBot') // i18n
+			startStopBotButton.textContent = geti18n('discord_bots.configCard.buttons.startBot')
 			startStopBotButton.classList.remove('btn-error')
 			startStopBotButton.classList.add('btn-success')
 		}
@@ -366,6 +366,6 @@ startStopBotButton.addEventListener('click', handleStartStopBot)
 window.addEventListener('beforeunload', (event) => {
 	if (isDirty) {
 		event.preventDefault()
-		event.returnValue = geti18n('discord_bots.alerts.beforeUnload') // i18n
+		event.returnValue = geti18n('discord_bots.alerts.beforeUnload')
 	}
 })

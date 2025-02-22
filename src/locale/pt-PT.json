@@ -114,7 +114,9 @@
 			"noFileSelectedDelete": "Nenhum arquivo selecionado para excluir.",
 			"deleteFileFailed": "Falha ao excluir o arquivo: ${error}",
 			"invalidFileName": "O nome do arquivo não pode conter os seguintes caracteres: / \\ : * ? \" < > |",
-			"addFileFailed": "Falha ao adicionar o arquivo: ${error}"
+			"addFileFailed": "Falha ao adicionar o arquivo: ${error}",
+			"fetchConfigTemplateFailed": "Falha ao obter o modelo de configuração",
+			"noGeneratorSelectedSave": "Por favor, selecione um gerador antes de salvar"
 		},
 		"confirm": {
 			"unsavedChanges": "Você tem alterações não salvas. Deseja descartar as alterações?",
@@ -123,6 +125,9 @@
 		},
 		"prompts": {
 			"newFileName": "Por favor, insira um novo nome de arquivo de fonte de IA (sem extensão):"
+		},
+		"editor": {
+			"disabledIndicator": "Por favor, selecione um gerador primeiro"
 		}
 	},
 	"part_config": {
@@ -217,7 +222,7 @@
 			"title": "Informações de Descrição"
 		},
 		"messageList": {
-			"confirmDeleteMessage": "Confirmar excluir esta mensagem?"
+			"confirmDeleteMessage": "Confirmar exclusão desta mensagem?"
 		},
 		"messageView": {
 			"buttons": {

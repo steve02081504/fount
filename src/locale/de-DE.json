@@ -114,7 +114,9 @@
 			"noFileSelectedDelete": "Keine Datei zum Löschen ausgewählt.",
 			"deleteFileFailed": "Fehler beim Löschen der Datei: ${error}",
 			"invalidFileName": "Der Dateiname darf folgende Zeichen nicht enthalten: / \\ : * ? \" < > |",
-			"addFileFailed": "Fehler beim Hinzufügen der Datei: ${error}"
+			"addFileFailed": "Fehler beim Hinzufügen der Datei: ${error}",
+			"fetchConfigTemplateFailed": "Fehler beim Abrufen der Konfigurationsvorlage",
+			"noGeneratorSelectedSave": "Bitte wählen Sie zuerst einen Generator aus, bevor Sie speichern"
 		},
 		"confirm": {
 			"unsavedChanges": "Sie haben ungespeicherte Änderungen. Möchten Sie die Änderungen verwerfen?",
@@ -123,6 +125,9 @@
 		},
 		"prompts": {
 			"newFileName": "Bitte geben Sie einen neuen KI-Quelldatei-Namen ein (ohne Erweiterung):"
+		},
+		"editor": {
+			"disabledIndicator": "Bitte wählen Sie zuerst einen Generator aus"
 		}
 	},
 	"part_config": {
