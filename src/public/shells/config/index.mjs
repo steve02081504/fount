@@ -262,7 +262,7 @@ saveButton.addEventListener('click', saveConfig)
 window.addEventListener('beforeunload', (event) => {
 	if (isDirty) {
 		event.preventDefault()
-		event.returnValue = geti18n('part_config.alerts.beforeUnload'); // i18n
+		event.returnValue = geti18n('part_config.alerts.beforeUnload') // i18n
 	}
 })
 

@@ -1,9 +1,6 @@
 import { applyTheme } from '../../scripts/theme.mjs'
 applyTheme()
 
-import { Terminal } from 'https://esm.run/xterm'
-import { WebLinksAddon } from 'https://esm.run/@xterm/addon-web-links'
-import { ClipboardAddon } from 'https://esm.run/@xterm/addon-clipboard'
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs' // Import i18n functions
 
 const tutorialModal = document.getElementById('tutorialModal')

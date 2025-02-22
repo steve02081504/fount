@@ -74,7 +74,7 @@ export function i18nElement(element) {
 		if (getNestedValue(i18n, key) instanceof Object) {
 			const attributes = ['placeholder', 'title', 'label', 'text', 'value', 'alt']
 
-			for (let attr of attributes) {
+			for (const attr of attributes) {
 				const specificKey = `${key}.${attr}`
 				const translation = geti18n(specificKey)
 				if (!translation) continue
