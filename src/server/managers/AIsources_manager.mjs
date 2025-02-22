@@ -10,20 +10,31 @@ export async function loadAIsourceGenerator(username, AIsourcename) {
 	return loadPartBase(username, 'AIsourceGenerators', AIsourcename)
 }
 
+export async function loadAIsourceFromConfigData(username, data) {
+	const generator = await loadAIsourceGenerator(username, data.generator)
+	return await generator.GetSource(data.config, {
+		username,
+	})
+}
+
 export async function loadAIsource(username, AIsourcename) {
 	return loadPartBase(username, 'AIsources', AIsourcename, null, {
 		pathGetter: () => GetPath(username, AIsourcename),
 		Loader: async (path) => {
 			const data = loadJsonFile(path + '.json')
-			const generator = await loadAIsourceGenerator(username, data.generator)
-			const AIsource = await generator.GetSource(data.config, {
-				username,
-			})
+			const AIsource = await loadAIsourceFromConfigData(username, data)
 			AIsource.filename = AIsourcename
 			return AIsource
 		},
 		Initer: () => { }
 	})
+}
+
+export async function loadAIsourceFromNameOrConfigData(username, nameOrData) {
+	if (Object(AIsourcename) instanceof String)
+		return loadAIsource(username, AIsourcename)
+	else
+		return loadAIsourceFromConfigData(username, AIsourcename)
 }
 
 export async function unloadAIsource(username, AIsourcename) {

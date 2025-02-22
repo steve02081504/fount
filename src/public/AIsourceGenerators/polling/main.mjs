@@ -1,12 +1,12 @@
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
-import { loadAIsource } from '../../../server/managers/AIsources_manager.mjs'
+import { loadAIsourceFromNameOrConfigData } from '../../../server/managers/AIsources_manager.mjs'
 
 export default {
 	GetSource: async (config, { username }) => {
 		let index = -1
-		const sources = await Promise.all(config.sources.map(source => loadAIsource(username, source)))
+		const sources = await Promise.all(config.sources.map(source => loadAIsourceFromNameOrConfigData(username, source)))
 		/** @type {AIsource_t} */
 		const result = {
 			type: 'text-chat',
