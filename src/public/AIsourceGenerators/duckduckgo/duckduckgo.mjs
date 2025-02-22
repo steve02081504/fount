@@ -47,11 +47,11 @@ export class DuckDuckGoAPI {
 				'x-vqd-4': token,
 			},
 			body: JSON.stringify({
-				model: model,
+				model,
 				messages: [
 					{
 						role: 'user',
-						content: content,
+						content,
 					},
 				],
 			}),

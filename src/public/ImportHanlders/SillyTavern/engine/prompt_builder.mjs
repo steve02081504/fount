@@ -66,7 +66,7 @@ export function promptBuilder(
 		/** @type {WorldInfoEntry} */
 		entry
 	) {
-		const content = entry.content
+		const { content } = entry
 		switch (entry.extensions.position) {
 			case world_info_position.atDepth: {
 				const existingDepthIndex = WIDepthEntries.findIndex((e) => e.depth === (entry.depth ?? DEFAULT_DEPTH) && e.role === entry.extensions.role)
@@ -116,7 +116,7 @@ export function promptBuilder(
 		for (const entrie of WIDepth) {
 			const role = ['system', 'user', 'assistant'][entrie.role]
 			additional_chat_log.push({
-				role: role,
+				role,
 				content: entrie.entries.join('\n'),
 			})
 		}

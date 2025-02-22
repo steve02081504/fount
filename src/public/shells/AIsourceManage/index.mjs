@@ -78,13 +78,10 @@ function renderGeneratorSelect() {
 async function fetchConfigTemplate(generatorName) {
 	if (!generatorName) return null
 	try {
-		const response = await fetch('/api/shells/AIsourceManage/getConfigTemplate', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({ generator: generatorName }),
-		})
+		const response = await fetch(`/api/shells/AIsourceManage/getConfigTemplate?${new URLSearchParams({
+			generator: generatorName,
+		})}`)
+
 		if (!response.ok) {
 			const message = await response.text()
 			throw new Error(`HTTP error! status: ${response.status}, message: ${message}`)
@@ -134,13 +131,10 @@ async function loadEditor(fileName) {
 
 	activeFile = fileName
 	try {
-		const response = await fetch('/api/shells/AIsourceManage/getfile', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({ AISourceFile: fileName }),
-		})
+		const response = await fetch(`/api/shells/AIsourceManage/getfile?${new URLSearchParams({
+			AISourceFile: fileName,
+		})}`)
+
 		if (!response.ok)
 			throw new Error(`HTTP error! status: ${response.status}`)
 

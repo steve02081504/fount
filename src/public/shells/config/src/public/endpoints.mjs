@@ -46,13 +46,11 @@ export async function getPartDetails(partType, partName) {
    * @param {string} partName 部分名称
    */
 export async function getConfigData(partType, partName) {
-	const response = await fetch('/api/shells/config/getdata', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({ parttype: partType, partname: partName }),
-	})
+	const response = await fetch(`/api/shells/config/getdata?${new URLSearchParams({
+		parttype: partType,
+		partname: partName,
+	})}`)
+
 	if (!response.ok) {
 		const data = await response.json()
 		const errorMsg = data.error || data.message || `HTTP error! status: ${response.status}`

@@ -124,9 +124,7 @@ async function refresh(refreshToken) {
  * 用户登出
  */
 export async function logout(req, res) {
-	const accessToken = req.cookies.accessToken
-	const refreshToken = req.cookies.refreshToken
-	const user = req.user
+	const { user, cookies: { accessToken, refreshToken } } = req
 
 	if (accessToken) {
 		// 将 accessToken 添加到 revokedTokens 中
@@ -161,8 +159,7 @@ export async function logout(req, res) {
  * 身份验证中间件
  */
 export async function authenticate(req, res, next) {
-	const accessToken = req.cookies.accessToken
-	const refreshToken = req.cookies.refreshToken
+	const { accessToken, refreshToken } = req.cookies
 
 	const Unauthorized = () => {
 		const path = encodeURIComponent(req.originalUrl)
@@ -334,7 +331,7 @@ export async function login(username, password, deviceId = 'unknown') {
 	})
 	save_config()
 
-	return { status: 200, message: 'Login successful', accessToken, refreshToken: refreshToken }
+	return { status: 200, message: 'Login successful', accessToken, refreshToken }
 }
 
 /**

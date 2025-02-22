@@ -13,7 +13,7 @@ export class BlackboxAI {
 
 	async call(messages, model) {
 		const payload = {
-			messages: messages,
+			messages,
 			id: Date.now().toString(),
 			previewToken: null,
 			userId: null,
@@ -46,7 +46,7 @@ export class BlackboxAI {
 
 	async countTokens(text) {
 		const payload = {
-			text: text
+			text
 		}
 
 		try {

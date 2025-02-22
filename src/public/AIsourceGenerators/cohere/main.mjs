@@ -92,7 +92,7 @@ export default {
 				}).then((result) => result.tokens),
 				decode: (tokens) => cohere.detokenize({
 					model: config.model,
-					tokens: tokens
+					tokens
 				}).then((result) => result.text),
 				decode_single: (token) => cohere.detokenize({
 					model: config.model,

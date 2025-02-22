@@ -36,7 +36,7 @@ export function registerEndpoints(router) {
 		} catch (e) { }
 		locale ??= 'en-UK'
 
-		// if (localeCache[locale]) return res.status(200).json(localeCache[locale])
+		if (localeCache[locale]) return res.status(200).json(localeCache[locale])
 
 		const localeList = fs.readdirSync(__dirname + '/src/locale').filter((file) => file.endsWith('.json')).map((file) => file.slice(0, -5))
 		let result

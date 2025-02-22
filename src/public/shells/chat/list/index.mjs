@@ -15,9 +15,7 @@ let chatList = []
 const selectedChats = new Set()
 
 async function fetchChatList() {
-	const response = await fetch('/api/shells/chat/list', {
-		method: 'POST',
-	})
+	const response = await fetch('/api/shells/chat/getchatlist')
 	if (response.ok)
 		chatList = await response.json()
 	else {

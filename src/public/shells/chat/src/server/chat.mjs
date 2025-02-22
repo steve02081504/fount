@@ -540,13 +540,13 @@ export async function modifyTimeLine(chatid, delta) {
 	let newTimeLineIndex = chatMetadata.timeLineIndex + delta
 	if (newTimeLineIndex < 0) newTimeLineIndex += chatMetadata.timeLines.length
 	if (newTimeLineIndex >= chatMetadata.timeLines.length) {
-		const charname = chatMetadata.LastTimeSlice.charname
+		const { charname } = chatMetadata.LastTimeSlice
 		const poped = chatMetadata.chatLog.pop()
 		try {
 			chatMetadata.LastTimeSlice = chatMetadata.chatLog[chatMetadata.chatLog.length - 1]?.timeSlice || chatMetadata.LastTimeSlice
 			const new_timeSlice = chatMetadata.LastTimeSlice.copy()
 			const char = new_timeSlice.chars[charname]
-			const world = new_timeSlice.world
+			const { world } = new_timeSlice
 			let result
 			switch (new_timeSlice.greeting_type = chatMetadata.LastTimeSlice.greeting_type) {
 				case 'single':
@@ -881,7 +881,7 @@ export async function editMessage(chatid, index, new_content) {
 		}
 	}
 
-	const timeSlice = chatMetadata.chatLog[index].timeSlice
+	const { timeSlice } = chatMetadata.chatLog[index]
 	let entry
 	if (timeSlice.charname) {
 		const char = timeSlice.chars[timeSlice.charname]

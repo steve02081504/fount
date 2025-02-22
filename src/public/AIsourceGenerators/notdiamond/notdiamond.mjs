@@ -217,7 +217,7 @@ class AuthManager {
 	async _make_request(method, url, headers, data = null) {
 		try {
 			const options = {
-				headers: headers
+				headers
 			}
 			if (data) {
 				options.method = 'POST'
@@ -259,14 +259,14 @@ function create_openai_chunk(content, model, finish_reason = null, usage = null)
 		'id': `chatcmpl-${uuidv4()}`,
 		'object': CHAT_COMPLETION_CHUNK,
 		'created': Math.floor(Date.now() / 1000),
-		'model': model,
+		model,
 		'system_fingerprint': generate_system_fingerprint(),
 		'choices': [
 			{
 				'index': 0,
-				'delta': content ? { 'content': content } : {},
+				'delta': content ? { content } : {},
 				'logprobs': null,
-				'finish_reason': finish_reason
+				finish_reason
 			}
 		]
 	}
@@ -343,7 +343,7 @@ async function handle_non_stream_response(response, model, prompt_tokens) {
 		'id': `chatcmpl-${uuidv4()}`,
 		'object': 'chat.completion',
 		'created': Math.floor(Date.now() / 1000),
-		'model': model,
+		model,
 		'system_fingerprint': generate_system_fingerprint(),
 		'choices': [
 			{
@@ -356,9 +356,9 @@ async function handle_non_stream_response(response, model, prompt_tokens) {
 			}
 		],
 		'usage': {
-			'prompt_tokens': prompt_tokens,
-			'completion_tokens': completion_tokens,
-			'total_tokens': total_tokens
+			prompt_tokens,
+			completion_tokens,
+			total_tokens
 		}
 	}
 }
@@ -408,7 +408,7 @@ async function build_payload(request_data, model_id) {
 	const mapping = MODEL_INFO[model_id]?.mapping || model_id
 	const payload = {
 		...request_data, // 使用扩展运算符将request_data中的所有属性复制到payload
-		messages: messages,
+		messages,
 		model: mapping,
 		temperature: request_data.temperature || DEFAULT_TEMPERATURE
 	}
@@ -428,7 +428,7 @@ async function make_request(payload, auth_manager) {
 		const headers = await get_notdiamond_headers(auth_manager)
 		const response = await fetch(url, {
 			method: 'POST',
-			headers: headers,
+			headers,
 			body: JSON.stringify(payload),
 			stream: true
 		})
@@ -452,8 +452,8 @@ async function make_request(payload, auth_manager) {
 async function call_model(model_id, messages, temperature, auth_manager) {
 	const request_data = {
 		'model': model_id,
-		'messages': messages,
-		'temperature': temperature,
+		messages,
+		temperature,
 		'stream': false
 	}
 	const payload = await build_payload(request_data, model_id)

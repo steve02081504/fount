@@ -26,10 +26,11 @@ export function setEndpoints(router) {
 		res.status(200).json(getRunningBotList(username))
 	})
 
-	router.post('/api/shells/discordbot/getbotconfig', authenticate, async (req, res) => {
+	router.get('/api/shells/discordbot/getbotconfig', authenticate, async (req, res) => {
 		const { username } = await getUserByToken(req.cookies.accessToken)
-		const { botname } = req.body
-		res.status(200).json(getBotConfig(username, botname))
+		const { botname } = req.query
+		const config = await getBotConfig(username, botname)
+		res.status(200).json(config)
 	})
 
 	router.post('/api/shells/discordbot/setbotconfig', authenticate, async (req, res) => {

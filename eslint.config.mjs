@@ -1,16 +1,21 @@
 import optimizeRegex from 'npm:eslint-plugin-optimize-regex'
 import UnusedImports from 'npm:eslint-plugin-unused-imports'
 import html from 'npm:eslint-plugin-html'
+import destructuringMerge from 'npm:eslint-plugin-destructuring-merge'
 
 export default [
 	{
 		plugins: {
 			'optimize-regex': optimizeRegex,
 			'unused-imports': UnusedImports,
-			'html': html
+			html,
+			'destructuring-merge': destructuringMerge
 		},
 		files: ['**/*.html', '**/*.js', '**/*.mjs'],
 		ignores: ['**/dist/*'],
+		languageOptions: {
+			ecmaVersion: 'latest',
+		},
 		rules: {
 			// 移除多余的分号
 			semi: [
@@ -29,6 +34,20 @@ export default [
 			}],
 			// 鼓励单引号
 			quotes: ['error', 'single'],
+			// 强制总是使用简写
+			'object-shorthand': ['error', 'always'],
+			'prefer-destructuring': ['warn', {
+				'VariableDeclarator': {
+					'array': true,
+					'object': true
+				},
+				'AssignmentExpression': {
+					'array': true,
+					'object': true
+				}
+			}, {
+				'enforceForRenamedProperties': true
+			}],
 			// 去除不必要小括号
 			'no-extra-parens': ['error', 'all', {
 				nestedBinaryExpressions: false, // 允许嵌套二元表达式中有括号
@@ -48,7 +67,8 @@ export default [
 			'prefer-const': ['error', {
 				'destructuring': 'all',
 				'ignoreReadBeforeAssign': true
-			}]
+			}],
+			'destructuring-merge/destructuring-merge': 'warn'
 		}
 	}
 ]
