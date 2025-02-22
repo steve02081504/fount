@@ -211,6 +211,7 @@ if [[ ($IN_TERMUX -eq 0 && -z "$(command -v deno)") || ($IN_TERMUX -eq 1 && ! -f
 	if [[ $IN_TERMUX -eq 1 ]]; then
 		echo "Installing Deno for Termux..."
 		# Termux 环境下的特殊处理
+		set -e
 		yes y | pkg upgrade -y
 		pkg install -y pacman patchelf which time ldd tree
 
@@ -223,6 +224,7 @@ if [[ ($IN_TERMUX -eq 0 && -z "$(command -v deno)") || ($IN_TERMUX -eq 1 && ! -f
 
 			pacman -Sy glibc-runner --assume-installed bash,patchelf,resolv-conf --noconfirm
 		fi
+		set +e
 
 		# Install Deno.js
 		curl -fsSL https://deno.land/install.sh | sh -s -- -y
@@ -246,6 +248,7 @@ if [[ ($IN_TERMUX -eq 0 && -z "$(command -v deno)") || ($IN_TERMUX -eq 1 && ! -f
 		GLIBC_RUNNER_PATH=$(which glibc-runner)
 		if ! "$GLIBC_RUNNER_PATH" "$DENO_BIN_PATH" -V &> /dev/null; then
 			echo "Error: Deno failed to execute with glibc-runner." >&2
+			rm -rf "$DENO_INSTALL"
 			exit 1  # 首次运行失败直接退出
 		fi
 
