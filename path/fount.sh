@@ -2,7 +2,7 @@
 
 install_package() {
 	if command -v pkg &> /dev/null; then
-		pkg install "$1"
+		pkg install -y "$1"
 	elif command -v apt-get &> /dev/null; then
 		if command -v sudo &> /dev/null; then
 			sudo apt-get update
@@ -90,7 +90,6 @@ patch_deno() {
 		echo "Error: Failed to patch Deno executable with patchelf." >&2
 		return 1
 	else
-		echo "Deno executable patched successfully."
 		# Create wrapper script (Termux)
 		mkdir -p ~/.deno/bin
 		cat > ~/.deno/bin/deno.glibc.sh << 'EOF'
@@ -106,7 +105,6 @@ cd "${_oldpwd}"
 LD_PRELOAD= exec "${_dir}/deno.orig" "${@}"
 EOF
 		chmod u+x ~/.deno/bin/deno.glibc.sh
-		echo "Deno wrapper script created."
 	fi
 	return 0
 }
@@ -116,23 +114,15 @@ if [[ $# -gt 0 && $1 = 'remove' ]]; then
 	echo "removing fount..."
 
 	# Remove fount from PATH in .profile
-	echo "removing fount from PATH in .profile..."
 	if [ -f "$HOME/.profile" ]; then
 		sed -i '/export PATH="\$PATH:'"$FOUNT_DIR/path"'"/d' "$HOME/.profile"
-		echo "fount removed from PATH in .profile."
-	else
-		echo ".profile not found, skipping PATH removal from .profile."
 	fi
 
 	# Remove fount from current PATH
-	echo "removing fount from current PATH..."
 	export PATH=$(echo "$PATH" | tr ':' '\n' | grep -v "$FOUNT_DIR/path" | tr '\n' ':')
-	echo "fount removed from current PATH."
 
 	# Remove fount installation directory
-	echo "removing fount installation directory..."
 	rm -rf "$FOUNT_DIR"
-	echo "fount installation directory removed."
 
 	echo "fount uninstallation complete."
 	exit 0
@@ -142,12 +132,8 @@ if ! command -v fount.sh &> /dev/null; then
 	if [ -f "$HOME/.profile" ]; then
 		if ! grep -q "export PATH=\"\$PATH:$FOUNT_DIR/path\"" "$HOME/.profile"; then
 			echo "export PATH=\"\$PATH:$FOUNT_DIR/path\"" >> "$HOME/.profile"
-			echo "fount added to PATH in .profile."
-		else
-			echo "fount already in PATH in .profile."
 		fi
 	else
-		echo ".profile not found, creating and adding fount to PATH in .profile."
 		echo "export PATH=\"\$PATH:$FOUNT_DIR/path\"" >> "$HOME/.profile"
 	fi
 	export PATH="$PATH:$FOUNT_DIR/path"
@@ -218,45 +204,35 @@ if command -v git &> /dev/null; then
 		fi
 	fi
 else
-	echo "Git is not installed, skipping git pull"
+	echo "Git is not installed, skipping fount update"
 fi
 
 if [[ ($IN_TERMUX -eq 0 && -z "$(command -v deno)") || ($IN_TERMUX -eq 1 && ! -f ~/.deno/bin/deno.glibc.sh) ]]; then
 	if [[ $IN_TERMUX -eq 1 ]]; then
-		echo "Termux environment detected, installing Deno for Termux..."
+		echo "Installing Deno for Termux..."
 		# Termux 环境下的特殊处理
+		set -e
+		yes y | pkg upgrade -y
 		pkg install -y pacman patchelf which time ldd tree
-
-		# 初始化和更新 pacman
-		pacman-key --init
-		pacman-key --populate
-		pacman -Syu --noconfirm
 
 		# 安装 glibc-runner, bash, patchelf, resolv-conf - 检查是否已安装 glibc-runner
 		if ! command -v glibc-runner &> /dev/null; then
-			echo "glibc-runner not found, installing..."
+			# 初始化和更新 pacman
+			pacman-key --init
+			pacman-key --populate
+			pacman -Syu --noconfirm
+
 			pacman -Sy glibc-runner --assume-installed bash,patchelf,resolv-conf --noconfirm
-		else
-			echo "glibc-runner already installed, skipping reinstallation."
 		fi
+		set +e
 
 		# Install Deno.js
 		curl -fsSL https://deno.land/install.sh | sh -s -- -y
 		DENO_INSTALL="${HOME}/.deno"
 		DENO_BIN_PATH="${DENO_INSTALL}/bin/deno"
 
-		# Check permissions *before* chmod
-		echo "Permissions before chmod:"
-		ls -l "$DENO_BIN_PATH" || echo "ls -l failed (file might not exist yet)"
-
 		# Explicitly set execute permissions
 		chmod +x "$DENO_BIN_PATH"
-		echo "chmod +x '$DENO_BIN_PATH' executed."
-
-		# Check permissions *after* chmod
-		echo "Permissions after chmod:"
-		ls -l "$DENO_BIN_PATH"
-
 
 		# Source bashrc and PATH setup  (提前 source)
 		export DENO_INSTALL="${HOME}/.deno"
@@ -265,39 +241,27 @@ if [[ ($IN_TERMUX -eq 0 && -z "$(command -v deno)") || ($IN_TERMUX -eq 1 && ! -f
 		# 将 Deno 添加到 .profile (如果尚不存在)  <--- 修改为 .profile
 		if ! grep -q "export PATH=.*${DENO_INSTALL}/bin" "$HOME/.profile"; then
 			echo "export PATH=\"\$PATH:${DENO_INSTALL}/bin\"" >> "$HOME/.profile"
-			echo "Added Deno to .profile."
 		fi
 		source "$HOME/.profile"
 
 		# 尝试使用 glibc-runner 运行 Deno，使用绝对路径(在source之后)
 		GLIBC_RUNNER_PATH=$(which glibc-runner)
-		if "$GLIBC_RUNNER_PATH" "$DENO_BIN_PATH" -V &> /dev/null; then
-			echo "Deno executed successfully with glibc-runner."
-		else
-		echo "Error: Deno failed to execute with glibc-runner." >&2
-		exit 1  # 首次运行失败直接退出
+		if ! "$GLIBC_RUNNER_PATH" "$DENO_BIN_PATH" -V &> /dev/null; then
+			echo "Error: Deno failed to execute with glibc-runner." >&2
+			rm -rf "$DENO_INSTALL"
+			exit 1  # 首次运行失败直接退出
 		fi
 
 		# Check 'command -v deno' again (after direct execution and PATH setup)
-		if command -v deno &> /dev/null; then
-			echo "Deno command found in PATH."
-			echo "Deno installed to $(which deno)"
-		else
+		if ! command -v deno &> /dev/null; then
 			echo "Warning: 'deno' command not found in PATH." >&2
 			# 不退出，因为后面可能通过 wrapper 运行
 		fi
 
-
-
 		# Patch Deno.js (Termux)
-		if patch_deno; then
-			# Create wrapper script moved to patch_deno
-			echo "Deno patched and wrapper created."
-		else
-			echo "Warning: Deno patching failed, fount might not work in Termux." >&2
-		fi
+		patch_deno
 
-		echo "Deno installed and configured for Termux."
+		echo "Deno installed for Termux."
 
 	else
 		# 非 Termux 环境下的普通安装
@@ -313,8 +277,6 @@ if [[ ($IN_TERMUX -eq 0 && -z "$(command -v deno)") || ($IN_TERMUX -eq 1 && ! -f
 	if ! command -v deno &> /dev/null; then
 		echo "Deno missing, you cant run fount without deno (final check)"
 		exit 1  # 最终检查，如果还是找不到，则退出
-	else
-		echo "Deno installation verified (final check)."
 	fi
 fi
 
@@ -332,7 +294,6 @@ else
 
 		# 检查是否需要重新 patch deno
 		if [[ "$deno_version_before" != "$deno_version_after" && $IN_TERMUX -eq 1 ]]; then
-			echo "Deno upgraded. Repatching..."
 			patch_deno
 		fi
 	fi
@@ -343,7 +304,11 @@ run_deno -V
 
 if [[ ! -d "$FOUNT_DIR/node_modules" || ($# -gt 0 && $1 = 'init') ]]; then
 	echo "Installing dependencies..."
-	run_deno install --reload --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs" || true
+	set +e
+	run_deno install --reload --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
+	# 不知为何部分环境下第一次跑铁定出错，先跑再说
+	run_deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" "shutdown"
+	set -e
 fi
 
 run() {
