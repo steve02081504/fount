@@ -114,7 +114,9 @@
 			"noFileSelectedDelete": "削除するファイルが選択されていません。",
 			"deleteFileFailed": "ファイルの削除に失敗しました: ${error}",
 			"invalidFileName": "ファイル名に以下の文字は使用できません： / \\ : * ? \" < > |",
-			"addFileFailed": "ファイルの追加に失敗しました: ${error}"
+			"addFileFailed": "ファイルの追加に失敗しました: ${error}",
+			"fetchConfigTemplateFailed": "構成テンプレートの取得に失敗しました",
+			"noGeneratorSelectedSave": "保存する前にジェネレーターを選択してください"
 		},
 		"confirm": {
 			"unsavedChanges": "保存されていない変更があります。変更を破棄しますか？",
@@ -123,6 +125,9 @@
 		},
 		"prompts": {
 			"newFileName": "新しいAIソースファイル名を入力してください (拡張子なし):"
+		},
+		"editor": {
+			"disabledIndicator": "最初にジェネレーターを選択してください"
 		}
 	},
 	"part_config": {

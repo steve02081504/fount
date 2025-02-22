@@ -19,4 +19,5 @@ export class AIsourceGeneretor {
 	Unload: () => Promise<void>
 	Uninstall: () => Promise<void>
 	GetSource: (config: any) => Promise<AIsource_t<any, any>>
+	GetConfigTemplate: () => Promise<any>
 }

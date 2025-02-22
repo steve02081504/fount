@@ -4,6 +4,13 @@ import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../s
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
 export default {
+	GetConfigTemplate: async () => {
+		return {
+			name: 'gemini-flash',
+			apikey: '',
+			model: 'gemini-2.0-flash'
+		}
+	},
 	GetSource: async (config) => {
 		config.system_prompt_at_depth ??= 10
 		const genAI = new GoogleGenerativeAI(config.apikey)

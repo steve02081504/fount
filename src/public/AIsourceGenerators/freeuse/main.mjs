@@ -2,6 +2,12 @@
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
 export default {
+	GetConfigTemplate: async () => {
+		return {
+			name: 'freeuse',
+			model: 'claude-3-5-sonnet',
+		}
+	},
 	GetSource: async (config) => {
 		/** @type {AIsource_t} */
 		const result = {

@@ -114,7 +114,9 @@
 			"noFileSelectedDelete": "삭제할 파일을 선택하지 않았습니다.",
 			"deleteFileFailed": "파일 삭제에 실패했습니다: ${error}",
 			"invalidFileName": "파일 이름에 다음 문자를 포함할 수 없습니다: / \\ : * ? \" < > |",
-			"addFileFailed": "파일 추가에 실패했습니다: ${error}"
+			"addFileFailed": "파일 추가에 실패했습니다: ${error}",
+			"fetchConfigTemplateFailed": "구성 템플릿을 가져오지 못했습니다",
+			"noGeneratorSelectedSave": "저장하기 전에 생성기를 선택해주세요"
 		},
 		"confirm": {
 			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까?",
@@ -123,6 +125,9 @@
 		},
 		"prompts": {
 			"newFileName": "새 AI 소스 파일 이름을 입력하세요 (확장자 없이):"
+		},
+		"editor": {
+			"disabledIndicator": "먼저 생성기를 선택해주세요"
 		}
 	},
 	"part_config": {

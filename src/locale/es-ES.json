@@ -114,7 +114,9 @@
 			"noFileSelectedDelete": "No se ha seleccionado ningún archivo para eliminar.",
 			"deleteFileFailed": "Error al eliminar el archivo: ${error}",
 			"invalidFileName": "El nombre del archivo no puede contener los siguientes caracteres: / \\ : * ? \" < > |",
-			"addFileFailed": "Error al añadir el archivo: ${error}"
+			"addFileFailed": "Error al añadir el archivo: ${error}",
+			"fetchConfigTemplateFailed": "Error al obtener la plantilla de configuración",
+			"noGeneratorSelectedSave": "Por favor, selecciona un generador antes de guardar"
 		},
 		"confirm": {
 			"unsavedChanges": "Tienes cambios sin guardar. ¿Quieres descartar los cambios?",
@@ -123,6 +125,9 @@
 		},
 		"prompts": {
 			"newFileName": "Por favor, introduce un nuevo nombre de archivo fuente de IA (sin extensión):"
+		},
+		"editor": {
+			"disabledIndicator": "Por favor, selecciona un generador primero"
 		}
 	},
 	"part_config": {

@@ -25,7 +25,7 @@
 		</div>
 
 		<!-- 编辑区域 -->
-		<div class="w-full md:w-3/4 mb-4">
+		<div class="w-full md:w-3/4 mb-4 relative">
 			<h2 class="text-xl font-semibold m-2" data-i18n="aisource_editor.configTitle"></h2>
 			<!-- 生成器选择 -->
 			<div class="mb-4">
@@ -37,7 +37,11 @@
 				</select>
 			</div>
 			<!-- JSON 编辑器容器 -->
-			<div id="jsonEditor" class="jsoneditor-container" style="height: 400px; overflow: auto"></div>
+			<div id="jsonEditor" class="jsoneditor-container relative" style="height: 400px; overflow: auto">
+				<div id="disabledIndicator" class="absolute inset-0 z-10 bg-base-200 opacity-80 flex justify-center items-center rounded-lg hidden">
+					<span class="text-lg text-error" data-i18n="aisource_editor.editor.disabledIndicator"></span>
+				</div>
+			</div>
 
 			<div class="mt-4 flex justify-end">
 				<button id="saveButton" class="btn btn-primary mr-2" data-i18n="aisource_editor.buttons.save"></button>

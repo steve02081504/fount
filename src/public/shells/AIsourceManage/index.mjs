@@ -1,8 +1,9 @@
 import { createJsonEditor } from '../../scripts/jsoneditor.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
-import { initTranslations, geti18n } from '../../scripts/i18n.mjs' // 引入 i18n 函数
+import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
 
 const jsonEditorContainer = document.getElementById('jsonEditor')
+const disabledIndicator = document.getElementById('disabledIndicator') // 获取遮罩层元素
 if (applyTheme()) jsonEditorContainer.classList.add('jse-theme-dark')
 
 const fileListDiv = document.getElementById('fileList')
@@ -27,7 +28,7 @@ async function fetchFileList() {
 		renderFileList()
 	} catch (error) {
 		console.error('Failed to fetch file list:', error)
-		alert(geti18n('aisource_editor.alerts.fetchFileListFailed', { error: error.message })) // 使用 geti18n
+		alert(geti18n('aisource_editor.alerts.fetchFileListFailed', { error: error.message }))
 	}
 }
 
@@ -41,7 +42,7 @@ async function fetchGeneratorList() {
 		renderGeneratorSelect()
 	} catch (error) {
 		console.error('Failed to fetch generator list:', error)
-		alert(geti18n('aisource_editor.alerts.fetchGeneratorListFailed', { error: error.message })) // 使用 geti18n
+		alert(geti18n('aisource_editor.alerts.fetchGeneratorListFailed', { error: error.message }))
 	}
 }
 
@@ -74,15 +75,51 @@ function renderGeneratorSelect() {
 	})
 }
 
+async function fetchConfigTemplate(generatorName) {
+	if (!generatorName) return null
+	try {
+		const response = await fetch('/api/shells/AIsourceManage/getConfigTemplate', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ generator: generatorName }),
+		})
+		if (!response.ok) {
+			const message = await response.text()
+			throw new Error(`HTTP error! status: ${response.status}, message: ${message}`)
+		}
+		return await response.json()
+	} catch (error) {
+		console.error('Failed to fetch config template:', error)
+		alert(geti18n('aisource_editor.alerts.fetchConfigTemplateFailed', { error: error.message }))
+		return null // 允许用户继续编辑
+	}
+}
+
+function disableEditor() {
+	if (jsonEditor) {
+		jsonEditor.set({ json: {} }) // 清空编辑器内容
+		jsonEditor.updateProps({ readOnly: true })
+	}
+	disabledIndicator.classList.remove('hidden') // 显示遮罩
+}
+
+function enableEditor() {
+	if (jsonEditor)
+		jsonEditor.updateProps({ readOnly: false })
+
+	disabledIndicator.classList.add('hidden') // 隐藏遮罩
+}
+
+
 async function loadEditor(fileName) {
 	if (!fileName) return
 
 	// 如果有未保存的更改，提示用户
 	if (isDirty)
-		if (!confirm(geti18n('aisource_editor.confirm.unsavedChanges'))) // 使用 geti18n
+		if (!confirm(geti18n('aisource_editor.confirm.unsavedChanges')))
 			return
-
-
 
 	// 更新高亮
 	document.querySelectorAll('.file-list-item').forEach(item => {
@@ -108,7 +145,7 @@ async function loadEditor(fileName) {
 			throw new Error(`HTTP error! status: ${response.status}`)
 
 		const data = await response.json()
-		generatorSelect.value = data.generator || ''
+		generatorSelect.value = data.generator
 
 		if (!jsonEditor)
 			jsonEditor = createJsonEditor(jsonEditorContainer, {
@@ -118,17 +155,30 @@ async function loadEditor(fileName) {
 				onSave: saveFile
 			})
 
-		jsonEditor.set({ json: data.config })
+		if (!generatorSelect.value) {
+			disableEditor()
+			jsonEditor.set({ json: {} })
+		}
+		else {
+			enableEditor()
+			const template = await fetchConfigTemplate(generatorSelect.value)
+			jsonEditor.set({ json: data.config || template || {} })
+		}
+
 		isDirty = false // 重置未保存标记
 	} catch (error) {
 		console.error('Failed to fetch file data:', error)
-		alert(geti18n('aisource_editor.alerts.fetchFileDataFailed', { error: error.message })) // 使用 geti18n
+		alert(geti18n('aisource_editor.alerts.fetchFileDataFailed', { error: error.message }))
 	}
 }
 
 async function saveFile() {
 	if (!activeFile) {
-		alert(geti18n('aisource_editor.alerts.noFileSelectedSave')) // 使用 geti18n
+		alert(geti18n('aisource_editor.alerts.noFileSelectedSave'))
+		return
+	}
+	if (!generatorSelect.value) {
+		alert(geti18n('aisource_editor.alerts.noGeneratorSelectedSave'))
 		return
 	}
 	const config = jsonEditor.get().json || JSON.parse(jsonEditor.get().text)
@@ -154,16 +204,16 @@ async function saveFile() {
 		isDirty = false // 重置未保存标记
 	} catch (error) {
 		console.error('Failed to save file:', error)
-		alert(geti18n('aisource_editor.alerts.saveFileFailed', { error: error.message })) // 使用 geti18n
+		alert(geti18n('aisource_editor.alerts.saveFileFailed', { error: error.message }))
 	}
 }
 
 async function deleteFile() {
 	if (!activeFile) {
-		alert(geti18n('aisource_editor.alerts.noFileSelectedDelete')) // 使用 geti18n
+		alert(geti18n('aisource_editor.alerts.noFileSelectedDelete'))
 		return
 	}
-	if (!confirm(geti18n('aisource_editor.confirm.deleteFile'))) // 使用 geti18n
+	if (!confirm(geti18n('aisource_editor.confirm.deleteFile')))
 		return
 
 	try {
@@ -182,7 +232,7 @@ async function deleteFile() {
 		activeFile = null
 		await fetchFileList()
 		if (fileList.length > 0)
-			loadEditor(activeFile = fileList[0])
+			loadEditor(fileList[0])
 		else if (jsonEditor) {
 			jsonEditor.destroy()
 			jsonEditor = null
@@ -190,17 +240,17 @@ async function deleteFile() {
 
 	} catch (error) {
 		console.error('Failed to delete file:', error)
-		alert(geti18n('aisource_editor.alerts.deleteFileFailed', { error: error.message })) // 使用 geti18n
+		alert(geti18n('aisource_editor.alerts.deleteFileFailed', { error: error.message }))
 	}
 }
 
 async function addFile() {
-	const newFileName = prompt(geti18n('aisource_editor.prompts.newFileName')) // 使用 geti18n
+	const newFileName = prompt(geti18n('aisource_editor.prompts.newFileName'))
 	if (!newFileName) return
 
 	// 验证文件名是否有效
 	if (!isValidFileName(newFileName)) {
-		alert(geti18n('aisource_editor.alerts.invalidFileName')) // 使用 geti18n
+		alert(geti18n('aisource_editor.alerts.invalidFileName'))
 		return
 	}
 
@@ -215,11 +265,12 @@ async function addFile() {
 		if (!response.ok)
 			throw new Error(`HTTP error! status: ${response.status}`)
 		await fetchFileList()
+
+		await loadEditor(newFileName)
 		console.log('File add successfully.')
-		loadEditor(newFileName)
 	} catch (error) {
 		console.error('Failed to add file:', error)
-		alert(geti18n('aisource_editor.alerts.addFileFailed', { error: error.message })) // 使用 geti18n
+		alert(geti18n('aisource_editor.alerts.addFileFailed', { error: error.message }))
 	}
 }
 
@@ -231,16 +282,31 @@ function isValidFileName(fileName) {
 // 初始化
 fetchFileList()
 fetchGeneratorList()
-initTranslations('aisource_editor') // 初始化 i18n，指定 pageid 为 'aisource_editor'
+initTranslations('aisource_editor')
+disableEditor() // 初始禁用编辑器
 
 saveButton.addEventListener('click', saveFile)
 deleteButton.addEventListener('click', deleteFile)
 addFileButton.addEventListener('click', addFile)
 
+generatorSelect.addEventListener('change', async () => {
+	const selectedGenerator = generatorSelect.value
+	if (selectedGenerator) {
+		enableEditor()
+		const template = await fetchConfigTemplate(selectedGenerator)
+		if (template && jsonEditor)
+			jsonEditor.set({ json: template })
+	}
+	else {
+		disableEditor()
+		jsonEditor.set({ json: {} })
+	}
+})
+
 // 离开页面时提醒
 window.addEventListener('beforeunload', (event) => {
 	if (isDirty) {
 		event.preventDefault()
-		event.returnValue = geti18n('aisource_editor.confirm.unsavedChangesBeforeUnload') // 使用 geti18n
+		event.returnValue = geti18n('aisource_editor.confirm.unsavedChangesBeforeUnload')
 	}
 })

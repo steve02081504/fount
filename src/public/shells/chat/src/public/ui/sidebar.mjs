@@ -73,7 +73,7 @@ async function updateSelectList(selectElement, currentName, listGetter, detailsR
 	added.forEach(name => {
 		const option = document.createElement('option')
 		option.value = name || ''
-		option.text = name || geti18n('chat.sidebar.noSelection') // i18n
+		option.text = name || geti18n('chat.sidebar.noSelection')
 		selectElement.add(option)
 	})
 
@@ -260,7 +260,7 @@ function addCardEventListeners(card, data) {
  * @param {string} markdown 描述的markdown内容
  */
 async function displayItemDescription(markdown) {
-	itemDescription.innerHTML = await renderMarkdown(markdown) || geti18n('chat.sidebar.noDescription') // i18n
+	itemDescription.innerHTML = await renderMarkdown(markdown) || geti18n('chat.sidebar.noDescription')
 }
 
 /**

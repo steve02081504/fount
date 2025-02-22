@@ -114,7 +114,9 @@
 			"noFileSelectedDelete": "没有选择要删除的文件。",
 			"deleteFileFailed": "删除文件失败: ${error}",
 			"invalidFileName": "文件名不能包含以下字符： / \\ : * ? \" < > |",
-			"addFileFailed": "添加文件失败: ${error}"
+			"addFileFailed": "添加文件失败: ${error}",
+			"fetchConfigTemplateFailed": "获取配置模板失败",
+			"noGeneratorSelectedSave": "请选择生成器后再保存"
 		},
 		"confirm": {
 			"unsavedChanges": "您有未保存的更改。是否要放弃更改？",
@@ -123,6 +125,9 @@
 		},
 		"prompts": {
 			"newFileName": "请输入新的 AI 来源文件名 (请勿包含后缀名):"
+		},
+		"editor": {
+			"disabledIndicator": "请先选择生成器"
 		}
 	},
 	"part_config": {
