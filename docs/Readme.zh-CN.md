@@ -12,7 +12,7 @@
 
 ## 安装
 
-### Linux/macOS
+### Linux/macOS/Android
 
 ```bash
 # 若需要，定义环境变量$FOUNT_DIR来指定fount目录
