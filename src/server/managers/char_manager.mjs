@@ -38,7 +38,7 @@ export async function UnloadChar(username, charname, reason) {
 }
 
 export async function initChar(username, charname) {
-	const state = loadCharData(username, charname).state
+	const { state } = loadCharData(username, charname)
 	await initPart(username, 'chars', charname, {
 		username,
 		charname,

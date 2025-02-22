@@ -24,7 +24,7 @@ app.use(FinalRouter)
 export const __dirname = path.resolve(import.meta.dirname + '/../../')
 
 mainRouter.use((req, res, next) => {
-	if (!(req.url.includes('/heartbeat/') || req.url.endsWith('/heartbeat')))
+	if (!(req.path.endsWith('/heartbeat')))
 		console.log(`Request received: ${req.method}\t${req.url}`)
 	next()
 })

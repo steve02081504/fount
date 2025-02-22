@@ -56,7 +56,7 @@ export function setEndpoints(router) {
 	})
 
 	router.post('/api/shells/chat/adduserreply', authenticate, async (req, res) => {
-		const reply = req.body.reply
+		const { reply } = req.body
 		reply.files = reply?.files?.map((file) => ({
 			...file,
 			buffer: Buffer.from(file.buffer, 'base64')
@@ -86,33 +86,40 @@ export function setEndpoints(router) {
 		res.status(200).json(entry)
 	})
 
-	router.post('/api/shells/chat/getcharlist', authenticate, async (req, res) => {
-		res.status(200).json(await getCharListOfChat(req.body.chatid))
+	router.get('/api/shells/chat/getcharlist', authenticate, async (req, res) => {
+		const { chatid } = req.query
+		res.status(200).json(await getCharListOfChat(chatid))
 	})
 
-	router.post('/api/shells/chat/getchatlog', authenticate, async (req, res) => {
-		const { chatid, start, end } = req.body
-		res.status(200).json(await GetChatLog(chatid, start, end))
+	router.get('/api/shells/chat/getchatlog', authenticate, async (req, res) => {
+		const { chatid, start, end } = req.query
+		const startNum = parseInt(start, 10)
+		const endNum = parseInt(end, 10)
+		res.status(200).json(await GetChatLog(chatid, startNum, endNum))
 	})
 
-	router.post('/api/shells/chat/heartbeat', authenticate, async (req, res) => {
-		const { chatid, start } = req.body
-		res.status(200).json(await getHeartbeatData(chatid, start))
+	router.get('/api/shells/chat/heartbeat', authenticate, async (req, res) => {
+		const { chatid, start } = req.query
+		const startNum = parseInt(start, 10)
+		res.status(200).json(await getHeartbeatData(chatid, startNum))
 	})
 
-	router.post('/api/shells/chat/getchatloglength', authenticate, async (req, res) => {
-		const { chatid } = req.body
+	router.get('/api/shells/chat/getchatloglength', authenticate, async (req, res) => {
+		const { chatid } = req.query
 		res.status(200).json(await GetChatLogLength(chatid))
 	})
 
-	router.post('/api/shells/chat/getpersonaname', async (req, res) => {
-		res.status(200).json(await GetUserPersonaName(req.body.chatid))
+	router.get('/api/shells/chat/getpersonaname', async (req, res) => {
+		const { chatid } = req.query
+		res.status(200).json(await GetUserPersonaName(chatid))
 	})
 
-	router.post('/api/shells/chat/getworldname', async (req, res) => {
-		res.status(200).json(await GetWorldName(req.body.chatid))
+	router.get('/api/shells/chat/getworldname', async (req, res) => {
+		const { chatid } = req.query
+		res.status(200).json(await GetWorldName(chatid))
 	})
-	router.post('/api/shells/chat/list', authenticate, async (req, res) => {
+
+	router.get('/api/shells/chat/getchatlist', authenticate, async (req, res) => {
 		res.status(200).json(await getChatList((await getUserByToken(req.cookies.accessToken)).username))
 	})
 

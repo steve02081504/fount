@@ -51,8 +51,8 @@ export default {
 			const errors = []
 			let retryConfigs = [
 				{}, // 第一次尝试，使用原始配置
-				{ urlSuffix: '/v1/chat/completions'},
-				{ urlSuffix: '/chat/completions'},
+				{ urlSuffix: '/v1/chat/completions' },
+				{ urlSuffix: '/chat/completions' },
 				{ modelArguments: {} },
 				{ urlSuffix: '/v1/chat/completions', modelArguments: {} },
 				{ urlSuffix: '/chat/completions', modelArguments: {} },

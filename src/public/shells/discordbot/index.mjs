@@ -41,11 +41,7 @@ async function charListGet() {
 }
 
 async function botConfigGet(botname) {
-	return await fetchData('/api/shells/discordbot/getbotconfig', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ botname }),
-	})
+	return await fetchData(`/api/shells/discordbot/getbotconfig?botname=${botname}`)
 }
 
 async function botConfigSet(botname, config) {
@@ -156,7 +152,7 @@ async function handleNewBot() {
 	if (!botname) return
 
 	if (botList.includes(botname)) {
-		alert(geti18n('discord_bots.alerts.botExists', { botname: botname }))
+		alert(geti18n('discord_bots.alerts.botExists', { botname }))
 		return
 	}
 

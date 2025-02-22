@@ -40,7 +40,7 @@ export async function handleFilesSelect(event, selectedFiles, attachmentPreviewC
  * @param {HTMLElement} attachmentPreviewContainer - 附件预览区域的 DOM 元素，用于显示新添加的附件。
  */
 export async function handlePaste(event, selectedFiles, attachmentPreviewContainer) {
-	const items = (event.clipboardData || window.clipboardData).items
+	const { items } = event.clipboardData || window.clipboardData
 	for (const item of items)
 		if (item.type.indexOf('image') === 0) {
 			const blob = item.getAsFile()

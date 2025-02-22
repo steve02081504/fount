@@ -160,7 +160,7 @@ async function downloadGithubCharacter(id) {
 
 
 	const json = await result.json()
-	const assets = json.assets
+	const { assets } = json
 	const contentTypes = ['image/png', 'image/jpeg', 'image/apng', 'application/json']
 
 	for (const type of contentTypes) {

@@ -152,13 +152,9 @@ export async function editMessage(index, content) {
 }
 
 export async function getCharList() {
-	const response = await fetch('/api/shells/chat/getcharlist', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({ chatid: currentChatId }),
-	})
+	const response = await fetch(`/api/shells/chat/getcharlist?${new URLSearchParams({
+		chatid: currentChatId,
+	})}`)
 
 	if (!response.ok)
 		throw new Error(`API request failed with status ${response.status}`)
@@ -167,13 +163,11 @@ export async function getCharList() {
 }
 
 export async function getChatLog(start, end) {
-	const response = await fetch('/api/shells/chat/getchatlog', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({ chatid: currentChatId, start, end }),
-	})
+	const response = await fetch(`/api/shells/chat/getchatlog?${new URLSearchParams({
+		chatid: currentChatId,
+		start,
+		end
+	})}`)
 
 	if (!response.ok)
 		throw new Error(`API request failed with status ${response.status}`)
@@ -185,13 +179,10 @@ export async function getChatLog(start, end) {
  * @returns {Promise<{ charlist: string[], worldname: string, personaname: string, Messages: any[] }>}
  */
 export async function triggerHeartbeat(start) {
-	const response = await fetch('/api/shells/chat/heartbeat', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({ chatid: currentChatId, start }),
-	})
+	const response = await fetch(`/api/shells/chat/heartbeat?${new URLSearchParams({
+		chatid: currentChatId,
+		start
+	})}`)
 
 	if (!response.ok)
 		throw new Error(`API request failed with status ${response.status}`)
@@ -200,13 +191,9 @@ export async function triggerHeartbeat(start) {
 }
 
 export async function getChatLogLength() {
-	const response = await fetch('/api/shells/chat/getchatloglength', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({ chatid: currentChatId }),
-	})
+	const response = await fetch(`/api/shells/chat/getchatloglength?${new URLSearchParams({
+		chatid: currentChatId,
+	})}`)
 
 	if (!response.ok)
 		throw new Error(`API request failed with status ${response.status}`)
@@ -215,13 +202,9 @@ export async function getChatLogLength() {
 }
 
 export async function getPersonaName() {
-	const response = await fetch('/api/shells/chat/getpersonaname', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({ chatid: currentChatId }),
-	})
+	const response = await fetch(`/api/shells/chat/getpersonaname?${new URLSearchParams({
+		chatid: currentChatId,
+	})}`)
 
 	if (!response.ok)
 		throw new Error(`API request failed with status ${response.status}`)
@@ -230,13 +213,9 @@ export async function getPersonaName() {
 }
 
 export async function getWorldName() {
-	const response = await fetch('/api/shells/chat/getworldname', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({ chatid: currentChatId }),
-	})
+	const response = await fetch(`/api/shells/chat/getworldname?${new URLSearchParams({
+		chatid: currentChatId,
+	})}`)
 
 	if (!response.ok)
 		throw new Error(`API request failed with status ${response.status}`)
