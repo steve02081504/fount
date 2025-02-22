@@ -12,7 +12,7 @@
 
 ## 설치
 
-### Linux/macOS
+### Linux/macOS/Android
 
 ```bash
 # 필요한 경우 환경 변수 $FOUNT_DIR을 정의하여 fount 디렉토리를 지정하십시오.

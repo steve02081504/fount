@@ -12,7 +12,7 @@ Venha [aqui![Discord](https://img.shields.io/discord/1288934771153440768)](https
 
 ## Instalação
 
-### Linux/macOS
+### Linux/macOS/Android
 
 ```bash
 # Se necessário, defina a variável de ambiente $FOUNT_DIR para especificar o diretório fount

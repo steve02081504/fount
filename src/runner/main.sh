@@ -9,6 +9,58 @@ if [[ "$OSTYPE" == "msys" ]]; then
 	exit $?
 fi
 
+install_package() {
+	if command -v pkg &> /dev/null; then
+		pkg install -y "$1"
+	elif command -v apt-get &> /dev/null; then
+		if command -v sudo &> /dev/null; then
+			sudo apt-get update
+			sudo apt-get install -y "$1"
+		else
+			apt-get update
+			apt-get install -y "$1"
+		fi
+	elif command -v brew &> /dev/null; then
+		brew install "$1"
+	elif command -v pacman &> /dev/null; then
+		if command -v sudo &> /dev/null; then
+			sudo pacman -Syy
+			sudo pacman -S --needed --noconfirm "$1"
+		else
+			pacman -Syy
+			pacman -S --needed --noconfirm "$1"
+		fi
+	elif command -v dnf &> /dev/null; then
+		if command -v sudo &> /dev/null; then
+			sudo dnf install -y "$1"
+		else
+			dnf install -y "$1"
+		fi
+	elif command -v zypper &> /dev/null; then
+		if command -v sudo &> /dev/null; then
+			sudo zypper install -y --no-confirm "$1"
+		else
+			zypper install -y --no-confirm "$1"
+		fi
+	elif command -v apk &> /dev/null; then
+		apk add --update "$1"
+	else
+		echo "无法安装 $1"
+		exit 1
+	fi
+}
+
+# 检查依赖
+if ! command -v git &> /dev/null; then
+	install_package git
+fi
+if ! command -v unzip &> /dev/null; then
+	install_package unzip
+fi
+if ! command -v wget &> /dev/null; then
+	install_package wget
+fi
+
 # 若未定义，则默认 fount 安装目录
 FOUNT_DIR="${FOUNT_DIR:-"$HOME/.local/share/fount"}"
 

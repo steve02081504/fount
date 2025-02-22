@@ -12,7 +12,7 @@ Ven [aquí ![Discord](https://img.shields.io/discord/1288934771153440768)](https
 
 ## Instalación
 
-### Linux/macOS
+### Linux/macOS/Android
 
 ```bash
 # Si es necesario, define la variable de entorno $FOUNT_DIR para especificar el directorio de fount

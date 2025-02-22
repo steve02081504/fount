@@ -12,7 +12,7 @@ Kommen Sie [hierher![Discord](https://img.shields.io/discord/1288934771153440768
 
 ## Installation
 
-### Linux/macOS
+### Linux/macOS/Android
 
 ```bash
 # Bei Bedarf definieren Sie die Umgebungsvariable $FOUNT_DIR, um das fount-Verzeichnis anzugeben
