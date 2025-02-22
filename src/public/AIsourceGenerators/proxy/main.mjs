@@ -4,7 +4,7 @@ import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../s
 
 export default {
 	GetSource: async (config) => {
-		async function callBase(messages) {
+		async function callBase(messages, config) {
 			let text
 			while (!text) {
 				const result = await fetch(config.url, {
@@ -19,7 +19,6 @@ export default {
 						stream: false,
 						...config.model_arguments || {
 							temperature: 1,
-							max_tokens: 800,
 							n: 1
 						},
 					})
@@ -39,6 +38,45 @@ export default {
 				}
 			}
 			return text
+		}
+		async function callBaseEx(messages) {
+			const errors = []
+			let retryConfigs = [
+				{}, // 第一次尝试，使用原始配置
+				{ urlSuffix: '/v1/chat/completions'},
+				{ urlSuffix: '/chat/completions'},
+				{ modelArguments: {} },
+				{ urlSuffix: '/v1/chat/completions', modelArguments: {} },
+				{ urlSuffix: '/chat/completions', modelArguments: {} },
+			]
+			if (config.url.endsWith('/chat/completions'))
+				retryConfigs = retryConfigs.filter((config) => !config?.urlSuffix?.endsWith?.('/chat/completions'))
+
+			for (const retryConfig of retryConfigs) {
+				const currentConfig = { ...config } // 复制配置，避免修改原始配置
+				if (retryConfig.urlSuffix)
+					currentConfig.url += retryConfig.urlSuffix
+
+				if (retryConfig.modelArguments)
+					currentConfig.model_arguments = retryConfig.modelArguments
+
+				try {
+					const result = await callBase(messages, currentConfig)
+
+					if (retryConfig.urlSuffix)
+						console.warn(`the api url of ${config.model} need to change from ${config.url} to ${currentConfig.url}`)
+
+					if (retryConfig.modelArguments)
+						console.warn(`the api arguments of ${config.model} need to set to {}`)
+
+					config = currentConfig
+
+					return result
+				} catch (error) {
+					errors.push(error)
+				}
+			}
+			throw errors.length == 1 ? errors[0] : errors
 		}
 		/** @type {AIsource_t} */
 		const result = {
@@ -61,7 +99,7 @@ export default {
 
 			Unload: () => { },
 			Call: async (prompt) => {
-				return await callBase([
+				return await callBaseEx([
 					{
 						role: 'system',
 						content: prompt
@@ -98,7 +136,7 @@ export default {
 						})
 				}
 
-				let text = await callBase(messages)
+				let text = await callBaseEx(messages)
 
 				{
 					text = text.split('\n')

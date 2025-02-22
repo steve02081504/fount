@@ -26,14 +26,13 @@ if (args.length) {
 			process.exit(1)
 		}
 	}
-	else if (command === 'shutdown') {
+	else if (command === 'shutdown')
 		try {
 			await IPCManager.sendCommand('shutdown')
 		} catch (err) {
 			console.error('发送命令失败：', err)
 			process.exit(1)
 		}
-	}
 	else {
 		console.error('Invalid command. Use "fount runshell <username> <shellname> <args>".')
 		process.exit(1)

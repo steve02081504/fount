@@ -366,6 +366,6 @@ startStopBotButton.addEventListener('click', handleStartStopBot)
 window.addEventListener('beforeunload', (event) => {
 	if (isDirty) {
 		event.preventDefault()
-		event.returnValue = geti18n('discord_bots.alerts.beforeUnload'); // i18n
+		event.returnValue = geti18n('discord_bots.alerts.beforeUnload') // i18n
 	}
 })

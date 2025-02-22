@@ -1,7 +1,7 @@
 import { createJSONEditor as base } from 'https://cdn.jsdelivr.net/npm/vanilla-jsoneditor@2/standalone.js'
 
 export function createJsonEditor(jsonEditorContainer, options) {
-	let result = base({
+	const result = base({
 		target: jsonEditorContainer,
 		props: {
 			mode: 'code',

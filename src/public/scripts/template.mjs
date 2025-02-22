@@ -1,5 +1,5 @@
-import { geti18n, i18nElement } from "./i18n.mjs"
-geti18n;
+import { geti18n, i18nElement } from './i18n.mjs'
+geti18n
 
 const template_cache = {}
 

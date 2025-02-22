@@ -2,7 +2,7 @@ import notifier from 'npm:node-notifier'
 import path from 'node:path'
 import process from 'node:process'
 import { __dirname } from '../server/server.mjs'
-import { in_docker, in_termux } from "./env.mjs";
+import { in_docker, in_termux } from './env.mjs'
 
 export async function notify(title, message, options = {}) {
 	if (process.platform === 'win32') return // https://github.com/mikaelbr/node-notifier/issues/454
