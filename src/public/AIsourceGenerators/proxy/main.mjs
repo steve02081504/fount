@@ -3,6 +3,14 @@ import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../s
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
 export default {
+	GetConfigTemplate: async () => {
+		return {
+			name: 'openai-proxy',
+			url: 'https://api.openai.com/v1/chat/completions',
+			model: 'gpt-3.5-turbo',
+			apikey: '',
+		}
+	},
 	GetSource: async (config) => {
 		async function callBase(messages, config) {
 			let text

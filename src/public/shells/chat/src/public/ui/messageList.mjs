@@ -9,7 +9,7 @@ import { handleFilesSelect, renderAttachmentPreview } from '../fileHandling.mjs'
 import { processTimeStampForId, SWIPE_THRESHOLD, DEFAULT_AVATAR } from '../utils.mjs'
 import { appendMessageToQueue, getQueueIndex, replaceMessageInQueue, getMessageIndexByIndex, deleteMessageInQueue, getMessageElementByMessageIndex } from './virtualQueue.mjs'
 import { addDragAndDropSupport } from './dragAndDrop.mjs'
-import { geti18n, i18nElement } from '../../../../../scripts/i18n.mjs' // Import i18n functions
+import { geti18n, i18nElement } from '../../../../../scripts/i18n.mjs'
 
 export async function renderMessage(message) {
 	const preprocessedMessage = {
@@ -27,7 +27,7 @@ export async function renderMessage(message) {
 	messageElement
 		.querySelector('.delete-button')
 		.addEventListener('click', async () => {
-			if (confirm(geti18n('chat.messageList.confirmDeleteMessage'))) { // i18n
+			if (confirm(geti18n('chat.messageList.confirmDeleteMessage'))) {
 				const index = getQueueIndex(messageElement)
 				if (index === -1) return
 				const messageIndex = await getMessageIndexByIndex(index)

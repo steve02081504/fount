@@ -5,6 +5,12 @@ import { BlackboxAI } from './blackbox.mjs'
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
 export default {
+	GetConfigTemplate: async () => {
+		return {
+			name: 'Blackbox',
+			model: 'claude-3-5-sonnet',
+		}
+	},
 	GetSource: async (config) => {
 		const blackbox = new BlackboxAI(config)
 		/** @type {AIsource_t} */

@@ -2,7 +2,7 @@ import { createJsonEditor } from '../../scripts/jsoneditor.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 import { getPartTypes, getParts, getPartDetails, saveConfigData, getConfigData } from './src/public/endpoints.mjs' // 导入 API 模块
 import { showErrorMessage } from './src/public/error.mjs'
-import { initTranslations, geti18n } from '../../scripts/i18n.mjs' // Import i18n functions
+import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
 
 const jsonEditorContainer = document.getElementById('jsonEditor')
 if (applyTheme()) jsonEditorContainer.classList.add('jse-theme-dark')
@@ -39,7 +39,7 @@ async function fetchPartTypes() {
 		renderPartTypeSelect()
 	} catch (err) {
 		console.error('Failed to fetch part types:', err)
-		showErrorMessage(geti18n('part_config.alerts.fetchPartTypesFailed') + ': ' + err.message) // i18n
+		showErrorMessage(geti18n('part_config.alerts.fetchPartTypesFailed') + ': ' + err.message)
 	}
 }
 
@@ -51,7 +51,7 @@ function renderPartTypeSelect() {
 	const defaultOption = document.createElement('option')
 	defaultOption.disabled = true
 	defaultOption.selected = true
-	defaultOption.textContent = geti18n('part_config.placeholders.partTypeSelect') // i18n
+	defaultOption.textContent = geti18n('part_config.placeholders.partTypeSelect')
 	fragment.appendChild(defaultOption)
 
 	partTypes.forEach(partType => {
@@ -75,7 +75,7 @@ async function fetchParts(partType) {
 		renderPartSelect()
 	} catch (err) {
 		console.error('Failed to fetch parts:', err)
-		showErrorMessage(geti18n('part_config.alerts.fetchPartsFailed') + ': ' + err.message) // i18n
+		showErrorMessage(geti18n('part_config.alerts.fetchPartsFailed') + ': ' + err.message)
 	}
 }
 
@@ -87,7 +87,7 @@ function renderPartSelect() {
 	const defaultOption = document.createElement('option')
 	defaultOption.disabled = true
 	defaultOption.selected = true
-	defaultOption.textContent = geti18n('part_config.placeholders.partSelect') // i18n
+	defaultOption.textContent = geti18n('part_config.placeholders.partSelect')
 	fragment.appendChild(defaultOption)
 
 	parts.forEach(partName => {
@@ -109,7 +109,7 @@ function renderPartSelect() {
  */
 async function loadEditor(partType, partName) {
 	if (isDirty)
-		if (!confirm(geti18n('part_config.alerts.unsavedChanges'))) // i18n
+		if (!confirm(geti18n('part_config.alerts.unsavedChanges')))
 			return
 
 	try {
@@ -139,7 +139,7 @@ async function loadEditor(partType, partName) {
 		jsonEditor.updateProps({ content: { json: data } })
 		isDirty = false
 	} catch (err) {
-		showErrorMessage(geti18n('part_config.alerts.loadEditorFailed') + ': ' + err.message) // i18n
+		showErrorMessage(geti18n('part_config.alerts.loadEditorFailed') + ': ' + err.message)
 		console.error('Failed to load editor:', err)
 		disableEditorAndSaveButton()
 	}
@@ -158,7 +158,7 @@ async function saveConfig() {
 		await saveConfigData(activePartType, activePart, data)
 		isDirty = false
 	} catch (err) {
-		showErrorMessage(geti18n('part_config.alerts.saveConfigFailed') + ': ' + err.message) // i18n
+		showErrorMessage(geti18n('part_config.alerts.saveConfigFailed') + ': ' + err.message)
 		console.error('Failed to save part config:', err)
 	}
 }
@@ -222,7 +222,7 @@ initializeFromURLParams()
 // 事件监听
 partTypeSelect.addEventListener('change', async () => {
 	if (isDirty)
-		if (!confirm(geti18n('part_config.alerts.unsavedChanges'))) { // i18n
+		if (!confirm(geti18n('part_config.alerts.unsavedChanges'))) {
 			partTypeSelect.value = activePartType
 			return
 		}
@@ -240,7 +240,7 @@ partTypeSelect.addEventListener('change', async () => {
 
 partSelect.addEventListener('change', async () => {
 	if (isDirty)
-		if (!confirm(geti18n('part_config.alerts.unsavedChanges'))) { // i18n
+		if (!confirm(geti18n('part_config.alerts.unsavedChanges'))) {
 			partSelect.value = activePart
 			return
 		}
@@ -262,7 +262,7 @@ saveButton.addEventListener('click', saveConfig)
 window.addEventListener('beforeunload', (event) => {
 	if (isDirty) {
 		event.preventDefault()
-		event.returnValue = geti18n('part_config.alerts.beforeUnload') // i18n
+		event.returnValue = geti18n('part_config.alerts.beforeUnload')
 	}
 })
 

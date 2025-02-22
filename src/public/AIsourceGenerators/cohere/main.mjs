@@ -4,6 +4,13 @@ import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../s
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
 export default {
+	GetConfigTemplate: async () => {
+		return {
+			name: 'cohere-command-r-plus',
+			model: 'command-r-plus',
+			apikey: '',
+		}
+	},
 	GetSource: async (config) => {
 		const cohere = new CohereClientV2({
 			token: config.apikey,

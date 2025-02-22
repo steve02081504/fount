@@ -114,7 +114,9 @@
 			"noFileSelectedDelete": "Aucun fichier sélectionné à supprimer.",
 			"deleteFileFailed": "Échec de la suppression du fichier : ${error}",
 			"invalidFileName": "Le nom de fichier ne peut pas contenir les caractères suivants : / \\ : * ? \" < > |",
-			"addFileFailed": "Échec de l'ajout du fichier : ${error}"
+			"addFileFailed": "Échec de l'ajout du fichier : ${error}",
+			"fetchConfigTemplateFailed": "Échec de la récupération du modèle de configuration",
+			"noGeneratorSelectedSave": "Veuillez sélectionner un générateur avant d'enregistrer"
 		},
 		"confirm": {
 			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous annuler les modifications ?",
@@ -123,6 +125,9 @@
 		},
 		"prompts": {
 			"newFileName": "Veuillez saisir un nouveau nom de fichier source IA (sans extension) :"
+		},
+		"editor": {
+			"disabledIndicator": "Veuillez sélectionner un générateur d'abord"
 		}
 	},
 	"part_config": {

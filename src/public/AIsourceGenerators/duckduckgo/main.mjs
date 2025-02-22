@@ -7,6 +7,12 @@ import { DuckDuckGoAPI } from './duckduckgo.mjs'
  */
 
 export default {
+	GetConfigTemplate: async () => {
+		return {
+			name: 'DuckDuckGo',
+			model: 'gpt-4o-mini',
+		}
+	},
 	/**
 	 * 创建一个 DuckDuckGo AI 来源生成器
 	 * @param {object} config - 配置对象

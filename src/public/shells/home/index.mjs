@@ -3,7 +3,7 @@ import { getCharDetails, noCacheGetCharDetails, getCharList } from '../../script
 import { renderMarkdown } from '../../scripts/markdown.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 import { parseRegexFromString, escapeRegExp } from '../../scripts/regex.mjs'
-import { initTranslations, geti18n } from '../../scripts/i18n.mjs' // 引入 i18n 函数
+import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
 
 const roleContainer = document.getElementById('role-container')
 const characterDescription = document.getElementById('character-description')
@@ -17,7 +17,7 @@ let charDetailsCache = {} // Cache for character details
 async function getHomeRegistry() {
 	const response = await fetch('/api/shells/home/gethomeregistry')
 	if (response.ok) return await response.json()
-	else throw new Error(geti18n('home.alerts.fetchHomeRegistryFailed')) // 使用 geti18n
+	else throw new Error(geti18n('home.alerts.fetchHomeRegistryFailed'))
 }
 
 let homeRegistry
@@ -127,7 +127,7 @@ async function renderCharView(charDetails, charname) {
 
 async function displayCharacterInfo(charDetails) {
 	characterDescription.innerHTML =
-		await renderMarkdown(charDetails.info.description_markdown) || geti18n('home.noDescription') // 使用 geti18n
+		await renderMarkdown(charDetails.info.description_markdown) || geti18n('home.noDescription')
 }
 
 async function setLocale(locale) {

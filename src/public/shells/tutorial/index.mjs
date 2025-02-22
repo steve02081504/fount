@@ -1,7 +1,7 @@
 import { applyTheme } from '../../scripts/theme.mjs'
 applyTheme()
 
-import { initTranslations, geti18n } from '../../scripts/i18n.mjs' // Import i18n functions
+import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
 
 const tutorialModal = document.getElementById('tutorialModal')
 const startTutorialBtn = document.getElementById('startTutorial')

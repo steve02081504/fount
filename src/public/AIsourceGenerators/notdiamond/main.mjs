@@ -4,6 +4,14 @@ import { NotDiamond } from './notdiamond.mjs'
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
 export default {
+	GetConfigTemplate: async () => {
+		return {
+			name: 'notdiamond-gpt',
+			email: '',
+			password: '',
+			model: 'gpt-3.5-turbo',
+		}
+	},
 	GetSource: async (config) => {
 		const notDiamond = new NotDiamond({
 			email: config.email,

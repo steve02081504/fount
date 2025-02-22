@@ -1,6 +1,6 @@
 {
 	"tutorial": {
-		"title": "Tutorial",
+		"title": "Tutorial?",
 		"modal": {
 			"title": "Welcome to fount!",
 			"instruction": "Would you like to take the newbie tutorial?",
@@ -114,7 +114,9 @@
 			"noFileSelectedDelete": "No file selected to delete.",
 			"deleteFileFailed": "Failed to delete file: ${error}",
 			"invalidFileName": "File name cannot contain the following characters: / \\ : * ? \" < > |",
-			"addFileFailed": "Failed to add file: ${error}"
+			"addFileFailed": "Failed to add file: ${error}",
+			"fetchConfigTemplateFailed": "Failed to fetch config template",
+			"noGeneratorSelectedSave": "Please select a generator before saving"
 		},
 		"confirm": {
 			"unsavedChanges": "You have unsaved changes. Do you want to discard changes?",
@@ -123,6 +125,9 @@
 		},
 		"prompts": {
 			"newFileName": "Please enter a new AI source file name (without extension):"
+		},
+		"editor": {
+			"disabledIndicator": "Please select a generator first"
 		}
 	},
 	"part_config": {

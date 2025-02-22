@@ -4,6 +4,13 @@
 import { loadAIsourceFromNameOrConfigData } from '../../../server/managers/AIsources_manager.mjs'
 
 export default {
+	GetConfigTemplate: async () => {
+		return {
+			name: 'fallback array',
+			provider: 'unknown',
+			sources: [],
+		}
+	},
 	GetSource: async (config, { username }) => {
 		const sources = await Promise.all(config.sources.map(source => loadAIsourceFromNameOrConfigData(username, source)))
 		/** @type {AIsource_t} */

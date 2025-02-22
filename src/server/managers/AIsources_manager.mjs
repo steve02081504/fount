@@ -6,6 +6,11 @@ function GetPath(username, partname) {
 	return getUserDictionary(username) + '/AIsources/' + partname
 }
 
+/**
+ * @param {string} username
+ * @param {string} AIsourcename
+ * @returns {Promise<import('../../decl/AIsourceGeneretor.ts').AIsourceGeneretor>}
+ */
 export async function loadAIsourceGenerator(username, AIsourcename) {
 	return loadPartBase(username, 'AIsourceGenerators', AIsourcename)
 }

@@ -114,7 +114,9 @@
 			"noFileSelectedDelete": "हटाने के लिए कोई फ़ाइल चयनित नहीं है।",
 			"deleteFileFailed": "फ़ाइल हटाने में विफल: ${error}",
 			"invalidFileName": "फ़ाइल नाम में निम्नलिखित वर्ण नहीं हो सकते: / \\ : * ? \" < > |",
-			"addFileFailed": "फ़ाइल जोड़ने में विफल: ${error}"
+			"addFileFailed": "फ़ाइल जोड़ने में विफल: ${error}",
+			"fetchConfigTemplateFailed": "कॉन्फ़िगरेशन टेम्पलेट प्राप्त करने में विफल",
+			"noGeneratorSelectedSave": "कृपया सहेजने से पहले एक जनरेटर का चयन करें"
 		},
 		"confirm": {
 			"unsavedChanges": "आपके पास सहेजे नहीं गए बदलाव हैं। क्या आप बदलावों को त्यागना चाहते हैं?",
@@ -123,6 +125,9 @@
 		},
 		"prompts": {
 			"newFileName": "कृपया एक नया एआई स्रोत फ़ाइल नाम दर्ज करें (एक्सटेंशन के बिना):"
+		},
+		"editor": {
+			"disabledIndicator": "कृपया पहले एक जनरेटर का चयन करें"
 		}
 	},
 	"part_config": {

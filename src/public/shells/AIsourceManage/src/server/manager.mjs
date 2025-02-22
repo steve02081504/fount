@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import sanitize from 'npm:sanitize-filename'
 import { loadJsonFile, saveJsonFile } from '../../../../../scripts/json_loader.mjs'
 import { getUserDictionary } from '../../../../../server/auth.mjs'
-import { isAIsourceLoaded, reloadAIsource } from '../../../../../server/managers/AIsources_manager.mjs'
+import { isAIsourceLoaded, loadAIsourceGenerator, reloadAIsource } from '../../../../../server/managers/AIsources_manager.mjs'
 
 export function getAISourceFile(username, fileName) {
 	const fname = getUserDictionary(username) + '/AIsources/' + sanitize(fileName) + '.json'
@@ -27,4 +27,9 @@ export function addAISourceFile(username, fileName) {
 export function deleteAISourceFile(username, fileName) {
 	const fname = getUserDictionary(username) + '/AIsources/' + sanitize(fileName) + '.json'
 	return fs.promises.unlink(fname)
+}
+
+export async function getConfigTemplate(username, generatorname) {
+	const generator = await loadAIsourceGenerator(username, generatorname)
+	return await generator.GetConfigTemplate()
 }
