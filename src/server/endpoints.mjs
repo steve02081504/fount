@@ -112,11 +112,11 @@ export function registerEndpoints(router) {
 				patharr = patharr.slice(partIndex + 1)
 				return patharr[0]
 			})()
-			let pathext = path.split('.').pop()
+			const pathext = path.split('.').pop()
 			if (pathext != path && !['html', 'js', 'mjs'].includes(pathext)) return next() // 跳过纯资源路径
 			try {
 				const { username } = await getUserByToken(req.cookies.accessToken)
-				let loader = loadPart(username, part, partName)
+				const loader = loadPart(username, part, partName)
 				if (path.startsWith('/api/')) await loader
 			} catch (e) { }
 

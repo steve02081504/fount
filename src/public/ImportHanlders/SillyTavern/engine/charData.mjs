@@ -223,6 +223,68 @@ class WorldInfoBook {
 	 */
 	entries
 }
+class regex_script_info {
+	/**
+	 * the name of the script
+	 * @type {string}
+	 */
+	scriptName
+	/**
+	 * the find regex
+	 * @type {string}
+	 */
+	findRegex
+	/**
+	 * the replace string
+	 * @type {string}
+	 */
+	replaceString
+	/**
+	 * the trim strings
+	 * @type {string[]}
+	 */
+	trimStrings
+	/**
+	 * the placement
+	 * @type {number[]}
+	 */
+	placement
+	/**
+	 * is the script disabled
+	 * @type {boolean}
+	 */
+	disabled
+	/**
+	 * is the script markdown only
+	 * @type {boolean}
+	 */
+	markdownOnly
+	/**
+	 * is the script prompt only
+	 * @type {boolean}
+	 */
+	promptOnly
+	/**
+	 * is the script run on edit
+	 * @type {boolean}
+	 */
+	runOnEdit
+	/**
+	 * is the script substitute regex
+	 * @type {boolean}
+	 */
+	substituteRegex
+	/**
+	 * the min depth
+	 * @type {number}
+	 */
+	minDepth
+	/**
+	 * the max depth
+	 * @type {number}
+	 */
+	maxDepth
+}
 class v2CharData {
 	/**
 	 * the name of the character
@@ -335,69 +397,9 @@ class v2CharData {
 		},
 		/**
 		 * regex_scripts
+		 * @type {regex_script_info[]}
 		 */
-		regex_scripts: [{
-			/**
-			 * the name of the script
-			 * @type {string}
-			 */
-			scriptName,
-			/**
-			 * the find regex
-			 * @type {string}
-			 */
-			findRegex,
-			/**
-			 * the replace string
-			 * @type {string}
-			 */
-			replaceString,
-			/**
-			 * the trim strings
-			 * @type {string[]}
-			 */
-			trimStrings,
-			/**
-			 * the placement
-			 * @type {number[]}
-			 */
-			placement,
-			/**
-			 * is the script disabled
-			 * @type {boolean}
-			 */
-			disabled,
-			/**
-			 * is the script markdown only
-			 * @type {boolean}
-			 */
-			markdownOnly,
-			/**
-			 * is the script prompt only
-			 * @type {boolean}
-			 */
-			promptOnly,
-			/**
-			 * is the script run on edit
-			 * @type {boolean}
-			 */
-			runOnEdit,
-			/**
-			 * is the script substitute regex
-			 * @type {boolean}
-			 */
-			substituteRegex,
-			/**
-			 * the min depth
-			 * @type {number}
-			 */
-			minDepth,
-			/**
-			 * the max depth
-			 * @type {number}
-			 */
-			maxDepth
-		}]
+		regex_scripts
 	}
 	/**
 	 * the charbook
@@ -511,5 +513,5 @@ function GetV2CharDataFromV1(data) {
 }
 export {
 	v2CharData, v1CharData, GetV1CharDataFromV2, GetV2CharDataFromV1, WorldInfoBook, WorldInfoEntry,
-	regex_placement, world_info_logic, world_info_position, wi_anchor_position, extension_prompt_roles
+	regex_placement, world_info_logic, world_info_position, wi_anchor_position, extension_prompt_roles, regex_script_info
 }
