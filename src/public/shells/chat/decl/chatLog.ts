@@ -38,7 +38,7 @@ export class chatReplyRequest_t {
 	Charname: string
 	UserCharname: string
 	ReplyToCharname?: string
-	locale: locale_t // 常见用法：switch (args.locale.split('-')[0]) 来多语言info或开场白
+	locales: locale_t[] // 常见用法：switch (args.locales[0].split('-')[0]) 来多语言info或开场白
 	time: timeStamp_t
 	chat_log: chatLogEntry_t[]
 	AddChatLogEntry?: (entry: chatReply_t) => Promise<chatLogEntry_t> // 调用这个来主动或定时发信息

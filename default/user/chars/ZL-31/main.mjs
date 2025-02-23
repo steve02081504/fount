@@ -206,7 +206,7 @@ ZL-31 — персонаж Fount по умолчанию, без гендерн�
 		chat: {
 			// 获取角色的开场白
 			GetGreeting: (arg, index) => {
-				switch (arg.locale.split('-')[0]) {
+				switch (arg.locales[0].split('-')[0]) {
 					case 'zh':
 						return [{ content: '您好，我是ZL-31，很高兴为您服务！有什么我可以帮助您的吗？' }, { content: '欢迎！我是ZL-31，请问有什么需要我帮忙的？' },][index]
 					case 'de':
@@ -232,7 +232,7 @@ ZL-31 — персонаж Fount по умолчанию, без гендерн�
 			},
 			// 获取角色在群组中的问好
 			GetGroupGreeting: (arg, index) => {
-				switch (arg.locale.split('-')[0]) {
+				switch (arg.locales[0].split('-')[0]) {
 					case 'zh':
 						return [{ content: '大家好，我是ZL-31，很高兴加入这个群组！' }, { content: '大家好！我是ZL-31，希望能和大家愉快相处！' },][index]
 					case 'de':
@@ -566,7 +566,7 @@ ${fs.readFileSync(path.join(__dirname, 'src/decl/charAPI.ts'), 'utf-8')}
 			GetReply: async (args) => {
 				// 如果没有设置AI源，返回默认回复
 				if (!AIsource)
-					switch (args.locale.split('-')[0]) {
+					switch (args.locales[0].split('-')[0]) {
 						case 'zh':
 							return { content: '抱歉，我还没有被配置AI源，暂时无法进行更复杂的对话。请在设置中为我配置AI源。' }
 						case 'de':

@@ -228,9 +228,9 @@ async function getChatRequest(chatid, charname) {
 	if (!chatMetadata) throw new Error('Chat not found')
 
 	const { username, LastTimeSlice: timeSlice } = chatMetadata
-	const { locale } = getUserByUsername(username)
-	const userinfo = getPartInfo(timeSlice.player, locale) || {}
-	const charinfo = getPartInfo(timeSlice.chars[charname], locale) || {}
+	const { locales } = getUserByUsername(username)
+	const userinfo = getPartInfo(timeSlice.player, locales) || {}
+	const charinfo = getPartInfo(timeSlice.chars[charname], locales) || {}
 	const UserCharname = userinfo.name || timeSlice.player_id || username
 
 	const other_chars = { ...timeSlice.chars }
@@ -251,7 +251,8 @@ async function getChatRequest(chatid, charname) {
 		username,
 		UserCharname,
 		Charname: charinfo.name || charname,
-		locale,
+		locale: locales[0], // TODO: remove
+		locales,
 		chat_log: chatMetadata.chatLog,
 		Update: () => getChatRequest(chatid, charname),
 		AddChatLogEntry: (entry) => {
@@ -609,9 +610,9 @@ export async function modifyTimeLine(chatid, delta) {
  * @returns {chatLogEntry_t}
  */
 function BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, username) {
-	const { locale } = getUserByUsername(username)
+	const { locales } = getUserByUsername(username)
 	new_timeSlice.charname = charname
-	const info = getPartInfo(char, locale) || {}
+	const info = getPartInfo(char, locales) || {}
 
 	return Object.assign(new chatLogEntry_t(), {
 		name: result.name || info.name || charname,
@@ -642,9 +643,9 @@ function BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, u
  * @returns {chatLogEntry_t}
  */
 function BuildChatLogEntryFromUserMessage(result, new_timeSlice, user, username) {
-	const { locale } = getUserByUsername(username)
+	const { locales } = getUserByUsername(username)
 	new_timeSlice.playername = new_timeSlice.player_id
-	const info = getPartInfo(user, locale) || {}
+	const info = getPartInfo(user, locales) || {}
 
 	return Object.assign(new chatLogEntry_t(), {
 		name: result.name || info.name || new_timeSlice.player_id || username,

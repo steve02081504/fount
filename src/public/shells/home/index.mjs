@@ -21,7 +21,15 @@ async function getHomeRegistry() {
 }
 
 let homeRegistry
-const currentLocale = navigator.language || navigator.userLanguage
+const currentLocales = navigator.languages || [navigator.language || navigator.userLanguage]
+
+function getLocalizedInfo(info) {
+	for(const locale of currentLocales) {
+		const result = info[locale] || info[locale?.split('-')?.[0]] || info[Object.keys(info).find(key => key.startsWith(locale?.split('-')?.[0] + '-'))]
+		if (result) return result
+	}
+	return info[Object.keys(info)[0]]
+}
 
 // Function to handle mouse wheel scrolling
 function handleMouseWheelScroll(event) {
@@ -69,9 +77,7 @@ async function renderCharView(charDetails, charname) {
 
 			if (interfaceItem.style) button.style.cssText = interfaceItem.style
 
-			const localizedInfo =
-				interfaceItem.info[currentLocale] ||
-				interfaceItem.info[Object.keys(interfaceItem.info)[0]]
+			const localizedInfo = getLocalizedInfo(interfaceItem.info)
 			button.innerHTML =
 				interfaceItem.button ??
 				'<img src="https://api.iconify.design/line-md/question-circle.svg" />'
@@ -128,21 +134,6 @@ async function renderCharView(charDetails, charname) {
 async function displayCharacterInfo(charDetails) {
 	characterDescription.innerHTML =
 		await renderMarkdown(charDetails.info.description_markdown) || geti18n('home.noDescription')
-}
-
-async function setLocale(locale) {
-	const response = await fetch('/api/setlocale', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({ locale }),
-	})
-
-	const data = await response.json()
-
-	if (response.ok) console.log(data.message)
-	else throw new Error(data.message)
 }
 
 /**
@@ -232,9 +223,7 @@ async function displayFunctionButtons() {
 
 		if (buttonItem.style) button.style.cssText = buttonItem.style
 
-		const localizedInfo =
-			buttonItem.info[currentLocale] ||
-			buttonItem.info[Object.keys(buttonItem.info)[0]]
+		const localizedInfo = await getLocalizedInfo(buttonItem.info)
 
 		// 添加图标和标题
 		const iconSpan = document.createElement('span')

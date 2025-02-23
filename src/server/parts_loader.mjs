@@ -348,29 +348,30 @@ export function getPartListBase(username, parttype, {
 }
 
 /**
- * Gets localized information from a part's info object based on the provided locale.
+ * Gets localized information from a part's info object based on the provided locales.
  *
  * @param {PartInfo} [info] - The part's info object, potentially undefined.
- * @param {string} [locale] - The locale string (e.g., 'en-US', 'zh-CN').
+ * @param {string[]} [locales] - The locale string array (e.g., 'en-US', 'zh-CN').
  * @returns {string | undefined} The localized information string, or undefined if not found.
  */
-function getLocalizedInfo(info, locale) {
+function getLocalizedInfo(info, locales) {
 	if (!info) return
-	return info[locale] ||
-		info[locale?.split('-')?.[0]] ||
-		info[Object.keys(info).find(key => key.startsWith(locale?.split('-')?.[0] + '-'))] ||
-		info[Object.keys(info)[0]]
+	for(const locale of locales) {
+		const result = info[locale] || info[locale?.split('-')?.[0]] || info[Object.keys(info).find(key => key.startsWith(locale?.split('-')?.[0] + '-'))]
+		if (result) return result
+	}
+	return info[Object.keys(info)[0]]
 }
 
 /**
- * Gets localized part information for a given part and locale.
+ * Gets localized part information for a given part and locales.
  *
  * @param {Part} part - The part object.
- * @param {string} [locale] - The locale string.
+ * @param {string[]} [locales] - The locale string array (e.g., 'en-US', 'zh-CN').
  * @returns {PartInfo | undefined} Localized part information, or undefined if part or info is missing.
  */
-export function getPartInfo(part, locale) {
-	return getLocalizedInfo(part?.info, locale)
+export function getPartInfo(part, locales) {
+	return getLocalizedInfo(part?.info, locales)
 }
 
 /**
@@ -407,9 +408,9 @@ export async function getPartDetails(username, parttype, partname, nocache = fal
 			supportedInterfaces: [],
 		}
 	}
-	const { locale } = getUserByUsername(username)
+	const { locales } = getUserByUsername(username)
 	return {
 		...details,
-		info: getLocalizedInfo(details.info, locale)
+		info: getLocalizedInfo(details.info, locales)
 	}
 }
