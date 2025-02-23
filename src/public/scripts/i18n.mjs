@@ -90,25 +90,6 @@ export function i18nElement(element) {
 	return element
 }
 
-async function setLocale(locale) {
-	const languageCode = locale.split('-')[0]
-	const response = await fetch('/api/setlocale', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({ locale: languageCode }),
-	})
-
-	const data = await response.json()
-
-	if (response.ok) console.log(data.message)
-	else throw new Error(data.message)
-}
-
-await setLocale(navigator.language || navigator.userLanguage)
-
 window.addEventListener('languagechange', () => {
-	setLocale(navigator.language || navigator.userLanguage)
 	initTranslations()
 })
