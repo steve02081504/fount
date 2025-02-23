@@ -5,8 +5,32 @@
 				"zh-CN": {
 					"title": "重玩教程"
 				},
-				"en": {
+				"en-UK": {
 					"title": "Replay Tutorial"
+				},
+				"de-DE": {
+					"title": "Tutorial erneut spielen"
+				},
+				"es-ES": {
+					"title": "Repetir tutorial"
+				},
+				"fr-FR": {
+					"title": "Rejouer le tutoriel"
+				},
+				"hi-IN": {
+					"title": "ट्यूटोरियल फिर से चलाएं"
+				},
+				"ja-JP": {
+					"title": "チュートリアルをリプレイ"
+				},
+				"ko-KR": {
+					"title": "튜토리얼 다시 재생"
+				},
+				"pt-PT": {
+					"title": "Repetir Tutorial"
+				},
+				"ru-RU": {
+					"title": "Повторить обучение"
 				}
 			},
 			"level": 99,

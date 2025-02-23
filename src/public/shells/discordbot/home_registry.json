@@ -5,8 +5,32 @@
 				"zh-CN": {
 					"title": "配置discord bot"
 				},
-				"en": {
-					"title": "Config Discord Bot"
+				"en-UK": {
+					"title": "Discord Bot Config"
+				},
+				"de-DE": {
+					"title": "Discord Bot konfigurieren"
+				},
+				"es-ES": {
+					"title": "Configuración de bot de Discord"
+				},
+				"fr-FR": {
+					"title": "Configuration du bot Discord"
+				},
+				"hi-IN": {
+					"title": "डिस्कॉर्ड बॉट कॉन्फ़िगर करें"
+				},
+				"ja-JP": {
+					"title": "Discord Botの設定"
+				},
+				"ko-KR": {
+					"title": "Discord Bot 구성"
+				},
+				"pt-PT": {
+					"title": "Configuração de Bot Discord"
+				},
+				"ru-RU": {
+					"title": "Настройка Discord Bot"
 				}
 			},
 			"level": 1,
@@ -20,8 +44,32 @@
 				"zh-CN": {
 					"title": "配置discord bot"
 				},
-				"en": {
-					"title": "Config Discord Bot"
+				"en-UK": {
+					"title": "Discord Bot Config"
+				},
+				"de-DE": {
+					"title": "Discord Bot konfigurieren"
+				},
+				"es-ES": {
+					"title": "Configuración de bot de Discord"
+				},
+				"fr-FR": {
+					"title": "Configuration du bot Discord"
+				},
+				"hi-IN": {
+					"title": "डिस्कॉर्ड बॉट कॉन्फ़िगर करें"
+				},
+				"ja-JP": {
+					"title": "Discord Botの設定"
+				},
+				"ko-KR": {
+					"title": "Discord Bot 구성"
+				},
+				"pt-PT": {
+					"title": "Configuração de Bot Discord"
+				},
+				"ru-RU": {
+					"title": "Настройка Discord Bot"
 				}
 			},
 			"level": 0,

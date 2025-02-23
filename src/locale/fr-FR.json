@@ -162,6 +162,33 @@
 			"beforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter ?"
 		}
 	},
+	"uninstall": {
+		"title": "Désinstaller",
+		"titleWithName": "Désinstaller ${type}/${name}",
+		"confirmMessage": "Êtes-vous sûr de vouloir désinstaller ${type} : ${name} ?",
+		"invalidParamsTitle": "Paramètres invalides",
+		"infoMessage": {
+			"icon": {
+				"alt": "Icône d'information"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Icône d'erreur"
+			}
+		},
+		"buttons": {
+			"confirm": "Confirmer la désinstallation",
+			"cancel": "Annuler",
+			"back": "Retour"
+		},
+		"alerts": {
+			"success": "${type} : ${name} désinstallé avec succès",
+			"failed": "Échec de la désinstallation : ${error}",
+			"invalidParams": "Paramètres de requête non valides.",
+			"httpError": "Erreur HTTP ! Code d'état : ${status}"
+		}
+	},
 	"chat": {
 		"title": "Chat",
 		"sidebar": {

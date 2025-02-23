@@ -162,6 +162,33 @@
 			"beforeUnload": "保存されていない変更があります。移動してもよろしいですか？"
 		}
 	},
+	"uninstall": {
+		"title": "アンインストール",
+		"titleWithName": "${type}/${name} をアンインストール",
+		"confirmMessage": "${type}: ${name} をアンインストールしてもよろしいですか？",
+		"invalidParamsTitle": "無効なパラメータ",
+		"infoMessage": {
+			"icon": {
+				"alt": "情報アイコン"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "エラーアイコン"
+			}
+		},
+		"buttons": {
+			"confirm": "アンインストールを確認",
+			"cancel": "キャンセル",
+			"back": "戻る"
+		},
+		"alerts": {
+			"success": "${type}: ${name} を正常にアンインストールしました",
+			"failed": "アンインストールに失敗しました: ${error}",
+			"invalidParams": "無効なリクエストパラメータ。",
+			"httpError": "HTTPエラー！ステータスコード: ${status}"
+		}
+	},
 	"chat": {
 		"title": "チャット",
 		"sidebar": {

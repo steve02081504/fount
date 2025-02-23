@@ -162,6 +162,33 @@
 			"beforeUnload": "Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie verlassen möchten?"
 		}
 	},
+	"uninstall": {
+		"title": "Deinstallieren",
+		"titleWithName": "Deinstalliere ${type}/${name}",
+		"confirmMessage": "Sind Sie sicher, dass Sie ${type}: ${name} deinstallieren möchten?",
+		"invalidParamsTitle": "Ungültige Parameter",
+		"infoMessage": {
+			"icon": {
+				"alt": "Info-Symbol"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Fehler-Symbol"
+			}
+		},
+		"buttons": {
+			"confirm": "Deinstallation bestätigen",
+			"cancel": "Abbrechen",
+			"back": "Zurück"
+		},
+		"alerts": {
+			"success": "${type}: ${name} erfolgreich deinstalliert",
+			"failed": "Deinstallation fehlgeschlagen: ${error}",
+			"invalidParams": "Ungültige Anfrageparameter.",
+			"httpError": "HTTP-Fehler! Statuscode: ${status}"
+		}
+	},
 	"chat": {
 		"title": "Chat",
 		"sidebar": {

@@ -5,8 +5,32 @@
 				"zh-CN": {
 					"title": "管理AI源"
 				},
-				"en": {
+				"en-UK": {
 					"title": "Manage AI Sources"
+				},
+				"de-DE": {
+					"title": "KI-Quellen verwalten"
+				},
+				"es-ES": {
+					"title": "Gestionar fuentes de IA"
+				},
+				"fr-FR": {
+					"title": "Gérer les sources d'IA"
+				},
+				"hi-IN": {
+					"title": "एआई स्रोत प्रबंधित करें"
+				},
+				"ja-JP": {
+					"title": "AIソースを管理"
+				},
+				"ko-KR": {
+					"title": "AI 소스 관리"
+				},
+				"pt-PT": {
+					"title": "Gerenciar Fontes de IA"
+				},
+				"ru-RU": {
+					"title": "Управление источниками ИИ"
 				}
 			},
 			"level": 1,

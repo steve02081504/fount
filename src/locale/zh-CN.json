@@ -162,6 +162,33 @@
 			"beforeUnload": "您有未保存的更改。确定要离开吗？"
 		}
 	},
+	"uninstall": {
+		"title": "卸载",
+		"titleWithName": "卸载 ${type}/${name}",
+		"confirmMessage": "您确定要卸载 ${type}: ${name} 吗？",
+		"invalidParamsTitle": "参数无效",
+		"infoMessage": {
+			"icon": {
+				"alt": "信息图标"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "错误图标"
+			}
+		},
+		"buttons": {
+			"confirm": "确认卸载",
+			"cancel": "取消",
+			"back": "返回"
+		},
+		"alerts": {
+			"success": "成功卸载 ${type}: ${name}",
+			"failed": "卸载失败: ${error}",
+			"invalidParams": "无效的请求参数。",
+			"httpError": "HTTP 错误！状态码：${status}"
+		}
+	},
 	"chat": {
 		"title": "聊天",
 		"sidebar": {

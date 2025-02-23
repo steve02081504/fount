@@ -5,8 +5,32 @@
 				"zh-CN": {
 					"title": "导入"
 				},
-				"en": {
+				"en-UK": {
 					"title": "Import"
+				},
+				"de-DE": {
+					"title": "Importieren"
+				},
+				"es-ES": {
+					"title": "Importar"
+				},
+				"fr-FR": {
+					"title": "Importer"
+				},
+				"hi-IN": {
+					"title": "आयात करें"
+				},
+				"ja-JP": {
+					"title": "インポート"
+				},
+				"ko-KR": {
+					"title": "가져오기"
+				},
+				"pt-PT": {
+					"title": "Importar"
+				},
+				"ru-RU": {
+					"title": "Импорт"
 				}
 			},
 			"level": 0,
@@ -20,8 +44,32 @@
 				"zh-CN": {
 					"title": "删除"
 				},
-				"en": {
+				"en-UK": {
 					"title": "Delete"
+				},
+				"de-DE": {
+					"title": "Löschen"
+				},
+				"es-ES": {
+					"title": "Eliminar"
+				},
+				"fr-FR": {
+					"title": "Supprimer"
+				},
+				"hi-IN": {
+					"title": "हटाएं"
+				},
+				"ja-JP": {
+					"title": "削除"
+				},
+				"ko-KR": {
+					"title": "삭제"
+				},
+				"pt-PT": {
+					"title": "Eliminar"
+				},
+				"ru-RU": {
+					"title": "Удалить"
 				}
 			},
 			"level": 0,

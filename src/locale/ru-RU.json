@@ -162,6 +162,33 @@
 			"beforeUnload": "У вас есть несохраненные изменения. Вы уверены, что хотите выйти?"
 		}
 	},
+	"uninstall": {
+		"title": "Удалить",
+		"titleWithName": "Удалить ${type}/${name}",
+		"confirmMessage": "Вы уверены, что хотите удалить ${type}: ${name}?",
+		"invalidParamsTitle": "Неверные параметры",
+		"infoMessage": {
+			"icon": {
+				"alt": "Значок информации"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Значок ошибки"
+			}
+		},
+		"buttons": {
+			"confirm": "Подтвердить удаление",
+			"cancel": "Отмена",
+			"back": "Назад"
+		},
+		"alerts": {
+			"success": "${type}: ${name} успешно удалено",
+			"failed": "Не удалось удалить: ${error}",
+			"invalidParams": "Неверные параметры запроса.",
+			"httpError": "Ошибка HTTP! Код состояния: ${status}"
+		}
+	},
 	"chat": {
 		"title": "Чат",
 		"sidebar": {

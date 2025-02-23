@@ -162,6 +162,33 @@
 			"beforeUnload": "Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?"
 		}
 	},
+	"uninstall": {
+		"title": "Desinstalar",
+		"titleWithName": "Desinstalar ${type}/${name}",
+		"confirmMessage": "¿Está seguro de que desea desinstalar ${type}: ${name}?",
+		"invalidParamsTitle": "Parámetros inválidos",
+		"infoMessage": {
+			"icon": {
+				"alt": "Icono de información"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Icono de error"
+			}
+		},
+		"buttons": {
+			"confirm": "Confirmar desinstalación",
+			"cancel": "Cancelar",
+			"back": "Volver"
+		},
+		"alerts": {
+			"success": "${type}: ${name} desinstalado con éxito",
+			"failed": "Error al desinstalar: ${error}",
+			"invalidParams": "Parámetros de solicitud no válidos.",
+			"httpError": "¡Error HTTP! Código de estado: ${status}"
+		}
+	},
 	"chat": {
 		"title": "Chat",
 		"sidebar": {
