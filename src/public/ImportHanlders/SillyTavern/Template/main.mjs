@@ -77,27 +77,31 @@ export default {
 			GetGreeting: (arg, index) => {
 				const greetings = [chardata?.first_mes, ...chardata?.alternate_greetings ?? []].filter(x => x)
 				if (index >= greetings.length) throw new Error('Invalid index')
+				let result = evaluateMacros(greetings[index], {
+					char: chardata.name,
+					user: arg.UserCharname,
+					model: AIsource?.filename,
+					charVersion: chardata.character_version,
+					char_version: chardata.character_version,
+				})
 				return {
-					content: evaluateMacros(greetings[index], {
-						char: chardata.name,
-						user: arg.UserCharname,
-						model: AIsource?.filename,
-						charVersion: chardata.character_version,
-						char_version: chardata.character_version,
-					})
+					content: runRegex(chardata, regex_placement.AI_OUTPUT, result),
+					content_for_edit: result
 				}
 			},
 			GetGroupGreeting: (arg, index) => {
 				const greetings = [...new Set([...chardata?.extensions?.group_greetings ?? [], ...chardata?.group_only_greetings ?? []].filter(x => x))]
 				if (index >= greetings.length) throw new Error('Invalid index')
+				let result = evaluateMacros(greetings[index], {
+					char: chardata.name,
+					user: arg.UserCharname,
+					model: AIsource?.filename,
+					charVersion: chardata.character_version,
+					char_version: chardata.character_version,
+				})
 				return {
-					content: evaluateMacros(greetings[index], {
-						char: chardata.name,
-						user: arg.UserCharname,
-						model: AIsource?.filename,
-						charVersion: chardata.character_version,
-						char_version: chardata.character_version,
-					})
+					content: runRegex(chardata, regex_placement.AI_OUTPUT, result),
+					content_for_edit: result
 				}
 			},
 			GetPrompt: (arg, prompt_struct, detail_level) => {
@@ -121,7 +125,8 @@ export default {
 			MessageEdit: (arg) => {
 				return {
 					...arg.edited,
-					content: runRegex(chardata, regex_placement.AI_OUTPUT, arg.edited.content)
+					content: runRegex(chardata, regex_placement.AI_OUTPUT, arg.edited.content),
+					content_for_edit: arg.edited.content
 				}
 			}
 		}

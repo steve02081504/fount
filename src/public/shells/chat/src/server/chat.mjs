@@ -668,12 +668,11 @@ async function getCharReplyFrequency(chatid) {
 
 	for (const charname in chatMetadata.LastTimeSlice.chars) {
 		const char = chatMetadata.LastTimeSlice.chars[charname]
+		let charbase = await char.interfaces?.chat?.GetReplyFequency?.(await getChatRequest(chatid, charname)) || 1
+		let userbase = chatMetadata.LastTimeSlice.chars_speaking_frequency[charname] || 1
 		result.push({
 			charname,
-			frequency:
-				(char.interfaces?.chat?.GetReplyFequency?.(await getChatRequest(chatid, charname)) || 1) *
-				(chatMetadata.LastTimeSlice.chars_speaking_frequency[charname] || 1)
-
+			frequency: charbase * userbase
 		})
 	}
 
