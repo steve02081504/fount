@@ -162,6 +162,33 @@
 			"beforeUnload": "आपके पास सहेजे नहीं गए बदलाव हैं। क्या आप वाकई छोड़ना चाहते हैं?"
 		}
 	},
+	"uninstall": {
+		"title": "अनइंस्टॉल करें",
+		"titleWithName": "${type}/${name} अनइंस्टॉल करें",
+		"confirmMessage": "क्या आप वाकई ${type}: ${name} अनइंस्टॉल करना चाहते हैं?",
+		"invalidParamsTitle": "अमान्य पैरामीटर",
+		"infoMessage": {
+			"icon": {
+				"alt": "जानकारी आइकन"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "त्रुटि आइकन"
+			}
+		},
+		"buttons": {
+			"confirm": "अनइंस्टॉल की पुष्टि करें",
+			"cancel": "रद्द करें",
+			"back": "वापस"
+		},
+		"alerts": {
+			"success": "${type}: ${name} सफलतापूर्वक अनइंस्टॉल किया गया",
+			"failed": "अनइंस्टॉल विफल: ${error}",
+			"invalidParams": "अमान्य अनुरोध पैरामीटर।",
+			"httpError": "HTTP त्रुटि! स्थिति कोड: ${status}"
+		}
+	},
 	"chat": {
 		"title": "चैट",
 		"sidebar": {

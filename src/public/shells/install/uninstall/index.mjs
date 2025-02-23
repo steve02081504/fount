@@ -1,3 +1,7 @@
+import { initTranslations, geti18n } from '../../../scripts/i18n.mjs'
+import { applyTheme } from '../../../scripts/theme.mjs'
+
+applyTheme()
 // 获取 URL 参数
 function getURLParams() {
 	return new URLSearchParams(window.location.search)
@@ -15,7 +19,7 @@ async function uninstallPart(type, name) {
 
 	if (!response.ok) {
 		const data = await response.json().catch(() => null)
-		throw new Error(data?.message || `HTTP error! status: ${response.status}`)
+		throw new Error(data?.message || geti18n('uninstall.alerts.httpError', { status: response.status }))
 	}
 
 	return await response.json()
@@ -44,30 +48,31 @@ function hideMessage() {
 	document.getElementById('error-message').style.display = 'none'
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-	const urlParams = getURLParams()
-	const type = urlParams.get('type')
-	const name = urlParams.get('name')
-	const uninstallMessage = document.getElementById('uninstall-message')
-	const title = document.getElementById('title')
-	const confirmButton = document.getElementById('confirm-uninstall')
+await initTranslations('uninstall')
+const urlParams = getURLParams()
+const type = urlParams.get('type')
+const name = urlParams.get('name')
+const uninstallMessage = document.getElementById('uninstall-message')
+const title = document.getElementById('title')
+const confirmButton = document.getElementById('confirm-uninstall')
+const cancelButton = document.getElementById('cancel-uninstall')
 
-	if (type && name) {
-		title.textContent = `卸载 ${type}/${name}`
-		uninstallMessage.textContent = `您确定要卸载 ${type}: ${name} 吗？`
+if (type && name) {
+	title.textContent = geti18n('uninstall.titleWithName', { type, name })
+	uninstallMessage.textContent = geti18n('uninstall.confirmMessage', { type, name })
 
-		confirmButton.addEventListener('click', async () => {
-			hideMessage()
-			try {
-				const result = await uninstallPart(type, name)
-				showMessage(result.message || `成功卸载 ${type}: ${name}`, 'info')
-				confirmButton.disabled = true // 卸载成功后禁用按钮
-			} catch (error) {
-				showMessage(`卸载失败: ${error.message}`, 'error')
-			}
-		})
-	} else {
-		title.textContent = '参数无效'
-		showMessage('无效的请求参数。', 'error')
-	}
-})
+	confirmButton.addEventListener('click', async () => {
+		hideMessage()
+		try {
+			const result = await uninstallPart(type, name)
+			showMessage(result.message || geti18n('uninstall.alerts.success', { type, name }), 'info')
+			confirmButton.disabled = true // 卸载成功后禁用按钮
+			cancelButton.textContent = geti18n('uninstall.buttons.back')//更改`取消`为`返回`
+		} catch (error) {
+			showMessage(geti18n('uninstall.alerts.failed', { error: error.message }), 'error')
+		}
+	})
+} else {
+	title.textContent = geti18n('uninstall.invalidParamsTitle')
+	showMessage(geti18n('uninstall.alerts.invalidParams'), 'error')
+}

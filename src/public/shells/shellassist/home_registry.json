@@ -5,8 +5,32 @@
 				"zh-CN": {
 					"title": "终端辅助"
 				},
-				"en": {
+				"en-UK": {
 					"title": "Terminal Assist"
+				},
+				"de-DE": {
+					"title": "Terminal-Assistenz"
+				},
+				"es-ES": {
+					"title": "Asistencia de Terminal"
+				},
+				"fr-FR": {
+					"title": "Assistant Terminal"
+				},
+				"hi-IN": {
+					"title": "टर्मिनल असिस्ट"
+				},
+				"ja-JP": {
+					"title": "ターミナルアシスト"
+				},
+				"ko-KR": {
+					"title": "터미널 지원"
+				},
+				"pt-PT": {
+					"title": "Assistente de Terminal"
+				},
+				"ru-RU": {
+					"title": "Терминал Помощник"
 				}
 			},
 			"level": 2,

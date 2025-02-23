@@ -162,6 +162,33 @@
 			"beforeUnload": "You have unsaved changes. Are you sure you want to leave?"
 		}
 	},
+	"uninstall": {
+		"title": "Uninstall",
+		"titleWithName": "Uninstall ${type}/${name}",
+		"confirmMessage": "Are you sure you want to uninstall ${type}: ${name}?",
+		"invalidParamsTitle": "Invalid Parameters",
+		"infoMessage": {
+			"icon": {
+				"alt": "Info Icon"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Error Icon"
+			}
+		},
+		"buttons": {
+			"confirm": "Confirm Uninstall",
+			"cancel": "Cancel",
+			"back": "Back"
+		},
+		"alerts": {
+			"success": "${type}: ${name} uninstalled successfully",
+			"failed": "Uninstall failed: ${error}",
+			"invalidParams": "Invalid request parameters.",
+			"httpError": "HTTP Error! Status code: ${status}"
+		}
+	},
 	"chat": {
 		"title": "Chat",
 		"sidebar": {

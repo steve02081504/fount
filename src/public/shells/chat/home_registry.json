@@ -5,8 +5,32 @@
 				"zh-CN": {
 					"title": "浏览历史记录"
 				},
-				"en": {
+				"en-UK": {
 					"title": "View History"
+				},
+				"de-DE": {
+					"title": "Verlauf anzeigen"
+				},
+				"es-ES": {
+					"title": "Ver historial"
+				},
+				"fr-FR": {
+					"title": "Voir l'historique"
+				},
+				"hi-IN": {
+					"title": "इतिहास देखें"
+				},
+				"ja-JP": {
+					"title": "履歴を見る"
+				},
+				"ko-KR": {
+					"title": "기록 보기"
+				},
+				"pt-PT": {
+					"title": "Ver histórico"
+				},
+				"ru-RU": {
+					"title": "Просмотреть историю"
 				}
 			},
 			"level": 1,
@@ -20,8 +44,32 @@
 				"zh-CN": {
 					"title": "聊天"
 				},
-				"en": {
+				"en-UK": {
 					"title": "Chat"
+				},
+				"de-DE": {
+					"title": "Chat"
+				},
+				"es-ES": {
+					"title": "Chat"
+				},
+				"fr-FR": {
+					"title": "Chat"
+				},
+				"hi-IN": {
+					"title": "चैट"
+				},
+				"ja-JP": {
+					"title": "チャット"
+				},
+				"ko-KR": {
+					"title": "채팅"
+				},
+				"pt-PT": {
+					"title": "Chat"
+				},
+				"ru-RU": {
+					"title": "Чат"
 				}
 			},
 			"level": 0,

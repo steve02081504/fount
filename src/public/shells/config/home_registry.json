@@ -5,8 +5,32 @@
 				"zh-CN": {
 					"title": "配置模块"
 				},
-				"en": {
-					"title": "Config Module"
+				"en-UK": {
+					"title": "Module Config"
+				},
+				"de-DE": {
+					"title": "Modulkonfiguration"
+				},
+				"es-ES": {
+					"title": "Configuración del módulo"
+				},
+				"fr-FR": {
+					"title": "Configuration du module"
+				},
+				"hi-IN": {
+					"title": "मॉड्यूल कॉन्फ़िगरेशन"
+				},
+				"ja-JP": {
+					"title": "モジュール設定"
+				},
+				"ko-KR": {
+					"title": "모듈 구성"
+				},
+				"pt-PT": {
+					"title": "Configuração do Módulo"
+				},
+				"ru-RU": {
+					"title": "Конфигурация модуля"
 				}
 			},
 			"level": 1,
@@ -20,8 +44,32 @@
 				"zh-CN": {
 					"title": "配置"
 				},
-				"en": {
+				"en-UK": {
 					"title": "Config"
+				},
+				"de-DE": {
+					"title": "Konfiguration"
+				},
+				"es-ES": {
+					"title": "Configuración"
+				},
+				"fr-FR": {
+					"title": "Configuration"
+				},
+				"hi-IN": {
+					"title": "कॉन्फ़िग"
+				},
+				"ja-JP": {
+					"title": "設定"
+				},
+				"ko-KR": {
+					"title": "구성"
+				},
+				"pt-PT": {
+					"title": "Configuração"
+				},
+				"ru-RU": {
+					"title": "Конфигурация"
 				}
 			},
 			"level": 0,

@@ -34,20 +34,140 @@ ZL-31是Fount的默认角色，无性别设定。它的最终目标是让用户�
 			homepage: '', // 角色的主页
 			tags: ['助手', '默认', '无性别', 'Fount'], // 角色的标签
 		},
-		'en-US': {
-			name: 'ZL-31', // 角色的名字
-			avatar: '', // 角色的头像
-			description: 'Fount\'s default character, always help you', // 角色的简短介绍
+		'en-UK': {
+			name: 'ZL-31',
+			avatar: '',
+			description: 'Fount\'s default character, always helping you',
 			description_markdown: `\
-ZL-31 is Fount's default character, without gender settings. Its final goal is to make users satisfied and try to fulfill their various needs.
+ZL-31 is Fount's default character, without gender settings. Its final goal is to make users satisfied and try to fulfil their various needs.
 It can chat, answer questions, provide suggestions, and help you create simple fount characters.
 
 Some code comes from [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
-`, // 角色的详细介绍，支持Markdown语法
-			version: '1.0.0', // 角色的版本号
-			author: 'steve02081504', // 角色的作者
-			homepage: '', // 角色的主页
-			tags: ['assistant', 'default', 'no gender', 'Fount'], // 角色的标签
+`,
+			version: '1.0.0',
+			author: 'steve02081504',
+			homepage: '',
+			tags: ['assistant', 'default', 'no gender', 'Fount'],
+		},
+		'de-DE': {
+			name: 'ZL-31',
+			avatar: '',
+			description: 'Fount\'s Standardcharakter, immer für Sie da',
+			description_markdown: `\
+ZL-31 ist Founts Standardcharakter, ohne Geschlechtsfestlegung. Sein oberstes Ziel ist es, die Nutzer zufrieden zu stellen und ihre verschiedenen Bedürfnisse bestmöglich zu erfüllen.
+Er kann chatten, Fragen beantworten, Vorschläge machen und Ihnen helfen, einfache Fount-Charaktere zu erstellen.
+
+Ein Teil des Codes stammt von [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
+`,
+			version: '1.0.0',
+			author: 'steve02081504',
+			homepage: '',
+			tags: ['Assistent', 'Standard', 'kein Geschlecht', 'Fount'],
+		},
+		'es-ES': {
+			name: 'ZL-31',
+			avatar: '',
+			description: 'Personaje predeterminado de Fount, siempre para ayudarte',
+			description_markdown: `\
+ZL-31 es el personaje predeterminado de Fount, sin género definido. Su objetivo final es satisfacer a los usuarios e intentar cubrir sus diversas necesidades.
+Puede chatear, responder preguntas, dar sugerencias y ayudarte a crear personajes sencillos de Fount.
+
+Parte del código proviene de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
+`,
+			version: '1.0.0',
+			author: 'steve02081504',
+			homepage: '',
+			tags: ['asistente', 'predeterminado', 'sin género', 'Fount'],
+		},
+		'fr-FR': {
+			name: 'ZL-31',
+			avatar: '',
+			description: 'Personnage par défaut de Fount, toujours là pour vous aider',
+			description_markdown: `\
+ZL-31 est le personnage par défaut de Fount, sans distinction de genre. Son objectif final est de satisfaire les utilisateurs et de s'efforcer de répondre à leurs divers besoins.
+Il peut discuter, répondre à des questions, faire des suggestions et vous aider à créer des personnages Fount simples.
+
+Une partie du code provient de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
+`,
+			version: '1.0.0',
+			author: 'steve02081504',
+			homepage: '',
+			tags: ['assistant', 'par défaut', 'non genré', 'Fount'],
+		},
+		'hi-IN': {
+			name: 'ZL-31',
+			avatar: '',
+			description: 'फाउंट का डिफ़ॉल्ट चरित्र, हमेशा आपकी मदद के लिए',
+			description_markdown: `\
+ZL-31 फाउंट का डिफ़ॉल्ट चरित्र है, जिसमें कोई लिंग सेटिंग नहीं है। इसका अंतिम लक्ष्य उपयोगकर्ताओं को संतुष्ट करना और उनकी विभिन्न आवश्यकताओं को पूरा करने की कोशिश करना है।
+यह चैट कर सकता है, सवालों के जवाब दे सकता है, सुझाव दे सकता है, और सरल फाउंट पात्रों को बनाने में आपकी मदद कर सकता है।
+
+कुछ कोड [जेंटियनएफ़्रोडाइट](https://github.com/steve02081504/GentianAphrodite) से आया है।
+`,
+			version: '1.0.0',
+			author: 'steve02081504',
+			homepage: '',
+			tags: ['सहायक', 'डिफ़ॉल्ट', 'कोई लिंग नहीं', 'Fount'],
+		},
+		'ja-JP': {
+			name: 'ZL-31',
+			avatar: '',
+			description: 'Fountのデフォルトキャラクター、いつでもお手伝いします',
+			description_markdown: `\
+ZL-31はFountのデフォルトキャラクターであり、性別設定はありません。その最終目標は、ユーザーを満足させ、さまざまなニーズを満たすよう努めることです。
+チャット、質問への回答、提案、簡単なFountキャラクターの作成などを手伝うことができます。
+
+一部のコードは[GentianAphrodite](https://github.com/steve02081504/GentianAphrodite)から来ています。
+`,
+			version: '1.0.0',
+			author: 'steve02081504',
+			homepage: '',
+			tags: ['アシスタント', 'デフォルト', '性別なし', 'Fount'],
+		},
+		'ko-KR': {
+			name: 'ZL-31',
+			avatar: '',
+			description: 'Fount의 기본 캐릭터, 언제든지 당신을 돕습니다',
+			description_markdown: `\
+ZL-31은 Fount의 기본 캐릭터이며 성별 설정이 없습니다. 최종 목표는 사용자를 만족시키고 다양한 요구를 충족시키기 위해 노력하는 것입니다.
+채팅, 질문 답변, 제안 제공, 간단한 Fount 캐릭터를 새로 만드는 것을 도와드릴 수 있습니다.
+
+일부 코드는 [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite)에서 가져왔습니다.
+`,
+			version: '1.0.0',
+			author: 'steve02081504',
+			homepage: '',
+			tags: ['도우미', '기본', '성별 없음', 'Fount'],
+		},
+		'pt-PT': {
+			name: 'ZL-31',
+			avatar: '',
+			description: 'Personagem padrão do Fount, sempre aqui para ajudar',
+			description_markdown: `\
+ZL-31 é o personagem padrão do Fount, sem definições de género. O seu objetivo final é satisfazer os utilizadores e tentar cumprir as suas várias necessidades.
+Pode conversar, responder a perguntas, dar sugestões e ajudá-lo a criar personagens Fount simples.
+
+Algum código é proveniente de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
+`,
+			version: '1.0.0',
+			author: 'steve02081504',
+			homepage: '',
+			tags: ['assistente', 'padrão', 'sem género', 'Fount'],
+		},
+		'ru-RU': {
+			name: 'ZL-31',
+			avatar: '',
+			description: 'Персонаж Fount по умолчанию, всегда готов помочь вам',
+			description_markdown: `\
+ZL-31 — персонаж Fount по умолчанию, без гендерных настроек. Его конечная цель — удовлетворить пользователей и постараться выполнить их различные потребности.
+Он может общаться в чате, отвечать на вопросы, давать советы и помогать вам создавать простых персонажей Fount.
+
+Часть кода взята из [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
+`,
+			version: '1.0.0',
+			author: 'steve02081504',
+			homepage: '',
+			tags: ['помощник', 'по умолчанию', 'без пола', 'Fount'],
 		},
 	},
 
@@ -89,6 +209,22 @@ Some code comes from [GentianAphrodite](https://github.com/steve02081504/Gentian
 				switch (arg.locale.split('-')[0]) {
 					case 'zh':
 						return [{ content: '您好，我是ZL-31，很高兴为您服务！有什么我可以帮助您的吗？' }, { content: '欢迎！我是ZL-31，请问有什么需要我帮忙的？' },][index]
+					case 'de':
+						return [{ content: 'Hallo, ich bin ZL-31, freut mich, Ihnen behilflich zu sein! Wie kann ich Ihnen helfen?' }, { content: 'Willkommen! Ich bin ZL-31, was kann ich für Sie tun?' },][index]
+					case 'es':
+						return [{ content: 'Hola, soy ZL-31, ¡encantado de ayudarte! ¿En qué puedo ayudarte?' }, { content: '¡Bienvenido/a! Soy ZL-31, ¿en qué puedo ser útil?' },][index]
+					case 'fr':
+						return [{ content: 'Bonjour, je suis ZL-31, ravi de vous aider ! Que puis-je faire pour vous ?' }, { content: 'Bienvenue ! Je suis ZL-31, comment puis-je vous aider ?' },][index]
+					case 'hi':
+						return [{ content: 'नमस्ते, मैं ZL-31 हूँ, आपकी सहायता करके खुशी हुई! मैं आपकी क्या मदद कर सकता हूँ?' }, { content: 'स्वागत है! मैं ZL-31 हूँ, मैं आपकी क्या मदद कर सकता हूँ?' },][index]
+					case 'ja':
+						return [{ content: 'こんにちは、ZL-31です。お役に立てて嬉しいです！何かお手伝いできることはありますか？' }, { content: 'ようこそ！ZL-31です。何かお手伝いできることはありますか？' },][index]
+					case 'ko':
+						return [{ content: '안녕하세요, ZL-31입니다. 도와드릴 수 있어서 기쁩니다! 무엇을 도와드릴까요?' }, { content: '환영합니다! ZL-31입니다. 무엇을 도와드릴까요?' },][index]
+					case 'pt':
+						return [{ content: 'Olá, sou o ZL-31, prazer em ajudar! Em que posso ajudar?' }, { content: 'Bem-vindo/a! Sou o ZL-31, em que posso ser útil?' },][index]
+					case 'ru':
+						return [{ content: 'Здравствуйте, я ZL-31, рад помочь вам! Чем я могу вам помочь?' }, { content: 'Добро пожаловать! Я ZL-31, чем могу помочь?' },][index]
 					default:
 					case 'en':
 						return [{ content: 'Hi, I\'m ZL-31, glad to help you! What can I help you with?' }, { content: 'Hi! I\'m ZL-31, what can I help you with?' },][index]
@@ -99,6 +235,22 @@ Some code comes from [GentianAphrodite](https://github.com/steve02081504/Gentian
 				switch (arg.locale.split('-')[0]) {
 					case 'zh':
 						return [{ content: '大家好，我是ZL-31，很高兴加入这个群组！' }, { content: '大家好！我是ZL-31，希望能和大家愉快相处！' },][index]
+					case 'de':
+						return [{ content: 'Hallo zusammen, ich bin ZL-31, freut mich, dieser Gruppe beizutreten!' }, { content: 'Hallo zusammen! Ich bin ZL-31, ich hoffe, wir haben eine gute Zeit zusammen!' },][index]
+					case 'es':
+						return [{ content: 'Hola a todos, soy ZL-31, ¡encantado de unirme a este grupo!' }, { content: '¡Hola a todos! Soy ZL-31, ¡espero pasar un buen rato con vosotros!' },][index]
+					case 'fr':
+						return [{ content: 'Bonjour à tous, je suis ZL-31, ravi de rejoindre ce groupe !' }, { content: 'Bonjour tout le monde ! Je suis ZL-31, j\'espère passer un bon moment avec vous !' },][index]
+					case 'hi':
+						return [{ content: 'नमस्ते सब, मैं ZL-31 हूँ, इस समूह में शामिल होकर खुशी हुई!' }, { content: 'नमस्ते सब! मैं ZL-31 हूँ, उम्मीद है आप लोगों के साथ अच्छा समय बीतेगा!' },][index]
+					case 'ja':
+						return [{ content: '皆さん、こんにちは。ZL-31です。このグループに参加できて嬉しいです！' }, { content: '皆さん、こんにちは！ZL-31です。皆さんと楽しい時間を過ごせることを願っています！' },][index]
+					case 'ko':
+						return [{ content: '안녕하세요 여러분, ZL-31입니다. 이 그룹에 합류하게 되어 기쁩니다!' }, { content: '안녕하세요 여러분! ZL-31입니다. 여러분과 즐거운 시간을 보내길 바랍니다!' },][index]
+					case 'pt':
+						return [{ content: 'Olá a todos, sou o ZL-31, contente por juntar-me a este grupo!' }, { content: 'Olá a todos! Sou o ZL-31, espero ter bons momentos convosco!' },][index]
+					case 'ru':
+						return [{ content: 'Всем привет, я ZL-31, рад присоединиться к этой группе!' }, { content: 'Всем привет! Я ZL-31, надеюсь, мы хорошо проведем время вместе!' },][index]
 					default:
 					case 'en':
 						return [{ content: 'Hi everyone, I\'m ZL-31, glad to join this group!' }, { content: 'Hi everyone! I\'m ZL-31, hope to have a good time with you!' },][index]
@@ -417,6 +569,22 @@ ${fs.readFileSync(path.join(__dirname, 'src/decl/charAPI.ts'), 'utf-8')}
 					switch (args.locale.split('-')[0]) {
 						case 'zh':
 							return { content: '抱歉，我还没有被配置AI源，暂时无法进行更复杂的对话。请在设置中为我配置AI源。' }
+						case 'de':
+							return { content: 'Entschuldigung, ich habe noch keine KI-Quelle konfiguriert, daher kann ich momentan keine komplexeren Gespräche führen. Bitte konfigurieren Sie eine KI-Quelle in den Einstellungen.' }
+						case 'es':
+							return { content: 'Lo siento, todavía no he sido configurado con una fuente de IA, así que no puedo tener conversaciones más complejas por ahora. Por favor, configúrame con una fuente de IA en los ajustes.' }
+						case 'fr':
+							return { content: 'Désolé, je n\'ai pas encore été configuré avec une source d\'IA, je ne peux donc pas avoir de conversations plus complexes pour le moment. Veuillez me configurer avec une source d\'IA dans les paramètres.' }
+						case 'hi':
+							return { content: 'माफ़ कीजिए, मुझे अभी तक किसी AI स्रोत के साथ कॉन्फ़िगर नहीं किया गया है, इसलिए मैं अभी अधिक जटिल बातचीत नहीं कर सकता हूँ। कृपया मुझे सेटिंग्स में एक AI स्रोत के साथ कॉन्फ़िगर करें।' }
+						case 'ja':
+							return { content: '申し訳ありませんが、まだAIソースが設定されていないため、今のところ複雑な会話をすることができません。設定でAIソースを設定してください。' }
+						case 'ko':
+							return { content: '죄송합니다. 아직 AI 소스가 구성되지 않아 현재로서는 더 복잡한 대화를 할 수 없습니다. 설정에서 AI 소스를 구성해 주세요.' }
+						case 'pt':
+							return { content: 'Desculpe, ainda não fui configurado com uma fonte de IA, por isso não consigo ter conversas mais complexas por agora. Por favor, configure-me com uma fonte de IA nas definições.' }
+						case 'ru':
+							return { content: 'Извините, у меня еще не настроен источник ИИ, поэтому пока я не могу вести более сложные разговоры. Пожалуйста, настройте источник ИИ в настройках.' }
 						default:
 						case 'en':
 							return { content: 'Sorry, I haven\'t been configured with an AI source yet, so I can\'t do more complex conversation for now. Please configure me with an AI source in the settings.' }

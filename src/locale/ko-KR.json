@@ -162,6 +162,33 @@
 			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 떠나시겠습니까?"
 		}
 	},
+	"uninstall": {
+		"title": "제거",
+		"titleWithName": "${type}/${name} 제거",
+		"confirmMessage": "${type}: ${name}을(를) 제거하시겠습니까?",
+		"invalidParamsTitle": "잘못된 매개변수",
+		"infoMessage": {
+			"icon": {
+				"alt": "정보 아이콘"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "오류 아이콘"
+			}
+		},
+		"buttons": {
+			"confirm": "제거 확인",
+			"cancel": "취소",
+			"back": "뒤로"
+		},
+		"alerts": {
+			"success": "${type}: ${name} 제거 성공",
+			"failed": "제거 실패: ${error}",
+			"invalidParams": "잘못된 요청 매개변수입니다.",
+			"httpError": "HTTP 오류! 상태 코드: ${status}"
+		}
+	},
 	"chat": {
 		"title": "채팅",
 		"sidebar": {
