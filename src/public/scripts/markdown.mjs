@@ -8,9 +8,17 @@ import remarkGfm from 'https://esm.run/remark-gfm'
 import remarkBreaks from 'https://esm.run/remark-breaks'
 import rehypePrettyCode from 'https://esm.run/rehype-pretty-code'
 import { transformerCopyButton } from 'https://esm.run/@rehype-pretty/transformers'
+function remarkDisable(options = {}) {
+	const data = this.data()
+	const list = data.micromarkExtensions || (data.micromarkExtensions = [])
+	list.push({disable: {null: options.disable || []}})
+}
 
 const convertor = unified()
 	.use(remarkParse)
+	.use(remarkDisable, {
+		disable: ['codeIndented'],
+	})
 	.use(remarkBreaks)
 	.use(remarkMath)
 	.use(remarkRehype, {
