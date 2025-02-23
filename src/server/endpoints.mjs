@@ -106,23 +106,24 @@ export function registerEndpoints(router) {
 		})
 		const autoloader = async (req, res, next) => {
 			const path = decodeURIComponent(req.path)
-			{
-				const pathext = path.split('.').pop()
-				if (pathext != path && !['js', 'html'].includes(pathext)) return next() // 跳过纯资源路径
-			}
-			const { username } = await getUserByToken(req.cookies.accessToken)
 			const partName = (() => {
 				let patharr = path.split('/')
 				const partIndex = patharr.indexOf(part)
 				patharr = patharr.slice(partIndex + 1)
 				return patharr[0]
 			})()
+			let pathext = path.split('.').pop()
+			if (pathext != path && !['html', 'js', 'mjs'].includes(pathext)) return next() // 跳过纯资源路径
+			try {
+				const { username } = await getUserByToken(req.cookies.accessToken)
+				let loader = loadPart(username, part, partName)
+				if (path.startsWith('/api/')) await loader
+			} catch (e) { }
 
-			await loadPart(username, part, partName)
-
-			next()
+			return next()
 		}
 		router.post(new RegExp('^/api/' + part + '/'), authenticate, autoloader)
+		router.get(new RegExp('^/api/' + part + '/'), authenticate, autoloader)
 		router.get(new RegExp('^/' + part + '/'), authenticate, autoloader, async (req, res) => {
 			const { username } = await getUserByToken(req.cookies.accessToken)
 			let path = decodeURIComponent(req.path)
