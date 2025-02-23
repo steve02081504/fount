@@ -9,6 +9,7 @@ export class chatReply_t {
 	name?: string;
 	avatar?: string;
 	content: string;
+	content_for_show?: string;
 	content_for_edit?: string;
 	files?: {
 		name: string;
@@ -58,6 +59,7 @@ export class chatLogEntry_t {
 	timeStamp: timeStamp_t;
 	role: role_t;
 	content: string;
+	content_for_show?: string;
 	content_for_edit?: string;
 	files: {
 		name: string;

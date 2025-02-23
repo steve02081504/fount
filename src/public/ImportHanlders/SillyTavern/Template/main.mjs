@@ -77,7 +77,7 @@ export default {
 			GetGreeting: (arg, index) => {
 				const greetings = [chardata?.first_mes, ...chardata?.alternate_greetings ?? []].filter(x => x)
 				if (index >= greetings.length) throw new Error('Invalid index')
-				let result = evaluateMacros(greetings[index], {
+				const result = evaluateMacros(greetings[index], {
 					char: chardata.name,
 					user: arg.UserCharname,
 					model: AIsource?.filename,
@@ -85,14 +85,14 @@ export default {
 					char_version: chardata.character_version,
 				})
 				return {
-					content: runRegex(chardata, regex_placement.AI_OUTPUT, result),
-					content_for_edit: result
+					content: runRegex(chardata, result, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.markdownOnly && !e.promptOnly),
+					content_for_show: runRegex(chardata, result, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.promptOnly)
 				}
 			},
 			GetGroupGreeting: (arg, index) => {
 				const greetings = [...new Set([...chardata?.extensions?.group_greetings ?? [], ...chardata?.group_only_greetings ?? []].filter(x => x))]
 				if (index >= greetings.length) throw new Error('Invalid index')
-				let result = evaluateMacros(greetings[index], {
+				const result = evaluateMacros(greetings[index], {
 					char: chardata.name,
 					user: arg.UserCharname,
 					model: AIsource?.filename,
@@ -100,8 +100,8 @@ export default {
 					char_version: chardata.character_version,
 				})
 				return {
-					content: runRegex(chardata, regex_placement.AI_OUTPUT, result),
-					content_for_edit: result
+					content: runRegex(chardata, result, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.markdownOnly && !e.promptOnly),
+					content_for_show: runRegex(chardata, result, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.promptOnly)
 				}
 			},
 			GetPrompt: (arg, prompt_struct, detail_level) => {
@@ -114,8 +114,8 @@ export default {
 				}
 				const reply = await AIsource?.StructCall?.(await buildPromptStruct(arg)) ?? ''
 				return {
-					content: runRegex(chardata, regex_placement.AI_OUTPUT, reply),
-					content_for_edit: reply
+					content: runRegex(chardata, reply, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.markdownOnly && !e.promptOnly),
+					content_for_show: runRegex(chardata, reply, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.promptOnly)
 				}
 			},
 			GetReplyFequency: async (arg) => {
@@ -125,8 +125,8 @@ export default {
 			MessageEdit: (arg) => {
 				return {
 					...arg.edited,
-					content: runRegex(chardata, regex_placement.AI_OUTPUT, arg.edited.content),
-					content_for_edit: arg.edited.content
+					content: runRegex(chardata, arg.edited.content, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.markdownOnly && !e.promptOnly && (e.runOnEdit ?? true)),
+					content_for_show: runRegex(chardata, arg.edited.content, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.promptOnly && (e.runOnEdit ?? true)),
 				}
 			}
 		}

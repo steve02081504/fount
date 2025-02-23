@@ -16,7 +16,7 @@ export async function renderMessage(message) {
 		...message,
 		avatar: message.avatar || DEFAULT_AVATAR,
 		timeStamp: new Date(message.timeStamp).toLocaleString(),
-		content: await renderMarkdown(message.content),
+		content: await renderMarkdown(message.content_for_show || message.content),
 		safeTimeStamp: processTimeStampForId(message.timeStamp)
 	}
 

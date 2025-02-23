@@ -106,6 +106,7 @@ class chatLogEntry_t {
 	timeStamp
 	role
 	content
+	content_for_show
 	content_for_edit
 	timeSlice = new timeSlice_t()
 	files = []
@@ -616,6 +617,7 @@ function BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, u
 		name: result.name || info.name || charname,
 		avatar: result.avatar || info.avatar,
 		content: result.content,
+		content_for_show: result.content_for_show,
 		content_for_edit: result.content_for_edit,
 		timeSlice: new_timeSlice,
 		role: 'char',
@@ -668,8 +670,8 @@ async function getCharReplyFrequency(chatid) {
 
 	for (const charname in chatMetadata.LastTimeSlice.chars) {
 		const char = chatMetadata.LastTimeSlice.chars[charname]
-		let charbase = await char.interfaces?.chat?.GetReplyFequency?.(await getChatRequest(chatid, charname)) || 1
-		let userbase = chatMetadata.LastTimeSlice.chars_speaking_frequency[charname] || 1
+		const charbase = await char.interfaces?.chat?.GetReplyFequency?.(await getChatRequest(chatid, charname)) || 1
+		const userbase = chatMetadata.LastTimeSlice.chars_speaking_frequency[charname] || 1
 		result.push({
 			charname,
 			frequency: charbase * userbase

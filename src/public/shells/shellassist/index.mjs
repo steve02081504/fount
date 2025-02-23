@@ -19,7 +19,7 @@ const terminal = new Terminal({
 	cursorBlink: true
 })
 
-let fiter = new FitAddon()
+const fiter = new FitAddon()
 terminal.loadAddon(fiter)
 terminal.loadAddon(new WebLinksAddon())
 terminal.loadAddon(new ClipboardAddon())
@@ -27,8 +27,8 @@ terminal.loadAddon(new ClipboardAddon())
 terminal.open(document.getElementById('terminal'))
 fiter.fit()
 window.addEventListener('resize', () => {
-	fiter.fit();
-});
+	fiter.fit()
+})
 terminal.element.addEventListener('contextmenu', async (event) => {
 	event.preventDefault()
 	const selectedText = terminal.getSelection()
