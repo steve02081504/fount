@@ -62,6 +62,7 @@ function applyTranslations() {
 	const descriptionMeta = document.querySelector('meta[name="description"]')
 	if (descriptionMeta)
 		descriptionMeta.content = geti18n(`${saved_pageid}.description`)
+	document.documentElement.lang = geti18n('lang')
 
 	i18nElement(document)
 }

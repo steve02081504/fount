@@ -1,4 +1,6 @@
 import { loadJsonFile } from '../../../../../scripts/json_loader.mjs'
+import { getLocalizedInfo } from '../../../../../scripts/locale.mjs'
+import { getUserByUsername } from '../../../../../server/auth.mjs'
 import { getPartListBase, GetPartPath } from '../../../../../server/parts_loader.mjs'
 import { loadTempData } from '../../../../../server/setting_loader.mjs'
 
@@ -56,8 +58,13 @@ export async function loadHomeRegistry(username) {
 export async function expandHomeRegistry(username) {
 	const user_home_registry = loadTempData(username, 'home_registry')
 	if (!Object.keys(user_home_registry).length) await loadHomeRegistry(username)
+	const { locales } = getUserByUsername(username)
+	const preprocess = list => Object.values(list).flat().sort((a, b) => a.level - b.level).map(button => ({
+		...button,
+		info: getLocalizedInfo(button.info, locales)
+	}))
 	return {
-		home_function_buttons: Object.values(user_home_registry.home_function_buttons).flat().sort((a, b) => a.level - b.level),
-		home_char_interfaces: Object.values(user_home_registry.home_char_interfaces).flat().sort((a, b) => a.level - b.level)
+		home_function_buttons: preprocess(user_home_registry.home_function_buttons),
+		home_char_interfaces: preprocess(user_home_registry.home_char_interfaces)
 	}
 }

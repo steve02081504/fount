@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html data-theme="dark">
 
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Authentication</title>
+	<title data-i18n="auth.title"></title>
 	<link rel="stylesheet" href="./index.css">
 	<link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.min.css" rel="stylesheet" type="text/css" />
 	<script src="https://cdn.tailwindcss.com"></script>
@@ -15,39 +15,39 @@
 		<div class="card w-96 bg-base-100 shadow-xl">
 			<div class="card-body">
 				<form id="auth-form">
-					<h2 class="card-title" id="form-title"></h2>
-					<p class="text-xs text-gray-500" id="form-subtitle"></p>
+					<h2 class="card-title" id="form-title" data-i18n="auth.form.title"></h2>
+					<p class="text-xs text-gray-500" id="form-subtitle" data-i18n="auth.form.subtitle"></p>
 					<p class="text-error text-xs" id="error-message"></p>
 					<div class="form-control">
 						<label class="label" for="username">
-							<span class="label-text">Username:</span>
+							<span class="label-text" data-i18n="auth.form.usernameLabel"></span>
 						</label>
-						<input type="text" id="username" name="username" class="input input-bordered" required>
+						<input type="text" id="username" name="username" class="input input-bordered" required placeholder="" data-i18n="auth.form.usernameInput.placeholder" />
 					</div>
 					<div class="form-control">
 						<label class="label" for="password">
-							<span class="label-text">Password:</span>
+							<span class="label-text" data-i18n="auth.form.passwordLabel"></span>
 						</label>
-						<input type="password" id="password" name="password" class="input input-bordered" required>
+						<input type="password" id="password" name="password" class="input input-bordered" required placeholder="" data-i18n="auth.form.passwordInput.placeholder" />
 						<div id="password-strength-feedback" class="text-xs mt-1"></div>
 					</div>
 					<div class="form-control" id="confirm-password-group">
 						<label class="label" for="confirm-password">
-							<span class="label-text">Confirm Password:</span>
+							<span class="label-text" data-i18n="auth.form.confirmPasswordLabel"></span>
 						</label>
-						<input type="password" id="confirm-password" name="confirm-password" class="input input-bordered">
+						<input type="password" id="confirm-password" name="confirm-password" class="input input-bordered" placeholder="" data-i18n="auth.form.confirmPasswordInput.placeholder">
 					</div>
 					<div class="form-control" id="verification-code-group">
 						<label class="label" for="verification-code">
-							<span class="label-text">Verification Code:</span>
+							<span class="label-text" data-i18n="auth.form.verificationCodeLabel"></span>
 						</label>
 						<div class="flex space-x-2">
-							<input type="text" id="verification-code" name="verification-code" class="input input-bordered w-full" required>
-							<button class="btn btn-primary" type="button" id="send-verification-code-btn">Send Code</button>
+							<input type="text" id="verification-code" name="verification-code" class="input input-bordered w-full" required placeholder="" data-i18n="auth.form.verificationCodeInput.placeholder" />
+							<button class="btn btn-primary" type="button" id="send-verification-code-btn" data-i18n="auth.form.sendCodeButton"></button>
 						</div>
 					</div>
 					<div class="card-actions justify-end mt-4">
-						<button class="btn btn-primary" type="submit" id="submit-btn"></button>
+						<button class="btn btn-primary" type="submit" id="submit-btn" data-i18n="auth.form.submitButton"></button>
 					</div>
 					<p class="text-sm mt-2" id="toggle-link"></p>
 				</form>

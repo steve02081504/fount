@@ -41,6 +41,7 @@ export function registerEndpoints(router) {
 					break
 				}
 				resultLocale = localeList.find((name) => name.startsWith(preferredLang.split('-')[0]))
+				if (resultLocale) break
 			}
 		}
 

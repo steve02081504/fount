@@ -1,4 +1,68 @@
 {
+	"lang": "de-DE",
+	"protocolhandler": {
+		"title": "Fount-Protokoll verarbeiten",
+		"processing": "Protokoll wird verarbeitet...",
+		"invalidProtocol": "Ungültiges Protokoll",
+		"insufficientParams": "Unzureichende Parameter",
+		"unknownCommand": "Unbekannter Befehl",
+		"shellCommandSent": "Shell-Befehl gesendet",
+		"shellCommandFailed": "Senden des Shell-Befehls fehlgeschlagen",
+		"shellCommandError": "Fehler beim Senden des Shell-Befehls"
+	},
+	"auth": {
+		"title": "Authentifizierung",
+		"form": {
+			"title": "Anmeldung",
+			"subtitle": "Benutzerdaten werden lokal gespeichert",
+			"usernameLabel": "Benutzername:",
+			"usernameInput": {
+				"placeholder": "Bitte Benutzernamen eingeben"
+			},
+			"passwordLabel": "Passwort:",
+			"passwordInput": {
+				"placeholder": "Bitte Passwort eingeben"
+			},
+			"confirmPasswordLabel": "Passwort bestätigen:",
+			"confirmPasswordInput": {
+				"placeholder": "Bitte Passwort erneut eingeben"
+			},
+			"verificationCodeLabel": "Verifizierungscode:",
+			"verificationCodeInput": {
+				"placeholder": "Bitte Verifizierungscode eingeben"
+			},
+			"sendCodeButton": "Code senden",
+			"submitButton": "Anmelden"
+		},
+		"error": {
+			"passwordMismatch": "Passwörter stimmen nicht überein.",
+			"loginError": "Fehler beim Anmelden.",
+			"registrationError": "Fehler beim Registrieren.",
+			"verificationCodeError": "Verifizierungscode fehlerhaft oder abgelaufen.",
+			"verificationCodeSent": "Verifizierungscode erfolgreich gesendet.",
+			"verificationCodeSendError": "Verifizierungscode konnte nicht gesendet werden.",
+			"verificationCodeRateLimit": "Zu viele Anfragen zum Senden des Verifizierungscodes. Bitte später erneut versuchen.",
+			"lowPasswordStrength": "Passwortstärke zu niedrig.",
+			"accountAlreadyExists": "Konto existiert bereits"
+		},
+		"passwordStrength": {
+			"veryWeak": "Sehr schwach",
+			"weak": "Schwach",
+			"normal": "Normal",
+			"strong": "Stark",
+			"veryStrong": "Sehr stark"
+		},
+		"toggleLink": {
+			"login": {
+				"text": "Kein Konto?",
+				"link": "Jetzt registrieren"
+			},
+			"register": {
+				"text": "Bereits ein Konto?",
+				"link": "Jetzt anmelden"
+			}
+		}
+	},
 	"tutorial": {
 		"title": "Tutorial?",
 		"modal": {

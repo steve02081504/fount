@@ -1,4 +1,68 @@
 {
+	"lang": "hi-IN",
+	"protocolhandler": {
+		"title": "फाउंट प्रोटोकॉल संसाधित किया जा रहा है",
+		"processing": "प्रोटोकॉल संसाधित किया जा रहा है...",
+		"invalidProtocol": "अमान्य प्रोटोकॉल",
+		"insufficientParams": "अपर्याप्त पैरामीटर",
+		"unknownCommand": "अज्ञात कमांड",
+		"shellCommandSent": "शैल कमांड भेजा गया",
+		"shellCommandFailed": "शैल कमांड भेजने में विफल",
+		"shellCommandError": "शैल कमांड भेजने में त्रुटि"
+	},
+	"auth": {
+		"title": "प्रमाणीकरण",
+		"form": {
+			"title": "लॉग इन करें",
+			"subtitle": "उपयोगकर्ता डेटा स्थानीय रूप से संग्रहीत है",
+			"usernameLabel": "उपयोगकर्ता नाम:",
+			"usernameInput": {
+				"placeholder": "कृपया उपयोगकर्ता नाम दर्ज करें"
+			},
+			"passwordLabel": "पासवर्ड:",
+			"passwordInput": {
+				"placeholder": "कृपया पासवर्ड दर्ज करें"
+			},
+			"confirmPasswordLabel": "पासवर्ड की पुष्टि करें:",
+			"confirmPasswordInput": {
+				"placeholder": "कृपया पासवर्ड दोबारा दर्ज करें"
+			},
+			"verificationCodeLabel": "सत्यापन कोड:",
+			"verificationCodeInput": {
+				"placeholder": "कृपया सत्यापन कोड दर्ज करें"
+			},
+			"sendCodeButton": "कोड भेजें",
+			"submitButton": "लॉग इन करें"
+		},
+		"error": {
+			"passwordMismatch": "पासवर्ड मेल नहीं खाते।",
+			"loginError": "लॉग इन के दौरान एक त्रुटि हुई।",
+			"registrationError": "पंजीकरण के दौरान एक त्रुटि हुई।",
+			"verificationCodeError": "सत्यापन कोड गलत है या समाप्त हो गया है।",
+			"verificationCodeSent": "सत्यापन कोड सफलतापूर्वक भेजा गया।",
+			"verificationCodeSendError": "सत्यापन कोड भेजने में विफल।",
+			"verificationCodeRateLimit": "सत्यापन कोड बहुत बार भेजा जा रहा है। कृपया बाद में पुन: प्रयास करें।",
+			"lowPasswordStrength": "पासवर्ड की सुरक्षा बहुत कम है।",
+			"accountAlreadyExists": "अकाउंट पहले से मौजूद है"
+		},
+		"passwordStrength": {
+			"veryWeak": "बहुत कमजोर",
+			"weak": "कमजोर",
+			"normal": "सामान्य",
+			"strong": "मजबूत",
+			"veryStrong": "बहुत मजबूत"
+		},
+		"toggleLink": {
+			"login": {
+				"text": "खाता नहीं है?",
+				"link": "अभी पंजीकरण करें"
+			},
+			"register": {
+				"text": "क्या आपके पास पहले से ही एक खाता है?",
+				"link": "अभी लॉग इन करें"
+			}
+		}
+	},
 	"tutorial": {
 		"title": "क्या ट्यूटोरियल?",
 		"modal": {

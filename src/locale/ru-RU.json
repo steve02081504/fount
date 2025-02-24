@@ -1,4 +1,68 @@
 {
+	"lang": "ru-RU",
+	"protocolhandler": {
+		"title": "Обработка протокола Fount",
+		"processing": "Обработка протокола...",
+		"invalidProtocol": "Недействительный протокол",
+		"insufficientParams": "Недостаточно параметров",
+		"unknownCommand": "Неизвестная команда",
+		"shellCommandSent": "Shell команда отправлена",
+		"shellCommandFailed": "Не удалось отправить Shell команду",
+		"shellCommandError": "Ошибка при отправке Shell команды"
+	},
+	"auth": {
+		"title": "Аутентификация",
+		"form": {
+			"title": "Войти",
+			"subtitle": "Данные пользователя хранятся локально",
+			"usernameLabel": "Имя пользователя:",
+			"usernameInput": {
+				"placeholder": "Пожалуйста, введите имя пользователя"
+			},
+			"passwordLabel": "Пароль:",
+			"passwordInput": {
+				"placeholder": "Пожалуйста, введите пароль"
+			},
+			"confirmPasswordLabel": "Подтвердите пароль:",
+			"confirmPasswordInput": {
+				"placeholder": "Пожалуйста, введите пароль еще раз"
+			},
+			"verificationCodeLabel": "Код подтверждения:",
+			"verificationCodeInput": {
+				"placeholder": "Пожалуйста, введите код подтверждения"
+			},
+			"sendCodeButton": "Отправить код",
+			"submitButton": "Войти"
+		},
+		"error": {
+			"passwordMismatch": "Пароли не совпадают.",
+			"loginError": "Произошла ошибка при входе.",
+			"registrationError": "Произошла ошибка при регистрации.",
+			"verificationCodeError": "Неверный или истекший код подтверждения.",
+			"verificationCodeSent": "Код подтверждения успешно отправлен.",
+			"verificationCodeSendError": "Не удалось отправить код подтверждения.",
+			"verificationCodeRateLimit": "Слишком частая отправка кода подтверждения. Пожалуйста, попробуйте позже.",
+			"lowPasswordStrength": "Слабый пароль.",
+			"accountAlreadyExists": "Аккаунт уже существует"
+		},
+		"passwordStrength": {
+			"veryWeak": "Очень слабый",
+			"weak": "Слабый",
+			"normal": "Нормальный",
+			"strong": "Сильный",
+			"veryStrong": "Очень сильный"
+		},
+		"toggleLink": {
+			"login": {
+				"text": "Нет аккаунта?",
+				"link": "Зарегистрироваться сейчас"
+			},
+			"register": {
+				"text": "Уже есть аккаунт?",
+				"link": "Войти сейчас"
+			}
+		}
+	},
 	"tutorial": {
 		"title": "Туториал?",
 		"modal": {
