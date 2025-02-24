@@ -12,7 +12,6 @@ const verificationCodeGroup = document.getElementById('verification-code-group')
 const sendVerificationCodeBtn = document.getElementById('send-verification-code-btn')
 const passwordStrengthFeedback = document.getElementById('password-strength-feedback')
 
-
 const isLocalOrigin = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname)
 
 let isLoginForm = true
@@ -37,6 +36,7 @@ function handleToggleClick(event) {
 	event.preventDefault()
 	toggleForm()
 }
+
 function evaluatePasswordStrength(password) {
 	const result = zxcvbn(password)
 	let feedbackText = ''
@@ -72,23 +72,19 @@ function evaluatePasswordStrength(password) {
 }
 
 function updateFormDisplay() {
-	formTitle.textContent = geti18n('auth.form.title')
-	formSubtitle.textContent = geti18n('auth.form.subtitle')
-	submitBtn.textContent = geti18n('auth.form.submitButton')
+	const formType = isLoginForm ? 'login' : 'register'
 
-	const toggleLinkData = isLoginForm ? 'auth.toggleLink.register' : 'auth.toggleLink.login'
-	const toggleLinkText = geti18n(`${toggleLinkData}.text`)
-	const toggleLinkHref = geti18n(`${toggleLinkData}.link`)
-	toggleLink.innerHTML = `${toggleLinkText}<a href="#" class="link link-primary">${toggleLinkHref}</a>`
+	formTitle.textContent = geti18n(`auth.${formType}.title`)
+	submitBtn.textContent = geti18n(`auth.${formType}.submitButton`)
+	toggleLink.innerHTML = `${geti18n(`auth.${formType}.toggleLink.text`)}<a href="#" class="link link-primary">${geti18n(`auth.${formType}.toggleLink.link`)}</a>`
 
 	confirmPasswordGroup.style.display = isLoginForm ? 'none' : 'flex'
-	if (isLocalOrigin) verificationCodeGroup.style.display = 'none'
-	else verificationCodeGroup.style.display = isLoginForm ? 'none' : 'flex'
+	verificationCodeGroup.style.display = isLoginForm || isLocalOrigin ? 'none' : 'flex'
 	errorMessage.textContent = ''
+
 	if (isLoginForm) {
 		verificationCodeSent = false
 		sendVerificationCodeBtn.disabled = false
-		sendVerificationCodeBtn.textContent = geti18n('auth.form.sendCodeButton')
 	}
 }
 
@@ -127,7 +123,7 @@ async function handleSendVerificationCode() {
 				if (timeLeft <= 0) {
 					clearInterval(countdown)
 					sendVerificationCodeBtn.disabled = false
-					sendVerificationCodeBtn.textContent = geti18n('auth.form.sendCodeButton')
+					sendVerificationCodeBtn.textContent = geti18n('auth.sendCodeButton')
 					sendCodeCooldown = false
 				}
 			}, 1000)

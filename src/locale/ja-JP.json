@@ -12,38 +12,50 @@
 	},
 	"auth": {
 		"title": "認証",
-		"form": {
+		"subtitle": "ユーザーデータはローカルに保存されます",
+		"usernameLabel": "ユーザー名:",
+		"usernameInput": {
+			"placeholder": "ユーザー名を入力してください"
+		},
+		"passwordLabel": "パスワード:",
+		"passwordInput": {
+			"placeholder": "パスワードを入力してください"
+		},
+		"confirmPasswordLabel": "パスワードの確認:",
+		"confirmPasswordInput": {
+			"placeholder": "もう一度パスワードを入力してください"
+		},
+		"verificationCodeLabel": "認証コード:",
+		"verificationCodeInput": {
+			"placeholder": "認証コードを入力してください"
+		},
+		"sendCodeButton": "コードを送信",
+		"login": {
 			"title": "ログイン",
-			"subtitle": "ユーザーデータはローカルに保存されます",
-			"usernameLabel": "ユーザー名:",
-			"usernameInput": {
-				"placeholder": "ユーザー名を入力してください"
-			},
-			"passwordLabel": "パスワード:",
-			"passwordInput": {
-				"placeholder": "パスワードを入力してください"
-			},
-			"confirmPasswordLabel": "パスワードの確認:",
-			"confirmPasswordInput": {
-				"placeholder": "パスワードを再入力してください"
-			},
-			"verificationCodeLabel": "認証コード:",
-			"verificationCodeInput": {
-				"placeholder": "認証コードを入力してください"
-			},
-			"sendCodeButton": "コードを送信",
-			"submitButton": "ログイン"
+			"submitButton": "ログイン",
+			"toggleLink": {
+				"text": "アカウントをお持ちでない場合",
+				"link": "今すぐ登録"
+			}
+		},
+		"register": {
+			"title": "登録",
+			"submitButton": "登録",
+			"toggleLink": {
+				"text": "アカウントをお持ちの場合",
+				"link": "今すぐログイン"
+			}
 		},
 		"error": {
 			"passwordMismatch": "パスワードが一致しません。",
-			"loginError": "ログイン中にエラーが発生しました。",
-			"registrationError": "登録中にエラーが発生しました。",
-			"verificationCodeError": "認証コードが無効または期限切れです。",
+			"loginError": "ログインエラー。",
+			"registrationError": "登録エラー。",
+			"verificationCodeError": "認証コードが間違っているか、期限切れです。",
 			"verificationCodeSent": "認証コードが正常に送信されました。",
-			"verificationCodeSendError": "認証コードを送信できませんでした。",
-			"verificationCodeRateLimit": "認証コードの送信頻度が高すぎます。後でもう一度お試しください。",
-			"lowPasswordStrength": "パスワードの強度が低すぎます。",
-			"accountAlreadyExists": "アカウントはすでに存在します"
+			"verificationCodeSendError": "認証コードの送信に失敗しました。",
+			"verificationCodeRateLimit": "認証コードのリクエストが多すぎます。後でもう一度お試しください。",
+			"lowPasswordStrength": "パスワード強度が低すぎます。",
+			"accountAlreadyExists": "アカウントは既に存在します"
 		},
 		"passwordStrength": {
 			"veryWeak": "非常に弱い",
@@ -51,16 +63,6 @@
 			"normal": "普通",
 			"strong": "強い",
 			"veryStrong": "非常に強い"
-		},
-		"toggleLink": {
-			"login": {
-				"text": "アカウントをお持ちでない場合は",
-				"link": "今すぐ登録"
-			},
-			"register": {
-				"text": "すでにアカウントをお持ちの場合は",
-				"link": "今すぐログイン"
-			}
 		}
 	},
 	"tutorial": {

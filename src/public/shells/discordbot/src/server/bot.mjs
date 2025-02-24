@@ -54,6 +54,11 @@ export function getBotConfig(username, botname) {
 	return botsData[botname] || {}
 }
 
+export async function getBotConfigTemplate(username, charname) {
+	const char = await LoadChar(username, charname)
+	return await char.interfaces.discord?.GetBotConfigTemplate?.() || {}
+}
+
 export function setBotConfig(username, botname, config) {
 	const botsData = getBotsData(username)
 	botsData[botname] = config

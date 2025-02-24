@@ -12,55 +12,57 @@
 	},
 	"auth": {
 		"title": "Autenticação",
-		"form": {
-			"title": "Iniciar Sessão",
-			"subtitle": "Os dados do utilizador são armazenados localmente",
-			"usernameLabel": "Nome de utilizador:",
-			"usernameInput": {
-				"placeholder": "Por favor, introduza o nome de utilizador"
-			},
-			"passwordLabel": "Senha:",
-			"passwordInput": {
-				"placeholder": "Por favor, introduza a senha"
-			},
-			"confirmPasswordLabel": "Confirmar Senha:",
-			"confirmPasswordInput": {
-				"placeholder": "Por favor, introduza a senha novamente"
-			},
-			"verificationCodeLabel": "Código de Verificação:",
-			"verificationCodeInput": {
-				"placeholder": "Por favor, introduza o código de verificação"
-			},
-			"sendCodeButton": "Enviar Código",
-			"submitButton": "Iniciar Sessão"
+		"subtitle": "Os dados do utilizador são armazenados localmente",
+		"usernameLabel": "Nome de utilizador:",
+		"usernameInput": {
+			"placeholder": "Introduza o nome de utilizador"
+		},
+		"passwordLabel": "Password:",
+		"passwordInput": {
+			"placeholder": "Introduza a password"
+		},
+		"confirmPasswordLabel": "Confirmar password:",
+		"confirmPasswordInput": {
+			"placeholder": "Introduza novamente a password"
+		},
+		"verificationCodeLabel": "Código de verificação:",
+		"verificationCodeInput": {
+			"placeholder": "Introduza o código de verificação"
+		},
+		"sendCodeButton": "Enviar código",
+		"login": {
+			"title": "Iniciar sessão",
+			"submitButton": "Iniciar sessão",
+			"toggleLink": {
+				"text": "Não tem conta?",
+				"link": "Registe-se agora"
+			}
+		},
+		"register": {
+			"title": "Registar",
+			"submitButton": "Registar",
+			"toggleLink": {
+				"text": "Já tem uma conta?",
+				"link": "Iniciar sessão agora"
+			}
 		},
 		"error": {
-			"passwordMismatch": "As senhas não coincidem.",
-			"loginError": "Ocorreu um erro ao iniciar a sessão.",
-			"registrationError": "Ocorreu um erro ao registar.",
+			"passwordMismatch": "As passwords não correspondem.",
+			"loginError": "Erro ao iniciar sessão.",
+			"registrationError": "Erro ao registar.",
 			"verificationCodeError": "O código de verificação está incorreto ou expirou.",
 			"verificationCodeSent": "Código de verificação enviado com sucesso.",
-			"verificationCodeSendError": "Não foi possível enviar o código de verificação.",
-			"verificationCodeRateLimit": "A enviar o código de verificação com demasiada frequência. Por favor, tente novamente mais tarde.",
-			"lowPasswordStrength": "A força da senha é demasiado fraca.",
+			"verificationCodeSendError": "Falha ao enviar o código de verificação.",
+			"verificationCodeRateLimit": "Demasiados pedidos de código de verificação. Por favor, tente novamente mais tarde.",
+			"lowPasswordStrength": "A força da password é demasiado fraca.",
 			"accountAlreadyExists": "A conta já existe"
 		},
 		"passwordStrength": {
-			"veryWeak": "Muito Fraca",
+			"veryWeak": "Muito fraca",
 			"weak": "Fraca",
 			"normal": "Normal",
 			"strong": "Forte",
-			"veryStrong": "Muito Forte"
-		},
-		"toggleLink": {
-			"login": {
-				"text": "Não tem uma conta?",
-				"link": "Registe-se agora"
-			},
-			"register": {
-				"text": "Já tem uma conta?",
-				"link": "Inicie a sessão agora"
-			}
+			"veryStrong": "Muito forte"
 		}
 	},
 	"tutorial": {

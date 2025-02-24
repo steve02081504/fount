@@ -1,5 +1,5 @@
 import { authenticate, getUserByToken } from '../../../../../server/auth.mjs'
-import { getBotList, runBot, getBotConfig, setBotConfig, deleteBotConfig, getRunningBotList, stopBot } from './bot.mjs'
+import { getBotList, runBot, getBotConfig, setBotConfig, deleteBotConfig, getRunningBotList, stopBot, getBotConfigTemplate } from './bot.mjs'
 
 export function setEndpoints(router) {
 	router.post('/api/shells/discordbot/start', authenticate, async (req, res) => {
@@ -30,6 +30,13 @@ export function setEndpoints(router) {
 		const { username } = await getUserByToken(req.cookies.accessToken)
 		const { botname } = req.query
 		const config = await getBotConfig(username, botname)
+		res.status(200).json(config)
+	})
+
+	router.get('/api/shells/discordbot/getbotConfigTemplate', authenticate, async (req, res) => {
+		const { username } = await getUserByToken(req.cookies.accessToken)
+		const { charname } = req.query
+		const config = await getBotConfigTemplate(username, charname)
 		res.status(200).json(config)
 	})
 

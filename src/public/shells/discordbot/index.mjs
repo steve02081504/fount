@@ -88,6 +88,26 @@ async function runningBotListGet() {
 	return await fetchData('/api/shells/discordbot/getrunningbotlist')
 }
 
+/**
+ * 获取角色对应的配置模板
+ * @param {string} charname 角色名称
+ * @returns {Promise<object | null>} 配置模板
+ */
+async function getBotConfigTemplate(charname) {
+	try {
+		const response = await fetch(`/api/shells/discordbot/getbotConfigTemplate?charname=${charname}`)
+		if (!response.ok) {
+			const message = await response.text()
+			throw new Error(`HTTP error! status: ${response.status}, message: ${message}`)
+		}
+		return await response.json()
+	} catch (error) {
+		console.error('Failed to fetch config template:', error)
+		alert(geti18n('discord_bots.alerts.fetchConfigTemplateFailed', { error: error.message }))
+		return null // 允许用户继续编辑
+	}
+}
+
 // UI 更新函数
 function populateBotList() {
 	botListSelect.innerHTML = ''
@@ -125,6 +145,11 @@ async function loadBotConfig(botname) {
 
 		// 检查角色是否支持 Discord
 		await checkCharSupport(config.char)
+		// 加载初始角色模板
+		if (config.char && !Object.keys(config.config).length) {
+			const template = await getBotConfigTemplate(config.char)
+			if (template) config.config = template
+		}
 
 		if (!configEditor)
 			configEditor = createJsonEditor(configEditorContainer, {
@@ -200,18 +225,22 @@ async function handleDeleteBot() {
 async function checkCharSupport(charName) {
 	if (!charName) {
 		charSupportMessage.classList.add('hidden')
-		return
+		return false
 	}
 	try {
 		const charDetails = await fetchData(`/api/getdetails/chars?name=${charName}`)
-		if (!charDetails.supportedInterfaces.includes('discord'))
-			charSupportMessage.classList.remove('hidden')
-		else
-			charSupportMessage.classList.add('hidden')
 
+		let result = charDetails.supportedInterfaces.includes('discord')
+		if (result)
+			charSupportMessage.classList.add('hidden')
+		else
+			charSupportMessage.classList.remove('hidden')
+
+		return result
 	} catch (error) {
 		console.error('Failed to check character support:', error)
 		charSupportMessage.classList.add('hidden') // 隐藏消息，因为无法确定支持状态
+		return false
 	}
 }
 
@@ -223,8 +252,17 @@ async function handleCharSelectChange() {
 			return
 		}
 
-	await checkCharSupport(charSelect.value)
-	isDirty = true // 更改了选项，标记为 dirty
+	const selectedChar = charSelect.value // 获取选择的角色
+
+	if (await checkCharSupport(selectedChar)) try {
+		isDirty = true // 更改了选项，标记为 dirty
+		const template = await getBotConfigTemplate(selectedChar) // 获取模板
+		if (template && configEditor) {
+			configEditor.set({ json: template }) // 更新编辑器内容
+		}
+	} catch (error) {
+		console.error('Failed to update config editor with template:', error)
+	}
 }
 
 function handleToggleToken() {

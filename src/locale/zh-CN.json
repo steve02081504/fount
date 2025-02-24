@@ -12,27 +12,39 @@
 	},
 	"auth": {
 		"title": "认证",
-		"form": {
+		"subtitle": "用户数据存储在本地",
+		"usernameLabel": "用户名:",
+		"usernameInput": {
+			"placeholder": "请输入用户名"
+		},
+		"passwordLabel": "密码:",
+		"passwordInput": {
+			"placeholder": "请输入密码"
+		},
+		"confirmPasswordLabel": "确认密码:",
+		"confirmPasswordInput": {
+			"placeholder": "请再次输入密码"
+		},
+		"verificationCodeLabel": "验证码:",
+		"verificationCodeInput": {
+			"placeholder": "请输入验证码"
+		},
+		"sendCodeButton": "发送验证码",
+		"login": {
 			"title": "登录",
-			"subtitle": "用户数据存储在本地",
-			"usernameLabel": "用户名:",
-			"usernameInput": {
-				"placeholder": "请输入用户名"
-			},
-			"passwordLabel": "密码:",
-			"passwordInput": {
-				"placeholder": "请输入密码"
-			},
-			"confirmPasswordLabel": "确认密码:",
-			"confirmPasswordInput": {
-				"placeholder": "请再次输入密码"
-			},
-			"verificationCodeLabel": "验证码:",
-			"verificationCodeInput": {
-				"placeholder": "请输入验证码"
-			},
-			"sendCodeButton": "发送验证码",
-			"submitButton": "登录"
+			"submitButton": "登录",
+			"toggleLink": {
+				"text": "没有账号？",
+				"link": "立即注册"
+			}
+		},
+		"register": {
+			"title": "注册",
+			"submitButton": "注册",
+			"toggleLink": {
+				"text": "已有账号？",
+				"link": "立即登录"
+			}
 		},
 		"error": {
 			"passwordMismatch": "两次密码不一致。",
@@ -51,16 +63,6 @@
 			"normal": "一般",
 			"strong": "强",
 			"veryStrong": "非常强"
-		},
-		"toggleLink": {
-			"login": {
-				"text": "没有账号？",
-				"link": "立即注册"
-			},
-			"register": {
-				"text": "已有账号？",
-				"link": "立即登录"
-			}
 		}
 	},
 	"tutorial": {

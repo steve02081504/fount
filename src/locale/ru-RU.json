@@ -12,37 +12,49 @@
 	},
 	"auth": {
 		"title": "Аутентификация",
-		"form": {
+		"subtitle": "Данные пользователя хранятся локально",
+		"usernameLabel": "Имя пользователя:",
+		"usernameInput": {
+			"placeholder": "Введите имя пользователя"
+		},
+		"passwordLabel": "Пароль:",
+		"passwordInput": {
+			"placeholder": "Введите пароль"
+		},
+		"confirmPasswordLabel": "Подтвердите пароль:",
+		"confirmPasswordInput": {
+			"placeholder": "Введите пароль еще раз"
+		},
+		"verificationCodeLabel": "Код верификации:",
+		"verificationCodeInput": {
+			"placeholder": "Введите код верификации"
+		},
+		"sendCodeButton": "Отправить код",
+		"login": {
 			"title": "Войти",
-			"subtitle": "Данные пользователя хранятся локально",
-			"usernameLabel": "Имя пользователя:",
-			"usernameInput": {
-				"placeholder": "Пожалуйста, введите имя пользователя"
-			},
-			"passwordLabel": "Пароль:",
-			"passwordInput": {
-				"placeholder": "Пожалуйста, введите пароль"
-			},
-			"confirmPasswordLabel": "Подтвердите пароль:",
-			"confirmPasswordInput": {
-				"placeholder": "Пожалуйста, введите пароль еще раз"
-			},
-			"verificationCodeLabel": "Код подтверждения:",
-			"verificationCodeInput": {
-				"placeholder": "Пожалуйста, введите код подтверждения"
-			},
-			"sendCodeButton": "Отправить код",
-			"submitButton": "Войти"
+			"submitButton": "Войти",
+			"toggleLink": {
+				"text": "Нет аккаунта?",
+				"link": "Зарегистрироваться сейчас"
+			}
+		},
+		"register": {
+			"title": "Зарегистрироваться",
+			"submitButton": "Зарегистрироваться",
+			"toggleLink": {
+				"text": "Уже есть аккаунт?",
+				"link": "Войти сейчас"
+			}
 		},
 		"error": {
 			"passwordMismatch": "Пароли не совпадают.",
-			"loginError": "Произошла ошибка при входе.",
-			"registrationError": "Произошла ошибка при регистрации.",
-			"verificationCodeError": "Неверный или истекший код подтверждения.",
-			"verificationCodeSent": "Код подтверждения успешно отправлен.",
-			"verificationCodeSendError": "Не удалось отправить код подтверждения.",
-			"verificationCodeRateLimit": "Слишком частая отправка кода подтверждения. Пожалуйста, попробуйте позже.",
-			"lowPasswordStrength": "Слабый пароль.",
+			"loginError": "Ошибка входа.",
+			"registrationError": "Ошибка регистрации.",
+			"verificationCodeError": "Код верификации неверный или устарел.",
+			"verificationCodeSent": "Код верификации успешно отправлен.",
+			"verificationCodeSendError": "Не удалось отправить код верификации.",
+			"verificationCodeRateLimit": "Слишком много запросов кода верификации. Пожалуйста, попробуйте позже.",
+			"lowPasswordStrength": "Слишком низкая надежность пароля.",
 			"accountAlreadyExists": "Аккаунт уже существует"
 		},
 		"passwordStrength": {
@@ -51,16 +63,6 @@
 			"normal": "Нормальный",
 			"strong": "Сильный",
 			"veryStrong": "Очень сильный"
-		},
-		"toggleLink": {
-			"login": {
-				"text": "Нет аккаунта?",
-				"link": "Зарегистрироваться сейчас"
-			},
-			"register": {
-				"text": "Уже есть аккаунт?",
-				"link": "Войти сейчас"
-			}
 		}
 	},
 	"tutorial": {

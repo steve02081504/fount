@@ -12,37 +12,49 @@
 	},
 	"auth": {
 		"title": "Authentifizierung",
-		"form": {
-			"title": "Anmeldung",
-			"subtitle": "Benutzerdaten werden lokal gespeichert",
-			"usernameLabel": "Benutzername:",
-			"usernameInput": {
-				"placeholder": "Bitte Benutzernamen eingeben"
-			},
-			"passwordLabel": "Passwort:",
-			"passwordInput": {
-				"placeholder": "Bitte Passwort eingeben"
-			},
-			"confirmPasswordLabel": "Passwort bestätigen:",
-			"confirmPasswordInput": {
-				"placeholder": "Bitte Passwort erneut eingeben"
-			},
-			"verificationCodeLabel": "Verifizierungscode:",
-			"verificationCodeInput": {
-				"placeholder": "Bitte Verifizierungscode eingeben"
-			},
-			"sendCodeButton": "Code senden",
-			"submitButton": "Anmelden"
+		"subtitle": "Benutzerdaten werden lokal gespeichert",
+		"usernameLabel": "Benutzername:",
+		"usernameInput": {
+			"placeholder": "Bitte Benutzernamen eingeben"
+		},
+		"passwordLabel": "Passwort:",
+		"passwordInput": {
+			"placeholder": "Bitte Passwort eingeben"
+		},
+		"confirmPasswordLabel": "Passwort bestätigen:",
+		"confirmPasswordInput": {
+			"placeholder": "Bitte Passwort erneut eingeben"
+		},
+		"verificationCodeLabel": "Verifizierungscode:",
+		"verificationCodeInput": {
+			"placeholder": "Bitte Verifizierungscode eingeben"
+		},
+		"sendCodeButton": "Code senden",
+		"login": {
+			"title": "Anmelden",
+			"submitButton": "Anmelden",
+			"toggleLink": {
+				"text": "Kein Konto?",
+				"link": "Jetzt registrieren"
+			}
+		},
+		"register": {
+			"title": "Registrieren",
+			"submitButton": "Registrieren",
+			"toggleLink": {
+				"text": "Bereits ein Konto?",
+				"link": "Jetzt anmelden"
+			}
 		},
 		"error": {
 			"passwordMismatch": "Passwörter stimmen nicht überein.",
 			"loginError": "Fehler beim Anmelden.",
-			"registrationError": "Fehler beim Registrieren.",
-			"verificationCodeError": "Verifizierungscode fehlerhaft oder abgelaufen.",
+			"registrationError": "Fehler bei der Registrierung.",
+			"verificationCodeError": "Verifizierungscode falsch oder abgelaufen.",
 			"verificationCodeSent": "Verifizierungscode erfolgreich gesendet.",
 			"verificationCodeSendError": "Verifizierungscode konnte nicht gesendet werden.",
 			"verificationCodeRateLimit": "Zu viele Anfragen zum Senden des Verifizierungscodes. Bitte später erneut versuchen.",
-			"lowPasswordStrength": "Passwortstärke zu niedrig.",
+			"lowPasswordStrength": "Passwort ist zu schwach.",
 			"accountAlreadyExists": "Konto existiert bereits"
 		},
 		"passwordStrength": {
@@ -51,16 +63,6 @@
 			"normal": "Normal",
 			"strong": "Stark",
 			"veryStrong": "Sehr stark"
-		},
-		"toggleLink": {
-			"login": {
-				"text": "Kein Konto?",
-				"link": "Jetzt registrieren"
-			},
-			"register": {
-				"text": "Bereits ein Konto?",
-				"link": "Jetzt anmelden"
-			}
 		}
 	},
 	"tutorial": {
