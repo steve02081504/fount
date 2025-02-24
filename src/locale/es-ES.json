@@ -12,36 +12,48 @@
 	},
 	"auth": {
 		"title": "Autenticación",
-		"form": {
+		"subtitle": "Los datos del usuario se almacenan localmente",
+		"usernameLabel": "Nombre de usuario:",
+		"usernameInput": {
+			"placeholder": "Introduce el nombre de usuario"
+		},
+		"passwordLabel": "Contraseña:",
+		"passwordInput": {
+			"placeholder": "Introduce la contraseña"
+		},
+		"confirmPasswordLabel": "Confirmar contraseña:",
+		"confirmPasswordInput": {
+			"placeholder": "Introduce la contraseña de nuevo"
+		},
+		"verificationCodeLabel": "Código de verificación:",
+		"verificationCodeInput": {
+			"placeholder": "Introduce el código de verificación"
+		},
+		"sendCodeButton": "Enviar código",
+		"login": {
 			"title": "Iniciar sesión",
-			"subtitle": "Los datos del usuario se almacenan localmente",
-			"usernameLabel": "Nombre de usuario:",
-			"usernameInput": {
-				"placeholder": "Por favor, introduce el nombre de usuario"
-			},
-			"passwordLabel": "Contraseña:",
-			"passwordInput": {
-				"placeholder": "Por favor, introduce la contraseña"
-			},
-			"confirmPasswordLabel": "Confirmar contraseña:",
-			"confirmPasswordInput": {
-				"placeholder": "Por favor, vuelve a introducir la contraseña"
-			},
-			"verificationCodeLabel": "Código de verificación:",
-			"verificationCodeInput": {
-				"placeholder": "Por favor, introduce el código de verificación"
-			},
-			"sendCodeButton": "Enviar código",
-			"submitButton": "Iniciar sesión"
+			"submitButton": "Iniciar sesión",
+			"toggleLink": {
+				"text": "¿No tienes cuenta?",
+				"link": "Regístrate ahora"
+			}
+		},
+		"register": {
+			"title": "Registrarse",
+			"submitButton": "Registrarse",
+			"toggleLink": {
+				"text": "¿Ya tienes cuenta?",
+				"link": "Iniciar sesión ahora"
+			}
 		},
 		"error": {
 			"passwordMismatch": "Las contraseñas no coinciden.",
-			"loginError": "Ocurrió un error al iniciar sesión.",
-			"registrationError": "Ocurrió un error al registrarse.",
+			"loginError": "Error al iniciar sesión.",
+			"registrationError": "Error al registrarse.",
 			"verificationCodeError": "El código de verificación es incorrecto o ha expirado.",
 			"verificationCodeSent": "Código de verificación enviado correctamente.",
-			"verificationCodeSendError": "No se pudo enviar el código de verificación.",
-			"verificationCodeRateLimit": "Se está enviando el código de verificación con demasiada frecuencia. Por favor, inténtalo de nuevo más tarde.",
+			"verificationCodeSendError": "Error al enviar el código de verificación.",
+			"verificationCodeRateLimit": "Demasiadas solicitudes de código de verificación. Por favor, inténtalo de nuevo más tarde.",
 			"lowPasswordStrength": "La seguridad de la contraseña es demasiado baja.",
 			"accountAlreadyExists": "La cuenta ya existe"
 		},
@@ -51,16 +63,6 @@
 			"normal": "Normal",
 			"strong": "Fuerte",
 			"veryStrong": "Muy fuerte"
-		},
-		"toggleLink": {
-			"login": {
-				"text": "¿No tienes una cuenta?",
-				"link": "Regístrate ahora"
-			},
-			"register": {
-				"text": "¿Ya tienes una cuenta?",
-				"link": "Inicia sesión ahora"
-			}
 		}
 	},
 	"tutorial": {

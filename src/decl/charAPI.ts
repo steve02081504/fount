@@ -75,6 +75,7 @@ export class charAPI_t {
 			Intents?: DiscordGatewayIntentBits[]
 			Partials?: DiscordPartials[]
 			OnceClientReady: (client: DiscordClient, config: any) => void
+			GetBotConfigTemplate: () => Promise<any>
 		},
 		shellassist?: {
 			Assist: (data: {

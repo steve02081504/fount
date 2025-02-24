@@ -12,38 +12,50 @@
 	},
 	"auth": {
 		"title": "प्रमाणीकरण",
-		"form": {
+		"subtitle": "उपयोगकर्ता डेटा स्थानीय रूप से संग्रहीत है",
+		"usernameLabel": "उपयोगकर्ता नाम:",
+		"usernameInput": {
+			"placeholder": "उपयोगकर्ता नाम दर्ज करें"
+		},
+		"passwordLabel": "पासवर्ड:",
+		"passwordInput": {
+			"placeholder": "पासवर्ड दर्ज करें"
+		},
+		"confirmPasswordLabel": "पासवर्ड की पुष्टि करें:",
+		"confirmPasswordInput": {
+			"placeholder": "फिर से पासवर्ड दर्ज करें"
+		},
+		"verificationCodeLabel": "सत्यापन कोड:",
+		"verificationCodeInput": {
+			"placeholder": "सत्यापन कोड दर्ज करें"
+		},
+		"sendCodeButton": "कोड भेजें",
+		"login": {
 			"title": "लॉग इन करें",
-			"subtitle": "उपयोगकर्ता डेटा स्थानीय रूप से संग्रहीत है",
-			"usernameLabel": "उपयोगकर्ता नाम:",
-			"usernameInput": {
-				"placeholder": "कृपया उपयोगकर्ता नाम दर्ज करें"
-			},
-			"passwordLabel": "पासवर्ड:",
-			"passwordInput": {
-				"placeholder": "कृपया पासवर्ड दर्ज करें"
-			},
-			"confirmPasswordLabel": "पासवर्ड की पुष्टि करें:",
-			"confirmPasswordInput": {
-				"placeholder": "कृपया पासवर्ड दोबारा दर्ज करें"
-			},
-			"verificationCodeLabel": "सत्यापन कोड:",
-			"verificationCodeInput": {
-				"placeholder": "कृपया सत्यापन कोड दर्ज करें"
-			},
-			"sendCodeButton": "कोड भेजें",
-			"submitButton": "लॉग इन करें"
+			"submitButton": "लॉग इन करें",
+			"toggleLink": {
+				"text": "कोई खाता नहीं है?",
+				"link": "अभी पंजीकरण करें"
+			}
+		},
+		"register": {
+			"title": "पंजीकरण करें",
+			"submitButton": "पंजीकरण करें",
+			"toggleLink": {
+				"text": "पहले से ही एक खाता है?",
+				"link": "अभी लॉग इन करें"
+			}
 		},
 		"error": {
 			"passwordMismatch": "पासवर्ड मेल नहीं खाते।",
-			"loginError": "लॉग इन के दौरान एक त्रुटि हुई।",
-			"registrationError": "पंजीकरण के दौरान एक त्रुटि हुई।",
-			"verificationCodeError": "सत्यापन कोड गलत है या समाप्त हो गया है।",
+			"loginError": "लॉगिन त्रुटि।",
+			"registrationError": "पंजीकरण त्रुटि।",
+			"verificationCodeError": "सत्यापन कोड गलत या समाप्त हो गया है।",
 			"verificationCodeSent": "सत्यापन कोड सफलतापूर्वक भेजा गया।",
 			"verificationCodeSendError": "सत्यापन कोड भेजने में विफल।",
-			"verificationCodeRateLimit": "सत्यापन कोड बहुत बार भेजा जा रहा है। कृपया बाद में पुन: प्रयास करें।",
-			"lowPasswordStrength": "पासवर्ड की सुरक्षा बहुत कम है।",
-			"accountAlreadyExists": "अकाउंट पहले से मौजूद है"
+			"verificationCodeRateLimit": "बहुत अधिक सत्यापन कोड अनुरोध। कृपया बाद में पुनः प्रयास करें।",
+			"lowPasswordStrength": "पासवर्ड शक्ति बहुत कम है।",
+			"accountAlreadyExists": "खाता पहले से मौजूद है"
 		},
 		"passwordStrength": {
 			"veryWeak": "बहुत कमजोर",
@@ -51,16 +63,6 @@
 			"normal": "सामान्य",
 			"strong": "मजबूत",
 			"veryStrong": "बहुत मजबूत"
-		},
-		"toggleLink": {
-			"login": {
-				"text": "खाता नहीं है?",
-				"link": "अभी पंजीकरण करें"
-			},
-			"register": {
-				"text": "क्या आपके पास पहले से ही एक खाता है?",
-				"link": "अभी लॉग इन करें"
-			}
 		}
 	},
 	"tutorial": {

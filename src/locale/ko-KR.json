@@ -12,36 +12,48 @@
 	},
 	"auth": {
 		"title": "인증",
-		"form": {
+		"subtitle": "사용자 데이터는 로컬에 저장됩니다",
+		"usernameLabel": "사용자 이름:",
+		"usernameInput": {
+			"placeholder": "사용자 이름을 입력하세요"
+		},
+		"passwordLabel": "비밀번호:",
+		"passwordInput": {
+			"placeholder": "비밀번호를 입력하세요"
+		},
+		"confirmPasswordLabel": "비밀번호 확인:",
+		"confirmPasswordInput": {
+			"placeholder": "비밀번호를 다시 입력하세요"
+		},
+		"verificationCodeLabel": "인증 코드:",
+		"verificationCodeInput": {
+			"placeholder": "인증 코드를 입력하세요"
+		},
+		"sendCodeButton": "코드 전송",
+		"login": {
 			"title": "로그인",
-			"subtitle": "사용자 데이터는 로컬에 저장됩니다",
-			"usernameLabel": "사용자 이름:",
-			"usernameInput": {
-				"placeholder": "사용자 이름을 입력하세요"
-			},
-			"passwordLabel": "비밀번호:",
-			"passwordInput": {
-				"placeholder": "비밀번호를 입력하세요"
-			},
-			"confirmPasswordLabel": "비밀번호 확인:",
-			"confirmPasswordInput": {
-				"placeholder": "비밀번호를 다시 입력하세요"
-			},
-			"verificationCodeLabel": "인증 코드:",
-			"verificationCodeInput": {
-				"placeholder": "인증 코드를 입력하세요"
-			},
-			"sendCodeButton": "코드 보내기",
-			"submitButton": "로그인"
+			"submitButton": "로그인",
+			"toggleLink": {
+				"text": "계정이 없으신가요?",
+				"link": "지금 가입하세요"
+			}
+		},
+		"register": {
+			"title": "가입",
+			"submitButton": "가입",
+			"toggleLink": {
+				"text": "이미 계정이 있으신가요?",
+				"link": "지금 로그인하세요"
+			}
 		},
 		"error": {
 			"passwordMismatch": "비밀번호가 일치하지 않습니다.",
-			"loginError": "로그인 중 오류가 발생했습니다.",
-			"registrationError": "등록 중 오류가 발생했습니다.",
+			"loginError": "로그인 오류.",
+			"registrationError": "가입 오류.",
 			"verificationCodeError": "인증 코드가 잘못되었거나 만료되었습니다.",
 			"verificationCodeSent": "인증 코드가 성공적으로 전송되었습니다.",
-			"verificationCodeSendError": "인증 코드를 보낼 수 없습니다.",
-			"verificationCodeRateLimit": "인증 코드 전송 요청이 너무 많습니다. 나중에 다시 시도하세요.",
+			"verificationCodeSendError": "인증 코드 전송에 실패했습니다.",
+			"verificationCodeRateLimit": "인증 코드 요청이 너무 많습니다. 나중에 다시 시도해 주세요.",
 			"lowPasswordStrength": "비밀번호 강도가 너무 낮습니다.",
 			"accountAlreadyExists": "계정이 이미 존재합니다"
 		},
@@ -51,16 +63,6 @@
 			"normal": "보통",
 			"strong": "강함",
 			"veryStrong": "매우 강함"
-		},
-		"toggleLink": {
-			"login": {
-				"text": "계정이 없으신가요?",
-				"link": "지금 가입하세요"
-			},
-			"register": {
-				"text": "이미 계정이 있으신가요?",
-				"link": "지금 로그인하세요"
-			}
 		}
 	},
 	"tutorial": {

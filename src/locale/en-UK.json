@@ -12,55 +12,57 @@
 	},
 	"auth": {
 		"title": "Authentication",
-		"form": {
-			"title": "Login",
-			"subtitle": "User data is stored locally",
-			"usernameLabel": "Username:",
-			"usernameInput": {
-				"placeholder": "Please enter username"
-			},
-			"passwordLabel": "Password:",
-			"passwordInput": {
-				"placeholder": "Please enter password"
-			},
-			"confirmPasswordLabel": "Confirm Password:",
-			"confirmPasswordInput": {
-				"placeholder": "Please re-enter password"
-			},
-			"verificationCodeLabel": "Verification Code:",
-			"verificationCodeInput": {
-				"placeholder": "Please enter verification code"
-			},
-			"sendCodeButton": "Send Code",
-			"submitButton": "Login"
+		"subtitle": "User data is stored locally",
+		"usernameLabel": "Username:",
+		"usernameInput": {
+			"placeholder": "Enter username"
+		},
+		"passwordLabel": "Password:",
+		"passwordInput": {
+			"placeholder": "Enter password"
+		},
+		"confirmPasswordLabel": "Confirm password:",
+		"confirmPasswordInput": {
+			"placeholder": "Enter password again"
+		},
+		"verificationCodeLabel": "Verification code:",
+		"verificationCodeInput": {
+			"placeholder": "Enter verification code"
+		},
+		"sendCodeButton": "Send code",
+		"login": {
+			"title": "Log in",
+			"submitButton": "Log in",
+			"toggleLink": {
+				"text": "No account?",
+				"link": "Register now"
+			}
+		},
+		"register": {
+			"title": "Register",
+			"submitButton": "Register",
+			"toggleLink": {
+				"text": "Already have an account?",
+				"link": "Log in now"
+			}
 		},
 		"error": {
 			"passwordMismatch": "Passwords do not match.",
-			"loginError": "An error occurred during login.",
-			"registrationError": "An error occurred during registration.",
+			"loginError": "Login error.",
+			"registrationError": "Registration error.",
 			"verificationCodeError": "Verification code is incorrect or expired.",
 			"verificationCodeSent": "Verification code sent successfully.",
 			"verificationCodeSendError": "Failed to send verification code.",
-			"verificationCodeRateLimit": "Sending verification code too frequently. Please try again later.",
+			"verificationCodeRateLimit": "Too many verification code requests. Please try again later.",
 			"lowPasswordStrength": "Password strength is too low.",
 			"accountAlreadyExists": "Account already exists"
 		},
 		"passwordStrength": {
-			"veryWeak": "Very Weak",
+			"veryWeak": "Very weak",
 			"weak": "Weak",
 			"normal": "Normal",
 			"strong": "Strong",
-			"veryStrong": "Very Strong"
-		},
-		"toggleLink": {
-			"login": {
-				"text": "Don't have an account?",
-				"link": "Register now"
-			},
-			"register": {
-				"text": "Already have an account?",
-				"link": "Login now"
-			}
+			"veryStrong": "Very strong"
 		}
 	},
 	"tutorial": {
