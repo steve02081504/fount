@@ -321,8 +321,10 @@ export async function uninstallPartBase(username, parttype, partname, unLoadargs
 	delete parts_set[username][parttype][partname]
 	const parts_details_cache = loadData(username, 'parts_details_cache')
 	delete parts_details_cache[parttype][partname]
+	saveData(username, 'parts_details_cache')
 	const parts_init = loadData(username, 'parts_init')
 	delete parts_init[parttype][partname]
+	saveData(username, 'parts_init')
 }
 
 /**
@@ -336,7 +338,7 @@ export async function uninstallPartBase(username, parttype, partname, unLoadargs
  * @returns {string[]} An array of part names.
  */
 export function getPartListBase(username, parttype, {
-	PathFilter = (file) => file.isDirectory() && fs.existsSync(file.parentPath + '/' + file.name + '/main.mjs'),
+	PathFilter = (file) => fs.existsSync(file.parentPath + '/' + file.name + '/main.mjs'),
 	ResultMapper = (file) => file.name
 } = {}) {
 	const part_dir = getUserDictionary(username) + '/' + parttype
