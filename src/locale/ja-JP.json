@@ -1,4 +1,68 @@
 {
+	"lang": "ja-JP",
+	"protocolhandler": {
+		"title": "Fountプロトコルを処理中",
+		"processing": "プロトコルを処理中...",
+		"invalidProtocol": "無効なプロトコル",
+		"insufficientParams": "パラメータが不足しています",
+		"unknownCommand": "不明なコマンド",
+		"shellCommandSent": "シェルコマンドを送信しました",
+		"shellCommandFailed": "シェルコマンドの送信に失敗しました",
+		"shellCommandError": "シェルコマンドの送信中にエラーが発生しました"
+	},
+	"auth": {
+		"title": "認証",
+		"form": {
+			"title": "ログイン",
+			"subtitle": "ユーザーデータはローカルに保存されます",
+			"usernameLabel": "ユーザー名:",
+			"usernameInput": {
+				"placeholder": "ユーザー名を入力してください"
+			},
+			"passwordLabel": "パスワード:",
+			"passwordInput": {
+				"placeholder": "パスワードを入力してください"
+			},
+			"confirmPasswordLabel": "パスワードの確認:",
+			"confirmPasswordInput": {
+				"placeholder": "パスワードを再入力してください"
+			},
+			"verificationCodeLabel": "認証コード:",
+			"verificationCodeInput": {
+				"placeholder": "認証コードを入力してください"
+			},
+			"sendCodeButton": "コードを送信",
+			"submitButton": "ログイン"
+		},
+		"error": {
+			"passwordMismatch": "パスワードが一致しません。",
+			"loginError": "ログイン中にエラーが発生しました。",
+			"registrationError": "登録中にエラーが発生しました。",
+			"verificationCodeError": "認証コードが無効または期限切れです。",
+			"verificationCodeSent": "認証コードが正常に送信されました。",
+			"verificationCodeSendError": "認証コードを送信できませんでした。",
+			"verificationCodeRateLimit": "認証コードの送信頻度が高すぎます。後でもう一度お試しください。",
+			"lowPasswordStrength": "パスワードの強度が低すぎます。",
+			"accountAlreadyExists": "アカウントはすでに存在します"
+		},
+		"passwordStrength": {
+			"veryWeak": "非常に弱い",
+			"weak": "弱い",
+			"normal": "普通",
+			"strong": "強い",
+			"veryStrong": "非常に強い"
+		},
+		"toggleLink": {
+			"login": {
+				"text": "アカウントをお持ちでない場合は",
+				"link": "今すぐ登録"
+			},
+			"register": {
+				"text": "すでにアカウントをお持ちの場合は",
+				"link": "今すぐログイン"
+			}
+		}
+	},
 	"tutorial": {
 		"title": "チュートリアル",
 		"modal": {

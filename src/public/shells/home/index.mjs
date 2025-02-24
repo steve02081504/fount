@@ -21,15 +21,6 @@ async function getHomeRegistry() {
 }
 
 let homeRegistry
-const currentLocales = navigator.languages || [navigator.language || navigator.userLanguage]
-
-function getLocalizedInfo(info) {
-	for(const locale of currentLocales) {
-		const result = info[locale] || info[locale?.split('-')?.[0]] || info[Object.keys(info).find(key => key.startsWith(locale?.split('-')?.[0] + '-'))]
-		if (result) return result
-	}
-	return info[Object.keys(info)[0]]
-}
 
 // Function to handle mouse wheel scrolling
 function handleMouseWheelScroll(event) {
@@ -77,11 +68,10 @@ async function renderCharView(charDetails, charname) {
 
 			if (interfaceItem.style) button.style.cssText = interfaceItem.style
 
-			const localizedInfo = getLocalizedInfo(interfaceItem.info)
 			button.innerHTML =
 				interfaceItem.button ??
 				'<img src="https://api.iconify.design/line-md/question-circle.svg" />'
-			button.title = localizedInfo.title
+			button.title = interfaceItem.info.title
 			button.addEventListener('click', () => {
 				if (interfaceItem.onclick) eval(interfaceItem.onclick)
 				else window.open(interfaceItem.url.replaceAll('${charname}', charname))
@@ -223,8 +213,6 @@ async function displayFunctionButtons() {
 
 		if (buttonItem.style) button.style.cssText = buttonItem.style
 
-		const localizedInfo = await getLocalizedInfo(buttonItem.info)
-
 		// 添加图标和标题
 		const iconSpan = document.createElement('span')
 		iconSpan.classList.add('mr-2') // 图标和文字之间添加一些间距
@@ -233,7 +221,7 @@ async function displayFunctionButtons() {
 			'<img src="https://api.iconify.design/line-md/question-circle.svg" class="dark:invert" />'
 
 		const titleSpan = document.createElement('span')
-		titleSpan.textContent = localizedInfo.title
+		titleSpan.textContent = buttonItem.info.title
 
 		button.appendChild(iconSpan)
 		button.appendChild(titleSpan)

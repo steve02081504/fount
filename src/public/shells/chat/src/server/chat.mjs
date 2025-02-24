@@ -6,7 +6,7 @@
 import { getUserByUsername, getUserDictionary, getAllUserNames } from '../../../../../server/auth.mjs'
 import { LoadChar } from '../../../../../server/managers/char_manager.mjs'
 import { loadJsonFile, saveJsonFile } from '../../../../../scripts/json_loader.mjs'
-import { getPartInfo } from '../../../../../server/parts_loader.mjs'
+import { getPartInfo } from '../../../../../scripts/locale.mjs'
 import { loadPersona } from '../../../../../server/managers/personas_manager.mjs'
 import { loadWorld } from '../../../../../server/managers/world_manager.mjs'
 import { Buffer } from 'node:buffer'

@@ -1,4 +1,5 @@
 import { applyTheme } from '../scripts/theme.mjs'
+import { initTranslations, geti18n } from '../scripts/i18n.mjs'
 
 const form = document.getElementById('auth-form')
 const formTitle = document.getElementById('form-title')
@@ -13,44 +14,6 @@ const passwordStrengthFeedback = document.getElementById('password-strength-feed
 
 
 const isLocalOrigin = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname)
-
-const formContent = {
-	login: {
-		title: 'Login',
-		subtitle: 'User data will be stored in local storage',
-		submitBtn: 'Login',
-		toggleLink: {
-			text: 'Don\'t have an account? ',
-			link: 'Create one now',
-		},
-	},
-	register: {
-		title: 'Create Account',
-		subtitle: 'User data will be stored in local storage',
-		submitBtn: 'Create Account',
-		toggleLink: {
-			text: 'Already have an account? ',
-			link: 'Login now',
-		},
-	},
-	error: {
-		passwordMismatch: 'Passwords do not match.',
-		loginError: 'An error occurred during login.',
-		registrationError: 'An error occurred during registration.',
-		verificationCodeError: 'Verification code error or expired.',
-		verificationCodeSent: 'Verification code sent successfully.',
-		verificationCodeSendError: 'Failed to send verification code.',
-		verificationCodeRateLimit: 'Sending verification code too frequently. Please try again later.',
-		lowPasswordStrength: 'Password strength too low.',
-	},
-	passwordStrength: {
-		veryWeak: 'Very Weak',
-		weak: 'Weak',
-		normal: 'Normal',
-		strong: 'Strong',
-		veryStrong: 'Very Strong',
-	},
-}
 
 let isLoginForm = true
 let verificationCodeSent = false
@@ -82,23 +45,23 @@ function evaluatePasswordStrength(password) {
 	switch (result.score) {
 		case 0:
 			borderColorClass = 'border-red-500'
-			feedbackText = formContent.passwordStrength.veryWeak
+			feedbackText = geti18n('auth.passwordStrength.veryWeak')
 			break
 		case 1:
 			borderColorClass = 'border-orange-500'
-			feedbackText = formContent.passwordStrength.weak
+			feedbackText = geti18n('auth.passwordStrength.weak')
 			break
 		case 2:
 			borderColorClass = 'border-yellow-500'
-			feedbackText = formContent.passwordStrength.normal
+			feedbackText = geti18n('auth.passwordStrength.normal')
 			break
 		case 3:
 			borderColorClass = 'border-lime-500'
-			feedbackText = formContent.passwordStrength.strong
+			feedbackText = geti18n('auth.passwordStrength.strong')
 			break
 		case 4:
 			borderColorClass = 'border-green-500'
-			feedbackText = formContent.passwordStrength.veryStrong
+			feedbackText = geti18n('auth.passwordStrength.veryStrong')
 			break
 	}
 	let fullFeedback = `<strong>${feedbackText}</strong><br/>`
@@ -109,12 +72,15 @@ function evaluatePasswordStrength(password) {
 }
 
 function updateFormDisplay() {
-	const currentForm = isLoginForm ? formContent.login : formContent.register
+	formTitle.textContent = geti18n('auth.form.title')
+	formSubtitle.textContent = geti18n('auth.form.subtitle')
+	submitBtn.textContent = geti18n('auth.form.submitButton')
 
-	formTitle.textContent = currentForm.title
-	formSubtitle.textContent = currentForm.subtitle
-	submitBtn.textContent = currentForm.submitBtn
-	toggleLink.innerHTML = `${currentForm.toggleLink.text}<a href="#" class="link link-primary">${currentForm.toggleLink.link}</a>`
+	const toggleLinkData = isLoginForm ? 'auth.toggleLink.register' : 'auth.toggleLink.login'
+	const toggleLinkText = geti18n(`${toggleLinkData}.text`)
+	const toggleLinkHref = geti18n(`${toggleLinkData}.link`)
+	toggleLink.innerHTML = `${toggleLinkText}<a href="#" class="link link-primary">${toggleLinkHref}</a>`
+
 	confirmPasswordGroup.style.display = isLoginForm ? 'none' : 'flex'
 	if (isLocalOrigin) verificationCodeGroup.style.display = 'none'
 	else verificationCodeGroup.style.display = isLoginForm ? 'none' : 'flex'
@@ -122,7 +88,7 @@ function updateFormDisplay() {
 	if (isLoginForm) {
 		verificationCodeSent = false
 		sendVerificationCodeBtn.disabled = false
-		sendVerificationCodeBtn.textContent = 'Send Code'
+		sendVerificationCodeBtn.textContent = geti18n('auth.form.sendCodeButton')
 	}
 }
 
@@ -149,7 +115,7 @@ async function handleSendVerificationCode() {
 		})
 
 		if (response.ok) {
-			errorMessage.textContent = formContent.error.verificationCodeSent
+			errorMessage.textContent = geti18n('auth.error.verificationCodeSent')
 			verificationCodeSent = true
 			sendCodeCooldown = true
 			let timeLeft = 60
@@ -161,18 +127,18 @@ async function handleSendVerificationCode() {
 				if (timeLeft <= 0) {
 					clearInterval(countdown)
 					sendVerificationCodeBtn.disabled = false
-					sendVerificationCodeBtn.textContent = 'Send Code'
+					sendVerificationCodeBtn.textContent = geti18n('auth.form.sendCodeButton')
 					sendCodeCooldown = false
 				}
 			}, 1000)
 		} else if (response.status === 429)
-			errorMessage.textContent = formContent.error.verificationCodeRateLimit
+			errorMessage.textContent = geti18n('auth.error.verificationCodeRateLimit')
 		else
-			errorMessage.textContent = formContent.error.verificationCodeSendError
+			errorMessage.textContent = geti18n('auth.error.verificationCodeSendError')
 
 	} catch (error) {
 		console.error('Error sending verification code:', error)
-		errorMessage.textContent = formContent.error.verificationCodeSendError
+		errorMessage.textContent = geti18n('auth.error.verificationCodeSendError')
 	}
 }
 
@@ -188,23 +154,23 @@ async function handleFormSubmit(event) {
 	if (!isLoginForm) {
 		const confirmPassword = document.getElementById('confirm-password').value
 		if (password !== confirmPassword) {
-			errorMessage.textContent = formContent.error.passwordMismatch
+			errorMessage.textContent = geti18n('auth.error.passwordMismatch')
 			return
 		}
 		// 密码强度检查
 		const { borderColorClass, fullFeedback } = evaluatePasswordStrength(password)
 		if (borderColorClass === 'border-red-500' || borderColorClass === 'border-orange-500') {
-			errorMessage.textContent = formContent.error.lowPasswordStrength
+			errorMessage.textContent = geti18n('auth.error.lowPasswordStrength')
 			return // 阻止表单提交
 		}
 		if (!isLocalOrigin) {
 			if (!verificationCodeSent) {
-				errorMessage.textContent = formContent.error.verificationCodeError
+				errorMessage.textContent = geti18n('auth.error.verificationCodeError')
 				return
 			}
 			verificationcode = document.getElementById('verification-code').value.trim()
 			if (!verificationcode) {
-				errorMessage.textContent = formContent.error.verificationCodeError
+				errorMessage.textContent = geti18n('auth.error.verificationCodeError')
 				return
 			}
 		}
@@ -245,8 +211,8 @@ async function handleFormSubmit(event) {
 	} catch (error) {
 		console.error('Error during form submission:', error)
 		errorMessage.textContent = isLoginForm
-			? formContent.error.loginError
-			: formContent.error.registrationError
+			? geti18n('auth.error.loginError')
+			: geti18n('auth.error.registrationError')
 	}
 }
 
@@ -271,8 +237,9 @@ function setupEventListeners() {
 }
 
 // 页面加载完成后的初始化工作
-function initializeApp() {
+async function initializeApp() {
 	applyTheme()
+	await initTranslations('auth')
 	initializeForm()
 	setupEventListeners()
 }

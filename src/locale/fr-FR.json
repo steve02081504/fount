@@ -1,4 +1,68 @@
 {
+	"lang": "fr-FR",
+	"protocolhandler": {
+		"title": "Traitement du protocole Fount",
+		"processing": "Traitement du protocole...",
+		"invalidProtocol": "Protocole invalide",
+		"insufficientParams": "Paramètres insuffisants",
+		"unknownCommand": "Commande inconnue",
+		"shellCommandSent": "Commande shell envoyée",
+		"shellCommandFailed": "Échec de l'envoi de la commande shell",
+		"shellCommandError": "Erreur lors de l'envoi de la commande shell"
+	},
+	"auth": {
+		"title": "Authentification",
+		"form": {
+			"title": "Se connecter",
+			"subtitle": "Les données utilisateur sont stockées localement",
+			"usernameLabel": "Nom d'utilisateur :",
+			"usernameInput": {
+				"placeholder": "Veuillez entrer votre nom d'utilisateur"
+			},
+			"passwordLabel": "Mot de passe :",
+			"passwordInput": {
+				"placeholder": "Veuillez entrer votre mot de passe"
+			},
+			"confirmPasswordLabel": "Confirmer le mot de passe :",
+			"confirmPasswordInput": {
+				"placeholder": "Veuillez entrer à nouveau votre mot de passe"
+			},
+			"verificationCodeLabel": "Code de vérification :",
+			"verificationCodeInput": {
+				"placeholder": "Veuillez entrer le code de vérification"
+			},
+			"sendCodeButton": "Envoyer le code",
+			"submitButton": "Se connecter"
+		},
+		"error": {
+			"passwordMismatch": "Les mots de passe ne correspondent pas.",
+			"loginError": "Une erreur s'est produite lors de la connexion.",
+			"registrationError": "Une erreur s'est produite lors de l'inscription.",
+			"verificationCodeError": "Le code de vérification est incorrect ou a expiré.",
+			"verificationCodeSent": "Code de vérification envoyé avec succès.",
+			"verificationCodeSendError": "Impossible d'envoyer le code de vérification.",
+			"verificationCodeRateLimit": "Envoi du code de vérification trop fréquent. Veuillez réessayer plus tard.",
+			"lowPasswordStrength": "La force du mot de passe est trop faible.",
+			"accountAlreadyExists": "Le compte existe déjà"
+		},
+		"passwordStrength": {
+			"veryWeak": "Très faible",
+			"weak": "Faible",
+			"normal": "Normal",
+			"strong": "Fort",
+			"veryStrong": "Très fort"
+		},
+		"toggleLink": {
+			"login": {
+				"text": "Vous n'avez pas de compte ?",
+				"link": "Inscrivez-vous maintenant"
+			},
+			"register": {
+				"text": "Vous avez déjà un compte ?",
+				"link": "Connectez-vous maintenant"
+			}
+		}
+	},
 	"tutorial": {
 		"title": "Tutoriel",
 		"modal": {

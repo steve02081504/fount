@@ -1,4 +1,68 @@
 {
+	"lang": "zh-CN",
+	"protocolhandler": {
+		"title": "处理 Fount 协议",
+		"processing": "正在处理协议...",
+		"invalidProtocol": "无效的协议",
+		"insufficientParams": "参数不足",
+		"unknownCommand": "未知的命令",
+		"shellCommandSent": "Shell 命令已发送",
+		"shellCommandFailed": "发送 Shell 命令失败",
+		"shellCommandError": "发送 Shell 命令时出错"
+	},
+	"auth": {
+		"title": "认证",
+		"form": {
+			"title": "登录",
+			"subtitle": "用户数据存储在本地",
+			"usernameLabel": "用户名:",
+			"usernameInput": {
+				"placeholder": "请输入用户名"
+			},
+			"passwordLabel": "密码:",
+			"passwordInput": {
+				"placeholder": "请输入密码"
+			},
+			"confirmPasswordLabel": "确认密码:",
+			"confirmPasswordInput": {
+				"placeholder": "请再次输入密码"
+			},
+			"verificationCodeLabel": "验证码:",
+			"verificationCodeInput": {
+				"placeholder": "请输入验证码"
+			},
+			"sendCodeButton": "发送验证码",
+			"submitButton": "登录"
+		},
+		"error": {
+			"passwordMismatch": "两次密码不一致。",
+			"loginError": "登录出错。",
+			"registrationError": "注册出错。",
+			"verificationCodeError": "验证码错误或已过期。",
+			"verificationCodeSent": "验证码发送成功。",
+			"verificationCodeSendError": "验证码发送失败。",
+			"verificationCodeRateLimit": "发送验证码过于频繁，请稍后再试。",
+			"lowPasswordStrength": "密码强度太低。",
+			"accountAlreadyExists": "账户已存在"
+		},
+		"passwordStrength": {
+			"veryWeak": "非常弱",
+			"weak": "弱",
+			"normal": "一般",
+			"strong": "强",
+			"veryStrong": "非常强"
+		},
+		"toggleLink": {
+			"login": {
+				"text": "没有账号？",
+				"link": "立即注册"
+			},
+			"register": {
+				"text": "已有账号？",
+				"link": "立即登录"
+			}
+		}
+	},
 	"tutorial": {
 		"title": "来点教程？",
 		"modal": {

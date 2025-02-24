@@ -1,4 +1,68 @@
 {
+	"lang": "en-UK",
+	"protocolhandler": {
+		"title": "Processing Fount Protocol",
+		"processing": "Processing protocol...",
+		"invalidProtocol": "Invalid protocol",
+		"insufficientParams": "Insufficient parameters",
+		"unknownCommand": "Unknown command",
+		"shellCommandSent": "Shell command sent",
+		"shellCommandFailed": "Failed to send shell command",
+		"shellCommandError": "Error sending shell command"
+	},
+	"auth": {
+		"title": "Authentication",
+		"form": {
+			"title": "Login",
+			"subtitle": "User data is stored locally",
+			"usernameLabel": "Username:",
+			"usernameInput": {
+				"placeholder": "Please enter username"
+			},
+			"passwordLabel": "Password:",
+			"passwordInput": {
+				"placeholder": "Please enter password"
+			},
+			"confirmPasswordLabel": "Confirm Password:",
+			"confirmPasswordInput": {
+				"placeholder": "Please re-enter password"
+			},
+			"verificationCodeLabel": "Verification Code:",
+			"verificationCodeInput": {
+				"placeholder": "Please enter verification code"
+			},
+			"sendCodeButton": "Send Code",
+			"submitButton": "Login"
+		},
+		"error": {
+			"passwordMismatch": "Passwords do not match.",
+			"loginError": "An error occurred during login.",
+			"registrationError": "An error occurred during registration.",
+			"verificationCodeError": "Verification code is incorrect or expired.",
+			"verificationCodeSent": "Verification code sent successfully.",
+			"verificationCodeSendError": "Failed to send verification code.",
+			"verificationCodeRateLimit": "Sending verification code too frequently. Please try again later.",
+			"lowPasswordStrength": "Password strength is too low.",
+			"accountAlreadyExists": "Account already exists"
+		},
+		"passwordStrength": {
+			"veryWeak": "Very Weak",
+			"weak": "Weak",
+			"normal": "Normal",
+			"strong": "Strong",
+			"veryStrong": "Very Strong"
+		},
+		"toggleLink": {
+			"login": {
+				"text": "Don't have an account?",
+				"link": "Register now"
+			},
+			"register": {
+				"text": "Already have an account?",
+				"link": "Login now"
+			}
+		}
+	},
 	"tutorial": {
 		"title": "Tutorial?",
 		"modal": {

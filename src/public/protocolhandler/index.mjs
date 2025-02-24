@@ -1,11 +1,12 @@
 import { applyTheme } from '../scripts/theme.mjs'
+import { initTranslations, geti18n } from '../scripts/i18n.mjs'
 
 async function handleProtocol() {
 	const urlParams = new URL(window.location.href)
 	const protocol = urlParams.searchParams.get('url')
 
 	if (!protocol || !protocol.startsWith('fount://')) {
-		document.getElementById('message').textContent = '无效的协议'
+		document.getElementById('message').textContent = geti18n('protocolhandler.invalidProtocol')
 		return
 	}
 
@@ -25,13 +26,13 @@ async function handleProtocol() {
 	else if (command === 'page')
 		handlePage(parts)
 	else
-		document.getElementById('message').textContent = '未知的命令'
+		document.getElementById('message').textContent = geti18n('protocolhandler.unknownCommand')
 
 }
 
 async function handleRunShell(parts) {
 	if (parts.length < 3) {
-		document.getElementById('message').textContent = '参数不足'
+		document.getElementById('message').textContent = geti18n('protocolhandler.insufficientParams')
 		return
 	}
 	const shellname = parts[1]
@@ -46,13 +47,13 @@ async function handleRunShell(parts) {
 		})
 
 		if (response.ok)
-			document.getElementById('message').textContent = 'Shell 命令已发送'
+			document.getElementById('message').textContent = geti18n('protocolhandler.shellCommandSent')
 		else
-			document.getElementById('message').textContent = '发送 Shell 命令失败'
+			document.getElementById('message').textContent = geti18n('protocolhandler.shellCommandFailed')
 
 	} catch (error) {
 		console.error('Error sending shell command:', error)
-		document.getElementById('message').textContent = '发送 Shell 命令时出错'
+		document.getElementById('message').textContent = geti18n('protocolhandler.shellCommandError')
 	}
 	setTimeout(() => {
 		history.back()
@@ -61,7 +62,7 @@ async function handleRunShell(parts) {
 
 function handlePage(parts) {
 	if (parts.length < 2) {
-		document.getElementById('message').textContent = '参数不足'
+		document.getElementById('message').textContent = geti18n('protocolhandler.insufficientParams')
 		return
 	}
 	parts.shift()
@@ -69,4 +70,5 @@ function handlePage(parts) {
 }
 
 applyTheme()
+await initTranslations('protocolhandler')
 handleProtocol()
