@@ -1,7 +1,7 @@
 import { Buffer } from "node:buffer";
 import { locale_t } from "./basedefs";
 
-export class importHanlderAPI_t {
+export class importHandlerAPI_t {
 	info: Record<locale_t, {
 		name: string;
 		avatar: string;

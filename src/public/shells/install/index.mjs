@@ -143,7 +143,7 @@ async function handleTextImport() {
 }
 
 function formatErrors(errors) {
-	return errors.map(err => `${geti18n('import.errors.handler')}: ${err.hanlder}, ${geti18n('import.errors.error')}: ${err.error}`).join(';\n')
+	return errors.map(err => `${geti18n('import.errors.handler')}: ${err.handler}, ${geti18n('import.errors.error')}: ${err.error}`).join(';\n')
 }
 
 initTranslations('import') // Initialize translations with pageid 'import'

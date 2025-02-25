@@ -63,7 +63,9 @@ export default {
 			Unload: () => { },
 			Call: async (prompt) => {
 				const result = await model.generateContent(prompt)
-				return result.response.text()
+				return {
+					content: result.response.text(),
+				}
 			},
 			StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
 				const system_prompt = structPromptToSingleNoChatLog(prompt_struct)
@@ -140,7 +142,9 @@ system:
 				while (['', '</pause>', '</declare>', '</>'].includes(text[text.length - 1].trim())) text.pop() //?
 				text = text.join('\n')
 
-				return text
+				return {
+					content: text,
+				}
 			},
 			Tokenizer: {
 				free: () => 0,

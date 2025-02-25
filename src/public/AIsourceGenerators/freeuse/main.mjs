@@ -30,10 +30,14 @@ export default {
 
 			Unload: () => { },
 			Call: async (prompt) => {
-				return '好的，没问题。'
+				return {
+					content: '好的，没问题。',
+				}
 			},
 			StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
-				return '好的，没问题。'
+				return {
+					content: '好的，没问题。',
+				}
 			},
 			Tokenizer: {
 				free: () => 0,

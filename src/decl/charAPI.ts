@@ -49,7 +49,7 @@ export class charAPI_t {
 			GetPrompt: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, detail_level: number) => Promise<single_part_prompt_t>;
 			GetPromptForOther: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, detail_level: number) => Promise<single_part_prompt_t>;
 			GetReply: (arg: chatReplyRequest_t) => Promise<chatReply_t | null>
-			GetReplyFequency?: (arg: chatReplyRequest_t) => Promise<number>
+			GetReplyFrequency?: (arg: chatReplyRequest_t) => Promise<number>
 			MessageEdit?: (arg: {
 				index: number
 				original: chatLogEntry_t
@@ -57,7 +57,7 @@ export class charAPI_t {
 				chat_log: chatLogEntry_t[]
 				extension?: any
 			}) => Promise<chatReply_t>
-			MessageEditting?: (arg: {
+			MessageEditing?: (arg: {
 				index: number
 				original: chatLogEntry_t
 				edited: chatReply_t

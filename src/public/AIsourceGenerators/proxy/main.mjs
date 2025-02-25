@@ -14,7 +14,8 @@ export default {
 	GetSource: async (config) => {
 		async function callBase(messages, config) {
 			let text
-			while (!text) {
+			let files = []
+			while (!text && !files.length) {
 				const result = await fetch(config.url, {
 					method: 'POST',
 					headers: {
@@ -43,9 +44,18 @@ export default {
 					try { json = JSON.parse(text) }
 					catch { json = await result.json() }
 					text = json.choices[0].message.content
+					let imgindex = 0
+					files = await Promise.all(json.choices[0].message.images.map(async(imageurl) => ({
+						name: `image${imgindex++}.png`,
+						buffer: await (await fetch(imageurl)).arrayBuffer(),
+						mimetype: 'image/png'
+					})))
 				}
 			}
-			return text
+			return {
+				content: text,
+				files,
+			}
 		}
 		async function callBaseEx(messages) {
 			const errors = []
@@ -144,7 +154,9 @@ export default {
 						})
 				}
 
-				let text = await callBaseEx(messages)
+				const result = await callBaseEx(messages)
+
+				let text = result.content
 
 				{
 					text = text.split('\n')
@@ -156,7 +168,10 @@ export default {
 					text = text.join('\n')
 				}
 
-				return text
+				return {
+					...result,
+					content: text
+				}
 			},
 			Tokenizer: {
 				free: () => 0,

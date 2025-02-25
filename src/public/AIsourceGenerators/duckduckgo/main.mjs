@@ -52,7 +52,9 @@ export default {
 				const model = options?.model || config.model || 'gpt-4o-mini'
 				const returnStream = options?.stream || false
 				const result = await duckduckgo.call(messages, model, returnStream)
-				return result
+				return {
+					content: result,
+				}
 			},
 
 			StructCall: async (/** @type {prompt_struct_t} */ prompt_struct, options) => {
@@ -98,7 +100,9 @@ export default {
 					text = text.join('\n')
 				}
 
-				return text
+				return {
+					content: text,
+				}
 			},
 
 			Tokenizer: {

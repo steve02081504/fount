@@ -37,7 +37,9 @@ export default {
 			Unload: () => { },
 			Call: async (prompt) => {
 				const result = await cohere.generate({ prompt, model: config.model })
-				return result.generations.map((generation) => generation.text).join('\n')
+				return {
+					content: result.generations.map((generation) => generation.text).join('\n')
+				}
 			},
 			StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
 				const system_prompt = structPromptToSingleNoChatLog(prompt_struct)
@@ -82,7 +84,9 @@ export default {
 				if (removeduplicate.length / text.length < 0.3)
 					text = removeduplicate
 
-				return text
+				return {
+					content: text
+				}
 			},
 			Tokenizer: {
 				free: () => 0,

@@ -9,6 +9,7 @@ export default {
 		return {
 			name: 'Blackbox',
 			model: 'claude-3-5-sonnet',
+			timeout: 10000
 		}
 	},
 	GetSource: async (config) => {
@@ -35,7 +36,9 @@ export default {
 			Unload: () => { },
 			Call: async (prompt) => {
 				const result = await with_timeout(config.timeout || 10000, blackbox.call(prompt, config.model))
-				return result
+				return {
+					content: result,
+				}
 			},
 			StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
 				const messages = []
@@ -79,7 +82,9 @@ export default {
 					text = text.join('\n')
 				}
 
-				return text
+				return {
+					content: text,
+				}
 			},
 			Tokenizer: {
 				free: () => 0,

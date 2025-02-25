@@ -322,6 +322,9 @@ export async function uninstallPartBase(username, parttype, partname, unLoadargs
 	const parts_details_cache = loadData(username, 'parts_details_cache')
 	delete parts_details_cache[parttype][partname]
 	saveData(username, 'parts_details_cache')
+	const parts_config = loadData(username, 'parts_config')
+	delete parts_config[parttype][partname]
+	saveData(username, 'parts_config')
 	const parts_init = loadData(username, 'parts_init')
 	delete parts_init[parttype][partname]
 	saveData(username, 'parts_init')
