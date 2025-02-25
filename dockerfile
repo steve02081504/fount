@@ -7,7 +7,7 @@ COPY . /app
 EXPOSE 8931
 
 # 给予 *.sh 执行权限
-RUN chmod +x /app/*.sh
+RUN chmod +x /app/*.sh /app/path/*
 
 # 安装依赖并忽略错误
 RUN /app/run.sh init

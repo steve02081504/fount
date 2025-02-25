@@ -74,8 +74,7 @@ async function renderFileList() {
 		fileList.appendChild(fileItem)
 
 		fileItem.querySelector('.remove-file-button').addEventListener('click', (event) => {
-			const fileName = event.target.dataset.filename
-			selectedFiles = selectedFiles.filter(f => f.name !== fileName)
+			selectedFiles = selectedFiles.filter(f => f.name !== file.name)
 			renderFileList()
 		})
 	}

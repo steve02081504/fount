@@ -172,6 +172,7 @@ if command -v git &> /dev/null; then
 	if [ $IN_DOCKER -eq 1 ]; then
 		echo "Skipping git pull in Docker environment"
 	else
+		git -C "$FOUNT_DIR" fetch origin
 		currentBranch=$(git -C "$FOUNT_DIR" rev-parse --abbrev-ref HEAD)
 		remoteBranch=$(git -C "$FOUNT_DIR" rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null)
 		if [ -z "$remoteBranch" ]; then
