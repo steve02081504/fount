@@ -4,7 +4,9 @@
 			<img src="${avatar}" alt="${name}" />
 		</div>
 	</div>
-	<div class="content ml-2 p-4 rounded-lg bg-base-200 relative">
+	<div class="content ml-2 p-4 rounded-lg bg-base-200 relative ${
+		content.match(/<(?<tag>img|video|iframe)\b[^>]*>.*?<\/\k<tag>>/gs) ? 'flex-grow' : ''
+	}">
 		<div class="info font-bold text-sm flex items-center gap-2">
 			${name}
 			<span class="timestamp text-xs text-gray-400">${timeStamp}</span>
