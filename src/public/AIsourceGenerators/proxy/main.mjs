@@ -45,11 +45,11 @@ export default {
 					catch { json = await result.json() }
 					text = json.choices[0].message.content
 					let imgindex = 0
-					files = await Promise.all(json.choices[0].message.images.map(async(imageurl) => ({
+					files = (await Promise.all(json.choices[0].message?.images?.map?.(async(imageurl) => ({
 						name: `image${imgindex++}.png`,
 						buffer: await (await fetch(imageurl)).arrayBuffer(),
 						mimetype: 'image/png'
-					})))
+					}))||[])).filter(Boolean)
 				}
 			}
 			return {
