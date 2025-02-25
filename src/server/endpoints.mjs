@@ -5,9 +5,10 @@ import { getPartDetails } from './parts_loader.mjs'
 import { generateVerificationCode, verifyVerificationCode } from '../scripts/verifycode.mjs'
 import { ms } from '../scripts/ms.mjs'
 import { getPartList, loadPart, partsList } from './managers/index.mjs'
-import { IPCManager } from './ipc_server.mjs'
+import { processIPCCommand } from './ipc_server.mjs'
 import { is_local_ip, rateLimit } from '../scripts/ratelimit.mjs'
 import { loadJsonFile } from '../scripts/json_loader.mjs'
+import express from 'npm:express@^5.0.1'
 
 /**
  * @param {import('npm:express').Router} router
@@ -92,10 +93,11 @@ export function registerEndpoints(router) {
 	router.post('/api/runshell', authenticate, async (req, res) => {
 		const { username } = await getUserByToken(req.cookies.accessToken)
 		const { shellname, args } = req.body
-		await IPCManager.sendCommand('runshell', { username, shellname, args })
+		await processIPCCommand('runshell', { username, shellname, args })
 		res.status(200).json({ message: 'Shell command sent successfully.' })
 	})
 
+	const user_static = {}
 	for (const part of partsList) {
 		router.get('/api/getlist/' + part, authenticate, async (req, res) => {
 			const { username } = await getUserByToken(req.cookies.accessToken)
@@ -127,18 +129,10 @@ export function registerEndpoints(router) {
 		}
 		router.post(new RegExp('^/api/' + part + '/'), authenticate, autoloader)
 		router.get(new RegExp('^/api/' + part + '/'), authenticate, autoloader)
-		router.get(new RegExp('^/' + part + '/'), authenticate, autoloader, async (req, res) => {
+		router.get(new RegExp('^/' + part + '/'), authenticate, autoloader, async (req, res, next) => {
 			const { username } = await getUserByToken(req.cookies.accessToken)
-			let path = decodeURIComponent(req.path)
-			if (path.endsWith('/')) path += '/index.html'
-			if (fs.existsSync(getUserDictionary(username) + '/' + path))
-				res.sendFile(getUserDictionary(username) + '/' + path)
-
-			else if (fs.existsSync(getUserDictionary(username) + '/chars/' + path))
-				res.sendFile(getUserDictionary(username) + '/chars/' + path)
-
-			else if (fs.existsSync(__dirname + '/src/public/' + path))
-				res.sendFile(__dirname + '/src/public/' + path)
+			user_static[username] ??= express.static(getUserDictionary(username))
+			return user_static[username](req, res, next)
 		})
 	}
 }

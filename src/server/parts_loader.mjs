@@ -67,7 +67,7 @@ export function GetPartPath(username, parttype, partname) {
  * @returns {Promise<Part>} A promise that resolves to the loaded part object.
  */
 export async function baseMjsPartLoader(path) {
-	if (fs.existsSync(path + '/.git')) {
+	if (fs.existsSync(path + '/.git')) try {
 		/**
 		 * Executes a git command within the part's directory.
 		 * @param {...string} args - Git command arguments.
@@ -76,6 +76,7 @@ export async function baseMjsPartLoader(path) {
 		function git(...args) {
 			return exec('git -C "' + path + '" ' + args.join(' ')).then(r => r.stdout.trim())
 		}
+		await git('fetch origin')
 		const currentBranch = await git('rev-parse --abbrev-ref HEAD')
 		const remoteBranch = await git('rev-parse --abbrev-ref --symbolic-full-name "@{u}"')
 		if (!remoteBranch)
@@ -106,6 +107,8 @@ export async function baseMjsPartLoader(path) {
 			else
 				console.log('Already up to date.')
 		}
+	} catch (e) {
+		console.error('Failed to update part from remote repository:', e)
 	}
 	const part = (await import(url.pathToFileURL(path + '/main.mjs'))).default
 	return part

@@ -159,6 +159,7 @@ if (Get-Command git -ErrorAction SilentlyContinue) {
 		Write-Host "Skipping git pull in Docker environment"
 	}
 	else {
+		git -C "$FOUNT_DIR" fetch origin
 		$currentBranch = git -C "$FOUNT_DIR" rev-parse --abbrev-ref HEAD
 		$remoteBranch = git -C "$FOUNT_DIR" rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>$null
 		if (-not $remoteBranch) {
