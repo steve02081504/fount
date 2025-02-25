@@ -32,14 +32,15 @@ mainRouter.use(express.json({ limit: Infinity }))
 mainRouter.use(express.urlencoded({ limit: Infinity, extended: true }))
 mainRouter.use(fileUpload())
 mainRouter.use(cookieParser())
-FinalRouter.use((err, req, res, next) => {
-	console.error(err)
-	res.status(500).json({ message: 'Internal Server Error', errors: err.errors, error: err.message })
-})
 FinalRouter.use((req, res) => {
 	if (req.accepts('html')) return res.status(404).sendFile(__dirname + '/src/public/404.html')
 	res.status(404).type('txt').send('Not found')
 })
+const errorHandler = (err, req, res, next) => {
+	console.error(err)
+	res.status(500).json({ message: 'Internal Server Error', errors: err.errors, error: err.message })
+}
+FinalRouter.use(errorHandler)
 
 function get_config() {
 	if (!fs.existsSync(__dirname + '/data/config.json')) {
@@ -69,6 +70,7 @@ function setWindowTitle(title) {
 
 export function setDefaultStuff() {
 	setWindowTitle('fount')
+	PartsRouter.use(errorHandler)
 }
 
 export let hosturl = 'http://localhost:' + config.port

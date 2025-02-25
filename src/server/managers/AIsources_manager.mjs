@@ -9,7 +9,7 @@ function GetPath(username, partname) {
 /**
  * @param {string} username
  * @param {string} AIsourcename
- * @returns {Promise<import('../../decl/AIsourceGeneretor.ts').AIsourceGeneretor>}
+ * @returns {Promise<import('../../decl/AIsourceGenerator.ts').AIsourceGenerator>}
  */
 export async function loadAIsourceGenerator(username, AIsourcename) {
 	return loadPartBase(username, 'AIsourceGenerators', AIsourcename)

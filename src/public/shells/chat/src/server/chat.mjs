@@ -671,7 +671,7 @@ async function getCharReplyFrequency(chatid) {
 
 	for (const charname in chatMetadata.LastTimeSlice.chars) {
 		const char = chatMetadata.LastTimeSlice.chars[charname]
-		const charbase = await char.interfaces?.chat?.GetReplyFequency?.(await getChatRequest(chatid, charname)) || 1
+		const charbase = await char.interfaces?.chat?.GetReplyFrequency?.(await getChatRequest(chatid, charname)) || 1
 		const userbase = chatMetadata.LastTimeSlice.chars_speaking_frequency[charname] || 1
 		result.push({
 			charname,
@@ -873,13 +873,13 @@ export async function editMessage(chatid, index, new_content) {
 		editresult ??= new_content
 
 		// 通知其他人消息被编辑
-		if (chatMetadata.LastTimeSlice.world?.interfaces?.chat?.MessageEditting)
-			await chatMetadata.LastTimeSlice.world.interfaces.chat.MessageEditting(geneRequest())
+		if (chatMetadata.LastTimeSlice.world?.interfaces?.chat?.MessageEditing)
+			await chatMetadata.LastTimeSlice.world.interfaces.chat.MessageEditing(geneRequest())
 		else {
 			for (const char of Object.values(chatMetadata.LastTimeSlice.chars))
-				await char.interfaces?.chat?.MessageEditting?.(geneRequest())
+				await char.interfaces?.chat?.MessageEditing?.(geneRequest())
 
-			await chatMetadata.LastTimeSlice.player?.interfaces?.chat?.MessageEditting?.(geneRequest())
+			await chatMetadata.LastTimeSlice.player?.interfaces?.chat?.MessageEditing?.(geneRequest())
 		}
 	}
 

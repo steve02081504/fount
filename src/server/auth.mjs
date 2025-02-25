@@ -313,7 +313,7 @@ export async function login(username, password, deviceId = 'unknown') {
 		// 自`/default/user`复制到用户目录
 		fse.copySync(path.join(__dirname, '/default/user'), userdir)
 	} catch { }
-	for (const subdir of ['AIsources', 'chars', 'personas', 'settings', 'shells', 'worlds', 'ImportHanlders', 'AIsourceGenerators'])
+	for (const subdir of ['AIsources', 'chars', 'personas', 'settings', 'shells', 'worlds', 'ImportHandlers', 'AIsourceGenerators'])
 		try { fs.mkdirSync(userdir + '/' + subdir, { recursive: true }) } catch { }
 
 	// 生成 access token 和 refresh token

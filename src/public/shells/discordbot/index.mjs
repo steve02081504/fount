@@ -230,7 +230,7 @@ async function checkCharSupport(charName) {
 	try {
 		const charDetails = await fetchData(`/api/getdetails/chars?name=${charName}`)
 
-		let result = charDetails.supportedInterfaces.includes('discord')
+		const result = charDetails.supportedInterfaces.includes('discord')
 		if (result)
 			charSupportMessage.classList.add('hidden')
 		else
@@ -257,9 +257,8 @@ async function handleCharSelectChange() {
 	if (await checkCharSupport(selectedChar)) try {
 		isDirty = true // 更改了选项，标记为 dirty
 		const template = await getBotConfigTemplate(selectedChar) // 获取模板
-		if (template && configEditor) {
+		if (template && configEditor)
 			configEditor.set({ json: template }) // 更新编辑器内容
-		}
 	} catch (error) {
 		console.error('Failed to update config editor with template:', error)
 	}

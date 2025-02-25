@@ -43,7 +43,7 @@ export class WorldAPI_t {
 				chat_log: chatLogEntry_t[]
 				extension?: any
 			}) => Promise<chatReply_t>
-			MessageEditting?: (arg: {
+			MessageEditing?: (arg: {
 				index: number
 				original: chatLogEntry_t
 				edited: chatReply_t

@@ -1,7 +1,7 @@
 import { AIsource_t } from "./AIsource"
 import { locale_t } from "./basedefs";
 
-export class AIsourceGeneretor {
+export class AIsourceGenerator {
 	info: Record<locale_t, {
 		name: string;
 		avatar: string;

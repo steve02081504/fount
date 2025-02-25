@@ -15,6 +15,47 @@ let AIsource = null
 // 用户名，用于加载AI源
 let username = ''
 
+/** @type {import("../../../../../src/decl/pluginAPI.ts").ReplyHandler_t} */
+function CharGenerator(reply, { AddLongTimeLog }) {
+	const match_generator_tool = reply.content.match(/```generate-char(?<charname>[^\n]+)\n(?<code>[^]*)```/)
+	if (match_generator_tool) try {
+		let { charname, code } = match_generator_tool.groups
+		charname = charname.trim()
+		AddLongTimeLog({
+			name: 'ZL-31',
+			role: 'char',
+			content: `\`\`\`generate-char ${charname}\n${code}\n\`\`\``,
+		})
+		const dir = path.join(import.meta.dirname, '..', charname)
+		const file = path.join(dir, 'main.mjs')
+		if (fs.existsSync(file))
+			throw new Error('无法覆盖已存在的角色')
+		fs.mkdirSync(dir, { recursive: true })
+		fs.writeFileSync(file, code)
+		fs.writeFileSync(path.join(dir, 'fount.json'), JSON.stringify({
+			type: 'chars',
+			dirname: charname
+		}, null, '\t'))
+
+		AddLongTimeLog({
+			name: 'system',
+			role: 'system',
+			content: `生成角色${charname}成功！告知用户吧！`,
+		})
+
+		return true
+	} catch (e) {
+		AddLongTimeLog({
+			name: 'system',
+			role: 'system',
+			content: `生成失败！\n原因：${e.stack}`,
+		})
+		return true
+	}
+
+	return false
+}
+
 /** @type {charAPI_t} */
 export default {
 	// 角色的基本信息
@@ -271,7 +312,7 @@ fount有discord群组：https://discord.gg/GtR9Quzq2v，可以在那里找到更
 
 关于工具：
 你只有一个工具：
-你可以输出以下格式生成新的单文件简易fount角色：
+你可以输出以下格式生成新的单文件简易fount角色，之后用户会在主页看见它，无需安装：
 \`\`\`generate-char charname
 // js codes
 \`\`\`
@@ -375,10 +416,38 @@ export default {
 			GetReply: async (args) => {
 				// 如果没有设置AI源，返回默认回复
 				if (!AIsource) return { content: '<未设置角色的AI来源时角色的对话回复>' }
-				// 调用AI源的StructCall方法，传入构建好的提示词结构
-				let result = await AIsource.StructCall(await buildPromptStruct(args))
-				// 返回AI源的回复
-				return { content: result }
+				// 用fount提供的工具构建提示词结构
+				const prompt_struct = await buildPromptStruct(args)
+				// 创建回复容器
+				/** @type {import("../../../../../src/public/shells/chat/decl/chatLog.ts").chatReply_t} */
+				const result = {
+					content: '',
+					logContextBefore: [],
+					logContextAfter: [],
+					files: [],
+					extension: {},
+				}
+				// 构建插件可能需要的追加上下文函数
+				function AddLongTimeLog(entry) {
+					entry.charVisibility = [args.char_id]
+					result?.logContextBefore?.push?.(entry)
+					prompt_struct.char_prompt.additional_chat_log.push(entry)
+				}
+
+				// 在重新生成循环中检查插件触发
+				regen: while (true) {
+					const requestResult = await AIsource.StructCall(prompt_struct)
+					result.content = requestResult.content
+					result.files = result.files.concat(requestResult.files || [])
+					for (const replyHandler of [
+						...Object.values(args.plugins).map((plugin) => plugin.interfaces?.chat?.ReplyHandler)
+					].filter(Boolean))
+						if (replyHandler(result, { ...args, prompt_struct, AddLongTimeLog }))
+							continue regen
+					break
+				}
+				// 返回构建好的回复
+				return result
 			}
 		}
 	}
@@ -388,64 +457,89 @@ export default {
 \`\`\`\`js
 import fs from 'node:fs'
 import path from 'node:path'
+
+/** @type {import("../../../../../src/decl/pluginAPI.ts").ReplyHandler_t} */
+function CharGenerator(reply, { AddLongTimeLog }) {
+	const match_generator_tool = reply.content.match(/\`\`\`generate-char(?<charname>[^\\n]+)\\n(?<code>[^]*)\`\`\`/)
+	if (match_generator_tool) try {
+		let { charname, code } = match_generator_tool.groups
+		charname = charname.trim()
+		AddLongTimeLog({
+			name: 'ZL-31',
+			role: 'char',
+			content: \`\\\`\\\`\\\`generate-char \${charname}\\n\${code}\\n\\\`\\\`\\\`\`,
+		})
+		const dir = path.join(import.meta.dirname, '..', charname)
+		const file = path.join(dir, 'main.mjs')
+		if (fs.existsSync(file))
+			throw new Error('无法覆盖已存在的角色')
+		fs.mkdirSync(dir, { recursive: true })
+		fs.writeFileSync(file, code)
+		fs.writeFileSync(path.join(dir, 'fount.json'), JSON.stringify({
+			type: 'chars',
+			dirname: charname
+		}, null, '\\t'))
+
+		AddLongTimeLog({
+			name: 'system',
+			role: 'system',
+			content: \`生成角色\${charname}成功！告知用户吧！\`,
+		})
+
+		return true
+	} catch (e) {
+		AddLongTimeLog({
+			name: 'system',
+			role: 'system',
+			content: \`生成失败！\\n原因：\${e.stack}\`,
+		})
+		return true
+	}
+
+	return false
+}
+
 //...
 // prompt的部分在这里跳过，它就是你的prompt。
 //...
 			GetReply: async (args) => {
 				// 如果没有设置AI源，返回默认回复
-				if (!AIsource) return { content: '抱歉，我还没有被配置AI源，暂时无法进行更复杂的对话。请在设置中为我配置AI源。' }
-				// 调用AI源的StructCall方法，传入构建好的提示词结构
+				if (!AIsource)
+					switch (args.locales[0].split('-')[0]) {
+						// ...
+					}
+				// 用fount提供的工具构建提示词结构
 				const prompt_struct = await buildPromptStruct(args)
+				// 创建回复容器
+				/** @type {import("../../../../../src/public/shells/chat/decl/chatLog.ts").chatReply_t} */
 				const result = {
 					content: '',
 					logContextBefore: [],
+					logContextAfter: [],
+					files: [],
+					extension: {},
 				}
+				// 构建插件可能需要的追加上下文函数
 				function AddLongTimeLog(entry) {
 					entry.charVisibility = [args.char_id]
 					result?.logContextBefore?.push?.(entry)
 					prompt_struct.char_prompt.additional_chat_log.push(entry)
 				}
+
+				// 在重新生成循环中检查插件触发
 				regen: while (true) {
-					const text_result = result.content = await AIsource.StructCall(prompt_struct)
-					const match_generator_tool = text_result.match(/\`\`\`generate-char(?<charname>[^\\n]+)\\n(?<code>[^]*)\`\`\`/)
-					if (match_generator_tool) try {
-						let { charname, code } = match_generator_tool.groups
-						charname = charname.trim()
-						AddLongTimeLog({
-							name: 'ZL-31',
-							role: 'char',
-							content: \`\\\`\\\`\\\`generate-char \${charname}\\n\${code}\\n\\\`\\\`\\\`\`,
-						})
-						const dir = path.join(import.meta.dirname, '..', charname)
-						const file = path.join(dir, 'main.mjs')
-						if (fs.existsSync(file))
-							throw new Error('无法覆盖已存在的角色')
-						fs.mkdirSync(dir, { recursive: true })
-						fs.writeFileSync(file, code)
-						fs.writeFileSync(path.join(dir, 'fount.json'), JSON.stringify({
-							type: 'chars',
-							dirname: charname
-						}, null, '\\t'))
-
-						AddLongTimeLog({
-							name: 'system',
-							role: 'system',
-							content: \`生成角色\${charname}成功！告知用户吧！\`,
-						})
-
-						continue regen
-					} catch (e) {
-						AddLongTimeLog({
-							name: 'system',
-							role: 'system',
-							content: \`生成失败！\\n原因：\${e.stack}\`,
-						})
-						continue regen
-					}
-
+					const requestResult = await AIsource.StructCall(prompt_struct)
+					result.content = requestResult.content
+					result.files = result.files.concat(requestResult.files || [])
+					for (const replyHandler of [
+						CharGenerator,
+						...Object.values(args.plugins).map((plugin) => plugin.interfaces?.chat?.ReplyHandler)
+					].filter(Boolean))
+						if (replyHandler(result, { ...args, prompt_struct, AddLongTimeLog }))
+							continue regen
 					break
 				}
-				// 返回AI源的回复
+				// 返回构建好的回复
 				return result
 			}
 //...
@@ -589,58 +683,38 @@ ${fs.readFileSync(path.join(__dirname, 'src/decl/charAPI.ts'), 'utf-8')}
 						case 'en':
 							return { content: 'Sorry, I haven\'t been configured with an AI source yet, so I can\'t do more complex conversation for now. Please configure me with an AI source in the settings.' }
 					}
-				// 调用AI源的StructCall方法，传入构建好的提示词结构
+				// 用fount提供的工具构建提示词结构
 				const prompt_struct = await buildPromptStruct(args)
+				// 创建回复容器
+				/** @type {import("../../../../../src/public/shells/chat/decl/chatLog.ts").chatReply_t} */
 				const result = {
 					content: '',
 					logContextBefore: [],
+					logContextAfter: [],
+					files: [],
+					extension: {},
 				}
+				// 构建插件可能需要的追加上下文函数
 				function AddLongTimeLog(entry) {
 					entry.charVisibility = [args.char_id]
 					result?.logContextBefore?.push?.(entry)
 					prompt_struct.char_prompt.additional_chat_log.push(entry)
 				}
+
+				// 在重新生成循环中检查插件触发
 				regen: while (true) {
-					const text_result = result.content = await AIsource.StructCall(prompt_struct)
-					const match_generator_tool = text_result.match(/```generate-char(?<charname>[^\n]+)\n(?<code>[^]*)```/)
-					if (match_generator_tool) try {
-						let { charname, code } = match_generator_tool.groups
-						charname = charname.trim()
-						AddLongTimeLog({
-							name: 'ZL-31',
-							role: 'char',
-							content: `\`\`\`generate-char ${charname}\n${code}\n\`\`\``,
-						})
-						const dir = path.join(import.meta.dirname, '..', charname)
-						const file = path.join(dir, 'main.mjs')
-						if (fs.existsSync(file))
-							throw new Error('无法覆盖已存在的角色')
-						fs.mkdirSync(dir, { recursive: true })
-						fs.writeFileSync(file, code)
-						fs.writeFileSync(path.join(dir, 'fount.json'), JSON.stringify({
-							type: 'chars',
-							dirname: charname
-						}, null, '\t'))
-
-						AddLongTimeLog({
-							name: 'system',
-							role: 'system',
-							content: `生成角色${charname}成功！告知用户吧！`,
-						})
-
-						continue regen
-					} catch (e) {
-						AddLongTimeLog({
-							name: 'system',
-							role: 'system',
-							content: `生成失败！\n原因：${e.stack}`,
-						})
-						continue regen
-					}
-
+					const requestResult = await AIsource.StructCall(prompt_struct)
+					result.content = requestResult.content
+					result.files = result.files.concat(requestResult.files || [])
+					for (const replyHandler of [
+						CharGenerator,
+						...Object.values(args.plugins).map((plugin) => plugin.interfaces?.chat?.ReplyHandler)
+					].filter(Boolean))
+						if (replyHandler(result, { ...args, prompt_struct, AddLongTimeLog }))
+							continue regen
 					break
 				}
-				// 返回AI源的回复
+				// 返回构建好的回复
 				return result
 			}
 		}

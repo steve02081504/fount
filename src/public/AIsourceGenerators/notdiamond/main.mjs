@@ -52,7 +52,9 @@ export default {
 						content: prompt
 					}
 				])
-				return result
+				return {
+					content: result,
+				}
 			},
 			StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
 				const messages = []
@@ -90,7 +92,9 @@ export default {
 					text = text.join('\n')
 				}
 
-				return text
+				return {
+					content: text,
+				}
 			},
 			Tokenizer: {
 				free: () => 0,

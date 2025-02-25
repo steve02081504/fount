@@ -3,12 +3,12 @@ import { getPartListBase } from '../parts_loader.mjs'
 import { LoadChar } from './char_manager.mjs'
 import { loadPersona } from './personas_manager.mjs'
 import { loadAIsource, loadAIsourceGenerator } from './AIsources_manager.mjs'
-import { LoadImportHanlder } from '../../public/shells/install/src/server/importHanlder_manager.mjs'
+import { LoadImportHandler } from '../../public/shells/install/src/server/importHandler_manager.mjs'
 import { loadWorld } from './world_manager.mjs'
 
 export const partsList = [
 	'shells', 'chars', 'personas', 'worlds', 'AIsources', 'AIsourceGenerators',
-	'ImportHanlders'
+	'ImportHandlers'
 ]
 const loadMethods = {
 	'shells': loadShell,
@@ -17,7 +17,7 @@ const loadMethods = {
 	'worlds': loadWorld,
 	'AIsources': loadAIsource,
 	'AIsourceGenerators': loadAIsourceGenerator,
-	'ImportHanlders': LoadImportHanlder
+	'ImportHandlers': LoadImportHandler
 }
 export function loadPart(username, parttype, partname) {
 	return loadMethods[parttype](username, partname)
