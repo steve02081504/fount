@@ -53,9 +53,14 @@ article img {
 }
 
 .text-content {
+	color: black;
+	background-color: rgba(255, 255, 255, 0.5);
+	padding-top: 0.5rem;
+}
+
+[data-theme="dark"] .text-content {
 	color: white;
 	background-color: rgba(0, 0, 0, 0.5);
-	padding-top: 0.5rem;
 }
 
 /* 标签容器 */
