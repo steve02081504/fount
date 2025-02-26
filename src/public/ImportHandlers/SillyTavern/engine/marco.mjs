@@ -103,8 +103,7 @@ function getTimeSinceLastMessage(chatLog) {
 	if (!chatLog || chatLog.length === 0) return 'just now'
 	const lastMessage = chatLog
 		.filter((message) => message.role !== 'system')
-		.slice()
-		.reverse()
+		.toReversed()
 		.find((_, index, arr) => arr[index + 1]?.role === 'user')
 	if (lastMessage?.timeStamp)
 		return moment.duration(moment().diff(lastMessage.timeStamp)).humanize()
