@@ -1,4 +1,6 @@
+import { applyTheme } from "../../../scripts/theme.mjs";
 import { currentChatId, addCharacter, createNewChat } from '../src/public/endpoints.mjs'
+applyTheme()
 
 await createNewChat()
 
