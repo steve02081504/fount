@@ -11,6 +11,7 @@ import { on_shutdown } from './on_shutdown.mjs'
 import { IPCManager } from './ipc_server.mjs'
 import { initAuth } from './auth.mjs'
 import { createTray } from '../scripts/tray.mjs'
+import { StartRPC } from '../scripts/discordrpc.mjs'
 
 export { __dirname }
 const app = express()
@@ -116,5 +117,6 @@ export async function init() {
 	createTray()
 	setDefaultStuff()
 	console.freshLine('server start', Array(Math.floor(Math.random() * 7)).fill('fo-').join('') + 'fount!')
+	StartRPC()
 	return true
 }
