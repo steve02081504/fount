@@ -7,7 +7,8 @@ COPY . /app
 EXPOSE 8931
 
 # 给予 *.sh 执行权限
-RUN chmod +x ./*.sh ./*.fish ./*.zsh ./path/*
+RUN find . -maxdepth 1 \( -name "*.sh" -o -name "*.fish" -o -name "*.zsh" \) -print0 | xargs -0 chmod +x
+RUN find ./path -maxdepth 1 -type f -print0 | xargs -0 chmod +x
 
 # 安装依赖并忽略错误
 RUN /app/run.sh init
