@@ -1,10 +1,10 @@
 import express from 'npm:express@^5.0.1'
 import cookieParser from 'npm:cookie-parser@^1.4.0'
 import fileUpload from 'npm:express-fileupload@^1.5.0'
-import path from 'node:path'
 import fs from 'node:fs'
 import process from 'node:process'
 import https from 'node:https'
+import { __dirname } from './base.mjs'
 import { console } from '../scripts/console.mjs'
 import { registerEndpoints } from './endpoints.mjs'
 import { on_shutdown } from './on_shutdown.mjs'
@@ -12,6 +12,7 @@ import { IPCManager } from './ipc_server.mjs'
 import { initAuth } from './auth.mjs'
 import { createTray } from '../scripts/tray.mjs'
 
+export { __dirname }
 const app = express()
 const mainRouter = express.Router()
 export const PartsRouter = express.Router()
@@ -20,8 +21,6 @@ const FinalRouter = express.Router()
 app.use(mainRouter)
 app.use(PartsRouter)
 app.use(FinalRouter)
-
-export const __dirname = path.resolve(import.meta.dirname + '/../../')
 
 mainRouter.use((req, res, next) => {
 	if (!req.path.endsWith('/heartbeat'))

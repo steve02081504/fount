@@ -1,14 +1,12 @@
 import { login, register, logout, authenticate, getUserByToken, getUserDictionary } from './auth.mjs'
-import { __dirname } from './server.mjs'
-import fs from 'node:fs'
 import { getPartDetails } from './parts_loader.mjs'
 import { generateVerificationCode, verifyVerificationCode } from '../scripts/verifycode.mjs'
 import { ms } from '../scripts/ms.mjs'
 import { getPartList, loadPart, partsList } from './managers/index.mjs'
 import { processIPCCommand } from './ipc_server.mjs'
 import { is_local_ip, rateLimit } from '../scripts/ratelimit.mjs'
-import { loadJsonFile } from '../scripts/json_loader.mjs'
 import express from 'npm:express@^5.0.1'
+import { getLocaleData } from '../scripts/i18n.mjs'
 
 /**
  * @param {import('npm:express').Router} router
@@ -21,7 +19,6 @@ export function registerEndpoints(router) {
 	router.get('/api/test/async_error', async (req, res) => {
 		throw new Error('test error')
 	})
-	const localeCache = {}
 	router.get('/api/getlocaledata', async (req, res) => {
 		const preferredLanguages = req.headers['accept-language']?.split?.(',')?.map?.((lang) => lang.trim().split(';')[0])
 		if (req.cookies.accessToken) try {
@@ -30,26 +27,7 @@ export function registerEndpoints(router) {
 			console.log(`user ${user.username} setting preferred languages:`, preferredLanguages)
 		} catch { }
 
-		let resultLocale = null
-		if (preferredLanguages?.length) {
-			const localeList = fs.readdirSync(__dirname + '/src/locale')
-				.filter((file) => file.endsWith('.json'))
-				.map((file) => file.slice(0, -5))
-
-			for (const preferredLang of preferredLanguages) {
-				if (localeList.includes(preferredLang)) {
-					resultLocale = preferredLang
-					break
-				}
-				resultLocale = localeList.find((name) => name.startsWith(preferredLang.split('-')[0]))
-				if (resultLocale) break
-			}
-		}
-
-		if (!resultLocale) resultLocale = 'en-UK'
-
-		localeCache[resultLocale] ??= loadJsonFile(__dirname + `/src/locale/${resultLocale}.json`)
-		return res.status(200).json(localeCache[resultLocale])
+		return res.status(200).json(await getLocaleData(preferredLanguages))
 	})
 	router.post('/api/login', rateLimit({ maxRequests: 5, windowMs: ms('1m') }), async (req, res) => {
 		const { username, password, deviceid } = req.body
