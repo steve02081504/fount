@@ -22,7 +22,7 @@ export async function processIPCCommand(command, data) {
 				return { status: 'ok', data: result }
 			}
 			case 'invokeshell': {
-				const { username, shellname, invokedata } = data
+				const { username, shellname, data: invokedata } = data
 				console.log(`调用 shell ${shellname} 作为 ${username}，参数：${JSON.stringify(invokedata)}`)
 				const shell = await loadShell(username, shellname)
 				const result = await shell.IPCInvokeHandler(username, invokedata)
