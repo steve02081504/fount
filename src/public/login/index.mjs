@@ -193,7 +193,7 @@ async function handleFormSubmit(event) {
 				// 跳转参数？
 				const urlParams = new URLSearchParams(window.location.search)
 				const redirect = urlParams.get('redirect')
-				if (redirect) window.location.href = decodeURIComponent(redirect)
+				if (redirect) window.location.href = decodeURIComponent(redirect) + window.location.hash
 				else {
 					localStorage.setItem('hasLoggedIn', 'true')
 					window.location.href = `/shells/${hasLoggedIn ? 'home' : 'tutorial'}`
