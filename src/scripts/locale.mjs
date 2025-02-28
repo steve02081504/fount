@@ -10,7 +10,7 @@
 export function getLocalizedInfo(info, locales) {
 	if (!info) return
 	if (locales)
-		for(const locale of locales) {
+		for (const locale of locales) {
 			const result = info[locale] || info[locale?.split('-')?.[0]] || info[Object.keys(info).find(key => key.startsWith(locale?.split('-')?.[0] + '-'))]
 			if (result) return result
 		}

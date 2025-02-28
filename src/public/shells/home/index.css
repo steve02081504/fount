@@ -19,14 +19,6 @@ article img {
 	white-space: pre-wrap;
 }
 
-[style*="--shiki-light"][style*="--shiki-dark"] {
-	color: var(--shiki-light) !important;
-}
-
-[data-theme="dark"] [style*="--shiki-light"][style*="--shiki-dark"] {
-	color: var(--shiki-dark) !important;
-}
-
 /* 卡片容器 */
 .card-container {
 	display: flex;
@@ -58,7 +50,7 @@ article img {
 	padding-top: 0.5rem;
 }
 
-[data-theme="dark"] .text-content {
+[data-theme-isdark="true"] .text-content {
 	color: white;
 	background-color: rgba(0, 0, 0, 0.5);
 }

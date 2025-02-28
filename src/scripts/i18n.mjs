@@ -7,7 +7,7 @@ export function getbestlocale(preferredlocaleList, localeList) {
 	for (const preferredlocale of preferredlocaleList) {
 		if (localeList.includes(preferredlocale))
 			return preferredlocale
-		const temp = localeList.find((name) => name.startsWith(preferredLang.split('-')[0]))
+		const temp = localeList.find((name) => name.startsWith(preferredlocale.split('-')[0]))
 		if (temp) return temp
 	}
 	return 'en-UK'

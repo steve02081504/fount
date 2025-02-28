@@ -1,0 +1,37 @@
+.theme-preview-card {
+	overflow: hidden;
+	border-radius: 0.5rem;
+	transition: transform 0.2s;
+	min-height: 70px;
+}
+
+.theme-preview-card:hover {
+	transform: scale(1.05);
+}
+
+.selected-theme {
+	outline: 4px solid;
+	outline-color: theme('colors.primary');
+}
+
+.auto-theme-container {
+	overflow: hidden;
+	position: relative;
+}
+
+.auto-theme-half {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+}
+
+.auto-theme-dark {
+	clip-path: polygon(0 0, 100% 0, 100% 100%);
+}
+
+.auto-theme-light {
+	clip-path: polygon(0 0, 0 100%, 100% 100%);
+}

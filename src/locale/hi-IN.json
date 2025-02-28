@@ -117,6 +117,13 @@
 			"issuepage": "समस्या प्रतिक्रिया"
 		}
 	},
+	"themeManage": {
+		"title": "थीम प्रबंधन",
+		"instruction": "एक थीम चुनें!",
+		"themes": {
+			"auto": "स्वचालित"
+		}
+	},
 	"import": {
 		"title": "आयात",
 		"tabs": {

@@ -1,9 +1,14 @@
 import { createJsonEditor } from '../../scripts/jsoneditor.mjs'
-import { applyTheme } from '../../scripts/theme.mjs'
+import { applyTheme, onThemeChange } from '../../scripts/theme.mjs'
 import { initTranslations, geti18n, i18nElement } from '../../scripts/i18n.mjs'
 
 const configEditorContainer = document.getElementById('config-editor')
-if (applyTheme()) configEditorContainer.classList.add('jse-theme-dark')
+onThemeChange(
+	(theme, isDark) => {
+		if (isDark) configEditorContainer.classList.add('jse-theme-dark')
+		else configEditorContainer.classList.remove('jse-theme-dark')
+	}
+)
 
 const newBotButton = document.getElementById('new-bot')
 const botListSelect = document.getElementById('bot-list')
@@ -383,6 +388,7 @@ async function initializeFromURLParams() {
 }
 
 // 初始化
+applyTheme()
 initTranslations('discord_bots') // Initialize translations with pageid 'discord_bots'
 initializeFromURLParams()
 

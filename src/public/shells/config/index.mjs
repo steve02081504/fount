@@ -1,11 +1,16 @@
 import { createJsonEditor } from '../../scripts/jsoneditor.mjs'
-import { applyTheme } from '../../scripts/theme.mjs'
+import { applyTheme, onThemeChange } from '../../scripts/theme.mjs'
 import { getPartTypes, getParts, getPartDetails, saveConfigData, getConfigData } from './src/public/endpoints.mjs' // 导入 API 模块
 import { showErrorMessage } from './src/public/error.mjs'
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
 
 const jsonEditorContainer = document.getElementById('jsonEditor')
-if (applyTheme()) jsonEditorContainer.classList.add('jse-theme-dark')
+onThemeChange(
+	(theme, isDark) => {
+		if (isDark) jsonEditorContainer.classList.add('jse-theme-dark')
+		else jsonEditorContainer.classList.remove('jse-theme-dark')
+	}
+)
 
 const partTypeSelect = document.getElementById('partTypeSelect')
 const partSelect = document.getElementById('partSelect')
@@ -216,6 +221,7 @@ async function initializeFromURLParams() {
 }
 
 // 初始化
+applyTheme()
 initTranslations('part_config')
 initializeFromURLParams()
 

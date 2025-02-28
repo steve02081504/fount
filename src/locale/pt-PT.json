@@ -117,6 +117,13 @@
 			"issuepage": "Relato de Problemas"
 		}
 	},
+	"themeManage": {
+		"title": "Gestão de Temas",
+		"instruction": "Escolha um tema!",
+		"themes": {
+			"auto": "Automático"
+		}
+	},
 	"import": {
 		"title": "Importar",
 		"tabs": {
