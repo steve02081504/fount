@@ -18,3 +18,5 @@ export function createJsonEditor(jsonEditorContainer, options) {
 	})
 	return result
 }
+
+document.head.innerHTML += '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanilla-jsoneditor@2/themes/jse-theme-dark.min.css" />'

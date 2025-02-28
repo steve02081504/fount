@@ -117,6 +117,13 @@
 			"issuepage": "Issue Feedback"
 		}
 	},
+	"themeManage": {
+		"title": "Theme Management",
+		"instruction": "Choose a theme!",
+		"themes": {
+			"auto": "Automatic"
+		}
+	},
 	"import": {
 		"title": "Import",
 		"tabs": {

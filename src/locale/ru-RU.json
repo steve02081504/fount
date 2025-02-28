@@ -117,6 +117,13 @@
 			"issuepage": "Сообщить о проблеме"
 		}
 	},
+	"themeManage": {
+		"title": "Управление темами",
+		"instruction": "Выберите тему!",
+		"themes": {
+			"auto": "Автоматически"
+		}
+	},
 	"import": {
 		"title": "Импорт",
 		"tabs": {

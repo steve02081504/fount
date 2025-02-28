@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="darkreader-lock">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title data-i18n="themeManage.title"></title>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.min.css" rel="stylesheet" type="text/css" />
+	<link href="/base.css" rel="stylesheet" type="text/css" />
+	<script src="https://cdn.tailwindcss.com"></script>
+	<link rel="stylesheet" href="./index.css" />
+</head>
+
+<body class="bg-base-200">
+	<div class="flex flex-col justify-center items-center min-h-screen">
+		<h1 class="text-4xl font-bold mb-4 px-4 text-center" data-i18n="themeManage.instruction"></h1>
+
+		<div class="container mx-auto px-4 flex flex-col lg:flex-row gap-8 w-full">
+			<!-- Preview Area -->
+			<div id="preview-area" class="lg:w-1/2 lg:sticky lg:top-4 max-h-[80vh] overflow-y-auto p-4 lg:p-6 rounded-box bg-base-100 shadow-md">
+				<div class="w-full space-y-4">
+					<h2 class="text-2xl font-bold text-center">Preview</h2>
+
+					<!-- 预览内容保持不变 -->
+					<div class="flex justify-center space-x-2">
+						<button class="btn btn-primary">Primary</button>
+						<button class="btn btn-secondary">Secondary</button>
+						<button class="btn btn-accent">Accent</button>
+						<button class="btn btn-ghost">Ghost</button>
+					</div>
+					<div class="rounded-box border border-base-300 p-2">
+						<ul class="menu">
+							<li><a>Item 1</a></li>
+							<li><a>Item 2</a></li>
+							<li><a>Item 3</a></li>
+						</ul>
+					</div>
+					<div class="form-control">
+						<select class="select select-bordered w-full">
+							<option disabled selected>Choose your option</option>
+							<option>Option 1</option>
+							<option>Option 2</option>
+							<option>Option 3</option>
+						</select>
+					</div>
+					<div class="form-control">
+						<label class="cursor-pointer label">
+							<span class="label-text">Remember me</span>
+							<input type="checkbox" class="checkbox checkbox-primary" checked />
+						</label>
+					</div>
+					<div class="flex justify-center">
+						<div class="avatar">
+							<div class="w-24 rounded-xl">
+								<img src="https://avatars.githubusercontent.com/u/31927825?v=4" />
+							</div>
+						</div>
+					</div>
+					<div class="flex space-x-4 items-center">
+						<div class="skeleton h-6 w-1/4"></div>
+						<div class="skeleton h-4 w-1/2"></div>
+						<div class="skeleton h-8 w-1/4"></div>
+					</div>
+					<div class="form-control">
+						<input type="text" placeholder="Type here" class="input input-bordered w-full" />
+					</div>
+					<div class="flex justify-center space-x-4">
+						<div class="form-control">
+							<label class="cursor-pointer label">
+								<span class="label-text">Radio 1</span>
+								<input type="radio" name="radio-group" class="radio" checked />
+							</label>
+						</div>
+						<div class="form-control">
+							<label class="cursor-pointer label">
+								<span class="label-text">Radio 2</span>
+								<input type="radio" name="radio-group" class="radio" />
+							</label>
+						</div>
+					</div>
+					<progress class="progress progress-primary w-full"></progress>
+					<div class="flex justify-center space-x-2">
+						<div class="badge badge-primary">Primary</div>
+						<div class="badge badge-secondary">Secondary</div>
+						<div class="badge badge-accent">Accent</div>
+						<div class="badge badge-ghost">Ghost</div>
+					</div>
+					<div class="alert alert-info">
+						<div>
+							<img src="https://api.iconify.design/line-md/alert-circle.svg" />
+							<span>Info alert!</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Theme List -->
+			<div id="theme-list" class="lg:w-1/2 grid gap-4 max-h-[80vh] overflow-y-auto grid-cols-[repeat(auto-fit,minmax(160px,1fr))] p-4 lg:p-6">
+			</div>
+		</div>
+	</div>
+
+	<script type="module" src="./index.mjs"></script>
+</body>
+
+</html>

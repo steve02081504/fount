@@ -117,6 +117,13 @@
 			"issuepage": "问题反馈"
 		}
 	},
+	"themeManage": {
+		"title": "主题管理",
+		"instruction": "选择一个主题！",
+		"themes": {
+			"auto": "自动"
+		}
+	},
 	"import": {
 		"title": "导入",
 		"tabs": {

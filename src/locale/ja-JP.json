@@ -117,6 +117,13 @@
 			"issuepage": "問題報告"
 		}
 	},
+	"themeManage": {
+		"title": "テーマ管理",
+		"instruction": "テーマを選択してください！",
+		"themes": {
+			"auto": "自動"
+		}
+	},
 	"import": {
 		"title": "インポート",
 		"tabs": {
