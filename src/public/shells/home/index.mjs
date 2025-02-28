@@ -4,6 +4,7 @@ import { renderMarkdown } from '../../scripts/markdown.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 import { parseRegexFromString, escapeRegExp } from '../../scripts/regex.mjs'
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
+import { svgInliner } from '../../scripts/svg-inliner.mjs'
 
 const roleContainer = document.getElementById('role-container')
 const characterDescription = document.getElementById('character-description')
@@ -72,6 +73,7 @@ async function renderCharView(charDetails, charname) {
 				interfaceItem.button ??
 				'<img src="https://api.iconify.design/line-md/question-circle.svg" />'
 			button.title = interfaceItem.info.title
+			svgInliner(button)
 			button.addEventListener('click', () => {
 				if (interfaceItem.onclick) eval(interfaceItem.onclick)
 				else window.open(interfaceItem.url.replaceAll('${charname}', charname))
@@ -218,8 +220,8 @@ async function displayFunctionButtons() {
 		iconSpan.classList.add('mr-2') // 图标和文字之间添加一些间距
 		iconSpan.innerHTML =
 			buttonItem.button ??
-			'<img src="https://api.iconify.design/line-md/question-circle.svg" class="dark:invert" />'
-
+			'<img src="https://api.iconify.design/line-md/question-circle.svg" class="text-icon" />'
+		svgInliner(iconSpan)
 		const titleSpan = document.createElement('span')
 		titleSpan.textContent = buttonItem.info.title
 

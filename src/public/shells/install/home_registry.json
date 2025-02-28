@@ -35,7 +35,7 @@
 			},
 			"level": 0,
 			"url": "/shells/install",
-			"button": "<img src=\"https://api.iconify.design/line-md/document-add.svg\" class=\"dark:invert\"/>"
+			"button": "<img src=\"https://api.iconify.design/line-md/document-add.svg\" class=\"text-icon\"/>"
 		}
 	],
 	"home_char_interfaces": [

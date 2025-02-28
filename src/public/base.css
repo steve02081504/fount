@@ -1,0 +1,5 @@
+.text-icon {
+	color: var(--fallback-bc,oklch(var(--bc)/1));
+	fill: var(--fallback-bc,oklch(var(--bc)/1));
+	stroke: var(--fallback-bc,oklch(var(--bc)/1));
+}

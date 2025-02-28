@@ -98,7 +98,7 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 		previewContainer.appendChild(preview)
 	} else {
 		const preview = document.createElement('img')
-		preview.classList.add('preview', 'dark:invert')
+		preview.classList.add('preview', 'icon')
 		preview.src = 'https://api.iconify.design/line-md/file.svg'
 		preview.alt = file.name
 		previewContainer.appendChild(preview)

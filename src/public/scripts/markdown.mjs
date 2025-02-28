@@ -8,7 +8,6 @@ import remarkGfm from 'https://esm.run/remark-gfm'
 import remarkBreaks from 'https://esm.run/remark-breaks'
 import rehypePrettyCode from 'https://esm.run/rehype-pretty-code'
 import { transformerCopyButton } from 'https://esm.run/@rehype-pretty/transformers'
-import { onThemeChange } from './theme.mjs'
 function remarkDisable(options = {}) {
 	const data = this.data()
 	const list = data.micromarkExtensions || (data.micromarkExtensions = [])
@@ -53,12 +52,3 @@ export async function renderMarkdown(markdown) {
 }
 
 document.head.innerHTML += '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css" />'
-const markdown_style = document.createElement('link')
-markdown_style.rel = 'stylesheet'
-onThemeChange(is_dark => {
-	if (is_dark)
-		markdown_style.href = 'https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown-dark.min.css'
-	else
-		markdown_style.href = 'https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown-light.min.css'
-})
-document.head.appendChild(markdown_style)

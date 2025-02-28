@@ -35,7 +35,7 @@
 			},
 			"level": 1,
 			"url": "/shells/chat/list",
-			"button": "<img src=\"https://api.iconify.design/line-md/chat-round.svg\" class=\"dark:invert\"/>"
+			"button": "<img src=\"https://api.iconify.design/line-md/chat-round.svg\" class=\"text-icon\"/>"
 		}
 	],
 	"home_char_interfaces": [
