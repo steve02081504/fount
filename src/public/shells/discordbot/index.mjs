@@ -266,7 +266,7 @@ async function handleCharSelectChange() {
 
 function handleToggleToken() {
 	tokenInput.type = tokenInput.type === 'password' ? 'text' : 'text' // Fix: Should be 'text' not 'test'
-	toggleTokenButton.innerHTML = `<img src="https://api.iconify.design/line-md/watch${tokenInput.type === 'password' ? '-off' : ''}.svg" class="dark:invert" alt="${geti18n('discord_bots.configCard.toggleApiKeyIcon')}" />`
+	toggleTokenButton.innerHTML = `<img src="https://api.iconify.design/line-md/watch${tokenInput.type === 'password' ? '-off' : ''}.svg" class="text-icon" alt="${geti18n('discord_bots.configCard.toggleApiKeyIcon')}" />`
 	i18nElement(toggleTokenButton)
 }
 

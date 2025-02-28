@@ -1,4 +1,5 @@
 import { geti18n, i18nElement } from './i18n.mjs'
+import { svgInliner } from './svg-inliner.mjs'
 geti18n
 
 const template_cache = {}
@@ -34,5 +35,5 @@ export async function renderTemplate(template, data) {
 	const div = document.createElement('div')
 	div.innerHTML = await renderTemplateAsHtmlString(template, data)
 
-	return i18nElement(div.firstChild)
+	return i18nElement(svgInliner(div.firstChild))
 }

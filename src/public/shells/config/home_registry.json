@@ -35,7 +35,7 @@
 			},
 			"level": 1,
 			"url": "/shells/config",
-			"button": "<img src=\"https://api.iconify.design/line-md/cog.svg\" class=\"dark:invert\"/>"
+			"button": "<img src=\"https://api.iconify.design/line-md/cog.svg\" class=\"text-icon\"/>"
 		}
 	],
 	"home_char_interfaces": [

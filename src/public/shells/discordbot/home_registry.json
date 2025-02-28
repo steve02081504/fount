@@ -35,7 +35,7 @@
 			},
 			"level": 1,
 			"url": "/shells/discordbot",
-			"button": "<img src=\"https://api.iconify.design/line-md/discord.svg\" class=\"dark:invert\"/>"
+			"button": "<img src=\"https://api.iconify.design/line-md/discord.svg\" class=\"text-icon\"/>"
 		}
 	],
 	"home_char_interfaces": [
