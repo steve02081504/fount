@@ -514,10 +514,10 @@ async function addChatLogEntry(chatid, entry) {
 	let freq_data = await getCharReplyFrequency(chatid)
 	let char = entry.timeSlice.charname ?? null
 	;(async () => {
-		while(true) {
+		while (true) {
 			freq_data = freq_data.filter(f => f.charname !== char)
 			const nextreply = await getNextCharForReply(freq_data)
-			if (nextreply) try{
+			if (nextreply) try {
 				await triggerCharReply(chatid, nextreply)
 				return
 			}
@@ -892,7 +892,7 @@ export async function editMessage(chatid, index, new_content) {
 	else
 		entry = BuildChatLogEntryFromUserMessage(editresult, timeSlice, chatMetadata.LastTimeSlice, chatMetadata.username)
 
-	chatMetadata.chatLog[index] = entry
+	chatMetadata.timeLines[chatMetadata.timeLineIndex] = chatMetadata.chatLog[index] = entry
 
 	if (is_VividChat(chatMetadata)) saveChat(chatid)
 

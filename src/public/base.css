@@ -2,6 +2,10 @@
 	color: var(--fallback-bc, oklch(var(--bc)/1));
 }
 
+.markdown-body {
+	color: var(--fallback-bc, oklch(var(--bc)/1)) !important;
+	background-color: var(--fallback-bg, oklch(var(--bg)/1)) !important;
+}
 
 [style*="--shiki-light"][style*="--shiki-dark"] {
 	color: var(--shiki-light) !important;
