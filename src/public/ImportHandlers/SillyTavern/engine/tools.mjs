@@ -27,7 +27,7 @@ export function parseRegexFromString(input) {
 	// If we find any unescaped slash delimiter, we also exit out.
 	// JS doesn't care about delimiters inside regex patterns, but for this to be a valid regex outside of our implementation,
 	// we have to make sure that our delimiter is correctly escaped. Or every other engine would fail.
-	if (pattern.match(/(^|[^\\])\//)) return null
+	// if (pattern.match(/(^|[^\\])\//)) return null
 
 	// Now we need to actually unescape the slash delimiters, because JS doesn't care about delimiters
 	pattern = pattern.replace('\\/', '/')
