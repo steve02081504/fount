@@ -8,8 +8,20 @@ import sanitizeFilename from 'npm:sanitize-filename'
 import { downloadCharacter } from './char-download.mjs'
 import { Buffer } from 'node:buffer'
 
+function RN2N(obj) {
+	if (!obj) return obj
+	if (Object(obj) instanceof String)
+		return obj.replaceAll('\r\n', '\n').replaceAll('\r', '\n')
+	else if (Array.isArray(obj))
+		return obj.map(RN2N)
+	else if (Object(obj) instanceof Number || Object(obj) instanceof Boolean)
+		return obj
+	else
+		return Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, RN2N(v)]))
+}
+
 async function ImportAsData(username, data) {
-	const chardata = GetV2CharDataFromV1(JSON.parse(data_reader.read(data)))
+	const chardata = GetV2CharDataFromV1(RN2N(JSON.parse(data_reader.read(data))))
 
 	// make an dir for the character
 	// copy directory
