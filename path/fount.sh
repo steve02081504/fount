@@ -244,6 +244,11 @@ if [[ ($IN_TERMUX -eq 0 && -z "$(command -v deno)") || ($IN_TERMUX -eq 1 && ! -f
 			echo "export PATH=\"\$PATH:${DENO_INSTALL}/bin\"" >> "$HOME/.profile"
 		fi
 		source "$HOME/.profile"
+		if [[ "$SHELL" == *"/zsh" ]]; then
+			source "$HOME/.zshrc"
+		else
+			source "$HOME/.bashrc"
+		fi
 
 		# 尝试使用 glibc-runner 运行 Deno，使用绝对路径(在source之后)
 		GLIBC_RUNNER_PATH=$(which glibc-runner)
@@ -267,6 +272,7 @@ if [[ ($IN_TERMUX -eq 0 && -z "$(command -v deno)") || ($IN_TERMUX -eq 1 && ! -f
 	else
 		# 非 Termux 环境下的普通安装
 		curl -fsSL https://deno.land/install.sh | sh -s -- -y
+		source "$HOME/.profile"
 		if [[ "$SHELL" == *"/zsh" ]]; then
 			source "$HOME/.zshrc"
 		else
