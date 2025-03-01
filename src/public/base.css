@@ -2,6 +2,12 @@
 	color: var(--fallback-bc, oklch(var(--bc)/1));
 }
 
+.jsoneditor-container {
+	width: 100%;
+	--jse-theme-color: var(--fallback-pc, oklch(var(--p)/1)) !important;
+	--jse-a-color: var(--fallback-pc, oklch(var(--p)/1)) !important;
+}
+
 .markdown-body {
 	color: var(--fallback-bc, oklch(var(--bc)/1));
 	background-color: var(--fallback-bg, oklch(var(--bg)/1));

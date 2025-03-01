@@ -19,4 +19,9 @@ export function createJsonEditor(jsonEditorContainer, options) {
 	return result
 }
 
-document.head.innerHTML += '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanilla-jsoneditor@2/themes/jse-theme-dark.min.css" />'
+{
+	const markdown_style = document.createElement('link')
+	markdown_style.rel = 'stylesheet'
+	markdown_style.href = 'https://cdn.jsdelivr.net/npm/vanilla-jsoneditor@2/themes/jse-theme-dark.min.css'
+	document.head.prepend(markdown_style)
+}

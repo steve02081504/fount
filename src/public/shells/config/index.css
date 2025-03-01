@@ -1,7 +1,3 @@
-.jsoneditor-container {
-	width: 100%;
-}
-
 #errorMessage {
 	transition: opacity 0.5s ease-in-out;
 	opacity: 1;
