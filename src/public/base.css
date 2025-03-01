@@ -10,10 +10,14 @@
 
 .markdown-body {
 	color: var(--fallback-bc, oklch(var(--bc)/1));
-	background-color: var(--fallback-bg, oklch(var(--bg)/1));
+	background-color: #00000000;
 }
 
-.markdown-body article img {
+.markdown-body hr {
+	background-color: var(--fallback-bc, oklch(var(--bc)/1));
+}
+
+.markdown-body img {
 	display: inline-block;
 	margin-right: 2px;
 }
