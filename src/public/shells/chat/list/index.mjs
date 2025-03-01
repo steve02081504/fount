@@ -1,4 +1,5 @@
 import { renderTemplate } from '../../../scripts/template.mjs'
+import { renderMarkdown } from '../../../scripts/markdown.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
 import { parseRegexFromString, escapeRegExp } from '../../../scripts/regex.mjs'
 import { initTranslations, geti18n } from '../../../scripts/i18n.mjs'
