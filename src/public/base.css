@@ -3,14 +3,25 @@
 }
 
 .markdown-body {
-	color: var(--fallback-bc, oklch(var(--bc)/1)) !important;
-	background-color: var(--fallback-bg, oklch(var(--bg)/1)) !important;
+	color: var(--fallback-bc, oklch(var(--bc)/1));
+	background-color: var(--fallback-bg, oklch(var(--bg)/1));
+}
+
+.markdown-body article img {
+	display: inline-block;
+	margin-right: 2px;
+}
+
+.markdown-body figure {
+	display: block;
+	overflow-x: auto;
+	white-space: pre;
 }
 
 [style*="--shiki-light"][style*="--shiki-dark"] {
-	color: var(--shiki-light) !important;
+	color: var(--shiki-light)
 }
 
 [data-theme-isdark="true"] [style*="--shiki-light"][style*="--shiki-dark"] {
-	color: var(--shiki-dark) !important;
+	color: var(--shiki-dark)
 }

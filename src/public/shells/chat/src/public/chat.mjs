@@ -1,3 +1,4 @@
+import { setupCss } from './ui/css.mjs'
 import { setupSidebar, triggerSidebarHeartbeat } from './ui/sidebar.mjs'
 import { initializeVirtualQueue, triggerVirtualQueueHeartbeat } from './ui/virtualQueue.mjs'
 
@@ -32,6 +33,7 @@ export function stopHeartbeat() {
 }
 
 export async function initializeChat() {
+	setupCss()
 	await initializeVirtualQueue()
 
 	doHeartbeat()

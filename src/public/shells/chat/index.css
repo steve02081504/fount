@@ -18,6 +18,10 @@ body {
 	transform: translateX(5px);
 }
 
+.chat-message .content {
+	max-width: calc(var(--chat-header-width) - 83px);
+}
+
 /* 左右箭头 */
 .chat-message .arrow {
 	position: absolute;
