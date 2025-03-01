@@ -94,7 +94,7 @@ Start-Job -ScriptBlock {
 } | Out-Null
 
 # 向用户的$Profile中注册导入fount-pwsh
-if (Get-Module fount-pwsh -ListAvailable) {
+if ($Profile -and (Get-Module fount-pwsh -ListAvailable)) {
 	$ProfileContent = Get-Content $Profile -ErrorAction Ignore
 	$ProfileContent = $ProfileContent -split "`n"
 	$ProfileContent = $ProfileContent | Where-Object { $_ -notmatch 'Import-Module fount-pwsh' }
