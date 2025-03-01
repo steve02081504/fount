@@ -6,19 +6,6 @@ body {
 	margin: 0;
 }
 
-article img {
-	display: inline-block;
-	margin-right: 2px;
-}
-
-.markdown-body pre {
-	overflow-x: auto;
-}
-
-.markdown-body code {
-	white-space: pre-wrap;
-}
-
 /* 卡片容器 */
 .card-container {
 	display: flex;

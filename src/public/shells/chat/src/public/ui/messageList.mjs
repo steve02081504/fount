@@ -151,19 +151,34 @@ export async function replaceMessage(index, message) {
 
 export function enableSwipe(messageElement) {
 	let touchStartX = 0
-	messageElement.addEventListener(
-		'touchstart',
-		(event) => {
-			touchStartX = event.touches[0].clientX
-		},
-		{ passive: true }
-	)
+	let touchStartY = 0
+	let hasHorizontalScrollbar = false
 
-	messageElement.addEventListener(
-		'touchend',
-		async (event) => {
-			const deltaX = event.changedTouches[0].clientX - touchStartX
-			if (Math.abs(deltaX) > SWIPE_THRESHOLD) {
+	messageElement.addEventListener('touchstart', (event) => {
+		touchStartX = event.touches[0].clientX
+		touchStartY = event.touches[0].clientY
+		function checkForScrollbar(element) {
+			if (element.scrollWidth > element.clientWidth)
+				return true
+			for (let i = 0; i < element.children.length; i++)
+				if (checkForScrollbar(element.children[i]))
+					return true
+			return false
+		}
+
+		hasHorizontalScrollbar = checkForScrollbar(event.target)
+	}, { passive: true })
+
+	messageElement.addEventListener('touchend', async (event) => {
+		const deltaX = event.changedTouches[0].clientX - touchStartX
+		const deltaY = event.changedTouches[0].clientY - touchStartY
+
+		if (
+			Math.abs(deltaX) > SWIPE_THRESHOLD &&
+			Math.abs(deltaY) < Math.abs(deltaX)
+		)
+			// Simplified logic: Only allow swipe if NO scrollbar was detected anywhere.
+			if (!hasHorizontalScrollbar) {
 				const index = getQueueIndex(messageElement)
 				if (index === -1) return
 				await replaceMessageInQueue(
@@ -171,7 +186,5 @@ export function enableSwipe(messageElement) {
 					await modifyTimeLine(deltaX > 0 ? -1 : 1)
 				)
 			}
-		},
-		{ passive: true }
-	)
+	}, { passive: true })
 }
