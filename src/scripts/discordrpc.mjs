@@ -12,6 +12,7 @@ let _activity = {
 }
 function _setActivity() {
 	if (!rpc) return
+	for (const key in _activity) if (_activity[key] === undefined) delete _activity[key]
 	rpc.setActivity({
 		startTimestamp: FountStartTimestamp,
 		..._activity
@@ -26,8 +27,8 @@ export function StartRPC(
 		startTimestamp: undefined,
 		largeImageKey: 'icon',
 		largeImageText: 'github.com/steve02081504/fount',
-		smallImageKey: '',
-		smallImageText: '',
+		smallImageKey: undefined,
+		smallImageText: undefined,
 		instance: false,
 	}
 ) {
