@@ -63,6 +63,10 @@ body {
 		flex-direction: column;
 		justify-content: space-between;
 	}
+
+	.drawer-side {
+		z-index: 50;
+	}
 }
 
 /* 移动端样式 */
@@ -86,6 +90,10 @@ body {
 		/* 移动端始终显示标签 */
 		flex-direction: column;
 		justify-content: space-between;
+	}
+
+	.drawer-side {
+		z-index: 70;
 	}
 }
 
