@@ -139,10 +139,10 @@ system:
 				}
 
 				// 移除<declare></declare>
-				text = text.replace(/<\/?declare>([^<]*)<\/?declare>\s*$/g, '')
+				text = text.replace(/<[\/\<\-]*declare>[^]*?<\/?declare>\s*$/g, '')
 
 				text = text.split('\n')
-				while (['', '</pause>', '</declare>', '</>'].includes(text[text.length - 1].trim())) text.pop() //?
+				while (['', '</pause>', '</declare>', '</>', '</'].includes(text[text.length - 1].trim())) text.pop() //?
 				text = text.join('\n')
 
 				return {
