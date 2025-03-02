@@ -1,4 +1,4 @@
-<div class="chat-list-item flex items-center justify-between gap-4 p-4 rounded-lg bg-base-100 shadow-md">
+<div class="chat-list-item flex items-center justify-between gap-4 p-4 rounded-md bg-base-100 shadow-md">
 	<input type="checkbox" class="checkbox select-checkbox" />
 	<div class="flex-1 min-w-0">
 		<div class="flex items-center gap-2 mb-1">
@@ -9,7 +9,7 @@
 			</div>
 			<p class="text-sm font-semibold text-gray-900 dark:text-white">${chars.join(', ')}</p>
 		</div>
-		<p class="text-sm text-gray-500 dark:text-gray-400 truncate">
+		<p class="text-sm text-gray-500 dark:text-gray-400 multiline-truncate">
 			<span class="font-medium">${lastMessageSender}:</span>
 			<div class="markdown-body">${lastMessageContent}</div>
 		</p>

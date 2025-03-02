@@ -10,9 +10,9 @@
 			<span class="timestamp text-xs text-gray-400">${timeStamp}</span>
 		</div>
 		<div class="edit-area mt-1 flex gap-2">
-			<textarea id="edit-input-${safeTimeStamp}" class="textarea textarea-bordered flex-grow" data-i18n="chat.messageEdit.input">${content_for_edit}</textarea>
+			<textarea id="edit-input-${safeTimeStamp}" class="textarea border flex-grow" data-i18n="chat.messageEdit.input">${content_for_edit}</textarea>
 			<div class="flex flex-col gap-2">
-				<div class="edit-button-group">
+				<div class="edit-button-group flex flex-col">
 					<button id="confirm-button-${safeTimeStamp}" class="btn btn-sm btn-success" data-i18n="chat.messageEdit.buttons.confirm"><img src="https://api.iconify.design/line-md/confirm.svg" data-i18n="chat.messageEdit.buttons.confirmIcon" /></button>
 					<button id="cancel-button-${safeTimeStamp}" class="btn btn-sm btn-error" data-i18n="chat.messageEdit.buttons.cancel"><img src="https://api.iconify.design/line-md/close.svg" data-i18n="chat.messageEdit.buttons.cancelIcon" /></button>
 					<button id="upload-edit-button-${safeTimeStamp}" class="btn btn-secondary" data-i18n="chat.messageEdit.buttons.upload"><img src="https://api.iconify.design/line-md/upload.svg" data-i18n="chat.messageEdit.buttons.uploadIcon" /></button>

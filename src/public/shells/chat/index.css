@@ -19,7 +19,7 @@ body {
 }
 
 .chat-message .content {
-	max-width: calc(var(--chat-header-width) - 83px);
+	max-width: calc(var(--chat-header-width) - 117px);
 }
 
 /* 左右箭头 */

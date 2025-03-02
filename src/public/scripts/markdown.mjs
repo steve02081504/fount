@@ -9,28 +9,11 @@ import remarkBreaks from 'https://esm.run/remark-breaks'
 import rehypePrettyCode from 'https://esm.run/rehype-pretty-code'
 import { transformerCopyButton } from 'https://esm.run/@rehype-pretty/transformers'
 import { onThemeChange } from './theme.mjs'
-import { visit } from 'https://esm.run/unist-util-visit'
 
 function remarkDisable(options = {}) {
 	const data = this.data()
 	const list = data.micromarkExtensions || (data.micromarkExtensions = [])
 	list.push({ disable: { null: options.disable || [] } })
-}
-
-function rehypeWrapTables(options = {}) {
-	return (tree) => {
-		visit(tree, 'element', (node, index, parent) => {
-			if (node.tagName === 'table') {
-				const container = {
-					type: 'element',
-					tagName: 'figure',
-					properties: { className: ['table-container'] },
-					children: [node],
-				}
-				parent.children[index] = container
-			}
-		})
-	}
 }
 
 const convertor = unified()
@@ -56,7 +39,6 @@ const convertor = unified()
 			}),
 		],
 	})
-	.use(rehypeWrapTables)
 	.use(rehypeKatex)
 	.use(rehypeStringify, {
 		allowDangerousCharacters: true,
