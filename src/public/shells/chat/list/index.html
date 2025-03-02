@@ -17,11 +17,11 @@
 		<div class="flex justify-between items-center mb-4 flex-wrap">
 			<h1 class="text-2xl" data-i18n="chat_history.pageTitle"></h1>
 			<div class="flex gap-2">
-				<select id="sort-select" class="select">
+				<select id="sort-select" class="select select-bordered"> <!-- Added select-bordered for better visual -->
 					<option value="time_desc" data-i18n="chat_history.sortOptions.time_desc"></option>
 					<option value="time_asc" data-i18n="chat_history.sortOptions.time_asc"></option>
 				</select>
-				<input type="text" id="filter-input" class="input" data-i18n="chat_history.filterInput" />
+				<input type="text" id="filter-input" class="input input-bordered" data-i18n="chat_history.filterInput" /> <!-- Added input-bordered for better visual -->
 			</div>
 		</div>
 		<div class="flex items-center mb-4 gap-2">

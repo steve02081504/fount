@@ -1,26 +1,44 @@
-<div class="chat-list-item flex items-center justify-between gap-4 p-4 rounded-md bg-base-100 shadow-md">
-	<input type="checkbox" class="checkbox select-checkbox" />
-	<div class="flex-1 min-w-0">
-		<div class="flex items-center gap-2 mb-1">
-			<div class="avatar-group -space-x-6 rtl:space-x-reverse">
-				${avatars.map(avatar => `<div class="avatar">
-					<div class="w-8"><img src="${avatar.url || 'https://gravatar.com/avatar/0?d=mp&f=y'}" alt="${avatar.name}" /></div>
-				</div>`).join('')}
-			</div>
-			<p class="text-sm font-semibold text-gray-900 dark:text-white">${chars.join(', ')}</p>
+<div class="chat-list-item rounded-md bg-base-100 shadow-md mb-2">
+	<div class="flex"> <!-- Removed p-4 from here to allow more control over padding -->
+		<!-- 选择框 (固定宽度) -->
+		<div class="flex-shrink-0 pr-2 pl-4 pt-4"> <!-- Added pl-4 and pt-4 for spacing, pr-2 for right spacing -->
+			<input type="checkbox" class="checkbox select-checkbox" />
 		</div>
-		<p class="text-sm text-gray-500 dark:text-gray-400 multiline-truncate">
-			<span class="font-medium">${lastMessageSender}:</span>
-			<div class="markdown-body">${lastMessageContent}</div>
-		</p>
-	</div>
-	<div class="flex flex-col items-end">
-		<p class="text-xs text-gray-500 dark:text-gray-400 mb-1">${lastMessageTime}</p>
-		<div class="join">
-			<button class="btn btn-xs join-item continue-button" data-i18n="chat_history.chatItemButtons.continue"></button>
-			<button class="btn btn-xs join-item copy-button" data-i18n="chat_history.chatItemButtons.copy"></button>
-			<button class="btn btn-xs join-item export-button" data-i18n="chat_history.chatItemButtons.export"></button>
-			<button class="btn btn-xs join-item btn-error delete-button" data-i18n="chat_history.chatItemButtons.delete"></button>
+
+		<!-- 内容区域 (弹性宽度) -->
+		<div class="flex-1 min-w-0 p-4"> <!-- Added p-4 for content padding -->
+			<div class="flex items-center gap-2 mb-1">
+				<div class="avatar-group -space-x-6 rtl:space-x-reverse">
+					${avatars.map(avatar => `<div class="avatar">
+						<div class="w-8"><img src="${avatar.url || 'https://gravatar.com/avatar/0?d=mp&f=y'}" alt="${avatar.name}" /></div>
+					</div>`).join('')}
+				</div>
+				<p class="text-sm font-semibold text-base-content">${chars.join(', ')}</p>
+			</div>
+			<div class="collapse">
+				<input type="checkbox" />
+				<div class="collapse-title text-sm text-base-content opacity-70 hover:opacity-100 multiline-truncate cursor-pointer">
+					<span class="font-medium">${lastMessageSender}:</span>
+					${lastMessageContent}
+				</div>
+				<div class="collapse-content">
+					<p class="text-sm text-base-content markdown-body">
+						<span class="font-medium">${lastMessageSender}:</span>
+						${lastMessageContent}
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- 按钮组和时间 (固定宽度和位置) -->
+		<div class="flex-shrink-0 pr-4 pl-2 pt-4 flex flex-col items-end justify-start"> <!-- Added pr-4 and pt-4 for spacing, pl-2 for left spacing, Removed h-full and items-end from outer div -->
+			<p class="text-xs text-base-content opacity-50 mb-1 text-right">${lastMessageTime}</p>
+			<div class="join join-vertical sm:join-horizontal">
+				<button class="btn btn-xs join-item continue-button" data-i18n="chat_history.chatItemButtons.continue"></button>
+				<button class="btn btn-xs join-item copy-button" data-i18n="chat_history.chatItemButtons.copy"></button>
+				<button class="btn btn-xs join-item export-button" data-i18n="chat_history.chatItemButtons.export"></button>
+				<button class="btn btn-xs join-item btn-error delete-button" data-i18n="chat_history.chatItemButtons.delete"></button>
+			</div>
 		</div>
 	</div>
 </div>
