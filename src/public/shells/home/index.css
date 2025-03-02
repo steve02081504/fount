@@ -50,6 +50,14 @@ body {
 	/* 默认隐藏 */
 }
 
+.card-actions .flex {
+	min-width: 0;
+	/* This is important for flexbox overflow handling */
+	width: 100%;
+	/* Take full width of parent */
+	overflow-x: auto;
+}
+
 /* 桌面端悬浮效果 */
 @media (min-width: 1024px) {
 	.card-container:hover {
