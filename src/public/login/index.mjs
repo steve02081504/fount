@@ -234,6 +234,7 @@ function setupEventListeners() {
 
 // 页面加载完成后的初始化工作
 async function initializeApp() {
+	localStorage.setItem('theme', localStorage.getItem('theme') || 'dark')
 	applyTheme()
 	await initTranslations('auth')
 	initializeForm()

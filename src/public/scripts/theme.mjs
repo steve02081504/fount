@@ -92,7 +92,7 @@ export function setTheme(theme) {
 }
 
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-	setTheme(theme_now || (e.matches ? 'dark' : 'light'))
+	setTheme(localStorage.getItem('theme') || (e.matches ? 'dark' : 'light'))
 })
 // 重新获取焦点时应用当前主题
 window.addEventListener('focus', () => {
