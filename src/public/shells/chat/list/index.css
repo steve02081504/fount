@@ -9,6 +9,11 @@
 	margin-right: 5px;
 }
 
+.avatar img {
+	width: 32px;
+	height: 32px;
+}
+
 .multiline-truncate {
 	display: -webkit-box;
 	-webkit-line-clamp: 2; /* 折叠时只显示两行 */

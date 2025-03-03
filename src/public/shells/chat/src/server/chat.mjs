@@ -744,7 +744,7 @@ export async function getChatList(username) {
 				chatid,
 				chars: Object.keys(chatMetadata.LastTimeSlice.chars),
 				lastMessageSender: lastEntry.name,
-				lastMessageSenderAvatar: lastEntry.avatar,
+				lastMessageSenderAvatar: lastEntry.avatar || null,
 				lastMessageContent: lastEntry.content,
 				lastMessageTime: lastEntry.timeStamp,
 			}
