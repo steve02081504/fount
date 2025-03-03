@@ -10,20 +10,12 @@
 
 .markdown-body {
 	color: var(--color-base-content);
-	background-color: #00000000;
-}
-
-.markdown-body hr {
-	background-color: var(--color-primary);
+	background-color: #11451400;
 }
 
 .markdown-body img {
 	display: inline-block;
 	margin-right: 2px;
-}
-
-.markdown-body table {
-
 }
 
 .markdown-body figure {

@@ -133,7 +133,7 @@ export const builtin_themes = [
 	'dim',
 	'nord',
 	'sunset',
-	"caramellatte",
-	"abyss",
-	"silk"
+	'caramellatte',
+	'abyss',
+	'silk'
 ]
