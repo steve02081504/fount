@@ -1,20 +1,16 @@
 .text-icon {
-	color: var(--fallback-bc, oklch(var(--bc)/1));
+	color: var(--color-base-content);
 }
 
 .jsoneditor-container {
 	width: 100%;
-	--jse-theme-color: var(--fallback-pc, oklch(var(--p)/1)) !important;
-	--jse-a-color: var(--fallback-pc, oklch(var(--p)/1)) !important;
+	--jse-theme-color: var(--color-primary) !important;
+	--jse-a-color: var(--color-primary) !important;
 }
 
 .markdown-body {
-	color: var(--fallback-bc, oklch(var(--bc)/1));
-	background-color: #00000000;
-}
-
-.markdown-body hr {
-	background-color: var(--fallback-bc, oklch(var(--bc)/1));
+	color: var(--color-base-content);
+	background-color: #11451400;
 }
 
 .markdown-body img {

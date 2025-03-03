@@ -8,8 +8,8 @@ import remarkGfm from 'https://esm.run/remark-gfm'
 import remarkBreaks from 'https://esm.run/remark-breaks'
 import rehypePrettyCode from 'https://esm.run/rehype-pretty-code'
 import { transformerCopyButton } from 'https://esm.run/@rehype-pretty/transformers'
-import { onThemeChange } from './theme.mjs'
 import { visit } from 'https://esm.run/unist-util-visit'
+import { onThemeChange } from './theme.mjs'
 
 function remarkDisable(options = {}) {
 	const data = this.data()
@@ -17,18 +17,17 @@ function remarkDisable(options = {}) {
 	list.push({ disable: { null: options.disable || [] } })
 }
 
-function rehypeWrapTables(options = {}) {
+function rehypeAddDaisyuiClass() {
 	return (tree) => {
-		visit(tree, 'element', (node, index, parent) => {
-			if (node.tagName === 'table') {
-				const container = {
-					type: 'element',
-					tagName: 'figure',
-					properties: { className: ['table-container'] },
-					children: [node],
-				}
-				parent.children[index] = container
-			}
+		visit(tree, 'element', (node) => {
+			if (node.tagName === 'hr')
+				node.properties.className = ['divider', 'divider-primary', ...node.properties.className || []]
+			else if (node.tagName === 'table')
+				node.properties.className = ['table', ...node.properties.className || []]
+			else if (node.tagName === 'th' || node.tagName === 'td')
+				node.properties.className = ['bg-base-100', ...node.properties.className || []]
+			else if (node.tagName === 'a')
+				node.properties.className = ['link', 'link-primary', ...node.properties.className || []]
 		})
 	}
 }
@@ -56,8 +55,8 @@ const convertor = unified()
 			}),
 		],
 	})
-	.use(rehypeWrapTables)
 	.use(rehypeKatex)
+	.use(rehypeAddDaisyuiClass)
 	.use(rehypeStringify, {
 		allowDangerousCharacters: true,
 		allowDangerousHtml: true,

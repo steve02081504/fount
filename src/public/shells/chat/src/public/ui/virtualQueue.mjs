@@ -115,7 +115,7 @@ function updateLastCharMessageArrows() {
 	const lastCharMessageIndex = queue.length - 1
 	if (queue[lastCharMessageIndex]?.role == 'char') {
 		const messageElement = chatMessagesContainer.children[lastCharMessageIndex]
-		const messageContent = messageElement.querySelector('.content')
+		const messageContent = messageElement.querySelector('.message-content')
 
 		const leftArrow = document.createElement('div')
 		leftArrow.classList.add('arrow', 'left')

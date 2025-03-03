@@ -116,6 +116,7 @@ async function renderChatListItem(chat) {
 	const data = {
 		...chat,
 		lastMessageTime: lastMsgTime,
+		lastMessageRowContent: chat.lastMessageContent,
 		lastMessageContent: await renderMarkdown(chat.lastMessageContent),
 		avatars: await Promise.all(chat.chars.map(async charName => {
 			const details = await getCharDetails(charName)
