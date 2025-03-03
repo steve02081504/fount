@@ -6,17 +6,18 @@
 	<meta name="darkreader-lock">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title data-i18n="themeManage.title"></title>
-	<link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.min.css" rel="stylesheet" type="text/css" />
+	<link href="https://cdn.jsdelivr.net/npm/daisyui@latest/daisyui.css" rel="stylesheet" type="text/css" />
 	<link href="/base.css" rel="stylesheet" type="text/css" />
-	<script src="https://cdn.tailwindcss.com"></script>
-	<link rel="stylesheet" href="./index.css" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser"></script>
+	<script type="module" src="/base.mjs"></script>
+	<link rel="stylesheet" href="./index.css" type="text/css" />
 </head>
 
 <body class="bg-base-200">
 	<div class="flex flex-col justify-center items-center min-h-screen">
 		<h1 class="text-4xl font-bold mb-4 px-4 text-center" data-i18n="themeManage.instruction"></h1>
 
-		<div class="container mx-auto px-4 flex flex-col lg:flex-row gap-8 w-full">
+		<div class="flex flex-col lg:flex-row gap-8 w-full px-4">
 			<!-- Preview Area -->
 			<div id="preview-area" class="lg:w-1/2 lg:sticky lg:top-4 max-h-[80vh] overflow-y-auto p-4 lg:p-6 rounded-box bg-base-100 shadow-md">
 				<div class="w-full space-y-4">
@@ -36,20 +37,21 @@
 							<li><a>Item 3</a></li>
 						</ul>
 					</div>
-					<div class="form-control">
-						<select class="select select-bordered w-full">
+					<fieldset class="fieldset">
+						<select class="select">
 							<option disabled selected>Choose your option</option>
 							<option>Option 1</option>
 							<option>Option 2</option>
 							<option>Option 3</option>
 						</select>
-					</div>
-					<div class="form-control">
-						<label class="cursor-pointer label">
-							<span class="label-text">Remember me</span>
-							<input type="checkbox" class="checkbox checkbox-primary" checked />
-						</label>
-					</div>
+					</fieldset>
+
+					<label class="label cursor-pointer flex items-center">
+						<input type="checkbox" class="checkbox checkbox-primary" checked />
+						<span class="ml-2">Remember me</span>
+					</label>
+
+
 					<div class="flex justify-center">
 						<div class="avatar">
 							<div class="w-24 rounded-xl">
@@ -62,22 +64,24 @@
 						<div class="skeleton h-4 w-1/2"></div>
 						<div class="skeleton h-8 w-1/4"></div>
 					</div>
-					<div class="form-control">
-						<input type="text" placeholder="Type here" class="input input-bordered w-full" />
-					</div>
+
+					<fieldset class="fieldset">
+						<input type="text" placeholder="Type here" class="input" />
+					</fieldset>
+
 					<div class="flex justify-center space-x-4">
-						<div class="form-control">
-							<label class="cursor-pointer label">
-								<span class="label-text">Radio 1</span>
+						<fieldset class="fieldset">
+							<label class="label cursor-pointer">
 								<input type="radio" name="radio-group" class="radio" checked />
+								<span class="ml-2">Radio 1</span>
 							</label>
-						</div>
-						<div class="form-control">
-							<label class="cursor-pointer label">
-								<span class="label-text">Radio 2</span>
+						</fieldset>
+						<fieldset class="fieldset">
+							<label class="label cursor-pointer">
 								<input type="radio" name="radio-group" class="radio" />
+								<span class="ml-2">Radio 2</span>
 							</label>
-						</div>
+						</fieldset>
 					</div>
 					<progress class="progress progress-primary w-full"></progress>
 					<div class="flex justify-center space-x-2">
@@ -96,8 +100,7 @@
 			</div>
 
 			<!-- Theme List -->
-			<div id="theme-list" class="lg:w-1/2 grid gap-4 max-h-[80vh] overflow-y-auto grid-cols-[repeat(auto-fit,minmax(160px,1fr))] p-4 lg:p-6">
-			</div>
+			<div id="theme-list" class="lg:w-1/2 grid gap-4 max-h-[80vh] overflow-y-auto grid-cols-[repeat(auto-fit,minmax(160px,1fr))] p-4 lg:p-6"></div>
 		</div>
 	</div>
 

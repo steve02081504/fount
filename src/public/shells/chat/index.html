@@ -6,10 +6,11 @@
 	<meta name="darkreader-lock">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title data-i18n="chat.title"></title>
-	<link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.min.css" rel="stylesheet" type="text/css" />
+	<link href="https://cdn.jsdelivr.net/npm/daisyui@latest/daisyui.css" rel="stylesheet" type="text/css" />
 	<link href="/base.css" rel="stylesheet" type="text/css" />
-	<script src="https://cdn.tailwindcss.com"></script>
-	<link rel="stylesheet" href="./index.css" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser"></script>
+	<script type="module" src="/base.mjs"></script>
+	<link rel="stylesheet" href="./index.css" type="text/css" />
 </head>
 
 <body class="bg-base-200 flex h-screen">
@@ -20,7 +21,7 @@
 			<div class="drawer-side z-40">
 				<label for="left-drawer" class="drawer-overlay"></label>
 				<div class="w-80 bg-base-200 text-base-content p-4 overflow-y-auto">
-					<ul class="menu">
+					<ul class="menu w-full">
 						<!-- Sidebar content here -->
 						<li id="world-info">
 							<div class="flex items-center justify-between mb-2">
@@ -29,7 +30,7 @@
 									<h3 class="text-lg font-bold" data-i18n="chat.sidebar.world.title"></h3>
 								</div>
 							</div>
-							<select class="select select-bordered w-full" id="world-select">
+							<select class="select border w-full" id="world-select">
 								<!-- 世界信息选项 -->
 							</select>
 							<div id="world-details" class="sidebar-item-details">
@@ -43,7 +44,7 @@
 									<h3 class="text-lg font-bold" data-i18n="chat.sidebar.persona.title"></h3>
 								</div>
 							</div>
-							<select class="select select-bordered w-full" id="persona-select">
+							<select class="select border w-full" id="persona-select">
 								<!-- 角色信息选项 -->
 							</select>
 							<div id="persona-details" class="sidebar-item-details">
@@ -58,12 +59,14 @@
 								</div>
 							</div>
 							<div class="flex justify-between">
-								<select class="select select-bordered w-full" id="char-select">
+								<select class="select border w-full" id="char-select">
 									<!-- 角色信息选项 -->
 								</select>
-								<button id="add-char-button" class="btn btn-sm btn-primary" data-i18n="chat.sidebar.charList.buttons.addChar">
-									<img src="https://api.iconify.design/line-md:account-add.svg" data-i18n="chat.sidebar.charList.buttons.addCharIcon" />
-								</button>
+								<div class="join">
+									<button id="add-char-button" class="btn btn-sm btn-primary join-item" data-i18n="chat.sidebar.charList.buttons.addChar">
+										<img src="https://api.iconify.design/line-md:account-add.svg" data-i18n="chat.sidebar.charList.buttons.addCharIcon" />
+									</button>
+								</div>
 							</div>
 							<div id="char-details" class="flex flex-col gap-2 sidebar-item-details">
 								<!-- 角色信息详情 -->
@@ -79,9 +82,9 @@
 	<div class="flex-grow flex flex-col items-center justify-start h-full lg:pt-4">
 		<!-- Chat Area -->
 		<div class="container mx-auto lg:p-4 w-full lg:w-3/4 flex flex-col h-full">
-			<div class="chat-container card bg-base-100 shadow-xl h-full flex flex-col">
+			<div class="chat-container card card-border bg-base-100 shadow-xl h-full flex flex-col">
 				<div class="chat-header card-title lg:flex justify-between items-center p-4">
-					<h2 class="flex-grow" data-i18n="chat.chatArea.title"></h2>
+					<h2 class="flex-grow text-lg font-bold" data-i18n="chat.chatArea.title"></h2>
 					<div class="flex-none">
 						<label for="left-drawer" class="btn btn-square btn-ghost" data-i18n="chat.chatArea.menuButton">
 							<img src="https://api.iconify.design/line-md/list-3-solid.svg" class="text-icon" data-i18n="chat.chatArea.menuButtonIcon" />
@@ -90,14 +93,12 @@
 				</div>
 				<div class="chat-messages flex-grow overflow-y-auto flex flex-col lg:p-8" id="chat-messages">
 				</div>
-				<div class="chat-input p-4 flex gap-4">
-					<textarea id="message-input" class="textarea textarea-bordered flex-grow" data-i18n="chat.chatArea.input"></textarea>
-					<div class="flex flex-col gap-2">
-						<button id="send-button" class="btn btn-primary" data-i18n="chat.chatArea.sendButton"><img src="https://api.iconify.design/line-md/chat-round-twotone.svg" data-i18n="chat.chatArea.sendButtonIcon" /></button>
-						<button id="upload-button" class="btn btn-secondary" data-i18n="chat.chatArea.uploadButton"><img src="https://api.iconify.design/line-md/upload.svg" data-i18n="chat.chatArea.uploadButtonIcon" /></button>
-					</div>
-					<input type="file" id="file-input" class="hidden" multiple />
+				<div class="chat-input join p-4">
+					<button id="upload-button" class="join-item btn btn-secondary h-full" data-i18n="chat.chatArea.uploadButton"><img src="https://api.iconify.design/line-md/upload.svg" data-i18n="chat.chatArea.uploadButtonIcon" /></button>
+					<textarea id="message-input" class="join-item textarea border flex-grow" data-i18n="chat.chatArea.input"></textarea>
+					<button id="send-button" class="join-item btn btn-primary h-full" data-i18n="chat.chatArea.sendButton"><img src="https://api.iconify.design/line-md/chat-round-twotone.svg" data-i18n="chat.chatArea.sendButtonIcon" /></button>
 				</div>
+				<input type="file" id="file-input" class="hidden" multiple />
 				<div id="attachment-preview" class="p-4 flex gap-4 overflow-x-auto">
 					<!-- 附件预览 -->
 				</div>

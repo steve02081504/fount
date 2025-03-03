@@ -99,6 +99,7 @@ window.addEventListener('focus', () => {
 	setTheme(localStorage.getItem('theme'))
 })
 
+document.head.innerHTML += '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daisyui@5.0.0/themes.css" />'
 export const builtin_themes = [
 	'light',
 	'dark',
@@ -132,4 +133,7 @@ export const builtin_themes = [
 	'dim',
 	'nord',
 	'sunset',
+	'caramellatte',
+	'abyss',
+	'silk'
 ]

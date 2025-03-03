@@ -2,12 +2,6 @@ body {
 	margin: 0;
 }
 
-/* 聊天消息容器 */
-.chat-messages .avatar img {
-	width: 40px;
-	height: 40px;
-}
-
 /* 聊天消息样式 */
 .chat-message {
 	position: relative;
@@ -18,7 +12,7 @@ body {
 	transform: translateX(5px);
 }
 
-.chat-message .content {
+.chat-message .message-content {
 	max-width: calc(var(--chat-header-width) - 83px);
 }
 
@@ -191,9 +185,4 @@ body {
 	max-width: 90%;
 	max-height: 90%;
 	object-fit: contain;
-}
-
-article img {
-	display: inline-block;
-	margin-right: 2px;
 }

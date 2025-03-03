@@ -6,10 +6,11 @@
 	<meta name="darkreader-lock">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title data-i18n="home.title"></title>
-	<link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.min.css" rel="stylesheet" type="text/css" />
+	<link href="https://cdn.jsdelivr.net/npm/daisyui@latest/daisyui.css" rel="stylesheet" type="text/css" />
 	<link href="/base.css" rel="stylesheet" type="text/css" />
-	<script src="https://cdn.tailwindcss.com"></script>
-	<link rel="stylesheet" href="./index.css" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser"></script>
+	<script type="module" src="/base.mjs"></script>
+	<link rel="stylesheet" href="./index.css" type="text/css" />
 </head>
 
 <body class="bg-base-200">
@@ -24,14 +25,14 @@
 						<div tabindex="0" role="button" class="btn btn-primary m-1">
 							<img src="https://api.iconify.design/line-md/list-3-filled.svg" data-i18n="home.functionMenu.icon" />
 						</div>
-						<ul id="function-buttons-container" tabindex="0" class="dropdown-content z-[70] p-2 shadow-2xl bg-base-300 rounded-box w-52 menu">
+						<ul id="function-buttons-container" tabindex="0" class="dropdown-content z-[60] p-2 shadow-2xl bg-base-300 rounded-box w-52 menu">
 						</ul>
 					</div>
 				</div>
 				<p class="mb-4" data-i18n="home.instruction"></p>
 				<div class="flex justify-between items-center mb-4 flex-wrap">
 					<div class="flex gap-2 w-full">
-						<input type="text" id="filter-input" class="input input-bordered w-full" data-i18n="home.filterInput" />
+						<input type="text" id="filter-input" class="input w-full" data-i18n="home.filterInput" />
 					</div>
 				</div>
 				<div class="grid gap-4" id="role-container" style="grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));">

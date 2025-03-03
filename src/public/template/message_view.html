@@ -1,23 +1,27 @@
-<div class="chat-message w-full flex items-start mb-4" id="message-${safeTimeStamp}" data-template-type="message">
-	<div class="avatar">
-		<div class="w-10 h-10 rounded-full">
+<div class="chat-message chat chat-start mb-4" id="message-${safeTimeStamp}" data-template-type="message">
+	<div class="chat-image avatar">
+		<div class="w-10 mask mask-squircle rounded-full">
 			<img src="${avatar}" alt="${name}" />
 		</div>
 	</div>
-	<div class="content ml-2 p-4 rounded-lg bg-base-200 relative ${
-		content.match(/<(?<tag>img|video|iframe)\b[^>]*>.*?<\/\k<tag>>/gs) ? 'flex-grow' : ''
-	}">
-		<div class="info font-bold text-sm flex items-center gap-2">
+	<div class="chat-bubble relative chat-bubble">
+		<div class="button-group absolute top-1 right-1 join">
+			<button class="edit-button btn btn-xs btn-primary join-item" data-i18n="chat.messageView.buttons.edit">
+				<img src="https://api.iconify.design/line-md/edit.svg" data-i18n="chat.messageView.buttons.editIcon" />
+			</button>
+			<button class="delete-button btn btn-xs btn-error join-item" data-i18n="chat.messageView.buttons.delete">
+				<img src="https://api.iconify.design/line-md/remove.svg" data-i18n="chat.messageView.buttons.deleteIcon" />
+			</button>
+		</div>
+		<div class="text-sm font-bold text-primary-content flex items-center gap-2">
 			${name}
-			<span class="timestamp text-xs text-gray-400">${timeStamp}</span>
 		</div>
 		<div class="message-content markdown-body mt-1">
 			${content}
 		</div>
 		<div class="attachments"></div>
-		<span class="button-group">
-			<button class="edit-button btn btn-xs btn-primary" data-i18n="chat.messageView.buttons.edit"><img src="https://api.iconify.design/line-md/edit.svg" data-i18n="chat.messageView.buttons.editIcon" /></button>
-			<button class="delete-button btn btn-xs btn-error" data-i18n="chat.messageView.buttons.delete"><img src="https://api.iconify.design/line-md/remove.svg" data-i18n="chat.messageView.buttons.deleteIcon" /></button>
-		</span>
+	</div>
+	<div class="chat-footer opacity-50">
+		${timeStamp}
 	</div>
 </div>
