@@ -4,7 +4,7 @@ geti18n
 
 const template_cache = {}
 
-export async function renderTemplateAsHtmlString(template, data) {
+export async function renderTemplate(template, data) {
 	template_cache[template] ??= fetch('/template/' + template + '.html').then(response => response.text())
 	let html = template_cache[template] = await template_cache[template]
 
@@ -27,13 +27,12 @@ export async function renderTemplateAsHtmlString(template, data) {
 			} catch (error) { }
 		}
 	}
-
-	return result + html
+	const div = document.createElement('div')
+	div.innerHTML = result + html
+	return i18nElement(await svgInliner(div.firstChild))
 }
 
-export async function renderTemplate(template, data) {
-	const div = document.createElement('div')
-	div.innerHTML = await renderTemplateAsHtmlString(template, data)
-
-	return i18nElement(svgInliner(div.firstChild))
+export async function renderTemplateAsHtmlString(template, data) {
+	const html = await renderTemplate(template, data)
+	return html.outerHTML
 }

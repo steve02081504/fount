@@ -81,7 +81,6 @@ export async function editMessageStart(message, index, messageIndex) {
 		'message_edit_view',
 		editRenderedMessage
 	)
-	i18nElement(messageElement)
 
 	const fileEditInputElement = messageElement.querySelector(
 		`#file-edit-input-${editRenderedMessage.safeTimeStamp}`
