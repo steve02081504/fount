@@ -47,17 +47,17 @@ export default {
 				// 在这里执行清理操作，如果有必要的话
 			},
 
-			Call: async (prompt, options) => {
+			Call: async (prompt) => {
 				const messages = [{ role: 'user', content: prompt }] // 将字符串 prompt 包装成一个消息对象
-				const model = options?.model || config.model || 'gpt-4o-mini'
-				const returnStream = options?.stream || false
+				const model = config.model || 'gpt-4o-mini'
+				const returnStream = config?.stream || false
 				const result = await duckduckgo.call(messages, model, returnStream)
 				return {
 					content: result,
 				}
 			},
 
-			StructCall: async (/** @type {prompt_struct_t} */ prompt_struct, options) => {
+			StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
 				const messages = []
 				margeStructPromptChatLog(prompt_struct).forEach((chatLogEntry) => {
 					messages.push({
@@ -87,7 +87,7 @@ export default {
 						})
 				}
 
-				const model = options?.model || config.model || 'gpt-4o-mini'
+				const model = config.model || 'gpt-4o-mini'
 				let text = await duckduckgo.call(messages, model)
 
 				{
