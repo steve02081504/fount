@@ -25,7 +25,7 @@ function rehypeAddDaisyuiClass() {
 			else if (node.tagName === 'table')
 				node.properties.className = ['table', ...node.properties.className || []]
 			else if (node.tagName === 'th' || node.tagName === 'td')
-				node.properties.className = ['bg-base-100', ...(node.properties.className || [])]
+				node.properties.className = ['bg-base-100', ...node.properties.className || []]
 			else if (node.tagName === 'a')
 				node.properties.className = ['link', 'link-primary', ...node.properties.className || []]
 		})

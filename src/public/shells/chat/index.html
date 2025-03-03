@@ -9,6 +9,7 @@
 	<link href="https://cdn.jsdelivr.net/npm/daisyui@latest/daisyui.css" rel="stylesheet" type="text/css" />
 	<link href="/base.css" rel="stylesheet" type="text/css" />
 	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser"></script>
+	<script type="module" src="/base.mjs"></script>
 	<link rel="stylesheet" href="./index.css" type="text/css" />
 </head>
 
@@ -93,13 +94,11 @@
 				<div class="chat-messages flex-grow overflow-y-auto flex flex-col lg:p-8" id="chat-messages">
 				</div>
 				<div class="chat-input join p-4">
+					<button id="upload-button" class="join-item btn btn-secondary h-full" data-i18n="chat.chatArea.uploadButton"><img src="https://api.iconify.design/line-md/upload.svg" data-i18n="chat.chatArea.uploadButtonIcon" /></button>
 					<textarea id="message-input" class="join-item textarea border flex-grow" data-i18n="chat.chatArea.input"></textarea>
-					<div class="join join-vertical join-item">
-						<button id="send-button" class="join-item btn btn-primary" data-i18n="chat.chatArea.sendButton"><img src="https://api.iconify.design/line-md/chat-round-twotone.svg" data-i18n="chat.chatArea.sendButtonIcon" /></button>
-						<button id="upload-button" class="join-item btn btn-secondary" data-i18n="chat.chatArea.uploadButton"><img src="https://api.iconify.design/line-md/upload.svg" data-i18n="chat.chatArea.uploadButtonIcon" /></button>
-					</div>
-					<input type="file" id="file-input" class="hidden" multiple />
+					<button id="send-button" class="join-item btn btn-primary h-full" data-i18n="chat.chatArea.sendButton"><img src="https://api.iconify.design/line-md/chat-round-twotone.svg" data-i18n="chat.chatArea.sendButtonIcon" /></button>
 				</div>
+				<input type="file" id="file-input" class="hidden" multiple />
 				<div id="attachment-preview" class="p-4 flex gap-4 overflow-x-auto">
 					<!-- 附件预览 -->
 				</div>
