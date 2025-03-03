@@ -18,7 +18,7 @@ body {
 	transform: translateX(5px);
 }
 
-.chat-message .content {
+.chat-message .message-content {
 	max-width: calc(var(--chat-header-width) - 117px);
 }
 
