@@ -195,7 +195,15 @@ async function displayCharList(charNames = Object.keys(charDetailsCache)) {
 	roleContainer.innerHTML = ''
 
 	// Render each character
-	for (const charName of charNames) {
+	for (const charName of charNames.sort((a, b) => {
+		const lowerA = a.toLowerCase()
+		const lowerB = b.toLowerCase()
+		if (lowerA < lowerB) return -1
+		if (lowerA > lowerB) return 1
+		if (a < b) return -1
+		if (a > b) return 1
+		return 0
+	})) {
 		const charDetails = charDetailsCache[charName]
 		const roleElement = await renderCharView(charDetails, charName)
 		roleContainer.appendChild(roleElement)
@@ -259,7 +267,7 @@ async function refetchCharData() {
 // Add event listener for window focus
 window.addEventListener('focus', async () => {
 	await refetchCharData()
-	await displayCharList()
+	await filterCharList()
 })
 
 initializeApp()
