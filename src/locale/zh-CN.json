@@ -327,6 +327,9 @@
 		}
 	},
 	"chat": {
+		"new": {
+			"title": "新聊天"
+		},
 		"title": "聊天",
 		"sidebar": {
 			"world": {
