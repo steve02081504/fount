@@ -1,5 +1,69 @@
 {
 	"lang": "ja-JP",
+	"fountConsole": {
+		"server": {
+			"start": "サーバーを起動中",
+			"starting": "サーバー起動中...",
+			"ready": "サーバー起動完了",
+			"showUrl": {
+				"https": "HTTPSサーバーは ${url} で実行されています",
+				"http": "HTTPサーバーは ${url} で実行されています"
+			},
+			"standingBy": "スタンバイ中..."
+		},
+		"jobs": {
+			"restartingJob": "ユーザー ${username} の Shell ${shellname} ジョブを再起動中：${uid}"
+		},
+		"ipc": {
+			"sendCommandFailed": "コマンドの送信に失敗しました：${error}",
+			"invalidCommand": "無効なコマンドです。\"fount runshell <ユーザー名> <シェル名> <パラメータ...>\" を使用してください",
+			"runShellLog": "シェル ${shellname} を ${username} として実行、パラメータ：${args}",
+			"invokeShellLog": "シェル ${shellname} を ${username} として呼び出し、パラメータ：${invokedata}",
+			"unsupportedCommand": "サポートされていないコマンドタイプ",
+			"processMessageError": "IPCメッセージの処理中にエラーが発生しました：${error}",
+			"invalidCommandFormat": "無効なコマンド形式",
+			"socketError": "ソケットエラー：${error}",
+			"instanceRunning": "別のインスタンスがすでに実行中です",
+			"serverStartPrefix": "サーバー起動",
+			"serverStarted": "IPCサーバーが起動しました",
+			"parseResponseFailed": "サーバー応答の解析に失敗しました：${error}",
+			"cannotParseResponse": "サーバー応答を解析できません",
+			"unknownError": "不明なエラー"
+		},
+		"partManager": {
+			"git": {
+				"noUpstream": "ブランチ '${currentBranch}' にアップストリームブランチが設定されていません。更新チェックをスキップします。",
+				"dirtyWorkingDirectory": "ワーキングディレクトリがクリーンではありません。更新する前に変更をステージングまたはコミットしてください。",
+				"updating": "リモートリポジトリから更新中...",
+				"localAhead": "ローカルブランチがリモートブランチよりも進んでいます。更新は不要です。",
+				"diverged": "ローカルブランチとリモートブランチが分岐しました。強制更新を実行中...",
+				"upToDate": "すでに最新です。",
+				"updateFailed": "リモートリポジトリからのパーツの更新に失敗しました：${error}"
+			}
+		},
+		"web": {
+			"requestReceived": "リクエストを受信しました：${method}\t${url}"
+		},
+		"route": {
+			"setLanguagePreference": "ユーザー ${username} が優先言語を設定しました：${preferredLanguages}"
+		},
+		"auth": {
+			"tokenVerifyError": "トークン検証エラー：${error}",
+			"refreshTokenError": "リフレッシュトークンエラー：${error}",
+			"logoutRefreshTokenProcessError": "ログアウトリフレッシュトークン処理エラー：${error}",
+			"revokeTokenNoJTI": "jtiのないトークンは取り消すことができません",
+			"accountLockedLog": "ログイン試行が複数回失敗したため、ユーザー ${username} のアカウントがロックされました"
+		},
+		"verification": {
+			"codeGeneratedLog": "認証コード：${code} (60秒後に期限切れになります)",
+			"codeNotifyTitle": "認証コード",
+			"codeNotifyBody": "認証コード：${code} (60秒後に期限切れになります)"
+		},
+		"tray": {
+			"readIconFailed": "アイコンファイルの読み込みに失敗しました：${error}",
+			"createTrayFailed": "トレイの作成に失敗しました：${error}"
+		}
+	},
 	"protocolhandler": {
 		"title": "Fountプロトコルを処理中",
 		"processing": "プロトコルを処理中...",

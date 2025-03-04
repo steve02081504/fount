@@ -12,6 +12,7 @@ import { IPCManager } from './ipc_server.mjs'
 import { initAuth } from './auth.mjs'
 import { createTray } from '../scripts/tray.mjs'
 import { StartRPC } from '../scripts/discordrpc.mjs'
+import { geti18n } from '../scripts/i18n.mjs'
 
 export { __dirname }
 const app = express()
@@ -23,9 +24,12 @@ app.use(mainRouter)
 app.use(PartsRouter)
 app.use(FinalRouter)
 
-mainRouter.use((req, res, next) => {
+mainRouter.use(async (req, res, next) => {
 	if (!req.path.endsWith('/heartbeat'))
-		console.log(`Request received: ${req.method}\t${req.url}`)
+		console.log(await geti18n('fountConsole.web.requestReceived', {
+			method: req.method,
+			url: req.url
+		}))
 	next()
 })
 mainRouter.use(express.json({ limit: Infinity }))
@@ -76,7 +80,7 @@ export function setDefaultStuff() {
 export let hosturl = 'http://localhost:' + config.port
 
 export async function init() {
-	console.freshLine('server start', 'start up')
+	console.freshLine('server start', await geti18n('fountConsole.server.start'))
 	globalThis.addEventListener('error', (e) => {
 		console.log(e.error)
 		e.preventDefault()
@@ -87,7 +91,7 @@ export async function init() {
 	})
 	if (!await new IPCManager().startServer()) return false
 
-	console.freshLine('server start', 'server starting')
+	console.freshLine('server start', await geti18n('fountConsole.server.starting'))
 	registerEndpoints(mainRouter)
 	mainRouter.use(express.static(__dirname + '/src/public'))
 	const { port, https: httpsConfig } = config // 获取 HTTPS 配置
@@ -100,18 +104,22 @@ export async function init() {
 			cert: fs.readFileSync(httpsConfig.certFile),
 		}
 		server = https.createServer(options, app)
-		server.listen(port, () => {
+		server.listen(port, async () => {
 			hosturl = 'https://localhost:' + port
-			console.log(`HTTPS 服务器运行在 https://localhost:${port}`)
+			console.log(await geti18n('fountConsole.server.showUrl.https', {
+				url: 'https://localhost:' + port
+			}))
 		})
 	}
 	else
 		// 使用 HTTP
-		server = app.listen(port, () => {
-			console.log(`HTTP 服务器运行在 http://localhost:${port}`)
+		server = app.listen(port, async () => {
+			console.log(await geti18n('fountConsole.server.showUrl.http', {
+				url: 'http://localhost:' + port
+			}))
 		})
 
-	console.freshLine('server start', 'server ready')
+	console.freshLine('server start', await geti18n('fountConsole.server.ready'))
 	const titleBackup = process.title
 	on_shutdown(() => setWindowTitle(titleBackup))
 	createTray()

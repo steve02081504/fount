@@ -1,5 +1,69 @@
 {
 	"lang": "zh-CN",
+	"fountConsole": {
+		"server": {
+			"start": "正在启动服务器",
+			"starting": "服务器启动中...",
+			"ready": "服务器已启动",
+			"showUrl": {
+				"https": "HTTPS 服务器运行在 ${url}",
+				"http": "HTTP 服务器运行在 ${url}"
+			},
+			"standingBy": "standing by..."
+		},
+		"jobs": {
+			"restartingJob": "正在重启用户 ${username} 的 Shell ${shellname} 任务：${uid}"
+		},
+		"ipc": {
+			"sendCommandFailed": "发送命令失败：${error}",
+			"invalidCommand": "无效的命令，请使用\"fount runshell <用户名> <shell名> <参数...>\"",
+			"runShellLog": "运行 shell ${shellname} 作为 ${username}，参数：${args}",
+			"invokeShellLog": "调用 shell ${shellname} 作为 ${username}，参数：${invokedata}",
+			"unsupportedCommand": "不支持的命令类型",
+			"processMessageError": "处理 IPC 消息时出错：${error}",
+			"invalidCommandFormat": "无效的命令格式",
+			"socketError": "Socket 错误: ${error}",
+			"instanceRunning": "另一个实例正在运行",
+			"serverStartPrefix": "server start",
+			"serverStarted": "IPC 服务器已启动",
+			"parseResponseFailed": "解析服务器响应失败: ${error}",
+			"cannotParseResponse": "无法解析服务器响应",
+			"unknownError": "未知错误"
+		},
+		"partManager": {
+			"git": {
+				"noUpstream": "没有为分支 '${currentBranch}' 配置上游分支，跳过更新检查。",
+				"dirtyWorkingDirectory": "工作目录不干净。请暂存或提交你的更改后再更新。",
+				"updating": "从远程仓库更新中...",
+				"localAhead": "本地分支领先于远程分支。无需更新。",
+				"diverged": "本地和远程分支已分叉。强制更新中...",
+				"upToDate": "已是最新。",
+				"updateFailed": "从远程仓库更新部件失败：${error}"
+			}
+		},
+		"web": {
+			"requestReceived": "接受到请求：${method}\t${url}"
+		},
+		"route": {
+			"setLanguagePreference": "用户 ${username} 设置首选语言: ${preferredLanguages}"
+		},
+		"auth": {
+			"tokenVerifyError": "令牌验证错误: ${error}",
+			"refreshTokenError": "刷新令牌错误: ${error}",
+			"logoutRefreshTokenProcessError": "登出刷新令牌处理错误: ${error}",
+			"revokeTokenNoJTI": "无法撤销没有 jti 的令牌",
+			"accountLockedLog": "用户 ${username} 账户因多次登录失败被锁定"
+		},
+		"verification": {
+			"codeGeneratedLog": "验证码: ${code} (60秒后过期)",
+			"codeNotifyTitle": "验证码",
+			"codeNotifyBody": "验证码: ${code} (60秒后过期)"
+		},
+		"tray": {
+			"readIconFailed": "读取图标文件失败: ${error}",
+			"createTrayFailed": "创建托盘失败: ${error}"
+		}
+	},
 	"protocolhandler": {
 		"title": "处理 Fount 协议",
 		"processing": "正在处理协议...",

@@ -8,6 +8,7 @@ import { loadPart } from './managers/index.mjs'
 import { FullProxy } from '../scripts/proxy.mjs'
 import { exec } from '../scripts/exec.mjs'
 import { getLocalizedInfo } from '../scripts/locale.mjs'
+import { geti18n } from '../scripts/i18n.mjs'
 
 /**
  * @typedef {Object} PartInfo
@@ -80,7 +81,7 @@ export async function baseMjsPartLoader(path) {
 		const currentBranch = await git('rev-parse --abbrev-ref HEAD')
 		const remoteBranch = await git('rev-parse --abbrev-ref --symbolic-full-name "@{u}"')
 		if (!remoteBranch)
-			console.warn('No upstream branch configured for \'' + currentBranch + '\'. Skipping update check.')
+			console.warn(await geti18n('fountConsole.partManager.git.noUpstream', { currentBranch }))
 
 		else {
 			const mergeBase = await git('merge-base ' + currentBranch + ' ' + remoteBranch)
@@ -88,27 +89,27 @@ export async function baseMjsPartLoader(path) {
 			const remoteCommit = await git('rev-parse ' + remoteBranch)
 			const status = await git('status --porcelain')
 			if (status)
-				console.warn('Working directory is not clean. Stash or commit your changes before updating.')
+				console.warn(await geti18n('fountConsole.partManager.git.dirtyWorkingDirectory'))
 
 			if (localCommit !== remoteCommit)
 				if (mergeBase === localCommit) {
-					console.log('Updating from remote repository...')
+					console.log(await geti18n('fountConsole.partManager.git.updating'))
 					await git('fetch origin')
 					await git('reset --hard ' + remoteBranch)
 				}
 				else if (mergeBase === remoteCommit)
-					console.log('Local branch is ahead of remote. No update needed.')
+					console.log(await geti18n('fountConsole.partManager.git.localAhead'))
 
 				else {
-					console.log('Local and remote branches have diverged. Force updating...')
+					console.log(await geti18n('fountConsole.partManager.git.diverged'))
 					await git('fetch origin')
 					await git('reset --hard ' + remoteBranch)
 				}
 			else
-				console.log('Already up to date.')
+				console.log(await geti18n('fountConsole.partManager.git.upToDate'))
 		}
 	} catch (e) {
-		console.error('Failed to update part from remote repository:', e)
+		console.error(await geti18n('fountConsole.partManager.git.updateFailed', { error: e }))
 	}
 	const part = (await import(url.pathToFileURL(path + '/main.mjs'))).default
 	return part

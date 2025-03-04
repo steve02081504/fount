@@ -1,5 +1,69 @@
 {
 	"lang": "de-DE",
+	"fountConsole": {
+		"server": {
+			"start": "Server wird gestartet",
+			"starting": "Server startet...",
+			"ready": "Server ist gestartet",
+			"showUrl": {
+				"https": "HTTPS-Server läuft auf ${url}",
+				"http": "HTTP-Server läuft auf ${url}"
+			},
+			"standingBy": "Warte..."
+		},
+		"jobs": {
+			"restartingJob": "Starte Shell-Aufgabe ${shellname} von Benutzer ${username} neu: ${uid}"
+		},
+		"ipc": {
+			"sendCommandFailed": "Senden des Befehls fehlgeschlagen: ${error}",
+			"invalidCommand": "Ungültiger Befehl, bitte verwenden Sie \"fount runshell <Benutzername> <Shell-Name> <Parameter...>\"",
+			"runShellLog": "Führe Shell ${shellname} als ${username} aus, Parameter: ${args}",
+			"invokeShellLog": "Rufe Shell ${shellname} als ${username} auf, Parameter: ${invokedata}",
+			"unsupportedCommand": "Nicht unterstützter Befehltyp",
+			"processMessageError": "Fehler beim Verarbeiten der IPC-Nachricht: ${error}",
+			"invalidCommandFormat": "Ungültiges Befehlsformat",
+			"socketError": "Socket-Fehler: ${error}",
+			"instanceRunning": "Eine andere Instanz wird bereits ausgeführt",
+			"serverStartPrefix": "Serverstart",
+			"serverStarted": "IPC-Server gestartet",
+			"parseResponseFailed": "Fehler beim Parsen der Serverantwort: ${error}",
+			"cannotParseResponse": "Serverantwort kann nicht geparst werden",
+			"unknownError": "Unbekannter Fehler"
+		},
+		"partManager": {
+			"git": {
+				"noUpstream": "Kein Upstream-Branch für Branch '${currentBranch}' konfiguriert, Update-Prüfung wird übersprungen.",
+				"dirtyWorkingDirectory": "Arbeitsverzeichnis ist nicht sauber. Bitte stashen oder committen Sie Ihre Änderungen vor dem Update.",
+				"updating": "Wird vom Remote-Repository aktualisiert...",
+				"localAhead": "Lokaler Branch ist dem Remote-Branch voraus. Kein Update erforderlich.",
+				"diverged": "Lokaler und Remote-Branch sind auseinandergelaufen. Erzwinge Update...",
+				"upToDate": "Bereits aktuell.",
+				"updateFailed": "Fehler beim Aktualisieren von Parts vom Remote-Repository: ${error}"
+			}
+		},
+		"web": {
+			"requestReceived": "Anfrage erhalten: ${method}\t${url}"
+		},
+		"route": {
+			"setLanguagePreference": "Benutzer ${username} hat die bevorzugte Sprache eingestellt: ${preferredLanguages}"
+		},
+		"auth": {
+			"tokenVerifyError": "Token-Verifizierungsfehler: ${error}",
+			"refreshTokenError": "Fehler beim Aktualisieren des Tokens: ${error}",
+			"logoutRefreshTokenProcessError": "Fehler beim Verarbeiten des Logout-Refresh-Tokens: ${error}",
+			"revokeTokenNoJTI": "Kann Token ohne jti nicht widerrufen",
+			"accountLockedLog": "Benutzerkonto ${username} wurde aufgrund zu vieler fehlgeschlagener Anmeldeversuche gesperrt"
+		},
+		"verification": {
+			"codeGeneratedLog": "Verifizierungscode: ${code} (läuft nach 60 Sekunden ab)",
+			"codeNotifyTitle": "Verifizierungscode",
+			"codeNotifyBody": "Verifizierungscode: ${code} (läuft nach 60 Sekunden ab)"
+		},
+		"tray": {
+			"readIconFailed": "Fehler beim Lesen der Icon-Datei: ${error}",
+			"createTrayFailed": "Fehler beim Erstellen des Trays: ${error}"
+		}
+	},
 	"protocolhandler": {
 		"title": "Fount-Protokoll verarbeiten",
 		"processing": "Protokoll wird verarbeitet...",

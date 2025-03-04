@@ -1,5 +1,69 @@
 {
 	"lang": "hi-IN",
+	"fountConsole": {
+		"server": {
+			"start": "सर्वर शुरू हो रहा है",
+			"starting": "सर्वर शुरू हो रहा है...",
+			"ready": "सर्वर शुरू हो गया है",
+			"showUrl": {
+				"https": "HTTPS सर्वर ${url} पर चल रहा है",
+				"http": "HTTP सर्वर ${url} पर चल रहा है"
+			},
+			"standingBy": "तैयार है..."
+		},
+		"jobs": {
+			"restartingJob": "उपयोगकर्ता ${username} के शेल ${shellname} कार्य को पुनः आरंभ किया जा रहा है: ${uid}"
+		},
+		"ipc": {
+			"sendCommandFailed": "कमांड भेजने में विफल: ${error}",
+			"invalidCommand": "अमान्य कमांड, कृपया \"fount runshell <उपयोगकर्ता नाम> <शेल नाम> <पैरामीटर...>\" का उपयोग करें",
+			"runShellLog": "शेल ${shellname} को ${username} के रूप में चलाएँ, पैरामीटर: ${args}",
+			"invokeShellLog": "शेल ${shellname} को ${username} के रूप में लागू करें, पैरामीटर: ${invokedata}",
+			"unsupportedCommand": "असमर्थित कमांड प्रकार",
+			"processMessageError": "IPC संदेश को संसाधित करने में त्रुटि: ${error}",
+			"invalidCommandFormat": "अमान्य कमांड प्रारूप",
+			"socketError": "सॉकेट त्रुटि: ${error}",
+			"instanceRunning": "एक और इंस्टेंस पहले से ही चल रहा है",
+			"serverStartPrefix": "सर्वर शुरू",
+			"serverStarted": "IPC सर्वर शुरू हो गया है",
+			"parseResponseFailed": "सर्वर प्रतिक्रिया को पार्स करने में विफल: ${error}",
+			"cannotParseResponse": "सर्वर प्रतिक्रिया को पार्स नहीं किया जा सकता",
+			"unknownError": "अज्ञात त्रुटि"
+		},
+		"partManager": {
+			"git": {
+				"noUpstream": "शाखा '${currentBranch}' के लिए कोई अपस्ट्रीम शाखा कॉन्फ़िगर नहीं है, अद्यतन जाँच छोड़ दी गई।",
+				"dirtyWorkingDirectory": "कार्य निर्देशिका साफ नहीं है। कृपया अद्यतन करने से पहले अपने परिवर्तनों को स्टेज या कमिट करें।",
+				"updating": "रिमोट रिपॉजिटरी से अपडेट हो रहा है...",
+				"localAhead": "स्थानीय शाखा रिमोट शाखा से आगे है। अद्यतन की आवश्यकता नहीं है।",
+				"diverged": "स्थानीय और रिमोट शाखाएँ विभाजित हो गई हैं। जबरन अद्यतन किया जा रहा है...",
+				"upToDate": "पहले से ही अप-टू-डेट।",
+				"updateFailed": "रिमोट रिपॉजिटरी से भागों को अपडेट करने में विफल: ${error}"
+			}
+		},
+		"web": {
+			"requestReceived": "अनुरोध प्राप्त हुआ: ${method}\t${url}"
+		},
+		"route": {
+			"setLanguagePreference": "उपयोगकर्ता ${username} ने पसंदीदा भाषा सेट की: ${preferredLanguages}"
+		},
+		"auth": {
+			"tokenVerifyError": "टोकन सत्यापन त्रुटि: ${error}",
+			"refreshTokenError": "रिफ्रेश टोकन त्रुटि: ${error}",
+			"logoutRefreshTokenProcessError": "लॉगआउट रिफ्रेश टोकन प्रक्रिया त्रुटि: ${error}",
+			"revokeTokenNoJTI": "jti के बिना टोकन को रद्द नहीं किया जा सकता",
+			"accountLockedLog": "कई विफल लॉगिन प्रयासों के कारण उपयोगकर्ता ${username} खाता लॉक कर दिया गया है"
+		},
+		"verification": {
+			"codeGeneratedLog": "सत्यापन कोड: ${code} (60 सेकंड में समाप्त हो जाएगा)",
+			"codeNotifyTitle": "सत्यापन कोड",
+			"codeNotifyBody": "सत्यापन कोड: ${code} (60 सेकंड में समाप्त हो जाएगा)"
+		},
+		"tray": {
+			"readIconFailed": "आइकन फ़ाइल पढ़ने में विफल: ${error}",
+			"createTrayFailed": "ट्रे बनाने में विफल: ${error}"
+		}
+	},
 	"protocolhandler": {
 		"title": "फाउंट प्रोटोकॉल संसाधित किया जा रहा है",
 		"processing": "प्रोटोकॉल संसाधित किया जा रहा है...",

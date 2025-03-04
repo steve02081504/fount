@@ -3,8 +3,9 @@ import { console } from '../scripts/console.mjs'
 import { init } from './server.mjs'
 import { IPCManager } from './ipc_server.mjs'
 import { ReStartJobs } from './jobs.mjs'
+import { geti18n } from '../scripts/i18n.mjs'
 
-console.log('standing by...')
+console.log(await geti18n('fountConsole.server.standingBy'))
 
 let args = process.argv.slice(2)
 
@@ -22,7 +23,7 @@ if (args.length) {
 		try {
 			await IPCManager.sendCommand('runshell', { username, shellname, args })
 		} catch (err) {
-			console.error('发送命令失败：', err)
+			console.error(await geti18n('fountConsole.ipc.sendCommandFailed', {error: err}))
 			process.exit(1)
 		}
 	}
@@ -30,11 +31,11 @@ if (args.length) {
 		try {
 			await IPCManager.sendCommand('shutdown')
 		} catch (err) {
-			console.error('发送命令失败：', err)
+			console.error(await geti18n('fountConsole.ipc.sendCommandFailed', {error: err}))
 			process.exit(1)
 		}
 	else {
-		console.error('Invalid command. Use "fount runshell <username> <shellname> <args>".')
+		console.error(await geti18n('fountConsole.ipc.invalidCommand'))
 		process.exit(1)
 	}
 }

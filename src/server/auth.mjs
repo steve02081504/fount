@@ -6,6 +6,7 @@ import { config, save_config, __dirname } from './server.mjs'
 import path from 'node:path'
 import argon2 from 'npm:argon2'
 import { ms } from '../scripts/ms.mjs'
+import { geti18n } from '../scripts/i18n.mjs'
 
 const ACCESS_TOKEN_EXPIRY = '15m'
 const REFRESH_TOKEN_EXPIRY = '30d'
@@ -79,7 +80,7 @@ async function verifyToken(token) {
 		})
 		return payload
 	} catch (error) {
-		console.error('Token verification error:', error)
+		console.error(await geti18n('fountConsole.auth.tokenVerifyError', { error }))
 		return null
 	}
 }
@@ -115,7 +116,7 @@ async function refresh(refreshToken) {
 
 		return { status: 200, accessToken, refreshToken: newRefreshToken }
 	} catch (error) {
-		console.error('Refresh token error:', error)
+		console.error(await geti18n('fountConsole.auth.refreshTokenError', { error }))
 		return { status: 401, message: 'Invalid refresh token' }
 	}
 }
@@ -146,7 +147,7 @@ export async function logout(req, res) {
 				}
 			}
 		} catch (error) {
-			console.error('Error during logout refresh token processing:', error)
+			console.error(await geti18n('fountConsole.auth.logoutRefreshTokenProcessError', { error }))
 		}
 
 	res.clearCookie('accessToken')
@@ -203,7 +204,7 @@ export async function authenticate(req, res, next) {
  */
 async function revokeToken(token) {
 	const decoded = await jose.decodeJwt(token)
-	if (!decoded || !decoded.jti) return console.error('Cannot revoke token without jti')
+	if (!decoded || !decoded.jti) return console.error(await geti18n('fountConsole.auth.revokeTokenNoJTI'))
 	const tokenType = decoded.exp ? decoded.exp * 1000 - Date.now() > ms(ACCESS_TOKEN_EXPIRY) ? 'refresh' : 'access' : 'unknown'
 
 	if (decoded && decoded.exp) {
@@ -295,7 +296,7 @@ export async function login(username, password, deviceId = 'unknown') {
 			authData.loginAttempts = 0 // 达到最大尝试次数后重置尝试次数
 			// 账户锁定逻辑：如果登录尝试次数超过限制，锁定账户一段时间
 			// 此处记录日志或发送通知
-			console.log(`用户 ${username} 账户因多次登录失败被锁定`)
+			console.log(await geti18n('fountConsole.auth.accountLockedLog', { username }))
 		}
 		save_config()
 		return { status: 401, message: 'Invalid password' }

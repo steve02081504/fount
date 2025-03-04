@@ -1,6 +1,7 @@
 import cryptoRandomString from 'npm:crypto-random-string'
 import { ms } from './ms.mjs'
 import { notify } from './notify.mjs'
+import { geti18n } from '../scripts/i18n.mjs'
 
 // 用于存储验证码、过期时间和ID
 let verificationCodes = []
@@ -11,7 +12,7 @@ const CODE_EXPIRATION_TIME = ms('60s')
 /**
  * 生成验证码的函数
  */
-export function generateVerificationCode(id) {
+export async function generateVerificationCode(id) {
 	// 清除过期的验证码
 	verificationCodes = verificationCodes.filter(code => code.expiresAt > Date.now())
 	// 若该ID已经存在，返回
@@ -22,8 +23,8 @@ export function generateVerificationCode(id) {
 	// 将验证码、过期时间和ID添加到数组
 	verificationCodes.push({ code, expiresAt, id })
 
-	console.log(`Verification code: ${code} (expires in 60 seconds)`)
-	notify('Verification code', `Verification code: ${code} (expires in 60 seconds)`)
+	console.log(await geti18n('fountConsole.verification.codeGeneratedLog', { code }))
+	notify(await geti18n('fountConsole.verification.codeNotifyTitle'), await geti18n('fountConsole.verification.codeNotifyBody', { code }))
 }
 
 /**

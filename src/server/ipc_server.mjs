@@ -2,6 +2,7 @@ import net from 'node:net'
 import { console } from '../scripts/console.mjs'
 import { loadShell } from './managers/shell_manager.mjs'
 import { shutdown } from './on_shutdown.mjs'
+import { geti18n } from '../scripts/i18n.mjs'
 
 const IPC_PORT = 16698 // 选择一个不太可能冲突的端口
 
@@ -16,14 +17,14 @@ export async function processIPCCommand(command, data) {
 		switch (command) {
 			case 'runshell': {
 				const { username, shellname, args } = data
-				console.log(`运行 shell ${shellname} 作为 ${username}，参数：${JSON.stringify(args)}`)
+				console.log(await geti18n('fountConsole.ipc.runShellLog', { shellname, username, args: JSON.stringify(args) }))
 				const shell = await loadShell(username, shellname)
 				const result = await shell.ArgumentsHandler(username, args)
 				return { status: 'ok', data: result }
 			}
 			case 'invokeshell': {
 				const { username, shellname, data: invokedata } = data
-				console.log(`调用 shell ${shellname} 作为 ${username}，参数：${JSON.stringify(invokedata)}`)
+				console.log(await geti18n('fountConsole.ipc.invokeShellLog', { shellname, username, invokedata: JSON.stringify(invokedata) }))
 				const shell = await loadShell(username, shellname)
 				const result = await shell.IPCInvokeHandler(username, invokedata)
 				return { status: 'ok', data: result }
@@ -34,10 +35,10 @@ export async function processIPCCommand(command, data) {
 			case 'ping':
 				return { status: 'ok', data: 'pong' }
 			default:
-				return { status: 'error', message: '不支持的命令类型' }
+				return { status: 'error', message: await geti18n('fountConsole.ipc.unsupportedCommand') }
 		}
 	} catch (err) {
-		console.error('处理 IPC 消息时出错：', err)
+		console.error(await geti18n('fountConsole.ipc.processMessageError', { error: err }))
 		return { status: 'error', message: err.message }
 	}
 }
@@ -64,29 +65,29 @@ export class IPCManager {
 						const result = await processIPCCommand(type, commandData) // 直接调用 processIPCCommand
 						socket.write(JSON.stringify(result) + '\n')
 					} catch (err) {
-						console.error('处理 IPC 消息时出错：', err)
-						socket.write(JSON.stringify({ status: 'error', message: err instanceof SyntaxError ? 'Invalid command format' : err.message }) + '\n') // 区分 JSON 解析错误
+						console.error(await geti18n('fountConsole.ipc.processMessageError', { error: err }))
+						socket.write(JSON.stringify({ status: 'error', message: err instanceof SyntaxError ? await geti18n('fountConsole.ipc.invalidCommandFormat') : err.message }) + '\n') // 区分 JSON 解析错误
 					}
 				}
 			})
 
-			socket.on('error', (err) => {
-				console.error('Socket 错误:', err)
+			socket.on('error', async (err) => {
+				console.error(await geti18n('fountConsole.ipc.socketError', { error: err }))
 			})
 		})
 
 		return new Promise((resolve, reject) => {
-			this.server.on('error', (err) => {
+			this.server.on('error', async (err) => {
 				if (err.code === 'EADDRINUSE') {
-					console.log('另一个实例正在运行')
+					console.log(await geti18n('fountConsole.ipc.instanceRunning'))
 					resolve(false) // 服务器已在运行
 				} else
 					reject(err)
 
 			})
 
-			this.server.listen(IPC_PORT, '::', () => {
-				console.freshLine('server start', 'IPC 服务器已启动')
+			this.server.listen(IPC_PORT, '::', async () => {
+				console.freshLine(await geti18n('fountConsole.ipc.serverStartPrefix'), await geti18n('fountConsole.ipc.serverStarted'))
 				resolve(true) // 成功启动服务器
 			})
 		})
@@ -101,7 +102,7 @@ export class IPCManager {
 			let responseData = ''
 			client.setEncoding('utf8') // 确保使用正确编码
 
-			client.on('data', (chunk) => {
+			client.on('data', async (chunk) => {
 				responseData += chunk
 				// 检查消息分隔符（换行符）
 				if (responseData.includes('\n')) {
@@ -114,11 +115,11 @@ export class IPCManager {
 						if (response.status === 'ok')
 							resolve(response.data) // 返回结果
 						else
-							reject(new Error(response.message || '未知错误'))
+							reject(new Error(response.message || await geti18n('fountConsole.ipc.unknownError')))
 
 					} catch (err) {
-						console.error('解析服务器响应失败:', err)
-						reject(new Error('无法解析服务器响应'))
+						console.error(await geti18n('fountConsole.ipc.parseResponseFailed', { error: err }))
+						reject(new Error(await geti18n('fountConsole.ipc.cannotParseResponse')))
 					} finally {
 						client.end() // 处理完成后关闭连接
 					}
