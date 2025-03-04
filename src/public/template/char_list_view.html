@@ -12,8 +12,8 @@
 		</div>
 	</div>
 
-	<div class="details-container z-[60] h-full overflow-y-auto p-4 bg-base-100 bg-opacity-50">
-		<div class="tags-container">
+	<div class="details-container z-[60] h-full p-4 bg-base-100 bg-opacity-50">
+		<div class="tags-container overflow-y-auto max-h-full">
 			${(info.tags && info.tags.length > 0) ? `
 			${info.tags.map((tag) => `<span class="badge badge-primary cursor-pointer">${tag}</span>`).join(' ')}
 			` : geti18n('home.charCard.noTags')}
@@ -21,8 +21,8 @@
 		<div class="char-details-container">
 			${info.version ? `<div class="char-info-item">${geti18n('home.charCard.version')}：<code>${info.version}</code></div>` : ''}
 			${info.author ? `<div class="char-info-item">${geti18n('home.charCard.author')}：${info.author}</div>` : ''}
-			${info.homepage ? `<div class="char-info-item"><a href="${info.homepage}" target="_blank">${geti18n('home.charCard.homepage')}</a></div>` : ''}
-			${info.issuepage ? `<div class="char-info-item"><a href="${info.issuepage}" target="_blank">${geti18n('home.charCard.issuepage')}</a></div>` : ''}
+			${info.homepage ? `<div class="char-info-item"><a href="${info.homepage}" class="link link-primary" target="_blank">${geti18n('home.charCard.homepage')}</a></div>` : ''}
+			${info.issuepage ? `<div class="char-info-item"><a href="${info.issuepage}" class="link link-primary" target="_blank">${info.issuepage}</a></div>` : ''}
 		</div>
 	</div>
 </div>

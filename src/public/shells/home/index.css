@@ -10,21 +10,16 @@ body {
 .card-container {
 	display: flex;
 	overflow: hidden;
-	/* 隐藏溢出部分 */
 	transition: width 0.3s ease;
-	/* 添加宽度过渡效果 */
 	width: 300px;
-	/* 桌面端初始宽度 */
+	max-height: 300px;
 }
 
-/* 卡片内容区域，用于添加图片和介绍 */
+/* 卡片内容区域 */
 .card-content {
 	width: 300px;
-	/* 桌面端初始宽度 */
 	height: 300px;
-	/* 桌面端初始高度 */
 	position: relative;
-	/* 为 card-body 提供定位 */
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-end;
@@ -45,16 +40,29 @@ body {
 /* 标签容器 */
 .details-container {
 	width: 300px;
-	/* 桌面端宽度，与卡片相同 */
 	display: none;
-	/* 默认隐藏 */
+	flex-direction: column;
+	/* 使用 flex: 1 来让 details-container 填充剩余空间 */
+	flex: 1;
+	/* 关键：设置最小高度以允许内容滚动 */
+	min-height: 0;
+	/* 或者设置一个合适的固定高度 */
+}
+
+.tags-container {
+	overflow-y: auto;
+	/* 设置最大高度，超出部分显示滚动条 */
+	max-height: 200px;
+}
+
+.char-details-container {
+	/* 确保内容不会溢出 */
+	overflow: hidden;
 }
 
 .card-actions .flex {
 	min-width: 0;
-	/* This is important for flexbox overflow handling */
 	width: 100%;
-	/* Take full width of parent */
 	overflow-x: auto;
 }
 
@@ -62,12 +70,10 @@ body {
 @media (min-width: 1024px) {
 	.card-container:hover {
 		width: 600px;
-		/* 鼠标悬浮时宽度翻倍 */
 	}
 
 	.card-container:hover .details-container {
 		display: flex;
-		/* 鼠标悬浮时显示标签 */
 		flex-direction: column;
 		justify-content: space-between;
 	}
@@ -81,21 +87,17 @@ body {
 @media (max-width: 1023px) {
 	.card-container {
 		width: 100%;
-		/* 移动端宽度占满 */
 		flex-wrap: wrap;
 	}
 
 	.card-content {
 		width: 50%;
-		/* 卡片宽度占据一半 */
 		aspect-ratio: 1 / 1;
 	}
 
 	.details-container {
 		width: 50%;
-		/* 标签容器占据一半 */
 		display: flex;
-		/* 移动端始终显示标签 */
 		flex-direction: column;
 		justify-content: space-between;
 	}
@@ -115,11 +117,9 @@ body {
 	margin: 0;
 	cursor: pointer;
 	opacity: 0;
-	/* Initially hidden */
 	transition: opacity 0.3s ease;
 }
 
 .card-container:hover .refresh-button {
 	opacity: 1;
-	/* Visible on hover */
 }
