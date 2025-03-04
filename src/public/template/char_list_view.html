@@ -15,7 +15,7 @@
 	<div class="details-container z-[60] h-full overflow-y-auto p-4 bg-base-100 bg-opacity-50">
 		<div class="tags-container">
 			${(info.tags && info.tags.length > 0) ? `
-			${info.tags.map((tag) => `<span class="badge badge-primary">${tag}</span>`).join(' ')}
+			${info.tags.map((tag) => `<span class="badge badge-primary cursor-pointer">${tag}</span>`).join(' ')}
 			` : geti18n('home.charCard.noTags')}
 		</div>
 		<div class="char-details-container">
