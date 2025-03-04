@@ -1,5 +1,69 @@
 {
 	"lang": "ko-KR",
+	"fountConsole": {
+		"server": {
+			"start": "서버 시작 중",
+			"starting": "서버 시작 중...",
+			"ready": "서버가 시작되었습니다",
+			"showUrl": {
+				"https": "HTTPS 서버가 ${url}에서 실행 중입니다",
+				"http": "HTTP 서버가 ${url}에서 실행 중입니다"
+			},
+			"standingBy": "대기 중..."
+		},
+		"jobs": {
+			"restartingJob": "사용자 ${username}의 Shell ${shellname} 작업 재시작 중: ${uid}"
+		},
+		"ipc": {
+			"sendCommandFailed": "명령 전송 실패: ${error}",
+			"invalidCommand": "잘못된 명령입니다. \"fount runshell <사용자 이름> <셸 이름> <매개변수...>\"를 사용하십시오",
+			"runShellLog": "셸 ${shellname}을(를) ${username}으로 실행, 매개변수: ${args}",
+			"invokeShellLog": "셸 ${shellname}을(를) ${username}으로 호출, 매개변수: ${invokedata}",
+			"unsupportedCommand": "지원되지 않는 명령 유형",
+			"processMessageError": "IPC 메시지 처리 중 오류 발생: ${error}",
+			"invalidCommandFormat": "잘못된 명령 형식",
+			"socketError": "소켓 오류: ${error}",
+			"instanceRunning": "다른 인스턴스가 이미 실행 중입니다",
+			"serverStartPrefix": "서버 시작",
+			"serverStarted": "IPC 서버가 시작되었습니다",
+			"parseResponseFailed": "서버 응답 구문 분석 실패: ${error}",
+			"cannotParseResponse": "서버 응답을 구문 분석할 수 없습니다",
+			"unknownError": "알 수 없는 오류"
+		},
+		"partManager": {
+			"git": {
+				"noUpstream": "'${currentBranch}' 브랜치에 대해 업스트림 브랜치가 구성되지 않았습니다. 업데이트 확인을 건너뜁니다.",
+				"dirtyWorkingDirectory": "작업 디렉토리가 깨끗하지 않습니다. 업데이트하기 전에 변경 사항을 스테이징하거나 커밋하십시오.",
+				"updating": "원격 리포지토리에서 업데이트 중...",
+				"localAhead": "로컬 브랜치가 원격 브랜치보다 앞서 있습니다. 업데이트가 필요하지 않습니다.",
+				"diverged": "로컬 및 원격 브랜치가 분기되었습니다. 강제 업데이트 중...",
+				"upToDate": "이미 최신 버전입니다.",
+				"updateFailed": "원격 리포지토리에서 파트 업데이트 실패: ${error}"
+			}
+		},
+		"web": {
+			"requestReceived": "요청 수신: ${method}\t${url}"
+		},
+		"route": {
+			"setLanguagePreference": "사용자 ${username}이(가) 선호하는 언어를 설정했습니다: ${preferredLanguages}"
+		},
+		"auth": {
+			"tokenVerifyError": "토큰 검증 오류: ${error}",
+			"refreshTokenError": "새로 고침 토큰 오류: ${error}",
+			"logoutRefreshTokenProcessError": "로그아웃 새로 고침 토큰 처리 오류: ${error}",
+			"revokeTokenNoJTI": "jti가 없는 토큰은 취소할 수 없습니다",
+			"accountLockedLog": "로그인 시도 실패 횟수 초과로 사용자 ${username} 계정이 잠겼습니다"
+		},
+		"verification": {
+			"codeGeneratedLog": "인증 코드: ${code} (60초 후 만료)",
+			"codeNotifyTitle": "인증 코드",
+			"codeNotifyBody": "인증 코드: ${code} (60초 후 만료)"
+		},
+		"tray": {
+			"readIconFailed": "아이콘 파일 읽기 실패: ${error}",
+			"createTrayFailed": "트레이 생성 실패: ${error}"
+		}
+	},
 	"protocolhandler": {
 		"title": "Fount 프로토콜 처리 중",
 		"processing": "프로토콜 처리 중...",

@@ -1,5 +1,69 @@
 {
 	"lang": "ru-RU",
+	"fountConsole": {
+		"server": {
+			"start": "Сервер запускается",
+			"starting": "Сервер запускается...",
+			"ready": "Сервер запущен",
+			"showUrl": {
+				"https": "HTTPS сервер запущен на ${url}",
+				"http": "HTTP сервер запущен на ${url}"
+			},
+			"standingBy": "Ожидание..."
+		},
+		"jobs": {
+			"restartingJob": "Перезапуск задания Shell ${shellname} пользователя ${username}: ${uid}"
+		},
+		"ipc": {
+			"sendCommandFailed": "Не удалось отправить команду: ${error}",
+			"invalidCommand": "Неверная команда, пожалуйста, используйте \"fount runshell <имя пользователя> <имя shell> <параметры...>\"",
+			"runShellLog": "Запуск shell ${shellname} от имени ${username}, параметры: ${args}",
+			"invokeShellLog": "Вызов shell ${shellname} от имени ${username}, параметры: ${invokedata}",
+			"unsupportedCommand": "Неподдерживаемый тип команды",
+			"processMessageError": "Ошибка обработки IPC-сообщения: ${error}",
+			"invalidCommandFormat": "Неверный формат команды",
+			"socketError": "Ошибка сокета: ${error}",
+			"instanceRunning": "Другой экземпляр уже запущен",
+			"serverStartPrefix": "запуск сервера",
+			"serverStarted": "IPC-сервер запущен",
+			"parseResponseFailed": "Не удалось разобрать ответ сервера: ${error}",
+			"cannotParseResponse": "Невозможно разобрать ответ сервера",
+			"unknownError": "Неизвестная ошибка"
+		},
+		"partManager": {
+			"git": {
+				"noUpstream": "Для ветки '${currentBranch}' не настроена вышестоящая ветка, проверка обновлений пропущена.",
+				"dirtyWorkingDirectory": "Рабочий каталог не чист. Пожалуйста, сохраните или закоммитьте свои изменения перед обновлением.",
+				"updating": "Обновление из удаленного репозитория...",
+				"localAhead": "Локальная ветка опережает удаленную ветку. Обновление не требуется.",
+				"diverged": "Локальная и удаленная ветки разошлись. Принудительное обновление...",
+				"upToDate": "Уже обновлено.",
+				"updateFailed": "Не удалось обновить части из удаленного репозитория: ${error}"
+			}
+		},
+		"web": {
+			"requestReceived": "Получен запрос: ${method}\t${url}"
+		},
+		"route": {
+			"setLanguagePreference": "Пользователь ${username} установил предпочитаемый язык: ${preferredLanguages}"
+		},
+		"auth": {
+			"tokenVerifyError": "Ошибка проверки токена: ${error}",
+			"refreshTokenError": "Ошибка токена обновления: ${error}",
+			"logoutRefreshTokenProcessError": "Ошибка обработки токена обновления при выходе из системы: ${error}",
+			"revokeTokenNoJTI": "Невозможно отозвать токен без jti",
+			"accountLockedLog": "Учетная запись пользователя ${username} заблокирована из-за многочисленных неудачных попыток входа в систему"
+		},
+		"verification": {
+			"codeGeneratedLog": "Код верификации: ${code} (истекает через 60 секунд)",
+			"codeNotifyTitle": "Код верификации",
+			"codeNotifyBody": "Код верификации: ${code} (истекает через 60 секунд)"
+		},
+		"tray": {
+			"readIconFailed": "Не удалось прочитать файл значка: ${error}",
+			"createTrayFailed": "Не удалось создать трей: ${error}"
+		}
+	},
 	"protocolhandler": {
 		"title": "Обработка протокола Fount",
 		"processing": "Обработка протокола...",

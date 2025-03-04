@@ -6,7 +6,7 @@ import { getPartList, loadPart, partsList } from './managers/index.mjs'
 import { processIPCCommand } from './ipc_server.mjs'
 import { is_local_ip, rateLimit } from '../scripts/ratelimit.mjs'
 import express from 'npm:express@^5.0.1'
-import { getLocaleData } from '../scripts/i18n.mjs'
+import { geti18n, getLocaleData } from '../scripts/i18n.mjs'
 
 /**
  * @param {import('npm:express').Router} router
@@ -24,7 +24,7 @@ export function registerEndpoints(router) {
 		if (req.cookies.accessToken) try {
 			const user = await getUserByToken(req.cookies.accessToken)
 			user.locales = preferredLanguages
-			console.log(`user ${user.username} setting preferred languages:`, preferredLanguages)
+			console.log(await geti18n('fountConsole.route.setLanguagePreference', { username: user.username, preferredLanguages }))
 		} catch { }
 
 		return res.status(200).json(await getLocaleData(preferredLanguages))

@@ -1,5 +1,69 @@
 {
 	"lang": "es-ES",
+	"fountConsole": {
+		"server": {
+			"start": "Iniciando servidor",
+			"starting": "Iniciando servidor...",
+			"ready": "Servidor iniciado",
+			"showUrl": {
+				"https": "Servidor HTTPS ejecutándose en ${url}",
+				"http": "Servidor HTTP ejecutándose en ${url}"
+			},
+			"standingBy": "En espera..."
+		},
+		"jobs": {
+			"restartingJob": "Reiniciando tarea Shell ${shellname} del usuario ${username}: ${uid}"
+		},
+		"ipc": {
+			"sendCommandFailed": "Error al enviar comando: ${error}",
+			"invalidCommand": "Comando inválido, por favor use \"fount runshell <nombre de usuario> <nombre de shell> <parámetros...>\"",
+			"runShellLog": "Ejecutando shell ${shellname} como ${username}, parámetros: ${args}",
+			"invokeShellLog": "Invocando shell ${shellname} como ${username}, parámetros: ${invokedata}",
+			"unsupportedCommand": "Tipo de comando no soportado",
+			"processMessageError": "Error al procesar mensaje IPC: ${error}",
+			"invalidCommandFormat": "Formato de comando inválido",
+			"socketError": "Error de Socket: ${error}",
+			"instanceRunning": "Otra instancia ya está en ejecución",
+			"serverStartPrefix": "inicio del servidor",
+			"serverStarted": "Servidor IPC iniciado",
+			"parseResponseFailed": "Error al analizar respuesta del servidor: ${error}",
+			"cannotParseResponse": "No se puede analizar la respuesta del servidor",
+			"unknownError": "Error desconocido"
+		},
+		"partManager": {
+			"git": {
+				"noUpstream": "No se ha configurado ninguna rama upstream para la rama '${currentBranch}', omitiendo la comprobación de actualizaciones.",
+				"dirtyWorkingDirectory": "El directorio de trabajo no está limpio. Por favor, guarda o commite tus cambios antes de actualizar.",
+				"updating": "Actualizando desde el repositorio remoto...",
+				"localAhead": "La rama local está por delante de la rama remota. No es necesaria la actualización.",
+				"diverged": "Las ramas local y remota han divergido. Forzando la actualización...",
+				"upToDate": "Ya está actualizado.",
+				"updateFailed": "Error al actualizar partes desde el repositorio remoto: ${error}"
+			}
+		},
+		"web": {
+			"requestReceived": "Petición recibida: ${method}\t${url}"
+		},
+		"route": {
+			"setLanguagePreference": "Usuario ${username} estableció el idioma preferido: ${preferredLanguages}"
+		},
+		"auth": {
+			"tokenVerifyError": "Error de verificación de token: ${error}",
+			"refreshTokenError": "Error de token de actualización: ${error}",
+			"logoutRefreshTokenProcessError": "Error al procesar el token de actualización de cierre de sesión: ${error}",
+			"revokeTokenNoJTI": "No se puede revocar el token sin jti",
+			"accountLockedLog": "Cuenta del usuario ${username} bloqueada debido a múltiples intentos fallidos de inicio de sesión"
+		},
+		"verification": {
+			"codeGeneratedLog": "Código de verificación: ${code} (expira en 60 segundos)",
+			"codeNotifyTitle": "Código de verificación",
+			"codeNotifyBody": "Código de verificación: ${code} (expira en 60 segundos)"
+		},
+		"tray": {
+			"readIconFailed": "Error al leer el archivo de icono: ${error}",
+			"createTrayFailed": "Error al crear la bandeja: ${error}"
+		}
+	},
 	"protocolhandler": {
 		"title": "Procesando el protocolo Fount",
 		"processing": "Procesando el protocolo...",

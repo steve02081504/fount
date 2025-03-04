@@ -1,5 +1,69 @@
 {
 	"lang": "pt-PT",
+	"fountConsole": {
+		"server": {
+			"start": "A iniciar servidor",
+			"starting": "A iniciar servidor...",
+			"ready": "Servidor iniciado",
+			"showUrl": {
+				"https": "Servidor HTTPS a correr em ${url}",
+				"http": "Servidor HTTP a correr em ${url}"
+			},
+			"standingBy": "Em espera..."
+		},
+		"jobs": {
+			"restartingJob": "A reiniciar tarefa Shell ${shellname} do utilizador ${username}: ${uid}"
+		},
+		"ipc": {
+			"sendCommandFailed": "Falha ao enviar comando: ${error}",
+			"invalidCommand": "Comando inválido, por favor use \"fount runshell <nome de utilizador> <nome da shell> <parâmetros...>\"",
+			"runShellLog": "A executar shell ${shellname} como ${username}, parâmetros: ${args}",
+			"invokeShellLog": "A invocar shell ${shellname} como ${username}, parâmetros: ${invokedata}",
+			"unsupportedCommand": "Tipo de comando não suportado",
+			"processMessageError": "Erro ao processar mensagem IPC: ${error}",
+			"invalidCommandFormat": "Formato de comando inválido",
+			"socketError": "Erro de Socket: ${error}",
+			"instanceRunning": "Outra instância já está a correr",
+			"serverStartPrefix": "início do servidor",
+			"serverStarted": "Servidor IPC iniciado",
+			"parseResponseFailed": "Falha ao analisar resposta do servidor: ${error}",
+			"cannotParseResponse": "Não é possível analisar a resposta do servidor",
+			"unknownError": "Erro desconhecido"
+		},
+		"partManager": {
+			"git": {
+				"noUpstream": "Nenhum ramo upstream configurado para o ramo '${currentBranch}', a ignorar verificação de atualizações.",
+				"dirtyWorkingDirectory": "Diretório de trabalho não está limpo. Por favor, guarde ou faça commit das suas alterações antes de atualizar.",
+				"updating": "A atualizar do repositório remoto...",
+				"localAhead": "O ramo local está à frente do ramo remoto. Não é necessária atualização.",
+				"diverged": "Os ramos local e remoto divergiram. A forçar atualização...",
+				"upToDate": "Já está atualizado.",
+				"updateFailed": "Falha ao atualizar partes do repositório remoto: ${error}"
+			}
+		},
+		"web": {
+			"requestReceived": "Pedido recebido: ${method}\t${url}"
+		},
+		"route": {
+			"setLanguagePreference": "Utilizador ${username} definiu idioma preferencial: ${preferredLanguages}"
+		},
+		"auth": {
+			"tokenVerifyError": "Erro de verificação de token: ${error}",
+			"refreshTokenError": "Erro de token de atualização: ${error}",
+			"logoutRefreshTokenProcessError": "Erro ao processar token de atualização de logout: ${error}",
+			"revokeTokenNoJTI": "Não é possível revogar token sem jti",
+			"accountLockedLog": "Conta de utilizador ${username} bloqueada devido a múltiplas tentativas de login falhadas"
+		},
+		"verification": {
+			"codeGeneratedLog": "Código de verificação: ${code} (expira em 60 segundos)",
+			"codeNotifyTitle": "Código de verificação",
+			"codeNotifyBody": "Código de verificação: ${code} (expira em 60 segundos)"
+		},
+		"tray": {
+			"readIconFailed": "Falha ao ler ficheiro de ícone: ${error}",
+			"createTrayFailed": "Falha ao criar bandeja: ${error}"
+		}
+	},
 	"protocolhandler": {
 		"title": "A processar o protocolo Fount",
 		"processing": "A processar o protocolo...",

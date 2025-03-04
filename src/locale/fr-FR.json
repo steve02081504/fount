@@ -1,5 +1,69 @@
 {
 	"lang": "fr-FR",
+	"fountConsole": {
+		"server": {
+			"start": "Démarrage du serveur",
+			"starting": "Serveur en cours de démarrage...",
+			"ready": "Serveur démarré",
+			"showUrl": {
+				"https": "Serveur HTTPS en cours d'exécution sur ${url}",
+				"http": "Serveur HTTP en cours d'exécution sur ${url}"
+			},
+			"standingBy": "En attente..."
+		},
+		"jobs": {
+			"restartingJob": "Redémarrage de la tâche Shell ${shellname} de l'utilisateur ${username} : ${uid}"
+		},
+		"ipc": {
+			"sendCommandFailed": "Échec de l'envoi de la commande : ${error}",
+			"invalidCommand": "Commande invalide, veuillez utiliser \"fount runshell <nom d'utilisateur> <nom de shell> <paramètres...>\"",
+			"runShellLog": "Exécution du shell ${shellname} en tant que ${username}, paramètres : ${args}",
+			"invokeShellLog": "Appel du shell ${shellname} en tant que ${username}, paramètres : ${invokedata}",
+			"unsupportedCommand": "Type de commande non pris en charge",
+			"processMessageError": "Erreur lors du traitement du message IPC : ${error}",
+			"invalidCommandFormat": "Format de commande invalide",
+			"socketError": "Erreur de Socket : ${error}",
+			"instanceRunning": "Une autre instance est déjà en cours d'exécution",
+			"serverStartPrefix": "démarrage du serveur",
+			"serverStarted": "Serveur IPC démarré",
+			"parseResponseFailed": "Échec de l'analyse de la réponse du serveur : ${error}",
+			"cannotParseResponse": "Impossible d'analyser la réponse du serveur",
+			"unknownError": "Erreur inconnue"
+		},
+		"partManager": {
+			"git": {
+				"noUpstream": "Aucune branche upstream configurée pour la branche '${currentBranch}', mise à jour ignorée.",
+				"dirtyWorkingDirectory": "Le répertoire de travail n'est pas propre. Veuillez stasher ou committer vos modifications avant de mettre à jour.",
+				"updating": "Mise à jour depuis le dépôt distant...",
+				"localAhead": "La branche locale est en avance sur la branche distante. Aucune mise à jour nécessaire.",
+				"diverged": "Les branches locale et distante ont divergé. Mise à jour forcée...",
+				"upToDate": "Déjà à jour.",
+				"updateFailed": "Échec de la mise à jour des parties depuis le dépôt distant : ${error}"
+			}
+		},
+		"web": {
+			"requestReceived": "Requête reçue : ${method}\t${url}"
+		},
+		"route": {
+			"setLanguagePreference": "L'utilisateur ${username} a défini la langue préférée : ${preferredLanguages}"
+		},
+		"auth": {
+			"tokenVerifyError": "Erreur de vérification du token : ${error}",
+			"refreshTokenError": "Erreur de token de rafraîchissement : ${error}",
+			"logoutRefreshTokenProcessError": "Erreur lors du traitement du token de rafraîchissement de déconnexion : ${error}",
+			"revokeTokenNoJTI": "Impossible de révoquer le token sans jti",
+			"accountLockedLog": "Compte utilisateur ${username} verrouillé en raison de multiples tentatives de connexion infructueuses"
+		},
+		"verification": {
+			"codeGeneratedLog": "Code de vérification : ${code} (expire dans 60 secondes)",
+			"codeNotifyTitle": "Code de vérification",
+			"codeNotifyBody": "Code de vérification : ${code} (expire dans 60 secondes)"
+		},
+		"tray": {
+			"readIconFailed": "Erreur lors de la lecture du fichier icône : ${error}",
+			"createTrayFailed": "Erreur lors de la création de l'icône de la barre des tâches : ${error}"
+		}
+	},
 	"protocolhandler": {
 		"title": "Traitement du protocole Fount",
 		"processing": "Traitement du protocole...",

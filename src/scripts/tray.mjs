@@ -4,13 +4,14 @@ import path from 'node:path'
 import fs from 'node:fs'
 import os from 'node:os'
 const SysTray = (await import('npm:systray')).default.default //??????
+import { geti18n } from '../scripts/i18n.mjs'
 
 async function getBase64Icon(iconPath) {
 	try {
 		const iconData = fs.readFileSync(iconPath)
 		return iconData.toString('base64')
 	} catch (err) {
-		console.error('读取图标文件失败:', err)
+		console.error(await geti18n('fountConsole.tray.readIconFailed', { error: err }))
 		return ''
 	}
 }
@@ -52,6 +53,6 @@ export async function createTray() {
 			}
 		})
 	} catch (err) {
-		console.error('创建托盘失败：', err)
+		console.error(await geti18n('fountConsole.tray.createTrayFailed', { error: err }))
 	}
 }

@@ -1,5 +1,69 @@
 {
 	"lang": "en-UK",
+	"fountConsole": {
+		"server": {
+			"start": "Starting server",
+			"starting": "Server starting...",
+			"ready": "Server is ready",
+			"showUrl": {
+				"https": "HTTPS server running on ${url}",
+				"http": "HTTP server running on ${url}"
+			},
+			"standingBy": "standing by..."
+		},
+		"jobs": {
+			"restartingJob": "Restarting Shell ${shellname} job for user ${username}: ${uid}"
+		},
+		"ipc": {
+			"sendCommandFailed": "Failed to send command: ${error}",
+			"invalidCommand": "Invalid command, please use \"fount runshell <username> <shellname> <parameters...>\"",
+			"runShellLog": "Running shell ${shellname} as ${username}, parameters: ${args}",
+			"invokeShellLog": "Invoking shell ${shellname} as ${username}, parameters: ${invokedata}",
+			"unsupportedCommand": "Unsupported command type",
+			"processMessageError": "Error processing IPC message: ${error}",
+			"invalidCommandFormat": "Invalid command format",
+			"socketError": "Socket Error: ${error}",
+			"instanceRunning": "Another instance is already running",
+			"serverStartPrefix": "server start",
+			"serverStarted": "IPC server started",
+			"parseResponseFailed": "Failed to parse server response: ${error}",
+			"cannotParseResponse": "Cannot parse server response",
+			"unknownError": "Unknown error"
+		},
+		"partManager": {
+			"git": {
+				"noUpstream": "No upstream branch configured for branch '${currentBranch}', skipping update check.",
+				"dirtyWorkingDirectory": "Working directory is not clean. Please stash or commit your changes before updating.",
+				"updating": "Updating from remote repository...",
+				"localAhead": "Local branch is ahead of remote branch. No update needed.",
+				"diverged": "Local and remote branches have diverged. Forcing update...",
+				"upToDate": "Already up-to-date.",
+				"updateFailed": "Failed to update parts from remote repository: ${error}"
+			}
+		},
+		"web": {
+			"requestReceived": "Request received: ${method}\t${url}"
+		},
+		"route": {
+			"setLanguagePreference": "User ${username} set preferred language: ${preferredLanguages}"
+		},
+		"auth": {
+			"tokenVerifyError": "Token verification error: ${error}",
+			"refreshTokenError": "Refresh token error: ${error}",
+			"logoutRefreshTokenProcessError": "Logout refresh token process error: ${error}",
+			"revokeTokenNoJTI": "Cannot revoke token without jti",
+			"accountLockedLog": "User account ${username} locked due to multiple failed login attempts"
+		},
+		"verification": {
+			"codeGeneratedLog": "Verification code: ${code} (expires in 60 seconds)",
+			"codeNotifyTitle": "Verification code",
+			"codeNotifyBody": "Verification code: ${code} (expires in 60 seconds)"
+		},
+		"tray": {
+			"readIconFailed": "Failed to read icon file: ${error}",
+			"createTrayFailed": "Failed to create tray: ${error}"
+		}
+	},
 	"protocolhandler": {
 		"title": "Processing Fount Protocol",
 		"processing": "Processing protocol...",
