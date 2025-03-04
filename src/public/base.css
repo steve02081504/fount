@@ -24,6 +24,11 @@
 	white-space: pre;
 }
 
+.markdown-body .highlight pre,
+.markdown-body pre {
+	background-color: var(--color-base-100);
+}
+
 [style*="--shiki-light"][style*="--shiki-dark"] {
 	color: var(--shiki-light)
 }
