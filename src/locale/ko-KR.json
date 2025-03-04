@@ -327,6 +327,9 @@
 		}
 	},
 	"chat": {
+		"new": {
+			"title": "생성한 채팅"
+		},
 		"title": "채팅",
 		"sidebar": {
 			"world": {

@@ -327,6 +327,9 @@
 		}
 	},
 	"chat": {
+		"new": {
+			"title": "New Chat"
+		},
 		"title": "Chat",
 		"sidebar": {
 			"world": {
