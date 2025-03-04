@@ -284,7 +284,7 @@ async function getChatRequest(chatid, charname) {
 								{
 									content: `\
 你所发送的信息均会被fount的网页前端渲染，其允许你使用markdown语法（你需要双写波浪线来获得删除线效果，如~~删除线~~），包括内嵌html（无任何过滤）。
-也就是说，你可以使用任何css或js代码来辅助消息渲染。
+也就是说，你可以使用任何css（可以使用最新版daisyui和tailwindcss库）或js代码来辅助消息渲染。
 同时，其还支持katex语法，但请注意\`$$\`和\`\\begin\`或\`\\end\`之间换行，否则无法识别。
 正确示例：
 $$
