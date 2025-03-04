@@ -98,55 +98,21 @@ function generateTailwindNumericCSS() {
 
 	for (const prefix in integerClasses) {
 		const property = integerClasses[prefix]
+
+		// 生成整数值规则 (1-100)
 		for (let i = 1; i <= 100; i++) {
 			const className = `${prefix}${i}`
-			let value
+			const value = calculateValue(property, i)
+			const cssProperty = formatCSSProperty(property, value)
+			cssRules.push(`.${className} { ${cssProperty} }`)
+		}
 
-			if (property === 'font-size')
-				value = `${i / 4}rem` // 简化 text- 类字体大小计算
-			else if (property === 'line-height')
-				value = `${i / 4}rem` // 简化 leading- 类行高计算
-			else if (property.startsWith('margin') || property.startsWith('padding') || property === 'width' || property === 'height' || property === 'flex-basis' || property.startsWith('border-width') || property.startsWith('border-radius') || property.startsWith('inset') || property.startsWith('top') || property.startsWith('right') || property.startsWith('bottom') || property.startsWith('left') || property === 'text-indent' || property.startsWith('scroll-margin') || property.startsWith('scroll-padding') || property === 'ring-offset-width' || property === 'ring-width' || property === 'gap' || property === 'column-gap' || property === 'row-gap')
-				value = `${i / 4}rem` // 大部分布局和间距相关的类使用 0.25rem 的倍数
-			else if (property === 'z-index' || property === 'order' || property === 'flex-grow' || property === 'flex-shrink' || property === 'column-count' || property === 'aspect-ratio')
-				value = `${i}` // z-index, order, flex-grow, flex-shrink, column-count, aspect-ratio 直接使用数字
-			else if (property === 'opacity')
-				value = `${i / 100}` // opacity 是 0-1 之间的值
-			else if (property === 'transition-duration')
-				value = `${i * 10}ms` // duration 单位是毫秒，步进 10ms
-			else if (property.startsWith('transform: scale'))
-				value = `${i / 100}` // scale 比例
-			else if (property.startsWith('transform: rotate'))
-				value = `${i}deg` // rotate 角度
-			else if (property.startsWith('transform: translateX') || property.startsWith('transform: translateY'))
-				value = `${i / 4}rem` // translate 单位 rem
-			else if (property === 'grid-template-columns' || property === 'grid-template-rows')
-				value = `repeat(${i}, minmax(0, 1fr))` // 简单的 grid-cols/rows 定义
-			else if (property === 'grid-column' || property === 'grid-row')
-				value = `span ${i} / span ${i}` // col-span 和 row-span
-			else if (property === 'box-shadow')
-				value = `0 0 ${i / 4}rem rgba(0, 0, 0, 0.1)` // 简化阴影
-			else if (property === 'filter: blur')
-				value = `${i / 4}rem` // 简化模糊
-			else if (property === 'letter-spacing')
-				value = `${i / 10}rem` // 简化字距，假设步进 0.1rem
-
-			else if (property === 'margin-left' || property === 'margin-top' || property === 'border-right-width' || property === 'border-bottom-width')  // space-x, space-y, divide-x, divide-y 简化处理
-				value = `${i / 4}rem`
-
-			else
-				value = `${i / 4}rem` // 默认使用 rem 单位
-
-
-			let cssProperty = property
-			if (property.includes(',')) {
-				const properties = property.split(',').map(p => p.trim())
-				value = properties.map(p => `${p}: ${value};`).join(' ')
-				cssProperty = '' // 避免重复定义 property
-			} else
-				cssProperty = `${property}: ${value};`
-
-
+		// 生成方括号值规则
+		const arbitraryValues = ['10', '20', '30', '40', '50', '60', '70', '80', '90', '100', '10px', '20px', '30px', '40px', '50px', '60px', '70px', '80px', '90px', '100px', '1rem', '2rem', '3rem', '4rem', '5rem', '6rem', '7rem', '8rem', '9rem', '10rem'] // 这里可以根据需要添加更多示例值
+		for (const arbitraryValue of arbitraryValues) {
+			const className = `${prefix}[${arbitraryValue}]`
+			const value = arbitraryValue // 直接使用方括号中的值
+			const cssProperty = formatCSSProperty(property, value)
 			cssRules.push(`.${className} { ${cssProperty} }`)
 		}
 	}
@@ -173,28 +139,8 @@ function generateTailwindNumericCSS() {
 				if (prefix === 'aspect-h-') continue
 
 				const className = `${prefix}${numerator}/${denominator}`
-				let value
-
-				if (property === 'width' || property === 'height' || property === 'flex-basis')
-					value = `${(numerator / denominator) * 100}%`
-				else if (property.startsWith('transform: translateX') || property.startsWith('transform: translateY'))
-					value = `${(numerator / denominator) * 100}%` // translate 使用百分比
-				else if (property === 'aspect-ratio')
-					value = `${numerator} / ${denominator}` // aspect-ratio 使用比例值
-
-				else
-					value = `${(numerator / denominator) * 100}%` // 默认百分比
-
-
-				let cssProperty = property
-				if (property.includes(',')) {
-					const properties = property.split(',').map(p => p.trim())
-					value = properties.map(p => `${p}: ${value};`).join(' ')
-					cssProperty = '' // 避免重复定义 property
-				} else
-					cssProperty = `${property}: ${value};`
-
-
+				const value = calculateFractionValue(property, numerator, denominator)
+				const cssProperty = formatCSSProperty(property, value)
 				cssRules.push(`.${className} { ${cssProperty} }`)
 			}
 
@@ -206,6 +152,68 @@ function generateTailwindNumericCSS() {
 
 	return cssRules.join('\n')
 }
+
+function calculateValue(property, i) {
+	let value
+	if (property === 'font-size')
+		value = `${i / 4}rem` // 简化 text- 类字体大小计算
+	else if (property === 'line-height')
+		value = `${i / 4}rem` // 简化 leading- 类行高计算
+	else if (property.startsWith('margin') || property.startsWith('padding') || property === 'width' || property === 'height' || property === 'flex-basis' || property.startsWith('border-width') || property.startsWith('border-radius') || property.startsWith('inset') || property.startsWith('top') || property.startsWith('right') || property.startsWith('bottom') || property.startsWith('left') || property === 'text-indent' || property.startsWith('scroll-margin') || property.startsWith('scroll-padding') || property === 'ring-offset-width' || property === 'ring-width' || property === 'gap' || property === 'column-gap' || property === 'row-gap')
+		value = `${i / 4}rem` // 大部分布局和间距相关的类使用 0.25rem 的倍数
+	else if (property === 'z-index' || property === 'order' || property === 'flex-grow' || property === 'flex-shrink' || property === 'column-count' || property === 'aspect-ratio')
+		value = `${i}` // z-index, order, flex-grow, flex-shrink, column-count, aspect-ratio 直接使用数字
+	else if (property === 'opacity')
+		value = `${i / 100}` // opacity 是 0-1 之间的值
+	else if (property === 'transition-duration')
+		value = `${i * 10}ms` // duration 单位是毫秒，步进 10ms
+	else if (property.startsWith('transform: scale'))
+		value = `${i / 100}` // scale 比例
+	else if (property.startsWith('transform: rotate'))
+		value = `${i}deg` // rotate 角度
+	else if (property.startsWith('transform: translateX') || property.startsWith('transform: translateY'))
+		value = `${i / 4}rem` // translate 单位 rem
+	else if (property === 'grid-template-columns' || property === 'grid-template-rows')
+		value = `repeat(${i}, minmax(0, 1fr))` // 简单的 grid-cols/rows 定义
+	else if (property === 'grid-column' || property === 'grid-row')
+		value = `span ${i} / span ${i}` // col-span 和 row-span
+	else if (property === 'box-shadow')
+		value = `0 0 ${i / 4}rem rgba(0, 0, 0, 0.1)` // 简化阴影
+	else if (property === 'filter: blur')
+		value = `${i / 4}rem` // 简化模糊
+	else if (property === 'letter-spacing')
+		value = `${i / 10}rem` // 简化字距，假设步进 0.1rem
+	else if (property === 'margin-left' || property === 'margin-top' || property === 'border-right-width' || property === 'border-bottom-width')  // space-x, space-y, divide-x, divide-y 简化处理
+		value = `${i / 4}rem`
+	else
+		value = `${i / 4}rem` // 默认使用 rem 单位
+	return value
+}
+
+function calculateFractionValue(property, numerator, denominator) {
+	let value
+	if (property === 'width' || property === 'height' || property === 'flex-basis')
+		value = `${(numerator / denominator) * 100}%`
+	else if (property.startsWith('transform: translateX') || property.startsWith('transform: translateY'))
+		value = `${(numerator / denominator) * 100}%` // translate 使用百分比
+	else if (property === 'aspect-ratio')
+		value = `${numerator} / ${denominator}` // aspect-ratio 使用比例值
+	else
+		value = `${(numerator / denominator) * 100}%` // 默认百分比
+	return value
+}
+
+
+function formatCSSProperty(property, value) {
+	let cssProperty
+	if (property.includes(',')) {
+		const properties = property.split(',').map(p => p.trim())
+		cssProperty = properties.map(p => `${p}: ${value};`).join(' ')
+	} else
+		cssProperty = `${property}: ${value};`
+	return cssProperty
+}
+
 
 export function fixTailwindcssCDN() {
 	const generatedCSS = generateTailwindNumericCSS()
