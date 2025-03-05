@@ -13,12 +13,12 @@
 	</div>
 
 	<div class="details-container z-[60] h-full p-4 bg-base-100 bg-opacity-50">
-		<div class="tags-container overflow-y-auto max-h-full">
+		<div class="tags-container overflow-y-auto">
 			${(info.tags && info.tags.length > 0) ? `
 			${info.tags.map((tag) => `<span class="badge badge-primary cursor-pointer">${tag}</span>`).join(' ')}
 			` : geti18n('home.charCard.noTags')}
 		</div>
-		<div class="char-details-container">
+		<div class="char-details-container overflow-y-auto">
 			${info.version ? `<div class="char-info-item">${geti18n('home.charCard.version')}：<code>${info.version}</code></div>` : ''}
 			${info.author ? `<div class="char-info-item">${geti18n('home.charCard.author')}：${info.author}</div>` : ''}
 			${info.homepage ? `<div class="char-info-item"><a href="${info.homepage}" class="link link-primary" target="_blank">${geti18n('home.charCard.homepage')}</a></div>` : ''}
