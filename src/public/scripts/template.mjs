@@ -18,35 +18,41 @@ export function createDocumentFragmentFromHtmlString(htmlString) {
 
 	// 递归创建元素并添加到父节点
 	function createElementFromNode(node, parent) {
-		if (node.nodeType === Node.TEXT_NODE) 
+		if (node.nodeType === Node.TEXT_NODE)
 			parent.appendChild(document.createTextNode(node.textContent))
 		 else if (node.nodeType === Node.ELEMENT_NODE) {
 			const element = document.createElement(node.nodeName)
-			for (const attr of node.attributes) 
+			for (const attr of node.attributes)
 				element.setAttribute(attr.name, attr.value)
-			
+
 
 			if (node.nodeName.toLowerCase() === 'script') {
-				if (node.src) 
+				if (node.src)
 					element.src = node.src
-				 else 
+				 else
 					element.text = node.textContent
-				
+
 				element.async = false
 				parent.appendChild(element)
 			} else {
 				parent.appendChild(element)
-				for (const childNode of node.childNodes) 
+				for (const childNode of node.childNodes)
 					createElementFromNode(childNode, element)
-				
+
 			}
 		}
 	}
 	const fragment = document.createDocumentFragment()
-	for (const childNode of doc.body.childNodes) 
+	for (const childNode of doc.body.childNodes)
 		createElementFromNode(childNode, fragment)
-	
+
 	return fragment
+}
+
+export function createDOMFromHtmlString(htmlString) {
+	const div = document.createElement('div')
+	div.appendChild(createDocumentFragmentFromHtmlString(htmlString))
+	return div.children[0]
 }
 
 export async function renderTemplate(template, data) {
@@ -73,7 +79,7 @@ export async function renderTemplate(template, data) {
 		}
 	}
 	result += html
-	return i18nElement(await svgInliner(createDocumentFragmentFromHtmlString(result)))
+	return i18nElement(await svgInliner(createDOMFromHtmlString(result)))
 }
 
 export async function renderTemplateAsHtmlString(template, data) {
