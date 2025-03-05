@@ -540,8 +540,25 @@
 		"initialMessageLink": "点击这里了解更多信息"
 	},
 	"404": {
-		"title": "404 - 页面未找到",
-		"pageNotFoundText": "糟糕！您要查找的页面不存在。",
-		"homepageButton": "返回首页"
+		"title": "页面未找到",
+		"pageNotFoundText": "糟糕！您似乎来到了一个不存在的页面。",
+		"homepageButton": "返回首页",
+		"MineSweeper": {
+			"difficultyLabel": "难度：",
+			"difficultyEasy": "简单",
+			"difficultyMedium": "中等",
+			"difficultyHard": "困难",
+			"difficultyCustom": "自定义",
+			"minesLeftLabel": "剩余雷数：",
+			"timeLabel": "时间：",
+			"restartButton": "重新开始",
+			"rowsLabel": "行数：",
+			"colsLabel": "列数：",
+			"minesCountLabel": "雷数：",
+			"winMessage": "恭喜你，你赢了！",
+			"loseMessage": "游戏结束，你踩到地雷了！",
+			"soundOn": "声音开启",
+			"soundOff": "声音关闭"
+		}
 	}
 }

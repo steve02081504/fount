@@ -540,8 +540,25 @@
 		"initialMessageLink": "詳細はこちらをクリック"
 	},
 	"404": {
-		"title": "404 - ページが見つかりません",
-		"pageNotFoundText": "申し訳ありません！お探しのページは見つかりませんでした。",
-		"homepageButton": "ホームに戻る"
+		"title": "ページが見つかりません",
+		"pageNotFoundText": "おっと！ 存在しないページにアクセスしてしまったようです。",
+		"homepageButton": "ホームページに戻る",
+		"MineSweeper": {
+			"difficultyLabel": "難易度:",
+			"difficultyEasy": "簡単",
+			"difficultyMedium": "普通",
+			"difficultyHard": "難しい",
+			"difficultyCustom": "カスタム",
+			"minesLeftLabel": "残り地雷数:",
+			"timeLabel": "時間:",
+			"restartButton": "再開",
+			"rowsLabel": "行数:",
+			"colsLabel": "列数:",
+			"minesCountLabel": "地雷数:",
+			"winMessage": "おめでとうございます、あなたの勝ちです！",
+			"loseMessage": "ゲームオーバー、地雷を踏んでしまいました！",
+			"soundOn": "サウンドオン",
+			"soundOff": "サウンドオフ"
+		}
 	}
 }
