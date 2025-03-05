@@ -540,8 +540,25 @@
 		"initialMessageLink": "자세히 알아보려면 여기를 클릭하세요"
 	},
 	"404": {
-		"title": "404 - 페이지를 찾을 수 없습니다",
-		"pageNotFoundText": "죄송합니다! 찾으시는 페이지를 찾을 수 없습니다.",
-		"homepageButton": "홈페이지로 돌아가기"
+		"title": "페이지를 찾을 수 없음",
+		"pageNotFoundText": "죄송합니다! 존재하지 않는 페이지에 오신 것 같습니다.",
+		"homepageButton": "홈페이지로 돌아가기",
+		"MineSweeper": {
+			"difficultyLabel": "난이도:",
+			"difficultyEasy": "쉬움",
+			"difficultyMedium": "보통",
+			"difficultyHard": "어려움",
+			"difficultyCustom": "사용자 정의",
+			"minesLeftLabel": "남은 지뢰 수:",
+			"timeLabel": "시간:",
+			"restartButton": "다시 시작",
+			"rowsLabel": "행:",
+			"colsLabel": "열:",
+			"minesCountLabel": "지뢰 수:",
+			"winMessage": "축하합니다, 당신이 이겼습니다!",
+			"loseMessage": "게임 오버, 지뢰를 밟았습니다!",
+			"soundOn": "소리 켜기",
+			"soundOff": "소리 끄기"
+		}
 	}
 }

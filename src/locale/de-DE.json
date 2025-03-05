@@ -540,8 +540,25 @@
 		"initialMessageLink": "Klicken Sie hier, um mehr zu erfahren"
 	},
 	"404": {
-		"title": "404 - Seite nicht gefunden",
-		"pageNotFoundText": "Hoppla! Die Seite, die Sie suchen, wurde nicht gefunden.",
-		"homepageButton": "Zurück zur Startseite"
+		"title": "Seite nicht gefunden",
+		"pageNotFoundText": "Hoppla! Sie scheinen auf einer Seite gelandet zu sein, die nicht existiert.",
+		"homepageButton": "Zur Startseite zurückkehren",
+		"MineSweeper": {
+			"difficultyLabel": "Schwierigkeitsgrad:",
+			"difficultyEasy": "Einfach",
+			"difficultyMedium": "Mittel",
+			"difficultyHard": "Schwer",
+			"difficultyCustom": "Benutzerdefiniert",
+			"minesLeftLabel": "Verbleibende Minen:",
+			"timeLabel": "Zeit:",
+			"restartButton": "Neustart",
+			"rowsLabel": "Zeilen:",
+			"colsLabel": "Spalten:",
+			"minesCountLabel": "Minenanzahl:",
+			"winMessage": "Herzlichen Glückwunsch, Sie haben gewonnen!",
+			"loseMessage": "Spiel vorbei, Sie haben eine Mine getroffen!",
+			"soundOn": "Ton ein",
+			"soundOff": "Ton aus"
+		}
 	}
 }

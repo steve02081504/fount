@@ -540,8 +540,25 @@
 		"initialMessageLink": "Нажмите здесь, чтобы узнать больше"
 	},
 	"404": {
-		"title": "404 - Страница не найдена",
-		"pageNotFoundText": "Упс! Страница, которую вы ищете, не найдена.",
-		"homepageButton": "Вернуться на главную страницу"
+		"title": "Страница не найдена",
+		"pageNotFoundText": "Ой! Похоже, вы попали на страницу, которой не существует.",
+		"homepageButton": "Вернуться на главную страницу",
+		"MineSweeper": {
+			"difficultyLabel": "Сложность:",
+			"difficultyEasy": "Легко",
+			"difficultyMedium": "Средне",
+			"difficultyHard": "Сложно",
+			"difficultyCustom": "Пользовательский",
+			"minesLeftLabel": "Осталось мин:",
+			"timeLabel": "Время:",
+			"restartButton": "Начать заново",
+			"rowsLabel": "Строки:",
+			"colsLabel": "Столбцы:",
+			"minesCountLabel": "Мин:",
+			"winMessage": "Поздравляем, вы выиграли!",
+			"loseMessage": "Игра окончена, вы наступили на мину!",
+			"soundOn": "Звук включен",
+			"soundOff": "Звук выключен"
+		}
 	}
 }

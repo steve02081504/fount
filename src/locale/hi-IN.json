@@ -540,8 +540,25 @@
 		"initialMessageLink": "अधिक जानने के लिए यहां क्लिक करें"
 	},
 	"404": {
-		"title": "404 - पृष्ठ नहीं मिला",
-		"pageNotFoundText": "ओह! आपके द्वारा खोजा जा रहा पृष्ठ नहीं मिला।",
-		"homepageButton": "होमपेज पर वापस जाएं"
+		"title": "पृष्ठ नहीं मिला",
+		"pageNotFoundText": "Oops! ऐसा लगता है कि आप एक ऐसे पृष्ठ पर आ गए हैं जो मौजूद नहीं है।",
+		"homepageButton": "होमपेज पर वापस जाएँ",
+		"MineSweeper": {
+			"difficultyLabel": "कठिनाई:",
+			"difficultyEasy": "आसान",
+			"difficultyMedium": "मध्यम",
+			"difficultyHard": "कठिन",
+			"difficultyCustom": "कस्टम",
+			"minesLeftLabel": "बची हुई खानें:",
+			"timeLabel": "समय:",
+			"restartButton": "पुनः आरंभ करें",
+			"rowsLabel": "पंक्तियाँ:",
+			"colsLabel": "कॉलम:",
+			"minesCountLabel": "खानें:",
+			"winMessage": "बधाई हो, आप जीत गए!",
+			"loseMessage": "खेल खत्म, आपने एक खान पर कदम रख दिया!",
+			"soundOn": "ध्वनि चालू",
+			"soundOff": "ध्वनि बंद"
+		}
 	}
 }

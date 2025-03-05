@@ -540,8 +540,25 @@
 		"initialMessageLink": "Cliquez ici pour en savoir plus"
 	},
 	"404": {
-		"title": "404 - Page introuvable",
-		"pageNotFoundText": "Oups ! La page que vous recherchez est introuvable.",
-		"homepageButton": "Retour à la page d'accueil"
+		"title": "Page non trouvée",
+		"pageNotFoundText": "Oups ! Il semble que vous soyez arrivé sur une page qui n'existe pas.",
+		"homepageButton": "Retour à la page d'accueil",
+		"MineSweeper": {
+			"difficultyLabel": "Difficulté :",
+			"difficultyEasy": "Facile",
+			"difficultyMedium": "Moyen",
+			"difficultyHard": "Difficile",
+			"difficultyCustom": "Personnalisé",
+			"minesLeftLabel": "Mines restantes :",
+			"timeLabel": "Temps :",
+			"restartButton": "Recommencer",
+			"rowsLabel": "Lignes :",
+			"colsLabel": "Colonnes :",
+			"minesCountLabel": "Mines :",
+			"winMessage": "Félicitations, vous avez gagné !",
+			"loseMessage": "Fin du jeu, vous avez touché une mine !",
+			"soundOn": "Son activé",
+			"soundOff": "Son désactivé"
+		}
 	}
 }
