@@ -10,6 +10,7 @@ import rehypePrettyCode from 'https://esm.run/rehype-pretty-code'
 import { transformerCopyButton } from 'https://esm.run/@rehype-pretty/transformers'
 import { visit } from 'https://esm.run/unist-util-visit'
 import { onThemeChange } from './theme.mjs'
+import { createDocumentFragmentFromHtmlString } from './template.mjs'
 
 function remarkDisable(options = {}) {
 	const data = this.data()
@@ -63,9 +64,13 @@ const convertor = unified()
 		tightBreaks: true,
 	})
 
-export async function renderMarkdown(markdown) {
+export async function renderMarkdownAsString(markdown) {
 	const file = await convertor.process(markdown)
 	return String(file)
+}
+
+export async function renderMarkdown(markdown) {
+	return createDocumentFragmentFromHtmlString(await renderMarkdownAsString(markdown))
 }
 
 document.head.innerHTML += '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css" />'

@@ -260,7 +260,12 @@ function addCardEventListeners(card, data) {
  * @param {string} markdown 描述的markdown内容
  */
 async function displayItemDescription(markdown) {
-	itemDescription.innerHTML = await renderMarkdown(markdown) || geti18n('chat.sidebar.noDescription')
+	if (!markdown) {
+		itemDescription.innerHTML = geti18n('chat.sidebar.noDescription')
+		return
+	}
+	itemDescription.innerHTML = ''
+	itemDescription.appendChild(await renderMarkdown(markdown))
 }
 
 /**

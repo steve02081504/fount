@@ -1,5 +1,5 @@
 import { renderTemplate } from '../../../scripts/template.mjs'
-import { renderMarkdown } from '../../../scripts/markdown.mjs'
+import { renderMarkdownAsString } from '../../../scripts/markdown.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
 import { parseRegexFromString, escapeRegExp } from '../../../scripts/regex.mjs'
 import { initTranslations, geti18n } from '../../../scripts/i18n.mjs'
@@ -117,7 +117,7 @@ async function renderChatListItem(chat) {
 		...chat,
 		lastMessageTime: lastMsgTime,
 		lastMessageRowContent: chat.lastMessageContent,
-		lastMessageContent: await renderMarkdown(chat.lastMessageContent),
+		lastMessageContent: await renderMarkdownAsString(chat.lastMessageContent),
 		avatars: await Promise.all(chat.chars.map(async charName => {
 			const details = await getCharDetails(charName)
 			return { name: details.info.name, url: details.info.avatar }
