@@ -1,5 +1,5 @@
 import { renderTemplate, renderTemplateAsHtmlString } from '../../../../../scripts/template.mjs'
-import { renderMarkdown } from '../../../../../scripts/markdown.mjs'
+import { renderMarkdownAsString } from '../../../../../scripts/markdown.mjs'
 import {
 	modifyTimeLine,
 	deleteMessage,
@@ -16,7 +16,7 @@ export async function renderMessage(message) {
 		...message,
 		avatar: message.avatar || DEFAULT_AVATAR,
 		timeStamp: new Date(message.timeStamp).toLocaleString(),
-		content: await renderMarkdown(message.content_for_show || message.content),
+		content: await renderMarkdownAsString(message.content_for_show || message.content),
 		safeTimeStamp: processTimeStampForId(message.timeStamp)
 	}
 

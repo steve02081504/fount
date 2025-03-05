@@ -124,8 +124,12 @@ async function renderCharView(charDetails, charname) {
 }
 
 async function displayCharacterInfo(charDetails) {
-	characterDescription.innerHTML =
-		await renderMarkdown(charDetails.info.description_markdown) || geti18n('home.noDescription')
+	if(!charDetails.info.description_markdown) {
+		characterDescription.innerHTML = geti18n('home.noDescription')
+		return
+	}
+	characterDescription.innerHTML = ''
+	characterDescription.appendChild(await renderMarkdown(charDetails.info.description_markdown))
 }
 
 /**

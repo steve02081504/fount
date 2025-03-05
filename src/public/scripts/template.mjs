@@ -3,6 +3,51 @@ import { svgInliner } from './svg-inliner.mjs'
 geti18n
 
 const template_cache = {}
+const parser = new DOMParser()
+
+/**
+ * 从 HTML 字符串安全地创建 DOM 元素（包括执行 <script> 标签），返回 DocumentFragment。
+ *
+ * @param {string} htmlString 包含 HTML 代码的字符串。
+ * @returns {DocumentFragment} 渲染好的 DocumentFragment。
+ */
+export function createDocumentFragmentFromHtmlString(htmlString) {
+	if (!htmlString.trim())	return document.createDocumentFragment()
+
+	const doc = parser.parseFromString(htmlString, 'text/html')
+
+	// 递归创建元素并添加到父节点
+	function createElementFromNode(node, parent) {
+		if (node.nodeType === Node.TEXT_NODE) 
+			parent.appendChild(document.createTextNode(node.textContent))
+		 else if (node.nodeType === Node.ELEMENT_NODE) {
+			const element = document.createElement(node.nodeName)
+			for (const attr of node.attributes) 
+				element.setAttribute(attr.name, attr.value)
+			
+
+			if (node.nodeName.toLowerCase() === 'script') {
+				if (node.src) 
+					element.src = node.src
+				 else 
+					element.text = node.textContent
+				
+				element.async = false
+				parent.appendChild(element)
+			} else {
+				parent.appendChild(element)
+				for (const childNode of node.childNodes) 
+					createElementFromNode(childNode, element)
+				
+			}
+		}
+	}
+	const fragment = document.createDocumentFragment()
+	for (const childNode of doc.body.childNodes) 
+		createElementFromNode(childNode, fragment)
+	
+	return fragment
+}
 
 export async function renderTemplate(template, data) {
 	template_cache[template] ??= fetch('/template/' + template + '.html').then(response => response.text())
@@ -27,9 +72,8 @@ export async function renderTemplate(template, data) {
 			} catch (error) { }
 		}
 	}
-	const div = document.createElement('div')
-	div.innerHTML = result + html
-	return i18nElement(await svgInliner(div.firstChild))
+	result += html
+	return i18nElement(await svgInliner(createDocumentFragmentFromHtmlString(result)))
 }
 
 export async function renderTemplateAsHtmlString(template, data) {
