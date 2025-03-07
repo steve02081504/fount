@@ -1,9 +1,11 @@
 import { svgInliner } from './svg-inliner.mjs'
+import { initLinesBackground, updateColors } from './lines_background.mjs'
 
 let theme_now
 export let is_dark = Boolean(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
 
 export const applyTheme = () => {
+	initLinesBackground()
 	setTheme(localStorage.getItem('theme'))
 	svgInliner(document)
 }
@@ -86,9 +88,9 @@ export function setTheme(theme) {
 
 	document.documentElement.setAttribute('data-theme-isdark', is_dark)
 
+	updateColors()
 	for (const func of functions)
 		func(theme, is_dark)
-
 }
 
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {

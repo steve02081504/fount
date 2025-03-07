@@ -52,7 +52,7 @@ export function createDocumentFragmentFromHtmlString(htmlString) {
 export function createDOMFromHtmlString(htmlString) {
 	const div = document.createElement('div')
 	div.appendChild(createDocumentFragmentFromHtmlString(htmlString))
-	return div
+	return div.children.length == 1 ? div.children[0] : div
 }
 
 export async function renderTemplate(template, data) {
