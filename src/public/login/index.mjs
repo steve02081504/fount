@@ -193,11 +193,15 @@ async function handleFormSubmit(event) {
 				// 跳转参数？
 				const urlParams = new URLSearchParams(window.location.search)
 				const redirect = urlParams.get('redirect')
-				if (redirect) window.location.href = decodeURIComponent(redirect) + window.location.hash
-				else {
-					localStorage.setItem('hasLoggedIn', 'true')
+				localStorage.setItem('hasLoggedIn', 'true')
+				if (redirect)
+					if (hasLoggedIn)
+						window.location.href = decodeURIComponent(redirect) + window.location.hash
+					else
+						window.location.href = `/shells/tutorial?redirect=${redirect}` + window.location.hash
+				else 
 					window.location.href = `/shells/${hasLoggedIn ? 'home' : 'tutorial'}`
-				}
+				
 			} else {
 				console.log('Registration successful!')
 				toggleForm() // 注册成功后自动切换到登录表单

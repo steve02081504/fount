@@ -142,7 +142,7 @@
 		"endScreen": {
 			"title": "太棒啦！教程完成！",
 			"subtitle": "现在你已经学会操作啦！",
-			"homeButton": "前往主页"
+			"endButton": "下一步！"
 		},
 		"progressMessages": {
 			"mouseMove": "请使用您的手指尝试握住鼠标${mouseIcon}<br/>随后移动它",

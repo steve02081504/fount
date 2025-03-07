@@ -142,7 +142,7 @@
 		"endScreen": {
 			"title": "Génial ! Tutoriel terminé !",
 			"subtitle": "Vous savez maintenant comment utiliser l'application !",
-			"homeButton": "Aller à la page d'accueil"
+			"endButton": "Let's Go!"
 		},
 		"progressMessages": {
 			"mouseMove": "Veuillez utiliser votre doigt pour essayer de saisir la souris ${mouseIcon}<br/>puis déplacez-la",
