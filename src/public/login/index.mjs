@@ -78,8 +78,8 @@ function updateFormDisplay() {
 	submitBtn.textContent = geti18n(`auth.${formType}.submitButton`)
 	toggleLink.innerHTML = `${geti18n(`auth.${formType}.toggleLink.text`)}<a href="#" class="link link-primary">${geti18n(`auth.${formType}.toggleLink.link`)}</a>`
 
-	confirmPasswordGroup.style.display = isLoginForm ? 'none' : 'flex'
-	verificationCodeGroup.style.display = isLoginForm || isLocalOrigin ? 'none' : 'flex'
+	confirmPasswordGroup.style.display = isLoginForm ? 'none' : 'block'
+	verificationCodeGroup.style.display = isLoginForm || isLocalOrigin ? 'none' : 'block'
 	errorMessage.textContent = ''
 
 	if (isLoginForm) {
