@@ -2,6 +2,7 @@ import { applyTheme } from '../../scripts/theme.mjs'
 applyTheme()
 
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
+import { svgInliner } from '../../scripts/svg-inliner.mjs'
 
 const tutorialModal = document.getElementById('tutorialModal')
 const startTutorialBtn = document.getElementById('startTutorial')
@@ -9,6 +10,8 @@ const progressBar = document.getElementById('progressBar')
 const progressText = document.getElementById('progressText')
 const tutorialEnd = document.getElementById('tutorialEnd')
 const progress = progressBar.querySelector('.progress')
+const skipButton = document.getElementById('skipButton')
+const endButton = document.getElementById('endButton')
 
 const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent)
 let progressValue = 0
@@ -32,6 +35,7 @@ function resetProgress() {
 function showProgressBar(message) {
 	progressBar.classList.remove('hidden')
 	progressText.innerHTML = message
+	svgInliner(progressBar)
 }
 
 function hideProgressBar() {
@@ -49,7 +53,7 @@ function hideTutorialEnd() {
 function startMouseTutorial() {
 	resetProgress()
 	const message = geti18n('tutorial.progressMessages.mouseMove', {
-		mouseIcon: '<img src="https://api.iconify.design/ph/mouse.svg" class="text-icon">',
+		mouseIcon: '<img src="https://api.iconify.design/ph/mouse.svg" class="text-icon inline">',
 	})
 	showProgressBar(message)
 
@@ -70,7 +74,7 @@ function handleMouseMove() {
 function startKeyboardTutorial() {
 	resetProgress()
 	const message = geti18n('tutorial.progressMessages.keyboardPress', {
-		keyboardIcon: '<img src="https://api.iconify.design/ph/keyboard.svg" class="text-icon">',
+		keyboardIcon: '<img src="https://api.iconify.design/ph/keyboard.svg" class="text-icon inline">',
 	})
 	showProgressBar(message)
 
@@ -93,7 +97,7 @@ function handleKeyDown() {
 function startMobileTutorial() {
 	resetProgress()
 	const message = geti18n('tutorial.progressMessages.mobileTouchMove', {
-		phoneIcon: '<img src="https://api.iconify.design/proicons/phone.svg" class="text-icon">',
+		phoneIcon: '<img src="https://api.iconify.design/proicons/phone.svg" class="text-icon inline">',
 	})
 	showProgressBar(message)
 
@@ -114,7 +118,7 @@ function handleTouchMove() {
 function startMobileClickTutorial() {
 	resetProgress()
 	const message = geti18n('tutorial.progressMessages.mobileClick', {
-		phoneIcon: '<img src="https://api.iconify.design/proicons/phone.svg" class="text-icon">',
+		phoneIcon: '<img src="https://api.iconify.design/proicons/phone.svg" class="text-icon inline">',
 	})
 	showProgressBar(message)
 
@@ -144,5 +148,18 @@ startTutorialBtn.addEventListener('click', () => {
 		startMouseTutorial()
 
 })
+
+// 获取 URLSearchParams
+const urlParams = new URLSearchParams(window.location.search)
+const redirect = urlParams.get('redirect')
+
+function closeTutorial() {
+	if (redirect)
+		window.location.href = decodeURIComponent(redirect) + window.location.hash
+	else
+		window.location.href = '/shells/home'
+}
+skipButton.addEventListener('click', closeTutorial)
+endButton.addEventListener('click', closeTutorial)
 
 initTranslations('tutorial')

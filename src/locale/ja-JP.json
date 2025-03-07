@@ -142,7 +142,7 @@
 		"endScreen": {
 			"title": "素晴らしい！チュートリアル完了！",
 			"subtitle": "操作をマスターしました！",
-			"homeButton": "ホームへ"
+			"endButton": "次へ進む!"
 		},
 		"progressMessages": {
 			"mouseMove": "指でマウス${mouseIcon}を掴んで<br/>動かしてみてください",

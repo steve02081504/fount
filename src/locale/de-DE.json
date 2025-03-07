@@ -142,7 +142,7 @@
 		"endScreen": {
 			"title": "Fantastisch! Tutorial abgeschlossen!",
 			"subtitle": "Jetzt wissen Sie, wie man es bedient!",
-			"homeButton": "Zur Startseite"
+			"endButton": "Los geht's!"
 		},
 		"progressMessages": {
 			"mouseMove": "Bitte versuchen Sie, die Maus ${mouseIcon} mit Ihrem Finger zu greifen<br/>und bewegen Sie sie dann",
