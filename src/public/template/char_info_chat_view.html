@@ -1,14 +1,14 @@
 <div class="card bg-base-100 shadow-sm mt-2" data-template-type="char">
 	<div class="card-body flex flex-row items-center">
-		<img src="${avatar || 'https://gravatar.com/avatar/0?d=mp&f=y'}" class="w-12 h-12 rounded-full mr-4" />
+		<img src="${avatar || 'https://gravatar.com/avatar/0?d=mp&f=y'}" class="w-12 h-12 rounded-full mr-4" style="object-fit: cover;" />
 		<div>
 			<h2 class="card-title">${name}</h2>
 			<p>${description}</p>
 		</div>
 	</div>
 	<div class="card-actions justify-end p-2">
-		<div class="flex items-center mr-4">
-			<label class="mr-2 text-sm" data-i18n="chat.charCard.frequencyLabel"></label>
+		<div class="items-center mr-4">
+			<label class="mr-2 text-sm" data-i18n="chat.charCard.frequencyLabel">Frequency:</label>
 			<input type="range" min="0" max="100" value="${Math.round(frequency_num * 100)}" class="range range-xs frequency-slider" />
 		</div>
 		<button class="btn btn-xs btn-error mr-2 remove-char-button" data-i18n="chat.charCard.buttons.removeChar">
