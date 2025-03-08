@@ -101,6 +101,7 @@ export default {
 					text = text.split('\n')
 					const base_reg = `^(|${[...new Set([
 						prompt_struct.Charname,
+						...(prompt_struct.alternative_charnames || []),
 						...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name),
 					])].filter(Boolean).map(escapeRegExp).join('|')}[^\\n：:]*)(:|：)\\s*`
 					let reg = new RegExp(`${base_reg}$`, 'i')
