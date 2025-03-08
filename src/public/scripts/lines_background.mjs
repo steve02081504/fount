@@ -5,7 +5,7 @@ import chroma from 'https://esm.run/chroma-js'
 const requestAnimationFrame = window.requestAnimationFrame || function (callback) { window.setTimeout(callback, 1000 / 45) }
 
 // 使用 matchMedia 更可靠地判断是否为移动设备
-const isMobile = window.matchMedia('(pointer: coarse)').matches;
+const isMobile = window.matchMedia('(pointer: coarse)').matches
 
 let canvas, ctx, canvasWidth, canvasHeight, config, dots, pointers // 改为 pointers
 
@@ -192,9 +192,9 @@ export function initLinesBackground(initconfig) {
 function handlePointerDown(event) {
 	if (event.pointerType === 'mouse') return // 鼠标事件由 mousemove/mouseout 单独处理
 
-	const pointer = pointers.find(p => p.id === event.pointerId);
+	const pointer = pointers.find(p => p.id === event.pointerId)
 
-	if (!pointer) {
+	if (!pointer) 
 		// 添加新的触摸点
 		pointers.push({
 			id: event.pointerId,
@@ -202,8 +202,8 @@ function handlePointerDown(event) {
 			y: event.clientY,
 			max: 20000,
 			type: event.pointerType
-		});
-	}
+		})
+	
 }
 
 /**
@@ -213,14 +213,14 @@ function handlePointerDown(event) {
 function handlePointerMove(event) {
 	if (event.pointerType === 'mouse') {
 		// 更新鼠标位置
-		pointers[0].x = event.clientX;
-		pointers[0].y = event.clientY;
+		pointers[0].x = event.clientX
+		pointers[0].y = event.clientY
 	} else {
 		// 更新触摸点位置
-		const pointer = pointers.find(p => p.id === event.pointerId);
+		const pointer = pointers.find(p => p.id === event.pointerId)
 		if (pointer) {
-			pointer.x = event.clientX;
-			pointer.y = event.clientY;
+			pointer.x = event.clientX
+			pointer.y = event.clientY
 		}
 	}
 }
@@ -230,8 +230,8 @@ function handlePointerMove(event) {
  * 处理 pointerout 事件 (鼠标移出)
  */
 function handlePointerOut() {
-	pointers[0].x = null; // 鼠标移出，重置鼠标位置
-	pointers[0].y = null;
+	pointers[0].x = null // 鼠标移出，重置鼠标位置
+	pointers[0].y = null
 }
 
 
@@ -240,12 +240,12 @@ function handlePointerOut() {
  * @param {PointerEvent} event
  */
 function handlePointerEnd(event) {
-	if (event.pointerType === 'mouse') return; // 鼠标事件不需要移除 pointer
+	if (event.pointerType === 'mouse') return // 鼠标事件不需要移除 pointer
 
-	const index = pointers.findIndex(p => p.id === event.pointerId);
-	if (index !== -1) {
-		pointers.splice(index, 1); // 移除触摸点
-	}
+	const index = pointers.findIndex(p => p.id === event.pointerId)
+	if (index !== -1) 
+		pointers.splice(index, 1) // 移除触摸点
+	
 }
 
 /**
