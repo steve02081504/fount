@@ -1,4 +1,5 @@
 import { CohereClientV2 } from 'npm:cohere-ai'
+import { escapeRegExp } from '../../../../src/scripts/escape.mjs'
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
@@ -72,7 +73,10 @@ export default {
 
 				{
 					text = text.split('\n')
-					const base_reg = `^(|${prompt_struct.Charname}[^\\n：:]*)(:|：)\\s*`
+					const base_reg = `^(|${[...new Set([
+						prompt_struct.Charname,
+						...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name),
+					])].filter(Boolean).map(escapeRegExp).join('|')}[^\\n：:]*)(:|：)\\s*`
 					let reg = new RegExp(`${base_reg}$`, 'i')
 					while (text[0].trim().match(reg)) text.shift()
 					reg = new RegExp(`${base_reg}`, 'i')

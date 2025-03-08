@@ -1,5 +1,6 @@
 // main.mjs
 import { GrokAPI } from './grokAPI.mjs'
+import { escapeRegExp } from '../../../../src/scripts/escape.mjs'
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
 
 /**
@@ -98,7 +99,10 @@ export default {
 
 				{
 					text = text.split('\n')
-					const base_reg = `^(|${prompt_struct.Charname}[^\\n：:]*)(:|：)\\s*`
+					const base_reg = `^(|${[...new Set([
+						prompt_struct.Charname,
+						...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name),
+					])].filter(Boolean).map(escapeRegExp).join('|')}[^\\n：:]*)(:|：)\\s*`
 					let reg = new RegExp(`${base_reg}$`, 'i')
 					while (text[0].trim().match(reg)) text.shift()
 					reg = new RegExp(`${base_reg}`, 'i')
