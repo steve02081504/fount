@@ -107,7 +107,7 @@ async function renderWorldDetails(worldName) {
 	if (!cachedDom.world[worldName]) {
 		worldData = await getWorldDetails(worldName)
 		if (!worldData) throw new Error(`世界 ${worldName} 不存在`)
-		const worldCard = cachedDom.world[worldName] = await renderTemplate('world_info_chat_view', worldData)
+		const worldCard = cachedDom.world[worldName] = await renderTemplate('world_info_chat_view', worldData.info)
 		addCardEventListeners(worldCard, worldData)
 	}
 
@@ -134,7 +134,7 @@ async function renderPersonaDetails(personaName) {
 	if (!cachedDom.persona[personaName]) {
 		personaData = await getPersonaDetails(personaName)
 		if (!personaData) throw new Error(`用户角色 ${personaName} 不存在`)
-		const personaCard = cachedDom.persona[personaName] = await renderTemplate('persona_info_chat_view', personaData)
+		const personaCard = cachedDom.persona[personaName] = await renderTemplate('persona_info_chat_view', personaData.info)
 		addCardEventListeners(personaCard, personaData)
 	}
 

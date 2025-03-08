@@ -31,6 +31,7 @@ export type chatLogEntry_t = {
 export type prompt_struct_t = {
 	char_id: string
 	Charname: string
+	alternative_charnames: string[]
 	UserCharname: string
 	user_prompt: single_part_prompt_t
 	char_prompt: single_part_prompt_t
