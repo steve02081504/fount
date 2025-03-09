@@ -64,7 +64,7 @@ export async function handlePaste(event, selectedFiles, attachmentPreviewContain
 }
 
 export async function renderAttachmentPreview(file, index, selectedFiles) {
-	const attachmentElement = await renderTemplate('attachment_preview', {
+	const attachmentElement = await renderTemplate('chat/attachment_preview', {
 		file,
 		index,
 		safeName: processTimeStampForId(file.name),

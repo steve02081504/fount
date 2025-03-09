@@ -143,10 +143,26 @@ class chatMetadata_t {
 	timeLines = []
 	/** @type {number} */
 	timeLineIndex = 0
+	/** @type {timeSlice_t} */
 	LastTimeSlice = new timeSlice_t()
 
 	constructor(username) {
 		this.username = username
+	}
+
+	static async StartNewAs(username) {
+		const metadata = new chatMetadata_t(username)
+
+		const user = getUserByUsername(username)
+		metadata.LastTimeSlice.player_id = user.defaultParts?.persona
+		if (metadata.LastTimeSlice.player_id)
+			metadata.LastTimeSlice.player = await loadPersona(username, metadata.LastTimeSlice.player_id)
+
+		metadata.LastTimeSlice.world_id = user.defaultParts?.world
+		if (metadata.LastTimeSlice.world_id)
+			metadata.LastTimeSlice.world = await loadWorld(username, metadata.LastTimeSlice.world_id)
+
+		return metadata
 	}
 
 	toJSON() {
@@ -176,8 +192,8 @@ class chatMetadata_t {
 	}
 }
 
-export function newMetadata(chatid, username) {
-	chatMetadatas.set(chatid, { username, chatMetadata: new chatMetadata_t(username) })
+export async function newMetadata(chatid, username) {
+	chatMetadatas.set(chatid, { username, chatMetadata: await chatMetadata_t.StartNewAs(username) })
 }
 
 export function findEmptyChatid() {
@@ -187,9 +203,9 @@ export function findEmptyChatid() {
 	}
 }
 
-export function newChat(username) {
+export async function newChat(username) {
 	const chatid = findEmptyChatid()
-	newMetadata(chatid, username)
+	await newMetadata(chatid, username)
 	return chatid
 }
 
@@ -774,7 +790,7 @@ export async function copyChat(chatids, username) {
 		if (!originalChat)
 			return { chatid, success: false, message: 'Original chat not found' }
 
-		const newChatId = newChat(username)
+		const newChatId = await newChat(username)
 		const copiedChat = await originalChat.copy()
 		chatMetadatas.set(newChatId, { username, chatMetadata: copiedChat })
 		chatMetadatas.get(newChatId).chatMetadata.LastTimeSlice = copiedChat.chatLog[copiedChat.chatLog.length - 1].timeSlice

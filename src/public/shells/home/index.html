@@ -15,12 +15,18 @@
 
 <body>
 	<div class="drawer drawer-end lg:drawer-open">
-		<input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
-		<div class="drawer-content flex flex-col items-center">
-			<!-- 页面内容 -->
+		<input id="drawer-toggle" type="checkbox" class="drawer-toggle" />
+		<div class="drawer-content flex flex-col">
+			<!-- Page Content -->
 			<div class="container mx-auto p-4 w-full lg:w-3/4">
 				<div class="flex justify-between items-center mb-4">
-					<h1 class="text-2xl" data-i18n="home.pageTitle"></h1>
+					<h1 class="text-2xl" id="page-title" data-i18n="home.charsPageTitle"></h1>
+					<!-- Desktop Tabs -->
+					<div role="tablist" class="tabs tabs-lifted tabs-vertical flex">
+						<a role="tab" class="tab" id="chars-tab-desktop" data-target="char-container" data-i18n="home.chars.tab"></a>
+						<a role="tab" class="tab" id="worlds-tab-desktop" data-target="world-container" data-i18n="home.worlds.tab"></a>
+						<a role="tab" class="tab" id="personas-tab-desktop" data-target="persona-container" data-i18n="home.personas.tab"></a>
+					</div>
 					<div class="dropdown dropdown-end">
 						<div tabindex="0" role="button" class="btn btn-primary m-1">
 							<img src="https://api.iconify.design/line-md/list-3-filled.svg" data-i18n="home.functionMenu.icon" />
@@ -35,15 +41,23 @@
 						<input type="text" id="filter-input" class="input w-full" data-i18n="home.filterInput" />
 					</div>
 				</div>
-				<div class="grid gap-4" id="role-container" style="grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));">
+
+				<!-- Content Containers -->
+				<div class="grid gap-4" id="char-container" style="grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));">
+				</div>
+				<div class="grid gap-4 hidden" id="world-container" style="grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));">
+				</div>
+				<div class="grid gap-4 hidden" id="persona-container" style="grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));">
 				</div>
 			</div>
 		</div>
+
+		<!-- Sidebar (drawer-side) -->
 		<div class="drawer-side">
-			<label for="my-drawer-2" aria-label="close sidebar" class="drawer-overlay"></label>
-			<div class="p-4 w-80 min-h-full bg-base-300/95 sm:bg-base-300/25 text-base-content border-l-2 border-base-content">
-				<h2 class="text-xl mb-2" data-i18n="home.sidebarTitle"></h2>
-				<article id="character-description" class="markdown-body" data-i18n="home.characterDescription"></article>
+			<label for="drawer-toggle" aria-label="close sidebar" class="drawer-overlay"></label>
+			<div class="p-4 w-80 min-h-full bg-base-300/95 sm:bg-base-300/25 text-base-content border-l-2 border-base-content flex flex-col">
+				<h2 class="text-xl mt-4 lg:mt-2 mb-2" data-i18n="home.sidebarTitle"></h2>
+				<article id="item-description" class="markdown-body" data-i18n="home.itemDescription"></article>
 			</div>
 		</div>
 	</div>

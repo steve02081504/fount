@@ -152,15 +152,13 @@
 		}
 	},
 	"home": {
-		"title": "キャラクター選択ページ",
-		"pageTitle": "キャラクター選択ページ",
-		"instruction": "キャラクターを選択してチャットを開始！",
+		"title": "ホーム",
 		"filterInput": {
 			"placeholder": "検索..."
 		},
-		"sidebarTitle": "キャラクター情報",
-		"characterDescription": {},
-		"noDescription": "説明情報なし",
+		"sidebarTitle": "詳細",
+		"itemDescription": "詳細を表示するには、こちらからアイテムを選択してください。",
+		"noDescription": "説明情報はありません",
 		"alerts": {
 			"fetchHomeRegistryFailed": "ホームレジストリ情報の取得に失敗しました"
 		},
@@ -169,16 +167,65 @@
 				"alt": "機能メニュー"
 			}
 		},
-		"charCard": {
-			"refreshButton": {
-				"alt": "更新",
-				"title": "更新"
-			},
-			"noTags": "タグなし",
-			"version": "バージョン",
-			"author": "作者",
-			"homepage": "ホームページ",
-			"issuepage": "問題報告"
+		"chars": {
+			"tab": "キャラクター",
+			"title": "キャラクター選択",
+			"subtitle": "キャラクターを選択して、チャットを始めましょう！",
+			"none": "空っぽ",
+			"card": {
+				"refreshButton": {
+					"alt": "更新",
+					"title": "更新"
+				},
+				"noTags": "タグなし",
+				"version": "バージョン",
+				"author": "作者",
+				"homepage": "ホームページ",
+				"issuepage": "問題ページ",
+				"defaultCheckbox": {
+					"title": "デフォルトキャラクターとして設定"
+				}
+			}
+		},
+		"worlds": {
+			"tab": "ワールド",
+			"title": "ワールド選択",
+			"subtitle": "ワールドを選んで、没入しましょう！",
+			"none": "空っぽ",
+			"card": {
+				"refreshButton": {
+					"alt": "更新",
+					"title": "更新"
+				},
+				"noTags": "タグなし",
+				"version": "バージョン",
+				"author": "作者",
+				"homepage": "ホームページ",
+				"issuepage": "問題ページ",
+				"defaultCheckbox": {
+					"title": "デフォルトワールドとして設定"
+				}
+			}
+		},
+		"personas": {
+			"tab": "ペルソナ",
+			"title": "ペルソナ選択",
+			"subtitle": "ペルソナを選択して、人生を体験しましょう。",
+			"none": "空っぽ",
+			"card": {
+				"refreshButton": {
+					"alt": "更新",
+					"title": "更新"
+				},
+				"noTags": "タグなし",
+				"version": "バージョン",
+				"author": "作者",
+				"homepage": "ホームページ",
+				"issuepage": "問題ページ",
+				"defaultCheckbox": {
+					"title": "デフォルトペルソナとして設定"
+				}
+			}
 		}
 	},
 	"themeManage": {

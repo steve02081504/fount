@@ -1,7 +1,7 @@
 <div class="card-container bg-base-100 shadow-xl group">
 	<div class="card-content" style="background-image: url(${info.avatar || 'https://api.iconify.design/line-md/person.svg'}); background-size: contain; background-position: center; background-repeat: no-repeat;">
 		<button class="refresh-button">
-			<img src="https://api.iconify.design/line-md/rotate-270.svg" data-i18n="home.charCard.refreshButton" class="text-icon">
+			<img src="https://api.iconify.design/line-md/rotate-270.svg" data-i18n="home.chars.card.refreshButton" class="text-icon">
 		</button>
 		<div class="text-content">
 			<h2 class="card-title">${info.name}</h2>
@@ -13,15 +13,16 @@
 	</div>
 
 	<div class="details-container z-[60] h-full p-4 bg-base-100 bg-opacity-50">
+		<input type="checkbox" class="checkbox checkbox-sm border border-primary checkbox-primary default-checkbox" ${info.isDefault ? 'checked' : ''} data-i18n="home.chars.card.defaultCheckbox"/>
 		<div class="tags-container overflow-y-auto">
 			${(info.tags && info.tags.length > 0) ? `
 			${info.tags.map((tag) => `<span class="badge badge-primary cursor-pointer">${tag}</span>`).join(' ')}
-			` : geti18n('home.charCard.noTags')}
+			` : geti18n('home.worldCard.noTags')}
 		</div>
 		<div class="char-details-container overflow-y-auto">
-			${info.version ? `<div class="char-info-item">${geti18n('home.charCard.version')}：<code>${info.version}</code></div>` : ''}
-			${info.author ? `<div class="char-info-item">${geti18n('home.charCard.author')}：${info.author}</div>` : ''}
-			${info.homepage ? `<div class="char-info-item"><a href="${info.homepage}" class="link link-primary" target="_blank">${geti18n('home.charCard.homepage')}</a></div>` : ''}
+			${info.version ? `<div class="char-info-item">${geti18n('home.chars.card.version')}：<code>${info.version}</code></div>` : ''}
+			${info.author ? `<div class="char-info-item">${geti18n('home.chars.card.author')}：${info.author}</div>` : ''}
+			${info.homepage ? `<div class="char-info-item"><a href="${info.homepage}" class="link link-primary" target="_blank">${geti18n('home.chars.card.homepage')}</a></div>` : ''}
 			${info.issuepage ? `<div class="char-info-item"><a href="${info.issuepage}" class="link link-primary" target="_blank">${info.issuepage}</a></div>` : ''}
 		</div>
 	</div>

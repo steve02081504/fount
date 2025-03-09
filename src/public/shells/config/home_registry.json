@@ -38,7 +38,7 @@
 			"button": "<img src=\"https://api.iconify.design/line-md/cog.svg\" class=\"text-icon\"/>"
 		}
 	],
-	"home_char_interfaces": [
+	"home_common_interfaces": [
 		{
 			"info": {
 				"zh-CN": {
@@ -74,7 +74,7 @@
 			},
 			"level": 0,
 			"interface": "config",
-			"url": "/shells/config?type=chars&name=${charname}",
+			"url": "/shells/config?type=chars&name=${name}",
 			"button": "<img src=\"https://api.iconify.design/line-md/cog.svg\"/>"
 		}
 	]

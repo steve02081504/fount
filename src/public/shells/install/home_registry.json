@@ -38,7 +38,7 @@
 			"button": "<img src=\"https://api.iconify.design/line-md/document-add.svg\" class=\"text-icon\"/>"
 		}
 	],
-	"home_char_interfaces": [
+	"home_common_interfaces": [
 		{
 			"info": {
 				"zh-CN": {
@@ -73,7 +73,7 @@
 				}
 			},
 			"level": 0,
-			"url": "/shells/install/uninstall?type=chars&name=${charname}",
+			"url": "/shells/install/uninstall?type=chars&name=${name}",
 			"button": "<img src=\"https://api.iconify.design/line-md/account-delete.svg\"/>",
 			"type": "error"
 		}

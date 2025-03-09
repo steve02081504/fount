@@ -123,7 +123,7 @@ async function renderChatListItem(chat) {
 			return { name: details.info.name, url: details.info.avatar }
 		}))
 	}
-	const chatElement = await renderTemplate('chat_list_view', data)
+	const chatElement = await renderTemplate('chat/list/chat_list_view', data)
 	chatElement.setAttribute('data-chatid', chat.chatid)
 
 	// 添加选择框

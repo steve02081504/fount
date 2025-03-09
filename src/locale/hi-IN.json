@@ -152,33 +152,80 @@
 		}
 	},
 	"home": {
-		"title": "चरित्र चयन पृष्ठ",
-		"pageTitle": "चरित्र चयन पृष्ठ",
-		"instruction": "एक चरित्र का चयन करें - और चैट शुरू करें!",
+		"title": "होम",
 		"filterInput": {
 			"placeholder": "खोजें..."
 		},
-		"sidebarTitle": "चरित्र जानकारी",
-		"characterDescription": {},
+		"sidebarTitle": "विवरण",
+		"itemDescription": "विवरण देखने के लिए यहां एक आइटम का चयन करें।",
 		"noDescription": "कोई विवरण जानकारी नहीं",
 		"alerts": {
-			"fetchHomeRegistryFailed": "होमपेज पंजीकरण जानकारी प्राप्त करने में विफल"
+			"fetchHomeRegistryFailed": "होम रजिस्ट्री जानकारी प्राप्त करने में विफल"
 		},
 		"functionMenu": {
 			"icon": {
-				"alt": "फंक्शन मेनू"
+				"alt": "फ़ंक्शन मेनू"
 			}
 		},
-		"charCard": {
-			"refreshButton": {
-				"alt": "रीफ्रेश",
-				"title": "रीफ्रेश"
-			},
-			"noTags": "कोई टैग नहीं",
-			"version": "संस्करण",
-			"author": "लेखक",
-			"homepage": "होमपेज",
-			"issuepage": "समस्या प्रतिक्रिया"
+		"chars": {
+			"tab": "अक्षर",
+			"title": "अक्षर चयन",
+			"subtitle": "एक अक्षर चुनें—फिर चैट करना शुरू करें!",
+			"none": "यहां कुछ नहीं है",
+			"card": {
+				"refreshButton": {
+					"alt": "रीफ्रेश करें",
+					"title": "रीफ्रेश करें"
+				},
+				"noTags": "कोई टैग नहीं",
+				"version": "संस्करण",
+				"author": "लेखक",
+				"homepage": "होमपेज",
+				"issuepage": "समस्या पृष्ठ",
+				"defaultCheckbox": {
+					"title": "डिफ़ॉल्ट अक्षर के रूप में सेट करें"
+				}
+			}
+		},
+		"worlds": {
+			"tab": "दुनिया",
+			"title": "विश्व चयन",
+			"subtitle": "एक दुनिया चुनें, और खुद को विसर्जित करें!",
+			"none": "यहां कुछ नहीं है",
+			"card": {
+				"refreshButton": {
+					"alt": "रीफ्रेश करें",
+					"title": "रीफ्रेश करें"
+				},
+				"noTags": "कोई टैग नहीं",
+				"version": "संस्करण",
+				"author": "लेखक",
+				"homepage": "होमपेज",
+				"issuepage": "समस्या पृष्ठ",
+				"defaultCheckbox": {
+					"title": "डिफ़ॉल्ट दुनिया के रूप में सेट करें"
+				}
+			}
+		},
+		"personas": {
+			"tab": "व्यक्तित्व",
+			"title": "व्यक्तित्व चयन",
+			"subtitle": "एक व्यक्तित्व का चयन करें, जीवन का अनुभव करें।",
+			"none": "यहां कुछ नहीं है",
+			"card": {
+				"refreshButton": {
+					"alt": "रीफ्रेश करें",
+					"title": "रीफ्रेश करें"
+				},
+				"noTags": "कोई टैग नहीं",
+				"version": "संस्करण",
+				"author": "लेखक",
+				"homepage": "होमपेज",
+				"issuepage": "समस्या पृष्ठ",
+				"defaultCheckbox": {
+					"title": "डिफ़ॉल्ट व्यक्तित्व के रूप में सेट करें"
+				}
+			}
 		}
 	},
 	"themeManage": {

@@ -152,33 +152,80 @@
 		}
 	},
 	"home": {
-		"title": "Charakterauswahlseite",
-		"pageTitle": "Charakterauswahlseite",
-		"instruction": "Wählen Sie einen Charakter aus und starten Sie den Chat!",
+		"title": "Startseite",
 		"filterInput": {
 			"placeholder": "Suchen..."
 		},
-		"sidebarTitle": "Charakterinformationen",
-		"characterDescription": {},
+		"sidebarTitle": "Details",
+		"itemDescription": "Wählen Sie hier ein Element aus, um Details anzuzeigen.",
 		"noDescription": "Keine Beschreibungsinformationen",
 		"alerts": {
-			"fetchHomeRegistryFailed": "Fehler beim Abrufen der Startseiten-Registrierungsinformationen"
+			"fetchHomeRegistryFailed": "Fehler beim Abrufen der Startseitenregistrierung"
 		},
 		"functionMenu": {
 			"icon": {
 				"alt": "Funktionsmenü"
 			}
 		},
-		"charCard": {
-			"refreshButton": {
-				"alt": "Aktualisieren",
-				"title": "Aktualisieren"
-			},
-			"noTags": "Keine Tags",
-			"version": "Version",
-			"author": "Autor",
-			"homepage": "Startseite",
-			"issuepage": "Problem melden"
+		"chars": {
+			"tab": "Charaktere",
+			"title": "Charakterauswahl",
+			"subtitle": "Wähle einen Charakter – und starte den Chat!",
+			"none": "Nichts hier",
+			"card": {
+				"refreshButton": {
+					"alt": "Aktualisieren",
+					"title": "Aktualisieren"
+				},
+				"noTags": "Keine Tags",
+				"version": "Version",
+				"author": "Autor",
+				"homepage": "Homepage",
+				"issuepage": "Problem melden",
+				"defaultCheckbox": {
+					"title": "Als Standardcharakter festlegen"
+				}
+			}
+		},
+		"worlds": {
+			"tab": "Welten",
+			"title": "Weltenauswahl",
+			"subtitle": "Wähle eine Welt und tauche ein!",
+			"none": "Nichts hier",
+			"card": {
+				"refreshButton": {
+					"alt": "Aktualisieren",
+					"title": "Aktualisieren"
+				},
+				"noTags": "Keine Tags",
+				"version": "Version",
+				"author": "Autor",
+				"homepage": "Homepage",
+				"issuepage": "Problem melden",
+				"defaultCheckbox": {
+					"title": "Als Standardwelt festlegen"
+				}
+			}
+		},
+		"personas": {
+			"tab": "Personas",
+			"title": "Personenauswahl",
+			"subtitle": "Wähle eine Persona und erlebe das Leben.",
+			"none": "Nichts hier",
+			"card": {
+				"refreshButton": {
+					"alt": "Aktualisieren",
+					"title": "Aktualisieren"
+				},
+				"noTags": "Keine Tags",
+				"version": "Version",
+				"author": "Autor",
+				"homepage": "Homepage",
+				"issuepage": "Problem melden",
+				"defaultCheckbox": {
+					"title": "Als Standardpersona festlegen"
+				}
+			}
 		}
 	},
 	"themeManage": {

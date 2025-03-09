@@ -6,16 +6,17 @@ body {
 	margin: 0;
 }
 
-/* 卡片容器 */
+/* Card Styles */
 .card-container {
 	display: flex;
 	overflow: hidden;
 	transition: width 0.3s ease;
 	width: 300px;
 	max-height: 300px;
+	border: 2px solid transparent;
+	/*  for highlighting */
 }
 
-/* 卡片内容区域 */
 .card-content {
 	width: 300px;
 	height: 300px;
@@ -27,36 +28,27 @@ body {
 }
 
 .text-content {
-	color: black;
-	background-color: rgba(255, 255, 255, 0.5);
+	color: var(--color-neutral-content);
+	background-color: color-mix(in srgb, var(--color-neutral), transparent 50%);
 	padding-top: 0.5rem;
 }
 
-[data-theme-isdark="true"] .text-content {
-	color: white;
-	background-color: rgba(0, 0, 0, 0.5);
-}
-
-/* 标签容器 */
 .details-container {
 	width: 300px;
 	display: none;
+	position: relative;
 	flex-direction: column;
-	/* 使用 flex: 1 来让 details-container 填充剩余空间 */
 	flex: 1;
-	/* 关键：设置最小高度以允许内容滚动 */
 	min-height: 0;
-	/* 或者设置一个合适的固定高度 */
+	/* Allow for scrolling */
 }
 
 .tags-container {
-	overflow-y: auto;
-	/* 设置最大高度，超出部分显示滚动条 */
 	max-height: 200px;
+	overflow-y: auto;
 }
 
 .char-details-container {
-	/* 确保内容不会溢出 */
 	overflow: hidden;
 }
 
@@ -66,7 +58,7 @@ body {
 	overflow-x: auto;
 }
 
-/* 桌面端悬浮效果 */
+/* Desktop Hover Effect */
 @media (min-width: 1024px) {
 	.card-container:hover {
 		width: 600px;
@@ -83,7 +75,7 @@ body {
 	}
 }
 
-/* 移动端样式 */
+/* Mobile Styles */
 @media (max-width: 1023px) {
 	.card-container {
 		width: 100%;
@@ -122,4 +114,20 @@ body {
 
 .card-container:hover .refresh-button {
 	opacity: 1;
+}
+
+/* Highlighting Selected Item */
+.selected-item {
+	border-color: hsl(var(--color-primary, currentColor));
+	border-width: 2px;
+}
+
+.default-checkbox {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	background: none;
+	padding: 0;
+	margin: 0;
+	cursor: pointer;
 }

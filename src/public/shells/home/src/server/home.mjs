@@ -30,8 +30,8 @@ import { loadTempData } from '../../../../../server/setting_loader.mjs'
 			},
 			level: 0,
 			interface: "chat",
-			url: "/shells/chat/new?char=${charname}", //这里的charname是约定的宏，由前端完成替换
-			onclick: "window.open('/shells/chat/new?char=${charname}')", //可选的自定义点击事件，如果不写则默认使用window.open到url
+			url: "/shells/chat/new?char=${name}", //这里的name是约定的宏，由前端完成替换
+			onclick: "window.open('/shells/chat/new?char=${name}')", //可选的自定义点击事件，如果不写则默认使用window.open到url
 			button: "<img src=\"https://example.com/icon.png\" />", //可选的自定义按钮，如果不写，则默认使用一个问号图标
 		}
 	]
@@ -41,12 +41,18 @@ export async function loadHomeRegistry(username) {
 	const user_home_registry = loadTempData(username, 'home_registry')
 	user_home_registry.home_function_buttons ??= {}
 	user_home_registry.home_char_interfaces ??= {}
+	user_home_registry.home_world_interfaces ??= {}
+	user_home_registry.home_persona_interfaces ??= {}
+	user_home_registry.home_common_interfaces ??= {}
 	const shell_list = await getPartListBase(username, 'shells')
 	for (const shell of shell_list)
 		try {
 			const home_registry = loadJsonFile(GetPartPath(username, 'shells', shell) + '/home_registry.json')
-			user_home_registry.home_function_buttons[shell] = home_registry.home_function_buttons
-			user_home_registry.home_char_interfaces[shell] = home_registry.home_char_interfaces
+			user_home_registry.home_function_buttons[shell] = home_registry.home_function_buttons ?? []
+			user_home_registry.home_char_interfaces[shell] = home_registry.home_char_interfaces ?? []
+			user_home_registry.home_world_interfaces[shell] = home_registry.home_world_interfaces ?? []
+			user_home_registry.home_persona_interfaces[shell] = home_registry.home_persona_interfaces ?? []
+			user_home_registry.home_common_interfaces[shell] = home_registry.home_common_interfaces ?? []
 		} catch (e) { }
 }
 
@@ -59,12 +65,16 @@ export async function expandHomeRegistry(username) {
 	const user_home_registry = loadTempData(username, 'home_registry')
 	if (!Object.keys(user_home_registry).length) await loadHomeRegistry(username)
 	const { locales } = getUserByUsername(username)
-	const preprocess = list => Object.values(list).flat().sort((a, b) => a.level - b.level).map(button => ({
+	const base_preprocess = list => list.flat().sort((a, b) => a.level - b.level).map(button => ({
 		...button,
 		info: getLocalizedInfo(button.info, locales)
 	}))
+	const preprocess = list => base_preprocess(Object.values(list))
+	const interface_preprocess = list => base_preprocess(Object.values(list).concat(Object.values(user_home_registry.home_common_interfaces)))
 	return {
 		home_function_buttons: preprocess(user_home_registry.home_function_buttons),
-		home_char_interfaces: preprocess(user_home_registry.home_char_interfaces)
+		home_char_interfaces: interface_preprocess(user_home_registry.home_char_interfaces),
+		home_world_interfaces: interface_preprocess(user_home_registry.home_world_interfaces),
+		home_persona_interfaces: interface_preprocess(user_home_registry.home_persona_interfaces),
 	}
 }

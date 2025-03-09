@@ -152,33 +152,80 @@
 		}
 	},
 	"home": {
-		"title": "Página de Seleção de Personagem",
-		"pageTitle": "Página de Seleção de Personagem",
-		"instruction": "Selecione um personagem - e comece a conversar!",
+		"title": "Página Inicial",
 		"filterInput": {
 			"placeholder": "Pesquisar..."
 		},
-		"sidebarTitle": "Informações do Personagem",
-		"characterDescription": {},
+		"sidebarTitle": "Detalhes",
+		"itemDescription": "Selecione um item aqui para ver os detalhes.",
 		"noDescription": "Sem informações de descrição",
 		"alerts": {
-			"fetchHomeRegistryFailed": "Falha ao obter informações de registro da página inicial"
+			"fetchHomeRegistryFailed": "Falha ao obter informações do registo da página inicial"
 		},
 		"functionMenu": {
 			"icon": {
-				"alt": "Menu de Funções"
+				"alt": "Menu de funções"
 			}
 		},
-		"charCard": {
-			"refreshButton": {
-				"alt": "Atualizar",
-				"title": "Atualizar"
-			},
-			"noTags": "Sem tags",
-			"version": "Versão",
-			"author": "Autor",
-			"homepage": "Página Inicial",
-			"issuepage": "Relato de Problemas"
+		"chars": {
+			"tab": "Personagens",
+			"title": "Seleção de Personagem",
+			"subtitle": "Selecione um personagem e comece a conversar!",
+			"none": "Vazio",
+			"card": {
+				"refreshButton": {
+					"alt": "Atualizar",
+					"title": "Atualizar"
+				},
+				"noTags": "Sem etiquetas",
+				"version": "Versão",
+				"author": "Autor",
+				"homepage": "Página inicial",
+				"issuepage": "Página de problemas",
+				"defaultCheckbox": {
+					"title": "Definir como personagem padrão"
+				}
+			}
+		},
+		"worlds": {
+			"tab": "Mundos",
+			"title": "Seleção de Mundo",
+			"subtitle": "Escolha um mundo e mergulhe nele!",
+			"none": "Vazio",
+			"card": {
+				"refreshButton": {
+					"alt": "Atualizar",
+					"title": "Atualizar"
+				},
+				"noTags": "Sem etiquetas",
+				"version": "Versão",
+				"author": "Autor",
+				"homepage": "Página inicial",
+				"issuepage": "Página de problemas",
+				"defaultCheckbox": {
+					"title": "Definir como mundo padrão"
+				}
+			}
+		},
+		"personas": {
+			"tab": "Personas",
+			"title": "Seleção de Persona",
+			"subtitle": "Selecione uma persona, experimente a vida.",
+			"none": "Vazio",
+			"card": {
+				"refreshButton": {
+					"alt": "Atualizar",
+					"title": "Atualizar"
+				},
+				"noTags": "Sem etiquetas",
+				"version": "Versão",
+				"author": "Autor",
+				"homepage": "Página inicial",
+				"issuepage": "Página de problemas",
+				"defaultCheckbox": {
+					"title": "Definir como persona padrão"
+				}
+			}
 		}
 	},
 	"themeManage": {

@@ -152,14 +152,12 @@
 		}
 	},
 	"home": {
-		"title": "角色选择页面",
-		"pageTitle": "角色选择页面",
-		"instruction": "选择一个角色——然后开启聊天！",
+		"title": "主页",
 		"filterInput": {
 			"placeholder": "搜索..."
 		},
-		"sidebarTitle": "角色信息",
-		"characterDescription": {},
+		"sidebarTitle": "详细信息",
+		"itemDescription": "在此处选择一个项目以查看详细信息。",
 		"noDescription": "无描述信息",
 		"alerts": {
 			"fetchHomeRegistryFailed": "获取主页注册信息失败"
@@ -169,16 +167,65 @@
 				"alt": "功能菜单"
 			}
 		},
-		"charCard": {
-			"refreshButton": {
-				"alt": "刷新",
-				"title": "刷新"
-			},
-			"noTags": "无标签",
-			"version": "版本",
-			"author": "作者",
-			"homepage": "主页",
-			"issuepage": "问题反馈"
+		"chars": {
+			"tab": "角色",
+			"title": "角色选择",
+			"subtitle": "选择一个角色——然后开启聊天！",
+			"none": "空空如也",
+			"card": {
+				"refreshButton": {
+					"alt": "刷新",
+					"title": "刷新"
+				},
+				"noTags": "无标签",
+				"version": "版本",
+				"author": "作者",
+				"homepage": "主页",
+				"issuepage": "问题反馈",
+				"defaultCheckbox": {
+					"title": "设为默认角色"
+				}
+			}
+		},
+		"worlds": {
+			"tab": "世界",
+			"title": "世界选择",
+			"subtitle": "选择世界，沉浸其中！",
+			"none": "空空如也",
+			"card": {
+				"refreshButton": {
+					"alt": "刷新",
+					"title": "刷新"
+				},
+				"noTags": "无标签",
+				"version": "版本",
+				"author": "作者",
+				"homepage": "主页",
+				"issuepage": "问题反馈",
+				"defaultCheckbox": {
+					"title": "设为默认世界"
+				}
+			}
+		},
+		"personas": {
+			"tab": "人设",
+			"title": "人设选择",
+			"subtitle": "选择人设，体验人生。",
+			"none": "空空如也",
+			"card": {
+				"refreshButton": {
+					"alt": "刷新",
+					"title": "刷新"
+				},
+				"noTags": "无标签",
+				"version": "版本",
+				"author": "作者",
+				"homepage": "主页",
+				"issuepage": "问题反馈",
+				"defaultCheckbox": {
+					"title": "设为默认人设"
+				}
+			}
 		}
 	},
 	"themeManage": {

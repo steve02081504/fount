@@ -152,33 +152,80 @@
 		}
 	},
 	"home": {
-		"title": "Página de selección de personajes",
-		"pageTitle": "Página de selección de personajes",
-		"instruction": "Selecciona un personaje y ¡comienza a chatear!",
+		"title": "Inicio",
 		"filterInput": {
 			"placeholder": "Buscar..."
 		},
-		"sidebarTitle": "Información del personaje",
-		"characterDescription": {},
+		"sidebarTitle": "Detalles",
+		"itemDescription": "Seleccione un elemento aquí para ver los detalles.",
 		"noDescription": "Sin información de descripción",
 		"alerts": {
-			"fetchHomeRegistryFailed": "Error al obtener la información de registro de la página de inicio"
+			"fetchHomeRegistryFailed": "Error al obtener la información del registro de inicio"
 		},
 		"functionMenu": {
 			"icon": {
 				"alt": "Menú de funciones"
 			}
 		},
-		"charCard": {
-			"refreshButton": {
-				"alt": "Actualizar",
-				"title": "Actualizar"
-			},
-			"noTags": "Sin etiquetas",
-			"version": "Versión",
-			"author": "Autor",
-			"homepage": "Página de inicio",
-			"issuepage": "Informar de un problema"
+		"chars": {
+			"tab": "Personajes",
+			"title": "Selección de personaje",
+			"subtitle": "¡Selecciona un personaje y empieza a chatear!",
+			"none": "Nada aquí",
+			"card": {
+				"refreshButton": {
+					"alt": "Actualizar",
+					"title": "Actualizar"
+				},
+				"noTags": "Sin etiquetas",
+				"version": "Versión",
+				"author": "Autor",
+				"homepage": "Página de inicio",
+				"issuepage": "Página de problemas",
+				"defaultCheckbox": {
+					"title": "Establecer como personaje predeterminado"
+				}
+			}
+		},
+		"worlds": {
+			"tab": "Mundos",
+			"title": "Selección de mundo",
+			"subtitle": "¡Elige un mundo y sumérgete!",
+			"none": "Nada aquí",
+			"card": {
+				"refreshButton": {
+					"alt": "Actualizar",
+					"title": "Actualizar"
+				},
+				"noTags": "Sin etiquetas",
+				"version": "Versión",
+				"author": "Autor",
+				"homepage": "Página de inicio",
+				"issuepage": "Página de problemas",
+				"defaultCheckbox": {
+					"title": "Establecer como mundo predeterminado"
+				}
+			}
+		},
+		"personas": {
+			"tab": "Personas",
+			"title": "Selección de persona",
+			"subtitle": "Selecciona una persona, experimenta la vida.",
+			"none": "Nada aquí",
+			"card": {
+				"refreshButton": {
+					"alt": "Actualizar",
+					"title": "Actualizar"
+				},
+				"noTags": "Sin etiquetas",
+				"version": "Versión",
+				"author": "Autor",
+				"homepage": "Página de inicio",
+				"issuepage": "Página de problemas",
+				"defaultCheckbox": {
+					"title": "Establecer como persona predeterminada"
+				}
+			}
 		}
 	},
 	"themeManage": {

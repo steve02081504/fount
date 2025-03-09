@@ -27,7 +27,7 @@ export default {
 
 		if (command === 'start') {
 			const charName = args[1]
-			chatId = newChat(user)
+			chatId = await newChat(user)
 			open(hosturl + '/shells/chat/#' + chatId)
 			if (charName) await addchar(chatId, charName)
 
@@ -37,7 +37,7 @@ export default {
 			if (chatInfo.id)
 				await loadChat(chatId = chatInfo.id, user)
 			else
-				chatId = newChat(user)
+				chatId = await newChat(user)
 
 			if (chatInfo.world)
 				await setWorld(chatId, chatInfo.world)
