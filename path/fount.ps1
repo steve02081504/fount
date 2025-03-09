@@ -158,40 +158,47 @@ if (Get-Command git -ErrorAction SilentlyContinue) {
 	if ($IN_DOCKER) {
 		Write-Host "Skipping git pull in Docker environment"
 	}
+	elseif(!(Test-Path -Path "$FOUNT_DIR/.git")) {
+		Write-Host "Repository not found, skipping git pull"
+	}
 	else {
 		git -C "$FOUNT_DIR" fetch origin
 		$currentBranch = git -C "$FOUNT_DIR" rev-parse --abbrev-ref HEAD
+		if ($currentBranch -eq 'HEAD') {
+			Write-Host "Not on a branch, switching to 'master'..."
+			git -C "$FOUNT_DIR" checkout master
+			$currentBranch = git -C "$FOUNT_DIR" rev-parse --abbrev-ref HEAD
+		}
 		$remoteBranch = git -C "$FOUNT_DIR" rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>$null
 		if (-not $remoteBranch) {
-			Write-Warning "No upstream branch configured for '$currentBranch'.  Skipping update check."
+			Write-Warning "No upstream branch configured for '$currentBranch'. Setting upstream to 'origin/master'."
+			git -C "$FOUNT_DIR" branch --set-upstream-to origin/master
 		}
-		else {
-			$mergeBase = git -C "$FOUNT_DIR" merge-base $currentBranch $remoteBranch
-			$localCommit = git -C "$FOUNT_DIR" rev-parse $currentBranch
-			$remoteCommit = git -C "$FOUNT_DIR" rev-parse $remoteBranch
-			$status = git -C "$FOUNT_DIR" status --porcelain
-			if ($status) {
-				Write-Warning "Working directory is not clean.  Stash or commit your changes before updating."
-			}
+		$mergeBase = git -C "$FOUNT_DIR" merge-base $currentBranch $remoteBranch
+		$localCommit = git -C "$FOUNT_DIR" rev-parse $currentBranch
+		$remoteCommit = git -C "$FOUNT_DIR" rev-parse $remoteBranch
+		$status = git -C "$FOUNT_DIR" status --porcelain
+		if ($status) {
+			Write-Warning "Working directory is not clean.  Stash or commit your changes before updating."
+		}
 
-			if ($localCommit -ne $remoteCommit) {
-				if ($mergeBase -eq $localCommit) {
-					Write-Host "Updating from remote repository..."
-					git -C "$FOUNT_DIR" fetch origin
-					git -C "$FOUNT_DIR" reset --hard $remoteBranch
-				}
-				elseif ($mergeBase -eq $remoteCommit) {
-					Write-Host "Local branch is ahead of remote. No update needed."
-				}
-				else {
-					Write-Host "Local and remote branches have diverged. Force updating..."
-					git -C "$FOUNT_DIR" fetch origin
-					git -C "$FOUNT_DIR" reset --hard $remoteBranch
-				}
+		if ($localCommit -ne $remoteCommit) {
+			if ($mergeBase -eq $localCommit) {
+				Write-Host "Updating from remote repository..."
+				git -C "$FOUNT_DIR" fetch origin
+				git -C "$FOUNT_DIR" reset --hard $remoteBranch
+			}
+			elseif ($mergeBase -eq $remoteCommit) {
+				Write-Host "Local branch is ahead of remote. No update needed."
 			}
 			else {
-				Write-Host "Already up to date."
+				Write-Host "Local and remote branches have diverged. Force updating..."
+				git -C "$FOUNT_DIR" fetch origin
+				git -C "$FOUNT_DIR" reset --hard $remoteBranch
 			}
+		}
+		else {
+			Write-Host "Already up to date."
 		}
 	}
 }

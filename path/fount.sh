@@ -150,46 +150,68 @@ if [[ $# -gt 0 && $1 = 'background' ]]; then
 fi
 
 if ! command -v git &> /dev/null; then
-	install_package git
+	echo "Git is not installed, attempting to install..."
+	install_package git  # Use the install_package function
 fi
 
-if command -v git &> /dev/null; then
+if command -v git &> /dev/null; then # Ensure git is now installed
 	if [ ! -d "$FOUNT_DIR/.git" ]; then
-		echo "Cloning fount repository..."
-		rm -rf "$FOUNT_DIR/.git-clone"
+		rm -rf "$FOUNT_DIR/.git-clone"  # Remove any old .git-clone
 		mkdir -p "$FOUNT_DIR/.git-clone"
 		git clone https://github.com/steve02081504/fount.git "$FOUNT_DIR/.git-clone" --no-checkout --depth 1
 		if [ $? -ne 0 ]; then
-			echo "Error: Failed to clone fount repository. Please check your internet connection or git configuration."
+			echo "Error: Failed to clone fount repository.  Check connection/config." >&2
 			exit 1
 		fi
 		mv "$FOUNT_DIR/.git-clone/.git" "$FOUNT_DIR/.git"
 		rm -rf "$FOUNT_DIR/.git-clone"
 		git -C "$FOUNT_DIR" fetch origin
-		git -C "$FOUNT_DIR" reset --hard "origin/master"
-	fi
-
-	if [ $IN_DOCKER -eq 1 ]; then
-		echo "Skipping git pull in Docker environment"
+		git -C "$FOUNT_DIR" reset --hard "origin/master"  # Reset to origin/master
 	else
-		git -C "$FOUNT_DIR" fetch origin
-		currentBranch=$(git -C "$FOUNT_DIR" rev-parse --abbrev-ref HEAD)
-		remoteBranch=$(git -C "$FOUNT_DIR" rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null)
-		if [ -z "$remoteBranch" ]; then
-			echo "Warning: No upstream branch configured for '$currentBranch'. Skipping update check." >&2
+		# Repository exists:  Update logic
+		if [ $IN_DOCKER -eq 1 ]; then
+			echo "Skipping git pull in Docker environment"
+		elif [ ! -d "$FOUNT_DIR/.git" ]; then # Double check if the repo exists
+			echo "Repository not found at $FOUNT_DIR/.git, skipping git pull." >&2
 		else
+			# Fetch latest changes
+			git -C "$FOUNT_DIR" fetch origin
+
+			# Get current branch name
+			currentBranch=$(git -C "$FOUNT_DIR" rev-parse --abbrev-ref HEAD)
+
+			# Handle detached HEAD (like PowerShell script)
+			if [ "$currentBranch" = "HEAD" ]; then
+				echo "Not on a branch, switching to 'master'..."
+				git -C "$FOUNT_DIR" checkout master
+				currentBranch=$(git -C "$FOUNT_DIR" rev-parse --abbrev-ref HEAD) # Re-read
+			fi
+
+			# Get upstream branch (if any)
+			remoteBranch=$(git -C "$FOUNT_DIR" rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null)
+
+			# If no upstream branch, set it to origin/master
+			if [ -z "$remoteBranch" ]; then
+				echo "Warning: No upstream branch for '$currentBranch'. Setting to origin/master." >&2
+				git -C "$FOUNT_DIR" branch --set-upstream-to origin/master "$currentBranch"
+				remoteBranch="origin/master" # Set for consistency
+			fi
+
+			# Check for uncommitted changes
+			status=$(git -C "$FOUNT_DIR" status --porcelain)
+			if [ -n "$status" ]; then
+				echo "Warning: Uncommitted changes. Stash or commit before updating." >&2
+			fi
+
+			# Get merge base, local commit, and remote commit
 			mergeBase=$(git -C "$FOUNT_DIR" merge-base "$currentBranch" "$remoteBranch")
 			localCommit=$(git -C "$FOUNT_DIR" rev-parse "$currentBranch")
 			remoteCommit=$(git -C "$FOUNT_DIR" rev-parse "$remoteBranch")
-			status=$(git -C "$FOUNT_DIR" status --porcelain)
 
-			if [ -n "$status" ]; then
-				echo "Warning: Working directory is not clean. Stash or commit your changes before updating." >&2
-			fi
-
+			# Compare commits and update accordingly
 			if [ "$localCommit" != "$remoteCommit" ]; then
 				if [ "$mergeBase" = "$localCommit" ]; then
-					echo "Updating from remote repository..."
+					echo "Updating from remote repository (fast-forward)..."
 					git -C "$FOUNT_DIR" fetch origin
 					git -C "$FOUNT_DIR" reset --hard "$remoteBranch"
 				elif [ "$mergeBase" = "$remoteCommit" ]; then
