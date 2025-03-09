@@ -78,6 +78,7 @@ export function setDefaultStuff() {
 }
 
 export let hosturl = 'http://localhost:' + config.port
+export let tray
 
 export async function init() {
 	console.freshLine('server start', await geti18n('fountConsole.server.start'))
@@ -122,7 +123,7 @@ export async function init() {
 	console.freshLine('server start', await geti18n('fountConsole.server.ready'))
 	const titleBackup = process.title
 	on_shutdown(() => setWindowTitle(titleBackup))
-	createTray()
+	createTray().then(t => tray = t)
 	setDefaultStuff()
 	console.freshLine('server start', Array(Math.floor(Math.random() * 7)).fill('fo-').join('') + 'fount!')
 	StartRPC()
