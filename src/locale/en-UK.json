@@ -152,33 +152,80 @@
 		}
 	},
 	"home": {
-		"title": "Character Selection Page",
-		"pageTitle": "Character Selection Page",
-		"instruction": "Select a character - and start chatting!",
+		"title": "Home",
 		"filterInput": {
 			"placeholder": "Search..."
 		},
-		"sidebarTitle": "Character Information",
-		"characterDescription": {},
+		"sidebarTitle": "Details",
+		"itemDescription": "Select an item here to view details.",
 		"noDescription": "No description information",
 		"alerts": {
-			"fetchHomeRegistryFailed": "Failed to get homepage registration information"
+			"fetchHomeRegistryFailed": "Failed to fetch home registry information"
 		},
 		"functionMenu": {
 			"icon": {
 				"alt": "Function Menu"
 			}
 		},
-		"charCard": {
-			"refreshButton": {
-				"alt": "Refresh",
-				"title": "Refresh"
-			},
-			"noTags": "No tags",
-			"version": "Version",
-			"author": "Author",
-			"homepage": "Homepage",
-			"issuepage": "Issue Feedback"
+		"chars": {
+			"tab": "Characters",
+			"title": "Character Selection",
+			"subtitle": "Select a character—then start chatting!",
+			"none": "Nothing here",
+			"card": {
+				"refreshButton": {
+					"alt": "Refresh",
+					"title": "Refresh"
+				},
+				"noTags": "No tags",
+				"version": "Version",
+				"author": "Author",
+				"homepage": "Homepage",
+				"issuepage": "Issue Page",
+				"defaultCheckbox": {
+					"title": "Set as default character"
+				}
+			}
+		},
+		"worlds": {
+			"tab": "Worlds",
+			"title": "World Selection",
+			"subtitle": "Choose a world, and immerse yourself!",
+			"none": "Nothing here",
+			"card": {
+				"refreshButton": {
+					"alt": "Refresh",
+					"title": "Refresh"
+				},
+				"noTags": "No tags",
+				"version": "Version",
+				"author": "Author",
+				"homepage": "Homepage",
+				"issuepage": "Issue Page",
+				"defaultCheckbox": {
+					"title": "Set as default world"
+				}
+			}
+		},
+		"personas": {
+			"tab": "Personas",
+			"title": "Persona Selection",
+			"subtitle": "Select a persona, experience life.",
+			"none": "Nothing here",
+			"card": {
+				"refreshButton": {
+					"alt": "Refresh",
+					"title": "Refresh"
+				},
+				"noTags": "No tags",
+				"version": "Version",
+				"author": "Author",
+				"homepage": "Homepage",
+				"issuepage": "Issue Page",
+				"defaultCheckbox": {
+					"title": "Set as default persona"
+				}
+			}
 		}
 	},
 	"themeManage": {

@@ -27,7 +27,7 @@ import { Buffer } from 'node:buffer'
 export function setEndpoints(router) {
 	router.post('/api/shells/chat/new', authenticate, async (req, res) => {
 		const { username } = await getUserByToken(req.cookies.accessToken)
-		res.status(200).json({ chatid: newChat(username) })
+		res.status(200).json({ chatid: await newChat(username) })
 	})
 
 	router.post('/api/shells/chat/addchar', async (req, res) => {

@@ -152,33 +152,80 @@
 		}
 	},
 	"home": {
-		"title": "Страница выбора персонажа",
-		"pageTitle": "Страница выбора персонажа",
-		"instruction": "Выберите персонажа и начните чат!",
+		"title": "Главная",
 		"filterInput": {
 			"placeholder": "Поиск..."
 		},
-		"sidebarTitle": "Информация о персонаже",
-		"characterDescription": {},
+		"sidebarTitle": "Детали",
+		"itemDescription": "Выберите элемент здесь, чтобы просмотреть детали.",
 		"noDescription": "Нет информации об описании",
 		"alerts": {
-			"fetchHomeRegistryFailed": "Не удалось получить информацию о регистрации главной страницы"
+			"fetchHomeRegistryFailed": "Не удалось получить информацию реестра главной страницы"
 		},
 		"functionMenu": {
 			"icon": {
 				"alt": "Меню функций"
 			}
 		},
-		"charCard": {
-			"refreshButton": {
-				"alt": "Обновить",
-				"title": "Обновить"
-			},
-			"noTags": "Нет тегов",
-			"version": "Версия",
-			"author": "Автор",
-			"homepage": "Главная страница",
-			"issuepage": "Сообщить о проблеме"
+		"chars": {
+			"tab": "Персонажи",
+			"title": "Выбор персонажа",
+			"subtitle": "Выберите персонажа, а затем начните чат!",
+			"none": "Пусто",
+			"card": {
+				"refreshButton": {
+					"alt": "Обновить",
+					"title": "Обновить"
+				},
+				"noTags": "Нет тегов",
+				"version": "Версия",
+				"author": "Автор",
+				"homepage": "Главная страница",
+				"issuepage": "Страница проблем",
+				"defaultCheckbox": {
+					"title": "Установить как персонажа по умолчанию"
+				}
+			}
+		},
+		"worlds": {
+			"tab": "Миры",
+			"title": "Выбор мира",
+			"subtitle": "Выберите мир и погрузитесь в него!",
+			"none": "Пусто",
+			"card": {
+				"refreshButton": {
+					"alt": "Обновить",
+					"title": "Обновить"
+				},
+				"noTags": "Нет тегов",
+				"version": "Версия",
+				"author": "Автор",
+				"homepage": "Главная страница",
+				"issuepage": "Страница проблем",
+				"defaultCheckbox": {
+					"title": "Установить как мир по умолчанию"
+				}
+			}
+		},
+		"personas": {
+			"tab": "Персоны",
+			"title": "Выбор персоны",
+			"subtitle": "Выберите персону, испытайте жизнь.",
+			"none": "Пусто",
+			"card": {
+				"refreshButton": {
+					"alt": "Обновить",
+					"title": "Обновить"
+				},
+				"noTags": "Нет тегов",
+				"version": "Версия",
+				"author": "Автор",
+				"homepage": "Главная страница",
+				"issuepage": "Страница проблем",
+				"defaultCheckbox": {
+					"title": "Установить как персону по умолчанию"
+				}
+			}
 		}
 	},
 	"themeManage": {

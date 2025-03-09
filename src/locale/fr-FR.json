@@ -152,33 +152,80 @@
 		}
 	},
 	"home": {
-		"title": "Page de sélection de personnage",
-		"pageTitle": "Page de sélection de personnage",
-		"instruction": "Sélectionnez un personnage - et commencez à chatter !",
+		"title": "Accueil",
 		"filterInput": {
 			"placeholder": "Rechercher..."
 		},
-		"sidebarTitle": "Informations sur le personnage",
-		"characterDescription": {},
+		"sidebarTitle": "Détails",
+		"itemDescription": "Sélectionnez un élément ici pour afficher les détails.",
 		"noDescription": "Aucune information de description",
 		"alerts": {
-			"fetchHomeRegistryFailed": "Échec de la récupération des informations d'enregistrement de la page d'accueil"
+			"fetchHomeRegistryFailed": "Échec de la récupération des informations d'enregistrement de l'accueil"
 		},
 		"functionMenu": {
 			"icon": {
 				"alt": "Menu de fonctions"
 			}
 		},
-		"charCard": {
-			"refreshButton": {
-				"alt": "Actualiser",
-				"title": "Actualiser"
-			},
-			"noTags": "Pas de tags",
-			"version": "Version",
-			"author": "Auteur",
-			"homepage": "Page d'accueil",
-			"issuepage": "Signalement de problème"
+		"chars": {
+			"tab": "Personnages",
+			"title": "Sélection de personnage",
+			"subtitle": "Sélectionnez un personnage, puis commencez à chatter !",
+			"none": "Rien ici",
+			"card": {
+				"refreshButton": {
+					"alt": "Rafraîchir",
+					"title": "Rafraîchir"
+				},
+				"noTags": "Aucun tag",
+				"version": "Version",
+				"author": "Auteur",
+				"homepage": "Page d'accueil",
+				"issuepage": "Page de problèmes",
+				"defaultCheckbox": {
+					"title": "Définir comme personnage par défaut"
+				}
+			}
+		},
+		"worlds": {
+			"tab": "Mondes",
+			"title": "Sélection de monde",
+			"subtitle": "Choisissez un monde et plongez-vous dedans !",
+			"none": "Rien ici",
+			"card": {
+				"refreshButton": {
+					"alt": "Rafraîchir",
+					"title": "Rafraîchir"
+				},
+				"noTags": "Aucun tag",
+				"version": "Version",
+				"author": "Auteur",
+				"homepage": "Page d'accueil",
+				"issuepage": "Page de problèmes",
+				"defaultCheckbox": {
+					"title": "Définir comme monde par défaut"
+				}
+			}
+		},
+		"personas": {
+			"tab": "Personas",
+			"title": "Sélection de persona",
+			"subtitle": "Sélectionnez une persona, vivez la vie.",
+			"none": "Rien ici",
+			"card": {
+				"refreshButton": {
+					"alt": "Rafraîchir",
+					"title": "Rafraîchir"
+				},
+				"noTags": "Aucun tag",
+				"version": "Version",
+				"author": "Auteur",
+				"homepage": "Page d'accueil",
+				"issuepage": "Page de problèmes",
+				"defaultCheckbox": {
+					"title": "Définir comme persona par défaut"
+				}
+			}
 		}
 	},
 	"themeManage": {

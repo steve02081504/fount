@@ -1,171 +1,213 @@
 import { renderTemplate } from '../../scripts/template.mjs'
-import { getCharDetails, noCacheGetCharDetails, getCharList } from '../../scripts/parts.mjs'
+import {
+	getCharDetails, noCacheGetCharDetails, getCharList,
+	getPersonaList, getPersonaDetails, noCacheGetPersonaDetails,
+	getWorldList, getWorldDetails, noCacheGetWorldDetails
+} from '../../scripts/parts.mjs'
 import { renderMarkdown } from '../../scripts/markdown.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 import { parseRegexFromString, escapeRegExp } from '../../scripts/regex.mjs'
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
 import { svgInliner } from '../../scripts/svg-inliner.mjs'
 
-const roleContainer = document.getElementById('role-container')
-const characterDescription = document.getElementById('character-description')
-const drawerToggle = document.getElementById('my-drawer-2')
+const charContainer = document.getElementById('char-container')
+const worldContainer = document.getElementById('world-container')
+const personaContainer = document.getElementById('persona-container')
+const itemDescription = document.getElementById('item-description')
+const drawerToggle = document.getElementById('drawer-toggle')
 const functionButtonsContainer = document.getElementById('function-buttons-container')
 const filterInput = document.getElementById('filter-input')
+const pageTitle = document.getElementById('page-title')
+const instruction = document.querySelector('p[data-i18n="home.instruction"]')
 
-let charDetailsCache = {} // Cache for character details
+const charsTab = document.getElementById('chars-tab')
+const worldsTab = document.getElementById('worlds-tab')
+const personasTab = document.getElementById('personas-tab')
+const charsTabDesktop = document.getElementById('chars-tab-desktop')
+const worldsTabDesktop = document.getElementById('worlds-tab-desktop')
+const personasTabDesktop = document.getElementById('personas-tab-desktop')
 
-// 获取已展开的注册项
-async function getHomeRegistry() {
-	const response = await fetch('/api/shells/home/gethomeregistry')
-	if (response.ok) return await response.json()
-	else throw new Error(geti18n('home.alerts.fetchHomeRegistryFailed'))
-}
-
+const itemDetailsCache = {} // Combined cache for all item types
+let currentItemType = localStorage.getItem('lastTab') || 'chars' // Persist tab selection
 let homeRegistry
+let defaultParts = {} // Store default parts
 
-// Function to handle mouse wheel scrolling
-function handleMouseWheelScroll(event) {
+// Utility function for mouse wheel scrolling (could be moved to a separate utility file)
+const handleMouseWheelScroll = (event) => {
 	const scrollContainer = event.currentTarget
-	const delta = Math.sign(event.deltaY) // Get the direction of scrolling
-
-	// Adjust the scrollLeft property based on the scroll direction
-	scrollContainer.scrollLeft += delta * 40 // Adjust the scroll amount as needed
-
-	event.preventDefault() // Prevent the default page scrolling behavior
+	scrollContainer.scrollLeft += Math.sign(event.deltaY) * 40
+	event.preventDefault()
 }
 
-async function getCharDetailsCached(char) {
-	return charDetailsCache[char] ??= await getCharDetails(char)
+// --- Item Details Fetching (Generic) ---
+async function getItemDetails(itemType, itemName, useCache = true) {
+	const cacheKey = `${itemType}-${itemName}`
+	if (useCache && itemDetailsCache[cacheKey])
+		return itemDetailsCache[cacheKey]
+
+
+	let fetchFunction
+	switch (itemType) {
+		case 'chars':
+			fetchFunction = useCache ? getCharDetails : noCacheGetCharDetails
+			break
+		case 'worlds':
+			fetchFunction = useCache ? getWorldDetails : noCacheGetWorldDetails
+			break
+		case 'personas':
+			fetchFunction = useCache ? getPersonaDetails : noCacheGetPersonaDetails
+			break
+		default:
+			throw new Error(`Invalid item type: ${itemType}`)
+	}
+
+	itemDetailsCache[cacheKey] = await fetchFunction(itemName)
+	return itemDetailsCache[cacheKey]
 }
-async function getCharDetailsRefreshed(char) {
-	return charDetailsCache[char] = await noCacheGetCharDetails(char)
+
+
+// --- Rendering (Generic) ---
+const ItemDOMCache = {}
+
+async function renderItemView(itemType, itemDetails, itemName) {
+	const cacheKey = `${itemType}-${itemName}`
+
+	// Check if the DOM node is cached and if the data hasn't changed
+	if (ItemDOMCache[cacheKey]?.info && JSON.stringify(ItemDOMCache[cacheKey].info) === JSON.stringify(itemDetails))
+		return ItemDOMCache[cacheKey].node
+
+	const templateName = `home/${itemType.slice(0, -1)}_list_view`
+	const itemElement = await renderTemplate(templateName, itemDetails)
+	await attachCardEventListeners(itemElement, itemDetails, itemName, homeRegistry[`home_${itemType.slice(0, -1)}_interfaces`])
+	ItemDOMCache[cacheKey] = { info: itemDetails, node: itemElement }  // Cache both info and node
+	return itemElement
 }
 
-const CharDOMCache = {}
-async function renderCharView(charDetails, charname) {
-	// Check if data has changed before rendering
-	if (JSON.stringify(CharDOMCache[charname]?.info) === JSON.stringify(charDetails))
-		return CharDOMCache[charname].node
 
 
-	const roleElement = await renderTemplate('char_list_view', charDetails)
-	const actionsContainer = roleElement.querySelector('.card-actions > div') // Target the inner div
-	actionsContainer.innerHTML = ''
-
-	// Add mouse wheel event listener to the scrollable container
+async function attachCardEventListeners(itemElement, itemDetails, itemName, interfacesRegistry) {
+	const actionsContainer = itemElement.querySelector('.card-actions > div')
+	actionsContainer.innerHTML = '' // Clear existing buttons
 	actionsContainer.addEventListener('wheel', handleMouseWheelScroll)
 
-	// 检查并添加按钮
-	for (const interfaceItem of homeRegistry.home_char_interfaces)
-		if (
-			!interfaceItem.interface ||
-			charDetails.supportedInterfaces.includes(interfaceItem.interface)
-		) {
+	// Add interface buttons
+	for (const interfaceItem of interfacesRegistry)
+		if (!interfaceItem.interface || itemDetails.supportedInterfaces.includes(interfaceItem.interface)) {
 			const button = document.createElement('button')
-			const classes = ['btn']
-			classes.push(`btn-${interfaceItem.type ?? 'primary'}`)
-			if (interfaceItem.classes) classes.push(...interfaceItem.classes.split(' '))
+			const classes = ['btn', `btn-${interfaceItem.type ?? 'primary'}`, ...interfaceItem.classes ? interfaceItem.classes.split(' ') : []]
 			button.classList.add(...classes)
-
 			if (interfaceItem.style) button.style.cssText = interfaceItem.style
 
-			button.innerHTML =
-				interfaceItem.button ??
-				'<img src="https://api.iconify.design/line-md/question-circle.svg" />'
+			button.innerHTML = interfaceItem.button ?? '<img src="https://api.iconify.design/line-md/question-circle.svg" />'
 			button.title = interfaceItem.info.title
 			svgInliner(button)
-			button.addEventListener('click', () => {
-				if (interfaceItem.onclick) eval(interfaceItem.onclick)
-				else window.open(interfaceItem.url.replaceAll('${charname}', charname))
-			})
 
+			button.addEventListener('click', () => {
+				if (interfaceItem.onclick)
+					eval(interfaceItem.onclick.replaceAll('${name}', itemName))
+				else
+					window.open(interfaceItem.url.replaceAll('${name}', itemName))
+			})
 			actionsContainer.appendChild(button)
 		}
 
-	// Add event listeners to tags
-	const tagElements = roleElement.querySelectorAll('.badge')
-	tagElements.forEach((tagElement) => {
+	// Tag click handler
+	itemElement.querySelectorAll('.badge').forEach(tagElement => {
 		tagElement.addEventListener('click', (event) => {
 			event.stopPropagation()
 			const tag = tagElement.textContent.trim()
-			const currentFilter = filterInput.value
-			if (currentFilter.split(' ').includes(tag))
-				// Remove tag from filter
-				filterInput.value = currentFilter.split(' ').filter((t) => t && t !== tag).join(' ')
-			else
-				// Add tag to filter
-				filterInput.value = currentFilter ? `${currentFilter} ${tag}` : tag
-
-			filterCharList()
+			filterInput.value = filterInput.value.split(' ').includes(tag)
+				? filterInput.value.split(' ').filter(t => t && t !== tag).join(' ')
+				: filterInput.value ? `${filterInput.value} ${tag}` : tag
+			filterItemList()
 		})
 	})
 
-	// 移动端点击卡片非按钮区域时显示侧边栏
-	roleElement.addEventListener('click', (event) => {
-		if (window.innerWidth < 1024 && !event.target.closest('button')) {
-			displayCharacterInfo(charDetails)
-			drawerToggle.checked = true
-		}
-	})
-
-	// 桌面端添加悬浮事件监听
-	roleElement.addEventListener('mouseover', () => {
-		if (window.innerWidth >= 1024) displayCharacterInfo(charDetails)
-	})
-
-	CharDOMCache[charname] = { info: charDetails, node: roleElement }
-
-	const refreshButton = roleElement.querySelector('.refresh-button')
-	refreshButton.addEventListener('click', async (event) => {
-		roleElement.replaceWith(await renderCharView(await getCharDetailsRefreshed(charname), charname))
-	})
-
-	return roleElement
-}
-
-async function displayCharacterInfo(charDetails) {
-	if(!charDetails.info.description_markdown) {
-		characterDescription.innerHTML = geti18n('home.noDescription')
-		return
+	// Click/Hover for sidebar
+	const clickHandler = () => {
+		displayItemInfo(itemDetails)
+		if (window.innerWidth < 1024) drawerToggle.checked = true
 	}
-	characterDescription.innerHTML = ''
-	characterDescription.appendChild(await renderMarkdown(charDetails.info.description_markdown))
+
+	itemElement.addEventListener('click', (event) => {
+		if (window.innerWidth < 1024 && !event.target.closest('button'))
+			clickHandler()
+	})
+	itemElement.addEventListener('mouseover', () => {
+		if (window.innerWidth >= 1024) displayItemInfo(itemDetails)
+	})
+
+	// Refresh button
+	itemElement.querySelector('.refresh-button').addEventListener('click', async () => {
+		itemElement.replaceWith(await renderItemView(currentItemType, await getItemDetails(currentItemType, itemName, false), itemName))
+	})
+
+	// Default Checkbox
+	const defaultCheckbox = itemElement.querySelector('.default-checkbox')
+	if (defaultCheckbox) {
+		// Set initial state based on defaultParts
+		defaultCheckbox.checked = defaultParts[currentItemType.slice(0, -1)] === itemName
+		if (defaultCheckbox.checked) itemElement.classList.add('selected-item')
+
+		defaultCheckbox.addEventListener('change', async (event) => {
+			const isChecked = event.target.checked
+			// Update default part in the backend
+			const response = await fetch('/api/shells/home/setdefault', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ parttype: currentItemType.slice(0, -1), partname: isChecked ? itemName : null }),
+			})
+
+			if (response.ok) {
+				// Update local defaultParts and UI
+				defaultParts[currentItemType.slice(0, -1)] = isChecked ? itemName : null
+				document.querySelectorAll(`.card-container .card.${currentItemType}-card`).forEach(el => {
+					el.classList.remove('selected-item')
+					const checkbox = el.querySelector('.default-checkbox')
+					if (checkbox) checkbox.checked = false
+				})
+				if (isChecked) {
+					itemElement.classList.add('selected-item')
+					defaultCheckbox.checked = true
+				}
+			}
+			else
+				console.error('Failed to update default part:', await response.text())
+		})
+	}
 }
 
-/**
- * Applies all filter conditions to a character.
- * @param {string} charName - The name of the character.
- * @param {RegExp[]} commonFilters - Array of common filters.
- * @param {RegExp[]} forceFilters - Array of forced filters.
- * @param {RegExp[]} excludeFilters - Array of excluded filters.
- * @returns {boolean} - True if the character matches all conditions, false otherwise.
- */
-function applyFilters(charName, commonFilters, forceFilters, excludeFilters) {
-	const charData = charDetailsCache[charName]
-	const charString = JSON.stringify(charData) // Optimize: Consider targeting specific properties
+async function displayItemInfo(itemDetails) {
+	itemDescription.innerHTML = itemDetails.info.description_markdown
+		? (await renderMarkdown(itemDetails.info.description_markdown)).outerHTML
+		: geti18n('home.noDescription')
+}
 
-	// Check for common filters (at least one must match)
-	const hasCommonMatch = commonFilters.length === 0 || commonFilters.some(filter => filter.test(charString))
+// --- Filtering ---
+function applyFilters(itemName, itemType, commonFilters, forceFilters, excludeFilters) {
+	const cacheKey = `${itemType}-${itemName}`
+	const itemData = itemDetailsCache[cacheKey]
 
-	// Check for forced filters (all must match)
-	const hasForceMatch = forceFilters.every(filter => filter.test(charString))
+	if (!itemData) return false
 
-	// Check for excluded filters (none must match)
-	const hasExcludeMatch = excludeFilters.some(filter => filter.test(charString))
+	const itemString = JSON.stringify(itemData)
 
+	const hasCommonMatch = commonFilters.length === 0 || commonFilters.some(filter => filter.test(itemString))
+	const hasForceMatch = forceFilters.every(filter => filter.test(itemString))
+	const hasExcludeMatch = excludeFilters.some(filter => filter.test(itemString))
 	return hasCommonMatch && hasForceMatch && !hasExcludeMatch
 }
 
-/**
- * Filters the character list based on user input.
- */
-async function filterCharList() {
+async function filterItemList() {
 	const filters = filterInput.value.toLowerCase().split(' ').filter(f => f)
-	if (filters.length === 0) return displayCharList()
+	const [commonFilters, forceFilters, excludeFilters] = [[], [], []]
 
-	const commonFilters = []
-	const forceFilters = []
-	const excludeFilters = []
+	filters.forEach(filter => {
+		const regex = parseRegexFilter(filter)
+		if (filter.startsWith('+')) forceFilters.push(regex)
+		else if (filter.startsWith('-')) excludeFilters.push(regex)
+		else commonFilters.push(regex)
+	})
 
 	function parseRegexFilter(filter) {
 		if (filter.startsWith('+') || filter.startsWith('-')) filter = filter.slice(1)
@@ -173,105 +215,175 @@ async function filterCharList() {
 		return parsed ? parsed : new RegExp(escapeRegExp(filter))
 	}
 
-	// Categorize filters
-	for (const filter of filters) {
-		const regex = parseRegexFilter(filter)
+	// Fetch item list ONLY if filters are applied.
+	if (filters.length > 0)
+		await fetchAndCacheItemList(currentItemType)
 
-		if (filter.startsWith('+'))
-			forceFilters.push(regex)
-		else if (filter.startsWith('-'))
-			excludeFilters.push(regex)
-		else
-			commonFilters.push(regex)
 
+	const filteredItemNames = Object.keys(itemDetailsCache)
+		.filter(key => key.startsWith(`${currentItemType}-`))  // Filter cache keys
+		.map(key => key.replace(`${currentItemType}-`, ''))      // Extract item name
+		.filter(itemName => applyFilters(itemName, currentItemType, commonFilters, forceFilters, excludeFilters))
+
+	displayItemList(currentItemType, filteredItemNames) // Display with filtered names.
+}
+// --- Displaying Items ---
+async function displayItemList(itemType, itemNames) {
+	// Hide all containers first
+	[charContainer, worldContainer, personaContainer].forEach(container => container.classList.add('hidden'))
+
+	let currentContainer
+	switch (itemType) {
+		case 'chars': currentContainer = charContainer; break
+		case 'worlds': currentContainer = worldContainer; break
+		case 'personas': currentContainer = personaContainer; break
 	}
 
-	// Apply filters and get filtered character names
-	const filteredCharNames = Object.keys(charDetailsCache).filter(charName =>
-		applyFilters(charName, commonFilters, forceFilters, excludeFilters)
-	)
+	currentContainer.classList.remove('hidden')
+	currentContainer.innerHTML = '' // Clear only the current container
 
-	await displayCharList(filteredCharNames)
-}
+	// If itemNames is undefined or null, fetch all item names
+	if (!itemNames)
+		itemNames = await getItemList(itemType)
 
-async function displayCharList(charNames = Object.keys(charDetailsCache)) {
-	// Clear the container
-	roleContainer.innerHTML = ''
 
-	// Render each character
-	for (const charName of charNames.sort((a, b) => {
-		const lowerA = a.toLowerCase()
-		const lowerB = b.toLowerCase()
-		if (lowerA < lowerB) return -1
-		if (lowerA > lowerB) return 1
-		if (a < b) return -1
-		if (a > b) return 1
-		return 0
-	})) {
-		const charDetails = charDetailsCache[charName]
-		const roleElement = await renderCharView(charDetails, charName)
-		roleContainer.appendChild(roleElement)
+	for (const itemName of itemNames.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))) {
+		const itemDetails = await getItemDetails(itemType, itemName)
+		const itemElement = await renderItemView(itemType, itemDetails, itemName)
+		itemElement.classList.add(`${itemType}-card`) // Add a class for easier selection
+		currentContainer.appendChild(itemElement)
 	}
 }
 
-filterInput.addEventListener('input', filterCharList)
 
-// 添加功能按钮
+async function fetchAndCacheItemList(itemType) {
+	const itemNames = await getItemList(itemType)
+	await Promise.all(itemNames.map(itemName => getItemDetails(itemType, itemName)))
+}
+
+async function getItemList(itemType) {
+	switch (itemType) {
+		case 'chars': return await getCharList()
+		case 'worlds': return await getWorldList()
+		case 'personas': return await getPersonaList()
+		default: return []
+	}
+}
+
+// --- Function Buttons ---
 async function displayFunctionButtons() {
+	functionButtonsContainer.innerHTML = '' // Clear existing buttons
 	for (const buttonItem of homeRegistry.home_function_buttons) {
 		const li = document.createElement('li')
 		const button = document.createElement('a')
-		const classes = ['flex', 'items-center', 'justify-start']
-		if (buttonItem.classes) classes.push(...buttonItem.classes.split(' '))
+		const classes = ['flex', 'items-center', 'justify-start', ...buttonItem.classes ? buttonItem.classes.split(' ') : []]
 		button.classList.add(...classes)
-
 		if (buttonItem.style) button.style.cssText = buttonItem.style
 
-		// 添加图标和标题
 		const iconSpan = document.createElement('span')
-		iconSpan.classList.add('mr-2') // 图标和文字之间添加一些间距
-		iconSpan.innerHTML =
-			buttonItem.button ??
-			'<img src="https://api.iconify.design/line-md/question-circle.svg" class="text-icon" />'
+		iconSpan.classList.add('mr-2')
+		iconSpan.innerHTML = buttonItem.button ?? '<img src="https://api.iconify.design/line-md/question-circle.svg" class="text-icon" />'
 		svgInliner(iconSpan)
+
 		const titleSpan = document.createElement('span')
 		titleSpan.textContent = buttonItem.info.title
 
-		button.appendChild(iconSpan)
-		button.appendChild(titleSpan)
-
+		button.append(iconSpan, titleSpan)
 		button.addEventListener('click', () => {
-			if (buttonItem.onclick) eval(buttonItem.onclick)
-			else window.open(buttonItem.url)
+			if (buttonItem.action)
+				eval(buttonItem.action.replaceAll('${name}', action)) // Consider alternatives to eval
+			else if (buttonItem.url)
+				window.open(buttonItem.url)
+			else
+				console.warn('No action defined for this button')
+
 		})
 		li.appendChild(button)
 		functionButtonsContainer.appendChild(li)
 	}
 }
 
-// 初始化
+// --- Tab Management ---
+function updateTabContent(itemType) {
+	currentItemType = itemType
+	localStorage.setItem('lastTab', itemType) // Remember the selected tab
+
+	const pageTitleKey = `home.${itemType}.title`
+	const instructionKey = `home.${itemType}.subtitle`
+	pageTitle.textContent = geti18n(pageTitleKey)
+	instruction.textContent = geti18n(instructionKey)
+
+	// Fetch and display list when switching tabs
+	fetchAndCacheItemList(itemType).then(() => {
+		displayItemList(itemType)
+	})
+
+	itemDescription.innerHTML = geti18n('home.itemDescription') // Reset sidebar
+}
+
+// --- Initialization ---
 async function initializeApp() {
 	applyTheme()
-	homeRegistry = await getHomeRegistry()
-	displayFunctionButtons()
-	initTranslations('home')
+	await initTranslations('home') // Initialize i18n first
 
-	await refetchCharData()
-	filterCharList()
+	// Fetch initial data (registry and default parts)
+	await fetchData()
+
+
+	const tabs = [
+		{ tab: charsTab, tabDesktop: charsTabDesktop, itemType: 'chars' },
+		{ tab: worldsTab, tabDesktop: worldsTabDesktop, itemType: 'worlds' },
+		{ tab: personasTab, tabDesktop: personasTabDesktop, itemType: 'personas' },
+	]
+
+	tabs.forEach(({ tab, tabDesktop, itemType }) => {
+		[tab, tabDesktop].filter(Boolean).forEach(tabElement => {
+			tabElement.addEventListener('click', () => {
+				updateTabContent(itemType)
+				// Remove active class from all tabs, then add to current
+				tabs.forEach(t => {
+					[t.tab, t.tabDesktop].filter(Boolean).forEach(el => el.classList.remove('tab-active'))
+				})
+				tabElement.classList.add('tab-active')
+			})
+		})
+	})
+
+	// Initial display (using the stored tab or default 'chars')
+	updateTabContent(currentItemType)
+	// Set the active tab based on currentItemType
+	const initialTab = tabs.find(t => t.itemType === currentItemType)
+	if (initialTab)
+		[initialTab.tab, initialTab.tabDesktop].filter(Boolean).forEach(el => el.classList.add('tab-active'))
+
+
+	filterInput.addEventListener('input', filterItemList)
+
+	// Refresh data on focus
+	window.addEventListener('focus', async () => {
+		await fetchData()  //Refresh Registry
+		fetchAndCacheItemList(currentItemType).then(() => { // Refresh List
+			filterItemList()
+		})
+	})
 }
+async function fetchData() {
+	const [registryResponse, defaultPartsResponse] = await Promise.all([
+		fetch('/api/shells/home/gethomeregistry'),
+		fetch('/api/shells/home/getdefaultparts')
+	])
 
-// Function to refetch character data
-async function refetchCharData() {
-	charDetailsCache = {}
-	// Refetch data for all characters
-	const allCharNames = await getCharList()
-	await Promise.all(allCharNames.map(charName => getCharDetailsCached(charName)))
+	if (registryResponse.ok) {
+		homeRegistry = await registryResponse.json()
+		displayFunctionButtons() // Update function buttons
+	}
+	else
+		console.error('Failed to fetch home registry:', await registryResponse.text())
+
+	if (defaultPartsResponse.ok)
+		defaultParts = await defaultPartsResponse.json()
+	else
+		console.error('Failed to fetch default parts:', await defaultPartsResponse.text())
 }
-
-// Add event listener for window focus
-window.addEventListener('focus', async () => {
-	await refetchCharData()
-	await filterCharList()
-})
 
 initializeApp()

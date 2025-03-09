@@ -152,33 +152,80 @@
 		}
 	},
 	"home": {
-		"title": "캐릭터 선택 페이지",
-		"pageTitle": "캐릭터 선택 페이지",
-		"instruction": "캐릭터를 선택하고 채팅을 시작하세요!",
+		"title": "홈",
 		"filterInput": {
 			"placeholder": "검색..."
 		},
-		"sidebarTitle": "캐릭터 정보",
-		"characterDescription": {},
+		"sidebarTitle": "세부 정보",
+		"itemDescription": "자세한 내용을 보려면 여기에서 항목을 선택하세요.",
 		"noDescription": "설명 정보 없음",
 		"alerts": {
-			"fetchHomeRegistryFailed": "홈페이지 등록 정보를 가져오지 못했습니다"
+			"fetchHomeRegistryFailed": "홈 레지스트리 정보를 가져오는 데 실패했습니다."
 		},
 		"functionMenu": {
 			"icon": {
 				"alt": "기능 메뉴"
 			}
 		},
-		"charCard": {
-			"refreshButton": {
-				"alt": "새로고침",
-				"title": "새로고침"
-			},
-			"noTags": "태그 없음",
-			"version": "버전",
-			"author": "작성자",
-			"homepage": "홈페이지",
-			"issuepage": "문제 보고"
+		"chars": {
+			"tab": "캐릭터",
+			"title": "캐릭터 선택",
+			"subtitle": "캐릭터를 선택하고 채팅을 시작하세요!",
+			"none": "비어 있음",
+			"card": {
+				"refreshButton": {
+					"alt": "새로 고침",
+					"title": "새로 고침"
+				},
+				"noTags": "태그 없음",
+				"version": "버전",
+				"author": "저자",
+				"homepage": "홈페이지",
+				"issuepage": "문제 페이지",
+				"defaultCheckbox": {
+					"title": "기본 캐릭터로 설정"
+				}
+			}
+		},
+		"worlds": {
+			"tab": "월드",
+			"title": "월드 선택",
+			"subtitle": "월드를 선택하고 몰입하세요!",
+			"none": "비어 있음",
+			"card": {
+				"refreshButton": {
+					"alt": "새로 고침",
+					"title": "새로 고침"
+				},
+				"noTags": "태그 없음",
+				"version": "버전",
+				"author": "저자",
+				"homepage": "홈페이지",
+				"issuepage": "문제 페이지",
+				"defaultCheckbox": {
+					"title": "기본 월드로 설정"
+				}
+			}
+		},
+		"personas": {
+			"tab": "페르소나",
+			"title": "페르소나 선택",
+			"subtitle": "페르소나를 선택하고 삶을 경험하세요.",
+			"none": "비어 있음",
+			"card": {
+				"refreshButton": {
+					"alt": "새로 고침",
+					"title": "새로 고침"
+				},
+				"noTags": "태그 없음",
+				"version": "버전",
+				"author": "저자",
+				"homepage": "홈페이지",
+				"issuepage": "문제 페이지",
+				"defaultCheckbox": {
+					"title": "기본 페르소나로 설정"
+				}
+			}
 		}
 	},
 	"themeManage": {

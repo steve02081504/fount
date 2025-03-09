@@ -21,7 +21,7 @@ export async function renderMessage(message) {
 	}
 
 	const messageElement = await renderTemplate(
-		'message_view',
+		'chat/message_view',
 		preprocessedMessage
 	)
 	messageElement
@@ -78,7 +78,7 @@ export async function editMessageStart(message, index, messageIndex) {
 	}
 	const messageElement = await getMessageElementByMessageIndex(messageIndex)
 	messageElement.innerHTML = await renderTemplateAsHtmlString(
-		'message_edit_view',
+		'chat/message_edit_view',
 		editRenderedMessage
 	)
 
