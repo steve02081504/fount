@@ -109,25 +109,6 @@ EOF
 	return 0
 }
 
-
-if [[ $# -gt 0 && $1 = 'remove' ]]; then
-	echo "removing fount..."
-
-	# Remove fount from PATH in .profile
-	if [ -f "$HOME/.profile" ]; then
-		sed -i '/export PATH="\$PATH:'"$FOUNT_DIR/path"'"/d' "$HOME/.profile"
-	fi
-
-	# Remove fount from current PATH
-	export PATH=$(echo "$PATH" | tr ':' '\n' | grep -v "$FOUNT_DIR/path" | tr '\n' ':')
-
-	# Remove fount installation directory
-	rm -rf "$FOUNT_DIR"
-
-	echo "fount uninstallation complete."
-	exit 0
-fi
-
 if ! command -v fount.sh &> /dev/null; then
 	if [ -f "$HOME/.profile" ]; then
 		if ! grep -q "export PATH=\"\$PATH:$FOUNT_DIR/path\"" "$HOME/.profile"; then
@@ -354,6 +335,23 @@ elif [[ $# -gt 0 && $1 = 'keepalive' ]]; then
 	runargs=("${@:2}")
 	run "${runargs[@]}"
 	while $?; do run; done
+elif [[ $# -gt 0 && $1 = 'remove' ]]; then
+	run shutdown
+	echo "removing fount..."
+
+	# Remove fount from PATH in .profile
+	if [ -f "$HOME/.profile" ]; then
+		sed -i '/export PATH="\$PATH:'"$FOUNT_DIR/path"'"/d' "$HOME/.profile"
+	fi
+
+	# Remove fount from current PATH
+	export PATH=$(echo "$PATH" | tr ':' '\n' | grep -v "$FOUNT_DIR/path" | tr '\n' ':')
+
+	# Remove fount installation directory
+	rm -rf "$FOUNT_DIR"
+
+	echo "fount uninstallation complete."
+	exit 0
 else
 	run "$@"
 fi

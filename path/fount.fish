@@ -305,6 +305,23 @@ else if test (count $argv) -gt 0 -a $argv[1] = 'keepalive'
 	while test $status
 		run
 	end
+else if test (count $argv) -gt 0 -a $argv[1] = 'remove'
+	run shutdown
+	echo "removing fount..."
+
+	# Remove fount from PATH in .profile
+	if test -f "$HOME/.profile"
+		sed -i '/export PATH=\"\$PATH:'"$FOUNT_DIR/path"'/\"/d' "$HOME/.profile"
+	end
+
+	# Remove fount from current PATH
+	set path (echo $PATH | tr ':' '\n' | grep -v "$FOUNT_DIR/path" | tr '\n' ':')
+
+	# Remove fount installation directory
+	rm -rf "$FOUNT_DIR"
+
+	echo "fount uninstallation complete."
+	exit 0
 else
 	run $argv
 end

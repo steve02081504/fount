@@ -52,6 +52,8 @@ export async function createTray() {
 				shutdown()
 			}
 		})
+
+		return systray
 	} catch (err) {
 		console.error(await geti18n('fountConsole.tray.createTrayFailed', { error: err }))
 	}
