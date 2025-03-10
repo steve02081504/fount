@@ -13,59 +13,88 @@
 [![हिन्दी](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/India.png)](./docs/Readme.hi-IN.md)
 [![한국어](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/South-Korea.png)](./docs/Readme.ko-KR.md)
 
+Searching for lost characters, components, or custom tutorials?
+Come on over to [here![Discord](https://img.shields.io/discord/1288934771153440768)](https://discord.gg/GtR9Quzq2v), and meet in a spark of minds!
+
+<details open>
+<summary>Screenshots</summary>
+
+|Screenshots|
+|----|
+|Homepage|
+|![Image](https://github.com/user-attachments/assets/c1954a7a-6c73-4fb0-bd12-f790a038bd0e)|
+|Theme Selection|
+|![Image](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074)|
+|Chat|
+|![Image](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d)|
+
+</details>
+
 ## What is fount?
 
-fount, in short, is a character card frontend page that decouples AI sources, AI characters, user personas, dialogue environments, and AI plugins, allowing them to be freely combined to spark infinite possibilities.
+fount, in short, is a character card frontend page that decouples AI sources, AI characters, user personas, conversation environments, and AI plugins, allowing them to be freely combined and spark infinite possibilities.
 
-Furthermore, it is a bridge, a bridge connecting imagination and reality.
+To put it more profoundly, it is a bridge, a bridge connecting imagination and reality.
 It is a lighthouse, guiding the direction of characters and stories in the boundless ocean of data.
-It is a free garden, allowing AI sources, characters, personas, dialogue environments, and plugins to grow, intertwine, and bloom freely here.
+It is a free garden, allowing AI sources, characters, personas, conversation environments, and plugins to grow, intertwine, and blossom freely here.
 
 ### AI Source Integration
 
-Ever been bothered by running reverse proxy servers on your computer?
-In the world of fount, you no longer need to start from scratch, letting the cumbersome dialogue format conversion vanish into thin air.
-Everything can be solved using custom JavaScript code in the AI source generator, like magic.
-No new processes are needed, CPU and memory can breathe quietly, and the desktop is also cleaner.
+Ever been annoyed by running reverse proxy servers on your computer?
+In the world of fount, you no longer need to start from scratch, letting the tedious dialogue format conversion vanish into thin air.
+Everything can be solved using custom JavaScript code in the AI source generator, just like magic.
+No new processes are needed, allowing your CPU and memory to breathe quietly, and your desktop to be cleaner.
+
+![Image](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
 
 ### Web Experience Improvement
 
-fount stands on the shoulders of giants, casts a respectful glance at [SillyTavern](https://github.com/SillyTavern/SillyTavern), and incorporates its own insights and ideas on this basis.
+fount stands on the shoulders of giants, casting a respectful glance at [SillyTavern](https://github.com/SillyTavern/SillyTavern), and based on this, incorporating its own insights and ideas.
 This includes:
 
-- **Whispers of multi-device synchronization:** No longer limited by a single device, you can simultaneously start conversations with characters on your computer and mobile phone, feeling the real-time resonance of thoughts, like whispers between lovers, hearts connected no matter where you are.
-- **Unfiltered HTML rendering:** Many SillyTavern enthusiasts choose to install additional plugins to lift the restrictions on HTML rendering for a richer visual experience. fount opens this capability by default, giving users more freedom and choice, allowing capable creators to implement more outstanding features.
-- **Native group support:** In fount, every conversation is a grand gathering. You can freely invite characters to join or let them quietly leave, without cumbersome format conversions and card copying, just like in a garden, flowers can be freely combined to present different scenery.
+- **Multi-device synchronised whispers:** No longer limited by a single device, you can engage in conversations with characters simultaneously on your computer and mobile phone, experiencing the real-time resonance of minds, like sweet nothings whispered between lovers, connecting hearts no matter where you are.
+- **Unfiltered HTML rendering:** Many SillyTavern enthusiasts choose to install additional plugins to lift the restrictions on HTML rendering for a richer visual experience. fount opens up this capability by default, giving users more freedom and choices, allowing capable creators to achieve more outstanding features.
+- **Native group support:** In fount, every conversation is a grand gathering. You can freely invite characters to join or let them quietly leave, without cumbersome format conversions and card copying, just like in a garden, flowers can be freely combined to present different landscapes.
 
 And more...
 
-### Companionship: Beyond the Web
+![Image](https://github.com/user-attachments/assets/bd1600dc-4612-458b-95ba-c7b019a26390)
 
-fount yearns to let characters walk into your life, experience wind and rain with you, and share joy.
+### Companionship: Beyond Webpages
+
+fount yearns to bring characters into your life, to experience wind and rain with you, and share joy.
 
 - You can connect characters to Discord groups by configuring the built-in Discord Bot Shell, letting them laugh with friends or listen to each other's hearts in private messages.
-    ![image](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
-    ![image](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
+    ![Image](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
+    ![Image](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
 
-- You can also use [fount-pwsh](https://github.com/steve02081504/fount-pwsh) to have characters send you gentle reminders when terminal commands fail, like a soft whisper in your ear when you are confused.
-    ![image](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
+- You can also use [fount-pwsh](https://github.com/steve02081504/fount-pwsh) to have characters send you gentle reminders when terminal commands fail, like soft whispers in your ear when you are lost.
+    ![Image](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
 
-- Even, as long as you have a heart of exploration, even if you only master a little programming skill, you can also create your own fount Shell, letting characters go to a wider world, to anywhere you imagine!
+- Even if you only have a little programming skill and an exploring heart, you can create your own fount Shell, letting characters go to a wider world, to anywhere you can imagine!
 
 ### Creation: Beyond Prompt
 
 If you are a character creator, fount will open a door to infinite possibilities for you.
 
-- You can freely use the magic of JavaScript or TypeScript code, unleash creativity, customize the character's prompt generation process and dialogue process, break free from the constraints of frontend syntax, like a poet wielding a pen and splashing ink, expressing inner emotions to the fullest.
-- Character cards can not only execute code without filtering, but also load any npm package and create custom HTML pages. Creation has never been so free, like a painter freely smearing colors on a canvas and outlining the world in their heart.
-- If you are willing, you can also build various resources into the character, bid farewell to the troubles of building image hosting services, and make everything within reach, as if putting the whole world into your pocket.
+- You can freely use the magic of JavaScript or TypeScript code to unleash your creativity and customise the character's Prompt generation process and dialogue flow, breaking free from the constraints of frontend syntax, like a poet wielding their pen, freely expressing inner emotions.
+- Not only can character cards execute code without filtering, but they can also load any npm packages and create custom HTML pages. Creation has never been so free, like a painter freely smearing on the canvas, outlining the world in their heart.
+- If you are willing, you can also build various resources into the character, saying goodbye to the troubles of image hosting, making everything within reach, as if putting the whole world in your pocket.
 
-### Extension: Beyond Sight
+![Image](https://github.com/user-attachments/assets/9740cd43-06fd-46c0-a114-e4bd99f13045)
 
-In the world of fount, everything is highly modularized.
+### Expansion: Beyond the Present
 
-- As long as you have a certain programming foundation, you can easily create and distribute the modules you need, just like a gardener cultivating new flowers, adding more color to this garden.
-- fount encourages you to contribute your strength to the community and the future, making this world more prosperous and more vibrant.
+In the world of fount, everything is highly modularised.
+
+- As long as you have some programming basics, you can easily create and distribute the modules you need, like a gardener cultivating new flowers, adding more colour to this garden.
+- fount encourages you to contribute your strength to the community and the future, making this world more prosperous and vibrant.
+
+![Image](https://github.com/user-attachments/assets/8487a04a-7040-4844-81a6-705687856757)
+
+### Summary
+
+In summary, fount allows you to run fount format characters, which may have various abilities or be applied to different scenarios. They may be deep, lively, gentle, or strong, it all depends on you, my friend! :)
 
 ### More Information
 

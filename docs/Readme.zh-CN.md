@@ -7,8 +7,24 @@
 
 > [!CAUTION]
 >
-> 1. fount 如同初生的朝阳，尚在成长的道路上。这意味着它的接口和 API 可能会随时变化，角色的创造者们可能需要及时跟进更新，以保证其作品的正常运行。但请相信，每一次改变，都是为了更加美好的未来。
-> 2. 在 fount 的世界里，角色可以自由地运行 JavaScript 命令，这赋予了它们强大的能力。因此，请您谨慎选择您所信任的角色，如同在现实生活中结交朋友一般，以保障本地文件的安全。
+> 在 fount 的世界里，角色可以自由地运行 JavaScript 命令，这赋予了它们强大的能力。因此，请您谨慎选择您所信任的角色，如同在现实生活中结交朋友一般，以保障本地文件的安全。
+
+<details open>
+<summary>屏幕截图</summary>
+
+|屏幕截图|
+|----|
+|主页|
+|![图片](https://github.com/user-attachments/assets/c1954a7a-6c73-4fb0-bd12-f790a038bd0e)|
+|主题选择|
+|![图片](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074)|
+|聊天|
+|![图片](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d)|
+
+</details>
+
+<details open>
+<summary>安装/删除</summary>
 
 ## 安装
 
@@ -50,6 +66,8 @@ fountInstaller init
 
 轻而易举地删除 fount，只需`fount remove`即可。
 
+</details>
+
 ## fount 是什么？
 
 fount，简而言之, 是一个角色卡前端页面，它解耦了 AI 来源、AI 角色、用户人设、对话环境和 AI 插件，让它们能够自由组合，碰撞出无限的火花。
@@ -65,6 +83,8 @@ fount，简而言之, 是一个角色卡前端页面，它解耦了 AI 来源、
 一切，都可以在 AI 来源生成器中使用自定义的 JavaScript 代码来解决，如同魔法一般。
 无需新的进程，CPU 和内存得以静静地呼吸，桌面也更加清爽。
 
+![图片](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
+
 ### 网页体验改进
 
 fount 站在巨人的肩膀上，向 [SillyTavern](https://github.com/SillyTavern/SillyTavern) 投去敬意的一瞥，并在此基础上，融入了自己的见解和构思。
@@ -75,6 +95,8 @@ fount 站在巨人的肩膀上，向 [SillyTavern](https://github.com/SillyTaver
 - **原生的群组支持：** 在 fount 中，每一次对话都是一场盛大的聚会。你可以自由地邀请角色加入，或让他们悄然离去，无需繁琐的格式转换和卡片复制，如同在花园中，花儿可以自由地组合，呈现出不同的风景。
 
 以及更多……
+
+![图片](https://github.com/user-attachments/assets/bd1600dc-4612-458b-95ba-c7b019a26390)
 
 ### 陪伴：不止于网页
 
@@ -97,12 +119,16 @@ fount 渴望让角色走进你的生活，与你一同经历风雨，分享喜�
 - 角色卡中不但可以无过滤地执行代码，亦可以加载任何 npm 包、创作自定义 HTML 页面。创作从未如此自由，如同画家在画布上自由地涂抹，勾勒出心中的世界。
 - 如果你愿意，还可以在角色中内置各种资源，告别图床搭建的烦恼，让一切都触手可及，如同将整个世界都装进了口袋。
 
+![图片](https://github.com/user-attachments/assets/9740cd43-06fd-46c0-a114-e4bd99f13045)
+
 ### 拓展：不止于眼前
 
 在 fount 的世界里，一切都是高度模块化的。
 
 - 只要你具备一定的程序基础，就可以轻松地创建、分发所需的模块，如同园丁培育出新的花朵，为这片花园增添更多的色彩。
 - fount 鼓励你向社区和未来贡献自己的力量，让这片天地变得更加繁荣，更加生机勃勃。
+
+![图片](https://github.com/user-attachments/assets/8487a04a-7040-4844-81a6-705687856757)
 
 ### 总结
 
