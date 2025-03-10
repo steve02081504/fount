@@ -4,7 +4,9 @@
 			<img src="${avatar}" alt="${name}" />
 		</div>
 	</div>
-	<div class="chat-bubble relative chat-bubble">
+	<div class="chat-bubble relative chat-bubble ${
+		content.match(/<(?<tag>video|iframe)\b[^>]*>.*?<\/\k<tag>>/gs) ? 'w-full' : ''
+	}">
 		<div class="button-group absolute top-1 right-1 join">
 			<button class="edit-button btn btn-xs btn-primary join-item" data-i18n="chat.messageView.buttons.edit">
 				<img src="https://api.iconify.design/line-md/edit.svg" data-i18n="chat.messageView.buttons.editIcon" />

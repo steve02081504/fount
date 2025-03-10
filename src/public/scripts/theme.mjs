@@ -4,10 +4,22 @@ import { initLinesBackground, updateColors } from './lines_background.mjs'
 let theme_now
 export let is_dark = Boolean(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
 
+function autoresize_frames() {
+	const frames = document.querySelectorAll('iframe')
+	for (const frame of frames) if (frame.contentWindow.document.body) {
+		let frame_width, frame_height
+		frame_width = frame.contentWindow.document.body.scrollWidth
+		frame_height = frame.contentWindow.document.body.scrollHeight
+		frame.style.width = frame_width + 'px'
+		frame.style.height = frame_height + 'px'
+	}
+}
+
 export const applyTheme = () => {
 	initLinesBackground()
 	setTheme(localStorage.getItem('theme'))
 	svgInliner(document)
+	setInterval(autoresize_frames, 1000)
 }
 
 const functions = []
