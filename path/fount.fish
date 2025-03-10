@@ -111,7 +111,9 @@ if not type -q git
 end
 
 # 2. Git Initialization / Update
-if type -q git # Ensure Git is installed
+if test -f "$FOUNT_DIR/.noupdate"
+	echo "Skipping fount update due to .noupdate file"
+else if type -q git # Ensure Git is installed
 	if not test -d "$FOUNT_DIR/.git"
 		rm -rf "$FOUNT_DIR/.git-clone"
 		mkdir -p "$FOUNT_DIR/.git-clone"
@@ -127,9 +129,7 @@ if type -q git # Ensure Git is installed
 		git -C "$FOUNT_DIR" checkout master
 	else
 		# Repository exists:  Update logic
-		if test $IN_DOCKER -eq 1
-			echo "Skipping git pull in Docker environment"
-		else if not test -d "$FOUNT_DIR/.git"
+		if not test -d "$FOUNT_DIR/.git"
 			echo "Repository not found, skipping git pull"
 		else
 			git -C "$FOUNT_DIR" fetch origin
@@ -288,6 +288,9 @@ if not -d "$FOUNT_DIR/node_modules" -o (count $argv) -gt 0 -a $argv[1] = 'init'
 	run_deno install --reload --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
 	run_deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" "shutdown"
 	set -e
+	echo "======================================================"
+	echo "WARNING: DO NOT install any untrusted fount parts on your system, they can do ANYTHING."
+	echo "======================================================"
 end
 
 function run

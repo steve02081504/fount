@@ -102,7 +102,13 @@ if ! command -v fount.sh &> /dev/null; then
 	find "$FOUNT_DIR/path" -type f -exec chmod +x {} \;
 else
 	# fount.sh 已存在，获取其所在目录
-	FOUNT_DIR="$(dirname "$(dirname "$(command -v fount.sh)")")"
+	FOUNT_SH_PATH="$(command -v fount.sh)"
+	# fount可能被安装在/usr/bin/fount.sh
+	if [[ "$FOUNT_SH_PATH" == "/usr/bin/fount.sh" ]]; then
+		FOUNT_DIR="/usr/share/fount"
+	else
+		FOUNT_DIR="$(dirname "$(dirname "$FOUNT_SH_PATH")")"
+	fi
 fi
 
 # 执行 fount.sh 脚本

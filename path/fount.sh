@@ -135,7 +135,9 @@ if ! command -v git &> /dev/null; then
 	install_package git  # Use the install_package function
 fi
 
-if command -v git &> /dev/null; then # Ensure git is now installed
+if [ -f "$FOUNT_DIR/.noupdate" ]; then
+	echo "Skipping fount update due to .noupdate file"
+elif command -v git &> /dev/null; then # Ensure git is now installed
 	if [ ! -d "$FOUNT_DIR/.git" ]; then
 		rm -rf "$FOUNT_DIR/.git-clone"  # Remove any old .git-clone
 		mkdir -p "$FOUNT_DIR/.git-clone"
@@ -151,9 +153,7 @@ if command -v git &> /dev/null; then # Ensure git is now installed
 		git -C "$FOUNT_DIR" checkout master
 	else
 		# Repository exists:  Update logic
-		if [ $IN_DOCKER -eq 1 ]; then
-			echo "Skipping git pull in Docker environment"
-		elif [ ! -d "$FOUNT_DIR/.git" ]; then # Double check if the repo exists
+		if [ ! -d "$FOUNT_DIR/.git" ]; then # Double check if the repo exists
 			echo "Repository not found at $FOUNT_DIR/.git, skipping git pull." >&2
 		else
 			# Fetch latest changes
@@ -321,6 +321,9 @@ if [[ ! -d "$FOUNT_DIR/node_modules" || ($# -gt 0 && $1 = 'init') ]]; then
 	# 不知为何部分环境下第一次跑铁定出错，先跑再说
 	run_deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" "shutdown"
 	set -e
+	echo "======================================================"
+	echo "WARNING: DO NOT install any untrusted fount parts on your system, they can do ANYTHING."
+	echo "======================================================"
 fi
 
 run() {

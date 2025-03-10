@@ -3,6 +3,8 @@ FROM denoland/deno:latest
 WORKDIR /app
 
 COPY . /app
+RUN touch /app/.noupdate
+RUN rm -rf /app/.git
 
 EXPOSE 8931
 

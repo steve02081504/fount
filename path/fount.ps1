@@ -99,7 +99,10 @@ if (!(Get-Command git -ErrorAction SilentlyContinue)) {
 	}
 }
 
-if (Get-Command git -ErrorAction SilentlyContinue) {
+if (Test-Path -Path "$FOUNT_DIR/.noupdate") {
+	Write-Host "Skipping fount update due to .noupdate file"
+}
+elseif (Get-Command git -ErrorAction SilentlyContinue) {
 	if (!(Test-Path -Path "$FOUNT_DIR/.git")) {
 		Remove-Item -Path "$FOUNT_DIR/.git-clone" -Recurse -Force -ErrorAction SilentlyContinue
 		New-Item -ItemType Directory -Path "$FOUNT_DIR/.git-clone"
@@ -111,10 +114,7 @@ if (Get-Command git -ErrorAction SilentlyContinue) {
 		git -C "$FOUNT_DIR" checkout master
 	}
 
-	if ($IN_DOCKER) {
-		Write-Host "Skipping git pull in Docker environment"
-	}
-	elseif(!(Test-Path -Path "$FOUNT_DIR/.git")) {
+	if(!(Test-Path -Path "$FOUNT_DIR/.git")) {
 		Write-Host "Repository not found, skipping git pull"
 	}
 	else {
@@ -188,6 +188,9 @@ deno -V
 if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $args[0] -eq 'init')) {
 	Write-Host "Installing dependencies..."
 	deno install --reload --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
+	Write-Host "======================================================" -ForegroundColor Green
+	Write-Warning "DO NOT install any untrusted fount parts on your system, they can do ANYTHING."
+	Write-Host "======================================================" -ForegroundColor Green
 }
 
 # 执行 fount

@@ -1,0 +1,39 @@
+name: Test PKGBUILD
+
+on:
+  push:
+    paths:
+      - 'PKGBUILD'
+      - '**.install'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Update system and install dependencies
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm base-devel sudo
+          sed -i '/E_ROOT/d' /usr/bin/makepkg
+
+      - name: Build package
+        run: makepkg -si --noconfirm
+
+      - name: Install package
+        run: sudo pacman -U --noconfirm *.pkg.tar.zst
+
+      - name: Verify installation
+        run: which fount
+
+      - name: Uninstall package
+        run: sudo pacman -R --noconfirm fount
+
+      - name: Cleanup
+        run: sudo pacman -Sc --noconfirm
