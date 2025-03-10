@@ -124,6 +124,7 @@ if type -q git # Ensure Git is installed
 		rm -rf "$FOUNT_DIR/.git-clone"
 		git -C "$FOUNT_DIR" fetch origin
 		git -C "$FOUNT_DIR" reset --hard "origin/master"
+		git -C "$FOUNT_DIR" checkout master
 	else
 		# Repository exists:  Update logic
 		if test $IN_DOCKER -eq 1
@@ -137,6 +138,7 @@ if type -q git # Ensure Git is installed
 
 			if test "$currentBranch" = "HEAD"
 				echo "Not on a branch, switching to 'master'..."
+				git -C "$FOUNT_DIR" reset --hard "origin/master"
 				git -C "$FOUNT_DIR" checkout master
 				set currentBranch (git -C "$FOUNT_DIR" rev-parse --abbrev-ref HEAD)
 			end
