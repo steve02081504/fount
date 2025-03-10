@@ -147,7 +147,8 @@ if command -v git &> /dev/null; then # Ensure git is now installed
 		mv "$FOUNT_DIR/.git-clone/.git" "$FOUNT_DIR/.git"
 		rm -rf "$FOUNT_DIR/.git-clone"
 		git -C "$FOUNT_DIR" fetch origin
-		git -C "$FOUNT_DIR" reset --hard "origin/master"  # Reset to origin/master
+		git -C "$FOUNT_DIR" reset --hard "origin/master"
+		git -C "$FOUNT_DIR" checkout master
 	else
 		# Repository exists:  Update logic
 		if [ $IN_DOCKER -eq 1 ]; then
@@ -164,6 +165,7 @@ if command -v git &> /dev/null; then # Ensure git is now installed
 			# Handle detached HEAD (like PowerShell script)
 			if [ "$currentBranch" = "HEAD" ]; then
 				echo "Not on a branch, switching to 'master'..."
+				git -C "$FOUNT_DIR" reset --hard "origin/master"
 				git -C "$FOUNT_DIR" checkout master
 				currentBranch=$(git -C "$FOUNT_DIR" rev-parse --abbrev-ref HEAD) # Re-read
 			fi
