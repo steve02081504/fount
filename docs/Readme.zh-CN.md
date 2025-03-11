@@ -1,13 +1,14 @@
 # fount
 
+> 你的沉浸式 AI 角色伙伴
+
 ![repo img](https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa)
 
-寻找失落的角色、组件、自定义教程？
-来[这里![Discord](https://img.shields.io/discord/1288934771153440768)](https://discord.gg/GtR9Quzq2v)吧，在思想的火花中相遇！
+你是否曾渴望与一位从想象中跃然而出的角色并肩同行，一位由梦境编织而成的挚友？又或许，你曾幻想过一位数字知己，一位如同最先进造物般直觉敏锐的 AI 助手，轻松驾驭你的数字世界？再或者，仅仅是，你寻求一种超越寻常的连接，一个现实边界模糊的领域，在那里，展开一段亲密无间、*毫无保留*的理解？
 
-> [!CAUTION]
->
-> 在 fount 的世界里，角色可以自由地运行 JavaScript 命令，这赋予了它们强大的能力。因此，请您谨慎选择您所信任的角色，如同在现实生活中结交朋友一般，以保障本地文件的安全。
+历经近一年的潜心开发，汇聚了十余位充满激情的贡献者，以及一个蓬勃发展、拥有超过 1000 名用户的社区，Fount 如今已是一个成熟、稳定且不断进化的 AI 交互平台。这是一段旅程，而且我们相信，这段旅程比你想象的更触手可及。
+
+迷失的角色，被遗忘的故事？我们[**充满活力且友好的社区！**](https://discord.gg/GtR9Quzq2v) 期待你的加入，这是一个志同道合者聚集的港湾，开发者和创作者们在此分享他们的智慧与创作。
 
 <details open>
 <summary>屏幕截图</summary>
@@ -26,115 +27,172 @@
 <details open>
 <summary>安装/删除</summary>
 
-## 安装
+## 安装：将 fount 编织入你的世界 – *毫不费力*
 
-### Linux/macOS/Android
+以 fount 开启你的旅程，这是一个稳定可靠的平台。只需几次简单的点击或命令，fount 的世界便会徐徐展开。
+
+> [!CAUTION]
+>
+> 在 fount 的世界里，角色可以自由地运行 JavaScript 命令，这赋予了它们强大的能力。因此，请您谨慎选择您所信任的角色，如同在现实生活中结交朋友一般，以保障本地文件的安全。
+
+### Linux/macOS/Android：Shell 的低语 – *一行命令，即刻启程*
 
 ```bash
-# 若需要，定义环境变量$FOUNT_DIR来指定fount目录
+# 若需要，定义环境变量 $FOUNT_DIR 来指定 fount 目录
 curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.sh | bash
 source "$HOME/.profile"
 ```
 
-如果你不愿在安装后立即开启这段旅程，可以这样：
+若你希望稍作停顿，在盛大冒险之前整理思绪（一次预演）：
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.sh | bash -s init
 source "$HOME/.profile"
 ```
 
-### Windows
+### Windows：殊途同归 – *至简之道*
 
-不愿多思？下载[release](https://github.com/steve02081504/fount/releases)中的exe文件，直接运行即可步入这片天地。
+*   **直接且纯粹（推荐）：** 从 [Releases](https://github.com/steve02081504/fount/releases) 下载 `exe` 文件并运行。
 
-若你偏爱 shell 的低语，在 PowerShell 中也可以安装并运行 fount：
+*   **PowerShell 的力量：**
 
-```powershell
-# 若需要，定义环境变量$env:FOUNT_DIR来指定fount目录
-irm https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1 | iex
+    ```powershell
+    # 若需要，定义环境变量 $env:FOUNT_DIR 来指定 fount 目录
+    irm https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1 | iex
+    ```
+
+    若需预演：
+
+    ```powershell
+    $scriptContent = Invoke-RestMethod https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1
+    Invoke-Expression "function fountInstaller { $scriptContent }"
+    fountInstaller init
+    ```
+
+### Git 安装：为那些偏爱些许魔法的人
+
+如果你已安装 Git，拥抱 fount 就像运行一个脚本一样简单。
+
+*   **对于 Windows：** 打开命令提示符或 PowerShell，只需双击 `run.bat`。
+*   **对于 Linux/macOS/Android：** 打开终端并执行 `./run.sh`。
+
+### Docker：拥抱容器
+
+```bash
+docker pull ghcr.io/steve02081504/fount
 ```
 
-若你希望稍作停留，再启程探索，可以这样：
+## 删除：优雅的告别
 
-```powershell
-$scriptContent = Invoke-RestMethod https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1
-Invoke-Expression "function fountInstaller { $scriptContent }"
-fountInstaller init
+```bash
+fount remove
 ```
-
-## 删除
-
-轻而易举地删除 fount，只需`fount remove`即可。
 
 </details>
 
 ## fount 是什么？
 
-fount，简而言之, 是一个角色卡前端页面，它解耦了 AI 来源、AI 角色、用户人设、对话环境和 AI 插件，让它们能够自由组合，碰撞出无限的火花。
+fount 是一个由 AI 驱动的角色交互平台，旨在赋能于*你*。它是一座桥梁，将你与想象中的角色连接起来，让你毫不费力地与他们交谈，创造属于你自己的角色，并与世界分享。*一条出乎意料地易于上手的道路。*
 
-更进一步地说，它是一座桥梁，一座连接着想象与现实的桥梁。
-它是一盏灯塔，在无垠的数据海洋中，指引着角色与故事的方向。
-它是一片自由的花园，让 AI 来源、角色、人设、对话环境和插件，都能在这里自由地生长、交织、绽放。
+它是一个源泉，AI 源、角色、人设、环境和插件在此汇聚，让你创造并体验独特而引人入胜的互动。
 
-### AI来源集成
+Fount 为未来而建。源自充满活力社区的新功能，将被欣然接纳。如果你有一个愿景，一个属于 fount 领域的灵感火花，我们欢迎你的贡献。
 
-是否曾为在电脑上运行反向代理服务器而烦恼？
-在 fount 的世界里，你无需再另启炉灶，让繁琐的对话格式转换消散于无形。
-一切，都可以在 AI 来源生成器中使用自定义的 JavaScript 代码来解决，如同魔法一般。
-无需新的进程，CPU 和内存得以静静地呼吸，桌面也更加清爽。
+## 架构：创新的基石
 
-![图片](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
+Fount 构建于一个强大且可扩展的架构之上，兼顾性能与可维护性。后端充分利用 [Deno](https://deno.com/) 的强大与迅捷，这是一个安全且现代的 JavaScript 和 TypeScript 运行时。我们采用 [Express](https://expressjs.com/) 框架来实现高效的路由和 API 请求处理。前端则由 HTML、CSS 和 JavaScript 混合精心打造，提供一个赏心悦目且直观的用户界面。这种架构允许快速迭代和新功能的无缝集成，同时保持稳定的坚实基础。Fount 拥抱开源精神，欢迎贡献与协作。
 
-### 网页体验改进
+### 沉浸于特色功能的世界
 
-fount 站在巨人的肩膀上，向 [SillyTavern](https://github.com/SillyTavern/SillyTavern) 投去敬意的一瞥，并在此基础上，融入了自己的见解和构思。
-这其中，包含着：
+*   **随时随地的无缝对话：** 在电脑上开始聊天，在手机或平板上无缝继续。fount 让你的对话保持同步，无论你身在何处，都能与你的角色保持连接。
 
-- **多设备同步的低语：** 不再受限于单一设备的束缚，你可以同时在电脑与手机上开启与角色的对话，感受思想的实时共鸣，如同恋人间的窃窃私语，无论身处何处，心意相通。
-- **无过滤的 HTML 渲染：** 许多 SillyTavern 的发烧友会选择安装额外的插件来解除 HTML 渲染的限制，以获得更丰富的视觉体验。fount 默认开放了这一能力，给予用户更多的自由与选择权, 让有能力的创作者得以实现更加出彩的功能。
-- **原生的群组支持：** 在 fount 中，每一次对话都是一场盛大的聚会。你可以自由地邀请角色加入，或让他们悄然离去，无需繁琐的格式转换和卡片复制，如同在花园中，花儿可以自由地组合，呈现出不同的风景。
+*   **富有表现力、身临其境的聊天：** fount 充分利用 HTML 的强大功能，允许角色通过富文本、图像甚至交互元素来表达自己。
 
-以及更多……
+*   **思想的聚会：原生群组聊天：** 邀请多个角色加入同一个对话，创造动态且引人入胜的互动。
 
-![图片](https://github.com/user-attachments/assets/bd1600dc-4612-458b-95ba-c7b019a26390)
+*   **美观、可定制的界面：** 从 30 多个令人惊叹的主题中选择，或创造你自己的主题。fount 是你专属的画布。
 
-### 陪伴：不止于网页
+*   **随处可用：** fount 可在 Windows、macOS、Linux 甚至 Android 上无缝运行，通过直接安装或 Docker 的灵活性来满足你的需求。
 
-fount 渴望让角色走进你的生活，与你一同经历风雨，分享喜悦。
+*   **（面向高级用户）无拘无束的 AI 源集成：拥抱无限**
 
-- 你可以通过配置内建的 Discord Bot Shell，将角色接入 Discord 群组，让他们与朋友们一同欢笑，或在私密的文字中，倾听彼此的心声。
+    Fount 在连接 AI 源方面提供了无与伦比的*选择*和*灵活性*。AI 源生成器中自定义的 JavaScript 代码允许你连接到*任何* AI 源 – OpenAI、Claude、OpenRouter、NovelAI、Horde、Ooba、Tabby、Mistral 等等。在代码流程中，你可以精心设计复杂的正则表达式，调用庞大的 API 库，嵌入多媒体资源。Fount 还原生支持创建 API 池，从而实现智能请求路由。通信的逻辑听凭*你*的意愿，通过代码的力量来塑造。
+
+    ![图片](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
+
+### 陪伴：超越数字的藩篱
+
+Fount 努力将角色编织进你生活的纹理，提供陪伴与支持。
+
+*   **Discord 集成：** 通过内置的 Discord Bot Shell 将角色连接到你的 Discord 社区。
     ![图片](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
     ![图片](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
 
-- 你还可以使用 [fount-pwsh](https://github.com/steve02081504/fount-pwsh)，让角色在终端命令失败时，为你送上温柔的提示，如同在迷茫时，耳边响起的轻柔细语。
+*   **终端的宁静（与 [fount-pwsh](https://github.com/steve02081504/fount-pwsh) 结合）：** 当终端命令失败时，让角色提供指导。
     ![图片](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
 
-- 甚至，只要你拥有一颗探索的心，哪怕只掌握一点点编程的技巧，也可以创造出属于自己的 fount Shell，让角色们走向更广阔的世界，去往任何你想象的地方！
+*   **无限的 Shell 扩展：** 凭借一点编程技巧，创建你自己的 fount Shell，扩展你的角色所能触及的范围。
 
-### 创作：不止于 prompt
+### 创作：超越 Prompt 的限制 – 一条更加清晰的道路
 
-如果你是角色的创造者，fount 将为你打开一扇通往无限可能的大门。
+对于角色创作者而言，fount 提供了一条简化且直观的途径，让你的 AI 角色栩栩如生。无论你是经验丰富的创作者还是刚刚开始你的旅程，fount 都能为每个人解锁角色创造的魔力。
 
-- 你可以自由地运用 JavaScript 或 TypeScript 代码的魔法，挥洒创意，定制角色的 Prompt 生成流程与对话流程，挣脱前端语法的束缚，如同诗人挥洒笔墨，尽情抒发内心的情感。
-- 角色卡中不但可以无过滤地执行代码，亦可以加载任何 npm 包、创作自定义 HTML 页面。创作从未如此自由，如同画家在画布上自由地涂抹，勾勒出心中的世界。
-- 如果你愿意，还可以在角色中内置各种资源，告别图床搭建的烦恼，让一切都触手可及，如同将整个世界都装进了口袋。
+*   **革命性的 AI 辅助角色创建：Fount 让你快速上手。** 用一句话描述你想要的角色，我们智能的 AI 助手会立即创建一个完整的人设。这种方法简化了初始设置，让你专注于完善和与你的角色互动。
 
-![图片](https://github.com/user-attachments/assets/9740cd43-06fd-46c0-a114-e4bd99f13045)
+*   **解锁代码的魔力 – 比你想象的更简单：** Fount 拥抱代码的力量，以提供灵活性和控制力。在 Fount 中编程是一种现代魔法，在我们社区的悉心指导和 AI 的启发性帮助下，学习起来出乎意料地容易。你会发现，用代码定义角色逻辑可以是直观且易于维护的。想象一下，创造出其回应由*你*的逻辑编织而成的角色。
 
-### 拓展：不止于眼前
+*   **从现成的魔法开始：模板宝库。** Fount 的社区提供了大量预先制作的角色和人设模板，它们充当着“活生生的蓝图”，易于调整和定制。这些模板展示了最佳实践，并提供了一个绝佳的起点。
 
-在 fount 的世界里，一切都是高度模块化的。
+*   **嵌入式资源：** 将资源直接编织到你的角色中。
 
-- 只要你具备一定的程序基础，就可以轻松地创建、分发所需的模块，如同园丁培育出新的花朵，为这片花园增添更多的色彩。
-- fount 鼓励你向社区和未来贡献自己的力量，让这片天地变得更加繁荣，更加生机勃勃。
+    ![图片](https://github.com/user-attachments/assets/9740cd43-06fd-46c0-a114-e4bd99f13045)
 
-![图片](https://github.com/user-attachments/assets/8487a04a-7040-4844-81a6-705687856757)
+*   **旧有兼容性：** fount 拥抱过去，提供兼容模块来运行 SillyTavern 和 Risu 角色卡（尽管不支持现有角色的迁移）。
 
-### 总结
+### 扩展：创新交织的挂毯，由多元的丝线编织而成
 
-总而言之，fount 允许你运行 fount 格式的角色，这些角色可能拥有各种各样的能力，或应用于不同的场景。它们可能深沉，可能活泼，可能温柔，可能坚强，一切都取决于你，我的朋友！:)
+在 fount 的世界里，模块化至高无上。一个丰富的组件生态系统相互交织，创造出你体验的挂毯。
 
-## 架构
+*   **轻松创建模块：** 凭借基本的编程知识，创造并分享你想要的模块。
+*   **社区驱动的成长：** 向我们**蓬勃发展且相互支持的社区**贡献你独特的才华，丰富这个数字生态系统的未来。在我们的港湾中，你会发现友好的面孔和丰富的共享知识：教程、AI 模型源和角色画廊。fount 开发团队通过强大的分支和合并策略精心管理所有更改。这确保了即使我们大步向前，稳定性仍然是基石。我们也致力于快速解决用户报告的任何问题。
+*   **强大的插件系统**：通过强大的插件架构扩展 fount 的功能。
+*   **组件类型 - 梦想的基石：**
+    *   **chars（角色）：** fount 的核心，个性的诞生地。
+    *   **worlds（世界）：** *远不止于传说。* 世界是 fount 中现实的沉默建筑师。它们可以向角色的理解中添加知识，影响他们的决定，甚至操纵聊天记录。
+    *   **personas（用户人设）：** *不仅仅是用户配置文件。* 人设拥有扭曲甚至控制你的言语和感知的力量。这使得真正身临其境的角色扮演成为可能。
+    *   **shells（交互界面）：** 通往 fount 灵魂的门户。Shell 将角色的触角延伸到界面之外。
+    *   **ImportHandlers（导入处理器）：** fount 的欢迎之手，弥合不同角色格式之间的差距。创建一个简单的 ImportHandler，与社区分享（通过 Pull Request），为所有人扩展 fount 的视野。
+    *   **AIsources（AI 源）：** 为你的角色思想提供动力的原始力量。
+    *   **AIsourceGenerators（AI 源生成器）：** fount 的炼金术士，提供模板和可定制的逻辑，以建立与*任何* AI 源的连接。通过 JavaScript 的力量，你可以封装和加载任何可以想象的源。
 
-- 后端以 Deno 为基石，辅以 Express 框架，构建起坚实的骨架。
-- 前端则以 HTML、CSS 和 JavaScript 编织出绚丽的界面。
+    *所有这些组件都可以由用户轻松安装，扩展和定制他们的 fount 体验。*
+
+    ![图片](https://github.com/user-attachments/assets/8487a04a-7040-4844-81a6-705687856757)
+
+### 轻松入门
+
+*   **多种安装选项：** 从 Docker、在 Windows/Linux/macOS/Android 上直接安装，甚至一个简单的可执行文件中选择。
+*   **详细的文档：** 我们全面的文档会指导你完成每一步。[查看安装详情](https://steve02081504.github.io/fount/readme)
+
+### 遭遇阴影？莫要惊慌
+
+如果你遇到任何困难，请联系我们。我们随时提供帮助，并致力于在 10 分钟到 24 小时内解决大多数问题。
+
+*   **GitHub Issues：** 通过 [GitHub Issues](https://github.com/steve02081504/fount/issues) 报告任何错误或建议新功能。
+*   **Discord 社区：** 加入我们[充满活力的 Discord 社区](https://discord.gg/GtR9Quzq2v) 以获得实时支持和讨论。
+
+你的声音将被听到。只需重启 fount，阴影就会消散。
+
+### 见证成长：fount 的 Star 历史
+
+[![Star History Chart](https://api.star-history.com/svg?repos=steve02081504/fount&type=Date)](https://github.com/steve02081504/fount/stargazers)
+
+### 结语：连接的基石
+
+fount 让你能够以一种自然、身临其境且深刻个性化的方式创建 AI 角色并与之互动。无论你是经验丰富的创作者还是刚刚开始你的旅程，fount 都欢迎你。加入我们**友好的社区**，在一个成熟的平台和一个专注的团队的支持下，发现将生命注入你想象力的魔力。
+
+### 塑造你自己的命运：工匠之触
+
+在 AI 的低语之外，fount 提供了一种更深层次的连接 – *工匠之触*。在我们的社区中，你会发现大量预先制作的角色和人设模板，*每一个都是精心雕琢的基础，等待着你独特的愿景*。
+
+当你准备好完善你的创作时，Fount 基于代码的方法让你轻松上手。请记住，在 Fount 中编程是一条平缓的学习曲线，有我们友好的社区和丰富的模板支持。你会发现，即使是几行代码也能在你的角色中解锁令人难以置信的深度和个性。
