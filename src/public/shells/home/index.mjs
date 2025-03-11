@@ -18,7 +18,7 @@ const drawerToggle = document.getElementById('drawer-toggle')
 const functionButtonsContainer = document.getElementById('function-buttons-container')
 const filterInput = document.getElementById('filter-input')
 const pageTitle = document.getElementById('page-title')
-const instruction = document.querySelector('p[data-i18n="home.instruction"]')
+const instruction = document.getElementById('subtitle')
 
 const charsTab = document.getElementById('chars-tab')
 const worldsTab = document.getElementById('worlds-tab')
@@ -366,6 +366,7 @@ async function initializeApp() {
 
 	// Initial display (using the stored tab or default 'chars')
 	updateTabContent(currentItemType)
+	filterItemList()
 	// Set the active tab based on currentItemType
 	const initialTab = tabs.find(t => t.itemType === currentItemType)
 	if (initialTab)
