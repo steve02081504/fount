@@ -9,6 +9,7 @@ on:
       - '**.sh'
       - '**.fish'
       - '**.zsh'
+      - '**.ps1'
       - 'path/**'
   workflow_dispatch:
 
@@ -19,7 +20,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Set execute permission for sh files
         run: |
-          find . -maxdepth 1 \( -name "*.sh" -o -name "*.fish" -o -name "*.zsh" \) -print0 | xargs -0 chmod +x
+          find . -maxdepth 1 \( -name "*.sh" -o -name "*.ps1" -o -name "*.fish" -o -name "*.zsh" \) -print0 | xargs -0 chmod +x
           find ./path -maxdepth 1 -type f -print0 | xargs -0 chmod +x
       - name: git add all
         run: git add -A
