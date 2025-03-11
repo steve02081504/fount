@@ -176,7 +176,7 @@ function updateDefaultPartDisplay() {
 		// 更新默认部件的显示状态
 		// 容器id=${itemType.slice(0, -1)}-container
 		const container = document.getElementById(`${itemType.slice(0, -1)}-container`)
-		container.querySelectorAll(`.card-container`).forEach(el => {
+		container.querySelectorAll('.card-container').forEach(el => {
 			el.classList.remove('selected-item')
 			const checkbox = el.querySelector('.default-checkbox')
 			if (checkbox) checkbox.checked = false

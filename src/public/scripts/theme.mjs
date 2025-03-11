@@ -115,7 +115,7 @@ window.addEventListener('focus', () => {
 {
 	const daisyui_theme_style = document.createElement('link')
 	daisyui_theme_style.rel = 'stylesheet'
-	daisyui_theme_style.href = 'https://cdn.jsdelivr.net/npm/daisyui@5.0.0/themes.css'
+	daisyui_theme_style.href = 'https://cdn.jsdelivr.net/npm/daisyui/themes.css'
 	document.head.prepend(daisyui_theme_style)
 }
 export const builtin_themes = [
