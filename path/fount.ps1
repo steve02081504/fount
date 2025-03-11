@@ -110,6 +110,7 @@ elseif (Get-Command git -ErrorAction SilentlyContinue) {
 		Move-Item -Path "$FOUNT_DIR/.git-clone/.git" -Destination "$FOUNT_DIR/.git"
 		Remove-Item -Path "$FOUNT_DIR/.git-clone" -Recurse -Force
 		git -C "$FOUNT_DIR" fetch origin
+		git -C "$FOUNT_DIR" clean -fd
 		git -C "$FOUNT_DIR" reset --hard "origin/master"
 		git -C "$FOUNT_DIR" checkout master
 	}
@@ -122,6 +123,7 @@ elseif (Get-Command git -ErrorAction SilentlyContinue) {
 		$currentBranch = git -C "$FOUNT_DIR" rev-parse --abbrev-ref HEAD
 		if ($currentBranch -eq 'HEAD') {
 			Write-Host "Not on a branch, switching to 'master'..."
+			git -C "$FOUNT_DIR" clean -fd
 			git -C "$FOUNT_DIR" reset --hard "origin/master"
 			git -C "$FOUNT_DIR" checkout master
 			$currentBranch = git -C "$FOUNT_DIR" rev-parse --abbrev-ref HEAD
