@@ -78,6 +78,7 @@ async function renderItemView(itemType, itemDetails, itemName) {
 
 	const templateName = `home/${itemType.slice(0, -1)}_list_view`
 	const itemElement = await renderTemplate(templateName, itemDetails)
+	itemElement.dataset.name = itemName
 	await attachCardEventListeners(itemElement, itemDetails, itemName, homeRegistry[`home_${itemType.slice(0, -1)}_interfaces`])
 	ItemDOMCache[cacheKey] = { info: itemDetails, node: itemElement }  // Cache both info and node
 	return itemElement
@@ -161,19 +162,33 @@ async function attachCardEventListeners(itemElement, itemDetails, itemName, inte
 			if (response.ok) {
 				// Update local defaultParts and UI
 				defaultParts[currentItemType.slice(0, -1)] = isChecked ? itemName : null
-				document.querySelectorAll(`.card-container .card.${currentItemType}-card`).forEach(el => {
-					el.classList.remove('selected-item')
-					const checkbox = el.querySelector('.default-checkbox')
-					if (checkbox) checkbox.checked = false
-				})
-				if (isChecked) {
-					itemElement.classList.add('selected-item')
-					defaultCheckbox.checked = true
-				}
+				updateDefaultPartDisplay()
 			}
 			else
 				console.error('Failed to update default part:', await response.text())
 		})
+	}
+}
+
+function updateDefaultPartDisplay() {
+	for (const itemType of ['chars', 'worlds', 'personas']) {
+		const defaultPartName = defaultParts[itemType.slice(0, -1)]
+		// 更新默认部件的显示状态
+		// 容器id=${itemType.slice(0, -1)}-container
+		const container = document.getElementById(`${itemType.slice(0, -1)}-container`)
+		container.querySelectorAll(`.card-container`).forEach(el => {
+			el.classList.remove('selected-item')
+			const checkbox = el.querySelector('.default-checkbox')
+			if (checkbox) checkbox.checked = false
+		})
+		if (defaultPartName) {
+			const itemElement = container.querySelector(`.card-container[data-name="${defaultPartName}"]`)
+			if (itemElement) {
+				itemElement.classList.add('selected-item')
+				const checkbox = itemElement.querySelector('.default-checkbox')
+				if (checkbox) checkbox.checked = true
+			}
+		}
 	}
 }
 
@@ -380,8 +395,10 @@ async function fetchData() {
 	else
 		console.error('Failed to fetch home registry:', await registryResponse.text())
 
-	if (defaultPartsResponse.ok)
+	if (defaultPartsResponse.ok) {
 		defaultParts = await defaultPartsResponse.json()
+		updateDefaultPartDisplay()
+	}
 	else
 		console.error('Failed to fetch default parts:', await defaultPartsResponse.text())
 }
