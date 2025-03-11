@@ -17,19 +17,13 @@
 		localStorage.setItem('fountTheme', theme)
 	</script>
 	<script type="module">
-		import { getFountHostUrl } from '../scripts/fountHostGetter.mjs'
-		const fountProtocolUrl = urlParams.get('url')
-
+		import { getFountHostUrl } from './scripts/fountHostGetter.mjs'
 		async function main() {
 			const hostUrl = await getFountHostUrl()
 
 			if (hostUrl) {
 				localStorage.setItem('fountHostUrl', hostUrl)
-				const redirectUrl = fountProtocolUrl
-					? new URL('/protocolhandler', hostUrl)
-					: new URL('/shells/home', hostUrl)
-				if (fountProtocolUrl) redirectUrl.searchParams.set('url', fountProtocolUrl)
-				window.location.href = redirectUrl.href
+				window.location.href = new URL('/shells/home', hostUrl)
 			}
 			else {
 				alert('awww\n\nfount not found, maybe you need to install one first?')

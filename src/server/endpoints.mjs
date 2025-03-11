@@ -6,6 +6,7 @@ import { getPartList, loadPart, partsList } from './managers/index.mjs'
 import { processIPCCommand } from './ipc_server.mjs'
 import { is_local_ip, rateLimit } from '../scripts/ratelimit.mjs'
 import express from 'npm:express@^5.0.1'
+import cors from 'npm:cors'
 import { geti18n, getLocaleData } from '../scripts/i18n.mjs'
 
 /**
@@ -18,6 +19,9 @@ export function registerEndpoints(router) {
 	})
 	router.get('/api/test/async_error', async (req, res) => {
 		throw new Error('test error')
+	})
+	router.get('/api/ping', cors(), (req, res) => {
+		return res.status(200).json({ message: 'pong', cilent_name: 'fount' })
 	})
 	router.get('/api/getlocaledata', async (req, res) => {
 		const preferredLanguages = req.headers['accept-language']?.split?.(',')?.map?.((lang) => lang.trim().split(';')[0])
