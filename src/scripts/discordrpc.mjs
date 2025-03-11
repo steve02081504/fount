@@ -1,4 +1,4 @@
-import DiscordRPC from 'npm:fixed-discord-rpc'
+import DiscordRPC from 'fixed-discord-rpc'
 import { in_docker, in_termux } from './env.mjs'
 
 // Set this to your Client ID.
@@ -32,8 +32,6 @@ export function StartRPC(
 		instance: false,
 	}
 ) {
-	if (process.platform === 'win32') return // https://github.com/denoland/deno/issues/28332
-
 	if (in_docker || in_termux) return
 
 	StopRPC()

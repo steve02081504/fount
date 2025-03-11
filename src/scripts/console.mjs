@@ -1,4 +1,4 @@
-import ansiEscapes from 'npm:ansi-escapes'
+import ansiEscapes from 'ansi-escapes'
 
 let loggedFreshLine = ''
 const myConsole = {

@@ -1,4 +1,4 @@
-import notifier from 'npm:node-notifier'
+import notifier from 'node-notifier'
 import path from 'node:path'
 import process from 'node:process'
 import { __dirname } from '../server/server.mjs'

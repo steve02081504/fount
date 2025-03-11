@@ -5,11 +5,11 @@ import { ms } from '../scripts/ms.mjs'
 import { getPartList, loadPart, partsList } from './managers/index.mjs'
 import { processIPCCommand } from './ipc_server.mjs'
 import { is_local_ip, rateLimit } from '../scripts/ratelimit.mjs'
-import express from 'npm:express@^5.0.1'
+import express from 'express'
 import { geti18n, getLocaleData } from '../scripts/i18n.mjs'
 
 /**
- * @param {import('npm:express').Router} router
+ * @param {import('express').Router} router
  */
 export function registerEndpoints(router) {
 	// 注册路由

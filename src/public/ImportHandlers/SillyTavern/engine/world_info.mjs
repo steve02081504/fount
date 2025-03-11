@@ -1,4 +1,4 @@
-import seedrandom from 'npm:seedrandom'
+import seedrandom from 'seedrandom'
 import { world_info_logic, world_info_position, extension_prompt_roles } from './charData.mjs' // 假设 charData.mjs 定义了这些枚举和类型
 import { escapeRegExp, parseRegexFromString } from './tools.mjs' // 假设 tools.mjs 包含这些工具函数
 import { evaluateMacros } from './marco.mjs' // 假设宏引擎已修改并接受 chat_scoped_char_memory

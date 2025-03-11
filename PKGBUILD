@@ -5,8 +5,8 @@ pkgdesc="A powerful AI character architecture/package loader with a chat UI"
 arch=('any')
 url="https://github.com/steve02081504/fount"
 install=$pkgname.install
-makedepends=('git' 'deno')
-depends=('git' 'deno') # 运行时依赖，fount 运行需要 deno 和 git
+makedepends=('git' 'bun')
+depends=('git' 'bun') # 运行时依赖，fount 运行需要 bun 和 git
 
 source=("git+https://github.com/steve02081504/fount.git#branch=master")
 sha256sums=('SKIP')

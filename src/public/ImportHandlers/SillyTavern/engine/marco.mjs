@@ -1,7 +1,7 @@
-import seedrandom from 'npm:seedrandom'
-import moment from 'npm:moment/moment.js'
-import droll from 'npm:droll'
-import sha256 from 'npm:crypto-js/sha256.js'
+import seedrandom from 'seedrandom'
+import moment from 'moment/moment.js'
+import droll from 'droll'
+import sha256 from 'crypto-js/sha256.js'
 
 const STRING_HASH = (str) => sha256(str).toString()
 

@@ -1,7 +1,7 @@
-import optimizeRegex from 'npm:eslint-plugin-optimize-regex'
-import UnusedImports from 'npm:eslint-plugin-unused-imports'
-import html from 'npm:eslint-plugin-html'
-import destructuringMerge from 'npm:eslint-plugin-destructuring-merge'
+import optimizeRegex from 'eslint-plugin-optimize-regex'
+import UnusedImports from 'eslint-plugin-unused-imports'
+import html from 'eslint-plugin-html'
+import destructuringMerge from 'eslint-plugin-destructuring-merge'
 
 export default [
 	{

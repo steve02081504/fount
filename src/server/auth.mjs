@@ -1,10 +1,10 @@
-import * as jose from 'npm:jose'
+import * as jose from 'jose'
 import fs from 'node:fs'
-import fse from 'npm:fs-extra@^11.0.0'
+import fse from 'fs-extra'
 import crypto from 'node:crypto'
 import { config, save_config, __dirname } from './server.mjs'
 import path from 'node:path'
-import argon2 from 'npm:argon2'
+import argon2 from 'argon2'
 import { ms } from '../scripts/ms.mjs'
 import { geti18n } from '../scripts/i18n.mjs'
 

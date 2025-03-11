@@ -1,6 +1,6 @@
-import encode from 'npm:png-chunks-encode'
-import extract from 'npm:png-chunks-extract'
-import { encode as encodeText, decode as decodeText } from 'npm:png-chunk-text'
+import encode from 'png-chunks-encode'
+import extract from 'png-chunks-extract'
+import { encode as encodeText, decode as decodeText } from 'png-chunk-text'
 import { Buffer } from 'node:buffer'
 
 /**

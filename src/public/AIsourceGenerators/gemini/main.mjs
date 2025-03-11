@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from 'npm:@google/generative-ai'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 import { escapeRegExp } from '../../../../src/scripts/escape.mjs'
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */

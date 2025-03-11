@@ -52,27 +52,27 @@ if test -d "/data/data/com.termux"
 	set IN_TERMUX 1
 end
 
-function run_deno
-	set deno_args $argv
-	set deno_cmd "deno"  # Default
+function run_bun
+	set bun_args $argv
+	set bun_cmd "bun"  # Default
 
 	if test $IN_TERMUX -eq 1
-		if type -q deno.glibc.sh
-			set deno_cmd "deno.glibc.sh"
+		if type -q bun.glibc.sh
+			set bun_cmd "bun.glibc.sh"
 		else if type -q glibc-runner
-			set deno_cmd "glibc-runner (which deno)"
+			set bun_cmd "glibc-runner (which bun)"
 		else
-			echo "Warning: glibc-runner and deno.glibc.sh not found, falling back to plain deno in Termux (may not work)." >&2
+			echo "Warning: glibc-runner and bun.glibc.sh not found, falling back to plain bun in Termux (may not work)." >&2
 		end
 	end
-	exec $deno_cmd $deno_args
+	exec $bun_cmd $bun_args
 end
 
-function patch_deno
-	set deno_bin (which deno)
+function patch_bun
+	set bun_bin (which bun)
 
-	if test -z "$deno_bin"
-		echo "Error: Deno executable not found before patching. Cannot patch." >&2
+	if test -z "$bun_bin"
+		echo "Error: Bun executable not found before patching. Cannot patch." >&2
 		return 1
 	end
 
@@ -82,25 +82,25 @@ function patch_deno
 	end
 
 	# 使用更通用的 rpath 和正确的 interpreter 路径
-	patchelf --set-rpath '${ORIGIN}/../glibc/lib' --set-interpreter "${PREFIX}/glibc/lib/ld-linux-aarch64.so.1" $deno_bin
+	patchelf --set-rpath '${ORIGIN}/../glibc/lib' --set-interpreter "${PREFIX}/glibc/lib/ld-linux-aarch64.so.1" $bun_bin
 
 	if test $status -ne 0
-		echo "Error: Failed to patch Deno executable with patchelf." >&2
+		echo "Error: Failed to patch Bun executable with patchelf." >&2
 		return 1
 	else
 		# Create wrapper script (Termux)
-		mkdir -p ~/.deno/bin
+		mkdir -p ~/.bun/bin
 		echo '#!/usr/bin/env sh
 _oldpwd="${PWD}"
 _dir="$(dirname "${0}")"
 cd "${_dir}"
-if not test -h "deno"
-	mv -f "deno" "deno.orig"
-	ln -sf "deno.glibc.sh" "deno"
+if not test -h "bun"
+	mv -f "bun" "bun.orig"
+	ln -sf "bun.glibc.sh" "bun"
 end
 cd "${_oldpwd}"
-LD_PRELOAD= exec "${_dir}/deno.orig" $argv' > ~/.deno/bin/deno.glibc.sh
-		chmod u+x ~/.deno/bin/deno.glibc.sh
+LD_PRELOAD= exec "${_dir}/bun.orig" $argv' > ~/.bun/bin/bun.glibc.sh
+		chmod u+x ~/.bun/bin/bun.glibc.sh
 	end
 	return 0
 end
@@ -187,9 +187,9 @@ else
 	echo "Git is not installed, skipping fount update"
 end
 
-if test ($IN_TERMUX -eq 0 -a -z (type -q deno)) -o ($IN_TERMUX -eq 1 -a not -f ~/.deno/bin/deno.glibc.sh)
+if test ($IN_TERMUX -eq 0 -a -z (type -q bun)) -o ($IN_TERMUX -eq 1 -a not -f ~/.bun/bin/bun.glibc.sh)
 	if test $IN_TERMUX -eq 1
-		echo "Installing Deno for Termux..."
+		echo "Installing Bun for Termux..."
 		# Termux 环境下的特殊处理
 		set -e
 		yes y | pkg upgrade -y
@@ -206,21 +206,21 @@ if test ($IN_TERMUX -eq 0 -a -z (type -q deno)) -o ($IN_TERMUX -eq 1 -a not -f ~
 		end
 		set +e
 
-		# Install Deno.js
-		curl -fsSL https://deno.land/install.sh | sh -s -- -y
-		set DENO_INSTALL "$HOME/.deno"
-		set DENO_BIN_PATH "$DENO_INSTALL/bin/deno"
+		# Install Bun.js
+		curl -fsSL https://https://bun.sh/install | sh -s -- -y
+		set BUN_INSTALL "$HOME/.bun"
+		set BUN_BIN_PATH "$BUN_INSTALL/bin/bun"
 
 		# Explicitly set execute permissions
-		chmod +x "$DENO_BIN_PATH"
+		chmod +x "$BUN_BIN_PATH"
 
 		# Source bashrc and PATH setup  (提前 source)
-		set -gx DENO_INSTALL "$HOME/.deno"
-		set -gx PATH "$PATH:$DENO_INSTALL/bin"
+		set -gx BUN_INSTALL "$HOME/.bun"
+		set -gx PATH "$PATH:$BUN_INSTALL/bin"
 
-		# 将 Deno 添加到 .profile (如果尚不存在)  <--- 修改为 .profile
-		if not grep -q "export PATH=.*$DENO_INSTALL/bin" "$HOME/.profile"
-			echo "export PATH=\"\$PATH:$DENO_INSTALL/bin\"" >> "$HOME/.profile"
+		# 将 Bun 添加到 .profile (如果尚不存在)  <--- 修改为 .profile
+		if not grep -q "export PATH=.*$BUN_INSTALL/bin" "$HOME/.profile"
+			echo "export PATH=\"\$PATH:$BUN_INSTALL/bin\"" >> "$HOME/.profile"
 		end
 
 		source "$HOME/.profile"
@@ -230,78 +230,78 @@ if test ($IN_TERMUX -eq 0 -a -z (type -q deno)) -o ($IN_TERMUX -eq 1 -a not -f ~
 			source "$HOME/.bashrc"
 		end
 
-		# 尝试使用 glibc-runner 运行 Deno，使用绝对路径(在source之后)
+		# 尝试使用 glibc-runner 运行 Bun，使用绝对路径(在source之后)
 		set GLIBC_RUNNER_PATH (which glibc-runner)
-		if not "$GLIBC_RUNNER_PATH" "$DENO_BIN_PATH" -V &> /dev/null
-			echo "Error: Deno failed to execute with glibc-runner." >&2
-			rm -rf "$DENO_INSTALL"
+		if not "$GLIBC_RUNNER_PATH" "$BUN_BIN_PATH" -V &> /dev/null
+			echo "Error: Bun failed to execute with glibc-runner." >&2
+			rm -rf "$BUN_INSTALL"
 			exit 1  # 首次运行失败直接退出
 		end
 
-		# Check 'command -v deno' again (after direct execution and PATH setup)
-		if not type -q deno
-			echo "Warning: 'deno' command not found in PATH." >&2
+		# Check 'command -v bun' again (after direct execution and PATH setup)
+		if not type -q bun
+			echo "Warning: 'bun' command not found in PATH." >&2
 			# 不退出，因为后面可能通过 wrapper 运行
 		end
 
-		# Patch Deno.js (Termux)
-		patch_deno
+		# Patch Bun.js (Termux)
+		patch_bun
 
-		echo "Deno installed for Termux."
+		echo "Bun installed for Termux."
 	else
 		# 非 Termux 环境下的普通安装
-		curl -fsSL https://deno.land/install.sh | sh -s -- -y
+		curl -fsSL https://https://bun.sh/install | sh -s -- -y
 		source "$HOME/.profile"
 		if string match -q -r '.*/zsh$' $SHELL
 			source "$HOME/.zshrc"
 		else
 			source "$HOME/.bashrc"
 		end
-		echo "Deno installed."
+		echo "Bun installed."
 	end
 
-	if not type -q deno
-		echo "Deno missing, you cant run fount without deno (final check)"
+	if not type -q bun
+		echo "Bun missing, you cant run fount without bun (final check)"
 		exit 1  # 最终检查，如果还是找不到，则退出
 	end
 end
 
 if test $IN_DOCKER -eq 1
-	echo "Skipping deno upgrade in Docker environment"
+	echo "Skipping bun upgrade in Docker environment"
 else
-	# 使用 run_deno 来获取 Deno 版本信息
-	set deno_version_before (run_deno -V 2>&1)
-	if test -z "$deno_version_before"
-		echo "Error: Could not determine current Deno version." >&2
+	# 使用 run_bun 来获取 Bun 版本信息
+	set bun_version_before (run_bun -V 2>&1)
+	if test -z "$bun_version_before"
+		echo "Error: Could not determine current Bun version." >&2
 	else
-		run_deno upgrade -q
-		set deno_version_after (run_deno -V 2>&1)
+		run_bun upgrade -q
+		set bun_version_after (run_bun -V 2>&1)
 
-		# 检查是否需要重新 patch deno
-		if test "$deno_version_before" != "$deno_version_after" -a $IN_TERMUX -eq 1
-			patch_deno
+		# 检查是否需要重新 patch bun
+		if test "$bun_version_before" != "$bun_version_after" -a $IN_TERMUX -eq 1
+			patch_bun
 		end
 	end
 end
-run_deno -V
-if not -d "$FOUNT_DIR/node_modules" -o (count $argv) -gt 0 -a $argv[1] = 'init'
-	echo "Installing dependencies..."
-	set +e
-	run_deno install --reload --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
-	run_deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" "shutdown"
-	set -e
-	echo "======================================================"
-	echo "WARNING: DO NOT install any untrusted fount parts on your system, they can do ANYTHING."
-	echo "======================================================"
-end
+run_bun -V
 
 function run
 	if test (count $argv) -gt 0 -a $argv[1] = 'debug'
 		set newargs $argv[2..-1]
-		run_deno run --allow-scripts --allow-all --inspect-brk "$FOUNT_DIR/src/server/index.mjs" $newargs
+		run_bun run --inspect-brk --install=force --prefer-latest "$FOUNT_DIR/src/server/index.mjs" $newargs
 	else
-		run_deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" $argv
+		run_bun run --install=force --prefer-latest "$FOUNT_DIR/src/server/index.mjs" $argv
 	end
+end
+
+if not -d "$FOUNT_DIR/node_modules" -o (count $argv) -gt 0 -a $argv[1] = 'init'
+	echo "Installing dependencies..."
+	set +e
+	run shutdown
+	set -e
+	echo "======================================================"
+	echo "WARNING: DO NOT install any untrusted fount parts on your system, they can do ANYTHING."
+	echo "======================================================"
 end
 
 if test (count $argv) -gt 0 -a $argv[1] = 'init'

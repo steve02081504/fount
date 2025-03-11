@@ -3,7 +3,7 @@ import { save_config } from '../../../../../server/server.mjs'
 import { expandHomeRegistry } from './home.mjs'
 
 /**
- * @param {import('npm:express').Router} router
+ * @param {import('express').Router} router
  */
 export function setEndpoints(router) {
 	router.get('/api/shells/home/gethomeregistry', authenticate, async (req, res) => {

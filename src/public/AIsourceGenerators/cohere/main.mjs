@@ -1,4 +1,4 @@
-import { CohereClientV2 } from 'npm:cohere-ai'
+import { CohereClientV2 } from 'cohere-ai'
 import { escapeRegExp } from '../../../../src/scripts/escape.mjs'
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */

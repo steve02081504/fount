@@ -1,4 +1,4 @@
-import { Client, Events, GatewayIntentBits, Partials } from 'npm:discord.js@^14.18.0'
+import { Client, Events, GatewayIntentBits, Partials } from 'discord.js'
 import { on_shutdown } from '../../../../../server/on_shutdown.mjs'
 import { loadData, loadTempData, saveData } from '../../../../../server/setting_loader.mjs'
 import { LoadChar } from '../../../../../server/managers/char_manager.mjs'
@@ -13,7 +13,7 @@ import { StartJob, EndJob } from '../../../../../server/jobs.mjs'
  * 	config: any
  * }} config
  * @param {charAPI_t} char
- * @returns {Promise<import('npm:discord.js').Client>}
+ * @returns {Promise<import('discord.js').Client>}
  */
 async function startBot(config, char) {
 	const client = new Client({

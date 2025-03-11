@@ -1,5 +1,5 @@
 // grokAPI.mjs
-import axios from 'npm:axios'
+import axios from 'axios'
 
 const getStandardHeaders = (cookie) => {
 	return {

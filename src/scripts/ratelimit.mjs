@@ -13,7 +13,7 @@ export function is_local_ip(ip) {
  * @param {boolean} [options.byIP=true] 是否基于 IP 地址限制（默认为 true）
  * @param {boolean} [options.byUsername=false] 是否基于用户名限制（如果提供，优先级高于 IP）
  * @param {string} [options.message='Too many requests'] 超出限制时的消息
- * @returns {import('npm:express').RequestHandler} Express 中间件
+ * @returns {import('express').RequestHandler} Express 中间件
  */
 export function rateLimit(options) {
 	const {

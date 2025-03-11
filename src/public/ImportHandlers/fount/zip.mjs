@@ -1,4 +1,4 @@
-import jszip from 'npm:jszip'
+import jszip from 'jszip'
 import { writeFile, mkdir, readdir, stat, readFile } from 'node:fs/promises'
 import path from 'node:path'
 

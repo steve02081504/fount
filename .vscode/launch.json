@@ -11,7 +11,7 @@
 			"program": "${workspaceFolder}/src/server/index.mjs",
 			"cwd": "${workspaceFolder}",
 			"env": {},
-			"runtimeExecutable": "deno",
+			"runtimeExecutable": "bun",
 			"runtimeArgs": [
 				"run",
 				"--unstable",

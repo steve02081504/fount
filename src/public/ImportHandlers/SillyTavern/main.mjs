@@ -1,10 +1,10 @@
 import { getAvailablePath } from './path.mjs'
 import data_reader from './data_reader.mjs'
-import fs from 'npm:fs-extra@^11.0.0'
+import fs from 'fs-extra'
 import path from 'node:path'
 import { saveJsonFile } from '../../../scripts/json_loader.mjs'
 import { GetV2CharDataFromV1 } from './engine/charData.mjs'
-import sanitizeFilename from 'npm:sanitize-filename'
+import sanitizeFilename from 'sanitize-filename'
 import { downloadCharacter } from './char-download.mjs'
 import { Buffer } from 'node:buffer'
 

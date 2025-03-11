@@ -1,5 +1,5 @@
 import fs from 'node:fs'
-import sanitize from 'npm:sanitize-filename'
+import sanitize from 'sanitize-filename'
 import { loadJsonFile, saveJsonFile } from '../../../../../scripts/json_loader.mjs'
 import { getUserDictionary } from '../../../../../server/auth.mjs'
 import { isAIsourceLoaded, loadAIsourceGenerator, reloadAIsource } from '../../../../../server/managers/AIsources_manager.mjs'

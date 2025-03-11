@@ -165,46 +165,47 @@ else {
 	Write-Host "Git is not installed, skipping git pull"
 }
 
-# Deno 安装
-if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
-	Write-Host "Deno missing, auto installing..."
-	Invoke-RestMethod https://deno.land/install.ps1 | Invoke-Expression
+# Bun 安装
+if (!(Get-Command bun -ErrorAction SilentlyContinue)) {
+	Write-Host "Bun missing, auto installing..."
+	Invoke-RestMethod https://bun.sh/install.ps1 | Invoke-Expression
 	$env:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-	if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
-		Write-Host "Deno missing, you cant run fount without deno"
+	if (!(Get-Command bun -ErrorAction SilentlyContinue)) {
+		Write-Host "Bun missing, you cant run fount without bun"
 		exit 1
 	}
 }
 
-# Deno 更新
+# Bun 更新
 if ($IN_DOCKER) {
-	Write-Host "Skipping deno upgrade in Docker environment"
+	Write-Host "Skipping bun upgrade in Docker environment"
 }
 else {
-	deno upgrade -q
+	bun upgrade
 }
 
-deno -V
+bun -v
+
+function run {
+	if ($args.Count -gt 0 -and $args[0] -eq 'debug') {
+		$newargs = $args[1..$args.Count]
+		bun run --inspect-brk --install=force --prefer-latest "$FOUNT_DIR/src/server/index.mjs" @newargs
+	}
+	else {
+		bun run --install=force --prefer-latest "$FOUNT_DIR/src/server/index.mjs" @args
+	}
+}
 
 # 安装依赖
-if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $args[0] -eq 'init')) {
+if (!(Test-Path -Path "$FOUNT_DIR/data") -or ($args.Count -gt 0 -and $args[0] -eq 'init')) {
 	Write-Host "Installing dependencies..."
-	deno install --reload --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
+	run shutdown
 	Write-Host "======================================================" -ForegroundColor Green
 	Write-Warning "DO NOT install any untrusted fount parts on your system, they can do ANYTHING."
 	Write-Host "======================================================" -ForegroundColor Green
 }
 
 # 执行 fount
-function run {
-	if ($args.Count -gt 0 -and $args[0] -eq 'debug') {
-		$newargs = $args[1..$args.Count]
-		deno run --allow-scripts --allow-all --inspect-brk "$FOUNT_DIR/src/server/index.mjs" @newargs
-	}
-	else {
-		deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" @args
-	}
-}
 if ($args.Count -gt 0 -and $args[0] -eq 'geneexe') {
 	$exepath = $args[1]
 	if (!$exepath) { $exepath = "fount.exe" }

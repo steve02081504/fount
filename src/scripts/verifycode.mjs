@@ -1,4 +1,4 @@
-import cryptoRandomString from 'npm:crypto-random-string'
+import cryptoRandomString from 'crypto-random-string'
 import { ms } from './ms.mjs'
 import { notify } from './notify.mjs'
 import { geti18n } from '../scripts/i18n.mjs'

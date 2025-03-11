@@ -1,4 +1,4 @@
-FROM denoland/deno:latest
+FROM oven/bun:latest
 
 WORKDIR /app
 
