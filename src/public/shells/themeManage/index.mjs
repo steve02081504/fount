@@ -3,7 +3,7 @@ import { renderTemplate } from '../../scripts/template.mjs'
 import { applyTheme, builtin_themes, setTheme, getCurrentTheme } from '../../scripts/theme.mjs'
 
 applyTheme()
-initTranslations('themeManage')
+await initTranslations('themeManage')
 
 const themeList = document.getElementById('theme-list')
 
