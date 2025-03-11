@@ -48,7 +48,7 @@ const localhostLocales = [...new Set([
 	process.env.LANGUAGE,
 	process.env.LC_ALL,
 	await exec('locale -uU').then((r) => r.stdout.trim()).catch(() => undefined),
-	...navigator.languages
+	...navigator.languages || [navigator.language]
 ].filter(Boolean))]
 
 function getNestedValue(obj, key) {
