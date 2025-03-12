@@ -42,7 +42,7 @@
 			}
 		},
 		"web": {
-			"requestReceived": "Получен запрос: ${method}\t${url}"
+			"requestReceived": "Получен запрос: ${method} ${url}"
 		},
 		"route": {
 			"setLanguagePreference": "Пользователь ${username} установил предпочитаемый язык: ${preferredLanguages}"

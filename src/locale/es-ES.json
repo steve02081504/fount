@@ -42,7 +42,7 @@
 			}
 		},
 		"web": {
-			"requestReceived": "Petición recibida: ${method}\t${url}"
+			"requestReceived": "Petición recibida: ${method} ${url}"
 		},
 		"route": {
 			"setLanguagePreference": "Usuario ${username} estableció el idioma preferido: ${preferredLanguages}"
