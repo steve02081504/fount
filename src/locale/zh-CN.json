@@ -42,7 +42,7 @@
 			}
 		},
 		"web": {
-			"requestReceived": "接受到请求：${method}\t${url}"
+			"requestReceived": "接受到请求：${method} ${url}"
 		},
 		"route": {
 			"setLanguagePreference": "用户 ${username} 设置首选语言: ${preferredLanguages}"

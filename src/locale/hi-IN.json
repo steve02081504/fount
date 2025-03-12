@@ -42,7 +42,7 @@
 			}
 		},
 		"web": {
-			"requestReceived": "अनुरोध प्राप्त हुआ: ${method}\t${url}"
+			"requestReceived": "अनुरोध प्राप्त हुआ: ${method} ${url}"
 		},
 		"route": {
 			"setLanguagePreference": "उपयोगकर्ता ${username} ने पसंदीदा भाषा सेट की: ${preferredLanguages}"

@@ -42,7 +42,7 @@
 			}
 		},
 		"web": {
-			"requestReceived": "リクエストを受信しました：${method}\t${url}"
+			"requestReceived": "リクエストを受信しました：${method} ${url}"
 		},
 		"route": {
 			"setLanguagePreference": "ユーザー ${username} が優先言語を設定しました：${preferredLanguages}"

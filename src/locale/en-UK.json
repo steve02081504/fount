@@ -42,7 +42,7 @@
 			}
 		},
 		"web": {
-			"requestReceived": "Request received: ${method}\t${url}"
+			"requestReceived": "Request received: ${method} ${url}"
 		},
 		"route": {
 			"setLanguagePreference": "User ${username} set preferred language: ${preferredLanguages}"
