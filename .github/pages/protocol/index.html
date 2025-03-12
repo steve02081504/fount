@@ -24,7 +24,6 @@
 			const hostUrl = await getFountHostUrl()
 
 			if (hostUrl) {
-				localStorage.setItem('fountHostUrl', hostUrl)
 				const redirectUrl = fountProtocolUrl
 					? new URL('/protocolhandler', hostUrl)
 					: new URL('/shells/home', hostUrl)
@@ -32,7 +31,7 @@
 				window.location.href = redirectUrl.href
 			}
 			else {
-				alert('awww\n\nfount not found, maybe you need to install one first?')
+				alert('awww :(\n\nfount not found, maybe you need to install one first?')
 				window.location.href = 'https://github.com/steve02081504/fount'
 			}
 		}
@@ -41,10 +40,8 @@
 	</script>
 </head>
 
-<body>
-	<div class="flex justify-center items-center h-screen">
-		<p class="text-lg">Loading...</p>
-	</div>
+<body class="flex justify-center items-center h-screen">
+	<span class="loading loading-ring loading-lg"></span>
 </body>
 
 </html>
