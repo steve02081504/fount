@@ -21,39 +21,43 @@ function extractIpAndPortFromUrl(urlString) {
 		return extractedData
 	} catch (error) {
 		console.error(`[extractIpAndPortFromUrl] Error extracting IP and port from ${urlString}:`, error)
-		return null // 更简洁的错误处理
+		return null
 	}
 }
 
 // 测试 Fount 服务是否可用
 async function isFountServiceAvailable(host) {
-	console.debug(`[isFountServiceAvailable] Testing Fount service at: ${host}`)
 	try {
 		const url = new URL('/api/ping', host)
-		const response = await fetch(url, { method: 'GET', mode: 'cors', signal: AbortSignal.timeout(100) })
+		const response = await fetch(url, { method: 'GET', mode: 'cors', signal: AbortSignal.timeout(500) })
 		const data = await response.json()
-		const isAvailable = data?.cilent_name === 'fount' // 使用可选链
-		console.debug(`[isFountServiceAvailable] Fount service at ${host} is available: ${isAvailable}`)
-		return isAvailable
+		if (data?.cilent_name != 'fount') return false
+		console.debug(`[isFountServiceAvailable] Fount service at ${host} is available.`)
+		return true
 	} catch (error) {
-		console.error(`[isFountServiceAvailable] Error testing Fount service at ${host}:`, error)
 		return false // 任何错误都表示不可用
 	}
 }
 
 // 扫描本地网络以查找 Fount 服务
 async function scanLocalNetworkForFount(baseIP, port) {
-	console.debug(`[scanLocalNetworkForFount] Scanning local network with base IP: ${baseIP}, Port: ${port}`)
-	for (let i = 0; i <= 255; i++) {
-		const ip = baseIP.replace(/\.\d+$/, `.${i}`)
-		const host = `http://${ip}:${port}`
-		console.debug(`[scanLocalNetworkForFount] Trying host: ${host}`)
-		if (await isFountServiceAvailable(host)) {
-			console.info(`[scanLocalNetworkForFount] Fount service found at: ${host}`)
-			return host
+	console.debug(`[scanLocalNetworkForFount] Scanning with base IP: ${baseIP}, Port: ${port}`)
+	const batchSize = 8
+	for (let i = 0; i <= 255; i += batchSize) {
+		const promise_arr = []
+		for (let j = 0; j < batchSize && (i + j) <= 255; j++) {
+			const ip = baseIP.replace(/\.\d+$/, `.${i + j}`)
+			const host = `http://${ip}:${port}`
+			promise_arr.push(isFountServiceAvailable(host).then(isSuccess => isSuccess && host))
+		}
+		const batchResults = await Promise.all(promise_arr)
+		const found = batchResults.find(host => host)
+		if (found) {
+			console.info(`[scanLocalNetworkForFount] Fount service found at: ${found}`)
+			return found
 		}
 	}
-	console.warn(`[scanLocalNetworkForFount] Fount service not found on local network with base IP: ${baseIP}, Port: ${port}`)
+	console.warn(`[scanLocalNetworkForFount] Fount service not found on ${baseIP}, Port: ${port}`)
 	return null
 }
 
@@ -68,44 +72,61 @@ async function mapFountHostOnIPv4(hostUrl) {
 	if (port != DEFAULT_FOUNT_PORT) {
 		console.debug(`[mapFountHostOnIPv4] Trying default port ${DEFAULT_FOUNT_PORT}`)
 		foundHost = await scanLocalNetworkForFount(ip, DEFAULT_FOUNT_PORT)
-		if (foundHost)
-			return foundHost
-
+		if (foundHost) return foundHost
 	}
 	console.warn(`[mapFountHostOnIPv4] Fount service not found for ${hostUrl}`)
 	return null
 }
 
 // 获取 Fount 主机 URL
-export async function getFountHostUrl(hostUrl = urlParams.get('hostUrl') ?? localStorage.getItem('fountHostUrl')) {
+async function mappingFountHostUrl(hostUrl) {
 	console.debug(`[getFountHostUrl] Attempting to get Fount host URL. Initial hostUrl: ${hostUrl}`)
 
 	if (await isFountServiceAvailable(hostUrl)) {
 		console.info(`[getFountHostUrl] Fount service is available at provided hostUrl: ${hostUrl}`)
 		return hostUrl
-	} else if (isValidIPv4Address(hostUrl)) {
+	}
+	if (isValidIPv4Address(hostUrl)) {
 		console.debug('[getFountHostUrl] hostUrl is a valid IPv4 address. Attempting to map.')
 		const result = await mapFountHostOnIPv4(hostUrl)
 		if (result) {
 			console.info(`[getFountHostUrl] Fount service found via IPv4 mapping: ${result}`)
 			return result
 		}
-	} else if (!hostUrl) {
-		console.debug('[getFountHostUrl] No hostUrl provided. Trying common hosts.')
-		if (await isFountServiceAvailable('http://localhost:8931')) {
-			console.info('[getFountHostUrl] Fount service found via common host: http://localhost:8931')
-			return 'http://localhost:8931'
-		}
-		for (const commonHost of ['http://192.168.1.0:8931', 'http://192.168.0.0:8931']) {
+	}
+	{
+		console.debug('[getFountHostUrl] hostUrl is not valid. Trying common hosts.')
+		for (const commonHost of [
+			'http://localhost:8931',
+			...[1, 0, 2, 3].map((_, x) => `http://192.168.${x}.0:8931`),
+			'http://10.0.0.0:8931',
+			'http://10.1.1.0:8931',
+			'http://172.16.0.0:8931',
+			'http://172.31.0.0:8931',
+			...[4, 5, 6, 7].map((_, x) => `http://192.168.${x}.0:8931`),
+		]) {
 			console.debug(`[getFountHostUrl] Trying common host: ${commonHost}`)
-			const result = await mapFountHostOnIPv4(commonHost)
-			if (result) {
-				console.info(`[getFountHostUrl] Fount service found via common host: ${result}`)
-				return result
+			const { ip } = extractIpAndPortFromUrl(commonHost) // 只需提取 ip
+			if (isValidIPv4Address(ip)) {
+				const result = await mapFountHostOnIPv4(commonHost)
+				if (result) {
+					console.info(`[getFountHostUrl] Fount service found via common host: ${result}`)
+					return result
+				}
+			}
+			else if (await isFountServiceAvailable(commonHost)) {
+				console.info(`[getFountHostUrl] Fount service found via common host: ${commonHost}`)
+				return commonHost
 			}
 		}
 	}
 
 	console.warn(`[getFountHostUrl] Could not determine Fount host URL. Returning initial hostUrl: ${hostUrl}`)
 	return hostUrl // 即使找不到也返回原始值
+}
+
+export async function getFountHostUrl(hostUrl = urlParams.get('hostUrl') ?? localStorage.getItem('fountHostUrl')) {
+	const result = await mappingFountHostUrl(hostUrl)
+	localStorage.setItem('fountHostUrl', result)
+	return result
 }
