@@ -329,11 +329,18 @@ if [[ ! -d "$FOUNT_DIR/node_modules" || ($# -gt 0 && $1 = 'init') ]]; then
 fi
 
 run() {
+	if [[ $IN_TERMUX -eq 1 ]]; then
+		LANG_BACKUP="$LANG"
+		export LANG="$(getprop persist.sys.locale)"
+	fi
 	if [[ $# -gt 0 && $1 = 'debug' ]]; then
 		newargs=("${@:2}")
 		run_deno run --allow-scripts --allow-all --inspect-brk "$FOUNT_DIR/src/server/index.mjs" "${newargs[@]}"
 	else
 		run_deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" "$@"
+	fi
+	if [[ $IN_TERMUX -eq 1 ]]; then
+		export LANG="$LANG_BACKUP"
 	fi
 }
 if [[ $# -gt 0 && $1 = 'init' ]]; then
