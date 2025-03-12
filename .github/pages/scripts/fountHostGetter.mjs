@@ -82,6 +82,10 @@ async function mapFountHostOnIPv4(hostUrl) {
 async function mappingFountHostUrl(hostUrl) {
 	console.debug(`[getFountHostUrl] Attempting to get Fount host URL. Initial hostUrl: ${hostUrl}`)
 
+	if (await isFountServiceAvailable('http://localhost:8931')) { // 永远先检查 localhost —— 要不然用户为什么要运行本地服务器?
+		console.info('[getFountHostUrl] Fount service is available at localhost')
+		return 'http://localhost:8931'
+	}
 	if (await isFountServiceAvailable(hostUrl)) {
 		console.info(`[getFountHostUrl] Fount service is available at provided hostUrl: ${hostUrl}`)
 		return hostUrl
@@ -97,7 +101,6 @@ async function mappingFountHostUrl(hostUrl) {
 	{
 		console.debug('[getFountHostUrl] hostUrl is not valid. Trying common hosts.')
 		for (const commonHost of [
-			'http://localhost:8931',
 			...[1, 0, 2, 3].map((_, x) => `http://192.168.${x}.0:8931`),
 			'http://10.0.0.0:8931',
 			'http://10.1.1.0:8931',
@@ -106,17 +109,10 @@ async function mappingFountHostUrl(hostUrl) {
 			...[4, 5, 6, 7].map((_, x) => `http://192.168.${x}.0:8931`),
 		]) {
 			console.debug(`[getFountHostUrl] Trying common host: ${commonHost}`)
-			const { ip } = extractIpAndPortFromUrl(commonHost) // 只需提取 ip
-			if (isValidIPv4Address(ip)) {
-				const result = await mapFountHostOnIPv4(commonHost)
-				if (result) {
-					console.info(`[getFountHostUrl] Fount service found via common host: ${result}`)
-					return result
-				}
-			}
-			else if (await isFountServiceAvailable(commonHost)) {
-				console.info(`[getFountHostUrl] Fount service found via common host: ${commonHost}`)
-				return commonHost
+			const result = await mapFountHostOnIPv4(commonHost)
+			if (result) {
+				console.info(`[getFountHostUrl] Fount service found via common host: ${result}`)
+				return result
 			}
 		}
 	}
