@@ -586,6 +586,16 @@
 		"initialMessage": "¡Fount permite desplegar tus personajes favoritos en tu terminal para ayudarte a programar!",
 		"initialMessageLink": "Haz clic aquí para saber más"
 	},
+	"access": {
+		"title": "Acceder a Fount en otros dispositivos",
+		"heading": "¿Quieres acceder a Fount en otros dispositivos?",
+		"instruction": {
+			"sameLAN": "Asegúrese de que el dispositivo y el host de Fount estén en la misma red local.",
+			"accessthis": "Visita esta URL:"
+		},
+		"copyButton": "Copiar URL",
+		"copied": "¡URL copiada al portapapeles!"
+	},
 	"404": {
 		"title": "Página no encontrada",
 		"pageNotFoundText": "¡Vaya! Parece que has llegado a una página que no existe.",

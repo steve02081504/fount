@@ -586,6 +586,16 @@
 		"initialMessage": "Fountはお気に入りのキャラクターをターミナルにデプロイしてコーディングを支援できます！",
 		"initialMessageLink": "詳細はこちらをクリック"
 	},
+	"access": {
+		"title": "他のデバイスでFountにアクセスする",
+		"heading": "他のデバイスでFountにアクセスしますか？",
+		"instruction": {
+			"sameLAN": "デバイスとFountホストが同じローカルネットワーク上にあることを確認してください。",
+			"accessthis": "このURLにアクセスしてください："
+		},
+		"copyButton": "URLをコピー",
+		"copied": "URLがクリップボードにコピーされました！"
+	},
 	"404": {
 		"title": "ページが見つかりません",
 		"pageNotFoundText": "おっと！ 存在しないページにアクセスしてしまったようです。",

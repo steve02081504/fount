@@ -586,6 +586,16 @@
 		"initialMessage": "Fount prend en charge le déploiement de vos personnages préférés dans votre terminal pour vous aider à coder !",
 		"initialMessageLink": "Cliquez ici pour en savoir plus"
 	},
+	"access": {
+		"title": "Accéder à Fount sur d'autres appareils",
+		"heading": "Vous voulez accéder à Fount sur d'autres appareils ?",
+		"instruction": {
+			"sameLAN": "Assurez-vous que l'appareil et l'hôte Fount sont sur le même réseau local.",
+			"accessthis": "Visitez cette URL :"
+		},
+		"copyButton": "Copier l'URL",
+		"copied": "URL copiée dans le presse-papiers !"
+	},
 	"404": {
 		"title": "Page non trouvée",
 		"pageNotFoundText": "Oups ! Il semble que vous soyez arrivé sur une page qui n'existe pas.",

@@ -586,6 +586,16 @@
 		"initialMessage": "Fount는 코딩을 지원하기 위해 좋아하는 캐릭터를 터미널에 배포하는 것을 지원합니다!",
 		"initialMessageLink": "자세히 알아보려면 여기를 클릭하세요"
 	},
+	"access": {
+		"title": "다른 장치에서 Fount에 액세스",
+		"heading": "다른 장치에서 Fount에 액세스하시겠습니까?",
+		"instruction": {
+			"sameLAN": "장치와 Fount 호스트가 동일한 로컬 네트워크에 있는지 확인하십시오.",
+			"accessthis": "이 URL을 방문하십시오:"
+		},
+		"copyButton": "URL 복사",
+		"copied": "URL이 클립보드에 복사되었습니다!"
+	},
 	"404": {
 		"title": "페이지를 찾을 수 없음",
 		"pageNotFoundText": "죄송합니다! 존재하지 않는 페이지에 오신 것 같습니다.",
