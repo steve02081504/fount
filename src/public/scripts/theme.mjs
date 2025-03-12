@@ -38,7 +38,7 @@ export function setTheme(theme) {
 	theme_now = theme
 	localStorage.setItem('theme', theme || '')
 	theme ||= Boolean(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light'
-	document.documentElement.setAttribute('data-theme', theme)
+	if (document.documentElement.dataset.theme !== theme) document.documentElement.setAttribute('data-theme', theme)
 
 	// Use getComputedStyle to get the *computed* value of background-color, which resolves var(--bc)
 	const computedStyle = getComputedStyle(document.documentElement)
@@ -104,6 +104,14 @@ export function setTheme(theme) {
 	for (const func of functions)
 		func(theme, is_dark)
 }
+
+// MutationObserver用于监视data-theme属性的变化
+const observer = new MutationObserver((mutationsList) => {
+	for (const mutation of mutationsList)
+		if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme')
+			setTheme(document.documentElement.dataset.theme)
+})
+observer.observe(document.documentElement, { attributes: true })
 
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
 	setTheme(localStorage.getItem('theme') || (e.matches ? 'dark' : 'light'))
