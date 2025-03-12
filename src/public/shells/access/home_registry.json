@@ -1,0 +1,35 @@
+{
+	"home_function_buttons": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "在其他设备访问"
+				},
+				"en-UK": {
+					"title": "Access on other devices"
+				},
+				"de-DE": {
+					"title": "Zugang auf anderen Geräten"
+				},
+				"es-ES": {
+					"title": "Acceso en otros dispositivos"
+				},
+				"fr-FR": {
+					"title": "Accès sur d'autres appareils"
+				},
+				"hi-IN": {
+					"title": "अन्य डिवाइस पर पहुंचें"
+				},
+				"ja-JP": {
+					"title": "他のデバイスへのアクセス"
+				},
+				"ko-KR": {
+					"title": "다른 디버스에 접속"
+				}
+			},
+			"level": 100,
+			"url": "/shells/access",
+			"button": "<img src=\"https://api.iconify.design/line-md/cloud-alt-twotone.svg\" class=\"text-icon\"/>"
+		}
+	]
+}

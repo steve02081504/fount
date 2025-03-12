@@ -586,6 +586,16 @@
 		"initialMessage": "Fount 支持将你喜欢的角色部署到你的终端中辅助你编码！",
 		"initialMessageLink": "点击这里了解更多信息"
 	},
+	"access": {
+		"title": "在其他设备上访问 Fount",
+		"heading": "想在其他设备上访问 Fount 吗？",
+		"instruction": {
+			"sameLAN": "确保设备和 Fount 主机在同一个局域网下",
+			"accessthis": "访问以下网址："
+		},
+		"copyButton": "复制网址",
+		"copied": "网址已复制到剪贴板！"
+	},
 	"404": {
 		"title": "页面未找到",
 		"pageNotFoundText": "糟糕！您似乎来到了一个不存在的页面。",

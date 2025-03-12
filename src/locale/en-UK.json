@@ -586,6 +586,16 @@
 		"initialMessage": "Fount supports deploying your favorite characters to your terminal to assist you in coding!",
 		"initialMessageLink": "Click here to learn more"
 	},
+	"access": {
+		"title": "Access Fount on other devices",
+		"heading": "Want to access Fount on other devices?",
+		"instruction": {
+			"sameLAN": "Ensure the device and Fount host are on the same local network.",
+			"accessthis": "Visit this URL:"
+		},
+		"copyButton": "Copy URL",
+		"copied": "URL copied to clipboard!"
+	},
 	"404": {
 		"title": "Page Not Found",
 		"pageNotFoundText": "Oops! It seems you've stumbled upon a page that doesn't exist.",

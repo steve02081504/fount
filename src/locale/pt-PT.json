@@ -586,6 +586,16 @@
 		"initialMessage": "Fount suporta a implantação de seus personagens favoritos em seu terminal para ajudá-lo na codificação!",
 		"initialMessageLink": "Clique aqui para saber mais"
 	},
+	"access": {
+		"title": "Aceder ao Fount noutros dispositivos",
+		"heading": "Quer aceder ao Fount noutros dispositivos?",
+		"instruction": {
+			"sameLAN": "Certifique-se de que o dispositivo e o anfitrião do Fount estão na mesma rede local.",
+			"accessthis": "Visite este URL:"
+		},
+		"copyButton": "Copiar URL",
+		"copied": "URL copiado para a área de transferência!"
+	},
 	"404": {
 		"title": "Página não encontrada",
 		"pageNotFoundText": "Ups! Parece que veio parar a uma página que não existe.",
