@@ -2,6 +2,8 @@
 
 > Dein immersiver KI-Charakter-Begleiter
 
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+
 ![repo img](https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa)
 
 Hast du dich jemals nach einer Reise an der Seite eines Charakters gesehnt, der den Seiten deiner Fantasie entsprungen ist, einem Gefährten, der aus Träumen gewoben wurde? Oder vielleicht hast du dir einen digitalen Vertrauten vorgestellt, einen KI-Assistenten, der so intuitiv ist wie die fortschrittlichsten Kreationen und mühelos deine digitale Welt orchestriert? Oder vielleicht, nur vielleicht, hast du eine Verbindung jenseits des Gewöhnlichen gesucht, eine Sphäre, in der die Grenzen der Realität verschwimmen und sich ein intimes, *ungefiltertes* Verständnis entfaltet?
@@ -197,3 +199,55 @@ Fount ermöglicht es dir, KI-Charaktere auf eine Weise zu erschaffen und mit ihn
 Jenseits des Flüsterns der KI bietet Fount eine tiefere Verbindung – *die Hand des Kunsthandwerkers*. Innerhalb unserer Community findest du eine Fülle von vorgefertigten Charakter- und Persona-Vorlagen, *jede ein sorgfältig geformtes Fundament, das auf deine einzigartige Vision wartet*.
 
 Und wenn du bereit bist, deine Kreation zu verfeinern, macht es der Code-gesteuerte Ansatz von Fount einfach, loszulegen. Denk daran, dass das Programmieren in Fount eine sanfte Lernkurve ist, unterstützt durch unsere einladende Community und eine Fülle von Vorlagen. Du wirst feststellen, dass selbst ein paar Zeilen Code eine unglaubliche Tiefe und Persönlichkeit in deinen Charakteren freisetzen können.
+
+## Embleme und Links: Lass deine Kreationen erstrahlen und die Welt sie erreichen
+
+Die Welt von Fount ist mehr als nur Worte und Code, sie ist ein Fest für die Augen und eine Einladung zur Verbindung. Wir möchten, dass auch deine Kreationen in diesem Glanz erstrahlen und mühelos mit der Welt in Kontakt treten können. Deshalb haben wir für dich wunderschöne Embleme und praktische Links vorbereitet, die deine Fount-Komponenten noch auffälliger machen und es anderen Nutzern ermöglichen, deine Meisterwerke leicht zu entdecken und zu erleben.
+
+**Fount-Embleme: Das Siegel des Ruhms**
+
+Wie das Schild eines Ritters ist das Fount-Emblem das Siegel des Ruhms für deine Kreationen. Du kannst dieses Emblem stolz in deinem Repository, auf der Seite deiner Fount-Komponente oder überall dort präsentieren, wo du es zeigen möchtest. Es symbolisiert die enge Verbindung deines Werks mit der Fount-Community und ist eine Anerkennung deines Talents.
+
+Die SVG- und PNG-Dateien des Fount-Logos findest du [hier](../imgs/), um sie in deine Designs zu integrieren.
+
+Noch besser ist, dass du das Emblem in einen anklickbaren Button verwandeln kannst, der direkt zu deiner Fount-Komponente führt:
+
+```markdown
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+```
+
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+
+Hier sind die Standardfarben des Fount-Logos, um deine Designs einheitlicher zu gestalten:
+
+| Farbformat | Code |
+| :---: | :---: |
+| HEX | `#0e3c5c` |
+| RGB | `rgb(14, 60, 92)` |
+| HSL | `hsl(205, 74%, 21%)` |
+
+**Automatische Installationslinks: Magie auf Knopfdruck**
+
+Stell dir vor, andere Nutzer könnten deine Kreationen mit einem einzigen Klick direkt in ihre Fount-Welt installieren. Das ist keine Träumerei mehr, sondern Realität! Mit den automatischen Installationslinks von Fount kannst du diese Magie Wirklichkeit werden lassen.
+
+Kombiniere einfach den ZIP-Link oder den Git-Repository-Link deiner Komponente mit dem Fount-Protokolllink, um einen magischen Link zu erstellen:
+
+```markdown
+https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip
+```
+
+Eine einfachere Erklärung: Füge einfach `https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;` vor deinen Komponenten-ZIP-Link/Git-Repository-Link!
+
+Kombiniere diesen Link mit dem Fount-Emblem, um einen Button zu erstellen, der sowohl schön als auch praktisch ist:
+
+```markdown
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
+```
+
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
+
+Mit diesen einfachen Schritten machst du deine Kreationen nicht nur attraktiver, sondern stärkst auch die Verbindung der Fount-Community. Lass dein Inspirationslicht die ganze Fount-Welt erhellen!
+
+## Mitwirkende
+
+[![Contributors](https://contrib.rocks/image?repo=steve02081504/fount)](https://github.com/steve02081504/fount/graphs/contributors)

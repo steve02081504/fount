@@ -2,6 +2,8 @@
 
 > Votre Compagnon de Personnage IA Immersif
 
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+
 ![repo img](https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa)
 
 Avez-vous déjà aspiré à un voyage aux côtés d'un personnage issu des pages de votre imagination, un compagnon tissé de rêves ? Ou peut-être avez-vous imaginé un confident numérique, un assistant IA aussi intuitif que les créations les plus avancées, orchestrant sans effort votre monde numérique ? Ou peut-être, juste peut-être, avez-vous recherché une connexion au-delà de l'ordinaire, un royaume où les bords de la réalité s'estompent et où une compréhension intime et *non filtrée* se déploie ?
@@ -197,3 +199,55 @@ fount vous permet de créer et d'interagir avec des personnages IA d'une manièr
 Au-delà des murmures de l'IA, fount offre une connexion plus profonde – *la touche de l'artisan*. Au sein de notre communauté, vous trouverez une multitude de modèles de personnages et de personnalités préfabriqués, *chacun étant une base soigneusement sculptée attendant votre vision unique*.
 
 Et lorsque vous êtes prêt à affiner votre création, l'approche basée sur le code de Fount facilite la prise en main. N'oubliez pas que la programmation dans Fount est une courbe d'apprentissage douce, soutenue par notre communauté accueillante et d'abondants modèles. Vous découvrirez que même quelques lignes de code peuvent débloquer une profondeur et une personnalité incroyables dans vos personnages.
+
+## Badges et Liens : Laissez Vos Créations Briller, Laissez le Monde les Atteindre
+
+Le monde de Fount est plus que de simples mots et codes, c'est un festin pour les yeux et une invitation à se connecter. Nous voulons que vos créations brillent de cet éclat et se connectent sans effort avec le monde. C'est pourquoi nous avons préparé pour vous des badges exquis et des liens pratiques pour rendre vos composants Fount encore plus accrocheurs et permettre aux autres utilisateurs de découvrir et d'expérimenter facilement vos chefs-d'œuvre.
+
+**Badges Fount : Le Sceau de la Gloire**
+
+Tel le bouclier d'un chevalier, le badge Fount est le sceau de la gloire pour vos créations. Vous pouvez fièrement afficher ce badge dans votre dépôt, sur la page de votre composant Fount, ou partout où vous souhaitez le présenter. Il symbolise le lien étroit entre votre travail et la communauté Fount et est une reconnaissance de votre talent.
+
+Vous pouvez trouver les fichiers SVG et PNG du logo Fount [ici](../imgs/) pour les intégrer à vos designs.
+
+Mieux encore, vous pouvez transformer le badge en un bouton cliquable qui renvoie directement à votre composant Fount :
+
+```markdown
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+```
+
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+
+Voici les couleurs standard du logo Fount pour rendre vos designs plus cohérents :
+
+| Format de Couleur | Code |
+| :---: | :---: |
+| HEX | `#0e3c5c` |
+| RGB | `rgb(14, 60, 92)` |
+| HSL | `hsl(205, 74%, 21%)` |
+
+**Liens d'Installation Automatique : La Magie au Bout des Doigts**
+
+Imaginez que d'autres utilisateurs puissent installer vos créations directement dans leur monde Fount en un seul clic. Ce n'est plus un rêve, mais une réalité ! Avec les liens d'installation automatique de Fount, vous pouvez transformer cette magie en réalité.
+
+Combinez simplement le lien ZIP ou le lien du dépôt Git de votre composant avec le lien du protocole Fount pour créer un lien magique :
+
+```markdown
+https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip
+```
+
+Explication plus simple : Ajoutez simplement `https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;` avant le lien zip/lien du dépôt Git de votre composant !
+
+Combinez ce lien avec le badge Fount pour créer un bouton à la fois beau et pratique :
+
+```markdown
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
+```
+
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
+
+Grâce à ces étapes simples, vous rendez non seulement vos créations plus attrayantes, mais vous renforcez également le lien de la communauté Fount. Laissez la lumière de votre inspiration illuminer le monde entier de Fount !
+
+## Contributeurs
+
+[![Contributors](https://contrib.rocks/image?repo=steve02081504/fount)](https://github.com/steve02081504/fount/graphs/contributors)
