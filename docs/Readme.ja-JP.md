@@ -2,6 +2,8 @@
 
 > あなただけの没入型 AI キャラクターコンパニオン
 
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+
 ![repo img](https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa)
 
 あなたは、想像力のページから飛び出したキャラクター、夢から織りなされた仲間との旅を切望したことはありませんか？あるいは、デジタルな腹心を思い描いたことはありませんか？最も先進的な創造物と同じくらい直感的な AI アシスタントが、あなたのデジタル世界を難なく組織するような？あるいは、もしかしたら、あなたは普通を超えたつながりを求めていたのかもしれません。現実の境界線が曖昧になり、親密で、*フィルターなしの* 理解が展開される領域を？
@@ -197,3 +199,55 @@ fount は、自然で没入感があり、深く個人的に感じられる方�
 AI の囁きを超えて、fount はより深いつながりを提供します – *職人の技*。私たちのコミュニティ内には、事前に作成されたキャラクターとペルソナのテンプレートが豊富にあります。*それぞれが、あなたのユニークなビジョンを待つ、慎重に彫刻された基盤です*。
 
 そして、作品を洗練させる準備ができたら、Fount のコード駆動型アプローチにより、簡単に始めることができます。Fount でのプログラミングは、歓迎的なコミュニティと豊富なテンプレートに支えられた、穏やかな学習曲線であることを忘れないでください。わずか数行のコードでも、キャラクターに信じられないほどの深みと個性を解き放つことができることに気付くでしょう。
+
+## バッジとリンク：あなたの創造物を輝かせ、世界に届けよう
+
+Fountの世界は、単なる言葉やコードではなく、目の保養であり、つながりへの誘いです。私たちは、あなたの創造物がこの輝きの中で輝き、世界と容易につながることを願っています。そこで、Fountコンポーネントをさらに目を引くものにし、他のユーザーがあなたの傑作を簡単に見つけて体験できるように、精巧なバッジと便利なリンクをご用意しました。
+
+**Fountバッジ：栄光の印**
+
+騎士の盾のように、Fountバッジはあなたの創造物に対する栄光の印です。このバッジは、リポジトリ、Fountコンポーネントのページ、または展示したい場所に誇らしげに表示できます。それは、あなたの作品とFountコミュニティとの緊密なつながりを象徴し、あなたの才能の証です。
+
+FountロゴのSVGおよびPNGファイルは[こちら](../imgs/)にあり、デザインに組み込むことができます。
+
+さらに良いことに、バッジをクリック可能なボタンに変えて、Fountコンポーネントに直接リンクさせることができます。
+
+```markdown
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+```
+
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+
+デザインに一貫性を持たせるために、Fountロゴの標準カラーを以下に示します。
+
+| カラー形式 | コード |
+| :---: | :---: |
+| HEX | `#0e3c5c` |
+| RGB | `rgb(14, 60, 92)` |
+| HSL | `hsl(205, 74%, 21%)` |
+
+**自動インストールリンク：指先一つで魔法**
+
+他のユーザーが、ワンクリックであなたの創造物をFountの世界に直接インストールできると想像してみてください。これはもはや夢ではなく、現実です！Fountの自動インストールリンクを使えば、この魔法を現実に変えることができます。
+
+コンポーネントのZIPリンクまたはGitリポジトリリンクをFountプロトコルリンクと組み合わせるだけで、魔法のリンクを作成できます。
+
+```markdown
+https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip
+```
+
+より簡単な説明：コンポーネントのzipリンク/Gitリポジトリリンクの前に `https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;` を追加するだけです！
+
+このリンクをFountバッジと組み合わせることで、美しく実用的なボタンを作成できます。
+
+```markdown
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
+```
+
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
+
+これらの簡単な手順で、あなたの創造物をより魅力的にするだけでなく、Fountコミュニティのつながりを強化することもできます。あなたのインスピレーションの光をFountの世界全体に照らしましょう！
+
+## 貢献者
+
+[![Contributors](https://contrib.rocks/image?repo=steve02081504/fount)](https://github.com/steve02081504/fount/graphs/contributors)

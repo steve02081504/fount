@@ -2,6 +2,8 @@
 
 > Seu Companheiro Imersivo de Personagens de IA
 
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+
 ![repo img](https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa)
 
 Você já desejou uma jornada ao lado de um personagem saído das páginas de sua imaginação, um companheiro tecido de sonhos? Ou talvez você tenha imaginado um confidente digital, um assistente de IA tão intuitivo quanto as criações mais avançadas, orquestrando sem esforço seu mundo digital? Ou talvez, apenas talvez, você tenha buscado uma conexão além do ordinário, um reino onde as bordas da realidade se confundem e um entendimento íntimo e *não filtrado* se revela?
@@ -197,3 +199,55 @@ O Fount capacita você a criar e interagir com personagens de IA de uma forma qu
 Além dos sussurros da IA, o Fount oferece uma conexão mais profunda – *o toque do artesão*. Dentro de nossa comunidade, você encontrará uma riqueza de modelos de personagens e personas pré-fabricados, *cada um uma base cuidadosamente esculpida aguardando sua visão única*.
 
 E quando você estiver pronto para refinar sua criação, a abordagem orientada a código do Fount torna fácil começar. Lembre-se, programar no Fount é uma curva de aprendizado suave, apoiada por nossa comunidade acolhedora e modelos abundantes. Você descobrirá que mesmo algumas linhas de código podem desbloquear uma profundidade e personalidade incríveis em seus personagens.
+
+## Insígnias e Links: Deixe Suas Criações Brilharem, Deixe o Mundo Alcançá-las
+
+O mundo de Fount é mais do que apenas palavras e código, é um banquete para os olhos e um convite para se conectar. Queremos que suas criações brilhem neste esplendor e se conectem sem esforço com o mundo. Portanto, preparamos insígnias requintadas e links convenientes para você tornar seus componentes Fount ainda mais atraentes e permitir que outros usuários descubram e experimentem facilmente suas obras-primas.
+
+**Insígnias Fount: O Selo da Glória**
+
+Como o escudo de um cavaleiro, a insígnia Fount é o selo da glória para suas criações. Você pode exibir com orgulho esta insígnia em seu repositório, na página do seu componente Fount ou em qualquer lugar que desejar exibi-la. Ela simboliza a estreita ligação do seu trabalho com a comunidade Fount e é um reconhecimento do seu talento.
+
+Você pode encontrar os arquivos SVG e PNG do logotipo Fount [aqui](../imgs/) para incorporá-los em seus designs.
+
+Melhor ainda, você pode transformar a insígnia em um botão clicável que se conecta diretamente ao seu componente Fount:
+
+```markdown
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+```
+
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+
+Aqui estão as cores padrão do logotipo Fount para tornar seus designs mais consistentes:
+
+| Formato de Cor | Código |
+| :---: | :---: |
+| HEX | `#0e3c5c` |
+| RGB | `rgb(14, 60, 92)` |
+| HSL | `hsl(205, 74%, 21%)` |
+
+**Links de Instalação Automática: Magia ao Seu Alcance**
+
+Imagine outros usuários sendo capazes de instalar suas criações diretamente em seu mundo Fount com um único clique. Isso não é mais um sonho, mas realidade! Com os links de instalação automática de Fount, você pode transformar essa magia em realidade.
+
+Simplesmente combine o link ZIP ou o link do repositório Git do seu componente com o link de protocolo Fount para criar um link mágico:
+
+```markdown
+https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip
+```
+
+Explicação mais simples: Basta adicionar `https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;` antes do link zip do seu componente/link do repositório Git!
+
+Combine este link com a insígnia Fount para criar um botão que seja bonito e prático:
+
+```markdown
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
+```
+
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
+
+Com estes passos simples, você não apenas torna suas criações mais atraentes, mas também fortalece a conexão da comunidade Fount. Deixe a luz da sua inspiração iluminar todo o mundo Fount!
+
+## Contribuidor
+
+[![Contributors](https://contrib.rocks/image?repo=steve02081504/fount)](https://github.com/steve02081504/fount/graphs/contributors)

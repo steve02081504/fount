@@ -2,6 +2,8 @@
 
 > 몰입형 AI 캐릭터 동반자
 
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+
 ![repo img](https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa)
 
 상상 속 페이지에서 튀어나온 캐릭터, 꿈으로 엮은 동반자와 함께하는 여정을 갈망해 본 적이 있나요? 아니면 가장 진보된 창작물처럼 직관적인 디지털 친구, 디지털 세계를 손쉽게 조율하는 AI 비서를 상상해 본 적이 있나요? 아니면 어쩌면, 그저 어쩌면, 평범함을 뛰어넘는 연결, 현실의 경계가 모호해지고 친밀하고 *필터링되지 않은* 이해가 펼쳐지는 영역을 추구했을 수도 있습니다.
@@ -197,3 +199,55 @@ Fount는 자연스럽고 몰입감 있으며 매우 개인적으로 느껴지는
 AI의 속삭임 너머 Fount는 더 깊은 연결, 즉 *장인의 손길*을 제공합니다. 저희 커뮤니티 내에서 사전 제작된 캐릭터 및 페르소나 템플릿을 풍부하게 찾을 수 있습니다. *각각은 당신의 독특한 비전을 기다리는 세심하게 조각된 토대입니다*.
 
 그리고 창작물을 다듬을 준비가 되면 Fount의 코드 기반 접근 방식으로 쉽게 시작할 수 있습니다. Fount에서 프로그래밍하는 것은 환영하는 커뮤니티와 풍부한 템플릿으로 뒷받침되는 부드러운 학습 곡선이라는 점을 기억하세요. 몇 줄의 코드만으로도 캐릭터에서 놀라운 깊이와 개성을 잠금 해제할 수 있다는 것을 알게 될 것입니다.
+
+## 배지 및 링크: 당신의 창작물을 빛나게 하고, 세상이 닿을 수 있게 하세요
+
+Fount의 세계는 단순한 단어와 코드 그 이상입니다. 눈을 즐겁게 하고 연결을 초대하는 축제입니다. 우리는 당신의 창작물이 이 광채 속에서 빛나고 세상과 쉽게 연결되기를 바랍니다. 따라서 Fount 컴포넌트를 더욱 눈길을 끌고 다른 사용자가 당신의 걸작을 쉽게 발견하고 경험할 수 있도록 훌륭한 배지와 편리한 링크를 준비했습니다.
+
+**Fount 배지: 영광의 인장**
+
+기사의 방패처럼 Fount 배지는 당신의 창작물에 대한 영광의 인장입니다. 이 배지는 리포지토리, Fount 컴포넌트 페이지 또는 전시하고 싶은 어느 곳이든 자랑스럽게 표시할 수 있습니다. 이는 당신의 작품과 Fount 커뮤니티와의 긴밀한 연결을 상징하며 당신의 재능을 인정하는 것입니다.
+
+Fount 로고의 SVG 및 PNG 파일은 [여기](../imgs/)에서 찾아 디자인에 통합할 수 있습니다.
+
+더욱 좋은 점은 배지를 클릭 가능한 버튼으로 바꿔 Fount 컴포넌트로 직접 연결할 수 있다는 것입니다.
+
+```markdown
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+```
+
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+
+디자인의 일관성을 높이기 위해 Fount 로고의 표준 색상을 소개합니다.
+
+| 색상 형식 | 코드 |
+| :---: | :---: |
+| HEX | `#0e3c5c` |
+| RGB | `rgb(14, 60, 92)` |
+| HSL | `hsl(205, 74%, 21%)` |
+
+**자동 설치 링크: 손끝에서 펼쳐지는 마법**
+
+다른 사용자가 단 한 번의 클릭으로 당신의 창작물을 Fount 세계에 직접 설치할 수 있다고 상상해 보세요. 더 이상 꿈이 아닌 현실입니다! Fount의 자동 설치 링크를 사용하면 이 마법을 현실로 만들 수 있습니다.
+
+컴포넌트의 ZIP 링크 또는 Git 리포지토리 링크를 Fount 프로토콜 링크와 결합하여 마법 같은 링크를 만드세요.
+
+```markdown
+https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip
+```
+
+더 간단한 설명: 컴포넌트 zip 링크/Git 리포지토리 링크 앞에 `https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;`를 추가하기만 하면 됩니다!
+
+이 링크를 Fount 배지와 결합하여 아름다움과 실용성을 겸비한 버튼을 만드세요.
+
+```markdown
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
+```
+
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
+
+이 간단한 단계를 통해 당신의 창작물을 더욱 매력적으로 만들 뿐만 아니라 Fount 커뮤니티의 연결도 강화할 수 있습니다. 당신의 영감의 빛이 Fount 세계 전체를 비추도록 하세요!
+
+## 기여자
+
+[![Contributors](https://contrib.rocks/image?repo=steve02081504/fount)](https://github.com/steve02081504/fount/graphs/contributors)
