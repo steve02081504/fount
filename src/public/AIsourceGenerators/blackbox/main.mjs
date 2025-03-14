@@ -77,9 +77,15 @@ export default {
 					text = text.split('\n')
 					const base_reg = `^(|${[...new Set([
 						prompt_struct.Charname,
-						...prompt_struct.alternative_charnames || [],
 						...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name),
-					])].filter(Boolean).map(escapeRegExp).join('|')}[^\\n：:]*)(:|：)\\s*`
+					])].filter(Boolean).map(escapeRegExp).concat([
+						...(prompt_struct.alternative_charnames || []).map(Object).map(
+							(stringOrReg) => {
+								if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
+								return stringOrReg.source
+							}
+						),
+					].filter(Boolean)).join('|')}[^\\n：:]*)(:|：)\\s*`
 					let reg = new RegExp(`${base_reg}$`, 'i')
 					while (text[0].trim().match(reg)) text.shift()
 					reg = new RegExp(`${base_reg}`, 'i')
