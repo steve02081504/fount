@@ -7,9 +7,8 @@ export let is_dark = Boolean(window.matchMedia && window.matchMedia('(prefers-co
 function autoresize_frames() {
 	const frames = document.querySelectorAll('iframe')
 	for (const frame of frames) if (frame.contentWindow.document.body) {
-		let frame_width, frame_height
-		frame_width = frame.contentWindow.document.body.scrollWidth
-		frame_height = frame.contentWindow.document.body.scrollHeight
+		const frame_width = frame.contentWindow.document.body.scrollWidth
+		const frame_height = frame.contentWindow.document.body.scrollHeight
 		frame.style.width = frame_width + 'px'
 		frame.style.height = frame_height + 'px'
 	}

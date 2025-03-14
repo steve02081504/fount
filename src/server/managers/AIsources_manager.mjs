@@ -1,5 +1,5 @@
 import { getUserDictionary } from '../auth.mjs'
-import { loadJsonFile } from '../../scripts/json_loader.mjs'
+import { loadJsonFile, saveJsonFile } from '../../scripts/json_loader.mjs'
 import { isPartLoaded, loadPartBase, unloadPart } from '../parts_loader.mjs'
 
 function GetPath(username, partname) {
@@ -15,10 +15,11 @@ export async function loadAIsourceGenerator(username, AIsourcename) {
 	return loadPartBase(username, 'AIsourceGenerators', AIsourcename)
 }
 
-export async function loadAIsourceFromConfigData(username, data) {
+export async function loadAIsourceFromConfigData(username, data, { SaveConfig }) {
 	const generator = await loadAIsourceGenerator(username, data.generator)
 	return await generator.GetSource(data.config, {
 		username,
+		SaveConfig
 	})
 }
 
@@ -27,7 +28,11 @@ export async function loadAIsource(username, AIsourcename) {
 		pathGetter: () => GetPath(username, AIsourcename),
 		Loader: async (path) => {
 			const data = loadJsonFile(path + '.json')
-			const AIsource = await loadAIsourceFromConfigData(username, data)
+			const AIsource = await loadAIsourceFromConfigData(username, data, {
+				SaveConfig: (newdata = data) => {
+					saveJsonFile(path + '.json', newdata)
+				}
+			})
 			AIsource.filename = AIsourcename
 			return AIsource
 		},
@@ -35,11 +40,11 @@ export async function loadAIsource(username, AIsourcename) {
 	})
 }
 
-export async function loadAIsourceFromNameOrConfigData(username, nameOrData) {
-	if (Object(AIsourcename) instanceof String)
-		return loadAIsource(username, AIsourcename)
+export async function loadAIsourceFromNameOrConfigData(username, nameOrData, { SaveConfig }) {
+	if (Object(nameOrData) instanceof String)
+		return loadAIsource(username, nameOrData)
 	else
-		return loadAIsourceFromConfigData(username, AIsourcename)
+		return loadAIsourceFromConfigData(username, nameOrData, { SaveConfig })
 }
 
 export async function unloadAIsource(username, AIsourcename) {
