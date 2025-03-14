@@ -12,7 +12,7 @@ export default {
 			apikey: '',
 		}
 	},
-	GetSource: async (config) => {
+	GetSource: async (config, { SaveConfig }) => {
 		async function callBase(messages, config) {
 			let text
 			let files = []
@@ -88,7 +88,10 @@ export default {
 					if (retryConfig.modelArguments)
 						console.warn(`the api arguments of ${config.model} need to set to {}`)
 
-					config = currentConfig
+					if (retryConfig.urlSuffix || retryConfig.modelArguments) {
+						Object.assign(config, currentConfig)
+						SaveConfig()
+					}
 
 					return result
 				} catch (error) {
