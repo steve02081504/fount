@@ -7,6 +7,7 @@ import path from 'node:path'
 import argon2 from 'npm:argon2'
 import { ms } from '../scripts/ms.mjs'
 import { geti18n } from '../scripts/i18n.mjs'
+import { is_local_ip_from_req } from '../scripts/ratelimit.mjs'
 
 const ACCESS_TOKEN_EXPIRY = '15m'
 const REFRESH_TOKEN_EXPIRY = '30d'
@@ -96,8 +97,8 @@ async function refresh(refreshToken) {
 		const user = getUserByUsername(decoded.username)
 		const userRefreshToken = user?.auth.refreshTokens.find((token) => token.jti === decoded.jti)
 
-		// 验证 refreshToken 是否存在、是否过期、是否被撤销以及 deviceId 是否匹配
-		if (!user || !userRefreshToken || userRefreshToken.expiry < Date.now() || config.data.revokedTokens[decoded.jti] || userRefreshToken.deviceId !== decoded.deviceId)
+		// 验证 refreshToken 是否存在、是否被撤销以及 deviceId 是否匹配（过期问题已被verifyToken验证）
+		if (!user || !userRefreshToken || config.data.revokedTokens[decoded.jti] || userRefreshToken.deviceId !== decoded.deviceId)
 			return { status: 401, message: 'Invalid refresh token' }
 
 		// 生成新的 access token 和 refresh token
@@ -132,7 +133,6 @@ export async function logout(req, res) {
 		const decodedAccessToken = await jose.decodeJwt(accessToken)
 		if (decodedAccessToken && decodedAccessToken.exp)
 			config.data.revokedTokens[decodedAccessToken.jti] = { expiry: decodedAccessToken.exp * 1000, type: 'access' }
-
 	}
 
 	if (refreshToken && user)
@@ -160,6 +160,8 @@ export async function logout(req, res) {
  * 身份验证中间件
  */
 export async function authenticate(req, res, next) {
+	if (is_local_ip_from_req(req)) return next()
+
 	const { accessToken, refreshToken } = req.cookies
 
 	const Unauthorized = () => {
@@ -265,7 +267,7 @@ async function verifyPassword(password, hashedPassword) {
 export async function getUserByToken(token) {
 	if (!token) return null
 
-	const decoded = await verifyToken(token)
+	const decoded = jose.decodeJwt(token)
 	if (!decoded) return null
 
 	return config.data.users[decoded.username]
@@ -358,7 +360,6 @@ function cleanupRevokedTokens() {
 			delete config.data.revokedTokens[jti]
 			cleaned = true
 		}
-
 
 	if (cleaned) save_config()
 }
