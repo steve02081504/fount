@@ -35,6 +35,7 @@ else {
 }
 
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -Force -ErrorAction Ignore
+$OutputEncoding = [console]::OutputEncoding = [System.Text.Encoding]::UTF8
 & "$Script:fountDir/run.bat" @args
 #_if PSEXE
 	#_!! if ($args[0] -eq 'remove') {
