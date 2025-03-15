@@ -54,9 +54,9 @@ source "$HOME/.profile"
 
 ### Windows : Un choix de chemins – *La simplicité même*
 
-*   **Direct et simple (Recommandé) :** Téléchargez le fichier `.exe` depuis [Releases](https://github.com/steve02081504/fount/releases) et exécutez-le.
+* **Direct et simple (Recommandé) :** Téléchargez le fichier `.exe` depuis [Releases](https://github.com/steve02081504/fount/releases) et exécutez-le.
 
-*   **La puissance de PowerShell :**
+* **La puissance de PowerShell :**
 
     ```powershell
     # Si nécessaire, définissez la variable d'environnement $env:FOUNT_DIR pour spécifier le répertoire fount
@@ -75,8 +75,8 @@ source "$HOME/.profile"
 
 Si Git est déjà installé, adopter fount est aussi simple que d'exécuter un script.
 
-*   **Pour Windows :** Ouvrez votre invite de commandes ou PowerShell et double-cliquez simplement sur `run.bat`.
-*   **Pour Linux/macOS/Android :** Ouvrez votre terminal et exécutez `./run.sh`.
+* **Pour Windows :** Ouvrez votre invite de commandes ou PowerShell et double-cliquez simplement sur `run.bat`.
+* **Pour Linux/macOS/Android :** Ouvrez votre terminal et exécutez `./run.sh`.
 
 ### Docker : Adopter le conteneur
 
@@ -106,17 +106,17 @@ Fount est construit sur une architecture robuste et évolutive, conçue à la fo
 
 ### Plongez dans un monde de fonctionnalités
 
-*   **Conversations fluides, partout :** Commencez une conversation sur votre ordinateur, continuez-la de manière transparente sur votre téléphone ou votre tablette. fount maintient vos conversations synchronisées, vous connectant à vos personnages où que vous alliez.
+* **Conversations fluides, partout :** Commencez une conversation sur votre ordinateur, continuez-la de manière transparente sur votre téléphone ou votre tablette. fount maintient vos conversations synchronisées, vous connectant à vos personnages où que vous alliez.
 
-*   **Chats expressifs et immersifs :** fount adopte toute la puissance du HTML, permettant aux personnages de s'exprimer avec du texte enrichi, des images et même des éléments interactifs.
+* **Chats expressifs et immersifs :** fount adopte toute la puissance du HTML, permettant aux personnages de s'exprimer avec du texte enrichi, des images et même des éléments interactifs.
 
-*   **Rassemblements d'esprits : Chats de groupe natifs :** Invitez plusieurs personnages dans une seule conversation, créant des interactions dynamiques et engageantes.
+* **Rassemblements d'esprits : Chats de groupe natifs :** Invitez plusieurs personnages dans une seule conversation, créant des interactions dynamiques et engageantes.
 
-*   **Une interface magnifique et personnalisable :** Choisissez parmi plus de 30 thèmes époustouflants, ou créez le vôtre. fount est votre toile personnelle.
+* **Une interface magnifique et personnalisable :** Choisissez parmi plus de 30 thèmes époustouflants, ou créez le vôtre. fount est votre toile personnelle.
 
-*   **Fonctionne partout où vous travaillez :** fount fonctionne de manière transparente sur Windows, macOS, Linux et même Android, s'adaptant à vos besoins grâce à une installation directe ou à la flexibilité de Docker.
+* **Fonctionne partout où vous travaillez :** fount fonctionne de manière transparente sur Windows, macOS, Linux et même Android, s'adaptant à vos besoins grâce à une installation directe ou à la flexibilité de Docker.
 
-*   **(Pour les utilisateurs avancés) Intégration de sources d'IA libérée : Embrassez l'illimité**
+* **(Pour les utilisateurs avancés) Intégration de sources d'IA libérée : Embrassez l'illimité**
 
     Fount offre un *choix* et une *flexibilité* inégalés dans la connexion aux sources d'IA. Le code JavaScript personnalisé au sein du générateur de sources d'IA vous permet de vous connecter à *n'importe quelle* source d'IA : OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral, et plus encore. Créez des expressions régulières complexes, faites appel à une vaste bibliothèque d'API, intégrez des ressources multimédias, le tout dans le flux de votre code. Fount prend également en charge nativement la création de pools d'API, permettant un routage intelligent des requêtes. La logique de la communication se plie à *votre* volonté, façonnée par la puissance du code.
 
@@ -126,47 +126,47 @@ Fount est construit sur une architecture robuste et évolutive, conçue à la fo
 
 Fount s'efforce de tisser des personnages dans le tissu de votre vie, offrant compagnie et soutien.
 
-*   **Intégration Discord :** Connectez des personnages à vos communautés Discord via le Discord Bot Shell intégré.
+* **Intégration Discord :** Connectez des personnages à vos communautés Discord via le Discord Bot Shell intégré.
     ![Image](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
     ![Image](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
 
-*   **Sérénité du terminal (avec [fount-pwsh](https://github.com/steve02081504/fount-pwsh)) :** Laissez les personnages vous guider lorsque les commandes du terminal échouent.
+* **Sérénité du terminal (avec [fount-pwsh](https://github.com/steve02081504/fount-pwsh)) :** Laissez les personnages vous guider lorsque les commandes du terminal échouent.
     ![Image](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
 
-*   **Extensions de shell illimitées :** Avec une touche de compétences en programmation, créez vos propres shells fount, étendant la portée de vos personnages.
+* **Extensions de shell illimitées :** Avec une touche de compétences en programmation, créez vos propres shells fount, étendant la portée de vos personnages.
 
 ### Création : Au-delà des limites des prompts – Un chemin plus clair
 
 Pour le créateur de personnages, fount offre un chemin simplifié et intuitif pour donner vie à vos personnages IA. Que vous soyez un créateur chevronné ou que vous commenciez tout juste votre parcours, fount déverrouille la magie de la création de personnages pour tous.
 
-*   **Création de personnages révolutionnaire assistée par l'IA : Fount vous permet de démarrer rapidement.** Décrivez le personnage souhaité en une seule phrase, et notre assistant IA intelligent crée instantanément une personnalité pleinement réalisée. Cette approche simplifie la configuration initiale, vous permettant de vous concentrer sur le raffinement et l'interaction avec votre personnage.
+* **Création de personnages révolutionnaire assistée par l'IA : Fount vous permet de démarrer rapidement.** Décrivez le personnage souhaité en une seule phrase, et notre assistant IA intelligent crée instantanément une personnalité pleinement réalisée. Cette approche simplifie la configuration initiale, vous permettant de vous concentrer sur le raffinement et l'interaction avec votre personnage.
 
-*   **Débloquez la magie du code - Plus facile que vous ne l'imaginez :** Fount adopte la puissance du code pour offrir flexibilité et contrôle. La programmation dans Fount est une forme de magie moderne, étonnamment facile à apprendre avec les conseils doux de notre communauté et l'aide éclairante de l'IA. Vous constaterez que la définition de la logique des personnages avec du code peut être intuitive et maintenable. Imaginez créer des personnages dont les réponses sont *tissées* à partir de votre propre logique.
+* **Débloquez la magie du code - Plus facile que vous ne l'imaginez :** Fount adopte la puissance du code pour offrir flexibilité et contrôle. La programmation dans Fount est une forme de magie moderne, étonnamment facile à apprendre avec les conseils doux de notre communauté et l'aide éclairante de l'IA. Vous constaterez que la définition de la logique des personnages avec du code peut être intuitive et maintenable. Imaginez créer des personnages dont les réponses sont *tissées* à partir de votre propre logique.
 
-*   **Commencez avec une magie prête à l'emploi : Une mine de modèles.** La communauté de Fount fournit une multitude de modèles de personnages et de personnalités préfabriqués, agissant comme des « plans vivants » faciles à adapter et à personnaliser. Ces modèles présentent les meilleures pratiques et constituent un point de départ fantastique.
+* **Commencez avec une magie prête à l'emploi : Une mine de modèles.** La communauté de Fount fournit une multitude de modèles de personnages et de personnalités préfabriqués, agissant comme des « plans vivants » faciles à adapter et à personnaliser. Ces modèles présentent les meilleures pratiques et constituent un point de départ fantastique.
 
-*   **Ressources intégrées :** Intégrez des ressources directement dans vos personnages.
+* **Ressources intégrées :** Intégrez des ressources directement dans vos personnages.
 
     ![Image](https://github.com/user-attachments/assets/9740cd43-06fd-46c0-a114-e4bd99f13045)
 
-*   **Compatibilité héritée :** fount embrasse le passé, offrant des modules de compatibilité pour exécuter les cartes de personnages SillyTavern et Risu (bien que la migration des personnages existants ne soit pas prise en charge).
+* **Compatibilité héritée :** fount embrasse le passé, offrant des modules de compatibilité pour exécuter les cartes de personnages SillyTavern et Risu (bien que la migration des personnages existants ne soit pas prise en charge).
 
 ### Expansion : Une tapisserie d'innovation, tissée de divers fils
 
 Dans le monde de fount, la modularité règne en maître. Un riche écosystème de composants s'entrelace pour créer la tapisserie de votre expérience.
 
-*   **Création de modules sans effort :** Avec des connaissances de base en programmation, créez et partagez les modules que vous désirez.
-*   **Croissance axée sur la communauté :** Contribuez vos talents uniques à notre **communauté florissante et solidaire**, enrichissant l'avenir de cet écosystème numérique. Au sein de notre havre de paix, vous trouverez des visages amicaux et une richesse de connaissances partagées : des tutoriels, des sources de modèles d'IA et une galerie de personnages. L'équipe de développement de fount gère méticuleusement tous les changements grâce à une stratégie robuste de branche et de fusion. Cela garantit que même lorsque nous faisons un bond en avant, la stabilité reste une pierre angulaire. Nous nous engageons également à résoudre rapidement tout problème signalé par nos utilisateurs.
-*   **Système de plugins puissant** : Étendez les capacités de fount avec une architecture de plugins robuste.
-*   **Types de composants - Les blocs de construction des rêves :**
+* **Création de modules sans effort :** Avec des connaissances de base en programmation, créez et partagez les modules que vous désirez.
+* **Croissance axée sur la communauté :** Contribuez vos talents uniques à notre **communauté florissante et solidaire**, enrichissant l'avenir de cet écosystème numérique. Au sein de notre havre de paix, vous trouverez des visages amicaux et une richesse de connaissances partagées : des tutoriels, des sources de modèles d'IA et une galerie de personnages. L'équipe de développement de fount gère méticuleusement tous les changements grâce à une stratégie robuste de branche et de fusion. Cela garantit que même lorsque nous faisons un bond en avant, la stabilité reste une pierre angulaire. Nous nous engageons également à résoudre rapidement tout problème signalé par nos utilisateurs.
+* **Système de plugins puissant** : Étendez les capacités de fount avec une architecture de plugins robuste.
+* **Types de composants - Les blocs de construction des rêves :**
 
-    *   **chars (Personnages) :** Le cœur de fount, où naissent les personnalités.
-    *   **worlds (Mondes) :** *Bien plus que de simples livres de connaissances.* Les mondes sont les architectes silencieux de la réalité au sein de fount. Ils peuvent ajouter des connaissances à la compréhension d'un personnage, influencer ses décisions et même manipuler l'historique du chat.
-    *   **personas (Personnalités utilisateur) :** *Plus que de simples profils d'utilisateur.* Les personnalités possèdent le pouvoir de déformer et même de prendre le contrôle de vos mots et de vos perceptions. Cela permet un jeu de rôle vraiment immersif.
-    *   **shells (Interfaces d'interaction) :** Les portes d'entrée à l'âme de fount. Les shells étendent la portée des personnages au-delà de l'interface.
-    *   **ImportHandlers (Gestionnaires d'importation) :** Les mains accueillantes de fount, comblant le fossé entre divers formats de personnages. Créez un ImportHandler simple, partagez-le avec la communauté (via une Pull Request) et élargissez les horizons de fount pour tous.
-    *   **AIsources (Sources d'IA) :** La puissance brute qui alimente l'esprit de vos personnages.
-    *   **AIsourceGenerators (Générateurs de sources d'IA) :** Les alchimistes de fount, fournissant les modèles et la logique personnalisable pour forger des connexions avec *n'importe quelle* source d'IA. Grâce à la puissance de JavaScript, vous pouvez encapsuler et charger n'importe quelle source imaginable.
+  * **chars (Personnages) :** Le cœur de fount, où naissent les personnalités.
+  * **worlds (Mondes) :** *Bien plus que de simples livres de connaissances.* Les mondes sont les architectes silencieux de la réalité au sein de fount. Ils peuvent ajouter des connaissances à la compréhension d'un personnage, influencer ses décisions et même manipuler l'historique du chat.
+  * **personas (Personnalités utilisateur) :** *Plus que de simples profils d'utilisateur.* Les personnalités possèdent le pouvoir de déformer et même de prendre le contrôle de vos mots et de vos perceptions. Cela permet un jeu de rôle vraiment immersif.
+  * **shells (Interfaces d'interaction) :** Les portes d'entrée à l'âme de fount. Les shells étendent la portée des personnages au-delà de l'interface.
+  * **ImportHandlers (Gestionnaires d'importation) :** Les mains accueillantes de fount, comblant le fossé entre divers formats de personnages. Créez un ImportHandler simple, partagez-le avec la communauté (via une Pull Request) et élargissez les horizons de fount pour tous.
+  * **AIsources (Sources d'IA) :** La puissance brute qui alimente l'esprit de vos personnages.
+  * **AIsourceGenerators (Générateurs de sources d'IA) :** Les alchimistes de fount, fournissant les modèles et la logique personnalisable pour forger des connexions avec *n'importe quelle* source d'IA. Grâce à la puissance de JavaScript, vous pouvez encapsuler et charger n'importe quelle source imaginable.
 
     *Tous ces composants peuvent être installés sans effort par les utilisateurs, élargissant et personnalisant leur expérience fount.*
 
@@ -174,15 +174,15 @@ Dans le monde de fount, la modularité règne en maître. Un riche écosystème 
 
 ### Se lancer est facile
 
-*   **Plusieurs options d'installation :** Choisissez entre Docker, l'installation directe sur Windows/Linux/macOS/Android, ou même un simple fichier exécutable.
-*   **Documentation détaillée :** Notre documentation complète vous guide à chaque étape. [Voir les détails d'installation](https://steve02081504.github.io/fount/readme)
+* **Plusieurs options d'installation :** Choisissez entre Docker, l'installation directe sur Windows/Linux/macOS/Android, ou même un simple fichier exécutable.
+* **Documentation détaillée :** Notre documentation complète vous guide à chaque étape. [Voir les détails d'installation](https://steve02081504.github.io/fount/readme)
 
 ### Vous rencontrez une ombre ? N'ayez crainte
 
 Si vous rencontrez des difficultés, contactez-nous. Nous sommes là pour vous aider et nous nous engageons à résoudre la plupart des problèmes dans un délai de 10 à 24 heures.
 
-*   **GitHub Issues :** Signalez tout bogue ou suggérez de nouvelles fonctionnalités via [GitHub Issues](https://github.com/steve02081504/fount/issues).
-*   **Communauté Discord :** Rejoignez notre [communauté Discord dynamique](https://discord.gg/GtR9Quzq2v) pour obtenir une assistance et des discussions en temps réel.
+* **GitHub Issues :** Signalez tout bogue ou suggérez de nouvelles fonctionnalités via [GitHub Issues](https://github.com/steve02081504/fount/issues).
+* **Communauté Discord :** Rejoignez notre [communauté Discord dynamique](https://discord.gg/GtR9Quzq2v) pour obtenir une assistance et des discussions en temps réel.
 
 Votre voix sera entendue. Redémarrez simplement fount, et les ombres se dissiperont.
 
