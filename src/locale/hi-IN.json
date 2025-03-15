@@ -42,7 +42,7 @@
 			}
 		},
 		"web": {
-			"requestReceived": "अनुरोध प्राप्त हुआ: ${method}\t${url}"
+			"requestReceived": "अनुरोध प्राप्त हुआ: ${method} ${url}"
 		},
 		"route": {
 			"setLanguagePreference": "उपयोगकर्ता ${username} ने पसंदीदा भाषा सेट की: ${preferredLanguages}"
@@ -585,6 +585,16 @@
 		"title": "टर्मिनल सहायक",
 		"initialMessage": "फाउंट आपके पसंदीदा पात्रों को आपके टर्मिनल में तैनात करने का समर्थन करता है ताकि आपको कोडिंग में मदद मिल सके!",
 		"initialMessageLink": "अधिक जानने के लिए यहां क्लिक करें"
+	},
+	"access": {
+		"title": "अन्य डिवाइस पर Fount एक्सेस करें",
+		"heading": "क्या आप अन्य डिवाइस पर Fount एक्सेस करना चाहते हैं?",
+		"instruction": {
+			"sameLAN": "सुनिश्चित करें कि डिवाइस और Fount होस्ट एक ही लोकल नेटवर्क पर हैं।",
+			"accessthis": "इस URL पर जाएं:"
+		},
+		"copyButton": "URL कॉपी करें",
+		"copied": "URL क्लिपबोर्ड पर कॉपी हो गया!"
 	},
 	"404": {
 		"title": "पृष्ठ नहीं मिला",

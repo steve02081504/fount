@@ -194,7 +194,7 @@ function handlePointerDown(event) {
 
 	const pointer = pointers.find(p => p.id === event.pointerId)
 
-	if (!pointer) 
+	if (!pointer)
 		// 添加新的触摸点
 		pointers.push({
 			id: event.pointerId,
@@ -203,7 +203,7 @@ function handlePointerDown(event) {
 			max: 20000,
 			type: event.pointerType
 		})
-	
+
 }
 
 /**
@@ -243,9 +243,9 @@ function handlePointerEnd(event) {
 	if (event.pointerType === 'mouse') return // 鼠标事件不需要移除 pointer
 
 	const index = pointers.findIndex(p => p.id === event.pointerId)
-	if (index !== -1) 
+	if (index !== -1)
 		pointers.splice(index, 1) // 移除触摸点
-	
+
 }
 
 /**
@@ -253,19 +253,19 @@ function handlePointerEnd(event) {
  * @param {object} newConfig - 新的配置对象。
  */
 export function updateConfig(newConfig) {
-	config = { ...config, ...newConfig } // 合并新的配置
+	config = { ...config || {}, ...newConfig } // 合并新的配置
 
 	if (newConfig.count !== undefined || newConfig.color !== undefined || newConfig.density !== undefined)
 		adjustDotCount() //数量或颜色或密度变化，都重新计算。
 	else if (newConfig.backgroundColor !== undefined)
 		canvas && resizeCanvas() // 背景色变化，重新绘制背景
-
 }
 
 /**
  *  更新颜色配置
  */
 export function updateColors() {
+	if(!config) return
 	const rootStyle = getComputedStyle(document.documentElement)
 	const primaryColor = rootStyle.getPropertyValue('--color-primary').trim()
 	const baseColor200 = rootStyle.getPropertyValue('--color-base-200').trim() // 获取背景色 css 变量

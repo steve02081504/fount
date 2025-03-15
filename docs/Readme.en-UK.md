@@ -2,6 +2,8 @@
 
 > Your Immersive AI Character Companion
 
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+
 ![repo img](https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa)
 
 Have you ever yearned for a journey alongside a character sprung from the pages of your imagination, a companion woven from dreams? Or perhaps you've envisioned a digital confidant, an AI assistant as intuitive as the most advanced creations, effortlessly orchestrating your digital world? Or maybe, just maybe, you've sought a connection beyond the ordinary, a realm where reality's edges blur, and an intimate, *unfiltered* understanding unfolds?
@@ -56,18 +58,18 @@ source "$HOME/.profile"
 
 * **The Power of PowerShell:**
 
-	```powershell
-	# If needed, define the environment variable $env:FOUNT_DIR to specify the fount directory
-	irm https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1 | iex
-	```
+ ```powershell
+ # If needed, define the environment variable $env:FOUNT_DIR to specify the fount directory
+ irm https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1 | iex
+ ```
 
-	For a dry run:
+ For a dry run:
 
-	```powershell
-	$scriptContent = Invoke-RestMethod https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1
-	Invoke-Expression "function fountInstaller { $scriptContent }"
-	fountInstaller init
-	```
+ ```powershell
+ $scriptContent = Invoke-RestMethod https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1
+ Invoke-Expression "function fountInstaller { $scriptContent }"
+ fountInstaller init
+ ```
 
 ### Git Installation: For those who prefer a touch of magic
 
@@ -116,20 +118,20 @@ Fount is built upon a robust and scalable architecture, designed for both perfor
 
 * **(For Advanced Users) Unshackled AI Source Integration: Embrace the Boundless**
 
-	Fount offers unparalleled *choice* and *flexibility* in connecting to AI sources.  Custom JavaScript code within the AI source generator allows you to connect to *any* AI source – OpenAI, Claude, OpenRouter, NovelAI, the Horde, Ooba, Tabby, Mistral, and more.  Craft intricate regular expressions, call upon a vast library of APIs, embed multimedia assets – all within the flow of your code. Fount also natively supports the creation of API pools, enabling intelligent request routing.  The logic of communication bends to *your* will, crafted through the power of code.
+ Fount offers unparalleled *choice* and *flexibility* in connecting to AI sources.  Custom JavaScript code within the AI source generator allows you to connect to *any* AI source – OpenAI, Claude, OpenRouter, NovelAI, the Horde, Ooba, Tabby, Mistral, and more.  Craft intricate regular expressions, call upon a vast library of APIs, embed multimedia assets – all within the flow of your code. Fount also natively supports the creation of API pools, enabling intelligent request routing.  The logic of communication bends to *your* will, crafted through the power of code.
 
-	![Image](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
+ ![Image](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
 
 ### Companionship: Beyond the Digital Veil
 
 Fount strives to weave characters into the fabric of your life, offering companionship and support.
 
 * **Discord Integration:** Connect characters to your Discord communities through the built-in Discord Bot Shell.
-	![Image](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
-	![Image](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
+ ![Image](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
+ ![Image](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
 
 * **Terminal Serenity (with [fount-pwsh](https://github.com/steve02081504/fount-pwsh)):** Let characters offer guidance when terminal commands falter.
-	![Image](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
+ ![Image](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
 
 * **Limitless Shell Extensions:** With a touch of programming skill, craft your own fount Shells, extending your characters' reach.
 
@@ -166,7 +168,7 @@ In the world of fount, modularity reigns supreme. A rich ecosystem of components
   * **AIsources (AI Sources):** The raw power that fuels the minds of your characters.
   * **AIsourceGenerators (AI Source Generators):** The alchemists of fount, providing the templates and customizable logic to forge connections with *any* AI source. Through the power of JavaScript, you can encapsulate and load any source imaginable.
 
-	*All of these components can be effortlessly installed by users, expanding and customizing their fount experience.*
+ *All of these components can be effortlessly installed by users, expanding and customizing their fount experience.*
 
 ![Image](https://github.com/user-attachments/assets/8487a04a-7040-4844-81a6-705687856757)
 
@@ -197,3 +199,55 @@ fount empowers you to create and interact with AI characters in a way that feels
 Beyond the whispers of AI, fount offers a deeper connection – *the artisan's touch*. Within our community, you'll find a wealth of pre-crafted character and persona templates, *each a carefully sculpted foundation awaiting your unique vision*.
 
 And when you're ready to refine your creation, Fount's code-driven approach makes it easy to get started. Remember, programming in Fount is a gentle learning curve, supported by our welcoming community and abundant templates. You'll discover that even a few lines of code can unlock incredible depth and personality in your characters.
+
+## Badges and Links: Let Your Creations Shine, Let the World Reach Them
+
+The world of Fount is more than just words and code, it is a feast for the eyes and an invitation to connect. We want your creations to shine in this brilliance and effortlessly connect with the world. Therefore, we have prepared exquisite badges and convenient links for you to make your Fount components even more eye-catching and allow other users to easily discover and experience your masterpieces.
+
+**Fount Badges: The Seal of Glory**
+
+Like a knight's shield, the Fount badge is the seal of glory for your creations. You can proudly display this badge in your repository, on your Fount component page, or anywhere you wish to showcase it. It symbolizes the close connection of your work with the Fount community and is a recognition of your talent.
+
+You can find the SVG and PNG files of the Fount logo [here](../imgs/) to incorporate them into your designs.
+
+Even better, you can turn the badge into a clickable button that links directly to your Fount component:
+
+```markdown
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+```
+
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+
+Here are the standard colours of the Fount logo to make your designs more consistent:
+
+| Colour Format | Code |
+| :---: | :---: |
+| HEX | `#0e3c5c` |
+| RGB | `rgb(14, 60, 92)` |
+| HSL | `hsl(205, 74%, 21%)` |
+
+**Automatic Installation Links: Magic at Your Fingertips**
+
+Imagine other users being able to install your creations directly into their Fount world with a single click. This is no longer a dream, but reality! With Fount's automatic installation links, you can turn this magic into reality.
+
+Simply combine the ZIP link or Git repository link of your component with the Fount protocol link to create a magical link:
+
+```markdown
+https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip
+```
+
+Simpler explanation: Just add `https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;` before your component zip link/Git repository link!
+
+Combine this link with the Fount badge to create a button that is both beautiful and practical:
+
+```markdown
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
+```
+
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
+
+With these simple steps, you not only make your creations more attractive, but also strengthen the connection of the Fount community. Let the light of your inspiration illuminate the entire Fount world!
+
+## Contributors
+
+[![Contributors](https://contrib.rocks/image?repo=steve02081504/fount)](https://github.com/steve02081504/fount/graphs/contributors)

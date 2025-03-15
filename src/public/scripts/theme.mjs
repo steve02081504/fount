@@ -1,5 +1,5 @@
 import { svgInliner } from './svg-inliner.mjs'
-import { initLinesBackground, updateColors } from './lines_background.mjs'
+import { initLinesBackground, updateColors as updateLinesBackgroundColors } from './lines_background.mjs'
 
 let theme_now
 export let is_dark = Boolean(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
@@ -7,9 +7,8 @@ export let is_dark = Boolean(window.matchMedia && window.matchMedia('(prefers-co
 function autoresize_frames() {
 	const frames = document.querySelectorAll('iframe')
 	for (const frame of frames) if (frame.contentWindow.document.body) {
-		let frame_width, frame_height
-		frame_width = frame.contentWindow.document.body.scrollWidth
-		frame_height = frame.contentWindow.document.body.scrollHeight
+		const frame_width = frame.contentWindow.document.body.scrollWidth
+		const frame_height = frame.contentWindow.document.body.scrollHeight
 		frame.style.width = frame_width + 'px'
 		frame.style.height = frame_height + 'px'
 	}
@@ -38,8 +37,11 @@ export function setTheme(theme) {
 	theme_now = theme
 	localStorage.setItem('theme', theme || '')
 	theme ||= Boolean(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light'
-	document.documentElement.setAttribute('data-theme', theme)
+	if (document.documentElement.dataset.theme !== theme) document.documentElement.setAttribute('data-theme', theme)
 
+	setTimeout(updateColors)
+}
+function updateColors() {
 	// Use getComputedStyle to get the *computed* value of background-color, which resolves var(--bc)
 	const computedStyle = getComputedStyle(document.documentElement)
 	const bcColor = computedStyle.getPropertyValue('background-color').trim()
@@ -59,7 +61,6 @@ export function setTheme(theme) {
 			lightness = parseFloat(match[1])
 			if (!match[1].endsWith('%'))
 				lightness *= 100 // Convert 0-1 to percentage
-
 
 		} else if (rgbRegex.test(bcColor) || rgbaRegex.test(bcColor)) {
 			const match = bcColor.match(rgbRegex) || bcColor.match(rgbaRegex)
@@ -100,10 +101,18 @@ export function setTheme(theme) {
 
 	document.documentElement.setAttribute('data-theme-isdark', is_dark)
 
-	updateColors()
+	updateLinesBackgroundColors()
 	for (const func of functions)
-		func(theme, is_dark)
+		func(theme_now, is_dark)
 }
+
+// MutationObserver用于监视data-theme属性的变化
+const observer = new MutationObserver((mutationsList) => {
+	for (const mutation of mutationsList)
+		if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme')
+			setTheme(document.documentElement.dataset.theme)
+})
+observer.observe(document.documentElement, { attributes: true })
 
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
 	setTheme(localStorage.getItem('theme') || (e.matches ? 'dark' : 'light'))
@@ -115,7 +124,7 @@ window.addEventListener('focus', () => {
 {
 	const daisyui_theme_style = document.createElement('link')
 	daisyui_theme_style.rel = 'stylesheet'
-	daisyui_theme_style.href = 'https://cdn.jsdelivr.net/npm/daisyui@5.0.0/themes.css'
+	daisyui_theme_style.href = 'https://cdn.jsdelivr.net/npm/daisyui/themes.css'
 	document.head.prepend(daisyui_theme_style)
 }
 export const builtin_themes = [

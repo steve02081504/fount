@@ -11,9 +11,11 @@ export default {
 			sources: [],
 		}
 	},
-	GetSource: async (config, { username }) => {
+	GetSource: async (config, { username, SaveConfig }) => {
 		let index = -1
-		const sources = await Promise.all(config.sources.map(source => loadAIsourceFromNameOrConfigData(username, source)))
+		const sources = await Promise.all(config.sources.map(source => loadAIsourceFromNameOrConfigData(username, source, {
+			SaveConfig
+		})))
 		/** @type {AIsource_t} */
 		const result = {
 			type: 'text-chat',

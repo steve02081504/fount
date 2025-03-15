@@ -27,7 +27,7 @@ app.use(FinalRouter)
 mainRouter.use(async (req, res, next) => {
 	if (!req.path.endsWith('/heartbeat'))
 		console.log(await geti18n('fountConsole.web.requestReceived', {
-			method: req.method,
+			method: req.method + ' '.repeat(Math.max(0, 8 - req.method.length)),
 			url: req.url
 		}))
 	next()

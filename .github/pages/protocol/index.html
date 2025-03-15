@@ -6,35 +6,42 @@
 	<meta name="darkreader-lock">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>fount!</title>
-	<link href="https://cdn.jsdelivr.net/npm/daisyui@latest/daisyui.css" rel="stylesheet" type="text/css" />
-	<link href="/base.css" rel="stylesheet" type="text/css" />
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/themes.css" rel="stylesheet" type="text/css" />
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" />
 	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser"></script>
 	<script>
-		const is_dark = Boolean(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
-
+		const isDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false //更简洁的写法
 		const urlParams = new URLSearchParams(window.location.search)
-		const theme = urlParams.get('theme')
-		document.documentElement.setAttribute('data-theme', theme ?? is_dark ? 'dark' : 'light')
-		const hostUrl = urlParams.get('hostUrl') ?? localStorage.getItem('fountHostUrl')
+		const theme = urlParams.get('theme') ?? localStorage.getItem('fountTheme') ?? (isDark ? 'dark' : 'light')
+		document.documentElement.setAttribute('data-theme', theme)
+		localStorage.setItem('fountTheme', theme)
+	</script>
+	<script type="module">
+		import { getFountHostUrl } from '../scripts/fountHostGetter.mjs'
 		const fountProtocolUrl = urlParams.get('url')
 
-		if (fountProtocolUrl && hostUrl) {
-			const redirectUrl = `${hostUrl}/protocolhandler?url=${fountProtocolUrl}`
-			window.location.href = redirectUrl
+		async function main() {
+			const hostUrl = await getFountHostUrl()
+
+			if (hostUrl) {
+				const redirectUrl = fountProtocolUrl
+					? new URL('/protocolhandler', hostUrl)
+					: new URL('/shells/home', hostUrl)
+				if (fountProtocolUrl) redirectUrl.searchParams.set('url', fountProtocolUrl)
+				window.location.href = redirectUrl.href
+			}
+			else {
+				alert('awww :(\n\nfount not found, maybe you need to install one first?')
+				window.location.href = 'https://github.com/steve02081504/fount'
+			}
 		}
-		else if (hostUrl) {
-			localStorage.setItem('fountHostUrl', hostUrl)
-			window.location.href = `${hostUrl}/shells/home`
-		}
-		else
-			window.location.href = 'https://github.com/steve02081504/fount'
+
+		main()
 	</script>
 </head>
 
-<body>
-	<div class="flex justify-center items-center h-screen">
-		<p class="text-lg">Loading...</p>
-	</div>
+<body class="flex justify-center items-center h-screen">
+	<span class="loading loading-ring loading-lg"></span>
 </body>
 
 </html>

@@ -316,15 +316,6 @@ fi
 # 使用 run_bun 来获取 Bun 版本信息，并输出
 run_bun -v
 
-run() {
-	if [[ $# -gt 0 && $1 = 'debug' ]]; then
-		newargs=("${@:2}")
-		run_bun run --inspect-brk --install=force --prefer-latest "$FOUNT_DIR/src/server/index.mjs" "${newargs[@]}"
-	else
-		run_bun run --install=force --prefer-latest "$FOUNT_DIR/src/server/index.mjs" "$@"
-	fi
-}
-
 if [[ ! -d "$FOUNT_DIR/data" || ($# -gt 0 && $1 = 'init') ]]; then
 	echo "Installing dependencies..."
 	set +e
@@ -334,6 +325,23 @@ if [[ ! -d "$FOUNT_DIR/data" || ($# -gt 0 && $1 = 'init') ]]; then
 	echo "WARNING: DO NOT install any untrusted fount parts on your system, they can do ANYTHING."
 	echo "======================================================"
 fi
+
+
+run() {
+	if [[ $IN_TERMUX -eq 1 ]]; then
+		LANG_BACKUP="$LANG"
+		export LANG="$(getprop persist.sys.locale)"
+	fi
+	if [[ $# -gt 0 && $1 = 'debug' ]]; then
+		newargs=("${@:2}")
+		run_bun run --inspect-brk --install=force --prefer-latest "$FOUNT_DIR/src/server/index.mjs" "${newargs[@]}"
+	else
+		run_bun run --install=force --prefer-latest "$FOUNT_DIR/src/server/index.mjs" "$@"
+	fi
+	if [[ $IN_TERMUX -eq 1 ]]; then
+		export LANG="$LANG_BACKUP"
+	fi
+}
 
 if [[ $# -gt 0 && $1 = 'init' ]]; then
 	exit 0

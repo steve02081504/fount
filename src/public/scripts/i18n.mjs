@@ -37,11 +37,10 @@ function getNestedValue(obj, key) {
  * @param {object} [params] - 可选的参数，用于插值（例如 {name: "John"}）。
  * @returns {string} - 翻译后的文本，如果未找到则返回键本身。
  */
-export function geti18n(key, params = {}) {
+export function geti18n_nowarn(key, params = {}) {
 	let translation = getNestedValue(i18n, key)
 
-	if (translation === undefined)
-		console.warn(`Translation key "${key}" not found.`)
+	if (translation === undefined) return
 
 	// 简单的插值处理
 	for (const param in params)
@@ -50,6 +49,20 @@ export function geti18n(key, params = {}) {
 	return translation
 }
 
+/**
+ * 根据提供的键（key）获取翻译后的文本。
+ * @param {string} key - 翻译键。
+ * @param {object} [params] - 可选的参数，用于插值（例如 {name: "John"}）。
+ * @returns {string} - 翻译后的文本，如果未找到则返回键本身。
+ */
+export function geti18n(key, params = {}) {
+	const translation = geti18n_nowarn(key, params)
+
+	if (translation === undefined)
+		console.warn(`Translation key "${key}" not found.`)
+
+	return translation
+}
 
 /**
  * 将翻译应用到 DOM 元素。
@@ -77,8 +90,8 @@ export function i18nElement(element) {
 
 			for (const attr of attributes) {
 				const specificKey = `${key}.${attr}`
-				const translation = geti18n(specificKey)
-				if (!translation) continue
+				const translation = geti18n_nowarn(specificKey)
+				if (translation === undefined) continue
 				if (attr === 'text')
 					element.textContent = translation
 				else

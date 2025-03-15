@@ -42,7 +42,7 @@
 			}
 		},
 		"web": {
-			"requestReceived": "Anfrage erhalten: ${method}\t${url}"
+			"requestReceived": "Anfrage erhalten: ${method} ${url}"
 		},
 		"route": {
 			"setLanguagePreference": "Benutzer ${username} hat die bevorzugte Sprache eingestellt: ${preferredLanguages}"
@@ -585,6 +585,16 @@
 		"title": "Terminal-Assistent",
 		"initialMessage": "Fount unterstützt die Bereitstellung Ihrer Lieblingscharaktere in Ihrem Terminal, um Sie beim Programmieren zu unterstützen!",
 		"initialMessageLink": "Klicken Sie hier, um mehr zu erfahren"
+	},
+	"access": {
+		"title": "Auf anderen Geräten auf Fount zugreifen",
+		"heading": "Möchten Sie auf anderen Geräten auf Fount zugreifen?",
+		"instruction": {
+			"sameLAN": "Stellen Sie sicher, dass sich das Gerät und der Fount-Host im selben lokalen Netzwerk befinden.",
+			"accessthis": "Besuchen Sie diese URL:"
+		},
+		"copyButton": "URL kopieren",
+		"copied": "URL in die Zwischenablage kopiert!"
 	},
 	"404": {
 		"title": "Seite nicht gefunden",
