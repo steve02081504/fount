@@ -1,4 +1,5 @@
 // main.mjs
+import { escapeRegExp } from "../../scripts/regex.mjs";
 import { structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
 import { ClaudeAPI } from './claude_api.mjs'
 
@@ -71,8 +72,31 @@ export default {
 					})
 
 
-				const text = await claudeAPI.callClaudeAPI(messages, config.model)
-				return { content: text }
+				let text = await claudeAPI.callClaudeAPI(messages, config.model)
+
+				{
+					text = text.split('\n')
+					const base_reg = `^(|${[...new Set([
+						prompt_struct.Charname,
+						...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name),
+					])].filter(Boolean).map(escapeRegExp).concat([
+						...(prompt_struct.alternative_charnames || []).map(Object).map(
+							(stringOrReg) => {
+								if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
+								return stringOrReg.source
+							}
+						),
+					].filter(Boolean)).join('|')}[^\\n：:]*)(:|：)\\s*`
+					let reg = new RegExp(`${base_reg}$`, 'i')
+					while (text[0].trim().match(reg)) text.shift()
+					reg = new RegExp(`${base_reg}`, 'i')
+					text[0] = text[0].replace(reg, '')
+					text = text.join('\n')
+				}
+
+				return {
+					content: text,
+				}
 			},
 
 			Tokenizer: {

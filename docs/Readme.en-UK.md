@@ -58,18 +58,18 @@ source "$HOME/.profile"
 
 * **The Power of PowerShell:**
 
-	```powershell
-	# If needed, define the environment variable $env:FOUNT_DIR to specify the fount directory
-	irm https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1 | iex
-	```
+ ```powershell
+ # If needed, define the environment variable $env:FOUNT_DIR to specify the fount directory
+ irm https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1 | iex
+ ```
 
-	For a dry run:
+ For a dry run:
 
-	```powershell
-	$scriptContent = Invoke-RestMethod https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1
-	Invoke-Expression "function fountInstaller { $scriptContent }"
-	fountInstaller init
-	```
+ ```powershell
+ $scriptContent = Invoke-RestMethod https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1
+ Invoke-Expression "function fountInstaller { $scriptContent }"
+ fountInstaller init
+ ```
 
 ### Git Installation: For those who prefer a touch of magic
 
@@ -118,20 +118,20 @@ Fount is built upon a robust and scalable architecture, designed for both perfor
 
 * **(For Advanced Users) Unshackled AI Source Integration: Embrace the Boundless**
 
-	Fount offers unparalleled *choice* and *flexibility* in connecting to AI sources.  Custom JavaScript code within the AI source generator allows you to connect to *any* AI source – OpenAI, Claude, OpenRouter, NovelAI, the Horde, Ooba, Tabby, Mistral, and more.  Craft intricate regular expressions, call upon a vast library of APIs, embed multimedia assets – all within the flow of your code. Fount also natively supports the creation of API pools, enabling intelligent request routing.  The logic of communication bends to *your* will, crafted through the power of code.
+ Fount offers unparalleled *choice* and *flexibility* in connecting to AI sources.  Custom JavaScript code within the AI source generator allows you to connect to *any* AI source – OpenAI, Claude, OpenRouter, NovelAI, the Horde, Ooba, Tabby, Mistral, and more.  Craft intricate regular expressions, call upon a vast library of APIs, embed multimedia assets – all within the flow of your code. Fount also natively supports the creation of API pools, enabling intelligent request routing.  The logic of communication bends to *your* will, crafted through the power of code.
 
-	![Image](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
+ ![Image](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
 
 ### Companionship: Beyond the Digital Veil
 
 Fount strives to weave characters into the fabric of your life, offering companionship and support.
 
 * **Discord Integration:** Connect characters to your Discord communities through the built-in Discord Bot Shell.
-	![Image](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
-	![Image](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
+ ![Image](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
+ ![Image](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
 
 * **Terminal Serenity (with [fount-pwsh](https://github.com/steve02081504/fount-pwsh)):** Let characters offer guidance when terminal commands falter.
-	![Image](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
+ ![Image](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
 
 * **Limitless Shell Extensions:** With a touch of programming skill, craft your own fount Shells, extending your characters' reach.
 
@@ -168,7 +168,7 @@ In the world of fount, modularity reigns supreme. A rich ecosystem of components
   * **AIsources (AI Sources):** The raw power that fuels the minds of your characters.
   * **AIsourceGenerators (AI Source Generators):** The alchemists of fount, providing the templates and customizable logic to forge connections with *any* AI source. Through the power of JavaScript, you can encapsulate and load any source imaginable.
 
-	*All of these components can be effortlessly installed by users, expanding and customizing their fount experience.*
+ *All of these components can be effortlessly installed by users, expanding and customizing their fount experience.*
 
 ![Image](https://github.com/user-attachments/assets/8487a04a-7040-4844-81a6-705687856757)
 
