@@ -32,7 +32,7 @@ export function rateLimit(options) {
 	const requestCounts = new Map() // 使用 Map 存储请求计数
 
 	return (req, res, next) => {
-		if (byIP && is_local_ip_from_req(ip)) return next()
+		if (byIP && is_local_ip_from_req(req)) return next()
 		const key = byUsername && req.body.username ? req.body.username : byIP ? ip : null
 
 		if (!key) return res.status(401).json({ message: 'Unauthorized' })

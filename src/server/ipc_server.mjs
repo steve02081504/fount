@@ -45,51 +45,66 @@ export async function processIPCCommand(command, data) {
 
 export class IPCManager {
 	constructor() {
-		this.server = null
+		this.serverV6 = null
+		this.serverV4 = null
 	}
 
 	async startServer() {
-		this.server = net.createServer((socket) => {
-			let data = ''
-
-			socket.on('data', async (chunk) => {
-				data += chunk
-				// 检查消息分隔符（换行符）
-				if (data.includes('\n')) {
-					const parts = data.split('\n')
-					const message = parts[0] // 提取完整消息
-					data = parts.slice(1).join('\n') // 剩余数据保留
-
-					try {
-						const { type, data: commandData } = JSON.parse(message)
-						const result = await processIPCCommand(type, commandData) // 直接调用 processIPCCommand
-						socket.write(JSON.stringify(result) + '\n')
-					} catch (err) {
-						console.error(await geti18n('fountConsole.ipc.processMessageError', { error: err }))
-						socket.write(JSON.stringify({ status: 'error', message: err instanceof SyntaxError ? await geti18n('fountConsole.ipc.invalidCommandFormat') : err.message }) + '\n') // 区分 JSON 解析错误
-					}
-				}
-			})
-
-			socket.on('error', async (err) => {
-				console.error(await geti18n('fountConsole.ipc.socketError', { error: err }))
-			})
+		this.serverV6 = net.createServer((socket) => {
+			this.handleConnection(socket)
 		})
 
-		return new Promise((resolve, reject) => {
-			this.server.on('error', async (err) => {
-				if (err.code === 'EADDRINUSE') {
-					console.log(await geti18n('fountConsole.ipc.instanceRunning'))
-					resolve(false) // 服务器已在运行
-				} else
-					reject(err)
+		this.serverV4 = net.createServer((socket) => {
+			this.handleConnection(socket)
+		})
 
-			})
+		const startServer = (server, address) => {
+			return new Promise((resolve, reject) => {
+				server.on('error', async (err) => {
+					if (err.code === 'EADDRINUSE') {
+						console.log(await geti18n('fountConsole.ipc.instanceRunning', { address }))
+						resolve(false) // 服务器已在运行
+					} else {
+						reject(err)
+					}
+				})
 
-			this.server.listen(IPC_PORT, '::', async () => {
-				console.freshLine(await geti18n('fountConsole.ipc.serverStartPrefix'), await geti18n('fountConsole.ipc.serverStarted'))
-				resolve(true) // 成功启动服务器
+				server.listen(IPC_PORT, address, async () => {
+					console.freshLine(await geti18n('fountConsole.ipc.serverStartPrefix', { address }), await geti18n('fountConsole.ipc.serverStarted'))
+					resolve(true) // 成功启动服务器
+				})
 			})
+		}
+		// 使用 Promise.all 确保两个监听都成功后才返回 true
+		return Promise.all([
+			startServer(this.serverV6, '::1'),
+			startServer(this.serverV4, '127.0.0.1'),
+		]).then(results => results.every(result => result === true))
+	}
+
+	handleConnection(socket) {
+		let data = ''
+
+		socket.on('data', async (chunk) => {
+			data += chunk
+			if (data.includes('\n')) {
+				const parts = data.split('\n')
+				const message = parts[0]
+				data = parts.slice(1).join('\n')
+
+				try {
+					const { type, data: commandData } = JSON.parse(message)
+					const result = await processIPCCommand(type, commandData)
+					socket.write(JSON.stringify(result) + '\n')
+				} catch (err) {
+					console.error(await geti18n('fountConsole.ipc.processMessageError', { error: err }))
+					socket.write(JSON.stringify({ status: 'error', message: err instanceof SyntaxError ? await geti18n('fountConsole.ipc.invalidCommandFormat') : err.message }) + '\n')
+				}
+			}
+		})
+
+		socket.on('error', async (err) => {
+			console.error(await geti18n('fountConsole.ipc.socketError', { error: err }))
 		})
 	}
 
