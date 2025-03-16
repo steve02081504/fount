@@ -24,6 +24,5 @@ export async function ReStartJobs() {
 				const shell = await loadShell(user, shellname)
 				await shell.ReStartJob(user, jobs[shellname][uid] ?? uid, uid)
 			}
-
 	}
 }

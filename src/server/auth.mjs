@@ -160,8 +160,6 @@ export async function logout(req, res) {
  * 身份验证中间件
  */
 export async function authenticate(req, res, next) {
-	if (is_local_ip_from_req(req)) return next()
-
 	const { accessToken, refreshToken } = req.cookies
 
 	const Unauthorized = () => {
@@ -170,6 +168,9 @@ export async function authenticate(req, res, next) {
 		return res.status(401).json({ message: 'Unauthorized' })
 	}
 	if (!accessToken) return Unauthorized()
+
+	// 本地 IP 不需要验证
+	if (is_local_ip_from_req(req)) return next()
 
 	let decoded = await verifyToken(accessToken)
 
