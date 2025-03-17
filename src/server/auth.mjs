@@ -8,6 +8,7 @@ import argon2 from 'npm:argon2'
 import { ms } from '../scripts/ms.mjs'
 import { geti18n } from '../scripts/i18n.mjs'
 import { is_local_ip_from_req } from '../scripts/ratelimit.mjs'
+import { loadJsonFile } from '../scripts/json_loader.mjs'
 
 const ACCESS_TOKEN_EXPIRY = '15m'
 const REFRESH_TOKEN_EXPIRY = '30d'
@@ -246,6 +247,7 @@ async function createUser(username, password) {
 			lockedUntil: null,
 			refreshTokens: [],
 		},
+		...loadJsonFile(__dirname + '/default/templates/user.json'),
 	}
 	save_config()
 	return { ...config.data.users[username], userId }
@@ -315,7 +317,7 @@ export async function login(username, password, deviceId = 'unknown') {
 	if (!fs.existsSync(userdir)) try {
 		fs.mkdirSync(path.dirname(userdir), { recursive: true })
 		// 自`/default/user`复制到用户目录
-		fse.copySync(path.join(__dirname, '/default/user'), userdir)
+		fse.copySync(path.join(__dirname, '/default/templates/user'), userdir)
 	} catch { }
 	for (const subdir of ['AIsources', 'chars', 'personas', 'settings', 'shells', 'worlds', 'ImportHandlers', 'AIsourceGenerators'])
 		try { fs.mkdirSync(userdir + '/' + subdir, { recursive: true }) } catch { }

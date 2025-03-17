@@ -199,9 +199,9 @@ async function handleFormSubmit(event) {
 						window.location.href = decodeURIComponent(redirect) + window.location.hash
 					else
 						window.location.href = `/shells/tutorial?redirect=${redirect}` + window.location.hash
-				else 
+				else
 					window.location.href = `/shells/${hasLoggedIn ? 'home' : 'tutorial'}`
-				
+
 			} else {
 				console.log('Registration successful!')
 				toggleForm() // 注册成功后自动切换到登录表单

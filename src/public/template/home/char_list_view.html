@@ -13,7 +13,7 @@
 	</div>
 
 	<div class="details-container z-[60] h-full p-4 bg-base-100 bg-opacity-50">
-		<input type="checkbox" class="checkbox checkbox-sm border border-primary checkbox-primary default-checkbox" ${info.isDefault ? 'checked' : ''} data-i18n="home.chars.card.defaultCheckbox"/>
+		<input type="checkbox" class="checkbox checkbox-sm border border-primary checkbox-primary default-checkbox" ${info.isDefault ? 'checked' : '' } data-i18n="home.chars.card.defaultCheckbox" />
 		<div class="tags-container overflow-y-auto">
 			${(info.tags && info.tags.length > 0) ? `
 			${info.tags.map((tag) => `<span class="badge badge-primary cursor-pointer">${tag}</span>`).join(' ')}

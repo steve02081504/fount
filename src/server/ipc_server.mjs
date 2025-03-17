@@ -64,9 +64,9 @@ export class IPCManager {
 					if (err.code === 'EADDRINUSE') {
 						console.log(await geti18n('fountConsole.ipc.instanceRunning', { address }))
 						resolve(false) // 服务器已在运行
-					} else {
+					} else
 						reject(err)
-					}
+
 				})
 
 				server.listen(IPC_PORT, address, async () => {
