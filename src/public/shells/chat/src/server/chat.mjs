@@ -45,8 +45,6 @@ initializeChatMetadatas()
 class timeSlice_t {
 	/** @type {Record<string, charAPI_t>} */
 	chars = {}
-	/** @type {string} */
-	summary
 	/** @type {WorldAPI_t} */
 	world
 	/** @type {string} */
@@ -76,7 +74,6 @@ class timeSlice_t {
 	toJSON() {
 		return {
 			chars: Object.keys(this.chars),
-			summary: this.summary,
 			world: this.world_id,
 			player: this.player_id,
 			chars_memories: this.chars_memories,
@@ -236,7 +233,7 @@ export async function loadChat(chatid) {
  * @param {chatMetadata_t} chatMetadata
  */
 function is_VividChat(chatMetadata) {
-	return chatMetadata?.chatLog?.filter?.(entry => !entry.timeSlice.greeting_type)?.length
+	return chatMetadata?.chatLog?.filter?.(entry => !entry.timeSlice?.greeting_type)?.length
 }
 
 async function getChatRequest(chatid, charname) {
@@ -281,77 +278,10 @@ async function getChatRequest(chatid, charname) {
 				chatMetadata.username
 			))
 		},
-		world: timeSlice.world || {
-			info: {
-				'zh-CN': {
-					name: 'fount默认世界',
-					description: '用于给角色关于fount渲染支持的输出指引',
-				},
-				'en-US': {
-					name: 'fount default world',
-					description: 'fount rendering support output guide for characters',
-				},
-			},
-			interfaces: {
-				chat: {
-					GetPrompt: () => {
-						return {
-							text: [
-								{
-									content: `\
-你所发送的信息均会被fount的网页前端渲染，其允许你使用markdown语法（你需要双写波浪线来获得删除线效果，如~~删除线~~），包括内嵌html（无任何过滤）。
-也就是说，你可以使用任何css（可以使用最新版daisyui和tailwindcss库）或js代码来辅助消息渲染。
-同时，其还支持katex语法，但请注意\`$$\`和\`\\begin\`或\`\\end\`之间换行，否则无法识别。
-正确示例：
-$$
-\\begin{cases}
-h(0) = 0 \\\\
-h'(0) = 1
-\\end{cases}
-$$
-最后，fount还支持一些特殊的代码块渲染：
-内联代码块的高亮：\`内联代码{:js}\`
-这会根据指定的语言（此处是js）高亮内联代码。
-
-特定行数的代码高亮：
-\`\`\`js {1-3,6} {4-5}#id1 {7}#id2
-// codes
-\`\`\`
-这将高亮第1到第3行、第6行、第4到第5行和第7行
-对应行的span会有\`data-highlighted-line\`属性，有id的行会有\`data-highlighted-line-id="<id>"\`属性
-
-字符高亮：
-\`\`\`js /console/3-5#console /log/#log /\\./
-console.log('Hello');
-\`\`\`
-这将高亮第3到第5个\`console\`、全部的\`log\`和\`.\`
-对应词的span会有\`data-highlighted-chars\`属性，有id的词会有\`data-chars-id="<id>"\`属性
-
-标题和字幕:
-\`\`\`js title="My Code" caption="Example"
-// codes
-\`\`\`
-
-显示行号与设置起始行号:
-\`\`\`js showLineNumbers
-// codes
-\`\`\`
-\`\`\`js showLineNumbers{3}
-// codes start at line 3
-\`\`\`
-`,
-									important: 0
-								}
-							]
-						}
-					}
-				}
-			}
-		},
+		world: timeSlice.world,
 		char: timeSlice.chars[charname],
 		user: timeSlice.player,
 		other_chars,
-		chat_summary: timeSlice.summary,
 		chat_scoped_char_memory: timeSlice.chars_memories[charname] ??= {},
 		plugins: [],
 		extension: {}
@@ -452,6 +382,7 @@ export async function addchar(chatid, charname) {
 		await addChatLogEntry(chatid, greeting_entrie) // saved, no need for another call
 		return greeting_entrie
 	} catch (error) {
+		console.error(error)
 		chatMetadata.LastTimeSlice.chars[charname] = timeSlice.chars[charname]
 	}
 	if (is_VividChat(chatMetadata)) saveChat(chatid)
@@ -515,7 +446,7 @@ export async function GetWorldName(chatid) {
  */
 async function addChatLogEntry(chatid, entry) {
 	const chatMetadata = await loadChat(chatid)
-	if (entry.timeSlice.world)
+	if (entry.timeSlice.world?.interfaces?.chat?.AddChatLogEntry)
 		entry.timeSlice.world.interfaces.chat.AddChatLogEntry(await getChatRequest(chatid, undefined), entry)
 	else
 		chatMetadata.chatLog.push(entry)

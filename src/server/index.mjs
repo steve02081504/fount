@@ -23,7 +23,7 @@ if (args.length) {
 		try {
 			await IPCManager.sendCommand('runshell', { username, shellname, args })
 		} catch (err) {
-			console.error(await geti18n('fountConsole.ipc.sendCommandFailed', {error: err}))
+			console.error(await geti18n('fountConsole.ipc.sendCommandFailed', { error: err }))
 			process.exit(1)
 		}
 	}
@@ -31,7 +31,7 @@ if (args.length) {
 		try {
 			await IPCManager.sendCommand('shutdown')
 		} catch (err) {
-			console.error(await geti18n('fountConsole.ipc.sendCommandFailed', {error: err}))
+			console.error(await geti18n('fountConsole.ipc.sendCommandFailed', { error: err }))
 			process.exit(1)
 		}
 	else {

@@ -12,7 +12,7 @@ const parser = new DOMParser()
  * @returns {DocumentFragment} 渲染好的 DocumentFragment。
  */
 export function createDocumentFragmentFromHtmlString(htmlString) {
-	if (!htmlString.trim())	return document.createDocumentFragment()
+	if (!htmlString.trim()) return document.createDocumentFragment()
 
 	const doc = parser.parseFromString(htmlString, 'text/html')
 
@@ -20,7 +20,7 @@ export function createDocumentFragmentFromHtmlString(htmlString) {
 	function createElementFromNode(node, parent) {
 		if (node.nodeType === Node.TEXT_NODE)
 			parent.appendChild(document.createTextNode(node.textContent))
-		 else if (node.nodeType === Node.ELEMENT_NODE) {
+		else if (node.nodeType === Node.ELEMENT_NODE) {
 			const element = document.createElement(node.nodeName)
 			for (const attr of node.attributes)
 				element.setAttribute(attr.name, attr.value)
@@ -29,7 +29,7 @@ export function createDocumentFragmentFromHtmlString(htmlString) {
 			if (node.nodeName.toLowerCase() === 'script') {
 				if (node.src)
 					element.src = node.src
-				 else
+				else
 					element.text = node.textContent
 
 				element.async = false
