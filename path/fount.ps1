@@ -196,7 +196,19 @@ if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $ar
 }
 
 # 执行 fount
+function isRoot {
+	if ($IsWindows) {
+		([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+	}
+	else {
+		$UID -eq 0
+	}
+}
 function run {
+	if (isRoot) {
+		Write-Warning "Not Recommended: Running fount as root grants full system access for all fount parts."
+		Write-Warning "Unless you know what you are doing, it is recommended to run fount as a common user."
+	}
 	if ($args.Count -gt 0 -and $args[0] -eq 'debug') {
 		$newargs = $args[1..$args.Count]
 		deno run --allow-scripts --allow-all --inspect-brk "$FOUNT_DIR/src/server/index.mjs" @newargs
@@ -245,7 +257,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 		$ProfileContent = $ProfileContent -split "`n"
 		$ProfileContent = $ProfileContent | Where-Object { $_ -notmatch 'Import-Module fount-pwsh' }
 		$ProfileContent = $ProfileContent -join "`n"
-		if ($ProfileContent -ne (Get-Content $Profile -ErrorAction Ignore)) {
+		if ($ProfileContent -ne ((Get-Content $Profile -ErrorAction Ignore) -split "`n" -join "`n")) {
 			Set-Content -Path $Profile -Value $ProfileContent
 		}
 		Write-Host "fount-pwsh removed from PowerShell Profile."
