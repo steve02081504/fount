@@ -329,6 +329,10 @@ if [[ ! -d "$FOUNT_DIR/node_modules" || ($# -gt 0 && $1 = 'init') ]]; then
 fi
 
 run() {
+	if [[ $(id -u) -eq 0 ]]; then
+		echo "Not recommended: Running fount as root grants full system access for all fount parts."
+		echo "Unless you know what you are doing, it is recommended to run fount as a common user."
+	fi
 	if [[ $IN_TERMUX -eq 1 ]]; then
 		LANG_BACKUP="$LANG"
 		export LANG="$(getprop persist.sys.locale)"

@@ -520,7 +520,7 @@ export async function modifyTimeLine(chatid, delta) {
 			else
 				entry = BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, chatMetadata.username)
 
-			if (entry.timeSlice.world)
+			if (entry.timeSlice.world.interfaces?.chat?.AddChatLogEntry)
 				entry.timeSlice.world.interfaces.chat.AddChatLogEntry(await getChatRequest(chatid, undefined), entry)
 			else
 				chatMetadata.chatLog.push(entry)

@@ -89,14 +89,15 @@ export default {
 						chatLog = chatLog.slice(i)
 						break
 					}
-				chatLog.unshift({
-					role: 'system',
-					name: 'system',
-					content: `\
+				if (chatLog[0].extension.summary)
+					chatLog.unshift({
+						role: 'system',
+						name: 'system',
+						content: `\
 之前的对话总结如下：
 ${chatLog[0].extension.summary}
 `,
-				})
+					})
 				// 若summaryAIsource为空，直接返回
 				if (!summary.AIsource) return chatLog
 				// 若超过startLength消息，开始总结
@@ -112,13 +113,12 @@ ${SummaryChatLog.map((chatLogEntry) => chatLogEntry.name + ':\n<content>' + chat
 					// 添加总结到消息的extension中
 					chatLog = chatLog.slice(summary.size)
 					chatLog[0].extension ??= {}
-					chatLog[0].extension.summary = newSummary
 					chatLog.unshift({
 						role: 'system',
 						name: 'system',
 						content: `\
 之前的对话总结如下：
-${chatLog[0].extension.summary}
+${chatLog[0].extension.summary = newSummary}
 `,
 					})
 				}
