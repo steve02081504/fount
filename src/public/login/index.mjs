@@ -11,6 +11,7 @@ const errorMessage = document.getElementById('error-message')
 const verificationCodeGroup = document.getElementById('verification-code-group')
 const sendVerificationCodeBtn = document.getElementById('send-verification-code-btn')
 const passwordStrengthFeedback = document.getElementById('password-strength-feedback')
+const passwordInput = document.getElementById('password')
 
 const isLocalOrigin = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname)
 
@@ -80,6 +81,7 @@ function updateFormDisplay() {
 
 	confirmPasswordGroup.style.display = isLoginForm ? 'none' : 'block'
 	verificationCodeGroup.style.display = isLoginForm || isLocalOrigin ? 'none' : 'block'
+	passwordInput.autocomplete = isLoginForm ? 'current-password' : 'new-password'
 	errorMessage.textContent = ''
 
 	if (isLoginForm) {
@@ -143,7 +145,7 @@ async function handleFormSubmit(event) {
 	event.preventDefault()
 
 	const username = document.getElementById('username').value
-	const password = document.getElementById('password').value
+	const password = passwordInput.value
 	const deviceid = generateDeviceId()
 
 	let verificationcode = ''
