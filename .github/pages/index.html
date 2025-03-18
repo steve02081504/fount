@@ -10,9 +10,8 @@
 	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" />
 	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser"></script>
 	<script>
-		const isDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false //更简洁的写法
 		const urlParams = new URLSearchParams(window.location.search)
-		const theme = urlParams.get('theme') ?? localStorage.getItem('fountTheme') ?? (isDark ? 'dark' : 'light')
+		const theme = urlParams.get('theme') ?? localStorage.getItem('fountTheme') ?? 'dark'
 		document.documentElement.setAttribute('data-theme', theme)
 		localStorage.setItem('fountTheme', theme)
 	</script>
