@@ -86,6 +86,10 @@ async function mappingFountHostUrl(hostUrl) {
 		console.info('[getFountHostUrl] Fount service is available at localhost')
 		return 'http://localhost:8931'
 	}
+	if (await isFountServiceAvailable('http://10.0.2.2:8931')) { // 安卓模拟器到本机
+		console.info('[getFountHostUrl] Fount service is available at 10.0.2.2')
+		return 'http://10.0.2.2:8931'
+	}
 	if (await isFountServiceAvailable(hostUrl)) {
 		console.info(`[getFountHostUrl] Fount service is available at provided hostUrl: ${hostUrl}`)
 		return hostUrl
