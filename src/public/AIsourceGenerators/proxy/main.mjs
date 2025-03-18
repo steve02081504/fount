@@ -10,6 +10,10 @@ export default {
 			url: 'https://api.openai.com/v1/chat/completions',
 			model: 'gpt-3.5-turbo',
 			apikey: '',
+			model_arguments: {
+				temperature: 1,
+				n: 1
+			},
 		}
 	},
 	GetSource: async (config, { SaveConfig }) => {
@@ -27,10 +31,7 @@ export default {
 						model: config.model,
 						messages,
 						stream: false,
-						...config.model_arguments || {
-							temperature: 1,
-							n: 1
-						},
+						...config.model_arguments,
 					})
 				})
 

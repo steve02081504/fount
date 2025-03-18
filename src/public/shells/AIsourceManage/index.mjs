@@ -23,55 +23,52 @@ let fileList = []
 let generatorList = []
 let isDirty = false // 标记是否有未保存的更改
 
-async function fetchFileList() {
-	try {
-		const response = await fetch('/api/getlist/AIsources')
-		if (!response.ok)
-			throw new Error(`HTTP error! status: ${response.status}`)
-
-		fileList = await response.json()
-		renderFileList()
-	} catch (error) {
-		console.error('Failed to fetch file list:', error)
-		alert(geti18n('aisource_editor.alerts.fetchFileListFailed', { error: error.message }))
+// 统一的错误处理函数
+async function handleFetchError(response, customMessage) {
+	if (!response.ok) {
+		const message = await response.text()
+		const error = new Error(`HTTP error! status: ${response.status}, message: ${message}`)
+		console.error(customMessage, error)
+		alert(geti18n(customMessage, { error: error.message }))
+		throw error // Re-throw the error to be caught by the caller if needed.
 	}
+	return response
+}
+
+async function fetchFileList() {
+	const response = await fetch('/api/getlist/AIsources')
+	await handleFetchError(response, 'aisource_editor.alerts.fetchFileListFailed')
+	fileList = await response.json()
+	renderFileList()
 }
 
 async function fetchGeneratorList() {
-	try {
-		const response = await fetch('/api/getlist/AIsourceGenerators')
-		if (!response.ok)
-			throw new Error(`HTTP error! status: ${response.status}`)
-
-		generatorList = await response.json()
-		renderGeneratorSelect()
-	} catch (error) {
-		console.error('Failed to fetch generator list:', error)
-		alert(geti18n('aisource_editor.alerts.fetchGeneratorListFailed', { error: error.message }))
-	}
+	const response = await fetch('/api/getlist/AIsourceGenerators')
+	await handleFetchError(response, 'aisource_editor.alerts.fetchGeneratorListFailed')
+	generatorList = await response.json()
+	renderGeneratorSelect()
 }
 
 function renderFileList() {
 	fileListDiv.innerHTML = ''
-	fileList.forEach((fileName, index) => {
+	fileList.forEach(fileName => {
 		const listItem = document.createElement('div')
 		listItem.classList.add('file-list-item')
 		const p = document.createElement('p')
 		p.textContent = fileName
 		listItem.appendChild(p)
 		listItem.addEventListener('click', () => loadEditor(fileName))
-
 		fileListDiv.appendChild(listItem)
 	})
-	if (fileList.length > 0 && !activeFile)
-		loadEditor(fileList[0])
-	else if (fileList.length > 0 && activeFile)
-		loadEditor(activeFile)
 
+	if (fileList.length > 0) {
+		const fileToLoad = activeFile && fileList.includes(activeFile) ? activeFile : fileList[0]
+		loadEditor(fileToLoad)
+	}
 }
 
 function renderGeneratorSelect() {
-	generatorSelect.innerHTML = '<option disabled selected data-i18n="aisource_editor.generatorSelect.placeholder"></option>' // 占位符已在 HTML 中处理
+	generatorSelect.innerHTML = '<option disabled selected data-i18n="aisource_editor.generatorSelect.placeholder"></option>'
 	generatorList.forEach(generator => {
 		const option = document.createElement('option')
 		option.value = generator
@@ -83,93 +80,68 @@ function renderGeneratorSelect() {
 async function fetchConfigTemplate(generatorName) {
 	if (!generatorName) return null
 	try {
-		const response = await fetch(`/api/shells/AIsourceManage/getConfigTemplate?${new URLSearchParams({
-			generator: generatorName,
-		})}`)
-
-		if (!response.ok) {
-			const message = await response.text()
-			throw new Error(`HTTP error! status: ${response.status}, message: ${message}`)
-		}
+		const response = await fetch(`/api/shells/AIsourceManage/getConfigTemplate?${new URLSearchParams({ generator: generatorName })}`)
+		await handleFetchError(response, 'aisource_editor.alerts.fetchConfigTemplateFailed')
 		return await response.json()
 	} catch (error) {
-		console.error('Failed to fetch config template:', error)
-		alert(geti18n('aisource_editor.alerts.fetchConfigTemplateFailed', { error: error.message }))
 		return null // 允许用户继续编辑
 	}
 }
 
 function disableEditor() {
-	if (jsonEditor) {
-		jsonEditor.set({ json: {} }) // 清空编辑器内容
+	if (jsonEditor)
 		jsonEditor.updateProps({ readOnly: true })
-	}
 	disabledIndicator.classList.remove('hidden') // 显示遮罩
 }
 
 function enableEditor() {
 	if (jsonEditor)
 		jsonEditor.updateProps({ readOnly: false })
-
 	disabledIndicator.classList.add('hidden') // 隐藏遮罩
 }
 
+async function updateEditorContent(data, template) {
+	if (jsonEditor)
+		jsonEditor.set({ json: data || template || {} })
+}
 
 async function loadEditor(fileName) {
 	if (!fileName) return
 
-	// 如果有未保存的更改，提示用户
-	if (isDirty)
-		if (!confirm(geti18n('aisource_editor.confirm.unsavedChanges')))
-			return
+	if (isDirty && !confirm(geti18n('aisource_editor.confirm.unsavedChanges')))
+		return
 
-	// 更新高亮
-	document.querySelectorAll('.file-list-item').forEach(item => {
-		item.classList.remove('active')
-	})
+	document.querySelectorAll('.file-list-item').forEach(item => item.classList.remove('active'))
 	const activeItemIndex = fileList.indexOf(fileName)
 	if (activeItemIndex !== -1) {
 		const fileItem = document.querySelector(`#fileList .file-list-item:nth-child(${activeItemIndex + 1})`)
-		if (fileItem)
-			fileItem.classList.add('active')
+		if (fileItem) fileItem.classList.add('active')
 	}
 
 	activeFile = fileName
-	try {
-		const response = await fetch(`/api/shells/AIsourceManage/getfile?${new URLSearchParams({
-			AISourceFile: fileName,
-		})}`)
+	const response = await fetch(`/api/shells/AIsourceManage/getfile?${new URLSearchParams({ AISourceFile: fileName })}`)
+	await handleFetchError(response, 'aisource_editor.alerts.fetchFileDataFailed')
+	const data = await response.json()
+	generatorSelect.value = data.generator
 
-		if (!response.ok)
-			throw new Error(`HTTP error! status: ${response.status}`)
+	if (!jsonEditor)
+		jsonEditor = createJsonEditor(jsonEditorContainer, {
+			onChange: () => { isDirty = true },
+			onSave: saveFile
+		})
 
-		const data = await response.json()
-		generatorSelect.value = data.generator
-
-		if (!jsonEditor)
-			jsonEditor = createJsonEditor(jsonEditorContainer, {
-				onChange: (updatedContent, previousContent, { error, patchResult }) => {
-					isDirty = true // 标记为有未保存的更改
-				},
-				onSave: saveFile
-			})
-
-		if (!generatorSelect.value) {
-			disableEditor()
-			jsonEditor.set({ json: {} })
-		}
-		else {
-			enableEditor()
-			const template = await fetchConfigTemplate(generatorSelect.value)
-			jsonEditor.set({ json: data.config || template || {} })
-		}
-
-		isDirty = false // 重置未保存标记
-	} catch (error) {
-		console.error('Failed to fetch file data:', error)
-		alert(geti18n('aisource_editor.alerts.fetchFileDataFailed', { error: error.message }))
+	if (!generatorSelect.value) {
+		await updateEditorContent(data.config)
+		disableEditor()
 	}
+	else {
+		enableEditor()
+		const template = await fetchConfigTemplate(generatorSelect.value)
+		await updateEditorContent(data.config, template)
+	}
+	isDirty = false
 }
+
 
 async function saveFile() {
 	if (!activeFile) {
@@ -182,29 +154,19 @@ async function saveFile() {
 	}
 	const config = jsonEditor.get().json || JSON.parse(jsonEditor.get().text)
 	const generator = generatorSelect.value
-	try {
-		const response = await fetch('/api/shells/AIsourceManage/setfile', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				AISourceFile: activeFile,
-				data: {
-					generator,
-					config
-				}
-			}),
-		})
-		if (!response.ok)
-			throw new Error(`HTTP error! status: ${response.status}`)
-
-		console.log('File saved successfully.')
-		isDirty = false // 重置未保存标记
-	} catch (error) {
-		console.error('Failed to save file:', error)
-		alert(geti18n('aisource_editor.alerts.saveFileFailed', { error: error.message }))
-	}
+	const response = await fetch('/api/shells/AIsourceManage/setfile', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({
+			AISourceFile: activeFile,
+			data: { generator, config }
+		}),
+	})
+	await handleFetchError(response, 'aisource_editor.alerts.saveFileFailed')
+	console.log('File saved successfully.')
+	isDirty = false
 }
 
 async function deleteFile() {
@@ -212,65 +174,46 @@ async function deleteFile() {
 		alert(geti18n('aisource_editor.alerts.noFileSelectedDelete'))
 		return
 	}
-	if (!confirm(geti18n('aisource_editor.confirm.deleteFile')))
-		return
+	if (!confirm(geti18n('aisource_editor.confirm.deleteFile'))) return
 
-	try {
-		const response = await fetch('/api/shells/AIsourceManage/deletefile', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({ AISourceFile: activeFile }),
-		})
-		if (!response.ok)
-			throw new Error(`HTTP error! status: ${response.status}`)
+	const response = await fetch('/api/shells/AIsourceManage/deletefile', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({ AISourceFile: activeFile }),
+	})
+	await handleFetchError(response, 'aisource_editor.alerts.deleteFileFailed')
+	console.log('File delete successfully.')
+	activeFile = null
+	await fetchFileList()
 
-		console.log('File delete successfully.')
-
-		activeFile = null
-		await fetchFileList()
-		if (fileList.length > 0)
-			loadEditor(fileList[0])
-		else if (jsonEditor) {
-			jsonEditor.destroy()
-			jsonEditor = null
-		}
-
-	} catch (error) {
-		console.error('Failed to delete file:', error)
-		alert(geti18n('aisource_editor.alerts.deleteFileFailed', { error: error.message }))
-	}
+	//  不清空 jsonEditor，而是禁用并清空
+	if (fileList.length === 0)
+		disableEditor()
 }
 
 async function addFile() {
 	const newFileName = prompt(geti18n('aisource_editor.prompts.newFileName'))
 	if (!newFileName) return
 
-	// 验证文件名是否有效
 	if (!isValidFileName(newFileName)) {
 		alert(geti18n('aisource_editor.alerts.invalidFileName'))
 		return
 	}
 
-	try {
-		const response = await fetch('/api/shells/AIsourceManage/addfile', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({ AISourceFile: newFileName }),
-		})
-		if (!response.ok)
-			throw new Error(`HTTP error! status: ${response.status}`)
-		await fetchFileList()
+	const response = await fetch('/api/shells/AIsourceManage/addfile', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({ AISourceFile: newFileName }),
+	})
+	await handleFetchError(response, 'aisource_editor.alerts.addFileFailed')
+	await fetchFileList()
 
-		await loadEditor(newFileName)
-		console.log('File add successfully.')
-	} catch (error) {
-		console.error('Failed to add file:', error)
-		alert(geti18n('aisource_editor.alerts.addFileFailed', { error: error.message }))
-	}
+	await loadEditor(newFileName)
+	console.log('File add successfully.')
 }
 
 function isValidFileName(fileName) {
@@ -283,7 +226,7 @@ applyTheme()
 fetchFileList()
 fetchGeneratorList()
 initTranslations('aisource_editor')
-disableEditor() // 初始禁用编辑器
+disableEditor()
 
 saveButton.addEventListener('click', saveFile)
 deleteButton.addEventListener('click', deleteFile)
@@ -292,18 +235,16 @@ addFileButton.addEventListener('click', addFile)
 generatorSelect.addEventListener('change', async () => {
 	const selectedGenerator = generatorSelect.value
 	if (selectedGenerator) {
-		enableEditor()
 		const template = await fetchConfigTemplate(selectedGenerator)
-		if (template && jsonEditor)
-			jsonEditor.set({ json: template })
+		if (jsonEditor)
+			updateEditorContent(null, template)
 	}
-	else {
+	else
 		disableEditor()
-		jsonEditor.set({ json: {} })
-	}
+	enableEditor() //无论如何都调用
+
 })
 
-// 离开页面时提醒
 window.addEventListener('beforeunload', (event) => {
 	if (isDirty) {
 		event.preventDefault()

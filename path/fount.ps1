@@ -245,7 +245,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 		$ProfileContent = $ProfileContent -split "`n"
 		$ProfileContent = $ProfileContent | Where-Object { $_ -notmatch 'Import-Module fount-pwsh' }
 		$ProfileContent = $ProfileContent -join "`n"
-		if ($ProfileContent -ne (Get-Content $Profile -ErrorAction Ignore)) {
+		if ($ProfileContent -ne ((Get-Content $Profile -ErrorAction Ignore) -split "`n" -join "`n")) {
 			Set-Content -Path $Profile -Value $ProfileContent
 		}
 		Write-Host "fount-pwsh removed from PowerShell Profile."
