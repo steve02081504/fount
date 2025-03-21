@@ -13,7 +13,10 @@ export default {
 		return {
 			name: 'Grok',
 			model: 'grok-3',
-			cookies: [], // cookies 现在是数组
+			cookies: [],
+			convert_config: {
+				roleReminding: true
+			}
 		}
 	},
 
@@ -84,8 +87,8 @@ export default {
 					})
 
 
-				if (config.roleReminding ?? true) {
-					const isMutiChar = new Set([...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name)]).size > 2
+				if (config.convert_config.roleReminding ?? true) {
+					const isMutiChar = new Set([...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name).filter(Boolean)]).size > 2
 					if (isMutiChar)
 						messages.push({
 							role: 'system',

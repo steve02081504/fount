@@ -12,6 +12,9 @@ export default {
 		return {
 			name: 'DuckDuckGo',
 			model: 'gpt-4o-mini',
+			convert_config: {
+				roleReminding: true
+			}
 		}
 	},
 	/**
@@ -79,8 +82,8 @@ export default {
 						content: system_prompt
 					})
 
-				if (config.roleReminding ?? true) {
-					const isMutiChar = new Set([...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name)]).size > 2
+				if (config.convert_config.roleReminding ?? true) {
+					const isMutiChar = new Set([...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name).filter(Boolean)]).size > 2
 					if (isMutiChar)
 						messages.push({
 							role: 'system',

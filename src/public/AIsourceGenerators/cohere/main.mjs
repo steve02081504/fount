@@ -10,6 +10,9 @@ export default {
 			name: 'cohere-command-r-plus',
 			model: 'command-r-plus',
 			apikey: '',
+			convert_config: {
+				roleReminding: true
+			}
 		}
 	},
 	GetSource: async (config) => {
@@ -58,8 +61,8 @@ export default {
 					})
 				})
 
-				if (config.roleReminding ?? true) {
-					const isMutiChar = new Set([...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name)]).size > 2
+				if (config.convert_config.roleReminding ?? true) {
+					const isMutiChar = new Set([...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name).filter(Boolean)]).size > 2
 					if (isMutiChar)
 						request.messages.push({
 							role: 'system',

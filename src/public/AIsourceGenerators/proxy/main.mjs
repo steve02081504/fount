@@ -14,6 +14,10 @@ export default {
 				temperature: 1,
 				n: 1
 			},
+			convert_config: {
+				passName: false,
+				roleReminding: true
+			}
 		}
 	},
 	GetSource: async (config, { SaveConfig }) => {
@@ -65,9 +69,6 @@ export default {
 				{}, // 第一次尝试，使用原始配置
 				{ urlSuffix: '/v1/chat/completions' },
 				{ urlSuffix: '/chat/completions' },
-				{ modelArguments: {} },
-				{ urlSuffix: '/v1/chat/completions', modelArguments: {} },
-				{ urlSuffix: '/chat/completions', modelArguments: {} },
 			]
 			if (config.url.endsWith('/chat/completions'))
 				retryConfigs = retryConfigs.filter((config) => !config?.urlSuffix?.endsWith?.('/chat/completions'))
@@ -77,19 +78,13 @@ export default {
 				if (retryConfig.urlSuffix)
 					currentConfig.url += retryConfig.urlSuffix
 
-				if (retryConfig.modelArguments)
-					currentConfig.model_arguments = retryConfig.modelArguments
-
 				try {
 					const result = await callBase(messages, currentConfig)
 
 					if (retryConfig.urlSuffix)
 						console.warn(`the api url of ${config.model} need to change from ${config.url} to ${currentConfig.url}`)
 
-					if (retryConfig.modelArguments)
-						console.warn(`the api arguments of ${config.model} need to set to {}`)
-
-					if (retryConfig.urlSuffix || retryConfig.modelArguments) {
+					if (retryConfig.urlSuffix) {
 						Object.assign(config, currentConfig)
 						SaveConfig()
 					}
@@ -134,7 +129,8 @@ export default {
 				margeStructPromptChatLog(prompt_struct).forEach((chatLogEntry) => {
 					messages.push({
 						role: chatLogEntry.role === 'user' ? 'user' : chatLogEntry.role === 'system' ? 'system' : 'assistant',
-						content: chatLogEntry.name + ':\n' + chatLogEntry.content
+						content: config.convert_config.passName ? chatLogEntry.content : chatLogEntry.name + ':\n' + chatLogEntry.content,
+						name: config.convert_config.passName ? chatLogEntry.name : undefined
 					})
 				})
 
@@ -150,8 +146,8 @@ export default {
 						content: system_prompt
 					})
 
-				if (config.roleReminding ?? true) {
-					const isMutiChar = new Set([...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name)]).size > 2
+				if (config.convert_config.roleReminding ?? true) {
+					const isMutiChar = new Set([...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name).filter(Boolean)]).size > 2
 					if (isMutiChar)
 						messages.push({
 							role: 'system',

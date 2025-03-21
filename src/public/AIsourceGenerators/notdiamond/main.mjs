@@ -11,6 +11,9 @@ export default {
 			email: '',
 			password: '',
 			model: 'gpt-3.5-turbo',
+			convert_config: {
+				roleReminding: true
+			}
 		}
 	},
 	GetSource: async (config) => {
@@ -72,8 +75,8 @@ export default {
 					content: system_prompt
 				})
 
-				if (config.roleReminding ?? true) {
-					const isMutiChar = new Set([...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name)]).size > 2
+				if (config.convert_config.roleReminding ?? true) {
+					const isMutiChar = new Set([...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name).filter(Boolean)]).size > 2
 					if (isMutiChar)
 						messages.push({
 							role: 'system',
