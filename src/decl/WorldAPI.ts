@@ -16,9 +16,15 @@ export class WorldAPI_t {
 		tags: string[];
 	}>;
 	// calls only on install, and if fail, all file under this persona's folder will be deleted
-	Init: () => void;
+	Init: (stat: {
+		username: string,
+		worldname: string,
+	}) => void;
 	// calls on every start, pop a message if fail
-	Load: () => void;
+	Load: (stat: {
+		username: string,
+		worldname: string,
+	}) => void;
 	// calls on every unload
 	Unload: (reason: string) => void;
 	// calls on uninstall

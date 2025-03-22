@@ -11,6 +11,8 @@ on:
       - '**.zsh'
       - '**.ps1'
       - 'path/**'
+    tags-ignore:
+      - '*'
   workflow_dispatch:
 
 jobs:

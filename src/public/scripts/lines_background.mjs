@@ -265,7 +265,7 @@ export function updateConfig(newConfig) {
  *  更新颜色配置
  */
 export function updateColors() {
-	if(!config) return
+	if (!config) return
 	const rootStyle = getComputedStyle(document.documentElement)
 	const primaryColor = rootStyle.getPropertyValue('--color-primary').trim()
 	const baseColor200 = rootStyle.getPropertyValue('--color-base-200').trim() // 获取背景色 css 变量

@@ -5,6 +5,11 @@ export function is_local_ip(ip) {
 	return localIPs.includes(ip)
 }
 
+export function is_local_ip_from_req(req) {
+	const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress
+	return is_local_ip(ip)
+}
+
 /**
  * 生成一个速率限制中间件。
  * @param {object} options 配置选项

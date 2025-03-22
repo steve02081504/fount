@@ -9,6 +9,7 @@ import { FullProxy } from '../scripts/proxy.mjs'
 import { exec } from '../scripts/exec.mjs'
 import { getLocalizedInfo } from '../scripts/locale.mjs'
 import { geti18n } from '../scripts/i18n.mjs'
+import { loadJsonFile } from '../scripts/json_loader.mjs'
 
 /**
  * @typedef {Object} PartInfo
@@ -110,6 +111,30 @@ export async function baseMjsPartLoader(path) {
 		}
 	} catch (e) {
 		console.error(await geti18n('fountConsole.partManager.git.updateFailed', { error: e }))
+	}
+	else if (fs.existsSync(path + '/.isdefault')) {
+		// 默认组件更新：在载入前自 __dirname + '/default/templates/user/' + parttype + '/' + partname 同步文件
+		const userPath = path
+		const { type, dirname } = loadJsonFile(userPath + '/fount.json')
+		const templatePath = __dirname + '/default/templates/user/' + type + '/' + dirname
+		function mapper(fileOrDir) {
+			if (fs.statSync(templatePath + '/' + fileOrDir).isDirectory()) {
+				if (!fs.existsSync(userPath + '/' + fileOrDir))
+					fs.mkdirSync(userPath + '/' + fileOrDir, { recursive: true })
+				fs.readdirSync(fileOrDir).forEach((path) => mapper(fileOrDir + '/' + path))
+			}
+			else
+				if (!fs.existsSync(userPath + '/' + fileOrDir))
+					fs.copyFileSync(templatePath + '/' + fileOrDir, userPath + '/' + fileOrDir)
+				else {
+					const template = fs.readFileSync(templatePath + '/' + fileOrDir, 'utf8')
+					const user = fs.readFileSync(userPath + '/' + fileOrDir, 'utf8')
+					if (template !== user)
+						fs.writeFileSync(userPath + '/' + fileOrDir, template)
+				}
+
+		}
+		fs.readdirSync(templatePath).forEach(mapper)
 	}
 	const part = (await import(url.pathToFileURL(path + '/main.mjs'))).default
 	return part

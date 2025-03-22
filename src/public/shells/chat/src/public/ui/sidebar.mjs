@@ -107,7 +107,10 @@ async function renderWorldDetails(worldName) {
 	if (!cachedDom.world[worldName]) {
 		worldData = await getWorldDetails(worldName)
 		if (!worldData) throw new Error(`世界 ${worldName} 不存在`)
-		const worldCard = cachedDom.world[worldName] = await renderTemplate('chat/world_info_chat_view', worldData.info)
+		const worldCard = cachedDom.world[worldName] = await renderTemplate('chat/world_info_chat_view', {
+			avatar: '',
+			...worldData.info
+		})
 		addCardEventListeners(worldCard, worldData)
 	}
 

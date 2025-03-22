@@ -1,15 +1,20 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { escapeRegExp } from '../../../../src/scripts/escape.mjs'
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
+import { Buffer } from 'node:buffer'
+import * as mime from 'npm:mime-types'
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
 export default {
 	GetConfigTemplate: async () => {
 		return {
-			name: 'gemini-flash',
+			name: 'gemini-flash-exp',
 			apikey: '',
-			model: 'gemini-2.0-flash'
+			model: 'gemini-2.0-flash-exp-image-generation',
+			model_arguments: {
+				responseModalities: ['Text']
+			}
 		}
 	},
 	GetSource: async (config) => {
@@ -17,7 +22,8 @@ export default {
 		const genAI = new GoogleGenerativeAI(config.apikey)
 		//fileManager is unable to upload buffer, for now we just use inlineData
 		// let fileManager = new GoogleAIFileManager(config.apikey)
-		const model = genAI.getGenerativeModel({
+
+		const generationConfig = {
 			safetySettings: [
 				{
 					category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
@@ -40,8 +46,11 @@ export default {
 					threshold: 'BLOCK_NONE'
 				}
 			],
-			model: config.model
-		})
+			...config.model_arguments,
+			model: config.model,
+		}
+
+		const model = genAI.getGenerativeModel(generationConfig)
 		/** @type {AIsource_t} */
 		const result = {
 			type: 'text-chat',
@@ -125,12 +134,24 @@ system:
 					},
 				])
 
-				const result = await model.generateContent(request)
-				let text = result.response.text()
+				const response = await model.generateContent(request)
+
+				let text = ''
+				const files = []
+
+				for (const part of response.response.candidates[0].content.parts)
+					if (part.text)
+						text += part.text
+					else if (part.inlineData && config.enableImageGeneration)
+						files.push({
+							name: `${files.length}.${mime.extension(part.inlineData.mimeType)}`,
+							mimeType: part.inlineData.mimeType,
+							data: Buffer.from(part.inlineData.data, 'base64')
+						})
 
 				{
 					text = text.split('\n')
-					const base_reg = `^(|${[...new Set([
+					const base_reg = `^((|${[...new Set([
 						prompt_struct.Charname,
 						...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name),
 					])].filter(Boolean).map(escapeRegExp).concat([
@@ -140,7 +161,7 @@ system:
 								return stringOrReg.source
 							}
 						),
-					].filter(Boolean)).join('|')}[^\\n：:]*)(:|：)\\s*`
+					].filter(Boolean)).join('|')})[^\\n：:]*)(:|：)\\s*`
 					let reg = new RegExp(`${base_reg}$`, 'i')
 					while (text[0].trim().match(reg)) text.shift()
 					reg = new RegExp(`${base_reg}`, 'i')
@@ -158,6 +179,7 @@ system:
 
 				return {
 					content: text,
+					files,
 				}
 			},
 			Tokenizer: {

@@ -7,6 +7,8 @@ import path from 'node:path'
 import argon2 from 'argon2'
 import { ms } from '../scripts/ms.mjs'
 import { geti18n } from '../scripts/i18n.mjs'
+import { is_local_ip_from_req } from '../scripts/ratelimit.mjs'
+import { loadJsonFile } from '../scripts/json_loader.mjs'
 
 const ACCESS_TOKEN_EXPIRY = '15m'
 const REFRESH_TOKEN_EXPIRY = '30d'
@@ -96,8 +98,8 @@ async function refresh(refreshToken) {
 		const user = getUserByUsername(decoded.username)
 		const userRefreshToken = user?.auth.refreshTokens.find((token) => token.jti === decoded.jti)
 
-		// 验证 refreshToken 是否存在、是否过期、是否被撤销以及 deviceId 是否匹配
-		if (!user || !userRefreshToken || userRefreshToken.expiry < Date.now() || config.data.revokedTokens[decoded.jti] || userRefreshToken.deviceId !== decoded.deviceId)
+		// 验证 refreshToken 是否存在、是否被撤销以及 deviceId 是否匹配（过期问题已被verifyToken验证）
+		if (!user || !userRefreshToken || config.data.revokedTokens[decoded.jti] || userRefreshToken.deviceId !== decoded.deviceId)
 			return { status: 401, message: 'Invalid refresh token' }
 
 		// 生成新的 access token 和 refresh token
@@ -132,7 +134,6 @@ export async function logout(req, res) {
 		const decodedAccessToken = await jose.decodeJwt(accessToken)
 		if (decodedAccessToken && decodedAccessToken.exp)
 			config.data.revokedTokens[decodedAccessToken.jti] = { expiry: decodedAccessToken.exp * 1000, type: 'access' }
-
 	}
 
 	if (refreshToken && user)
@@ -168,6 +169,9 @@ export async function authenticate(req, res, next) {
 		return res.status(401).json({ message: 'Unauthorized' })
 	}
 	if (!accessToken) return Unauthorized()
+
+	// 本地 IP 不需要验证
+	if (is_local_ip_from_req(req)) return next()
 
 	let decoded = await verifyToken(accessToken)
 
@@ -243,6 +247,7 @@ async function createUser(username, password) {
 			lockedUntil: null,
 			refreshTokens: [],
 		},
+		...loadJsonFile(__dirname + '/default/templates/user.json'),
 	}
 	save_config()
 	return { ...config.data.users[username], userId }
@@ -265,7 +270,7 @@ async function verifyPassword(password, hashedPassword) {
 export async function getUserByToken(token) {
 	if (!token) return null
 
-	const decoded = await verifyToken(token)
+	const decoded = jose.decodeJwt(token)
 	if (!decoded) return null
 
 	return config.data.users[decoded.username]
@@ -312,7 +317,7 @@ export async function login(username, password, deviceId = 'unknown') {
 	if (!fs.existsSync(userdir)) try {
 		fs.mkdirSync(path.dirname(userdir), { recursive: true })
 		// 自`/default/user`复制到用户目录
-		fse.copySync(path.join(__dirname, '/default/user'), userdir)
+		fse.copySync(path.join(__dirname, '/default/templates/user'), userdir)
 	} catch { }
 	for (const subdir of ['AIsources', 'chars', 'personas', 'settings', 'shells', 'worlds', 'ImportHandlers', 'AIsourceGenerators'])
 		try { fs.mkdirSync(userdir + '/' + subdir, { recursive: true }) } catch { }
@@ -358,7 +363,6 @@ function cleanupRevokedTokens() {
 			delete config.data.revokedTokens[jti]
 			cleaned = true
 		}
-
 
 	if (cleaned) save_config()
 }
