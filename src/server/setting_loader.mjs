@@ -9,6 +9,7 @@ export function loadData(username, dataname) {
 		return userDataSet[username][dataname] ??= loadJsonFile(getUserDictionary(username) + '/settings/' + dataname + '.json')
 	}
 	catch (error) {
+		console.error(error)
 		return userDataSet[username][dataname] = {}
 	}
 }
