@@ -43,11 +43,11 @@ export function addPartLocaleData(partname, localeList, loader) {
 	partsLocaleLoaders[partname] = loader
 }
 
-const localhostLocales = [...new Set([
+export const localhostLocales = [...new Set([
 	process.env.LANG,
 	process.env.LANGUAGE,
 	process.env.LC_ALL,
-	await exec('locale -uU').then((r) => r.stdout.trim()).catch(() => undefined),
+	await exec('locale -uU').then((r) => r.stdout.trim().split('.')[0].replace('_', '-')).catch(() => undefined),
 	...navigator.languages || [navigator.language]
 ].filter(Boolean))]
 
