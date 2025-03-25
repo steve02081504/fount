@@ -1,6 +1,6 @@
 import { Client, Events, GatewayIntentBits, Partials } from 'npm:discord.js@^14.18.0'
 import { on_shutdown } from '../../../../../server/on_shutdown.mjs'
-import { loadData, loadTempData, saveData } from '../../../../../server/setting_loader.mjs'
+import { loadData, loadShellData, loadTempData, saveData, saveShellData } from '../../../../../server/setting_loader.mjs'
 import { LoadChar } from '../../../../../server/managers/char_manager.mjs'
 import { getAllUserNames } from '../../../../../server/auth.mjs'
 import { StartJob, EndJob } from '../../../../../server/jobs.mjs'
@@ -46,7 +46,7 @@ async function startBot(config, char) {
 }
 
 function getBotsData(username) {
-	return loadData(username, 'discordbot_configs')
+	return loadShellData(username, 'discordbot', 'bot_configs')
 }
 
 export function getBotConfig(username, botname) {
@@ -62,13 +62,13 @@ export async function getBotConfigTemplate(username, charname) {
 export function setBotConfig(username, botname, config) {
 	const botsData = getBotsData(username)
 	botsData[botname] = config
-	saveData(username, 'discordbot_configs', botsData)
+	saveShellData(username, 'discordbot', 'bot_configs')
 }
 
 export function deleteBotConfig(username, botname) {
 	const botsData = getBotsData(username)
 	delete botsData[botname]
-	saveData(username, 'discordbot_configs', botsData)
+	saveShellData(username, 'discordbot', 'bot_configs')
 }
 
 export async function runBot(username, botname) {
