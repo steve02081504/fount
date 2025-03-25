@@ -22,6 +22,29 @@ on_shutdown(() => {
 			saveData(username, dataname)
 })
 
+// shelldata 用于存储 特定 shell 的特定数据
+const userShellDataSet = {}
+export function loadShellData(username, shellname, dataname) {
+	userShellDataSet[username] ??= {}
+	userShellDataSet[username][shellname] ??= {}
+	try {
+		return userShellDataSet[username][shellname][dataname] ??= loadJsonFile(getUserDictionary(username) + '/shells/' + shellname + '/' + dataname + '.json')
+	}
+	catch (error) {
+		console.error(error)
+		return userShellDataSet[username][shellname][dataname] = {}
+	}
+}
+export function saveShellData(username, shellname, dataname) {
+	saveJsonFile(getUserDictionary(username) + '/shells/' + shellname + '/' + dataname + '.json', userShellDataSet[username][shellname][dataname])
+}
+on_shutdown(() => {
+	for (const username in userShellDataSet)
+		for (const shellname in userShellDataSet[username])
+			for (const dataname in userShellDataSet[username][shellname])
+				saveShellData(username, shellname, dataname)
+})
+
 // tempdata 用于临时存储数据
 const userTempDataSet = {}
 export function loadTempData(username, dataname) {

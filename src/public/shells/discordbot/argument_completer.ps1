@@ -20,7 +20,7 @@ param(
 function Get-BotList([string]$Username) {
 	# $PSScriptRoot 是当前脚本所在的目录。
 	# 构造 discordbot_configs.json 文件的路径。
-	$jsonPath = "$PSScriptRoot/../../../../data/users/$Username/settings/discordbot_configs.json"
+	$jsonPath = "$PSScriptRoot/../../../../data/users/$Username/shells/discordbot/bot_configs.json"
 	# 检查文件是否存在。
 	if (Test-Path $jsonPath -PathType Leaf) {
 		# 读取 JSON 文件并将其转换为哈希表。
