@@ -310,7 +310,7 @@ async function handleStartStopBot() {
 			startStopBotButton.classList.add('btn-error')
 		}
 	} catch (error) {
-		alert(error.message)
+		alert(error.message + '\n' + error.error || error.errors?.join('\n') || '')
 	}
 }
 
