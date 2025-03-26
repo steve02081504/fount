@@ -1,4 +1,4 @@
-import { authenticate, getUserByToken } from '../../../../../server/auth.mjs'
+import { authenticate, getUserByReq } from '../../../../../server/auth.mjs'
 import {
 	addchar,
 	addUserReply,
@@ -26,7 +26,7 @@ import { Buffer } from 'node:buffer'
 
 export function setEndpoints(router) {
 	router.post('/api/shells/chat/new', authenticate, async (req, res) => {
-		const { username } = await getUserByToken(req.cookies.accessToken)
+		const { username } = await getUserByReq(req)
 		res.status(200).json({ chatid: await newChat(username) })
 	})
 
@@ -120,16 +120,16 @@ export function setEndpoints(router) {
 	})
 
 	router.get('/api/shells/chat/getchatlist', authenticate, async (req, res) => {
-		res.status(200).json(await getChatList((await getUserByToken(req.cookies.accessToken)).username))
+		res.status(200).json(await getChatList((await getUserByReq(req)).username))
 	})
 
 	router.delete('/api/shells/chat/delete', authenticate, async (req, res) => {
-		const result = await deleteChat(req.body.chatids, (await getUserByToken(req.cookies.accessToken)).username)
+		const result = await deleteChat(req.body.chatids, (await getUserByReq(req)).username)
 		res.status(200).json(result)
 	})
 
 	router.post('/api/shells/chat/copy', authenticate, async (req, res) => {
-		const result = await copyChat(req.body.chatids, (await getUserByToken(req.cookies.accessToken)).username)
+		const result = await copyChat(req.body.chatids, (await getUserByReq(req)).username)
 		res.status(200).json(result)
 	})
 

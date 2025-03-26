@@ -1,11 +1,11 @@
-import { authenticate, getUserByToken } from '../../../../../server/auth.mjs'
+import { authenticate, getUserByReq } from '../../../../../server/auth.mjs'
 import { uninstallPartBase } from '../../../../../server/parts_loader.mjs'
 import { importPart, importPartByText } from './Installer_handler.mjs'
 
 export function setEndpoints(router) {
 	// 文件上传接口
 	router.post('/api/shells/install/file', authenticate, async (req, res) => {
-		const user = await getUserByToken(req.cookies.accessToken)
+		const user = await getUserByReq(req)
 		if (!user)
 			return res.status(401).json({ message: '未授权' })
 
@@ -20,7 +20,7 @@ export function setEndpoints(router) {
 
 	// 文本导入接口
 	router.post('/api/shells/install/text', authenticate, async (req, res) => {
-		const user = await getUserByToken(req.cookies.accessToken)
+		const user = await getUserByReq(req)
 		if (!user)
 			return res.status(401).json({ message: '未授权' })
 
@@ -36,7 +36,7 @@ export function setEndpoints(router) {
 
 	// 删除请求发送
 	router.post('/api/shells/install/uninstall', authenticate, async (req, res) => {
-		const { username } = await getUserByToken(req.cookies.accessToken)
+		const { username } = await getUserByReq(req)
 		const parttype = req.body.type
 		const partname = req.body.name
 		await uninstallPartBase(username, parttype, partname)

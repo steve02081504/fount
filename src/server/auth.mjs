@@ -49,7 +49,7 @@ export async function initAuth(config) {
 /**
  * 生成 JWT (Access Token)
  */
-async function generateAccessToken(payload) {
+export async function generateAccessToken(payload) {
 	const jti = crypto.randomUUID() // Generate a unique identifier for the access token
 	return await new jose.SignJWT({ ...payload, jti })
 		.setProtectedHeader({ alg: 'ES256' })
@@ -267,17 +267,22 @@ async function verifyPassword(password, hashedPassword) {
 	return await argon2.verify(hashedPassword, password)
 }
 
-export async function getUserByToken(token) {
+async function getUserByToken(token) {
 	if (!token) return null
 
 	const decoded = jose.decodeJwt(token)
 	if (!decoded) return null
 
+	console.log(decoded.username)
 	return config.data.users[decoded.username]
 }
 
 export function getUserDictionary(username) {
 	return path.resolve(config.data.users[username]?.UserDictionary || __dirname + '/data/users/' + username)
+}
+
+export function getUserByReq(req) {
+	return getUserByToken(req.cookies.accessToken)
 }
 
 /**
