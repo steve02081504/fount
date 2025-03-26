@@ -1,12 +1,14 @@
-import { login, register, logout, authenticate, getUserByToken, getUserDictionary } from './auth.mjs'
+import { login, register, logout, authenticate, getUserByReq, getUserDictionary, generateAccessToken } from './auth.mjs'
 import { getPartDetails } from './parts_loader.mjs'
 import { generateVerificationCode, verifyVerificationCode } from '../scripts/verifycode.mjs'
 import { ms } from '../scripts/ms.mjs'
 import { getPartList, loadPart, partsList } from './managers/index.mjs'
 import { processIPCCommand } from './ipc_server.mjs'
-import { is_local_ip, rateLimit } from '../scripts/ratelimit.mjs'
+import { is_local_ip, is_local_ip_from_req, rateLimit } from '../scripts/ratelimit.mjs'
+import {hosturl } from './server.mjs'
 import express from 'npm:express@^5.0.1'
 import cors from 'npm:cors'
+import { Readable } from 'node:stream';
 import { geti18n, getLocaleData } from '../scripts/i18n.mjs'
 
 /**
@@ -26,7 +28,7 @@ export function registerEndpoints(router) {
 	router.get('/api/getlocaledata', async (req, res) => {
 		const preferredLanguages = req.headers['accept-language']?.split?.(',')?.map?.((lang) => lang.trim().split(';')[0])
 		if (req.cookies.accessToken) try {
-			const user = await getUserByToken(req.cookies.accessToken)
+			const user = await getUserByReq(req)
 			user.locales = preferredLanguages
 			console.log(await geti18n('fountConsole.route.setLanguagePreference', { username: user.username, preferredLanguages }))
 		} catch { }
@@ -64,6 +66,53 @@ export function registerEndpoints(router) {
 
 	router.post('/api/logout', logout)
 
+	//来自本地的`/asuser/username/url`请求一律生成跳过验证转发请求给`/url`
+	router.all(/asuser\/([^\/]*)\/(.*)/, async (req, res) => {
+		if (!is_local_ip_from_req(req))
+			return res.status(403).send('Access allowed only from local IP.');
+		try {
+			const username = req.params[0];
+			const targetPathAndQuery = req.params[1];
+			const targetUrl = hosturl + '/' + targetPathAndQuery;
+
+			console.log(`AsUser: Forwarding request for user '${username}' to: ${targetUrl}`);
+
+			const accessToken = await generateAccessToken({ username });
+
+			const forwardedHeaders = {
+				...req.headers,
+				'cookie': `accessToken=${accessToken}; ${Object.entries(req.cookies || {}).map(([k, v]) => `${k}=${v}`).join('; ')}`,
+				'x-forwarded-for': req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+			};
+			delete forwardedHeaders.host;
+
+			const response = await fetch(targetUrl, {
+				method: req.method,
+				headers: forwardedHeaders,
+				body: req.body && JSON.stringify(req.body),
+				redirect: 'manual'
+			});
+
+			response.headers.forEach((value, name) => {
+				res.setHeader(name, value);
+			});
+
+			res.status(response.status);
+			if (response.body) {
+				const nodeReadableStream = Readable.fromWeb(response.body);
+				nodeReadableStream.pipe(res);
+			} else {
+				res.end();
+			}
+		} catch (error) {
+			console.error(`AsUser: Proxy Error for ${req.method} ${req.originalUrl}:`, error);
+			if (!res.headersSent)
+				res.status(502).send('Bad Gateway: Error forwarding request.');
+			else
+				res.socket.destroy();
+		}
+	});
+
 	router.post('/api/authenticate', authenticate, (req, res) => {
 		res.status(200).json({ message: 'Authenticated' })
 	})
@@ -73,7 +122,7 @@ export function registerEndpoints(router) {
 	})
 
 	router.post('/api/runshell', authenticate, async (req, res) => {
-		const { username } = await getUserByToken(req.cookies.accessToken)
+		const { username } = await getUserByReq(req)
 		const { shellname, args } = req.body
 		await processIPCCommand('runshell', { username, shellname, args })
 		res.status(200).json({ message: 'Shell command sent successfully.' })
@@ -82,11 +131,11 @@ export function registerEndpoints(router) {
 	const user_static = {}
 	for (const part of partsList) {
 		router.get('/api/getlist/' + part, authenticate, async (req, res) => {
-			const { username } = await getUserByToken(req.cookies.accessToken)
+			const { username } = await getUserByReq(req)
 			res.status(200).json(getPartList(username, part))
 		})
 		router.get('/api/getdetails/' + part, authenticate, async (req, res) => {
-			const { username } = await getUserByToken(req.cookies.accessToken)
+			const { username } = await getUserByReq(req)
 			const { name, nocache } = req.query
 			const details = await getPartDetails(username, part, name, nocache)
 			res.status(200).json(details)
@@ -103,7 +152,7 @@ export function registerEndpoints(router) {
 			const pathext = path.split('.').pop()
 			if (pathext != path && !['html', 'js', 'mjs', ''].includes(pathext)) return next() // 跳过纯资源路径
 			try {
-				const { username } = await getUserByToken(req.cookies.accessToken)
+				const { username } = await getUserByReq(req)
 				const loader = loadPart(username, part, partName)
 				if (path.startsWith('/api/')) await loader
 			} catch (e) { }
@@ -113,7 +162,7 @@ export function registerEndpoints(router) {
 		router.post(new RegExp('^/api/' + part + '/'), authenticate, autoloader)
 		router.get(new RegExp('^/api/' + part + '/'), authenticate, autoloader)
 		router.get(new RegExp('^/' + part + '/'), authenticate, autoloader, async (req, res, next) => {
-			const { username } = await getUserByToken(req.cookies.accessToken)
+			const { username } = await getUserByReq(req)
 			user_static[username] ??= express.static(getUserDictionary(username))
 			return user_static[username](req, res, next)
 		})
