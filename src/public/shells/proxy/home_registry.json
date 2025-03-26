@@ -1,0 +1,41 @@
+{
+	"home_function_buttons": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "作为代理"
+				},
+				"en-UK": {
+					"title": "As Proxy"
+				},
+				"de-DE": {
+					"title": "Als Proxy"
+				},
+				"es-ES": {
+					"title": "Como Proxy"
+				},
+				"fr-FR": {
+					"title": "En tant que proxy"
+				},
+				"hi-IN": {
+					"title": "प्रोक्सी के रूप में"
+				},
+				"ja-JP": {
+					"title": "プロキシとして"
+				},
+				"ko-KR": {
+					"title": "프로티시"
+				},
+				"pt-PT": {
+					"title": "Como Proxy"
+				},
+				"ru-RU": {
+					"title": "Как прокси"
+				}
+			},
+			"level": 2,
+			"url": "/shells/proxy",
+			"button": "<img src=\"https://api.iconify.design/line-md/cloud-alt-braces.svg\" class=\"text-icon\"/>"
+		}
+	]
+}

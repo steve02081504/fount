@@ -1,6 +1,7 @@
 import { getUserDictionary } from './auth.mjs'
 import { saveJsonFile, loadJsonFile } from '../scripts/json_loader.mjs'
 import { on_shutdown } from './on_shutdown.mjs'
+import fs from 'node:fs'
 
 const userDataSet = {}
 export function loadData(username, dataname) {
@@ -36,6 +37,7 @@ export function loadShellData(username, shellname, dataname) {
 	}
 }
 export function saveShellData(username, shellname, dataname) {
+	fs.mkdirSync(getUserDictionary(username) + '/shells/' + shellname, { recursive: true })
 	saveJsonFile(getUserDictionary(username) + '/shells/' + shellname + '/' + dataname + '.json', userShellDataSet[username][shellname][dataname])
 }
 on_shutdown(() => {

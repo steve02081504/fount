@@ -5,10 +5,10 @@ import { ms } from '../scripts/ms.mjs'
 import { getPartList, loadPart, partsList } from './managers/index.mjs'
 import { processIPCCommand } from './ipc_server.mjs'
 import { is_local_ip, is_local_ip_from_req, rateLimit } from '../scripts/ratelimit.mjs'
-import {hosturl } from './server.mjs'
+import { hosturl } from './server.mjs'
 import express from 'npm:express@^5.0.1'
 import cors from 'npm:cors'
-import { Readable } from 'node:stream';
+import { Readable } from 'node:stream'
 import { geti18n, getLocaleData } from '../scripts/i18n.mjs'
 
 /**
@@ -66,52 +66,56 @@ export function registerEndpoints(router) {
 
 	router.post('/api/logout', logout)
 
-	//来自本地的`/asuser/username/url`请求一律生成跳过验证转发请求给`/url`
-	router.all(/asuser\/([^\/]*)\/(.*)/, async (req, res) => {
+	router.get('/api/whoami', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		res.status(200).json({ username })
+	})
+
+	router.all(/asuser\/([^/]*)\/(.*)/, async (req, res) => {
 		if (!is_local_ip_from_req(req))
-			return res.status(403).send('Access allowed only from local IP.');
+			return res.status(403).send('Access allowed only from local IP.')
 		try {
-			const username = req.params[0];
-			const targetPathAndQuery = req.params[1];
-			const targetUrl = hosturl + '/' + targetPathAndQuery;
+			const username = req.params[0]
+			const targetPathAndQuery = req.params[1]
+			const targetUrl = hosturl + '/' + targetPathAndQuery
 
-			console.log(`AsUser: Forwarding request for user '${username}' to: ${targetUrl}`);
+			console.log(`AsUser: Forwarding request for user '${username}' to: ${targetUrl}`)
 
-			const accessToken = await generateAccessToken({ username });
+			const accessToken = await generateAccessToken({ username })
 
 			const forwardedHeaders = {
 				...req.headers,
 				'cookie': `accessToken=${accessToken}; ${Object.entries(req.cookies || {}).map(([k, v]) => `${k}=${v}`).join('; ')}`,
 				'x-forwarded-for': req.headers['x-forwarded-for'] || req.socket.remoteAddress,
-			};
-			delete forwardedHeaders.host;
+			}
+			delete forwardedHeaders.host
 
 			const response = await fetch(targetUrl, {
 				method: req.method,
 				headers: forwardedHeaders,
 				body: req.body && JSON.stringify(req.body),
 				redirect: 'manual'
-			});
+			})
 
 			response.headers.forEach((value, name) => {
-				res.setHeader(name, value);
-			});
+				res.setHeader(name, value)
+			})
 
-			res.status(response.status);
+			res.status(response.status)
 			if (response.body) {
-				const nodeReadableStream = Readable.fromWeb(response.body);
-				nodeReadableStream.pipe(res);
-			} else {
-				res.end();
+				const nodeReadableStream = Readable.fromWeb(response.body)
+				nodeReadableStream.pipe(res)
 			}
-		} catch (error) {
-			console.error(`AsUser: Proxy Error for ${req.method} ${req.originalUrl}:`, error);
-			if (!res.headersSent)
-				res.status(502).send('Bad Gateway: Error forwarding request.');
 			else
-				res.socket.destroy();
+				res.end()
+		} catch (error) {
+			console.error(`AsUser: Proxy Error for ${req.method} ${req.originalUrl}:`, error)
+			if (!res.headersSent)
+				res.status(502).send('Bad Gateway: Error forwarding request.')
+			else
+				res.socket.destroy()
 		}
-	});
+	})
 
 	router.post('/api/authenticate', authenticate, (req, res) => {
 		res.status(200).json({ message: 'Authenticated' })
