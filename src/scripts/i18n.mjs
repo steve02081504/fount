@@ -44,10 +44,12 @@ export function addPartLocaleData(partname, localeList, loader) {
 }
 
 export const localhostLocales = [...new Set([
-	process.env.LANG,
-	process.env.LANGUAGE,
-	process.env.LC_ALL,
-	await exec('locale -uU').then((r) => r.stdout.trim().split('.')[0].replace('_', '-')).catch(() => undefined),
+	...[
+		process.env.LANG,
+		process.env.LANGUAGE,
+		process.env.LC_ALL,
+		await exec('locale -uU').then((r) => r.stdout.trim()).catch(() => undefined),
+	].filter(Boolean).map(locale => locale.split('.')[0].replace('_', '-')),
 	...navigator.languages || [navigator.language]
 ].filter(Boolean))]
 
