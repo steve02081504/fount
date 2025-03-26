@@ -28,7 +28,6 @@ const SYSTEM_MESSAGE_CONTENT =
 const DEFAULT_TEMPERATURE = 1
 
 import { v4 as uuidv4 } from 'npm:uuid'
-import fetch from 'npm:node-fetch'
 import { encoding_for_model, get_encoding } from 'npm:tiktoken'
 
 // 模型信息

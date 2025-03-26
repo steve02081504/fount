@@ -273,7 +273,6 @@ async function getUserByToken(token) {
 	const decoded = jose.decodeJwt(token)
 	if (!decoded) return null
 
-	console.log(decoded.username)
 	return config.data.users[decoded.username]
 }
 

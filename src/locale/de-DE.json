@@ -596,6 +596,13 @@
 		"copyButton": "URL kopieren",
 		"copied": "URL in die Zwischenablage kopiert!"
 	},
+	"proxy": {
+		"title": "API-Proxy",
+		"heading": "OpenAI API Proxy-Adresse",
+		"instruction": "Fügen Sie die folgende Adresse in jede Anwendung ein, die das OpenAI-API-Format benötigt, um die KI-Quelle in fount zu verwenden!",
+		"copyButton": "Adresse kopieren",
+		"copied": "Adresse in die Zwischenablage kopiert!"
+	},
 	"404": {
 		"title": "Seite nicht gefunden",
 		"pageNotFoundText": "Hoppla! Sie scheinen auf einer Seite gelandet zu sein, die nicht existiert.",
