@@ -16,7 +16,7 @@ async function renderThemePreviews() {
 	// 创建 "Auto" 主题预览
 	const autoPreview = await createAutoPreview()
 	autoPreview.addEventListener('click', () => handleThemeClick(autoPreview, null))
-	if (currentTheme === 'auto') autoPreview.classList.add('selected-theme')
+	if (!currentTheme) autoPreview.classList.add('selected-theme')
 	themeList.appendChild(autoPreview)
 
 	// 创建其他内置主题预览
