@@ -38,8 +38,6 @@ export function setTheme(theme) {
 	localStorage.setItem('theme', theme || '')
 	theme ||= Boolean(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light'
 	if (document.documentElement.dataset.theme !== theme) document.documentElement.setAttribute('data-theme', theme)
-
-	setTimeout(updateColors)
 }
 function updateColors() {
 	// Use getComputedStyle to get the *computed* value of background-color, which resolves var(--bc)
@@ -110,7 +108,7 @@ function updateColors() {
 const observer = new MutationObserver((mutationsList) => {
 	for (const mutation of mutationsList)
 		if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme')
-			setTheme(document.documentElement.dataset.theme)
+			setTimeout(updateColors)
 })
 observer.observe(document.documentElement, { attributes: true })
 
