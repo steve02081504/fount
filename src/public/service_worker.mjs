@@ -33,7 +33,6 @@ function openMetadataDB() {
 		}
 
 		request.onsuccess = event => {
-			console.log('[SW DB] Database opened successfully.')
 			resolve(event.target.result)
 		}
 
@@ -99,13 +98,10 @@ async function cleanupExpiredCache() {
 				const cursor = event.target.result
 				if (cursor) {
 					const record = cursor.value
-					console.log(`[SW Cleanup] Found expired item: ${record.url} (timestamp: ${new Date(record.timestamp).toISOString()})`)
-
 					// 1. 从主缓存中删除
 					cache.delete(record.url)
 						.then(deleted => {
 							if (deleted) {
-								console.log(`[SW Cleanup] Deleted from cache: ${record.url}`)
 								// 2. 如果缓存删除成功，则从 IndexedDB 中删除元数据
 								const deleteRequest = cursor.delete() // 使用游标删除当前记录
 								deleteRequest.onsuccess = () => {
@@ -180,7 +176,7 @@ self.addEventListener('fetch', event => {
 	if (event.request.method !== 'GET') return
 
 	const requestUrl = new URL(event.request.url) // Parse the full URL
-	const { pathname, href: url } = requestUrl           // Keep the full URL string for logging/keys if needed
+	const { pathname, href: url } = requestUrl // Keep the full URL string for logging/keys if needed
 
 	// 对于扩展程序等的请求，不进行拦截
 	if (!url.startsWith('http')) return
@@ -214,8 +210,6 @@ self.addEventListener('fetch', event => {
 					// 存入缓存并更新时间戳
 					cache.put(finalUrl, responseToCache) // 使用最终 URL 作为键
 						.then(() => {
-							console.log(`[SW ${CACHE_NAME}] Cache successful: ${finalUrl} (original request: ${url})`)
-							// 缓存成功后，更新 IndexedDB 中的时间戳
 							return updateTimestamp(finalUrl, now) // 使用最终 URL
 						})
 						.then(() => {
@@ -245,14 +239,12 @@ self.addEventListener('fetch', event => {
 
 			// 如果缓存命中 (Stale 部分)
 			if (cachedResponse) {
-				console.log(`[SW ${CACHE_NAME}] Serving from cache: ${url}`)
 				// 更新缓存项的访问时间戳（即使是旧的）
 				updateTimestamp(cachedResponse.url || url, now) // 使用缓存响应的 URL 或原始请求 URL
 				return cachedResponse // 立即返回缓存响应
 			}
 
 			// 如果缓存未命中
-			console.log(`[SW ${CACHE_NAME}] Cache miss, fetching from network: ${url}`)
 			// 等待网络请求结果 (fetchPromise)
 			// 如果 fetchPromise 解析为 null（网络错误但有缓存已处理），则不会执行到这里
 			// 如果 fetchPromise 抛出错误（网络错误且无缓存），错误会传播到 respondWith

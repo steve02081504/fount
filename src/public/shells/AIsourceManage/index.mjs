@@ -89,20 +89,17 @@ async function fetchConfigTemplate(generatorName) {
 }
 
 function disableEditor() {
-	if (jsonEditor)
-		jsonEditor.updateProps({ readOnly: true })
+	if (jsonEditor) jsonEditor.updateProps({ readOnly: true })
 	disabledIndicator.classList.remove('hidden') // 显示遮罩
 }
 
 function enableEditor() {
-	if (jsonEditor)
-		jsonEditor.updateProps({ readOnly: false })
+	if (jsonEditor) jsonEditor.updateProps({ readOnly: false })
 	disabledIndicator.classList.add('hidden') // 隐藏遮罩
 }
 
-async function updateEditorContent(data, template) {
-	if (jsonEditor)
-		jsonEditor.set({ json: data || template || {} })
+async function updateEditorContent(data) {
+	if (jsonEditor) jsonEditor.set({ json: data || {} })
 }
 
 async function loadEditor(fileName) {
@@ -136,8 +133,7 @@ async function loadEditor(fileName) {
 	}
 	else {
 		enableEditor()
-		const template = await fetchConfigTemplate(generatorSelect.value)
-		await updateEditorContent(data.config, template)
+		await updateEditorContent(data.config || await fetchConfigTemplate(generatorSelect.value))
 	}
 	isDirty = false
 }
@@ -236,8 +232,7 @@ generatorSelect.addEventListener('change', async () => {
 	const selectedGenerator = generatorSelect.value
 	if (selectedGenerator) {
 		const template = await fetchConfigTemplate(selectedGenerator)
-		if (jsonEditor)
-			updateEditorContent(null, template)
+		updateEditorContent(template)
 	}
 	else
 		disableEditor()
