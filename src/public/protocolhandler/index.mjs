@@ -56,7 +56,13 @@ async function handleRunShell(parts) {
 		document.getElementById('message').textContent = geti18n('protocolhandler.shellCommandError')
 	}
 	setTimeout(() => {
-		history.back()
+		if (history[history.length - 1].startsWith('https://steve02081504.github.io/fount/protocol'))
+			if (history.length > 2)
+				history.go(-2)
+			else
+				window.location.href = '/'
+		else
+			history.back()
 	}, 1000)
 }
 

@@ -596,6 +596,13 @@
 		"copyButton": "Copiar URL",
 		"copied": "URL copiado para a área de transferência!"
 	},
+	"proxy": {
+		"title": "Proxy de API",
+		"heading": "Endereço do Proxy da API OpenAI",
+		"instruction": "Introduza o endereço seguinte em qualquer aplicação que necessite do formato da API OpenAI para usar a fonte de IA no fount!",
+		"copyButton": "Copiar Endereço",
+		"copied": "Endereço copiado para a área de transferência!"
+	},
 	"404": {
 		"title": "Página não encontrada",
 		"pageNotFoundText": "Ups! Parece que veio parar a uma página que não existe.",

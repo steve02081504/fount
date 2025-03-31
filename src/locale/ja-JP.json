@@ -596,6 +596,13 @@
 		"copyButton": "URLをコピー",
 		"copied": "URLがクリップボードにコピーされました！"
 	},
+	"proxy": {
+		"title": "APIプロキシ",
+		"heading": "OpenAI API プロキシアドレス",
+		"instruction": "fount内のAIソースを使用するには、以下のアドレスをOpenAI API形式を必要とする任意のアプリケーションに入力してください！",
+		"copyButton": "アドレスをコピー",
+		"copied": "アドレスがクリップボードにコピーされました！"
+	},
 	"404": {
 		"title": "ページが見つかりません",
 		"pageNotFoundText": "おっと！ 存在しないページにアクセスしてしまったようです。",

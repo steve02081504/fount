@@ -596,6 +596,13 @@
 		"copyButton": "复制网址",
 		"copied": "网址已复制到剪贴板！"
 	},
+	"proxy": {
+		"title": "API 代理",
+		"heading": "OpenAI API 代理地址",
+		"instruction": "将以下地址填入任意需要 OpenAI API 格式的应用中，即可使用在 fount 中的AI源！",
+		"copyButton": "复制地址",
+		"copied": "地址已复制到剪贴板！"
+	},
 	"404": {
 		"title": "页面未找到",
 		"pageNotFoundText": "糟糕！您似乎来到了一个不存在的页面。",

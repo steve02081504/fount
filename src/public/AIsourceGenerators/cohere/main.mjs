@@ -61,7 +61,7 @@ export default {
 					})
 				})
 
-				if (config.convert_config.roleReminding ?? true) {
+				if (config.convert_config?.roleReminding ?? true) {
 					const isMutiChar = new Set([...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name).filter(Boolean)]).size > 2
 					if (isMutiChar)
 						request.messages.push({
@@ -86,7 +86,7 @@ export default {
 								return stringOrReg.source
 							}
 						),
-					].filter(Boolean)).join('|')})[^\\n：:]*)(:|：)\\s*`
+					].filter(Boolean)).join('|')})[^\\n：:\<\>]*)(:|：)\\s*`
 					let reg = new RegExp(`${base_reg}$`, 'i')
 					while (text[0].trim().match(reg)) text.shift()
 					reg = new RegExp(`${base_reg}`, 'i')

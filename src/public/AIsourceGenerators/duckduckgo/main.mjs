@@ -72,7 +72,7 @@ export default {
 
 				const system_prompt = structPromptToSingleNoChatLog(prompt_struct)
 				if (config.system_prompt_at_depth ?? 10)
-					messages.splice(Math.max(messages.length - config.system_prompt_at_depth, 0), 0, {
+					messages.splice(Math.max(messages.length - (config.system_prompt_at_depth ?? 10), 0), 0, {
 						role: 'system',
 						content: system_prompt
 					})
@@ -82,7 +82,7 @@ export default {
 						content: system_prompt
 					})
 
-				if (config.convert_config.roleReminding ?? true) {
+				if (config.convert_config?.roleReminding ?? true) {
 					const isMutiChar = new Set([...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name).filter(Boolean)]).size > 2
 					if (isMutiChar)
 						messages.push({
@@ -106,7 +106,7 @@ export default {
 								return stringOrReg.source
 							}
 						),
-					].filter(Boolean)).join('|')})[^\\n：:]*)(:|：)\\s*`
+					].filter(Boolean)).join('|')})[^\\n：:\<\>]*)(:|：)\\s*`
 					let reg = new RegExp(`${base_reg}$`, 'i')
 					while (text[0].trim().match(reg)) text.shift()
 					reg = new RegExp(`${base_reg}`, 'i')

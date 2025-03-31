@@ -22,7 +22,7 @@ export async function ReStartJobs() {
 			for (const uid in jobs[shellname]) {
 				console.log(await geti18n('fountConsole.jobs.restartingJob', { username: user, shellname, uid }))
 				const shell = await loadShell(user, shellname)
-				await shell.ReStartJob(user, jobs[shellname][uid] ?? uid, uid)
+				await shell.ReStartJob(user, jobs[shellname][uid] ?? uid, uid).catch(console.error)
 			}
 	}
 }

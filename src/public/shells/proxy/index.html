@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="darkreader-lock">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title data-i18n="proxy.title"></title>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" />
+	<link href="/base.css" rel="stylesheet" type="text/css" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser"></script>
+	<script type="module" src="/base.mjs"></script>
+	<link rel="stylesheet" href="./index.css" type="text/css" />
+</head>
+
+<body class="flex flex-col h-screen items-center justify-center p-4">
+	<div class="max-w-md w-full bg-base-200 rounded-lg shadow-lg p-6">
+		<h1 class="text-2xl font-bold text-center mb-4" data-i18n="proxy.heading"></h1>
+		<p class="text-center mb-6" data-i18n="proxy.instruction"></p>
+
+		<div class="form-control w-full max-w-xs mx-auto">
+			<div class="join w-full">
+				<input type="text" id="proxyApiUrl" class="input input-bordered join-item w-full text-center" readonly />
+				<button class="btn btn-primary join-item" id="copyProxyButton" data-i18n="proxy.copyButton"></button>
+			</div>
+		</div>
+	</div>
+	<div id="toastProxy" class="toast toast-center invisible fixed bottom-10">
+		<div class="alert alert-success">
+			<span data-i18n="proxy.copied"></span>
+		</div>
+	</div>
+	<script type="module" src="./index.mjs"></script>
+</body>
+
+</html>

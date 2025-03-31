@@ -2,6 +2,7 @@ import { renderTemplate } from '../../../../scripts/template.mjs'
 import { processTimeStampForId, arrayBufferToBase64 } from './utils.mjs'
 import { openModal } from './ui/modal.mjs'
 import { onElementRemoved } from '../../../../scripts/onElementRemoved.mjs'
+import { svgInliner } from '../../../../scripts/svg-inliner.mjs'
 
 export const attachmentPreviewMap = new Map()
 
@@ -64,7 +65,7 @@ export async function handlePaste(event, selectedFiles, attachmentPreviewContain
 }
 
 export async function renderAttachmentPreview(file, index, selectedFiles) {
-	const attachmentElement = await renderTemplate('chat/attachment_preview', {
+	let attachmentElement = await renderTemplate('chat/attachment_preview', {
 		file,
 		index,
 		safeName: processTimeStampForId(file.name),
@@ -101,8 +102,10 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 		preview.classList.add('preview', 'icon')
 		preview.src = 'https://api.iconify.design/line-md/file.svg'
 		preview.alt = file.name
+		preview.width = preview.height = 40
 		previewContainer.appendChild(preview)
 	}
+	attachmentElement = await svgInliner(attachmentElement)
 
 	attachmentElement
 		.querySelector('.download-button')

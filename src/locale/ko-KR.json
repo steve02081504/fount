@@ -596,6 +596,13 @@
 		"copyButton": "URL 복사",
 		"copied": "URL이 클립보드에 복사되었습니다!"
 	},
+	"proxy": {
+		"title": "API 프록시",
+		"heading": "OpenAI API 프록시 주소",
+		"instruction": "fount의 AI 소스를 사용하려면 OpenAI API 형식이 필요한 모든 애플리케이션에 다음 주소를 입력하세요!",
+		"copyButton": "주소 복사",
+		"copied": "주소가 클립보드에 복사되었습니다!"
+	},
 	"404": {
 		"title": "페이지를 찾을 수 없음",
 		"pageNotFoundText": "죄송합니다! 존재하지 않는 페이지에 오신 것 같습니다.",
