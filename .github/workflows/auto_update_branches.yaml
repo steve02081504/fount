@@ -1,0 +1,120 @@
+name: Auto Update Branches from Master
+
+permissions:
+  contents: write # Required to push updates to branches
+
+on:
+  push:
+    branches:
+      - master # Trigger only on pushes to the master branch
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  update-branches:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for all branches and tags
+          # The GITHUB_TOKEN is automatically used by checkout for authentication
+          # for subsequent git operations like push
+
+      - name: Update and Push Branches
+        shell: bash
+        run: |
+          set -e # Exit immediately if a command exits with a non-zero status.
+
+          echo "Configuring Git..."
+          # Use the GitHub Actions bot user for auditability
+          git config --global user.name 'Taromati2'
+          git config --global user.email 'taromati2@outlook.com'
+
+          echo "Fetching latest updates from origin..."
+          # Ensure we have the absolute latest state, prune deleted remote branches
+          git fetch --all --prune
+
+          # Get the commit hash of the remote master branch tip
+          MASTER_COMMIT=$(git rev-parse origin/master)
+          echo "Current origin/master commit: $MASTER_COMMIT"
+
+          echo "Identifying remote branches to process..."
+          # Get list of remote branches, excluding master and HEAD, and trim whitespace
+          REMOTE_BRANCHES=()
+          while IFS= read -r branch_name; do
+              # Add cleaned branch name to array
+              REMOTE_BRANCHES+=("$branch_name")
+          # The pipeline below lists remote branches, filters out HEAD and master,
+          # removes the 'origin/' prefix, and trims leading/trailing whitespace.
+          done < <(git branch -r | grep 'origin/' | grep -v 'origin/HEAD' | grep -v 'origin/master' | sed 's|.*origin/||' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+
+          if [ ${#REMOTE_BRANCHES[@]} -eq 0 ]; then
+            echo "No remote branches found to update (excluding master and HEAD)."
+            exit 0
+          fi
+
+          echo "Found branches to potentially update: ${REMOTE_BRANCHES[@]}"
+
+          # Checkout master initially to have a clean base state
+          git checkout master
+
+          echo "Starting branch update loop..."
+
+          for branch in "${REMOTE_BRANCHES[@]}"; do
+            echo "--- Processing branch: $branch ---"
+
+            # Ensure local branch exists and tracks the remote one, and is up-to-date
+            # Use -B to reset if it exists, ensuring it matches remote before merge attempt
+            echo "Checking out and updating local branch '$branch' from 'origin/$branch'..."
+            if ! git checkout -B "$branch" "origin/$branch"; then
+                echo "ERROR: Failed to checkout branch '$branch'. Skipping."
+                # Go back to master before continuing the loop
+                git checkout master || echo "Warning: Failed to checkout master after skipping $branch"
+                continue
+            fi
+
+            # Get the current commit of the branch *before* merge attempt
+            BRANCH_COMMIT_BEFORE=$(git rev-parse HEAD)
+            echo "Current commit of '$branch': $BRANCH_COMMIT_BEFORE"
+
+            # Check if the branch is already up-to-date or ahead of master
+            # If master's commit is an ancestor of the branch's commit, it's up-to-date or ahead.
+            if git merge-base --is-ancestor "$MASTER_COMMIT" HEAD; then
+                echo "Branch '$branch' is already up-to-date with or ahead of master ($MASTER_COMMIT). Skipping merge."
+                # Go back to master before the next iteration
+                git checkout master
+                continue
+            fi
+
+            # Attempt to merge changes from origin/master into the branch
+            echo "Attempting merge from origin/master into '$branch'..."
+            # Use --no-edit to avoid interactive prompts for merge commit message
+            if git merge --no-edit "origin/master"; then
+              MERGE_COMMIT=$(git rev-parse HEAD)
+              echo "Merge successful for '$branch'. New commit: $MERGE_COMMIT"
+
+              # Push the updated branch
+              echo "Pushing updated '$branch' to origin..."
+              if git push origin "$branch"; then
+                echo "Successfully pushed updated '$branch'."
+              else
+                echo "ERROR: Failed to push updated '$branch'. Check permissions and branch protection rules."
+                # The script will exit here due to `set -e`
+              fi
+            else
+              # Merge failed - likely due to conflicts
+              merge_status=$?
+              echo "ERROR: Merge failed for branch '$branch' with status $merge_status. Conflicts likely occurred. Manual resolution required."
+              # Abort the failed merge to keep the branch clean
+              echo "Aborting the failed merge attempt..."
+              git merge --abort || echo "Warning: git merge --abort failed, branch state might be inconsistent."
+              # No push needed if merge failed
+            fi
+
+            # Go back to master before the next iteration to ensure clean state
+            echo "Checking out master before processing next branch..."
+            git checkout master
+
+          done
+
+          echo "--- Branch update process finished successfully ---"
