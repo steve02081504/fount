@@ -27,7 +27,7 @@ export default {
 	},
 	GetSource: async (config) => {
 		config.system_prompt_at_depth ??= 10
-		const ai = new GoogleGenAI({ apiKey: config.apikey });
+		const ai = new GoogleGenAI({ apiKey: config.apikey })
 
 		/**
 		 * 使用新版SDK上传文件到 Gemini (Uploads the given file buffer to Gemini using the new SDK)
@@ -38,9 +38,9 @@ export default {
 		 */
 		async function uploadToGemini(displayName, buffer, mimeType) {
 			const hashkey = calculateHash('sha256', buffer)
-			if (fileUploadMap.has(hashkey)) return fileUploadMap.get(hashkey);
+			if (fileUploadMap.has(hashkey)) return fileUploadMap.get(hashkey)
 
-			displayName += '';
+			displayName += ''
 
 			const file = await ai.files.upload({
 				file: new Blob([buffer], { type: mimeType }),
@@ -48,11 +48,11 @@ export default {
 					mimeType,
 					displayName,
 				},
-			});
+			})
 
-			if (fileUploadMap.size > 4096) fileUploadMap.clear();
-			fileUploadMap.set(hashkey, file);
-			return file;
+			if (fileUploadMap.size > 4096) fileUploadMap.clear()
+			fileUploadMap.set(hashkey, file)
+			return file
 		}
 
 		const default_config = {
@@ -86,23 +86,23 @@ export default {
 			Call: async (prompt) => {
 				const response = await ai.models.generateContent({
 					model: config.model,
-					contents: [{ role: "user", parts: [{ text: prompt }] }],
+					contents: [{ role: 'user', parts: [{ text: prompt }] }],
 					config: {
 						...default_config,
 						...config.model_arguments,
 					},
-				});
+				})
 
-				let text = '';
+				let text = ''
 				for (const part of response.candidates[0].content.parts)
-					if (part.text) text += part.text;
+					if (part.text) text += part.text
 
 				return {
 					content: text,
-				};
+				}
 			},
 			StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
-				const system_prompt = structPromptToSingleNoChatLog(prompt_struct);
+				const system_prompt = structPromptToSingleNoChatLog(prompt_struct)
 				const baseMessages = [
 					{
 						role: 'user',
@@ -117,7 +117,7 @@ system:
 						role: 'model',
 						parts: [{ text: '我理解了' }]
 					}
-				];
+				]
 
 				const chatHistory = await Promise.all(margeStructPromptChatLog(prompt_struct).map(async (chatLogEntry) => {
 					return {
@@ -126,30 +126,30 @@ system:
 							{ text: chatLogEntry.name + ':\n' + chatLogEntry.content },
 							...await Promise.all((chatLogEntry.files || []).map(async file => {
 								try {
-									const uploadedFile = await uploadToGemini(file.name, file.buffer, file.mimeType);
-									return createPartFromUri(uploadedFile.uri, uploadedFile.mimeType);
+									const uploadedFile = await uploadToGemini(file.name, file.buffer, file.mimeType)
+									return createPartFromUri(uploadedFile.uri, uploadedFile.mimeType)
 								}
 								catch (error) {
-									console.error(`Failed to process file ${file.name} for prompt:`, error);
-									return { text: `[System Error: Failed to process file ${file.name}]` };
+									console.error(`Failed to process file ${file.name} for prompt:`, error)
+									return { text: `[System Error: Failed to process file ${file.name}]` }
 								}
 							}))
 						]
-					};
-				}));
+					}
+				}))
 
 				const systemPromptMessage = {
 					role: 'user',
 					parts: [{ text: 'system:\n由于上下文有限，请再次回顾设定:\n' + system_prompt }]
-				};
+				}
 				if (config.system_prompt_at_depth ?? 10)
 					chatHistory.splice(Math.max(chatHistory.length - (config.system_prompt_at_depth ?? 10), 0), 0, systemPromptMessage)
 				else
 					chatHistory.unshift(systemPromptMessage)
 
-				const messages = [...baseMessages, ...chatHistory];
+				const messages = [...baseMessages, ...chatHistory]
 
-				const is_ImageGeneration = config.model_arguments?.responseModalities?.includes?.('Image') ?? config.model.includes('image-generation');
+				const is_ImageGeneration = config.model_arguments?.responseModalities?.includes?.('Image') ?? config.model.includes('image-generation')
 				const pauseDeclareMessages = [
 					{
 						role: 'user',
@@ -174,11 +174,11 @@ ${
 						role: 'user',
 						parts: [{ text: 'system:\n继续扮演。' }]
 					}
-				];
-				messages.push(...pauseDeclareMessages);
+				]
+				messages.push(...pauseDeclareMessages)
 
-				const responseModalities = ['Text'];
-				if (is_ImageGeneration) responseModalities.unshift('Image');
+				const responseModalities = ['Text']
+				if (is_ImageGeneration) responseModalities.unshift('Image')
 
 				const response = await ai.models.generateContent({
 					model: config.model,
@@ -188,26 +188,26 @@ ${
 						responseModalities,
 						...config.model_arguments,
 					},
-				});
+				})
 
-				let text = '';
-				const files = [];
+				let text = ''
+				const files = []
 
 				for (const part of response.candidates[0].content.parts)
-					if (part.text) text += part.text;
+					if (part.text) text += part.text
 					else if (part.inlineData) try {
-						const { mimeType, data } = part.inlineData;
-						const fileExtension = mime.extension(mimeType) || 'png';
-						const fileName = `${files.length}.${fileExtension}`;
-						const dataBuffer = Buffer.from(data, 'base64');
+						const { mimeType, data } = part.inlineData
+						const fileExtension = mime.extension(mimeType) || 'png'
+						const fileName = `${files.length}.${fileExtension}`
+						const dataBuffer = Buffer.from(data, 'base64')
 
 						files.push({
 							name: fileName,
 							mimeType,
 							buffer: dataBuffer
-						});
+						})
 					} catch (error) {
-						console.error('Error processing inline image data:', error);
+						console.error('Error processing inline image data:', error)
 					}
 				{
 					text = text.split('\n')
