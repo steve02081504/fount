@@ -3,7 +3,7 @@ import { __dirname } from '../server/server.mjs'
 import path from 'node:path'
 import fs from 'node:fs'
 import os from 'node:os'
-const SysTray = (await import('systray').catch(_ => 0))?.default?.default //??????
+const SysTray = (await import('systray').catch(_ => 0))?.default //??????
 import { geti18n } from '../scripts/i18n.mjs'
 
 async function getBase64Icon(iconPath) {
