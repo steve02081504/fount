@@ -226,7 +226,7 @@ export function enableSwipe(messageElement) {
 	}
 	const handleTouchCancel = () => { isDragging = false }
 	function checkForHorizontalScrollbar(element) {
-		if (!element || typeof element.scrollWidth === 'undefined' || typeof element.clientWidth === 'undefined') return false
+		if (!element || !element.scrollWidth || !element.clientWidth) return false
 		if (element.scrollWidth > element.clientWidth) return true
 		for (let i = 0; i < element.children.length; i++)
 			if (checkForHorizontalScrollbar(element.children[i])) return true

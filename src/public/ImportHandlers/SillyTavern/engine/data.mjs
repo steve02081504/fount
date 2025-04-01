@@ -17,7 +17,7 @@ export function getCharacterSource(charData) {
 		return sourceUrl
 
 	const risuId = charData?.data?.extensions?.risuai?.source
-	if (Array.isArray(risuId) && risuId.length && typeof risuId[0] === 'string' && risuId[0].startsWith('risurealm:')) {
+	if (Array.isArray(risuId) && risuId.length && Object(risuId[0]) instanceof String && risuId[0].startsWith('risurealm:')) {
 		const realmId = risuId[0].split(':')[1]
 		return `https://realm.risuai.net/character/${realmId}`
 	}
