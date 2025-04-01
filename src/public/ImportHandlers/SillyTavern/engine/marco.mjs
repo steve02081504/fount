@@ -13,7 +13,7 @@ function getVariable(memory, name, args = {}, isGlobal = false) {
 		try {
 			variable = JSON.parse(variable)
 			variable = variable?.[args.index]
-			if (typeof variable === 'object') variable = JSON.stringify(variable)
+			if (variable instanceof Object) variable = JSON.stringify(variable)
 		} catch { }
 
 	return variable === '' || isNaN(Number(variable)) ? variable || '' : Number(variable)
@@ -152,9 +152,9 @@ export function evaluateMacros(content, env, memory = {}, chatLog = []) {
 	const rawContent = content
 
 	content = content
-		.replace(/<user>/gi, typeof env.user === 'function' ? env.user() : env.user)
-		.replace(/<bot>|<char>/gi, typeof env.char === 'function' ? env.char() : env.char)
-		.replace(/<charifnotgroup>|<group>/gi, typeof env.group === 'function' ? env.group() : env.group)
+		.replace(/<user>/gi, env.user instanceof Function ? env.user() : env.user)
+		.replace(/<bot>|<char>/gi, env.char instanceof Function ? env.char() : env.char)
+		.replace(/<charifnotgroup>|<group>/gi, env.group instanceof Function ? env.group() : env.group)
 
 	if (!content.includes('{{')) return content
 

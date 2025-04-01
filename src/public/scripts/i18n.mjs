@@ -24,7 +24,7 @@ function getNestedValue(obj, key) {
 	const keys = key.split('.')
 	let value = obj
 	for (const k of keys)
-		if (value && typeof value === 'object' && k in value)
+		if (value && value instanceof Object && k in value)
 			value = value[k]
 		else
 			return undefined

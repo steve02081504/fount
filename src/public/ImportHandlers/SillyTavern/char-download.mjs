@@ -53,7 +53,7 @@ async function downloadPygmalionCharacter(id) {
 	const jsonData = await result.json()
 	const characterData = jsonData?.character
 
-	if (!characterData || typeof characterData !== 'object')
+	if (!characterData || !(characterData instanceof Object))
 		throw new Error('Pygsite returned invalid character data')
 
 

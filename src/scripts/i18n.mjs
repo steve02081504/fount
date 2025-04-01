@@ -50,14 +50,15 @@ export const localhostLocales = [...new Set([
 		process.env.LC_ALL,
 		await exec('locale -uU').then((r) => r.stdout.trim()).catch(() => undefined),
 	].filter(Boolean).map(locale => locale.split('.')[0].replace('_', '-')),
-	...navigator.languages || [navigator.language]
+	...navigator.languages || [navigator.language],
+	'en-UK',
 ].filter(Boolean))]
 
 function getNestedValue(obj, key) {
 	const keys = key.split('.')
 	let value = obj
 	for (const k of keys)
-		if (value && typeof value === 'object' && k in value)
+		if (value && value instanceof Object && k in value)
 			value = value[k]
 		else
 			return undefined
