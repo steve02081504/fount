@@ -161,7 +161,7 @@ export class GrokAPI {
 				let base64Content = ''
 				let mimeType = ''
 				let fileName = ''
-				const imageUrl = typeof item.image_url === 'string'
+				const imageUrl = Object(item.image_url) instanceof String
 					? item.image_url
 					: item.image_url?.url
 
@@ -200,7 +200,7 @@ export class GrokAPI {
 
 				const hasImages = message.content.some(content =>
 					content.type === 'image_url' && (
-						(typeof content.image_url === 'string' && content.image_url.startsWith('data:')) ||
+						(Object(content.image_url) instanceof String && content.image_url.startsWith('data:')) ||
 						content.image_url?.url?.startsWith('data:')
 					)
 				)

@@ -69,6 +69,42 @@ export function GetPartPath(username, parttype, partname) {
  * @returns {Promise<Part>} A promise that resolves to the loaded part object.
  */
 export async function baseMjsPartLoader(path) {
+	const part = (await import(url.pathToFileURL(path + '/main.mjs'))).default
+	return part
+}
+
+/**
+ * Checks if a part is currently loaded in memory.
+ *
+ * @param {string} username - The username of the user.
+ * @param {string} parttype - The type of the part.
+ * @param {string} partname - The name of the part.
+ * @returns {boolean} True if the part is loaded, false otherwise.
+ */
+export function isPartLoaded(username, parttype, partname) {
+	return !!parts_set?.[username]?.[parttype]?.[partname]
+}
+
+/**
+ * Base function to load a part, using provided or default path getter and loader.
+ * If the part is already loaded, it returns the existing instance.
+ *
+ * @async
+ * @template T
+ * @param {string} username - The username of the user.
+ * @param {string} parttype - The type of the part.
+ * @param {string} partname - The name of the part.
+ * @param {Object} [options] - Optional configuration for loading.
+ * @param {() => string} [options.pathGetter=GetPartPath] - Function to get the part's path.
+ * @param {(path: string) => Promise<T>} [options.Loader=baseMjsPartLoader] - Function to load the part from the path.
+ * @returns {Promise<T>} A promise that resolves to the loaded part instance.
+ */
+export async function baseloadPart(username, parttype, partname, {
+	pathGetter = () => GetPartPath(username, parttype, partname),
+	Loader = baseMjsPartLoader,
+} = {}) {
+	const path = pathGetter()
+
 	if (fs.existsSync(path + '/.git')) try {
 		/**
 		 * Executes a git command within the part's directory.
@@ -136,43 +172,7 @@ export async function baseMjsPartLoader(path) {
 		}
 		fs.readdirSync(templatePath).forEach(mapper)
 	}
-	const part = (await import(url.pathToFileURL(path + '/main.mjs'))).default
-	return part
-}
-
-/**
- * Checks if a part is currently loaded in memory.
- *
- * @param {string} username - The username of the user.
- * @param {string} parttype - The type of the part.
- * @param {string} partname - The name of the part.
- * @returns {boolean} True if the part is loaded, false otherwise.
- */
-export function isPartLoaded(username, parttype, partname) {
-	return !!parts_set?.[username]?.[parttype]?.[partname]
-}
-
-/**
- * Base function to load a part, using provided or default path getter and loader.
- * If the part is already loaded, it returns the existing instance.
- *
- * @async
- * @template T
- * @param {string} username - The username of the user.
- * @param {string} parttype - The type of the part.
- * @param {string} partname - The name of the part.
- * @param {Object} [options] - Optional configuration for loading.
- * @param {() => string} [options.pathGetter=GetPartPath] - Function to get the part's path.
- * @param {(path: string) => Promise<T>} [options.Loader=baseMjsPartLoader] - Function to load the part from the path.
- * @returns {Promise<T>} A promise that resolves to the loaded part instance.
- */
-export async function baseloadPart(username, parttype, partname, {
-	pathGetter = () => GetPartPath(username, parttype, partname),
-	Loader = baseMjsPartLoader,
-} = {}) {
-	if (!parts_set?.[username]?.[parttype]?.[partname])
-		return await Loader(pathGetter())
-	return parts_set[username][parttype][partname]
+	return await Loader(path)
 }
 
 /**
