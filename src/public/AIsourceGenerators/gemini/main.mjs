@@ -121,7 +121,7 @@ system:
 
 				const chatHistory = await Promise.all(margeStructPromptChatLog(prompt_struct).map(async (chatLogEntry) => {
 					return {
-						role: chatLogEntry.role === 'user' ? 'user' : 'model',
+						role: chatLogEntry.role === 'user' || chatLogEntry.role === 'system' ? 'user' : 'model',
 						parts: [
 							{ text: chatLogEntry.name + ':\n' + chatLogEntry.content },
 							...await Promise.all((chatLogEntry.files || []).map(async file => {
@@ -221,7 +221,7 @@ ${
 								return stringOrReg.source
 							}
 						),
-					].filter(Boolean)).join('|')})[^\\n：:\<\>]*)(:|：)\\s*`
+					].filter(Boolean)).join('|')})[^\\n：:\<\>\d]*)(:|：)\\s*`
 					let reg = new RegExp(`${base_reg}$`, 'i')
 					while (text[0].trim().match(reg)) text.shift()
 					reg = new RegExp(`${base_reg}`, 'i')
