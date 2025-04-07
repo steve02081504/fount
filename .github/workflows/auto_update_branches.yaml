@@ -4,10 +4,9 @@ permissions:
   contents: write # Required to push updates to branches
 
 on:
-  push:
-    branches:
-      - master # Trigger only on pushes to the master branch
-  workflow_dispatch: # Allows manual triggering
+  schedule:
+    - cron: '0 8 * * *'
+  workflow_dispatch:
 
 jobs:
   update-branches:
