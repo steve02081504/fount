@@ -247,7 +247,7 @@ ${
 				encode: (prompt) => prompt,
 				decode: (tokens) => tokens,
 				decode_single: (token) => token,
-				get_token_count: (prompt) => model.countTokens(prompt)
+				get_token_count: (prompt) => prompt.length
 			}
 		}
 
