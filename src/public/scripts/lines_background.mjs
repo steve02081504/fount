@@ -261,6 +261,7 @@ export function updateConfig(newConfig) {
 		canvas && resizeCanvas() // 背景色变化，重新绘制背景
 }
 
+let updateColorsErrorInterval
 /**
  *  更新颜色配置
  */
@@ -273,10 +274,12 @@ export function updateColors() {
 	try {
 		config.color = chroma(primaryColor).rgb().join(',') // 获取 RGB 值
 		config.backgroundColor = chroma(baseColor200).hex()
+		if (updateColorsErrorInterval) updateColorsErrorInterval = clearInterval(updateColorsErrorInterval)
 	} catch (error) {
 		console.error('Error parsing color with chroma-js:', error) // 日志：chroma-js 解析错误
 		// 处理错误，例如使用默认颜色
 		config.color = '255, 255, 255'
 		config.backgroundColor = '#f0f0f0'
+		updateColorsErrorInterval = setInterval(updateColors, 1000)
 	}
 }
