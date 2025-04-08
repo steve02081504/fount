@@ -1,5 +1,5 @@
 import { getUserDictionary } from './auth.mjs'
-import { saveJsonFile, loadJsonFile } from '../scripts/json_loader.mjs'
+import { saveJsonFile, loadJsonFileIfExists } from '../scripts/json_loader.mjs'
 import { on_shutdown } from './on_shutdown.mjs'
 import fs from 'node:fs'
 
@@ -7,7 +7,7 @@ const userDataSet = {}
 export function loadData(username, dataname) {
 	userDataSet[username] ??= {}
 	try {
-		return userDataSet[username][dataname] ??= loadJsonFile(getUserDictionary(username) + '/settings/' + dataname + '.json')
+		return userDataSet[username][dataname] ??= loadJsonFileIfExists(getUserDictionary(username) + '/settings/' + dataname + '.json')
 	}
 	catch (error) {
 		console.error(error)
@@ -29,7 +29,7 @@ export function loadShellData(username, shellname, dataname) {
 	userShellDataSet[username] ??= {}
 	userShellDataSet[username][shellname] ??= {}
 	try {
-		return userShellDataSet[username][shellname][dataname] ??= loadJsonFile(getUserDictionary(username) + '/shells/' + shellname + '/' + dataname + '.json')
+		return userShellDataSet[username][shellname][dataname] ??= loadJsonFileIfExists(getUserDictionary(username) + '/shells/' + shellname + '/' + dataname + '.json')
 	}
 	catch (error) {
 		console.error(error)
