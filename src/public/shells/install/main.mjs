@@ -41,7 +41,7 @@ export default {
 					console.log(`Installed from text: ${input}`)
 				}
 			} catch (error) {
-				console.error('Installation failed:', error)
+				throw error
 			}
 		}
 		else if (action === 'uninstall') {
@@ -50,6 +50,6 @@ export default {
 			await uninstallPartBase(user, partType, partName)
 			console.log(`Uninstalled ${partType}: ${partName}`)
 		} else
-			console.error('Invalid action. Use "install" or "uninstall".')
+			throw 'Invalid action. Use "install" or "uninstall".'
 	}
 }
