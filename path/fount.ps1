@@ -21,6 +21,21 @@ if (!(Get-Command fount -ErrorAction SilentlyContinue)) {
 	[System.Environment]::SetEnvironmentVariable('PATH', $UserPath, [System.EnvironmentVariableTarget]::User)
 }
 
+if ($args.Count -gt 0 -and $args[0] -eq 'open') {
+	if (!(Get-Module fount-pwsh -ListAvailable)) {
+		Install-Module -Name fount-pwsh -Scope CurrentUser -Force
+	}
+	$runargs = $args[1..$args.Count]
+	Start-Job -ScriptBlock {
+		while (-not (Test-FountRunning)) {
+			Start-Sleep -Seconds 1
+		}
+		Start-Process https://steve02081504.github.io/fount/
+	}
+	$runargs = $args[1..$args.Count]
+	fount @runargs
+	exit
+}
 if ($args.Count -gt 0 -and $args[0] -eq 'background') {
 	if (!(Get-Command ps12exe -ErrorAction Ignore)) {
 		Install-Module -Name ps12exe -Scope CurrentUser -Force
@@ -193,6 +208,22 @@ if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $ar
 	Write-Host "======================================================" -ForegroundColor Green
 	Write-Warning "DO NOT install any untrusted fount parts on your system, they can do ANYTHING."
 	Write-Host "======================================================" -ForegroundColor Green
+	# 生成 桌面快捷方式
+	if ($IsWindows) {
+		$shell = New-Object -ComObject WScript.Shell
+		$desktop = [Environment]::GetFolderPath("Desktop")
+		$shortcut = $shell.CreateShortcut("$desktop\fount.lnk")
+		if (Test-Path "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe") {
+			$shortcut.TargetPath = "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe"
+			$shortcut.Arguments = "-p fount powershell.exe -noprofile -nologo -ExecutionPolicy Bypass -File $FOUNT_DIR\path\fount.ps1 open keepalive"
+		}
+		else {
+			$shortcut.TargetPath = "powershell.exe"
+			$shortcut.Arguments = "-noprofile -nologo -ExecutionPolicy Bypass -File $FOUNT_DIR\path\fount.ps1 open keepalive"
+		}
+		$shortcut.IconLocation = "$FOUNT_DIR\src\public\favicon.ico"
+		$shortcut.Save()
+	}
 }
 
 # 执行 fount
@@ -279,6 +310,17 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 	}
 	else {
 		Write-Host "Windows Terminal Profile directory not found."
+	}
+
+	# Remove Desktop Shortcut
+	Write-Host "removing Desktop Shortcut..."
+	$ShortcutPath = "$env:USERPROFILE\Desktop\fount.lnk"
+	if (Test-Path $ShortcutPath) {
+		Remove-Item -Path $ShortcutPath -Force
+		Write-Host "Desktop Shortcut removed."
+	}
+	else {
+		Write-Host "Desktop Shortcut not found."
 	}
 
 	# Remove fount installation directory
