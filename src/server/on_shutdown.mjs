@@ -8,7 +8,7 @@ export function on_shutdown(func) {
 export async function shutdown() {
 	for (const func of shutdowm_functions)
 		await func()
-	tray.kill()
+	if (tray) tray.kill()
 	process.exit(0)
 }
 
