@@ -14,6 +14,7 @@ onThemeChange(
 const fileListDiv = document.getElementById('fileList')
 const generatorSelect = document.getElementById('generatorSelect')
 const saveButton = document.getElementById('saveButton')
+const saveStatusIcon = document.getElementById('saveStatusIcon')
 const deleteButton = document.getElementById('deleteButton')
 const addFileButton = document.getElementById('addFileButton')
 
@@ -150,19 +151,47 @@ async function saveFile() {
 	}
 	const config = jsonEditor.get().json || JSON.parse(jsonEditor.get().text)
 	const generator = generatorSelect.value
-	const response = await fetch('/api/shells/AIsourceManage/setfile', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({
-			AISourceFile: activeFile,
-			data: { generator, config }
-		}),
-	})
-	await handleFetchError(response, 'aisource_editor.alerts.saveFileFailed')
-	console.log('File saved successfully.')
-	isDirty = false
+
+	// Show loading icon and disable button
+	saveStatusIcon.src = 'https://api.iconify.design/line-md/loading-loop.svg'
+	saveStatusIcon.classList.remove('hidden')
+	saveButton.disabled = true
+
+	try {
+		const response = await fetch('/api/shells/AIsourceManage/setfile', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				AISourceFile: activeFile,
+				data: { generator, config }
+			}),
+		})
+		await handleFetchError(response, 'aisource_editor.alerts.saveFileFailed')
+		console.log('File saved successfully.')
+		isDirty = false
+
+		// Show success icon
+		saveStatusIcon.src = 'https://api.iconify.design/line-md/confirm-circle.svg'
+
+		// Hide icon and re-enable button after a delay
+		setTimeout(() => {
+			saveStatusIcon.classList.add('hidden')
+			saveButton.disabled = false
+		}, 2000) // 2 seconds delay
+
+	} catch (error) {
+		// Error is already logged by handleFetchError if it throws
+		// Show error icon
+		saveStatusIcon.src = 'https://api.iconify.design/line-md/emoji-frown.svg'
+
+		// Hide icon and re-enable button after a delay
+		setTimeout(() => {
+			saveStatusIcon.classList.add('hidden')
+			saveButton.disabled = false
+		}, 2000) // 2 seconds delay
+	}
 }
 
 async function deleteFile() {

@@ -236,6 +236,9 @@ ${
 				text = text.split('\n')
 				while (['', '</pause>', '</declare>', '</>', '</'].includes(text[text.length - 1].trim())) text.pop() //?
 				text = text.join('\n')
+				// <0xE3> -> char(0xE3)
+				// 搞不懂在发什么疯
+				text = text.replace(/<0x([0-9A-Fa-f]{2})>/g, (match, hex) => String.fromCharCode(parseInt(hex, 16)))
 
 				return {
 					content: text,

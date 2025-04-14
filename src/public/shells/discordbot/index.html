@@ -55,8 +55,11 @@
 					</label>
 					<div id="config-editor" class="jsoneditor-container" style="height: 400px; overflow: auto"></div>
 				</div>
-				<div class="flex justify-end gap-4">
-					<button id="save-config" class="btn btn-primary" data-i18n="discord_bots.configCard.buttons.saveConfig"></button>
+				<div class="flex justify-end gap-4 items-center">
+					<button id="save-config" class="btn btn-primary">
+						<img id="saveStatusIcon" src="" class="w-6 h-6 mr-2 hidden"/>
+						<span id="saveStatusText" data-i18n="discord_bots.configCard.buttons.saveConfig"></span>
+					</button>
 					<button id="start-stop-bot" class="btn btn-success" data-i18n="discord_bots.configCard.buttons.startBot"></button>
 				</div>
 			</div>
