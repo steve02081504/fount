@@ -15,6 +15,7 @@ onThemeChange(
 const partTypeSelect = document.getElementById('partTypeSelect')
 const partSelect = document.getElementById('partSelect')
 const saveButton = document.getElementById('saveButton')
+const saveStatusIcon = document.getElementById('saveStatusIcon')
 const disabledIndicator = document.getElementById('disabledIndicator')
 
 let jsonEditor = null
@@ -159,12 +160,37 @@ async function saveConfig() {
 		return
 	}
 	const data = jsonEditor.get().json || JSON.parse(jsonEditor.get().text)
+
+	// Show loading icon and disable button
+	saveStatusIcon.src = 'https://api.iconify.design/line-md/loading-loop.svg'
+	saveStatusIcon.classList.remove('hidden')
+	saveButton.disabled = true
+
 	try {
 		await saveConfigData(activePartType, activePart, data)
 		isDirty = false
+
+		// Show success icon
+		saveStatusIcon.src = 'https://api.iconify.design/line-md/confirm-circle.svg'
+
+		// Hide icon and re-enable button after a delay
+		setTimeout(() => {
+			saveStatusIcon.classList.add('hidden')
+			saveButton.disabled = false
+		}, 2000) // 2 seconds delay
+
 	} catch (err) {
 		showErrorMessage(geti18n('part_config.alerts.saveConfigFailed') + ': ' + err.message)
 		console.error('Failed to save part config:', err)
+
+		// Show error icon
+		saveStatusIcon.src = 'https://api.iconify.design/line-md/emoji-frown.svg'
+
+		// Hide icon and re-enable button after a delay
+		setTimeout(() => {
+			saveStatusIcon.classList.add('hidden')
+			saveButton.disabled = false
+		}, 2000) // 2 seconds delay
 	}
 }
 

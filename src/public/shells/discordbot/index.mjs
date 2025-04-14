@@ -18,6 +18,7 @@ const charSupportMessage = document.getElementById('char-support-message')
 const tokenInput = document.getElementById('token-input')
 const toggleTokenButton = document.getElementById('toggle-token')
 const saveConfigButton = document.getElementById('save-config')
+const saveStatusIcon = document.getElementById('saveStatusIcon')
 const startStopBotButton = document.getElementById('start-stop-bot')
 
 let configEditor = null
@@ -284,12 +285,36 @@ async function handleSaveConfig() {
 		config: configEditor.get().json || JSON.parse(configEditor.get().text),
 	}
 
+	// Show loading icon and disable button
+	saveStatusIcon.src = 'https://api.iconify.design/line-md/loading-loop.svg'
+	saveStatusIcon.classList.remove('hidden')
+	saveConfigButton.disabled = true
+
 	try {
 		await botConfigSet(selectedBot, config)
 		console.log(geti18n('discord_bots.alerts.configSaved'))
 		isDirty = false // 重置未保存标记
+
+		// Show success icon
+		saveStatusIcon.src = 'https://api.iconify.design/line-md/confirm-circle.svg'
+
+		// Hide icon and re-enable button after a delay
+		setTimeout(() => {
+			saveStatusIcon.classList.add('hidden')
+			saveConfigButton.disabled = false
+		}, 2000) // 2 seconds delay
+
 	} catch (error) {
 		console.error(error)
+
+		// Show error icon
+		saveStatusIcon.src = 'https://api.iconify.design/line-md/emoji-frown.svg'
+
+		// Hide icon and re-enable button after a delay
+		setTimeout(() => {
+			saveStatusIcon.classList.add('hidden')
+			saveConfigButton.disabled = false
+		}, 2000) // 2 seconds delay
 	}
 }
 
