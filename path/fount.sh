@@ -285,7 +285,6 @@ if [[ ($IN_TERMUX -eq 0 && -z "$(command -v deno)") || ($IN_TERMUX -eq 1 && ! -f
 		else
 			source "$HOME/.bashrc"
 		fi
-		echo "Deno installed."
 	fi
 
 	if ! command -v deno &> /dev/null; then
