@@ -29,13 +29,13 @@ export class charAPI_t {
 		tags: string[];
 	}>;
 	// calls only on char install, and if fail, all file under this char's folder will be deleted
-	Init: (stat: charInit_t) => void;
+	Init: (stat: charInit_t) => Promise<void>;
 	// calls on every char start, pop a message if fail
-	Load: (stat: charInit_t) => void;
+	Load: (stat: charInit_t) => Promise<void>;
 	// calls on every char unload
-	Unload: (reason: string) => void;
+	Unload: (reason: string) => Promise<void>;
 	// calls on char uninstall
-	Uninstall: (reason: string, from: string) => void;
+	Uninstall: (reason: string, from: string) => Promise<void>;
 
 	// interface with shell (maybe chat WebUI or cute Live2d or a kill machine, i don't care)
 	interfaces: {
