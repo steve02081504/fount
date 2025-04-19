@@ -14,13 +14,13 @@ export class importHandlerAPI_t {
 		tags: string[];
 	}>;
 	// calls only on char install, and if fail, all file under this char's folder will be deleted
-	Init: () => void;
+	Init: () => Promise<void>;
 	// calls on every char start, pop a message if fail
-	Load: () => void;
+	Load: () => Promise<void>;
 	// calls on every char unload
-	Unload: (reason: string) => void;
+	Unload: (reason: string) => Promise<void>;
 	// calls on char uninstall
-	Uninstall: (reason: string, from: string) => void;
+	Uninstall: (reason: string, from: string) => Promise<void>;
 
 	ImportAsData: (username: string, chardata: Buffer) => Promise<void>;
 	ImportByText: (username: string, text: string) => Promise<void>

@@ -19,16 +19,16 @@ export class WorldAPI_t {
 	Init: (stat: {
 		username: string,
 		worldname: string,
-	}) => void;
+	}) => Promise<void>;
 	// calls on every start, pop a message if fail
 	Load: (stat: {
 		username: string,
 		worldname: string,
-	}) => void;
+	}) => Promise<void>;
 	// calls on every unload
-	Unload: (reason: string) => void;
+	Unload: (reason: string) => Promise<void>;
 	// calls on uninstall
-	Uninstall: (reason: string, from: string) => void;
+	Uninstall: (reason: string, from: string) => Promise<void>;
 
 	interfaces: {
 		config?: {
