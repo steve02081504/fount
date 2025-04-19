@@ -19,10 +19,10 @@ export class pluginAPI_t {
 		issuepage: string;
 		tags: string[];
 	}>;
-	Init: () => void;
-	Load: () => void;
-	Unload: (reason: string) => void;
-	Uninstall: (reason: string, from: string) => void;
+	Init: () => Promise<void>;
+	Load: () => Promise<void>;
+	Unload: (reason: string) => Promise<void>;
+	Uninstall: (reason: string, from: string) => Promise<void>;
 
 	interfaces: {
 		config?: {

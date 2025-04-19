@@ -238,7 +238,7 @@ ${
 				text = text.join('\n')
 				// <0xE3> -> char(0xE3)
 				// 搞不懂在发什么疯
-				text = text.replace(/<0x([0-9A-Fa-f]{2})>/g, (match, hex) => String.fromCharCode(parseInt(hex, 16)))
+				text = text.replace(/<0x([\dA-Fa-f]{2})>/g, (match, hex) => String.fromCharCode(parseInt(hex, 16)))
 
 				return {
 					content: text,

@@ -1,6 +1,6 @@
 import open from 'npm:open'
 import { hosturl } from '../../../server/server.mjs'
-import { addchar, removechar, addUserReply, deleteChat, newChat, setPersona, setWorld } from './src/server/chat.mjs'
+import { addchar, newChat, setPersona, setWorld } from './src/server/chat.mjs'
 import { loadChat } from './src/server/chat.mjs'
 import { setEndpoints } from './src/server/endpoints.mjs'
 
