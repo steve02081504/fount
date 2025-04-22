@@ -11,6 +11,8 @@ const proxyApiUrlInput = document.getElementById('proxyApiUrl')
 const copyProxyButton = document.getElementById('copyProxyButton')
 const toastProxy = document.getElementById('toastProxy')
 
+document.getElementById('proxyCodeExample').textContent = fountHost + '/asuser/<your_fount_username>/api/shells/proxy/calling/openai/models/<your_fount_AI_source_name>'
+
 proxyApiUrlInput.value = apiUrl
 
 copyProxyButton.addEventListener('click', () => {
