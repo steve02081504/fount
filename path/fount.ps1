@@ -214,7 +214,15 @@ if ($IN_DOCKER) {
 	Write-Host "Skipping deno upgrade in Docker environment"
 }
 else {
-	deno upgrade -q
+	$deno_ver = deno -V
+	$deno_update_channel = "stable"
+	if ($deno_ver.Contains("+")) {
+		$deno_update_channel = "canary"
+	}
+	elseif ($deno_ver.Contains("-rc")) {
+		$deno_update_channel = "rc"
+	}
+	deno upgrade -q $deno_update_channel
 }
 
 deno -V

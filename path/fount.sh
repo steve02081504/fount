@@ -299,10 +299,16 @@ if [ $IN_DOCKER -eq 1 ]; then
 else
 	# 使用 run_deno 来获取 Deno 版本信息
 	deno_version_before=$(run_deno -V 2>&1)
+	deno_upgrade_channel="stable"
+	if [[ "$deno_version_before" == *"+"* ]]; then
+		deno_upgrade_channel="canary"
+	elif [[ "$deno_version_before" == *"-rc"* ]]; then
+		deno_upgrade_channel="rc"
+	fi
 	if [[ -z "$deno_version_before" ]]; then
 		echo "Error: Could not determine current Deno version." >&2
 	else
-		run_deno upgrade -q
+		run_deno upgrade -q $deno_upgrade_channel
 		deno_version_after=$(run_deno -V 2>&1)
 
 		# 检查是否需要重新 patch deno
