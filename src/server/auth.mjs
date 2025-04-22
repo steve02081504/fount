@@ -170,8 +170,14 @@ export async function authenticate(req, res, next) {
 	}
 	if (!accessToken) return Unauthorized()
 
-	// 本地 IP 不需要验证
-	if (is_local_ip_from_req(req)) return next()
+	// 本地 IP
+	if (is_local_ip_from_req(req)) {
+		// 解密 accessToken而无需验证
+		const decoded = await jose.decodeJwt(accessToken)
+		if (config.data.users[decoded.username])
+			return next()
+		return Unauthorized()
+	}
 
 	let decoded = await verifyToken(accessToken)
 
@@ -324,7 +330,9 @@ export async function login(username, password, deviceId = 'unknown') {
 		fse.copySync(path.join(__dirname, '/default/templates/user'), userdir)
 	} catch { }
 	for (const subdir of ['AIsources', 'chars', 'personas', 'settings', 'shells', 'worlds', 'ImportHandlers', 'AIsourceGenerators'])
-		try { fs.mkdirSync(userdir + '/' + subdir, { recursive: true }) } catch { }
+		try { fs.mkdirSync(userdir + '/' + subdir, { recursive: true }) } catch {
+			console.error('Failed to create directory:', userdir + '/' + subdir, error)
+		}
 
 	// 生成 access token 和 refresh token
 	const accessToken = await generateAccessToken({ username: user.username, userId: authData.userId })
