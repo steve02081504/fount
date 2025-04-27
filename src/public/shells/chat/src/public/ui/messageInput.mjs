@@ -2,14 +2,21 @@ import { addUserReply } from '../endpoints.mjs'
 import { appendMessage } from './messageList.mjs'
 import { addDragAndDropSupport } from './dragAndDrop.mjs'
 import { handleFilesSelect } from '../fileHandling.mjs'
+import { geti18n } from '../../../../../scripts/i18n.mjs'
 
 const messageInputElement = document.getElementById('message-input')
 const sendButtonElement = document.getElementById('send-button')
 const fileInputElement = document.getElementById('file-input')
 const attachmentPreviewContainer = document.getElementById('attachment-preview')
 const uploadButtonElement = document.getElementById('upload-button')
+const voiceButtonElement = document.getElementById('voice-button')
+const photoButtonElement = document.getElementById('photo-button')
 
 const SelectedFiles = []
+
+let isRecording = false
+let mediaRecorder
+let audioChunks = []
 
 export function initializeMessageInput() {
 	uploadButtonElement.addEventListener('click', () => fileInputElement.click())
@@ -17,6 +24,8 @@ export function initializeMessageInput() {
 	addDragAndDropSupport(messageInputElement, SelectedFiles, attachmentPreviewContainer)
 	sendButtonElement.addEventListener('click', sendMessage)
 	messageInputElement.addEventListener('keydown', handleKeyPress)
+	voiceButtonElement.addEventListener('click', toggleVoiceRecording)
+	photoButtonElement.addEventListener('click', togglePhotoSection)
 	messageInputElement.focus()
 }
 
@@ -27,9 +36,67 @@ function handleKeyPress(event) {
 	}
 }
 
+function togglePhotoSection() {
+	const input = document.createElement('input')
+	input.type = 'file'
+	input.accept = 'image/*'
+	input.addEventListener('change', (event) => {
+		const files = event.target.files
+		if (files.length > 0) {
+			handleFilesSelect({ target: { files } }, SelectedFiles, attachmentPreviewContainer)
+		}
+	})
+	input.click()
+}
+
+async function toggleVoiceRecording() {
+	if (isRecording) {
+		mediaRecorder.stop()
+		voiceButtonElement.innerHTML = await fetch('https://api.iconify.design/material-symbols/mic.svg').then(res => res.text())
+		while(isRecording) {
+			await new Promise(resolve => setTimeout(resolve, 100))
+			isRecording = await isRecording
+		}
+	} else {
+		// Start recording
+		try {
+			const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+			mediaRecorder = new MediaRecorder(stream)
+			audioChunks = []
+
+			mediaRecorder.ondataavailable = (event) => {
+				audioChunks.push(event.data)
+			}
+
+			mediaRecorder.onstop = async () => {
+				const audioBlob = new Blob(audioChunks, { type: 'audio/wav' })
+				const audioFile = new File([audioBlob], `voice_message_${Date.now()}.wav`, { type: 'audio/wav' })
+
+				// Simulate a file input change event to use handleFilesSelect
+				const fakeEvent = {
+					target: {
+						files: [audioFile],
+					},
+				}
+				stream.getTracks().forEach((track) => track.stop())
+				isRecording = await handleFilesSelect(fakeEvent, SelectedFiles, attachmentPreviewContainer)
+			}
+
+			mediaRecorder.start()
+			voiceButtonElement.innerHTML = await fetch('https://api.iconify.design/line-md/square.svg').then(res => res.text())
+			isRecording = true
+		} catch (error) {
+			console.error('Error accessing microphone:', error)
+			alert(geti18n('chat.voiceRecording.errorAccessingMicrophone'))
+		}
+	}
+}
+
 async function sendMessage() {
 	const messageText = messageInputElement.value.trim()
 	if (!messageText && SelectedFiles.length === 0) return
+
+	if (isRecording) await toggleVoiceRecording()
 
 	messageInputElement.value = ''
 	await appendMessage(await addUserReply({ content: messageText, files: SelectedFiles }))

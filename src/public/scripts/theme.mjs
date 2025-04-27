@@ -4,6 +4,15 @@ import { initLinesBackground, updateColors as updateLinesBackgroundColors } from
 let theme_now
 export let is_dark = Boolean(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
 
+let oldBcColor
+function check_color_change() {
+	const computedStyle = getComputedStyle(document.documentElement)
+	const bcColor = computedStyle.getPropertyValue('background-color').trim()
+	if (oldBcColor !== bcColor) {
+		updateColors()
+		oldBcColor = bcColor
+	}
+}
 function autoresize_frames() {
 	const frames = document.querySelectorAll('iframe')
 	for (const frame of frames) if (frame.contentWindow.document.body) {
@@ -13,12 +22,16 @@ function autoresize_frames() {
 		frame.style.height = frame_height + 'px'
 	}
 }
+function themeHeartbeat() {
+	autoresize_frames()
+	check_color_change()
+}
 
 export const applyTheme = () => {
 	initLinesBackground()
 	setTheme(localStorage.getItem('theme'))
 	svgInliner(document)
-	setInterval(autoresize_frames, 1000)
+	setInterval(themeHeartbeat, 1000)
 }
 
 const functions = []
@@ -108,7 +121,7 @@ function updateColors() {
 const observer = new MutationObserver((mutationsList) => {
 	for (const mutation of mutationsList)
 		if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme')
-			setTimeout(updateColors)
+			setTimeout(themeHeartbeat)
 })
 observer.observe(document.documentElement, { attributes: true })
 

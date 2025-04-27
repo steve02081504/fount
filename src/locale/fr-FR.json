@@ -430,6 +430,18 @@
 			},
 			"uploadButtonIcon": {
 				"alt": "Icône Télécharger"
+			},
+			"voiceButton": {
+				"title": "Parler"
+			},
+			"voiceButtonIcon": {
+				"alt": "Icône Parler"
+			},
+			"photoButton": {
+				"title": "Photo"
+			},
+			"photoButtonIcon": {
+				"alt": "Icône Photo"
 			}
 		},
 		"rightSidebar": {
@@ -437,6 +449,9 @@
 		},
 		"messageList": {
 			"confirmDeleteMessage": "Confirmer la suppression de ce message ?"
+		},
+		"voiceRecording": {
+			"errorAccessingMicrophone": "Echec de l'accès au micro"
 		},
 		"messageView": {
 			"buttons": {
