@@ -430,6 +430,18 @@
 			},
 			"uploadButtonIcon": {
 				"alt": "अपलोड आइकन"
+			},
+			"voiceButton": {
+				"title": "वॉइस"
+			},
+			"voiceButtonIcon": {
+				"alt": "वॉइस आइकन"
+			},
+			"photoButton": {
+				"title": "फोटो"
+			},
+			"photoButtonIcon": {
+				"alt": "फोटो आइकन"
 			}
 		},
 		"rightSidebar": {
@@ -437,6 +449,9 @@
 		},
 		"messageList": {
 			"confirmDeleteMessage": "क्या इस संदेश को हटाना चाहते हैं?"
+		},
+		"voiceRecording": {
+			"errorAccessingMicrophone": "माइक्रोफोन पहुंचने में विफल"
 		},
 		"messageView": {
 			"buttons": {
