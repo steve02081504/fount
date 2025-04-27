@@ -215,6 +215,14 @@ if ($IN_DOCKER) {
 }
 else {
 	$deno_ver = deno -V
+	if (!$deno_ver) {
+		deno upgrade -q
+		$deno_ver = deno -V
+	}
+	if (!$deno_ver) {
+		Write-Error "For some reason deno doesn't work, you may need to join https://discord.gg/deno to get support" -ErrorAction Ignore
+		exit
+	}
 	$deno_update_channel = "stable"
 	if ($deno_ver.Contains("+")) {
 		$deno_update_channel = "canary"
