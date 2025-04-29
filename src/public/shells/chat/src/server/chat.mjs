@@ -443,12 +443,12 @@ export async function GetWorldName(chatid) {
  *
  * @param {string} chatid
  * @param {chatLogEntry_t} entry
- * @returns
+ * @returns {Promise<chatLogEntry_t>}
  */
 async function addChatLogEntry(chatid, entry) {
 	const chatMetadata = await loadChat(chatid)
 	if (entry.timeSlice.world?.interfaces?.chat?.AddChatLogEntry)
-		entry.timeSlice.world.interfaces.chat.AddChatLogEntry(await getChatRequest(chatid, undefined), entry)
+		await entry.timeSlice.world.interfaces.chat.AddChatLogEntry(await getChatRequest(chatid, undefined), entry)
 	else
 		chatMetadata.chatLog.push(entry)
 
@@ -460,23 +460,27 @@ async function addChatLogEntry(chatid, entry) {
 	if (is_VividChat(chatMetadata)) saveChat(chatid)
 
 	let freq_data = await getCharReplyFrequency(chatid)
-	let char = entry.timeSlice.charname ?? null
-	;(async () => {
-		while (true) {
-			freq_data = freq_data.filter(f => f.charname !== char)
-			const nextreply = await getNextCharForReply(freq_data)
-			if (nextreply) try {
-				await triggerCharReply(chatid, nextreply)
-				return
+	if (entry.timeSlice.world?.interfaces?.chat?.AfterAddChatLogEntry)
+		await entry.timeSlice.world.interfaces.chat.AfterAddChatLogEntry(await getChatRequest(chatid, undefined), freq_data)
+	else {
+		let char = entry.timeSlice.charname ?? null
+		; (async () => {
+			while (true) {
+				freq_data = freq_data.filter(f => f.charname !== char)
+				const nextreply = await getNextCharForReply(freq_data)
+				if (nextreply) try {
+					await triggerCharReply(chatid, nextreply)
+					return
+				}
+					catch (error) {
+						console.error(error)
+						char = nextreply
+					}
+				else
+					return
 			}
-			catch (error) {
-				console.error(error)
-				char = nextreply
-			}
-			else
-				return
-		}
-	})()
+		})()
+	}
 
 	return entry
 }
@@ -656,7 +660,7 @@ export async function triggerCharReply(chatid, charname) {
 	const request = await getChatRequest(chatid, charname)
 
 	if (timeSlice?.world?.interfaces?.chat?.GetCharReply)
-		result = timeSlice.world.interfaces.chat.GetCharReply(request, charname)
+		result = await timeSlice.world.interfaces.chat.GetCharReply(request, charname)
 	else
 		result = await char.interfaces.chat.GetReply(request)
 
