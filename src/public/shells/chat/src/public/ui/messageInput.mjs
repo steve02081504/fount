@@ -41,10 +41,9 @@ function togglePhotoSection() {
 	input.type = 'file'
 	input.accept = 'image/*'
 	input.addEventListener('change', (event) => {
-		const files = event.target.files
-		if (files.length > 0) {
+		const { files } = event.target
+		if (files.length > 0)
 			handleFilesSelect({ target: { files } }, SelectedFiles, attachmentPreviewContainer)
-		}
 	})
 	input.click()
 }
@@ -53,11 +52,11 @@ async function toggleVoiceRecording() {
 	if (isRecording) {
 		mediaRecorder.stop()
 		voiceButtonElement.innerHTML = await fetch('https://api.iconify.design/material-symbols/mic.svg').then(res => res.text())
-		while(isRecording) {
+		while (isRecording) {
 			await new Promise(resolve => setTimeout(resolve, 100))
 			isRecording = await isRecording
 		}
-	} else {
+	} else
 		// Start recording
 		try {
 			const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
@@ -89,7 +88,6 @@ async function toggleVoiceRecording() {
 			console.error('Error accessing microphone:', error)
 			alert(geti18n('chat.voiceRecording.errorAccessingMicrophone'))
 		}
-	}
 }
 
 async function sendMessage() {
