@@ -10,11 +10,10 @@ export class MarkovGenerator {
 		specialTokens = [],
 		endToken = null,
 	} = {
-			order: null,
-			specialTokens: [],
-			endToken: null,
-		}
-	) {
+		order: null,
+		specialTokens: [],
+		endToken: null,
+	}) {
 		/**
 		 * @member {number | null} order - 马尔可夫链的阶数。首次训练时设定，后续训练必须使用相同阶数。初始为 null。
 		 */

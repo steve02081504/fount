@@ -472,10 +472,10 @@ async function addChatLogEntry(chatid, entry) {
 					await triggerCharReply(chatid, nextreply)
 					return
 				}
-					catch (error) {
-						console.error(error)
-						char = nextreply
-					}
+				catch (error) {
+					console.error(error)
+					char = nextreply
+				}
 				else
 					return
 			}
