@@ -4,6 +4,10 @@
 
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
 
+<a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+
+[Wanna know about repo arch? Check out deepwiki!](https://deepwiki.com/steve02081504/fount)
+
 ![repo img](https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa)
 
 あなたは、想像力のページから飛び出したキャラクター、夢から織りなされた仲間との旅を切望したことはありませんか？あるいは、デジタルな腹心を思い描いたことはありませんか？最も先進的な創造物と同じくらい直感的な AI アシスタントが、あなたのデジタル世界を難なく組織するような？あるいは、もしかしたら、あなたは普通を超えたつながりを求めていたのかもしれません。現実の境界線が曖昧になり、親密で、*フィルターなしの* 理解が展開される領域を？
