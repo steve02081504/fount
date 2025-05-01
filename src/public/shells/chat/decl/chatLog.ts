@@ -32,6 +32,7 @@ export class chatReplyRequest_t {
 		files: boolean;
 		add_message: boolean;
 	}
+	chat_name: string
 	chat_id: string
 	char_id: string
 	username: string

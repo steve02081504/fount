@@ -11,10 +11,10 @@
 }
 
 .file-list-item:hover {
-	background-color: #374151;
+	background-color: var(--color-base-200);
 }
 
 .file-list-item.active {
-	background-color: #1f2937;
-	color: #ffffff;
+	background-color: var(--color-neutral);
+	color: var(--color-neutral-content);
 }

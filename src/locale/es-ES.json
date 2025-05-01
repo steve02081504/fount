@@ -430,6 +430,18 @@
 			},
 			"uploadButtonIcon": {
 				"alt": "Icono de carga"
+			},
+			"voiceButton": {
+				"title": "Voz"
+			},
+			"voiceButtonIcon": {
+				"alt": "Icono de voz"
+			},
+			"photoButton": {
+				"title": "Foto"
+			},
+			"photoButtonIcon": {
+				"alt": "Icono de foto"
 			}
 		},
 		"rightSidebar": {
@@ -437,6 +449,9 @@
 		},
 		"messageList": {
 			"confirmDeleteMessage": "¿Confirmar eliminar este mensaje?"
+		},
+		"voiceRecording": {
+			"errorAccessingMicrophone": "Error al acceder al microfono"
 		},
 		"messageView": {
 			"buttons": {

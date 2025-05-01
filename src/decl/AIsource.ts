@@ -2,7 +2,7 @@ import { locale_t } from "./basedefs";
 import { prompt_struct_t } from "./prompt_struct";
 
 class tokenizer_t<InputType, TokenType> {
-	free: () => void;
+	free: () => Promise<void>;
 	encode: (prompt: InputType) => TokenType[];
 	decode: (tokens: TokenType[]) => InputType;
 	decode_single: (token: TokenType) => InputType;
@@ -26,7 +26,7 @@ export class AIsource_t<InputType, OutputType> {
 	is_paid: boolean;
 	extension: {};
 
-	Unload: () => void;
+	Unload: () => Promise<void>;
 	Call: (prompt: InputType) => OutputType;
 	Tokenizer: tokenizer_t<InputType, any>;
 }

@@ -50,14 +50,11 @@ export default {
 			console.log(`Loaded chat from JSON: ${args[1]}`)
 		} else if (command === 'load') {
 			chatId = args[1]
-			if (!chatId) {
-				console.error('Error: Chat ID is required for load command.')
-				return
-			}
+			if (!chatId) throw 'Chat ID is required for load command.'
 			open(hosturl + '/shells/chat/#' + chatId)
 			console.log(`Loaded chat with ID: ${chatId}`)
 		}
 		else
-			console.error('Invalid command. Use "start [charName]" or "asjson [json]" or "load [chatId]".')
+			throw `Unknown command: ${command}`
 	}
 }

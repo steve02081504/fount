@@ -17,13 +17,13 @@ export class UserAPI_t {
 		tags: string[];
 	}>;
 	// calls only on install, and if fail, all file under this persona's folder will be deleted
-	Init: () => void;
+	Init: () => Promise<void>;
 	// calls on every start, pop a message if fail
-	Load: () => void;
+	Load: () => Promise<void>;
 	// calls on every unload
-	Unload: (reason: string) => void;
+	Unload: (reason: string) => Promise<void>;
 	// calls on uninstall
-	Uninstall: (reason: string, from: string) => void;
+	Uninstall: (reason: string, from: string) => Promise<void>;
 
 	interfaces: {
 		config?: {

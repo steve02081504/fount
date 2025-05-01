@@ -4,6 +4,10 @@
 
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
 
+<a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+
+[Wanna know about repo arch? Check out deepwiki!](https://deepwiki.com/steve02081504/fount)
+
 ![repo img](https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa)
 
 你是否曾渴望与一位从想象中跃然而出的角色并肩同行，一位由梦境编织而成的挚友？又或许，你曾幻想过一位数字知己，一位如同最先进造物般直觉敏锐的 AI 助手，轻松驾驭你的数字世界？再或者，仅仅是，你寻求一种超越寻常的连接，一个现实边界模糊的领域，在那里，展开一段亲密无间、*毫无保留*的理解？

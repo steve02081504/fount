@@ -430,13 +430,29 @@
 			},
 			"uploadButtonIcon": {
 				"alt": "Значок загрузки"
+			},
+			"voiceButton": {
+				"title": "Голос"
+			},
+			"voiceButtonIcon": {
+				"alt": "Значок голоса"
+			},
+			"photoButton": {
+				"title": "Фото"
+			},
+			"photoButtonIcon": {
+				"alt": "Значок фото"
 			}
+
 		},
 		"rightSidebar": {
 			"title": "Информация об описании"
 		},
 		"messageList": {
 			"confirmDeleteMessage": "Подтвердить удаление этого сообщения?"
+		},
+		"voiceRecording": {
+			"errorAccessingMicrophone": "Не удалось получить доступ к микрофону"
 		},
 		"messageView": {
 			"buttons": {

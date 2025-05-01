@@ -430,6 +430,18 @@
 			},
 			"uploadButtonIcon": {
 				"alt": "アップロードアイコン"
+			},
+			"voiceButton": {
+				"title": "音声"
+			},
+			"voiceButtonIcon": {
+				"alt": "音声アイコン"
+			},
+			"photoButton": {
+				"title": "写真"
+			},
+			"photoButtonIcon": {
+				"alt": "写真アイコン"
 			}
 		},
 		"rightSidebar": {
@@ -437,6 +449,9 @@
 		},
 		"messageList": {
 			"confirmDeleteMessage": "このメッセージを削除してもよろしいですか？"
+		},
+		"voiceRecording": {
+			"errorAccessingMicrophone": "マイクへのアクセスに失敗しました"
 		},
 		"messageView": {
 			"buttons": {

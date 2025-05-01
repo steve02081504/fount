@@ -60,8 +60,11 @@ function filterChatList() {
 
 	function parseRegexFilter(filter) {
 		if (filter.startsWith('+') || filter.startsWith('-')) filter = filter.slice(1)
-		const parsed = parseRegexFromString(filter)
-		return parsed ? parsed : new RegExp(escapeRegExp(filter))
+		try {
+			return parseRegexFromString(filter)
+		} catch (_) {
+			return new RegExp(escapeRegExp(filter))
+		}
 	}
 
 	// Categorize filters

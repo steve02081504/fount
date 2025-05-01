@@ -23,10 +23,10 @@ export async function buildPromptStruct(
 	args,
 	detail_level = 3
 ) {
-	const { char, user, world, other_chars, plugins, chat_log, UserCharname, ReplyToCharname, Charname } = args
+	const { char_id, char, user, world, other_chars, plugins, chat_log, UserCharname, ReplyToCharname, Charname } = args
 	/** @type {prompt_struct_t} */
 	const result = {
-		char_id: args.char_id,
+		char_id,
 		UserCharname,
 		ReplyToCharname,
 		Charname,

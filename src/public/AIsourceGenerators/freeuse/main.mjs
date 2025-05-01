@@ -1,6 +1,11 @@
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
+import { structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
+import { MarkovGenerator } from './MarkovGenerator.mjs'
+
+const endToken = '<|endofres|>'
+
 export default {
 	GetConfigTemplate: async () => {
 		return {
@@ -9,6 +14,9 @@ export default {
 		}
 	},
 	GetSource: async (config) => {
+		const generator = new MarkovGenerator({
+			endToken,
+		})
 		/** @type {AIsource_t} */
 		const result = {
 			type: 'text-chat',
@@ -31,12 +39,20 @@ export default {
 			Unload: () => { },
 			Call: async (prompt) => {
 				return {
-					content: '好的，没问题。',
+					content: generator.generate({
+						prompt,
+					}),
 				}
 			},
 			StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
+				let prompt = structPromptToSingleNoChatLog(prompt_struct)
+				prompt += `\
+\n${prompt_struct.chat_log.map((item) => `${item.name}: ${item.content}\n${endToken}`).join('\n')}
+${prompt_struct.Charname}: `
 				return {
-					content: '好的，没问题。',
+					content: generator.generate({
+						prompt,
+					}),
 				}
 			},
 			Tokenizer: {

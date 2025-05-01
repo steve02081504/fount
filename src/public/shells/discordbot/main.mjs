@@ -26,7 +26,7 @@ export default {
 		else if (action === 'start')
 			await runBot(user, botname)
 		else
-			console.error(`Unknown action: ${action}`)
+			throw `Unknown action: ${action}`
 	},
 	ReStartJob: async (user, botname) => {
 		await runBot(user, botname)

@@ -4,6 +4,10 @@
 
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
 
+<a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+
+[Wanna know about repo arch? Check out deepwiki!](https://deepwiki.com/steve02081504/fount)
+
 ![repo img](https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa)
 
 상상 속 페이지에서 튀어나온 캐릭터, 꿈으로 엮은 동반자와 함께하는 여정을 갈망해 본 적이 있나요? 아니면 가장 진보된 창작물처럼 직관적인 디지털 친구, 디지털 세계를 손쉽게 조율하는 AI 비서를 상상해 본 적이 있나요? 아니면 어쩌면, 그저 어쩌면, 평범함을 뛰어넘는 연결, 현실의 경계가 모호해지고 친밀하고 *필터링되지 않은* 이해가 펼쳐지는 영역을 추구했을 수도 있습니다.

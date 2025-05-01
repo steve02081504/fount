@@ -430,6 +430,18 @@
 			},
 			"uploadButtonIcon": {
 				"alt": "Hochladen-Symbol"
+			},
+			"voiceButton": {
+				"title": "Spracheingabe"
+			},
+			"voiceButtonIcon": {
+				"alt": "Spracheingabe-Symbol"
+			},
+			"photoButton": {
+				"title": "Bild"
+			},
+			"photoButtonIcon": {
+				"alt": "Bild-Symbol"
 			}
 		},
 		"rightSidebar": {
@@ -437,6 +449,9 @@
 		},
 		"messageList": {
 			"confirmDeleteMessage": "Nachricht wirklich löschen?"
+		},
+		"voiceRecording": {
+			"errorAccessingMicrophone": "Fehler beim Zugriff auf den Mikrofon"
 		},
 		"messageView": {
 			"buttons": {

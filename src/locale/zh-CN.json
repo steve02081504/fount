@@ -430,6 +430,18 @@
 			},
 			"uploadButtonIcon": {
 				"alt": "上传图标"
+			},
+			"voiceButton": {
+				"title": "录音"
+			},
+			"voiceButtonIcon": {
+				"alt": "录音图标"
+			},
+			"photoButton": {
+				"title": "照片"
+			},
+			"photoButtonIcon": {
+				"alt": "照片图标"
 			}
 		},
 		"rightSidebar": {
@@ -437,6 +449,9 @@
 		},
 		"messageList": {
 			"confirmDeleteMessage": "确认删除此消息？"
+		},
+		"voiceRecording": {
+			"errorAccessingMicrophone": "无法访问麦克风"
 		},
 		"messageView": {
 			"buttons": {

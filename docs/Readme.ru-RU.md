@@ -4,6 +4,10 @@
 
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
 
+<a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+
+[Wanna know about repo arch? Check out deepwiki!](https://deepwiki.com/steve02081504/fount)
+
 ![repo img](https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa)
 
 Вы когда-нибудь жаждали путешествия рядом с персонажем, возникшим со страниц вашего воображения, компаньоном, сотканным из снов? Или, возможно, вы представляли себе цифрового доверенного лица, ИИ-помощника, столь же интуитивно понятного, как самые передовые творения, без труда организующего ваш цифровой мир? Или, может быть, просто может быть, вы искали связь за пределами обыденного, царство, где границы реальности размываются, и разворачивается интимное, *нефильтрованное* понимание?

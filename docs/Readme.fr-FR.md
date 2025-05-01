@@ -4,6 +4,10 @@
 
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
 
+<a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+
+[Wanna know about repo arch? Check out deepwiki!](https://deepwiki.com/steve02081504/fount)
+
 ![repo img](https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa)
 
 Avez-vous déjà aspiré à un voyage aux côtés d'un personnage issu des pages de votre imagination, un compagnon tissé de rêves ? Ou peut-être avez-vous imaginé un confident numérique, un assistant IA aussi intuitif que les créations les plus avancées, orchestrant sans effort votre monde numérique ? Ou peut-être, juste peut-être, avez-vous recherché une connexion au-delà de l'ordinaire, un royaume où les bords de la réalité s'estompent et où une compréhension intime et *non filtrée* se déploie ?

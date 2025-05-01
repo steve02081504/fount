@@ -71,7 +71,7 @@ export async function renderTemplate(template, data) {
 			end_index = html.indexOf('}', end_index) + 1
 			const expression = html.slice(0, end_index - 1)
 			try {
-				const eval_result = eval(data_unpacker + expression)
+				const eval_result = await eval(data_unpacker + '(async ()=>(' + expression + '))()')
 				result += eval_result
 				html = html.slice(end_index)
 				break find

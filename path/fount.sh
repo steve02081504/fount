@@ -285,7 +285,6 @@ if [[ ($IN_TERMUX -eq 0 && -z "$(command -v bun)") || ($IN_TERMUX -eq 1 && ! -f 
 		else
 			source "$HOME/.bashrc"
 		fi
-		echo "Bun installed."
 	fi
 
 	if ! command -v bun &> /dev/null; then
@@ -300,10 +299,14 @@ if [ $IN_DOCKER -eq 1 ]; then
 else
 	# 使用 run_bun 来获取 Bun 版本信息
 	bun_version_before=$(run_bun -V 2>&1)
+	bun_upgrade_channel=""
+	if [[ "$bun_version_before" == *"+"* ]]; then
+		bun_upgrade_channel="--canary"
+	fi
 	if [[ -z "$bun_version_before" ]]; then
 		echo "Error: Could not determine current Bun version." >&2
 	else
-		run_bun upgrade &> /dev/null
+		run_bun upgrade $bun_upgrade_channel &> /dev/null
 		bun_version_after=$(run_bun -V 2>&1)
 
 		# 检查是否需要重新 patch bun
