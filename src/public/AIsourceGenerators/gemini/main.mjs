@@ -3,7 +3,7 @@ import {
 	HarmCategory,
 	HarmBlockThreshold,
 	createPartFromUri,
-} from 'npm:@google/genai'
+} from 'npm:@google/genai@^0.12.0'
 import { escapeRegExp } from '../../../../src/scripts/escape.mjs'
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
 import { Buffer } from 'node:buffer'
@@ -11,6 +11,41 @@ import * as mime from 'npm:mime-types'
 import { hash as calculateHash } from 'node:crypto'
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
+
+const supportedFileTypes = [
+	'application/pdf',
+	'application/x-javascript',
+	'text/javascript',
+	'application/x-python',
+	'text/x-python',
+	'text/plain',
+	'text/html',
+	'text/css',
+	'text/md',
+	'text/csv',
+	'text/xml',
+	'text/rtf',
+	'image/png',
+	'image/jpeg',
+	'image/webp',
+	'image/heic',
+	'image/heif',
+	'video/mp4',
+	'video/mpeg',
+	'video/mov',
+	'video/avi',
+	'video/x-flv',
+	'video/mpg',
+	'video/webm',
+	'video/wmv',
+	'video/3gpp',
+	'audio/wav',
+	'audio/mp3',
+	'audio/aiff',
+	'audio/aac',
+	'audio/ogg',
+	'audio/flac'
+]
 
 const fileUploadMap = new Map()
 export default {
@@ -125,8 +160,13 @@ system:
 						parts: [
 							{ text: chatLogEntry.name + ':\n' + chatLogEntry.content },
 							...await Promise.all((chatLogEntry.files || []).map(async file => {
+								let mimeType = file.mimeType.split(';')[0]
+								if (!supportedFileTypes.includes(mimeType)) {
+									console.warn(`Unsupported file type: ${mimeType} for file ${file.name}`)
+									return { text: `[System Error: Unsupported file type ${mimeType}, file: ${file.name}]` }
+								}
 								try {
-									const uploadedFile = await uploadToGemini(file.name, file.buffer, file.mimeType)
+									const uploadedFile = await uploadToGemini(file.name, file.buffer, mimeType)
 									return createPartFromUri(uploadedFile.uri, uploadedFile.mimeType)
 								}
 								catch (error) {
