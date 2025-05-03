@@ -2,9 +2,6 @@ import DiscordRPC from 'npm:fixed-discord-rpc'
 import { in_docker, in_termux } from './env.mjs'
 import process from 'node:process'
 
-// Set this to your Client ID.
-const clientId = '1344722070323335259'
-
 let rpc
 
 const FountStartTimestamp = new Date()
