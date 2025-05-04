@@ -1,7 +1,7 @@
 // load Sentry
-import * as Sentry from "https://esm.run/@sentry/browser"
+import * as Sentry from 'https://esm.run/@sentry/browser'
 Sentry.init({
-	dsn: "https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704",
+	dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
 	sendDefaultPii: true
 })
 

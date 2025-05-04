@@ -12,7 +12,7 @@
 			"standingBy": "Ожидание..."
 		},
 		"jobs": {
-			"restartingJob": "Перезапуск задания Shell ${shellname} пользователя ${username}: ${uid}"
+			"restartingJob": "Перезапуск задания ${parttype} ${partname} пользователя ${username}: ${uid}"
 		},
 		"ipc": {
 			"sendCommandFailed": "Не удалось отправить команду: ${error}",

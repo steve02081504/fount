@@ -12,7 +12,7 @@
 			"standingBy": "standing by..."
 		},
 		"jobs": {
-			"restartingJob": "正在重启用户 ${username} 的 Shell ${shellname} 任务：${uid}"
+			"restartingJob": "正在重启用户 ${username} 的 ${parttype} ${partname} 任务：${uid}"
 		},
 		"ipc": {
 			"sendCommandFailed": "发送命令失败：${error}",

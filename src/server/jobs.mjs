@@ -1,28 +1,41 @@
-import { loadShell } from './managers/shell_manager.mjs'
 import { getUserByUsername } from './auth.mjs'
 import { getAllUserNames } from './auth.mjs'
 import { save_config } from './server.mjs'
 import { geti18n } from '../scripts/i18n.mjs'
+import { loadPart, partsList } from './managers/index.mjs'
 
-export function StartJob(username, shellname, uid, data = null) {
+export function StartJob(username, parttype, partname, uid, data = null) {
 	const jobs = getUserByUsername(username).jobs ??= {}
-	jobs[shellname] ??= {}
-	jobs[shellname][uid] = data
+	jobs[parttype] ??= {}
+	jobs[parttype][partname] ??= {}
+	jobs[parttype][partname][uid] = data
 	save_config()
 }
-export function EndJob(username, shellname, uid) {
-	delete getUserByUsername(username).jobs[shellname][uid]
+export function EndJob(username, parttype, partname, uid) {
+	delete getUserByUsername(username).jobs[parttype][partname][uid]
 	save_config()
 }
 export async function ReStartJobs() {
 	const users = getAllUserNames()
 	for (const user of users) {
 		const jobs = getUserByUsername(user).jobs ??= {}
-		for (const shellname in jobs)
-			for (const uid in jobs[shellname]) {
-				console.log(await geti18n('fountConsole.jobs.restartingJob', { username: user, shellname, uid }))
-				const shell = await loadShell(user, shellname)
-				await shell.ReStartJob(user, jobs[shellname][uid] ?? uid, uid).catch(console.error)
+		for (const maybeparttype in jobs) // 旧版本jobs兼容
+			if (!partsList.includes(maybeparttype)) {
+				const shellname = maybeparttype
+				jobs.shells ??= {}
+				jobs.shells[shellname] = Object.assign(jobs[shellname], jobs.shells[shellname] || {})
+				delete jobs[maybeparttype]
 			}
+		for (const parttype in jobs)
+			for (const partname in jobs[parttype])
+				for (const uid in jobs[parttype][partname]) {
+					console.log(await geti18n('fountConsole.jobs.restartingJob', { username: user, parttype, partname, uid }))
+					try {
+						const part = await loadPart(user, parttype, partname)
+						await part.interfaces.jobs.ReStartJob(user, jobs[parttype][partname][uid] ?? uid)
+					} catch (err) {
+						console.error(err)
+					}
+				}
 	}
 }

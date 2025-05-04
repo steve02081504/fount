@@ -79,7 +79,7 @@ export async function runBot(username, botname) {
 	const char = await LoadChar(username, config.char)
 	if (!char.interfaces.discord) throw new Error(`Char ${config.char} does not support discord interface`)
 	botCache[botname] = await startBot(config, char)
-	StartJob(username, 'discordbot', botname)
+	StartJob(username, 'shells', 'discordbot', botname)
 }
 
 export async function stopBot(username, botname) {
@@ -88,7 +88,7 @@ export async function stopBot(username, botname) {
 		botCache[botname].destroy()
 		delete botCache[botname]
 	}
-	EndJob(username, 'discordbot', botname)
+	EndJob(username, 'shells', 'discordbot', botname)
 }
 
 export function getRunningBotList(username) {

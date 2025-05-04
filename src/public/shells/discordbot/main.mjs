@@ -28,7 +28,11 @@ export default {
 		else
 			throw `Unknown action: ${action}`
 	},
-	ReStartJob: async (user, botname) => {
-		await runBot(user, botname)
+	interfaces: {
+		jobs: {
+			ReStartJob: async (user, botname) => {
+				await runBot(user, botname)
+			}
+		}
 	}
 }
