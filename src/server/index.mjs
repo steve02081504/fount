@@ -1,6 +1,6 @@
-import * as Sentry from "npm:@sentry/deno"
+import * as Sentry from 'npm:@sentry/deno'
 Sentry.init({
-	dsn: "https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704",
+	dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
 })
 
 import process from 'node:process'
@@ -9,6 +9,7 @@ import { init } from './server.mjs'
 import { IPCManager } from './ipc_server.mjs'
 import { ReStartJobs } from './jobs.mjs'
 import { geti18n } from '../scripts/i18n.mjs'
+import { startTimerHeartbeat } from './timers.mjs'
 
 console.log(await geti18n('fountConsole.server.standingBy'))
 
@@ -48,3 +49,4 @@ if (args.length) {
 if (!isFirstInstance) process.exit(0)
 
 ReStartJobs()
+startTimerHeartbeat()

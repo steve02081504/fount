@@ -12,7 +12,7 @@
 			"standingBy": "Em espera..."
 		},
 		"jobs": {
-			"restartingJob": "A reiniciar tarefa Shell ${shellname} do utilizador ${username}: ${uid}"
+			"restartingJob": "A reiniciar tarefa ${parttype} ${partname} do utilizador ${username}: ${uid}"
 		},
 		"ipc": {
 			"sendCommandFailed": "Falha ao enviar comando: ${error}",

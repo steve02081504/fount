@@ -12,7 +12,7 @@
 			"standingBy": "Warte..."
 		},
 		"jobs": {
-			"restartingJob": "Starte Shell-Aufgabe ${shellname} von Benutzer ${username} neu: ${uid}"
+			"restartingJob": "Starte ${parttype}-Aufgabe ${partname} von Benutzer ${username} neu: ${uid}"
 		},
 		"ipc": {
 			"sendCommandFailed": "Senden des Befehls fehlgeschlagen: ${error}",

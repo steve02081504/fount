@@ -160,7 +160,7 @@ system:
 						parts: [
 							{ text: chatLogEntry.name + ':\n' + chatLogEntry.content },
 							...await Promise.all((chatLogEntry.files || []).map(async file => {
-								let mimeType = file.mimeType.split(';')[0]
+								const mimeType = file.mimeType.split(';')[0]
 								if (!supportedFileTypes.includes(mimeType)) {
 									console.warn(`Unsupported file type: ${mimeType} for file ${file.name}`)
 									return { text: `[System Error: Unsupported file type ${mimeType}, file: ${file.name}]` }

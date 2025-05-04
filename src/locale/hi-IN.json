@@ -12,7 +12,7 @@
 			"standingBy": "तैयार है..."
 		},
 		"jobs": {
-			"restartingJob": "उपयोगकर्ता ${username} के शेल ${shellname} कार्य को पुनः आरंभ किया जा रहा है: ${uid}"
+			"restartingJob": "उपयोगकर्ता ${username} के ${parttype} ${partname} कार्य को पुनः आरंभ किया जा रहा है: ${uid}"
 		},
 		"ipc": {
 			"sendCommandFailed": "कमांड भेजने में विफल: ${error}",
