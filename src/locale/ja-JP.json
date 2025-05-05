@@ -12,7 +12,7 @@
 			"standingBy": "スタンバイ中..."
 		},
 		"jobs": {
-			"restartingJob": "ユーザー ${username} の Shell ${shellname} ジョブを再起動中：${uid}"
+			"restartingJob": "ユーザー ${username} の ${parttype} ${partname} ジョブを再起動中：${uid}"
 		},
 		"ipc": {
 			"sendCommandFailed": "コマンドの送信に失敗しました：${error}",

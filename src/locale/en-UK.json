@@ -12,7 +12,7 @@
 			"standingBy": "standing by..."
 		},
 		"jobs": {
-			"restartingJob": "Restarting Shell ${shellname} job for user ${username}: ${uid}"
+			"restartingJob": "Restarting ${parttype} ${partname} job for user ${username}: ${uid}"
 		},
 		"ipc": {
 			"sendCommandFailed": "Failed to send command: ${error}",

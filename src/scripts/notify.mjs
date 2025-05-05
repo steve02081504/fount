@@ -3,6 +3,7 @@ import path from 'node:path'
 import process from 'node:process'
 import { __dirname } from '../server/server.mjs'
 import { in_docker, in_termux } from './env.mjs'
+import { exec } from 'node:child_process'
 
 export async function notify(title, message, options = {}) {
 	if (in_docker || in_termux) return

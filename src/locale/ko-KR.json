@@ -12,7 +12,7 @@
 			"standingBy": "대기 중..."
 		},
 		"jobs": {
-			"restartingJob": "사용자 ${username}의 Shell ${shellname} 작업 재시작 중: ${uid}"
+			"restartingJob": "사용자 ${username}의 ${parttype} ${partname} 작업 재시작 중: ${uid}"
 		},
 		"ipc": {
 			"sendCommandFailed": "명령 전송 실패: ${error}",

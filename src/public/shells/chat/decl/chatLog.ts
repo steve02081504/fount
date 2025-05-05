@@ -19,6 +19,7 @@ export class chatReply_t {
 	}[]
 	logContextBefore?: chatLogEntry_t[];
 	logContextAfter?: chatLogEntry_t[];
+	charVisibility?: string[];
 	extension?: any;
 }
 

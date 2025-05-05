@@ -12,7 +12,7 @@
 			"standingBy": "En attente..."
 		},
 		"jobs": {
-			"restartingJob": "Redémarrage de la tâche Shell ${shellname} de l'utilisateur ${username} : ${uid}"
+			"restartingJob": "Redémarrage de la tâche ${parttype} ${partname} de l'utilisateur ${username} : ${uid}"
 		},
 		"ipc": {
 			"sendCommandFailed": "Échec de l'envoi de la commande : ${error}",
