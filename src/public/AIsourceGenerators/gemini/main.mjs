@@ -160,7 +160,20 @@ system:
 						parts: [
 							{ text: chatLogEntry.name + ':\n' + chatLogEntry.content },
 							...await Promise.all((chatLogEntry.files || []).map(async file => {
-								const mimeType = file.mimeType.split(';')[0]
+								const originalMimeType = file.mimeType || mime.lookup(file.name) || 'application/octet-stream'
+								let bufferToUpload = file.buffer
+								const detectedCharset = originalMimeType.match(/charset=([^;]+)/i)?.[1]?.trim?.()
+
+								if (detectedCharset && detectedCharset.toLowerCase() !== 'utf-8') try {
+									const decodedString = bufferToUpload.toString(detectedCharset)
+									bufferToUpload = Buffer.from(decodedString, 'utf-8')
+								} catch (_) { }
+								let mimeType = file.mimeType.split(';')[0]
+
+								if (!supportedFileTypes.includes(mimeType)) {
+									const textMimeType = 'text/' + mimeType.split('/')[1]
+									if (supportedFileTypes.includes(textMimeType)) mimeType = textMimeType
+								}
 								if (!supportedFileTypes.includes(mimeType)) {
 									console.warn(`Unsupported file type: ${mimeType} for file ${file.name}`)
 									return { text: `[System Error: Unsupported file type ${mimeType}, file: ${file.name}]` }
