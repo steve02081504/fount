@@ -12,13 +12,14 @@ on:
   workflow_dispatch:
 
 jobs:
-  set-permissions:
+  update-locale:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: run script to update locale files
         run: |
-          python ./.esh/commands/update_locale.py
+          pip install deep_translator
+          python ./.esh/commands/update-locale.py
       - name: git add all
         run: git add -A
       - name: Push changes
