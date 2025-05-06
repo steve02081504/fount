@@ -1,5 +1,5 @@
 import { loadData, saveData } from '../setting_loader.mjs'
-import { initPart, loadPartBase, uninstallPartBase, unloadPart } from '../parts_loader.mjs'
+import { initPart, loadPartBase, uninstallPartBase, unloadPartBase } from '../parts_loader.mjs'
 
 function loadCharData(username, charname) {
 	const userCharDataSet = loadData(username, 'char_data')
@@ -33,7 +33,7 @@ export async function LoadChar(username, charname) {
 }
 
 export async function UnloadChar(username, charname, reason) {
-	await unloadPart(username, 'chars', charname, reason)
+	await unloadPartBase(username, 'chars', charname, reason)
 	saveCharData(username)
 }
 

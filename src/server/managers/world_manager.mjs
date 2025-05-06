@@ -1,4 +1,4 @@
-import { loadPartBase } from '../parts_loader.mjs'
+import { loadPartBase, unloadPartBase } from '../parts_loader.mjs'
 
 /**
  *
@@ -11,4 +11,8 @@ export function loadWorld(username, worldname) {
 		username,
 		worldname,
 	})
+}
+
+export async function unloadWorld(username, worldname) {
+	await unloadPartBase(username, 'worlds', worldname)
 }

@@ -1,5 +1,5 @@
 import { PartsRouter } from '../server.mjs'
-import { initPart, loadPartBase, uninstallPartBase, unloadPart } from '../parts_loader.mjs'
+import { initPart, loadPartBase, uninstallPartBase, unloadPartBase } from '../parts_loader.mjs'
 
 /**
  *
@@ -12,7 +12,7 @@ export async function loadShell(username, shellname) {
 }
 
 export async function unloadShell(username, shellname) {
-	await unloadPart(username, 'shells', shellname, PartsRouter)
+	await unloadPartBase(username, 'shells', shellname, PartsRouter)
 }
 
 export async function initShell(username, shellname) {
