@@ -1,4 +1,4 @@
-import { initPart, loadPartBase, uninstallPartBase, unloadPart } from '../../../../../server/parts_loader.mjs'
+import { initPart, loadPartBase, uninstallPartBase, unloadPartBase } from '../../../../../server/parts_loader.mjs'
 
 /**
  * @param {string} username
@@ -10,7 +10,7 @@ export async function LoadImportHandler(username, tempname) {
 }
 
 export async function UnloadImportHandler(username, tempname, reason) {
-	await unloadPart(username, 'ImportHandlers', tempname, reason)
+	await unloadPartBase(username, 'ImportHandlers', tempname, reason)
 }
 
 export async function initImportHandler(username, tempname) {

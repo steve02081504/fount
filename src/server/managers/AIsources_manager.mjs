@@ -1,6 +1,6 @@
 import { getUserDictionary } from '../auth.mjs'
 import { loadJsonFile, saveJsonFile } from '../../scripts/json_loader.mjs'
-import { isPartLoaded, loadPartBase, unloadPart } from '../parts_loader.mjs'
+import { isPartLoaded, loadPartBase, unloadPartBase } from '../parts_loader.mjs'
 
 function GetPath(username, partname) {
 	return getUserDictionary(username) + '/AIsources/' + partname
@@ -13,6 +13,10 @@ function GetPath(username, partname) {
  */
 export async function loadAIsourceGenerator(username, AIsourcename) {
 	return loadPartBase(username, 'AIsourceGenerators', AIsourcename)
+}
+
+export async function unloadAIsourceGenerator(username, AIsourcename) {
+	await unloadPartBase(username, 'AIsourceGenerators', AIsourcename)
 }
 
 export async function loadAIsourceFromConfigData(username, data, { SaveConfig }) {
@@ -48,7 +52,10 @@ export async function loadAIsourceFromNameOrConfigData(username, nameOrData, { S
 }
 
 export async function unloadAIsource(username, AIsourcename) {
-	await unloadPart(username, 'AIsources', AIsourcename)
+	await unloadPartBase(username, 'AIsources', AIsourcename, {}, {
+		pathGetter: () => GetPath(username, AIsourcename),
+		afterUnload: _ => 0
+	})
 }
 
 export function isAIsourceLoaded(username, AIsourcename) {
