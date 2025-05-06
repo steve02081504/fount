@@ -7,7 +7,7 @@ from collections import OrderedDict
 import sys
 
 # ----------- 配置 -----------
-# locale 文件夹相对于脚本的位置 (根据你的项目结构调整)
+# locales 文件夹相对于脚本的位置 (根据你的项目结构调整)
 try:
     # __file__ 在直接运行时是脚本路径，但在某些打包或交互环境可能未定义
     MY_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -16,7 +16,7 @@ except NameError:
     MY_DIR = os.path.abspath(".")
     print("警告: 无法确定脚本精确位置，假设在项目子目录中运行。")
 
-LOCALE_DIR = os.path.join(MY_DIR, "../../src/locale")
+LOCALE_DIR = os.path.join(MY_DIR, "../../src/locales")
 # 参考语言优先级列表
 REFERENCE_LANG_CODES = [
     "zh-CN",

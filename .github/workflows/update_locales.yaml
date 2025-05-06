@@ -6,20 +6,20 @@ permissions:
 on:
   push:
     paths:
-      - 'src/locale/**'
+      - 'src/locales/**'
     tags-ignore:
       - '*'
   workflow_dispatch:
 
 jobs:
-  update-locale:
+  update-locales:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: run script to update locale files
         run: |
           pip install deep_translator
-          python ./.esh/commands/update-locale.py
+          python ./.esh/commands/update-locales.py
       - name: git add all
         run: git add -A
       - name: Push changes
