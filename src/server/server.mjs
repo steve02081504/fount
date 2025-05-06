@@ -1,3 +1,4 @@
+import * as Sentry from 'npm:@sentry/deno'
 import express from 'npm:express@^5.0.1'
 import cookieParser from 'npm:cookie-parser@^1.4.0'
 import fileUpload from 'npm:express-fileupload@^1.5.0'
@@ -41,6 +42,7 @@ FinalRouter.use((req, res) => {
 	res.status(404).type('txt').send('Not found')
 })
 const errorHandler = (err, req, res, next) => {
+	Sentry.captureException(err)
 	console.error(err)
 	res.status(500).json({ message: 'Internal Server Error', errors: err.errors, error: err.message })
 }
