@@ -1,10 +1,11 @@
-import { loadShell } from './shell_manager.mjs'
-import { getPartListBase } from '../parts_loader.mjs'
-import { LoadChar } from './char_manager.mjs'
-import { loadPersona } from './personas_manager.mjs'
-import { loadAIsource, loadAIsourceGenerator } from './AIsources_manager.mjs'
-import { LoadImportHandler } from '../../public/shells/install/src/server/importHandler_manager.mjs'
-import { loadWorld } from './world_manager.mjs'
+import { loadShell, unloadShell } from './shell_manager.mjs'
+import { getPartListBase, parts_set } from '../parts_loader.mjs'
+import { LoadChar, UnloadChar } from './char_manager.mjs'
+import { loadPersona, unloadPersona } from './personas_manager.mjs'
+import { loadAIsource, loadAIsourceGenerator, unloadAIsource, unloadAIsourceGenerator } from './AIsources_manager.mjs'
+import { LoadImportHandler, UnloadImportHandler } from '../../public/shells/install/src/server/importHandler_manager.mjs'
+import { loadWorld, unloadWorld } from './world_manager.mjs'
+import { on_shutdown } from '../on_shutdown.mjs'
 
 export const partsList = [
 	'shells', 'chars', 'personas', 'worlds', 'AIsources', 'AIsourceGenerators',
@@ -35,3 +36,22 @@ export function getPartList(username, parttype) {
 		ResultMapper: ResultMappers[parttype]
 	})
 }
+
+const unLoadMethods = {
+	'shells': unloadShell,
+	'chars': UnloadChar,
+	'personas': unloadPersona,
+	'worlds': unloadWorld,
+	'AIsources': unloadAIsource,
+	'AIsourceGenerators': unloadAIsourceGenerator,
+	'ImportHandlers': UnloadImportHandler
+}
+export function unloadPart(username, parttype, partname) {
+	return unLoadMethods[parttype](username, partname)
+}
+on_shutdown(async () => {
+	for (const username in parts_set)
+		for (const parttype in parts_set[username])
+			for (const partname in parts_set[username][parttype])
+				await unloadPart(username, parttype, partname)
+})

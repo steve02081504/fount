@@ -1,5 +1,4 @@
 import { getUserByUsername, getUserDictionary } from './auth.mjs'
-import { on_shutdown } from './on_shutdown.mjs'
 import fs from 'node:fs'
 import url from 'node:url'
 import { __dirname, setDefaultStuff } from './server.mjs'
@@ -43,7 +42,7 @@ import { loadJsonFile } from '../scripts/json_loader.mjs'
  * @property {string[]} supportedInterfaces - List of supported interfaces.
  */
 
-const parts_set = {}
+export const parts_set = {}
 
 /**
  * Gets the path to a part based on username, part type, and part name.
@@ -175,6 +174,25 @@ export async function baseloadPart(username, parttype, partname, {
 	return await Loader(path)
 }
 
+export async function baseMjsPartUnLoader(path) {
+	async function codeunloader(path) {
+		/*
+		todo: implement codeunloader after moveing fount from deno to bun/done
+		deno ll never support this, see also:
+		https://github.com/denoland/deno/issues/27820
+		https://github.com/denoland/deno/issues/28126
+		https://github.com/denoland/deno/issues/25780
+		*/
+	}
+	// get all the js/ts/mjs/cjs/wasm files in the path and call codeunloader
+	await Promise.all(
+		fs.readdirSync(path, { withFileTypes: true, recursive: true })
+			.filter(file => file.isFile() && /\.(js|ts|mjs|cjs|wasm)$/.test(file.name))
+			.map(file => path + '/' + file.name)
+			.map(f => codeunloader(f).catch(console.error))
+	)
+}
+
 /**
  * Base function to load and initialize a part. Handles initialization and loading lifecycle.
  * Uses template parameters for part type and initialization arguments for better type safety.
@@ -286,8 +304,10 @@ export async function initPart(username, parttype, partname, Initargs, {
  * @param {(part: T) => Promise<void>} [options.unLoader=(part) => part.Unload?.(unLoadargs)] - Function to unload the part. Defaults to calling part.Unload.
  * @returns {Promise<void>} A promise that resolves when the part is unloaded.
  */
-export async function unloadPart(username, parttype, partname, unLoadargs, {
+export async function unloadPartBase(username, parttype, partname, unLoadargs, {
+	pathGetter = () => GetPartPath(username, parttype, partname),
 	unLoader = (part) => part.Unload?.(unLoadargs),
+	afterUnload = baseMjsPartUnLoader,
 } = {}) {
 	/** @type {T} */
 	const part = parts_set[username][parttype][partname]
@@ -297,14 +317,9 @@ export async function unloadPart(username, parttype, partname, unLoadargs, {
 	catch (error) {
 		console.error(error)
 	}
+	await afterUnload(pathGetter(), unLoadargs)
 	delete parts_set[username][parttype][partname]
 }
-on_shutdown(async () => {
-	for (const username in parts_set)
-		for (const parttype in parts_set[username])
-			for (const partname in parts_set[username][parttype])
-				await unloadPart(username, parttype, partname)
-})
 
 /**
  * Uninstalls a part, unloading it first, then calling its Uninstall function (if exists) and removing its directory.
@@ -337,7 +352,7 @@ export async function uninstallPartBase(username, parttype, partname, unLoadargs
 	/** @type {T | undefined} */
 	let part = parts_set[username][parttype][partname]
 	try {
-		await unloadPart(username, parttype, partname, unLoadargs, { unLoader })
+		await unloadPartBase(username, parttype, partname, unLoadargs, { unLoader })
 	} catch (error) {
 		console.error(error)
 	}

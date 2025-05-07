@@ -3,7 +3,7 @@ import { __dirname } from '../server/server.mjs'
 import { loadJsonFile } from './json_loader.mjs'
 import { exec } from './exec.mjs'
 import process from 'node:process'
-const fountLocaleList = fs.readdirSync(__dirname + '/src/locale').filter((file) => file.endsWith('.json')).map((file) => file.slice(0, -5))
+const fountLocaleList = fs.readdirSync(__dirname + '/src/locales').filter((file) => file.endsWith('.json')).map((file) => file.slice(0, -5))
 
 export function getbestlocale(preferredlocaleList, localeList) {
 	for (const preferredlocale of preferredlocaleList) {
@@ -28,7 +28,7 @@ const partsLocaleCache = {}
 
 export async function getLocaleData(preferredlocaleList) {
 	const resultLocale = getbestlocale(preferredlocaleList, fountLocaleList)
-	let result = fountLocaleCache[resultLocale] ??= loadJsonFile(__dirname + `/src/locale/${resultLocale}.json`)
+	let result = fountLocaleCache[resultLocale] ??= loadJsonFile(__dirname + `/src/locales/${resultLocale}.json`)
 	for (const part in partsLocaleLists) {
 		const resultLocale = getbestlocale(preferredlocaleList, partsLocaleLists[part])
 		partsLocaleCache[part] ??= {}

@@ -1,11 +1,11 @@
-import { loadPartBase, uninstallPartBase, unloadPart } from '../parts_loader.mjs'
+import { loadPartBase, uninstallPartBase, unloadPartBase } from '../parts_loader.mjs'
 
 export async function loadPersona(username, personaname) {
 	return loadPartBase(username, 'personas', personaname)
 }
 
 export async function unloadPersona(username, personaname) {
-	await unloadPart(username, 'personas', personaname)
+	await unloadPartBase(username, 'personas', personaname)
 }
 
 export async function uninstallPersona(username, personaname) {

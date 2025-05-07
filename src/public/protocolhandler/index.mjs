@@ -1,8 +1,10 @@
 import { applyTheme } from '../scripts/theme.mjs'
 import { initTranslations, geti18n } from '../scripts/i18n.mjs'
 
+const urlParams = new URL(window.location.href)
+const from = urlParams.searchParams.get('from')
+
 async function handleProtocol() {
-	const urlParams = new URL(window.location.href)
 	const protocol = urlParams.searchParams.get('url')
 
 	if (!protocol || !protocol.startsWith('fount://')) {
@@ -56,13 +58,14 @@ async function handleRunShell(parts) {
 		document.getElementById('message').textContent = geti18n('protocolhandler.shellCommandError')
 	}
 	setTimeout(() => {
-		if (history[history.length - 1].startsWith('https://steve02081504.github.io/fount/protocol'))
-			if (history.length > 2)
-				history.go(-2)
-			else
-				window.location.href = '/'
-		else
-			history.back()
+		try {
+			if (from == 'jumppage')
+				if (history.length > 2) history.go(-2)
+				else throw new Error('No history')
+			else history.back()
+		} catch (_) {
+			window.location.href = '/'
+		}
 	}, 1000)
 }
 
