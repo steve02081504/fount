@@ -167,7 +167,6 @@ export async function baseloadPart(username, parttype, partname, {
 					if (template !== user)
 						fs.writeFileSync(userPath + '/' + fileOrDir, template)
 				}
-
 		}
 		fs.readdirSync(templatePath).forEach(mapper)
 	}

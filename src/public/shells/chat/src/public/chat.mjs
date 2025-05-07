@@ -41,11 +41,11 @@ export async function initializeChat() {
 	document.addEventListener('visibilitychange', () => {
 		if (document.visibilityState == 'visible')
 			startHeartbeat()
-		else if (Notification?.permission != 'granted')
+		else if (window?.Notification?.permission != 'granted')
 			stopHeartbeat()
 	})
 
-	if (Notification?.permission != 'granted')
+	if (window.Notification && Notification?.permission != 'granted')
 		Notification.requestPermission()
 
 	setupSidebar()
