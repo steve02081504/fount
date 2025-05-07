@@ -1,8 +1,21 @@
 // load Sentry
+
+/** @type {import('npm:@sentry/browser')} */
 import * as Sentry from 'https://esm.run/@sentry/browser'
+
 Sentry.init({
 	dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
-	sendDefaultPii: true
+	sendDefaultPii: true,
+	integrations: [
+		Sentry.replayIntegration(),
+		Sentry.browserTracingIntegration()
+	],
+	// Performance Monitoring
+	tracesSampleRate: 1.0,
+	tracePropagationTargets: [window.location.origin || 'localhost'],
+	// Session Replay
+	replaysSessionSampleRate: 0.1,
+	replaysOnErrorSampleRate: 1.0,
 })
 
 // fix of tailwindcss Play CDN

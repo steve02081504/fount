@@ -52,7 +52,8 @@ export function setEndpoints(router) {
 
 	router.post('/api/shells/chat/setcharreplyfrequency', authenticate, async (req, res) => {
 		const { chatid, charname, frequency } = req.body
-		res.status(200).json(await setCharSpeakingFrequency(chatid, charname, frequency))
+		await setCharSpeakingFrequency(chatid, charname, frequency)
+		res.status(200).json({ message: 'setcharreplyfrequency ok' })
 	})
 
 	router.post('/api/shells/chat/adduserreply', authenticate, async (req, res) => {
