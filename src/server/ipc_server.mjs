@@ -66,7 +66,6 @@ export class IPCManager {
 						resolve(false) // 服务器已在运行
 					} else
 						reject(err)
-
 				})
 
 				server.listen(IPC_PORT, address, async () => {

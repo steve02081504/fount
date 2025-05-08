@@ -20,6 +20,8 @@ const toggleTokenButton = document.getElementById('toggle-token')
 const saveConfigButton = document.getElementById('save-config')
 const saveStatusIcon = document.getElementById('saveStatusIcon')
 const startStopBotButton = document.getElementById('start-stop-bot')
+const startStopStatusIcon = document.getElementById('startStopStatusIcon')
+const startStopStatusText = document.getElementById('startStopStatusText')
 
 let configEditor = null
 let botList = []
@@ -297,51 +299,60 @@ async function handleSaveConfig() {
 
 		// Show success icon
 		saveStatusIcon.src = 'https://api.iconify.design/line-md/confirm-circle.svg'
-
-		// Hide icon and re-enable button after a delay
-		setTimeout(() => {
-			saveStatusIcon.classList.add('hidden')
-			saveConfigButton.disabled = false
-		}, 2000) // 2 seconds delay
-
 	} catch (error) {
+		alert(error.message + '\n' + error.error || error.errors?.join('\n') || '')
 		console.error(error)
 
 		// Show error icon
 		saveStatusIcon.src = 'https://api.iconify.design/line-md/emoji-frown.svg'
-
-		// Hide icon and re-enable button after a delay
-		setTimeout(() => {
-			saveStatusIcon.classList.add('hidden')
-			saveConfigButton.disabled = false
-		}, 2000) // 2 seconds delay
 	}
+
+	setTimeout(() => {
+		saveStatusIcon.classList.add('hidden')
+		saveConfigButton.disabled = false
+	}, 2000) // 2 seconds delay
 }
 
 async function handleStartStopBot() {
 	if (!selectedBot) return
+
+	// Show loading icon and disable button
+	startStopStatusIcon.src = 'https://api.iconify.design/line-md/loading-loop.svg'
+	startStopStatusIcon.classList.remove('hidden')
+	startStopBotButton.disabled = true
+
 	try {
 		const runningBots = await runningBotListGet()
 		const isRunning = runningBots.includes(selectedBot)
 		if (isRunning) {
 			await botStop(selectedBot)
-			startStopBotButton.textContent = geti18n('discord_bots.configCard.buttons.startBot')
+			startStopStatusText.textContent = geti18n('discord_bots.configCard.buttons.startBot')
 			startStopBotButton.classList.remove('btn-error')
 			startStopBotButton.classList.add('btn-success')
 		} else {
 			await botStart(selectedBot)
-			startStopBotButton.textContent = geti18n('discord_bots.configCard.buttons.stopBot')
+			startStopStatusText.textContent = geti18n('discord_bots.configCard.buttons.stopBot')
 			startStopBotButton.classList.remove('btn-success')
 			startStopBotButton.classList.add('btn-error')
 		}
+
+		startStopStatusIcon.src = 'https://api.iconify.design/line-md/confirm-circle.svg'
 	} catch (error) {
 		alert(error.message + '\n' + error.error || error.errors?.join('\n') || '')
+		console.error(error)
+
+		startStopStatusIcon.src = 'https://api.iconify.design/line-md/emoji-frown.svg'
 	}
+
+	setTimeout(() => {
+		startStopStatusIcon.classList.add('hidden')
+		startStopBotButton.disabled = false
+	}, 2000)
 }
 
 async function updateStartStopButtonState() {
 	if (!selectedBot) {
-		startStopBotButton.textContent = geti18n('discord_bots.configCard.buttons.startBot')
+		startStopStatusText.textContent = geti18n('discord_bots.configCard.buttons.startBot')
 		startStopBotButton.classList.remove('btn-error')
 		startStopBotButton.classList.add('btn-success')
 		return
@@ -349,11 +360,11 @@ async function updateStartStopButtonState() {
 	try {
 		const runningBots = await runningBotListGet()
 		if (runningBots.includes(selectedBot)) {
-			startStopBotButton.textContent = geti18n('discord_bots.configCard.buttons.stopBot')
+			startStopStatusText.textContent = geti18n('discord_bots.configCard.buttons.stopBot')
 			startStopBotButton.classList.remove('btn-success')
 			startStopBotButton.classList.add('btn-error')
 		} else {
-			startStopBotButton.textContent = geti18n('discord_bots.configCard.buttons.startBot')
+			startStopStatusText.textContent = geti18n('discord_bots.configCard.buttons.startBot')
 			startStopBotButton.classList.remove('btn-error')
 			startStopBotButton.classList.add('btn-success')
 		}

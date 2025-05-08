@@ -5,6 +5,7 @@ import fileUpload from 'npm:express-fileupload@^1.5.0'
 import fs from 'node:fs'
 import process from 'node:process'
 import https from 'node:https'
+import http from 'node:http'
 import { __dirname, startTime } from './base.mjs'
 import { console } from '../scripts/console.mjs'
 import { on_shutdown } from './on_shutdown.mjs'
@@ -12,6 +13,7 @@ import { initAuth } from './auth.mjs'
 import { createTray } from '../scripts/tray.mjs'
 import { StartRPC } from '../scripts/discordrpc.mjs'
 import { geti18n } from '../scripts/i18n.mjs'
+import { sentrytunnel } from '../scripts/sentrytunnel.mjs'
 
 export { __dirname }
 const app = express()
@@ -24,13 +26,14 @@ app.use(PartsRouter)
 app.use(FinalRouter)
 
 mainRouter.use(async (req, res, next) => {
-	if (!req.path.endsWith('/heartbeat'))
+	if (!(req.path.endsWith('/heartbeat') || req.path.endsWith('/api/sentrytunnel')))
 		console.log(await geti18n('fountConsole.web.requestReceived', {
 			method: req.method + ' '.repeat(Math.max(0, 8 - req.method.length)),
 			url: req.url
 		}))
 	return next()
 })
+mainRouter.post('/api/sentrytunnel', express.raw({ type: '*/*', limit: Infinity }), sentrytunnel)
 mainRouter.use(express.json({ limit: Infinity }))
 mainRouter.use(express.urlencoded({ limit: Infinity, extended: true }))
 mainRouter.use(fileUpload())
@@ -110,28 +113,31 @@ export async function init() {
 	})
 	const { port, https: httpsConfig } = config // 获取 HTTPS 配置
 
-	let server
-	if (httpsConfig && httpsConfig.enabled) {
-		// 启用 HTTPS
-		const options = {
-			key: fs.readFileSync(httpsConfig.keyFile),
-			cert: fs.readFileSync(httpsConfig.certFile),
+	await new Promise((resolve, reject) => {
+		let server
+		if (httpsConfig && httpsConfig.enabled) {
+			// 启用 HTTPS
+			const options = {
+				key: fs.readFileSync(httpsConfig.keyFile),
+				cert: fs.readFileSync(httpsConfig.certFile),
+			}
+			server = https.createServer(options, app).listen(port, async () => {
+				hosturl = 'https://localhost:' + port
+				console.log(await geti18n('fountConsole.server.showUrl.https', {
+					url: 'https://localhost:' + port
+				}))
+				resolve()
+			})
 		}
-		server = https.createServer(options, app)
-		server.listen(port, async () => {
-			hosturl = 'https://localhost:' + port
-			console.log(await geti18n('fountConsole.server.showUrl.https', {
-				url: 'https://localhost:' + port
-			}))
-		})
-	}
-	else
-		// 使用 HTTP
-		server = app.listen(port, async () => {
-			console.log(await geti18n('fountConsole.server.showUrl.http', {
-				url: 'http://localhost:' + port
-			}))
-		})
+		else
+			server = http.createServer(app).listen(port, async () => {
+				console.log(await geti18n('fountConsole.server.showUrl.http', {
+					url: 'http://localhost:' + port
+				}))
+				resolve()
+			})
+		server.on('error', reject)
+	})
 
 	console.freshLine('server start', await geti18n('fountConsole.server.ready'))
 	const endtime = new Date()

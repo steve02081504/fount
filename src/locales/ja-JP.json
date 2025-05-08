@@ -65,6 +65,9 @@
 		"tray": {
 			"readIconFailed": "アイコンファイルの読み込みに失敗しました：${error}",
 			"createTrayFailed": "トレイの作成に失敗しました：${error}"
+		},
+		"discordbot": {
+			"botStarted": "char ${charname} bot ${botusername}にログインしました"
 		}
 	},
 	"protocolhandler": {

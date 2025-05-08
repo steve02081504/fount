@@ -4,6 +4,7 @@ import { loadShellData, loadTempData, saveShellData } from '../../../../../serve
 import { LoadChar } from '../../../../../server/managers/char_manager.mjs'
 import { getAllUserNames } from '../../../../../server/auth.mjs'
 import { StartJob, EndJob } from '../../../../../server/jobs.mjs'
+import { geti18n } from '../../../../../scripts/i18n.mjs'
 /** @typedef {import('../../../../../decl/charAPI.ts').charAPI_t} charAPI_t */
 
 /**
@@ -38,7 +39,13 @@ async function startBot(config, char) {
 		],
 	})
 
-	client.once(Events.ClientReady, client => char.interfaces.discord?.OnceClientReady(client, config.config))
+	client.once(Events.ClientReady, async client => {
+		await char.interfaces.discord?.OnceClientReady(client, config.config)
+		console.info(await geti18n('fountConsole.discordbot.botStarted', {
+			botusername: client.user.username,
+			charname: config.char
+		}))
+	})
 
 	await client.login(config.token)
 
@@ -74,20 +81,34 @@ export function deleteBotConfig(username, botname) {
 export async function runBot(username, botname) {
 	const botCache = loadTempData(username, 'discordbot_cache')
 	if (botCache[botname]) return
-	const config = getBotConfig(username, botname)
-	if (!Object.keys(config).length) throw new Error(`Bot ${botname} not found`)
-	const char = await LoadChar(username, config.char)
-	if (!char.interfaces.discord) throw new Error(`Char ${config.char} does not support discord interface`)
-	botCache[botname] = await startBot(config, char)
-	StartJob(username, 'shells', 'discordbot', botname)
+	botCache[botname] = (async _ => {
+		const config = getBotConfig(username, botname)
+		if (!Object.keys(config).length) throw new Error(`Bot ${botname} not found`)
+		const char = await LoadChar(username, config.char)
+		if (!char.interfaces.discord) throw new Error(`Char ${config.char} does not support discord interface`)
+		const client = await startBot(config, char)
+		return client
+	})()
+
+	try {
+		botCache[botname] = await botCache[botname]
+		StartJob(username, 'shells', 'discordbot', botname)
+	} catch (error) {
+		delete botCache[botname]
+		throw error
+	}
 }
 
 export async function stopBot(username, botname) {
 	const botCache = loadTempData(username, 'discordbot_cache')
-	if (botCache[botname]) {
-		botCache[botname].destroy()
+
+	if (botCache[botname]) try {
+		const client = await botCache[botname]
+		await client.destroy()
+	} finally {
 		delete botCache[botname]
 	}
+
 	EndJob(username, 'shells', 'discordbot', botname)
 }
 

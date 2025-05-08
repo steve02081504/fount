@@ -65,6 +65,9 @@
 		"tray": {
 			"readIconFailed": "读取图标文件失败: ${error}",
 			"createTrayFailed": "创建托盘失败: ${error}"
+		},
+		"discordbot": {
+			"botStarted": "char ${charname} 已在bot ${botusername} 上登录"
 		}
 	},
 	"protocolhandler": {
