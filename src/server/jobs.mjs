@@ -2,7 +2,7 @@ import { getUserByUsername } from './auth.mjs'
 import { getAllUserNames } from './auth.mjs'
 import { save_config } from './server.mjs'
 import { geti18n } from '../scripts/i18n.mjs'
-import { loadPart, partsList } from './managers/index.mjs'
+import { loadPart } from './managers/index.mjs'
 
 export function StartJob(username, parttype, partname, uid, data = null) {
 	const jobs = getUserByUsername(username).jobs ??= {}

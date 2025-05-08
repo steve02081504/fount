@@ -5,6 +5,7 @@
 			"start": "서버 시작 중",
 			"starting": "서버 시작 중...",
 			"ready": "서버가 시작되었습니다",
+			"usesdTime": "시작 시간 : ${time}s",
 			"showUrl": {
 				"https": "HTTPS 서버가 ${url}에서 실행 중입니다",
 				"http": "HTTP 서버가 ${url}에서 실행 중입니다"
@@ -39,7 +40,9 @@
 				"diverged": "로컬 및 원격 브랜치가 분기되었습니다. 강제 업데이트 중...",
 				"upToDate": "이미 최신 버전입니다.",
 				"updateFailed": "원격 리포지토리에서 파트 업데이트 실패: ${error}"
-			}
+			},
+			"partInitTime": "${parttype} part ${partname} 초기화 시간 : ${time}s",
+			"partLoadTime": "${parttype} part ${partname}로드 시간 : ${time}s"
 		},
 		"web": {
 			"requestReceived": "요청 수신: ${method} ${url}"

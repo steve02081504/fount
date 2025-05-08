@@ -5,6 +5,7 @@
 			"start": "Démarrage du serveur",
 			"starting": "Serveur en cours de démarrage...",
 			"ready": "Serveur démarré",
+			"usesdTime": "Heure de début: $ {heure} S",
 			"showUrl": {
 				"https": "Serveur HTTPS en cours d'exécution sur ${url}",
 				"http": "Serveur HTTP en cours d'exécution sur ${url}"
@@ -39,7 +40,9 @@
 				"diverged": "Les branches locale et distante ont divergé. Mise à jour forcée...",
 				"upToDate": "Déjà à jour.",
 				"updateFailed": "Échec de la mise à jour des parties depuis le dépôt distant : ${error}"
-			}
+			},
+			"partInitTime": "${parttype} Part ${partname} Temps d'initialisation: ${time}S",
+			"partLoadTime": "${parttype} Part ${partname} Temps de chargement: ${time}S"
 		},
 		"web": {
 			"requestReceived": "Requête reçue : ${method} ${url}"

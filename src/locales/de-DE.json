@@ -5,6 +5,7 @@
 			"start": "Server wird gestartet",
 			"starting": "Server startet...",
 			"ready": "Server ist gestartet",
+			"usesdTime": "Startzeit: ${time}s",
 			"showUrl": {
 				"https": "HTTPS-Server läuft auf ${url}",
 				"http": "HTTP-Server läuft auf ${url}"
@@ -39,7 +40,9 @@
 				"diverged": "Lokaler und Remote-Branch sind auseinandergelaufen. Erzwinge Update...",
 				"upToDate": "Bereits aktuell.",
 				"updateFailed": "Fehler beim Aktualisieren von Parts vom Remote-Repository: ${error}"
-			}
+			},
+			"partInitTime": "${parttype} Teil ${partname} Initialisierungszeit: ${time}s",
+			"partLoadTime": "${parttype} Teil ${partname} Ladezeit: ${time}s"
 		},
 		"web": {
 			"requestReceived": "Anfrage erhalten: ${method} ${url}"

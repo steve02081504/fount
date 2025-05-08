@@ -5,6 +5,7 @@
 			"start": "Iniciando servidor",
 			"starting": "Iniciando servidor...",
 			"ready": "Servidor iniciado",
+			"usesdTime": "Hora de inicio: ${time}s",
 			"showUrl": {
 				"https": "Servidor HTTPS ejecutándose en ${url}",
 				"http": "Servidor HTTP ejecutándose en ${url}"
@@ -39,7 +40,9 @@
 				"diverged": "Las ramas local y remota han divergido. Forzando la actualización...",
 				"upToDate": "Ya está actualizado.",
 				"updateFailed": "Error al actualizar partes desde el repositorio remoto: ${error}"
-			}
+			},
+			"partInitTime": "${parttype} parte ${partname} Tiempo de inicialización: ${time}S",
+			"partLoadTime": "${parttype} parte ${partname} Tiempo de carga: ${time}S"
 		},
 		"web": {
 			"requestReceived": "Petición recibida: ${method} ${url}"
