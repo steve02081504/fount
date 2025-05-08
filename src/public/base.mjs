@@ -1,6 +1,6 @@
 // load Sentry
 
-/** @type {import('npm:@sentry/browser')} */
+/** @type {import('@sentry/browser')} */
 import * as Sentry from 'https://esm.run/@sentry/browser'
 
 Sentry.init({
