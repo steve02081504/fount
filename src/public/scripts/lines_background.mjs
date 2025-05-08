@@ -83,6 +83,7 @@ function drawConnection(ctx, configColor, dot1, dot2, isPointer) {
  * 绘制动画帧。
  */
 function draw() {
+	if (!config) return
 	// 重新绘制背景 (缓存)
 	ctx.fillStyle = config.backgroundColor // 使用配置的背景颜色
 	ctx.fillRect(0, 0, canvasWidth, canvasHeight)
@@ -230,6 +231,7 @@ function handlePointerMove(event) {
  * 处理 pointerout 事件 (鼠标移出)
  */
 function handlePointerOut() {
+	if (!pointers) return
 	pointers[0].x = null // 鼠标移出，重置鼠标位置
 	pointers[0].y = null
 }

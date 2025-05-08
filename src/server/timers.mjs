@@ -16,7 +16,7 @@ export function setTimer(username, parttype, partname, uid, { trigger, callbackd
 }
 
 export function removeTimer(username, parttype, partname, uid) {
-	const timers = getUserByUsername(username).timers ??= {}
+	const timers = getUserByUsername(username).timers ?? {}
 	if (timers[parttype]?.[partname]?.[uid]) {
 		delete timers[parttype][partname][uid]
 		if (Object.keys(timers[parttype][partname]).length === 0)
@@ -26,14 +26,14 @@ export function removeTimer(username, parttype, partname, uid) {
 }
 
 export function getTimers(username, parttype, partname) {
-	const timers = getUserByUsername(username).timers ??= {}
+	const timers = getUserByUsername(username).timers ?? {}
 	return timers[parttype]?.[partname] ?? {}
 }
 
 async function TimerHeartbeat() {
 	const users = getAllUserNames()
 	for (const user of users) {
-		const timers = getUserByUsername(user).timers ??= {}
+		const timers = getUserByUsername(user).timers ?? {}
 		for (const parttype in timers)
 			for (const partname in timers[parttype])
 				for (const uid in timers[parttype][partname]) {

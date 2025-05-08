@@ -12,20 +12,13 @@ export function StartJob(username, parttype, partname, uid, data = null) {
 	save_config()
 }
 export function EndJob(username, parttype, partname, uid) {
-	delete getUserByUsername(username).jobs[parttype][partname][uid]
+	delete getUserByUsername(username).jobs?.[parttype]?.[partname]?.[uid]
 	save_config()
 }
 export async function ReStartJobs() {
 	const users = getAllUserNames()
 	for (const user of users) {
-		const jobs = getUserByUsername(user).jobs ??= {}
-		for (const maybeparttype in jobs) // 旧版本jobs兼容
-			if (!partsList.includes(maybeparttype)) {
-				const shellname = maybeparttype
-				jobs.shells ??= {}
-				jobs.shells[shellname] = Object.assign(jobs[shellname], jobs.shells[shellname] || {})
-				delete jobs[maybeparttype]
-			}
+		const jobs = getUserByUsername(user).jobs ?? {}
 		for (const parttype in jobs)
 			for (const partname in jobs[parttype])
 				for (const uid in jobs[parttype][partname]) {

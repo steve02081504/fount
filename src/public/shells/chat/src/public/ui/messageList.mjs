@@ -74,7 +74,7 @@ export async function renderMessage(message) {
 	}
 
 	// --- 特殊处理 'char' 消息 ---
-	if (message.role == 'char')
+	if (window.Notification && message.role == 'char')
 		// 注意：enableSwipe 不在这里调用了，由 virtualQueue.mjs 中的 updateLastCharMessageArrows 管理
 		// 桌面通知 (如果页面在后台)
 		if (document.visibilityState != 'visible' && Notification?.permission == 'granted')

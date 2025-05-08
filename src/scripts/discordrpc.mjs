@@ -33,7 +33,7 @@ export function StartRPC(
 	if (in_docker || in_termux) return
 
 	StopRPC()
-	rpc ??= new DiscordRPC.Client({ transport: 'ipc' })
+	rpc = new DiscordRPC.Client({ transport: 'ipc' })
 
 	SetActivity(activity)
 
@@ -54,4 +54,5 @@ export function SetActivity(activity) {
 export function StopRPC() {
 	if (!rpc) return
 	rpc.destroy()
+	rpc = undefined
 }

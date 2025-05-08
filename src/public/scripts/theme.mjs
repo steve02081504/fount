@@ -15,7 +15,7 @@ function check_color_change() {
 }
 function autoresize_frames() {
 	const frames = document.querySelectorAll('iframe')
-	for (const frame of frames) if (frame.contentWindow.document.body) {
+	for (const frame of frames) if (frame.contentWindow?.document?.body) {
 		const frame_width = frame.contentWindow.document.body.scrollWidth
 		const frame_height = frame.contentWindow.document.body.scrollHeight
 		frame.style.width = frame_width + 'px'

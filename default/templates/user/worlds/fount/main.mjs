@@ -65,7 +65,7 @@ export default {
 		config: {
 			GetData: async () => {
 				return {
-					summaryAIsource: AIsource?.filename || '',
+					summaryAIsource: summary.AIsource?.filename || '',
 					summaryStartLength: 60, // 每次达到多少消息开始总结
 					summarySize: 20, // 每次总结多少消息
 				}
