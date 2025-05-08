@@ -115,7 +115,7 @@ Fount is built for the future.  New features, born from the vibrant community, a
 
 ## Architecture: The Foundation of Innovation
 
-Fount is built upon a robust and scalable architecture, designed for both performance and maintainability. The backend leverages the power and speed of [Deno](https://deno.com/), a secure and modern runtime for JavaScript and TypeScript. We utilize the [Express](https://expressjs.com/) framework for efficient routing and handling of API requests. The frontend is crafted with a blend of HTML, CSS, and JavaScript, providing a visually appealing and intuitive user interface. This architecture allows for rapid iteration and the seamless integration of new features, while maintaining a strong foundation of stability. Fount embraces an open-source ethos, welcoming contributions and collaboration.
+Fount is built upon a robust and scalable architecture, designed for both performance and maintainability. The backend leverages the power and speed of [Done](https://github.com/CyanProjects/done), a secure and modern runtime for JavaScript and TypeScript. We utilize the [Express](https://expressjs.com/) framework for efficient routing and handling of API requests. The frontend is crafted with a blend of HTML, CSS, and JavaScript, providing a visually appealing and intuitive user interface. This architecture allows for rapid iteration and the seamless integration of new features, while maintaining a strong foundation of stability. Fount embraces an open-source ethos, welcoming contributions and collaboration.
 
 ### Dive into a World of Features
 

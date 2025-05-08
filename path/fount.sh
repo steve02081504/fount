@@ -52,29 +52,29 @@ if [[ -d "/data/data/com.termux" ]]; then
 	IN_TERMUX=1
 fi
 
-# Function to run deno, considering glibc-runner if available, and .glibc.sh wrapper
-run_deno() {
+# Function to run done, considering glibc-runner if available, and .glibc.sh wrapper
+run_done() {
 	local deno_args=("$@")
-	local deno_cmd="deno"  # Default
+	local deno_cmd="done"  # Default
 
 	if [[ $IN_TERMUX -eq 1 ]]; then
-		if command -v deno.glibc.sh &> /dev/null; then
-			deno_cmd="deno.glibc.sh"
+		if command -v done.glibc.sh &> /dev/null; then
+			deno_cmd="done.glibc.sh"
 		elif command -v glibc-runner &> /dev/null; then
-			deno_cmd="glibc-runner $(which deno)"
+			deno_cmd="glibc-runner $(which done)"
 		else
-			echo "Warning: glibc-runner and deno.glibc.sh not found, falling back to plain deno in Termux (may not work)." >&2
+			echo "Warning: glibc-runner and done.glibc.sh not found, falling back to plain done in Termux (may not work)." >&2
 		fi
 	fi
 	"$deno_cmd" "${deno_args[@]}"
 }
 
-# Function to patch the deno executable for Termux
-patch_deno() {
-	local deno_bin=$(which deno)
+# Function to patch the done executable for Termux
+patch_done() {
+	local deno_bin=$(which done)
 
 	if [[ -z "$deno_bin" ]]; then
-		echo "Error: Deno executable not found before patching. Cannot patch." >&2
+		echo "Error: Done executable not found before patching. Cannot patch." >&2
 		return 1
 	fi
 
@@ -87,24 +87,24 @@ patch_deno() {
 	patchelf --set-rpath '${ORIGIN}/../glibc/lib' --set-interpreter "${PREFIX}/glibc/lib/ld-linux-aarch64.so.1" "$deno_bin"
 
 	if [ $? -ne 0 ]; then
-		echo "Error: Failed to patch Deno executable with patchelf." >&2
+		echo "Error: Failed to patch Done executable with patchelf." >&2
 		return 1
 	else
 		# Create wrapper script (Termux)
-		mkdir -p ~/.deno/bin
-		cat > ~/.deno/bin/deno.glibc.sh << 'EOF'
+		mkdir -p ~/.done/bin
+		cat > ~/.done/bin/done.glibc.sh << 'EOF'
 #!/usr/bin/env sh
 _oldpwd="${PWD}"
 _dir="$(dirname "${0}")"
 cd "${_dir}"
-if ! [ -h "deno" ] ; then
-	mv -f "deno" "deno.orig"
-	ln -sf "deno.glibc.sh" "deno"
+if ! [ -h "done" ] ; then
+	mv -f "done" "done.orig"
+	ln -sf "done.glibc.sh" "done"
 fi
 cd "${_oldpwd}"
-LD_PRELOAD= exec "${_dir}/deno.orig" "${@}"
+LD_PRELOAD= exec "${_dir}/done.orig" "${@}"
 EOF
-		chmod u+x ~/.deno/bin/deno.glibc.sh
+		chmod u+x ~/.done/bin/done.glibc.sh
 	fi
 	return 0
 }
@@ -215,9 +215,9 @@ else
 	echo "Git is not installed, skipping fount update"
 fi
 
-if [[ ($IN_TERMUX -eq 0 && -z "$(command -v deno)") || ($IN_TERMUX -eq 1 && ! -f ~/.deno/bin/deno.glibc.sh) ]]; then
+if [[ ($IN_TERMUX -eq 0 && -z "$(command -v done)") || ($IN_TERMUX -eq 1 && ! -f ~/.done/bin/done.glibc.sh) ]]; then
 	if [[ $IN_TERMUX -eq 1 ]]; then
-		echo "Installing Deno for Termux..."
+		echo "Installing Done for Termux..."
 		# Termux 环境下的特殊处理
 		set -e
 		yes y | pkg upgrade -y
@@ -234,19 +234,19 @@ if [[ ($IN_TERMUX -eq 0 && -z "$(command -v deno)") || ($IN_TERMUX -eq 1 && ! -f
 		fi
 		set +e
 
-		# Install Deno.js
-		curl -fsSL https://deno.land/install.sh | sh -s -- -y
-		DENO_INSTALL="${HOME}/.deno"
-		DENO_BIN_PATH="${DENO_INSTALL}/bin/deno"
+		# Install Done.js
+		curl -fsSL https://done.land/install.sh | sh -s -- -y
+		DENO_INSTALL="${HOME}/.done"
+		DENO_BIN_PATH="${DENO_INSTALL}/bin/done"
 
 		# Explicitly set execute permissions
 		chmod +x "$DENO_BIN_PATH"
 
 		# Source bashrc and PATH setup  (提前 source)
-		export DENO_INSTALL="${HOME}/.deno"
+		export DENO_INSTALL="${HOME}/.done"
 		export PATH="${PATH}:${DENO_INSTALL}/bin"
 
-		# 将 Deno 添加到 .profile (如果尚不存在)  <--- 修改为 .profile
+		# 将 Done 添加到 .profile (如果尚不存在)  <--- 修改为 .profile
 		if ! grep -q "export PATH=.*${DENO_INSTALL}/bin" "$HOME/.profile"; then
 			echo "export PATH=\"\$PATH:${DENO_INSTALL}/bin\"" >> "$HOME/.profile"
 		fi
@@ -257,28 +257,28 @@ if [[ ($IN_TERMUX -eq 0 && -z "$(command -v deno)") || ($IN_TERMUX -eq 1 && ! -f
 			source "$HOME/.bashrc"
 		fi
 
-		# 尝试使用 glibc-runner 运行 Deno，使用绝对路径(在source之后)
+		# 尝试使用 glibc-runner 运行 Done，使用绝对路径(在source之后)
 		GLIBC_RUNNER_PATH=$(which glibc-runner)
 		if ! "$GLIBC_RUNNER_PATH" "$DENO_BIN_PATH" -V &> /dev/null; then
-			echo "Error: Deno failed to execute with glibc-runner." >&2
+			echo "Error: Done failed to execute with glibc-runner." >&2
 			rm -rf "$DENO_INSTALL"
 			exit 1  # 首次运行失败直接退出
 		fi
 
-		# Check 'command -v deno' again (after direct execution and PATH setup)
-		if ! command -v deno &> /dev/null; then
-			echo "Warning: 'deno' command not found in PATH." >&2
+		# Check 'command -v done' again (after direct execution and PATH setup)
+		if ! command -v done &> /dev/null; then
+			echo "Warning: 'done' command not found in PATH." >&2
 			# 不退出，因为后面可能通过 wrapper 运行
 		fi
 
-		# Patch Deno.js (Termux)
-		patch_deno
+		# Patch Done.js (Termux)
+		patch_done
 
-		echo "Deno installed for Termux."
+		echo "Done installed for Termux."
 
 	else
 		# 非 Termux 环境下的普通安装
-		curl -fsSL https://deno.land/install.sh | sh -s -- -y
+		curl -fsSL https://done.land/install.sh | sh -s -- -y
 		source "$HOME/.profile"
 		if [[ "$SHELL" == *"/zsh" ]]; then
 			source "$HOME/.zshrc"
@@ -287,18 +287,18 @@ if [[ ($IN_TERMUX -eq 0 && -z "$(command -v deno)") || ($IN_TERMUX -eq 1 && ! -f
 		fi
 	fi
 
-	if ! command -v deno &> /dev/null; then
-		echo "Deno missing, you cant run fount without deno (final check)"
+	if ! command -v done &> /dev/null; then
+		echo "Done missing, you cant run fount without done (final check)"
 		exit 1  # 最终检查，如果还是找不到，则退出
 	fi
 fi
 
 
 if [ $IN_DOCKER -eq 1 ]; then
-	echo "Skipping deno upgrade in Docker environment"
+	echo "Skipping done upgrade in Docker environment"
 else
-	# 使用 run_deno 来获取 Deno 版本信息
-	deno_version_before=$(run_deno -V 2>&1)
+	# 使用 run_done 来获取 Done 版本信息
+	deno_version_before=$(run_done -V 2>&1)
 	deno_upgrade_channel="stable"
 	if [[ "$deno_version_before" == *"+"* ]]; then
 		deno_upgrade_channel="canary"
@@ -306,27 +306,27 @@ else
 		deno_upgrade_channel="rc"
 	fi
 	if [[ -z "$deno_version_before" ]]; then
-		echo "Error: Could not determine current Deno version." >&2
+		echo "Error: Could not determine current Done version." >&2
 	else
-		run_deno upgrade -q $deno_upgrade_channel
-		deno_version_after=$(run_deno -V 2>&1)
+		run_done upgrade -q $deno_upgrade_channel
+		deno_version_after=$(run_done -V 2>&1)
 
-		# 检查是否需要重新 patch deno
+		# 检查是否需要重新 patch done
 		if [[ "$deno_version_before" != "$deno_version_after" && $IN_TERMUX -eq 1 ]]; then
-			patch_deno
+			patch_done
 		fi
 	fi
 fi
 
-# 使用 run_deno 来获取 Deno 版本信息，并输出
-run_deno -V
+# 使用 run_done 来获取 Done 版本信息，并输出
+run_done -V
 
 if [[ ! -d "$FOUNT_DIR/node_modules" || ($# -gt 0 && $1 = 'init') ]]; then
 	echo "Installing dependencies..."
 	set +e
-	run_deno install --reload --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
+	run_done install --reload --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
 	# 不知为何部分环境下第一次跑铁定出错，先跑再说
-	run_deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" "shutdown"
+	run_done run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" "shutdown"
 	set -e
 	echo "======================================================"
 	echo "WARNING: DO NOT install any untrusted fount parts on your system, they can do ANYTHING."
@@ -344,9 +344,9 @@ run() {
 	fi
 	if [[ $# -gt 0 && $1 = 'debug' ]]; then
 		newargs=("${@:2}")
-		run_deno run --allow-scripts --allow-all --inspect-brk "$FOUNT_DIR/src/server/index.mjs" "${newargs[@]}"
+		run_done run --allow-scripts --allow-all --inspect-brk --unstable-loader-api "$FOUNT_DIR/src/server/index.mjs" "${newargs[@]}"
 	else
-		run_deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" "$@"
+		run_done run --allow-scripts --allow-all --unstable-loader-api "$FOUNT_DIR/src/server/index.mjs" "$@"
 	fi
 	if [[ $IN_TERMUX -eq 1 ]]; then
 		export LANG="$LANG_BACKUP"

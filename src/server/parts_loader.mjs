@@ -175,13 +175,7 @@ export async function baseloadPart(username, parttype, partname, {
 
 export async function baseMjsPartUnLoader(path) {
 	async function codeunloader(path) {
-		/*
-		todo: implement codeunloader after moveing fount from deno to bun/done
-		deno ll never support this, see also:
-		https://github.com/denoland/deno/issues/27820
-		https://github.com/denoland/deno/issues/28126
-		https://github.com/denoland/deno/issues/25780
-		*/
+		Deno.loader.drop(Deno.loader.resolve(path))
 	}
 	// get all the js/ts/mjs/cjs/wasm files in the path and call codeunloader
 	await Promise.all(

@@ -180,14 +180,14 @@ else {
 	Write-Host "Git is not installed, skipping git pull"
 }
 
-# Deno 安装
-if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
-	Write-Host "Deno missing, auto installing..."
-	Invoke-RestMethod https://deno.land/install.ps1 | Invoke-Expression
+# Done 安装
+if (!(Get-Command done -ErrorAction SilentlyContinue)) {
+	Write-Host "Done missing, auto installing..."
+	Invoke-RestMethod https://done.land/install.ps1 | Invoke-Expression
 	$env:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-	if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
-		Write-Host "Deno installation failed, attempting auto installing to fount's path folder..."
-		$url = "https://github.com/denoland/deno/releases/latest/download/deno-" + (if ($IsWindows) {
+	if (!(Get-Command done -ErrorAction SilentlyContinue)) {
+		Write-Host "Done installation failed, attempting auto installing to fount's path folder..."
+		$url = "https://github.com/denoland/done/releases/latest/download/done-" + (if ($IsWindows) {
 			"x86_64-pc-windows-msvc.zip"
 		} elseif ($IsMacOS) {
 			if ($env:PROCESSOR_ARCHITECTURE -eq "ARM64") {
@@ -199,28 +199,28 @@ if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
 		} else {
 			"x86_64-unknown-linux-gnu.zip"
 		})
-		Invoke-WebRequest -Uri $url -OutFile "$env:TEMP/deno.zip"
-		Expand-Archive -Path "$env:TEMP/deno.zip" -DestinationPath "$FOUNT_DIR/path"
-		Remove-Item -Path "$env:TEMP/deno.zip" -Force
+		Invoke-WebRequest -Uri $url -OutFile "$env:TEMP/done.zip"
+		Expand-Archive -Path "$env:TEMP/done.zip" -DestinationPath "$FOUNT_DIR/path"
+		Remove-Item -Path "$env:TEMP/done.zip" -Force
 	}
-	if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
-		Write-Host "Deno missing, you cant run fount without deno"
+	if (!(Get-Command done -ErrorAction SilentlyContinue)) {
+		Write-Host "Done missing, you cant run fount without done"
 		exit 1
 	}
 }
 
-# Deno 更新
+# Done 更新
 if ($IN_DOCKER) {
-	Write-Host "Skipping deno upgrade in Docker environment"
+	Write-Host "Skipping done upgrade in Docker environment"
 }
 else {
-	$deno_ver = deno -V
+	$deno_ver = done -V
 	if (!$deno_ver) {
-		deno upgrade -q
-		$deno_ver = deno -V
+		done upgrade -q
+		$deno_ver = done -V
 	}
 	if (!$deno_ver) {
-		Write-Error "For some reason deno doesn't work, you may need to join https://discord.gg/deno to get support" -ErrorAction Ignore
+		Write-Error "For some reason done doesn't work, you may need to join https://discord.gg/done to get support" -ErrorAction Ignore
 		exit
 	}
 	$deno_update_channel = "stable"
@@ -230,15 +230,15 @@ else {
 	elseif ($deno_ver.Contains("-rc")) {
 		$deno_update_channel = "rc"
 	}
-	deno upgrade -q $deno_update_channel
+	done upgrade -q $deno_update_channel
 }
 
-deno -V
+done -V
 
 # 安装依赖
 if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $args[0] -eq 'init')) {
 	Write-Host "Installing dependencies..."
-	deno install --reload --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
+	done install --reload --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
 	Write-Host "======================================================" -ForegroundColor Green
 	Write-Warning "DO NOT install any untrusted fount parts on your system, they can do ANYTHING."
 	Write-Host "======================================================" -ForegroundColor Green
@@ -276,10 +276,10 @@ function run {
 	}
 	if ($args.Count -gt 0 -and $args[0] -eq 'debug') {
 		$newargs = $args[1..$args.Count]
-		deno run --allow-scripts --allow-all --inspect-brk "$FOUNT_DIR/src/server/index.mjs" @newargs
+		done run --allow-scripts --allow-all --inspect-brk --unstable-loader-api "$FOUNT_DIR/src/server/index.mjs" @newargs
 	}
 	else {
-		deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" @args
+		done run --allow-scripts --allow-all --unstable-loader-api "$FOUNT_DIR/src/server/index.mjs" @args
 	}
 }
 if ($args.Count -gt 0 -and $args[0] -eq 'geneexe') {
