@@ -29,7 +29,7 @@ mainRouter.use(async (req, res, next) => {
 			method: req.method + ' '.repeat(Math.max(0, 8 - req.method.length)),
 			url: req.url
 		}))
-	next()
+	return next()
 })
 mainRouter.use(express.json({ limit: Infinity }))
 mainRouter.use(express.urlencoded({ limit: Infinity, extended: true }))
@@ -102,6 +102,12 @@ export async function init() {
 	const { registerEndpoints } = await import('./endpoints.mjs')
 	registerEndpoints(mainRouter)
 	mainRouter.use(express.static(__dirname + '/src/public'))
+	mainRouter.use((req, res, next) => {
+		if (req.method != 'GET') return next()
+		if (req.path == '/apple-touch-icon.png' || req.path == '/apple-touch-icon-precomposed.png')
+			return res.sendFile(__dirname + '/src/public/favicon.png')
+		return next()
+	})
 	const { port, https: httpsConfig } = config // 获取 HTTPS 配置
 
 	let server
