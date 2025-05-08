@@ -1,6 +1,7 @@
 import json
 import os
 import copy
+import re
 from deep_translator import GoogleTranslator
 import time
 from collections import OrderedDict
@@ -120,8 +121,50 @@ def find_best_translation_source(key_path, all_data, languages_map, reference_co
     return None, None
 
 
-def translate_text(text, source_lang, target_lang):
-    """翻译文本，包含重试逻辑和延时"""
+def align_placeholders(original_text: str, translated_text: str) -> str:
+    """
+    Aligns placeholders in the translated string based on the original text string.
+    1. Normalizes "$  {" to "${" in translated_text.
+    2. Replaces placeholders in translated_text sequentially with those from original_text.
+    """
+    if not isinstance(translated_text, str):  # 防御性编程，如果翻译结果不是字符串
+        return translated_text
+
+    # 1. 将translated中所有的`\$\s+\{`替换到`${`
+    normalized_translated = re.sub(r"\$\s*\{", "${", translated_text)
+
+    # 2. 提取original_text中的所有placeholder内容 (XXX)
+    text_placeholders_content = re.findall(r"\$\{(.*?)\}", original_text)
+
+    if not text_placeholders_content:
+        # 如果原始文本中没有placeholder，直接返回初步normalize后的translated
+        # 或许还需要处理 translated 中的 " }" -> "}"，但主要问题是 "$ {"
+        # 为了简化，我们假设如果原始文本没有占位符，翻译后的文本中的占位符格式我们不强制更改
+        # 除了开头的 "$ {"。如果需要进一步规范化，如内部空格，可以添加。
+        # 但如果原始文本没有占位符，对齐步骤本身就没有意义。
+        # 不过，为了确保 "$ {foo}" 变成 "${foo}" 即使原始文本没有占位符，
+        # 这一步的 normalized_translated 还是有用的。
+        return normalized_translated
+
+    text_content_iter = iter(text_placeholders_content)
+
+    def replace_with_text_placeholder(match_obj):
+        try:
+            new_content = next(text_content_iter)
+            return f"${{{new_content}}}"
+        except StopIteration:
+            # 如果原始文本的placeholder用完了，但翻译文本中还有
+            # 保留翻译文本中的placeholder（在它被第一步normalize之后）
+            return match_obj.group(0)
+
+    final_translated = re.sub(
+        r"\$\{(.*?)\}", replace_with_text_placeholder, normalized_translated
+    )
+    return final_translated
+
+
+def translate_text(text: str, source_lang: str, target_lang: str) -> str:
+    """翻译文本，包含重试逻辑、延时，并在翻译成功后对齐占位符。"""
     if not isinstance(text, str) or not text or source_lang == target_lang:
         return text
 
@@ -165,19 +208,23 @@ def translate_text(text, source_lang, target_lang):
     )
     time.sleep(TRANSLATION_DELAY)
 
+    translated_result = None  # 用于存储翻译结果
+
     try:
         translator = GoogleTranslator(source=src_code, target=tgt_code)
-        translated = translator.translate(text)
-        if translated is not None:
+        translated_result = translator.translate(text)
+        if translated_result is not None:
             print(
-                f"      - 翻译成功: '{translated[:50]}{'...' if len(translated) > 50 else ''}'"
+                f"      - 翻译成功 (原始): '{translated_result[:50]}{'...' if len(translated_result) > 50 else ''}'"
             )
-            return translated
+            aligned_translated = align_placeholders(text, translated_result)
+            print(
+                f"      - 翻译成功 (对齐后): '{aligned_translated[:50]}{'...' if len(aligned_translated) > 50 else ''}'"
+            )
+            return aligned_translated
         else:
             print(f"    - 翻译 '{text[:50]}...' ({src_code} -> {tgt_code}) 返回 None。")
-            # 尝试备选代码之前，先尝试直接返回 None 是否表示失败，按照要求返回空
-            # return "" # 或者继续走下面的重试逻辑
-            raise ValueError("Translator returned None")  # 触发后面的重试/失败逻辑
+            raise ValueError("Translator returned None")
     except Exception as e:
         print(f"    - 翻译 '{text[:50]}...' ({src_code} -> {tgt_code}) 初始失败: {e}")
 
@@ -223,21 +270,26 @@ def translate_text(text, source_lang, target_lang):
                 print(f"      - 尝试备选: source={s_try}, target={t_try}")
                 time.sleep(TRANSLATION_DELAY)
                 translator = GoogleTranslator(source=s_try, target=t_try)
-                translated = translator.translate(text)
-                if translated is not None:
+                translated_result_retry = translator.translate(text)
+                if translated_result_retry is not None:
                     print(
-                        f"      - 备选翻译成功: '{translated[:50]}{'...' if len(translated) > 50 else ''}'"
+                        f"      - 备选翻译成功 (原始): '{translated_result_retry[:50]}{'...' if len(translated_result_retry) > 50 else ''}'"
                     )
-                    return translated
+                    aligned_translated_retry = align_placeholders(
+                        text, translated_result_retry
+                    )
+                    print(
+                        f"      - 备选翻译成功 (对齐后): '{aligned_translated_retry[:50]}{'...' if len(aligned_translated_retry) > 50 else ''}'"
+                    )
+                    return aligned_translated_retry
             except Exception as e2:
                 print(f"      - 尝试 {s_try} -> {t_try} 失败: {e2}")
 
-        # === 修改点 2: 翻译彻底失败时，返回空字符串 ===
         print(
-            f"    - 翻译 '{text[:50]}...' ({src_code} -> {tgt_code}) 所有尝试均失败，保留原文。"
-        )  # 保留此行打印原文警告
-        print(f"    - 根据配置，翻译失败的键将设置为 '\"\"'。")  # 新增提示
-        return ""  # 返回空字符串，表示翻译失败
+            f"    - 翻译 '{text[:50]}...' ({src_code} -> {tgt_code}) 所有尝试均失败。"
+        )
+        print(f"    - 根据配置，翻译失败的键将设置为 '\"\"'。")
+        return ""
 
 
 def translate_value(value, source_lang, target_lang):

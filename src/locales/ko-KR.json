@@ -65,6 +65,9 @@
 		"tray": {
 			"readIconFailed": "아이콘 파일 읽기 실패: ${error}",
 			"createTrayFailed": "트레이 생성 실패: ${error}"
+		},
+		"discordbot": {
+			"botStarted": "char ${charname} bot ${botusername}에 로그인"
 		}
 	},
 	"protocolhandler": {
