@@ -8,11 +8,11 @@ Sentry.init({
 	sendDefaultPii: true,
 	integrations: [
 		Sentry.replayIntegration(),
-		Sentry.browserTracingIntegration()
+		// Sentry.browserTracingIntegration()
 	],
 	// Performance Monitoring
-	tracesSampleRate: 1.0,
-	tracePropagationTargets: [window.location.origin || 'localhost'],
+	// tracesSampleRate: 1.0,
+	// tracePropagationTargets: [window.location.origin || 'localhost'],
 	// Session Replay
 	replaysSessionSampleRate: 0.1,
 	replaysOnErrorSampleRate: 1.0,

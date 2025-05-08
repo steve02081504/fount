@@ -5,6 +5,7 @@
 			"start": "Avvio del server",
 			"starting": "Server Startup ...",
 			"ready": "Il server viene avviato",
+			"usesdTime": "Ora di inizio: ${time}s",
 			"showUrl": {
 				"https": "Il server HTTPS funziona a $ {url}",
 				"http": "Il server HTTP funziona a $ {url}"
@@ -39,7 +40,9 @@
 				"diverged": "Le filiali locali e remote sono state biforcute. Aggiornamento forzato ...",
 				"upToDate": "È l'ultimo.",
 				"updateFailed": "Impossibile aggiornare il componente dal repository remoto: $ {errore}"
-			}
+			},
+			"partInitTime": "${parttype} parte ${partname} Inizializzazione tempo: ${time}s",
+			"partLoadTime": "${parttype} parte ${partname} Tempo di caricamento: ${time}s"
 		},
 		"web": {
 			"requestReceived": "Richiesta accettata: $ {metodo} $ {url}"

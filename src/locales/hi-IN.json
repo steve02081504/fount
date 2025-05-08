@@ -5,6 +5,7 @@
 			"start": "सर्वर शुरू हो रहा है",
 			"starting": "सर्वर शुरू हो रहा है...",
 			"ready": "सर्वर शुरू हो गया है",
+			"usesdTime": "समय शुरू करें: ${time}s",
 			"showUrl": {
 				"https": "HTTPS सर्वर ${url} पर चल रहा है",
 				"http": "HTTP सर्वर ${url} पर चल रहा है"
@@ -39,7 +40,9 @@
 				"diverged": "स्थानीय और रिमोट शाखाएँ विभाजित हो गई हैं। जबरन अद्यतन किया जा रहा है...",
 				"upToDate": "पहले से ही अप-टू-डेट।",
 				"updateFailed": "रिमोट रिपॉजिटरी से भागों को अपडेट करने में विफल: ${error}"
-			}
+			},
+			"partInitTime": "${parttype} भाग ${partname} आरंभीकरण समय: ${time}s",
+			"partLoadTime": "${parttype} भाग ${partname} लोडिंग समय: ${time}s"
 		},
 		"web": {
 			"requestReceived": "अनुरोध प्राप्त हुआ: ${method} ${url}"

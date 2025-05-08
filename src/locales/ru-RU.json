@@ -5,6 +5,7 @@
 			"start": "Сервер запускается",
 			"starting": "Сервер запускается...",
 			"ready": "Сервер запущен",
+			"usesdTime": "Время начала: ${time}s",
 			"showUrl": {
 				"https": "HTTPS сервер запущен на ${url}",
 				"http": "HTTP сервер запущен на ${url}"
@@ -39,7 +40,9 @@
 				"diverged": "Локальная и удаленная ветки разошлись. Принудительное обновление...",
 				"upToDate": "Уже обновлено.",
 				"updateFailed": "Не удалось обновить части из удаленного репозитория: ${error}"
-			}
+			},
+			"partInitTime": "${parttype} часть ${partname} Время инициализации: ${time}s",
+			"partLoadTime": "${parttype} Часть ${partname} Время загрузки: ${time}s"
 		},
 		"web": {
 			"requestReceived": "Получен запрос: ${method} ${url}"

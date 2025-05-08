@@ -15,12 +15,14 @@ function check_color_change() {
 }
 function autoresize_frames() {
 	const frames = document.querySelectorAll('iframe')
-	for (const frame of frames) if (frame.contentWindow?.document?.body) {
-		const frame_width = frame.contentWindow.document.body.scrollWidth
-		const frame_height = frame.contentWindow.document.body.scrollHeight
-		frame.style.width = frame_width + 'px'
-		frame.style.height = frame_height + 'px'
-	}
+	for (const frame of frames) try {
+		if (frame.contentWindow?.document?.body) {
+			const frame_width = frame.contentWindow.document.body.scrollWidth
+			const frame_height = frame.contentWindow.document.body.scrollHeight
+			frame.style.width = frame_width + 'px'
+			frame.style.height = frame_height + 'px'
+		}
+	} catch (e) { }
 }
 function themeHeartbeat() {
 	autoresize_frames()

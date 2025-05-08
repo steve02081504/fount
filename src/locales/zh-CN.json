@@ -5,6 +5,7 @@
 			"start": "正在启动服务器",
 			"starting": "服务器启动中...",
 			"ready": "服务器已启动",
+			"usesdTime": "启动用时：${time}s",
 			"showUrl": {
 				"https": "HTTPS 服务器运行在 ${url}",
 				"http": "HTTP 服务器运行在 ${url}"
@@ -39,7 +40,9 @@
 				"diverged": "本地和远程分支已分叉。强制更新中...",
 				"upToDate": "已是最新。",
 				"updateFailed": "从远程仓库更新部件失败：${error}"
-			}
+			},
+			"partInitTime": "${parttype}部件${partname}初始化时间：${time}s",
+			"partLoadTime": "${parttype}部件${partname}加载时间：${time}s"
 		},
 		"web": {
 			"requestReceived": "接受到请求：${method} ${url}"

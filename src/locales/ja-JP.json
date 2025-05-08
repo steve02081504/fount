@@ -5,6 +5,7 @@
 			"start": "サーバーを起動中",
 			"starting": "サーバー起動中...",
 			"ready": "サーバー起動完了",
+			"usesdTime": "起動時間：${time}s",
 			"showUrl": {
 				"https": "HTTPSサーバーは ${url} で実行されています",
 				"http": "HTTPサーバーは ${url} で実行されています"
@@ -39,7 +40,9 @@
 				"diverged": "ローカルブランチとリモートブランチが分岐しました。強制更新を実行中...",
 				"upToDate": "すでに最新です。",
 				"updateFailed": "リモートリポジトリからのパーツの更新に失敗しました：${error}"
-			}
+			},
+			"partInitTime": "${parttype} part ${partname}初期化時間：${time}s",
+			"partLoadTime": "${parttype} part ${partname}読み込み時間：${time}s"
 		},
 		"web": {
 			"requestReceived": "リクエストを受信しました：${method} ${url}"
