@@ -5,11 +5,9 @@ import fileUpload from 'npm:express-fileupload@^1.5.0'
 import fs from 'node:fs'
 import process from 'node:process'
 import https from 'node:https'
-import { __dirname } from './base.mjs'
+import { __dirname, startTime } from './base.mjs'
 import { console } from '../scripts/console.mjs'
-import { registerEndpoints } from './endpoints.mjs'
 import { on_shutdown } from './on_shutdown.mjs'
-import { IPCManager } from './ipc_server.mjs'
 import { initAuth } from './auth.mjs'
 import { createTray } from '../scripts/tray.mjs'
 import { StartRPC } from '../scripts/discordrpc.mjs'
@@ -31,7 +29,7 @@ mainRouter.use(async (req, res, next) => {
 			method: req.method + ' '.repeat(Math.max(0, 8 - req.method.length)),
 			url: req.url
 		}))
-	next()
+	return next()
 })
 mainRouter.use(express.json({ limit: Infinity }))
 mainRouter.use(express.urlencoded({ limit: Infinity, extended: true }))
@@ -48,6 +46,10 @@ const errorHandler = (err, req, res, next) => {
 }
 FinalRouter.use(errorHandler)
 
+export function UpdatePartsRouter() {
+	PartsRouter.use(errorHandler)
+}
+
 function get_config() {
 	if (!fs.existsSync(__dirname + '/data/config.json')) {
 		try { fs.mkdirSync(__dirname + '/data') } catch { }
@@ -61,10 +63,7 @@ export function save_config() {
 }
 
 //读取confing文件
-export const config = get_config()
-
-// 初始化身份验证模块
-initAuth(config)
+export let config
 
 /**
  * Set the title of the terminal window
@@ -76,10 +75,9 @@ function setWindowTitle(title) {
 
 export function setDefaultStuff() {
 	setWindowTitle('fount')
-	PartsRouter.use(errorHandler)
 }
 
-export let hosturl = 'http://localhost:' + config.port
+export let hosturl
 export let tray
 
 export async function init() {
@@ -92,11 +90,24 @@ export async function init() {
 		console.log(e.reason)
 		e.preventDefault()
 	})
+
+	config = get_config()
+	hosturl = 'http://localhost:' + config.port
+	initAuth(config)
+
+	const { IPCManager } = await import('./ipc_server.mjs')
 	if (!await new IPCManager().startServer()) return false
 
 	console.freshLine('server start', await geti18n('fountConsole.server.starting'))
+	const { registerEndpoints } = await import('./endpoints.mjs')
 	registerEndpoints(mainRouter)
 	mainRouter.use(express.static(__dirname + '/src/public'))
+	mainRouter.use((req, res, next) => {
+		if (req.method != 'GET') return next()
+		if (req.path == '/apple-touch-icon.png' || req.path == '/apple-touch-icon-precomposed.png')
+			return res.sendFile(__dirname + '/src/public/favicon.png')
+		return next()
+	})
 	const { port, https: httpsConfig } = config // 获取 HTTPS 配置
 
 	let server
@@ -123,11 +134,15 @@ export async function init() {
 		})
 
 	console.freshLine('server start', await geti18n('fountConsole.server.ready'))
+	const endtime = new Date()
 	const titleBackup = process.title
 	on_shutdown(() => setWindowTitle(titleBackup))
 	createTray().then(t => tray = t)
 	setDefaultStuff()
 	console.freshLine('server start', Array(Math.floor(Math.random() * 7)).fill('fo-').join('') + 'fount!')
+	console.log(await geti18n('fountConsole.server.usesdTime', {
+		time: (endtime - startTime) / 1000
+	}))
 	StartRPC()
 	return true
 }

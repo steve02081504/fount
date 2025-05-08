@@ -1,5 +1,27 @@
-import { PartsRouter } from '../server.mjs'
+import express from 'npm:express@^5.0.1'
+import { PartsRouter, UpdatePartsRouter } from '../server.mjs'
 import { initPart, loadPartBase, uninstallPartBase, unloadPartBase } from '../parts_loader.mjs'
+
+const shellsRouters = {}
+PartsRouter.use((req, res, next) => {
+	const shellsRoutersList = Object.values(shellsRouters).map(Object.values).flatMap(x => x)
+	let i = 0
+	function nextShellsRouter() {
+		if (shellsRoutersList.length == i) return next()
+		return shellsRoutersList[i++](req, res, nextShellsRouter)
+	}
+	return nextShellsRouter()
+})
+UpdatePartsRouter()
+
+function getShellsPartRouter(username, shellname) {
+	shellsRouters[username] ??= {}
+	return shellsRouters[username][shellname] ??= express.Router()
+}
+
+function deleteShellsPartRouter(username, shellname) {
+	delete shellsRouters[username][shellname]
+}
 
 /**
  *
@@ -8,11 +30,12 @@ import { initPart, loadPartBase, uninstallPartBase, unloadPartBase } from '../pa
  * @returns {Promise<import('../../decl/shellAPI.ts').shellAPI_t>}
  */
 export async function loadShell(username, shellname) {
-	return loadPartBase(username, 'shells', shellname, PartsRouter)
+	return loadPartBase(username, 'shells', shellname, getShellsPartRouter(username, shellname))
 }
 
 export async function unloadShell(username, shellname) {
-	await unloadPartBase(username, 'shells', shellname, PartsRouter)
+	await unloadPartBase(username, 'shells', shellname, getShellsPartRouter(username, shellname))
+	deleteShellsPartRouter(username, shellname)
 }
 
 export async function initShell(username, shellname) {

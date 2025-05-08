@@ -6,7 +6,7 @@ permissions:
 on:
   push:
     paths:
-      - 'src/locales/**'
+      - 'src/locales/**.json'
     tags-ignore:
       - '*'
   workflow_dispatch:

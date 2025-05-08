@@ -239,18 +239,38 @@ export async function loadPartBase(username, parttype, partname, Initargs, {
 	const parts_config = loadData(username, 'parts_config')
 	try {
 		if (!parts_init[parttype]?.[partname]) {
-			await initPart(username, parttype, partname, Initargs, { pathGetter, Initer, afterInit })
+			const startTime = new Date()
+			parts_init[parttype][partname] = initPart(username, parttype, partname, Initargs, { pathGetter, Initer, afterInit })
+			parts_init[parttype][partname] = await parts_init[parttype][partname]
+			const endTime = new Date()
+			console.log(await geti18n('fountConsole.partManager.partInitTime', {
+				parttype,
+				partname,
+				time: (endTime - startTime) / 1000,
+			}))
 			parts_init[parttype] ??= {}
 			parts_init[parttype][partname] = true
 			saveData(username, 'parts_init')
 		}
+		if (parts_init[parttype][partname] instanceof Promise)
+			parts_init[parttype][partname] = await parts_init[parttype][partname]
 		if (!parts_set[username][parttype][partname]) {
+			const startTime = new Date()
 			/** @type {T} */
-			const part = parts_set[username][parttype][partname] = await Loader(pathGetter(), Initargs)
+			parts_set[username][parttype][partname] = Loader(pathGetter(), Initargs)
+			const part = parts_set[username][parttype][partname] = await parts_set[username][parttype][partname]
+			const endTime = new Date()
 			parts_config[parttype] ??= {}
 			await part.interfaces?.config?.SetData?.(parts_config[parttype][partname] ?? {})
 			await afterLoad(part)
+			console.log(await geti18n('fountConsole.partManager.partLoadTime', {
+				parttype,
+				partname,
+				time: (endTime - startTime) / 1000,
+			}))
 		}
+		if (parts_set[username][parttype][partname] instanceof Promise)
+			parts_set[username][parttype][partname] = await parts_set[username][parttype][partname]
 	}
 	catch (error) {
 		console.log(username, parttype, partname)
