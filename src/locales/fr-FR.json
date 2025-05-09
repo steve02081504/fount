@@ -65,6 +65,9 @@
 		"tray": {
 			"readIconFailed": "Erreur lors de la lecture du fichier icône : ${error}",
 			"createTrayFailed": "Erreur lors de la création de l'icône de la barre des tâches : ${error}"
+		},
+		"discordbot": {
+			"botStarted": "Char ${charname} connecté sur Bot ${botusername}"
 		}
 	},
 	"protocolhandler": {

@@ -65,6 +65,9 @@
 		"tray": {
 			"readIconFailed": "आइकन फ़ाइल पढ़ने में विफल: ${error}",
 			"createTrayFailed": "ट्रे बनाने में विफल: ${error}"
+		},
+		"discordbot": {
+			"botStarted": "char ${charname} बॉट ${botusername} पर लॉग इन किया गया"
 		}
 	},
 	"protocolhandler": {
