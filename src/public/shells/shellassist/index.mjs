@@ -1,10 +1,11 @@
-import { applyTheme } from '../../scripts/theme.mjs'
+import { applyTheme, onThemeChange } from '../../scripts/theme.mjs'
 applyTheme()
 
 import { Terminal } from 'https://esm.run/xterm'
 import { WebLinksAddon } from 'https://esm.run/@xterm/addon-web-links'
 import { ClipboardAddon } from 'https://esm.run/@xterm/addon-clipboard'
 import { FitAddon } from 'https://esm.run/@xterm/addon-fit'
+import chroma from 'https://esm.run/chroma-js'
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
 
 const terminal = new Terminal({
@@ -28,6 +29,28 @@ terminal.open(document.getElementById('terminal'))
 fiter.fit()
 window.addEventListener('resize', () => {
 	fiter.fit()
+})
+onThemeChange((theme, is_dark) => {
+	const rootStyle = getComputedStyle(document.documentElement)
+
+	const terminalColorMap = {
+		cursor: '--color-base-300',
+		background: '--color-neutral',
+		foreground: '--color-neutral-content',
+		selectionBackground: '--color-primary-content',
+		selectionForeground: '--color-primary',
+		selectionInactiveBackground: '--color-neutral-content',
+	}
+
+	const terminalOptions = { ...terminal.options.theme }
+
+	for (const option in terminalColorMap) {
+		const cssVariable = terminalColorMap[option]
+		const colorValue = rootStyle.getPropertyValue(cssVariable).trim()
+		terminalOptions[option] = chroma(colorValue).hex()
+	}
+
+	terminal.options.theme = terminalOptions
 })
 terminal.element.addEventListener('contextmenu', async (event) => {
 	event.preventDefault()
