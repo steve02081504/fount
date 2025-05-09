@@ -6,6 +6,8 @@
 	width: 100%;
 	--jse-theme-color: var(--color-primary) !important;
 	--jse-a-color: var(--color-primary) !important;
+	--jse-menu-color: var(--color-primary-content) !important;
+	--jse-theme-color-highlight: var(--color-info) !important;
 }
 
 .markdown-body {
