@@ -1,10 +1,13 @@
 import express from 'npm:express@^5.0.1'
 import { PartsRouter, UpdatePartsRouter } from '../server.mjs'
 import { initPart, loadPartBase, uninstallPartBase, unloadPartBase } from '../parts_loader.mjs'
+import { getUserByReq } from '../auth.mjs'
 
 const shellsRouters = {}
-PartsRouter.use((req, res, next) => {
-	const shellsRoutersList = Object.values(shellsRouters).map(Object.values).flatMap(x => x)
+PartsRouter.use(async (req, res, next) => {
+	const { username } = await getUserByReq(req).catch(_ => {})
+	if (!username) return next()
+	const shellsRoutersList = Object.values(shellsRouters[username])
 	let i = 0
 	function nextShellsRouter() {
 		if (shellsRoutersList.length == i) return next()
