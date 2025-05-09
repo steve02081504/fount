@@ -172,26 +172,19 @@ async function saveFile() {
 		console.log('File saved successfully.')
 		isDirty = false
 
-		// Show success icon
 		saveStatusIcon.src = 'https://api.iconify.design/line-md/confirm-circle.svg'
-
-		// Hide icon and re-enable button after a delay
-		setTimeout(() => {
-			saveStatusIcon.classList.add('hidden')
-			saveButton.disabled = false
-		}, 2000) // 2 seconds delay
-
 	} catch (error) {
-		// Error is already logged by handleFetchError if it throws
-		// Show error icon
-		saveStatusIcon.src = 'https://api.iconify.design/line-md/emoji-frown.svg'
+		alert(error.message + '\n' + error.error || error.errors?.join('\n') || '')
+		console.error(error)
 
-		// Hide icon and re-enable button after a delay
-		setTimeout(() => {
-			saveStatusIcon.classList.add('hidden')
-			saveButton.disabled = false
-		}, 2000) // 2 seconds delay
+		saveStatusIcon.src = 'https://api.iconify.design/line-md/emoji-frown.svg'
 	}
+
+	// Hide icon and re-enable button after a delay
+	setTimeout(() => {
+		saveStatusIcon.classList.add('hidden')
+		saveButton.disabled = false
+	}, 2000) // 2 seconds delay
 }
 
 async function deleteFile() {

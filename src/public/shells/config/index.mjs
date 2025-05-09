@@ -170,28 +170,18 @@ async function saveConfig() {
 		await saveConfigData(activePartType, activePart, data)
 		isDirty = false
 
-		// Show success icon
 		saveStatusIcon.src = 'https://api.iconify.design/line-md/confirm-circle.svg'
-
-		// Hide icon and re-enable button after a delay
-		setTimeout(() => {
-			saveStatusIcon.classList.add('hidden')
-			saveButton.disabled = false
-		}, 2000) // 2 seconds delay
-
 	} catch (err) {
 		showErrorMessage(geti18n('part_config.alerts.saveConfigFailed') + ': ' + err.message)
 		console.error('Failed to save part config:', err)
 
-		// Show error icon
 		saveStatusIcon.src = 'https://api.iconify.design/line-md/emoji-frown.svg'
-
-		// Hide icon and re-enable button after a delay
-		setTimeout(() => {
-			saveStatusIcon.classList.add('hidden')
-			saveButton.disabled = false
-		}, 2000) // 2 seconds delay
 	}
+	// Hide icon and re-enable button after a delay
+	setTimeout(() => {
+		saveStatusIcon.classList.add('hidden')
+		saveButton.disabled = false
+	}, 2000) // 2 seconds delay
 }
 
 /**

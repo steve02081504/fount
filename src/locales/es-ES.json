@@ -65,6 +65,9 @@
 		"tray": {
 			"readIconFailed": "Error al leer el archivo de icono: ${error}",
 			"createTrayFailed": "Error al crear la bandeja: ${error}"
+		},
+		"discordbot": {
+			"botStarted": "Char ${charname} inició sesión en Bot ${botusername}"
 		}
 	},
 	"protocolhandler": {
