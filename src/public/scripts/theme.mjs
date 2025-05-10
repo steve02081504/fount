@@ -39,7 +39,12 @@ export const applyTheme = () => {
 const functions = []
 
 export function onThemeChange(callback) {
-	callback(theme_now, is_dark)
+	try {
+		callback(theme_now, is_dark)
+	}
+	catch (e) {
+		console.error(e)
+	}
 	functions.push(callback)
 }
 
@@ -115,8 +120,12 @@ function updateColors() {
 	document.documentElement.setAttribute('data-theme-isdark', is_dark)
 
 	updateLinesBackgroundColors()
-	for (const func of functions)
+	for (const func of functions) try {
 		func(theme_now, is_dark)
+	}
+	catch(e) {
+		console.error(e)
+	}
 }
 
 // MutationObserver用于监视data-theme属性的变化
