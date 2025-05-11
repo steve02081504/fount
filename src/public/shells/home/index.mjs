@@ -27,24 +27,23 @@ const charsTabDesktop = document.getElementById('chars-tab-desktop')
 const worldsTabDesktop = document.getElementById('worlds-tab-desktop')
 const personasTabDesktop = document.getElementById('personas-tab-desktop')
 
-const itemDetailsCache = {} // Combined cache for all item types
+const itemDetailsCache = {} // Combined cache
 let currentItemType = localStorage.getItem('lastTab') || 'chars' // Persist tab selection
 let homeRegistry
 let defaultParts = {} // Store default parts
 
-// Utility function for mouse wheel scrolling (could be moved to a separate utility file)
+// Utility for mouse wheel scrolling
 const handleMouseWheelScroll = (event) => {
 	const scrollContainer = event.currentTarget
 	scrollContainer.scrollLeft += Math.sign(event.deltaY) * 40
 	event.preventDefault()
 }
 
-// --- Item Details Fetching (Generic) ---
+// --- Item Details Fetching ---
 async function getItemDetails(itemType, itemName, useCache = true) {
 	const cacheKey = `${itemType}-${itemName}`
 	if (useCache && itemDetailsCache[cacheKey])
 		return itemDetailsCache[cacheKey]
-
 
 	let fetchFunction
 	switch (itemType) {
@@ -65,14 +64,13 @@ async function getItemDetails(itemType, itemName, useCache = true) {
 	return itemDetailsCache[cacheKey]
 }
 
-
-// --- Rendering (Generic) ---
+// --- Rendering ---
 const ItemDOMCache = {}
 
 async function renderItemView(itemType, itemDetails, itemName) {
 	const cacheKey = `${itemType}-${itemName}`
 
-	// Check if the DOM node is cached and if the data hasn't changed
+	// Check if the DOM node is cached and if data hasn't changed
 	if (ItemDOMCache[cacheKey]?.info && JSON.stringify(ItemDOMCache[cacheKey].info) === JSON.stringify(itemDetails))
 		return ItemDOMCache[cacheKey].node
 
@@ -80,11 +78,9 @@ async function renderItemView(itemType, itemDetails, itemName) {
 	const itemElement = await renderTemplate(templateName, itemDetails)
 	itemElement.dataset.name = itemName
 	await attachCardEventListeners(itemElement, itemDetails, itemName, homeRegistry[`home_${itemType.slice(0, -1)}_interfaces`])
-	ItemDOMCache[cacheKey] = { info: itemDetails, node: itemElement }  // Cache both info and node
+	ItemDOMCache[cacheKey] = { info: itemDetails, node: itemElement }  // Cache info and DOM node
 	return itemElement
 }
-
-
 
 async function attachCardEventListeners(itemElement, itemDetails, itemName, interfacesRegistry) {
 	const actionsContainer = itemElement.querySelector('.card-actions > div')
@@ -112,7 +108,7 @@ async function attachCardEventListeners(itemElement, itemDetails, itemName, inte
 			actionsContainer.appendChild(button)
 		}
 
-	// Tag click handler
+	// Tag click events
 	itemElement.querySelectorAll('.badge').forEach(tagElement => {
 		tagElement.addEventListener('click', (event) => {
 			event.stopPropagation()
@@ -124,7 +120,7 @@ async function attachCardEventListeners(itemElement, itemDetails, itemName, inte
 		})
 	})
 
-	// Click/Hover for sidebar
+	// Click/Hover to display info
 	const clickHandler = () => {
 		displayItemInfo(itemDetails)
 		if (window.innerWidth < 1024) drawerToggle.checked = true
@@ -138,21 +134,21 @@ async function attachCardEventListeners(itemElement, itemDetails, itemName, inte
 		if (window.innerWidth >= 1024) displayItemInfo(itemDetails)
 	})
 
-	// Refresh button
+	// Refresh card data
 	itemElement.querySelector('.refresh-button').addEventListener('click', async () => {
 		itemElement.replaceWith(await renderItemView(currentItemType, await getItemDetails(currentItemType, itemName, false), itemName))
 	})
 
-	// Default Checkbox
+	// Default item checkbox
 	const defaultCheckbox = itemElement.querySelector('.default-checkbox')
 	if (defaultCheckbox) {
-		// Set initial state based on defaultParts
+		// Set initial checkbox state
 		defaultCheckbox.checked = defaultParts[currentItemType.slice(0, -1)] === itemName
 		if (defaultCheckbox.checked) itemElement.classList.add('selected-item')
 
 		defaultCheckbox.addEventListener('change', async (event) => {
 			const isChecked = event.target.checked
-			// Update default part in the backend
+			// Update default part in backend
 			const response = await fetch('/api/shells/home/setdefault', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -160,7 +156,7 @@ async function attachCardEventListeners(itemElement, itemDetails, itemName, inte
 			})
 
 			if (response.ok) {
-				// Update local defaultParts and UI
+				// Update local state and UI
 				defaultParts[currentItemType.slice(0, -1)] = isChecked ? itemName : null
 				updateDefaultPartDisplay()
 			}
@@ -173,8 +169,6 @@ async function attachCardEventListeners(itemElement, itemDetails, itemName, inte
 function updateDefaultPartDisplay() {
 	for (const itemType of ['chars', 'worlds', 'personas']) {
 		const defaultPartName = defaultParts[itemType.slice(0, -1)]
-		// 更新默认部件的显示状态
-		// 容器id=${itemType.slice(0, -1)}-container
 		const container = document.getElementById(`${itemType.slice(0, -1)}-container`)
 		container.querySelectorAll('.card-container').forEach(el => {
 			el.classList.remove('selected-item')
@@ -199,10 +193,22 @@ async function displayItemInfo(itemDetails) {
 }
 
 // --- Filtering ---
+
+// Helper function for parsing regex filter
+function parseRegexFilter(filter) {
+	if (filter.startsWith('+') || filter.startsWith('-')) filter = filter.slice(1)
+	try {
+		return parseRegexFromString(filter)
+	} catch (_) {
+		return new RegExp(escapeRegExp(filter))
+	}
+}
+
 function applyFilters(itemName, itemType, commonFilters, forceFilters, excludeFilters) {
 	const cacheKey = `${itemType}-${itemName}`
 	const itemData = itemDetailsCache[cacheKey]
 
+	// Should be in cache if fetched previously
 	if (!itemData) return false
 
 	const itemString = JSON.stringify(itemData)
@@ -214,40 +220,13 @@ function applyFilters(itemName, itemType, commonFilters, forceFilters, excludeFi
 }
 
 async function filterItemList() {
-	const filters = filterInput.value.toLowerCase().split(' ').filter(f => f)
-	const [commonFilters, forceFilters, excludeFilters] = [[], [], []]
-
-	filters.forEach(filter => {
-		const regex = parseRegexFilter(filter)
-		if (filter.startsWith('+')) forceFilters.push(regex)
-		else if (filter.startsWith('-')) excludeFilters.push(regex)
-		else commonFilters.push(regex)
-	})
-
-	function parseRegexFilter(filter) {
-		if (filter.startsWith('+') || filter.startsWith('-')) filter = filter.slice(1)
-		try {
-			return parseRegexFromString(filter)
-		} catch (_) {
-			return new RegExp(escapeRegExp(filter))
-		}
-	}
-
-	// Fetch item list ONLY if filters are applied.
-	if (filters.length > 0)
-		await fetchAndCacheItemList(currentItemType)
-
-
-	const filteredItemNames = Object.keys(itemDetailsCache)
-		.filter(key => key.startsWith(`${currentItemType}-`))  // Filter cache keys
-		.map(key => key.replace(`${currentItemType}-`, ''))      // Extract item name
-		.filter(itemName => applyFilters(itemName, currentItemType, commonFilters, forceFilters, excludeFilters))
-
-	displayItemList(currentItemType, filteredItemNames) // Display with filtered names.
+	// Trigger re-render based on filters
+	await displayItemList(currentItemType)
 }
+
 // --- Displaying Items ---
-async function displayItemList(itemType, itemNames) {
-	// Hide all containers first
+async function displayItemList(itemType) {
+	// Hide all containers
 	[charContainer, worldContainer, personaContainer].forEach(container => container.classList.add('hidden'))
 
 	let currentContainer
@@ -258,25 +237,55 @@ async function displayItemList(itemType, itemNames) {
 	}
 
 	currentContainer.classList.remove('hidden')
-	currentContainer.innerHTML = '' // Clear only the current container
+	let targetContainer = currentContainer
+	// Use temp container if current one has children to avoid multiple reflows
+	if (currentContainer.children.length > 0)
+		targetContainer = document.createElement('div')
 
-	// If itemNames is undefined or null, fetch all item names
-	if (!itemNames)
-		itemNames = await getItemList(itemType)
+	// Clear target container
+	targetContainer.innerHTML = ''
 
+	// Get all item names
+	const allItemNames = await getItemList(itemType)
 
-	for (const itemName of itemNames.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))) {
-		const itemDetails = await getItemDetails(itemType, itemName)
-		const itemElement = await renderItemView(itemType, itemDetails, itemName)
-		itemElement.classList.add(`${itemType}-card`) // Add a class for easier selection
-		currentContainer.appendChild(itemElement)
-	}
-}
+	// Get current filters
+	const filterValue = filterInput.value.toLowerCase()
+	const filtersArray = filterValue.split(' ').filter(f => f)
+	const [commonFilters, forceFilters, excludeFilters] = [[], [], []]
 
+	filtersArray.forEach(filterStr => {
+		const regex = parseRegexFilter(filterStr)
+		if (filterStr.startsWith('+')) forceFilters.push(regex)
+		else if (filterStr.startsWith('-')) excludeFilters.push(regex)
+		else commonFilters.push(regex)
+	})
 
-async function fetchAndCacheItemList(itemType) {
-	const itemNames = await getItemList(itemType)
-	await Promise.all(itemNames.map(itemName => getItemDetails(itemType, itemName)))
+	const skeletons = Array(allItemNames.length).fill(0).map(_ => {
+		const skeleton = document.createElement('div')
+		skeleton.classList.add('skeleton')
+		skeleton.classList.add('card-skeleton')
+		targetContainer.appendChild(skeleton)
+		return skeleton
+	})
+	await Promise.all(allItemNames
+		.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
+		.map(async (itemName, index) => {
+			const skeleton = skeletons[index]
+			// Fetch details (populates itemDetailsCache)
+			const itemDetails = await getItemDetails(itemType, itemName, true)
+
+			// Apply filters
+			if (applyFilters(itemName, itemType, commonFilters, forceFilters, excludeFilters)) {
+				const itemElement = await renderItemView(itemType, itemDetails, itemName)
+				itemElement.classList.add(`${itemType}-card`)
+				targetContainer.replaceChild(itemElement, skeleton)
+			}
+			else
+				targetContainer.removeChild(skeleton)
+		}))
+	// Replace children if a temp container was used
+	if (targetContainer !== currentContainer)
+		currentContainer.replaceChildren(...targetContainer.children)
 }
 
 async function getItemList(itemType) {
@@ -291,6 +300,8 @@ async function getItemList(itemType) {
 // --- Function Buttons ---
 async function displayFunctionButtons() {
 	functionButtonsContainer.innerHTML = '' // Clear existing buttons
+	if (!homeRegistry?.home_function_buttons) return // Avoid error if registry is not loaded
+
 	for (const buttonItem of homeRegistry.home_function_buttons) {
 		const li = document.createElement('li')
 		const button = document.createElement('a')
@@ -309,12 +320,11 @@ async function displayFunctionButtons() {
 		button.append(iconSpan, titleSpan)
 		button.addEventListener('click', () => {
 			if (buttonItem.action)
-				eval(buttonItem.action.replaceAll('${name}', action)) // Consider alternatives to eval
+				eval(buttonItem.action.replaceAll('${name}', action))
 			else if (buttonItem.url)
 				window.open(buttonItem.url)
 			else
 				console.warn('No action defined for this button')
-
 		})
 		li.appendChild(button)
 		functionButtonsContainer.appendChild(li)
@@ -322,19 +332,17 @@ async function displayFunctionButtons() {
 }
 
 // --- Tab Management ---
-function updateTabContent(itemType) {
+async function updateTabContent(itemType) {
 	currentItemType = itemType
-	localStorage.setItem('lastTab', itemType) // Remember the selected tab
+	localStorage.setItem('lastTab', itemType) // Persist tab in localStorage
 
 	const pageTitleKey = `home.${itemType}.title`
 	const instructionKey = `home.${itemType}.subtitle`
 	pageTitle.textContent = geti18n(pageTitleKey)
 	instruction.textContent = geti18n(instructionKey)
 
-	// Fetch and display list when switching tabs
-	fetchAndCacheItemList(itemType).then(() => {
-		displayItemList(itemType)
-	})
+	// Display items for the new tab
+	await displayItemList(itemType)
 
 	itemDescription.innerHTML = geti18n('home.itemDescription') // Reset sidebar
 }
@@ -344,9 +352,8 @@ async function initializeApp() {
 	applyTheme()
 	await initTranslations('home') // Initialize i18n first
 
-	// Fetch initial data (registry and default parts)
+	// Fetch initial data
 	await fetchData()
-
 
 	const tabs = [
 		{ tab: charsTab, tabDesktop: charsTabDesktop, itemType: 'chars' },
@@ -356,8 +363,8 @@ async function initializeApp() {
 
 	tabs.forEach(({ tab, tabDesktop, itemType }) => {
 		[tab, tabDesktop].filter(Boolean).forEach(tabElement => {
-			tabElement.addEventListener('click', () => {
-				updateTabContent(itemType)
+			tabElement.addEventListener('click', async () => {
+				await updateTabContent(itemType)
 				// Remove active class from all tabs, then add to current
 				tabs.forEach(t => {
 					[t.tab, t.tabDesktop].filter(Boolean).forEach(el => el.classList.remove('tab-active'))
@@ -368,24 +375,24 @@ async function initializeApp() {
 	})
 
 	// Initial display (using the stored tab or default 'chars')
-	updateTabContent(currentItemType)
-	filterItemList()
-	// Set the active tab based on currentItemType
+	await updateTabContent(currentItemType)
+
+	// Set active tab UI
 	const initialTab = tabs.find(t => t.itemType === currentItemType)
 	if (initialTab)
 		[initialTab.tab, initialTab.tabDesktop].filter(Boolean).forEach(el => el.classList.add('tab-active'))
 
-
+	// Filter input event (consider debouncing)
 	filterInput.addEventListener('input', filterItemList)
 
 	// Refresh data on focus
 	window.addEventListener('focus', async () => {
-		await fetchData()  //Refresh Registry
-		fetchAndCacheItemList(currentItemType).then(() => { // Refresh List
-			filterItemList()
-		})
+		await fetchData()
+		// Refresh and display filtered list
+		await filterItemList()
 	})
 }
+
 async function fetchData() {
 	const [registryResponse, defaultPartsResponse] = await Promise.all([
 		fetch('/api/shells/home/gethomeregistry'),
@@ -394,7 +401,7 @@ async function fetchData() {
 
 	if (registryResponse.ok) {
 		homeRegistry = await registryResponse.json()
-		displayFunctionButtons() // Update function buttons
+		await displayFunctionButtons() // Update function buttons
 	}
 	else
 		console.error('Failed to fetch home registry:', await registryResponse.text())

@@ -2,6 +2,7 @@
 import { escapeRegExp } from '../../scripts/regex.mjs'
 import { structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
 import { ClaudeAPI } from './claude_api.mjs'
+import { countTokens } from 'npm:@anthropic-ai/tokenizer'
 
 export default {
 	GetConfigTemplate: async () => {
@@ -104,7 +105,7 @@ export default {
 				encode: (prompt) => prompt, // 实际上不需要
 				decode: (tokens) => tokens, // 实际上不需要
 				decode_single: (token) => token, // 实际上不需要
-				get_token_count: (prompt) => prompt.length, // 粗略估算
+				get_token_count: (prompt) => countTokens(prompt),
 			}
 		}
 

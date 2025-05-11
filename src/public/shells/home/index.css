@@ -27,6 +27,11 @@ body {
 	padding: 0.5rem;
 }
 
+.card-skeleton {
+	width: 300px;
+	height: 300px;
+}
+
 .text-content {
 	color: var(--color-neutral-content);
 	background-color: color-mix(in srgb, var(--color-neutral), transparent 50%);

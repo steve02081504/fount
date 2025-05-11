@@ -39,6 +39,7 @@ export async function sentrytunnel(req, res) {
 		res.status(fetchResponse.status).send(responseBody)
 
 	} catch (e) {
+		console.error(e)
 		return res.status(500).json({ error: 'Failed to tunnel event to Sentry' })
 	}
 }
