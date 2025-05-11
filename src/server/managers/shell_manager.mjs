@@ -5,7 +5,7 @@ import { getUserByReq } from '../auth.mjs'
 
 const shellsRouters = {}
 PartsRouter.use(async (req, res, next) => {
-	const { username } = await getUserByReq(req).catch(_ => {})
+	const { username } = await getUserByReq(req).catch(_ => ({}))
 	if (!username) return next()
 	const shellsRoutersList = Object.values(shellsRouters[username])
 	let i = 0

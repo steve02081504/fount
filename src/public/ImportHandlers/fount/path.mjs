@@ -1,7 +1,7 @@
 import path from 'node:path'
 import fs from 'node:fs'
 import { getUserDictionary } from '../../../server/auth.mjs'
-import { uninstallPartBase } from '../../../server/parts_loader.mjs'
+import { unloadPart } from '../../../server/managers/index.mjs'
 
 export function resolvePath(username, type, name) {
 	const userPath = getUserDictionary(username)
@@ -12,6 +12,6 @@ export function resolvePath(username, type, name) {
 export async function getAvailablePath(username, type, name) {
 	const targetPath = resolvePath(username, type, name)
 	if (fs.existsSync(targetPath))
-		await uninstallPartBase(username, type, name)
+		await unloadPart(username, type, name)
 	return targetPath
 }

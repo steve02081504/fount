@@ -42,7 +42,7 @@ const handleMouseWheelScroll = (event) => {
 // --- Item Details Fetching ---
 async function getItemDetails(itemType, itemName, useCache = true) {
 	const cacheKey = `${itemType}-${itemName}`
-	if (useCache && itemDetailsCache[cacheKey])
+	if (useCache && itemDetailsCache[cacheKey] && !itemDetailsCache[cacheKey].supportedInterfaces.includes('info'))
 		return itemDetailsCache[cacheKey]
 
 	let fetchFunction
@@ -240,7 +240,12 @@ async function displayItemList(itemType) {
 	let targetContainer = currentContainer
 	// Use temp container if current one has children to avoid multiple reflows
 	if (currentContainer.children.length > 0)
-		targetContainer = document.createElement('div')
+		targetContainer = {
+			children: [],
+			appendChild: _ => targetContainer.children.push(_),
+			replaceChild: (thenew, theold) => targetContainer.children.splice(targetContainer.children.indexOf(theold), 1, thenew),
+			removeChild: _ => targetContainer.children.splice(targetContainer.children.indexOf(_), 1),
+		}
 
 	// Clear target container
 	targetContainer.innerHTML = ''

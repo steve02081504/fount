@@ -41,7 +41,7 @@ async function handleIntersection(entries) {
 				isLoading = false
 				observeSentinels() // 即使在顶部，也重新观察
 			}
-		 else if (entry.target.id === 'sentinel-bottom') {
+		else if (entry.target.id === 'sentinel-bottom') {
 			const currentCount = startIndex + queue.length
 			if (currentCount < chatLogLength) {
 				observer.unobserve(sentinelBottom)

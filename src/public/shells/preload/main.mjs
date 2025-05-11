@@ -15,10 +15,15 @@ export default {
 	},
 	Load: (router) => { },
 	Unload: (router) => { },
-	ArgumentsHandler: async (user, args) => {
-		loadPart(user, args[0], args[1])
-	},
-	IPCInvokeHandler: async (user, data) => {
-		loadPart(user, data.parttype, data.partname)
+
+	interfaces: {
+		invokes: {
+			ArgumentsHandler: async (user, args) => {
+				loadPart(user, args[0], args[1])
+			},
+			IPCInvokeHandler: async (user, data) => {
+				loadPart(user, data.parttype, data.partname)
+			}
+		}
 	}
 }

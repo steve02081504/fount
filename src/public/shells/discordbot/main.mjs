@@ -18,17 +18,20 @@ export default {
 		setEndpoints(router)
 	},
 	Unload: async () => { },
-	ArgumentsHandler: async (user, args) => {
-		const botname = args[0]
-		const action = args[1] ?? 'start'
-		if (action === 'stop')
-			await stopBot(user, botname)
-		else if (action === 'start')
-			await runBot(user, botname)
-		else
-			throw `Unknown action: ${action}`
-	},
+
 	interfaces: {
+		invokes: {
+			ArgumentsHandler: async (user, args) => {
+				const botname = args[0]
+				const action = args[1] ?? 'start'
+				if (action === 'stop')
+					await stopBot(user, botname)
+				else if (action === 'start')
+					await runBot(user, botname)
+				else
+					throw `Unknown action: ${action}`
+			}
+		},
 		jobs: {
 			ReStartJob: async (user, botname) => {
 				await runBot(user, botname)

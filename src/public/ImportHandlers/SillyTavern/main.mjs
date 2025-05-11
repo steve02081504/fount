@@ -62,6 +62,10 @@ export default {
 		}
 	},
 
-	ImportAsData,
-	ImportByText
+	interfaces: {
+		import: {
+			ImportAsData,
+			ImportByText,
+		}
+	}
 }

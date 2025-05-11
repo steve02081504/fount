@@ -17,7 +17,7 @@ export class charInit_t {
 }
 
 export class charAPI_t {
-	info: info_t | (locales: locale_t[]) => Promise<info_t>;
+	info: info_t;
 	// calls only on char install, and if fail, all file under this char's folder will be deleted
 	Init: (stat: charInit_t) => Promise<void>;
 	// calls on every char start, pop a message if fail
@@ -29,6 +29,9 @@ export class charAPI_t {
 
 	// interface with shell (maybe chat WebUI or cute Live2d or a kill machine, i don't care)
 	interfaces: {
+		info?: {
+			UpdateInfo: (locales: locale_t[]) => Promise<info_t>,
+		},
 		config?: {
 			GetData: () => Promise<any>
 			SetData: (data: any) => Promise<void>

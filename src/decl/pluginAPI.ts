@@ -8,13 +8,16 @@ export type ReplyHandler_t = (reply: chatLogEntry_t, args: chatReplyRequest_t & 
 }) => Promise<boolean>
 
 export class pluginAPI_t {
-	info: info_t | (locales: locale_t[]) => Promise<info_t>;
+	info: info_t;
 	Init: () => Promise<void>;
 	Load: () => Promise<void>;
 	Unload: (reason: string) => Promise<void>;
 	Uninstall: (reason: string, from: string) => Promise<void>;
 
 	interfaces: {
+		info?: {
+			UpdateInfo: (locales: locale_t[]) => Promise<info_t>,
+		},
 		config?: {
 			GetData: () => Promise<any>
 			SetData: (data: any) => Promise<void>

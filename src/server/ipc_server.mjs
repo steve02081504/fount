@@ -19,14 +19,14 @@ export async function processIPCCommand(command, data) {
 				const { username, shellname, args } = data
 				console.log(await geti18n('fountConsole.ipc.runShellLog', { shellname, username, args: JSON.stringify(args) }))
 				const shell = await loadShell(username, shellname)
-				const result = await shell.ArgumentsHandler(username, args)
+				const result = await shell.interfaces.invokes.ArgumentsHandler(username, args)
 				return { status: 'ok', data: result }
 			}
 			case 'invokeshell': {
 				const { username, shellname, data: invokedata } = data
 				console.log(await geti18n('fountConsole.ipc.invokeShellLog', { shellname, username, invokedata: JSON.stringify(invokedata) }))
 				const shell = await loadShell(username, shellname)
-				const result = await shell.IPCInvokeHandler(username, invokedata)
+				const result = await shell.interfaces.invokes.IPCInvokeHandler(username, invokedata)
 				return { status: 'ok', data: result }
 			}
 			case 'shutdown':
