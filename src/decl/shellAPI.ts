@@ -1,19 +1,9 @@
-import { locale_t } from "./basedefs";
+import { locale_t, info_t } from "./basedefs";
 import { Express } from "express";
 
 // no idea but it's necessary now
 export class shellAPI_t {
-	info: Record<locale_t, {
-		name: string;
-		avatar: string;
-		description: string;
-		description_markdown: string;
-		version: string;
-		author: string;
-		homepage: string;
-		issuepage: string;
-		tags: string[];
-	}>;
+	info: info_t | (locales: locale_t[]) => Promise<info_t>;
 	Init: () => Promise<void>;
 	Load: (app: Express) => Promise<void>;
 	Unload: (app: Express) => Promise<void>;
