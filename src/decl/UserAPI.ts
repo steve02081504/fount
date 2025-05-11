@@ -5,7 +5,7 @@ import { locale_t, info_t } from "./basedefs";
 import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from "./prompt_struct";
 
 export class UserAPI_t {
-	info: info_t | (locales: locale_t[]) => Promise<info_t>;
+	info: info_t;
 	// calls only on install, and if fail, all file under this persona's folder will be deleted
 	Init: () => Promise<void>;
 	// calls on every start, pop a message if fail
@@ -16,6 +16,9 @@ export class UserAPI_t {
 	Uninstall: (reason: string, from: string) => Promise<void>;
 
 	interfaces: {
+		info?: {
+			UpdateInfo: (locales: locale_t[]) => Promise<info_t>,
+		},
 		config?: {
 			GetData: () => Promise<any>
 			SetData: (data: any) => Promise<void>

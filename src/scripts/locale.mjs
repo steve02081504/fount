@@ -25,6 +25,7 @@ export function getLocalizedInfo(info, locales) {
  * @param {string[]} [locales] - The locale string array (e.g., 'en-US', 'zh-CN').
  * @returns {T | undefined} Localized part information, or undefined if info is missing.
  */
-export function getPartInfo(part, locales) {
-	return getLocalizedInfo(part?.info, locales)
+export async function getPartInfo(part, locales) {
+	const info = await part.interfaces?.info?.UpdateInfo?.() || part.info
+	return getLocalizedInfo(info, locales)
 }

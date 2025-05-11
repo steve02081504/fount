@@ -21,7 +21,7 @@ export async function unloadAIsourceGenerator(username, AIsourcename) {
 
 export async function loadAIsourceFromConfigData(username, data, { SaveConfig }) {
 	const generator = await loadAIsourceGenerator(username, data.generator)
-	return await generator.GetSource(data.config, {
+	return await generator.interfaces.AIsource.GetSource(data.config, {
 		username,
 		SaveConfig
 	})

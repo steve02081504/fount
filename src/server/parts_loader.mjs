@@ -219,7 +219,7 @@ export async function loadPartBase(username, parttype, partname, Initargs, {
 			await part.Load?.(Initargs)
 			return part
 		}
-		catch(e) {
+		catch (e) {
 			await baseMjsPartUnLoader(path).catch(x => 0)
 			throw e
 		}
@@ -335,6 +335,7 @@ export async function unloadPartBase(username, parttype, partname, unLoadargs, {
 } = {}) {
 	/** @type {T} */
 	const part = parts_set[username][parttype][partname]
+	if (!part) return
 	try {
 		await unLoader(part)
 	}
@@ -439,7 +440,7 @@ export async function getPartDetails(username, parttype, partname, nocache = fal
 	const { locales } = getUserByUsername(username)
 	if (!details) try {
 		const part = await baseloadPart(username, parttype, partname).catch(() => loadPart(username, parttype, partname))
-		const info = part.info instanceof Function ? await part.info(locales) : part.info
+		const info = await part.interfaces?.info?.UpdateInfo?.() || part.info
 		parts_details_cache[parttype] ??= {}
 		details = parts_details_cache[parttype][partname] = {
 			info: JSON.parse(JSON.stringify(info)),
