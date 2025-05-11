@@ -1,18 +1,8 @@
 import { AIsource_t } from "./AIsource"
-import { locale_t } from "./basedefs";
+import { locale_t, info_t } from "./basedefs";
 
 export class AIsourceGenerator {
-	info: Record<locale_t, {
-		name: string;
-		avatar: string;
-		description: string;
-		description_markdown: string;
-		version: string;
-		author: string;
-		homepage: string;
-		issuepage: string;
-		tags: string[];
-	}>;
+	info: info_t | (locales: locale_t[]) => Promise<info_t>;
 
 	Init: () => Promise<void>
 	Load: () => Promise<void>
