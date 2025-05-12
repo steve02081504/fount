@@ -38,7 +38,6 @@ export function createDocumentFragmentFromHtmlString(htmlString) {
 				parent.appendChild(element)
 				for (const childNode of node.childNodes)
 					createElementFromNode(childNode, element)
-
 			}
 		}
 	}

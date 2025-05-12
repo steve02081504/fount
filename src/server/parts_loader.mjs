@@ -102,6 +102,7 @@ export async function baseloadPart(username, parttype, partname, {
 	pathGetter = () => GetPartPath(username, parttype, partname),
 	Loader = baseMjsPartLoader,
 } = {}) {
+	if (isPartLoaded(username, parttype, partname)) return parts_set[username][parttype][partname]
 	const path = pathGetter()
 
 	if (fs.existsSync(path + '/.git')) try {
@@ -174,6 +175,7 @@ export async function baseloadPart(username, parttype, partname, {
 }
 
 export async function baseMjsPartUnLoader(path) {
+	if (!fs.existsSync(path)) return
 	async function codeunloader(path) {
 		/*
 		todo: implement codeunloader after moveing fount from deno to bun/done
@@ -436,11 +438,11 @@ export async function getPartDetails(username, parttype, partname, nocache = fal
 	const parts_details_cache = loadData(username, 'parts_details_cache')
 	/** @type {PartDetails | undefined} */
 	let details = parts_details_cache?.[parttype]?.[partname]
-	if (nocache || parts_set?.[username]?.[parttype]?.[partname]) details = undefined
+	if (nocache || isPartLoaded(username, parttype, partname)) details = undefined
 	const { locales } = getUserByUsername(username)
 	if (!details) try {
 		const part = await baseloadPart(username, parttype, partname).catch(() => loadPart(username, parttype, partname))
-		const info = await part.interfaces?.info?.UpdateInfo?.() || part.info
+		const info = await part?.interfaces?.info?.UpdateInfo?.() || part?.info
 		parts_details_cache[parttype] ??= {}
 		details = parts_details_cache[parttype][partname] = {
 			info: JSON.parse(JSON.stringify(info)),

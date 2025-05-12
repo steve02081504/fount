@@ -15,6 +15,7 @@ export async function setPartData(username, parttype, partname, data) {
 	try {
 		const part = await loadPart(username, parttype, partname)
 		await part.interfaces.config.SetData(data)
+		parts_config[parttype] ??= {}
 		parts_config[parttype][partname] = data
 		saveData(username, 'parts_config')
 	} catch (error) {

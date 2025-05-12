@@ -1,7 +1,13 @@
+import { lookup } from 'node:dns'
+import { in_docker } from './env.mjs'
 import { ms } from './ms.mjs'
 
+const localIPs = [
+	'127.0.0.1', '::1',
+	in_docker ? lookup('host.docker.internal') : null
+].filter(Boolean)
+
 export function is_local_ip(ip) {
-	const localIPs = ['127.0.0.1', '::1']
 	return localIPs.includes(ip)
 }
 
