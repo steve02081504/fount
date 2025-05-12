@@ -1,4 +1,4 @@
-import { locale_t } from "./basedefs";
+import { info_t, locale_t } from "./basedefs";
 import { prompt_struct_t } from "./prompt_struct";
 
 class tokenizer_t<InputType, TokenType> {
@@ -11,23 +11,18 @@ class tokenizer_t<InputType, TokenType> {
 
 export class AIsource_t<InputType, OutputType> {
 	filename: string;
-	info: Record<locale_t, {
-		avatar: string;
-		name: string;
-		provider: string;
-		description: string;
-		description_markdown: string;
-		version: string;
-		author: string;
-		homepage: string;
-		issuepage: string;
-		tags: string[];
-	}>;
+	type: 'text-chat' | string;
+	info: info_t;
 	is_paid: boolean;
 	extension: {};
 
 	Unload: () => Promise<void>;
 	Call: (prompt: InputType) => OutputType;
+	interfaces: {
+		info?: {
+			UpdateInfo: (locales: locale_t[]) => Promise<info_t>,
+		},
+	}
 	Tokenizer: tokenizer_t<InputType, any>;
 }
 export class textAISource_t extends AIsource_t<string, string> {

@@ -28,7 +28,7 @@
 					: new URL('/shells/home', hostUrl)
 				if (fountProtocolUrl) {
 					redirectUrl.searchParams.set('url', fountProtocolUrl)
-					redirectUrl.searchParams.set('form', 'jumppage')
+					redirectUrl.searchParams.set('from', 'jumppage')
 				}
 				window.location.href = redirectUrl.href
 			}

@@ -31,5 +31,5 @@ export function deleteAISourceFile(username, fileName) {
 
 export async function getConfigTemplate(username, generatorname) {
 	const generator = await loadAIsourceGenerator(username, generatorname)
-	return await generator.GetConfigTemplate()
+	return await generator.interfaces.AIsource.GetConfigTemplate()
 }

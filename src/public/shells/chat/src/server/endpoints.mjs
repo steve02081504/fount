@@ -35,7 +35,8 @@ export function setEndpoints(router) {
 	})
 
 	router.post('/api/shells/chat/removechar', async (req, res) => {
-		res.status(200).json(await removechar(req.body.chatid, req.body.charname))
+		await removechar(req.body.chatid, req.body.charname)
+		res.status(200).json({ message: 'removechar ok' })
 	})
 
 	router.post('/api/shells/chat/setworld', async (req, res) => {
@@ -43,7 +44,8 @@ export function setEndpoints(router) {
 	})
 
 	router.post('/api/shells/chat/setpersona', async (req, res) => {
-		res.status(200).json(await setPersona(req.body.chatid, req.body.personaname))
+		await setPersona(req.body.chatid, req.body.personaname)
+		res.status(200).json({ message: 'setpersona ok' })
 	})
 
 	router.post('/api/shells/chat/triggercharreply', async (req, res) => {

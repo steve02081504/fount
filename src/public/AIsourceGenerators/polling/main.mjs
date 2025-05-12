@@ -3,67 +3,73 @@
 
 import { loadAIsourceFromNameOrConfigData } from '../../../server/managers/AIsources_manager.mjs'
 
-export default {
-	GetConfigTemplate: async () => {
-		return {
-			name: 'polling array',
-			provider: 'unknown',
-			sources: [],
-		}
-	},
-	GetSource: async (config, { username, SaveConfig }) => {
-		let index = -1
-		const sources = await Promise.all(config.sources.map(source => loadAIsourceFromNameOrConfigData(username, source, {
-			SaveConfig
-		})))
-		/** @type {AIsource_t} */
-		const result = {
-			type: 'text-chat',
-			info: {
-				'': {
-					avatar: '',
-					name: config.name,
-					provider: config.provider || 'unknown',
-					description: 'polling',
-					description_markdown: 'polling',
-					version: '0.0.0',
-					author: 'steve02081504',
-					homepage: '',
-					tags: ['polling'],
-				}
-			},
-			is_paid: false,
-			extension: {},
 
-			Unload: () => { },
-			Call: async (prompt) => {
-				while (true) try {
-					index++
-					index %= config.sources.length
-					return await sources[index].Call(prompt)
-				}
-				catch (e) {
-					console.error(e)
-				}
-			},
-			StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
-				while (true) try {
-					index++
-					index %= config.sources.length
-					return await sources[index].StructCall(prompt_struct)
-				}
-				catch (e) {
-					console.error(e)
-				}
-			},
-			Tokenizer: {
-				free: () => 0,
-				encode: (prompt) => prompt,
-				decode: (tokens) => tokens,
-				decode_single: (token) => token,
-				get_token_count: (prompt) => prompt.length
-			}
+export default {
+	interfaces: {
+		AIsource: {
+			GetConfigTemplate: async () => configTemplate,
+			GetSource,
 		}
-		return result
 	}
+}
+
+const configTemplate = {
+	name: 'polling array',
+	provider: 'unknown',
+	sources: [],
+}
+async function GetSource(config, { username, SaveConfig }) {
+	let index = -1
+	const sources = await Promise.all(config.sources.map(source => loadAIsourceFromNameOrConfigData(username, source, {
+		SaveConfig
+	})))
+	/** @type {AIsource_t} */
+	const result = {
+		type: 'text-chat',
+		info: {
+			'': {
+				avatar: '',
+				name: config.name,
+				provider: config.provider || 'unknown',
+				description: 'polling',
+				description_markdown: 'polling',
+				version: '0.0.0',
+				author: 'steve02081504',
+				homepage: '',
+				tags: ['polling'],
+			}
+		},
+		is_paid: false,
+		extension: {},
+
+		Unload: () => { },
+		Call: async (prompt) => {
+			while (true) try {
+				index++
+				index %= config.sources.length
+				return await sources[index].Call(prompt)
+			}
+			catch (e) {
+				console.error(e)
+			}
+		},
+		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
+			while (true) try {
+				index++
+				index %= config.sources.length
+				return await sources[index].StructCall(prompt_struct)
+			}
+			catch (e) {
+				console.error(e)
+			}
+		},
+		Tokenizer: {
+			free: () => 0,
+			encode: (prompt) => prompt,
+			decode: (tokens) => tokens,
+			decode_single: (token) => token,
+			get_token_count: (prompt) => prompt.length
+		}
+	}
+	return result
 }

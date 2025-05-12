@@ -208,9 +208,15 @@ export async function baseMjsPartUnLoader(path) {
 export async function loadPartBase(username, parttype, partname, Initargs, {
 	pathGetter = () => GetPartPath(username, parttype, partname),
 	Loader = async (path, Initargs) => {
-		const part = await baseMjsPartLoader(path)
-		await part.Load?.(Initargs)
-		return part
+		try {
+			const part = await baseMjsPartLoader(path)
+			await part.Load?.(Initargs)
+			return part
+		}
+		catch (e) {
+			await baseMjsPartUnLoader(path).catch(x => 0)
+			throw e
+		}
 	},
 	afterLoad = (part) => { },
 	Initer = async (path, Initargs) => {
@@ -323,6 +329,7 @@ export async function unloadPartBase(username, parttype, partname, unLoadargs, {
 } = {}) {
 	/** @type {T} */
 	const part = parts_set[username][parttype][partname]
+	if (!part) return
 	try {
 		await unLoader(part)
 	}
@@ -424,11 +431,13 @@ export async function getPartDetails(username, parttype, partname, nocache = fal
 	/** @type {PartDetails | undefined} */
 	let details = parts_details_cache?.[parttype]?.[partname]
 	if (nocache || parts_set?.[username]?.[parttype]?.[partname]) details = undefined
+	const { locales } = getUserByUsername(username)
 	if (!details) try {
 		const part = await baseloadPart(username, parttype, partname).catch(() => loadPart(username, parttype, partname))
+		const info = await part.interfaces?.info?.UpdateInfo?.() || part.info
 		parts_details_cache[parttype] ??= {}
 		details = parts_details_cache[parttype][partname] = {
-			info: JSON.parse(JSON.stringify(part.info)),
+			info: JSON.parse(JSON.stringify(info)),
 			supportedInterfaces: Object.keys(part.interfaces || {}),
 		}
 	}
@@ -443,7 +452,6 @@ export async function getPartDetails(username, parttype, partname, nocache = fal
 			supportedInterfaces: [],
 		}
 	}
-	const { locales } = getUserByUsername(username)
 	return {
 		...details,
 		info: getLocalizedInfo(details.info, locales)

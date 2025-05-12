@@ -8,7 +8,7 @@ export async function importPart(username, data) {
 	for (const importHandler of ImportHandlers)
 		try {
 			const handler = await LoadImportHandler(username, importHandler)
-			await handler.ImportAsData(username, data)
+			await handler.interfaces.import.ImportAsData(username, data)
 			return
 		} catch (err) {
 			errors.push({ handler: importHandler, error: err.message || String(err) })
@@ -27,7 +27,7 @@ export async function importPartByText(username, text) {
 	for (const importHandler of ImportHandlers)
 		try {
 			const handler = await LoadImportHandler(username, importHandler)
-			await handler.ImportByText(username, text)
+			await handler.interfaces.import.ImportByText(username, text)
 			return
 		} catch (err) {
 			errors.push({ handler: importHandler, error: err.message || String(err) })

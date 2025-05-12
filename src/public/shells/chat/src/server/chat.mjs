@@ -242,8 +242,8 @@ async function getChatRequest(chatid, charname) {
 
 	const { username, LastTimeSlice: timeSlice } = chatMetadata
 	const { locales } = getUserByUsername(username)
-	const userinfo = getPartInfo(timeSlice.player, locales) || {}
-	const charinfo = getPartInfo(timeSlice.chars[charname], locales) || {}
+	const userinfo = await getPartInfo(timeSlice.player, locales) || {}
+	const charinfo = await getPartInfo(timeSlice.chars[charname], locales) || {}
 	const UserCharname = userinfo.name || timeSlice.player_id || username
 
 	const other_chars = { ...timeSlice.chars }
@@ -269,9 +269,9 @@ async function getChatRequest(chatid, charname) {
 		locales,
 		chat_log: chatMetadata.chatLog,
 		Update: () => getChatRequest(chatid, charname),
-		AddChatLogEntry: (entry) => {
+		AddChatLogEntry: async (entry) => {
 			if (!chatMetadata.LastTimeSlice.chars[charname]) throw new Error('Char not in this chat')
-			return addChatLogEntry(chatid, BuildChatLogEntryFromCharReply(
+			return addChatLogEntry(chatid, await BuildChatLogEntryFromCharReply(
 				entry,
 				chatMetadata.LastTimeSlice.copy(),
 				chatMetadata.LastTimeSlice.chars[charname],
@@ -338,7 +338,7 @@ export async function setWorld(chatid, worldname) {
 				break
 		}
 		if (!result) return
-		const greeting_entrie = BuildChatLogEntryFromCharReply(result, timeSlice, null, undefined, username)
+		const greeting_entrie = await BuildChatLogEntryFromCharReply(result, timeSlice, null, undefined, username)
 		await addChatLogEntry(chatid, greeting_entrie) // saved, no need for another call
 		return greeting_entrie
 	} catch (error) {
@@ -379,7 +379,7 @@ export async function addchar(chatid, charname) {
 				break
 		}
 		if (!result) return
-		const greeting_entrie = BuildChatLogEntryFromCharReply(result, timeSlice, char, charname, username)
+		const greeting_entrie = await BuildChatLogEntryFromCharReply(result, timeSlice, char, charname, username)
 		await addChatLogEntry(chatid, greeting_entrie) // saved, no need for another call
 		return greeting_entrie
 	} catch (error) {
@@ -521,9 +521,9 @@ export async function modifyTimeLine(chatid, delta) {
 			if (!result) throw new Error('No reply')
 			let entry
 			if (new_timeSlice.greeting_type?.startsWith?.('world_'))
-				entry = BuildChatLogEntryFromCharReply(result, new_timeSlice, null, undefined, chatMetadata.username)
+				entry = await BuildChatLogEntryFromCharReply(result, new_timeSlice, null, undefined, chatMetadata.username)
 			else
-				entry = BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, chatMetadata.username)
+				entry = await BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, chatMetadata.username)
 
 			if (entry.timeSlice.world.interfaces?.chat?.AddChatLogEntry)
 				entry.timeSlice.world.interfaces.chat.AddChatLogEntry(await getChatRequest(chatid, undefined), entry)
@@ -559,12 +559,12 @@ export async function modifyTimeLine(chatid, delta) {
  * @param {timeSlice_t} new_timeSlice
  * @param {charAPI_t} char
  * @param {string} charname
- * @returns {chatLogEntry_t}
+ * @returns {Promise<chatLogEntry_t>}
  */
-function BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, username) {
+async function BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, username) {
 	const { locales } = getUserByUsername(username)
 	new_timeSlice.charname = charname
-	const info = getPartInfo(char, locales) || {}
+	const info = await getPartInfo(char, locales) || {}
 
 	return Object.assign(new chatLogEntry_t(), {
 		name: result.name || info.name || charname,
@@ -592,12 +592,12 @@ function BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, u
  * @param {timeSlice_t} new_timeSlice
  * @param {UserAPI_t} user
  * @param {string} username
- * @returns {chatLogEntry_t}
+ * @returns {Promise<chatLogEntry_t>}
  */
-function BuildChatLogEntryFromUserMessage(result, new_timeSlice, user, username) {
+async function BuildChatLogEntryFromUserMessage(result, new_timeSlice, user, username) {
 	const { locales } = getUserByUsername(username)
 	new_timeSlice.playername = new_timeSlice.player_id
-	const info = getPartInfo(user, locales) || {}
+	const info = await getPartInfo(user, locales) || {}
 
 	return Object.assign(new chatLogEntry_t(), {
 		name: result.name || info.name || new_timeSlice.player_id || username,
@@ -667,7 +667,7 @@ export async function triggerCharReply(chatid, charname) {
 	if (!result) return
 	const new_timeSlice = timeSlice.copy()
 
-	return addChatLogEntry(chatid, BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, chatMetadata.username))
+	return addChatLogEntry(chatid, await BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, chatMetadata.username))
 }
 
 export async function addUserReply(chatid, object) {
@@ -678,7 +678,7 @@ export async function addUserReply(chatid, object) {
 	const new_timeSlice = timeSlice.copy()
 	const user = timeSlice.player
 
-	return addChatLogEntry(chatid, BuildChatLogEntryFromUserMessage(object, new_timeSlice, user, chatMetadata.username))
+	return addChatLogEntry(chatid, await BuildChatLogEntryFromUserMessage(object, new_timeSlice, user, chatMetadata.username))
 }
 
 export async function getChatList(username) {
@@ -840,10 +840,10 @@ export async function editMessage(chatid, index, new_content) {
 	let entry
 	if (timeSlice.charname) {
 		const char = timeSlice.chars[timeSlice.charname]
-		entry = BuildChatLogEntryFromCharReply(editresult, timeSlice, char, timeSlice.charname, chatMetadata.username)
+		entry = await BuildChatLogEntryFromCharReply(editresult, timeSlice, char, timeSlice.charname, chatMetadata.username)
 	}
 	else
-		entry = BuildChatLogEntryFromUserMessage(editresult, timeSlice, chatMetadata.LastTimeSlice, chatMetadata.username)
+		entry = await BuildChatLogEntryFromUserMessage(editresult, timeSlice, chatMetadata.LastTimeSlice, chatMetadata.username)
 
 	chatMetadata.timeLines[chatMetadata.timeLineIndex] = chatMetadata.chatLog[index] = entry
 

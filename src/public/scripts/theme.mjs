@@ -123,7 +123,7 @@ function updateColors() {
 	for (const func of functions) try {
 		func(theme_now, is_dark)
 	}
-	catch(e) {
+	catch (e) {
 		console.error(e)
 	}
 }

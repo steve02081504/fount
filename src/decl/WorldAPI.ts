@@ -1,19 +1,9 @@
-import { chatReply_t, chatReplyRequest_t } from "../public/shells/chat/decl/chatLog.ts";
-import { locale_t } from "./basedefs.ts";
-import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from "./prompt_struct.ts";
+import { chatReply_t, chatReplyRequest_t } from "../public/shells/chat/decl/chatLog";
+import { locale_t, info_t } from "./basedefs";
+import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from "./prompt_struct";
 
 export class WorldAPI_t {
-	info: Record<locale_t, {
-		name: string;
-		avatar: string;
-		description: string;
-		description_markdown: string;
-		version: string;
-		author: string;
-		homepage: string;
-		issuepage: string;
-		tags: string[];
-	}>;
+	info: info_t;
 	// calls only on install, and if fail, all file under this persona's folder will be deleted
 	Init: (stat: {
 		username: string,
@@ -30,6 +20,9 @@ export class WorldAPI_t {
 	Uninstall: (reason: string, from: string) => Promise<void>;
 
 	interfaces: {
+		info?: {
+			UpdateInfo: (locales: locale_t[]) => Promise<info_t>,
+		},
 		config?: {
 			GetData: () => Promise<any>
 			SetData: (data: any) => Promise<void>

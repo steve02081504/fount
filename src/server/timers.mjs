@@ -39,7 +39,7 @@ async function TimerHeartbeat() {
 				for (const uid in timers[parttype][partname]) {
 					const timer = timers[parttype][partname][uid]
 					if (!timer.triggered && (timer.triggered = !!eval(timer.trigger))) { // 确保触发条件只在跳变时生效一次
-						if(!timer.repeat) removeTimer(user, parttype, partname, uid) // 先移除避免重复触发
+						if (!timer.repeat) removeTimer(user, parttype, partname, uid) // 先移除避免重复触发
 						try {
 							const part = await loadPart(user, parttype, partname)
 							part.interfaces.timers.TimerCallback(user, uid, timer.callbackdata)

@@ -101,6 +101,7 @@ body {
 
 	.drawer-side {
 		z-index: 60;
+		background-color: var(--color-base-100);
 	}
 }
 

@@ -1,6 +1,6 @@
-import { locale_t, role_t, timeStamp_t } from './basedefs.ts';
-import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts';
-import { chatReply_t, chatReplyRequest_t } from '../public/shells/chat/decl/chatLog.ts';
+import { info_t, locale_t, role_t, timeStamp_t } from './basedefs';
+import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct';
+import { chatReply_t, chatReplyRequest_t } from '../public/shells/chat/decl/chatLog';
 
 import { Client as DiscordClient, GatewayIntentBits as DiscordGatewayIntentBits, Partials as DiscordPartials } from 'npm:discord.js';
 
@@ -17,17 +17,7 @@ export class charInit_t {
 }
 
 export class charAPI_t {
-	info: Record<locale_t, {
-		name: string;
-		avatar: string;
-		description: string;
-		description_markdown: string;
-		version: string;
-		author: string;
-		homepage: string;
-		issuepage: string;
-		tags: string[];
-	}>;
+	info: info_t;
 	// calls only on char install, and if fail, all file under this char's folder will be deleted
 	Init: (stat: charInit_t) => Promise<void>;
 	// calls on every char start, pop a message if fail
@@ -39,6 +29,9 @@ export class charAPI_t {
 
 	// interface with shell (maybe chat WebUI or cute Live2d or a kill machine, i don't care)
 	interfaces: {
+		info?: {
+			UpdateInfo: (locales: locale_t[]) => Promise<info_t>,
+		},
 		config?: {
 			GetData: () => Promise<any>
 			SetData: (data: any) => Promise<void>
