@@ -27,7 +27,7 @@ const charsTabDesktop = document.getElementById('chars-tab-desktop')
 const worldsTabDesktop = document.getElementById('worlds-tab-desktop')
 const personasTabDesktop = document.getElementById('personas-tab-desktop')
 
-const itemDetailsCache = {} // Combined cache
+let itemDetailsCache = {} // Combined cache
 let currentItemType = localStorage.getItem('lastTab') || 'chars' // Persist tab selection
 let homeRegistry
 let defaultParts = {} // Store default parts
@@ -38,6 +38,10 @@ const handleMouseWheelScroll = (event) => {
 	scrollContainer.scrollLeft += Math.sign(event.deltaY) * 40
 	event.preventDefault()
 }
+
+window.addEventListener('languagechange', () => {
+	itemDetailsCache = {}
+})
 
 // --- Item Details Fetching ---
 async function getItemDetails(itemType, itemName, useCache = true) {

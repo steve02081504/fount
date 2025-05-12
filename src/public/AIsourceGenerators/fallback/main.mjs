@@ -15,7 +15,17 @@ export default {
 const configTemplate = {
 	name: 'fallback array',
 	provider: 'unknown',
-	sources: [],
+	sources: [
+		'source name1',
+		'source name2',
+		{
+			generator: 'some generator',
+			config: {
+				model_name: 'lol',
+				other_datas: 'lol'
+			}
+		}
+	],
 }
 
 async function GetSource(config, { username, SaveConfig }) {

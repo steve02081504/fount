@@ -284,6 +284,9 @@ function run {
 	if ($IsWindows) {
 		Get-Process tray_windows_release | Where-Object { $_.CPU -gt 0.5 } | Stop-Process
 	}
+	if ($IsWindows) {
+		Get-Process tray_windows_release | Where-Object { $_.CPU -gt 0.5 } | Stop-Process
+	}
 }
 if ($args.Count -gt 0 -and $args[0] -eq 'geneexe') {
 	$exepath = $args[1]
