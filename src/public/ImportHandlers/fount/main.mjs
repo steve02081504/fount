@@ -130,7 +130,6 @@ async function ImportByText(username, text) {
 					console.error(`Git clone failed for ${line}:`, err)
 				}
 				await rm(tempDir, { recursive: true, force: true }).catch(x => x)
-				continue
 			}
 			// Try importing as a file
 			try {
@@ -141,7 +140,6 @@ async function ImportByText(username, text) {
 					const allowedTypes = ['application/octet-stream', 'application/zip', 'image/png', 'image/apng', 'image/jpng']
 					if (!allowedTypes.includes(type))
 						throw new Error(`Unsupported file type: ${type}`)
-
 				}
 				request = await fetch(line)
 				if (request.ok) {

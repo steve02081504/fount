@@ -4,12 +4,18 @@ import { currentChatId, addCharacter, createNewChat } from '../src/public/endpoi
 initTranslations('chat.new')
 applyTheme()
 
-await createNewChat()
+function logger(e) {
+	console.error(e)
+	alert(e)
+	throw e
+}
+
+await createNewChat().catch(logger)
 
 const serchParams = new URLSearchParams(window.location.search)
 
 if (serchParams.has('char'))
-	await addCharacter(serchParams.get('char'))
+	await addCharacter(serchParams.get('char')).catch(logger)
 
 // jump to chat
 window.history.replaceState(null, null, '/shells/chat/#' + currentChatId)

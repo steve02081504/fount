@@ -29,3 +29,18 @@ if ('serviceWorker' in navigator)
 		.catch(error => {
 			console.error('Service Worker registration failed: ', error)
 		})
+
+// set prerender rules
+if (HTMLScriptElement.supports?.('speculationrules')) {
+	const specScript = document.createElement('script')
+	specScript.type = 'speculationrules'
+	specScript.textContent = JSON.stringify({
+		prerender: [{
+			where: {
+				href_matches: '/*'
+			},
+			eagerness: 'moderate'
+		}]
+	})
+	document.head.prepend(specScript)
+}

@@ -26,6 +26,6 @@ export function getLocalizedInfo(info, locales) {
  * @returns {T | undefined} Localized part information, or undefined if info is missing.
  */
 export async function getPartInfo(part, locales) {
-	const info = await part.interfaces?.info?.UpdateInfo?.() || part.info
+	const info = await part?.interfaces?.info?.UpdateInfo?.() || part?.info
 	return getLocalizedInfo(info, locales)
 }

@@ -5,15 +5,13 @@ import { getUserByReq } from '../auth.mjs'
 
 const shellsRouters = {}
 PartsRouter.use(async (req, res, next) => {
+	if (!req.path.startsWith('/api/shells/')) return next()
 	const { username } = await getUserByReq(req).catch(_ => ({}))
 	if (!username) return next()
-	const shellsRoutersList = Object.values(shellsRouters[username])
-	let i = 0
-	function nextShellsRouter() {
-		if (shellsRoutersList.length == i) return next()
-		return shellsRoutersList[i++](req, res, nextShellsRouter)
-	}
-	return nextShellsRouter()
+	const shellname = req.path.split('/')[3]
+	if (shellsRouters[username][shellname])
+		return shellsRouters[username][shellname](req, res, next)
+	return next()
 })
 UpdatePartsRouter()
 
