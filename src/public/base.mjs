@@ -42,5 +42,5 @@ if (HTMLScriptElement.supports?.('speculationrules')) {
 			eagerness: 'moderate'
 		}]
 	})
-	document.body.append(specScript)
+	document.head.prepend(specScript)
 }
