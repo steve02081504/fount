@@ -5,6 +5,7 @@ import { LoadChar } from '../../../../../server/managers/char_manager.mjs'
 import { getAllUserNames } from '../../../../../server/auth.mjs'
 import { StartJob, EndJob } from '../../../../../server/jobs.mjs'
 import { geti18n } from '../../../../../scripts/i18n.mjs'
+import { createSimpleDiscordInterface } from './default_interface/main.mjs'
 /** @typedef {import('../../../../../decl/charAPI.ts').charAPI_t} charAPI_t */
 
 /**
@@ -63,6 +64,7 @@ export function getBotConfig(username, botname) {
 
 export async function getBotConfigTemplate(username, charname) {
 	const char = await LoadChar(username, charname)
+	char.interfaces.discord ??= await createSimpleDiscordInterface(char, username, charname)
 	return await char.interfaces.discord?.GetBotConfigTemplate?.() || {}
 }
 
@@ -85,7 +87,7 @@ export async function runBot(username, botname) {
 		const config = getBotConfig(username, botname)
 		if (!Object.keys(config).length) throw new Error(`Bot ${botname} not found`)
 		const char = await LoadChar(username, config.char)
-		if (!char.interfaces.discord) throw new Error(`Char ${config.char} does not support discord interface`)
+		char.interfaces.discord ??= await createSimpleDiscordInterface(char, username, config.char)
 		const client = await startBot(config, char)
 		return client
 	})()
