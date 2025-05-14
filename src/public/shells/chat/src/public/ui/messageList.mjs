@@ -17,6 +17,7 @@ import {
 } from './virtualQueue.mjs'
 import { addDragAndDropSupport } from './dragAndDrop.mjs'
 import { geti18n } from '../../../../../scripts/i18n.mjs'
+import { do_notification } from '../../../../../scripts/do_notification.mjs'
 
 // 用于存储滑动事件监听器的 Map
 const swipeListenersMap = new WeakMap()
@@ -77,8 +78,8 @@ export async function renderMessage(message) {
 	if (window.Notification && message.role == 'char')
 		// 注意：enableSwipe 不在这里调用了，由 virtualQueue.mjs 中的 updateLastCharMessageArrows 管理
 		// 桌面通知 (如果页面在后台)
-		if (document.visibilityState != 'visible' && Notification?.permission == 'granted')
-			new Notification(message.name || 'Character', {
+		if (document.visibilityState != 'visible')
+			do_notification(message.name || 'Character', {
 				body: message.content,
 				icon: message.avatar || DEFAULT_AVATAR
 			})
