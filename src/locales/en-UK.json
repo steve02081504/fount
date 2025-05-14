@@ -68,6 +68,9 @@
 		},
 		"discordbot": {
 			"botStarted": "char ${charname} logged in on bot ${botusername}"
+		},
+		"telegrambot": {
+			"botStarted": "char ${charname} logged in on telegram bot ${botusername}"
 		}
 	},
 	"protocolhandler": {
@@ -599,6 +602,44 @@
 			"configSaved": "Config saved successfully",
 			"httpError": "HTTP Error",
 			"beforeUnload": "You have unsaved changes. Are you sure you want to leave?"
+		}
+	},
+	"telegram_bots": {
+		"title": "Telegram Robot",
+		"cardTitle": "Telegram Robot Management",
+		"buttons": {
+			"newBot": "New",
+			"deleteBot": "delete"
+		},
+		"configCard": {
+			"title": "Robot configuration",
+			"labels": {
+				"character": "Bind the role",
+				"botToken": "Telegram Bot Token",
+				"config": "Config"
+			},
+			"charSelectPlaceholder": "Select a role",
+			"botTokenInput": {
+				"placeholder": "Enter Telegram Bot Token"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "Switch to display API keys"
+			},
+			"buttons": {
+				"saveConfig": "Save configuration",
+				"startBot": "start up",
+				"stopBot": "stop"
+			}
+		},
+		"prompts": {
+			"newBotName": "Please enter a new Bot name:"
+		},
+		"alerts": {
+			"botExists": "The robot named \"${botname}\" already exists, please use a different name.",
+			"unsavedChanges": "You have unsaved changes. Are you sure you want to abandon these changes?",
+			"configSaved": "The configuration has been saved successfully!",
+			"httpError": "HTTP request error",
+			"beforeUnload": "You have unsaved changes. Are you sure you want to leave the current page?"
 		}
 	},
 	"terminal_assistant": {

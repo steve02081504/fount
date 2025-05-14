@@ -68,6 +68,9 @@
 		},
 		"discordbot": {
 			"botStarted": "Char ${charname} inició sesión en Bot ${botusername}"
+		},
+		"telegrambot": {
+			"botStarted": "Char ${charname} inició sesión en Telegram Bot ${botusername}"
 		}
 	},
 	"protocolhandler": {
@@ -599,6 +602,44 @@
 			"configSaved": "Configuración guardada con éxito",
 			"httpError": "Error HTTP",
 			"beforeUnload": "Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?"
+		}
+	},
+	"telegram_bots": {
+		"title": "Robot telegrama",
+		"cardTitle": "Gestión de robots de telegrama",
+		"buttons": {
+			"newBot": "Nuevo",
+			"deleteBot": "borrar"
+		},
+		"configCard": {
+			"title": "Configuración de robot",
+			"labels": {
+				"character": "Atar el papel",
+				"botToken": "TOKEN DE BOT DE TELEGRAM",
+				"config": "Configuración"
+			},
+			"charSelectPlaceholder": "Seleccione un rol",
+			"botTokenInput": {
+				"placeholder": "Ingrese Telegram Bot Token"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "Cambiar a las teclas API de visualización"
+			},
+			"buttons": {
+				"saveConfig": "Guardar la configuración",
+				"startBot": "puesta en marcha",
+				"stopBot": "detener"
+			}
+		},
+		"prompts": {
+			"newBotName": "Ingrese un nuevo nombre de bot:"
+		},
+		"alerts": {
+			"botExists": "El robot llamado \"${botname}\" ya existe, por favor use un nombre diferente.",
+			"unsavedChanges": "Tienes cambios no salvos. ¿Estás seguro de que quieres abandonar estos cambios?",
+			"configSaved": "¡La configuración se ha guardado con éxito!",
+			"httpError": "Error de solicitud de HTTP",
+			"beforeUnload": "Tienes cambios no salvos. ¿Estás seguro de que quieres salir de la página actual?"
 		}
 	},
 	"terminal_assistant": {

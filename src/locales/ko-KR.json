@@ -68,6 +68,9 @@
 		},
 		"discordbot": {
 			"botStarted": "char ${charname} bot ${botusername}에 로그인"
+		},
+		"telegrambot": {
+			"botStarted": "char ${charname} 텔레 그램 봇 ${botusername}에 로그인했습니다."
 		}
 	},
 	"protocolhandler": {
@@ -599,6 +602,44 @@
 			"configSaved": "구성이 성공적으로 저장되었습니다",
 			"httpError": "HTTP 오류",
 			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 떠나시겠습니까?"
+		}
+	},
+	"telegram_bots": {
+		"title": "전보 로봇",
+		"cardTitle": "전보 로봇 관리",
+		"buttons": {
+			"newBot": "새로운",
+			"deleteBot": "삭제"
+		},
+		"configCard": {
+			"title": "로봇 구성",
+			"labels": {
+				"character": "역할을 묶습니다",
+				"botToken": "Telegram Bot Token",
+				"config": "구성"
+			},
+			"charSelectPlaceholder": "역할을 선택하십시오",
+			"botTokenInput": {
+				"placeholder": "Telegram Bot Token을 입력하십시오"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "API 키를 표시하도록 전환하십시오"
+			},
+			"buttons": {
+				"saveConfig": "구성 저장",
+				"startBot": "시작",
+				"stopBot": "멈추다"
+			}
+		},
+		"prompts": {
+			"newBotName": "새 봇 이름을 입력하십시오 :"
+		},
+		"alerts": {
+			"botExists": "\"${botname}\"이라는 로봇이 이미 존재합니다. 다른 이름을 사용하십시오.",
+			"unsavedChanges": "구원받지 못한 변화가 있습니다. 이러한 변화를 포기하고 싶습니까?",
+			"configSaved": "구성이 성공적으로 저장되었습니다!",
+			"httpError": "HTTP 요청 오류",
+			"beforeUnload": "구원받지 못한 변화가 있습니다. 현재 페이지를 떠나고 싶습니까?"
 		}
 	},
 	"terminal_assistant": {
