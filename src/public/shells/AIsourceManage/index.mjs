@@ -1,15 +1,9 @@
 import { createJsonEditor } from '../../scripts/jsoneditor.mjs'
-import { applyTheme, onThemeChange } from '../../scripts/theme.mjs'
+import { applyTheme } from '../../scripts/theme.mjs'
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
 
 const jsonEditorContainer = document.getElementById('jsonEditor')
 const disabledIndicator = document.getElementById('disabledIndicator') // 获取遮罩层元素
-onThemeChange(
-	(theme, isDark) => {
-		if (isDark) jsonEditorContainer.classList.add('jse-theme-dark')
-		else jsonEditorContainer.classList.remove('jse-theme-dark')
-	}
-)
 
 const fileListDiv = document.getElementById('fileList')
 const generatorSelect = document.getElementById('generatorSelect')

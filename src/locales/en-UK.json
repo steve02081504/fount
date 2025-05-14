@@ -578,7 +578,6 @@
 				"config": "Config"
 			},
 			"charSelectPlaceholder": "Select Character",
-			"charSupportMessage": "This character does not support Discord interface.",
 			"apiKeyInput": {
 				"placeholder": "Enter API Key"
 			},

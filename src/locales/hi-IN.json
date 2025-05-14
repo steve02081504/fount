@@ -578,7 +578,6 @@
 				"config": "कॉन्फ़िगरेशन"
 			},
 			"charSelectPlaceholder": "चरित्र का चयन करें",
-			"charSupportMessage": "यह चरित्र Discord इंटरफ़ेस का समर्थन नहीं करता है।",
 			"apiKeyInput": {
 				"placeholder": "API कुंजी दर्ज करें"
 			},

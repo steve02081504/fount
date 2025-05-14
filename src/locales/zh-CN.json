@@ -67,7 +67,10 @@
 			"createTrayFailed": "创建托盘失败: ${error}"
 		},
 		"discordbot": {
-			"botStarted": "char ${charname} 已在bot ${botusername} 上登录"
+			"botStarted": "char ${charname} 已在discord bot ${botusername} 上登录"
+		},
+		"telegrambot": {
+			"botStarted": "char ${charname} 已在telegream bot ${botusername} 上登录"
 		}
 	},
 	"protocolhandler": {
@@ -578,7 +581,6 @@
 				"config": "Config"
 			},
 			"charSelectPlaceholder": "选择角色",
-			"charSupportMessage": "此角色不支持 Discord 接口。",
 			"apiKeyInput": {
 				"placeholder": "Enter API Key"
 			},
@@ -600,6 +602,44 @@
 			"configSaved": "配置保存成功",
 			"httpError": "HTTP 错误",
 			"beforeUnload": "您有未保存的更改。确定要离开吗？"
+		}
+	},
+	"telegram_bots": {
+		"title": "Telegram 机器人",
+		"cardTitle": "Telegram 机器人管理",
+		"buttons": {
+			"newBot": "新建",
+			"deleteBot": "删除"
+		},
+		"configCard": {
+			"title": "机器人配置",
+			"labels": {
+				"character": "绑定角色",
+				"botToken": "Telegram Bot Token",
+				"config": "Config"
+			},
+			"charSelectPlaceholder": "选择角色",
+			"botTokenInput": {
+				"placeholder": "Enter Telegram Bot Token"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "切换显示 API 密钥"
+			},
+			"buttons": {
+				"saveConfig": "保存配置",
+				"startBot": "启动",
+				"stopBot": "停止"
+			}
+		},
+		"prompts": {
+			"newBotName": "请输入新的 Bot 名称："
+		},
+		"alerts": {
+			"botExists": "名为 “${botname}” 的机器人已存在，请使用其他名称。",
+			"unsavedChanges": "您有未保存的更改。确定要放弃这些更改吗？",
+			"configSaved": "配置已成功保存！",
+			"httpError": "HTTP 请求错误",
+			"beforeUnload": "您有未保存的更改。确定要离开当前页面吗？"
 		}
 	},
 	"terminal_assistant": {

@@ -578,7 +578,6 @@
 				"config": "구성"
 			},
 			"charSelectPlaceholder": "캐릭터 선택",
-			"charSupportMessage": "이 캐릭터는 Discord 인터페이스를 지원하지 않습니다.",
 			"apiKeyInput": {
 				"placeholder": "API 키 입력"
 			},
