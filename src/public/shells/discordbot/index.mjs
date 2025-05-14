@@ -152,7 +152,7 @@ async function loadBotConfig(botname) {
 		charSelect.value = config.char || ''
 
 		// 检查角色是否支持 Discord
-		await checkCharSupport(config.char)
+		checkCharSupport(config.char)
 		// 加载初始角色模板
 		if (config.char && !Object.keys(config.config).length) {
 			const template = await getBotConfigTemplate(config.char)
@@ -230,26 +230,13 @@ async function handleDeleteBot() {
 	}
 }
 
-async function checkCharSupport(charName) {
+function checkCharSupport(charName) {
 	if (!charName) {
 		charSupportMessage.classList.add('hidden')
 		return false
 	}
-	try {
-		const charDetails = await fetchData(`/api/getdetails/chars?name=${charName}`)
-
-		const result = charDetails.supportedInterfaces.includes('discord')
-		if (result)
-			charSupportMessage.classList.add('hidden')
-		else
-			charSupportMessage.classList.remove('hidden')
-
-		return result
-	} catch (error) {
-		console.error('Failed to check character support:', error)
-		charSupportMessage.classList.add('hidden') // 隐藏消息，因为无法确定支持状态
-		return false
-	}
+	charSupportMessage.classList.add('hidden')
+	return true
 }
 
 async function handleCharSelectChange() {
@@ -262,7 +249,7 @@ async function handleCharSelectChange() {
 
 	const selectedChar = charSelect.value // 获取选择的角色
 
-	if (await checkCharSupport(selectedChar)) try {
+	if (checkCharSupport(selectedChar)) try {
 		isDirty = true // 更改了选项，标记为 dirty
 		const template = await getBotConfigTemplate(selectedChar) // 获取模板
 		if (template && configEditor)
@@ -273,8 +260,8 @@ async function handleCharSelectChange() {
 }
 
 function handleToggleToken() {
-	tokenInput.type = tokenInput.type === 'password' ? 'text' : 'text' // Fix: Should be 'text' not 'test'
-	toggleTokenButton.innerHTML = `<img src="https://api.iconify.design/line-md/watch${tokenInput.type === 'password' ? '-off' : ''}.svg" class="text-icon" alt="${geti18n('discord_bots.configCard.toggleApiKeyIcon')}" />`
+	tokenInput.type = tokenInput.type === 'password' ? 'text' : 'password'
+	toggleTokenButton.innerHTML = `<img src="https://api.iconify.design/line-md/watch${tokenInput.type === 'password' ? '-off' : ''}.svg" class="text-icon" data-i18n="discord_bots.configCard.toggleApiKeyIcon" />`
 	i18nElement(toggleTokenButton)
 }
 
@@ -416,7 +403,7 @@ async function initializeFromURLParams() {
 
 		if (charName) {
 			charSelect.value = charName
-			await checkCharSupport(charName)
+			checkCharSupport(charName)
 		}
 	} catch (error) {
 		console.error('Failed to initialize from URL parameters:', error)

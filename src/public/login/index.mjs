@@ -13,7 +13,7 @@ const sendVerificationCodeBtn = document.getElementById('send-verification-code-
 const passwordStrengthFeedback = document.getElementById('password-strength-feedback')
 const passwordInput = document.getElementById('password')
 
-const isLocalOrigin = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname)
+const isLocalOrigin = await fetch('/api/ping').then(res => res.is_local_ip).catch(() => false)
 
 let isLoginForm = true
 let verificationCodeSent = false
