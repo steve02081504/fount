@@ -68,6 +68,9 @@
 		},
 		"discordbot": {
 			"botStarted": "char ${charname} bot ${botusername}にログインしました"
+		},
+		"telegrambot": {
+			"botStarted": "char ${charname} telegram bot ${botusername}にログインしました"
 		}
 	},
 	"protocolhandler": {
@@ -599,6 +602,44 @@
 			"configSaved": "設定が保存されました",
 			"httpError": "HTTPエラー",
 			"beforeUnload": "保存されていない変更があります。移動してもよろしいですか？"
+		}
+	},
+	"telegram_bots": {
+		"title": "電報ロボット",
+		"cardTitle": "電報ロボット管理",
+		"buttons": {
+			"newBot": "新しい",
+			"deleteBot": "消去"
+		},
+		"configCard": {
+			"title": "ロボット構成",
+			"labels": {
+				"character": "役割を結合します",
+				"botToken": "電報ボットトークン",
+				"config": "config"
+			},
+			"charSelectPlaceholder": "役割を選択します",
+			"botTokenInput": {
+				"placeholder": "電報ボットトークンを入力してください"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "APIキーの表示に切り替えます"
+			},
+			"buttons": {
+				"saveConfig": "構成を保存します",
+				"startBot": "起動する",
+				"stopBot": "停止"
+			}
+		},
+		"prompts": {
+			"newBotName": "新しいボット名を入力してください："
+		},
+		"alerts": {
+			"botExists": "「${botname}」という名前のロボットはすでに存在しています。別の名前を使用してください。",
+			"unsavedChanges": "救われていない変更があります。これらの変更を放棄したいですか？",
+			"configSaved": "構成は正常に保存されました！",
+			"httpError": "HTTP要求エラー",
+			"beforeUnload": "救われていない変更があります。現在のページを離れたいですか？"
 		}
 	},
 	"terminal_assistant": {

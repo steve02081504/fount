@@ -68,6 +68,9 @@
 		},
 		"discordbot": {
 			"botStarted": "char ${charname} вошел в систему на бот ${botusername}"
+		},
+		"telegrambot": {
+			"botStarted": "char ${charname} вошел в систему на Telegram Bot ${botusername}"
 		}
 	},
 	"protocolhandler": {
@@ -599,6 +602,44 @@
 			"configSaved": "Конфигурация успешно сохранена",
 			"httpError": "Ошибка HTTP",
 			"beforeUnload": "У вас есть несохраненные изменения. Вы уверены, что хотите выйти?"
+		}
+	},
+	"telegram_bots": {
+		"title": "Телеграмма робот",
+		"cardTitle": "Телеграмма управление роботами",
+		"buttons": {
+			"newBot": "Новый",
+			"deleteBot": "удалить"
+		},
+		"configCard": {
+			"title": "Конфигурация робота",
+			"labels": {
+				"character": "Связывать роль",
+				"botToken": "Telegram Bot Token",
+				"config": "Конфигурация"
+			},
+			"charSelectPlaceholder": "Выберите роль",
+			"botTokenInput": {
+				"placeholder": "Введите Telegram Bot Token"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "Переключить на отображение клавиш API"
+			},
+			"buttons": {
+				"saveConfig": "Сохранить конфигурацию",
+				"startBot": "запускать",
+				"stopBot": "останавливаться"
+			}
+		},
+		"prompts": {
+			"newBotName": "Пожалуйста, введите новое имя бота:"
+		},
+		"alerts": {
+			"botExists": "Робот по имени «${botname}» уже существует, используйте другое имя.",
+			"unsavedChanges": "У вас есть неспасенные изменения. Вы уверены, что хотите отказаться от этих изменений?",
+			"configSaved": "Конфигурация была успешно сохранена!",
+			"httpError": "Ошибка HTTP -запроса",
+			"beforeUnload": "У вас есть неспасенные изменения. Вы уверены, что хотите покинуть текущую страницу?"
 		}
 	},
 	"terminal_assistant": {

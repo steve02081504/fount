@@ -68,6 +68,9 @@
 		},
 		"discordbot": {
 			"botStarted": "char ${charname} बॉट ${botusername} पर लॉग इन किया गया"
+		},
+		"telegrambot": {
+			"botStarted": "char ${charname} टेलीग्राम बॉट ${botusername} पर लॉग इन किया गया"
 		}
 	},
 	"protocolhandler": {
@@ -599,6 +602,44 @@
 			"configSaved": "कॉन्फ़िगरेशन सफलतापूर्वक सहेजा गया",
 			"httpError": "HTTP त्रुटि",
 			"beforeUnload": "आपके पास सहेजे नहीं गए बदलाव हैं। क्या आप वाकई छोड़ना चाहते हैं?"
+		}
+	},
+	"telegram_bots": {
+		"title": "तार रोबोट",
+		"cardTitle": "तार रोबोट प्रबंधन",
+		"buttons": {
+			"newBot": "नया",
+			"deleteBot": "मिटाना"
+		},
+		"configCard": {
+			"title": "रोबोट विन्यास",
+			"labels": {
+				"character": "भूमिका को बांधें",
+				"botToken": "तार बॉट टोकन",
+				"config": "कॉन्फ़िग"
+			},
+			"charSelectPlaceholder": "एक भूमिका का चयन करें",
+			"botTokenInput": {
+				"placeholder": "टेलीग्राम बॉट टोकन दर्ज करें"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "API कुंजी प्रदर्शित करने के लिए स्विच करें"
+			},
+			"buttons": {
+				"saveConfig": "कॉन्फ़िगरेशन सहेजें",
+				"startBot": "चालू होना",
+				"stopBot": "रुकना"
+			}
+		},
+		"prompts": {
+			"newBotName": "कृपया एक नया बॉट नाम दर्ज करें:"
+		},
+		"alerts": {
+			"botExists": "\"${botname}\" नामक रोबोट पहले से मौजूद है, कृपया एक अलग नाम का उपयोग करें।",
+			"unsavedChanges": "आपके पास अनसुना परिवर्तन हैं। क्या आप सुनिश्चित हैं कि आप इन परिवर्तनों को छोड़ना चाहते हैं?",
+			"configSaved": "कॉन्फ़िगरेशन को सफलतापूर्वक सहेजा गया है!",
+			"httpError": "HTTP अनुरोध त्रुटि",
+			"beforeUnload": "आपके पास अनसुना परिवर्तन हैं। क्या आप सुनिश्चित हैं कि आप वर्तमान पृष्ठ छोड़ना चाहते हैं?"
 		}
 	},
 	"terminal_assistant": {
