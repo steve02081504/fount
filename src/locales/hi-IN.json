@@ -66,6 +66,9 @@
 			"readIconFailed": "आइकन फ़ाइल पढ़ने में विफल: ${error}",
 			"createTrayFailed": "ट्रे बनाने में विफल: ${error}"
 		},
+		"discordbot": {
+			"botStarted": "char ${charname} डिस्कोर्ड बॉट ${botusername} पर लॉग इन किया गया"
+		},
 		"telegrambot": {
 			"botStarted": "char ${charname} टेलीग्राम बॉट ${botusername} पर लॉग इन किया गया"
 		}

@@ -66,6 +66,9 @@
 			"readIconFailed": "Impossibile leggere il file icona: $ {errore}",
 			"createTrayFailed": "Impossibile creare un vassoio: $ {errore}"
 		},
+		"discordbot": {
+			"botStarted": "char ${charname} loggato su discord bot ${botusername}"
+		},
 		"telegrambot": {
 			"botStarted": "char ${charname} loggato su telegramma bot ${botusername}"
 		}

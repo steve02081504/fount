@@ -66,6 +66,9 @@
 			"readIconFailed": "Falha ao ler ficheiro de ícone: ${error}",
 			"createTrayFailed": "Falha ao criar bandeja: ${error}"
 		},
+		"discordbot": {
+			"botStarted": "char ${charname} conectado no discord Bot ${botusername}"
+		},
 		"telegrambot": {
 			"botStarted": "char ${charname} conectado no Telegram Bot ${botusername}"
 		}
