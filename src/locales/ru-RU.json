@@ -66,6 +66,9 @@
 			"readIconFailed": "Не удалось прочитать файл значка: ${error}",
 			"createTrayFailed": "Не удалось создать трей: ${error}"
 		},
+		"discordbot": {
+			"botStarted": "char ${charname} вошел в систему на Discord Bot ${botusername}"
+		},
 		"telegrambot": {
 			"botStarted": "char ${charname} вошел в систему на Telegram Bot ${botusername}"
 		}

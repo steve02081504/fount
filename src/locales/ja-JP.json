@@ -66,6 +66,9 @@
 			"readIconFailed": "アイコンファイルの読み込みに失敗しました：${error}",
 			"createTrayFailed": "トレイの作成に失敗しました：${error}"
 		},
+		"discordbot": {
+			"botStarted": "char ${charname} discord bot ${botusername}にログインしました"
+		},
 		"telegrambot": {
 			"botStarted": "char ${charname} telegram bot ${botusername}にログインしました"
 		}
