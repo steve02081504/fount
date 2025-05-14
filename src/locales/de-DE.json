@@ -66,9 +66,6 @@
 			"readIconFailed": "Fehler beim Lesen der Icon-Datei: ${error}",
 			"createTrayFailed": "Fehler beim Erstellen des Trays: ${error}"
 		},
-		"discordbot": {
-			"botStarted": "char ${charname} Angemeldete Bot ${botusername}"
-		},
 		"telegrambot": {
 			"botStarted": "char ${charname} Angemeldet bei Telegram Bot ${botusername}"
 		}
