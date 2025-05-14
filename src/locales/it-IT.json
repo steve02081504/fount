@@ -578,7 +578,6 @@
 				"config": "Configurazione"
 			},
 			"charSelectPlaceholder": "Seleziona un ruolo",
-			"charSupportMessage": "Questo ruolo non supporta l'interfaccia discord.",
 			"apiKeyInput": {
 				"placeholder": "Immettere la chiave API"
 			},

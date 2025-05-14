@@ -578,7 +578,6 @@
 				"config": "Конфигурация"
 			},
 			"charSelectPlaceholder": "Выберите персонажа",
-			"charSupportMessage": "Этот персонаж не поддерживает интерфейс Discord.",
 			"apiKeyInput": {
 				"placeholder": "Введите API-ключ"
 			},

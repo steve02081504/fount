@@ -1,4 +1,5 @@
 import { createJSONEditor as base } from 'https://cdn.jsdelivr.net/npm/vanilla-jsoneditor@2/standalone.js'
+import { onThemeChange } from './theme.mjs'
 
 export function createJsonEditor(jsonEditorContainer, options) {
 	const result = base({
@@ -16,6 +17,12 @@ export function createJsonEditor(jsonEditorContainer, options) {
 			e.preventDefault()
 		}
 	})
+	onThemeChange(
+		(theme, isDark) => {
+			if (isDark) jsonEditorContainer.classList.add('jse-theme-dark')
+			else jsonEditorContainer.classList.remove('jse-theme-dark')
+		}
+	)
 	return result
 }
 

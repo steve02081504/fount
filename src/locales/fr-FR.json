@@ -578,7 +578,6 @@
 				"config": "Config"
 			},
 			"charSelectPlaceholder": "Sélectionner un Personnage",
-			"charSupportMessage": "Ce personnage ne prend pas en charge l'interface Discord.",
 			"apiKeyInput": {
 				"placeholder": "Saisir la Clé API"
 			},

@@ -578,7 +578,6 @@
 				"config": "Konfiguration"
 			},
 			"charSelectPlaceholder": "Charakter auswählen",
-			"charSupportMessage": "Dieser Charakter unterstützt die Discord-Schnittstelle nicht.",
 			"apiKeyInput": {
 				"placeholder": "API-Schlüssel eingeben"
 			},

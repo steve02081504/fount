@@ -578,7 +578,6 @@
 				"config": "Configuración"
 			},
 			"charSelectPlaceholder": "Seleccionar personaje",
-			"charSupportMessage": "Este personaje no es compatible con la interfaz de Discord.",
 			"apiKeyInput": {
 				"placeholder": "Introduce la clave API"
 			},
