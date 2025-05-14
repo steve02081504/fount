@@ -66,9 +66,6 @@
 			"readIconFailed": "Failed to read icon file: ${error}",
 			"createTrayFailed": "Failed to create tray: ${error}"
 		},
-		"discordbot": {
-			"botStarted": "char ${charname} logged in on bot ${botusername}"
-		},
 		"telegrambot": {
 			"botStarted": "char ${charname} logged in on telegram bot ${botusername}"
 		}

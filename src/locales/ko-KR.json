@@ -66,9 +66,6 @@
 			"readIconFailed": "아이콘 파일 읽기 실패: ${error}",
 			"createTrayFailed": "트레이 생성 실패: ${error}"
 		},
-		"discordbot": {
-			"botStarted": "char ${charname} bot ${botusername}에 로그인"
-		},
 		"telegrambot": {
 			"botStarted": "char ${charname} 텔레 그램 봇 ${botusername}에 로그인했습니다."
 		}
