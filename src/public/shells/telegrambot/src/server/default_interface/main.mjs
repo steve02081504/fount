@@ -76,7 +76,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 	/**
 	 * Telegram Bot 的核心设置和事件处理函数。
 	 */
-	async function SimpleTelegramBotSetup(bot, interfaceConfig, fountUsername, currentBotName) {
+	async function SimpleTelegramBotSetup(bot, interfaceConfig) {
 		const botInfo = bot.botInfo || await tryFewTimes(() => bot.telegram.getMe())
 		const botDisplayName = (await getPartInfo(charAPI, localhostLocales[0]))?.name || botCharname // 尝试获取本地化名称
 
@@ -294,7 +294,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 	} // end of SimpleTelegramBotSetup
 
 	return {
-		Setup: SimpleTelegramBotSetup,
+		BotSetup: SimpleTelegramBotSetup,
 		GetBotConfigTemplate: GetSimpleBotConfigTemplate,
 	}
 }

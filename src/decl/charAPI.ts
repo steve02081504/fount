@@ -3,6 +3,7 @@ import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_
 import { chatReply_t, chatReplyRequest_t } from '../public/shells/chat/decl/chatLog';
 
 import { Client as DiscordClient, GatewayIntentBits as DiscordGatewayIntentBits, Partials as DiscordPartials } from 'npm:discord.js';
+import { Telegraf } from 'npm:telegraf';
 
 export class charState_t {
 	InitCount: number;
@@ -70,6 +71,10 @@ export class charAPI_t {
 			OnceClientReady: (client: DiscordClient, config: any) => Promise<void>
 			GetBotConfigTemplate: () => Promise<any>
 		},
+		telegram?: {
+			BotSetup?: (bot: Telegraf, config: any) => Promise<void>;
+			GetBotConfigTemplate?: () => Promise<any>;
+		}
 		shellassist?: {
 			Assist: (data: {
 				username: string
