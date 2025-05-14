@@ -28,7 +28,7 @@ async function startTelegrafBot(username, botname, botConfig, char) {
 	// 允许角色自定义其 Telegram 接口的设置
 	// char.interfaces.telegram 是角色 manifest.json 中定义的 telegram 接口
 	// botConfig.config 是用户在前端UI的JSON编辑器中为此特定机器人实例配置的内容
-	await char.interfaces.telegram?.Setup?.(bot, botConfig.config, username, botname)
+	await char.interfaces.telegram?.BotSetup?.(bot, botConfig.config)
 
 	// 启动机器人
 	// 使用 try-catch 包装 bot.launch() 以便捕获启动时可能发生的错误 (例如无效token)
