@@ -23,7 +23,7 @@ export function registerEndpoints(router) {
 		throw new Error('test error')
 	})
 	router.get('/api/ping', cors(), (req, res) => {
-		return res.status(200).json({ message: 'pong', cilent_name: 'fount' })
+		return res.status(200).json({ message: 'pong', cilent_name: 'fount', is_local_ip: is_local_ip_from_req(req) })
 	})
 	router.get('/api/getlocaledata', async (req, res) => {
 		const preferredLanguages = req.headers['accept-language']?.split?.(',')?.map?.((lang) => lang.trim().split(';')[0])
