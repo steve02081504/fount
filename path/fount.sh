@@ -135,9 +135,11 @@ if ! command -v git &> /dev/null; then
 	install_package git  # Use the install_package function
 fi
 
-if [ -f "$FOUNT_DIR/.noupdate" ]; then
-	echo "Skipping fount update due to .noupdate file"
-elif command -v git &> /dev/null; then # Ensure git is now installed
+fount_upgrade() {
+	if ! command -v git &> /dev/null; then # Ensure git is now installed
+		echo "Git is not installed, skipping fount update"
+		return 0
+	fi
 	if [ ! -d "$FOUNT_DIR/.git" ]; then
 		rm -rf "$FOUNT_DIR/.git-clone"  # Remove any old .git-clone
 		mkdir -p "$FOUNT_DIR/.git-clone"
@@ -211,8 +213,11 @@ elif command -v git &> /dev/null; then # Ensure git is now installed
 			fi
 		fi
 	fi
+}
+if [ -f "$FOUNT_DIR/.noupdate" ]; then
+	echo "Skipping fount update due to .noupdate file"
 else
-	echo "Git is not installed, skipping fount update"
+	fount_upgrade
 fi
 
 if [[ ($IN_TERMUX -eq 0 && -z "$(command -v deno)") || ($IN_TERMUX -eq 1 && ! -f ~/.deno/bin/deno.glibc.sh) ]]; then
@@ -294,9 +299,7 @@ if [[ ($IN_TERMUX -eq 0 && -z "$(command -v deno)") || ($IN_TERMUX -eq 1 && ! -f
 fi
 
 
-if [ $IN_DOCKER -eq 1 ]; then
-	echo "Skipping deno upgrade in Docker environment"
-else
+deno_upgrade() {
 	# 使用 run_deno 来获取 Deno 版本信息
 	deno_version_before=$(run_deno -V 2>&1)
 	deno_upgrade_channel="stable"
@@ -316,6 +319,11 @@ else
 			patch_deno
 		fi
 	fi
+}
+if [ $IN_DOCKER -eq 1 ]; then
+	echo "Skipping deno upgrade in Docker environment"
+else
+	deno_upgrade
 fi
 
 # 使用 run_deno 来获取 Deno 版本信息，并输出
@@ -357,7 +365,11 @@ if [[ $# -gt 0 && $1 = 'init' ]]; then
 elif [[ $# -gt 0 && $1 = 'keepalive' ]]; then
 	runargs=("${@:2}")
 	run "${runargs[@]}"
-	while $?; do run; done
+	while $?; do
+		deno_upgrade
+		fount_upgrade
+		run
+	done
 elif [[ $# -gt 0 && $1 = 'remove' ]]; then
 	run shutdown
 	echo "removing fount..."
