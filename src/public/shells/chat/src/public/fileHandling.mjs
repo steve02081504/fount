@@ -3,6 +3,7 @@ import { processTimeStampForId, arrayBufferToBase64 } from './utils.mjs'
 import { openModal } from './ui/modal.mjs'
 import { onElementRemoved } from '../../../../scripts/onElementRemoved.mjs'
 import { svgInliner } from '../../../../scripts/svg-inliner.mjs'
+import { getfile } from './files.mjs'
 
 export const attachmentPreviewMap = new Map()
 
@@ -72,6 +73,10 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 		showDownloadButton: !selectedFiles,
 		showDeleteButton: selectedFiles,
 	})
+	if (file.buffer.startsWith('file:')) {
+		file = {...file}
+		file.buffer = arrayBufferToBase64(await getfile(file.buffer))
+	}
 
 	const previewContainer = attachmentElement.querySelector('.preview-container')
 	if (file.mimeType.startsWith('image/')) {
