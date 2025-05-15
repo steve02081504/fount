@@ -19,6 +19,7 @@ if (!(Get-Command fount -ErrorAction SilentlyContinue)) {
 	}
 	$UserPath = $UserPath -join ';'
 	[System.Environment]::SetEnvironmentVariable('PATH', $UserPath, [System.EnvironmentVariableTarget]::User)
+	$env:PATH = $path
 }
 
 if ($args.Count -gt 0 -and $args[0] -eq 'open') {
