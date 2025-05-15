@@ -5,7 +5,7 @@
 	<meta charset="UTF-8">
 	<meta name="darkreader-lock">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title data-i18n="discord_bots.title"></title>
+	<title data-i18n="telegram_bots.title"></title>
 	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" />
 	<link href="/base.css" rel="stylesheet" type="text/css" />
 	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser"></script>
@@ -17,51 +17,51 @@
 	<div class="container mx-auto w-full lg:w-2/3">
 		<div class="card bg-base-100 shadow-xl mb-4">
 			<div class="card-body">
-				<h2 class="card-title mb-4" data-i18n="discord_bots.cardTitle"></h2>
+				<h2 class="card-title mb-4" data-i18n="telegram_bots.cardTitle"></h2>
 				<div class="flex flex-col lg:flex-row gap-4 mt-4">
 					<select id="bot-list" class="select select-bordered w-full"></select>
-					<button id="new-bot" class="btn btn-accent w-full lg:w-auto" data-i18n="discord_bots.buttons.newBot"></button>
-					<button id="delete-bot" class="btn btn-error w-full lg:w-auto" data-i18n="discord_bots.buttons.deleteBot"></button>
+					<button id="new-bot" class="btn btn-accent w-full lg:w-auto" data-i18n="telegram_bots.buttons.newBot"></button>
+					<button id="delete-bot" class="btn btn-error w-full lg:w-auto" data-i18n="telegram_bots.buttons.deleteBot"></button>
 				</div>
 			</div>
 		</div>
 
 		<div class="card bg-base-100 shadow-xl">
 			<div class="card-body">
-				<h2 class="card-title mb-4" data-i18n="discord_bots.configCard.title"></h2>
+				<h2 class="card-title mb-4" data-i18n="telegram_bots.configCard.title"></h2>
 				<div class="mb-4">
 					<label for="char-select" class="label">
-						<span class="label-text" data-i18n="discord_bots.configCard.labels.character"></span>
+						<span class="label-text" data-i18n="telegram_bots.configCard.labels.character"></span>
 					</label>
 					<select id="char-select" class="select select-bordered w-full">
-						<option value="" disabled selected data-i18n="discord_bots.configCard.charSelectPlaceholder"></option>
+						<option value="" disabled selected data-i18n="telegram_bots.configCard.charSelectPlaceholder"></option>
 					</select>
 				</div>
 				<div class="mb-4">
 					<label for="token-input" class="label">
-						<span class="label-text" data-i18n="discord_bots.configCard.labels.apiKey"></span>
+						<span class="label-text" data-i18n="telegram_bots.configCard.labels.botToken"></span>
 					</label>
 					<div class="relative">
-						<input id="token-input" type="password" class="input input-bordered w-full pr-10" data-i18n="discord_bots.configCard.apiKeyInput" />
+						<input id="token-input" type="password" class="input input-bordered w-full pr-10" data-i18n="telegram_bots.configCard.botTokenInput" />
 						<button id="toggle-token" type="button" class="absolute top-0 right-0 h-full px-4">
-							<img src="https://api.iconify.design/line-md/watch-off.svg" class="text-icon" data-i18n="discord_bots.configCard.toggleApiKeyIcon" />
+							<img src="https://api.iconify.design/line-md/watch-off.svg" class="text-icon" data-i18n="telegram_bots.configCard.toggleBotTokenIcon" />
 						</button>
 					</div>
 				</div>
 				<div class="mb-4">
 					<label for="config-editor" class="label">
-						<span class="label-text" data-i18n="discord_bots.configCard.labels.config"></span>
+						<span class="label-text" data-i18n="telegram_bots.configCard.labels.config"></span>
 					</label>
 					<div id="config-editor" class="jsoneditor-container" style="height: 400px; overflow: auto"></div>
 				</div>
 				<div class="flex justify-end gap-4 items-center">
 					<button id="save-config" class="btn btn-primary">
 						<img id="saveStatusIcon" src="" class="w-6 h-6 mr-2 hidden" />
-						<span id="saveStatusText" data-i18n="discord_bots.configCard.buttons.saveConfig"></span>
+						<span id="saveStatusText" data-i18n="telegram_bots.configCard.buttons.saveConfig"></span>
 					</button>
 					<button id="start-stop-bot" class="btn btn-success">
 						<img id="startStopStatusIcon" src="" class="w-6 h-6 mr-2 hidden" />
-						<span id="startStopStatusText" data-i18n="discord_bots.configCard.buttons.startBot"></span>
+						<span id="startStopStatusText" data-i18n="telegram_bots.configCard.buttons.startBot"></span>
 					</button>
 				</div>
 			</div>

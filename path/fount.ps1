@@ -114,10 +114,11 @@ if (!(Get-Command git -ErrorAction SilentlyContinue)) {
 	}
 }
 
-if (Test-Path -Path "$FOUNT_DIR/.noupdate") {
-	Write-Host "Skipping fount update due to .noupdate file"
-}
-elseif (Get-Command git -ErrorAction SilentlyContinue) {
+function fount_upgrade {
+	if (!(Get-Command git -ErrorAction SilentlyContinue)) {
+		Write-Host "Git is not installed, skipping git pull"
+		return
+	}
 	if (!(Test-Path -Path "$FOUNT_DIR/.git")) {
 		Remove-Item -Path "$FOUNT_DIR/.git-clone" -Recurse -Force -ErrorAction SilentlyContinue
 		New-Item -ItemType Directory -Path "$FOUNT_DIR/.git-clone"
@@ -130,7 +131,7 @@ elseif (Get-Command git -ErrorAction SilentlyContinue) {
 		git -C "$FOUNT_DIR" checkout master
 	}
 
-	if(!(Test-Path -Path "$FOUNT_DIR/.git")) {
+	if (!(Test-Path -Path "$FOUNT_DIR/.git")) {
 		Write-Host "Repository not found, skipping git pull"
 	}
 	else {
@@ -176,8 +177,12 @@ elseif (Get-Command git -ErrorAction SilentlyContinue) {
 		}
 	}
 }
+
+if (Test-Path -Path "$FOUNT_DIR/.noupdate") {
+	Write-Host "Skipping fount update due to .noupdate file"
+}
 else {
-	Write-Host "Git is not installed, skipping git pull"
+	fount_upgrade
 }
 
 # Done 安装
@@ -209,12 +214,9 @@ if (!(Get-Command done -ErrorAction SilentlyContinue)) {
 	}
 }
 
-# Done 更新
-if ($IN_DOCKER) {
-	Write-Host "Skipping done upgrade in Docker environment"
-}
-else {
-	$deno_ver = done -V
+# Deno 更新
+function deno_upgrade() {
+	$deno_ver = deno -V
 	if (!$deno_ver) {
 		done upgrade -q
 		$deno_ver = done -V
@@ -233,7 +235,14 @@ else {
 	done upgrade -q $deno_update_channel
 }
 
-done -V
+if ($IN_DOCKER) {
+	Write-Host "Skipping deno upgrade in Docker environment"
+}
+else {
+	deno_upgrade
+}
+
+deno -V
 
 # 安装依赖
 if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $args[0] -eq 'init')) {
@@ -306,7 +315,11 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'init') {
 elseif ($args.Count -gt 0 -and $args[0] -eq 'keepalive') {
 	$runargs = $args[1..$args.Count]
 	run @runargs
-	while ($LastExitCode) { run }
+	while ($LastExitCode) {
+		deno_upgrade
+		fount_upgrade
+		run
+	}
 }
 elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 	run shutdown

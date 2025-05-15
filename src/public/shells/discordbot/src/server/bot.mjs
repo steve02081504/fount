@@ -108,8 +108,8 @@ export async function stopBot(username, botname) {
 		const client = await botCache[botname]
 		await client.destroy()
 	} finally {
-		delete botCache[botname]
-	}
+			delete botCache[botname]
+		}
 
 	EndJob(username, 'shells', 'discordbot', botname)
 }
@@ -119,9 +119,17 @@ export function getRunningBotList(username) {
 }
 
 on_shutdown(async () => {
-	for (const username in getAllUserNames())
-		for (const botname in getRunningBotList(username))
-			await stopBot(username, botname)
+	for (const username in getAllUserNames()) {
+		const botCache = loadTempData(username, 'discordbot_cache')
+		for (const botname in botCache) {
+			if (botCache[botname]) try {
+				const client = await botCache[botname]
+				await client.destroy()
+			} finally {
+				delete botCache[botname]
+			}
+		}
+	}
 })
 
 export function getBotList(username) {

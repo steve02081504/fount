@@ -67,7 +67,10 @@
 			"createTrayFailed": "Falha ao criar bandeja: ${error}"
 		},
 		"discordbot": {
-			"botStarted": "char ${charname} conectado no bot ${botusername}"
+			"botStarted": "char ${charname} conectado no discord Bot ${botusername}"
+		},
+		"telegrambot": {
+			"botStarted": "char ${charname} conectado no Telegram Bot ${botusername}"
 		}
 	},
 	"protocolhandler": {
@@ -578,7 +581,6 @@
 				"config": "Configuração"
 			},
 			"charSelectPlaceholder": "Selecionar Personagem",
-			"charSupportMessage": "Este personagem não suporta a interface Discord.",
 			"apiKeyInput": {
 				"placeholder": "Digite a Chave API"
 			},
@@ -600,6 +602,44 @@
 			"configSaved": "Configuração salva com sucesso",
 			"httpError": "Erro HTTP",
 			"beforeUnload": "Você tem alterações não salvas. Tem certeza de que deseja sair?"
+		}
+	},
+	"telegram_bots": {
+		"title": "Robô de Telegrama",
+		"cardTitle": "Gerenciamento de robôs do Telegram",
+		"buttons": {
+			"newBot": "Novo",
+			"deleteBot": "excluir"
+		},
+		"configCard": {
+			"title": "Configuração do robô",
+			"labels": {
+				"character": "Vincular o papel",
+				"botToken": "Token de bot de telegrama",
+				"config": "Config"
+			},
+			"charSelectPlaceholder": "Selecione uma função",
+			"botTokenInput": {
+				"placeholder": "Digite o TELEGRAM Bot Token"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "Alterne para exibir as chaves da API"
+			},
+			"buttons": {
+				"saveConfig": "Salvar configuração",
+				"startBot": "comece",
+				"stopBot": "parar"
+			}
+		},
+		"prompts": {
+			"newBotName": "Por favor, insira um novo nome de bot:"
+		},
+		"alerts": {
+			"botExists": "O robô chamado \"${botname}\" já existe, use um nome diferente.",
+			"unsavedChanges": "Você tem mudanças não salvas. Tem certeza de que deseja abandonar essas mudanças?",
+			"configSaved": "A configuração foi salva com sucesso!",
+			"httpError": "Erro de solicitação HTTP",
+			"beforeUnload": "Você tem mudanças não salvas. Tem certeza de que deseja deixar a página atual?"
 		}
 	},
 	"terminal_assistant": {

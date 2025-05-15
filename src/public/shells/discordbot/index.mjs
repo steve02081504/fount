@@ -1,20 +1,13 @@
 import { createJsonEditor } from '../../scripts/jsoneditor.mjs'
-import { applyTheme, onThemeChange } from '../../scripts/theme.mjs'
+import { applyTheme } from '../../scripts/theme.mjs'
 import { initTranslations, geti18n, i18nElement } from '../../scripts/i18n.mjs'
 
 const configEditorContainer = document.getElementById('config-editor')
-onThemeChange(
-	(theme, isDark) => {
-		if (isDark) configEditorContainer.classList.add('jse-theme-dark')
-		else configEditorContainer.classList.remove('jse-theme-dark')
-	}
-)
 
 const newBotButton = document.getElementById('new-bot')
 const botListSelect = document.getElementById('bot-list')
 const deleteBotButton = document.getElementById('delete-bot')
 const charSelect = document.getElementById('char-select')
-const charSupportMessage = document.getElementById('char-support-message')
 const tokenInput = document.getElementById('token-input')
 const toggleTokenButton = document.getElementById('toggle-token')
 const saveConfigButton = document.getElementById('save-config')
@@ -151,8 +144,6 @@ async function loadBotConfig(botname) {
 		tokenInput.value = config.token || ''
 		charSelect.value = config.char || ''
 
-		// 检查角色是否支持 Discord
-		checkCharSupport(config.char)
 		// 加载初始角色模板
 		if (config.char && !Object.keys(config.config).length) {
 			const template = await getBotConfigTemplate(config.char)
@@ -230,15 +221,6 @@ async function handleDeleteBot() {
 	}
 }
 
-function checkCharSupport(charName) {
-	if (!charName) {
-		charSupportMessage.classList.add('hidden')
-		return false
-	}
-	charSupportMessage.classList.add('hidden')
-	return true
-}
-
 async function handleCharSelectChange() {
 	// 如果有未保存的更改，提示用户
 	if (isDirty)
@@ -249,14 +231,10 @@ async function handleCharSelectChange() {
 
 	const selectedChar = charSelect.value // 获取选择的角色
 
-	if (checkCharSupport(selectedChar)) try {
-		isDirty = true // 更改了选项，标记为 dirty
-		const template = await getBotConfigTemplate(selectedChar) // 获取模板
-		if (template && configEditor)
-			configEditor.set({ json: template }) // 更新编辑器内容
-	} catch (error) {
-		console.error('Failed to update config editor with template:', error)
-	}
+	isDirty = true // 更改了选项，标记为 dirty
+	const template = await getBotConfigTemplate(selectedChar) // 获取模板
+	if (template && configEditor)
+		configEditor.set({ json: template }) // 更新编辑器内容
 }
 
 function handleToggleToken() {
@@ -401,10 +379,9 @@ async function initializeFromURLParams() {
 			await loadBotConfig(botList[0]) // 手动加载第一个 Bot 的配置
 		}
 
-		if (charName) {
+		if (charName) 
 			charSelect.value = charName
-			checkCharSupport(charName)
-		}
+		
 	} catch (error) {
 		console.error('Failed to initialize from URL parameters:', error)
 	}

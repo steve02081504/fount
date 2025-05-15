@@ -1,0 +1,81 @@
+{
+	"home_function_buttons": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "配置Telegram Bot"
+				},
+				"en-UK": {
+					"title": "Telegram Bot Config"
+				},
+				"de-DE": {
+					"title": "Telegram Bot konfigurieren"
+				},
+				"es-ES": {
+					"title": "Configuración de bot de Telegram"
+				},
+				"fr-FR": {
+					"title": "Configuration du bot Telegram"
+				},
+				"hi-IN": {
+					"title": "टेलीग्राम बॉट कॉन्फ़िगर करें"
+				},
+				"ja-JP": {
+					"title": "Telegram Botの設定"
+				},
+				"ko-KR": {
+					"title": "Telegram Bot 구성"
+				},
+				"pt-PT": {
+					"title": "Configuração de Bot Telegram"
+				},
+				"ru-RU": {
+					"title": "Настройка Telegram Bot"
+				}
+			},
+			"level": 1,
+			"url": "/shells/telegrambot",
+			"button": "<img src=\"https://api.iconify.design/line-md/telegram.svg\" class=\"text-icon\"/>"
+		}
+	],
+	"home_char_interfaces": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "配置Telegram Bot"
+				},
+				"en-UK": {
+					"title": "Telegram Bot Config"
+				},
+				"de-DE": {
+					"title": "Telegram Bot konfigurieren"
+				},
+				"es-ES": {
+					"title": "Configuración de bot de Telegram"
+				},
+				"fr-FR": {
+					"title": "Configuration du bot Telegram"
+				},
+				"hi-IN": {
+					"title": "टेलीग्राम बॉट कॉन्फ़िगर करें"
+				},
+				"ja-JP": {
+					"title": "Telegram Botの設定"
+				},
+				"ko-KR": {
+					"title": "Telegram Bot 구성"
+				},
+				"pt-PT": {
+					"title": "Configuração de Bot Telegram"
+				},
+				"ru-RU": {
+					"title": "Настройка Telegram Bot"
+				}
+			},
+			"level": 0,
+			"interface": "telegram",
+			"url": "/shells/telegrambot?name=${name}&char=${name}",
+			"button": "<img src=\"https://api.iconify.design/line-md/telegram.svg\"/>"
+		}
+	]
+}
