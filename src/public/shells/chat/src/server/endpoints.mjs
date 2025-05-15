@@ -22,7 +22,21 @@ import {
 	setCharSpeakingFrequency,
 	getHeartbeatData
 } from './chat.mjs'
+import { addfile,getfile } from './files.mjs'
 import { Buffer } from 'node:buffer'
+
+/**
+ * Sets up the API endpoints for chat operations within the application.
+ *
+ * @param {import('npm:express').Router} router - The express router to which the endpoints will be attached.
+ *
+ * This function defines several POST and GET routes for managing chat functionalities, such as creating new chats,
+ * adding or removing characters, setting world and persona, triggering character replies, modifying timelines, and
+ * managing messages. Additionally, it provides endpoints for retrieving chat-related data like character lists, chat
+ * logs, and persona/world names. File operations such as adding and retrieving files are also supported.
+ *
+ * Authentication is required for most endpoints to ensure secure access to chat data.
+ */
 
 export function setEndpoints(router) {
 	router.post('/api/shells/chat/new', authenticate, async (req, res) => {
@@ -98,7 +112,7 @@ export function setEndpoints(router) {
 		const { chatid, start, end } = req.query
 		const startNum = parseInt(start, 10)
 		const endNum = parseInt(end, 10)
-		res.status(200).json(await GetChatLog(chatid, startNum, endNum))
+		res.status(200).json(await GetChatLog(chatid, startNum, endNum).then((log) => Promise.all(log.map((entry) => entry.toData()))))
 	})
 
 	router.get('/api/shells/chat/heartbeat', authenticate, async (req, res) => {
@@ -139,5 +153,20 @@ export function setEndpoints(router) {
 	router.post('/api/shells/chat/export', authenticate, async (req, res) => {
 		const result = await exportChat(req.body.chatids)
 		res.status(200).json(result)
+	})
+
+	router.post('/api/shells/chat/addfile', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const data = req.files
+		for (const file of Object.values(data))
+			await addfile(username, file.data)
+		res.status(200).json({ message: 'files added' })
+	})
+
+	router.get('/api/shells/chat/getfile', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const { hash } = req.query
+		const data = await getfile(username, hash)
+		res.status(200).send(data)
 	})
 }

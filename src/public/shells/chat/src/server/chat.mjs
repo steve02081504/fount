@@ -11,6 +11,7 @@ import { loadPersona } from '../../../../../server/managers/personas_manager.mjs
 import { loadWorld } from '../../../../../server/managers/world_manager.mjs'
 import { Buffer } from 'node:buffer'
 import fs from 'node:fs'
+import { addfile, getfile } from './files.mjs'
 
 /**
  * Structure of the chat metadata map:
@@ -81,6 +82,16 @@ class timeSlice_t {
 		}
 	}
 
+	async toData() {
+		return {
+			chars: Object.keys(this.chars),
+			world: this.world_id,
+			player: this.player_id,
+			chars_memories: this.chars_memories,
+			charname: this.charname
+		}
+	}
+
 	static async fromJSON(json, username) {
 		const chars = {}
 		for (const charname of json.chars)
@@ -120,14 +131,25 @@ class chatLogEntry_t {
 		}
 	}
 
+	async toData() {
+		return {
+			...this,
+			timeSlice: await this.timeSlice.toData(),
+			files: await Promise.all(this.files.map(async (file) => ({
+				...file,
+				buffer: 'file:' + await addfile(this.timeSlice.player_id, file.buffer)
+			})))
+		}
+	}
+
 	static async fromJSON(json, username) {
 		return Object.assign(new chatLogEntry_t(), {
 			...json,
 			timeSlice: await timeSlice_t.fromJSON(json.timeSlice, username),
-			files: json.files.map((file) => ({
+			files: await Promise.all(json.files.map(async (file) => ({
 				...file,
-				buffer: Buffer.from(file.buffer, 'base64')
-			}))
+				buffer: file.buffer.startsWith('file:') ? await getfile(username, file.buffer.slice(5)) : Buffer.from(file.buffer, 'base64')
+			})))
 		})
 	}
 }
@@ -167,6 +189,15 @@ class chatMetadata_t {
 			username: this.username,
 			chatLog: this.chatLog.map((log) => log.toJSON()),
 			timeLines: this.timeLines.map(entry => entry.toJSON()),
+			timeLineIndex: this.timeLineIndex,
+		}
+	}
+
+	async toData() {
+		return {
+			username: this.username,
+			chatLog: await Promise.all(this.chatLog.map(async (log) => log.toData())),
+			timeLines: await Promise.all(this.timeLines.map(async entry => entry.toData())),
 			timeLineIndex: this.timeLineIndex,
 		}
 	}
@@ -212,7 +243,7 @@ export async function saveChat(chatid) {
 
 	const { username, chatMetadata } = chatData
 	fs.mkdirSync(getUserDictionary(username) + '/shells/chat/chats', { recursive: true })
-	saveJsonFile(getUserDictionary(username) + '/shells/chat/chats/' + chatid + '.json', chatMetadata)
+	saveJsonFile(getUserDictionary(username) + '/shells/chat/chats/' + chatid + '.json', await chatMetadata.toData())
 }
 
 export async function loadChat(chatid) {
@@ -860,7 +891,6 @@ export async function getHeartbeatData(chatid, start) {
 		worldname: timeSlice.world_id,
 		personaname: timeSlice.player_id,
 		frequency_data: timeSlice.chars_speaking_frequency,
-		Messages: chatMetadata.chatLog.slice(start)
+		Messages: await Promise.all(chatMetadata.chatLog.slice(start).map(x => x.toData())),
 	}
 }
-

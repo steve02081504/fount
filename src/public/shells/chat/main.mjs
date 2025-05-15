@@ -3,6 +3,7 @@ import { hosturl } from '../../../server/server.mjs'
 import { addchar, newChat, setPersona, setWorld } from './src/server/chat.mjs'
 import { loadChat } from './src/server/chat.mjs'
 import { setEndpoints } from './src/server/endpoints.mjs'
+import { cleanFilesInterval } from './src/server/files.mjs'
 
 export default {
 	info: {
@@ -20,7 +21,9 @@ export default {
 	Load: (router) => {
 		setEndpoints(router)
 	},
-	Unload: () => { },
+	Unload: () => {
+		clearInterval(cleanFilesInterval)
+	},
 
 	interfaces: {
 		invokes: {
