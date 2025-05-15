@@ -114,10 +114,11 @@ if (!(Get-Command git -ErrorAction SilentlyContinue)) {
 	}
 }
 
-if (Test-Path -Path "$FOUNT_DIR/.noupdate") {
-	Write-Host "Skipping fount update due to .noupdate file"
-}
-elseif (Get-Command git -ErrorAction SilentlyContinue) {
+function fount_upgrade {
+	if (!(Get-Command git -ErrorAction SilentlyContinue)) {
+		Write-Host "Git is not installed, skipping git pull"
+		return
+	}
 	if (!(Test-Path -Path "$FOUNT_DIR/.git")) {
 		Remove-Item -Path "$FOUNT_DIR/.git-clone" -Recurse -Force -ErrorAction SilentlyContinue
 		New-Item -ItemType Directory -Path "$FOUNT_DIR/.git-clone"
@@ -130,7 +131,7 @@ elseif (Get-Command git -ErrorAction SilentlyContinue) {
 		git -C "$FOUNT_DIR" checkout master
 	}
 
-	if(!(Test-Path -Path "$FOUNT_DIR/.git")) {
+	if (!(Test-Path -Path "$FOUNT_DIR/.git")) {
 		Write-Host "Repository not found, skipping git pull"
 	}
 	else {
@@ -176,8 +177,12 @@ elseif (Get-Command git -ErrorAction SilentlyContinue) {
 		}
 	}
 }
+
+if (Test-Path -Path "$FOUNT_DIR/.noupdate") {
+	Write-Host "Skipping fount update due to .noupdate file"
+}
 else {
-	Write-Host "Git is not installed, skipping git pull"
+	fount_upgrade
 }
 
 # Deno 安装
@@ -210,10 +215,7 @@ if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
 }
 
 # Deno 更新
-if ($IN_DOCKER) {
-	Write-Host "Skipping deno upgrade in Docker environment"
-}
-else {
+function deno_upgrade() {
 	$deno_ver = deno -V
 	if (!$deno_ver) {
 		deno upgrade -q
@@ -231,6 +233,13 @@ else {
 		$deno_update_channel = "rc"
 	}
 	deno upgrade -q $deno_update_channel
+}
+
+if ($IN_DOCKER) {
+	Write-Host "Skipping deno upgrade in Docker environment"
+}
+else {
+	deno_upgrade
 }
 
 deno -V
@@ -300,7 +309,11 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'init') {
 elseif ($args.Count -gt 0 -and $args[0] -eq 'keepalive') {
 	$runargs = $args[1..$args.Count]
 	run @runargs
-	while ($LastExitCode) { run }
+	while ($LastExitCode) {
+		deno_upgrade
+		fount_upgrade
+		run
+	}
 }
 elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 	run shutdown
