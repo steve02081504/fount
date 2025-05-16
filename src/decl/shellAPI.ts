@@ -1,5 +1,5 @@
 import { locale_t, info_t } from "./basedefs";
-import { Express } from "express";
+import { Express } from "npm:express";
 
 // no idea but it's necessary now
 export class shellAPI_t {
