@@ -21,7 +21,7 @@ import { createSimpleTelegramInterface } from './default_interface/main.mjs' // 
  * @param {charAPI_t} char - 加载后的角色 API 对象。
  * @returns {Promise<import('npm:telegraf').Telegraf>} Telegraf 实例。
  */
-async function startTelegrafBot(username, botname, botConfig, char) {
+async function startTelegrafBot(botConfig, char) {
 	// 创建 Telegraf 实例
 	const bot = new Telegraf(botConfig.token)
 
@@ -29,12 +29,13 @@ async function startTelegrafBot(username, botname, botConfig, char) {
 	// char.interfaces.telegram 是角色 manifest.json 中定义的 telegram 接口
 	// botConfig.config 是用户在前端UI的JSON编辑器中为此特定机器人实例配置的内容
 	await char.interfaces.telegram?.BotSetup?.(bot, botConfig.config)
+	const me = await bot.telegram.getMe()
 
 	// 启动机器人
 	// 使用 try-catch 包装 bot.launch() 以便捕获启动时可能发生的错误 (例如无效token)
 	bot.launch() // Telegraf v4 的启动方式
 	console.info(await geti18n('fountConsole.telegrambot.botStarted', {
-		botusername: bot.botInfo?.username || botname, // botInfo 可能在 launch 后才完全可用
+		botusername: me.username,
 		charname: botConfig.char
 	}))
 	return bot
@@ -120,7 +121,7 @@ export async function runBot(username, botname) {
 		const char = await LoadChar(username, config.char)
 		// 如果角色没有定义 telegram 接口，则使用默认接口
 		char.interfaces.telegram ??= await createSimpleTelegramInterface(char, username, config.char)
-		return await startTelegrafBot(username, botname, config, char)
+		return await startTelegrafBot(config, char)
 	})()
 
 	try {

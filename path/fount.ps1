@@ -19,6 +19,7 @@ if (!(Get-Command fount -ErrorAction SilentlyContinue)) {
 	}
 	$UserPath = $UserPath -join ';'
 	[System.Environment]::SetEnvironmentVariable('PATH', $UserPath, [System.EnvironmentVariableTarget]::User)
+	$env:PATH = $path
 }
 
 if ($args.Count -gt 0 -and $args[0] -eq 'open') {
@@ -30,7 +31,7 @@ if ($args.Count -gt 0 -and $args[0] -eq 'open') {
 		while (-not (Test-FountRunning)) {
 			Start-Sleep -Seconds 1
 		}
-		Start-Process https://steve02081504.github.io/fount/
+		Start-Process 'https://steve02081504.github.io/fount/protocol'
 	}
 	$runargs = $args[1..$args.Count]
 	fount @runargs
