@@ -4,7 +4,9 @@ import { initTranslations } from '../../scripts/i18n.mjs'
 initTranslations('access')
 
 import qrcode from 'https://esm.run/qrcode-generator'
-const url = 'https://steve02081504.github.io/fount/'
+const url = 'https://steve02081504.github.io/fount/protocol?' + new URLSearchParams({
+	theme: localStorage.getItem('theme') || 'dark'
+})
 
 const accessUrl = document.getElementById('accessUrl')
 const copyButton = document.getElementById('copyButton')
