@@ -111,6 +111,9 @@ export function splitDiscordReply(reply, split_lenth = 2000) {
 
 function formatEmbed(embed) {
 	let embedContent = ''
+	if (embed.data)
+		if (embed.data?.author?.name)
+			embedContent += embed.data.author.name + '\n'
 	if (embed.title) embedContent += embed.title + '\n'
 	if (embed.description) embedContent += embed.description + '\n'
 	for (const field of embed.fields || []) {
