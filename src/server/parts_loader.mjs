@@ -189,7 +189,7 @@ export async function baseMjsPartUnLoader(path) {
 	await Promise.all(
 		fs.readdirSync(path, { withFileTypes: true, recursive: true })
 			.filter(file => file.isFile() && /\.(js|ts|mjs|cjs|wasm)$/.test(file.name))
-			.map(file => path + '/' + file.name)
+			.map(file => file.parentPath + '/' + file.name)
 			.map(f => codeunloader(f).catch(console.error))
 	)
 }
