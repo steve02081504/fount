@@ -292,13 +292,13 @@ export async function setupSidebar() {
 	worldSelect.addEventListener('change', async () => {
 		const newWorldName = worldSelect.value === '' ? null : worldSelect.value
 		await appendMessage(await setWorld(newWorldName))
-		await renderWorldDetails(worldName = newWorldName)
+		await renderWorldDetails(newWorldName)
 	})
 
 	personaSelect.addEventListener('change', async () => {
 		const newPersonaName = personaSelect.value === '' ? null : personaSelect.value
 		await appendMessage(await setPersona(newPersonaName))
-		await renderPersonaDetails(personaName = newPersonaName)
+		await renderPersonaDetails(newPersonaName)
 	})
 
 	addCharButton.addEventListener('click', async () => {

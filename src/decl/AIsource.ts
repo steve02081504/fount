@@ -1,5 +1,5 @@
 import { info_t, locale_t } from "./basedefs";
-import { prompt_struct_t } from "./prompt_struct";
+import { prompt_struct_t } from "./prompt_struct.ts";
 
 class tokenizer_t<InputType, TokenType> {
 	free: () => Promise<void>;

@@ -1,8 +1,6 @@
-import { chatReplyRequest_t } from "../public/shells/chat/decl/chatLog";
-import { chatReply_t } from "../public/shells/chat/decl/chatLog";
-import { AIsource_t } from "./AIsource";
+import { chatReplyRequest_t, chatReply_t } from "../public/shells/chat/decl/chatLog.ts";
 import { locale_t, info_t } from "./basedefs";
-import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from "./prompt_struct";
+import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from "./prompt_struct.ts";
 
 export class UserAPI_t {
 	info: info_t;

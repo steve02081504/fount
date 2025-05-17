@@ -66,6 +66,7 @@ const configTemplate = {
 		responseMimeType: 'text/plain',
 		responseModalities: ['Text'],
 	},
+	disable_default_prompt: false,
 }
 
 async function GetSource(config) {
@@ -145,7 +146,6 @@ async function GetSource(config) {
 			}
 		},
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
-			const system_prompt = structPromptToSingleNoChatLog(prompt_struct)
 			const baseMessages = [
 				{
 					role: 'user',
@@ -161,6 +161,7 @@ system:
 					parts: [{ text: '我理解了' }]
 				}
 			]
+			if (config.disable_default_prompt) baseMessages.length = 0
 
 			const chatHistory = await Promise.all(margeStructPromptChatLog(prompt_struct).map(async (chatLogEntry) => {
 				return {
@@ -199,14 +200,16 @@ system:
 				}
 			}))
 
+			const system_prompt = structPromptToSingleNoChatLog(prompt_struct)
 			const systemPromptMessage = {
 				role: 'user',
 				parts: [{ text: 'system:\n由于上下文有限，请再次回顾设定:\n' + system_prompt }]
 			}
-			if (config.system_prompt_at_depth ?? 10)
-				chatHistory.splice(Math.max(chatHistory.length - (config.system_prompt_at_depth ?? 10), 0), 0, systemPromptMessage)
-			else
-				chatHistory.unshift(systemPromptMessage)
+			if (system_prompt)
+				if (config.system_prompt_at_depth ?? 10)
+					chatHistory.splice(Math.max(chatHistory.length - (config.system_prompt_at_depth ?? 10), 0), 0, systemPromptMessage)
+				else
+					chatHistory.unshift(systemPromptMessage)
 
 			const messages = [...baseMessages, ...chatHistory]
 
@@ -235,6 +238,7 @@ ${is_ImageGeneration
 					parts: [{ text: 'system:\n继续扮演。' }]
 				}
 			]
+			if (config.disable_default_prompt) pauseDeclareMessages.length = 0
 			messages.push(...pauseDeclareMessages)
 
 			const responseModalities = ['Text']
