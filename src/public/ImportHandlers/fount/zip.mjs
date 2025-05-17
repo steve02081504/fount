@@ -19,6 +19,15 @@ async function zipDirectory(dirPath, zip) {
 	}
 }
 
+export async function isFountPart(buffer) {
+	const zip = new jszip()
+	await zip.loadAsync(buffer)
+	const file = zip.files['fount.json']
+	if (!file || file.dir)
+		return false
+	return true
+}
+
 export async function zipDir(dirPath) {
 	const zip = new jszip()
 	await zipDirectory(dirPath, zip)
