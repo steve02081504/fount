@@ -63,7 +63,6 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 	if (!charAPI?.interfaces?.chat?.GetReply)
 		throw new Error('charAPI.interfaces.chat.GetReply is required for SimpleTelegramInterface.')
 
-
 	function GetSimpleBotConfigTemplate() {
 		return {
 			OwnerUserID: 'YOUR_TELEGRAM_USER_ID', // 用户需填写的 Telegram 数字 ID

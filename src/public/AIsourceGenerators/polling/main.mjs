@@ -54,6 +54,7 @@ async function GetSource(config, { username, SaveConfig }) {
 
 		Unload: () => { },
 		Call: async (prompt) => {
+			if (sources.length === 0) throw new Error('no source selected')
 			while (true) try {
 				index++
 				index %= config.sources.length
@@ -64,6 +65,7 @@ async function GetSource(config, { username, SaveConfig }) {
 			}
 		},
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
+			if (sources.length === 0) throw new Error('no source selected')
 			while (true) try {
 				index++
 				index %= config.sources.length

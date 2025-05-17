@@ -533,21 +533,27 @@ export async function modifyTimeLine(chatid, delta) {
 			const char = new_timeSlice.chars[charname]
 			const { world } = new_timeSlice
 			let result
-			switch (new_timeSlice.greeting_type = chatMetadata.LastTimeSlice.greeting_type) {
-				case 'single':
-					result = await char.interfaces.chat.GetGreeting(await getChatRequest(chatid, charname), newTimeLineIndex)
-					break
-				case 'group':
-					result = await char.interfaces.chat.GetGroupGreeting(await getChatRequest(chatid, charname), newTimeLineIndex)
-					break
-				case 'world_single':
-					result = await world.interfaces.chat.GetGreeting(await getChatRequest(chatid, undefined), newTimeLineIndex)
-					break
-				case 'world_group':
-					result = await world.interfaces.chat.GetGroupGreeting(await getChatRequest(chatid, undefined), newTimeLineIndex)
-					break
-				default:
-					result = await char.interfaces.chat.GetReply(await getChatRequest(chatid, charname))
+			try {
+				switch (new_timeSlice.greeting_type = chatMetadata.LastTimeSlice.greeting_type) {
+					case 'single':
+						result = await char.interfaces.chat.GetGreeting(await getChatRequest(chatid, charname), newTimeLineIndex)
+						break
+					case 'group':
+						result = await char.interfaces.chat.GetGroupGreeting(await getChatRequest(chatid, charname), newTimeLineIndex)
+						break
+					case 'world_single':
+						result = await world.interfaces.chat.GetGreeting(await getChatRequest(chatid, undefined), newTimeLineIndex)
+						break
+					case 'world_group':
+						result = await world.interfaces.chat.GetGroupGreeting(await getChatRequest(chatid, undefined), newTimeLineIndex)
+						break
+					default:
+						result = await char.interfaces.chat.GetReply(await getChatRequest(chatid, charname))
+				}
+			} catch (e) {
+				result = {
+					content: e.stack || e.message,
+				}
 			}
 			if (!result) throw new Error('No reply')
 			let entry
@@ -690,10 +696,16 @@ export async function triggerCharReply(chatid, charname) {
 
 	const request = await getChatRequest(chatid, charname)
 
-	if (timeSlice?.world?.interfaces?.chat?.GetCharReply)
-		result = await timeSlice.world.interfaces.chat.GetCharReply(request, charname)
-	else
-		result = await char.interfaces.chat.GetReply(request)
+	try {
+		if (timeSlice?.world?.interfaces?.chat?.GetCharReply)
+			result = await timeSlice.world.interfaces.chat.GetCharReply(request, charname)
+		else
+			result = await char.interfaces.chat.GetReply(request)
+	} catch (e) {
+		result = {
+			content: e.stack || e.message,
+		}
+	}
 
 	if (!result) return
 	const new_timeSlice = timeSlice.copy()
