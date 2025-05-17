@@ -552,7 +552,7 @@ export async function modifyTimeLine(chatid, delta) {
 				}
 			} catch (e) {
 				result = {
-					content: e.stack || e.message,
+					content: '```' + (e.stack || e.message) + '```',
 				}
 			}
 			if (!result) throw new Error('No reply')
@@ -703,7 +703,7 @@ export async function triggerCharReply(chatid, charname) {
 			result = await char.interfaces.chat.GetReply(request)
 	} catch (e) {
 		result = {
-			content: e.stack || e.message,
+			content: '```' + (e.stack || e.message) + '```',
 		}
 	}
 
