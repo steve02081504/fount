@@ -29,7 +29,6 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 	if (!charAPI?.interfaces?.chat?.GetReply)
 		throw new Error('charAPI.interfaces.chat.GetReply is required for SimpleDiscordInterface.')
 
-
 	function GetSimpleBotConfigTemplate() {
 		return {
 			OwnerUserName: 'your_discord_username', // Discord 用户名, 不是Fount用户名
