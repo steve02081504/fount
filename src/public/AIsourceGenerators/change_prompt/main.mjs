@@ -22,7 +22,7 @@ export default {
 }
 
 const configTemplate = {
-	name: 'polling array',
+	name: 'custom prompt',
 	provider: 'unknown',
 	base_source: 'source name',
 	build_prompt: true,
@@ -33,7 +33,7 @@ const configTemplate = {
 			content: {
 				role: 'system',
 				name: 'system',
-				content: `/
+				content: `\
 你需要扮演的角色\${Charname}的设定如下：
 \${char_prompt}
 用户\${UserCharname}的设定如下：
@@ -128,40 +128,40 @@ async function GetSource(config, { username, SaveConfig }) {
 			}
 			if (config.build_prompt) {
 				{
-					const sorted = prompt.char_prompt.text.sort((a, b) => a.important - b.important).map(text => text.content).filter(Boolean)
+					const sorted = prompt_struct.char_prompt.text.sort((a, b) => a.important - b.important).map(text => text.content).filter(Boolean)
 					eval_strings.char_prompt = sorted.join('\n')
 				}
 
 				{
-					const sorted = prompt.user_prompt.text.sort((a, b) => a.important - b.important).map(text => text.content).filter(Boolean)
+					const sorted = prompt_struct.user_prompt.text.sort((a, b) => a.important - b.important).map(text => text.content).filter(Boolean)
 					eval_strings.user_prompt = sorted.join('\n')
 				}
 
 				{
-					const sorted = prompt.world_prompt.text.sort((a, b) => a.important - b.important).map(text => text.content).filter(Boolean)
+					const sorted = prompt_struct.world_prompt.text.sort((a, b) => a.important - b.important).map(text => text.content).filter(Boolean)
 					eval_strings.world_prompt = sorted.join('\n')
 				}
 
 				{
-					const sorted = Object.values(prompt.other_chars_prompt).map(char => char.text).filter(Boolean).map(
+					const sorted = Object.values(prompt_struct.other_chars_prompt).map(char => char.text).filter(Boolean).map(
 						char => char.sort((a, b) => a.important - b.important).map(text => text.content).filter(Boolean)
 					).flat().filter(Boolean)
 					eval_strings.other_chars_prompt = sorted.join('\n')
 				}
 
 				{
-					const sorted = Object.values(prompt.plugin_prompts).map(plugin => plugin?.text).filter(Boolean).map(
+					const sorted = Object.values(prompt_struct.plugin_prompts).map(plugin => plugin?.text).filter(Boolean).map(
 						plugin => plugin.sort((a, b) => a.important - b.important).map(text => text.content).filter(Boolean)
 					).flat().filter(Boolean)
 					eval_strings.plugin_prompts = sorted.join('\n')
 				}
 			}
 			else {
-				new_prompt_struct.char_prompt = prompt.char_prompt
-				new_prompt_struct.user_prompt = prompt.user_prompt
-				new_prompt_struct.world_prompt = prompt.world_prompt
-				new_prompt_struct.other_chars_prompt = prompt.other_chars_prompt
-				new_prompt_struct.plugin_prompts = prompt.plugin_prompts
+				new_prompt_struct.char_prompt = prompt_struct.char_prompt
+				new_prompt_struct.user_prompt = prompt_struct.user_prompt
+				new_prompt_struct.world_prompt = prompt_struct.world_prompt
+				new_prompt_struct.other_chars_prompt = prompt_struct.other_chars_prompt
+				new_prompt_struct.plugin_prompts = prompt_struct.plugin_prompts
 				eval_strings = {}
 			}
 			for (const change of config.changes) {
@@ -194,7 +194,7 @@ async function GetSource(config, { username, SaveConfig }) {
 					}
 				}
 			}
-			const result = base_source.StructCall(new_prompt_struct)
+			const result = await base_source.StructCall(new_prompt_struct)
 			for (const replace of config.replaces) {
 				const reg = parseRegexFromString(replace.seek)
 				result.text = result.text.replace(reg, replace.replace)
