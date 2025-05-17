@@ -197,7 +197,7 @@ async function GetSource(config, { username, SaveConfig }) {
 			const result = await base_source.StructCall(new_prompt_struct)
 			for (const replace of config.replaces) {
 				const reg = parseRegexFromString(replace.seek)
-				result.text = result.text.replace(reg, replace.replace)
+				result.content = result.content.replace(reg, replace.replace)
 			}
 			return result
 		},
