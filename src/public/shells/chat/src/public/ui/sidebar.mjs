@@ -149,6 +149,7 @@ async function renderPersonaDetails(personaName) {
  * 渲染聊天角色列表
  */
 async function renderCharList(data) {
+	if (!data) return
 	const allChars = await getCharList()
 	const currentCharsRendered = Array.from(charDetailsContainer.children).map(child => child.getAttribute('data-char-name'))
 	const { added, removed, unchanged } = compareLists(currentCharsRendered, charList)

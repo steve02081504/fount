@@ -1,4 +1,4 @@
-import { unzipDirectory } from './zip.mjs'
+import { isFountPart, unzipDirectory } from './zip.mjs'
 import { cloneRepo } from './git.mjs'
 import { getAvailablePath } from './path.mjs'
 import { mkdir, rm, stat, readdir } from 'node:fs/promises'
@@ -50,6 +50,7 @@ async function mergeDirectories(srcDir, destDir) {
 }
 
 async function ImportAsData(username, data) {
+	if (!await isFountPart(data)) throw new Error('Invalid fount part: no fount.json found')
 	const tempDir = path.join(tmpdir(), 'fount_import_' + Date.now())
 	await mkdir(tempDir, { recursive: true })
 	try {

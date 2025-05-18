@@ -2,7 +2,7 @@
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
 import { loadAIsourceFromNameOrConfigData } from '../../../server/managers/AIsources_manager.mjs'
-import { parseRegexFromString } from "../../scripts/regex.mjs";
+import { parseRegexFromString } from '../../scripts/regex.mjs'
 
 function getSinglePartPrompt() {
 	return {
@@ -107,7 +107,7 @@ async function GetSource(config, { username, SaveConfig }) {
 		Unload: () => { },
 		Call: async (prompt) => base_source.Call(prompt),
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
-			let new_prompt_struct = {
+			const new_prompt_struct = {
 				char_id: prompt_struct.char_id,
 				UserCharname: prompt_struct.UserCharname,
 				ReplyToCharname: prompt_struct.ReplyToCharname,
@@ -176,23 +176,19 @@ async function GetSource(config, { username, SaveConfig }) {
 						...prompt_struct,
 					})
 				}
-				const chat_log = new_prompt_struct.chat_log
-				if (change.insert_depth > 0) {
+				const { chat_log } = new_prompt_struct
+				if (change.insert_depth > 0)
 					// 正数表示在后插入
-					if (chat_log.length > change.insert_depth) {
+					if (chat_log.length > change.insert_depth)
 						chat_log.splice(chat_log.length - change.insert_depth, 0, value)
-					} else {
+					else
 						chat_log.unshift(value)
-					}
-				}
-				else {
+				else
 					// 负数表示在前插入
-					if (chat_log.length > -change.insert_depth) {
+					if (chat_log.length > -change.insert_depth)
 						chat_log.splice(-change.insert_depth, 0, value)
-					} else {
+					else
 						chat_log.push(value)
-					}
-				}
 			}
 			const result = await base_source.StructCall(new_prompt_struct)
 			for (const replace of config.replaces) {
