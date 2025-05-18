@@ -423,4 +423,7 @@ async function fetchData() {
 		console.error('Failed to fetch default parts:', await defaultPartsResponse.text())
 }
 
-initializeApp()
+initializeApp().catch(error => {
+	alert(error.message)
+	window.location.href = '/login'
+})
