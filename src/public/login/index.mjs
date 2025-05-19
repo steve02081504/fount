@@ -248,4 +248,7 @@ async function initializeApp() {
 }
 
 // 执行初始化
-initializeApp()
+initializeApp().catch(error => {
+	alert(error.message)
+	window.location.href = '/login'
+})

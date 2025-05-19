@@ -310,7 +310,10 @@ async function initializeApp() {
 	applyTheme()
 	await initTranslations('chat_history') // Initialize translations for 'chat_history'
 	await fetchChatList()
-	renderChatList()
+	await renderChatList()
 }
 
-initializeApp()
+initializeApp().catch(error => {
+	alert(error.message)
+	window.location.href = '/login'
+})
