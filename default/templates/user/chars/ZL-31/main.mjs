@@ -161,7 +161,7 @@ export default {
 					for (const replyHandler of [
 						...Object.values(args.plugins).map((plugin) => plugin.interfaces?.chat?.ReplyHandler)
 					].filter(Boolean))
-						if (replyHandler(result, { ...args, prompt_struct, AddLongTimeLog }))
+						if (await replyHandler(result, { ...args, prompt_struct, AddLongTimeLog }))
 							continue regen
 					break
 				}
@@ -254,7 +254,7 @@ function CharGenerator(reply, { AddLongTimeLog }) {
 						CharGenerator,
 						...Object.values(args.plugins).map((plugin) => plugin.interfaces?.chat?.ReplyHandler)
 					].filter(Boolean))
-						if (replyHandler(result, { ...args, prompt_struct, AddLongTimeLog }))
+						if (await replyHandler(result, { ...args, prompt_struct, AddLongTimeLog }))
 							continue regen
 					break
 				}
@@ -838,7 +838,7 @@ persona-generator
 						PersonaGenerator,
 						...Object.values(args.plugins).map((plugin) => plugin.interfaces?.chat?.ReplyHandler)
 					].filter(Boolean))
-						if (replyHandler(result, { ...args, prompt_struct, AddLongTimeLog }))
+						if (await replyHandler(result, { ...args, prompt_struct, AddLongTimeLog }))
 							continue regen
 					break
 				}
