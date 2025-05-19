@@ -1,7 +1,7 @@
 import { GetShellWorld } from './world.mjs'
 import { recommend_command_plugin } from './recommend_command.mjs'
 import { localhostLocales } from '../../../../../../../src/scripts/i18n.mjs'
-import { getPartInfo } from "../../../../../../scripts/locale.mjs";
+import { getPartInfo } from '../../../../../../scripts/locale.mjs'
 /** @typedef {import('../../../../../../../src/public/shells/chat/decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t */
 
 /**

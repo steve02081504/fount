@@ -1,5 +1,5 @@
 import { LoadChar } from '../../../server/managers/char_manager.mjs'
-import { GetDefaultShellAssistInterface } from "./src/server/default_interface/main.mjs";
+import { GetDefaultShellAssistInterface } from './src/server/default_interface/main.mjs'
 
 export default {
 	info: {

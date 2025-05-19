@@ -1,4 +1,4 @@
-import { Client } from "npm:@xhayper/discord-rpc"
+import { Client } from 'npm:@xhayper/discord-rpc'
 import { in_docker, in_termux } from './env.mjs'
 import process from 'node:process'
 
