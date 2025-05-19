@@ -1,21 +1,22 @@
-import DiscordRPC from 'npm:fixed-discord-rpc'
+import { Client } from "npm:@xhayper/discord-rpc"
 import { in_docker, in_termux } from './env.mjs'
 import process from 'node:process'
-
-let rpc
 
 const FountStartTimestamp = new Date()
 let _activity = {
 
 }
-function _setActivity() {
-	if (!rpc) return
+async function _setActivity() {
+	if (!client) return
 	for (const key in _activity) if (_activity[key] === undefined) delete _activity[key]
-	rpc.setActivity({
+	await client.user?.setActivity({
 		startTimestamp: FountStartTimestamp,
 		..._activity
 	})
 }
+
+let interval = null
+let client = null
 
 export function StartRPC(
 	clientId = '1344722070323335259',
@@ -34,19 +35,20 @@ export function StartRPC(
 
 	if (in_docker || in_termux) return
 
+	if (interval) clearInterval(interval)
 	StopRPC()
-	rpc = new DiscordRPC.Client({ transport: 'ipc' })
+	client = new Client({ clientId })
 
 	SetActivity(activity)
 
-	rpc.on('ready', () => {
-		_setActivity()
+	client.on('ready', async () => {
+		await _setActivity()
 
 		// activity can only be set every 15 seconds
-		setInterval(() => { _setActivity() }, 15e3)
+		interval = setInterval(() => { _setActivity() }, 15e3)
 	})
 
-	rpc.login({ clientId }).catch(console.error)
+	client.login().catch(console.error)
 }
 
 export function SetActivity(activity) {
@@ -54,7 +56,7 @@ export function SetActivity(activity) {
 }
 
 export function StopRPC() {
-	if (!rpc) return
-	rpc.destroy()
-	rpc = undefined
+	if (!client) return
+	client.destroy()
+	client = undefined
 }
