@@ -9,7 +9,8 @@ Sentry.init({
 	tunnel: '/api/sentrytunnel',
 	integrations: [
 		Sentry.replayIntegration(),
-		Sentry.browserTracingIntegration()
+		Sentry.browserTracingIntegration(),
+		Sentry.browserProfilingIntegration()
 	],
 	// Performance Monitoring
 	tracesSampleRate: 1.0,
@@ -17,6 +18,10 @@ Sentry.init({
 	// Session Replay
 	replaysSessionSampleRate: 0.1,
 	replaysOnErrorSampleRate: 1.0,
+	// Profiling
+	profilesSampleRate: 1.0,
+	// Logging
+	_experiments: { enableLogs: true },
 })
 
 // fix of tailwindcss Play CDN

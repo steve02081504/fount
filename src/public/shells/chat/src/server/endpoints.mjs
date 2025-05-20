@@ -63,7 +63,7 @@ export function setEndpoints(router) {
 	})
 
 	router.post('/api/shells/chat/triggercharreply', async (req, res) => {
-		res.status(200).json(await triggerCharReply(req.body.chatid, req.body.charname))
+		res.status(200).json((await triggerCharReply(req.body.chatid, req.body.charname))?.toData?.())
 	})
 
 	router.post('/api/shells/chat/setcharreplyfrequency', authenticate, async (req, res) => {
@@ -78,7 +78,7 @@ export function setEndpoints(router) {
 			...file,
 			buffer: Buffer.from(file.buffer, 'base64')
 		}))
-		res.status(200).json(await addUserReply(req.body.chatid, req.body.reply))
+		res.status(200).json((await addUserReply(req.body.chatid, req.body.reply)).toData())
 	})
 
 	router.post('/api/shells/chat/modifytimeline', authenticate, async (req, res) => {
