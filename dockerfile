@@ -7,6 +7,7 @@ RUN touch /app/.noupdate
 RUN rm -rf /app/.git
 
 EXPOSE 8931
+EXPOSE 16698
 
 # 给予 *.sh 执行权限
 RUN find . -maxdepth 1 \( -name "*.sh" -o -name "*.fish" -o -name "*.zsh" -o -name "*.ps1" \) -print0 | xargs -0 chmod +x

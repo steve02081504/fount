@@ -6,6 +6,7 @@ services:
     image: steve02081504/fount:latest
     ports:
       - "8931:8931"
+      - "16698:16698"
     volumes:
       - ./data:/app/data:rw # 挂载 data 目录以存储用户数据
       - ./node_modules:/app/node_modules:rw # 挂载 node_modules 目录以缓存用户数据产生的依赖项
