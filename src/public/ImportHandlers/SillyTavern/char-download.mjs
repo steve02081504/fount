@@ -31,18 +31,24 @@ export async function downloadCharacter(url) {
 }
 
 async function downloadChubCharacter(id) {
-	const result = await fetch('https://api.chub.ai/api/characters/download', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ format: 'tavern', fullPath: id }),
+	const [creatorName, projectName] = id.split('/')
+	const result = await fetch(`https://api.chub.ai/api/characters/${creatorName}/${projectName}`, {
+		method: 'GET',
+		headers: { 'Content-Type': 'application/json', 'User-Agent': 'fount/1.0' },
 	})
 
-	if (!result.ok)
-		throw new Error(`Chub download failed: ${result.status} ${await result.text()}`)
+	if (!result.ok) throw await result.text()
 
-	return result.arrayBuffer()
+	const metadata = await result.json()
+	const downloadUrl = metadata.node?.max_res_url
+
+
+	const downloadResult = await fetch(downloadUrl)
+
+	if (!downloadResult.ok) throw await downloadResult.text()
+
+	return await downloadResult.arrayBuffer()
 }
-
 async function downloadPygmalionCharacter(id) {
 	const result = await fetch(`https://server.pygmalion.chat/api/export/character/${id}/v2`)
 
