@@ -49,3 +49,10 @@ if (HTMLScriptElement.supports?.('speculationrules')) {
 	})
 	document.head.prepend(specScript)
 }
+
+// esc按键
+document.addEventListener('keydown', event => {
+	if (event.key === 'Escape')
+		if (history.length > 1) history.back()
+		else window.close()
+})
