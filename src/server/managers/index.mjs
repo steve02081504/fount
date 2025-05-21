@@ -5,7 +5,7 @@ import { loadPersona, unloadPersona } from './personas_manager.mjs'
 import { loadAIsource, loadAIsourceGenerator, unloadAIsource, unloadAIsourceGenerator } from './AIsources_manager.mjs'
 import { LoadImportHandler, UnloadImportHandler } from '../../public/shells/install/src/server/importHandler_manager.mjs'
 import { loadWorld, unloadWorld } from './world_manager.mjs'
-import { on_shutdown } from '../on_shutdown.mjs'
+import { on_shutdown, shutdown } from '../on_shutdown.mjs'
 
 export const partsList = [
 	'shells', 'chars', 'personas', 'worlds', 'AIsources', 'AIsourceGenerators',
@@ -57,6 +57,5 @@ on_shutdown(async () => {
 })
 
 export async function reloadPart(username, parttype, partname) {
-	await unloadPart(username, parttype, partname)
-	await loadPart(username, parttype, partname)
+	shutdown(1) // we ll prey that the hole server will be restarted by the user or something
 }
