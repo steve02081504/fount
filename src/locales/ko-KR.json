@@ -162,6 +162,7 @@
 	},
 	"home": {
 		"title": "홈",
+		"escapeConfirm": "당신은 분노를 떠나고 싶습니까?",
 		"filterInput": {
 			"placeholder": "검색..."
 		},

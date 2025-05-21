@@ -162,6 +162,7 @@
 	},
 	"home": {
 		"title": "होम",
+		"escapeConfirm": "क्या आप सुनिश्चित हैं कि आप फव्वारा छोड़ना चाहते हैं?",
 		"filterInput": {
 			"placeholder": "खोजें..."
 		},

@@ -162,6 +162,7 @@
 	},
 	"home": {
 		"title": "Página Inicial",
+		"escapeConfirm": "Tem certeza de que deseja deixar a fonte?",
 		"filterInput": {
 			"placeholder": "Pesquisar..."
 		},
