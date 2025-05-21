@@ -1,8 +1,17 @@
 import { LoadImportHandler } from './importHandler_manager.mjs'
-import { getPartListBase } from '../../../../../server/parts_loader.mjs'
+import { getPartListBase, GetPartPath } from '../../../../../server/parts_loader.mjs'
+import { loadJsonFileIfExists } from '../../../../../scripts/json_loader.mjs'
 
+function getImportHandlerList(username) {
+	return getPartListBase(username, 'ImportHandlers').map(
+		name => ({
+			name,
+			order: loadJsonFileIfExists(GetPartPath(username, 'ImportHandlers', name) + '/order.txt', 0),
+		})
+	).sort((a, b) => b.order - a.order).map(a => a.name)
+}
 export async function importPart(username, data) {
-	const ImportHandlers = getPartListBase(username, 'ImportHandlers')
+	const ImportHandlers = getImportHandlerList(username)
 	const errors = []
 
 	for (const importHandler of ImportHandlers)
@@ -21,7 +30,7 @@ export async function importPart(username, data) {
 }
 
 export async function importPartByText(username, text) {
-	const ImportHandlers = getPartListBase(username, 'ImportHandlers')
+	const ImportHandlers = getImportHandlerList(username)
 	const errors = []
 
 	for (const importHandler of ImportHandlers)
