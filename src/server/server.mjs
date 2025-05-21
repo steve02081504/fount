@@ -38,6 +38,10 @@ mainRouter.use(express.json({ limit: Infinity }))
 mainRouter.use(express.urlencoded({ limit: Infinity, extended: true }))
 mainRouter.use(fileUpload())
 mainRouter.use(cookieParser())
+mainRouter.use((req, res, next) => {
+	if (req.accepts('html')) res.set('Document-Policy', 'js-profiling')
+	return next()
+})
 FinalRouter.use((req, res) => {
 	if (req.accepts('html')) return res.status(404).sendFile(__dirname + '/src/public/404.html')
 	res.status(404).type('txt').send('Not found')
