@@ -4,6 +4,7 @@ import { getAvailablePath } from './path.mjs'
 import { mkdir, rm, stat, readdir } from 'node:fs/promises'
 import { move, remove } from 'npm:fs-extra@^11.0.0'
 import path from 'node:path'
+import url from 'node:url'
 import { tmpdir } from 'node:os'
 import { loadJsonFile } from '../../../scripts/json_loader.mjs'
 import { exec } from '../../../scripts/exec.mjs'
@@ -79,7 +80,7 @@ async function ImportAsData(username, data) {
 		if (needsReload)
 			loadPart(username, meta.type, meta.dirname)
 		else
-			import(path.join(targetPath, 'main.mjs')).catch(x => x)
+			import(url.pathToFileURL(path.join(targetPath, 'main.mjs'))).catch(x => x)
 	} catch (err) {
 		rm(tempDir, { recursive: true, force: true }).catch(x => x)
 		throw new Error(`loadMeta failed: ${err.message || err}`)
@@ -124,7 +125,7 @@ async function ImportByText(username, text) {
 					if (needsReload)
 						loadPart(username, meta.type, meta.dirname)
 					else
-						import(path.join(targetPath, 'main.mjs')).catch(x => x)
+						import(url.pathToFileURL(path.join(targetPath, 'main.mjs'))).catch(x => x)
 					continue
 				} catch (err) {
 					errors.push(err)

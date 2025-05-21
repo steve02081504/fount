@@ -55,3 +55,8 @@ on_shutdown(async () => {
 			for (const partname in parts_set[username][parttype])
 				await unloadPart(username, parttype, partname)
 })
+
+export async function reloadPart(username, parttype, partname) {
+	await unloadPart(username, parttype, partname)
+	await loadPart(username, parttype, partname)
+}

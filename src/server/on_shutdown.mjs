@@ -5,11 +5,11 @@ const shutdowm_functions = []
 export function on_shutdown(func) {
 	shutdowm_functions.unshift(func)
 }
-export async function shutdown() {
+export async function shutdown(code = 0) {
 	for (const func of shutdowm_functions)
 		await func()
 	if (tray) tray.kill()
-	process.exit(0)
+	process.exit(code)
 }
 
 process.on('SIGINT', shutdown)

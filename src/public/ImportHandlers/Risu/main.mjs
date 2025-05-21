@@ -1,6 +1,7 @@
 import { mkdir, rm, writeFile } from 'node:fs/promises'
 import fsSync from 'node:fs' // For existsSync
 import path from 'node:path'
+import url from 'node:url'
 import { tmpdir } from 'node:os'
 import sanitizeFilename from 'npm:sanitize-filename'
 import { Buffer } from 'node:buffer'
@@ -216,8 +217,7 @@ async function ImportAsData(username, dataBuffer) {
 			await loadPart(username, 'chars', charName)
 		else
 			// 尝试动态导入，如果 Fount 支持的话。否则 loadPart 应该处理首次加载。
-			import(targetMainMjsPath).catch(err => console.error(`Dynamic import of ${targetMainMjsPath} failed:`, err))
-
+			import(url.pathToFileURL(targetMainMjsPath)).catch(err => console.error(`Dynamic import of ${targetMainMjsPath} failed:`, err))
 
 		console.log(`Risu character "${charName}" imported successfully to ${targetPath}`)
 
