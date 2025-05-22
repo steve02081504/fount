@@ -21,6 +21,8 @@
 [![Português](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Portugal.png)](./docs/Readme.pt-BR.md)
 [![हिन्दी](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/India.png)](./docs/Readme.hi-IN.md)
 [![한국어](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/South-Korea.png)](./docs/Readme.ko-KR.md)
+[![Italiano](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Italy.png)](./docs/Readme.it-IT.md)
+[![Tiếng Việt](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Vietnam.png)](./docs/Readme.vi-VN.md)
 
 ![Repobeats analytics image](https://repobeats.axiom.co/api/embed/d0bbc20f70089126a83c66d9c1f88c7ec67aa101.svg)
 
