@@ -20,6 +20,9 @@
 				"hi-IN": {
 					"title": "डिस्कॉर्ड बॉट कॉन्फ़िगर करें"
 				},
+				"it-IT": {
+					"title": "Configura Bot Discord"
+				},
 				"ja-JP": {
 					"title": "Discord Botの設定"
 				},
@@ -31,6 +34,9 @@
 				},
 				"ru-RU": {
 					"title": "Настройка Discord Bot"
+				},
+				"vi-VN": {
+					"title": "Định cấu hình Bot Discord"
 				}
 			},
 			"level": 1,
@@ -59,6 +65,9 @@
 				"hi-IN": {
 					"title": "डिस्कॉर्ड बॉट कॉन्फ़िगर करें"
 				},
+				"it-IT": {
+					"title": "Configura Bot Discord"
+				},
 				"ja-JP": {
 					"title": "Discord Botの設定"
 				},
@@ -70,6 +79,9 @@
 				},
 				"ru-RU": {
 					"title": "Настройка Discord Bot"
+				},
+				"vi-VN": {
+					"title": "Định cấu hình Bot Discord"
 				}
 			},
 			"level": 0,

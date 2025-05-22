@@ -20,6 +20,9 @@
 				"hi-IN": {
 					"title": "मॉड्यूल कॉन्फ़िगरेशन"
 				},
+				"it-IT": {
+					"title": "Modulo di configurazione"
+				},
 				"ja-JP": {
 					"title": "モジュール設定"
 				},
@@ -31,6 +34,9 @@
 				},
 				"ru-RU": {
 					"title": "Конфигурация модуля"
+				},
+				"vi-VN": {
+					"title": "Mô -đun cấu hình"
 				}
 			},
 			"level": 1,

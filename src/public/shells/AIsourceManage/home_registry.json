@@ -20,6 +20,9 @@
 				"hi-IN": {
 					"title": "एआई स्रोत प्रबंधित करें"
 				},
+				"it-IT": {
+					"title": "Gestisci fonti di intelligenza artificiale"
+				},
 				"ja-JP": {
 					"title": "AIソースを管理"
 				},
@@ -31,6 +34,9 @@
 				},
 				"ru-RU": {
 					"title": "Управление источниками ИИ"
+				},
+				"vi-VN": {
+					"title": "Quản lý các nguồn AI"
 				}
 			},
 			"level": 1,

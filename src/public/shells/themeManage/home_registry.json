@@ -20,6 +20,9 @@
 				"hi-IN": {
 					"title": "थीम स्विच"
 				},
+				"it-IT": {
+					"title": "Switch Theme"
+				},
 				"ja-JP": {
 					"title": "テーマ切り替え"
 				},
@@ -31,6 +34,9 @@
 				},
 				"ru-RU": {
 					"title": "Сменить тему"
+				},
+				"vi-VN": {
+					"title": "Chuyển đổi chủ đề"
 				}
 			},
 			"level": 0,
