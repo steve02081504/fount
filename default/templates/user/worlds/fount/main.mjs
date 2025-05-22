@@ -57,6 +57,14 @@ export default {
 			name: 'Мир fount по умолчанию',
 			description: 'Используется для руководства персонажей по выводу поддержки рендеринга fount',
 		},
+		'it-IT': {
+			name: 'Mondo predefinito di fount',
+			description: 'Utilizzato per guidare i personaggi sulla uscita di supporto per il rendering di fount',
+		},
+		'vi-VN': {
+			name: 'Thế giới mặc định của fount',
+			description: 'Sử dụng để hướng dẫn các nhân vật về xuất hiện hỗ trợ cho việc render hoạt hình của fount',
+		},
 	},
 	Load: (stat) => {
 		username = stat.username // 获取用户名

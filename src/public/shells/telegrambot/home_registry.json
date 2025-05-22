@@ -20,6 +20,9 @@
 				"hi-IN": {
 					"title": "टेलीग्राम बॉट कॉन्फ़िगर करें"
 				},
+				"it-IT": {
+					"title": "Configura Bot Telegram"
+				},
 				"ja-JP": {
 					"title": "Telegram Botの設定"
 				},
@@ -31,6 +34,9 @@
 				},
 				"ru-RU": {
 					"title": "Настройка Telegram Bot"
+				},
+				"vi-VN": {
+					"title": "Cấu hình bot telegram"
 				}
 			},
 			"level": 1,
@@ -59,6 +65,9 @@
 				"hi-IN": {
 					"title": "टेलीग्राम बॉट कॉन्फ़िगर करें"
 				},
+				"it-IT": {
+					"title": "Configura Bot Telegram"
+				},
 				"ja-JP": {
 					"title": "Telegram Botの設定"
 				},
@@ -70,6 +79,9 @@
 				},
 				"ru-RU": {
 					"title": "Настройка Telegram Bot"
+				},
+				"vi-VN": {
+					"title": "Cấu hình bot telegram"
 				}
 			},
 			"level": 0,

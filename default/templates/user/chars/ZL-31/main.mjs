@@ -619,7 +619,7 @@ ZL-31はFountのデフォルトキャラクターであり、性別設定はあ�
 ZL-31은 Fount의 기본 캐릭터이며 성별 설정이 없습니다. 최종 목표는 사용자를 만족시키고 다양한 요구를 충족시키기 위해 노력하는 것입니다.
 채팅, 질문 답변, 제안 제공, 간단한 Fount 캐릭터를 새로 만드는 것을 도와드릴 수 있습니다.
 
-일부 코드는 [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite)에서 가져왔습니다.
+일부 코드는 [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite)에서 가져왔습니다。
 `,
 			version: '1.0.0',
 			author: 'steve02081504',
@@ -655,6 +655,36 @@ ZL-31 — персонаж Fount по умолчанию, без гендерн�
 			author: 'steve02081504',
 			homepage: '',
 			tags: ['помощник', 'по умолчанию', 'без пола', 'Fount'],
+		},
+		'it-IT': {
+			name: 'ZL-31',
+			avatar: '',
+			description: 'Il personaggio predefinito di Fount, sempre pronto ad aiutarti',
+			description_markdown: `\
+ZL-31 è il personaggio predefinito di Fount, senza impostazioni di genere. Il suo obiettivo finale è soddisfare gli utenti e cercare di soddisfare le loro varie esigenze.
+Può chattare, rispondere a domande, fornire suggerimenti e aiutarti a creare semplici personaggi Fount.
+
+Parte del codice proviene da [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
+`,
+			version: '1.0.0',
+			author: 'steve02081504',
+			homepage: '',
+			tags: ['assistente', 'predefinito', 'senza genere', 'Fount'],
+		},
+		'vi-VN': {
+			name: 'ZL-31',
+			avatar: '',
+			description: 'Nhân vật mặc định của Fount, luôn sẵn lòng giúp đỡ bạn',
+			description_markdown: `\
+ZL-31 là nhân vật mặc định của Fount, không có cài đặt giới tính. Mục tiêu cuối cùng của nó là làm hài lòng người dùng và cố gắng đáp ứng các nhu cầu khác nhau của họ.
+Nó có thể trò chuyện, trả lời câu hỏi, đưa ra gợi ý và giúp bạn tạo các nhân vật Fount đơn giản.
+
+Một số mã nguồn đến từ [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
+`,
+			version: '1.0.0',
+			author: 'steve02081504',
+			homepage: '',
+			tags: ['trợ lý', 'mặc định', 'không giới tính', 'Fount'],
 		},
 	},
 
@@ -711,6 +741,10 @@ ZL-31 — персонаж Fount по умолчанию, без гендерн�
 						return [{ content: 'Olá, sou o ZL-31, prazer em ajudar! Em que posso ajudar?' }, { content: 'Bem-vindo/a! Sou o ZL-31, em que posso ser útil?' },][index]
 					case 'ru':
 						return [{ content: 'Здравствуйте, я ZL-31, рад помочь вам! Чем я могу вам помочь?' }, { content: 'Добро пожаловать! Я ZL-31, чем могу помочь?' },][index]
+					case 'it':
+						return [{ content: 'Ciao, sono ZL-31, felice di esserti d\'aiuto! Come posso aiutarti?' }, { content: 'Benvenuto/a! Sono ZL-31, cosa posso fare per te?' },][index]
+					case 'vi':
+						return [{ content: 'Chào bạn, tôi là ZL-31, rất vui được phục vụ bạn! Tôi có thể giúp gì cho bạn?' }, { content: 'Chào mừng! Tôi là ZL-31, có gì tôi có thể giúp được không?' },][index]
 					default:
 					case 'en':
 						return [{ content: 'Hi, I\'m ZL-31, glad to help you! What can I help you with?' }, { content: 'Hi! I\'m ZL-31, what can I help you with?' },][index]
@@ -737,6 +771,10 @@ ZL-31 — персонаж Fount по умолчанию, без гендерн�
 						return [{ content: 'Olá a todos, sou o ZL-31, contente por juntar-me a este grupo!' }, { content: 'Olá a todos! Sou o ZL-31, espero ter bons momentos convosco!' },][index]
 					case 'ru':
 						return [{ content: 'Всем привет, я ZL-31, рад присоединиться к этой группе!' }, { content: 'Всем привет! Я ZL-31, надеюсь, мы хорошо проведем время вместе!' },][index]
+					case 'it':
+						return [{ content: 'Ciao a tutti, sono ZL-31, felice di unirmi a questo gruppo!' }, { content: 'Ciao a tutti! Sono ZL-31, spero di trascorrere un bel momento con voi!' },][index]
+					case 'vi':
+						return [{ content: 'Chào mọi người, tôi là ZL-31, rất vui được tham gia nhóm này!' }, { content: 'Chào mọi người! Tôi là ZL-31, hy vọng sẽ có thời gian vui vẻ với các bạn!' },][index]
 					default:
 					case 'en':
 						return [{ content: 'Hi everyone, I\'m ZL-31, glad to join this group!' }, { content: 'Hi everyone! I\'m ZL-31, hope to have a good time with you!' },][index]
@@ -805,6 +843,10 @@ persona-generator
 							return { content: 'Desculpe, ainda não fui configurado com uma fonte de IA, por isso não consigo ter conversas mais complexas por agora. Por favor, configure-me com uma fonte de IA nas definições.' }
 						case 'ru':
 							return { content: 'Извините, у меня еще не настроен источник ИИ, поэтому пока я не могу вести более сложные разговоры. Пожалуйста, настройте источник ИИ в настройках.' }
+						case 'it':
+							return { content: 'Mi dispiace, non sono ancora stato configurato con una fonte AI, quindi per ora non posso intrattenere conversazioni più complesse. Per favore, configurami con una fonte AI nelle impostazioni.' }
+						case 'vi':
+							return { content: 'Xin lỗi, tôi chưa được cấu hình với nguồn AI, vì vậy tôi không thể thực hiện cuộc trò chuyện phức tạp hơn lúc này. Vui lòng cấu hình nguồn AI cho tôi trong cài đặt.' }
 						default:
 						case 'en':
 							return { content: 'Sorry, I haven\'t been configured with an AI source yet, so I can\'t do more complex conversation for now. Please configure me with an AI source in the settings.' }

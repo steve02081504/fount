@@ -69,21 +69,21 @@ function buildCharInfo(charData) {
 	info[defaultLocaleKey] = createInfoForLang(charData.creator_notes)
 
 	// --- 步骤2: 从 chardata.extensions.creator_notes_multilingual 填充其他语言信息 ---
-	if (charData.extensions?.creator_notes_multilingual && typeof charData.extensions.creator_notes_multilingual === 'object') 
-		for (const langCode in charData.extensions.creator_notes_multilingual) 
+	if (charData.extensions?.creator_notes_multilingual && typeof charData.extensions.creator_notes_multilingual === 'object')
+		for (const langCode in charData.extensions.creator_notes_multilingual)
 			if (Object.hasOwnProperty.call(charData.extensions.creator_notes_multilingual, langCode)) {
 				const noteForLang = charData.extensions.creator_notes_multilingual[langCode]
 				// Fount 的 locale 通常是 'en-US', 'zh-CN' 等。CCv3 的是 'en', 'zh'。
 				// 直接使用 CCv3 的 langCode。Fount 在查找时应能处理 'en' 匹配 'en-US' 的情况。
 				if (langCode !== defaultLocaleKey)  //避免覆盖已经由 `chardata.creator_notes` 设置的默认条目
 					info[langCode] = createInfoForLang(noteForLang)
-				else if (!info[defaultLocaleKey].description_markdown && noteForLang) 
+				else if (!info[defaultLocaleKey].description_markdown && noteForLang)
 				// 如果默认条目的描述为空（可能 chardata.creator_notes 为空），但多语言中有对应默认键的有效条目，则使用它
 					info[defaultLocaleKey] = createInfoForLang(noteForLang)
-                
+
 			}
-        
-    
+
+
 	// 如果 Fount 强制要求 'en' 存在，且 '' 不是 'en' 的有效代理，可以在这里确保 'en' 条目
 	if (!info.en && info[''] && chardata.creator_notes === (chardata.extensions?.creator_notes_multilingual?.en || chardata.creator_notes) ) {
 		// 如果 '' 的内容实际上是英文内容，并且没有显式的 'en'，可以考虑复制一份
@@ -92,6 +92,18 @@ function buildCharInfo(charData) {
 
 
 	return info
+}
+
+/**
+ * @param {string} text
+ * @returns {string}
+ */
+function formatRisuOutput(text) {
+	const risu_assets = chardata.extensions?.risu_assets || []
+	return text.replace(/<img="(?<src>[^"]+)">/g, (match, src) => {
+		const asset = risu_assets.find(a => a.name == src) || risu_assets.find(a => a.name == `${src}.${a.ext}`)
+		return `<img src="${charurl}/${asset.fount_uri}" class="modal-img">`
+	})
 }
 
 
@@ -152,7 +164,7 @@ const charAPI_definition = { // 先定义结构主体
 
 				return {
 					content: runRegex(chardata, result, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.markdownOnly && !e.promptOnly),
-					content_for_show: runRegex(chardata, result, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.promptOnly)
+					content_for_show: formatRisuOutput(runRegex(chardata, result, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.promptOnly))
 				}
 			},
 			GetGroupGreeting: (args, index) => {
@@ -173,7 +185,7 @@ const charAPI_definition = { // 先定义结构主体
 
 				return {
 					content: runRegex(chardata, result, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.markdownOnly && !e.promptOnly),
-					content_for_show: runRegex(chardata, result, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.promptOnly)
+					content_for_show: formatRisuOutput(runRegex(chardata, result, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.promptOnly))
 				}
 			},
 			GetPrompt: (promptArgs /* Fount prompt_struct_args_t */) => {
@@ -233,7 +245,7 @@ const charAPI_definition = { // 先定义结构主体
 
 				return {
 					content: runRegex(chardata, finalContent, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.markdownOnly && !e.promptOnly),
-					content_for_show: runRegex(chardata, finalContent, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.promptOnly),
+					content_for_show: formatRisuOutput(runRegex(chardata, finalContent, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.promptOnly)),
 					files: result.files,
 					extension: result.extension,
 				}
@@ -250,7 +262,7 @@ const charAPI_definition = { // 先定义结构主体
 				return {
 					...args.edited,
 					content: runRegex(chardata, editedContent, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.markdownOnly && !e.promptOnly && (e.runOnEdit !== false)),
-					content_for_show: runRegex(chardata, editedContent, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.promptOnly && (e.runOnEdit !== false)),
+					content_for_show: formatRisuOutput(runRegex(chardata, editedContent, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.promptOnly && (e.runOnEdit !== false))),
 				}
 			}
 		}

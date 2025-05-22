@@ -20,6 +20,9 @@
 				"hi-IN": {
 					"title": "प्रोक्सी के रूप में"
 				},
+				"it-IT": {
+					"title": "Come agente"
+				},
 				"ja-JP": {
 					"title": "プロキシとして"
 				},
@@ -31,6 +34,9 @@
 				},
 				"ru-RU": {
 					"title": "Как прокси"
+				},
+				"vi-VN": {
+					"title": "Là một đại lý"
 				}
 			},
 			"level": 2,

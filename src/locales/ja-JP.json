@@ -162,6 +162,7 @@
 	},
 	"home": {
 		"title": "ホーム",
+		"escapeConfirm": "噴水を離れたいですか？",
 		"filterInput": {
 			"placeholder": "検索..."
 		},

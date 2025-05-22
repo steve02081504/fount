@@ -162,6 +162,7 @@
 	},
 	"home": {
 		"title": "Inicio",
+		"escapeConfirm": "¿Estás seguro de que quieres dejar la fuente?",
 		"filterInput": {
 			"placeholder": "Buscar..."
 		},

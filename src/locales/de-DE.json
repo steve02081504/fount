@@ -162,6 +162,7 @@
 	},
 	"home": {
 		"title": "Startseite",
+		"escapeConfirm": "Bist du sicher, dass du den Brunnen verlassen willst?",
 		"filterInput": {
 			"placeholder": "Suchen..."
 		},

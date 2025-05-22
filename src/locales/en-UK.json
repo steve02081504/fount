@@ -162,6 +162,7 @@
 	},
 	"home": {
 		"title": "Home",
+		"escapeConfirm": "Are you sure you want to leave the fount?",
 		"filterInput": {
 			"placeholder": "Search..."
 		},

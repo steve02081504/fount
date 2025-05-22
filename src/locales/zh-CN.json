@@ -162,6 +162,7 @@
 	},
 	"home": {
 		"title": "主页",
+		"escapeConfirm": "确定要离开fount吗？",
 		"filterInput": {
 			"placeholder": "搜索..."
 		},

@@ -19,8 +19,8 @@ import { isPartLoaded } from '../../../server/parts_loader.mjs' // 调整路径
 // Helper to save assets and update URIs
 async function saveAndNormalizeAsset(assetBuffer, originalName, targetDir, assetSubDir, assetTypeForLog = 'asset') {
 	const safeOriginalName = sanitizeFilename(originalName || `${assetTypeForLog}_${Date.now()}`)
-	const targetAssetPath = path.join(assetSubDir, safeOriginalName)
-	const fullTargetPath = path.join(targetDir, targetAssetPath)
+	const targetAssetPath = assetSubDir + '/' + safeOriginalName
+	const fullTargetPath = targetDir + '/' + targetAssetPath
 
 	await mkdir(path.dirname(fullTargetPath), { recursive: true })
 	await writeFile(fullTargetPath, assetBuffer)
@@ -89,12 +89,9 @@ async function ImportAsData(username, dataBuffer) {
 		if (sourceSpec !== 'ccv3')
 			throw new Error(`This Risu importer primarily handles CCv3. Detected ${sourceSpec}. Please use the SillyTavern importer if applicable.`)
 
-
-
 		const charName = sanitizeFilename(ccv3Card.data.name || `RisuChar_${Date.now()}`)
 		const targetPath = await getAvailablePath(username, 'chars', charName)
 		await mkdir(targetPath, { recursive: true })
-		const risuAssetsTargetDir = path.join(targetPath, 'risu_assets') // 存放所有额外资源
 
 		// 处理卡片定义的资源 (ccv3Card.data.assets)
 		const processedAssetsForST = [] // 用于放入 stV2Data.extensions.risu_assets
@@ -278,8 +275,8 @@ export default {
 	},
 	interfaces: {
 		import: {
-			ImportAsData, // function(username: string, data: Buffer): Promise<void>
-			ImportByText, // function(username: string, text: string): Promise<void>
+			ImportAsData,
+			ImportByText,
 		}
 	}
 }

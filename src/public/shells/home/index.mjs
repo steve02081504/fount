@@ -400,6 +400,13 @@ async function initializeApp() {
 		// Refresh and display filtered list
 		await filterItemList()
 	})
+
+	// esc按键
+	document.addEventListener('keydown', event => {
+		if (event.key === 'Escape')
+			if (!confirm(geti18n('home.escapeConfirm')))
+				event.stopImmediatePropagation()
+	}, true)
 }
 
 async function fetchData() {

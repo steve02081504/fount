@@ -20,6 +20,9 @@
 				"hi-IN": {
 					"title": "आयात करें"
 				},
+				"it-IT": {
+					"title": "Importare"
+				},
 				"ja-JP": {
 					"title": "インポート"
 				},
@@ -31,6 +34,9 @@
 				},
 				"ru-RU": {
 					"title": "Импорт"
+				},
+				"vi-VN": {
+					"title": "Nhập khẩu"
 				}
 			},
 			"level": 0,

@@ -20,6 +20,9 @@
 				"hi-IN": {
 					"title": "इतिहास देखें"
 				},
+				"it-IT": {
+					"title": "Navigazione nella storia"
+				},
 				"ja-JP": {
 					"title": "履歴を見る"
 				},
@@ -31,6 +34,9 @@
 				},
 				"ru-RU": {
 					"title": "Просмотреть историю"
+				},
+				"vi-VN": {
+					"title": "Lịch sử duyệt web"
 				}
 			},
 			"level": 1,
@@ -59,6 +65,9 @@
 				"hi-IN": {
 					"title": "चैट"
 				},
+				"it-IT": {
+					"title": "chiacchierata"
+				},
 				"ja-JP": {
 					"title": "チャット"
 				},
@@ -70,6 +79,9 @@
 				},
 				"ru-RU": {
 					"title": "Чат"
+				},
+				"vi-VN": {
+					"title": "trò chuyện"
 				}
 			},
 			"level": 0,
