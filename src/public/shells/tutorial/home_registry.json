@@ -20,6 +20,9 @@
 				"hi-IN": {
 					"title": "ट्यूटोरियल फिर से चलाएं"
 				},
+				"it-IT": {
+					"title": "Replay Tutorial"
+				},
 				"ja-JP": {
 					"title": "チュートリアルをリプレイ"
 				},
@@ -31,6 +34,9 @@
 				},
 				"ru-RU": {
 					"title": "Повторить обучение"
+				},
+				"vi-VN": {
+					"title": "Phát lại hướng dẫn"
 				}
 			},
 			"level": 99,
