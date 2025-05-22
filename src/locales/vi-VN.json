@@ -1,0 +1,690 @@
+{
+	"lang": "vi-VN",
+	"fountConsole": {
+		"server": {
+			"start": "Đang khởi động máy chủ",
+			"starting": "Máy chủ đang khởi động...",
+			"ready": "Máy chủ đã sẵn sàng",
+			"usesdTime": "Thời gian khởi động: ${time}s",
+			"showUrl": {
+				"https": "Máy chủ HTTPS đang chạy tại ${url}",
+				"http": "Máy chủ HTTP đang chạy tại ${url}"
+			},
+			"standingBy": "đang chờ..."
+		},
+		"jobs": {
+			"restartingJob": "Đang khởi động lại nhiệm vụ ${parttype} ${partname} của người dùng ${username}: ${uid}"
+		},
+		"ipc": {
+			"sendCommandFailed": "Gửi lệnh thất bại: ${error}",
+			"invalidCommand": "Lệnh không hợp lệ, vui lòng sử dụng \"fount runshell <tên người dùng> <tên shell> <tham số...>\"",
+			"runShellLog": "Chạy shell ${shellname} dưới dạng ${username}, tham số: ${args}",
+			"invokeShellLog": "Gọi shell ${shellname} dưới dạng ${username}, tham số: ${invokedata}",
+			"unsupportedCommand": "Loại lệnh không được hỗ trợ",
+			"processMessageError": "Đã xảy ra lỗi khi xử lý tin nhắn IPC: ${error}",
+			"invalidCommandFormat": "Định dạng lệnh không hợp lệ",
+			"socketError": "Lỗi Socket: ${error}",
+			"instanceRunning": "Một phiên bản khác đang chạy",
+			"serverStartPrefix": "máy chủ khởi động",
+			"serverStarted": "Máy chủ IPC đã khởi động",
+			"parseResponseFailed": "Phân tích phản hồi máy chủ thất bại: ${error}",
+			"cannotParseResponse": "Không thể phân tích phản hồi máy chủ",
+			"unknownError": "Lỗi không xác định"
+		},
+		"partManager": {
+			"git": {
+				"noUpstream": "Không có nhánh upstream nào được cấu hình cho nhánh '${currentBranch}', bỏ qua kiểm tra cập nhật.",
+				"dirtyWorkingDirectory": "Thư mục làm việc không sạch. Vui lòng thêm hoặc commit các thay đổi của bạn trước khi cập nhật.",
+				"updating": "Đang cập nhật từ kho lưu trữ từ xa...",
+				"localAhead": "Nhánh cục bộ đang dẫn trước nhánh từ xa. Không cần cập nhật.",
+				"diverged": "Nhánh cục bộ và từ xa đã phân nhánh. Đang buộc cập nhật...",
+				"upToDate": "Đã là phiên bản mới nhất.",
+				"updateFailed": "Cập nhật thành phần từ kho lưu trữ từ xa thất bại: ${error}"
+			},
+			"partInitTime": "Thời gian khởi tạo thành phần ${parttype} ${partname}: ${time}s",
+			"partLoadTime": "Thời gian tải thành phần ${parttype} ${partname}: ${time}s"
+		},
+		"web": {
+			"requestReceived": "Đã nhận được yêu cầu: ${method} ${url}"
+		},
+		"route": {
+			"setLanguagePreference": "Người dùng ${username} đã đặt ngôn ngữ ưu tiên: ${preferredLanguages}"
+		},
+		"auth": {
+			"tokenVerifyError": "Lỗi xác minh mã thông báo: ${error}",
+			"refreshTokenError": "Lỗi làm mới mã thông báo: ${error}",
+			"logoutRefreshTokenProcessError": "Lỗi xử lý mã thông báo làm mới khi đăng xuất: ${error}",
+			"revokeTokenNoJTI": "Không thể thu hồi mã thông báo không có jti",
+			"accountLockedLog": "Tài khoản của người dùng ${username} đã bị khóa do nhiều lần đăng nhập thất bại"
+		},
+		"verification": {
+			"codeGeneratedLog": "Mã xác minh: ${code} (hết hạn sau 60 giây)",
+			"codeNotifyTitle": "Mã xác minh",
+			"codeNotifyBody": "Mã xác minh: ${code} (hết hạn sau 60 giây)"
+		},
+		"tray": {
+			"readIconFailed": "Đọc tệp biểu tượng thất bại: ${error}",
+			"createTrayFailed": "Tạo khay hệ thống thất bại: ${error}"
+		},
+		"discordbot": {
+			"botStarted": "Ký tự ${charname} đã đăng nhập trên bot discord ${botusername}"
+		},
+		"telegrambot": {
+			"botStarted": "Ký tự ${charname} đã đăng nhập trên bot telegram ${botusername}"
+		}
+	},
+	"protocolhandler": {
+		"title": "Xử lý giao thức Fount",
+		"processing": "Đang xử lý giao thức...",
+		"invalidProtocol": "Giao thức không hợp lệ",
+		"insufficientParams": "Tham số không đủ",
+		"unknownCommand": "Lệnh không xác định",
+		"shellCommandSent": "Lệnh Shell đã được gửi",
+		"shellCommandFailed": "Gửi lệnh Shell thất bại",
+		"shellCommandError": "Đã xảy ra lỗi khi gửi lệnh Shell"
+	},
+	"auth": {
+		"title": "Xác thực",
+		"subtitle": "Dữ liệu người dùng được lưu trữ cục bộ",
+		"usernameLabel": "Tên người dùng:",
+		"usernameInput": {
+			"placeholder": "Vui lòng nhập tên người dùng"
+		},
+		"passwordLabel": "Mật khẩu:",
+		"passwordInput": {
+			"placeholder": "Vui lòng nhập mật khẩu"
+		},
+		"confirmPasswordLabel": "Xác nhận mật khẩu:",
+		"confirmPasswordInput": {
+			"placeholder": "Vui lòng nhập lại mật khẩu"
+		},
+		"verificationCodeLabel": "Mã xác minh:",
+		"verificationCodeInput": {
+			"placeholder": "Vui lòng nhập mã xác minh"
+		},
+		"sendCodeButton": "Gửi mã xác minh",
+		"login": {
+			"title": "Đăng nhập",
+			"submitButton": "Đăng nhập",
+			"toggleLink": {
+				"text": "Chưa có tài khoản?",
+				"link": "Đăng ký ngay"
+			}
+		},
+		"register": {
+			"title": "Đăng ký",
+			"submitButton": "Đăng ký",
+			"toggleLink": {
+				"text": "Đã có tài khoản?",
+				"link": "Đăng nhập ngay"
+			}
+		},
+		"error": {
+			"passwordMismatch": "Mật khẩu không khớp.",
+			"loginError": "Lỗi đăng nhập.",
+			"registrationError": "Lỗi đăng ký.",
+			"verificationCodeError": "Mã xác minh sai hoặc đã hết hạn.",
+			"verificationCodeSent": "Mã xác minh đã được gửi thành công.",
+			"verificationCodeSendError": "Gửi mã xác minh thất bại.",
+			"verificationCodeRateLimit": "Gửi mã xác minh quá thường xuyên, vui lòng thử lại sau.",
+			"lowPasswordStrength": "Độ mạnh mật khẩu quá thấp.",
+			"accountAlreadyExists": "Tài khoản đã tồn tại"
+		},
+		"passwordStrength": {
+			"veryWeak": "Rất yếu",
+			"weak": "Yếu",
+			"normal": "Bình thường",
+			"strong": "Mạnh",
+			"veryStrong": "Rất mạnh"
+		}
+	},
+	"tutorial": {
+		"title": "Bạn muốn hướng dẫn?",
+		"modal": {
+			"title": "Chào mừng bạn đến với Fount!",
+			"instruction": "Bạn muốn xem hướng dẫn dành cho người mới không?",
+			"buttons": {
+				"start": "Bắt đầu hướng dẫn",
+				"skip": "Bỏ qua"
+			}
+		},
+		"endScreen": {
+			"title": "Tuyệt vời! Hướng dẫn đã hoàn tất!",
+			"subtitle": "Bây giờ bạn đã biết cách thao tác rồi!",
+			"endButton": "Tiếp theo!"
+		},
+		"progressMessages": {
+			"mouseMove": "Vui lòng dùng ngón tay của bạn để cầm chuột ${mouseIcon}<br/>Sau đó di chuyển nó",
+			"keyboardPress": "Vui lòng tìm bàn phím của bạn ${keyboardIcon}<br/>Thử dùng ngón tay nhấn phím trên bàn phím",
+			"mobileTouchMove": "Vui lòng tìm điện thoại của bạn ${phoneIcon}<br/>Thử dùng bất kỳ ngón tay nào chạm vào màn hình, sau đó di chuyển nó",
+			"mobileClick": "Vui lòng thử dùng bất kỳ ngón tay nào chạm vào màn hình điện thoại ${phoneIcon}<br/>Sau đó thả ra"
+		}
+	},
+	"home": {
+		"title": "Trang chủ",
+		"escapeConfirm": "Bạn có chắc muốn rời khỏi Fount không?",
+		"filterInput": {
+			"placeholder": "Tìm kiếm..."
+		},
+		"sidebarTitle": "Chi tiết",
+		"itemDescription": "Chọn một mục tại đây để xem chi tiết.",
+		"noDescription": "Không có mô tả",
+		"alerts": {
+			"fetchHomeRegistryFailed": "Lấy thông tin đăng ký trang chủ thất bại"
+		},
+		"functionMenu": {
+			"icon": {
+				"alt": "Menu chức năng"
+			}
+		},
+		"chars": {
+			"tab": "Nhân vật",
+			"title": "Chọn nhân vật",
+			"subtitle": "Chọn một nhân vật - sau đó bắt đầu trò chuyện!",
+			"none": "Trống rỗng",
+			"card": {
+				"refreshButton": {
+					"alt": "Làm mới",
+					"title": "Làm mới"
+				},
+				"noTags": "Không có thẻ",
+				"version": "Phiên bản",
+				"author": "Tác giả",
+				"homepage": "Trang chủ",
+				"issuepage": "Trang báo lỗi",
+				"defaultCheckbox": {
+					"title": "Đặt làm nhân vật mặc định"
+				}
+			}
+		},
+		"worlds": {
+			"tab": "Thế giới",
+			"title": "Chọn thế giới",
+			"subtitle": "Chọn thế giới, đắm mình vào đó!",
+			"none": "Trống rỗng",
+			"card": {
+				"refreshButton": {
+					"alt": "Làm mới",
+					"title": "Làm mới"
+				},
+				"noTags": "Không có thẻ",
+				"version": "Phiên bản",
+				"author": "Tác giả",
+				"homepage": "Trang chủ",
+				"issuepage": "Trang báo lỗi",
+				"defaultCheckbox": {
+					"title": "Đặt làm thế giới mặc định"
+				}
+			}
+		},
+		"personas": {
+			"tab": "Hình ảnh",
+			"title": "Chọn hình ảnh",
+			"subtitle": "Chọn hình ảnh, trải nghiệm cuộc sống.",
+			"none": "Trống rỗng",
+			"card": {
+				"refreshButton": {
+					"alt": "Làm mới",
+					"title": "Làm mới"
+				},
+				"noTags": "Không có thẻ",
+				"version": "Phiên bản",
+				"author": "Tác giả",
+				"homepage": "Trang chủ",
+				"issuepage": "Trang báo lỗi",
+				"defaultCheckbox": {
+					"title": "Đặt làm hình ảnh mặc định"
+				}
+			}
+		}
+	},
+	"themeManage": {
+		"title": "Quản lý chủ đề",
+		"instruction": "Chọn một chủ đề!",
+		"themes": {
+			"auto": "Tự động"
+		}
+	},
+	"import": {
+		"title": "Nhập khẩu",
+		"tabs": {
+			"fileImport": "Nhập từ tệp",
+			"textImport": "Nhập từ văn bản"
+		},
+		"dropArea": {
+			"icon": {
+				"alt": "Biểu tượng tải lên"
+			},
+			"text": "Kéo và thả tệp vào đây hoặc nhấp để chọn tệp"
+		},
+		"textArea": {
+			"placeholder": "Nhập văn bản muốn nhập..."
+		},
+		"buttons": {
+			"import": "Nhập khẩu"
+		},
+		"alerts": {
+			"importSuccess": "Nhập khẩu thành công",
+			"importFailed": "Nhập khẩu thất bại: ${error}",
+			"unknownError": "Lỗi không xác định"
+		},
+		"errors": {
+			"noFileSelected": "Vui lòng chọn tệp",
+			"fileImportFailed": "Nhập tệp thất bại: ${message}",
+			"noTextContent": "Vui lòng nhập nội dung văn bản",
+			"textImportFailed": "Nhập văn bản thất bại: ${message}",
+			"handler": "Bộ xử lý",
+			"error": "Lỗi"
+		},
+		"fileItem": {
+			"removeButton": {
+				"title": "Xóa"
+			}
+		}
+	},
+	"aisource_editor": {
+		"title": "Trình chỉnh sửa nguồn AI",
+		"fileList": {
+			"title": "Danh sách nguồn AI",
+			"addButton": {
+				"title": "+"
+			}
+		},
+		"configTitle": "Cấu hình nguồn AI",
+		"generatorSelect": {
+			"label": "Chọn trình tạo",
+			"placeholder": "Vui lòng chọn"
+		},
+		"buttons": {
+			"save": "Lưu",
+			"delete": "Xóa"
+		},
+		"alerts": {
+			"fetchFileListFailed": "Lấy danh sách tệp thất bại: ${error}",
+			"fetchGeneratorListFailed": "Lấy danh sách trình tạo thất bại: ${error}",
+			"fetchFileDataFailed": "Lấy dữ liệu tệp thất bại: ${error}",
+			"noFileSelectedSave": "Chưa chọn tệp để lưu.",
+			"saveFileFailed": "Lưu tệp thất bại: ${error}",
+			"noFileSelectedDelete": "Chưa chọn tệp để xóa.",
+			"deleteFileFailed": "Xóa tệp thất bại: ${error}",
+			"invalidFileName": "Tên tệp không được chứa các ký tự sau: / \\ : * ? \" < > |",
+			"addFileFailed": "Thêm tệp thất bại: ${error}",
+			"fetchConfigTemplateFailed": "Lấy mẫu cấu hình thất bại",
+			"noGeneratorSelectedSave": "Vui lòng chọn trình tạo trước khi lưu"
+		},
+		"confirm": {
+			"unsavedChanges": "Bạn có các thay đổi chưa lưu. Bạn có muốn bỏ qua các thay đổi không?",
+			"deleteFile": "Bạn có chắc muốn xóa tệp không?",
+			"unsavedChangesBeforeUnload": "Bạn có các thay đổi chưa lưu. Bạn có chắc muốn rời khỏi trang này không?"
+		},
+		"prompts": {
+			"newFileName": "Vui lòng nhập tên tệp nguồn AI mới (không bao gồm phần mở rộng):"
+		},
+		"editor": {
+			"disabledIndicator": "Vui lòng chọn trình tạo trước"
+		}
+	},
+	"part_config": {
+		"title": "Cấu hình thành phần",
+		"pageTitle": "Cấu hình thành phần",
+		"labels": {
+			"partType": "Chọn loại thành phần",
+			"part": "Chọn thành phần"
+		},
+		"placeholders": {
+			"partTypeSelect": "Vui lòng chọn",
+			"partSelect": "Vui lòng chọn"
+		},
+		"editor": {
+			"title": "Cấu hình thành phần",
+			"disabledIndicator": "Thành phần này không hỗ trợ cấu hình",
+			"buttons": {
+				"save": "Lưu"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Biểu tượng báo lỗi"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "Lấy loại thành phần thất bại",
+			"fetchPartsFailed": "Lấy danh sách thành phần thất bại",
+			"loadEditorFailed": "Tải trình chỉnh sửa thất bại",
+			"saveConfigFailed": "Lưu cấu hình thành phần thất bại",
+			"unsavedChanges": "Bạn có các thay đổi chưa lưu. Bạn có muốn bỏ qua các thay đổi không?",
+			"beforeUnload": "Bạn có các thay đổi chưa lưu. Bạn có chắc muốn rời đi không?"
+		}
+	},
+	"uninstall": {
+		"title": "Gỡ cài đặt",
+		"titleWithName": "Gỡ cài đặt ${type}/${name}",
+		"confirmMessage": "Bạn có chắc muốn gỡ cài đặt ${type}: ${name} không?",
+		"invalidParamsTitle": "Tham số không hợp lệ",
+		"infoMessage": {
+			"icon": {
+				"alt": "Biểu tượng thông tin"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Biểu tượng lỗi"
+			}
+		},
+		"buttons": {
+			"confirm": "Xác nhận gỡ cài đặt",
+			"cancel": "Hủy",
+			"back": "Quay lại"
+		},
+		"alerts": {
+			"success": "Đã gỡ cài đặt thành công ${type}: ${name}",
+			"failed": "Gỡ cài đặt thất bại: ${error}",
+			"invalidParams": "Tham số yêu cầu không hợp lệ.",
+			"httpError": "Lỗi HTTP! Mã trạng thái: ${status}"
+		}
+	},
+	"chat": {
+		"new": {
+			"title": "Trò chuyện mới"
+		},
+		"title": "Trò chuyện",
+		"sidebar": {
+			"world": {
+				"icon": {
+					"alt": "Biểu tượng thế giới"
+				},
+				"title": "Thế giới"
+			},
+			"persona": {
+				"icon": {
+					"alt": "Biểu tượng vai trò người dùng"
+				},
+				"title": "Vai trò người dùng"
+			},
+			"charList": {
+				"icon": {
+					"alt": "Biểu tượng danh sách nhân vật"
+				},
+				"title": "Danh sách nhân vật",
+				"buttons": {
+					"addChar": {
+						"title": "Thêm nhân vật"
+					},
+					"addCharIcon": {
+						"alt": "Biểu tượng thêm nhân vật"
+					}
+				}
+			},
+			"noSelection": "Không có",
+			"noDescription": "Không có mô tả"
+		},
+		"chatArea": {
+			"title": "Trò chuyện",
+			"menuButton": {
+				"title": "Menu"
+			},
+			"menuButtonIcon": {
+				"alt": "Biểu tượng menu"
+			},
+			"input": {
+				"placeholder": "Nhập tin nhắn...\nCtrl+Enter để gửi"
+			},
+			"sendButton": {
+				"title": "Gửi"
+			},
+			"sendButtonIcon": {
+				"alt": "Biểu tượng gửi"
+			},
+			"uploadButton": {
+				"title": "Tải lên"
+			},
+			"uploadButtonIcon": {
+				"alt": "Biểu tượng tải lên"
+			},
+			"voiceButton": {
+				"title": "Ghi âm"
+			},
+			"voiceButtonIcon": {
+				"alt": "Biểu tượng ghi âm"
+			},
+			"photoButton": {
+				"title": "Ảnh"
+			},
+			"photoButtonIcon": {
+				"alt": "Biểu tượng ảnh"
+			}
+		},
+		"rightSidebar": {
+			"title": "Mô tả"
+		},
+		"messageList": {
+			"confirmDeleteMessage": "Xác nhận xóa tin nhắn này?"
+		},
+		"voiceRecording": {
+			"errorAccessingMicrophone": "Không thể truy cập micro"
+		},
+		"messageView": {
+			"buttons": {
+				"edit": {
+					"title": "Chỉnh sửa"
+				},
+				"editIcon": {
+					"alt": "Biểu tượng chỉnh sửa"
+				},
+				"delete": {
+					"title": "Xóa"
+				},
+				"deleteIcon": {
+					"alt": "Biểu tượng xóa"
+				}
+			}
+		},
+		"messageEdit": {
+			"input": {
+				"placeholder": "Nhập nội dung..."
+			},
+			"buttons": {
+				"confirm": {
+					"title": "Xác nhận"
+				},
+				"confirmIcon": {
+					"alt": "Biểu tượng xác nhận"
+				},
+				"cancel": {
+					"title": "Hủy"
+				},
+				"cancelIcon": {
+					"alt": "Biểu tượng hủy"
+				},
+				"upload": {
+					"title": "Tải lên"
+				},
+				"uploadIcon": {
+					"alt": "Biểu tượng tải lên"
+				}
+			}
+		},
+		"attachment": {
+			"buttons": {
+				"download": {
+					"title": "Tải xuống"
+				},
+				"downloadIcon": {
+					"alt": "Biểu tượng tải xuống"
+				},
+				"delete": {
+					"title": "Xóa"
+				},
+				"deleteIcon": {
+					"alt": "Biểu tượng xóa"
+				}
+			}
+		},
+		"charCard": {
+			"frequencyLabel": "Tần suất",
+			"buttons": {
+				"removeChar": {
+					"title": "Xóa khỏi cuộc hội thoại"
+				},
+				"removeCharIcon": {
+					"alt": "Biểu tượng xóa nhân vật"
+				},
+				"forceReply": {
+					"title": "Buộc trả lời"
+				},
+				"forceReplyIcon": {
+					"alt": "Biểu tượng buộc trả lời"
+				}
+			}
+		}
+	},
+	"chat_history": {
+		"title": "Lịch sử trò chuyện",
+		"pageTitle": "Lịch sử trò chuyện",
+		"sortOptions": {
+			"time_desc": "Thời gian giảm dần",
+			"time_asc": "Thời gian tăng dần"
+		},
+		"filterInput": {
+			"placeholder": "Tìm kiếm..."
+		},
+		"selectAll": "Chọn tất cả",
+		"buttons": {
+			"reverseSelect": "Đảo chọn",
+			"deleteSelected": "Xóa đã chọn",
+			"exportSelected": "Xuất đã chọn"
+		},
+		"confirmDeleteChat": "Bạn có chắc muốn xóa lịch sử trò chuyện với ${chars} không?",
+		"confirmDeleteMultiChats": "Bạn có chắc muốn xóa ${count} cuộc trò chuyện đã chọn không?",
+		"alerts": {
+			"noChatSelectedForDeletion": "Vui lòng chọn lịch sử trò chuyện để xóa",
+			"noChatSelectedForExport": "Vui lòng chọn lịch sử trò chuyện để xuất"
+		},
+		"chatItemButtons": {
+			"continue": "Tiếp tục",
+			"copy": "Sao chép",
+			"export": "Xuất",
+			"delete": "Xóa"
+		}
+	},
+	"discord_bots": {
+		"title": "Bot Discord",
+		"cardTitle": "Bot Discord",
+		"buttons": {
+			"newBot": "Tạo mới",
+			"deleteBot": "Xóa"
+		},
+		"configCard": {
+			"title": "Cấu hình Bot",
+			"labels": {
+				"character": "Nhân vật",
+				"apiKey": "Khóa API Discord",
+				"config": "Cấu hình"
+			},
+			"charSelectPlaceholder": "Chọn nhân vật",
+			"apiKeyInput": {
+				"placeholder": "Nhập Khóa API"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "Chuyển đổi hiển thị khóa API"
+			},
+			"buttons": {
+				"saveConfig": "Lưu cấu hình",
+				"startBot": "Khởi động",
+				"stopBot": "Dừng"
+			}
+		},
+		"prompts": {
+			"newBotName": "Vui lòng nhập tên Bot mới:"
+		},
+		"alerts": {
+			"botExists": "Bot có tên \"${botname}\" đã tồn tại, vui lòng sử dụng tên khác.",
+			"unsavedChanges": "Bạn có các thay đổi chưa lưu. Bạn có muốn bỏ qua các thay đổi không?",
+			"configSaved": "Cấu hình đã lưu thành công",
+			"httpError": "Lỗi HTTP",
+			"beforeUnload": "Bạn có các thay đổi chưa lưu. Bạn có chắc muốn rời đi không?"
+		}
+	},
+	"telegram_bots": {
+		"title": "Bot Telegram",
+		"cardTitle": "Quản lý Bot Telegram",
+		"buttons": {
+			"newBot": "Tạo mới",
+			"deleteBot": "Xóa"
+		},
+		"configCard": {
+			"title": "Cấu hình Bot",
+			"labels": {
+				"character": "Gắn kết nhân vật",
+				"botToken": "Mã thông báo Bot Telegram",
+				"config": "Cấu hình"
+			},
+			"charSelectPlaceholder": "Chọn nhân vật",
+			"botTokenInput": {
+				"placeholder": "Nhập Mã thông báo Bot Telegram"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "Chuyển đổi hiển thị khóa API"
+			},
+			"buttons": {
+				"saveConfig": "Lưu cấu hình",
+				"startBot": "Khởi động",
+				"stopBot": "Dừng"
+			}
+		},
+		"prompts": {
+			"newBotName": "Vui lòng nhập tên Bot mới:"
+		},
+		"alerts": {
+			"botExists": "Bot có tên “${botname}” đã tồn tại, vui lòng sử dụng tên khác.",
+			"unsavedChanges": "Bạn có các thay đổi chưa lưu. Bạn có chắc muốn bỏ qua những thay đổi này không?",
+			"configSaved": "Cấu hình đã lưu thành công!",
+			"httpError": "Lỗi yêu cầu HTTP",
+			"beforeUnload": "Bạn có các thay đổi chưa lưu. Bạn có chắc muốn rời khỏi trang hiện tại không?"
+		}
+	},
+	"terminal_assistant": {
+		"title": "Hỗ trợ Terminal",
+		"initialMessage": "Fount hỗ trợ triển khai nhân vật yêu thích của bạn vào terminal để hỗ trợ bạn lập trình!",
+		"initialMessageLink": "Nhấp vào đây để biết thêm thông tin"
+	},
+	"access": {
+		"title": "Truy cập Fount trên các thiết bị khác",
+		"heading": "Bạn muốn truy cập Fount trên các thiết bị khác?",
+		"instruction": {
+			"sameLAN": "Đảm bảo thiết bị và máy chủ Fount nằm trong cùng mạng LAN",
+			"accessthis": "Truy cập các địa chỉ sau:"
+		},
+		"copyButton": "Sao chép địa chỉ",
+		"copied": "Địa chỉ đã được sao chép vào clipboard!"
+	},
+	"proxy": {
+		"title": "Proxy API",
+		"heading": "Địa chỉ Proxy API OpenAI",
+		"instruction": "Điền địa chỉ sau vào bất kỳ ứng dụng nào yêu cầu định dạng API OpenAI để sử dụng nguồn AI trong Fount!",
+		"copyButton": "Sao chép địa chỉ",
+		"copied": "Địa chỉ đã được sao chép vào clipboard!"
+	},
+	"404": {
+		"title": "Không tìm thấy trang",
+		"pageNotFoundText": "Ối! Có vẻ như bạn đã lạc vào một trang không tồn tại.",
+		"homepageButton": "Quay lại trang chủ",
+		"MineSweeper": {
+			"difficultyLabel": "Độ khó:",
+			"difficultyEasy": "Dễ",
+			"difficultyMedium": "Trung bình",
+			"difficultyHard": "Khó",
+			"difficultyCustom": "Tùy chỉnh",
+			"minesLeftLabel": "Số mìn còn lại:",
+			"timeLabel": "Thời gian:",
+			"restartButton": "Khởi động lại",
+			"rowsLabel": "Số hàng:",
+			"colsLabel": "Số cột:",
+			"minesCountLabel": "Số mìn:",
+			"winMessage": "Chúc mừng, bạn đã thắng!",
+			"loseMessage": "Trò chơi kết thúc, bạn đã dẫm phải mìn!",
+			"soundOn": "Bật âm thanh",
+			"soundOff": "Tắt âm thanh"
+		}
+	}
+}
