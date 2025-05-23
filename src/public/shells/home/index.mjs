@@ -9,6 +9,7 @@ import { applyTheme } from '../../scripts/theme.mjs'
 import { parseRegexFromString, escapeRegExp } from '../../scripts/regex.mjs'
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
 import { svgInliner } from '../../scripts/svg-inliner.mjs'
+import { setHomeDefaultPart, getHomeRegistry, getHomeDefaultParts } from './src/public/endpoints.mjs'
 
 const charContainer = document.getElementById('char-container')
 const worldContainer = document.getElementById('world-container')
@@ -153,19 +154,15 @@ async function attachCardEventListeners(itemElement, itemDetails, itemName, inte
 		defaultCheckbox.addEventListener('change', async (event) => {
 			const isChecked = event.target.checked
 			// Update default part in backend
-			const response = await fetch('/api/shells/home/setdefault', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ parttype: currentItemType.slice(0, -1), partname: isChecked ? itemName : null }),
-			})
+			const response = await setHomeDefaultPart(currentItemType.slice(0, -1), isChecked ? itemName : null)
 
-			if (response.ok) {
+			if (response && response.ok) {
 				// Update local state and UI
 				defaultParts[currentItemType.slice(0, -1)] = isChecked ? itemName : null
 				updateDefaultPartDisplay()
 			}
 			else
-				console.error('Failed to update default part:', await response.text())
+				console.error('Failed to update default part:', response ? await response.text() : 'No response from server')
 		})
 	}
 }
@@ -410,24 +407,22 @@ async function initializeApp() {
 }
 
 async function fetchData() {
-	const [registryResponse, defaultPartsResponse] = await Promise.all([
-		fetch('/api/shells/home/gethomeregistry'),
-		fetch('/api/shells/home/getdefaultparts')
+	const [registryData, defaultPartsData] = await Promise.all([
+		getHomeRegistry(),
+		getHomeDefaultParts()
 	])
 
-	if (registryResponse.ok) {
-		homeRegistry = await registryResponse.json()
+	if (registryData) {
+		homeRegistry = registryData
 		await displayFunctionButtons() // Update function buttons
 	}
-	else
-		console.error('Failed to fetch home registry:', await registryResponse.text())
+	// No else needed, getHomeRegistry logs errors
 
-	if (defaultPartsResponse.ok) {
-		defaultParts = await defaultPartsResponse.json()
+	if (defaultPartsData) {
+		defaultParts = defaultPartsData
 		updateDefaultPartDisplay()
 	}
-	else
-		console.error('Failed to fetch default parts:', await defaultPartsResponse.text())
+	// No else needed, getHomeDefaultParts logs errors
 }
 
 initializeApp().catch(error => {

@@ -1,3 +1,5 @@
+import { getDuckDuckGoStatus, postDuckDuckGoChat } from './src/public/endpoints.mjs'
+
 export class DuckDuckGoAPI {
 	constructor(config) {
 		this.config = config
@@ -22,13 +24,13 @@ export class DuckDuckGoAPI {
 
 	async requestToken() {
 		try {
-			const response = await fetch('https://duckduckgo.com/duckchat/v1/status', {
-				method: 'GET',
-				headers: {
-					...this.fake_headers,
-					'x-vqd-accept': '1',
-				},
+			const response = await getDuckDuckGoStatus({
+				...this.fake_headers,
+				'x-vqd-accept': '1',
 			})
+			if (!response.ok) { // Added check for response.ok based on original fetch
+				throw new Error(`Request token error! status: ${response.status}`);
+			}
 			return response.headers.get('x-vqd-4')
 		} catch (error) {
 			console.error('Request token error: ', error)
@@ -38,24 +40,22 @@ export class DuckDuckGoAPI {
 
 	async createCompletion(model, content, returnStream) {
 		const token = await this.requestToken()
-		const response = await fetch('https://duckduckgo.com/duckchat/v1/chat', {
-			method: 'POST',
-			headers: {
-				...this.fake_headers,
-				Accept: 'text/event-stream',
-				'Content-Type': 'application/json',
-				'x-vqd-4': token,
-			},
-			body: JSON.stringify({
-				model,
-				messages: [
-					{
-						role: 'user',
-						content,
-					},
-				],
-			}),
+		const body = JSON.stringify({
+			model,
+			messages: [
+				{
+					role: 'user',
+					content,
+				},
+			],
 		})
+		const headers = {
+			...this.fake_headers,
+			Accept: 'text/event-stream',
+			'Content-Type': 'application/json',
+			'x-vqd-4': token,
+		}
+		const response = await postDuckDuckGoChat(headers, body)
 
 		if (!response.ok)
 			throw new Error(`Create Completion error! status: ${response.status}`)

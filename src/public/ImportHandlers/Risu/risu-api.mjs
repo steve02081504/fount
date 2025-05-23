@@ -1,4 +1,5 @@
 import { Buffer } from 'node:buffer'
+import { fetchRisuDynamic, fetchRisuPng, fetchGenericAsset } from './src/public/endpoints.mjs'
 
 const RISU_API_PNG_DOWNLOAD_URL = 'https://realm.risuai.net/api/v1/download/png-v3/'
 // 根据 Risu 源码，他们也有 dynamic 下载，可能会返回 charx
@@ -18,7 +19,7 @@ export async function downloadRisuCard(uuid) {
 
 	try {
 		urlToTry = `${RISU_API_DYNAMIC_DOWNLOAD_URL}${uuid}?cors=true`
-		response = await fetch(urlToTry, { headers: { 'x-risu-api-version': '4' } })
+		response = await fetchRisuDynamic(urlToTry, { 'x-risu-api-version': '4' }) // Changed fetch to fetchRisuDynamic
 		contentType = response.headers.get('content-type')
 
 		if (response.ok && (contentType?.includes('application/zip') || contentType?.includes('application/charx')))
@@ -32,7 +33,7 @@ export async function downloadRisuCard(uuid) {
 	} catch (err) {
 		console.warn(`Dynamic download for ${uuid} failed, trying PNGv3. Error: ${err.message}`)
 		urlToTry = `${RISU_API_PNG_DOWNLOAD_URL}${uuid}?non_commercial=true`
-		response = await fetch(urlToTry)
+		response = await fetchRisuPng(urlToTry) // Changed fetch to fetchRisuPng
 		contentType = response.headers.get('content-type')
 		if (!response.ok || !contentType?.includes('image/png'))
 			throw new Error(`Failed to download Risu card PNG for ${uuid} from ${urlToTry}. Status: ${response.status}, Type: ${contentType}`)
@@ -55,7 +56,7 @@ export async function downloadAsset(url) {
 	if (!url.startsWith('http'))
 		throw new Error(`Invalid URL for downloadAsset: ${url}`)
 
-	const response = await fetch(url)
+	const response = await fetchGenericAsset(url) // Changed fetch to fetchGenericAsset
 	if (!response.ok)
 		throw new Error(`Failed to download asset from ${url}. Status: ${response.status}`)
 

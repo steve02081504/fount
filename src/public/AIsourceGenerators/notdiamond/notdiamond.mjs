@@ -29,6 +29,7 @@ const DEFAULT_TEMPERATURE = 1
 
 import { v4 as uuidv4 } from 'npm:uuid'
 import { encoding_for_model, get_encoding } from 'npm:tiktoken'
+import { fetchNotDiamond } from './src/public/endpoints.mjs'
 
 // 模型信息
 const MODEL_INFO = {
@@ -224,7 +225,7 @@ class AuthManager {
 			}
 			else
 				options.method = method
-			const response = await fetch(url, options)
+			const response = await fetchNotDiamond(url, options) // Changed fetch to fetchNotDiamond
 			if (!response.ok)
 				throw new Error(`请求错误 (${method} ${url}): ${response.status}`)
 
@@ -425,7 +426,7 @@ async function make_request(payload, auth_manager) {
 
 	for (let i = 0; i < 3; i++) {
 		const headers = await get_notdiamond_headers(auth_manager)
-		const response = await fetch(url, {
+		const response = await fetchNotDiamond(url, { // Changed fetch to fetchNotDiamond
 			method: 'POST',
 			headers,
 			body: JSON.stringify(payload),

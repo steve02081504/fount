@@ -1,6 +1,7 @@
 import { isFountPart, unzipDirectory } from './zip.mjs'
 import { cloneRepo } from './git.mjs'
 import { getAvailablePath } from './path.mjs'
+import { fetchFountUrlHead, fetchFountUrlGet } from './src/public/endpoints.mjs'
 import { mkdir, rm, stat, readdir } from 'node:fs/promises'
 import { move, remove } from 'npm:fs-extra@^11.0.0'
 import path from 'node:path'
@@ -136,14 +137,21 @@ async function ImportByText(username, text) {
 			// Try importing as a file
 			try {
 				// Send HEAD request to get file type; skip if not zip/png/apng/jpng
-				let request = await fetch(line, { method: 'HEAD' })
+				let request = await fetchFountUrlHead(line, { method: 'HEAD' }) // Changed fetch to fetchFountUrlHead
 				if (request.ok) {
 					const type = request.headers.get('content-type')
 					const allowedTypes = ['application/octet-stream', 'application/zip', 'image/png', 'image/apng', 'image/jpng']
 					if (!allowedTypes.includes(type))
 						throw new Error(`Unsupported file type: ${type}`)
+				} else {
+					// If HEAD request itself failed, no need to proceed with GET for this check
+					// but the original code would try GET regardless of HEAD's success for the actual download.
+					// We'll mimic that by allowing the next fetch to proceed.
+					console.warn(`HEAD request for ${line} failed with status: ${request.status}. Proceeding to attempt GET.`);
 				}
-				request = await fetch(line)
+
+				// Original logic attempts GET regardless of HEAD success for actual content
+				request = await fetchFountUrlGet(line) // Changed fetch to fetchFountUrlGet
 				if (request.ok) {
 					const buffer = await request.arrayBuffer()
 					await ImportAsData(username, buffer)
