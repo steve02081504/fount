@@ -1,12 +1,4 @@
 import { write } from './data_reader.mjs'
-import {
-	fetchChubCharacterApi, fetchChubDownload,
-	fetchPygmalionApi, fetchPygmalionAvatar,
-	fetchJannyApi, fetchJannyDownload,
-	fetchAiccApi, fetchGenericPngDownload,
-	fetchRisuDownloadApi,
-	fetchGithubApi, fetchGithubAsset
-} from './src/public/endpoints.mjs'
 
 /**
  * Downloads a character card from the given URL and returns its buffer.
@@ -40,7 +32,7 @@ export async function downloadCharacter(url) {
 
 async function downloadChubCharacter(id) {
 	const [creatorName, projectName] = id.split('/')
-	const result = await fetchChubCharacterApi(`https://api.chub.ai/api/characters/${creatorName}/${projectName}`, { // Changed fetch to fetchChubCharacterApi
+	const result = await fetch(`https://api.chub.ai/api/characters/${creatorName}/${projectName}`, {
 		method: 'GET',
 		headers: { 'Content-Type': 'application/json', 'User-Agent': 'fount/1.0' },
 	})
@@ -51,14 +43,14 @@ async function downloadChubCharacter(id) {
 	const downloadUrl = metadata.node?.max_res_url
 
 
-	const downloadResult = await fetchChubDownload(downloadUrl) // Changed fetch to fetchChubDownload
+	const downloadResult = await fetch(downloadUrl)
 
 	if (!downloadResult.ok) throw await downloadResult.text()
 
 	return await downloadResult.arrayBuffer()
 }
 async function downloadPygmalionCharacter(id) {
-	const result = await fetchPygmalionApi(`https://server.pygmalion.chat/api/export/character/${id}/v2`) // Changed fetch to fetchPygmalionApi
+	const result = await fetch(`https://server.pygmalion.chat/api/export/character/${id}/v2`)
 
 	if (!result.ok)
 		throw new Error(`Pygsite download failed: ${result.status} ${await result.text()}`)
@@ -77,7 +69,7 @@ async function downloadPygmalionCharacter(id) {
 			throw new Error('Pygsite character does not have an avatar')
 
 
-		const avatarResult = await fetchPygmalionAvatar(avatarUrl) // Changed fetch to fetchPygmalionAvatar
+		const avatarResult = await fetch(avatarUrl)
 		const avatarBuffer = await avatarResult.arrayBuffer()
 		return write(new Uint8Array(avatarBuffer), JSON.stringify(characterData))
 	} catch (e) {
@@ -97,7 +89,7 @@ function parseChubUrl(str) {
 }
 
 async function downloadJannyCharacter(uuid) {
-	const result = await fetchJannyApi('https://api.jannyai.com/api/v1/download', { // Changed fetch to fetchJannyApi
+	const result = await fetch('https://api.jannyai.com/api/v1/download', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ characterId: uuid }),
@@ -112,13 +104,13 @@ async function downloadJannyCharacter(uuid) {
 		throw new Error(`Janny download failed: ${downloadResult.message}`)
 
 
-	const imageResult = await fetchJannyDownload(downloadResult.downloadUrl) // Changed fetch to fetchJannyDownload
+	const imageResult = await fetch(downloadResult.downloadUrl)
 	return imageResult.arrayBuffer()
 }
 
 async function downloadAICCCharacter(id) {
 	const apiURL = `https://aicharactercards.com/wp-json/pngapi/v1/image/${id}`
-	const response = await fetchAiccApi(apiURL) // Changed fetch to fetchAiccApi
+	const response = await fetch(apiURL)
 	if (!response.ok)
 		throw new Error(`AICC download failed: ${response.statusText}`)
 
@@ -131,7 +123,7 @@ function parseAICC(url) {
 }
 
 async function downloadGenericPng(url) {
-	const response = await fetchGenericPngDownload(url, { method: 'GET', headers: { 'Accept': '*/*' } }) // Changed fetch to fetchGenericPngDownload
+	const response = await fetch(url, { method: 'GET', headers: { 'Accept': '*/*' } }) // Set Accept header to allow various content types
 	if (!response.ok)
 		throw new Error(`Generic download failed: ${response.statusText}`)
 
@@ -144,7 +136,7 @@ function parseRisuUrl(url) {
 }
 
 async function downloadRisuCharacter(uuid) {
-	const result = await fetchRisuDownloadApi(`https://realm.risuai.net/api/v1/download/png-v3/${uuid}?non_commercial=true`) // Changed fetch to fetchRisuDownloadApi
+	const result = await fetch(`https://realm.risuai.net/api/v1/download/png-v3/${uuid}?non_commercial=true`)
 
 	if (!result.ok)
 		throw new Error(`RisuAI download failed: ${result.status} ${await result.text()}`)
@@ -167,7 +159,7 @@ function getHostFromUrl(url) {
 }
 
 async function downloadGithubCharacter(id) {
-	const result = await fetchGithubApi(`https://api.github.com/repos/${id}/releases/latest`) // Changed fetch to fetchGithubApi
+	const result = await fetch(`https://api.github.com/repos/${id}/releases/latest`)
 
 	if (!result.ok)
 		throw new Error(`GitHub download failed: ${result.status} ${await result.text()}`)
@@ -180,7 +172,7 @@ async function downloadGithubCharacter(id) {
 	for (const type of contentTypes) {
 		const asset = assets.find(asset => asset.content_type === type)
 		if (asset)
-			return (await fetchGithubAsset(asset.browser_download_url)).arrayBuffer() // Changed fetch to fetchGithubAsset
+			return (await fetch(asset.browser_download_url)).arrayBuffer()
 
 	}
 

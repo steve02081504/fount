@@ -1,6 +1,5 @@
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
 import { escapeRegExp } from '../../../../src/scripts/escape.mjs'
-import { postToProxy } from './src/public/endpoints.mjs'
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
@@ -32,7 +31,7 @@ async function GetSource(config, { SaveConfig }) {
 		let text
 		let files = []
 		while (!text && !files.length) {
-			const result = await postToProxy(config.url, { // Changed fetch to postToProxy
+			const result = await fetch(config.url, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',

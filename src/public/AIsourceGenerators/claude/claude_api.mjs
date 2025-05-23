@@ -1,7 +1,6 @@
 // claude_api.mjs
 import { randomUUID } from 'node:crypto'
 import { Buffer } from 'node:buffer'
-import { getOrganizations as fetchOrganizations, postCompletion as fetchCompletion } from './src/public/endpoints.mjs'
 
 const AI = {
 	end: () => Buffer.from([104, 116, 116, 112, 115, 58, 47, 47, 97, 112, 105, 46, 99, 108, 97, 117, 100, 101, 46, 97, 105]).toString(),
@@ -136,7 +135,10 @@ export class ClaudeAPI {
 				headers.Cookie = `sessionKey=${this.getCookies()}`
 				const rProxy = this.config.r_proxy || AI.end()
 
-				const orgsResponse = await fetchOrganizations(rProxy, headers)
+				const orgsResponse = await fetch(`${rProxy}/api/organizations`, {
+					method: 'GET',
+					headers,
+				})
 
 				const orgsErr = await checkResErr(orgsResponse, false)
 				if (orgsErr)
@@ -350,9 +352,12 @@ export class ClaudeAPI {
 					attachments: [], // 根据需要添加
 				}
 
-				// The original code doesn't pass payload.signal to this fetch call,
-				// but the endpoint wrapper expects it, so passing it as undefined.
-				const response = await fetchCompletion(rProxy, this.uuidOrg, this.conversationUuid, headers, payload)
+
+				const response = await fetch(`${rProxy}/api/organizations/${this.uuidOrg}/chat_conversations/${this.conversationUuid}/completion`, {
+					method: 'POST',
+					headers,
+					body: JSON.stringify(payload),
+				})
 
 				const err = await checkResErr(response, false)
 				if (err)
