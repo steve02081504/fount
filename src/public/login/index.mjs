@@ -1,5 +1,6 @@
 import { applyTheme } from '../scripts/theme.mjs'
 import { initTranslations, geti18n } from '../scripts/i18n.mjs'
+import { ping, generateVerificationCode, login, register } from '../scripts/endpoints.mjs'
 
 const form = document.getElementById('auth-form')
 const formTitle = document.getElementById('form-title')
@@ -13,7 +14,7 @@ const sendVerificationCodeBtn = document.getElementById('send-verification-code-
 const passwordStrengthFeedback = document.getElementById('password-strength-feedback')
 const passwordInput = document.getElementById('password')
 
-const isLocalOrigin = await fetch('/api/ping').then(res => res.is_local_ip).catch(() => false)
+const isLocalOrigin = await ping().then(res => res.json()).then(data => data.is_local_ip).catch(() => false)
 
 let isLoginForm = true
 let verificationCodeSent = false
@@ -105,12 +106,7 @@ async function handleSendVerificationCode() {
 	if (sendCodeCooldown) return
 
 	try {
-		const response = await fetch('/api/register/generateverificationcode', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-		})
+		const response = await generateVerificationCode()
 
 		if (response.ok) {
 			errorMessage.textContent = geti18n('auth.error.verificationCodeSent')
@@ -174,18 +170,13 @@ async function handleFormSubmit(event) {
 		}
 	}
 
-	const endpoint = isLoginForm ? '/api/login' : '/api/register'
 	try {
-		const body = isLoginForm
-			? JSON.stringify({ username, password, deviceid })
-			: JSON.stringify({ username, password, deviceid, verificationcode })
-		const response = await fetch(endpoint, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body,
-		})
+		let response
+		if (isLoginForm) {
+			response = await login(username, password, deviceid)
+		} else {
+			response = await register(username, password, deviceid, verificationcode)
+		}
 
 		const data = await response.json()
 

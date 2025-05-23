@@ -2,9 +2,11 @@ import { applyTheme } from '../../scripts/theme.mjs'
 applyTheme()
 import { initTranslations } from '../../scripts/i18n.mjs'
 initTranslations('proxy')
+import { whoami } from '../../scripts/endpoints.mjs'
 
 const fountHost = window.location.origin
-const username = await fetch('/api/whoami').then(res => res.json()).then(data => data.username)
+const whoamiData = await whoami()
+const username = whoamiData.username
 const apiUrl = `${fountHost}/asuser/${username}/api/shells/proxy/calling/openai`
 
 const proxyApiUrlInput = document.getElementById('proxyApiUrl')

@@ -1,5 +1,6 @@
 import { applyTheme } from '../scripts/theme.mjs'
 import { initTranslations, geti18n } from '../scripts/i18n.mjs'
+import { authenticate, runShell } from '../scripts/endpoints.mjs'
 
 const urlParams = new URL(window.location.href)
 const from = urlParams.searchParams.get('from')
@@ -15,9 +16,7 @@ async function handleProtocol() {
 	const parts = protocol.substring(8).split('/')
 	const command = parts[0]
 
-	const authResponse = await fetch('/api/authenticate', {
-		method: 'POST'
-	})
+	const authResponse = await authenticate()
 	if (!authResponse.ok) {
 		window.location.href = `/login?redirect=${encodeURIComponent(window.location.href)}`
 		return
@@ -40,13 +39,7 @@ async function handleRunShell(parts) {
 	const shellname = parts[1]
 	const args = parts.slice(2).join('/').split(';').map(decodeURIComponent)
 	try {
-		const response = await fetch('/api/runshell', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({ shellname, args }),
-		})
+		const response = await runShell(shellname, args)
 
 		if (response.ok)
 			document.getElementById('message').textContent = geti18n('protocolhandler.shellCommandSent')

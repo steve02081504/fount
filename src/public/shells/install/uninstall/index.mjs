@@ -1,5 +1,6 @@
 import { initTranslations, geti18n } from '../../../scripts/i18n.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
+import { uninstallPart as uninstallPartEndpoint } from '../../src/public/endpoints.mjs'
 
 applyTheme()
 // 获取 URL 参数
@@ -9,13 +10,8 @@ function getURLParams() {
 
 // API 请求函数
 async function uninstallPart(type, name) {
-	const response = await fetch(`/api/shells/install/uninstall?type=${type}&name=${name}`, {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({ type, name }),
-	})
+	// Renamed imported function to avoid conflict with this local function
+	const response = await uninstallPartEndpoint(type, name)
 
 	if (!response.ok) {
 		const data = await response.json().catch(() => null)
