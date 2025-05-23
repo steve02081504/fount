@@ -65,7 +65,7 @@ async function loadBotConfig(botname) {
 
 	selectedBot = botname
 	try {
-		const config = await getBotConfig(botname) // Updated Call
+		const config = await getBotConfig(botname)
 		tokenInput.value = config.token || ''
 		charSelect.value = config.char || ''
 
@@ -106,8 +106,8 @@ async function handleNewBot() {
 	}
 
 	try {
-		await newBotConfig(botname) // Updated Call
-		botList = await getBotList() // Updated Call
+		await newBotConfig(botname)
+		botList = await getBotList()
 		populateBotList()
 		botListSelect.value = botname
 		await loadBotConfig(botname)
@@ -124,8 +124,8 @@ async function handleDeleteBot() {
 			return
 
 	try {
-		await deleteBotConfig(selectedBot) // Updated Call
-		botList = await getBotList() // Updated Call
+		await deleteBotConfig(selectedBot)
+		botList = await getBotList()
 		populateBotList()
 
 		// 如果删除的是当前选中的 bot，则 selectedBot 设为 null，否则保持不变
@@ -183,7 +183,7 @@ async function handleSaveConfig() {
 	saveConfigButton.disabled = true
 
 	try {
-		await setBotConfig(selectedBot, config) // Updated Call
+		await setBotConfig(selectedBot, config)
 		console.log(geti18n('discord_bots.alerts.configSaved'))
 		isDirty = false // 重置未保存标记
 
@@ -212,15 +212,15 @@ async function handleStartStopBot() {
 	startStopBotButton.disabled = true
 
 	try {
-		const runningBots = await getRunningBotList() // Updated Call
+		const runningBots = await getRunningBotList()
 		const isRunning = runningBots.includes(selectedBot)
 		if (isRunning) {
-			await stopBot(selectedBot) // Updated Call
+			await stopBot(selectedBot)
 			startStopStatusText.textContent = geti18n('discord_bots.configCard.buttons.startBot')
 			startStopBotButton.classList.remove('btn-error')
 			startStopBotButton.classList.add('btn-success')
 		} else {
-			await startBot(selectedBot) // Updated Call
+			await startBot(selectedBot)
 			startStopStatusText.textContent = geti18n('discord_bots.configCard.buttons.stopBot')
 			startStopBotButton.classList.remove('btn-success')
 			startStopBotButton.classList.add('btn-error')
@@ -248,7 +248,7 @@ async function updateStartStopButtonState() {
 		return
 	}
 	try {
-		const runningBots = await getRunningBotList() // Updated Call
+		const runningBots = await getRunningBotList()
 		if (runningBots.includes(selectedBot)) {
 			startStopStatusText.textContent = geti18n('discord_bots.configCard.buttons.stopBot')
 			startStopBotButton.classList.remove('btn-success')
@@ -280,8 +280,8 @@ async function initializeFromURLParams() {
 	const charName = urlParams.get('char') // 使用 'char' 参数
 
 	try {
-		botList = await getBotList() // Updated Call
-		charList = await getPartList('chars') // Updated Call
+		botList = await getBotList()
+		charList = await getPartList('chars')
 		populateBotList()
 		populateCharList()
 
@@ -289,8 +289,8 @@ async function initializeFromURLParams() {
 			if (!botList.includes(botName))
 				// 如果 botName 不存在，则创建新的 bot
 				try {
-					await newBotConfig(botName) // Updated Call
-					botList = await getBotList() // Updated Call
+					await newBotConfig(botName)
+					botList = await getBotList()
 					populateBotList()
 				} catch (error) {
 					console.error('Failed to create new bot from URL parameter:', error)
