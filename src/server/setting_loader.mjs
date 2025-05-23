@@ -1,4 +1,5 @@
 import { getUserDictionary } from './auth.mjs'
+import { events } from './events.mjs';
 import { saveJsonFile, loadJsonFileIfExists } from '../scripts/json_loader.mjs'
 import { on_shutdown } from './on_shutdown.mjs'
 import fs from 'node:fs'
@@ -54,3 +55,49 @@ export function loadTempData(username, dataname) {
 	return userTempDataSet[username][dataname] ??= {}
 }
 // 无需保存 :)
+
+// Event Handlers
+events.on('userDeleted', ({ username, userId }) => {
+  console.log(`SettingLoader: Handling userDeleted event for username: ${username}`);
+
+  if (userDataSet[username]) {
+    delete userDataSet[username];
+    console.log(`SettingLoader: Cleared userDataSet cache for ${username}`);
+  }
+  if (userShellDataSet[username]) {
+    delete userShellDataSet[username];
+    console.log(`SettingLoader: Cleared userShellDataSet cache for ${username}`);
+  }
+  if (userTempDataSet[username]) {
+    delete userTempDataSet[username];
+    console.log(`SettingLoader: Cleared userTempDataSet cache for ${username}`);
+  }
+  // Note: Actual file deletion for data managed by loadData/saveData and loadShellData/saveShellData
+  // is assumed to be handled by the process that deletes the user's main data directory
+  // (e.g., data/users/<username>/settings/ and data/users/<username>/shells/).
+  // This handler only clears the in-memory caches.
+});
+
+events.on('userRenamed', ({ oldUsername, newUsername, userId, newUserData }) => {
+  console.log(`SettingLoader: Handling userRenamed event from ${oldUsername} to ${newUsername}`);
+
+  if (userDataSet[oldUsername]) {
+    userDataSet[newUsername] = userDataSet[oldUsername];
+    delete userDataSet[oldUsername];
+    console.log(`SettingLoader: Migrated userDataSet cache from ${oldUsername} to ${newUsername}`);
+  }
+  if (userShellDataSet[oldUsername]) {
+    userShellDataSet[newUsername] = userShellDataSet[oldUsername];
+    delete userShellDataSet[oldUsername];
+    console.log(`SettingLoader: Migrated userShellDataSet cache from ${oldUsername} to ${newUsername}`);
+  }
+  if (userTempDataSet[oldUsername]) {
+    userTempDataSet[newUsername] = userTempDataSet[oldUsername];
+    delete userTempDataSet[oldUsername];
+    console.log(`SettingLoader: Migrated userTempDataSet cache from ${oldUsername} to ${newUsername}`);
+  }
+  // Note: Actual file renaming for data managed by loadData/saveData and loadShellData/saveShellData
+  // (e.g., data/users/<username>/settings/ and data/users/<username>/shells/)
+  // has already been handled by auth.mjs moving the entire user's data directory.
+  // This handler only updates the in-memory cache keys.
+});

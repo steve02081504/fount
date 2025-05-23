@@ -14,6 +14,7 @@ import { createTray } from '../scripts/tray.mjs'
 import { StartRPC } from '../scripts/discordrpc.mjs'
 import { geti18n } from '../scripts/i18n.mjs'
 import { sentrytunnel } from '../scripts/sentrytunnel.mjs'
+import { events } from './events.mjs';
 
 export { __dirname }
 const app = express()

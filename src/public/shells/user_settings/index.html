@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="darkreader-lock">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="userSettings.title">User Settings</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" />
+  <link href="/base.css" rel="stylesheet" type="text/css" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser"></script>
+  <script type="module" src="/base.mjs"></script>
+  <link rel="stylesheet" href="./index.css" type="text/css" />
+</head>
+<body>
+  <h1 data-i18n="userSettings.header">User Settings</h1>
+
+  <div class="container">
+    <h2 data-i18n="userSettings.changePassword.title">Change Password</h2>
+    <form id="changePasswordForm">
+      <label for="usernameChangePassword" data-i18n="userSettings.common.usernameLabel">Username:</label>
+      <input type="text" id="usernameChangePassword" name="usernameChangePassword" required>
+      <label for="currentPassword" data-i18n="userSettings.changePassword.currentPasswordLabel">Current Password:</label>
+      <input type="password" id="currentPassword" name="currentPassword" required>
+      <label for="newPassword" data-i18n="userSettings.changePassword.newPasswordLabel">New Password:</label>
+      <input type="password" id="newPassword" name="newPassword" required>
+      <button type="submit" data-i18n="userSettings.changePassword.submitButton">Change Password</button>
+    </form>
+  </div>
+
+  <div class="container">
+    <h2 data-i18n="userSettings.userDevices.title">User Devices</h2>
+    <form id="viewDevicesForm">
+      <label for="usernameViewDevices" data-i18n="userSettings.common.usernameLabel">Username:</label>
+      <input type="text" id="usernameViewDevices" name="usernameViewDevices" required>
+      <button type="submit" data-i18n="userSettings.userDevices.viewButton">View Devices</button>
+    </form>
+    <ul id="deviceList"></ul>
+  </div>
+
+  <div class="container">
+    <h2 data-i18n="userSettings.renameUser.title">Rename Username</h2>
+    <form id="renameUserForm">
+      <label for="currentUsernameRename" data-i18n="userSettings.renameUser.currentUsernameLabel">Current Username:</label>
+      <input type="text" id="currentUsernameRename" name="currentUsernameRename" required>
+      <label for="newUsernameRename" data-i18n="userSettings.renameUser.newUsernameLabel">New Username:</label>
+      <input type="text" id="newUsernameRename" name="newUsernameRename" required>
+      <button type="submit" data-i18n="userSettings.renameUser.submitButton">Rename User</button>
+    </form>
+  </div>
+
+  <div class="container">
+    <h2 data-i18n="userSettings.deleteAccount.title">Delete Account</h2>
+    <form id="deleteAccountForm">
+      <label for="usernameDelete" data-i18n="userSettings.common.usernameLabel">Username:</label>
+      <input type="text" id="usernameDelete" name="usernameDelete" required>
+      <label for="passwordDelete" data-i18n="userSettings.common.passwordLabel">Password:</label>
+      <input type="password" id="passwordDelete" name="passwordDelete" required>
+      <button type="submit" class="danger" data-i18n="userSettings.deleteAccount.submitButton">Delete Account</button>
+    </form>
+  </div>
+
+  <script src="index.mjs" type="module"></script>
+</body>
+</html>

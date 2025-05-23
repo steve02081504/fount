@@ -686,5 +686,36 @@
 			"soundOn": "声音开启",
 			"soundOff": "声音关闭"
 		}
+	},
+	"userSettings": {
+		"title": "用户设置",
+		"header": "用户设置",
+		"common": {
+			"usernameLabel": "用户名:",
+			"passwordLabel": "密码:"
+		},
+		"changePassword": {
+			"title": "修改密码",
+			"currentPasswordLabel": "当前密码:",
+			"newPasswordLabel": "新密码:",
+			"submitButton": "修改密码"
+		},
+		"userDevices": {
+			"title": "用户设备",
+			"viewButton": "查看设备",
+			"noDevicesFound": "未找到该用户的设备。",
+			"revokeButton": "吊销"
+		},
+		"renameUser": {
+			"title": "重命名用户",
+			"currentUsernameLabel": "当前用户名:",
+			"newUsernameLabel": "新用户名:",
+			"submitButton": "重命名用户"
+		},
+		"deleteAccount": {
+			"title": "删除账户",
+			"submitButton": "删除账户",
+			"confirmDelete": "您确定要删除此账户吗？此操作无法撤销。"
+		}
 	}
 }

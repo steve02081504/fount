@@ -1,0 +1,20 @@
+{
+  "home_function_buttons": [
+    {
+      "info": {
+        "en-UK": {
+          "title": "User Settings",
+          "description": "Manage user accounts, settings, passwords, and devices."
+        },
+        "zh-CN": {
+          "title": "用户设置",
+          "description": "管理用户账户、设置、密码和设备。"
+        }
+      },
+      "level": 0,
+      "url": "/shells/user_settings",
+      "button": "<img src=\"/public/imgs/icon.svg\" class=\"text-icon\"/>",
+      "permissions": ["administrator"]
+    }
+  ]
+}
