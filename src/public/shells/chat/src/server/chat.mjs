@@ -4,9 +4,7 @@
 /** @typedef {import('../../../../../decl/basedefs.ts').locale_t} locale_t */
 
 import { getUserByUsername, getUserDictionary, getAllUserNames } from '../../../../../server/auth.mjs'
-import { events } from '../../../../../server/events.mjs';
-import fse from 'npm:fs-extra@^11.0.0';
-import path from 'node:path';
+import { events } from '../../../../../server/events.mjs'
 import { LoadChar } from '../../../../../server/managers/char_manager.mjs'
 import { loadJsonFile, saveJsonFile } from '../../../../../scripts/json_loader.mjs'
 import { getPartInfo } from '../../../../../scripts/locale.mjs'
@@ -912,95 +910,37 @@ export async function getHeartbeatData(chatid, start) {
 
 // Event Handlers
 events.on('userDeleted', async (payload) => {
-      const { username, userId, userDirectoryPath } = payload; // Destructure userDirectoryPath
-      console.log(`Chat: Handling userDeleted event for username: ${username}`);
+	const { username, userId, userDirectoryPath } = payload // Destructure userDirectoryPath
+	console.log(`Chat: Handling userDeleted event for username: ${username}`)
 
-      // Clear from in-memory cache
-      const chatIdsToDeleteFromCache = [];
-      for (const [chatId, data] of chatMetadatas.entries()) {
-        if (data.username === username) {
-          chatIdsToDeleteFromCache.push(chatId);
-        }
-      }
-      chatIdsToDeleteFromCache.forEach(chatId => chatMetadatas.delete(chatId));
-      console.log(`Chat: Cleared ${chatIdsToDeleteFromCache.length} chat entries from in-memory cache for user ${username}.`);
-
-      // Actual file deletion logic using userDirectoryPath
-      if (userDirectoryPath) {
-        const userChatShellPath = path.join(userDirectoryPath, 'shells', 'chat');
-        if (fse.existsSync(userChatShellPath)) {
-          try {
-            await fse.remove(userChatShellPath); // fse.remove is like rm -rf
-            console.log(`Chat: Successfully deleted chat shell directory for user ${username} at ${userChatShellPath}`);
-          } catch (err) {
-            console.error(`Chat: Error deleting chat shell directory ${userChatShellPath} for user ${username}:`, err);
-          }
-        } else {
-          console.log(`Chat: Chat shell directory for user ${username} not found at ${userChatShellPath}, nothing to delete.`);
-        }
-      } else {
-        console.warn(`Chat: userDirectoryPath not provided in userDeleted event for ${username}. Cannot delete chat files for this user.`);
-      }
-    });
+	// Clear from in-memory cache
+	const chatIdsToDeleteFromCache = []
+	for (const [chatId, data] of chatMetadatas.entries()) 
+		if (data.username === username) 
+			chatIdsToDeleteFromCache.push(chatId)
+		
+	
+	chatIdsToDeleteFromCache.forEach(chatId => chatMetadatas.delete(chatId))
+	console.log(`Chat: Cleared ${chatIdsToDeleteFromCache.length} chat entries from in-memory cache for user ${username}.`)
+})
 
 events.on('userRenamed', async ({ oldUsername, newUsername, userId, newUserData }) => {
-  console.log(`Chat: Handling userRenamed event from ${oldUsername} to ${newUsername}`);
-  
-  // Update in-memory cache: chatMetadatas map
-  let updatedInCacheCount = 0;
-  for (const [chatId, data] of chatMetadatas.entries()) {
-    if (data.username === oldUsername) {
-      data.username = newUsername; // Update username in the map's value
-      if (data.chatMetadata && data.chatMetadata.username === oldUsername) {
-        data.chatMetadata.username = newUsername; // Update username within the cached object itself
-      }
-      updatedInCacheCount++;
-    }
-  }
-  if (updatedInCacheCount > 0) {
-    console.log(`Chat: Updated ${updatedInCacheCount} chat entries in in-memory cache from ${oldUsername} to ${newUsername}.`);
-  }
+	console.log(`Chat: Handling userRenamed event from ${oldUsername} to ${newUsername}`)
 
-  // Update username in persisted chat files.
-  // The user's main data directory has already been moved by auth.mjs.
-  // So, we use getUserDictionary(newUsername) to get the new base path.
-  try {
-    const newUserChatFilesPath = path.join(getUserDictionary(newUsername), 'shells', 'chat', 'chats');
-    if (fse.existsSync(newUserChatFilesPath)) {
-      const chatFiles = fse.readdirSync(newUserChatFilesPath).filter(file => file.endsWith('.json'));
-      let updatedFilesInSystemCount = 0;
-      for (const fileName of chatFiles) {
-        const chatId = fileName.replace('.json', '');
-        const filePath = path.join(newUserChatFilesPath, fileName);
-        try {
-          let chatFileContent = loadJsonFile(filePath); // loadJsonFile is already imported and used in chat.mjs
-          if (chatFileContent.username === oldUsername) {
-            chatFileContent.username = newUsername;
-            // TODO: Consider if any other fields within chatFileContent need deep updating
-            // (e.g., if oldUsername was stored in other properties).
-            // For now, only updating the top-level 'username' field.
-            saveJsonFile(filePath, chatFileContent); // saveJsonFile is already imported
-            updatedFilesInSystemCount++;
-            
-            // If this chat is in the live cache and was missed by the first loop (e.g. loaded after), update it.
-            const cachedChatData = chatMetadatas.get(chatId);
-            if (cachedChatData && cachedChatData.chatMetadata && cachedChatData.chatMetadata.username === oldUsername) {
-               cachedChatData.chatMetadata.username = newUsername;
-            }
-          }
-        } catch (error) {
-          console.error(`Chat: Error updating username in chat file ${fileName} for ${newUsername}:`, error);
-        }
-      }
-      if (updatedFilesInSystemCount > 0) {
-        console.log(`Chat: Updated ${updatedFilesInSystemCount} chat files for ${newUsername}.`);
-      }
-    } else {
-      console.log(`Chat: No chat directory found for ${newUsername} at ${newUserChatFilesPath}, no chat files to update.`);
-    }
-  } catch (error) {
-    // This might happen if getUserDictionary(newUsername) fails for some reason.
-    console.error(`Chat: Error accessing chat directory for ${newUsername}. Cannot update chat files. Error: ${error.message}`);
-  }
-  console.log(`Chat: Finished processing userRenamed event for ${newUsername}.`);
-});
+	// Update in-memory cache: chatMetadatas map
+	let updatedInCacheCount = 0
+	for (const [chatId, data] of chatMetadatas.entries()) 
+		if (data.username === oldUsername) {
+			data.username = newUsername // Update username in the map's value
+			if (data.chatMetadata && data.chatMetadata.username === oldUsername) 
+				data.chatMetadata.username = newUsername // Update username within the cached object itself
+			
+			updatedInCacheCount++
+		}
+	
+	if (updatedInCacheCount > 0) 
+		console.log(`Chat: Updated ${updatedInCacheCount} chat entries in in-memory cache from ${oldUsername} to ${newUsername}.`)
+	
+
+	console.log(`Chat: Finished processing userRenamed event for ${newUsername}.`)
+})

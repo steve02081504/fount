@@ -6,7 +6,7 @@ import { getAllUserNames } from '../../../../../server/auth.mjs' // 获取所有
 import { StartJob, EndJob } from '../../../../../server/jobs.mjs' // Fount 的任务管理
 import { geti18n } from '../../../../../scripts/i18n.mjs' // 国际化
 import { createSimpleTelegramInterface } from './default_interface/main.mjs' // 默认的 Telegram 角色接口
-import { events } from '../../../../../server/events.mjs';
+import { events } from '../../../../../server/events.mjs'
 
 /** @typedef {import('../../../../../decl/charAPI.ts').charAPI_t} charAPI_t */
 
@@ -193,65 +193,65 @@ export function getBotList(username) {
 
 // Event Handlers
 events.on('userDeleted', async ({ username, userId }) => {
-  console.log(`Telegram Bot: Handling userDeleted event for username: ${username}`);
-  const runningBots = getRunningBotList(username);
-  for (const botname of runningBots) {
-    try {
-      await stopBot(username, botname);
-      console.log(`Telegram Bot: Stopped bot ${botname} for deleted user ${username}`);
-    } catch (error) {
-      console.error(`Telegram Bot: Error stopping bot ${botname} for deleted user ${username}:`, error);
-    }
-  }
+	console.log(`Telegram Bot: Handling userDeleted event for username: ${username}`)
+	const runningBots = getRunningBotList(username)
+	for (const botname of runningBots) 
+		try {
+			await stopBot(username, botname)
+			console.log(`Telegram Bot: Stopped bot ${botname} for deleted user ${username}`)
+		} catch (error) {
+			console.error(`Telegram Bot: Error stopping bot ${botname} for deleted user ${username}:`, error)
+		}
+  
 
-  // Delete bot configurations
-  // Assuming saveShellData with undefined or null data effectively deletes it,
-  // or we need a dedicated function like deleteShellData(username, shellName, dataName)
-  // For now, saving an empty object. If there's a specific delete function, that would be better.
-  saveShellData(username, 'telegrambot', 'bot_configs', {}); // Clears all bot configs for the user
+	// Delete bot configurations
+	// Assuming saveShellData with undefined or null data effectively deletes it,
+	// or we need a dedicated function like deleteShellData(username, shellName, dataName)
+	// For now, saving an empty object. If there's a specific delete function, that would be better.
+	saveShellData(username, 'telegrambot', 'bot_configs', {}) // Clears all bot configs for the user
 
-  // Clear temp data (cache)
-  const botCache = loadTempData(username, 'telegrambot_cache');
-  for (const botname of Object.keys(botCache)) {
-    delete botCache[botname];
-  }
-  // If loadTempData returns a mutable object that needs saving, uncomment next line
-  // saveTempData(username, 'telegrambot_cache', botCache); // Or a dedicated function to clear temp data for a user for this shell
+	// Clear temp data (cache)
+	const botCache = loadTempData(username, 'telegrambot_cache')
+	for (const botname of Object.keys(botCache)) 
+		delete botCache[botname]
+  
+	// If loadTempData returns a mutable object that needs saving, uncomment next line
+	// saveTempData(username, 'telegrambot_cache', botCache); // Or a dedicated function to clear temp data for a user for this shell
 
-  console.log(`Telegram Bot: Cleaned up data for deleted user ${username}`);
-});
+	console.log(`Telegram Bot: Cleaned up data for deleted user ${username}`)
+})
 
 events.on('userRenamed', async ({ oldUsername, newUsername, userId, newUserData }) => {
-  console.log(`Telegram Bot: Handling userRenamed event from ${oldUsername} to ${newUsername}`);
+	console.log(`Telegram Bot: Handling userRenamed event from ${oldUsername} to ${newUsername}`)
 
-  // Stop all bots running under the old username
-  const runningBotsOldUser = getRunningBotList(oldUsername);
-  for (const botname of runningBotsOldUser) {
-    try {
-      await stopBot(oldUsername, botname);
-      console.log(`Telegram Bot: Stopped bot ${botname} for old username ${oldUsername}`);
-    } catch (error) {
-      console.error(`Telegram Bot: Error stopping bot ${botname} for old username ${oldUsername}:`, error);
-    }
-  }
+	// Stop all bots running under the old username
+	const runningBotsOldUser = getRunningBotList(oldUsername)
+	for (const botname of runningBotsOldUser) 
+		try {
+			await stopBot(oldUsername, botname)
+			console.log(`Telegram Bot: Stopped bot ${botname} for old username ${oldUsername}`)
+		} catch (error) {
+			console.error(`Telegram Bot: Error stopping bot ${botname} for old username ${oldUsername}:`, error)
+		}
+  
 
-  // Move bot configurations
-  const oldUserBotsData = getBotsData(oldUsername);
-  if (oldUserBotsData && Object.keys(oldUserBotsData).length > 0) {
-    saveShellData(newUsername, 'telegrambot', 'bot_configs', oldUserBotsData);
-    saveShellData(oldUsername, 'telegrambot', 'bot_configs', {}); // Clear old user's bot configs
-    console.log(`Telegram Bot: Migrated bot configurations from ${oldUsername} to ${newUsername}`);
-  }
+	// Move bot configurations
+	const oldUserBotsData = getBotsData(oldUsername)
+	if (oldUserBotsData && Object.keys(oldUserBotsData).length > 0) {
+		saveShellData(newUsername, 'telegrambot', 'bot_configs', oldUserBotsData)
+		saveShellData(oldUsername, 'telegrambot', 'bot_configs', {}) // Clear old user's bot configs
+		console.log(`Telegram Bot: Migrated bot configurations from ${oldUsername} to ${newUsername}`)
+	}
 
-  // Clear temp data (cache) for the old username
-  const oldBotCache = loadTempData(oldUsername, 'telegrambot_cache');
-  for (const botname of Object.keys(oldBotCache)) {
-    delete oldBotCache[botname];
-  }
-  // If loadTempData needs saving, uncomment:
-  // saveTempData(oldUsername, 'telegrambot_cache', oldBotCache);
+	// Clear temp data (cache) for the old username
+	const oldBotCache = loadTempData(oldUsername, 'telegrambot_cache')
+	for (const botname of Object.keys(oldBotCache)) 
+		delete oldBotCache[botname]
+  
+	// If loadTempData needs saving, uncomment:
+	// saveTempData(oldUsername, 'telegrambot_cache', oldBotCache);
 
-  // The user will need to restart their bots under the new username.
-  // Active migration of running bot instances is complex and error-prone.
-  console.log(`Telegram Bot: Cleaned up data for old username ${oldUsername}. User ${newUsername} may need to restart bots.`);
-});
+	// The user will need to restart their bots under the new username.
+	// Active migration of running bot instances is complex and error-prone.
+	console.log(`Telegram Bot: Cleaned up data for old username ${oldUsername}. User ${newUsername} may need to restart bots.`)
+})

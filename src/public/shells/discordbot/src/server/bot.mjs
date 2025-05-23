@@ -6,7 +6,7 @@ import { getAllUserNames } from '../../../../../server/auth.mjs'
 import { StartJob, EndJob } from '../../../../../server/jobs.mjs'
 import { geti18n } from '../../../../../scripts/i18n.mjs'
 import { createSimpleDiscordInterface } from './default_interface/main.mjs'
-import { events } from '../../../../../server/events.mjs';
+import { events } from '../../../../../server/events.mjs'
 /** @typedef {import('../../../../../decl/charAPI.ts').charAPI_t} charAPI_t */
 
 /**
@@ -138,64 +138,64 @@ export function getBotList(username) {
 
 // Event Handlers
 events.on('userDeleted', async ({ username, userId }) => {
-  console.log(`Discord Bot: Handling userDeleted event for username: ${username}`);
-  const runningBots = getRunningBotList(username);
-  for (const botname of runningBots) {
-    try {
-      await stopBot(username, botname);
-      console.log(`Discord Bot: Stopped bot ${botname} for deleted user ${username}`);
-    } catch (error) {
-      console.error(`Discord Bot: Error stopping bot ${botname} for deleted user ${username}:`, error);
-    }
-  }
+	console.log(`Discord Bot: Handling userDeleted event for username: ${username}`)
+	const runningBots = getRunningBotList(username)
+	for (const botname of runningBots) 
+		try {
+			await stopBot(username, botname)
+			console.log(`Discord Bot: Stopped bot ${botname} for deleted user ${username}`)
+		} catch (error) {
+			console.error(`Discord Bot: Error stopping bot ${botname} for deleted user ${username}:`, error)
+		}
+  
 
-  const userBotsData = getBotsData(username); 
-  if (userBotsData) {
-    for (const botname of Object.keys(userBotsData)) {
-      delete userBotsData[botname]; 
-    }
-    saveShellData(username, 'discordbot', 'bot_configs'); 
-  }
+	const userBotsData = getBotsData(username) 
+	if (userBotsData) {
+		for (const botname of Object.keys(userBotsData)) 
+			delete userBotsData[botname] 
+    
+		saveShellData(username, 'discordbot', 'bot_configs') 
+	}
 
-  const botCache = loadTempData(username, 'discordbot_cache');
-  for (const botname of Object.keys(botCache)) {
-    delete botCache[botname];
-  }
-  console.log(`Discord Bot: Cleaned up data for deleted user ${username}`);
-});
+	const botCache = loadTempData(username, 'discordbot_cache')
+	for (const botname of Object.keys(botCache)) 
+		delete botCache[botname]
+  
+	console.log(`Discord Bot: Cleaned up data for deleted user ${username}`)
+})
 
 events.on('userRenamed', async ({ oldUsername, newUsername, userId, newUserData }) => {
-  console.log(`Discord Bot: Handling userRenamed event from ${oldUsername} to ${newUsername}`);
+	console.log(`Discord Bot: Handling userRenamed event from ${oldUsername} to ${newUsername}`)
 
-  const runningBotsOldUser = getRunningBotList(oldUsername);
-  for (const botname of runningBotsOldUser) {
-    try {
-      await stopBot(oldUsername, botname);
-      console.log(`Discord Bot: Stopped bot ${botname} for old username ${oldUsername}`);
-    } catch (error) {
-      console.error(`Discord Bot: Error stopping bot ${botname} for old username ${oldUsername}:`, error);
-    }
-  }
+	const runningBotsOldUser = getRunningBotList(oldUsername)
+	for (const botname of runningBotsOldUser) 
+		try {
+			await stopBot(oldUsername, botname)
+			console.log(`Discord Bot: Stopped bot ${botname} for old username ${oldUsername}`)
+		} catch (error) {
+			console.error(`Discord Bot: Error stopping bot ${botname} for old username ${oldUsername}:`, error)
+		}
+  
 
-  const oldUserBotsData = getBotsData(oldUsername);
-  if (oldUserBotsData && Object.keys(oldUserBotsData).length > 0) {
-    const dataToMove = JSON.parse(JSON.stringify(oldUserBotsData)); 
+	const oldUserBotsData = getBotsData(oldUsername)
+	if (oldUserBotsData && Object.keys(oldUserBotsData).length > 0) {
+		const dataToMove = JSON.parse(JSON.stringify(oldUserBotsData)) 
 
-    saveShellData(newUsername, 'discordbot', 'bot_configs', dataToMove);
+		saveShellData(newUsername, 'discordbot', 'bot_configs', dataToMove)
 
-    const currentOldUserBotsData = getBotsData(oldUsername); 
-    if (currentOldUserBotsData) {
-      for (const botname of Object.keys(currentOldUserBotsData)) {
-        delete currentOldUserBotsData[botname]; 
-      }
-      saveShellData(oldUsername, 'discordbot', 'bot_configs'); 
-    }
-    console.log(`Discord Bot: Migrated bot configurations from ${oldUsername} to ${newUsername}`);
-  }
+		const currentOldUserBotsData = getBotsData(oldUsername) 
+		if (currentOldUserBotsData) {
+			for (const botname of Object.keys(currentOldUserBotsData)) 
+				delete currentOldUserBotsData[botname] 
+      
+			saveShellData(oldUsername, 'discordbot', 'bot_configs') 
+		}
+		console.log(`Discord Bot: Migrated bot configurations from ${oldUsername} to ${newUsername}`)
+	}
 
-  const oldBotCache = loadTempData(oldUsername, 'discordbot_cache');
-  for (const botname of Object.keys(oldBotCache)) {
-    delete oldBotCache[botname];
-  }
-  console.log(`Discord Bot: Cleaned up data for old username ${oldUsername}. User ${newUsername} may need to restart bots.`);
-});
+	const oldBotCache = loadTempData(oldUsername, 'discordbot_cache')
+	for (const botname of Object.keys(oldBotCache)) 
+		delete oldBotCache[botname]
+  
+	console.log(`Discord Bot: Cleaned up data for old username ${oldUsername}. User ${newUsername} may need to restart bots.`)
+})
