@@ -9,7 +9,7 @@ import { ms } from '../scripts/ms.mjs'
 import { geti18n } from '../scripts/i18n.mjs'
 import { is_local_ip_from_req } from '../scripts/ratelimit.mjs'
 import { loadJsonFile } from '../scripts/json_loader.mjs'
-import { events } from './events.mjs';
+import { events } from './events.mjs'
 
 const ACCESS_TOKEN_EXPIRY = '15m'
 const REFRESH_TOKEN_EXPIRY = '30d'
@@ -275,127 +275,126 @@ export async function verifyPassword(password, hashedPassword) {
 }
 
 export async function changeUserPassword(username, currentPassword, newPassword) {
-  const user = getUserByUsername(username);
-  if (!user) return { success: false, message: 'User not found' };
+	const user = getUserByUsername(username)
+	if (!user) return { success: false, message: 'User not found' }
 
-  const isValidPassword = await verifyPassword(currentPassword, user.auth.password);
-  if (!isValidPassword) return { success: false, message: 'Invalid current password' };
+	const isValidPassword = await verifyPassword(currentPassword, user.auth.password)
+	if (!isValidPassword) return { success: false, message: 'Invalid current password' }
 
-  user.auth.password = await hashPassword(newPassword);
-  save_config();
-  return { success: true, message: 'Password changed successfully' };
+	user.auth.password = await hashPassword(newPassword)
+	save_config()
+	return { success: true, message: 'Password changed successfully' }
 }
 
 export async function revokeUserDevice(username, deviceId) {
-  const user = getUserByUsername(username);
-  if (!user || !user.auth || !user.auth.refreshTokens) {
-    return { success: false, message: 'User or device list not found' };
-  }
+	const user = getUserByUsername(username)
+	if (!user || !user.auth || !user.auth.refreshTokens) 
+		return { success: false, message: 'User or device list not found' }
+	
 
-  const tokenIndex = user.auth.refreshTokens.findIndex(token => token.deviceId === deviceId || token.jti === deviceId);
-  if (tokenIndex === -1) {
-    return { success: false, message: 'Device not found for this user' };
-  }
+	const tokenIndex = user.auth.refreshTokens.findIndex(token => token.deviceId === deviceId || token.jti === deviceId)
+	if (tokenIndex === -1) 
+		return { success: false, message: 'Device not found for this user' }
+	
 
-  const revokedToken = user.auth.refreshTokens.splice(tokenIndex, 1)[0];
-  // Add to global revoked list if your system requires it by jti
-  if (revokedToken && revokedToken.jti) {
-    config.data.revokedTokens[revokedToken.jti] = { expiry: Date.now() + ms(REFRESH_TOKEN_EXPIRY), type: 'refresh-revoked-manual' }; // Or use actual expiry if preferred
-  }
-  save_config();
-  return { success: true, message: 'Device access revoked successfully' };
+	const revokedToken = user.auth.refreshTokens.splice(tokenIndex, 1)[0]
+	// Add to global revoked list if your system requires it by jti
+	if (revokedToken && revokedToken.jti) 
+		config.data.revokedTokens[revokedToken.jti] = { expiry: Date.now() + ms(REFRESH_TOKEN_EXPIRY), type: 'refresh-revoked-manual' } // Or use actual expiry if preferred
+	
+	save_config()
+	return { success: true, message: 'Device access revoked successfully' }
 }
 
 export async function deleteUserAccount(username, password) {
-  const user = getUserByUsername(username);
-  if (!user) return { success: false, message: 'User not found' };
+	const user = getUserByUsername(username)
+	if (!user) return { success: false, message: 'User not found' }
 
-  const isValidPassword = await verifyPassword(password, user.auth.password);
-  if (!isValidPassword) return { success: false, message: 'Invalid password' };
+	const isValidPassword = await verifyPassword(password, user.auth.password)
+	if (!isValidPassword) return { success: false, message: 'Invalid password' }
 
-  const userId = user.auth.userId; // Get userId before deleting user
-  const userDirectoryPath = getUserDictionary(username); // Get path BEFORE deleting user from config
+	const {userId} = user.auth // Get userId before deleting user
+	const userDirectoryPath = getUserDictionary(username) // Get path BEFORE deleting user from config
 
-  // Revoke all refresh tokens for the user
-  if (user.auth.refreshTokens && user.auth.refreshTokens.length > 0) {
-    user.auth.refreshTokens.forEach(token => {
-      if (token.jti) {
-        config.data.revokedTokens[token.jti] = { expiry: Date.now() + ms(REFRESH_TOKEN_EXPIRY), type: 'refresh-revoked-delete' };
-      }
-    });
-  }
-  
-  // Delete user data from config
-  delete config.data.users[username];
-  save_config();
+	// Revoke all refresh tokens for the user
+	if (user.auth.refreshTokens && user.auth.refreshTokens.length > 0) 
+		user.auth.refreshTokens.forEach(token => {
+			if (token.jti) 
+				config.data.revokedTokens[token.jti] = { expiry: Date.now() + ms(REFRESH_TOKEN_EXPIRY), type: 'refresh-revoked-delete' }
+			
+		})
+	
 
-  // Emit userDeleted event WITH userDirectoryPath
-  events.emit('userDeleted', { username, userId, userDirectoryPath });
+	// Delete user data from config
+	delete config.data.users[username]
+	save_config()
 
-  return { success: true, message: 'User account deleted successfully' };
+	// Emit userDeleted event WITH userDirectoryPath
+	events.emit('userDeleted', { username, userId, userDirectoryPath })
+
+	return { success: true, message: 'User account deleted successfully' }
 }
 
 export async function renameUser(currentUsername, newUsername) {
-  if (currentUsername === newUsername) {
-    return { success: false, message: 'New username must be different from the current one.' };
-  }
+	if (currentUsername === newUsername) 
+		return { success: false, message: 'New username must be different from the current one.' }
+	
 
-  const oldUserConfigEntry = getUserByUsername(currentUsername);
-  if (!oldUserConfigEntry) {
-    return { success: false, message: 'Current user not found' };
-  }
+	const oldUserConfigEntry = getUserByUsername(currentUsername)
+	if (!oldUserConfigEntry) 
+		return { success: false, message: 'Current user not found' }
+	
 
-  if (getUserByUsername(newUsername)) {
-    return { success: false, message: 'New username already exists' };
-  }
+	if (getUserByUsername(newUsername)) 
+		return { success: false, message: 'New username already exists' }
+	
 
-  const oldUserPath = getUserDictionary(currentUsername); 
+	const oldUserPath = getUserDictionary(currentUsername)
 
-  const newUserConfigEntry = JSON.parse(JSON.stringify(oldUserConfigEntry));
-  newUserConfigEntry.username = newUsername; 
+	const newUserConfigEntry = JSON.parse(JSON.stringify(oldUserConfigEntry))
+	newUserConfigEntry.username = newUsername
 
-  if (newUserConfigEntry.UserDictionary && 
-      typeof newUserConfigEntry.UserDictionary === 'string' && 
-      newUserConfigEntry.UserDictionary.includes(currentUsername)) {
-    const escapedOldUsername = currentUsername.replace(/[.*+?^${}()|[\]\]/g, '\\$&');
-    newUserConfigEntry.UserDictionary = newUserConfigEntry.UserDictionary.replace(new RegExp(escapedOldUsername, 'g'), newUsername);
-  }
+	if (newUserConfigEntry.UserDictionary &&
+		typeof newUserConfigEntry.UserDictionary === 'string' &&
+		newUserConfigEntry.UserDictionary.includes(currentUsername)) 
+		newUserConfigEntry.UserDictionary = newUserConfigEntry.UserDictionary.replace(currentUsername, newUsername)
+	
 
-  const newUserPath = path.resolve(newUserConfigEntry.UserDictionary || path.join(__dirname, 'data', 'users', newUsername));
+	const newUserPath = path.resolve(newUserConfigEntry.UserDictionary || path.join(__dirname, 'data', 'users', newUsername))
 
-  try {
-    if (fse.existsSync(oldUserPath)) {
-      if (oldUserPath.toLowerCase() !== newUserPath.toLowerCase()) {
-        fse.ensureDirSync(path.dirname(newUserPath)); 
-        fse.moveSync(oldUserPath, newUserPath, { overwrite: true });
-        console.log(`User data directory moved from ${oldUserPath} to ${newUserPath}`);
-      } else {
-        console.log(`User data directory path is effectively the same, no move needed: ${oldUserPath}`);
-      }
-    } else {
-      console.warn(`Old user data directory not found: ${oldUserPath}. Nothing to move.`);
-      if (!fse.existsSync(newUserPath)) {
-         fse.ensureDirSync(newUserPath);
-         console.log(`Ensured new user data directory exists at: ${newUserPath}`);
-      }
-    }
-  } catch (error) {
-    console.error(`Error moving user data directory from ${oldUserPath} to ${newUserPath}:`, error);
-    return { success: false, message: `Error moving user data directory: ${error.message}. Username change not saved.` };
-  }
+	try {
+		if (fse.existsSync(oldUserPath)) 
+			if (oldUserPath.toLowerCase() !== newUserPath.toLowerCase()) {
+				fse.ensureDirSync(path.dirname(newUserPath))
+				fse.moveSync(oldUserPath, newUserPath, { overwrite: true })
+				console.log(`User data directory moved from ${oldUserPath} to ${newUserPath}`)
+			} else 
+				console.log(`User data directory path is effectively the same, no move needed: ${oldUserPath}`)
+			
+		 else {
+			console.warn(`Old user data directory not found: ${oldUserPath}. Nothing to move.`)
+			if (!fse.existsSync(newUserPath)) {
+				fse.ensureDirSync(newUserPath)
+				console.log(`Ensured new user data directory exists at: ${newUserPath}`)
+			}
+		}
+	} catch (error) {
+		console.error(`Error moving user data directory from ${oldUserPath} to ${newUserPath}:`, error)
+		return { success: false, message: `Error moving user data directory: ${error.message}. Username change not saved.` }
+	}
 
-  config.data.users[newUsername] = newUserConfigEntry;
-  delete config.data.users[currentUsername];
-  save_config();
+	config.data.users[newUsername] = newUserConfigEntry
+	delete config.data.users[currentUsername]
+	save_config()
 
-  events.emit('userRenamed', {
-    oldUsername: currentUsername,
-    newUsername: newUsername,
-    userId: newUserConfigEntry.auth.userId,
-    newUserData: newUserConfigEntry
-  });
+	events.emit('userRenamed', {
+		oldUsername: currentUsername,
+		newUsername,
+		userId: newUserConfigEntry.auth.userId,
+		newUserData: newUserConfigEntry
+	})
 
-  return { success: true, message: 'Username renamed successfully and user data directory moved.' };
+	return { success: true, message: 'Username renamed successfully and user data directory moved.' }
 }
 
 async function getUserByToken(token) {
