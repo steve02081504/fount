@@ -304,9 +304,9 @@ async function initializeFromURLParams() {
 			await loadBotConfig(botList[0]) // 手动加载第一个 Bot 的配置
 		}
 
-		if (charName) 
+		if (charName)
 			charSelect.value = charName
-		
+
 	} catch (error) {
 		console.error('Failed to initialize from URL parameters:', error)
 	}

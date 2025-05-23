@@ -5,8 +5,7 @@ initTranslations('proxy')
 import { whoami } from '../../scripts/endpoints.mjs'
 
 const fountHost = window.location.origin
-const whoamiData = await whoami()
-const username = whoamiData.username
+const username = await whoami().then(data => data.username)
 const apiUrl = `${fountHost}/asuser/${username}/api/shells/proxy/calling/openai`
 
 const proxyApiUrlInput = document.getElementById('proxyApiUrl')

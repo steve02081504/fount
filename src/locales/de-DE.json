@@ -639,7 +639,7 @@
 			"botExists": "Der Roboter namens \"${botname}\" existiert bereits, bitte verwenden Sie einen anderen Namen.",
 			"unsavedChanges": "Sie haben nicht gerettete Änderungen. Sind Sie sicher, dass Sie diese Änderungen aufgeben möchten?",
 			"configSaved": "Die Konfiguration wurde erfolgreich gespeichert!",
-			"httpError": "HTTP -Anforderungsfehler",
+			"httpError": "HTTP-Fehler",
 			"beforeUnload": "Sie haben nicht gerettete Änderungen. Sind Sie sicher, dass Sie die aktuelle Seite verlassen möchten?"
 		}
 	},

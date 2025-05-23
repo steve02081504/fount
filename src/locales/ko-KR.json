@@ -639,7 +639,7 @@
 			"botExists": "\"${botname}\"이라는 로봇이 이미 존재합니다. 다른 이름을 사용하십시오.",
 			"unsavedChanges": "구원받지 못한 변화가 있습니다. 이러한 변화를 포기하고 싶습니까?",
 			"configSaved": "구성이 성공적으로 저장되었습니다!",
-			"httpError": "HTTP 요청 오류",
+			"httpError": "HTTP 오류",
 			"beforeUnload": "구원받지 못한 변화가 있습니다. 현재 페이지를 떠나고 싶습니까?"
 		}
 	},

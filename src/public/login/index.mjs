@@ -14,7 +14,7 @@ const sendVerificationCodeBtn = document.getElementById('send-verification-code-
 const passwordStrengthFeedback = document.getElementById('password-strength-feedback')
 const passwordInput = document.getElementById('password')
 
-const isLocalOrigin = await ping().then(res => res.json()).then(data => data.is_local_ip).catch(() => false)
+const isLocalOrigin = await ping().then(data => data.is_local_ip).catch(() => false)
 
 let isLoginForm = true
 let verificationCodeSent = false
@@ -172,11 +172,11 @@ async function handleFormSubmit(event) {
 
 	try {
 		let response
-		if (isLoginForm) {
+		if (isLoginForm)
 			response = await login(username, password, deviceid)
-		} else {
+		else
 			response = await register(username, password, deviceid, verificationcode)
-		}
+
 
 		const data = await response.json()
 

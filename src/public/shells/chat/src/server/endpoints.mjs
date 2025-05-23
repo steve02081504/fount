@@ -22,7 +22,7 @@ import {
 	setCharSpeakingFrequency,
 	getHeartbeatData
 } from './chat.mjs'
-import { addfile,getfile } from './files.mjs'
+import { addfile, getfile } from './files.mjs'
 import { Buffer } from 'node:buffer'
 
 /**

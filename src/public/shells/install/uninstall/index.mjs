@@ -1,6 +1,6 @@
 import { initTranslations, geti18n } from '../../../scripts/i18n.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
-import { uninstallPart as uninstallPartEndpoint } from '../../src/public/endpoints.mjs'
+import { uninstallPart as uninstallPartEndpoint } from '../src/public/endpoints.mjs'
 
 applyTheme()
 // 获取 URL 参数
