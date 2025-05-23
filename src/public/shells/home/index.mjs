@@ -9,6 +9,7 @@ import { applyTheme } from '../../scripts/theme.mjs'
 import { parseRegexFromString, escapeRegExp } from '../../scripts/regex.mjs'
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
 import { svgInliner } from '../../scripts/svg-inliner.mjs'
+import { setDefaultPart, getHomeRegistry, getDefaultParts } from './src/public/endpoints.mjs'
 
 const charContainer = document.getElementById('char-container')
 const worldContainer = document.getElementById('world-container')
@@ -153,11 +154,7 @@ async function attachCardEventListeners(itemElement, itemDetails, itemName, inte
 		defaultCheckbox.addEventListener('change', async (event) => {
 			const isChecked = event.target.checked
 			// Update default part in backend
-			const response = await fetch('/api/shells/home/setdefault', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ parttype: currentItemType.slice(0, -1), partname: isChecked ? itemName : null }),
-			})
+			const response = await setDefaultPart(currentItemType.slice(0, -1), isChecked ? itemName : null)
 
 			if (response.ok) {
 				// Update local state and UI
@@ -411,8 +408,8 @@ async function initializeApp() {
 
 async function fetchData() {
 	const [registryResponse, defaultPartsResponse] = await Promise.all([
-		fetch('/api/shells/home/gethomeregistry'),
-		fetch('/api/shells/home/getdefaultparts')
+		getHomeRegistry(),
+		getDefaultParts()
 	])
 
 	if (registryResponse.ok) {

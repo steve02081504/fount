@@ -639,7 +639,7 @@
 			"botExists": "Bot có tên “${botname}” đã tồn tại, vui lòng sử dụng tên khác.",
 			"unsavedChanges": "Bạn có các thay đổi chưa lưu. Bạn có chắc muốn bỏ qua những thay đổi này không?",
 			"configSaved": "Cấu hình đã lưu thành công!",
-			"httpError": "Lỗi yêu cầu HTTP",
+			"httpError": "Lỗi HTTP",
 			"beforeUnload": "Bạn có các thay đổi chưa lưu. Bạn có chắc muốn rời khỏi trang hiện tại không?"
 		}
 	},

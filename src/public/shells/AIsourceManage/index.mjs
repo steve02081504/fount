@@ -1,6 +1,8 @@
 import { createJsonEditor } from '../../scripts/jsoneditor.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
+import { getPartList } from '../../scripts/parts.mjs'
+import { getConfigTemplate, getAIFile, setAIFile, deleteAIFile, addAIFile } from './src/public/endpoints.mjs'
 
 const jsonEditorContainer = document.getElementById('jsonEditor')
 const disabledIndicator = document.getElementById('disabledIndicator') // 获取遮罩层元素
@@ -31,14 +33,14 @@ async function handleFetchError(response, customMessage) {
 }
 
 async function fetchFileList() {
-	const response = await fetch('/api/getlist/AIsources')
+	const response = await getPartList('AIsources')
 	await handleFetchError(response, 'aisource_editor.alerts.fetchFileListFailed')
 	fileList = await response.json()
 	renderFileList()
 }
 
 async function fetchGeneratorList() {
-	const response = await fetch('/api/getlist/AIsourceGenerators')
+	const response = await getPartList('AIsourceGenerators')
 	await handleFetchError(response, 'aisource_editor.alerts.fetchGeneratorListFailed')
 	generatorList = await response.json()
 	renderGeneratorSelect()
@@ -75,7 +77,7 @@ function renderGeneratorSelect() {
 async function fetchConfigTemplate(generatorName) {
 	if (!generatorName) return null
 	try {
-		const response = await fetch(`/api/shells/AIsourceManage/getConfigTemplate?${new URLSearchParams({ generator: generatorName })}`)
+		const response = await getConfigTemplate(generatorName)
 		await handleFetchError(response, 'aisource_editor.alerts.fetchConfigTemplateFailed')
 		return await response.json()
 	} catch (error) {
@@ -111,7 +113,7 @@ async function loadEditor(fileName) {
 	}
 
 	activeFile = fileName
-	const response = await fetch(`/api/shells/AIsourceManage/getfile?${new URLSearchParams({ AISourceFile: fileName })}`)
+	const response = await getAIFile(fileName)
 	await handleFetchError(response, 'aisource_editor.alerts.fetchFileDataFailed')
 	const data = await response.json()
 	generatorSelect.value = data.generator
@@ -152,16 +154,7 @@ async function saveFile() {
 	saveButton.disabled = true
 
 	try {
-		const response = await fetch('/api/shells/AIsourceManage/setfile', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				AISourceFile: activeFile,
-				data: { generator, config }
-			}),
-		})
+		const response = await setAIFile(activeFile, { generator, config })
 		await handleFetchError(response, 'aisource_editor.alerts.saveFileFailed')
 		console.log('File saved successfully.')
 		isDirty = false
@@ -188,13 +181,7 @@ async function deleteFile() {
 	}
 	if (!confirm(geti18n('aisource_editor.confirm.deleteFile'))) return
 
-	const response = await fetch('/api/shells/AIsourceManage/deletefile', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({ AISourceFile: activeFile }),
-	})
+	const response = await deleteAIFile(activeFile)
 	await handleFetchError(response, 'aisource_editor.alerts.deleteFileFailed')
 	console.log('File delete successfully.')
 	activeFile = null
@@ -214,13 +201,7 @@ async function addFile() {
 		return
 	}
 
-	const response = await fetch('/api/shells/AIsourceManage/addfile', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({ AISourceFile: newFileName }),
-	})
+	const response = await addAIFile(newFileName)
 	await handleFetchError(response, 'aisource_editor.alerts.addFileFailed')
 	await fetchFileList()
 

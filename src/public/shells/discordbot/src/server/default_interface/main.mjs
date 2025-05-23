@@ -229,7 +229,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 						const splitTexts = splitDiscordReply(discordPayload.content || '')
 						if (splitTexts.length === 0 && discordPayload.files.length > 0)  // 只有文件
 							await sendAndCache({ files: discordPayload.files }, replyFromChar)
-						 else
+						else
 							for (let i = 0; i < splitTexts.length; i++) {
 								const currentPartPayload = { content: splitTexts[i] }
 								const isLastPart = i === splitTexts.length - 1
@@ -267,7 +267,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 						const splitTexts = splitDiscordReply(finalDiscordPayload.content || '')
 						if (splitTexts.length === 0 && finalDiscordPayload.files.length > 0)
 							await sendAndCache({ files: finalDiscordPayload.files }, aiFinalReply)
-						 else
+						else
 							for (let i = 0; i < splitTexts.length; i++) {
 								const currentPartPayload = { content: splitTexts[i] }
 								const isLastPart = i === splitTexts.length - 1
