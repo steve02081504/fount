@@ -909,38 +909,23 @@ export async function getHeartbeatData(chatid, start) {
 }
 
 // Event Handlers
-events.on('userDeleted', async (payload) => {
+events.on('AfterUserDeleted', async (payload) => {
 	const { username, userId, userDirectoryPath } = payload // Destructure userDirectoryPath
-	console.log(`Chat: Handling userDeleted event for username: ${username}`)
-
 	// Clear from in-memory cache
 	const chatIdsToDeleteFromCache = []
-	for (const [chatId, data] of chatMetadatas.entries()) 
-		if (data.username === username) 
+	for (const [chatId, data] of chatMetadatas.entries())
+		if (data.username === username)
 			chatIdsToDeleteFromCache.push(chatId)
-		
-	
 	chatIdsToDeleteFromCache.forEach(chatId => chatMetadatas.delete(chatId))
-	console.log(`Chat: Cleared ${chatIdsToDeleteFromCache.length} chat entries from in-memory cache for user ${username}.`)
 })
 
-events.on('userRenamed', async ({ oldUsername, newUsername, userId, newUserData }) => {
-	console.log(`Chat: Handling userRenamed event from ${oldUsername} to ${newUsername}`)
-
+events.on('AfterUserRenamed', async ({ oldUsername, newUsername, userId, newUserData }) => {
 	// Update in-memory cache: chatMetadatas map
-	let updatedInCacheCount = 0
-	for (const [chatId, data] of chatMetadatas.entries()) 
+	for (const [chatId, data] of chatMetadatas.entries())
 		if (data.username === oldUsername) {
 			data.username = newUsername // Update username in the map's value
-			if (data.chatMetadata && data.chatMetadata.username === oldUsername) 
+			if (data.chatMetadata && data.chatMetadata.username === oldUsername)
 				data.chatMetadata.username = newUsername // Update username within the cached object itself
-			
-			updatedInCacheCount++
+			saveChat(chatId)
 		}
-	
-	if (updatedInCacheCount > 0) 
-		console.log(`Chat: Updated ${updatedInCacheCount} chat entries in in-memory cache from ${oldUsername} to ${newUsername}.`)
-	
-
-	console.log(`Chat: Finished processing userRenamed event for ${newUsername}.`)
 })

@@ -1,31 +1,47 @@
-// Helper function to make API calls (internal to this module)
-async function callApi(endpoint, method, body) {
+// Helper function to make API calls
+async function callApi(endpoint, method = 'POST', body) {
 	const response = await fetch(`/api/shells/user_settings/${endpoint}`, {
 		method,
-		headers: {
-			'Content-Type': 'application/json',
-		},
+		headers: { 'Content-Type': 'application/json' },
 		body: body ? JSON.stringify(body) : undefined,
 	})
-	return response.json()
+	const contentType = response.headers.get('content-type')
+	if (contentType && contentType.indexOf('application/json') !== -1)
+		return response.json()
+	else {
+		const text = await response.text()
+		if (!response.ok)
+			return { success: false, message: text || response.statusText }
+
+		return { success: true, data: text }
+	}
 }
 
-export async function changePassword(username, currentPassword, newPassword) {
-	return callApi('change-password', 'POST', { username, currentPassword, newPassword })
+export async function getUserStats() {
+	return callApi('stats', 'GET')
 }
 
-export async function viewDevices(username) {
-	return callApi('view-devices', 'POST', { username })
+export async function changePassword(currentPassword, newPassword) {
+	return callApi('change_password', 'POST', { currentPassword, newPassword })
 }
 
-export async function revokeDevice(username, deviceId) {
-	return callApi('revoke-device', 'POST', { username, deviceId })
+export async function getDevices() {
+	return callApi('devices', 'GET')
 }
 
-export async function renameUser(currentUsername, newUsername) {
-	return callApi('rename-user', 'POST', { currentUsername, newUsername })
+export async function revokeDevice(tokenJti, password) {
+	return callApi('revoke_device', 'POST', { tokenJti, password })
 }
 
-export async function deleteAccount(username, password) {
-	return callApi('delete-account', 'POST', { username, password })
+export async function renameUser(newUsername, password) {
+	return callApi('rename_user', 'POST', { newUsername, password })
+}
+
+export async function deleteAccount(password) {
+	return callApi('delete_account', 'POST', { password })
+}
+
+// 新增：登出用户的API调用
+export async function logoutUser() {
+	return callApi('logout', 'POST') // 不需要 body
 }
