@@ -119,7 +119,6 @@ async function cleanupExpiredCache() {
 					cursor.continue()
 				} else
 					resolve()
-
 			}
 			cursorRequest.onerror = event => {
 				console.error('[SW Cleanup] Error iterating expired items:', event.target.error)
@@ -168,7 +167,6 @@ async function cleanupExpiredCache() {
 						reject(e.target.error)
 					}
 				})
-
 			} catch (err) {
 				console.error(`[SW Cleanup] Error during deletion process for ${url}:`, err)
 			}
@@ -265,7 +263,6 @@ self.addEventListener('fetch', event => {
 
 				// Return the network response (good, bad, or opaque)
 				return networkResponse
-
 			} catch (error) {
 				// 3. If network fetch fails (e.g., offline), try to serve from cache.
 				console.warn(`[SW ${CACHE_NAME}] Network fetch failed for: ${url}. Attempting to serve from cache. Error:`, error)

@@ -45,7 +45,6 @@ export default {
 					await runBot(user, botname)
 				else
 					throw new Error(`Unknown action for telegrambot: ${action}. Supported actions are 'start' or 'stop'.`)
-
 			}
 		},
 		jobs: {

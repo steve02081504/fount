@@ -240,7 +240,6 @@ async function appendMessages() {
 			await renderQueue() // 重绘 (不需要调整滚动)
 		} else
 			isLoading = false
-
 	} catch (error) {
 		console.error('[Append] 加载后续消息出错:', error)
 		isLoading = false
@@ -309,7 +308,6 @@ function updateLastCharMessageArrows() {
 					// --- 箭头逻辑结束 ---
 				} else
 					potentialNewSwipableElement = null // 找不到内容元素，无法添加箭头/滑动
-
 			}
 		}
 	}

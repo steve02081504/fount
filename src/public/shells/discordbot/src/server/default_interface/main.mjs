@@ -145,7 +145,6 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 					last.timeStamp = entry.timeStamp
 					if (entry.extension?.discord_message_id)
 						last.extension = { ...last.extension || {}, discord_message_id: entry.extension.discord_message_id }
-
 				} else {
 					if (last) newlog.push(last)
 					last = entry
@@ -190,7 +189,6 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 
 					if (shouldReply && triggerMessage.author.id !== client.user.id && !triggerMessage.author.bot)
 						await DoMessageReply(triggerMessage, channelId)
-
 				}
 			} catch (error) {
 				console.error(`[SimpleDiscord] 处理频道 ${channelId} 消息队列出错:`, error)
@@ -229,14 +227,13 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 						const splitTexts = splitDiscordReply(discordPayload.content || '')
 						if (splitTexts.length === 0 && discordPayload.files.length > 0)  // 只有文件
 							await sendAndCache({ files: discordPayload.files }, replyFromChar)
-						 else
+						else
 							for (let i = 0; i < splitTexts.length; i++) {
 								const currentPartPayload = { content: splitTexts[i] }
 								const isLastPart = i === splitTexts.length - 1
 								if (isLastPart && discordPayload.files.length > 0) currentPartPayload.files = discordPayload.files
 								await sendAndCache(currentPartPayload, isLastPart ? replyFromChar : undefined)
 							}
-
 					}
 					return null
 				}
@@ -267,14 +264,13 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 						const splitTexts = splitDiscordReply(finalDiscordPayload.content || '')
 						if (splitTexts.length === 0 && finalDiscordPayload.files.length > 0)
 							await sendAndCache({ files: finalDiscordPayload.files }, aiFinalReply)
-						 else
+						else
 							for (let i = 0; i < splitTexts.length; i++) {
 								const currentPartPayload = { content: splitTexts[i] }
 								const isLastPart = i === splitTexts.length - 1
 								if (isLastPart && finalDiscordPayload.files.length > 0) currentPartPayload.files = finalDiscordPayload.files
 								await sendAndCache(currentPartPayload, isLastPart ? aiFinalReply : undefined)
 							}
-
 					}
 				}
 			} catch (error) {

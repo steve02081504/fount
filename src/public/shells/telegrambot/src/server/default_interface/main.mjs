@@ -109,7 +109,6 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 				const removedEntry = ChannelChatLogs[logicalChannelId].shift()
 				if (removedEntry?.extension?.platform_message_ids?.[0] && aiReplyObjectCache[removedEntry.extension.platform_message_ids[0]])
 					delete aiReplyObjectCache[removedEntry.extension.platform_message_ids[0]]
-
 			}
 
 			let shouldReply = false
@@ -132,8 +131,6 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 								break
 							}
 						}
-
-
 			}
 			if (!shouldReply) return
 
@@ -169,7 +166,6 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 										const removed = ChannelChatLogs[logicalChannelId].shift()
 										if (removed?.extension?.platform_message_ids?.[0] && aiReplyObjectCache[removed.extension.platform_message_ids[0]])
 											delete aiReplyObjectCache[removed.extension.platform_message_ids[0]]
-
 									}
 								}
 							}
@@ -264,7 +260,6 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 									sentMsg = await tryFewTimes(() => ctx.replyWithVideo({ source: fileItem.source, filename: fileItem.filename }, sendOptionsWithCaption))
 								else
 									sentMsg = await tryFewTimes(() => ctx.replyWithDocument({ source: fileItem.source, filename: fileItem.filename }, sendOptionsWithCaption))
-
 							} catch (e) {
 								console.error(`[TelegramDefaultInterface] 发送文件 ${fileItem.filename} 失败:`, e)
 								const fallbackText = `[文件发送失败: ${fileItem.filename}] ${captionAiMarkdown || ''}`.trim()
@@ -273,7 +268,6 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 										// ctx.reply 的第二个参数是 Extra
 										sentMsg = await tryFewTimes(() => ctx.reply(escapeHTML(fallbackText.substring(0, 4000)), baseSendOptionsForReply))
 									} catch (e2) { console.error('[TelegramDefaultInterface] 发送文件失败的回退消息也失败:', e2) }
-
 							}
 							if (sentMsg && !firstSentTelegramMessage) firstSentTelegramMessage = sentMsg
 						}
@@ -285,7 +279,6 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 									const sentMsg = await tryFewTimes(() => ctx.reply(part, baseSendOptionsForReply))
 									if (sentMsg && !firstSentTelegramMessage) firstSentTelegramMessage = sentMsg
 								} catch (e) { console.error('[TelegramDefaultInterface] 发送剩余HTML文本失败:', e) }
-
 						}
 					} else if (aiMarkdownContent.trim()) {
 						const htmlContent = aiMarkdownToTelegramHtml(aiMarkdownContent)
@@ -295,7 +288,6 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 								const sentMsg = await tryFewTimes(() => ctx.reply(part, baseSendOptionsForReply))
 								if (sentMsg && !firstSentTelegramMessage) firstSentTelegramMessage = sentMsg
 							} catch (e) { console.error('[TelegramDefaultInterface] 发送HTML文本消息失败:', e) }
-
 					}
 
 					if (firstSentTelegramMessage && aiFinalReply) {
@@ -307,7 +299,6 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 								const removed = ChannelChatLogs[logicalChannelId].shift()
 								if (removed?.extension?.platform_message_ids?.[0] && aiReplyObjectCache[removed.extension.platform_message_ids[0]])
 									delete aiReplyObjectCache[removed.extension.platform_message_ids[0]]
-
 							}
 						}
 					}

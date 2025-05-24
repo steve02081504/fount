@@ -144,8 +144,6 @@ async function ImportAsData(username, dataBuffer) {
 					// 如果这个资源是主头像，也单独处理一下
 					if (assetDef.type === 'icon' && assetDef.name === 'main' && !fsSync.existsSync(path.join(targetPath, `image.${assetDef.ext || 'png'}`)))
 						await writeFile(path.join(targetPath, `image.${assetDef.ext || 'png'}`), assetBuffer)
-
-
 				} catch (err) {
 					console.error(`Failed to process asset ${assetDef.name} (uri: ${originalUri}): ${err.message}`)
 				}
@@ -191,7 +189,6 @@ async function ImportAsData(username, dataBuffer) {
 				} catch (err) {
 					console.error(`Failed to save unreferenced CHARX asset ${internalPath}: ${err.message}`)
 				}
-
 		}
 
 		// 转换数据到 STv2 格式
@@ -217,7 +214,6 @@ async function ImportAsData(username, dataBuffer) {
 			import(url.pathToFileURL(targetMainMjsPath)).catch(err => console.error(`Dynamic import of ${targetMainMjsPath} failed:`, err))
 
 		console.log(`Risu character "${charName}" imported successfully to ${targetPath}`)
-
 	} catch (error) {
 		console.error('Error during Risu import:', error)
 		await rm(tempExtractDir, { recursive: true, force: true }).catch(() => { }) // 清理临时目录
@@ -251,7 +247,6 @@ async function ImportByText(username, text) {
 				// 如果不是 Risu 特有链接，可以尝试作为通用文件下载 (如果你的fount/main.mjs有这个逻辑)
 				// 但这个 Risu 导入器主要处理 Risu 卡，其他 URL 可以忽略或交给通用导入器
 				console.log(`Skipping non-Risu URL: ${line}`)
-
 		} else
 			errors.push(`Invalid line (not a URL): ${line}`)
 

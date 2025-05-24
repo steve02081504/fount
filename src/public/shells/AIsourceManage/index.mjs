@@ -1,6 +1,8 @@
 import { createJsonEditor } from '../../scripts/jsoneditor.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
+import { getPartList } from '../../scripts/parts.mjs'
+import { getConfigTemplate, getAIFile, setAIFile, deleteAIFile, addAIFile } from './src/public/endpoints.mjs'
 
 const jsonEditorContainer = document.getElementById('jsonEditor')
 const disabledIndicator = document.getElementById('disabledIndicator') // 获取遮罩层元素
@@ -19,28 +21,22 @@ let generatorList = []
 let isDirty = false // 标记是否有未保存的更改
 
 // 统一的错误处理函数
-async function handleFetchError(response, customMessage) {
-	if (!response.ok) {
-		const message = await response.text()
-		const error = new Error(`HTTP error! status: ${response.status}, message: ${message}`)
-		console.error(customMessage, error)
-		alert(geti18n(customMessage, { error: error.message }))
+function handleFetchError(customMessage) {
+	return (error) => {
+		const text = geti18n(customMessage, { error: error.stack })
+		console.error(text)
+		alert(text)
 		throw error // Re-throw the error to be caught by the caller if needed.
 	}
-	return response
 }
 
 async function fetchFileList() {
-	const response = await fetch('/api/getlist/AIsources')
-	await handleFetchError(response, 'aisource_editor.alerts.fetchFileListFailed')
-	fileList = await response.json()
+	fileList = await getPartList('AIsources').catch(handleFetchError('aisource_editor.alerts.fetchFileListFailed'))
 	renderFileList()
 }
 
 async function fetchGeneratorList() {
-	const response = await fetch('/api/getlist/AIsourceGenerators')
-	await handleFetchError(response, 'aisource_editor.alerts.fetchGeneratorListFailed')
-	generatorList = await response.json()
+	generatorList = await getPartList('AIsourceGenerators').catch(handleFetchError('aisource_editor.alerts.fetchGeneratorListFailed'))
 	renderGeneratorSelect()
 }
 
@@ -74,13 +70,7 @@ function renderGeneratorSelect() {
 
 async function fetchConfigTemplate(generatorName) {
 	if (!generatorName) return null
-	try {
-		const response = await fetch(`/api/shells/AIsourceManage/getConfigTemplate?${new URLSearchParams({ generator: generatorName })}`)
-		await handleFetchError(response, 'aisource_editor.alerts.fetchConfigTemplateFailed')
-		return await response.json()
-	} catch (error) {
-		return null // 允许用户继续编辑
-	}
+	return await getConfigTemplate(generatorName).catch(handleFetchError('aisource_editor.alerts.fetchConfigTemplateFailed'))
 }
 
 function disableEditor() {
@@ -111,9 +101,7 @@ async function loadEditor(fileName) {
 	}
 
 	activeFile = fileName
-	const response = await fetch(`/api/shells/AIsourceManage/getfile?${new URLSearchParams({ AISourceFile: fileName })}`)
-	await handleFetchError(response, 'aisource_editor.alerts.fetchFileDataFailed')
-	const data = await response.json()
+	const data = await getAIFile(fileName).catch(handleFetchError('aisource_editor.alerts.fetchFileDataFailed'))
 	generatorSelect.value = data.generator
 
 	if (!jsonEditor)
@@ -152,17 +140,7 @@ async function saveFile() {
 	saveButton.disabled = true
 
 	try {
-		const response = await fetch('/api/shells/AIsourceManage/setfile', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				AISourceFile: activeFile,
-				data: { generator, config }
-			}),
-		})
-		await handleFetchError(response, 'aisource_editor.alerts.saveFileFailed')
+		await setAIFile(activeFile, { generator, config }).catch(handleFetchError('aisource_editor.alerts.saveFileFailed'))
 		console.log('File saved successfully.')
 		isDirty = false
 
@@ -188,14 +166,7 @@ async function deleteFile() {
 	}
 	if (!confirm(geti18n('aisource_editor.confirm.deleteFile'))) return
 
-	const response = await fetch('/api/shells/AIsourceManage/deletefile', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({ AISourceFile: activeFile }),
-	})
-	await handleFetchError(response, 'aisource_editor.alerts.deleteFileFailed')
+	await deleteAIFile(activeFile).catch(handleFetchError('aisource_editor.alerts.deleteFileFailed'))
 	console.log('File delete successfully.')
 	activeFile = null
 	await fetchFileList()
@@ -214,14 +185,7 @@ async function addFile() {
 		return
 	}
 
-	const response = await fetch('/api/shells/AIsourceManage/addfile', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({ AISourceFile: newFileName }),
-	})
-	await handleFetchError(response, 'aisource_editor.alerts.addFileFailed')
+	await addAIFile(newFileName).catch(handleFetchError('aisource_editor.alerts.addFileFailed'))
 	await fetchFileList()
 
 	await loadEditor(newFileName)

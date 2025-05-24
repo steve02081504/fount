@@ -130,7 +130,6 @@ export class IPCManager {
 							resolve(response.data) // 返回结果
 						else
 							reject(new Error(response.message || await geti18n('fountConsole.ipc.unknownError')))
-
 					} catch (err) {
 						console.error(await geti18n('fountConsole.ipc.parseResponseFailed', { error: err }))
 						reject(new Error(await geti18n('fountConsole.ipc.cannotParseResponse')))

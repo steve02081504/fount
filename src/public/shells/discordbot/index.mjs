@@ -1,6 +1,18 @@
 import { createJsonEditor } from '../../scripts/jsoneditor.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 import { initTranslations, geti18n, i18nElement } from '../../scripts/i18n.mjs'
+import { getPartList } from '../../scripts/parts.mjs'
+import {
+	getBotList,
+	getBotConfig,
+	setBotConfig,
+	deleteBotConfig,
+	newBotConfig,
+	startBot,
+	stopBot,
+	getRunningBotList,
+	getBotConfigTemplate
+} from './src/public/endpoints.mjs'
 
 const configEditorContainer = document.getElementById('config-editor')
 
@@ -21,93 +33,6 @@ let botList = []
 let charList = []
 let selectedBot = null
 let isDirty = false // 标记是否有未保存的更改
-
-// 抽象的 API 请求函数 (使用前面定义的 fetchData 函数)
-async function fetchData(url, options = {}) {
-	const response = await fetch(url, options)
-	if (!response.ok) {
-		const data = await response.json().catch(() => null)
-		throw new Error(data?.message || `${geti18n('discord_bots.alerts.httpError')}! status: ${response.status}`)
-	}
-	return await response.json()
-}
-
-// API 请求函数 (现在使用 fetchData)
-async function botListGet() {
-	return await fetchData('/api/shells/discordbot/getbotlist')
-}
-
-async function charListGet() {
-	return await fetchData('/api/getlist/chars')
-}
-
-async function botConfigGet(botname) {
-	return await fetchData(`/api/shells/discordbot/getbotconfig?botname=${botname}`)
-}
-
-async function botConfigSet(botname, config) {
-	await fetchData('/api/shells/discordbot/setbotconfig', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ botname, config }),
-	})
-}
-
-async function botConfigDelete(botname) {
-	await fetchData('/api/shells/discordbot/deletebotconfig', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ botname }),
-	})
-}
-
-async function botConfigNew(botname) {
-	await fetchData('/api/shells/discordbot/newbotconfig', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ botname }),
-	})
-}
-
-async function botStart(botname) {
-	await fetchData('/api/shells/discordbot/start', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ botname }),
-	})
-}
-
-async function botStop(botname) {
-	await fetchData('/api/shells/discordbot/stop', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ botname }),
-	})
-}
-
-async function runningBotListGet() {
-	return await fetchData('/api/shells/discordbot/getrunningbotlist')
-}
-
-/**
- * 获取角色对应的配置模板
- * @param {string} charname 角色名称
- * @returns {Promise<object | null>} 配置模板
- */
-async function getBotConfigTemplate(charname) {
-	try {
-		const response = await fetch(`/api/shells/discordbot/getbotConfigTemplate?charname=${charname}`)
-		if (!response.ok) {
-			const message = await response.text()
-			throw new Error(`HTTP error! status: ${response.status}, message: ${message}`)
-		}
-		return await response.json()
-	} catch (error) {
-		console.error('Failed to fetch config template:', error)
-		alert(geti18n('discord_bots.alerts.fetchConfigTemplateFailed', { error: error.message }))
-		return null // 允许用户继续编辑
-	}
-}
 
 // UI 更新函数
 function populateBotList() {
@@ -140,7 +65,7 @@ async function loadBotConfig(botname) {
 
 	selectedBot = botname
 	try {
-		const config = await botConfigGet(botname)
+		const config = await getBotConfig(botname)
 		tokenInput.value = config.token || ''
 		charSelect.value = config.char || ''
 
@@ -181,8 +106,8 @@ async function handleNewBot() {
 	}
 
 	try {
-		await botConfigNew(botname)
-		botList = await botListGet()
+		await newBotConfig(botname)
+		botList = await getBotList()
 		populateBotList()
 		botListSelect.value = botname
 		await loadBotConfig(botname)
@@ -199,8 +124,8 @@ async function handleDeleteBot() {
 			return
 
 	try {
-		await botConfigDelete(selectedBot)
-		botList = await botListGet()
+		await deleteBotConfig(selectedBot)
+		botList = await getBotList()
 		populateBotList()
 
 		// 如果删除的是当前选中的 bot，则 selectedBot 设为 null，否则保持不变
@@ -258,7 +183,7 @@ async function handleSaveConfig() {
 	saveConfigButton.disabled = true
 
 	try {
-		await botConfigSet(selectedBot, config)
+		await setBotConfig(selectedBot, config)
 		console.log(geti18n('discord_bots.alerts.configSaved'))
 		isDirty = false // 重置未保存标记
 
@@ -287,15 +212,15 @@ async function handleStartStopBot() {
 	startStopBotButton.disabled = true
 
 	try {
-		const runningBots = await runningBotListGet()
+		const runningBots = await getRunningBotList()
 		const isRunning = runningBots.includes(selectedBot)
 		if (isRunning) {
-			await botStop(selectedBot)
+			await stopBot(selectedBot)
 			startStopStatusText.textContent = geti18n('discord_bots.configCard.buttons.startBot')
 			startStopBotButton.classList.remove('btn-error')
 			startStopBotButton.classList.add('btn-success')
 		} else {
-			await botStart(selectedBot)
+			await startBot(selectedBot)
 			startStopStatusText.textContent = geti18n('discord_bots.configCard.buttons.stopBot')
 			startStopBotButton.classList.remove('btn-success')
 			startStopBotButton.classList.add('btn-error')
@@ -323,7 +248,7 @@ async function updateStartStopButtonState() {
 		return
 	}
 	try {
-		const runningBots = await runningBotListGet()
+		const runningBots = await getRunningBotList()
 		if (runningBots.includes(selectedBot)) {
 			startStopStatusText.textContent = geti18n('discord_bots.configCard.buttons.stopBot')
 			startStopBotButton.classList.remove('btn-success')
@@ -355,8 +280,8 @@ async function initializeFromURLParams() {
 	const charName = urlParams.get('char') // 使用 'char' 参数
 
 	try {
-		botList = await botListGet()
-		charList = await charListGet()
+		botList = await getBotList()
+		charList = await getPartList('chars')
 		populateBotList()
 		populateCharList()
 
@@ -364,8 +289,8 @@ async function initializeFromURLParams() {
 			if (!botList.includes(botName))
 				// 如果 botName 不存在，则创建新的 bot
 				try {
-					await botConfigNew(botName)
-					botList = await botListGet()
+					await newBotConfig(botName)
+					botList = await getBotList()
 					populateBotList()
 				} catch (error) {
 					console.error('Failed to create new bot from URL parameter:', error)
@@ -379,9 +304,8 @@ async function initializeFromURLParams() {
 			await loadBotConfig(botList[0]) // 手动加载第一个 Bot 的配置
 		}
 
-		if (charName) 
+		if (charName)
 			charSelect.value = charName
-		
 	} catch (error) {
 		console.error('Failed to initialize from URL parameters:', error)
 	}

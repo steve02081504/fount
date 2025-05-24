@@ -143,7 +143,6 @@ function generateTailwindNumericCSS() {
 				const cssProperty = formatCSSProperty(property, value)
 				cssRules.push(`.${className} { ${cssProperty} }`)
 			}
-
 	}
 
 	// Aspect Ratio Square

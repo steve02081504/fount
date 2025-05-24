@@ -80,7 +80,6 @@ function buildCharInfo(charData) {
 				else if (!info[defaultLocaleKey].description_markdown && noteForLang)
 				// 如果默认条目的描述为空（可能 chardata.creator_notes 为空），但多语言中有对应默认键的有效条目，则使用它
 					info[defaultLocaleKey] = createInfoForLang(noteForLang)
-
 			}
 
 
@@ -120,7 +119,6 @@ const charAPI_definition = { // 先定义结构主体
 			loadAIsource(username, chardata.extensions.default_aisource)
 				.then(ai => { AIsource = ai })
 				.catch(err => console.warn(`Failed to autoload AI source ${chardata.extensions.default_aisource}: ${err.message}`))
-
 	},
 	Unload: () => {
 		AIsource = null

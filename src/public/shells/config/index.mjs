@@ -223,7 +223,6 @@ async function initializeFromURLParams() {
 			await loadEditor(partType, partName)
 		} else
 			disableEditorAndSaveButton()
-
 	} else {
 		await fetchPartTypes()
 		disableEditorAndSaveButton()

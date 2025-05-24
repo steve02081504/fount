@@ -89,7 +89,6 @@ export async function parseRisuModule(moduleBuffer) {
 
 
 		return { moduleDef, assetsData }
-
 	} catch (error) {
 		console.error('Error parsing Risu module:', error)
 		return null
