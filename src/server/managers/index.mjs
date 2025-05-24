@@ -58,13 +58,13 @@ on_shutdown(async () => {
 })
 
 // Event Handlers
-events.on('userDeleted', async ({ username }) => {
+events.on('BeforeUserDeleted', async ({ username }) => {
 	for (const parttype in parts_set[username])
 		for (const partname in parts_set[username][parttype])
 			await unloadPart(username, parttype, partname)
 })
 
-events.on('userRenamed', async ({ oldUsername, newUsername }) => {
+events.on('BeforeUserRenamed', async ({ oldUsername, newUsername }) => {
 	for (const parttype in parts_set[oldUsername])
 		for (const partname in parts_set[oldUsername][parttype])
 			await unloadPart(oldUsername, parttype, partname)
