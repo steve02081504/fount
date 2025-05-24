@@ -2,90 +2,90 @@
 	"lang": "ja-JP",
 	"fountConsole": {
 		"server": {
-			"start": "サーバーを起動中",
+			"start": "サーバーを起動しています。",
 			"starting": "サーバー起動中...",
-			"ready": "サーバー起動完了",
+			"ready": "サーバーが起動しました。",
 			"usesdTime": "起動時間：${time}s",
 			"showUrl": {
-				"https": "HTTPSサーバーは ${url} で実行されています",
-				"http": "HTTPサーバーは ${url} で実行されています"
+				"https": "HTTPSサーバーが ${url} で実行されています。",
+				"http": "HTTPサーバーが ${url} で実行されています。"
 			},
 			"standingBy": "スタンバイ中..."
 		},
 		"jobs": {
-			"restartingJob": "ユーザー ${username} の ${parttype} ${partname} ジョブを再起動中：${uid}"
+			"restartingJob": "ユーザー「${username}」の${parttype}「${partname}」ジョブ（${uid}）を再起動しています。"
 		},
 		"ipc": {
 			"sendCommandFailed": "コマンドの送信に失敗しました：${error}",
-			"invalidCommand": "無効なコマンドです。\"fount runshell <ユーザー名> <シェル名> <パラメータ...>\" を使用してください",
-			"runShellLog": "シェル ${shellname} を ${username} として実行、パラメータ：${args}",
-			"invokeShellLog": "シェル ${shellname} を ${username} として呼び出し、パラメータ：${invokedata}",
-			"unsupportedCommand": "サポートされていないコマンドタイプ",
+			"invalidCommand": "無効なコマンドです。「fount runshell <ユーザー名> <シェル名> <パラメータ...>」を使用してください。",
+			"runShellLog": "シェル「${shellname}」をユーザー「${username}」として実行、パラメータ：${args}",
+			"invokeShellLog": "シェル「${shellname}」をユーザー「${username}」として呼び出し、パラメータ：${invokedata}",
+			"unsupportedCommand": "サポートされていないコマンドタイプです。",
 			"processMessageError": "IPCメッセージの処理中にエラーが発生しました：${error}",
-			"invalidCommandFormat": "無効なコマンド形式",
+			"invalidCommandFormat": "無効なコマンド形式です。",
 			"socketError": "ソケットエラー：${error}",
-			"instanceRunning": "別のインスタンスがすでに実行中です",
+			"instanceRunning": "別のインスタンスが既に実行中です。",
 			"serverStartPrefix": "サーバー起動",
-			"serverStarted": "IPCサーバーが起動しました",
+			"serverStarted": "IPCサーバーが起動しました。",
 			"parseResponseFailed": "サーバー応答の解析に失敗しました：${error}",
-			"cannotParseResponse": "サーバー応答を解析できません",
-			"unknownError": "不明なエラー"
+			"cannotParseResponse": "サーバー応答を解析できません。",
+			"unknownError": "不明なエラーが発生しました。"
 		},
 		"partManager": {
 			"git": {
-				"noUpstream": "ブランチ '${currentBranch}' にアップストリームブランチが設定されていません。更新チェックをスキップします。",
-				"dirtyWorkingDirectory": "ワーキングディレクトリがクリーンではありません。更新する前に変更をステージングまたはコミットしてください。",
-				"updating": "リモートリポジトリから更新中...",
+				"noUpstream": "ブランチ「${currentBranch}」にアップストリームブランチが設定されていません。更新チェックをスキップします。",
+				"dirtyWorkingDirectory": "作業ディレクトリに未コミットの変更があります。更新前に変更をステージングまたはコミットしてください。",
+				"updating": "リモートリポジトリから更新中です...",
 				"localAhead": "ローカルブランチがリモートブランチよりも進んでいます。更新は不要です。",
-				"diverged": "ローカルブランチとリモートブランチが分岐しました。強制更新を実行中...",
-				"upToDate": "すでに最新です。",
-				"updateFailed": "リモートリポジトリからのパーツの更新に失敗しました：${error}"
+				"diverged": "ローカルブランチとリモートブランチが分岐しました。強制的に更新しています...",
+				"upToDate": "既に最新です。",
+				"updateFailed": "リモートリポジトリから部品を更新できませんでした：${error}"
 			},
-			"partInitTime": "${parttype} part ${partname}初期化時間：${time}s",
-			"partLoadTime": "${parttype} part ${partname}読み込み時間：${time}s"
+			"partInitTime": "${parttype}部品「${partname}」初期化時間：${time}s",
+			"partLoadTime": "${parttype}部品「${partname}」読み込み時間：${time}s"
 		},
 		"web": {
 			"requestReceived": "リクエストを受信しました：${method} ${url}"
 		},
 		"route": {
-			"setLanguagePreference": "ユーザー ${username} が優先言語を設定しました：${preferredLanguages}"
+			"setLanguagePreference": "ユーザー「${username}」が優先言語を設定しました：${preferredLanguages}"
 		},
 		"auth": {
 			"tokenVerifyError": "トークン検証エラー：${error}",
 			"refreshTokenError": "リフレッシュトークンエラー：${error}",
 			"logoutRefreshTokenProcessError": "ログアウトリフレッシュトークン処理エラー：${error}",
-			"revokeTokenNoJTI": "jtiのないトークンは取り消すことができません",
-			"accountLockedLog": "ログイン試行が複数回失敗したため、ユーザー ${username} のアカウントがロックされました"
+			"revokeTokenNoJTI": "JTIのないトークンは取り消せません。",
+			"accountLockedLog": "ログイン試行が複数回失敗したため、ユーザー「${username}」のアカウントはロックされました。"
 		},
 		"verification": {
-			"codeGeneratedLog": "認証コード：${code} (60秒後に期限切れになります)",
+			"codeGeneratedLog": "認証コード：${code}（60秒後に期限切れとなります）",
 			"codeNotifyTitle": "認証コード",
-			"codeNotifyBody": "認証コード：${code} (60秒後に期限切れになります)"
+			"codeNotifyBody": "認証コード：${code}（60秒後に期限切れとなります）"
 		},
 		"tray": {
 			"readIconFailed": "アイコンファイルの読み込みに失敗しました：${error}",
-			"createTrayFailed": "トレイの作成に失敗しました：${error}"
+			"createTrayFailed": "トレイアイコンの作成に失敗しました：${error}"
 		},
 		"discordbot": {
-			"botStarted": "char ${charname} discord bot ${botusername}にログインしました"
+			"botStarted": "キャラクター「${charname}」がDiscordボット「${botusername}」にログインしました。"
 		},
 		"telegrambot": {
-			"botStarted": "char ${charname} telegram bot ${botusername}にログインしました"
+			"botStarted": "キャラクター「${charname}」がTelegramボット「${botusername}」にログインしました。"
 		}
 	},
 	"protocolhandler": {
-		"title": "Fountプロトコルを処理中",
-		"processing": "プロトコルを処理中...",
-		"invalidProtocol": "無効なプロトコル",
-		"insufficientParams": "パラメータが不足しています",
-		"unknownCommand": "不明なコマンド",
-		"shellCommandSent": "シェルコマンドを送信しました",
-		"shellCommandFailed": "シェルコマンドの送信に失敗しました",
-		"shellCommandError": "シェルコマンドの送信中にエラーが発生しました"
+		"title": "Fountプロトコルの処理",
+		"processing": "プロトコルを処理中です...",
+		"invalidProtocol": "無効なプロトコルです。",
+		"insufficientParams": "パラメータが不足しています。",
+		"unknownCommand": "不明なコマンドです。",
+		"shellCommandSent": "シェルコマンドを送信しました。",
+		"shellCommandFailed": "シェルコマンドの送信に失敗しました。",
+		"shellCommandError": "シェルコマンドの送信中にエラーが発生しました。"
 	},
 	"auth": {
 		"title": "認証",
-		"subtitle": "ユーザーデータはローカルに保存されます",
+		"subtitle": "ユーザーデータはローカルに保存されます。",
 		"usernameLabel": "ユーザー名:",
 		"usernameInput": {
 			"placeholder": "ユーザー名を入力してください"
@@ -94,7 +94,7 @@
 		"passwordInput": {
 			"placeholder": "パスワードを入力してください"
 		},
-		"confirmPasswordLabel": "パスワードの確認:",
+		"confirmPasswordLabel": "パスワード確認:",
 		"confirmPasswordInput": {
 			"placeholder": "もう一度パスワードを入力してください"
 		},
@@ -102,7 +102,7 @@
 		"verificationCodeInput": {
 			"placeholder": "認証コードを入力してください"
 		},
-		"sendCodeButton": "コードを送信",
+		"sendCodeButton": "認証コードを送信",
 		"login": {
 			"title": "ログイン",
 			"submitButton": "ログイン",
@@ -115,20 +115,20 @@
 			"title": "登録",
 			"submitButton": "登録",
 			"toggleLink": {
-				"text": "アカウントをお持ちの場合",
+				"text": "既にアカウントをお持ちの場合",
 				"link": "今すぐログイン"
 			}
 		},
 		"error": {
 			"passwordMismatch": "パスワードが一致しません。",
-			"loginError": "ログインエラー。",
-			"registrationError": "登録エラー。",
-			"verificationCodeError": "認証コードが間違っているか、期限切れです。",
-			"verificationCodeSent": "認証コードが正常に送信されました。",
+			"loginError": "ログイン中にエラーが発生しました。",
+			"registrationError": "登録中にエラーが発生しました。",
+			"verificationCodeError": "認証コードが正しくないか、有効期限が切れています。",
+			"verificationCodeSent": "認証コードを正常に送信しました。",
 			"verificationCodeSendError": "認証コードの送信に失敗しました。",
-			"verificationCodeRateLimit": "認証コードのリクエストが多すぎます。後でもう一度お試しください。",
-			"lowPasswordStrength": "パスワード強度が低すぎます。",
-			"accountAlreadyExists": "アカウントは既に存在します"
+			"verificationCodeRateLimit": "認証コードの送信リクエストが多すぎます。しばらくしてから再度お試しください。",
+			"lowPasswordStrength": "パスワードの強度が低すぎます。",
+			"accountAlreadyExists": "このアカウントは既に存在します。"
 		},
 		"passwordStrength": {
 			"veryWeak": "非常に弱い",
@@ -141,8 +141,8 @@
 	"tutorial": {
 		"title": "チュートリアル",
 		"modal": {
-			"title": "fountへようこそ！",
-			"instruction": "新手チュートリアルを開始しますか？",
+			"title": "Fountへようこそ！",
+			"instruction": "入門チュートリアルを開始しますか？",
 			"buttons": {
 				"start": "チュートリアル開始",
 				"skip": "スキップ"
@@ -150,27 +150,27 @@
 		},
 		"endScreen": {
 			"title": "素晴らしい！チュートリアル完了！",
-			"subtitle": "操作をマスターしました！",
-			"endButton": "次へ進む!"
+			"subtitle": "これで基本操作は完了です！",
+			"endButton": "始めましょう！"
 		},
 		"progressMessages": {
-			"mouseMove": "指でマウス${mouseIcon}を掴んで<br/>動かしてみてください",
-			"keyboardPress": "キーボード${keyboardIcon}を見つけて<br/>指でキーを押してみてください",
-			"mobileTouchMove": "スマートフォン${phoneIcon}を見つけて<br/>指で画面に触れて、そのまま動かしてみてください",
-			"mobileClick": "指でスマートフォン画面${phoneIcon}をタッチして<br/>離してみてください"
+			"mouseMove": "マウス${mouseIcon}を掴んで<br/>動かしてみてください。",
+			"keyboardPress": "キーボード${keyboardIcon}の<br/>キーを押してみてください。",
+			"mobileTouchMove": "スマートフォン${phoneIcon}の画面に触れて、<br/>そのまま指を動かしてみてください。",
+			"mobileClick": "スマートフォン${phoneIcon}の画面をタッチして<br/>指を離してみてください。"
 		}
 	},
 	"home": {
 		"title": "ホーム",
-		"escapeConfirm": "噴水を離れたいですか？",
+		"escapeConfirm": "Fountを終了しますか？",
 		"filterInput": {
 			"placeholder": "検索..."
 		},
 		"sidebarTitle": "詳細",
-		"itemDescription": "詳細を表示するには、こちらからアイテムを選択してください。",
-		"noDescription": "説明情報はありません",
+		"itemDescription": "詳細を表示するには、ここから項目を選択してください。",
+		"noDescription": "説明はありません。",
 		"alerts": {
-			"fetchHomeRegistryFailed": "ホームレジストリ情報の取得に失敗しました"
+			"fetchHomeRegistryFailed": "ホームレジストリ情報の取得に失敗しました。"
 		},
 		"functionMenu": {
 			"icon": {
@@ -181,7 +181,7 @@
 			"tab": "キャラクター",
 			"title": "キャラクター選択",
 			"subtitle": "キャラクターを選択して、チャットを始めましょう！",
-			"none": "空っぽ",
+			"none": "空です",
 			"card": {
 				"refreshButton": {
 					"alt": "更新",
@@ -189,9 +189,9 @@
 				},
 				"noTags": "タグなし",
 				"version": "バージョン",
-				"author": "作者",
+				"author": "作成者",
 				"homepage": "ホームページ",
-				"issuepage": "問題ページ",
+				"issuepage": "問題報告ページ",
 				"defaultCheckbox": {
 					"title": "デフォルトキャラクターとして設定"
 				}
@@ -200,8 +200,8 @@
 		"worlds": {
 			"tab": "ワールド",
 			"title": "ワールド選択",
-			"subtitle": "ワールドを選んで、没入しましょう！",
-			"none": "空っぽ",
+			"subtitle": "ワールドを選んで、没入体験を！",
+			"none": "空です",
 			"card": {
 				"refreshButton": {
 					"alt": "更新",
@@ -209,9 +209,9 @@
 				},
 				"noTags": "タグなし",
 				"version": "バージョン",
-				"author": "作者",
+				"author": "作成者",
 				"homepage": "ホームページ",
-				"issuepage": "問題ページ",
+				"issuepage": "問題報告ページ",
 				"defaultCheckbox": {
 					"title": "デフォルトワールドとして設定"
 				}
@@ -219,9 +219,9 @@
 		},
 		"personas": {
 			"tab": "ペルソナ",
-			"title": "ペルソナ選択",
-			"subtitle": "ペルソナを選択して、人生を体験しましょう。",
-			"none": "空っぽ",
+			"title": "ペルソना選択",
+			"subtitle": "ペルソナを選択して、様々な役割を体験しましょう。",
+			"none": "空です",
 			"card": {
 				"refreshButton": {
 					"alt": "更新",
@@ -229,9 +229,9 @@
 				},
 				"noTags": "タグなし",
 				"version": "バージョン",
-				"author": "作者",
+				"author": "作成者",
 				"homepage": "ホームページ",
-				"issuepage": "問題ページ",
+				"issuepage": "問題報告ページ",
 				"defaultCheckbox": {
 					"title": "デフォルトペルソナとして設定"
 				}
@@ -248,32 +248,32 @@
 	"import": {
 		"title": "インポート",
 		"tabs": {
-			"fileImport": "ファイルインポート",
-			"textImport": "テキストインポート"
+			"fileImport": "ファイルからインポート",
+			"textImport": "テキストからインポート"
 		},
 		"dropArea": {
 			"icon": {
 				"alt": "アップロードアイコン"
 			},
-			"text": "ファイルをドラッグ＆ドロップまたはクリックして選択"
+			"text": "ここにファイルをドラッグ＆ドロップするか、クリックしてファイルを選択"
 		},
 		"textArea": {
-			"placeholder": "インポートするテキストを入力..."
+			"placeholder": "インポートするテキストを入力してください..."
 		},
 		"buttons": {
 			"import": "インポート"
 		},
 		"alerts": {
-			"importSuccess": "インポート成功",
-			"importFailed": "インポート失敗: ${error}",
-			"unknownError": "不明なエラー"
+			"importSuccess": "正常にインポートされました。",
+			"importFailed": "インポートに失敗しました: ${error}",
+			"unknownError": "不明なエラーが発生しました。"
 		},
 		"errors": {
-			"noFileSelected": "ファイルを選択してください",
-			"fileImportFailed": "ファイルインポート失敗: ${message}",
-			"noTextContent": "テキストコンテンツを入力してください",
-			"textImportFailed": "テキストインポート失敗: ${message}",
-			"handler": "ハンドラー",
+			"noFileSelected": "ファイルを選択してください。",
+			"fileImportFailed": "ファイルのインポートに失敗しました: ${message}",
+			"noTextContent": "テキスト内容を入力してください。",
+			"textImportFailed": "テキストのインポートに失敗しました: ${message}",
+			"handler": "ハンドラ",
 			"error": "エラー"
 		},
 		"fileItem": {
@@ -283,16 +283,16 @@
 		}
 	},
 	"aisource_editor": {
-		"title": "AIソースエディター",
+		"title": "AIソースエディタ",
 		"fileList": {
-			"title": "AIソースリスト",
+			"title": "AIソース一覧",
 			"addButton": {
 				"title": "+"
 			}
 		},
 		"configTitle": "AIソース設定",
 		"generatorSelect": {
-			"label": "ジェネレーターを選択",
+			"label": "ジェネレータを選択",
 			"placeholder": "選択してください"
 		},
 		"buttons": {
@@ -301,27 +301,27 @@
 		},
 		"alerts": {
 			"fetchFileListFailed": "ファイルリストの取得に失敗しました: ${error}",
-			"fetchGeneratorListFailed": "ジェネレーターリストの取得に失敗しました: ${error}",
+			"fetchGeneratorListFailed": "ジェネレータリストの取得に失敗しました: ${error}",
 			"fetchFileDataFailed": "ファイルデータの取得に失敗しました: ${error}",
 			"noFileSelectedSave": "保存するファイルが選択されていません。",
 			"saveFileFailed": "ファイルの保存に失敗しました: ${error}",
 			"noFileSelectedDelete": "削除するファイルが選択されていません。",
 			"deleteFileFailed": "ファイルの削除に失敗しました: ${error}",
-			"invalidFileName": "ファイル名に以下の文字は使用できません： / \\ : * ? \" < > |",
+			"invalidFileName": "ファイル名に次の文字は使用できません： / \\ : * ? \" < > |",
 			"addFileFailed": "ファイルの追加に失敗しました: ${error}",
-			"fetchConfigTemplateFailed": "構成テンプレートの取得に失敗しました",
-			"noGeneratorSelectedSave": "保存する前にジェネレーターを選択してください"
+			"fetchConfigTemplateFailed": "設定テンプレートの取得に失敗しました。",
+			"noGeneratorSelectedSave": "保存する前にジェネレータを選択してください。"
 		},
 		"confirm": {
 			"unsavedChanges": "保存されていない変更があります。変更を破棄しますか？",
-			"deleteFile": "ファイルを削除してもよろしいですか？",
-			"unsavedChangesBeforeUnload": "保存されていない変更があります。このページから移動してもよろしいですか？"
+			"deleteFile": "このファイルを削除してもよろしいですか？",
+			"unsavedChangesBeforeUnload": "保存されていない変更があります。このページから移動しますか？"
 		},
 		"prompts": {
-			"newFileName": "新しいAIソースファイル名を入力してください (拡張子なし):"
+			"newFileName": "新しいAIソースのファイル名を入力してください（拡張子なし）："
 		},
 		"editor": {
-			"disabledIndicator": "最初にジェネレーターを選択してください"
+			"disabledIndicator": "最初にジェネレータを選択してください。"
 		}
 	},
 	"part_config": {
@@ -337,23 +337,23 @@
 		},
 		"editor": {
 			"title": "部品設定",
-			"disabledIndicator": "この部品は設定をサポートしていません",
+			"disabledIndicator": "この部品は設定に対応していません。",
 			"buttons": {
 				"save": "保存"
 			}
 		},
 		"errorMessage": {
 			"icon": {
-				"alt": "エラー提示"
+				"alt": "エラー"
 			}
 		},
 		"alerts": {
-			"fetchPartTypesFailed": "部品タイプの取得に失敗しました",
-			"fetchPartsFailed": "部品リストの取得に失敗しました",
-			"loadEditorFailed": "エディターのロードに失敗しました",
-			"saveConfigFailed": "部品設定の保存に失敗しました",
+			"fetchPartTypesFailed": "部品タイプの取得に失敗しました。",
+			"fetchPartsFailed": "部品リストの取得に失敗しました。",
+			"loadEditorFailed": "エディタの読み込みに失敗しました。",
+			"saveConfigFailed": "部品設定の保存に失敗しました。",
 			"unsavedChanges": "保存されていない変更があります。変更を破棄しますか？",
-			"beforeUnload": "保存されていない変更があります。移動してもよろしいですか？"
+			"beforeUnload": "保存されていない変更があります。このページから移動しますか？"
 		}
 	},
 	"uninstall": {
@@ -372,15 +372,15 @@
 			}
 		},
 		"buttons": {
-			"confirm": "アンインストールを確認",
+			"confirm": "アンインストール確定",
 			"cancel": "キャンセル",
 			"back": "戻る"
 		},
 		"alerts": {
-			"success": "${type}: ${name} を正常にアンインストールしました",
+			"success": "${type}: ${name} は正常にアンインストールされました。",
 			"failed": "アンインストールに失敗しました: ${error}",
-			"invalidParams": "無効なリクエストパラメータ。",
-			"httpError": "HTTPエラー！ステータスコード: ${status}"
+			"invalidParams": "無効なリクエストパラメータです。",
+			"httpError": "HTTPエラーが発生しました！ステータスコード: ${status}"
 		}
 	},
 	"chat": {
@@ -391,15 +391,15 @@
 		"sidebar": {
 			"world": {
 				"icon": {
-					"alt": "世界アイコン"
+					"alt": "ワールドアイコン"
 				},
-				"title": "世界"
+				"title": "ワールド"
 			},
 			"persona": {
 				"icon": {
-					"alt": "ユーザーロールアイコン"
+					"alt": "ユーザーペルソナアイコン"
 				},
-				"title": "ユーザーロール"
+				"title": "ユーザーペルソナ"
 			},
 			"charList": {
 				"icon": {
@@ -415,8 +415,8 @@
 					}
 				}
 			},
-			"noSelection": "なし",
-			"noDescription": "説明情報なし"
+			"noSelection": "選択なし",
+			"noDescription": "説明なし"
 		},
 		"chatArea": {
 			"title": "チャット",
@@ -427,7 +427,7 @@
 				"alt": "メニューアイコン"
 			},
 			"input": {
-				"placeholder": "メッセージを入力...\nCtrl+Enterで送信"
+				"placeholder": "メッセージを入力...\\nCtrl+Enterで送信"
 			},
 			"sendButton": {
 				"title": "送信"
@@ -442,10 +442,10 @@
 				"alt": "アップロードアイコン"
 			},
 			"voiceButton": {
-				"title": "音声"
+				"title": "音声入力"
 			},
 			"voiceButtonIcon": {
-				"alt": "音声アイコン"
+				"alt": "音声入力アイコン"
 			},
 			"photoButton": {
 				"title": "写真"
@@ -455,13 +455,13 @@
 			}
 		},
 		"rightSidebar": {
-			"title": "説明情報"
+			"title": "詳細情報"
 		},
 		"messageList": {
-			"confirmDeleteMessage": "このメッセージを削除してもよろしいですか？"
+			"confirmDeleteMessage": "このメッセージを削除しますか？"
 		},
 		"voiceRecording": {
-			"errorAccessingMicrophone": "マイクへのアクセスに失敗しました"
+			"errorAccessingMicrophone": "マイクへのアクセスに失敗しました。"
 		},
 		"messageView": {
 			"buttons": {
@@ -481,7 +481,7 @@
 		},
 		"messageEdit": {
 			"input": {
-				"placeholder": "内容を入力..."
+				"placeholder": "内容を入力してください..."
 			},
 			"buttons": {
 				"confirm": {
@@ -524,7 +524,7 @@
 			"frequencyLabel": "頻度",
 			"buttons": {
 				"removeChar": {
-					"title": "会話から削除"
+					"title": "チャットから削除"
 				},
 				"removeCharIcon": {
 					"alt": "キャラクター削除アイコン"
@@ -542,40 +542,40 @@
 		"title": "チャット履歴",
 		"pageTitle": "チャット履歴",
 		"sortOptions": {
-			"time_desc": "時間降順",
-			"time_asc": "時間昇順"
+			"time_desc": "日時（新しい順）",
+			"time_asc": "日時（古い順）"
 		},
 		"filterInput": {
 			"placeholder": "検索..."
 		},
-		"selectAll": "全選択",
+		"selectAll": "すべて選択",
 		"buttons": {
-			"reverseSelect": "選択反転",
-			"deleteSelected": "選択削除",
-			"exportSelected": "選択エクスポート"
+			"reverseSelect": "選択を反転",
+			"deleteSelected": "選択項目を削除",
+			"exportSelected": "選択項目をエクスポート"
 		},
-		"confirmDeleteChat": "${chars}とのチャット履歴を削除してもよろしいですか？",
+		"confirmDeleteChat": "「${chars}」とのチャット履歴を削除してもよろしいですか？",
 		"confirmDeleteMultiChats": "選択した${count}件のチャット履歴を削除してもよろしいですか？",
 		"alerts": {
-			"noChatSelectedForDeletion": "削除するチャット履歴を選択してください",
-			"noChatSelectedForExport": "エクスポートするチャット履歴を選択してください"
+			"noChatSelectedForDeletion": "削除するチャット履歴を選択してください。",
+			"noChatSelectedForExport": "エクスポートするチャット履歴を選択してください。"
 		},
 		"chatItemButtons": {
-			"continue": "続ける",
+			"continue": "続行",
 			"copy": "コピー",
 			"export": "エクスポート",
 			"delete": "削除"
 		}
 	},
 	"discord_bots": {
-		"title": "Discord Bots",
-		"cardTitle": "Discord Bots",
+		"title": "Discordボット",
+		"cardTitle": "Discordボット",
 		"buttons": {
 			"newBot": "新規作成",
 			"deleteBot": "削除"
 		},
 		"configCard": {
-			"title": "Bot設定",
+			"title": "ボット設定",
 			"labels": {
 				"character": "キャラクター",
 				"apiKey": "Discord APIキー",
@@ -586,7 +586,7 @@
 				"placeholder": "APIキーを入力"
 			},
 			"toggleApiKeyIcon": {
-				"alt": "APIキーの表示/非表示を切り替え"
+				"alt": "APIキーの表示切り替え"
 			},
 			"buttons": {
 				"saveConfig": "設定を保存",
@@ -595,40 +595,40 @@
 			}
 		},
 		"prompts": {
-			"newBotName": "新しいBot名を入力してください："
+			"newBotName": "新しいボット名を入力してください："
 		},
 		"alerts": {
-			"botExists": "\"${botname}\"という名前のBotは既に存在します。別の名前を使用してください。",
+			"botExists": "ボット名「${botname}」は既に存在します。別の名前を使用してください。",
 			"unsavedChanges": "保存されていない変更があります。変更を破棄しますか？",
-			"configSaved": "設定が保存されました",
-			"httpError": "HTTPエラー",
-			"beforeUnload": "保存されていない変更があります。移動してもよろしいですか？"
+			"configSaved": "設定を正常に保存しました。",
+			"httpError": "HTTPエラーが発生しました。",
+			"beforeUnload": "保存されていない変更があります。このページから移動しますか？"
 		}
 	},
 	"telegram_bots": {
-		"title": "電報ロボット",
-		"cardTitle": "電報ロボット管理",
+		"title": "Telegramボット",
+		"cardTitle": "Telegramボット管理",
 		"buttons": {
-			"newBot": "新しい",
-			"deleteBot": "消去"
+			"newBot": "新規作成",
+			"deleteBot": "削除"
 		},
 		"configCard": {
-			"title": "ロボット構成",
+			"title": "ボット設定",
 			"labels": {
-				"character": "役割を結合します",
-				"botToken": "電報ボットトークン",
-				"config": "config"
+				"character": "キャラクター",
+				"botToken": "Telegramボットトークン",
+				"config": "設定"
 			},
-			"charSelectPlaceholder": "役割を選択します",
+			"charSelectPlaceholder": "キャラクターを選択",
 			"botTokenInput": {
-				"placeholder": "電報ボットトークンを入力してください"
+				"placeholder": "Telegramボットトークンを入力"
 			},
 			"toggleBotTokenIcon": {
-				"alt": "APIキーの表示に切り替えます"
+				"alt": "ボットトークンの表示切り替え"
 			},
 			"buttons": {
-				"saveConfig": "構成を保存します",
-				"startBot": "起動する",
+				"saveConfig": "設定を保存",
+				"startBot": "起動",
 				"stopBot": "停止"
 			}
 		},
@@ -636,119 +636,119 @@
 			"newBotName": "新しいボット名を入力してください："
 		},
 		"alerts": {
-			"botExists": "「${botname}」という名前のロボットはすでに存在しています。別の名前を使用してください。",
-			"unsavedChanges": "救われていない変更があります。これらの変更を放棄したいですか？",
-			"configSaved": "構成は正常に保存されました！",
-			"httpError": "HTTPエラー",
-			"beforeUnload": "救われていない変更があります。現在のページを離れたいですか？"
+			"botExists": "ボット名「${botname}」は既に存在します。別の名前を使用してください。",
+			"unsavedChanges": "保存されていない変更があります。変更を破棄しますか？",
+			"configSaved": "設定を正常に保存しました！",
+			"httpError": "HTTPエラーが発生しました。",
+			"beforeUnload": "保存されていない変更があります。このページから移動しますか？"
 		}
 	},
 	"terminal_assistant": {
 		"title": "ターミナルアシスタント",
-		"initialMessage": "Fountはお気に入りのキャラクターをターミナルにデプロイしてコーディングを支援できます！",
-		"initialMessageLink": "詳細はこちらをクリック"
+		"initialMessage": "Fountは、お気に入りのキャラクターをターミナルに導入し、コーディング作業をサポートします！",
+		"initialMessageLink": "詳細はこちら"
 	},
 	"access": {
-		"title": "他のデバイスでFountにアクセスする",
-		"heading": "他のデバイスでFountにアクセスしますか？",
+		"title": "他のデバイスからFountにアクセス",
+		"heading": "他のデバイスからFountにアクセスしますか？",
 		"instruction": {
 			"sameLAN": "デバイスとFountホストが同じローカルネットワーク上にあることを確認してください。",
-			"accessthis": "このURLにアクセスしてください："
+			"accessthis": "次のURLにアクセスしてください："
 		},
 		"copyButton": "URLをコピー",
-		"copied": "URLがクリップボードにコピーされました！"
+		"copied": "URLをクリップボードにコピーしました！"
 	},
 	"proxy": {
 		"title": "APIプロキシ",
 		"heading": "OpenAI API プロキシアドレス",
-		"instruction": "fount内のAIソースを使用するには、以下のアドレスをOpenAI API形式を必要とする任意のアプリケーションに入力してください！",
+		"instruction": "Fount内のAIソースを使用するには、このアドレスをOpenAI API形式に対応したアプリケーションに入力してください！",
 		"copyButton": "アドレスをコピー",
-		"copied": "アドレスがクリップボードにコピーされました！"
+		"copied": "アドレスをクリップボードにコピーしました！"
 	},
 	"404": {
 		"title": "ページが見つかりません",
-		"pageNotFoundText": "おっと！ 存在しないページにアクセスしてしまったようです。",
+		"pageNotFoundText": "おっと！存在しないページにアクセスしたようです。",
 		"homepageButton": "ホームページに戻る",
 		"MineSweeper": {
 			"difficultyLabel": "難易度:",
 			"difficultyEasy": "簡単",
-			"difficultyMedium": "普通",
+			"difficultyMedium": "中級",
 			"difficultyHard": "難しい",
 			"difficultyCustom": "カスタム",
-			"minesLeftLabel": "残り地雷数:",
+			"minesLeftLabel": "残りの地雷:",
 			"timeLabel": "時間:",
-			"restartButton": "再開",
-			"rowsLabel": "行数:",
-			"colsLabel": "列数:",
-			"minesCountLabel": "地雷数:",
-			"winMessage": "おめでとうございます、あなたの勝ちです！",
-			"loseMessage": "ゲームオーバー、地雷を踏んでしまいました！",
-			"soundOn": "サウンドオン",
-			"soundOff": "サウンドオフ"
+			"restartButton": "リスタート",
+			"rowsLabel": "行:",
+			"colsLabel": "列:",
+			"minesCountLabel": "地雷の数:",
+			"winMessage": "おめでとうございます、あなたの勝利です！",
+			"loseMessage": "ゲームオーバー。地雷を踏んでしまいました！",
+			"soundOn": "サウンド オン",
+			"soundOff": "サウンド オフ"
 		}
 	},
 	"userSettings": {
 		"title": "ユーザー設定",
 		"PageTitle": "ユーザー設定",
-		"apiError": "APIリクエストが失敗しました：${message}",
+		"apiError": "APIリクエストに失敗しました：${message}",
 		"generalError": "エラーが発生しました：${message}",
 		"userInfo": {
 			"title": "ユーザー情報",
-			"usernameLabel": "ユーザー名：",
-			"creationDateLabel": "アカウントの作成日：",
-			"folderSizeLabel": "ユーザーデータサイズ：",
-			"folderPathLabel": "ユーザーデータパス：",
-			"copyPathBtnTitle": "パスをコピーします",
-			"copiedAlert": "パスはクリップボードにコピーされました！"
+			"usernameLabel": "ユーザー名:",
+			"creationDateLabel": "アカウント作成日:",
+			"folderSizeLabel": "ユーザーデータサイズ:",
+			"folderPathLabel": "ユーザーデータパス:",
+			"copyPathBtnTitle": "パスをコピー",
+			"copiedAlert": "パスをクリップボードにコピーしました！"
 		},
 		"changePassword": {
-			"title": "パスワードを変更します",
-			"currentPasswordLabel": "現在のパスワード：",
-			"newPasswordLabel": "新しいパスワード：",
-			"confirmNewPasswordLabel": "新しいパスワードを確認してください：",
-			"submitButton": "パスワードを変更します",
-			"errorMismatch": "新しいパスワードは一貫して2回入力されます。",
-			"success": "パスワードの変更が成功しました。"
+			"title": "パスワード変更",
+			"currentPasswordLabel": "現在のパスワード:",
+			"newPasswordLabel": "新しいパスワード:",
+			"confirmNewPasswordLabel": "新しいパスワード（確認）:",
+			"submitButton": "パスワードを変更",
+			"errorMismatch": "新しいパスワードが一致しません。",
+			"success": "パスワードが正常に変更されました。"
 		},
 		"renameUser": {
-			"title": "ユーザーの名前を変更します",
-			"newUsernameLabel": "新しいユーザー名：",
-			"submitButton": "ユーザーの名前を変更します",
-			"confirmMessage": "ユーザー名を変更したいですか？これには、再度ログインする必要があります。",
-			"success": "ユーザーは「${newUsername}」に正常に名前が変更されました。これでログアウトされます。"
+			"title": "ユーザー名変更",
+			"newUsernameLabel": "新しいユーザー名:",
+			"submitButton": "ユーザー名を変更",
+			"confirmMessage": "ユーザー名を変更しますか？変更後は再度ログインが必要です。",
+			"success": "ユーザー名を「${newUsername}」に正常に変更しました。ログアウトします。"
 		},
 		"userDevices": {
-			"title": "ユーザー機器/セッション",
-			"refreshButtonTitle": "リストを更新します",
-			"noDevicesFound": "デバイスやセッションは見つかりませんでした。",
+			"title": "ユーザーデバイス・セッション",
+			"refreshButtonTitle": "リストを更新",
+			"noDevicesFound": "デバイスまたはセッションが見つかりませんでした。",
 			"deviceInfo": "デバイスID：${deviceId}",
-			"thisDevice": "現在の機器",
-			"deviceDetails": "最後のオンライン：${lastSeen} | IP：${ipAddress} | ua：${userAgent}",
-			"revokeButton": "取り消す",
-			"revokeConfirm": "このデバイス/セッションからログアウトしたいですか？",
-			"revokeSuccess": "デバイス/セッションは正常に取り消されました。"
+			"thisDevice": "このデバイス",
+			"deviceDetails": "最終オンライン：${lastSeen} | IPアドレス：${ipAddress} | UA：${userAgent}",
+			"revokeButton": "取り消し",
+			"revokeConfirm": "このデバイス/セッションからログアウトしますか？",
+			"revokeSuccess": "デバイス/セッションを正常に取り消しました。"
 		},
 		"logout": {
-			"title": "サインアウト",
-			"description": "これにより、現在のデバイスからアカウントからログアウトします。",
-			"buttonText": "サインアウト",
-			"confirmMessage": "ログアウトしたいですか？",
-			"successMessage": "正常にログアウトします。すぐにログインページにジャンプします..."
+			"title": "ログアウト",
+			"description": "現在のデバイスからアカウントをログアウトします。",
+			"buttonText": "ログアウト",
+			"confirmMessage": "ログアウトしますか？",
+			"successMessage": "正常にログアウトしました。ログインページに移動します..."
 		},
 		"deleteAccount": {
-			"title": "アカウントを削除します",
-			"warning": "警告：このアクションは、アカウントとすべての関連データを永続的に削除し、復元できません。",
-			"submitButton": "アカウントを削除します",
-			"confirmMessage1": "警告！アカウントを永久に削除したいですか？この操作はキャンセルできません。",
+			"title": "アカウント削除",
+			"warning": "警告：この操作を行うと、アカウントと関連する全てのデータが完全に削除され、元に戻すことはできません。",
+			"submitButton": "アカウントを削除",
+			"confirmMessage1": "警告！アカウントを完全に削除しますか？この操作は元に戻せません。",
 			"confirmMessage2": "削除を確認するには、ユーザー名「${username}」を入力してください：",
-			"usernameMismatch": "入力されたユーザー名は、現在のユーザーと一致しません。削除操作がキャンセルされました。",
-			"success": "アカウントは正常に削除されました。これでログアウトされます。"
+			"usernameMismatch": "入力されたユーザー名が現在のアカウントと一致しません。削除処理はキャンセルされました。",
+			"success": "アカウントが正常に削除されました。ログアウトします。"
 		},
 		"passwordConfirm": {
-			"title": "操作を確認します",
-			"message": "これを続けるには、現在のパスワードを入力してください。",
-			"passwordLabel": "パスワード：",
-			"confirmButton": "確認する",
+			"title": "操作の確認",
+			"message": "続行するには、現在のパスワードを入力してください。",
+			"passwordLabel": "パスワード:",
+			"confirmButton": "確認",
 			"cancelButton": "キャンセル"
 		}
 	}

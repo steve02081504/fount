@@ -2,90 +2,90 @@
 	"lang": "ko-KR",
 	"fountConsole": {
 		"server": {
-			"start": "서버 시작 중",
+			"start": "서버를 시작하고 있습니다.",
 			"starting": "서버 시작 중...",
-			"ready": "서버가 시작되었습니다",
-			"usesdTime": "시작 시간 : ${time}s",
+			"ready": "서버가 시작되었습니다.",
+			"usesdTime": "시작 소요 시간: ${time}s",
 			"showUrl": {
-				"https": "HTTPS 서버가 ${url}에서 실행 중입니다",
-				"http": "HTTP 서버가 ${url}에서 실행 중입니다"
+				"https": "HTTPS 서버가 ${url}에서 실행 중입니다.",
+				"http": "HTTP 서버가 ${url}에서 실행 중입니다."
 			},
 			"standingBy": "대기 중..."
 		},
 		"jobs": {
-			"restartingJob": "사용자 ${username}의 ${parttype} ${partname} 작업 재시작 중: ${uid}"
+			"restartingJob": "사용자 ${username}의 ${parttype} ${partname} 작업(${uid})을(를) 다시 시작하는 중입니다."
 		},
 		"ipc": {
-			"sendCommandFailed": "명령 전송 실패: ${error}",
-			"invalidCommand": "잘못된 명령입니다. \"fount runshell <사용자 이름> <셸 이름> <매개변수...>\"를 사용하십시오",
-			"runShellLog": "셸 ${shellname}을(를) ${username}으로 실행, 매개변수: ${args}",
-			"invokeShellLog": "셸 ${shellname}을(를) ${username}으로 호출, 매개변수: ${invokedata}",
-			"unsupportedCommand": "지원되지 않는 명령 유형",
-			"processMessageError": "IPC 메시지 처리 중 오류 발생: ${error}",
-			"invalidCommandFormat": "잘못된 명령 형식",
+			"sendCommandFailed": "명령 전송에 실패했습니다: ${error}",
+			"invalidCommand": "잘못된 명령입니다. \"fount runshell <사용자_이름> <셸_이름> <매개변수...>\"를 사용하세요.",
+			"runShellLog": "셸 ${shellname}을(를) ${username}(으)로 실행 중, 매개변수: ${args}",
+			"invokeShellLog": "셸 ${shellname}을(를) ${username}(으)로 호출 중, 매개변수: ${invokedata}",
+			"unsupportedCommand": "지원되지 않는 명령 유형입니다.",
+			"processMessageError": "IPC 메시지 처리 중 오류가 발생했습니다: ${error}",
+			"invalidCommandFormat": "잘못된 명령 형식입니다.",
 			"socketError": "소켓 오류: ${error}",
-			"instanceRunning": "다른 인스턴스가 이미 실행 중입니다",
+			"instanceRunning": "다른 인스턴스가 이미 실행 중입니다.",
 			"serverStartPrefix": "서버 시작",
-			"serverStarted": "IPC 서버가 시작되었습니다",
-			"parseResponseFailed": "서버 응답 구문 분석 실패: ${error}",
-			"cannotParseResponse": "서버 응답을 구문 분석할 수 없습니다",
-			"unknownError": "알 수 없는 오류"
+			"serverStarted": "IPC 서버가 시작되었습니다.",
+			"parseResponseFailed": "서버 응답 구문 분석에 실패했습니다: ${error}",
+			"cannotParseResponse": "서버 응답을 구문 분석할 수 없습니다.",
+			"unknownError": "알 수 없는 오류가 발생했습니다."
 		},
 		"partManager": {
 			"git": {
-				"noUpstream": "'${currentBranch}' 브랜치에 대해 업스트림 브랜치가 구성되지 않았습니다. 업데이트 확인을 건너뜁니다.",
-				"dirtyWorkingDirectory": "작업 디렉토리가 깨끗하지 않습니다. 업데이트하기 전에 변경 사항을 스테이징하거나 커밋하십시오.",
-				"updating": "원격 리포지토리에서 업데이트 중...",
-				"localAhead": "로컬 브랜치가 원격 브랜치보다 앞서 있습니다. 업데이트가 필요하지 않습니다.",
-				"diverged": "로컬 및 원격 브랜치가 분기되었습니다. 강제 업데이트 중...",
+				"noUpstream": "'${currentBranch}' 브랜치에 업스트림 브랜치가 구성되어 있지 않아 업데이트 확인을 건너뜁니다.",
+				"dirtyWorkingDirectory": "작업 디렉토리에 커밋되지 않은 변경 사항이 있습니다. 업데이트하기 전에 변경 사항을 스테이징하거나 커밋하십시오.",
+				"updating": "원격 리포지토리에서 업데이트하는 중...",
+				"localAhead": "로컬 브랜치가 원격 브랜치보다 최신입니다. 업데이트가 필요하지 않습니다.",
+				"diverged": "로컬 브랜치와 원격 브랜치가 갈라졌습니다. 강제로 업데이트하는 중...",
 				"upToDate": "이미 최신 버전입니다.",
-				"updateFailed": "원격 리포지토리에서 파트 업데이트 실패: ${error}"
+				"updateFailed": "원격 리포지토리에서 컴포넌트 업데이트에 실패했습니다: ${error}"
 			},
-			"partInitTime": "${parttype} part ${partname} 초기화 시간 : ${time}s",
-			"partLoadTime": "${parttype} part ${partname}로드 시간 : ${time}s"
+			"partInitTime": "${parttype} 컴포넌트 ${partname} 초기화 시간: ${time}s",
+			"partLoadTime": "${parttype} 컴포넌트 ${partname} 로드 시간: ${time}s"
 		},
 		"web": {
-			"requestReceived": "요청 수신: ${method} ${url}"
+			"requestReceived": "요청 수신됨: ${method} ${url}"
 		},
 		"route": {
-			"setLanguagePreference": "사용자 ${username}이(가) 선호하는 언어를 설정했습니다: ${preferredLanguages}"
+			"setLanguagePreference": "사용자 ${username}님이 선호하는 언어를 설정했습니다: ${preferredLanguages}"
 		},
 		"auth": {
 			"tokenVerifyError": "토큰 검증 오류: ${error}",
-			"refreshTokenError": "새로 고침 토큰 오류: ${error}",
-			"logoutRefreshTokenProcessError": "로그아웃 새로 고침 토큰 처리 오류: ${error}",
-			"revokeTokenNoJTI": "jti가 없는 토큰은 취소할 수 없습니다",
-			"accountLockedLog": "로그인 시도 실패 횟수 초과로 사용자 ${username} 계정이 잠겼습니다"
+			"refreshTokenError": "리프레시 토큰 오류: ${error}",
+			"logoutRefreshTokenProcessError": "로그아웃 리프레시 토큰 처리 오류: ${error}",
+			"revokeTokenNoJTI": "JTI가 없는 토큰은 해지할 수 없습니다.",
+			"accountLockedLog": "로그인 시도 실패 횟수 초과로 사용자 ${username}님의 계정이 잠겼습니다."
 		},
 		"verification": {
-			"codeGeneratedLog": "인증 코드: ${code} (60초 후 만료)",
+			"codeGeneratedLog": "인증 코드: ${code} (60초 후에 만료됩니다).",
 			"codeNotifyTitle": "인증 코드",
-			"codeNotifyBody": "인증 코드: ${code} (60초 후 만료)"
+			"codeNotifyBody": "인증 코드: ${code} (60초 후에 만료됩니다)."
 		},
 		"tray": {
-			"readIconFailed": "아이콘 파일 읽기 실패: ${error}",
-			"createTrayFailed": "트레이 생성 실패: ${error}"
+			"readIconFailed": "아이콘 파일을 읽는 데 실패했습니다: ${error}",
+			"createTrayFailed": "트레이 아이콘 생성에 실패했습니다: ${error}"
 		},
 		"discordbot": {
-			"botStarted": "char ${charname} discord bot ${botusername}에 로그인했습니다."
+			"botStarted": "캐릭터 ${charname}님이 Discord 봇 ${botusername}에 로그인했습니다."
 		},
 		"telegrambot": {
-			"botStarted": "char ${charname} 텔레 그램 봇 ${botusername}에 로그인했습니다."
+			"botStarted": "캐릭터 ${charname}님이 Telegram 봇 ${botusername}에 로그인했습니다."
 		}
 	},
 	"protocolhandler": {
-		"title": "Fount 프로토콜 처리 중",
+		"title": "Fount 프로토콜 처리",
 		"processing": "프로토콜 처리 중...",
-		"invalidProtocol": "잘못된 프로토콜",
-		"insufficientParams": "매개변수 부족",
-		"unknownCommand": "알 수 없는 명령",
-		"shellCommandSent": "셸 명령 전송됨",
-		"shellCommandFailed": "셸 명령 전송 실패",
-		"shellCommandError": "셸 명령 전송 중 오류 발생"
+		"invalidProtocol": "잘못된 프로토콜입니다.",
+		"insufficientParams": "매개변수가 부족합니다.",
+		"unknownCommand": "알 수 없는 명령입니다.",
+		"shellCommandSent": "셸 명령이 전송되었습니다.",
+		"shellCommandFailed": "셸 명령 전송에 실패했습니다.",
+		"shellCommandError": "셸 명령 전송 중 오류가 발생했습니다."
 	},
 	"auth": {
 		"title": "인증",
-		"subtitle": "사용자 데이터는 로컬에 저장됩니다",
+		"subtitle": "사용자 데이터는 로컬에 저장됩니다.",
 		"usernameLabel": "사용자 이름:",
 		"usernameInput": {
 			"placeholder": "사용자 이름을 입력하세요"
@@ -102,18 +102,18 @@
 		"verificationCodeInput": {
 			"placeholder": "인증 코드를 입력하세요"
 		},
-		"sendCodeButton": "코드 전송",
+		"sendCodeButton": "인증 코드 전송",
 		"login": {
 			"title": "로그인",
 			"submitButton": "로그인",
 			"toggleLink": {
 				"text": "계정이 없으신가요?",
-				"link": "지금 가입하세요"
+				"link": "지금 회원가입하세요"
 			}
 		},
 		"register": {
-			"title": "가입",
-			"submitButton": "가입",
+			"title": "회원가입",
+			"submitButton": "회원가입",
 			"toggleLink": {
 				"text": "이미 계정이 있으신가요?",
 				"link": "지금 로그인하세요"
@@ -121,14 +121,14 @@
 		},
 		"error": {
 			"passwordMismatch": "비밀번호가 일치하지 않습니다.",
-			"loginError": "로그인 오류.",
-			"registrationError": "가입 오류.",
+			"loginError": "로그인 중 오류가 발생했습니다.",
+			"registrationError": "회원가입 중 오류가 발생했습니다.",
 			"verificationCodeError": "인증 코드가 잘못되었거나 만료되었습니다.",
 			"verificationCodeSent": "인증 코드가 성공적으로 전송되었습니다.",
 			"verificationCodeSendError": "인증 코드 전송에 실패했습니다.",
-			"verificationCodeRateLimit": "인증 코드 요청이 너무 많습니다. 나중에 다시 시도해 주세요.",
-			"lowPasswordStrength": "비밀번호 강도가 너무 낮습니다.",
-			"accountAlreadyExists": "계정이 이미 존재합니다"
+			"verificationCodeRateLimit": "인증 코드 요청 횟수를 초과했습니다. 잠시 후 다시 시도해주세요.",
+			"lowPasswordStrength": "비밀번호의 보안 수준이 너무 낮습니다.",
+			"accountAlreadyExists": "이미 존재하는 계정입니다."
 		},
 		"passwordStrength": {
 			"veryWeak": "매우 약함",
@@ -139,36 +139,36 @@
 		}
 	},
 	"tutorial": {
-		"title": "튜토리얼?",
+		"title": "튜토리얼을 시작할까요?",
 		"modal": {
-			"title": "fount에 오신 것을 환영합니다!",
-			"instruction": "신규 사용자 튜토리얼을 진행하시겠습니까?",
+			"title": "Fount에 오신 것을 환영합니다!",
+			"instruction": "시작 가이드를 진행하시겠습니까?",
 			"buttons": {
-				"start": "튜토리얼 시작",
+				"start": "가이드 시작",
 				"skip": "건너뛰기"
 			}
 		},
 		"endScreen": {
-			"title": "훌륭합니다! 튜토리얼 완료!",
-			"subtitle": "이제 조작 방법을 배우셨습니다!",
-			"endButton": "다음에!"
+			"title": "훌륭합니다! 가이드 완료!",
+			"subtitle": "이제 Fount 사용법을 익혔습니다!",
+			"endButton": "시작하기!"
 		},
 		"progressMessages": {
-			"mouseMove": "손가락으로 마우스 ${mouseIcon}를 잡아보세요<br/>그런 다음 움직여보세요",
-			"keyboardPress": "키보드 ${keyboardIcon}를 찾으세요<br/>손가락으로 키보드를 눌러보세요",
-			"mobileTouchMove": "휴대폰 ${phoneIcon}를 찾으세요<br/>손가락으로 화면을 터치한 다음 움직여보세요",
-			"mobileClick": "손가락으로 휴대폰 화면 ${phoneIcon}를 터치해보세요<br/>그런 다음 손을 떼세요"
+			"mouseMove": "마우스 ${mouseIcon}를 잡고<br/>움직여 보세요.",
+			"keyboardPress": "키보드 ${keyboardIcon}의<br/>아무 키나 눌러보세요.",
+			"mobileTouchMove": "휴대폰 ${phoneIcon} 화면을 터치한 후<br/>손가락을 움직여보세요.",
+			"mobileClick": "휴대폰 ${phoneIcon} 화면을 터치했다가<br/>손가락을 떼어보세요."
 		}
 	},
 	"home": {
 		"title": "홈",
-		"escapeConfirm": "당신은 분노를 떠나고 싶습니까?",
+		"escapeConfirm": "Fount를 종료하시겠습니까?",
 		"filterInput": {
 			"placeholder": "검색..."
 		},
 		"sidebarTitle": "세부 정보",
 		"itemDescription": "자세한 내용을 보려면 여기에서 항목을 선택하세요.",
-		"noDescription": "설명 정보 없음",
+		"noDescription": "설명이 없습니다.",
 		"alerts": {
 			"fetchHomeRegistryFailed": "홈 레지스트리 정보를 가져오는 데 실패했습니다."
 		},
@@ -181,17 +181,17 @@
 			"tab": "캐릭터",
 			"title": "캐릭터 선택",
 			"subtitle": "캐릭터를 선택하고 채팅을 시작하세요!",
-			"none": "비어 있음",
+			"none": "없음",
 			"card": {
 				"refreshButton": {
-					"alt": "새로 고침",
-					"title": "새로 고침"
+					"alt": "새로고침",
+					"title": "새로고침"
 				},
 				"noTags": "태그 없음",
 				"version": "버전",
-				"author": "저자",
+				"author": "제작자",
 				"homepage": "홈페이지",
-				"issuepage": "문제 페이지",
+				"issuepage": "문제 신고 페이지",
 				"defaultCheckbox": {
 					"title": "기본 캐릭터로 설정"
 				}
@@ -200,18 +200,18 @@
 		"worlds": {
 			"tab": "월드",
 			"title": "월드 선택",
-			"subtitle": "월드를 선택하고 몰입하세요!",
-			"none": "비어 있음",
+			"subtitle": "월드를 선택하고 몰입해보세요!",
+			"none": "없음",
 			"card": {
 				"refreshButton": {
-					"alt": "새로 고침",
-					"title": "새로 고침"
+					"alt": "새로고침",
+					"title": "새로고침"
 				},
 				"noTags": "태그 없음",
 				"version": "버전",
-				"author": "저자",
+				"author": "제작자",
 				"homepage": "홈페이지",
-				"issuepage": "문제 페이지",
+				"issuepage": "문제 신고 페이지",
 				"defaultCheckbox": {
 					"title": "기본 월드로 설정"
 				}
@@ -220,18 +220,18 @@
 		"personas": {
 			"tab": "페르소나",
 			"title": "페르소나 선택",
-			"subtitle": "페르소나를 선택하고 삶을 경험하세요.",
-			"none": "비어 있음",
+			"subtitle": "페르소나를 선택하고 다양한 역할을 경험해보세요.",
+			"none": "없음",
 			"card": {
 				"refreshButton": {
-					"alt": "새로 고침",
-					"title": "새로 고침"
+					"alt": "새로고침",
+					"title": "새로고침"
 				},
 				"noTags": "태그 없음",
 				"version": "버전",
-				"author": "저자",
+				"author": "제작자",
 				"homepage": "홈페이지",
-				"issuepage": "문제 페이지",
+				"issuepage": "문제 신고 페이지",
 				"defaultCheckbox": {
 					"title": "기본 페르소나로 설정"
 				}
@@ -255,7 +255,7 @@
 			"icon": {
 				"alt": "업로드 아이콘"
 			},
-			"text": "파일을 여기로 드래그 앤 드롭하거나 파일을 선택하려면 클릭하세요"
+			"text": "여기에 파일을 드래그 앤 드롭하거나 클릭하여 파일을 선택하세요."
 		},
 		"textArea": {
 			"placeholder": "가져올 텍스트를 입력하세요..."
@@ -264,15 +264,15 @@
 			"import": "가져오기"
 		},
 		"alerts": {
-			"importSuccess": "가져오기 성공",
-			"importFailed": "가져오기 실패: ${error}",
-			"unknownError": "알 수 없는 오류"
+			"importSuccess": "성공적으로 가져왔습니다.",
+			"importFailed": "가져오기에 실패했습니다: ${error}",
+			"unknownError": "알 수 없는 오류가 발생했습니다."
 		},
 		"errors": {
-			"noFileSelected": "파일을 선택해주세요",
-			"fileImportFailed": "파일 가져오기 실패: ${message}",
-			"noTextContent": "텍스트 내용을 입력해주세요",
-			"textImportFailed": "텍스트 가져오기 실패: ${message}",
+			"noFileSelected": "파일을 선택해주세요.",
+			"fileImportFailed": "파일 가져오기에 실패했습니다: ${message}",
+			"noTextContent": "텍스트 내용을 입력해주세요.",
+			"textImportFailed": "텍스트 가져오기에 실패했습니다: ${message}",
 			"handler": "핸들러",
 			"error": "오류"
 		},
@@ -290,7 +290,7 @@
 				"title": "+"
 			}
 		},
-		"configTitle": "AI 소스 구성",
+		"configTitle": "AI 소스 설정",
 		"generatorSelect": {
 			"label": "생성기 선택",
 			"placeholder": "선택해주세요"
@@ -300,60 +300,60 @@
 			"delete": "삭제"
 		},
 		"alerts": {
-			"fetchFileListFailed": "파일 목록을 가져오지 못했습니다: ${error}",
-			"fetchGeneratorListFailed": "생성기 목록을 가져오지 못했습니다: ${error}",
-			"fetchFileDataFailed": "파일 데이터를 가져오지 못했습니다: ${error}",
-			"noFileSelectedSave": "저장할 파일을 선택하지 않았습니다.",
+			"fetchFileListFailed": "파일 목록을 가져오는 데 실패했습니다: ${error}",
+			"fetchGeneratorListFailed": "생성기 목록을 가져오는 데 실패했습니다: ${error}",
+			"fetchFileDataFailed": "파일 데이터를 가져오는 데 실패했습니다: ${error}",
+			"noFileSelectedSave": "저장할 파일이 선택되지 않았습니다.",
 			"saveFileFailed": "파일 저장에 실패했습니다: ${error}",
-			"noFileSelectedDelete": "삭제할 파일을 선택하지 않았습니다.",
+			"noFileSelectedDelete": "삭제할 파일이 선택되지 않았습니다.",
 			"deleteFileFailed": "파일 삭제에 실패했습니다: ${error}",
-			"invalidFileName": "파일 이름에 다음 문자를 포함할 수 없습니다: / \\ : * ? \" < > |",
+			"invalidFileName": "파일 이름에는 다음 문자를 사용할 수 없습니다: / \\ : * ? \" < > |",
 			"addFileFailed": "파일 추가에 실패했습니다: ${error}",
-			"fetchConfigTemplateFailed": "구성 템플릿을 가져오지 못했습니다",
-			"noGeneratorSelectedSave": "저장하기 전에 생성기를 선택해주세요"
+			"fetchConfigTemplateFailed": "설정 템플릿을 가져오는 데 실패했습니다.",
+			"noGeneratorSelectedSave": "저장하기 전에 생성기를 선택해주세요."
 		},
 		"confirm": {
 			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까?",
-			"deleteFile": "파일을 삭제하시겠습니까?",
-			"unsavedChangesBeforeUnload": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 떠나시겠습니까?"
+			"deleteFile": "이 파일을 삭제하시겠습니까?",
+			"unsavedChangesBeforeUnload": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 나가시겠습니까?"
 		},
 		"prompts": {
-			"newFileName": "새 AI 소스 파일 이름을 입력하세요 (확장자 없이):"
+			"newFileName": "새 AI 소스 파일 이름을 입력하세요 (확장자 제외):"
 		},
 		"editor": {
-			"disabledIndicator": "먼저 생성기를 선택해주세요"
+			"disabledIndicator": "먼저 생성기를 선택해주세요."
 		}
 	},
 	"part_config": {
-		"title": "부품 구성",
-		"pageTitle": "부품 구성",
+		"title": "컴포넌트 설정",
+		"pageTitle": "컴포넌트 설정",
 		"labels": {
-			"partType": "부품 유형 선택",
-			"part": "부품 선택"
+			"partType": "컴포넌트 유형 선택",
+			"part": "컴포넌트 선택"
 		},
 		"placeholders": {
 			"partTypeSelect": "선택해주세요",
 			"partSelect": "선택해주세요"
 		},
 		"editor": {
-			"title": "부품 구성",
-			"disabledIndicator": "이 부품은 구성을 지원하지 않습니다",
+			"title": "컴포넌트 설정",
+			"disabledIndicator": "이 컴포넌트는 설정을 지원하지 않습니다.",
 			"buttons": {
 				"save": "저장"
 			}
 		},
 		"errorMessage": {
 			"icon": {
-				"alt": "오류 알림"
+				"alt": "오류 메시지"
 			}
 		},
 		"alerts": {
-			"fetchPartTypesFailed": "부품 유형을 가져오지 못했습니다",
-			"fetchPartsFailed": "부품 목록을 가져오지 못했습니다",
-			"loadEditorFailed": "편집기를 로드하지 못했습니다",
-			"saveConfigFailed": "부품 구성 저장에 실패했습니다",
+			"fetchPartTypesFailed": "컴포넌트 유형을 가져오는 데 실패했습니다.",
+			"fetchPartsFailed": "컴포넌트 목록을 가져오는 데 실패했습니다.",
+			"loadEditorFailed": "편집기를 로드하는 데 실패했습니다.",
+			"saveConfigFailed": "컴포넌트 설정을 저장하는 데 실패했습니다.",
 			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까?",
-			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 떠나시겠습니까?"
+			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 나가시겠습니까?"
 		}
 	},
 	"uninstall": {
@@ -377,23 +377,23 @@
 			"back": "뒤로"
 		},
 		"alerts": {
-			"success": "${type}: ${name} 제거 성공",
-			"failed": "제거 실패: ${error}",
+			"success": "${type}: ${name}이(가) 성공적으로 제거되었습니다.",
+			"failed": "제거에 실패했습니다: ${error}",
 			"invalidParams": "잘못된 요청 매개변수입니다.",
 			"httpError": "HTTP 오류! 상태 코드: ${status}"
 		}
 	},
 	"chat": {
 		"new": {
-			"title": "생성한 채팅"
+			"title": "새 채팅"
 		},
 		"title": "채팅",
 		"sidebar": {
 			"world": {
 				"icon": {
-					"alt": "세계 아이콘"
+					"alt": "월드 아이콘"
 				},
-				"title": "세계"
+				"title": "월드"
 			},
 			"persona": {
 				"icon": {
@@ -415,8 +415,8 @@
 					}
 				}
 			},
-			"noSelection": "없음",
-			"noDescription": "설명 정보 없음"
+			"noSelection": "선택 없음",
+			"noDescription": "설명 없음"
 		},
 		"chatArea": {
 			"title": "채팅",
@@ -427,13 +427,13 @@
 				"alt": "메뉴 아이콘"
 			},
 			"input": {
-				"placeholder": "메시지 입력...\nCtrl+Enter로 보내기"
+				"placeholder": "메시지를 입력하세요...\\nCtrl+Enter로 전송"
 			},
 			"sendButton": {
-				"title": "보내기"
+				"title": "전송"
 			},
 			"sendButtonIcon": {
-				"alt": "보내기 아이콘"
+				"alt": "전송 아이콘"
 			},
 			"uploadButton": {
 				"title": "업로드"
@@ -442,10 +442,10 @@
 				"alt": "업로드 아이콘"
 			},
 			"voiceButton": {
-				"title": "음성"
+				"title": "음성 입력"
 			},
 			"voiceButtonIcon": {
-				"alt": "음성 아이콘"
+				"alt": "음성 입력 아이콘"
 			},
 			"photoButton": {
 				"title": "사진"
@@ -455,13 +455,13 @@
 			}
 		},
 		"rightSidebar": {
-			"title": "설명 정보"
+			"title": "세부 정보"
 		},
 		"messageList": {
 			"confirmDeleteMessage": "이 메시지를 삭제하시겠습니까?"
 		},
 		"voiceRecording": {
-			"errorAccessingMicrophone": "마이크로프론을 접속하지 못했음"
+			"errorAccessingMicrophone": "마이크에 연결하지 못했습니다."
 		},
 		"messageView": {
 			"buttons": {
@@ -481,7 +481,7 @@
 		},
 		"messageEdit": {
 			"input": {
-				"placeholder": "내용 입력..."
+				"placeholder": "내용을 입력하세요..."
 			},
 			"buttons": {
 				"confirm": {
@@ -530,10 +530,10 @@
 					"alt": "캐릭터 제거 아이콘"
 				},
 				"forceReply": {
-					"title": "강제 답장"
+					"title": "강제 응답"
 				},
 				"forceReplyIcon": {
-					"alt": "강제 답장 아이콘"
+					"alt": "강제 응답 아이콘"
 				}
 			}
 		}
@@ -542,8 +542,8 @@
 		"title": "채팅 기록",
 		"pageTitle": "채팅 기록",
 		"sortOptions": {
-			"time_desc": "시간 내림차순",
-			"time_asc": "시간 오름차순"
+			"time_desc": "시간 (최신순)",
+			"time_asc": "시간 (오래된순)"
 		},
 		"filterInput": {
 			"placeholder": "검색..."
@@ -551,14 +551,14 @@
 		"selectAll": "모두 선택",
 		"buttons": {
 			"reverseSelect": "선택 반전",
-			"deleteSelected": "선택 삭제",
-			"exportSelected": "선택 내보내기"
+			"deleteSelected": "선택 항목 삭제",
+			"exportSelected": "선택 항목 내보내기"
 		},
-		"confirmDeleteChat": "${chars}와의 채팅 기록을 삭제하시겠습니까?",
+		"confirmDeleteChat": "${chars}님과의 채팅 기록을 삭제하시겠습니까?",
 		"confirmDeleteMultiChats": "선택한 ${count}개의 채팅 기록을 삭제하시겠습니까?",
 		"alerts": {
-			"noChatSelectedForDeletion": "삭제할 채팅 기록을 선택해주세요",
-			"noChatSelectedForExport": "내보낼 채팅 기록을 선택해주세요"
+			"noChatSelectedForDeletion": "삭제할 채팅 기록을 선택해주세요.",
+			"noChatSelectedForExport": "내보낼 채팅 기록을 선택해주세요."
 		},
 		"chatItemButtons": {
 			"continue": "계속하기",
@@ -568,28 +568,28 @@
 		}
 	},
 	"discord_bots": {
-		"title": "Discord Bots",
-		"cardTitle": "Discord Bots",
+		"title": "Discord 봇",
+		"cardTitle": "Discord 봇",
 		"buttons": {
 			"newBot": "새로 만들기",
 			"deleteBot": "삭제"
 		},
 		"configCard": {
-			"title": "봇 구성",
+			"title": "봇 설정",
 			"labels": {
 				"character": "캐릭터",
 				"apiKey": "Discord API 키",
-				"config": "구성"
+				"config": "설정"
 			},
 			"charSelectPlaceholder": "캐릭터 선택",
 			"apiKeyInput": {
-				"placeholder": "API 키 입력"
+				"placeholder": "API 키를 입력하세요"
 			},
 			"toggleApiKeyIcon": {
-				"alt": "API 키 가시성 전환"
+				"alt": "API 키 표시/숨기기"
 			},
 			"buttons": {
-				"saveConfig": "구성 저장",
+				"saveConfig": "설정 저장",
 				"startBot": "시작",
 				"stopBot": "중지"
 			}
@@ -598,62 +598,62 @@
 			"newBotName": "새 봇 이름을 입력하세요:"
 		},
 		"alerts": {
-			"botExists": "\"${botname}\" 이름의 봇이 이미 있습니다. 다른 이름을 사용해주세요.",
+			"botExists": "\"${botname}\" 이름의 봇이 이미 존재합니다. 다른 이름을 사용해주세요.",
 			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까?",
-			"configSaved": "구성이 성공적으로 저장되었습니다",
-			"httpError": "HTTP 오류",
-			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 떠나시겠습니까?"
+			"configSaved": "설정이 성공적으로 저장되었습니다.",
+			"httpError": "HTTP 오류가 발생했습니다.",
+			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 나가시겠습니까?"
 		}
 	},
 	"telegram_bots": {
-		"title": "전보 로봇",
-		"cardTitle": "전보 로봇 관리",
+		"title": "텔레그램 봇",
+		"cardTitle": "텔레그램 봇 관리",
 		"buttons": {
-			"newBot": "새로운",
+			"newBot": "새로 만들기",
 			"deleteBot": "삭제"
 		},
 		"configCard": {
-			"title": "로봇 구성",
+			"title": "봇 설정",
 			"labels": {
-				"character": "역할을 묶습니다",
-				"botToken": "Telegram Bot Token",
-				"config": "구성"
+				"character": "캐릭터",
+				"botToken": "텔레그램 봇 토큰",
+				"config": "설정"
 			},
-			"charSelectPlaceholder": "역할을 선택하십시오",
+			"charSelectPlaceholder": "캐릭터 선택",
 			"botTokenInput": {
-				"placeholder": "Telegram Bot Token을 입력하십시오"
+				"placeholder": "텔레그램 봇 토큰을 입력하세요"
 			},
 			"toggleBotTokenIcon": {
-				"alt": "API 키를 표시하도록 전환하십시오"
+				"alt": "봇 토큰 표시/숨기기"
 			},
 			"buttons": {
-				"saveConfig": "구성 저장",
+				"saveConfig": "설정 저장",
 				"startBot": "시작",
-				"stopBot": "멈추다"
+				"stopBot": "중지"
 			}
 		},
 		"prompts": {
-			"newBotName": "새 봇 이름을 입력하십시오 :"
+			"newBotName": "새 봇 이름을 입력하세요:"
 		},
 		"alerts": {
-			"botExists": "\"${botname}\"이라는 로봇이 이미 존재합니다. 다른 이름을 사용하십시오.",
-			"unsavedChanges": "구원받지 못한 변화가 있습니다. 이러한 변화를 포기하고 싶습니까?",
-			"configSaved": "구성이 성공적으로 저장되었습니다!",
-			"httpError": "HTTP 오류",
-			"beforeUnload": "구원받지 못한 변화가 있습니다. 현재 페이지를 떠나고 싶습니까?"
+			"botExists": "\"${botname}\" 이름의 봇이 이미 존재합니다. 다른 이름을 사용해주세요.",
+			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까?",
+			"configSaved": "설정이 성공적으로 저장되었습니다!",
+			"httpError": "HTTP 오류가 발생했습니다.",
+			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 나가시겠습니까?"
 		}
 	},
 	"terminal_assistant": {
 		"title": "터미널 어시스턴트",
-		"initialMessage": "Fount는 코딩을 지원하기 위해 좋아하는 캐릭터를 터미널에 배포하는 것을 지원합니다!",
-		"initialMessageLink": "자세히 알아보려면 여기를 클릭하세요"
+		"initialMessage": "Fount는 코딩 작업을 돕기 위해 즐겨찾는 캐릭터를 터미널에 배포하는 기능을 지원합니다!",
+		"initialMessageLink": "자세한 내용은 여기를 클릭하세요."
 	},
 	"access": {
-		"title": "다른 장치에서 Fount에 액세스",
-		"heading": "다른 장치에서 Fount에 액세스하시겠습니까?",
+		"title": "다른 기기에서 Fount에 접속",
+		"heading": "다른 기기에서 Fount에 접속하시겠습니까?",
 		"instruction": {
-			"sameLAN": "장치와 Fount 호스트가 동일한 로컬 네트워크에 있는지 확인하십시오.",
-			"accessthis": "이 URL을 방문하십시오:"
+			"sameLAN": "기기와 Fount 호스트가 동일한 로컬 네트워크에 있는지 확인하세요.",
+			"accessthis": "다음 URL로 접속하세요:"
 		},
 		"copyButton": "URL 복사",
 		"copied": "URL이 클립보드에 복사되었습니다!"
@@ -661,94 +661,94 @@
 	"proxy": {
 		"title": "API 프록시",
 		"heading": "OpenAI API 프록시 주소",
-		"instruction": "fount의 AI 소스를 사용하려면 OpenAI API 형식이 필요한 모든 애플리케이션에 다음 주소를 입력하세요!",
+		"instruction": "Fount의 AI 소스를 사용하려면, OpenAI API 형식이 필요한 애플리케이션에 다음 주소를 입력하세요!",
 		"copyButton": "주소 복사",
 		"copied": "주소가 클립보드에 복사되었습니다!"
 	},
 	"404": {
-		"title": "페이지를 찾을 수 없음",
-		"pageNotFoundText": "죄송합니다! 존재하지 않는 페이지에 오신 것 같습니다.",
+		"title": "페이지를 찾을 수 없습니다",
+		"pageNotFoundText": "おっと！ 존재하지 않는 페이지에 접속한 것 같습니다.",
 		"homepageButton": "홈페이지로 돌아가기",
 		"MineSweeper": {
 			"difficultyLabel": "난이도:",
 			"difficultyEasy": "쉬움",
 			"difficultyMedium": "보통",
 			"difficultyHard": "어려움",
-			"difficultyCustom": "사용자 정의",
-			"minesLeftLabel": "남은 지뢰 수:",
+			"difficultyCustom": "사용자 설정",
+			"minesLeftLabel": "남은 지뢰:",
 			"timeLabel": "시간:",
 			"restartButton": "다시 시작",
 			"rowsLabel": "행:",
 			"colsLabel": "열:",
 			"minesCountLabel": "지뢰 수:",
-			"winMessage": "축하합니다, 당신이 이겼습니다!",
+			"winMessage": "축하합니다, 승리하셨습니다!",
 			"loseMessage": "게임 오버, 지뢰를 밟았습니다!",
-			"soundOn": "소리 켜기",
-			"soundOff": "소리 끄기"
+			"soundOn": "소리 켜짐",
+			"soundOff": "소리 꺼짐"
 		}
 	},
 	"userSettings": {
 		"title": "사용자 설정",
 		"PageTitle": "사용자 설정",
-		"apiError": "API 요청 실패 : ${message}",
-		"generalError": "오류가 발생했습니다 : ${message}",
+		"apiError": "API 요청에 실패했습니다: ${message}",
+		"generalError": "오류가 발생했습니다: ${message}",
 		"userInfo": {
 			"title": "사용자 정보",
-			"usernameLabel": "사용자 이름 :",
-			"creationDateLabel": "계정 생성 날짜 :",
-			"folderSizeLabel": "사용자 데이터 크기 :",
-			"folderPathLabel": "사용자 데이터 경로 :",
-			"copyPathBtnTitle": "복사 경로",
-			"copiedAlert": "경로는 클립 보드에 복사되었습니다!"
+			"usernameLabel": "사용자 이름:",
+			"creationDateLabel": "계정 생성일:",
+			"folderSizeLabel": "사용자 데이터 크기:",
+			"folderPathLabel": "사용자 데이터 경로:",
+			"copyPathBtnTitle": "경로 복사",
+			"copiedAlert": "경로가 클립보드에 복사되었습니다!"
 		},
 		"changePassword": {
-			"title": "비밀번호를 수정하십시오",
-			"currentPasswordLabel": "현재 비밀번호 :",
-			"newPasswordLabel": "새 비밀번호 :",
-			"confirmNewPasswordLabel": "새 비밀번호 확인 :",
-			"submitButton": "비밀번호를 수정하십시오",
-			"errorMismatch": "새 비밀번호는 일관되지 않게 두 번 입력됩니다.",
-			"success": "비밀번호 수정이 성공적이었습니다."
+			"title": "비밀번호 변경",
+			"currentPasswordLabel": "현재 비밀번호:",
+			"newPasswordLabel": "새 비밀번호:",
+			"confirmNewPasswordLabel": "새 비밀번호 확인:",
+			"submitButton": "비밀번호 변경",
+			"errorMismatch": "새 비밀번호가 일치하지 않습니다.",
+			"success": "비밀번호가 성공적으로 변경되었습니다."
 		},
 		"renameUser": {
-			"title": "사용자 이름을 바꿉니다",
-			"newUsernameLabel": "새로운 사용자 이름 :",
-			"submitButton": "사용자 이름을 바꿉니다",
-			"confirmMessage": "사용자 이름을 변경 하시겠습니까? 다시 로그인해야합니다.",
-			"success": "사용자의 이름은 \"${newUsername}\"로 성공적으로 바뀌 었습니다. 이제 로그 아웃됩니다."
+			"title": "사용자 이름 변경",
+			"newUsernameLabel": "새 사용자 이름:",
+			"submitButton": "사용자 이름 변경",
+			"confirmMessage": "사용자 이름을 변경하시겠습니까? 변경 후 다시 로그인해야 합니다.",
+			"success": "사용자 이름이 \"${newUsername}\"(으)로 성공적으로 변경되었습니다. 이제 로그아웃됩니다."
 		},
 		"userDevices": {
-			"title": "사용자 장비/세션",
-			"refreshButtonTitle": "목록을 새로 고치십시오",
-			"noDevicesFound": "장치 나 세션이 발견되지 않았습니다.",
-			"deviceInfo": "장치 ID : ${deviceId}",
-			"thisDevice": "현재 장비",
-			"deviceDetails": "마지막 온라인 : ${lastSeen} | IP : ${ipAddress} | UA : ${userAgent}",
-			"revokeButton": "취소",
-			"revokeConfirm": "이 장치/세션에서 로그 아웃 하시겠습니까?",
-			"revokeSuccess": "장치/세션이 성공적으로 취소되었습니다."
+			"title": "사용자 기기/세션",
+			"refreshButtonTitle": "목록 새로고침",
+			"noDevicesFound": "기기 또는 세션이 없습니다.",
+			"deviceInfo": "기기 ID: ${deviceId}",
+			"thisDevice": "이 기기",
+			"deviceDetails": "마지막 접속: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
+			"revokeButton": "해지",
+			"revokeConfirm": "이 기기/세션에서 로그아웃하시겠습니까?",
+			"revokeSuccess": "기기/세션이 성공적으로 해지되었습니다."
 		},
 		"logout": {
-			"title": "로그 아웃하십시오",
-			"description": "이것은 현재 장치에서 계정에서 로그 아웃됩니다.",
-			"buttonText": "로그 아웃하십시오",
-			"confirmMessage": "로그 아웃 하시겠습니까?",
-			"successMessage": "성공적으로 로그 아웃하십시오. 곧 로그인 페이지로 이동할 것입니다 ..."
+			"title": "로그아웃",
+			"description": "현재 기기에서 계정을 로그아웃합니다.",
+			"buttonText": "로그아웃",
+			"confirmMessage": "로그아웃하시겠습니까?",
+			"successMessage": "성공적으로 로그아웃되었습니다. 잠시 후 로그인 페이지로 이동합니다..."
 		},
 		"deleteAccount": {
-			"title": "계정을 삭제하십시오",
-			"warning": "경고 :이 조치는 계정과 모든 관련 데이터를 영구적으로 삭제하며 복원 할 수 없습니다.",
-			"submitButton": "내 계정을 삭제하십시오",
-			"confirmMessage1": "경고하다! 계정을 영구적으로 삭제 하시겠습니까? 이 작업은 취소 할 수 없습니다.",
-			"confirmMessage2": "삭제를 확인하려면 사용자 이름 \"${username}\"을 입력하십시오.",
-			"usernameMismatch": "입력 된 사용자 이름은 현재 사용자와 일치하지 않습니다. 삭제 작업이 취소되었습니다.",
-			"success": "계정이 성공적으로 삭제되었습니다. 이제 로그 아웃됩니다."
+			"title": "계정 삭제",
+			"warning": "경고: 이 작업은 계정과 모든 관련 데이터를 영구적으로 삭제하며 복구할 수 없습니다.",
+			"submitButton": "내 계정 삭제",
+			"confirmMessage1": "경고! 계정을 영구적으로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+			"confirmMessage2": "삭제를 확인하려면 사용자 이름 \"${username}\"을(를) 입력하세요:",
+			"usernameMismatch": "입력한 사용자 이름이 현재 사용자와 일치하지 않습니다. 삭제 작업이 취소되었습니다.",
+			"success": "계정이 성공적으로 삭제되었습니다. 이제 로그아웃됩니다."
 		},
 		"passwordConfirm": {
-			"title": "작업을 확인하십시오",
-			"message": "이를 계속하려면 현재 비밀번호를 입력하십시오.",
+			"title": "작업 확인",
+			"message": "계속하려면 현재 비밀번호를 입력하세요:",
 			"passwordLabel": "비밀번호:",
-			"confirmButton": "확인하다",
+			"confirmButton": "확인",
 			"cancelButton": "취소"
 		}
 	}
