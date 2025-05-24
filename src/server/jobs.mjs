@@ -3,6 +3,7 @@ import { getAllUserNames } from './auth.mjs'
 import { save_config } from './server.mjs'
 import { loadPart } from './managers/index.mjs'
 import { events } from './events.mjs'
+import { geti18n } from '../scripts/i18n.mjs'
 
 export function StartJob(username, parttype, partname, uid, data = null) {
 	const jobs = getUserByUsername(username).jobs ??= {}

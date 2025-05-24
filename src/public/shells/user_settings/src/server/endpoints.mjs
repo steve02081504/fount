@@ -83,7 +83,7 @@ export function setEndpoints(router) {
 		if (!currentPassword || !newPassword) return res.status(400).json({ success: false, message: 'Missing fields.' })
 
 		const result = await changeUserPassword(user.username, currentPassword, newPassword)
-		res.status(result.success ? 200 : result.message.includes('Invalid current password') ? 401 : 400 ).json(result)
+		res.status(result.success ? 200 : result.message.includes('Invalid current password') ? 401 : 400).json(result)
 	})
 
 	router.get('/api/shells/user_settings/devices', authenticate, async (req, res) => {
@@ -107,7 +107,7 @@ export function setEndpoints(router) {
 			lastSeen: token.lastSeen || (token.expiry - ms(REFRESH_TOKEN_EXPIRY_DURATION)),
 			ipAddress: token.ipAddress,
 			userAgent: token.userAgent,
-		})).sort((a,b) => (b.lastSeen || 0) - (a.lastSeen || 0) )
+		})).sort((a, b) => (b.lastSeen || 0) - (a.lastSeen || 0))
 
 		res.json({ success: true, devices })
 	})
@@ -119,7 +119,7 @@ export function setEndpoints(router) {
 		if (!tokenJti || !password) return res.status(400).json({ success: false, message: 'Token JTI and password required.' })
 
 		const result = await revokeUserDeviceByJti(user.username, tokenJti, password)
-		res.status(result.success ? 200 : result.message.includes('Invalid password') ? 401 : 400 ).json(result)
+		res.status(result.success ? 200 : result.message.includes('Invalid password') ? 401 : 400).json(result)
 	})
 
 	router.post('/api/shells/user_settings/rename_user', authenticate, async (req, res) => {
@@ -133,7 +133,7 @@ export function setEndpoints(router) {
 			res.clearCookie('accessToken', { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax' })
 			res.clearCookie('refreshToken', { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax' })
 		}
-		res.status(result.success ? 200 : result.message.includes('Invalid password') ? 401 : 400 ).json(result)
+		res.status(result.success ? 200 : result.message.includes('Invalid password') ? 401 : 400).json(result)
 	})
 
 	router.post('/api/shells/user_settings/delete_account', authenticate, async (req, res) => {
@@ -147,7 +147,7 @@ export function setEndpoints(router) {
 			res.clearCookie('accessToken', { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax' })
 			res.clearCookie('refreshToken', { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax' })
 		}
-		res.status(result.success ? 200 : result.message.includes('Invalid password') ? 401 : 400 ).json(result)
+		res.status(result.success ? 200 : result.message.includes('Invalid password') ? 401 : 400).json(result)
 	})
 
 	// 新增：登出API端点

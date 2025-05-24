@@ -692,7 +692,6 @@
 		"PageTitle": "用户设置",
 		"apiError": "API 请求失败: ${message}",
 		"generalError": "发生错误: ${message}",
-
 		"userInfo": {
 			"title": "用户信息",
 			"usernameLabel": "用户名:",
@@ -702,7 +701,6 @@
 			"copyPathBtnTitle": "复制路径",
 			"copiedAlert": "路径已复制到剪贴板！"
 		},
-
 		"changePassword": {
 			"title": "修改密码",
 			"currentPasswordLabel": "当前密码:",
@@ -712,7 +710,6 @@
 			"errorMismatch": "新密码两次输入不一致。",
 			"success": "密码修改成功。"
 		},
-
 		"renameUser": {
 			"title": "重命名用户",
 			"newUsernameLabel": "新用户名:",
@@ -720,7 +717,6 @@
 			"confirmMessage": "您确定要更改用户名吗？这将需要您重新登录。",
 			"success": "用户已成功重命名为 “${newUsername}”。您现在将被注销。"
 		},
-
 		"userDevices": {
 			"title": "用户设备/会话",
 			"refreshButtonTitle": "刷新列表",
@@ -732,15 +728,13 @@
 			"revokeConfirm": "您确定要从此设备/会话注销吗？",
 			"revokeSuccess": "设备/会话已成功撤销。"
 		},
-
 		"logout": {
 			"title": "登出",
 			"description": "这将从当前设备注销您的账户。",
 			"buttonText": "登出",
 			"confirmMessage": "您确定要登出吗？",
-      		"successMessage": "已成功登出。即将跳转到登录页面..."
+			"successMessage": "已成功登出。即将跳转到登录页面..."
 		},
-
 		"deleteAccount": {
 			"title": "删除账户",
 			"warning": "警告：此操作将永久删除您的账户和所有相关数据，且无法恢复。",
@@ -750,7 +744,6 @@
 			"usernameMismatch": "输入的用户名与当前用户不匹配。删除操作已取消。",
 			"success": "账户已成功删除。您现在将被注销。"
 		},
-
 		"passwordConfirm": {
 			"title": "确认操作",
 			"message": "为继续此操作，请输入您的当前密码：",

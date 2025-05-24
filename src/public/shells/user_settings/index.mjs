@@ -69,7 +69,7 @@ el.passwordConfirmationModal.addEventListener('close', () => {
 async function loadUserInfo() {
 	try {
 		const stats = await api.getUserStats()
-		if (!stats.success) throw new Error(stats.message || geti18n('userSettings.apiError', {message: 'Failed to load user info'}))
+		if (!stats.success) throw new Error(stats.message || geti18n('userSettings.apiError', { message: 'Failed to load user info' }))
 
 		el.userInfoUsername.textContent = stats.username
 		el.userInfoCreationDate.textContent = new Date(stats.creationDate).toLocaleDateString()
@@ -84,9 +84,9 @@ el.copyFolderPathBtn.addEventListener('click', async () => {
 	try {
 		await navigator.clipboard.writeText(el.userInfoFolderPath.textContent)
 		showAlert('userSettings.userInfo.copiedAlert', 'success')
-	} catch(err) {
+	} catch (err) {
 		console.error('Failed to copy path: ', err)
-		showAlert('userSettings.generalError', 'error', 5000, { message: 'Failed to copy path.'})
+		showAlert('userSettings.generalError', 'error', 5000, { message: 'Failed to copy path.' })
 	}
 })
 
@@ -102,7 +102,7 @@ el.changePasswordForm.addEventListener('submit', async (event) => {
 
 	try {
 		const result = await api.changePassword(currentPassword, newPassword)
-		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', {message: 'Password change failed'}))
+		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Password change failed' }))
 
 		showAlert('userSettings.changePassword.success', 'success')
 		form.reset()
@@ -122,7 +122,7 @@ el.renameUserForm.addEventListener('submit', async (event) => {
 	try {
 		const password = await requestPasswordConfirmation()
 		const result = await api.renameUser(newUsername, password)
-		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', {message: 'Rename user failed'}))
+		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Rename user failed' }))
 
 		showAlert('userSettings.renameUser.success', 'success', 5000, { newUsername })
 		form.reset()
@@ -139,7 +139,7 @@ async function loadAndDisplayDevices() {
 
 	try {
 		const result = await api.getDevices()
-		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', {message: 'Failed to load devices'}))
+		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Failed to load devices' }))
 
 		el.deviceList.innerHTML = ''
 		if (result.devices.length === 0) {
@@ -189,7 +189,7 @@ async function loadAndDisplayDevices() {
 					try {
 						const password = await requestPasswordConfirmation()
 						const revokeResult = await api.revokeDevice(device.jti, password)
-						if (!revokeResult.success) throw new Error(revokeResult.message || geti18n('userSettings.apiError', {message: 'Revoke failed'}))
+						if (!revokeResult.success) throw new Error(revokeResult.message || geti18n('userSettings.apiError', { message: 'Revoke failed' }))
 						showAlert('userSettings.userDevices.revokeSuccess', 'success')
 						loadAndDisplayDevices()
 					} catch (error) {
@@ -217,7 +217,7 @@ el.logoutBtn.addEventListener('click', async () => {
 
 	try {
 		const result = await api.logoutUser() // 调用新的API端点
-		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', {message: 'Logout failed'}))
+		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Logout failed' }))
 
 		// 登出成功，显示短暂消息并重定向
 		showAlert('userSettings.logout.successMessage', 'success', 2000)
@@ -244,7 +244,7 @@ el.deleteAccountBtn.addEventListener('click', async () => {
 	try {
 		const password = await requestPasswordConfirmation()
 		const result = await api.deleteAccount(password)
-		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', {message: 'Delete account failed'}))
+		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Delete account failed' }))
 
 		showAlert('userSettings.deleteAccount.success', 'success', 5000)
 		setTimeout(() => window.location.href = '/login', 3000)

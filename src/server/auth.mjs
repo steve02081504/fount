@@ -730,10 +730,3 @@ setInterval(() => {
 	cleanupRevokedTokens()
 	cleanupRefreshTokens()
 }, ms('1h'))
-
-// 确保在应用启动时至少运行一次清理（尤其是在长时间停机后）
-// initAuth 调用后执行，或者单独导出并由主应用调用
-export function runInitialCleanup() {
-	cleanupRevokedTokens()
-	cleanupRefreshTokens()
-}
