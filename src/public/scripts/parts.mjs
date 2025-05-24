@@ -1,3 +1,7 @@
+export async function getPartList(partType) {
+	const response = await fetch('/api/getlist/' + partType)
+	return response.json()
+}
 export async function getCharList() {
 	const response = await fetch('/api/getlist/chars')
 	return response.json()

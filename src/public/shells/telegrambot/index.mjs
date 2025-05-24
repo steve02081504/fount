@@ -1,6 +1,18 @@
 import { createJsonEditor } from '../../scripts/jsoneditor.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 import { initTranslations, geti18n, i18nElement } from '../../scripts/i18n.mjs'
+import { getPartList } from '../../scripts/parts.mjs'
+import {
+	getBotList,
+	getBotConfig,
+	setBotConfig,
+	deleteBotConfig,
+	newBotConfig,
+	startBot,
+	stopBot,
+	getRunningBotList,
+	getBotConfigTemplate
+} from './src/public/endpoints.mjs'
 
 const configEditorContainer = document.getElementById('config-editor')
 
@@ -21,87 +33,6 @@ let botList = []
 let charList = []
 let selectedBot = null
 let isDirty = false // 标记是否有未保存的更改
-
-// 抽象的 API 请求函数
-async function fetchData(url, options = {}) {
-	const response = await fetch(url, options)
-	if (!response.ok) {
-		const data = await response.json().catch(() => null)
-		throw new Error(data?.message || `${geti18n('telegram_bots.alerts.httpError')}! status: ${response.status}`)
-	}
-	return await response.json()
-}
-
-// API 请求函数
-async function botListGet() {
-	return await fetchData('/api/shells/telegrambot/getbotlist')
-}
-
-async function charListGet() {
-	return await fetchData('/api/getlist/chars')
-}
-
-async function botConfigGet(botname) {
-	return await fetchData(`/api/shells/telegrambot/getbotconfig?botname=${botname}`)
-}
-
-async function botConfigSet(botname, config) {
-	await fetchData('/api/shells/telegrambot/setbotconfig', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ botname, config }),
-	})
-}
-
-async function botConfigDelete(botname) {
-	await fetchData('/api/shells/telegrambot/deletebotconfig', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ botname }),
-	})
-}
-
-async function botConfigNew(botname) {
-	await fetchData('/api/shells/telegrambot/newbotconfig', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ botname }),
-	})
-}
-
-async function botStart(botname) {
-	await fetchData('/api/shells/telegrambot/start', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ botname }),
-	})
-}
-
-async function botStop(botname) {
-	await fetchData('/api/shells/telegrambot/stop', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ botname }),
-	})
-}
-
-async function runningBotListGet() {
-	return await fetchData('/api/shells/telegrambot/getrunningbotlist')
-}
-
-/**
- * 获取角色对应的配置模板
- * @param {string} charname 角色名称
- * @returns {Promise<object | null>} 配置模板
- */
-async function getBotConfigTemplate(charname) {
-	const response = await fetch(`/api/shells/telegrambot/getbotConfigTemplate?charname=${charname}`)
-	if (!response.ok) {
-		const message = await response.text()
-		throw new Error(`HTTP error! status: ${response.status}, message: ${message}`)
-	}
-	return await response.json()
-}
 
 // UI 更新函数
 function populateBotList() {
@@ -132,7 +63,7 @@ async function loadBotConfig(botname) {
 		}
 
 	selectedBot = botname
-	const config = await botConfigGet(botname)
+	const config = await getBotConfig(botname) // Use imported function
 	tokenInput.value = config.token || ''
 	charSelect.value = config.char || ''
 
@@ -169,8 +100,8 @@ async function handleNewBot() {
 		return
 	}
 
-	await botConfigNew(botname)
-	botList = await botListGet()
+	await newBotConfig(botname) // Use imported function
+	botList = await getBotList() // Use imported function
 	populateBotList()
 	botListSelect.value = botname
 	await loadBotConfig(botname)
@@ -185,8 +116,8 @@ async function handleDeleteBot() {
 
 	if (!confirm(geti18n('telegram_bots.alerts.confirmDeleteBot', { botname: selectedBot }))) return
 
-	await botConfigDelete(selectedBot)
-	botList = await botListGet()
+	await deleteBotConfig(selectedBot) // Use imported function
+	botList = await getBotList() // Use imported function
 	populateBotList()
 
 	if (botList.length > 0) {
@@ -206,7 +137,7 @@ async function handleDeleteBot() {
 async function handleCharSelectChange() {
 	if (isDirty)
 		if (!confirm(geti18n('telegram_bots.alerts.unsavedChanges'))) {
-			const currentConfig = await botConfigGet(selectedBot)
+			const currentConfig = await getBotConfig(selectedBot) // Use imported function
 			charSelect.value = currentConfig.char || '' // 如果取消则还原选择
 			return
 		}
@@ -247,7 +178,7 @@ async function handleSaveConfig() {
 	saveConfigButton.disabled = true
 
 	try {
-		await botConfigSet(selectedBot, config)
+		await setBotConfig(selectedBot, config) // Use imported function
 		console.log(geti18n('telegram_bots.alerts.configSaved'))
 		isDirty = false
 
@@ -272,15 +203,15 @@ async function handleStartStopBot() {
 	startStopBotButton.disabled = true
 
 	try {
-		const runningBots = await runningBotListGet()
+		const runningBots = await getRunningBotList() // Use imported function
 		const isRunning = runningBots.includes(selectedBot)
 		if (isRunning) {
-			await botStop(selectedBot)
+			await stopBot(selectedBot) // Use imported function
 			startStopStatusText.textContent = geti18n('telegram_bots.configCard.buttons.startBot')
 			startStopBotButton.classList.remove('btn-error')
 			startStopBotButton.classList.add('btn-success')
 		} else {
-			await botStart(selectedBot)
+			await startBot(selectedBot) // Use imported function
 			startStopStatusText.textContent = geti18n('telegram_bots.configCard.buttons.stopBot')
 			startStopBotButton.classList.remove('btn-success')
 			startStopBotButton.classList.add('btn-error')
@@ -305,7 +236,7 @@ async function updateStartStopButtonState() {
 		startStopBotButton.classList.add('btn-success')
 		return
 	}
-	const runningBots = await runningBotListGet()
+	const runningBots = await getRunningBotList() // Use imported function
 	if (runningBots.includes(selectedBot)) {
 		startStopStatusText.textContent = geti18n('telegram_bots.configCard.buttons.stopBot')
 		startStopBotButton.classList.remove('btn-success')
@@ -326,16 +257,16 @@ async function initializeFromURLParams() {
 	const botName = urlParams.get('name')
 	const charName = urlParams.get('char')
 
-	botList = await botListGet()
-	charList = await charListGet()
+	botList = await getBotList() // Use imported function
+	charList = await getPartList('chars') // Use getPartList
 	populateBotList()
 	populateCharList()
 
 	if (botName) {
 		if (!botList.includes(botName))
 			try {
-				await botConfigNew(botName)
-				botList = await botListGet()
+				await newBotConfig(botName) // Use imported function
+				botList = await getBotList() // Use imported function
 				populateBotList()
 			} catch (error) {
 				console.error('Failed to create new bot from URL parameter:', error)

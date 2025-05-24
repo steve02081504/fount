@@ -84,7 +84,7 @@ stderr: ${entry.error.includes('\n') ? '\n```\n' + entry.error + '\n```' : '`' +
 			files: [],
 			extension: {}
 		})
-		const Charname = (await getPartInfo(char_API,localhostLocales)).name
+		const Charname = (await getPartInfo(char_API, localhostLocales)).name
 		const AIsuggestion = await char_API.interfaces.chat.GetReply({
 			supported_functions: {
 				markdown: false,

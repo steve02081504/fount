@@ -639,7 +639,7 @@
 			"botExists": "El robot llamado \"${botname}\" ya existe, por favor use un nombre diferente.",
 			"unsavedChanges": "Tienes cambios no salvos. ¿Estás seguro de que quieres abandonar estos cambios?",
 			"configSaved": "¡La configuración se ha guardado con éxito!",
-			"httpError": "Error de solicitud de HTTP",
+			"httpError": "Error HTTP",
 			"beforeUnload": "Tienes cambios no salvos. ¿Estás seguro de que quieres salir de la página actual?"
 		}
 	},

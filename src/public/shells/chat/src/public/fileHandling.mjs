@@ -74,7 +74,7 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 		showDeleteButton: selectedFiles,
 	})
 	if (file.buffer.startsWith('file:')) {
-		file = {...file}
+		file = { ...file }
 		file.buffer = arrayBufferToBase64(await getfile(file.buffer))
 	}
 

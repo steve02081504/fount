@@ -639,7 +639,7 @@
 			"botExists": "名为 “${botname}” 的机器人已存在，请使用其他名称。",
 			"unsavedChanges": "您有未保存的更改。确定要放弃这些更改吗？",
 			"configSaved": "配置已成功保存！",
-			"httpError": "HTTP 请求错误",
+			"httpError": "HTTP 错误",
 			"beforeUnload": "您有未保存的更改。确定要离开当前页面吗？"
 		}
 	},

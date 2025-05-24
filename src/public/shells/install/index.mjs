@@ -1,6 +1,7 @@
 import { renderTemplate } from '../../scripts/template.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
+import { importFiles, importText } from './src/public/endpoints.mjs'
 
 applyTheme()
 
@@ -108,10 +109,7 @@ async function handleFileImport() {
 	for (const file of selectedFiles)
 		formData.append('files', file)
 
-	const response = await fetch('/api/shells/install/file', {
-		method: 'POST',
-		body: formData
-	})
+	const response = await importFiles(formData)
 
 	if (!response.ok) {
 		const result = await response.json()
@@ -125,13 +123,7 @@ async function handleTextImport() {
 	if (!text)
 		throw new Error(geti18n('import.errors.noTextContent'))
 
-	const response = await fetch('/api/shells/install/text', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify({ text })
-	})
+	const response = await importText(text)
 
 	if (!response.ok) {
 		const result = await response.json()

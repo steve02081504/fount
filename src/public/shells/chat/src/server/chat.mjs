@@ -495,7 +495,7 @@ async function addChatLogEntry(chatid, entry) {
 		await entry.timeSlice.world.interfaces.chat.AfterAddChatLogEntry(await getChatRequest(chatid, undefined), freq_data)
 	else {
 		let char = entry.timeSlice.charname ?? null
-		; (async () => {
+			; (async () => {
 			while (true) {
 				freq_data = freq_data.filter(f => f.charname !== char)
 				const nextreply = await getNextCharForReply(freq_data)
