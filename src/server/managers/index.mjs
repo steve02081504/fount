@@ -6,7 +6,7 @@ import { loadAIsource, loadAIsourceGenerator, unloadAIsource, unloadAIsourceGene
 import { LoadImportHandler, UnloadImportHandler } from '../../public/shells/install/src/server/importHandler_manager.mjs'
 import { loadWorld, unloadWorld } from './world_manager.mjs'
 import { on_shutdown, shutdown } from '../on_shutdown.mjs'
-import { events } from "../events.mjs";
+import { events } from '../events.mjs'
 
 export const partsList = [
 	'shells', 'chars', 'personas', 'worlds', 'AIsources', 'AIsourceGenerators',

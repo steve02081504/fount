@@ -146,10 +146,10 @@ async function refresh(refreshTokenValue, req) {
 		// (可选) 滚动刷新 Refresh Token：生成新的 Refresh Token，并使旧的失效
 		// 为了简化，并减少客户端状态管理，这里可以不滚动刷新 Refresh Token，而是沿用旧的，直到它过期
 		// 如果决定滚动：
-		const newRefreshToken = await generateRefreshToken({ username: decoded.username, userId: decoded.userId }, userRefreshTokenEntry.deviceId, req);
-		const decodedNewRefreshToken = jose.decodeJwt(newRefreshToken);
+		const newRefreshToken = await generateRefreshToken({ username: decoded.username, userId: decoded.userId }, userRefreshTokenEntry.deviceId, req)
+		const decodedNewRefreshToken = jose.decodeJwt(newRefreshToken)
 		// 移除旧的 refreshToken，添加新的 refreshToken
-		user.auth.refreshTokens = user.auth.refreshTokens.filter((token) => token.jti !== decoded.jti);
+		user.auth.refreshTokens = user.auth.refreshTokens.filter((token) => token.jti !== decoded.jti)
 		user.auth.refreshTokens.push({
 			jti: decodedNewRefreshToken.jti,
 			deviceId: userRefreshTokenEntry.deviceId,
@@ -157,9 +157,9 @@ async function refresh(refreshTokenValue, req) {
 			ipAddress: req?.ip,
 			userAgent: req?.headers?.['user-agent'],
 			lastSeen: Date.now()
-		});
-		save_config();
-		return { status: 200, success: true, accessToken, refreshToken: newRefreshToken };
+		})
+		save_config()
+		return { status: 200, success: true, accessToken, refreshToken: newRefreshToken }
 	} catch (error) {
 		console.error(await geti18n('fountConsole.auth.refreshTokenError', { error: error.message }))
 		return { status: 401, success: false, message: 'Error refreshing token' }
@@ -222,14 +222,13 @@ export async function authenticate(req, res, next) {
 
 	if (!accessToken) return Unauthorized()
 
-	// 本地 IP 特权（如果需要，但通常不推荐完全跳过验证）
-	// if (is_local_ip_from_req(req)) {
-	//     const decoded = await jose.decodeJwt(accessToken); // 仅解码
-	//     if (decoded && config.data.users[decoded.username]) {
-	//         req.user = { username: decoded.username, userId: decoded.userId || config.data.users[decoded.username].auth.userId };
-	//         return next();
-	//     }
-	// }
+	if (is_local_ip_from_req(req)) {
+		const decoded = await jose.decodeJwt(accessToken)
+		if (decoded && config.data.users[decoded.username]) {
+			req.user = { username: decoded.username, userId: decoded.userId || config.data.users[decoded.username].auth.userId }
+			return next()
+		}
+	}
 
 	let decodedAccessToken = await verifyToken(accessToken)
 
