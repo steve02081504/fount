@@ -100,7 +100,7 @@ export async function init() {
 
 	config = get_config()
 	hosturl = 'http://localhost:' + config.port
-	initAuth(config)
+	initAuth()
 
 	const { IPCManager } = await import('./ipc_server.mjs')
 	if (!await new IPCManager().startServer()) return false

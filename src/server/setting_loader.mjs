@@ -1,4 +1,5 @@
 import { getUserDictionary } from './auth.mjs'
+import { events } from './events.mjs'
 import { saveJsonFile, loadJsonFileIfExists } from '../scripts/json_loader.mjs'
 import { on_shutdown } from './on_shutdown.mjs'
 import fs from 'node:fs'
@@ -54,3 +55,37 @@ export function loadTempData(username, dataname) {
 	return userTempDataSet[username][dataname] ??= {}
 }
 // 无需保存 :)
+
+// Event Handlers
+events.on('AfterUserDeleted', ({ username }) => {
+	if (userDataSet[username]) {
+		delete userDataSet[username]
+		console.log(`SettingLoader: Cleared userDataSet cache for ${username}`)
+	}
+	if (userShellDataSet[username]) {
+		delete userShellDataSet[username]
+		console.log(`SettingLoader: Cleared userShellDataSet cache for ${username}`)
+	}
+	if (userTempDataSet[username]) {
+		delete userTempDataSet[username]
+		console.log(`SettingLoader: Cleared userTempDataSet cache for ${username}`)
+	}
+})
+
+events.on('AfterUserRenamed', ({ oldUsername, newUsername }) => {
+	if (userDataSet[oldUsername]) {
+		userDataSet[newUsername] = userDataSet[oldUsername]
+		delete userDataSet[oldUsername]
+		console.log(`SettingLoader: Migrated userDataSet cache from ${oldUsername} to ${newUsername}`)
+	}
+	if (userShellDataSet[oldUsername]) {
+		userShellDataSet[newUsername] = userShellDataSet[oldUsername]
+		delete userShellDataSet[oldUsername]
+		console.log(`SettingLoader: Migrated userShellDataSet cache from ${oldUsername} to ${newUsername}`)
+	}
+	if (userTempDataSet[oldUsername]) {
+		userTempDataSet[newUsername] = userTempDataSet[oldUsername]
+		delete userTempDataSet[oldUsername]
+		console.log(`SettingLoader: Migrated userTempDataSet cache from ${oldUsername} to ${newUsername}`)
+	}
+})

@@ -7,17 +7,22 @@ import path from 'node:path'
 import argon2 from 'npm:argon2'
 import { ms } from '../scripts/ms.mjs'
 import { geti18n } from '../scripts/i18n.mjs'
-import { is_local_ip_from_req } from '../scripts/ratelimit.mjs'
 import { loadJsonFile } from '../scripts/json_loader.mjs'
+import { events } from './events.mjs'
+import { is_local_ip_from_req } from '../scripts/ratelimit.mjs'
 
-const ACCESS_TOKEN_EXPIRY = '15m'
-const REFRESH_TOKEN_EXPIRY = '30d'
-const ACCOUNT_LOCK_TIME = '10m'
-const MAX_LOGIN_ATTEMPTS = 3
+const ACCESS_TOKEN_EXPIRY = '15m' // Access Token 有效期
+export const REFRESH_TOKEN_EXPIRY = '30d' // Refresh Token 有效期 (字符串形式)
+export const REFRESH_TOKEN_EXPIRY_DURATION = ms(REFRESH_TOKEN_EXPIRY) // Refresh Token 有效期 (毫秒数)
+const ACCOUNT_LOCK_TIME = '10m' // 账户锁定时间
+const MAX_LOGIN_ATTEMPTS = 5 // 最大登录尝试次数
 
-let privateKey, publicKey
+let privateKey, publicKey // 用于JWT签名的密钥对
 
-export async function initAuth(config) {
+/**
+ * 初始化认证模块，加载或生成密钥对
+ */
+export async function initAuth() { // config 参数已从全局 config 替代
 	if (!config.privateKey || !config.publicKey) {
 		const { privateKey: newPrivateKey, publicKey: newPublicKey } = crypto.generateKeyPairSync('ec', {
 			namedCurve: 'prime256v1',
@@ -48,9 +53,11 @@ export async function initAuth(config) {
 
 /**
  * 生成 JWT (Access Token)
+ * @param {object} payload - 令牌的有效载荷
+ * @returns {Promise<string>} Access Token
  */
 export async function generateAccessToken(payload) {
-	const jti = crypto.randomUUID() // Generate a unique identifier for the access token
+	const jti = crypto.randomUUID() // 为 Access Token 生成唯一标识符
 	return await new jose.SignJWT({ ...payload, jti })
 		.setProtectedHeader({ alg: 'ES256' })
 		.setIssuedAt()
@@ -62,10 +69,17 @@ export async function generateAccessToken(payload) {
  * 生成刷新令牌 (Refresh Token)
  * @param {object} payload - 令牌的有效载荷
  * @param {string} deviceId - 设备的唯一标识符
+ * @returns {Promise<string>} Refresh Token
  */
 async function generateRefreshToken(payload, deviceId = 'unknown') {
-	const refreshTokenId = crypto.randomUUID()
-	return await new jose.SignJWT({ ...payload, jti: refreshTokenId, deviceId })
+	const refreshTokenId = crypto.randomUUID() // JTI for refresh token
+	const tokenPayload = {
+		...payload,
+		jti: refreshTokenId,
+		deviceId,
+	}
+	// 不直接在 JWT payload 中存储 IP 和 UserAgent，这些信息存储在服务器端的 refreshTokens 数组中
+	return await new jose.SignJWT(tokenPayload)
 		.setProtectedHeader({ alg: 'ES256' })
 		.setIssuedAt()
 		.setExpirationTime(REFRESH_TOKEN_EXPIRY)
@@ -74,12 +88,19 @@ async function generateRefreshToken(payload, deviceId = 'unknown') {
 
 /**
  * 验证 JWT (包括 Access Token 和 Refresh Token)
+ * @param {string} token - 要验证的 JWT
+ * @returns {Promise<object|null>} 解码后的 payload 或 null
  */
 async function verifyToken(token) {
 	try {
 		const { payload } = await jose.jwtVerify(token, publicKey, {
 			algorithms: ['ES256'],
 		})
+		// 检查令牌是否已被撤销 (针对 access token 和 refresh token 统一检查)
+		if (config.data.revokedTokens[payload.jti]) {
+			console.warn(await geti18n('fountConsole.auth.tokenRevoked', { jti: payload.jti }))
+			return null
+		}
 		return payload
 	} catch (error) {
 		console.error(await geti18n('fountConsole.auth.tokenVerifyError', { error }))
@@ -89,240 +110,497 @@ async function verifyToken(token) {
 
 /**
  * 刷新 Access Token
+ * @param {string} refreshTokenValue - 客户端传入的 Refresh Token
+ * @param {object} req - Express 请求对象, 用于获取 IP 和 User-Agent
+ * @returns {Promise<object>} 包含状态码、新令牌或错误消息的对象
  */
-async function refresh(refreshToken) {
+async function refresh(refreshTokenValue, req) {
 	try {
-		const decoded = await verifyToken(refreshToken)
-		if (!decoded) return { status: 401, message: 'Invalid refresh token' }
+		const decoded = await verifyToken(refreshTokenValue) // verifyToken 内部已检查全局 revokedTokens
+		if (!decoded) return { status: 401, success: false, message: 'Invalid or revoked refresh token' }
 
 		const user = getUserByUsername(decoded.username)
-		const userRefreshToken = user?.auth.refreshTokens.find((token) => token.jti === decoded.jti)
+		if (!user || !user.auth || !user.auth.refreshTokens)
+			return { status: 401, success: false, message: 'User not found or refresh tokens unavailable' }
 
-		// 验证 refreshToken 是否存在、是否被撤销以及 deviceId 是否匹配（过期问题已被verifyToken验证）
-		if (!user || !userRefreshToken || config.data.revokedTokens[decoded.jti] || userRefreshToken.deviceId !== decoded.deviceId)
-			return { status: 401, message: 'Invalid refresh token' }
+		const userRefreshTokenEntry = user.auth.refreshTokens.find((token) => token.jti === decoded.jti)
 
-		// 生成新的 access token 和 refresh token
+		// 再次验证 refreshToken 是否存在于用户记录中，以及 deviceId 是否匹配
+		if (!userRefreshTokenEntry || userRefreshTokenEntry.deviceId !== decoded.deviceId) {
+			// 如果 JTI 存在于用户记录中但 deviceId 不匹配，这可能是一个安全问题，撤销该 JTI
+			if (userRefreshTokenEntry)
+				await revokeToken(refreshTokenValue, 'refresh-device-mismatch')
+
+			return { status: 401, success: false, message: 'Refresh token not found for user or device mismatch' }
+		}
+
+		// 更新 lastSeen, ipAddress, userAgent for the current token entry
+		userRefreshTokenEntry.lastSeen = Date.now()
+		if (req?.ip) userRefreshTokenEntry.ipAddress = req.ip
+		if (req?.headers?.['user-agent']) userRefreshTokenEntry.userAgent = req.headers['user-agent']
+
+		// 生成新的 access token
 		const accessToken = await generateAccessToken({ username: decoded.username, userId: decoded.userId })
-		const newRefreshToken = await generateRefreshToken({ username: decoded.username, userId: decoded.userId }, userRefreshToken.deviceId)
-		const decodedNewRefreshToken = jose.decodeJwt(newRefreshToken) // 解码 newRefreshToken
 
+		// (可选) 滚动刷新 Refresh Token：生成新的 Refresh Token，并使旧的失效
+		// 为了简化，并减少客户端状态管理，这里可以不滚动刷新 Refresh Token，而是沿用旧的，直到它过期
+		// 如果决定滚动：
+		const newRefreshToken = await generateRefreshToken({ username: decoded.username, userId: decoded.userId }, userRefreshTokenEntry.deviceId)
+		const decodedNewRefreshToken = jose.decodeJwt(newRefreshToken)
 		// 移除旧的 refreshToken，添加新的 refreshToken
 		user.auth.refreshTokens = user.auth.refreshTokens.filter((token) => token.jti !== decoded.jti)
 		user.auth.refreshTokens.push({
 			jti: decodedNewRefreshToken.jti,
-			deviceId: userRefreshToken.deviceId,
-			expiry: Date.now() + ms(REFRESH_TOKEN_EXPIRY),
+			deviceId: userRefreshTokenEntry.deviceId,
+			expiry: decodedNewRefreshToken.exp * 1000, // 从JWT payload获取过期时间
+			ipAddress: req?.ip,
+			userAgent: req?.headers?.['user-agent'],
+			lastSeen: Date.now()
 		})
 		save_config()
-
-		return { status: 200, accessToken, refreshToken: newRefreshToken }
+		return { status: 200, success: true, accessToken, refreshToken: newRefreshToken }
 	} catch (error) {
-		console.error(await geti18n('fountConsole.auth.refreshTokenError', { error }))
-		return { status: 401, message: 'Invalid refresh token' }
+		console.error(await geti18n('fountConsole.auth.refreshTokenError', { error: error.message }))
+		return { status: 401, success: false, message: 'Error refreshing token' }
 	}
 }
 
 /**
  * 用户登出
+ * @param {object} req - Express 请求对象
+ * @param {object} res - Express 响应对象
  */
 export async function logout(req, res) {
-	const { user, cookies: { accessToken, refreshToken } } = req
+	const { cookies: { accessToken, refreshToken } } = req
+	const user = await getUserByReq(req) // 使用 getUserByReq 获取用户信息
 
-	if (accessToken) {
-		// 将 accessToken 添加到 revokedTokens 中
-		const decodedAccessToken = await jose.decodeJwt(accessToken)
-		if (decodedAccessToken && decodedAccessToken.exp)
-			config.data.revokedTokens[decodedAccessToken.jti] = { expiry: decodedAccessToken.exp * 1000, type: 'access' }
+	if (accessToken)
+		await revokeToken(accessToken, 'access-logout')
+
+
+	if (refreshToken && user) {
+		const userConfig = getUserByUsername(user.username) // 获取完整的用户配置
+		if (userConfig?.auth?.refreshTokens)
+			try {
+				const decodedRefreshToken = await jose.decodeJwt(refreshToken) // 仅解码，不验证，因为可能已过期但仍需从用户列表中移除
+				if (decodedRefreshToken?.jti) {
+					// 从用户的 refreshToken 列表中移除当前的 refreshToken
+					const tokenIndex = userConfig.auth.refreshTokens.findIndex((token) => token.jti === decodedRefreshToken.jti)
+					if (tokenIndex !== -1)
+						userConfig.auth.refreshTokens.splice(tokenIndex, 1)
+
+					// 将其添加到全局 revokedTokens
+					await revokeToken(refreshToken, 'refresh-logout')
+				}
+			} catch (error) {
+				console.error(await geti18n('fountConsole.auth.logoutRefreshTokenProcessError', { error: error.message }))
+			}
 	}
 
-	if (refreshToken && user)
-		try {
-			const decodedRefreshToken = await verifyToken(refreshToken)
-			if (decodedRefreshToken) {
-				// 从用户的 refreshToken 列表中移除当前的 refreshToken，并将其添加到 revokedTokens
-				const userRefreshTokenIndex = user.auth.refreshTokens.findIndex((token) => token.jti === decodedRefreshToken.jti)
-				if (userRefreshTokenIndex !== -1) {
-					user.auth.refreshTokens.splice(userRefreshTokenIndex, 1)
-					config.data.revokedTokens[decodedRefreshToken.jti] = { expiry: Date.now() + ms(REFRESH_TOKEN_EXPIRY), type: 'refresh' }
-				}
-			}
-		} catch (error) {
-			console.error(await geti18n('fountConsole.auth.logoutRefreshTokenProcessError', { error }))
-		}
-
-	res.clearCookie('accessToken')
-	res.clearCookie('refreshToken')
+	res.clearCookie('accessToken', { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax' })
+	res.clearCookie('refreshToken', { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax' })
 	save_config()
-	res.status(200).json({ message: 'Logout successful' })
+	res.status(200).json({ success: true, message: 'Logout successful' })
 }
 
 /**
  * 身份验证中间件
+ * @param {object} req - Express 请求对象
+ * @param {object} res - Express 响应对象
+ * @param {function} next - Express next middleware 函数
  */
 export async function authenticate(req, res, next) {
 	const { accessToken, refreshToken } = req.cookies
 
-	const Unauthorized = () => {
+	const Unauthorized = (message = 'Unauthorized') => {
 		const path = encodeURIComponent(req.originalUrl)
-		if (req.accepts('html')) return res.redirect('/login?redirect=' + path)
-		return res.status(401).json({ message: 'Unauthorized' })
+		if (req.accepts('html') && req.method === 'GET') return res.redirect(`/login?redirect=${path}`) // 只对GET HTML请求重定向
+		return res.status(401).json({ success: false, message })
 	}
+
 	if (!accessToken) return Unauthorized()
 
-	// 本地 IP
 	if (is_local_ip_from_req(req)) {
-		// 解密 accessToken而无需验证
 		const decoded = await jose.decodeJwt(accessToken)
-		if (config.data.users[decoded.username])
-			return next()
-		return Unauthorized()
+		req.user = config.data.users[decoded.username]
+		if (decoded && req.user) return next()
 	}
 
-	let decoded = await verifyToken(accessToken)
+	let decodedAccessToken = await verifyToken(accessToken)
 
-	if (!decoded) {
-		// accessToken 无效，尝试使用 refreshToken 刷新
-		if (!refreshToken) return Unauthorized()
+	if (!decodedAccessToken) {
+		// accessToken 无效或已过期，尝试使用 refreshToken 刷新
+		if (!refreshToken) return Unauthorized('Access token invalid, no refresh token provided.')
 
-		const refreshResult = await refresh(refreshToken)
-		if (refreshResult.status !== 200) {
+		const refreshResult = await refresh(refreshToken, req) // 传入 req
+		if (refreshResult.status !== 200 || !refreshResult.success) {
 			// refreshToken 也无效，需要重新登录
-			res.clearCookie('accessToken')
-			res.clearCookie('refreshToken')
-			return Unauthorized()
+			res.clearCookie('accessToken', { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax' })
+			res.clearCookie('refreshToken', { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax' })
+			return Unauthorized(refreshResult.message || 'Session expired, please login again.')
 		}
 
 		// 刷新成功，设置新的 accessToken 和 refreshToken 到 Cookie
-		const newAccessToken = refreshResult.accessToken
-		const newRefreshToken = refreshResult.refreshToken
-		res.cookie('accessToken', newAccessToken, { httpOnly: true, secure: false })
-		res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: false })
-		req.cookies.accessToken = newAccessToken
-		req.cookies.refreshToken = newRefreshToken
+		res.cookie('accessToken', refreshResult.accessToken, { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax' })
+		res.cookie('refreshToken', refreshResult.refreshToken, { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax' })
+
+		req.cookies.accessToken = refreshResult.accessToken // 更新当前请求的cookies对象，供后续逻辑使用
+		req.cookies.refreshToken = refreshResult.refreshToken // 如果滚动了，也更新
 
 		// 使用新的 accessToken 重新验证
-		decoded = await verifyToken(newAccessToken)
+		decodedAccessToken = await verifyToken(refreshResult.accessToken)
+		if (!decodedAccessToken) return Unauthorized('Failed to verify newly refreshed token.') // 安全检查
 	}
 
-	req.user = decoded
+	req.user = config.data.users[decodedAccessToken.username]
 	next()
 }
 
 /**
  * 撤销令牌 (将 Access Token 或 Refresh Token 添加到撤销列表)
+ * @param {string} token - 要撤销的令牌
+ * @param {string} typeSuffix - 撤销原因的后缀 (e.g., 'logout', 'manual')
  */
-async function revokeToken(token) {
-	const decoded = await jose.decodeJwt(token)
-	if (!decoded || !decoded.jti) return console.error(await geti18n('fountConsole.auth.revokeTokenNoJTI'))
-	const tokenType = decoded.exp ? decoded.exp * 1000 - Date.now() > ms(ACCESS_TOKEN_EXPIRY) ? 'refresh' : 'access' : 'unknown'
+async function revokeToken(token, typeSuffix = 'unknown') {
+	try {
+		const decoded = await jose.decodeJwt(token) // 仅解码以获取 jti 和 exp
+		if (!decoded || !decoded.jti) {
+			console.error(await geti18n('fountConsole.auth.revokeTokenNoJTI'))
+			return
+		}
 
-	if (decoded && decoded.exp) {
-		config.data.revokedTokens[decoded.jti] = { expiry: decoded.exp * 1000, type: tokenType }
+		const tokenType = decoded.exp ?
+			decoded.exp * 1000 - (decoded.iat ? decoded.iat * 1000 : Date.now() - ms('1m')) > ms(ACCESS_TOKEN_EXPIRY) + ms('1m') ? 'refresh' : 'access'
+			: 'unknown' // 尝试根据典型有效期猜测类型
+
+		const expiry = decoded.exp ? decoded.exp * 1000 : Date.now() + ms(REFRESH_TOKEN_EXPIRY) // 如果没有exp，假设是长期有效的需要被记录
+
+		config.data.revokedTokens[decoded.jti] = {
+			expiry,
+			type: `${tokenType}-${typeSuffix}`,
+			revokedAt: Date.now()
+		}
 		save_config()
+	} catch (e) {
+		console.error(`Error decoding token for revocation: ${e.message}`)
 	}
 }
 
 /**
- * 通过用户名获取用户信息
+ * 通过用户名获取完整的用户信息对象
+ * @param {string} username - 用户名
+ * @returns {object|undefined} 用户对象或 undefined
  */
 export function getUserByUsername(username) {
 	return config.data.users[username]
 }
 
+/**
+ * 获取所有用户名列表
+ * @returns {string[]}
+ */
 export function getAllUserNames() {
 	return Object.keys(config.data.users)
 }
 
+/**
+ * 获取所有用户对象的字典
+ * @returns {object}
+ */
 export function getAllUsers() {
 	return config.data.users
 }
 
 /**
  * 创建新用户
+ * @param {string} username - 用户名
+ * @param {string} password - 密码
+ * @returns {Promise<object>} 创建的用户对象 (包含 userId)
  */
 async function createUser(username, password) {
 	const hashedPassword = await hashPassword(password)
 	const userId = crypto.randomUUID()
+	const now = Date.now()
 	config.data.users[username] = {
 		username,
+		createdAt: now, // 添加 createdAt 字段
 		auth: {
 			userId,
 			password: hashedPassword,
 			loginAttempts: 0,
 			lockedUntil: null,
-			refreshTokens: [],
+			refreshTokens: [], // 初始化 refreshTokens 数组
 		},
-		...loadJsonFile(__dirname + '/default/templates/user.json'),
+		// 合并默认用户模板
+		...loadJsonFile(path.join(__dirname, 'default', 'templates', 'user.json')),
 	}
+
 	save_config()
-	return { ...config.data.users[username], userId }
+	return config.data.users[username]
 }
 
 /**
  * 使用 Argon2id 哈希密码
+ * @param {string} password - 明文密码
+ * @returns {Promise<string>} 哈希后的密码
  */
-async function hashPassword(password) {
+export async function hashPassword(password) {
 	return await argon2.hash(password, { type: argon2.argon2id })
 }
 
 /**
  * 验证密码
+ * @param {string} password - 用户输入的明文密码
+ * @param {string} hashedPassword - 存储的哈希密码
+ * @returns {Promise<boolean>} 密码是否匹配
  */
-async function verifyPassword(password, hashedPassword) {
+export async function verifyPassword(password, hashedPassword) {
+	if (!password || !hashedPassword) return false
 	return await argon2.verify(hashedPassword, password)
 }
 
-async function getUserByToken(token) {
+/**
+ * 修改用户密码
+ * @param {string} username - 用户名
+ * @param {string} currentPassword - 当前密码
+ * @param {string} newPassword - 新密码
+ * @returns {Promise<object>} 操作结果 { success: boolean, message: string }
+ */
+export async function changeUserPassword(username, currentPassword, newPassword) {
+	const user = getUserByUsername(username)
+	if (!user || !user.auth) return { success: false, message: 'User not found' }
+
+	const isValidPassword = await verifyPassword(currentPassword, user.auth.password)
+	if (!isValidPassword) return { success: false, message: 'Invalid current password' }
+
+	user.auth.password = await hashPassword(newPassword)
+	save_config()
+	return { success: true, message: 'Password changed successfully' }
+}
+
+
+/**
+ * 根据 JTI 撤销用户的某个设备（Refresh Token）
+ * 需要用户密码进行验证
+ * @param {string} username - 用户名
+ * @param {string} tokenJti - 要撤销的 Refresh Token 的 JTI
+ * @param {string} password - 用户密码，用于验证操作权限
+ * @returns {Promise<object>} 操作结果 { success: boolean, message: string }
+ */
+export async function revokeUserDeviceByJti(username, tokenJti, password) {
+	const user = getUserByUsername(username)
+	if (!user || !user.auth || !user.auth.refreshTokens)
+		return { success: false, message: 'User or device list not found' }
+
+
+	// 验证用户密码
+	const isValidPassword = await verifyPassword(password, user.auth.password)
+	if (!isValidPassword)
+		return { success: false, message: 'Invalid password for user action' }
+
+
+	const tokenIndex = user.auth.refreshTokens.findIndex(token => token.jti === tokenJti)
+	if (tokenIndex === -1)
+		return { success: false, message: 'Device (JTI) not found for this user' }
+
+
+	const revokedToken = user.auth.refreshTokens.splice(tokenIndex, 1)[0]
+	if (revokedToken && revokedToken.jti)
+		// 全局撤销这个JTI
+		config.data.revokedTokens[revokedToken.jti] = {
+			expiry: Date.now() + REFRESH_TOKEN_EXPIRY_DURATION, // 或使用 token.expiry
+			type: 'refresh-revoked-by-user-jti',
+			revokedAt: Date.now()
+		}
+
+
+	save_config()
+	return { success: true, message: 'Device access (JTI) revoked successfully' }
+}
+
+/**
+ * 删除用户账户及数据，需要密码验证
+ * @param {string} username - 要删除的用户名
+ * @param {string} password - 用户密码
+ * @returns {Promise<object>} 操作结果 { success: boolean, message: string }
+ */
+export async function deleteUserAccount(username, password) {
+	const user = getUserByUsername(username)
+	if (!user || !user.auth)
+		return { success: false, message: 'User not found.' }
+
+
+	const isValidPassword = await verifyPassword(password, user.auth.password)
+	if (!isValidPassword)
+		return { success: false, message: 'Invalid password for deleting account.' }
+
+	await events.emit('BeforeUserDeleted', { username })
+
+	// 撤销用户所有的 refresh tokens
+	if (user.auth.refreshTokens && user.auth.refreshTokens.length > 0)
+		user.auth.refreshTokens.forEach(token => {
+			if (token.jti)
+				config.data.revokedTokens[token.jti] = {
+					expiry: Date.now() + REFRESH_TOKEN_EXPIRY_DURATION,
+					type: 'refresh-revoked-account-delete',
+					revokedAt: Date.now()
+				}
+		})
+
+	// 从配置中删除用户数据
+	delete config.data.users[username]
+	save_config()
+
+	const userDirectoryPath = getUserDictionary(username) // 在从配置中删除用户前获取路径
+
+	// 删除用户数据目录
+	if (fs.existsSync(userDirectoryPath))
+		fs.rmSync(userDirectoryPath, { recursive: true, force: true })
+
+	await events.emit('AfterUserDeleted', { username })
+
+	return { success: true, message: 'User account deleted successfully. Associated data will be cleaned up.' }
+}
+
+/**
+ * 重命名用户账户，需要密码验证
+ * @param {string} currentUsername - 当前用户名
+ * @param {string} newUsername - 新用户名
+ * @param {string} password - 用户密码
+ * @returns {Promise<object>} 操作结果 { success: boolean, message: string }
+ */
+export async function renameUser(currentUsername, newUsername, password) {
+	const user = getUserByUsername(currentUsername)
+	if (!user || !user.auth)
+		return { success: false, message: 'Current user not found.' }
+
+
+	const isValidPassword = await verifyPassword(password, user.auth.password)
+	if (!isValidPassword)
+		return { success: false, message: 'Invalid password for renaming user.' }
+
+	if (currentUsername === newUsername)
+		return { success: false, message: 'New username must be different from the current one.' }
+
+	const oldUserConfigEntry = getUserByUsername(currentUsername)
+	if (!oldUserConfigEntry)
+		return { success: false, message: 'Current user not found' }
+
+	if (getUserByUsername(newUsername))
+		return { success: false, message: 'New username already exists' }
+
+	await events.emit('BeforeUserRenamed', { oldUsername: currentUsername, newUsername })
+
+	const oldUserPath = getUserDictionary(currentUsername) // 获取旧路径
+
+	// 深拷贝用户配置
+	const newUserConfigEntry = JSON.parse(JSON.stringify(oldUserConfigEntry))
+	newUserConfigEntry.username = newUsername // 更新用户名
+
+	const newUserPath = path.resolve(newUserConfigEntry.UserDictionary || path.join(__dirname, 'data', 'users', newUsername))
+
+	try {
+		if (fse.existsSync(oldUserPath))
+			if (oldUserPath.toLowerCase() !== newUserPath.toLowerCase()) { // 路径不同才移动
+				fse.ensureDirSync(path.dirname(newUserPath)) // 确保目标目录的父目录存在
+				fse.moveSync(oldUserPath, newUserPath, { overwrite: true })
+				console.log(`User data directory moved from ${oldUserPath} to ${newUserPath}`)
+			} else
+				console.log(`User data directory path is effectively the same (case-insensitive), no move needed: ${oldUserPath}`)
+
+		else {
+			console.warn(`Old user data directory not found: ${oldUserPath}. Nothing to move.`)
+			// 即使旧目录不存在，也应确保新目录存在
+			if (!fse.existsSync(newUserPath)) {
+				fse.ensureDirSync(newUserPath)
+				console.log(`Ensured new user data directory exists at: ${newUserPath}`)
+			}
+		}
+	} catch (error) {
+		console.error(`Error moving user data directory from ${oldUserPath} to ${newUserPath}:`, error)
+		// 如果移动失败，不应该保存配置更改，以避免数据和配置不一致
+		return { success: false, message: `Error moving user data directory: ${error.message}. Username change not saved.` }
+	}
+
+	// 更新配置
+	config.data.users[newUsername] = newUserConfigEntry
+	delete config.data.users[currentUsername]
+	save_config()
+
+	await events.emit('AfterUserRenamed', {
+		oldUsername: currentUsername,
+		newUsername,
+	})
+
+	return { success: true, message: 'Username renamed successfully and user data directory potentially moved.' }
+}
+
+
+/**
+ * 从请求中获取用户信息（username, userId）
+ * 依赖 authenticate 中间件已填充 req.user
+ * @param {object} req - Express 请求对象
+ * @returns {Promise<object|null>}
+ */
+export async function getUserByReq(req) {
+	if (req.user) return req.user
+
+	const token = req.cookies?.accessToken
 	if (!token) return null
 
-	const decoded = jose.decodeJwt(token)
+	const decoded = await jose.decodeJwt(token) // 不要使用 verifyToken
 	if (!decoded) return null
 
-	return config.data.users[decoded.username]
+	return req.user = config.data.users[decoded.username]
 }
 
+/**
+ * 获取用户的数据目录路径
+ * @param {string} username - 用户名
+ * @returns {string} 用户数据目录的绝对路径
+ */
 export function getUserDictionary(username) {
-	return path.resolve(config.data.users[username]?.UserDictionary || __dirname + '/data/users/' + username)
-}
-
-export function getUserByReq(req) {
-	return getUserByToken(req.cookies.accessToken)
+	const user = config.data.users[username]
+	return path.resolve(user?.UserDictionary || path.join(__dirname, 'data', 'users', username))
 }
 
 /**
  * 用户登录
+ * @param {string} username - 用户名
+ * @param {string} password - 密码
+ * @param {string} deviceId - 设备标识符，用于区分不同设备的会话
+ * @param {object} req - Express 请求对象, 用于获取 IP 和 User-Agent
+ * @returns {Promise<object>} 包含状态码、消息、令牌的对象
  */
-export async function login(username, password, deviceId = 'unknown') {
+export async function login(username, password, deviceId = 'unknown', req) {
 	const user = getUserByUsername(username)
-	if (!user) return { status: 404, message: 'User not found' }
+	if (!user) return { status: 404, success: false, message: 'User not found' }
 
 	const authData = user.auth
 
-	// 检查账户是否被锁定
-	if (authData.lockedUntil && authData.lockedUntil > Date.now())
-		return { status: 403, message: 'Account locked' }
+	if (authData.lockedUntil && authData.lockedUntil > Date.now()) {
+		const timeLeft = ms(authData.lockedUntil - Date.now(), { long: true })
+		return { status: 403, success: false, message: `Account locked. Try again in ${timeLeft}.` }
+	}
 
 	const isValidPassword = await verifyPassword(password, authData.password)
 	if (!isValidPassword) {
-		authData.loginAttempts++
+		authData.loginAttempts = (authData.loginAttempts || 0) + 1
 		if (authData.loginAttempts >= MAX_LOGIN_ATTEMPTS) {
 			authData.lockedUntil = Date.now() + ms(ACCOUNT_LOCK_TIME)
-			authData.loginAttempts = 0 // 达到最大尝试次数后重置尝试次数
-			// 账户锁定逻辑：如果登录尝试次数超过限制，锁定账户一段时间
-			// 此处记录日志或发送通知
+			authData.loginAttempts = 0 // 达到最大尝试次数后重置
+			save_config()
 			console.log(await geti18n('fountConsole.auth.accountLockedLog', { username }))
+			return { status: 403, success: false, message: `Account locked due to too many failed attempts. Try again in ${ms(ms(ACCOUNT_LOCK_TIME), { long: true })}.` }
 		}
 		save_config()
-		return { status: 401, message: 'Invalid password' }
+		return { status: 401, success: false, message: 'Invalid username or password' }
 	}
 
-	// 重置登录尝试次数
-	if (authData.loginAttempts !== 0 || authData.lockedUntil !== null) {
-		authData.loginAttempts = 0
-		authData.lockedUntil = null
-	}
+	authData.loginAttempts = 0
+	authData.lockedUntil = null
 
+	// 创建用户目录 (如果尚不存在)
 	const userdir = getUserDictionary(username)
 	if (!fs.existsSync(userdir)) try {
 		fs.mkdirSync(path.dirname(userdir), { recursive: true })
@@ -336,36 +614,43 @@ export async function login(username, password, deviceId = 'unknown') {
 
 	// 生成 access token 和 refresh token
 	const accessToken = await generateAccessToken({ username: user.username, userId: authData.userId })
-	const refreshToken = await generateRefreshToken({ username: user.username, userId: authData.userId }, deviceId)
-	const decodedRefreshToken = jose.decodeJwt(refreshToken) // 解码 refreshToken 以获取 jti
+	const refreshTokenString = await generateRefreshToken({ username: user.username, userId: authData.userId }, deviceId)
+	const decodedRefreshToken = jose.decodeJwt(refreshTokenString) // 解码 refreshToken 以获取 jti 和 exp
 
-	// 移除同一个设备上的旧的 refresh token
+	// 移除同一个设备上的旧的 refresh token (如果策略是每个设备只保留一个会话)
 	authData.refreshTokens = authData.refreshTokens.filter((token) => token.deviceId !== deviceId)
-	// 存储 refresh token
+
+	// 存储新的 refresh token 信息
 	authData.refreshTokens.push({
 		jti: decodedRefreshToken.jti,
 		deviceId,
-		expiry: Date.now() + ms(REFRESH_TOKEN_EXPIRY),
+		expiry: decodedRefreshToken.exp * 1000, // 从JWT payload获取过期时间 (秒转毫秒)
+		ipAddress: req?.ip,
+		userAgent: req?.headers?.['user-agent'],
+		lastSeen: Date.now()
 	})
 	save_config()
 
-	return { status: 200, message: 'Login successful', accessToken, refreshToken }
+	return { status: 200, success: true, message: 'Login successful', accessToken, refreshToken: refreshTokenString }
 }
 
 /**
  * 用户注册
+ * @param {string} username - 用户名
+ * @param {string} password - 密码
+ * @returns {Promise<object>} 包含状态码和用户信息的对象
  */
 export async function register(username, password) {
 	const existingUser = getUserByUsername(username)
-	if (existingUser?.auth)
-		return { status: 409, message: 'Username already exists' }
+	if (existingUser?.auth)  // 检查 .auth 是为了确保这是一个完整的用户记录，而不仅仅是配置中的某个键
+		return { status: 409, success: false, message: 'Username already exists' }
 
-	const newUser = await createUser(username, password)
-	return { status: 201, user: newUser }
+	const newUser = await createUser(username, password) // createUser 内部处理保存
+	return { status: 201, success: true, user: { username: newUser.username, userId: newUser.auth.userId, createdAt: newUser.createdAt } }
 }
 
 /**
- * 清理过期的已撤销 token (每小时调用一次)
+ * 清理过期的已撤销 token (例如，每小时调用一次)
  */
 function cleanupRevokedTokens() {
 	const now = Date.now()
@@ -380,23 +665,29 @@ function cleanupRevokedTokens() {
 }
 
 /**
- * 清理过期的 refresh token (每小时调用一次)
+ * 清理用户配置中过期的 refresh token (例如，每小时调用一次)
  */
 function cleanupRefreshTokens() {
 	const now = Date.now()
 	let cleaned = false
 	for (const username in config.data.users) {
 		const user = config.data.users[username]
-		const initialLength = user.auth.refreshTokens.length
-		user.auth.refreshTokens = user.auth.refreshTokens.filter((token) =>
-			token.expiry > now && !config.data.revokedTokens[token.jti]
-		)
-		if (user.auth.refreshTokens.length !== initialLength) cleaned = true
+		if (user?.auth?.refreshTokens) {
+			const initialLength = user.auth.refreshTokens.length
+			user.auth.refreshTokens = user.auth.refreshTokens.filter((token) => {
+				const stillValid = token.expiry > now
+				const notGloballyRevoked = !config.data.revokedTokens[token.jti]
+				return stillValid && notGloballyRevoked
+			})
+			if (user.auth.refreshTokens.length !== initialLength)
+				cleaned = true
+		}
 	}
 
 	if (cleaned) save_config()
 }
 
+// 定时清理任务
 setInterval(() => {
 	cleanupRevokedTokens()
 	cleanupRefreshTokens()

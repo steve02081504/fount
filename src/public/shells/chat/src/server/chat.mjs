@@ -4,6 +4,7 @@
 /** @typedef {import('../../../../../decl/basedefs.ts').locale_t} locale_t */
 
 import { getUserByUsername, getUserDictionary, getAllUserNames } from '../../../../../server/auth.mjs'
+import { events } from '../../../../../server/events.mjs'
 import { LoadChar } from '../../../../../server/managers/char_manager.mjs'
 import { loadJsonFile, saveJsonFile } from '../../../../../scripts/json_loader.mjs'
 import { getPartInfo } from '../../../../../scripts/locale.mjs'
@@ -906,3 +907,25 @@ export async function getHeartbeatData(chatid, start) {
 		Messages: await Promise.all(chatMetadata.chatLog.slice(start).map(x => x.toData())),
 	}
 }
+
+// Event Handlers
+events.on('AfterUserDeleted', async (payload) => {
+	const { username } = payload // Destructure userDirectoryPath
+	// Clear from in-memory cache
+	const chatIdsToDeleteFromCache = []
+	for (const [chatId, data] of chatMetadatas.entries())
+		if (data.username === username)
+			chatIdsToDeleteFromCache.push(chatId)
+	chatIdsToDeleteFromCache.forEach(chatId => chatMetadatas.delete(chatId))
+})
+
+events.on('AfterUserRenamed', async ({ oldUsername, newUsername }) => {
+	// Update in-memory cache: chatMetadatas map
+	for (const [chatId, data] of chatMetadatas.entries())
+		if (data.username === oldUsername) {
+			data.username = newUsername // Update username in the map's value
+			if (data.chatMetadata && data.chatMetadata.username === oldUsername)
+				data.chatMetadata.username = newUsername // Update username within the cached object itself
+			saveChat(chatId)
+		}
+})

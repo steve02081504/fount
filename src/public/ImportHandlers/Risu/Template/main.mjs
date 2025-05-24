@@ -78,13 +78,13 @@ function buildCharInfo(charData) {
 				if (langCode !== defaultLocaleKey)  //避免覆盖已经由 `chardata.creator_notes` 设置的默认条目
 					info[langCode] = createInfoForLang(noteForLang)
 				else if (!info[defaultLocaleKey].description_markdown && noteForLang)
-				// 如果默认条目的描述为空（可能 chardata.creator_notes 为空），但多语言中有对应默认键的有效条目，则使用它
+					// 如果默认条目的描述为空（可能 chardata.creator_notes 为空），但多语言中有对应默认键的有效条目，则使用它
 					info[defaultLocaleKey] = createInfoForLang(noteForLang)
 			}
 
 
 	// 如果 Fount 强制要求 'en' 存在，且 '' 不是 'en' 的有效代理，可以在这里确保 'en' 条目
-	if (!info.en && info[''] && chardata.creator_notes === (chardata.extensions?.creator_notes_multilingual?.en || chardata.creator_notes) ) {
+	if (!info.en && info[''] && chardata.creator_notes === (chardata.extensions?.creator_notes_multilingual?.en || chardata.creator_notes)) {
 		// 如果 '' 的内容实际上是英文内容，并且没有显式的 'en'，可以考虑复制一份
 		// 但更好的做法是让Fount的locale匹配机制处理 '' 和 'en'
 	}
