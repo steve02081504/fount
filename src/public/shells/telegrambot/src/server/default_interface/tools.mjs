@@ -339,7 +339,6 @@ export function splitTelegramReply(reply, split_length = 4096) {
 				}
 				for (let i = 0; i < line.length; i += split_length)
 					messages.push(line.substring(i, Math.min(i + split_length, line.length)))
-
 			} else {
 				if (currentMessage)
 					messages.push(currentMessage)

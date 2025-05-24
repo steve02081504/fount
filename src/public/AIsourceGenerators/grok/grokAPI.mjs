@@ -75,7 +75,6 @@ export class GrokAPI {
 						this.currentThinkCookieIndex = selectedIndex
 					else
 						this.currentCookieIndex = selectedIndex
-
 				}
 
 			// 直接使用 this.cookies[selectedIndex]，不再需要拼接 "sso="
@@ -122,7 +121,6 @@ export class GrokAPI {
 					console.log(`[${new Date().toISOString()}] ${modelType} Cookie #${cookieIndex + 1} 额度已用尽，下次请求将切换到 Cookie #${(isThinkModel ? this.currentThinkCookieIndex : this.currentCookieIndex) % this.cookies.length + 1}`)
 				}
 			}
-
 		} catch (error) {
 			console.error(`[${new Date().toISOString()}] 检查额度时出错:`, error)
 		}
@@ -212,7 +210,6 @@ export class GrokAPI {
 					messageText += `${message.role}: ${textContent}\n[Attached images: ${imageNames}]\n`
 				} else
 					messageText += `${message.role}: ${textContent}\n`
-
 			} else
 				messageText += `${message.role}: ${message.content}\n`
 
@@ -301,7 +298,6 @@ export class GrokAPI {
 
 
 		throw new Error('All cookies have been tried and failed')
-
 	}
 	async call(messages, model, stream = false) {
 		const isThinkModel = model === 'grok-3-think'
@@ -313,7 +309,6 @@ export class GrokAPI {
 
 		else
 			return this.handleNonStreamResponse(response, isThinkModel)
-
 	}
 	async handleStreamResponse(response, model) {
 		return new Promise((resolve, reject) => {
@@ -340,7 +335,6 @@ export class GrokAPI {
 									if (isThinking && !thinkingBlockActive) {
 										thinkingBlockActive = true
 										fullResponse += '\n<think>\n'
-
 									}
 									// 当 token 不为 thinking 且正在处于 thinking 块内，则先输出 </think> 标签
 									if (!isThinking && thinkingBlockActive) {
@@ -359,7 +353,6 @@ export class GrokAPI {
 									fullResponse += '\n</think>\n'
 									thinkingBlockActive = false
 								}
-
 						}
 					} catch (e) {
 						console.warn('Incomplete or invalid JSON, skipping chunk', e)
@@ -395,7 +388,6 @@ export class GrokAPI {
 						const data = JSON.parse(line)
 						if (data.result?.response?.modelResponse?.message)
 							fullResponse = data.result.response.modelResponse.message
-
 					}
 				} catch (e) {
 					console.warn('Failed to parse line in non-stream mode')
@@ -407,7 +399,6 @@ export class GrokAPI {
 				const data = JSON.parse(buffer)
 				if (data.result?.response?.modelResponse?.message)
 					fullResponse = data.result.response.modelResponse.message
-
 			} catch (e) {
 				console.warn('Failed to parse final buffer in non-stream mode')
 			}
@@ -462,7 +453,6 @@ export class GrokAPI {
 									url: `https://assets.grok.com/${url}`,
 									revised_prompt: prompt
 								}))
-
 						}
 					} catch (e) {
 						console.warn('Failed to parse JSON:', e)

@@ -48,7 +48,6 @@ async function checkResErr(res, throwIt = true) {
 					}
 					err.exceeded_limit = true // 添加标记
 				} catch { }
-
 		}
 
 		if (throwIt) throw err
@@ -71,7 +70,6 @@ class ClewdSimulation {
 			this.impersonated = true // 设置标志
 			if (this.config.prevent_imperson)  // 假设有一个 PreventImperson 配置
 				return true  // 阻止进一步处理
-
 		}
 		return false
 	}
@@ -158,7 +156,6 @@ export class ClaudeAPI {
 				this.uuidOrg = org.uuid
 				console.log(`Logged in to Claude API. Organization UUID: ${this.uuidOrg}`)
 				return // 成功获取到 uuidOrg，直接返回
-
 			} catch (error) {
 				console.error(`First login attempt ${attempts + 1} failed:`, error)
 				attempts++
@@ -166,7 +163,6 @@ export class ClaudeAPI {
 				if (this.shouldRotateCookie(error)) {
 					this.failedCookies.add(this.config.cookie_array[this.currentIndex])
 					await this.cookieChanger() // 轮换 Cookie，但不清理
-
 				} else if (this.shouldCleanCookie(error))
 					if (this.config.cookie_array.length > 1)
 						this.cookieCleaner(error.message) // 清理 Cookie
@@ -186,7 +182,6 @@ export class ClaudeAPI {
 		console.error('First login failed after multiple attempts.')
 		if (this.config.cookie_array.length > 0)
 			this.cookieCleaner('Failed firstLogin after retry') // 清理当前 Cookie
-
 	}
 
 	// 判断是否应该轮换 Cookie (更完整的逻辑)
@@ -373,8 +368,6 @@ export class ClaudeAPI {
 					return responseJSON.completion
 				else
 					throw new Error('Claude API error: empty response')
-
-
 			} catch (error) {
 				console.error('Claude API call failed:', error)
 
@@ -393,7 +386,6 @@ export class ClaudeAPI {
 					await this.waitForChange()
 				} else
 					attempt++
-
 			}
 
 		throw new Error('All configured cookies have failed.')

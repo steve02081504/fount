@@ -12,7 +12,6 @@ export function setEndpoints(router) {
 		const { username } = await getUserByReq(req)
 		await saveAISourceFile(username, req.body.AISourceFile, req.body.data)
 		res.status(200).json({ message: 'File saved successfully' })
-
 	})
 	router.post('/api/shells/AIsourceManage/addfile', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)

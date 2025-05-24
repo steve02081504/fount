@@ -48,7 +48,6 @@ export async function unzipCharx(zipBuffer) {
 						assetMeta.uri = `embeded://${moduleAssetPath}`
 					}
 				}
-
 		}
 	}
 
@@ -73,7 +72,6 @@ export async function unzipCharx(zipBuffer) {
 			const assetPathInZip = mainIconAsset.uri.substring('embeded://'.length)
 			if (assets.has(assetPathInZip))
 				mainImageBuffer = assets.get(assetPathInZip)
-
 		}
 	}
 

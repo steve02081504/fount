@@ -59,7 +59,6 @@ async function handleCompletionsRequest(req, res, username, model) {
 		// Send DONE signal
 		res.write('data: [DONE]\n\n')
 		res.end()
-
 	} else
 		// Non-stream response
 		res.status(200).json({
@@ -153,7 +152,6 @@ async function handleChatCompletionsRequest(req, res, username, model) {
 		// Send DONE signal
 		res.write('data: [DONE]\n\n')
 		res.end()
-
 	} else
 		// Non-stream response
 		res.status(200).json({
@@ -221,7 +219,6 @@ export function setOpenAIAPIEndpoints(router) {
 
 			// Call the core logic function
 			await handleCompletionsRequest(req, res, username, model)
-
 		} catch (error) {
 			console.error('Error processing completions request:', error)
 			// Differentiate auth errors from other errors if possible
@@ -245,7 +242,6 @@ export function setOpenAIAPIEndpoints(router) {
 
 			// Call the core logic function
 			await handleChatCompletionsRequest(req, res, username, model)
-
 		} catch (error) {
 			console.error('Error processing chat completions request:', error)
 			// Differentiate auth errors from other errors if possible

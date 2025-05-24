@@ -115,7 +115,6 @@ export class DuckDuckGoAPI {
 									controller.enqueue(
 										encoder.encode(`data: ${JSON.stringify(this.newChatCompletionChunkWithModel(originReq.message, model))}\n\n`)
 									)
-
 							}
 						} else {
 							if (returnStream)
@@ -163,7 +162,6 @@ export class DuckDuckGoAPI {
 			return response // 返回 ReadableStream
 		else
 			return await response.text() // 返回完整文本
-
 	}
 
 	countTokens(text) {

@@ -13,7 +13,6 @@ function removeCharaChunks(chunks) {
 			const decodedChunk = decodeText(chunks[i].data)
 			if (decodedChunk.keyword.toLowerCase() === 'chara')
 				chunks.splice(i, 1)
-
 		}
 }
 

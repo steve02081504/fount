@@ -101,7 +101,6 @@ async function GetSource(config) {
 						role: 'system',
 						content: `现在请以${prompt_struct.Charname}的身份续写对话。`
 					})
-
 			}
 
 			const model = config.model || 'grok-3'

@@ -3,6 +3,7 @@ import { renderMarkdownAsString } from '../../../scripts/markdown.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
 import { parseRegexFromString, escapeRegExp } from '../../../scripts/regex.mjs'
 import { initTranslations, geti18n } from '../../../scripts/i18n.mjs'
+import { getChatList, getCharDetails, copyChats, exportChats, deleteChats } from './endpoints.mjs'
 
 const chatListContainer = document.getElementById('chat-list-container')
 const sortSelect = document.getElementById('sort-select')
@@ -14,16 +15,6 @@ const exportSelectedButton = document.getElementById('export-selected-button')
 
 let chatList = []
 const selectedChats = new Set()
-
-async function fetchChatList() {
-	const response = await fetch('/api/shells/chat/getchatlist')
-	if (response.ok)
-		chatList = await response.json()
-	else {
-		console.error('Failed to fetch chat list')
-		chatList = []
-	}
-}
 
 /**
  * Applies all filter conditions to a chat.
@@ -77,7 +68,6 @@ function filterChatList() {
 			excludeFilters.push(regex)
 		else
 			commonFilters.push(regex)
-
 	}
 
 	// Apply filters and get filtered chat list
@@ -106,12 +96,6 @@ async function renderChatList() {
 	// 每次渲染列表后重置选择状态
 	selectedChats.clear()
 	selectAllCheckbox.checked = false
-}
-
-const char_details_cache = {}
-async function getCharDetails(charname) {
-	char_details_cache[charname] ??= fetch('/api/getdetails/chars?name=' + charname).then(res => res.json())
-	return char_details_cache[charname] = await char_details_cache[charname]
 }
 
 async function renderChatListItem(chat) {
@@ -148,34 +132,24 @@ async function renderChatListItem(chat) {
 
 	// 复制聊天
 	chatElement.querySelector('.copy-button').addEventListener('click', async () => {
-		const response = await fetch('/api/shells/chat/copy', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({ chatids: [chat.chatid] }), // Send as array
-		})
-		if (response.ok) {
-			const datas = await response.json()
+		try {
+			const datas = await copyChats([chat.chatid])
 			const data = datas[0]
-			if (data.success) // refresh chat list
-				fetchChatList().then(renderChatList)
-			else
+			if (data.success) {
+				chatList = await getChatList() // refresh chat list
+				renderChatList()
+			} else
 				alert(data.message)
+		} catch (error) {
+			console.error('Error copying chat:', error)
+			alert(geti18n('chat_history.alerts.copyError'))
 		}
 	})
 
 	// 导出聊天
 	chatElement.querySelector('.export-button').addEventListener('click', async () => {
-		const response = await fetch('/api/shells/chat/export', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({ chatids: [chat.chatid] }), // Send as array
-		})
-		if (response.ok) {
-			const datas = await response.json()
+		try {
+			const datas = await exportChats([chat.chatid])
 			for (const data of datas)
 				if (data.success) {
 					const blob = new Blob([JSON.stringify(data.data, null, 2)], { type: 'application/json' })
@@ -185,30 +159,28 @@ async function renderChatListItem(chat) {
 					a.download = `chat-${chat.chatid}.json`
 					a.click()
 					URL.revokeObjectURL(url)
-				}
-				else alert(data.message)
+				} else
+					alert(data.message)
+		} catch (error) {
+			console.error('Error exporting chat:', error)
+			alert(geti18n('chat_history.alerts.exportError'))
 		}
 	})
 
 	// 删除聊天
 	chatElement.querySelector('.delete-button').addEventListener('click', async () => {
-		if (confirm(geti18n('chat_history.confirmDeleteChat', { chars: chat.chars.join(', ') }))) {
-			const response = await fetch('/api/shells/chat/delete', {
-				method: 'DELETE',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({ chatids: [chat.chatid] }), // Send as array
-			})
-			if (response.ok) {
-				const data = await response.json()
+		if (confirm(geti18n('chat_history.confirmDeleteChat', { chars: chat.chars.join(', ') })))
+			try {
+				const data = await deleteChats([chat.chatid])
 				if (data[0].success) {
 					chatList = chatList.filter(c => c.chatid !== chat.chatid)
 					renderChatList()
-				}
-				else alert(data[0].message)
+				} else
+					alert(data[0].message)
+			} catch (error) {
+				console.error('Error deleting chat:', error)
+				alert(geti18n('chat_history.alerts.deleteError'))
 			}
-		}
 	})
 
 	return chatElement
@@ -228,7 +200,6 @@ selectAllCheckbox.addEventListener('change', () => {
 			selectedChats.add(chatid)
 		else
 			selectedChats.delete(chatid)
-
 	})
 })
 
@@ -243,7 +214,6 @@ reverseSelectButton.addEventListener('click', () => {
 			selectedChats.add(chatid)
 		else
 			selectedChats.delete(chatid)
-
 	})
 })
 
@@ -253,28 +223,22 @@ deleteSelectedButton.addEventListener('click', async () => {
 		alert(geti18n('chat_history.alerts.noChatSelectedForDeletion'))
 		return
 	}
-	if (confirm(geti18n('chat_history.confirmDeleteMultiChats', { count: selectedChats.size }))) {
-		const response = await fetch('/api/shells/chat/delete', {
-			method: 'DELETE',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({ chatids: Array.from(selectedChats) }),
-		})
-		if (response.ok) {
-			const results = await response.json()
+	if (confirm(geti18n('chat_history.confirmDeleteMultiChats', { count: selectedChats.size })))
+		try {
+			const results = await deleteChats(Array.from(selectedChats))
 			results.forEach(result => {
 				if (result.success) {
 					// Remove only successfully deleted chats from the UI
 					chatList = chatList.filter(c => c.chatid !== result.chatid)
 					selectedChats.delete(result.chatid) // Also remove from selectedChats
-				}
-				else alert(result.message)
-
+				} else
+					alert(result.message)
 			})
 			renderChatList()
+		} catch (error) {
+			console.error('Error deleting selected chats:', error)
+			alert(geti18n('chat_history.alerts.deleteError'))
 		}
-	}
 })
 
 // 导出选中
@@ -283,15 +247,8 @@ exportSelectedButton.addEventListener('click', async () => {
 		alert(geti18n('chat_history.alerts.noChatSelectedForExport'))
 		return
 	}
-	const response = await fetch('/api/shells/chat/export', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({ chatids: Array.from(selectedChats) }),
-	})
-	if (response.ok) {
-		const results = await response.json()
+	try {
+		const results = await exportChats(Array.from(selectedChats))
 		for (const result of results)
 			if (result.success) {
 				const blob = new Blob([JSON.stringify(result.data, null, 2)], { type: 'application/json' })
@@ -301,15 +258,18 @@ exportSelectedButton.addEventListener('click', async () => {
 				a.download = `chat-${result.chatid}.json`
 				a.click()
 				URL.revokeObjectURL(url)
-			}
-			else alert(result.message)
+			} else
+				alert(result.message)
+	} catch (error) {
+		console.error('Error exporting selected chats:', error)
+		alert(geti18n('chat_history.alerts.exportError'))
 	}
 })
 
 async function initializeApp() {
 	applyTheme()
 	await initTranslations('chat_history') // Initialize translations for 'chat_history'
-	await fetchChatList()
+	chatList = await getChatList()
 	await renderChatList()
 }
 

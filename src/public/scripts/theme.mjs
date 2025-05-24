@@ -79,7 +79,6 @@ function updateColors() {
 			lightness = parseFloat(match[1])
 			if (!match[1].endsWith('%'))
 				lightness *= 100 // Convert 0-1 to percentage
-
 		} else if (rgbRegex.test(bcColor) || rgbaRegex.test(bcColor)) {
 			const match = bcColor.match(rgbRegex) || bcColor.match(rgbaRegex)
 			const r = parseInt(match[1], 10)
@@ -92,13 +91,11 @@ function updateColors() {
 				return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)
 			})
 			lightness = (0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2]) * 100
-
 		} else if (hslRegex.test(bcColor) || hslaRegex.test(bcColor)) {
 			const match = bcColor.match(hslRegex) || bcColor.match(hslaRegex)
 			lightness = parseFloat(match[3]) //L in HSL is the lightness.
 			if (!match[3].endsWith('%'))
 				lightness *= 100
-
 		} else {
 			// Handle named colors (e.g., "red", "blue") and other formats.  Difficult without a lookup table.
 			//  Best to use a default or signal an error.
@@ -110,7 +107,6 @@ function updateColors() {
 
 		// 3. Determine is_dark
 		is_dark = lightness < threshold
-
 	} else {
 		console.warn('The --bc variable or background-color is not defined on documentElement.')
 		// Fallback: Use system preference if --bc is not found.

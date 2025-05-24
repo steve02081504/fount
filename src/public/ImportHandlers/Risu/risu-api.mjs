@@ -28,7 +28,6 @@ export async function downloadRisuCard(uuid) {
 		else
 			// 如果 dynamic 下载失败或类型不对，尝试 png-v3
 			throw new Error(`Dynamic download failed or returned unexpected type: ${contentType}`)
-
 	} catch (err) {
 		console.warn(`Dynamic download for ${uuid} failed, trying PNGv3. Error: ${err.message}`)
 		urlToTry = `${RISU_API_PNG_DOWNLOAD_URL}${uuid}?non_commercial=true`

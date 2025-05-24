@@ -21,7 +21,6 @@ export async function downloadCharacter(url) {
 			return downloadChubCharacter(parsed.id)
 		else if (parsed?.type === 'lorebook')
 			throw new Error('Lorebook download not supported')
-
 	} else if (host.includes('realm.risuai.net'))
 		return downloadRisuCharacter(parseRisuUrl(url))
 	else if (host.includes('github.com'))
@@ -173,7 +172,6 @@ async function downloadGithubCharacter(id) {
 		const asset = assets.find(asset => asset.content_type === type)
 		if (asset)
 			return (await fetch(asset.browser_download_url)).arrayBuffer()
-
 	}
 
 	throw new Error('No suitable asset found on GitHub')
