@@ -57,7 +57,7 @@ export function loadTempData(username, dataname) {
 // 无需保存 :)
 
 // Event Handlers
-events.on('AfterUserDeleted', ({ username, userId }) => {
+events.on('AfterUserDeleted', ({ username }) => {
 	if (userDataSet[username]) {
 		delete userDataSet[username]
 		console.log(`SettingLoader: Cleared userDataSet cache for ${username}`)
@@ -72,7 +72,7 @@ events.on('AfterUserDeleted', ({ username, userId }) => {
 	}
 })
 
-events.on('AfterUserRenamed', ({ oldUsername, newUsername, userId, newUserData }) => {
+events.on('AfterUserRenamed', ({ oldUsername, newUsername }) => {
 	if (userDataSet[oldUsername]) {
 		userDataSet[newUsername] = userDataSet[oldUsername]
 		delete userDataSet[oldUsername]

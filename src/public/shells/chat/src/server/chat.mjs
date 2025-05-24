@@ -910,7 +910,7 @@ export async function getHeartbeatData(chatid, start) {
 
 // Event Handlers
 events.on('AfterUserDeleted', async (payload) => {
-	const { username, userId, userDirectoryPath } = payload // Destructure userDirectoryPath
+	const { username } = payload // Destructure userDirectoryPath
 	// Clear from in-memory cache
 	const chatIdsToDeleteFromCache = []
 	for (const [chatId, data] of chatMetadatas.entries())
@@ -919,7 +919,7 @@ events.on('AfterUserDeleted', async (payload) => {
 	chatIdsToDeleteFromCache.forEach(chatId => chatMetadatas.delete(chatId))
 })
 
-events.on('AfterUserRenamed', async ({ oldUsername, newUsername, userId, newUserData }) => {
+events.on('AfterUserRenamed', async ({ oldUsername, newUsername }) => {
 	// Update in-memory cache: chatMetadatas map
 	for (const [chatId, data] of chatMetadatas.entries())
 		if (data.username === oldUsername) {

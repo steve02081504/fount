@@ -449,7 +449,7 @@ export async function deleteUserAccount(username, password) {
 
 	const { userId } = user.auth // 在删除用户前获取 userId
 	const userDirectoryPath = getUserDictionary(username) // 在从配置中删除用户前获取路径
-	events.emit('BeforeUserDeleted', { username, userId: user.auth.userId, userDirectoryPath })
+	await events.emit('BeforeUserDeleted', { username })
 
 	// 撤销用户所有的 refresh tokens
 	if (user.auth.refreshTokens && user.auth.refreshTokens.length > 0)
@@ -466,8 +466,7 @@ export async function deleteUserAccount(username, password) {
 	delete config.data.users[username]
 	save_config()
 
-	// 发出 userDeleted 事件，并附带用户目录路径，供其他模块处理数据清理
-	events.emit('AfterUserDeleted', { username, userId, userDirectoryPath })
+	await events.emit('AfterUserDeleted', { username })
 
 	return { success: true, message: 'User account deleted successfully. Associated data will be cleaned up.' }
 }
@@ -499,7 +498,7 @@ export async function renameUser(currentUsername, newUsername, password) {
 	if (getUserByUsername(newUsername))
 		return { success: false, message: 'New username already exists' }
 
-	events.emit('BeforeUserRenamed', { oldUsername: currentUsername, newUsername, userId: oldUserConfigEntry.auth.userId, newUserData: oldUserConfigEntry })
+	await events.emit('BeforeUserRenamed', { oldUsername: currentUsername, newUsername })
 
 	const oldUserPath = getUserDictionary(currentUsername) // 获取旧路径
 
@@ -537,11 +536,9 @@ export async function renameUser(currentUsername, newUsername, password) {
 	delete config.data.users[currentUsername]
 	save_config()
 
-	events.emit('AfterUserRenamed', {
+	await events.emit('AfterUserRenamed', {
 		oldUsername: currentUsername,
 		newUsername,
-		userId: newUserConfigEntry.auth.userId,
-		newUserData: newUserConfigEntry
 	})
 
 	return { success: true, message: 'Username renamed successfully and user data directory potentially moved.' }

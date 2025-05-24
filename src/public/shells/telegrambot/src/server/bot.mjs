@@ -192,7 +192,7 @@ export function getBotList(username) {
 }
 
 // Event Handlers
-events.on('BeforeUserDeleted', async ({ username, userId }) => {
+events.on('BeforeUserDeleted', async ({ username }) => {
 	const runningBots = getRunningBotList(username)
 	for (const botname of runningBots)
 		try {
@@ -203,7 +203,7 @@ events.on('BeforeUserDeleted', async ({ username, userId }) => {
 		}
 })
 
-events.on('BeforeUserRenamed', async ({ oldUsername, newUsername, userId, newUserData }) => {
+events.on('BeforeUserRenamed', async ({ oldUsername, newUsername }) => {
 	const runningBotsOldUser = getRunningBotList(oldUsername)
 	for (const botname of runningBotsOldUser)
 		try {

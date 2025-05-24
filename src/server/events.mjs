@@ -4,8 +4,10 @@ export const events = {
 		data[eventName] ??= []
 		data[eventName].push(listener)
 	},
-	emit(eventName, ...args) {
-		data[eventName]?.forEach?.(listener => listener(...args))
+	async emit(eventName, ...args) {
+		if (!data[eventName]) return
+		for (const listener of data[eventName])
+			await listener(...args)
 	},
 	off(eventName, listenerToRemove) {
 		if (!data[eventName]) return
