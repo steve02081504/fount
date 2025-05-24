@@ -109,10 +109,6 @@ async function handleNewBot() {
 async function handleDeleteBot() {
 	if (!selectedBot) return
 
-	if (isDirty)
-		if (!confirm(geti18n('telegram_bots.alerts.unsavedChangesOnDelete')))
-			return
-
 	if (!confirm(geti18n('telegram_bots.alerts.confirmDeleteBot', { botname: selectedBot }))) return
 
 	await deleteBotConfig(selectedBot)
