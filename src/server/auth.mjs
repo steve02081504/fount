@@ -10,6 +10,7 @@ import { geti18n } from '../scripts/i18n.mjs' // 确保路径正确
 // 确保路径正确
 import { loadJsonFile } from '../scripts/json_loader.mjs' // 确保路径正确
 import { events } from './events.mjs' // 假设 events.mjs 在同级目录
+import { is_local_ip_from_req } from '../scripts/ratelimit.mjs'
 
 const ACCESS_TOKEN_EXPIRY = '15m' // Access Token 有效期
 export const REFRESH_TOKEN_EXPIRY = '30d' // Refresh Token 有效期 (字符串形式)
@@ -447,8 +448,6 @@ export async function deleteUserAccount(username, password) {
 	if (!isValidPassword)
 		return { success: false, message: 'Invalid password for deleting account.' }
 
-	const { userId } = user.auth // 在删除用户前获取 userId
-	const userDirectoryPath = getUserDictionary(username) // 在从配置中删除用户前获取路径
 	await events.emit('BeforeUserDeleted', { username })
 
 	// 撤销用户所有的 refresh tokens
@@ -465,6 +464,12 @@ export async function deleteUserAccount(username, password) {
 	// 从配置中删除用户数据
 	delete config.data.users[username]
 	save_config()
+
+	const userDirectoryPath = getUserDictionary(username) // 在从配置中删除用户前获取路径
+
+	// 删除用户数据目录
+	if (fs.existsSync(userDirectoryPath))
+		fs.rmSync(userDirectoryPath, { recursive: true, force: true })
 
 	await events.emit('AfterUserDeleted', { username })
 
