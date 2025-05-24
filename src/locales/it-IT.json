@@ -2,344 +2,348 @@
 	"lang": "it-IT",
 	"fountConsole": {
 		"server": {
-			"start": "Avvio del server",
-			"starting": "Server Startup ...",
-			"ready": "Il server viene avviato",
-			"usesdTime": "Ora di inizio: ${time}s",
+			"start": "Avvio del server in corso...",
+			"starting": "Avvio del server in corso...",
+			"ready": "Server avviato.",
+			"usesdTime": "Tempo di avvio: ${time}s",
 			"showUrl": {
-				"https": "Il server HTTPS funziona a $ {url}",
-				"http": "Il server HTTP funziona a $ {url}"
+				"https": "Server HTTPS in esecuzione su ${url}",
+				"http": "Server HTTP in esecuzione su ${url}"
 			},
-			"standingBy": "In piedi accanto ..."
+			"standingBy": "In attesa..."
 		},
 		"jobs": {
-			"restartingJob": "Riavvia la attività $ {partttype} $ {partname} dell'utente $ {username}: $ {uid}"
+			"restartingJob": "Riavvio dell'attività ${partname} (${parttype}) per l'utente ${username}: ${uid}."
 		},
 		"ipc": {
-			"sendCommandFailed": "Impossibile inviare comando: $ {errore}",
-			"invalidCommand": "Comando non valido, usa \"Fount Runshell <Username> <ShellName> <Parameter ...>\"",
-			"runShellLog": "Esegui shell $ {shellname} come $ {nome utente}, parametro: $ {args}",
-			"invokeShellLog": "Chiama shell $ {shellname} come $ {nome utente}, parametro: $ {invkedata}",
-			"unsupportedCommand": "Tipi di comando non supportati",
-			"processMessageError": "Si è verificato un errore durante l'elaborazione dei messaggi IPC: $ {errore}",
-			"invalidCommandFormat": "Formato di comando non valido",
-			"socketError": "Errore socket: $ {errore}",
-			"instanceRunning": "Un altro istanza è in esecuzione",
-			"serverStartPrefix": "Server Start",
-			"serverStarted": "Il server IPC viene avviato",
-			"parseResponseFailed": "Risposta del server di risoluzione non riuscita: $ {errore}",
-			"cannotParseResponse": "Impossibile risolvere la risposta del server",
-			"unknownError": "Errore sconosciuto"
+			"sendCommandFailed": "Impossibile inviare il comando: ${error}",
+			"invalidCommand": "Comando non valido, usa \"fount runshell <nome_utente> <nome_shell> <parametri...>\"",
+			"runShellLog": "Esecuzione shell ${shellname} come ${username}, parametri: ${args}.",
+			"invokeShellLog": "Chiamata shell ${shellname} come ${username}, parametri: ${invokedata}.",
+			"unsupportedCommand": "Tipo di comando non supportato.",
+			"processMessageError": "Errore durante l'elaborazione del messaggio IPC: ${error}",
+			"invalidCommandFormat": "Formato comando non valido.",
+			"socketError": "Errore socket: ${error}",
+			"instanceRunning": "Un'altra istanza è già in esecuzione.",
+			"serverStartPrefix": "Avvio server",
+			"serverStarted": "Server IPC avviato.",
+			"parseResponseFailed": "Impossibile analizzare la risposta del server: ${error}",
+			"cannotParseResponse": "Impossibile analizzare la risposta del server.",
+			"unknownError": "Errore sconosciuto."
 		},
 		"partManager": {
 			"git": {
-				"noUpstream": "La filiale a monte non è configurata per Branch '$ {CurrentBranch}', salta gli assegni di aggiornamento.",
-				"dirtyWorkingDirectory": "La directory di lavoro non è pulita. Si prega di salvare o inviare le modifiche prima dell'aggiornamento.",
-				"updating": "Dall'aggiornamento del repository remoto ...",
-				"localAhead": "La filiale locale è in anticipo rispetto alla filiale remota. Nessun aggiornamento richiesto.",
-				"diverged": "Le filiali locali e remote sono state biforcute. Aggiornamento forzato ...",
-				"upToDate": "È l'ultimo.",
-				"updateFailed": "Impossibile aggiornare il componente dal repository remoto: $ {errore}"
+				"noUpstream": "Nessun branch upstream configurato per il branch '${currentBranch}', verifica degli aggiornamenti saltata.",
+				"dirtyWorkingDirectory": "La directory di lavoro contiene modifiche non salvate. Effettua il commit o metti da parte (stash) le modifiche prima di aggiornare.",
+				"updating": "Aggiornamento dal repository remoto...",
+				"localAhead": "Il branch locale è più avanti del branch remoto. Nessun aggiornamento necessario.",
+				"diverged": "I branch locale e remoto sono divergenti. Forzatura dell'aggiornamento...",
+				"upToDate": "Già aggiornato.",
+				"updateFailed": "Impossibile aggiornare i componenti dal repository remoto: ${error}"
 			},
-			"partInitTime": "${parttype} parte ${partname} Inizializzazione tempo: ${time}s",
-			"partLoadTime": "${parttype} parte ${partname} Tempo di caricamento: ${time}s"
+			"partInitTime": "${parttype} componente ${partname} tempo di inizializzazione: ${time}s",
+			"partLoadTime": "${parttype} componente ${partname} tempo di caricamento: ${time}s"
 		},
 		"web": {
-			"requestReceived": "Richiesta accettata: $ {metodo} $ {url}"
+			"requestReceived": "Richiesta ricevuta: ${method} ${url}"
 		},
 		"route": {
-			"setLanguagePreference": "Utente $ {username} set lingua preferita: $ {preferitedLanguages}"
+			"setLanguagePreference": "L'utente ${username} ha impostato la lingua preferita: ${preferredLanguages}"
 		},
 		"auth": {
-			"tokenVerifyError": "Errore di verifica del token: $ {errore}",
-			"refreshTokenError": "Errore token di aggiornamento: $ {errore}",
-			"logoutRefreshTokenProcessError": "Elimina l'errore di gestione del token di aggiornamento: $ {errore}",
-			"revokeTokenNoJTI": "Non posso annullare il segno senza jti",
-			"accountLockedLog": "Utente $ {nome utente} L'account è stato bloccato a causa di più guasti di accesso"
+			"tokenVerifyError": "Errore di verifica del token: ${error}",
+			"refreshTokenError": "Errore token di aggiornamento: ${error}",
+			"logoutRefreshTokenProcessError": "Errore durante l'elaborazione del token di aggiornamento per il logout: ${error}",
+			"revokeTokenNoJTI": "Impossibile revocare il token senza JTI.",
+			"accountLockedLog": "L'account dell'utente ${username} è stato bloccato a causa di molteplici tentativi di accesso falliti."
 		},
 		"verification": {
-			"codeGeneratedLog": "Codice di verifica: $ {code} (scaduto dopo 60 secondi)",
+			"codeGeneratedLog": "Codice di verifica: ${code} (scade tra 60 secondi).",
 			"codeNotifyTitle": "Codice di verifica",
-			"codeNotifyBody": "Codice di verifica: $ {code} (scaduto dopo 60 secondi)"
+			"codeNotifyBody": "Codice di verifica: ${code} (scade tra 60 secondi)."
 		},
 		"tray": {
-			"readIconFailed": "Impossibile leggere il file icona: $ {errore}",
-			"createTrayFailed": "Impossibile creare un vassoio: $ {errore}"
+			"readIconFailed": "Impossibile leggere il file dell'icona: ${error}",
+			"createTrayFailed": "Impossibile creare l'icona nell'area di notifica: ${error}"
 		},
 		"discordbot": {
-			"botStarted": "char ${charname} loggato su discord bot ${botusername}"
+			"botStarted": "Il personaggio ${charname} ha effettuato l'accesso al bot Discord ${botusername}."
 		},
 		"telegrambot": {
-			"botStarted": "char ${charname} loggato su telegramma bot ${botusername}"
+			"botStarted": "Il personaggio ${charname} ha effettuato l'accesso al bot Telegram ${botusername}."
 		}
 	},
 	"protocolhandler": {
-		"title": "Gestire il protocollo di fonte",
-		"processing": "Elaborazione dell'accordo ...",
-		"invalidProtocol": "Accordo non valido",
-		"insufficientParams": "Parametri insufficienti",
-		"unknownCommand": "Comandi sconosciuti",
-		"shellCommandSent": "Il comando shell è stato inviato",
-		"shellCommandFailed": "Impossibile inviare un comando shell",
-		"shellCommandError": "Si è verificato un errore durante l'invio di un comando shell"
+		"title": "Gestione protocollo Fount",
+		"processing": "Elaborazione del protocollo in corso...",
+		"invalidProtocol": "Protocollo non valido.",
+		"insufficientParams": "Parametri insufficienti.",
+		"unknownCommand": "Comando sconosciuto.",
+		"shellCommandSent": "Comando shell inviato.",
+		"shellCommandFailed": "Impossibile inviare il comando shell.",
+		"shellCommandError": "Errore durante l'invio del comando shell."
 	},
 	"auth": {
-		"title": "Certificazione",
-		"subtitle": "I dati dell'utente sono archiviati a livello locale",
-		"usernameLabel": "nome utente:",
+		"title": "Autenticazione",
+		"subtitle": "I dati utente sono archiviati localmente.",
+		"usernameLabel": "Nome utente:",
 		"usernameInput": {
 			"placeholder": "Inserisci il tuo nome utente"
 		},
-		"passwordLabel": "password:",
+		"passwordLabel": "Password:",
 		"passwordInput": {
 			"placeholder": "Inserisci la tua password"
 		},
 		"confirmPasswordLabel": "Conferma password:",
 		"confirmPasswordInput": {
-			"placeholder": "Inserisci di nuovo la tua password"
+			"placeholder": "Reinserisci la tua password"
 		},
 		"verificationCodeLabel": "Codice di verifica:",
 		"verificationCodeInput": {
 			"placeholder": "Inserisci il codice di verifica"
 		},
-		"sendCodeButton": "Invia codice di verifica",
+		"sendCodeButton": "Invia codice",
 		"login": {
-			"title": "Login",
-			"submitButton": "Login",
+			"title": "Accedi",
+			"submitButton": "Accedi",
 			"toggleLink": {
 				"text": "Non hai un account?",
 				"link": "Registrati ora"
 			}
 		},
 		"register": {
-			"title": "registro",
-			"submitButton": "registro",
+			"title": "Registrati",
+			"submitButton": "Registrati",
 			"toggleLink": {
 				"text": "Hai già un account?",
 				"link": "Accedi ora"
 			}
 		},
 		"error": {
-			"passwordMismatch": "Le password erano incoerenti due volte.",
-			"loginError": "Si è verificato un errore durante l'accesso.",
-			"registrationError": "Si è verificato un errore durante la registrazione.",
-			"verificationCodeError": "Il codice di verifica è sbagliato o scaduto.",
-			"verificationCodeSent": "Il codice di verifica è stato inviato correttamente.",
-			"verificationCodeSendError": "Il codice di verifica non è stato inviato.",
-			"verificationCodeRateLimit": "Il codice di verifica viene inviato troppo frequentemente, riprova più tardi.",
-			"lowPasswordStrength": "La forza della password è troppo bassa.",
-			"accountAlreadyExists": "L'account esiste già"
+			"passwordMismatch": "Le password non coincidono.",
+			"loginError": "Errore durante l'accesso.",
+			"registrationError": "Errore durante la registrazione.",
+			"verificationCodeError": "Il codice di verifica è errato o scaduto.",
+			"verificationCodeSent": "Codice di verifica inviato correttamente.",
+			"verificationCodeSendError": "Impossibile inviare il codice di verifica.",
+			"verificationCodeRateLimit": "Troppe richieste di invio del codice di verifica. Riprova più tardi.",
+			"lowPasswordStrength": "La password è troppo debole.",
+			"accountAlreadyExists": "L'account esiste già."
 		},
 		"passwordStrength": {
 			"veryWeak": "Molto debole",
 			"weak": "Debole",
-			"normal": "generalmente",
-			"strong": "potente",
+			"normal": "Normale",
+			"strong": "Forte",
 			"veryStrong": "Molto forte"
 		}
 	},
 	"tutorial": {
-		"title": "Alcuni tutorial?",
+		"title": "Vuoi un tutorial?",
 		"modal": {
-			"title": "Benvenuti a Fount!",
-			"instruction": "Passare attraverso il tutorial per i principianti?",
+			"title": "Benvenuto in Fount!",
+			"instruction": "Vuoi seguire il tutorial per principianti?",
 			"buttons": {
 				"start": "Inizia il tutorial",
-				"skip": "saltare"
+				"skip": "Salta"
 			}
 		},
 		"endScreen": {
-			"title": "Eccezionale! Il tutorial è completato!",
-			"subtitle": "Ora hai imparato a operare!",
-			"endButton": "Prossimo passo!"
+			"title": "Fantastico! Tutorial completato!",
+			"subtitle": "Ora sai come funziona!",
+			"endButton": "Avanti!"
 		},
 		"progressMessages": {
-			"mouseMove": "Si prega di usare il dito per provare a tenere il mouse $ {mouseicon} <br/> e quindi spostarlo",
-			"keyboardPress": "Trova la tastiera $ {tastierboardicon} <br/> prova a premere la tastiera con il dito",
-			"mobileTouchMove": "Trova il tuo telefono $ {PhlephElicon} <br/> prova a toccare lo schermo con una qualsiasi delle dita e spostalo",
-			"mobileClick": "Prova a utilizzare una qualsiasi delle dita per toccare la schermata del telefono $ {Phinphone} <br/> e quindi rilasciarla"
+			"mouseMove": "Usa il dito per afferrare il mouse ${mouseIcon}<br/>e poi muovilo.",
+			"keyboardPress": "Trova la tastiera ${keyboardIcon}<br/>e prova a premere un tasto.",
+			"mobileTouchMove": "Prendi il tuo telefono ${phoneIcon},<br/>tocca lo schermo con un dito e muovilo.",
+			"mobileClick": "Tocca lo schermo del telefono ${phoneIcon} con un dito<br/>e poi rilascia."
 		}
 	},
 	"home": {
-		"title": "Home page",
-		"escapeConfirm": "Sei sicuro di voler lasciare la fonte?",
+		"title": "Home",
+		"escapeConfirm": "Sei sicuro di voler uscire da Fount?",
 		"filterInput": {
-			"placeholder": "ricerca..."
+			"placeholder": "Cerca..."
 		},
 		"sidebarTitle": "Dettagli",
-		"itemDescription": "Seleziona un elemento qui per visualizzare i dettagli.",
-		"noDescription": "Nessuna informazione di descrizione",
+		"itemDescription": "Seleziona un elemento qui per visualizzarne i dettagli.",
+		"noDescription": "Nessuna descrizione disponibile.",
 		"alerts": {
-			"fetchHomeRegistryFailed": "Impossibile ottenere informazioni sulla registrazione della homepage"
+			"fetchHomeRegistryFailed": "Impossibile recuperare le informazioni del registro home."
 		},
 		"functionMenu": {
 			"icon": {
-				"alt": "Menu di funzione"
+				"alt": "Menu funzioni"
 			}
 		},
 		"chars": {
-			"tab": "Ruolo",
-			"title": "Selezione del ruolo",
-			"subtitle": "Seleziona un personaggio - e inizia a chattare!",
-			"none": "Vuoto",
+			"tab": "Personaggi",
+			"title": "Selezione personaggio",
+			"subtitle": "Seleziona un personaggio e inizia a chattare!",
+			"none": "Nessun elemento",
 			"card": {
 				"refreshButton": {
-					"alt": "rinfrescare",
-					"title": "rinfrescare"
+					"alt": "Aggiorna",
+					"title": "Aggiorna"
 				},
-				"noTags": "Nessuna etichetta",
+				"noTags": "Nessun tag",
 				"version": "Versione",
-				"author": "autore",
-				"homepage": "Home page",
-				"issuepage": "Feedback delle domande",
+				"author": "Autore",
+				"homepage": "Homepage",
+				"issuepage": "Segnala un problema",
 				"defaultCheckbox": {
-					"title": "Impostare come ruolo predefinito"
+					"title": "Imposta come personaggio predefinito"
 				}
 			}
 		},
 		"worlds": {
-			"tab": "mondo",
-			"title": "Scelta del mondo",
-			"subtitle": "Scegli il mondo e immergiti!",
-			"none": "Vuoto",
+			"tab": "Mondi",
+			"title": "Selezione mondo",
+			"subtitle": "Scegli un mondo e immergiti!",
+			"none": "Nessun elemento",
 			"card": {
 				"refreshButton": {
-					"alt": "rinfrescare",
-					"title": "rinfrescare"
+					"alt": "Aggiorna",
+					"title": "Aggiorna"
 				},
-				"noTags": "Nessuna etichetta",
+				"noTags": "Nessun tag",
 				"version": "Versione",
-				"author": "autore",
-				"homepage": "Home page",
-				"issuepage": "Feedback delle domande",
+				"author": "Autore",
+				"homepage": "Homepage",
+				"issuepage": "Segnala un problema",
 				"defaultCheckbox": {
-					"title": "Impostare come mondo predefinito"
+					"title": "Imposta come mondo predefinito"
 				}
 			}
 		},
 		"personas": {
-			"tab": "Design del personaggio",
-			"title": "Selezione dei caratteri",
-			"subtitle": "Scegli un personaggio e sperimenta la vita.",
-			"none": "Vuoto",
+			"tab": "Persone",
+			"title": "Selezione persona",
+			"subtitle": "Seleziona una persona e vivi una nuova esperienza.",
+			"none": "Nessun elemento",
 			"card": {
 				"refreshButton": {
-					"alt": "rinfrescare",
-					"title": "rinfrescare"
+					"alt": "Aggiorna",
+					"title": "Aggiorna"
 				},
-				"noTags": "Nessuna etichetta",
+				"noTags": "Nessun tag",
 				"version": "Versione",
-				"author": "autore",
-				"homepage": "Home page",
-				"issuepage": "Feedback delle domande",
+				"author": "Autore",
+				"homepage": "Homepage",
+				"issuepage": "Segnala un problema",
 				"defaultCheckbox": {
-					"title": "Impostare come carattere predefinito"
+					"title": "Imposta come persona predefinita"
 				}
 			}
 		}
 	},
 	"themeManage": {
-		"title": "Gestione del tema",
-		"instruction": "Scegli un argomento!",
+		"title": "Gestione temi",
+		"instruction": "Scegli un tema!",
 		"themes": {
-			"auto": "automatico"
+			"auto": "Automatico"
 		}
 	},
 	"import": {
-		"title": "Importare",
+		"title": "Importa",
 		"tabs": {
-			"fileImport": "Importazione di file",
-			"textImport": "Importazione di testo"
+			"fileImport": "Importa file",
+			"textImport": "Importa testo"
 		},
 		"dropArea": {
 			"icon": {
-				"alt": "Carica icona"
+				"alt": "Icona di caricamento"
 			},
-			"text": "Trascinare e rilasciare il file qui o fare clic su Seleziona il file"
+			"text": "Trascina i file qui oppure fai clic per selezionare i file."
 		},
 		"textArea": {
-			"placeholder": "Immettere il testo per importare ..."
+			"placeholder": "Inserisci il testo da importare..."
 		},
 		"buttons": {
-			"import": "Importare"
+			"import": "Importa"
 		},
 		"alerts": {
-			"importSuccess": "Importato con successo",
-			"importFailed": "Importa non riuscita: $ {errore}",
-			"unknownError": "Errore sconosciuto"
+			"importSuccess": "Importazione riuscita.",
+			"importFailed": "Importazione non riuscita: ${error}",
+			"unknownError": "Errore sconosciuto."
 		},
 		"errors": {
-			"noFileSelected": "Seleziona un file",
-			"fileImportFailed": "Import file non riuscito: $ {messaggio}",
-			"noTextContent": "Inserisci il contenuto di testo",
-			"textImportFailed": "Importazione di testo non riuscita: $ {messaggio}",
-			"handler": "processore",
-			"error": "errore"
+			"noFileSelected": "Seleziona un file.",
+			"fileImportFailed": "Importazione file non riuscita: ${message}",
+			"noTextContent": "Inserisci il contenuto del testo.",
+			"textImportFailed": "Importazione testo non riuscita: ${message}",
+			"unknownError": "Errore sconosciuto.",
+			"handler": "Gestore",
+			"error": "Errore"
 		},
 		"fileItem": {
 			"removeButton": {
-				"title": "eliminare"
+				"title": "Rimuovi"
+			},
+			"removeButtonIcon": {
+				"alt": "Rimuovi"
 			}
 		}
 	},
 	"aisource_editor": {
-		"title": "Editor di fonte AI",
+		"title": "Editor sorgente IA",
 		"fileList": {
-			"title": "Elenco di fonti AI",
+			"title": "Elenco sorgenti IA",
 			"addButton": {
-				"title": ""
+				"title": "+"
 			}
 		},
-		"configTitle": "Configurazione della sorgente AI",
+		"configTitle": "Configurazione sorgente IA",
 		"generatorSelect": {
-			"label": "Seleziona il generatore",
+			"label": "Seleziona generatore",
 			"placeholder": "Seleziona"
 		},
 		"buttons": {
-			"save": "salva",
-			"delete": "eliminare"
+			"save": "Salva",
+			"delete": "Elimina"
 		},
 		"alerts": {
-			"fetchFileListFailed": "Impossibile ottenere elenco di file: $ {errore}",
-			"fetchGeneratorListFailed": "Impossibile ottenere l'elenco dei generatori: $ {errore}",
-			"fetchFileDataFailed": "Impossibile ottenere i dati dei file: $ {errore}",
-			"noFileSelectedSave": "Non è selezionato alcun file da salvare.",
-			"saveFileFailed": "Impossibile salvare il file: $ {errore}",
-			"noFileSelectedDelete": "Non è selezionato alcun file da eliminare.",
-			"deleteFileFailed": "Impossibile eliminare il file: $ {errore}",
-			"invalidFileName": "Il nome del file non può contenere i seguenti caratteri: / \\: *? \"<> |",
-			"addFileFailed": "Impossibile aggiungere file: $ {errore}",
-			"fetchConfigTemplateFailed": "Impossibile ottenere il modello di configurazione",
-			"noGeneratorSelectedSave": "Seleziona il generatore prima di salvare"
+			"fetchFileListFailed": "Impossibile ottenere l'elenco dei file: ${error}",
+			"fetchGeneratorListFailed": "Impossibile ottenere l'elenco dei generatori: ${error}",
+			"fetchFileDataFailed": "Impossibile ottenere i dati del file: ${error}",
+			"noFileSelectedSave": "Nessun file selezionato da salvare.",
+			"saveFileFailed": "Impossibile salvare il file: ${error}",
+			"noFileSelectedDelete": "Nessun file selezionato da eliminare.",
+			"deleteFileFailed": "Impossibile eliminare il file: ${error}",
+			"invalidFileName": "Il nome del file non può contenere i seguenti caratteri: / \\ : * ? \" < > |",
+			"addFileFailed": "Impossibile aggiungere il file: ${error}",
+			"fetchConfigTemplateFailed": "Impossibile ottenere il template di configurazione.",
+			"noGeneratorSelectedSave": "Seleziona un generatore prima di salvare."
 		},
 		"confirm": {
-			"unsavedChanges": "Hai cambiati cambiamenti. Vuoi rinunciare alle modifiche?",
+			"unsavedChanges": "Hai modifiche non salvate. Vuoi scartarle?",
 			"deleteFile": "Sei sicuro di voler eliminare il file?",
-			"unsavedChangesBeforeUnload": "Hai cambiati cambiamenti. Sei sicuro di voler lasciare questa pagina?"
+			"unsavedChangesBeforeUnload": "Hai modifiche non salvate. Sei sicuro di voler lasciare questa pagina?"
 		},
 		"prompts": {
-			"newFileName": "Inserisci il nuovo nome del file di origine AI (non includere il nome del suffisso):"
+			"newFileName": "Inserisci il nuovo nome del file sorgente IA (senza estensione):"
 		},
 		"editor": {
-			"disabledIndicator": "Seleziona prima il generatore"
+			"disabledIndicator": "Seleziona prima un generatore."
 		}
 	},
 	"part_config": {
-		"title": "Configurazione parte",
-		"pageTitle": "Configurazione parte",
+		"title": "Configurazione componente",
+		"pageTitle": "Configurazione componente",
 		"labels": {
-			"partType": "Seleziona un tipo di componente",
-			"part": "Seleziona parti"
+			"partType": "Seleziona tipo di componente",
+			"part": "Seleziona componente"
 		},
 		"placeholders": {
 			"partTypeSelect": "Seleziona",
 			"partSelect": "Seleziona"
 		},
 		"editor": {
-			"title": "Configurazione parte",
-			"disabledIndicator": "Questo componente non supporta la configurazione",
+			"title": "Configurazione componente",
+			"disabledIndicator": "Questo componente non supporta la configurazione.",
 			"buttons": {
-				"save": "salva"
+				"save": "Salva"
 			}
 		},
 		"errorMessage": {
@@ -348,343 +352,408 @@
 			}
 		},
 		"alerts": {
-			"fetchPartTypesFailed": "Impossibile ottenere il tipo di componente",
-			"fetchPartsFailed": "Impossibile ottenere l'elenco dei componenti",
-			"loadEditorFailed": "Impossibile caricare l'editor",
-			"saveConfigFailed": "Salva la configurazione del componente non riuscita",
-			"unsavedChanges": "Hai cambiati cambiamenti. Vuoi rinunciare alle modifiche?",
-			"beforeUnload": "Hai cambiati cambiamenti. Sei sicuro di voler andartene?"
+			"fetchPartTypesFailed": "Impossibile ottenere i tipi di componente.",
+			"fetchPartsFailed": "Impossibile ottenere l'elenco dei componenti.",
+			"loadEditorFailed": "Impossibile caricare l'editor.",
+			"saveConfigFailed": "Impossibile salvare la configurazione del componente.",
+			"unsavedChanges": "Hai modifiche non salvate. Vuoi scartarle?",
+			"beforeUnload": "Hai modifiche non salvate. Sei sicuro di voler uscire?"
 		}
 	},
 	"uninstall": {
 		"title": "Disinstalla",
-		"titleWithName": "Disinstall $ {type}/$ {name}",
-		"confirmMessage": "Sei sicuro di voler disinstallare $ {type}: $ {name}?",
+		"titleWithName": "Disinstalla ${type}/${name}",
+		"confirmMessage": "Sei sicuro di voler disinstallare ${type}: ${name}?",
 		"invalidParamsTitle": "Parametri non validi",
 		"infoMessage": {
 			"icon": {
-				"alt": "Icona delle informazioni"
+				"alt": "Icona informazioni"
 			}
 		},
 		"errorMessage": {
 			"icon": {
-				"alt": "Icona di errore"
+				"alt": "Icona errore"
 			}
 		},
 		"buttons": {
-			"confirm": "Conferma la disinstallazione",
-			"cancel": "Cancellare",
-			"back": "ritorno"
+			"confirm": "Conferma disinstallazione",
+			"cancel": "Annulla",
+			"back": "Indietro"
 		},
 		"alerts": {
-			"success": "Sinstallata correttamente $ {type}: $ {name}",
-			"failed": "Disinstalla non riuscita: $ {errore}",
-			"invalidParams": "Parametro di richiesta non valido.",
-			"httpError": "Errore HTTP! Codice di stato: $ {status}"
+			"success": "${type}: ${name} disinstallato correttamente.",
+			"failed": "Disinstallazione non riuscita: ${error}",
+			"invalidParams": "Parametri della richiesta non validi.",
+			"httpError": "Errore HTTP! Codice stato: ${status}"
 		}
 	},
 	"chat": {
 		"new": {
 			"title": "Nuova chat"
 		},
-		"title": "chiacchierata",
+		"title": "Chat",
 		"sidebar": {
 			"world": {
 				"icon": {
-					"alt": "Icone del mondo"
+					"alt": "Icona Mondo"
 				},
-				"title": "mondo"
+				"title": "Mondo"
 			},
 			"persona": {
 				"icon": {
-					"alt": "Icona del ruolo dell'utente"
+					"alt": "Icona Persona utente"
 				},
-				"title": "Ruoli utente"
+				"title": "Persona utente"
 			},
 			"charList": {
 				"icon": {
-					"alt": "Icona dell'elenco di ruolo"
+					"alt": "Icona Elenco personaggi"
 				},
-				"title": "Elenco dei ruolo",
+				"title": "Elenco personaggi",
 				"buttons": {
 					"addChar": {
-						"title": "Aggiungi un ruolo"
+						"title": "Aggiungi personaggio"
 					},
 					"addCharIcon": {
-						"alt": "Aggiungi un'icona di ruolo"
+						"alt": "Icona Aggiungi personaggio"
 					}
 				}
 			},
-			"noSelection": "nessuno",
-			"noDescription": "Nessuna informazione di descrizione"
+			"noSelection": "Nessuna",
+			"noDescription": "Nessuna descrizione disponibile."
 		},
 		"chatArea": {
-			"title": "chiacchierata",
+			"title": "Chat",
 			"menuButton": {
-				"title": "menu"
+				"title": "Menu"
 			},
 			"menuButtonIcon": {
-				"alt": "Icona del menu"
+				"alt": "Icona Menu"
 			},
 			"input": {
-				"placeholder": "Inserisci informazioni ...\nCtrl+Enter Invia"
+				"placeholder": "Scrivi un messaggio...\\nCtrl+Invio per inviare"
 			},
 			"sendButton": {
-				"title": "Inviare"
+				"title": "Invia"
 			},
 			"sendButtonIcon": {
-				"alt": "Invia icona"
+				"alt": "Icona Invia"
 			},
 			"uploadButton": {
-				"title": "Caricamento"
+				"title": "Carica"
 			},
 			"uploadButtonIcon": {
-				"alt": "Carica icona"
+				"alt": "Icona Carica"
 			},
 			"voiceButton": {
-				"title": "registrazione"
+				"title": "Registra vocale"
 			},
 			"voiceButtonIcon": {
-				"alt": "Icona di registrazione"
+				"alt": "Icona Registra vocale"
 			},
 			"photoButton": {
-				"title": "foto"
+				"title": "Foto"
 			},
 			"photoButtonIcon": {
-				"alt": "Icone fotografiche"
+				"alt": "Icona Foto"
 			}
 		},
 		"rightSidebar": {
-			"title": "Descrizione Informazioni"
+			"title": "Dettagli"
 		},
 		"messageList": {
-			"confirmDeleteMessage": "Conferma di eliminare questo messaggio?"
+			"confirmDeleteMessage": "Confermi di voler eliminare questo messaggio?"
 		},
 		"voiceRecording": {
-			"errorAccessingMicrophone": "Impossibile accedere al microfono"
+			"errorAccessingMicrophone": "Impossibile accedere al microfono."
 		},
 		"messageView": {
 			"buttons": {
 				"edit": {
-					"title": "modificare"
+					"title": "Modifica"
 				},
 				"editIcon": {
-					"alt": "Modifica icona"
+					"alt": "Icona Modifica"
 				},
 				"delete": {
-					"title": "eliminare"
+					"title": "Elimina"
 				},
 				"deleteIcon": {
-					"alt": "Elimina icona"
+					"alt": "Icona Elimina"
 				}
 			}
 		},
 		"messageEdit": {
 			"input": {
-				"placeholder": "Inserisci il contenuto ..."
+				"placeholder": "Inserisci contenuto..."
 			},
 			"buttons": {
 				"confirm": {
-					"title": "confermare"
+					"title": "Conferma"
 				},
 				"confirmIcon": {
-					"alt": "Conferma icona"
+					"alt": "Icona Conferma"
 				},
 				"cancel": {
-					"title": "Cancellare"
+					"title": "Annulla"
 				},
 				"cancelIcon": {
-					"alt": "Annulla icona"
+					"alt": "Icona Annulla"
 				},
 				"upload": {
-					"title": "Caricamento"
+					"title": "Carica"
 				},
 				"uploadIcon": {
-					"alt": "Carica icona"
+					"alt": "Icona Carica"
 				}
 			}
 		},
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "scaricamento"
+					"title": "Scarica"
 				},
 				"downloadIcon": {
-					"alt": "Scarica icona"
+					"alt": "Icona Scarica"
 				},
 				"delete": {
-					"title": "eliminare"
+					"title": "Elimina"
 				},
 				"deleteIcon": {
-					"alt": "Elimina icona"
+					"alt": "Icona Elimina"
 				}
 			}
 		},
 		"charCard": {
-			"frequencyLabel": "frequenza",
+			"frequencyLabel": "Frequenza",
 			"buttons": {
 				"removeChar": {
-					"title": "Uscire dalla conversazione"
+					"title": "Rimuovi dalla chat"
 				},
 				"removeCharIcon": {
-					"alt": "Rimuovi l'icona del ruolo"
+					"alt": "Icona Rimuovi personaggio"
 				},
 				"forceReply": {
-					"title": "Risposta forzata"
+					"title": "Forza risposta"
 				},
 				"forceReplyIcon": {
-					"alt": "Icona di risposta forzata"
+					"alt": "Icona Forza risposta"
 				}
 			}
 		}
 	},
 	"chat_history": {
-		"title": "Cronologia delle chat",
-		"pageTitle": "Cronologia delle chat",
+		"title": "Cronologia chat",
+		"pageTitle": "Cronologia chat",
 		"sortOptions": {
-			"time_desc": "Ordine discendente del tempo",
-			"time_asc": "Tempo ascendente"
+			"time_desc": "Data (più recenti)",
+			"time_asc": "Data (meno recenti)"
 		},
 		"filterInput": {
-			"placeholder": "ricerca..."
+			"placeholder": "Cerca..."
 		},
 		"selectAll": "Seleziona tutto",
 		"buttons": {
-			"reverseSelect": "Selezione inversa",
-			"deleteSelected": "Elimina selezionata",
-			"exportSelected": "L'esportazione viene selezionata"
+			"reverseSelect": "Inverti selezione",
+			"deleteSelected": "Elimina selezionati",
+			"exportSelected": "Esporta selezionati"
 		},
-		"confirmDeleteChat": "Sei sicuro di voler eliminare la cronologia della chat con $ {chars}?",
-		"confirmDeleteMultiChats": "Sei sicuro di voler eliminare la cronologia di chat $ {count} selezionata?",
+		"confirmDeleteChat": "Sei sicuro di voler eliminare la cronologia chat con ${chars}?",
+		"confirmDeleteMultiChats": "Sei sicuro di voler eliminare le ${count} cronologie chat selezionate?",
 		"alerts": {
-			"noChatSelectedForDeletion": "Seleziona la cronologia della chat da eliminare",
-			"noChatSelectedForExport": "Seleziona la cronologia della chat per esportare"
+			"noChatSelectedForDeletion": "Seleziona le cronologie chat da eliminare.",
+			"noChatSelectedForExport": "Seleziona le cronologie chat da esportare."
 		},
 		"chatItemButtons": {
-			"continue": "continuare",
-			"copy": "copia",
-			"export": "Esportare",
-			"delete": "eliminare"
+			"continue": "Continua",
+			"copy": "Copia",
+			"export": "Esporta",
+			"delete": "Elimina"
 		}
 	},
 	"discord_bots": {
-		"title": "Robot discord",
-		"cardTitle": "Robot discord",
+		"title": "Bot Discord",
+		"cardTitle": "Bot Discord",
 		"buttons": {
 			"newBot": "Nuovo",
-			"deleteBot": "eliminare"
+			"deleteBot": "Elimina"
 		},
 		"configCard": {
 			"title": "Configurazione bot",
 			"labels": {
-				"character": "Ruolo",
+				"character": "Personaggio",
 				"apiKey": "Chiave API Discord",
 				"config": "Configurazione"
 			},
-			"charSelectPlaceholder": "Seleziona un ruolo",
+			"charSelectPlaceholder": "Seleziona personaggio",
 			"apiKeyInput": {
-				"placeholder": "Immettere la chiave API"
+				"placeholder": "Inserisci chiave API"
 			},
 			"toggleApiKeyIcon": {
-				"alt": "Passa ai tasti API di visualizzazione"
+				"alt": "Mostra/Nascondi chiave API"
 			},
 			"buttons": {
-				"saveConfig": "Salva la configurazione",
+				"saveConfig": "Salva configurazione",
 				"startBot": "Avvia",
-				"stopBot": "fermare"
+				"stopBot": "Arresta"
 			}
 		},
 		"prompts": {
-			"newBotName": "Inserisci un nuovo nome di bot:"
+			"newBotName": "Inserisci un nuovo nome per il bot:"
 		},
 		"alerts": {
-			"botExists": "Un bot chiamato \"$ {botname}\" esiste già, per favore usa un nome diverso.",
-			"unsavedChanges": "Hai cambiati cambiamenti. Vuoi rinunciare alle modifiche?",
-			"configSaved": "Configurazione salvata correttamente",
-			"httpError": "Errore HTTP",
-			"beforeUnload": "Hai cambiati cambiamenti. Sei sicuro di voler andartene?"
+			"botExists": "Un bot con nome \"${botname}\" esiste già, usa un nome diverso.",
+			"unsavedChanges": "Hai modifiche non salvate. Vuoi scartarle?",
+			"configSaved": "Configurazione salvata correttamente.",
+			"httpError": "Errore HTTP.",
+			"beforeUnload": "Hai modifiche non salvate. Sei sicuro di voler uscire?"
 		}
 	},
 	"telegram_bots": {
-		"title": "Robot Telegram",
-		"cardTitle": "Telegram Robot Management",
+		"title": "Bot Telegram",
+		"cardTitle": "Gestione Bot Telegram",
 		"buttons": {
 			"newBot": "Nuovo",
-			"deleteBot": "eliminare"
+			"deleteBot": "Elimina"
 		},
 		"configCard": {
-			"title": "Configurazione robot",
+			"title": "Configurazione bot",
 			"labels": {
-				"character": "Legare il ruolo",
+				"character": "Personaggio",
 				"botToken": "Token Bot Telegram",
 				"config": "Configurazione"
 			},
-			"charSelectPlaceholder": "Seleziona un ruolo",
+			"charSelectPlaceholder": "Seleziona personaggio",
 			"botTokenInput": {
-				"placeholder": "Inserisci il token di Bot Telegram"
+				"placeholder": "Inserisci token Bot Telegram"
 			},
 			"toggleBotTokenIcon": {
-				"alt": "Passa ai tasti API di visualizzazione"
+				"alt": "Mostra/Nascondi token Bot"
 			},
 			"buttons": {
-				"saveConfig": "Salva la configurazione",
+				"saveConfig": "Salva configurazione",
 				"startBot": "Avvia",
-				"stopBot": "fermare"
+				"stopBot": "Arresta"
 			}
 		},
 		"prompts": {
-			"newBotName": "Inserisci un nuovo nome di bot:"
+			"newBotName": "Inserisci un nuovo nome per il bot:"
 		},
 		"alerts": {
-			"botExists": "Il robot chiamato \"${botname}\" esiste già, usa un nome diverso.",
-			"unsavedChanges": "Hai cambiati cambiamenti. Sei sicuro di voler abbandonare questi cambiamenti?",
-			"configSaved": "La configurazione è stata salvata correttamente!",
-			"httpError": "Errore di richiesta HTTP",
-			"beforeUnload": "Hai cambiati cambiamenti. Sei sicuro di voler lasciare la pagina corrente?"
+			"botExists": "Un bot con nome \"${botname}\" esiste già, usa un nome diverso.",
+			"unsavedChanges": "Hai modifiche non salvate. Sei sicuro di volerle scartare?",
+			"configSaved": "Configurazione salvata con successo!",
+			"httpError": "Errore HTTP.",
+			"beforeUnload": "Hai modifiche non salvate. Sei sicuro di voler lasciare la pagina corrente?"
 		}
 	},
 	"terminal_assistant": {
-		"title": "Assistenza terminale",
-		"initialMessage": "Fount supporta la distribuzione dei tuoi personaggi preferiti nel tuo terminale per aiutarti nella codifica!",
-		"initialMessageLink": "Clicca qui per saperne di più"
+		"title": "Assistente terminale",
+		"initialMessage": "Fount supporta l'integrazione dei tuoi personaggi preferiti nel terminale per assisterti nella programmazione!",
+		"initialMessageLink": "Clicca qui per saperne di più."
 	},
 	"access": {
-		"title": "Accedi fonte su altri dispositivi",
-		"heading": "Vuoi accedere alla fonte su un altro dispositivo?",
+		"title": "Accedi a Fount su altri dispositivi",
+		"heading": "Vuoi accedere a Fount da altri dispositivi?",
 		"instruction": {
-			"sameLAN": "Assicurati che il dispositivo e l'host di fonte siano sulla stessa LAN",
-			"accessthis": "Visita il seguente URL:"
+			"sameLAN": "Assicurati che il dispositivo e l'host Fount siano sulla stessa rete locale.",
+			"accessthis": "Visita questo URL:"
 		},
-		"copyButton": "Copia l'URL",
-		"copied": "L'URL è stato copiato negli appunti!"
+		"copyButton": "Copia URL",
+		"copied": "URL copiato negli appunti!"
 	},
 	"proxy": {
 		"title": "Proxy API",
-		"heading": "Indirizzo proxy API aperto",
-		"instruction": "Compila il seguente indirizzo in qualsiasi applicazione che richiede il formato API OpenAI e puoi utilizzare la fonte AI in Fount!",
-		"copyButton": "Indirizzo di copia",
-		"copied": "L'indirizzo è stato copiato negli appunti!"
+		"heading": "Indirizzo proxy API OpenAI",
+		"instruction": "Inserisci il seguente indirizzo in qualsiasi applicazione che richieda il formato API OpenAI per utilizzare la sorgente AI in Fount!",
+		"copyButton": "Copia indirizzo",
+		"copied": "Indirizzo copiato negli appunti!"
 	},
 	"404": {
 		"title": "Pagina non trovata",
-		"pageNotFoundText": "Oops! Sembra che tu sia arrivato a una pagina che non esiste.",
+		"pageNotFoundText": "Ops! Sembra che tu sia finito in una pagina inesistente.",
 		"homepageButton": "Torna alla homepage",
 		"MineSweeper": {
 			"difficultyLabel": "Difficoltà:",
-			"difficultyEasy": "Semplice",
-			"difficultyMedium": "medio",
-			"difficultyHard": "difficoltà",
-			"difficultyCustom": "Personalizzare",
-			"minesLeftLabel": "Numero di tuono rimanente:",
-			"timeLabel": "tempo:",
-			"restartButton": "ricomincia",
-			"rowsLabel": "Numero di righe:",
-			"colsLabel": "Numero di colonne:",
-			"minesCountLabel": "Numero di tuoni:",
+			"difficultyEasy": "Facile",
+			"difficultyMedium": "Medio",
+			"difficultyHard": "Difficile",
+			"difficultyCustom": "Personalizzata",
+			"minesLeftLabel": "Mine rimaste:",
+			"timeLabel": "Tempo:",
+			"restartButton": "Ricomincia",
+			"rowsLabel": "Righe:",
+			"colsLabel": "Colonne:",
+			"minesCountLabel": "Numero mine:",
 			"winMessage": "Congratulazioni, hai vinto!",
-			"loseMessage": "Il gioco è finito, calpesti una mine antiuomo!",
-			"soundOn": "Il suono è acceso",
-			"soundOff": "Sound off"
+			"loseMessage": "Partita finita, hai colpito una mina!",
+			"soundOn": "Audio attivo",
+			"soundOff": "Audio disattivato"
+		}
+	},
+	"userSettings": {
+		"title": "Impostazioni utente",
+		"PageTitle": "Impostazioni utente",
+		"apiError": "Richiesta API non riuscita: ${message}",
+		"generalError": "Si è verificato un errore: ${message}",
+		"userInfo": {
+			"title": "Informazioni utente",
+			"usernameLabel": "Nome utente:",
+			"creationDateLabel": "Data creazione account:",
+			"folderSizeLabel": "Dimensioni dati utente:",
+			"folderPathLabel": "Percorso dati utente:",
+			"copyPathBtnTitle": "Copia percorso",
+			"copiedAlert": "Percorso copiato negli appunti!"
+		},
+		"changePassword": {
+			"title": "Modifica password",
+			"currentPasswordLabel": "Password attuale:",
+			"newPasswordLabel": "Nuova password:",
+			"confirmNewPasswordLabel": "Conferma nuova password:",
+			"submitButton": "Modifica password",
+			"errorMismatch": "Le nuove password non coincidono.",
+			"success": "Password modificata con successo."
+		},
+		"renameUser": {
+			"title": "Rinomina utente",
+			"newUsernameLabel": "Nuovo nome utente:",
+			"submitButton": "Rinomina utente",
+			"confirmMessage": "Sei sicuro di voler cambiare il tuo nome utente? Dovrai effettuare nuovamente l'accesso.",
+			"success": "Nome utente rinominato correttamente in \"${newUsername}\". Verrai disconnesso."
+		},
+		"userDevices": {
+			"title": "Dispositivi/Sessioni utente",
+			"refreshButtonTitle": "Aggiorna elenco",
+			"noDevicesFound": "Nessun dispositivo o sessione trovata.",
+			"deviceInfo": "ID dispositivo: ${deviceId}",
+			"thisDevice": "Questo dispositivo",
+			"deviceDetails": "Ultimo accesso: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
+			"revokeButton": "Revoca",
+			"revokeConfirm": "Sei sicuro di voler disconnettere questo dispositivo/sessione?",
+			"revokeSuccess": "Dispositivo/Sessione revocato con successo."
+		},
+		"logout": {
+			"title": "Esci",
+			"description": "Verrai disconnesso dal tuo account su questo dispositivo.",
+			"buttonText": "Esci",
+			"confirmMessage": "Sei sicuro di voler uscire?",
+			"successMessage": "Disconnessione riuscita. Reindirizzamento alla pagina di accesso in corso..."
+		},
+		"deleteAccount": {
+			"title": "Elimina account",
+			"warning": "ATTENZIONE: questa azione eliminerà permanentemente il tuo account e tutti i dati correlati e non potrà essere annullata.",
+			"submitButton": "Elimina il mio account",
+			"confirmMessage1": "Attenzione! Sei sicuro di voler eliminare permanentemente il tuo account? Questa operazione non può essere annullata.",
+			"confirmMessage2": "Per confermare l'eliminazione, inserisci il tuo nome utente \"${username}\":",
+			"usernameMismatch": "Il nome utente inserito non corrisponde all'utente corrente. Eliminazione annullata.",
+			"success": "Account eliminato con successo. Verrai disconnesso."
+		},
+		"passwordConfirm": {
+			"title": "Conferma operazione",
+			"message": "Per continuare, inserisci la tua password attuale:",
+			"passwordLabel": "Password:",
+			"confirmButton": "Conferma",
+			"cancelButton": "Annulla"
 		}
 	}
 }

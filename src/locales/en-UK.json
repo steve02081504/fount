@@ -5,19 +5,19 @@
 			"start": "Starting server",
 			"starting": "Server starting...",
 			"ready": "Server is ready",
-			"usesdTime": "Start time: ${time}s",
+			"usesdTime": "Startup time: ${time}s",
 			"showUrl": {
 				"https": "HTTPS server running on ${url}",
 				"http": "HTTP server running on ${url}"
 			},
-			"standingBy": "standing by..."
+			"standingBy": "Standing by..."
 		},
 		"jobs": {
 			"restartingJob": "Restarting ${parttype} ${partname} job for user ${username}: ${uid}"
 		},
 		"ipc": {
 			"sendCommandFailed": "Failed to send command: ${error}",
-			"invalidCommand": "Invalid command, please use \"fount runshell <username> <shellname> <parameters...>\"",
+			"invalidCommand": "Invalid command. Please use \"fount runshell <username> <shellname> <parameters...>\"",
 			"runShellLog": "Running shell ${shellname} as ${username}, parameters: ${args}",
 			"invokeShellLog": "Invoking shell ${shellname} as ${username}, parameters: ${invokedata}",
 			"unsupportedCommand": "Unsupported command type",
@@ -25,7 +25,7 @@
 			"invalidCommandFormat": "Invalid command format",
 			"socketError": "Socket Error: ${error}",
 			"instanceRunning": "Another instance is already running",
-			"serverStartPrefix": "server start",
+			"serverStartPrefix": "Server start",
 			"serverStarted": "IPC server started",
 			"parseResponseFailed": "Failed to parse server response: ${error}",
 			"cannotParseResponse": "Cannot parse server response",
@@ -39,10 +39,10 @@
 				"localAhead": "Local branch is ahead of remote branch. No update needed.",
 				"diverged": "Local and remote branches have diverged. Forcing update...",
 				"upToDate": "Already up-to-date.",
-				"updateFailed": "Failed to update parts from remote repository: ${error}"
+				"updateFailed": "Failed to update components from remote repository: ${error}"
 			},
-			"partInitTime": "${parttype} Part ${partname} Initialization time: ${time}s",
-			"partLoadTime": "${parttype} Part ${partname} Loading time: ${time}s"
+			"partInitTime": "${parttype} Component ${partname} Initialisation time: ${time}s",
+			"partLoadTime": "${parttype} Component ${partname} Loading time: ${time}s"
 		},
 		"web": {
 			"requestReceived": "Request received: ${method} ${url}"
@@ -54,12 +54,12 @@
 			"tokenVerifyError": "Token verification error: ${error}",
 			"refreshTokenError": "Refresh token error: ${error}",
 			"logoutRefreshTokenProcessError": "Logout refresh token process error: ${error}",
-			"revokeTokenNoJTI": "Cannot revoke token without jti",
-			"accountLockedLog": "User account ${username} locked due to multiple failed login attempts"
+			"revokeTokenNoJTI": "Cannot revoke token without JTI.",
+			"accountLockedLog": "User account ${username} locked due to multiple failed login attempts."
 		},
 		"verification": {
 			"codeGeneratedLog": "Verification code: ${code} (expires in 60 seconds)",
-			"codeNotifyTitle": "Verification code",
+			"codeNotifyTitle": "Verification Code",
 			"codeNotifyBody": "Verification code: ${code} (expires in 60 seconds)"
 		},
 		"tray": {
@@ -67,14 +67,14 @@
 			"createTrayFailed": "Failed to create tray: ${error}"
 		},
 		"discordbot": {
-			"botStarted": "char ${charname} logged in on discord bot ${botusername}"
+			"botStarted": "Character ${charname} has logged in to the Discord bot ${botusername}."
 		},
 		"telegrambot": {
-			"botStarted": "char ${charname} logged in on telegram bot ${botusername}"
+			"botStarted": "Character ${charname} has logged in to the Telegram bot ${botusername}."
 		}
 	},
 	"protocolhandler": {
-		"title": "Processing Fount Protocol",
+		"title": "Handling Fount Protocol",
 		"processing": "Processing protocol...",
 		"invalidProtocol": "Invalid protocol",
 		"insufficientParams": "Insufficient parameters",
@@ -94,18 +94,18 @@
 		"passwordInput": {
 			"placeholder": "Enter password"
 		},
-		"confirmPasswordLabel": "Confirm password:",
+		"confirmPasswordLabel": "Confirm Password:",
 		"confirmPasswordInput": {
 			"placeholder": "Enter password again"
 		},
-		"verificationCodeLabel": "Verification code:",
+		"verificationCodeLabel": "Verification Code:",
 		"verificationCodeInput": {
 			"placeholder": "Enter verification code"
 		},
-		"sendCodeButton": "Send code",
+		"sendCodeButton": "Send Code",
 		"login": {
-			"title": "Log in",
-			"submitButton": "Log in",
+			"title": "Log In",
+			"submitButton": "Log In",
 			"toggleLink": {
 				"text": "No account?",
 				"link": "Register now"
@@ -123,12 +123,12 @@
 			"passwordMismatch": "Passwords do not match.",
 			"loginError": "Login error.",
 			"registrationError": "Registration error.",
-			"verificationCodeError": "Verification code is incorrect or expired.",
+			"verificationCodeError": "Verification code is incorrect or has expired.",
 			"verificationCodeSent": "Verification code sent successfully.",
 			"verificationCodeSendError": "Failed to send verification code.",
 			"verificationCodeRateLimit": "Too many verification code requests. Please try again later.",
 			"lowPasswordStrength": "Password strength is too low.",
-			"accountAlreadyExists": "Account already exists"
+			"accountAlreadyExists": "Account already exists."
 		},
 		"passwordStrength": {
 			"veryWeak": "Very weak",
@@ -141,8 +141,8 @@
 	"tutorial": {
 		"title": "Tutorial?",
 		"modal": {
-			"title": "Welcome to fount!",
-			"instruction": "Would you like to take the newbie tutorial?",
+			"title": "Welcome to Fount!",
+			"instruction": "Would you like to take the introductory tutorial?",
 			"buttons": {
 				"start": "Start Tutorial",
 				"skip": "Skip"
@@ -150,27 +150,27 @@
 		},
 		"endScreen": {
 			"title": "Awesome! Tutorial Completed!",
-			"subtitle": "Now you have learned how to operate!",
-			"endButton": "Let's Go!"
+			"subtitle": "You're now familiar with the basics!",
+			"endButton": "Get Started!"
 		},
 		"progressMessages": {
-			"mouseMove": "Please use your finger to try to hold the mouse ${mouseIcon}<br/>and then move it",
-			"keyboardPress": "Please find your keyboard ${keyboardIcon}<br/>and try to press the keyboard with your finger",
-			"mobileTouchMove": "Please find your phone ${phoneIcon}<br/>Try to touch the screen with any of your fingers, and then move it",
-			"mobileClick": "Please try to touch the phone screen ${phoneIcon} with any of your fingers<br/>and then release"
+			"mouseMove": "Please use your finger to try to hold the mouse ${mouseIcon}<br/>and then move it.",
+			"keyboardPress": "Please find your keyboard ${keyboardIcon}<br/>and try to press the keyboard with your finger.",
+			"mobileTouchMove": "Please find your phone ${phoneIcon}<br/>Try to touch the screen with any of your fingers, and then move it.",
+			"mobileClick": "Please try to touch the phone screen ${phoneIcon} with any of your fingers<br/>and then release."
 		}
 	},
 	"home": {
 		"title": "Home",
-		"escapeConfirm": "Are you sure you want to leave the fount?",
+		"escapeConfirm": "Are you sure you want to leave Fount?",
 		"filterInput": {
 			"placeholder": "Search..."
 		},
 		"sidebarTitle": "Details",
 		"itemDescription": "Select an item here to view details.",
-		"noDescription": "No description information",
+		"noDescription": "No description available.",
 		"alerts": {
-			"fetchHomeRegistryFailed": "Failed to fetch home registry information"
+			"fetchHomeRegistryFailed": "Failed to fetch home registry information."
 		},
 		"functionMenu": {
 			"icon": {
@@ -181,7 +181,7 @@
 			"tab": "Characters",
 			"title": "Character Selection",
 			"subtitle": "Select a character—then start chatting!",
-			"none": "Nothing here",
+			"none": "Empty",
 			"card": {
 				"refreshButton": {
 					"alt": "Refresh",
@@ -201,7 +201,7 @@
 			"tab": "Worlds",
 			"title": "World Selection",
 			"subtitle": "Choose a world, and immerse yourself!",
-			"none": "Nothing here",
+			"none": "Empty",
 			"card": {
 				"refreshButton": {
 					"alt": "Refresh",
@@ -221,7 +221,7 @@
 			"tab": "Personas",
 			"title": "Persona Selection",
 			"subtitle": "Select a persona, experience life.",
-			"none": "Nothing here",
+			"none": "Empty",
 			"card": {
 				"refreshButton": {
 					"alt": "Refresh",
@@ -264,21 +264,25 @@
 			"import": "Import"
 		},
 		"alerts": {
-			"importSuccess": "Import successful",
+			"importSuccess": "Import successful.",
 			"importFailed": "Import failed: ${error}",
-			"unknownError": "Unknown error"
+			"unknownError": "Unknown error."
 		},
 		"errors": {
-			"noFileSelected": "Please select a file",
+			"noFileSelected": "Please select a file.",
 			"fileImportFailed": "File import failed: ${message}",
-			"noTextContent": "Please enter text content",
+			"noTextContent": "Please enter text content.",
 			"textImportFailed": "Text import failed: ${message}",
+			"unknownError": "Unknown error.",
 			"handler": "Handler",
 			"error": "Error"
 		},
 		"fileItem": {
 			"removeButton": {
 				"title": "Remove"
+			},
+			"removeButtonIcon": {
+				"alt": "Remove"
 			}
 		}
 	},
@@ -290,7 +294,7 @@
 				"title": "+"
 			}
 		},
-		"configTitle": "AI Source Config",
+		"configTitle": "AI Source Configuration",
 		"generatorSelect": {
 			"label": "Select Generator",
 			"placeholder": "Please select"
@@ -309,8 +313,8 @@
 			"deleteFileFailed": "Failed to delete file: ${error}",
 			"invalidFileName": "File name cannot contain the following characters: / \\ : * ? \" < > |",
 			"addFileFailed": "Failed to add file: ${error}",
-			"fetchConfigTemplateFailed": "Failed to fetch config template",
-			"noGeneratorSelectedSave": "Please select a generator before saving"
+			"fetchConfigTemplateFailed": "Failed to fetch config template.",
+			"noGeneratorSelectedSave": "Please select a generator before saving."
 		},
 		"confirm": {
 			"unsavedChanges": "You have unsaved changes. Do you want to discard changes?",
@@ -321,23 +325,23 @@
 			"newFileName": "Please enter a new AI source file name (without extension):"
 		},
 		"editor": {
-			"disabledIndicator": "Please select a generator first"
+			"disabledIndicator": "Please select a generator first."
 		}
 	},
 	"part_config": {
-		"title": "Part Config",
-		"pageTitle": "Part Config",
+		"title": "Component Configuration",
+		"pageTitle": "Component Configuration",
 		"labels": {
-			"partType": "Select Part Type",
-			"part": "Select Part"
+			"partType": "Select Component Type",
+			"part": "Select Component"
 		},
 		"placeholders": {
 			"partTypeSelect": "Please select",
 			"partSelect": "Please select"
 		},
 		"editor": {
-			"title": "Part Config",
-			"disabledIndicator": "This part does not support configuration",
+			"title": "Component Configuration",
+			"disabledIndicator": "This component does not support configuration.",
 			"buttons": {
 				"save": "Save"
 			}
@@ -348,10 +352,10 @@
 			}
 		},
 		"alerts": {
-			"fetchPartTypesFailed": "Failed to get part types",
-			"fetchPartsFailed": "Failed to get part list",
-			"loadEditorFailed": "Failed to load editor",
-			"saveConfigFailed": "Failed to save part config",
+			"fetchPartTypesFailed": "Failed to get component types.",
+			"fetchPartsFailed": "Failed to get component list.",
+			"loadEditorFailed": "Failed to load editor.",
+			"saveConfigFailed": "Failed to save component configuration.",
 			"unsavedChanges": "You have unsaved changes. Do you want to discard changes?",
 			"beforeUnload": "You have unsaved changes. Are you sure you want to leave?"
 		}
@@ -377,7 +381,7 @@
 			"back": "Back"
 		},
 		"alerts": {
-			"success": "${type}: ${name} uninstalled successfully",
+			"success": "${type}: ${name} uninstalled successfully.",
 			"failed": "Uninstall failed: ${error}",
 			"invalidParams": "Invalid request parameters.",
 			"httpError": "HTTP Error! Status code: ${status}"
@@ -416,7 +420,7 @@
 				}
 			},
 			"noSelection": "None",
-			"noDescription": "No description information"
+			"noDescription": "No description available."
 		},
 		"chatArea": {
 			"title": "Chat",
@@ -427,7 +431,7 @@
 				"alt": "Menu Icon"
 			},
 			"input": {
-				"placeholder": "Enter message...\nCtrl+Enter to send"
+				"placeholder": "Enter message...\\nCtrl+Enter to send"
 			},
 			"sendButton": {
 				"title": "Send"
@@ -442,10 +446,10 @@
 				"alt": "Upload Icon"
 			},
 			"voiceButton": {
-				"title": "Voice"
+				"title": "Voice Input"
 			},
 			"voiceButtonIcon": {
-				"alt": "Voice Icon"
+				"alt": "Voice Input Icon"
 			},
 			"photoButton": {
 				"title": "Photo"
@@ -455,13 +459,13 @@
 			}
 		},
 		"rightSidebar": {
-			"title": "Description Information"
+			"title": "Details"
 		},
 		"messageList": {
-			"confirmDeleteMessage": "Confirm delete this message?"
+			"confirmDeleteMessage": "Are you sure you want to delete this message?"
 		},
 		"voiceRecording": {
-			"errorAccessingMicrophone": "Failed to access microphone"
+			"errorAccessingMicrophone": "Failed to access microphone."
 		},
 		"messageView": {
 			"buttons": {
@@ -550,15 +554,15 @@
 		},
 		"selectAll": "Select All",
 		"buttons": {
-			"reverseSelect": "Reverse Select",
+			"reverseSelect": "Invert Selection",
 			"deleteSelected": "Delete Selected",
 			"exportSelected": "Export Selected"
 		},
 		"confirmDeleteChat": "Are you sure you want to delete the chat history with ${chars}?",
 		"confirmDeleteMultiChats": "Are you sure you want to delete the selected ${count} chat histories?",
 		"alerts": {
-			"noChatSelectedForDeletion": "Please select chat histories to delete",
-			"noChatSelectedForExport": "Please select chat histories to export"
+			"noChatSelectedForDeletion": "Please select chat histories to delete.",
+			"noChatSelectedForExport": "Please select chat histories to export."
 		},
 		"chatItemButtons": {
 			"continue": "Continue",
@@ -575,11 +579,11 @@
 			"deleteBot": "Delete"
 		},
 		"configCard": {
-			"title": "Bot Config",
+			"title": "Bot Configuration",
 			"labels": {
 				"character": "Character",
 				"apiKey": "Discord API Key",
-				"config": "Config"
+				"config": "Configuration"
 			},
 			"charSelectPlaceholder": "Select Character",
 			"apiKeyInput": {
@@ -589,7 +593,7 @@
 				"alt": "Toggle API Key Visibility"
 			},
 			"buttons": {
-				"saveConfig": "Save Config",
+				"saveConfig": "Save Configuration",
 				"startBot": "Start",
 				"stopBot": "Stop"
 			}
@@ -598,55 +602,55 @@
 			"newBotName": "Please enter a new Bot name:"
 		},
 		"alerts": {
-			"botExists": "Bot named \"${botname}\" already exists, please use another name.",
-			"unsavedChanges": "You have unsaved changes. Do you want to discard changes?",
-			"configSaved": "Config saved successfully",
-			"httpError": "HTTP Error",
+			"botExists": "A bot named \"${botname}\" already exists. Please use another name.",
+			"unsavedChanges": "You have unsaved changes. Do you want to discard these changes?",
+			"configSaved": "Configuration saved successfully.",
+			"httpError": "HTTP Error.",
 			"beforeUnload": "You have unsaved changes. Are you sure you want to leave?"
 		}
 	},
 	"telegram_bots": {
-		"title": "Telegram Robot",
-		"cardTitle": "Telegram Robot Management",
+		"title": "Telegram Bots",
+		"cardTitle": "Telegram Bot Management",
 		"buttons": {
 			"newBot": "New",
-			"deleteBot": "delete"
+			"deleteBot": "Delete"
 		},
 		"configCard": {
-			"title": "Robot configuration",
+			"title": "Bot Configuration",
 			"labels": {
-				"character": "Bind the role",
+				"character": "Character",
 				"botToken": "Telegram Bot Token",
-				"config": "Config"
+				"config": "Configuration"
 			},
-			"charSelectPlaceholder": "Select a role",
+			"charSelectPlaceholder": "Select Character",
 			"botTokenInput": {
 				"placeholder": "Enter Telegram Bot Token"
 			},
 			"toggleBotTokenIcon": {
-				"alt": "Switch to display API keys"
+				"alt": "Toggle Bot Token Visibility"
 			},
 			"buttons": {
-				"saveConfig": "Save configuration",
-				"startBot": "start up",
-				"stopBot": "stop"
+				"saveConfig": "Save Configuration",
+				"startBot": "Start",
+				"stopBot": "Stop"
 			}
 		},
 		"prompts": {
 			"newBotName": "Please enter a new Bot name:"
 		},
 		"alerts": {
-			"botExists": "The robot named \"${botname}\" already exists, please use a different name.",
-			"unsavedChanges": "You have unsaved changes. Are you sure you want to abandon these changes?",
-			"configSaved": "The configuration has been saved successfully!",
-			"httpError": "HTTP request error",
+			"botExists": "A bot named \"${botname}\" already exists. Please use a different name.",
+			"unsavedChanges": "You have unsaved changes. Are you sure you want to discard these changes?",
+			"configSaved": "Configuration has been saved successfully!",
+			"httpError": "HTTP Error.",
 			"beforeUnload": "You have unsaved changes. Are you sure you want to leave the current page?"
 		}
 	},
 	"terminal_assistant": {
 		"title": "Terminal Assistant",
-		"initialMessage": "Fount supports deploying your favorite characters to your terminal to assist you in coding!",
-		"initialMessageLink": "Click here to learn more"
+		"initialMessage": "Fount supports deploying your favourite characters to your terminal to assist you in coding!",
+		"initialMessageLink": "Click here to learn more."
 	},
 	"access": {
 		"title": "Access Fount on other devices",
@@ -661,7 +665,7 @@
 	"proxy": {
 		"title": "API Proxy",
 		"heading": "OpenAI API Proxy Address",
-		"instruction": "Enter the following address into any application that requires the OpenAI API format to use the AI source in fount!",
+		"instruction": "Enter the following address into any application that requires the OpenAI API format to use the AI source in Fount!",
 		"copyButton": "Copy Address",
 		"copied": "Address copied to clipboard!"
 	},
@@ -679,12 +683,77 @@
 			"timeLabel": "Time:",
 			"restartButton": "Restart",
 			"rowsLabel": "Rows:",
-			"colsLabel": "Cols:",
-			"minesCountLabel": "Mines:",
+			"colsLabel": "Columns:",
+			"minesCountLabel": "Mines Count:",
 			"winMessage": "Congratulations, you won!",
 			"loseMessage": "Game Over, you hit a mine!",
 			"soundOn": "Sound On",
 			"soundOff": "Sound Off"
+		}
+	},
+	"userSettings": {
+		"title": "User Settings",
+		"PageTitle": "User Settings",
+		"apiError": "API request failed: ${message}",
+		"generalError": "An error occurred: ${message}",
+		"userInfo": {
+			"title": "User Information",
+			"usernameLabel": "Username:",
+			"creationDateLabel": "Account Creation Date:",
+			"folderSizeLabel": "User Data Size:",
+			"folderPathLabel": "User Data Path:",
+			"copyPathBtnTitle": "Copy Path",
+			"copiedAlert": "Path copied to clipboard!"
+		},
+		"changePassword": {
+			"title": "Change Password",
+			"currentPasswordLabel": "Current Password:",
+			"newPasswordLabel": "New Password:",
+			"confirmNewPasswordLabel": "Confirm New Password:",
+			"submitButton": "Change Password",
+			"errorMismatch": "Passwords do not match.",
+			"success": "Password changed successfully."
+		},
+		"renameUser": {
+			"title": "Rename User",
+			"newUsernameLabel": "New Username:",
+			"submitButton": "Rename User",
+			"confirmMessage": "Are you sure you want to change your username? This will require you to log in again.",
+			"success": "User successfully renamed to \"${newUsername}\". You will now be logged out."
+		},
+		"userDevices": {
+			"title": "User Devices/Sessions",
+			"refreshButtonTitle": "Refresh List",
+			"noDevicesFound": "No devices or sessions found.",
+			"deviceInfo": "Device ID: ${deviceId}",
+			"thisDevice": "This Device",
+			"deviceDetails": "Last online: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
+			"revokeButton": "Revoke",
+			"revokeConfirm": "Are you sure you want to log out this device/session?",
+			"revokeSuccess": "Device/session successfully revoked."
+		},
+		"logout": {
+			"title": "Log Out",
+			"description": "This will log you out of your account on the current device.",
+			"buttonText": "Log Out",
+			"confirmMessage": "Are you sure you want to log out?",
+			"successMessage": "Logged out successfully. Redirecting to the login page..."
+		},
+		"deleteAccount": {
+			"title": "Delete Account",
+			"warning": "Warning: This action will permanently delete your account and all related data, and it cannot be recovered.",
+			"submitButton": "Delete My Account",
+			"confirmMessage1": "Warning! Are you sure you want to permanently delete your account? This action cannot be undone.",
+			"confirmMessage2": "To confirm deletion, please enter your username \"${username}\":",
+			"usernameMismatch": "The entered username does not match the current user. Deletion has been cancelled.",
+			"success": "Account successfully deleted. You will now be logged out."
+		},
+		"passwordConfirm": {
+			"title": "Confirm Operation",
+			"message": "To continue, please enter your current password:",
+			"passwordLabel": "Password:",
+			"confirmButton": "Confirm",
+			"cancelButton": "Cancel"
 		}
 	}
 }

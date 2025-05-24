@@ -10,17 +10,17 @@
 				"https": "HTTPS-Server läuft auf ${url}",
 				"http": "HTTP-Server läuft auf ${url}"
 			},
-			"standingBy": "Warte..."
+			"standingBy": "In Bereitschaft..."
 		},
 		"jobs": {
-			"restartingJob": "Starte ${parttype}-Aufgabe ${partname} von Benutzer ${username} neu: ${uid}"
+			"restartingJob": "Starte Aufgabe ${partname} (${parttype}) für Benutzer ${username} neu: ${uid}"
 		},
 		"ipc": {
 			"sendCommandFailed": "Senden des Befehls fehlgeschlagen: ${error}",
 			"invalidCommand": "Ungültiger Befehl, bitte verwenden Sie \"fount runshell <Benutzername> <Shell-Name> <Parameter...>\"",
 			"runShellLog": "Führe Shell ${shellname} als ${username} aus, Parameter: ${args}",
 			"invokeShellLog": "Rufe Shell ${shellname} als ${username} auf, Parameter: ${invokedata}",
-			"unsupportedCommand": "Nicht unterstützter Befehltyp",
+			"unsupportedCommand": "Nicht unterstützter Befehlstyp",
 			"processMessageError": "Fehler beim Verarbeiten der IPC-Nachricht: ${error}",
 			"invalidCommandFormat": "Ungültiges Befehlsformat",
 			"socketError": "Socket-Fehler: ${error}",
@@ -34,15 +34,15 @@
 		"partManager": {
 			"git": {
 				"noUpstream": "Kein Upstream-Branch für Branch '${currentBranch}' konfiguriert, Update-Prüfung wird übersprungen.",
-				"dirtyWorkingDirectory": "Arbeitsverzeichnis ist nicht sauber. Bitte stashen oder committen Sie Ihre Änderungen vor dem Update.",
+				"dirtyWorkingDirectory": "Arbeitsverzeichnis enthält nicht übertragene Änderungen. Bitte stashen oder committen Sie Ihre Änderungen vor dem Update.",
 				"updating": "Wird vom Remote-Repository aktualisiert...",
 				"localAhead": "Lokaler Branch ist dem Remote-Branch voraus. Kein Update erforderlich.",
 				"diverged": "Lokaler und Remote-Branch sind auseinandergelaufen. Erzwinge Update...",
 				"upToDate": "Bereits aktuell.",
-				"updateFailed": "Fehler beim Aktualisieren von Parts vom Remote-Repository: ${error}"
+				"updateFailed": "Fehler beim Aktualisieren von Komponenten vom Remote-Repository: ${error}"
 			},
-			"partInitTime": "${parttype} Teil ${partname} Initialisierungszeit: ${time}s",
-			"partLoadTime": "${parttype} Teil ${partname} Ladezeit: ${time}s"
+			"partInitTime": "${parttype}-Komponente ${partname} Initialisierungszeit: ${time}s",
+			"partLoadTime": "${parttype}-Komponente ${partname} Ladezeit: ${time}s"
 		},
 		"web": {
 			"requestReceived": "Anfrage erhalten: ${method} ${url}"
@@ -54,8 +54,8 @@
 			"tokenVerifyError": "Token-Verifizierungsfehler: ${error}",
 			"refreshTokenError": "Fehler beim Aktualisieren des Tokens: ${error}",
 			"logoutRefreshTokenProcessError": "Fehler beim Verarbeiten des Logout-Refresh-Tokens: ${error}",
-			"revokeTokenNoJTI": "Kann Token ohne jti nicht widerrufen",
-			"accountLockedLog": "Benutzerkonto ${username} wurde aufgrund zu vieler fehlgeschlagener Anmeldeversuche gesperrt"
+			"revokeTokenNoJTI": "Token ohne JTI kann nicht widerrufen werden.",
+			"accountLockedLog": "Benutzerkonto ${username} wurde aufgrund zu vieler fehlgeschlagener Anmeldeversuche gesperrt."
 		},
 		"verification": {
 			"codeGeneratedLog": "Verifizierungscode: ${code} (läuft nach 60 Sekunden ab)",
@@ -67,10 +67,10 @@
 			"createTrayFailed": "Fehler beim Erstellen des Trays: ${error}"
 		},
 		"discordbot": {
-			"botStarted": "char ${charname} Angemeldet bei Discord Bot ${botusername}"
+			"botStarted": "Char ${charname} hat sich beim Discord-Bot ${botusername} angemeldet."
 		},
 		"telegrambot": {
-			"botStarted": "char ${charname} Angemeldet bei Telegram Bot ${botusername}"
+			"botStarted": "Char ${charname} hat sich beim Telegram-Bot ${botusername} angemeldet."
 		}
 	},
 	"protocolhandler": {
@@ -141,7 +141,7 @@
 	"tutorial": {
 		"title": "Tutorial?",
 		"modal": {
-			"title": "Willkommen bei fount!",
+			"title": "Willkommen bei Fount!",
 			"instruction": "Möchten Sie das Einsteiger-Tutorial durchgehen?",
 			"buttons": {
 				"start": "Tutorial starten",
@@ -154,21 +154,21 @@
 			"endButton": "Los geht's!"
 		},
 		"progressMessages": {
-			"mouseMove": "Bitte versuchen Sie, die Maus ${mouseIcon} mit Ihrem Finger zu greifen<br/>und bewegen Sie sie dann",
-			"keyboardPress": "Bitte suchen Sie Ihre Tastatur ${keyboardIcon}<br/>und versuchen Sie, die Tastatur mit Ihrem Finger zu drücken",
-			"mobileTouchMove": "Bitte suchen Sie Ihr Telefon ${phoneIcon}<br/>Versuchen Sie, den Bildschirm mit einem Ihrer Finger zu berühren und ihn dann zu bewegen",
-			"mobileClick": "Bitte versuchen Sie, den Bildschirm des Telefons ${phoneIcon} mit einem Ihrer Finger zu berühren<br/>und dann loszulassen"
+			"mouseMove": "Bitte versuchen Sie, die Maus ${mouseIcon} mit Ihrem Finger zu greifen<br/>und bewegen Sie sie dann.",
+			"keyboardPress": "Bitte suchen Sie Ihre Tastatur ${keyboardIcon}<br/>und versuchen Sie, die Tastatur mit Ihrem Finger zu drücken.",
+			"mobileTouchMove": "Bitte suchen Sie Ihr Telefon ${phoneIcon}<br/>Versuchen Sie, den Bildschirm mit einem Ihrer Finger zu berühren und ihn dann zu bewegen.",
+			"mobileClick": "Bitte versuchen Sie, den Bildschirm des Telefons ${phoneIcon} mit einem Ihrer Finger zu berühren<br/>und dann loszulassen."
 		}
 	},
 	"home": {
 		"title": "Startseite",
-		"escapeConfirm": "Bist du sicher, dass du den Brunnen verlassen willst?",
+		"escapeConfirm": "Sind Sie sicher, dass Sie Fount verlassen möchten?",
 		"filterInput": {
 			"placeholder": "Suchen..."
 		},
 		"sidebarTitle": "Details",
-		"itemDescription": "Wählen Sie hier ein Element aus, um Details anzuzeigen.",
-		"noDescription": "Keine Beschreibungsinformationen",
+		"itemDescription": "Wähle ein Element aus, um Details anzuzeigen.",
+		"noDescription": "Keine Beschreibung",
 		"alerts": {
 			"fetchHomeRegistryFailed": "Fehler beim Abrufen der Startseitenregistrierung"
 		},
@@ -181,7 +181,7 @@
 			"tab": "Charaktere",
 			"title": "Charakterauswahl",
 			"subtitle": "Wähle einen Charakter – und starte den Chat!",
-			"none": "Nichts hier",
+			"none": "Leer",
 			"card": {
 				"refreshButton": {
 					"alt": "Aktualisieren",
@@ -201,7 +201,7 @@
 			"tab": "Welten",
 			"title": "Weltenauswahl",
 			"subtitle": "Wähle eine Welt und tauche ein!",
-			"none": "Nichts hier",
+			"none": "Leer",
 			"card": {
 				"refreshButton": {
 					"alt": "Aktualisieren",
@@ -221,7 +221,7 @@
 			"tab": "Personas",
 			"title": "Personenauswahl",
 			"subtitle": "Wähle eine Persona und erlebe das Leben.",
-			"none": "Nichts hier",
+			"none": "Leer",
 			"card": {
 				"refreshButton": {
 					"alt": "Aktualisieren",
@@ -273,12 +273,16 @@
 			"fileImportFailed": "Dateiimport fehlgeschlagen: ${message}",
 			"noTextContent": "Bitte geben Sie Textinhalt ein",
 			"textImportFailed": "Textimport fehlgeschlagen: ${message}",
+			"unknownError": "Unbekannter Fehler",
 			"handler": "Handler",
 			"error": "Fehler"
 		},
 		"fileItem": {
 			"removeButton": {
 				"title": "Entfernen"
+			},
+			"removeButtonIcon": {
+				"alt": "Entfernen"
 			}
 		}
 	},
@@ -310,7 +314,7 @@
 			"invalidFileName": "Der Dateiname darf folgende Zeichen nicht enthalten: / \\ : * ? \" < > |",
 			"addFileFailed": "Fehler beim Hinzufügen der Datei: ${error}",
 			"fetchConfigTemplateFailed": "Fehler beim Abrufen der Konfigurationsvorlage",
-			"noGeneratorSelectedSave": "Bitte wählen Sie zuerst einen Generator aus, bevor Sie speichern"
+			"noGeneratorSelectedSave": "Bitte wählen Sie zuerst einen Generator aus, bevor Sie speichern."
 		},
 		"confirm": {
 			"unsavedChanges": "Sie haben ungespeicherte Änderungen. Möchten Sie die Änderungen verwerfen?",
@@ -321,23 +325,23 @@
 			"newFileName": "Bitte geben Sie einen neuen KI-Quelldatei-Namen ein (ohne Erweiterung):"
 		},
 		"editor": {
-			"disabledIndicator": "Bitte wählen Sie zuerst einen Generator aus"
+			"disabledIndicator": "Bitte wählen Sie zuerst einen Generator aus."
 		}
 	},
 	"part_config": {
-		"title": "Teilekonfiguration",
-		"pageTitle": "Teilekonfiguration",
+		"title": "Komponentenkonfiguration",
+		"pageTitle": "Komponentenkonfiguration",
 		"labels": {
-			"partType": "Teiletyp auswählen",
-			"part": "Teil auswählen"
+			"partType": "Komponententyp auswählen",
+			"part": "Komponente auswählen"
 		},
 		"placeholders": {
 			"partTypeSelect": "Bitte auswählen",
 			"partSelect": "Bitte auswählen"
 		},
 		"editor": {
-			"title": "Teilekonfiguration",
-			"disabledIndicator": "Dieses Teil unterstützt keine Konfiguration",
+			"title": "Komponentenkonfiguration",
+			"disabledIndicator": "Diese Komponente unterstützt keine Konfiguration.",
 			"buttons": {
 				"save": "Speichern"
 			}
@@ -348,12 +352,12 @@
 			}
 		},
 		"alerts": {
-			"fetchPartTypesFailed": "Fehler beim Abrufen der Teiletypen",
-			"fetchPartsFailed": "Fehler beim Abrufen der Teileliste",
-			"loadEditorFailed": "Fehler beim Laden des Editors",
-			"saveConfigFailed": "Fehler beim Speichern der Teilekonfiguration",
+			"fetchPartTypesFailed": "Fehler beim Abrufen der Komponententypen.",
+			"fetchPartsFailed": "Fehler beim Abrufen der Komponentenliste.",
+			"loadEditorFailed": "Fehler beim Laden des Editors.",
+			"saveConfigFailed": "Fehler beim Speichern der Komponentenkonfiguration.",
 			"unsavedChanges": "Sie haben ungespeicherte Änderungen. Möchten Sie die Änderungen verwerfen?",
-			"beforeUnload": "Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie verlassen möchten?"
+			"beforeUnload": "Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie die Seite verlassen möchten?"
 		}
 	},
 	"uninstall": {
@@ -385,7 +389,7 @@
 	},
 	"chat": {
 		"new": {
-			"title": "Neues Chat"
+			"title": "Neuer Chat"
 		},
 		"title": "Chat",
 		"sidebar": {
@@ -415,8 +419,8 @@
 					}
 				}
 			},
-			"noSelection": "Keine",
-			"noDescription": "Keine Beschreibungsinformationen"
+			"noSelection": "Keine Auswahl",
+			"noDescription": "Keine Beschreibung"
 		},
 		"chatArea": {
 			"title": "Chat",
@@ -427,7 +431,7 @@
 				"alt": "Menüsymbol"
 			},
 			"input": {
-				"placeholder": "Nachricht eingeben...\nStrg+Enter zum Senden"
+				"placeholder": "Nachricht eingeben...\\nStrg+Enter zum Senden"
 			},
 			"sendButton": {
 				"title": "Senden"
@@ -455,13 +459,13 @@
 			}
 		},
 		"rightSidebar": {
-			"title": "Beschreibungsinformationen"
+			"title": "Beschreibung"
 		},
 		"messageList": {
 			"confirmDeleteMessage": "Nachricht wirklich löschen?"
 		},
 		"voiceRecording": {
-			"errorAccessingMicrophone": "Fehler beim Zugriff auf den Mikrofon"
+			"errorAccessingMicrophone": "Fehler beim Zugriff auf das Mikrofon."
 		},
 		"messageView": {
 			"buttons": {
@@ -557,8 +561,8 @@
 		"confirmDeleteChat": "Möchten Sie den Chatverlauf mit ${chars} wirklich löschen?",
 		"confirmDeleteMultiChats": "Möchten Sie die ausgewählten ${count} Chatverläufe wirklich löschen?",
 		"alerts": {
-			"noChatSelectedForDeletion": "Bitte wählen Sie Chatverläufe zum Löschen aus",
-			"noChatSelectedForExport": "Bitte wählen Sie Chatverläufe zum Exportieren aus"
+			"noChatSelectedForDeletion": "Bitte wählen Sie Chatverläufe zum Löschen aus.",
+			"noChatSelectedForExport": "Bitte wählen Sie Chatverläufe zum Exportieren aus."
 		},
 		"chatItemButtons": {
 			"continue": "Fortsetzen",
@@ -568,8 +572,8 @@
 		}
 	},
 	"discord_bots": {
-		"title": "Discord Bots",
-		"cardTitle": "Discord Bots",
+		"title": "Discord-Bots",
+		"cardTitle": "Discord-Bots",
 		"buttons": {
 			"newBot": "Neu",
 			"deleteBot": "Löschen"
@@ -595,52 +599,52 @@
 			}
 		},
 		"prompts": {
-			"newBotName": "Bitte geben Sie einen neuen Bot-Namen ein:"
+			"newBotName": "Bitte gib einen neuen Bot-Namen ein:"
 		},
 		"alerts": {
-			"botExists": "Ein Bot namens \"${botname}\" existiert bereits, bitte verwenden Sie einen anderen Namen.",
+			"botExists": "Ein Bot namens \"${botname}\" existiert bereits, bitte verwende einen anderen Namen.",
 			"unsavedChanges": "Sie haben ungespeicherte Änderungen. Möchten Sie die Änderungen verwerfen?",
-			"configSaved": "Konfiguration erfolgreich gespeichert",
+			"configSaved": "Konfiguration erfolgreich gespeichert.",
 			"httpError": "HTTP-Fehler",
-			"beforeUnload": "Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie verlassen möchten?"
+			"beforeUnload": "Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie die Seite verlassen möchten?"
 		}
 	},
 	"telegram_bots": {
-		"title": "Telegrammroboter",
-		"cardTitle": "Telegramm -Robotermanagement",
+		"title": "Telegram-Bots",
+		"cardTitle": "Telegram-Bot-Verwaltung",
 		"buttons": {
 			"newBot": "Neu",
-			"deleteBot": "löschen"
+			"deleteBot": "Löschen"
 		},
 		"configCard": {
-			"title": "Roboterkonfiguration",
+			"title": "Bot-Konfiguration",
 			"labels": {
-				"character": "Binden Sie die Rolle",
-				"botToken": "Telegramm Bot Token",
+				"character": "Charakter",
+				"botToken": "Telegram Bot-Token",
 				"config": "Konfiguration"
 			},
-			"charSelectPlaceholder": "Wählen Sie eine Rolle",
+			"charSelectPlaceholder": "Charakter auswählen",
 			"botTokenInput": {
-				"placeholder": "Geben Sie Telegram Bot Token ein"
+				"placeholder": "Telegram Bot-Token eingeben"
 			},
 			"toggleBotTokenIcon": {
-				"alt": "Switch um API -Schlüssel anzuzeigen"
+				"alt": "Bot-Token-Sichtbarkeit umschalten"
 			},
 			"buttons": {
 				"saveConfig": "Konfiguration speichern",
-				"startBot": "Start-up",
-				"stopBot": "stoppen"
+				"startBot": "Starten",
+				"stopBot": "Stoppen"
 			}
 		},
 		"prompts": {
-			"newBotName": "Bitte geben Sie einen neuen Bot -Namen ein:"
+			"newBotName": "Bitte gib einen neuen Bot-Namen ein:"
 		},
 		"alerts": {
-			"botExists": "Der Roboter namens \"${botname}\" existiert bereits, bitte verwenden Sie einen anderen Namen.",
-			"unsavedChanges": "Sie haben nicht gerettete Änderungen. Sind Sie sicher, dass Sie diese Änderungen aufgeben möchten?",
+			"botExists": "Ein Bot namens \"${botname}\" existiert bereits, bitte verwende einen anderen Namen.",
+			"unsavedChanges": "Sie haben ungespeicherte Änderungen. Möchten Sie diese Änderungen verwerfen?",
 			"configSaved": "Die Konfiguration wurde erfolgreich gespeichert!",
-			"httpError": "HTTP -Anforderungsfehler",
-			"beforeUnload": "Sie haben nicht gerettete Änderungen. Sind Sie sicher, dass Sie die aktuelle Seite verlassen möchten?"
+			"httpError": "HTTP-Fehler",
+			"beforeUnload": "Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie die aktuelle Seite verlassen möchten?"
 		}
 	},
 	"terminal_assistant": {
@@ -661,7 +665,7 @@
 	"proxy": {
 		"title": "API-Proxy",
 		"heading": "OpenAI API Proxy-Adresse",
-		"instruction": "Fügen Sie die folgende Adresse in jede Anwendung ein, die das OpenAI-API-Format benötigt, um die KI-Quelle in fount zu verwenden!",
+		"instruction": "Fügen Sie die folgende Adresse in jede Anwendung ein, die das OpenAI-API-Format benötigt, um die KI-Quelle in Fount zu verwenden!",
 		"copyButton": "Adresse kopieren",
 		"copied": "Adresse in die Zwischenablage kopiert!"
 	},
@@ -685,6 +689,71 @@
 			"loseMessage": "Spiel vorbei, Sie haben eine Mine getroffen!",
 			"soundOn": "Ton ein",
 			"soundOff": "Ton aus"
+		}
+	},
+	"userSettings": {
+		"title": "Benutzereinstellungen",
+		"PageTitle": "Benutzereinstellungen",
+		"apiError": "API-Anfrage fehlgeschlagen: ${message}",
+		"generalError": "Es ist ein Fehler aufgetreten: ${message}",
+		"userInfo": {
+			"title": "Benutzerinformationen",
+			"usernameLabel": "Benutzername:",
+			"creationDateLabel": "Kontoerstellungsdatum:",
+			"folderSizeLabel": "Benutzerdatengröße:",
+			"folderPathLabel": "Benutzerdatenpfad:",
+			"copyPathBtnTitle": "Pfad kopieren",
+			"copiedAlert": "Der Pfad wurde in die Zwischenablage kopiert!"
+		},
+		"changePassword": {
+			"title": "Passwort ändern",
+			"currentPasswordLabel": "Aktuelles Passwort:",
+			"newPasswordLabel": "Neues Passwort:",
+			"confirmNewPasswordLabel": "Neues Passwort bestätigen:",
+			"submitButton": "Passwort ändern",
+			"errorMismatch": "Die neuen Passwörter stimmen nicht überein.",
+			"success": "Passwort erfolgreich geändert."
+		},
+		"renameUser": {
+			"title": "Benutzer umbenennen",
+			"newUsernameLabel": "Neuer Benutzername:",
+			"submitButton": "Benutzer umbenennen",
+			"confirmMessage": "Sind Sie sicher, dass Sie Ihren Benutzernamen ändern möchten? Sie müssen sich danach neu anmelden.",
+			"success": "Der Benutzer wurde erfolgreich in \"${newUsername}\" umbenannt. Sie werden jetzt abgemeldet."
+		},
+		"userDevices": {
+			"title": "Benutzergeräte/-sitzungen",
+			"refreshButtonTitle": "Liste aktualisieren",
+			"noDevicesFound": "Es wurden keine Geräte oder Sitzungen gefunden.",
+			"deviceInfo": "Geräte-ID: ${deviceId}",
+			"thisDevice": "Dieses Gerät",
+			"deviceDetails": "Zuletzt online: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
+			"revokeButton": "Widerrufen",
+			"revokeConfirm": "Sind Sie sicher, dass Sie sich von diesem Gerät/dieser Sitzung abmelden möchten?",
+			"revokeSuccess": "Das Gerät/Die Sitzung wurde erfolgreich widerrufen."
+		},
+		"logout": {
+			"title": "Abmelden",
+			"description": "Dadurch wird Ihr Konto vom aktuellen Gerät abgemeldet.",
+			"buttonText": "Abmelden",
+			"confirmMessage": "Sind Sie sicher, dass Sie sich abmelden möchten?",
+			"successMessage": "Erfolgreich abgemeldet. Sie werden zur Anmeldeseite weitergeleitet..."
+		},
+		"deleteAccount": {
+			"title": "Konto löschen",
+			"warning": "Warnung: Diese Aktion löscht Ihr Konto und alle zugehörigen Daten dauerhaft und kann nicht wiederhergestellt werden.",
+			"submitButton": "Mein Konto löschen",
+			"confirmMessage1": "Warnung! Sind Sie sicher, dass Sie Ihr Konto dauerhaft löschen möchten? Dieser Vorgang kann nicht rückgängig gemacht werden.",
+			"confirmMessage2": "Um die Löschung zu bestätigen, geben Sie bitte Ihren Benutzernamen \"${username}\" ein:",
+			"usernameMismatch": "Der eingegebene Benutzername stimmt nicht mit dem aktuellen Benutzer überein. Der Löschvorgang wurde abgebrochen.",
+			"success": "Das Konto wurde erfolgreich gelöscht. Sie werden jetzt abgemeldet."
+		},
+		"passwordConfirm": {
+			"title": "Vorgang bestätigen",
+			"message": "Um diesen Vorgang fortzusetzen, geben Sie bitte Ihr aktuelles Passwort ein:",
+			"passwordLabel": "Passwort:",
+			"confirmButton": "Bestätigen",
+			"cancelButton": "Abbrechen"
 		}
 	}
 }

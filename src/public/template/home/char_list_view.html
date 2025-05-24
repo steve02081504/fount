@@ -17,7 +17,7 @@
 		<div class="tags-container overflow-y-auto">
 			${(info.tags && info.tags.length > 0) ? `
 			${info.tags.map((tag) => `<span class="badge badge-primary cursor-pointer">${tag}</span>`).join(' ')}
-			` : geti18n('home.worldCard.noTags')}
+			` : geti18n('home.worlds.card.noTags')}
 		</div>
 		<div class="char-details-container overflow-y-auto">
 			${info.version ? `<div class="char-info-item">${geti18n('home.chars.card.version')}：<code>${info.version}</code></div>` : ''}

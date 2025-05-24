@@ -4,8 +4,8 @@
 		"server": {
 			"start": "Démarrage du serveur",
 			"starting": "Serveur en cours de démarrage...",
-			"ready": "Serveur démarré",
-			"usesdTime": "Heure de début: $ {heure} S",
+			"ready": "Serveur démarré.",
+			"usesdTime": "Temps de démarrage : ${time}s",
 			"showUrl": {
 				"https": "Serveur HTTPS en cours d'exécution sur ${url}",
 				"http": "Serveur HTTP en cours d'exécution sur ${url}"
@@ -13,101 +13,101 @@
 			"standingBy": "En attente..."
 		},
 		"jobs": {
-			"restartingJob": "Redémarrage de la tâche ${parttype} ${partname} de l'utilisateur ${username} : ${uid}"
+			"restartingJob": "Redémarrage de la tâche ${partname} (${parttype}) pour l'utilisateur ${username} : ${uid}"
 		},
 		"ipc": {
-			"sendCommandFailed": "Échec de l'envoi de la commande : ${error}",
-			"invalidCommand": "Commande invalide, veuillez utiliser \"fount runshell <nom d'utilisateur> <nom de shell> <paramètres...>\"",
-			"runShellLog": "Exécution du shell ${shellname} en tant que ${username}, paramètres : ${args}",
-			"invokeShellLog": "Appel du shell ${shellname} en tant que ${username}, paramètres : ${invokedata}",
-			"unsupportedCommand": "Type de commande non pris en charge",
-			"processMessageError": "Erreur lors du traitement du message IPC : ${error}",
-			"invalidCommandFormat": "Format de commande invalide",
-			"socketError": "Erreur de Socket : ${error}",
-			"instanceRunning": "Une autre instance est déjà en cours d'exécution",
-			"serverStartPrefix": "démarrage du serveur",
-			"serverStarted": "Serveur IPC démarré",
-			"parseResponseFailed": "Échec de l'analyse de la réponse du serveur : ${error}",
-			"cannotParseResponse": "Impossible d'analyser la réponse du serveur",
-			"unknownError": "Erreur inconnue"
+			"sendCommandFailed": "Échec de l'envoi de la commande : ${error}",
+			"invalidCommand": "Commande invalide. Veuillez utiliser \"fount runshell <nom_utilisateur> <nom_shell> <paramètres...>\"",
+			"runShellLog": "Exécution du shell ${shellname} en tant que ${username}, paramètres : ${args}",
+			"invokeShellLog": "Appel du shell ${shellname} en tant que ${username}, paramètres : ${invokedata}",
+			"unsupportedCommand": "Type de commande non pris en charge.",
+			"processMessageError": "Erreur lors du traitement du message IPC : ${error}",
+			"invalidCommandFormat": "Format de commande invalide.",
+			"socketError": "Erreur de socket : ${error}",
+			"instanceRunning": "Une autre instance est déjà en cours d'exécution.",
+			"serverStartPrefix": "Démarrage du serveur",
+			"serverStarted": "Serveur IPC démarré.",
+			"parseResponseFailed": "Échec de l'analyse de la réponse du serveur : ${error}",
+			"cannotParseResponse": "Impossible d'analyser la réponse du serveur.",
+			"unknownError": "Erreur inconnue."
 		},
 		"partManager": {
 			"git": {
-				"noUpstream": "Aucune branche upstream configurée pour la branche '${currentBranch}', mise à jour ignorée.",
-				"dirtyWorkingDirectory": "Le répertoire de travail n'est pas propre. Veuillez stasher ou committer vos modifications avant de mettre à jour.",
+				"noUpstream": "Aucune branche de suivi configurée pour la branche '${currentBranch}', vérification des mises à jour ignorée.",
+				"dirtyWorkingDirectory": "Le répertoire de travail contient des modifications non validées. Veuillez enregistrer ('commit') ou mettre de côté ('stash') vos modifications avant de mettre à jour.",
 				"updating": "Mise à jour depuis le dépôt distant...",
 				"localAhead": "La branche locale est en avance sur la branche distante. Aucune mise à jour nécessaire.",
 				"diverged": "Les branches locale et distante ont divergé. Mise à jour forcée...",
 				"upToDate": "Déjà à jour.",
-				"updateFailed": "Échec de la mise à jour des parties depuis le dépôt distant : ${error}"
+				"updateFailed": "Échec de la mise à jour des composants depuis le dépôt distant : ${error}"
 			},
-			"partInitTime": "${parttype} Part ${partname} Temps d'initialisation: ${time}S",
-			"partLoadTime": "${parttype} Part ${partname} Temps de chargement: ${time}S"
+			"partInitTime": "${parttype} composant ${partname} temps d'initialisation : ${time}s",
+			"partLoadTime": "${parttype} composant ${partname} temps de chargement : ${time}s"
 		},
 		"web": {
-			"requestReceived": "Requête reçue : ${method} ${url}"
+			"requestReceived": "Requête reçue : ${method} ${url}"
 		},
 		"route": {
-			"setLanguagePreference": "L'utilisateur ${username} a défini la langue préférée : ${preferredLanguages}"
+			"setLanguagePreference": "L'utilisateur ${username} a défini sa langue préférée : ${preferredLanguages}"
 		},
 		"auth": {
-			"tokenVerifyError": "Erreur de vérification du token : ${error}",
-			"refreshTokenError": "Erreur de token de rafraîchissement : ${error}",
-			"logoutRefreshTokenProcessError": "Erreur lors du traitement du token de rafraîchissement de déconnexion : ${error}",
-			"revokeTokenNoJTI": "Impossible de révoquer le token sans jti",
-			"accountLockedLog": "Compte utilisateur ${username} verrouillé en raison de multiples tentatives de connexion infructueuses"
+			"tokenVerifyError": "Erreur de vérification du jeton : ${error}",
+			"refreshTokenError": "Erreur du jeton de rafraîchissement : ${error}",
+			"logoutRefreshTokenProcessError": "Erreur lors du traitement du jeton de rafraîchissement de déconnexion : ${error}",
+			"revokeTokenNoJTI": "Impossible de révoquer le jeton sans JTI.",
+			"accountLockedLog": "Compte utilisateur ${username} verrouillé suite à de multiples tentatives de connexion infructueuses."
 		},
 		"verification": {
-			"codeGeneratedLog": "Code de vérification : ${code} (expire dans 60 secondes)",
+			"codeGeneratedLog": "Code de vérification : ${code} (expire dans 60 secondes).",
 			"codeNotifyTitle": "Code de vérification",
-			"codeNotifyBody": "Code de vérification : ${code} (expire dans 60 secondes)"
+			"codeNotifyBody": "Code de vérification : ${code} (expire dans 60 secondes)."
 		},
 		"tray": {
-			"readIconFailed": "Erreur lors de la lecture du fichier icône : ${error}",
-			"createTrayFailed": "Erreur lors de la création de l'icône de la barre des tâches : ${error}"
+			"readIconFailed": "Erreur lors de la lecture du fichier d'icône : ${error}",
+			"createTrayFailed": "Erreur lors de la création de l'icône dans la zone de notification : ${error}"
 		},
 		"discordbot": {
-			"botStarted": "Char ${charname} connecté sur Discord Bot ${botusername}"
+			"botStarted": "Le personnage ${charname} s'est connecté au bot Discord ${botusername}."
 		},
 		"telegrambot": {
-			"botStarted": "Char ${charname} connecté sur Telegram Bot ${botusername}"
+			"botStarted": "Le personnage ${charname} s'est connecté au bot Telegram ${botusername}."
 		}
 	},
 	"protocolhandler": {
 		"title": "Traitement du protocole Fount",
-		"processing": "Traitement du protocole...",
-		"invalidProtocol": "Protocole invalide",
-		"insufficientParams": "Paramètres insuffisants",
-		"unknownCommand": "Commande inconnue",
-		"shellCommandSent": "Commande shell envoyée",
-		"shellCommandFailed": "Échec de l'envoi de la commande shell",
-		"shellCommandError": "Erreur lors de l'envoi de la commande shell"
+		"processing": "Traitement du protocole en cours...",
+		"invalidProtocol": "Protocole invalide.",
+		"insufficientParams": "Paramètres insuffisants.",
+		"unknownCommand": "Commande inconnue.",
+		"shellCommandSent": "Commande shell envoyée.",
+		"shellCommandFailed": "Échec de l'envoi de la commande shell.",
+		"shellCommandError": "Erreur lors de l'envoi de la commande shell."
 	},
 	"auth": {
 		"title": "Authentification",
-		"subtitle": "Les données utilisateur sont stockées localement",
-		"usernameLabel": "Nom d'utilisateur :",
+		"subtitle": "Les données utilisateur sont stockées localement.",
+		"usernameLabel": "Nom d'utilisateur :",
 		"usernameInput": {
-			"placeholder": "Entrez votre nom d'utilisateur"
+			"placeholder": "Saisissez votre nom d'utilisateur"
 		},
-		"passwordLabel": "Mot de passe :",
+		"passwordLabel": "Mot de passe :",
 		"passwordInput": {
-			"placeholder": "Entrez votre mot de passe"
+			"placeholder": "Saisissez votre mot de passe"
 		},
-		"confirmPasswordLabel": "Confirmer le mot de passe :",
+		"confirmPasswordLabel": "Confirmer le mot de passe :",
 		"confirmPasswordInput": {
-			"placeholder": "Entrez à nouveau le mot de passe"
+			"placeholder": "Saisissez à nouveau votre mot de passe"
 		},
-		"verificationCodeLabel": "Code de vérification :",
+		"verificationCodeLabel": "Code de vérification :",
 		"verificationCodeInput": {
-			"placeholder": "Entrez le code de vérification"
+			"placeholder": "Saisissez le code de vérification"
 		},
 		"sendCodeButton": "Envoyer le code",
 		"login": {
 			"title": "Se connecter",
 			"submitButton": "Se connecter",
 			"toggleLink": {
-				"text": "Pas de compte ?",
+				"text": "Pas de compte ?",
 				"link": "S'inscrire maintenant"
 			}
 		},
@@ -115,7 +115,7 @@
 			"title": "S'inscrire",
 			"submitButton": "S'inscrire",
 			"toggleLink": {
-				"text": "Vous avez déjà un compte ?",
+				"text": "Vous avez déjà un compte ?",
 				"link": "Se connecter maintenant"
 			}
 		},
@@ -123,17 +123,17 @@
 			"passwordMismatch": "Les mots de passe ne correspondent pas.",
 			"loginError": "Erreur de connexion.",
 			"registrationError": "Erreur d'inscription.",
-			"verificationCodeError": "Le code de vérification est incorrect ou expiré.",
+			"verificationCodeError": "Le code de vérification est incorrect ou a expiré.",
 			"verificationCodeSent": "Code de vérification envoyé avec succès.",
 			"verificationCodeSendError": "Échec de l'envoi du code de vérification.",
 			"verificationCodeRateLimit": "Trop de demandes de code de vérification. Veuillez réessayer plus tard.",
-			"lowPasswordStrength": "La force du mot de passe est trop faible.",
-			"accountAlreadyExists": "Le compte existe déjà"
+			"lowPasswordStrength": "Le mot de passe est trop faible.",
+			"accountAlreadyExists": "Ce compte existe déjà."
 		},
 		"passwordStrength": {
 			"veryWeak": "Très faible",
 			"weak": "Faible",
-			"normal": "Normale",
+			"normal": "Normal",
 			"strong": "Fort",
 			"veryStrong": "Très fort"
 		}
@@ -141,57 +141,57 @@
 	"tutorial": {
 		"title": "Tutoriel",
 		"modal": {
-			"title": "Bienvenue sur fount !",
-			"instruction": "Voulez-vous suivre le tutoriel pour les débutants ?",
+			"title": "Bienvenue sur Fount !",
+			"instruction": "Voulez-vous suivre le tutoriel d'introduction ?",
 			"buttons": {
 				"start": "Commencer le tutoriel",
 				"skip": "Passer"
 			}
 		},
 		"endScreen": {
-			"title": "Génial ! Tutoriel terminé !",
-			"subtitle": "Vous savez maintenant comment utiliser l'application !",
-			"endButton": "Let's Go!"
+			"title": "Bravo ! Tutoriel terminé !",
+			"subtitle": "Vous maîtrisez maintenant les bases de l'application !",
+			"endButton": "C'est parti !"
 		},
 		"progressMessages": {
-			"mouseMove": "Veuillez utiliser votre doigt pour essayer de saisir la souris ${mouseIcon}<br/>puis déplacez-la",
-			"keyboardPress": "Veuillez trouver votre clavier ${keyboardIcon}<br/>et essayez d'appuyer sur le clavier avec votre doigt",
-			"mobileTouchMove": "Veuillez trouver votre téléphone ${phoneIcon}<br/>Essayez de toucher l'écran avec l'un de vos doigts, puis déplacez-le",
-			"mobileClick": "Veuillez essayer de toucher l'écran du téléphone ${phoneIcon} avec l'un de vos doigts<br/>puis relâchez"
+			"mouseMove": "Utilisez votre doigt pour saisir la souris ${mouseIcon}<br/>puis déplacez-la.",
+			"keyboardPress": "Trouvez votre clavier ${keyboardIcon}<br/>et essayez d'appuyer sur une touche.",
+			"mobileTouchMove": "Prenez votre téléphone ${phoneIcon},<br/>touchez l'écran avec un doigt, puis déplacez-le.",
+			"mobileClick": "Touchez l'écran de votre téléphone ${phoneIcon} avec un doigt<br/>puis relâchez."
 		}
 	},
 	"home": {
 		"title": "Accueil",
-		"escapeConfirm": "Êtes-vous sûr de vouloir quitter la fontaine?",
+		"escapeConfirm": "Êtes-vous sûr de vouloir quitter Fount ?",
 		"filterInput": {
 			"placeholder": "Rechercher..."
 		},
 		"sidebarTitle": "Détails",
 		"itemDescription": "Sélectionnez un élément ici pour afficher les détails.",
-		"noDescription": "Aucune information de description",
+		"noDescription": "Aucune description disponible.",
 		"alerts": {
-			"fetchHomeRegistryFailed": "Échec de la récupération des informations d'enregistrement de l'accueil"
+			"fetchHomeRegistryFailed": "Échec de la récupération des informations du registre d'accueil."
 		},
 		"functionMenu": {
 			"icon": {
-				"alt": "Menu de fonctions"
+				"alt": "Menu des fonctions"
 			}
 		},
 		"chars": {
 			"tab": "Personnages",
 			"title": "Sélection de personnage",
-			"subtitle": "Sélectionnez un personnage, puis commencez à chatter !",
-			"none": "Rien ici",
+			"subtitle": "Sélectionnez un personnage, puis commencez à discuter !",
+			"none": "Vide",
 			"card": {
 				"refreshButton": {
 					"alt": "Rafraîchir",
 					"title": "Rafraîchir"
 				},
-				"noTags": "Aucun tag",
+				"noTags": "Aucune étiquette",
 				"version": "Version",
 				"author": "Auteur",
 				"homepage": "Page d'accueil",
-				"issuepage": "Page de problèmes",
+				"issuepage": "Page des problèmes",
 				"defaultCheckbox": {
 					"title": "Définir comme personnage par défaut"
 				}
@@ -200,18 +200,18 @@
 		"worlds": {
 			"tab": "Mondes",
 			"title": "Sélection de monde",
-			"subtitle": "Choisissez un monde et plongez-vous dedans !",
-			"none": "Rien ici",
+			"subtitle": "Choisissez un monde et plongez au cœur de l'action !",
+			"none": "Vide",
 			"card": {
 				"refreshButton": {
 					"alt": "Rafraîchir",
 					"title": "Rafraîchir"
 				},
-				"noTags": "Aucun tag",
+				"noTags": "Aucune étiquette",
 				"version": "Version",
 				"author": "Auteur",
 				"homepage": "Page d'accueil",
-				"issuepage": "Page de problèmes",
+				"issuepage": "Page des problèmes",
 				"defaultCheckbox": {
 					"title": "Définir comme monde par défaut"
 				}
@@ -220,18 +220,18 @@
 		"personas": {
 			"tab": "Personas",
 			"title": "Sélection de persona",
-			"subtitle": "Sélectionnez une persona, vivez la vie.",
-			"none": "Rien ici",
+			"subtitle": "Sélectionnez une persona et vivez une nouvelle expérience.",
+			"none": "Vide",
 			"card": {
 				"refreshButton": {
 					"alt": "Rafraîchir",
 					"title": "Rafraîchir"
 				},
-				"noTags": "Aucun tag",
+				"noTags": "Aucune étiquette",
 				"version": "Version",
 				"author": "Auteur",
 				"homepage": "Page d'accueil",
-				"issuepage": "Page de problèmes",
+				"issuepage": "Page des problèmes",
 				"defaultCheckbox": {
 					"title": "Définir comme persona par défaut"
 				}
@@ -240,7 +240,7 @@
 	},
 	"themeManage": {
 		"title": "Gestion des thèmes",
-		"instruction": "Choisissez un thème !",
+		"instruction": "Choisissez un thème !",
 		"themes": {
 			"auto": "Automatique"
 		}
@@ -253,9 +253,9 @@
 		},
 		"dropArea": {
 			"icon": {
-				"alt": "Icône de téléchargement"
+				"alt": "Icône d'importation"
 			},
-			"text": "Faites glisser et déposez des fichiers ici ou cliquez pour sélectionner des fichiers"
+			"text": "Faites glisser et déposez des fichiers ici ou cliquez pour sélectionner des fichiers."
 		},
 		"textArea": {
 			"placeholder": "Saisissez le texte à importer..."
@@ -264,33 +264,37 @@
 			"import": "Importer"
 		},
 		"alerts": {
-			"importSuccess": "Importation réussie",
-			"importFailed": "Importation échouée : ${error}",
-			"unknownError": "Erreur inconnue"
+			"importSuccess": "Importation réussie.",
+			"importFailed": "Échec de l'importation : ${error}",
+			"unknownError": "Erreur inconnue."
 		},
 		"errors": {
-			"noFileSelected": "Veuillez sélectionner un fichier",
-			"fileImportFailed": "Échec de l'importation de fichier : ${message}",
-			"noTextContent": "Veuillez saisir du contenu textuel",
-			"textImportFailed": "Échec de l'importation de texte : ${message}",
+			"noFileSelected": "Veuillez sélectionner un fichier.",
+			"fileImportFailed": "Échec de l'importation du fichier : ${message}",
+			"noTextContent": "Veuillez saisir du contenu texte.",
+			"textImportFailed": "Échec de l'importation du texte : ${message}",
+			"unknownError": "Erreur inconnue.",
 			"handler": "Gestionnaire",
 			"error": "Erreur"
 		},
 		"fileItem": {
 			"removeButton": {
 				"title": "Supprimer"
+			},
+			"removeButtonIcon": {
+				"alt": "Supprimer"
 			}
 		}
 	},
 	"aisource_editor": {
-		"title": "Éditeur de source IA",
+		"title": "Éditeur de source d'IA",
 		"fileList": {
-			"title": "Liste des sources IA",
+			"title": "Liste des sources d'IA",
 			"addButton": {
 				"title": "+"
 			}
 		},
-		"configTitle": "Configuration de la source IA",
+		"configTitle": "Configuration de la source d'IA",
 		"generatorSelect": {
 			"label": "Sélectionner un générateur",
 			"placeholder": "Veuillez sélectionner"
@@ -300,66 +304,66 @@
 			"delete": "Supprimer"
 		},
 		"alerts": {
-			"fetchFileListFailed": "Échec de la récupération de la liste des fichiers : ${error}",
-			"fetchGeneratorListFailed": "Échec de la récupération de la liste des générateurs : ${error}",
-			"fetchFileDataFailed": "Échec de la récupération des données du fichier : ${error}",
+			"fetchFileListFailed": "Échec de la récupération de la liste des fichiers : ${error}",
+			"fetchGeneratorListFailed": "Échec de la récupération de la liste des générateurs : ${error}",
+			"fetchFileDataFailed": "Échec de la récupération des données du fichier : ${error}",
 			"noFileSelectedSave": "Aucun fichier sélectionné à enregistrer.",
-			"saveFileFailed": "Échec de l'enregistrement du fichier : ${error}",
+			"saveFileFailed": "Échec de l'enregistrement du fichier : ${error}",
 			"noFileSelectedDelete": "Aucun fichier sélectionné à supprimer.",
-			"deleteFileFailed": "Échec de la suppression du fichier : ${error}",
-			"invalidFileName": "Le nom de fichier ne peut pas contenir les caractères suivants : / \\ : * ? \" < > |",
-			"addFileFailed": "Échec de l'ajout du fichier : ${error}",
-			"fetchConfigTemplateFailed": "Échec de la récupération du modèle de configuration",
-			"noGeneratorSelectedSave": "Veuillez sélectionner un générateur avant d'enregistrer"
+			"deleteFileFailed": "Échec de la suppression du fichier : ${error}",
+			"invalidFileName": "Le nom de fichier ne peut pas contenir les caractères suivants : / \\ : * ? \" < > |",
+			"addFileFailed": "Échec de l'ajout du fichier : ${error}",
+			"fetchConfigTemplateFailed": "Échec de la récupération du modèle de configuration.",
+			"noGeneratorSelectedSave": "Veuillez sélectionner un générateur avant d'enregistrer."
 		},
 		"confirm": {
-			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous annuler les modifications ?",
-			"deleteFile": "Êtes-vous sûr de vouloir supprimer le fichier ?",
-			"unsavedChangesBeforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter cette page ?"
+			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous annuler les modifications ?",
+			"deleteFile": "Êtes-vous sûr de vouloir supprimer le fichier ?",
+			"unsavedChangesBeforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter cette page ?"
 		},
 		"prompts": {
-			"newFileName": "Veuillez saisir un nouveau nom de fichier source IA (sans extension) :"
+			"newFileName": "Veuillez saisir un nouveau nom de fichier pour la source d'IA (sans extension) :"
 		},
 		"editor": {
-			"disabledIndicator": "Veuillez sélectionner un générateur d'abord"
+			"disabledIndicator": "Veuillez d'abord sélectionner un générateur."
 		}
 	},
 	"part_config": {
-		"title": "Configuration de pièce",
-		"pageTitle": "Configuration de pièce",
+		"title": "Configuration des composants",
+		"pageTitle": "Configuration des composants",
 		"labels": {
-			"partType": "Sélectionner le type de pièce",
-			"part": "Sélectionner la pièce"
+			"partType": "Sélectionner le type de composant",
+			"part": "Sélectionner le composant"
 		},
 		"placeholders": {
 			"partTypeSelect": "Veuillez sélectionner",
 			"partSelect": "Veuillez sélectionner"
 		},
 		"editor": {
-			"title": "Configuration de pièce",
-			"disabledIndicator": "Cette pièce ne prend pas en charge la configuration",
+			"title": "Configuration du composant",
+			"disabledIndicator": "Ce composant ne prend pas en charge la configuration.",
 			"buttons": {
 				"save": "Enregistrer"
 			}
 		},
 		"errorMessage": {
 			"icon": {
-				"alt": "Invite d'erreur"
+				"alt": "Message d'erreur"
 			}
 		},
 		"alerts": {
-			"fetchPartTypesFailed": "Échec de la récupération des types de pièces",
-			"fetchPartsFailed": "Échec de la récupération de la liste des pièces",
-			"loadEditorFailed": "Échec du chargement de l'éditeur",
-			"saveConfigFailed": "Échec de l'enregistrement de la configuration de la pièce",
-			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous annuler les modifications ?",
-			"beforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter ?"
+			"fetchPartTypesFailed": "Échec de la récupération des types de composants.",
+			"fetchPartsFailed": "Échec de la récupération de la liste des composants.",
+			"loadEditorFailed": "Échec du chargement de l'éditeur.",
+			"saveConfigFailed": "Échec de l'enregistrement de la configuration du composant.",
+			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous annuler les modifications ?",
+			"beforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter ?"
 		}
 	},
 	"uninstall": {
 		"title": "Désinstaller",
 		"titleWithName": "Désinstaller ${type}/${name}",
-		"confirmMessage": "Êtes-vous sûr de vouloir désinstaller ${type} : ${name} ?",
+		"confirmMessage": "Êtes-vous sûr de vouloir désinstaller ${type} : ${name} ?",
 		"invalidParamsTitle": "Paramètres invalides",
 		"infoMessage": {
 			"icon": {
@@ -377,15 +381,15 @@
 			"back": "Retour"
 		},
 		"alerts": {
-			"success": "${type} : ${name} désinstallé avec succès",
-			"failed": "Échec de la désinstallation : ${error}",
+			"success": "${type} : ${name} désinstallé avec succès.",
+			"failed": "Échec de la désinstallation : ${error}",
 			"invalidParams": "Paramètres de requête non valides.",
-			"httpError": "Erreur HTTP ! Code d'état : ${status}"
+			"httpError": "Erreur HTTP ! Code d'état : ${status}"
 		}
 	},
 	"chat": {
 		"new": {
-			"title": "Chat Nouveau"
+			"title": "Nouveau chat"
 		},
 		"title": "Chat",
 		"sidebar": {
@@ -403,9 +407,9 @@
 			},
 			"charList": {
 				"icon": {
-					"alt": "Icône Liste de Personnages"
+					"alt": "Icône Liste des personnages"
 				},
-				"title": "Liste de Personnages",
+				"title": "Liste des personnages",
 				"buttons": {
 					"addChar": {
 						"title": "Ajouter un personnage"
@@ -415,8 +419,8 @@
 					}
 				}
 			},
-			"noSelection": "Aucun",
-			"noDescription": "Aucune information de description"
+			"noSelection": "Aucune sélection",
+			"noDescription": "Aucune description disponible."
 		},
 		"chatArea": {
 			"title": "Chat",
@@ -427,7 +431,7 @@
 				"alt": "Icône Menu"
 			},
 			"input": {
-				"placeholder": "Saisir un message...\nCtrl+Entrée pour envoyer"
+				"placeholder": "Saisissez un message...\\nCtrl+Entrée pour envoyer"
 			},
 			"sendButton": {
 				"title": "Envoyer"
@@ -436,16 +440,16 @@
 				"alt": "Icône Envoyer"
 			},
 			"uploadButton": {
-				"title": "Télécharger"
+				"title": "Importer"
 			},
 			"uploadButtonIcon": {
-				"alt": "Icône Télécharger"
+				"alt": "Icône Importer"
 			},
 			"voiceButton": {
-				"title": "Parler"
+				"title": "Message vocal"
 			},
 			"voiceButtonIcon": {
-				"alt": "Icône Parler"
+				"alt": "Icône Message vocal"
 			},
 			"photoButton": {
 				"title": "Photo"
@@ -455,13 +459,13 @@
 			}
 		},
 		"rightSidebar": {
-			"title": "Informations de description"
+			"title": "Détails"
 		},
 		"messageList": {
-			"confirmDeleteMessage": "Confirmer la suppression de ce message ?"
+			"confirmDeleteMessage": "Supprimer ce message ?"
 		},
 		"voiceRecording": {
-			"errorAccessingMicrophone": "Echec de l'accès au micro"
+			"errorAccessingMicrophone": "Échec de l'accès au microphone."
 		},
 		"messageView": {
 			"buttons": {
@@ -497,10 +501,10 @@
 					"alt": "Icône Annuler"
 				},
 				"upload": {
-					"title": "Télécharger"
+					"title": "Importer"
 				},
 				"uploadIcon": {
-					"alt": "Icône Télécharger"
+					"alt": "Icône Importer"
 				}
 			}
 		},
@@ -524,26 +528,26 @@
 			"frequencyLabel": "Fréquence",
 			"buttons": {
 				"removeChar": {
-					"title": "Retirer du Chat"
+					"title": "Retirer du chat"
 				},
 				"removeCharIcon": {
-					"alt": "Icône Retirer le Personnage"
+					"alt": "Icône Retirer le personnage"
 				},
 				"forceReply": {
-					"title": "Forcer la Réponse"
+					"title": "Forcer la réponse"
 				},
 				"forceReplyIcon": {
-					"alt": "Icône Forcer la Réponse"
+					"alt": "Icône Forcer la réponse"
 				}
 			}
 		}
 	},
 	"chat_history": {
-		"title": "Historique des Chats",
-		"pageTitle": "Historique des Chats",
+		"title": "Historique des chats",
+		"pageTitle": "Historique des chats",
 		"sortOptions": {
-			"time_desc": "Heure décroissante",
-			"time_asc": "Heure croissante"
+			"time_desc": "Date décroissante",
+			"time_asc": "Date croissante"
 		},
 		"filterInput": {
 			"placeholder": "Rechercher..."
@@ -554,11 +558,11 @@
 			"deleteSelected": "Supprimer la sélection",
 			"exportSelected": "Exporter la sélection"
 		},
-		"confirmDeleteChat": "Êtes-vous sûr de vouloir supprimer l'historique des chats avec ${chars} ?",
-		"confirmDeleteMultiChats": "Êtes-vous sûr de vouloir supprimer les ${count} historiques de chats sélectionnés ?",
+		"confirmDeleteChat": "Êtes-vous sûr de vouloir supprimer l'historique des chats avec ${chars} ?",
+		"confirmDeleteMultiChats": "Êtes-vous sûr de vouloir supprimer les ${count} historiques de chats sélectionnés ?",
 		"alerts": {
-			"noChatSelectedForDeletion": "Veuillez sélectionner les historiques de chats à supprimer",
-			"noChatSelectedForExport": "Veuillez sélectionner les historiques de chats à exporter"
+			"noChatSelectedForDeletion": "Veuillez sélectionner les historiques de chats à supprimer.",
+			"noChatSelectedForExport": "Veuillez sélectionner les historiques de chats à exporter."
 		},
 		"chatItemButtons": {
 			"continue": "Continuer",
@@ -575,116 +579,181 @@
 			"deleteBot": "Supprimer"
 		},
 		"configCard": {
-			"title": "Configuration du Bot",
+			"title": "Configuration du bot",
 			"labels": {
 				"character": "Personnage",
 				"apiKey": "Clé API Discord",
-				"config": "Config"
+				"config": "Configuration"
 			},
-			"charSelectPlaceholder": "Sélectionner un Personnage",
+			"charSelectPlaceholder": "Sélectionner un personnage",
 			"apiKeyInput": {
-				"placeholder": "Saisir la Clé API"
+				"placeholder": "Saisir la clé API"
 			},
 			"toggleApiKeyIcon": {
-				"alt": "Basculer la visibilité de la Clé API"
+				"alt": "Afficher/Masquer la clé API"
 			},
 			"buttons": {
-				"saveConfig": "Enregistrer la Config",
+				"saveConfig": "Enregistrer la configuration",
 				"startBot": "Démarrer",
 				"stopBot": "Arrêter"
 			}
 		},
 		"prompts": {
-			"newBotName": "Veuillez saisir un nouveau nom de Bot :"
+			"newBotName": "Veuillez saisir un nouveau nom pour le bot :"
 		},
 		"alerts": {
-			"botExists": "Un bot nommé \"${botname}\" existe déjà, veuillez utiliser un autre nom.",
-			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous annuler les modifications ?",
-			"configSaved": "Config enregistrée avec succès",
-			"httpError": "Erreur HTTP",
-			"beforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter ?"
+			"botExists": "Un bot nommé \"${botname}\" existe déjà. Veuillez utiliser un autre nom.",
+			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous annuler les modifications ?",
+			"configSaved": "Configuration enregistrée avec succès.",
+			"httpError": "Erreur HTTP.",
+			"beforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter ?"
 		}
 	},
 	"telegram_bots": {
-		"title": "Robot télégramme",
-		"cardTitle": "Gestion des robots télégrammes",
+		"title": "Bots Telegram",
+		"cardTitle": "Gestion des bots Telegram",
 		"buttons": {
 			"newBot": "Nouveau",
-			"deleteBot": "supprimer"
+			"deleteBot": "Supprimer"
 		},
 		"configCard": {
-			"title": "Configuration du robot",
+			"title": "Configuration du bot",
 			"labels": {
-				"character": "Lier le rôle",
-				"botToken": "Jeton de bot télégramme",
-				"config": "Configurer"
+				"character": "Personnage",
+				"botToken": "Jeton du bot Telegram",
+				"config": "Configuration"
 			},
-			"charSelectPlaceholder": "Sélectionnez un rôle",
+			"charSelectPlaceholder": "Sélectionner un personnage",
 			"botTokenInput": {
-				"placeholder": "Entrez le jeton de bot télégramme"
+				"placeholder": "Saisissez le jeton du bot Telegram"
 			},
 			"toggleBotTokenIcon": {
-				"alt": "Passer pour afficher les touches API"
+				"alt": "Afficher/Masquer le jeton du bot"
 			},
 			"buttons": {
 				"saveConfig": "Enregistrer la configuration",
-				"startBot": "démarrer",
-				"stopBot": "arrêt"
+				"startBot": "Démarrer",
+				"stopBot": "Arrêter"
 			}
 		},
 		"prompts": {
-			"newBotName": "Veuillez saisir un nouveau nom de bot:"
+			"newBotName": "Veuillez saisir un nouveau nom pour le bot :"
 		},
 		"alerts": {
-			"botExists": "Le robot nommé \"${botname}\" existe déjà, veuillez utiliser un nom différent.",
-			"unsavedChanges": "Vous avez des changements non sauvés. Êtes-vous sûr de vouloir abandonner ces changements?",
-			"configSaved": "La configuration a été enregistrée avec succès!",
-			"httpError": "Erreur de demande HTTP",
-			"beforeUnload": "Vous avez des changements non sauvés. Êtes-vous sûr de vouloir quitter la page actuelle?"
+			"botExists": "Un bot nommé \"${botname}\" existe déjà. Veuillez utiliser un autre nom.",
+			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous vraiment annuler ces modifications ?",
+			"configSaved": "La configuration a été enregistrée avec succès !",
+			"httpError": "Erreur HTTP.",
+			"beforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter cette page ?"
 		}
 	},
 	"terminal_assistant": {
 		"title": "Assistant Terminal",
-		"initialMessage": "Fount prend en charge le déploiement de vos personnages préférés dans votre terminal pour vous aider à coder !",
-		"initialMessageLink": "Cliquez ici pour en savoir plus"
+		"initialMessage": "Fount prend en charge le déploiement de vos personnages préférés dans votre terminal pour vous assister lors du codage !",
+		"initialMessageLink": "Cliquez ici pour en savoir plus."
 	},
 	"access": {
 		"title": "Accéder à Fount sur d'autres appareils",
-		"heading": "Vous voulez accéder à Fount sur d'autres appareils ?",
+		"heading": "Vous voulez accéder à Fount sur d'autres appareils ?",
 		"instruction": {
 			"sameLAN": "Assurez-vous que l'appareil et l'hôte Fount sont sur le même réseau local.",
-			"accessthis": "Visitez cette URL :"
+			"accessthis": "Visitez cette URL :"
 		},
 		"copyButton": "Copier l'URL",
-		"copied": "URL copiée dans le presse-papiers !"
+		"copied": "URL copiée dans le presse-papiers !"
 	},
 	"proxy": {
 		"title": "Proxy API",
-		"heading": "Adresse du Proxy API OpenAI",
-		"instruction": "Entrez l'adresse suivante dans toute application nécessitant le format API OpenAI pour utiliser la source d'IA dans fount !",
+		"heading": "Adresse du proxy API OpenAI",
+		"instruction": "Saisissez l'adresse suivante dans toute application nécessitant le format API OpenAI pour utiliser la source d'IA dans Fount !",
 		"copyButton": "Copier l'adresse",
-		"copied": "Adresse copiée dans le presse-papiers !"
+		"copied": "Adresse copiée dans le presse-papiers !"
 	},
 	"404": {
 		"title": "Page non trouvée",
-		"pageNotFoundText": "Oups ! Il semble que vous soyez arrivé sur une page qui n'existe pas.",
+		"pageNotFoundText": "Oups ! Il semble que vous soyez arrivé sur une page qui n'existe pas.",
 		"homepageButton": "Retour à la page d'accueil",
 		"MineSweeper": {
-			"difficultyLabel": "Difficulté :",
+			"difficultyLabel": "Difficulté :",
 			"difficultyEasy": "Facile",
 			"difficultyMedium": "Moyen",
 			"difficultyHard": "Difficile",
-			"difficultyCustom": "Personnalisé",
-			"minesLeftLabel": "Mines restantes :",
-			"timeLabel": "Temps :",
+			"difficultyCustom": "Personnalisée",
+			"minesLeftLabel": "Mines restantes :",
+			"timeLabel": "Temps :",
 			"restartButton": "Recommencer",
-			"rowsLabel": "Lignes :",
-			"colsLabel": "Colonnes :",
-			"minesCountLabel": "Mines :",
-			"winMessage": "Félicitations, vous avez gagné !",
-			"loseMessage": "Fin du jeu, vous avez touché une mine !",
+			"rowsLabel": "Lignes :",
+			"colsLabel": "Colonnes :",
+			"minesCountLabel": "Nombre de mines :",
+			"winMessage": "Félicitations, vous avez gagné !",
+			"loseMessage": "Partie terminée, vous avez touché une mine !",
 			"soundOn": "Son activé",
 			"soundOff": "Son désactivé"
+		}
+	},
+	"userSettings": {
+		"title": "Paramètres utilisateur",
+		"PageTitle": "Paramètres utilisateur",
+		"apiError": "La requête API a échoué : ${message}",
+		"generalError": "Une erreur s'est produite : ${message}",
+		"userInfo": {
+			"title": "Informations utilisateur",
+			"usernameLabel": "Nom d'utilisateur :",
+			"creationDateLabel": "Date de création du compte :",
+			"folderSizeLabel": "Taille des données utilisateur :",
+			"folderPathLabel": "Chemin des données utilisateur :",
+			"copyPathBtnTitle": "Copier le chemin",
+			"copiedAlert": "Chemin copié dans le presse-papiers !"
+		},
+		"changePassword": {
+			"title": "Modifier le mot de passe",
+			"currentPasswordLabel": "Mot de passe actuel :",
+			"newPasswordLabel": "Nouveau mot de passe :",
+			"confirmNewPasswordLabel": "Confirmer le nouveau mot de passe :",
+			"submitButton": "Modifier le mot de passe",
+			"errorMismatch": "Les nouveaux mots de passe ne correspondent pas.",
+			"success": "Mot de passe modifié avec succès."
+		},
+		"renameUser": {
+			"title": "Renommer l'utilisateur",
+			"newUsernameLabel": "Nouveau nom d'utilisateur :",
+			"submitButton": "Renommer l'utilisateur",
+			"confirmMessage": "Êtes-vous sûr de vouloir changer votre nom d'utilisateur ? Cela nécessitera une nouvelle connexion.",
+			"success": "L'utilisateur a été renommé \"${newUsername}\" avec succès. Vous allez maintenant être déconnecté."
+		},
+		"userDevices": {
+			"title": "Appareils et sessions utilisateur",
+			"refreshButtonTitle": "Actualiser la liste",
+			"noDevicesFound": "Aucun appareil ou session trouvé.",
+			"deviceInfo": "ID de l'appareil : ${deviceId}",
+			"thisDevice": "Cet appareil",
+			"deviceDetails": "Dernière connexion : ${lastSeen} | IP : ${ipAddress} | UA : ${userAgent}",
+			"revokeButton": "Révoquer",
+			"revokeConfirm": "Voulez-vous vraiment déconnecter cet appareil/cette session ?",
+			"revokeSuccess": "Appareil/session révoqué avec succès."
+		},
+		"logout": {
+			"title": "Se déconnecter",
+			"description": "Ceci déconnectera votre compte de l'appareil actuel.",
+			"buttonText": "Se déconnecter",
+			"confirmMessage": "Êtes-vous sûr de vouloir vous déconnecter ?",
+			"successMessage": "Déconnexion réussie. Redirection vers la page de connexion en cours..."
+		},
+		"deleteAccount": {
+			"title": "Supprimer le compte",
+			"warning": "Attention : Cette action supprimera définitivement votre compte et toutes les données associées. Elle est irréversible.",
+			"submitButton": "Supprimer mon compte",
+			"confirmMessage1": "Attention ! Êtes-vous sûr de vouloir supprimer définitivement votre compte ? Cette action est irréversible.",
+			"confirmMessage2": "Pour confirmer la suppression, veuillez saisir votre nom d'utilisateur \"${username}\" :",
+			"usernameMismatch": "Le nom d'utilisateur saisi ne correspond pas à l'utilisateur actuel. La suppression a été annulée.",
+			"success": "Le compte a été supprimé avec succès. Vous allez maintenant être déconnecté."
+		},
+		"passwordConfirm": {
+			"title": "Confirmer l'opération",
+			"message": "Pour continuer, veuillez saisir votre mot de passe actuel :",
+			"passwordLabel": "Mot de passe :",
+			"confirmButton": "Confirmer",
+			"cancelButton": "Annuler"
 		}
 	}
 }
