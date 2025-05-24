@@ -5,6 +5,8 @@ import { loadChat } from './src/server/chat.mjs'
 import { setEndpoints } from './src/server/endpoints.mjs'
 import { cleanFilesInterval } from './src/server/files.mjs'
 
+let loading_count = 0
+
 export default {
 	info: {
 		'': {
@@ -19,10 +21,13 @@ export default {
 		}
 	},
 	Load: (router) => {
+		loading_count++
 		setEndpoints(router)
 	},
 	Unload: () => {
-		clearInterval(cleanFilesInterval)
+		loading_count--
+		if (loading_count === 0)
+			clearInterval(cleanFilesInterval)
 	},
 
 	interfaces: {

@@ -33,7 +33,7 @@ export class pluginAPI_t {
 			// 这两个API为可以执行js代码的char提供高级扩展
 
 			// 此函数在合适时机扩充至char的有关代码运行的prompt中，为char更好掌握代码运行的上下文提供基础
-			GetJSCodePrompt?: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, detail_level: number) => Promise<string|undefined>;
+			GetJSCodePrompt?: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, detail_level: number) => Promise<string | undefined>;
 			// 此函数为char的代码运行提供特殊变量或函数，允许其在代码中使用
 			GetJSCodeContext?: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t) => Promise<Record<string, any>>;
 		}

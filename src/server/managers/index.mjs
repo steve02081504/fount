@@ -6,6 +6,7 @@ import { loadAIsource, loadAIsourceGenerator, unloadAIsource, unloadAIsourceGene
 import { LoadImportHandler, UnloadImportHandler } from '../../public/shells/install/src/server/importHandler_manager.mjs'
 import { loadWorld, unloadWorld } from './world_manager.mjs'
 import { on_shutdown, shutdown } from '../on_shutdown.mjs'
+import { events } from '../events.mjs'
 
 export const partsList = [
 	'shells', 'chars', 'personas', 'worlds', 'AIsources', 'AIsourceGenerators',
@@ -54,6 +55,19 @@ on_shutdown(async () => {
 		for (const parttype in parts_set[username])
 			for (const partname in parts_set[username][parttype])
 				await unloadPart(username, parttype, partname)
+})
+
+// Event Handlers
+events.on('BeforeUserDeleted', async ({ username }) => {
+	for (const parttype in parts_set[username])
+		for (const partname in parts_set[username][parttype])
+			await unloadPart(username, parttype, partname)
+})
+
+events.on('BeforeUserRenamed', async ({ oldUsername, newUsername }) => {
+	for (const parttype in parts_set[oldUsername])
+		for (const partname in parts_set[oldUsername][parttype])
+			await unloadPart(oldUsername, parttype, partname)
 })
 
 export async function reloadPart(username, parttype, partname) {

@@ -22,13 +22,13 @@ async function moveWithMerge(src, dest) {
 	if (srcStat.isFile())
 		if (destStat.isFile())
 			await move(src, dest, { overwrite: true })
-		 else
+		else
 			throw new Error(`Cannot move file to directory: ${dest}`)
 	// Source is a directory
 	else if (srcStat.isDirectory())
 		if (destStat.isDirectory())
 			await mergeDirectories(src, dest)
-		 else
+		else
 			throw new Error(`Cannot move directory to file: ${dest}`)
 }
 
@@ -41,10 +41,10 @@ async function mergeDirectories(srcDir, destDir) {
 
 		if (srcStat.isFile())
 			await move(srcPath, destPath, { overwrite: true })
-		 else if (srcStat.isDirectory())
+		else if (srcStat.isDirectory())
 			if (!existsSync(destPath))
 				await move(srcPath, destPath)
-			 else
+			else
 				await mergeDirectories(srcPath, destPath)
 	}
 	await remove(srcDir)

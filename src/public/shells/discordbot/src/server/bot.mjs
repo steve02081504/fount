@@ -6,6 +6,7 @@ import { getAllUserNames } from '../../../../../server/auth.mjs'
 import { StartJob, EndJob } from '../../../../../server/jobs.mjs'
 import { geti18n } from '../../../../../scripts/i18n.mjs'
 import { createSimpleDiscordInterface } from './default_interface/main.mjs'
+import { events } from '../../../../../server/events.mjs'
 /** @typedef {import('../../../../../decl/charAPI.ts').charAPI_t} charAPI_t */
 
 /**
@@ -134,3 +135,26 @@ on_shutdown(async () => {
 export function getBotList(username) {
 	return Object.keys(getBotsData(username))
 }
+
+// Event Handlers
+events.on('BeforeUserDeleted', async ({ username }) => {
+	const runningBots = getRunningBotList(username)
+	for (const botname of runningBots)
+		try {
+			await stopBot(username, botname)
+			console.log(`Discord Bot: Stopped bot ${botname} for deleted user ${username}`)
+		} catch (error) {
+			console.error(`Discord Bot: Error stopping bot ${botname} for deleted user ${username}:`, error)
+		}
+})
+
+events.on('BeforeUserRenamed', async ({ oldUsername, newUsername }) => {
+	const runningBotsOldUser = getRunningBotList(oldUsername)
+	for (const botname of runningBotsOldUser)
+		try {
+			await stopBot(oldUsername, botname)
+			console.log(`Discord Bot: Stopped bot ${botname} for old username ${oldUsername}`)
+		} catch (error) {
+			console.error(`Discord Bot: Error stopping bot ${botname} for old username ${oldUsername}:`, error)
+		}
+})
