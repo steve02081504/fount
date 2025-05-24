@@ -163,8 +163,8 @@ export function registerEndpoints(router) {
 
 			return next()
 		}
-		router.post(new RegExp('^/api/' + part + '/'), authenticate, autoloader)
-		router.get(new RegExp('^/api/' + part + '/'), authenticate, autoloader)
+		for (const method of ['get', 'post', 'delete', 'patch', 'put'])
+			router[method](new RegExp('^/api/' + part + '/'), authenticate, autoloader)
 		router.get(new RegExp('^/' + part + '/'), authenticate, autoloader, async (req, res, next) => {
 			const { username } = await getUserByReq(req)
 			user_static[username] ??= express.static(getUserDictionary(username))
