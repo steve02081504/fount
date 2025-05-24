@@ -686,5 +686,70 @@
 			"soundOn": "Bật âm thanh",
 			"soundOff": "Tắt âm thanh"
 		}
+	},
+	"userSettings": {
+		"title": "Cài đặt người dùng",
+		"PageTitle": "Cài đặt người dùng",
+		"apiError": "Yêu cầu API không thành công: ${message}",
+		"generalError": "Đã xảy ra lỗi: ${message}",
+		"userInfo": {
+			"title": "Thông tin người dùng",
+			"usernameLabel": "Tên người dùng:",
+			"creationDateLabel": "Ngày tạo tài khoản:",
+			"folderSizeLabel": "Kích thước dữ liệu người dùng:",
+			"folderPathLabel": "Đường dẫn dữ liệu người dùng:",
+			"copyPathBtnTitle": "Sao chép đường dẫn",
+			"copiedAlert": "Con đường đã được sao chép vào bảng tạm!"
+		},
+		"changePassword": {
+			"title": "Sửa đổi mật khẩu",
+			"currentPasswordLabel": "Mật khẩu hiện tại:",
+			"newPasswordLabel": "Mật khẩu mới:",
+			"confirmNewPasswordLabel": "Xác nhận mật khẩu mới:",
+			"submitButton": "Sửa đổi mật khẩu",
+			"errorMismatch": "Mật khẩu mới được nhập không nhất quán hai lần.",
+			"success": "Sửa đổi mật khẩu đã thành công."
+		},
+		"renameUser": {
+			"title": "Đổi tên người dùng",
+			"newUsernameLabel": "Tên người dùng mới:",
+			"submitButton": "Đổi tên người dùng",
+			"confirmMessage": "Bạn có chắc là bạn muốn thay đổi tên người dùng của mình không? Điều này sẽ yêu cầu bạn đăng nhập lại.",
+			"success": "Người dùng đã được đổi tên thành công thành \"${newUsername}\". Bây giờ bạn sẽ được đăng xuất."
+		},
+		"userDevices": {
+			"title": "Thiết bị người dùng/phiên",
+			"refreshButtonTitle": "Làm mới danh sách",
+			"noDevicesFound": "Không có thiết bị hoặc phiên được tìm thấy.",
+			"deviceInfo": "ID thiết bị: ${deviceId}",
+			"thisDevice": "Thiết bị hiện tại",
+			"deviceDetails": "Trực tuyến cuối cùng: ${lastSeen} | IP: ${ipAddress} | Ua: ${userAgent}",
+			"revokeButton": "Thu hồi",
+			"revokeConfirm": "Bạn có chắc là bạn muốn đăng xuất khỏi thiết bị/phiên này không?",
+			"revokeSuccess": "Thiết bị/phiên đã bị thu hồi thành công."
+		},
+		"logout": {
+			"title": "Đăng xuất",
+			"description": "Điều này sẽ đăng xuất khỏi tài khoản của bạn từ thiết bị hiện tại.",
+			"buttonText": "Đăng xuất",
+			"confirmMessage": "Bạn có chắc là bạn muốn đăng xuất?",
+			"successMessage": "Đăng xuất thành công. Nó sẽ sớm nhảy đến trang đăng nhập ..."
+		},
+		"deleteAccount": {
+			"title": "Xóa một tài khoản",
+			"warning": "Cảnh báo: Hành động này sẽ xóa vĩnh viễn tài khoản của bạn và tất cả dữ liệu liên quan và không thể được khôi phục.",
+			"submitButton": "Xóa tài khoản của tôi",
+			"confirmMessage1": "cảnh báo! Bạn có chắc là bạn muốn xóa vĩnh viễn tài khoản của mình? Hoạt động này không thể bị hủy bỏ.",
+			"confirmMessage2": "Để xác nhận xóa, vui lòng nhập tên người dùng của bạn \"${username}\":",
+			"usernameMismatch": "Tên người dùng đã nhập không phù hợp với người dùng hiện tại. Các hoạt động xóa đã bị hủy bỏ.",
+			"success": "Tài khoản đã bị xóa thành công. Bây giờ bạn sẽ được đăng xuất."
+		},
+		"passwordConfirm": {
+			"title": "Xác nhận hoạt động",
+			"message": "Để tiếp tục điều này, hãy nhập mật khẩu hiện tại của bạn:",
+			"passwordLabel": "mật khẩu:",
+			"confirmButton": "xác nhận",
+			"cancelButton": "Hủy bỏ"
+		}
 	}
 }

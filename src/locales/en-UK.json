@@ -686,5 +686,70 @@
 			"soundOn": "Sound On",
 			"soundOff": "Sound Off"
 		}
+	},
+	"userSettings": {
+		"title": "User settings",
+		"PageTitle": "User settings",
+		"apiError": "API request failed: ${message}",
+		"generalError": "An error occurred: ${message}",
+		"userInfo": {
+			"title": "User Information",
+			"usernameLabel": "username:",
+			"creationDateLabel": "Account creation date:",
+			"folderSizeLabel": "User data size:",
+			"folderPathLabel": "User data path:",
+			"copyPathBtnTitle": "Copy path",
+			"copiedAlert": "The path has been copied to the clipboard!"
+		},
+		"changePassword": {
+			"title": "Modify password",
+			"currentPasswordLabel": "Current Password:",
+			"newPasswordLabel": "New Password:",
+			"confirmNewPasswordLabel": "Confirm the new password:",
+			"submitButton": "Modify password",
+			"errorMismatch": "The new password is entered inconsistently twice.",
+			"success": "Password modification was successful."
+		},
+		"renameUser": {
+			"title": "Rename the user",
+			"newUsernameLabel": "New username:",
+			"submitButton": "Rename the user",
+			"confirmMessage": "Are you sure you want to change your username? This will require you to log in again.",
+			"success": "The user has been successfully renamed to \"${newUsername}\". You will now be logged out."
+		},
+		"userDevices": {
+			"title": "User Equipment/Session",
+			"refreshButtonTitle": "Refresh the list",
+			"noDevicesFound": "No devices or sessions were found.",
+			"deviceInfo": "Device ID: ${deviceId}",
+			"thisDevice": "Current equipment",
+			"deviceDetails": "Last online: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
+			"revokeButton": "Revoke",
+			"revokeConfirm": "Are you sure you want to log out of this device/session?",
+			"revokeSuccess": "The device/session has been successfully revoked."
+		},
+		"logout": {
+			"title": "Sign out",
+			"description": "This will log out of your account from the current device.",
+			"buttonText": "Sign out",
+			"confirmMessage": "Are you sure you want to log out?",
+			"successMessage": "Log out successfully. It will jump to the login page soon..."
+		},
+		"deleteAccount": {
+			"title": "Delete an account",
+			"warning": "Warning: This action will permanently delete your account and all related data and cannot be restored.",
+			"submitButton": "Delete my account",
+			"confirmMessage1": "warn! Are you sure you want to permanently delete your account? This operation cannot be cancelled.",
+			"confirmMessage2": "To confirm the deletion, please enter your username \"${username}\":",
+			"usernameMismatch": "The entered username does not match the current user. The delete operation has been cancelled.",
+			"success": "Account has been deleted successfully. You will now be logged out."
+		},
+		"passwordConfirm": {
+			"title": "Confirm the operation",
+			"message": "To continue this, enter your current password:",
+			"passwordLabel": "password:",
+			"confirmButton": "confirm",
+			"cancelButton": "Cancel"
+		}
 	}
 }

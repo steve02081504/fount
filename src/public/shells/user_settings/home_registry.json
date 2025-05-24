@@ -2,11 +2,41 @@
 	"home_function_buttons": [
 		{
 			"info": {
+				"zh-CN": {
+					"title": "用户设置"
+				},
 				"en-UK": {
 					"title": "User Settings"
 				},
-				"zh-CN": {
-					"title": "用户设置"
+				"de-DE": {
+					"title": "Benutzereinstellungen"
+				},
+				"es-ES": {
+					"title": "Configuración de usuario"
+				},
+				"fr-FR": {
+					"title": "Paramètres utilisateur"
+				},
+				"hi-IN": {
+					"title": "उपयोगकर्ता सेटिंग्स"
+				},
+				"it-IT": {
+					"title": "Impostazioni utente"
+				},
+				"ja-JP": {
+					"title": "ユーザー設定"
+				},
+				"ko-KR": {
+					"title": "사용자 설정"
+				},
+				"pt-PT": {
+					"title": "Configurações do usuário"
+				},
+				"ru-RU": {
+					"title": "Настройки пользователя"
+				},
+				"vi-VN": {
+					"title": "Cài đặt người dùng"
 				}
 			},
 			"level": 100,

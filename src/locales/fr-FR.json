@@ -686,5 +686,70 @@
 			"soundOn": "Son activé",
 			"soundOff": "Son désactivé"
 		}
+	},
+	"userSettings": {
+		"title": "Paramètres utilisateur",
+		"PageTitle": "Paramètres utilisateur",
+		"apiError": "La demande d'API a échoué: ${message}",
+		"generalError": "Une erreur s'est produite: ${message}",
+		"userInfo": {
+			"title": "Informations sur l'utilisateur",
+			"usernameLabel": "nom d'utilisateur:",
+			"creationDateLabel": "Date de création du compte:",
+			"folderSizeLabel": "Taille des données de l'utilisateur:",
+			"folderPathLabel": "Chemin de données utilisateur:",
+			"copyPathBtnTitle": "Chemin de copie",
+			"copiedAlert": "Le chemin a été copié dans le presse-papiers!"
+		},
+		"changePassword": {
+			"title": "Modifier le mot de passe",
+			"currentPasswordLabel": "Mot de passe actuel:",
+			"newPasswordLabel": "Nouveau mot de passe:",
+			"confirmNewPasswordLabel": "Confirmez le nouveau mot de passe:",
+			"submitButton": "Modifier le mot de passe",
+			"errorMismatch": "Le nouveau mot de passe est entré deux fois de manière incohérente.",
+			"success": "La modification du mot de passe a réussi."
+		},
+		"renameUser": {
+			"title": "Renommer l'utilisateur",
+			"newUsernameLabel": "Nouveau nom d'utilisateur:",
+			"submitButton": "Renommer l'utilisateur",
+			"confirmMessage": "Êtes-vous sûr de vouloir changer votre nom d'utilisateur? Cela vous obligera à vous connecter à nouveau.",
+			"success": "L'utilisateur a été renommé avec succès \"${newUsername}\". Vous serez maintenant déconnecté."
+		},
+		"userDevices": {
+			"title": "Équipement / session utilisateur",
+			"refreshButtonTitle": "Actualiser la liste",
+			"noDevicesFound": "Aucun dispositif ou sessions n'a été trouvé.",
+			"deviceInfo": "ID de périphérique: ${deviceId}",
+			"thisDevice": "Équipement actuel",
+			"deviceDetails": "Dernier en ligne: ${lastSeen} | IP: ${ipAddress} | Ua: ${userAgent}",
+			"revokeButton": "Révoquer",
+			"revokeConfirm": "Êtes-vous sûr de souhaiter vous déconnecter de cet appareil / session?",
+			"revokeSuccess": "L'appareil / session a été révoqué avec succès."
+		},
+		"logout": {
+			"title": "se déconnecter",
+			"description": "Cela se déconnectera de votre compte à partir de l'appareil actuel.",
+			"buttonText": "se déconnecter",
+			"confirmMessage": "Êtes-vous sûr de vouloir vous déconnecter?",
+			"successMessage": "Déconnectez-vous avec succès. Il passera bientôt à la page de connexion ..."
+		},
+		"deleteAccount": {
+			"title": "Supprimer un compte",
+			"warning": "AVERTISSEMENT: Cette action supprimera en permanence votre compte et toutes les données connexes et ne peut pas être restaurée.",
+			"submitButton": "Supprimer mon compte",
+			"confirmMessage1": "avertir! Êtes-vous sûr de vouloir supprimer définitivement votre compte? Cette opération ne peut pas être annulée.",
+			"confirmMessage2": "Pour confirmer la suppression, veuillez saisir votre nom d'utilisateur \"${username}\":",
+			"usernameMismatch": "Le nom d'utilisateur entré ne correspond pas à l'utilisateur actuel. L'opération de suppression a été annulée.",
+			"success": "Le compte a été supprimé avec succès. Vous serez maintenant déconnecté."
+		},
+		"passwordConfirm": {
+			"title": "Confirmer l'opération",
+			"message": "Pour continuer, entrez votre mot de passe actuel:",
+			"passwordLabel": "mot de passe:",
+			"confirmButton": "confirmer",
+			"cancelButton": "Annuler"
+		}
 	}
 }

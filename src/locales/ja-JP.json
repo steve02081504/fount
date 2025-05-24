@@ -686,5 +686,70 @@
 			"soundOn": "サウンドオン",
 			"soundOff": "サウンドオフ"
 		}
+	},
+	"userSettings": {
+		"title": "ユーザー設定",
+		"PageTitle": "ユーザー設定",
+		"apiError": "APIリクエストが失敗しました：${message}",
+		"generalError": "エラーが発生しました：${message}",
+		"userInfo": {
+			"title": "ユーザー情報",
+			"usernameLabel": "ユーザー名：",
+			"creationDateLabel": "アカウントの作成日：",
+			"folderSizeLabel": "ユーザーデータサイズ：",
+			"folderPathLabel": "ユーザーデータパス：",
+			"copyPathBtnTitle": "パスをコピーします",
+			"copiedAlert": "パスはクリップボードにコピーされました！"
+		},
+		"changePassword": {
+			"title": "パスワードを変更します",
+			"currentPasswordLabel": "現在のパスワード：",
+			"newPasswordLabel": "新しいパスワード：",
+			"confirmNewPasswordLabel": "新しいパスワードを確認してください：",
+			"submitButton": "パスワードを変更します",
+			"errorMismatch": "新しいパスワードは一貫して2回入力されます。",
+			"success": "パスワードの変更が成功しました。"
+		},
+		"renameUser": {
+			"title": "ユーザーの名前を変更します",
+			"newUsernameLabel": "新しいユーザー名：",
+			"submitButton": "ユーザーの名前を変更します",
+			"confirmMessage": "ユーザー名を変更したいですか？これには、再度ログインする必要があります。",
+			"success": "ユーザーは「${newUsername}」に正常に名前が変更されました。これでログアウトされます。"
+		},
+		"userDevices": {
+			"title": "ユーザー機器/セッション",
+			"refreshButtonTitle": "リストを更新します",
+			"noDevicesFound": "デバイスやセッションは見つかりませんでした。",
+			"deviceInfo": "デバイスID：${deviceId}",
+			"thisDevice": "現在の機器",
+			"deviceDetails": "最後のオンライン：${lastSeen} | IP：${ipAddress} | ua：${userAgent}",
+			"revokeButton": "取り消す",
+			"revokeConfirm": "このデバイス/セッションからログアウトしたいですか？",
+			"revokeSuccess": "デバイス/セッションは正常に取り消されました。"
+		},
+		"logout": {
+			"title": "サインアウト",
+			"description": "これにより、現在のデバイスからアカウントからログアウトします。",
+			"buttonText": "サインアウト",
+			"confirmMessage": "ログアウトしたいですか？",
+			"successMessage": "正常にログアウトします。すぐにログインページにジャンプします..."
+		},
+		"deleteAccount": {
+			"title": "アカウントを削除します",
+			"warning": "警告：このアクションは、アカウントとすべての関連データを永続的に削除し、復元できません。",
+			"submitButton": "アカウントを削除します",
+			"confirmMessage1": "警告！アカウントを永久に削除したいですか？この操作はキャンセルできません。",
+			"confirmMessage2": "削除を確認するには、ユーザー名「${username}」を入力してください：",
+			"usernameMismatch": "入力されたユーザー名は、現在のユーザーと一致しません。削除操作がキャンセルされました。",
+			"success": "アカウントは正常に削除されました。これでログアウトされます。"
+		},
+		"passwordConfirm": {
+			"title": "操作を確認します",
+			"message": "これを続けるには、現在のパスワードを入力してください。",
+			"passwordLabel": "パスワード：",
+			"confirmButton": "確認する",
+			"cancelButton": "キャンセル"
+		}
 	}
 }

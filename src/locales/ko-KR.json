@@ -686,5 +686,70 @@
 			"soundOn": "소리 켜기",
 			"soundOff": "소리 끄기"
 		}
+	},
+	"userSettings": {
+		"title": "사용자 설정",
+		"PageTitle": "사용자 설정",
+		"apiError": "API 요청 실패 : ${message}",
+		"generalError": "오류가 발생했습니다 : ${message}",
+		"userInfo": {
+			"title": "사용자 정보",
+			"usernameLabel": "사용자 이름 :",
+			"creationDateLabel": "계정 생성 날짜 :",
+			"folderSizeLabel": "사용자 데이터 크기 :",
+			"folderPathLabel": "사용자 데이터 경로 :",
+			"copyPathBtnTitle": "복사 경로",
+			"copiedAlert": "경로는 클립 보드에 복사되었습니다!"
+		},
+		"changePassword": {
+			"title": "비밀번호를 수정하십시오",
+			"currentPasswordLabel": "현재 비밀번호 :",
+			"newPasswordLabel": "새 비밀번호 :",
+			"confirmNewPasswordLabel": "새 비밀번호 확인 :",
+			"submitButton": "비밀번호를 수정하십시오",
+			"errorMismatch": "새 비밀번호는 일관되지 않게 두 번 입력됩니다.",
+			"success": "비밀번호 수정이 성공적이었습니다."
+		},
+		"renameUser": {
+			"title": "사용자 이름을 바꿉니다",
+			"newUsernameLabel": "새로운 사용자 이름 :",
+			"submitButton": "사용자 이름을 바꿉니다",
+			"confirmMessage": "사용자 이름을 변경 하시겠습니까? 다시 로그인해야합니다.",
+			"success": "사용자의 이름은 \"${newUsername}\"로 성공적으로 바뀌 었습니다. 이제 로그 아웃됩니다."
+		},
+		"userDevices": {
+			"title": "사용자 장비/세션",
+			"refreshButtonTitle": "목록을 새로 고치십시오",
+			"noDevicesFound": "장치 나 세션이 발견되지 않았습니다.",
+			"deviceInfo": "장치 ID : ${deviceId}",
+			"thisDevice": "현재 장비",
+			"deviceDetails": "마지막 온라인 : ${lastSeen} | IP : ${ipAddress} | UA : ${userAgent}",
+			"revokeButton": "취소",
+			"revokeConfirm": "이 장치/세션에서 로그 아웃 하시겠습니까?",
+			"revokeSuccess": "장치/세션이 성공적으로 취소되었습니다."
+		},
+		"logout": {
+			"title": "로그 아웃하십시오",
+			"description": "이것은 현재 장치에서 계정에서 로그 아웃됩니다.",
+			"buttonText": "로그 아웃하십시오",
+			"confirmMessage": "로그 아웃 하시겠습니까?",
+			"successMessage": "성공적으로 로그 아웃하십시오. 곧 로그인 페이지로 이동할 것입니다 ..."
+		},
+		"deleteAccount": {
+			"title": "계정을 삭제하십시오",
+			"warning": "경고 :이 조치는 계정과 모든 관련 데이터를 영구적으로 삭제하며 복원 할 수 없습니다.",
+			"submitButton": "내 계정을 삭제하십시오",
+			"confirmMessage1": "경고하다! 계정을 영구적으로 삭제 하시겠습니까? 이 작업은 취소 할 수 없습니다.",
+			"confirmMessage2": "삭제를 확인하려면 사용자 이름 \"${username}\"을 입력하십시오.",
+			"usernameMismatch": "입력 된 사용자 이름은 현재 사용자와 일치하지 않습니다. 삭제 작업이 취소되었습니다.",
+			"success": "계정이 성공적으로 삭제되었습니다. 이제 로그 아웃됩니다."
+		},
+		"passwordConfirm": {
+			"title": "작업을 확인하십시오",
+			"message": "이를 계속하려면 현재 비밀번호를 입력하십시오.",
+			"passwordLabel": "비밀번호:",
+			"confirmButton": "확인하다",
+			"cancelButton": "취소"
+		}
 	}
 }

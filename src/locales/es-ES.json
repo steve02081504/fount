@@ -686,5 +686,70 @@
 			"soundOn": "Sonido activado",
 			"soundOff": "Sonido desactivado"
 		}
+	},
+	"userSettings": {
+		"title": "Configuración de usuario",
+		"PageTitle": "Configuración de usuario",
+		"apiError": "La solicitud de API falló: ${message}",
+		"generalError": "Ocurrió un error: ${message}",
+		"userInfo": {
+			"title": "Información de usuario",
+			"usernameLabel": "nombre de usuario:",
+			"creationDateLabel": "Fecha de creación de cuenta:",
+			"folderSizeLabel": "Tamaño de datos del usuario:",
+			"folderPathLabel": "Ruta de datos de usuario:",
+			"copyPathBtnTitle": "Ruta de copia",
+			"copiedAlert": "¡El camino se ha copiado en el portapapeles!"
+		},
+		"changePassword": {
+			"title": "Modificar contraseña",
+			"currentPasswordLabel": "Contraseña actual:",
+			"newPasswordLabel": "Nueva contraseña:",
+			"confirmNewPasswordLabel": "Confirme la nueva contraseña:",
+			"submitButton": "Modificar contraseña",
+			"errorMismatch": "La nueva contraseña se ingresa de manera inconsistente dos veces.",
+			"success": "La modificación de la contraseña fue exitosa."
+		},
+		"renameUser": {
+			"title": "Cambiar el nombre del usuario",
+			"newUsernameLabel": "Nuevo nombre de usuario:",
+			"submitButton": "Cambiar el nombre del usuario",
+			"confirmMessage": "¿Estás seguro de que quieres cambiar tu nombre de usuario? Esto requerirá que vuelva a iniciar sesión.",
+			"success": "El usuario ha sido renombrado con éxito a \"${newUsername}\". Ahora se registrará."
+		},
+		"userDevices": {
+			"title": "Equipo/sesión de usuario",
+			"refreshButtonTitle": "Actualiza la lista",
+			"noDevicesFound": "No se encontraron dispositivos ni sesiones.",
+			"deviceInfo": "ID de dispositivo: ${deviceId}",
+			"thisDevice": "Equipo actual",
+			"deviceDetails": "Último en línea: ${lastSeen} | IP: ${ipAddress} | Ua: ${userAgent}",
+			"revokeButton": "Revocar",
+			"revokeConfirm": "¿Estás seguro de que quieres cerrar la sesión de este dispositivo/sesión?",
+			"revokeSuccess": "El dispositivo/sesión se ha revocado con éxito."
+		},
+		"logout": {
+			"title": "desconectar",
+			"description": "Esto cerrará la sesión de su cuenta desde el dispositivo actual.",
+			"buttonText": "desconectar",
+			"confirmMessage": "¿Estás seguro de que quieres cerrar sesión?",
+			"successMessage": "Iniciar sesión con éxito. Pronto saltará a la página de inicio de sesión ..."
+		},
+		"deleteAccount": {
+			"title": "Eliminar una cuenta",
+			"warning": "ADVERTENCIA: Esta acción eliminará permanentemente su cuenta y todos los datos relacionados y no se puede restaurar.",
+			"submitButton": "Eliminar mi cuenta",
+			"confirmMessage1": "¡advertir! ¿Estás seguro de que quieres eliminar permanentemente tu cuenta? Esta operación no se puede cancelar.",
+			"confirmMessage2": "Para confirmar la eliminación, ingrese su nombre de usuario \"${username}\":",
+			"usernameMismatch": "El nombre de usuario ingresado no coincide con el usuario actual. La operación de eliminación ha sido cancelada.",
+			"success": "La cuenta se ha eliminado con éxito. Ahora se registrará."
+		},
+		"passwordConfirm": {
+			"title": "Confirmar la operación",
+			"message": "Para continuar con esto, ingrese su contraseña actual:",
+			"passwordLabel": "contraseña:",
+			"confirmButton": "confirmar",
+			"cancelButton": "Cancelar"
+		}
 	}
 }

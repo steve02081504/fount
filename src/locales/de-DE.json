@@ -686,5 +686,70 @@
 			"soundOn": "Ton ein",
 			"soundOff": "Ton aus"
 		}
+	},
+	"userSettings": {
+		"title": "Benutzereinstellungen",
+		"PageTitle": "Benutzereinstellungen",
+		"apiError": "API -Anfrage fehlgeschlagen: ${message}",
+		"generalError": "Es ist ein Fehler aufgetreten: ${message}",
+		"userInfo": {
+			"title": "Benutzerinformationen",
+			"usernameLabel": "Benutzername:",
+			"creationDateLabel": "Kontoerstellung Datum:",
+			"folderSizeLabel": "Benutzerdatengröße:",
+			"folderPathLabel": "Benutzerdatenpfad:",
+			"copyPathBtnTitle": "Pfad kopieren",
+			"copiedAlert": "Der Pfad wurde in die Zwischenablage kopiert!"
+		},
+		"changePassword": {
+			"title": "Passwort ändern",
+			"currentPasswordLabel": "Aktuelles Passwort:",
+			"newPasswordLabel": "Neues Passwort:",
+			"confirmNewPasswordLabel": "Bestätigen Sie das neue Passwort:",
+			"submitButton": "Passwort ändern",
+			"errorMismatch": "Das neue Passwort wird zweimal inkonsistent eingegeben.",
+			"success": "Passwortänderung war erfolgreich."
+		},
+		"renameUser": {
+			"title": "Benennen Sie den Benutzer um",
+			"newUsernameLabel": "Neuer Benutzername:",
+			"submitButton": "Benennen Sie den Benutzer um",
+			"confirmMessage": "Sind Sie sicher, dass Sie Ihren Benutzernamen ändern möchten? Auf diese Weise müssen Sie sich erneut anmelden.",
+			"success": "Der Benutzer wurde erfolgreich in \"${newUsername}\" umbenannt. Sie werden jetzt angemeldet."
+		},
+		"userDevices": {
+			"title": "Benutzerausstattung/Sitzung",
+			"refreshButtonTitle": "Aktualisieren Sie die Liste",
+			"noDevicesFound": "Es wurden keine Geräte oder Sitzungen gefunden.",
+			"deviceInfo": "Geräte -ID: ${deviceId}",
+			"thisDevice": "Aktuelle Ausrüstung",
+			"deviceDetails": "Zuletzt online: ${lastSeen} | IP: ${ipAddress} | Ua: ${userAgent}",
+			"revokeButton": "Widerrufen",
+			"revokeConfirm": "Sind Sie sicher, dass Sie sich von diesem Gerät/dieser Sitzung abmelden möchten?",
+			"revokeSuccess": "Das Gerät/die Sitzung wurde erfolgreich widerrufen."
+		},
+		"logout": {
+			"title": "Abmelden",
+			"description": "Dadurch wird von Ihrem Konto vom aktuellen Gerät abgelehnt.",
+			"buttonText": "Abmelden",
+			"confirmMessage": "Sind Sie sicher, dass Sie sich abmelden möchten?",
+			"successMessage": "Erfolgreich abmelden. Es wird bald zur Anmeldeseite springen ..."
+		},
+		"deleteAccount": {
+			"title": "Ein Konto löschen",
+			"warning": "Warnung: Diese Aktion löscht Ihr Konto und alle verwandten Daten dauerhaft und kann nicht wiederhergestellt werden.",
+			"submitButton": "Löschen Sie mein Konto",
+			"confirmMessage1": "warnen! Sind Sie sicher, dass Sie Ihr Konto dauerhaft löschen möchten? Diese Operation kann nicht storniert werden.",
+			"confirmMessage2": "Um die Löschung zu bestätigen, geben Sie bitte Ihren Benutzernamen \"${username}\" ein:",
+			"usernameMismatch": "Der eingegebene Benutzername stimmt nicht mit dem aktuellen Benutzer überein. Der Löschvorgang wurde storniert.",
+			"success": "Das Konto wurde erfolgreich gelöscht. Sie werden jetzt angemeldet."
+		},
+		"passwordConfirm": {
+			"title": "Bestätigen Sie den Vorgang",
+			"message": "Um dies fortzusetzen, geben Sie Ihr aktuelles Passwort ein:",
+			"passwordLabel": "Passwort:",
+			"confirmButton": "bestätigen",
+			"cancelButton": "Stornieren"
+		}
 	}
 }
