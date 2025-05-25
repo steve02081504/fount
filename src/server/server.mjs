@@ -14,7 +14,7 @@ import { createTray } from '../scripts/tray.mjs'
 import { StartRPC } from '../scripts/discordrpc.mjs'
 import { geti18n } from '../scripts/i18n.mjs'
 import { sentrytunnel } from '../scripts/sentrytunnel.mjs'
-import { handleUpgrade } from "./wss_server.mjs"
+import { handleUpgrade } from './wss_server.mjs'
 
 export { __dirname }
 // export let httpServerInstance; // Removed as per new design

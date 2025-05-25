@@ -2,7 +2,7 @@ import express from 'npm:express@^5.0.1'
 import { PartsRouter, UpdatePartsRouter } from '../server.mjs'
 import { initPart, loadPartBase, uninstallPartBase, unloadPartBase } from '../parts_loader.mjs'
 import { getUserByReq } from '../auth.mjs'
-import { getShellsWssRouter, deleteShellsWssRouter } from "../wss_server.mjs";
+import { getShellsWssRouter, deleteShellsWssRouter } from '../wss_server.mjs'
 
 const shellsRouters = {}
 PartsRouter.use(async (req, res, next) => {
@@ -35,8 +35,8 @@ export async function loadShell(username, shellname) {
 	const initArgs = {
 		router: getShellsPartRouter(username, shellname), // Keep the shell-specific HTTP router
 		wssRouter: getShellsWssRouter(username, shellname), // Pass the WssRouter instance
-	};
-	return loadPartBase(username, 'shells', shellname, initArgs);
+	}
+	return loadPartBase(username, 'shells', shellname, initArgs)
 }
 
 export async function unloadShell(username, shellname) {
