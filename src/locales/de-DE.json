@@ -597,7 +597,10 @@
 		"confirmDeleteMultiChats": "Möchten Sie die ausgewählten ${count} Chatverläufe wirklich löschen?",
 		"alerts": {
 			"noChatSelectedForDeletion": "Bitte wählen Sie Chatverläufe zum Löschen aus.",
-			"noChatSelectedForExport": "Bitte wählen Sie Chatverläufe zum Exportieren aus."
+			"noChatSelectedForExport": "Bitte wählen Sie Chatverläufe zum Exportieren aus.",
+			"copyError": "Kopie fehlgeschlagen",
+			"deleteError": "Löschung fehlgeschlagen",
+			"exportError": "Export fehlgeschlagen"
 		},
 		"chatItemButtons": {
 			"continue": "Fortsetzen",

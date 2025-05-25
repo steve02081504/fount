@@ -597,7 +597,10 @@
 		"confirmDeleteMultiChats": "選択した${count}件のチャット履歴を削除してもよろしいですか？",
 		"alerts": {
 			"noChatSelectedForDeletion": "削除するチャット履歴を選択してください。",
-			"noChatSelectedForExport": "エクスポートするチャット履歴を選択してください。"
+			"noChatSelectedForExport": "エクスポートするチャット履歴を選択してください。",
+			"copyError": "コピーが失敗しました",
+			"deleteError": "削除が失敗しました",
+			"exportError": "エクスポートは失敗しました"
 		},
 		"chatItemButtons": {
 			"continue": "続行",

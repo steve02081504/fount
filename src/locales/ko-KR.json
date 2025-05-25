@@ -597,7 +597,10 @@
 		"confirmDeleteMultiChats": "선택한 ${count}개의 채팅 기록을 삭제하시겠습니까?",
 		"alerts": {
 			"noChatSelectedForDeletion": "삭제할 채팅 기록을 선택해주세요.",
-			"noChatSelectedForExport": "내보낼 채팅 기록을 선택해주세요."
+			"noChatSelectedForExport": "내보낼 채팅 기록을 선택해주세요.",
+			"copyError": "복사 실패",
+			"deleteError": "삭제가 실패했습니다",
+			"exportError": "내보내기 실패"
 		},
 		"chatItemButtons": {
 			"continue": "계속하기",

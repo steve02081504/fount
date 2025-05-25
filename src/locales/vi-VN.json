@@ -597,7 +597,10 @@
 		"confirmDeleteMultiChats": "Bạn có chắc chắn muốn xóa ${count} cuộc trò chuyện đã chọn không?",
 		"alerts": {
 			"noChatSelectedForDeletion": "Vui lòng chọn lịch sử trò chuyện cần xóa.",
-			"noChatSelectedForExport": "Vui lòng chọn lịch sử trò chuyện cần xuất."
+			"noChatSelectedForExport": "Vui lòng chọn lịch sử trò chuyện cần xuất.",
+			"copyError": "Sao chép không thành công",
+			"deleteError": "Xóa không thành công",
+			"exportError": "Xuất khẩu không thành công"
 		},
 		"chatItemButtons": {
 			"continue": "Tiếp tục",

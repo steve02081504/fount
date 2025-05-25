@@ -597,7 +597,10 @@
 		"confirmDeleteMultiChats": "Êtes-vous sûr de vouloir supprimer les ${count} historiques de chats sélectionnés ?",
 		"alerts": {
 			"noChatSelectedForDeletion": "Veuillez sélectionner les historiques de chats à supprimer.",
-			"noChatSelectedForExport": "Veuillez sélectionner les historiques de chats à exporter."
+			"noChatSelectedForExport": "Veuillez sélectionner les historiques de chats à exporter.",
+			"copyError": "Échec de la copie",
+			"deleteError": "La suppression a échoué",
+			"exportError": "Échec de l'exportation"
 		},
 		"chatItemButtons": {
 			"continue": "Continuer",
