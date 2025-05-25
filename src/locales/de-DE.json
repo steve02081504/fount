@@ -5,7 +5,7 @@
 			"start": "Server wird gestartet",
 			"starting": "Server startet...",
 			"ready": "Server ist gestartet",
-			"usesdTime": "Startzeit: ${time}s",
+			"usesdTime": "Hochfahrzeit: ${time}s",
 			"showUrl": {
 				"https": "HTTPS-Server läuft auf ${url}",
 				"http": "HTTP-Server läuft auf ${url}"
@@ -13,7 +13,7 @@
 			"standingBy": "In Bereitschaft..."
 		},
 		"jobs": {
-			"restartingJob": "Starte Aufgabe ${partname} (${parttype}) für Benutzer ${username} neu: ${uid}"
+			"restartingJob": "Starte ${parttype}-Aufgabe ${partname} für Benutzer ${username} neu: ${uid}"
 		},
 		"ipc": {
 			"sendCommandFailed": "Senden des Befehls fehlgeschlagen: ${error}",
@@ -34,7 +34,7 @@
 		"partManager": {
 			"git": {
 				"noUpstream": "Kein Upstream-Branch für Branch '${currentBranch}' konfiguriert, Update-Prüfung wird übersprungen.",
-				"dirtyWorkingDirectory": "Arbeitsverzeichnis enthält nicht übertragene Änderungen. Bitte stashen oder committen Sie Ihre Änderungen vor dem Update.",
+				"dirtyWorkingDirectory": "Arbeitsverzeichnis ist nicht sauber. Bitte stashen oder committen Sie Ihre Änderungen vor dem Update.",
 				"updating": "Wird vom Remote-Repository aktualisiert...",
 				"localAhead": "Lokaler Branch ist dem Remote-Branch voraus. Kein Update erforderlich.",
 				"diverged": "Lokaler und Remote-Branch sind auseinandergelaufen. Erzwinge Update...",
@@ -151,13 +151,13 @@
 		"endScreen": {
 			"title": "Fantastisch! Tutorial abgeschlossen!",
 			"subtitle": "Jetzt wissen Sie, wie man es bedient!",
-			"endButton": "Los geht's!"
+			"endButton": "Weiter!"
 		},
 		"progressMessages": {
-			"mouseMove": "Bitte versuchen Sie, die Maus ${mouseIcon} mit Ihrem Finger zu greifen<br/>und bewegen Sie sie dann.",
-			"keyboardPress": "Bitte suchen Sie Ihre Tastatur ${keyboardIcon}<br/>und versuchen Sie, die Tastatur mit Ihrem Finger zu drücken.",
-			"mobileTouchMove": "Bitte suchen Sie Ihr Telefon ${phoneIcon}<br/>Versuchen Sie, den Bildschirm mit einem Ihrer Finger zu berühren und ihn dann zu bewegen.",
-			"mobileClick": "Bitte versuchen Sie, den Bildschirm des Telefons ${phoneIcon} mit einem Ihrer Finger zu berühren<br/>und dann loszulassen."
+			"mouseMove": "Bitte bewegen Sie die Maus ${mouseIcon} mit Ihrer Hand.",
+			"keyboardPress": "Drücken Sie eine Taste auf Ihrer Tastatur ${keyboardIcon}.",
+			"mobileTouchMove": "Berühren Sie den Bildschirm Ihres Telefons ${phoneIcon} mit einem Finger und bewegen Sie ihn dann.",
+			"mobileClick": "Tippen Sie mit einem Finger auf den Bildschirm Ihres Telefons ${phoneIcon}."
 		}
 	},
 	"home": {
@@ -181,7 +181,7 @@
 			"tab": "Charaktere",
 			"title": "Charakterauswahl",
 			"subtitle": "Wähle einen Charakter – und starte den Chat!",
-			"none": "Leer",
+			"none": "Nichts vorhanden",
 			"card": {
 				"refreshButton": {
 					"alt": "Aktualisieren",
@@ -201,7 +201,7 @@
 			"tab": "Welten",
 			"title": "Weltenauswahl",
 			"subtitle": "Wähle eine Welt und tauche ein!",
-			"none": "Leer",
+			"none": "Nichts vorhanden",
 			"card": {
 				"refreshButton": {
 					"alt": "Aktualisieren",
@@ -221,7 +221,7 @@
 			"tab": "Personas",
 			"title": "Personenauswahl",
 			"subtitle": "Wähle eine Persona und erlebe das Leben.",
-			"none": "Leer",
+			"none": "Nichts vorhanden",
 			"card": {
 				"refreshButton": {
 					"alt": "Aktualisieren",
@@ -243,41 +243,41 @@
 		"instruction": "Wähle ein Thema!",
 		"themes": {
 			"auto": "Automatisch",
-			"light": "Helle Farbe",
-			"dark": "Dunkle Farbe",
+			"light": "Hell",
+			"dark": "Dunkel",
 			"cupcake": "Tassenkuchen",
-			"bumblebee": "Honig Süßigkeiten",
+			"bumblebee": "Hummel",
 			"emerald": "Smaragd",
-			"corporate": "Unternehmen",
-			"synthwave": "Synthetische Welle",
+			"corporate": "Corporate",
+			"synthwave": "Synthwave",
 			"retro": "Retro",
 			"cyberpunk": "Cyberpunk",
 			"valentine": "Valentinstag",
 			"halloween": "Halloween",
 			"garden": "Garten",
 			"forest": "Wald",
-			"aqua": "Tiefsee",
+			"aqua": "Aqua",
 			"lofi": "Lo-Fi",
-			"pastel": "Lichtfarbe",
+			"pastel": "Pastell",
 			"fantasy": "Fantasie",
 			"wireframe": "Wireframe",
 			"black": "Schwarz",
-			"luxury": "luxuriös",
-			"dracula": "Dämon",
+			"luxury": "Luxus",
+			"dracula": "Dracula",
 			"cmyk": "CMYK",
 			"autumn": "Herbst",
 			"business": "Geschäft",
-			"acid": "Säure",
-			"lemonade": "Zitronensaft",
+			"acid": "Acid",
+			"lemonade": "Limonade",
 			"night": "Nacht",
 			"coffee": "Kaffee",
 			"winter": "Winter",
-			"dim": "Dunkel",
-			"nord": "Norden",
+			"dim": "Gedimmt",
+			"nord": "Nord",
 			"sunset": "Sonnenuntergang",
-			"caramellatte": "Schokoladenlatte",
+			"caramellatte": "Caramel Latte",
 			"abyss": "Abgrund",
-			"silk": "Samt"
+			"silk": "Seide"
 		}
 	},
 	"import": {
@@ -454,7 +454,7 @@
 					}
 				}
 			},
-			"noSelection": "Keine Auswahl",
+			"noSelection": "Nichts ausgewählt",
 			"noDescription": "Keine Beschreibung"
 		},
 		"chatArea": {
@@ -590,8 +590,8 @@
 		"selectAll": "Alle auswählen",
 		"buttons": {
 			"reverseSelect": "Auswahl umkehren",
-			"deleteSelected": "Auswahl löschen",
-			"exportSelected": "Auswahl exportieren"
+			"deleteSelected": "Ausgewählte löschen",
+			"exportSelected": "Ausgewählte exportieren"
 		},
 		"confirmDeleteChat": "Möchten Sie den Chatverlauf mit ${chars} wirklich löschen?",
 		"confirmDeleteMultiChats": "Möchten Sie die ausgewählten ${count} Chatverläufe wirklich löschen?",
@@ -657,7 +657,7 @@
 		"configCard": {
 			"title": "Bot-Konfiguration",
 			"labels": {
-				"character": "Charakter",
+				"character": "Gebundener Charakter",
 				"botToken": "Telegram Bot-Token",
 				"config": "Konfiguration"
 			},
@@ -695,7 +695,7 @@
 		"heading": "Möchten Sie auf anderen Geräten auf Fount zugreifen?",
 		"instruction": {
 			"sameLAN": "Stellen Sie sicher, dass sich das Gerät und der Fount-Host im selben lokalen Netzwerk befinden.",
-			"accessthis": "Besuchen Sie diese URL:"
+			"accessthis": "Rufen Sie folgende URL auf:"
 		},
 		"copyButton": "URL kopieren",
 		"copied": "URL in die Zwischenablage kopiert!"
@@ -703,7 +703,7 @@
 	"proxy": {
 		"title": "API-Proxy",
 		"heading": "OpenAI API Proxy-Adresse",
-		"instruction": "Fügen Sie die folgende Adresse in jede Anwendung ein, die das OpenAI-API-Format benötigt, um die KI-Quelle in Fount zu verwenden!",
+		"instruction": "Fügen Sie die folgende Adresse in jede Anwendung ein, die das OpenAI-API-Format benötigt, um die KI-Quellen in Fount zu verwenden!",
 		"copyButton": "Adresse kopieren",
 		"copied": "Adresse in die Zwischenablage kopiert!"
 	},

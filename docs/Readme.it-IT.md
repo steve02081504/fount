@@ -7,7 +7,7 @@
 
 <a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
-[Vuoi conoscere l'architettura del repository? Dai un'occhiata a DeepWiki!](https://deepwiki.com/steve02081504/fount)
+[Vuoi saperne di più sull'architettura del repository? Dai un'occhiata a DeepWiki!](https://deepwiki.com/steve02081504/fount)
 
 ![repo img](https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa)
 
@@ -101,7 +101,7 @@ fount remove
 
 Fount è una piattaforma di interazione con personaggi basata su AI, concepita per *potenziare te*. È un ponte che ti connette ai personaggi della tua immaginazione, permettendoti di conversare senza sforzo con loro, creare i tuoi e condividerli con il mondo. *Un percorso inaspettatamente agevole da intraprendere.*
 
-È una sorgente dove fonti AI, personaggi, personalità, ambienti e plugin convergono, permettendoti di creare e sperimentare interazioni uniche e coinvolgenti.
+È una sorgente dove fonti AI, personaggi, persone, ambienti e plugin convergono, permettendoti di creare e sperimentare interazioni uniche e coinvolgenti.
 
 Fount è costruito per il futuro. Nuove funzionalità, scaturite da una comunità vibrante, saranno accolte con gioia. Se hai una visione, una scintilla di ispirazione destinata al regno di Fount, il tuo contributo è il benvenuto.
 
@@ -148,7 +148,7 @@ Per i creatori di personaggi, Fount offre un percorso semplificato e intuitivo p
 
 * **Sblocca la magia del codice – Più semplice di quanto tu possa immaginare:** Fount abbraccia la potenza del codice per offrire flessibilità e controllo. Programmare in Fount è una magia moderna, sorprendentemente facile da apprendere grazie alla guida attenta della nostra comunità e all'assistenza illuminante dell'AI. Scoprirai che definire la logica di un personaggio tramite codice può essere intuitivo e di facile manutenzione. Immagina di creare personaggi le cui risposte sono intessute dalla *tua* logica.
 
-* **Inizia con la magia pronta all'uso: Un tesoro di modelli.** La comunità di Fount offre una vasta gamma di modelli di personaggi e personalità predefiniti, che fungono da "progetti viventi", facili da adattare e personalizzare. Questi modelli mostrano le migliori pratiche e offrono un eccellente punto di partenza.
+* **Inizia con la magia pronta all'uso: Un tesoro di modelli.** La comunità di Fount offre una vasta gamma di modelli di personaggi e di persone predefiniti, che fungono da "progetti viventi", facili da adattare e personalizzare. Questi modelli mostrano le migliori pratiche e offrono un eccellente punto di partenza.
 
 * **Risorse incorporate:** Intreccia le risorse direttamente nel tuo personaggio.
 
@@ -166,7 +166,7 @@ Nel mondo di Fount, la modularità regna sovrana. Un ricco ecosistema di compone
 * **Tipi di componenti - Le fondamenta del sogno:**
   * **chars (personaggi):** Il cuore di Fount, il luogo di nascita della personalità.
   * **worlds (mondi):** *Molto più che semplici leggende.* I mondi sono gli architetti silenziosi della realtà in Fount. Possono aggiungere conoscenza alla comprensione dei personaggi, influenzare le loro decisioni e persino manipolare la cronologia della chat.
-  * **personas (personalità utente):** *Non solo profili utente.* Le personalità detengono il potere di distorcere e persino controllare le tue parole e percezioni. Ciò rende possibile un gioco di ruolo autenticamente immersivo.
+  * **personas (persona utente):** *Non solo profili utente.* Le persone detengono il potere di distorcere e persino controllare le tue parole e percezioni. Ciò rende possibile un gioco di ruolo autenticamente immersivo.
   * **shells (interfacce interattive):** Il portale all'anima di Fount. Le Shell estendono la portata dei personaggi oltre l'interfaccia.
   * **ImportHandlers (gestori di importazione):** La mano accogliente di Fount, che colma il divario tra i diversi formati di personaggi. Crea un semplice ImportHandler, condividilo con la comunità (tramite Pull Request), ed espandi l'orizzonte di Fount per tutti.
   * **AIsources (fonti AI):** La forza primordiale che alimenta la mente dei tuoi personaggi.
@@ -200,7 +200,7 @@ Fount ti consente di creare e interagire con personaggi AI in un modo naturale, 
 
 ### Plasma il tuo destino: Il tocco dell'artigiano
 
-Oltre i sussurri dell'AI, Fount offre una connessione più profonda – *il tocco dell'artigiano*. Nella nostra comunità, troverai una vasta gamma di modelli di personaggi e personalità predefiniti, *ognuno una base finemente cesellata, in attesa della tua visione unica*.
+Oltre i sussurri dell'AI, Fount offre una connessione più profonda – *il tocco dell'artigiano*. Nella nostra comunità, troverai una vasta gamma di modelli di personaggi e di persone predefiniti, *ognuno una base finemente cesellata, in attesa della tua visione unica*.
 
 Quando sarai pronto a perfezionare la tua creazione, l'approccio basato sul codice di Fount ti permette di iniziare con facilità. Ricorda, programmare in Fount è una curva di apprendimento dolce, supportata dalla nostra amichevole comunità e da una ricchezza di modelli. Scoprirai che anche poche righe di codice possono sbloccare una profondità e una personalità incredibili nei tuoi personaggi.
 

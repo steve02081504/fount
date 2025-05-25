@@ -154,10 +154,10 @@
 			"endButton": "Get Started!"
 		},
 		"progressMessages": {
-			"mouseMove": "Please use your finger to try to hold the mouse ${mouseIcon}<br/>and then move it.",
-			"keyboardPress": "Please find your keyboard ${keyboardIcon}<br/>and try to press the keyboard with your finger.",
-			"mobileTouchMove": "Please find your phone ${phoneIcon}<br/>Try to touch the screen with any of your fingers, and then move it.",
-			"mobileClick": "Please try to touch the phone screen ${phoneIcon} with any of your fingers<br/>and then release."
+			"mouseMove": "Please try moving the mouse ${mouseIcon} using your hand.",
+			"keyboardPress": "Press a key on your keyboard ${keyboardIcon}.",
+			"mobileTouchMove": "Try touching and dragging your finger on the screen of your phone ${phoneIcon}.",
+			"mobileClick": "Try tapping the screen of your phone ${phoneIcon} with your finger."
 		}
 	},
 	"home": {
@@ -181,7 +181,7 @@
 			"tab": "Characters",
 			"title": "Character Selection",
 			"subtitle": "Select a character—then start chatting!",
-			"none": "Empty",
+			"none": "Nothing to show",
 			"card": {
 				"refreshButton": {
 					"alt": "Refresh",
@@ -201,7 +201,7 @@
 			"tab": "Worlds",
 			"title": "World Selection",
 			"subtitle": "Choose a world, and immerse yourself!",
-			"none": "Empty",
+			"none": "Nothing to show",
 			"card": {
 				"refreshButton": {
 					"alt": "Refresh",
@@ -221,7 +221,7 @@
 			"tab": "Personas",
 			"title": "Persona Selection",
 			"subtitle": "Select a persona, experience life.",
-			"none": "Empty",
+			"none": "Nothing to show",
 			"card": {
 				"refreshButton": {
 					"alt": "Refresh",
@@ -243,41 +243,41 @@
 		"instruction": "Choose a theme!",
 		"themes": {
 			"auto": "Automatic",
-			"light": "Bright color",
-			"dark": "Dark color",
-			"cupcake": "Cup cake",
-			"bumblebee": "Honey candy",
+			"light": "Light",
+			"dark": "Dark",
+			"cupcake": "Cupcake",
+			"bumblebee": "Bumblebee",
 			"emerald": "Emerald",
-			"corporate": "company",
-			"synthwave": "Synthetic wave",
+			"corporate": "Corporate",
+			"synthwave": "Synthwave",
 			"retro": "Retro",
 			"cyberpunk": "Cyberpunk",
 			"valentine": "Valentine's Day",
 			"halloween": "Halloween",
-			"garden": "garden",
-			"forest": "forest",
-			"aqua": "deep sea",
+			"garden": "Garden",
+			"forest": "Forest",
+			"aqua": "Aqua",
 			"lofi": "lo-fi",
-			"pastel": "Light color",
-			"fantasy": "fantasy",
+			"pastel": "Pastel",
+			"fantasy": "Fantasy",
 			"wireframe": "Wireframe",
-			"black": "black",
-			"luxury": "luxurious",
-			"dracula": "demon",
+			"black": "Black",
+			"luxury": "Luxury",
+			"dracula": "Dracula",
 			"cmyk": "CMYK",
-			"autumn": "autumn",
+			"autumn": "Autumn",
 			"business": "Business",
 			"acid": "Acid",
-			"lemonade": "Lemon juice",
-			"night": "night",
-			"coffee": "coffee",
-			"winter": "winter",
-			"dim": "Dark",
-			"nord": "north",
+			"lemonade": "Lemonade",
+			"night": "Night",
+			"coffee": "Coffee",
+			"winter": "Winter",
+			"dim": "Dim",
+			"nord": "Nord",
 			"sunset": "Sunset",
-			"caramellatte": "Chocolate latte",
-			"abyss": "abyss",
-			"silk": "velvet"
+			"caramellatte": "Caramel Latte",
+			"abyss": "Abyss",
+			"silk": "Silk"
 		}
 	},
 	"import": {
@@ -454,7 +454,7 @@
 					}
 				}
 			},
-			"noSelection": "None",
+			"noSelection": "Not selected",
 			"noDescription": "No description available."
 		},
 		"chatArea": {
@@ -657,7 +657,7 @@
 		"configCard": {
 			"title": "Bot Configuration",
 			"labels": {
-				"character": "Character",
+				"character": "Bound Character",
 				"botToken": "Telegram Bot Token",
 				"config": "Configuration"
 			},
@@ -703,7 +703,7 @@
 	"proxy": {
 		"title": "API Proxy",
 		"heading": "OpenAI API Proxy Address",
-		"instruction": "Enter the following address into any application that requires the OpenAI API format to use the AI source in Fount!",
+		"instruction": "Enter the following address into any application that requires the OpenAI API format to use the AI sources in Fount!",
 		"copyButton": "Copy Address",
 		"copied": "Address copied to clipboard!"
 	},
@@ -767,7 +767,7 @@
 			"thisDevice": "This Device",
 			"deviceDetails": "Last online: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
 			"revokeButton": "Revoke",
-			"revokeConfirm": "Are you sure you want to log out this device/session?",
+			"revokeConfirm": "Are you sure you want to revoke this device/session?",
 			"revokeSuccess": "Device/session successfully revoked."
 		},
 		"logout": {

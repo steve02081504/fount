@@ -5,7 +5,7 @@
 			"start": "Iniciando servidor",
 			"starting": "Servidor iniciándose...",
 			"ready": "Servidor iniciado",
-			"usesdTime": "Tiempo de arranque: ${time}s",
+			"usesdTime": "Tiempo de inicio: ${time}s",
 			"showUrl": {
 				"https": "Servidor HTTPS en ejecución en ${url}",
 				"http": "Servidor HTTP en ejecución en ${url}"
@@ -34,7 +34,7 @@
 		"partManager": {
 			"git": {
 				"noUpstream": "No se ha configurado rama de seguimiento para la rama '${currentBranch}'. Omitiendo comprobación de actualizaciones.",
-				"dirtyWorkingDirectory": "El directorio de trabajo tiene cambios pendientes. Guarda ('commit') o descarta ('stash') los cambios antes de actualizar.",
+				"dirtyWorkingDirectory": "El directorio de trabajo no está limpio. Por favor, haz 'stash' o 'commit' de tus cambios antes de actualizar.",
 				"updating": "Actualizando desde el repositorio remoto...",
 				"localAhead": "La rama local está por delante de la remota. No es necesaria la actualización.",
 				"diverged": "Las ramas local y remota han divergido. Forzando actualización...",
@@ -154,10 +154,10 @@
 			"endButton": "¡Adelante!"
 		},
 		"progressMessages": {
-			"mouseMove": "Usa el dedo para coger el ratón ${mouseIcon}<br/>y muévelo.",
-			"keyboardPress": "Busca tu teclado ${keyboardIcon}<br/>e intenta pulsar alguna tecla.",
-			"mobileTouchMove": "Coge tu móvil ${phoneIcon},<br/>toca la pantalla con un dedo y muévelo.",
-			"mobileClick": "Toca la pantalla de tu móvil ${phoneIcon} con un dedo<br/>y luego levántalo."
+			"mouseMove": "Intenta mover el ratón ${mouseIcon} con tu mano.",
+			"keyboardPress": "Pulsa una tecla en tu teclado ${keyboardIcon}.",
+			"mobileTouchMove": "Toca la pantalla de tu móvil ${phoneIcon} con un dedo y luego deslízalo.",
+			"mobileClick": "Toca la pantalla de tu móvil ${phoneIcon} con un dedo."
 		}
 	},
 	"home": {
@@ -181,7 +181,7 @@
 			"tab": "Personajes",
 			"title": "Selección de personaje",
 			"subtitle": "¡Selecciona un personaje y empieza a chatear!",
-			"none": "Vacío",
+			"none": "Nada que mostrar",
 			"card": {
 				"refreshButton": {
 					"alt": "Actualizar",
@@ -201,7 +201,7 @@
 			"tab": "Mundos",
 			"title": "Selección de mundo",
 			"subtitle": "¡Elige un mundo y sumérgete!",
-			"none": "Vacío",
+			"none": "Nada que mostrar",
 			"card": {
 				"refreshButton": {
 					"alt": "Actualizar",
@@ -221,7 +221,7 @@
 			"tab": "Personas",
 			"title": "Selección de persona",
 			"subtitle": "Selecciona una persona y vive la experiencia.",
-			"none": "Vacío",
+			"none": "Nada que mostrar",
 			"card": {
 				"refreshButton": {
 					"alt": "Actualizar",
@@ -243,41 +243,41 @@
 		"instruction": "¡Elige un tema!",
 		"themes": {
 			"auto": "Automático",
-			"light": "Color brillante",
-			"dark": "Color oscuro",
-			"cupcake": "Pastel de copa",
-			"bumblebee": "Caramelo de miel",
+			"light": "Claro",
+			"dark": "Oscuro",
+			"cupcake": "Cupcake",
+			"bumblebee": "Bumblebee",
 			"emerald": "Esmeralda",
-			"corporate": "compañía",
-			"synthwave": "Onda sintética",
+			"corporate": "Corporativo",
+			"synthwave": "Synthwave",
 			"retro": "Retro",
 			"cyberpunk": "Ciberpunk",
 			"valentine": "Día de San Valentín",
-			"halloween": "Víspera de Todos los Santos",
-			"garden": "jardín",
-			"forest": "bosque",
-			"aqua": "mar profunda",
+			"halloween": "Halloween",
+			"garden": "Jardín",
+			"forest": "Bosque",
+			"aqua": "Aqua",
 			"lofi": "lo-fi",
-			"pastel": "Color claro",
-			"fantasy": "fantasía",
-			"wireframe": "Marco",
-			"black": "negro",
-			"luxury": "lujoso",
-			"dracula": "demonio",
-			"cmyk": "Cmyk",
-			"autumn": "otoño",
-			"business": "Negocio",
-			"acid": "Ácido",
-			"lemonade": "Zumo de limón",
-			"night": "noche",
-			"coffee": "café",
-			"winter": "invierno",
-			"dim": "Oscuro",
-			"nord": "norte",
+			"pastel": "Pastel",
+			"fantasy": "Fantasía",
+			"wireframe": "Wireframe",
+			"black": "Negro",
+			"luxury": "Lujo",
+			"dracula": "Drácula",
+			"cmyk": "CMYK",
+			"autumn": "Otoño",
+			"business": "Negocios",
+			"acid": "Acid",
+			"lemonade": "Limonada",
+			"night": "Noche",
+			"coffee": "Café",
+			"winter": "Invierno",
+			"dim": "Tenue",
+			"nord": "Nórdico",
 			"sunset": "Atardecer",
-			"caramellatte": "Café con leche de chocolate",
-			"abyss": "abismo",
-			"silk": "terciopelo"
+			"caramellatte": "Caramel Latte",
+			"abyss": "Abismo",
+			"silk": "Seda"
 		}
 	},
 	"import": {
@@ -454,7 +454,7 @@
 					}
 				}
 			},
-			"noSelection": "Ninguna",
+			"noSelection": "Nada seleccionado",
 			"noDescription": "No hay descripción disponible."
 		},
 		"chatArea": {
@@ -657,7 +657,7 @@
 		"configCard": {
 			"title": "Configuración de Bot",
 			"labels": {
-				"character": "Personaje",
+				"character": "Personaje vinculado",
 				"botToken": "Token de Bot de Telegram",
 				"config": "Configuración"
 			},
@@ -703,7 +703,7 @@
 	"proxy": {
 		"title": "Proxy de API",
 		"heading": "Dirección del Proxy de API de OpenAI",
-		"instruction": "¡Introduce la siguiente dirección en cualquier aplicación que requiera el formato de API de OpenAI para usar la fuente de IA en Fount!",
+		"instruction": "¡Introduce la siguiente dirección en cualquier aplicación que requiera el formato de API de OpenAI para usar las fuentes de IA en Fount!",
 		"copyButton": "Copiar dirección",
 		"copied": "¡Dirección copiada al portapapeles!"
 	},
@@ -755,7 +755,7 @@
 		"renameUser": {
 			"title": "Cambiar nombre de usuario",
 			"newUsernameLabel": "Nuevo nombre de usuario:",
-			"submitButton": "Cambiar nombre",
+			"submitButton": "Cambiar nombre de usuario",
 			"confirmMessage": "¿Seguro que quieres cambiar tu nombre de usuario? Esto requerirá que vuelvas a iniciar sesión.",
 			"success": "Nombre de usuario cambiado a \"${newUsername}\" correctamente. Ahora se cerrará tu sesión."
 		},
@@ -767,7 +767,7 @@
 			"thisDevice": "Este dispositivo",
 			"deviceDetails": "Última conexión: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
 			"revokeButton": "Revocar",
-			"revokeConfirm": "¿Seguro que quieres cerrar la sesión en este dispositivo/sesión?",
+			"revokeConfirm": "¿Seguro que quieres revocar el acceso para este dispositivo/sesión?",
 			"revokeSuccess": "Dispositivo/sesión revocado correctamente."
 		},
 		"logout": {

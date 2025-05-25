@@ -7,7 +7,7 @@
 
 <a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
-[Wanna know about repo arch? Check out deepwiki!](https://deepwiki.com/steve02081504/fount)
+[Möchtest du mehr über die Repo-Architektur erfahren? Schau dir DeepWiki an!](https://deepwiki.com/steve02081504/fount)
 
 ![repo img](https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa)
 
@@ -24,7 +24,7 @@ Verlorene Charaktere, vergessene Geschichten? Unsere [**lebendige und einladende
 |----|
 |Homepage|
 |![Image](https://github.com/user-attachments/assets/c1954a7a-6c73-4fb0-bd12-f790a038bd0e)|
-|Theme Selection|
+|Themenauswahl|
 |![Image](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074)|
 |Chat|
 |![Image](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d)|
@@ -40,7 +40,7 @@ Beginne deine Reise mit Fount, einer stabilen und zuverlässigen Plattform. Ein 
 
 > [!CAUTION]
 >
-> In der Welt von fount können Charaktere frei JavaScript-Befehle ausführen, was ihnen beträchtliche Macht verleiht. Wählt daher die Charaktere, denen ihr vertraut, mit Bedacht aus, so wie ihr im echten Leben Freunde gewinnt, um die Sicherheit eurer lokalen Dateien zu gewährleisten.
+> In der Welt von fount können Charaktere frei JavaScript-Befehle ausführen, was ihnen beträchtliche Macht verleiht. Wähle daher die Charaktere, denen du vertraust, mit Bedacht aus, so wie du im echten Leben Freunde gewinnst, um die Sicherheit deiner lokalen Dateien zu gewährleisten.
 
 ### Linux/macOS/Android: Das Flüstern der Shell – *Eine Zeile, und du bist dabei*
 
