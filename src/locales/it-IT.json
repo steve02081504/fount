@@ -2,8 +2,8 @@
 	"lang": "it-IT",
 	"fountConsole": {
 		"server": {
-			"start": "Avvio del server in corso...",
-			"starting": "Avvio del server in corso...",
+			"start": "Avvio del server...",
+			"starting": "Server in fase di avvio...",
 			"ready": "Server avviato.",
 			"usesdTime": "Tempo di avvio: ${time}s",
 			"showUrl": {
@@ -13,7 +13,7 @@
 			"standingBy": "In attesa..."
 		},
 		"jobs": {
-			"restartingJob": "Riavvio dell'attività ${partname} (${parttype}) per l'utente ${username}: ${uid}."
+			"restartingJob": "Riavvio attività ${parttype} ${partname} per l'utente ${username}: ${uid}."
 		},
 		"ipc": {
 			"sendCommandFailed": "Impossibile inviare il comando: ${error}",
@@ -34,7 +34,7 @@
 		"partManager": {
 			"git": {
 				"noUpstream": "Nessun branch upstream configurato per il branch '${currentBranch}', verifica degli aggiornamenti saltata.",
-				"dirtyWorkingDirectory": "La directory di lavoro contiene modifiche non salvate. Effettua il commit o metti da parte (stash) le modifiche prima di aggiornare.",
+				"dirtyWorkingDirectory": "La directory di lavoro non è pulita. Esegui 'stash' o 'commit' delle modifiche prima di aggiornare.",
 				"updating": "Aggiornamento dal repository remoto...",
 				"localAhead": "Il branch locale è più avanti del branch remoto. Nessun aggiornamento necessario.",
 				"diverged": "I branch locale e remoto sono divergenti. Forzatura dell'aggiornamento...",
@@ -139,7 +139,7 @@
 		}
 	},
 	"tutorial": {
-		"title": "Vuoi un tutorial?",
+		"title": "Ti va un tutorial?",
 		"modal": {
 			"title": "Benvenuto in Fount!",
 			"instruction": "Vuoi seguire il tutorial per principianti?",
@@ -150,14 +150,14 @@
 		},
 		"endScreen": {
 			"title": "Fantastico! Tutorial completato!",
-			"subtitle": "Ora sai come funziona!",
+			"subtitle": "Ora hai imparato come si usa!",
 			"endButton": "Avanti!"
 		},
 		"progressMessages": {
-			"mouseMove": "Usa il dito per afferrare il mouse ${mouseIcon}<br/>e poi muovilo.",
-			"keyboardPress": "Trova la tastiera ${keyboardIcon}<br/>e prova a premere un tasto.",
-			"mobileTouchMove": "Prendi il tuo telefono ${phoneIcon},<br/>tocca lo schermo con un dito e muovilo.",
-			"mobileClick": "Tocca lo schermo del telefono ${phoneIcon} con un dito<br/>e poi rilascia."
+			"mouseMove": "Prova a muovere il mouse ${mouseIcon} con la mano.",
+			"keyboardPress": "Premi un tasto sulla tua tastiera ${keyboardIcon}.",
+			"mobileTouchMove": "Tocca lo schermo del tuo telefono ${phoneIcon} con un dito e poi trascinalo.",
+			"mobileClick": "Tocca lo schermo del tuo telefono ${phoneIcon} con un dito."
 		}
 	},
 	"home": {
@@ -181,7 +181,7 @@
 			"tab": "Personaggi",
 			"title": "Selezione personaggio",
 			"subtitle": "Seleziona un personaggio e inizia a chattare!",
-			"none": "Nessun elemento",
+			"none": "Niente da mostrare",
 			"card": {
 				"refreshButton": {
 					"alt": "Aggiorna",
@@ -201,7 +201,7 @@
 			"tab": "Mondi",
 			"title": "Selezione mondo",
 			"subtitle": "Scegli un mondo e immergiti!",
-			"none": "Nessun elemento",
+			"none": "Niente da mostrare",
 			"card": {
 				"refreshButton": {
 					"alt": "Aggiorna",
@@ -221,7 +221,7 @@
 			"tab": "Persone",
 			"title": "Selezione persona",
 			"subtitle": "Seleziona una persona e vivi una nuova esperienza.",
-			"none": "Nessun elemento",
+			"none": "Niente da mostrare",
 			"card": {
 				"refreshButton": {
 					"alt": "Aggiorna",
@@ -243,41 +243,41 @@
 		"instruction": "Scegli un tema!",
 		"themes": {
 			"auto": "Automatico",
-			"light": "Colore brillante",
-			"dark": "Colore scuro",
-			"cupcake": "Tazza di torta",
-			"bumblebee": "Caramelle al miele",
+			"light": "Chiaro",
+			"dark": "Scuro",
+			"cupcake": "Cupcake",
+			"bumblebee": "Bumblebee",
 			"emerald": "Smeraldo",
-			"corporate": "azienda",
-			"synthwave": "Onda sintetica",
+			"corporate": "Corporate",
+			"synthwave": "Synthwave",
 			"retro": "Retrò",
 			"cyberpunk": "Cyberpunk",
 			"valentine": "San Valentino",
 			"halloween": "Halloween",
-			"garden": "giardino",
-			"forest": "foresta",
-			"aqua": "Mare profondo",
+			"garden": "Giardino",
+			"forest": "Foresta",
+			"aqua": "Aqua",
 			"lofi": "lo-fi",
-			"pastel": "Colore chiaro",
-			"fantasy": "fantasia",
+			"pastel": "Pastello",
+			"fantasy": "Fantasia",
 			"wireframe": "Wireframe",
-			"black": "nero",
-			"luxury": "lussuoso",
-			"dracula": "demone",
-			"cmyk": "Cmyk",
-			"autumn": "autunno",
+			"black": "Nero",
+			"luxury": "Lusso",
+			"dracula": "Dracula",
+			"cmyk": "CMYK",
+			"autumn": "Autunno",
 			"business": "Attività commerciale",
-			"acid": "Acido",
-			"lemonade": "Succo di limone",
-			"night": "notte",
-			"coffee": "caffè",
-			"winter": "inverno",
-			"dim": "Buio",
-			"nord": "nord",
-			"sunset": "Tramonto",
-			"caramellatte": "Latte di cioccolato",
-			"abyss": "abisso",
-			"silk": "velluto"
+			"acid": "Acid",
+			"lemonade": "Limonata",
+			"night": "Notte",
+			"coffee": "Caffè",
+			"winter": "Inverno",
+			"dim": "Tenue",
+			"nord": "Nordico",
+			"sunset": "Sunset",
+			"caramellatte": "Caramel Latte",
+			"abyss": "Abisso",
+			"silk": "Seta"
 		}
 	},
 	"import": {
@@ -454,7 +454,7 @@
 					}
 				}
 			},
-			"noSelection": "Nessuna",
+			"noSelection": "Non selezionato",
 			"noDescription": "Nessuna descrizione disponibile."
 		},
 		"chatArea": {
@@ -657,7 +657,7 @@
 		"configCard": {
 			"title": "Configurazione bot",
 			"labels": {
-				"character": "Personaggio",
+				"character": "Personaggio associato",
 				"botToken": "Token Bot Telegram",
 				"config": "Configurazione"
 			},
@@ -703,7 +703,7 @@
 	"proxy": {
 		"title": "Proxy API",
 		"heading": "Indirizzo proxy API OpenAI",
-		"instruction": "Inserisci il seguente indirizzo in qualsiasi applicazione che richieda il formato API OpenAI per utilizzare la sorgente AI in Fount!",
+		"instruction": "Inserisci il seguente indirizzo in qualsiasi applicazione che richieda il formato API OpenAI per utilizzare le sorgenti AI in Fount!",
 		"copyButton": "Copia indirizzo",
 		"copied": "Indirizzo copiato negli appunti!"
 	},
@@ -767,7 +767,7 @@
 			"thisDevice": "Questo dispositivo",
 			"deviceDetails": "Ultimo accesso: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
 			"revokeButton": "Revoca",
-			"revokeConfirm": "Sei sicuro di voler disconnettere questo dispositivo/sessione?",
+			"revokeConfirm": "Sei sicuro di voler revocare l'accesso per questo dispositivo/sessione?",
 			"revokeSuccess": "Dispositivo/Sessione revocato con successo."
 		},
 		"logout": {

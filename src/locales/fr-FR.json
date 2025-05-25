@@ -34,7 +34,7 @@
 		"partManager": {
 			"git": {
 				"noUpstream": "Aucune branche de suivi configurée pour la branche '${currentBranch}', vérification des mises à jour ignorée.",
-				"dirtyWorkingDirectory": "Le répertoire de travail contient des modifications non validées. Veuillez enregistrer ('commit') ou mettre de côté ('stash') vos modifications avant de mettre à jour.",
+				"dirtyWorkingDirectory": "Le répertoire de travail n'est pas propre. Veuillez faire un 'stash' ou 'commit' de vos modifications avant de mettre à jour.",
 				"updating": "Mise à jour depuis le dépôt distant...",
 				"localAhead": "La branche locale est en avance sur la branche distante. Aucune mise à jour nécessaire.",
 				"diverged": "Les branches locale et distante ont divergé. Mise à jour forcée...",
@@ -139,7 +139,7 @@
 		}
 	},
 	"tutorial": {
-		"title": "Tutoriel",
+		"title": "Un tutoriel ?",
 		"modal": {
 			"title": "Bienvenue sur Fount !",
 			"instruction": "Voulez-vous suivre le tutoriel d'introduction ?",
@@ -154,10 +154,10 @@
 			"endButton": "C'est parti !"
 		},
 		"progressMessages": {
-			"mouseMove": "Utilisez votre doigt pour saisir la souris ${mouseIcon}<br/>puis déplacez-la.",
-			"keyboardPress": "Trouvez votre clavier ${keyboardIcon}<br/>et essayez d'appuyer sur une touche.",
-			"mobileTouchMove": "Prenez votre téléphone ${phoneIcon},<br/>touchez l'écran avec un doigt, puis déplacez-le.",
-			"mobileClick": "Touchez l'écran de votre téléphone ${phoneIcon} avec un doigt<br/>puis relâchez."
+			"mouseMove": "Essayez de déplacer la souris ${mouseIcon} avec votre main.",
+			"keyboardPress": "Appuyez sur une touche de votre clavier ${keyboardIcon}.",
+			"mobileTouchMove": "Touchez l'écran de votre téléphone ${phoneIcon} avec un doigt, puis faites-le glisser.",
+			"mobileClick": "Appuyez sur l'écran de votre téléphone ${phoneIcon} avec un doigt."
 		}
 	},
 	"home": {
@@ -181,7 +181,7 @@
 			"tab": "Personnages",
 			"title": "Sélection de personnage",
 			"subtitle": "Sélectionnez un personnage, puis commencez à discuter !",
-			"none": "Vide",
+			"none": "Rien à afficher",
 			"card": {
 				"refreshButton": {
 					"alt": "Rafraîchir",
@@ -201,7 +201,7 @@
 			"tab": "Mondes",
 			"title": "Sélection de monde",
 			"subtitle": "Choisissez un monde et plongez au cœur de l'action !",
-			"none": "Vide",
+			"none": "Rien à afficher",
 			"card": {
 				"refreshButton": {
 					"alt": "Rafraîchir",
@@ -221,7 +221,7 @@
 			"tab": "Personas",
 			"title": "Sélection de persona",
 			"subtitle": "Sélectionnez une persona et vivez une nouvelle expérience.",
-			"none": "Vide",
+			"none": "Rien à afficher",
 			"card": {
 				"refreshButton": {
 					"alt": "Rafraîchir",
@@ -243,41 +243,41 @@
 		"instruction": "Choisissez un thème !",
 		"themes": {
 			"auto": "Automatique",
-			"light": "Couleur vive",
-			"dark": "Couleur foncée",
-			"cupcake": "Gâteau",
-			"bumblebee": "Bonbons de miel",
+			"light": "Clair",
+			"dark": "Sombre",
+			"cupcake": "Cupcake",
+			"bumblebee": "Bumblebee",
 			"emerald": "Émeraude",
-			"corporate": "entreprise",
-			"synthwave": "Vague synthétique",
+			"corporate": "Corporate",
+			"synthwave": "Synthwave",
 			"retro": "Rétro",
 			"cyberpunk": "Cyberpunk",
 			"valentine": "Saint Valentin",
 			"halloween": "Halloween",
-			"garden": "jardin",
-			"forest": "forêt",
-			"aqua": "mer profonde",
+			"garden": "Jardin",
+			"forest": "Forêt",
+			"aqua": "Aqua",
 			"lofi": "lo-fi",
-			"pastel": "Couleur claire",
-			"fantasy": "fantaisie",
+			"pastel": "Pastel",
+			"fantasy": "Fantaisie",
 			"wireframe": "Filaire",
-			"black": "noir",
-			"luxury": "luxueux",
-			"dracula": "démon",
-			"cmyk": "Cmyk",
-			"autumn": "automne",
+			"black": "Noir",
+			"luxury": "Luxe",
+			"dracula": "Dracula",
+			"cmyk": "CMYK",
+			"autumn": "Automne",
 			"business": "Entreprise",
-			"acid": "Acide",
-			"lemonade": "Jus de citron",
-			"night": "nuit",
-			"coffee": "café",
-			"winter": "hiver",
-			"dim": "Sombre",
-			"nord": "nord",
-			"sunset": "Coucher de soleil",
-			"caramellatte": "Latte au chocolat",
-			"abyss": "abîme",
-			"silk": "velours"
+			"acid": "Acid",
+			"lemonade": "Limonade",
+			"night": "Nuit",
+			"coffee": "Café",
+			"winter": "Hiver",
+			"dim": "Tamisé",
+			"nord": "Nordique",
+			"sunset": "Sunset",
+			"caramellatte": "Caramel Latte",
+			"abyss": "Abysse",
+			"silk": "Soie"
 		}
 	},
 	"import": {
@@ -454,7 +454,7 @@
 					}
 				}
 			},
-			"noSelection": "Aucune sélection",
+			"noSelection": "Rien de sélectionné",
 			"noDescription": "Aucune description disponible."
 		},
 		"chatArea": {
@@ -657,7 +657,7 @@
 		"configCard": {
 			"title": "Configuration du bot",
 			"labels": {
-				"character": "Personnage",
+				"character": "Personnage lié",
 				"botToken": "Jeton du bot Telegram",
 				"config": "Configuration"
 			},
@@ -703,7 +703,7 @@
 	"proxy": {
 		"title": "Proxy API",
 		"heading": "Adresse du proxy API OpenAI",
-		"instruction": "Saisissez l'adresse suivante dans toute application nécessitant le format API OpenAI pour utiliser la source d'IA dans Fount !",
+		"instruction": "Saisissez l'adresse suivante dans toute application nécessitant le format API OpenAI pour utiliser les sources d'IA dans Fount !",
 		"copyButton": "Copier l'adresse",
 		"copied": "Adresse copiée dans le presse-papiers !"
 	},
@@ -767,7 +767,7 @@
 			"thisDevice": "Cet appareil",
 			"deviceDetails": "Dernière connexion : ${lastSeen} | IP : ${ipAddress} | UA : ${userAgent}",
 			"revokeButton": "Révoquer",
-			"revokeConfirm": "Voulez-vous vraiment déconnecter cet appareil/cette session ?",
+			"revokeConfirm": "Révoquer l'accès pour cet appareil/cette session ?",
 			"revokeSuccess": "Appareil/session révoqué avec succès."
 		},
 		"logout": {

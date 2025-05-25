@@ -7,7 +7,7 @@
 
 <a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
-[Bạn muốn biết về kiến trúc kho lưu trữ? Hãy khám phá deepwiki!](https://deepwiki.com/steve02081504/fount)
+[Bạn muốn biết về kiến trúc kho lưu trữ? Hãy xem DeepWiki!](https://deepwiki.com/steve02081504/fount)
 
 ![repo img](https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa)
 

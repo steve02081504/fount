@@ -34,7 +34,7 @@
 		"partManager": {
 			"git": {
 				"noUpstream": "'${currentBranch}' 브랜치에 업스트림 브랜치가 구성되어 있지 않아 업데이트 확인을 건너뜁니다.",
-				"dirtyWorkingDirectory": "작업 디렉토리에 커밋되지 않은 변경 사항이 있습니다. 업데이트하기 전에 변경 사항을 스테이징하거나 커밋하십시오.",
+				"dirtyWorkingDirectory": "작업 디렉터리가 정리되지 않았습니다. 업데이트하기 전에 변경 사항을 스태시하거나 커밋하세요.",
 				"updating": "원격 리포지토리에서 업데이트하는 중...",
 				"localAhead": "로컬 브랜치가 원격 브랜치보다 최신입니다. 업데이트가 필요하지 않습니다.",
 				"diverged": "로컬 브랜치와 원격 브랜치가 갈라졌습니다. 강제로 업데이트하는 중...",
@@ -139,7 +139,7 @@
 		}
 	},
 	"tutorial": {
-		"title": "튜토리얼을 시작할까요?",
+		"title": "튜토리얼 어떠세요?",
 		"modal": {
 			"title": "Fount에 오신 것을 환영합니다!",
 			"instruction": "시작 가이드를 진행하시겠습니까?",
@@ -154,10 +154,10 @@
 			"endButton": "시작하기!"
 		},
 		"progressMessages": {
-			"mouseMove": "마우스 ${mouseIcon}를 잡고<br/>움직여 보세요.",
-			"keyboardPress": "키보드 ${keyboardIcon}의<br/>아무 키나 눌러보세요.",
-			"mobileTouchMove": "휴대폰 ${phoneIcon} 화면을 터치한 후<br/>손가락을 움직여보세요.",
-			"mobileClick": "휴대폰 ${phoneIcon} 화면을 터치했다가<br/>손가락을 떼어보세요."
+			"mouseMove": "손으로 마우스 ${mouseIcon}를 잡고 움직여 보세요.",
+			"keyboardPress": "키보드 ${keyboardIcon}에서 아무 키나 눌러보세요.",
+			"mobileTouchMove": "휴대폰 ${phoneIcon} 화면을 손가락으로 터치한 후 드래그해보세요.",
+			"mobileClick": "휴대폰 ${phoneIcon} 화면을 손가락으로 탭해보세요."
 		}
 	},
 	"home": {
@@ -181,7 +181,7 @@
 			"tab": "캐릭터",
 			"title": "캐릭터 선택",
 			"subtitle": "캐릭터를 선택하고 채팅을 시작하세요!",
-			"none": "없음",
+			"none": "표시할 내용이 없습니다",
 			"card": {
 				"refreshButton": {
 					"alt": "새로고침",
@@ -201,7 +201,7 @@
 			"tab": "월드",
 			"title": "월드 선택",
 			"subtitle": "월드를 선택하고 몰입해보세요!",
-			"none": "없음",
+			"none": "표시할 내용이 없습니다",
 			"card": {
 				"refreshButton": {
 					"alt": "새로고침",
@@ -221,7 +221,7 @@
 			"tab": "페르소나",
 			"title": "페르소나 선택",
 			"subtitle": "페르소나를 선택하고 다양한 역할을 경험해보세요.",
-			"none": "없음",
+			"none": "표시할 내용이 없습니다",
 			"card": {
 				"refreshButton": {
 					"alt": "새로고침",
@@ -243,41 +243,41 @@
 		"instruction": "테마를 선택하세요!",
 		"themes": {
 			"auto": "자동",
-			"light": "밝은 색",
-			"dark": "어두운 색",
-			"cupcake": "컵 케이크",
-			"bumblebee": "꿀 사탕",
+			"light": "라이트",
+			"dark": "다크",
+			"cupcake": "컵케이크",
+			"bumblebee": "범블비",
 			"emerald": "에메랄드",
-			"corporate": "회사",
-			"synthwave": "합성 파",
+			"corporate": "코퍼레이트",
+			"synthwave": "신스웨이브",
 			"retro": "레트로",
 			"cyberpunk": "사이버 펑크",
 			"valentine": "발렌타인 데이",
 			"halloween": "할로윈",
-			"garden": "정원",
-			"forest": "숲",
-			"aqua": "심해",
+			"garden": "가든",
+			"forest": "포레스트",
+			"aqua": "아쿠아",
 			"lofi": "lo-fi",
-			"pastel": "밝은 색",
-			"fantasy": "공상",
+			"pastel": "파스텔",
+			"fantasy": "판타지",
 			"wireframe": "와이어 프레임",
-			"black": "검은색",
-			"luxury": "호화로운",
-			"dracula": "악마",
+			"black": "블랙",
+			"luxury": "럭셔리",
+			"dracula": "드라큘라",
 			"cmyk": "CMYK",
-			"autumn": "가을",
+			"autumn": "어텀",
 			"business": "사업",
-			"acid": "산",
-			"lemonade": "레몬 주스",
-			"night": "밤",
+			"acid": "애시드",
+			"lemonade": "레모네이드",
+			"night": "나이트",
 			"coffee": "커피",
-			"winter": "겨울",
-			"dim": "어두운",
-			"nord": "북쪽",
-			"sunset": "일몰",
-			"caramellatte": "초콜릿 라떼",
-			"abyss": "심연",
-			"silk": "벨벳"
+			"winter": "윈터",
+			"dim": "흐릿한",
+			"nord": "노르딕",
+			"sunset": "선셋",
+			"caramellatte": "카라멜 라떼",
+			"abyss": "어비스",
+			"silk": "실크"
 		}
 	},
 	"import": {
@@ -454,7 +454,7 @@
 					}
 				}
 			},
-			"noSelection": "선택 없음",
+			"noSelection": "선택되지 않음",
 			"noDescription": "설명 없음"
 		},
 		"chatArea": {
@@ -657,7 +657,7 @@
 		"configCard": {
 			"title": "봇 설정",
 			"labels": {
-				"character": "캐릭터",
+				"character": "연결된 캐릭터",
 				"botToken": "텔레그램 봇 토큰",
 				"config": "설정"
 			},
@@ -709,7 +709,7 @@
 	},
 	"404": {
 		"title": "페이지를 찾을 수 없습니다",
-		"pageNotFoundText": "おっと！ 존재하지 않는 페이지에 접속한 것 같습니다.",
+		"pageNotFoundText": "이런! 존재하지 않는 페이지에 접속한 것 같습니다.",
 		"homepageButton": "홈페이지로 돌아가기",
 		"MineSweeper": {
 			"difficultyLabel": "난이도:",
@@ -767,7 +767,7 @@
 			"thisDevice": "이 기기",
 			"deviceDetails": "마지막 접속: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
 			"revokeButton": "해지",
-			"revokeConfirm": "이 기기/세션에서 로그아웃하시겠습니까?",
+			"revokeConfirm": "이 기기/세션의 액세스 권한을 해지하시겠습니까?",
 			"revokeSuccess": "기기/세션이 성공적으로 해지되었습니다."
 		},
 		"logout": {
