@@ -1,5 +1,3 @@
-// src/public/scripts/endpoints.mjs
-
 export async function ping() {
 	const response = await fetch('/api/ping')
 	return response.json()

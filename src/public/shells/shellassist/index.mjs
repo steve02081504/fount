@@ -1,4 +1,3 @@
-// src/public/shells/shellassist/index.mjs
 import { applyTheme } from '../../scripts/theme.mjs';
 applyTheme();
 
@@ -34,7 +33,7 @@ function setupRemoteSessionHandlers() {
     resizeListenerDisposable = terminal.onResize(({ cols, rows }) => {
         sendRemoteSocketMessage({ type: 'resize', data: { cols, rows } });
     });
-    
+
     // Initial resize message is sent in remoteSocket.onopen
 }
 
@@ -56,8 +55,8 @@ function connectRemoteTerminal() {
     // isRemoteSessionActive will be set true on successful open
 
     const socketProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const socketUrl = `${socketProtocol}//${window.location.host}/ws/shellassist/terminal`;
-    
+    const socketUrl = `${socketProtocol}//${window.location.host}/ws/shells/shellassist/terminal`;
+
     remoteSocket = new WebSocket(socketUrl);
 
     remoteSocket.onopen = () => {
@@ -71,13 +70,13 @@ function connectRemoteTerminal() {
 
     remoteSocket.onmessage = (event) => {
         // Ensure terminal is still active and visible before writing
-        if (!terminal.element) return; 
+        if (!terminal.element) return;
         try {
             const message = JSON.parse(event.data);
             if (message.type === 'status') {
                 terminal.writeln(`\r\n[REMOTE STATUS] ${message.message}`);
             } else {
-                terminal.write(event.data); 
+                terminal.write(event.data);
             }
         } catch (e) {
             terminal.write(event.data);
@@ -98,7 +97,7 @@ function connectRemoteTerminal() {
         terminal.writeln(`\r\n[REMOTE SESSION ENDED] ${eventMessage}`);
         isRemoteSessionActive = false; // Set to false as session is no longer active
         clearRemoteSessionHandlers(); // Clean up terminal listeners
-        
+
         // Ensure remoteSocket is nulled out only after checking its state and deciding to reconnect.
         // If we are not attempting to reconnect, or if it's already null, this is fine.
         // If a reconnect is scheduled, the old socket object is now irrelevant.
@@ -109,9 +108,9 @@ function connectRemoteTerminal() {
             remoteSocket.onclose = null;
             // Don't close if it's already closed or errored out, could throw.
             // if (remoteSocket.readyState === WebSocket.OPEN || remoteSocket.readyState === WebSocket.CONNECTING) {
-            //     remoteSocket.close(); 
+            //     remoteSocket.close();
             // }
-            remoteSocket = null; 
+            remoteSocket = null;
         }
 
 
@@ -144,19 +143,9 @@ async function main() {
     await initTranslations('terminal_assistant');
     terminal.writeln(geti18n('terminal_assistant.initialMessage'));
     terminal.writeln(`\x1b]8;;https://github.com/steve02081504/fount-pwsh\x07${geti18n('terminal_assistant.initialMessageLink')}\x1b]8;;\x07`);
-    
+
     // Directly connect to remote terminal
     connectRemoteTerminal();
 }
 
 main();
-
-// Ensure terminal is cleared if the page is hidden and then shown again, to avoid stale output
-// document.addEventListener('visibilitychange', () => {
-//     if (document.visibilityState === 'visible') {
-//         if (isRemoteSessionActive && remoteSocket && remoteSocket.readyState === WebSocket.OPEN) {
-//             terminal.clear(); // Or send a request for fresh screen
-//             sendRemoteSocketMessage({ type: 'refresh' }); // Example: server might need to resend full screen
-//         }
-//     }
-// });

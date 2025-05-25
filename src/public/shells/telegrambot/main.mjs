@@ -21,7 +21,7 @@ export default {
 		}
 		// 可以添加更多语言的本地化信息
 	},
-	Load: async (router) => {
+	Load: async ({router}) => {
 		// 设置此 shell 的 API 端点
 		setEndpoints(router)
 	},

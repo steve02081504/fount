@@ -20,7 +20,7 @@ export default {
 			tags: []
 		}
 	},
-	Load: (router) => {
+	Load: ({router}) => {
 		loading_count++
 		setEndpoints(router)
 	},

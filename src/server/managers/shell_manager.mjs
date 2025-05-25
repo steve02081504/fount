@@ -1,8 +1,8 @@
 import express from 'npm:express@^5.0.1'
-// Import wssRouter and PartsRouter. PartsRouter might be used by getShellsPartRouter or directly.
-import { PartsRouter, UpdatePartsRouter, wssRouter } from '../server.mjs'; // Changed httpServerInstance to wssRouter
+import { PartsRouter, UpdatePartsRouter } from '../server.mjs'
 import { initPart, loadPartBase, uninstallPartBase, unloadPartBase } from '../parts_loader.mjs'
 import { getUserByReq } from '../auth.mjs'
+import { getShellsWssRouter, deleteShellsWssRouter } from "../wss_server.mjs";
 
 const shellsRouters = {}
 PartsRouter.use(async (req, res, next) => {
@@ -32,17 +32,20 @@ function deleteShellsPartRouter(username, shellname) {
  * @returns {Promise<import('../../decl/shellAPI.ts').shellAPI_t>}
  */
 export async function loadShell(username, shellname) {
-	const shellSpecificRouter = getShellsPartRouter(username, shellname);
 	const initArgs = {
-		router: shellSpecificRouter, // Keep the shell-specific HTTP router
-		wssRouter: wssRouter       // Pass the WssRouter instance
+		router: getShellsPartRouter(username, shellname), // Keep the shell-specific HTTP router
+		wssRouter: getShellsWssRouter(username, shellname), // Pass the WssRouter instance
 	};
 	return loadPartBase(username, 'shells', shellname, initArgs);
 }
 
 export async function unloadShell(username, shellname) {
-	await unloadPartBase(username, 'shells', shellname, getShellsPartRouter(username, shellname))
+	await unloadPartBase(username, 'shells', shellname, {
+		router: getShellsPartRouter(username, shellname),
+		wssRouter: getShellsWssRouter(username, shellname),
+	})
 	deleteShellsPartRouter(username, shellname)
+	deleteShellsWssRouter(username, shellname)
 }
 
 export async function initShell(username, shellname) {
