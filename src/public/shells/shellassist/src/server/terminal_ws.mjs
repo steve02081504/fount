@@ -63,7 +63,3 @@ export function handleTerminalConnection(ws, request) {
 	if (ws.readyState === ws.OPEN)
 		ws.send(JSON.stringify({ type: 'status', message: 'PTY session started via WssRouter' }))
 }
-
-export function initTerminalWebsocket(wss) {
-	wss.on('connection', handleTerminalConnection)
-}

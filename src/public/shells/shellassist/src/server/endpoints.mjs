@@ -1,5 +1,5 @@
-import { initTerminalWebsocket } from './terminal_ws.mjs'
+import { handleTerminalConnection } from './terminal_ws.mjs'
 
-export function setEndpoints(router, wssRouter) {
-	initTerminalWebsocket(wssRouter)
+export function setEndpoints(router) {
+	router.ws('/ws/shells/shellassist/terminal', handleTerminalConnection)
 }

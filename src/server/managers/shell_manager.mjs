@@ -1,12 +1,11 @@
 import express from 'npm:express@^5.0.1'
-import { PartsRouter, UpdatePartsRouter } from '../server.mjs'
+import { PartsRouter, UpdatePartsRouter, wss } from '../server.mjs'
 import { initPart, loadPartBase, uninstallPartBase, unloadPartBase } from '../parts_loader.mjs'
 import { getUserByReq } from '../auth.mjs'
-import { getShellsWssRouter, deleteShellsWssRouter } from '../wss_server.mjs'
 
 const shellsRouters = {}
 PartsRouter.use(async (req, res, next) => {
-	if (!req.path.startsWith('/api/shells/')) return next()
+	if ((!req.path.startsWith('/api/shells/')) && (!req.path.startsWith('/ws/shells/'))) return next()
 	const { username } = await getUserByReq(req).catch(_ => ({}))
 	if (!username) return next()
 	const shellname = req.path.split('/')[3]
@@ -16,9 +15,15 @@ PartsRouter.use(async (req, res, next) => {
 })
 UpdatePartsRouter()
 
+function getNewRouter () {
+	const router = express.Router()
+	wss.applyTo(router)
+	return router
+}
+
 function getShellsPartRouter(username, shellname) {
 	shellsRouters[username] ??= {}
-	return shellsRouters[username][shellname] ??= express.Router()
+	return shellsRouters[username][shellname] ??= getNewRouter()
 }
 
 function deleteShellsPartRouter(username, shellname) {
@@ -33,8 +38,7 @@ function deleteShellsPartRouter(username, shellname) {
  */
 export async function loadShell(username, shellname) {
 	const initArgs = {
-		router: getShellsPartRouter(username, shellname), // Keep the shell-specific HTTP router
-		wssRouter: getShellsWssRouter(username, shellname), // Pass the WssRouter instance
+		router: getShellsPartRouter(username, shellname),
 	}
 	return loadPartBase(username, 'shells', shellname, initArgs)
 }
@@ -42,10 +46,8 @@ export async function loadShell(username, shellname) {
 export async function unloadShell(username, shellname) {
 	await unloadPartBase(username, 'shells', shellname, {
 		router: getShellsPartRouter(username, shellname),
-		wssRouter: getShellsWssRouter(username, shellname),
 	})
 	deleteShellsPartRouter(username, shellname)
-	deleteShellsWssRouter(username, shellname)
 }
 
 export async function initShell(username, shellname) {

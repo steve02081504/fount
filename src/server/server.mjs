@@ -1,5 +1,6 @@
 import * as Sentry from 'npm:@sentry/deno'
 import express from 'npm:express@^5.0.1'
+import expressWS from 'npm:express-ws'
 import cookieParser from 'npm:cookie-parser@^1.4.0'
 import fileUpload from 'npm:express-fileupload@^1.5.0'
 import fs from 'node:fs'
@@ -14,10 +15,10 @@ import { createTray } from '../scripts/tray.mjs'
 import { StartRPC } from '../scripts/discordrpc.mjs'
 import { geti18n } from '../scripts/i18n.mjs'
 import { sentrytunnel } from '../scripts/sentrytunnel.mjs'
-import { handleUpgrade } from './wss_server.mjs'
 
 export { __dirname }
 const app = express()
+export const wss = expressWS(app)
 const mainRouter = express.Router()
 export const PartsRouter = express.Router()
 const FinalRouter = express.Router()
@@ -142,7 +143,6 @@ export async function init() {
 				resolve()
 			})
 		server.on('error', reject)
-		server.on('upgrade', handleUpgrade)
 	})
 
 	console.freshLine('server start', await geti18n('fountConsole.server.ready'))
@@ -155,6 +155,6 @@ export async function init() {
 	console.log(await geti18n('fountConsole.server.usesdTime', {
 		time: (endtime - startTime) / 1000
 	}))
-	StartRPC() // Assuming StartRPC is correctly placed and still needed
+	StartRPC()
 	return true
 }

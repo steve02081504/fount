@@ -108,12 +108,6 @@ async function verifyToken(token) {
 	}
 }
 
-export function getUserByToken(token) {
-	const decoded = verifyToken(token)
-	if (!decoded) return null
-	return getUserByUsername(decoded.username)
-}
-
 /**
  * 刷新 Access Token
  * @param {string} refreshTokenValue - 客户端传入的 Refresh Token
@@ -229,7 +223,7 @@ export async function authenticate(req, res, next) {
 	if (is_local_ip_from_req(req)) {
 		const decoded = await jose.decodeJwt(accessToken)
 		req.user = config.data.users[decoded.username]
-		// if (decoded && req.user) return next()
+		if (decoded && req.user) return next()
 	}
 
 	let decodedAccessToken = await verifyToken(accessToken)
