@@ -597,7 +597,10 @@
 		"confirmDeleteMultiChats": "确定要删除选中的 ${count} 条聊天记录吗？",
 		"alerts": {
 			"noChatSelectedForDeletion": "请选择要删除的聊天记录",
-			"noChatSelectedForExport": "请选择要导出的聊天记录"
+			"noChatSelectedForExport": "请选择要导出的聊天记录",
+			"copyError": "复制失败",
+			"deleteError": "删除失败",
+			"exportError": "导出失败"
 		},
 		"chatItemButtons": {
 			"continue": "继续",
