@@ -11,11 +11,13 @@ import { console } from '../scripts/console.mjs'
 import { on_shutdown } from './on_shutdown.mjs'
 import { initAuth } from './auth.mjs'
 import { createTray } from '../scripts/tray.mjs'
-import { StartRPC } from '../scripts/discordrpc.mjs'
+import { StartRPC } from '../scripts/discordrpc.mjs' // Assuming StartRPC is still relevant or handled elsewhere
 import { geti18n } from '../scripts/i18n.mjs'
+import { WssRouter } from './wss_router.mjs'; // + IMPORT WssRouter
 import { sentrytunnel } from '../scripts/sentrytunnel.mjs'
 
 export { __dirname }
+// export let httpServerInstance; // Removed as per new design
 const app = express()
 const mainRouter = express.Router()
 export const PartsRouter = express.Router()
@@ -86,6 +88,7 @@ export function setDefaultStuff() {
 
 export let hosturl
 export let tray
+export let wssRouter; // + EXPORT wssRouter
 
 export async function init() {
 	console.freshLine('server start', await geti18n('fountConsole.server.start'))
@@ -129,7 +132,9 @@ export async function init() {
 				hosturl = 'https://localhost:' + port
 				console.log(await geti18n('fountConsole.server.showUrl.https', {
 					url: 'https://localhost:' + port
-				}))
+				}));
+				// httpServerInstance = server; // Removed
+				wssRouter = new WssRouter(server); // + INSTANTIATE WssRouter
 				resolve()
 			})
 		}
@@ -137,7 +142,9 @@ export async function init() {
 			server = http.createServer(app).listen(port, async () => {
 				console.log(await geti18n('fountConsole.server.showUrl.http', {
 					url: 'http://localhost:' + port
-				}))
+				}));
+				// httpServerInstance = server; // Removed
+				wssRouter = new WssRouter(server); // + INSTANTIATE WssRouter
 				resolve()
 			})
 		server.on('error', reject)
@@ -153,6 +160,6 @@ export async function init() {
 	console.log(await geti18n('fountConsole.server.usesdTime', {
 		time: (endtime - startTime) / 1000
 	}))
-	StartRPC()
+	StartRPC() // Assuming StartRPC is correctly placed and still needed
 	return true
 }

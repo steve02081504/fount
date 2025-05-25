@@ -1,5 +1,6 @@
 import express from 'npm:express@^5.0.1'
-import { PartsRouter, UpdatePartsRouter } from '../server.mjs'
+// Import wssRouter and PartsRouter. PartsRouter might be used by getShellsPartRouter or directly.
+import { PartsRouter, UpdatePartsRouter, wssRouter } from '../server.mjs'; // Changed httpServerInstance to wssRouter
 import { initPart, loadPartBase, uninstallPartBase, unloadPartBase } from '../parts_loader.mjs'
 import { getUserByReq } from '../auth.mjs'
 
@@ -31,7 +32,12 @@ function deleteShellsPartRouter(username, shellname) {
  * @returns {Promise<import('../../decl/shellAPI.ts').shellAPI_t>}
  */
 export async function loadShell(username, shellname) {
-	return loadPartBase(username, 'shells', shellname, getShellsPartRouter(username, shellname))
+	const shellSpecificRouter = getShellsPartRouter(username, shellname);
+	const initArgs = {
+		router: shellSpecificRouter, // Keep the shell-specific HTTP router
+		wssRouter: wssRouter       // Pass the WssRouter instance
+	};
+	return loadPartBase(username, 'shells', shellname, initArgs);
 }
 
 export async function unloadShell(username, shellname) {
