@@ -8,7 +8,7 @@
  */
 export async function getChatList() {
 	const response = await fetch('/api/shells/chat/getchatlist')
-	if (response.ok) 
+	if (response.ok)
 		return response.json()
 	else {
 		console.error('Failed to get chat list:', response.status, response.statusText)
@@ -24,13 +24,13 @@ const char_details_cache = {}
  * @return {!Promise<!Object>} A promise that resolves to the character details.
  */
 export async function getCharDetails(charname) {
-	if (char_details_cache[charname]) 
+	if (char_details_cache[charname])
 		return char_details_cache[charname]
-  
+
 
 	const promise = fetch(`/api/getdetails/chars?name=${charname}`)
 		.then(response => {
-			if (response.ok) 
+			if (response.ok)
 				return response.json()
 			else {
 				console.error('Failed to get char details:', response.status, response.statusText)
@@ -64,9 +64,9 @@ export async function copyChats(chatids) {
 		body: JSON.stringify({ chatids }),
 	})
 
-	if (!response.ok) 
+	if (!response.ok)
 		throw new Error(`API request failed with status ${response.status}`)
-  
+
 	return response.json()
 }
 
@@ -85,9 +85,9 @@ export async function deleteChats(chatids) {
 		body: JSON.stringify({ chatids }),
 	})
 
-	if (!response.ok) 
+	if (!response.ok)
 		throw new Error(`API request failed with status ${response.status}`)
-  
+
 	return response.json()
 }
 
@@ -106,8 +106,8 @@ export async function exportChats(chatids) {
 		body: JSON.stringify({ chatids }),
 	})
 
-	if (!response.ok) 
+	if (!response.ok)
 		throw new Error(`API request failed with status ${response.status}`)
-  
+
 	return response.json()
 }

@@ -223,7 +223,7 @@ self.addEventListener('fetch', event => {
 	const { protocol, pathname, href: url } = requestUrl
 
 	// Skip non-http/https requests and API calls (or any other paths you want to exclude)
-	if (!protocol.startsWith('http') || pathname.startsWith('/api/'))
+	if (!protocol.startsWith('http') || pathname.startsWith('/api/') || pathname.startsWith('/ws/'))
 		return // Let the browser handle it, or network pass-through
 
 	event.respondWith(

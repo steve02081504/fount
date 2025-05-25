@@ -16,7 +16,7 @@ export default {
 			tags: []
 		}
 	},
-	Load: (router) => {
+	Load: ({ router }) => {
 		setEndpoints(router)
 	},
 	Unload: () => { },

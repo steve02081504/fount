@@ -9,7 +9,7 @@ export default {
 			description: 'Provides API endpoints for user settings management.'
 		}
 	},
-	Load: async (router) => {
+	Load: async ({ router }) => {
 		setEndpoints(router)
 	},
 	Unload: async () => { }
