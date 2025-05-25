@@ -597,7 +597,10 @@
 		"confirmDeleteMultiChats": "Вы уверены, что хотите удалить выбранные ${count} истории чатов?",
 		"alerts": {
 			"noChatSelectedForDeletion": "Пожалуйста, выберите чаты для удаления.",
-			"noChatSelectedForExport": "Пожалуйста, выберите чаты для экспорта."
+			"noChatSelectedForExport": "Пожалуйста, выберите чаты для экспорта.",
+			"copyError": "Копия не удалась",
+			"deleteError": "Удаление не удалось",
+			"exportError": "Экспорт не удался"
 		},
 		"chatItemButtons": {
 			"continue": "Продолжить",

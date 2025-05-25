@@ -597,7 +597,10 @@
 		"confirmDeleteMultiChats": "Sei sicuro di voler eliminare le ${count} cronologie chat selezionate?",
 		"alerts": {
 			"noChatSelectedForDeletion": "Seleziona le cronologie chat da eliminare.",
-			"noChatSelectedForExport": "Seleziona le cronologie chat da esportare."
+			"noChatSelectedForExport": "Seleziona le cronologie chat da esportare.",
+			"copyError": "Copia non riuscita",
+			"deleteError": "La cancellazione non è riuscita",
+			"exportError": "L'esportazione non è riuscita"
 		},
 		"chatItemButtons": {
 			"continue": "Continua",

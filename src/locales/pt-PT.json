@@ -597,7 +597,10 @@
 		"confirmDeleteMultiChats": "Tem a certeza que quer eliminar os ${count} históricos de conversas selecionados?",
 		"alerts": {
 			"noChatSelectedForDeletion": "Por favor, selecione os históricos de conversas para eliminar.",
-			"noChatSelectedForExport": "Por favor, selecione os históricos de conversas para exportar."
+			"noChatSelectedForExport": "Por favor, selecione os históricos de conversas para exportar.",
+			"copyError": "Cópia falhou",
+			"deleteError": "A exclusão falhou",
+			"exportError": "A exportação falhou"
 		},
 		"chatItemButtons": {
 			"continue": "Continuar",

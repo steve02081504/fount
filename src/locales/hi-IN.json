@@ -597,7 +597,10 @@
 		"confirmDeleteMultiChats": "क्या आप वाकई चुने हुए ${count} चैट इतिहास हटाना चाहते हैं?",
 		"alerts": {
 			"noChatSelectedForDeletion": "कृपया हटाने के लिए चैट इतिहास चुनें।",
-			"noChatSelectedForExport": "कृपया निर्यात करने के लिए चैट इतिहास चुनें।"
+			"noChatSelectedForExport": "कृपया निर्यात करने के लिए चैट इतिहास चुनें।",
+			"copyError": "कॉपी विफल",
+			"deleteError": "विलोपन विफल रहा",
+			"exportError": "निर्यात विफल हो गया"
 		},
 		"chatItemButtons": {
 			"continue": "जारी रखें",

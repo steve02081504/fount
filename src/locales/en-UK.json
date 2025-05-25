@@ -597,7 +597,10 @@
 		"confirmDeleteMultiChats": "Are you sure you want to delete the selected ${count} chat histories?",
 		"alerts": {
 			"noChatSelectedForDeletion": "Please select chat histories to delete.",
-			"noChatSelectedForExport": "Please select chat histories to export."
+			"noChatSelectedForExport": "Please select chat histories to export.",
+			"copyError": "Copy failed",
+			"deleteError": "Deletion failed",
+			"exportError": "Export failed"
 		},
 		"chatItemButtons": {
 			"continue": "Continue",
