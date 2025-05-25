@@ -15,6 +15,7 @@ function spawnShell() {
 }
 
 export function handleTerminalConnection(ws) {
+	console.log('handleTerminalConnection: Entered')
 	const ptyProcess = spawnShell()
 	ws.on('message', (message) => {
 		try {
