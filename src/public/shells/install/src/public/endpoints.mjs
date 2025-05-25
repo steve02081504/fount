@@ -1,5 +1,3 @@
-// src/public/shells/install/src/public/endpoints.mjs
-
 export async function importFiles(formData) {
 	return fetch('/api/shells/install/file', {
 		method: 'POST',

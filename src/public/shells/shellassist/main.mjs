@@ -1,22 +1,24 @@
 import { LoadChar } from '../../../server/managers/char_manager.mjs'
 import { GetDefaultShellAssistInterface } from './src/server/default_interface/main.mjs'
+import { setEndpoints } from './src/server/endpoints.mjs'
 
 export default {
 	info: {
 		'': {
-			name: 'install',
+			name: 'shellassist',
 			avatar: '',
-			description: 'default description',
-			description_markdown: 'default description',
+			description: 'Interactive terminal access within fount.',
+			description_markdown: 'Provides an interactive terminal connected to the fount server environment.',
 			version: '1.0.0',
 			author: 'steve02081504',
 			homepage: '',
-			tags: []
+			tags: ['terminal', 'shell', 'interactive']
 		}
 	},
-	Load: (router) => { },
-	Unload: (router) => { },
-
+	Load: ({ router }) => {
+		setEndpoints(router)
+	},
+	Unload: () => { },
 	interfaces: {
 		invokes: {
 			IPCInvokeHandler: async (username, data) => {
