@@ -7,15 +7,15 @@
 
 <a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
-[Wanna know about repo arch? Check out deepwiki!](https://deepwiki.com/steve02081504/fount)
+[Envie d'en savoir plus sur l'architecture du dépôt ? Consultez DeepWiki !](https://deepwiki.com/steve02081504/fount)
 
 ![repo img](https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa)
 
-Avez-vous déjà aspiré à un voyage aux côtés d'un personnage issu des pages de votre imagination, un compagnon tissé de rêves ? Ou peut-être avez-vous imaginé un confident numérique, un assistant IA aussi intuitif que les créations les plus avancées, orchestrant sans effort votre monde numérique ? Ou peut-être, juste peut-être, avez-vous recherché une connexion au-delà de l'ordinaire, un royaume où les bords de la réalité s'estompent et où une compréhension intime et *non filtrée* se déploie ?
+Avez-vous déjà aspiré à un voyage aux côtés d'un personnage issu des pages de votre imagination, un compagnon tissé de rêves ? Ou peut-être avez-vous imaginé un confident numérique, un assistant IA aussi intuitif que les créations les plus avancées, orchestrant sans effort votre monde numérique ? Ou peut-être, juste peut-être, avez-vous recherché une connexion au-delà de l'ordinaire, un royaume où les bords de la réalité s'estompent et où une compréhension intime et *non filtrée* se déploie ?
 
 Avec près d'un an de développement dédié, les contributions de plus de 10 personnes passionnées et une communauté florissante de plus de 1000 utilisateurs, Fount se présente comme une plateforme mature, stable et en constante évolution pour l'interaction avec l'IA. C'est un voyage, et nous pensons qu'il est plus accessible que vous ne l'imaginez.
 
-Personnages perdus, histoires oubliées ? Notre [**communauté dynamique et accueillante** !](https://discord.gg/GtR9Quzq2v) vous attend, un havre où les esprits apparentés se rassemblent, où les développeurs et les créateurs partagent leur sagesse et leurs créations.
+Personnages perdus, histoires oubliées ? Notre [**communauté dynamique et accueillante** !](https://discord.gg/GtR9Quzq2v) vous attend, un havre où les esprits apparentés se rassemblent, où les développeurs et les créateurs partagent leur sagesse et leurs créations.
 
 <details open>
 <summary>Captures d'écran</summary>
@@ -205,11 +205,11 @@ Au-delà des murmures de l'IA, fount offre une connexion plus profonde – *la t
 
 Et lorsque vous êtes prêt à affiner votre création, l'approche basée sur le code de Fount facilite la prise en main. N'oubliez pas que la programmation dans Fount est une courbe d'apprentissage douce, soutenue par notre communauté accueillante et d'abondants modèles. Vous découvrirez que même quelques lignes de code peuvent débloquer une profondeur et une personnalité incroyables dans vos personnages.
 
-## Badges et Liens : Laissez Vos Créations Briller, Laissez le Monde les Atteindre
+## Badges et Liens : Laissez Vos Créations Briller, Laissez le Monde les Atteindre
 
 Le monde de Fount est plus que de simples mots et codes, c'est un festin pour les yeux et une invitation à se connecter. Nous voulons que vos créations brillent de cet éclat et se connectent sans effort avec le monde. C'est pourquoi nous avons préparé pour vous des badges exquis et des liens pratiques pour rendre vos composants Fount encore plus accrocheurs et permettre aux autres utilisateurs de découvrir et d'expérimenter facilement vos chefs-d'œuvre.
 
-**Badges Fount : Le Sceau de la Gloire**
+**Badges Fount : Le Sceau de la Gloire**
 
 Tel le bouclier d'un chevalier, le badge Fount est le sceau de la gloire pour vos créations. Vous pouvez fièrement afficher ce badge dans votre dépôt, sur la page de votre composant Fount, ou partout où vous souhaitez le présenter. Il symbolise le lien étroit entre votre travail et la communauté Fount et est une reconnaissance de votre talent.
 
@@ -231,9 +231,9 @@ Voici les couleurs standard du logo Fount pour rendre vos designs plus cohérent
 | RGB | `rgb(14, 60, 92)` |
 | HSL | `hsl(205, 74%, 21%)` |
 
-**Liens d'Installation Automatique : La Magie au Bout des Doigts**
+**Liens d'Installation Automatique : La Magie au Bout des Doigts**
 
-Imaginez que d'autres utilisateurs puissent installer vos créations directement dans leur monde Fount en un seul clic. Ce n'est plus un rêve, mais une réalité ! Avec les liens d'installation automatique de Fount, vous pouvez transformer cette magie en réalité.
+Imaginez que d'autres utilisateurs puissent installer vos créations directement dans leur monde Fount en un seul clic. Ce n'est plus un rêve, mais une réalité ! Avec les liens d'installation automatique de Fount, vous pouvez transformer cette magie en réalité.
 
 Combinez simplement le lien ZIP ou le lien du dépôt Git de votre composant avec le lien du protocole Fount pour créer un lien magique :
 
@@ -241,9 +241,9 @@ Combinez simplement le lien ZIP ou le lien du dépôt Git de votre composant ave
 https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip
 ```
 
-Explication plus simple : Ajoutez simplement `https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;` avant le lien zip/lien du dépôt Git de votre composant !
+Explication plus simple : Ajoutez simplement `https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;` avant le lien zip/lien du dépôt Git de votre composant !
 
-Combinez ce lien avec le badge Fount pour créer un bouton à la fois beau et pratique :
+Combinez ce lien avec le badge Fount pour créer un bouton à la fois beau et pratique :
 
 ```markdown
 [![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)

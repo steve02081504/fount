@@ -34,7 +34,7 @@
 		"partManager": {
 			"git": {
 				"noUpstream": "Không có nhánh upstream nào được cấu hình cho nhánh '${currentBranch}', bỏ qua kiểm tra cập nhật.",
-				"dirtyWorkingDirectory": "Thư mục làm việc có những thay đổi chưa được lưu. Vui lòng lưu trữ (stash) hoặc commit các thay đổi trước khi cập nhật.",
+				"dirtyWorkingDirectory": "Thư mục làm việc chưa sạch. Vui lòng 'stash' hoặc 'commit' các thay đổi của bạn trước khi cập nhật.",
 				"updating": "Đang cập nhật từ kho lưu trữ từ xa...",
 				"localAhead": "Nhánh cục bộ đang ở phiên bản mới hơn nhánh từ xa. Không cần cập nhật.",
 				"diverged": "Nhánh cục bộ và nhánh từ xa đã khác nhau. Đang buộc cập nhật...",
@@ -139,7 +139,7 @@
 		}
 	},
 	"tutorial": {
-		"title": "Xem hướng dẫn?",
+		"title": "Thử hướng dẫn nhé?",
 		"modal": {
 			"title": "Chào mừng bạn đến với Fount!",
 			"instruction": "Bạn có muốn xem hướng dẫn cho người mới bắt đầu không?",
@@ -150,14 +150,14 @@
 		},
 		"endScreen": {
 			"title": "Tuyệt vời! Hướng dẫn đã hoàn tất!",
-			"subtitle": "Bây giờ bạn đã nắm được các thao tác cơ bản!",
+			"subtitle": "Bây giờ bạn đã biết cách thao tác rồi!",
 			"endButton": "Bắt đầu nào!"
 		},
 		"progressMessages": {
-			"mouseMove": "Vui lòng dùng ngón tay của bạn để giữ chuột ${mouseIcon}<br/>sau đó di chuyển chuột.",
+			"mouseMove": "Vui lòng dùng tay giữ chuột ${mouseIcon} và di chuyển.",
 			"keyboardPress": "Vui lòng tìm bàn phím ${keyboardIcon} của bạn<br/>và thử nhấn một phím bất kỳ.",
-			"mobileTouchMove": "Vui lòng tìm điện thoại ${phoneIcon} của bạn,<br/>dùng ngón tay chạm vào màn hình rồi di chuyển.",
-			"mobileClick": "Vui lòng dùng ngón tay chạm vào màn hình điện thoại ${phoneIcon}<br/>sau đó thả ra."
+			"mobileTouchMove": "Vui lòng dùng ngón tay chạm vào màn hình điện thoại ${phoneIcon} rồi vuốt.",
+			"mobileClick": "Vui lòng dùng ngón tay chạm vào màn hình điện thoại ${phoneIcon}."
 		}
 	},
 	"home": {
@@ -181,7 +181,7 @@
 			"tab": "Nhân vật",
 			"title": "Chọn nhân vật",
 			"subtitle": "Chọn một nhân vật - rồi bắt đầu trò chuyện!",
-			"none": "Trống",
+			"none": "Không có gì để hiển thị",
 			"card": {
 				"refreshButton": {
 					"alt": "Làm mới",
@@ -201,7 +201,7 @@
 			"tab": "Thế giới",
 			"title": "Chọn thế giới",
 			"subtitle": "Chọn một thế giới và đắm chìm trong đó!",
-			"none": "Trống",
+			"none": "Không có gì để hiển thị",
 			"card": {
 				"refreshButton": {
 					"alt": "Làm mới",
@@ -221,7 +221,7 @@
 			"tab": "Persona",
 			"title": "Chọn Persona",
 			"subtitle": "Chọn một Persona và trải nghiệm cuộc sống.",
-			"none": "Trống",
+			"none": "Không có gì để hiển thị",
 			"card": {
 				"refreshButton": {
 					"alt": "Làm mới",
@@ -243,41 +243,41 @@
 		"instruction": "Chọn một chủ đề!",
 		"themes": {
 			"auto": "Tự động",
-			"light": "Màu sáng",
-			"dark": "Màu tối",
-			"cupcake": "Bánh Cup",
-			"bumblebee": "Kẹo mật ong",
+			"light": "Sáng",
+			"dark": "Tối",
+			"cupcake": "Cupcake",
+			"bumblebee": "Bumblebee",
 			"emerald": "Ngọc lục bảo",
-			"corporate": "công ty",
-			"synthwave": "Sóng tổng hợp",
+			"corporate": "Corporate",
+			"synthwave": "Synthwave",
 			"retro": "Retro",
 			"cyberpunk": "Cyberpunk",
 			"valentine": "Ngày lễ tình nhân",
 			"halloween": "Halloween",
-			"garden": "vườn",
-			"forest": "rừng",
-			"aqua": "Biển sâu",
+			"garden": "Vườn",
+			"forest": "Rừng",
+			"aqua": "Aqua",
 			"lofi": "LO-FI",
-			"pastel": "Màu sáng",
-			"fantasy": "tưởng tượng",
+			"pastel": "Pastel",
+			"fantasy": "Huyền ảo",
 			"wireframe": "Khung dây",
-			"black": "đen",
-			"luxury": "sang trọng",
-			"dracula": "quỷ",
+			"black": "Đen",
+			"luxury": "Luxury",
+			"dracula": "Dracula",
 			"cmyk": "CMYK",
-			"autumn": "mùa thu",
+			"autumn": "Thu",
 			"business": "Việc kinh doanh",
-			"acid": "Axit",
-			"lemonade": "Nước chanh",
-			"night": "đêm",
-			"coffee": "cà phê",
-			"winter": "mùa đông",
-			"dim": "Tối tăm",
-			"nord": "phía bắc",
+			"acid": "Acid",
+			"lemonade": "Limonada",
+			"night": "Đêm",
+			"coffee": "Cà phê",
+			"winter": "Đông",
+			"dim": "Mờ",
+			"nord": "Nordic",
 			"sunset": "Hoàng hôn",
-			"caramellatte": "Latte sô cô la",
-			"abyss": "Abyss",
-			"silk": "nhung"
+			"caramellatte": "Caramel Latte",
+			"abyss": "Vực thẳm",
+			"silk": "Lụa"
 		}
 	},
 	"import": {
@@ -657,7 +657,7 @@
 		"configCard": {
 			"title": "Cấu hình Bot",
 			"labels": {
-				"character": "Nhân vật",
+				"character": "Nhân vật đã liên kết",
 				"botToken": "Token Bot Telegram",
 				"config": "Cấu hình"
 			},
@@ -703,7 +703,7 @@
 	"proxy": {
 		"title": "Proxy API",
 		"heading": "Địa chỉ Proxy API OpenAI",
-		"instruction": "Nhập địa chỉ sau vào bất kỳ ứng dụng nào yêu cầu định dạng API OpenAI để sử dụng nguồn AI trong Fount!",
+		"instruction": "Nhập địa chỉ sau vào bất kỳ ứng dụng nào yêu cầu định dạng API OpenAI để sử dụng các nguồn AI trong Fount!",
 		"copyButton": "Sao chép địa chỉ",
 		"copied": "Địa chỉ đã được sao chép vào bộ nhớ tạm!"
 	},
@@ -767,7 +767,7 @@
 			"thisDevice": "Thiết bị này",
 			"deviceDetails": "Hoạt động lần cuối: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
 			"revokeButton": "Thu hồi",
-			"revokeConfirm": "Bạn có chắc chắn muốn đăng xuất khỏi thiết bị/phiên hoạt động này không?",
+			"revokeConfirm": "Bạn có chắc chắn muốn thu hồi quyền truy cập cho thiết bị/phiên này không?",
 			"revokeSuccess": "Thiết bị/Phiên hoạt động đã được thu hồi thành công."
 		},
 		"logout": {

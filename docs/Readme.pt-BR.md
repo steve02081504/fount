@@ -7,7 +7,7 @@
 
 <a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
-[Wanna know about repo arch? Check out deepwiki!](https://deepwiki.com/steve02081504/fount)
+[Quer saber sobre a arquitetura do repositório? Confira o DeepWiki!](https://deepwiki.com/steve02081504/fount)
 
 ![repo img](https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa)
 
@@ -253,6 +253,6 @@ Combine este link com a insígnia Fount para criar um botão que seja bonito e p
 
 Com estes passos simples, você não apenas torna suas criações mais atraentes, mas também fortalece a conexão da comunidade Fount. Deixe a luz da sua inspiração iluminar todo o mundo Fount!
 
-## Contribuidor
+## Contribuidores
 
 [![Contributors](https://contrib.rocks/image?repo=steve02081504/fount)](https://github.com/steve02081504/fount/graphs/contributors)

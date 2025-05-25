@@ -34,7 +34,7 @@
 		"partManager": {
 			"git": {
 				"noUpstream": "ブランチ「${currentBranch}」にアップストリームブランチが設定されていません。更新チェックをスキップします。",
-				"dirtyWorkingDirectory": "作業ディレクトリに未コミットの変更があります。更新前に変更をステージングまたはコミットしてください。",
+				"dirtyWorkingDirectory": "作業ディレクトリがクリーンではありません。更新前に変更をスタッシュするかコミットしてください。",
 				"updating": "リモートリポジトリから更新中です...",
 				"localAhead": "ローカルブランチがリモートブランチよりも進んでいます。更新は不要です。",
 				"diverged": "ローカルブランチとリモートブランチが分岐しました。強制的に更新しています...",
@@ -139,7 +139,7 @@
 		}
 	},
 	"tutorial": {
-		"title": "チュートリアル",
+		"title": "チュートリアルはいかがですか？",
 		"modal": {
 			"title": "Fountへようこそ！",
 			"instruction": "入門チュートリアルを開始しますか？",
@@ -150,14 +150,14 @@
 		},
 		"endScreen": {
 			"title": "素晴らしい！チュートリアル完了！",
-			"subtitle": "これで基本操作は完了です！",
+			"subtitle": "基本操作はこれで完了です！",
 			"endButton": "始めましょう！"
 		},
 		"progressMessages": {
-			"mouseMove": "マウス${mouseIcon}を掴んで<br/>動かしてみてください。",
-			"keyboardPress": "キーボード${keyboardIcon}の<br/>キーを押してみてください。",
-			"mobileTouchMove": "スマートフォン${phoneIcon}の画面に触れて、<br/>そのまま指を動かしてみてください。",
-			"mobileClick": "スマートフォン${phoneIcon}の画面をタッチして<br/>指を離してみてください。"
+			"mouseMove": "マウス${mouseIcon}を手で掴んで動かしてみてください。",
+			"keyboardPress": "キーボード${keyboardIcon}で何かキーを押してみてください。",
+			"mobileTouchMove": "スマートフォン${phoneIcon}の画面に指で触れて、そのままスライドさせてみてください。",
+			"mobileClick": "スマートフォン${phoneIcon}の画面を指でタップしてみてください。"
 		}
 	},
 	"home": {
@@ -181,7 +181,7 @@
 			"tab": "キャラクター",
 			"title": "キャラクター選択",
 			"subtitle": "キャラクターを選択して、チャットを始めましょう！",
-			"none": "空です",
+			"none": "何も表示するものがありません",
 			"card": {
 				"refreshButton": {
 					"alt": "更新",
@@ -201,7 +201,7 @@
 			"tab": "ワールド",
 			"title": "ワールド選択",
 			"subtitle": "ワールドを選んで、没入体験を！",
-			"none": "空です",
+			"none": "何も表示するものがありません",
 			"card": {
 				"refreshButton": {
 					"alt": "更新",
@@ -219,9 +219,9 @@
 		},
 		"personas": {
 			"tab": "ペルソナ",
-			"title": "ペルソना選択",
+			"title": "ペルソナ選択",
 			"subtitle": "ペルソナを選択して、様々な役割を体験しましょう。",
-			"none": "空です",
+			"none": "何も表示するものがありません",
 			"card": {
 				"refreshButton": {
 					"alt": "更新",
@@ -243,41 +243,41 @@
 		"instruction": "テーマを選択してください！",
 		"themes": {
 			"auto": "自動",
-			"light": "明るい色",
-			"dark": "暗色",
+			"light": "ライト",
+			"dark": "ダーク",
 			"cupcake": "カップケーキ",
-			"bumblebee": "ハニーキャンディ",
+			"bumblebee": "バンブルビー",
 			"emerald": "エメラルド",
-			"corporate": "会社",
-			"synthwave": "合成波",
+			"corporate": "コーポレート",
+			"synthwave": "シンセウェイヴ",
 			"retro": "レトロ",
 			"cyberpunk": "サイバーパンク",
 			"valentine": "バレンタインデー",
 			"halloween": "ハロウィーン",
-			"garden": "庭",
-			"forest": "森",
-			"aqua": "深海",
+			"garden": "ガーデン",
+			"forest": "フォレスト",
+			"aqua": "アクア",
 			"lofi": "lo-fi",
-			"pastel": "明るい色",
+			"pastel": "パステル",
 			"fantasy": "ファンタジー",
 			"wireframe": "ワイヤーフレーム",
-			"black": "黒",
-			"luxury": "贅沢",
-			"dracula": "悪魔",
-			"cmyk": "cmyk",
-			"autumn": "秋",
+			"black": "ブラック",
+			"luxury": "ラグジュアリー",
+			"dracula": "ドラキュラ",
+			"cmyk": "CMYK",
+			"autumn": "オータム",
 			"business": "仕事",
-			"acid": "酸",
-			"lemonade": "レモン汁",
-			"night": "夜",
+			"acid": "アシッド",
+			"lemonade": "レモネード",
+			"night": "ナイト",
 			"coffee": "コーヒー",
-			"winter": "冬",
-			"dim": "暗い",
-			"nord": "北",
-			"sunset": "日没",
-			"caramellatte": "チョコレートラテ",
-			"abyss": "深淵",
-			"silk": "ベルベット"
+			"winter": "ウィンター",
+			"dim": "ディム",
+			"nord": "ノルディック",
+			"sunset": "サンセット",
+			"caramellatte": "キャラメルラテ",
+			"abyss": "アビス",
+			"silk": "シルク"
 		}
 	},
 	"import": {
@@ -454,7 +454,7 @@
 					}
 				}
 			},
-			"noSelection": "選択なし",
+			"noSelection": "未選択",
 			"noDescription": "説明なし"
 		},
 		"chatArea": {
@@ -657,7 +657,7 @@
 		"configCard": {
 			"title": "ボット設定",
 			"labels": {
-				"character": "キャラクター",
+				"character": "連携キャラクター",
 				"botToken": "Telegramボットトークン",
 				"config": "設定"
 			},
@@ -767,7 +767,7 @@
 			"thisDevice": "このデバイス",
 			"deviceDetails": "最終オンライン：${lastSeen} | IPアドレス：${ipAddress} | UA：${userAgent}",
 			"revokeButton": "取り消し",
-			"revokeConfirm": "このデバイス/セッションからログアウトしますか？",
+			"revokeConfirm": "このデバイス/セッションのアクセス権を取り消しますか？",
 			"revokeSuccess": "デバイス/セッションを正常に取り消しました。"
 		},
 		"logout": {
