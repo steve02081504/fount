@@ -1,5 +1,5 @@
-import express from 'npm:express@^5.0.1'
-import { PartsRouter, UpdatePartsRouter, wss } from '../server.mjs'
+import { Router } from 'npm:websocket-express'
+import { PartsRouter, UpdatePartsRouter } from '../server.mjs'
 import { initPart, loadPartBase, uninstallPartBase, unloadPartBase } from '../parts_loader.mjs'
 import { getUserByReq } from '../auth.mjs'
 
@@ -15,15 +15,9 @@ PartsRouter.use(async (req, res, next) => {
 })
 UpdatePartsRouter()
 
-function getNewRouter () {
-	const router = express.Router()
-	wss.applyTo(router)
-	return router
-}
-
 function getShellsPartRouter(username, shellname) {
 	shellsRouters[username] ??= {}
-	return shellsRouters[username][shellname] ??= getNewRouter()
+	return shellsRouters[username][shellname] ??= new Router()
 }
 
 function deleteShellsPartRouter(username, shellname) {

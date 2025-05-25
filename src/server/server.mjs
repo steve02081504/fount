@@ -1,6 +1,5 @@
 import * as Sentry from 'npm:@sentry/deno'
 import express from 'npm:express@^5.0.1'
-import expressWS from 'npm:express-ws'
 import cookieParser from 'npm:cookie-parser@^1.4.0'
 import fileUpload from 'npm:express-fileupload@^1.5.0'
 import fs from 'node:fs'
@@ -18,7 +17,6 @@ import { sentrytunnel } from '../scripts/sentrytunnel.mjs'
 
 export { __dirname }
 const app = express()
-export const wss = expressWS(app)
 const mainRouter = express.Router()
 export const PartsRouter = express.Router()
 const FinalRouter = express.Router()

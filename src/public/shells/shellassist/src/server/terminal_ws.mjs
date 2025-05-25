@@ -15,7 +15,6 @@ function spawnShell() {
 }
 
 export function handleTerminalConnection(ws) {
-	console.log('handleTerminalConnection: Entered')
 	const ptyProcess = spawnShell()
 	ws.on('message', (message) => {
 		try {
@@ -47,8 +46,4 @@ export function handleTerminalConnection(ws) {
 		console.error('WebSocket error for shellassist terminal:', error)
 		ptyProcess.kill()
 	})
-
-	// Send initial status message
-	if (ws.readyState === ws.OPEN)
-		ws.send(JSON.stringify({ type: 'status', message: 'PTY session started via WssRouter' }))
 }
