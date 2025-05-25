@@ -5,7 +5,7 @@ import { getUserByReq } from '../auth.mjs'
 
 const shellsRouters = {}
 PartsRouter.use(async (req, res, next) => {
-	if ((!req.path.startsWith('/api/shells/')) && (!req.path.startsWith('/ws/shells/'))) return next()
+	if (!req.path.startsWith('/api/shells/') && !req.path.startsWith('/ws/shells/')) return next()
 	const { username } = await getUserByReq(req).catch(_ => ({}))
 	if (!username) return next()
 	const shellname = req.path.split('/')[3]

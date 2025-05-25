@@ -14,48 +14,36 @@ function spawnShell() {
 	})
 }
 
-export function handleTerminalConnection(ws, request) {
-	const user = request.user
+export function handleTerminalConnection(ws) {
 	const ptyProcess = spawnShell()
 	ws.on('message', (message) => {
 		try {
 			let inputData = ''
-			if (typeof message === 'string')
-				inputData = message
-			 else if (Buffer.isBuffer(message))
-				inputData = message.toString('utf-8')
-			 else {
-				console.warn('Received non-string/buffer WebSocket message:', message)
-				return // Ignore if not string or buffer
-			}
+			if (typeof message === 'string') inputData = message
+			else if (Buffer.isBuffer(message)) inputData = message.toString('utf-8')
+			else return console.warn('Received non-string/buffer WebSocket message:', message)
 
 			// Assuming client always sends JSON strings
 			const parsedMessage = JSON.parse(inputData)
-			if (parsedMessage.type === 'resize' && parsedMessage.data &&
-				typeof parsedMessage.data.cols === 'number' && typeof parsedMessage.data.rows === 'number')
+			if (parsedMessage.type === 'resize')
 				ptyProcess.resize(parsedMessage.data.cols, parsedMessage.data.rows)
-			 else if (parsedMessage.type === 'data' && typeof parsedMessage.data === 'string')
+			else if (parsedMessage.type === 'data')
 				ptyProcess.write(parsedMessage.data)
-			 else
-				console.warn('Received valid JSON but with unexpected type or missing data:', parsedMessage)
-
+			else
+				console.warn('Received valid JSON but with unexpected type:', parsedMessage)
 		} catch (e) {
 			console.error('Failed to parse client message as JSON, or error in processing:', e)
 		}
 	})
 
 	ptyProcess.on('data', (data) => {
-		if (ws.readyState === ws.OPEN)  // Ensure WebSocket is still open before sending
-			ws.send(data) // Send raw data from PTY to client
+		if (ws.readyState === ws.OPEN) ws.send(data)
 	})
 
-	ws.on('close', () => {
-		console.log(`WebSocket connection closed for shellassist terminal, user: ${user.username}`)
-		ptyProcess.kill()
-	})
+	ws.on('close', () => { ptyProcess.kill() })
 
 	ws.on('error', (error) => {
-		console.error(`WebSocket error for shellassist terminal, user ${user.username}:`, error)
+		console.error('WebSocket error for shellassist terminal:', error)
 		ptyProcess.kill()
 	})
 

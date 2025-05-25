@@ -13,8 +13,8 @@ export default {
 			tags: []
 		}
 	},
-	Load: ({router}) => { },
-	Unload: ({router}) => { },
+	Load: ({ router }) => { },
+	Unload: ({ router }) => { },
 
 	interfaces: {
 		invokes: {

@@ -15,12 +15,12 @@ const MAX_RECONNECT_ATTEMPTS = 5
 const RECONNECT_DELAY = 5000 // 5 seconds
 
 function sendRemoteSocketMessage(payload) {
-	if (remoteSocket && remoteSocket.readyState === WebSocket.OPEN) 
+	if (remoteSocket && remoteSocket.readyState === WebSocket.OPEN)
 		remoteSocket.send(JSON.stringify(payload))
-	else 
-	// Don't writeln here as it might interfere with reconnection messages
+	else
+		// Don't writeln here as it might interfere with reconnection messages
 		console.warn('Remote socket not open, message not sent:', payload)
-    
+
 }
 
 function setupRemoteSessionHandlers() {
@@ -46,10 +46,10 @@ function clearRemoteSessionHandlers() {
 }
 
 function connectRemoteTerminal() {
-	if (isRemoteSessionActive || (remoteSocket && remoteSocket.readyState === WebSocket.CONNECTING)) 
-	// terminal.writeln('\r\nAlready connected or attempting to connect.'); // Can be noisy
+	if (isRemoteSessionActive || (remoteSocket && remoteSocket.readyState === WebSocket.CONNECTING))
+		// terminal.writeln('\r\nAlready connected or attempting to connect.'); // Can be noisy
 		return
-    
+
 
 	terminal.writeln('\r\nConnecting to fount remote terminal...')
 	// isRemoteSessionActive will be set true on successful open
@@ -73,27 +73,27 @@ function connectRemoteTerminal() {
 		if (!terminal.element) return
 		try {
 			const message = JSON.parse(event.data)
-			if (message.type === 'status') 
+			if (message.type === 'status')
 				terminal.writeln(`\r\n[REMOTE STATUS] ${message.message}`)
-			else 
+			else
 				terminal.write(event.data)
-            
+
 		} catch (e) {
 			terminal.write(event.data)
 		}
 	}
 
 	const handleDisconnect = (eventMessage) => {
-		if (!isRemoteSessionActive && remoteSocket?.readyState !== WebSocket.CONNECTING && remoteSocket?.readyState !== WebSocket.OPEN ) 
-		// This check is to ensure we only act on disconnects of previously active or currently connecting sessions.
-		// If remoteSocket is null (already cleaned up) or in a closed state from a non-active session, do nothing.
+		if (!isRemoteSessionActive && remoteSocket?.readyState !== WebSocket.CONNECTING && remoteSocket?.readyState !== WebSocket.OPEN)
+			// This check is to ensure we only act on disconnects of previously active or currently connecting sessions.
+			// If remoteSocket is null (already cleaned up) or in a closed state from a non-active session, do nothing.
 			if (!isRemoteSessionActive && reconnectAttempts === 0 && remoteSocket === null) {
 				// This means it's likely the initial connection attempt that failed, and error handler already ran.
-			} else if (!isRemoteSessionActive && remoteSocket === null) 
-			// Already handled and cleaned up.
+			} else if (!isRemoteSessionActive && remoteSocket === null)
+				// Already handled and cleaned up.
 				return
-            
-        
+
+
 		terminal.writeln(`\r\n[REMOTE SESSION ENDED] ${eventMessage}`)
 		isRemoteSessionActive = false // Set to false as session is no longer active
 		clearRemoteSessionHandlers() // Clean up terminal listeners
@@ -118,9 +118,9 @@ function connectRemoteTerminal() {
 			reconnectAttempts++
 			terminal.writeln(`Attempting to reconnect in ${RECONNECT_DELAY / 1000} seconds... (Attempt ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`)
 			setTimeout(connectRemoteTerminal, RECONNECT_DELAY)
-		} else 
+		} else
 			terminal.writeln('Maximum reconnect attempts reached. Please refresh the page to try again.')
-        
+
 	}
 
 	remoteSocket.onerror = (error) => {

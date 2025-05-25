@@ -15,10 +15,10 @@ export default {
 			tags: ['terminal', 'shell', 'interactive']
 		}
 	},
-	Load: ({ router, wssRouter }) => {
-		setEndpoints(router, wssRouter)
+	Load: ({ router }) => {
+		setEndpoints(router)
 	},
-	Unload: () => {},
+	Unload: () => { },
 	interfaces: {
 		invokes: {
 			IPCInvokeHandler: async (username, data) => {
