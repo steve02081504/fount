@@ -12,5 +12,5 @@ export default {
 		}
 	},
 	Load: async ({router}) => { },
-	UnLoad: async ({router}) => { },
+	Unload: async ({router}) => { },
 }

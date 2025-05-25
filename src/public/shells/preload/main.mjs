@@ -14,7 +14,7 @@ export default {
 		}
 	},
 	Load: ({router}) => { },
-	UnLoad: ({router}) => { },
+	Unload: ({router}) => { },
 
 	interfaces: {
 		invokes: {

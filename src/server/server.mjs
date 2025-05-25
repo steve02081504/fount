@@ -17,7 +17,6 @@ import { sentrytunnel } from '../scripts/sentrytunnel.mjs'
 import { handleUpgrade } from './wss_server.mjs'
 
 export { __dirname }
-// export let httpServerInstance; // Removed as per new design
 const app = express()
 const mainRouter = express.Router()
 export const PartsRouter = express.Router()
