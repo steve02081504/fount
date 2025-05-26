@@ -1,11 +1,8 @@
 import { renderTemplate } from '../../../../scripts/template.mjs'
 import { processTimeStampForId, arrayBufferToBase64 } from './utils.mjs'
 import { openModal } from './ui/modal.mjs'
-import { onElementRemoved } from '../../../../scripts/onElementRemoved.mjs'
 import { svgInliner } from '../../../../scripts/svg-inliner.mjs'
 import { getfile } from './files.mjs'
-
-export const attachmentPreviewMap = new Map()
 
 export async function handleFilesSelect(event, selectedFiles, attachmentPreviewContainer) {
 	const files = event.target.files || event.dataTransfer.files
@@ -86,22 +83,26 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 		previewImg.src = base64Data
 		previewImg.alt = file.name
 		previewImg.addEventListener('click', () => {
-			openModal(base64Data)
-		})
-		attachmentPreviewMap.set(previewImg, {
-			name: file.name,
-			mimeType: file.mimeType,
-			buffer: file.buffer,
-			description: file.description,
+			openModal(base64Data, 'image')
 		})
 		previewContainer.appendChild(previewImg)
 	} else if (file.mimeType.startsWith('video/')) {
 		const preview = document.createElement('video')
 		preview.classList.add('preview')
-		preview.src = `data:${file.mimeType};base64,${file.buffer}`
+		const videoSrc = `data:${file.mimeType};base64,${file.buffer}`
+		preview.src = videoSrc
 		preview.controls = true
-		preview.muted = true
+		preview.autoplay = false
+
+		preview.addEventListener('click', () => {
+			openModal(videoSrc, 'video')
+		})
 		previewContainer.appendChild(preview)
+	} else if (file.mimeType.startsWith('audio/')) {
+		const audio = document.createElement('audio')
+		audio.src = `data:${file.mimeType};base64,${file.buffer}`
+		audio.controls = true
+		previewContainer.appendChild(audio)
 	} else {
 		const preview = document.createElement('img')
 		preview.classList.add('preview', 'icon')
@@ -121,11 +122,6 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 			selectedFiles.splice(index, 1)
 			attachmentElement.remove()
 		})
-	onElementRemoved(attachmentElement, () => {
-		// 从映射中删除
-		const previewImg = attachmentElement.querySelector('.preview-img')
-		if (previewImg) attachmentPreviewMap.delete(previewImg)
-	})
 
 	return attachmentElement
 }
