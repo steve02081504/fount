@@ -1,4 +1,4 @@
-<div class="attachment" id="attachment-${safeName}-${index}" data-template-type="attachment_preview">
+<div class="attachment" id="attachment-${safeName}-${index}" data-template-type="attachment_preview" data-attachment-type="${file.mimeType.split('/')[0]}">
 	<span class="preview-container"></span>
 	<span class="file-name">${file.name}</span>
 	<span class="attachment-button-group ${showDownloadButton && showDeleteButton ? 'join' : ''}">

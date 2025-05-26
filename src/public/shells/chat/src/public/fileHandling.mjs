@@ -86,7 +86,7 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 		previewImg.src = base64Data
 		previewImg.alt = file.name
 		previewImg.addEventListener('click', () => {
-			openModal(base64Data)
+			openModal(base64Data, 'image') // Updated to use new openModal signature
 		})
 		attachmentPreviewMap.set(previewImg, {
 			name: file.name,
@@ -98,10 +98,67 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 	} else if (file.mimeType.startsWith('video/')) {
 		const preview = document.createElement('video')
 		preview.classList.add('preview')
-		preview.src = `data:${file.mimeType};base64,${file.buffer}`
-		preview.controls = true
-		preview.muted = true
+		const videoSrc = `data:${file.mimeType};base64,${file.buffer}`
+		preview.src = videoSrc
+		// preview.controls = false; // Default is false
+		// preview.muted = true; // Remove if not autoplaying, shows first frame
+		preview.style.cursor = 'pointer' // Indicate it's clickable
+
+		preview.addEventListener('click', () => {
+			openModal(videoSrc, 'video')
+		})
 		previewContainer.appendChild(preview)
+	} else if (file.mimeType.startsWith('audio/')) {
+		const audio = document.createElement('audio')
+		audio.src = `data:${file.mimeType};base64,${file.buffer}`
+		// audio.controls = true; // Default controls disabled
+
+		const audioControls = document.createElement('div')
+		audioControls.classList.add('audio-controls')
+
+		const playPauseBtn = document.createElement('button')
+		playPauseBtn.classList.add('play-pause-btn')
+		playPauseBtn.innerHTML = '<img src="https://api.iconify.design/line-md/play.svg" alt="Play">'
+
+		const progressBar = document.createElement('input')
+		progressBar.type = 'range'
+		progressBar.classList.add('progress-bar')
+		progressBar.min = '0'
+		progressBar.value = '0'
+		progressBar.step = '0.1'
+
+		audioControls.appendChild(playPauseBtn)
+		audioControls.appendChild(progressBar)
+
+		previewContainer.appendChild(audio)
+		previewContainer.appendChild(audioControls)
+
+		playPauseBtn.addEventListener('click', () => {
+			if (audio.paused || audio.ended) {
+				audio.play()
+				playPauseBtn.innerHTML = '<img src="https://api.iconify.design/line-md/pause.svg" alt="Pause">'
+			} else {
+				audio.pause()
+				playPauseBtn.innerHTML = '<img src="https://api.iconify.design/line-md/play.svg" alt="Play">'
+			}
+		})
+
+		audio.addEventListener('loadedmetadata', () => {
+			progressBar.max = audio.duration
+		})
+
+		audio.addEventListener('timeupdate', () => {
+			progressBar.value = audio.currentTime
+		})
+
+		audio.addEventListener('ended', () => {
+			playPauseBtn.innerHTML = '<img src="https://api.iconify.design/line-md/play.svg" alt="Play">'
+			progressBar.value = 0 // Reset progress bar to beginning
+		})
+
+		progressBar.addEventListener('input', () => {
+			audio.currentTime = progressBar.value
+		})
 	} else {
 		const preview = document.createElement('img')
 		preview.classList.add('preview', 'icon')
