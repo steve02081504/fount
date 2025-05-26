@@ -105,7 +105,6 @@ body {
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	width: 100%;
-	position: absolute;
 	bottom: 0;
 	background-color: rgba(0, 0, 0, 0.5);
 	color: #fff;
@@ -185,90 +184,4 @@ body {
 	max-width: 90%;
 	max-height: 90%;
 	object-fit: contain;
-}
-
-/* Styles for audio attachments */
-.attachment[data-attachment-type="audio"] {
-    /* Add specific styling for audio attachment containers if needed */
-    /* For example, you might want to ensure it has a certain height or layout */
-}
-
-.attachment[data-attachment-type="audio"] .preview-container {
-    display: flex; /* Helps align audio element and controls */
-    flex-direction: column; /* Stack audio element and controls vertically */
-    align-items: stretch; /* Stretch items to fill container width */
-    gap: 8px; /* Space between audio element (if visible) and controls */
-}
-
-/* Hide the default audio player if using custom controls exclusively */
-/* If you want to keep it, you might need to style it or ensure it doesn't clash */
-.attachment[data-attachment-type="audio"] .preview-container audio {
-    /* max-width: 100%; */
-    /* display: none; */ /* Uncomment if you want to fully hide the native player */
-}
-
-.audio-controls {
-    display: flex;
-    align-items: center;
-    gap: 8px; /* Space between button and progress bar */
-    padding: 4px;
-    border: 1px solid var(--fallback-bc, oklch(var(--bc) / 0.2)); /* Use theme border color */
-    border-radius: var(--rounded-btn, 0.5rem); /* Use theme border radius */
-    background-color: var(--fallback-b2, oklch(var(--b2) / 1)); /* Use theme background color */
-}
-
-.play-pause-btn {
-    /* DaisyUI btn styles are quite comprehensive.
-       If the button is a <button class="btn btn-sm btn-ghost"> for example,
-       it might already look good. These are additional/override styles. */
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0; /* Reset padding if using img/svg directly */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.play-pause-btn img { /* If using <img> for icons */
-    width: 24px; /* Adjust size as needed */
-    height: 24px; /* Adjust size as needed */
-    filter: var(--icon-filter, invert(80%)); /* Adjust if icons are not visible with current theme */
-}
-
-.progress-bar {
-    flex-grow: 1; /* Allow progress bar to take available space */
-    height: 8px; /* Make the track thinner */
-    -webkit-appearance: none; /* Override default Safari/Chrome appearance */
-    appearance: none;
-    background: var(--fallback-b3, oklch(var(--b3) / 1)); /* Theme background for the track */
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-/* Webkit (Chrome, Safari, Edge) */
-.progress-bar::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 16px;
-    height: 16px;
-    background: var(--fallback-p, oklch(var(--p) / 1)); /* Theme primary color for thumb */
-    border-radius: 50%;
-    cursor: pointer;
-}
-
-/* Mozilla Firefox */
-.progress-bar::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
-    background: var(--fallback-p, oklch(var(--p) / 1)); /* Theme primary color for thumb */
-    border-radius: 50%;
-    border: none; /* Reset Firefox default border */
-    cursor: pointer;
-}
-
-.progress-bar::-moz-range-track {
-    background: var(--fallback-b3, oklch(var(--b3) / 1)); /* Theme background for the track */
-    height: 8px;
-    border-radius: 4px;
 }

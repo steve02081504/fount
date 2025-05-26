@@ -1,11 +1,8 @@
 import { renderTemplate } from '../../../../scripts/template.mjs'
 import { processTimeStampForId, arrayBufferToBase64 } from './utils.mjs'
 import { openModal } from './ui/modal.mjs'
-import { onElementRemoved } from '../../../../scripts/onElementRemoved.mjs'
 import { svgInliner } from '../../../../scripts/svg-inliner.mjs'
 import { getfile } from './files.mjs'
-
-export const attachmentPreviewMap = new Map()
 
 export async function handleFilesSelect(event, selectedFiles, attachmentPreviewContainer) {
 	const files = event.target.files || event.dataTransfer.files
@@ -86,13 +83,7 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 		previewImg.src = base64Data
 		previewImg.alt = file.name
 		previewImg.addEventListener('click', () => {
-			openModal(base64Data, 'image') // Updated to use new openModal signature
-		})
-		attachmentPreviewMap.set(previewImg, {
-			name: file.name,
-			mimeType: file.mimeType,
-			buffer: file.buffer,
-			description: file.description,
+			openModal(base64Data, 'image')
 		})
 		previewContainer.appendChild(previewImg)
 	} else if (file.mimeType.startsWith('video/')) {
@@ -100,9 +91,8 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 		preview.classList.add('preview')
 		const videoSrc = `data:${file.mimeType};base64,${file.buffer}`
 		preview.src = videoSrc
-		// preview.controls = false; // Default is false
-		// preview.muted = true; // Remove if not autoplaying, shows first frame
-		preview.style.cursor = 'pointer' // Indicate it's clickable
+		preview.controls = true
+		preview.autoplay = false
 
 		preview.addEventListener('click', () => {
 			openModal(videoSrc, 'video')
@@ -111,54 +101,8 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 	} else if (file.mimeType.startsWith('audio/')) {
 		const audio = document.createElement('audio')
 		audio.src = `data:${file.mimeType};base64,${file.buffer}`
-		// audio.controls = true; // Default controls disabled
-
-		const audioControls = document.createElement('div')
-		audioControls.classList.add('audio-controls')
-
-		const playPauseBtn = document.createElement('button')
-		playPauseBtn.classList.add('play-pause-btn')
-		playPauseBtn.innerHTML = '<img src="https://api.iconify.design/line-md/play.svg" alt="Play">'
-
-		const progressBar = document.createElement('input')
-		progressBar.type = 'range'
-		progressBar.classList.add('progress-bar')
-		progressBar.min = '0'
-		progressBar.value = '0'
-		progressBar.step = '0.1'
-
-		audioControls.appendChild(playPauseBtn)
-		audioControls.appendChild(progressBar)
-
+		audio.controls = true
 		previewContainer.appendChild(audio)
-		previewContainer.appendChild(audioControls)
-
-		playPauseBtn.addEventListener('click', () => {
-			if (audio.paused || audio.ended) {
-				audio.play()
-				playPauseBtn.innerHTML = '<img src="https://api.iconify.design/line-md/pause.svg" alt="Pause">'
-			} else {
-				audio.pause()
-				playPauseBtn.innerHTML = '<img src="https://api.iconify.design/line-md/play.svg" alt="Play">'
-			}
-		})
-
-		audio.addEventListener('loadedmetadata', () => {
-			progressBar.max = audio.duration
-		})
-
-		audio.addEventListener('timeupdate', () => {
-			progressBar.value = audio.currentTime
-		})
-
-		audio.addEventListener('ended', () => {
-			playPauseBtn.innerHTML = '<img src="https://api.iconify.design/line-md/play.svg" alt="Play">'
-			progressBar.value = 0 // Reset progress bar to beginning
-		})
-
-		progressBar.addEventListener('input', () => {
-			audio.currentTime = progressBar.value
-		})
 	} else {
 		const preview = document.createElement('img')
 		preview.classList.add('preview', 'icon')
@@ -178,11 +122,6 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 			selectedFiles.splice(index, 1)
 			attachmentElement.remove()
 		})
-	onElementRemoved(attachmentElement, () => {
-		// 从映射中删除
-		const previewImg = attachmentElement.querySelector('.preview-img')
-		if (previewImg) attachmentPreviewMap.delete(previewImg)
-	})
 
 	return attachmentElement
 }
