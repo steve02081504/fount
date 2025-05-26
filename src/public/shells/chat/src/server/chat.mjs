@@ -497,21 +497,21 @@ async function addChatLogEntry(chatid, entry) {
 	else {
 		let char = entry.timeSlice.charname ?? null
 			; (async () => {
-			while (true) {
-				freq_data = freq_data.filter(f => f.charname !== char)
-				const nextreply = await getNextCharForReply(freq_data)
-				if (nextreply) try {
-					await triggerCharReply(chatid, nextreply)
-					return
+				while (true) {
+					freq_data = freq_data.filter(f => f.charname !== char)
+					const nextreply = await getNextCharForReply(freq_data)
+					if (nextreply) try {
+						await triggerCharReply(chatid, nextreply)
+						return
+					}
+						catch (error) {
+							console.error(error)
+							char = nextreply
+						}
+					else
+						return
 				}
-				catch (error) {
-					console.error(error)
-					char = nextreply
-				}
-				else
-					return
-			}
-		})()
+			})()
 	}
 
 	return entry
@@ -553,7 +553,7 @@ export async function modifyTimeLine(chatid, delta) {
 				}
 			} catch (e) {
 				result = {
-					content: '```' + (e.stack || e.message) + '```',
+					content: ['```', e.message, (e.stack || ''), '```'].filter(Boolean).join('\n'),
 				}
 			}
 			if (!result) throw new Error('No reply')
@@ -704,7 +704,7 @@ export async function triggerCharReply(chatid, charname) {
 			result = await char.interfaces.chat.GetReply(request)
 	} catch (e) {
 		result = {
-			content: '```' + (e.stack || e.message) + '```',
+			content: ['```', e.message, (e.stack || ''), '```'].filter(Boolean).join('\n'),
 		}
 	}
 
