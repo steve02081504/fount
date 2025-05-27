@@ -45,10 +45,21 @@ if (-not $IN_DOCKER) {
 	}
 }
 
-if ($args.Count -gt 0 -and $args[0] -eq 'open') {
-	if (!(Get-Module fount-pwsh -ListAvailable)) {
-		Install-Module -Name fount-pwsh -Scope CurrentUser -Force
+$auto_installed_pwsh_modules = Get-Content "$FOUNT_DIR/data/installer/auto_installed_pwsh_modules" -Raw -ErrorAction Ignore
+if (!$auto_installed_pwsh_modules) { $auto_installed_pwsh_modules = '' }
+$auto_installed_pwsh_modules = $auto_installed_pwsh_modules.Split(';')
+
+function Test-PWSHModule([string]$ModuleName) {
+	if (!(Get-Module $ModuleName -ListAvailable)) {
+		$auto_installed_pwsh_modules += $ModuleName
+		New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
+		Set-Content "$FOUNT_DIR/data/installer/auto_installed_pwsh_modules" $($auto_installed_pwsh_modules -join ';')
+		Install-Module -Name $ModuleName -Scope CurrentUser -Force
 	}
+}
+
+if ($args.Count -gt 0 -and $args[0] -eq 'open') {
+	Test-PWSHModule fount-pwsh
 	Start-Job -ScriptBlock {
 		while (-not (Test-FountRunning)) {
 			Start-Sleep -Seconds 1
@@ -60,9 +71,7 @@ if ($args.Count -gt 0 -and $args[0] -eq 'open') {
 	exit
 }
 elseif ($args.Count -gt 0 -and $args[0] -eq 'background') {
-	if (!(Get-Command ps12exe -ErrorAction Ignore)) {
-		Install-Module -Name ps12exe -Scope CurrentUser -Force
-	}
+	Test-PWSHModule ps12exe
 	$TempDir = [System.IO.Path]::GetTempPath()
 	$exepath = Join-Path $TempDir "fount-background.exe"
 	if (!(Test-Path $exepath)) {
@@ -83,9 +92,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'protocolhandle') {
 	$encodedUrl = [uri]::EscapeDataString($protocolUrl)
 	$targetUrl = "https://steve02081504.github.io/fount/protocol/?url=$encodedUrl"
 
-	if (!(Get-Module fount-pwsh -ListAvailable)) {
-		Install-Module -Name fount-pwsh -Scope CurrentUser -Force
-	}
+	Test-PWSHModule fount-pwsh
 	Start-Job -ScriptBlock {
 		param ($targetUrl)
 		while (-not (Test-FountRunning)) {
@@ -152,9 +159,13 @@ if (!(Get-Command git -ErrorAction SilentlyContinue)) {
 	if (!(Get-Command winget -ErrorAction SilentlyContinue)) {
 		Import-Module Appx
 		Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe
+		New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
+		Set-Content "$FOUNT_DIR/data/installer/auto_installed_winget" '1'
 	}
 	if (Get-Command winget -ErrorAction SilentlyContinue) {
 		winget install --id Git.Git -e --source winget
+		New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
+		Set-Content "$FOUNT_DIR/data/installer/auto_installed_git" '1'
 	}
 	$env:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 	if (!(Get-Command git -ErrorAction SilentlyContinue)) {
@@ -256,6 +267,8 @@ if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
 		Expand-Archive -Path "$env:TEMP/deno.zip" -DestinationPath "$FOUNT_DIR/path"
 		Remove-Item -Path "$env:TEMP/deno.zip" -Force
 	}
+	New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
+	Set-Content "$FOUNT_DIR/data/installer/auto_installed_deno" '1'
 	if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
 		Write-Host "Deno missing, you cant run fount without deno"
 		exit 1
@@ -432,6 +445,35 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 	}
 	else {
 		Write-Host "Desktop Shortcut not found."
+	}
+
+	# Remove Installed pwsh modules
+	Write-Host "Removing Installed pwsh modules..."
+	$auto_installed_pwsh_modules | ForEach-Object {
+		try {
+			Uninstall-Module -Name $_ -Scope CurrentUser -Force -ErrorAction Stop
+			Write-Host "$_ removed."
+		}
+		catch {
+			Write-Warning "Failed to remove ${_}: $($_.Exception.Message)"
+		}
+	}
+
+	if (Test-Path "$FOUNT_DIR/data/installer/auto_installed_git") {
+		Write-Host "Uninstalling Git..."
+		winget uninstall --id Git.Git -e --source winget
+	}
+
+	if (Test-Path "$FOUNT_DIR/data/installer/auto_installed_winget") {
+		Write-Host "Uninstalling Winget..."
+		Import-Module Appx
+		Remove-AppxPackage -Package Microsoft.DesktopAppInstaller_8wekyb3d8bbwe
+	}
+
+	if (Test-Path "$FOUNT_DIR/data/installer/auto_installed_deno") {
+		Write-Host "Uninstalling Deno..."
+		Remove-Item $(Get-Command deno).Source -Force -ErrorAction Ignore
+		Remove-Item "~/.deno" -Force -Recurse -ErrorAction Ignore
 	}
 
 	# Remove fount installation directory

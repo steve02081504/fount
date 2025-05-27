@@ -9,7 +9,16 @@ if [[ "$OSTYPE" == "msys" ]]; then
 	exit $?
 fi
 
+INSTALLED_PACKAGES=""
+
 install_package() {
+	# 将当前安装的包添加到列表中
+	if [[ -z "$INSTALLED_PACKAGES" ]]; then
+		INSTALLED_PACKAGES="$1"
+	else
+		INSTALLED_PACKAGES="$INSTALLED_PACKAGES;$1"
+	fi
+
 	if command -v pkg &> /dev/null; then
 		pkg install -y "$1"
 	elif command -v apt-get &> /dev/null; then
@@ -103,6 +112,12 @@ if ! command -v fount.sh &> /dev/null; then
 else
 	# fount.sh 已存在，获取其所在目录
 	FOUNT_DIR="$(dirname "$(dirname "$(command -v fount.sh)")")"
+fi
+
+if [[ -n "$INSTALLED_PACKAGES" ]]; then
+	INSTALLER_DATA_DIR="$FOUNT_DIR/data/installer"
+	mkdir -p "$INSTALLER_DATA_DIR"
+	echo "$INSTALLED_PACKAGES" > "$INSTALLER_DATA_DIR/auto_installed_system_packages"
 fi
 
 # 执行 fount.sh 脚本
