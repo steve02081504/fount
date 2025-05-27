@@ -9,7 +9,16 @@ if [[ "$OSTYPE" == "msys" ]]; then
 	exit $?
 fi
 
+INSTALLED_PACKAGES=""
+
 install_package() {
+	# 将当前安装的包添加到列表中
+	if [[ -z "$INSTALLED_PACKAGES" ]]; then
+		INSTALLED_PACKAGES="$1"
+	else
+		INSTALLED_PACKAGES="$INSTALLED_PACKAGES;$1"
+	fi
+
 	if command -v pkg &> /dev/null; then
 		pkg install -y "$1"
 	elif command -v apt-get &> /dev/null; then
@@ -22,6 +31,7 @@ install_package() {
 		fi
 	elif command -v brew &> /dev/null; then
 		brew install "$1"
+		eval "$(brew shellenv)" || eval "$(/opt/homebrew/bin/brew shellenv)"
 	elif command -v pacman &> /dev/null; then
 		if command -v sudo &> /dev/null; then
 			sudo pacman -Syy
@@ -71,7 +81,7 @@ if ! command -v fount.sh &> /dev/null; then
 
 	# 尝试使用 git 克隆
 	if command -v git &> /dev/null; then
-		git clone https://github.com/steve02081504/fount "$FOUNT_DIR" --depth 1
+		git clone https://github.com/steve02081504/fount "$FOUNT_DIR" --depth 1 --single-branch
 		if [[ $? -ne 0 ]]; then
 			echo "下载错误，终止脚本" >&2
 			exit 1
@@ -96,13 +106,19 @@ if ! command -v fount.sh &> /dev/null; then
 	fi
 	# 移除隔离属性 (仅限 macOS)
 	if [[ "$OSTYPE" == "darwin"* ]]; then
-		xattr -dr com.apple.quarantine "$FOUNT_DIR"
+		xattr -dr com.apple.quarantine "$FOUNT_DIR" || true
 	fi
 	find "$FOUNT_DIR" -name "*.sh" -exec chmod +x {} \;
 	find "$FOUNT_DIR/path" -type f -exec chmod +x {} \;
 else
 	# fount.sh 已存在，获取其所在目录
 	FOUNT_DIR="$(dirname "$(dirname "$(command -v fount.sh)")")"
+fi
+
+if [[ -n "$INSTALLED_PACKAGES" ]]; then
+	INSTALLER_DATA_DIR="$FOUNT_DIR/data/installer"
+	mkdir -p "$INSTALLER_DATA_DIR"
+	echo "$INSTALLED_PACKAGES" > "$INSTALLER_DATA_DIR/auto_installed_system_packages"
 fi
 
 # 执行 fount.sh 脚本

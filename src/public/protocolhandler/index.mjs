@@ -28,7 +28,6 @@ async function handleProtocol() {
 		handlePage(parts)
 	else
 		document.getElementById('message').textContent = geti18n('protocolhandler.unknownCommand')
-
 }
 
 async function handleRunShell(parts) {

@@ -22,11 +22,44 @@ if (!(Get-Command fount -ErrorAction SilentlyContinue)) {
 	$env:PATH = $path
 }
 
-if ($args.Count -gt 0 -and $args[0] -eq 'open') {
-	if (!(Get-Module fount-pwsh -ListAvailable)) {
-		Install-Module -Name fount-pwsh -Scope CurrentUser -Force
+# fount 协议注册 (新增)
+if (-not $IN_DOCKER) {
+	$protocolName = "fount"
+	$protocolDescription = "URL:fount Protocol"
+	# 使用 fount.bat 作为协议处理程序，因为它是Windows上的主入口点
+	$command = "`"$FOUNT_DIR\path\fount.bat`" protocolhandle `"%1`""
+
+	try {
+		# 创建目录
+		New-Item -Path "HKCU:\Software\Classes\$protocolName" -Force | Out-Null
+		# 设置协议根键
+		Set-ItemProperty -Path "HKCU:\Software\Classes\$protocolName" -Name "(Default)" -Value $protocolDescription -ErrorAction Stop
+		Set-ItemProperty -Path "HKCU:\Software\Classes\$protocolName" -Name "URL Protocol" -Value "" -ErrorAction Stop
+		# 创建 shell\open\command 子键
+		New-Item -Path "HKCU:\Software\Classes\$protocolName\shell\open\command" -Force | Out-Null
+		# 设置协议处理命令
+		Set-ItemProperty -Path "HKCU:\Software\Classes\$protocolName\shell\open\command" -Name "(Default)" -Value $command -ErrorAction Stop
 	}
-	$runargs = $args[1..$args.Count]
+	catch {
+		Write-Warning "Failed to register fount:// protocol handler: $($_.Exception.Message)"
+	}
+}
+
+$auto_installed_pwsh_modules = Get-Content "$FOUNT_DIR/data/installer/auto_installed_pwsh_modules" -Raw -ErrorAction Ignore
+if (!$auto_installed_pwsh_modules) { $auto_installed_pwsh_modules = '' }
+$auto_installed_pwsh_modules = $auto_installed_pwsh_modules.Split(';') | Where-Object { $_ }
+
+function Test-PWSHModule([string]$ModuleName) {
+	if (!(Get-Module $ModuleName -ListAvailable)) {
+		$auto_installed_pwsh_modules += $ModuleName
+		New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
+		Set-Content "$FOUNT_DIR/data/installer/auto_installed_pwsh_modules" $($auto_installed_pwsh_modules -join ';')
+		Install-Module -Name $ModuleName -Scope CurrentUser -Force
+	}
+}
+
+if ($args.Count -gt 0 -and $args[0] -eq 'open') {
+	Test-PWSHModule fount-pwsh
 	Start-Job -ScriptBlock {
 		while (-not (Test-FountRunning)) {
 			Start-Sleep -Seconds 1
@@ -37,10 +70,8 @@ if ($args.Count -gt 0 -and $args[0] -eq 'open') {
 	fount @runargs
 	exit
 }
-if ($args.Count -gt 0 -and $args[0] -eq 'background') {
-	if (!(Get-Command ps12exe -ErrorAction Ignore)) {
-		Install-Module -Name ps12exe -Scope CurrentUser -Force
-	}
+elseif ($args.Count -gt 0 -and $args[0] -eq 'background') {
+	Test-PWSHModule ps12exe
 	$TempDir = [System.IO.Path]::GetTempPath()
 	$exepath = Join-Path $TempDir "fount-background.exe"
 	if (!(Test-Path $exepath)) {
@@ -48,6 +79,29 @@ if ($args.Count -gt 0 -and $args[0] -eq 'background') {
 	}
 	$runargs = $args[1..$args.Count]
 	Start-Process -FilePath $exepath -ArgumentList $runargs
+	exit
+}
+elseif ($args.Count -gt 0 -and $args[0] -eq 'protocolhandle') {
+	# 新增 protocolhandle 逻辑
+	$protocolUrl = $args[1]
+	if (-not $protocolUrl) {
+		Write-Error "Error: No URL provided for protocolhandle."
+		exit 1
+	}
+	# 编码 URL 参数，防止特殊字符问题，确保传入的 URL 能正确作为查询参数
+	$encodedUrl = [uri]::EscapeDataString($protocolUrl)
+	$targetUrl = "https://steve02081504.github.io/fount/protocol/?url=$encodedUrl"
+
+	Test-PWSHModule fount-pwsh
+	Start-Job -ScriptBlock {
+		param ($targetUrl)
+		while (-not (Test-FountRunning)) {
+			Start-Sleep -Seconds 1
+		}
+		Start-Process $targetUrl
+	} -ArgumentList $targetUrl
+	$runargs = $args[2..$args.Count]
+	fount @runargs
 	exit
 }
 
@@ -59,6 +113,11 @@ Start-Job -ScriptBlock {
 		if ("$localVersion" -eq '0.0.0') { return }
 		$latestVersion = (Find-Module $_).Version
 		if ("$latestVersion" -ne "$localVersion") {
+			if (!(Get-Module $_ -ListAvailable)) {
+				$auto_installed_pwsh_modules += $_
+				New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
+				Set-Content "$FOUNT_DIR/data/installer/auto_installed_pwsh_modules" $($auto_installed_pwsh_modules -join ';')
+			}
 			Install-Module -Name $_ -Scope CurrentUser -Force
 		}
 	}
@@ -105,9 +164,13 @@ if (!(Get-Command git -ErrorAction SilentlyContinue)) {
 	if (!(Get-Command winget -ErrorAction SilentlyContinue)) {
 		Import-Module Appx
 		Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe
+		New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
+		Set-Content "$FOUNT_DIR/data/installer/auto_installed_winget" '1'
 	}
 	if (Get-Command winget -ErrorAction SilentlyContinue) {
 		winget install --id Git.Git -e --source winget
+		New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
+		Set-Content "$FOUNT_DIR/data/installer/auto_installed_git" '1'
 	}
 	$env:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 	if (!(Get-Command git -ErrorAction SilentlyContinue)) {
@@ -123,7 +186,7 @@ function fount_upgrade {
 	if (!(Test-Path -Path "$FOUNT_DIR/.git")) {
 		Remove-Item -Path "$FOUNT_DIR/.git-clone" -Recurse -Force -ErrorAction SilentlyContinue
 		New-Item -ItemType Directory -Path "$FOUNT_DIR/.git-clone"
-		git clone https://github.com/steve02081504/fount.git "$FOUNT_DIR/.git-clone" --no-checkout --depth 1
+		git clone https://github.com/steve02081504/fount.git "$FOUNT_DIR/.git-clone" --no-checkout --depth 1 --single-branch
 		Move-Item -Path "$FOUNT_DIR/.git-clone/.git" -Destination "$FOUNT_DIR/.git"
 		Remove-Item -Path "$FOUNT_DIR/.git-clone" -Recurse -Force
 		git -C "$FOUNT_DIR" fetch origin
@@ -209,6 +272,8 @@ if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
 		Expand-Archive -Path "$env:TEMP/deno.zip" -DestinationPath "$FOUNT_DIR/path"
 		Remove-Item -Path "$env:TEMP/deno.zip" -Force
 	}
+	New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
+	Set-Content "$FOUNT_DIR/data/installer/auto_installed_deno" '1'
 	if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
 		Write-Host "Deno missing, you cant run fount without deno"
 		exit 1
@@ -245,31 +310,6 @@ else {
 
 deno -V
 
-# 安装依赖
-if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $args[0] -eq 'init')) {
-	Write-Host "Installing dependencies..."
-	deno install --reload --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
-	Write-Host "======================================================" -ForegroundColor Green
-	Write-Warning "DO NOT install any untrusted fount parts on your system, they can do ANYTHING."
-	Write-Host "======================================================" -ForegroundColor Green
-	# 生成 桌面快捷方式
-	if ($IsWindows) {
-		$shell = New-Object -ComObject WScript.Shell
-		$desktop = [Environment]::GetFolderPath("Desktop")
-		$shortcut = $shell.CreateShortcut("$desktop\fount.lnk")
-		if (Test-Path "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe") {
-			$shortcut.TargetPath = "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe"
-			$shortcut.Arguments = "-p fount powershell.exe -noprofile -nologo -ExecutionPolicy Bypass -File $FOUNT_DIR\path\fount.ps1 open keepalive"
-		}
-		else {
-			$shortcut.TargetPath = "powershell.exe"
-			$shortcut.Arguments = "-noprofile -nologo -ExecutionPolicy Bypass -File $FOUNT_DIR\path\fount.ps1 open keepalive"
-		}
-		$shortcut.IconLocation = "$FOUNT_DIR\src\public\favicon.ico"
-		$shortcut.Save()
-	}
-}
-
 # 执行 fount
 function isRoot {
 	if ($IsWindows) {
@@ -295,6 +335,49 @@ function run {
 		Get-Process tray_windows_release -ErrorAction Ignore | Where-Object { $_.CPU -gt 0.5 } | Stop-Process
 	}
 }
+
+# 安装依赖
+if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $args[0] -eq 'init')) {
+	Write-Host "Installing dependencies..."
+	if (Test-Path -Path "$FOUNT_DIR/node_modules") {
+		run shutdown
+	}
+	deno install --reload --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
+	Write-Host "======================================================" -ForegroundColor Green
+	Write-Warning "DO NOT install any untrusted fount parts on your system, they can do ANYTHING."
+	Write-Host "======================================================" -ForegroundColor Green
+	# 生成 桌面快捷方式 和 Start Menu 快捷方式
+	if ($IsWindows) {
+		$shell = New-Object -ComObject WScript.Shell
+
+		$shortcutTargetPath = "powershell.exe"
+		$shortcutArguments = "-noprofile -nologo -ExecutionPolicy Bypass -File `"$FOUNT_DIR\path\fount.ps1`" open keepalive"
+		if (Test-Path "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe") {
+			$shortcutTargetPath = "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe"
+			$shortcutArguments = "-p fount powershell.exe $shortcutArguments" # Prepend -p fount to existing arguments
+		}
+		$shortcutIconLocation = "$FOUNT_DIR\src\public\favicon.ico"
+
+		# 创建桌面快捷方式
+		$desktopPath = [Environment]::GetFolderPath("Desktop")
+		$desktopShortcut = $shell.CreateShortcut("$desktopPath\fount.lnk")
+		$desktopShortcut.TargetPath = $shortcutTargetPath
+		$desktopShortcut.Arguments = $shortcutArguments
+		$desktopShortcut.IconLocation = $shortcutIconLocation
+		$desktopShortcut.Save()
+		Write-Host "Desktop shortcut created at $desktopPath\fount.lnk"
+
+		# 创建开始菜单快捷方式
+		$startMenuPath = [Environment]::GetFolderPath("StartMenu")
+		$startMenuShortcut = $shell.CreateShortcut("$startMenuPath\fount.lnk")
+		$startMenuShortcut.TargetPath = $shortcutTargetPath
+		$startMenuShortcut.Arguments = $shortcutArguments
+		$startMenuShortcut.IconLocation = $shortcutIconLocation
+		$startMenuShortcut.Save()
+		Write-Host "Start Menu shortcut created at $startMenuPath\fount.lnk"
+	}
+}
+
 if ($args.Count -gt 0 -and $args[0] -eq 'geneexe') {
 	$exepath = $args[1]
 	if (!$exepath) { $exepath = "fount.exe" }
@@ -318,10 +401,10 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'keepalive') {
 }
 elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 	run shutdown
-	Write-Host "removing fount..."
+	Write-Host "Removing fount..."
 
 	# Remove fount from PATH
-	Write-Host "removing fount from PATH..."
+	Write-Host "Removing fount from PATH..."
 	$path = $env:PATH -split ';'
 	$path = $path | Where-Object { !$_.StartsWith("$FOUNT_DIR") }
 	$env:Path = $path -join ';'
@@ -330,10 +413,10 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 	$UserPath = $UserPath | Where-Object { !$_.StartsWith("$FOUNT_DIR") }
 	$UserPath = $UserPath -join ';'
 	[System.Environment]::SetEnvironmentVariable('PATH', $UserPath, [System.EnvironmentVariableTarget]::User)
-	Write-Host "fount removed from PATH."
+	Write-Host "Fount removed from PATH."
 
 	# Remove fount-pwsh from PowerShell Profile
-	Write-Host "removing fount-pwsh from PowerShell Profile..."
+	Write-Host "Removing fount-pwsh from PowerShell Profile..."
 	if (Test-Path $Profile) {
 		$ProfileContent = Get-Content $Profile -ErrorAction Ignore
 		$ProfileContent = $ProfileContent -split "`n"
@@ -345,15 +428,28 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 		Write-Host "fount-pwsh removed from PowerShell Profile."
 	}
 	else {
-		Write-Host "powerShell Profile not found, skipping fount-pwsh removal from profile."
+		Write-Host "PowerShell Profile not found, skipping fount-pwsh removal from profile."
 	}
 
-	# uninstall fount-pwsh
+	# Uninstall fount-pwsh
 	Write-Host "Uninstalling fount-pwsh..."
 	try { Uninstall-Module -Name fount-pwsh -Scope CurrentUser -Force -ErrorAction Stop } catch {}
 
+	# Remove fount protocol handler (新增)
+	if (-not $IN_DOCKER) {
+		Write-Host "Removing fount:// protocol handler..."
+		try {
+			# 静默删除注册表键及其所有子键
+			Remove-Item -Path "HKCU:\Software\Classes\fount" -Recurse -Force -ErrorAction SilentlyContinue
+			Write-Host "fount:// protocol handler removed."
+		}
+		catch {
+			Write-Warning "Failed to remove fount:// protocol handler: $($_.Exception.Message)"
+		}
+	}
+
 	# Remove Windows Terminal Profile
-	Write-Host "removing Windows Terminal Profile..."
+	Write-Host "Removing Windows Terminal Profile..."
 	$WTjsonDirPath = "$env:LOCALAPPDATA/Microsoft/Windows Terminal/Fragments/fount"
 	if (Test-Path $WTjsonDirPath -PathType Container) {
 		Remove-Item -Path $WTjsonDirPath -Force -Recurse
@@ -364,22 +460,64 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 	}
 
 	# Remove Desktop Shortcut
-	Write-Host "removing Desktop Shortcut..."
-	$ShortcutPath = "$env:USERPROFILE\Desktop\fount.lnk"
-	if (Test-Path $ShortcutPath) {
-		Remove-Item -Path $ShortcutPath -Force
+	Write-Host "Removing Desktop Shortcut..."
+	$desktopShortcutPath = [Environment]::GetFolderPath("Desktop") + "\fount.lnk"
+	if (Test-Path $desktopShortcutPath) {
+		Remove-Item -Path $desktopShortcutPath -Force
 		Write-Host "Desktop Shortcut removed."
 	}
 	else {
 		Write-Host "Desktop Shortcut not found."
 	}
 
-	# Remove fount installation directory
-	Write-Host "removing fount installation directory..."
-	Remove-Item -Path $FOUNT_DIR -Recurse -Force -ErrorAction SilentlyContinue
-	Write-Host "fount installation directory removed."
+	# Remove Start Menu Shortcut
+	Write-Host "Removing Start Menu Shortcut..."
+	$startMenuShortcutPath = [Environment]::GetFolderPath("StartMenu") + "\fount.lnk"
+	if (Test-Path $startMenuShortcutPath) {
+		Remove-Item -Path $startMenuShortcutPath -Force
+		Write-Host "Start Menu Shortcut removed."
+	}
+	else {
+		Write-Host "Start Menu Shortcut not found."
+	}
 
-	Write-Host "fount uninstallation complete."
+	# Remove Installed pwsh modules
+	Write-Host "Removing Installed pwsh modules..."
+	$auto_installed_pwsh_modules | ForEach-Object {
+		try {
+			if (Get-Module $_ -ListAvailable) {
+				Uninstall-Module -Name $_ -Scope CurrentUser -Force -ErrorAction Stop
+				Write-Host "$_ removed."
+			}
+		}
+		catch {
+			Write-Warning "Failed to remove ${_}: $($_.Exception.Message)"
+		}
+	}
+
+	if (Test-Path "$FOUNT_DIR/data/installer/auto_installed_git") {
+		Write-Host "Uninstalling Git..."
+		winget uninstall --id Git.Git -e --source winget
+	}
+
+	if (Test-Path "$FOUNT_DIR/data/installer/auto_installed_winget") {
+		Write-Host "Uninstalling Winget..."
+		Import-Module Appx
+		Remove-AppxPackage -Package Microsoft.DesktopAppInstaller_8wekyb3d8bbwe
+	}
+
+	if (Test-Path "$FOUNT_DIR/data/installer/auto_installed_deno") {
+		Write-Host "Uninstalling Deno..."
+		Remove-Item $(Get-Command deno).Source -Force -ErrorAction Ignore
+		Remove-Item "~/.deno" -Force -Recurse -ErrorAction Ignore
+	}
+
+	# Remove fount installation directory
+	Write-Host "Removing fount installation directory..."
+	Remove-Item -Path $FOUNT_DIR -Recurse -Force -ErrorAction SilentlyContinue
+	Write-Host "Fount installation directory removed."
+
+	Write-Host "Fount uninstallation complete."
 	exit 0
 }
 else {
