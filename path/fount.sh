@@ -21,12 +21,9 @@ load_installed_packages() {
 		# 读取内容，按分号分割并转换为数组
 		# 使用 tr -d '\n' 移除换行符，防止IFS读取时产生空元素
 		IFS=';' read -r -a INSTALLED_SYSTEM_PACKAGES_ARRAY <<< "$(cat "$INSTALLED_SYSTEM_PACKAGES_FILE" | tr -d '\n')"
-		# 过滤空字符串（防止文件内容为空时产生空元素）
-		INSTALLED_SYSTEM_PACKAGES_ARRAY=( "${INSTALLED_SYSTEM_PACKAGES_ARRAY[@]/#/}" )
 	fi
 	if [[ -f "$INSTALLED_PACMAN_PACKAGES_FILE" ]]; then
 		IFS=';' read -r -a INSTALLED_PACMAN_PACKAGES_ARRAY <<< "$(cat "$INSTALLED_PACMAN_PACKAGES_FILE" | tr -d '\n')"
-		INSTALLED_PACMAN_PACKAGES_ARRAY=( "${INSTALLED_PACMAN_PACKAGES_ARRAY[@]/#/}" )
 	fi
 }
 
@@ -59,10 +56,16 @@ fi
 OS_TYPE=$(uname -s) # "Linux" or "Darwin" (for macOS)
 
 # 函数: 检查包是否已在数组中
+# $1: 包名
+# $2: 数组的名称字符串 (例如 "INSTALLED_SYSTEM_PACKAGES_ARRAY")
 is_package_tracked() {
 	local package="$1"
-	local -n array_ref="$2" # 引用传递数组名 (requires bash 4.3+)
-	for p in "${array_ref[@]}"; do
+	local array_name="$2" # 接收数组的名称字符串
+
+	# 使用间接扩展来遍历数组
+	# 要访问名为 $array_name 的数组的元素，使用 ${!array_name[@]}
+	local p
+	for p in "${!array_name[@]}"; do
 		if [[ "$p" == "$package" ]]; then
 			return 0 # Found
 		fi
@@ -71,11 +74,16 @@ is_package_tracked() {
 }
 
 # 函数: 将包添加到数组并保存
+# $1: 包名
+# $2: 数组的名称字符串
 add_package_to_tracker() {
 	local package="$1"
-	local -n array_ref="$2"
-	if ! is_package_tracked "$package" array_ref; then
-		array_ref+=("$package")
+	local array_name="$2" # 接收数组的名称字符串
+
+	# 检查是否已跟踪
+	if ! is_package_tracked "$package" "$array_name"; then
+		# 使用 eval 进行间接赋值，将新元素添加到指定名称的数组
+		eval "${array_name}+=(\"$package\")"
 		save_installed_packages
 	fi
 }
@@ -88,7 +96,7 @@ install_package() {
 	# 检查是否已经通过 command -v 安装成功
 	if command -v "$package_name" &> /dev/null; then
 		echo "$package_name is already installed and found in PATH."
-		add_package_to_tracker "$package_name" INSTALLED_SYSTEM_PACKAGES_ARRAY
+		add_package_to_tracker "$package_name" "INSTALLED_SYSTEM_PACKAGES_ARRAY"
 		return 0
 	fi
 
@@ -107,6 +115,7 @@ install_package() {
 	elif command -v brew &> /dev/null; then
 		if ! brew list --formula "$package_name" &> /dev/null; then
 			brew install "$package_name" && install_successful=1
+			eval "$(brew shellenv)" || eval "$(/opt/homebrew/bin/brew shellenv)"
 		else
 			echo "$package_name is already installed via brew."
 			install_successful=1 # 即使是外部安装，也视为成功
@@ -118,10 +127,6 @@ install_package() {
 		else
 			pacman -Syy
 			pacman -S --needed --noconfirm "$package_name" && install_successful=1
-		fi
-		# 无论是否成功，如果是 pacman 安装，则也添加到 pacman 列表
-		if [[ $install_successful -eq 1 ]]; then
-			add_package_to_tracker "$package_name" INSTALLED_PACMAN_PACKAGES_ARRAY
 		fi
 	elif command -v dnf &> /dev/null; then
 		if command -v sudo &> /dev/null; then
@@ -143,7 +148,7 @@ install_package() {
 	fi
 
 	if [[ $install_successful -eq 1 ]]; then
-		add_package_to_tracker "$package_name" INSTALLED_SYSTEM_PACKAGES_ARRAY
+		add_package_to_tracker "$package_name" "INSTALLED_SYSTEM_PACKAGES_ARRAY"
 		return 0
 	else
 		echo "Error: $package_name installation failed." >&2
@@ -243,20 +248,20 @@ EOF
 
 # 新增函数: URL 编码 (用于 Bash, 将特殊字符转换为 %XX 格式)
 urlencode() {
-    local string="$1"
-    local strlen=${#string}
-    local encoded=""
-    local pos c o
+	local string="$1"
+	local strlen=${#string}
+	local encoded=""
+	local pos c o
 
-    for (( pos=0 ; pos<strlen ; pos++ )); do
-        c="${string:$pos:1}"
-        case "$c" in
-            [-_.~a-zA-Z0-9] ) o="${c}" ;;
-            * )               printf -v o '%%%02X' "'$c" # 使用大写十六进制
-        esac
-        encoded+="${o}"
-    done
-    echo "${encoded}"
+	for (( pos=0 ; pos<strlen ; pos++ )); do
+		c="${string:$pos:1}"
+		case "$c" in
+			[-_.~a-zA-Z0-9] ) o="${c}" ;;
+			* )               printf -v o '%%%02X' "'$c" # 使用大写十六进制
+		esac
+		encoded+="${o}"
+	done
+	echo "${encoded}"
 }
 
 # 函数: 创建桌面快捷方式 (及 macOS 协议注册)
@@ -307,62 +312,164 @@ EOF
 		fi
 		echo "fount:// protocol handler registered for Linux."
 	elif [ "$OS_TYPE" = "Darwin" ]; then # macOS
-		# 检查 Platypus 是否已安装，如果没有则尝试安装
-		if ! command -v platypus &> /dev/null; then
-			echo "Platypus not found. Attempting to install Platypus for macOS app creation."
-			install_package platypus
-			if ! command -v platypus &> /dev/null; then
-				echo "Error: Platypus installation failed. Cannot create macOS app shortcut and protocol handler." >&2
-				return 1
-			fi
-		fi
-
-		# 转换 .ico 到 .icns 格式以获得更好的应用图标兼容性
+		local app_path="$HOME/Desktop/$shortcut_name.app"
 		local icns_path="$FOUNT_DIR/src/public/favicon.icns"
+		local compiled_applescript_path="$app_path/Contents/MacOS/fount-launcher"
+		local temp_applescript_file="/tmp/fount_launcher_script.applescript"
+
+		echo "Creating macOS application bundle at $app_path"
+
+		# 1. 创建 .app 目录结构
+		mkdir -p "$app_path/Contents/MacOS" "$app_path/Contents/Resources"
+
+		# 2. 转换 .ico 到 .icns 格式以获得更好的应用图标兼容性
 		if [ ! -f "$icns_path" ]; then
 			echo "Converting favicon.ico to favicon.icns for better app icon compatibility..."
 			if command -v sips &> /dev/null; then
 				sips -s format icns "$icon_path" --out "$icns_path"
 				if [ $? -ne 0 ]; then
-					echo "Warning: Failed to convert icon to .icns. Using original .ico." >&2
-					icns_path="$icon_path" # Fallback to .ico
+					echo "Warning: Failed to convert icon to .icns. Using original .ico and hoping for the best." >&2
+					# 如果转换失败，尝试直接使用 .ico 文件，虽然可能显示不佳
+					cp "$icon_path" "$app_path/Contents/Resources/favicon.ico"
+					icon_name="favicon.ico"
+				else
+					cp "$icns_path" "$app_path/Contents/Resources/favicon.icns"
+					icon_name="favicon.icns"
 				fi
 			else
-				echo "Warning: 'sips' command not found, cannot convert icon to .icns. Using original .ico." >&2
-				icns_path="$icon_path" # Fallback to .ico
+				echo "Warning: 'sips' command not found, cannot convert icon to .icns. Using original .ico directly." >&2
+				cp "$icon_path" "$app_path/Contents/Resources/favicon.ico"
+				icon_name="favicon.ico"
 			fi
+		else
+			cp "$icns_path" "$app_path/Contents/Resources/favicon.icns"
+			icon_name="favicon.icns"
 		fi
 
-		local app_path="$HOME/Desktop/$shortcut_name.app"
-		# Platypus 内部执行的脚本内容
-		local app_script_content_temp_file="$FOUNT_DIR/.fount_app_temp_script.sh"
-		cat <<EOF > "$app_script_content_temp_file"
-#!/bin/bash
-"$FOUNT_DIR/path/fount" protocolhandle "\$@"
-echo "Fount has exited. Press Enter to close this window..."
-read -r
+
+		# 3. 创建 Info.plist 文件
+		cat <<EOF > "$app_path/Contents/Info.plist"
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleExecutable</key>
+	<string>fount-launcher</string> <!-- Points to our compiled AppleScript -->
+	<key>CFBundleIconFile</key>
+	<string>$icon_name</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.steve02081504.fount</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$shortcut_name</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>10.15</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+	<key>LSUIElement</key>
+	<false/> <!-- Set to false to show a dock icon and application window -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>Fount Protocol</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fount</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>
 EOF
-		chmod +x "$app_script_content_temp_file"
 
-		# 使用 Platypus 创建 .app 应用程序
-		platypus -y \
-			-o "$app_path" \
-			-t "Text Window" \
-			-i "$icns_path" \
-			-b "com.steve02081504.fount" \
-			-u "steve02081504" \
-			-V "1.0" \
-			-S \
-			-U "fount" \
-			"$app_script_content_temp_file"
+		# 4. 创建 AppleScript 启动器
+		cat <<EOF > "$temp_applescript_file"
+on run argv
+	-- 获取当前应用包的路径 (fount.app/Contents/MacOS/fount-launcher)
+	set app_executable_path to POSIX path of (path to me)
+	set fount_dir_path to POSIX path of "$FOUNT_DIR"
 
-		# 清理临时脚本文件
-		rm "$app_script_content_temp_file"
+	-- 构建要执行的实际 fount 脚本的完整路径
+	set fount_command_path to fount_dir_path & "path/fount"
+	set command_to_execute to quoted form of fount_command_path
+
+	-- 如果没有传递任何参数，默认执行 'open keepalive'
+	if (count of argv) is 0 then
+		set command_to_execute to command_to_execute & " open keepalive"
+	else
+		-- 将所有传入的参数添加到命令中
+		repeat with i from 1 to count of argv
+			set command_to_execute to command_to_execute & " " & quoted form of (item i of argv)
+		end repeat
+	end if
+
+	-- 在 Terminal.app 中执行命令，并使其保持打开
+	tell application "Terminal"
+		activate
+		-- 创建一个新窗口并执行命令
+		set new_window to do script command_to_execute
+		-- 确保在命令完成后终端窗口不会立即关闭
+		do script "echo ''; echo 'Fount has exited. Press Enter to close this window...'; read -r" in new_window
+	end tell
+end run
+EOF
+
+		# 5. 编译 AppleScript
+		# osacompile 命令会将 .applescript 文件编译成可执行的脚本文件。
+		# -o 参数指定输出文件路径
+		# -x 参数使得输出文件在执行时不需要调用 osascript
+		if command -v osacompile &> /dev/null; then
+			osacompile -o "$compiled_applescript_path" "$temp_applescript_file"
+			if [ $? -ne 0 ]; then
+				echo "Error: Failed to compile AppleScript. Cannot create macOS app shortcut." >&2
+				rm -rf "$app_path"
+				rm "$temp_applescript_file"
+				return 1
+			fi
+		else
+			echo "Error: 'osacompile' command not found. Cannot create macOS app shortcut. Please install Xcode Command Line Tools." >&2
+			rm -rf "$app_path"
+			rm "$temp_applescript_file"
+			return 1
+		fi
+
+		# 6. 清理临时文件
+		rm "$temp_applescript_file"
+
+		# 7. 确保应用可执行权限 (Recursive)
+		chmod -R u+rwx "$app_path"
+
+		# 8. 刷新 LaunchServices 数据库以注册协议和图标
+		local LSREGISTER_PATH="/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister"
+		if [ -f "$LSREGISTER_PATH" ]; then
+			echo "Refreshing LaunchServices database with $LSREGISTER_PATH..."
+			"$LSREGISTER_PATH" -f "$app_path"
+			if [ $? -ne 0 ]; then
+				echo "Warning: Failed to register application with LaunchServices using lsregister." >&2
+				# 操你妈，跟你爆了
+				killall -KILL lsd
+			fi
+		else
+			# 操你妈，跟你爆了
+			killall -KILL lsd
+		fi
 
 		if [ -d "$app_path" ]; then
 			echo "Desktop application created at $app_path"
 		else
-			echo "Error: Failed to create Desktop application using Platypus." >&2
+			echo "Error: Failed to create Desktop application." >&2
 			return 1
 		fi
 	else
@@ -399,6 +506,7 @@ remove_desktop_shortcut() {
 	elif [ "$OS_TYPE" = "Darwin" ]; then # macOS
 		local app_path="$HOME/Desktop/$shortcut_name.app"
 		if [ -d "$app_path" ]; then
+			echo "Removing macOS application bundle at $app_path"
 			rm -rf "$app_path"
 			echo "Desktop application removed."
 		else
@@ -720,22 +828,22 @@ install_deno() {
 
 				# 升级 pkg，安装必要的工具
 				if ! command -v patchelf &> /dev/null; then
-					add_package_to_tracker patchelf INSTALLED_SYSTEM_PACKAGES_ARRAY
+					add_package_to_tracker "patchelf" "INSTALLED_SYSTEM_PACKAGES_ARRAY"
 				fi
 				if ! command -v which &> /dev/null; then
-					add_package_to_tracker which INSTALLED_SYSTEM_PACKAGES_ARRAY
+					add_package_to_tracker "which" "INSTALLED_SYSTEM_PACKAGES_ARRAY"
 				fi
 				if ! command -v time &> /dev/null; then
-					add_package_to_tracker time INSTALLED_SYSTEM_PACKAGES_ARRAY
+					add_package_to_tracker "time" "INSTALLED_SYSTEM_PACKAGES_ARRAY"
 				fi
 				if ! command -v ldd &> /dev/null; then
-					add_package_to_tracker ldd INSTALLED_SYSTEM_PACKAGES_ARRAY
+					add_package_to_tracker "ldd" "INSTALLED_SYSTEM_PACKAGES_ARRAY"
 				fi
 				if ! command -v tree &> /dev/null; then
-					add_package_to_tracker tree INSTALLED_SYSTEM_PACKAGES_ARRAY
+					add_package_to_tracker "tree" "INSTALLED_SYSTEM_PACKAGES_ARRAY"
 				fi
 				if ! command -v pacman &> /dev/null; then
-					add_package_to_tracker pacman INSTALLED_SYSTEM_PACKAGES_ARRAY
+					add_package_to_tracker "pacman" "INSTALLED_SYSTEM_PACKAGES_ARRAY"
 				fi
 				yes y | pkg upgrade -y
 				pkg install -y pacman patchelf which time ldd tree
@@ -747,7 +855,7 @@ install_deno() {
 
 				pacman -Sy glibc-runner --assume-installed bash,patchelf,resolv-conf --noconfirm
 				if [ $? -eq 0 ]; then
-					add_package_to_tracker "glibc-runner" INSTALLED_PACMAN_PACKAGES_ARRAY
+					add_package_to_tracker "glibc-runner" "INSTALLED_PACMAN_PACKAGES_ARRAY"
 				fi
 				set +e # 关闭严格模式
 			fi
@@ -820,6 +928,8 @@ install_deno() {
 				echo "export PATH=\"\$PATH:${HOME}/.deno/bin\"" >> "$profile_file_deno"
 			fi
 			source "$profile_file_deno" &> /dev/null # 重新加载 shell 配置文件以更新 PATH (当前会话)
+			export DENO_INSTALL="$HOME/.deno"
+			export PATH="$PATH:$DENO_INSTALL/bin"
 			touch "$AUTO_INSTALLED_DENO_FLAG" # 标记为自动安装
 		fi
 
@@ -920,6 +1030,9 @@ run() {
 # 主要参数处理逻辑
 if [[ $# -gt 0 ]]; then
 	case "$1" in
+		init)
+			exit 0
+			;;
 		keepalive)
 			runargs=("${@:2}")
 			run "${runargs[@]}"
@@ -949,7 +1062,7 @@ if [[ $# -gt 0 ]]; then
 					else
 						sed -i '/export PATH="\$PATH:'"$FOUNT_DIR/path"'"/d' "$profile_file"
 						sed -i '/export DENO_INSTALL=".*\.deno"/d' "$profile_file"
-						sed -i '/export PATH="\$PATH:.*\.deno\/bin"/d/g' "$profile_file"
+						sed -i '/export PATH="\$PATH:.*\.deno\/bin"/d' "$profile_file"
 					fi
 					echo "Cleaned PATH entries in $profile_file."
 				fi

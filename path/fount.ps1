@@ -47,7 +47,7 @@ if (-not $IN_DOCKER) {
 
 $auto_installed_pwsh_modules = Get-Content "$FOUNT_DIR/data/installer/auto_installed_pwsh_modules" -Raw -ErrorAction Ignore
 if (!$auto_installed_pwsh_modules) { $auto_installed_pwsh_modules = '' }
-$auto_installed_pwsh_modules = $auto_installed_pwsh_modules.Split(';')
+$auto_installed_pwsh_modules = $auto_installed_pwsh_modules.Split(';') | Where-Object { $_ }
 
 function Test-PWSHModule([string]$ModuleName) {
 	if (!(Get-Module $ModuleName -ListAvailable)) {
@@ -113,6 +113,11 @@ Start-Job -ScriptBlock {
 		if ("$localVersion" -eq '0.0.0') { return }
 		$latestVersion = (Find-Module $_).Version
 		if ("$latestVersion" -ne "$localVersion") {
+			if (!(Get-Module $_ -ListAvailable)) {
+				$auto_installed_pwsh_modules += $_
+				New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
+				Set-Content "$FOUNT_DIR/data/installer/auto_installed_pwsh_modules" $($auto_installed_pwsh_modules -join ';')
+			}
 			Install-Module -Name $_ -Scope CurrentUser -Force
 		}
 	}
@@ -451,8 +456,10 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 	Write-Host "Removing Installed pwsh modules..."
 	$auto_installed_pwsh_modules | ForEach-Object {
 		try {
-			Uninstall-Module -Name $_ -Scope CurrentUser -Force -ErrorAction Stop
-			Write-Host "$_ removed."
+			if (Get-Module $_ -ListAvailable) {
+				Uninstall-Module -Name $_ -Scope CurrentUser -Force -ErrorAction Stop
+				Write-Host "$_ removed."
+			}
 		}
 		catch {
 			Write-Warning "Failed to remove ${_}: $($_.Exception.Message)"

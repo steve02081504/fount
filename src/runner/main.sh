@@ -31,6 +31,7 @@ install_package() {
 		fi
 	elif command -v brew &> /dev/null; then
 		brew install "$1"
+		eval "$(brew shellenv)" || eval "$(/opt/homebrew/bin/brew shellenv)"
 	elif command -v pacman &> /dev/null; then
 		if command -v sudo &> /dev/null; then
 			sudo pacman -Syy
