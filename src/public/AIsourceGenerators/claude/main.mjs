@@ -92,7 +92,7 @@ async function GetSource(config, { SaveConfig }) { // 接收 SaveConfig
 							return stringOrReg.source
 						}
 					),
-				].filter(Boolean)).join('|')})[^\\n：:\<\>\\d\`]*)(:|：)\\s*`
+				].filter(Boolean)).join('|')})[^\\n：:\<\>\\d\`]*)(:|：)\\s*(?!\/)`
 				let reg = new RegExp(`${base_reg}$`, 'i')
 				while (text[0].trim().match(reg)) text.shift()
 				reg = new RegExp(`${base_reg}`, 'i')
