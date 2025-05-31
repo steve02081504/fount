@@ -30,7 +30,7 @@ if (!$IsWindows) {
 		}
 		if (-not $install_successful -and (Get-Command -Name "brew" -ErrorAction Ignore)) {
 			brew list --formula "$package_name" | Out-Null
-			if ($LASTEXITCODE -ne 0) {
+			if ($LastExitCode) {
 				brew install "$package_name"
 				if (!$LastExitCode) { $install_successful = $true }
 			}
@@ -101,7 +101,7 @@ if (!(Get-Command fount.ps1 -ErrorAction Ignore)) {
 	Remove-Item $env:FOUNT_DIR -Confirm -ErrorAction Ignore -Recurse
 	if (Get-Command git -ErrorAction Ignore) {
 		git clone https://github.com/steve02081504/fount $env:FOUNT_DIR --depth 1 --single-branch
-		if ($LASTEXITCODE) {
+		if ($LastExitCode) {
 			Remove-Item $env:FOUNT_DIR -Force -ErrorAction Ignore -Confirm:$false -Recurse
 		}
 	}
