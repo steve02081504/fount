@@ -3,6 +3,9 @@
 #_pragma title "fount"
 
 #_if PSScript
+if ($PSEdition -eq "Desktop") {
+	try { $IsWindows = $true } catch {}
+}
 if (!$IsWindows) {
 	function install_package([string]$package_name) {
 		if (Get-Command -Name $package_name -ErrorAction Ignore) { return $true }

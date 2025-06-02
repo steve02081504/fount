@@ -2,6 +2,10 @@
 
 $ErrorCount = $Error.Count
 
+if ($PSEdition -eq "Desktop") {
+	try { $IsWindows = $true } catch {}
+}
+
 # Docker 检测
 $IN_DOCKER = $false
 
