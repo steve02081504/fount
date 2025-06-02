@@ -592,7 +592,7 @@ ensure_fount_path() {
 		for profile_file in "${profile_files[@]}"; do
 			if ! grep -q "export PATH=.*$FOUNT_DIR/path" "$profile_file" 2>/dev/null; then
 				echo "Adding fount path to $profile_file..."
-				if [! -f "$profile_file" ]; then
+				if [ ! -f "$profile_file" ]; then
 					touch "$profile_file"
 				fi
 				# remove old fount path first
