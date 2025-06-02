@@ -2,9 +2,19 @@ name: Test Running
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - '**.sh'
+      - '**.fish'
+      - '**.zsh'
+      - '**.ps1'
+      - 'path/**'
+    tags-ignore:
+      - '*'
 
 jobs:
   test-fount:
+    timeout-minutes: 4
     strategy:
       fail-fast: false
       matrix:
