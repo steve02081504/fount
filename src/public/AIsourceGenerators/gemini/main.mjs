@@ -182,7 +182,12 @@ system:
 							if (!supportedFileTypes.includes(mimeType)) {
 								const textMimeType = 'text/' + mimeType.split('/')[1]
 								if (supportedFileTypes.includes(textMimeType)) mimeType = textMimeType
-								else if (['application/json', 'application/xml', 'application/yaml'].includes(mimeType)) mimeType = 'text/plain'
+								else if ([
+									'application/json',
+									'application/xml',
+									'application/yaml',
+									'application/rls-services+xml',
+								].includes(mimeType)) mimeType = 'text/plain'
 							}
 							if (!supportedFileTypes.includes(mimeType)) {
 								console.warn(`Unsupported file type: ${mimeType} for file ${file.name}`)
