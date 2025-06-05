@@ -1,5 +1,6 @@
 import os from 'node:os'
 import { Buffer } from 'node:buffer'
+import process from 'node:process'
 
 const shell = os.platform() === 'win32' ? 'powershell.exe' : 'bash'
 
