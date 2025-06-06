@@ -5,7 +5,7 @@ import process from 'node:process'
 const shell = os.platform() === 'win32' ? 'powershell.exe' : 'bash'
 
 async function spawnShell() {
-	const pty = await import('npm:node-pty')
+	const pty = await import('npm:@homebridge/node-pty-prebuilt-multiarch')
 	return pty.spawn(shell, [], {
 		name: 'xterm-color',
 		cols: 80, // Default, can be resized
