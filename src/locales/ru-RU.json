@@ -17,9 +17,9 @@
 		},
 		"ipc": {
 			"sendCommandFailed": "Не удалось отправить команду: ${error}",
-			"invalidCommand": "Неверная команда. Используйте \"fount runshell <имя_пользователя> <имя_оболочки> <параметры...>\"",
-			"runShellLog": "Запуск оболочки ${shellname} от имени ${username}, параметры: ${args}",
-			"invokeShellLog": "Вызов оболочки ${shellname} от имени ${username}, параметры: ${invokedata}",
+			"invalidCommand": "Неверная команда, пожалуйста, используйте «Fount Run <Part Type> <имя пользователя> <имя части> <параметр ...>»",
+			"runPartLog": "Запустить ${parttype} ${partname} как ${username}, параметр: ${args}",
+			"invokePartLog": "Вызовите ${parttype} ${partname} как ${username}, параметр: ${invokedata}",
 			"unsupportedCommand": "Неподдерживаемый тип команды.",
 			"processMessageError": "Ошибка при обработке IPC-сообщения: ${error}",
 			"invalidCommandFormat": "Неверный формат команды.",

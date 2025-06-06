@@ -1,8 +1,8 @@
 import net from 'node:net'
 import { console } from '../scripts/console.mjs'
-import { loadShell } from './managers/shell_manager.mjs'
 import { shutdown } from './on_shutdown.mjs'
 import { geti18n } from '../scripts/i18n.mjs'
+import { getLoadedPartList, getPartList, loadPart } from './managers/index.mjs'
 
 const IPC_PORT = 16698 // 选择一个不太可能冲突的端口
 
@@ -15,19 +15,27 @@ const IPC_PORT = 16698 // 选择一个不太可能冲突的端口
 export async function processIPCCommand(command, data) {
 	try {
 		switch (command) {
-			case 'runshell': {
-				const { username, shellname, args } = data
-				console.log(await geti18n('fountConsole.ipc.runShellLog', { shellname, username, args: JSON.stringify(args) }))
-				const shell = await loadShell(username, shellname)
-				const result = await shell.interfaces.invokes.ArgumentsHandler(username, args)
+			case 'runpart': {
+				const { username, parttype, partname, args } = data
+				console.log(await geti18n('fountConsole.ipc.runPartLog', { parttype, partname, username, args: JSON.stringify(args) }))
+				const part = await loadPart(username, parttype, partname)
+				const result = await part.interfaces.invokes.ArgumentsHandler(username, args)
 				return { status: 'ok', data: result }
 			}
-			case 'invokeshell': {
-				const { username, shellname, data: invokedata } = data
-				console.log(await geti18n('fountConsole.ipc.invokeShellLog', { shellname, username, invokedata: JSON.stringify(invokedata) }))
-				const shell = await loadShell(username, shellname)
-				const result = await shell.interfaces.invokes.IPCInvokeHandler(username, invokedata)
+			case 'invokepart': {
+				const { username, parttype, partname, data: invokedata } = data
+				console.log(await geti18n('fountConsole.ipc.invokePartLog', { parttype, partname, username, invokedata: JSON.stringify(invokedata) }))
+				const part = await loadPart(username, parttype, partname)
+				const result = await part.interfaces.invokes.IPCInvokeHandler(username, invokedata)
 				return { status: 'ok', data: result }
+			}
+			case 'getlist': {
+				const { username, parttype } = data
+				return { status: 'ok', data: await getPartList(username, parttype) }
+			}
+			case 'getloadedlist': {
+				const { username, parttype } = data
+				return { status: 'ok', data: await getLoadedPartList(username, parttype) }
 			}
 			case 'shutdown':
 				shutdown()

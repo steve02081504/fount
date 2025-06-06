@@ -257,18 +257,18 @@ Imagine other users being able to install your creations directly into their Fou
 Simply combine the ZIP link or Git repository link of your component with the Fount protocol link to create a magical link:
 
 ```markdown
-https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip
+https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip
 ```
 
-Simpler explanation: Just add `https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;` before your component zip link/Git repository link!
+Simpler explanation: Just add `https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;` before your component zip link/Git repository link!
 
 Combine this link with the Fount badge to create a button that is both beautiful and practical:
 
 ```markdown
-[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
 ```
 
-[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
 
 With these simple steps, you not only make your creations more attractive, but also strengthen the connection of the Fount community. Let the light of your inspiration illuminate the entire Fount world!
 

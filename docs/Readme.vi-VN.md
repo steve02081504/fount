@@ -245,18 +245,18 @@ Hãy tưởng tượng, những người dùng khác chỉ cần một cú nhấ
 Chỉ cần đơn giản kết hợp liên kết zip hoặc liên kết kho Git của thành phần của bạn, với liên kết giao thức của Fount, bạn sẽ tạo ra một liên kết kỳ diệu:
 
 ```markdown
-https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip
+https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip
 ```
 
-Giải thích ngắn gọn hơn: Chỉ cần thêm `https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;` vào trước liên kết zip/kho Git của thành phần của bạn là được!
+Giải thích ngắn gọn hơn: Chỉ cần thêm `https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;` vào trước liên kết zip/kho Git của thành phần của bạn là được!
 
 Kết hợp liên kết này với huy hiệu Fount, tạo ra một nút vừa đẹp mắt vừa tiện dụng:
 
 ```markdown
-[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
 ```
 
-[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
 
 Thông qua những bước đơn giản này, bạn không chỉ làm cho tác phẩm của mình trở nên hấp dẫn hơn, mà còn giúp cộng đồng Fount thêm gắn kết. Hãy để ánh sáng cảm hứng của bạn, soi rọi cả thế giới Fount!
 

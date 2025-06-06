@@ -17,9 +17,9 @@
 		},
 		"ipc": {
 			"sendCommandFailed": "Error al enviar comando: ${error}",
-			"invalidCommand": "Comando inválido. Utiliza \"fount runshell <nombre_usuario> <nombre_shell> <parámetros...>\"",
-			"runShellLog": "Ejecutando shell ${shellname} como ${username}, parámetros: ${args}",
-			"invokeShellLog": "Invocando shell ${shellname} como ${username}, parámetros: ${invokedata}",
+			"invalidCommand": "Comando no válido, use \"Fuente Run <Part Tipo> <Nombre de usuario> <Nombre de la parte> <Parámetro ...>\"",
+			"runPartLog": "Ejecutar ${parttype} ${partname} como ${username}, parámetro: ${args}",
+			"invokePartLog": "Llame a ${parttype} ${partname} como ${username}, parámetro: ${invokedata}",
 			"unsupportedCommand": "Tipo de comando no soportado",
 			"processMessageError": "Error al procesar mensaje IPC: ${error}",
 			"invalidCommandFormat": "Formato de comando inválido",

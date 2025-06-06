@@ -246,18 +246,18 @@ Fount 로고의 SVG 및 PNG 파일은 [여기](../imgs/)에서 찾아 디자인�
 컴포넌트의 ZIP 링크 또는 Git 리포지토리 링크를 Fount 프로토콜 링크와 결합하여 마법 같은 링크를 만드세요.
 
 ```markdown
-https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip
+https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip
 ```
 
-더 간단한 설명: 컴포넌트 zip 링크/Git 리포지토리 링크 앞에 `https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;`를 추가하기만 하면 됩니다!
+더 간단한 설명: 컴포넌트 zip 링크/Git 리포지토리 링크 앞에 `https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;`를 추가하기만 하면 됩니다!
 
 이 링크를 Fount 배지와 결합하여 아름다움과 실용성을 겸비한 버튼을 만드세요.
 
 ```markdown
-[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
 ```
 
-[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
 
 이 간단한 단계를 통해 당신의 창작물을 더욱 매력적으로 만들 뿐만 아니라 Fount 커뮤니티의 연결도 강화할 수 있습니다. 당신의 영감의 빛이 Fount 세계 전체를 비추도록 하세요!
 

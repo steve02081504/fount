@@ -17,9 +17,9 @@
 		},
 		"ipc": {
 			"sendCommandFailed": "कमांड भेजने में विफल: ${error}",
-			"invalidCommand": "अमान्य कमांड, कृपया \"fount runshell <उपयोगकर्ता_नाम> <शेल_नाम> <पैरामीटर...>\" का उपयोग करें।",
-			"runShellLog": "शेल ${shellname} को ${username} के रूप में चलाया जा रहा है, पैरामीटर: ${args}",
-			"invokeShellLog": "शेल ${shellname} को ${username} के रूप में लागू किया जा रहा है, पैरामीटर: ${invokedata}",
+			"invalidCommand": "अमान्य कमांड, कृपया \"फाउंट रन <भाग प्रकार> <उपयोगकर्ता नाम> <भाग नाम> <पैरामीटर ...> का उपयोग करें\"",
+			"runPartLog": "${parttype} ${partname} को ${username}, पैरामीटर: ${args} के रूप में चलाएं",
+			"invokePartLog": "${parttype} ${partname} को ${username}, पैरामीटर: ${invokedata} के रूप में कॉल करें",
 			"unsupportedCommand": "असमर्थित कमांड प्रकार।",
 			"processMessageError": "IPC संदेश को संसाधित करने में त्रुटि: ${error}",
 			"invalidCommandFormat": "अमान्य कमांड प्रारूप।",

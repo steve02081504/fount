@@ -246,18 +246,18 @@ fount remove
 एक जादुई लिंक बनाने के लिए बस अपने घटक के ZIP लिंक या Git रिपॉजिटरी लिंक को फाउंट प्रोटोकॉल लिंक के साथ मिलाएं:
 
 ```markdown
-https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip
+https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip
 ```
 
-सरल व्याख्या: बस अपने घटक ज़िप लिंक/Git रिपॉजिटरी लिंक से पहले `https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;` जोड़ें!
+सरल व्याख्या: बस अपने घटक ज़िप लिंक/Git रिपॉजिटरी लिंक से पहले `https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;` जोड़ें!
 
 एक ऐसा बटन बनाने के लिए इस लिंक को फाउंट बैज के साथ मिलाएं जो सुंदर और व्यावहारिक दोनों हो:
 
 ```markdown
-[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
 ```
 
-[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
 
 इन सरल चरणों के साथ, आप न केवल अपनी रचनाओं को और अधिक आकर्षक बनाते हैं, बल्कि फाउंट समुदाय के संबंध को भी मजबूत करते हैं। अपनी प्रेरणा की रोशनी को पूरी फाउंट दुनिया को रोशन करने दें!
 

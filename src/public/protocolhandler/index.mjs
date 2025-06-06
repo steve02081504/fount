@@ -1,6 +1,6 @@
 import { applyTheme } from '../scripts/theme.mjs'
 import { initTranslations, geti18n } from '../scripts/i18n.mjs'
-import { authenticate, runShell } from '../scripts/endpoints.mjs'
+import { authenticate, runPart } from '../scripts/endpoints.mjs'
 
 const urlParams = new URL(window.location.href)
 const from = urlParams.searchParams.get('from')
@@ -22,23 +22,29 @@ async function handleProtocol() {
 		return
 	}
 
-	if (command === 'runshell')
-		handleRunShell(parts)
+	if (command === 'runshell') {
+		command = 'run'
+		parts = parts.replace('runshell', 'run/shells')
+	}
+
+	if (command === 'run')
+		handleRunPart(parts)
 	else if (command === 'page')
 		handlePage(parts)
 	else
 		document.getElementById('message').textContent = geti18n('protocolhandler.unknownCommand')
 }
 
-async function handleRunShell(parts) {
+async function handleRunPart(parts) {
 	if (parts.length < 3) {
 		document.getElementById('message').textContent = geti18n('protocolhandler.insufficientParams')
 		return
 	}
-	const shellname = parts[1]
-	const args = parts.slice(2).join('/').split(';').map(decodeURIComponent)
+	const parttype = parts[1]
+	const partname = parts[2]
+	const args = parts.slice(3).join('/').split(';').map(decodeURIComponent)
 	try {
-		const response = await runShell(shellname, args)
+		const response = await runPart(parttype, partname, args)
 
 		if (response.ok)
 			document.getElementById('message').textContent = geti18n('protocolhandler.shellCommandSent')
