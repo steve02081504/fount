@@ -471,13 +471,14 @@ on run argv
 		end repeat
 	end if
 
-	-- 在 Terminal.app 中执行命令，并使其保持打开
+	-- 将主命令和退出提示合并成一个单一的命令字符串。
+	-- 'read -r' 只会在主命令 (keepalive 循环) 正常结束后执行。
+	set final_command_in_terminal to command_to_execute & "; echo ''; echo 'Fount has exited. Press Enter to close this window...'; read -r"
+
+	-- 在 Terminal.app 中执行这个合并后的命令。
 	tell application "Terminal"
 		activate
-		-- 创建一个新窗口并执行命令
-		set new_window to do script command_to_execute
-		-- 确保在命令完成后终端窗口不会立即关闭
-		do script "echo ''; echo 'Fount has exited. Press Enter to close this window...'; read -r" in new_window
+		set new_window to do script final_command_in_terminal
 	end tell
 end run
 EOF
