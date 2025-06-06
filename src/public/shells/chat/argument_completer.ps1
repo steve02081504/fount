@@ -5,14 +5,14 @@
 #   $WordToComplete: 用户正在输入的单词。
 #   $CommandAst:     命令的抽象语法树 (AST)。
 #   $CursorPosition:  光标在命令行中的位置。
-#   $runshellIndex:  'runshell' 命令在 CommandAst 中的索引。
+#   $runIndex:  'run' 命令在 CommandAst 中的索引。
 #   $Argindex:        当前参数在 CommandAst 中的索引。
 param(
 	[string]$Username,
 	[string]$WordToComplete,
 	[System.Management.Automation.Language.CommandAst]$CommandAst,
 	[int]$CursorPosition,
-	[int]$runshellIndex,
+	[int]$runIndex,
 	[int]$Argindex
 )
 
@@ -28,9 +28,9 @@ function Get-ChatIDList([string]$Username) {
 }
 
 try {
-	# 提取 'runshell <username> chat' 之后的参数。
+	# 提取 'run shells <username> chat' 之后的参数。
 	$commandElements = $CommandAst.CommandElements
-	$chatIndex = $runshellIndex + 2
+	$chatIndex = $runIndex + 3
 
 	# 根据参数构建补全逻辑。
 	switch ($commandElements.Count - ($chatIndex + 1)) {

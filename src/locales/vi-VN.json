@@ -17,9 +17,9 @@
 		},
 		"ipc": {
 			"sendCommandFailed": "Gửi lệnh thất bại: ${error}",
-			"invalidCommand": "Lệnh không hợp lệ, vui lòng sử dụng \"fount runshell <tên_người_dùng> <tên_shell> <tham_số...>\"",
-			"runShellLog": "Chạy shell ${shellname} với tư cách ${username}, tham số: ${args}",
-			"invokeShellLog": "Gọi shell ${shellname} với tư cách ${username}, tham số: ${invokedata}",
+			"invalidCommand": "Lệnh không hợp lệ, vui lòng sử dụng \"Fount Run <part type> <tên người dùng> <tên phần> <tham số ...>\"",
+			"runPartLog": "Chạy ${parttype} ${partname} dưới dạng ${username}, tham số: ${args}",
+			"invokePartLog": "Gọi ${parttype} ${partname} là ${username}, tham số: ${invokedata}",
 			"unsupportedCommand": "Loại lệnh không được hỗ trợ.",
 			"processMessageError": "Đã xảy ra lỗi khi xử lý tin nhắn IPC: ${error}",
 			"invalidCommandFormat": "Định dạng lệnh không hợp lệ.",

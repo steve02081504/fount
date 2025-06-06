@@ -1,7 +1,7 @@
 import { getUserByUsername, getUserDictionary } from './auth.mjs'
 import fs from 'node:fs'
 import url from 'node:url'
-import { __dirname, setDefaultStuff } from './server.mjs'
+import { __dirname, deletePartRouter, getPartRouter, setDefaultStuff } from './server.mjs'
 import { loadData, saveData } from './setting_loader.mjs'
 import { loadPart } from './managers/index.mjs'
 import { FullProxy } from '../scripts/proxy.mjs'
@@ -234,6 +234,10 @@ export async function loadPartBase(username, parttype, partname, Initargs, {
 	},
 	afterInit = (part) => { },
 } = {}) {
+	Initargs = {
+		router: getPartRouter(username, parttype, partname),
+		...Initargs
+	}
 	parts_set[username] ??= { // 指定卸载顺序 world > char > persona > shell > AIsource > AIsourceGenerator
 		worlds: {},
 		chars: {},
@@ -340,6 +344,7 @@ export async function unloadPartBase(username, parttype, partname, unLoadargs, {
 	if (!part) return
 	try {
 		await unLoader(part)
+		await deletePartRouter(username, parttype, partname)
 	}
 	catch (error) {
 		console.error(error)

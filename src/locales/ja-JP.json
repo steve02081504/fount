@@ -17,9 +17,9 @@
 		},
 		"ipc": {
 			"sendCommandFailed": "コマンドの送信に失敗しました：${error}",
-			"invalidCommand": "無効なコマンドです。「fount runshell <ユーザー名> <シェル名> <パラメータ...>」を使用してください。",
-			"runShellLog": "シェル「${shellname}」をユーザー「${username}」として実行、パラメータ：${args}",
-			"invokeShellLog": "シェル「${shellname}」をユーザー「${username}」として呼び出し、パラメータ：${invokedata}",
+			"invalidCommand": "無効なコマンド、「Fount Run <パートタイプ> <ユーザー名> <パーツ名> <パラメーター...>」を使用してください。",
+			"runPartLog": "${parttype} ${partname} as ${username}、parameter：${args}を実行します",
+			"invokePartLog": "${parttype} ${partname} as ${username}、parameter：${invokedata}を呼び出す",
 			"unsupportedCommand": "サポートされていないコマンドタイプです。",
 			"processMessageError": "IPCメッセージの処理中にエラーが発生しました：${error}",
 			"invalidCommandFormat": "無効なコマンド形式です。",

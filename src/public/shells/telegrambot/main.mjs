@@ -32,7 +32,7 @@ export default {
 
 	interfaces: {
 		invokes: {
-			// 处理通过 Fount 命令行/脚本调用的情况，例如 'runshell <user> telegrambot <botname> start'
+			// 处理通过 Fount 命令行/脚本调用的情况，例如 'run shells <user> telegrambot <botname> start'
 			ArgumentsHandler: async (user, args) => {
 				const botname = args[0]
 				const action = args[1] ?? 'start' // 默认为 'start'

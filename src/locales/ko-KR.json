@@ -17,9 +17,9 @@
 		},
 		"ipc": {
 			"sendCommandFailed": "명령 전송에 실패했습니다: ${error}",
-			"invalidCommand": "잘못된 명령입니다. \"fount runshell <사용자_이름> <셸_이름> <매개변수...>\"를 사용하세요.",
-			"runShellLog": "셸 ${shellname}을(를) ${username}(으)로 실행 중, 매개변수: ${args}",
-			"invokeShellLog": "셸 ${shellname}을(를) ${username}(으)로 호출 중, 매개변수: ${invokedata}",
+			"invalidCommand": "잘못된 명령, \"fount run <part type> <User Name> <부품 이름> <매개 변수 ...>\"를 사용하십시오.",
+			"runPartLog": "run ${parttype} ${partname} as ${username}, 매개 변수 : ${args}",
+			"invokePartLog": "${parttype} ${partname} as ${username}, 매개 변수 : ${invokedata} 호출",
 			"unsupportedCommand": "지원되지 않는 명령 유형입니다.",
 			"processMessageError": "IPC 메시지 처리 중 오류가 발생했습니다: ${error}",
 			"invalidCommandFormat": "잘못된 명령 형식입니다.",

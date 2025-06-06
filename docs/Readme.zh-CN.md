@@ -245,18 +245,18 @@ Fount 的世界不仅仅是文字和代码，它更是一场视觉与连接的�
 只需简单地将你的组件的 zip 链接或 Git 仓库链接，与 Fount 的协议链接组合在一起，就能创造出一个神奇的链接：
 
 ```markdown
-https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip
+https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip
 ```
 
-更简洁的解释：在你的组件 zip 链接/Git 仓库链接前追加 `https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;` 即可！
+更简洁的解释：在你的组件 zip 链接/Git 仓库链接前追加 `https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;` 即可！
 
 将这个链接与 Fount 徽章结合，创造一个既美观又实用的按钮：
 
 ```markdown
-[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
 ```
 
-[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
 
 通过这些简单的步骤，你不仅让你的创作更具吸引力，也让 Fount 社区的连接更加紧密。让你的灵感之光，照亮整个 Fount 世界！
 

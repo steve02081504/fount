@@ -246,18 +246,18 @@ FountロゴのSVGおよびPNGファイルは[こちら](../imgs/)にあり、デ
 コンポーネントのZIPリンクまたはGitリポジトリリンクをFountプロトコルリンクと組み合わせるだけで、魔法のリンクを作成できます。
 
 ```markdown
-https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip
+https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip
 ```
 
-より簡単な説明：コンポーネントのzipリンク/Gitリポジトリリンクの前に `https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;` を追加するだけです！
+より簡単な説明：コンポーネントのzipリンク/Gitリポジトリリンクの前に `https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;` を追加するだけです！
 
 このリンクをFountバッジと組み合わせることで、美しく実用的なボタンを作成できます。
 
 ```markdown
-[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
 ```
 
-[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
 
 これらの簡単な手順で、あなたの創造物をより魅力的にするだけでなく、Fountコミュニティのつながりを強化することもできます。あなたのインスピレーションの光をFountの世界全体に照らしましょう！
 

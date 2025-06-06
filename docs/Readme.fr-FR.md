@@ -246,18 +246,18 @@ Imaginez que d'autres utilisateurs puissent installer vos créations directement
 Combinez simplement le lien ZIP ou le lien du dépôt Git de votre composant avec le lien du protocole Fount pour créer un lien magique :
 
 ```markdown
-https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip
+https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip
 ```
 
-Explication plus simple : Ajoutez simplement `https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;` avant le lien zip/lien du dépôt Git de votre composant !
+Explication plus simple : Ajoutez simplement `https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;` avant le lien zip/lien du dépôt Git de votre composant !
 
 Combinez ce lien avec le badge Fount pour créer un bouton à la fois beau et pratique :
 
 ```markdown
-[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
 ```
 
-[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://runshell/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
 
 Grâce à ces étapes simples, vous rendez non seulement vos créations plus attrayantes, mais vous renforcez également le lien de la communauté Fount. Laissez la lumière de votre inspiration illuminer le monde entier de Fount !
 
