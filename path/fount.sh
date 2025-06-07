@@ -788,7 +788,6 @@ EOF_PROTOCOL_JOB
 	$FOUNT_DIR/path/fount.sh "${@:3}"
 	exit $?
 fi
-EOF_PROTOCOL_JOB
 
 # 检查并安装 Git (如果需要)
 if ! command -v git &> /dev/null; then
