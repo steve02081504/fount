@@ -27,9 +27,9 @@ export function openModal(contentSrc, contentType) {
 		// Close only if the modal background (not the content itself) is clicked
 		if (e.target === modal) {
 			// If it's a video, pause it before removing the modal
-			if (contentType === 'video' && modalContentElement) 
+			if (contentType === 'video' && modalContentElement)
 				modalContentElement.pause()
-			
+
 			modal.remove()
 		}
 	})

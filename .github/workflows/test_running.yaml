@@ -11,6 +11,8 @@ on:
       - 'path/**'
     tags-ignore:
       - '*'
+    branches:
+      - '*'
 
 jobs:
   test-fount:
