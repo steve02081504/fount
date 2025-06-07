@@ -21,7 +21,7 @@
 					"title": "टर्मिनल असिस्ट"
 				},
 				"it-IT": {
-					"title": "Assistenza terminale"
+					"title": "Assistenza Terminale"
 				},
 				"ja-JP": {
 					"title": "ターミナルアシスト"
@@ -33,10 +33,10 @@
 					"title": "Assistente de Terminal"
 				},
 				"ru-RU": {
-					"title": "Терминал Помощник"
+					"title": "Терминал-Ассистент"
 				},
 				"vi-VN": {
-					"title": "Hỗ trợ thiết bị đầu cuối"
+					"title": "Hỗ trợ Terminal"
 				}
 			},
 			"level": 2,

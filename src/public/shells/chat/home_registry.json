@@ -21,7 +21,7 @@
 					"title": "इतिहास देखें"
 				},
 				"it-IT": {
-					"title": "Navigazione nella storia"
+					"title": "Visualizza cronologia"
 				},
 				"ja-JP": {
 					"title": "履歴を見る"
@@ -36,7 +36,7 @@
 					"title": "Просмотреть историю"
 				},
 				"vi-VN": {
-					"title": "Lịch sử duyệt web"
+					"title": "Xem lịch sử"
 				}
 			},
 			"level": 1,
@@ -66,7 +66,7 @@
 					"title": "चैट"
 				},
 				"it-IT": {
-					"title": "chiacchierata"
+					"title": "Chat"
 				},
 				"ja-JP": {
 					"title": "チャット"
@@ -81,7 +81,7 @@
 					"title": "Чат"
 				},
 				"vi-VN": {
-					"title": "trò chuyện"
+					"title": "Chat"
 				}
 			},
 			"level": 0,
