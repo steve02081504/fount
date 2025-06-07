@@ -22,11 +22,6 @@ async function handleProtocol() {
 		return
 	}
 
-	if (command === 'runshell') {
-		command = 'run'
-		parts = parts.replace('runshell', 'run/shells')
-	}
-
 	if (command === 'run')
 		handleRunPart(parts)
 	else if (command === 'page')

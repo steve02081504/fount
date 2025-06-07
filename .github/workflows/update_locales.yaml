@@ -10,6 +10,8 @@ on:
       - '**/home_registry.json'
     tags-ignore:
       - '*'
+    branches:
+      - '*'
   workflow_dispatch:
 
 jobs:

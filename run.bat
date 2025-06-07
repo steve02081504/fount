@@ -1,6 +1,6 @@
 @echo off
 if "%1"=="" (
-	cmd /c "%~dp0/path/fount.bat" open
+	cmd /c "%~dp0/path/fount.bat" keepalive open
 ) else (
 	cmd /c "%~dp0/path/fount.bat" %*
 )

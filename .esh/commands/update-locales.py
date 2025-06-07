@@ -348,7 +348,13 @@ def process_home_registries(map_lang_to_path, global_ref_lang_codes, all_locale_
 
 	print(f"\n--- 开始处理 Fount 目录 '{FOUNT_DIR}' 下的 home_registry.json 文件 ---")
 	print(f"可用的区域语言 (来自 locales): {', '.join(sorted(list(available_locale_langs)))}")
-	registry_keys_to_process = ["home_function_buttons", "home_char_interfaces"]
+	registry_keys_to_process = [
+		"home_function_buttons",
+		"home_char_interfaces",
+		"home_world_interfaces",
+		"home_persona_interfaces",
+		"home_common_interfaces"
+	]
 
 	for root, _, files in os.walk(FOUNT_DIR):
 		for filename in files:

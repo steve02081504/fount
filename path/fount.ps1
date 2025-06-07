@@ -334,6 +334,9 @@ function isRoot {
 	}
 }
 function run {
+	if ($IsWindows) {
+		Get-Process tray_windows_release -ErrorAction Ignore | Where-Object { $_.CPU -gt 0.5 } | Stop-Process
+	}
 	if (isRoot) {
 		Write-Warning "Not Recommended: Running fount as root grants full system access for all fount parts."
 		Write-Warning "Unless you know what you are doing, it is recommended to run fount as a common user."
@@ -344,9 +347,6 @@ function run {
 	}
 	else {
 		deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" @args
-	}
-	if ($IsWindows) {
-		Get-Process tray_windows_release -ErrorAction Ignore | Where-Object { $_.CPU -gt 0.5 } | Stop-Process
 	}
 }
 

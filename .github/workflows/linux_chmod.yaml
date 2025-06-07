@@ -13,6 +13,8 @@ on:
       - 'path/**'
     tags-ignore:
       - '*'
+    branches:
+      - '*'
   workflow_dispatch:
 
 jobs:

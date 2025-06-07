@@ -297,7 +297,6 @@ async function getChatRequest(chatid, charname) {
 		username,
 		UserCharname,
 		Charname: charinfo.name || charname,
-		locale: locales[0], // TODO: remove
 		locales,
 		chat_log: chatMetadata.chatLog,
 		Update: () => getChatRequest(chatid, charname),
@@ -316,7 +315,7 @@ async function getChatRequest(chatid, charname) {
 		user: timeSlice.player,
 		other_chars,
 		chat_scoped_char_memory: timeSlice.chars_memories[charname] ??= {},
-		plugins: [],
+		plugins: {},
 		extension: {}
 	}
 
