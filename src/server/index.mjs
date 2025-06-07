@@ -11,9 +11,7 @@ import process from 'node:process'
 import { console } from '../scripts/console.mjs'
 import { init } from './server.mjs'
 import { IPCManager } from './ipc_server.mjs'
-import { ReStartJobs } from './jobs.mjs'
 import { geti18n } from '../scripts/i18n.mjs'
-import { startTimerHeartbeat } from './timers.mjs'
 
 console.log(await geti18n('fountConsole.server.standingBy'))
 
@@ -52,6 +50,3 @@ if (args.length) {
 }
 
 if (!isFirstInstance) process.exit(0)
-
-ReStartJobs()
-startTimerHeartbeat()

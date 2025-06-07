@@ -1,5 +1,6 @@
 import { Buffer } from "node:buffer";
 import { role_t, timeStamp_t } from "./basedefs";
+import { chatReplyRequest_t } from "../public/shells/chat/decl/chatLog.ts";
 
 export class single_part_prompt_t {
 	text: {
@@ -39,4 +40,5 @@ export type prompt_struct_t = {
 	world_prompt: single_part_prompt_t
 	plugin_prompts: Record<string, single_part_prompt_t>
 	chat_log: chatLogEntry_t[];
+	extension?: any;
 }

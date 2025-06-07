@@ -271,17 +271,17 @@ if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
 	if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
 		Write-Host "Deno installation failed, attempting auto installing to fount's path folder..."
 		$url = "https://github.com/denoland/deno/releases/latest/download/deno-" + (if ($IsWindows) {
-			"x86_64-pc-windows-msvc.zip"
-		} elseif ($IsMacOS) {
-			if ($env:PROCESSOR_ARCHITECTURE -eq "ARM64") {
-				"aarch64-apple-darwin.zip"
-			}
-			else {
-				"x86_64-apple-darwin.zip"
-			}
-		} else {
-			"x86_64-unknown-linux-gnu.zip"
-		})
+				"x86_64-pc-windows-msvc.zip"
+			} elseif ($IsMacOS) {
+				if ($env:PROCESSOR_ARCHITECTURE -eq "ARM64") {
+					"aarch64-apple-darwin.zip"
+				}
+				else {
+					"x86_64-apple-darwin.zip"
+				}
+			} else {
+				"x86_64-unknown-linux-gnu.zip"
+			})
 		Invoke-WebRequest -Uri $url -OutFile "$env:TEMP/deno.zip"
 		Expand-Archive -Path "$env:TEMP/deno.zip" -DestinationPath "$FOUNT_DIR/path"
 		Remove-Item -Path "$env:TEMP/deno.zip" -Force
@@ -334,6 +334,9 @@ function isRoot {
 	}
 }
 function run {
+	if ($IsWindows) {
+		Get-Process tray_windows_release -ErrorAction Ignore | Where-Object { $_.CPU -gt 0.5 } | Stop-Process
+	}
 	if (isRoot) {
 		Write-Warning "Not Recommended: Running fount as root grants full system access for all fount parts."
 		Write-Warning "Unless you know what you are doing, it is recommended to run fount as a common user."
@@ -344,9 +347,6 @@ function run {
 	}
 	else {
 		deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" @args
-	}
-	if ($IsWindows) {
-		Get-Process tray_windows_release -ErrorAction Ignore | Where-Object { $_.CPU -gt 0.5 } | Stop-Process
 	}
 }
 

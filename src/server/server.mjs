@@ -16,6 +16,9 @@ import { geti18n } from '../scripts/i18n.mjs'
 import { sentrytunnel } from '../scripts/sentrytunnel.mjs'
 import { partsList } from './managers/index.mjs'
 import { Router as WsAbleRouter } from 'npm:websocket-express'
+import { ReStartJobs } from './jobs.mjs'
+import { startTimerHeartbeat } from './timers.mjs'
+import supportsAnsi from 'npm:supports-ansi'
 
 export { __dirname }
 const app = express()
@@ -100,7 +103,7 @@ export let config
  * @param {string} title Desired title for the window
  */
 function setWindowTitle(title) {
-	process.stdout.write(`\x1b]2;${title}\x1b\x5c`)
+	if (supportsAnsi) process.stdout.write(`\x1b]2;${title}\x1b\x5c`)
 }
 
 export function setDefaultStuff() {
@@ -176,6 +179,8 @@ export async function init() {
 	console.log(await geti18n('fountConsole.server.usesdTime', {
 		time: (endtime - startTime) / 1000
 	}))
+	ReStartJobs()
+	startTimerHeartbeat()
 	StartRPC()
 	return true
 }

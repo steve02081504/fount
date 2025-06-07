@@ -13,8 +13,20 @@ export function StartJob(username, parttype, partname, uid, data = null) {
 	save_config()
 }
 export function EndJob(username, parttype, partname, uid) {
-	delete getUserByUsername(username).jobs?.[parttype]?.[partname]?.[uid]
-	save_config()
+	const jobs = getUserByUsername(username).jobs ??= {}
+	if (jobs?.[parttype]?.[partname]?.[uid]) {
+		delete jobs[parttype][partname][uid]
+		if (Object.keys(jobs[parttype][partname]).length === 0) {
+			delete jobs[parttype][partname]
+			if (Object.keys(jobs[parttype]).length === 0)
+				delete jobs[parttype]
+		}
+		save_config()
+	}
+	else {
+		console.warn('Job not found:', { username, parttype, partname, uid })
+		throw new Error('Job not found')
+	}
 }
 async function startJobsOfUser(username) {
 	const jobs = getUserByUsername(username).jobs ?? {}

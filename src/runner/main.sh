@@ -15,20 +15,20 @@ install_package() {
 	local package_name="$1"
 
 	# 检查是否已经通过 command -v 安装成功
-	if command -v "$package_name" &> /dev/null; then
+	if command -v "$package_name" &>/dev/null; then
 		return 0
 	fi
 
 	local install_successful=0
 
-	if command -v pkg &> /dev/null; then
+	if command -v pkg &>/dev/null; then
 		pkg install -y "$package_name" && install_successful=1
 	fi
-	if [[ install_successful -eq 0 ]] && command -v snap &> /dev/null; then
+	if [[ install_successful -eq 0 ]] && command -v snap &>/dev/null; then
 		snap install "$package_name" && install_successful=1
 	fi
-	if [[ install_successful -eq 0 ]] && command -v apt-get &> /dev/null; then
-		if command -v sudo &> /dev/null; then
+	if [[ install_successful -eq 0 ]] && command -v apt-get &>/dev/null; then
+		if command -v sudo &>/dev/null; then
 			sudo apt-get update -y
 			sudo apt-get install -y "$package_name" && install_successful=1
 		else
@@ -36,13 +36,13 @@ install_package() {
 			apt-get install -y "$package_name" && install_successful=1
 		fi
 	fi
-	if [[ install_successful -eq 0 ]] && command -v brew &> /dev/null; then
-		if ! brew list --formula "$package_name" &> /dev/null; then
+	if [[ install_successful -eq 0 ]] && command -v brew &>/dev/null; then
+		if ! brew list --formula "$package_name" &>/dev/null; then
 			brew install "$package_name" && install_successful=1
 		fi
 	fi
-	if [[ install_successful -eq 0 ]] && command -v pacman &> /dev/null; then
-		if command -v sudo &> /dev/null; then
+	if [[ install_successful -eq 0 ]] && command -v pacman &>/dev/null; then
+		if command -v sudo &>/dev/null; then
 			sudo pacman -Syy
 			sudo pacman -S --needed --noconfirm "$package_name" && install_successful=1
 		else
@@ -50,28 +50,28 @@ install_package() {
 			pacman -S --needed --noconfirm "$package_name" && install_successful=1
 		fi
 	fi
-	if [[ install_successful -eq 0 ]] && command -v dnf &> /dev/null; then
-		if command -v sudo &> /dev/null; then
+	if [[ install_successful -eq 0 ]] && command -v dnf &>/dev/null; then
+		if command -v sudo &>/dev/null; then
 			sudo dnf install -y "$package_name" && install_successful=1
 		else
 			dnf install -y "$package_name" && install_successful=1
 		fi
 	fi
-	if [[ install_successful -eq 0 ]] && command -v yum &> /dev/null; then
-		if command -v sudo &> /dev/null; then
+	if [[ install_successful -eq 0 ]] && command -v yum &>/dev/null; then
+		if command -v sudo &>/dev/null; then
 			sudo yum install -y "$package_name" && install_successful=1
 		else
 			yum install -y "$package_name" && install_successful=1
 		fi
 	fi
-	if [[ install_successful -eq 0 ]] && command -v zypper &> /dev/null; then
-		if command -v sudo &> /dev/null; then
+	if [[ install_successful -eq 0 ]] && command -v zypper &>/dev/null; then
+		if command -v sudo &>/dev/null; then
 			sudo zypper install -y --no-confirm "$package_name" && install_successful=1
 		else
 			zypper install -y --no-confirm "$package_name" && install_successful=1
 		fi
 	fi
-	if [[ install_successful -eq 0 ]] && command -v apk &> /dev/null; then
+	if [[ install_successful -eq 0 ]] && command -v apk &>/dev/null; then
 		apk add --update "$package_name" && install_successful=1
 	fi
 
@@ -96,12 +96,12 @@ install_package git
 FOUNT_DIR="${FOUNT_DIR:-"$HOME/.local/share/fount"}"
 
 # 检查 fount.sh 是否已存在
-if ! command -v fount.sh &> /dev/null; then
+if ! command -v fount.sh &>/dev/null; then
 	# 清理旧的 fount 安装（如果存在）
 	rm -rf "$FOUNT_DIR"
 
 	# 尝试使用 git 克隆
-	if command -v git &> /dev/null; then
+	if command -v git &>/dev/null; then
 		git clone https://github.com/steve02081504/fount "$FOUNT_DIR" --depth 1 --single-branch
 		if [[ $? -ne 0 ]]; then
 			rm -rf "$FOUNT_DIR"
@@ -145,7 +145,7 @@ fi
 if [[ -n "$INSTALLED_PACKAGES" ]]; then
 	INSTALLER_DATA_DIR="$FOUNT_DIR/data/installer"
 	mkdir -p "$INSTALLER_DATA_DIR"
-	echo "$INSTALLED_PACKAGES" > "$INSTALLER_DATA_DIR/auto_installed_system_packages"
+	echo "$INSTALLED_PACKAGES" >"$INSTALLER_DATA_DIR/auto_installed_system_packages"
 fi
 
 # 执行 fount.sh 脚本
