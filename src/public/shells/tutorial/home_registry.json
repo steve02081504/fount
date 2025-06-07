@@ -12,7 +12,7 @@
 					"title": "Tutorial erneut spielen"
 				},
 				"es-ES": {
-					"title": "Repetir tutorial"
+					"title": "Repetir Tutorial"
 				},
 				"fr-FR": {
 					"title": "Rejouer le tutoriel"
@@ -21,7 +21,7 @@
 					"title": "ट्यूटोरियल फिर से चलाएं"
 				},
 				"it-IT": {
-					"title": "Replay Tutorial"
+					"title": "Ripeti Tutorial"
 				},
 				"ja-JP": {
 					"title": "チュートリアルをリプレイ"
@@ -33,10 +33,10 @@
 					"title": "Repetir Tutorial"
 				},
 				"ru-RU": {
-					"title": "Повторить обучение"
+					"title": "Повторить туториал"
 				},
 				"vi-VN": {
-					"title": "Phát lại hướng dẫn"
+					"title": "Chơi lại hướng dẫn"
 				}
 			},
 			"level": 99,

@@ -9,7 +9,7 @@
 					"title": "Access on other devices"
 				},
 				"de-DE": {
-					"title": "Zugang auf anderen Geräten"
+					"title": "Zugriff auf anderen Geräten"
 				},
 				"es-ES": {
 					"title": "Acceso en otros dispositivos"
@@ -18,25 +18,25 @@
 					"title": "Accès sur d'autres appareils"
 				},
 				"hi-IN": {
-					"title": "अन्य डिवाइस पर पहुंचें"
+					"title": "अन्य डिवाइस पर पहुँचें"
 				},
 				"it-IT": {
 					"title": "Accesso su altri dispositivi"
 				},
 				"ja-JP": {
-					"title": "他のデバイスへのアクセス"
+					"title": "他のデバイスへのアクセス"
 				},
 				"ko-KR": {
-					"title": "다른 디버스에 접속"
+					"title": "다른 디바이스에서 접속"
 				},
 				"pt-PT": {
 					"title": "Acesso em outros dispositivos"
 				},
 				"ru-RU": {
-					"title": "Доступ на других устройствах"
+					"title": "Доступ на других устройствах"
 				},
 				"vi-VN": {
-					"title": "Truy cập với thư viện khác"
+					"title": "Truy cập trên thiết bị khác"
 				}
 			},
 			"level": 100,

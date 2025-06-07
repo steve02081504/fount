@@ -21,7 +21,7 @@
 					"title": "आयात करें"
 				},
 				"it-IT": {
-					"title": "Importare"
+					"title": "Importa"
 				},
 				"ja-JP": {
 					"title": "インポート"
@@ -65,6 +65,9 @@
 				"hi-IN": {
 					"title": "हटाएं"
 				},
+				"it-IT": {
+					"title": "Elimina"
+				},
 				"ja-JP": {
 					"title": "削除"
 				},
@@ -76,6 +79,9 @@
 				},
 				"ru-RU": {
 					"title": "Удалить"
+				},
+				"vi-VN": {
+					"title": "Xóa"
 				}
 			},
 			"level": 0,

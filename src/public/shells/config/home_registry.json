@@ -12,16 +12,16 @@
 					"title": "Modulkonfiguration"
 				},
 				"es-ES": {
-					"title": "Configuración del módulo"
+					"title": "Configuración del Módulo"
 				},
 				"fr-FR": {
-					"title": "Configuration du module"
+					"title": "Configuration du Module"
 				},
 				"hi-IN": {
 					"title": "मॉड्यूल कॉन्फ़िगरेशन"
 				},
 				"it-IT": {
-					"title": "Modulo di configurazione"
+					"title": "Configurazione Modulo"
 				},
 				"ja-JP": {
 					"title": "モジュール設定"
@@ -36,7 +36,7 @@
 					"title": "Конфигурация модуля"
 				},
 				"vi-VN": {
-					"title": "Mô -đun cấu hình"
+					"title": "Cấu hình Mô-đun"
 				}
 			},
 			"level": 1,
@@ -65,6 +65,9 @@
 				"hi-IN": {
 					"title": "कॉन्फ़िग"
 				},
+				"it-IT": {
+					"title": "Configurazione"
+				},
 				"ja-JP": {
 					"title": "設定"
 				},
@@ -76,6 +79,9 @@
 				},
 				"ru-RU": {
 					"title": "Конфигурация"
+				},
+				"vi-VN": {
+					"title": "Cấu hình"
 				}
 			},
 			"level": 0,
