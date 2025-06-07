@@ -17,9 +17,9 @@
 		},
 		"ipc": {
 			"sendCommandFailed": "发送命令失败：${error}",
-			"invalidCommand": "无效的命令，请使用\"fount runshell <用户名> <shell名> <参数...>\"",
-			"runShellLog": "运行 shell ${shellname} 作为 ${username}，参数：${args}",
-			"invokeShellLog": "调用 shell ${shellname} 作为 ${username}，参数：${invokedata}",
+			"invalidCommand": "无效的命令，请使用\"fount run <部件类型> <用户名> <部件名> <参数...>\"",
+			"runPartLog": "运行 ${parttype} ${partname} 作为 ${username}，参数：${args}",
+			"invokePartLog": "调用 ${parttype} ${partname} 作为 ${username}，参数：${invokedata}",
 			"unsupportedCommand": "不支持的命令类型",
 			"processMessageError": "处理 IPC 消息时出错：${error}",
 			"invalidCommandFormat": "无效的命令格式",

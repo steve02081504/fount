@@ -4,6 +4,15 @@
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 FOUNT_DIR=$(dirname "$SCRIPT_DIR")
 
+# 若是 Windows 环境，则使用 fount.ps1
+if [[ "$OSTYPE" == "msys" ]]; then
+	powerShell.exe -noprofile -executionpolicy bypass -file "$FOUNT_DIR\path\fount.ps1" $@
+	exit $?
+fi
+
+# 转义后的Fount路径用于sed
+ESCAPED_FOUNT_DIR=$(echo "$FOUNT_DIR" | sed 's/\//\\\//g')
+
 # 自动安装包列表文件及标记文件
 INSTALLER_DATA_DIR="$FOUNT_DIR/data/installer"
 INSTALLED_SYSTEM_PACKAGES_FILE="$INSTALLER_DATA_DIR/auto_installed_system_packages"
@@ -95,8 +104,6 @@ install_package() {
 
 	# 检查是否已经通过 command -v 安装成功
 	if command -v "$package_name" &> /dev/null; then
-		echo "$package_name is already installed and found in PATH."
-		add_package_to_tracker "$package_name" "INSTALLED_SYSTEM_PACKAGES_ARRAY"
 		return 0
 	fi
 
@@ -104,7 +111,11 @@ install_package() {
 
 	if command -v pkg &> /dev/null; then
 		pkg install -y "$package_name" && install_successful=1
-	elif command -v apt-get &> /dev/null; then
+	fi
+	if [[ install_successful -eq 0 ]] && command -v snap &> /dev/null; then
+		snap install "$package_name" && install_successful=1
+	fi
+	if [[ install_successful -eq 0 ]] && command -v apt-get &> /dev/null; then
 		if command -v sudo &> /dev/null; then
 			sudo apt-get update -y
 			sudo apt-get install -y "$package_name" && install_successful=1
@@ -112,15 +123,13 @@ install_package() {
 			apt-get update -y
 			apt-get install -y "$package_name" && install_successful=1
 		fi
-	elif command -v brew &> /dev/null; then
+	fi
+	if [[ install_successful -eq 0 ]] && command -v brew &> /dev/null; then
 		if ! brew list --formula "$package_name" &> /dev/null; then
 			brew install "$package_name" && install_successful=1
-			eval "$(brew shellenv)" || eval "$(/opt/homebrew/bin/brew shellenv)"
-		else
-			echo "$package_name is already installed via brew."
-			install_successful=1 # 即使是外部安装，也视为成功
 		fi
-	elif command -v pacman &> /dev/null; then
+	fi
+	if [[ install_successful -eq 0 ]] && command -v pacman &> /dev/null; then
 		if command -v sudo &> /dev/null; then
 			sudo pacman -Syy
 			sudo pacman -S --needed --noconfirm "$package_name" && install_successful=1
@@ -128,23 +137,30 @@ install_package() {
 			pacman -Syy
 			pacman -S --needed --noconfirm "$package_name" && install_successful=1
 		fi
-	elif command -v dnf &> /dev/null; then
+	fi
+	if [[ install_successful -eq 0 ]] && command -v dnf &> /dev/null; then
 		if command -v sudo &> /dev/null; then
 			sudo dnf install -y "$package_name" && install_successful=1
 		else
 			dnf install -y "$package_name" && install_successful=1
 		fi
-	elif command -v zypper &> /dev/null; then
+	fi
+	if [[ install_successful -eq 0 ]] && command -v yum &> /dev/null; then
+		if command -v sudo &> /dev/null; then
+			sudo yum install -y "$package_name" && install_successful=1
+		else
+			yum install -y "$package_name" && install_successful=1
+		fi
+	fi
+	if [[ install_successful -eq 0 ]] && command -v zypper &> /dev/null; then
 		if command -v sudo &> /dev/null; then
 			sudo zypper install -y --no-confirm "$package_name" && install_successful=1
 		else
 			zypper install -y --no-confirm "$package_name" && install_successful=1
 		fi
-	elif command -v apk &> /dev/null; then
+	fi
+	if [[ install_successful -eq 0 ]] && command -v apk &> /dev/null; then
 		apk add --update "$package_name" && install_successful=1
-	else
-		echo "Error: Cannot install $package_name. Please install it manually." >&2
-		return 1
 	fi
 
 	if [[ $install_successful -eq 1 ]]; then
@@ -160,32 +176,59 @@ install_package() {
 # $1: 包名
 uninstall_package() {
 	local package_name="$1"
-	# 尝试从系统包管理器中卸载
-	# 注意：卸载顺序从“最新”或“最不通用”的开始，以避免依赖问题
-	if command -v apk &> /dev/null; then
-		apk del "$package_name" && { echo "$package_name uninstalled via apk."; return 0; }
+	echo "Attempting to uninstall $package_name..."
+
+	if command -v pkg &> /dev/null; then
+		pkg uninstall -y "$package_name" && { echo "$package_name uninstalled via pkg."; return 0; }
 	fi
-	if command -v zypper &> /dev/null; then
-		if command -v sudo &> /dev/null; then sudo zypper remove -y --no-confirm "$package_name"; else zypper remove -y --no-confirm "$package_name"; fi && { echo "$package_name uninstalled via zypper."; return 0; }
+	if command -v snap &> /dev/null; then
+		snap remove "$package_name" && { echo "$package_name uninstalled via snap."; return 0; }
 	fi
-	if command -v dnf &> /dev/null; then
-		if command -v sudo &> /dev/null; then sudo dnf remove -y "$package_name"; else dnf remove -y "$package_name"; fi && { echo "$package_name uninstalled via dnf."; return 0; }
-	fi
-	if command -v pacman &> /dev/null; then
-		# 使用 -Rns 移除包及其不再需要的依赖
-		if command -v sudo &> /dev/null; then sudo pacman -Rns --noconfirm "$package_name"; else pacman -Rns --noconfirm "$package_name"; fi && { echo "$package_name uninstalled via pacman."; return 0; }
+	if command -v apt-get &> /dev/null; then
+		# 使用 purge 以便彻底删除配置文件
+		if command -v sudo &> /dev/null; then
+			sudo apt-get purge -y "$package_name"
+		else
+			apt-get purge -y "$package_name"
+		fi && { echo "$package_name uninstalled via apt-get."; return 0; }
 	fi
 	if command -v brew &> /dev/null; then
 		brew uninstall "$package_name" && { echo "$package_name uninstalled via brew."; return 0; }
 	fi
-	if command -v apt-get &> /dev/null; then
-		# 使用 purge 以便彻底删除配置文件
-		if command -v sudo &> /dev/null; then sudo apt-get purge -y "$package_name"; else apt-get purge -y "$package_name"; fi && { echo "$package_name uninstalled via apt-get."; return 0; }
+	if command -v pacman &> /dev/null; then
+		# 使用 -Rns 移除包及其不再需要的依赖和配置文件
+		if command -v sudo &> /dev/null; then
+			sudo pacman -Rns --noconfirm "$package_name"
+		else
+			pacman -Rns --noconfirm "$package_name"
+		fi && { echo "$package_name uninstalled via pacman."; return 0; }
 	fi
-	if command -v pkg &> /dev/null; then
-		pkg uninstall -y "$package_name" && { echo "$package_name uninstalled via pkg."; return 0; }
+	if command -v dnf &> /dev/null; then
+		if command -v sudo &> /dev/null; then
+			sudo dnf remove -y "$package_name"
+		else
+			dnf remove -y "$package_name"
+		fi && { echo "$package_name uninstalled via dnf."; return 0; }
 	fi
-	echo "Failed to uninstall $package_name via any package manager." >&2
+	if command -v yum &> /dev/null; then
+		if command -v sudo &> /dev/null; then
+			sudo yum remove -y "$package_name"
+		else
+			yum remove -y "$package_name"
+		fi && { echo "$package_name uninstalled via yum."; return 0; }
+	fi
+	if command -v zypper &> /dev/null; then
+		if command -v sudo &> /dev/null; then
+			sudo zypper remove -y --no-confirm "$package_name"
+		else
+			zypper remove -y --no-confirm "$package_name"
+		fi && { echo "$package_name uninstalled via zypper."; return 0; }
+	fi
+	if command -v apk &> /dev/null; then
+		apk del "$package_name" && { echo "$package_name uninstalled via apk."; return 0; }
+	fi
+
+	echo "Failed to uninstall $package_name via any recognized package manager." >&2
 	return 1
 }
 
@@ -272,6 +315,10 @@ create_desktop_shortcut() {
 
 	if [ "$OS_TYPE" = "Linux" ]; then
 		local desktop_file_path="$HOME/.local/share/applications/$shortcut_name.desktop"
+		if [ -f "$desktop_file_path" ]; then
+			echo "Removing old desktop shortcut at $desktop_file_path"
+			rm "$desktop_file_path"
+		fi
 		mkdir -p "$(dirname "$desktop_file_path")"
 		cat <<EOF > "$desktop_file_path"
 [Desktop Entry]
@@ -314,8 +361,15 @@ EOF
 	elif [ "$OS_TYPE" = "Darwin" ]; then # macOS
 		local app_path="$HOME/Desktop/$shortcut_name.app"
 		local icns_path="$FOUNT_DIR/src/public/favicon.icns"
-		local compiled_applescript_path="$app_path/Contents/MacOS/fount-launcher"
+		local macos_launcher_path="$app_path/Contents/MacOS/fount-launcher"
+		# 已编译的 AppleScript 将放在 Resources 目录
+		local compiled_applescript_in_resources="$app_path/Contents/Resources/fount-launcher.scpt"
 		local temp_applescript_file="/tmp/fount_launcher_script.applescript"
+
+		if [ -d "$app_path" ]; then
+			echo "Removing old macOS application bundle at $app_path"
+			rm -rf "$app_path"
+		fi
 
 		echo "Creating macOS application bundle at $app_path"
 
@@ -346,8 +400,7 @@ EOF
 			icon_name="favicon.icns"
 		fi
 
-
-		# 3. 创建 Info.plist 文件
+		# 3. 创建 Info.plist 文件 (CFBundleExecutable 指向新的 shell 脚本)
 		cat <<EOF > "$app_path/Contents/Info.plist"
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -356,7 +409,7 @@ EOF
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>
-	<string>fount-launcher</string> <!-- Points to our compiled AppleScript -->
+	<string>fount-launcher</string> <!-- Points to our new shell script launcher -->
 	<key>CFBundleIconFile</key>
 	<string>$icon_name</string>
 	<key>CFBundleIdentifier</key>
@@ -378,7 +431,7 @@ EOF
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 	<key>LSUIElement</key>
-	<false/> <!-- Set to false to show a dock icon and application window -->
+	<false/>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -394,15 +447,18 @@ EOF
 </plist>
 EOF
 
-		# 4. 创建 AppleScript 启动器
+		# 4. 创建 AppleScript 启动器内容的临时文件 (这部分不变)
 		cat <<EOF > "$temp_applescript_file"
 on run argv
-	-- 获取当前应用包的路径 (fount.app/Contents/MacOS/fount-launcher)
-	set app_executable_path to POSIX path of (path to me)
+	-- 获取当前应用包的路径 (fount.app/Contents/MacOS/fount-launcher 或 fount.app/Contents/Resources/fount-launcher.scpt)
+	-- 注意：这里的 path to me 会根据 osascript 执行的脚本来。如果直接执行 .scpt，则 path to me 是 .scpt 的路径。
+	-- 我们将这个 AppleScript 作为通用逻辑，由外部的 shell 脚本调用。
+	-- 所以这里的 fount_dir_path 需要直接从 shell 脚本传入或硬编码。
+	-- 这里使用硬编码的 "$FOUNT_DIR" 是正确的。
 	set fount_dir_path to POSIX path of "$FOUNT_DIR"
 
 	-- 构建要执行的实际 fount 脚本的完整路径
-	set fount_command_path to fount_dir_path & "path/fount"
+	set fount_command_path to fount_dir_path & "/path/fount"
 	set command_to_execute to quoted form of fount_command_path
 
 	-- 如果没有传递任何参数，默认执行 'open keepalive'
@@ -415,23 +471,21 @@ on run argv
 		end repeat
 	end if
 
-	-- 在 Terminal.app 中执行命令，并使其保持打开
+	-- 将主命令和退出提示合并成一个单一的命令字符串。
+	-- 'read -r' 只会在主命令 (keepalive 循环) 正常结束后执行。
+	set final_command_in_terminal to command_to_execute & "; echo ''; echo 'Fount has exited. Press Enter to close this window...'; read -r"
+
+	-- 在 Terminal.app 中执行这个合并后的命令。
 	tell application "Terminal"
 		activate
-		-- 创建一个新窗口并执行命令
-		set new_window to do script command_to_execute
-		-- 确保在命令完成后终端窗口不会立即关闭
-		do script "echo ''; echo 'Fount has exited. Press Enter to close this window...'; read -r" in new_window
+		set new_window to do script final_command_in_terminal
 	end tell
 end run
 EOF
 
-		# 5. 编译 AppleScript
-		# osacompile 命令会将 .applescript 文件编译成可执行的脚本文件。
-		# -o 参数指定输出文件路径
-		# -x 参数使得输出文件在执行时不需要调用 osascript
+		# 5. 编译 AppleScript 到 Resources 目录
 		if command -v osacompile &> /dev/null; then
-			osacompile -o "$compiled_applescript_path" "$temp_applescript_file"
+			osacompile -o "$compiled_applescript_in_resources" "$temp_applescript_file"
 			if [ $? -ne 0 ]; then
 				echo "Error: Failed to compile AppleScript. Cannot create macOS app shortcut." >&2
 				rm -rf "$app_path"
@@ -445,11 +499,26 @@ EOF
 			return 1
 		fi
 
-		# 6. 清理临时文件
-		rm "$temp_applescript_file"
+		# 6. 创建真正的 fount-launcher shell 脚本
+		cat <<EOF > "$macos_launcher_path"
+#!/bin/bash
+# 这个脚本是 fount.app 的入口点，它会调用 osascript 来执行已编译的 AppleScript。
+
+# 获取当前 shell 脚本的目录
+SCRIPT_DIR="\$(dirname "\$0")"
+
+# 已编译的 AppleScript 文件路径 (相对于这个 shell 脚本的路径)
+COMPILED_APPLESCRIPT_PATH="\$SCRIPT_DIR/../Resources/fount-launcher.scpt"
+
+# 将所有命令行参数传递给 AppleScript
+# osascript 会自动处理参数传递给 AppleScript 的 'run argv' handler
+osascript "\$COMPILED_APPLESCRIPT_PATH" "\$@"
+
+EOF
 
 		# 7. 确保应用可执行权限 (Recursive)
 		chmod -R u+rwx "$app_path"
+		xattr -dr com.apple.quarantine "$app_path"
 
 		# 8. 刷新 LaunchServices 数据库以注册协议和图标
 		local LSREGISTER_PATH="/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister"
@@ -519,27 +588,27 @@ remove_desktop_shortcut() {
 
 # 将 fount 路径添加到 PATH (如果尚未添加)
 ensure_fount_path() {
-	if ! command -v fount &> /dev/null; then
-		local profile_file="$HOME/.profile"
-		if [[ "$SHELL" == *"/zsh" ]]; then
-			profile_file="$HOME/.zshrc"
-		elif [[ "$SHELL" == *"/bash" ]]; then
-			profile_file="$HOME/.bashrc"
-		fi
-
-		# Fallback to .profile if specific shell config not found or for default
-		if [[ ! -f "$profile_file" ]] && [[ -f "$HOME/.profile" ]]; then
-			profile_file="$HOME/.profile"
-		elif [[ ! -f "$profile_file" ]] && [[ ! -f "$HOME/.profile" ]]; then
-			# If no profile file exists, create .profile
-			touch "$HOME/.profile"
-			profile_file="$HOME/.profile"
-		fi
-
-		if ! grep -q "export PATH=.*$FOUNT_DIR/path" "$profile_file" 2>/dev/null; then
-			echo "Adding fount path to $profile_file..."
-			echo "export PATH=\"\$PATH:$FOUNT_DIR/path\"" >> "$profile_file"
-		fi
+	if ! command -v fount.sh &> /dev/null; then
+		local profile_files=("$HOME/.profile" "$HOME/.bashrc" "$HOME/.zshrc")
+		for profile_file in "${profile_files[@]}"; do
+			if ! grep -q "export PATH=.*$FOUNT_DIR/path" "$profile_file" 2>/dev/null; then
+				echo "Adding fount path to $profile_file..."
+				if [ ! -f "$profile_file" ]; then
+					touch "$profile_file"
+				fi
+				# remove old fount path first
+				if [ "$OS_TYPE" = "Darwin" ]; then
+					sed -i '' '/export PATH="\$PATH:'"$ESCAPED_FOUNT_DIR\/path"'"/d' "$profile_file"
+				else
+					sed -i '/export PATH="\$PATH:'"$ESCAPED_FOUNT_DIR\/path"'"/d' "$profile_file"
+				fi
+				# 若profile不是\n结尾，加上
+				if [ "$(tail -c 1 "$profile_file")" != $'\n' ]; then
+					echo >> "$profile_file"
+				fi
+				echo "export PATH=\"\$PATH:$FOUNT_DIR/path\"" >> "$profile_file"
+			fi
+		done
 		# 立即更新当前 shell 的 PATH
 		export PATH="$PATH:$FOUNT_DIR/path"
 	fi
@@ -622,7 +691,7 @@ fi
 EOF_OPEN_JOB
 
 	# 将剩余参数传递给 fount 运行 (例如 'keepalive')
-	run "${@:2}" # 从第二个参数开始传递给 run 函数
+	$FOUNT_DIR/path/fount.sh "${@:2}" # 从第二个参数开始传递给fount
 	exit $? # 确保在后台进程启动后，主脚本可以退出
 # 处理 'background' 参数
 elif [[ $# -gt 0 && $1 = 'background' ]]; then
@@ -716,9 +785,10 @@ else
 fi
 EOF_PROTOCOL_JOB
 
-	run "${@:3}"
+	$FOUNT_DIR/path/fount.sh "${@:3}"
 	exit $?
 fi
+EOF_PROTOCOL_JOB
 
 # 检查并安装 Git (如果需要)
 if ! command -v git &> /dev/null; then
@@ -736,7 +806,7 @@ fount_upgrade() {
 		echo "Fount repository not found, cloning..."
 		rm -rf "$FOUNT_DIR/.git-clone"  # 移除任何旧的 .git-clone 目录
 		mkdir -p "$FOUNT_DIR/.git-clone"
-		git clone https://github.com/steve02081504/fount.git "$FOUNT_DIR/.git-clone" --no-checkout --depth 1
+		git clone https://github.com/steve02081504/fount.git "$FOUNT_DIR/.git-clone" --no-checkout --depth 1 --single-branch
 		if [ $? -ne 0 ]; then
 			echo "Error: Failed to clone fount repository. Check connection or configuration." >&2
 			exit 1
@@ -819,6 +889,10 @@ fi
 # 对于非 Termux 环境，如果 Deno 不存在，则安装。
 # 对于 Termux 环境，如果 ~/.deno/bin/deno.glibc.sh 不存在，则安装。
 install_deno() {
+	# 若没有deno但有$HOME/.deno/env
+	if [[ -z "$(command -v deno)" && -f "$HOME/.deno/env" ]]; then
+		. "$HOME/.deno/env"
+	fi
 	if [[ ($IN_TERMUX -eq 0 && -z "$(command -v deno)") || ($IN_TERMUX -eq 1 && ! -f ~/.deno/bin/deno.glibc.sh) ]]; then
 		if [[ $IN_TERMUX -eq 1 ]]; then
 			echo "Installing Deno for Termux..."
@@ -882,6 +956,10 @@ install_deno() {
 				profile_file_deno="$HOME/.profile"
 			fi
 
+			# 若profile不是\n结尾，加上
+			if [ "$(tail -c 1 "$profile_file_deno")" != $'\n' ]; then
+				echo >> "$profile_file_deno"
+			fi
 			if ! grep -q "export DENO_INSTALL=.*" "$profile_file_deno" 2>/dev/null; then
 				echo "export DENO_INSTALL=\"${HOME}/.deno\"" >> "$profile_file_deno"
 			fi
@@ -907,30 +985,82 @@ install_deno() {
 			# 非 Termux 环境下的普通安装
 			echo "Deno not found, attempting to install..."
 			curl -fsSL https://deno.land/install.sh | sh -s -- -y
-			# 处理 PATH 和 DENO_INSTALL 环境变量的持久化
-			local profile_file_deno="$HOME/.profile"
-			if [[ "$SHELL" == *"/zsh" ]]; then
-				profile_file_deno="$HOME/.zshrc"
-			elif [[ "$SHELL" == *"/bash" ]]; then
-				profile_file_deno="$HOME/.bashrc"
+			if [ $? -ne 0 ]; then
+				echo "Deno standard installation script failed. Attempting direct download to fount's path folder..."
+
+				local deno_dl_url="https://github.com/denoland/deno/releases/latest/download/deno-"
+				local arch_target=""
+				local current_arch=$(uname -m)
+
+				case "$OS_TYPE" in
+					Linux*)
+						# PWSH版本Linux默认x86_64，这里也遵循，除非明确需要其他架构
+						arch_target="x86_64-unknown-linux-gnu.zip"
+						if [ "$current_arch" = "aarch64" ]; then
+							arch_target="aarch64-unknown-linux-gnu.zip"
+						else
+							arch_target="x86_64-unknown-linux-gnu.zip"
+						fi
+						;;
+					Darwin*)
+						if [ "$current_arch" = "arm64" ]; then
+							arch_target="aarch64-apple-darwin.zip"
+						else
+							arch_target="x86_64-apple-darwin.zip"
+						fi
+						;;
+					*)
+						echo "Warning: Unknown OS type: $(uname -s). Defaulting to x86_64-unknown-linux-gnu.zip for manual download." >&2
+						arch_target="x86_64-unknown-linux-gnu.zip"
+						;;
+				esac
+				deno_dl_url="${deno_dl_url}${arch_target}"
+
+				local TEMP_DIR="/tmp"
+				mkdir -p "$FOUNT_DIR/path"
+
+				if ! command -v unzip &> /dev/null; then
+					echo "'unzip' command not found. Attempting to install..."
+					install_package unzip
+					if ! command -v unzip &> /dev/null; then
+						echo "Error: Failed to install 'unzip'. Cannot proceed with Deno installation." >&2
+						exit 1
+					fi
+				fi
+
+				if ! curl -fL -o "$TEMP_DIR/deno.zip" "$deno_dl_url"; then
+					echo "Error: Failed to download Deno from $deno_dl_url." >&2
+					exit 1
+				fi
+
+				if ! unzip -o "$TEMP_DIR/deno.zip" -d "$FOUNT_DIR/path"; then
+					echo "Error: Failed to extract Deno archive to $FOUNT_DIR/path." >&2
+					rm "$TEMP_DIR/deno.zip"
+					exit 1
+				fi
+				rm "$TEMP_DIR/deno.zip"
+
+				chmod +x "$FOUNT_DIR/path/deno"
+				export PATH="$PATH:$FOUNT_DIR/path"
+			else
+				# 处理 PATH 和 DENO_INSTALL 环境变量的持久化
+				local profile_file_deno="$HOME/.profile"
+				if [[ "$SHELL" == *"/zsh" ]]; then
+					profile_file_deno="$HOME/.zshrc"
+				elif [[ "$SHELL" == *"/bash" ]]; then
+					profile_file_deno="$HOME/.bashrc"
+				fi
+				if [[ ! -f "$profile_file_deno" ]] && [[ -f "$HOME/.profile" ]]; then
+					profile_file_deno="$HOME/.profile"
+				elif [[ ! -f "$profile_file_deno" ]] && [[ ! -f "$HOME/.profile" ]]; then
+					touch "$HOME/.profile"
+					profile_file_deno="$HOME/.profile"
+				fi
+				source "$profile_file_deno" &> /dev/null # 重新加载 shell 配置文件以更新 PATH (当前会话)
+				export DENO_INSTALL="$HOME/.deno"
+				export PATH="$PATH:$DENO_INSTALL/bin"
+				touch "$AUTO_INSTALLED_DENO_FLAG" # 标记为自动安装
 			fi
-			if [[ ! -f "$profile_file_deno" ]] && [[ -f "$HOME/.profile" ]]; then
-				profile_file_deno="$HOME/.profile"
-			elif [[ ! -f "$profile_file_deno" ]] && [[ ! -f "$HOME/.profile" ]]; then
-				touch "$HOME/.profile"
-				profile_file_deno="$HOME/.profile"
-			fi
-			# install.sh 脚本会处理 PATH，但确保其持久化
-			if ! grep -q "export DENO_INSTALL=.*" "$profile_file_deno" 2>/dev/null; then
-				echo "export DENO_INSTALL=\"${HOME}/.deno\"" >> "$profile_file_deno"
-			fi
-			if ! grep -q "export PATH=.*${HOME}/.deno/bin" "$profile_file_deno" 2>/dev/null; then
-				echo "export PATH=\"\$PATH:${HOME}/.deno/bin\"" >> "$profile_file_deno"
-			fi
-			source "$profile_file_deno" &> /dev/null # 重新加载 shell 配置文件以更新 PATH (当前会话)
-			export DENO_INSTALL="$HOME/.deno"
-			export PATH="$PATH:$DENO_INSTALL/bin"
-			touch "$AUTO_INSTALLED_DENO_FLAG" # 标记为自动安装
 		fi
 
 		# 最终检查，如果还是找不到 Deno，则退出
@@ -980,25 +1110,7 @@ else
 fi
 
 # 输出 Deno 版本信息
-echo "Deno version: $(run_deno -V)"
-
-# 安装 fount 依赖
-if [[ ! -d "$FOUNT_DIR/node_modules" || ($# -gt 0 && $1 = 'init') ]]; then
-	echo "Installing Fount dependencies..."
-	set +e # 临时禁用严格模式，因为第一次运行可能会失败
-	run_deno install --reload --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
-	# 不知为何部分环境下第一次跑铁定出错，先跑再说 (模仿 PowerShell 脚本的行为)
-	run_deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" "shutdown" 2>/dev/null || true
-	set -e # 重新启用严格模式
-
-	if [ $IN_DOCKER -eq 0 ] && [ $IN_TERMUX -eq 0 ]; then
-		create_desktop_shortcut # 现在这个函数会同时处理快捷方式和协议注册
-	fi
-
-	echo "======================================================"
-	echo "WARNING: DO NOT install any untrusted fount parts on your system, they can do ANYTHING."
-	echo "======================================================"
-fi
+echo "$(run_deno -V)"
 
 # 函数: 运行 fount
 run() {
@@ -1011,6 +1123,12 @@ run() {
 	if [[ $IN_TERMUX -eq 1 ]]; then
 		LANG_BACKUP="$LANG"
 		export LANG="$(getprop persist.sys.locale)"
+		# 水秋脚本对termux的劫持移除
+		local SQsacPath="/data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/root/.bashrc"
+		if [[ -f "$SQsacPath" ]] && grep -q "bash /root/sac.sh" "$SQsacPath"; then
+			sed -i '/bash \/root\/sac.sh/d' "$SQsacPath"
+			sed -i '/proot-distro login ubuntu/d' "/data/data/com.termux/files/home/.bashrc"
+		fi
 	fi
 
 	# 运行 fount (debug 或普通模式)
@@ -1026,6 +1144,27 @@ run() {
 		export LANG="$LANG_BACKUP"
 	fi
 }
+
+# 安装 fount 依赖
+if [[ ! -d "$FOUNT_DIR/node_modules" || ($# -gt 0 && $1 = 'init') ]]; then
+	if [[ -d "$FOUNT_DIR/node_modules" ]]; then
+		run "shutdown"
+	fi
+	echo "Installing Fount dependencies..."
+	set +e # 临时禁用严格模式，因为第一次运行可能会失败
+	run_deno install --reload --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
+	# 不知为何部分环境下第一次跑铁定出错，先跑再说 (模仿 PowerShell 脚本的行为)
+	run_deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" "shutdown" 2>/dev/null || true
+	set -e # 重新启用严格模式
+
+	if [ $IN_DOCKER -eq 0 ] && [ $IN_TERMUX -eq 0 ]; then
+		create_desktop_shortcut # 现在这个函数会同时处理快捷方式和协议注册
+	fi
+
+	echo "======================================================"
+	echo "WARNING: DO NOT install any untrusted fount parts on your system, they can do ANYTHING."
+	echo "======================================================"
+fi
 
 # 主要参数处理逻辑
 if [[ $# -gt 0 ]]; then
@@ -1056,13 +1195,9 @@ if [[ $# -gt 0 ]]; then
 				if [ -f "$profile_file" ]; then
 					# macOS sed needs empty string, Linux sed doesn't
 					if [ "$OS_TYPE" = "Darwin" ]; then
-						sed -i '' '/export PATH="\$PATH:'"$FOUNT_DIR/path"'"/d' "$profile_file"
-						sed -i '' '/export DENO_INSTALL=".*\.deno"/d' "$profile_file"
-						sed -i '' '/export PATH="\$PATH:.*\.deno\/bin"/d' "$profile_file"
+						sed -i '' '/export PATH="\$PATH:'"$ESCAPED_FOUNT_DIR\/path"'"/d' "$profile_file"
 					else
-						sed -i '/export PATH="\$PATH:'"$FOUNT_DIR/path"'"/d' "$profile_file"
-						sed -i '/export DENO_INSTALL=".*\.deno"/d' "$profile_file"
-						sed -i '/export PATH="\$PATH:.*\.deno\/bin"/d' "$profile_file"
+						sed -i '/export PATH="\$PATH:'"$ESCAPED_FOUNT_DIR\/path"'"/d' "$profile_file"
 					fi
 					echo "Cleaned PATH entries in $profile_file."
 				fi
@@ -1097,11 +1232,17 @@ if [[ $# -gt 0 ]]; then
 					rm -rf "$HOME/.deno"
 					echo "Deno installation directory $HOME/.deno removed."
 				fi
-				# 移除 Termux specific deno.glibc.sh wrapper
-				if [ -f "$HOME/.deno/bin/deno.glibc.sh" ]; then
-					rm "$HOME/.deno/bin/deno.glibc.sh"
-					echo "Removed Termux deno.glibc.sh wrapper."
-				fi
+				for profile_file in "${profile_files[@]}"; do
+					if [ -f "$profile_file" ]; then
+						# macOS sed needs empty string, Linux sed doesn't
+						if [ "$OS_TYPE" = "Darwin" ]; then
+							sed -i '' '/\.deno/d' "$profile_file"
+						else
+							sed -i '/\.deno/d' "$profile_file"
+						fi
+						echo "Cleaned PATH entries in $profile_file."
+					fi
+				done
 				rm -f "$AUTO_INSTALLED_DENO_FLAG"
 			fi
 

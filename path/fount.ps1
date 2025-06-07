@@ -2,6 +2,10 @@
 
 $ErrorCount = $Error.Count
 
+if ($PSEdition -eq "Desktop") {
+	try { $IsWindows = $true } catch {}
+}
+
 # Docker 检测
 $IN_DOCKER = $false
 
@@ -20,29 +24,6 @@ if (!(Get-Command fount -ErrorAction SilentlyContinue)) {
 	$UserPath = $UserPath -join ';'
 	[System.Environment]::SetEnvironmentVariable('PATH', $UserPath, [System.EnvironmentVariableTarget]::User)
 	$env:PATH = $path
-}
-
-# fount 协议注册 (新增)
-if (-not $IN_DOCKER) {
-	$protocolName = "fount"
-	$protocolDescription = "URL:fount Protocol"
-	# 使用 fount.bat 作为协议处理程序，因为它是Windows上的主入口点
-	$command = "`"$FOUNT_DIR\path\fount.bat`" protocolhandle `"%1`""
-
-	try {
-		# 创建目录
-		New-Item -Path "HKCU:\Software\Classes\$protocolName" -Force | Out-Null
-		# 设置协议根键
-		Set-ItemProperty -Path "HKCU:\Software\Classes\$protocolName" -Name "(Default)" -Value $protocolDescription -ErrorAction Stop
-		Set-ItemProperty -Path "HKCU:\Software\Classes\$protocolName" -Name "URL Protocol" -Value "" -ErrorAction Stop
-		# 创建 shell\open\command 子键
-		New-Item -Path "HKCU:\Software\Classes\$protocolName\shell\open\command" -Force | Out-Null
-		# 设置协议处理命令
-		Set-ItemProperty -Path "HKCU:\Software\Classes\$protocolName\shell\open\command" -Name "(Default)" -Value $command -ErrorAction Stop
-	}
-	catch {
-		Write-Warning "Failed to register fount:// protocol handler: $($_.Exception.Message)"
-	}
 }
 
 $auto_installed_pwsh_modules = Get-Content "$FOUNT_DIR/data/installer/auto_installed_pwsh_modules" -Raw -ErrorAction Ignore
@@ -136,6 +117,34 @@ if ($Profile -and (Get-Module fount-pwsh -ListAvailable)) {
 	}
 }
 
+if (!$IsWindows) {
+	bash $FOUNT_DIR/path/fount.sh @args
+	exit $LastExitCode
+}
+
+# fount 协议注册 (新增)
+if (-not $IN_DOCKER) {
+	$protocolName = "fount"
+	$protocolDescription = "URL:fount Protocol"
+	# 使用 fount.bat 作为协议处理程序，因为它是Windows上的主入口点
+	$command = "`"$FOUNT_DIR\path\fount.bat`" protocolhandle `"%1`""
+
+	try {
+		# 创建目录
+		New-Item -Path "HKCU:\Software\Classes\$protocolName" -Force | Out-Null
+		# 设置协议根键
+		Set-ItemProperty -Path "HKCU:\Software\Classes\$protocolName" -Name "(Default)" -Value $protocolDescription -ErrorAction Stop
+		Set-ItemProperty -Path "HKCU:\Software\Classes\$protocolName" -Name "URL Protocol" -Value "" -ErrorAction Stop
+		# 创建 shell\open\command 子键
+		New-Item -Path "HKCU:\Software\Classes\$protocolName\shell\open\command" -Force | Out-Null
+		# 设置协议处理命令
+		Set-ItemProperty -Path "HKCU:\Software\Classes\$protocolName\shell\open\command" -Name "(Default)" -Value $command -ErrorAction Stop
+	}
+	catch {
+		Write-Warning "Failed to register fount:// protocol handler: $($_.Exception.Message)"
+	}
+}
+
 # fount Terminal注册
 $WTjsonDirPath = "$env:LOCALAPPDATA/Microsoft/Windows Terminal/Fragments/fount"
 if (!(Test-Path $WTjsonDirPath)) {
@@ -186,7 +195,12 @@ function fount_upgrade {
 	if (!(Test-Path -Path "$FOUNT_DIR/.git")) {
 		Remove-Item -Path "$FOUNT_DIR/.git-clone" -Recurse -Force -ErrorAction SilentlyContinue
 		New-Item -ItemType Directory -Path "$FOUNT_DIR/.git-clone"
-		git clone https://github.com/steve02081504/fount.git "$FOUNT_DIR/.git-clone" --no-checkout --depth 1
+		git clone https://github.com/steve02081504/fount.git "$FOUNT_DIR/.git-clone" --no-checkout --depth 1 --single-branch
+		if ($LastExitCode) {
+			Remove-Item -Path "$FOUNT_DIR/.git-clone" -Recurse -Force
+			Write-Host "Failed to clone fount repository, skipping update"
+			return
+		}
 		Move-Item -Path "$FOUNT_DIR/.git-clone/.git" -Destination "$FOUNT_DIR/.git"
 		Remove-Item -Path "$FOUNT_DIR/.git-clone" -Recurse -Force
 		git -C "$FOUNT_DIR" fetch origin
@@ -310,31 +324,6 @@ else {
 
 deno -V
 
-# 安装依赖
-if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $args[0] -eq 'init')) {
-	Write-Host "Installing dependencies..."
-	deno install --reload --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
-	Write-Host "======================================================" -ForegroundColor Green
-	Write-Warning "DO NOT install any untrusted fount parts on your system, they can do ANYTHING."
-	Write-Host "======================================================" -ForegroundColor Green
-	# 生成 桌面快捷方式
-	if ($IsWindows) {
-		$shell = New-Object -ComObject WScript.Shell
-		$desktop = [Environment]::GetFolderPath("Desktop")
-		$shortcut = $shell.CreateShortcut("$desktop\fount.lnk")
-		if (Test-Path "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe") {
-			$shortcut.TargetPath = "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe"
-			$shortcut.Arguments = "-p fount powershell.exe -noprofile -nologo -ExecutionPolicy Bypass -File $FOUNT_DIR\path\fount.ps1 open keepalive"
-		}
-		else {
-			$shortcut.TargetPath = "powershell.exe"
-			$shortcut.Arguments = "-noprofile -nologo -ExecutionPolicy Bypass -File $FOUNT_DIR\path\fount.ps1 open keepalive"
-		}
-		$shortcut.IconLocation = "$FOUNT_DIR\src\public\favicon.ico"
-		$shortcut.Save()
-	}
-}
-
 # 执行 fount
 function isRoot {
 	if ($IsWindows) {
@@ -360,6 +349,47 @@ function run {
 		Get-Process tray_windows_release -ErrorAction Ignore | Where-Object { $_.CPU -gt 0.5 } | Stop-Process
 	}
 }
+
+# 安装依赖
+if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $args[0] -eq 'init')) {
+	Write-Host "Installing dependencies..."
+	if (Test-Path -Path "$FOUNT_DIR/node_modules") {
+		run shutdown
+	}
+	deno install --reload --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
+	Write-Host "======================================================" -ForegroundColor Green
+	Write-Warning "DO NOT install any untrusted fount parts on your system, they can do ANYTHING."
+	Write-Host "======================================================" -ForegroundColor Green
+	# 生成 桌面快捷方式 和 Start Menu 快捷方式
+	$shell = New-Object -ComObject WScript.Shell
+
+	$shortcutTargetPath = "powershell.exe"
+	$shortcutArguments = "-noprofile -nologo -ExecutionPolicy Bypass -File `"$FOUNT_DIR\path\fount.ps1`" open keepalive"
+	if (Test-Path "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe") {
+		$shortcutTargetPath = "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe"
+		$shortcutArguments = "-p fount powershell.exe $shortcutArguments" # Prepend -p fount to existing arguments
+	}
+	$shortcutIconLocation = "$FOUNT_DIR\src\public\favicon.ico"
+
+	# 创建桌面快捷方式
+	$desktopPath = [Environment]::GetFolderPath("Desktop")
+	$desktopShortcut = $shell.CreateShortcut("$desktopPath\fount.lnk")
+	$desktopShortcut.TargetPath = $shortcutTargetPath
+	$desktopShortcut.Arguments = $shortcutArguments
+	$desktopShortcut.IconLocation = $shortcutIconLocation
+	$desktopShortcut.Save()
+	Write-Host "Desktop shortcut created at $desktopPath\fount.lnk"
+
+	# 创建开始菜单快捷方式
+	$startMenuPath = [Environment]::GetFolderPath("StartMenu")
+	$startMenuShortcut = $shell.CreateShortcut("$startMenuPath\fount.lnk")
+	$startMenuShortcut.TargetPath = $shortcutTargetPath
+	$startMenuShortcut.Arguments = $shortcutArguments
+	$startMenuShortcut.IconLocation = $shortcutIconLocation
+	$startMenuShortcut.Save()
+	Write-Host "Start Menu shortcut created at $startMenuPath\fount.lnk"
+}
+
 if ($args.Count -gt 0 -and $args[0] -eq 'geneexe') {
 	$exepath = $args[1]
 	if (!$exepath) { $exepath = "fount.exe" }
@@ -443,13 +473,24 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 
 	# Remove Desktop Shortcut
 	Write-Host "Removing Desktop Shortcut..."
-	$ShortcutPath = "$env:USERPROFILE\Desktop\fount.lnk"
-	if (Test-Path $ShortcutPath) {
-		Remove-Item -Path $ShortcutPath -Force
+	$desktopShortcutPath = [Environment]::GetFolderPath("Desktop") + "\fount.lnk"
+	if (Test-Path $desktopShortcutPath) {
+		Remove-Item -Path $desktopShortcutPath -Force
 		Write-Host "Desktop Shortcut removed."
 	}
 	else {
 		Write-Host "Desktop Shortcut not found."
+	}
+
+	# Remove Start Menu Shortcut
+	Write-Host "Removing Start Menu Shortcut..."
+	$startMenuShortcutPath = [Environment]::GetFolderPath("StartMenu") + "\fount.lnk"
+	if (Test-Path $startMenuShortcutPath) {
+		Remove-Item -Path $startMenuShortcutPath -Force
+		Write-Host "Start Menu Shortcut removed."
+	}
+	else {
+		Write-Host "Start Menu Shortcut not found."
 	}
 
 	# Remove Installed pwsh modules

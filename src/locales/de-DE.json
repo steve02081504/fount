@@ -17,9 +17,9 @@
 		},
 		"ipc": {
 			"sendCommandFailed": "Senden des Befehls fehlgeschlagen: ${error}",
-			"invalidCommand": "Ungültiger Befehl, bitte verwenden Sie \"fount runshell <Benutzername> <Shell-Name> <Parameter...>\"",
-			"runShellLog": "Führe Shell ${shellname} als ${username} aus, Parameter: ${args}",
-			"invokeShellLog": "Rufe Shell ${shellname} als ${username} auf, Parameter: ${invokedata}",
+			"invalidCommand": "Ungültige Befehl, bitte verwenden Sie \"Fount Run <Teil -Typ> <Benutzername> <Teilname> <Parameter ...>\"",
+			"runPartLog": "Führen Sie ${parttype} ${partname} als ${username}, Parameter: ${args} aus.",
+			"invokePartLog": "Rufen Sie ${parttype} ${partname} als ${username}, Parameter: ${invokedata} auf, auf",
 			"unsupportedCommand": "Nicht unterstützter Befehlstyp",
 			"processMessageError": "Fehler beim Verarbeiten der IPC-Nachricht: ${error}",
 			"invalidCommandFormat": "Ungültiges Befehlsformat",

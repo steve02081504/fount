@@ -37,6 +37,9 @@ export function getPartList(username, parttype) {
 		ResultMapper: ResultMappers[parttype]
 	})
 }
+export function getLoadedPartList(username, parttype) {
+	return Object.keys(parts_set[username]?.[parttype] ?? {})
+}
 
 const unLoadMethods = {
 	'shells': unloadShell,

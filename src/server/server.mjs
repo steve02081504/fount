@@ -9,11 +9,13 @@ import http from 'node:http'
 import { __dirname, startTime } from './base.mjs'
 import { console } from '../scripts/console.mjs'
 import { on_shutdown } from './on_shutdown.mjs'
-import { initAuth } from './auth.mjs'
+import { getUserByReq, initAuth } from './auth.mjs'
 import { createTray } from '../scripts/tray.mjs'
 import { StartRPC } from '../scripts/discordrpc.mjs'
 import { geti18n } from '../scripts/i18n.mjs'
 import { sentrytunnel } from '../scripts/sentrytunnel.mjs'
+import { partsList } from './managers/index.mjs'
+import { Router as WsAbleRouter } from 'npm:websocket-express'
 
 export { __dirname }
 const app = express()
@@ -53,8 +55,29 @@ const errorHandler = (err, req, res, next) => {
 }
 FinalRouter.use(errorHandler)
 
-export function UpdatePartsRouter() {
-	PartsRouter.use(errorHandler)
+const PartsRouters = {}
+const partsAPIregex = new RegExp(`^/(api|ws)/(${partsList.join('|')})/`)
+PartsRouter.use(async (req, res, next) => {
+	if (!partsAPIregex.test(req.path)) return next()
+	const { username } = await getUserByReq(req).catch(_ => ({}))
+	if (!username) return next()
+	const parttype = req.path.split('/')[2]
+	const partname = req.path.split('/')[3]
+	if (PartsRouters[username][parttype][partname])
+		return PartsRouters[username][parttype][partname](req, res, next)
+	return next()
+})
+PartsRouter.use(errorHandler)
+export function getPartRouter(username, parttype, partname) {
+	PartsRouters[username] ??= {}
+	PartsRouters[username][parttype] ??= {}
+	return PartsRouters[username][parttype][partname] ??= new WsAbleRouter()
+}
+
+export function deletePartRouter(username, parttype, partname) {
+	delete PartsRouters[username][parttype][partname]
+	if (!Object.keys(PartsRouters[username][parttype]).length) delete PartsRouters[username][parttype]
+	if (!Object.keys(PartsRouters[username]).length) delete PartsRouters[username]
 }
 
 function get_config() {

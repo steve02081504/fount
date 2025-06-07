@@ -9,67 +9,88 @@ if [[ "$OSTYPE" == "msys" ]]; then
 	exit $?
 fi
 
-INSTALLED_PACKAGES=""
+INSTALLED_PACKAGES="${FOUNT_AUTO_INSTALLED_PACKAGES:-}"
 
 install_package() {
-	# 将当前安装的包添加到列表中
-	if [[ -z "$INSTALLED_PACKAGES" ]]; then
-		INSTALLED_PACKAGES="$1"
-	else
-		INSTALLED_PACKAGES="$INSTALLED_PACKAGES;$1"
+	local package_name="$1"
+
+	# 检查是否已经通过 command -v 安装成功
+	if command -v "$package_name" &> /dev/null; then
+		return 0
 	fi
 
+	local install_successful=0
+
 	if command -v pkg &> /dev/null; then
-		pkg install -y "$1"
-	elif command -v apt-get &> /dev/null; then
+		pkg install -y "$package_name" && install_successful=1
+	fi
+	if [[ install_successful -eq 0 ]] && command -v snap &> /dev/null; then
+		snap install "$package_name" && install_successful=1
+	fi
+	if [[ install_successful -eq 0 ]] && command -v apt-get &> /dev/null; then
 		if command -v sudo &> /dev/null; then
-			sudo apt-get update
-			sudo apt-get install -y "$1"
+			sudo apt-get update -y
+			sudo apt-get install -y "$package_name" && install_successful=1
 		else
-			apt-get update
-			apt-get install -y "$1"
+			apt-get update -y
+			apt-get install -y "$package_name" && install_successful=1
 		fi
-	elif command -v brew &> /dev/null; then
-		brew install "$1"
-		eval "$(brew shellenv)" || eval "$(/opt/homebrew/bin/brew shellenv)"
-	elif command -v pacman &> /dev/null; then
+	fi
+	if [[ install_successful -eq 0 ]] && command -v brew &> /dev/null; then
+		if ! brew list --formula "$package_name" &> /dev/null; then
+			brew install "$package_name" && install_successful=1
+		fi
+	fi
+	if [[ install_successful -eq 0 ]] && command -v pacman &> /dev/null; then
 		if command -v sudo &> /dev/null; then
 			sudo pacman -Syy
-			sudo pacman -S --needed --noconfirm "$1"
+			sudo pacman -S --needed --noconfirm "$package_name" && install_successful=1
 		else
 			pacman -Syy
-			pacman -S --needed --noconfirm "$1"
+			pacman -S --needed --noconfirm "$package_name" && install_successful=1
 		fi
-	elif command -v dnf &> /dev/null; then
+	fi
+	if [[ install_successful -eq 0 ]] && command -v dnf &> /dev/null; then
 		if command -v sudo &> /dev/null; then
-			sudo dnf install -y "$1"
+			sudo dnf install -y "$package_name" && install_successful=1
 		else
-			dnf install -y "$1"
+			dnf install -y "$package_name" && install_successful=1
 		fi
-	elif command -v zypper &> /dev/null; then
+	fi
+	if [[ install_successful -eq 0 ]] && command -v yum &> /dev/null; then
 		if command -v sudo &> /dev/null; then
-			sudo zypper install -y --no-confirm "$1"
+			sudo yum install -y "$package_name" && install_successful=1
 		else
-			zypper install -y --no-confirm "$1"
+			yum install -y "$package_name" && install_successful=1
 		fi
-	elif command -v apk &> /dev/null; then
-		apk add --update "$1"
+	fi
+	if [[ install_successful -eq 0 ]] && command -v zypper &> /dev/null; then
+		if command -v sudo &> /dev/null; then
+			sudo zypper install -y --no-confirm "$package_name" && install_successful=1
+		else
+			zypper install -y --no-confirm "$package_name" && install_successful=1
+		fi
+	fi
+	if [[ install_successful -eq 0 ]] && command -v apk &> /dev/null; then
+		apk add --update "$package_name" && install_successful=1
+	fi
+
+	if [[ $install_successful -eq 1 ]]; then
+		# 将当前安装的包添加到列表中
+		if [[ -z "$INSTALLED_PACKAGES" ]]; then
+			INSTALLED_PACKAGES="$1"
+		else
+			INSTALLED_PACKAGES="$INSTALLED_PACKAGES;$1"
+		fi
+		return 0
 	else
-		echo "无法安装 $1"
-		exit 1
+		echo "Error: $package_name installation failed." >&2
+		return 1
 	fi
 }
 
 # 检查依赖
-if ! command -v git &> /dev/null; then
-	install_package git
-fi
-if ! command -v unzip &> /dev/null; then
-	install_package unzip
-fi
-if ! command -v wget &> /dev/null; then
-	install_package wget
-fi
+install_package git
 
 # 若未定义，则默认 fount 安装目录
 FOUNT_DIR="${FOUNT_DIR:-"$HOME/.local/share/fount"}"
@@ -81,22 +102,24 @@ if ! command -v fount.sh &> /dev/null; then
 
 	# 尝试使用 git 克隆
 	if command -v git &> /dev/null; then
-		git clone https://github.com/steve02081504/fount "$FOUNT_DIR" --depth 1
+		git clone https://github.com/steve02081504/fount "$FOUNT_DIR" --depth 1 --single-branch
 		if [[ $? -ne 0 ]]; then
-			echo "下载错误，终止脚本" >&2
-			exit 1
+			rm -rf "$FOUNT_DIR"
 		fi
-	else
+	fi
+	if [[ ! -d "$FOUNT_DIR" ]]; then
 		# 使用 wget 和 unzip 下载
+		install_package unzip
+		install_package wget
 		rm -rf /tmp/fount-master
 		wget -O /tmp/fount.zip https://github.com/steve02081504/fount/archive/refs/heads/master.zip
 		if [[ $? -ne 0 ]]; then
-			echo "下载错误，终止脚本" >&2
+			echo "Download error" >&2
 			exit 1
 		fi
 		unzip -o /tmp/fount.zip -d /tmp
 		if [[ $? -ne 0 ]]; then
-			echo "解压错误，可能需要安装 unzip , 可以尝试执行：sudo apt-get install unzip" >&2
+			echo "Unzip error" >&2
 			exit 1
 		fi
 		rm /tmp/fount.zip
@@ -104,9 +127,13 @@ if ! command -v fount.sh &> /dev/null; then
 		mkdir -p "$FOUNT_DIR"
 		mv /tmp/fount-master "$FOUNT_DIR"
 	fi
+	if [[ ! -d "$FOUNT_DIR" ]]; then
+		echo "Error: Fount installation failed." >&2
+		exit 1
+	fi
 	# 移除隔离属性 (仅限 macOS)
 	if [[ "$OSTYPE" == "darwin"* ]]; then
-		xattr -dr com.apple.quarantine "$FOUNT_DIR"
+		xattr -dr com.apple.quarantine "$FOUNT_DIR" || true
 	fi
 	find "$FOUNT_DIR" -name "*.sh" -exec chmod +x {} \;
 	find "$FOUNT_DIR/path" -type f -exec chmod +x {} \;

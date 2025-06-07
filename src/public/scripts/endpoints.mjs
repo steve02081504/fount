@@ -43,12 +43,12 @@ export async function authenticate() {
 	})
 }
 
-export async function runShell(shellname, args) {
-	return await fetch('/api/runshell', {
+export async function runPart(parttype, partname, args) {
+	return await fetch('/api/runpart', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
 		},
-		body: JSON.stringify({ shellname, args }),
+		body: JSON.stringify({ parttype, partname, args }),
 	})
 }

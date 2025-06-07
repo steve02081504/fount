@@ -1,10 +1,11 @@
 import os from 'node:os'
-import pty from 'npm:node-pty'
 import { Buffer } from 'node:buffer'
+import process from 'node:process'
 
 const shell = os.platform() === 'win32' ? 'powershell.exe' : 'bash'
 
-function spawnShell() {
+async function spawnShell() {
+	const pty = await import('npm:@homebridge/node-pty-prebuilt-multiarch')
 	return pty.spawn(shell, [], {
 		name: 'xterm-color',
 		cols: 80, // Default, can be resized
@@ -14,8 +15,8 @@ function spawnShell() {
 	})
 }
 
-export function handleTerminalConnection(ws) {
-	const ptyProcess = spawnShell()
+export async function handleTerminalConnection(ws) {
+	const ptyProcess = await spawnShell()
 	ws.on('message', (message) => {
 		try {
 			let inputData = ''

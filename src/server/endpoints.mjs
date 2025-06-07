@@ -125,10 +125,10 @@ export function registerEndpoints(router) {
 		res.status(200).json(partsList)
 	})
 
-	router.post('/api/runshell', authenticate, async (req, res) => {
+	router.post('/api/runpart', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
-		const { shellname, args } = req.body
-		await processIPCCommand('runshell', { username, shellname, args })
+		const { parttype, partname, args } = req.body
+		await processIPCCommand('runpart', { username, parttype, partname, args })
 		res.status(200).json({ message: 'Shell command sent successfully.' })
 	})
 

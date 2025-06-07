@@ -5,14 +5,14 @@
 #   $WordToComplete: 用户正在输入的单词。
 #   $CommandAst:     命令的抽象语法树 (AST)。
 #   $CursorPosition:  光标在命令行中的位置。
-#   $runshellIndex:  'runshell' 命令在 CommandAst 中的索引。
+#   $runIndex:  'run shells' 命令在 CommandAst 中的索引。
 #   $Argindex:        当前参数在 CommandAst 中的索引。
 param(
 	[string]$Username,
 	[string]$WordToComplete,
 	[System.Management.Automation.Language.CommandAst]$CommandAst,
 	[int]$CursorPosition,
-	[int]$runshellIndex,
+	[int]$runIndex,
 	[int]$Argindex
 )
 
@@ -36,10 +36,10 @@ function Get-BotList([string]$Username) {
 }
 
 try {
-	# 提取 'runshell <username> discordbot' 之后的参数。
+	# 提取 'run shells <username> discordbot' 之后的参数。
 	$commandElements = $CommandAst.CommandElements
 	# $discordBotIndex 是 'discordbot' 命令的索引。
-	$discordBotIndex = $runshellIndex + 2
+	$discordBotIndex = $runIndex + 3
 
 	# 根据参数构建补全逻辑。
 	# switch 语句根据 'discordbot' 命令之后的参数数量进行分支。

@@ -17,9 +17,9 @@
 		},
 		"ipc": {
 			"sendCommandFailed": "Failed to send command: ${error}",
-			"invalidCommand": "Invalid command. Please use \"fount runshell <username> <shellname> <parameters...>\"",
-			"runShellLog": "Running shell ${shellname} as ${username}, parameters: ${args}",
-			"invokeShellLog": "Invoking shell ${shellname} as ${username}, parameters: ${invokedata}",
+			"invalidCommand": "Invalid command, please use \"fount run <part type> <user name> <part name> <parameter...>\"",
+			"runPartLog": "Run ${parttype} ${partname} as ${username}, parameter: ${args}",
+			"invokePartLog": "Call ${parttype} ${partname} as ${username}, parameter: ${invokedata}",
 			"unsupportedCommand": "Unsupported command type",
 			"processMessageError": "Error processing IPC message: ${error}",
 			"invalidCommandFormat": "Invalid command format",

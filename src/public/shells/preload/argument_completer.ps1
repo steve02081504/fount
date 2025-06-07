@@ -5,21 +5,21 @@
 #   $WordToComplete: 用户正在输入的单词。
 #   $CommandAst:     命令的抽象语法树 (AST)。
 #   $CursorPosition:  光标在命令行中的位置。
-#   $runshellIndex:  'runshell' 命令在 CommandAst 中的索引。
+#   $runIndex:  'run shells' 命令在 CommandAst 中的索引。
 #   $Argindex:        当前参数在 CommandAst 中的索引。
 param(
 	[string]$Username,
 	[string]$WordToComplete,
 	[System.Management.Automation.Language.CommandAst]$CommandAst,
 	[int]$CursorPosition,
-	[int]$runshellIndex,
+	[int]$runIndex,
 	[int]$Argindex
 )
 
 try {
-	# 提取 'runshell <username> preload' 之后的参数。
+	# 提取 'run shells <username> preload' 之后的参数。
 	$commandElements = $CommandAst.CommandElements
-	$preloadIndex = $runshellIndex + 2 # 'preload' 的索引
+	$preloadIndex = $runIndex + 3 # 'preload' 的索引
 
 	# 根据参数构建补全逻辑。
 	switch ($commandElements.Count - ($preloadIndex + 1)) {
