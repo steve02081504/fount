@@ -2,6 +2,7 @@ import optimizeRegex from 'npm:eslint-plugin-optimize-regex'
 import UnusedImports from 'npm:eslint-plugin-unused-imports'
 import html from 'npm:eslint-plugin-html'
 import destructuringMerge from 'npm:eslint-plugin-destructuring-merge'
+import tseslint from 'npm:typescript-eslint'
 
 export default [
 	{
@@ -9,12 +10,14 @@ export default [
 			'optimize-regex': optimizeRegex,
 			'unused-imports': UnusedImports,
 			html,
-			'destructuring-merge': destructuringMerge
+			'destructuring-merge': destructuringMerge,
+			'@typescript-eslint': tseslint.plugin,
 		},
-		files: ['**/*.html', '**/*.js', '**/*.mjs'],
+		files: ['**/*.html', '**/*.js', '**/*.mjs', '**/*.cjs', '**/*.ts', '**/*.tsx'],
 		ignores: ['**/dist/*'],
 		languageOptions: {
 			ecmaVersion: 'latest',
+			parser: tseslint.parser,
 		},
 		rules: {
 			// 移除多余的分号
