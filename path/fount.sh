@@ -78,7 +78,7 @@ if [[ -d "/data/data/com.termux" ]]; then
 fi
 
 # 检查操作系统类型
-OS_TYPE=$(uname -s) # "Linux" or "Darwin" (for macOS)
+OS_TYPE=$(uname -s) # "Linux" or "Darwin"
 
 # 函数: 检查包是否已在数组中
 # $1: 包名
@@ -378,7 +378,7 @@ EOF
 		echo "Desktop shortcut created at $desktop_file_path"
 
 		# 新增：注册 fount:// 协议处理程序 (Linux)
-		echo "Registering fount:// protocol handler for Linux..."
+		echo "Registering fount:// protocol handler..."
 		local protocol_desktop_file_path="$HOME/.local/share/applications/fount-protocol.desktop"
 		mkdir -p "$(dirname "$protocol_desktop_file_path")"
 		cat <<EOF >"$protocol_desktop_file_path"
@@ -400,7 +400,7 @@ EOF
 		if command -v update-desktop-database &>/dev/null; then
 			update-desktop-database "$HOME/.local/share/applications"
 		fi
-		echo "fount:// protocol handler registered for Linux."
+		echo "fount:// protocol handler registered."
 	elif [ "$OS_TYPE" = "Darwin" ]; then # macOS
 		local app_path="$HOME/Desktop/$shortcut_name.app"
 		local icns_path="$FOUNT_DIR/src/public/favicon.icns"
