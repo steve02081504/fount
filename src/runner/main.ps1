@@ -99,18 +99,21 @@ if (!$IsWindows) {
 if (!$env:FOUNT_DIR) {
 	$env:FOUNT_DIR = "$env:LOCALAPPDATA/fount"
 }
+if (!$env:FOUNT_BRANCH) {
+	$env:FOUNT_BRANCH = "master"
+}
 
 if (!(Get-Command fount.ps1 -ErrorAction Ignore)) {
 	Remove-Item $env:FOUNT_DIR -Confirm -ErrorAction Ignore -Recurse
 	if (Get-Command git -ErrorAction Ignore) {
-		git clone https://github.com/steve02081504/fount $env:FOUNT_DIR --depth 1 --single-branch
+		git clone https://github.com/steve02081504/fount $env:FOUNT_DIR --depth 1 --single-branch --branch $env:FOUNT_BRANCH
 		if ($LastExitCode) {
 			Remove-Item $env:FOUNT_DIR -Force -ErrorAction Ignore -Confirm:$false -Recurse
 		}
 	}
 	if (!(Test-Path $env:FOUNT_DIR)) {
-		Remove-Item $env:TEMP/fount-master -Force -ErrorAction Ignore -Confirm:$false -Recurse
-		try { Invoke-WebRequest https://github.com/steve02081504/fount/archive/refs/heads/master.zip -OutFile $env:TEMP/fount.zip }
+		Remove-Item $env:TEMP/fount-$env:FOUNT_BRANCH -Force -ErrorAction Ignore -Confirm:$false -Recurse
+		try { Invoke-WebRequest https://github.com/steve02081504/fount/archive/refs/heads/$env:FOUNT_BRANCH.zip -OutFile $env:TEMP/fount.zip }
 		catch {
 			$Host.UI.WriteErrorLine("Failed to download fount: $($_.Exception.Message)")
 			exit 1
@@ -119,7 +122,7 @@ if (!(Get-Command fount.ps1 -ErrorAction Ignore)) {
 		Remove-Item $env:TEMP/fount.zip -Force
 		# 确保父文件夹存在
 		New-Item $(Split-Path -Parent $env:FOUNT_DIR) -ItemType Directory -Force -ErrorAction Ignore
-		Move-Item $env:TEMP/fount-master $env:FOUNT_DIR -Force
+		Move-Item $env:TEMP/fount-$env:FOUNT_BRANCH $env:FOUNT_DIR -Force
 	}
 	if (!(Test-Path $env:FOUNT_DIR)) {
 		$Host.UI.WriteErrorLine("Failed to install fount")

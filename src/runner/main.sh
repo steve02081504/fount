@@ -2,10 +2,11 @@
 
 # 若是 Windows 环境，则使用 fount.ps1
 if [[ "$OSTYPE" == "msys" ]]; then
-	powerShell.exe -noprofile -executionpolicy bypass -command "{
-	\$env:FOUNT_DIR = '$FOUNT_DIR' # 空字符串也是假 所以不需要空判断
-	irm https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1 | iex
-	}" $@
+	powerShell.exe -noprofile -executionpolicy bypass -command "& {
+	\$scriptContent = Invoke-RestMethod https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1
+	Invoke-Expression \"function fountInstaller { \$scriptContent }\"
+	fountInstaller $@
+	}"
 	exit $?
 fi
 
@@ -94,6 +95,7 @@ install_package git
 
 # 若未定义，则默认 fount 安装目录
 FOUNT_DIR="${FOUNT_DIR:-"$HOME/.local/share/fount"}"
+FOUNT_BRANCH="${FOUNT_BRANCH:-"master"}"
 
 # 检查 fount.sh 是否已存在
 if ! command -v fount.sh &>/dev/null; then
@@ -102,7 +104,7 @@ if ! command -v fount.sh &>/dev/null; then
 
 	# 尝试使用 git 克隆
 	if command -v git &>/dev/null; then
-		git clone https://github.com/steve02081504/fount "$FOUNT_DIR" --depth 1 --single-branch
+		git clone https://github.com/steve02081504/fount "$FOUNT_DIR" --depth 1 --single-branch --branch "$FOUNT_BRANCH"
 		if [[ $? -ne 0 ]]; then
 			rm -rf "$FOUNT_DIR"
 		fi
@@ -111,8 +113,8 @@ if ! command -v fount.sh &>/dev/null; then
 		# 使用 wget 和 unzip 下载
 		install_package unzip
 		install_package wget
-		rm -rf /tmp/fount-master
-		wget -O /tmp/fount.zip https://github.com/steve02081504/fount/archive/refs/heads/master.zip
+		rm -rf /tmp/fount-$FOUNT_BRANCH
+		wget -O /tmp/fount.zip https://github.com/steve02081504/fount/archive/refs/heads/$FOUNT_BRANCH.zip
 		if [[ $? -ne 0 ]]; then
 			echo "Download error" >&2
 			exit 1
@@ -125,7 +127,7 @@ if ! command -v fount.sh &>/dev/null; then
 		rm /tmp/fount.zip
 		# 保证父目录存在
 		mkdir -p "$FOUNT_DIR"
-		mv /tmp/fount-master "$FOUNT_DIR"
+		mv /tmp/fount-$FOUNT_BRANCH "$FOUNT_DIR"
 	fi
 	if [[ ! -d "$FOUNT_DIR" ]]; then
 		echo "Error: Fount installation failed." >&2
