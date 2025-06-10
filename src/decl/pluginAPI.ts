@@ -1,6 +1,6 @@
-import { locale_t, info_t } from './basedefs';
-import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts';
-import { chatReplyRequest_t } from '../public/shells/chat/decl/chatLog.ts';
+import { locale_t, info_t } from './basedefs'
+import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts'
+import { chatReplyRequest_t } from '../public/shells/chat/decl/chatLog.ts'
 
 export type ReplyHandler_t = (reply: chatLogEntry_t, args: chatReplyRequest_t & {
 	prompt_struct: prompt_struct_t
@@ -8,11 +8,11 @@ export type ReplyHandler_t = (reply: chatLogEntry_t, args: chatReplyRequest_t & 
 }) => Promise<boolean>
 
 export class pluginAPI_t {
-	info: info_t;
-	Init: () => Promise<void>;
-	Load: () => Promise<void>;
-	Unload: (reason: string) => Promise<void>;
-	Uninstall: (reason: string, from: string) => Promise<void>;
+	info: info_t
+	Init: () => Promise<void>
+	Load: () => Promise<void>
+	Unload: (reason: string) => Promise<void>
+	Uninstall: (reason: string, from: string) => Promise<void>
 
 	interfaces: {
 		info?: {
@@ -37,5 +37,5 @@ export class pluginAPI_t {
 			// 此函数为char的代码运行提供特殊变量或函数，允许其在代码中使用
 			GetJSCodeContext?: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t) => Promise<Record<string, any>>;
 		}
-	};
+	}
 }

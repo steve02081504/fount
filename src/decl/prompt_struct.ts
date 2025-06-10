@@ -1,20 +1,19 @@
-import { Buffer } from "node:buffer";
-import { role_t, timeStamp_t } from "./basedefs";
-import { chatReplyRequest_t } from "../public/shells/chat/decl/chatLog.ts";
+import { Buffer } from 'node:buffer'
+import { role_t, timeStamp_t } from './basedefs'
 
 export class single_part_prompt_t {
 	text: {
 		content: string;
 		description: string;
 		important: number;
-	}[];
-	additional_chat_log: chatLogEntry_t[];
-	extension: {};
+	}[]
+	additional_chat_log: chatLogEntry_t[]
+	extension: {}
 }
 export class other_chars_prompt_t extends single_part_prompt_t {
-	name: string;
-	isActive: boolean;
-	LastActive: timeStamp_t;
+	name: string
+	isActive: boolean
+	LastActive: timeStamp_t
 }
 export type chatLogEntry_t = {
 	name: string;

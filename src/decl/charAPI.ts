@@ -1,32 +1,32 @@
-import { info_t, locale_t, role_t, timeStamp_t } from './basedefs';
-import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts';
-import { chatReply_t, chatReplyRequest_t } from '../public/shells/chat/decl/chatLog.ts';
+import { info_t, locale_t, role_t, timeStamp_t } from './basedefs'
+import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts'
+import { chatReply_t, chatReplyRequest_t } from '../public/shells/chat/decl/chatLog.ts'
 
-import { Client as DiscordClient, GatewayIntentBits as DiscordGatewayIntentBits, Partials as DiscordPartials } from 'npm:discord.js';
-import { Telegraf } from 'npm:telegraf';
+import { Client as DiscordClient, GatewayIntentBits as DiscordGatewayIntentBits, Partials as DiscordPartials } from 'npm:discord.js'
+import { Telegraf } from 'npm:telegraf'
 
 export class charState_t {
-	InitCount: number;
-	StartCount: number;
-	LastStart: timeStamp_t;
+	InitCount: number
+	StartCount: number
+	LastStart: timeStamp_t
 }
 
 export class charInit_t {
-	state: charState_t;
-	username: string;
-	charname: string;
+	state: charState_t
+	username: string
+	charname: string
 }
 
 export class charAPI_t {
-	info: info_t;
+	info: info_t
 	// calls only on char install, and if fail, all file under this char's folder will be deleted
-	Init: (stat: charInit_t) => Promise<void>;
+	Init: (stat: charInit_t) => Promise<void>
 	// calls on every char start, pop a message if fail
-	Load: (stat: charInit_t) => Promise<void>;
+	Load: (stat: charInit_t) => Promise<void>
 	// calls on every char unload
-	Unload: (reason: string) => Promise<void>;
+	Unload: (reason: string) => Promise<void>
 	// calls on char uninstall
-	Uninstall: (reason: string, from: string) => Promise<void>;
+	Uninstall: (reason: string, from: string) => Promise<void>
 
 	// interface with shell (maybe chat WebUI or cute Live2d or a kill machine, i don't care)
 	interfaces: {
@@ -102,5 +102,5 @@ export class charAPI_t {
 				chat_scoped_char_memory: {}
 			}>
 		}
-	};
+	}
 }

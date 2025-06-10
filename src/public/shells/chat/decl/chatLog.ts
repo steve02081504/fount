@@ -1,26 +1,26 @@
-import { locale_t, role_t, timeStamp_t } from '../../../../decl/basedefs.ts';
-import { charAPI_t } from '../../../../decl/charAPI.ts';
-import { WorldAPI_t } from '../../../../decl/WorldAPI.ts';
-import { UserAPI_t } from '../../../../decl/UserAPI.ts';
-import { pluginAPI_t } from '../../../../decl/pluginAPI.ts';
-import { Buffer } from "node:buffer";
+import { locale_t, role_t, timeStamp_t } from '../../../../decl/basedefs.ts'
+import { charAPI_t } from '../../../../decl/charAPI.ts'
+import { WorldAPI_t } from '../../../../decl/WorldAPI.ts'
+import { UserAPI_t } from '../../../../decl/UserAPI.ts'
+import { pluginAPI_t } from '../../../../decl/pluginAPI.ts'
+import { Buffer } from 'node:buffer'
 
 export class chatReply_t {
-	name?: string;
-	avatar?: string;
-	content: string;
-	content_for_show?: string;
-	content_for_edit?: string;
+	name?: string
+	avatar?: string
+	content: string
+	content_for_show?: string
+	content_for_edit?: string
 	files?: {
 		name: string;
 		mimeType: string;
 		buffer: Buffer;
 		description: string;
 	}[]
-	logContextBefore?: chatLogEntry_t[];
-	logContextAfter?: chatLogEntry_t[];
-	charVisibility?: string[];
-	extension?: any;
+	logContextBefore?: chatLogEntry_t[]
+	logContextAfter?: chatLogEntry_t[]
+	charVisibility?: string[]
+	extension?: any
 }
 
 export class chatReplyRequest_t {
@@ -56,13 +56,13 @@ export class chatReplyRequest_t {
 }
 
 export class chatLogEntry_t {
-	name: string;
-	avatar: string;
-	timeStamp: timeStamp_t;
-	role: role_t;
-	content: string;
-	content_for_show?: string;
-	content_for_edit?: string;
+	name: string
+	avatar: string
+	timeStamp: timeStamp_t
+	role: role_t
+	content: string
+	content_for_show?: string
+	content_for_edit?: string
 	files: {
 		name: string;
 		mimeType: string;
@@ -79,6 +79,6 @@ export class chatLogEntry_t {
 			world: WorldAPI_t;
 			player: UserAPI_t;
 		}
-	};
+	}
 }
 export type chatLog_t = chatLogEntry_t[];

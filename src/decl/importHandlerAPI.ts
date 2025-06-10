@@ -1,16 +1,16 @@
-import { Buffer } from "node:buffer";
-import { locale_t, info_t } from "./basedefs";
+import { Buffer } from 'node:buffer'
+import { locale_t, info_t } from './basedefs'
 
 export class importHandlerAPI_t {
-	info: info_t;
+	info: info_t
 	// calls only on char install, and if fail, all file under this char's folder will be deleted
-	Init: () => Promise<void>;
+	Init: () => Promise<void>
 	// calls on every char start, pop a message if fail
-	Load: () => Promise<void>;
+	Load: () => Promise<void>
 	// calls on every char unload
-	Unload: (reason: string) => Promise<void>;
+	Unload: (reason: string) => Promise<void>
 	// calls on char uninstall
-	Uninstall: (reason: string, from: string) => Promise<void>;
+	Uninstall: (reason: string, from: string) => Promise<void>
 
 	interfaces: {
 		info?: {

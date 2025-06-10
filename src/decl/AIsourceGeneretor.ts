@@ -1,8 +1,8 @@
-import { AIsource_t } from "./AIsource.ts"
-import { locale_t, info_t } from "./basedefs";
+import { AIsource_t } from './AIsource.ts'
+import { locale_t, info_t } from './basedefs'
 
 export class AIsourceGenerator {
-	info: info_t;
+	info: info_t
 
 	Init: () => Promise<void>
 	Load: () => Promise<void>
