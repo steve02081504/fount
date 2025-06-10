@@ -39,7 +39,7 @@ install_package bash
 export FOUNT_AUTO_INSTALLED_PACKAGES="$INSTALLED_PACKAGES"
 
 if [ "$#" -eq 0 ]; then
-	/bin/bash "$SCRIPT_DIR/path/fount.sh" keepalive open
+	/bin/bash "$SCRIPT_DIR/path/fount.sh" open keepalive
 else
 	/bin/bash "$SCRIPT_DIR/path/fount.sh" "$@"
 fi
