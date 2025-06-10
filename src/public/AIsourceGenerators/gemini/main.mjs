@@ -67,11 +67,18 @@ const configTemplate = {
 		responseModalities: ['Text'],
 	},
 	disable_default_prompt: false,
+	proxy_url: '',
+	use_stream: false,
 }
 
 async function GetSource(config) {
 	config.system_prompt_at_depth ??= 10
-	const ai = new GoogleGenAI({ apiKey: config.apikey })
+	const ai = new GoogleGenAI({
+		apiKey: config.apikey,
+		httpOptions: config.proxy_url ? {
+			baseUrl: config.proxy_url
+		} : undefined
+	})
 
 	/**
 	 * 使用新版SDK上传文件到 Gemini (Uploads the given file buffer to Gemini using the new SDK)
@@ -128,18 +135,30 @@ async function GetSource(config) {
 
 		Unload: () => { },
 		Call: async (prompt) => {
-			const response = await ai.models.generateContent({
+			const model_params = {
 				model: config.model,
 				contents: [{ role: 'user', parts: [{ text: prompt }] }],
 				config: {
 					...default_config,
 					...config.model_arguments,
 				},
-			})
+			}
 
 			let text = ''
-			for (const part of response.candidates[0].content.parts)
-				if (part.text) text += part.text
+
+			function handle_parts(parts) {
+				if (!parts) return
+				for (const part of parts)
+					if (part.text) text += part.text
+			}
+			if (config.use_stream) {
+				const result = await ai.models.generateContentStream(model_params)
+				for await (const chunk of result)
+					handle_parts(chunk.candidates?.[0]?.content?.parts)
+			} else {
+				const response = await ai.models.generateContent(model_params)
+				handle_parts(response.candidates?.[0]?.content?.parts)
+			}
 
 			return {
 				content: text,
@@ -250,7 +269,7 @@ ${is_ImageGeneration
 			const responseModalities = ['Text']
 			if (is_ImageGeneration) responseModalities.unshift('Image')
 
-			const response = await ai.models.generateContent({
+			const model_params = {
 				model: config.model,
 				contents: messages,
 				config: {
@@ -258,27 +277,38 @@ ${is_ImageGeneration
 					responseModalities,
 					...config.model_arguments,
 				},
-			})
+			}
 
 			let text = ''
 			const files = []
+			function handle_parts(parts) {
+				if (!parts) return
+				for (const part of parts)
+					if (part.text) text += part.text
+					else if (part.inlineData) try {
+						const { mimeType, data } = part.inlineData
+						const fileExtension = mime.extension(mimeType) || 'png'
+						const fileName = `${files.length}.${fileExtension}`
+						const dataBuffer = Buffer.from(data, 'base64')
+						files.push({
+							name: fileName,
+							mimeType,
+							buffer: dataBuffer
+						})
+					} catch (error) {
+						console.error('Error processing inline image data:', error)
+					}
+			}
 
-			for (const part of response.candidates[0].content.parts)
-				if (part.text) text += part.text
-				else if (part.inlineData) try {
-					const { mimeType, data } = part.inlineData
-					const fileExtension = mime.extension(mimeType) || 'png'
-					const fileName = `${files.length}.${fileExtension}`
-					const dataBuffer = Buffer.from(data, 'base64')
+			if (config.use_stream) {
+				const result = await ai.models.generateContentStream(model_params)
+				for await (const chunk of result)
+					handle_parts(chunk.candidates?.[0]?.content?.parts)
+			} else {
+				const response = await ai.models.generateContent(model_params)
+				handle_parts(response.candidates?.[0]?.content?.parts)
+			}
 
-					files.push({
-						name: fileName,
-						mimeType,
-						buffer: dataBuffer
-					})
-				} catch (error) {
-					console.error('Error processing inline image data:', error)
-				}
 			{
 				text = text.split('\n')
 				const base_reg = `^((|${[...new Set([
