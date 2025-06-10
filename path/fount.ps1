@@ -148,7 +148,7 @@ if (-not $IN_DOCKER) {
 # fount Terminal注册
 $WTjsonDirPath = "$env:LOCALAPPDATA/Microsoft/Windows Terminal/Fragments/fount"
 if (!(Test-Path $WTjsonDirPath)) {
-	New-Item -ItemType Directory -Force -Path $WTjsonDirPath
+	New-Item -ItemType Directory -Force -Path $WTjsonDirPath | Out-Null
 }
 $WTjsonPath = "$WTjsonDirPath/fount.json"
 $jsonContent = [ordered]@{
@@ -194,7 +194,7 @@ function fount_upgrade {
 	}
 	if (!(Test-Path -Path "$FOUNT_DIR/.git")) {
 		Remove-Item -Path "$FOUNT_DIR/.git-clone" -Recurse -Force -ErrorAction SilentlyContinue
-		New-Item -ItemType Directory -Path "$FOUNT_DIR/.git-clone"
+		New-Item -ItemType Directory -Path "$FOUNT_DIR/.git-clone" | Out-Null
 		git clone https://github.com/steve02081504/fount.git "$FOUNT_DIR/.git-clone" --no-checkout --depth 1 --single-branch
 		if ($LastExitCode) {
 			Remove-Item -Path "$FOUNT_DIR/.git-clone" -Recurse -Force
@@ -265,12 +265,20 @@ else {
 
 # Deno 安装
 if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
+	if (Test-Path "$HOME/.deno/bin/deno.exe") {
+		$env:PATH = $env:PATH + ";$HOME/.deno/bin"
+		[System.Environment]::SetEnvironmentVariable("PATH", [System.Environment]::GetEnvironmentVariable("PATH", "User") + ";$HOME/.deno/bin", [System.EnvironmentVariableTarget]::User)
+	}
+}
+if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
 	Write-Host "Deno missing, auto installing..."
 	Invoke-RestMethod https://deno.land/install.ps1 | Invoke-Expression
-	$env:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+	if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
+		$env:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+	}
 	if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
 		Write-Host "Deno installation failed, attempting auto installing to fount's path folder..."
-		$url = "https://github.com/denoland/deno/releases/latest/download/deno-" + (if ($IsWindows) {
+		$url = "https://github.com/denoland/deno/releases/latest/download/deno-" + $(if ($IsWindows) {
 				"x86_64-pc-windows-msvc.zip"
 			} elseif ($IsMacOS) {
 				if ($env:PROCESSOR_ARCHITECTURE -eq "ARM64") {
@@ -356,6 +364,7 @@ if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $ar
 	if (Test-Path -Path "$FOUNT_DIR/node_modules") {
 		run shutdown
 	}
+	New-Item -Path "$FOUNT_DIR/node_modules" -ItemType Directory -ErrorAction Ignore -Force | Out-Null
 	deno install --reload --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
 	Write-Host "======================================================" -ForegroundColor Green
 	Write-Warning "DO NOT install any untrusted fount parts on your system, they can do ANYTHING."

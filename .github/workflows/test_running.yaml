@@ -28,29 +28,32 @@ jobs:
         run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
         id: extract_branch
 
-      - name: Run install script (Unix)
-        if: runner.os != 'Windows'
+      - name: test script (bash)
+        shell: bash
         run: |
-          git clone https://github.com/steve02081504/fount.git --depth 1 --single-branch --branch ${{ steps.extract_branch.outputs.branch }}
-          if [[ "$OSTYPE" == "darwin"* ]]; then
-            xattr -dr com.apple.quarantine "./fount" || true
-          fi
-          find "./fount" -name "*.sh" -exec chmod +x {} \;
-          find "./fount/path" -type f -exec chmod +x {} \;
-          ./fount/path/fount.sh init
+          export FOUNT_DIR="$PWD/fount"
+          export FOUNT_BRANCH="${{ steps.extract_branch.outputs.branch }}"
+          curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/${{ steps.extract_branch.outputs.branch }}/src/runner/main.sh | bash -s init
+          ./fount/path/fount.sh remove
 
-      - name: Run install script (Windows)
+      - name: test script (pwsh)
         if: runner.os == 'Windows'
         shell: powershell
         run: |
-          git clone https://github.com/steve02081504/fount.git --depth 1 --single-branch --branch ${{ steps.extract_branch.outputs.branch }}
-          ./fount/path/fount.ps1 init
+          $env:FOUNT_DIR = "$PWD/fount"
+          $env:FOUNT_BRANCH = "${{ steps.extract_branch.outputs.branch }}"
+          $scriptContent = Invoke-RestMethod https://raw.githubusercontent.com/steve02081504/fount/refs/heads/${{ steps.extract_branch.outputs.branch }}/src/runner/main.ps1
+          Invoke-Expression "function fountInstaller { $scriptContent }"
+          fountInstaller init
+          ./fount/path/fount.ps1 remove
 
-      - name: Run remove script (Unix)
+      - name: test script (pwsh)
         if: runner.os != 'Windows'
-        run: ./fount/path/fount.sh remove
-
-      - name: Run remove script (Windows)
-        if: runner.os == 'Windows'
-        shell: powershell
-        run: ./fount/path/fount.ps1 remove
+        shell: pwsh
+        run: |
+          $env:FOUNT_DIR = "$PWD/fount"
+          $env:FOUNT_BRANCH = "${{ steps.extract_branch.outputs.branch }}"
+          $scriptContent = Invoke-RestMethod https://raw.githubusercontent.com/steve02081504/fount/refs/heads/${{ steps.extract_branch.outputs.branch }}/src/runner/main.ps1
+          Invoke-Expression "function fountInstaller { $scriptContent }"
+          fountInstaller init
+          ./fount/path/fount.ps1 remove
