@@ -110,7 +110,7 @@ function generateTailwindNumericCSS() {
 		// 生成方括号值规则
 		const arbitraryValues = ['10', '20', '30', '40', '50', '60', '70', '80', '90', '100', '10px', '20px', '30px', '40px', '50px', '60px', '70px', '80px', '90px', '100px', '1rem', '2rem', '3rem', '4rem', '5rem', '6rem', '7rem', '8rem', '9rem', '10rem'] // 这里可以根据需要添加更多示例值
 		for (const arbitraryValue of arbitraryValues) {
-			const className = `${prefix}[${arbitraryValue}]`
+			const className = `${prefix}\\[${arbitraryValue}]\\`
 			const value = arbitraryValue // 直接使用方括号中的值
 			const cssProperty = formatCSSProperty(property, value)
 			cssRules.push(`.${className} { ${cssProperty} }`)

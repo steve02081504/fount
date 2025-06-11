@@ -24,6 +24,11 @@ Sentry.init({
 	_experiments: { enableLogs: true },
 })
 
+// fix firefox and safari's anchor
+/*
+if (!('anchorName' in document.documentElement.style))
+	import('https://esm.run/@oddbird/css-anchor-positioning')
+//*/
 // fix of tailwindcss Play CDN
 import { fixTailwindcssCDN } from './scripts/tailwindcssCdnFixer.mjs'
 fixTailwindcssCDN()
