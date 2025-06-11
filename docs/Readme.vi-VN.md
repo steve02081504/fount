@@ -4,6 +4,8 @@
 
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/steve02081504/fount)
+![Docker Image Size](https://img.shields.io/docker/image-size/steve02081504/fount)
+![GitHub repo size](https://img.shields.io/github/repo-size/steve02081504/fount)
 
 <a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
@@ -23,11 +25,11 @@ Những nhân vật lạc lối, những câu chuyện bị lãng quên? Cộng 
 |Ảnh chụp màn hình|
 |----|
 |Trang chủ|
-|![图片](https://github.com/user-attachments/assets/c1954a7a-6c73-4fb0-bd12-f790a038bd0e)|
+|![Hình ảnh](https://github.com/user-attachments/assets/c1954a7a-6c73-4fb0-bd12-f790a038bd0e)|
 |Chọn chủ đề|
-|![图片](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074)|
+|![Hình ảnh](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074)|
 |Trò chuyện|
-|![图片](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d)|
+|![Hình ảnh](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d)|
 
 </details>
 
@@ -133,18 +135,19 @@ Fount được xây dựng trên một kiến trúc mạnh mẽ và có khả n�
 
     Fount cung cấp sự *lựa chọn* và *linh hoạt* vô song trong việc kết nối các nguồn AI. Mã JavaScript tùy chỉnh trong trình tạo nguồn AI cho phép bạn kết nối với *bất kỳ* nguồn AI nào – OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral, và nhiều hơn nữa. Trong luồng mã, bạn có thể tỉ mỉ thiết kế các biểu thức chính quy phức tạp, gọi các thư viện API đồ sộ, nhúng các tài nguyên đa phương tiện. Fount còn hỗ trợ nguyên bản việc tạo các nhóm API, từ đó cho phép định tuyến yêu cầu thông minh. Logic giao tiếp uốn mình theo ý *bạn*, được định hình bởi sức mạnh của mã lệnh.
 
-    ![图片](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
+    ![Hình ảnh](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
 
 ### Đồng hành: Vượt ngoài những giới hạn kỹ thuật số
 
 Fount nỗ lực dệt các nhân vật vào sợi vải cuộc sống của bạn, mang đến sự đồng hành và hỗ trợ.
 
-* **Tích hợp Discord:** Kết nối các nhân vật với cộng đồng Discord của bạn thông qua Discord Bot Shell tích hợp sẵn.
-    ![图片](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
-    ![图片](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
+* **Tích hợp Discord/Telegram:** Kết nối nhân vật với cộng đồng Discord/Telegram của bạn thông qua các Bot Shells tích hợp sẵn.
+    ![Hình ảnh](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
+    ![Hình ảnh](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
+    ![Hình ảnh](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
 
 * **Sự tĩnh lặng của terminal (kết hợp với [fount-pwsh](https://github.com/steve02081504/fount-pwsh)):** Khi lệnh terminal thất bại, hãy để nhân vật cung cấp hướng dẫn.
-    ![图片](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
+    ![Hình ảnh](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
 
 * **Những mở rộng Shell không giới hạn:** Với một chút kỹ năng lập trình, hãy tạo fount Shell của riêng bạn, mở rộng phạm vi tiếp cận của nhân vật.
 
@@ -160,7 +163,11 @@ Fount nỗ lực dệt các nhân vật vào sợi vải cuộc sống của b�
 
 * **Tài nguyên nhúng:** Dệt tài nguyên trực tiếp vào nhân vật của bạn.
 
-    ![图片](https://github.com/user-attachments/assets/9740cd43-06fd-46c0-a114-e4bd99f13045)
+    ![Hình ảnh](https://github.com/user-attachments/assets/9740cd43-06fd-46c0-a114-e4bd99f13045)
+
+* **Tích hợp liên tục (fount-charCI):** Sử dụng [fount-charCI](https://github.com/marketplace/actions/fount-charci) để bảo vệ quá trình phát triển nhân vật của bạn. Nó tự động chạy thử nghiệm không đồng bộ khi commit và báo cáo sự cố trong thời gian thực.
+    ![Hình ảnh](https://github.com/user-attachments/assets/3f6a188d-6643-4d70-8bd1-b75f00c76439)
+    ![Hình ảnh](https://github.com/user-attachments/assets/30eb8374-64c2-41bc-a7d1-f15596352260)
 
 * **Khả năng tương thích cũ:** fount đón nhận quá khứ, cung cấp các module tương thích để chạy các thẻ nhân vật của SillyTavern và Risu (mặc dù không hỗ trợ di chuyển các nhân vật hiện có).
 
@@ -182,7 +189,7 @@ Trong thế giới của fount, tính mô-đun là tối thượng. Một hệ s
 
     *Tất cả các thành phần này đều có thể được người dùng cài đặt dễ dàng, mở rộng và tùy chỉnh trải nghiệm fount của họ.*
 
-    ![图片](https://github.com/user-attachments/assets/8487a04a-7040-4844-81a6-705687856757)
+    ![Hình ảnh](https://github.com/user-attachments/assets/8487a04a-7040-4844-81a6-705687856757)
 
 ### Dễ dàng bắt đầu
 

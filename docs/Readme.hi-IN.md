@@ -4,6 +4,8 @@
 
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/steve02081504/fount)
+![Docker Image Size](https://img.shields.io/docker/image-size/steve02081504/fount)
+![GitHub repo size](https://img.shields.io/github/repo-size/steve02081504/fount)
 
 <a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
@@ -139,9 +141,10 @@ fount remove
 
 फाउंट पात्रों को आपके जीवन के ताने-बाने में बुनने, साहचर्य और समर्थन प्रदान करने का प्रयास करता है।
 
-* **Discord एकीकरण:** अंतर्निहित Discord बॉट शेल के माध्यम से पात्रों को अपने Discord समुदायों से कनेक्ट करें।
+* **डिस्कॉर्ड/टेलीग्राम इंटीग्रेशन:** अंतर्निहित बॉट शेल्स के माध्यम से पात्रों को अपने डिस्कॉर्ड/टेलीग्राम समुदायों से कनेक्ट करें।
     ![छवि](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
     ![छवि](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
+    ![छवि](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
 
 * **टर्मिनल शांति (साथ [fount-pwsh](https://github.com/steve02081504/fount-pwsh)):** टर्मिनल कमांड लड़खड़ाने पर पात्रों को मार्गदर्शन देने दें।
     ![छवि](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
@@ -161,6 +164,10 @@ fount remove
 * **एम्बेडेड संसाधन:** संसाधनों को सीधे अपने पात्रों में बुनें।
 
     ![छवि](https://github.com/user-attachments/assets/9740cd43-06fd-46c0-a114-e4bd99f13045)
+
+* **सतत एकीकरण (fount-charCI):** अपने चरित्र विकास को सुरक्षित करने के लिए [fount-charCI](https://github.com/marketplace/actions/fount-charci) का उपयोग करें। यह प्रतिबद्धता पर स्वचालित रूप से अतुल्यकालिक रूप से परीक्षण चलाता है और वास्तविक समय में समस्याओं की रिपोर्ट करता है।
+    ![छवि](https://github.com/user-attachments/assets/3f6a188d-6643-4d70-8bd1-b75f00c76439)
+    ![छवि](https://github.com/user-attachments/assets/30eb8374-64c2-41bc-a7d1-f15596352260)
 
 * **विरासत संगतता:** फाउंट अतीत को अपनाता है, सिलीटेवर्न और रिसु चरित्र कार्ड चलाने के लिए संगतता मॉड्यूल प्रदान करता है (हालांकि मौजूदा पात्रों का माइग्रेशन समर्थित नहीं है)।
 

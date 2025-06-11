@@ -4,6 +4,8 @@
 
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/steve02081504/fount)
+![Docker Image Size](https://img.shields.io/docker/image-size/steve02081504/fount)
+![GitHub repo size](https://img.shields.io/github/repo-size/steve02081504/fount)
 
 <a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
@@ -139,9 +141,10 @@ Fount는 성능과 유지 관리성을 모두 고려하여 설계된 견고하�
 
 Fount는 캐릭터를 삶의 구조에 직조하여 동반자 관계와 지원을 제공하기 위해 노력합니다.
 
-* **Discord 통합:** 내장된 Discord Bot Shell을 통해 캐릭터를 Discord 커뮤니티에 연결합니다.
+* **Discord/Telegram 통합:** 내장된 봇 셸을 통해 Discord/Telegram 커뮤니티에 캐릭터를 연결하세요.
     ![이미지](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
     ![이미지](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
+    ![이미지](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
 
 * **터미널 평온함 ([fount-pwsh](https://github.com/steve02081504/fount-pwsh)와 함께):** 터미널 명령이 실패할 때 캐릭터가 지침을 제공하도록 합니다.
     ![이미지](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
@@ -161,6 +164,10 @@ Fount는 캐릭터를 삶의 구조에 직조하여 동반자 관계와 지원�
 * **내장된 리소스:** 리소스를 캐릭터에 직접 직조합니다.
 
     ![이미지](https://github.com/user-attachments/assets/9740cd43-06fd-46c0-a114-e4bd99f13045)
+
+* **지속적인 통합 (fount-charCI):** [fount-charCI](https://github.com/marketplace/actions/fount-charci)를 사용하여 캐릭터 개발을 보호하세요. 커밋 시 자동으로 비동기 테스트를 실행하고 실시간으로 문제를 보고합니다.
+    ![이미지](https://github.com/user-attachments/assets/3f6a188d-6643-4d70-8bd1-b75f00c76439)
+    ![이미지](https://github.com/user-attachments/assets/30eb8374-64c2-41bc-a7d1-f15596352260)
 
 * **레거시 호환성:** Fount는 과거를 수용하여 SillyTavern 및 Risu 캐릭터 카드를 실행하기 위한 호환성 모듈을 제공합니다(기존 캐릭터의 마이그레이션은 지원되지 않음).
 
