@@ -4,6 +4,8 @@
 
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/steve02081504/fount)
+![Docker Image Size](https://img.shields.io/docker/image-size/steve02081504/fount)
+![GitHub repo size](https://img.shields.io/github/repo-size/steve02081504/fount)
 
 <a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
@@ -150,9 +152,10 @@ Fount is built upon a robust and scalable architecture, designed for both perfor
 
 Fount strives to weave characters into the fabric of your life, offering companionship and support.
 
-* **Discord Integration:** Connect characters to your Discord communities through the built-in Discord Bot Shell.
+* **Discord/Telegram Integration:** Connect characters to your Discord/Telegram communities through the built-in Bot Shells.
     ![Image](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
     ![Image](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
+    ![Image](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
 
 * **Terminal Serenity (with [fount-pwsh](https://github.com/steve02081504/fount-pwsh)):** Let characters offer guidance when terminal commands falter.
     ![Image](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
@@ -172,6 +175,10 @@ For the character creator, fount offers a streamlined and intuitive path to brin
 * **Embedded Resources:** Weave resources directly into your characters.
 
 ![Image](https://github.com/user-attachments/assets/9740cd43-06fd-46c0-a114-e4bd99f13045)
+
+* **Continuous Integration (fount-charCI):** Use [fount-charCI](https://github.com/marketplace/actions/fount-charci) to safeguard your character development. It automatically runs tests asynchronously on commit and reports issues in real-time.
+    ![Image](https://github.com/user-attachments/assets/3f6a188d-6643-4d70-8bd1-b75f00c76439)
+    ![Image](https://github.com/user-attachments/assets/30eb8374-64c2-41bc-a7d1-f15596352260)
 
 * **Legacy Compatibility:** fount embraces the past, offering compatibility modules to run SillyTavern and Risu character cards (though migration of existing characters is not supported).
 

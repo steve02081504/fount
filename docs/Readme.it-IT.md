@@ -4,6 +4,8 @@
 
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/steve02081504/fount)
+![Docker Image Size](https://img.shields.io/docker/image-size/steve02081504/fount)
+![GitHub repo size](https://img.shields.io/github/repo-size/steve02081504/fount)
 
 <a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
@@ -139,9 +141,10 @@ Fount è edificato su un'architettura robusta e scalabile, bilanciando performan
 
 Fount si adopera per intessere i personaggi nella trama della tua vita, offrendo compagnia e supporto.
 
-* **Integrazione Discord:** Connetti i personaggi alla tua comunità Discord tramite la Shell Discord integrata.
+* **Integrazione con Discord/Telegram:** Collega i personaggi alle tue comunità Discord/Telegram tramite le Bot Shells integrate.
     ![Immagine](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
     ![Immagine](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
+    ![Immagine](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
 
 * **La quiete del terminale (in combinazione con [fount-pwsh](https://github.com/steve02081504/fount-pwsh)):** Lascia che i personaggi offrano guida quando i comandi del terminale falliscono.
     ![Immagine](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
@@ -161,6 +164,10 @@ Per i creatori di personaggi, Fount offre un percorso semplificato e intuitivo p
 * **Risorse incorporate:** Intreccia le risorse direttamente nel tuo personaggio.
 
     ![Immagine](https://github.com/user-attachments/assets/9740cd43-06fd-46c0-a114-e4bd99f13045)
+
+* **Integrazione Continua (fount-charCI):** Usa [fount-charCI](https://github.com/marketplace/actions/fount-charci) per salvaguardare lo sviluppo dei tuoi personaggi. Esegue automaticamente test in modo asincrono ad ogni commit e segnala i problemi in tempo reale.
+    ![Immagine](https://github.com/user-attachments/assets/3f6a188d-6643-4d70-8bd1-b75f00c76439)
+    ![Immagine](https://github.com/user-attachments/assets/30eb8374-64c2-41bc-a7d1-f15596352260)
 
 * **Compatibilità con il passato:** Fount abbraccia il passato, offrendo moduli compatibili per eseguire schede personaggio di SillyTavern e Risu (sebbene la migrazione di personaggi esistenti non sia supportata).
 
