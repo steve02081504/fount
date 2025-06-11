@@ -67,7 +67,7 @@
 			"createTrayFailed": "ट्रे बनाने में विफल: ${error}"
 		},
 		"discordbot": {
-			"botStarted": "कैरेक्टर ${charname} ने डिस्कॉर्ड बॉट ${botusername} पर लॉगिन किया है।",
+			"botStarted": "कैरेक्टर ${charname} ने डिस्कॉर्ड बॉट ${botusername} पर लॉगिन किया है।"
 		},
 		"telegrambot": {
 			"botStarted": "कैरेक्टर ${charname} ने टेलीग्राम बॉट ${botusername} पर लॉगिन किया है।"
