@@ -17,9 +17,9 @@
 		},
 		"ipc": {
 			"sendCommandFailed": "Gửi lệnh thất bại: ${error}",
-			"invalidCommand": "Lệnh không hợp lệ, vui lòng sử dụng \"Fount Run <part type> <tên người dùng> <tên phần> <tham số ...>\"",
-			"runPartLog": "Chạy ${parttype} ${partname} dưới dạng ${username}, tham số: ${args}",
-			"invokePartLog": "Gọi ${parttype} ${partname} là ${username}, tham số: ${invokedata}",
+			"invalidCommand": "Lệnh không hợp lệ. Vui lòng sử dụng \"fount run <loại thành phần> <tên người dùng> <tên thành phần> <tham số ...>\".",
+			"runPartLog": "Đang chạy ${parttype} ${partname} với tư cách ${username}, tham số: ${args}.",
+			"invokePartLog": "Đang gọi ${parttype} ${partname} với tư cách ${username}, tham số: ${invokedata}.",
 			"unsupportedCommand": "Loại lệnh không được hỗ trợ.",
 			"processMessageError": "Đã xảy ra lỗi khi xử lý tin nhắn IPC: ${error}",
 			"invalidCommandFormat": "Định dạng lệnh không hợp lệ.",
@@ -154,7 +154,7 @@
 			"endButton": "Bắt đầu nào!"
 		},
 		"progressMessages": {
-			"mouseMove": "Vui lòng dùng tay giữ chuột ${mouseIcon} và di chuyển.",
+			"mouseMove": "Vui lòng di chuyển chuột ${mouseIcon}.",
 			"keyboardPress": "Vui lòng tìm bàn phím ${keyboardIcon} của bạn<br/>và thử nhấn một phím bất kỳ.",
 			"mobileTouchMove": "Vui lòng dùng ngón tay chạm vào màn hình điện thoại ${phoneIcon} rồi vuốt.",
 			"mobileClick": "Vui lòng dùng ngón tay chạm vào màn hình điện thoại ${phoneIcon}."
@@ -317,7 +317,7 @@
 				"title": "Xóa"
 			},
 			"removeButtonIcon": {
-				"alt": "xóa"
+				"alt": "Xóa"
 			}
 		}
 	},
@@ -514,25 +514,25 @@
 					"title": "Hơn"
 				},
 				"moreIcon": {
-					"alt": "Nhiều biểu tượng hơn"
+					"alt": "Thêm tùy chọn"
 				}
 			},
 			"dropdown": {
-				"delete": "xóa bỏ",
+				"delete": "Xóa",
 				"deleteIcon": {
-					"alt": "Xóa biểu tượng"
+					"alt": "Biểu tượng Xóa"
 				},
 				"copyMarkdown": "Sao chép dưới dạng Markdown",
 				"copyMarkdownIcon": {
-					"alt": "Sao chép dưới dạng biểu tượng Markdown"
+					"alt": "Biểu tượng Sao chép dạng Markdown"
 				},
 				"copyText": "Sao chép dưới dạng văn bản đơn giản",
 				"copyTextIcon": {
-					"alt": "Sao chép biểu tượng văn bản"
+					"alt": "Biểu tượng Sao chép dạng văn bản"
 				},
 				"copyHtml": "Sao chép dưới dạng HTML",
 				"copyHtmlIcon": {
-					"alt": "Sao chép biểu tượng HTML"
+					"alt": "Biểu tượng Sao chép dạng HTML"
 				}
 			}
 		},
@@ -616,9 +616,9 @@
 		"alerts": {
 			"noChatSelectedForDeletion": "Vui lòng chọn lịch sử trò chuyện cần xóa.",
 			"noChatSelectedForExport": "Vui lòng chọn lịch sử trò chuyện cần xuất.",
-			"copyError": "Sao chép không thành công",
-			"deleteError": "Xóa không thành công",
-			"exportError": "Xuất khẩu không thành công"
+			"copyError": "Sao chép không thành công.",
+			"deleteError": "Xóa không thành công.",
+			"exportError": "Xuất không thành công."
 		},
 		"chatItemButtons": {
 			"continue": "Tiếp tục",

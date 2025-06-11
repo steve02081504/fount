@@ -17,9 +17,9 @@
 		},
 		"ipc": {
 			"sendCommandFailed": "Failed to send command: ${error}",
-			"invalidCommand": "Invalid command, please use \"fount run <part type> <user name> <part name> <parameter...>\"",
-			"runPartLog": "Run ${parttype} ${partname} as ${username}, parameter: ${args}",
-			"invokePartLog": "Call ${parttype} ${partname} as ${username}, parameter: ${invokedata}",
+			"invalidCommand": "Invalid command, please use \"fount run <part type> <username> <part name> <parameters...>\"",
+			"runPartLog": "Run ${parttype} ${partname} as ${username}, parameters: ${args}",
+			"invokePartLog": "Call ${parttype} ${partname} as ${username}, parameters: ${invokedata}",
 			"unsupportedCommand": "Unsupported command type",
 			"processMessageError": "Error processing IPC message: ${error}",
 			"invalidCommandFormat": "Invalid command format",
@@ -39,10 +39,10 @@
 				"localAhead": "Local branch is ahead of remote branch. No update needed.",
 				"diverged": "Local and remote branches have diverged. Forcing update...",
 				"upToDate": "Already up-to-date.",
-				"updateFailed": "Failed to update components from remote repository: ${error}"
+				"updateFailed": "Failed to update parts from remote repository: ${error}"
 			},
-			"partInitTime": "${parttype} Component ${partname} Initialisation time: ${time}s",
-			"partLoadTime": "${parttype} Component ${partname} Loading time: ${time}s"
+			"partInitTime": "${parttype} Part ${partname} initialisation time: ${time}s",
+			"partLoadTime": "${parttype} Part ${partname} loading time: ${time}s"
 		},
 		"web": {
 			"requestReceived": "Request received: ${method} ${url}"
@@ -154,7 +154,7 @@
 			"endButton": "Get Started!"
 		},
 		"progressMessages": {
-			"mouseMove": "Please try moving the mouse ${mouseIcon} using your hand.",
+			"mouseMove": "Try moving the mouse ${mouseIcon}.",
 			"keyboardPress": "Press a key on your keyboard ${keyboardIcon}.",
 			"mobileTouchMove": "Try touching and dragging your finger on the screen of your phone ${phoneIcon}.",
 			"mobileClick": "Try tapping the screen of your phone ${phoneIcon} with your finger."
@@ -191,7 +191,7 @@
 				"version": "Version",
 				"author": "Author",
 				"homepage": "Homepage",
-				"issuepage": "Issue Page",
+				"issuepage": "Report Issue",
 				"defaultCheckbox": {
 					"title": "Set as default character"
 				}
@@ -211,7 +211,7 @@
 				"version": "Version",
 				"author": "Author",
 				"homepage": "Homepage",
-				"issuepage": "Issue Page",
+				"issuepage": "Report Issue",
 				"defaultCheckbox": {
 					"title": "Set as default world"
 				}
@@ -231,7 +231,7 @@
 				"version": "Version",
 				"author": "Author",
 				"homepage": "Homepage",
-				"issuepage": "Issue Page",
+				"issuepage": "Report Issue",
 				"defaultCheckbox": {
 					"title": "Set as default persona"
 				}
@@ -364,33 +364,33 @@
 		}
 	},
 	"part_config": {
-		"title": "Component Configuration",
-		"pageTitle": "Component Configuration",
+		"title": "Part Configuration",
+		"pageTitle": "Part Configuration",
 		"labels": {
-			"partType": "Select Component Type",
-			"part": "Select Component"
+			"partType": "Select Part Type",
+			"part": "Select Part"
 		},
 		"placeholders": {
 			"partTypeSelect": "Please select",
 			"partSelect": "Please select"
 		},
 		"editor": {
-			"title": "Component Configuration",
-			"disabledIndicator": "This component does not support configuration.",
+			"title": "Part Configuration",
+			"disabledIndicator": "This part does not support configuration.",
 			"buttons": {
 				"save": "Save"
 			}
 		},
 		"errorMessage": {
 			"icon": {
-				"alt": "Error Prompt"
+				"alt": "Error Icon"
 			}
 		},
 		"alerts": {
-			"fetchPartTypesFailed": "Failed to get component types.",
-			"fetchPartsFailed": "Failed to get component list.",
+			"fetchPartTypesFailed": "Failed to get part types.",
+			"fetchPartsFailed": "Failed to get part list.",
 			"loadEditorFailed": "Failed to load editor.",
-			"saveConfigFailed": "Failed to save component configuration.",
+			"saveConfigFailed": "Failed to save part configuration.",
 			"unsavedChanges": "You have unsaved changes. Do you want to discard changes?",
 			"beforeUnload": "You have unsaved changes. Are you sure you want to leave?"
 		}
@@ -454,7 +454,7 @@
 					}
 				}
 			},
-			"noSelection": "Not selected",
+			"noSelection": "None selected",
 			"noDescription": "No description available."
 		},
 		"chatArea": {
@@ -514,11 +514,11 @@
 					"title": "More"
 				},
 				"moreIcon": {
-					"alt": "More icons"
+					"alt": "More Icon"
 				}
 			},
 			"dropdown": {
-				"delete": "delete",
+				"delete": "Delete",
 				"deleteIcon": {
 					"alt": "Delete icon"
 				},
@@ -675,7 +675,7 @@
 		"configCard": {
 			"title": "Bot Configuration",
 			"labels": {
-				"character": "Bound Character",
+				"character": "Linked Character",
 				"botToken": "Telegram Bot Token",
 				"config": "Configuration"
 			},

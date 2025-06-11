@@ -10,16 +10,16 @@
 				"https": "HTTPS सर्वर ${url} पर चल रहा है।",
 				"http": "HTTP सर्वर ${url} पर चल रहा है।"
 			},
-			"standingBy": "स्टैंडबाय पर..."
+			"standingBy": "स्टैंडबाय पर।"
 		},
 		"jobs": {
 			"restartingJob": "उपयोगकर्ता ${username} का ${parttype} ${partname} कार्य (${uid}) पुनः आरंभ किया जा रहा है।"
 		},
 		"ipc": {
 			"sendCommandFailed": "कमांड भेजने में विफल: ${error}",
-			"invalidCommand": "अमान्य कमांड, कृपया \"फाउंट रन <भाग प्रकार> <उपयोगकर्ता नाम> <भाग नाम> <पैरामीटर ...> का उपयोग करें\"",
-			"runPartLog": "${parttype} ${partname} को ${username}, पैरामीटर: ${args} के रूप में चलाएं",
-			"invokePartLog": "${parttype} ${partname} को ${username}, पैरामीटर: ${invokedata} के रूप में कॉल करें",
+			"invalidCommand": "अमान्य कमांड, कृपया \"fount run <घटक प्रकार> <उपयोगकर्ता नाम> <घटक नाम> <पैरामीटर ...>\" का उपयोग करें।",
+			"runPartLog": "${username} के रूप में ${parttype} ${partname} चलाएँ, पैरामीटर: ${args}।",
+			"invokePartLog": "${username} के रूप में ${parttype} ${partname} कॉल करें, पैरामीटर: ${invokedata}।",
 			"unsupportedCommand": "असमर्थित कमांड प्रकार।",
 			"processMessageError": "IPC संदेश को संसाधित करने में त्रुटि: ${error}",
 			"invalidCommandFormat": "अमान्य कमांड प्रारूप।",
@@ -35,9 +35,9 @@
 			"git": {
 				"noUpstream": "शाखा '${currentBranch}' के लिए कोई अपस्ट्रीम शाखा कॉन्फ़िगर नहीं है, अपडेट की जाँच छोड़ी जा रही है।",
 				"dirtyWorkingDirectory": "कार्यरत डायरेक्टरी स्वच्छ नहीं है। कृपया अपडेट करने से पहले अपने बदलावों को स्टैश (stash) या कमिट (commit) करें।",
-				"updating": "रिमोट रिपॉजिटरी से अपडेट किया जा रहा है...",
+				"updating": "रिमोट रिपॉजिटरी से अपडेट किया जा रहा है।",
 				"localAhead": "स्थानीय शाखा रिमोट शाखा से आगे है। अपडेट की आवश्यकता नहीं है।",
-				"diverged": "स्थानीय और रिमोट शाखाएँ अलग हो गई हैं। ज़बरदस्ती अपडेट किया जा रहा है...",
+				"diverged": "स्थानीय और रिमोट शाखाएँ अलग हो गई हैं। ज़बरदस्ती अपडेट किया जा रहा है।",
 				"upToDate": "पहले से ही अपडेटेड है।",
 				"updateFailed": "रिमोट रिपॉजिटरी से घटक अपडेट करने में विफल: ${error}"
 			},
@@ -67,10 +67,10 @@
 			"createTrayFailed": "ट्रे बनाने में विफल: ${error}"
 		},
 		"discordbot": {
-			"botStarted": "कैरेक्टर ${charname} ने डिस्कॉर्ड बॉट ${botusername} पर लॉगिन किया।"
+			"botStarted": "कैरेक्टर ${charname} ने डिस्कॉर्ड बॉट ${botusername} पर लॉगिन किया है।",
 		},
 		"telegrambot": {
-			"botStarted": "कैरेक्टर ${charname} ने टेलीग्राम बॉट ${botusername} पर लॉगिन किया।"
+			"botStarted": "कैरेक्टर ${charname} ने टेलीग्राम बॉट ${botusername} पर लॉगिन किया है।"
 		}
 	},
 	"protocolhandler": {
@@ -154,7 +154,7 @@
 			"endButton": "चलिए शुरू करते हैं!"
 		},
 		"progressMessages": {
-			"mouseMove": "कृपया अपने हाथ से माउस ${mouseIcon} को पकड़कर हिलाने का प्रयास करें।",
+			"mouseMove": "कृपया माउस ${mouseIcon} को हिलाने का प्रयास करें।",
 			"keyboardPress": "कृपया अपने कीबोर्ड ${keyboardIcon} पर कोई कुंजी दबाएँ।",
 			"mobileTouchMove": "कृपया अपने फ़ोन ${phoneIcon} की स्क्रीन को उंगली से स्पर्श करें और फिर उसे स्वाइप करें।",
 			"mobileClick": "कृपया अपने फ़ोन ${phoneIcon} की स्क्रीन को उंगली से टैप करें।"
@@ -191,7 +191,7 @@
 				"version": "संस्करण",
 				"author": "लेखक",
 				"homepage": "होमपेज",
-				"issuepage": "समस्या रिपोर्ट पेज",
+				"issuepage": "समस्या की रिपोर्ट करें",
 				"defaultCheckbox": {
 					"title": "डिफ़ॉल्ट कैरेक्टर के रूप में सेट करें"
 				}
@@ -211,7 +211,7 @@
 				"version": "संस्करण",
 				"author": "लेखक",
 				"homepage": "होमपेज",
-				"issuepage": "समस्या रिपोर्ट पेज",
+				"issuepage": "समस्या की रिपोर्ट करें",
 				"defaultCheckbox": {
 					"title": "डिफ़ॉल्ट दुनिया के रूप में सेट करें"
 				}
@@ -231,7 +231,7 @@
 				"version": "संस्करण",
 				"author": "लेखक",
 				"homepage": "होमपेज",
-				"issuepage": "समस्या रिपोर्ट पेज",
+				"issuepage": "समस्या की रिपोर्ट करें",
 				"defaultCheckbox": {
 					"title": "डिफ़ॉल्ट पर्सोना के रूप में सेट करें"
 				}
@@ -383,7 +383,7 @@
 		},
 		"errorMessage": {
 			"icon": {
-				"alt": "त्रुटि संकेत"
+				"alt": "त्रुटि आइकन"
 			}
 		},
 		"alerts": {
@@ -454,7 +454,7 @@
 					}
 				}
 			},
-			"noSelection": "कुछ नहीं चुना गया",
+			"noSelection": "कुछ नहीं चुना गया।",
 			"noDescription": "कोई विवरण उपलब्ध नहीं है।"
 		},
 		"chatArea": {
@@ -518,21 +518,21 @@
 				}
 			},
 			"dropdown": {
-				"delete": "मिटाना",
+				"delete": "हटाएँ",
 				"deleteIcon": {
-					"alt": "आइकन हटाएं"
+					"alt": "हटाएँ आइकन"
 				},
 				"copyMarkdown": "मार्कडाउन के रूप में कॉपी करें",
 				"copyMarkdownIcon": {
-					"alt": "मार्कडाउन आइकन के रूप में कॉपी करें"
+					"alt": "आइकन: मार्कडाउन के रूप में कॉपी करें"
 				},
 				"copyText": "सादे पाठ के रूप में कॉपी करें",
 				"copyTextIcon": {
-					"alt": "पाठ आइकन की प्रतिलिपि बनाएँ"
+					"alt": "आइकन: सादे पाठ के रूप में कॉपी करें"
 				},
 				"copyHtml": "HTML के रूप में कॉपी करें",
 				"copyHtmlIcon": {
-					"alt": "HTML आइकन कॉपी करें"
+					"alt": "आइकन: HTML के रूप में कॉपी करें"
 				}
 			}
 		},
@@ -616,9 +616,9 @@
 		"alerts": {
 			"noChatSelectedForDeletion": "कृपया हटाने के लिए चैट इतिहास चुनें।",
 			"noChatSelectedForExport": "कृपया निर्यात करने के लिए चैट इतिहास चुनें।",
-			"copyError": "कॉपी विफल",
-			"deleteError": "विलोपन विफल रहा",
-			"exportError": "निर्यात विफल हो गया"
+			"copyError": "कॉपी विफल।",
+			"deleteError": "हटाना विफल रहा।",
+			"exportError": "निर्यात विफल रहा।"
 		},
 		"chatItemButtons": {
 			"continue": "जारी रखें",
@@ -793,7 +793,7 @@
 			"description": "यह आपको वर्तमान डिवाइस से आपके खाते से लॉग आउट कर देगा।",
 			"buttonText": "लॉग आउट करें",
 			"confirmMessage": "क्या आप वाकई लॉग आउट करना चाहते हैं?",
-			"successMessage": "सफलतापूर्वक लॉग आउट कर दिया गया है। आपको जल्द ही लॉगिन पेज पर रीडायरेक्ट कर दिया जाएगा..."
+			"successMessage": "सफलतापूर्वक लॉग आउट कर दिया गया है। आपको जल्द ही लॉगिन पेज पर रीडायरेक्ट कर दिया जाएगा।"
 		},
 		"deleteAccount": {
 			"title": "खाता हटाएँ",

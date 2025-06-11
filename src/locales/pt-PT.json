@@ -17,9 +17,9 @@
 		},
 		"ipc": {
 			"sendCommandFailed": "Falha ao enviar o comando: ${error}",
-			"invalidCommand": "Comando inválido, use \"Fount Run <Part Type> <Nome do usuário> <Nome da peça> <parâmetro ...>\"",
-			"runPartLog": "Execute ${parttype} ${partname} como ${username}, parâmetro: ${args}",
-			"invokePartLog": "Ligue para ${parttype} ${partname} como ${username}, parâmetro: ${invokedata}",
+			"invalidCommand": "Comando inválido. Utilize \"fount run <Tipo de Componente> <Nome de utilizador> <Nome do Componente> <parâmetro ...>\".",
+			"runPartLog": "A executar ${parttype} ${partname} como ${username}, parâmetros: ${args}.",
+			"invokePartLog": "A invocar ${parttype} ${partname} como ${username}, parâmetros: ${invokedata}.",
 			"unsupportedCommand": "Tipo de comando não suportado.",
 			"processMessageError": "Erro ao processar a mensagem IPC: ${error}",
 			"invalidCommandFormat": "Formato de comando inválido.",
@@ -154,7 +154,7 @@
 			"endButton": "Começar!"
 		},
 		"progressMessages": {
-			"mouseMove": "Por favor, tente mover o rato ${mouseIcon} com a sua mão.",
+			"mouseMove": "Por favor, tente mover o rato ${mouseIcon}.",
 			"keyboardPress": "Por favor, prima uma tecla no seu teclado ${keyboardIcon}.",
 			"mobileTouchMove": "Por favor, toque no ecrã do seu telemóvel ${phoneIcon} com um dedo e depois deslize-o.",
 			"mobileClick": "Por favor, toque no ecrã do seu telemóvel ${phoneIcon} com um dedo."
@@ -383,7 +383,7 @@
 		},
 		"errorMessage": {
 			"icon": {
-				"alt": "Mensagem de Erro"
+				"alt": "Ícone de Erro"
 			}
 		},
 		"alerts": {
@@ -514,25 +514,25 @@
 					"title": "Mais"
 				},
 				"moreIcon": {
-					"alt": "Mais ícones"
+					"alt": "Mais opções"
 				}
 			},
 			"dropdown": {
-				"delete": "excluir",
+				"delete": "Eliminar",
 				"deleteIcon": {
-					"alt": "Excluir ícone"
+					"alt": "Ícone Eliminar"
 				},
-				"copyMarkdown": "Cópia como markdown",
+				"copyMarkdown": "Copiar como Markdown",
 				"copyMarkdownIcon": {
-					"alt": "Copie como ícone de Markdown"
+					"alt": "Ícone Copiar como Markdown"
 				},
 				"copyText": "Copiar como texto simples",
 				"copyTextIcon": {
-					"alt": "Copiar ícone de texto"
+					"alt": "Ícone Copiar texto"
 				},
-				"copyHtml": "Copie como HTML",
+				"copyHtml": "Copiar como HTML",
 				"copyHtmlIcon": {
-					"alt": "Copie o ícone HTML"
+					"alt": "Ícone Copiar como HTML"
 				}
 			}
 		},
@@ -616,9 +616,9 @@
 		"alerts": {
 			"noChatSelectedForDeletion": "Por favor, selecione os históricos de conversas para eliminar.",
 			"noChatSelectedForExport": "Por favor, selecione os históricos de conversas para exportar.",
-			"copyError": "Cópia falhou",
-			"deleteError": "A exclusão falhou",
-			"exportError": "A exportação falhou"
+			"copyError": "Falha ao copiar.",
+			"deleteError": "Falha ao eliminar.",
+			"exportError": "Falha ao exportar."
 		},
 		"chatItemButtons": {
 			"continue": "Continuar",
