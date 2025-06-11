@@ -4,6 +4,8 @@
 
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/steve02081504/fount)
+![Docker Image Size](https://img.shields.io/docker/image-size/steve02081504/fount)
+![GitHub repo size](https://img.shields.io/github/repo-size/steve02081504/fount)
 
 <a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
@@ -139,9 +141,10 @@ O Fount é construído sobre uma arquitetura robusta e escalável, projetada tan
 
 O Fount se esforça para tecer personagens no tecido de sua vida, oferecendo companheirismo e apoio.
 
-* **Integração com o Discord:** Conecte personagens às suas comunidades do Discord através do Discord Bot Shell integrado.
+* **Integração com Discord/Telegram:** Conecte personagens às suas comunidades Discord/Telegram através dos Bot Shells embutidos.
     ![Imagem](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
     ![Imagem](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
+    ![Imagem](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
 
 * **Serenidade no Terminal (com [fount-pwsh](https://github.com/steve02081504/fount-pwsh)):** Deixe que os personagens ofereçam orientação quando os comandos do terminal falharem.
     ![Imagem](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
@@ -161,6 +164,10 @@ Para o criador de personagens, o Fount oferece um caminho simplificado e intuiti
 * **Recursos Embutidos:** Teça recursos diretamente em seus personagens.
 
     ![Imagem](https://github.com/user-attachments/assets/9740cd43-06fd-46c0-a114-e4bd99f13045)
+
+* **Integração Contínua (fount-charCI):** Use [fount-charCI](https://github.com/marketplace/actions/fount-charci) para proteger o desenvolvimento de seus personagens. Ele executa testes automaticamente de forma assíncrona a cada commit e relata problemas em tempo real.
+    ![Imagem](https://github.com/user-attachments/assets/3f6a188d-6643-4d70-8bd1-b75f00c76439)
+    ![Imagem](https://github.com/user-attachments/assets/30eb8374-64c2-41bc-a7d1-f15596352260)
 
 * **Compatibilidade Legada:** O Fount abraça o passado, oferecendo módulos de compatibilidade para executar cartões de personagem SillyTavern e Risu (embora a migração de personagens existentes não seja suportada).
 

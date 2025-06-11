@@ -4,6 +4,8 @@
 
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/steve02081504/fount)
+![Docker Image Size](https://img.shields.io/docker/image-size/steve02081504/fount)
+![GitHub repo size](https://img.shields.io/github/repo-size/steve02081504/fount)
 
 <a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
@@ -139,9 +141,10 @@ Fount está construido sobre una arquitectura robusta y escalable, diseñada tan
 
 Fount se esfuerza por tejer personajes en el tejido de tu vida, ofreciendo compañía y apoyo.
 
-* **Integración de Discord:** Conecta personajes a tus comunidades de Discord a través del shell de bot de Discord integrado.
-    ![Image](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
-    ![Image](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
+* **Integración con Discord/Telegram:** Conecta personajes a tus comunidades de Discord/Telegram a través de los Bot Shells integrados.
+    ![Imagen](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
+    ![Imagen](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
+    ![Imagen](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
 
 * **Serenidad del terminal (con [fount-pwsh](https://github.com/steve02081504/fount-pwsh)):** Deja que los personajes ofrezcan orientación cuando los comandos del terminal fallen.
     ![Image](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
@@ -160,7 +163,11 @@ Para el creador de personajes, fount ofrece un camino optimizado e intuitivo par
 
 * **Recursos incrustados:** Teje recursos directamente en tus personajes.
 
-    ![Image](https://github.com/user-attachments/assets/9740cd43-06fd-46c0-a114-e4bd99f13045)
+    ![Imagen](https://github.com/user-attachments/assets/9740cd43-06fd-46c0-a114-e4bd99f13045)
+
+* **Integración Continua (fount-charCI):** Usa [fount-charCI](https://github.com/marketplace/actions/fount-charci) para proteger el desarrollo de tus personajes. Ejecuta pruebas automáticamente de forma asíncrona en cada commit e informa de problemas en tiempo real.
+    ![Imagen](https://github.com/user-attachments/assets/3f6a188d-6643-4d70-8bd1-b75f00c76439)
+    ![Imagen](https://github.com/user-attachments/assets/30eb8374-64c2-41bc-a7d1-f15596352260)
 
 * **Compatibilidad heredada:** fount abraza el pasado, ofreciendo módulos de compatibilidad para ejecutar tarjetas de personajes de SillyTavern y Risu (aunque no se admite la migración de personajes existentes).
 

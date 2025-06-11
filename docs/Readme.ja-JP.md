@@ -4,6 +4,8 @@
 
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/steve02081504/fount)
+![Docker Image Size](https://img.shields.io/docker/image-size/steve02081504/fount)
+![GitHub repo size](https://img.shields.io/github/repo-size/steve02081504/fount)
 
 <a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
@@ -139,9 +141,10 @@ Fount は、パフォーマンスと保守性の両方を考慮して設計さ�
 
 Fount は、キャラクターをあなたの人生の構造に織り込み、仲間意識とサポートを提供しようと努めています。
 
-* **Discord 統合:** 組み込みの Discord Bot Shell を介して、キャラクターを Discord コミュニティに接続します。
+* **Discord/Telegram 統合:** 組み込みのBot Shellsを通じて、キャラクターをDiscord/Telegramコミュニティに接続します。
     ![画像](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
     ![画像](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
+    ![画像](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
 
 * **ターミナルの静けさ ([fount-pwsh](https://github.com/steve02081504/fount-pwsh) と共に):** ターミナルコマンドが失敗したときに、キャラクターにガイダンスを提供させましょう。
     ![画像](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
@@ -161,6 +164,10 @@ Fount は、キャラクターをあなたの人生の構造に織り込み、�
 * **埋め込みリソース:** リソースをキャラクターに直接織り込みます。
 
     ![画像](https://github.com/user-attachments/assets/9740cd43-06fd-46c0-a114-e4bd99f13045)
+
+* **継続的インテグレーション (fount-charCI):** [fount-charCI](https://github.com/marketplace/actions/fount-charci)を使用してキャラクター開発を保護します。コミット時に自動的に非同期でテストを実行し、問題をリアルタイムで報告します。
+    ![画像](https://github.com/user-attachments/assets/3f6a188d-6643-4d70-8bd1-b75f00c76439)
+    ![画像](https://github.com/user-attachments/assets/30eb8374-64c2-41bc-a7d1-f15596352260)
 
 * **レガシー互換性:** fount は過去を受け入れ、SillyTavern および Risu キャラクターカードを実行するための互換性モジュールを提供します (ただし、既存のキャラクターの移行はサポートされていません)。
 
