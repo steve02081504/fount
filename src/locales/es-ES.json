@@ -510,11 +510,29 @@
 				"editIcon": {
 					"alt": "Icono de editar"
 				},
-				"delete": {
-					"title": "Eliminar"
+				"more": {
+					"title": "Más"
 				},
+				"moreIcon": {
+					"alt": "Más íconos"
+				}
+			},
+			"dropdown": {
+				"delete": "borrar",
 				"deleteIcon": {
-					"alt": "Icono de eliminar"
+					"alt": "Eliminar icono"
+				},
+				"copyMarkdown": "Copiar como Markdown",
+				"copyMarkdownIcon": {
+					"alt": "Copiar como icono de Markdown"
+				},
+				"copyText": "Copiar como texto sin formato",
+				"copyTextIcon": {
+					"alt": "Copiar icono de texto"
+				},
+				"copyHtml": "Copiar como html",
+				"copyHtmlIcon": {
+					"alt": "Copiar icono HTML"
 				}
 			}
 		},

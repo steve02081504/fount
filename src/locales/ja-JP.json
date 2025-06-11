@@ -510,11 +510,29 @@
 				"editIcon": {
 					"alt": "編集アイコン"
 				},
-				"delete": {
-					"title": "削除"
+				"more": {
+					"title": "もっと"
 				},
+				"moreIcon": {
+					"alt": "その他のアイコン"
+				}
+			},
+			"dropdown": {
+				"delete": "消去",
 				"deleteIcon": {
-					"alt": "削除アイコン"
+					"alt": "アイコンを削除します"
+				},
+				"copyMarkdown": "マークダウンとしてコピーします",
+				"copyMarkdownIcon": {
+					"alt": "マークダウンアイコンとしてコピーします"
+				},
+				"copyText": "プレーンテキストとしてコピーします",
+				"copyTextIcon": {
+					"alt": "テキストアイコンをコピーします"
+				},
+				"copyHtml": "HTMLとしてコピーします",
+				"copyHtmlIcon": {
+					"alt": "HTMLアイコンをコピーします"
 				}
 			}
 		},

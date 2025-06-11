@@ -510,11 +510,29 @@
 				"editIcon": {
 					"alt": "संपादित करें आइकन"
 				},
-				"delete": {
-					"title": "हटाएँ"
+				"more": {
+					"title": "अधिक"
 				},
+				"moreIcon": {
+					"alt": "अधिक आइकन"
+				}
+			},
+			"dropdown": {
+				"delete": "मिटाना",
 				"deleteIcon": {
-					"alt": "हटाएँ आइकन"
+					"alt": "आइकन हटाएं"
+				},
+				"copyMarkdown": "मार्कडाउन के रूप में कॉपी करें",
+				"copyMarkdownIcon": {
+					"alt": "मार्कडाउन आइकन के रूप में कॉपी करें"
+				},
+				"copyText": "सादे पाठ के रूप में कॉपी करें",
+				"copyTextIcon": {
+					"alt": "पाठ आइकन की प्रतिलिपि बनाएँ"
+				},
+				"copyHtml": "HTML के रूप में कॉपी करें",
+				"copyHtmlIcon": {
+					"alt": "HTML आइकन कॉपी करें"
 				}
 			}
 		},

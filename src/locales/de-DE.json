@@ -510,11 +510,29 @@
 				"editIcon": {
 					"alt": "Bearbeiten-Symbol"
 				},
-				"delete": {
-					"title": "Löschen"
+				"more": {
+					"title": "Mehr"
 				},
+				"moreIcon": {
+					"alt": "Weitere Ikonen"
+				}
+			},
+			"dropdown": {
+				"delete": "löschen",
 				"deleteIcon": {
-					"alt": "Löschen-Symbol"
+					"alt": "Symbol löschen"
+				},
+				"copyMarkdown": "Kopieren Sie als Markdown",
+				"copyMarkdownIcon": {
+					"alt": "Kopieren Sie als Markdown -Symbol"
+				},
+				"copyText": "Kopieren Sie als einfacher Text",
+				"copyTextIcon": {
+					"alt": "Textsymbol kopieren"
+				},
+				"copyHtml": "Kopieren Sie als HTML",
+				"copyHtmlIcon": {
+					"alt": "Kopieren Sie das HTML -Symbol"
 				}
 			}
 		},

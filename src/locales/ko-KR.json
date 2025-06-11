@@ -510,11 +510,29 @@
 				"editIcon": {
 					"alt": "편집 아이콘"
 				},
-				"delete": {
-					"title": "삭제"
+				"more": {
+					"title": "더"
 				},
+				"moreIcon": {
+					"alt": "더 많은 아이콘"
+				}
+			},
+			"dropdown": {
+				"delete": "삭제",
 				"deleteIcon": {
-					"alt": "삭제 아이콘"
+					"alt": "아이콘을 삭제하십시오"
+				},
+				"copyMarkdown": "마크 다운으로 복사하십시오",
+				"copyMarkdownIcon": {
+					"alt": "마크 다운 아이콘으로 복사하십시오"
+				},
+				"copyText": "일반 텍스트로 복사하십시오",
+				"copyTextIcon": {
+					"alt": "텍스트 아이콘을 복사하십시오"
+				},
+				"copyHtml": "HTML로 복사하십시오",
+				"copyHtmlIcon": {
+					"alt": "HTML 아이콘을 복사하십시오"
 				}
 			}
 		},

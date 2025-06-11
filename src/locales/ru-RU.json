@@ -510,11 +510,29 @@
 				"editIcon": {
 					"alt": "Значок редактирования"
 				},
-				"delete": {
-					"title": "Удалить"
+				"more": {
+					"title": "Более"
 				},
+				"moreIcon": {
+					"alt": "Больше значков"
+				}
+			},
+			"dropdown": {
+				"delete": "удалить",
 				"deleteIcon": {
-					"alt": "Значок удаления"
+					"alt": "Удалить значок"
+				},
+				"copyMarkdown": "Копировать как отметка",
+				"copyMarkdownIcon": {
+					"alt": "Копировать как значок Markdown"
+				},
+				"copyText": "Копировать как простой текст",
+				"copyTextIcon": {
+					"alt": "Копировать текст значок"
+				},
+				"copyHtml": "Копировать как html",
+				"copyHtmlIcon": {
+					"alt": "Скопируйте значок HTML"
 				}
 			}
 		},
