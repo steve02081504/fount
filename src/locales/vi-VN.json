@@ -510,11 +510,29 @@
 				"editIcon": {
 					"alt": "Biểu tượng chỉnh sửa"
 				},
-				"delete": {
-					"title": "Xóa"
+				"more": {
+					"title": "Hơn"
 				},
+				"moreIcon": {
+					"alt": "Nhiều biểu tượng hơn"
+				}
+			},
+			"dropdown": {
+				"delete": "xóa bỏ",
 				"deleteIcon": {
-					"alt": "Biểu tượng xóa"
+					"alt": "Xóa biểu tượng"
+				},
+				"copyMarkdown": "Sao chép dưới dạng Markdown",
+				"copyMarkdownIcon": {
+					"alt": "Sao chép dưới dạng biểu tượng Markdown"
+				},
+				"copyText": "Sao chép dưới dạng văn bản đơn giản",
+				"copyTextIcon": {
+					"alt": "Sao chép biểu tượng văn bản"
+				},
+				"copyHtml": "Sao chép dưới dạng HTML",
+				"copyHtmlIcon": {
+					"alt": "Sao chép biểu tượng HTML"
 				}
 			}
 		},
