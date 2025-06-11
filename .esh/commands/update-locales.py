@@ -1,3 +1,4 @@
+import json5
 import json
 import os
 import copy
@@ -416,7 +417,14 @@ def process_home_registries(map_lang_to_path, global_ref_lang_codes, all_locale_
 								item_id_str = item_object_in_list.get("id", "未知ID")
 								item_description = f"'{reg_key_list_name}' 项目 {item_index} (ID: {item_id_str})"
 
-								langs_in_info_to_remove = [lang for lang in current_info_dict if lang not in available_locale_langs]
+								langs_in_info_to_remove = []
+								for lang in current_info_dict:
+									locale_file_path = os.path.join(LOCALE_DIR, f"{lang}.json")
+									if lang not in available_locale_langs and not os.path.exists(locale_file_path):
+										langs_in_info_to_remove.append(lang)
+									elif lang not in available_locale_langs and os.path.exists(locale_file_path):
+										print(f"    - 警告: 语言 '{lang}' 在 {item_description} 中存在，但未在可用区域设置中加载。文件 '{os.path.basename(locale_file_path)}' 存在。跳过删除。")
+
 								for lang_code_to_remove in langs_in_info_to_remove:
 									print(f"    - 从 {item_description} 的 info 中删除 '{lang_code_to_remove}' (在 locales 中不存在)")
 									del current_info_dict[lang_code_to_remove]
@@ -783,7 +791,7 @@ def main():
 			continue
 		try:
 			with open(filepath, "r", encoding="utf-8") as f:
-				loaded_data = json.load(f, object_pairs_hook=OrderedDict)
+				loaded_data = json5.load(f, object_pairs_hook=OrderedDict)
 				if not isinstance(loaded_data, OrderedDict):
 					print(f"  - 警告: 文件 {filename} 根部不是一个 JSON 对象。跳过。")
 					continue

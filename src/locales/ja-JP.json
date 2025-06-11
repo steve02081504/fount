@@ -17,9 +17,9 @@
 		},
 		"ipc": {
 			"sendCommandFailed": "コマンドの送信に失敗しました：${error}",
-			"invalidCommand": "無効なコマンド、「Fount Run <パートタイプ> <ユーザー名> <パーツ名> <パラメーター...>」を使用してください。",
-			"runPartLog": "${parttype} ${partname} as ${username}、parameter：${args}を実行します",
-			"invokePartLog": "${parttype} ${partname} as ${username}、parameter：${invokedata}を呼び出す",
+			"invalidCommand": "無効なコマンド、「fount run <部品タイプ> <ユーザー名> <部品名> <パラメーター...>」を使用してください。",
+			"runPartLog": "${username}として${parttype} ${partname}を実行します、パラメーター：${args}。",
+			"invokePartLog": "${username}として${parttype} ${partname}を呼び出します、パラメーター：${invokedata}。",
 			"unsupportedCommand": "サポートされていないコマンドタイプです。",
 			"processMessageError": "IPCメッセージの処理中にエラーが発生しました：${error}",
 			"invalidCommandFormat": "無効なコマンド形式です。",
@@ -154,7 +154,7 @@
 			"endButton": "始めましょう！"
 		},
 		"progressMessages": {
-			"mouseMove": "マウス${mouseIcon}を手で掴んで動かしてみてください。",
+			"mouseMove": "マウス${mouseIcon}を動かしてみてください。",
 			"keyboardPress": "キーボード${keyboardIcon}で何かキーを押してみてください。",
 			"mobileTouchMove": "スマートフォン${phoneIcon}の画面に指で触れて、そのままスライドさせてみてください。",
 			"mobileClick": "スマートフォン${phoneIcon}の画面を指でタップしてみてください。"
@@ -514,25 +514,25 @@
 					"title": "もっと"
 				},
 				"moreIcon": {
-					"alt": "その他のアイコン"
+					"alt": "その他アイコン"
 				}
 			},
 			"dropdown": {
-				"delete": "消去",
+				"delete": "削除",
 				"deleteIcon": {
-					"alt": "アイコンを削除します"
+					"alt": "削除アイコン"
 				},
-				"copyMarkdown": "マークダウンとしてコピーします",
+				"copyMarkdown": "Markdownとしてコピー",
 				"copyMarkdownIcon": {
-					"alt": "マークダウンアイコンとしてコピーします"
+					"alt": "Markdownとしてコピーアイコン"
 				},
-				"copyText": "プレーンテキストとしてコピーします",
+				"copyText": "プレーンテキストとしてコピー",
 				"copyTextIcon": {
-					"alt": "テキストアイコンをコピーします"
+					"alt": "プレーンテキストとしてコピーアイコン"
 				},
-				"copyHtml": "HTMLとしてコピーします",
+				"copyHtml": "HTMLとしてコピー",
 				"copyHtmlIcon": {
-					"alt": "HTMLアイコンをコピーします"
+					"alt": "HTMLとしてコピーアイコン"
 				}
 			}
 		},
@@ -616,9 +616,9 @@
 		"alerts": {
 			"noChatSelectedForDeletion": "削除するチャット履歴を選択してください。",
 			"noChatSelectedForExport": "エクスポートするチャット履歴を選択してください。",
-			"copyError": "コピーが失敗しました",
-			"deleteError": "削除が失敗しました",
-			"exportError": "エクスポートは失敗しました"
+			"copyError": "コピーに失敗しました。",
+			"deleteError": "削除に失敗しました。",
+			"exportError": "エクスポートに失敗しました。"
 		},
 		"chatItemButtons": {
 			"continue": "続行",

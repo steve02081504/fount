@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: run script to update locale files
         run: |
-          pip install deep_translator
+          pip install deep_translator json5
           python ./.esh/commands/update-locales.py
       - name: git add all
         run: git add -A
