@@ -4,6 +4,8 @@
 
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/steve02081504/fount)
+![Docker Image Size](https://img.shields.io/docker/image-size/steve02081504/fount)
+![GitHub repo size](https://img.shields.io/github/repo-size/steve02081504/fount)
 
 <a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
@@ -139,9 +141,10 @@ Fount 构建于一个强大且可扩展的架构之上，兼顾性能与可维�
 
 Fount 努力将角色编织进你生活的纹理，提供陪伴与支持。
 
-* **Discord 集成：** 通过内置的 Discord Bot Shell 将角色连接到你的 Discord 社区。
+* **Discord/Telegram 集成：** 通过内置的 Bot Shells 将角色连接到你的 Discord/Telegram 社区。
     ![图片](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
     ![图片](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
+    ![图片](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
 
 * **终端的宁静（与 [fount-pwsh](https://github.com/steve02081504/fount-pwsh) 结合）：** 当终端命令失败时，让角色提供指导。
     ![图片](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
@@ -161,6 +164,11 @@ Fount 努力将角色编织进你生活的纹理，提供陪伴与支持。
 * **嵌入式资源：** 将资源直接编织到你的角色中。
 
     ![图片](https://github.com/user-attachments/assets/9740cd43-06fd-46c0-a114-e4bd99f13045)
+
+* **持续集成** 使用[fount-charCI](https://github.com/marketplace/actions/fount-charci)来为你的角色开发护航，commit时自动异步运行测试，实时汇报问题。
+
+    ![图片](https://github.com/user-attachments/assets/3f6a188d-6643-4d70-8bd1-b75f00c76439)
+    ![图片](https://github.com/user-attachments/assets/30eb8374-64c2-41bc-a7d1-f15596352260)
 
 * **旧有兼容性：** fount 拥抱过去，提供兼容模块来运行 SillyTavern 和 Risu 角色卡（尽管不支持现有角色的迁移）。
 

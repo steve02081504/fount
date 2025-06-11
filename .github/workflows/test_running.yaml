@@ -4,10 +4,7 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - '**.sh'
-      - '**.fish'
-      - '**.zsh'
-      - '**.ps1'
+      - 'src/runner/**'
       - 'path/**'
     tags-ignore:
       - '*'
