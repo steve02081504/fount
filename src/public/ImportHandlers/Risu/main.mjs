@@ -246,7 +246,7 @@ async function ImportByText(username, text) {
 			} else
 				// 如果不是 Risu 特有链接，可以尝试作为通用文件下载 (如果你的fount/main.mjs有这个逻辑)
 				// 但这个 Risu 导入器主要处理 Risu 卡，其他 URL 可以忽略或交给通用导入器
-				console.log(`Skipping non-Risu URL: ${line}`)
+				errors.push(`non-Risu URL: ${line}`)
 		} else
 			errors.push(`Invalid line (not a URL): ${line}`)
 
