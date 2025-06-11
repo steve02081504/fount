@@ -132,16 +132,8 @@ def find_best_translation_source(key_path, all_data, languages_map, reference_co
 				if isinstance(value, OrderedDict) and len(value) == 1 and "text" in value and isinstance(value["text"], str) and value["text"].strip() == "":
 					continue
 				return value, ref_lang
-	for path, data in all_data.items():
-		lang = languages_map.get(path)
-		if lang and lang not in reference_codes:
-			value, found = get_value_at_path(data, key_path)
-			if found:
-				if isinstance(value, str) and value.strip() == "":
-					continue
-				if isinstance(value, OrderedDict) and len(value) == 1 and "text" in value and isinstance(value["text"], str) and value["text"].strip() == "":
-					continue
-				return value, lang
+			else:
+				return None, None  # If key not found in ref_lang, return None immediately
 	return None, None
 
 
@@ -240,8 +232,8 @@ def translate_text(text: str, source_lang: str, target_lang: str) -> str:
 					return aligned_translated_retry
 			except Exception as e2:
 				print(f"      - 尝试 {s_base_compat} -> {t_base_compat} 失败: {e2}")
-		print(f"    - 翻译 '{text[:50]}...' ({source_lang} -> {target_lang}) 所有尝试均失败。返回空字符串。")
-		return ""
+		print(f"    - 翻译 '{text[:50]}...' ({source_lang} -> {target_lang}) 所有尝试均失败。返回 None。")
+		return None
 
 
 def translate_value(value, source_lang, target_lang):
@@ -273,6 +265,9 @@ def normalize_and_sync_dicts(
 	path="",
 ):
 	changed = False
+	is_ref_lang_a = lang_a in reference_codes_global
+	is_ref_lang_b = lang_b in reference_codes_global
+
 	if path == "":
 		lang_key = "lang"
 		if lang_key not in dict_a or dict_a.get(lang_key) != lang_a:
@@ -283,10 +278,29 @@ def normalize_and_sync_dicts(
 			changed = True
 
 	keys_a_ordered = list(dict_a.keys())
+	keys_b_ordered = list(dict_b.keys())
+
+	# Remove keys from non-reference language if not in reference language
+	ref_dict = dict_a if is_ref_lang_a else (dict_b if is_ref_lang_b else None)
+	non_ref_dict = dict_b if is_ref_lang_a else (dict_a if is_ref_lang_b else None)
+	non_ref_lang = lang_b if is_ref_lang_a else (lang_a if is_ref_lang_b else None)
+
+	if ref_dict and non_ref_dict:
+		ref_keys = set(ref_dict.keys())
+		non_ref_keys = set(non_ref_dict.keys())
+		keys_to_remove = non_ref_keys - ref_keys
+
+		for key in list(non_ref_dict.keys()):
+			if key in keys_to_remove:
+				print(f"  - 删除: 键 '{key}' 从 {non_ref_lang} (不在参考语言中)")
+				del non_ref_dict[key]
+				changed = True
+
 	combined_keys = OrderedDict.fromkeys(keys_a_ordered)
-	for k in dict_b.keys():
+	for k in keys_b_ordered:
 		if k not in combined_keys:
 			combined_keys[k] = None
+
 	all_unique_keys_ordered = list(combined_keys.keys())
 	if path == "" and "lang" in all_unique_keys_ordered:
 		all_unique_keys_ordered.remove("lang")
@@ -331,8 +345,15 @@ def normalize_and_sync_dicts(
 			source_value_direct = source_dict[key]
 			translated_val = translate_value(copy.deepcopy(source_value_direct), source_lang_for_trans, target_lang)
 			if translated_val is not None:
-				target_dict[key] = translated_val
-				changed = True
+				if isinstance(translated_val, str) and translated_val == "":
+					print(f"  - 跳过: 键 '{key}' 的翻译结果为空字符串，不添加到 {missing_in_lang}。")
+				elif isinstance(translated_val, OrderedDict) and "text" in translated_val and isinstance(translated_val["text"], str) and translated_val["text"] == "" and len(translated_val) == 1:
+					print(f"  - 跳过: 键 '{key}' 的翻译结果为 {{'text': ''}}，不添加到 {missing_in_lang}。")
+				else:
+					target_dict[key] = translated_val
+					changed = True
+			else:
+				print(f"  - 跳过: 键 '{key}' 的翻译结果为 None，不添加到 {missing_in_lang}。")
 			# 如果 translate_value 返回 None (例如翻译失败且返回空字符串，我们这里允许空字符串作为有效值)
 			# 如果要严格处理 None，可以在这里添加逻辑。目前是如果返回 None，键不会被添加。
 			# 但 translate_text 设计为返回 "" 而不是 None。
@@ -794,8 +815,14 @@ def main():
 		ref_lang = languages[ref_path]
 		print(f"\n警告: 未找到配置的参考语言。使用加载的第一个文件 '{os.path.basename(ref_path)}' ({ref_lang}) 作为参考。")
 
-	if ref_path and ref_path in all_data:
-		check_used_keys_in_fount(FOUNT_DIR, all_data[ref_path], ref_lang)
+	first_ref_lang = None
+	for lang_code_pref in REFERENCE_LANG_CODES:
+		if lang_code_pref in lang_to_path:
+			first_ref_lang = lang_code_pref
+			break
+
+	if first_ref_lang and lang_to_path[first_ref_lang] in all_data:
+		check_used_keys_in_fount(FOUNT_DIR, all_data[lang_to_path[first_ref_lang]], first_ref_lang)
 	else:
 		print("\n警告: 未找到有效的参考语言文件数据，跳过 FOUNT 目录中的i18n键检查。")
 
