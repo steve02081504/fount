@@ -17,9 +17,9 @@
 		},
 		"ipc": {
 			"sendCommandFailed": "Senden des Befehls fehlgeschlagen: ${error}",
-			"invalidCommand": "Ungültige Befehl, bitte verwenden Sie \"Fount Run <Teil -Typ> <Benutzername> <Teilname> <Parameter ...>\"",
-			"runPartLog": "Führen Sie ${parttype} ${partname} als ${username}, Parameter: ${args} aus.",
-			"invokePartLog": "Rufen Sie ${parttype} ${partname} als ${username}, Parameter: ${invokedata} auf, auf",
+			"invalidCommand": "Ungültiger Befehl. Bitte verwenden Sie \"fount run <Part-Typ> <Benutzername> <Part-Name> <Parameter...>\".",
+			"runPartLog": "Starte ${parttype} ${partname} als ${username} mit Parametern: ${args}.",
+			"invokePartLog": "Rufe ${parttype} ${partname} als ${username} mit Parametern: ${invokedata} auf.",
 			"unsupportedCommand": "Nicht unterstützter Befehlstyp",
 			"processMessageError": "Fehler beim Verarbeiten der IPC-Nachricht: ${error}",
 			"invalidCommandFormat": "Ungültiges Befehlsformat",
@@ -39,10 +39,10 @@
 				"localAhead": "Lokaler Branch ist dem Remote-Branch voraus. Kein Update erforderlich.",
 				"diverged": "Lokaler und Remote-Branch sind auseinandergelaufen. Erzwinge Update...",
 				"upToDate": "Bereits aktuell.",
-				"updateFailed": "Fehler beim Aktualisieren von Komponenten vom Remote-Repository: ${error}"
+				"updateFailed": "Fehler beim Aktualisieren von Parts vom Remote-Repository: ${error}"
 			},
-			"partInitTime": "${parttype}-Komponente ${partname} Initialisierungszeit: ${time}s",
-			"partLoadTime": "${parttype}-Komponente ${partname} Ladezeit: ${time}s"
+			"partInitTime": "${parttype}-Part ${partname} Initialisierungszeit: ${time}s",
+			"partLoadTime": "${parttype}-Part ${partname} Ladezeit: ${time}s"
 		},
 		"web": {
 			"requestReceived": "Anfrage erhalten: ${method} ${url}"
@@ -375,8 +375,8 @@
 			"partSelect": "Bitte auswählen"
 		},
 		"editor": {
-			"title": "Komponentenkonfiguration",
-			"disabledIndicator": "Diese Komponente unterstützt keine Konfiguration.",
+			"title": "Part-Konfiguration",
+			"disabledIndicator": "Dieser Part unterstützt keine Konfiguration.",
 			"buttons": {
 				"save": "Speichern"
 			}
@@ -407,7 +407,7 @@
 		},
 		"errorMessage": {
 			"icon": {
-				"alt": "Fehler-Symbol"
+				"alt": "Fehler Symbol"
 			}
 		},
 		"buttons": {
@@ -514,25 +514,25 @@
 					"title": "Mehr"
 				},
 				"moreIcon": {
-					"alt": "Weitere Ikonen"
+					"alt": "Mehr Symbol"
 				}
 			},
 			"dropdown": {
-				"delete": "löschen",
+				"delete": "Löschen",
 				"deleteIcon": {
-					"alt": "Symbol löschen"
+					"alt": "Löschen Symbol"
 				},
-				"copyMarkdown": "Kopieren Sie als Markdown",
+				"copyMarkdown": "Als Markdown kopieren",
 				"copyMarkdownIcon": {
-					"alt": "Kopieren Sie als Markdown -Symbol"
+					"alt": "Symbol 'Als Markdown kopieren'"
 				},
-				"copyText": "Kopieren Sie als einfacher Text",
+				"copyText": "Als reinen Text kopieren",
 				"copyTextIcon": {
-					"alt": "Textsymbol kopieren"
+					"alt": "Symbol 'Als reinen Text kopieren'"
 				},
-				"copyHtml": "Kopieren Sie als HTML",
+				"copyHtml": "Als HTML kopieren",
 				"copyHtmlIcon": {
-					"alt": "Kopieren Sie das HTML -Symbol"
+					"alt": "Symbol 'Als HTML kopieren'"
 				}
 			}
 		},
@@ -646,7 +646,7 @@
 				"placeholder": "API-Schlüssel eingeben"
 			},
 			"toggleApiKeyIcon": {
-				"alt": "API-Schlüssel-Sichtbarkeit umschalten"
+				"alt": "API-Schlüssel Sichtbarkeit umschalten"
 			},
 			"buttons": {
 				"saveConfig": "Konfiguration speichern",
@@ -684,7 +684,7 @@
 				"placeholder": "Telegram Bot-Token eingeben"
 			},
 			"toggleBotTokenIcon": {
-				"alt": "Bot-Token-Sichtbarkeit umschalten"
+				"alt": "Bot-Token Sichtbarkeit umschalten"
 			},
 			"buttons": {
 				"saveConfig": "Konfiguration speichern",

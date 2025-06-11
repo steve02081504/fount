@@ -17,9 +17,9 @@
 		},
 		"ipc": {
 			"sendCommandFailed": "Échec de l'envoi de la commande : ${error}",
-			"invalidCommand": "Commande non valide, veuillez utiliser \"Fount Run <Type de pièce> <nom d'utilisateur> <nom de pièce> <paramètre ...>\"",
-			"runPartLog": "Exécuter ${parttype} ${partname} comme ${username}, paramètre: ${args}",
-			"invokePartLog": "Appel ${parttype} ${partname} comme ${username}, paramètre: ${invokedata}",
+			"invalidCommand": "Commande non valide. Veuillez utiliser \"fount run <type de composant> <nom d'utilisateur> <nom de composant> <paramètres...>\".",
+			"runPartLog": "Exécution de ${parttype} ${partname} en tant que ${username}, paramètres : ${args}.",
+			"invokePartLog": "Appel de ${parttype} ${partname} en tant que ${username}, paramètres : ${invokedata}.",
 			"unsupportedCommand": "Type de commande non pris en charge.",
 			"processMessageError": "Erreur lors du traitement du message IPC : ${error}",
 			"invalidCommandFormat": "Format de commande invalide.",
@@ -154,7 +154,7 @@
 			"endButton": "C'est parti !"
 		},
 		"progressMessages": {
-			"mouseMove": "Essayez de déplacer la souris ${mouseIcon} avec votre main.",
+			"mouseMove": "Essayez de déplacer la souris ${mouseIcon}.",
 			"keyboardPress": "Appuyez sur une touche de votre clavier ${keyboardIcon}.",
 			"mobileTouchMove": "Touchez l'écran de votre téléphone ${phoneIcon} avec un doigt, puis faites-le glisser.",
 			"mobileClick": "Appuyez sur l'écran de votre téléphone ${phoneIcon} avec un doigt."
@@ -191,7 +191,7 @@
 				"version": "Version",
 				"author": "Auteur",
 				"homepage": "Page d'accueil",
-				"issuepage": "Page des problèmes",
+				"issuepage": "Signaler un problème",
 				"defaultCheckbox": {
 					"title": "Définir comme personnage par défaut"
 				}
@@ -211,7 +211,7 @@
 				"version": "Version",
 				"author": "Auteur",
 				"homepage": "Page d'accueil",
-				"issuepage": "Page des problèmes",
+				"issuepage": "Signaler un problème",
 				"defaultCheckbox": {
 					"title": "Définir comme monde par défaut"
 				}
@@ -231,7 +231,7 @@
 				"version": "Version",
 				"author": "Auteur",
 				"homepage": "Page d'accueil",
-				"issuepage": "Page des problèmes",
+				"issuepage": "Signaler un problème",
 				"defaultCheckbox": {
 					"title": "Définir comme persona par défaut"
 				}
@@ -383,7 +383,7 @@
 		},
 		"errorMessage": {
 			"icon": {
-				"alt": "Message d'erreur"
+				"alt": "Icône d'erreur"
 			}
 		},
 		"alerts": {
@@ -514,25 +514,25 @@
 					"title": "Plus"
 				},
 				"moreIcon": {
-					"alt": "Plus d'icônes"
+					"alt": "Icône Plus"
 				}
 			},
 			"dropdown": {
-				"delete": "supprimer",
+				"delete": "Supprimer",
 				"deleteIcon": {
-					"alt": "Supprimer l'icône"
+					"alt": "Icône Supprimer"
 				},
-				"copyMarkdown": "Copier en tant que Markdown",
+				"copyMarkdown": "Copier au format Markdown",
 				"copyMarkdownIcon": {
-					"alt": "Copier comme l'icône de Markdown"
+					"alt": "Icône Copier au format Markdown"
 				},
-				"copyText": "Copier en texte brut",
+				"copyText": "Copier en texte simple",
 				"copyTextIcon": {
-					"alt": "Copier l'icône du texte"
+					"alt": "Icône Copier le texte simple"
 				},
-				"copyHtml": "Copier en tant que HTML",
+				"copyHtml": "Copier au format HTML",
 				"copyHtmlIcon": {
-					"alt": "Copier l'icône HTML"
+					"alt": "Icône Copier au format HTML"
 				}
 			}
 		},
@@ -616,9 +616,9 @@
 		"alerts": {
 			"noChatSelectedForDeletion": "Veuillez sélectionner les historiques de chats à supprimer.",
 			"noChatSelectedForExport": "Veuillez sélectionner les historiques de chats à exporter.",
-			"copyError": "Échec de la copie",
-			"deleteError": "La suppression a échoué",
-			"exportError": "Échec de l'exportation"
+			"copyError": "Échec de la copie.",
+			"deleteError": "Échec de la suppression.",
+			"exportError": "Échec de l'exportation."
 		},
 		"chatItemButtons": {
 			"continue": "Continuer",

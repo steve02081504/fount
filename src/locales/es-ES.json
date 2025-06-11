@@ -17,12 +17,12 @@
 		},
 		"ipc": {
 			"sendCommandFailed": "Error al enviar comando: ${error}",
-			"invalidCommand": "Comando no válido, use \"Fuente Run <Part Tipo> <Nombre de usuario> <Nombre de la parte> <Parámetro ...>\"",
-			"runPartLog": "Ejecutar ${parttype} ${partname} como ${username}, parámetro: ${args}",
-			"invokePartLog": "Llame a ${parttype} ${partname} como ${username}, parámetro: ${invokedata}",
-			"unsupportedCommand": "Tipo de comando no soportado",
+			"invalidCommand": "Comando inválido. Por favor, usa \"fount run <tipo de parte> <nombre de usuario> <nombre de parte> <parámetros...>\".",
+			"runPartLog": "Ejecutar ${parttype} ${partname} como ${username}, parámetros: ${args}.",
+			"invokePartLog": "Llama a ${parttype} ${partname} como ${username}, parámetros: ${invokedata}.",
+			"unsupportedCommand": "Tipo de comando no soportado.",
 			"processMessageError": "Error al procesar mensaje IPC: ${error}",
-			"invalidCommandFormat": "Formato de comando inválido",
+			"invalidCommandFormat": "Formato de comando inválido.",
 			"socketError": "Error de socket: ${error}",
 			"instanceRunning": "Otra instancia ya está en ejecución.",
 			"serverStartPrefix": "Inicio del servidor",
@@ -39,10 +39,10 @@
 				"localAhead": "La rama local está por delante de la remota. No es necesaria la actualización.",
 				"diverged": "Las ramas local y remota han divergido. Forzando actualización...",
 				"upToDate": "Ya está actualizado.",
-				"updateFailed": "Error al actualizar componentes desde el repositorio remoto: ${error}"
+				"updateFailed": "Error al actualizar partes desde el repositorio remoto: ${error}"
 			},
-			"partInitTime": "${parttype} componente ${partname} tiempo de inicialización: ${time}s",
-			"partLoadTime": "${parttype} componente ${partname} tiempo de carga: ${time}s"
+			"partInitTime": "${parttype} parte ${partname} tiempo de inicialización: ${time}s",
+			"partLoadTime": "${parttype} parte ${partname} tiempo de carga: ${time}s"
 		},
 		"web": {
 			"requestReceived": "Petición recibida: ${method} ${url}"
@@ -139,7 +139,7 @@
 		}
 	},
 	"tutorial": {
-		"title": "¿Empezamos con un tutorial?",
+		"title": "¿Quieres un tutorial?",
 		"modal": {
 			"title": "¡Bienvenido a Fount!",
 			"instruction": "¿Quieres seguir el tutorial de introducción?",
@@ -154,7 +154,7 @@
 			"endButton": "¡Adelante!"
 		},
 		"progressMessages": {
-			"mouseMove": "Intenta mover el ratón ${mouseIcon} con tu mano.",
+			"mouseMove": "Intenta mover el ratón ${mouseIcon}.",
 			"keyboardPress": "Pulsa una tecla en tu teclado ${keyboardIcon}.",
 			"mobileTouchMove": "Toca la pantalla de tu móvil ${phoneIcon} con un dedo y luego deslízalo.",
 			"mobileClick": "Toca la pantalla de tu móvil ${phoneIcon} con un dedo."
@@ -191,7 +191,7 @@
 				"version": "Versión",
 				"author": "Autor",
 				"homepage": "Página de inicio",
-				"issuepage": "Página de incidencias",
+				"issuepage": "Reportar incidencia",
 				"defaultCheckbox": {
 					"title": "Establecer como personaje predeterminado"
 				}
@@ -211,7 +211,7 @@
 				"version": "Versión",
 				"author": "Autor",
 				"homepage": "Página de inicio",
-				"issuepage": "Página de incidencias",
+				"issuepage": "Reportar incidencia",
 				"defaultCheckbox": {
 					"title": "Establecer como mundo predeterminado"
 				}
@@ -231,7 +231,7 @@
 				"version": "Versión",
 				"author": "Autor",
 				"homepage": "Página de inicio",
-				"issuepage": "Página de incidencias",
+				"issuepage": "Reportar incidencia",
 				"defaultCheckbox": {
 					"title": "Establecer como persona predeterminada"
 				}
@@ -364,33 +364,33 @@
 		}
 	},
 	"part_config": {
-		"title": "Configuración de Componente",
-		"pageTitle": "Configuración de Componente",
+		"title": "Configuración de Parte",
+		"pageTitle": "Configuración de Parte",
 		"labels": {
-			"partType": "Seleccionar tipo de componente",
-			"part": "Seleccionar componente"
+			"partType": "Seleccionar tipo de parte",
+			"part": "Seleccionar parte"
 		},
 		"placeholders": {
 			"partTypeSelect": "Por favor, selecciona",
 			"partSelect": "Por favor, selecciona"
 		},
 		"editor": {
-			"title": "Configuración de Componente",
-			"disabledIndicator": "Este componente no admite configuración.",
+			"title": "Configuración de Parte",
+			"disabledIndicator": "Esta parte no admite configuración.",
 			"buttons": {
 				"save": "Guardar"
 			}
 		},
 		"errorMessage": {
 			"icon": {
-				"alt": "Aviso de error"
+				"alt": "Icono de error"
 			}
 		},
 		"alerts": {
-			"fetchPartTypesFailed": "Error al obtener los tipos de componente.",
-			"fetchPartsFailed": "Error al obtener la lista de componentes.",
+			"fetchPartTypesFailed": "Error al obtener los tipos de parte.",
+			"fetchPartsFailed": "Error al obtener la lista de partes.",
 			"loadEditorFailed": "Error al cargar el editor.",
-			"saveConfigFailed": "Error al guardar la configuración del componente.",
+			"saveConfigFailed": "Error al guardar la configuración de la parte.",
 			"unsavedChanges": "Tienes cambios sin guardar. ¿Quieres descartarlos?",
 			"beforeUnload": "Tienes cambios sin guardar. ¿Seguro que quieres salir?"
 		}
@@ -438,7 +438,7 @@
 				"icon": {
 					"alt": "Icono de persona de usuario"
 				},
-				"title": "Persona del usuario"
+				"title": "Persona de usuario"
 			},
 			"charList": {
 				"icon": {
@@ -514,25 +514,25 @@
 					"title": "Más"
 				},
 				"moreIcon": {
-					"alt": "Más íconos"
+					"alt": "Más icono"
 				}
 			},
 			"dropdown": {
-				"delete": "borrar",
+				"delete": "Eliminar",
 				"deleteIcon": {
-					"alt": "Eliminar icono"
+					"alt": "Icono Eliminar"
 				},
 				"copyMarkdown": "Copiar como Markdown",
 				"copyMarkdownIcon": {
-					"alt": "Copiar como icono de Markdown"
+					"alt": "Icono Copiar como Markdown"
 				},
 				"copyText": "Copiar como texto sin formato",
 				"copyTextIcon": {
-					"alt": "Copiar icono de texto"
+					"alt": "Icono Copiar como texto"
 				},
-				"copyHtml": "Copiar como html",
+				"copyHtml": "Copiar como HTML",
 				"copyHtmlIcon": {
-					"alt": "Copiar icono HTML"
+					"alt": "Icono Copiar como HTML"
 				}
 			}
 		},
@@ -616,9 +616,9 @@
 		"alerts": {
 			"noChatSelectedForDeletion": "Por favor, selecciona los historiales de chat que quieres eliminar.",
 			"noChatSelectedForExport": "Por favor, selecciona los historiales de chat que quieres exportar.",
-			"copyError": "Copia fallida",
-			"deleteError": "Falló la eliminación",
-			"exportError": "Exportación fallida"
+			"copyError": "Copia fallida.",
+			"deleteError": "Eliminación fallida.",
+			"exportError": "Exportación fallida."
 		},
 		"chatItemButtons": {
 			"continue": "Continuar",

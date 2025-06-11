@@ -17,9 +17,9 @@
 		},
 		"ipc": {
 			"sendCommandFailed": "명령 전송에 실패했습니다: ${error}",
-			"invalidCommand": "잘못된 명령, \"fount run <part type> <User Name> <부품 이름> <매개 변수 ...>\"를 사용하십시오.",
-			"runPartLog": "run ${parttype} ${partname} as ${username}, 매개 변수 : ${args}",
-			"invokePartLog": "${parttype} ${partname} as ${username}, 매개 변수 : ${invokedata} 호출",
+			"invalidCommand": "잘못된 명령입니다. \"fount run <컴포넌트 유형> <사용자 이름> <컴포넌트 이름> <매개 변수 ...>\" 형식을 사용하십시오.",
+			"runPartLog": "${parttype} ${partname}을(를) ${username} 이름으로 실행, 매개 변수: ${args}.",
+			"invokePartLog": "${parttype} ${partname}을(를) ${username} 이름으로 호출, 매개 변수: ${invokedata}.",
 			"unsupportedCommand": "지원되지 않는 명령 유형입니다.",
 			"processMessageError": "IPC 메시지 처리 중 오류가 발생했습니다: ${error}",
 			"invalidCommandFormat": "잘못된 명령 형식입니다.",
@@ -154,7 +154,7 @@
 			"endButton": "시작하기!"
 		},
 		"progressMessages": {
-			"mouseMove": "손으로 마우스 ${mouseIcon}를 잡고 움직여 보세요.",
+			"mouseMove": "마우스 ${mouseIcon}를 움직여 보세요.",
 			"keyboardPress": "키보드 ${keyboardIcon}에서 아무 키나 눌러보세요.",
 			"mobileTouchMove": "휴대폰 ${phoneIcon} 화면을 손가락으로 터치한 후 드래그해보세요.",
 			"mobileClick": "휴대폰 ${phoneIcon} 화면을 손가락으로 탭해보세요."
@@ -383,7 +383,7 @@
 		},
 		"errorMessage": {
 			"icon": {
-				"alt": "오류 메시지"
+				"alt": "오류 아이콘"
 			}
 		},
 		"alerts": {
@@ -514,25 +514,25 @@
 					"title": "더"
 				},
 				"moreIcon": {
-					"alt": "더 많은 아이콘"
+					"alt": "더 보기 아이콘"
 				}
 			},
 			"dropdown": {
 				"delete": "삭제",
 				"deleteIcon": {
-					"alt": "아이콘을 삭제하십시오"
+					"alt": "삭제 아이콘"
 				},
-				"copyMarkdown": "마크 다운으로 복사하십시오",
+				"copyMarkdown": "Markdown으로 복사",
 				"copyMarkdownIcon": {
-					"alt": "마크 다운 아이콘으로 복사하십시오"
+					"alt": "Markdown으로 복사 아이콘"
 				},
-				"copyText": "일반 텍스트로 복사하십시오",
+				"copyText": "일반 텍스트로 복사",
 				"copyTextIcon": {
-					"alt": "텍스트 아이콘을 복사하십시오"
+					"alt": "일반 텍스트로 복사 아이콘"
 				},
-				"copyHtml": "HTML로 복사하십시오",
+				"copyHtml": "HTML로 복사",
 				"copyHtmlIcon": {
-					"alt": "HTML 아이콘을 복사하십시오"
+					"alt": "HTML로 복사 아이콘"
 				}
 			}
 		},
@@ -616,9 +616,9 @@
 		"alerts": {
 			"noChatSelectedForDeletion": "삭제할 채팅 기록을 선택해주세요.",
 			"noChatSelectedForExport": "내보낼 채팅 기록을 선택해주세요.",
-			"copyError": "복사 실패",
-			"deleteError": "삭제가 실패했습니다",
-			"exportError": "내보내기 실패"
+			"copyError": "복사에 실패했습니다.",
+			"deleteError": "삭제에 실패했습니다.",
+			"exportError": "내보내기에 실패했습니다."
 		},
 		"chatItemButtons": {
 			"continue": "계속하기",
