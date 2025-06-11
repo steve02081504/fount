@@ -207,6 +207,9 @@ system:
 									'application/yaml',
 									'application/rls-services+xml',
 								].includes(mimeType)) mimeType = 'text/plain'
+								else if ([
+									'audio/mpeg',
+								].includes(mimeType)) mimeType = 'audio/mp3'
 							}
 							if (!supportedFileTypes.includes(mimeType)) {
 								console.warn(`Unsupported file type: ${mimeType} for file ${file.name}`)
