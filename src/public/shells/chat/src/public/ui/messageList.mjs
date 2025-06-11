@@ -43,19 +43,45 @@ export async function renderMessage(message) {
 	if (deleteButton)
 		deleteButton.addEventListener('click', async () => {
 			if (confirm(geti18n('chat.messageList.confirmDeleteMessage'))) {
-				const queueIndex = getQueueIndex(messageElement); if (queueIndex === -1) return
-				const chatLogIndex = getChatLogIndexByQueueIndex(queueIndex); if (chatLogIndex === -1) return
+				const queueIndex = getQueueIndex(messageElement)
+				if (queueIndex === -1) return
+				const chatLogIndex = getChatLogIndexByQueueIndex(queueIndex)
+				if (chatLogIndex === -1) return
 				await deleteMessage(chatLogIndex)
 				await deleteMessageInQueue(queueIndex) // virtualQueue 处理移除和重绘
 			}
 		})
 
+	// 获取 dropdown 菜单元素
+	const dropdownMenu = messageElement.querySelector('.dropdown')
+	if (dropdownMenu) {
+		// 获取消息内容
+		const messageContentElement = messageElement.querySelector('.message-content')
+		const messageMarkdownContent = message.content_for_show || message.content
+
+		// 获取 dropdown items
+		dropdownMenu.querySelector('.copy-markdown-button').addEventListener('click', async () => {
+			navigator.clipboard.writeText(messageMarkdownContent)
+			dropdownMenu.removeAttribute('popover')
+		})
+		dropdownMenu.querySelector('.copy-text-button').addEventListener('click', async () => {
+			navigator.clipboard.writeText(messageContentElement.textContent.trim())
+			dropdownMenu.removeAttribute('popover')
+		})
+		dropdownMenu.querySelector('.copy-html-button').addEventListener('click', async () => {
+			navigator.clipboard.writeText(messageContentElement.innerHTML.trim())
+			dropdownMenu.removeAttribute('popover')
+		})
+	}
+
 	// --- 编辑按钮 ---
 	const editButton = messageElement.querySelector('.edit-button')
 	if (editButton)
 		editButton.addEventListener('click', async () => {
-			const queueIndex = getQueueIndex(messageElement); if (queueIndex === -1) return
-			const chatLogIndex = getChatLogIndexByQueueIndex(queueIndex); if (chatLogIndex === -1) return
+			const queueIndex = getQueueIndex(messageElement)
+			if (queueIndex === -1) return
+			const chatLogIndex = getChatLogIndexByQueueIndex(queueIndex)
+			if (chatLogIndex === -1) return
 			await editMessageStart(message, queueIndex, chatLogIndex) // 显示编辑界面
 		})
 
@@ -75,11 +101,10 @@ export async function renderMessage(message) {
 	}
 
 	// --- 特殊处理 'char' 消息 ---
-	if (window.Notification && message.role == 'char')
-		// 注意：enableSwipe 不在这里调用了，由 virtualQueue.mjs 中的 updateLastCharMessageArrows 管理
+	if (message.role == 'char')
 		// 桌面通知 (如果页面在后台)
 		if (document.visibilityState != 'visible')
-			do_notification(message.name || 'Character', {
+			do_notification(message.name ?? 'Character', {
 				body: message.content,
 				icon: message.avatar || DEFAULT_AVATAR
 			})

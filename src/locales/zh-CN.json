@@ -510,11 +510,29 @@
 				"editIcon": {
 					"alt": "编辑图标"
 				},
-				"delete": {
-					"title": "删除"
+				"more": {
+					"title": "更多"
 				},
+				"moreIcon": {
+					"alt": "更多图标"
+				}
+			},
+			"dropdown": {
+				"delete": "删除",
 				"deleteIcon": {
 					"alt": "删除图标"
+				},
+				"copyMarkdown": "复制为markdown",
+				"copyMarkdownIcon": {
+					"alt": "复制为markdown图标"
+				},
+				"copyText": "复制为纯文本",
+				"copyTextIcon": {
+					"alt": "复制文本图标"
+				},
+				"copyHtml": "复制为html",
+				"copyHtmlIcon": {
+					"alt": "复制HTML图标"
 				}
 			}
 		},
