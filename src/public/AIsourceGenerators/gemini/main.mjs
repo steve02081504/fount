@@ -213,7 +213,7 @@ system:
 							}
 							if (!supportedFileTypes.includes(mimeType)) {
 								console.warn(`Unsupported file type: ${mimeType} for file ${file.name}`)
-								return { text: `[System Error: Unsupported file type ${mimeType}, file: ${file.name}]` }
+								return { text: `[System Notice: can't show you about file '${file.name}' because you cant take the file input of type '${mimeType}', but you may be able to access it by using code tools if you have.]` }
 							}
 							try {
 								const uploadedFile = await uploadToGemini(file.name, file.buffer, mimeType)
@@ -221,7 +221,7 @@ system:
 							}
 							catch (error) {
 								console.error(`Failed to process file ${file.name} for prompt:`, error)
-								return { text: `[System Error: Failed to process file ${file.name}]` }
+								return { text: `[System Error: Failed to process file ${file.name} because ${error}, but you may be able to access it by using code tools if you have.]` }
 							}
 						}))
 					]
