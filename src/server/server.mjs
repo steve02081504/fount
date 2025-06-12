@@ -1,5 +1,5 @@
 import * as Sentry from 'npm:@sentry/deno'
-import express from 'npm:express@^5.0.1'
+import express from 'npm:express@^5.1.0'
 import cookieParser from 'npm:cookie-parser@^1.4.0'
 import fileUpload from 'npm:express-fileupload@^1.5.0'
 import fs from 'node:fs'

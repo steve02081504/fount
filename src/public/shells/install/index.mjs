@@ -41,10 +41,10 @@ dropArea.addEventListener('dragleave', () => {
 	dropArea.classList.remove('dragover')
 })
 
-dropArea.addEventListener('drop', (event) => {
+dropArea.addEventListener('drop', async (event) => {
 	event.preventDefault()
 	dropArea.classList.remove('dragover')
-	handleFiles(event.dataTransfer.files)
+	await handleDroppedItems(event.dataTransfer.items)
 })
 
 // 点击选择文件
@@ -52,19 +52,48 @@ dropArea.addEventListener('click', () => {
 	const input = document.createElement('input')
 	input.type = 'file'
 	input.multiple = true
-	input.addEventListener('change', (event) => {
-		handleFiles(event.target.files)
+	input.addEventListener('change', async (event) => {
+		await handleFiles(event.target.files)
 	})
 	input.click()
 })
 
-// 文件处理函数
-function handleFiles(files) {
-	for (const file of files)
-		if (!selectedFiles.find(f => f.name === file.name))
-			selectedFiles.push(file)
+// 递归处理拖放的文件和文件夹
+async function handleDroppedItems(items) {
+	const filesToProcess = []
+	for (const item of items) {
+		const entry = item.webkitGetAsEntry()
+		if (entry) {
+			const files = await traverseFileTree(entry)
+			filesToProcess.push(...files)
+		}
+	}
+	await handleFiles(filesToProcess)
+}
 
-	renderFileList()
+// 遍历文件树（处理文件夹）
+async function traverseFileTree(entry) {
+	return new Promise(resolve => {
+		if (entry.isFile)
+			entry.file(file => resolve([file]))
+		else if (entry.isDirectory) {
+			const directoryReader = entry.createReader()
+			directoryReader.readEntries(async (entries) => {
+				const files = []
+				for (const subEntry of entries)
+					files.push(...await traverseFileTree(subEntry))
+
+				resolve(files)
+			})
+		}
+	})
+}
+
+// 文件处理函数
+async function handleFiles(files) {
+	for (const file of files)
+		selectedFiles.push(file)
+	await renderFileList()
 }
 
 // 渲染文件列表
@@ -74,9 +103,9 @@ async function renderFileList() {
 		const fileItem = await renderTemplate('import_file_item', { fileName: file.name })
 		fileList.appendChild(fileItem)
 
-		fileItem.querySelector('.remove-file-button').addEventListener('click', (event) => {
+		fileItem.querySelector('.remove-file-button').addEventListener('click', async () => {
 			selectedFiles = selectedFiles.filter(f => f.name !== file.name)
-			renderFileList()
+			await renderFileList()
 		})
 	}
 }
