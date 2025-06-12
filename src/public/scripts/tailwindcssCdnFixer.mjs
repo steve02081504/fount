@@ -1,216 +1,324 @@
+// --- 1. 统一的、描述性的配置中心 ---
+const classConfigs = [
+	// 间距和尺寸 (使用 rem 单位)
+	{
+		type: 'spacing', supportsFractions: true, configs: [
+			{ prefix: 'w-', property: 'width' },
+			{ prefix: 'h-', property: 'height' },
+			{ prefix: 'max-w-', property: 'max-width' },
+			{ prefix: 'max-h-', property: 'max-height' },
+			{ prefix: 'min-w-', property: 'min-width' },
+			{ prefix: 'min-h-', property: 'min-height' },
+			{ prefix: 'basis-', property: 'flex-basis' },
+			{ prefix: 'm-', property: 'margin' },
+			{ prefix: 'mt-', property: 'margin-top' },
+			{ prefix: 'mr-', property: 'margin-right' },
+			{ prefix: 'mb-', property: 'margin-bottom' },
+			{ prefix: 'ml-', property: 'margin-left' },
+			{ prefix: 'mx-', property: 'margin-left, margin-right' },
+			{ prefix: 'my-', property: 'margin-top, margin-bottom' },
+			{ prefix: 'p-', property: 'padding' },
+			{ prefix: 'pt-', property: 'padding-top' },
+			{ prefix: 'pr-', property: 'padding-right' },
+			{ prefix: 'pb-', property: 'padding-bottom' },
+			{ prefix: 'pl-', property: 'padding-left' },
+			{ prefix: 'px-', property: 'padding-left, padding-right' },
+			{ prefix: 'py-', property: 'padding-top, padding-bottom' },
+			{ prefix: 'inset-', property: 'top, right, bottom, left' },
+			{ prefix: 'inset-x-', property: 'left, right' },
+			{ prefix: 'inset-y-', property: 'top, bottom' },
+			{ prefix: 'top-', property: 'top' },
+			{ prefix: 'right-', property: 'right' },
+			{ prefix: 'bottom-', property: 'bottom' },
+			{ prefix: 'left-', property: 'left' },
+			{ prefix: 'gap-', property: 'gap' },
+			{ prefix: 'gap-x-', property: 'column-gap' },
+			{ prefix: 'gap-y-', property: 'row-gap' },
+			{ prefix: 'indent-', property: 'text-indent' },
+			{ prefix: 'scroll-m-', property: 'scroll-margin' },
+			{ prefix: 'scroll-mt-', property: 'scroll-margin-top' },
+			{ prefix: 'scroll-mr-', property: 'scroll-margin-right' },
+			{ prefix: 'scroll-mb-', property: 'scroll-margin-bottom' },
+			{ prefix: 'scroll-ml-', property: 'scroll-margin-left' },
+			{ prefix: 'scroll-mx-', property: 'scroll-margin-left, scroll-margin-right' },
+			{ prefix: 'scroll-my-', property: 'scroll-margin-top, scroll-margin-bottom' },
+			{ prefix: 'scroll-p-', property: 'scroll-padding' },
+			{ prefix: 'scroll-pt-', property: 'scroll-padding-top' },
+			{ prefix: 'scroll-pr-', property: 'scroll-padding-right' },
+			{ prefix: 'scroll-pb-', property: 'scroll-padding-bottom' },
+			{ prefix: 'scroll-pl-', property: 'scroll-padding-left' },
+			{ prefix: 'scroll-px-', property: 'scroll-padding-left, scroll-padding-right' },
+			{ prefix: 'scroll-py-', property: 'scroll-padding-top, scroll-padding-bottom' },
+		]
+	},
+	// 边框 (width 和 radius)
+	{
+		type: 'spacing', configs: [
+			{ prefix: 'border-', property: 'border-width' },
+			{ prefix: 'border-t-', property: 'border-top-width' },
+			{ prefix: 'border-r-', property: 'border-right-width' },
+			{ prefix: 'border-b-', property: 'border-bottom-width' },
+			{ prefix: 'border-l-', property: 'border-left-width' },
+			{ prefix: 'border-x-', property: 'border-left-width, border-right-width' },
+			{ prefix: 'border-y-', property: 'border-top-width, border-bottom-width' },
+			{ prefix: 'rounded-', property: 'border-radius' },
+			{ prefix: 'rounded-t-', property: 'border-top-left-radius, border-top-right-radius' },
+			{ prefix: 'rounded-r-', property: 'border-top-right-radius, border-bottom-right-radius' },
+			{ prefix: 'rounded-b-', property: 'border-bottom-left-radius, border-bottom-right-radius' },
+			{ prefix: 'rounded-l-', property: 'border-top-left-radius, border-bottom-left-radius' },
+			{ prefix: 'rounded-tl-', property: 'border-top-left-radius' },
+			{ prefix: 'rounded-tr-', property: 'border-top-right-radius' },
+			{ prefix: 'rounded-br-', property: 'border-bottom-right-radius' },
+			{ prefix: 'rounded-bl-', property: 'border-bottom-left-radius' },
+		]
+	},
+	// 字体和行高
+	{
+		type: 'spacing', configs: [
+			{ prefix: 'text-', property: 'font-size' },
+			{ prefix: 'leading-', property: 'line-height' },
+			{ prefix: 'tracking-', property: 'letter-spacing' },
+		]
+	},
+	// Transform 属性 (更准确的实现)
+	{
+		type: 'transform', supportsFractions: true, configs: [
+			{ prefix: 'scale-', transformFn: 'scale' },
+			{ prefix: 'rotate-', transformFn: 'rotate', unit: 'deg' },
+			{ prefix: 'translate-x-', transformFn: 'translateX' },
+			{ prefix: 'translate-y-', transformFn: 'translateY' },
+		]
+	},
+	// Filter 属性
+	{
+		type: 'filter', configs: [
+			{ prefix: 'blur-', filterFn: 'blur', scale: 0.25, unit: 'rem' },
+		]
+	},
+	// 特殊单位和无单位值
+	{
+		type: 'unitless', configs: [
+			{ prefix: 'order-', property: 'order' },
+			{ prefix: 'z-', property: 'z-index' },
+			{ prefix: 'flex-grow-', property: 'flex-grow' },
+			{ prefix: 'flex-shrink-', property: 'flex-shrink' },
+			{ prefix: 'grid-cols-', property: 'grid-template-columns', template: (v) => `repeat(${v}, minmax(0, 1fr))` },
+			{ prefix: 'grid-rows-', property: 'grid-template-rows', template: (v) => `repeat(${v}, minmax(0, 1fr))` },
+			{ prefix: 'col-span-', property: 'grid-column', template: (v) => `span ${v} / span ${v}` },
+			{ prefix: 'row-span-', property: 'grid-row', template: (v) => `span ${v} / span ${v}` },
+			{ prefix: 'columns-', property: 'column-count' },
+		]
+	},
+	// 百分比值
+	{
+		type: 'percentage', configs: [
+			{ prefix: 'opacity-', property: 'opacity', scale: 100 },
+		]
+	},
+	// 时间单位
+	{
+		type: 'time', configs: [
+			{ prefix: 'duration-', property: 'transition-duration', scale: 10, unit: 'ms' },
+		]
+	},
+	// 特殊选择器 (space 和 divide)
+	{
+		type: 'special_spacing', configs: [
+			{ prefix: 'space-x-', property: 'margin-left' },
+			{ prefix: 'space-y-', property: 'margin-top' },
+		]
+	},
+	{
+		type: 'special_divide', configs: [
+			{ prefix: 'divide-x-', property: 'border-right-width' }, // 注意: 真实 Tailwind 依赖 `divide-color`
+			{ prefix: 'divide-y-', property: 'border-bottom-width' }, // 这里我们简化，只设置宽度
+		]
+	},
+	// 新增: 设置CSS变量的类型
+	{
+		type: 'variable_setter', configs: [
+			{ prefix: 'ring-', variable: '--tw-ring-width', unit: 'px' },
+			{ prefix: 'ring-offset-', variable: '--tw-ring-offset-width', unit: 'px' },
+		]
+	},
+	// 宽高比
+	{
+		type: 'aspect_ratio', configs: [
+			{ prefix: 'aspect-w-', property: '--tw-aspect-w' },
+			{ prefix: 'aspect-h-', property: '--tw-aspect-h' },
+		]
+	}
+];
+
+function generateRule(config, rawValue, type, metadata = {}) {
+	const className = `${config.prefix}${String(rawValue).replace('/', '\\/').replace('.', '_')}`
+	const escapedClassName = `${config.prefix}\\[${rawValue.toString().replace('%', '\\%')}\\]` // For arbitrary values
+	let value
+	let properties = config.property ? config.property.split(',').map(p => p.trim()) : []
+	let selectorTemplate = (cn) => `.${cn}`
+	let cssDeclarations = ''
+
+	switch (type) {
+		case 'spacing':
+			value = typeof rawValue === 'number' ? `${rawValue / 4}rem` : rawValue
+			cssDeclarations = properties.map(p => `${p}: ${value};`).join(' ')
+			break
+		case 'unitless':
+			value = rawValue
+			const template = config.template || ((v) => v);
+			cssDeclarations = properties.map(p => `${p}: ${template(value)};`).join(' ')
+			break
+		case 'percentage':
+			value = typeof rawValue === 'number' ? `${rawValue / (metadata.scale || 100)}` : rawValue
+			cssDeclarations = properties.map(p => `${p}: ${value};`).join(' ')
+			break
+		case 'time':
+			value = typeof rawValue === 'number' ? `${rawValue * (metadata.scale || 1)}${metadata.unit || 'ms'}` : rawValue
+			cssDeclarations = properties.map(p => `${p}: ${value};`).join(' ')
+			break
+		case 'transform':
+			const unit = metadata.unit || ''
+			const scale = metadata.scale || (config.transformFn === 'scale' ? 100 : 4)
+			const transformValue = typeof rawValue === 'number' ? (config.transformFn === 'scale' ? rawValue / scale : rawValue) : rawValue.replace(/rem|px|%|deg/, '')
+
+			value = typeof rawValue === 'string' && (rawValue.endsWith('%') || rawValue.endsWith('rem') || rawValue.endsWith('px'))
+				? `${config.transformFn}(${rawValue})`
+				: `${config.transformFn}(${transformValue}${unit})`
+			// 注意: 真实的 Tailwind 使用 CSS 变量来组合多个 transform
+			cssDeclarations = `transform: ${value};`
+			break
+		case 'filter':
+			const filterUnit = metadata.unit || 'px'
+			const filterScale = metadata.scale || 1
+			value = typeof rawValue === 'number' ? `${config.filterFn}(${rawValue * filterScale}${filterUnit})` : `${config.filterFn}(${rawValue})`
+			// 注意: 真实的 Tailwind 使用 CSS 变量来组合多个 filter
+			cssDeclarations = `filter: ${value};`
+			break
+		case 'special_spacing':
+			selectorTemplate = (cn) => `.${cn} > :not([hidden]) ~ :not([hidden])`
+			value = typeof rawValue === 'number' ? `${rawValue / 4}rem` : rawValue
+			cssDeclarations = `${config.property}: ${value};`
+			break
+		case 'special_divide':
+			selectorTemplate = (cn) => `.${cn} > :not([hidden]) ~ :not([hidden])`
+			value = typeof rawValue === 'number' ? `${rawValue}px` : rawValue // divide 通常用 px
+			// 简化版：我们只设置宽度，并假设边框样式和颜色由其他类定义
+			cssDeclarations = `${config.property}: ${value};`
+			break
+		case 'variable_setter':
+			value = typeof rawValue === 'number' ? `${rawValue}${metadata.unit || 'px'}` : rawValue;
+			cssDeclarations = `${config.variable}: ${value};`;
+			break
+		case 'aspect_ratio':
+			value = rawValue;
+			cssDeclarations = `${config.property}: ${value};`;
+			break
+		default:
+			return ''
+	}
+
+	if (typeof rawValue === 'number') {
+		return `${selectorTemplate(className)} { ${cssDeclarations} }`
+	}
+	// 处理方括号任意值
+	return `${selectorTemplate(escapedClassName)} { ${cssDeclarations} }`
+}
+
 function generateTailwindNumericCSS() {
 	const cssRules = []
+	const maxInteger = 100
+	const arbitraryValues = ['10px', '2rem', '50%']
 
-	// 支持整数值的类 (更全面的列表)
-	const integerClasses = {
-		'w-': 'width',
-		'h-': 'height',
-		'max-w-': 'max-width',
-		'max-h-': 'max-height',
-		'min-w-': 'min-width',
-		'min-h-': 'min-height',
-		'basis-': 'flex-basis',
-		'grid-cols-': 'grid-template-columns',
-		'grid-rows-': 'grid-template-rows',
-		'col-span-': 'grid-column',
-		'row-span-': 'grid-row',
-		'order-': 'order',
-		'z-': 'z-index',
-		'm-': 'margin',
-		'mt-': 'margin-top',
-		'mr-': 'margin-right',
-		'mb-': 'margin-bottom',
-		'ml-': 'margin-left',
-		'mx-': 'margin-left, margin-right',
-		'my-': 'margin-top, margin-bottom',
-		'p-': 'padding',
-		'pt-': 'padding-top',
-		'pr-': 'padding-right',
-		'pb-': 'padding-bottom',
-		'pl-': 'padding-left',
-		'px-': 'padding-left, padding-right',
-		'py-': 'padding-top, padding-bottom',
-		'text-': 'font-size', // 注意：实际 Tailwind text- 类有更复杂的比例
-		'leading-': 'line-height', // 注意：实际 Tailwind leading- 类有预设值
-		'border-': 'border-width',
-		'border-t-': 'border-top-width',
-		'border-r-': 'border-right-width',
-		'border-b-': 'border-bottom-width',
-		'border-l-': 'border-left-width',
-		'border-x-': 'border-left-width, border-right-width',
-		'border-y-': 'border-top-width, border-bottom-width',
-		'rounded-': 'border-radius',
-		'rounded-t-': 'border-top-left-radius, border-top-right-radius',
-		'rounded-r-': 'border-top-right-radius, border-bottom-right-radius',
-		'rounded-b-': 'border-bottom-left-radius, border-bottom-right-radius',
-		'rounded-l-': 'border-top-left-radius, border-bottom-left-radius',
-		'rounded-tl-': 'border-top-left-radius',
-		'rounded-tr-': 'border-top-right-radius',
-		'rounded-br-': 'border-bottom-right-radius',
-		'rounded-bl-': 'border-bottom-left-radius',
-		'opacity-': 'opacity',
-		'flex-grow-': 'flex-grow',
-		'flex-shrink-': 'flex-shrink',
-		'duration-': 'transition-duration',
-		'scale-': 'transform: scale',
-		'rotate-': 'transform: rotate',
-		'translate-x-': 'transform: translateX',
-		'translate-y-': 'transform: translateY',
-		'shadow-': 'box-shadow', // 注意：简化阴影效果
-		'blur-': 'filter: blur', // 注意：简化模糊效果
-		'gap-': 'gap',
-		'gap-x-': 'column-gap',
-		'gap-y-': 'row-gap',
-		'space-x-': 'margin-left', // 注意：space-x-* 类实际更复杂，这里简化为 margin-left
-		'space-y-': 'margin-top',  // 注意：space-y-* 类实际更复杂，这里简化为 margin-top
-		'inset-': 'top, right, bottom, left',
-		'inset-x-': 'left, right',
-		'inset-y-': 'top, bottom',
-		'top-': 'top',
-		'right-': 'right',
-		'bottom-': 'bottom',
-		'left-': 'left',
-		'indent-': 'text-indent',
-		'tracking-': 'letter-spacing',
-		'divide-x-': 'border-right-width', // 注意：divide-x-* 类实际更复杂，这里简化为 border-right-width
-		'divide-y-': 'border-bottom-width', // 注意：divide-y-* 类实际更复杂，这里简化为 border-bottom-width
-		'ring-offset-': 'ring-offset-width',
-		'ring-': 'ring-width',
-		'aspect-w-': 'aspect-ratio',
-		'aspect-h-': '', // aspect-h 通常和 aspect-w 一起使用
-		'scroll-m-': 'scroll-margin',
-		'scroll-mt-': 'scroll-margin-top',
-		'scroll-mr-': 'scroll-margin-right',
-		'scroll-mb-': 'scroll-margin-bottom',
-		'scroll-ml-': 'scroll-margin-left',
-		'scroll-mx-': 'scroll-margin-left, scroll-margin-right',
-		'scroll-my-': 'scroll-margin-top, scroll-margin-bottom',
-		'scroll-p-': 'scroll-padding',
-		'scroll-pt-': 'scroll-padding-top',
-		'scroll-pr-': 'scroll-padding-right',
-		'scroll-pb-': 'scroll-padding-bottom',
-		'scroll-pl-': 'scroll-padding-left',
-		'scroll-px-': 'scroll-padding-left, scroll-padding-right',
-		'scroll-py-': 'scroll-padding-top, scroll-padding-bottom',
-		'columns-': 'column-count',
-		// ... 可以继续添加更多支持整数值的类，参考 Tailwind CSS 文档
-	}
+	for (const group of classConfigs) {
+		const { type, configs, ...metadata } = group
 
-	for (const prefix in integerClasses) {
-		const property = integerClasses[prefix]
-
-		// 生成整数值规则 (1-100)
-		for (let i = 1; i <= 100; i++) {
-			const className = `${prefix}${i}`
-			const value = calculateValue(property, i)
-			const cssProperty = formatCSSProperty(property, value)
-			cssRules.push(`.${className} { ${cssProperty} }`)
-		}
-
-		// 生成方括号值规则
-		const arbitraryValues = ['10', '20', '30', '40', '50', '60', '70', '80', '90', '100', '10px', '20px', '30px', '40px', '50px', '60px', '70px', '80px', '90px', '100px', '1rem', '2rem', '3rem', '4rem', '5rem', '6rem', '7rem', '8rem', '9rem', '10rem'] // 这里可以根据需要添加更多示例值
-		for (const arbitraryValue of arbitraryValues) {
-			const className = `${prefix}\\[${arbitraryValue}]\\`
-			const value = arbitraryValue // 直接使用方括号中的值
-			const cssProperty = formatCSSProperty(property, value)
-			cssRules.push(`.${className} { ${cssProperty} }`)
-		}
-	}
-
-	const fractionClasses = {
-		'w-': 'width',
-		'h-': 'height',
-		'basis-': 'flex-basis',
-		'translate-x-': 'transform: translateX',
-		'translate-y-': 'transform: translateY',
-		'aspect-w-': 'aspect-ratio', // aspect-w 用于分数
-		'aspect-h-': 'aspect-ratio' // aspect-h 用于分数，通常和 aspect-w 一起, use same property for simplicity
-		// ... 可以继续添加更多支持分数的类，参考 Tailwind CSS 文档
-	}
-
-	// 生成分数值规则 (分子 1-20, 分母 1-20)  Increased numerator range to 20 for aspect ratio flexibility
-	for (const prefix in fractionClasses) {
-		const property = fractionClasses[prefix]
-		for (let numerator = 1; numerator <= 20; numerator++)  // Increased numerator range
-			for (let denominator = 1; denominator <= 20; denominator++) {
-				if (numerator >= denominator && !prefix.startsWith('aspect-')) continue // 避免生成 >=1 的分数，除非是 aspect-ratio
-
-				// Skip aspect-h-n/d classes, as aspect-ratio is already set by aspect-w
-				if (prefix === 'aspect-h-') continue
-
-				const className = `${prefix}${numerator}/${denominator}`
-				const value = calculateFractionValue(property, numerator, denominator)
-				const cssProperty = formatCSSProperty(property, value)
-				cssRules.push(`.${className} { ${cssProperty} }`)
+		for (const config of configs) {
+			// 生成整数值规则 (1-100)
+			for (let i = 1; i <= maxInteger; i++) {
+				cssRules.push(generateRule(config, i, type, metadata))
 			}
+
+			// 生成方括号任意值规则
+			for (const arbitraryValue of arbitraryValues) {
+				// 仅为有意义的类型生成任意值
+				if (['spacing', 'percentage', 'time', 'transform', 'filter', 'special_spacing', 'special_divide', 'variable_setter'].includes(type)) {
+					cssRules.push(generateRule(config, arbitraryValue, type, metadata))
+				}
+			}
+
+			// 生成分数值规则 (如果支持)
+			if (metadata.supportsFractions) {
+				for (let num = 1; num < 12; num++) {
+					for (let den = 2; den <= 12; den++) {
+						if (num >= den) continue
+
+						const className = `${config.prefix}${num}\\/${den}`;
+						let cssDeclarations = '';
+
+						// 根据类型分别处理分数值的 CSS 生成
+						if (type === 'transform') {
+							// 对 transform 类型进行特殊处理
+							let value;
+							if (config.transformFn === 'scale') {
+								// 对于 scale, 分数应转换为小数, e.g., scale(0.5)
+								value = num / den;
+							} else {
+								// 对于 translate, 分数应转换为百分比, e.g., translateX(50%)
+								value = `${(num / den) * 100}%`;
+							}
+							cssDeclarations = `transform: ${config.transformFn}(${value});`;
+
+						} else if (config.property) {
+							// 对 spacing 等其他有 property 属性的类型进行处理
+							// 默认将分数转换为百分比, e.g., w-1/2 -> width: 50%
+							const value = `${(num / den) * 100}%`;
+							cssDeclarations = config.property
+								.split(',')
+								.map(p => `${p.trim()}: ${value};`)
+								.join(' ');
+						}
+
+						if (cssDeclarations) {
+							cssRules.push(`.${className} { ${cssDeclarations} }`);
+						}
+					}
+				}
+			}
+		}
 	}
 
-	// Aspect Ratio Square
-	cssRules.push('.aspect-square { aspect-ratio: 1 / 1; }')
+	// 单独处理 aspect-ratio 的组合规则
+	cssRules.push(`
+.aspect-video { --tw-aspect-w: 16; --tw-aspect-h: 9; aspect-ratio: var(--tw-aspect-w) / var(--tw-aspect-h); }
+.aspect-auto { aspect-ratio: auto; }
+.aspect-square { aspect-ratio: 1 / 1; }
+[class*="aspect-w-"] { aspect-ratio: var(--tw-aspect-w) / var(--tw-aspect-h, 1); }
+[class*="aspect-h-"] { aspect-ratio: var(--tw-aspect-w, 1) / var(--tw-aspect-h); }
+`);
 
+	// 添加 Ring 的基础规则
+	/*
+	  注意：这是一个简化的实现。
+	  真实的 Tailwind 使用了更复杂的变量组合（--tw-shadow, --tw-ring-inset 等）。
+	  要看到效果，一个元素需要同时拥有 .ring 和一个颜色类（如 .ring-blue-500），
+	  而我们的脚本目前不生成颜色类，所以我们在这里提供一个默认颜色。
+	*/
+	cssRules.push(`
+.ring {
+	/* 定义默认变量值 */
+	--tw-ring-offset-width: 0px;
+	--tw-ring-width: 0px;
+	--tw-ring-color: rgb(59 130 246 / 0.5); /* 默认类似 ring-blue-500/50 */
+	--tw-ring-offset-color: #fff; /* 默认类似 bg-white */
 
-	return cssRules.join('\n')
+	/* 应用多层 box-shadow */
+	box-shadow:
+		0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color),
+		0 0 0 calc(var(--tw-ring-width) + var(--tw-ring-offset-width)) var(--tw-ring-color);
 }
+`);
 
-function calculateValue(property, i) {
-	let value
-	if (property === 'font-size')
-		value = `${i / 4}rem` // 简化 text- 类字体大小计算
-	else if (property === 'line-height')
-		value = `${i / 4}rem` // 简化 leading- 类行高计算
-	else if (property.startsWith('margin') || property.startsWith('padding') || property === 'width' || property === 'height' || property === 'flex-basis' || property.startsWith('border-width') || property.startsWith('border-radius') || property.startsWith('inset') || property.startsWith('top') || property.startsWith('right') || property.startsWith('bottom') || property.startsWith('left') || property === 'text-indent' || property.startsWith('scroll-margin') || property.startsWith('scroll-padding') || property === 'ring-offset-width' || property === 'ring-width' || property === 'gap' || property === 'column-gap' || property === 'row-gap')
-		value = `${i / 4}rem` // 大部分布局和间距相关的类使用 0.25rem 的倍数
-	else if (property === 'z-index' || property === 'order' || property === 'flex-grow' || property === 'flex-shrink' || property === 'column-count' || property === 'aspect-ratio')
-		value = `${i}` // z-index, order, flex-grow, flex-shrink, column-count, aspect-ratio 直接使用数字
-	else if (property === 'opacity')
-		value = `${i / 100}` // opacity 是 0-1 之间的值
-	else if (property === 'transition-duration')
-		value = `${i * 10}ms` // duration 单位是毫秒，步进 10ms
-	else if (property.startsWith('transform: scale'))
-		value = `${i / 100}` // scale 比例
-	else if (property.startsWith('transform: rotate'))
-		value = `${i}deg` // rotate 角度
-	else if (property.startsWith('transform: translateX') || property.startsWith('transform: translateY'))
-		value = `${i / 4}rem` // translate 单位 rem
-	else if (property === 'grid-template-columns' || property === 'grid-template-rows')
-		value = `repeat(${i}, minmax(0, 1fr))` // 简单的 grid-cols/rows 定义
-	else if (property === 'grid-column' || property === 'grid-row')
-		value = `span ${i} / span ${i}` // col-span 和 row-span
-	else if (property === 'box-shadow')
-		value = `0 0 ${i / 4}rem rgba(0, 0, 0, 0.1)` // 简化阴影
-	else if (property === 'filter: blur')
-		value = `${i / 4}rem` // 简化模糊
-	else if (property === 'letter-spacing')
-		value = `${i / 10}rem` // 简化字距，假设步进 0.1rem
-	else if (property === 'margin-left' || property === 'margin-top' || property === 'border-right-width' || property === 'border-bottom-width')  // space-x, space-y, divide-x, divide-y 简化处理
-		value = `${i / 4}rem`
-	else
-		value = `${i / 4}rem` // 默认使用 rem 单位
-	return value
-}
-
-function calculateFractionValue(property, numerator, denominator) {
-	let value
-	if (property === 'width' || property === 'height' || property === 'flex-basis')
-		value = `${(numerator / denominator) * 100}%`
-	else if (property.startsWith('transform: translateX') || property.startsWith('transform: translateY'))
-		value = `${(numerator / denominator) * 100}%` // translate 使用百分比
-	else if (property === 'aspect-ratio')
-		value = `${numerator} / ${denominator}` // aspect-ratio 使用比例值
-	else
-		value = `${(numerator / denominator) * 100}%` // 默认百分比
-	return value
-}
-
-
-function formatCSSProperty(property, value) {
-	let cssProperty
-	if (property.includes(',')) {
-		const properties = property.split(',').map(p => p.trim())
-		cssProperty = properties.map(p => `${p}: ${value};`).join(' ')
-	} else
-		cssProperty = `${property}: ${value};`
-	return cssProperty
+	return cssRules.filter(Boolean).join('\n')
 }
 
 
