@@ -148,13 +148,13 @@ const classConfigs = [
 			{ prefix: 'aspect-h-', property: '--tw-aspect-h' },
 		]
 	}
-];
+]
 
 function generateRule(config, rawValue, type, metadata = {}) {
 	const className = `${config.prefix}${String(rawValue).replace('/', '\\/').replace('.', '_')}`
 	const escapedClassName = `${config.prefix}\\[${rawValue.toString().replace('%', '\\%')}\\]` // For arbitrary values
 	let value
-	let properties = config.property ? config.property.split(',').map(p => p.trim()) : []
+	const properties = config.property ? config.property.split(',').map(p => p.trim()) : []
 	let selectorTemplate = (cn) => `.${cn}`
 	let cssDeclarations = ''
 
@@ -165,7 +165,7 @@ function generateRule(config, rawValue, type, metadata = {}) {
 			break
 		case 'unitless':
 			value = rawValue
-			const template = config.template || ((v) => v);
+			const template = config.template || ((v) => v)
 			cssDeclarations = properties.map(p => `${p}: ${template(value)};`).join(' ')
 			break
 		case 'percentage':
@@ -179,7 +179,7 @@ function generateRule(config, rawValue, type, metadata = {}) {
 		case 'transform':
 			const unit = metadata.unit || ''
 			const scale = metadata.scale || (config.transformFn === 'scale' ? 100 : 4)
-			const transformValue = typeof rawValue === 'number' ? (config.transformFn === 'scale' ? rawValue / scale : rawValue) : rawValue.replace(/rem|px|%|deg/, '')
+			const transformValue = typeof rawValue === 'number' ? config.transformFn === 'scale' ? rawValue / scale : rawValue : rawValue.replace(/rem|px|%|deg/, '')
 
 			value = typeof rawValue === 'string' && (rawValue.endsWith('%') || rawValue.endsWith('rem') || rawValue.endsWith('px'))
 				? `${config.transformFn}(${rawValue})`
@@ -206,20 +206,20 @@ function generateRule(config, rawValue, type, metadata = {}) {
 			cssDeclarations = `${config.property}: ${value};`
 			break
 		case 'variable_setter':
-			value = typeof rawValue === 'number' ? `${rawValue}${metadata.unit || 'px'}` : rawValue;
-			cssDeclarations = `${config.variable}: ${value};`;
+			value = typeof rawValue === 'number' ? `${rawValue}${metadata.unit || 'px'}` : rawValue
+			cssDeclarations = `${config.variable}: ${value};`
 			break
 		case 'aspect_ratio':
-			value = rawValue;
-			cssDeclarations = `${config.property}: ${value};`;
+			value = rawValue
+			cssDeclarations = `${config.property}: ${value};`
 			break
 		default:
 			return ''
 	}
 
-	if (typeof rawValue === 'number') {
+	if (typeof rawValue === 'number')
 		return `${selectorTemplate(className)} { ${cssDeclarations} }`
-	}
+
 	// 处理方括号任意值
 	return `${selectorTemplate(escapedClassName)} { ${cssDeclarations} }`
 }
@@ -234,56 +234,56 @@ function generateTailwindNumericCSS() {
 
 		for (const config of configs) {
 			// 生成整数值规则 (1-100)
-			for (let i = 1; i <= maxInteger; i++) {
+			for (let i = 1; i <= maxInteger; i++)
 				cssRules.push(generateRule(config, i, type, metadata))
-			}
+
 
 			// 生成方括号任意值规则
-			for (const arbitraryValue of arbitraryValues) {
+			for (const arbitraryValue of arbitraryValues)
 				// 仅为有意义的类型生成任意值
-				if (['spacing', 'percentage', 'time', 'transform', 'filter', 'special_spacing', 'special_divide', 'variable_setter'].includes(type)) {
+				if (['spacing', 'percentage', 'time', 'transform', 'filter', 'special_spacing', 'special_divide', 'variable_setter'].includes(type))
 					cssRules.push(generateRule(config, arbitraryValue, type, metadata))
-				}
-			}
+
+
 
 			// 生成分数值规则 (如果支持)
-			if (metadata.supportsFractions) {
-				for (let num = 1; num < 12; num++) {
+			if (metadata.supportsFractions)
+				for (let num = 1; num < 12; num++)
 					for (let den = 2; den <= 12; den++) {
 						if (num >= den) continue
 
-						const className = `${config.prefix}${num}\\/${den}`;
-						let cssDeclarations = '';
+						const className = `${config.prefix}${num}\\/${den}`
+						let cssDeclarations = ''
 
 						// 根据类型分别处理分数值的 CSS 生成
 						if (type === 'transform') {
 							// 对 transform 类型进行特殊处理
-							let value;
-							if (config.transformFn === 'scale') {
+							let value
+							if (config.transformFn === 'scale')
 								// 对于 scale, 分数应转换为小数, e.g., scale(0.5)
-								value = num / den;
-							} else {
+								value = num / den
+							else
 								// 对于 translate, 分数应转换为百分比, e.g., translateX(50%)
-								value = `${(num / den) * 100}%`;
-							}
-							cssDeclarations = `transform: ${config.transformFn}(${value});`;
+								value = `${(num / den) * 100}%`
+
+							cssDeclarations = `transform: ${config.transformFn}(${value});`
 
 						} else if (config.property) {
 							// 对 spacing 等其他有 property 属性的类型进行处理
 							// 默认将分数转换为百分比, e.g., w-1/2 -> width: 50%
-							const value = `${(num / den) * 100}%`;
+							const value = `${(num / den) * 100}%`
 							cssDeclarations = config.property
 								.split(',')
 								.map(p => `${p.trim()}: ${value};`)
-								.join(' ');
+								.join(' ')
 						}
 
-						if (cssDeclarations) {
-							cssRules.push(`.${className} { ${cssDeclarations} }`);
-						}
+						if (cssDeclarations)
+							cssRules.push(`.${className} { ${cssDeclarations} }`)
+
 					}
-				}
-			}
+
+
 		}
 	}
 
@@ -294,7 +294,7 @@ function generateTailwindNumericCSS() {
 .aspect-square { aspect-ratio: 1 / 1; }
 [class*="aspect-w-"] { aspect-ratio: var(--tw-aspect-w) / var(--tw-aspect-h, 1); }
 [class*="aspect-h-"] { aspect-ratio: var(--tw-aspect-w, 1) / var(--tw-aspect-h); }
-`);
+`)
 
 	// 添加 Ring 的基础规则
 	/*
@@ -316,7 +316,7 @@ function generateTailwindNumericCSS() {
 		0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color),
 		0 0 0 calc(var(--tw-ring-width) + var(--tw-ring-offset-width)) var(--tw-ring-color);
 }
-`);
+`)
 
 	return cssRules.filter(Boolean).join('\n')
 }
