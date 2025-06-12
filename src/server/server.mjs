@@ -47,16 +47,6 @@ mainRouter.use((req, res, next) => {
 	if (req.accepts('html')) res.set('Document-Policy', 'js-profiling')
 	return next()
 })
-FinalRouter.use((req, res) => {
-	if (req.accepts('html')) return res.status(404).sendFile(__dirname + '/src/public/404.html')
-	res.status(404).type('txt').send('Not found')
-})
-const errorHandler = (err, req, res, next) => {
-	Sentry.captureException(err)
-	console.error(err)
-	res.status(500).json({ message: 'Internal Server Error', errors: err.errors, error: err.message })
-}
-FinalRouter.use(errorHandler)
 
 const PartsRouters = {}
 const partsAPIregex = new RegExp(`^/(api|ws)/(${partsList.join('|')})/`)
@@ -70,7 +60,6 @@ PartsRouter.use(async (req, res, next) => {
 		return PartsRouters[username][parttype][partname](req, res, next)
 	return next()
 })
-PartsRouter.use(errorHandler)
 export function getPartRouter(username, parttype, partname) {
 	PartsRouters[username] ??= {}
 	PartsRouters[username][parttype] ??= {}
@@ -82,6 +71,18 @@ export function deletePartRouter(username, parttype, partname) {
 	if (!Object.keys(PartsRouters[username][parttype]).length) delete PartsRouters[username][parttype]
 	if (!Object.keys(PartsRouters[username]).length) delete PartsRouters[username]
 }
+FinalRouter.use((req, res) => {
+	if (req.accepts('html')) return res.status(404).sendFile(__dirname + '/src/public/404.html')
+	res.status(404).type('txt').send('Not found')
+})
+const errorHandler = (err, req, res, next) => {
+	Sentry.captureException(err)
+	console.error(err)
+	res.status(500).json({ message: 'Internal Server Error', errors: err.errors, error: err.message })
+}
+PartsRouter.use(errorHandler)
+FinalRouter.use(errorHandler)
+app.use(errorHandler)
 
 function get_config() {
 	if (!fs.existsSync(__dirname + '/data/config.json')) {
