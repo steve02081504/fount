@@ -91,6 +91,7 @@ export class charAPI_t {
 				})[]
 				pwd: string
 				command_now: string
+				command_output: string
 				command_error: string
 				rejected_commands: string[]
 				chat_scoped_char_memory: {}

@@ -28,6 +28,7 @@ export function GetDefaultShellAssistInterface(char_API, char_name) {
 	 * 	})[]
 	 *  pwd: string
 	 * 	command_now: string
+	 * 	command_output: string
 	 * 	command_error: string
 	 * 	rejected_commands: string[]
 	 * 	chat_scoped_char_memory: {}
@@ -70,6 +71,9 @@ stderr: ${entry.error.includes('\n') ? '\n```\n' + entry.error + '\n```' : '`' +
 		let user_doing_now = `\
 用户现在执行的命令：\`${args.command_now}\`
 所在路径：\`${args.pwd}\`
+`
+		if (args.command_output) user_doing_now += `\
+输出内容：\`${args.command_output}\`
 `
 		if (args.command_error) user_doing_now += `\
 错误信息：\`${args.command_error}\`
