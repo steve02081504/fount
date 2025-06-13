@@ -15,12 +15,12 @@ export async function importText(text) {
 	})
 }
 
-export async function uninstallPart(type, name) {
+export async function uninstallPart(parttype, partname) {
 	return fetch('/api/shells/install/uninstall', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
 		},
-		body: JSON.stringify({ type, name }),
+		body: JSON.stringify({ parttype, partname }),
 	})
 }
