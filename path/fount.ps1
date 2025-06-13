@@ -31,6 +31,7 @@ if (!$auto_installed_pwsh_modules) { $auto_installed_pwsh_modules = '' }
 $auto_installed_pwsh_modules = $auto_installed_pwsh_modules.Split(';') | Where-Object { $_ }
 
 function Test-PWSHModule([string]$ModuleName) {
+	Get-PackageProvider -Name "NuGet" -Force | Out-Null
 	if (!(Get-Module $ModuleName -ListAvailable)) {
 		$auto_installed_pwsh_modules += $ModuleName
 		New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
