@@ -37,8 +37,7 @@ export function setEndpoints(router) {
 	// 删除请求发送
 	router.post('/api/shells/install/uninstall', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
-		const parttype = req.body.type
-		const partname = req.body.name
+		const { parttype, partname } = req.body
 		await uninstallPartBase(username, parttype, partname)
 		res.status(200).json({ message: '删除成功' })
 	})
