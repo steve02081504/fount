@@ -604,7 +604,7 @@ async function BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charn
 	const info = await getPartInfo(char, locales) || {}
 
 	return Object.assign(new chatLogEntry_t(), {
-		name: result.name || info.name || charname,
+		name: result.name || info.name || charname || 'Unknown',
 		avatar: result.avatar || info.avatar,
 		content: result.content,
 		content_for_show: result.content_for_show,
