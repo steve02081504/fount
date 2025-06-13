@@ -132,10 +132,14 @@ if (!(Get-Command git -ErrorAction SilentlyContinue)) {
 		New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
 		Set-Content "$FOUNT_DIR/data/installer/auto_installed_winget" '1'
 	}
+	$env:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 	if (Get-Command winget -ErrorAction SilentlyContinue) {
 		winget install --id Git.Git -e --source winget
 		New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
 		Set-Content "$FOUNT_DIR/data/installer/auto_installed_git" '1'
+	}
+	else {
+		Write-Host "Failed to install Git because Winget is failed to install, please install it manually."
 	}
 	$env:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 	if (!(Get-Command git -ErrorAction SilentlyContinue)) {
