@@ -546,7 +546,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 
 	if (Test-Path "$FOUNT_DIR/data/installer/auto_installed_deno") {
 		Write-Host "Uninstalling Deno..."
-		Remove-Item $(Get-Command deno).Source -Force -ErrorAction Ignore
+		try{ Remove-Item $(Get-Command deno).Source -Force } catch {}
 		Remove-Item "~/.deno" -Force -Recurse -ErrorAction Ignore
 	}
 
