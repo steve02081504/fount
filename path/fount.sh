@@ -660,6 +660,12 @@ ensure_fount_path
 
 # 处理 'open' 参数
 if [[ $# -gt 0 && $1 = 'open' ]]; then
+	# 若在 Docker 环境 或 Termux 环境中，不执行 open 命令
+	if [[ $IN_DOCKER -eq 1 || $IN_TERMUX -eq 1 ]]; then
+		shift
+		"$FOUNT_DIR/path/fount.sh" "$@"
+		exit $?
+	fi
 	# 确保 netcat 或 socat 可用
 	if ! command -v nc &>/dev/null && ! command -v socat &>/dev/null; then
 		install_package netcat || install_package socat
@@ -738,6 +744,12 @@ EOF_OPEN_JOB
 	exit $?                           # 确保在后台进程启动后，主脚本可以退出
 # 处理 'background' 参数
 elif [[ $# -gt 0 && $1 = 'background' ]]; then
+	# 若在 Docker 环境 或 Termux 环境中，不执行 open 命令
+	if [[ $IN_DOCKER -eq 1 || $IN_TERMUX -eq 1 ]]; then
+		shift
+		"$FOUNT_DIR/path/fount.sh" "$@"
+		exit $?
+	fi
 	if command -v fount &>/dev/null; then
 		# 注意：这里使用 nohup 确保在父 shell 退出后进程继续运行
 		nohup "$FOUNT_DIR/path/fount" "${@:2}" >/dev/null 2>&1 &
@@ -748,6 +760,12 @@ elif [[ $# -gt 0 && $1 = 'background' ]]; then
 	fi
 # 新增: 处理 'protocolhandle' 参数
 elif [[ $# -gt 0 && $1 = 'protocolhandle' ]]; then
+	# 若在 Docker 环境 或 Termux 环境中，不执行 open 命令
+	if [[ $IN_DOCKER -eq 1 || $IN_TERMUX -eq 1 ]]; then
+		shift
+		"$FOUNT_DIR/path/fount.sh" "$@"
+		exit $?
+	fi
 	local protocolUrl="$2"
 	if [ -z "$protocolUrl" ]; then
 		echo "Error: No URL provided for protocolhandle." >&2
