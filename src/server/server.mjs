@@ -19,6 +19,7 @@ import { Router as WsAbleRouter } from 'npm:websocket-express@^3.1.3'
 import { ReStartJobs } from './jobs.mjs'
 import { startTimerHeartbeat } from './timers.mjs'
 import supportsAnsi from 'npm:supports-ansi'
+import { loadJsonFile, saveJsonFile } from '../scripts/json_loader.mjs'
 
 export { __dirname }
 const app = express()
@@ -90,10 +91,10 @@ function get_config() {
 		fs.copyFileSync(__dirname + '/default/config.json', __dirname + '/data/config.json')
 	}
 
-	return JSON.parse(fs.readFileSync(__dirname + '/data/config.json', 'utf8'))
+	return loadJsonFile(__dirname + '/data/config.json')
 }
 export function save_config() {
-	fs.writeFileSync(__dirname + '/data/config.json', JSON.stringify(config, null, '\t'))
+	saveJsonFile(__dirname + '/data/config.json', config)
 }
 
 //读取confing文件

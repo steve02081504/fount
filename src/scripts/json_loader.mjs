@@ -12,7 +12,7 @@ export function loadJsonFileIfExists(filename, defaultvalue = {}) {
 
 export function saveJsonFile(filename, json) {
 	try {
-		fs.writeFileSync(filename, JSON.stringify(json, null, '\t'))
+		fs.writeFileSync(filename, JSON.stringify(json, null, '\t'), { encoding: 'utf8' })
 	}
 	catch (error) {
 		console.error('Error saving JSON file:', filename, error)
