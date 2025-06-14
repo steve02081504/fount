@@ -14,7 +14,13 @@ export function setTimer(username, parttype, partname, uid, { trigger, callbackd
 		repeat: repeat ?? false,
 		asyncstorages: getAsyncLocalStorages()
 	}
-	save_config()
+	try {
+		save_config()
+	}
+	catch (err) {
+		console.error(err)
+		removeTimer(username, parttype, partname, uid)
+	}
 }
 
 export function removeTimer(username, parttype, partname, uid) {

@@ -272,7 +272,12 @@ export async function loadPartBase(username, parttype, partname, Initargs, {
 			parts_set[username][parttype][partname] = Loader(pathGetter(), Initargs)
 			const part = parts_set[username][parttype][partname] = await parts_set[username][parttype][partname]
 			const endTime = new Date()
-			await part.interfaces?.config?.SetData?.(parts_config[parttype]?.[partname] ?? {})
+			try {
+				await part.interfaces?.config?.SetData?.(parts_config[parttype]?.[partname] ?? {})
+			}
+			catch (error) {
+				console.error(`Failed to set data for part ${partname}: ${error.message}\n${error.stack}`)
+			}
 			await afterLoad(part)
 			console.log(await geti18n('fountConsole.partManager.partLoadTime', {
 				parttype,

@@ -25,7 +25,6 @@
 			"invalidCommandFormat": "잘못된 명령 형식입니다.",
 			"socketError": "소켓 오류: ${error}",
 			"instanceRunning": "다른 인스턴스가 이미 실행 중입니다.",
-			"serverStartPrefix": "서버 시작",
 			"serverStarted": "IPC 서버가 시작되었습니다.",
 			"parseResponseFailed": "서버 응답 구문 분석에 실패했습니다: ${error}",
 			"cannotParseResponse": "서버 응답을 구문 분석할 수 없습니다.",

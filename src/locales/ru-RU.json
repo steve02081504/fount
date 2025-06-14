@@ -25,7 +25,6 @@
 			"invalidCommandFormat": "Неверный формат команды.",
 			"socketError": "Ошибка сокета: ${error}",
 			"instanceRunning": "Другой экземпляр уже запущен.",
-			"serverStartPrefix": "Запуск сервера",
 			"serverStarted": "IPC-сервер запущен.",
 			"parseResponseFailed": "Не удалось обработать ответ сервера: ${error}",
 			"cannotParseResponse": "Невозможно обработать ответ сервера.",

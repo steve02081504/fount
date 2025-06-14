@@ -25,7 +25,6 @@
 			"invalidCommandFormat": "अमान्य कमांड प्रारूप।",
 			"socketError": "सॉकेट त्रुटि: ${error}",
 			"instanceRunning": "एक और इंस्टेंस पहले से ही चल रहा है।",
-			"serverStartPrefix": "सर्वर प्रारंभ",
 			"serverStarted": "IPC सर्वर शुरू हो गया है।",
 			"parseResponseFailed": "सर्वर प्रतिक्रिया को पार्स करने में विफल: ${error}",
 			"cannotParseResponse": "सर्वर प्रतिक्रिया को पार्स नहीं किया जा सकता।",

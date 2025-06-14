@@ -1,5 +1,5 @@
 import { Buffer } from 'node:buffer'
-import { role_t, timeStamp_t } from './basedefs'
+import { role_t, timeStamp_t } from './basedefs.ts'
 
 export class single_part_prompt_t {
 	text: {

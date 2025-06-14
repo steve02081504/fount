@@ -1,4 +1,5 @@
 import ansiEscapes from 'npm:ansi-escapes'
+import supportsAnsi from 'npm:supports-ansi'
 
 let loggedFreshLine = ''
 const myConsole = {
@@ -16,7 +17,7 @@ const myConsole = {
 	},
 	freshLine: (id, ...args) => {
 		let logger = console.log
-		if (loggedFreshLine == id) logger = (...args) => console.log(ansiEscapes.cursorUp(1) + ansiEscapes.eraseLine + args[0], ...args.slice(1))
+		if (supportsAnsi && loggedFreshLine == id) logger = (...args) => console.log(ansiEscapes.cursorUp(1) + ansiEscapes.eraseLine + args[0], ...args.slice(1))
 		loggedFreshLine = id
 		logger(...args)
 	}
