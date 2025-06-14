@@ -2,105 +2,86 @@
 #_pragma icon $PSScriptRoot/../public/favicon.ico
 #_pragma title "fount"
 
+if (!$env:FOUNT_BRANCH) {
+	$env:FOUNT_BRANCH = "master"
+}
 #_if PSScript
 if ($PSEdition -eq "Desktop") {
 	try { $IsWindows = $true } catch {}
 }
 if (!$IsWindows) {
-	function install_package([string]$package_name) {
-		if (Get-Command -Name $package_name -ErrorAction Ignore) { return $true }
+	function install_package {
+		param(
+			[string]$CommandName,
+			[string[]]$PackageNames
+		)
+		if ((Get-Command -Name $CommandName -ErrorAction Ignore)) { return $true }
 
-		$install_successful = $false
+		$hasSudo = (Get-Command -Name "sudo" -ErrorAction Ignore)
 
-		if (-not $install_successful -and (Get-Command -Name "pkg" -ErrorAction Ignore)) {
-			pkg install -y "$package_name"
-			if (!$LastExitCode) { $install_successful = $true }
+		foreach ($package in $PackageNames) {
+			if (Get-Command -Name "apt-get" -ErrorAction Ignore) {
+				if ($hasSudo) { sudo apt-get update -y > $null; sudo apt-get install -y $package }
+				else { apt-get update -y > $null; apt-get install -y $package }
+				if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
+			}
+			if (Get-Command -Name "pacman" -ErrorAction Ignore) {
+				if ($hasSudo) { sudo pacman -Syy --noconfirm > $null; sudo pacman -S --needed --noconfirm $package }
+				else { pacman -Syy --noconfirm > $null; pacman -S --needed --noconfirm $package }
+				if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
+			}
+			if (Get-Command -Name "dnf" -ErrorAction Ignore) {
+				if ($hasSudo) { sudo dnf install -y $package } else { dnf install -y $package }
+				if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
+			}
+			if (Get-Command -Name "yum" -ErrorAction Ignore) {
+				if ($hasSudo) { sudo yum install -y $package } else { yum install -y $package }
+				if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
+			}
+			if (Get-Command -Name "zypper" -ErrorAction Ignore) {
+				if ($hasSudo) { sudo zypper install -y --no-confirm $package } else { zypper install -y --no-confirm $package }
+				if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
+			}
+			if (Get-Command -Name "apk" -ErrorAction Ignore) {
+				if ($hasSudo) { sudo apk add --update $package } else { apk add --update $package }
+				if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
+			}
+			if (Get-Command -Name "brew" -ErrorAction Ignore) {
+				if (-not (brew list --formula $package -ErrorAction Ignore)) {
+					brew install $package
+				}
+				if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
+			}
+			if (Get-Command -Name "pkg" -ErrorAction Ignore) {
+				if ($hasSudo) { sudo pkg install -y $package } else { pkg install -y $package }
+				if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
+			}
+			if (Get-Command -Name "snap" -ErrorAction Ignore) {
+				if ($hasSudo) { sudo snap install $package } else { snap install $package }
+				if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
+			}
 		}
-		if (-not $install_successful -and (Get-Command -Name "snap" -ErrorAction Ignore)) {
-			snap install "$package_name"
-			if (!$LastExitCode) { $install_successful = $true }
-		}
-		if (-not $install_successful -and (Get-Command -Name "apt-get" -ErrorAction Ignore)) {
-			if (Get-Command -Name "sudo" -ErrorAction Ignore) {
-				sudo apt-get update -y
-				sudo apt-get install -y "$package_name"
+
+		if (Get-Command -Name $CommandName -ErrorAction Ignore) {
+			$currentPackages = $env:FOUNT_AUTO_INSTALLED_PACKAGES -split ';' | Where-Object { $_ }
+			if ($package -notin $currentPackages) {
+				$env:FOUNT_AUTO_INSTALLED_PACKAGES = ($currentPackages + $package) -join ';'
 			}
-			else {
-				apt-get update -y
-				apt-get install -y "$package_name"
-			}
-			if (!$LastExitCode) { $install_successful = $true }
-		}
-		if (-not $install_successful -and (Get-Command -Name "brew" -ErrorAction Ignore)) {
-			brew list --formula "$package_name" | Out-Null
-			if ($LastExitCode) {
-				brew install "$package_name"
-				if (!$LastExitCode) { $install_successful = $true }
-			}
-		}
-		if (-not $install_successful -and (Get-Command -Name "pacman" -ErrorAction Ignore)) {
-			if (Get-Command -Name "sudo" -ErrorAction Ignore) {
-				sudo pacman -Syy
-				sudo pacman -S --needed --noconfirm "$package_name"
-			}
-			else {
-				pacman -Syy
-				pacman -S --needed --noconfirm "$package_name"
-			}
-			if (!$LastExitCode) { $install_successful = $true }
-		}
-		if (-not $install_successful -and (Get-Command -Name "dnf" -ErrorAction Ignore)) {
-			if (Get-Command -Name "sudo" -ErrorAction Ignore) {
-				sudo dnf install -y "$package_name"
-			}
-			else {
-				dnf install -y "$package_name"
-			}
-			if (!$LastExitCode) { $install_successful = $true }
-		}
-		if (-not $install_successful -and (Get-Command -Name "yum" -ErrorAction Ignore)) {
-			if (Get-Command -Name "sudo" -ErrorAction Ignore) {
-				sudo yum install -y "$package_name"
-			}
-			else {
-				yum install -y "$package_name"
-			}
-			if (!$LastExitCode) { $install_successful = $true }
-		}
-		if (-not $install_successful -and (Get-Command -Name "zypper" -ErrorAction Ignore)) {
-			if (Get-Command -Name "sudo" -ErrorAction Ignore) {
-				sudo zypper install -y "$package_name"
-			}
-			else {
-				zypper install -y "$package_name"
-			}
-			if (!$LastExitCode) { $install_successful = $true }
-		}
-		if (-not $install_successful -and (Get-Command -Name "apk" -ErrorAction Ignore)) {
-			apk add --update "$package_name"
-			if (!$LastExitCode) { $install_successful = $true }
-		}
-		if ($install_successful) {
-			if ([string]::IsNullOrEmpty($env:FOUNT_AUTO_INSTALLED_PACKAGES)) { $env:FOUNT_AUTO_INSTALLED_PACKAGES = $package_name }
-			else { $env:FOUNT_AUTO_INSTALLED_PACKAGES = "$env:FOUNT_AUTO_INSTALLED_PACKAGES;$package_name" }
 			return $true
 		}
 		else {
-			Write-Error "Error: $package_name installation failed."
+			Write-Error "Error: $package installation failed."
 			return $false
 		}
 	}
-	install_package bash
-	Invoke-RestMethod https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.sh | bash -s @args
+	install_package "bash" @("bash", "gnu-bash")
+	Invoke-RestMethod https://raw.githubusercontent.com/steve02081504/fount/refs/heads/$env:FOUNT_BRANCH/src/runner/main.sh | bash -s -- $args
 	exit $LastExitCode
 }
 #_endif
 
 if (!$env:FOUNT_DIR) {
 	$env:FOUNT_DIR = "$env:LOCALAPPDATA/fount"
-}
-if (!$env:FOUNT_BRANCH) {
-	$env:FOUNT_BRANCH = "master"
 }
 
 if (!(Get-Command fount.ps1 -ErrorAction Ignore)) {
