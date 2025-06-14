@@ -1,6 +1,6 @@
 export type timeStamp_t = number;
 export type locale_t = string;
-export type role_t = 'user' | 'char' | 'system' | 'world' | 'plugin';
+export type role_t = 'user' | 'char' | 'system' | 'world' | 'tool';
 export type info_t = Record<locale_t, {
 	name: string;
 	avatar: string;

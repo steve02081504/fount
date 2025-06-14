@@ -25,7 +25,6 @@
 			"invalidCommandFormat": "無効なコマンド形式です。",
 			"socketError": "ソケットエラー：${error}",
 			"instanceRunning": "別のインスタンスが既に実行中です。",
-			"serverStartPrefix": "サーバー起動",
 			"serverStarted": "IPCサーバーが起動しました。",
 			"parseResponseFailed": "サーバー応答の解析に失敗しました：${error}",
 			"cannotParseResponse": "サーバー応答を解析できません。",

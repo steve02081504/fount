@@ -25,7 +25,6 @@
 			"invalidCommandFormat": "Ungültiges Befehlsformat",
 			"socketError": "Socket-Fehler: ${error}",
 			"instanceRunning": "Eine andere Instanz wird bereits ausgeführt",
-			"serverStartPrefix": "Serverstart",
 			"serverStarted": "IPC-Server gestartet",
 			"parseResponseFailed": "Fehler beim Parsen der Serverantwort: ${error}",
 			"cannotParseResponse": "Serverantwort kann nicht geparst werden",

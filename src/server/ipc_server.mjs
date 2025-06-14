@@ -76,17 +76,17 @@ export class IPCManager {
 						reject(err)
 				})
 
-				server.listen(IPC_PORT, address, async () => {
-					console.freshLine(await geti18n('fountConsole.ipc.serverStartPrefix', { address }), await geti18n('fountConsole.ipc.serverStarted'))
-					resolve(true) // 成功启动服务器
-				})
+				server.listen(IPC_PORT, address, _ => resolve(true))
 			})
 		}
 		// 使用 Promise.all 确保两个监听都成功后才返回 true
 		return Promise.all([
 			startServer(this.serverV6, '::1'),
 			startServer(this.serverV4, '127.0.0.1'),
-		]).then(results => results.every(result => result === true))
+		]).then(async results => {
+			console.freshLine('server start', await geti18n('fountConsole.ipc.serverStarted'))
+			return results.every(result => result === true)
+		})
 	}
 
 	handleConnection(socket) {

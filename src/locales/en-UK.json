@@ -25,7 +25,6 @@
 			"invalidCommandFormat": "Invalid command format",
 			"socketError": "Socket Error: ${error}",
 			"instanceRunning": "Another instance is already running",
-			"serverStartPrefix": "Server start",
 			"serverStarted": "IPC server started",
 			"parseResponseFailed": "Failed to parse server response: ${error}",
 			"cannotParseResponse": "Cannot parse server response",

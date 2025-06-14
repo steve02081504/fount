@@ -25,7 +25,6 @@
 			"invalidCommandFormat": "Formato comando non valido.",
 			"socketError": "Errore socket: ${error}",
 			"instanceRunning": "Un'altra istanza è già in esecuzione.",
-			"serverStartPrefix": "Avvio server",
 			"serverStarted": "Server IPC avviato.",
 			"parseResponseFailed": "Impossibile analizzare la risposta del server: ${error}",
 			"cannotParseResponse": "Impossibile analizzare la risposta del server.",

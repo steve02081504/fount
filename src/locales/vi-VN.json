@@ -25,7 +25,6 @@
 			"invalidCommandFormat": "Định dạng lệnh không hợp lệ.",
 			"socketError": "Lỗi Socket: ${error}",
 			"instanceRunning": "Một tiến trình khác đang chạy.",
-			"serverStartPrefix": "Khởi động máy chủ",
 			"serverStarted": "Máy chủ IPC đã khởi động.",
 			"parseResponseFailed": "Phân tích phản hồi từ máy chủ thất bại: ${error}",
 			"cannotParseResponse": "Không thể phân tích phản hồi từ máy chủ.",

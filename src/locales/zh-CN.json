@@ -25,7 +25,6 @@
 			"invalidCommandFormat": "无效的命令格式",
 			"socketError": "Socket 错误: ${error}",
 			"instanceRunning": "另一个实例正在运行",
-			"serverStartPrefix": "server start",
 			"serverStarted": "IPC 服务器已启动",
 			"parseResponseFailed": "解析服务器响应失败: ${error}",
 			"cannotParseResponse": "无法解析服务器响应",
