@@ -41,6 +41,11 @@ function Test-PWSHModule([string]$ModuleName) {
 }
 
 if ($args.Count -gt 0 -and $args[0] -eq 'open') {
+	if ($IN_DOCKER) {
+		$runargs = $args[1..$args.Count]
+		fount @runargs
+		exit
+	}
 	Test-PWSHModule fount-pwsh
 	Start-Job -ScriptBlock {
 		while (-not (Test-FountRunning)) {
@@ -53,6 +58,11 @@ if ($args.Count -gt 0 -and $args[0] -eq 'open') {
 	exit
 }
 elseif ($args.Count -gt 0 -and $args[0] -eq 'background') {
+	if ($IN_DOCKER) {
+		$runargs = $args[1..$args.Count]
+		fount @runargs
+		exit
+	}
 	Test-PWSHModule ps12exe
 	$TempDir = [System.IO.Path]::GetTempPath()
 	$exepath = Join-Path $TempDir "fount-background.exe"
@@ -64,6 +74,11 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'background') {
 	exit
 }
 elseif ($args.Count -gt 0 -and $args[0] -eq 'protocolhandle') {
+	if ($IN_DOCKER) {
+		$runargs = $args[1..$args.Count]
+		fount @runargs
+		exit
+	}
 	# 新增 protocolhandle 逻辑
 	$protocolUrl = $args[1]
 	if (-not $protocolUrl) {
