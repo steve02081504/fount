@@ -7,6 +7,7 @@ import { unified } from 'https://esm.run/unified'
 import remarkGfm from 'https://esm.run/remark-gfm'
 import remarkBreaks from 'https://esm.run/remark-breaks'
 import rehypePrettyCode from 'https://esm.run/rehype-pretty-code'
+import rehypeMermaid from 'https://esm.run/rehype-mermaid'
 import { transformerCopyButton } from 'https://esm.run/@rehype-pretty/transformers'
 import { visit } from 'https://esm.run/unist-util-visit'
 import { onThemeChange } from './theme.mjs'
@@ -44,6 +45,7 @@ const convertor = unified()
 	.use(remarkGfm, {
 		singleTilde: false,
 	})
+	.use(rehypeMermaid)
 	.use(rehypePrettyCode, {
 		theme: {
 			dark: 'github-dark-dimmed',
