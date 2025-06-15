@@ -6,7 +6,8 @@ export async function svgInliner(DOM) {
 	const svgs = DOM.querySelectorAll('img[src$=".svg"]')
 	await Promise.all([...svgs].map(async (svg) => {
 		const url = svg.getAttribute('src')
-		const data = IconCache[url] ??= await fetch(url).then((response) => response.text())
+		IconCache[url] ??= fetch(url).then((response) => response.text())
+		const data = IconCache[url] = await IconCache[url]
 		const newsvg = parser.parseFromString(data, 'image/svg+xml').documentElement
 		for (const attribute of svg.attributes) newsvg.setAttribute(attribute.name, attribute.value)
 		svg.replaceWith(newsvg)
