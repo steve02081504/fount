@@ -383,7 +383,7 @@ EOF
 			icon_name="favicon.ico"
 		fi
 
-				cat <<EOF >"$app_path/Contents/Info.plist"
+		cat <<EOF >"$app_path/Contents/Info.plist"
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -441,7 +441,9 @@ on run argv
 			set command_to_execute to command_to_execute & " " & quoted form of (item i of argv)
 		end repeat
 	end if
-	set final_command_in_terminal to command_to_execute & "; echo ''; echo 'Fount has exited. Press Enter to close this window...'; read -r"
+
+	set final_command_in_terminal to ":; (" & command_to_execute & "; echo; echo ''Fount has exited. Press Enter to close this window...''; read -r)"
+
 	tell application "Terminal"
 		activate
 		do script final_command_in_terminal
