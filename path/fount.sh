@@ -772,7 +772,7 @@ deno_upgrade() {
 	fi
 
 	echo "Attempting to upgrade Deno on the '$deno_upgrade_channel' channel..."
-	if ! run_deno upgrade --channel "$deno_upgrade_channel" --quiet; then
+	if ! run_deno upgrade -q "$deno_upgrade_channel"; then
 		echo "Deno upgrade command failed." >&2
 		if [[ $IN_TERMUX -eq 1 ]]; then
 			echo "Attempting to reinstall Deno for Termux..."
