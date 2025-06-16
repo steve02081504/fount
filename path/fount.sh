@@ -405,8 +405,8 @@ EOF
 		local temp_applescript_file="/tmp/fount_launcher_script.applescript"
 		cat <<EOF >"$temp_applescript_file"
 on run argv
-	set fount_command_path to "$FOUNT_DIR/path/fount"
-	set command_to_execute to quoted form of fount_command_path
+	set fount_command_path to "\\\"$FOUNT_DIR/path/fount\\\""
+	set command_to_execute to fount_command_path
 	if (count of argv) is 0 then
 		set command_to_execute to command_to_execute & " open keepalive"
 	else
