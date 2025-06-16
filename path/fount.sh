@@ -383,30 +383,57 @@ EOF
 			icon_name="favicon.ico"
 		fi
 
-		cat <<EOF >"$app_path/Contents/Info.plist"
+				cat <<EOF >"$app_path/Contents/Info.plist"
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0"><dict>
-<key>CFBundleExecutable</key><string>fount-launcher</string>
-<key>CFBundleIconFile</key><string>$icon_name</string>
-<key>CFBundleIdentifier</key><string>com.steve02081504.fount</string>
-<key>CFBundleName</key><string>$shortcut_name</string>
-<key>CFBundlePackageType</key><string>APPL</string>
-<key>CFBundleShortVersionString</key><string>1.0</string>
-<key>CFBundleVersion</key><string>1</string>
-<key>LSMinimumSystemVersion</key><string>10.15</string>
-<key>CFBundleURLTypes</key><array><dict>
-<key>CFBundleURLName</key><string>Fount Protocol</string>
-<key>CFBundleURLSchemes</key><array><string>fount</string></array>
-</dict></array>
-</dict></plist>
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleExecutable</key>
+	<string>fount-launcher</string>
+	<key>CFBundleIconFile</key>
+	<string>$icon_name</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.steve02081504.fount</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$shortcut_name</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>10.15</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+	<key>LSUIElement</key>
+	<false/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>Fount Protocol</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fount</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>
 EOF
 
 		local temp_applescript_file="/tmp/fount_launcher_script.applescript"
 		cat <<EOF >"$temp_applescript_file"
 on run argv
-	set fount_command_path to "\\\"$FOUNT_DIR/path/fount\\\""
-	set command_to_execute to fount_command_path
+	set fount_command_path to "$FOUNT_DIR/path/fount"
+	set command_to_execute to quoted form of fount_command_path
 	if (count of argv) is 0 then
 		set command_to_execute to command_to_execute & " open keepalive"
 	else
