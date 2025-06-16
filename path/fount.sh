@@ -683,12 +683,12 @@ install_deno() {
 		pacman -Sy glibc-runner --assume-installed bash,patchelf,resolv-conf --noconfirm
 		add_package_to_tracker "glibc-runner" "INSTALLED_PACMAN_PACKAGES_ARRAY"
 		set +e
-		curl -fsSL https://deno.land/install.sh | sh
+		curl -fsSL https://deno.land/install.sh | sh -s -- -y
 		patch_deno
 		touch "$AUTO_INSTALLED_DENO_FLAG"
 	else
 		echo "Deno not found, attempting to install..."
-		if ! curl -fsSL https://deno.land/install.sh | sh; then
+		if ! curl -fsSL https://deno.land/install.sh | sh -s -- -y; then
 			echo "Deno standard installation script failed. Attempting direct download..."
 			ensure_dependencies "deno_install_fallback" || exit 1
 			local deno_dl_url="https://github.com/denoland/deno/releases/latest/download/deno-"
