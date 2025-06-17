@@ -2,7 +2,7 @@ import * as jose from 'npm:jose'
 import fs from 'node:fs'
 import fse from 'npm:fs-extra@^11.0.0'
 import crypto from 'node:crypto'
-import { config, save_config, __dirname } from './server.mjs'
+import { config, save_config, __dirname, data_path } from './server.mjs'
 import path from 'node:path'
 import argon2 from 'npm:argon2'
 import { ms } from '../scripts/ms.mjs'
@@ -561,7 +561,7 @@ export async function getUserByReq(req) {
  */
 export function getUserDictionary(username) {
 	const user = config.data.users[username]
-	return path.resolve(user?.UserDictionary || path.join(__dirname, 'data', 'users', username))
+	return path.resolve(user?.UserDictionary || path.join(data_path, 'users', username))
 }
 
 /**

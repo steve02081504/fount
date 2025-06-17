@@ -85,16 +85,18 @@ PartsRouter.use(errorHandler)
 FinalRouter.use(errorHandler)
 app.use(errorHandler)
 
+export let data_path
+
 function get_config() {
-	if (!fs.existsSync(__dirname + '/data/config.json')) {
-		try { fs.mkdirSync(__dirname + '/data') } catch { }
-		fs.copyFileSync(__dirname + '/default/config.json', __dirname + '/data/config.json')
+	if (!fs.existsSync(data_path + '/config.json')) {
+		try { fs.mkdirSync(data_path) } catch { }
+		fs.copyFileSync(__dirname + '/default/config.json', data_path + '/config.json')
 	}
 
-	return loadJsonFile(__dirname + '/data/config.json')
+	return loadJsonFile(data_path + '/config.json')
 }
 export function save_config() {
-	saveJsonFile(__dirname + '/data/config.json', config)
+	saveJsonFile(data_path + '/config.json', config)
 }
 
 //读取confing文件
@@ -115,7 +117,9 @@ export function setDefaultStuff() {
 export let hosturl
 export let tray
 
-export async function init() {
+export async function init(start_config) {
+	data_path = start_config.data_path
+	const { starts } = start_config
 	console.freshLine('server start', await geti18n('fountConsole.server.start'))
 	globalThis.addEventListener('error', (e) => {
 		console.log(e.error)
@@ -130,52 +134,56 @@ export async function init() {
 	hosturl = 'http://localhost:' + config.port
 	initAuth()
 
-	const { IPCManager } = await import('./ipc_server.mjs')
-	if (!await new IPCManager().startServer()) return false
+	if (starts?.IPC ?? true) {
+		const { IPCManager } = await import('./ipc_server.mjs')
+		if (!await new IPCManager().startServer()) return false
+	}
 
-	console.freshLine('server start', await geti18n('fountConsole.server.starting'))
-	const { registerEndpoints } = await import('./endpoints.mjs')
-	registerEndpoints(mainRouter)
-	mainRouter.use(express.static(__dirname + '/src/public'))
-	mainRouter.use((req, res, next) => {
-		if (req.method != 'GET') return next()
-		if (req.path == '/apple-touch-icon.png' || req.path == '/apple-touch-icon-precomposed.png')
-			return res.sendFile(__dirname + '/src/public/favicon.png')
-		return next()
-	})
-	const { port, https: httpsConfig } = config // 获取 HTTPS 配置
+	if (starts?.Web ?? true) {
+		console.freshLine('server start', await geti18n('fountConsole.server.starting'))
+		const { registerEndpoints } = await import('./endpoints.mjs')
+		registerEndpoints(mainRouter)
+		mainRouter.use(express.static(__dirname + '/src/public'))
+		mainRouter.use((req, res, next) => {
+			if (req.method != 'GET') return next()
+			if (req.path == '/apple-touch-icon.png' || req.path == '/apple-touch-icon-precomposed.png')
+				return res.sendFile(__dirname + '/src/public/favicon.png')
+			return next()
+		})
+		const { port, https: httpsConfig } = config // 获取 HTTPS 配置
 
-	await new Promise((resolve, reject) => {
-		let server
-		if (httpsConfig && httpsConfig.enabled) {
-			// 启用 HTTPS
-			const options = {
-				key: fs.readFileSync(httpsConfig.keyFile),
-				cert: fs.readFileSync(httpsConfig.certFile),
+		await new Promise((resolve, reject) => {
+			let server
+			if (httpsConfig && httpsConfig.enabled) {
+				// 启用 HTTPS
+				const options = {
+					key: fs.readFileSync(httpsConfig.keyFile),
+					cert: fs.readFileSync(httpsConfig.certFile),
+				}
+				server = https.createServer(options, app).listen(port, async () => {
+					hosturl = 'https://localhost:' + port
+					console.log(await geti18n('fountConsole.server.showUrl.https', {
+						url: 'https://localhost:' + port
+					}))
+					resolve()
+				})
 			}
-			server = https.createServer(options, app).listen(port, async () => {
-				hosturl = 'https://localhost:' + port
-				console.log(await geti18n('fountConsole.server.showUrl.https', {
-					url: 'https://localhost:' + port
-				}))
-				resolve()
-			})
-		}
-		else
-			server = http.createServer(app).listen(port, async () => {
-				console.log(await geti18n('fountConsole.server.showUrl.http', {
-					url: 'http://localhost:' + port
-				}))
-				resolve()
-			})
-		server.on('error', reject)
-	})
+			else
+				server = http.createServer(app).listen(port, async () => {
+					console.log(await geti18n('fountConsole.server.showUrl.http', {
+						url: 'http://localhost:' + port
+					}))
+					resolve()
+				})
+			server.on('error', reject)
+		})
+	}
 
 	console.freshLine('server start', await geti18n('fountConsole.server.ready'))
 	const endtime = new Date()
 	const titleBackup = process.title
 	on_shutdown(() => setWindowTitle(titleBackup))
-	createTray().then(t => tray = t)
+	if (starts?.Tray ?? true) createTray().then(t => tray = t)
 	setDefaultStuff()
 	console.freshLine('server start', Array(Math.floor(Math.random() * 7)).fill('fo-').join('') + 'fount!')
 	console.log(await geti18n('fountConsole.server.usesdTime', {
@@ -183,6 +191,6 @@ export async function init() {
 	}))
 	ReStartJobs()
 	startTimerHeartbeat()
-	StartRPC()
+	if (starts?.DiscordRPC ?? true) StartRPC()
 	return true
 }

@@ -4,20 +4,29 @@ Sentry.init({
 	_experiments: { enableLogs: true },
 })
 
-import { set_start } from './base.mjs'
+import { __dirname, set_start } from './base.mjs'
 set_start()
 
 import process from 'node:process'
 import { console } from '../scripts/console.mjs'
 import { init } from './server.mjs'
-import { IPCManager } from './ipc_server.mjs'
 import { geti18n } from '../scripts/i18n.mjs'
 
 console.log(await geti18n('fountConsole.server.standingBy'))
 
 let args = process.argv.slice(2)
 
-const isFirstInstance = await init()
+const fount_config = {
+	starts: {
+		IPC: true,
+		Web: true,
+		Tray: true,
+		DiscordIPC: true,
+	},
+	data_path: __dirname + '/data',
+}
+
+let command
 
 if (args.length) {
 	const command = args[0]
@@ -29,19 +38,14 @@ if (args.length) {
 		const partname = args[2]
 		args = args.slice(3)
 
-		try {
-			await IPCManager.sendCommand('runpart', { username, parttype, partname, args })
-		} catch (err) {
-			console.error(await geti18n('fountConsole.ipc.sendCommandFailed', { error: err }))
-			process.exit(1)
+		command = {
+			type: 'runpart',
+			data: { username, parttype, partname, args },
 		}
 	}
 	else if (command === 'shutdown')
-		try {
-			await IPCManager.sendCommand('shutdown')
-		} catch (err) {
-			console.error(await geti18n('fountConsole.ipc.sendCommandFailed', { error: err }))
-			process.exit(1)
+		command = {
+			type: 'shutdown',
 		}
 	else {
 		console.error(await geti18n('fountConsole.ipc.invalidCommand'))
@@ -49,4 +53,15 @@ if (args.length) {
 	}
 }
 
-if (!isFirstInstance) process.exit(0)
+const okey = await init(fount_config)
+
+if (command) try {
+	if (!fount_config.starts.IPC) throw new Error('cannot send command when IPC not enabled')
+	const { IPCManager } = await import('./ipc_server.mjs')
+	await IPCManager.sendCommand(fount_config.command.type, fount_config.command.data)
+} catch (err) {
+	console.error(await geti18n('fountConsole.ipc.sendCommandFailed', { error: err }))
+	process.exit(1)
+}
+
+if (!okey) process.exit(0)
