@@ -41,7 +41,6 @@ export async function deleteAccount(password) {
 	return callApi('delete_account', 'POST', { password })
 }
 
-// 新增：登出用户的API调用
 export async function logoutUser() {
 	return callApi('logout', 'POST') // 不需要 body
 }

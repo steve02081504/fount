@@ -79,7 +79,6 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'protocolhandle') {
 		fount @runargs
 		exit
 	}
-	# 新增 protocolhandle 逻辑
 	$protocolUrl = $args[1]
 	if (-not $protocolUrl) {
 		Write-Error "Error: No URL provided for protocolhandle."
@@ -255,14 +254,16 @@ if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
 		Write-Host "Deno installation failed, attempting auto installing to fount's path folder..."
 		$url = "https://github.com/denoland/deno/releases/latest/download/deno-" + $(if ($IsWindows) {
 				"x86_64-pc-windows-msvc.zip"
-			} elseif ($IsMacOS) {
+			}
+			elseif ($IsMacOS) {
 				if ($env:PROCESSOR_ARCHITECTURE -eq "ARM64") {
 					"aarch64-apple-darwin.zip"
 				}
 				else {
 					"x86_64-apple-darwin.zip"
 				}
-			} else {
+			}
+			else {
 				"x86_64-unknown-linux-gnu.zip"
 			})
 		Invoke-WebRequest -Uri $url -OutFile "$env:TEMP/deno.zip"
@@ -473,7 +474,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 	Write-Host "Uninstalling fount-pwsh..."
 	try { Uninstall-Module -Name fount-pwsh -Scope CurrentUser -Force -ErrorAction Stop } catch {}
 
-	# Remove fount protocol handler (新增)
+	# Remove fount protocol handler
 	if (-not $IN_DOCKER) {
 		Write-Host "Removing fount:// protocol handler..."
 		try {
@@ -546,7 +547,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 
 	if (Test-Path "$FOUNT_DIR/data/installer/auto_installed_deno") {
 		Write-Host "Uninstalling Deno..."
-		try{ Remove-Item $(Get-Command deno).Source -Force } catch {}
+		try { Remove-Item $(Get-Command deno).Source -Force } catch {}
 		Remove-Item "~/.deno" -Force -Recurse -ErrorAction Ignore
 	}
 

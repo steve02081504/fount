@@ -3,6 +3,7 @@ import { console } from '../scripts/console.mjs'
 import { shutdown } from './on_shutdown.mjs'
 import { geti18n } from '../scripts/i18n.mjs'
 import { getLoadedPartList, getPartList, loadPart } from './managers/index.mjs'
+import { getPartDetails } from './parts_loader.mjs'
 
 const IPC_PORT = 16698 // 选择一个不太可能冲突的端口
 
@@ -36,6 +37,10 @@ export async function processIPCCommand(command, data) {
 			case 'getloadedlist': {
 				const { username, parttype } = data
 				return { status: 'ok', data: await getLoadedPartList(username, parttype) }
+			}
+			case 'getdetails': {
+				const { username, parttype, partname } = data
+				return { status: 'ok', data: await getPartDetails(username, parttype, partname) }
 			}
 			case 'shutdown':
 				shutdown()

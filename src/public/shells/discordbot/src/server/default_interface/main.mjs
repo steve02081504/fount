@@ -1,7 +1,7 @@
 import { Events, ChannelType, GatewayIntentBits, Partials, escapeMarkdown } from 'npm:discord.js'
 import { Buffer } from 'node:buffer'
-import { getMessageFullContent, splitDiscordReply } from './tools.mjs' // 确保路径正确
-import { localhostLocales } from '../../../../../../scripts/i18n.mjs' // 确保路径正确
+import { getMessageFullContent, splitDiscordReply } from './tools.mjs'
+import { localhostLocales } from '../../../../../../scripts/i18n.mjs'
 
 /** @typedef {import('npm:discord.js').Message} Message */
 /** @typedef {import('../../../../chat/decl/chatLog.ts').chatLogEntry_t} FountChatLogEntryBase */

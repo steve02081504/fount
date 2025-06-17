@@ -2,7 +2,7 @@
 const errorMessage = document.getElementById('errorMessage')
 const errorMessageText = document.getElementById('errorMessageText')
 let hideTimeout = null
-let fadeTimeout = null // 新增：用于控制渐出效果
+let fadeTimeout = null
 
 /**
  * 显示错误信息
