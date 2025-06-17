@@ -724,16 +724,61 @@ export async function addUserReply(chatid, object) {
 	return addChatLogEntry(chatid, await BuildChatLogEntryFromUserMessage(object, new_timeSlice, user, chatMetadata.username))
 }
 
+/**
+ * Loads a lightweight summary of a chat from its JSON file without full hydration.
+ * This is much faster as it avoids loading character/world/persona data.
+ * @param {string} username
+ * @param {string} chatid
+ * @returns {Promise<{
+ *   chatid: string,
+ *   chars: string[],
+ *   lastMessageSender: string,
+ *   lastMessageSenderAvatar: string | null,
+ *   lastMessageContent: string,
+ *   lastMessageTime: Date,
+ * } | null>}
+ */
+async function loadChatSummary(username, chatid) {
+	const filepath = getUserDictionary(username) + '/shells/chat/chats/' + chatid + '.json'
+	if (!fs.existsSync(filepath)) return null
+
+	try {
+		const rawChatData = loadJsonFile(filepath)
+		const lastEntry = rawChatData.chatLog[rawChatData.chatLog.length - 1]
+		const chars = lastEntry.timeSlice?.chars || []
+		return {
+			chatid,
+			chars,
+			lastMessageSender: lastEntry.name || 'Unknown',
+			lastMessageSenderAvatar: lastEntry.avatar || null,
+			lastMessageContent: lastEntry.content || '',
+			lastMessageTime: new Date(lastEntry.timeStamp), // Ensure it's a Date object
+		}
+	}
+	catch (error) {
+		console.error(`Failed to load summary for chat ${chatid}:`, error)
+		return null
+	}
+}
+
 export async function getChatList(username) {
 	const userDir = getUserDictionary(username) + '/shells/chat/chats/'
-	if (!fs.existsSync(userDir)) fs.mkdirSync(userDir, { recursive: true })
+	if (!fs.existsSync(userDir)) return []
+
 	const chatFiles = fs.readdirSync(userDir).filter(file => file.endsWith('.json'))
+	const chatIdsOnDisk = new Set(chatFiles.map(file => file.replace('.json', '')))
 
-	for (const file of chatFiles)
-		await loadChat(file.replace('.json', ''), username)
+	for (const [chatid, data] of chatMetadatas.entries())
+		if (data.username === username)
+			chatIdsOnDisk.add(chatid)
 
-	return [...chatMetadatas.entries()].filter(([id, { username: name }]) => name === username).map(([chatid, { chatMetadata }]) => {
-		if (is_VividChat(chatMetadata)) {
+	const chatListPromises = Array.from(chatIdsOnDisk).map(async (chatid) => {
+		const cachedData = chatMetadatas.get(chatid)
+
+		if (cachedData?.chatMetadata) {
+			const { chatMetadata } = cachedData
+			if (!is_VividChat(chatMetadata)) return null
+
 			const lastEntry = chatMetadata.chatLog[chatMetadata.chatLog.length - 1]
 			return {
 				chatid,
@@ -744,7 +789,11 @@ export async function getChatList(username) {
 				lastMessageTime: lastEntry.timeStamp,
 			}
 		}
-	}).filter(Boolean)
+
+		return await loadChatSummary(username, chatid)
+	})
+	const chatList = (await Promise.all(chatListPromises)).filter(Boolean)
+	return chatList.sort((a, b) => b.lastMessageTime - a.lastMessageTime)
 }
 
 export async function deleteChat(chatids, username) {

@@ -20,7 +20,7 @@ export function StartJob(username, parttype, partname, uid, data = null) {
 }
 export function EndJob(username, parttype, partname, uid) {
 	const jobs = getUserByUsername(username).jobs ??= {}
-	if (jobs?.[parttype]?.[partname]?.[uid]) {
+	if (jobs?.[parttype]?.[partname]?.[uid] !== undefined) {
 		delete jobs[parttype][partname][uid]
 		if (Object.keys(jobs[parttype][partname]).length === 0) {
 			delete jobs[parttype][partname]

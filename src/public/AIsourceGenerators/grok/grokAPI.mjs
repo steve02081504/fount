@@ -106,7 +106,7 @@ export class GrokAPI {
 		if (!cookie) return
 
 		try {
-			const cookieValue = cookie.replace('sso=', '')//保持不变
+			const cookieValue = cookie.replace('sso=', '')
 			const quota = await this.checkQuota(cookieValue, isThinkModel)
 			if (quota) {
 				const cookieIndex = isThinkModel ? this.currentThinkCookieIndex : this.currentCookieIndex
@@ -265,7 +265,7 @@ export class GrokAPI {
 					grokPayload,
 					{ headers, responseType: 'stream' }
 				)
-				const currentCookie = cookie.replace('sso=', '')//保持不变
+				const currentCookie = cookie.replace('sso=', '')
 				const index = this.cookies.findIndex(c => c === currentCookie)
 				if (isThinkModel)
 					this.lastSuccessfulThinkCookieIndex = index

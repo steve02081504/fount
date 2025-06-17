@@ -818,7 +818,7 @@ if [[ ! -d "$FOUNT_DIR/node_modules" || ($# -gt 0 && $1 = 'init') ]]; then
 	set +e # 禁用错误检测，因为第一次运行可能会失败
 	run_deno install --reload --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
 	run "shutdown" # 确保安装后服务能正常启动
-	set -e # 重新启用严格模式
+	set -e         # 重新启用严格模式
 	if [ $IN_DOCKER -eq 0 ] && [ $IN_TERMUX -eq 0 ]; then
 		create_desktop_shortcut
 	fi

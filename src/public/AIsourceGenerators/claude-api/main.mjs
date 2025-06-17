@@ -140,7 +140,7 @@ async function GetSource(config) {
 									text: `[System Error: Failed to process image file ${file.name}]`,
 								})
 							}
-						 else {
+						else {
 							console.warn(`Unsupported file type for Claude: ${mimeType} for file ${file.name}. Skipping.`)
 							content.push({
 								type: 'text',

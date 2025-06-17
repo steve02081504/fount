@@ -16,7 +16,7 @@ const el = { // DOM 元素引用
 	deviceList: document.getElementById('deviceList'),
 	noDevicesText: document.getElementById('noDevicesText'),
 	refreshDevicesBtn: document.getElementById('refreshDevicesBtn'),
-	logoutBtn: document.getElementById('logoutBtn'), // 新增：登出按钮
+	logoutBtn: document.getElementById('logoutBtn'),
 	deleteAccountBtn: document.getElementById('deleteAccountBtn'),
 	passwordConfirmationModal: document.getElementById('passwordConfirmationModal'),
 	confirmationPasswordInput: document.getElementById('confirmationPassword'),
@@ -210,7 +210,7 @@ async function loadAndDisplayDevices() {
 
 el.refreshDevicesBtn.addEventListener('click', loadAndDisplayDevices)
 
-// 新增：登出处理函数
+// 登出处理函数
 el.logoutBtn.addEventListener('click', async () => {
 	// 通常登出不需要二次确认，但如果需要可以取消下面的注释
 	// if (!confirm(geti18n('userSettings.logout.confirmMessage'))) return;

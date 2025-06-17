@@ -1,5 +1,5 @@
 import { Buffer } from 'node:buffer'
-import { getPartInfo } from '../../../../../../scripts/locale.mjs' // 确保路径正确
+import { getPartInfo } from '../../../../../../scripts/locale.mjs'
 
 /**
  * @typedef {import('npm:telegraf/typings/core/types/typegram').UserFromGetMe} TelegramBotInfo
@@ -12,6 +12,7 @@ import { getPartInfo } from '../../../../../../scripts/locale.mjs' // 确保路�
  */
 /** @typedef {import('../../../../../../decl/charAPI.ts').charAPI_t} charAPI_t */
 /** @typedef {import('../../../../chat/decl/chatLog.ts').chatLogEntry_t} FountChatLogEntryBase */
+/** @typedef {import('../../../../chat/decl/chatLog.ts').chatReply_t} ChatReply_t */
 
 /**
  * 简化的 Fount 聊天日志条目类型，用于默认接口。
@@ -51,7 +52,6 @@ export function escapeHTML(text) {
 
 /**
  * 将 Telegram 消息文本和实体转换为 AI 方言 Markdown。
- * (此函数保持不变)
  * @param {string | undefined} text - 原始消息文本。
  * @param {TelegramMessageEntity[] | undefined} entities - Telegram 消息实体数组。
  * @param {TelegramBotInfo | undefined} botInfo - 机器人自身信息。
@@ -131,7 +131,6 @@ export function telegramEntitiesToAiMarkdown(text, entities, botInfo, replyToMes
 
 /**
  * 将 AI 方言 Markdown 转换为 Telegram HTML 格式。
- * (此函数保持不变)
  * @param {string} aiMarkdownText - 包含 AI 方言 Markdown 的文本。
  * @returns {string} 转换后的 Telegram HTML 文本。
  */
@@ -186,9 +185,10 @@ export function aiMarkdownToTelegramHtml(aiMarkdownText) {
  * @param {charAPI_t} charAPI - 当前角色的API对象。
  * @param {string} ownerUsername - Fount系统的用户名。
  * @param {string} botCharname - 当前机器人绑定的角色名。
+ * @param {Record<number, ChatReply_t>} [aiReplyObjectCache] 用于恢复AI回复附加数据的缓存。
  * @returns {Promise<chatLogEntry_t_simple | null>} 转换后的聊天日志条目，或 null。
  */
-export async function TelegramMessageToFountChatLogEntry(ctx, messageHolder, botInfo, interfaceConfig, charAPI, ownerUsername, botCharname) {
+export async function TelegramMessageToFountChatLogEntry(ctx, messageHolder, botInfo, interfaceConfig, charAPI, ownerUsername, botCharname, aiReplyObjectCache) {
 	if (!messageHolder || !messageHolder.message) return null
 
 	const { message } = messageHolder
@@ -199,6 +199,8 @@ export async function TelegramMessageToFountChatLogEntry(ctx, messageHolder, bot
 		console.warn('[TelegramDefaultInterface] Message without `from` field encountered, skipping:', message)
 		return null
 	}
+
+	const cachedAIReply = aiReplyObjectCache?.[message.message_id]
 
 	let role = 'char'
 	if (fromUser.id === botInfo.id)
@@ -212,7 +214,6 @@ export async function TelegramMessageToFountChatLogEntry(ctx, messageHolder, bot
 	if (!name.trim() && fromUser.username) name = fromUser.username
 	if (!name.trim()) name = `User_${fromUser.id}`
 
-	// 确保 getPartInfo 使用正确的 locales 参数，如果需要的话。这里假设它能处理默认情况。
 	const botDisplayName = (await getPartInfo(charAPI))?.name || botCharname
 
 	const rawText = message.text || message.caption
@@ -220,7 +221,6 @@ export async function TelegramMessageToFountChatLogEntry(ctx, messageHolder, bot
 	const content = telegramEntitiesToAiMarkdown(rawText, entities, botInfo, message.reply_to_message)
 
 	const files = []
-	// ... (文件处理逻辑保持不变，确保 try-catch 和 telegramApi 的获取是健壮的) ...
 	try {
 		const telegramApi = ctx.telegram || (ctx.botInfo ? ctx : null)?.telegram
 		if (!telegramApi)
@@ -287,23 +287,23 @@ export async function TelegramMessageToFountChatLogEntry(ctx, messageHolder, bot
 		console.error(`[TelegramDefaultInterface] 文件处理失败 (消息ID ${message.message_id}):`, error)
 	}
 
-	if (!content.trim() && files.length === 0)
+	if (!content.trim() && files.length === 0 && !cachedAIReply)
 		return null
-
 
 	/** @type {chatLogEntry_t_simple} */
 	const entry = {
+		...cachedAIReply,
 		timeStamp: message.date * 1000,
 		role,
 		name: role === 'char' && fromUser.id === botInfo.id ? botDisplayName : name,
 		content,
-		files,
+		files: cachedAIReply?.files?.length ? cachedAIReply.files : files,
 		extension: {
+			...cachedAIReply?.extension || {},
 			platform: 'telegram',
-			platform_message_ids: [message.message_id], // 确保是数组
-			platform_channel_id: chat.id,             // 原始群组/私聊 ID
-			platform_user_id: fromUser.id,            // 原始用户 ID
-			// 新增：存储 message_thread_id (如果存在)
+			platform_message_ids: [message.message_id],
+			platform_channel_id: chat.id,
+			platform_user_id: fromUser.id,
 			...message.message_thread_id && { telegram_message_thread_id: message.message_thread_id },
 			is_from_owner: role === 'user',
 			telegram_message_obj: message,
@@ -315,7 +315,6 @@ export async function TelegramMessageToFountChatLogEntry(ctx, messageHolder, bot
 
 /**
  * 分割 Telegram 回复文本以适应其消息长度限制。
- * (此函数保持不变)
  * @param {string} reply - 原始回复文本。
  * @param {number} [split_length=4096] - 每条消息的最大长度。
  * @returns {string[]} 分割后的消息片段数组。

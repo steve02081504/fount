@@ -158,7 +158,7 @@ export function initLinesBackground(initconfig) {
 		opacity: 'opacity',
 		color: '255, 255, 255', // 初始颜色，会被 updateColors 更新
 		count: 99,
-		backgroundColor: '#f0f0f0', // 新增 backgroundColor 配置
+		backgroundColor: '#f0f0f0',
 		density: 0.0001, // 默认密度因子
 		...initconfig
 	}

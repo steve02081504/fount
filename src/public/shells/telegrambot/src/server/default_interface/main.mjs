@@ -4,8 +4,8 @@ import {
 	aiMarkdownToTelegramHtml,
 	escapeHTML
 } from './tools.mjs'
-import { localhostLocales } from '../../../../../../scripts/i18n.mjs' // 确保路径正确
-import { getPartInfo } from '../../../../../../scripts/locale.mjs'    // 确保路径正确
+import { localhostLocales } from '../../../../../../scripts/i18n.mjs'
+import { getPartInfo } from '../../../../../../scripts/locale.mjs'
 
 /** @typedef {import('npm:telegraf').Telegraf} TelegrafInstance */
 /** @typedef {import('npm:telegraf').Context} TelegrafContext */
@@ -15,7 +15,7 @@ import { getPartInfo } from '../../../../../../scripts/locale.mjs'    // 确保�
 /** @typedef {import('../../../../chat/decl/chatLog.ts').chatReply_t} ChatReply_t */
 
 /**
- * 重试函数 (保持不变)
+ * 重试函数
  * @async
  * @param {Function} func - 要执行的异步函数。
  * @param {{times?: number, WhenFailsWaitFor?: number}} [options] - 重试选项。
@@ -35,8 +35,6 @@ async function tryFewTimes(func, { times = 3, WhenFailsWaitFor = 2000 } = {}) {
 	console.error(`[TelegramDefaultInterface] tryFewTimes: All ${times} attempts failed. Last error:`, lastError)
 	throw lastError
 }
-
-// escapeMarkdownV2 保持不变，主要用于日志。
 
 /**
  * 辅助函数：构造逻辑频道 ID。
@@ -72,24 +70,26 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 
 	const DefaultParseModeOptions = { parse_mode: 'HTML' }
 	const CAPTION_LENGTH_LIMIT = 1024
-	const errorMessageText = '抱歉，处理您的消息时发生了错误。' // 统一错误消息
+	const errorMessageText = '抱歉，处理您的消息时发生了错误。'
 
 	async function SimpleTelegramBotSetup(bot, interfaceConfig) {
 		const botInfo = bot.botInfo || await tryFewTimes(() => bot.telegram.getMe())
 		const botDisplayName = (await getPartInfo(charAPI, localhostLocales[0]))?.name || botCharname
 
-		/** @type {Record<string, chatLogEntry_t_simple[]>} */ // 键改为 string (逻辑频道ID)
+		/** @type {Record<string, chatLogEntry_t_simple[]>} */
 		const ChannelChatLogs = {}
-		/** @type {Record<string, any>} */ // 键改为 string
+		/** @type {Record<string, any>} */
 		const ChannelCharScopedMemory = {}
-		/** @type {Record<number, ChatReply_t>} */ // 键是 TG message_id (number)
+		/**
+		 * @type {Record<number, ChatReply_t>}
+		 * 缓存机器人发送AI回复时，AI原始的回复对象。键是机器人发出的Telegram消息ID。
+		 * 此缓存用于在处理机器人自身发出的消息时，恢复AI返回的附加数据(如extension)。
+		 */
 		const aiReplyObjectCache = {}
 
 		bot.on('message', async (ctx_generic) => {
 			/** @type {import('npm:telegraf').NarrowedContext<TelegrafContext, import('npm:telegraf').Types.Update.MessageUpdate>} */
 			const ctx = ctx_generic
-
-			// 构造逻辑频道 ID
 			const logicalChannelId = constructLogicalChannelIdForDefault(ctx.chat.id, ctx.message.message_thread_id)
 
 			if (ctx.chat.type === 'private' && String(ctx.from.id) !== String(interfaceConfig.OwnerUserID)) {
@@ -98,18 +98,15 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 			}
 			if (ctx.from.is_bot) return
 
-			const fountEntry = await TelegramMessageToFountChatLogEntry(ctx, ctx, botInfo, interfaceConfig, charAPI, ownerUsername, botCharname)
+			const fountEntry = await TelegramMessageToFountChatLogEntry(ctx, ctx, botInfo, interfaceConfig, charAPI, ownerUsername, botCharname, aiReplyObjectCache)
 			if (!fountEntry) return
 
 			ChannelChatLogs[logicalChannelId] ??= []
 			ChannelChatLogs[logicalChannelId].push(fountEntry)
 
 			const maxDepth = interfaceConfig.MaxMessageDepth || 20
-			while (ChannelChatLogs[logicalChannelId].length > maxDepth) {
-				const removedEntry = ChannelChatLogs[logicalChannelId].shift()
-				if (removedEntry?.extension?.platform_message_ids?.[0] && aiReplyObjectCache[removedEntry.extension.platform_message_ids[0]])
-					delete aiReplyObjectCache[removedEntry.extension.platform_message_ids[0]]
-			}
+			while (ChannelChatLogs[logicalChannelId].length > maxDepth)
+				ChannelChatLogs[logicalChannelId].shift()
 
 			let shouldReply = false
 			if (ctx.chat.type === 'private')
@@ -135,7 +132,6 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 			if (!shouldReply) return
 
 			try {
-				// 发送 "typing" 到正确的 thread
 				await tryFewTimes(() => ctx.telegram.sendChatAction(ctx.chat.id, 'typing', {
 					...ctx.message.message_thread_id && { message_thread_id: ctx.message.message_thread_id }
 				}))
@@ -238,7 +234,6 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 							}
 							let finalHtmlCaption = captionAiMarkdown ? aiMarkdownToTelegramHtml(captionAiMarkdown) : undefined
 							if (finalHtmlCaption && finalHtmlCaption.length > CAPTION_LENGTH_LIMIT) {
-								// ... (标题截断逻辑保持不变) ...
 								console.warn(`[TelegramDefaultInterface] 文件 "${fileItem.filename}" 的HTML标题过长 (${finalHtmlCaption.length} > ${CAPTION_LENGTH_LIMIT})，尝试截断。`)
 								const truncatedCaptionAiMarkdown = captionAiMarkdown.substring(0, Math.floor(CAPTION_LENGTH_LIMIT * 0.7)) + '...'
 								finalHtmlCaption = aiMarkdownToTelegramHtml(truncatedCaptionAiMarkdown)
@@ -292,7 +287,9 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 
 					if (firstSentTelegramMessage && aiFinalReply) {
 						aiReplyObjectCache[firstSentTelegramMessage.message_id] = aiFinalReply
-						const fountEntryForBotReply = await TelegramMessageToFountChatLogEntry(ctx, { message: firstSentTelegramMessage }, botInfo, interfaceConfig, charAPI, ownerUsername, botCharname)
+
+						const fountEntryForBotReply = await TelegramMessageToFountChatLogEntry(ctx, { message: firstSentTelegramMessage }, botInfo, interfaceConfig, charAPI, ownerUsername, botCharname, aiReplyObjectCache)
+
 						if (fountEntryForBotReply) {
 							ChannelChatLogs[logicalChannelId].push(fountEntryForBotReply)
 							while (ChannelChatLogs[logicalChannelId].length > maxDepth) {
@@ -305,10 +302,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 				}
 			} catch (error) {
 				console.error(`[TelegramDefaultInterface] 处理消息并回复时出错 (chat ${logicalChannelId}):`, error)
-				// 使用 ctx.reply 回复错误信息
-				await tryFewTimes(() => ctx.reply(escapeHTML(errorMessageText), {
-					// Telegraf 的 ctx.reply 自动处理 reply_to_message_id 和 message_thread_id
-				}))
+				await tryFewTimes(() => ctx.reply(escapeHTML(errorMessageText)))
 			}
 		})
 

@@ -134,7 +134,6 @@ const classConfigs = [
 			{ prefix: 'divide-y-', property: 'border-bottom-width' }, // 这里我们简化，只设置宽度
 		]
 	},
-	// 新增: 设置CSS变量的类型
 	{
 		type: 'variable_setter', configs: [
 			{ prefix: 'ring-', variable: '--tw-ring-width', unit: 'px' },
