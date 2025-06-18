@@ -82,7 +82,8 @@ async function formatStr(str, data) {
 }
 
 async function GetSource(config, { username, SaveConfig }) {
-	const base_source = await loadAIsourceFromNameOrConfigData(username, config.base_source, {
+	const unnamedSources = []
+	const base_source = await loadAIsourceFromNameOrConfigData(username, config.base_source, unnamedSources, {
 		SaveConfig
 	})
 	/** @type {AIsource_t} */
@@ -104,7 +105,7 @@ async function GetSource(config, { username, SaveConfig }) {
 		is_paid: false,
 		extension: {},
 
-		Unload: () => { },
+		Unload: () => Promise.all(unnamedSources.map(source => source.Unload())),
 		Call: async (prompt) => base_source.Call(prompt),
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
 			const new_prompt_struct = {

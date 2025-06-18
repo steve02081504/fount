@@ -44,11 +44,11 @@ export async function loadAIsource(username, AIsourcename) {
 	})
 }
 
-export async function loadAIsourceFromNameOrConfigData(username, nameOrData, { SaveConfig }) {
+export async function loadAIsourceFromNameOrConfigData(username, nameOrData, unnamedSources, { SaveConfig }) {
 	if (Object(nameOrData) instanceof String)
 		return loadAIsource(username, nameOrData)
 	else
-		return loadAIsourceFromConfigData(username, nameOrData, { SaveConfig })
+		return unnamedSources[unnamedSources.push(loadAIsourceFromConfigData(username, nameOrData, { SaveConfig })) - 1]
 }
 
 export async function unloadAIsource(username, AIsourcename) {
