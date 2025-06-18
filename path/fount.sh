@@ -868,6 +868,12 @@ remove)
 	fi
 	echo "Removing fount installation directory: $FOUNT_DIR"
 	rm -rf "$FOUNT_DIR"
+	# 进一步ls和删除$FOUNT_DIR的父目录直到其不为空
+	parent_dir=$(dirname "$FOUNT_DIR")
+	while rmdir "$parent_dir" 2>/dev/null; do
+		echo "Removed empty parent directory: $parent_dir"
+		parent_dir=$(dirname "$parent_dir")
+	done
 	echo "Fount uninstallation complete."
 	exit 0
 	;;

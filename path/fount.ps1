@@ -614,11 +614,30 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 		Write-Host "Uninstalling Deno..."
 		try { Remove-Item $(Get-Command deno).Source -Force } catch {}
 		Remove-Item "~/.deno" -Force -Recurse -ErrorAction Ignore
+
+		$UserPath = [System.Environment]::GetEnvironmentVariable('PATH', [System.EnvironmentVariableTarget]::User)
+		$UserPath = $UserPath -split ';'
+		$UserPath = $UserPath | Where-Object { !$_.Contains("/.deno") }
+		$UserPath = $UserPath -join ';'
+		[System.Environment]::SetEnvironmentVariable('PATH', $UserPath, [System.EnvironmentVariableTarget]::User)
+	}
+
+	# Remove background runner
+	$TempDir = [System.IO.Path]::GetTempPath()
+	$exepath = Join-Path $TempDir "fount-background.exe"
+	if (Test-Path $exepath) {
+		Write-Host "Removing background runner..."
+		try { Remove-Item $exepath -Force -ErrorAction Stop } catch {}
 	}
 
 	# Remove fount installation directory
 	Write-Host "Removing fount installation directory..."
 	Remove-Item -Path $FOUNT_DIR -Recurse -Force -ErrorAction SilentlyContinue
+	# 只要父目录为空，继续删他妈的
+	$parent = Split-Path -Parent $FOUNT_DIR
+	while ((Get-ChildItem $parent -ErrorAction Ignore | Measure-Object).Count -eq 0) {
+		Remove-Item -Path $parent -Recurse -Force -ErrorAction SilentlyContinue
+	}
 	Write-Host "Fount installation directory removed."
 
 	Write-Host "Fount uninstallation complete."

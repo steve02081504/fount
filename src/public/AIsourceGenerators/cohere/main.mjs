@@ -61,9 +61,17 @@ async function GetSource(config) {
 				}]
 			}
 			margeStructPromptChatLog(prompt_struct).forEach((chatLogEntry) => {
+				const uid = Math.random().toString(36).slice(2, 10)
 				request.messages.push({
 					role: chatLogEntry.role === 'user' ? 'user' : chatLogEntry.role === 'system' ? 'system' : 'assistant',
-					content: chatLogEntry.name + ':\n' + chatLogEntry.content
+					content: `\
+<message "${uid}">
+<sender>${chatLogEntry.name}</sender>
+<content>
+${chatLogEntry.content}
+</content>
+</message "${uid}">
+`
 				})
 			})
 
@@ -80,25 +88,8 @@ async function GetSource(config) {
 			let text = result?.message?.content?.map((message) => message?.text)?.filter((text) => text)?.join('\n')
 			if (!text) throw result
 
-			{
-				text = text.split('\n')
-				const base_reg = `^((|${[...new Set([
-					prompt_struct.Charname,
-					...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name),
-				])].filter(Boolean).map(escapeRegExp).concat([
-					...(prompt_struct.alternative_charnames || []).map(Object).map(
-						(stringOrReg) => {
-							if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
-							return stringOrReg.source
-						}
-					),
-				].filter(Boolean)).join('|')})[^\\n：:\<\>\\d\`]*)(:|：)\\s*(?!\/)`
-				let reg = new RegExp(`${base_reg}$`, 'i')
-				while (text[0].trim().match(reg)) text.shift()
-				reg = new RegExp(`${base_reg}`, 'i')
-				text[0] = text[0].replace(reg, '')
-				text = text.join('\n')
-			}
+			if (text.match(/\<\/sender\>\s*\<content\>/))
+				text = text.match(/\<\/sender\>\s*\<content\>([\s\S]*)\<\/content\>/)[1]
 
 			const removeduplicate = [...new Set(text.split('\n'))].join('\n')
 			if (removeduplicate.length / text.length < 0.3)
