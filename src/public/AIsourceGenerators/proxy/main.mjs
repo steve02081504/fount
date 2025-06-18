@@ -22,7 +22,6 @@ const configTemplate = {
 		n: 1
 	},
 	convert_config: {
-		passName: false,
 		roleReminding: true
 	}
 }
@@ -133,10 +132,17 @@ async function GetSource(config, { SaveConfig }) {
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
 			const messages = []
 			margeStructPromptChatLog(prompt_struct).forEach((chatLogEntry) => {
+				const uid = Math.random().toString(36).slice(2, 10)
 				messages.push({
 					role: chatLogEntry.role === 'user' ? 'user' : chatLogEntry.role === 'system' ? 'system' : 'assistant',
-					content: config.convert_config?.passName ? chatLogEntry.content : chatLogEntry.name + ':\n' + chatLogEntry.content,
-					name: config.convert_config?.passName ? chatLogEntry.name : undefined
+					content: `\
+<message "${uid}">
+<sender>${chatLogEntry.name}</sender>
+<content>
+${chatLogEntry.content}
+</content>
+</message "${uid}">
+`
 				})
 			})
 
@@ -165,25 +171,8 @@ async function GetSource(config, { SaveConfig }) {
 
 			let text = result.content
 
-			{
-				text = text.split('\n')
-				const base_reg = `^((|${[...new Set([
-					prompt_struct.Charname,
-					...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name),
-				])].filter(Boolean).map(escapeRegExp).concat([
-					...(prompt_struct.alternative_charnames || []).map(Object).map(
-						(stringOrReg) => {
-							if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
-							return stringOrReg.source
-						}
-					),
-				].filter(Boolean)).join('|')})[^\\n：:\<\>\\d\`]*)(:|：)\\s*(?!\/)`
-				let reg = new RegExp(`${base_reg}$`, 'i')
-				while (text[0].trim().match(reg)) text.shift()
-				reg = new RegExp(`${base_reg}`, 'i')
-				text[0] = text[0].replace(reg, '')
-				text = text.join('\n')
-			}
+			if (text.match(/\<\/sender\>\s*\<content\>/))
+				text = text.match(/\<\/sender\>\s*\<content\>([\s\S]*)\<\/content\>/)[1]
 
 			return {
 				...result,

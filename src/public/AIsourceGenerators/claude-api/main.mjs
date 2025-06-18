@@ -112,10 +112,19 @@ async function GetSource(config) {
 				// 内容可以是文本和图片的混合数组
 				const content = []
 
+				const uid = Math.random().toString(36).slice(2, 10)
+
 				// 添加文本内容
 				content.push({
 					type: 'text',
-					text: chatLogEntry.name + ':\n' + chatLogEntry.content,
+					text: `\
+<message "${uid}">
+<sender>${chatLogEntry.name}</sender>
+<content>
+${chatLogEntry.content}
+</content>
+</message "${uid}">
+`,
 				})
 
 				// 处理并添加文件内容（仅限图片）
@@ -176,29 +185,8 @@ async function GetSource(config) {
 				text = message.content.filter(block => block.type === 'text').map(block => block.text).join('')
 			}
 
-			// --- 复用 Gemini 模块的响应清理逻辑，以保证行为一致 ---
-			{
-				text = text.split('\n')
-				const base_reg = `^((|${[...new Set([
-					prompt_struct.Charname,
-					...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name),
-				])].filter(Boolean).map(escapeRegExp).concat([
-					...(prompt_struct.alternative_charnames || []).map(Object).map(
-						(stringOrReg) => {
-							if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
-							return stringOrReg.source
-						}
-					),
-				].filter(Boolean)).join('|')})[^\\n：:\<\>\\d\`]*)(:|：)\\s*(?!\/)`
-				let reg = new RegExp(`${base_reg}$`, 'i')
-				while (text.length > 0 && text[0].trim().match(reg)) text.shift()
-				reg = new RegExp(`${base_reg}`, 'i')
-				if (text.length > 0)
-					text[0] = text[0].replace(reg, '')
-
-				while (text.length > 0 && text[text.length - 1].trim() === '') text.pop()
-				text = text.join('\n')
-			}
+			if (text.match(/\<\/sender\>\s*\<content\>/))
+				text = text.match(/\<\/sender\>\s*\<content\>([\s\S]*)\<\/content\>/)[1]
 
 			return {
 				content: text,
