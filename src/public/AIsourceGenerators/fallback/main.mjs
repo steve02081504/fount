@@ -29,7 +29,8 @@ const configTemplate = {
 }
 
 async function GetSource(config, { username, SaveConfig }) {
-	const sources = await Promise.all(config.sources.map((source) => loadAIsourceFromNameOrConfigData(username, source, {
+	const unnamedSources = []
+	const sources = await Promise.all(config.sources.map((source) => loadAIsourceFromNameOrConfigData(username, source, unnamedSources, {
 		SaveConfig
 	})))
 	/** @type {AIsource_t} */
@@ -51,7 +52,7 @@ async function GetSource(config, { username, SaveConfig }) {
 		is_paid: false,
 		extension: {},
 
-		Unload: () => { },
+		Unload: () => Promise.all(unnamedSources.map(source => source.Unload())),
 		Call: async (prompt) => {
 			if (sources.length === 0) throw new Error('no source selected')
 			let index = 0
