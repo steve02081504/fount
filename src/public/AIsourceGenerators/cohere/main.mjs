@@ -1,5 +1,4 @@
 import { CohereClientV2 } from 'npm:cohere-ai'
-import { escapeRegExp } from '../../../../src/scripts/escape.mjs'
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
@@ -88,8 +87,8 @@ ${chatLogEntry.content}
 			let text = result?.message?.content?.map((message) => message?.text)?.filter((text) => text)?.join('\n')
 			if (!text) throw result
 
-			if (text.match(/\<\/sender\>\s*\<content\>/))
-				text = text.match(/\<\/sender\>\s*\<content\>([\s\S]*)\<\/content\>/)[1]
+			if (text.match(/<\/sender>\s*<content>/))
+				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1]
 
 			const removeduplicate = [...new Set(text.split('\n'))].join('\n')
 			if (removeduplicate.length / text.length < 0.3)

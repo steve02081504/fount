@@ -1,6 +1,5 @@
 // 导入 Anthropic SDK 和 Fount 需要的工具函数
 import Anthropic from 'npm:@anthropic-ai/sdk'
-import { escapeRegExp } from '../../../../src/scripts/escape.mjs'
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
 import * as mime from 'npm:mime-types'
 // 导入 undici 用于设置代理
@@ -185,8 +184,8 @@ ${chatLogEntry.content}
 				text = message.content.filter(block => block.type === 'text').map(block => block.text).join('')
 			}
 
-			if (text.match(/\<\/sender\>\s*\<content\>/))
-				text = text.match(/\<\/sender\>\s*\<content\>([\s\S]*)\<\/content\>/)[1]
+			if (text.match(/<\/sender>\s*<content>/))
+				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1]
 
 			return {
 				content: text,

@@ -1,5 +1,4 @@
 // main.mjs
-import { escapeRegExp } from '../../scripts/regex.mjs'
 import { structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
 import { ClaudeAPI } from './claude_api.mjs'
 import { countTokens } from 'npm:@anthropic-ai/tokenizer'
@@ -88,8 +87,8 @@ ${chatLogEntry.content}
 
 			let text = await claudeAPI.callClaudeAPI(messages, config.model)
 
-			if (text.match(/\<\/sender\>\s*\<content\>/))
-				text = text.match(/\<\/sender\>\s*\<content\>([\s\S]*)\<\/content\>/)[1]
+			if (text.match(/<\/sender>\s*<content>/))
+				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1]
 
 			return {
 				content: text,

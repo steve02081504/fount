@@ -12,8 +12,7 @@ export function is_local_ip(ip) {
 }
 
 export function is_local_ip_from_req(req) {
-	const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress
-	return is_local_ip(ip)
+	return is_local_ip(req.ip)
 }
 
 /**
@@ -38,8 +37,7 @@ export function rateLimit(options) {
 	const requestCounts = new Map() // 使用 Map 存储请求计数
 
 	return (req, res, next) => {
-		const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress
-		if (byIP && is_local_ip(ip)) return next()
+		if (byIP && is_local_ip(req.ip)) return next()
 		const key = byUsername && req.body.username ? req.body.username : byIP ? ip : null
 
 		if (!key) return res.status(401).json({ message: 'Unauthorized' })
