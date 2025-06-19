@@ -40,8 +40,8 @@ export function registerEndpoints(router) {
 		const result = await login(username, password, deviceid)
 		// 在登录成功时设置 Cookie
 		if (result.status === 200) {
-			res.cookie('accessToken', result.accessToken, { httpOnly: true, secure: false }) // 短效
-			res.cookie('refreshToken', result.refreshToken, { httpOnly: true, secure: false }) // 长效
+			res.cookie('accessToken', result.accessToken, { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https' }) // 短效
+			res.cookie('refreshToken', result.refreshToken, { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https' }) // 长效
 		}
 		res.status(result.status).json(result)
 	})
