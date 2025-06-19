@@ -2,76 +2,80 @@ import optimizeRegex from 'npm:eslint-plugin-optimize-regex'
 import UnusedImports from 'npm:eslint-plugin-unused-imports'
 import html from 'npm:eslint-plugin-html'
 import destructuringMerge from 'npm:eslint-plugin-destructuring-merge'
+import removeDuplicates from 'npm:eslint-plugin-remove-duplicates'
 import tseslint from 'npm:typescript-eslint'
+
+const commonPlugins = {
+	'optimize-regex': optimizeRegex,
+	'unused-imports': UnusedImports,
+	'destructuring-merge': destructuringMerge,
+	'remove-duplicates': removeDuplicates,
+}
+
+const commonRules = {
+	'remove-duplicates/remove-array-duplicates': ['error'],
+	semi: ['error', 'never'],
+	'no-duplicate-imports': ['error'],
+	curly: ['error', 'multi'],
+	indent: ['error', 'tab', {
+		VariableDeclarator: 1,
+		MemberExpression: 1,
+		SwitchCase: 1,
+		ignoredNodes: ['ConditionalExpression'],
+	}],
+	quotes: ['error', 'single'],
+	'object-shorthand': ['error', 'always'],
+	'prefer-destructuring': ['warn', {
+		VariableDeclarator: { array: true, object: true },
+		AssignmentExpression: { array: true, object: true },
+	}, {
+		enforceForRenamedProperties: true,
+	}],
+	'no-extra-parens': ['error', 'all', {
+		nestedBinaryExpressions: false,
+		returnAssign: false,
+	}],
+	'no-constant-condition': ['error', { checkLoops: false }],
+	'optimize-regex/optimize-regex': 'warn',
+	'unused-imports/no-unused-imports': 'error',
+	'no-unused-vars': 'off',
+	'no-var': 'error',
+	'prefer-const': ['error', {
+		destructuring: 'all',
+		ignoreReadBeforeAssign: true,
+	}],
+	'destructuring-merge/destructuring-merge': 'warn',
+}
 
 export default [
 	{
+		ignores: ['**/dist/*'],
+	},
+	{
+		files: ['**/*.js', '**/*.mjs', '**/*.cjs', '**/*.html'],
 		plugins: {
-			'optimize-regex': optimizeRegex,
-			'unused-imports': UnusedImports,
+			...commonPlugins,
 			html,
-			'destructuring-merge': destructuringMerge,
+		},
+		languageOptions: {
+			ecmaVersion: 'latest',
+		},
+		rules: commonRules,
+	},
+	{
+		files: ['**/*.ts', '**/*.tsx'],
+		plugins: {
+			...commonPlugins,
 			'@typescript-eslint': tseslint.plugin,
 		},
-		files: ['**/*.html', '**/*.js', '**/*.mjs', '**/*.cjs', '**/*.ts', '**/*.tsx'],
-		ignores: ['**/dist/*'],
 		languageOptions: {
 			ecmaVersion: 'latest',
 			parser: tseslint.parser,
 		},
 		rules: {
-			// 移除多余的分号
-			semi: [
-				'error', 'never'
-			],
-			// 当块内容只有一行时，移除块的大括号
-			curly: ['error', 'multi'],
-			// tab 缩进
-			indent: ['error', 'tab', {
-				VariableDeclarator: 1,
-				MemberExpression: 1,
-				SwitchCase: 1,
-				ignoredNodes: [
-					'ConditionalExpression'
-				]
-			}],
-			// 鼓励单引号
-			quotes: ['error', 'single'],
-			// 强制总是使用简写
-			'object-shorthand': ['error', 'always'],
-			'prefer-destructuring': ['warn', {
-				'VariableDeclarator': {
-					'array': true,
-					'object': true
-				},
-				'AssignmentExpression': {
-					'array': true,
-					'object': true
-				}
-			}, {
-				'enforceForRenamedProperties': true
-			}],
-			// 去除不必要小括号
-			'no-extra-parens': ['error', 'all', {
-				nestedBinaryExpressions: false, // 允许嵌套二元表达式中有括号
-				returnAssign: false // 允许 return 语句中的赋值表达式中有括号
-			}],
-			// if中的没有await的promise
-			'no-constant-condition': ['error', { checkLoops: false }],
-			// 优化正则
-			'optimize-regex/optimize-regex': 'warn',
-			// 禁用未使用的导入
-			'unused-imports/no-unused-imports': 'error',
-			// 禁用未使用的变量
-			'no-unused-vars': 'off',
-			// 不要 var
-			'no-var': 'error',
-			// 偏好 const
-			'prefer-const': ['error', {
-				'destructuring': 'all',
-				'ignoreReadBeforeAssign': true
-			}],
-			'destructuring-merge/destructuring-merge': 'warn'
-		}
-	}
+			...commonRules,
+			'no-extra-parens': 'off',
+			'@typescript-eslint/no-unused-vars': 'error',
+		},
+	},
 ]
