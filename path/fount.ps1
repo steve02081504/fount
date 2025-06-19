@@ -105,7 +105,8 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'protocolhandle') {
 Start-Job -ScriptBlock {
 	@('ps12exe', 'fount-pwsh') | ForEach-Object {
 		# 先获取本地模块的版本号，若是0.0.0则跳过更新（开发版本）
-		$localVersion = (Get-Module $_ -ListAvailable).Version
+		$localVersion = [System.Version]::new(0, 0, 0)
+		Get-Module $_ -ListAvailable | ForEach-Object { if ($_.Version -gt $localVersion) { $localVersion = $_.Version } }
 		if ("$localVersion" -eq '0.0.0') { return }
 		$latestVersion = (Find-Module $_).Version
 		if ("$latestVersion" -ne "$localVersion") {
