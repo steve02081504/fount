@@ -113,7 +113,7 @@ function updateColors() {
 		is_dark = Boolean(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
 	}
 
-	document.documentElement.setAttribute('data-theme-isdark', is_dark)
+	document.documentElement.setAttribute('color-scheme', is_dark ? 'dark' : 'light')
 
 	updateLinesBackgroundColors()
 	for (const func of functions) try {

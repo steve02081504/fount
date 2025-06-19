@@ -1,5 +1,6 @@
+import { createDocumentFragmentFromHtmlString } from './template.mjs'
+
 const IconCache = {}
-const parser = new DOMParser()
 
 // currentColor在img的从url导入的svg中不起作用，此函数旨在解决这个问题
 export async function svgInliner(DOM) {
@@ -8,9 +9,7 @@ export async function svgInliner(DOM) {
 		const url = svg.getAttribute('src')
 		IconCache[url] ??= fetch(url).then((response) => response.text())
 		const data = IconCache[url] = await IconCache[url]
-		const newsvg = parser.parseFromString(data, 'image/svg+xml').documentElement
-		for (const attribute of svg.attributes) newsvg.setAttribute(attribute.name, attribute.value)
-		svg.replaceWith(newsvg)
+		svg.replaceWith(createDocumentFragmentFromHtmlString(data))
 	})).catch(console.error)
 	return DOM
 }
