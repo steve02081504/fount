@@ -4,7 +4,6 @@ import {
 	HarmBlockThreshold,
 	createPartFromUri,
 } from 'npm:@google/genai@^0.12.0'
-import { escapeRegExp } from '../../../../src/scripts/escape.mjs'
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
 import { Buffer } from 'node:buffer'
 import * as mime from 'npm:mime-types'
@@ -322,8 +321,8 @@ ${is_ImageGeneration
 				handle_parts(response.candidates?.[0]?.content?.parts)
 			}
 
-			if (text.match(/\<\/sender\>\s*\<content\>/))
-				text = text.match(/\<\/sender\>\s*\<content\>([\s\S]*)\<\/content\>/)[1]
+			if (text.match(/<\/sender>\s*<content>/))
+				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1]
 
 			return {
 				content: text,

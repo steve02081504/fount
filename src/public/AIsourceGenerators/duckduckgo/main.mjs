@@ -1,5 +1,4 @@
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
-import { escapeRegExp } from '../../../../src/scripts/escape.mjs'
 import { DuckDuckGoAPI } from './duckduckgo.mjs'
 
 /**
@@ -108,8 +107,8 @@ ${chatLogEntry.content}
 			const model = config.model || 'gpt-4o-mini'
 			let text = await duckduckgo.call(messages, model)
 
-			if (text.match(/\<\/sender\>\s*\<content\>/))
-				text = text.match(/\<\/sender\>\s*\<content\>([\s\S]*)\<\/content\>/)[1]
+			if (text.match(/<\/sender>\s*<content>/))
+				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1]
 
 			return {
 				content: text,

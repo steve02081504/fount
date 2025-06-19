@@ -9,7 +9,7 @@ import http from 'node:http'
 import { __dirname, startTime } from './base.mjs'
 import { console } from '../scripts/console.mjs'
 import { on_shutdown } from './on_shutdown.mjs'
-import { getUserByReq, initAuth } from './auth.mjs'
+import { auth_request, getUserByReq, initAuth } from './auth.mjs'
 import { createTray } from '../scripts/tray.mjs'
 import { StartRPC } from '../scripts/discordrpc.mjs'
 import { geti18n } from '../scripts/i18n.mjs'
@@ -23,6 +23,7 @@ import { loadJsonFile, saveJsonFile } from '../scripts/json_loader.mjs'
 
 export { __dirname }
 const app = express()
+app.set('trust proxy', 'loopback')
 const mainRouter = express.Router()
 export const PartsRouter = express.Router()
 const FinalRouter = express.Router()
@@ -39,9 +40,25 @@ mainRouter.use(async (req, res, next) => {
 		}))
 	return next()
 })
-mainRouter.post('/api/sentrytunnel', express.raw({ type: '*/*', limit: Infinity }), sentrytunnel)
-mainRouter.use(express.json({ limit: Infinity }))
-mainRouter.use(express.urlencoded({ limit: Infinity, extended: true }))
+function diff_if_auth(if_auth, if_not_auth) {
+	return async (req, res, next) => {
+		try { await auth_request(req) }
+		catch { return if_not_auth(req, res, next) }
+		return if_auth(req, res, next)
+	}
+}
+mainRouter.post('/api/sentrytunnel', diff_if_auth(
+	express.raw({ type: '*/*', limit: Infinity }),
+	express.raw({ type: '*/*', limit: 5 * 1024 * 1024 })
+), sentrytunnel)
+mainRouter.use(diff_if_auth(
+	express.json({ limit: Infinity }),
+	express.json({ limit: 5 * 1024 * 1024 })
+))
+mainRouter.use(diff_if_auth(
+	express.urlencoded({ limit: Infinity, extended: true }),
+	express.urlencoded({ limit: 5 * 1024 * 1024, extended: true })
+))
 mainRouter.use(fileUpload())
 mainRouter.use(cookieParser())
 mainRouter.use((req, res, next) => {

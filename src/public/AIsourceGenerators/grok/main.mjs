@@ -1,6 +1,5 @@
 // main.mjs
 import { GrokAPI } from './grokAPI.mjs'
-import { escapeRegExp } from '../../../../src/scripts/escape.mjs'
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
 
 /**
@@ -114,8 +113,8 @@ ${chatLogEntry.content}
 			const model = config.model || 'grok-3'
 			let text = await grok.call(messages, model)
 
-			if (text.match(/\<\/sender\>\s*\<content\>/))
-				text = text.match(/\<\/sender\>\s*\<content\>([\s\S]*)\<\/content\>/)[1]
+			if (text.match(/<\/sender>\s*<content>/))
+				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1]
 
 			return {
 				content: text,
