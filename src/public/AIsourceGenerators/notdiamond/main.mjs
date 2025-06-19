@@ -1,3 +1,4 @@
+import { escapeRegExp } from '../../../scripts/escape.mjs'
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
 import { NotDiamond } from './notdiamond.mjs'
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
@@ -101,7 +102,16 @@ ${chatLogEntry.content}
 			let text = await callBase(messages)
 
 			if (text.match(/<\/sender>\s*<content>/))
-				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1]
+				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1].split(new RegExp(
+					`(${
+						(prompt_struct.alternative_charnames || []).map(Object).map(
+							(stringOrReg) => {
+								if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
+								return stringOrReg.source
+							}
+						).join('|')
+					})\\s*<\\/sender>\\s*<content>`
+				)).pop().split(/<\/content>\s*<\/message/).shift()
 
 			return {
 				content: text,

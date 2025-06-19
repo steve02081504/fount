@@ -1,3 +1,4 @@
+import { escapeRegExp } from '../../scripts/regex.mjs'
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
 import { DuckDuckGoAPI } from './duckduckgo.mjs'
 
@@ -108,7 +109,16 @@ ${chatLogEntry.content}
 			let text = await duckduckgo.call(messages, model)
 
 			if (text.match(/<\/sender>\s*<content>/))
-				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1]
+				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1].split(new RegExp(
+					`(${
+						(prompt_struct.alternative_charnames || []).map(Object).map(
+							(stringOrReg) => {
+								if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
+								return stringOrReg.source
+							}
+						).join('|')
+					})\\s*<\\/sender>\\s*<content>`
+				)).pop().split(/<\/content>\s*<\/message/).shift()
 
 			return {
 				content: text,
