@@ -3,9 +3,9 @@ import {
 	changeUserPassword, revokeUserDeviceByJti,
 	renameUser, deleteUserAccount,
 	getUserDictionary, getUserByUsername as getUserConfig,
+	REFRESH_TOKEN_EXPIRY_DURATION,
 	logout as authLogout // 导入 auth.mjs 中的 logout 函数
 } from '../../../../../server/auth.mjs'
-import { REFRESH_TOKEN_EXPIRY_DURATION } from '../../../../../server/auth.mjs'
 import fs_promises from 'node:fs/promises'
 import path from 'node:path'
 import { ms } from '../../../../../scripts/ms.mjs'
