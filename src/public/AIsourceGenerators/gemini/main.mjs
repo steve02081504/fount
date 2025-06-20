@@ -333,6 +333,8 @@ ${is_ImageGeneration
 						).join('|')
 					})\\s*<\\/sender>\\s*<content>`
 				)).pop().split(/<\/content>\s*<\/message/).shift()
+			if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
+				text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
 
 			return {
 				content: text,
