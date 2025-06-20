@@ -99,6 +99,8 @@ ${chatLogEntry.content}
 						).join('|')
 					})\\s*<\\/sender>\\s*<content>`
 				)).pop().split(/<\/content>\s*<\/message/).shift()
+			if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
+				text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
 
 			const removeduplicate = [...new Set(text.split('\n'))].join('\n')
 			if (removeduplicate.length / text.length < 0.3)
