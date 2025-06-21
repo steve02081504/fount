@@ -587,8 +587,12 @@ if [[ $# -gt 0 ]]; then
 	case "$1" in
 	open)
 		ensure_dependencies "open" || exit 1
-		export TARGET_URL='https://steve02081504.github.io/fount/protocol'
-		nohup bash -c "$BACKGROUND_IPC_JOB" >/dev/null 2>&1 &
+		local TARGET_URL='https://steve02081504.github.io/fount/wait'
+		if [ "$OS_TYPE" = "Linux" ]; then
+			xdg-open "$TARGET_URL" >/dev/null 2>&1
+		elif [ "$OS_TYPE" = "Darwin" ]; then
+			open "$TARGET_URL" >/dev/null 2>&1
+		fi
 		"$0" "${@:2}"
 		exit $?
 		;;
