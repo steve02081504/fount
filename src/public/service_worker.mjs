@@ -33,20 +33,26 @@ function openMetadataDB(attempt = 1, maxAttempts = 3) {
 
 		request.onsuccess = event => {
 			const db = event.target.result
+			// Handle potential database errors after opening
 			db.onerror = (event) => {
 				console.error('[SW DB] Database error:', event.target.error)
-				dbPromise = null
+				dbPromise = null // Invalidate promise on error
+			}
+			db.onclose = () => {
+				console.warn('[SW DB] Database connection closed unexpectedly.')
+				dbPromise = null // Invalidate promise if closed
 			}
 			resolve(db)
 		}
 
 		request.onerror = event => {
 			console.error(`[SW DB] Database open error (Attempt ${attempt}):`, event.target.error)
-			dbPromise = null
+			dbPromise = null // Clear promise on error to allow retry
 			if (attempt < maxAttempts)
 				setTimeout(() => {
+					// Recursively retry opening the DB
 					resolve(openMetadataDB(attempt + 1, maxAttempts))
-				}, 1000 * attempt)
+				}, 1000 * attempt) // Exponential backoff
 			else {
 				console.error('[SW DB] Max DB open attempts reached.')
 				reject(event.target.error)
@@ -54,6 +60,7 @@ function openMetadataDB(attempt = 1, maxAttempts = 3) {
 		}
 
 		request.onblocked = () => {
+			// This happens if a previous connection is still open and blocking the upgrade/new connection
 			console.warn('[SW DB] Database open blocked. Please close other tabs using the database.')
 		}
 	})
@@ -100,11 +107,12 @@ async function cleanupExpiredCache() {
 
 	try {
 		const db = await openMetadataDB()
-		const transaction = db.transaction(STORE_NAME, 'readwrite') // Ensure readwrite for deletions
+		const transaction = db.transaction(STORE_NAME, 'readwrite') // 确保是读写模式以便删除
 		const store = transaction.objectStore(STORE_NAME)
 		const index = store.index('timestamp')
-		const range = IDBKeyRange.upperBound(expiryThreshold)
+		const range = IDBKeyRange.upperBound(expiryThreshold) // 查找所有时间戳小于 expiryThreshold 的记录
 
+		// 1. 获取所有过期 URL
 		await new Promise((resolve, reject) => {
 			const cursorRequest = index.openCursor(range)
 
@@ -115,10 +123,10 @@ async function cleanupExpiredCache() {
 						urlsToDelete.push(cursor.value.url)
 					else
 						console.warn('[SW Cleanup] Found record without URL in cursor, skipping deletion:', cursor.value)
-
 					cursor.continue()
-				} else
-					resolve()
+				}
+				else
+					resolve() // 所有过期项已收集
 			}
 			cursorRequest.onerror = event => {
 				console.error('[SW Cleanup] Error iterating expired items:', event.target.error)
@@ -127,7 +135,8 @@ async function cleanupExpiredCache() {
 		})
 
 		if (urlsToDelete.length === 0) {
-			// Ensure transaction closes even if no deletions
+			console.log('[SW Cleanup] No expired items found.')
+			// 即使没有需要删除的项，也要确保事务完成，否则会一直挂起
 			await new Promise((resolve, reject) => {
 				transaction.oncomplete = resolve
 				transaction.onerror = (event) => {
@@ -147,6 +156,7 @@ async function cleanupExpiredCache() {
 		let deletedFromCacheCount = 0
 		let deletedMetadataCount = 0
 
+		// 2. 遍历 URLsToDelete，从 Cache 和 IndexedDB 中删除
 		for (const url of urlsToDelete) {
 			let cacheDeleted = false
 			try {
@@ -154,9 +164,9 @@ async function cleanupExpiredCache() {
 				if (!cacheDeleted)
 					console.warn(`[SW Cleanup] Item not found in cache for ${url}, attempting metadata deletion anyway.`)
 
-
+				// 在同一个事务中删除 IndexedDB 元数据
 				await new Promise((resolve, reject) => {
-					const deleteRequest = store.delete(url) // store is already part of the transaction
+					const deleteRequest = store.delete(url)
 					deleteRequest.onsuccess = () => {
 						if (cacheDeleted) deletedFromCacheCount++
 						deletedMetadataCount++
@@ -164,7 +174,7 @@ async function cleanupExpiredCache() {
 					}
 					deleteRequest.onerror = e => {
 						console.error(`[SW Cleanup] Failed to delete metadata for ${url}:`, e.target.error)
-						reject(e.target.error)
+						reject(e.target.error) // 即使一个失败，也记录，但继续尝试删除其他
 					}
 				})
 			} catch (err) {
@@ -172,7 +182,7 @@ async function cleanupExpiredCache() {
 			}
 		}
 
-		// Wait for the entire transaction to complete
+		// 3. 等待整个事务完成
 		await new Promise((resolve, reject) => {
 			transaction.oncomplete = () => {
 				console.log(`[SW Cleanup] Cleanup complete. Deleted ${deletedFromCacheCount} from cache, ${deletedMetadataCount} metadata entries for ${urlsToDelete.length} URLs.`)
@@ -188,100 +198,199 @@ async function cleanupExpiredCache() {
 			}
 		})
 	} catch (error) {
-		console.error('[SW Cleanup] Cache cleanup process failed:', error)
+		console.error('[SW Cleanup] Cache cleanup process failed overall:', error)
 	} finally {
-		cleanupTimeout = undefined
+		cleanupTimeout = undefined // 无论成功失败，清除定时器ID
 	}
 }
+
+/**
+ * 缓存优先策略：尝试从缓存获取，同时发起网络请求更新缓存。
+ * 如果缓存存在，立即返回缓存。如果不存在，则等待网络响应。
+ * @param {Request} request 请求对象
+ * @returns {Promise<Response>} 响应 Promise
+ */
+async function handleCacheFirst(request) {
+	const { url } = request
+	const cache = await caches.open(CACHE_NAME)
+	const cachedResponse = await cache.match(request)
+
+	// 在后台立即发起网络请求并更新缓存
+	const backgroundUpdatePromise = (async () => {
+		try {
+			const networkResponse = await fetch(request)
+			const now = Date.now()
+
+			if (networkResponse && networkResponse.ok && networkResponse.type !== 'opaque') {
+				const responseToCache = networkResponse.clone()
+				const finalUrl = networkResponse.url // 处理重定向后的最终URL
+
+				await cache.put(finalUrl, responseToCache)
+				await updateTimestamp(finalUrl, now)
+				console.log(`[SW ${CACHE_NAME}] Background cached and updated timestamp for ${finalUrl} (cache-first strategy).`)
+
+				// 触发清理任务
+				if (cleanupTimeout) clearTimeout(cleanupTimeout)
+				cleanupTimeout = setTimeout(cleanupExpiredCache, 1000)
+				return networkResponse // 返回原始网络响应
+			} else if (networkResponse && networkResponse.type === 'opaque')
+				console.log(`[SW ${CACHE_NAME}] Opaque response for: ${url} (cache-first). Not caching in background.`)
+			else if (networkResponse)
+				console.warn(`[SW ${CACHE_NAME}] Network responded with status ${networkResponse.status} for: ${url} (cache-first). Not caching in background.`)
+
+			return networkResponse // 即使不缓存，也返回网络响应（如果有的话）
+		} catch (error) {
+			console.warn(`[SW ${CACHE_NAME}] Background network fetch failed for ${url} (cache-first strategy):`, error)
+			return null // 表示网络请求失败
+		}
+	})()
+
+	// 如果有缓存，立即返回缓存响应
+	if (cachedResponse) {
+		console.log(`[SW ${CACHE_NAME}] Serving ${url} from cache (cache-first strategy), updating in background.`)
+		return cachedResponse
+	}
+
+	// 如果没有缓存，则等待后台的网络请求完成
+	console.log(`[SW ${CACHE_NAME}] No cache for ${url}, waiting for network (cache-first strategy).`)
+	const networkResponse = await backgroundUpdatePromise // 等待后台的 Promise
+	if (networkResponse)
+		return networkResponse
+
+	// 如果缓存和网络都失败了
+	console.warn(`[SW ${CACHE_NAME}] Cache miss and network failed for ${url} (cache-first strategy).`)
+	// 抛出错误，以便浏览器显示默认错误页面
+	throw new Error(`Failed to fetch ${url} from both cache and network.`)
+}
+
+/**
+ * 网络优先策略：尝试从网络获取，网络失败则回退到缓存。
+ * @param {Request} request 请求对象
+ * @returns {Promise<Response>} 响应 Promise
+ */
+async function handleNetworkFirst(request) {
+	const { url } = request
+	try {
+		// 1. 尝试从网络获取
+		const networkResponse = await fetch(request)
+		const now = Date.now()
+
+		// 2. 如果网络请求成功且可缓存，则缓存并返回网络响应
+		if (networkResponse && networkResponse.ok && networkResponse.type !== 'opaque') {
+			const cache = await caches.open(CACHE_NAME)
+			const responseToCache = networkResponse.clone() // 克隆响应以便缓存
+			const finalUrl = networkResponse.url // 处理重定向后的最终URL
+
+			// 异步缓存并更新元数据，不阻塞主线程返回响应
+			cache.put(finalUrl, responseToCache)
+				.then(() => updateTimestamp(finalUrl, now))
+				.then(() => {
+					// 只有成功缓存和更新时间戳后才考虑触发清理
+					if (cleanupTimeout) clearTimeout(cleanupTimeout)
+					cleanupTimeout = setTimeout(cleanupExpiredCache, 1000) // 延迟1秒执行清理
+				})
+				.catch(err => {
+					console.error(`[SW ${CACHE_NAME}] Failed to cache ${finalUrl} (network-first):`, err)
+				})
+		}
+		// Opaque 响应不能被检查，默认不缓存。直接返回网络响应。
+		else if (networkResponse && networkResponse.type === 'opaque')
+			console.log(`[SW ${CACHE_NAME}] Opaque response for: ${url} (network-first). Not caching, returning network response.`)
+
+		// 网络响应非 OK (例如 404, 500)。不缓存，但返回网络响应。
+		else if (networkResponse)
+			console.warn(`[SW ${CACHE_NAME}] Network responded with status ${networkResponse.status} for: ${url} (network-first). Not caching, returning network response.`)
+
+
+		// 返回网络响应（无论是成功、失败或不透明）
+		return networkResponse
+	} catch (error) {
+		// 3. 如果网络请求失败（例如离线），尝试从缓存中提供
+		console.warn(`[SW ${CACHE_NAME}] Network fetch failed for: ${url} (network-first). Attempting to serve from cache. Error:`, error)
+
+		const cache = await caches.open(CACHE_NAME)
+		const cachedResponse = await cache.match(request)
+
+		if (cachedResponse) {
+			console.log(`[SW ${CACHE_NAME}] Serving from cache for: ${url}`)
+			// 可选：如果希望在从缓存提供服务时也更新时间戳，可在此处调用 updateTimestamp
+			// await updateTimestamp(cachedResponse.url || url, Date.now());
+			return cachedResponse
+		}
+
+		// 4. 如果缓存中也没有，则重新抛出网络错误，让浏览器处理
+		console.warn(`[SW ${CACHE_NAME}] Cache miss for: ${url} after network failure (network-first). Propagating error.`)
+		throw error
+	}
+}
+
 
 // --- Service Worker Event Listeners ---
 
 self.addEventListener('install', event => {
+	console.log(`[SW ${CACHE_NAME}] Installing...`)
 	event.waitUntil(
-		caches.open(CACHE_NAME).catch(error => {
-			console.error(`[SW ${CACHE_NAME}] Failed to open cache during install:`, error)
-		})
+		caches.open(CACHE_NAME)
+			.then(cache => {
+				console.log(`[SW ${CACHE_NAME}] Cache opened during install.`)
+			})
+			.catch(error => {
+				console.error(`[SW ${CACHE_NAME}] Failed to open cache during install:`, error)
+			})
 	)
+	self.skipWaiting() // 强制新的 Service Worker 立即激活
 })
 
 self.addEventListener('activate', event => {
+	console.log(`[SW ${CACHE_NAME}] Activating...`)
 	event.waitUntil(
 		Promise.all([
-			self.clients.claim(),
-			cleanupExpiredCache()
-		]).catch(error => {
+			self.clients.claim(), // 立即控制所有客户端
+			cleanupExpiredCache() // 激活时执行一次清理
+		]).then(() => {
+			console.log(`[SW ${CACHE_NAME}] Activation complete and initial cleanup performed.`)
+		}).catch(error => {
 			console.error(`[SW ${CACHE_NAME}] Activation failed:`, error)
 		})
 	)
 })
 
-// --- MODIFIED FETCH HANDLER ---
 self.addEventListener('fetch', event => {
-	if (event.request.method !== 'GET') return
+	// 忽略非 GET 请求
+	if (event.request.method !== 'GET') {
+		console.debug(`[SW ${CACHE_NAME}] Skipping non-GET request: ${event.request.method} ${event.request.url}`)
+		return // 交给浏览器处理
+	}
 
 	const requestUrl = new URL(event.request.url)
 	const { protocol, pathname, href: url } = requestUrl
 
-	// Skip non-http/https requests and API calls (or any other paths you want to exclude)
-	if (!protocol.startsWith('http') || pathname.startsWith('/api/') || pathname.startsWith('/ws/'))
-		return // Let the browser handle it, or network pass-through
+	// 忽略非 HTTP/HTTPS 请求
+	if (!protocol.startsWith('http')) {
+		console.debug(`[SW ${CACHE_NAME}] Skipping non-HTTP(S) request: ${url}`)
+		return // 交给浏览器处理
+	}
 
-	event.respondWith(
-		(async () => {
-			try {
-				// 1. Try to fetch from the network first
-				const networkResponse = await fetch(event.request)
-				const now = Date.now()
+	// 忽略特定路径，例如 API 调用或 WebSocket 连接
+	if (pathname.startsWith('/api/') || pathname.startsWith('/ws/')) {
+		console.debug(`[SW ${CACHE_NAME}] Skipping API/WS request: ${url}`)
+		return // 交给浏览器处理（通常这些不应该被缓存）
+	}
 
-				// 2. If network request is successful and cacheable,
-				//    cache it and return the network response.
-				if (networkResponse && networkResponse.ok && networkResponse.type !== 'opaque') {
-					const cache = await caches.open(CACHE_NAME)
-					const responseToCache = networkResponse.clone() // Clone for caching
-					const finalUrl = networkResponse.url // Use final URL to handle redirects
+	// 判断是否为同源请求
+	const isSameOrigin = url.startsWith(self.location.origin)
+	// 判断 URL 中是否包含单词 'api' (不区分大小写，使用单词边界确保不是 'happy' 中的 'api')
+	const containsApiWord = /\bapi\b/i.test(url)
 
-					// Asynchronously cache and update metadata.
-					// Don't await these, so the response to the page is not delayed.
-					cache.put(finalUrl, responseToCache)
-						.then(() => updateTimestamp(finalUrl, now))
-						.then(() => {
-							if (cleanupTimeout) clearTimeout(cleanupTimeout)
-							cleanupTimeout = setTimeout(cleanupExpiredCache, 1000)
-						})
-						.catch(err => {
-							console.error(`[SW ${CACHE_NAME}] Failed to cache ${finalUrl}:`, err)
-						})
-				}
-				else if (networkResponse && networkResponse.type === 'opaque')
-					// Opaque responses cannot be inspected, so we don't cache them by default.
-					// Still, it's a "fetch result", so we return it.
-					console.log(`[SW ${CACHE_NAME}] Opaque response for: ${url}. Not caching, returning network response.`)
-				else if (networkResponse)
-					// Network responded, but not with an 'ok' status (e.g., 404, 500).
-					// This is still a "fetch result".
-					console.warn(`[SW ${CACHE_NAME}] Network responded with status ${networkResponse.status} for: ${url}. Not caching, returning network response.`)
-
-				// Return the network response (good, bad, or opaque)
-				return networkResponse
-			} catch (error) {
-				// 3. If network fetch fails (e.g., offline), try to serve from cache.
-				console.warn(`[SW ${CACHE_NAME}] Network fetch failed for: ${url}. Attempting to serve from cache. Error:`, error)
-
-				const cache = await caches.open(CACHE_NAME)
-				const cachedResponse = await cache.match(event.request)
-
-				if (cachedResponse) {
-					console.log(`[SW ${CACHE_NAME}] Serving from cache for: ${url}`)
-					// Optional: If you want to update the timestamp even when serving from cache after network failure
-					// await updateTimestamp(cachedResponse.url || url, Date.now());
-					return cachedResponse
-				}
-
-				// 4. If not in cache either, re-throw the network error.
-				// This will result in the browser's default network error page.
-				console.warn(`[SW ${CACHE_NAME}] Cache miss for: ${url} after network failure. Propagating error.`)
-				throw error
-			}
-		})()
-	)
+	// 根据条件应用不同的策略
+	if (!isSameOrigin && !containsApiWord) {
+		// 非本站且 URL 中不含 \bapi\b，使用缓存优先策略
+		console.log(`[SW ${CACHE_NAME}] Applying Cache-First strategy for: ${url}`)
+		event.respondWith(handleCacheFirst(event.request))
+	}
+	else {
+		// 其他情况（本站请求、非本站但含 \bapi\b），使用网络优先策略
+		console.log(`[SW ${CACHE_NAME}] Applying Network-First strategy for: ${url}`)
+		event.respondWith(handleNetworkFirst(event.request))
+	}
 })

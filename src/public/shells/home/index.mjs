@@ -11,6 +11,8 @@ import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
 import { svgInliner } from '../../scripts/svg-inliner.mjs'
 import { setDefaultPart, getHomeRegistry, getDefaultParts } from './src/public/endpoints.mjs'
 
+localStorage.setItem('visited_home', '1')
+
 const charContainer = document.getElementById('char-container')
 const worldContainer = document.getElementById('world-container')
 const personaContainer = document.getElementById('persona-container')
