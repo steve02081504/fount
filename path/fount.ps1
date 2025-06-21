@@ -31,11 +31,11 @@ if (!$auto_installed_pwsh_modules) { $auto_installed_pwsh_modules = '' }
 $auto_installed_pwsh_modules = $auto_installed_pwsh_modules.Split(';') | Where-Object { $_ }
 
 function Test-PWSHModule([string]$ModuleName) {
-	Get-PackageProvider -Name "NuGet" -Force | Out-Null
 	if (!(Get-Module $ModuleName -ListAvailable)) {
 		$auto_installed_pwsh_modules += $ModuleName
 		New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
 		Set-Content "$FOUNT_DIR/data/installer/auto_installed_pwsh_modules" $($auto_installed_pwsh_modules -join ';')
+		Get-PackageProvider -Name "NuGet" -Force | Out-Null
 		Install-Module -Name $ModuleName -Scope CurrentUser -Force
 	}
 }
@@ -46,13 +46,7 @@ if ($args.Count -gt 0 -and $args[0] -eq 'open') {
 		fount @runargs
 		exit
 	}
-	Test-PWSHModule fount-pwsh
-	Start-Job -ScriptBlock {
-		while (-not (Test-FountRunning)) {
-			Start-Sleep -Seconds 1
-		}
-		Start-Process 'https://steve02081504.github.io/fount/protocol'
-	}
+	Start-Process 'https://steve02081504.github.io/fount/wait'
 	$runargs = $args[1..$args.Count]
 	fount @runargs
 	exit
@@ -115,6 +109,7 @@ Start-Job -ScriptBlock {
 				New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
 				Set-Content "$FOUNT_DIR/data/installer/auto_installed_pwsh_modules" $($auto_installed_pwsh_modules -join ';')
 			}
+			Get-PackageProvider -Name "NuGet" -Force | Out-Null
 			Install-Module -Name $_ -Scope CurrentUser -Force
 		}
 	}
