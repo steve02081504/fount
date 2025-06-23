@@ -3,6 +3,7 @@ const DB_NAME = 'service-worker-cache-metadata'
 const STORE_NAME = 'timestamps'
 const EXPIRY_DAYS = 13 // 缓存过期天数
 const EXPIRY_MS = EXPIRY_DAYS * 24 * 60 * 60 * 1000 // 13 天对应的毫秒数
+const BACKGROUND_FETCH_THROTTLE_MS = 24 * 60 * 60 * 1000 // 背景请求节流时间，例如每天一次
 
 let dbPromise = null // 用于缓存 IndexedDB 连接
 let cleanupTimeout // 清理任务的定时器
@@ -93,6 +94,33 @@ async function updateTimestamp(url, timestamp) {
 		})
 	} catch (error) {
 		console.error(`[SW DB] Failed to update timestamp for ${url}:`, error)
+	}
+}
+
+/**
+ * 获取指定 URL 的时间戳。
+ * @param {string} url 资源 URL
+ * @returns {Promise<number | null>} 时间戳或 null（如果不存在）
+ */
+async function getTimestamp(url) {
+	try {
+		const db = await openMetadataDB()
+		const transaction = db.transaction(STORE_NAME, 'readonly')
+		const store = transaction.objectStore(STORE_NAME)
+		const request = store.get(url)
+
+		return new Promise((resolve, reject) => {
+			request.onsuccess = () => {
+				resolve(request.result ? request.result.timestamp : null)
+			}
+			request.onerror = () => {
+				console.error(`[SW DB] Error getting timestamp for ${url}:`, request.error)
+				reject(request.error)
+			}
+		})
+	} catch (error) {
+		console.error(`[SW DB] Failed to get timestamp for ${url}:`, error)
+		return null
 	}
 }
 
@@ -207,6 +235,8 @@ async function cleanupExpiredCache() {
 /**
  * 缓存优先策略：尝试从缓存获取，同时发起网络请求更新缓存。
  * 如果缓存存在，立即返回缓存。如果不存在，则等待网络响应。
+ * 在 BACKGROUND_FETCH_THROTTLE_MS 时间内不反复发起背景网络请求。
+ *
  * @param {Request} request 请求对象
  * @returns {Promise<Response>} 响应 Promise
  */
@@ -214,51 +244,69 @@ async function handleCacheFirst(request) {
 	const { url } = request
 	const cache = await caches.open(CACHE_NAME)
 	const cachedResponse = await cache.match(request)
+	const now = Date.now()
 
-	// 在后台立即发起网络请求并更新缓存
-	const backgroundUpdatePromise = (async () => {
-		try {
-			const networkResponse = await fetch(request)
-			const now = Date.now()
+	// 标记是否需要发起背景网络请求
+	let shouldFetchInBackground = true
+	const storedTimestamp = await getTimestamp(url) // 获取该 URL 最后一次更新的时间戳
 
-			if (networkResponse && networkResponse.ok && networkResponse.type !== 'opaque') {
-				const responseToCache = networkResponse.clone()
-				const finalUrl = networkResponse.url // 处理重定向后的最终URL
-
-				await cache.put(finalUrl, responseToCache)
-				await updateTimestamp(finalUrl, now)
-				console.log(`[SW ${CACHE_NAME}] Background cached and updated timestamp for ${finalUrl} (cache-first strategy).`)
-
-				// 触发清理任务
-				if (cleanupTimeout) clearTimeout(cleanupTimeout)
-				cleanupTimeout = setTimeout(cleanupExpiredCache, 1000)
-				return networkResponse // 返回原始网络响应
-			} else if (networkResponse && networkResponse.type === 'opaque')
-				console.log(`[SW ${CACHE_NAME}] Opaque response for: ${url} (cache-first). Not caching in background.`)
-			else if (networkResponse)
-				console.warn(`[SW ${CACHE_NAME}] Network responded with status ${networkResponse.status} for: ${url} (cache-first). Not caching in background.`)
-
-			return networkResponse // 即使不缓存，也返回网络响应（如果有的话）
-		} catch (error) {
-			console.warn(`[SW ${CACHE_NAME}] Background network fetch failed for ${url} (cache-first strategy):`, error)
-			return null // 表示网络请求失败
+	if (storedTimestamp) {
+		const timeSinceLastFetch = now - storedTimestamp
+		if (timeSinceLastFetch < BACKGROUND_FETCH_THROTTLE_MS) {
+			shouldFetchInBackground = false
+			console.log(`[SW ${CACHE_NAME}] Throttling background fetch for ${url}. Last fetch was ${Math.round(timeSinceLastFetch / 1000)}s ago.`)
 		}
-	})()
+	}
+
+	// 初始化一个 Promise，如果不需要背景请求，它会立即解决为 null
+	let backgroundUpdatePromise = Promise.resolve(null)
+
+	if (shouldFetchInBackground)
+		backgroundUpdatePromise = (async () => {
+			try {
+				const networkResponse = await fetch(request)
+				const nowAfterFetch = Date.now() // 确保使用最新的时间戳
+
+				if (networkResponse && networkResponse.ok && networkResponse.type !== 'opaque') {
+					const responseToCache = networkResponse.clone()
+					const finalUrl = networkResponse.url // 处理重定向后的最终URL
+
+					await cache.put(finalUrl, responseToCache)
+					await updateTimestamp(finalUrl, nowAfterFetch) // 更新为本次成功获取的时间
+					console.log(`[SW ${CACHE_NAME}] Background cached and updated timestamp for ${finalUrl} (cache-first strategy).`)
+
+					// 触发清理任务
+					if (cleanupTimeout) clearTimeout(cleanupTimeout)
+					cleanupTimeout = setTimeout(cleanupExpiredCache, 1000) // 延迟执行清理
+					return networkResponse // 返回原始网络响应
+				} else if (networkResponse && networkResponse.type === 'opaque')
+					console.log(`[SW ${CACHE_NAME}] Opaque response for: ${url} (cache-first). Not caching in background.`)
+				 else if (networkResponse)
+					console.warn(`[SW ${CACHE_NAME}] Network responded with status ${networkResponse.status} for: ${url} (cache-first). Not caching in background.`)
+
+				return networkResponse // 即使不缓存，也返回网络响应（如果有的话）
+			} catch (error) {
+				console.warn(`[SW ${CACHE_NAME}] Background network fetch failed for ${url} (cache-first strategy):`, error)
+				return null // 表示网络请求失败
+			}
+		})()
 
 	// 如果有缓存，立即返回缓存响应
 	if (cachedResponse) {
-		console.log(`[SW ${CACHE_NAME}] Serving ${url} from cache (cache-first strategy), updating in background.`)
+		console.log(`[SW ${CACHE_NAME}] Serving ${url} from cache (cache-first strategy).`)
+		// 无论是否触发了背景更新，都会立即返回缓存响应
 		return cachedResponse
 	}
 
-	// 如果没有缓存，则等待后台的网络请求完成
+	// 如果没有缓存，则等待背景的网络请求完成（或被节流的 promise 解决为 null）
 	console.log(`[SW ${CACHE_NAME}] No cache for ${url}, waiting for network (cache-first strategy).`)
-	const networkResponse = await backgroundUpdatePromise // 等待后台的 Promise
+	const networkResponse = await backgroundUpdatePromise // 等待背景的 Promise
+
 	if (networkResponse)
 		return networkResponse
 
-	// 如果缓存和网络都失败了
-	console.warn(`[SW ${CACHE_NAME}] Cache miss and network failed for ${url} (cache-first strategy).`)
+	// 如果缓存和网络都失败了（或者网络被节流但没有缓存）
+	console.warn(`[SW ${CACHE_NAME}] Cache miss and network failed (or throttled without cache) for ${url} (cache-first strategy).`)
 	// 抛出错误，以便浏览器显示默认错误页面
 	throw new Error(`Failed to fetch ${url} from both cache and network.`)
 }
@@ -377,19 +425,17 @@ self.addEventListener('fetch', event => {
 		return // 交给浏览器处理（通常这些不应该被缓存）
 	}
 
-	// 判断是否为同源请求
-	const isSameOrigin = url.startsWith(self.location.origin)
-	// 判断 URL 中是否包含单词 'api' (不区分大小写，使用单词边界确保不是 'happy' 中的 'api')
-	const containsApiWord = /\bapi\b/i.test(url)
-
 	// 根据条件应用不同的策略
-	if (!isSameOrigin && !containsApiWord) {
-		// 非本站且 URL 中不含 \bapi\b，使用缓存优先策略
+	if (!url.startsWith(self.location.origin) && !(
+		/\bapi\b/i.test(url) &&
+		!/\.(svg|html|mjs|js|css|jpg|png|gif|webp|bmp|mp3|mp4|ogg|wav|webm)$/i.test(url)
+	)) {
+		// 非本站且不是 API 调用，使用缓存优先策略
 		console.log(`[SW ${CACHE_NAME}] Applying Cache-First strategy for: ${url}`)
 		event.respondWith(handleCacheFirst(event.request))
 	}
 	else {
-		// 其他情况（本站请求、非本站但含 \bapi\b），使用网络优先策略
+		// 其他情况，使用网络优先策略
 		console.log(`[SW ${CACHE_NAME}] Applying Network-First strategy for: ${url}`)
 		event.respondWith(handleNetworkFirst(event.request))
 	}
