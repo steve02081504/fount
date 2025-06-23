@@ -1,5 +1,5 @@
+import { escapeRegExp } from '../../../scripts/escape.mjs'
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
-import { escapeRegExp } from '../../../../src/scripts/escape.mjs'
 import { NotDiamond } from './notdiamond.mjs'
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
@@ -70,9 +70,17 @@ async function GetSource(config) {
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
 			const messages = []
 			margeStructPromptChatLog(prompt_struct).forEach((chatLogEntry) => {
+				const uid = Math.random().toString(36).slice(2, 10)
 				messages.push({
 					role: chatLogEntry.role === 'user' ? 'user' : chatLogEntry.role === 'system' ? 'system' : 'assistant',
-					content: chatLogEntry.name + ':\n' + chatLogEntry.content
+					content: `\
+<message "${uid}">
+<sender>${chatLogEntry.name}</sender>
+<content>
+${chatLogEntry.content}
+</content>
+</message "${uid}">
+`
 				})
 			})
 
@@ -93,25 +101,19 @@ async function GetSource(config) {
 
 			let text = await callBase(messages)
 
-			{
-				text = text.split('\n')
-				const base_reg = `^((|${[...new Set([
-					prompt_struct.Charname,
-					...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name),
-				])].filter(Boolean).map(escapeRegExp).concat([
-					...(prompt_struct.alternative_charnames || []).map(Object).map(
-						(stringOrReg) => {
-							if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
-							return stringOrReg.source
-						}
-					),
-				].filter(Boolean)).join('|')})[^\\n：:\<\>\\d\`]*)(:|：)\\s*(?!\/)`
-				let reg = new RegExp(`${base_reg}$`, 'i')
-				while (text[0].trim().match(reg)) text.shift()
-				reg = new RegExp(`${base_reg}`, 'i')
-				text[0] = text[0].replace(reg, '')
-				text = text.join('\n')
-			}
+			if (text.match(/<\/sender>\s*<content>/))
+				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1].split(new RegExp(
+					`(${
+						(prompt_struct.alternative_charnames || []).map(Object).map(
+							(stringOrReg) => {
+								if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
+								return stringOrReg.source
+							}
+						).join('|')
+					})\\s*<\\/sender>\\s*<content>`
+				)).pop().split(/<\/content>\s*<\/message/).shift()
+			if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
+				text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
 
 			return {
 				content: text,

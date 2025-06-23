@@ -566,9 +566,13 @@ if [[ $# -gt 0 ]]; then
 	case "$1" in
 	open)
 		ensure_dependencies "open" || exit 1
-		export TARGET_URL='https://steve02081504.github.io/fount/protocol'
-		nohup bash -c "$BACKGROUND_IPC_JOB" >/dev/null 2>&1 &
-		"$0" "${@:2}" # 运行 fount 主进程
+		local TARGET_URL='https://steve02081504.github.io/fount/wait'
+		if [ "$OS_TYPE" = "Linux" ]; then
+			xdg-open "$TARGET_URL" >/dev/null 2>&1
+		elif [ "$OS_TYPE" = "Darwin" ]; then
+			open "$TARGET_URL" >/dev/null 2>&1
+		fi
+		"$0" "${@:2}"
 		exit $?
 		;;
 	background)
@@ -867,7 +871,12 @@ remove)
 	# 5. 移除 fount 安装目录
 	echo "Removing fount installation directory: $FOUNT_DIR"
 	rm -rf "$FOUNT_DIR"
-
+	# 进一步ls和删除$FOUNT_DIR的父目录直到其不为空
+	parent_dir=$(dirname "$FOUNT_DIR")
+	while rmdir "$parent_dir" 2>/dev/null; do
+		echo "Removed empty parent directory: $parent_dir"
+		parent_dir=$(dirname "$parent_dir")
+	done
 	echo "Fount uninstallation complete."
 	exit 0
 	;;

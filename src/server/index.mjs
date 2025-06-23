@@ -26,7 +26,7 @@ const fount_config = {
 	data_path: __dirname + '/data',
 }
 
-let command
+let command_obj
 
 if (args.length) {
 	const command = args[0]
@@ -38,13 +38,13 @@ if (args.length) {
 		const partname = args[2]
 		args = args.slice(3)
 
-		command = {
+		command_obj = {
 			type: 'runpart',
 			data: { username, parttype, partname, args },
 		}
 	}
 	else if (command === 'shutdown')
-		command = {
+		command_obj = {
 			type: 'shutdown',
 		}
 	else {
@@ -55,10 +55,10 @@ if (args.length) {
 
 const okey = await init(fount_config)
 
-if (command) try {
+if (command_obj) try {
 	if (!fount_config.starts.IPC) throw new Error('cannot send command when IPC not enabled')
 	const { IPCManager } = await import('./ipc_server.mjs')
-	await IPCManager.sendCommand(fount_config.command.type, fount_config.command.data)
+	await IPCManager.sendCommand(command_obj.type, command_obj.data)
 } catch (err) {
 	console.error(await geti18n('fountConsole.ipc.sendCommandFailed', { error: err }))
 	process.exit(1)

@@ -26,7 +26,7 @@ function extractIpAndPortFromUrl(urlString) {
 }
 
 // 测试 Fount 服务是否可用
-async function isFountServiceAvailable(host) {
+export async function isFountServiceAvailable(host) {
 	try {
 		const url = new URL('/api/ping', host)
 		const response = await fetch(url, { method: 'GET', mode: 'cors', signal: AbortSignal.timeout(500) })
@@ -125,8 +125,12 @@ async function mappingFountHostUrl(hostUrl) {
 	return hostUrl // 即使找不到也返回原始值
 }
 
+export function saveFountHostUrl(hostUrl) {
+	localStorage.setItem('fountHostUrl', hostUrl)
+}
+
 export async function getFountHostUrl(hostUrl = urlParams.get('hostUrl') ?? localStorage.getItem('fountHostUrl')) {
 	const result = await mappingFountHostUrl(hostUrl)
-	localStorage.setItem('fountHostUrl', result)
+	saveFountHostUrl(result)
 	return result
 }
