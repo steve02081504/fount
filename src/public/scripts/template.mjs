@@ -3,47 +3,33 @@ import { svgInliner } from './svg-inliner.mjs'
 geti18n
 
 const template_cache = {}
-const parser = new DOMParser()
 
 /**
- * 从 HTML 字符串安全地创建 DOM 元素（包括执行 <script> 标签），返回 DocumentFragment。
+ * 从 HTML 字符串安全地创建 DOM 元素（包括执行 <script> 标签和使得 <link> 标签生效），返回 DocumentFragment。
  *
  * @param {string} htmlString 包含 HTML 代码的字符串。
  * @returns {DocumentFragment} 渲染好的 DocumentFragment。
  */
 export function createDocumentFragmentFromHtmlString(htmlString) {
-	if (!htmlString.trim()) return document.createDocumentFragment()
+	if (!htmlString || !htmlString.trim()) return document.createDocumentFragment()
 
-	const doc = parser.parseFromString(htmlString, 'text/html')
+	const template = document.createElement('template')
+	template.innerHTML = htmlString
+	const fragment = template.content
 
-	// 递归创建元素并添加到父节点
-	function createElementFromNode(node, parent) {
-		if (node.nodeType === Node.TEXT_NODE)
-			parent.appendChild(document.createTextNode(node.textContent))
-		else if (node.nodeType === Node.ELEMENT_NODE) {
-			const element = document.createElement(node.nodeName)
-			for (const attr of node.attributes)
-				element.setAttribute(attr.name, attr.value)
-
-
-			if (node.nodeName.toLowerCase() === 'script') {
-				if (node.src)
-					element.src = node.src
-				else
-					element.text = node.textContent
-
-				element.async = false
-				parent.appendChild(element)
-			} else {
-				parent.appendChild(element)
-				for (const childNode of node.childNodes)
-					createElementFromNode(childNode, element)
-			}
-		}
-	}
-	const fragment = document.createDocumentFragment()
-	for (const childNode of doc.body.childNodes)
-		createElementFromNode(childNode, fragment)
+	fragment.querySelectorAll('script').forEach(oldScript => {
+		const newScript = document.createElement('script')
+		for (const attr of oldScript.attributes)
+			newScript.setAttribute(attr.name, attr.value)
+		if (oldScript.textContent) newScript.text = oldScript.textContent
+		oldScript.parentNode.replaceChild(newScript, oldScript)
+	})
+	fragment.querySelectorAll('link').forEach(oldLink => {
+		const newLink = document.createElement('link')
+		for (const attr of oldLink.attributes)
+			newLink.setAttribute(attr.name, attr.value)
+		oldLink.parentNode.replaceChild(newLink, oldLink)
+	})
 
 	return fragment
 }

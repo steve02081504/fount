@@ -1,7 +1,6 @@
 import open from 'npm:open'
 import { hosturl } from '../../../server/server.mjs'
-import { addchar, newChat, setPersona, setWorld } from './src/server/chat.mjs'
-import { loadChat } from './src/server/chat.mjs'
+import { loadChat, addchar, newChat, setPersona, setWorld } from './src/server/chat.mjs'
 import { setEndpoints } from './src/server/endpoints.mjs'
 import { cleanFilesInterval } from './src/server/files.mjs'
 

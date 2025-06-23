@@ -26,28 +26,12 @@ $auto_installed_pwsh_modules = $auto_installed_pwsh_modules.Split(';') | Where-O
 
 # 函数: 检查并安装 PowerShell 模块，并记录自动安装的模块
 function Test-PWSHModule([string]$ModuleName) {
-	# 确保 NuGet Provider 已安装
-	Get-PackageProvider -Name "NuGet" -Force | Out-Null
 	if (!(Get-Module $ModuleName -ListAvailable)) {
-		Write-Host "PowerShell module '$ModuleName' not found, attempting to install..."
-		# 确保安装器数据目录存在
-		New-Item -Path $INSTALLER_DATA_DIR -ItemType Directory -Force | Out-Null
-
-		# 尝试安装模块
-		try {
-			Install-Module -Name $ModuleName -Scope CurrentUser -Force -ErrorAction Stop
-			# 如果安装成功，添加到跟踪列表并保存
-			if ($auto_installed_pwsh_modules -notcontains $ModuleName) {
-				$auto_installed_pwsh_modules += $ModuleName
-				Set-Content $AUTO_INSTALLED_PWSH_MODULES_FILE ($auto_installed_pwsh_modules -join ';')
-				Write-Host "PowerShell module '$ModuleName' installed and tracked."
-			}
-		}
-		catch {
-			Write-Warning "Failed to install PowerShell module '$ModuleName': $($_.Exception.Message)"
-			# 如果安装失败，不添加到跟踪列表
-			return $false
-		}
+		$auto_installed_pwsh_modules += $ModuleName
+		New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
+		Set-Content "$FOUNT_DIR/data/installer/auto_installed_pwsh_modules" $($auto_installed_pwsh_modules -join ';')
+		Get-PackageProvider -Name "NuGet" -Force | Out-Null
+		Install-Module -Name $ModuleName -Scope CurrentUser -Force
 	}
 	return $true
 }
@@ -63,58 +47,7 @@ if ($args.Count -gt 0 -and $args[0] -eq 'open') {
 		fount @runargs
 		exit
 	}
-	# 确保 fount-pwsh 模块已安装，该模块包含 Test-FountRunning 函数
-	Test-PWSHModule fount-pwsh | Out-Null
-
-	# 在后台启动一个 Job，等待 fount 服务运行，然后打开网页
-	Start-Job -ScriptBlock {
-		# 内部函数定义，确保在 Job 进程中可用
-		function Test-FountRunningInternal {
-			try {
-				# 尝试通过 IPC 端口 ping fount 服务
-				$socket = New-Object System.Net.Sockets.TcpClient
-				$socket.Connect("localhost", 16698)
-				$stream = $socket.GetStream()
-				$writer = New-Object System.IO.StreamWriter($stream)
-				$reader = New-Object System.IO.StreamReader($stream)
-
-				$writer.WriteLine('{"type":"ping","data":{}}')
-				$writer.Flush()
-
-				$response = $reader.ReadLine()
-				$jsonResponse = $response | ConvertFrom-Json
-				return ($jsonResponse.status -eq "ok")
-			}
-			catch {
-				return $false
-			}
-			finally {
-				if ($stream) { $stream.Dispose() }
-				if ($socket) { $socket.Dispose() }
-			}
-		}
-
-		$timeout_seconds = 60 # 等待超时时间
-		$elapsed_seconds = 0
-		$ping_interval = 1    # 每次 ping 间隔
-
-		Write-Host "Fount server not running, waiting..."
-		while (-not (Test-FountRunningInternal)) {
-			Start-Sleep -Seconds $ping_interval
-			$elapsed_seconds += $ping_interval
-			if ($elapsed_seconds -ge $timeout_seconds) {
-				Write-Error "Error: Fount server did not start in time. Aborting 'open' command."
-				exit 1
-			}
-		}
-		Write-Host "Fount server is running."
-
-		# 打开 fount 协议页面
-		Write-Host "Opening fount protocol URL..."
-		Start-Process 'https://steve02081504.github.io/fount/protocol'
-	} | Out-Null # 将 Job 输出重定向到 Out-Null，避免污染主脚本输出
-
-	# 将剩余参数传递给 fount 运行 (例如 'keepalive')
+	Start-Process 'https://steve02081504.github.io/fount/wait'
 	$runargs = $args[1..$args.Count]
 	fount @runargs
 	exit
@@ -225,7 +158,8 @@ Start-Job -ScriptBlock {
 
 	@('ps12exe', 'fount-pwsh') | ForEach-Object {
 		# 先获取本地模块的版本号，若是0.0.0则跳过更新（开发版本）
-		$localVersion = (Get-Module $_ -ListAvailable).Version
+		$localVersion = [System.Version]::new(0, 0, 0)
+		Get-Module $_ -ListAvailable | ForEach-Object { if ($_.Version -gt $localVersion) { $localVersion = $_.Version } }
 		if ("$localVersion" -eq '0.0.0') { return }
 		$latestVersion = (Find-Module $_).Version
 		if ("$latestVersion" -ne "$localVersion") {
@@ -233,6 +167,7 @@ Start-Job -ScriptBlock {
 			New-Item -Path $INSTALLER_DATA_DIR_JOB -ItemType Directory -Force | Out-Null
 			# 尝试安装模块
 			try {
+				Get-PackageProvider -Name "NuGet" -Force | Out-Null
 				Install-Module -Name $_ -Scope CurrentUser -Force -ErrorAction Stop
 				# 如果安装成功，添加到跟踪列表并保存
 				$auto_installed_pwsh_modules_job = Get-Content $AUTO_INSTALLED_PWSH_MODULES_FILE_JOB -Raw -ErrorAction Ignore
@@ -882,9 +817,22 @@ if ($args.Count -gt 0) {
 				Remove-Item $AUTO_INSTALLED_BUN_FLAG -ErrorAction SilentlyContinue
 			}
 
+			# Remove background runner
+			$TempDir = [System.IO.Path]::GetTempPath()
+			$exepath = Join-Path $TempDir "fount-background.exe"
+			if (Test-Path $exepath) {
+				Write-Host "Removing background runner..."
+				try { Remove-Item $exepath -Force -ErrorAction Stop } catch {}
+			}
+
 			# 11. 移除 fount 安装目录
 			Write-Host "Removing fount installation directory: $FOUNT_DIR"
-			Remove-Item -Path $FOUNT_DIR -Recurse -Force -ErrorAction SilentlyContinue
+			Remove-Item -Path $FOUNT_DIR -Recurse -Force -ErrorAction
+			# 只要父目录为空，继续删他妈的
+			$parent = Split-Path -Parent $FOUNT_DIR
+			while ((Get-ChildItem $parent -ErrorAction Ignore | Measure-Object).Count -eq 0) {
+				Remove-Item -Path $parent -Recurse -Force -ErrorAction SilentlyContinue
+			}
 			Write-Host "Fount installation directory removed."
 
 			Write-Host "Fount uninstallation complete."

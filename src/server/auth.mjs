@@ -204,26 +204,23 @@ export async function logout(req, res) {
 }
 
 /**
- * 身份验证中间件
+ * 验证请求
  * @param {object} req - Express 请求对象
  * @param {object} res - Express 响应对象
- * @param {function} next - Express next middleware 函数
+ * @returns {Promise<void>} - 只在成功时resolve
  */
-export async function authenticate(req, res, next) {
+export async function auth_request(req, res) {
+	if (req.user) return
 	const { accessToken, refreshToken } = req.cookies
 
-	const Unauthorized = (message = 'Unauthorized') => {
-		const path = encodeURIComponent(req.originalUrl)
-		if (req.accepts('html') && req.method === 'GET') return res.redirect(`/login?redirect=${path}`) // 只对GET HTML请求重定向
-		return res.status(401).json({ success: false, message })
-	}
+	const Unauthorized = (message = 'Unauthorized') => { throw message }
 
 	if (!accessToken) return Unauthorized()
 
 	if (is_local_ip_from_req(req)) {
 		const decoded = await jose.decodeJwt(accessToken)
 		req.user = config.data.users[decoded.username]
-		if (decoded && req.user) return next()
+		if (decoded && req.user) return
 	}
 
 	let decodedAccessToken = await verifyToken(accessToken)
@@ -253,7 +250,25 @@ export async function authenticate(req, res, next) {
 	}
 
 	req.user = config.data.users[decodedAccessToken.username]
-	next()
+	return
+}
+
+/**
+ * 身份验证中间件
+ * @param {object} req - Express 请求对象
+ * @param {object} res - Express 响应对象
+ * @param {function} next - Express next middleware 函数
+ */
+export async function authenticate(req, res, next) {
+	const Unauthorized = (message = 'Unauthorized') => {
+		const path = encodeURIComponent(req.originalUrl)
+		if (req.accepts('html') && req.method === 'GET') return res.redirect(`/login?redirect=${path}`) // 只对GET HTML请求重定向
+		return res.status(401).json({ success: false, message })
+	}
+
+	try { await auth_request(req, res) }
+	catch (message) { return Unauthorized(message) }
+	return next()
 }
 
 /**

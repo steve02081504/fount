@@ -4,11 +4,11 @@ import {
 	HarmBlockThreshold,
 	createPartFromUri,
 } from 'npm:@google/genai@^0.12.0'
-import { escapeRegExp } from '../../../../src/scripts/escape.mjs'
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
 import { Buffer } from 'node:buffer'
 import * as mime from 'npm:mime-types'
 import { hash as calculateHash } from 'node:crypto'
+import { escapeRegExp } from '../../../scripts/escape.mjs'
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
@@ -183,10 +183,20 @@ system:
 			if (config.disable_default_prompt) baseMessages.length = 0
 
 			const chatHistory = await Promise.all(margeStructPromptChatLog(prompt_struct).map(async (chatLogEntry) => {
+				const uid = Math.random().toString(36).slice(2, 10)
 				return {
 					role: chatLogEntry.role === 'user' || chatLogEntry.role === 'system' ? 'user' : 'model',
 					parts: [
-						{ text: chatLogEntry.name + ':\n' + chatLogEntry.content },
+						{
+							text: `\
+<message "${uid}">
+<sender>${chatLogEntry.name}</sender>
+<content>
+${chatLogEntry.content}
+</content>
+</message "${uid}">
+`
+						},
 						...await Promise.all((chatLogEntry.files || []).map(async file => {
 							const originalMimeType = file.mimeType || mime.lookup(file.name) || 'application/octet-stream'
 							let bufferToUpload = file.buffer
@@ -312,36 +322,19 @@ ${is_ImageGeneration
 				handle_parts(response.candidates?.[0]?.content?.parts)
 			}
 
-			{
-				text = text.split('\n')
-				const base_reg = `^((|${[...new Set([
-					prompt_struct.Charname,
-					...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name),
-				])].filter(Boolean).map(escapeRegExp).concat([
-					...(prompt_struct.alternative_charnames || []).map(Object).map(
-						(stringOrReg) => {
-							if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
-							return stringOrReg.source
-						}
-					),
-				].filter(Boolean)).join('|')})[^\\n：:\<\>\\d\`]*)(:|：)\\s*(?!\/)`
-				let reg = new RegExp(`${base_reg}$`, 'i')
-				while (text[0].trim().match(reg)) text.shift()
-				reg = new RegExp(`${base_reg}`, 'i')
-				text[0] = text[0].replace(reg, '')
-				while (['', '</pause>'].includes(text[text.length - 1].trim())) text.pop() //?
-				text = text.join('\n')
-			}
-
-			// 移除<declare></declare>
-			text = text.replace(/<[!-\s/<\-]*declare>[^]*?<\/?declare[!-\s/>\-]*>\s*$/g, '')
-
-			text = text.split('\n')
-			while (['', '</pause>', '</declare>', '</>', '</'].includes(text[text.length - 1].trim())) text.pop() //?
-			text = text.join('\n')
-			// <0xE3> -> char(0xE3)
-			// 搞不懂在发什么疯
-			text = text.replace(/<0x([\dA-Fa-f]{2})>/g, (match, hex) => String.fromCharCode(parseInt(hex, 16)))
+			if (text.match(/<\/sender>\s*<content>/))
+				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1].split(new RegExp(
+					`(${
+						(prompt_struct.alternative_charnames || []).map(Object).map(
+							(stringOrReg) => {
+								if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
+								return stringOrReg.source
+							}
+						).join('|')
+					})\\s*<\\/sender>\\s*<content>`
+				)).pop().split(/<\/content>\s*<\/message/).shift()
+			if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
+				text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
 
 			return {
 				content: text,

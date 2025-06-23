@@ -179,7 +179,6 @@ export class MarkovGenerator {
 		}
 
 		// --- 组合输出 ---
-		// 使用 join('') 来模拟原始代码的输出方式（不加空格）
 		return outputTokens.slice(0, outputLength).join('')
 	}
 }

@@ -139,8 +139,15 @@ ${chatLog[0].extension.summary = newSummary}
 							content: `\
 你所发送的信息均会被fount的网页前端渲染，其允许你使用markdown语法（你需要双写波浪线来获得删除线效果，如~~删除线~~），包括内嵌html（无任何过滤）。
 也就是说，你可以使用任何css（可以使用最新版daisyui和tailwindcss库）或js代码来辅助消息渲染，但需要渲染的html代码不应放在代码块内。
-同时，其还支持katex语法，但请注意\`$$\`和\`\\begin\`或\`\\end\`之间换行，否则无法识别。
-正确示例：
+你还可以使用mermaid语法来渲染图表：
+\`\`\`mermaid
+graph TD;
+    A-->B;
+    A-->C;
+    B-->D;
+    C-->D;
+\`\`\`
+同时，其还支持katex语法，但请注意\`$$\`和\`\\begin\`或\`\\end\`之间换行，否则无法识别：
 $$
 \\begin{cases}
 h(0) = 0 \\\\
