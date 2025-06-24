@@ -17,7 +17,7 @@ import {
 } from './virtualQueue.mjs'
 import { addDragAndDropSupport } from './dragAndDrop.mjs'
 import { geti18n } from '../../../../../scripts/i18n.mjs'
-import { do_notification } from '../../../../../scripts/do_notification.mjs'
+import { sendNotification } from '../../../../../scripts/sendNotification.mjs'
 
 // 用于存储滑动事件监听器的 Map
 const swipeListenersMap = new WeakMap()
@@ -31,9 +31,9 @@ export async function renderMessage(message) {
 	const preprocessedMessage = {
 		...message,
 		avatar: message.avatar || DEFAULT_AVATAR,
-		timeStamp: new Date(message.timeStamp).toLocaleString(),
+		time_stamp: new Date(message.time_stamp).toLocaleString(),
 		content: await renderMarkdownAsString(message.content_for_show || message.content),
-		safeTimeStamp: processTimeStampForId(message.timeStamp)
+		safeTimeStamp: processTimeStampForId(message.time_stamp)
 	}
 
 	const messageElement = await renderTemplate('chat/message_view', preprocessedMessage)
@@ -104,7 +104,7 @@ export async function renderMessage(message) {
 	if (message.role == 'char')
 		// 桌面通知 (如果页面在后台)
 		if (document.visibilityState != 'visible')
-			do_notification(message.name ?? 'Character', {
+			sendNotification(message.name ?? 'Character', {
 				body: message.content,
 				icon: message.avatar || DEFAULT_AVATAR
 			})
@@ -123,9 +123,9 @@ export async function editMessageStart(message, queueIndex, chatLogIndex) {
 	const editRenderedMessage = {
 		...message,
 		avatar: message.avatar || DEFAULT_AVATAR,
-		timeStamp: new Date(message.timeStamp).toLocaleString(),
+		time_stamp: new Date(message.time_stamp).toLocaleString(),
 		content_for_edit: message.content_for_edit || message.content, // 编辑专用内容
-		safeTimeStamp: processTimeStampForId(message.timeStamp),
+		safeTimeStamp: processTimeStampForId(message.time_stamp),
 	}
 
 	const messageElement = await getMessageElementByQueueIndex(queueIndex)

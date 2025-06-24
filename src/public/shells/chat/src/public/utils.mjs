@@ -1,5 +1,5 @@
-export const processTimeStampForId = (timeStamp) =>
-	timeStamp.replaceAll(/[\s./:]/g, '_')
+export const processTimeStampForId = (time_stamp) =>
+	time_stamp.replaceAll(/[\s./:]/g, '_')
 
 export const arrayBufferToBase64 = (buffer) => {
 	let binary = ''

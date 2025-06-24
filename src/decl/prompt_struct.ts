@@ -12,12 +12,12 @@ export class single_part_prompt_t {
 }
 export class other_chars_prompt_t extends single_part_prompt_t {
 	name: string
-	isActive: boolean
-	LastActive: timeStamp_t
+	is_active: boolean
+	last_active: timeStamp_t
 }
 export type chatLogEntry_t = {
 	name: string;
-	timeStamp: timeStamp_t;
+	time_stamp: timeStamp_t;
 	role: role_t;
 	content: string;
 	files: {

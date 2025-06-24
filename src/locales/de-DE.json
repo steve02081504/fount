@@ -189,8 +189,8 @@
 				"noTags": "Keine Tags",
 				"version": "Version",
 				"author": "Autor",
-				"homepage": "Homepage",
-				"issuepage": "Problem melden",
+				"home_page": "Homepage",
+				"issue_page": "Problem melden",
 				"defaultCheckbox": {
 					"title": "Als Standardcharakter festlegen"
 				}
@@ -209,8 +209,8 @@
 				"noTags": "Keine Tags",
 				"version": "Version",
 				"author": "Autor",
-				"homepage": "Homepage",
-				"issuepage": "Problem melden",
+				"home_page": "Homepage",
+				"issue_page": "Problem melden",
 				"defaultCheckbox": {
 					"title": "Als Standardwelt festlegen"
 				}
@@ -229,8 +229,8 @@
 				"noTags": "Keine Tags",
 				"version": "Version",
 				"author": "Autor",
-				"homepage": "Homepage",
-				"issuepage": "Problem melden",
+				"home_page": "Homepage",
+				"issue_page": "Problem melden",
 				"defaultCheckbox": {
 					"title": "Als Standardpersona festlegen"
 				}

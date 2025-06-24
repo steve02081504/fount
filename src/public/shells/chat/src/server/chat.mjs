@@ -1,4 +1,4 @@
-/** @typedef {import('../../../../../decl/charAPI.ts').charAPI_t} charAPI_t */
+/** @typedef {import('../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
 /** @typedef {import('../../../../../decl/WorldAPI.ts').WorldAPI_t} WorldAPI_t */
 /** @typedef {import('../../../../../decl/UserAPI.ts').UserAPI_t} UserAPI_t */
 /** @typedef {import('../../../../../decl/basedefs.ts').locale_t} locale_t */
@@ -8,7 +8,7 @@ import { events } from '../../../../../server/events.mjs'
 import { LoadChar } from '../../../../../server/managers/char_manager.mjs'
 import { loadJsonFile, saveJsonFile } from '../../../../../scripts/json_loader.mjs'
 import { getPartInfo } from '../../../../../scripts/locale.mjs'
-import { loadPersona } from '../../../../../server/managers/personas_manager.mjs'
+import { loadPersona } from '../../../../../server/managers/persona_manager.mjs'
 import { loadWorld } from '../../../../../server/managers/world_manager.mjs'
 import { Buffer } from 'node:buffer'
 import fs from 'node:fs'
@@ -45,7 +45,7 @@ function initializeChatMetadatas() {
 initializeChatMetadatas()
 
 class timeSlice_t {
-	/** @type {Record<string, charAPI_t>} */
+	/** @type {Record<string, CharAPI_t>} */
 	chars = {}
 	/** @type {WorldAPI_t} */
 	world
@@ -112,7 +112,7 @@ class timeSlice_t {
 class chatLogEntry_t {
 	name
 	avatar
-	timeStamp
+	time_stamp
 	role
 	content
 	content_for_show
@@ -594,7 +594,7 @@ export async function modifyTimeLine(chatid, delta) {
  *  extension: any
  * }} result
  * @param {timeSlice_t} new_timeSlice
- * @param {charAPI_t} char
+ * @param {CharAPI_t} char
  * @param {string} charname
  * @returns {Promise<chatLogEntry_t>}
  */
@@ -611,7 +611,7 @@ async function BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charn
 		content_for_edit: result.content_for_edit,
 		timeSlice: new_timeSlice,
 		role: 'char',
-		timeStamp: new Date(),
+		time_stamp: new Date(),
 		files: result.files || [],
 		extension: result.extension || {},
 		logContextBefore: result.logContextBefore,
@@ -642,7 +642,7 @@ async function BuildChatLogEntryFromUserMessage(result, new_timeSlice, user, use
 		content: result.content,
 		timeSlice: new_timeSlice,
 		role: 'user',
-		timeStamp: new Date(),
+		time_stamp: new Date(),
 		files: result.files || [],
 		extension: result.extension || {}
 	})
@@ -752,7 +752,7 @@ async function loadChatSummary(username, chatid) {
 			lastMessageSender: lastEntry.name || 'Unknown',
 			lastMessageSenderAvatar: lastEntry.avatar || null,
 			lastMessageContent: lastEntry.content || '',
-			lastMessageTime: new Date(lastEntry.timeStamp), // Ensure it's a Date object
+			lastMessageTime: new Date(lastEntry.time_stamp), // Ensure it's a Date object
 		}
 	}
 	catch (error) {
@@ -786,7 +786,7 @@ export async function getChatList(username) {
 				lastMessageSender: lastEntry.name,
 				lastMessageSenderAvatar: lastEntry.avatar || null,
 				lastMessageContent: lastEntry.content,
-				lastMessageTime: lastEntry.timeStamp,
+				lastMessageTime: lastEntry.time_stamp,
 			}
 		}
 

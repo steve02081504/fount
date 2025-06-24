@@ -189,8 +189,8 @@
 				"noTags": "タグなし",
 				"version": "バージョン",
 				"author": "作成者",
-				"homepage": "ホームページ",
-				"issuepage": "問題報告ページ",
+				"home_page": "ホームページ",
+				"issue_page": "問題報告ページ",
 				"defaultCheckbox": {
 					"title": "デフォルトキャラクターとして設定"
 				}
@@ -209,8 +209,8 @@
 				"noTags": "タグなし",
 				"version": "バージョン",
 				"author": "作成者",
-				"homepage": "ホームページ",
-				"issuepage": "問題報告ページ",
+				"home_page": "ホームページ",
+				"issue_page": "問題報告ページ",
 				"defaultCheckbox": {
 					"title": "デフォルトワールドとして設定"
 				}
@@ -229,8 +229,8 @@
 				"noTags": "タグなし",
 				"version": "バージョン",
 				"author": "作成者",
-				"homepage": "ホームページ",
-				"issuepage": "問題報告ページ",
+				"home_page": "ホームページ",
+				"issue_page": "問題報告ページ",
 				"defaultCheckbox": {
 					"title": "デフォルトペルソナとして設定"
 				}

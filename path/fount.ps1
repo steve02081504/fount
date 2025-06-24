@@ -415,7 +415,7 @@ if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $ar
 		$shortcutTargetPath = "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe"
 		$shortcutArguments = "-p fount powershell.exe $shortcutArguments" # Prepend -p fount to existing arguments
 	}
-	$shortcutIconLocation = "$FOUNT_DIR\src\public\favicon.ico"
+	$shortcutIconLocation = "$FOUNT_DIR\src\pages\favicon.ico"
 
 	# 创建桌面快捷方式
 	$desktopPath = [Environment]::GetFolderPath("Desktop")
@@ -469,7 +469,7 @@ if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $ar
 				name              = "fount"
 				commandline       = "fount.bat keepalive"
 				startingDirectory = $FOUNT_DIR
-				icon              = Join-Path $FOUNT_DIR src/public/favicon.ico
+				icon              = Join-Path $FOUNT_DIR src/pages/favicon.ico
 			}
 		)
 	} | ConvertTo-Json -Depth 100 -Compress

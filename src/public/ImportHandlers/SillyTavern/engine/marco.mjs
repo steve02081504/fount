@@ -105,8 +105,8 @@ function getTimeSinceLastMessage(chatLog) {
 		.filter((message) => message.role !== 'system')
 		.toReversed()
 		.find((_, index, arr) => arr[index + 1]?.role === 'user')
-	if (lastMessage?.timeStamp)
-		return moment.duration(moment().diff(lastMessage.timeStamp)).humanize()
+	if (lastMessage?.time_stamp)
+		return moment.duration(moment().diff(lastMessage.time_stamp)).humanize()
 
 	return 'just now'
 }
@@ -176,11 +176,11 @@ export function evaluateMacros(content, env, memory = {}, chatLog = []) {
 	content = content.replace(/{{\/\/([\S\s]*?)}}/gm, '')
 	content = content.replace(/{{lasttime}}/gi, () => {
 		const lastMessage = chatLog?.findLast(message => message.role !== 'system')
-		return lastMessage?.timeStamp ? moment(lastMessage.timeStamp).format('LT') : ''
+		return lastMessage?.time_stamp ? moment(lastMessage.time_stamp).format('LT') : ''
 	})
 	content = content.replace(/{{lastdate}}/gi, () => {
 		const lastMessage = chatLog?.findLast(message => message.role !== 'system')
-		return lastMessage?.timeStamp ? moment(lastMessage.timeStamp).format('LL') : ''
+		return lastMessage?.time_stamp ? moment(lastMessage.time_stamp).format('LL') : ''
 	})
 	content = content.replace(/{{time}}/gi, () => moment().format('LT'))
 	content = content.replace(/{{date}}/gi, () => moment().format('LL'))

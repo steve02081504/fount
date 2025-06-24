@@ -8,7 +8,7 @@ import { renderMarkdown } from '../../scripts/markdown.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 import { parseRegexFromString, escapeRegExp } from '../../scripts/regex.mjs'
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
-import { svgInliner } from '../../scripts/svg-inliner.mjs'
+import { svgInliner } from '../../scripts/svgInliner.mjs'
 import { setDefaultPart, getHomeRegistry, getDefaultParts } from './src/public/endpoints.mjs'
 
 localStorage.setItem('visited_home', '1')

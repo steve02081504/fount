@@ -1,4 +1,4 @@
-import { createJsonEditor } from '../../scripts/jsoneditor.mjs'
+import { createJsonEditor } from '../../scripts/jsonEditor.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
 import { getPartList } from '../../scripts/parts.mjs'

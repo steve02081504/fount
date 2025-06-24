@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { loadAIsource } from '../../../../../src/server/managers/AIsources_manager.mjs' // 调整路径
+import { loadAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs' // 调整路径
 import { saveJsonFile } from '../../../../../src/scripts/json_loader.mjs' // 调整路径
 import { promptBuilder } from '../../../../../src/public/ImportHandlers/SillyTavern/engine/prompt_builder.mjs' // 复用ST引擎
 import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/server/prompt_struct.mjs' // 调整路径
@@ -9,7 +9,7 @@ import { regex_placement } from '../../../../../src/public/ImportHandlers/SillyT
 import { evaluateMacros } from '../../../../../src/public/ImportHandlers/SillyTavern/engine/marco.mjs' // 复用ST引擎
 // 复用ST引擎 (getCharacterSource可能需要调整或我们直接用转换时存的source_url)
 
-/** @typedef {import('../../../../../src/decl/charAPI.ts').charAPI_t} charAPI_t */
+/** @typedef {import('../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t */
 /** @typedef {import('../../../../../src/decl/AIsource.ts').AIsource_t} AIsource_t */
 /** @typedef {import('../../../../../src/public/ImportHandlers/SillyTavern/engine/charData.mjs').v2CharData} chardata_t */
 
@@ -59,7 +59,7 @@ function buildCharInfo(charData) {
 			description_markdown: evaluatedNote || 'No description.', // 完整描述
 			version: charData.character_version || '1.0.0',
 			author: charData.creator || 'Unknown',
-			homepage: charData.extensions?.source_url || '',
+			home_page: charData.extensions?.source_url || '',
 			tags: charData.tags || [],
 		}
 	}
@@ -106,7 +106,7 @@ function formatRisuOutput(text) {
 }
 
 
-/** @type {charAPI_t} */
+/** @type {CharAPI_t} */
 const charAPI_definition = { // 先定义结构主体
 	info: {}, // 将由 buildCharInfo 动态填充
 

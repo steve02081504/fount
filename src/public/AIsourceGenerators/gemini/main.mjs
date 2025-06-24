@@ -126,7 +126,7 @@ async function GetSource(config) {
 				description_markdown: 'gemini',
 				version: '0.0.0',
 				author: 'steve02081504',
-				homepage: '',
+				home_page: '',
 				tags: ['Google'],
 			}
 		},
@@ -341,7 +341,7 @@ ${is_ImageGeneration
 				files,
 			}
 		},
-		Tokenizer: {
+		tokenizer: {
 			free: () => 0,
 			encode: (prompt) => prompt,
 			decode: (tokens) => tokens,

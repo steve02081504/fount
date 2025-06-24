@@ -19,11 +19,11 @@ export function promptBuilder(
 ) {
 	const username = arg.UserCharname
 	const charname = arg.Charname
-	const chatLog = arg.chat_log.map(entry => ({ // 保留 timeStamp
+	const chatLog = arg.chat_log.map(entry => ({ // 保留 time_stamp
 		role: entry.role,
 		charname: entry.role === 'char' ? charname : entry.role === 'user' ? username : undefined,
 		content: entry.content,
-		timeStamp: entry.timeStamp // 保留 timeStamp
+		time_stamp: entry.time_stamp // 保留 time_stamp
 	}))
 	const env = {
 		char: charname,

@@ -1,4 +1,4 @@
-import { loadAIsource } from '../../../../../server/managers/AIsources_manager.mjs'
+import { loadAIsource } from '../../../../../server/managers/AIsource_manager.mjs'
 import { getPartList } from '../../../../../server/managers/index.mjs'
 import { v4 as uuidv4 } from 'npm:uuid'
 import { authenticate, getUserByReq } from '../../../../../server/auth.mjs'
