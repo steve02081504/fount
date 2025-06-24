@@ -189,8 +189,8 @@
 				"noTags": "Sin etiquetas",
 				"version": "Versión",
 				"author": "Autor",
-				"homepage": "Página de inicio",
-				"issuepage": "Reportar incidencia",
+				"home_page": "Página de inicio",
+				"issue_page": "Reportar incidencia",
 				"defaultCheckbox": {
 					"title": "Establecer como personaje predeterminado"
 				}
@@ -209,8 +209,8 @@
 				"noTags": "Sin etiquetas",
 				"version": "Versión",
 				"author": "Autor",
-				"homepage": "Página de inicio",
-				"issuepage": "Reportar incidencia",
+				"home_page": "Página de inicio",
+				"issue_page": "Reportar incidencia",
 				"defaultCheckbox": {
 					"title": "Establecer como mundo predeterminado"
 				}
@@ -229,8 +229,8 @@
 				"noTags": "Sin etiquetas",
 				"version": "Versión",
 				"author": "Autor",
-				"homepage": "Página de inicio",
-				"issuepage": "Reportar incidencia",
+				"home_page": "Página de inicio",
+				"issue_page": "Reportar incidencia",
 				"defaultCheckbox": {
 					"title": "Establecer como persona predeterminada"
 				}

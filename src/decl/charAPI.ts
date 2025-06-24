@@ -6,9 +6,9 @@ import { Client as DiscordClient, GatewayIntentBits as DiscordGatewayIntentBits,
 import { Telegraf } from 'npm:telegraf'
 
 export class charState_t {
-	InitCount: number
-	StartCount: number
-	LastStart: timeStamp_t
+	init_count: number
+	start_count: number
+	last_start_time_stamp: timeStamp_t
 }
 
 export class charInit_t {
@@ -17,7 +17,7 @@ export class charInit_t {
 	charname: string
 }
 
-export class charAPI_t {
+export class CharAPI_t {
 	info: info_t
 	// calls only on char install, and if fail, all file under this char's folder will be deleted
 	Init: (stat: charInit_t) => Promise<void>

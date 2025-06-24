@@ -189,8 +189,8 @@
 				"noTags": "No tags",
 				"version": "Version",
 				"author": "Author",
-				"homepage": "Homepage",
-				"issuepage": "Report Issue",
+				"home_page": "Homepage",
+				"issue_page": "Report Issue",
 				"defaultCheckbox": {
 					"title": "Set as default character"
 				}
@@ -209,8 +209,8 @@
 				"noTags": "No tags",
 				"version": "Version",
 				"author": "Author",
-				"homepage": "Homepage",
-				"issuepage": "Report Issue",
+				"home_page": "Homepage",
+				"issue_page": "Report Issue",
 				"defaultCheckbox": {
 					"title": "Set as default world"
 				}
@@ -229,8 +229,8 @@
 				"noTags": "No tags",
 				"version": "Version",
 				"author": "Author",
-				"homepage": "Homepage",
-				"issuepage": "Report Issue",
+				"home_page": "Homepage",
+				"issue_page": "Report Issue",
 				"defaultCheckbox": {
 					"title": "Set as default persona"
 				}

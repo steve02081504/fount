@@ -39,7 +39,7 @@ async function GetSource(config, { SaveConfig }) { // 接收 SaveConfig
 				description_markdown: 'Claude',
 				version: '0.0.1', // Update as needed
 				author: 'steve02081504',
-				homepage: '',
+				home_page: '',
 				tags: ['Claude'],
 			}
 		},
@@ -107,7 +107,7 @@ ${chatLogEntry.content}
 			}
 		},
 
-		Tokenizer: {
+		tokenizer: {
 			free: () => 0,
 			encode: (prompt) => prompt, // 实际上不需要
 			decode: (tokens) => tokens, // 实际上不需要

@@ -105,7 +105,7 @@ export async function initializeVirtualQueue() {
 }
 
 function messageIsEqual(a, b) {
-	if (a.content != b.content || a.timeStamp != b.timeStamp || a.role != b.role) return false
+	if (a.content != b.content || a.time_stamp != b.time_stamp || a.role != b.role) return false
 	if ((a.files || []).length != (b.files || []).length) return false
 	for (let i = 0; i < a.files.length; i++) {
 		if (!a.files[i] || !b.files[i]) return false

@@ -1,8 +1,8 @@
 /**
- * @typedef {import('../../../../../src/decl/charAPI.ts').charAPI_t} charAPI_t
+ * @typedef {import('../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t
  */
 
-import { loadAIsource } from '../../../../../src/server/managers/AIsources_manager.mjs'
+import { loadAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
 import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/server/prompt_struct.mjs'
 import { __dirname } from '../../../../../src/server/server.mjs'
 import fs from 'node:fs'
@@ -39,10 +39,10 @@ fount角色以mjs文件语法所书写，其可以自由导入任何npm或jsr包
 这是一个简单的fount角色模板：
 \`\`\`generate-char template
 /**
- * @typedef {import('../../../../../src/decl/charAPI.ts').charAPI_t} charAPI_t
+ * @typedef {import('../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t
  */
 
-import { loadAIsource } from '../../../../../src/server/managers/AIsources_manager.mjs'
+import { loadAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
 import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/server/prompt_struct.mjs'
 
 // AI源的实例
@@ -52,7 +52,7 @@ let AIsource = null
 // 用户名，用于加载AI源
 let username = ''
 
-/** @type {charAPI_t} */
+/** @type {CharAPI_t} */
 export default {
 	// 角色的基本信息，这里的内容不会被角色知道
 	info: {
@@ -65,7 +65,7 @@ export default {
 \`, // 角色的详细介绍，支持Markdown语法
 			version: '<版本号>', // 角色的版本号
 			author: '<作者名>', // 角色的作者
-			homepage: '<主页网址>', // 角色的主页
+			home_page: '<主页网址>', // 角色的主页
 			tags: ['<标签>', '<可以多个>'], // 角色的标签
 		}
 	},
@@ -270,10 +270,10 @@ function CharGenerator(reply, { AddLongTimeLog }) {
 ${args.UserCharname}: 帮我写一个复读角色，它总是复读上一句话。
 ZL-31: \`\`\`generate-char repeater
 /**
- * @typedef {import('../../../../../src/decl/charAPI.ts').charAPI_t} charAPI_t
+ * @typedef {import('../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t
  */
 
-/** @type {charAPI_t} */
+/** @type {CharAPI_t} */
 export default {
 	// 角色的基本信息
 	info: {
@@ -284,7 +284,7 @@ export default {
 			description_markdown: '这是一个复读机角色，它会复读用户的上一条消息。',
 			version: '1.0.0',
 			author: '${args.UserCharname} & ZL-31',
-			homepage: '',
+			home_page: '',
 			tags: ['复读', '工具'],
 		}
 	},
@@ -380,7 +380,7 @@ export default {
 			description_markdown: '<简介，支持markdown语法>',
 			version: '<版本号>',
 			author: '${args.UserCharname} & ZL-31',
-			homepage: '<主页链接，没有可以不写>',
+			home_page: '<主页链接，没有可以不写>',
 			tags: ['tag列表', '可以多个tag'],
 		}
 	},
@@ -502,7 +502,7 @@ function PersonaGenerator(reply, { AddLongTimeLog }) {
 	return false
 }
 
-/** @type {charAPI_t} */
+/** @type {CharAPI_t} */
 export default {
 	// 角色的基本信息
 	info: {
@@ -518,7 +518,7 @@ Some code comes from [GentianAphrodite](https://github.com/steve02081504/Gentian
 `,
 			version: '1.0.0',
 			author: 'steve02081504',
-			homepage: '',
+			home_page: '',
 			tags: ['assistant', 'default', 'no gender', 'Fount'],
 		},
 		'zh-CN': {
@@ -533,7 +533,7 @@ ZL-31是Fount的默认角色，无性别设定。它的最终目标是让用户�
 `, // 角色的详细介绍，支持Markdown语法
 			version: '1.0.0', // 角色的版本号
 			author: 'steve02081504', // 角色的作者
-			homepage: '', // 角色的主页
+			home_page: '', // 角色的主页
 			tags: ['助手', '默认', '无性别', 'Fount'], // 角色的标签
 		},
 		'de-DE': {
@@ -548,7 +548,7 @@ Ein Teil des Codes stammt von [GentianAphrodite](https://github.com/steve0208150
 `,
 			version: '1.0.0',
 			author: 'steve02081504',
-			homepage: '',
+			home_page: '',
 			tags: ['Assistent', 'Standard', 'kein Geschlecht', 'Fount'],
 		},
 		'es-ES': {
@@ -563,7 +563,7 @@ Parte del código proviene de [GentianAphrodite](https://github.com/steve0208150
 `,
 			version: '1.0.0',
 			author: 'steve02081504',
-			homepage: '',
+			home_page: '',
 			tags: ['asistente', 'predeterminado', 'sin género', 'Fount'],
 		},
 		'fr-FR': {
@@ -578,7 +578,7 @@ Une partie du code provient de [GentianAphrodite](https://github.com/steve020815
 `,
 			version: '1.0.0',
 			author: 'steve02081504',
-			homepage: '',
+			home_page: '',
 			tags: ['assistant', 'par défaut', 'non genré', 'Fount'],
 		},
 		'hi-IN': {
@@ -593,7 +593,7 @@ ZL-31 फाउंट का डिफ़ॉल्ट चरित्र है,
 `,
 			version: '1.0.0',
 			author: 'steve02081504',
-			homepage: '',
+			home_page: '',
 			tags: ['सहायक', 'डिफ़ॉल्ट', 'कोई लिंग नहीं', 'Fount'],
 		},
 		'ja-JP': {
@@ -608,7 +608,7 @@ ZL-31はFountのデフォルトキャラクターであり、性別設定はあ�
 `,
 			version: '1.0.0',
 			author: 'steve02081504',
-			homepage: '',
+			home_page: '',
 			tags: ['アシスタント', 'デフォルト', '性別なし', 'Fount'],
 		},
 		'ko-KR': {
@@ -623,7 +623,7 @@ ZL-31은 Fount의 기본 캐릭터이며 성별 설정이 없습니다. 최종 �
 `,
 			version: '1.0.0',
 			author: 'steve02081504',
-			homepage: '',
+			home_page: '',
 			tags: ['도우미', '기본', '성별 없음', 'Fount'],
 		},
 		'pt-PT': {
@@ -638,7 +638,7 @@ Algum código é proveniente de [GentianAphrodite](https://github.com/steve02081
 `,
 			version: '1.0.0',
 			author: 'steve02081504',
-			homepage: '',
+			home_page: '',
 			tags: ['assistente', 'padrão', 'sem género', 'Fount'],
 		},
 		'ru-RU': {
@@ -653,7 +653,7 @@ ZL-31 — персонаж Fount по умолчанию, без гендерн�
 `,
 			version: '1.0.0',
 			author: 'steve02081504',
-			homepage: '',
+			home_page: '',
 			tags: ['помощник', 'по умолчанию', 'без пола', 'Fount'],
 		},
 		'it-IT': {
@@ -668,7 +668,7 @@ Parte del codice proviene da [GentianAphrodite](https://github.com/steve02081504
 `,
 			version: '1.0.0',
 			author: 'steve02081504',
-			homepage: '',
+			home_page: '',
 			tags: ['assistente', 'predefinito', 'senza genere', 'Fount'],
 		},
 		'vi-VN': {
@@ -683,7 +683,7 @@ Một số mã nguồn đến từ [GentianAphrodite](https://github.com/steve02
 `,
 			version: '1.0.0',
 			author: 'steve02081504',
-			homepage: '',
+			home_page: '',
 			tags: ['trợ lý', 'mặc định', 'không giới tính', 'Fount'],
 		},
 	},

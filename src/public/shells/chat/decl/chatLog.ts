@@ -1,5 +1,5 @@
 import { locale_t, role_t, timeStamp_t } from '../../../../decl/basedefs.ts'
-import { charAPI_t } from '../../../../decl/charAPI.ts'
+import { CharAPI_t } from '../../../../decl/charAPI.ts'
 import { WorldAPI_t } from '../../../../decl/WorldAPI.ts'
 import { UserAPI_t } from '../../../../decl/UserAPI.ts'
 import { pluginAPI_t } from '../../../../decl/pluginAPI.ts'
@@ -47,8 +47,8 @@ export class chatReplyRequest_t {
 	Update?: () => Promise<chatReplyRequest_t> // 调用这个来在定时任务时获取最新args
 	world: WorldAPI_t
 	user: UserAPI_t
-	char: charAPI_t
-	other_chars: Record<string, charAPI_t>
+	char: CharAPI_t
+	other_chars: Record<string, CharAPI_t>
 	plugins: Record<string, pluginAPI_t>
 	chat_summary: string
 	chat_scoped_char_memory: {}
@@ -58,7 +58,7 @@ export class chatReplyRequest_t {
 export class chatLogEntry_t {
 	name: string
 	avatar: string
-	timeStamp: timeStamp_t
+	time_stamp: timeStamp_t
 	role: role_t
 	content: string
 	content_for_show?: string
@@ -74,7 +74,7 @@ export class chatLogEntry_t {
 	charVisibility?: string[] // 可见的角色的char_id列表，若无则全可见
 	extension: {
 		timeSlice: {
-			chars: Map<string, charAPI_t>;
+			chars: Map<string, CharAPI_t>;
 			summary: string;
 			world: WorldAPI_t;
 			player: UserAPI_t;

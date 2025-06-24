@@ -1,7 +1,7 @@
 import { renderTemplate } from '../../../../scripts/template.mjs'
 import { processTimeStampForId, arrayBufferToBase64 } from './utils.mjs'
 import { openModal } from './ui/modal.mjs'
-import { svgInliner } from '../../../../scripts/svg-inliner.mjs'
+import { svgInliner } from '../../../../scripts/svgInliner.mjs'
 import { getfile } from './files.mjs'
 
 export async function handleFilesSelect(event, selectedFiles, attachmentPreviewContainer) {

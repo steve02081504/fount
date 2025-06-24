@@ -8,7 +8,7 @@ export type info_t = Record<locale_t, {
 	description_markdown: string;
 	version: string;
 	author: string;
-	homepage: string;
-	issuepage: string;
+	home_page: string;
+	issue_page: string;
 	tags: string[];
 }>

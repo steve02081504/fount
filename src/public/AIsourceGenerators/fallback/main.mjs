@@ -1,7 +1,7 @@
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
-import { loadAIsourceFromNameOrConfigData } from '../../../server/managers/AIsources_manager.mjs'
+import { loadAIsourceFromNameOrConfigData } from '../../../server/managers/AIsource_manager.mjs'
 
 export default {
 	interfaces: {
@@ -45,7 +45,7 @@ async function GetSource(config, { username, SaveConfig }) {
 				description_markdown: 'fallback',
 				version: '0.0.0',
 				author: 'steve02081504',
-				homepage: '',
+				home_page: '',
 				tags: ['fallback'],
 			}
 		},
@@ -77,7 +77,7 @@ async function GetSource(config, { username, SaveConfig }) {
 				console.error(e)
 			}
 		},
-		Tokenizer: {
+		tokenizer: {
 			free: () => 0,
 			encode: (prompt) => prompt,
 			decode: (tokens) => tokens,

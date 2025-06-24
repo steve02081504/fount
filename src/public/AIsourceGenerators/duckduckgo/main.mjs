@@ -46,7 +46,7 @@ async function GetSource(config) {
 				description_markdown: 'DuckDuckGo AI Chat',
 				version: '0.1.0',
 				author: 'steve02081504',
-				homepage: 'https://duckduckgo.com/', // DuckDuckGo 的主页
+				home_page: 'https://duckduckgo.com/', // DuckDuckGo 的主页
 				tags: ['DuckDuckGo'],
 			}
 		},
@@ -127,7 +127,7 @@ ${chatLogEntry.content}
 			}
 		},
 
-		Tokenizer: {
+		tokenizer: {
 			free: () => 0,
 			encode: (prompt) => prompt,
 			decode: (tokens) => tokens,

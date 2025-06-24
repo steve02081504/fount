@@ -189,8 +189,8 @@
 				"noTags": "태그 없음",
 				"version": "버전",
 				"author": "제작자",
-				"homepage": "홈페이지",
-				"issuepage": "문제 신고 페이지",
+				"home_page": "홈페이지",
+				"issue_page": "문제 신고 페이지",
 				"defaultCheckbox": {
 					"title": "기본 캐릭터로 설정"
 				}
@@ -209,8 +209,8 @@
 				"noTags": "태그 없음",
 				"version": "버전",
 				"author": "제작자",
-				"homepage": "홈페이지",
-				"issuepage": "문제 신고 페이지",
+				"home_page": "홈페이지",
+				"issue_page": "문제 신고 페이지",
 				"defaultCheckbox": {
 					"title": "기본 월드로 설정"
 				}
@@ -229,8 +229,8 @@
 				"noTags": "태그 없음",
 				"version": "버전",
 				"author": "제작자",
-				"homepage": "홈페이지",
-				"issuepage": "문제 신고 페이지",
+				"home_page": "홈페이지",
+				"issue_page": "문제 신고 페이지",
 				"defaultCheckbox": {
 					"title": "기본 페르소나로 설정"
 				}
