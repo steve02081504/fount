@@ -13,7 +13,7 @@ export async function handleFilesSelect(event, selectedFiles, attachmentPreviewC
 		reader.onload = async (e) => {
 			const newFile = {
 				name: file.name,
-				mimeType: file.type,
+				mime_type: file.type,
 				buffer: arrayBufferToBase64(e.target.result),
 				description: '',
 			}
@@ -63,7 +63,7 @@ export async function handlePaste(event, selectedFiles, attachmentPreviewContain
 }
 
 export async function renderAttachmentPreview(file, index, selectedFiles) {
-	let attachmentElement = await renderTemplate('chat/attachment_preview', {
+	let attachmentElement = await renderTemplate('attachment_preview', {
 		file,
 		index,
 		safeName: processTimeStampForId(file.name),
@@ -76,20 +76,20 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 	}
 
 	const previewContainer = attachmentElement.querySelector('.preview-container')
-	if (file.mimeType.startsWith('image/')) {
+	if (file.mime_type.startsWith('image/')) {
 		const previewImg = document.createElement('img')
 		previewImg.classList.add('preview-img')
-		const base64Data = `data:${file.mimeType};base64,${file.buffer}`
+		const base64Data = `data:${file.mime_type};base64,${file.buffer}`
 		previewImg.src = base64Data
 		previewImg.alt = file.name
 		previewImg.addEventListener('click', () => {
 			openModal(base64Data, 'image')
 		})
 		previewContainer.appendChild(previewImg)
-	} else if (file.mimeType.startsWith('video/')) {
+	} else if (file.mime_type.startsWith('video/')) {
 		const preview = document.createElement('video')
 		preview.classList.add('preview')
-		const videoSrc = `data:${file.mimeType};base64,${file.buffer}`
+		const videoSrc = `data:${file.mime_type};base64,${file.buffer}`
 		preview.src = videoSrc
 		preview.controls = true
 		preview.autoplay = false
@@ -98,9 +98,9 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 			openModal(videoSrc, 'video')
 		})
 		previewContainer.appendChild(preview)
-	} else if (file.mimeType.startsWith('audio/')) {
+	} else if (file.mime_type.startsWith('audio/')) {
 		const audio = document.createElement('audio')
-		audio.src = `data:${file.mimeType};base64,${file.buffer}`
+		audio.src = `data:${file.mime_type};base64,${file.buffer}`
 		audio.controls = true
 		previewContainer.appendChild(audio)
 	} else {
@@ -128,7 +128,7 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 
 export function downloadFile(file) {
 	const link = document.createElement('a')
-	link.href = `data:${file.mimeType};base64,${file.buffer}`
+	link.href = `data:${file.mime_type};base64,${file.buffer}`
 	link.download = file.name
 	link.click()
 }

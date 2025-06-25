@@ -130,14 +130,14 @@ ${chatLogEntry.content}
 				// 处理并添加文件内容（仅限图片）
 				if (chatLogEntry.files)
 					for (const file of chatLogEntry.files) {
-						const mimeType = file.mimeType || mime.lookup(file.name) || 'application/octet-stream'
-						if (supportedImageTypes.includes(mimeType))
+						const mime_type = file.mime_type || mime.lookup(file.name) || 'application/octet-stream'
+						if (supportedImageTypes.includes(mime_type))
 							try {
 								content.push({
 									type: 'image',
 									source: {
 										type: 'base64',
-										media_type: mimeType,
+										media_type: mime_type,
 										data: file.buffer.toString('base64'),
 									}
 								})
@@ -150,10 +150,10 @@ ${chatLogEntry.content}
 								})
 							}
 						else {
-							console.warn(`Unsupported file type for Claude: ${mimeType} for file ${file.name}. Skipping.`)
+							console.warn(`Unsupported file type for Claude: ${mime_type} for file ${file.name}. Skipping.`)
 							content.push({
 								type: 'text',
-								text: `[System Info: File ${file.name} with type ${mimeType} was skipped as it is not a supported image format.]`
+								text: `[System Info: File ${file.name} with type ${mime_type} was skipped as it is not a supported image format.]`
 							})
 						}
 					}

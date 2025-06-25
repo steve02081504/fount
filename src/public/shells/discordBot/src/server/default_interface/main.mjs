@@ -93,7 +93,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 					if (!attachment.url) continue
 					try {
 						const buffer = Buffer.from(await tryFewTimes(() => fetch(attachment.url).then(r => r.arrayBuffer())))
-						files.push({ name: attachment.name, buffer, description: attachment.description, mimeType: attachment.contentType })
+						files.push({ name: attachment.name, buffer, description: attachment.description, mime_type: attachment.contentType })
 					} catch (error) { console.error(`[SimpleDiscord] 获取附件 ${attachment.name} 失败:`, error) }
 				}
 
@@ -105,7 +105,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 							name: url.substring(url.lastIndexOf('/') + 1) || 'embedded_image.png',
 							buffer: Buffer.from(await tryFewTimes(() => fetch(url).then(r => r.arrayBuffer()))),
 							description: embed.title || embed.description || '',
-							mimeType: 'image/png' // 简化处理，实际应更精确
+							mime_type: 'image/png' // 简化处理，实际应更精确
 						})
 					} catch (error) { console.error(`[SimpleDiscord] 获取embed图片 ${embed.image.url} 失败:`, error) }
 

@@ -3,7 +3,10 @@ import { renderMarkdownAsString } from '../../../scripts/markdown.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
 import { parseRegexFromString, escapeRegExp } from '../../../scripts/regex.mjs'
 import { initTranslations, geti18n } from '../../../scripts/i18n.mjs'
+import { usingTemplates } from '../../../scripts/template.mjs'
 import { getChatList, getCharDetails, copyChats, exportChats, deleteChats } from './endpoints.mjs'
+
+usingTemplates('/shells/chat/src/public/templates')
 
 const chatListContainer = document.getElementById('chat-list-container')
 const sortSelect = document.getElementById('sort-select')
@@ -110,7 +113,7 @@ async function renderChatListItem(chat) {
 			return { name: details.info.name, url: details.info.avatar }
 		}))
 	}
-	const chatElement = await renderTemplate('chat/list/chat_list_view', data)
+	const chatElement = await renderTemplate('list/chat_list_view', data)
 	chatElement.setAttribute('data-chatid', chat.chatid)
 
 	// 添加选择框
