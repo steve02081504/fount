@@ -129,9 +129,7 @@ async function renderChatListItem(chat) {
 	})
 
 	// 继续聊天
-	chatElement.querySelector('.continue-button').addEventListener('click', () => {
-		window.location = `/shells/chat#${chat.chatid}`
-	})
+	chatElement.querySelector('.continue-button').href = `/shells/chat#${chat.chatid}`
 
 	// 复制聊天
 	chatElement.querySelector('.copy-button').addEventListener('click', async () => {
@@ -268,6 +266,9 @@ exportSelectedButton.addEventListener('click', async () => {
 		alert(geti18n('chat_history.alerts.exportError'))
 	}
 })
+
+// 在焦点返回时重新渲染聊天列表
+window.addEventListener('focus', getChatList().then(renderChatList))
 
 async function initializeApp() {
 	applyTheme()
