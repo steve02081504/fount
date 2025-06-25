@@ -155,7 +155,7 @@ async function renderChatListItem(chat) {
 			const datas = await exportChats([chat.chatid])
 			for (const data of datas)
 				if (data.success) {
-					const blob = new Blob([JSON.stringify(data.data, null, 2)], { type: 'application/json' })
+					const blob = new Blob([JSON.stringify(data.data, null, '\t')], { type: 'application/json' })
 					const url = URL.createObjectURL(blob)
 					const a = document.createElement('a')
 					a.href = url
@@ -254,7 +254,7 @@ exportSelectedButton.addEventListener('click', async () => {
 		const results = await exportChats(Array.from(selectedChats))
 		for (const result of results)
 			if (result.success) {
-				const blob = new Blob([JSON.stringify(result.data, null, 2)], { type: 'application/json' })
+				const blob = new Blob([JSON.stringify(result.data, null, '\t')], { type: 'application/json' })
 				const url = URL.createObjectURL(blob)
 				const a = document.createElement('a')
 				a.href = url
