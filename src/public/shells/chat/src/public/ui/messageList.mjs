@@ -132,7 +132,7 @@ export async function editMessageStart(message, queueIndex, chatLogIndex) {
 	if (!messageElement) return
 
 	// 渲染编辑视图并替换
-	const editViewHtml = await renderTemplateAsHtmlString('chat/message_edit_view', editRenderedMessage)
+	const editViewHtml = await renderTemplateAsHtmlString('message_edit_view', editRenderedMessage)
 	messageElement.innerHTML = editViewHtml
 
 	// 获取编辑视图元素
