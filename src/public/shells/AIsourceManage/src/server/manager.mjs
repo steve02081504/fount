@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import sanitize from 'npm:sanitize-filename'
 import { loadJsonFile, saveJsonFile } from '../../../../../scripts/json_loader.mjs'
 import { getUserDictionary } from '../../../../../server/auth.mjs'
-import { isAIsourceLoaded, loadAIsourceGenerator, reloadAIsource } from '../../../../../server/managers/AIsources_manager.mjs'
+import { isAIsourceLoaded, loadAIsourceGenerator, reloadAIsource } from '../../../../../server/managers/AIsource_manager.mjs'
 
 export function getAISourceFile(username, fileName) {
 	const fname = getUserDictionary(username) + '/AIsources/' + sanitize(fileName) + '.json'

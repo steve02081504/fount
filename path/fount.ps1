@@ -43,18 +43,18 @@ function Test-PWSHModule([string]$ModuleName) {
 if ($args.Count -gt 0 -and $args[0] -eq 'open') {
 	if ($IN_DOCKER) {
 		$runargs = $args[1..$args.Count]
-		fount @runargs
+		fount.ps1 @runargs
 		exit
 	}
 	Start-Process 'https://steve02081504.github.io/fount/wait'
 	$runargs = $args[1..$args.Count]
-	fount @runargs
+	fount.ps1 @runargs
 	exit
 }
 elseif ($args.Count -gt 0 -and $args[0] -eq 'background') {
 	if ($IN_DOCKER) {
 		$runargs = $args[1..$args.Count]
-		fount @runargs
+		fount.ps1 @runargs
 		exit
 	}
 	Test-PWSHModule ps12exe
@@ -70,7 +70,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'background') {
 elseif ($args.Count -gt 0 -and $args[0] -eq 'protocolhandle') {
 	if ($IN_DOCKER) {
 		$runargs = $args[1..$args.Count]
-		fount @runargs
+		fount.ps1 @runargs
 		exit
 	}
 	$protocolUrl = $args[1]
@@ -91,7 +91,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'protocolhandle') {
 		Start-Process $targetUrl
 	} -ArgumentList $targetUrl
 	$runargs = $args[2..$args.Count]
-	fount @runargs
+	fount.ps1 @runargs
 	exit
 }
 
@@ -415,7 +415,7 @@ if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $ar
 		$shortcutTargetPath = "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe"
 		$shortcutArguments = "-p fount powershell.exe $shortcutArguments" # Prepend -p fount to existing arguments
 	}
-	$shortcutIconLocation = "$FOUNT_DIR\src\public\favicon.ico"
+	$shortcutIconLocation = "$FOUNT_DIR\src\pages\favicon.ico"
 
 	# 创建桌面快捷方式
 	$desktopPath = [Environment]::GetFolderPath("Desktop")
@@ -469,7 +469,7 @@ if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $ar
 				name              = "fount"
 				commandline       = "fount.bat keepalive"
 				startingDirectory = $FOUNT_DIR
-				icon              = Join-Path $FOUNT_DIR src/public/favicon.ico
+				icon              = Join-Path $FOUNT_DIR src/pages/favicon.ico
 			}
 		)
 	} | ConvertTo-Json -Depth 100 -Compress

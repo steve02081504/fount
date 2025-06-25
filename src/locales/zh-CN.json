@@ -189,8 +189,8 @@
 				"noTags": "无标签",
 				"version": "版本",
 				"author": "作者",
-				"homepage": "主页",
-				"issuepage": "问题反馈",
+				"home_page": "主页",
+				"issue_page": "问题反馈",
 				"defaultCheckbox": {
 					"title": "设为默认角色"
 				}
@@ -209,8 +209,8 @@
 				"noTags": "无标签",
 				"version": "版本",
 				"author": "作者",
-				"homepage": "主页",
-				"issuepage": "问题反馈",
+				"home_page": "主页",
+				"issue_page": "问题反馈",
 				"defaultCheckbox": {
 					"title": "设为默认世界"
 				}
@@ -229,8 +229,8 @@
 				"noTags": "无标签",
 				"version": "版本",
 				"author": "作者",
-				"homepage": "主页",
-				"issuepage": "问题反馈",
+				"home_page": "主页",
+				"issue_page": "问题反馈",
 				"defaultCheckbox": {
 					"title": "设为默认人设"
 				}

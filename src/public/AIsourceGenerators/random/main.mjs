@@ -1,7 +1,7 @@
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
-import { loadAIsourceFromNameOrConfigData } from '../../../server/managers/AIsources_manager.mjs'
+import { loadAIsourceFromNameOrConfigData } from '../../../server/managers/AIsource_manager.mjs'
 
 export default {
 	interfaces: {
@@ -78,7 +78,7 @@ async function GetSource(config, { username, SaveConfig }) {
 				description_markdown: 'Selects a source randomly based on configured weights.',
 				version: '1.0.0',
 				author: 'steve02081504',
-				homepage: '',
+				home_page: '',
 				tags: ['random', 'weighted', 'router'],
 			}
 		},
@@ -93,12 +93,12 @@ async function GetSource(config, { username, SaveConfig }) {
 			const selectedSource = selectSourceByWeight()
 			return await selectedSource.StructCall(prompt_struct)
 		},
-		Tokenizer: new Proxy({}, {
-			get: (prop) => Reflect.get(selectSourceByWeight().Tokenizer, prop),
-			set: (prop, value) => Reflect.set(selectSourceByWeight().Tokenizer, prop, value),
-			getOwnPropertyDescriptor: (prop) => Reflect.getOwnPropertyDescriptor(selectSourceByWeight().Tokenizer, prop),
-			has: (prop) => Reflect.has(selectSourceByWeight().Tokenizer, prop),
-			ownKeys: () => Reflect.ownKeys(selectSourceByWeight().Tokenizer),
+		tokenizer: new Proxy({}, {
+			get: (prop) => Reflect.get(selectSourceByWeight().tokenizer, prop),
+			set: (prop, value) => Reflect.set(selectSourceByWeight().tokenizer, prop, value),
+			getOwnPropertyDescriptor: (prop) => Reflect.getOwnPropertyDescriptor(selectSourceByWeight().tokenizer, prop),
+			has: (prop) => Reflect.has(selectSourceByWeight().tokenizer, prop),
+			ownKeys: () => Reflect.ownKeys(selectSourceByWeight().tokenizer),
 		})
 	}
 	return result

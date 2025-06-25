@@ -291,7 +291,7 @@ urlencode() {
 create_desktop_shortcut() {
 	echo "Creating desktop shortcut..."
 	local shortcut_name="fount"
-	local icon_path="$FOUNT_DIR/src/public/favicon.ico"
+	local icon_path="$FOUNT_DIR/src/pages/favicon.ico"
 
 	if [ "$OS_TYPE" = "Linux" ]; then
 		install_package "xdg-open" "xdg-utils" || return 1
@@ -343,7 +343,7 @@ EOF
 		echo "Creating macOS application bundle at $app_path"
 
 		mkdir -p "$app_path/Contents/MacOS" "$app_path/Contents/Resources"
-		local icns_path="$FOUNT_DIR/src/public/favicon.icns"
+		local icns_path="$FOUNT_DIR/src/pages/favicon.icns"
 		local icon_name="favicon.icns"
 		# 如果 .icns 不存在但 sips 命令存在，则转换 .ico
 		if [ ! -f "$icns_path" ] && command -v sips &>/dev/null; then
@@ -355,6 +355,7 @@ EOF
 			cp "$icon_path" "$app_path/Contents/Resources/favicon.ico"
 			icon_name="favicon.ico"
 		fi
+		rm -f "$icns_path"
 
 		# 创建 Info.plist 文件，包含协议注册信息
 		cat <<EOF >"$app_path/Contents/Info.plist"

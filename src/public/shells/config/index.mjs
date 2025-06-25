@@ -1,4 +1,4 @@
-import { createJsonEditor } from '../../scripts/jsoneditor.mjs'
+import { createJsonEditor } from '../../scripts/jsonEditor.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 import { getPartTypes, getParts, getPartDetails, saveConfigData, getConfigData } from './src/public/endpoints.mjs' // 导入 API 模块
 import { showErrorMessage } from './src/public/error.mjs'

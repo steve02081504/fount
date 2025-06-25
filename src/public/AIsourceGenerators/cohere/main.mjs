@@ -37,7 +37,7 @@ async function GetSource(config) {
 				description_markdown: 'cohere',
 				version: '0.0.0',
 				author: 'steve02081504',
-				homepage: '',
+				home_page: '',
 				tags: ['cohere'],
 			}
 		},
@@ -110,7 +110,7 @@ ${chatLogEntry.content}
 				content: text
 			}
 		},
-		Tokenizer: {
+		tokenizer: {
 			free: () => 0,
 			encode: (prompt) => cohere.tokenize({
 				model: config.model,

@@ -189,8 +189,8 @@
 				"noTags": "Nessun tag",
 				"version": "Versione",
 				"author": "Autore",
-				"homepage": "Homepage",
-				"issuepage": "Segnala un problema",
+				"home_page": "Homepage",
+				"issue_page": "Segnala un problema",
 				"defaultCheckbox": {
 					"title": "Imposta come personaggio predefinito"
 				}
@@ -209,8 +209,8 @@
 				"noTags": "Nessun tag",
 				"version": "Versione",
 				"author": "Autore",
-				"homepage": "Homepage",
-				"issuepage": "Segnala un problema",
+				"home_page": "Homepage",
+				"issue_page": "Segnala un problema",
 				"defaultCheckbox": {
 					"title": "Imposta come mondo predefinito"
 				}
@@ -229,8 +229,8 @@
 				"noTags": "Nessun tag",
 				"version": "Versione",
 				"author": "Autore",
-				"homepage": "Homepage",
-				"issuepage": "Segnala un problema",
+				"home_page": "Homepage",
+				"issue_page": "Segnala un problema",
 				"defaultCheckbox": {
 					"title": "Imposta come persona predefinita"
 				}
@@ -727,7 +727,7 @@
 	"404": {
 		"title": "Pagina non trovata",
 		"pageNotFoundText": "Ops! Sembra che tu sia finito in una pagina inesistente.",
-		"homepageButton": "Torna alla homepage",
+		"homepageButton": "Torna alla home_page",
 		"MineSweeper": {
 			"difficultyLabel": "Difficoltà:",
 			"difficultyEasy": "Facile",

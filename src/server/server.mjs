@@ -90,7 +90,7 @@ export function deletePartRouter(username, parttype, partname) {
 	if (!Object.keys(PartsRouters[username]).length) delete PartsRouters[username]
 }
 FinalRouter.use((req, res) => {
-	if (req.accepts('html')) return res.status(404).sendFile(__dirname + '/src/public/404.html')
+	if (req.accepts('html')) return res.status(404).sendFile(__dirname + '/src/pages/404.html')
 	res.status(404).type('txt').send('Not found')
 })
 const errorHandler = (err, req, res, next) => {
@@ -160,11 +160,11 @@ export async function init(start_config) {
 		console.freshLine('server start', await geti18n('fountConsole.server.starting'))
 		const { registerEndpoints } = await import('./endpoints.mjs')
 		registerEndpoints(mainRouter)
-		mainRouter.use(express.static(__dirname + '/src/public'))
+		mainRouter.use(express.static(__dirname + '/src/pages'))
 		mainRouter.use((req, res, next) => {
 			if (req.method != 'GET') return next()
 			if (req.path == '/apple-touch-icon.png' || req.path == '/apple-touch-icon-precomposed.png')
-				return res.sendFile(__dirname + '/src/public/favicon.png')
+				return res.sendFile(__dirname + '/src/pages/favicon.png')
 			return next()
 		})
 		const { port, https: httpsConfig } = config // 获取 HTTPS 配置
