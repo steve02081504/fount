@@ -43,18 +43,18 @@ function Test-PWSHModule([string]$ModuleName) {
 if ($args.Count -gt 0 -and $args[0] -eq 'open') {
 	if ($IN_DOCKER) {
 		$runargs = $args[1..$args.Count]
-		fount @runargs
+		fount.ps1 @runargs
 		exit
 	}
 	Start-Process 'https://steve02081504.github.io/fount/wait'
 	$runargs = $args[1..$args.Count]
-	fount @runargs
+	fount.ps1 @runargs
 	exit
 }
 elseif ($args.Count -gt 0 -and $args[0] -eq 'background') {
 	if ($IN_DOCKER) {
 		$runargs = $args[1..$args.Count]
-		fount @runargs
+		fount.ps1 @runargs
 		exit
 	}
 	Test-PWSHModule ps12exe
@@ -70,7 +70,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'background') {
 elseif ($args.Count -gt 0 -and $args[0] -eq 'protocolhandle') {
 	if ($IN_DOCKER) {
 		$runargs = $args[1..$args.Count]
-		fount @runargs
+		fount.ps1 @runargs
 		exit
 	}
 	$protocolUrl = $args[1]
@@ -91,7 +91,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'protocolhandle') {
 		Start-Process $targetUrl
 	} -ArgumentList $targetUrl
 	$runargs = $args[2..$args.Count]
-	fount @runargs
+	fount.ps1 @runargs
 	exit
 }
 
