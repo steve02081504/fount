@@ -65,7 +65,7 @@ export async function copyChats(chatids) {
 	})
 
 	if (!response.ok)
-		throw new Error(`API request failed with status ${response.status}`)
+		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => {}))
 
 	return response.json()
 }
@@ -86,7 +86,7 @@ export async function deleteChats(chatids) {
 	})
 
 	if (!response.ok)
-		throw new Error(`API request failed with status ${response.status}`)
+		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => {}))
 
 	return response.json()
 }
@@ -107,7 +107,7 @@ export async function exportChats(chatids) {
 	})
 
 	if (!response.ok)
-		throw new Error(`API request failed with status ${response.status}`)
+		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => {}))
 
 	return response.json()
 }
