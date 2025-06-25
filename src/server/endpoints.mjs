@@ -5,7 +5,7 @@ import { ms } from '../scripts/ms.mjs'
 import { getLoadedPartList, getPartList, loadPart, partsList } from './managers/index.mjs'
 import { processIPCCommand } from './ipc_server.mjs'
 import { is_local_ip, is_local_ip_from_req, rateLimit } from '../scripts/ratelimit.mjs'
-import { hosturl } from './server.mjs'
+import { hosturl, __dirname } from './server.mjs'
 import express from 'npm:express@^5.1.0'
 import cors from 'npm:cors'
 import { Readable } from 'node:stream'
@@ -133,6 +133,7 @@ export function registerEndpoints(router) {
 	})
 
 	const user_static = {}
+	const public_static = express.static(__dirname + '/src/public')
 	for (const part of partsList) {
 		router.get('/api/getlist/' + part, authenticate, async (req, res) => {
 			const { username } = await getUserByReq(req)
@@ -162,8 +163,7 @@ export function registerEndpoints(router) {
 			try {
 				const { username } = await getUserByReq(req)
 				const loader = loadPart(username, part, partName)
-				if (path.startsWith('/api/')) await loader
-				else if (path.startsWith('/ws/')) await loader
+				if (path.startsWith('/api/') || path.startsWith('/ws/')) await loader
 			} catch (e) { }
 
 			return next()
@@ -174,6 +174,6 @@ export function registerEndpoints(router) {
 			const { username } = await getUserByReq(req)
 			user_static[username] ??= express.static(getUserDictionary(username))
 			return user_static[username](req, res, next)
-		})
+		}, public_static)
 	}
 }

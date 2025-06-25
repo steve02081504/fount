@@ -50,7 +50,7 @@ async function GetSource(config) {
 				description_markdown: 'Grok AI Chat',
 				version: '0.1.0',
 				author: 'Your Name',
-				homepage: 'https://grok.com/',
+				home_page: 'https://grok.com/',
 				tags: ['Grok'],
 			}
 		},
@@ -133,7 +133,7 @@ ${chatLogEntry.content}
 			}
 		},
 
-		Tokenizer: {
+		tokenizer: {
 			free: () => 0, // 或者根据实际情况计算
 			encode: (prompt) => prompt, // Grok 不需要特殊的编码
 			decode: (tokens) => tokens,

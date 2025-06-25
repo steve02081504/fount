@@ -189,8 +189,8 @@
 				"noTags": "Sem etiquetas",
 				"version": "Versão",
 				"author": "Autor",
-				"homepage": "Página inicial",
-				"issuepage": "Comunicar problemas",
+				"home_page": "Página inicial",
+				"issue_page": "Comunicar problemas",
 				"defaultCheckbox": {
 					"title": "Definir como personagem padrão"
 				}
@@ -209,8 +209,8 @@
 				"noTags": "Sem etiquetas",
 				"version": "Versão",
 				"author": "Autor",
-				"homepage": "Página inicial",
-				"issuepage": "Comunicar problemas",
+				"home_page": "Página inicial",
+				"issue_page": "Comunicar problemas",
 				"defaultCheckbox": {
 					"title": "Definir como mundo padrão"
 				}
@@ -229,8 +229,8 @@
 				"noTags": "Sem etiquetas",
 				"version": "Versão",
 				"author": "Autor",
-				"homepage": "Página inicial",
-				"issuepage": "Comunicar problemas",
+				"home_page": "Página inicial",
+				"issue_page": "Comunicar problemas",
 				"defaultCheckbox": {
 					"title": "Definir como persona padrão"
 				}

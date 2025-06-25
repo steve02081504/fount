@@ -9,7 +9,7 @@ export async function notify(title, message, options = {}) {
 	return new Promise((resolve, reject) => notifier.notify({
 		title,
 		message,
-		icon: path.join(__dirname, process.platform === 'win32' ? '/src/public/favicon.ico' : '/src/public/favicon.ico'),
+		icon: path.join(__dirname, process.platform === 'win32' ? '/src/pages/favicon.ico' : '/src/pages/favicon.ico'),
 		...options
 	}, function (err, response, metadata) {
 		if (err) reject(err)

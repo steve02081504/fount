@@ -44,12 +44,12 @@ if ($args.Count -gt 0 -and $args[0] -eq 'open') {
 	# [合并] 如果在 Docker 容器中，直接执行 fount 并退出，不进行桌面集成操作
 	if ($IN_DOCKER) {
 		$runargs = $args[1..$args.Count]
-		fount @runargs
+		fount.ps1 @runargs
 		exit
 	}
 	Start-Process 'https://steve02081504.github.io/fount/wait'
 	$runargs = $args[1..$args.Count]
-	fount @runargs
+	fount.ps1 @runargs
 	exit
 }
 # 处理 'background' 参数：在后台启动 fount 进程
@@ -57,7 +57,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'background') {
 	# [合并] 如果在 Docker 容器中，直接执行 fount 并退出
 	if ($IN_DOCKER) {
 		$runargs = $args[1..$args.Count]
-		fount @runargs
+		fount.ps1 @runargs
 		exit
 	}
 	# 确保 ps12exe 模块已安装，用于将 PowerShell 脚本编译为可执行文件
@@ -83,7 +83,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'protocolhandle') {
 	# [合并] 如果在 Docker 容器中，直接执行 fount 并退出
 	if ($IN_DOCKER) {
 		$runargs = $args[1..$args.Count]
-		fount @runargs
+		fount.ps1 @runargs
 		exit
 	}
 	$protocolUrl = $args[1]
@@ -148,7 +148,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'protocolhandle') {
 
 	# 将剩余参数传递给 fount 运行
 	$runargs = $args[2..$args.Count]
-	fount @runargs
+	fount.ps1 @runargs
 	exit
 }
 
@@ -572,7 +572,7 @@ if (!(Test-Path -Path "$FOUNT_DIR/data") -or ($args.Count -gt 0 -and $args[0] -e
 		$shortcutTargetPath = "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe"
 		$shortcutArguments = "-p fount powershell.exe $shortcutArguments" # 在已有参数前添加 -p fount
 	}
-	$shortcutIconLocation = "$FOUNT_DIR\src\public\favicon.ico"
+	$shortcutIconLocation = "$FOUNT_DIR\src\pages\favicon.ico"
 
 	# 创建桌面快捷方式
 	$desktopPath = [Environment]::GetFolderPath("Desktop")
@@ -626,7 +626,7 @@ if (!(Test-Path -Path "$FOUNT_DIR/data") -or ($args.Count -gt 0 -and $args[0] -e
 				name              = "fount"
 				commandline       = "fount.bat keepalive"
 				startingDirectory = $FOUNT_DIR
-				icon              = Join-Path $FOUNT_DIR src/public/favicon.ico
+				icon              = Join-Path $FOUNT_DIR src/pages/favicon.ico
 			}
 		)
 	} | ConvertTo-Json -Depth 100 -Compress

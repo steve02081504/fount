@@ -1,7 +1,7 @@
 /** @typedef {import('../../../../../src/decl/WorldAPI.ts').WorldAPI_t} WorldAPI_t */
 /** @typedef {import('../../../../../src/decl/AIsource.ts').AIsource_t} AIsource_t */
 
-import { loadAIsource } from '../../../../../src/server/managers/AIsources_manager.mjs'
+import { loadAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
 
 const summary = {
 	/** @type {AIsource_t} */

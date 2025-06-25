@@ -189,8 +189,8 @@
 				"noTags": "Aucune étiquette",
 				"version": "Version",
 				"author": "Auteur",
-				"homepage": "Page d'accueil",
-				"issuepage": "Signaler un problème",
+				"home_page": "Page d'accueil",
+				"issue_page": "Signaler un problème",
 				"defaultCheckbox": {
 					"title": "Définir comme personnage par défaut"
 				}
@@ -209,8 +209,8 @@
 				"noTags": "Aucune étiquette",
 				"version": "Version",
 				"author": "Auteur",
-				"homepage": "Page d'accueil",
-				"issuepage": "Signaler un problème",
+				"home_page": "Page d'accueil",
+				"issue_page": "Signaler un problème",
 				"defaultCheckbox": {
 					"title": "Définir comme monde par défaut"
 				}
@@ -229,8 +229,8 @@
 				"noTags": "Aucune étiquette",
 				"version": "Version",
 				"author": "Auteur",
-				"homepage": "Page d'accueil",
-				"issuepage": "Signaler un problème",
+				"home_page": "Page d'accueil",
+				"issue_page": "Signaler un problème",
 				"defaultCheckbox": {
 					"title": "Définir comme persona par défaut"
 				}
