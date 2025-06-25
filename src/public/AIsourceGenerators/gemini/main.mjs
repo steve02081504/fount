@@ -198,7 +198,7 @@ ${chatLogEntry.content}
 `
 						},
 						...await Promise.all((chatLogEntry.files || []).map(async file => {
-							const originalMimeType = file.mimeType || mime.lookup(file.name) || 'application/octet-stream'
+							const originalMimeType = file.mime_type || mime.lookup(file.name) || 'application/octet-stream'
 							let bufferToUpload = file.buffer
 							const detectedCharset = originalMimeType.match(/charset=([^;]+)/i)?.[1]?.trim?.()
 
@@ -206,28 +206,28 @@ ${chatLogEntry.content}
 								const decodedString = bufferToUpload.toString(detectedCharset)
 								bufferToUpload = Buffer.from(decodedString, 'utf-8')
 							} catch (_) { }
-							let mimeType = file.mimeType?.split?.(';')?.[0]
+							let mime_type = file.mime_type?.split?.(';')?.[0]
 
-							if (!supportedFileTypes.includes(mimeType)) {
-								const textMimeType = 'text/' + mimeType.split('/')[1]
-								if (supportedFileTypes.includes(textMimeType)) mimeType = textMimeType
+							if (!supportedFileTypes.includes(mime_type)) {
+								const textMimeType = 'text/' + mime_type.split('/')[1]
+								if (supportedFileTypes.includes(textMimeType)) mime_type = textMimeType
 								else if ([
 									'application/json',
 									'application/xml',
 									'application/yaml',
 									'application/rls-services+xml',
-								].includes(mimeType)) mimeType = 'text/plain'
+								].includes(mime_type)) mime_type = 'text/plain'
 								else if ([
 									'audio/mpeg',
-								].includes(mimeType)) mimeType = 'audio/mp3'
+								].includes(mime_type)) mime_type = 'audio/mp3'
 							}
-							if (!supportedFileTypes.includes(mimeType)) {
-								console.warn(`Unsupported file type: ${mimeType} for file ${file.name}`)
-								return { text: `[System Notice: can't show you about file '${file.name}' because you cant take the file input of type '${mimeType}', but you may be able to access it by using code tools if you have.]` }
+							if (!supportedFileTypes.includes(mime_type)) {
+								console.warn(`Unsupported file type: ${mime_type} for file ${file.name}`)
+								return { text: `[System Notice: can't show you about file '${file.name}' because you cant take the file input of type '${mime_type}', but you may be able to access it by using code tools if you have.]` }
 							}
 							try {
-								const uploadedFile = await uploadToGemini(file.name, file.buffer, mimeType)
-								return createPartFromUri(uploadedFile.uri, uploadedFile.mimeType)
+								const uploadedFile = await uploadToGemini(file.name, file.buffer, mime_type)
+								return createPartFromUri(uploadedFile.uri, uploadedFile.mime_type)
 							}
 							catch (error) {
 								console.error(`Failed to process file ${file.name} for prompt:`, error)
@@ -299,13 +299,13 @@ ${is_ImageGeneration
 				for (const part of parts)
 					if (part.text) text += part.text
 					else if (part.inlineData) try {
-						const { mimeType, data } = part.inlineData
-						const fileExtension = mime.extension(mimeType) || 'png'
+						const { mime_type, data } = part.inlineData
+						const fileExtension = mime.extension(mime_type) || 'png'
 						const fileName = `${files.length}.${fileExtension}`
 						const dataBuffer = Buffer.from(data, 'base64')
 						files.push({
 							name: fileName,
-							mimeType,
+							mime_type,
 							buffer: dataBuffer
 						})
 					} catch (error) {

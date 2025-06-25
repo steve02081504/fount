@@ -13,7 +13,7 @@ export class chatReply_t {
 	content_for_edit?: string
 	files?: {
 		name: string;
-		mimeType: string;
+		mime_type: string;
 		buffer: Buffer;
 		description: string;
 	}[]
@@ -65,7 +65,7 @@ export class chatLogEntry_t {
 	content_for_edit?: string
 	files: {
 		name: string;
-		mimeType: string;
+		mime_type: string;
 		buffer: Buffer;
 		description: string;
 	}[]

@@ -1,9 +1,10 @@
 import { initTranslations } from '../../scripts/i18n.mjs'
-import { renderTemplate } from '../../scripts/template.mjs'
+import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
 import { applyTheme, builtin_themes, setTheme, getCurrentTheme } from '../../scripts/theme.mjs'
 
 applyTheme()
 await initTranslations('themeManage')
+usingTemplates('/shells/themeManage/templates')
 
 const themeList = document.getElementById('theme-list')
 

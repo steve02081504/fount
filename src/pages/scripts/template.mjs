@@ -40,8 +40,14 @@ export function createDOMFromHtmlString(htmlString) {
 	return div.children.length == 1 ? div.children[0] : div
 }
 
+let templatePath
+
+export function usingTemplates(path) {
+	templatePath = path
+}
+
 export async function renderTemplate(template, data) {
-	template_cache[template] ??= fetch('/template/' + template + '.html').then(response => response.text())
+	template_cache[template] ??= fetch(templatePath + '/' + template + '.html').then(response => response.text())
 	let html = template_cache[template] = await template_cache[template]
 
 	const data_unpacker = `let { ${Object.keys(data).join(', ')} } = data;`

@@ -109,7 +109,7 @@ function messageIsEqual(a, b) {
 	if ((a.files || []).length != (b.files || []).length) return false
 	for (let i = 0; i < a.files.length; i++) {
 		if (!a.files[i] || !b.files[i]) return false
-		for (const key of ['name', 'buffer', 'mimeType', 'description'])
+		for (const key of ['name', 'buffer', 'mime_type', 'description'])
 			if (a.files[i][key] != b.files[i][key]) return false
 	}
 	return true

@@ -22,7 +22,7 @@ export type chatLogEntry_t = {
 	content: string;
 	files: {
 		name: string;
-		mimeType: string;
+		mime_type: string;
 		buffer: Buffer;
 		description: string;
 	}[];

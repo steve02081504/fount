@@ -235,7 +235,7 @@ export async function TelegramMessageToFountChatLogEntry(ctx, messageHolder, bot
 			files.push({
 				name: `${photo.file_unique_id}.jpg`,
 				buffer,
-				mimeType: 'image/jpeg',
+				mime_type: 'image/jpeg',
 				description: message.caption || '图片'
 			})
 		} else if (telegramApi && 'document' in message && message.document) {
@@ -246,7 +246,7 @@ export async function TelegramMessageToFountChatLogEntry(ctx, messageHolder, bot
 			files.push({
 				name: doc.file_name || `${doc.file_unique_id}`,
 				buffer,
-				mimeType: doc.mime_type || 'application/octet-stream',
+				mime_type: doc.mime_type || 'application/octet-stream',
 				description: message.caption || '文件'
 			})
 		} else if (telegramApi && 'voice' in message && message.voice) {
@@ -257,7 +257,7 @@ export async function TelegramMessageToFountChatLogEntry(ctx, messageHolder, bot
 			files.push({
 				name: `${voice.file_unique_id}.ogg`,
 				buffer,
-				mimeType: voice.mime_type || 'audio/ogg',
+				mime_type: voice.mime_type || 'audio/ogg',
 				description: '语音消息'
 			})
 		} else if (telegramApi && 'audio' in message && message.audio) {
@@ -268,7 +268,7 @@ export async function TelegramMessageToFountChatLogEntry(ctx, messageHolder, bot
 			files.push({
 				name: audio.file_name || `${audio.file_unique_id}.${audio.mime_type?.split('/')[1] || 'mp3'}`,
 				buffer,
-				mimeType: audio.mime_type || 'audio/mpeg',
+				mime_type: audio.mime_type || 'audio/mpeg',
 				description: audio.title || '音频文件'
 			})
 		} else if (telegramApi && 'video' in message && message.video) {
@@ -279,7 +279,7 @@ export async function TelegramMessageToFountChatLogEntry(ctx, messageHolder, bot
 			files.push({
 				name: video.file_name || `${video.file_unique_id}.${video.mime_type?.split('/')[1] || 'mp4'}`,
 				buffer,
-				mimeType: video.mime_type || 'video/mp4',
+				mime_type: video.mime_type || 'video/mp4',
 				description: message.caption || '视频文件'
 			})
 		}

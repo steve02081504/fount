@@ -36,7 +36,7 @@ export async function renderMessage(message) {
 		safeTimeStamp: processTimeStampForId(message.time_stamp)
 	}
 
-	const messageElement = await renderTemplate('chat/message_view', preprocessedMessage)
+	const messageElement = await renderTemplate('message_view', preprocessedMessage)
 
 	// --- 删除按钮 ---
 	const deleteButton = messageElement.querySelector('.delete-button')

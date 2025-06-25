@@ -1,4 +1,4 @@
-import { renderTemplate } from '../../scripts/template.mjs'
+import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
 import {
 	getCharDetails, noCacheGetCharDetails, getCharList,
 	getPersonaList, getPersonaDetails, noCacheGetPersonaDetails,
@@ -12,6 +12,8 @@ import { svgInliner } from '../../scripts/svgInliner.mjs'
 import { setDefaultPart, getHomeRegistry, getDefaultParts } from './src/public/endpoints.mjs'
 
 localStorage.setItem('visited_home', '1')
+
+usingTemplates('/shells/home/src/public/templates')
 
 const charContainer = document.getElementById('char-container')
 const worldContainer = document.getElementById('world-container')
@@ -81,7 +83,7 @@ async function renderItemView(itemType, itemDetails, itemName) {
 	if (ItemDOMCache[cacheKey]?.info && JSON.stringify(ItemDOMCache[cacheKey].info) === JSON.stringify(itemDetails))
 		return ItemDOMCache[cacheKey].node
 
-	const templateName = `home/${itemType.slice(0, -1)}_list_view`
+	const templateName = `${itemType.slice(0, -1)}_list_view`
 	const itemElement = await renderTemplate(templateName, itemDetails)
 	itemElement.dataset.name = itemName
 	await attachCardEventListeners(itemElement, itemDetails, itemName, homeRegistry[`home_${itemType.slice(0, -1)}_interfaces`])
