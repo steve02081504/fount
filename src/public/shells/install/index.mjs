@@ -1,8 +1,9 @@
-import { renderTemplate } from '../../scripts/template.mjs'
+import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
 import { importFiles, importText } from './src/public/endpoints.mjs'
 
+usingTemplates('/shells/install/src/public/templates')
 applyTheme()
 
 const fileImportTab = document.getElementById('file-import-tab')
