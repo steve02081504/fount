@@ -93,8 +93,12 @@ FinalRouter.use((req, res) => {
 	if (req.accepts('html')) return res.status(404).sendFile(__dirname + '/src/pages/404.html')
 	res.status(404).type('txt').send('Not found')
 })
+export function skip_report(err) {
+	err.skip_report = true
+	return err
+}
 const errorHandler = (err, req, res, next) => {
-	Sentry.captureException(err)
+	if (!err.skip_report) Sentry.captureException(err)
 	console.error(err)
 	res.status(500).json({ message: 'Internal Server Error', errors: err.errors, error: err.message })
 }
