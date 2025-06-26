@@ -27,6 +27,7 @@ export function GetDefaultShellAssistInterface(char_API, char_name) {
 	 * 		content: string
 	 * 	})[]
 	 *  pwd: string
+	 *  screen: string
 	 * 	command_now: string
 	 * 	command_output: string
 	 * 	command_error: string
@@ -68,7 +69,14 @@ stderr: ${entry.error.includes('\n') ? '\n```\n' + entry.error + '\n```' : '`' +
 			if (entry.extension.recommend_command)
 				entry.content = entry.content.trimEnd() + `\n<recommend_command>\n${entry.extension.recommend_command}\n</recommend_command>`
 
-		let user_doing_now = `\
+		let user_doing_now = ''
+		if (args.screen) user_doing_now += `\
+现在的屏幕内容：
+\`\`\`
+${args.screen}
+\`\`\`
+`
+		user_doing_now += `\
 用户现在执行的命令：\`${args.command_now}\`
 所在路径：\`${args.pwd}\`
 `

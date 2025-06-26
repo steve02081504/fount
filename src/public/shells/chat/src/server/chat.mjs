@@ -928,16 +928,18 @@ export async function editMessage(chatid, index, new_content) {
 		}
 	}
 
-	const { timeSlice } = chatMetadata.chatLog[index]
-	let entry
-	if (timeSlice.charname) {
-		const char = timeSlice.chars[timeSlice.charname]
-		entry = await BuildChatLogEntryFromCharReply(editresult, timeSlice, char, timeSlice.charname, chatMetadata.username)
-	}
-	else
-		entry = await BuildChatLogEntryFromUserMessage(editresult, timeSlice, chatMetadata.LastTimeSlice, chatMetadata.username)
+	if (index == chatMetadata.chatLog.length - 1) {
+		const { timeSlice } = chatMetadata.chatLog[index]
+		let entry
+		if (timeSlice.charname) {
+			const char = timeSlice.chars[timeSlice.charname]
+			entry = await BuildChatLogEntryFromCharReply(editresult, timeSlice, char, timeSlice.charname, chatMetadata.username)
+		}
+		else
+			entry = await BuildChatLogEntryFromUserMessage(editresult, timeSlice, chatMetadata.LastTimeSlice, chatMetadata.username)
 
-	chatMetadata.timeLines[chatMetadata.timeLineIndex] = chatMetadata.chatLog[index] = entry
+		chatMetadata.timeLines[chatMetadata.timeLineIndex] = chatMetadata.chatLog[index] = entry
+	}
 
 	if (is_VividChat(chatMetadata)) saveChat(chatid)
 
@@ -946,6 +948,7 @@ export async function editMessage(chatid, index, new_content) {
 
 export async function getHeartbeatData(chatid, start) {
 	const chatMetadata = await loadChat(chatid)
+	if (!chatMetadata) throw new Error('Chat not found')
 	const timeSlice = chatMetadata.LastTimeSlice
 	return {
 		charlist: Object.keys(timeSlice.chars),

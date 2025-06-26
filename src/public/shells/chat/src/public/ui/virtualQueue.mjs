@@ -118,7 +118,12 @@ function messageIsEqual(a, b) {
 export async function triggerVirtualQueueHeartbeat() {
 	if (chatLogLength === null || !observer) return
 
-	const data = await triggerHeartbeat(startIndex)
+	const data = await triggerHeartbeat(startIndex).catch(error => {
+		if (error.error == 'Chat not found') {
+			window.close()
+			window.location = '/shells/home'
+		}
+	})
 	const { Messages } = data
 	delete data.Messages
 
