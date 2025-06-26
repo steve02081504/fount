@@ -13,6 +13,7 @@ import { loadWorld } from '../../../../../server/managers/world_manager.mjs'
 import { Buffer } from 'node:buffer'
 import fs from 'node:fs'
 import { addfile, getfile } from './files.mjs'
+import { skip_report } from '../../../../../server/server.mjs'
 
 /**
  * Structure of the chat metadata map:
@@ -948,7 +949,7 @@ export async function editMessage(chatid, index, new_content) {
 
 export async function getHeartbeatData(chatid, start) {
 	const chatMetadata = await loadChat(chatid)
-	if (!chatMetadata) throw new Error('Chat not found')
+	if (!chatMetadata) throw skip_report(new Error('Chat not found'))
 	const timeSlice = chatMetadata.LastTimeSlice
 	return {
 		charlist: Object.keys(timeSlice.chars),

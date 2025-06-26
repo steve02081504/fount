@@ -1,6 +1,7 @@
 import { getUserDictionary } from '../auth.mjs'
 import { loadJsonFile, saveJsonFile } from '../../scripts/json_loader.mjs'
 import { isPartLoaded, loadPartBase, unloadPartBase } from '../parts_loader.mjs'
+import { skip_report } from '../server.mjs'
 
 function GetPath(username, partname) {
 	return getUserDictionary(username) + '/AIsources/' + partname
@@ -31,7 +32,9 @@ export async function loadAIsource(username, AIsourcename) {
 	return loadPartBase(username, 'AIsources', AIsourcename, null, {
 		pathGetter: () => GetPath(username, AIsourcename),
 		Loader: async (path) => {
-			const data = loadJsonFile(path + '.json')
+			let data
+			try { data = loadJsonFile(path + '.json') }
+			catch(e) { throw skip_report(e) }
 			const AIsource = await loadAIsourceFromConfigData(username, data, {
 				SaveConfig: (newdata = data) => {
 					saveJsonFile(path + '.json', newdata)

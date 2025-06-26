@@ -2,7 +2,7 @@
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
 import { loadAIsourceFromNameOrConfigData } from '../../../server/managers/AIsource_manager.mjs'
-import { parseRegexFromString } from '../../scripts/regex.mjs'
+import { parseRegexFromString } from '../../../scripts/regex.mjs'
 
 function getSinglePartPrompt() {
 	return {

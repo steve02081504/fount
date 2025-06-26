@@ -1,6 +1,7 @@
 import { LoadImportHandler } from './importHandler_manager.mjs'
 import { getPartListBase, GetPartPath } from '../../../../../server/parts_loader.mjs'
 import { loadJsonFileIfExists } from '../../../../../scripts/json_loader.mjs'
+import { skip_report } from '../../../../../server/server.mjs'
 
 function getImportHandlerList(username) {
 	return getPartListBase(username, 'ImportHandlers').map(
@@ -26,7 +27,7 @@ export async function importPart(username, data) {
 
 	// 如果所有模板都失败，抛出包含所有错误的异常
 	if (errors.length > 0)
-		throw Object.assign(new Error('All handlers failed'), { errors })
+		throw skip_report(Object.assign(new Error('All handlers failed'), { errors }))
 }
 
 export async function importPartByText(username, text) {
