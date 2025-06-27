@@ -293,7 +293,6 @@ async function getChatRequest(chatid, charname) {
 			add_message: true,
 		},
 		chat_name: 'common_chat_' + chatid,
-		chat_id: chatid,
 		char_id: charname,
 		username,
 		UserCharname,
