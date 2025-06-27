@@ -222,7 +222,7 @@ const charAPI_definition = { // 先定义结构主体
 				}
 
 				regen_loop: while (true) {
-					const requestResult = await AIsource.StructCall(prompt_struct, args.chat_id, args.message_id)
+					const requestResult = await AIsource.StructCall(prompt_struct)
 					result.content = requestResult.content
 					result.files = (result.files || []).concat(requestResult.files || [])
 					result.extension = { ...result.extension, ...requestResult.extension }

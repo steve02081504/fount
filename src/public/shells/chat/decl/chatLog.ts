@@ -34,7 +34,6 @@ export class chatReplyRequest_t {
 		add_message: boolean;
 	}
 	chat_name: string
-	chat_id: string
 	char_id: string
 	username: string
 	Charname: string
