@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# fount脚本需要兼容mac的上古版本bash，尽量避免使用新版本语法
+
 # 定义常量和路径
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 FOUNT_DIR=$(dirname "$SCRIPT_DIR")
@@ -35,6 +37,7 @@ load_installed_packages() {
 	if [[ -n "$FOUNT_AUTO_INSTALLED_PACKAGES" ]]; then
 		IFS=';' read -r -a FOUNT_AUTO_INSTALLED_PACKAGES_ARRAY <<<"$FOUNT_AUTO_INSTALLED_PACKAGES"
 		INSTALLED_SYSTEM_PACKAGES_ARRAY+=("${FOUNT_AUTO_INSTALLED_PACKAGES_ARRAY[@]}")
+		# shellcheck disable=SC2207
 		INSTALLED_SYSTEM_PACKAGES_ARRAY=($(echo "${INSTALLED_SYSTEM_PACKAGES_ARRAY[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
 		(
 			IFS=';'
@@ -179,6 +182,7 @@ install_package() {
 	local command_name="$1"
 	# 如果第二个参数为空，则默认为命令名
 	local package_list_str="${2:-$command_name}"
+	# shellcheck disable=SC2206
 	local package_list=($package_list_str)
 
 	if command -v "$command_name" &>/dev/null; then
@@ -276,9 +280,7 @@ patch_deno() {
 
 	install_package "patchelf" "patchelf" || return 1
 
-	patchelf --set-rpath '${ORIGIN}/../glibc/lib' --set-interpreter "${PREFIX}/glibc/lib/ld-linux-aarch64.so.1" "$deno_bin"
-
-	if [ $? -ne 0 ]; then
+	if ! patchelf --set-rpath "${ORIGIN}/../glibc/lib" --set-interpreter "${PREFIX}/glibc/lib/ld-linux-aarch64.so.1" "$deno_bin"; then
 		echo "Error: Failed to patch Deno executable with patchelf." >&2
 		return 1
 	else
@@ -443,7 +445,7 @@ on run argv
 		end repeat
 	end if
 
-	set final_command_in_terminal to ":; (" & command_to_execute & "; echo; echo ''Fount has exited. Press Enter to close this window...''; read -r)"
+	set final_command_in_terminal to ":; (" & command_to_execute & "; echo; echo \"Fount has exited. Press Enter to close this window...\"; read -r)"
 
 	tell application "Terminal"
 		activate
@@ -470,15 +472,14 @@ EOF
 
 		local LSREGISTER_PATH="/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister"
 		if [ -f "$LSREGISTER_PATH" ]; then
-			"$LSREGISTER_PATH" -f "$app_path"
-			if [ $? -ne 0 ]; then
+			if ! "$LSREGISTER_PATH" -f "$app_path"; then
 				echo "Warning: Failed to register application with LaunchServices using lsregister." >&2
 				# 操你妈，跟你爆了
-				killall -KILL lsd
+				killall lsd
 			fi
 		else
 			# 操你妈，跟你爆了
-			killall -KILL lsd
+			killall lsd
 		fi
 
 		if [ -d "$app_path" ]; then
@@ -562,7 +563,7 @@ fount_ipc_internal() {
 }
 test_fount_running_internal() { fount_ipc_internal "ping" "{}"; }
 
-local timeout=60 elapsed=0
+timeout=60 elapsed=0
 while ! test_fount_running_internal; do
 	sleep 1; elapsed=$((elapsed + 1))
 	if [ "$elapsed" -ge "$timeout" ]; then
@@ -570,10 +571,10 @@ while ! test_fount_running_internal; do
 	fi
 done
 echo "Fount server is running. Opening URL..." >&2
-local os_type_internal=$(uname -s)
-if [ "$os_type_internal" = "Linux" ]; then
+os_type=$(uname -s)
+if [ "$os_type" = "Linux" ]; then
 	xdg-open "$TARGET_URL" >/dev/null 2>&1
-elif [ "$os_type_internal" = "Darwin" ]; then
+elif [ "$os_type" = "Darwin" ]; then
 	open "$TARGET_URL" >/dev/null 2>&1
 fi
 EOF
@@ -588,7 +589,7 @@ if [[ $# -gt 0 ]]; then
 	case "$1" in
 	open)
 		ensure_dependencies "open" || exit 1
-		local TARGET_URL='https://steve02081504.github.io/fount/wait'
+		TARGET_URL='https://steve02081504.github.io/fount/wait'
 		if [ "$OS_TYPE" = "Linux" ]; then
 			xdg-open "$TARGET_URL" >/dev/null 2>&1
 		elif [ "$OS_TYPE" = "Darwin" ]; then
@@ -602,13 +603,14 @@ if [[ $# -gt 0 ]]; then
 		exit 0
 		;;
 	protocolhandle)
-		local protocolUrl="$2"
+		protocolUrl="$2"
 		if [ -z "$protocolUrl" ]; then
 			echo "Error: No URL provided." >&2
 			exit 1
 		fi
 		ensure_dependencies "protocolhandle" || exit 1
-		export TARGET_URL="https://steve02081504.github.io/fount/protocol/?url=$(urlencode "$protocolUrl")"
+		TARGET_URL="https://steve02081504.github.io/fount/protocol/?url=$(urlencode "$protocolUrl")"
+		export TARGET_URL
 		nohup bash -c "$BACKGROUND_IPC_JOB" >/dev/null 2>&1 &
 		"$0" "${@:3}"
 		exit $?
@@ -620,23 +622,19 @@ fi
 fount_upgrade() {
 	ensure_dependencies "upgrade" || return 0
 	if [ ! -d "$FOUNT_DIR/.git" ]; then
-		echo "Fount repository not found, cloning..."
-		rm -rf "$FOUNT_DIR/.git-clone"
-		mkdir -p "$FOUNT_DIR/.git-clone"
-		git clone https://github.com/steve02081504/fount.git "$FOUNT_DIR/.git-clone" --no-checkout --depth 1 --single-branch
-		if [ $? -ne 0 ]; then
-			echo "Error: Failed to clone fount repository." >&2
-			exit 1
+		echo "Fount's git repository not found, initializing a new one..."
+		git -C "$FOUNT_DIR" init -b master
+		git -C "$FOUNT_DIR" remote add origin https://github.com/steve02081504/fount.git
+		echo "Fetching from remote and resetting to master..."
+		if ! git -C "$FOUNT_DIR" fetch origin --depth 1 --single-branch; then
+			echo "Failed to fetch from 'origin'."
+			return 1
 		fi
-		mv "$FOUNT_DIR/.git-clone/.git" "$FOUNT_DIR/.git"
-		rm -rf "$FOUNT_DIR/.git-clone"
-		git -C "$FOUNT_DIR" fetch origin
 		git -C "$FOUNT_DIR" clean -fd
 		git -C "$FOUNT_DIR" reset --hard "origin/master"
-		git -C "$FOUNT_DIR" checkout master
 	else
 		git -C "$FOUNT_DIR" fetch origin
-		local currentBranch remoteBranch mergeBase localCommit remoteCommit
+		local currentBranch
 		currentBranch=$(git -C "$FOUNT_DIR" rev-parse --abbrev-ref HEAD)
 		if [ "$currentBranch" = "HEAD" ]; then
 			echo "Not on a branch, switching to 'master'..."
@@ -645,6 +643,7 @@ fount_upgrade() {
 			git -C "$FOUNT_DIR" checkout master
 			currentBranch=$(git -C "$FOUNT_DIR" rev-parse --abbrev-ref HEAD)
 		fi
+		local remoteBranch
 		remoteBranch=$(git -C "$FOUNT_DIR" rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null)
 		if [ -z "$remoteBranch" ]; then
 			echo "Warning: No upstream branch configured for '$currentBranch'. Setting to 'origin/master'." >&2
@@ -654,8 +653,11 @@ fount_upgrade() {
 		if [ -n "$(git -C "$FOUNT_DIR" status --porcelain)" ]; then
 			echo "Warning: Working directory not clean. Stash or commit your changes before updating." >&2
 		fi
+		local mergeBase
 		mergeBase=$(git -C "$FOUNT_DIR" merge-base "$currentBranch" "$remoteBranch")
+		local localCommit
 		localCommit=$(git -C "$FOUNT_DIR" rev-parse "$currentBranch")
+		local remoteCommit
 		remoteCommit=$(git -C "$FOUNT_DIR" rev-parse "$remoteBranch")
 		if [ "$localCommit" != "$remoteCommit" ]; then
 			if [ "$mergeBase" = "$localCommit" ]; then
@@ -725,8 +727,11 @@ install_deno() {
 		if ! curl -fsSL https://deno.land/install.sh | sh -s -- -y; then
 			echo "Deno standard installation script failed. Attempting direct download..."
 			ensure_dependencies "deno_install_fallback" || exit 1
-			local deno_dl_url="https://github.com/denoland/deno/releases/latest/download/deno-"
-			local arch_target current_arch=$(uname -m)
+			local deno_dl_url
+			deno_dl_url="https://github.com/denoland/deno/releases/latest/download/deno-"
+			local arch_target
+			local current_arch
+			current_arch=$(uname -m)
 			case "$OS_TYPE" in
 			Linux*) [[ "$current_arch" = "aarch64" ]] && arch_target="aarch64-unknown-linux-gnu.zip" || arch_target="x86_64-unknown-linux-gnu.zip" ;;
 			Darwin*) [[ "$current_arch" = "arm64" ]] && arch_target="aarch64-apple-darwin.zip" || arch_target="x86_64-apple-darwin.zip" ;;
@@ -789,7 +794,7 @@ deno_upgrade() {
 	fi
 }
 deno_upgrade
-echo "$(run_deno -V)"
+run_deno -V
 
 # 函数: 运行 fount
 run() {
@@ -797,8 +802,10 @@ run() {
 		echo "Warning: Not Recommended: Running fount as root." >&2
 	fi
 	if [[ $IN_TERMUX -eq 1 ]]; then
+		local LANG_BACKUP
 		LANG_BACKUP="$LANG"
-		export LANG="$(getprop persist.sys.locale)"
+		LANG="$(getprop persist.sys.locale)"
+		export LANG
 		# 水秋脚本对termux的劫持移除
 		local SQsacPath="/data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/root/.bashrc"
 		if [[ -f "$SQsacPath" ]] && grep -q "bash /root/sac.sh" "$SQsacPath"; then
@@ -839,8 +846,7 @@ init)
 	;;
 keepalive)
 	runargs=("${@:2}")
-	run "${runargs[@]}"
-	while [ $? -ne 0 ]; do
+	while ! run "${runargs[@]}"; do
 		echo "Fount exited with an error, attempting to upgrade and restart..." >&2
 		deno_upgrade
 		fount_upgrade
@@ -850,13 +856,15 @@ keepalive)
 remove)
 	echo "Initiating fount uninstallation..."
 	run shutdown
-	local profile_files=("$HOME/.profile" "$HOME/.bashrc" "$HOME/.zshrc")
+	profile_files=("$HOME/.profile" "$HOME/.bashrc" "$HOME/.zshrc")
 	for profile_file in "${profile_files[@]}"; do
 		if [ -f "$profile_file" ]; then
-			run_sed_inplace '/export PATH="\$PATH:'"$ESCAPED_FOUNT_DIR\/path"'"/d' "$profile_file"
+			# shellcheck disable=SC2016
+			run_sed_inplace '/export PATH=\"$PATH:$ESCAPED_FOUNT_DIR\\/path\"/d' "$profile_file"
 		fi
 	done
-	export PATH=$(echo "$PATH" | tr ':' '\n' | grep -v "$FOUNT_DIR/path" | grep -v "$HOME/.deno/bin" | tr '\n' ':' | sed 's/:*$//')
+	PATH=$(echo "$PATH" | tr ':' '\n' | grep -v "$FOUNT_DIR/path" | grep -v "$HOME/.deno/bin" | tr '\n' ':' | sed 's/:*$//')
+	export PATH
 	remove_desktop_shortcut
 	if [[ $IN_TERMUX -eq 1 ]]; then
 		for package in "${INSTALLED_PACMAN_PACKAGES_ARRAY[@]}"; do pacman -R --noconfirm "$package"; done
