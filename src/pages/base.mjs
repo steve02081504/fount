@@ -24,12 +24,7 @@ Sentry.init({
 	_experiments: { enableLogs: true },
 })
 
-// fix firefox and safari's anchor
-if (!('anchorName' in document.documentElement.style))
-	import('https://esm.run/@oddbird/css-anchor-positioning')
-// fix of tailwindcss Play CDN
-import { fixTailwindcssCDN } from './scripts/tailwindcssCdnFixer.mjs'
-fixTailwindcssCDN()
+import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill@master/index.mjs')
 
 // register service worker
 if ('serviceWorker' in navigator)
