@@ -5,7 +5,6 @@ import { LoadChar } from '../../../../../server/managers/char_manager.mjs'
 import { getAllUserNames } from '../../../../../server/auth.mjs'
 import { StartJob, EndJob } from '../../../../../server/jobs.mjs'
 import { geti18n } from '../../../../../scripts/i18n.mjs'
-import { createSimpleDiscordInterface } from './default_interface/main.mjs'
 import { events } from '../../../../../server/events.mjs'
 /** @typedef {import('../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
 
@@ -65,7 +64,10 @@ export function getBotConfig(username, botname) {
 
 export async function getBotConfigTemplate(username, charname) {
 	const char = await LoadChar(username, charname)
-	char.interfaces.discord ??= await createSimpleDiscordInterface(char, username, charname)
+	if (!char.interfaces.discord) {
+		const { createSimpleDiscordInterface } = await import('./default_interface/main.mjs')
+		char.interfaces.discord = await createSimpleDiscordInterface(char, username, charname)
+	}
 	return await char.interfaces.discord?.GetBotConfigTemplate?.() || {}
 }
 
