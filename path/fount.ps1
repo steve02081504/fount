@@ -43,18 +43,18 @@ function Test-PWSHModule([string]$ModuleName) {
 if ($args.Count -gt 0 -and $args[0] -eq 'open') {
 	if ($IN_DOCKER) {
 		$runargs = $args[1..$args.Count]
-		fount @runargs
+		fount.ps1 @runargs
 		exit
 	}
 	Start-Process 'https://steve02081504.github.io/fount/wait'
 	$runargs = $args[1..$args.Count]
-	fount @runargs
+	fount.ps1 @runargs
 	exit
 }
 elseif ($args.Count -gt 0 -and $args[0] -eq 'background') {
 	if ($IN_DOCKER) {
 		$runargs = $args[1..$args.Count]
-		fount @runargs
+		fount.ps1 @runargs
 		exit
 	}
 	Test-PWSHModule ps12exe
@@ -70,7 +70,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'background') {
 elseif ($args.Count -gt 0 -and $args[0] -eq 'protocolhandle') {
 	if ($IN_DOCKER) {
 		$runargs = $args[1..$args.Count]
-		fount @runargs
+		fount.ps1 @runargs
 		exit
 	}
 	$protocolUrl = $args[1]
@@ -91,7 +91,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'protocolhandle') {
 		Start-Process $targetUrl
 	} -ArgumentList $targetUrl
 	$runargs = $args[2..$args.Count]
-	fount @runargs
+	fount.ps1 @runargs
 	exit
 }
 
@@ -228,20 +228,14 @@ function fount_upgrade {
 		return
 	}
 	if (!(Test-Path -Path "$FOUNT_DIR/.git")) {
-		Remove-Item -Path "$FOUNT_DIR/.git-clone" -Recurse -Force -ErrorAction SilentlyContinue
-		New-Item -ItemType Directory -Path "$FOUNT_DIR/.git-clone" | Out-Null
-		git clone https://github.com/steve02081504/fount.git "$FOUNT_DIR/.git-clone" --no-checkout --depth 1 --single-branch
-		if ($LastExitCode) {
-			Remove-Item -Path "$FOUNT_DIR/.git-clone" -Recurse -Force
-			Write-Host "Failed to clone fount repository, skipping update"
-			return
-		}
-		Move-Item -Path "$FOUNT_DIR/.git-clone/.git" -Destination "$FOUNT_DIR/.git"
-		Remove-Item -Path "$FOUNT_DIR/.git-clone" -Recurse -Force
-		git -C "$FOUNT_DIR" fetch origin
+		Write-Host "Fount's git repository not found, initializing a new one..."
+		git -C "$FOUNT_DIR" init -b master
+		git -C "$FOUNT_DIR" remote add origin https://github.com/steve02081504/fount.git
+		Write-Host "Fetching from remote and resetting to master..."
+		git -C "$FOUNT_DIR" fetch origin --depth 1 --single-branch
+		if ($LastExitCode) { Write-Error "Failed to fetch from 'origin'."; return }
 		git -C "$FOUNT_DIR" clean -fd
 		git -C "$FOUNT_DIR" reset --hard "origin/master"
-		git -C "$FOUNT_DIR" checkout master
 	}
 
 	if (!(Test-Path -Path "$FOUNT_DIR/.git")) {
@@ -415,7 +409,7 @@ if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $ar
 		$shortcutTargetPath = "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe"
 		$shortcutArguments = "-p fount powershell.exe $shortcutArguments" # Prepend -p fount to existing arguments
 	}
-	$shortcutIconLocation = "$FOUNT_DIR\src\public\favicon.ico"
+	$shortcutIconLocation = "$FOUNT_DIR\src\pages\favicon.ico"
 
 	# 创建桌面快捷方式
 	$desktopPath = [Environment]::GetFolderPath("Desktop")
@@ -469,7 +463,7 @@ if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $ar
 				name              = "fount"
 				commandline       = "fount.bat keepalive"
 				startingDirectory = $FOUNT_DIR
-				icon              = Join-Path $FOUNT_DIR src/public/favicon.ico
+				icon              = Join-Path $FOUNT_DIR src/pages/favicon.ico
 			}
 		)
 	} | ConvertTo-Json -Depth 100 -Compress

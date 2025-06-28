@@ -113,7 +113,7 @@ async function GetSource(config, { SaveConfig }) {
 				description_markdown: 'proxy',
 				version: '0.0.0',
 				author: 'steve02081504',
-				homepage: '',
+				home_page: '',
 				tags: ['proxy'],
 			}
 		},
@@ -190,7 +190,7 @@ ${chatLogEntry.content}
 				content: text
 			}
 		},
-		Tokenizer: {
+		tokenizer: {
 			free: () => 0,
 			encode: (prompt) => prompt,
 			decode: (tokens) => tokens,

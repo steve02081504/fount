@@ -36,7 +36,7 @@ async function GetSource(config) {
 				description_markdown: 'freeuse',
 				version: '0.0.0',
 				author: 'steve02081504',
-				homepage: '',
+				home_page: '',
 				tags: ['free'],
 			}
 		},
@@ -62,7 +62,7 @@ ${prompt_struct.Charname}: `
 				}),
 			}
 		},
-		Tokenizer: {
+		tokenizer: {
 			free: () => 0,
 			encode: (prompt) => prompt,
 			decode: (tokens) => tokens,

@@ -189,8 +189,8 @@
 				"noTags": "Không có thẻ",
 				"version": "Phiên bản",
 				"author": "Tác giả",
-				"homepage": "Trang chủ",
-				"issuepage": "Báo cáo sự cố",
+				"home_page": "Trang chủ",
+				"issue_page": "Báo cáo sự cố",
 				"defaultCheckbox": {
 					"title": "Đặt làm nhân vật mặc định"
 				}
@@ -209,8 +209,8 @@
 				"noTags": "Không có thẻ",
 				"version": "Phiên bản",
 				"author": "Tác giả",
-				"homepage": "Trang chủ",
-				"issuepage": "Báo cáo sự cố",
+				"home_page": "Trang chủ",
+				"issue_page": "Báo cáo sự cố",
 				"defaultCheckbox": {
 					"title": "Đặt làm thế giới mặc định"
 				}
@@ -229,8 +229,8 @@
 				"noTags": "Không có thẻ",
 				"version": "Phiên bản",
 				"author": "Tác giả",
-				"homepage": "Trang chủ",
-				"issuepage": "Báo cáo sự cố",
+				"home_page": "Trang chủ",
+				"issue_page": "Báo cáo sự cố",
 				"defaultCheckbox": {
 					"title": "Đặt làm Persona mặc định"
 				}

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# fount脚本需要兼容mac的上古版本bash，尽量避免使用新版本语法
+
 # 若未定义，则默认 fount 安装分支
 FOUNT_BRANCH="${FOUNT_BRANCH:-"master"}"
 
@@ -81,6 +83,7 @@ install_with_manager() {
 install_package() {
 	local command_name="$1"
 	local package_list_str="${2:-$command_name}"
+	# shellcheck disable=SC2206
 	local package_list=($package_list_str)
 	local installed_pkg_name=""
 
@@ -164,15 +167,22 @@ else
 			wget -O "$ZIP_FILE" "$ZIP_URL"
 		fi
 
+		# shellcheck disable=SC2181
 		if [ $? -ne 0 ]; then
 			echo "Error: Download failed." >&2
 			exit 1
 		fi
 
 		echo "Unzipping Fount..."
-		unzip -o "$ZIP_FILE" -d "$TMP_DIR"
-		if [ $? -ne 0 ]; then
+		if ! unzip -o "$ZIP_FILE" -d "$TMP_DIR"; then
 			echo "Error: Unzip failed." >&2
+			exit 1
+		fi
+
+		extracted_dir=$(find "$TMP_DIR" -maxdepth 1 -type d -name "fount-*" | head -n 1)
+
+		if [ -z "$extracted_dir" ] || [ ! -d "$extracted_dir" ]; then
+			echo "Error: Could not find extracted fount directory in $TMP_DIR" >&2
 			exit 1
 		fi
 
@@ -189,8 +199,8 @@ else
 	if [[ "$OSTYPE" == "darwin"* ]]; then
 		xattr -dr com.apple.quarantine "$FOUNT_DIR" 2>/dev/null || true
 	fi
-	find "$FOUNT_DIR" -name "*.sh" -exec chmod +x {} \;
-	find "$FOUNT_DIR/path" -type f -exec chmod +x {} \;
+	find "$FOUNT_DIR" -name "*.sh" -exec chmod +x {} +
+	find "$FOUNT_DIR/path" -type f -exec chmod +x {} +
 
 	echo "Fount installation complete."
 fi

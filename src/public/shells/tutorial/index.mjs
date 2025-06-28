@@ -2,7 +2,7 @@ import { applyTheme } from '../../scripts/theme.mjs'
 applyTheme()
 
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
-import { svgInliner } from '../../scripts/svg-inliner.mjs'
+import { svgInliner } from '../../scripts/svgInliner.mjs'
 
 const tutorialModal = document.getElementById('tutorialModal')
 const startTutorialBtn = document.getElementById('startTutorial')

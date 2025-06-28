@@ -6,9 +6,9 @@ function loadCharData(username, charname) {
 	return userCharDataSet[charname] ??= {
 		/** @type {import('../../decl/charAPI.ts').charState_t} */
 		state: {
-			InitCount: 0,
-			LastStart: 0,
-			StartCount: 0,
+			init_count: 0,
+			last_start_time_stamp: 0,
+			start_count: 0,
 		}
 	}
 }
@@ -19,7 +19,7 @@ function saveCharData(username) {
 /**
  * @param {string} username
  * @param {string} charname
- * @returns {Promise<import('../../decl/charAPI.ts').charAPI_t>}
+ * @returns {Promise<import('../../decl/charAPI.ts').CharAPI_t>}
  */
 export async function LoadChar(username, charname) {
 	const data = loadCharData(username, charname)
@@ -28,6 +28,11 @@ export async function LoadChar(username, charname) {
 		username,
 		charname,
 		state: char_state,
+	}, {
+		afterLoad: () => {
+			char_state.last_start_time_stamp = Date.now()
+			char_state.start_count++
+		}
 	})
 	return char
 }
@@ -45,7 +50,7 @@ export async function initChar(username, charname) {
 		state,
 	}, {
 		afterInit: async (char) => {
-			state.InitCount++
+			state.init_count++
 			saveCharData(username)
 		}
 	})

@@ -1,9 +1,11 @@
-import { renderTemplate } from '../../../scripts/template.mjs'
+import { renderTemplate, usingTemplates } from '../../../scripts/template.mjs'
 import { renderMarkdownAsString } from '../../../scripts/markdown.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
 import { parseRegexFromString, escapeRegExp } from '../../../scripts/regex.mjs'
 import { initTranslations, geti18n } from '../../../scripts/i18n.mjs'
 import { getChatList, getCharDetails, copyChats, exportChats, deleteChats } from './endpoints.mjs'
+
+usingTemplates('/shells/chat/src/public/templates')
 
 const chatListContainer = document.getElementById('chat-list-container')
 const sortSelect = document.getElementById('sort-select')
@@ -110,7 +112,7 @@ async function renderChatListItem(chat) {
 			return { name: details.info.name, url: details.info.avatar }
 		}))
 	}
-	const chatElement = await renderTemplate('chat/list/chat_list_view', data)
+	const chatElement = await renderTemplate('list/chat_list_view', data)
 	chatElement.setAttribute('data-chatid', chat.chatid)
 
 	// 添加选择框
@@ -126,9 +128,7 @@ async function renderChatListItem(chat) {
 	})
 
 	// 继续聊天
-	chatElement.querySelector('.continue-button').addEventListener('click', () => {
-		window.location = `/shells/chat#${chat.chatid}`
-	})
+	chatElement.querySelector('.continue-button').href = `/shells/chat#${chat.chatid}`
 
 	// 复制聊天
 	chatElement.querySelector('.copy-button').addEventListener('click', async () => {
@@ -152,7 +152,7 @@ async function renderChatListItem(chat) {
 			const datas = await exportChats([chat.chatid])
 			for (const data of datas)
 				if (data.success) {
-					const blob = new Blob([JSON.stringify(data.data, null, 2)], { type: 'application/json' })
+					const blob = new Blob([JSON.stringify(data.data, null, '\t')], { type: 'application/json' })
 					const url = URL.createObjectURL(blob)
 					const a = document.createElement('a')
 					a.href = url
@@ -251,7 +251,7 @@ exportSelectedButton.addEventListener('click', async () => {
 		const results = await exportChats(Array.from(selectedChats))
 		for (const result of results)
 			if (result.success) {
-				const blob = new Blob([JSON.stringify(result.data, null, 2)], { type: 'application/json' })
+				const blob = new Blob([JSON.stringify(result.data, null, '\t')], { type: 'application/json' })
 				const url = URL.createObjectURL(blob)
 				const a = document.createElement('a')
 				a.href = url
@@ -265,6 +265,9 @@ exportSelectedButton.addEventListener('click', async () => {
 		alert(geti18n('chat_history.alerts.exportError'))
 	}
 })
+
+// 在焦点返回时重新渲染聊天列表
+window.addEventListener('focus', getChatList().then(renderChatList))
 
 async function initializeApp() {
 	applyTheme()

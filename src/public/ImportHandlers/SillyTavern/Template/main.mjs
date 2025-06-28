@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { loadAIsource } from '../../../../../src/server/managers/AIsources_manager.mjs'
+import { loadAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
 import { saveJsonFile } from '../../../../../src/scripts/json_loader.mjs'
 import { promptBuilder } from '../../../../../src/public/ImportHandlers/SillyTavern/engine/prompt_builder.mjs'
 import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/server/prompt_struct.mjs'
@@ -9,7 +9,7 @@ import { regex_placement } from '../../../../../src/public/ImportHandlers/SillyT
 import { evaluateMacros } from '../../../../../src/public/ImportHandlers/SillyTavern/engine/marco.mjs'
 import { getCharacterSource } from '../../../../../src/public/ImportHandlers/SillyTavern/engine/data.mjs'
 
-/** @typedef {import('../../../../../src/decl/charAPI.ts').charAPI_t} charAPI_t */
+/** @typedef {import('../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t */
 /** @typedef {import('../../../../../src/decl/AIsource.ts').AIsource_t} AIsource_t */
 /** @typedef {import('../../../../../src/public/ImportHandlers/SillyTavern/engine/charData.mjs').v2CharData} chardata_t */
 
@@ -25,7 +25,7 @@ const charjson = path.join(chardir, 'chardata.json')
 /** @type {chardata_t} */
 let chardata = JSON.parse(fs.readFileSync(charjson))
 
-/** @type {charAPI_t} */
+/** @type {CharAPI_t} */
 export default {
 	info: {
 		'': {
@@ -47,7 +47,7 @@ export default {
 			}),
 			version: chardata.character_version,
 			author: chardata.creator || chardata.create_by,
-			homepage: getCharacterSource(chardata),
+			home_page: getCharacterSource(chardata),
 			tags: chardata.tags
 		}
 	},

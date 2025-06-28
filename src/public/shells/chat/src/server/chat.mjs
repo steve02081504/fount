@@ -1,4 +1,4 @@
-/** @typedef {import('../../../../../decl/charAPI.ts').charAPI_t} charAPI_t */
+/** @typedef {import('../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
 /** @typedef {import('../../../../../decl/WorldAPI.ts').WorldAPI_t} WorldAPI_t */
 /** @typedef {import('../../../../../decl/UserAPI.ts').UserAPI_t} UserAPI_t */
 /** @typedef {import('../../../../../decl/basedefs.ts').locale_t} locale_t */
@@ -8,11 +8,12 @@ import { events } from '../../../../../server/events.mjs'
 import { LoadChar } from '../../../../../server/managers/char_manager.mjs'
 import { loadJsonFile, saveJsonFile } from '../../../../../scripts/json_loader.mjs'
 import { getPartInfo } from '../../../../../scripts/locale.mjs'
-import { loadPersona } from '../../../../../server/managers/personas_manager.mjs'
+import { loadPersona } from '../../../../../server/managers/persona_manager.mjs'
 import { loadWorld } from '../../../../../server/managers/world_manager.mjs'
 import { Buffer } from 'node:buffer'
 import fs from 'node:fs'
 import { addfile, getfile } from './files.mjs'
+import { skip_report } from '../../../../../server/server.mjs'
 
 /**
  * Structure of the chat metadata map:
@@ -45,7 +46,7 @@ function initializeChatMetadatas() {
 initializeChatMetadatas()
 
 class timeSlice_t {
-	/** @type {Record<string, charAPI_t>} */
+	/** @type {Record<string, CharAPI_t>} */
 	chars = {}
 	/** @type {WorldAPI_t} */
 	world
@@ -112,7 +113,7 @@ class timeSlice_t {
 class chatLogEntry_t {
 	name
 	avatar
-	timeStamp
+	time_stamp
 	role
 	content
 	content_for_show
@@ -292,7 +293,6 @@ async function getChatRequest(chatid, charname) {
 			add_message: true,
 		},
 		chat_name: 'common_chat_' + chatid,
-		chat_id: chatid,
 		char_id: charname,
 		username,
 		UserCharname,
@@ -594,7 +594,7 @@ export async function modifyTimeLine(chatid, delta) {
  *  extension: any
  * }} result
  * @param {timeSlice_t} new_timeSlice
- * @param {charAPI_t} char
+ * @param {CharAPI_t} char
  * @param {string} charname
  * @returns {Promise<chatLogEntry_t>}
  */
@@ -611,7 +611,7 @@ async function BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charn
 		content_for_edit: result.content_for_edit,
 		timeSlice: new_timeSlice,
 		role: 'char',
-		timeStamp: new Date(),
+		time_stamp: new Date(),
 		files: result.files || [],
 		extension: result.extension || {},
 		logContextBefore: result.logContextBefore,
@@ -642,7 +642,7 @@ async function BuildChatLogEntryFromUserMessage(result, new_timeSlice, user, use
 		content: result.content,
 		timeSlice: new_timeSlice,
 		role: 'user',
-		timeStamp: new Date(),
+		time_stamp: new Date(),
 		files: result.files || [],
 		extension: result.extension || {}
 	})
@@ -752,7 +752,7 @@ async function loadChatSummary(username, chatid) {
 			lastMessageSender: lastEntry.name || 'Unknown',
 			lastMessageSenderAvatar: lastEntry.avatar || null,
 			lastMessageContent: lastEntry.content || '',
-			lastMessageTime: new Date(lastEntry.timeStamp), // Ensure it's a Date object
+			lastMessageTime: new Date(lastEntry.time_stamp), // Ensure it's a Date object
 		}
 	}
 	catch (error) {
@@ -786,7 +786,7 @@ export async function getChatList(username) {
 				lastMessageSender: lastEntry.name,
 				lastMessageSenderAvatar: lastEntry.avatar || null,
 				lastMessageContent: lastEntry.content,
-				lastMessageTime: lastEntry.timeStamp,
+				lastMessageTime: lastEntry.time_stamp,
 			}
 		}
 
@@ -928,16 +928,18 @@ export async function editMessage(chatid, index, new_content) {
 		}
 	}
 
-	const { timeSlice } = chatMetadata.chatLog[index]
-	let entry
-	if (timeSlice.charname) {
-		const char = timeSlice.chars[timeSlice.charname]
-		entry = await BuildChatLogEntryFromCharReply(editresult, timeSlice, char, timeSlice.charname, chatMetadata.username)
-	}
-	else
-		entry = await BuildChatLogEntryFromUserMessage(editresult, timeSlice, chatMetadata.LastTimeSlice, chatMetadata.username)
+	if (index == chatMetadata.chatLog.length - 1) {
+		const { timeSlice } = chatMetadata.chatLog[index]
+		let entry
+		if (timeSlice.charname) {
+			const char = timeSlice.chars[timeSlice.charname]
+			entry = await BuildChatLogEntryFromCharReply(editresult, timeSlice, char, timeSlice.charname, chatMetadata.username)
+		}
+		else
+			entry = await BuildChatLogEntryFromUserMessage(editresult, timeSlice, chatMetadata.LastTimeSlice, chatMetadata.username)
 
-	chatMetadata.timeLines[chatMetadata.timeLineIndex] = chatMetadata.chatLog[index] = entry
+		chatMetadata.timeLines[chatMetadata.timeLineIndex] = chatMetadata.chatLog[index] = entry
+	}
 
 	if (is_VividChat(chatMetadata)) saveChat(chatid)
 
@@ -946,6 +948,7 @@ export async function editMessage(chatid, index, new_content) {
 
 export async function getHeartbeatData(chatid, start) {
 	const chatMetadata = await loadChat(chatid)
+	if (!chatMetadata) throw skip_report(new Error('Chat not found'))
 	const timeSlice = chatMetadata.LastTimeSlice
 	return {
 		charlist: Object.keys(timeSlice.chars),
