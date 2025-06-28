@@ -280,7 +280,27 @@ patch_deno() {
 
 	install_package "patchelf" "patchelf" || return 1
 
-	if ! patchelf --set-rpath "${ORIGIN}/../glibc/lib" --set-interpreter "${PREFIX}/glibc/lib/ld-linux-aarch64.so.1" "$deno_bin"; then
+	local interp_path
+	local arch
+	arch=$(uname -m)
+
+	case "$arch" in
+	"aarch64")
+		interp_path="${PREFIX}/glibc/lib/ld-linux-aarch64.so.1"
+		;;
+	"x86_64")
+		interp_path="${PREFIX}/glibc/lib/ld-linux-x86-64.so.2"
+		;;
+	"i686")
+		interp_path="${PREFIX}/glibc/lib/ld-linux.so.2"
+		;;
+	*)
+		echo "Error: Unsupported architecture for patching: $arch" >&2
+		return 1
+		;;
+	esac
+
+	if ! patchelf --set-rpath "${ORIGIN}/../glibc/lib" --set-interpreter "$interp_path" "$deno_bin"; then
 		echo "Error: Failed to patch Deno executable with patchelf." >&2
 		return 1
 	else
@@ -809,8 +829,8 @@ run() {
 		# 水秋脚本对termux的劫持移除
 		local SQsacPath="/data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/root/.bashrc"
 		if [[ -f "$SQsacPath" ]] && grep -q "bash /root/sac.sh" "$SQsacPath"; then
-			sed -i '/bash \/root\/sac.sh/d' "$SQsacPath"
-			sed -i '/proot-distro login ubuntu/d' "/data/data/com.termux/files/home/.bashrc"
+			run_sed_inplace '/bash \/root\/sac.sh/d' "$SQsacPath"
+			run_sed_inplace '/proot-distro login ubuntu/d' "/data/data/com.termux/files/home/.bashrc"
 		fi
 	fi
 	if [[ $# -gt 0 && $1 = 'debug' ]]; then
