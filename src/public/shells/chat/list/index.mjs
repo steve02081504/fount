@@ -1,9 +1,8 @@
-import { renderTemplate } from '../../../scripts/template.mjs'
+import { renderTemplate, usingTemplates } from '../../../scripts/template.mjs'
 import { renderMarkdownAsString } from '../../../scripts/markdown.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
 import { parseRegexFromString, escapeRegExp } from '../../../scripts/regex.mjs'
 import { initTranslations, geti18n } from '../../../scripts/i18n.mjs'
-import { usingTemplates } from '../../../scripts/template.mjs'
 import { getChatList, getCharDetails, copyChats, exportChats, deleteChats } from './endpoints.mjs'
 
 usingTemplates('/shells/chat/src/public/templates')
