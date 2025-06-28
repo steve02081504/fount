@@ -437,7 +437,6 @@ EOF
 	return 0
 }
 
-
 # 函数: 移除桌面快捷方式和协议处理器
 remove_desktop_shortcut() {
 	echo "Removing desktop shortcut..."
