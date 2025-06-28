@@ -12,6 +12,17 @@ if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
 	exit $?
 fi
 
+# 辅助函数: 跨平台原地修改文件 (sed -i)
+run_sed_inplace() {
+	local expression="$1"
+	local file="$2"
+	if [ "$OS_TYPE" = "Darwin" ]; then
+		sed -i '' "$expression" "$file"
+	else
+		sed -i "$expression" "$file"
+	fi
+}
+
 # 转义后的 Fount 路径用于 sed 等命令
 ESCAPED_FOUNT_DIR=$(echo "$FOUNT_DIR" | sed 's/\//\\\//g')
 
@@ -757,14 +768,8 @@ remove)
 	profile_files=("$HOME/.profile" "$HOME/.bashrc" "$HOME/.zshrc")
 	for profile_file in "${profile_files[@]}"; do
 		if [ -f "$profile_file" ]; then
-			# [莉音批注：你master分支的sed命令是坏的，我用了HEAD里兼容macOS的正确写法]
-			if [ "$OS_TYPE" = "Darwin" ]; then
-				# shellcheck disable=SC2016
-				sed -i '' '/export PATH="\$PATH:'"$ESCAPED_FOUNT_DIR\/path"'"/d' "$profile_file"
-			else
-				# shellcheck disable=SC2016
-				sed -i '/export PATH="\$PATH:'"$ESCAPED_FOUNT_DIR\/path"'"/d' "$profile_file"
-			fi
+			# shellcheck disable=SC2016
+			run_sed_inplace '/export PATH="\$PATH:'"$ESCAPED_FOUNT_DIR"'\/path"/d' "$profile_file"
 		fi
 	done
 	# [莉音批注：这里要移除bun的路径，不是deno的，帮你改对了]
