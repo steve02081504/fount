@@ -39,6 +39,7 @@ export default {
 					await runBot(user, botname)
 					break
 				} catch (error) {
+					console.error(error)
 					await new Promise(resolve => setTimeout(resolve, sleep_time))
 					sleep_time += 1000
 				}
