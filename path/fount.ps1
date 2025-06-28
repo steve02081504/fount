@@ -327,21 +327,14 @@ function fount_upgrade {
 
 	# 如果 .git 目录不存在，则克隆仓库
 	if (!(Test-Path -Path "$FOUNT_DIR/.git")) {
-		Write-Host "Fount repository not found, cloning..."
-		Remove-Item -Path "$FOUNT_DIR/.git-clone" -Recurse -Force -ErrorAction SilentlyContinue
-		New-Item -ItemType Directory -Path "$FOUNT_DIR/.git-clone" | Out-Null
-		git clone https://github.com/steve02081504/fount.git "$FOUNT_DIR/.git-clone" --no-checkout --depth 1 --single-branch
-		if ($LastExitCode) {
-			Remove-Item -Path "$FOUNT_DIR/.git-clone" -Recurse -Force
-			Write-Host "Failed to clone fount repository, skipping update"
-			return
-		}
-		Move-Item -Path "$FOUNT_DIR/.git-clone/.git" -Destination "$FOUNT_DIR/.git"
-		Remove-Item -Path "$FOUNT_DIR/.git-clone" -Recurse -Force
-		git -C "$FOUNT_DIR" fetch origin
+		Write-Host "Fount's git repository not found, initializing a new one..."
+		git -C "$FOUNT_DIR" init -b master
+		git -C "$FOUNT_DIR" remote add origin https://github.com/steve02081504/fount.git
+		Write-Host "Fetching from remote and resetting to master..."
+		git -C "$FOUNT_DIR" fetch origin --depth 1 --single-branch
+		if ($LastExitCode) { Write-Error "Failed to fetch from 'origin'."; return }
 		git -C "$FOUNT_DIR" clean -fd
 		git -C "$FOUNT_DIR" reset --hard "origin/master"
-		git -C "$FOUNT_DIR" checkout master
 	}
 	else {
 		# 仓库存在：更新逻辑
