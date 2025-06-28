@@ -90,6 +90,7 @@ export function deletePartRouter(username, parttype, partname) {
 	if (!Object.keys(PartsRouters[username]).length) delete PartsRouters[username]
 }
 FinalRouter.use((req, res) => {
+	if (req.path.startsWith('/api/') || req.path.startsWith('/ws/')) return res.status(404).json({ message: 'API Not found' })
 	if (req.accepts('html')) return res.status(404).sendFile(__dirname + '/src/pages/404.html')
 	res.status(404).type('txt').send('Not found')
 })
@@ -142,13 +143,11 @@ export async function init(start_config) {
 	data_path = start_config.data_path
 	const { starts } = start_config
 	console.freshLine('server start', await geti18n('fountConsole.server.start'))
-	globalThis.addEventListener('error', (e) => {
+	process.on('error', (e) => {
 		console.log(e.error)
-		e.preventDefault()
 	})
-	globalThis.addEventListener('unhandledRejection', (e) => {
-		console.log(e.reason)
-		e.preventDefault()
+	process.on('unhandledRejection', (e) => {
+		console.log(e.error)
 	})
 
 	config = get_config()

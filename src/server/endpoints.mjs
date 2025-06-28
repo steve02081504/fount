@@ -5,7 +5,7 @@ import { ms } from '../scripts/ms.mjs'
 import { getLoadedPartList, getPartList, loadPart, partsList } from './managers/index.mjs'
 import { processIPCCommand } from './ipc_server.mjs'
 import { is_local_ip, is_local_ip_from_req, rateLimit } from '../scripts/ratelimit.mjs'
-import { hosturl, __dirname } from './server.mjs'
+import { hosturl, __dirname, skip_report } from './server.mjs'
 import express from 'npm:express@^5.1.0'
 import cors from 'npm:cors'
 import { Readable } from 'node:stream'
@@ -17,10 +17,14 @@ import { geti18n, getLocaleData } from '../scripts/i18n.mjs'
 export function registerEndpoints(router) {
 	// 注册路由
 	router.get('/api/test/error', (req, res) => {
-		throw new Error('test error')
+		throw skip_report(new Error('test error'))
 	})
 	router.get('/api/test/async_error', async (req, res) => {
-		throw new Error('test error')
+		throw skip_report(new Error('test error'))
+	})
+	router.get('/api/test/unhandledRejection', async (req, res) => {
+		Promise.reject(skip_report(new Error('test error')))
+		return res.status(200).json({ message: 'hell yeah!' })
 	})
 	router.get('/api/ping', cors(), (req, res) => {
 		return res.status(200).json({ message: 'pong', cilent_name: 'fount', is_local_ip: is_local_ip_from_req(req) })
