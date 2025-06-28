@@ -860,7 +860,7 @@ remove)
 	for profile_file in "${profile_files[@]}"; do
 		if [ -f "$profile_file" ]; then
 			# shellcheck disable=SC2016
-			run_sed_inplace '/export PATH=\"$PATH:$ESCAPED_FOUNT_DIR\\/path\"/d' "$profile_file"
+			run_sed_inplace '/export PATH="\$PATH:'"$ESCAPED_FOUNT_DIR"'\/path"/d' "$profile_file"
 		fi
 	done
 	PATH=$(echo "$PATH" | tr ':' '\n' | grep -v "$FOUNT_DIR/path" | grep -v "$HOME/.deno/bin" | tr '\n' ':' | sed 's/:*$//')
