@@ -24,7 +24,7 @@ Sentry.init({
 	_experiments: { enableLogs: true },
 })
 
-import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill@master/index.mjs')
+await import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill@master/index.mjs')
 
 // register service worker
 if ('serviceWorker' in navigator)
