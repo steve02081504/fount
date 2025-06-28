@@ -264,9 +264,29 @@ patch_bun() {
 
 	install_package "patchelf" "patchelf" || return 1
 
+	local interp_path
+	local arch
+	arch=$(uname -m)
+
+	case "$arch" in
+	"aarch64")
+		interp_path="${PREFIX}/glibc/lib/ld-linux-aarch64.so.1"
+		;;
+	"x86_64")
+		interp_path="${PREFIX}/glibc/lib/ld-linux-x86-64.so.2"
+		;;
+	"i686")
+		interp_path="${PREFIX}/glibc/lib/ld-linux.so.2"
+		;;
+	*)
+		echo "Error: Unsupported architecture for patching: $arch" >&2
+		return 1
+		;;
+	esac
+
 	# [莉音批注：这是你的HEAD分支逻辑，我保留了]
 	# 使用 patchelf 修改 Bun 的 rpath 和 interpreter
-	if ! patchelf --set-rpath "${ORIGIN}/../glibc/lib" --set-interpreter "${PREFIX}/glibc/lib/ld-linux-aarch64.so.1" "$bun_bin"; then
+	if ! patchelf --set-rpath "${ORIGIN}/../glibc/lib" --set-interpreter "$interp_path" "$bun_bin"; then
 		echo "Error: Failed to patch Bun executable with patchelf." >&2
 		return 1
 	else
@@ -715,8 +735,8 @@ run() {
 		# 水秋脚本对termux的劫持移除
 		local SQsacPath="/data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/root/.bashrc"
 		if [[ -f "$SQsacPath" ]] && grep -q "bash /root/sac.sh" "$SQsacPath"; then
-			sed -i '/bash \/root\/sac.sh/d' "$SQsacPath"
-			sed -i '/proot-distro login ubuntu/d' "/data/data/com.termux/files/home/.bashrc"
+			run_sed_inplace '/bash \/root\/sac.sh/d' "$SQsacPath"
+			run_sed_inplace '/proot-distro login ubuntu/d' "/data/data/com.termux/files/home/.bashrc"
 		fi
 	fi
 	if [[ $# -gt 0 && $1 = 'debug' ]]; then
