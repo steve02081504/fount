@@ -21,9 +21,28 @@ Sentry.init({
 	_experiments: { enableLogs: true },
 })
 
-import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill@master/index.mjs')
+await import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill@master/index.mjs')
 
 globalThis.urlParams = new URLSearchParams(window.location.search)
 const theme = urlParams.get('theme') ?? localStorage.getItem('fountTheme') ?? 'dark'
 document.documentElement.setAttribute('data-theme', theme)
 localStorage.setItem('fountTheme', theme)
+
+export function setPreRender(hostUrl = urlParams.get('hostUrl') ?? localStorage.getItem('fountHostUrl') ?? 'http://localhost:8931') {
+	if (HTMLScriptElement.supports?.('speculationrules')) {
+		const specScript = document.createElement('script')
+		specScript.type = 'speculationrules'
+		specScript.textContent = JSON.stringify({
+			prerender: [{
+				urls: [hostUrl+'/shells/home']
+			}]
+		})
+		document.head.prepend(specScript)
+	}
+	else {
+		const link = document.createElement('link')
+		link.rel = 'prerender'
+		link.href = hostUrl+'/shells/home'
+		document.head.prepend(link)
+	}
+}
