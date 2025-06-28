@@ -34,7 +34,14 @@ export default {
 		},
 		jobs: {
 			ReStartJob: async (user, botname) => {
-				await runBot(user, botname)
+				let sleep_time = 0
+				while(true) try {
+					await runBot(user, botname)
+					break
+				} catch (error) {
+					await new Promise(resolve => setTimeout(resolve, sleep_time))
+					sleep_time += 1000
+				}
 			}
 		}
 	}
