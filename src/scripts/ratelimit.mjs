@@ -1,6 +1,7 @@
 import dns from 'node:dns'
 import { in_docker } from './env.mjs'
 import { ms } from './ms.mjs'
+import { config } from '../server/server.mjs'
 
 const localIPs = [
 	'127.0.0.1', '::1',
@@ -13,6 +14,20 @@ export function is_local_ip(ip) {
 
 export function is_local_ip_from_req(req) {
 	return is_local_ip(req.ip)
+}
+
+export function get_local_ip() {
+	const interfaces = Deno.networkInterfaces()
+	return (
+		interfaces.find(i => i.family == 'IPv4' && i.name == 'WLAN') ||
+		interfaces.find(i => i.family == 'IPv4' && i.name == 'eth0') ||
+		interfaces.find(i => i.family == 'IPv4') ||
+	0)?.address
+}
+
+export function get_hosturl_in_local_ip() {
+	const is_https = config.https?.enabled
+	return `http${is_https ? 's' : ''}://${get_local_ip()}:${config.port}`
 }
 
 /**

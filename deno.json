@@ -1,7 +1,4 @@
 {
 	"nodeModulesDir": "auto",
-	"lock": false,
-	"imports": {
-		"css-select": "npm:css-select@5.2.0"
-	}
+	"lock": false
 }
