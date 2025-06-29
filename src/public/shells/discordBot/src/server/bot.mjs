@@ -90,7 +90,10 @@ export async function runBot(username, botname) {
 		const config = getBotConfig(username, botname)
 		if (!Object.keys(config).length) throw new Error(`Bot ${botname} not found`)
 		const char = await LoadChar(username, config.char)
-		char.interfaces.discord ??= await createSimpleDiscordInterface(char, username, config.char)
+		if (!char.interfaces.discord) {
+			const { createSimpleDiscordInterface } = await import('./default_interface/main.mjs')
+			char.interfaces.discord = await createSimpleDiscordInterface(char, username, config.char)
+		}
 		const client = await startBot(config, char)
 		return client
 	})()

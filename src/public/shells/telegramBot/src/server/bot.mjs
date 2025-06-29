@@ -123,7 +123,10 @@ export async function runBot(username, botname) {
 	botCache[botname] = (async () => {
 		const char = await LoadChar(username, config.char)
 		// 如果角色没有定义 telegram 接口，则使用默认接口
-		char.interfaces.telegram ??= await createSimpleTelegramInterface(char, username, config.char)
+		if (!char.interfaces.telegram) {
+			const { createSimpleTelegramInterface } = await import('./default_interface/main.mjs')
+			char.interfaces.telegram = await createSimpleTelegramInterface(char, username, config.char)
+		}
 		return await startTelegrafBot(config, char)
 	})()
 
