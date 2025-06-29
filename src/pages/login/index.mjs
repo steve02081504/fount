@@ -1,6 +1,7 @@
 import { applyTheme } from '../scripts/theme.mjs'
 import { initTranslations, geti18n } from '../scripts/i18n.mjs'
 import { ping, generateVerificationCode, login, register } from '../scripts/endpoints.mjs'
+import zxcvbn from 'https://esm.run/zxcvbn'
 
 const form = document.getElementById('auth-form')
 const formTitle = document.getElementById('form-title')

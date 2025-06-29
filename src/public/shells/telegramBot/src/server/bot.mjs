@@ -5,7 +5,6 @@ import { LoadChar } from '../../../../../server/managers/char_manager.mjs' // �
 import { getAllUserNames } from '../../../../../server/auth.mjs' // 获取所有用户名
 import { StartJob, EndJob } from '../../../../../server/jobs.mjs' // Fount 的任务管理
 import { geti18n } from '../../../../../scripts/i18n.mjs' // 国际化
-import { createSimpleTelegramInterface } from './default_interface/main.mjs' // 默认的 Telegram 角色接口
 import { events } from '../../../../../server/events.mjs'
 
 /** @typedef {import('../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
@@ -72,7 +71,10 @@ export function getBotConfig(username, botname) {
 export async function getBotConfigTemplate(username, charname) {
 	const char = await LoadChar(username, charname)
 	// 如果角色没有定义 telegram 接口，则使用默认接口
-	char.interfaces.telegram ??= await createSimpleTelegramInterface(char, username, charname)
+	if (!char.interfaces.telegram) {
+		const { createSimpleTelegramInterface } = await import('./default_interface/main.mjs')
+		char.interfaces.telegram = await createSimpleTelegramInterface(char, username, charname)
+	}
 	// 调用角色接口的 GetBotConfigTemplate 方法，如果不存在则返回空对象
 	return await char.interfaces.telegram?.GetBotConfigTemplate?.() || {}
 }
@@ -121,7 +123,10 @@ export async function runBot(username, botname) {
 	botCache[botname] = (async () => {
 		const char = await LoadChar(username, config.char)
 		// 如果角色没有定义 telegram 接口，则使用默认接口
-		char.interfaces.telegram ??= await createSimpleTelegramInterface(char, username, config.char)
+		if (!char.interfaces.telegram) {
+			const { createSimpleTelegramInterface } = await import('./default_interface/main.mjs')
+			char.interfaces.telegram = await createSimpleTelegramInterface(char, username, config.char)
+		}
 		return await startTelegrafBot(config, char)
 	})()
 

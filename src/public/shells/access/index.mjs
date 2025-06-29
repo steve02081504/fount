@@ -2,9 +2,10 @@ import { applyTheme } from '../../scripts/theme.mjs'
 applyTheme()
 import { initTranslations } from '../../scripts/i18n.mjs'
 initTranslations('access')
+import { hosturl_in_local_ip } from '../../scripts/endpoints.mjs'
 
 import qrcode from 'https://esm.run/qrcode-generator'
-const url = 'https://steve02081504.github.io/fount/protocol?' + new URLSearchParams({
+const url = await hosturl_in_local_ip() + '/?' + new URLSearchParams({
 	theme: localStorage.getItem('theme') || 'dark'
 })
 

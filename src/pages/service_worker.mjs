@@ -350,27 +350,22 @@ async function handleNetworkFirst(request) {
  * @type {Array<{condition: (context: {event: FetchEvent, request: Request, url: URL}) => boolean, handler: (context: {event: FetchEvent, request: Request, url: URL}) => Promise<Response> | null}>}
  */
 const routes = [
-	// 规则 1: 忽略所有非 GET 请求。
+	// 忽略所有非 GET 请求。
 	{
 		condition: ({ request }) => request.method !== 'GET',
 		handler: () => null, // 返回 null 表示跳过，让浏览器自行处理。
 	},
-	// 规则 2: 忽略非 http/https 协议的请求（例如 chrome-extension://）。
+	// 忽略非 http/https 协议的请求（例如 chrome-extension://）。
 	{
 		condition: ({ url }) => !url.protocol.startsWith('http'),
 		handler: () => null,
 	},
-	// 规则 3: 忽略特定的 API 或 WebSocket 路径。
-	{
-		condition: ({ url }) => url.pathname.startsWith('/api/') || url.pathname.startsWith('/ws/'),
-		handler: () => null,
-	},
-	// 规则 4: 对所有跨域资源（通常是 CDN 上的静态文件）使用缓存优先策略。
+	// 对所有跨域资源（通常是 CDN 上的静态文件）使用缓存优先策略。
 	{
 		condition: ({ url }) => url.origin !== self.location.origin,
 		handler: ({ event }) => handleCacheFirst(event.request),
 	},
-	// 规则 5: 默认规则，对所有同源资源使用网络优先策略。
+	// 默认规则，对所有同源资源使用网络优先策略。
 	{
 		condition: () => true, // 始终匹配，作为最后的 fallback。
 		handler: ({ event }) => handleNetworkFirst(event.request),

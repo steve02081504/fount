@@ -7,6 +7,9 @@ const warnText = `
 =========================================================================
 `
 
+console.warn(warnText)
+console.trace()
+
 /**
  * @deprecated
  */
