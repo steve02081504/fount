@@ -2,6 +2,7 @@ import { getUserByUsername, getAllUserNames } from './auth.mjs'
 import { save_config } from './server.mjs'
 import { loadPart } from './managers/index.mjs'
 import { getAsyncLocalStorages, runAsyncLocalStorages } from './async_storage.mjs'
+import { async_eval } from 'npm:@steve02081504/async-eval'
 
 export function setTimer(username, parttype, partname, uid, { trigger, callbackdata, repeat }) {
 	const timers = getUserByUsername(username).timers ??= {}
@@ -53,7 +54,7 @@ async function TimerHeartbeat() {
 			for (const partname in timers[parttype])
 				for (const uid in timers[parttype][partname]) {
 					const timer = timers[parttype][partname][uid]
-					if (!timer.triggered && (timer.triggered = !!eval(timer.trigger))) { // 确保触发条件只在跳变时生效一次
+					if (!timer.triggered && (timer.triggered = !!await async_eval(timer.trigger).then(v => v.result))) { // 确保触发条件只在跳变时生效一次
 						if (!timer.repeat) removeTimer(user, parttype, partname, uid) // 先移除避免重复触发
 						try {
 							const part = await loadPart(user, parttype, partname)

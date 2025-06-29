@@ -1,5 +1,5 @@
 import net from 'node:net'
-import { console } from '../scripts/console.mjs'
+import { console } from 'npm:@steve02081504/virtual-console'
 import { shutdown } from './on_shutdown.mjs'
 import { geti18n } from '../scripts/i18n.mjs'
 import { getLoadedPartList, getPartList, loadPart } from './managers/index.mjs'

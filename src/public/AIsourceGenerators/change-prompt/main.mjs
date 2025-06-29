@@ -3,6 +3,7 @@
 
 import { loadAIsourceFromNameOrConfigData } from '../../../server/managers/AIsource_manager.mjs'
 import { parseRegexFromString } from '../../../scripts/regex.mjs'
+import { async_eval } from 'npm:@steve02081504/async-eval'
 
 function getSinglePartPrompt() {
 	return {
@@ -58,7 +59,6 @@ const configTemplate = {
 }
 
 async function formatStr(str, data) {
-	const data_unpacker = `let { ${Object.keys(data).join(', ')} } = data;`
 	// 使用循环匹配所有 ${...} 表达式
 	let result = ''
 	while (str.indexOf('${') != -1) {
@@ -70,8 +70,8 @@ async function formatStr(str, data) {
 			end_index = str.indexOf('}', end_index) + 1
 			const expression = str.slice(0, end_index - 1)
 			try {
-				const eval_result = await eval(data_unpacker + '(async ()=>(' + expression + '))()')
-				result += eval_result
+				const eval_result = await async_eval(expression, data)
+				result += eval_result.result
 				str = str.slice(end_index)
 				break find
 			} catch (error) { }
