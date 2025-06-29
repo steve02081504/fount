@@ -66,7 +66,7 @@ load_installed_packages
 
 # 检测环境
 IN_DOCKER=0
-if [ -f "/.dockerenv" ] || grep -q 'docker\|containerd' /proc/1/cgroup 2>/dev/null; then
+if [ -f "/.dockerenv" ] || grep -q 'docker\|containerd' /proc/1/cgroup 2>/dev/null || [ "$container" = "docker" ]; then
 	IN_DOCKER=1
 fi
 IN_TERMUX=0
