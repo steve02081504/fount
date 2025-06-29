@@ -1,0 +1,117 @@
+/* 
+ * Minimal DaisyUI CSS for protocol handler page
+ * Contains only the essential styles needed for the page functionality
+ */
+
+/* Progress component */
+.progress {
+  appearance: none;
+  border: none;
+  border-radius: var(--rounded-box, 1rem);
+  height: 0.5rem;
+  width: 100%;
+  overflow: hidden;
+  background-color: hsl(var(--bc) / 0.2);
+}
+
+.progress::-webkit-progress-bar {
+  border-radius: var(--rounded-box, 1rem);
+  background-color: hsl(var(--bc) / 0.2);
+}
+
+.progress::-webkit-progress-value {
+  border-radius: var(--rounded-box, 1rem);
+  background-color: hsl(var(--p));
+}
+
+.progress::-moz-progress-bar {
+  border-radius: var(--rounded-box, 1rem);
+  background-color: hsl(var(--p));
+}
+
+.progress:indeterminate {
+  background-image: linear-gradient(
+    90deg,
+    hsl(var(--bc) / 0.2) 0%,
+    hsl(var(--p)) 50%,
+    hsl(var(--bc) / 0.2) 100%
+  );
+  background-size: 200% 100%;
+  animation: progress-loading 1s ease-in-out infinite;
+}
+
+@keyframes progress-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Flex utilities */
+.flex {
+  display: flex;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.h-screen {
+  height: 100vh;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-lg {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.w-56 {
+  width: 14rem;
+}
+
+/* CSS variables for theming */
+:root {
+  --rounded-box: 1rem;
+  --p: 259 94% 51%;
+  --bc: 215 28% 17%;
+}
+
+/* Dark theme support */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --p: 259 94% 61%;
+  --bc: 220 13% 91%;
+}
+
+/* Base styling */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+[data-theme="dark"] body {
+  background-color: hsl(222 84% 5%);
+  color: hsl(220 13% 91%);
+}
