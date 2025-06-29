@@ -78,6 +78,25 @@ async function mapFountHostOnIPv4(hostUrl) {
 	return null
 }
 
+// 从 WebRTC 获取本地 IP
+function getLocalIPFromWebRTC() {
+	return new Promise((resolve) => {
+		const pc = new RTCPeerConnection({
+			iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+		})
+		pc.createDataChannel('')
+		pc.onicecandidate = (event) => {
+			const match = event?.candidate?.candidate?.match?.(/(\d+\.\d+\.\d+\.\d+)/)
+			if (match && !match[1].startsWith('127.')) {
+				pc.close()
+				resolve(match[1])
+			}
+		}
+		pc.createOffer().then(offer => pc.setLocalDescription(offer))
+		setTimeout(() => { pc.close(); resolve(null) }, 1000) // 1秒超时
+	}).catch(() => null)
+}
+
 // 获取 Fount 主机 URL
 async function mappingFountHostUrl(hostUrl) {
 	console.debug(`[getFountHostUrl] Attempting to get Fount host URL. Initial hostUrl: ${hostUrl}`)
@@ -102,6 +121,20 @@ async function mappingFountHostUrl(hostUrl) {
 			return result
 		}
 	}
+
+	console.debug('[getFountHostUrl] Trying to get local IP via WebRTC for a quick scan.')
+	const localIp = await getLocalIPFromWebRTC()
+	if (localIp) {
+		console.info(`[getFountHostUrl] Got local IP via WebRTC: ${localIp}. Scanning its subnet.`)
+		const result = await mapFountHostOnIPv4(`http://${localIp}:${DEFAULT_FOUNT_PORT}`)
+		if (result) {
+			console.info(`[getFountHostUrl] Fount service found via WebRTC quick scan: ${result}`)
+			return result
+		}
+	}
+	else
+		console.warn('[getFountHostUrl] Could not get local IP via WebRTC. Falling back to common subnets.')
+
 	{
 		console.debug('[getFountHostUrl] hostUrl is not valid. Trying common hosts.')
 		for (const commonHost of [
