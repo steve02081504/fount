@@ -4,7 +4,7 @@
 
 # 定义常量和路径
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-FOUNT_DIR=$(dirname "$SCRIPT_DIR")
+FOUNT_DIR=$(dirname "$(dirname "$SCRIPT_DIR")")
 
 # 若是 Windows 环境，则使用 fount.ps1
 if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
