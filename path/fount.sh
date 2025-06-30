@@ -821,6 +821,11 @@ run() {
 	if [[ $(id -u) -eq 0 ]]; then
 		echo "Warning: Not Recommended: Running fount as root." >&2
 	fi
+	
+	# Build TypeScript files before running
+	echo "Building TypeScript files..."
+	run_deno task build
+	
 	if [[ $IN_TERMUX -eq 1 ]]; then
 		local LANG_BACKUP
 		LANG_BACKUP="$LANG"
@@ -847,6 +852,11 @@ run() {
 if [[ ! -d "$FOUNT_DIR/node_modules" || ($# -gt 0 && $1 = 'init') ]]; then
 	if [[ -d "$FOUNT_DIR/node_modules" ]]; then run "shutdown"; fi
 	echo "Installing Fount dependencies..."
+	
+	# Build TypeScript files first
+	echo "Building TypeScript files..."
+	run_deno task build
+	
 	set +e # 禁用错误检测，因为第一次运行可能会失败
 	run_deno install --reload --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
 	run "shutdown" # 确保安装后服务能正常启动
