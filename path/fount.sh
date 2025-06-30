@@ -833,10 +833,14 @@ run() {
 			run_sed_inplace '/proot-distro login ubuntu/d' "/data/data/com.termux/files/home/.bashrc"
 		fi
 	fi
+	local deno_args=()
+	if [[ $IN_TERMUX -eq 1 ]]; then
+		deno_args+=(--no-tray)
+	fi
 	if [[ $# -gt 0 && $1 = 'debug' ]]; then
-		run_deno run --allow-scripts --allow-all --inspect-brk "$FOUNT_DIR/src/server/index.mjs" "${@:2}"
+		run_deno run --allow-scripts --allow-all --inspect-brk "$FOUNT_DIR/src/server/index.mjs" "${deno_args[@]}" "${@:2}"
 	else
-		run_deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" "$@"
+		run_deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" "${deno_args[@]}" "$@"
 	fi
 	local exit_code=$?
 	if [[ $IN_TERMUX -eq 1 ]]; then export LANG="$LANG_BACKUP"; fi
@@ -848,7 +852,11 @@ if [[ ! -d "$FOUNT_DIR/node_modules" || ($# -gt 0 && $1 = 'init') ]]; then
 	if [[ -d "$FOUNT_DIR/node_modules" ]]; then run "shutdown"; fi
 	echo "Installing Fount dependencies..."
 	set +e # 禁用错误检测，因为第一次运行可能会失败
-	run_deno install --reload --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
+	local deno_args=()
+	if [[ $IN_TERMUX -eq 1 ]]; then
+		deno_args+=(--no-tray)
+	fi
+	run_deno install --reload --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs" "${deno_args[@]}"
 	run "shutdown" # 确保安装后服务能正常启动
 	set -e         # 重新启用严格模式
 	if [ $IN_DOCKER -eq 0 ] && [ $IN_TERMUX -eq 0 ]; then
