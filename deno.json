@@ -1,4 +1,7 @@
 {
 	"nodeModulesDir": "auto",
-	"lock": false
+	"lock": false,
+	"imports": {
+		"@steve02081504/async-eval": "npm:@steve02081504/async-eval@^0.0.3"
+	}
 }
