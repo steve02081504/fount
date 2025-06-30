@@ -264,6 +264,21 @@ run_deno() {
 		elif command -v glibc-runner &>/dev/null; then
 			deno_cmd="glibc-runner $(command -v deno)"
 		fi
+		# Add required network interfaces permission for Termux
+		if [[ "${deno_args[0]}" == "run" ]]; then
+			# Check if --allow-sys=networkInterfaces is already present
+			local has_network_permission=0
+			for arg in "${deno_args[@]}"; do
+				if [[ "$arg" == "--allow-sys=networkInterfaces" ]] || [[ "$arg" == *"networkInterfaces"* ]]; then
+					has_network_permission=1
+					break
+				fi
+			done
+			# Add the permission if not already present
+			if [[ $has_network_permission -eq 0 ]]; then
+				deno_args=("${deno_args[0]}" "--allow-sys=networkInterfaces" "${deno_args[@]:1}")
+			fi
+		fi
 	fi
 	command "$deno_cmd" "${deno_args[@]}"
 }
