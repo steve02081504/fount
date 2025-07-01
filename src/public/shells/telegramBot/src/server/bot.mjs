@@ -1,5 +1,5 @@
 import { Telegraf } from 'npm:telegraf@^4.16.3' // 引入 Telegraf
-import { on_shutdown } from '../../../../../server/on_shutdown.mjs' // 用于注册进程关闭时的回调
+import { on_shutdown } from 'npm:on-shutdown' // 用于注册进程关闭时的回调
 import { loadShellData, loadTempData, saveShellData } from '../../../../../server/setting_loader.mjs' // Fount 的数据加载/保存工具
 import { LoadChar } from '../../../../../server/managers/char_manager.mjs' // 加载角色
 import { getAllUserNames } from '../../../../../server/auth.mjs' // 获取所有用户名

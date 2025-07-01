@@ -1,4 +1,4 @@
-import { on_shutdown } from '../server/on_shutdown.mjs'
+import { on_shutdown } from 'npm:on-shutdown'
 import { __dirname } from '../server/server.mjs'
 import path from 'node:path'
 import fs from 'node:fs'

@@ -1,4 +1,8 @@
 {
 	"nodeModulesDir": "auto",
-	"lock": false
+	"lock": false,
+	"imports": {
+		"@steve02081504/async-eval": "npm:@steve02081504/async-eval@^0.0.4",
+		"@steve02081504/bigfloat": "npm:@steve02081504/bigfloat@^0.0.1"
+	}
 }

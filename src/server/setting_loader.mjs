@@ -1,7 +1,7 @@
 import { getUserDictionary } from './auth.mjs'
 import { events } from './events.mjs'
 import { saveJsonFile, loadJsonFileIfExists } from '../scripts/json_loader.mjs'
-import { on_shutdown } from './on_shutdown.mjs'
+import { on_shutdown } from 'npm:on-shutdown'
 import fs from 'node:fs'
 
 const userDataSet = {}
