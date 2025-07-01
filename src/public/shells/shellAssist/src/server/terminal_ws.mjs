@@ -1,5 +1,5 @@
-import os from 'node:os'
 import { Buffer } from 'node:buffer'
+import os from 'node:os'
 import process from 'node:process'
 
 const shell = os.platform() === 'win32' ? 'powershell.exe' : 'bash'
@@ -12,6 +12,7 @@ async function spawnShell() {
 		rows: 30, // Default, can be resized
 		cwd: os.homedir(), // Use os.homedir() for better platform compatibility
 		env: process.env,
+		useConpty: false, // Force winpty backend to avoid os error 87
 	})
 }
 
@@ -24,27 +25,31 @@ export async function handleTerminalConnection(ws) {
 			else if (Buffer.isBuffer(message)) inputData = message.toString('utf-8')
 			else return console.warn('Received non-string/buffer WebSocket message:', message)
 
-			// Assuming client always sends JSON strings
-			const parsedMessage = JSON.parse(inputData)
-			if (parsedMessage.type === 'resize')
-				ptyProcess.resize(parsedMessage.data.cols, parsedMessage.data.rows)
-			else if (parsedMessage.type === 'data')
-				ptyProcess.write(parsedMessage.data)
-			else
-				console.warn('Received valid JSON but with unexpected type:', parsedMessage)
-		} catch (e) {
-			console.error('Failed to parse client message as JSON, or error in processing:', e)
+			ptyProcess.write(inputData)
+		} catch (error) {
+			console.error('Error handling WebSocket message:', error)
 		}
 	})
 
 	ptyProcess.on('data', (data) => {
-		if (ws.readyState === ws.OPEN) ws.send(data)
+		try {
+			ws.send(data)
+		} catch (error) {
+			console.error('Error sending data to WebSocket:', error)
+		}
 	})
 
-	ws.on('close', () => { ptyProcess.kill() })
+	ptyProcess.on('exit', (code) => {
+		console.log('PTY process exited with code:', code)
+		ws.close()
+	})
+
+	ws.on('close', () => {
+		ptyProcess.kill()
+	})
 
 	ws.on('error', (error) => {
-		console.error('WebSocket error for shellassist terminal:', error)
+		console.error('WebSocket error:', error)
 		ptyProcess.kill()
 	})
 }
