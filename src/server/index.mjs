@@ -9,7 +9,7 @@ import { __dirname, set_start } from './base.mjs'
 set_start()
 
 import process from 'node:process'
-import { console } from '../scripts/console.mjs'
+import { console } from 'npm:@steve02081504/virtual-console'
 import { init } from './server.mjs'
 import { geti18n } from '../scripts/i18n.mjs'
 
