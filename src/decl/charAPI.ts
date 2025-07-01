@@ -4,6 +4,7 @@ import { chatReply_t, chatReplyRequest_t } from '../public/shells/chat/decl/chat
 
 import { Client as DiscordClient, GatewayIntentBits as DiscordGatewayIntentBits, Partials as DiscordPartials } from 'npm:discord.js'
 import { Telegraf } from 'npm:telegraf'
+import { createSafeDiscordClient } from './discordSafeClient.ts'
 
 export class charState_t {
 	init_count: number
@@ -103,5 +104,35 @@ export class CharAPI_t {
 				chat_scoped_char_memory: {}
 			}>
 		}
+	}
+}
+
+/**
+ * Utility function to safely initialize a Discord client with error handling.
+ * Should be used by the runtime system when creating and passing Discord clients to characters.
+ */
+export function initializeDiscordClientSafely(char: CharAPI_t, config: any): DiscordClient | null {
+	if (!char.interfaces.discord?.OnceClientReady) {
+		return null;
+	}
+
+	try {
+		const client = new DiscordClient({
+			intents: char.interfaces.discord.Intents || [],
+			partials: char.interfaces.discord.Partials || [],
+		});
+		
+		// Wrap the client with safe error handling before passing to character
+		const safeClient = createSafeDiscordClient(client);
+		
+		// Call the character's initialization with the safe client
+		char.interfaces.discord.OnceClientReady(safeClient, config).catch((error) => {
+			console.error(`[CharRuntime] Error in character Discord initialization:`, error);
+		});
+		
+		return safeClient;
+	} catch (error) {
+		console.error(`[CharRuntime] Failed to initialize Discord client:`, error);
+		return null;
 	}
 }
