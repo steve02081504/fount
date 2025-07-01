@@ -53,7 +53,7 @@ export function rateLimit(options) {
 
 	return (req, res, next) => {
 		if (byIP && is_local_ip(req.ip)) return next()
-		const key = byUsername && req.body.username ? req.body.username : byIP ? ip : null
+		const key = byUsername && req.body.username ? req.body.username : byIP ? req.ip : null
 
 		if (!key) return res.status(401).json({ message: 'Unauthorized' })
 

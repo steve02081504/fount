@@ -1,6 +1,6 @@
 // Helper function to make API calls
 async function callApi(endpoint, method = 'POST', body) {
-	const response = await fetch(`/api/shells/user_settings/${endpoint}`, {
+	const response = await fetch(`/api/shells/userSettings/${endpoint}`, {
 		method,
 		headers: { 'Content-Type': 'application/json' },
 		body: body ? JSON.stringify(body) : undefined,

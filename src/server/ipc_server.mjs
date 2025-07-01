@@ -1,6 +1,5 @@
 import net from 'node:net'
 import { console } from 'npm:@steve02081504/virtual-console'
-import { shutdown } from './on_shutdown.mjs'
 import { geti18n } from '../scripts/i18n.mjs'
 import { getLoadedPartList, getPartList, loadPart } from './managers/index.mjs'
 import { getPartDetails } from './parts_loader.mjs'
@@ -43,7 +42,7 @@ export async function processIPCCommand(command, data) {
 				return { status: 'ok', data: await getPartDetails(username, parttype, partname) }
 			}
 			case 'shutdown':
-				shutdown()
+				process.exit()
 				return { status: 'ok' }
 			case 'ping':
 				return { status: 'ok', data: 'pong' }

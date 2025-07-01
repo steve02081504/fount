@@ -1,7 +1,7 @@
 import { getUserByUsername, getAllUserNames } from './auth.mjs'
 import { save_config } from './server.mjs'
 import { loadPart } from './managers/index.mjs'
-import { getAsyncLocalStorages, runAsyncLocalStorages } from './async_storage.mjs'
+import { getAllContextData, runWithContexts } from 'npm:als-registry'
 import { async_eval } from 'npm:@steve02081504/async-eval'
 
 export function setTimer(username, parttype, partname, uid, { trigger, callbackdata, repeat }) {
@@ -12,7 +12,7 @@ export function setTimer(username, parttype, partname, uid, { trigger, callbackd
 		trigger,
 		callbackdata,
 		repeat: repeat ?? false,
-		asyncstorages: getAsyncLocalStorages()
+		asynccontexts: getAllContextData()
 	}
 	try {
 		save_config()
@@ -58,7 +58,7 @@ async function TimerHeartbeat() {
 						if (!timer.repeat) removeTimer(user, parttype, partname, uid) // 先移除避免重复触发
 						try {
 							const part = await loadPart(user, parttype, partname)
-							await runAsyncLocalStorages(timer.asyncstorages, () =>
+							await runWithContexts(timer.asynccontexts, () =>
 								part.interfaces.timers.TimerCallback(user, uid, timer.callbackdata)
 							)
 							need_save = true

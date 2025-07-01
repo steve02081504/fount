@@ -5,8 +5,9 @@ import { loadPersona, unloadPersona } from './persona_manager.mjs'
 import { loadAIsource, loadAIsourceGenerator, unloadAIsource, unloadAIsourceGenerator } from './AIsource_manager.mjs'
 import { LoadImportHandler, UnloadImportHandler } from '../../public/shells/install/src/server/importHandler_manager.mjs'
 import { loadWorld, unloadWorld } from './world_manager.mjs'
-import { on_shutdown, shutdown } from '../on_shutdown.mjs'
+import { on_shutdown } from 'npm:on-shutdown'
 import { events } from '../events.mjs'
+import process from 'node:process'
 
 export const partsList = [
 	'shells', 'chars', 'personas', 'worlds', 'AIsources', 'AIsourceGenerators',
@@ -74,5 +75,5 @@ events.on('BeforeUserRenamed', async ({ oldUsername, newUsername }) => {
 })
 
 export async function reloadPart(username, parttype, partname) {
-	shutdown(1) // we ll prey that the hole server will be restarted by the user or something
+	process.exit(1) // we ll prey that the hole server will be restarted by the user or something
 }
