@@ -28,11 +28,13 @@ export function registerEndpoints(router) {
 	})
 	router.get('/api/ping', cors(), (req, res) => {
 		const is_local_ip = is_local_ip_from_req(req)
+		let hosturl_in_local_ip
+		if (is_local_ip) try { hosturl_in_local_ip = get_hosturl_in_local_ip() } catch { }
 		return res.status(200).json({
 			message: 'pong',
 			cilent_name: 'fount',
 			is_local_ip,
-			hosturl_in_local_ip: is_local_ip ? get_hosturl_in_local_ip() : undefined,
+			hosturl_in_local_ip,
 		})
 	})
 	router.get('/api/getlocaledata', async (req, res) => {
