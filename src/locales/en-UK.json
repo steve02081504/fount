@@ -81,8 +81,8 @@
 		"shellCommandSent": "Shell command sent",
 		"shellCommandFailed": "Failed to send shell command",
 		"shellCommandError": "Error sending shell command",
-		"fountNotFound": "awww:(\n\nNo fount was found, maybe you need to install one first?",
-		"unknownError": "awww:(\n\nAn error occurred:"
+		"fountNotFound": "awww :(\n\nFount was not found. Perhaps you need to install it first?",
+		"unknownError": "awww :(\n\nAn error occurred:\n"
 	},
 	"installer_wait_screen": {
 		"title": "Welcome to fount!",
@@ -95,8 +95,8 @@
 			"description": "Start chatting on your computer and continue seamlessly on your phone or tablet. fount keeps your conversations in sync and stay in touch with your character wherever you go. Runs on Windows, macOS, Linux and even Android."
 		},
 		"feature2": {
-			"title": "Beautiful, customizable interface",
-			"description": "Choose from over 30 beautiful themes, or create your own. fount is your personal canvas. Express yourself, customize the environment to your preferences, and get a truly personalized experience."
+			"title": "Beautiful, customisable interface",
+			"description": "Choose from over 30 beautiful themes, or create your own. fount is your personal canvas. Express yourself, customise the environment to your preferences, and get a truly personalised experience."
 		},
 		"feature3": {
 			"title": "Expressive, immersive chat",
@@ -108,27 +108,27 @@
 		},
 		"theme_selector": {
 			"title": "Choose your appearance",
-			"description": "Choose a theme to personalize your experience."
+			"description": "Choose a theme to personalise your experience."
 		},
 		"mini_game": {
-			"title": "Play some small games",
-			"description1": "Installation is too slow?",
-			"description2": "There are mini games here to pass the time."
+			"title": "Play a little game",
+			"description1": "Installation taking too long?",
+			"description2": "Here's a mini game to pass the time."
 		},
 		"footer": {
 			"ready_text": "Ready to start your journey?",
-			"wait_text": "Wait for a moment...",
+			"wait_text": "Please wait a moment...",
 			"launch_button": "Fount is installing...",
 			"open_fount": "Open fount",
-			"open_or_install_fount": "Open/install fount",
-			"error_message": "awww:(\n\nAn error occurred:"
+			"open_or_install_fount": "Open/Install fount",
+			"error_message": "awww :(\n\nAn error occurred:\n"
 		},
 		"error": {
 			"title": "Installation failed!",
 			"connection_failed": "Connection failed!",
 			"description1": "There seems to be something wrong with the fount installer.",
 			"description2": "Please check your terminal and try again.",
-			"close_page": "Close the page"
+			"close_page": "Close page"
 		}
 	},
 	"auth": {
@@ -215,7 +215,7 @@
 			"placeholder": "Search..."
 		},
 		"sidebarTitle": "Details",
-		"itemDescription": "Select an item here to view details.",
+		"itemDescription": "Select an item to view details.",
 		"noDescription": "No description available.",
 		"alerts": {
 			"fetchHomeRegistryFailed": "Failed to fetch home registry information."
@@ -305,7 +305,7 @@
 			"garden": "Garden",
 			"forest": "Forest",
 			"aqua": "Aqua",
-			"lofi": "lo-fi",
+			"lofi": "Lo-fi",
 			"pastel": "Pastel",
 			"fantasy": "Fantasy",
 			"wireframe": "Wireframe",
@@ -514,7 +514,7 @@
 				"alt": "Menu Icon"
 			},
 			"input": {
-				"placeholder": "Enter message...\\nCtrl+Enter to send"
+				"placeholder": "Enter message...\nCtrl+Enter to send"
 			},
 			"sendButton": {
 				"title": "Send"
@@ -568,19 +568,19 @@
 			"dropdown": {
 				"delete": "Delete",
 				"deleteIcon": {
-					"alt": "Delete icon"
+					"alt": "Delete Icon"
 				},
-				"copyMarkdown": "Copy as markdown",
+				"copyMarkdown": "Copy as Markdown",
 				"copyMarkdownIcon": {
-					"alt": "Copy as markdown icon"
+					"alt": "Copy as Markdown Icon"
 				},
-				"copyText": "Copy as plain text",
+				"copyText": "Copy as Plain Text",
 				"copyTextIcon": {
-					"alt": "Copy text icon"
+					"alt": "Copy Text Icon"
 				},
-				"copyHtml": "Copy as html",
+				"copyHtml": "Copy as HTML",
 				"copyHtmlIcon": {
-					"alt": "Copy HTML icon"
+					"alt": "Copy HTML Icon"
 				}
 			}
 		},
@@ -760,7 +760,7 @@
 		"title": "Access Fount on other devices",
 		"heading": "Want to access Fount on other devices?",
 		"instruction": {
-			"sameLAN": "Ensure the device and Fount host are on the same local network.",
+			"sameLAN": "Ensure the device and Fount host are on the same local area network.",
 			"accessthis": "Visit this URL:"
 		},
 		"copyButton": "Copy URL",
@@ -815,7 +815,7 @@
 			"newPasswordLabel": "New Password:",
 			"confirmNewPasswordLabel": "Confirm New Password:",
 			"submitButton": "Change Password",
-			"errorMismatch": "Passwords do not match.",
+			"errorMismatch": "The new passwords do not match.",
 			"success": "Password changed successfully."
 		},
 		"renameUser": {
@@ -831,7 +831,7 @@
 			"noDevicesFound": "No devices or sessions found.",
 			"deviceInfo": "Device ID: ${deviceId}",
 			"thisDevice": "This Device",
-			"deviceDetails": "Last online: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
+			"deviceDetails": "Last online: ${lastSeen} | IP: ${ipAddress} | User Agent: ${userAgent}",
 			"revokeButton": "Revoke",
 			"revokeConfirm": "Are you sure you want to revoke this device/session?",
 			"revokeSuccess": "Device/session successfully revoked."

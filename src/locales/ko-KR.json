@@ -4,7 +4,7 @@
 		"server": {
 			"start": "서버를 시작하고 있습니다.",
 			"starting": "서버 시작 중...",
-			"ready": "서버가 시작되었습니다.",
+			"ready": "서버가 준비되었습니다.",
 			"usesdTime": "시작 소요 시간: ${time}s",
 			"showUrl": {
 				"https": "HTTPS 서버가 ${url}에서 실행 중입니다.",
@@ -17,9 +17,9 @@
 		},
 		"ipc": {
 			"sendCommandFailed": "명령 전송에 실패했습니다: ${error}",
-			"invalidCommand": "잘못된 명령입니다. \"fount run <컴포넌트 유형> <사용자 이름> <컴포넌트 이름> <매개 변수 ...>\" 형식을 사용하십시오.",
-			"runPartLog": "${parttype} ${partname}을(를) ${username} 이름으로 실행, 매개 변수: ${args}.",
-			"invokePartLog": "${parttype} ${partname}을(를) ${username} 이름으로 호출, 매개 변수: ${invokedata}.",
+			"invalidCommand": "잘못된 명령입니다. \"fount run <컴포넌트 유형> <사용자 이름> <컴포넌트 이름> <매개변수...>\" 형식을 사용하십시오.",
+			"runPartLog": "${parttype} ${partname}을(를) ${username}으로 실행, 매개변수: ${args}.",
+			"invokePartLog": "${parttype} ${partname}을(를) ${username}으로 호출, 매개변수: ${invokedata}.",
 			"unsupportedCommand": "지원되지 않는 명령 유형입니다.",
 			"processMessageError": "IPC 메시지 처리 중 오류가 발생했습니다: ${error}",
 			"invalidCommandFormat": "잘못된 명령 형식입니다.",
@@ -57,9 +57,9 @@
 			"accountLockedLog": "로그인 시도 실패 횟수 초과로 사용자 ${username}님의 계정이 잠겼습니다."
 		},
 		"verification": {
-			"codeGeneratedLog": "인증 코드: ${code} (60초 후에 만료됩니다).",
+			"codeGeneratedLog": "인증 코드: ${code} (60초 후에 만료됩니다)",
 			"codeNotifyTitle": "인증 코드",
-			"codeNotifyBody": "인증 코드: ${code} (60초 후에 만료됩니다)."
+			"codeNotifyBody": "인증 코드: ${code} (60초 후에 만료됩니다)"
 		},
 		"tray": {
 			"readIconFailed": "아이콘 파일을 읽는 데 실패했습니다: ${error}",
@@ -81,54 +81,54 @@
 		"shellCommandSent": "셸 명령이 전송되었습니다.",
 		"shellCommandFailed": "셸 명령 전송에 실패했습니다.",
 		"shellCommandError": "셸 명령 전송 중 오류가 발생했습니다.",
-		"fountNotFound": "awww :(\n\n분류가 발견되지 않았으므로 먼저 설치해야합니까?",
-		"unknownError": "awww :(\n\n오류가 발생했습니다."
+		"fountNotFound": "awww :(\n\nFount를 찾을 수 없습니다. 먼저 설치해야 할까요?",
+		"unknownError": "awww :(\n\n오류가 발생했습니다:\n"
 	},
 	"installer_wait_screen": {
 		"title": "Fount에 오신 것을 환영합니다!",
 		"hero": {
-			"title": "당신의 몰입 형 AI 캐릭터 동반자",
-			"description": "Fount는 <i> you </i>에 권한을 부여하도록 설계된 AI 기반 역할 상호 작용 플랫폼입니다. 상상의 캐릭터와 연결하여 쉽게 대화하고 자신의 캐릭터를 만들고 세상과 공유 할 수있는 다리입니다."
+			"title": "당신만의 몰입형 AI 캐릭터 동반자",
+			"description": "Fount는 <i>당신</i>에게 특별한 경험을 선사하기 위해 설계된 AI 기반 캐릭터 인터랙션 플랫폼입니다. 상상 속 캐릭터와 당신을 연결하여 손쉽게 대화하고, 자신만의 캐릭터를 만들어 세상과 공유할 수 있게 해주는 다리입니다."
 		},
 		"feature1": {
-			"title": "어디서나 원활한 대화",
-			"description": "컴퓨터에서 채팅을 시작하고 휴대 전화 나 태블릿에서 원활하게 계속하십시오. Fount는 대화를 동기화하고 어디를 가든 캐릭터와 연락을 유지합니다. Windows, MacOS, Linux 및 Android에서 실행됩니다."
+			"title": "어디서든 끊김 없는 대화",
+			"description": "컴퓨터에서 채팅을 시작하고 휴대폰이나 태블릿에서 매끄럽게 이어가세요. Fount는 대화를 항상 동기화하여 어디에 있든 당신의 캐릭터와 소통할 수 있도록 합니다. Windows, macOS, Linux는 물론 Android에서도 실행됩니다."
 		},
 		"feature2": {
 			"title": "아름답고 사용자 정의 가능한 인터페이스",
-			"description": "30 개가 넘는 아름다운 테마 중에서 선택하거나 직접 만들 수 있습니다. Fount는 개인 캔버스입니다. 자신을 표현하고 환경을 선호하는 환경을 사용자 정의하고 진정으로 개인화 된 경험을 얻으십시오."
+			"description": "30가지가 넘는 아름다운 테마 중에서 선택하거나 자신만의 테마를 만드세요. Fount는 당신의 개인적인 캔버스입니다. 자신을 표현하고, 원하는 대로 환경을 설정하여 진정으로 개인화된 경험을 즐겨보세요."
 		},
 		"feature3": {
-			"title": "표현적이고 몰입 형 채팅",
-			"description": "Fount는 HTML의 힘을 활용하여 풍부한 텍스트, 이미지 및 대화식 요소를 통해 캐릭터가 자신을 표현할 수 있도록합니다. 여러 캐릭터와 동시에 역동적이고 매력적인 그룹 채팅을하십시오."
+			"title": "표현 풍부한 몰입형 채팅",
+			"description": "Fount는 HTML의 강력한 기능을 활용하여 캐릭터가 리치 텍스트, 이미지, 심지어 인터랙티브 요소를 통해 자신을 표현할 수 있도록 합니다. 여러 캐릭터와 동시에 역동적이고 매력적인 그룹 채팅을 즐겨보세요."
 		},
 		"feature4": {
-			"title": "Unbound AI 소스 통합",
-			"description": "Fount는 비교할 수없는 선택과 유연성을 제공합니다. Openai, Claude, Openrouter, Novelai 등 모든 </i> AI 소스에 연결하십시오. 커뮤니케이션 논리는 소원에 따라 코드의 힘에 의해 형성됩니다."
+			"title": "자유로운 AI 소스 연동",
+			"description": "Fount는 비교할 수 없는 선택의 폭과 유연성을 제공합니다. OpenAI, Claude, OpenRouter, NovelAI 등 <i>모든</i> AI 소스에 연결하세요. 커뮤니케이션 로직은 당신의 의지에 따라 코드의 힘으로 만들어집니다."
 		},
 		"theme_selector": {
-			"title": "외모를 선택하십시오",
-			"description": "경험을 개인화하기 위해 테마를 선택하십시오."
+			"title": "테마 선택",
+			"description": "테마를 선택하여 당신의 경험을 개인화하세요."
 		},
 		"mini_game": {
-			"title": "작은 게임을 플레이하십시오",
-			"description1": "설치가 너무 느립니다.",
-			"description2": "시간을 통과하기위한 미니 게임이 있습니다."
+			"title": "미니 게임 한판!",
+			"description1": "설치가 너무 오래 걸리나요?",
+			"description2": "시간을 보낼 수 있는 미니 게임이 준비되어 있습니다."
 		},
 		"footer": {
-			"ready_text": "여행을 시작할 준비가 되셨습니까?",
-			"wait_text": "잠깐만 ...",
-			"launch_button": "Fount가 설치 중입니다 ...",
-			"open_fount": "열린 분노",
-			"open_or_install_fount": "Fount를 열/설치합니다",
-			"error_message": "awww :(\n\n오류가 발생했습니다."
+			"ready_text": "여정을 시작할 준비가 되셨나요?",
+			"wait_text": "잠시만 기다려주세요...",
+			"launch_button": "Fount 설치 중...",
+			"open_fount": "Fount 열기",
+			"open_or_install_fount": "Fount 열기/설치하기",
+			"error_message": "awww :(\n\n오류가 발생했습니다:\n"
 		},
 		"error": {
 			"title": "설치 실패!",
 			"connection_failed": "연결 실패!",
-			"description1": "Fount Installer에는 문제가있는 것 같습니다.",
-			"description2": "터미널을 확인하고 다시 시도하십시오.",
-			"close_page": "페이지를 닫으십시오"
+			"description1": "Fount 설치 프로그램에 문제가 발생한 것 같습니다.",
+			"description2": "터미널을 확인하고 다시 시도해주세요.",
+			"close_page": "페이지 닫기"
 		}
 	},
 	"auth": {
@@ -239,7 +239,7 @@
 				"version": "버전",
 				"author": "제작자",
 				"home_page": "홈페이지",
-				"issue_page": "문제 신고 페이지",
+				"issue_page": "문제 신고",
 				"defaultCheckbox": {
 					"title": "기본 캐릭터로 설정"
 				}
@@ -259,7 +259,7 @@
 				"version": "버전",
 				"author": "제작자",
 				"home_page": "홈페이지",
-				"issue_page": "문제 신고 페이지",
+				"issue_page": "문제 신고",
 				"defaultCheckbox": {
 					"title": "기본 월드로 설정"
 				}
@@ -279,7 +279,7 @@
 				"version": "버전",
 				"author": "제작자",
 				"home_page": "홈페이지",
-				"issue_page": "문제 신고 페이지",
+				"issue_page": "문제 신고",
 				"defaultCheckbox": {
 					"title": "기본 페르소나로 설정"
 				}
@@ -299,31 +299,31 @@
 			"corporate": "코퍼레이트",
 			"synthwave": "신스웨이브",
 			"retro": "레트로",
-			"cyberpunk": "사이버 펑크",
-			"valentine": "발렌타인 데이",
+			"cyberpunk": "사이버펑크",
+			"valentine": "밸런타인",
 			"halloween": "할로윈",
 			"garden": "가든",
 			"forest": "포레스트",
 			"aqua": "아쿠아",
-			"lofi": "lo-fi",
+			"lofi": "Lo-fi",
 			"pastel": "파스텔",
 			"fantasy": "판타지",
-			"wireframe": "와이어 프레임",
+			"wireframe": "와이어프레임",
 			"black": "블랙",
 			"luxury": "럭셔리",
 			"dracula": "드라큘라",
 			"cmyk": "CMYK",
 			"autumn": "어텀",
-			"business": "사업",
+			"business": "비즈니스",
 			"acid": "애시드",
 			"lemonade": "레모네이드",
 			"night": "나이트",
 			"coffee": "커피",
 			"winter": "윈터",
-			"dim": "흐릿한",
-			"nord": "노르딕",
+			"dim": "딤",
+			"nord": "노드",
 			"sunset": "선셋",
-			"caramellatte": "카라멜 라떼",
+			"caramellatte": "캐러멜 라테",
 			"abyss": "어비스",
 			"silk": "실크"
 		}
@@ -370,7 +370,7 @@
 		}
 	},
 	"aisource_editor": {
-		"title": "AI 소스 편집기",
+		"title": "AI 소스 에디터",
 		"fileList": {
 			"title": "AI 소스 목록",
 			"addButton": {
@@ -437,7 +437,7 @@
 		"alerts": {
 			"fetchPartTypesFailed": "컴포넌트 유형을 가져오는 데 실패했습니다.",
 			"fetchPartsFailed": "컴포넌트 목록을 가져오는 데 실패했습니다.",
-			"loadEditorFailed": "편집기를 로드하는 데 실패했습니다.",
+			"loadEditorFailed": "에디터를 로드하는 데 실패했습니다.",
 			"saveConfigFailed": "컴포넌트 설정을 저장하는 데 실패했습니다.",
 			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까?",
 			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 나가시겠습니까?"
@@ -514,7 +514,7 @@
 				"alt": "메뉴 아이콘"
 			},
 			"input": {
-				"placeholder": "메시지를 입력하세요...\\nCtrl+Enter로 전송"
+				"placeholder": "메시지를 입력하세요...\nCtrl+Enter로 전송"
 			},
 			"sendButton": {
 				"title": "전송"
@@ -559,7 +559,7 @@
 					"alt": "편집 아이콘"
 				},
 				"more": {
-					"title": "더"
+					"title": "더 보기"
 				},
 				"moreIcon": {
 					"alt": "더 보기 아이콘"
