@@ -80,7 +80,9 @@
 		"unknownCommand": "不明なコマンドです。",
 		"shellCommandSent": "シェルコマンドを送信しました。",
 		"shellCommandFailed": "シェルコマンドの送信に失敗しました。",
-		"shellCommandError": "シェルコマンドの送信中にエラーが発生しました。"
+		"shellCommandError": "シェルコマンドの送信中にエラーが発生しました。",
+		"fountNotFound": "awww :(\n\n噴水は見つかりませんでした、多分あなたは最初に1つをインストールする必要がありますか？",
+		"unknownError": "awww :(\n\nエラーが発生しました："
 	},
 	"installer_wait_screen": {
 		"title": "Fountへようこそ！",

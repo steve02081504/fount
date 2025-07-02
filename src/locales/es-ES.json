@@ -80,7 +80,9 @@
 		"unknownCommand": "Comando desconocido.",
 		"shellCommandSent": "Comando de shell enviado.",
 		"shellCommandFailed": "Error al enviar el comando de shell.",
-		"shellCommandError": "Error enviando el comando de shell."
+		"shellCommandError": "Error enviando el comando de shell.",
+		"fountNotFound": "awww:(\n\nNo se encontró una fuente, ¿tal vez necesitas instalar una primero?",
+		"unknownError": "awww:(\n\nSe produjo un error:"
 	},
 	"installer_wait_screen": {
 		"title": "¡Bienvenido a la fuente!",

@@ -80,7 +80,9 @@
 		"unknownCommand": "Unknown command",
 		"shellCommandSent": "Shell command sent",
 		"shellCommandFailed": "Failed to send shell command",
-		"shellCommandError": "Error sending shell command"
+		"shellCommandError": "Error sending shell command",
+		"fountNotFound": "awww:(\n\nNo fount was found, maybe you need to install one first?",
+		"unknownError": "awww:(\n\nAn error occurred:"
 	},
 	"installer_wait_screen": {
 		"title": "Welcome to fount!",

@@ -80,7 +80,9 @@
 		"unknownCommand": "알 수 없는 명령입니다.",
 		"shellCommandSent": "셸 명령이 전송되었습니다.",
 		"shellCommandFailed": "셸 명령 전송에 실패했습니다.",
-		"shellCommandError": "셸 명령 전송 중 오류가 발생했습니다."
+		"shellCommandError": "셸 명령 전송 중 오류가 발생했습니다.",
+		"fountNotFound": "awww :(\n\n분류가 발견되지 않았으므로 먼저 설치해야합니까?",
+		"unknownError": "awww :(\n\n오류가 발생했습니다."
 	},
 	"installer_wait_screen": {
 		"title": "Fount에 오신 것을 환영합니다!",

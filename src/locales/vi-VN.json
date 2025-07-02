@@ -80,7 +80,9 @@
 		"unknownCommand": "Lệnh không xác định.",
 		"shellCommandSent": "Lệnh Shell đã được gửi.",
 		"shellCommandFailed": "Gửi lệnh Shell thất bại.",
-		"shellCommandError": "Đã xảy ra lỗi khi gửi lệnh Shell."
+		"shellCommandError": "Đã xảy ra lỗi khi gửi lệnh Shell.",
+		"fountNotFound": "awww :(\n\nKhông tìm thấy Fount, có thể bạn cần cài đặt trước?",
+		"unknownError": "awww :(\n\nĐã xảy ra lỗi:"
 	},
 	"installer_wait_screen": {
 		"title": "Chào mừng đến với Fount!",

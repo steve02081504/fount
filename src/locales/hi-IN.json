@@ -80,7 +80,9 @@
 		"unknownCommand": "अज्ञात कमांड।",
 		"shellCommandSent": "शेल कमांड भेज दिया गया है।",
 		"shellCommandFailed": "शेल कमांड भेजने में विफल।",
-		"shellCommandError": "शेल कमांड भेजने में त्रुटि।"
+		"shellCommandError": "शेल कमांड भेजने में त्रुटि।",
+		"fountNotFound": "Awww :(\n\nकोई फव्वारा नहीं मिला, शायद आपको पहले एक स्थापित करने की आवश्यकता है?",
+		"unknownError": "Awww :(\n\nएक त्रुटि पाई गई:"
 	},
 	"installer_wait_screen": {
 		"title": "फाउंट में आपका स्वागत है!",

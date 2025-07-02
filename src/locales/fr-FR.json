@@ -80,7 +80,9 @@
 		"unknownCommand": "Commande inconnue.",
 		"shellCommandSent": "Commande shell envoyée.",
 		"shellCommandFailed": "Échec de l'envoi de la commande shell.",
-		"shellCommandError": "Erreur lors de l'envoi de la commande shell."
+		"shellCommandError": "Erreur lors de l'envoi de la commande shell.",
+		"fountNotFound": "awww :(\n\nAucune fontaine n'a été trouvée, vous devez peut-être en installer un en premier?",
+		"unknownError": "awww :(\n\nUne erreur s'est produite:"
 	},
 	"installer_wait_screen": {
 		"title": "Bienvenue à Fount!",

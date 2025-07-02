@@ -80,7 +80,9 @@
 		"unknownCommand": "Unbekannter Befehl",
 		"shellCommandSent": "Shell-Befehl gesendet",
 		"shellCommandFailed": "Senden des Shell-Befehls fehlgeschlagen",
-		"shellCommandError": "Fehler beim Senden des Shell-Befehls"
+		"shellCommandError": "Fehler beim Senden des Shell-Befehls",
+		"fountNotFound": "awww :(\n\nEs wurde kein Fount gefunden, vielleicht müssen Sie zuerst eine installieren?",
+		"unknownError": "awww :(\n\nEin Fehler trat auf:"
 	},
 	"installer_wait_screen": {
 		"title": "Willkommen bei Fount!",
