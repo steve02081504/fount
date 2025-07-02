@@ -81,54 +81,54 @@
 		"shellCommandSent": "Shell-Befehl gesendet",
 		"shellCommandFailed": "Senden des Shell-Befehls fehlgeschlagen",
 		"shellCommandError": "Fehler beim Senden des Shell-Befehls",
-		"fountNotFound": "awww :(\n\nEs wurde kein Fount gefunden, vielleicht müssen Sie zuerst eine installieren?",
-		"unknownError": "awww :(\n\nEin Fehler trat auf:"
+		"fountNotFound": "awww :(\n\nFount wurde nicht gefunden. Vielleicht müssen Sie es zuerst installieren?",
+		"unknownError": "awww :(\n\nEin Fehler ist aufgetreten:\n"
 	},
 	"installer_wait_screen": {
 		"title": "Willkommen bei Fount!",
 		"hero": {
-			"title": "Ihr immersives KI -Charakterbegleiter",
-			"description": "Fount ist eine KI-angetriebene Interaktionsplattform für Rollen-Rollen, die <i> Sie </i> stärkt. Es ist eine Brücke, die Sie mit Ihren imaginären Charakteren verbindet und es Ihnen ermöglicht, problemlos mit ihnen zu sprechen, Ihre eigenen Charaktere zu erstellen und sie mit der Welt zu teilen."
+			"title": "Ihr immersiver KI-Charakterbegleiter",
+			"description": "Fount ist eine KI-gestützte Charakter-Interaktionsplattform, die <i>Sie</i> befähigt. Es ist eine Brücke, die Sie mit Ihren imaginären Charakteren verbindet und es Ihnen ermöglicht, problemlos mit ihnen zu sprechen, Ihre eigenen Charaktere zu erstellen und sie mit der Welt zu teilen."
 		},
 		"feature1": {
-			"title": "Nahtloser Dialog, überall",
-			"description": "Chatten Sie auf Ihrem Computer und fahren Sie nahtlos auf Ihrem Telefon oder Tablet fort. Fount hält Ihre Gespräche synchron und bleibt mit Ihrem Charakter in Kontakt, wo immer Sie gehen. Läuft unter Windows, MacOS, Linux und sogar Android."
+			"title": "Nahtlose Dialoge – überall",
+			"description": "Chatten Sie auf Ihrem Computer und fahren Sie nahtlos auf Ihrem Telefon oder Tablet fort. Fount hält Ihre Gespräche synchron, sodass Sie überall mit Ihren Charakteren in Kontakt bleiben. Läuft unter Windows, macOS, Linux und sogar Android."
 		},
 		"feature2": {
-			"title": "Schöne, anpassbare Schnittstelle",
-			"description": "Wählen Sie aus über 30 schönen Themen oder erstellen Sie Ihre eigenen. Fount ist Ihre persönliche Leinwand. Drücken Sie sich aus, passen Sie die Umgebung an Ihre Vorlieben an und machen Sie eine wirklich personalisierte Erfahrung."
+			"title": "Schöne, anpassbare Benutzeroberfläche",
+			"description": "Wählen Sie aus über 30 wunderschönen Designs oder erstellen Sie Ihr eigenes. Fount ist Ihre persönliche Leinwand. Drücken Sie sich aus, passen Sie die Umgebung an Ihre Vorlieben an und schaffen Sie ein wirklich persönliches Erlebnis."
 		},
 		"feature3": {
-			"title": "Ausdrucksstarker, eindringlicher Chat",
-			"description": "Fount nutzt die Kraft von HTML und ermöglicht es Charakteren, sich durch reiche Text, Bilder und sogar interaktive Elemente auszudrücken. Haben Sie dynamische und ansprechende Gruppenchats mit mehreren Zeichen gleichzeitig."
+			"title": "Ausdrucksstarker, immersiver Chat",
+			"description": "Fount nutzt die volle Leistungsfähigkeit von HTML und ermöglicht es Charakteren, sich durch Rich Text, Bilder und sogar interaktive Elemente auszudrücken. Führen Sie dynamische und ansprechende Gruppenchats mit mehreren Charakteren gleichzeitig."
 		},
 		"feature4": {
-			"title": "Unbeschwerte KI -Quellintegration",
-			"description": "Fount bietet eine beispiellose Auswahl und Flexibilität. Stellen Sie eine Verbindung zu <i> an alle </i> AI -Quellen her - Openai, Claude, OpenRouter, Romanai usw. Die Kommunikationslogik wird nach Ihren Wünschen durch die Kraft des Codes geprägt."
+			"title": "Uneingeschränkte Integration von KI-Quellen",
+			"description": "Fount bietet beispiellose Auswahl und Flexibilität. Verbinden Sie sich mit <i>jeder</i> KI-Quelle – OpenAI, Claude, OpenRouter, NovelAI usw. Die Kommunikationslogik wird nach <i>Ihrem</i> Willen durch die Macht des Codes geformt."
 		},
 		"theme_selector": {
 			"title": "Wählen Sie Ihr Aussehen",
-			"description": "Wählen Sie ein Thema, um Ihre Erfahrung zu personalisieren."
+			"description": "Wählen Sie ein Design, um Ihre Erfahrung zu personalisieren."
 		},
 		"mini_game": {
-			"title": "Spielen Sie einige kleine Spiele",
-			"description1": "Installation ist zu langsam?",
-			"description2": "Hier gibt es Mini -Spiele, um die Zeit zu verbringen."
+			"title": "Spielen Sie ein kleines Spiel",
+			"description1": "Ist die Installation zu langsam?",
+			"description2": "Hier ist ein kleines Spiel, um sich die Zeit zu vertreiben."
 		},
 		"footer": {
 			"ready_text": "Bereit, Ihre Reise zu beginnen?",
-			"wait_text": "Warten Sie einen Moment ...",
-			"launch_button": "Fount installiert ...",
-			"open_fount": "Offene Brunnen",
+			"wait_text": "Bitte warten Sie einen Moment...",
+			"launch_button": "Fount wird installiert...",
+			"open_fount": "Fount öffnen",
 			"open_or_install_fount": "Fount öffnen/installieren",
-			"error_message": "awww :(\n\nEin Fehler trat auf:"
+			"error_message": "awww :(\n\nEin Fehler ist aufgetreten:\n"
 		},
 		"error": {
 			"title": "Installation fehlgeschlagen!",
-			"connection_failed": "Verbindung ist fehlgeschlagen!",
-			"description1": "Mit dem Fount -Installateur scheint etwas nicht zu stimmen.",
+			"connection_failed": "Verbindung fehlgeschlagen!",
+			"description1": "Mit dem Fount-Installationsprogramm scheint etwas nicht zu stimmen.",
 			"description2": "Bitte überprüfen Sie Ihr Terminal und versuchen Sie es erneut.",
-			"close_page": "Schließen Sie die Seite"
+			"close_page": "Seite schließen"
 		}
 	},
 	"auth": {
@@ -215,8 +215,8 @@
 			"placeholder": "Suchen..."
 		},
 		"sidebarTitle": "Details",
-		"itemDescription": "Wähle ein Element aus, um Details anzuzeigen.",
-		"noDescription": "Keine Beschreibung",
+		"itemDescription": "Wählen Sie ein Element aus, um Details anzuzeigen.",
+		"noDescription": "Keine Beschreibung verfügbar",
 		"alerts": {
 			"fetchHomeRegistryFailed": "Fehler beim Abrufen der Startseitenregistrierung"
 		},
@@ -228,7 +228,7 @@
 		"chars": {
 			"tab": "Charaktere",
 			"title": "Charakterauswahl",
-			"subtitle": "Wähle einen Charakter – und starte den Chat!",
+			"subtitle": "Wähle einen Charakter und starte den Chat!",
 			"none": "Nichts vorhanden",
 			"card": {
 				"refreshButton": {
@@ -238,7 +238,7 @@
 				"noTags": "Keine Tags",
 				"version": "Version",
 				"author": "Autor",
-				"home_page": "Homepage",
+				"home_page": "Startseite",
 				"issue_page": "Problem melden",
 				"defaultCheckbox": {
 					"title": "Als Standardcharakter festlegen"
@@ -258,7 +258,7 @@
 				"noTags": "Keine Tags",
 				"version": "Version",
 				"author": "Autor",
-				"home_page": "Homepage",
+				"home_page": "Startseite",
 				"issue_page": "Problem melden",
 				"defaultCheckbox": {
 					"title": "Als Standardwelt festlegen"
@@ -278,7 +278,7 @@
 				"noTags": "Keine Tags",
 				"version": "Version",
 				"author": "Autor",
-				"home_page": "Homepage",
+				"home_page": "Startseite",
 				"issue_page": "Problem melden",
 				"defaultCheckbox": {
 					"title": "Als Standardpersona festlegen"
@@ -287,45 +287,45 @@
 		}
 	},
 	"themeManage": {
-		"title": "Themenverwaltung",
-		"instruction": "Wähle ein Thema!",
+		"title": "Design-Verwaltung",
+		"instruction": "Wählen Sie ein Design!",
 		"themes": {
 			"auto": "Automatisch",
 			"light": "Hell",
 			"dark": "Dunkel",
-			"cupcake": "Tassenkuchen",
-			"bumblebee": "Hummel",
-			"emerald": "Smaragd",
+			"cupcake": "Cupcake",
+			"bumblebee": "Bumblebee",
+			"emerald": "Emerald",
 			"corporate": "Corporate",
 			"synthwave": "Synthwave",
 			"retro": "Retro",
 			"cyberpunk": "Cyberpunk",
-			"valentine": "Valentinstag",
+			"valentine": "Valentine",
 			"halloween": "Halloween",
-			"garden": "Garten",
-			"forest": "Wald",
+			"garden": "Garden",
+			"forest": "Forest",
 			"aqua": "Aqua",
 			"lofi": "Lo-Fi",
-			"pastel": "Pastell",
-			"fantasy": "Fantasie",
+			"pastel": "Pastel",
+			"fantasy": "Fantasy",
 			"wireframe": "Wireframe",
-			"black": "Schwarz",
-			"luxury": "Luxus",
+			"black": "Black",
+			"luxury": "Luxury",
 			"dracula": "Dracula",
 			"cmyk": "CMYK",
-			"autumn": "Herbst",
-			"business": "Geschäft",
+			"autumn": "Autumn",
+			"business": "Business",
 			"acid": "Acid",
-			"lemonade": "Limonade",
-			"night": "Nacht",
-			"coffee": "Kaffee",
+			"lemonade": "Lemonade",
+			"night": "Night",
+			"coffee": "Coffee",
 			"winter": "Winter",
-			"dim": "Gedimmt",
+			"dim": "Dim",
 			"nord": "Nord",
-			"sunset": "Sonnenuntergang",
+			"sunset": "Sunset",
 			"caramellatte": "Caramel Latte",
-			"abyss": "Abgrund",
-			"silk": "Seide"
+			"abyss": "Abyss",
+			"silk": "Silk"
 		}
 	},
 	"import": {
@@ -455,7 +455,7 @@
 		},
 		"errorMessage": {
 			"icon": {
-				"alt": "Fehler Symbol"
+				"alt": "Fehlersymbol"
 			}
 		},
 		"buttons": {
@@ -498,12 +498,12 @@
 						"title": "Charakter hinzufügen"
 					},
 					"addCharIcon": {
-						"alt": "Charakter hinzufügen-Symbol"
+						"alt": "Charakter hinzufügen Symbol"
 					}
 				}
 			},
-			"noSelection": "Nichts ausgewählt",
-			"noDescription": "Keine Beschreibung"
+			"noSelection": "Keine Auswahl",
+			"noDescription": "Keine Beschreibung verfügbar"
 		},
 		"chatArea": {
 			"title": "Chat",
@@ -514,7 +514,7 @@
 				"alt": "Menüsymbol"
 			},
 			"input": {
-				"placeholder": "Nachricht eingeben...\\nStrg+Enter zum Senden"
+				"placeholder": "Nachricht eingeben...\nStrg+Enter zum Senden"
 			},
 			"sendButton": {
 				"title": "Senden"
@@ -529,23 +529,23 @@
 				"alt": "Hochladen-Symbol"
 			},
 			"voiceButton": {
-				"title": "Spracheingabe"
+				"title": "Sprachaufnahme"
 			},
 			"voiceButtonIcon": {
-				"alt": "Spracheingabe-Symbol"
+				"alt": "Sprachaufnahme-Symbol"
 			},
 			"photoButton": {
-				"title": "Bild"
+				"title": "Foto"
 			},
 			"photoButtonIcon": {
-				"alt": "Bild-Symbol"
+				"alt": "Foto-Symbol"
 			}
 		},
 		"rightSidebar": {
 			"title": "Beschreibung"
 		},
 		"messageList": {
-			"confirmDeleteMessage": "Nachricht wirklich löschen?"
+			"confirmDeleteMessage": "Diese Nachricht wirklich löschen?"
 		},
 		"voiceRecording": {
 			"errorAccessingMicrophone": "Fehler beim Zugriff auf das Mikrofon."
@@ -562,25 +562,25 @@
 					"title": "Mehr"
 				},
 				"moreIcon": {
-					"alt": "Mehr Symbol"
+					"alt": "Mehr-Symbol"
 				}
 			},
 			"dropdown": {
 				"delete": "Löschen",
 				"deleteIcon": {
-					"alt": "Löschen Symbol"
+					"alt": "Löschen-Symbol"
 				},
 				"copyMarkdown": "Als Markdown kopieren",
 				"copyMarkdownIcon": {
-					"alt": "Symbol 'Als Markdown kopieren'"
+					"alt": "Als Markdown kopieren Symbol"
 				},
 				"copyText": "Als reinen Text kopieren",
 				"copyTextIcon": {
-					"alt": "Symbol 'Als reinen Text kopieren'"
+					"alt": "Als reinen Text kopieren Symbol"
 				},
 				"copyHtml": "Als HTML kopieren",
 				"copyHtmlIcon": {
-					"alt": "Symbol 'Als HTML kopieren'"
+					"alt": "Als HTML kopieren Symbol"
 				}
 			}
 		},
@@ -626,19 +626,19 @@
 			}
 		},
 		"charCard": {
-			"frequencyLabel": "Frequenz",
+			"frequencyLabel": "Häufigkeit",
 			"buttons": {
 				"removeChar": {
 					"title": "Aus Chat entfernen"
 				},
 				"removeCharIcon": {
-					"alt": "Charakter entfernen-Symbol"
+					"alt": "Charakter entfernen Symbol"
 				},
 				"forceReply": {
 					"title": "Antwort erzwingen"
 				},
 				"forceReplyIcon": {
-					"alt": "Antwort erzwingen-Symbol"
+					"alt": "Antwort erzwingen Symbol"
 				}
 			}
 		}
@@ -664,8 +664,8 @@
 		"alerts": {
 			"noChatSelectedForDeletion": "Bitte wählen Sie Chatverläufe zum Löschen aus.",
 			"noChatSelectedForExport": "Bitte wählen Sie Chatverläufe zum Exportieren aus.",
-			"copyError": "Kopie fehlgeschlagen",
-			"deleteError": "Löschung fehlgeschlagen",
+			"copyError": "Kopieren fehlgeschlagen",
+			"deleteError": "Löschen fehlgeschlagen",
 			"exportError": "Export fehlgeschlagen"
 		},
 		"chatItemButtons": {
@@ -703,10 +703,10 @@
 			}
 		},
 		"prompts": {
-			"newBotName": "Bitte gib einen neuen Bot-Namen ein:"
+			"newBotName": "Bitte geben Sie einen neuen Bot-Namen ein:"
 		},
 		"alerts": {
-			"botExists": "Ein Bot namens \"${botname}\" existiert bereits, bitte verwende einen anderen Namen.",
+			"botExists": "Ein Bot namens \"${botname}\" existiert bereits. Bitte verwenden Sie einen anderen Namen.",
 			"unsavedChanges": "Sie haben ungespeicherte Änderungen. Möchten Sie die Änderungen verwerfen?",
 			"configSaved": "Konfiguration erfolgreich gespeichert.",
 			"httpError": "HTTP-Fehler",
@@ -723,7 +723,7 @@
 		"configCard": {
 			"title": "Bot-Konfiguration",
 			"labels": {
-				"character": "Gebundener Charakter",
+				"character": "Verknüpfter Charakter",
 				"botToken": "Telegram Bot-Token",
 				"config": "Konfiguration"
 			},
@@ -741,10 +741,10 @@
 			}
 		},
 		"prompts": {
-			"newBotName": "Bitte gib einen neuen Bot-Namen ein:"
+			"newBotName": "Bitte geben Sie einen neuen Bot-Namen ein:"
 		},
 		"alerts": {
-			"botExists": "Ein Bot namens \"${botname}\" existiert bereits, bitte verwende einen anderen Namen.",
+			"botExists": "Ein Bot namens \"${botname}\" existiert bereits. Bitte verwenden Sie einen anderen Namen.",
 			"unsavedChanges": "Sie haben ungespeicherte Änderungen. Möchten Sie diese Änderungen verwerfen?",
 			"configSaved": "Die Konfiguration wurde erfolgreich gespeichert!",
 			"httpError": "HTTP-Fehler",
@@ -757,8 +757,8 @@
 		"initialMessageLink": "Klicken Sie hier, um mehr zu erfahren"
 	},
 	"access": {
-		"title": "Auf anderen Geräten auf Fount zugreifen",
-		"heading": "Möchten Sie auf anderen Geräten auf Fount zugreifen?",
+		"title": "Auf Fount von anderen Geräten zugreifen",
+		"heading": "Möchten Sie auf Fount von anderen Geräten zugreifen?",
 		"instruction": {
 			"sameLAN": "Stellen Sie sicher, dass sich das Gerät und der Fount-Host im selben lokalen Netzwerk befinden.",
 			"accessthis": "Rufen Sie folgende URL auf:"
@@ -790,7 +790,7 @@
 			"colsLabel": "Spalten:",
 			"minesCountLabel": "Minenanzahl:",
 			"winMessage": "Herzlichen Glückwunsch, Sie haben gewonnen!",
-			"loseMessage": "Spiel vorbei, Sie haben eine Mine getroffen!",
+			"loseMessage": "Spiel vorbei, Sie sind auf eine Mine getreten!",
 			"soundOn": "Ton ein",
 			"soundOff": "Ton aus"
 		}
@@ -804,8 +804,8 @@
 			"title": "Benutzerinformationen",
 			"usernameLabel": "Benutzername:",
 			"creationDateLabel": "Kontoerstellungsdatum:",
-			"folderSizeLabel": "Benutzerdatengröße:",
-			"folderPathLabel": "Benutzerdatenpfad:",
+			"folderSizeLabel": "Größe der Benutzerdaten:",
+			"folderPathLabel": "Pfad der Benutzerdaten:",
 			"copyPathBtnTitle": "Pfad kopieren",
 			"copiedAlert": "Der Pfad wurde in die Zwischenablage kopiert!"
 		},

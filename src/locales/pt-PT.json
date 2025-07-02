@@ -4,7 +4,7 @@
 		"server": {
 			"start": "A iniciar o servidor",
 			"starting": "A iniciar o servidor...",
-			"ready": "Servidor iniciado.",
+			"ready": "Servidor pronto.",
 			"usesdTime": "Tempo de arranque: ${time}s",
 			"showUrl": {
 				"https": "Servidor HTTPS a correr em ${url}",
@@ -17,7 +17,7 @@
 		},
 		"ipc": {
 			"sendCommandFailed": "Falha ao enviar o comando: ${error}",
-			"invalidCommand": "Comando inválido. Utilize \"fount run <Tipo de Componente> <Nome de utilizador> <Nome do Componente> <parâmetro ...>\".",
+			"invalidCommand": "Comando inválido. Utilize \"fount run <Tipo de Componente> <Nome de utilizador> <Nome do Componente> <parâmetros...>\".",
 			"runPartLog": "A executar ${parttype} ${partname} como ${username}, parâmetros: ${args}.",
 			"invokePartLog": "A invocar ${parttype} ${partname} como ${username}, parâmetros: ${invokedata}.",
 			"unsupportedCommand": "Tipo de comando não suportado.",
@@ -40,8 +40,8 @@
 				"upToDate": "Já está atualizado.",
 				"updateFailed": "Falha ao atualizar os componentes do repositório remoto: ${error}"
 			},
-			"partInitTime": "${parttype} Componente ${partname} Tempo de inicialização: ${time}s",
-			"partLoadTime": "${parttype} Componente ${partname} Tempo de carregamento: ${time}s"
+			"partInitTime": "Componente ${parttype} ${partname}, tempo de inicialização: ${time}s",
+			"partLoadTime": "Componente ${parttype} ${partname}, tempo de carregamento: ${time}s"
 		},
 		"web": {
 			"requestReceived": "Pedido recebido: ${method} ${url}"
@@ -57,9 +57,9 @@
 			"accountLockedLog": "A conta do utilizador ${username} foi bloqueada devido a múltiplas tentativas de login falhadas."
 		},
 		"verification": {
-			"codeGeneratedLog": "Código de verificação: ${code} (expira em 60 segundos).",
-			"codeNotifyTitle": "Código de verificação",
-			"codeNotifyBody": "Código de verificação: ${code} (expira em 60 segundos)."
+			"codeGeneratedLog": "Código de verificação: ${code} (expira em 60 segundos)",
+			"codeNotifyTitle": "Código de Verificação",
+			"codeNotifyBody": "Código de verificação: ${code} (expira em 60 segundos)"
 		},
 		"tray": {
 			"readIconFailed": "Falha ao ler o ficheiro do ícone: ${error}",
@@ -73,7 +73,7 @@
 		}
 	},
 	"protocolhandler": {
-		"title": "A processar o protocolo Fount",
+		"title": "A Processar o Protocolo Fount",
 		"processing": "A processar o protocolo...",
 		"invalidProtocol": "Protocolo inválido.",
 		"insufficientParams": "Parâmetros insuficientes.",
@@ -81,54 +81,54 @@
 		"shellCommandSent": "Comando shell enviado.",
 		"shellCommandFailed": "Falha ao enviar o comando shell.",
 		"shellCommandError": "Erro ao enviar o comando shell.",
-		"fountNotFound": "awww :(\n\nNenhuma fonte foi encontrada, talvez você precise instalar um primeiro?",
-		"unknownError": "awww :(\n\nOcorreu um erro:"
+		"fountNotFound": "awww :(\n\nFount não encontrado. Talvez precise de o instalar primeiro?",
+		"unknownError": "awww :(\n\nOcorreu um erro:\n"
 	},
 	"installer_wait_screen": {
-		"title": "Bem -vindo ao Fount!",
+		"title": "Bem-vindo ao Fount!",
 		"hero": {
-			"title": "Seu imersivo companheiro de personagem de IA",
-			"description": "Fount é uma plataforma de interação de função movida a IA projetada para capacitar <i> você </i>. É uma ponte que o conecta com seus personagens imaginados, permitindo que você converse facilmente com eles, crie seus próprios personagens e os compartilhe com o mundo."
+			"title": "O Seu Companheiro Imersivo de Personagens IA",
+			"description": "Fount é uma plataforma de interação com personagens alimentada por IA, desenhada para <i>lhe</i> dar poder. É uma ponte que o conecta com as suas personagens imaginadas, permitindo-lhe conversar facilmente com elas, criar as suas próprias personagens e partilhá-las com o mundo."
 		},
 		"feature1": {
-			"title": "Diálogo contínuo, em qualquer lugar",
-			"description": "Comece a conversar no seu computador e continue perfeitamente no seu telefone ou tablet. A Fount mantém suas conversas sincronizadas e mantenha contato com seu personagem onde quer que você vá. Executa no Windows, MacOS, Linux e até Android."
+			"title": "Diálogo fluido, em qualquer lugar",
+			"description": "Comece a conversar no seu computador e continue de forma fluida no seu telemóvel ou tablet. A Fount mantém as suas conversas sincronizadas para que possa manter contacto com a sua personagem onde quer que vá. Funciona em Windows, macOS, Linux e até Android."
 		},
 		"feature2": {
-			"title": "Interface bonita e personalizável",
-			"description": "Escolha entre mais de 30 temas lindos ou crie o seu próprio. Fonte é sua tela pessoal. Expresse -se, personalize o ambiente em suas preferências e obtenha uma experiência verdadeiramente personalizada."
+			"title": "Interface elegante e personalizável",
+			"description": "Escolha entre mais de 30 temas deslumbrantes ou crie o seu próprio. Fount é a sua tela pessoal. Expresse-se, personalize o ambiente de acordo com as suas preferências e obtenha uma experiência verdadeiramente personalizada."
 		},
 		"feature3": {
-			"title": "Bate -papo expressivo e imersivo",
-			"description": "Fount aproveita o poder do HTML, permitindo que os caracteres se expressem através de textos ricos, imagens e até elementos interativos. Tenha bate -papos de grupo dinâmicos e envolventes com vários caracteres ao mesmo tempo."
+			"title": "Chat expressivo e imersivo",
+			"description": "Fount aproveita o poder do HTML, permitindo que as personagens se expressem através de texto formatado, imagens e até elementos interativos. Tenha conversas de grupo dinâmicas e envolventes com várias personagens ao mesmo tempo."
 		},
 		"feature4": {
-			"title": "Integração da fonte da IA ​​não ligada",
-			"description": "A fonte oferece escolha e flexibilidade incomparáveis. Conecte -se a <i> qualquer fontes </i> AI - Openai, Claude, OpenRouter, Novelai, etc. A lógica de comunicação será moldada pelo poder do código de acordo com seus desejos."
+			"title": "Integração Livre com Fontes de IA",
+			"description": "Fount oferece escolha e flexibilidade incomparáveis. Conecte-se a <i>qualquer</i> fonte de IA – OpenAI, Claude, OpenRouter, NovelAI, etc. A lógica de comunicação será moldada pelo poder do código, de acordo com os <i>seus</i> desejos."
 		},
 		"theme_selector": {
-			"title": "Escolha sua aparência",
-			"description": "Escolha um tema para personalizar sua experiência."
+			"title": "Escolha a sua aparência",
+			"description": "Escolha um tema para personalizar a sua experiência."
 		},
 		"mini_game": {
-			"title": "Jogue alguns pequenos jogos",
-			"description1": "A instalação é muito lenta?",
-			"description2": "Existem mini -jogos aqui para passar o tempo."
+			"title": "Jogue um minijogo",
+			"description1": "A instalação está muito lenta?",
+			"description2": "Há minijogos aqui para passar o tempo."
 		},
 		"footer": {
-			"ready_text": "Pronto para começar sua jornada?",
-			"wait_text": "Espere por um momento ...",
-			"launch_button": "Fount está instalando ...",
-			"open_fount": "Fonte aberta",
-			"open_or_install_fount": "Abra/instale fonte",
-			"error_message": "awww :(\n\nOcorreu um erro:"
+			"ready_text": "Pronto para começar a sua jornada?",
+			"wait_text": "Aguarde um momento...",
+			"launch_button": "Fount está a instalar...",
+			"open_fount": "Abrir Fount",
+			"open_or_install_fount": "Abrir/Instalar Fount",
+			"error_message": "awww :(\n\nOcorreu um erro:\n"
 		},
 		"error": {
 			"title": "A instalação falhou!",
 			"connection_failed": "A conexão falhou!",
-			"description1": "Parece haver algo errado com o instalador da fonte.",
-			"description2": "Verifique seu terminal e tente novamente.",
-			"close_page": "Feche a página"
+			"description1": "Parece haver algo de errado com o instalador do Fount.",
+			"description2": "Verifique o seu terminal e tente novamente.",
+			"close_page": "Fechar página"
 		}
 	},
 	"auth": {
@@ -198,7 +198,7 @@
 		},
 		"endScreen": {
 			"title": "Incrível! Tutorial Concluído!",
-			"subtitle": "Agora já aprendeu a utilizar!",
+			"subtitle": "Agora já sabe como utilizar!",
 			"endButton": "Começar!"
 		},
 		"progressMessages": {
@@ -216,7 +216,7 @@
 		},
 		"sidebarTitle": "Detalhes",
 		"itemDescription": "Selecione um item aqui para ver os detalhes.",
-		"noDescription": "Nenhuma descrição disponível.",
+		"noDescription": "Sem descrição.",
 		"alerts": {
 			"fetchHomeRegistryFailed": "Falha ao obter as informações do registo da página inicial."
 		},
@@ -305,7 +305,7 @@
 			"garden": "Jardim",
 			"forest": "Floresta",
 			"aqua": "Aqua",
-			"lofi": "lo-fi",
+			"lofi": "Lo-fi",
 			"pastel": "Pastel",
 			"fantasy": "Fantasia",
 			"wireframe": "Wireframe",
@@ -322,7 +322,7 @@
 			"winter": "Inverno",
 			"dim": "Ténue",
 			"nord": "Nórdico",
-			"sunset": "Sunset",
+			"sunset": "Pôr do sol",
 			"caramellatte": "Caramel Latte",
 			"abyss": "Abismo",
 			"silk": "Seda"
@@ -370,7 +370,7 @@
 		}
 	},
 	"aisource_editor": {
-		"title": "Editor de Fonte de IA",
+		"title": "Editor de Fontes de IA",
 		"fileList": {
 			"title": "Lista de Fontes de IA",
 			"addButton": {
@@ -503,7 +503,7 @@
 				}
 			},
 			"noSelection": "Não selecionado",
-			"noDescription": "Nenhuma descrição."
+			"noDescription": "Sem descrição."
 		},
 		"chatArea": {
 			"title": "Chat",
@@ -514,7 +514,7 @@
 				"alt": "Ícone de Menu"
 			},
 			"input": {
-				"placeholder": "Escreva uma mensagem...\\nCtrl+Enter para enviar"
+				"placeholder": "Escreva uma mensagem...\nCtrl+Enter para enviar"
 			},
 			"sendButton": {
 				"title": "Enviar"
@@ -562,7 +562,7 @@
 					"title": "Mais"
 				},
 				"moreIcon": {
-					"alt": "Mais opções"
+					"alt": "Ícone Mais Opções"
 				}
 			},
 			"dropdown": {
@@ -753,7 +753,7 @@
 	},
 	"terminal_assistant": {
 		"title": "Assistente de Terminal",
-		"initialMessage": "O Fount suporta a implementação dos seus personagens favoritos no seu terminal para o ajudar na programação!",
+		"initialMessage": "O Fount suporta a implementação das suas personagens favoritas no seu terminal para o ajudar na programação!",
 		"initialMessageLink": "Clique aqui para saber mais."
 	},
 	"access": {
@@ -776,7 +776,7 @@
 	"404": {
 		"title": "Página não encontrada",
 		"pageNotFoundText": "Ups! Parece que acedeu a uma página que não existe.",
-		"homepageButton": "Voltar à página inicial",
+		"homepageButton": "Voltar à Página Inicial",
 		"MineSweeper": {
 			"difficultyLabel": "Dificuldade:",
 			"difficultyEasy": "Fácil",

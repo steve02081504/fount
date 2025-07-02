@@ -4,8 +4,8 @@
 		"server": {
 			"start": "Démarrage du serveur",
 			"starting": "Serveur en cours de démarrage...",
-			"ready": "Serveur démarré.",
-			"usesdTime": "Temps de démarrage : ${time}s",
+			"ready": "Serveur démarré",
+			"usesdTime": "Temps de démarrage : ${time}s",
 			"showUrl": {
 				"https": "Serveur HTTPS en cours d'exécution sur ${url}",
 				"http": "Serveur HTTP en cours d'exécution sur ${url}"
@@ -13,57 +13,57 @@
 			"standingBy": "En attente..."
 		},
 		"jobs": {
-			"restartingJob": "Redémarrage de la tâche ${partname} (${parttype}) pour l'utilisateur ${username} : ${uid}"
+			"restartingJob": "Redémarrage de la tâche ${partname} (${parttype}) pour l'utilisateur ${username} : ${uid}"
 		},
 		"ipc": {
-			"sendCommandFailed": "Échec de l'envoi de la commande : ${error}",
-			"invalidCommand": "Commande non valide. Veuillez utiliser \"fount run <type de composant> <nom d'utilisateur> <nom de composant> <paramètres...>\".",
+			"sendCommandFailed": "Échec de l'envoi de la commande : ${error}",
+			"invalidCommand": "Commande non valide. Veuillez utiliser « fount run <type de composant> <nom d'utilisateur> <nom de composant> <paramètres...> ».",
 			"runPartLog": "Exécution de ${parttype} ${partname} en tant que ${username}, paramètres : ${args}.",
 			"invokePartLog": "Appel de ${parttype} ${partname} en tant que ${username}, paramètres : ${invokedata}.",
 			"unsupportedCommand": "Type de commande non pris en charge.",
-			"processMessageError": "Erreur lors du traitement du message IPC : ${error}",
+			"processMessageError": "Erreur lors du traitement du message IPC : ${error}",
 			"invalidCommandFormat": "Format de commande invalide.",
-			"socketError": "Erreur de socket : ${error}",
+			"socketError": "Erreur de socket : ${error}",
 			"instanceRunning": "Une autre instance est déjà en cours d'exécution.",
 			"serverStarted": "Serveur IPC démarré.",
-			"parseResponseFailed": "Échec de l'analyse de la réponse du serveur : ${error}",
+			"parseResponseFailed": "Échec de l'analyse de la réponse du serveur : ${error}",
 			"cannotParseResponse": "Impossible d'analyser la réponse du serveur.",
 			"unknownError": "Erreur inconnue."
 		},
 		"partManager": {
 			"git": {
 				"noUpstream": "Aucune branche de suivi configurée pour la branche '${currentBranch}', vérification des mises à jour ignorée.",
-				"dirtyWorkingDirectory": "Le répertoire de travail n'est pas propre. Veuillez faire un 'stash' ou 'commit' de vos modifications avant de mettre à jour.",
+				"dirtyWorkingDirectory": "Le répertoire de travail n'est pas propre. Veuillez mettre de côté ('stash') ou valider ('commit') vos modifications avant de mettre à jour.",
 				"updating": "Mise à jour depuis le dépôt distant...",
 				"localAhead": "La branche locale est en avance sur la branche distante. Aucune mise à jour nécessaire.",
 				"diverged": "Les branches locale et distante ont divergé. Mise à jour forcée...",
 				"upToDate": "Déjà à jour.",
-				"updateFailed": "Échec de la mise à jour des composants depuis le dépôt distant : ${error}"
+				"updateFailed": "Échec de la mise à jour des composants depuis le dépôt distant : ${error}"
 			},
-			"partInitTime": "${parttype} composant ${partname} temps d'initialisation : ${time}s",
-			"partLoadTime": "${parttype} composant ${partname} temps de chargement : ${time}s"
+			"partInitTime": "Composant ${parttype} ${partname}, temps d'initialisation : ${time}s",
+			"partLoadTime": "Composant ${parttype} ${partname}, temps de chargement : ${time}s"
 		},
 		"web": {
-			"requestReceived": "Requête reçue : ${method} ${url}"
+			"requestReceived": "Requête reçue : ${method} ${url}"
 		},
 		"route": {
-			"setLanguagePreference": "L'utilisateur ${username} a défini sa langue préférée : ${preferredLanguages}"
+			"setLanguagePreference": "L'utilisateur ${username} a défini sa langue préférée : ${preferredLanguages}"
 		},
 		"auth": {
-			"tokenVerifyError": "Erreur de vérification du jeton : ${error}",
-			"refreshTokenError": "Erreur du jeton de rafraîchissement : ${error}",
-			"logoutRefreshTokenProcessError": "Erreur lors du traitement du jeton de rafraîchissement de déconnexion : ${error}",
+			"tokenVerifyError": "Erreur de vérification du jeton : ${error}",
+			"refreshTokenError": "Erreur du jeton de rafraîchissement : ${error}",
+			"logoutRefreshTokenProcessError": "Erreur lors du traitement du jeton de rafraîchissement de déconnexion : ${error}",
 			"revokeTokenNoJTI": "Impossible de révoquer le jeton sans JTI.",
 			"accountLockedLog": "Compte utilisateur ${username} verrouillé suite à de multiples tentatives de connexion infructueuses."
 		},
 		"verification": {
-			"codeGeneratedLog": "Code de vérification : ${code} (expire dans 60 secondes).",
-			"codeNotifyTitle": "Code de vérification",
-			"codeNotifyBody": "Code de vérification : ${code} (expire dans 60 secondes)."
+			"codeGeneratedLog": "Code de vérification : ${code} (expire dans 60 secondes)",
+			"codeNotifyTitle": "Code de Vérification",
+			"codeNotifyBody": "Code de vérification : ${code} (expire dans 60 secondes)"
 		},
 		"tray": {
-			"readIconFailed": "Erreur lors de la lecture du fichier d'icône : ${error}",
-			"createTrayFailed": "Erreur lors de la création de l'icône dans la zone de notification : ${error}"
+			"readIconFailed": "Erreur lors de la lecture du fichier d'icône : ${error}",
+			"createTrayFailed": "Erreur lors de la création de l'icône dans la zone de notification : ${error}"
 		},
 		"discordbot": {
 			"botStarted": "Le personnage ${charname} s'est connecté au bot Discord ${botusername}."
@@ -73,7 +73,7 @@
 		}
 	},
 	"protocolhandler": {
-		"title": "Traitement du protocole Fount",
+		"title": "Traitement du Protocole Fount",
 		"processing": "Traitement du protocole en cours...",
 		"invalidProtocol": "Protocole invalide.",
 		"insufficientParams": "Paramètres insuffisants.",
@@ -81,72 +81,72 @@
 		"shellCommandSent": "Commande shell envoyée.",
 		"shellCommandFailed": "Échec de l'envoi de la commande shell.",
 		"shellCommandError": "Erreur lors de l'envoi de la commande shell.",
-		"fountNotFound": "awww :(\n\nAucune fontaine n'a été trouvée, vous devez peut-être en installer un en premier?",
-		"unknownError": "awww :(\n\nUne erreur s'est produite:"
+		"fountNotFound": "awww :(\n\nFount introuvable. Peut-être devez-vous d'abord l'installer ?",
+		"unknownError": "awww :(\n\nUne erreur s'est produite :\n"
 	},
 	"installer_wait_screen": {
-		"title": "Bienvenue à Fount!",
+		"title": "Bienvenue sur Fount !",
 		"hero": {
-			"title": "Votre compagnon de caractère IMMERSIVE AI",
-			"description": "Fount est une plate-forme d'interaction de rôle alimentée en AI conçue pour responsabiliser <i> vous </i>. C'est un pont qui vous relie à vos personnages imaginés, vous permettant de leur parler facilement, de créer vos propres personnages et de les partager avec le monde."
+			"title": "Votre Compagnon IA Immersif de Personnages",
+			"description": "Fount est une plateforme d'interaction avec des personnages, animée par l'IA et conçue pour <i>vous</i> donner le pouvoir. C'est un pont qui vous connecte avec les personnages de votre imagination, vous permettant de dialoguer aisément avec eux, de créer vos propres personnages et de les partager avec le monde."
 		},
 		"feature1": {
-			"title": "Dialogue sans couture, n'importe où",
-			"description": "Commencez à discuter sur votre ordinateur et continuez de manière transparente sur votre téléphone ou votre tablette. Fount garde vos conversations en synchronisation et restez en contact avec votre personnage où que vous alliez. Exécute sur Windows, MacOS, Linux et même Android."
+			"title": "Dialogues fluides, n'importe où",
+			"description": "Commencez à discuter sur votre ordinateur et poursuivez en toute fluidité sur votre téléphone ou tablette. Fount synchronise vos conversations pour que vous restiez en contact avec votre personnage où que vous alliez. Disponible sur Windows, macOS, Linux et même Android."
 		},
 		"feature2": {
-			"title": "Belle interface personnalisable",
-			"description": "Choisissez parmi plus de 30 beaux thèmes ou créez les vôtres. Fount est votre toile personnelle. Exprimez-vous, personnalisez l'environnement à vos préférences et obtenez une expérience vraiment personnalisée."
+			"title": "Interface superbe et personnalisable",
+			"description": "Choisissez parmi plus de 30 thèmes magnifiques ou créez le vôtre. Fount est votre toile personnelle. Exprimez-vous, personnalisez l'environnement selon vos préférences et vivez une expérience véritablement unique."
 		},
 		"feature3": {
 			"title": "Chat expressif et immersif",
-			"description": "Fount tire parti de la puissance de HTML, permettant aux personnages de s'exprimer à travers un texte riche, des images et même des éléments interactifs. Ayez en même temps des discussions de groupe dynamiques et engageantes avec plusieurs caractères."
+			"description": "Fount exploite la puissance du HTML, permettant aux personnages de s'exprimer à travers du texte enrichi, des images et même des éléments interactifs. Participez à des discussions de groupe dynamiques et captivantes avec plusieurs personnages simultanément."
 		},
 		"feature4": {
-			"title": "Intégration de la source AI non liée",
-			"description": "Fount offre un choix et une flexibilité inégalés. Connectez-vous à <i> toutes les sources </i> AI - Opennai, Claude, OpenRouter, Novelai, etc. La logique de communication sera façonnée par la puissance du code en fonction de vos souhaits."
+			"title": "Intégration illimitée de sources d'IA",
+			"description": "Fount offre un choix et une flexibilité inégalés. Connectez-vous à <i>n'importe quelle</i> source d'IA – OpenAI, Claude, OpenRouter, NovelAI, etc. La logique de communication sera façonnée par la puissance du code, selon <i>vos</i> désirs."
 		},
 		"theme_selector": {
 			"title": "Choisissez votre apparence",
 			"description": "Choisissez un thème pour personnaliser votre expérience."
 		},
 		"mini_game": {
-			"title": "Jouer à quelques petits jeux",
-			"description1": "L'installation est trop lente?",
-			"description2": "Il y a des mini jeux ici pour passer le temps."
+			"title": "Jouez à un petit jeu",
+			"description1": "L'installation est trop longue ?",
+			"description2": "Voici un mini-jeu pour passer le temps."
 		},
 		"footer": {
-			"ready_text": "Prêt à commencer votre voyage?",
-			"wait_text": "Attendez un instant ...",
-			"launch_button": "Fount est en installation ...",
-			"open_fount": "Bougie ouvre",
-			"open_or_install_fount": "Ouvrir / installer la fontaine",
-			"error_message": "awww :(\n\nUne erreur s'est produite:"
+			"ready_text": "Prêt à commencer votre voyage ?",
+			"wait_text": "Veuillez patienter un instant...",
+			"launch_button": "Fount est en cours d'installation...",
+			"open_fount": "Ouvrir Fount",
+			"open_or_install_fount": "Ouvrir/Installer Fount",
+			"error_message": "awww :(\n\nUne erreur s'est produite :\n"
 		},
 		"error": {
-			"title": "L'installation a échoué!",
-			"connection_failed": "La connexion a échoué!",
-			"description1": "Il semble y avoir quelque chose qui ne va pas avec le programme d'installation de Fount.",
+			"title": "Échec de l'installation !",
+			"connection_failed": "Échec de la connexion !",
+			"description1": "Un problème semble être survenu avec le programme d'installation de Fount.",
 			"description2": "Veuillez vérifier votre terminal et réessayer.",
-			"close_page": "Fermez la page"
+			"close_page": "Fermer la page"
 		}
 	},
 	"auth": {
 		"title": "Authentification",
 		"subtitle": "Les données utilisateur sont stockées localement.",
-		"usernameLabel": "Nom d'utilisateur :",
+		"usernameLabel": "Nom d'utilisateur :",
 		"usernameInput": {
 			"placeholder": "Saisissez votre nom d'utilisateur"
 		},
-		"passwordLabel": "Mot de passe :",
+		"passwordLabel": "Mot de passe :",
 		"passwordInput": {
 			"placeholder": "Saisissez votre mot de passe"
 		},
-		"confirmPasswordLabel": "Confirmer le mot de passe :",
+		"confirmPasswordLabel": "Confirmer le mot de passe :",
 		"confirmPasswordInput": {
 			"placeholder": "Saisissez à nouveau votre mot de passe"
 		},
-		"verificationCodeLabel": "Code de vérification :",
+		"verificationCodeLabel": "Code de vérification :",
 		"verificationCodeInput": {
 			"placeholder": "Saisissez le code de vérification"
 		},
@@ -155,7 +155,7 @@
 			"title": "Se connecter",
 			"submitButton": "Se connecter",
 			"toggleLink": {
-				"text": "Pas de compte ?",
+				"text": "Pas de compte ?",
 				"link": "S'inscrire maintenant"
 			}
 		},
@@ -163,7 +163,7 @@
 			"title": "S'inscrire",
 			"submitButton": "S'inscrire",
 			"toggleLink": {
-				"text": "Vous avez déjà un compte ?",
+				"text": "Vous avez déjà un compte ?",
 				"link": "Se connecter maintenant"
 			}
 		},
@@ -189,17 +189,17 @@
 	"tutorial": {
 		"title": "Un tutoriel ?",
 		"modal": {
-			"title": "Bienvenue sur Fount !",
-			"instruction": "Voulez-vous suivre le tutoriel d'introduction ?",
+			"title": "Bienvenue sur Fount !",
+			"instruction": "Voulez-vous suivre le tutoriel d'introduction ?",
 			"buttons": {
 				"start": "Commencer le tutoriel",
 				"skip": "Passer"
 			}
 		},
 		"endScreen": {
-			"title": "Bravo ! Tutoriel terminé !",
-			"subtitle": "Vous maîtrisez maintenant les bases de l'application !",
-			"endButton": "C'est parti !"
+			"title": "Bravo ! Tutoriel terminé !",
+			"subtitle": "Vous maîtrisez maintenant les bases de l'application !",
+			"endButton": "C'est parti !"
 		},
 		"progressMessages": {
 			"mouseMove": "Essayez de déplacer la souris ${mouseIcon}.",
@@ -210,7 +210,7 @@
 	},
 	"home": {
 		"title": "Accueil",
-		"escapeConfirm": "Êtes-vous sûr de vouloir quitter Fount ?",
+		"escapeConfirm": "Êtes-vous sûr de vouloir quitter Fount ?",
 		"filterInput": {
 			"placeholder": "Rechercher..."
 		},
@@ -228,7 +228,7 @@
 		"chars": {
 			"tab": "Personnages",
 			"title": "Sélection de personnage",
-			"subtitle": "Sélectionnez un personnage, puis commencez à discuter !",
+			"subtitle": "Sélectionnez un personnage, puis commencez à discuter !",
 			"none": "Rien à afficher",
 			"card": {
 				"refreshButton": {
@@ -248,7 +248,7 @@
 		"worlds": {
 			"tab": "Mondes",
 			"title": "Sélection de monde",
-			"subtitle": "Choisissez un monde et plongez au cœur de l'action !",
+			"subtitle": "Choisissez un monde et plongez au cœur de l'action !",
 			"none": "Rien à afficher",
 			"card": {
 				"refreshButton": {
@@ -288,7 +288,7 @@
 	},
 	"themeManage": {
 		"title": "Gestion des thèmes",
-		"instruction": "Choisissez un thème !",
+		"instruction": "Choisissez un thème !",
 		"themes": {
 			"auto": "Automatique",
 			"light": "Clair",
@@ -300,21 +300,21 @@
 			"synthwave": "Synthwave",
 			"retro": "Rétro",
 			"cyberpunk": "Cyberpunk",
-			"valentine": "Saint Valentin",
+			"valentine": "Saint-Valentin",
 			"halloween": "Halloween",
 			"garden": "Jardin",
 			"forest": "Forêt",
 			"aqua": "Aqua",
-			"lofi": "lo-fi",
+			"lofi": "Lo-fi",
 			"pastel": "Pastel",
 			"fantasy": "Fantaisie",
 			"wireframe": "Filaire",
 			"black": "Noir",
 			"luxury": "Luxe",
 			"dracula": "Dracula",
-			"cmyk": "CMYK",
+			"cmyk": "CMJN",
 			"autumn": "Automne",
-			"business": "Entreprise",
+			"business": "Affaires",
 			"acid": "Acid",
 			"lemonade": "Limonade",
 			"night": "Nuit",
@@ -322,7 +322,7 @@
 			"winter": "Hiver",
 			"dim": "Tamisé",
 			"nord": "Nordique",
-			"sunset": "Sunset",
+			"sunset": "Crépuscule",
 			"caramellatte": "Caramel Latte",
 			"abyss": "Abysse",
 			"silk": "Soie"
@@ -348,14 +348,14 @@
 		},
 		"alerts": {
 			"importSuccess": "Importation réussie.",
-			"importFailed": "Échec de l'importation : ${error}",
+			"importFailed": "Échec de l'importation : ${error}",
 			"unknownError": "Erreur inconnue."
 		},
 		"errors": {
 			"noFileSelected": "Veuillez sélectionner un fichier.",
-			"fileImportFailed": "Échec de l'importation du fichier : ${message}",
+			"fileImportFailed": "Échec de l'importation du fichier : ${message}",
 			"noTextContent": "Veuillez saisir du contenu texte.",
-			"textImportFailed": "Échec de l'importation du texte : ${message}",
+			"textImportFailed": "Échec de l'importation du texte : ${message}",
 			"unknownError": "Erreur inconnue.",
 			"handler": "Gestionnaire",
 			"error": "Erreur"
@@ -370,14 +370,14 @@
 		}
 	},
 	"aisource_editor": {
-		"title": "Éditeur de source d'IA",
+		"title": "Éditeur de Source d'IA",
 		"fileList": {
-			"title": "Liste des sources d'IA",
+			"title": "Liste des Sources d'IA",
 			"addButton": {
 				"title": "+"
 			}
 		},
-		"configTitle": "Configuration de la source d'IA",
+		"configTitle": "Configuration de la Source d'IA",
 		"generatorSelect": {
 			"label": "Sélectionner un générateur",
 			"placeholder": "Veuillez sélectionner"
@@ -387,33 +387,33 @@
 			"delete": "Supprimer"
 		},
 		"alerts": {
-			"fetchFileListFailed": "Échec de la récupération de la liste des fichiers : ${error}",
-			"fetchGeneratorListFailed": "Échec de la récupération de la liste des générateurs : ${error}",
-			"fetchFileDataFailed": "Échec de la récupération des données du fichier : ${error}",
+			"fetchFileListFailed": "Échec de la récupération de la liste des fichiers : ${error}",
+			"fetchGeneratorListFailed": "Échec de la récupération de la liste des générateurs : ${error}",
+			"fetchFileDataFailed": "Échec de la récupération des données du fichier : ${error}",
 			"noFileSelectedSave": "Aucun fichier sélectionné à enregistrer.",
-			"saveFileFailed": "Échec de l'enregistrement du fichier : ${error}",
+			"saveFileFailed": "Échec de l'enregistrement du fichier : ${error}",
 			"noFileSelectedDelete": "Aucun fichier sélectionné à supprimer.",
-			"deleteFileFailed": "Échec de la suppression du fichier : ${error}",
-			"invalidFileName": "Le nom de fichier ne peut pas contenir les caractères suivants : / \\ : * ? \" < > |",
-			"addFileFailed": "Échec de l'ajout du fichier : ${error}",
+			"deleteFileFailed": "Échec de la suppression du fichier : ${error}",
+			"invalidFileName": "Le nom de fichier ne peut pas contenir les caractères suivants : / \\ : * ? \" < > |",
+			"addFileFailed": "Échec de l'ajout du fichier : ${error}",
 			"fetchConfigTemplateFailed": "Échec de la récupération du modèle de configuration.",
 			"noGeneratorSelectedSave": "Veuillez sélectionner un générateur avant d'enregistrer."
 		},
 		"confirm": {
-			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous annuler les modifications ?",
-			"deleteFile": "Êtes-vous sûr de vouloir supprimer le fichier ?",
-			"unsavedChangesBeforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter cette page ?"
+			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous annuler les modifications ?",
+			"deleteFile": "Êtes-vous sûr de vouloir supprimer le fichier ?",
+			"unsavedChangesBeforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter cette page ?"
 		},
 		"prompts": {
-			"newFileName": "Veuillez saisir un nouveau nom de fichier pour la source d'IA (sans extension) :"
+			"newFileName": "Veuillez saisir un nouveau nom de fichier pour la source d'IA (sans extension) :"
 		},
 		"editor": {
 			"disabledIndicator": "Veuillez d'abord sélectionner un générateur."
 		}
 	},
 	"part_config": {
-		"title": "Configuration des composants",
-		"pageTitle": "Configuration des composants",
+		"title": "Configuration des Composants",
+		"pageTitle": "Configuration des Composants",
 		"labels": {
 			"partType": "Sélectionner le type de composant",
 			"part": "Sélectionner le composant"
@@ -423,7 +423,7 @@
 			"partSelect": "Veuillez sélectionner"
 		},
 		"editor": {
-			"title": "Configuration du composant",
+			"title": "Configuration du Composant",
 			"disabledIndicator": "Ce composant ne prend pas en charge la configuration.",
 			"buttons": {
 				"save": "Enregistrer"
@@ -439,14 +439,14 @@
 			"fetchPartsFailed": "Échec de la récupération de la liste des composants.",
 			"loadEditorFailed": "Échec du chargement de l'éditeur.",
 			"saveConfigFailed": "Échec de l'enregistrement de la configuration du composant.",
-			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous annuler les modifications ?",
-			"beforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter ?"
+			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous annuler les modifications ?",
+			"beforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter ?"
 		}
 	},
 	"uninstall": {
 		"title": "Désinstaller",
 		"titleWithName": "Désinstaller ${type}/${name}",
-		"confirmMessage": "Êtes-vous sûr de vouloir désinstaller ${type} : ${name} ?",
+		"confirmMessage": "Êtes-vous sûr de vouloir désinstaller ${type} : ${name} ?",
 		"invalidParamsTitle": "Paramètres invalides",
 		"infoMessage": {
 			"icon": {
@@ -464,10 +464,10 @@
 			"back": "Retour"
 		},
 		"alerts": {
-			"success": "${type} : ${name} désinstallé avec succès.",
-			"failed": "Échec de la désinstallation : ${error}",
+			"success": "${type} : ${name} désinstallé avec succès.",
+			"failed": "Échec de la désinstallation : ${error}",
 			"invalidParams": "Paramètres de requête non valides.",
-			"httpError": "Erreur HTTP ! Code d'état : ${status}"
+			"httpError": "Erreur HTTP ! Code d'état : ${status}"
 		}
 	},
 	"chat": {
@@ -514,7 +514,7 @@
 				"alt": "Icône Menu"
 			},
 			"input": {
-				"placeholder": "Saisissez un message...\\nCtrl+Entrée pour envoyer"
+				"placeholder": "Saisissez un message...\nCtrl+Entrée pour envoyer"
 			},
 			"sendButton": {
 				"title": "Envoyer"
@@ -545,7 +545,7 @@
 			"title": "Détails"
 		},
 		"messageList": {
-			"confirmDeleteMessage": "Supprimer ce message ?"
+			"confirmDeleteMessage": "Supprimer ce message ?"
 		},
 		"voiceRecording": {
 			"errorAccessingMicrophone": "Échec de l'accès au microphone."
@@ -574,9 +574,9 @@
 				"copyMarkdownIcon": {
 					"alt": "Icône Copier au format Markdown"
 				},
-				"copyText": "Copier en texte simple",
+				"copyText": "Copier en texte brut",
 				"copyTextIcon": {
-					"alt": "Icône Copier le texte simple"
+					"alt": "Icône Copier le texte brut"
 				},
 				"copyHtml": "Copier au format HTML",
 				"copyHtmlIcon": {
@@ -659,8 +659,8 @@
 			"deleteSelected": "Supprimer la sélection",
 			"exportSelected": "Exporter la sélection"
 		},
-		"confirmDeleteChat": "Êtes-vous sûr de vouloir supprimer l'historique des chats avec ${chars} ?",
-		"confirmDeleteMultiChats": "Êtes-vous sûr de vouloir supprimer les ${count} historiques de chats sélectionnés ?",
+		"confirmDeleteChat": "Êtes-vous sûr de vouloir supprimer l'historique des chats avec ${chars} ?",
+		"confirmDeleteMultiChats": "Êtes-vous sûr de vouloir supprimer les ${count} historiques de chats sélectionnés ?",
 		"alerts": {
 			"noChatSelectedForDeletion": "Veuillez sélectionner les historiques de chats à supprimer.",
 			"noChatSelectedForExport": "Veuillez sélectionner les historiques de chats à exporter.",
@@ -703,14 +703,14 @@
 			}
 		},
 		"prompts": {
-			"newBotName": "Veuillez saisir un nouveau nom pour le bot :"
+			"newBotName": "Veuillez saisir un nouveau nom pour le bot :"
 		},
 		"alerts": {
 			"botExists": "Un bot nommé \"${botname}\" existe déjà. Veuillez utiliser un autre nom.",
-			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous annuler les modifications ?",
+			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous annuler les modifications ?",
 			"configSaved": "Configuration enregistrée avec succès.",
 			"httpError": "Erreur HTTP.",
-			"beforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter ?"
+			"beforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter ?"
 		}
 	},
 	"telegram_bots": {
@@ -741,56 +741,56 @@
 			}
 		},
 		"prompts": {
-			"newBotName": "Veuillez saisir un nouveau nom pour le bot :"
+			"newBotName": "Veuillez saisir un nouveau nom pour le bot :"
 		},
 		"alerts": {
 			"botExists": "Un bot nommé \"${botname}\" existe déjà. Veuillez utiliser un autre nom.",
-			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous vraiment annuler ces modifications ?",
-			"configSaved": "La configuration a été enregistrée avec succès !",
+			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous vraiment annuler ces modifications ?",
+			"configSaved": "La configuration a été enregistrée avec succès !",
 			"httpError": "Erreur HTTP.",
-			"beforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter cette page ?"
+			"beforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter cette page ?"
 		}
 	},
 	"terminal_assistant": {
 		"title": "Assistant Terminal",
-		"initialMessage": "Fount prend en charge le déploiement de vos personnages préférés dans votre terminal pour vous assister lors du codage !",
+		"initialMessage": "Fount prend en charge le déploiement de vos personnages préférés dans votre terminal pour vous assister lors du codage !",
 		"initialMessageLink": "Cliquez ici pour en savoir plus."
 	},
 	"access": {
 		"title": "Accéder à Fount sur d'autres appareils",
-		"heading": "Vous voulez accéder à Fount sur d'autres appareils ?",
+		"heading": "Vous voulez accéder à Fount sur d'autres appareils ?",
 		"instruction": {
 			"sameLAN": "Assurez-vous que l'appareil et l'hôte Fount sont sur le même réseau local.",
-			"accessthis": "Visitez cette URL :"
+			"accessthis": "Visitez cette URL :"
 		},
 		"copyButton": "Copier l'URL",
-		"copied": "URL copiée dans le presse-papiers !"
+		"copied": "URL copiée dans le presse-papiers !"
 	},
 	"proxy": {
 		"title": "Proxy API",
-		"heading": "Adresse du proxy API OpenAI",
-		"instruction": "Saisissez l'adresse suivante dans toute application nécessitant le format API OpenAI pour utiliser les sources d'IA dans Fount !",
+		"heading": "Adresse du Proxy API OpenAI",
+		"instruction": "Saisissez l'adresse suivante dans toute application nécessitant le format API OpenAI pour utiliser les sources d'IA dans Fount !",
 		"copyButton": "Copier l'adresse",
-		"copied": "Adresse copiée dans le presse-papiers !"
+		"copied": "Adresse copiée dans le presse-papiers !"
 	},
 	"404": {
 		"title": "Page non trouvée",
-		"pageNotFoundText": "Oups ! Il semble que vous soyez arrivé sur une page qui n'existe pas.",
+		"pageNotFoundText": "Oups ! Il semble que vous soyez arrivé sur une page qui n'existe pas.",
 		"homepageButton": "Retour à la page d'accueil",
 		"MineSweeper": {
-			"difficultyLabel": "Difficulté :",
+			"difficultyLabel": "Difficulté :",
 			"difficultyEasy": "Facile",
 			"difficultyMedium": "Moyen",
 			"difficultyHard": "Difficile",
 			"difficultyCustom": "Personnalisée",
-			"minesLeftLabel": "Mines restantes :",
-			"timeLabel": "Temps :",
+			"minesLeftLabel": "Mines restantes :",
+			"timeLabel": "Temps :",
 			"restartButton": "Recommencer",
-			"rowsLabel": "Lignes :",
-			"colsLabel": "Colonnes :",
-			"minesCountLabel": "Nombre de mines :",
-			"winMessage": "Félicitations, vous avez gagné !",
-			"loseMessage": "Partie terminée, vous avez touché une mine !",
+			"rowsLabel": "Lignes :",
+			"colsLabel": "Colonnes :",
+			"minesCountLabel": "Nombre de mines :",
+			"winMessage": "Félicitations, vous avez gagné !",
+			"loseMessage": "Partie terminée, vous avez touché une mine !",
 			"soundOn": "Son activé",
 			"soundOff": "Son désactivé"
 		}
@@ -798,64 +798,64 @@
 	"userSettings": {
 		"title": "Paramètres utilisateur",
 		"PageTitle": "Paramètres utilisateur",
-		"apiError": "La requête API a échoué : ${message}",
-		"generalError": "Une erreur s'est produite : ${message}",
+		"apiError": "La requête API a échoué : ${message}",
+		"generalError": "Une erreur s'est produite : ${message}",
 		"userInfo": {
 			"title": "Informations utilisateur",
-			"usernameLabel": "Nom d'utilisateur :",
-			"creationDateLabel": "Date de création du compte :",
-			"folderSizeLabel": "Taille des données utilisateur :",
-			"folderPathLabel": "Chemin des données utilisateur :",
+			"usernameLabel": "Nom d'utilisateur :",
+			"creationDateLabel": "Date de création du compte :",
+			"folderSizeLabel": "Taille des données utilisateur :",
+			"folderPathLabel": "Chemin des données utilisateur :",
 			"copyPathBtnTitle": "Copier le chemin",
-			"copiedAlert": "Chemin copié dans le presse-papiers !"
+			"copiedAlert": "Chemin copié dans le presse-papiers !"
 		},
 		"changePassword": {
 			"title": "Modifier le mot de passe",
-			"currentPasswordLabel": "Mot de passe actuel :",
-			"newPasswordLabel": "Nouveau mot de passe :",
-			"confirmNewPasswordLabel": "Confirmer le nouveau mot de passe :",
+			"currentPasswordLabel": "Mot de passe actuel :",
+			"newPasswordLabel": "Nouveau mot de passe :",
+			"confirmNewPasswordLabel": "Confirmer le nouveau mot de passe :",
 			"submitButton": "Modifier le mot de passe",
 			"errorMismatch": "Les nouveaux mots de passe ne correspondent pas.",
 			"success": "Mot de passe modifié avec succès."
 		},
 		"renameUser": {
 			"title": "Renommer l'utilisateur",
-			"newUsernameLabel": "Nouveau nom d'utilisateur :",
+			"newUsernameLabel": "Nouveau nom d'utilisateur :",
 			"submitButton": "Renommer l'utilisateur",
-			"confirmMessage": "Êtes-vous sûr de vouloir changer votre nom d'utilisateur ? Cela nécessitera une nouvelle connexion.",
+			"confirmMessage": "Êtes-vous sûr de vouloir changer votre nom d'utilisateur ? Cela nécessitera une nouvelle connexion.",
 			"success": "L'utilisateur a été renommé \"${newUsername}\" avec succès. Vous allez maintenant être déconnecté."
 		},
 		"userDevices": {
 			"title": "Appareils et sessions utilisateur",
 			"refreshButtonTitle": "Actualiser la liste",
 			"noDevicesFound": "Aucun appareil ou session trouvé.",
-			"deviceInfo": "ID de l'appareil : ${deviceId}",
+			"deviceInfo": "ID de l'appareil : ${deviceId}",
 			"thisDevice": "Cet appareil",
-			"deviceDetails": "Dernière connexion : ${lastSeen} | IP : ${ipAddress} | UA : ${userAgent}",
+			"deviceDetails": "Dernière connexion : ${lastSeen} | IP : ${ipAddress} | UA : ${userAgent}",
 			"revokeButton": "Révoquer",
 			"revokeConfirm": "Révoquer l'accès pour cet appareil/cette session ?",
-			"revokeSuccess": "Appareil/session révoqué avec succès."
+			"revokeSuccess": "Appareil/Session révoqué avec succès."
 		},
 		"logout": {
 			"title": "Se déconnecter",
 			"description": "Ceci déconnectera votre compte de l'appareil actuel.",
 			"buttonText": "Se déconnecter",
-			"confirmMessage": "Êtes-vous sûr de vouloir vous déconnecter ?",
+			"confirmMessage": "Êtes-vous sûr de vouloir vous déconnecter ?",
 			"successMessage": "Déconnexion réussie. Redirection vers la page de connexion en cours..."
 		},
 		"deleteAccount": {
 			"title": "Supprimer le compte",
-			"warning": "Attention : Cette action supprimera définitivement votre compte et toutes les données associées. Elle est irréversible.",
+			"warning": "Attention : Cette action supprimera définitivement votre compte et toutes les données associées. Elle est irréversible.",
 			"submitButton": "Supprimer mon compte",
-			"confirmMessage1": "Attention ! Êtes-vous sûr de vouloir supprimer définitivement votre compte ? Cette action est irréversible.",
-			"confirmMessage2": "Pour confirmer la suppression, veuillez saisir votre nom d'utilisateur \"${username}\" :",
+			"confirmMessage1": "Attention ! Êtes-vous sûr de vouloir supprimer définitivement votre compte ? Cette action est irréversible.",
+			"confirmMessage2": "Pour confirmer la suppression, veuillez saisir votre nom d'utilisateur \"${username}\" :",
 			"usernameMismatch": "Le nom d'utilisateur saisi ne correspond pas à l'utilisateur actuel. La suppression a été annulée.",
 			"success": "Le compte a été supprimé avec succès. Vous allez maintenant être déconnecté."
 		},
 		"passwordConfirm": {
 			"title": "Confirmer l'opération",
-			"message": "Pour continuer, veuillez saisir votre mot de passe actuel :",
-			"passwordLabel": "Mot de passe :",
+			"message": "Pour continuer, veuillez saisir votre mot de passe actuel :",
+			"passwordLabel": "Mot de passe :",
 			"confirmButton": "Confirmer",
 			"cancelButton": "Annuler"
 		}
