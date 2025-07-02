@@ -40,7 +40,7 @@
 				}
 			},
 			"level": 1,
-			"url": "/shells/discordBot",
+			"url": "/shells/discordbot",
 			"button": "<img src=\"https://api.iconify.design/line-md/discord.svg\" class=\"text-icon\"/>"
 		}
 	],
@@ -86,7 +86,7 @@
 			},
 			"level": 0,
 			"interface": "discord",
-			"url": "/shells/discordBot?name=${name}&char=${name}",
+			"url": "/shells/discordbot?name=${name}&char=${name}",
 			"button": "<img src=\"https://api.iconify.design/line-md/discord.svg\"/>"
 		}
 	]
