@@ -188,7 +188,11 @@ else
 			elif [[ "$(uname -s)" == "Darwin" ]]; then
 				(open "$URL" &)
 			fi
-			new_args=("${new_args[@]/open/}")
+			temp_args=()
+			for arg in "${new_args[@]}"; do
+			  [[ "$arg" != "open" ]] && temp_args+=("$arg")
+			done
+			new_args=("${temp_args[@]}")
 		else
 			echo "Warning: Could not start status server. Proceeding with standard installation."
 		fi
