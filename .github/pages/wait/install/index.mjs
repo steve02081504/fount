@@ -123,6 +123,8 @@ async function main() {
 		return true
 	}
 	if (await checkFountInstallerAlive()) {
+		document.getElementById('theme-selection-section').style.display = 'block'
+		document.getElementById('mini-game-section').style.display = 'block'
 		footerReadyText.textContent = geti18n('installer_wait_screen.footer.wait_text')
 		const timer = setInterval(async () => {
 			if (!await checkFountInstallerAlive()) {
@@ -148,8 +150,6 @@ async function main() {
 		}, 1000)
 	}
 	else {
-		// Installer is not running, hide theme section, change button
-		themeSelectionSection.style.display = 'none'
 		launchButtonText.textContent = geti18n('installer_wait_screen.footer.open_or_install_fount')
 		launchButton.onclick = () => {
 			window.location.href = 'fount://page/shells/home'

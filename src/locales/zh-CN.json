@@ -108,6 +108,11 @@
 			"title": "选择您的外观",
 			"description": "选择一个主题来个性化您的体验。"
 		},
+		"mini_game": {
+			"title": "玩点小游戏",
+			"description1": "安装太慢了？",
+			"description2": "这里有小游戏用来打发时间。"
+		},
 		"footer": {
 			"ready_text": "准备好开始您的旅程了吗？",
 			"wait_text": "稍候片刻...",

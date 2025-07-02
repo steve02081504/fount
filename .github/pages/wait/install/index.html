@@ -75,7 +75,7 @@
 		</div>
 
 		<!-- Theme Selector -->
-		<div id="theme-selection-section" class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+		<div id="theme-selection-section" style="display: none;" class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
 			<h2 class="text-4xl font-bold mb-4 text-center" data-i18n="installer_wait_screen.theme_selector.title"></h2>
 			<p class="text-lg text-base-content text-opacity-80 mb-8 text-center" data-i18n="installer_wait_screen.theme_selector.description"></p>
 
@@ -163,6 +163,22 @@
 				<div id="theme-list" class="lg:w-1/2 grid gap-4 max-h-[80vh] overflow-y-auto grid-cols-[repeat(auto-fit,minmax(160px,1fr))] p-4 lg:p-6">
 					<!-- Theme previews will be populated by JS -->
 				</div>
+			</div>
+		</div>
+
+		<!-- Mini Game Section -->
+		<div id="mini-game-section" style="display: none;" class="container mx-auto px-4 sm:px-6 lg:px-8 py-24">
+			<!-- Section Header -->
+			<div class="text-center mb-12">
+				<h2 class="text-4xl font-bold mb-4" data-i18n="installer_wait_screen.mini_game.title"></h2>
+				<p class="text-lg text-base-content text-opacity-80 max-w-3xl mx-auto" data-i18n="installer_wait_screen.mini_game.description1"></p>
+				<p class="text-lg text-base-content text-opacity-80 max-w-3xl mx-auto mt-2" data-i18n="installer_wait_screen.mini_game.description2"></p>
+			</div>
+
+			<!-- Game Iframe -->
+			<div class="flex justify-center">
+				<iframe id="mini-game" class="w-full max-w-md h-[550px] rounded-lg shadow-2xl border border-base-300" src="https://aaarafat.github.io/JS-Flappy-Bird/" title="Flappy Bird Mini Game">
+				</iframe>
 			</div>
 		</div>
 	</div>
