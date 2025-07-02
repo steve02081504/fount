@@ -80,7 +80,9 @@
 		"unknownCommand": "未知的命令",
 		"shellCommandSent": "Shell 命令已发送",
 		"shellCommandFailed": "发送 Shell 命令失败",
-		"shellCommandError": "发送 Shell 命令时出错"
+		"shellCommandError": "发送 Shell 命令时出错",
+		"fountNotFound": "awww :(\n\n没有找到 fount，或许你需要先安装一个？",
+		"unknownError": "awww :(\n\n发生错误：\n"
 	},
 	"installer_wait_screen": {
 		"title": "欢迎使用 fount！",
