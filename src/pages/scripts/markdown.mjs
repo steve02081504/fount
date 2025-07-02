@@ -84,4 +84,5 @@ onThemeChange((theme, is_dark) => {
 	else
 		markdown_style.href = 'https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown-light.min.css'
 })
+markdown_style.crossorigin = 'anonymous'
 document.head.prepend(markdown_style) // 最低优先级以免覆写颜色设定
