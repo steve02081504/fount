@@ -1,4 +1,4 @@
-import { base_dir } from "./base.mjs";
+import { base_dir } from './base.mjs'
 
 let i18n = {}
 let saved_pageid

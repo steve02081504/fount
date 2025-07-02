@@ -137,7 +137,7 @@ async function main() {
 				setPreRender(hostUrl)
 				footerReadyText.textContent = geti18n('installer_wait_screen.footer.ready_text')
 				launchButtonText.textContent = geti18n('installer_wait_screen.footer.open_fount')
-				launchButton.onclick = () => window.location.href = new URL('/shells/home', hostUrl)
+				launchButton.onclick = () => window.location.href = hostUrl + '?theme=' + theme_now
 				launchButtonSpinner.style.display = 'none'
 
 				if (footer) {

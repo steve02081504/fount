@@ -11,7 +11,11 @@
 	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser" crossorigin="anonymous"></script>
 	<script type="module" src="/base.mjs"></script>
 	<script>
+		import { setTheme } from './scripts/theme.mjs'
 		const hosturl = window.location.origin
+		urlParams = new URLSearchParams(window.location.search)
+		if (urlParams.get('theme'))
+			setTheme(urlParams.get('theme'))
 		if (localStorage.getItem('visited_home'))
 			window.location.href = '/shells/home'
 		else {

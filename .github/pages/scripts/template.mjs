@@ -1,4 +1,4 @@
-import { base_dir } from "./base.mjs";
+import { base_dir } from './base.mjs'
 import { geti18n, i18nElement } from './i18n.mjs'
 import { svgInliner } from './svgInliner.mjs'
 geti18n
