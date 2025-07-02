@@ -12,6 +12,7 @@ const launchButton = document.getElementById('launchButton')
 const launchButtonText = document.getElementById('launchButtonText')
 const launchButtonSpinner = document.getElementById('launchButtonSpinner')
 const footer = document.querySelector('.footer')
+const footerReadyText = document.getElementById('footerReadyText')
 const themeSelectionSection = document.getElementById('theme-selection-section')
 
 // --- Theme Selection ---
@@ -94,7 +95,7 @@ function handleThemeClick(previewElement, theme) {
 
 // --- Main Execution ---
 async function main() {
-	initTranslations('wait_installer')
+	await initTranslations('installer_wait_screen')
 	// Initial render
 	renderThemePreviews()
 
@@ -122,6 +123,7 @@ async function main() {
 		return true
 	}
 	if (await checkFountInstallerAlive()) {
+		footerReadyText.textContent = geti18n('installer_wait_screen.footer.wait_text')
 		const timer = setInterval(async () => {
 			if (!await checkFountInstallerAlive()) {
 				window.location.href = './error'
@@ -131,13 +133,14 @@ async function main() {
 			if (await isFountServiceAvailable(hostUrl)) {
 				saveFountHostUrl(hostUrl)
 				setPreRender(hostUrl)
-				launchButtonText.textContent = geti18n('wait_installer.footer.open_fount')
+				footerReadyText.textContent = geti18n('installer_wait_screen.footer.ready_text')
+				launchButtonText.textContent = geti18n('installer_wait_screen.footer.open_fount')
 				launchButton.onclick = () => window.location.href = new URL('/shells/home', hostUrl)
 				launchButtonSpinner.style.display = 'none'
 
 				if (footer) {
 					footer.classList.remove('fixed', 'bottom-0', 'w-full', 'z-50')
-					footer.classList.add('sticky')
+					footer.classList.add('sticky', 'absolute', 'bottom-0', 'w-full', 'z-50')
 				}
 
 				clearInterval(timer)
@@ -147,7 +150,7 @@ async function main() {
 	else {
 		// Installer is not running, hide theme section, change button
 		themeSelectionSection.style.display = 'none'
-		launchButtonText.textContent = geti18n('wait_installer.footer.open_or_install_fount')
+		launchButtonText.textContent = geti18n('installer_wait_screen.footer.open_or_install_fount')
 		launchButton.onclick = () => {
 			window.location.href = 'fount://page/shells/home'
 			window.location.href = 'https://github.com/steve02081504/fount'
@@ -156,7 +159,7 @@ async function main() {
 		const hostUrl = await getFountHostUrl()
 
 		if (hostUrl) {
-			launchButtonText.textContent = geti18n('wait_installer.footer.open_fount')
+			launchButtonText.textContent = geti18n('installer_wait_screen.footer.open_fount')
 			launchButton.onclick = () => window.location.href = new URL('/shells/home', hostUrl)
 		}
 		return
@@ -165,6 +168,6 @@ async function main() {
 
 main().catch(e => {
 	Sentry.captureException(e)
-	alert(geti18n('wait_installer.footer.error_message') + e.message)
+	alert(geti18n('installer_wait_screen.footer.error_message') + e.message)
 	window.location.href = 'https://github.com/steve02081504/fount'
 })

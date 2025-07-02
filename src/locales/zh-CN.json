@@ -82,7 +82,7 @@
 		"shellCommandFailed": "发送 Shell 命令失败",
 		"shellCommandError": "发送 Shell 命令时出错"
 	},
-	"wait_installer": {
+	"installer_wait_screen": {
 		"title": "欢迎使用 fount！",
 		"hero": {
 			"title": "您的沉浸式 AI 角色伴侣",
@@ -110,10 +110,18 @@
 		},
 		"footer": {
 			"ready_text": "准备好开始您的旅程了吗？",
+			"wait_text": "稍候片刻...",
 			"launch_button": "Fount 正在安装...",
 			"open_fount": "打开 fount",
 			"open_or_install_fount": "打开/安装 fount",
 			"error_message": "awww :(\n\n发生错误：\n"
+		},
+		"error": {
+			"title": "安装失败！",
+			"connection_failed": "连接失败！",
+			"description1": "fount 安装程序似乎出了问题。",
+			"description2": "请检查您的终端并重试。",
+			"close_page": "关闭页面"
 		}
 	},
 	"auth": {
