@@ -45,7 +45,7 @@ async function renderThemePreviews() {
 
 	// Create "Auto" theme preview
 	const autoPreview = await createAutoPreview()
-	autoPreview.addEventListener('click', () => handleThemeClick(autoPreview, null))
+	autoPreview.addEventListener('click', () => handleThemeClick(autoPreview, 'auto'))
 	if (!currentTheme) autoPreview.classList.add('selected-theme')
 	themeList.appendChild(autoPreview)
 

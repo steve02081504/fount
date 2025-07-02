@@ -55,7 +55,8 @@ export function getCurrentTheme() {
 export function setTheme(theme) {
 	if (theme === theme_now) return
 	theme_now = theme
-	localStorage.setItem('theme', theme || '')
+	localStorage.setItem('theme', theme)
+	if (theme === 'auto') theme = null
 	theme ||= Boolean(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light'
 	if (document.documentElement.dataset.theme !== theme) document.documentElement.setAttribute('data-theme', theme)
 }
