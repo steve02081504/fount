@@ -152,12 +152,9 @@ async function main() {
 	else {
 		launchButtonText.textContent = geti18n('installer_wait_screen.footer.open_or_install_fount')
 		launchButton.onclick = () => {
-			const timeout = setTimeout(() => {
+			setTimeout(() => {
 				window.location.href = 'https://github.com/steve02081504/fount'
 			}, 1000)
-			window.addEventListener('blur', () => {
-				clearTimeout(timeout)
-			})
 			window.location.href = 'fount://page/shells/home'
 		}
 		launchButtonSpinner.style.display = 'none'
