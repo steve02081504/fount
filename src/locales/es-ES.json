@@ -4,7 +4,7 @@
 		"server": {
 			"start": "Iniciando servidor",
 			"starting": "Servidor iniciándose...",
-			"ready": "Servidor iniciado",
+			"ready": "Servidor listo",
 			"usesdTime": "Tiempo de inicio: ${time}s",
 			"showUrl": {
 				"https": "Servidor HTTPS en ejecución en ${url}",
@@ -18,17 +18,17 @@
 		"ipc": {
 			"sendCommandFailed": "Error al enviar comando: ${error}",
 			"invalidCommand": "Comando inválido. Por favor, usa \"fount run <tipo de parte> <nombre de usuario> <nombre de parte> <parámetros...>\".",
-			"runPartLog": "Ejecutar ${parttype} ${partname} como ${username}, parámetros: ${args}.",
-			"invokePartLog": "Llama a ${parttype} ${partname} como ${username}, parámetros: ${invokedata}.",
-			"unsupportedCommand": "Tipo de comando no soportado.",
+			"runPartLog": "Ejecutar ${parttype} ${partname} como ${username}, parámetros: ${args}",
+			"invokePartLog": "Llamar a ${parttype} ${partname} como ${username}, parámetros: ${invokedata}",
+			"unsupportedCommand": "Tipo de comando no soportado",
 			"processMessageError": "Error al procesar mensaje IPC: ${error}",
-			"invalidCommandFormat": "Formato de comando inválido.",
+			"invalidCommandFormat": "Formato de comando inválido",
 			"socketError": "Error de socket: ${error}",
-			"instanceRunning": "Otra instancia ya está en ejecución.",
-			"serverStarted": "Servidor IPC iniciado.",
+			"instanceRunning": "Otra instancia ya está en ejecución",
+			"serverStarted": "Servidor IPC iniciado",
 			"parseResponseFailed": "Error al analizar la respuesta del servidor: ${error}",
-			"cannotParseResponse": "No se puede analizar la respuesta del servidor.",
-			"unknownError": "Error desconocido."
+			"cannotParseResponse": "No se puede analizar la respuesta del servidor",
+			"unknownError": "Error desconocido"
 		},
 		"partManager": {
 			"git": {
@@ -40,8 +40,8 @@
 				"upToDate": "Ya está actualizado.",
 				"updateFailed": "Error al actualizar partes desde el repositorio remoto: ${error}"
 			},
-			"partInitTime": "${parttype} parte ${partname} tiempo de inicialización: ${time}s",
-			"partLoadTime": "${parttype} parte ${partname} tiempo de carga: ${time}s"
+			"partInitTime": "Parte ${parttype} ${partname}, tiempo de inicialización: ${time}s",
+			"partLoadTime": "Parte ${parttype} ${partname}, tiempo de carga: ${time}s"
 		},
 		"web": {
 			"requestReceived": "Petición recibida: ${method} ${url}"
@@ -57,9 +57,9 @@
 			"accountLockedLog": "Cuenta del usuario ${username} bloqueada debido a múltiples intentos fallidos de inicio de sesión."
 		},
 		"verification": {
-			"codeGeneratedLog": "Código de verificación: ${code} (expira en 60 segundos).",
-			"codeNotifyTitle": "Código de verificación",
-			"codeNotifyBody": "Código de verificación: ${code} (expira en 60 segundos)."
+			"codeGeneratedLog": "Código de verificación: ${code} (expira en 60 segundos)",
+			"codeNotifyTitle": "Código de Verificación",
+			"codeNotifyBody": "Código de verificación: ${code} (expira en 60 segundos)"
 		},
 		"tray": {
 			"readIconFailed": "Error al leer el archivo del icono: ${error}",
@@ -73,62 +73,62 @@
 		}
 	},
 	"protocolhandler": {
-		"title": "Procesando protocolo Fount",
+		"title": "Procesando Protocolo Fount",
 		"processing": "Procesando protocolo...",
-		"invalidProtocol": "Protocolo inválido.",
-		"insufficientParams": "Parámetros insuficientes.",
-		"unknownCommand": "Comando desconocido.",
-		"shellCommandSent": "Comando de shell enviado.",
-		"shellCommandFailed": "Error al enviar el comando de shell.",
-		"shellCommandError": "Error enviando el comando de shell.",
-		"fountNotFound": "awww:(\n\nNo se encontró una fuente, ¿tal vez necesitas instalar una primero?",
-		"unknownError": "awww:(\n\nSe produjo un error:"
+		"invalidProtocol": "Protocolo inválido",
+		"insufficientParams": "Parámetros insuficientes",
+		"unknownCommand": "Comando desconocido",
+		"shellCommandSent": "Comando de shell enviado",
+		"shellCommandFailed": "Error al enviar el comando de shell",
+		"shellCommandError": "Error enviando el comando de shell",
+		"fountNotFound": "awww :(\n\nFount no encontrado, ¿quizás necesites instalarlo primero?",
+		"unknownError": "awww :(\n\nOcurrió un error:\n"
 	},
 	"installer_wait_screen": {
-		"title": "¡Bienvenido a la fuente!",
+		"title": "¡Bienvenido a Fount!",
 		"hero": {
-			"title": "Tu compañero de personaje de IA inmersivo",
-			"description": "Fount es una plataforma de interacción de roles con IA diseñada para empoderar <i> You </i>. Es un puente que te conecta con tus personajes imaginados, que te permite hablar fácilmente con ellos, crear tus propios personajes y compartirlos con el mundo."
+			"title": "Tu Compañero Inmersivo de Personajes con IA",
+			"description": "Fount es una plataforma de interacción de personajes impulsada por IA, diseñada para <i>empoderarte</i>. Es un puente que te conecta con los personajes que imaginas, permitiéndote hablar fácilmente con ellos, crear tus propios personajes y compartirlos con el mundo."
 		},
 		"feature1": {
-			"title": "Diálogo sin costuras, en cualquier lugar",
-			"description": "Comience a chatear en su computadora y continúe sin problemas en su teléfono o tableta. La fuente mantiene sus conversaciones sincronizadas y manténgase en contacto con su personaje donde quiera que vaya. Se ejecuta en Windows, MacOS, Linux e incluso Android."
+			"title": "Diálogos fluidos, en cualquier lugar",
+			"description": "Comienza a chatear en tu ordenador y continúa sin interrupciones en tu teléfono o tableta. Fount mantiene tus conversaciones sincronizadas para que estés en contacto con tu personaje dondequiera que vayas. Funciona en Windows, macOS, Linux e incluso Android."
 		},
 		"feature2": {
-			"title": "Hermosa interfaz personalizable",
-			"description": "Elija entre más de 30 temas hermosos o cree los suyos propios. La fuente es su lienzo personal. Exprese usted mismo, personalice el entorno a sus preferencias y obtenga una experiencia verdaderamente personalizada."
+			"title": "Interfaz atractiva y personalizable",
+			"description": "Elige entre más de 30 atractivos temas o crea el tuyo propio. Fount es tu lienzo personal. Exprésate, personaliza el entorno a tu gusto y disfruta de una experiencia verdaderamente única."
 		},
 		"feature3": {
 			"title": "Chat expresivo e inmersivo",
-			"description": "Fount aprovecha el poder de HTML, permitiendo que los personajes se expresen a través de textos ricos, imágenes e incluso elementos interactivos. Tener chats grupales dinámicos y atractivos con múltiples personajes al mismo tiempo."
+			"description": "Fount aprovecha todo el potencial de HTML, permitiendo que los personajes se expresen mediante texto enriquecido, imágenes e incluso elementos interactivos. Disfruta de chats grupales dinámicos y participativos con múltiples personajes al mismo tiempo."
 		},
 		"feature4": {
-			"title": "Integración de fuente de IA unbound AI",
-			"description": "Fount ofrece una elección y flexibilidad incomparables. Conéctese a <i> cualquiera de las fuentes </i> ai: openai, Claude, OpenRouter, novelai, etc. La lógica de comunicación será moldeada por el poder del código de acuerdo con sus deseos."
+			"title": "Integración sin límites con orígenes de IA",
+			"description": "Fount ofrece una variedad y flexibilidad incomparables. Conéctate a <i>cualquier</i> origen de IA: OpenAI, Claude, OpenRouter, NovelAI, etc. La lógica de comunicación se moldeará con el poder del código según <i>tus</i> deseos."
 		},
 		"theme_selector": {
 			"title": "Elige tu apariencia",
-			"description": "Elija un tema para personalizar su experiencia."
+			"description": "Selecciona un tema para personalizar tu experiencia."
 		},
 		"mini_game": {
-			"title": "Juega algunos juegos pequeños",
-			"description1": "La instalación es demasiado lenta?",
-			"description2": "Hay mini juegos aquí para pasar el tiempo."
+			"title": "Juega a un minijuego",
+			"description1": "¿La instalación va demasiado lenta?",
+			"description2": "Aquí tienes un minijuego para pasar el rato."
 		},
 		"footer": {
-			"ready_text": "¿Listo para comenzar tu viaje?",
-			"wait_text": "Espera un momento ...",
-			"launch_button": "Fount está instalando ...",
-			"open_fount": "Fuente abierta",
-			"open_or_install_fount": "Abrir/instalar una fuente",
-			"error_message": "awww:(\n\nSe produjo un error:"
+			"ready_text": "¿Listo para empezar tu aventura?",
+			"wait_text": "Espera un momento...",
+			"launch_button": "Fount se está instalando...",
+			"open_fount": "Abrir Fount",
+			"open_or_install_fount": "Abrir/Instalar Fount",
+			"error_message": "awww :(\n\nOcurrió un error:\n"
 		},
 		"error": {
-			"title": "¡Falló la instalación!",
-			"connection_failed": "¡Falló la conexión!",
-			"description1": "Parece haber algo mal con el instalador de la fuente.",
-			"description2": "Consulte su terminal y vuelva a intentarlo.",
-			"close_page": "Cerrar la página"
+			"title": "¡Error en la instalación!",
+			"connection_failed": "¡Error de conexión!",
+			"description1": "Parece que hay un problema con el instalador de Fount.",
+			"description2": "Por favor, comprueba tu terminal e inténtalo de nuevo.",
+			"close_page": "Cerrar página"
 		}
 	},
 	"auth": {
@@ -187,10 +187,10 @@
 		}
 	},
 	"tutorial": {
-		"title": "¿Quieres un tutorial?",
+		"title": "¿Un tutorial?",
 		"modal": {
 			"title": "¡Bienvenido a Fount!",
-			"instruction": "¿Quieres seguir el tutorial de introducción?",
+			"instruction": "¿Te gustaría hacer el tutorial de introducción?",
 			"buttons": {
 				"start": "Iniciar tutorial",
 				"skip": "Omitir"
@@ -198,8 +198,8 @@
 		},
 		"endScreen": {
 			"title": "¡Genial! ¡Tutorial completado!",
-			"subtitle": "¡Ya estás listo para empezar!",
-			"endButton": "¡Adelante!"
+			"subtitle": "¡Ya conoces lo básico!",
+			"endButton": "¡Empezar!"
 		},
 		"progressMessages": {
 			"mouseMove": "Intenta mover el ratón ${mouseIcon}.",
@@ -215,8 +215,8 @@
 			"placeholder": "Buscar..."
 		},
 		"sidebarTitle": "Detalles",
-		"itemDescription": "Selecciona un elemento aquí para ver los detalles.",
-		"noDescription": "No hay descripción disponible.",
+		"itemDescription": "Selecciona un elemento para ver los detalles.",
+		"noDescription": "Sin descripción.",
 		"alerts": {
 			"fetchHomeRegistryFailed": "Error al obtener la información del registro de inicio."
 		},
@@ -300,12 +300,12 @@
 			"synthwave": "Synthwave",
 			"retro": "Retro",
 			"cyberpunk": "Ciberpunk",
-			"valentine": "Día de San Valentín",
+			"valentine": "San Valentín",
 			"halloween": "Halloween",
 			"garden": "Jardín",
 			"forest": "Bosque",
 			"aqua": "Aqua",
-			"lofi": "lo-fi",
+			"lofi": "Lo-fi",
 			"pastel": "Pastel",
 			"fantasy": "Fantasía",
 			"wireframe": "Wireframe",
@@ -370,14 +370,14 @@
 		}
 	},
 	"aisource_editor": {
-		"title": "Editor de Fuentes de IA",
+		"title": "Editor de Orígenes de IA",
 		"fileList": {
-			"title": "Lista de Fuentes de IA",
+			"title": "Lista de Orígenes de IA",
 			"addButton": {
 				"title": "+"
 			}
 		},
-		"configTitle": "Configuración de Fuente de IA",
+		"configTitle": "Configuración de Origen de IA",
 		"generatorSelect": {
 			"label": "Seleccionar generador",
 			"placeholder": "Por favor, selecciona"
@@ -405,7 +405,7 @@
 			"unsavedChangesBeforeUnload": "Tienes cambios sin guardar. ¿Seguro que quieres salir de esta página?"
 		},
 		"prompts": {
-			"newFileName": "Introduce un nuevo nombre para el archivo de fuente de IA (sin extensión):"
+			"newFileName": "Introduce un nuevo nombre para el archivo de origen de IA (sin extensión):"
 		},
 		"editor": {
 			"disabledIndicator": "Por favor, selecciona primero un generador."
@@ -503,7 +503,7 @@
 				}
 			},
 			"noSelection": "Nada seleccionado",
-			"noDescription": "No hay descripción disponible."
+			"noDescription": "Sin descripción."
 		},
 		"chatArea": {
 			"title": "Chat",
@@ -514,7 +514,7 @@
 				"alt": "Icono de menú"
 			},
 			"input": {
-				"placeholder": "Escribe un mensaje...\\nCtrl+Enter para enviar"
+				"placeholder": "Escribe un mensaje...\nCtrl+Enter para enviar"
 			},
 			"sendButton": {
 				"title": "Enviar"
@@ -562,25 +562,25 @@
 					"title": "Más"
 				},
 				"moreIcon": {
-					"alt": "Más icono"
+					"alt": "Icono de más"
 				}
 			},
 			"dropdown": {
 				"delete": "Eliminar",
 				"deleteIcon": {
-					"alt": "Icono Eliminar"
+					"alt": "Icono de eliminar"
 				},
 				"copyMarkdown": "Copiar como Markdown",
 				"copyMarkdownIcon": {
-					"alt": "Icono Copiar como Markdown"
+					"alt": "Icono de copiar como Markdown"
 				},
 				"copyText": "Copiar como texto sin formato",
 				"copyTextIcon": {
-					"alt": "Icono Copiar como texto"
+					"alt": "Icono de copiar texto"
 				},
 				"copyHtml": "Copiar como HTML",
 				"copyHtmlIcon": {
-					"alt": "Icono Copiar como HTML"
+					"alt": "Icono de copiar HTML"
 				}
 			}
 		},
@@ -664,9 +664,9 @@
 		"alerts": {
 			"noChatSelectedForDeletion": "Por favor, selecciona los historiales de chat que quieres eliminar.",
 			"noChatSelectedForExport": "Por favor, selecciona los historiales de chat que quieres exportar.",
-			"copyError": "Copia fallida.",
-			"deleteError": "Eliminación fallida.",
-			"exportError": "Exportación fallida."
+			"copyError": "Error al copiar.",
+			"deleteError": "Error al eliminar.",
+			"exportError": "Error al exportar."
 		},
 		"chatItemButtons": {
 			"continue": "Continuar",
@@ -769,7 +769,7 @@
 	"proxy": {
 		"title": "Proxy de API",
 		"heading": "Dirección del Proxy de API de OpenAI",
-		"instruction": "¡Introduce la siguiente dirección en cualquier aplicación que requiera el formato de API de OpenAI para usar las fuentes de IA en Fount!",
+		"instruction": "¡Introduce la siguiente dirección en cualquier aplicación que requiera el formato de API de OpenAI para usar los orígenes de IA en Fount!",
 		"copyButton": "Copiar dirección",
 		"copied": "¡Dirección copiada al portapapeles!"
 	},
@@ -823,10 +823,10 @@
 			"newUsernameLabel": "Nuevo nombre de usuario:",
 			"submitButton": "Cambiar nombre de usuario",
 			"confirmMessage": "¿Seguro que quieres cambiar tu nombre de usuario? Esto requerirá que vuelvas a iniciar sesión.",
-			"success": "Nombre de usuario cambiado a \"${newUsername}\" correctamente. Ahora se cerrará tu sesión."
+			"success": "Nombre de usuario cambiado a \"${newUsername}\" correctamente. Ahora se cerrará la sesión."
 		},
 		"userDevices": {
-			"title": "Dispositivos/sesiones de usuario",
+			"title": "Dispositivos/Sesiones de usuario",
 			"refreshButtonTitle": "Actualizar lista",
 			"noDevicesFound": "No se han encontrado dispositivos ni sesiones.",
 			"deviceInfo": "ID del dispositivo: ${deviceId}",
@@ -834,7 +834,7 @@
 			"deviceDetails": "Última conexión: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
 			"revokeButton": "Revocar",
 			"revokeConfirm": "¿Seguro que quieres revocar el acceso para este dispositivo/sesión?",
-			"revokeSuccess": "Dispositivo/sesión revocado correctamente."
+			"revokeSuccess": "Dispositivo/Sesión revocado correctamente."
 		},
 		"logout": {
 			"title": "Cerrar sesión",
@@ -850,7 +850,7 @@
 			"confirmMessage1": "¡Atención! ¿Seguro que quieres eliminar tu cuenta permanentemente? Esta acción no se puede deshacer.",
 			"confirmMessage2": "Para confirmar la eliminación, introduce tu nombre de usuario \"${username}\":",
 			"usernameMismatch": "El nombre de usuario introducido no coincide con el actual. Se ha cancelado la eliminación.",
-			"success": "Cuenta eliminada correctamente. Ahora se cerrará tu sesión."
+			"success": "Cuenta eliminada correctamente. Ahora se cerrará la sesión."
 		},
 		"passwordConfirm": {
 			"title": "Confirmar operación",

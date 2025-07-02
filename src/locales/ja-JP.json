@@ -17,9 +17,9 @@
 		},
 		"ipc": {
 			"sendCommandFailed": "コマンドの送信に失敗しました：${error}",
-			"invalidCommand": "無効なコマンド、「fount run <部品タイプ> <ユーザー名> <部品名> <パラメーター...>」を使用してください。",
-			"runPartLog": "${username}として${parttype} ${partname}を実行します、パラメーター：${args}。",
-			"invokePartLog": "${username}として${parttype} ${partname}を呼び出します、パラメーター：${invokedata}。",
+			"invalidCommand": "無効なコマンドです。「fount run <部品タイプ> <ユーザー名> <部品名> <パラメーター...>」を使用してください。",
+			"runPartLog": "${username}として${parttype} ${partname}を実行します。パラメーター：${args}",
+			"invokePartLog": "${username}として${parttype} ${partname}を呼び出します。パラメーター：${invokedata}",
 			"unsupportedCommand": "サポートされていないコマンドタイプです。",
 			"processMessageError": "IPCメッセージの処理中にエラーが発生しました：${error}",
 			"invalidCommandFormat": "無効なコマンド形式です。",
@@ -76,59 +76,59 @@
 		"title": "Fountプロトコルの処理",
 		"processing": "プロトコルを処理中です...",
 		"invalidProtocol": "無効なプロトコルです。",
-		"insufficientParams": "パラメータが不足しています。",
+		"insufficientParams": "パラメーターが不足しています。",
 		"unknownCommand": "不明なコマンドです。",
 		"shellCommandSent": "シェルコマンドを送信しました。",
 		"shellCommandFailed": "シェルコマンドの送信に失敗しました。",
 		"shellCommandError": "シェルコマンドの送信中にエラーが発生しました。",
-		"fountNotFound": "awww :(\n\n噴水は見つかりませんでした、多分あなたは最初に1つをインストールする必要がありますか？",
-		"unknownError": "awww :(\n\nエラーが発生しました："
+		"fountNotFound": "awww :(\n\nFountが見つかりませんでした。最初にインストールする必要がありますか？",
+		"unknownError": "awww :(\n\nエラーが発生しました：\n"
 	},
 	"installer_wait_screen": {
 		"title": "Fountへようこそ！",
 		"hero": {
-			"title": "あなたの没入型AIキャラクターコンパニオン",
-			"description": "Fountは、</i> </i>を強化するように設計されたAI搭載の役割インタラクションプラットフォームです。それはあなたをあなたの想像上のキャラクターとつなぐ橋であり、あなたが簡単に彼らと話をし、あなた自身のキャラクターを作成し、それらを世界と共有することを可能にします。"
+			"title": "あなただけの没入型AIキャラクターコンパニオン",
+			"description": "Fountは、<i>あなた</i>の可能性を最大限に引き出すために設計された、AI搭載のキャラクター対話プラットフォームです。想像の世界のキャラクターたちとあなたを繋ぐ架け橋となり、気軽に会話を楽しんだり、自分だけのキャラクターを創り出して世界と共有したりすることを可能にします。"
 		},
 		"feature1": {
-			"title": "シームレスな対話、どこでも",
-			"description": "コンピューターでチャットを開始し、携帯電話やタブレットでシームレスに続けます。 Fountは会話を同期させ、どこへ行ってもキャラクターと連絡を取り合っています。 Windows、MacOS、Linux、さらにはAndroidで実行されます。"
+			"title": "どこでもシームレスな対話を",
+			"description": "PCで始めたチャットを、スマートフォンやタブレットでシームレスに継続。Fountが会話を常に同期し、どこにいてもあなたのキャラクターと繋がっていられます。Windows、macOS、Linux、そしてAndroidにも対応しています。"
 		},
 		"feature2": {
-			"title": "美しいカスタマイズ可能なインターフェイス",
-			"description": "30を超える美しいテーマから選択するか、独自のテーマを作成してください。 Fountはあなたの個人的なキャンバスです。自分を表現し、環境を好みに合わせてカスタマイズし、本当にパーソナライズされた体験を得てください。"
+			"title": "美しく、カスタマイズ可能なインターフェース",
+			"description": "30種類以上の美しいテーマから選択、または独自のテーマを作成しましょう。Fountはあなたのパーソナルキャンバスです。自分らしさを表現し、好みに合わせて環境をカスタマイズして、真にパーソナルな体験を手に入れましょう。"
 		},
 		"feature3": {
-			"title": "表現力豊かで没入型のチャット",
-			"description": "FountはHTMLの力を利用して、豊かなテキスト、画像、さらにはインタラクティブな要素を通してキャラクターが自分自身を表現できるようにします。複数の文字と同時にダイナミックで魅力的なグループチャットをしてください。"
+			"title": "表現力豊かで、没入感あふれるチャット",
+			"description": "FountはHTMLの力を最大限に活用し、キャラクターがリッチテキスト、画像、さらにはインタラクティブな要素を通じて自己表現することを可能にします。複数のキャラクターと同時に、ダイナミックで魅力的なグループチャットをお楽しみください。"
 		},
 		"feature4": {
-			"title": "Unbound AIソース統合",
-			"description": "Fountは、比類のない選択と柔軟性を提供します。 Openai、Claude、OpenRouter、Novelaiなどの</i> aiソースに接続します。コミュニケーションロジックは、あなたの希望に応じてコードの力によって形作られます。"
+			"title": "AIソースとの自由な連携",
+			"description": "Fountは、比類のない選択肢と柔軟性を提供します。OpenAI、Claude、OpenRouter、NovelAIなど、<i>あらゆる</i>AIソースに接続可能です。コミュニケーションのロジックは、あなたの意のままに、コードの力によって形作られます。"
 		},
 		"theme_selector": {
-			"title": "外観を選択してください",
-			"description": "あなたの経験をパーソナライズするテーマを選択してください。"
+			"title": "テーマを選択",
+			"description": "テーマを選択して、あなただけの体験をカスタマイズしましょう。"
 		},
 		"mini_game": {
-			"title": "いくつかの小さなゲームをプレイします",
-			"description1": "インストールが遅すぎますか？",
-			"description2": "ここには時間を過ごすためにミニゲームがあります。"
+			"title": "ミニゲームでひと息",
+			"description1": "インストールに時間がかかりすぎていませんか？",
+			"description2": "ここでミニゲームをして、少し時間を潰しましょう。"
 		},
 		"footer": {
-			"ready_text": "あなたの旅を始める準備はできましたか？",
-			"wait_text": "しばらく待って...",
-			"launch_button": "噴水がインストールされています...",
-			"open_fount": "噴水を開きます",
-			"open_or_install_fount": "開いて/インストールします",
-			"error_message": "awww :(\n\nエラーが発生しました："
+			"ready_text": "冒険を始める準備はできましたか？",
+			"wait_text": "しばらくお待ちください...",
+			"launch_button": "Fountをインストール中...",
+			"open_fount": "Fountを開く",
+			"open_or_install_fount": "Fountを開く/インストール",
+			"error_message": "awww :(\n\nエラーが発生しました：\n"
 		},
 		"error": {
 			"title": "インストールに失敗しました！",
 			"connection_failed": "接続に失敗しました！",
-			"description1": "Fountインストーラーに何か問題があるようです。",
-			"description2": "端末を確認して、もう一度やり直してください。",
-			"close_page": "ページを閉じます"
+			"description1": "Fountインストーラーに問題が発生したようです。",
+			"description2": "ターミナルを確認して、もう一度お試しください。",
+			"close_page": "ページを閉じる"
 		}
 	},
 	"auth": {
@@ -198,7 +198,7 @@
 		},
 		"endScreen": {
 			"title": "素晴らしい！チュートリアル完了！",
-			"subtitle": "基本操作はこれで完了です！",
+			"subtitle": "基本操作はこれでバッチリです！",
 			"endButton": "始めましょう！"
 		},
 		"progressMessages": {
@@ -229,7 +229,7 @@
 			"tab": "キャラクター",
 			"title": "キャラクター選択",
 			"subtitle": "キャラクターを選択して、チャットを始めましょう！",
-			"none": "何も表示するものがありません",
+			"none": "該当する項目がありません",
 			"card": {
 				"refreshButton": {
 					"alt": "更新",
@@ -239,7 +239,7 @@
 				"version": "バージョン",
 				"author": "作成者",
 				"home_page": "ホームページ",
-				"issue_page": "問題報告ページ",
+				"issue_page": "問題報告",
 				"defaultCheckbox": {
 					"title": "デフォルトキャラクターとして設定"
 				}
@@ -249,7 +249,7 @@
 			"tab": "ワールド",
 			"title": "ワールド選択",
 			"subtitle": "ワールドを選んで、没入体験を！",
-			"none": "何も表示するものがありません",
+			"none": "該当する項目がありません",
 			"card": {
 				"refreshButton": {
 					"alt": "更新",
@@ -259,7 +259,7 @@
 				"version": "バージョン",
 				"author": "作成者",
 				"home_page": "ホームページ",
-				"issue_page": "問題報告ページ",
+				"issue_page": "問題報告",
 				"defaultCheckbox": {
 					"title": "デフォルトワールドとして設定"
 				}
@@ -269,7 +269,7 @@
 			"tab": "ペルソナ",
 			"title": "ペルソナ選択",
 			"subtitle": "ペルソナを選択して、様々な役割を体験しましょう。",
-			"none": "何も表示するものがありません",
+			"none": "該当する項目がありません",
 			"card": {
 				"refreshButton": {
 					"alt": "更新",
@@ -279,7 +279,7 @@
 				"version": "バージョン",
 				"author": "作成者",
 				"home_page": "ホームページ",
-				"issue_page": "問題報告ページ",
+				"issue_page": "問題報告",
 				"defaultCheckbox": {
 					"title": "デフォルトペルソナとして設定"
 				}
@@ -300,12 +300,12 @@
 			"synthwave": "シンセウェイヴ",
 			"retro": "レトロ",
 			"cyberpunk": "サイバーパンク",
-			"valentine": "バレンタインデー",
+			"valentine": "バレンタイン",
 			"halloween": "ハロウィーン",
 			"garden": "ガーデン",
 			"forest": "フォレスト",
 			"aqua": "アクア",
-			"lofi": "lo-fi",
+			"lofi": "Lo-fi",
 			"pastel": "パステル",
 			"fantasy": "ファンタジー",
 			"wireframe": "ワイヤーフレーム",
@@ -314,14 +314,14 @@
 			"dracula": "ドラキュラ",
 			"cmyk": "CMYK",
 			"autumn": "オータム",
-			"business": "仕事",
+			"business": "ビジネス",
 			"acid": "アシッド",
 			"lemonade": "レモネード",
 			"night": "ナイト",
 			"coffee": "コーヒー",
 			"winter": "ウィンター",
 			"dim": "ディム",
-			"nord": "ノルディック",
+			"nord": "ノール",
 			"sunset": "サンセット",
 			"caramellatte": "キャラメルラテ",
 			"abyss": "アビス",
@@ -357,7 +357,7 @@
 			"noTextContent": "テキスト内容を入力してください。",
 			"textImportFailed": "テキストのインポートに失敗しました: ${message}",
 			"unknownError": "不明なエラーが発生しました。",
-			"handler": "ハンドラ",
+			"handler": "ハンドラー",
 			"error": "エラー"
 		},
 		"fileItem": {
@@ -370,7 +370,7 @@
 		}
 	},
 	"aisource_editor": {
-		"title": "AIソースエディタ",
+		"title": "AIソースエディター",
 		"fileList": {
 			"title": "AIソース一覧",
 			"addButton": {
@@ -379,7 +379,7 @@
 		},
 		"configTitle": "AIソース設定",
 		"generatorSelect": {
-			"label": "ジェネレータを選択",
+			"label": "ジェネレーターを選択",
 			"placeholder": "選択してください"
 		},
 		"buttons": {
@@ -388,7 +388,7 @@
 		},
 		"alerts": {
 			"fetchFileListFailed": "ファイルリストの取得に失敗しました: ${error}",
-			"fetchGeneratorListFailed": "ジェネレータリストの取得に失敗しました: ${error}",
+			"fetchGeneratorListFailed": "ジェネレーターリストの取得に失敗しました: ${error}",
 			"fetchFileDataFailed": "ファイルデータの取得に失敗しました: ${error}",
 			"noFileSelectedSave": "保存するファイルが選択されていません。",
 			"saveFileFailed": "ファイルの保存に失敗しました: ${error}",
@@ -397,7 +397,7 @@
 			"invalidFileName": "ファイル名に次の文字は使用できません： / \\ : * ? \" < > |",
 			"addFileFailed": "ファイルの追加に失敗しました: ${error}",
 			"fetchConfigTemplateFailed": "設定テンプレートの取得に失敗しました。",
-			"noGeneratorSelectedSave": "保存する前にジェネレータを選択してください。"
+			"noGeneratorSelectedSave": "保存する前にジェネレーターを選択してください。"
 		},
 		"confirm": {
 			"unsavedChanges": "保存されていない変更があります。変更を破棄しますか？",
@@ -408,7 +408,7 @@
 			"newFileName": "新しいAIソースのファイル名を入力してください（拡張子なし）："
 		},
 		"editor": {
-			"disabledIndicator": "最初にジェネレータを選択してください。"
+			"disabledIndicator": "最初にジェネレーターを選択してください。"
 		}
 	},
 	"part_config": {
@@ -437,7 +437,7 @@
 		"alerts": {
 			"fetchPartTypesFailed": "部品タイプの取得に失敗しました。",
 			"fetchPartsFailed": "部品リストの取得に失敗しました。",
-			"loadEditorFailed": "エディタの読み込みに失敗しました。",
+			"loadEditorFailed": "エディターの読み込みに失敗しました。",
 			"saveConfigFailed": "部品設定の保存に失敗しました。",
 			"unsavedChanges": "保存されていない変更があります。変更を破棄しますか？",
 			"beforeUnload": "保存されていない変更があります。このページから移動しますか？"
@@ -447,7 +447,7 @@
 		"title": "アンインストール",
 		"titleWithName": "${type}/${name} をアンインストール",
 		"confirmMessage": "${type}: ${name} をアンインストールしてもよろしいですか？",
-		"invalidParamsTitle": "無効なパラメータ",
+		"invalidParamsTitle": "無効なパラメーター",
 		"infoMessage": {
 			"icon": {
 				"alt": "情報アイコン"
@@ -466,7 +466,7 @@
 		"alerts": {
 			"success": "${type}: ${name} は正常にアンインストールされました。",
 			"failed": "アンインストールに失敗しました: ${error}",
-			"invalidParams": "無効なリクエストパラメータです。",
+			"invalidParams": "無効なリクエストパラメーターです。",
 			"httpError": "HTTPエラーが発生しました！ステータスコード: ${status}"
 		}
 	},
@@ -514,7 +514,7 @@
 				"alt": "メニューアイコン"
 			},
 			"input": {
-				"placeholder": "メッセージを入力...\\nCtrl+Enterで送信"
+				"placeholder": "メッセージを入力...\nCtrl+Enterで送信"
 			},
 			"sendButton": {
 				"title": "送信"
@@ -559,7 +559,7 @@
 					"alt": "編集アイコン"
 				},
 				"more": {
-					"title": "もっと"
+					"title": "その他"
 				},
 				"moreIcon": {
 					"alt": "その他アイコン"

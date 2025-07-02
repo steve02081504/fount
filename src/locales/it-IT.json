@@ -17,7 +17,7 @@
 		},
 		"ipc": {
 			"sendCommandFailed": "Impossibile inviare il comando: ${error}",
-			"invalidCommand": "Comando non valido. Usa \"fount run <tipo componente> <Nome utente> <nome componente> <Parametri ...>\".",
+			"invalidCommand": "Comando non valido. Usa \"fount run <tipo componente> <nome utente> <nome componente> <parametri...>\".",
 			"runPartLog": "Esecuzione di ${parttype} ${partname} come ${username}, parametri: ${args}.",
 			"invokePartLog": "Chiamata di ${parttype} ${partname} come ${username}, parametri: ${invokedata}.",
 			"unsupportedCommand": "Tipo di comando non supportato.",
@@ -40,8 +40,8 @@
 				"upToDate": "Già aggiornato.",
 				"updateFailed": "Impossibile aggiornare i componenti dal repository remoto: ${error}"
 			},
-			"partInitTime": "${parttype} componente ${partname} tempo di inizializzazione: ${time}s",
-			"partLoadTime": "${parttype} componente ${partname} tempo di caricamento: ${time}s"
+			"partInitTime": "Componente ${parttype} ${partname}, tempo di inizializzazione: ${time}s",
+			"partLoadTime": "Componente ${parttype} ${partname}, tempo di caricamento: ${time}s"
 		},
 		"web": {
 			"requestReceived": "Richiesta ricevuta: ${method} ${url}"
@@ -57,9 +57,9 @@
 			"accountLockedLog": "L'account dell'utente ${username} è stato bloccato a causa di molteplici tentativi di accesso falliti."
 		},
 		"verification": {
-			"codeGeneratedLog": "Codice di verifica: ${code} (scade tra 60 secondi).",
-			"codeNotifyTitle": "Codice di verifica",
-			"codeNotifyBody": "Codice di verifica: ${code} (scade tra 60 secondi)."
+			"codeGeneratedLog": "Codice di verifica: ${code} (scade tra 60 secondi)",
+			"codeNotifyTitle": "Codice di Verifica",
+			"codeNotifyBody": "Codice di verifica: ${code} (scade tra 60 secondi)"
 		},
 		"tray": {
 			"readIconFailed": "Impossibile leggere il file dell'icona: ${error}",
@@ -73,7 +73,7 @@
 		}
 	},
 	"protocolhandler": {
-		"title": "Gestione protocollo Fount",
+		"title": "Gestione Protocollo Fount",
 		"processing": "Elaborazione del protocollo in corso...",
 		"invalidProtocol": "Protocollo non valido.",
 		"insufficientParams": "Parametri insufficienti.",
@@ -81,54 +81,54 @@
 		"shellCommandSent": "Comando shell inviato.",
 		"shellCommandFailed": "Impossibile inviare il comando shell.",
 		"shellCommandError": "Errore durante l'invio del comando shell.",
-		"fountNotFound": "awww :(\n\nNon è stato trovato alcun fonte, forse devi installarne uno prima?",
-		"unknownError": "awww :(\n\nSi è verificato un errore:"
+		"fountNotFound": "awww :(\n\nFount non trovato. Forse devi prima installarlo?",
+		"unknownError": "awww :(\n\nSi è verificato un errore:\n"
 	},
 	"installer_wait_screen": {
-		"title": "Benvenuti a Fount!",
+		"title": "Benvenuto in Fount!",
 		"hero": {
-			"title": "Il tuo compagno di personaggio AI immersivo",
-			"description": "FOUNT è una piattaforma di interazione di ruolo basata sull'intelligenza artificiale progettata per potenziare <i> tu </i>. È un ponte che ti collega con i tuoi personaggi immaginati, permettendoti di parlare facilmente con loro, creare i tuoi personaggi e condividerli con il mondo."
+			"title": "Il Tuo Compagno Immersivo di Personaggi AI",
+			"description": "Fount è una piattaforma di interazione con personaggi basata sull'IA, progettata per dare più potere a <i>te</i>. È un ponte che ti connette con i personaggi della tua immaginazione, permettendoti di parlare facilmente con loro, creare i tuoi personaggi e condividerli con il mondo."
 		},
 		"feature1": {
-			"title": "Dialoghi senza soluzione di continuità, ovunque",
-			"description": "Inizia a chattare sul tuo computer e continua perfettamente sul telefono o sul tablet. Fount mantiene le tue conversazioni in sintonia e rimani in contatto con il tuo personaggio ovunque tu vada. Funziona su Windows, MacOS, Linux e persino Android."
+			"title": "Dialoghi fluidi, ovunque",
+			"description": "Inizia a chattare sul tuo computer e prosegui senza interruzioni sul tuo telefono o tablet. Fount mantiene sincronizzate le tue conversazioni, così puoi restare in contatto con il tuo personaggio ovunque tu vada. Funziona su Windows, macOS, Linux e persino Android."
 		},
 		"feature2": {
-			"title": "Interfaccia bella e personalizzabile",
-			"description": "Scegli tra oltre 30 bei temi o crea il tuo. Fount è la tua tela personale. Esprimi te stesso, personalizza l'ambiente alle tue preferenze e ottieni un'esperienza veramente personalizzata."
+			"title": "Interfaccia elegante e personalizzabile",
+			"description": "Scegli tra oltre 30 temi magnifici o crea il tuo. Fount è la tua tela personale. Esprimiti, personalizza l'ambiente secondo le tue preferenze e vivi un'esperienza davvero unica."
 		},
 		"feature3": {
 			"title": "Chat espressiva e coinvolgente",
-			"description": "Fount sfrutta il potere di HTML, consentendo ai personaggi di esprimersi attraverso un testo ricco, immagini e persino elementi interattivi. Avere chat di gruppo dinamiche e coinvolgenti con più caratteri contemporaneamente."
+			"description": "Fount sfrutta la potenza dell'HTML, consentendo ai personaggi di esprimersi attraverso testo formattato, immagini e persino elementi interattivi. Partecipa a chat di gruppo dinamiche e avvincenti con più personaggi contemporaneamente."
 		},
 		"feature4": {
-			"title": "Integrazione della fonte AI non legata",
-			"description": "Fount offre una scelta e flessibilità senza pari. Connettiti a <i> qualsiasi fonti di intelligenza artificiale: OPENAI, CLAUDE, OpenRouter, Nuovai, ecc. La logica di comunicazione sarà modellata dal potere del codice secondo i tuoi desideri."
+			"title": "Integrazione illimitata con sorgenti IA",
+			"description": "Fount offre scelta e flessibilità senza pari. Connettiti a <i>qualsiasi</i> sorgente IA: OpenAI, Claude, OpenRouter, NovelAI, ecc. La logica di comunicazione sarà modellata dalla potenza del codice, secondo i <i>tuoi</i> desideri."
 		},
 		"theme_selector": {
 			"title": "Scegli il tuo aspetto",
 			"description": "Scegli un tema per personalizzare la tua esperienza."
 		},
 		"mini_game": {
-			"title": "Gioca alcuni piccoli giochi",
+			"title": "Fai un piccolo gioco",
 			"description1": "L'installazione è troppo lenta?",
-			"description2": "Ci sono mini giochi qui per passare il tempo."
+			"description2": "Ecco un mini-gioco per passare il tempo."
 		},
 		"footer": {
 			"ready_text": "Pronto per iniziare il tuo viaggio?",
-			"wait_text": "Aspetta un momento ...",
-			"launch_button": "La fonte sta installando ...",
-			"open_fount": "Fonte aperta",
-			"open_or_install_fount": "Apri/installa fonte",
-			"error_message": "awww :(\n\nSi è verificato un errore:"
+			"wait_text": "Attendi un momento...",
+			"launch_button": "Fount è in fase di installazione...",
+			"open_fount": "Apri Fount",
+			"open_or_install_fount": "Apri/Installa Fount",
+			"error_message": "awww :(\n\nSi è verificato un errore:\n"
 		},
 		"error": {
-			"title": "L'installazione non è riuscita!",
+			"title": "Installazione non riuscita!",
 			"connection_failed": "Connessione non riuscita!",
-			"description1": "Sembra che ci sia qualcosa di sbagliato con lo installatore di fonte.",
+			"description1": "Sembra esserci un problema con il programma di installazione di Fount.",
 			"description2": "Controlla il tuo terminale e riprova.",
-			"close_page": "Chiudi la pagina"
+			"close_page": "Chiudi pagina"
 		}
 	},
 	"auth": {
@@ -198,8 +198,8 @@
 		},
 		"endScreen": {
 			"title": "Fantastico! Tutorial completato!",
-			"subtitle": "Ora hai imparato come si usa!",
-			"endButton": "Avanti!"
+			"subtitle": "Ora sai come si usa!",
+			"endButton": "Inizia!"
 		},
 		"progressMessages": {
 			"mouseMove": "Prova a muovere il mouse ${mouseIcon}.",
@@ -215,8 +215,8 @@
 			"placeholder": "Cerca..."
 		},
 		"sidebarTitle": "Dettagli",
-		"itemDescription": "Seleziona un elemento qui per visualizzarne i dettagli.",
-		"noDescription": "Nessuna descrizione disponibile.",
+		"itemDescription": "Seleziona un elemento per visualizzarne i dettagli.",
+		"noDescription": "Nessuna descrizione.",
 		"alerts": {
 			"fetchHomeRegistryFailed": "Impossibile recuperare le informazioni del registro home."
 		},
@@ -305,7 +305,7 @@
 			"garden": "Giardino",
 			"forest": "Foresta",
 			"aqua": "Aqua",
-			"lofi": "lo-fi",
+			"lofi": "Lo-fi",
 			"pastel": "Pastello",
 			"fantasy": "Fantasia",
 			"wireframe": "Wireframe",
@@ -314,15 +314,15 @@
 			"dracula": "Dracula",
 			"cmyk": "CMYK",
 			"autumn": "Autunno",
-			"business": "Attività commerciale",
+			"business": "Business",
 			"acid": "Acid",
 			"lemonade": "Limonata",
 			"night": "Notte",
 			"coffee": "Caffè",
 			"winter": "Inverno",
 			"dim": "Tenue",
-			"nord": "Nordico",
-			"sunset": "Sunset",
+			"nord": "Nord",
+			"sunset": "Tramonto",
 			"caramellatte": "Caramel Latte",
 			"abyss": "Abisso",
 			"silk": "Seta"
@@ -370,14 +370,14 @@
 		}
 	},
 	"aisource_editor": {
-		"title": "Editor sorgente IA",
+		"title": "Editor Sorgente IA",
 		"fileList": {
-			"title": "Elenco sorgenti IA",
+			"title": "Elenco Sorgenti IA",
 			"addButton": {
 				"title": "+"
 			}
 		},
-		"configTitle": "Configurazione sorgente IA",
+		"configTitle": "Configurazione Sorgente IA",
 		"generatorSelect": {
 			"label": "Seleziona generatore",
 			"placeholder": "Seleziona"
@@ -412,8 +412,8 @@
 		}
 	},
 	"part_config": {
-		"title": "Configurazione componente",
-		"pageTitle": "Configurazione componente",
+		"title": "Configurazione Componente",
+		"pageTitle": "Configurazione Componente",
 		"labels": {
 			"partType": "Seleziona tipo di componente",
 			"part": "Seleziona componente"
@@ -423,7 +423,7 @@
 			"partSelect": "Seleziona"
 		},
 		"editor": {
-			"title": "Configurazione componente",
+			"title": "Configurazione Componente",
 			"disabledIndicator": "Questo componente non supporta la configurazione.",
 			"buttons": {
 				"save": "Salva"
@@ -502,8 +502,8 @@
 					}
 				}
 			},
-			"noSelection": "Non selezionato",
-			"noDescription": "Nessuna descrizione disponibile."
+			"noSelection": "Nessuna selezione",
+			"noDescription": "Nessuna descrizione."
 		},
 		"chatArea": {
 			"title": "Chat",
@@ -514,7 +514,7 @@
 				"alt": "Icona Menu"
 			},
 			"input": {
-				"placeholder": "Scrivi un messaggio...\\nCtrl+Invio per inviare"
+				"placeholder": "Scrivi un messaggio...\nCtrl+Invio per inviare"
 			},
 			"sendButton": {
 				"title": "Invia"
@@ -529,10 +529,10 @@
 				"alt": "Icona Carica"
 			},
 			"voiceButton": {
-				"title": "Registra vocale"
+				"title": "Registrazione vocale"
 			},
 			"voiceButtonIcon": {
-				"alt": "Icona Registra vocale"
+				"alt": "Icona Registrazione vocale"
 			},
 			"photoButton": {
 				"title": "Foto"
@@ -559,10 +559,10 @@
 					"alt": "Icona Modifica"
 				},
 				"more": {
-					"title": "Di più"
+					"title": "Altro"
 				},
 				"moreIcon": {
-					"alt": "Altre opzioni"
+					"alt": "Icona Altro"
 				}
 			},
 			"dropdown": {
@@ -683,7 +683,7 @@
 			"deleteBot": "Elimina"
 		},
 		"configCard": {
-			"title": "Configurazione bot",
+			"title": "Configurazione Bot",
 			"labels": {
 				"character": "Personaggio",
 				"apiKey": "Chiave API Discord",
@@ -721,7 +721,7 @@
 			"deleteBot": "Elimina"
 		},
 		"configCard": {
-			"title": "Configurazione bot",
+			"title": "Configurazione Bot",
 			"labels": {
 				"character": "Personaggio associato",
 				"botToken": "Token Bot Telegram",
@@ -752,7 +752,7 @@
 		}
 	},
 	"terminal_assistant": {
-		"title": "Assistente terminale",
+		"title": "Assistente Terminale",
 		"initialMessage": "Fount supporta l'integrazione dei tuoi personaggi preferiti nel terminale per assisterti nella programmazione!",
 		"initialMessageLink": "Clicca qui per saperne di più."
 	},
@@ -768,15 +768,15 @@
 	},
 	"proxy": {
 		"title": "Proxy API",
-		"heading": "Indirizzo proxy API OpenAI",
-		"instruction": "Inserisci il seguente indirizzo in qualsiasi applicazione che richieda il formato API OpenAI per utilizzare le sorgenti AI in Fount!",
+		"heading": "Indirizzo Proxy API OpenAI",
+		"instruction": "Inserisci il seguente indirizzo in qualsiasi applicazione che richieda il formato API OpenAI per utilizzare le sorgenti IA in Fount!",
 		"copyButton": "Copia indirizzo",
 		"copied": "Indirizzo copiato negli appunti!"
 	},
 	"404": {
 		"title": "Pagina non trovata",
 		"pageNotFoundText": "Ops! Sembra che tu sia finito in una pagina inesistente.",
-		"homepageButton": "Torna alla home_page",
+		"homepageButton": "Torna alla Homepage",
 		"MineSweeper": {
 			"difficultyLabel": "Difficoltà:",
 			"difficultyEasy": "Facile",
@@ -823,7 +823,7 @@
 			"newUsernameLabel": "Nuovo nome utente:",
 			"submitButton": "Rinomina utente",
 			"confirmMessage": "Sei sicuro di voler cambiare il tuo nome utente? Dovrai effettuare nuovamente l'accesso.",
-			"success": "Nome utente rinominato correttamente in \"${newUsername}\". Verrai disconnesso."
+			"success": "Nome utente rinominato correttamente in \"${newUsername}\". Verrai ora disconnesso."
 		},
 		"userDevices": {
 			"title": "Dispositivi/Sessioni utente",
@@ -850,7 +850,7 @@
 			"confirmMessage1": "Attenzione! Sei sicuro di voler eliminare permanentemente il tuo account? Questa operazione non può essere annullata.",
 			"confirmMessage2": "Per confermare l'eliminazione, inserisci il tuo nome utente \"${username}\":",
 			"usernameMismatch": "Il nome utente inserito non corrisponde all'utente corrente. Eliminazione annullata.",
-			"success": "Account eliminato con successo. Verrai disconnesso."
+			"success": "Account eliminato con successo. Verrai ora disconnesso."
 		},
 		"passwordConfirm": {
 			"title": "Conferma operazione",
