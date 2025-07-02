@@ -5,6 +5,7 @@
 if (!$env:FOUNT_BRANCH) {
 	$env:FOUNT_BRANCH = "master"
 }
+
 #_if PSScript
 if ($PSEdition -eq "Desktop") {
 	try { $IsWindows = $true } catch {}
@@ -84,40 +85,76 @@ if (!$env:FOUNT_DIR) {
 	$env:FOUNT_DIR = "$env:LOCALAPPDATA/fount"
 }
 
-if (!(Get-Command fount.ps1 -ErrorAction Ignore)) {
-	Remove-Item $env:FOUNT_DIR -Confirm -ErrorAction Ignore -Recurse
-	if (Get-Command git -ErrorAction Ignore) {
-		git clone https://github.com/steve02081504/fount $env:FOUNT_DIR --depth 1 --single-branch --branch $env:FOUNT_BRANCH
-		if ($LastExitCode) {
-			Remove-Item $env:FOUNT_DIR -Force -ErrorAction Ignore -Confirm:$false -Recurse
-		}
-	}
-	if (!(Test-Path $env:FOUNT_DIR)) {
-		Remove-Item $env:TEMP/fount-$env:FOUNT_BRANCH -Force -ErrorAction Ignore -Confirm:$false -Recurse
-		try { Invoke-WebRequest https://github.com/steve02081504/fount/archive/refs/heads/$env:FOUNT_BRANCH.zip -OutFile $env:TEMP/fount.zip }
-		catch {
-			$Host.UI.WriteErrorLine("Failed to download fount: $($_.Exception.Message)")
-			exit 1
-		}
-		Expand-Archive $env:TEMP/fount.zip $env:TEMP -Force
-		Remove-Item $env:TEMP/fount.zip -Force
-		# 确保父文件夹存在
-		New-Item $(Split-Path -Parent $env:FOUNT_DIR) -ItemType Directory -Force -ErrorAction Ignore
-		Move-Item $env:TEMP/fount-$env:FOUNT_BRANCH $env:FOUNT_DIR -Force
-	}
-	if (!(Test-Path $env:FOUNT_DIR)) {
-		$Host.UI.WriteErrorLine("Failed to install fount")
-		exit 1
-	}
-	$Script:fountDir = $env:FOUNT_DIR
-}
-else {
-	$Script:fountDir = (Get-Command fount.ps1).Path | Split-Path -Parent | Split-Path -Parent
+$newargs = $args
+if ($args.Length -eq 0) {
+	$newargs = @("open", "keepalive")
 }
 
-Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -Force -ErrorAction Ignore
-$OutputEncoding = [console]::OutputEncoding = [System.Text.Encoding]::UTF8
-& "$Script:fountDir/run.bat" @args
+$statusServerJob = $null
+try {
+	if (!(Get-Command fount.ps1 -ErrorAction Ignore)) {
+		if ($newargs -contains "open") {
+			$statusServerScriptBlock = {
+				$listener = [System.Net.HttpListener]::new()
+				$listener.Prefixes.Add("http://localhost:8930/")
+				$listener.Start()
+				# 打开浏览器到等待页面
+				Start-Process 'https://steve02081504.github.io/fount/wait/install'
+
+				while ($true) {
+					$response = $listener.GetContext().Response
+					$buffer = [System.Text.Encoding]::UTF8.GetBytes('{"message":"pong"}')
+					$response.ContentType = "application/json"
+					$response.ContentLength64 = $buffer.Length
+					$response.OutputStream.Write($buffer, 0, $buffer.Length)
+					$response.Close()
+				}
+			}
+			$statusServerJob = Start-Job -ScriptBlock $statusServerScriptBlock
+			$newargs = $newargs | Where-Object { $_ -ne 'open' }
+		}
+		Remove-Item $env:FOUNT_DIR -Confirm -ErrorAction Ignore -Recurse
+		if (Get-Command git -ErrorAction Ignore) {
+			git clone https://github.com/steve02081504/fount $env:FOUNT_DIR --depth 1 --single-branch --branch $env:FOUNT_BRANCH
+			if ($LastExitCode) {
+				Remove-Item $env:FOUNT_DIR -Force -ErrorAction Ignore -Confirm:$false -Recurse
+			}
+		}
+		if (!(Test-Path $env:FOUNT_DIR)) {
+			Remove-Item $env:TEMP/fount-$env:FOUNT_BRANCH -Force -ErrorAction Ignore -Confirm:$false -Recurse
+			try { Invoke-WebRequest https://github.com/steve02081504/fount/archive/refs/heads/$env:FOUNT_BRANCH.zip -OutFile $env:TEMP/fount.zip }
+			catch {
+				$Host.UI.WriteErrorLine("Failed to download fount: $($_.Exception.Message)")
+				exit 1
+			}
+			Expand-Archive $env:TEMP/fount.zip $env:TEMP -Force
+			Remove-Item $env:TEMP/fount.zip -Force
+			# 确保父文件夹存在
+			New-Item $(Split-Path -Parent $env:FOUNT_DIR) -ItemType Directory -Force -ErrorAction Ignore
+			Move-Item $env:TEMP/fount-$env:FOUNT_BRANCH $env:FOUNT_DIR -Force
+		}
+		if (!(Test-Path $env:FOUNT_DIR)) {
+			$Host.UI.WriteErrorLine("Failed to install fount")
+			exit 1
+		}
+		$Script:fountDir = $env:FOUNT_DIR
+	}
+	else {
+		$Script:fountDir = (Get-Command fount.ps1).Path | Split-Path -Parent | Split-Path -Parent
+	}
+
+	Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -Force -ErrorAction Ignore
+	$OutputEncoding = [console]::OutputEncoding = [System.Text.Encoding]::UTF8
+	& "$Script:fountDir/run.bat" @newargs
+}
+finally {
+	if ($null -ne $statusServerJob) {
+		Write-Host "Shutting down installation status server..."
+		$statusServerJob | Stop-Job -Force
+		$statusServerJob | Remove-Job -Force
+	}
+}
+
 #_if PSEXE
 	#_!! if ($args[0] -eq 'remove') {
 		#_balus $LastExitCode

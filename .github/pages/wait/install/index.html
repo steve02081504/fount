@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="darkreader-lock">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>fount!</title>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/themes.css" rel="stylesheet" type="text/css" />
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser"></script>
+	<script type="module">
+		import { setPreRender } from '../../scripts/base.mjs'
+		import { isFountServiceAvailable, saveFountHostUrl } from '../../scripts/fountHostGetter.mjs'
+
+		const hostUrl = 'http://localhost:8931'
+		setPreRender(hostUrl)
+		const timer = setInterval(async () => {
+			try {
+				let response = await fetch('http://localhost:8930')
+				if (!response.ok) throw new Error()
+			}
+			catch (e) {
+				window.location.href = './error'
+			}
+			if (await isFountServiceAvailable(hostUrl)) {
+				saveFountHostUrl(hostUrl)
+				window.location.href = hostUrl + '/shells/home'
+				clearInterval(timer)
+			}
+		})
+	</script>
+</head>
+
+<body class="flex justify-center items-center h-screen">
+	<span class="loading loading-ring loading-lg"></span>
+</body>
+
+</html>

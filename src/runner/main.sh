@@ -15,6 +15,22 @@ if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
 	exit $?
 fi
 
+STATUS_SERVER_PID=""
+
+# 清理函数，用于在脚本退出时关闭状态服务器
+cleanup_status_server() {
+	if [[ -n "$STATUS_SERVER_PID" ]]; then
+		# 使用 kill -0 检查进程是否存在，避免报错
+		if kill -0 "$STATUS_SERVER_PID" 2>/dev/null; then
+			kill "$STATUS_SERVER_PID"
+		fi
+		STATUS_SERVER_PID=""
+	fi
+}
+
+# 注册 trap，确保任何形式的退出都会调用清理函数
+trap cleanup_status_server EXIT INT TERM
+
 # 初始化自动安装的包列表
 FOUNT_AUTO_INSTALLED_PACKAGES="${FOUNT_AUTO_INSTALLED_PACKAGES:-}"
 
@@ -132,10 +148,52 @@ install_package() {
 # 默认安装目录
 FOUNT_DIR="${FOUNT_DIR:-"$HOME/.local/share/fount"}"
 
+new_args=("$@")
+if [[ "${#new_args[@]}" -eq 0 ]]; then
+	new_args=("open" "keepalive")
+fi
+
 if command -v fount.sh &>/dev/null; then
 	# 从现有命令推断出安装目录
 	FOUNT_DIR="$(dirname "$(dirname "$(command -v fount.sh)")")"
 else
+	# 检测环境，决定是否启动快速反馈流程
+	IN_DOCKER=0
+	if [ -f "/.dockerenv" ] || grep -q 'docker\|containerd' /proc/1/cgroup 2>/dev/null; then
+		IN_DOCKER=1
+	fi
+	IN_TERMUX=0
+	if [[ -d "/data/data/com.termux" ]]; then
+		IN_TERMUX=1
+	fi
+
+	if [[ $IN_DOCKER -eq 0 && $IN_TERMUX -eq 0 && "${new_args[*]}" == *'open'* ]]; then
+		install_package "nc" "netcat gnu-netcat openbsd-netcat netcat-openbsd nmap-ncat" || install_package "socat" "socat"
+
+		if command -v nc &>/dev/null; then
+			while true; do {
+				while IFS= read -r -t 2 line && [[ "$line" != $'\r' ]]; do :; done
+				echo -e "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nConnection: close\r\n\r\n{\"message\":\"installing\"}"
+			} | nc -l 8930 -q 0; done >/dev/null 2>&1 &
+			STATUS_SERVER_PID=$!
+		elif command -v socat &>/dev/null; then
+			(socat -T 5 TCP-LISTEN:8930,reuseaddr,fork SYSTEM:"read; echo -e 'HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nConnection: close\r\n\r\n{\"message\":\"installing\"}'") >/dev/null 2>&1 &
+			STATUS_SERVER_PID=$!
+		fi
+
+		if [[ -n "$STATUS_SERVER_PID" ]]; then
+			URL='https://steve02081504.github.io/fount/wait/install'
+			if [[ "$(uname -s)" == "Linux" ]]; then
+				(xdg-open "$URL" &)
+			elif [[ "$(uname -s)" == "Darwin" ]]; then
+				(open "$URL" &)
+			fi
+			new_args=("${new_args[@]/open/}")
+		else
+			echo "Warning: Could not start status server. Proceeding with standard installation."
+		fi
+	fi
+
 	echo "Installing Fount into $FOUNT_DIR..."
 	rm -rf "$FOUNT_DIR"
 	mkdir -p "$(dirname "$FOUNT_DIR")"
@@ -207,4 +265,4 @@ fi
 
 export FOUNT_AUTO_INSTALLED_PACKAGES
 # 执行真正的 fount 核心脚本
-"$FOUNT_DIR/run.sh" "$@"
+"$FOUNT_DIR/run.sh" "${new_args[@]}"
