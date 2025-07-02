@@ -640,7 +640,6 @@ if [[ $# -gt 0 ]]; then
 				elif [[ "$(uname -s)" == "Darwin" ]]; then
 					(open "$URL" &)
 				fi
-				new_args=("${new_args[@]/open/}")
 			else
 				echo "Warning: Could not start status server. Proceeding with standard installation."
 			fi

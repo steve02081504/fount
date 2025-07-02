@@ -14,7 +14,7 @@
 		import * as Sentry from 'https://esm.run/@sentry/browser'
 		import { getFountHostUrl } from '../scripts/fountHostGetter.mjs'
 		import { initTranslations, geti18n } from '../scripts/i18n.mjs'
-		initTranslations('protocolhandler')
+		await initTranslations('protocolhandler')
 		const fountProtocolUrl = urlParams.get('url')
 
 		async function main() {
