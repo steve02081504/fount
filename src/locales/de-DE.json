@@ -108,6 +108,11 @@
 			"title": "Wählen Sie Ihr Aussehen",
 			"description": "Wählen Sie ein Thema, um Ihre Erfahrung zu personalisieren."
 		},
+		"mini_game": {
+			"title": "Spielen Sie einige kleine Spiele",
+			"description1": "Installation ist zu langsam?",
+			"description2": "Hier gibt es Mini -Spiele, um die Zeit zu verbringen."
+		},
 		"footer": {
 			"ready_text": "Bereit, Ihre Reise zu beginnen?",
 			"wait_text": "Warten Sie einen Moment ...",

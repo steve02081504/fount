@@ -108,6 +108,11 @@
 			"title": "Scegli il tuo aspetto",
 			"description": "Scegli un tema per personalizzare la tua esperienza."
 		},
+		"mini_game": {
+			"title": "Gioca alcuni piccoli giochi",
+			"description1": "L'installazione è troppo lenta?",
+			"description2": "Ci sono mini giochi qui per passare il tempo."
+		},
 		"footer": {
 			"ready_text": "Pronto per iniziare il tuo viaggio?",
 			"wait_text": "Aspetta un momento ...",

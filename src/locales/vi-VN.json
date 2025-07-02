@@ -108,6 +108,11 @@
 			"title": "Chọn ngoại hình của bạn",
 			"description": "Chọn một chủ đề để cá nhân hóa kinh nghiệm của bạn."
 		},
+		"mini_game": {
+			"title": "Chơi một số trò chơi nhỏ",
+			"description1": "Cài đặt quá chậm?",
+			"description2": "Có những trò chơi nhỏ ở đây để vượt qua thời gian."
+		},
 		"footer": {
 			"ready_text": "Sẵn sàng để bắt đầu hành trình của bạn?",
 			"wait_text": "Chờ một lúc ...",

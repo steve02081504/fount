@@ -108,6 +108,11 @@
 			"title": "외모를 선택하십시오",
 			"description": "경험을 개인화하기 위해 테마를 선택하십시오."
 		},
+		"mini_game": {
+			"title": "작은 게임을 플레이하십시오",
+			"description1": "설치가 너무 느립니다.",
+			"description2": "시간을 통과하기위한 미니 게임이 있습니다."
+		},
 		"footer": {
 			"ready_text": "여행을 시작할 준비가 되셨습니까?",
 			"wait_text": "잠깐만 ...",
