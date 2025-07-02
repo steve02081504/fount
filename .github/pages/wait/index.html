@@ -15,8 +15,8 @@
 
 		const hostUrl = 'http://localhost:8931'
 		setPreRender(hostUrl)
-		const timer = setInterval(() => {
-			if (isFountServiceAvailable(hostUrl)) {
+		const timer = setInterval(async () => {
+			if (await isFountServiceAvailable(hostUrl)) {
 				saveFountHostUrl(hostUrl)
 				window.location.href = hostUrl + '/shells/home'
 				clearInterval(timer)
