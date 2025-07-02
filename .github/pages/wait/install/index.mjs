@@ -1,4 +1,4 @@
-import { setPreRender, setTheme } from '../../scripts/base.mjs'
+import { setPreRender, setTheme, theme_now } from '../../scripts/base.mjs'
 import { isFountServiceAvailable, saveFountHostUrl } from '../../scripts/fountHostGetter.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
 
@@ -12,21 +12,13 @@ const footer = document.querySelector('.footer')
 const themeSelectionSection = document.getElementById('theme-selection-section')
 
 // --- Theme Selection ---
-const themes = [
-	'light', 'dark', 'cupcake', 'bumblebee', 'emerald', 'corporate',
-	'synthwave', 'retro', 'cyberpunk', 'valentine', 'halloween', 'garden',
-	'forest', 'aqua', 'lofi', 'pastel', 'fantasy', 'wireframe', 'black',
-	'luxury', 'dracula', 'cmyk', 'autumn', 'business', 'acid', 'lemonade',
-	'night', 'coffee', 'winter', 'dim', 'nord', 'sunset', 'caramellatte', 'abyss', 'silk'
-]
+const themes = Object.keys(await import('https://cdn.jsdelivr.net/npm/daisyui/theme/object.js').then(m => m.default))
 
 const themeList = document.getElementById('theme-list')
 
 // Render theme previews
 async function renderThemePreviews() {
 	themeList.innerHTML = ''
-
-	const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark'
 
 	for (const theme of themes) {
 		const preview = await renderTemplate('theme_preview', { theme })
@@ -38,7 +30,7 @@ async function renderThemePreviews() {
 
 		preview.addEventListener('click', () => handleThemeClick(preview, theme))
 
-		if (currentTheme === theme)
+		if (theme_now === theme)
 			preview.classList.add('selected-theme')
 
 		themeList.appendChild(preview)
@@ -115,7 +107,7 @@ function main() {
 				saveFountHostUrl(hostUrl)
 				setPreRender(hostUrl)
 				launchButton.disabled = false
-				launchButtonText.textContent = 'Launch fount'
+				launchButtonText.textContent = 'Open fount'
 				launchButtonSpinner.style.display = 'none'
 
 				if (footer) {
