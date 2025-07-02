@@ -1,0 +1,61 @@
+body {
+    scroll-behavior: smooth;
+}
+
+.content-wrapper {
+    /* Adjust padding to accommodate the footer and theme selector */
+    padding-bottom: 200px; 
+}
+
+/* Animation for feature sections */
+.feature-section {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition-delay: 0.2s;
+}
+
+.feature-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Theme Preview Styles */
+.theme-preview-card {
+	overflow: hidden;
+	border-radius: 0.5rem;
+	transition: transform 0.2s;
+	min-height: 70px;
+}
+
+.theme-preview-card:hover {
+	transform: scale(1.05);
+}
+
+.selected-theme {
+	outline: 4px solid;
+	outline-color: oklch(var(--p)); /* Use oklch for better compatibility with daisyUI */
+    outline-offset: 2px;
+}
+
+.auto-theme-container {
+	overflow: hidden;
+	position: relative;
+}
+
+.auto-theme-half {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+}
+
+.auto-theme-dark {
+	clip-path: polygon(0 0, 100% 0, 100% 100%);
+}
+
+.auto-theme-light {
+	clip-path: polygon(0 0, 0 100%, 100% 100%);
+}

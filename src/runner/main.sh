@@ -173,11 +173,11 @@ else
 		if command -v nc &>/dev/null; then
 			while true; do {
 				while IFS= read -r -t 2 line && [[ "$line" != $'\r' ]]; do :; done
-				echo -e "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nConnection: close\r\n\r\n{\"message\":\"installing\"}"
+				echo -e "HTTP/1.1 200 OK\r\nAccess-Control-Allow-Origin: *\r\nContent-Type: application/json\r\nConnection: close\r\n\r\n{\"message\":\"installing\"}"
 			} | nc -l 8930 -q 0; done >/dev/null 2>&1 &
 			STATUS_SERVER_PID=$!
 		elif command -v socat &>/dev/null; then
-			(socat -T 5 TCP-LISTEN:8930,reuseaddr,fork SYSTEM:"read; echo -e 'HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nConnection: close\r\n\r\n{\"message\":\"installing\"}'") >/dev/null 2>&1 &
+			(socat -T 5 TCP-LISTEN:8930,reuseaddr,fork SYSTEM:"read; echo -e 'HTTP/1.1 200 OK\r\nAccess-Control-Allow-Origin: *\r\nContent-Type: application/json\r\nConnection: close\r\n\r\n{\"message\":\"installing\"}'") >/dev/null 2>&1 &
 			STATUS_SERVER_PID=$!
 		fi
 
