@@ -142,7 +142,7 @@ async function main() {
 
 				if (footer) {
 					footer.classList.remove('fixed', 'bottom-0', 'w-full', 'z-50')
-					footer.classList.add('sticky', 'absolute', 'bottom-0', 'w-full', 'z-50')
+					footer.classList.add('sticky', 'bottom-0', 'w-full', 'z-50')
 				}
 
 				clearInterval(timer)
