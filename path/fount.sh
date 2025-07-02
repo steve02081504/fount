@@ -621,7 +621,7 @@ if [[ $# -gt 0 ]]; then
 			exit $?
 		else
 			install_package "nc" "netcat gnu-netcat openbsd-netcat netcat-openbsd nmap-ncat" || install_package "socat" "socat"
-
+			trap '[[ -n "$STATUS_SERVER_PID" ]] && kill "$STATUS_SERVER_PID" 2>/dev/null' EXIT
 			if command -v nc &>/dev/null; then
 				while true; do {
 					while IFS= read -r -t 2 line && [[ "$line" != $'\r' ]]; do :; done

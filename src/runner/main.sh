@@ -17,19 +17,7 @@ fi
 
 STATUS_SERVER_PID=""
 
-# 清理函数，用于在脚本退出时关闭状态服务器
-cleanup_status_server() {
-	if [[ -n "$STATUS_SERVER_PID" ]]; then
-		# 使用 kill -0 检查进程是否存在，避免报错
-		if kill -0 "$STATUS_SERVER_PID" 2>/dev/null; then
-			kill "$STATUS_SERVER_PID"
-		fi
-		STATUS_SERVER_PID=""
-	fi
-}
-
-# 注册 trap，确保任何形式的退出都会调用清理函数
-trap cleanup_status_server EXIT INT TERM
+trap '[[ -n "$STATUS_SERVER_PID" ]] && kill "$STATUS_SERVER_PID" 2>/dev/null' EXIT
 
 # 初始化自动安装的包列表
 FOUNT_AUTO_INSTALLED_PACKAGES="${FOUNT_AUTO_INSTALLED_PACKAGES:-}"
