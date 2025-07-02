@@ -82,6 +82,48 @@
 		"shellCommandFailed": "Falha ao enviar o comando shell.",
 		"shellCommandError": "Erro ao enviar o comando shell."
 	},
+	"installer_wait_screen": {
+		"title": "Bem -vindo ao Fount!",
+		"hero": {
+			"title": "Seu imersivo companheiro de personagem de IA",
+			"description": "Fount é uma plataforma de interação de função movida a IA projetada para capacitar <i> você </i>. É uma ponte que o conecta com seus personagens imaginados, permitindo que você converse facilmente com eles, crie seus próprios personagens e os compartilhe com o mundo."
+		},
+		"feature1": {
+			"title": "Diálogo contínuo, em qualquer lugar",
+			"description": "Comece a conversar no seu computador e continue perfeitamente no seu telefone ou tablet. A Fount mantém suas conversas sincronizadas e mantenha contato com seu personagem onde quer que você vá. Executa no Windows, MacOS, Linux e até Android."
+		},
+		"feature2": {
+			"title": "Interface bonita e personalizável",
+			"description": "Escolha entre mais de 30 temas lindos ou crie o seu próprio. Fonte é sua tela pessoal. Expresse -se, personalize o ambiente em suas preferências e obtenha uma experiência verdadeiramente personalizada."
+		},
+		"feature3": {
+			"title": "Bate -papo expressivo e imersivo",
+			"description": "Fount aproveita o poder do HTML, permitindo que os caracteres se expressem através de textos ricos, imagens e até elementos interativos. Tenha bate -papos de grupo dinâmicos e envolventes com vários caracteres ao mesmo tempo."
+		},
+		"feature4": {
+			"title": "Integração da fonte da IA ​​não ligada",
+			"description": "A fonte oferece escolha e flexibilidade incomparáveis. Conecte -se a <i> qualquer fontes </i> AI - Openai, Claude, OpenRouter, Novelai, etc. A lógica de comunicação será moldada pelo poder do código de acordo com seus desejos."
+		},
+		"theme_selector": {
+			"title": "Escolha sua aparência",
+			"description": "Escolha um tema para personalizar sua experiência."
+		},
+		"footer": {
+			"ready_text": "Pronto para começar sua jornada?",
+			"wait_text": "Espere por um momento ...",
+			"launch_button": "Fount está instalando ...",
+			"open_fount": "Fonte aberta",
+			"open_or_install_fount": "Abra/instale fonte",
+			"error_message": "awww :(\n\nOcorreu um erro:"
+		},
+		"error": {
+			"title": "A instalação falhou!",
+			"connection_failed": "A conexão falhou!",
+			"description1": "Parece haver algo errado com o instalador da fonte.",
+			"description2": "Verifique seu terminal e tente novamente.",
+			"close_page": "Feche a página"
+		}
+	},
 	"auth": {
 		"title": "Autenticação",
 		"subtitle": "Os dados do utilizador são armazenados localmente.",

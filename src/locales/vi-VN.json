@@ -82,6 +82,48 @@
 		"shellCommandFailed": "Gửi lệnh Shell thất bại.",
 		"shellCommandError": "Đã xảy ra lỗi khi gửi lệnh Shell."
 	},
+	"installer_wait_screen": {
+		"title": "Chào mừng đến với Fount!",
+		"hero": {
+			"title": "Người bạn đồng hành nhân vật AI nhập vai của bạn",
+			"description": "Fount là một nền tảng tương tác vai trò hỗ trợ AI được thiết kế để trao quyền cho <i> bạn </i>. Đó là một cây cầu kết nối bạn với các nhân vật tưởng tượng của bạn, cho phép bạn dễ dàng nói chuyện với họ, tạo các nhân vật của riêng bạn và chia sẻ chúng với thế giới."
+		},
+		"feature1": {
+			"title": "Đối thoại liền mạch, bất cứ nơi nào",
+			"description": "Bắt đầu trò chuyện trên máy tính của bạn và tiếp tục liền mạch trên điện thoại hoặc máy tính bảng của bạn. Fount giữ các cuộc trò chuyện của bạn đồng bộ và giữ liên lạc với nhân vật của bạn bất cứ nơi nào bạn đi. Chạy trên Windows, MacOS, Linux và thậm chí Android."
+		},
+		"feature2": {
+			"title": "Giao diện đẹp, có thể tùy chỉnh",
+			"description": "Chọn từ hơn 30 chủ đề đẹp, hoặc tạo ra của riêng bạn. Fount là vải cá nhân của bạn. Thể hiện bản thân, tùy chỉnh môi trường theo sở thích của bạn và có được trải nghiệm thực sự được cá nhân hóa."
+		},
+		"feature3": {
+			"title": "Trò chuyện biểu cảm, nhập vai",
+			"description": "Fount tận dụng sức mạnh của HTML, cho phép các nhân vật thể hiện bản thân thông qua văn bản phong phú, hình ảnh và thậm chí các yếu tố tương tác. Có các cuộc trò chuyện nhóm động và hấp dẫn với nhiều ký tự cùng một lúc."
+		},
+		"feature4": {
+			"title": "Tích hợp nguồn AI không ràng buộc",
+			"description": "Fount cung cấp sự lựa chọn vô song và linh hoạt. Kết nối với <i> bất kỳ </i> AI Nguồn, Openai, Claude, OpenRouter, Novelai, v.v. Logic giao tiếp sẽ được định hình bởi sức mạnh của mã theo mong muốn của bạn."
+		},
+		"theme_selector": {
+			"title": "Chọn ngoại hình của bạn",
+			"description": "Chọn một chủ đề để cá nhân hóa kinh nghiệm của bạn."
+		},
+		"footer": {
+			"ready_text": "Sẵn sàng để bắt đầu hành trình của bạn?",
+			"wait_text": "Chờ một lúc ...",
+			"launch_button": "Fount đang cài đặt ...",
+			"open_fount": "Mở Fount",
+			"open_or_install_fount": "Mở/Cài đặt Fount",
+			"error_message": "awww :(\n\nĐã xảy ra lỗi:"
+		},
+		"error": {
+			"title": "Cài đặt không thành công!",
+			"connection_failed": "Kết nối không thành công!",
+			"description1": "Dường như có một cái gì đó sai với trình cài đặt Fount.",
+			"description2": "Vui lòng kiểm tra thiết bị đầu cuối của bạn và thử lại.",
+			"close_page": "Đóng trang"
+		}
+	},
 	"auth": {
 		"title": "Xác thực",
 		"subtitle": "Dữ liệu người dùng được lưu trữ cục bộ.",

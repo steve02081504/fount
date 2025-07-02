@@ -82,6 +82,48 @@
 		"shellCommandFailed": "Impossibile inviare il comando shell.",
 		"shellCommandError": "Errore durante l'invio del comando shell."
 	},
+	"installer_wait_screen": {
+		"title": "Benvenuti a Fount!",
+		"hero": {
+			"title": "Il tuo compagno di personaggio AI immersivo",
+			"description": "FOUNT è una piattaforma di interazione di ruolo basata sull'intelligenza artificiale progettata per potenziare <i> tu </i>. È un ponte che ti collega con i tuoi personaggi immaginati, permettendoti di parlare facilmente con loro, creare i tuoi personaggi e condividerli con il mondo."
+		},
+		"feature1": {
+			"title": "Dialoghi senza soluzione di continuità, ovunque",
+			"description": "Inizia a chattare sul tuo computer e continua perfettamente sul telefono o sul tablet. Fount mantiene le tue conversazioni in sintonia e rimani in contatto con il tuo personaggio ovunque tu vada. Funziona su Windows, MacOS, Linux e persino Android."
+		},
+		"feature2": {
+			"title": "Interfaccia bella e personalizzabile",
+			"description": "Scegli tra oltre 30 bei temi o crea il tuo. Fount è la tua tela personale. Esprimi te stesso, personalizza l'ambiente alle tue preferenze e ottieni un'esperienza veramente personalizzata."
+		},
+		"feature3": {
+			"title": "Chat espressiva e coinvolgente",
+			"description": "Fount sfrutta il potere di HTML, consentendo ai personaggi di esprimersi attraverso un testo ricco, immagini e persino elementi interattivi. Avere chat di gruppo dinamiche e coinvolgenti con più caratteri contemporaneamente."
+		},
+		"feature4": {
+			"title": "Integrazione della fonte AI non legata",
+			"description": "Fount offre una scelta e flessibilità senza pari. Connettiti a <i> qualsiasi fonti di intelligenza artificiale: OPENAI, CLAUDE, OpenRouter, Nuovai, ecc. La logica di comunicazione sarà modellata dal potere del codice secondo i tuoi desideri."
+		},
+		"theme_selector": {
+			"title": "Scegli il tuo aspetto",
+			"description": "Scegli un tema per personalizzare la tua esperienza."
+		},
+		"footer": {
+			"ready_text": "Pronto per iniziare il tuo viaggio?",
+			"wait_text": "Aspetta un momento ...",
+			"launch_button": "La fonte sta installando ...",
+			"open_fount": "Fonte aperta",
+			"open_or_install_fount": "Apri/installa fonte",
+			"error_message": "awww :(\n\nSi è verificato un errore:"
+		},
+		"error": {
+			"title": "L'installazione non è riuscita!",
+			"connection_failed": "Connessione non riuscita!",
+			"description1": "Sembra che ci sia qualcosa di sbagliato con lo installatore di fonte.",
+			"description2": "Controlla il tuo terminale e riprova.",
+			"close_page": "Chiudi la pagina"
+		}
+	},
 	"auth": {
 		"title": "Autenticazione",
 		"subtitle": "I dati utente sono archiviati localmente.",
