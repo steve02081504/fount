@@ -13,7 +13,7 @@
 	<script type="module">
 		import { setTheme } from './scripts/theme.mjs'
 		const hosturl = window.location.origin
-const urlParams = new URLSearchParams(window.location.search)
+		const urlParams = new URLSearchParams(window.location.search)
 		if (urlParams.get('theme'))
 			setTheme(urlParams.get('theme'))
 		if (localStorage.getItem('visited_home'))

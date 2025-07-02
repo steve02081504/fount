@@ -178,7 +178,7 @@ else
 			fi
 			temp_args=()
 			for arg in "${new_args[@]}"; do
-			  [[ "$arg" != "open" ]] && temp_args+=("$arg")
+				[[ "$arg" != "open" ]] && temp_args+=("$arg")
 			done
 			new_args=("${temp_args[@]}")
 		else

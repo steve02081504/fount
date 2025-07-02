@@ -34,7 +34,7 @@ export async function loadAIsource(username, AIsourcename) {
 		Loader: async (path) => {
 			let data
 			try { data = loadJsonFile(path + '.json') }
-			catch(e) { throw skip_report(e) }
+			catch (e) { throw skip_report(e) }
 			const AIsource = await loadAIsourceFromConfigData(username, data, {
 				SaveConfig: (newdata = data) => {
 					saveJsonFile(path + '.json', newdata)
