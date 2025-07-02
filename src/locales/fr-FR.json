@@ -80,7 +80,56 @@
 		"unknownCommand": "Commande inconnue.",
 		"shellCommandSent": "Commande shell envoyée.",
 		"shellCommandFailed": "Échec de l'envoi de la commande shell.",
-		"shellCommandError": "Erreur lors de l'envoi de la commande shell."
+		"shellCommandError": "Erreur lors de l'envoi de la commande shell.",
+		"fountNotFound": "awww :(\n\nAucune fontaine n'a été trouvée, vous devez peut-être en installer un en premier?",
+		"unknownError": "awww :(\n\nUne erreur s'est produite:"
+	},
+	"installer_wait_screen": {
+		"title": "Bienvenue à Fount!",
+		"hero": {
+			"title": "Votre compagnon de caractère IMMERSIVE AI",
+			"description": "Fount est une plate-forme d'interaction de rôle alimentée en AI conçue pour responsabiliser <i> vous </i>. C'est un pont qui vous relie à vos personnages imaginés, vous permettant de leur parler facilement, de créer vos propres personnages et de les partager avec le monde."
+		},
+		"feature1": {
+			"title": "Dialogue sans couture, n'importe où",
+			"description": "Commencez à discuter sur votre ordinateur et continuez de manière transparente sur votre téléphone ou votre tablette. Fount garde vos conversations en synchronisation et restez en contact avec votre personnage où que vous alliez. Exécute sur Windows, MacOS, Linux et même Android."
+		},
+		"feature2": {
+			"title": "Belle interface personnalisable",
+			"description": "Choisissez parmi plus de 30 beaux thèmes ou créez les vôtres. Fount est votre toile personnelle. Exprimez-vous, personnalisez l'environnement à vos préférences et obtenez une expérience vraiment personnalisée."
+		},
+		"feature3": {
+			"title": "Chat expressif et immersif",
+			"description": "Fount tire parti de la puissance de HTML, permettant aux personnages de s'exprimer à travers un texte riche, des images et même des éléments interactifs. Ayez en même temps des discussions de groupe dynamiques et engageantes avec plusieurs caractères."
+		},
+		"feature4": {
+			"title": "Intégration de la source AI non liée",
+			"description": "Fount offre un choix et une flexibilité inégalés. Connectez-vous à <i> toutes les sources </i> AI - Opennai, Claude, OpenRouter, Novelai, etc. La logique de communication sera façonnée par la puissance du code en fonction de vos souhaits."
+		},
+		"theme_selector": {
+			"title": "Choisissez votre apparence",
+			"description": "Choisissez un thème pour personnaliser votre expérience."
+		},
+		"mini_game": {
+			"title": "Jouer à quelques petits jeux",
+			"description1": "L'installation est trop lente?",
+			"description2": "Il y a des mini jeux ici pour passer le temps."
+		},
+		"footer": {
+			"ready_text": "Prêt à commencer votre voyage?",
+			"wait_text": "Attendez un instant ...",
+			"launch_button": "Fount est en installation ...",
+			"open_fount": "Bougie ouvre",
+			"open_or_install_fount": "Ouvrir / installer la fontaine",
+			"error_message": "awww :(\n\nUne erreur s'est produite:"
+		},
+		"error": {
+			"title": "L'installation a échoué!",
+			"connection_failed": "La connexion a échoué!",
+			"description1": "Il semble y avoir quelque chose qui ne va pas avec le programme d'installation de Fount.",
+			"description2": "Veuillez vérifier votre terminal et réessayer.",
+			"close_page": "Fermez la page"
+		}
 	},
 	"auth": {
 		"title": "Authentification",

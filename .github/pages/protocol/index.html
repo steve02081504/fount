@@ -5,7 +5,7 @@
 	<meta charset="UTF-8">
 	<meta name="darkreader-lock">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>fount!</title>
+	<title data-i18n="protocolhandler.title"></title>
 	<link href="https://cdn.jsdelivr.net/npm/daisyui/themes.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
 	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
 	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser" crossorigin="anonymous"></script>
@@ -13,6 +13,8 @@
 		import '../scripts/base.mjs'
 		import * as Sentry from 'https://esm.run/@sentry/browser'
 		import { getFountHostUrl } from '../scripts/fountHostGetter.mjs'
+		import { initTranslations, geti18n } from '../scripts/i18n.mjs'
+		await initTranslations('protocolhandler')
 		const fountProtocolUrl = urlParams.get('url')
 
 		async function main() {
@@ -29,14 +31,14 @@
 				window.location.href = redirectUrl.href
 			}
 			else {
-				alert('awww :(\n\nfount not found, maybe you need to install one first?')
+				alert(geti18n('protocolhandler.fountNotFound'))
 				window.location.href = 'https://github.com/steve02081504/fount'
 			}
 		}
 
 		main().catch(e => {
 			Sentry.captureException(e)
-			alert('awww :(\n\nAn error occurred:\n' + e.message)
+			alert(geti18n('protocolhandler.unknownError') + e.message)
 			window.location.href = 'https://github.com/steve02081504/fount'
 		})
 	</script>

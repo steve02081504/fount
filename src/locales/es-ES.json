@@ -80,7 +80,56 @@
 		"unknownCommand": "Comando desconocido.",
 		"shellCommandSent": "Comando de shell enviado.",
 		"shellCommandFailed": "Error al enviar el comando de shell.",
-		"shellCommandError": "Error enviando el comando de shell."
+		"shellCommandError": "Error enviando el comando de shell.",
+		"fountNotFound": "awww:(\n\nNo se encontró una fuente, ¿tal vez necesitas instalar una primero?",
+		"unknownError": "awww:(\n\nSe produjo un error:"
+	},
+	"installer_wait_screen": {
+		"title": "¡Bienvenido a la fuente!",
+		"hero": {
+			"title": "Tu compañero de personaje de IA inmersivo",
+			"description": "Fount es una plataforma de interacción de roles con IA diseñada para empoderar <i> You </i>. Es un puente que te conecta con tus personajes imaginados, que te permite hablar fácilmente con ellos, crear tus propios personajes y compartirlos con el mundo."
+		},
+		"feature1": {
+			"title": "Diálogo sin costuras, en cualquier lugar",
+			"description": "Comience a chatear en su computadora y continúe sin problemas en su teléfono o tableta. La fuente mantiene sus conversaciones sincronizadas y manténgase en contacto con su personaje donde quiera que vaya. Se ejecuta en Windows, MacOS, Linux e incluso Android."
+		},
+		"feature2": {
+			"title": "Hermosa interfaz personalizable",
+			"description": "Elija entre más de 30 temas hermosos o cree los suyos propios. La fuente es su lienzo personal. Exprese usted mismo, personalice el entorno a sus preferencias y obtenga una experiencia verdaderamente personalizada."
+		},
+		"feature3": {
+			"title": "Chat expresivo e inmersivo",
+			"description": "Fount aprovecha el poder de HTML, permitiendo que los personajes se expresen a través de textos ricos, imágenes e incluso elementos interactivos. Tener chats grupales dinámicos y atractivos con múltiples personajes al mismo tiempo."
+		},
+		"feature4": {
+			"title": "Integración de fuente de IA unbound AI",
+			"description": "Fount ofrece una elección y flexibilidad incomparables. Conéctese a <i> cualquiera de las fuentes </i> ai: openai, Claude, OpenRouter, novelai, etc. La lógica de comunicación será moldeada por el poder del código de acuerdo con sus deseos."
+		},
+		"theme_selector": {
+			"title": "Elige tu apariencia",
+			"description": "Elija un tema para personalizar su experiencia."
+		},
+		"mini_game": {
+			"title": "Juega algunos juegos pequeños",
+			"description1": "La instalación es demasiado lenta?",
+			"description2": "Hay mini juegos aquí para pasar el tiempo."
+		},
+		"footer": {
+			"ready_text": "¿Listo para comenzar tu viaje?",
+			"wait_text": "Espera un momento ...",
+			"launch_button": "Fount está instalando ...",
+			"open_fount": "Fuente abierta",
+			"open_or_install_fount": "Abrir/instalar una fuente",
+			"error_message": "awww:(\n\nSe produjo un error:"
+		},
+		"error": {
+			"title": "¡Falló la instalación!",
+			"connection_failed": "¡Falló la conexión!",
+			"description1": "Parece haber algo mal con el instalador de la fuente.",
+			"description2": "Consulte su terminal y vuelva a intentarlo.",
+			"close_page": "Cerrar la página"
+		}
 	},
 	"auth": {
 		"title": "Autenticación",

@@ -1,5 +1,8 @@
+import { base_dir } from './base.mjs'
+
 let i18n = {}
 let saved_pageid
+let availableLocales = []
 
 /**
  * 从服务器获取多语言数据并初始化翻译。
@@ -9,15 +12,32 @@ export async function initTranslations(pageid = saved_pageid) {
 	saved_pageid = pageid
 
 	try {
-		const response = await fetch('/api/getlocaledata')
+		const response = await fetch(base_dir + '/locales.json')
 		if (!response.ok)
-			throw new Error(`Failed to fetch translations: ${response.status} ${response.statusText}`)
+			throw new Error(`Failed to fetch available locales: ${response.status} ${response.statusText}`)
+		availableLocales = await response.json()
 
-		i18n = await response.json()
+		const lang = getbestlocale(navigator.languages || [navigator.language], availableLocales)
+
+		const translationResponse = await fetch(base_dir + `/locales/${lang}.json`)
+		if (!translationResponse.ok)
+			throw new Error(`Failed to fetch translations: ${translationResponse.status} ${translationResponse.statusText}`)
+
+		i18n = await translationResponse.json()
 		applyTranslations()
 	} catch (error) {
 		console.error('Error initializing translations:', error)
 	}
+}
+
+function getbestlocale(preferredlocaleList, localeList) {
+	for (const preferredlocale of preferredlocaleList) {
+		if (localeList.includes(preferredlocale))
+			return preferredlocale
+		const temp = localeList.find((name) => name.startsWith(preferredlocale.split('-')[0]))
+		if (temp) return temp
+	}
+	return 'en-UK' // Fallback
 }
 
 function getNestedValue(obj, key) {

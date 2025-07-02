@@ -22,7 +22,7 @@ export function get_local_ip() {
 		interfaces.find(i => i.family == 'IPv4' && i.name == 'WLAN') ||
 		interfaces.find(i => i.family == 'IPv4' && i.name == 'eth0') ||
 		interfaces.find(i => i.family == 'IPv4') ||
-	0)?.address
+		0)?.address
 }
 
 export function get_hosturl_in_local_ip() {

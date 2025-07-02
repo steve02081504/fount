@@ -80,7 +80,56 @@
 		"unknownCommand": "Unbekannter Befehl",
 		"shellCommandSent": "Shell-Befehl gesendet",
 		"shellCommandFailed": "Senden des Shell-Befehls fehlgeschlagen",
-		"shellCommandError": "Fehler beim Senden des Shell-Befehls"
+		"shellCommandError": "Fehler beim Senden des Shell-Befehls",
+		"fountNotFound": "awww :(\n\nEs wurde kein Fount gefunden, vielleicht müssen Sie zuerst eine installieren?",
+		"unknownError": "awww :(\n\nEin Fehler trat auf:"
+	},
+	"installer_wait_screen": {
+		"title": "Willkommen bei Fount!",
+		"hero": {
+			"title": "Ihr immersives KI -Charakterbegleiter",
+			"description": "Fount ist eine KI-angetriebene Interaktionsplattform für Rollen-Rollen, die <i> Sie </i> stärkt. Es ist eine Brücke, die Sie mit Ihren imaginären Charakteren verbindet und es Ihnen ermöglicht, problemlos mit ihnen zu sprechen, Ihre eigenen Charaktere zu erstellen und sie mit der Welt zu teilen."
+		},
+		"feature1": {
+			"title": "Nahtloser Dialog, überall",
+			"description": "Chatten Sie auf Ihrem Computer und fahren Sie nahtlos auf Ihrem Telefon oder Tablet fort. Fount hält Ihre Gespräche synchron und bleibt mit Ihrem Charakter in Kontakt, wo immer Sie gehen. Läuft unter Windows, MacOS, Linux und sogar Android."
+		},
+		"feature2": {
+			"title": "Schöne, anpassbare Schnittstelle",
+			"description": "Wählen Sie aus über 30 schönen Themen oder erstellen Sie Ihre eigenen. Fount ist Ihre persönliche Leinwand. Drücken Sie sich aus, passen Sie die Umgebung an Ihre Vorlieben an und machen Sie eine wirklich personalisierte Erfahrung."
+		},
+		"feature3": {
+			"title": "Ausdrucksstarker, eindringlicher Chat",
+			"description": "Fount nutzt die Kraft von HTML und ermöglicht es Charakteren, sich durch reiche Text, Bilder und sogar interaktive Elemente auszudrücken. Haben Sie dynamische und ansprechende Gruppenchats mit mehreren Zeichen gleichzeitig."
+		},
+		"feature4": {
+			"title": "Unbeschwerte KI -Quellintegration",
+			"description": "Fount bietet eine beispiellose Auswahl und Flexibilität. Stellen Sie eine Verbindung zu <i> an alle </i> AI -Quellen her - Openai, Claude, OpenRouter, Romanai usw. Die Kommunikationslogik wird nach Ihren Wünschen durch die Kraft des Codes geprägt."
+		},
+		"theme_selector": {
+			"title": "Wählen Sie Ihr Aussehen",
+			"description": "Wählen Sie ein Thema, um Ihre Erfahrung zu personalisieren."
+		},
+		"mini_game": {
+			"title": "Spielen Sie einige kleine Spiele",
+			"description1": "Installation ist zu langsam?",
+			"description2": "Hier gibt es Mini -Spiele, um die Zeit zu verbringen."
+		},
+		"footer": {
+			"ready_text": "Bereit, Ihre Reise zu beginnen?",
+			"wait_text": "Warten Sie einen Moment ...",
+			"launch_button": "Fount installiert ...",
+			"open_fount": "Offene Brunnen",
+			"open_or_install_fount": "Fount öffnen/installieren",
+			"error_message": "awww :(\n\nEin Fehler trat auf:"
+		},
+		"error": {
+			"title": "Installation fehlgeschlagen!",
+			"connection_failed": "Verbindung ist fehlgeschlagen!",
+			"description1": "Mit dem Fount -Installateur scheint etwas nicht zu stimmen.",
+			"description2": "Bitte überprüfen Sie Ihr Terminal und versuchen Sie es erneut.",
+			"close_page": "Schließen Sie die Seite"
+		}
 	},
 	"auth": {
 		"title": "Authentifizierung",

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="darkreader-lock">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title data-i18n="installer_wait_screen.error.title"></title>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/themes.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser" crossorigin="anonymous"></script>
+	<script type="module">
+		import {setBaseDir} from '../../../scripts/base.mjs'
+		import { initTranslations } from '../../../scripts/i18n.mjs'
+
+		setBaseDir('../../..')
+		initTranslations('installer_wait_screen.error')
+	</script>
+</head>
+
+<body class="flex justify-center items-center h-screen">
+	<div role="alert" class="alert alert-error max-w-md">
+		<svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+				d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+		</svg>
+		<div>
+			<h3 class="font-bold" data-i18n="installer_wait_screen.error.connection_failed"></h3>
+			<div class="text-xs" data-i18n="installer_wait_screen.error.description1"></div>
+			<div class="text-xs" data-i18n="installer_wait_screen.error.description2"></div>
+		</div>
+		<button class="btn btn-sm btn-primary" onclick="window.close()" data-i18n="installer_wait_screen.error.close_page"></button>
+	</div>
+</body>
+
+</html>

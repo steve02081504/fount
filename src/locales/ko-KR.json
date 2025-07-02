@@ -80,7 +80,56 @@
 		"unknownCommand": "알 수 없는 명령입니다.",
 		"shellCommandSent": "셸 명령이 전송되었습니다.",
 		"shellCommandFailed": "셸 명령 전송에 실패했습니다.",
-		"shellCommandError": "셸 명령 전송 중 오류가 발생했습니다."
+		"shellCommandError": "셸 명령 전송 중 오류가 발생했습니다.",
+		"fountNotFound": "awww :(\n\n분류가 발견되지 않았으므로 먼저 설치해야합니까?",
+		"unknownError": "awww :(\n\n오류가 발생했습니다."
+	},
+	"installer_wait_screen": {
+		"title": "Fount에 오신 것을 환영합니다!",
+		"hero": {
+			"title": "당신의 몰입 형 AI 캐릭터 동반자",
+			"description": "Fount는 <i> you </i>에 권한을 부여하도록 설계된 AI 기반 역할 상호 작용 플랫폼입니다. 상상의 캐릭터와 연결하여 쉽게 대화하고 자신의 캐릭터를 만들고 세상과 공유 할 수있는 다리입니다."
+		},
+		"feature1": {
+			"title": "어디서나 원활한 대화",
+			"description": "컴퓨터에서 채팅을 시작하고 휴대 전화 나 태블릿에서 원활하게 계속하십시오. Fount는 대화를 동기화하고 어디를 가든 캐릭터와 연락을 유지합니다. Windows, MacOS, Linux 및 Android에서 실행됩니다."
+		},
+		"feature2": {
+			"title": "아름답고 사용자 정의 가능한 인터페이스",
+			"description": "30 개가 넘는 아름다운 테마 중에서 선택하거나 직접 만들 수 있습니다. Fount는 개인 캔버스입니다. 자신을 표현하고 환경을 선호하는 환경을 사용자 정의하고 진정으로 개인화 된 경험을 얻으십시오."
+		},
+		"feature3": {
+			"title": "표현적이고 몰입 형 채팅",
+			"description": "Fount는 HTML의 힘을 활용하여 풍부한 텍스트, 이미지 및 대화식 요소를 통해 캐릭터가 자신을 표현할 수 있도록합니다. 여러 캐릭터와 동시에 역동적이고 매력적인 그룹 채팅을하십시오."
+		},
+		"feature4": {
+			"title": "Unbound AI 소스 통합",
+			"description": "Fount는 비교할 수없는 선택과 유연성을 제공합니다. Openai, Claude, Openrouter, Novelai 등 모든 </i> AI 소스에 연결하십시오. 커뮤니케이션 논리는 소원에 따라 코드의 힘에 의해 형성됩니다."
+		},
+		"theme_selector": {
+			"title": "외모를 선택하십시오",
+			"description": "경험을 개인화하기 위해 테마를 선택하십시오."
+		},
+		"mini_game": {
+			"title": "작은 게임을 플레이하십시오",
+			"description1": "설치가 너무 느립니다.",
+			"description2": "시간을 통과하기위한 미니 게임이 있습니다."
+		},
+		"footer": {
+			"ready_text": "여행을 시작할 준비가 되셨습니까?",
+			"wait_text": "잠깐만 ...",
+			"launch_button": "Fount가 설치 중입니다 ...",
+			"open_fount": "열린 분노",
+			"open_or_install_fount": "Fount를 열/설치합니다",
+			"error_message": "awww :(\n\n오류가 발생했습니다."
+		},
+		"error": {
+			"title": "설치 실패!",
+			"connection_failed": "연결 실패!",
+			"description1": "Fount Installer에는 문제가있는 것 같습니다.",
+			"description2": "터미널을 확인하고 다시 시도하십시오.",
+			"close_page": "페이지를 닫으십시오"
+		}
 	},
 	"auth": {
 		"title": "인증",

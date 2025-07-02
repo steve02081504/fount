@@ -80,7 +80,56 @@
 		"unknownCommand": "Unknown command",
 		"shellCommandSent": "Shell command sent",
 		"shellCommandFailed": "Failed to send shell command",
-		"shellCommandError": "Error sending shell command"
+		"shellCommandError": "Error sending shell command",
+		"fountNotFound": "awww:(\n\nNo fount was found, maybe you need to install one first?",
+		"unknownError": "awww:(\n\nAn error occurred:"
+	},
+	"installer_wait_screen": {
+		"title": "Welcome to fount!",
+		"hero": {
+			"title": "Your Immersive AI Character Companion",
+			"description": "fount is an AI-powered role interaction platform designed to empower <i>you</i>. It is a bridge that connects you with your imagined characters, allowing you to easily talk to them, create your own characters, and share them with the world."
+		},
+		"feature1": {
+			"title": "Seamless dialogue, anywhere",
+			"description": "Start chatting on your computer and continue seamlessly on your phone or tablet. fount keeps your conversations in sync and stay in touch with your character wherever you go. Runs on Windows, macOS, Linux and even Android."
+		},
+		"feature2": {
+			"title": "Beautiful, customizable interface",
+			"description": "Choose from over 30 beautiful themes, or create your own. fount is your personal canvas. Express yourself, customize the environment to your preferences, and get a truly personalized experience."
+		},
+		"feature3": {
+			"title": "Expressive, immersive chat",
+			"description": "fount takes advantage of the power of HTML, allowing characters to express themselves through rich text, images, and even interactive elements. Have dynamic and engaging group chats with multiple characters at the same time."
+		},
+		"feature4": {
+			"title": "Unbound AI source integration",
+			"description": "Fount offers unparalleled choice and flexibility. Connect to <i>any</i> AI sources—OpenAI, Claude, OpenRouter, NovelAI, etc. Communication logic will be shaped by the power of code according to your wishes."
+		},
+		"theme_selector": {
+			"title": "Choose your appearance",
+			"description": "Choose a theme to personalize your experience."
+		},
+		"mini_game": {
+			"title": "Play some small games",
+			"description1": "Installation is too slow?",
+			"description2": "There are mini games here to pass the time."
+		},
+		"footer": {
+			"ready_text": "Ready to start your journey?",
+			"wait_text": "Wait for a moment...",
+			"launch_button": "Fount is installing...",
+			"open_fount": "Open fount",
+			"open_or_install_fount": "Open/install fount",
+			"error_message": "awww:(\n\nAn error occurred:"
+		},
+		"error": {
+			"title": "Installation failed!",
+			"connection_failed": "Connection failed!",
+			"description1": "There seems to be something wrong with the fount installer.",
+			"description2": "Please check your terminal and try again.",
+			"close_page": "Close the page"
+		}
 	},
 	"auth": {
 		"title": "Authentication",
