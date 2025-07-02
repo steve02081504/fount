@@ -24,9 +24,12 @@ Sentry.init({
 await import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill@master/index.mjs')
 
 globalThis.urlParams = new URLSearchParams(window.location.search)
-const theme = urlParams.get('theme') ?? localStorage.getItem('fountTheme') ?? 'dark'
-document.documentElement.setAttribute('data-theme', theme)
-localStorage.setItem('fountTheme', theme)
+export let theme_now
+function setTheme(theme) {
+	localStorage.setItem('theme', theme_now = theme)
+	document.documentElement.setAttribute('data-theme', theme_now)
+}
+setTheme(urlParams.get('theme') ?? localStorage.getItem('theme') ?? 'dark')
 
 export function setPreRender(hostUrl = urlParams.get('hostUrl') ?? localStorage.getItem('fountHostUrl') ?? 'http://localhost:8931') {
 	if (HTMLScriptElement.supports?.('speculationrules')) {

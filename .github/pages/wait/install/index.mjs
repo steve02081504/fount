@@ -1,4 +1,4 @@
-import { setPreRender } from '../../scripts/base.mjs'
+import { setPreRender, setTheme } from '../../scripts/base.mjs'
 import { isFountServiceAvailable, saveFountHostUrl } from '../../scripts/fountHostGetter.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
 
@@ -54,7 +54,7 @@ function updateSelectedTheme(selectedElement) {
 // Handle theme click
 function handleThemeClick(previewElement, theme) {
 	const applyNewTheme = () => {
-		document.documentElement.setAttribute('data-theme', theme)
+		setTheme(theme)
 		updateSelectedTheme(previewElement)
 	}
 
@@ -105,15 +105,12 @@ function main() {
 		return true
 	}
 	if (checkFountInstallerAlive()) {
-
 		const timer = setInterval(async () => {
 			if (!await checkFountInstallerAlive()) {
 				window.location.href = './error'
 				clearInterval(timer)
 				return
 			}
-
-			// If we reach here, 8930 is up, now check fount service
 			if (await isFountServiceAvailable(hostUrl)) {
 				saveFountHostUrl(hostUrl)
 				setPreRender(hostUrl)
