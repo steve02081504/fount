@@ -30,5 +30,6 @@ export function createJsonEditor(jsonEditorContainer, options) {
 	const jse_style = document.createElement('link')
 	jse_style.rel = 'stylesheet'
 	jse_style.href = 'https://cdn.jsdelivr.net/npm/vanilla-jsoneditor@2/themes/jse-theme-dark.min.css'
+	jse_style.crossorigin = 'anonymous'
 	document.head.prepend(jse_style)
 }
