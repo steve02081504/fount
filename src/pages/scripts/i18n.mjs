@@ -99,7 +99,7 @@ export function i18nElement(element) {
 			}
 		}
 		else
-			element.textContent = geti18n(key)
+			element.innerHTML = geti18n(key)
 	})
 	return element
 }

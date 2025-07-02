@@ -51,3 +51,8 @@ export function setPreRender(hostUrl = urlParams.get('hostUrl') ?? localStorage.
 		document.head.prepend(link)
 	}
 }
+
+export let base_dir = '..'
+export function setBaseDir(v) {
+	base_dir = v
+}

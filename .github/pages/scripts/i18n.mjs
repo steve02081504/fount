@@ -1,3 +1,5 @@
+import { base_dir } from "./base.mjs";
+
 let i18n = {}
 let saved_pageid
 let availableLocales = []
@@ -10,14 +12,14 @@ export async function initTranslations(pageid = saved_pageid) {
 	saved_pageid = pageid
 
 	try {
-		const response = await fetch('../locales.json')
+		const response = await fetch(base_dir + '/locales.json')
 		if (!response.ok)
 			throw new Error(`Failed to fetch available locales: ${response.status} ${response.statusText}`)
 		availableLocales = await response.json()
 
 		const lang = getbestlocale(navigator.languages || [navigator.language], availableLocales)
 
-		const translationResponse = await fetch(`../locales/${lang}.json`)
+		const translationResponse = await fetch(base_dir + `/locales/${lang}.json`)
 		if (!translationResponse.ok)
 			throw new Error(`Failed to fetch translations: ${translationResponse.status} ${translationResponse.statusText}`)
 
@@ -117,7 +119,7 @@ export function i18nElement(element) {
 			}
 		}
 		else
-			element.textContent = geti18n(key)
+			element.innerHTML = geti18n(key)
 	})
 	return element
 }

@@ -1,8 +1,11 @@
-import { Sentry, setPreRender, setTheme, theme_now } from '../../scripts/base.mjs'
-import { isFountServiceAvailable, saveFountHostUrl } from '../../scripts/fountHostGetter.mjs'
+import { setBaseDir, setPreRender, setTheme, theme_now } from '../../scripts/base.mjs'
+import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
+import { isFountServiceAvailable, saveFountHostUrl, getFountHostUrl } from '../../scripts/fountHostGetter.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
+import * as Sentry from 'https://esm.run/@sentry/browser'
 
-usingTemplates('../../wait/install/templates')
+setBaseDir('../..')
+usingTemplates('wait/install/templates')
 const hostUrl = 'http://localhost:8931'
 
 const launchButton = document.getElementById('launchButton')
@@ -91,6 +94,7 @@ function handleThemeClick(previewElement, theme) {
 
 // --- Main Execution ---
 async function main() {
+	initTranslations('wait_installer')
 	// Initial render
 	renderThemePreviews()
 
@@ -127,8 +131,7 @@ async function main() {
 			if (await isFountServiceAvailable(hostUrl)) {
 				saveFountHostUrl(hostUrl)
 				setPreRender(hostUrl)
-				launchButton.disabled = false
-				launchButtonText.textContent = 'Open fount'
+				launchButtonText.textContent = geti18n('wait_installer.footer.open_fount')
 				launchButton.onclick = () => window.location.href = new URL('/shells/home', hostUrl)
 				launchButtonSpinner.style.display = 'none'
 
@@ -144,15 +147,16 @@ async function main() {
 	else {
 		// Installer is not running, hide theme section, change button
 		themeSelectionSection.style.display = 'none'
-		launchButtonText.textContent = 'Install fount'
-		launchButton.onclick = () => { window.location.href = 'https://github.com/steve02081504/fount' }
+		launchButtonText.textContent = geti18n('wait_installer.footer.open_or_install_fount')
+		launchButton.onclick = () => {
+			window.location.href = 'fount://page/shells/home'
+			window.location.href = 'https://github.com/steve02081504/fount'
+		}
 		launchButtonSpinner.style.display = 'none'
-		launchButton.disabled = false // Enable the button to install
 		const hostUrl = await getFountHostUrl()
 
 		if (hostUrl) {
-			launchButton.disabled = false
-			launchButtonText.textContent = 'Open fount'
+			launchButtonText.textContent = geti18n('wait_installer.footer.open_fount')
 			launchButton.onclick = () => window.location.href = new URL('/shells/home', hostUrl)
 		}
 		return
@@ -161,6 +165,6 @@ async function main() {
 
 main().catch(e => {
 	Sentry.captureException(e)
-	alert('awww :(\n\nAn error occurred:\n' + e.message)
+	alert(geti18n('wait_installer.footer.error_message') + e.message)
 	window.location.href = 'https://github.com/steve02081504/fount'
 })
