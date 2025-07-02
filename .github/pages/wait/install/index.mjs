@@ -1,4 +1,4 @@
-import { setPreRender, setTheme, theme_now } from '../../scripts/base.mjs'
+import { Sentry, setPreRender, setTheme, theme_now } from '../../scripts/base.mjs'
 import { isFountServiceAvailable, saveFountHostUrl } from '../../scripts/fountHostGetter.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
 
@@ -12,13 +12,38 @@ const footer = document.querySelector('.footer')
 const themeSelectionSection = document.getElementById('theme-selection-section')
 
 // --- Theme Selection ---
-const themes = Object.keys(await import('https://cdn.jsdelivr.net/npm/daisyui/theme/object.js').then(m => m.default))
+const themes = Object.keys(await import('https://cdn.jsdelivr.net/npm/daisyui/theme/object.js').then(m => m.default)).sort()
 
 const themeList = document.getElementById('theme-list')
+
+// Create "Auto" theme preview function
+async function createAutoPreview() {
+	const container = document.createElement('div')
+	container.classList.add('theme-preview-card', 'cursor-pointer', 'auto-theme-container')
+
+	const darkHalf = await renderTemplate('theme_preview', { theme: 'dark', name: 'auto' })
+	const lightHalf = await renderTemplate('theme_preview', { theme: 'light', name: 'auto' })
+
+	darkHalf.classList.add('auto-theme-half', 'auto-theme-dark')
+	lightHalf.classList.add('auto-theme-half', 'auto-theme-light')
+
+	container.appendChild(lightHalf)
+	container.appendChild(darkHalf)
+
+	return container
+}
 
 // Render theme previews
 async function renderThemePreviews() {
 	themeList.innerHTML = ''
+
+	const currentTheme = theme_now
+
+	// Create "Auto" theme preview
+	const autoPreview = await createAutoPreview()
+	autoPreview.addEventListener('click', () => handleThemeClick(autoPreview, null))
+	if (!currentTheme) autoPreview.classList.add('selected-theme')
+	themeList.appendChild(autoPreview)
 
 	for (const theme of themes) {
 		const preview = await renderTemplate('theme_preview', { theme })
@@ -64,12 +89,8 @@ function handleThemeClick(previewElement, theme) {
 	document.startViewTransition(applyNewTheme)
 }
 
-function launchFount() {
-	window.location.href = hostUrl
-}
-
 // --- Main Execution ---
-function main() {
+async function main() {
 	// Initial render
 	renderThemePreviews()
 
@@ -96,7 +117,7 @@ function main() {
 		catch (e) { return false }
 		return true
 	}
-	if (checkFountInstallerAlive()) {
+	if (await checkFountInstallerAlive()) {
 		const timer = setInterval(async () => {
 			if (!await checkFountInstallerAlive()) {
 				window.location.href = './error'
@@ -108,6 +129,7 @@ function main() {
 				setPreRender(hostUrl)
 				launchButton.disabled = false
 				launchButtonText.textContent = 'Open fount'
+				launchButton.onclick = () => window.location.href = new URL('/shells/home', hostUrl)
 				launchButtonSpinner.style.display = 'none'
 
 				if (footer) {
@@ -126,12 +148,19 @@ function main() {
 		launchButton.onclick = () => { window.location.href = 'https://github.com/steve02081504/fount' }
 		launchButtonSpinner.style.display = 'none'
 		launchButton.disabled = false // Enable the button to install
-		clearInterval(timer)
+		const hostUrl = await getFountHostUrl()
+
+		if (hostUrl) {
+			launchButton.disabled = false
+			launchButtonText.textContent = 'Open fount'
+			launchButton.onclick = () => window.location.href = new URL('/shells/home', hostUrl)
+		}
 		return
 	}
-
-	// Add event listener to the button
-	launchButton.addEventListener('click', launchFount)
 }
 
-main()
+main().catch(e => {
+	Sentry.captureException(e)
+	alert('awww :(\n\nAn error occurred:\n' + e.message)
+	window.location.href = 'https://github.com/steve02081504/fount'
+})

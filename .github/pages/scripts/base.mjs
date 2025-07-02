@@ -26,8 +26,10 @@ await import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill@master/index
 globalThis.urlParams = new URLSearchParams(window.location.search)
 export let theme_now
 export function setTheme(theme) {
-	localStorage.setItem('theme', theme_now = theme)
-	document.documentElement.setAttribute('data-theme', theme_now)
+	theme_now = theme
+	theme ||= Boolean(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light'
+	localStorage.setItem('theme', theme_now || '')
+	document.documentElement.setAttribute('data-theme', theme)
 }
 setTheme(urlParams.get('theme') ?? localStorage.getItem('theme') ?? 'dark')
 
