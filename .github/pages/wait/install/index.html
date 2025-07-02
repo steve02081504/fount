@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="darkreader-lock">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title data-i18n="installer_wait_screen.title"></title>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/themes.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="./index.css" type="text/css" />
+</head>
+
+<body class="bg-base-200">
+
+	<div class="content-wrapper">
+		<!-- Hero Section -->
+		<div class="hero min-h-screen" style="background-image: url(https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa);">
+			<div class="hero-overlay bg-opacity-60"></div>
+			<div class="hero-content text-center text-neutral-content">
+				<div class="max-w-md">
+					<h1 class="mb-5 text-5xl font-bold" data-i18n="installer_wait_screen.hero.title"></h1>
+					<p class="mb-5" data-i18n="installer_wait_screen.hero.description"></p>
+				</div>
+			</div>
+		</div>
+
+		<!-- Feature Sections -->
+		<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-24">
+
+			<!-- Feature 1: Seamless Conversations -->
+			<div class="feature-section flex flex-col md:flex-row items-center gap-12 mb-24">
+				<div class="md:w-1/2">
+					<h2 class="text-4xl font-bold mb-4" data-i18n="installer_wait_screen.feature1.title"></h2>
+					<p class="text-lg text-base-content text-opacity-80" data-i18n="installer_wait_screen.feature1.description"></p>
+				</div>
+				<div class="md:w-1/2">
+					<img src="https://github.com/user-attachments/assets/c1954a7a-6c73-4fb0-bd12-f790a038bd0e" alt="Homepage Screenshot" class="rounded-lg shadow-2xl w-full">
+				</div>
+			</div>
+
+			<!-- Feature 2: Customization -->
+			<div class="feature-section flex flex-col md:flex-row-reverse items-center gap-12 mb-24">
+				<div class="md:w-1/2">
+					<h2 class="text-4xl font-bold mb-4" data-i18n="installer_wait_screen.feature2.title"></h2>
+					<p class="text-lg text-base-content text-opacity-80" data-i18n="installer_wait_screen.feature2.description"></p>
+				</div>
+				<div class="md:w-1/2">
+					<img src="https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074" alt="Theme Selection" class="rounded-lg shadow-2xl w-full">
+				</div>
+			</div>
+
+			<!-- Feature 3: Expressive Chats -->
+			<div class="feature-section flex flex-col md:flex-row items-center gap-12 mb-24">
+				<div class="md:w-1/2">
+					<h2 class="text-4xl font-bold mb-4" data-i18n="installer_wait_screen.feature3.title"></h2>
+					<p class="text-lg text-base-content text-opacity-80" data-i18n="installer_wait_screen.feature3.description"></p>
+				</div>
+				<div class="md:w-1/2">
+					<img src="https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d" alt="Chat Screenshot" class="rounded-lg shadow-2xl w-full">
+				</div>
+			</div>
+
+			<!-- Feature 4: Unshackled AI Integration -->
+			<div class="feature-section flex flex-col md:flex-row-reverse items-center gap-12">
+				<div class="md:w-1/2">
+					<h2 class="text-4xl font-bold mb-4" data-i18n="installer_wait_screen.feature4.title"></h2>
+					<p class="text-lg text-base-content text-opacity-80" data-i18n="installer_wait_screen.feature4.description"></p>
+				</div>
+				<div class="md:w-1/2">
+					<img src="https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9" alt="AI source integration" class="rounded-lg shadow-2xl w-full">
+				</div>
+			</div>
+		</div>
+
+		<!-- Theme Selector -->
+		<div id="theme-selection-section" style="display: none;" class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+			<h2 class="text-4xl font-bold mb-4 text-center" data-i18n="installer_wait_screen.theme_selector.title"></h2>
+			<p class="text-lg text-base-content text-opacity-80 mb-8 text-center" data-i18n="installer_wait_screen.theme_selector.description"></p>
+
+			<div class="flex flex-col lg:flex-row gap-8 w-full">
+				<!-- Preview Area -->
+				<div id="preview-area" class="lg:w-1/2 lg:sticky lg:top-4 max-h-[80vh] overflow-y-auto p-4 lg:p-6 rounded-box bg-base-100/25 shadow-md">
+					<div class="w-full space-y-4">
+						<h2 class="text-2xl font-bold text-center">Preview</h2>
+
+						<div class="flex justify-center space-x-2">
+							<button class="btn btn-primary">Primary</button>
+							<button class="btn btn-secondary">Secondary</button>
+							<button class="btn btn-accent">Accent</button>
+							<button class="btn btn-ghost">Ghost</button>
+						</div>
+						<div class="rounded-box border border-base-300 p-2">
+							<ul class="menu">
+								<li><a>Item 1</a></li>
+								<li><a>Item 2</a></li>
+								<li><a>Item 3</a></li>
+							</ul>
+						</div>
+						<div class="form-control">
+							<select class="select select-bordered">
+								<option disabled selected>Select an option</option>
+								<option>Option 1</option>
+								<option>Option 2</option>
+							</select>
+						</div>
+
+						<label class="label cursor-pointer flex items-center">
+							<input type="checkbox" class="checkbox checkbox-primary" checked />
+							<span class="ml-2">我将身来在了大街前 把你来想念</span>
+							<span class="ml-2">只惜今生恐难再相见</span>
+						</label>
+
+						<div class="flex justify-center">
+							<div class="avatar">
+								<div class="w-24 rounded-xl">
+									<img src="https://avatars.githubusercontent.com/u/31927825?v=4" />
+								</div>
+							</div>
+						</div>
+						<div class="flex space-x-4 items-center">
+							<div class="skeleton h-6 w-1/4"></div>
+							<div class="skeleton h-4 w-1/2"></div>
+							<div class="skeleton h-8 w-1/4"></div>
+						</div>
+
+						<div class="form-control">
+							<input type="text" placeholder="Type here" class="input input-bordered" />
+						</div>
+
+						<div class="flex justify-center space-x-4">
+							<div class="form-control">
+								<label class="label cursor-pointer">
+									<input type="radio" name="radio-group" class="radio" checked />
+									<span class="label-text ml-2">Radio 1</span>
+								</label>
+							</div>
+							<div class="form-control">
+								<label class="label cursor-pointer">
+									<input type="radio" name="radio-group" class="radio" />
+									<span class="label-text ml-2">Radio 2</span>
+								</label>
+							</div>
+						</div>
+						<progress class="progress progress-primary w-full"></progress>
+						<div class="flex justify-center space-x-2">
+							<div class="badge badge-primary">Primary</div>
+							<div class="badge badge-secondary">Secondary</div>
+							<div class="badge badge-accent">Accent</div>
+							<div class="badge badge-ghost">Ghost</div>
+						</div>
+						<div role="alert" class="alert alert-info">
+							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+							</svg>
+							<span>Info alert!</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- Theme List -->
+				<div id="theme-list" class="lg:w-1/2 grid gap-4 max-h-[80vh] overflow-y-auto grid-cols-[repeat(auto-fit,minmax(160px,1fr))] p-4 lg:p-6">
+					<!-- Theme previews will be populated by JS -->
+				</div>
+			</div>
+		</div>
+
+		<!-- Mini Game Section -->
+		<div id="mini-game-section" style="display: none;" class="container mx-auto px-4 sm:px-6 lg:px-8 py-24">
+			<!-- Section Header -->
+			<div class="text-center mb-12">
+				<h2 class="text-4xl font-bold mb-4" data-i18n="installer_wait_screen.mini_game.title"></h2>
+				<p class="text-lg text-base-content text-opacity-80 max-w-3xl mx-auto" data-i18n="installer_wait_screen.mini_game.description1"></p>
+				<p class="text-lg text-base-content text-opacity-80 max-w-3xl mx-auto mt-2" data-i18n="installer_wait_screen.mini_game.description2"></p>
+			</div>
+
+			<!-- Game Iframe -->
+			<div class="flex justify-center">
+<iframe id="mini-game" class="w-full max-w-md h-[550px] rounded-lg shadow-2xl border border-base-300" src="https://aaarafat.github.io/JS-Flappy-Bird/" title="Flappy Bird Mini Game" sandbox="allow-scripts">
+				</iframe>
+			</div>
+		</div>
+	</div>
+
+	<!-- Sticky Footer / Launch Bar -->
+	<footer class="footer items-center p-4 bg-neutral text-neutral-content">
+		<div class="items-center grid-flow-col">
+			<p id="footerReadyText" class="text-lg font-bold" data-i18n="installer_wait_screen.footer.ready_text"></p>
+		</div>
+		<div class="grid-flow-col gap-4 md:place-self-center md:justify-self-end">
+			<button id="launchButton" class="btn btn-primary btn-lg">
+				<span id="launchButtonSpinner" class="loading loading-spinner"></span>
+				<span id="launchButtonText" data-i18n="installer_wait_screen.footer.launch_button"></span>
+			</button>
+		</div>
+	</footer>
+
+	<script type="module" src="index.mjs"></script>
+
+</body>
+
+</html>

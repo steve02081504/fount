@@ -608,15 +608,44 @@ if [[ $# -gt 0 ]]; then
 	fi
 	case "$1" in
 	open)
-		ensure_dependencies "open" || exit 1
-		TARGET_URL='https://steve02081504.github.io/fount/wait'
-		if [ "$OS_TYPE" = "Linux" ]; then
-			xdg-open "$TARGET_URL" >/dev/null 2>&1
-		elif [ "$OS_TYPE" = "Darwin" ]; then
-			open "$TARGET_URL" >/dev/null 2>&1
+		# 若 $FOUNT_DIR/data 是目录
+		if [ -d "$FOUNT_DIR/data" ]; then
+			ensure_dependencies "open" || exit 1
+			TARGET_URL='https://steve02081504.github.io/fount/wait'
+			if [ "$OS_TYPE" = "Linux" ]; then
+				xdg-open "$TARGET_URL" >/dev/null 2>&1
+			elif [ "$OS_TYPE" = "Darwin" ]; then
+				open "$TARGET_URL" >/dev/null 2>&1
+			fi
+			"$0" "${@:2}"
+			exit $?
+		else
+			install_package "nc" "netcat gnu-netcat openbsd-netcat netcat-openbsd nmap-ncat" || install_package "socat" "socat"
+			trap '[[ -n "$STATUS_SERVER_PID" ]] && kill "$STATUS_SERVER_PID" 2>/dev/null' EXIT
+			if command -v nc &>/dev/null; then
+				while true; do {
+					while IFS= read -r -t 2 line && [[ "$line" != $'\r' ]]; do :; done
+echo -e "HTTP/1.1 200 OK\r\nAccess-Control-Allow-Origin: *\r\nContent-Type: application/json\r\nConnection: close\r\n\r\n{\"message\":\"pong\"}"
+				} | nc -l 8930 -q 0; done >/dev/null 2>&1 &
+				STATUS_SERVER_PID=$!
+			elif command -v socat &>/dev/null; then
+(socat -T 5 TCP-LISTEN:8930,reuseaddr,fork SYSTEM:"read; echo -e 'HTTP/1.1 200 OK\r\nAccess-Control-Allow-Origin: *\r\nContent-Type: application/json\r\nConnection: close\r\n\r\n{\"message\":\"pong\"}'") >/dev/null 2>&1 &
+				STATUS_SERVER_PID=$!
+			fi
+
+			if [[ -n "$STATUS_SERVER_PID" ]]; then
+				URL='https://steve02081504.github.io/fount/wait/install'
+				if [[ "$(uname -s)" == "Linux" ]]; then
+					(xdg-open "$URL" &)
+				elif [[ "$(uname -s)" == "Darwin" ]]; then
+					(open "$URL" &)
+				fi
+			else
+				echo "Warning: Could not start status server. Proceeding with standard installation."
+			fi
+			"$0" "${@:2}"
+			exit $?
 		fi
-		"$0" "${@:2}"
-		exit $?
 		;;
 	background)
 		nohup "$0" "${@:2}" >/dev/null 2>&1 &
