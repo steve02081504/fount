@@ -42,9 +42,8 @@ mainRouter.use(async (req, res, next) => {
 })
 function diff_if_auth(if_auth, if_not_auth) {
 	return async (req, res, next) => {
-		try { await auth_request(req) }
-		catch { return if_not_auth(req, res, next) }
-		return if_auth(req, res, next)
+		if(await auth_request(req)) return if_auth(req, res, next)
+		return if_not_auth(req, res, next)
 	}
 }
 mainRouter.post('/api/sentrytunnel', diff_if_auth(

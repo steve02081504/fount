@@ -209,7 +209,7 @@ export async function logout(req, res) {
  * @param {object} res - Express 响应对象
  * @returns {Promise<void>} - 只在成功时resolve
  */
-export async function auth_request(req, res) {
+async function auth_request_base(req, res) {
 	if (req.user) return
 	const { accessToken, refreshToken } = req.cookies
 
@@ -252,6 +252,15 @@ export async function auth_request(req, res) {
 	req.user = config.data.users[decodedAccessToken.username]
 	return
 }
+/**
+ * 验证请求
+ * @param {object} req - Express 请求对象
+ * @param {object} res - Express 响应对象
+ * @returns {Promise<boolean>} - 成功返回true，失败返回false
+ */
+export function auth_request(req, res) {
+	return auth_request_base(req, res).then(_ => true, _ => false)
+}
 
 /**
  * 身份验证中间件
@@ -266,9 +275,8 @@ export async function authenticate(req, res, next) {
 		return res.status(401).json({ success: false, message })
 	}
 
-	try { await auth_request(req, res) }
-	catch (message) { return Unauthorized(message) }
-	return next()
+	if(await auth_request(req, res)) return next()
+	return Unauthorized(message)
 }
 
 /**

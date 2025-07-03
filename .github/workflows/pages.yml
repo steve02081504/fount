@@ -6,6 +6,7 @@ on:
   push:
     paths:
       - '.github/pages/**'
+      - 'src/locales/**'
     branches: ["master"]
 
   # Allows you to run this workflow manually from the Actions tab
@@ -33,6 +34,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Copy local files
+        run: cp -r ./src/locales ./.github/pages/
+      - name: Create locales list
+        run: ls -1 ./src/locales | sed 's/\.json$//' | jq -R . | jq -s . > ./.github/pages/locales.json
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact

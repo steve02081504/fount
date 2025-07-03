@@ -24,9 +24,16 @@ Sentry.init({
 await import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill@master/index.mjs')
 
 globalThis.urlParams = new URLSearchParams(window.location.search)
-const theme = urlParams.get('theme') ?? localStorage.getItem('fountTheme') ?? 'dark'
-document.documentElement.setAttribute('data-theme', theme)
-localStorage.setItem('fountTheme', theme)
+export let theme_now
+export function setTheme(theme) {
+	if (theme === theme_now) return
+	theme_now = theme
+	localStorage.setItem('theme', theme)
+	if (theme === 'auto') theme = null
+	theme ||= Boolean(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light'
+	if (document.documentElement.dataset.theme !== theme) document.documentElement.setAttribute('data-theme', theme)
+}
+setTheme(urlParams.get('theme') ?? localStorage.getItem('theme') ?? 'dark')
 
 export function setPreRender(hostUrl = urlParams.get('hostUrl') ?? localStorage.getItem('fountHostUrl') ?? 'http://localhost:8931') {
 	if (HTMLScriptElement.supports?.('speculationrules')) {
@@ -45,4 +52,9 @@ export function setPreRender(hostUrl = urlParams.get('hostUrl') ?? localStorage.
 		link.href = hostUrl+'/shells/home'
 		document.head.prepend(link)
 	}
+}
+
+export let base_dir = '..'
+export function setBaseDir(v) {
+	base_dir = v
 }
