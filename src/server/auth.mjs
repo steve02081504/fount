@@ -209,7 +209,7 @@ export async function logout(req, res) {
  * @param {object} res - Express 响应对象
  * @returns {Promise<void>} - 只在成功时resolve
  */
-async function auth_request_base(req, res) {
+export async function try_auth_request(req, res) {
 	if (req.user) return
 	const { accessToken, refreshToken } = req.cookies
 
@@ -259,7 +259,7 @@ async function auth_request_base(req, res) {
  * @returns {Promise<boolean>} - 成功返回true，失败返回false
  */
 export function auth_request(req, res) {
-	return auth_request_base(req, res).then(_ => true, _ => false)
+	return try_auth_request(req, res).then(_ => true, _ => false)
 }
 
 /**
@@ -275,8 +275,12 @@ export async function authenticate(req, res, next) {
 		return res.status(401).json({ success: false, message })
 	}
 
-	if(await auth_request(req, res)) return next()
-	return Unauthorized(message)
+	try {
+		await try_auth_request(req, res)
+		return next()
+	} catch (e) {
+		return Unauthorized(e)
+	}
 }
 
 /**
