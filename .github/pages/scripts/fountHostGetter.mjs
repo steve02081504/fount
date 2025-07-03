@@ -163,7 +163,7 @@ export function saveFountHostUrl(hostUrl) {
 }
 
 export async function getFountHostUrl(hostUrl = urlParams.get('hostUrl') ?? localStorage.getItem('fountHostUrl')) {
-	if (!hostUrl.startsWith('http')) hostUrl = null
+	if (!String(hostUrl).startsWith('http')) hostUrl = null
 	const result = await mappingFountHostUrl(hostUrl)
 	saveFountHostUrl(result)
 	return result
