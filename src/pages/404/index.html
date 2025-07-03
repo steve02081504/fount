@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="darkreader-lock">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta property="og:title" content="fount! - 404">
+	<meta property="og:url" content="https://steve02081504.github.io/fount/protocol?url=fount://page/404">
+	<meta property="og:type" content="website">
+	<meta property="og:description" content="there is no page here">
+	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa">
+	<title data-i18n="404.title"></title>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser" crossorigin="anonymous"></script>
+	<script type="module" src="/base.mjs"></script>
+</head>
+
+<body>
+	<div class="flex flex-col justify-center items-center h-screen px-4 gap-8">
+		<div class="text-center">
+			<h1 class="text-6xl font-bold mb-4">404</h1>
+			<p class="text-lg mb-8" data-i18n="404.pageNotFoundText"></p>
+			<a href="/" class="btn btn-primary" data-i18n="404.homepageButton"></a>
+		</div>
+
+		<iframe id="mini-game" class="w-full max-w-md h-[450px]" src="https://aaarafat.github.io/JS-Flappy-Bird/" title="Flappy Bird Mini Game" sandbox="allow-scripts"></iframe>
+	</div>
+	<script type="module">
+		import { initTranslations } from '/scripts/i18n.mjs'
+		import { applyTheme } from '/scripts/theme.mjs'
+		applyTheme()
+		initTranslations('404')
+	</script>
+</body>
+
+</html>
