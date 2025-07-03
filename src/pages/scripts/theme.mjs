@@ -147,4 +147,4 @@ window.addEventListener('focus', () => {
 	daisyui_theme_style.crossorigin = 'anonymous'
 	document.head.prepend(daisyui_theme_style)
 }
-export const builtin_themes = Object.keys(await import('https://cdn.jsdelivr.net/npm/daisyui/theme/object.js').then(m => m.default)).sort()
+export const builtin_themes = await import('https://cdn.jsdelivr.net/npm/daisyui/functions/themeOrder.js').then(m => m.default)

@@ -1,4 +1,4 @@
-import { login, register, logout, authenticate, getUserByReq, getUserDictionary, generateAccessToken } from './auth.mjs'
+import { login, register, logout, authenticate, getUserByReq, getUserDictionary, generateAccessToken, auth_request } from './auth.mjs'
 import { getPartDetails } from './parts_loader.mjs'
 import { generateVerificationCode, verifyVerificationCode } from '../scripts/verifycode.mjs'
 import { ms } from '../scripts/ms.mjs'
@@ -26,10 +26,10 @@ export function registerEndpoints(router) {
 		Promise.reject(skip_report(new Error('test error')))
 		return res.status(200).json({ message: 'hell yeah!' })
 	})
-	router.get('/api/ping', cors(), (req, res) => {
+	router.get('/api/ping', cors(), async (req, res) => {
 		const is_local_ip = is_local_ip_from_req(req)
 		let hosturl_in_local_ip
-		if (is_local_ip) try { hosturl_in_local_ip = get_hosturl_in_local_ip() } catch { }
+		if (is_local_ip || await auth_request(req, res)) try { hosturl_in_local_ip = get_hosturl_in_local_ip() } catch { }
 		return res.status(200).json({
 			message: 'pong',
 			cilent_name: 'fount',
