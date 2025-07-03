@@ -187,8 +187,13 @@
 	<footer class="footer items-center p-4 bg-neutral text-neutral-content">
 		<div class="items-center grid-flow-col">
 			<p id="footerReadyText" class="text-lg font-bold" data-i18n="installer_wait_screen.footer.ready_text"></p>
+			<p id="connection-error" class="text-error hidden">Could not connect. Check URL.</p>
 		</div>
 		<div class="grid-flow-col gap-4 md:place-self-center md:justify-self-end">
+			<div id="manual-connection" class="hidden items-center grid-flow-col">
+				<input id="manual-url" type="text" placeholder="Enter Fount URL" class="input input-bordered w-full max-w-xs" />
+				<button id="connect-button" class="btn btn-secondary">Connect</button>
+			</div>
 			<button id="launchButton" class="btn btn-primary btn-lg">
 				<span id="launchButtonSpinner" class="loading loading-spinner"></span>
 				<span id="launchButtonText" data-i18n="installer_wait_screen.footer.launch_button"></span>
