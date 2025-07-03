@@ -725,11 +725,7 @@ fount_upgrade() {
 }
 
 # 更新 Fount
-if [ -f "$FOUNT_DIR/.noupdate" ]; then
-	echo "Skipping fount update due to .noupdate file."
-else
-	fount_upgrade
-fi
+fount_upgrade
 
 # 函数: 安装 Deno
 install_deno() {
