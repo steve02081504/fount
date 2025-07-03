@@ -13,10 +13,9 @@ const launchButtonText = document.getElementById('launchButtonText')
 const launchButtonSpinner = document.getElementById('launchButtonSpinner')
 const footer = document.querySelector('.footer')
 const footerReadyText = document.getElementById('footerReadyText')
-const themeSelectionSection = document.getElementById('theme-selection-section')
 
 // --- Theme Selection ---
-const themes = Object.keys(await import('https://cdn.jsdelivr.net/npm/daisyui/theme/object.js').then(m => m.default)).sort()
+const themes = await import('https://cdn.jsdelivr.net/npm/daisyui/functions/themeOrder.js').then(m => m.default)
 
 const themeList = document.getElementById('theme-list')
 
