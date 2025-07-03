@@ -55,7 +55,8 @@ export function getCurrentTheme() {
 export function setTheme(theme) {
 	if (theme === theme_now) return
 	theme_now = theme
-	localStorage.setItem('theme', theme || '')
+	localStorage.setItem('theme', theme)
+	if (theme === 'auto') theme = null
 	theme ||= Boolean(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light'
 	if (document.documentElement.dataset.theme !== theme) document.documentElement.setAttribute('data-theme', theme)
 }
@@ -143,42 +144,7 @@ window.addEventListener('focus', () => {
 	const daisyui_theme_style = document.createElement('link')
 	daisyui_theme_style.rel = 'stylesheet'
 	daisyui_theme_style.href = 'https://cdn.jsdelivr.net/npm/daisyui/themes.css'
+	daisyui_theme_style.crossorigin = 'anonymous'
 	document.head.prepend(daisyui_theme_style)
 }
-export const builtin_themes = [
-	'light',
-	'dark',
-	'cupcake',
-	'bumblebee',
-	'emerald',
-	'corporate',
-	'synthwave',
-	'retro',
-	'cyberpunk',
-	'valentine',
-	'halloween',
-	'garden',
-	'forest',
-	'aqua',
-	'lofi',
-	'pastel',
-	'fantasy',
-	'wireframe',
-	'black',
-	'luxury',
-	'dracula',
-	'cmyk',
-	'autumn',
-	'business',
-	'acid',
-	'lemonade',
-	'night',
-	'coffee',
-	'winter',
-	'dim',
-	'nord',
-	'sunset',
-	'caramellatte',
-	'abyss',
-	'silk'
-]
+export const builtin_themes = await import('https://cdn.jsdelivr.net/npm/daisyui/functions/themeOrder.js').then(m => m.default)

@@ -5,7 +5,7 @@ import { loadPersona, unloadPersona } from './persona_manager.mjs'
 import { loadAIsource, loadAIsourceGenerator, unloadAIsource, unloadAIsourceGenerator } from './AIsource_manager.mjs'
 import { LoadImportHandler, UnloadImportHandler } from '../../public/shells/install/src/server/importHandler_manager.mjs'
 import { loadWorld, unloadWorld } from './world_manager.mjs'
-import { on_shutdown, shutdown } from '../on_shutdown.mjs'
+import { on_shutdown } from 'npm:on-shutdown'
 import { events } from '../events.mjs'
 
 export const partsList = [

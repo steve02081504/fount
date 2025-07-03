@@ -40,7 +40,7 @@
 				}
 			},
 			"level": 1,
-			"url": "/shells/telegramBot",
+			"url": "/shells/telegrambot",
 			"button": "<img src=\"https://api.iconify.design/line-md/telegram.svg\" class=\"text-icon\"/>"
 		}
 	],
@@ -86,7 +86,7 @@
 			},
 			"level": 0,
 			"interface": "telegram",
-			"url": "/shells/telegramBot?name=${name}&char=${name}",
+			"url": "/shells/telegrambot?name=${name}&char=${name}",
 			"button": "<img src=\"https://api.iconify.design/line-md/telegram.svg\"/>"
 		}
 	]

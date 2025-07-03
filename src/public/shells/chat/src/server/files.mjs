@@ -2,7 +2,7 @@ import blake2b from 'npm:@bitgo/blake2b-wasm'
 import { Buffer } from 'node:buffer'
 import fs from 'node:fs'
 import { getAllUserNames, getUserDictionary } from '../../../../../server/auth.mjs'
-import { on_shutdown } from '../../../../../server/on_shutdown.mjs'
+import { on_shutdown } from 'npm:on-shutdown'
 async function gethash(buffer) {
 	return new Promise((resolve, reject) => {
 		blake2b.ready(function (err) {

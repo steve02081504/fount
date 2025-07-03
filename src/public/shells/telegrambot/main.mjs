@@ -51,10 +51,11 @@ export default {
 			// 当 Fount 启动时，如果之前有正在运行的机器人，则重新启动它们
 			ReStartJob: async (user, botname) => {
 				let sleep_time = 0
-				while(true) try {
+				while (true) try {
 					await runBot(user, botname)
 					break
 				} catch (error) {
+					console.error(error)
 					await new Promise(resolve => setTimeout(resolve, sleep_time))
 					sleep_time += 1000
 				}

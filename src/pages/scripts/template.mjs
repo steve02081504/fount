@@ -17,6 +17,9 @@ export function createDocumentFragmentFromHtmlString(htmlString) {
 	template.innerHTML = htmlString
 	const fragment = template.content
 
+	fragment.querySelectorAll('script[src^="/___"]').forEach(oldScript => {
+		oldScript.remove()
+	})
 	fragment.querySelectorAll('script').forEach(oldScript => {
 		const newScript = document.createElement('script')
 		for (const attr of oldScript.attributes)

@@ -7,8 +7,8 @@ import process from 'node:process'
 import https from 'node:https'
 import http from 'node:http'
 import { __dirname, startTime } from './base.mjs'
-import { console } from '../scripts/console.mjs'
-import { on_shutdown } from './on_shutdown.mjs'
+import { console } from 'npm:@steve02081504/virtual-console'
+import { on_shutdown } from 'npm:on-shutdown'
 import { auth_request, getUserByReq, initAuth } from './auth.mjs'
 import { createTray } from '../scripts/tray.mjs'
 import { StartRPC } from '../scripts/discordrpc.mjs'
@@ -42,9 +42,8 @@ mainRouter.use(async (req, res, next) => {
 })
 function diff_if_auth(if_auth, if_not_auth) {
 	return async (req, res, next) => {
-		try { await auth_request(req) }
-		catch { return if_not_auth(req, res, next) }
-		return if_auth(req, res, next)
+		if(await auth_request(req)) return if_auth(req, res, next)
+		return if_not_auth(req, res, next)
 	}
 }
 mainRouter.post('/api/sentrytunnel', diff_if_auth(
@@ -129,7 +128,7 @@ export let config
  * @param {string} title Desired title for the window
  */
 function setWindowTitle(title) {
-	if (supportsAnsi) process.stdout.write(`\x1b]2;${title}\x1b\x5c`)
+	if (supportsAnsi && process.stdout.writable) process.stdout.write(`\x1b]2;${title}\x1b\x5c`)
 }
 
 export function setDefaultStuff() {

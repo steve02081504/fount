@@ -80,7 +80,56 @@
 		"unknownCommand": "未知的命令",
 		"shellCommandSent": "Shell 命令已发送",
 		"shellCommandFailed": "发送 Shell 命令失败",
-		"shellCommandError": "发送 Shell 命令时出错"
+		"shellCommandError": "发送 Shell 命令时出错",
+		"fountNotFound": "awww :(\n\n没有找到 fount，或许你需要先安装一个？",
+		"unknownError": "awww :(\n\n发生错误：\n"
+	},
+	"installer_wait_screen": {
+		"title": "欢迎使用 fount！",
+		"hero": {
+			"title": "您的沉浸式 AI 角色伴侣",
+			"description": "fount 是一个由 AI 驱动的角色互动平台，旨在赋能<i>您</i>。它是一座桥梁，将您与您想象中的角色连接起来，让您轻松地与他们对话、创建自己的角色并与世界分享。"
+		},
+		"feature1": {
+			"title": "无缝对话，随时随地",
+			"description": "在电脑上开始聊天，在手机或平板电脑上无缝继续。fount 让您的对话保持同步，无论您走到哪里，都能与您的角色保持联系。可在 Windows、macOS、Linux 甚至 Android 上运行。"
+		},
+		"feature2": {
+			"title": "美观、可定制的界面",
+			"description": "从 30 多个精美主题中选择，或创建您自己的主题。fount 是您的个人画布。表达自我，根据您的喜好定制环境，获得真正个性化的体验。"
+		},
+		"feature3": {
+			"title": "富有表现力、沉浸式的聊天",
+			"description": "fount 充分利用 HTML 的强大功能，允许角色通过富文本、图像甚至交互元素表达自己。同时与多个角色进行动态且引人入胜的群聊。"
+		},
+		"feature4": {
+			"title": "不受束缚的 AI 源集成",
+			"description": "Fount 提供无与伦比的选择和灵活性。连接到<i>任何</i> AI 源——OpenAI、Claude、OpenRouter、NovelAI 等。通信逻辑将根据<i>您的</i>意愿，通过代码的力量来塑造。"
+		},
+		"theme_selector": {
+			"title": "选择您的外观",
+			"description": "选择一个主题来个性化您的体验。"
+		},
+		"mini_game": {
+			"title": "玩点小游戏",
+			"description1": "安装太慢了？",
+			"description2": "这里有小游戏用来打发时间。"
+		},
+		"footer": {
+			"ready_text": "准备好开始您的旅程了吗？",
+			"wait_text": "稍候片刻...",
+			"launch_button": "Fount 正在安装...",
+			"open_fount": "打开 fount",
+			"open_or_install_fount": "打开/安装 fount",
+			"error_message": "awww :(\n\n发生错误：\n"
+		},
+		"error": {
+			"title": "安装失败！",
+			"connection_failed": "连接失败！",
+			"description1": "fount 安装程序似乎出了问题。",
+			"description2": "请检查您的终端并重试。",
+			"close_page": "关闭页面"
+		}
 	},
 	"auth": {
 		"title": "认证",

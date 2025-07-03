@@ -10,7 +10,7 @@ export async function createNewChat() {
 	const data = await response.json()
 
 	if (!response.ok)
-		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => {}))
+		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }))
 
 	currentChatId = data.chatid
 	return data.chatid
@@ -26,7 +26,7 @@ export async function addCharacter(charname) {
 	})
 
 	if (!response.ok)
-		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => {}))
+		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }))
 
 	return response.json()
 }
@@ -41,7 +41,7 @@ export async function removeCharacter(charname) {
 	})
 
 	if (!response.ok)
-		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => {}))
+		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }))
 
 	return response.json()
 }
@@ -56,7 +56,7 @@ export async function setWorld(worldname) {
 	})
 
 	if (!response.ok)
-		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => {}))
+		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }))
 
 	return response.json()
 }
@@ -71,7 +71,7 @@ export async function setPersona(personaname) {
 	})
 
 	if (!response.ok)
-		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => {}))
+		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }))
 
 	return response.json()
 }
@@ -86,7 +86,7 @@ export async function triggerCharacterReply(charname) {
 	})
 
 	if (!response.ok)
-		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => {}))
+		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }))
 
 	return response.json()
 }
@@ -101,7 +101,7 @@ export async function setCharReplyFrequency(charname, frequency) {
 	})
 
 	if (!response.ok)
-		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => {}))
+		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }))
 
 	return response.json()
 }
@@ -116,7 +116,7 @@ export async function addUserReply(reply) {
 	})
 
 	if (!response.ok)
-		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => {}))
+		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }))
 
 	return response.json()
 }
@@ -131,7 +131,7 @@ export async function deleteMessage(index) {
 	})
 
 	if (!response.ok)
-		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => {}))
+		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }))
 
 	return response.json()
 }
@@ -146,7 +146,7 @@ export async function editMessage(index, content) {
 	})
 
 	if (!response.ok)
-		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => {}))
+		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }))
 
 	return response.json()
 }
@@ -157,7 +157,7 @@ export async function getCharList() {
 	})}`)
 
 	if (!response.ok)
-		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => {}))
+		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }))
 
 	return await response.json()
 }
@@ -170,7 +170,7 @@ export async function getChatLog(start, end) {
 	})}`)
 
 	if (!response.ok)
-		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => {}))
+		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }))
 
 	return await response.json()
 }
@@ -185,7 +185,7 @@ export async function triggerHeartbeat(start) {
 	})}`)
 
 	if (!response.ok)
-		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => {}))
+		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }))
 
 	return await response.json()
 }
@@ -196,7 +196,7 @@ export async function getChatLogLength() {
 	})}`)
 
 	if (!response.ok)
-		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => {}))
+		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }))
 
 	return await response.json()
 }
@@ -207,7 +207,7 @@ export async function getPersonaName() {
 	})}`)
 
 	if (!response.ok)
-		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => {}))
+		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }))
 
 	return await response.json()
 }
@@ -218,7 +218,7 @@ export async function getWorldName() {
 	})}`)
 
 	if (!response.ok)
-		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => {}))
+		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }))
 
 	return await response.json()
 }
@@ -233,7 +233,7 @@ export async function modifyTimeLine(delta) {
 	})
 
 	if (!response.ok)
-		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => {}))
+		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }))
 
 	return await response.json()
 }

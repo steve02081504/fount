@@ -3,6 +3,10 @@ export async function ping() {
 	return response.json()
 }
 
+export async function hosturl_in_local_ip() {
+	return ping().then(data => data.hosturl_in_local_ip).catch(() => window.location.origin)
+}
+
 export async function generateVerificationCode() {
 	return await fetch('/api/register/generateverificationcode', {
 		method: 'POST',

@@ -1,11 +1,10 @@
 import { Client, Events, GatewayIntentBits, Partials } from 'npm:discord.js@^14.20.0'
-import { on_shutdown } from '../../../../../server/on_shutdown.mjs'
+import { on_shutdown } from 'npm:on-shutdown'
 import { loadShellData, loadTempData, saveShellData } from '../../../../../server/setting_loader.mjs'
 import { LoadChar } from '../../../../../server/managers/char_manager.mjs'
 import { getAllUserNames } from '../../../../../server/auth.mjs'
 import { StartJob, EndJob } from '../../../../../server/jobs.mjs'
 import { geti18n } from '../../../../../scripts/i18n.mjs'
-import { createSimpleDiscordInterface } from './default_interface/main.mjs'
 import { events } from '../../../../../server/events.mjs'
 /** @typedef {import('../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
 
@@ -65,7 +64,10 @@ export function getBotConfig(username, botname) {
 
 export async function getBotConfigTemplate(username, charname) {
 	const char = await LoadChar(username, charname)
-	char.interfaces.discord ??= await createSimpleDiscordInterface(char, username, charname)
+	if (!char.interfaces.discord) {
+		const { createSimpleDiscordInterface } = await import('./default_interface/main.mjs')
+		char.interfaces.discord = await createSimpleDiscordInterface(char, username, charname)
+	}
 	return await char.interfaces.discord?.GetBotConfigTemplate?.() || {}
 }
 
@@ -88,7 +90,10 @@ export async function runBot(username, botname) {
 		const config = getBotConfig(username, botname)
 		if (!Object.keys(config).length) throw new Error(`Bot ${botname} not found`)
 		const char = await LoadChar(username, config.char)
-		char.interfaces.discord ??= await createSimpleDiscordInterface(char, username, config.char)
+		if (!char.interfaces.discord) {
+			const { createSimpleDiscordInterface } = await import('./default_interface/main.mjs')
+			char.interfaces.discord = await createSimpleDiscordInterface(char, username, config.char)
+		}
 		const client = await startBot(config, char)
 		return client
 	})()
