@@ -5,10 +5,10 @@
 	<meta charset="UTF-8">
 	<meta name="darkreader-lock">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta property="og:title" content="fount! - Waiting for Service">
-	<meta property="og:url" content="https://steve02081504.github.io/fount/wait/">
+	<meta property="og:title" content="fount!">
+	<meta property="og:url" content="https://steve02081504.github.io/fount/values_update">
 	<meta property="og:type" content="website">
-	<meta property="og:description" content="Waiting for the fount local service to become available before redirecting.">
+	<meta property="og:description" content="values update">
 	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa">
 	<link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/pages/favicon.ico">
 	<title>fount!</title>
@@ -17,18 +17,10 @@
 	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser" crossorigin="anonymous"></script>
 	<script blocking="render" src="../preload.js"></script>
 	<script type="module">
-		import { setPreRender } from '../base.mjs'
-		import { isFountServiceAvailable, saveFountHostUrl } from '../scripts/fountHostGetter.mjs'
-
-		const hostUrl = 'http://localhost:8931'
-		setPreRender(hostUrl)
-		const timer = setInterval(async () => {
-			if (await isFountServiceAvailable(hostUrl)) {
-				saveFountHostUrl(hostUrl)
-				window.location.href = hostUrl + '/shells/home'
-				clearInterval(timer)
-			}
-		})
+		for (const [key, value] of urlParams)
+			localStorage.setItem('fount' + key.charAt(0).toUpperCase() + key.slice(1), value)
+		setTimeout(() => window.location.href = window.location.pathname, 1000)
+		window.close()
 	</script>
 </head>
 

@@ -25,14 +25,15 @@ function autoresize_frames() {
 	} catch (e) { }
 }
 function themeHeartbeat() {
+	setTheme(localStorage.getItem('theme'))
 	autoresize_frames()
 	check_color_change()
 }
 
 export const applyTheme = () => {
-	initLinesBackground()
 	setTheme(localStorage.getItem('theme'))
 	svgInliner(document)
+	setTimeout(initLinesBackground, 750)
 	setInterval(themeHeartbeat, 1000)
 }
 
@@ -134,10 +135,6 @@ const observer = new MutationObserver((mutationsList) => {
 observer.observe(document.documentElement, { attributes: true })
 
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-	setTheme(localStorage.getItem('theme') || (e.matches ? 'dark' : 'light'))
-})
-// 重新获取焦点时应用当前主题
-window.addEventListener('focus', () => {
 	setTheme(localStorage.getItem('theme'))
 })
 {
