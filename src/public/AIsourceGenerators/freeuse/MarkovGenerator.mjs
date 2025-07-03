@@ -1,4 +1,4 @@
-import { escapeRegExp } from '../../scripts/regex.mjs'
+import { escapeRegExp } from '../../../scripts/regex.mjs'
 
 /**
  * @class MarkovGenerator
