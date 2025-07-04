@@ -8,7 +8,7 @@ Sentry.init({
 	sendDefaultPii: true,
 	tunnel: '/api/sentrytunnel',
 	integrations: [
-		Sentry.replayIntegration(),
+		// Sentry.replayIntegration(),
 		Sentry.browserTracingIntegration(),
 		Sentry.browserProfilingIntegration()
 	],
@@ -53,4 +53,9 @@ document.addEventListener('keydown', event => {
 	if (event.key === 'Escape')
 		if (history.length > 1) history.back()
 		else window.close()
+})
+
+window.addEventListener('load', async () => {
+	console.log(await import('https://cdn.jsdelivr.net/gh/steve02081504/fount/imgs/icon_ascii.mjs').then(m => m.default))
+	console.log('Curious? Join us and build future together: https://github.com/steve02081504/fount')
 })

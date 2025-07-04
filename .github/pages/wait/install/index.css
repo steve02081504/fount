@@ -1,23 +1,23 @@
 body {
-    scroll-behavior: smooth;
+	scroll-behavior: smooth;
 }
 
 .content-wrapper {
-    /* Adjust padding to accommodate the footer and theme selector */
-    padding-bottom: 200px; 
+	/* Adjust padding to accommodate the footer and theme selector */
+	padding-bottom: 200px;
 }
 
 /* Animation for feature sections */
 .feature-section {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    transition-delay: 0.2s;
+	opacity: 0;
+	transform: translateY(30px);
+	transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+	transition-delay: 0.2s;
 }
 
 .feature-section.visible {
-    opacity: 1;
-    transform: translateY(0);
+	opacity: 1;
+	transform: translateY(0);
 }
 
 /* Theme Preview Styles */
@@ -34,8 +34,9 @@ body {
 
 .selected-theme {
 	outline: 4px solid;
-	outline-color: oklch(var(--p)); /* Use oklch for better compatibility with daisyUI */
-    outline-offset: 2px;
+	outline-color: oklch(var(--p));
+	/* Use oklch for better compatibility with daisyUI */
+	outline-offset: 2px;
 }
 
 .auto-theme-container {
