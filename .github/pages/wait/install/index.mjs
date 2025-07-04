@@ -1,4 +1,4 @@
-import { setBaseDir, setPreRender, setTheme, theme_now } from '../../scripts/base.mjs'
+import { setBaseDir, setPreRender, setTheme, theme_now } from '../../base.mjs'
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
 import { isFountServiceAvailable, saveFountHostUrl, getFountHostUrl } from '../../scripts/fountHostGetter.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
