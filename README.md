@@ -6,6 +6,9 @@
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/steve02081504/fount)
 [![Docker Image Size](https://img.shields.io/docker/image-size/steve02081504/fount)](https://github.com/users/steve02081504/packages/container/package/fount)
 [![GitHub repo size](https://img.shields.io/github/repo-size/steve02081504/fount)](https://github.com/steve02081504/fount/archive/refs/heads/master.zip)
+[![Discord](https://img.shields.io/discord/1288934771153440768)](https://discord.gg/GtR9Quzq2v)
+[![CodeFactor](https://www.codefactor.io/repository/github/steve02081504/fount/badge)](https://www.codefactor.io/repository/github/steve02081504/fount)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/8615bc18e3fa4ff391f41e9dcadf93f7)](https://app.codacy.com/gh/steve02081504/fount/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
 <a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
