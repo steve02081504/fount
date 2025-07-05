@@ -874,8 +874,9 @@ run() {
 
 # 安装 fount 依赖
 if [[ ! -d "$FOUNT_DIR/node_modules" || ($# -gt 0 && $1 = 'init') ]]; then
+	git -C "$FOUNT_DIR" clean -fd
 	if [[ -d "$FOUNT_DIR/node_modules" ]]; then run "shutdown"; fi
-	echo "Installing Fount dependencies..."
+	echo "Installing dependencies..."
 	set +e # 禁用错误检测，因为第一次运行可能会失败
 	run_deno install --reload --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
 	run "shutdown" # 确保安装后服务能正常启动
