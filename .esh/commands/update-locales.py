@@ -167,73 +167,112 @@ def align_placeholders_google_raw(original_text_with_placeholders: str, translat
 	return final_translated
 
 
-def translate_text(text: str, source_lang: str, target_lang: str) -> str:
-	"""翻译文本，包含重试逻辑、延时，并在翻译成功后对齐占位符。"""
-	if not isinstance(text, str) or not text or source_lang == target_lang:
-		return text
+def _get_compatible_code(code):
+	"""Helper function to get a compatible Google Translate API language code."""
+	if not SUPPORTED_GOOGLE_CODES:
+		return code
+	if code in SUPPORTED_GOOGLE_CODES:
+		return code
+	base_code = code.split("-")[0]
+	if base_code in SUPPORTED_GOOGLE_CODES:
+		return base_code
+	code_lower = code.lower()
+	for sc in SUPPORTED_GOOGLE_CODES:
+		if sc.lower() == code_lower:
+			return sc
+	base_lower = base_code.lower()
+	for sc in SUPPORTED_GOOGLE_CODES:
+		if sc.lower() == base_lower:
+			return sc
+	return None
 
-	def get_compatible_code(code):
-		if not SUPPORTED_GOOGLE_CODES:
-			return code
-		if code in SUPPORTED_GOOGLE_CODES:
-			return code
-		base_code = code.split("-")[0]
-		if base_code in SUPPORTED_GOOGLE_CODES:
-			return base_code
-		code_lower = code.lower()
-		for sc in SUPPORTED_GOOGLE_CODES:
-			if sc.lower() == code_lower:
-				return sc
-		base_lower = base_code.lower()
-		for sc in SUPPORTED_GOOGLE_CODES:
-			if sc.lower() == base_lower:
-				return sc
-		return None
 
-	src_code_compat = get_compatible_code(source_lang)
-	tgt_code_compat = get_compatible_code(target_lang)
-
-	if src_code_compat is None:
-		print(f"    - 错误: 源语言代码 '{source_lang}' 不被 Google Translator 支持。")
-		return ""
-	if tgt_code_compat is None:
-		print(f"    - 错误: 目标语言代码 '{target_lang}' 不被 Google Translator 支持。")
-		return ""
-	if src_code_compat == tgt_code_compat:
-		return text
-
-	print(f"    - 正在翻译: '{text[:50]}{'...' if len(text) > 50 else ''}' 从 {source_lang}({src_code_compat}) 到 {target_lang}({tgt_code_compat})")
+def _perform_translation_with_retry(text: str, source_lang_code: str, target_lang_code: str, original_source_lang: str, original_target_lang: str) -> str | None:
+	"""
+	Performs translation with a retry mechanism using base language codes if the initial attempt fails.
+	Returns the translated text or None if all attempts fail.
+	"""
+	print(f"    - 正在翻译: '{text[:50]}{'...' if len(text) > 50 else ''}' 从 {original_source_lang}({source_lang_code}) 到 {original_target_lang}({target_lang_code})")
 	time.sleep(TRANSLATION_DELAY)
 
 	try:
-		translator = GoogleTranslator(source=src_code_compat, target=tgt_code_compat)
+		translator = GoogleTranslator(source=source_lang_code, target=target_lang_code)
 		translated_result = translator.translate(text)
 		if translated_result is not None:
-			aligned_translated = align_placeholders_google_raw(text, translated_result)  # 使用 Google 对齐逻辑
-			print(f"      - 翻译成功 (Google对齐后): '{aligned_translated[:50]}{'...' if len(aligned_translated) > 50 else ''}'")
-			return aligned_translated
+			# No alignment here, it will be done in the caller
+			print(f"      - API翻译成功: '{translated_result[:50]}{'...' if len(translated_result) > 50 else ''}'")
+			return translated_result
 		else:
-			raise ValueError("翻译器返回 None")
+			# This case might not be typically hit if deep_translator raises an exception for failed translations
+			print(f"    - 翻译 '{text[:50]}...' ({source_lang_code} -> {target_lang_code}) API返回None。")
+			raise ValueError("翻译器返回 None") # Force into exception handling for retry
 	except Exception as e:
-		print(f"    - 翻译 '{text[:50]}...' ({src_code_compat} -> {tgt_code_compat}) 初始失败: {e}")
-		s_base = source_lang.split("-")[0]
-		t_base = target_lang.split("-")[0]
-		s_base_compat = get_compatible_code(s_base)
-		t_base_compat = get_compatible_code(t_base)
+		print(f"    - 翻译 '{text[:50]}...' ({source_lang_code} -> {target_lang_code}) 初始失败: {e}")
 
-		if s_base_compat and t_base_compat and (s_base_compat != src_code_compat or t_base_compat != tgt_code_compat) and s_base_compat != t_base_compat:
+		# Prepare for retry with base codes
+		s_base = original_source_lang.split("-")[0]
+		t_base = original_target_lang.split("-")[0]
+		s_base_compat = _get_compatible_code(s_base)
+		t_base_compat = _get_compatible_code(t_base)
+
+		# Condition for retry:
+		# 1. Compatible base codes exist.
+		# 2. Base codes are different from the initially attempted codes (meaning there's something new to try).
+		# 3. Base source and target are not the same (no point translating to itself).
+		if s_base_compat and t_base_compat and \
+		   (s_base_compat != source_lang_code or t_base_compat != target_lang_code) and \
+		   s_base_compat != t_base_compat:
 			print(f"      - 尝试备选 (基本代码): source={s_base_compat}, target={t_base_compat}")
 			time.sleep(TRANSLATION_DELAY)
 			try:
 				translator_retry = GoogleTranslator(source=s_base_compat, target=t_base_compat)
 				translated_result_retry = translator_retry.translate(text)
 				if translated_result_retry is not None:
-					aligned_translated_retry = align_placeholders_google_raw(text, translated_result_retry)
-					print(f"      - 备选翻译成功 (Google对齐后): '{aligned_translated_retry[:50]}{'...' if len(aligned_translated_retry) > 50 else ''}'")
-					return aligned_translated_retry
+					# No alignment here
+					print(f"      - 备选API翻译成功: '{translated_result_retry[:50]}{'...' if len(translated_result_retry) > 50 else ''}'")
+					return translated_result_retry
+				else:
+					print(f"      - 尝试 {s_base_compat} -> {t_base_compat} API返回None。")
+					return None # Explicitly return None for this failure path
 			except Exception as e2:
 				print(f"      - 尝试 {s_base_compat} -> {t_base_compat} 失败: {e2}")
-		print(f"    - 翻译 '{text[:50]}...' ({source_lang} -> {target_lang}) 所有尝试均失败。返回 None。")
+		# If retry is not applicable or fails
+		print(f"    - 翻译 '{text[:50]}...' ({original_source_lang} -> {original_target_lang}) 所有尝试均失败。返回 None。")
+		return None
+
+
+def translate_text(text: str, source_lang: str, target_lang: str) -> str | None:
+	"""
+	Translates text using GoogleTranslator with compatibility checks and retry logic.
+	Aligns placeholders after successful translation.
+	Returns the translated text or None if translation fails.
+	"""
+	if not isinstance(text, str) or not text.strip() or source_lang == target_lang:
+		return text # Return original text if empty, not a string, or langs are same
+
+	src_code_compat = _get_compatible_code(source_lang)
+	tgt_code_compat = _get_compatible_code(target_lang)
+
+	if src_code_compat is None:
+		print(f"    - 错误: 源语言代码 '{source_lang}' 不被 Google Translator 支持或无法找到兼容代码。")
+		return None # Return None as per original behavior for failed translations
+	if tgt_code_compat is None:
+		print(f"    - 错误: 目标语言代码 '{target_lang}' 不被 Google Translator 支持或无法找到兼容代码。")
+		return None # Return None
+	if src_code_compat == tgt_code_compat:
+		return text # Return original if, after compatibility, codes are the same
+
+	translated_text_raw = _perform_translation_with_retry(text, src_code_compat, tgt_code_compat, source_lang, target_lang)
+
+	if translated_text_raw is not None:
+		aligned_translated = align_placeholders_google_raw(text, translated_text_raw)
+		print(f"      - 翻译成功 (Google对齐后): '{aligned_translated[:50]}{'...' if len(aligned_translated) > 50 else ''}'")
+		return aligned_translated
+	else:
+		# _perform_translation_with_retry already logs the failure details.
+		# The original function returned "" on total failure, but None is more explicit
+		# and consistent with how _perform_translation_with_retry now signals failure.
+		# Let's stick to None for clarity, callers might need adjustment if they expected "".
 		return None
 
 
@@ -255,17 +294,80 @@ def translate_value(value, source_lang, target_lang):
 		return value
 
 
+def _normalize_string_or_text_obj(parent_dict_a, parent_dict_b, key, lang_a, lang_b, path):
+	"""
+	Normalizes cases where one value is a string and the other is an {'text': 'string'} object.
+	Modifies the parent dictionary in place.
+	Returns (val_a, val_b, changed_flag).
+	"""
+	val_a, val_b = parent_dict_a.get(key), parent_dict_b.get(key)
+	changed_here = False
+
+	is_val_a_str = isinstance(val_a, str)
+	is_val_b_str = isinstance(val_b, str)
+	is_val_a_text_obj = isinstance(val_a, OrderedDict) and "text" in val_a and isinstance(val_a["text"], str) and len(val_a) == 1
+	is_val_b_text_obj = isinstance(val_b, OrderedDict) and "text" in val_b and isinstance(val_b["text"], str) and len(val_b) == 1
+
+	if is_val_a_str and is_val_b_text_obj:
+		parent_dict_a[key] = OrderedDict([("text", val_a)])
+		val_a = parent_dict_a[key]
+		print(f"  - 规范化: @ '{path}' 中 '{lang_a}' 的字符串值已转换为 {{'text': ...}} 以匹配 '{lang_b}'。")
+		changed_here = True
+	elif is_val_b_str and is_val_a_text_obj:
+		parent_dict_b[key] = OrderedDict([("text", val_b)])
+		val_b = parent_dict_b[key]
+		print(f"  - 规范化: @ '{path}' 中 '{lang_b}' 的字符串值已转换为 {{'text': ...}} 以匹配 '{lang_a}'。")
+		changed_here = True
+
+	return val_a, val_b, changed_here
+
+
+def _handle_missing_key_translation(target_dict, source_dict, key, target_lang, source_lang_for_trans, current_path):
+	"""
+	Handles translation for a key missing in target_dict but present in source_dict.
+	Returns True if a change was made (key added), False otherwise.
+	"""
+	made_change = False
+	source_value_direct = source_dict[key]
+	# print(f"  - 尝试翻译键 '{current_path}' 从 {source_lang_for_trans} 到 {target_lang}")
+	translated_val = translate_value(copy.deepcopy(source_value_direct), source_lang_for_trans, target_lang)
+
+	if translated_val is not None:
+		# Check for effectively empty translations that should not be added
+		is_empty_str = isinstance(translated_val, str) and translated_val.strip() == ""
+		is_empty_text_obj = isinstance(translated_val, OrderedDict) and \
+							"text" in translated_val and \
+							isinstance(translated_val["text"], str) and \
+							translated_val["text"].strip() == "" and \
+							len(translated_val) == 1
+
+		if is_empty_str:
+			print(f"  - 跳过添加: 键 '{current_path}' 的翻译结果为空字符串 (来自 {source_lang_for_trans} 到 {target_lang})。")
+		elif is_empty_text_obj:
+			print(f"  - 跳过添加: 键 '{current_path}' 的翻译结果为 {{'text': ''}} (来自 {source_lang_for_trans} 到 {target_lang})。")
+		else:
+			target_dict[key] = translated_val
+			made_change = True
+			print(f"  + 添加并翻译: 键 '{current_path}' 从 {source_lang_for_trans} 到 {target_lang}。")
+	else:
+		# This case implies translate_value returned None, meaning translation failed or was skipped.
+		# translate_text (called by translate_value) should log specific reasons for None.
+		print(f"  - 跳过添加: 键 '{current_path}' 的翻译结果为 None (来自 {source_lang_for_trans} 到 {target_lang})。")
+
+	return made_change
+
+
 def normalize_and_sync_dicts(
 	dict_a,
 	dict_b,
 	lang_a,
 	lang_b,
-	all_data_global,
-	languages_global,
+	all_data_global, # Unused, but kept for API compatibility if needed later
+	languages_global, # Unused, but kept for API compatibility if needed later
 	reference_codes_global,
 	path="",
 ):
-	changed = False
+	changed_overall = False # Use a different name to avoid confusion with the returned 'changed' from recursive calls
 	is_ref_lang_a = lang_a in reference_codes_global
 	is_ref_lang_b = lang_b in reference_codes_global
 
@@ -273,10 +375,10 @@ def normalize_and_sync_dicts(
 		lang_key = "lang"
 		if lang_key not in dict_a or dict_a.get(lang_key) != lang_a:
 			dict_a[lang_key] = lang_a
-			changed = True
+			changed_overall = True
 		if lang_key not in dict_b or dict_b.get(lang_key) != lang_b:
 			dict_b[lang_key] = lang_b
-			changed = True
+			changed_overall = True
 
 	keys_a_ordered = list(dict_a.keys())
 	keys_b_ordered = list(dict_b.keys())
@@ -286,16 +388,19 @@ def normalize_and_sync_dicts(
 	non_ref_dict = dict_b if is_ref_lang_a else (dict_a if is_ref_lang_b else None)
 	non_ref_lang = lang_b if is_ref_lang_a else (lang_a if is_ref_lang_b else None)
 
-	if ref_dict and non_ref_dict:
+	if ref_dict and non_ref_dict and ref_dict is not non_ref_dict : # Ensure they are not the same dict
 		ref_keys = set(ref_dict.keys())
-		non_ref_keys = set(non_ref_dict.keys())
-		keys_to_remove = non_ref_keys - ref_keys
+		non_ref_keys_copy = list(non_ref_dict.keys()) # Iterate over a copy for safe deletion
 
-		for key in list(non_ref_dict.keys()):
-			if key in keys_to_remove:
-				print(f"  - 删除: 键 '{key}' 从 {non_ref_lang} (不在参考语言中)")
-				del non_ref_dict[key]
-				changed = True
+		for key_in_non_ref in non_ref_keys_copy:
+			if key_in_non_ref not in ref_keys and key_in_non_ref != "lang": # "lang" key should not be removed
+				print(f"  - 删除: 键 '{path + '.' + key_in_non_ref if path else key_in_non_ref}' 从 {non_ref_lang} (不在参考语言 {lang_a if is_ref_lang_a else lang_b} 中)")
+				del non_ref_dict[key_in_non_ref]
+				changed_overall = True
+				# Update ordered key lists if necessary, though combined_keys handles overall structure
+				if key_in_non_ref in keys_b_ordered and non_ref_dict is dict_b: keys_b_ordered.remove(key_in_non_ref)
+				if key_in_non_ref in keys_a_ordered and non_ref_dict is dict_a: keys_a_ordered.remove(key_in_non_ref)
+
 
 	combined_keys = OrderedDict.fromkeys(keys_a_ordered)
 	for k in keys_b_ordered:
@@ -303,63 +408,59 @@ def normalize_and_sync_dicts(
 			combined_keys[k] = None
 
 	all_unique_keys_ordered = list(combined_keys.keys())
-	if path == "" and "lang" in all_unique_keys_ordered:
+	if path == "" and "lang" in all_unique_keys_ordered: # Ensure 'lang' is first if present at root
 		all_unique_keys_ordered.remove("lang")
 		all_unique_keys_ordered.insert(0, "lang")
 
+	# First pass: Normalize existing keys and recurse
 	for key in all_unique_keys_ordered:
 		current_path = f"{path}.{key}" if path else key
-		in_a, in_b = key in dict_a, key in dict_b
-		if key == "lang" and path == "":
+		if key == "lang" and path == "": # Handled at the start
 			continue
+
+		in_a, in_b = key in dict_a, key in dict_b
 
 		if in_a and in_b:
-			val_a, val_b = dict_a[key], dict_b[key]
-			if isinstance(val_a, str) and isinstance(val_b, OrderedDict) and "text" in val_b and isinstance(val_b["text"], str) and len(val_b) == 1:
-				dict_a[key] = OrderedDict([("text", val_a)])
-				val_a = dict_a[key]
-				changed = True
-			elif isinstance(val_b, str) and isinstance(val_a, OrderedDict) and "text" in val_a and isinstance(val_a["text"], str) and len(val_a) == 1:
-				dict_b[key] = OrderedDict([("text", val_b)])
-				val_b = dict_b[key]
-				changed = True
+			# Use the new helper to normalize string vs {'text':...}
+			val_a, val_b, normalized_changed = _normalize_string_or_text_obj(dict_a, dict_b, key, lang_a, lang_b, current_path)
+			if normalized_changed:
+				changed_overall = True
 
+			# Proceed with recursion or type mismatch warning
 			if isinstance(val_a, OrderedDict) and isinstance(val_b, OrderedDict):
 				if normalize_and_sync_dicts(val_a, val_b, lang_a, lang_b, all_data_global, languages_global, reference_codes_global, current_path):
-					changed = True
+					changed_overall = True
 			elif type(val_a) != type(val_b):
-				print(f"  - 警告: 类型不匹配 @ '{current_path}'. {lang_a}: {type(val_a).__name__}, {lang_b}: {type(val_b).__name__}。跳过同步。")
+				# This warning might be redundant if _normalize_string_or_text_obj handles the common cases
+				# However, it can catch other type mismatches.
+				is_val_a_text_like = isinstance(val_a, OrderedDict) and "text" in val_a and len(val_a) == 1
+				is_val_b_text_like = isinstance(val_b, OrderedDict) and "text" in val_b and len(val_b) == 1
+				# Avoid warning if one is string and other is text-like, as normalization should handle it or has handled it.
+				if not ((isinstance(val_a, str) and is_val_b_text_like) or \
+					    (isinstance(val_b, str) and is_val_a_text_like)):
+					print(f"  - 警告: 类型不匹配 @ '{current_path}'. {lang_a}: {type(val_a).__name__}, {lang_b}: {type(val_b).__name__}。跳过同步此键。")
 
-	for key in all_unique_keys_ordered:  # 第二遍处理缺失键
+	# Second pass: Handle missing keys by translating
+	for key in all_unique_keys_ordered:
 		current_path = f"{path}.{key}" if path else key
-		in_a, in_b = key in dict_a, key in dict_b
-		if key == "lang" and path == "":
+		if key == "lang" and path == "": # Handled at the start
 			continue
 
-		target_dict, target_lang, source_dict, source_lang_for_trans, missing_in_lang = (None, None, None, None, None)
+		in_a, in_b = key in dict_a, key in dict_b
+
+		target_dict, source_dict, target_lang_code, source_lang_code = None, None, None, None
 		if in_a and not in_b:
-			target_dict, target_lang, source_dict, source_lang_for_trans, missing_in_lang = dict_b, lang_b, dict_a, lang_a, lang_b
+			target_dict, source_dict = dict_b, dict_a
+			target_lang_code, source_lang_code = lang_b, lang_a
 		elif not in_a and in_b:
-			target_dict, target_lang, source_dict, source_lang_for_trans, missing_in_lang = dict_a, lang_a, dict_b, lang_b, lang_a
+			target_dict, source_dict = dict_a, dict_b
+			target_lang_code, source_lang_code = lang_a, lang_b
 
-		if target_dict is not None:  # 如果某个字典中缺失键
-			source_value_direct = source_dict[key]
-			translated_val = translate_value(copy.deepcopy(source_value_direct), source_lang_for_trans, target_lang)
-			if translated_val is not None:
-				if isinstance(translated_val, str) and translated_val == "":
-					print(f"  - 跳过: 键 '{key}' 的翻译结果为空字符串，不添加到 {missing_in_lang}。")
-				elif isinstance(translated_val, OrderedDict) and "text" in translated_val and isinstance(translated_val["text"], str) and translated_val["text"] == "" and len(translated_val) == 1:
-					print(f"  - 跳过: 键 '{key}' 的翻译结果为 {{'text': ''}}，不添加到 {missing_in_lang}。")
-				else:
-					target_dict[key] = translated_val
-					changed = True
-			else:
-				print(f"  - 跳过: 键 '{key}' 的翻译结果为 None，不添加到 {missing_in_lang}。")
-			# 如果 translate_value 返回 None (例如翻译失败且返回空字符串，我们这里允许空字符串作为有效值)
-			# 如果要严格处理 None，可以在这里添加逻辑。目前是如果返回 None，键不会被添加。
-			# 但 translate_text 设计为返回 "" 而不是 None。
+		if target_dict is not None:
+			if _handle_missing_key_translation(target_dict, source_dict, key, target_lang_code, source_lang_code, current_path):
+				changed_overall = True
 
-	return changed
+	return changed_overall
 
 
 def reorder_keys_like_reference(target_dict, reference_dict):
@@ -379,7 +480,114 @@ def reorder_keys_like_reference(target_dict, reference_dict):
 	return ordered_target
 
 
-def process_home_registries(map_lang_to_path, global_ref_lang_codes, all_locale_data_full):
+def _process_registry_item_info(item_object_in_list, reg_key_list_name, item_index, available_locale_langs, global_ref_lang_codes):
+	"""
+	Processes the 'info' dictionary of a single item from a home_registry.json list.
+	Handles language removal, addition/translation, and reordering.
+	Modifies item_object_in_list['info'] in place.
+	Returns True if changes were made, False otherwise.
+	"""
+	if not (isinstance(item_object_in_list, (dict, OrderedDict)) and \
+			"info" in item_object_in_list and \
+			isinstance(item_object_in_list["info"], (dict, OrderedDict))):
+		return False
+
+	item_changed = False
+	current_info_dict = item_object_in_list["info"]
+	if not isinstance(current_info_dict, OrderedDict):
+		current_info_dict = OrderedDict(current_info_dict.items())
+		# This conversion itself isn't a "change" for the purpose of file saving,
+		# but subsequent operations might rely on it being an OrderedDict.
+		# The final comparison will determine if a meaningful change occurred.
+
+	original_info_dict_for_comparison = copy.deepcopy(current_info_dict)
+	item_id_str = item_object_in_list.get("id", "未知ID")
+	item_description = f"'{reg_key_list_name}' 项目 {item_index} (ID: {item_id_str})"
+
+	# 1. Remove languages from 'info' that are not in available_locale_langs
+	langs_in_info_to_remove = []
+	for lang in list(current_info_dict.keys()): # Iterate over a copy of keys for safe deletion
+		locale_file_path = os.path.join(LOCALE_DIR, f"{lang}.json")
+		if lang not in available_locale_langs and not os.path.exists(locale_file_path):
+			langs_in_info_to_remove.append(lang)
+		elif lang not in available_locale_langs and os.path.exists(locale_file_path):
+			print(f"    - 警告: 语言 '{lang}' 在 {item_description} 的 info 中存在，但未在可用区域设置中加载。文件 '{os.path.basename(locale_file_path)}' 存在于磁盘。跳过删除。")
+
+	for lang_code_to_remove in langs_in_info_to_remove:
+		print(f"    - 从 {item_description} 的 info 中删除 '{lang_code_to_remove}' (关联的 locale 文件在 locales/ 中不存在且语言未加载)")
+		del current_info_dict[lang_code_to_remove]
+		# item_changed implicitly handled by later comparison
+
+	# 2. Add and translate missing languages to 'info'
+	present_info_langs_after_delete = set(current_info_dict.keys())
+	langs_to_add_to_info = available_locale_langs - present_info_langs_after_delete
+
+	if langs_to_add_to_info:
+		if not present_info_langs_after_delete:
+			print(f"    - 警告: {item_description} 的 info 为空或所有语言均被移除，无法为 '{', '.join(sorted(list(langs_to_add_to_info)))}' 添加翻译。")
+		else:
+			source_lang_in_info, source_data_from_info = None, None
+			# Prioritize reference languages as source
+			for r_lang_code in global_ref_lang_codes:
+				if r_lang_code in present_info_langs_after_delete:
+					source_lang_in_info = r_lang_code
+					source_data_from_info = current_info_dict[r_lang_code]
+					break
+			# Fallback to the first available language in the current info dict
+			if not source_lang_in_info and present_info_langs_after_delete: # Ensure not empty
+				source_lang_in_info = next(iter(sorted(list(present_info_langs_after_delete)))) # Make deterministic
+				source_data_from_info = current_info_dict[source_lang_in_info]
+
+			if source_lang_in_info and isinstance(source_data_from_info, (dict, OrderedDict)):
+				print(f"    - 为 {item_description} 的 info 翻译缺失语言 (目标: {', '.join(sorted(list(langs_to_add_to_info)))}), 源: '{source_lang_in_info}'")
+				for target_lang_to_add in sorted(list(langs_to_add_to_info)): # Process in defined order
+					# print(f"      - 翻译到 '{target_lang_to_add}'...")
+					translated_item_content = OrderedDict()
+					translation_successful_for_all_sub_keys = True
+					for text_key, text_to_translate in source_data_from_info.items():
+						if isinstance(text_to_translate, str):
+							translated_text = translate_text(text_to_translate, source_lang_in_info, target_lang_to_add)
+							if translated_text is None: # Handle translation failure for a sub-key
+								print(f"      - 警告: {item_description} 中 '{text_key}' 从 '{source_lang_in_info}' 到 '{target_lang_to_add}' 翻译失败。跳过此子项。")
+								translated_item_content[text_key] = text_to_translate # Keep original or skip? For now, keep original.
+								translation_successful_for_all_sub_keys = False
+							else:
+								translated_item_content[text_key] = translated_text
+						else:
+							# print(f"      - 警告: {item_description} 中 '{text_key}' 的值不是字符串。复制原值。")
+							translated_item_content[text_key] = copy.deepcopy(text_to_translate)
+
+					if translated_item_content and translation_successful_for_all_sub_keys: # Only add if all sub-keys translated
+						current_info_dict[target_lang_to_add] = translated_item_content
+					elif not translation_successful_for_all_sub_keys:
+						print(f"      - 警告: 由于部分子项翻译失败，未向 {item_description} 的info中添加 '{target_lang_to_add}'。")
+
+
+			elif source_lang_in_info: # but source_data_from_info is not a dict
+				print(f"    - 警告: {item_description} 中源语言 '{source_lang_in_info}' 的数据不是字典。跳过翻译。")
+
+	# 3. Reorder the keys in the 'info' dictionary
+	final_ordered_info_dict = OrderedDict()
+	for r_lang in global_ref_lang_codes: # Add reference languages first, in order
+		if r_lang in current_info_dict:
+			final_ordered_info_dict[r_lang] = current_info_dict[r_lang]
+	for lang_code_key in sorted(current_info_dict.keys()): # Add remaining languages, sorted alphabetically
+		if lang_code_key not in final_ordered_info_dict:
+			final_ordered_info_dict[lang_code_key] = current_info_dict[lang_code_key]
+
+	# Update the item_object_in_list if changes were made
+	if final_ordered_info_dict != original_info_dict_for_comparison:
+		item_object_in_list["info"] = final_ordered_info_dict
+		item_changed = True
+		# print(f"    - {item_description} 的 info 已更新/重新排序。")
+	else:
+		# Ensure the original object (if it was converted from dict to OrderedDict) is preserved if no content change
+		item_object_in_list["info"] = original_info_dict_for_comparison
+
+	return item_changed
+
+
+def process_home_registries(map_lang_to_path, global_ref_lang_codes, all_locale_data_full): # all_locale_data_full is unused
 	if not os.path.isdir(FOUNT_DIR):
 		print(f"警告: Fount 目录 '{FOUNT_DIR}' 不存在，跳过 home_registry.json 处理。")
 		return
@@ -404,82 +612,16 @@ def process_home_registries(map_lang_to_path, global_ref_lang_codes, all_locale_
 					print(f"  错误: 无法加载或解析 {filepath}: {e}")
 					continue
 
-				file_changed_overall = False
+				file_changed_this_json = False
 				for reg_key_list_name in registry_keys_to_process:
 					if reg_key_list_name in registry_data and isinstance(registry_data[reg_key_list_name], list):
-						print(f"  检查列表: '{reg_key_list_name}'")
+						# print(f"  检查列表: '{reg_key_list_name}'")
 						for item_index, item_object_in_list in enumerate(registry_data[reg_key_list_name]):
-							if isinstance(item_object_in_list, (dict, OrderedDict)) and "info" in item_object_in_list and isinstance(item_object_in_list["info"], (dict, OrderedDict)):
-								current_info_dict = item_object_in_list["info"]
-								if not isinstance(current_info_dict, OrderedDict):
-									current_info_dict = OrderedDict(current_info_dict.items())
-								original_info_dict_for_comparison = copy.deepcopy(current_info_dict)
-								item_id_str = item_object_in_list.get("id", "未知ID")
-								item_description = f"'{reg_key_list_name}' 项目 {item_index} (ID: {item_id_str})"
+							if _process_registry_item_info(item_object_in_list, reg_key_list_name, item_index, available_locale_langs, global_ref_lang_codes):
+								file_changed_this_json = True
 
-								langs_in_info_to_remove = []
-								for lang in current_info_dict:
-									locale_file_path = os.path.join(LOCALE_DIR, f"{lang}.json")
-									if lang not in available_locale_langs and not os.path.exists(locale_file_path):
-										langs_in_info_to_remove.append(lang)
-									elif lang not in available_locale_langs and os.path.exists(locale_file_path):
-										print(f"    - 警告: 语言 '{lang}' 在 {item_description} 中存在，但未在可用区域设置中加载。文件 '{os.path.basename(locale_file_path)}' 存在。跳过删除。")
-
-								for lang_code_to_remove in langs_in_info_to_remove:
-									print(f"    - 从 {item_description} 的 info 中删除 '{lang_code_to_remove}' (在 locales 中不存在)")
-									del current_info_dict[lang_code_to_remove]
-
-								present_info_langs_after_delete = set(current_info_dict.keys())
-								langs_to_add_to_info = available_locale_langs - present_info_langs_after_delete
-
-								if langs_to_add_to_info:
-									if not present_info_langs_after_delete:
-										print(f"    - 警告: {item_description} 的 info 为空，无法为 '{', '.join(sorted(list(langs_to_add_to_info)))}' 添加翻译。")
-									else:
-										source_lang_in_info, source_data_from_info = None, None
-										for r_lang_code in global_ref_lang_codes:
-											if r_lang_code in present_info_langs_after_delete:
-												source_lang_in_info = r_lang_code
-												source_data_from_info = current_info_dict[r_lang_code]
-												break
-										if not source_lang_in_info:
-											source_lang_in_info = next(iter(present_info_langs_after_delete))
-											source_data_from_info = current_info_dict[source_lang_in_info]
-
-										if source_lang_in_info and isinstance(source_data_from_info, (dict, OrderedDict)):
-											print(f"    - 为 {item_description} 的 info 翻译缺失语言 (目标: {', '.join(sorted(list(langs_to_add_to_info)))}), 源: '{source_lang_in_info}'")
-											for target_lang_to_add in sorted(list(langs_to_add_to_info)):
-												print(f"      - 翻译到 '{target_lang_to_add}'...")
-												translated_item_content = OrderedDict()
-												for text_key, text_to_translate in source_data_from_info.items():
-													if isinstance(text_to_translate, str):
-														translated_text = translate_text(text_to_translate, source_lang_in_info, target_lang_to_add)
-														translated_item_content[text_key] = translated_text
-													else:
-														print(f"      - 警告: {item_description} 中 '{text_key}' 的值不是字符串。复制原值。")
-														translated_item_content[text_key] = copy.deepcopy(text_to_translate)
-												if translated_item_content:
-													current_info_dict[target_lang_to_add] = translated_item_content
-										elif source_lang_in_info:
-											print(f"    - 警告: {item_description} 中源语言 '{source_lang_in_info}' 的数据不是字典。跳过翻译。")
-
-								final_ordered_info_dict = OrderedDict()
-								for r_lang in global_ref_lang_codes:
-									if r_lang in current_info_dict:
-										final_ordered_info_dict[r_lang] = current_info_dict[r_lang]
-								for lang_code_key in sorted(current_info_dict.keys()):
-									if lang_code_key not in final_ordered_info_dict:
-										final_ordered_info_dict[lang_code_key] = current_info_dict[lang_code_key]
-
-								if final_ordered_info_dict != original_info_dict_for_comparison:
-									item_object_in_list["info"] = final_ordered_info_dict
-									file_changed_overall = True
-									# print(f"    - {item_description} 的 info 已更新/重新排序。")
-								else:
-									item_object_in_list["info"] = original_info_dict_for_comparison
-
-				if file_changed_overall:
-					print(f"  保存已修改的文件: {filepath}")
+				if file_changed_this_json:
+					print(f"  检测到更改，正在保存文件: {filepath}")
 					try:
 						with open(filepath, "w", encoding="utf-8", newline="\n") as f:
 							json.dump(registry_data, f, ensure_ascii=False, indent="\t", default=str)
@@ -621,18 +763,147 @@ def align_placeholders_with_list(original_text_with_placeholders: str, new_place
 	return re.sub(r"\$\{(.*?)\}", replace_match, normalized_text)
 
 
+def _find_canonical_placeholder_list(placeholders_by_lang: dict[str, list[str]], most_frequent_count: int, reference_lang_codes: list[str]) -> list[str] | None:
+	"""
+	Determines the canonical (reference) ordered list of placeholder names.
+	It prioritizes reference languages. If not found, it takes the first encountered
+	language (sorted by lang code) that matches the most_frequent_count.
+	"""
+	# Try to find the canonical list from reference languages first
+	for ref_lang_code in reference_lang_codes:
+		if ref_lang_code in placeholders_by_lang and len(placeholders_by_lang[ref_lang_code]) == most_frequent_count:
+			return placeholders_by_lang[ref_lang_code]
+
+	# If not found in reference languages, try any language (sorted for determinism)
+	for lang_code in sorted(placeholders_by_lang.keys()):
+		if len(placeholders_by_lang[lang_code]) == most_frequent_count:
+			return placeholders_by_lang[lang_code]
+
+	# If still not found (e.g., most_frequent_count is 0 and no lists are empty, though unlikely with count logic)
+	# or if most_frequent_count > 0 but no list matches (also unlikely if most_frequent_count derived from these lists)
+	return None
+
+
+def _attempt_placeholder_name_fix(original_text: str, current_ph_list_ordered: list[str], canonical_placeholder_list_ordered: list[str], canonical_placeholder_set: set[str], key_path: str, lang_code: str) -> tuple[str | None, bool]:
+	"""
+	Attempts to fix placeholder names in original_text to match the canonical_placeholder_list_ordered.
+	Returns (fixed_text_or_none, repair_successful_bool).
+	'repair_successful_bool' is True only if the repaired list's set matches canonical_placeholder_set.
+	"""
+	# This function encapsulates logic from the `action_type == "try_fix_names"` block.
+	# print(f"    - 尝试修复键 '{key_path}' 在语言 '{lang_code}' 中的占位符名称...") # Already logged by caller
+
+	repaired_ph_list_ordered = []
+	unmappable = False
+
+	if len(current_ph_list_ordered) != len(canonical_placeholder_list_ordered): # Should be caught by caller, but double check
+		# This situation implies a mismatch in expected counts, should not proceed with name fixing.
+		print(f"      - 警告: 占位符数量不一致 ({len(current_ph_list_ordered)} vs {len(canonical_placeholder_list_ordered)})，无法进行名称修复 for key '{key_path}' in '{lang_code}'.")
+		return None, False
+
+	temp_repaired_list = []
+	used_canonical_indices = set()
+
+	for current_name_in_text in current_ph_list_ordered:
+		best_match_score, best_canonical_match, best_canonical_idx = float("inf"), None, -1
+		for idx, canonical_name_option in enumerate(canonical_placeholder_list_ordered):
+			if idx in used_canonical_indices:
+				continue
+
+			dist = levenshtein_distance(current_name_in_text, canonical_name_option)
+			if dist < best_match_score:
+				best_match_score = dist
+				best_canonical_match = canonical_name_option
+				best_canonical_idx = idx
+			elif dist == best_match_score:
+				if best_canonical_match is None or len(canonical_name_option) < len(best_canonical_match) or \
+				   (len(canonical_name_option) == len(best_canonical_match) and canonical_name_option < best_canonical_match):
+					best_canonical_match = canonical_name_option
+					best_canonical_idx = idx
+
+		if best_canonical_match is not None and best_match_score <= PLACEHOLDER_ABSOLUTE_DISTANCE_THRESHOLD:
+			temp_repaired_list.append(best_canonical_match)
+			used_canonical_indices.add(best_canonical_idx)
+		else:
+			# If any placeholder is unmappable (too dissimilar or no unique match found)
+			# consider the whole fix attempt as failed for strictness.
+			# Alternatively, could append current_name_in_text and check set equality later.
+			# Current logic: if one is bad, the whole attempt is bad for repair_successful_bool.
+			unmappable = True
+			break
+
+	if unmappable or len(temp_repaired_list) != len(canonical_placeholder_list_ordered):
+		# This path means a full, one-to-one mapping within threshold wasn't found.
+		return None, False
+
+	# Crucial check: Does the set of repaired names match the canonical set?
+	# This ensures that we didn't just map to some names, but to the *correct* set of names.
+	if set(temp_repaired_list) == canonical_placeholder_set:
+		repaired_ph_list_ordered = temp_repaired_list
+		fixed_text = align_placeholders_with_list(original_text, repaired_ph_list_ordered)
+		if fixed_text != original_text: # Only return text if it actually changed
+			print(f"      - 成功修复占位符名称 (保留顺序): 原 '{original_text[:50]}...' -> 修 '{fixed_text[:50]}...' (修复列表: {repaired_ph_list_ordered}) for key '{key_path}' in '{lang_code}'.")
+			return fixed_text, True
+		return original_text, True # Return original text but mark as successful if set matches (no change needed or names were already good)
+	else:
+		# Repaired list was generated, but its set of names does not match the canonical one.
+		# This can happen if, e.g., multiple text placeholders map to the same canonical one.
+		return None, False
+
+
+def _align_single_translation_placeholders(lang_code: str, lang_info: dict, key_path: str,
+										   most_frequent_count: int,
+										   canonical_placeholder_list_ordered: list[str],
+										   canonical_placeholder_set: set[str],
+										   lang_file_data: OrderedDict,
+										   placeholders_by_lang: dict[str, list[str]]
+										   ) -> bool:
+	"""
+	Aligns placeholders for a single language entry based on canonical lists.
+	Calls _update_translation_at_path_in_data if changes are made.
+	Returns True if data was changed, False otherwise.
+	"""
+	original_text = lang_info["text"]
+	current_ph_list_ordered = placeholders_by_lang.get(lang_code, []) # Get pre-extracted list
+	made_change_to_data = False
+	action_taken = False # Flag to ensure only one action (clear/update) is taken
+
+	if len(current_ph_list_ordered) != most_frequent_count:
+		reason = f"占位符数量不匹配 (当前: {len(current_ph_list_ordered)}, 应为: {most_frequent_count})"
+		print(f"    - 清理翻译: 键 '{key_path}' 在 '{lang_code}'. 原因: {reason}.")
+		if _update_translation_at_path_in_data(lang_file_data, key_path, None, lang_info["is_dict_obj"]):
+			made_change_to_data = True
+		action_taken = True
+	else:
+		current_ph_set = set(current_ph_list_ordered)
+		if current_ph_set != canonical_placeholder_set: # Counts match, but names differ
+			reason = f"占位符名称集不匹配 (当前: {sorted(list(current_ph_set))}, 规范: {sorted(list(canonical_placeholder_set))})"
+			print(f"    - {reason}。尝试修复键 '{key_path}' 在语言 '{lang_code}' 中的占位符名称...")
+
+			fixed_text, repair_successful = _attempt_placeholder_name_fix(
+				original_text, current_ph_list_ordered,
+				canonical_placeholder_list_ordered, canonical_placeholder_set,
+				key_path, lang_code
+			)
+
+			if repair_successful and fixed_text is not None:
+				# If fixed_text is same as original_text, _update_translation_at_path_in_data will return False
+				if _update_translation_at_path_in_data(lang_file_data, key_path, fixed_text, lang_info["is_dict_obj"]):
+					made_change_to_data = True
+			else: # Repair failed or resulted in no valid change
+				print(f"      - 无法自信地修复占位符名称。将清理翻译。键: '{key_path}', 语言: '{lang_code}'.")
+				if _update_translation_at_path_in_data(lang_file_data, key_path, None, lang_info["is_dict_obj"]):
+					made_change_to_data = True
+			action_taken = True
+
+	# If no action was taken (counts and sets match), made_change_to_data remains False.
+	return made_change_to_data
+
+
 def perform_global_placeholder_alignment(all_data_files, languages_map, reference_lang_codes_list):
 	"""
 	执行全局占位符验证，并尝试修复轻微的名称差异。
-	1. 确定最常见的占位符数量和规范的占位符名称列表（有序）。
-	2. 对每个翻译：
-		a. 如果数量不匹配，则清空翻译。
-		b. 如果数量匹配但名称集不匹配：
-			i. 尝试使用字符串相似度将当前名称映射到规范名称。
-			ii. 如果找到可信的映射（所有名称都映射成功，且映射后的名称集与规范集一致），
-				则纠正翻译中的占位符名称，并保留原始顺序。
-			iii. 否则（无法可信地映射），清空翻译。
-		c. 如果数量和名称（作为集合）都匹配，则保留翻译（顺序也被保留）。
+	(Detailed description as before)
 	返回 True 如果进行了任何更改。
 	"""
 	print("  开始全局占位符验证和修复过程...")
@@ -654,22 +925,14 @@ def perform_global_placeholder_alignment(all_data_files, languages_map, referenc
 
 		placeholders_by_lang = {lang: _extract_placeholders(info["text"]) for lang, info in string_values_info_for_key.items()}
 		placeholder_counts = [len(ph_list) for ph_list in placeholders_by_lang.values()]
+
 		if not placeholder_counts:
 			continue
 
 		count_frequencies = Counter(placeholder_counts)
 		most_frequent_count = count_frequencies.most_common(1)[0][0]
 
-		canonical_placeholder_list_ordered = None
-		for ref_lang_code in reference_lang_codes_list:
-			if ref_lang_code in placeholders_by_lang and len(placeholders_by_lang[ref_lang_code]) == most_frequent_count:
-				canonical_placeholder_list_ordered = placeholders_by_lang[ref_lang_code]
-				break
-		if canonical_placeholder_list_ordered is None:
-			for lang_c_sorted in sorted(placeholders_by_lang.keys()):
-				if len(placeholders_by_lang[lang_c_sorted]) == most_frequent_count:
-					canonical_placeholder_list_ordered = placeholders_by_lang[lang_c_sorted]
-					break
+		canonical_placeholder_list_ordered = _find_canonical_placeholder_list(placeholders_by_lang, most_frequent_count, reference_lang_codes_list)
 
 		if canonical_placeholder_list_ordered is None:
 			if most_frequent_count == 0:
@@ -680,84 +943,18 @@ def perform_global_placeholder_alignment(all_data_files, languages_map, referenc
 		canonical_placeholder_set = set(canonical_placeholder_list_ordered)
 
 		for lang_code, lang_info in string_values_info_for_key.items():
-			original_text = lang_info["text"]
-			current_ph_list_ordered = placeholders_by_lang.get(lang_code, [])
-			action_type, reason = None, ""
+			# Get the actual data dictionary for the language file
+			lang_file_data = all_data_files.get(lang_info["file_path"])
+			if not lang_file_data:
+				print(f"    - 严重错误: 无法找到语言文件数据 for path '{lang_info['file_path']}' while processing key '{key_path}'. Skipping this entry.")
+				continue
 
-			if len(current_ph_list_ordered) != most_frequent_count:
-				action_type = "clear"
-				reason = f"占位符数量不匹配 (当前: {len(current_ph_list_ordered)}, 应为: {most_frequent_count})"
-			else:
-				current_ph_set = set(current_ph_list_ordered)
-				if current_ph_set != canonical_placeholder_set:  # 数量一致，但名称集不同
-					action_type = "try_fix_names"
-					reason = f"占位符名称集不匹配 (当前: {sorted(list(current_ph_set))}, 规范: {sorted(list(canonical_placeholder_set))})"
-				# else: 数量和名称集都一致，无需操作 (保留原始顺序)
-
-			if action_type == "clear":
-				print(f"    - 清理翻译: 键 '{key_path}' 在 '{lang_code}'. 原因: {reason}.")
-				if _update_translation_at_path_in_data(all_data_files[lang_info["file_path"]], key_path, None, lang_info["is_dict_obj"]):
-					overall_changes_made = True
-
-			elif action_type == "try_fix_names":
-				print(f"    - {reason}。尝试修复键 '{key_path}' 在语言 '{lang_code}' 中的占位符名称...")
-				repaired_ph_list_ordered, unmappable = [], False
-				available_canonical_names = list(canonical_placeholder_list_ordered)  # 可用的规范名称副本
-
-				if len(current_ph_list_ordered) == len(canonical_placeholder_list_ordered):  # 再次确认数量一致
-					temp_repaired_list = []
-					used_canonical_indices = set()  # 确保规范名称一对一使用
-
-					for current_name_in_text in current_ph_list_ordered:
-						best_match_score, best_canonical_match, best_canonical_idx = float("inf"), None, -1
-
-						for idx, canonical_name_option in enumerate(canonical_placeholder_list_ordered):
-							if idx in used_canonical_indices:
-								continue  # 此规范名称已被用于之前的匹配
-
-							dist = levenshtein_distance(current_name_in_text, canonical_name_option)
-							if dist < best_match_score:
-								best_match_score = dist
-								best_canonical_match = canonical_name_option
-								best_canonical_idx = idx
-							elif dist == best_match_score:  # 平局处理：选择字母顺序靠前的或更短的
-								if best_canonical_match is None or len(canonical_name_option) < len(best_canonical_match) or (len(canonical_name_option) == len(best_canonical_match) and canonical_name_option < best_canonical_match):
-									best_canonical_match = canonical_name_option
-									best_canonical_idx = idx
-
-						if best_canonical_match is not None:
-							# 阈值判断：这里使用绝对距离阈值
-							if best_match_score <= PLACEHOLDER_ABSOLUTE_DISTANCE_THRESHOLD:
-								temp_repaired_list.append(best_canonical_match)
-								used_canonical_indices.add(best_canonical_idx)  # 标记此规范名称已用
-							else:
-								temp_repaired_list.append(current_name_in_text)  # 相似度太低，保留原样
-								unmappable = True
-								break  # 一个匹配不好，则认为整个修复失败
-						else:  # 没有找到任何可用的规范名称（理论上不应发生，因为数量一致）
-							unmappable = True
-							break
-
-					if not unmappable and len(temp_repaired_list) == len(current_ph_list_ordered):
-						if set(temp_repaired_list) == canonical_placeholder_set:  # 确保修复后的集合是规范的
-							repaired_ph_list_ordered = temp_repaired_list
-						else:
-							unmappable = True  # 修复后的集合仍不等于规范集（例如，多个映射到同一个规范名称）
-					else:
-						unmappable = True
-				else:
-					unmappable = True  # 数量不一致，不应在此处，但作为防御
-
-				if not unmappable and repaired_ph_list_ordered:
-					fixed_text = align_placeholders_with_list(original_text, repaired_ph_list_ordered)
-					if fixed_text != original_text:
-						print(f"      - 成功修复占位符名称 (保留顺序): 原 '{original_text[:50]}...' -> 修 '{fixed_text[:50]}...' (修复列表: {repaired_ph_list_ordered})")
-						if _update_translation_at_path_in_data(all_data_files[lang_info["file_path"]], key_path, fixed_text, lang_info["is_dict_obj"]):
-							overall_changes_made = True
-				else:
-					print(f"      - 无法自信地修复占位符名称。将清理翻译。键: '{key_path}', 语言: '{lang_code}'.")
-					if _update_translation_at_path_in_data(all_data_files[lang_info["file_path"]], key_path, None, lang_info["is_dict_obj"]):  # 此处修正了 is_doc_obj
-						overall_changes_made = True
+			if _align_single_translation_placeholders(
+				lang_code, lang_info, key_path,
+				most_frequent_count, canonical_placeholder_list_ordered, canonical_placeholder_set,
+				lang_file_data, placeholders_by_lang # Pass pre-calculated placeholders_by_lang
+			):
+				overall_changes_made = True
 
 	if overall_changes_made:
 		print("  全局占位符验证和修复过程已完成。")
