@@ -123,7 +123,11 @@ export async function triggerVirtualQueueHeartbeat() {
 			window.close()
 			window.location = '/shells/home'
 		}
+		else if (error.response.status == 401)
+			window.location = '/login?redirect=' + encodeURIComponent(window.location)
+		console.error('[Heartbeat] 处理心跳出错:', error)
 	})
+	if (!data) return
 	const { Messages } = data
 	delete data.Messages
 

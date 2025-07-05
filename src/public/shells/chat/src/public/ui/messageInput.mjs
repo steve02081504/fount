@@ -96,8 +96,14 @@ async function sendMessage() {
 
 	if (isRecording) await toggleVoiceRecording()
 
-	messageInputElement.value = ''
-	await appendMessage(await addUserReply({ content: messageText, files: SelectedFiles }))
-	SelectedFiles.length = 0
-	attachmentPreviewContainer.innerHTML = ''
+	try {
+		await appendMessage(await addUserReply({ content: messageText, files: SelectedFiles }))
+		messageInputElement.value = ''
+		SelectedFiles.length = 0
+		attachmentPreviewContainer.innerHTML = ''
+	}
+	catch (error) {
+		alert(error)
+		console.error(error)
+	}
 }

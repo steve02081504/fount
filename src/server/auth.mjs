@@ -272,7 +272,7 @@ export async function authenticate(req, res, next) {
 	const Unauthorized = (message = 'Unauthorized') => {
 		const path = encodeURIComponent(req.originalUrl)
 		if (req.accepts('html') && req.method === 'GET') return res.redirect(`/login?redirect=${path}`) // 只对GET HTML请求重定向
-		return res.status(401).json({ success: false, message })
+		return res.status(401).json({ success: false, message, error: message })
 	}
 
 	try {
