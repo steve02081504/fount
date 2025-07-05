@@ -1,0 +1,14 @@
+/.git
+/.gitignore
+/.github
+/.esh
+/.vscode
+/README.md
+/LICENSE
+/docs
+/imgs
+/src/runner
+/node_modules
+/eslint.config.mjs
+*.bat
+*.ps1
