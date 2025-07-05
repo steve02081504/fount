@@ -480,6 +480,83 @@ def reorder_keys_like_reference(target_dict, reference_dict):
 	return ordered_target
 
 
+def _remove_unavailable_languages_from_info(current_info_dict: OrderedDict, available_locale_langs: set, item_description: str):
+	"""Removes languages from info dict if their locale files are not available."""
+	langs_in_info_to_remove = []
+	for lang in list(current_info_dict.keys()): # Iterate over a copy for safe deletion
+		locale_file_path = os.path.join(LOCALE_DIR, f"{lang}.json")
+		if lang not in available_locale_langs and not os.path.exists(locale_file_path):
+			langs_in_info_to_remove.append(lang)
+		elif lang not in available_locale_langs and os.path.exists(locale_file_path):
+			print(f"    - 警告: 语言 '{lang}' 在 {item_description} 的 info 中存在，但未在可用区域设置中加载。文件 '{os.path.basename(locale_file_path)}' 存在于磁盘。跳过删除。")
+
+	for lang_code_to_remove in langs_in_info_to_remove:
+		print(f"    - 从 {item_description} 的 info 中删除 '{lang_code_to_remove}' (关联的 locale 文件在 locales/ 中不存在且语言未加载)")
+		del current_info_dict[lang_code_to_remove]
+	# Modification is in-place, parent function will check for overall changes.
+
+
+def _determine_translation_source_for_info(current_info_dict: OrderedDict, global_ref_lang_codes: list[str]) -> tuple[str | None, OrderedDict | None]:
+	"""Determines the source language and data for translating other info entries."""
+	source_lang_in_info, source_data_from_info = None, None
+	present_info_langs = set(current_info_dict.keys())
+
+	# Prioritize reference languages as source
+	for r_lang_code in global_ref_lang_codes:
+		if r_lang_code in present_info_langs:
+			source_lang_in_info = r_lang_code
+			source_data_from_info = current_info_dict[r_lang_code]
+			break
+	# Fallback to the first available language in the current info dict
+	if not source_lang_in_info and present_info_langs: # Ensure not empty
+		source_lang_in_info = next(iter(sorted(list(present_info_langs)))) # Make deterministic
+		source_data_from_info = current_info_dict[source_lang_in_info]
+	return source_lang_in_info, source_data_from_info
+
+
+def _translate_missing_languages_for_info(current_info_dict: OrderedDict, langs_to_add_to_info: set, source_lang_in_info: str, source_data_from_info: OrderedDict, item_description: str) -> bool:
+	"""Translates missing languages for the info dict, modifying it in place. Returns True if any translation was added."""
+	if not isinstance(source_data_from_info, (dict, OrderedDict)):
+		print(f"    - 警告: {item_description} 中源语言 '{source_lang_in_info}' 的数据不是字典。跳过翻译。")
+		return False
+
+	any_translation_added = False
+	print(f"    - 为 {item_description} 的 info 翻译缺失语言 (目标: {', '.join(sorted(list(langs_to_add_to_info)))}), 源: '{source_lang_in_info}'")
+	for target_lang_to_add in sorted(list(langs_to_add_to_info)): # Process in defined order
+		translated_item_content = OrderedDict()
+		translation_successful_for_all_sub_keys = True
+		for text_key, text_to_translate in source_data_from_info.items():
+			if isinstance(text_to_translate, str):
+				translated_text = translate_text(text_to_translate, source_lang_in_info, target_lang_to_add)
+				if translated_text is None:
+					print(f"      - 警告: {item_description} 中 '{text_key}' 从 '{source_lang_in_info}' 到 '{target_lang_to_add}' 翻译失败。跳过此子项。")
+					translated_item_content[text_key] = text_to_translate # Keep original
+					translation_successful_for_all_sub_keys = False
+				else:
+					translated_item_content[text_key] = translated_text
+			else:
+				translated_item_content[text_key] = copy.deepcopy(text_to_translate)
+
+		if translated_item_content and translation_successful_for_all_sub_keys:
+			current_info_dict[target_lang_to_add] = translated_item_content
+			any_translation_added = True
+		elif not translation_successful_for_all_sub_keys:
+			print(f"      - 警告: 由于部分子项翻译失败，未向 {item_description} 的info中添加 '{target_lang_to_add}'。")
+	return any_translation_added
+
+
+def _reorder_info_dict_keys(current_info_dict: OrderedDict, global_ref_lang_codes: list[str]) -> OrderedDict:
+	"""Reorders the keys in the info dictionary based on reference languages and then alphabetically."""
+	final_ordered_info_dict = OrderedDict()
+	for r_lang in global_ref_lang_codes: # Add reference languages first, in order
+		if r_lang in current_info_dict:
+			final_ordered_info_dict[r_lang] = current_info_dict[r_lang]
+	for lang_code_key in sorted(current_info_dict.keys()): # Add remaining languages, sorted alphabetically
+		if lang_code_key not in final_ordered_info_dict:
+			final_ordered_info_dict[lang_code_key] = current_info_dict[lang_code_key]
+	return final_ordered_info_dict
+
+
 def _process_registry_item_info(item_object_in_list, reg_key_list_name, item_index, available_locale_langs, global_ref_lang_codes):
 	"""
 	Processes the 'info' dictionary of a single item from a home_registry.json list.
@@ -492,7 +569,6 @@ def _process_registry_item_info(item_object_in_list, reg_key_list_name, item_ind
 			isinstance(item_object_in_list["info"], (dict, OrderedDict))):
 		return False
 
-	item_changed = False
 	current_info_dict = item_object_in_list["info"]
 	if not isinstance(current_info_dict, OrderedDict):
 		current_info_dict = OrderedDict(current_info_dict.items())
@@ -505,18 +581,7 @@ def _process_registry_item_info(item_object_in_list, reg_key_list_name, item_ind
 	item_description = f"'{reg_key_list_name}' 项目 {item_index} (ID: {item_id_str})"
 
 	# 1. Remove languages from 'info' that are not in available_locale_langs
-	langs_in_info_to_remove = []
-	for lang in list(current_info_dict.keys()): # Iterate over a copy of keys for safe deletion
-		locale_file_path = os.path.join(LOCALE_DIR, f"{lang}.json")
-		if lang not in available_locale_langs and not os.path.exists(locale_file_path):
-			langs_in_info_to_remove.append(lang)
-		elif lang not in available_locale_langs and os.path.exists(locale_file_path):
-			print(f"    - 警告: 语言 '{lang}' 在 {item_description} 的 info 中存在，但未在可用区域设置中加载。文件 '{os.path.basename(locale_file_path)}' 存在于磁盘。跳过删除。")
-
-	for lang_code_to_remove in langs_in_info_to_remove:
-		print(f"    - 从 {item_description} 的 info 中删除 '{lang_code_to_remove}' (关联的 locale 文件在 locales/ 中不存在且语言未加载)")
-		del current_info_dict[lang_code_to_remove]
-		# item_changed implicitly handled by later comparison
+	_remove_unavailable_languages_from_info(current_info_dict, available_locale_langs, item_description)
 
 	# 2. Add and translate missing languages to 'info'
 	present_info_langs_after_delete = set(current_info_dict.keys())
@@ -526,65 +591,23 @@ def _process_registry_item_info(item_object_in_list, reg_key_list_name, item_ind
 		if not present_info_langs_after_delete:
 			print(f"    - 警告: {item_description} 的 info 为空或所有语言均被移除，无法为 '{', '.join(sorted(list(langs_to_add_to_info)))}' 添加翻译。")
 		else:
-			source_lang_in_info, source_data_from_info = None, None
-			# Prioritize reference languages as source
-			for r_lang_code in global_ref_lang_codes:
-				if r_lang_code in present_info_langs_after_delete:
-					source_lang_in_info = r_lang_code
-					source_data_from_info = current_info_dict[r_lang_code]
-					break
-			# Fallback to the first available language in the current info dict
-			if not source_lang_in_info and present_info_langs_after_delete: # Ensure not empty
-				source_lang_in_info = next(iter(sorted(list(present_info_langs_after_delete)))) # Make deterministic
-				source_data_from_info = current_info_dict[source_lang_in_info]
-
-			if source_lang_in_info and isinstance(source_data_from_info, (dict, OrderedDict)):
-				print(f"    - 为 {item_description} 的 info 翻译缺失语言 (目标: {', '.join(sorted(list(langs_to_add_to_info)))}), 源: '{source_lang_in_info}'")
-				for target_lang_to_add in sorted(list(langs_to_add_to_info)): # Process in defined order
-					# print(f"      - 翻译到 '{target_lang_to_add}'...")
-					translated_item_content = OrderedDict()
-					translation_successful_for_all_sub_keys = True
-					for text_key, text_to_translate in source_data_from_info.items():
-						if isinstance(text_to_translate, str):
-							translated_text = translate_text(text_to_translate, source_lang_in_info, target_lang_to_add)
-							if translated_text is None: # Handle translation failure for a sub-key
-								print(f"      - 警告: {item_description} 中 '{text_key}' 从 '{source_lang_in_info}' 到 '{target_lang_to_add}' 翻译失败。跳过此子项。")
-								translated_item_content[text_key] = text_to_translate # Keep original or skip? For now, keep original.
-								translation_successful_for_all_sub_keys = False
-							else:
-								translated_item_content[text_key] = translated_text
-						else:
-							# print(f"      - 警告: {item_description} 中 '{text_key}' 的值不是字符串。复制原值。")
-							translated_item_content[text_key] = copy.deepcopy(text_to_translate)
-
-					if translated_item_content and translation_successful_for_all_sub_keys: # Only add if all sub-keys translated
-						current_info_dict[target_lang_to_add] = translated_item_content
-					elif not translation_successful_for_all_sub_keys:
-						print(f"      - 警告: 由于部分子项翻译失败，未向 {item_description} 的info中添加 '{target_lang_to_add}'。")
-
-
-			elif source_lang_in_info: # but source_data_from_info is not a dict
-				print(f"    - 警告: {item_description} 中源语言 '{source_lang_in_info}' 的数据不是字典。跳过翻译。")
+			source_lang_in_info, source_data_from_info = _determine_translation_source_for_info(current_info_dict, global_ref_lang_codes)
+			if source_lang_in_info and source_data_from_info:
+				_translate_missing_languages_for_info(current_info_dict, langs_to_add_to_info, source_lang_in_info, source_data_from_info, item_description)
+			# If source_lang_in_info is None or source_data_from_info is None (e.g. not a dict), _translate_missing_languages_for_info handles it or doesn't run.
 
 	# 3. Reorder the keys in the 'info' dictionary
-	final_ordered_info_dict = OrderedDict()
-	for r_lang in global_ref_lang_codes: # Add reference languages first, in order
-		if r_lang in current_info_dict:
-			final_ordered_info_dict[r_lang] = current_info_dict[r_lang]
-	for lang_code_key in sorted(current_info_dict.keys()): # Add remaining languages, sorted alphabetically
-		if lang_code_key not in final_ordered_info_dict:
-			final_ordered_info_dict[lang_code_key] = current_info_dict[lang_code_key]
+	final_ordered_info_dict = _reorder_info_dict_keys(current_info_dict, global_ref_lang_codes)
 
 	# Update the item_object_in_list if changes were made
 	if final_ordered_info_dict != original_info_dict_for_comparison:
 		item_object_in_list["info"] = final_ordered_info_dict
-		item_changed = True
-		# print(f"    - {item_description} 的 info 已更新/重新排序。")
+		# print(f"    - {item_description} 的 info 已更新/重新排序。") # Optional: uncomment for verbose logging
+		return True # Indicates a change was made
 	else:
-		# Ensure the original object (if it was converted from dict to OrderedDict) is preserved if no content change
+		# Ensure the original object (if it was converted from dict to OrderedDict and no content change) is preserved
 		item_object_in_list["info"] = original_info_dict_for_comparison
-
-	return item_changed
+		return False # No change made
 
 
 def process_home_registries(map_lang_to_path, global_ref_lang_codes, all_locale_data_full): # all_locale_data_full is unused
@@ -738,6 +761,46 @@ def levenshtein_distance(s1, s2):
 	return previous_row[-1]
 
 
+def _handle_placeholder_count_mismatch(lang_code, lang_info, key_path, current_ph_list_ordered_len, most_frequent_count, lang_file_data) -> bool:
+	"""
+	Handles the case where the placeholder count in a translation mismatches the most frequent count.
+	Prints a warning and clears the translation.
+	Returns True if data was changed, False otherwise.
+	"""
+	reason = f"占位符数量不匹配 (当前: {current_ph_list_ordered_len}, 应为: {most_frequent_count})"
+	print(f"    - 清理翻译: 键 '{key_path}' 在 '{lang_code}'. 原因: {reason}.")
+	if _update_translation_at_path_in_data(lang_file_data, key_path, None, lang_info["is_dict_obj"]):
+		return True
+	return False
+
+
+def _handle_placeholder_name_mismatch(lang_code, lang_info, key_path, current_ph_list_ordered, canonical_placeholder_list_ordered, canonical_placeholder_set, lang_file_data) -> bool:
+	"""
+	Handles cases where placeholder counts match but names differ.
+	Attempts to fix names or clears the translation.
+	Returns True if data was changed, False otherwise.
+	"""
+	original_text = lang_info["text"]
+	reason = f"占位符名称集不匹配 (当前: {sorted(list(set(current_ph_list_ordered)))}, 规范: {sorted(list(canonical_placeholder_set))})"
+	print(f"    - {reason}。尝试修复键 '{key_path}' 在语言 '{lang_code}' 中的占位符名称...")
+
+	fixed_text, repair_successful = _attempt_placeholder_name_fix(
+		original_text, current_ph_list_ordered,
+		canonical_placeholder_list_ordered, canonical_placeholder_set,
+		key_path, lang_code
+	)
+
+	made_change_to_data = False
+	if repair_successful and fixed_text is not None:
+		if _update_translation_at_path_in_data(lang_file_data, key_path, fixed_text, lang_info["is_dict_obj"]):
+			made_change_to_data = True
+	else: # Repair failed or resulted in no valid change
+		print(f"      - 无法自信地修复占位符名称。将清理翻译。键: '{key_path}', 语言: '{lang_code}'.")
+		if _update_translation_at_path_in_data(lang_file_data, key_path, None, lang_info["is_dict_obj"]):
+			made_change_to_data = True
+	return made_change_to_data
+
+
 def align_placeholders_with_list(original_text_with_placeholders: str, new_placeholder_names: list[str]) -> str:
 	"""
 	使用 new_placeholder_names 中的名称按顺序替换 original_text_with_placeholders 中的占位符。
@@ -863,41 +926,24 @@ def _align_single_translation_placeholders(lang_code: str, lang_info: dict, key_
 	Calls _update_translation_at_path_in_data if changes are made.
 	Returns True if data was changed, False otherwise.
 	"""
-	original_text = lang_info["text"]
 	current_ph_list_ordered = placeholders_by_lang.get(lang_code, []) # Get pre-extracted list
-	made_change_to_data = False
-	action_taken = False # Flag to ensure only one action (clear/update) is taken
 
 	if len(current_ph_list_ordered) != most_frequent_count:
-		reason = f"占位符数量不匹配 (当前: {len(current_ph_list_ordered)}, 应为: {most_frequent_count})"
-		print(f"    - 清理翻译: 键 '{key_path}' 在 '{lang_code}'. 原因: {reason}.")
-		if _update_translation_at_path_in_data(lang_file_data, key_path, None, lang_info["is_dict_obj"]):
-			made_change_to_data = True
-		action_taken = True
+		return _handle_placeholder_count_mismatch(
+			lang_code, lang_info, key_path,
+			len(current_ph_list_ordered), most_frequent_count,
+			lang_file_data
+		)
 	else:
 		current_ph_set = set(current_ph_list_ordered)
 		if current_ph_set != canonical_placeholder_set: # Counts match, but names differ
-			reason = f"占位符名称集不匹配 (当前: {sorted(list(current_ph_set))}, 规范: {sorted(list(canonical_placeholder_set))})"
-			print(f"    - {reason}。尝试修复键 '{key_path}' 在语言 '{lang_code}' 中的占位符名称...")
-
-			fixed_text, repair_successful = _attempt_placeholder_name_fix(
-				original_text, current_ph_list_ordered,
-				canonical_placeholder_list_ordered, canonical_placeholder_set,
-				key_path, lang_code
+			return _handle_placeholder_name_mismatch(
+				lang_code, lang_info, key_path,
+				current_ph_list_ordered, canonical_placeholder_list_ordered,
+				canonical_placeholder_set, lang_file_data
 			)
 
-			if repair_successful and fixed_text is not None:
-				# If fixed_text is same as original_text, _update_translation_at_path_in_data will return False
-				if _update_translation_at_path_in_data(lang_file_data, key_path, fixed_text, lang_info["is_dict_obj"]):
-					made_change_to_data = True
-			else: # Repair failed or resulted in no valid change
-				print(f"      - 无法自信地修复占位符名称。将清理翻译。键: '{key_path}', 语言: '{lang_code}'.")
-				if _update_translation_at_path_in_data(lang_file_data, key_path, None, lang_info["is_dict_obj"]):
-					made_change_to_data = True
-			action_taken = True
-
-	# If no action was taken (counts and sets match), made_change_to_data remains False.
-	return made_change_to_data
+	return False # No action taken, counts and sets match
 
 
 def perform_global_placeholder_alignment(all_data_files, languages_map, reference_lang_codes_list):
