@@ -563,7 +563,9 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 
 	# Uninstall fount-pwsh
 	Write-Host "Uninstalling fount-pwsh..."
-	try { Uninstall-Module -Name fount-pwsh -Scope CurrentUser -Force -ErrorAction Stop } catch {}
+	try { Uninstall-Module -Name fount-pwsh -Scope CurrentUser -Force -ErrorAction Stop } catch {
+		Write-Warning "Failed to uninstall fount-pwsh: $($_.Exception.Message)"
+	}
 
 	# Remove fount protocol handler
 	if (-not $IN_DOCKER) {
@@ -638,7 +640,9 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 
 	if (Test-Path "$FOUNT_DIR/data/installer/auto_installed_deno") {
 		Write-Host "Uninstalling Deno..."
-		try { Remove-Item $(Get-Command deno).Source -Force } catch {}
+		try { Remove-Item $(Get-Command deno).Source -Force } catch {
+			Write-Warning "Failed to remove Deno: $($_.Exception.Message)"
+		}
 		Remove-Item "~/.deno" -Force -Recurse -ErrorAction Ignore
 
 		$UserPath = [System.Environment]::GetEnvironmentVariable('PATH', [System.EnvironmentVariableTarget]::User)
@@ -653,7 +657,9 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 	$exepath = Join-Path $TempDir "fount-background.exe"
 	if (Test-Path $exepath) {
 		Write-Host "Removing background runner..."
-		try { Remove-Item $exepath -Force -ErrorAction Stop } catch {}
+		try { Remove-Item $exepath -Force -ErrorAction Stop } catch {
+			Write-Warning "Failed to remove background runner: $($_.Exception.Message)"
+		}
 	}
 
 	# Remove fount installation directory
