@@ -13,19 +13,6 @@ import { console } from 'npm:@steve02081504/virtual-console'
 import { init } from './server.mjs'
 import { geti18n } from '../scripts/i18n.mjs'
 
-const original_log = console.log
-console.log = (...args) => {
-	if (args[0] === undefined) {
-		original_log('got ya!')
-		console.trace()
-		Sentry.captureException(new Error('got ya, received undefined!'))
-	}
-	original_log(...args)
-}
-console.log.toString = () => 'function log() { [native code] }'
-console.log.toString.toString = () => 'function toString() { [native code] }'
-console.log.toString.toString.toString = console.log.toString.toString
-
 console.log(await geti18n('fountConsole.server.standingBy'))
 
 let args = process.argv.slice(2)
