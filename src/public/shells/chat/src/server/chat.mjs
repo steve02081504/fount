@@ -943,7 +943,7 @@ export async function editMessage(chatid, index, new_content) {
 
 	if (is_VividChat(chatMetadata)) saveChat(chatid)
 
-	return entry
+	return chatMetadata.chatLog[index]
 }
 
 export async function getHeartbeatData(chatid, start) {
