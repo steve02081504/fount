@@ -142,12 +142,8 @@ export async function init(start_config) {
 	data_path = start_config.data_path
 	const { starts } = start_config
 	console.freshLine('server start', await geti18n('fountConsole.server.start'))
-	process.on('error', (e) => {
-		console.log(e.error)
-	})
-	process.on('unhandledRejection', (e) => {
-		console.log(e.error)
-	})
+	process.on('error', console.log)
+	process.on('unhandledRejection', console.log)
 
 	config = get_config()
 	hosturl = 'http://localhost:' + config.port
