@@ -3,8 +3,8 @@ FROM denoland/deno:latest
 WORKDIR /app
 
 COPY . /app
-RUN touch /app/.noupdate
-RUN rm -rf /app/.git
+RUN touch /app/.noupdate && touch /.dockerenv
+RUN rm -rf /app/.git /app/.gitignore /app/.github /app/.esh /app/.vscode /app/docs /app/eslint.config.mjs
 
 EXPOSE 8931
 EXPOSE 16698
