@@ -269,7 +269,7 @@ export async function loadPartBase(username, parttype, partname, Initargs, {
 		if (!parts_set[username][parttype][partname]) {
 			const startTime = new Date()
 			/** @type {T} */
-			parts_set[username][parttype][partname] = Loader(pathGetter(), Initargs)
+			parts_set[username][parttype][partname] = baseloadPart(username, parttype, partname, { pathGetter, Loader: async (path) => await Loader(path, Initargs) })
 			const part = parts_set[username][parttype][partname] = await parts_set[username][parttype][partname]
 			const endTime = new Date()
 			try {
