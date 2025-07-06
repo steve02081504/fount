@@ -28,23 +28,19 @@ export default {
 
 				if (action === 'install') {
 					const input = args[1]
+					// 检查输入是否为有效的文件路径
 					try {
-						// 检查输入是否为有效的文件路径
-						try {
-							const stats = await fs.stat(input)
-							if (stats.isFile()) {
-								const fileData = await fs.readFile(input)
-								await importPart(user, fileData)
-								console.log(`Installed from file: ${input}`)
-							}
-							else throw new Error('Input is not a valid file path')
+						const stats = await fs.stat(input)
+						if (stats.isFile()) {
+							const fileData = await fs.readFile(input)
+							await importPart(user, fileData)
+							console.log(`Installed from file: ${input}`)
 						}
-						catch (error) {
-							await importPartByText(user, input)
-							console.log(`Installed from text: ${input}`)
-						}
-					} catch (error) {
-						throw error
+						else throw new Error('Input is not a valid file path')
+					}
+					catch (error) {
+						await importPartByText(user, input)
+						console.log(`Installed from text: ${input}`)
 					}
 				}
 				else if (action === 'uninstall') {

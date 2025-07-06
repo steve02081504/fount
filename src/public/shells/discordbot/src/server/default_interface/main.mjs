@@ -122,7 +122,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 				content,
 				files: files.filter(Boolean),
 				// 确保discord_message_id总是最新的
-				extension: { ...cachedAIReply?.extension || {}, discord_message_id: fullMessage.id }
+				extension: { ...cachedAIReply?.extension, discord_message_id: fullMessage.id }
 			}
 			if (cachedAIReply) delete aiReplyObjectCache[fullMessage.id] // 用后即焚，同龙胆
 
@@ -144,7 +144,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 					if (entry.files?.length > 0) last.files = [...last.files || [], ...entry.files]
 					last.time_stamp = entry.time_stamp
 					if (entry.extension?.discord_message_id)
-						last.extension = { ...last.extension || {}, discord_message_id: entry.extension.discord_message_id }
+						last.extension = { ...last.extension, discord_message_id: entry.extension.discord_message_id }
 				} else {
 					if (last) newlog.push(last)
 					last = entry

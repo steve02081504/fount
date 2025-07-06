@@ -29,7 +29,7 @@ export function setTheme(theme) {
 	theme_now = theme
 	localStorage.setItem('fountTheme', theme)
 	if (theme === 'auto') theme = null
-	theme ||= Boolean(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light'
+	theme ||= window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 	if (document.documentElement.dataset.theme !== theme) document.documentElement.setAttribute('data-theme', theme)
 }
 setTheme(urlParams.get('theme') ?? localStorage.getItem('fountTheme') ?? 'dark')

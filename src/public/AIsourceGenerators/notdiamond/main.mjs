@@ -91,7 +91,7 @@ ${chatLogEntry.content}
 			})
 
 			if (config.convert_config?.roleReminding ?? true) {
-				const isMutiChar = new Set([...prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name).filter(Boolean)]).size > 2
+				const isMutiChar = new Set(prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name).filter(Boolean)).size > 2
 				if (isMutiChar)
 					messages.push({
 						role: 'system',
