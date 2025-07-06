@@ -1,3 +1,5 @@
+import { geti18n } from '../../../../scripts/i18n.mjs'
+
 async function fetchDataWithHandling(url, options = {}) {
 	const response = await fetch(url, options)
 	if (!response.ok) {

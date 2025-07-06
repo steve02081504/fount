@@ -328,7 +328,7 @@ async function displayFunctionButtons() {
 		button.append(iconSpan, titleSpan)
 		button.addEventListener('click', () => {
 			if (buttonItem.action)
-				eval(buttonItem.action.replaceAll('${name}', action))
+				eval(buttonItem.action)
 			else if (buttonItem.url)
 				window.open(buttonItem.url)
 			else

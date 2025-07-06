@@ -3,6 +3,7 @@ import json
 import os
 import copy
 import re
+import itertools
 from deep_translator import GoogleTranslator
 import time
 from collections import OrderedDict, Counter
@@ -86,7 +87,7 @@ def update_translation_at_path_in_data(target_lang_data, key_path, new_text_cont
 	"""
 	keys = key_path.split(".")
 	current_level_obj = target_lang_data
-	for i, key_segment in enumerate(keys[:-1]):
+	for _, key_segment in enumerate(keys[:-1]):
 		if not isinstance(current_level_obj, (OrderedDict, dict)) or key_segment not in current_level_obj:
 			print(f"  错误: 更新时路径 '{key_path}' 在数据中无效于段 '{key_segment}'。")
 			return False
@@ -353,7 +354,7 @@ def sync_common_key(dict_a, dict_b, key, lang_a, lang_b, reference_codes, path):
 	if isinstance(val_a, OrderedDict) and isinstance(val_b, OrderedDict):
 		if normalize_and_sync_dicts(val_a, val_b, lang_a, lang_b, reference_codes, path):
 			changed_here = True
-	elif type(val_a) != type(val_b):
+	elif type(val_a) is not type(val_b):
 		# 仅在无法通过 normalize_string_or_text_obj 自动规范化时发出警告
 		is_val_a_text_like = isinstance(val_a, OrderedDict) and "text" in val_a and len(val_a) == 1
 		is_val_b_text_like = isinstance(val_b, OrderedDict) and "text" in val_b and len(val_b) == 1
@@ -393,7 +394,6 @@ def normalize_and_sync_dicts(
 	此版本使用单次循环处理所有键，逻辑更集中。
 	"""
 	changed_overall = False
-	is_ref_lang_a = lang_a in reference_codes_global
 
 	# 根级别处理 'lang' 键
 	if path == "":
@@ -405,9 +405,7 @@ def normalize_and_sync_dicts(
 			changed_overall = True
 
 	# 合并键，保持 dict_a 的顺序，然后添加 dict_b 中独有的键
-	keys_a = list(dict_a.keys())
-	keys_b = list(dict_b.keys())
-	combined_keys = keys_a + [k for k in keys_b if k not in keys_a]
+	combined_keys = list(dict.fromkeys(itertools.chain(dict_a.keys(), dict_b.keys())))
 
 	# 单次遍历所有键
 	for key in combined_keys:
@@ -606,7 +604,7 @@ def process_home_registries(map_lang_to_path, global_ref_lang_codes):
 						print(f"  错误: 保存 {filepath} 时出错: {e}")
 				else:
 					print(f"  文件 {filepath} 无需更改。")
-	print(f"--- Fount 目录 home_registry.json 文件处理完毕 ---")
+	print("--- Fount 目录 home_registry.json 文件处理完毕 ---")
 
 
 def check_used_keys_in_fount(fount_dir, reference_loc_data, reference_lang_code):
@@ -751,7 +749,7 @@ def align_placeholders_with_list(original_text_with_placeholders: str, new_place
 		return replace_match
 
 	if len(re.findall(r"\$\{(.*?)\}", normalized_text)) != len(new_placeholder_names):
-		print(f"  - 警告 (占位符重建): 文本中的占位符数量与提供的名称列表长度不匹配。返回原文本。")
+		print("  - 警告 (占位符重建): 文本中的占位符数量与提供的名称列表长度不匹配。返回原文本。")
 		return original_text_with_placeholders
 
 	return re.sub(r"\$\{(.*?)\}", replace_match_factory(iter(new_placeholder_names)), normalized_text)
@@ -937,9 +935,7 @@ def run_synchronization_loop(all_data, languages, ref_path):
 		other_paths = [p for p in paths if p != ref_path]
 		path_pairs = [(ref_path, p) for p in other_paths]
 		# 然后在其他语言之间比较
-		for j in range(len(other_paths)):
-			for k in range(j + 1, len(other_paths)):
-				path_pairs.append((other_paths[j], other_paths[k]))
+		path_pairs.extend(itertools.combinations(other_paths, 2))
 
 		for p_a, p_b in path_pairs:
 			lang_a, lang_b = languages[p_a], languages[p_b]

@@ -421,6 +421,7 @@ async function build_payload(request_data, model_id) {
  * @returns {object} API响应对象
  */
 async function make_request(payload, auth_manager) {
+	let response
 	const url = await get_notdiamond_url()
 
 	for (let i = 0; i < 3; i++) {

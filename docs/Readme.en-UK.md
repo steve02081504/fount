@@ -233,7 +233,7 @@ Your voice will be heard. Simply restart fount, and the shadows will dissipate.
 
 The world of Fount is more than words and code; it's a feast for the eyes and an invitation to connect. We have prepared exquisite badges and convenient links to make your Fount components shine and allow others to easily discover your masterpieces.
 
-**Fount Badges: The Seal of Glory**
+### Fount Badges: The Seal of Glory
 
 You can proudly display this badge in your repository or anywhere you wish to showcase your work. Find the SVG and PNG files of the Fount logo [here](../imgs/).
 
@@ -249,7 +249,7 @@ You can proudly display this badge in your repository or anywhere you wish to sh
 |      RGB      | `rgb(14, 60, 92)`   |
 |      HSL      | `hsl(205, 74%, 21%)`|
 
-**Automatic Installation Links: Magic at Your Fingertips**
+### Automatic Installation Links: Magic at Your Fingertips
 
 Imagine others installing your creations into their Fount world with a single click. Simply combine your component's ZIP or Git repository link with Fount's protocol link.
 

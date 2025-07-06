@@ -1,3 +1,4 @@
+/* global urlParams */
 window.urlParams = new URLSearchParams(window.location.search)
 document.documentElement.setAttribute('data-theme',
 	(urlParams.get('theme') ?? localStorage.getItem('fountTheme')) ||

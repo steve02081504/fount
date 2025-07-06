@@ -233,7 +233,7 @@ Tu voz será escuchada. Simplemente reinicia fount, y las sombras se disiparán.
 
 El mundo de Fount es más que palabras y código; es un festín para los ojos y una invitación a conectar. Hemos preparado insignias exquisitas y enlaces convenientes para hacer que tus componentes de Fount brillen y permitir que otros descubran fácilmente tus obras maestras.
 
-**Insignias de Fount: El Sello de la Gloria**
+### Insignias de Fount: El Sello de la Gloria
 
 Puedes mostrar con orgullo esta insignia en tu repositorio o en cualquier lugar donde desees exhibir tu trabajo. Encuentra los archivos SVG y PNG del logotipo de Fount [aquí](../imgs/).
 
@@ -249,7 +249,7 @@ Puedes mostrar con orgullo esta insignia en tu repositorio o en cualquier lugar 
 | RGB | `rgb(14, 60, 92)` |
 | HSL | `hsl(205, 74%, 21%)` |
 
-**Enlaces de Instalación Automática: Magia al Alcance de tu Mano**
+### Enlaces de Instalación Automática: Magia al Alcance de tu Mano
 
 Imagina que otros instalan tus creaciones en su mundo de Fount con un solo clic. Simplemente combina el enlace ZIP o del repositorio Git de tu componente con el enlace de protocolo de Fount.
 

@@ -233,7 +233,7 @@ Tiếng nói của bạn sẽ được lắng nghe. Chỉ cần khởi động l
 
 Thế giới của Fount không chỉ là từ ngữ và mã lệnh; đó là một bữa tiệc cho thị giác và một lời mời kết nối. Chúng tôi đã chuẩn bị những huy hiệu tinh xảo và các liên kết tiện lợi để làm cho các thành phần Fount của bạn tỏa sáng và cho phép người khác dễ dàng khám phá những kiệt tác của bạn.
 
-**Huy hiệu Fount: Con dấu của vinh quang**
+### Huy hiệu Fount: Con dấu của vinh quang
 
 Bạn có thể tự hào hiển thị huy hiệu này trong kho lưu trữ của mình hoặc bất cứ nơi nào bạn muốn trưng bày tác phẩm của mình. Tìm các tệp SVG và PNG của logo Fount [tại đây](../imgs/).
 
@@ -249,7 +249,7 @@ Bạn có thể tự hào hiển thị huy hiệu này trong kho lưu trữ củ
 | RGB | `rgb(14, 60, 92)` |
 | HSL | `hsl(205, 74%, 21%)` |
 
-**Liên kết cài đặt tự động: Phép thuật trong tầm tay**
+### Liên kết cài đặt tự động: Phép thuật trong tầm tay
 
 Hãy tưởng tượng những người khác cài đặt sáng tạo của bạn vào thế giới Fount của họ chỉ bằng một cú nhấp chuột. Chỉ cần kết hợp liên kết ZIP hoặc kho Git của thành phần của bạn với liên kết giao thức của Fount.
 
