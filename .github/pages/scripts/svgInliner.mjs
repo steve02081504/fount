@@ -9,7 +9,10 @@ export async function svgInliner(DOM) {
 		const url = svg.getAttribute('src')
 		IconCache[url] ??= fetch(url).then((response) => response.text())
 		const data = IconCache[url] = await IconCache[url]
-		svg.replaceWith(createDocumentFragmentFromHtmlString(data))
+		const newSvg = createDocumentFragmentFromHtmlString(data)
+		for (const attr of svg.attributes)
+			newSvg.querySelector('svg').setAttribute(attr.name, attr.value)
+		svg.replaceWith(newSvg)
 	})).catch(console.error)
 	return DOM
 }
