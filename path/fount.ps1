@@ -417,10 +417,10 @@ function run {
 	}
 	if ($args.Count -gt 0 -and $args[0] -eq 'debug') {
 		$newargs = $args[1..$args.Count]
-		deno run --allow-scripts --allow-all --inspect-brk "$FOUNT_DIR/src/server/index.mjs" @newargs
+		deno run --allow-scripts --allow-all --inspect-brk "$FOUNT_DIR/src/server/main.ts" @newargs
 	}
 	else {
-		deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" @args
+		deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/main.ts" @args
 	}
 }
 
@@ -432,7 +432,7 @@ if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $ar
 	}
 	New-Item -Path "$FOUNT_DIR/node_modules" -ItemType Directory -ErrorAction Ignore -Force | Out-Null
 	echo "Installing dependencies..."
-	deno install --reload --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
+	deno install --reload --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/main.ts"
 	Write-Host "======================================================" -ForegroundColor Green
 	Write-Warning "DO NOT install any untrusted fount parts on your system, they can do ANYTHING."
 	Write-Host "======================================================" -ForegroundColor Green
