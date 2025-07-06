@@ -255,7 +255,7 @@ function handlePointerEnd(event) {
  * @param {object} newConfig - 新的配置对象。
  */
 export function updateConfig(newConfig) {
-	config = { ...config || {}, ...newConfig } // 合并新的配置
+	config = { ...config, ...newConfig } // 合并新的配置
 
 	if (newConfig.count !== undefined || newConfig.color !== undefined || newConfig.density !== undefined)
 		adjustDotCount() //数量或颜色或密度变化，都重新计算。

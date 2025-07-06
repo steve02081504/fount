@@ -81,7 +81,7 @@ ${err.stack || err}
 				const info = getPartInfo(source, getUserByUsername(username).locales)
 				return source.StructCall(prompt_struct).then(
 					result => {
-						const res = `\
+						let res = `\
 **${info.name} from ${info.provider}:**
 ${result.content}
 `
