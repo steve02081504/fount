@@ -233,7 +233,7 @@ Sua voz será ouvida. Simplesmente reinicie o Fount, e as sombras se dissiparão
 
 O mundo do Fount é mais do que palavras e código; é um deleite para os olhos e um convite para se conectar. Preparamos insígnias requintadas e links convenientes para fazer seus componentes Fount brilharem e permitir que outros descubram facilmente suas obras-primas.
 
-**Insígnias Fount: O Selo da Glória**
+### Insígnias Fount: O Selo da Glória
 
 Você pode exibir com orgulho esta insígnia em seu repositório ou em qualquer lugar que deseje mostrar seu trabalho. Encontre os arquivos SVG e PNG do logo do Fount [aqui](../imgs/).
 
@@ -249,7 +249,7 @@ Você pode exibir com orgulho esta insígnia em seu repositório ou em qualquer 
 | RGB | `rgb(14, 60, 92)` |
 | HSL | `hsl(205, 74%, 21%)` |
 
-**Links de Instalação Automática: Magia na Ponta dos Dedos**
+### Links de Instalação Automática: Magia na Ponta dos Dedos
 
 Imagine outros instalando suas criações em seu mundo Fount com um único clique. Simplesmente combine o link do ZIP ou do repositório Git do seu componente com o link de protocolo do Fount.
 

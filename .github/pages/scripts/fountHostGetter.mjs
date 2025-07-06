@@ -1,3 +1,4 @@
+/* global urlParams */
 const DEFAULT_FOUNT_PORT = 8931
 
 // 验证 IPv4 地址

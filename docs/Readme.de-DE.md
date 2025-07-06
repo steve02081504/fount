@@ -233,7 +233,7 @@ Deine Stimme wird gehört werden. Starte Fount einfach neu, und die Schatten wer
 
 Die Welt von Fount ist mehr als Worte und Code; sie ist ein Fest für die Augen und eine Einladung zur Verbindung. Wir haben exquisite Embleme und praktische Links vorbereitet, um deine Fount-Komponenten erstrahlen zu lassen und es anderen zu ermöglichen, deine Meisterwerke leicht zu entdecken.
 
-**Fount-Embleme: Das Siegel des Ruhms**
+### Fount-Embleme: Das Siegel des Ruhms
 
 Du kannst dieses Emblem stolz in deinem Repository oder überall dort präsentieren, wo du deine Arbeit zeigen möchtest. Die SVG- und PNG-Dateien des Fount-Logos findest du [hier](../imgs/).
 
@@ -249,7 +249,7 @@ Du kannst dieses Emblem stolz in deinem Repository oder überall dort präsentie
 | RGB | `rgb(14, 60, 92)` |
 | HSL | `hsl(205, 74%, 21%)` |
 
-**Automatische Installationslinks: Magie auf Knopfdruck**
+### Automatische Installationslinks: Magie auf Knopfdruck
 
 Stell dir vor, andere installieren deine Kreationen mit einem einzigen Klick in ihre Fount-Welt. Kombiniere einfach den ZIP- oder Git-Repository-Link deiner Komponente mit dem Protokolllink von Fount.
 

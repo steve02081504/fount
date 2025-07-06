@@ -94,13 +94,13 @@ export class CharAPI_t {
 				command_output: string
 				command_error: string
 				rejected_commands: string[]
-				chat_scoped_char_memory: {}
+				chat_scoped_char_memory: object
 			}) => Promise<{
 				name: string
 				avatar: string
 				recommend_command: string
 				content: string
-				chat_scoped_char_memory: {}
+				chat_scoped_char_memory: object
 			}>
 		}
 	}

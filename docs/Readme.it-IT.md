@@ -233,7 +233,7 @@ La tua voce sarà ascoltata. Riavvia semplicemente Fount, e le ombre si dissolve
 
 Il mondo di Fount è più di parole e codice; è una festa per gli occhi e un invito alla connessione. Abbiamo preparato stemmi raffinati e collegamenti comodi per far brillare i tuoi componenti Fount e permettere ad altri di scoprire facilmente i tuoi capolavori.
 
-**Stemma Fount: Il Sigillo della Gloria**
+### Stemma Fount: Il Sigillo della Gloria
 
 Puoi esporre con orgoglio questo stemma nel tuo repository o ovunque desideri mostrare il tuo lavoro. Trova i file SVG e PNG del logo Fount [qui](../imgs/).
 
@@ -249,7 +249,7 @@ Puoi esporre con orgoglio questo stemma nel tuo repository o ovunque desideri mo
 | RGB | `rgb(14, 60, 92)` |
 | HSL | `hsl(205, 74%, 21%)` |
 
-**Collegamenti di Installazione Automatica: Magia a Portata di Mano**
+### Collegamenti di Installazione Automatica: Magia a Portata di Mano
 
 Immagina altri che installano le tue creazioni nel loro mondo Fount con un solo clic. Combina semplicemente il link ZIP o del repository Git del tuo componente con il link di protocollo di Fount.
 

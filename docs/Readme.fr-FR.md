@@ -233,7 +233,7 @@ Votre voix sera entendue. Redémarrez simplement fount, et les ombres se dissipe
 
 Le monde de Fount est plus que des mots et du code ; c'est un festin pour les yeux et une invitation à se connecter. Nous avons préparé des badges exquis et des liens pratiques pour faire briller vos composants Fount et permettre aux autres de découvrir facilement vos chefs-d'œuvre.
 
-**Badges Fount : Le Sceau de la Gloire**
+### Badges Fount : Le Sceau de la Gloire
 
 Vous pouvez fièrement afficher ce badge dans votre dépôt ou partout où vous souhaitez présenter votre travail. Retrouvez les fichiers SVG et PNG du logo Fount [ici](../imgs/).
 
@@ -249,7 +249,7 @@ Vous pouvez fièrement afficher ce badge dans votre dépôt ou partout où vous 
 | RGB | `rgb(14, 60, 92)` |
 | HSL | `hsl(205, 74%, 21%)` |
 
-**Liens d'Installation Automatique : La Magie au Bout des Doigts**
+### Liens d'Installation Automatique : La Magie au Bout des Doigts
 
 Imaginez que d'autres installent vos créations dans leur monde Fount d'un simple clic. Combinez simplement le lien ZIP ou du dépôt Git de votre composant avec le lien de protocole de Fount.
 

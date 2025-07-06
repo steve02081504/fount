@@ -50,8 +50,8 @@ export class chatReplyRequest_t {
 	other_chars: Record<string, CharAPI_t>
 	plugins: Record<string, pluginAPI_t>
 	chat_summary: string
-	chat_scoped_char_memory: {}
-	extension: {}
+	chat_scoped_char_memory: object
+	extension: object
 }
 
 export class chatLogEntry_t {

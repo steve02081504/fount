@@ -14,7 +14,7 @@ export class AIsource_t<InputType, OutputType> {
 	type: 'text-chat' | string
 	info: info_t
 	is_paid: boolean
-	extension: {}
+	extension: object
 
 	Unload: () => Promise<void>
 	Call: (prompt: InputType) => OutputType
