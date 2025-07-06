@@ -215,26 +215,48 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 				}
 			}
 
+			async function sendSplitReply(fountReply) {
+				const MAX_FILES_PER_MESSAGE = 10
+				const filesToSend = (fountReply.files || []).map(f => ({ attachment: f.buffer, name: f.name, description: f.description }))
+				const textChunks = splitDiscordReply(fountReply.content || '')
+
+				const fileChunks = []
+				for (let i = 0; i < filesToSend.length; i += MAX_FILES_PER_MESSAGE)
+					fileChunks.push(filesToSend.slice(i, i + MAX_FILES_PER_MESSAGE))
+
+
+				if (textChunks.length === 0 && fileChunks.length === 0) return // 无任何内容，不发送
+
+				// 1. 发送所有文本消息。最后一个文本块会带上第一个文件块（如果存在）。
+				for (let i = 0; i < textChunks.length; i++) {
+					const isLastTextMessage = i === textChunks.length - 1
+					const payload = { content: textChunks[i] }
+
+					// 核心：如果是最后一个文本块，并且有文件要发送，则附加第一个文件块
+					if (isLastTextMessage && fileChunks.length > 0)
+						payload.files = fileChunks.shift() // 附加并从待处理队列中移除
+
+
+					const isLastOverallMessage = isLastTextMessage && fileChunks.length === 0
+					await sendAndCache(payload, isLastOverallMessage ? fountReply : undefined)
+				}
+
+				// 2. 发送所有剩余的文件块。
+				// 这个循环会在以下情况执行：
+				// a) 根本没有文本，只有文件。
+				// b) 文本发送完毕后，还有剩余的文件块。
+				for (let i = 0; i < fileChunks.length; i++) {
+					const payload = { files: fileChunks[i] }
+					const isLastOverallMessage = i === fileChunks.length - 1
+					await sendAndCache(payload, isLastOverallMessage ? fountReply : undefined)
+				}
+			}
+
 			try {
 				const AddChatLogEntry = async (replyFromChar) => { // AI调用的中间消息发送函数
-					if (replyFromChar && (replyFromChar.content || replyFromChar.files?.length)) {
-						const discordPayload = {
-							content: replyFromChar.content || undefined,
-							files: (replyFromChar.files || []).map(f => ({ attachment: f.buffer, name: f.name, description: f.description })),
-						}
-						if (!discordPayload.content && !discordPayload.files?.length) return null
+					if (replyFromChar && (replyFromChar.content || replyFromChar.files?.length))
+						await sendSplitReply(replyFromChar)
 
-						const splitTexts = splitDiscordReply(discordPayload.content || '')
-						if (splitTexts.length === 0 && discordPayload.files.length > 0)  // 只有文件
-							await sendAndCache({ files: discordPayload.files }, replyFromChar)
-						else
-							for (let i = 0; i < splitTexts.length; i++) {
-								const currentPartPayload = { content: splitTexts[i] }
-								const isLastPart = i === splitTexts.length - 1
-								if (isLastPart && discordPayload.files.length > 0) currentPartPayload.files = discordPayload.files
-								await sendAndCache(currentPartPayload, isLastPart ? replyFromChar : undefined)
-							}
-					}
 					return null
 				}
 
@@ -254,25 +276,8 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 
 				const aiFinalReply = await charAPI.interfaces.chat.GetReply(generateChatReplyRequest())
 
-				if (aiFinalReply && (aiFinalReply.content || aiFinalReply.files?.length)) {
-					const finalDiscordPayload = {
-						content: aiFinalReply.content || undefined,
-						files: (aiFinalReply.files || []).map(f => ({ attachment: f.buffer, name: f.name, description: f.description })),
-					}
-					if (!finalDiscordPayload.content && !finalDiscordPayload.files?.length) { /* AI回复为空，不处理 */ }
-					else {
-						const splitTexts = splitDiscordReply(finalDiscordPayload.content || '')
-						if (splitTexts.length === 0 && finalDiscordPayload.files.length > 0)
-							await sendAndCache({ files: finalDiscordPayload.files }, aiFinalReply)
-						else
-							for (let i = 0; i < splitTexts.length; i++) {
-								const currentPartPayload = { content: splitTexts[i] }
-								const isLastPart = i === splitTexts.length - 1
-								if (isLastPart && finalDiscordPayload.files.length > 0) currentPartPayload.files = finalDiscordPayload.files
-								await sendAndCache(currentPartPayload, isLastPart ? aiFinalReply : undefined)
-							}
-					}
-				}
+				if (aiFinalReply && (aiFinalReply.content || aiFinalReply.files?.length))
+					await sendSplitReply(aiFinalReply)
 			} catch (error) {
 				console.error(`[SimpleDiscord] Error in DoMessageReply for message ${triggerMessage.id} in channel ${channelId}:`, error)
 				try {
