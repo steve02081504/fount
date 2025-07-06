@@ -63,7 +63,8 @@ export function setEndpoints(router) {
 	})
 
 	router.post('/api/shells/chat/triggercharreply', async (req, res) => {
-		res.status(200).json(await (await triggerCharReply(req.body.chatid, req.body.charname))?.toData?.())
+		const { username } = await getUserByReq(req)
+		res.status(200).json(await (await triggerCharReply(req.body.chatid, req.body.charname))?.toData?.(username))
 	})
 
 	router.post('/api/shells/chat/setcharreplyfrequency', authenticate, async (req, res) => {
@@ -73,12 +74,13 @@ export function setEndpoints(router) {
 	})
 
 	router.post('/api/shells/chat/adduserreply', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
 		const { reply } = req.body
 		reply.files = reply?.files?.map((file) => ({
 			...file,
 			buffer: Buffer.from(file.buffer, 'base64')
 		}))
-		res.status(200).json(await (await addUserReply(req.body.chatid, req.body.reply)).toData())
+		res.status(200).json(await (await addUserReply(req.body.chatid, req.body.reply)).toData(username))
 	})
 
 	router.post('/api/shells/chat/modifytimeline', authenticate, async (req, res) => {
@@ -109,10 +111,11 @@ export function setEndpoints(router) {
 	})
 
 	router.get('/api/shells/chat/getchatlog', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
 		const { chatid, start, end } = req.query
 		const startNum = parseInt(start, 10)
 		const endNum = parseInt(end, 10)
-		res.status(200).json(await GetChatLog(chatid, startNum, endNum).then((log) => Promise.all(log.map((entry) => entry.toData()))))
+		res.status(200).json(await GetChatLog(chatid, startNum, endNum).then((log) => Promise.all(log.map((entry) => entry.toData(username)))))
 	})
 
 	router.get('/api/shells/chat/heartbeat', authenticate, async (req, res) => {
