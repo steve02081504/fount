@@ -81,3 +81,8 @@ export class chatLogEntry_t {
 	}
 }
 export type chatLog_t = chatLogEntry_t[];
+
+export class chatMetadata {
+	chatLog: chatLogEntry_t[];
+	version: number;
+}
