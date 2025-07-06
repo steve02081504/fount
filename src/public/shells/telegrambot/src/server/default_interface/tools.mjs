@@ -299,7 +299,7 @@ export async function TelegramMessageToFountChatLogEntry(ctx, messageHolder, bot
 		content,
 		files: cachedAIReply?.files?.length ? cachedAIReply.files : files,
 		extension: {
-			...cachedAIReply?.extension || {},
+			...cachedAIReply?.extension,
 			platform: 'telegram',
 			platform_message_ids: [message.message_id],
 			platform_channel_id: chat.id,

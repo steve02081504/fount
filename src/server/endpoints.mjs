@@ -105,7 +105,7 @@ export function registerEndpoints(router) {
 			const response = await fetch(targetUrl, {
 				method: req.method,
 				headers: forwardedHeaders,
-				body: req.body && JSON.stringify(req.body),
+				body: req.method == 'GET' ? undefined : req.body && JSON.stringify(req.body),
 				redirect: 'manual'
 			})
 

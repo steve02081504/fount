@@ -16,6 +16,7 @@ export function is_local_ip_from_req(req) {
 	return is_local_ip(req.ip)
 }
 
+/* global Deno */
 export function get_local_ip() {
 	const interfaces = Deno.networkInterfaces()
 	return (

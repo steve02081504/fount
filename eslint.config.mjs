@@ -4,6 +4,7 @@ import html from 'npm:eslint-plugin-html'
 import destructuringMerge from 'npm:eslint-plugin-destructuring-merge'
 import removeDuplicates from 'npm:eslint-plugin-remove-duplicates'
 import tseslint from 'npm:typescript-eslint'
+import decled_globals from 'npm:globals'
 
 const commonPlugins = {
 	'optimize-regex': optimizeRegex,
@@ -14,6 +15,7 @@ const commonPlugins = {
 
 const commonRules = {
 	'remove-duplicates/remove-array-duplicates': ['error'],
+	'no-undef': ['error'],
 	semi: ['error', 'never'],
 	'no-duplicate-imports': ['error'],
 	curly: ['error', 'multi'],
@@ -47,11 +49,14 @@ const commonRules = {
 	'destructuring-merge/destructuring-merge': 'warn',
 }
 
+const globals = {
+	...decled_globals.browser,
+	'process': 'readonly',
+}
+
 export default [
 	{
 		ignores: ['**/dist/*'],
-	},
-	{
 		files: ['**/*.js', '**/*.mjs', '**/*.cjs', '**/*.html'],
 		plugins: {
 			...commonPlugins,
@@ -59,10 +64,12 @@ export default [
 		},
 		languageOptions: {
 			ecmaVersion: 'latest',
+			globals,
 		},
 		rules: commonRules,
 	},
 	{
+		ignores: ['**/dist/*'],
 		files: ['**/*.ts', '**/*.tsx'],
 		plugins: {
 			...commonPlugins,
@@ -71,6 +78,7 @@ export default [
 		languageOptions: {
 			ecmaVersion: 'latest',
 			parser: tseslint.parser,
+			globals,
 		},
 		rules: {
 			...commonRules,

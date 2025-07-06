@@ -51,7 +51,7 @@ export async function encodeRPack(datas) {
 		const ptr0 = passArray8ToWasm0(datas, wasm.__wbindgen_malloc)
 		const len0 = WASM_VECTOR_LEN
 		wasm.encode(retptr, ptr0, len0)
-		const r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true)
+		const r0 = getDataViewMemory0().getInt32(retptr, true)
 		const r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true)
 		const v2 = getArrayU8FromWasm0(r0, r1).slice()
 		wasm.__wbindgen_free(r0, r1 * 1, 1)
@@ -72,7 +72,7 @@ export async function decodeRPack(datas) {
 		const ptr0 = passArray8ToWasm0(datas, wasm.__wbindgen_malloc)
 		const len0 = WASM_VECTOR_LEN
 		wasm.decode(retptr, ptr0, len0)
-		const r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true)
+		const r0 = getDataViewMemory0().getInt32(retptr, true)
 		const r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true)
 		const v2 = getArrayU8FromWasm0(r0, r1).slice()
 		wasm.__wbindgen_free(r0, r1 * 1, 1)
