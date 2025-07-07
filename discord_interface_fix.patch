@@ -1,0 +1,11 @@
+--- Original code
++++ Fixed code
+@@ -212,7 +212,7 @@
+ 		)
+ 	})
+ 
+-	const originalAttachments = [...message.attachments.values(), ...message.messageSnapshots.flatMap(ref => [...ref.attachments.values()])]
++	const originalAttachments = [...message.attachments.values(), ...message.messageSnapshots.flatMap(ref => ref.attachments ? [...ref.attachments.values()] : [])]
+ 
+ 	originalAttachments.forEach(attachment => {
+ 		if (!attachment.url) {
