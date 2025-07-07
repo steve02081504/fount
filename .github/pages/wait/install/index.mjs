@@ -3,6 +3,7 @@ import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
 import { isFountServiceAvailable, saveFountHostUrl, getFountHostUrl } from '../../scripts/fountHostGetter.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
 import * as Sentry from 'https://esm.run/@sentry/browser'
+import { animateSVG } from 'https://cdn.jsdelivr.net/gh/steve02081504/animate-SVG/index.mjs'
 
 setBaseDir('../..')
 usingTemplates('wait/install/templates')
@@ -13,6 +14,63 @@ const launchButtonText = document.getElementById('launchButtonText')
 const launchButtonSpinner = document.getElementById('launchButtonSpinner')
 const footer = document.querySelector('.footer')
 const footerReadyText = document.getElementById('footerReadyText')
+
+// --- Hero Intro Animation ---
+async function playHeroAnimation() {
+	const heroElement = document.querySelector('.hero')
+	const animationContainer = document.getElementById('hero-animation-bg')
+	const heroOverlay = document.querySelector('.hero-overlay')
+	const heroContent = document.querySelector('.hero-content')
+
+	try {
+		// 1. 锁定滚动
+		document.body.classList.add('scroll-lock')
+
+		const response = await fetch('https://steve02081504.github.io/fount/imgs/repo-img.svg')
+		if (!response.ok) throw new Error(`Failed to load SVG: ${response.statusText}`)
+
+		const svgText = await response.text()
+		const svgElement = new DOMParser().parseFromString(svgText, 'image/svg+xml').documentElement
+
+		// 确保SVG preserveAspectRatio 与 object-fit: cover 行为匹配
+		svgElement.setAttribute('preserveAspectRatio', 'xMidYMid slice')
+
+		animationContainer.appendChild(svgElement)
+
+		// 播放动画并获取持续时间
+		animateSVG(svgElement)
+		const durationMs = 3100
+
+		// 动画结束后执行
+		setTimeout(() => {
+			// 1. 淡入 Hero 文字和遮罩
+			heroOverlay.classList.add('visible-after-intro')
+			heroContent.classList.add('visible-after-intro')
+
+			// 2. 加载最终的背景图
+			heroElement.classList.add('bg-image-loaded')
+
+			// 3. 淡出 SVG 动画
+			animationContainer.style.opacity = '0'
+
+			// 4. 解锁滚动
+			document.body.classList.remove('scroll-lock')
+
+			// 5. 在淡出动画后彻底移除SVG，释放资源
+			setTimeout(() => animationContainer.remove(), 800)
+		}, durationMs)
+	}
+	catch (error) {
+		console.error('Hero animation failed:', error)
+		// 如果动画失败，直接显示最终效果
+		heroOverlay.classList.add('visible-after-intro')
+		heroContent.classList.add('visible-after-intro')
+		heroElement.classList.add('bg-image-loaded')
+		animationContainer.remove()
+		// 确保在出错时也解锁滚动
+		document.body.classList.remove('scroll-lock')
+	}
+}
 
 // --- Theme Selection ---
 const themes = await import('https://cdn.jsdelivr.net/npm/daisyui/functions/themeOrder.js').then(m => m.default)
@@ -94,7 +152,12 @@ function handleThemeClick(previewElement, theme) {
 
 // --- Main Execution ---
 async function main() {
-	await initTranslations('installer_wait_screen')
+	// Start the intro animation and translations in parallel
+	await Promise.all([
+		initTranslations('installer_wait_screen'),
+		playHeroAnimation()
+	])
+
 	// Initial render
 	renderThemePreviews()
 
