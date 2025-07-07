@@ -7,6 +7,7 @@ on:
     paths:
       - '.github/pages/**'
       - 'src/locales/**'
+      - 'imgs/**'
     branches: ["master"]
 
   # Allows you to run this workflow manually from the Actions tab
@@ -35,7 +36,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Copy local files
-        run: cp -r ./src/locales ./.github/pages/
+        run: |
+          cp -r ./src/locales ./.github/pages/
+          cp -r ./imgs ./.github/pages/
       - name: Create locales list
         run: ls -1 ./src/locales | sed 's/\.json$//' | jq -R . | jq -s . > ./.github/pages/locales.json
       - name: Setup Pages
