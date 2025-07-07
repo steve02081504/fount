@@ -56,7 +56,7 @@ const globals = {
 
 export default [
 	{
-		ignores: ['**/dist/*'],
+		ignores: ['**/dist/*', '**/data/*'],
 		files: ['**/*.js', '**/*.mjs', '**/*.cjs', '**/*.html'],
 		plugins: {
 			...commonPlugins,
@@ -69,7 +69,7 @@ export default [
 		rules: commonRules,
 	},
 	{
-		ignores: ['**/dist/*'],
+		ignores: ['**/dist/*', '**/data/*'],
 		files: ['**/*.ts', '**/*.tsx'],
 		plugins: {
 			...commonPlugins,

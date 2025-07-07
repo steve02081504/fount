@@ -859,5 +859,19 @@
 			"confirmButton": "确认",
 			"cancelButton": "取消"
 		}
+	},
+	"badges_maker": {
+		"title": "fount! 徽章转换器",
+		"card_title": "Fount 徽章链接转换器",
+		"original_url_label": "粘贴 img.shields.io 网址",
+		"original_url_placeholder": "例如: https://img.shields.io/badge/Hello-World-blue",
+		"new_url_label": "生成的新网址",
+		"new_url_placeholder": "这里会显示转换后的网址",
+		"copy_button": "复制",
+		"preview_label": "效果预览",
+		"preview_alt": "徽章预览",
+		"copied_text": "已复制!",
+		"copy_error": "无法复制文本: ",
+		"copy_fail_alert": "复制失败！"
 	}
 }

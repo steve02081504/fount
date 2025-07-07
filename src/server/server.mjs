@@ -161,8 +161,16 @@ export async function init(start_config) {
 		mainRouter.use(express.static(__dirname + '/src/pages'))
 		mainRouter.use((req, res, next) => {
 			if (req.method != 'GET') return next()
-			if (req.path == '/apple-touch-icon.png' || req.path == '/apple-touch-icon-precomposed.png')
-				return res.sendFile(__dirname + '/src/pages/favicon.png')
+			switch (req.path) {
+				case '/favicon.ico':
+					return res.sendFile(__dirname + '/imgs/icon.ico')
+				case '/favicon.png':
+				case '/apple-touch-icon-precomposed.png':
+				case '/apple-touch-icon.png':
+					return res.sendFile(__dirname + '/imgs/icon.png')
+				case '/favicon.svg':
+					return res.sendFile(__dirname + '/imgs/icon.svg')
+			}
 			return next()
 		})
 		const { port, https: httpsConfig } = config // 获取 HTTPS 配置
