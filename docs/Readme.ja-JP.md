@@ -14,7 +14,7 @@
 
 [リポジトリのアーキテクチャについて知りたいですか？DeepWikiをチェックしてください！](https://deepwiki.com/steve02081504/fount)
 
-![repo img](https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa)
+![repo img](https://repository-images.githubusercontent.com/862251163/ef021bff-96a0-4e73-b3d0-7e7fbab660e8)
 
 あなたは、想像力のページから飛び出したキャラクター、夢の糸で織られた仲間との旅を切望したことはありませんか？
 

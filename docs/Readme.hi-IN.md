@@ -14,7 +14,7 @@
 
 [रिपॉजिटरी आर्किटेक्चर के बारे में जानना चाहते हैं? डीपविकि देखें!](https://deepwiki.com/steve02081504/fount)
 
-![repo img](https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa)
+![repo img](https://repository-images.githubusercontent.com/862251163/ef021bff-96a0-4e73-b3d0-7e7fbab660e8)
 
 क्या आपने कभी अपनी कल्पना के पन्नों से जन्मे किसी चरित्र के साथ यात्रा करने की लालसा की है, एक ऐसा साथी जो सपनों के धागों से बुना गया हो?
 

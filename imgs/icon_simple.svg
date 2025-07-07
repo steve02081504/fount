@@ -2,6 +2,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="2048" height="2048" viewBox="0 0 1000 1000">
 	<style>.B{fill:#011422}.C{fill-opacity:.35}</style>
 	<defs>
+		<linearGradient x1="500" y1="0" x2="500" y2="1000" id="A" href="#J">
+			<stop offset="0" stop-color="rgb(7.0588% 23.922% 36.471%)"/>
+			<stop offset="1" stop-color="rgb(0% 15.694% 27.463%)"/>
+		</linearGradient>
 		<linearGradient x1="-767.097" y1="671.252" x2="-767.097" y2="1008.418" id="B" href="#J">
 			<stop offset="0"/>
 			<stop offset="1" stop-color="#fff" stop-opacity="0"/>
@@ -30,6 +34,9 @@
 		<path id="I" d="M149.928 795.278h730.649v45.743H149.928z"/>
 		<linearGradient id="J" gradientUnits="userSpaceOnUse"/>
 	</defs>
+	<path d="M0 0h1000v1000H0z" stroke="#000" fill="url(#A)">
+		<title>back</title>
+	</path>
 	<g transform="matrix(.908637 0 0 .903759 31.805417 36.45068)">
 		<title>icon</title>
 		<g transform="translate(-.06)" class="C">

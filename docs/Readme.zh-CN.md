@@ -14,7 +14,7 @@
 
 [想知道项目仓库架构吗？快来看看 DeepWiki！](https://deepwiki.com/steve02081504/fount)
 
-![repo img](https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa)
+![repo img](https://repository-images.githubusercontent.com/862251163/ef021bff-96a0-4e73-b3d0-7e7fbab660e8)
 
 是否曾几何时，你渴望一位伙伴，从想象的织机上走下，由梦境编织而成？
 
