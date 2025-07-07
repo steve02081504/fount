@@ -14,7 +14,7 @@
 
 [Wanna know about the repo architecture? Check out DeepWiki!](https://deepwiki.com/steve02081504/fount)
 
-![repo img](https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa)
+![repo img](https://repository-images.githubusercontent.com/862251163/ef021bff-96a0-4e73-b3d0-7e7fbab660e8)
 
 [![English (United Kingdom)](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/United-Kingdom.png)](./docs/Readme.en-UK.md)
 [![日本語](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Japan.png)](./docs/Readme.ja-JP.md)

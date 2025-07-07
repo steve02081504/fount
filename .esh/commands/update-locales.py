@@ -366,20 +366,39 @@ def sync_common_key(dict_a, dict_b, key, lang_a, lang_b, reference_codes, path):
 def sync_unique_key(dict_has_key, dict_missing_key, lang_has_key, lang_missing_key, key, reference_codes, path):
 	"""
 	处理只存在于一个字典中的键。
-	- 如果缺失键的字典是参考语言，则从另一个字典中删除该键。
-	- 否则，将键从存在的字典翻译并添加到缺失的字典中。
+	- 核心思想：以 reference_codes 列表中的最高优先级语言为准。
+	- 如果一个键存在于高优先级语言中，而低优先级语言没有，则翻译并添加。
+	- 如果一个键存在于低优先级语言中，而高优先级语言没有，则删除。
 	"""
-	is_missing_dict_ref = lang_missing_key in reference_codes
+	try:
+		# 获取两种语言在参考列表中的优先级（索引越小，优先级越高）
+		# 如果语言不在列表中，给予一个极大的值，视为最低优先级
+		priority_has_key = reference_codes.index(lang_has_key)
+	except ValueError:
+		priority_has_key = float('inf')
 
-	# 如果目标语言（缺失键的语言）是参考语言，那么源语言（有键的语言）中存在一个多余的键，应删除
-	if is_missing_dict_ref:
-		print(f"  - 删除: 键 '{path}' 从 {lang_has_key} (不在参考语言 {lang_missing_key} 中)")
+	try:
+		priority_missing_key = reference_codes.index(lang_missing_key)
+	except ValueError:
+		priority_missing_key = float('inf')
+
+	# 逻辑判断：
+	# 1. 持有键的语言 (lang_has_key) 优先级更高
+	if priority_has_key < priority_missing_key:
+		# 这意味着 "源头" 语言有这个键，而目标语言没有。应该翻译。
+		return handle_missing_key_translation(dict_missing_key, dict_has_key, key, lang_missing_key, lang_has_key, path)
+
+	# 2. 缺失键的语言 (lang_missing_key) 优先级更高
+	elif priority_missing_key < priority_has_key:
+		# 这意味着 "源头" 语言没有这个键，而一个非源头语言却有。这是多余的，应该删除。
+		print(f"  - 删除: 键 '{path}' 从 {lang_has_key} (因为它不在更高优先级的参考语言 {lang_missing_key} 中)")
 		del dict_has_key[key]
 		return True
 
-	# 否则，进行翻译并添加
-	return handle_missing_key_translation(dict_missing_key, dict_has_key, key, lang_missing_key, lang_has_key, path)
-
+	# 3. 优先级相同或两者都不在参考列表中（例如两个非参考语言之间的比较）
+	# 在这种模糊情况下，我们默认采取更安全的操作：翻译并添加，而不是删除。
+	else:
+		return handle_missing_key_translation(dict_missing_key, dict_has_key, key, lang_missing_key, lang_has_key, path)
 
 def normalize_and_sync_dicts(
 	dict_a,

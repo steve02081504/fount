@@ -14,7 +14,7 @@
 
 [Want to know about the repository architecture? Check out DeepWiki!](https://deepwiki.com/steve02081504/fount)
 
-![repo img](https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa)
+![repo img](https://repository-images.githubusercontent.com/862251163/ef021bff-96a0-4e73-b3d0-7e7fbab660e8)
 
 Have you ever yearned for a journey alongside a character sprung from the pages of your imagination, a companion woven from the threads of dreams?
 

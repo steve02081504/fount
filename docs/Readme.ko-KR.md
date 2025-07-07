@@ -14,7 +14,7 @@
 
 [리포지토리 아키텍처에 대해 알고 싶으신가요? DeepWiki를 확인하세요!](https://deepwiki.com/steve02081504/fount)
 
-![repo img](https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa)
+![repo img](https://repository-images.githubusercontent.com/862251163/ef021bff-96a0-4e73-b3d0-7e7fbab660e8)
 
 상상 속 페이지에서 튀어나온 캐릭터, 꿈의 실로 엮은 동반자와 함께하는 여정을 갈망해 본 적 있나요?
 

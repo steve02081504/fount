@@ -14,7 +14,7 @@
 
 [Bạn muốn biết về kiến trúc kho lưu trữ? Hãy xem DeepWiki!](https://deepwiki.com/steve02081504/fount)
 
-![repo img](https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa)
+![repo img](https://repository-images.githubusercontent.com/862251163/ef021bff-96a0-4e73-b3d0-7e7fbab660e8)
 
 Bạn đã bao giờ khao khát một cuộc hành trình bên cạnh một nhân vật bước ra từ trang sách tưởng tượng, một người bạn đồng hành được dệt nên từ những giấc mơ?
 

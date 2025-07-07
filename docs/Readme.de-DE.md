@@ -14,7 +14,7 @@
 
 [Möchtest du mehr über die Repo-Architektur erfahren? Schau dir DeepWiki an!](https://deepwiki.com/steve02081504/fount)
 
-![repo img](https://repository-images.githubusercontent.com/862251163/3b57d9ea-ab18-4b70-b11d-f74c764016aa)
+![repo img](https://repository-images.githubusercontent.com/862251163/ef021bff-96a0-4e73-b3d0-7e7fbab660e8)
 
 Hast du dich jemals nach einer Reise an der Seite eines Charakters gesehnt, der den Seiten deiner Fantasie entsprungen ist, einem Gefährten, der aus den Fäden von Träumen gewoben wurde?
 
