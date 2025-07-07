@@ -859,5 +859,19 @@
 			"confirmButton": "Xác nhận",
 			"cancelButton": "Hủy"
 		}
+	},
+	"badges_maker": {
+		"title": "Fount! Bộ chuyển đổi huy hiệu",
+		"card_title": "Bộ chuyển đổi liên kết huy hiệu Fount",
+		"original_url_label": "Dán IMG.Shields.io URL",
+		"original_url_placeholder": "Ví dụ: https://img.shields.io/badge/hello-world-blue",
+		"new_url_label": "URL mới được tạo",
+		"new_url_placeholder": "URL được chuyển đổi sẽ được hiển thị tại đây",
+		"copy_button": "sao chép",
+		"preview_label": "Xem trước hiệu ứng",
+		"preview_alt": "Xem trước huy hiệu",
+		"copied_text": "Đã sao chép!",
+		"copy_error": "Không thể sao chép văn bản:",
+		"copy_fail_alert": "Sao chép không thành công!"
 	}
 }

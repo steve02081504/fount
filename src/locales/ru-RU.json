@@ -859,5 +859,19 @@
 			"confirmButton": "Подтвердить",
 			"cancelButton": "Отмена"
 		}
+	},
+	"badges_maker": {
+		"title": "Вернут! Конвертер значков",
+		"card_title": "Конвертер ссылок на фонд значков",
+		"original_url_label": "Вставьте img.shields.io url",
+		"original_url_placeholder": "Например: https://img.shields.io/badge/hello-world-blue",
+		"new_url_label": "Сгенерированный новый URL",
+		"new_url_placeholder": "Конвертированный URL будет отображаться здесь",
+		"copy_button": "копия",
+		"preview_label": "Предварительный просмотр эффекта",
+		"preview_alt": "Предварительный просмотр значков",
+		"copied_text": "Копировано!",
+		"copy_error": "Невозможно скопировать текст:",
+		"copy_fail_alert": "Копия не удалась!"
 	}
 }

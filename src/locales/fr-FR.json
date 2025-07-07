@@ -859,5 +859,19 @@
 			"confirmButton": "Confirmer",
 			"cancelButton": "Annuler"
 		}
+	},
+	"badges_maker": {
+		"title": "source! Convertisseur de badge",
+		"card_title": "Convertisseur de liaison de badge de fontaine",
+		"original_url_label": "Pâtez iMg.shields.io URL",
+		"original_url_placeholder": "Par exemple: https://img.shields.io/badge/hello-world-blue",
+		"new_url_label": "La nouvelle URL générée",
+		"new_url_placeholder": "L'URL convertie sera affichée ici",
+		"copy_button": "copie",
+		"preview_label": "Aperçu de l'effet",
+		"preview_alt": "Aperçu du badge",
+		"copied_text": "Copie!",
+		"copy_error": "Impossible de copier le texte:",
+		"copy_fail_alert": "Copie a échoué!"
 	}
 }

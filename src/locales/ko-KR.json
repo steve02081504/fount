@@ -859,5 +859,19 @@
 			"confirmButton": "확인",
 			"cancelButton": "취소"
 		}
+	},
+	"badges_maker": {
+		"title": "세례반! 배지 변환기",
+		"card_title": "배지 링크 컨버터",
+		"original_url_label": "IMG.Shields.io URL을 붙여 넣습니다",
+		"original_url_placeholder": "예 : https://img.shields.io/badge/hello-world-blue",
+		"new_url_label": "생성 된 새로운 URL",
+		"new_url_placeholder": "변환 된 URL이 여기에 표시됩니다",
+		"copy_button": "복사",
+		"preview_label": "효과 미리보기",
+		"preview_alt": "배지 미리보기",
+		"copied_text": "사본!",
+		"copy_error": "텍스트를 복사 할 수 없습니다 :",
+		"copy_fail_alert": "복사 실패!"
 	}
 }

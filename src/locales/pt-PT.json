@@ -859,5 +859,19 @@
 			"confirmButton": "Confirmar",
 			"cancelButton": "Cancelar"
 		}
+	},
+	"badges_maker": {
+		"title": "fonte! Conversor de crachá",
+		"card_title": "Conversor de link para emblemas da fonte",
+		"original_url_label": "Colar img.shields.io url",
+		"original_url_placeholder": "Por exemplo: https://img.shields.io/badge/hello-world-blue",
+		"new_url_label": "O novo URL gerado",
+		"new_url_placeholder": "O URL convertido será exibido aqui",
+		"copy_button": "cópia",
+		"preview_label": "Visualização de efeito",
+		"preview_alt": "Visualização de crachá",
+		"copied_text": "Copiado!",
+		"copy_error": "Incapaz de copiar o texto:",
+		"copy_fail_alert": "A cópia falhou!"
 	}
 }

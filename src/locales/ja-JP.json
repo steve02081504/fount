@@ -859,5 +859,19 @@
 			"confirmButton": "確認",
 			"cancelButton": "キャンセル"
 		}
+	},
+	"badges_maker": {
+		"title": "噴水！バッジコンバーター",
+		"card_title": "ファウントバッジリンクコンバーター",
+		"original_url_label": "IMG.Shields.io URLを貼り付けます",
+		"original_url_placeholder": "例：https：//img.shields.io/badge/hello-world-blue",
+		"new_url_label": "生成された新しいURL",
+		"new_url_placeholder": "変換されたURLはここに表示されます",
+		"copy_button": "コピー",
+		"preview_label": "効果プレビュー",
+		"preview_alt": "バッジプレビュー",
+		"copied_text": "コピー！",
+		"copy_error": "テキストをコピーできません：",
+		"copy_fail_alert": "コピーが失敗しました！"
 	}
 }
