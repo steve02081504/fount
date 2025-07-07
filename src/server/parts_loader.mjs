@@ -171,7 +171,12 @@ export async function baseloadPart(username, parttype, partname, {
 		}
 		fs.readdirSync(templatePath).forEach(mapper)
 	}
-	return await Loader(path)
+	return await Promise.resolve(Loader(path)).catch((e) => {
+		const parts_details_cache = loadData(username, 'parts_details_cache')
+		if (parts_details_cache[parttype]?.[partname]) delete parts_details_cache[parttype][partname]
+		saveData(username, 'parts_details_cache')
+		throw e
+	})
 }
 
 export async function baseMjsPartUnloader(path) {
@@ -288,12 +293,9 @@ export async function loadPartBase(username, parttype, partname, Initargs, {
 		if (parts_set[username][parttype][partname] instanceof Promise)
 			parts_set[username][parttype][partname] = await parts_set[username][parttype][partname]
 	}
-	catch (error) {
-		console.log(username, parttype, partname)
-		console.trace()
-		throw error
+	finally {
+		setDefaultStuff()
 	}
-	setDefaultStuff()
 	return new FullProxy(() => parts_set[username][parttype][partname])
 }
 
