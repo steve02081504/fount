@@ -859,5 +859,19 @@
 			"confirmButton": "Confirmar",
 			"cancelButton": "Cancelar"
 		}
+	},
+	"badges_maker": {
+		"title": "¡fuente! Convertidor de insignia",
+		"card_title": "Convertidor de enlace de insignia de fuente",
+		"original_url_label": "Pegar img.shields.io URL",
+		"original_url_placeholder": "Por ejemplo: https://img.shields.io/badge/hello-world-blue",
+		"new_url_label": "La nueva URL generada",
+		"new_url_placeholder": "La URL convertida se mostrará aquí",
+		"copy_button": "Copiar",
+		"preview_label": "Vista previa de efectos",
+		"preview_alt": "Vista previa de la insignia",
+		"copied_text": "¡Combinado!",
+		"copy_error": "No se puede copiar texto:",
+		"copy_fail_alert": "¡Copia falló!"
 	}
 }

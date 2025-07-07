@@ -859,5 +859,19 @@
 			"confirmButton": "पुष्टि करें",
 			"cancelButton": "रद्द करें"
 		}
+	},
+	"badges_maker": {
+		"title": "फव्वारा! बैज कनवर्टर",
+		"card_title": "फाउंट बैज लिंक कनवर्टर",
+		"original_url_label": "पेस्ट img.shields.io url",
+		"original_url_placeholder": "उदाहरण के लिए: https://img.shields.io/badge/hello-world-blue",
+		"new_url_label": "उत्पन्न नया URL",
+		"new_url_placeholder": "परिवर्तित URL यहां प्रदर्शित किया जाएगा",
+		"copy_button": "कॉपी",
+		"preview_label": "प्रभाव पूर्वावलोकन",
+		"preview_alt": "बैज पूर्वावलोकन",
+		"copied_text": "कॉपी!",
+		"copy_error": "पाठ को कॉपी करने में असमर्थ:",
+		"copy_fail_alert": "कॉपी विफल!"
 	}
 }
