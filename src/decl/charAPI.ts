@@ -70,6 +70,7 @@ export class CharAPI_t {
 			Partials?: DiscordPartials[]
 			OnceClientReady: (client: DiscordClient, config: any) => Promise<void>
 			GetBotConfigTemplate: () => Promise<any>
+			login: (token: string) => Promise<void>
 		},
 		telegram?: {
 			BotSetup?: (bot: Telegraf, config: any) => Promise<void>;
