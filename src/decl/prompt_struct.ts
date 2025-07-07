@@ -25,6 +25,7 @@ export interface chatLogEntry_t {
 		mime_type: string
 		buffer: Buffer
 		description: string
+		extension?: object
 	}[]
 	extension: object
 }

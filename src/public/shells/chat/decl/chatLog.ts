@@ -67,6 +67,7 @@ export class chatLogEntry_t {
 		mime_type: string;
 		buffer: Buffer;
 		description: string;
+		extension?: object;
 	}[]
 	logContextBefore: chatLogEntry_t[] // 内容会被展开到此信息前
 	logContextAfter: chatLogEntry_t[] // 展开到其后
