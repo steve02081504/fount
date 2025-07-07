@@ -2,6 +2,63 @@ body {
 	scroll-behavior: smooth;
 }
 
+body.scroll-lock {
+	overflow: hidden;
+}
+
+/* === Hero 动画和过渡样式 === */
+.hero {
+	position: relative;
+}
+
+.hero.bg-image-loaded {
+	background-image: url(https://repository-images.githubusercontent.com/862251163/ef021bff-96a0-4e73-b3d0-7e7fbab660e8);
+	/* 确保背景图的显示方式与SVG的模拟方式一致 */
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	/* 添加过渡效果 */
+	transition: background-image 0.8s ease-in;
+}
+
+/* SVG动画的容器 */
+#hero-animation-bg {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	display: flex; /* 保持flex以便居中 */
+	align-items: center;
+	justify-content: center;
+	transition: opacity 0.8s ease-in;
+	overflow: hidden;
+}
+
+#hero-animation-bg svg {
+	/* SVG将尽可能大地填充容器，同时保持其宽高比，可能会被裁切 */
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	/* 确保SVG在容器内居中，这与 background-position: center 对应 */
+	object-position: center;
+}
+
+/* Hero's overlay and content */
+.hero .hero-overlay,
+.hero .hero-content {
+	position: relative;
+	z-index: 2; /* Ensures it's above the SVG animation */
+	opacity: 0; /* Initially transparent */
+	transition: opacity 0.8s ease-in; /* Ready for fade-in effect */
+}
+
+/* Class to make elements visible after the animation */
+.visible-after-intro {
+	opacity: 1 !important; /* !important ensures it overrides daisyUI's bg-opacity-60 */
+}
+
+/* === End: Hero Animation Styles === */
+
+
 .content-wrapper {
 	/* Adjust padding to accommodate the footer and theme selector */
 	padding-bottom: 200px;
