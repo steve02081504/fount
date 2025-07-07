@@ -8,16 +8,12 @@ Sentry.init({
 	sendDefaultPii: true,
 	tunnel: '/api/sentrytunnel',
 	integrations: [
-		// Sentry.replayIntegration(),
 		Sentry.browserTracingIntegration(),
 		Sentry.browserProfilingIntegration()
 	],
 	// Performance Monitoring
 	tracesSampleRate: 1.0,
 	tracePropagationTargets: [window.location.origin || 'localhost'],
-	// Session Replay
-	replaysSessionSampleRate: 0.1,
-	replaysOnErrorSampleRate: 1.0,
 	// Profiling
 	profilesSampleRate: 1.0,
 	// Logging
