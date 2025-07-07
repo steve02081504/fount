@@ -1,4 +1,8 @@
-﻿$FOUNT_DIR = Split-Path -Parent $PSScriptRoot
+param(
+    [switch]$NoTray
+)
+
+$FOUNT_DIR = Split-Path -Parent $PSScriptRoot
 
 $ErrorCount = $Error.Count
 
@@ -408,7 +412,7 @@ function isRoot {
 	}
 }
 function run {
-	if ($IsWindows) {
+	if ($IsWindows -and !$NoTray) {
 		Get-Process tray_windows_release -ErrorAction Ignore | Where-Object { $_.CPU -gt 0.5 } | Stop-Process
 	}
 	if (isRoot) {
