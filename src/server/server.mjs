@@ -20,6 +20,7 @@ import { ReStartJobs } from './jobs.mjs'
 import { startTimerHeartbeat } from './timers.mjs'
 import supportsAnsi from 'npm:supports-ansi'
 import { loadJsonFile, saveJsonFile } from '../scripts/json_loader.mjs'
+import { nicerWriteFileSync } from '../../data/users/steve02081504/chars/GentianAphrodite/scripts/tools.mjs'
 
 export { __dirname }
 const app = express()
@@ -140,22 +141,35 @@ export let tray
 
 export async function init(start_config) {
 	data_path = start_config.data_path
-	const { starts } = start_config
-	if (starts?.Base ?? true) {
+	const starts = start_config.starts ?? {}
+	for (const start in ['Base', 'IPC', 'Web', 'Tray', 'DiscordIPC']) starts[start] ??= true
+	if (starts.Base) {
 		console.freshLine('server start', await geti18n('fountConsole.server.start'))
 		process.on('error', console.log)
 		process.on('unhandledRejection', console.log)
 	}
 
 	config = get_config()
-	if (starts?.Base ?? true) initAuth()
+	if (starts.Base) initAuth()
 
-	if (starts?.IPC ?? true) {
+	if (starts.IPC) {
 		const { IPCManager } = await import('./ipc_server.mjs')
 		if (!await new IPCManager().startServer()) return false
 	}
+	let iconPromise
+	if (starts.Tray || starts.Web || !fs.existsSync(__dirname + '/src/pages/favicon.ico'))
+		iconPromise = (async () => {
+			const { render: resvg } = await import('https://deno.land/x/resvg_wasm/mod.ts')
+			const { default: pngToIco } = await import('npm:png-to-ico')
+			const { Buffer } = await import('node:buffer')
+			const svg = fs.readFileSync(__dirname + '/imgs/icon.svg', 'utf-8')
+			const favpngbuf = await resvg(svg).then((buffer) => Buffer.from(buffer))
+			nicerWriteFileSync(__dirname + '/src/pages/favicon.png', favpngbuf)
+			const favicobuf = await pngToIco(favpngbuf)
+			nicerWriteFileSync(__dirname + '/src/pages/favicon.ico', favicobuf)
+		})()
 
-	if (starts?.Web ?? true) {
+	if (starts.Web) {
 		hosturl = 'http://localhost:' + config.port
 		console.freshLine('server start', await geti18n('fountConsole.server.starting'))
 		const { registerEndpoints } = await import('./endpoints.mjs')
@@ -164,12 +178,9 @@ export async function init(start_config) {
 		mainRouter.use((req, res, next) => {
 			if (req.method != 'GET') return next()
 			switch (req.path) {
-				case '/favicon.ico':
-					return res.sendFile(__dirname + '/imgs/icon.ico')
-				case '/favicon.png':
 				case '/apple-touch-icon-precomposed.png':
 				case '/apple-touch-icon.png':
-					return res.sendFile(__dirname + '/imgs/icon.png')
+					return res.sendFile(__dirname + '/src/pages/favicon.png')
 				case '/favicon.svg':
 					return res.sendFile(__dirname + '/imgs/icon.svg')
 			}
@@ -204,11 +215,11 @@ export async function init(start_config) {
 		})
 	}
 
-	if (starts?.Base ?? true) {
+	if (starts.Tray) iconPromise.then(() => createTray()).then(t => tray = t)
+	if (starts.Base) {
 		console.freshLine('server start', await geti18n('fountConsole.server.ready'))
 		const titleBackup = process.title
 		on_shutdown(() => setWindowTitle(titleBackup))
-		if (starts?.Tray ?? true) createTray().then(t => tray = t)
 		setDefaultStuff()
 		ReStartJobs()
 		startTimerHeartbeat()
@@ -218,6 +229,6 @@ export async function init(start_config) {
 	console.log(await geti18n('fountConsole.server.usesdTime', {
 		time: (endtime - startTime) / 1000
 	}))
-	if (starts?.DiscordRPC ?? true) StartRPC()
+	if (starts.DiscordRPC) StartRPC()
 	return true
 }

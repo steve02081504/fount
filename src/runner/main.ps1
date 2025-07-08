@@ -1,5 +1,5 @@
 #!pwsh
-#_pragma icon $PSScriptRoot/../../imgs/icon.ico
+#_pragma icon $PSScriptRoot/../../src/pages/favicon.ico
 #_pragma title "fount"
 
 if (!$env:FOUNT_BRANCH) {
