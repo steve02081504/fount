@@ -1,166 +1,200 @@
-import { applyTheme } from '../../scripts/theme.mjs'
-applyTheme()
+// src/public/shells/tutorial/index.mjs
 
-import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
-import { svgInliner } from '../../scripts/svgInliner.mjs'
-/* global confetti */
+// Event listeners, progress bar updates, end screen logic
 
-const tutorialModal = document.getElementById('tutorialModal')
-const startTutorialBtn = document.getElementById('startTutorial')
-const progressBar = document.getElementById('progressBar')
-const progressText = document.getElementById('progressText')
-const tutorialEnd = document.getElementById('tutorialEnd')
-const progress = progressBar.querySelector('.progress')
-const skipButton = document.getElementById('skipButton')
-const endButton = document.getElementById('endButton')
+import { getText } from '/base.mjs';
 
-const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent)
-let progressValue = 0
-let clickCount = 0
+// Tutorial state
+let tutorialProgress = 0;
+let tutorialSteps = [];
+let currentStep = 0;
+let isRunning = false;
 
-function launchConfetti() {
-	confetti({
-		particleCount: 100,
-		spread: 70,
-		origin: { y: 0.6 }
-	})
-}
+// DOM elements
+let tutorialModal;
+let progressBar;
+let progressElement;
+let progressText;
+let tutorialEnd;
+let startButton;
+let skipButton;
+let endButton;
 
-function resetProgress() {
-	progressValue = 0
-	clickCount = 0
-	progress.value = progressValue
-	progressText.innerText = ''
-}
+// Initialize DOM references
+const initDOMElements = () => {
+	tutorialModal = document.getElementById('tutorialModal');
+	progressBar = document.getElementById('progressBar');
+	progressElement = progressBar?.querySelector('progress');
+	progressText = document.getElementById('progressText');
+	tutorialEnd = document.getElementById('tutorialEnd');
+	startButton = document.getElementById('startTutorial');
+	skipButton = document.getElementById('skipButton');
+	endButton = document.getElementById('endButton');
+};
 
-function showProgressBar(message) {
-	progressBar.classList.remove('hidden')
-	progressText.innerHTML = message
-	svgInliner(progressBar)
-}
+// Define tutorial steps
+const initTutorialSteps = () => {
+	tutorialSteps = [
+		{
+			title: getText('tutorial.steps.welcome.title', 'Welcome to Fount'),
+			description: getText('tutorial.steps.welcome.description', 'Let\'s explore the features together!'),
+			duration: 2000
+		},
+		{
+			title: getText('tutorial.steps.navigation.title', 'Navigation'),
+			description: getText('tutorial.steps.navigation.description', 'Learn how to navigate through the interface'),
+			duration: 3000
+		},
+		{
+			title: getText('tutorial.steps.features.title', 'Key Features'),
+			description: getText('tutorial.steps.features.description', 'Discover the main capabilities of Fount'),
+			duration: 3000
+		},
+		{
+			title: getText('tutorial.steps.customization.title', 'Customization'),
+			description: getText('tutorial.steps.customization.description', 'Personalize your experience'),
+			duration: 2500
+		},
+		{
+			title: getText('tutorial.steps.completion.title', 'Tutorial Complete'),
+			description: getText('tutorial.steps.completion.description', 'You\'re ready to start using Fount!'),
+			duration: 2000
+		}
+	];
+};
 
-function hideProgressBar() {
-	progressBar.classList.add('hidden')
-}
-
-function showTutorialEnd() {
-	tutorialEnd.classList.remove('hidden')
-}
-
-function hideTutorialEnd() {
-	tutorialEnd.classList.add('hidden')
-}
-
-function startMouseTutorial() {
-	resetProgress()
-	const message = geti18n('tutorial.progressMessages.mouseMove', {
-		mouseIcon: '<img src="https://api.iconify.design/ph/mouse.svg" class="text-icon inline">',
-	})
-	showProgressBar(message)
-
-	document.addEventListener('mousemove', handleMouseMove)
-}
-
-function handleMouseMove() {
-	progressValue += 10
-	progress.value = progressValue
-
-	if (progressValue >= 100) {
-		document.removeEventListener('mousemove', handleMouseMove)
-		launchConfetti()
-		setTimeout(startKeyboardTutorial, 1000)
+// Update progress bar
+const updateProgress = (step, total) => {
+	if (!progressElement || !progressText) return;
+	
+	const percentage = Math.round((step / total) * 100);
+	progressElement.value = percentage;
+	progressElement.max = 100;
+	
+	const currentStepData = tutorialSteps[step - 1];
+	if (currentStepData) {
+		progressText.textContent = `${step}/${total}: ${currentStepData.title}`;
+	} else {
+		progressText.textContent = `${percentage}%`;
 	}
-}
+};
 
-function startKeyboardTutorial() {
-	resetProgress()
-	const message = geti18n('tutorial.progressMessages.keyboardPress', {
-		keyboardIcon: '<img src="https://api.iconify.design/ph/keyboard.svg" class="text-icon inline">',
-	})
-	showProgressBar(message)
-
-	document.addEventListener('keydown', handleKeyDown)
-}
-
-function handleKeyDown() {
-	clickCount++
-	progressValue += 5
-	progress.value = progressValue
-
-	if (clickCount >= 20) {
-		document.removeEventListener('keydown', handleKeyDown)
-		hideProgressBar()
-		launchConfetti()
-		setTimeout(showTutorialEnd, 1000)
+// Show tutorial end screen
+const showEndScreen = () => {
+	if (!progressBar || !tutorialEnd) return;
+	
+	progressBar.classList.add('hidden');
+	tutorialEnd.classList.remove('hidden');
+	
+	// Trigger confetti animation if available
+	if (typeof confetti === 'function') {
+		confetti({
+			particleCount: 100,
+			spread: 70,
+			origin: { y: 0.6 }
+		});
 	}
-}
+};
 
-function startMobileTutorial() {
-	resetProgress()
-	const message = geti18n('tutorial.progressMessages.mobileTouchMove', {
-		phoneIcon: '<img src="https://api.iconify.design/proicons/phone.svg" class="text-icon inline">',
-	})
-	showProgressBar(message)
-
-	document.addEventListener('touchmove', handleTouchMove)
-}
-
-function handleTouchMove() {
-	progressValue += 10
-	progress.value = progressValue
-
-	if (progressValue >= 100) {
-		document.removeEventListener('touchmove', handleTouchMove)
-		launchConfetti()
-		setTimeout(startMobileClickTutorial, 1000)
+// Execute tutorial step
+const executeStep = async (stepIndex) => {
+	if (stepIndex >= tutorialSteps.length) {
+		showEndScreen();
+		return;
 	}
-}
-
-function startMobileClickTutorial() {
-	resetProgress()
-	const message = geti18n('tutorial.progressMessages.mobileClick', {
-		phoneIcon: '<img src="https://api.iconify.design/proicons/phone.svg" class="text-icon inline">',
-	})
-	showProgressBar(message)
-
-	document.addEventListener('click', handleMobileClick)
-}
-
-function handleMobileClick() {
-	clickCount++
-	progressValue += 5
-	progress.value = progressValue
-
-	if (clickCount >= 20) {
-		document.removeEventListener('click', handleMobileClick)
-		hideProgressBar()
-		launchConfetti()
-		setTimeout(showTutorialEnd, 1000)
+	
+	const step = tutorialSteps[stepIndex];
+	updateProgress(stepIndex + 1, tutorialSteps.length);
+	
+	// Simulate step execution time
+	await new Promise(resolve => setTimeout(resolve, step.duration));
+	
+	if (isRunning) {
+		executeStep(stepIndex + 1);
 	}
+};
+
+// Start tutorial
+const startTutorial = async () => {
+	if (!tutorialModal || !progressBar) return;
+	
+	isRunning = true;
+	currentStep = 0;
+	
+	// Hide modal and show progress bar
+	tutorialModal.classList.remove('modal-open');
+	tutorialModal.classList.add('hidden');
+	progressBar.classList.remove('hidden');
+	
+	// Initialize and start steps
+	initTutorialSteps();
+	await executeStep(0);
+};
+
+// Skip tutorial
+const skipTutorial = () => {
+	isRunning = false;
+	
+	// Navigate to home page
+	window.location.href = '/shells/home';
+};
+
+// End tutorial
+const endTutorial = () => {
+	// Navigate to home page
+	window.location.href = '/shells/home';
+};
+
+// Set up event listeners
+const setupEventListeners = () => {
+	if (startButton) {
+		startButton.addEventListener('click', startTutorial);
+	}
+	
+	if (skipButton) {
+		skipButton.addEventListener('click', skipTutorial);
+	}
+	
+	if (endButton) {
+		endButton.addEventListener('click', endTutorial);
+	}
+	
+	// Handle page unload
+	window.addEventListener('beforeunload', () => {
+		isRunning = false;
+	});
+};
+
+// Initialize tutorial page
+const initTutorial = () => {
+	initDOMElements();
+	setupEventListeners();
+	
+	// Check if tutorial should be skipped (e.g., user preference)
+	const skipTutorialPreference = localStorage.getItem('skipTutorial');
+	if (skipTutorialPreference === 'true') {
+		skipTutorial();
+		return;
+	}
+	
+	// Ensure modal is visible on load
+	if (tutorialModal) {
+		tutorialModal.classList.add('modal-open');
+		tutorialModal.classList.remove('hidden');
+	}
+};
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+	document.addEventListener('DOMContentLoaded', initTutorial);
+} else {
+	initTutorial();
 }
 
-startTutorialBtn.addEventListener('click', () => {
-	tutorialModal.classList.add('hidden')
-	hideTutorialEnd()
-
-	if (isMobile)
-		startMobileTutorial()
-	else
-		startMouseTutorial()
-
-})
-
-// 获取 URLSearchParams
-const urlParams = new URLSearchParams(window.location.search)
-const redirect = urlParams.get('redirect')
-
-function closeTutorial() {
-	if (redirect)
-		window.location.href = decodeURIComponent(redirect) + window.location.hash
-	else
-		window.location.href = '/shells/home'
-}
-skipButton.addEventListener('click', closeTutorial)
-endButton.addEventListener('click', closeTutorial)
-
-initTranslations('tutorial')
+// Export functions for potential external use
+export {
+	startTutorial,
+	skipTutorial,
+	endTutorial,
+	updateProgress
+};
