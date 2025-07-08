@@ -81,8 +81,8 @@
 		"shellCommandSent": "셸 명령이 전송되었습니다.",
 		"shellCommandFailed": "셸 명령 전송에 실패했습니다.",
 		"shellCommandError": "셸 명령 전송 중 오류가 발생했습니다.",
-		"fountNotFound": "awww :(\n\nFount를 찾을 수 없습니다. 먼저 설치해야 할까요?",
-		"unknownError": "awww :(\n\n오류가 발생했습니다:\n"
+		"fountNotFound": "아이고…\n\nFount를 찾을 수 없습니다. 먼저 설치해야 할까요?",
+		"unknownError": "아이고…\n\n오류가 발생했습니다:\n"
 	},
 	"installer_wait_screen": {
 		"title": "Fount에 오신 것을 환영합니다!",
@@ -121,7 +121,7 @@
 			"launch_button": "Fount 설치 중...",
 			"open_fount": "Fount 열기",
 			"open_or_install_fount": "Fount 열기/설치하기",
-			"error_message": "awww :(\n\n오류가 발생했습니다:\n"
+			"error_message": "아이고…\n\n오류가 발생했습니다:\n"
 		},
 		"error": {
 			"title": "설치 실패!",
@@ -323,7 +323,7 @@
 			"dim": "딤",
 			"nord": "노드",
 			"sunset": "선셋",
-			"caramellatte": "캐러멜 라테",
+			"caramellatte": "초콜릿 라테",
 			"abyss": "어비스",
 			"silk": "실크"
 		}
@@ -861,17 +861,17 @@
 		}
 	},
 	"badges_maker": {
-		"title": "세례반! 배지 변환기",
-		"card_title": "배지 링크 컨버터",
-		"original_url_label": "IMG.Shields.io URL을 붙여 넣습니다",
-		"original_url_placeholder": "예 : https://img.shields.io/badge/hello-world-blue",
-		"new_url_label": "생성 된 새로운 URL",
-		"new_url_placeholder": "변환 된 URL이 여기에 표시됩니다",
+		"title": "Fount! 배지 변환기",
+		"card_title": "Fount 배지 링크 컨버터",
+		"original_url_label": "img.shields.io URL을 붙여넣으세요",
+		"original_url_placeholder": "예: https://img.shields.io/badge/hello-world-blue",
+		"new_url_label": "생성된 새 URL",
+		"new_url_placeholder": "변환된 URL이 여기에 표시됩니다",
 		"copy_button": "복사",
 		"preview_label": "효과 미리보기",
 		"preview_alt": "배지 미리보기",
-		"copied_text": "사본!",
-		"copy_error": "텍스트를 복사 할 수 없습니다 :",
+		"copied_text": "복사됨!",
+		"copy_error": "텍스트를 복사할 수 없습니다:",
 		"copy_fail_alert": "복사 실패!"
 	}
 }

@@ -81,8 +81,8 @@
 		"shellCommandSent": "Comando shell enviado.",
 		"shellCommandFailed": "Falha ao enviar o comando shell.",
 		"shellCommandError": "Erro ao enviar o comando shell.",
-		"fountNotFound": "awww :(\n\nFount não encontrado. Talvez precise de o instalar primeiro?",
-		"unknownError": "awww :(\n\nOcorreu um erro:\n"
+		"fountNotFound": "Oh não :(\n\nFount não encontrado. Talvez precise de o instalar primeiro?",
+		"unknownError": "Oh não :(\n\nOcorreu um erro:\n"
 	},
 	"installer_wait_screen": {
 		"title": "Bem-vindo ao Fount!",
@@ -121,7 +121,7 @@
 			"launch_button": "Fount está a instalar...",
 			"open_fount": "Abrir Fount",
 			"open_or_install_fount": "Abrir/Instalar Fount",
-			"error_message": "awww :(\n\nOcorreu um erro:\n"
+			"error_message": "Oh não :(\n\nOcorreu um erro:\n"
 		},
 		"error": {
 			"title": "A instalação falhou!",
@@ -323,7 +323,7 @@
 			"dim": "Ténue",
 			"nord": "Nórdico",
 			"sunset": "Pôr do sol",
-			"caramellatte": "Caramel Latte",
+			"caramellatte": "Chocolate Latte",
 			"abyss": "Abismo",
 			"silk": "Seda"
 		}
@@ -861,17 +861,17 @@
 		}
 	},
 	"badges_maker": {
-		"title": "fonte! Conversor de crachá",
-		"card_title": "Conversor de link para emblemas da fonte",
-		"original_url_label": "Colar img.shields.io url",
+		"title": "Fount! Conversor de Crachás",
+		"card_title": "Conversor de Links para Emblemas Fount",
+		"original_url_label": "Colar URL img.shields.io",
 		"original_url_placeholder": "Por exemplo: https://img.shields.io/badge/hello-world-blue",
 		"new_url_label": "O novo URL gerado",
 		"new_url_placeholder": "O URL convertido será exibido aqui",
-		"copy_button": "cópia",
-		"preview_label": "Visualização de efeito",
+		"copy_button": "Copiar",
+		"preview_label": "Antevisão",
 		"preview_alt": "Visualização de crachá",
 		"copied_text": "Copiado!",
-		"copy_error": "Incapaz de copiar o texto:",
+		"copy_error": "Não foi possível copiar o texto:",
 		"copy_fail_alert": "A cópia falhou!"
 	}
 }

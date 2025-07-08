@@ -81,8 +81,8 @@
 		"shellCommandSent": "Lệnh Shell đã được gửi.",
 		"shellCommandFailed": "Gửi lệnh Shell thất bại.",
 		"shellCommandError": "Đã xảy ra lỗi khi gửi lệnh Shell.",
-		"fountNotFound": "awww :(\n\nKhông tìm thấy Fount. Có lẽ bạn cần cài đặt trước?",
-		"unknownError": "awww :(\n\nĐã xảy ra lỗi:\n"
+		"fountNotFound": "Ối... :(\n\nKhông tìm thấy Fount. Có lẽ bạn cần cài đặt trước?",
+		"unknownError": "Ối... :(\n\nĐã xảy ra lỗi:\n"
 	},
 	"installer_wait_screen": {
 		"title": "Chào mừng đến với Fount!",
@@ -121,7 +121,7 @@
 			"launch_button": "Fount đang được cài đặt...",
 			"open_fount": "Mở Fount",
 			"open_or_install_fount": "Mở/Cài đặt Fount",
-			"error_message": "awww :(\n\nĐã xảy ra lỗi:\n"
+			"error_message": "Ối... :(\n\nĐã xảy ra lỗi:\n"
 		},
 		"error": {
 			"title": "Cài đặt thất bại!",
@@ -323,7 +323,7 @@
 			"dim": "Mờ ảo",
 			"nord": "Nord",
 			"sunset": "Hoàng hôn",
-			"caramellatte": "Caramel Latte",
+			"caramellatte": "Latte Sô cô la",
 			"abyss": "Vực thẳm",
 			"silk": "Lụa"
 		}
@@ -863,12 +863,12 @@
 	"badges_maker": {
 		"title": "Fount! Bộ chuyển đổi huy hiệu",
 		"card_title": "Bộ chuyển đổi liên kết huy hiệu Fount",
-		"original_url_label": "Dán IMG.Shields.io URL",
+		"original_url_label": "Dán URL img.shields.io",
 		"original_url_placeholder": "Ví dụ: https://img.shields.io/badge/hello-world-blue",
 		"new_url_label": "URL mới được tạo",
 		"new_url_placeholder": "URL được chuyển đổi sẽ được hiển thị tại đây",
-		"copy_button": "sao chép",
-		"preview_label": "Xem trước hiệu ứng",
+		"copy_button": "Sao chép",
+		"preview_label": "Xem trước",
 		"preview_alt": "Xem trước huy hiệu",
 		"copied_text": "Đã sao chép!",
 		"copy_error": "Không thể sao chép văn bản:",
