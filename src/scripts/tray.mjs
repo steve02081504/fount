@@ -1,6 +1,5 @@
 import { on_shutdown } from 'npm:on-shutdown'
 import { __dirname } from '../server/server.mjs'
-import path from 'node:path'
 import fs from 'node:fs'
 import os from 'node:os'
 const SysTray = (await import('npm:systray').catch(_ => 0))?.default?.default //??????
@@ -32,9 +31,9 @@ export async function createTray() {
 		const platform = os.platform()
 
 		if (platform === 'win32')
-			iconPath = __dirname + '/imgs/icon.ico'
+			iconPath = __dirname + '/src/pages/favicon.ico'
 		else
-			iconPath = __dirname + '/imgs/icon.png'
+			iconPath = __dirname + '/src/pages/favicon.png'
 
 		const base64Icon = await getBase64Icon(iconPath)
 
