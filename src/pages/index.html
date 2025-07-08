@@ -18,15 +18,24 @@
 	<script type="module" src="/base.mjs"></script>
 	<script type="module">
 		import { setTheme } from './scripts/theme.mjs'
-		const hosturl = window.location.origin
+		const hostUrl = window.location.origin
 		const urlParams = new URLSearchParams(window.location.search)
 		if (urlParams.get('theme')) setTheme(urlParams.get('theme'))
-		window.open('https://steve02081504.github.io/fount/values_update?' + new URLSearchParams({
+		const newTab = window.open('https://steve02081504.github.io/fount/values_update?' + new URLSearchParams({
 			theme: localStorage.getItem('theme'),
-			hostUrl: window.location.origin
-		}).toString(), '_blank')?.blur?.()
-		window.focus()
-		window.location.href = '/shells/home'
+			hostUrl,
+		}).toString(), '_blank')
+		if (newTab) {
+			newTab.blur()
+			window.focus()
+			window.location.href = '/shells/home'
+		}
+		else
+			window.location.href = 'https://steve02081504.github.io/fount/values_update?' + new URLSearchParams({
+				theme: localStorage.getItem('theme'),
+				hostUrl,
+				redirect: hostUrl + '/shells/home',
+			})
 	</script>
 </head>
 
