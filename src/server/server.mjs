@@ -20,7 +20,7 @@ import { ReStartJobs } from './jobs.mjs'
 import { startTimerHeartbeat } from './timers.mjs'
 import supportsAnsi from 'npm:supports-ansi'
 import { loadJsonFile, saveJsonFile } from '../scripts/json_loader.mjs'
-import { nicerWriteFileSync } from '../../data/users/steve02081504/chars/GentianAphrodite/scripts/tools.mjs'
+import { nicerWriteFileSync } from '../scripts/nicerWriteFile.mjs'
 
 export { __dirname }
 const app = express()
