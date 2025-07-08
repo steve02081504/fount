@@ -130,6 +130,19 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'protocolhandle') {
 	exit
 }
 
+# 向用户的$Profile中注册导入fount-pwsh
+if ($Profile -and (Get-Module fount-pwsh -ListAvailable)) {
+	$ProfileContent = Get-Content $Profile -ErrorAction Ignore
+	$ProfileContent = $ProfileContent -split "`n"
+	$ProfileContent = $ProfileContent | Where-Object { $_ -notmatch 'Import-Module fount-pwsh' }
+	$ProfileContent = $ProfileContent -join "`n"
+	$ProfileContent += "`nImport-Module fount-pwsh`n"
+	$ProfileContent = $ProfileContent -replace '\n+Import-Module fount-pwsh', "`nImport-Module fount-pwsh"
+	if ($ProfileContent -ne (Get-Content $Profile -ErrorAction Ignore)) {
+		Set-Content -Path $Profile -Value $ProfileContent
+	}
+}
+
 # 新建一个背景job用于后台更新所需的pwsh模块
 Start-Job -ScriptBlock {
 	@('ps12exe', 'fount-pwsh') | ForEach-Object {
@@ -145,23 +158,11 @@ Start-Job -ScriptBlock {
 				Set-Content "$FOUNT_DIR/data/installer/auto_installed_pwsh_modules" $($auto_installed_pwsh_modules -join ';')
 			}
 			Get-PackageProvider -Name "NuGet" -Force | Out-Null
+			Uninstall-Module -Name $_ -Scope CurrentUser -AllVersions -Force -ErrorAction Ignore
 			Install-Module -Name $_ -Scope CurrentUser -Force
 		}
 	}
 } | Out-Null
-
-# 向用户的$Profile中注册导入fount-pwsh
-if ($Profile -and (Get-Module fount-pwsh -ListAvailable)) {
-	$ProfileContent = Get-Content $Profile -ErrorAction Ignore
-	$ProfileContent = $ProfileContent -split "`n"
-	$ProfileContent = $ProfileContent | Where-Object { $_ -notmatch 'Import-Module fount-pwsh' }
-	$ProfileContent = $ProfileContent -join "`n"
-	$ProfileContent += "`nImport-Module fount-pwsh`n"
-	$ProfileContent = $ProfileContent -replace '\n+Import-Module fount-pwsh', "`nImport-Module fount-pwsh"
-	if ($ProfileContent -ne (Get-Content $Profile -ErrorAction Ignore)) {
-		Set-Content -Path $Profile -Value $ProfileContent
-	}
-}
 
 if (!$IsWindows) {
 	function install_package {
@@ -644,7 +645,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 	$auto_installed_pwsh_modules | ForEach-Object {
 		try {
 			if (Get-Module $_ -ListAvailable) {
-				Uninstall-Module -Name $_ -Scope CurrentUser -Force -ErrorAction Stop
+				Uninstall-Module -Name $_ -Scope CurrentUser -AllVersions -Force -ErrorAction Stop
 				Write-Host "$_ removed."
 			}
 		}
