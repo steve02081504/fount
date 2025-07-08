@@ -1,7 +1,8 @@
+import * as fs from 'node:fs';
+
 /**
- * Synchronously writes data to a file if the data is different from the existing data.
- *
- * @param {string} filePath - The path of the file to write to.
+ * Write data to a file only if the file doesn't exist or the content has changed.
+ * @param {string} filePath - The path to the file to write.
  * @param {string|Buffer} data - The data to write to the file.
  * @param {string} [encoding='utf8'] - The encoding to use when writing the file.
  * @return {void}
