@@ -344,7 +344,7 @@ urlencode() {
 create_desktop_shortcut() {
 	echo "Creating desktop shortcut..."
 	local shortcut_name="fount"
-	local icon_path="$FOUNT_DIR/imgs/icon.ico"
+	local icon_path="$FOUNT_DIR/src/pages/favicon.ico"
 
 	if [ "$OS_TYPE" = "Linux" ]; then
 		install_package "xdg-open" "xdg-utils" || return 1
@@ -393,7 +393,7 @@ EOF
 		echo "Creating macOS application bundle at $app_path"
 
 		mkdir -p "$app_path/Contents/MacOS" "$app_path/Contents/Resources"
-		local icns_path="$FOUNT_DIR/imgs/favicon.icns"
+		local icns_path="$FOUNT_DIR/src/pages/favicon.icns"
 		local icon_name="favicon.icns"
 		if [ ! -f "$icns_path" ] && command -v sips &>/dev/null; then
 			sips -s format icns "$icon_path" --out "$icns_path"
