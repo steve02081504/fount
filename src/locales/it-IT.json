@@ -81,8 +81,8 @@
 		"shellCommandSent": "Comando shell inviato.",
 		"shellCommandFailed": "Impossibile inviare il comando shell.",
 		"shellCommandError": "Errore durante l'invio del comando shell.",
-		"fountNotFound": "awww :(\n\nFount non trovato. Forse devi prima installarlo?",
-		"unknownError": "awww :(\n\nSi è verificato un errore:\n"
+		"fountNotFound": "Uffa :(\n\nFount non trovato. Forse devi prima installarlo?",
+		"unknownError": "Uffa :(\n\nSi è verificato un errore:\n"
 	},
 	"installer_wait_screen": {
 		"title": "Benvenuto in Fount!",
@@ -121,7 +121,7 @@
 			"launch_button": "Fount è in fase di installazione...",
 			"open_fount": "Apri Fount",
 			"open_or_install_fount": "Apri/Installa Fount",
-			"error_message": "awww :(\n\nSi è verificato un errore:\n"
+			"error_message": "Uffa :(\n\nSi è verificato un errore:\n"
 		},
 		"error": {
 			"title": "Installazione non riuscita!",
@@ -323,7 +323,7 @@
 			"dim": "Tenue",
 			"nord": "Nord",
 			"sunset": "Tramonto",
-			"caramellatte": "Caramel Latte",
+			"caramellatte": "Cioccolatte",
 			"abyss": "Abisso",
 			"silk": "Seta"
 		}
@@ -861,14 +861,14 @@
 		}
 	},
 	"badges_maker": {
-		"title": "fonte! Convertitore distintivo",
-		"card_title": "Convertitore di link badge di fonte",
-		"original_url_label": "Incolla img.shields.io URL",
+		"title": "Fount! Convertitore di Badge",
+		"card_title": "Convertitore di Link Badge Fount",
+		"original_url_label": "Incolla URL img.shields.io",
 		"original_url_placeholder": "Ad esempio: https://img.shields.io/badge/hello-world-blue",
-		"new_url_label": "Il nuovo URL generato",
+		"new_url_label": "Nuovo URL generato",
 		"new_url_placeholder": "L'URL convertito verrà visualizzato qui",
-		"copy_button": "copia",
-		"preview_label": "Anteprima dell'effetto",
+		"copy_button": "Copia",
+		"preview_label": "Anteprima",
 		"preview_alt": "Anteprima del badge",
 		"copied_text": "Copiato!",
 		"copy_error": "Impossibile copiare il testo:",

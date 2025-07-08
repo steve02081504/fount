@@ -81,8 +81,8 @@
 		"shellCommandSent": "Commande shell envoyée.",
 		"shellCommandFailed": "Échec de l'envoi de la commande shell.",
 		"shellCommandError": "Erreur lors de l'envoi de la commande shell.",
-		"fountNotFound": "awww :(\n\nFount introuvable. Peut-être devez-vous d'abord l'installer ?",
-		"unknownError": "awww :(\n\nUne erreur s'est produite :\n"
+		"fountNotFound": "Oh là là :(\n\nFount introuvable. Peut-être devez-vous d'abord l'installer ?",
+		"unknownError": "Oh là là :(\n\nUne erreur s'est produite :\n"
 	},
 	"installer_wait_screen": {
 		"title": "Bienvenue sur Fount !",
@@ -121,7 +121,7 @@
 			"launch_button": "Fount est en cours d'installation...",
 			"open_fount": "Ouvrir Fount",
 			"open_or_install_fount": "Ouvrir/Installer Fount",
-			"error_message": "awww :(\n\nUne erreur s'est produite :\n"
+			"error_message": "Oh là là :(\n\nUne erreur s'est produite :\n"
 		},
 		"error": {
 			"title": "Échec de l'installation !",
@@ -347,16 +347,16 @@
 			"import": "Importer"
 		},
 		"alerts": {
-			"importSuccess": "Importation réussie.",
+			"importSuccess": "Importation réussie",
 			"importFailed": "Échec de l'importation : ${error}",
-			"unknownError": "Erreur inconnue."
+			"unknownError": "Erreur inconnue"
 		},
 		"errors": {
 			"noFileSelected": "Veuillez sélectionner un fichier.",
 			"fileImportFailed": "Échec de l'importation du fichier : ${message}",
 			"noTextContent": "Veuillez saisir du contenu texte.",
 			"textImportFailed": "Échec de l'importation du texte : ${message}",
-			"unknownError": "Erreur inconnue.",
+			"unknownError": "Erreur inconnue",
 			"handler": "Gestionnaire",
 			"error": "Erreur"
 		},
@@ -396,8 +396,8 @@
 			"deleteFileFailed": "Échec de la suppression du fichier : ${error}",
 			"invalidFileName": "Le nom de fichier ne peut pas contenir les caractères suivants : / \\ : * ? \" < > |",
 			"addFileFailed": "Échec de l'ajout du fichier : ${error}",
-			"fetchConfigTemplateFailed": "Échec de la récupération du modèle de configuration.",
-			"noGeneratorSelectedSave": "Veuillez sélectionner un générateur avant d'enregistrer."
+			"fetchConfigTemplateFailed": "Échec de la récupération du modèle de configuration",
+			"noGeneratorSelectedSave": "Veuillez sélectionner un générateur avant d'enregistrer"
 		},
 		"confirm": {
 			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous annuler les modifications ?",
@@ -408,7 +408,7 @@
 			"newFileName": "Veuillez saisir un nouveau nom de fichier pour la source d'IA (sans extension) :"
 		},
 		"editor": {
-			"disabledIndicator": "Veuillez d'abord sélectionner un générateur."
+			"disabledIndicator": "Veuillez d'abord sélectionner un générateur"
 		}
 	},
 	"part_config": {
@@ -424,7 +424,7 @@
 		},
 		"editor": {
 			"title": "Configuration du Composant",
-			"disabledIndicator": "Ce composant ne prend pas en charge la configuration.",
+			"disabledIndicator": "Ce composant ne prend pas en charge la configuration",
 			"buttons": {
 				"save": "Enregistrer"
 			}
@@ -464,9 +464,9 @@
 			"back": "Retour"
 		},
 		"alerts": {
-			"success": "${type} : ${name} désinstallé avec succès.",
+			"success": "${type} : ${name} désinstallé avec succès",
 			"failed": "Échec de la désinstallation : ${error}",
-			"invalidParams": "Paramètres de requête non valides.",
+			"invalidParams": "Paramètres de requête non valides",
 			"httpError": "Erreur HTTP ! Code d'état : ${status}"
 		}
 	},
@@ -503,7 +503,7 @@
 				}
 			},
 			"noSelection": "Rien de sélectionné",
-			"noDescription": "Aucune description disponible."
+			"noDescription": "Aucune description disponible"
 		},
 		"chatArea": {
 			"title": "Chat",
@@ -548,7 +548,7 @@
 			"confirmDeleteMessage": "Supprimer ce message ?"
 		},
 		"voiceRecording": {
-			"errorAccessingMicrophone": "Échec de l'accès au microphone."
+			"errorAccessingMicrophone": "Échec de l'accès au microphone"
 		},
 		"messageView": {
 			"buttons": {
@@ -662,11 +662,11 @@
 		"confirmDeleteChat": "Êtes-vous sûr de vouloir supprimer l'historique des chats avec ${chars} ?",
 		"confirmDeleteMultiChats": "Êtes-vous sûr de vouloir supprimer les ${count} historiques de chats sélectionnés ?",
 		"alerts": {
-			"noChatSelectedForDeletion": "Veuillez sélectionner les historiques de chats à supprimer.",
-			"noChatSelectedForExport": "Veuillez sélectionner les historiques de chats à exporter.",
-			"copyError": "Échec de la copie.",
-			"deleteError": "Échec de la suppression.",
-			"exportError": "Échec de l'exportation."
+			"noChatSelectedForDeletion": "Veuillez sélectionner les historiques de chats à supprimer",
+			"noChatSelectedForExport": "Veuillez sélectionner les historiques de chats à exporter",
+			"copyError": "Échec de la copie",
+			"deleteError": "Échec de la suppression",
+			"exportError": "Échec de l'exportation"
 		},
 		"chatItemButtons": {
 			"continue": "Continuer",
@@ -708,8 +708,8 @@
 		"alerts": {
 			"botExists": "Un bot nommé \"${botname}\" existe déjà. Veuillez utiliser un autre nom.",
 			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous annuler les modifications ?",
-			"configSaved": "Configuration enregistrée avec succès.",
-			"httpError": "Erreur HTTP.",
+			"configSaved": "Configuration enregistrée avec succès",
+			"httpError": "Erreur HTTP",
 			"beforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter ?"
 		}
 	},
@@ -747,14 +747,14 @@
 			"botExists": "Un bot nommé \"${botname}\" existe déjà. Veuillez utiliser un autre nom.",
 			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous vraiment annuler ces modifications ?",
 			"configSaved": "La configuration a été enregistrée avec succès !",
-			"httpError": "Erreur HTTP.",
+			"httpError": "Erreur HTTP",
 			"beforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter cette page ?"
 		}
 	},
 	"terminal_assistant": {
 		"title": "Assistant Terminal",
 		"initialMessage": "Fount prend en charge le déploiement de vos personnages préférés dans votre terminal pour vous assister lors du codage !",
-		"initialMessageLink": "Cliquez ici pour en savoir plus."
+		"initialMessageLink": "Cliquez ici pour en savoir plus"
 	},
 	"access": {
 		"title": "Accéder à Fount sur d'autres appareils",
@@ -861,17 +861,17 @@
 		}
 	},
 	"badges_maker": {
-		"title": "source! Convertisseur de badge",
-		"card_title": "Convertisseur de liaison de badge de fontaine",
-		"original_url_label": "Pâtez iMg.shields.io URL",
-		"original_url_placeholder": "Par exemple: https://img.shields.io/badge/hello-world-blue",
-		"new_url_label": "La nouvelle URL générée",
+		"title": "Fount! Convertisseur de Badges",
+		"card_title": "Convertisseur de Liens de Badges Fount",
+		"original_url_label": "Collez l'URL img.shields.io",
+		"original_url_placeholder": "Par exemple : https://img.shields.io/badge/Hello-World-blue",
+		"new_url_label": "Nouvelle URL générée",
 		"new_url_placeholder": "L'URL convertie sera affichée ici",
-		"copy_button": "copie",
-		"preview_label": "Aperçu de l'effet",
+		"copy_button": "Copier",
+		"preview_label": "Aperçu",
 		"preview_alt": "Aperçu du badge",
-		"copied_text": "Copie!",
-		"copy_error": "Impossible de copier le texte:",
-		"copy_fail_alert": "Copie a échoué!"
+		"copied_text": "Copié !",
+		"copy_error": "Impossible de copier le texte :",
+		"copy_fail_alert": "La copie a échoué !"
 	}
 }
