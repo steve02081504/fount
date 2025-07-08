@@ -3,6 +3,7 @@ import { Buffer } from 'node:buffer'
 import fs from 'node:fs'
 import { getAllUserNames, getUserDictionary } from '../../../../../server/auth.mjs'
 import { on_shutdown } from 'npm:on-shutdown'
+import { nicerWriteFileSync } from '../../../../../scripts/nicerWriteFile.mjs'
 async function gethash(buffer) {
 	return new Promise((resolve, reject) => {
 		blake2b.ready(function (err) {
@@ -23,7 +24,7 @@ export async function addfile(username, buffer) {
 	const hash = await gethash(buffer)
 	const userDir = getUserDir(username)
 	if (!fs.existsSync(userDir)) fs.mkdirSync(userDir, { recursive: true })
-	fs.writeFileSync(userDir + hash, buffer)
+	nicerWriteFileSync(userDir + hash, buffer)
 	return hash
 }
 export async function getfile(username, hash) {
