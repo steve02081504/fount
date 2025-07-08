@@ -73,11 +73,8 @@ export class IPCManager {
 		const startServer = (server, address) => {
 			return new Promise((resolve, reject) => {
 				server.on('error', async (err) => {
-					if (err.code === 'EADDRINUSE') {
-						console.log(await geti18n('fountConsole.ipc.instanceRunning', { address }))
-						resolve(false) // 服务器已在运行
-					} else
-						reject(err)
+					if (err.code === 'EADDRINUSE') resolve(false)
+					else reject(err)
 				})
 
 				server.listen(IPC_PORT, address, _ => resolve(true))
@@ -88,8 +85,10 @@ export class IPCManager {
 			startServer(this.serverV6, '::1'),
 			startServer(this.serverV4, '127.0.0.1'),
 		]).then(async results => {
-			console.freshLine('server start', await geti18n('fountConsole.ipc.serverStarted'))
-			return results.every(result => result === true)
+			const result = results.every(result => result === true)
+			if (result) console.freshLine('server start', await geti18n('fountConsole.ipc.serverStarted'))
+			else console.log(await geti18n('fountConsole.ipc.instanceRunning'))
+			return result
 		})
 	}
 
