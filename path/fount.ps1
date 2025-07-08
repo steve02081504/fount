@@ -449,6 +449,7 @@ if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $ar
 
 	# 创建桌面快捷方式
 	$desktopPath = [Environment]::GetFolderPath("Desktop")
+	Remove-Item -Force "$desktopPath\fount.lnk" -ErrorAction Ignore
 	$desktopShortcut = $shell.CreateShortcut("$desktopPath\fount.lnk")
 	$desktopShortcut.TargetPath = $shortcutTargetPath
 	$desktopShortcut.Arguments = $shortcutArguments
@@ -458,6 +459,7 @@ if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $ar
 
 	# 创建开始菜单快捷方式
 	$startMenuPath = [Environment]::GetFolderPath("StartMenu")
+	Remove-Item -Force "$startMenuPath\fount.lnk" -ErrorAction Ignore
 	$startMenuShortcut = $shell.CreateShortcut("$startMenuPath\fount.lnk")
 	$startMenuShortcut.TargetPath = $shortcutTargetPath
 	$startMenuShortcut.Arguments = $shortcutArguments
@@ -506,6 +508,30 @@ if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $ar
 	if ($jsonContent -ne (Get-Content $WTjsonPath -ErrorAction Ignore)) {
 		Set-Content -Path $WTjsonPath -Value $jsonContent
 	}
+
+	Add-Type -TypeDefinition @'
+using System;
+using System.Runtime.InteropServices;
+
+public class ExplorerRefresher {
+	[DllImport("user32.dll", SetLastError = true)]
+	private static extern IntPtr SendMessageTimeout(IntPtr hWnd, int Msg, IntPtr wParam, string lParam, uint fuFlags, uint uTimeout, IntPtr lpdwResult);
+
+	private static readonly IntPtr HWND_BROADCAST = new IntPtr(0xffff);
+	private const int WM_SETTINGCHANGE = 0x1a;
+	private const int SMTO_ABORTIFHUNG = 0x0002;
+	public static void RefreshSettings() {
+		SendMessageTimeout(HWND_BROADCAST, WM_SETTINGCHANGE, IntPtr.Zero, null, SMTO_ABORTIFHUNG, 100, IntPtr.Zero);
+	}
+	[DllImport("shell32.dll")]
+	private static extern int SHChangeNotify(int eventId, int flags, IntPtr item1, IntPtr item2);
+	public static void RefreshDesktop() {
+		SHChangeNotify(0x8000000, 0x1000, IntPtr.Zero, IntPtr.Zero);
+	}
+}
+'@
+	[ExplorerRefresher]::RefreshSettings()
+	[ExplorerRefresher]::RefreshDesktop()
 }
 
 if ($args.Count -gt 0 -and $args[0] -eq 'geneexe') {

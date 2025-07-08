@@ -61,7 +61,8 @@ if (command_obj) try {
 	const { IPCManager } = await import('./ipc_server.mjs')
 	await IPCManager.sendCommand(command_obj.type, command_obj.data)
 } catch (err) {
-	console.error(await geti18n('fountConsole.ipc.sendCommandFailed', { error: err }))
+	if (!(command_obj.type === 'shutdown' && String(err).endsWith('read ECONNRESET')))
+		console.error(await geti18n('fountConsole.ipc.sendCommandFailed', { error: err }))
 	process.exit(1)
 }
 
