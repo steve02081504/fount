@@ -81,8 +81,8 @@
 		"shellCommandSent": "Команда оболочки отправлена.",
 		"shellCommandFailed": "Не удалось отправить команду оболочки.",
 		"shellCommandError": "Ошибка при отправке команды оболочки.",
-		"fountNotFound": "awww :(\n\nFount не найден. Возможно, вам нужно сначала его установить?",
-		"unknownError": "awww :(\n\nПроизошла ошибка:\n"
+		"fountNotFound": "Ой... :(\n\nFount не найден. Возможно, вам нужно сначала его установить?",
+		"unknownError": "Ой... :(\n\nПроизошла ошибка:\n"
 	},
 	"installer_wait_screen": {
 		"title": "Добро пожаловать в Fount!",
@@ -121,7 +121,7 @@
 			"launch_button": "Fount устанавливается...",
 			"open_fount": "Открыть Fount",
 			"open_or_install_fount": "Открыть/Установить Fount",
-			"error_message": "awww :(\n\nПроизошла ошибка:\n"
+			"error_message": "Ой... :(\n\nПроизошла ошибка:\n"
 		},
 		"error": {
 			"title": "Установка не удалась!",
@@ -323,7 +323,7 @@
 			"dim": "Тусклая",
 			"nord": "Норд",
 			"sunset": "Закат",
-			"caramellatte": "Карамельный латте",
+			"caramellatte": "Шоколадный латте",
 			"abyss": "Бездна",
 			"silk": "Шелк"
 		}
@@ -861,17 +861,17 @@
 		}
 	},
 	"badges_maker": {
-		"title": "Вернут! Конвертер значков",
-		"card_title": "Конвертер ссылок на фонд значков",
-		"original_url_label": "Вставьте img.shields.io url",
+		"title": "Fount! Конвертер значков",
+		"card_title": "Конвертер ссылок на значки Fount",
+		"original_url_label": "Вставьте URL img.shields.io",
 		"original_url_placeholder": "Например: https://img.shields.io/badge/hello-world-blue",
 		"new_url_label": "Сгенерированный новый URL",
 		"new_url_placeholder": "Конвертированный URL будет отображаться здесь",
-		"copy_button": "копия",
-		"preview_label": "Предварительный просмотр эффекта",
+		"copy_button": "Копировать",
+		"preview_label": "Предпросмотр",
 		"preview_alt": "Предварительный просмотр значков",
-		"copied_text": "Копировано!",
+		"copied_text": "Скопировано!",
 		"copy_error": "Невозможно скопировать текст:",
-		"copy_fail_alert": "Копия не удалась!"
+		"copy_fail_alert": "Копирование не удалось!"
 	}
 }

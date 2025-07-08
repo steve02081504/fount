@@ -18,7 +18,7 @@
 		"ipc": {
 			"sendCommandFailed": "Senden des Befehls fehlgeschlagen: ${error}",
 			"invalidCommand": "Ungültiger Befehl. Bitte verwenden Sie \"fount run <Part-Typ> <Benutzername> <Part-Name> <Parameter...>\".",
-			"runPartLog": "Starte ${parttype} ${partname} als ${username} mit Parametern: ${args}.",
+			"runPartLog": "Starte ${parttype} ${partname} als ${username} mit Parametern: ${args}",
 			"invokePartLog": "Rufe ${parttype} ${partname} als ${username} mit Parametern: ${invokedata} auf.",
 			"unsupportedCommand": "Nicht unterstützter Befehlstyp",
 			"processMessageError": "Fehler beim Verarbeiten der IPC-Nachricht: ${error}",
@@ -81,8 +81,8 @@
 		"shellCommandSent": "Shell-Befehl gesendet",
 		"shellCommandFailed": "Senden des Shell-Befehls fehlgeschlagen",
 		"shellCommandError": "Fehler beim Senden des Shell-Befehls",
-		"fountNotFound": "awww :(\n\nFount wurde nicht gefunden. Vielleicht müssen Sie es zuerst installieren?",
-		"unknownError": "awww :(\n\nEin Fehler ist aufgetreten:\n"
+		"fountNotFound": "Och nö :(\n\nFount wurde nicht gefunden. Vielleicht müssen Sie es zuerst installieren?",
+		"unknownError": "Och nö :(\n\nEin Fehler ist aufgetreten:\n"
 	},
 	"installer_wait_screen": {
 		"title": "Willkommen bei Fount!",
@@ -121,7 +121,7 @@
 			"launch_button": "Fount wird installiert...",
 			"open_fount": "Fount öffnen",
 			"open_or_install_fount": "Fount öffnen/installieren",
-			"error_message": "awww :(\n\nEin Fehler ist aufgetreten:\n"
+			"error_message": "Och nö :(\n\nEin Fehler ist aufgetreten:\n"
 		},
 		"error": {
 			"title": "Installation fehlgeschlagen!",
@@ -202,7 +202,7 @@
 			"endButton": "Weiter!"
 		},
 		"progressMessages": {
-			"mouseMove": "Bitte bewegen Sie die Maus ${mouseIcon} mit Ihrer Hand.",
+			"mouseMove": "Bitte bewegen Sie die Maus ${mouseIcon}.",
 			"keyboardPress": "Drücken Sie eine Taste auf Ihrer Tastatur ${keyboardIcon}.",
 			"mobileTouchMove": "Berühren Sie den Bildschirm Ihres Telefons ${phoneIcon} mit einem Finger und bewegen Sie ihn dann.",
 			"mobileClick": "Tippen Sie mit einem Finger auf den Bildschirm Ihres Telefons ${phoneIcon}."
@@ -861,17 +861,17 @@
 		}
 	},
 	"badges_maker": {
-		"title": "Quelle! Abzeichenwandler",
-		"card_title": "Fount Badge Link Converter",
-		"original_url_label": "Fügen Sie img.shields.io url ein",
-		"original_url_placeholder": "Zum Beispiel: https://img.shields.io/badge/hello-world-blue",
-		"new_url_label": "Die erzeugte neue URL",
+		"title": "Fount! Abzeichenwandler",
+		"card_title": "Fount Abzeichen Link Konverter",
+		"original_url_label": "img.shields.io URL einfügen",
+		"original_url_placeholder": "Zum Beispiel: https://img.shields.io/badge/Hello-World-blue",
+		"new_url_label": "Generierte neue URL",
 		"new_url_placeholder": "Die konvertierte URL wird hier angezeigt",
-		"copy_button": "Kopie",
-		"preview_label": "Effektvorschau",
-		"preview_alt": "Abzeichenvorschau",
+		"copy_button": "Kopieren",
+		"preview_label": "Vorschau",
+		"preview_alt": "Abzeichen-Vorschau",
 		"copied_text": "Kopiert!",
-		"copy_error": "Text kann nicht kopieren:",
-		"copy_fail_alert": "Kopie fehlgeschlagen!"
+		"copy_error": "Text konnte nicht kopiert werden:",
+		"copy_fail_alert": "Kopieren fehlgeschlagen!"
 	}
 }

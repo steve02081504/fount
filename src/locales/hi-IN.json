@@ -81,8 +81,8 @@
 		"shellCommandSent": "शेल कमांड भेज दिया गया है।",
 		"shellCommandFailed": "शेल कमांड भेजने में विफल।",
 		"shellCommandError": "शेल कमांड भेजने में त्रुटि।",
-		"fountNotFound": "awww :(\n\nFount नहीं मिला, शायद आपको इसे पहले इंस्टॉल करने की ज़रूरत है?",
-		"unknownError": "awww :(\n\nएक त्रुटि हुई:\n"
+		"fountNotFound": "ओह हो :(\n\nFount नहीं मिला, शायद आपको इसे पहले इंस्टॉल करने की ज़रूरत है?",
+		"unknownError": "ओह हो :(\n\nएक त्रुटि हुई:\n"
 	},
 	"installer_wait_screen": {
 		"title": "Fount में आपका स्वागत है!",
@@ -121,7 +121,7 @@
 			"launch_button": "Fount इंस्टॉल हो रहा है...",
 			"open_fount": "Fount खोलें",
 			"open_or_install_fount": "Fount खोलें/इंस्टॉल करें",
-			"error_message": "awww :(\n\nएक त्रुटि हुई:\n"
+			"error_message": "ओह हो :(\n\nएक त्रुटि हुई:\n"
 		},
 		"error": {
 			"title": "इंस्टॉलेशन विफल!",
@@ -323,7 +323,7 @@
 			"dim": "मंद",
 			"nord": "नॉर्ड",
 			"sunset": "सूर्यास्त",
-			"caramellatte": "कैरामल लाटे",
+			"caramellatte": "चॉकलेट लाटे",
 			"abyss": "अगाध",
 			"silk": "रेशम"
 		}
@@ -861,16 +861,16 @@
 		}
 	},
 	"badges_maker": {
-		"title": "फव्वारा! बैज कनवर्टर",
-		"card_title": "फाउंट बैज लिंक कनवर्टर",
-		"original_url_label": "पेस्ट img.shields.io url",
+		"title": "Fount! बैज कन्वर्टर",
+		"card_title": "Fount बैज लिंक कन्वर्टर",
+		"original_url_label": "img.shields.io URL पेस्ट करें",
 		"original_url_placeholder": "उदाहरण के लिए: https://img.shields.io/badge/hello-world-blue",
 		"new_url_label": "उत्पन्न नया URL",
 		"new_url_placeholder": "परिवर्तित URL यहां प्रदर्शित किया जाएगा",
 		"copy_button": "कॉपी",
-		"preview_label": "प्रभाव पूर्वावलोकन",
+		"preview_label": "पूर्वावलोकन",
 		"preview_alt": "बैज पूर्वावलोकन",
-		"copied_text": "कॉपी!",
+		"copied_text": "कॉपीड!",
 		"copy_error": "पाठ को कॉपी करने में असमर्थ:",
 		"copy_fail_alert": "कॉपी विफल!"
 	}

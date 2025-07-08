@@ -81,8 +81,8 @@
 		"shellCommandSent": "シェルコマンドを送信しました。",
 		"shellCommandFailed": "シェルコマンドの送信に失敗しました。",
 		"shellCommandError": "シェルコマンドの送信中にエラーが発生しました。",
-		"fountNotFound": "awww :(\n\nFountが見つかりませんでした。最初にインストールする必要がありますか？",
-		"unknownError": "awww :(\n\nエラーが発生しました：\n"
+		"fountNotFound": "あらら…\n\nFountが見つかりませんでした。最初にインストールする必要がありますか？",
+		"unknownError": "あらら…\n\nエラーが発生しました：\n"
 	},
 	"installer_wait_screen": {
 		"title": "Fountへようこそ！",
@@ -121,7 +121,7 @@
 			"launch_button": "Fountをインストール中...",
 			"open_fount": "Fountを開く",
 			"open_or_install_fount": "Fountを開く/インストール",
-			"error_message": "awww :(\n\nエラーが発生しました：\n"
+			"error_message": "あらら…\n\nエラーが発生しました：\n"
 		},
 		"error": {
 			"title": "インストールに失敗しました！",
@@ -323,7 +323,7 @@
 			"dim": "ディム",
 			"nord": "ノール",
 			"sunset": "サンセット",
-			"caramellatte": "キャラメルラテ",
+			"caramellatte": "チョコレートラテ",
 			"abyss": "アビス",
 			"silk": "シルク"
 		}
@@ -861,16 +861,16 @@
 		}
 	},
 	"badges_maker": {
-		"title": "噴水！バッジコンバーター",
-		"card_title": "ファウントバッジリンクコンバーター",
-		"original_url_label": "IMG.Shields.io URLを貼り付けます",
-		"original_url_placeholder": "例：https：//img.shields.io/badge/hello-world-blue",
+		"title": "Fount! バッジコンバーター",
+		"card_title": "Fountバッジリンクコンバーター",
+		"original_url_label": "img.shields.io URLを貼り付けます",
+		"original_url_placeholder": "例：https://img.shields.io/badge/hello-world-blue",
 		"new_url_label": "生成された新しいURL",
 		"new_url_placeholder": "変換されたURLはここに表示されます",
 		"copy_button": "コピー",
 		"preview_label": "効果プレビュー",
 		"preview_alt": "バッジプレビュー",
-		"copied_text": "コピー！",
+		"copied_text": "コピーしました！",
 		"copy_error": "テキストをコピーできません：",
 		"copy_fail_alert": "コピーが失敗しました！"
 	}
