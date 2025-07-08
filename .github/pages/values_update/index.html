@@ -19,10 +19,13 @@
 	<script type="module">
 		/* global urlParams */
 		import '../base.mjs'
+		const redirectUrl = urlParams.get('redirect')
+		urlParams.delete('redirect')
 		for (const [key, value] of urlParams)
 			localStorage.setItem('fount' + key.charAt(0).toUpperCase() + key.slice(1), value)
 		setTimeout(() => window.location.href = window.location.pathname, 1000)
-		window.close()
+		if (redirectUrl) window.location.href = redirectUrl
+		else window.close()
 	</script>
 </head>
 
