@@ -9,6 +9,7 @@ import { exec } from '../scripts/exec.mjs'
 import { getLocalizedInfo } from '../scripts/locale.mjs'
 import { geti18n } from '../scripts/i18n.mjs'
 import { loadJsonFile } from '../scripts/json_loader.mjs'
+import { nicerWriteFileSync } from '../scripts/nicerWriteFile.mjs'
 
 /**
  * @typedef {Object} PartInfo
@@ -160,14 +161,7 @@ export async function baseloadPart(username, parttype, partname, {
 				fs.readdirSync(fileOrDir).forEach((path) => mapper(fileOrDir + '/' + path))
 			}
 			else
-				if (!fs.existsSync(userPath + '/' + fileOrDir))
-					fs.copyFileSync(templatePath + '/' + fileOrDir, userPath + '/' + fileOrDir)
-				else {
-					const template = fs.readFileSync(templatePath + '/' + fileOrDir, 'utf8')
-					const user = fs.readFileSync(userPath + '/' + fileOrDir, 'utf8')
-					if (template !== user)
-						fs.writeFileSync(userPath + '/' + fileOrDir, template)
-				}
+				nicerWriteFileSync(userPath + '/' + fileOrDir, fs.readFileSync(templatePath + '/' + fileOrDir))
 		}
 		fs.readdirSync(templatePath).forEach(mapper)
 	}
