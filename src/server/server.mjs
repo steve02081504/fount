@@ -141,13 +141,14 @@ export let tray
 export async function init(start_config) {
 	data_path = start_config.data_path
 	const { starts } = start_config
-	console.freshLine('server start', await geti18n('fountConsole.server.start'))
-	process.on('error', console.log)
-	process.on('unhandledRejection', console.log)
+	if (starts?.Base ?? true) {
+		console.freshLine('server start', await geti18n('fountConsole.server.start'))
+		process.on('error', console.log)
+		process.on('unhandledRejection', console.log)
+	}
 
 	config = get_config()
-	hosturl = 'http://localhost:' + config.port
-	initAuth()
+	if (starts?.Base ?? true) initAuth()
 
 	if (starts?.IPC ?? true) {
 		const { IPCManager } = await import('./ipc_server.mjs')
@@ -155,6 +156,7 @@ export async function init(start_config) {
 	}
 
 	if (starts?.Web ?? true) {
+		hosturl = 'http://localhost:' + config.port
 		console.freshLine('server start', await geti18n('fountConsole.server.starting'))
 		const { registerEndpoints } = await import('./endpoints.mjs')
 		registerEndpoints(mainRouter)
@@ -202,18 +204,20 @@ export async function init(start_config) {
 		})
 	}
 
-	console.freshLine('server start', await geti18n('fountConsole.server.ready'))
+	if (starts?.Base ?? true) {
+		console.freshLine('server start', await geti18n('fountConsole.server.ready'))
+		const titleBackup = process.title
+		on_shutdown(() => setWindowTitle(titleBackup))
+		if (starts?.Tray ?? true) createTray().then(t => tray = t)
+		setDefaultStuff()
+		ReStartJobs()
+		startTimerHeartbeat()
+		console.freshLine('server start', Array(Math.floor(Math.random() * 7)).fill('fo-').join('') + 'fount!')
+	}
 	const endtime = new Date()
-	const titleBackup = process.title
-	on_shutdown(() => setWindowTitle(titleBackup))
-	if (starts?.Tray ?? true) createTray().then(t => tray = t)
-	setDefaultStuff()
-	console.freshLine('server start', Array(Math.floor(Math.random() * 7)).fill('fo-').join('') + 'fount!')
 	console.log(await geti18n('fountConsole.server.usesdTime', {
 		time: (endtime - startTime) / 1000
 	}))
-	ReStartJobs()
-	startTimerHeartbeat()
 	if (starts?.DiscordRPC ?? true) StartRPC()
 	return true
 }
