@@ -230,5 +230,6 @@ export async function init(start_config) {
 		time: (endtime - startTime) / 1000
 	}))
 	if (starts.DiscordRPC) StartRPC()
+	if (!fs.existsSync(__dirname + '/src/pages/favicon.ico')) await iconPromise
 	return true
 }
