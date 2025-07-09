@@ -1,5 +1,4 @@
 #!pwsh
-#_pragma icon $PSScriptRoot/../public/favicon.ico
 #_pragma title "fount background"
 #_pragma Console 0
 
