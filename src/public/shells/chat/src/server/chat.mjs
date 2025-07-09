@@ -1193,22 +1193,22 @@ export async function editMessage(chatid, index, new_content) {
 		}
 	}
 
-	if (index == chatMetadata.chatLog.length - 1) {
-		const { timeSlice } = chatMetadata.chatLog[index]
-		let entry
-		if (timeSlice.charname) {
-			const char = timeSlice.chars[timeSlice.charname]
-			entry = await BuildChatLogEntryFromCharReply(editresult, timeSlice, char, timeSlice.charname, chatMetadata.username)
-		}
-		else
-			entry = await BuildChatLogEntryFromUserMessage(editresult, timeSlice, chatMetadata.LastTimeSlice, chatMetadata.username)
-
-		chatMetadata.timeLines[chatMetadata.timeLineIndex] = chatMetadata.chatLog[index] = entry
+	const { timeSlice } = chatMetadata.chatLog[index]
+	let entry
+	if (timeSlice.charname) {
+		const char = timeSlice.chars[timeSlice.charname]
+		entry = await BuildChatLogEntryFromCharReply(editresult, timeSlice, char, timeSlice.charname, chatMetadata.username)
 	}
+	else
+		entry = await BuildChatLogEntryFromUserMessage(editresult, timeSlice, chatMetadata.LastTimeSlice, chatMetadata.username)
+
+	chatMetadata.chatLog[index] = entry
+	if (index == chatMetadata.chatLog.length - 1)
+		chatMetadata.timeLines[chatMetadata.timeLineIndex] = entry
 
 	if (is_VividChat(chatMetadata)) saveChat(chatid)
 
-	return chatMetadata.chatLog[index]
+	return entry
 }
 
 /**
