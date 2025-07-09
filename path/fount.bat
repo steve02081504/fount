@@ -14,13 +14,13 @@ if not errorlevel 1 (
 	goto :exit_batch
 )
 
-if exist "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" (
-	"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -noprofile -executionpolicy bypass -file "%~dp0fount.ps1" %*
+if exist "%windir%\System32\WindowsPowerShell\v1.0\powershell.exe" (
+	"%windir%\System32\WindowsPowerShell\v1.0\powershell.exe" -noprofile -executionpolicy bypass -file "%~dp0fount.ps1" %*
 	goto :exit_batch
 )
 
-if exist "C:\Windows\SysWOW64\WindowsPowerShell\v1.0\powershell.exe" (
-	"C:\Windows\SysWOW64\WindowsPowerShell\v1.0\powershell.exe" -noprofile -executionpolicy bypass -file "%~dp0fount.ps1" %*
+if exist "%windir%\SysWOW64\WindowsPowerShell\v1.0\powershell.exe" (
+	"%windir%\SysWOW64\WindowsPowerShell\v1.0\powershell.exe" -noprofile -executionpolicy bypass -file "%~dp0fount.ps1" %*
 	goto :exit_batch
 )
 
