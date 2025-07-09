@@ -235,7 +235,7 @@ El mundo de Fount es más que palabras y código; es un festín para los ojos y 
 
 ### Insignias de Fount: El Sello de la Gloria
 
-Puedes mostrar con orgullo esta insignia en tu repositorio o en cualquier lugar donde desees exhibir tu trabajo. Encuentra los archivos SVG y PNG del logotipo de Fount [aquí](../imgs/).
+Puedes mostrar con orgullo esta insignia en tu repositorio o en cualquier lugar donde desees exhibir tu trabajo. Encuentra los archivos SVG del logotipo de Fount [aquí](../imgs/).
 
 ```markdown
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)

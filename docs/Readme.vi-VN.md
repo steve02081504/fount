@@ -235,7 +235,7 @@ Thế giới của Fount không chỉ là từ ngữ và mã lệnh; đó là m�
 
 ### Huy hiệu Fount: Con dấu của vinh quang
 
-Bạn có thể tự hào hiển thị huy hiệu này trong kho lưu trữ của mình hoặc bất cứ nơi nào bạn muốn trưng bày tác phẩm của mình. Tìm các tệp SVG và PNG của logo Fount [tại đây](../imgs/).
+Bạn có thể tự hào hiển thị huy hiệu này trong kho lưu trữ của mình hoặc bất cứ nơi nào bạn muốn trưng bày tác phẩm của mình. Tìm các tệp SVG của logo Fount [tại đây](../imgs/).
 
 ```markdown
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)

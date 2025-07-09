@@ -235,7 +235,7 @@ Le monde de Fount est plus que des mots et du code ; c'est un festin pour les ye
 
 ### Badges Fount : Le Sceau de la Gloire
 
-Vous pouvez fièrement afficher ce badge dans votre dépôt ou partout où vous souhaitez présenter votre travail. Retrouvez les fichiers SVG et PNG du logo Fount [ici](../imgs/).
+Vous pouvez fièrement afficher ce badge dans votre dépôt ou partout où vous souhaitez présenter votre travail. Retrouvez les fichiers SVG du logo Fount [ici](../imgs/).
 
 ```markdown
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)

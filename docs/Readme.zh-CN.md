@@ -236,7 +236,7 @@ Fount 的世界不止是文字与代码，它更是一场视觉与连接的盛�
 
 ### Fount 徽章：荣耀的印记
 
-你可以自豪地在你的仓库或任何希望展示的地方，使用这枚徽章。你可以在[此处](../imgs/)找到 Fount logo 的 SVG 和 PNG 文件。
+你可以自豪地在你的仓库或任何希望展示的地方，使用这枚徽章。你可以在[此处](../imgs/)找到 Fount logo 的 SVG 文件。
 
 ```markdown
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
