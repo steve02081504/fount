@@ -142,7 +142,7 @@ export let tray
 export async function init(start_config) {
 	data_path = start_config.data_path
 	const starts = start_config.starts ?? {}
-	for (const start in ['Base', 'IPC', 'Web', 'Tray', 'DiscordIPC']) starts[start] ??= true
+	for (const start of ['Base', 'IPC', 'Web', 'Tray', 'DiscordIPC']) starts[start] ??= true
 	if (starts.Base) {
 		console.freshLine('server start', await geti18n('fountConsole.server.start'))
 		process.on('error', console.log)

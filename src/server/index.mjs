@@ -18,13 +18,6 @@ console.log(await geti18n('fountConsole.server.standingBy'))
 let args = process.argv.slice(2)
 
 const fount_config = {
-	starts: {
-		Base: true,
-		IPC: true,
-		Web: true,
-		Tray: true,
-		DiscordIPC: true,
-	},
 	data_path: __dirname + '/data',
 }
 
@@ -51,7 +44,6 @@ if (args.length) {
 		}
 		fount_config.starts = {
 			Base: false,
-			IPC: true,
 			Web: false,
 			Tray: false,
 			DiscordIPC: false,
