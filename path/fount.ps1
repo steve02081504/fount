@@ -418,22 +418,25 @@ function run {
 	}
 	if ($args.Count -gt 0 -and $args[0] -eq 'debug') {
 		$newargs = $args[1..$args.Count]
-		deno run --allow-scripts --allow-all --inspect-brk "$FOUNT_DIR/src/server/index.mjs" @newargs
+		deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" "$FOUNT_DIR/src/server/index.mjs" @newargs
 	}
 	else {
-		deno run --allow-scripts --allow-all "$FOUNT_DIR/src/server/index.mjs" @args
+		deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" "$FOUNT_DIR/src/server/index.mjs" @args
 	}
 }
 
 # 安装依赖
 if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $args[0] -eq 'init')) {
-	git -C "$FOUNT_DIR" clean -fd
+	if (!(Test-Path -Path "$FOUNT_DIR/.noupdate")) {
+		git -C "$FOUNT_DIR" clean -fd
+		git -C "$FOUNT_DIR" reset --hard "origin/master"
+	}
 	if (Test-Path -Path "$FOUNT_DIR/node_modules") {
 		run shutdown
 	}
 	New-Item -Path "$FOUNT_DIR/node_modules" -ItemType Directory -ErrorAction Ignore -Force | Out-Null
 	Write-Host "Installing dependencies..."
-	deno install --reload --allow-scripts --allow-all --node-modules-dir=auto --entrypoint "$FOUNT_DIR/src/server/index.mjs"
+	deno install --reload --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --entrypoint "$FOUNT_DIR/src/server/index.mjs"
 	Write-Host "======================================================" -ForegroundColor Green
 	Write-Warning "DO NOT install any untrusted fount parts on your system, they can do ANYTHING."
 	Write-Host "======================================================" -ForegroundColor Green
