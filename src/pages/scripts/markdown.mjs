@@ -10,6 +10,7 @@ import rehypePrettyCode from 'https://esm.run/rehype-pretty-code'
 import rehypeMermaid from 'https://esm.run/rehype-mermaid'
 import { transformerCopyButton } from 'https://esm.run/@rehype-pretty/transformers'
 import { visit } from 'https://esm.run/unist-util-visit'
+import { h } from 'https://esm.run/hastscript'
 import { onThemeChange } from './theme.mjs'
 import { createDOMFromHtmlString } from './template.mjs'
 
@@ -45,7 +46,21 @@ const convertor = unified()
 	.use(remarkGfm, {
 		singleTilde: false,
 	})
-	.use(rehypeMermaid)
+	.use(rehypeMermaid, {
+		dark: true,
+		errorFallback: (element, diagram, error) => {
+			// https://github.com/remcohaszing/rehype-mermaid/issues/31
+			document.getElementById('dmermaid-0')?.remove()
+			document.getElementById('dmermaid-dark-0')?.remove()
+
+			return h('pre.mermaid-error-fallback', `\
+❌ Mermaid Diagram Failed to Render
+Error: ${error.message}
+--- Diagram Source ---
+${diagram}`
+			)
+		}
+	})
 	.use(rehypePrettyCode, {
 		theme: {
 			dark: 'github-dark-dimmed',
