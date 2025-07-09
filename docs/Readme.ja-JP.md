@@ -237,7 +237,7 @@ Fountの世界は単なる言葉やコードではありません。それは目
 
 騎士の盾のように、Fountバッジはあなたの創造物に対する栄光の印です。このバッジをリポジトリや、あなたの作品を展示したい任意の場所に誇らしげに表示できます。
 
-FountロゴのSVGおよびPNGファイルは[こちら](../imgs/)にあります。
+FountロゴのSVGファイルは[こちら](../imgs/)にあります。
 
 ```markdown
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)

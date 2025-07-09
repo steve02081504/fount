@@ -235,7 +235,7 @@ Die Welt von Fount ist mehr als Worte und Code; sie ist ein Fest für die Augen 
 
 ### Fount-Embleme: Das Siegel des Ruhms
 
-Du kannst dieses Emblem stolz in deinem Repository oder überall dort präsentieren, wo du deine Arbeit zeigen möchtest. Die SVG- und PNG-Dateien des Fount-Logos findest du [hier](../imgs/).
+Du kannst dieses Emblem stolz in deinem Repository oder überall dort präsentieren, wo du deine Arbeit zeigen möchtest. Die SVG-Dateien des Fount-Logos findest du [hier](../imgs/).
 
 ```markdown
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)

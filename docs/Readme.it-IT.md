@@ -235,7 +235,7 @@ Il mondo di Fount è più di parole e codice; è una festa per gli occhi e un in
 
 ### Stemma Fount: Il Sigillo della Gloria
 
-Puoi esporre con orgoglio questo stemma nel tuo repository o ovunque desideri mostrare il tuo lavoro. Trova i file SVG e PNG del logo Fount [qui](../imgs/).
+Puoi esporre con orgoglio questo stemma nel tuo repository o ovunque desideri mostrare il tuo lavoro. Trova i file SVG del logo Fount [qui](../imgs/).
 
 ```markdown
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)

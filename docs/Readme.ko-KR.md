@@ -237,7 +237,7 @@ Fount의 세계는 단순한 단어와 코드를 넘어, 눈을 즐겁게 하고
 
 기사의 방패처럼, Fount 배지는 당신의 창작물에 대한 영광의 인장입니다. 이 배지를 리포지토리나 당신의 작품을 전시하고 싶은 곳 어디든 자랑스럽게 표시할 수 있습니다.
 
-Fount 로고의 SVG 및 PNG 파일은 [여기](../imgs/)에서 찾을 수 있습니다.
+Fount 로고의 SVG 파일은 [여기](../imgs/)에서 찾을 수 있습니다.
 
 ```markdown
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)

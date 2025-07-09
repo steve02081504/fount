@@ -235,7 +235,7 @@ The world of Fount is more than words and code; it's a feast for the eyes and an
 
 ### Fount Badges: The Seal of Glory
 
-You can proudly display this badge in your repository or anywhere you wish to showcase your work. Find the SVG and PNG files of the Fount logo [here](../imgs/).
+You can proudly display this badge in your repository or anywhere you wish to showcase your work. Find the SVG files of the Fount logo [here](../imgs/).
 
 ```markdown
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
