@@ -21,7 +21,6 @@ import { startTimerHeartbeat } from './timers.mjs'
 import supportsAnsi from 'npm:supports-ansi'
 import { loadJsonFile, saveJsonFile } from '../scripts/json_loader.mjs'
 import { nicerWriteFileSync } from '../scripts/nicerWriteFile.mjs'
-import { in_docker } from '../scripts/env.mjs'
 
 export { __dirname }
 const app = express()
@@ -158,7 +157,7 @@ export async function init(start_config) {
 		if (!await new IPCManager().startServer()) return false
 	}
 	let iconPromise
-	if (!in_docker && (starts.Tray || starts.Web || !fs.existsSync(__dirname + '/src/pages/favicon.ico')))
+	if (starts.Tray || starts.Web || !fs.existsSync(__dirname + '/src/pages/favicon.ico'))
 		iconPromise = (async () => {
 			const { render: resvg } = await import('https://deno.land/x/resvg_wasm/mod.ts')
 			const { default: pngToIco } = await import('npm:png-to-ico')
