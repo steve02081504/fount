@@ -1,5 +1,6 @@
 @echo off
 setlocal enabledelayedexpansion
+set POWERSHELL_UPDATECHECK=Off
 
 where pwsh.exe >nul 2>&1
 if not errorlevel 1 (
