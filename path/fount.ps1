@@ -565,6 +565,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'keepalive') {
 }
 elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 	run shutdown
+	deno clean
 	Write-Host "Removing fount..."
 
 	# Remove fount from PATH

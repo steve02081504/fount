@@ -913,6 +913,7 @@ keepalive)
 remove)
 	echo "Initiating fount uninstallation..."
 	run shutdown
+	run_deno clean
 	profile_files=("$HOME/.profile" "$HOME/.bashrc" "$HOME/.zshrc")
 	for profile_file in "${profile_files[@]}"; do
 		if [ -f "$profile_file" ]; then
@@ -920,7 +921,7 @@ remove)
 			run_sed_inplace '/export PATH="\$PATH:'"$ESCAPED_FOUNT_DIR"'\/path"/d' "$profile_file"
 		fi
 	done
-	PATH=$(echo "$PATH" | tr ':' '\n' | grep -v "$FOUNT_DIR/path" | grep -v "$HOME/.deno/bin" | tr '\n' ':' | sed 's/:*$//')
+	PATH=$(echo "$PATH" | tr ':' '\n' | grep -v "$FOUNT_DIR/path" | tr '\n' ':' | sed 's/:*$//')
 	export PATH
 	remove_desktop_shortcut
 	if [[ $IN_TERMUX -eq 1 ]]; then
@@ -934,6 +935,8 @@ remove)
 		for profile_file in "${profile_files[@]}"; do
 			if [ -f "$profile_file" ]; then run_sed_inplace '/\.deno/d' "$profile_file"; fi
 		done
+		PATH=$(echo "$PATH" | tr ':' '\n' | grep -v "$HOME/.deno/bin" | tr '\n' ':' | sed 's/:*$//')
+		export PATH
 		rm -f "$AUTO_INSTALLED_DENO_FLAG"
 	fi
 	echo "Removing fount installation directory: $FOUNT_DIR"
