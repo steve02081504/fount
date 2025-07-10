@@ -2,7 +2,7 @@ import { getUserByUsername, getAllUserNames } from './auth.mjs'
 import { save_config } from './server.mjs'
 import { loadPart } from './managers/index.mjs'
 import { getAllContextData, runWithContexts } from 'npm:als-registry'
-import { async_eval } from 'npm:@steve02081504/async-eval'
+import { async_eval } from 'https://cdn.jsdelivr.net/gh/steve02081504/async-eval/deno.mjs'
 
 export function setTimer(username, parttype, partname, uid, { trigger, callbackdata, repeat }) {
 	const timers = getUserByUsername(username).timers ??= {}
