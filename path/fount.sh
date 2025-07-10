@@ -725,10 +725,12 @@ fount_upgrade() {
 }
 
 # 更新 Fount
-if [ -f "$FOUNT_DIR/.noupdate" ]; then
-	echo "Skipping fount update due to .noupdate file."
-else
-	fount_upgrade
+if [[ $# -eq 0 || $1 != "shutdown" ]]; then
+	if [ -f "$FOUNT_DIR/.noupdate" ]; then
+		echo "Skipping fount update due to .noupdate file."
+	else
+		fount_upgrade
+	fi
 fi
 
 # 函数: 安装 Deno
@@ -810,11 +812,6 @@ install_deno
 
 # 函数: 升级 Deno
 deno_upgrade() {
-	if [ $IN_DOCKER -eq 1 ]; then
-		echo "Skipping Deno upgrade in Docker environment."
-		return
-	fi
-
 	echo "Checking for Deno updates..."
 	local deno_version_before
 	deno_version_before=$(run_deno -V 2>&1)
@@ -842,8 +839,15 @@ deno_upgrade() {
 		fi
 	fi
 }
-deno_upgrade
-run_deno -V
+
+if [[ $# -eq 0 || $1 != "shutdown" ]]; then
+	if [ $IN_DOCKER -eq 1 ]; then
+		echo "Skipping Deno upgrade in Docker environment."
+	else
+		deno_upgrade
+	fi
+	run_deno -V
+fi
 
 # 函数: 运行 fount
 run() {

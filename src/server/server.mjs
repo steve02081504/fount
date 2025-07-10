@@ -21,6 +21,8 @@ import { startTimerHeartbeat } from './timers.mjs'
 import supportsAnsi from 'npm:supports-ansi'
 import { loadJsonFile, saveJsonFile } from '../scripts/json_loader.mjs'
 import { nicerWriteFileSync } from '../scripts/nicerWriteFile.mjs'
+import figlet from 'npm:figlet'
+import chalk from 'npm:chalk'
 
 export { __dirname }
 const app = express()
@@ -199,7 +201,7 @@ export async function init(start_config) {
 				server = https.createServer(options, app).listen(port, async () => {
 					hosturl = 'https://localhost:' + port
 					console.log(await geti18n('fountConsole.server.showUrl.https', {
-						url: 'https://localhost:' + port
+						url: supportsAnsi ? `\x1b]8;;${hosturl}\x1b\\${hosturl}\x1b]8;;\x1b\\` : hosturl
 					}))
 					resolve()
 				})
@@ -207,7 +209,7 @@ export async function init(start_config) {
 			else
 				server = http.createServer(app).listen(port, async () => {
 					console.log(await geti18n('fountConsole.server.showUrl.http', {
-						url: 'http://localhost:' + port
+						url: supportsAnsi ? `\x1b]8;;${hosturl}\x1b\\${hosturl}\x1b]8;;\x1b\\` : hosturl
 					}))
 					resolve()
 				})
@@ -223,7 +225,13 @@ export async function init(start_config) {
 		setDefaultStuff()
 		ReStartJobs()
 		startTimerHeartbeat()
-		console.freshLine('server start', Array(Math.floor(Math.random() * 7)).fill('fo-').join('') + 'fount!')
+		let logo = Array(Math.floor(Math.random() * 7)).fill('fo-').join('') + 'fount!'
+		logo = await figlet(logo, {
+			font: 'Pagga',
+			width: process.stdout.columns - 1,
+			whitespaceBreak: true
+		}).catch(_ => logo)
+		console.freshLine('server start', chalk.hex('#0e3c5c')(logo))
 	}
 	const endtime = new Date()
 	console.log(await geti18n('fountConsole.server.usesdTime', {

@@ -321,11 +321,13 @@ function fount_upgrade {
 	}
 }
 
-if (Test-Path -Path "$FOUNT_DIR/.noupdate") {
-	Write-Host "Skipping fount update due to .noupdate file"
-}
-else {
-	fount_upgrade
+if ($args.Count -eq 0 -or $args[0] -ne 'shutdown') {
+	if (Test-Path -Path "$FOUNT_DIR/.noupdate") {
+		Write-Host "Skipping fount update due to .noupdate file"
+	}
+	else {
+		fount_upgrade
+	}
 }
 
 # Deno 安装
@@ -390,14 +392,16 @@ function deno_upgrade() {
 	deno upgrade -q $deno_update_channel
 }
 
-if ($IN_DOCKER) {
-	Write-Host "Skipping deno upgrade in Docker environment"
-}
-else {
-	deno_upgrade
-}
+if ($args.Count -eq 0 -or $args[0] -ne 'shutdown') {
+	if ($IN_DOCKER) {
+		Write-Host "Skipping deno upgrade in Docker environment"
+	}
+	else {
+		deno_upgrade
+	}
 
-deno -V
+	deno -V
+}
 
 # 执行 fount
 function isRoot {
