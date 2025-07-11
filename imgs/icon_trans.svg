@@ -55,26 +55,14 @@
 		</g>
 		<g>
 			<title>base</title>
-			<g>
-				<ellipse cx="150.395" cy="735.067" rx="21.225" ry="22.778" class="B"/>
+			<g id="base_clone">
+				<ellipse cx="150.395" cy="735.067" rx="21.225" ry="22.8" class="B"/>
 				<path d="M150.654 712.108h730.649v45.743H150.654z" class="B"/>
-				<ellipse cx="-880.15" cy="735.067" rx="21.225" ry="22.778" transform="matrix(-1, 0, 0, 1, 0, 0)" class="B"/>
+				<ellipse cx="-880.15" cy="735.067" rx="21.225" ry="22.8" transform="matrix(-1, 0, 0, 1, 0, 0)" class="B"/>
 			</g>
-			<g>
-				<ellipse cx="149.669" cy="818.237" rx="21.225" ry="22.778" class="B"/>
-				<path d="M149.928 795.278h730.649v45.743H149.928z" class="B"/>
-				<ellipse cx="-880.87" cy="818.237" rx="21.225" ry="22.778" transform="matrix(-1, 0, 0, 1, 0, 0)" class="B"/>
-			</g>
-			<g>
-				<ellipse cx="149.108" cy="903.034" rx="21.225" ry="22.778" class="B"/>
-				<path d="M149.367 880.075h730.649v45.743H149.367z" class="B"/>
-				<ellipse cx="-881.44" cy="903.034" rx="21.225" ry="22.778" transform="matrix(-1, 0, 0, 1, 0, 0)" class="B"/>
-			</g>
-			<g>
-				<ellipse cx="149.669" cy="986.584" rx="21.225" ry="22.778" class="B"/>
-				<path d="M 149.928 963.625 L 880.577 963.625 L 880.577 1009.37 L 149.928 1009.37 L 149.928 963.625 Z" class="B"/>
-				<ellipse cx="-880.87" cy="986.584" rx="21.225" ry="22.778" transform="matrix(-1, 0, 0, 1, 0, 0)" class="B"/>
-			</g>
+			<use href="#base_clone" y="83"/>
+			<use href="#base_clone" y="166"/>
+			<use href="#base_clone" y="249"/>
 		</g>
 	</g>
 </svg>

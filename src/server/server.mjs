@@ -23,6 +23,7 @@ import { loadJsonFile, saveJsonFile } from '../scripts/json_loader.mjs'
 import { nicerWriteFileSync } from '../scripts/nicerWriteFile.mjs'
 import figlet from 'npm:figlet'
 import chalk from 'npm:chalk'
+import { buffer } from "node:stream/consumers";
 
 export { __dirname }
 const app = express()
@@ -161,11 +162,15 @@ export async function init(start_config) {
 	let iconPromise
 	if (starts.Tray || starts.Web || !fs.existsSync(__dirname + '/src/pages/favicon.ico'))
 		iconPromise = (async () => {
-			const { render: resvg } = await import('https://deno.land/x/resvg_wasm/mod.ts')
+			const { default: svg2img } = await import('npm:svg2img')
 			const { default: pngToIco } = await import('npm:png-to-ico')
 			const { Buffer } = await import('node:buffer')
-			const svg = fs.readFileSync(__dirname + '/imgs/icon.svg', 'utf-8')
-			const favpngbuf = await resvg(svg).then((buffer) => Buffer.from(buffer))
+			const favpngbuf = await new Promise((resolve, reject) =>
+				svg2img(__dirname + '/imgs/icon.svg', (error, buffer) => {
+					if (error) return reject(error)
+					resolve(Buffer.from(buffer))
+				})
+			)
 			nicerWriteFileSync(__dirname + '/src/pages/favicon.png', favpngbuf)
 			const favicobuf = await pngToIco(favpngbuf)
 			nicerWriteFileSync(__dirname + '/src/pages/favicon.ico', favicobuf)
