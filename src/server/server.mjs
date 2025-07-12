@@ -45,7 +45,7 @@ mainRouter.use(async (req, res, next) => {
 })
 function diff_if_auth(if_auth, if_not_auth) {
 	return async (req, res, next) => {
-		if(await auth_request(req)) return if_auth(req, res, next)
+		if (await auth_request(req)) return if_auth(req, res, next)
 		return if_not_auth(req, res, next)
 	}
 }
@@ -226,11 +226,13 @@ export async function init(start_config) {
 		ReStartJobs()
 		startTimerHeartbeat()
 		let logo = Array(Math.floor(Math.random() * 7)).fill('fo-').join('') + 'fount!'
-		logo = await figlet(logo, {
-			font: 'Pagga',
-			width: process.stdout.columns - 1,
-			whitespaceBreak: true
-		}).catch(_ => logo)
+		try {
+			logo = figlet.textSync(logo, {
+				font: 'Pagga',
+				width: process.stdout.columns - 1,
+				whitespaceBreak: true
+			})
+		} catch { /* ignore */ }
 		console.freshLine('server start', chalk.hex('#0e3c5c')(logo))
 	}
 	const endtime = new Date()
