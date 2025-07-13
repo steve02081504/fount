@@ -386,12 +386,17 @@
 			"save": "Сохранить",
 			"delete": "Удалить"
 		},
+		"tooltips": {
+			"setDefault": "Установить по умолчанию"
+		},
 		"alerts": {
 			"fetchFileListFailed": "Не удалось получить список файлов: ${error}",
 			"fetchGeneratorListFailed": "Не удалось получить список генераторов: ${error}",
+			"fetchDefaultsFailed": "Не удалось получить компонент по умолчанию: ${error}",
 			"fetchFileDataFailed": "Не удалось получить данные файла: ${error}",
 			"noFileSelectedSave": "Файл для сохранения не выбран.",
 			"saveFileFailed": "Не удалось сохранить файл: ${error}",
+			"setDefaultFailed": "Установка исходного источника AI по умолчанию не удалось: ${error}",
 			"noFileSelectedDelete": "Файл для удаления не выбран.",
 			"deleteFileFailed": "Не удалось удалить файл: ${error}",
 			"invalidFileName": "Имя файла не может содержать следующие символы: / \\ : * ? \" < > |",

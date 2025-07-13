@@ -386,12 +386,17 @@
 			"save": "Speichern",
 			"delete": "Löschen"
 		},
+		"tooltips": {
+			"setDefault": "Standardmäßig festgelegt"
+		},
 		"alerts": {
 			"fetchFileListFailed": "Fehler beim Abrufen der Dateiliste: ${error}",
 			"fetchGeneratorListFailed": "Fehler beim Abrufen der Generatorliste: ${error}",
+			"fetchDefaultsFailed": "Die Standardkomponente nicht erhalten: ${error}",
 			"fetchFileDataFailed": "Fehler beim Abrufen der Dateidaten: ${error}",
 			"noFileSelectedSave": "Keine Datei zum Speichern ausgewählt.",
 			"saveFileFailed": "Fehler beim Speichern der Datei: ${error}",
+			"setDefaultFailed": "Festlegen der Standard -AI -Quelle fehlgeschlagen: ${error}",
 			"noFileSelectedDelete": "Keine Datei zum Löschen ausgewählt.",
 			"deleteFileFailed": "Fehler beim Löschen der Datei: ${error}",
 			"invalidFileName": "Der Dateiname darf folgende Zeichen nicht enthalten: / \\ : * ? \" < > |",

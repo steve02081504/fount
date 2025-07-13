@@ -386,12 +386,17 @@
 			"save": "Lưu",
 			"delete": "Xóa"
 		},
+		"tooltips": {
+			"setDefault": "Đặt làm mặc định"
+		},
 		"alerts": {
 			"fetchFileListFailed": "Lấy danh sách tệp thất bại: ${error}",
 			"fetchGeneratorListFailed": "Lấy danh sách trình tạo thất bại: ${error}",
+			"fetchDefaultsFailed": "Không nhận được thành phần mặc định: ${error}",
 			"fetchFileDataFailed": "Lấy dữ liệu tệp thất bại: ${error}",
 			"noFileSelectedSave": "Chưa chọn tệp để lưu.",
 			"saveFileFailed": "Lưu tệp thất bại: ${error}",
+			"setDefaultFailed": "Đặt nguồn AI mặc định không thành công: ${error}",
 			"noFileSelectedDelete": "Chưa chọn tệp để xóa.",
 			"deleteFileFailed": "Xóa tệp thất bại: ${error}",
 			"invalidFileName": "Tên tệp không được chứa các ký tự sau: / \\ : * ? \" < > |",

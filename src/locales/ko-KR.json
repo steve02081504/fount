@@ -386,12 +386,17 @@
 			"save": "저장",
 			"delete": "삭제"
 		},
+		"tooltips": {
+			"setDefault": "기본값으로 설정합니다"
+		},
 		"alerts": {
 			"fetchFileListFailed": "파일 목록을 가져오는 데 실패했습니다: ${error}",
 			"fetchGeneratorListFailed": "생성기 목록을 가져오는 데 실패했습니다: ${error}",
+			"fetchDefaultsFailed": "기본 구성 요소를 얻지 못했습니다 : ${error}",
 			"fetchFileDataFailed": "파일 데이터를 가져오는 데 실패했습니다: ${error}",
 			"noFileSelectedSave": "저장할 파일이 선택되지 않았습니다.",
 			"saveFileFailed": "파일 저장에 실패했습니다: ${error}",
+			"setDefaultFailed": "기본 AI 소스 설정 실패 : ${error}",
 			"noFileSelectedDelete": "삭제할 파일이 선택되지 않았습니다.",
 			"deleteFileFailed": "파일 삭제에 실패했습니다: ${error}",
 			"invalidFileName": "파일 이름에는 다음 문자를 사용할 수 없습니다: / \\ : * ? \" < > |",
