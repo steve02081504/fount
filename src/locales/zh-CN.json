@@ -386,12 +386,17 @@
 			"save": "保存",
 			"delete": "删除"
 		},
+		"tooltips": {
+			"setDefault": "设为默认"
+		},
 		"alerts": {
 			"fetchFileListFailed": "获取文件列表失败: ${error}",
 			"fetchGeneratorListFailed": "获取生成器列表失败: ${error}",
+			"fetchDefaultsFailed": "获取默认部件失败: ${error}",
 			"fetchFileDataFailed": "获取文件数据失败: ${error}",
 			"noFileSelectedSave": "没有选择要保存的文件。",
 			"saveFileFailed": "保存文件失败: ${error}",
+			"setDefaultFailed": "设置默认 AI 源失败: ${error}",
 			"noFileSelectedDelete": "没有选择要删除的文件。",
 			"deleteFileFailed": "删除文件失败: ${error}",
 			"invalidFileName": "文件名不能包含以下字符： / \\ : * ? \" < > |",

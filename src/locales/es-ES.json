@@ -386,12 +386,17 @@
 			"save": "Guardar",
 			"delete": "Eliminar"
 		},
+		"tooltips": {
+			"setDefault": "Establecer como predeterminado"
+		},
 		"alerts": {
 			"fetchFileListFailed": "Error al obtener la lista de archivos: ${error}",
 			"fetchGeneratorListFailed": "Error al obtener la lista de generadores: ${error}",
+			"fetchDefaultsFailed": "No se pudo obtener el componente predeterminado: ${error}",
 			"fetchFileDataFailed": "Error al obtener los datos del archivo: ${error}",
 			"noFileSelectedSave": "No se ha seleccionado ningún archivo para guardar.",
 			"saveFileFailed": "Error al guardar el archivo: ${error}",
+			"setDefaultFailed": "Configuración de la fuente AI predeterminada falló: ${error}",
 			"noFileSelectedDelete": "No se ha seleccionado ningún archivo para eliminar.",
 			"deleteFileFailed": "Error al eliminar el archivo: ${error}",
 			"invalidFileName": "El nombre del archivo no puede contener los siguientes caracteres: / \\ : * ? \" < > |",

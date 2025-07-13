@@ -1,15 +1,6 @@
-export async function setDefaultPart(parttype, partname) {
-	return fetch('/api/shells/home/setdefault', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ parttype, partname }),
-	})
-}
-
 export async function getHomeRegistry() {
-	return fetch('/api/shells/home/gethomeregistry')
-}
-
-export async function getDefaultParts() {
-	return fetch('/api/shells/home/getdefaultparts')
+	return fetch('/api/shells/home/gethomeregistry').then(async response => {
+		if (response.ok) return response.json()
+		else return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response }))
+	})
 }

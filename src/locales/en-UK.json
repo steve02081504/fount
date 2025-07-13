@@ -386,12 +386,17 @@
 			"save": "Save",
 			"delete": "Delete"
 		},
+		"tooltips": {
+			"setDefault": "Set as default"
+		},
 		"alerts": {
 			"fetchFileListFailed": "Failed to get file list: ${error}",
 			"fetchGeneratorListFailed": "Failed to get generator list: ${error}",
+			"fetchDefaultsFailed": "Failed to get the default component: ${error}",
 			"fetchFileDataFailed": "Failed to get file data: ${error}",
 			"noFileSelectedSave": "No file selected to save.",
 			"saveFileFailed": "Failed to save file: ${error}",
+			"setDefaultFailed": "Setting the default AI source failed: ${error}",
 			"noFileSelectedDelete": "No file selected to delete.",
 			"deleteFileFailed": "Failed to delete file: ${error}",
 			"invalidFileName": "File name cannot contain the following characters: / \\ : * ? \" < > |",

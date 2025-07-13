@@ -38,3 +38,16 @@ export async function noCacheGetPersonaDetails(personaname) {
 	const response = await fetch('/api/getdetails/personas?name=' + personaname + '&nocache=true')
 	return response.json()
 }
+export async function setDefaultPart(parttype, partname) {
+	return fetch('/api/setdefaultpart', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ parttype, partname }),
+	})
+}
+export async function getDefaultParts() {
+	return fetch('/api/getdefaultparts').then(async response => {
+		if (response.ok) return response.json()
+		else return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response }))
+	})
+}

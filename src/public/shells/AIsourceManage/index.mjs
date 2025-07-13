@@ -1,7 +1,7 @@
 import { createJsonEditor } from '../../scripts/jsonEditor.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
-import { getPartList } from '../../scripts/parts.mjs'
+import { getPartList, setDefaultPart, getDefaultParts } from '../../scripts/parts.mjs'
 import { getConfigTemplate, getAIFile, setAIFile, deleteAIFile, addAIFile } from './src/public/endpoints.mjs'
 
 const jsonEditorContainer = document.getElementById('jsonEditor')
@@ -19,6 +19,7 @@ let jsonEditor = null
 let fileList = []
 let generatorList = []
 let isDirty = false // 标记是否有未保存的更改
+let defaultParts = {} // Store default parts
 
 // 统一的错误处理函数
 function handleFetchError(customMessage) {
@@ -40,22 +41,73 @@ async function fetchGeneratorList() {
 	renderGeneratorSelect()
 }
 
+async function fetchDefaultParts() {
+	defaultParts = await getDefaultParts().catch(handleFetchError('aisource_editor.alerts.fetchDefaultsFailed'))
+	updateDefaultPartDisplay()
+}
+
 function renderFileList() {
 	fileListDiv.innerHTML = ''
 	fileList.forEach(fileName => {
 		const listItem = document.createElement('div')
 		listItem.classList.add('file-list-item')
+		listItem.dataset.name = fileName // Add data-name attribute
+
 		const p = document.createElement('p')
 		p.textContent = fileName
+		p.classList.add('flex-grow') // Allow text to take up space
 		listItem.appendChild(p)
+
+		// Default item checkbox
+		const checkboxContainer = document.createElement('div')
+		checkboxContainer.classList.add('tooltip', 'tooltip-left')
+		checkboxContainer.dataset.tip = geti18n('aisource_editor.tooltips.setDefault')
+
+		const checkbox = document.createElement('input')
+		checkbox.type = 'checkbox'
+		checkbox.classList.add('default-checkbox', 'checkbox', 'checkbox-primary')
+		checkboxContainer.appendChild(checkbox)
+		listItem.appendChild(checkboxContainer)
+
+		checkbox.addEventListener('change', async (event) => {
+			event.stopPropagation() // Prevent click from triggering loadEditor
+			const isChecked = event.target.checked
+			const newDefault = isChecked ? fileName : null
+
+			try {
+				await setDefaultPart('AIsources', newDefault)
+				// Update local state and UI on success
+				defaultParts.AIsources = newDefault
+				updateDefaultPartDisplay()
+			} catch (error) {
+				handleFetchError('aisource_editor.alerts.setDefaultFailed')(error)
+				// Revert checkbox on failure
+				event.target.checked = !isChecked
+			}
+		})
+
+		// Prevent checkbox click from triggering list item click
+		checkboxContainer.addEventListener('click', (event) => event.stopPropagation())
 		listItem.addEventListener('click', () => loadEditor(fileName))
 		fileListDiv.appendChild(listItem)
 	})
+
+	updateDefaultPartDisplay() // Apply styles for default item
 
 	if (fileList.length > 0) {
 		const fileToLoad = activeFile && fileList.includes(activeFile) ? activeFile : fileList[0]
 		loadEditor(fileToLoad)
 	}
+}
+
+function updateDefaultPartDisplay() {
+	const defaultPartName = defaultParts.AIsources
+	fileListDiv.querySelectorAll('.file-list-item').forEach(el => {
+		const isDefault = el.dataset.name === defaultPartName
+		el.classList.toggle('selected-item', isDefault)
+		const checkbox = el.querySelector('.default-checkbox')
+		if (checkbox) checkbox.checked = isDefault
+	})
 }
 
 function renderGeneratorSelect() {
@@ -94,11 +146,8 @@ async function loadEditor(fileName) {
 		return
 
 	document.querySelectorAll('.file-list-item').forEach(item => item.classList.remove('active'))
-	const activeItemIndex = fileList.indexOf(fileName)
-	if (activeItemIndex !== -1) {
-		const fileItem = document.querySelector(`#fileList .file-list-item:nth-child(${activeItemIndex + 1})`)
-		if (fileItem) fileItem.classList.add('active')
-	}
+	const activeItem = fileListDiv.querySelector(`.file-list-item[data-name="${fileName}"]`)
+	if (activeItem) activeItem.classList.add('active')
 
 	activeFile = fileName
 	const data = await getAIFile(fileName).catch(handleFetchError('aisource_editor.alerts.fetchFileDataFailed'))
@@ -172,8 +221,10 @@ async function deleteFile() {
 	await fetchFileList()
 
 	//  不清空 jsonEditor，而是禁用并清空
-	if (fileList.length === 0)
+	if (fileList.length === 0) {
+		updateEditorContent({})
 		disableEditor()
+	}
 }
 
 async function addFile() {
@@ -197,12 +248,14 @@ function isValidFileName(fileName) {
 	return !invalidChars.test(fileName)
 }
 
-// 初始化
+// Initialization
 applyTheme()
-fetchFileList()
-fetchGeneratorList()
 initTranslations('aisource_editor')
 disableEditor()
+
+fetchFileList()
+fetchGeneratorList()
+fetchDefaultParts()
 
 saveButton.addEventListener('click', saveFile)
 deleteButton.addEventListener('click', deleteFile)
@@ -213,11 +266,10 @@ generatorSelect.addEventListener('change', async () => {
 	if (selectedGenerator) {
 		const template = await fetchConfigTemplate(selectedGenerator)
 		updateEditorContent(template)
+		enableEditor()
 	}
 	else
 		disableEditor()
-	enableEditor() //无论如何都调用
-
 })
 
 window.addEventListener('beforeunload', (event) => {

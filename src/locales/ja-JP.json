@@ -386,12 +386,17 @@
 			"save": "保存",
 			"delete": "削除"
 		},
+		"tooltips": {
+			"setDefault": "デフォルトとして設定します"
+		},
 		"alerts": {
 			"fetchFileListFailed": "ファイルリストの取得に失敗しました: ${error}",
 			"fetchGeneratorListFailed": "ジェネレーターリストの取得に失敗しました: ${error}",
+			"fetchDefaultsFailed": "デフォルトのコンポーネントを取得できませんでした：${error}",
 			"fetchFileDataFailed": "ファイルデータの取得に失敗しました: ${error}",
 			"noFileSelectedSave": "保存するファイルが選択されていません。",
 			"saveFileFailed": "ファイルの保存に失敗しました: ${error}",
+			"setDefaultFailed": "デフォルトのAIソースの設定失敗：${error}",
 			"noFileSelectedDelete": "削除するファイルが選択されていません。",
 			"deleteFileFailed": "ファイルの削除に失敗しました: ${error}",
 			"invalidFileName": "ファイル名に次の文字は使用できません： / \\ : * ? \" < > |",

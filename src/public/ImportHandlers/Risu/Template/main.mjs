@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { loadAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs' // 调整路径
+import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs' // 调整路径
 import { saveJsonFile } from '../../../../../src/scripts/json_loader.mjs' // 调整路径
 import { promptBuilder } from '../../../../../src/public/ImportHandlers/SillyTavern/engine/prompt_builder.mjs' // 复用ST引擎
 import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/server/prompt_struct.mjs' // 调整路径
@@ -114,11 +114,6 @@ const charAPI_definition = { // 先定义结构主体
 	Uninstall: () => { },
 	Load: (stat) => {
 		username = stat.username
-		// 可以在这里尝试加载与角色绑定的AI源，如果chardata.extensions中有记录
-		if (chardata.extensions?.default_aisource)
-			loadAIsource(username, chardata.extensions.default_aisource)
-				.then(ai => { AIsource = ai })
-				.catch(err => console.warn(`Failed to autoload AI source ${chardata.extensions.default_aisource}: ${err.message}`))
 	},
 	Unload: () => {
 		AIsource = null
@@ -137,12 +132,8 @@ const charAPI_definition = { // 先定义结构主体
 					charAPI_definition.info = buildCharInfo(chardata)
 					saveJsonFile(charjson, chardata) // 保存 STv2 格式
 				}
-				if (data.AIsource) {
-					AIsource = await loadAIsource(username, data.AIsource)
-					// 可以考虑将选择的AI源保存到 chardata.extensions.default_aisource
-					chardata.extensions.default_aisource = data.AIsource
-					saveJsonFile(charjson, chardata)
-				}
+				if (data.AIsource) AIsource = await loadAIsource(username, data.AIsource)
+				else AIsource = await loadDefaultAIsource(username)
 			}
 		},
 		chat: {
