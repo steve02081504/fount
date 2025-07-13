@@ -11,6 +11,7 @@ import { parseRegexFromString, escapeRegExp } from '../../scripts/regex.mjs'
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
 import { svgInliner } from '../../scripts/svgInliner.mjs'
 import { getHomeRegistry } from './src/public/endpoints.mjs'
+import { get } from "node:http";
 
 usingTemplates('/shells/home/src/public/templates')
 
@@ -410,24 +411,10 @@ async function initializeApp() {
 }
 
 async function fetchData() {
-	const [registryResponse, defaultPartsResponse] = await Promise.all([
-		getHomeRegistry(),
-		getDefaultParts()
+	await Promise.all([
+		getHomeRegistry().then(data => homeRegistry = data).catch(error => console.error('Failed to fetch home registry:', error)),
+		getDefaultParts().then(data => defaultParts = data).catch(error => console.error('Failed to fetch default parts:', error)),
 	])
-
-	if (registryResponse.ok) {
-		homeRegistry = await registryResponse.json()
-		await displayFunctionButtons() // Update function buttons
-	}
-	else
-		console.error('Failed to fetch home registry:', await registryResponse.text())
-
-	if (defaultPartsResponse.ok) {
-		defaultParts = await defaultPartsResponse.json()
-		updateDefaultPartDisplay()
-	}
-	else
-		console.error('Failed to fetch default parts:', await defaultPartsResponse.text())
 }
 
 initializeApp().catch(error => {

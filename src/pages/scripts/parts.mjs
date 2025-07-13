@@ -46,5 +46,10 @@ export async function setDefaultPart(parttype, partname) {
 	})
 }
 export async function getDefaultParts() {
-	return fetch('/api/getdefaultparts')
+	return fetch('/api/getdefaultparts').then(response => {
+		if (response.ok)
+			return response.json()
+		else
+			return Promise.reject(response.json())
+	})
 }

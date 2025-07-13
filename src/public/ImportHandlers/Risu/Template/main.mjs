@@ -132,9 +132,9 @@ const charAPI_definition = { // 先定义结构主体
 					charAPI_definition.info = buildCharInfo(chardata)
 					saveJsonFile(charjson, chardata) // 保存 STv2 格式
 				}
-				if (data.AIsource)
-					AIsource = await loadAIsource(username, data.AIsource)
-				AIsource ||= loadDefaultAIsource(username)
+				if (data.AIsource) AIsource = await loadAIsource(username, data.AIsource)
+				else AIsource = null
+				AIsource ||= await loadDefaultAIsource(username)
 			}
 		},
 		chat: {

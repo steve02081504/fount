@@ -80,7 +80,9 @@ export default {
 			},
 			SetData: async (data) => {
 				if (data.summaryAIsource)
-					summary.AIsource = loadAIsource(username, data.summaryAIsource)
+					summary.AIsource = await loadAIsource(username, data.summaryAIsource)
+				else
+					summary.AIsource = null
 				summary.AIsource ||= await loadDefaultAIsource(username)
 				summary.startLength = data.summaryStartLength
 				summary.size = data.summarySize

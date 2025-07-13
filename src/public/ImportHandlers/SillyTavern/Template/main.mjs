@@ -71,6 +71,7 @@ export default {
 					saveJsonFile(charjson, chardata)
 				}
 				if (data.AIsource) AIsource = await loadAIsource(username, data.AIsource)
+				else AIsource = null
 				AIsource ||= await loadDefaultAIsource(username)
 			}
 		},

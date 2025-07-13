@@ -13,8 +13,8 @@ import { nicerWriteFileSync } from '../scripts/nicerWriteFile.mjs'
 
 export function setDefaultPart(user, parttype, partname) {
 	if (Object(user) instanceof String) user = getUserByUsername(user)
+	if (partname == defaultParts?.[parttype]) return
 	const defaultParts = user.defaultParts ??= {}
-	if (partname == defaultParts[parttype]) return
 	if (!partname) delete defaultParts[parttype]
 	else defaultParts[parttype] = partname
 	save_config()
