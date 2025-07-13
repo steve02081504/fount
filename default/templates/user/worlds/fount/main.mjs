@@ -1,7 +1,7 @@
 /** @typedef {import('../../../../../src/decl/WorldAPI.ts').WorldAPI_t} WorldAPI_t */
 /** @typedef {import('../../../../../src/decl/AIsource.ts').AIsource_t} AIsource_t */
 
-import { loadAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
+import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
 
 const summary = {
 	/** @type {AIsource_t} */
@@ -81,8 +81,7 @@ export default {
 			SetData: async (data) => {
 				if (data.summaryAIsource)
 					summary.AIsource = loadAIsource(username, data.summaryAIsource)
-				else
-					summary.AIsource = null
+				summary.AIsource ||= await loadDefaultAIsource(username)
 				summary.startLength = data.summaryStartLength
 				summary.size = data.summarySize
 			}

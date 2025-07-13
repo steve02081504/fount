@@ -1,6 +1,6 @@
 import { getUserDictionary } from '../auth.mjs'
 import { loadJsonFile, saveJsonFile } from '../../scripts/json_loader.mjs'
-import { isPartLoaded, loadPartBase, unloadPartBase } from '../parts_loader.mjs'
+import { getDefaultParts, isPartLoaded, loadPartBase, unloadPartBase } from '../parts_loader.mjs'
 import { skip_report } from '../server.mjs'
 
 function GetPath(username, partname) {
@@ -68,4 +68,10 @@ export function isAIsourceLoaded(username, AIsourcename) {
 export async function reloadAIsource(username, AIsourcename) {
 	await unloadAIsource(username, AIsourcename)
 	await loadAIsource(username, AIsourcename)
+}
+
+export async function loadDefaultAIsource(username) {
+	const defaultAIsourceName = getDefaultParts(username).AIsources
+	if (!defaultAIsourceName) return
+	return loadAIsource(username, defaultAIsourceName)
 }

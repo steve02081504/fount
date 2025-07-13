@@ -2,7 +2,7 @@ import { getUserByUsername, getUserDictionary } from './auth.mjs'
 import fs from 'node:fs'
 import url from 'node:url'
 import { FullProxy } from 'npm:full-proxy'
-import { __dirname, deletePartRouter, getPartRouter, setDefaultStuff } from './server.mjs'
+import { __dirname, deletePartRouter, getPartRouter, save_config, setDefaultStuff } from './server.mjs'
 import { loadData, saveData } from './setting_loader.mjs'
 import { loadPart } from './managers/index.mjs'
 import { exec } from '../scripts/exec.mjs'
@@ -11,6 +11,18 @@ import { geti18n } from '../scripts/i18n.mjs'
 import { loadJsonFile } from '../scripts/json_loader.mjs'
 import { nicerWriteFileSync } from '../scripts/nicerWriteFile.mjs'
 
+export function setDefaultPart(user, parttype, partname) {
+	if (Object(user) instanceof String) user = getUserByUsername(user)
+	const defaultParts = user.defaultParts ??= {}
+	if (partname == defaultParts[parttype]) return
+	if (!partname) delete defaultParts[parttype]
+	else defaultParts[parttype] = partname
+	save_config()
+}
+export function getDefaultParts(user) {
+	if (Object(user) instanceof String) user = getUserByUsername(user)
+	return user?.defaultParts || {}
+}
 /**
  * @typedef {Object} PartInfo
  * @property {Record<string, string>} [name] - Localized name of the part.

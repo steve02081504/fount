@@ -2,14 +2,15 @@ import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
 import {
 	getCharDetails, noCacheGetCharDetails, getCharList,
 	getPersonaList, getPersonaDetails, noCacheGetPersonaDetails,
-	getWorldList, getWorldDetails, noCacheGetWorldDetails
+	getWorldList, getWorldDetails, noCacheGetWorldDetails,
+	setDefaultPart, getDefaultParts
 } from '../../scripts/parts.mjs'
 import { renderMarkdown } from '../../scripts/markdown.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 import { parseRegexFromString, escapeRegExp } from '../../scripts/regex.mjs'
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
 import { svgInliner } from '../../scripts/svgInliner.mjs'
-import { setDefaultPart, getHomeRegistry, getDefaultParts } from './src/public/endpoints.mjs'
+import { getHomeRegistry } from './src/public/endpoints.mjs'
 
 usingTemplates('/shells/home/src/public/templates')
 

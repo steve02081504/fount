@@ -2,7 +2,7 @@
  * @typedef {import('../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t
  */
 
-import { loadAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
+import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
 import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/server/prompt_struct.mjs'
 import { __dirname } from '../../../../../src/server/server.mjs'
 import fs from 'node:fs'
@@ -42,7 +42,7 @@ fount角色以mjs文件语法所书写，其可以自由导入任何npm或jsr包
  * @typedef {import('../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t
  */
 
-import { loadAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
+import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
 import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/server/prompt_struct.mjs'
 
 // AI源的实例
@@ -95,10 +95,9 @@ export default {
 			// 设置角色的配置数据
 			SetData: async (data) => {
 				// 如果传入了AI源的配置
-				if (data.AIsource) {
-					// 加载AI源
+				if (data.AIsource) // 加载AI源
 					AIsource = await loadAIsource(username, data.AIsource)
-				}
+				AIsource ||= await loadDefaultAIsource(username) // 或加载默认AI源（若未设置默认AI源则为undefined）
 			}
 		},
 		// 角色的聊天接口
@@ -713,9 +712,9 @@ Một số mã nguồn đến từ [GentianAphrodite](https://github.com/steve02
 			// 设置角色的配置数据
 			SetData: async (data) => {
 				// 如果传入了AI源的配置
-				if (data.AIsource)
-					// 加载AI源
+				if (data.AIsource) // 加载AI源
 					AIsource = await loadAIsource(username, data.AIsource)
+				AIsource ||= await loadDefaultAIsource(username) // 或加载默认AI源（若未设置默认AI源则为undefined）
 			}
 		},
 		// 角色的聊天接口
