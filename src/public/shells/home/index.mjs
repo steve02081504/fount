@@ -11,7 +11,6 @@ import { parseRegexFromString, escapeRegExp } from '../../scripts/regex.mjs'
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
 import { svgInliner } from '../../scripts/svgInliner.mjs'
 import { getHomeRegistry } from './src/public/endpoints.mjs'
-import { get } from "node:http";
 
 usingTemplates('/shells/home/src/public/templates')
 
