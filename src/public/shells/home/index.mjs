@@ -412,8 +412,14 @@ async function initializeApp() {
 
 async function fetchData() {
 	await Promise.all([
-		getHomeRegistry().then(data => homeRegistry = data).catch(error => console.error('Failed to fetch home registry:', error)),
-		getDefaultParts().then(data => defaultParts = data).catch(error => console.error('Failed to fetch default parts:', error)),
+		getHomeRegistry().then(async (data) => {
+			homeRegistry = data
+			await displayFunctionButtons()
+		}).catch(error => console.error('Failed to fetch home registry:', error)),
+		getDefaultParts().then(data => {
+			defaultParts = data
+			updateDefaultPartDisplay()
+		}).catch(error => console.error('Failed to fetch default parts:', error)),
 	])
 }
 
