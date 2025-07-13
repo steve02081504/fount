@@ -69,16 +69,21 @@ function renderFileList() {
 		checkboxContainer.appendChild(checkbox)
 		listItem.appendChild(checkboxContainer)
 
-		checkbox.addEventListener('change', async (event) => {
+checkbox.addEventListener('change', async (event) => {
 			event.stopPropagation() // Prevent click from triggering loadEditor
 			const isChecked = event.target.checked
-			// Update default part in backend
-			await setDefaultPart('AIsources', isChecked ? fileName : null)
-				.catch(handleFetchError('aisource_editor.alerts.setDefaultFailed'))
+			const newDefault = isChecked ? fileName : null
 
-			// Update local state and UI
-			defaultParts.AIsources = isChecked ? fileName : null
-			updateDefaultPartDisplay()
+			try {
+				await setDefaultPart('AIsources', newDefault)
+				// Update local state and UI on success
+				defaultParts.AIsources = newDefault
+				updateDefaultPartDisplay()
+			} catch (error) {
+				handleFetchError('aisource_editor.alerts.setDefaultFailed')(error)
+				// Revert checkbox on failure
+				event.target.checked = !isChecked
+			}
 		})
 
 		// Prevent checkbox click from triggering list item click
