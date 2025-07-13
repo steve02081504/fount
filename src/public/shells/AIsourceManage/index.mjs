@@ -69,7 +69,7 @@ function renderFileList() {
 		checkboxContainer.appendChild(checkbox)
 		listItem.appendChild(checkboxContainer)
 
-checkbox.addEventListener('change', async (event) => {
+		checkbox.addEventListener('change', async (event) => {
 			event.stopPropagation() // Prevent click from triggering loadEditor
 			const isChecked = event.target.checked
 			const newDefault = isChecked ? fileName : null
