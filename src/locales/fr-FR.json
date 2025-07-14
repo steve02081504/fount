@@ -386,12 +386,17 @@
 			"save": "Enregistrer",
 			"delete": "Supprimer"
 		},
+		"tooltips": {
+			"setDefault": "Définir par défaut"
+		},
 		"alerts": {
 			"fetchFileListFailed": "Échec de la récupération de la liste des fichiers : ${error}",
 			"fetchGeneratorListFailed": "Échec de la récupération de la liste des générateurs : ${error}",
+			"fetchDefaultsFailed": "Échec de l'obtention du composant par défaut: ${error}",
 			"fetchFileDataFailed": "Échec de la récupération des données du fichier : ${error}",
 			"noFileSelectedSave": "Aucun fichier sélectionné à enregistrer.",
 			"saveFileFailed": "Échec de l'enregistrement du fichier : ${error}",
+			"setDefaultFailed": "Définition de la source AI par défaut a échoué: ${error}",
 			"noFileSelectedDelete": "Aucun fichier sélectionné à supprimer.",
 			"deleteFileFailed": "Échec de la suppression du fichier : ${error}",
 			"invalidFileName": "Le nom de fichier ne peut pas contenir les caractères suivants : / \\ : * ? \" < > |",

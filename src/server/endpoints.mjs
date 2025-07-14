@@ -1,5 +1,5 @@
 import { login, register, logout, authenticate, getUserByReq, getUserDictionary, generateAccessToken, auth_request } from './auth.mjs'
-import { getPartDetails } from './parts_loader.mjs'
+import { getDefaultParts, getPartDetails, setDefaultPart } from './parts_loader.mjs'
 import { generateVerificationCode, verifyVerificationCode } from '../scripts/verifycode.mjs'
 import { ms } from '../scripts/ms.mjs'
 import { getLoadedPartList, getPartList, loadPart, partsList } from './managers/index.mjs'
@@ -188,4 +188,16 @@ export function registerEndpoints(router) {
 			return user_static[username](req, res, next)
 		}, public_static)
 	}
+
+	router.get('/api/getdefaultparts', authenticate, async (req, res) => {
+		const user = await getUserByReq(req)
+		res.status(200).json(getDefaultParts(user))
+	})
+
+	router.post('/api/setdefaultpart', authenticate, async (req, res) => {
+		const user = await getUserByReq(req)
+		const { parttype, partname } = req.body
+		setDefaultPart(user, parttype, partname)
+		res.status(200).json({ message: 'success' })
+	})
 }

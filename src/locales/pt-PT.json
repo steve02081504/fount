@@ -386,12 +386,17 @@
 			"save": "Guardar",
 			"delete": "Eliminar"
 		},
+		"tooltips": {
+			"setDefault": "Definido como padrão"
+		},
 		"alerts": {
 			"fetchFileListFailed": "Falha ao obter a lista de ficheiros: ${error}",
 			"fetchGeneratorListFailed": "Falha ao obter a lista de geradores: ${error}",
+			"fetchDefaultsFailed": "Falha ao obter o componente padrão: ${error}",
 			"fetchFileDataFailed": "Falha ao obter os dados do ficheiro: ${error}",
 			"noFileSelectedSave": "Nenhum ficheiro selecionado para guardar.",
 			"saveFileFailed": "Falha ao guardar o ficheiro: ${error}",
+			"setDefaultFailed": "Definir a fonte de IA padrão falhada: ${error}",
 			"noFileSelectedDelete": "Nenhum ficheiro selecionado para eliminar.",
 			"deleteFileFailed": "Falha ao eliminar o ficheiro: ${error}",
 			"invalidFileName": "O nome do ficheiro não pode conter os seguintes caracteres: / \\ : * ? \" < > |",

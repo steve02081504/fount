@@ -56,6 +56,7 @@ async function GetSource(config, { username, SaveConfig }) {
 		Unload: () => Promise.all(unnamedSources.map(source => source.Unload())),
 		Call: async (prompt) => {
 			if (sources.length === 0) throw new Error('no source selected')
+			let error_num = 0
 			while (true) try {
 				index++
 				index %= config.sources.length
@@ -63,10 +64,13 @@ async function GetSource(config, { username, SaveConfig }) {
 			}
 			catch (e) {
 				console.error(e)
+				error_num++
+				if (error_num == config.sources.length) throw new Error('all sources failed')
 			}
 		},
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
 			if (sources.length === 0) throw new Error('no source selected')
+			let error_num = 0
 			while (true) try {
 				index++
 				index %= config.sources.length
@@ -74,6 +78,8 @@ async function GetSource(config, { username, SaveConfig }) {
 			}
 			catch (e) {
 				console.error(e)
+				error_num++
+				if (error_num == config.sources.length) throw new Error('all sources failed')
 			}
 		},
 		tokenizer: {

@@ -386,12 +386,17 @@
 			"save": "Salva",
 			"delete": "Elimina"
 		},
+		"tooltips": {
+			"setDefault": "Impostare come impostazione predefinita"
+		},
 		"alerts": {
 			"fetchFileListFailed": "Impossibile ottenere l'elenco dei file: ${error}",
 			"fetchGeneratorListFailed": "Impossibile ottenere l'elenco dei generatori: ${error}",
+			"fetchDefaultsFailed": "Impossibile ottenere il componente predefinito: ${error}",
 			"fetchFileDataFailed": "Impossibile ottenere i dati del file: ${error}",
 			"noFileSelectedSave": "Nessun file selezionato da salvare.",
 			"saveFileFailed": "Impossibile salvare il file: ${error}",
+			"setDefaultFailed": "Impostazione della sorgente AI predefinita non riuscita: ${error}",
 			"noFileSelectedDelete": "Nessun file selezionato da eliminare.",
 			"deleteFileFailed": "Impossibile eliminare il file: ${error}",
 			"invalidFileName": "Il nome del file non può contenere i seguenti caratteri: / \\ : * ? \" < > |",

@@ -14,6 +14,7 @@ import { Buffer } from 'node:buffer'
 import fs from 'node:fs'
 import { addfile, getfile } from './files.mjs'
 import { skip_report } from '../../../../../server/server.mjs'
+import { getDefaultParts } from '../../../../../server/parts_loader.mjs'
 
 /**
  * @description 聊天元数据映射表的结构。这是一个在内存中缓存聊天信息的Map。
@@ -289,12 +290,11 @@ class chatMetadata_t {
 	static async StartNewAs(username) {
 		const metadata = new chatMetadata_t(username)
 
-		const user = getUserByUsername(username)
-		metadata.LastTimeSlice.player_id = user.defaultParts?.persona
+		metadata.LastTimeSlice.player_id = getDefaultParts(username).persona
 		if (metadata.LastTimeSlice.player_id)
 			metadata.LastTimeSlice.player = await loadPersona(username, metadata.LastTimeSlice.player_id)
 
-		metadata.LastTimeSlice.world_id = user.defaultParts?.world
+		metadata.LastTimeSlice.world_id = getDefaultParts(username).world
 		if (metadata.LastTimeSlice.world_id)
 			metadata.LastTimeSlice.world = await loadWorld(username, metadata.LastTimeSlice.world_id)
 

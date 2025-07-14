@@ -2,14 +2,15 @@ import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
 import {
 	getCharDetails, noCacheGetCharDetails, getCharList,
 	getPersonaList, getPersonaDetails, noCacheGetPersonaDetails,
-	getWorldList, getWorldDetails, noCacheGetWorldDetails
+	getWorldList, getWorldDetails, noCacheGetWorldDetails,
+	setDefaultPart, getDefaultParts
 } from '../../scripts/parts.mjs'
 import { renderMarkdown } from '../../scripts/markdown.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 import { parseRegexFromString, escapeRegExp } from '../../scripts/regex.mjs'
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
 import { svgInliner } from '../../scripts/svgInliner.mjs'
-import { setDefaultPart, getHomeRegistry, getDefaultParts } from './src/public/endpoints.mjs'
+import { getHomeRegistry } from './src/public/endpoints.mjs'
 
 usingTemplates('/shells/home/src/public/templates')
 
@@ -409,24 +410,16 @@ async function initializeApp() {
 }
 
 async function fetchData() {
-	const [registryResponse, defaultPartsResponse] = await Promise.all([
-		getHomeRegistry(),
-		getDefaultParts()
+	await Promise.all([
+		getHomeRegistry().then(async (data) => {
+			homeRegistry = data
+			await displayFunctionButtons()
+		}).catch(error => console.error('Failed to fetch home registry:', error)),
+		getDefaultParts().then(data => {
+			defaultParts = data
+			updateDefaultPartDisplay()
+		}).catch(error => console.error('Failed to fetch default parts:', error)),
 	])
-
-	if (registryResponse.ok) {
-		homeRegistry = await registryResponse.json()
-		await displayFunctionButtons() // Update function buttons
-	}
-	else
-		console.error('Failed to fetch home registry:', await registryResponse.text())
-
-	if (defaultPartsResponse.ok) {
-		defaultParts = await defaultPartsResponse.json()
-		updateDefaultPartDisplay()
-	}
-	else
-		console.error('Failed to fetch default parts:', await defaultPartsResponse.text())
 }
 
 initializeApp().catch(error => {

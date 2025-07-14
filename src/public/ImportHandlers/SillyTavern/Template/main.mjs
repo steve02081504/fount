@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { loadAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
+import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
 import { saveJsonFile } from '../../../../../src/scripts/json_loader.mjs'
 import { promptBuilder } from '../../../../../src/public/ImportHandlers/SillyTavern/engine/prompt_builder.mjs'
 import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/server/prompt_struct.mjs'
@@ -71,6 +71,7 @@ export default {
 					saveJsonFile(charjson, chardata)
 				}
 				if (data.AIsource) AIsource = await loadAIsource(username, data.AIsource)
+				else AIsource = await loadDefaultAIsource(username)
 			}
 		},
 		chat: {
