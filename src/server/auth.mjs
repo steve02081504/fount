@@ -20,7 +20,7 @@ const BRUTE_FORCE_THRESHOLD = 8 // Brute force threshold
 const BRUTE_FORCE_FAKE_SUCCESS_RATE = 1 / 3 // 1/3 chance of fake success
 
 let privateKey, publicKey // 用于JWT签名的密钥对
-const loginFailures = {} // { [ip]: { [username]: count } }
+const loginFailures = {} // { [ip]: count }
 
 function geneNewKeyPair() {
 	const { privateKey: newPrivateKey, publicKey: newPublicKey } = crypto.generateKeyPairSync('ec', {
@@ -77,13 +77,13 @@ export async function initAuth() { // config 参数已从全局 config 替代
  * @param {object} payload - 令牌的有效载荷
  * @returns {Promise<string>} Access Token
  */
-export async function generateAccessToken(payload, private_key = privateKey) {
+export async function generateAccessToken(payload, signingKey = privateKey) {
 	const jti = crypto.randomUUID() // 为 Access Token 生成唯一标识符
 	return await new jose.SignJWT({ ...payload, jti })
 		.setProtectedHeader({ alg: 'ES256' })
 		.setIssuedAt()
 		.setExpirationTime(ACCESS_TOKEN_EXPIRY)
-		.sign(private_key)
+		.sign(signingKey)
 }
 
 /**
@@ -92,7 +92,7 @@ export async function generateAccessToken(payload, private_key = privateKey) {
  * @param {string} deviceId - 设备的唯一标识符
  * @returns {Promise<string>} Refresh Token
  */
-async function generateRefreshToken(payload, deviceId = 'unknown', private_key = privateKey) {
+async function generateRefreshToken(payload, deviceId = 'unknown', signingKey = privateKey) {
 	const refreshTokenId = crypto.randomUUID() // JTI for refresh token
 	const tokenPayload = {
 		...payload,
@@ -104,7 +104,7 @@ async function generateRefreshToken(payload, deviceId = 'unknown', private_key =
 		.setProtectedHeader({ alg: 'ES256' })
 		.setIssuedAt()
 		.setExpirationTime(REFRESH_TOKEN_EXPIRY)
-		.sign(private_key)
+		.sign(signingKey)
 }
 
 /**
@@ -623,7 +623,18 @@ export function getUserDictionary(username) {
 export async function login(username, password, deviceId = 'unknown', req) {
 	const ip = req.ip
 	const user = getUserByUsername(username)
-	if (!user) return { status: 404, success: false, message: 'User not found' }
+	async function failedLogin() {
+		loginFailures[ip] ??= (loginFailures[ip] || 0) + 1
+
+		if (loginFailures[ip] >= BRUTE_FORCE_THRESHOLD && Math.random() < BRUTE_FORCE_FAKE_SUCCESS_RATE) {
+			const fakePrivateKey = await getFakePrivateKey()
+			const accessToken = await generateAccessToken({ username: user.username, userId: authData.userId }, fakePrivateKey)
+			const refreshTokenString = await generateRefreshToken({ username: user.username, userId: authData.userId }, deviceId, fakePrivateKey)
+			return { status: 200, success: true, message: 'Login successful', accessToken, refreshToken: refreshTokenString }
+		}
+		return { status: 401, success: false, message: 'Invalid username or password' }
+	}
+	if (!user) return await failedLogin()
 
 	const authData = user.auth
 
@@ -653,10 +664,10 @@ export async function login(username, password, deviceId = 'unknown', req) {
 			return { status: 403, success: false, message: `Account locked due to too many failed attempts. Try again in ${ms(ms(ACCOUNT_LOCK_TIME), { long: true })}.` }
 		}
 		save_config()
-		return { status: 401, success: false, message: 'Invalid username or password' }
+		return await failedLogin()
 	}
 
-	delete loginFailures?.[ip]?.[username]
+	delete loginFailures[ip]
 
 	authData.loginAttempts = 0
 	authData.lockedUntil = null
