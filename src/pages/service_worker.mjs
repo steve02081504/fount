@@ -179,7 +179,6 @@ async function getTimestamp(url) {
  * @returns {Promise<void>}
  */
 async function cleanupExpiredCache() {
-	console.log('[SW Cleanup] Starting expired cache cleanup...')
 	const now = Date.now()
 	const expiryThreshold = now - EXPIRY_MS
 	const urlsToDelete = []
@@ -214,12 +213,8 @@ async function cleanupExpiredCache() {
 			transaction.onabort = () => reject(new Error('Cleanup transaction aborted'))
 		})
 
-		if (urlsToDelete.length === 0) {
-			console.log('[SW Cleanup] No expired items to delete from metadata.')
+		if (urlsToDelete.length === 0)
 			return
-		}
-
-		console.log(`[SW Cleanup] Metadata cleanup complete. Found ${urlsToDelete.length} expired items. Now cleaning cache...`)
 
 		// 步骤 2: 在数据库清理成功后，安全地清理 Cache Storage。
 		const cache = await caches.open(CACHE_NAME)
@@ -227,8 +222,6 @@ async function cleanupExpiredCache() {
 		for (const url of urlsToDelete)
 			if (await cache.delete(url))
 				deletedCount++
-
-		console.log(`[SW Cleanup] Cache cleanup finished. Deleted ${deletedCount} of ${urlsToDelete.length} items from cache.`)
 	} catch (error) {
 		console.error('[SW Cleanup] Cache cleanup process failed:', error)
 	}
@@ -259,24 +252,20 @@ async function handleCacheFirst(request) {
 	if (storedTimestamp && (now - storedTimestamp < BACKGROUND_FETCH_THROTTLE_MS))
 		shouldFetchInBackground = false
 
-
 	// 定义一个在后台执行的网络请求和缓存更新任务。
 	const backgroundUpdateTask = async () => {
-		if (!shouldFetchInBackground) {
-			console.log(`[SW ${CACHE_NAME}] Throttling background fetch for ${url}.`)
+		if (!shouldFetchInBackground)
 			return null
-		}
 		try {
-			console.log(`[SW ${CACHE_NAME}] Background fetching for ${url}...`)
 			const networkResponse = await fetch(request)
 			// 仅缓存有效的、非不透明的响应。
 			if (networkResponse && networkResponse.ok && networkResponse.type !== 'opaque') {
 				const responseToCache = networkResponse.clone()
 				await cache.put(request, responseToCache)
 				await updateTimestamp(url, Date.now())
-				console.log(`[SW ${CACHE_NAME}] Background cached and updated timestamp for ${url}.`)
-			} else if (networkResponse)
-				console.warn(`[SW ${CACHE_NAME}] Background fetch for ${url} responded with status ${networkResponse.status} or was opaque. Not caching.`)
+			}
+			else if (networkResponse && networkResponse.type !== 'opaque')
+				console.warn(`[SW ${CACHE_NAME}] Background fetch for ${url} responded with ${networkResponse.status} ${networkResponse.statusText}. Not caching.`)
 
 			return networkResponse // 返回网络响应，供无缓存时使用。
 		} catch (error) {
@@ -288,15 +277,10 @@ async function handleCacheFirst(request) {
 	// 启动后台更新任务，不阻塞主流程。
 	const networkPromise = backgroundUpdateTask()
 
-	if (cachedResponse) {
-		console.log(`[SW ${CACHE_NAME}] Serving from cache (cache-first): ${url}`)
-		return cachedResponse // 如果有缓存，立即返回。
-	}
+	if (cachedResponse) return cachedResponse // 如果有缓存，立即返回。
 
-	console.log(`[SW ${CACHE_NAME}] No cache, waiting for network (cache-first): ${url}`)
 	const networkResponse = await networkPromise
-	if (networkResponse)
-		return networkResponse
+	if (networkResponse) return networkResponse
 
 	// 当缓存和网络都失败时，抛出错误。
 	throw new Error(`Failed to fetch ${url} from both cache and network.`)
@@ -323,7 +307,6 @@ async function handleNetworkFirst(request) {
 			(async () => {
 				await cache.put(request, responseToCache)
 				await updateTimestamp(url, Date.now())
-				console.log(`[SW ${CACHE_NAME}] Cached successful response for ${url}.`)
 			})()
 		}
 
@@ -332,10 +315,7 @@ async function handleNetworkFirst(request) {
 		console.warn(`[SW ${CACHE_NAME}] Network fetch failed for ${url}. Attempting to serve from cache.`)
 		const cache = await caches.open(CACHE_NAME)
 		const cachedResponse = await cache.match(request)
-		if (cachedResponse) {
-			console.log(`[SW ${CACHE_NAME}] Serving from cache as fallback for: ${url}`)
-			return cachedResponse
-		}
+		if (cachedResponse) return cachedResponse
 		console.error(`[SW ${CACHE_NAME}] Cache miss after network failure for: ${url}.`)
 		throw error
 	}
@@ -383,7 +363,6 @@ self.addEventListener('install', event => {
 })
 
 self.addEventListener('activate', event => {
-	console.log(`[SW ${CACHE_NAME}] Activating...`)
 	event.waitUntil(
 		(async () => {
 			// 注册定期后台同步任务，用于自动清理过期缓存。
@@ -394,7 +373,6 @@ self.addEventListener('activate', event => {
 					await self.registration.periodicSync.register(PERIODIC_SYNC_TAG, {
 						minInterval: 24 * 60 * 60 * 1000, // 至少每 24 小时执行一次。
 					})
-					console.log('[SW] Periodic background sync registered.')
 				} catch (err) {
 					console.error('[SW] Periodic background sync failed to register:', err)
 				}
@@ -403,7 +381,6 @@ self.addEventListener('activate', event => {
 			await self.clients.claim()
 			// 在激活时立即执行一次清理，以处理可能在 SW 非活动期间过期的项目。
 			await cleanupExpiredCache()
-			console.log(`[SW ${CACHE_NAME}] Activation complete and initial cleanup performed.`)
 		})()
 	)
 })
@@ -413,12 +390,9 @@ self.addEventListener('activate', event => {
  * 当浏览器认为条件合适（例如网络连接良好，电量充足）且达到了最小间隔时间时，会触发此事件。
  */
 self.addEventListener('periodicsync', event => {
-	console.log(`[SW] Periodic sync event fired: ${event.tag}`)
-	if (event.tag === PERIODIC_SYNC_TAG) {
+	if (event.tag === PERIODIC_SYNC_TAG)
 		// 仅当事件标签与我们注册的清理任务标签匹配时，才执行清理操作。
-		console.log('[SW] Running periodic cache cleanup...')
 		event.waitUntil(cleanupExpiredCache())
-	}
 })
 
 /**
