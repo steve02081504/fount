@@ -750,8 +750,17 @@ function cleanupRefreshTokens() {
 	if (cleaned) save_config()
 }
 
+function cleanupLoginFailures() {
+	for (const ip in loginFailures)
+		if (loginFailures[ip] < MAX_LOGIN_ATTEMPTS)
+			delete loginFailures[ip]
+		else
+			loginFailures[ip] -= MAX_LOGIN_ATTEMPTS
+}
+
 // 定时清理任务
 setInterval(() => {
 	cleanupRevokedTokens()
 	cleanupRefreshTokens()
+	cleanupLoginFailures()
 }, ms('1h'))
