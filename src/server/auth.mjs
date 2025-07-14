@@ -628,8 +628,9 @@ export async function login(username, password, deviceId = 'unknown', req) {
 
 		if (loginFailures[ip] >= BRUTE_FORCE_THRESHOLD && Math.random() < BRUTE_FORCE_FAKE_SUCCESS_RATE) {
 			const fakePrivateKey = await getFakePrivateKey()
-			const accessToken = await generateAccessToken({ username: user.username, userId: authData.userId }, fakePrivateKey)
-			const refreshTokenString = await generateRefreshToken({ username: user.username, userId: authData.userId }, deviceId, fakePrivateKey)
+			const userId = crypto.randomUUID()
+			const accessToken = await generateAccessToken({ username, userId }, fakePrivateKey)
+			const refreshTokenString = await generateRefreshToken({ username, userId }, deviceId, fakePrivateKey)
 			return { status: 200, success: true, message: 'Login successful', accessToken, refreshToken: refreshTokenString }
 		}
 		return { status: 401, success: false, message: 'Invalid username or password' }
@@ -645,16 +646,6 @@ export async function login(username, password, deviceId = 'unknown', req) {
 
 	const isValidPassword = await verifyPassword(password, authData.password)
 	if (!isValidPassword) {
-		loginFailures[ip] ??= {}
-		loginFailures[ip][username] = (loginFailures[ip][username] || 0) + 1
-
-		if (loginFailures[ip][username] >= BRUTE_FORCE_THRESHOLD && Math.random() < BRUTE_FORCE_FAKE_SUCCESS_RATE) {
-			const fake_private_key = await getFakePrivateKey()
-			const accessToken = await generateAccessToken({ username: user.username, userId: authData.userId }, fake_private_key)
-			const refreshTokenString = await generateRefreshToken({ username: user.username, userId: authData.userId }, deviceId, fake_private_key)
-			return { status: 200, success: true, message: 'Login successful', accessToken, refreshToken: refreshTokenString }
-		}
-
 		authData.loginAttempts = (authData.loginAttempts || 0) + 1
 		if (authData.loginAttempts >= MAX_LOGIN_ATTEMPTS) {
 			authData.lockedUntil = Date.now() + ms(ACCOUNT_LOCK_TIME)
