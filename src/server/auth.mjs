@@ -624,7 +624,7 @@ export async function login(username, password, deviceId = 'unknown', req) {
 	const ip = req.ip
 	const user = getUserByUsername(username)
 	async function failedLogin() {
-		loginFailures[ip] ??= (loginFailures[ip] || 0) + 1
+		loginFailures[ip] = (loginFailures[ip] || 0) + 1
 
 		if (loginFailures[ip] >= BRUTE_FORCE_THRESHOLD && Math.random() < BRUTE_FORCE_FAKE_SUCCESS_RATE) {
 			const fakePrivateKey = await getFakePrivateKey()
