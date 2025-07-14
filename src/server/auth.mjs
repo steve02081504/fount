@@ -22,7 +22,7 @@ const BRUTE_FORCE_FAKE_SUCCESS_RATE = 1 / 3 // 1/3 chance of fake success
 let privateKey, publicKey // 用于JWT签名的密钥对
 const loginFailures = {} // { [ip]: count }
 
-function geneNewKeyPair() {
+function genNewKeyPair() {
 	const { privateKey: newPrivateKey, publicKey: newPublicKey } = crypto.generateKeyPairSync('ec', {
 		namedCurve: 'prime256v1',
 	})
@@ -44,7 +44,7 @@ async function importKeyPair(keyPair) {
 async function getFakePrivateKey() {
 	let fakeKeyPair
 	do
-		fakeKeyPair = geneNewKeyPair()
+		fakeKeyPair = genNewKeyPair()
 	while (fakeKeyPair.privateKey == config.privateKey)
 	const importedFakeKeyPair = await importKeyPair(fakeKeyPair)
 	return importedFakeKeyPair.privateKey
@@ -55,7 +55,7 @@ async function getFakePrivateKey() {
  */
 export async function initAuth() { // config 参数已从全局 config 替代
 	if (!config.privateKey || !config.publicKey) {
-		Object.assign(config, geneNewKeyPair())
+		Object.assign(config, genNewKeyPair())
 		save_config()
 	}
 	const keyPair = await importKeyPair(config)
