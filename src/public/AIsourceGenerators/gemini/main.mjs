@@ -48,8 +48,6 @@ const supportedFileTypes = [
 	'audio/flac'
 ]
 
-const fileUploadMap = new Map()
-
 export default {
 	interfaces: {
 		AIsource: {
@@ -81,6 +79,7 @@ async function GetSource(config) {
 		} : undefined
 	})
 
+	const fileUploadMap = new Map()
 	/**
 	 * 使用新版SDK上传文件到 Gemini (Uploads the given file buffer to Gemini using the new SDK)
 	 * @param {string} displayName 文件显示名称 (File display name)
