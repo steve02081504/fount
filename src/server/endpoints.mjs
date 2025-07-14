@@ -49,7 +49,7 @@ export function registerEndpoints(router) {
 	})
 	router.post('/api/login', rateLimit({ maxRequests: 5, windowMs: ms('1m') }), async (req, res) => {
 		const { username, password, deviceid } = req.body
-		const result = await login(username, password, deviceid)
+		const result = await login(username, password, deviceid, req)
 		// 在登录成功时设置 Cookie
 		if (result.status === 200) {
 			res.cookie('accessToken', result.accessToken, { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https' }) // 短效
