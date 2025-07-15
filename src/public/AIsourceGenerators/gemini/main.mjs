@@ -3,7 +3,8 @@ import {
 	HarmCategory,
 	HarmBlockThreshold,
 	createPartFromUri,
-} from 'npm:@google/genai@^0.12.0'
+	createPartFromBase64,
+} from 'npm:@google/genai@^1.9.0'
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
 import { Buffer } from 'node:buffer'
 import * as mime from 'npm:mime-types'
@@ -61,17 +62,100 @@ const configTemplate = {
 	name: 'gemini-flash-exp',
 	apikey: process.env.GEMINI_API_KEY || '',
 	model: 'gemini-2.0-flash-exp-image-generation',
+	max_input_tokens: 1048576,
 	model_arguments: {
 		responseMimeType: 'text/plain',
 		responseModalities: ['Text'],
 	},
 	disable_default_prompt: false,
+	system_prompt_at_depth: 10,
 	proxy_url: '',
 	use_stream: false,
 }
 
+/**
+ * 根据文本长度快速估算 token 数量。
+ * 注意：此函数不处理文件等非文本部分。
+ * @param {Array<object>} contents - Gemini API 的 contents 数组。
+ * @returns {number} 估算的 token 数量。
+ */
+function estimateTextTokens(contents) {
+	let totalChars = 0
+	if (!Array.isArray(contents)) return 0
+
+	for (const message of contents)
+		if (message.parts && Array.isArray(message.parts))
+			for (const part of message.parts)
+				if (part.text) totalChars += part.text.length
+
+	// 1 token ~= 4 characters. 使用 Math.ceil 确保不低估。
+	return Math.ceil(totalChars / 4)
+}
+
+/**
+ * 使用二分搜索找到在 token 限制内可以保留的最大历史记录数量
+ * @param {GoogleGenAI} ai - GenAI 实例
+ * @param {string} model - 模型名称
+ * @param {number} limit - Token 数量上限
+ * @param {Array<object>} history - 完整的聊天历史记录
+ * @param {Array<object>} prefixMessages - 必须保留在历史记录之前的消息 (例如 system prompt)
+ * @param {Array<object>} suffixMessages - 必须保留在历史记录之后的消息 (例如 a pause prompt)
+ * @returns {Promise<Array<object>>} - 截断后的聊天历史记录
+ */
+async function findOptimalHistorySlice(ai, model, limit, history, prefixMessages = [], suffixMessages = []) {
+	const getTokens = async (contents) => {
+		try {
+			const res = await ai.models.countTokens({ model, contents })
+			return res.totalTokens
+		} catch (e) {
+			console.error('Token counting failed:', e)
+			// 如果计算失败，则返回无穷大以触发截断
+			return Infinity
+		}
+	}
+
+	const overheadTokens = await getTokens([...prefixMessages, ...suffixMessages])
+	const historyTokenLimit = limit - overheadTokens
+
+	// 如果连基本消息都超了，历史记录只能为空
+	if (historyTokenLimit <= 0) return []
+
+	let low = 0
+	let high = history.length
+	let bestK = 0 // 可以保留的最新消息数量
+
+	while (low <= high) {
+		const mid = Math.floor((low + high) / 2)
+		if (mid === 0) {
+			low = mid + 1
+			continue
+		}
+
+		// 取最新的 mid 条记录
+		const trialHistory = history.slice(-mid)
+		const trialTokens = await getTokens(trialHistory)
+
+		if (trialTokens <= historyTokenLimit) {
+			// 当前数量的 token 未超限，尝试保留更多
+			bestK = mid
+			low = mid + 1
+		} else
+			// 超限了，需要减少记录数量
+			high = mid - 1
+
+	}
+
+	if (bestK < history.length)
+		console.log(`History truncated: Kept last ${bestK} of ${history.length} messages to fit token limit.`)
+
+
+	return history.slice(-bestK)
+}
+
 async function GetSource(config) {
-	config.system_prompt_at_depth ??= 10
+	config.system_prompt_at_depth ??= configTemplate.system_prompt_at_depth
+	config.max_input_tokens ??= configTemplate.max_input_tokens
+
 	const ai = new GoogleGenAI({
 		apiKey: config.apikey,
 		httpOptions: config.proxy_url ? {
@@ -80,6 +164,10 @@ async function GetSource(config) {
 	})
 
 	const fileUploadMap = new Map()
+	function is_cached(buffer) {
+		const hashkey = calculateHash('sha256', buffer)
+		return fileUploadMap.has(hashkey)
+	}
 	/**
 	 * 使用新版SDK上传文件到 Gemini (Uploads the given file buffer to Gemini using the new SDK)
 	 * @param {string} displayName 文件显示名称 (File display name)
@@ -106,12 +194,17 @@ async function GetSource(config) {
 		return file
 	}
 
+	const is_ImageGeneration = config.model_arguments?.responseModalities?.includes?.('Image') ?? config.model.includes('image-generation')
+
 	const default_config = {
 		responseMimeType: 'text/plain',
-		safetySettings: Object.values(HarmCategory).filter((category) => category != HarmCategory.HARM_CATEGORY_UNSPECIFIED).map((category) => ({
-			category,
-			threshold: HarmBlockThreshold.BLOCK_NONE
-		}))
+		safetySettings: Object.values(HarmCategory)
+			.filter((category) => is_ImageGeneration ? true : !category.includes('IMAGE'))
+			.filter((category) => category != HarmCategory.HARM_CATEGORY_UNSPECIFIED)
+			.map((category) => ({
+				category,
+				threshold: HarmBlockThreshold.BLOCK_NONE
+			}))
 	}
 
 	/** @type {AIsource_t} */
@@ -164,6 +257,7 @@ async function GetSource(config) {
 				content: text,
 			}
 		},
+
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
 			const baseMessages = [
 				{
@@ -182,10 +276,74 @@ system:
 			]
 			if (config.disable_default_prompt) baseMessages.length = 0
 
+			let totalFileTokens = 0 // 单独跟踪文件 token
+
 			const chatHistory = await Promise.all(margeStructPromptChatLog(prompt_struct).map(async (chatLogEntry) => {
 				const uid = Math.random().toString(36).slice(2, 10)
+
+				const fileParts = await Promise.all((chatLogEntry.files || []).map(async file => {
+					// ... (file processing logic remains the same)
+					const originalMimeType = file.mime_type || mime.lookup(file.name) || 'application/octet-stream'
+					let bufferToUpload = file.buffer
+					const detectedCharset = originalMimeType.match(/charset=([^;]+)/i)?.[1]?.trim?.()
+
+					if (detectedCharset && detectedCharset.toLowerCase() !== 'utf-8') try {
+						const decodedString = bufferToUpload.toString(detectedCharset)
+						bufferToUpload = Buffer.from(decodedString, 'utf-8')
+					} catch (_) { }
+					let mime_type = file.mime_type?.split?.(';')?.[0]
+
+					if (!supportedFileTypes.includes(mime_type)) {
+						const textMimeType = 'text/' + mime_type.split('/')[1]
+						if (supportedFileTypes.includes(textMimeType)) mime_type = textMimeType
+						else if ([
+							'application/json',
+							'application/xml',
+							'application/yaml',
+							'application/rls-services+xml',
+						].includes(mime_type)) mime_type = 'text/plain'
+						else if ([
+							'audio/mpeg',
+						].includes(mime_type)) mime_type = 'audio/mp3'
+					}
+					if (!supportedFileTypes.includes(mime_type)) {
+						console.warn(`Unsupported file type: ${mime_type} for file ${file.name}`)
+						return { text: `[System Notice: can't show you about file '${file.name}' because you cant take the file input of type '${mime_type}', but you may be able to access it by using code tools if you have.]` }
+					}
+
+					let fileTokenCost = 0
+					if (!is_cached(bufferToUpload)) try {
+						const filePartForCounting = createPartFromBase64(bufferToUpload.toString('base64'), mime_type)
+						const countResponse = await ai.models.countTokens({
+							model: config.model,
+							contents: [{ role: 'user', parts: [filePartForCounting] }]
+						})
+						fileTokenCost = countResponse.totalTokens
+						const tokenLimitForFile = config.max_input_tokens * 0.9
+
+						if (fileTokenCost > tokenLimitForFile) {
+							console.warn(`File '${file.name}' is too large (${fileTokenCost} tokens), exceeds 90% of limit (${tokenLimitForFile}). Replacing with text notice.`)
+							return { text: `[System Notice: can't show you about file '${file.name}' because its token count (${fileTokenCost}) is too high of the your's input limit, but you may be able to access it by using code tools if you have.]` }
+						}
+					} catch (error) {
+						console.error(`Failed to count tokens for file ${file.name} for prompt:`, error)
+						return { text: `[System Error: can't show you about file '${file.name}' because failed to count tokens, but you may be able to access it by using code tools if you have.]` }
+					}
+
+					totalFileTokens += fileTokenCost // 累加文件 token
+
+					try {
+						const uploadedFile = await uploadToGemini(file.name, bufferToUpload, mime_type)
+						return createPartFromUri(uploadedFile.uri, uploadedFile.mimeType)
+					}
+					catch (error) {
+						console.error(`Failed to process file ${file.name} for prompt:`, error)
+						return { text: `[System Error: can't show you about file '${file.name}' because ${error}, but you may be able to access it by using code tools if you have.]` }
+					}
+				}))
+
 				return {
-					role: chatLogEntry.role === 'user' || chatLogEntry.role === 'system' ? 'user' : 'model',
+					role: chatLogEntry.role == 'user' || chatLogEntry.role == 'system' ? 'user' : 'model',
 					parts: [
 						{
 							text: `\
@@ -197,43 +355,7 @@ ${chatLogEntry.content}
 </message "${uid}">
 `
 						},
-						...await Promise.all((chatLogEntry.files || []).map(async file => {
-							const originalMimeType = file.mime_type || mime.lookup(file.name) || 'application/octet-stream'
-							let bufferToUpload = file.buffer
-							const detectedCharset = originalMimeType.match(/charset=([^;]+)/i)?.[1]?.trim?.()
-
-							if (detectedCharset && detectedCharset.toLowerCase() !== 'utf-8') try {
-								const decodedString = bufferToUpload.toString(detectedCharset)
-								bufferToUpload = Buffer.from(decodedString, 'utf-8')
-							} catch (_) { }
-							let mime_type = file.mime_type?.split?.(';')?.[0]
-
-							if (!supportedFileTypes.includes(mime_type)) {
-								const textMimeType = 'text/' + mime_type.split('/')[1]
-								if (supportedFileTypes.includes(textMimeType)) mime_type = textMimeType
-								else if ([
-									'application/json',
-									'application/xml',
-									'application/yaml',
-									'application/rls-services+xml',
-								].includes(mime_type)) mime_type = 'text/plain'
-								else if ([
-									'audio/mpeg',
-								].includes(mime_type)) mime_type = 'audio/mp3'
-							}
-							if (!supportedFileTypes.includes(mime_type)) {
-								console.warn(`Unsupported file type: ${mime_type} for file ${file.name}`)
-								return { text: `[System Notice: can't show you about file '${file.name}' because you cant take the file input of type '${mime_type}', but you may be able to access it by using code tools if you have.]` }
-							}
-							try {
-								const uploadedFile = await uploadToGemini(file.name, file.buffer, mime_type)
-								return createPartFromUri(uploadedFile.uri, uploadedFile.mime_type)
-							}
-							catch (error) {
-								console.error(`Failed to process file ${file.name} for prompt:`, error)
-								return { text: `[System Error: Failed to process file ${file.name} because ${error}, but you may be able to access it by using code tools if you have.]` }
-							}
-						}))
+						...fileParts
 					]
 				}
 			}))
@@ -243,15 +365,7 @@ ${chatLogEntry.content}
 				role: 'user',
 				parts: [{ text: 'system:\n由于上下文有限，请再次回顾设定:\n' + system_prompt }]
 			}
-			if (system_prompt)
-				if (config.system_prompt_at_depth ?? 10)
-					chatHistory.splice(Math.max(chatHistory.length - (config.system_prompt_at_depth ?? 10), 0), 0, systemPromptMessage)
-				else
-					chatHistory.unshift(systemPromptMessage)
 
-			const messages = [...baseMessages, ...chatHistory]
-
-			const is_ImageGeneration = config.model_arguments?.responseModalities?.includes?.('Image') ?? config.model.includes('image-generation')
 			const pauseDeclareMessages = [
 				{
 					role: 'user',
@@ -277,14 +391,91 @@ ${is_ImageGeneration
 				}
 			]
 			if (config.disable_default_prompt) pauseDeclareMessages.length = 0
-			messages.push(...pauseDeclareMessages)
+
+			// 组合非历史记录部分的消息
+			const prefixMessages = [...baseMessages]
+			const suffixMessages = [...pauseDeclareMessages]
+			if (system_prompt)
+				// 根据注入深度决定 system_prompt 是前缀还是后缀
+				if (config.system_prompt_at_depth && config.system_prompt_at_depth < chatHistory.length)
+					suffixMessages.push(systemPromptMessage)
+				else
+					prefixMessages.push(systemPromptMessage)
+
+
+
+			// --- 1. 本地估算与快速路径检查 ---
+			const overheadTextTokens = estimateTextTokens([...prefixMessages, ...suffixMessages])
+			const historyTextTokens = estimateTextTokens(chatHistory)
+			const totalEstimatedTokens = overheadTextTokens + historyTextTokens + totalFileTokens
+			const tokenLimit = config.max_input_tokens
+
+			let finalMessages
+
+			if (totalEstimatedTokens < tokenLimit * 0.9) {
+				// 快速路径：估算值远低于上限，无需API检查和截断
+				const tempHistory = [...chatHistory]
+				if (system_prompt) {
+					const insertIndex = config.system_prompt_at_depth
+						? Math.max(tempHistory.length - config.system_prompt_at_depth, 0)
+						: 0
+					tempHistory.splice(insertIndex, 0, systemPromptMessage)
+				}
+				finalMessages = [...baseMessages, ...tempHistory, ...pauseDeclareMessages]
+			} else {
+				const historyForProcessing = [...chatHistory]
+
+				// --- 2a. 基于本地估算的预截断 ---
+				const preTruncateLimit = tokenLimit * 1.1 // 预截断到上限的110%
+				let currentEstimatedTokens = totalEstimatedTokens
+
+				while (currentEstimatedTokens > preTruncateLimit && historyForProcessing.length > 0) {
+					const removedMessage = historyForProcessing.shift() // 移除最旧的消息
+					currentEstimatedTokens -= estimateTextTokens([removedMessage]) // 减去估算值
+				}
+
+				// --- 2b. 对预截断后的历史记录进行精确API检查 ---
+				const tempHistoryForSystemPrompt = [...historyForProcessing]
+				if (system_prompt) {
+					const insertIndex = config.system_prompt_at_depth
+						? Math.max(tempHistoryForSystemPrompt.length - config.system_prompt_at_depth, 0)
+						: 0
+					tempHistoryForSystemPrompt.splice(insertIndex, 0, systemPromptMessage)
+				}
+
+				const fullContents = [...baseMessages, ...tempHistoryForSystemPrompt, ...pauseDeclareMessages]
+				const totalTokens = (await ai.models.countTokens({ model: config.model, contents: fullContents })).totalTokens
+
+				if (totalTokens > tokenLimit) {
+					const truncatedHistory = await findOptimalHistorySlice(
+						ai,
+						config.model,
+						tokenLimit,
+						historyForProcessing,
+						baseMessages,
+						system_prompt ? [...pauseDeclareMessages, systemPromptMessage] : pauseDeclareMessages
+					)
+
+					const finalHistory = [...truncatedHistory]
+					if (system_prompt) {
+						const insertIndex = config.system_prompt_at_depth
+							? Math.max(finalHistory.length - config.system_prompt_at_depth, 0)
+							: 0
+						finalHistory.splice(insertIndex, 0, systemPromptMessage)
+					}
+					finalMessages = [...baseMessages, ...finalHistory, ...pauseDeclareMessages]
+
+				}
+				else
+					finalMessages = fullContents
+			}
 
 			const responseModalities = ['Text']
 			if (is_ImageGeneration) responseModalities.unshift('Image')
 
 			const model_params = {
 				model: config.model,
-				contents: messages,
+				contents: finalMessages,
 				config: {
 					...default_config,
 					responseModalities,
@@ -342,11 +533,40 @@ ${is_ImageGeneration
 			}
 		},
 		tokenizer: {
-			free: () => 0,
-			encode: (prompt) => prompt,
-			decode: (tokens) => tokens,
+			free: () => { /* no-op */ },
+			encode: (prompt) => {
+				console.warn('Gemini tokenizer.encode is a no-op, returning prompt as-is.')
+				return prompt
+			},
+			decode: (tokens) => {
+				console.warn('Gemini tokenizer.decode is a no-op, returning tokens as-is.')
+				return tokens
+			},
 			decode_single: (token) => token,
-			get_token_count: (prompt) => prompt.length
+			// 更新 tokenizer 以使用真实 API 进行计算
+			get_token_count: async (prompt) => {
+				if (!prompt) return 0
+				try {
+					let contents
+					if (typeof prompt === 'string')
+						contents = [{ role: 'user', parts: [{ text: prompt }] }]
+					else if (Array.isArray(prompt))
+						contents = prompt
+					else {
+						console.error('Unsupported type for get_token_count:', typeof prompt)
+						return 0
+					}
+					const response = await ai.models.countTokens({
+						model: config.model,
+						contents,
+					})
+					return response.totalTokens
+				} catch (error) {
+					console.error('Failed to get token count:', error)
+					// 返回一个估算值或0
+					return typeof prompt === 'string' ? prompt.length / 4 : 0
+				}
+			}
 		}
 	}
 

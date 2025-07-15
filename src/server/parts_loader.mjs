@@ -179,7 +179,7 @@ export async function baseloadPart(username, parttype, partname, {
 	}
 	return await Promise.resolve(Loader(path)).catch((e) => {
 		const parts_details_cache = loadData(username, 'parts_details_cache')
-		if (parts_details_cache[parttype]?.[partname]) delete parts_details_cache[parttype][partname]
+		delete parts_details_cache[parttype]?.[partname]
 		saveData(username, 'parts_details_cache')
 		throw e
 	})

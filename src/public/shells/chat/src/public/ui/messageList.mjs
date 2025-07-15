@@ -61,16 +61,22 @@ export async function renderMessage(message) {
 
 		// 获取 dropdown items
 		dropdownMenu.querySelector('.copy-markdown-button').addEventListener('click', async () => {
-			navigator.clipboard.writeText(messageMarkdownContent)
-			dropdownMenu.removeAttribute('popover')
+			try{
+				await navigator.clipboard.writeText(messageMarkdownContent)
+			} catch (error) { alert(error) }
+			dropdownMenu.hidePopover()
 		})
 		dropdownMenu.querySelector('.copy-text-button').addEventListener('click', async () => {
-			navigator.clipboard.writeText(messageContentElement.textContent.trim())
-			dropdownMenu.removeAttribute('popover')
+			try{
+				await navigator.clipboard.writeText(messageContentElement.textContent.trim())
+			} catch (error) { alert(error) }
+			dropdownMenu.hidePopover()
 		})
 		dropdownMenu.querySelector('.copy-html-button').addEventListener('click', async () => {
-			navigator.clipboard.writeText(messageContentElement.innerHTML.trim())
-			dropdownMenu.removeAttribute('popover')
+			try {
+				await navigator.clipboard.writeText(messageContentElement.innerHTML.trim())
+			} catch (error) { alert(error) }
+			dropdownMenu.hidePopover()
 		})
 	}
 

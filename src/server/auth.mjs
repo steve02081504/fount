@@ -9,37 +9,58 @@ import { ms } from '../scripts/ms.mjs'
 import { geti18n } from '../scripts/i18n.mjs'
 import { loadJsonFile } from '../scripts/json_loader.mjs'
 import { events } from './events.mjs'
-import { is_local_ip_from_req } from '../scripts/ratelimit.mjs'
+import { is_local_ip, is_local_ip_from_req } from '../scripts/ratelimit.mjs'
 
 const ACCESS_TOKEN_EXPIRY = '15m' // Access Token 有效期
 export const REFRESH_TOKEN_EXPIRY = '30d' // Refresh Token 有效期 (字符串形式)
 export const REFRESH_TOKEN_EXPIRY_DURATION = ms(REFRESH_TOKEN_EXPIRY) // Refresh Token 有效期 (毫秒数)
 const ACCOUNT_LOCK_TIME = '10m' // 账户锁定时间
 const MAX_LOGIN_ATTEMPTS = 5 // 最大登录尝试次数
+const BRUTE_FORCE_THRESHOLD = 8 // Brute force threshold
+const BRUTE_FORCE_FAKE_SUCCESS_RATE = 1 / 3 // 1/3 chance of fake success
 
 let privateKey, publicKey // 用于JWT签名的密钥对
+const loginFailures = {} // { [ip]: count }
+
+function genNewKeyPair() {
+	const { privateKey: newPrivateKey, publicKey: newPublicKey } = crypto.generateKeyPairSync('ec', {
+		namedCurve: 'prime256v1',
+	})
+
+	const newPrivateKeyPEM = newPrivateKey.export({ type: 'pkcs8', format: 'pem' })
+	const newPublicKeyPEM = newPublicKey.export({ type: 'spki', format: 'pem' })
+
+	return {
+		privateKey: newPrivateKeyPEM,
+		publicKey: newPublicKeyPEM
+	}
+}
+async function importKeyPair(keyPair) {
+	return {
+		privateKey: await jose.importPKCS8(keyPair.privateKey, 'ES256'),
+		publicKey: await jose.importSPKI(keyPair.publicKey, 'ES256'),
+	}
+}
+async function getFakePrivateKey() {
+	let fakeKeyPair
+	do
+		fakeKeyPair = genNewKeyPair()
+	while (fakeKeyPair.privateKey == config.privateKey)
+	const importedFakeKeyPair = await importKeyPair(fakeKeyPair)
+	return importedFakeKeyPair.privateKey
+}
 
 /**
  * 初始化认证模块，加载或生成密钥对
  */
 export async function initAuth() { // config 参数已从全局 config 替代
 	if (!config.privateKey || !config.publicKey) {
-		const { privateKey: newPrivateKey, publicKey: newPublicKey } = crypto.generateKeyPairSync('ec', {
-			namedCurve: 'prime256v1',
-		})
-
-		const newPrivateKeyPEM = newPrivateKey.export({ type: 'pkcs8', format: 'pem' })
-		const newPublicKeyPEM = newPublicKey.export({ type: 'spki', format: 'pem' })
-
-		config.privateKey = newPrivateKeyPEM
-		config.publicKey = newPublicKeyPEM
-		privateKey = await jose.importPKCS8(newPrivateKeyPEM, 'ES256')
-		publicKey = await jose.importSPKI(newPublicKeyPEM, 'ES256')
+		Object.assign(config, genNewKeyPair())
 		save_config()
-	} else {
-		privateKey = await jose.importPKCS8(config.privateKey, 'ES256')
-		publicKey = await jose.importSPKI(config.publicKey, 'ES256')
 	}
+	const keyPair = await importKeyPair(config)
+	privateKey = keyPair.privateKey
+	publicKey = keyPair.publicKey
 
 	config.data.revokedTokens ??= {}
 	config.data.users ??= {}
@@ -56,13 +77,13 @@ export async function initAuth() { // config 参数已从全局 config 替代
  * @param {object} payload - 令牌的有效载荷
  * @returns {Promise<string>} Access Token
  */
-export async function generateAccessToken(payload) {
+export async function generateAccessToken(payload, signingKey = privateKey) {
 	const jti = crypto.randomUUID() // 为 Access Token 生成唯一标识符
 	return await new jose.SignJWT({ ...payload, jti })
 		.setProtectedHeader({ alg: 'ES256' })
 		.setIssuedAt()
 		.setExpirationTime(ACCESS_TOKEN_EXPIRY)
-		.sign(privateKey)
+		.sign(signingKey)
 }
 
 /**
@@ -71,7 +92,7 @@ export async function generateAccessToken(payload) {
  * @param {string} deviceId - 设备的唯一标识符
  * @returns {Promise<string>} Refresh Token
  */
-async function generateRefreshToken(payload, deviceId = 'unknown') {
+async function generateRefreshToken(payload, deviceId = 'unknown', signingKey = privateKey) {
 	const refreshTokenId = crypto.randomUUID() // JTI for refresh token
 	const tokenPayload = {
 		...payload,
@@ -83,7 +104,7 @@ async function generateRefreshToken(payload, deviceId = 'unknown') {
 		.setProtectedHeader({ alg: 'ES256' })
 		.setIssuedAt()
 		.setExpirationTime(REFRESH_TOKEN_EXPIRY)
-		.sign(privateKey)
+		.sign(signingKey)
 }
 
 /**
@@ -600,8 +621,24 @@ export function getUserDictionary(username) {
  * @returns {Promise<object>} 包含状态码、消息、令牌的对象
  */
 export async function login(username, password, deviceId = 'unknown', req) {
+	const ip = req.ip
 	const user = getUserByUsername(username)
-	if (!user) return { status: 404, success: false, message: 'User not found' }
+	async function failedLogin(local_return = {}) {
+		if (!is_local_ip(ip)) {
+			local_return = {}
+			loginFailures[ip] = (loginFailures[ip] || 0) + 1
+
+			if (loginFailures[ip] >= BRUTE_FORCE_THRESHOLD && Math.random() < BRUTE_FORCE_FAKE_SUCCESS_RATE) {
+				const fakePrivateKey = await getFakePrivateKey()
+				const userId = crypto.randomUUID()
+				const accessToken = await generateAccessToken({ username, userId }, fakePrivateKey)
+				const refreshTokenString = await generateRefreshToken({ username, userId }, deviceId, fakePrivateKey)
+				return { status: 200, success: true, message: 'Login successful', accessToken, refreshToken: refreshTokenString }
+			}
+		}
+		return Object.assign({ status: 401, success: false, message: 'Invalid username or password' }, local_return)
+	}
+	if (!user) return await failedLogin({ status: 401, success: false, message: 'User not found' })
 
 	const authData = user.auth
 
@@ -621,8 +658,10 @@ export async function login(username, password, deviceId = 'unknown', req) {
 			return { status: 403, success: false, message: `Account locked due to too many failed attempts. Try again in ${ms(ms(ACCOUNT_LOCK_TIME), { long: true })}.` }
 		}
 		save_config()
-		return { status: 401, success: false, message: 'Invalid username or password' }
+		return await failedLogin()
 	}
+
+	delete loginFailures[ip]
 
 	authData.loginAttempts = 0
 	authData.lockedUntil = null
@@ -714,8 +753,17 @@ function cleanupRefreshTokens() {
 	if (cleaned) save_config()
 }
 
+function cleanupLoginFailures() {
+	for (const ip in loginFailures)
+		if (loginFailures[ip] < MAX_LOGIN_ATTEMPTS)
+			delete loginFailures[ip]
+		else
+			loginFailures[ip] -= MAX_LOGIN_ATTEMPTS
+}
+
 // 定时清理任务
 setInterval(() => {
 	cleanupRevokedTokens()
 	cleanupRefreshTokens()
+	cleanupLoginFailures()
 }, ms('1h'))
