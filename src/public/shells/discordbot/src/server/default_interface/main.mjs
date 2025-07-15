@@ -176,8 +176,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 						while (ChannelChatLogs[channelId].length > MAX_MESSAGE_DEPTH) {
 							const removed = ChannelChatLogs[channelId].shift()
 							// 如果移除的条目在缓存中，也一并清除 (虽然理论上DiscordMessageToFountChatLogEntry已经清了)
-							if (removed?.extension?.discord_message_id && aiReplyObjectCache[removed.extension.discord_message_id])
-								delete aiReplyObjectCache[removed.extension.discord_message_id]
+							delete aiReplyObjectCache[removed?.extension?.discord_message_id]
 						}
 					} else continue
 

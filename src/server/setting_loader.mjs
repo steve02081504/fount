@@ -58,34 +58,16 @@ export function loadTempData(username, dataname) {
 
 // Event Handlers
 events.on('AfterUserDeleted', ({ username }) => {
-	if (userDataSet[username]) {
-		delete userDataSet[username]
-		console.log(`SettingLoader: Cleared userDataSet cache for ${username}`)
-	}
-	if (userShellDataSet[username]) {
-		delete userShellDataSet[username]
-		console.log(`SettingLoader: Cleared userShellDataSet cache for ${username}`)
-	}
-	if (userTempDataSet[username]) {
-		delete userTempDataSet[username]
-		console.log(`SettingLoader: Cleared userTempDataSet cache for ${username}`)
-	}
+	delete userDataSet[username]
+	delete userShellDataSet[username]
+	delete userTempDataSet[username]
 })
 
 events.on('AfterUserRenamed', ({ oldUsername, newUsername }) => {
-	if (userDataSet[oldUsername]) {
-		userDataSet[newUsername] = userDataSet[oldUsername]
-		delete userDataSet[oldUsername]
-		console.log(`SettingLoader: Migrated userDataSet cache from ${oldUsername} to ${newUsername}`)
-	}
-	if (userShellDataSet[oldUsername]) {
-		userShellDataSet[newUsername] = userShellDataSet[oldUsername]
-		delete userShellDataSet[oldUsername]
-		console.log(`SettingLoader: Migrated userShellDataSet cache from ${oldUsername} to ${newUsername}`)
-	}
-	if (userTempDataSet[oldUsername]) {
-		userTempDataSet[newUsername] = userTempDataSet[oldUsername]
-		delete userTempDataSet[oldUsername]
-		console.log(`SettingLoader: Migrated userTempDataSet cache from ${oldUsername} to ${newUsername}`)
-	}
+	userDataSet[newUsername] = userDataSet[oldUsername] ?? {}
+	delete userDataSet[oldUsername]
+	userShellDataSet[newUsername] = userShellDataSet[oldUsername] ?? {}
+	delete userShellDataSet[oldUsername]
+	userTempDataSet[newUsername] = userTempDataSet[oldUsername] ?? {}
+	delete userTempDataSet[oldUsername]
 })
