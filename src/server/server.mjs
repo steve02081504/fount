@@ -169,7 +169,7 @@ export async function init(start_config) {
 			nicerWriteFileSync(__dirname + '/src/pages/favicon.png', favpngbuf)
 			const favicobuf = await pngToIco(favpngbuf)
 			nicerWriteFileSync(__dirname + '/src/pages/favicon.ico', favicobuf)
-		})()
+		})().catch(console.error)
 
 	if (starts.Web) {
 		hosturl = 'http://localhost:' + config.port
