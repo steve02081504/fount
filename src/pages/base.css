@@ -1,3 +1,7 @@
+[un-cloak], .hidden {
+	display: none;
+}
+
 .text-icon {
 	color: var(--color-base-content);
 }
