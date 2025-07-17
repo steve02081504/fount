@@ -97,12 +97,14 @@ function RefreshPath {
 	$env:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 }
 function Test-Winget {
-	if (!(Get-Command winget -ErrorAction SilentlyContinue)) {
-		Import-Module Appx
-		Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe
-		$Script:Insalled_winget = 1
-	}
-	RefreshPath
+	try {
+		if (!(Get-Command winget -ErrorAction SilentlyContinue)) {
+			Import-Module Appx
+			Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe
+			$Script:Insalled_winget = 1
+			RefreshPath
+		}
+	} catch { <# ignore #> }
 }
 function Test-Browser {
 	$browser = try {
@@ -112,12 +114,14 @@ function Test-Browser {
 			(Get-ItemProperty -Path "Registry::HKEY_CLASSES_ROOT\$progId\shell\open\command" -Name "(default)" -ErrorAction Stop).'(default)'
 		}
 	} catch { <# ignore #> }
-	if (!$browser) {
-		Test-Winget
-		winget install --id Google.Chrome -e --source winget
-		$Script:Insalled_chrome = 1
-		RefreshPath
-	}
+	try {
+		if (!$browser) {
+			Test-Winget
+			winget install --id Google.Chrome -e --source winget
+			$Script:Insalled_chrome = 1
+			RefreshPath
+		}
+	} catch { <# ignore #> }
 }
 
 $statusServerJob = $null
@@ -191,14 +195,24 @@ try {
 	}
 
 	Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -Force -ErrorAction Ignore
+	#_if PSEXE
+		#_!! if (Test-Path "${PSEXEpath}.old") {
+			#_!! Remove-Item "${PSEXEpath}.old"
+		#_!! }
+		#_!! $(if ((Get-Command ps12exe -ErrorAction Ignore) -and ($PSEXEscript -ne (ps12exe -inputFile "$Script:fountDir/src/runner/main.ps1" -PreprocessOnly))) {
+			#_!! "Doing runner updating..."
+			#_!! Move-Item "$PSEXEpath" "${PSEXEpath}.old"
+			#_!! & "$Script:fountDir/run.bat" geneexe "$PSEXEpath"
+		#_!! }) 6> $null
+	#_endif
 	$OutputEncoding = [console]::OutputEncoding = [System.Text.Encoding]::UTF8
 	& "$Script:fountDir/run.bat" @newargs
 }
 finally {
 	if ($null -ne $statusServerJob) {
 		Write-Host "Shutting down installation status server..."
-		$statusServerJob | Stop-Job -Force
-		$statusServerJob | Remove-Job -Force
+		$statusServerJob | Stop-Job
+		$statusServerJob | Remove-Job
 	}
 	if ($Script:Insalled_chrome) {
 		winget uninstall --id Google.Chrome -e --source winget
@@ -210,11 +224,11 @@ finally {
 }
 
 #_if PSEXE
+	#_!! if (Test-Path "${PSEXEpath}.old") {
+		#_!! Start-Process powerShell @("-NoProfile";"-c";"sleep 1;Remove-Item `"${PSEXEpath}.old`"") -WindowStyle Hidden
+	#_!! }
 	#_!! if ($args[0] -eq 'remove') {
 		#_balus $LastExitCode
-	#_!! }
-	#_!! elseif ($PSEXEscript -ne (ps12exe -inputFile "$Script:fountDir/src/runner/main.ps1" -PreprocessOnly)) {
-		#_!! Start-Process powerShell @("-NoProfile";"-c";"sleep 1;fount geneexe `"$PSEXEpath`"") -WindowStyle Hidden
 	#_!! }
 	#_!! exit $LastExitCode
 #_endif

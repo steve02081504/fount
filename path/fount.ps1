@@ -44,13 +44,15 @@ function RefreshPath {
 	$env:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 }
 function Test-Winget {
-	if (!(Get-Command winget -ErrorAction SilentlyContinue)) {
-		Import-Module Appx
-		Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe
-		New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
-		Set-Content "$FOUNT_DIR/data/installer/auto_installed_winget" '1'
-		RefreshPath
-	}
+	try {
+		if (!(Get-Command winget -ErrorAction SilentlyContinue)) {
+			Import-Module Appx
+			Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe
+			New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
+			Set-Content "$FOUNT_DIR/data/installer/auto_installed_winget" '1'
+			RefreshPath
+		}
+	} catch { <# ignore #> }
 }
 function Test-Browser {
 	$browser = try {
@@ -60,13 +62,15 @@ function Test-Browser {
 			(Get-ItemProperty -Path "Registry::HKEY_CLASSES_ROOT\$progId\shell\open\command" -Name "(default)" -ErrorAction Stop).'(default)'
 		}
 	} catch { <# ignore #> }
-	if (!$browser) {
-		Test-Winget
-		winget install --id Google.Chrome -e --source winget
-		New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
-		Set-Content "$FOUNT_DIR/data/installer/auto_installed_chrome" '1'
-		RefreshPath
-	}
+	try {
+		if (!$browser) {
+			Test-Winget
+			winget install --id Google.Chrome -e --source winget
+			New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
+			Set-Content "$FOUNT_DIR/data/installer/auto_installed_chrome" '1'
+			RefreshPath
+		}
+	} catch { <# ignore #> }
 }
 
 if ($args.Count -gt 0 -and $args[0] -eq 'open') {
@@ -420,7 +424,7 @@ function deno_upgrade() {
 	deno upgrade -q $deno_update_channel
 }
 
-if ($args.Count -eq 0 -or $args[0] -ne 'shutdown') {
+if ($args.Count -eq 0 -or ($args[0] -ne 'shutdown' -and $args[0] -ne 'geneexe')) {
 	if ($IN_DOCKER) {
 		Write-Host "Skipping deno upgrade in Docker environment"
 	}
@@ -565,9 +569,14 @@ public class ExplorerRefresher {
 		SHChangeNotify(0x8000000, 0x1000, IntPtr.Zero, IntPtr.Zero);
 	}
 }
-'@
-	[ExplorerRefresher]::RefreshSettings()
-	[ExplorerRefresher]::RefreshDesktop()
+'@ -ErrorAction Ignore
+	try {
+		[ExplorerRefresher]::RefreshSettings()
+		[ExplorerRefresher]::RefreshDesktop()
+	}
+	catch {
+		Write-Warning "Failed to refresh explorer: $($_.Exception.Message)"
+	}
 }
 
 if ($args.Count -gt 0 -and $args[0] -eq 'geneexe') {
