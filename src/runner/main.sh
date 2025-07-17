@@ -117,16 +117,12 @@ install_package() {
 
 	if command -v "$command_name" &>/dev/null; then
 		# 跟踪自动安装的包
-		case ";$FOUNT_AUTO_INSTALLED_PACKAGES;" in
-		*";$installed_pkg_name;"*) ;; # Already tracked
-		*)
-			if [ -z "$FOUNT_AUTO_INSTALLED_PACKAGES" ]; then
-				FOUNT_AUTO_INSTALLED_PACKAGES="$installed_pkg_name"
-			else
-				FOUNT_AUTO_INSTALLED_PACKAGES="$FOUNT_AUTO_INSTALLED_PACKAGES;$installed_pkg_name"
-			fi
-			;;
-		esac
+		if [ -z "$FOUNT_AUTO_INSTALLED_PACKAGES" ]; then
+			FOUNT_AUTO_INSTALLED_PACKAGES="$installed_pkg_name"
+		else
+			FOUNT_AUTO_INSTALLED_PACKAGES="$FOUNT_AUTO_INSTALLED_PACKAGES;$installed_pkg_name"
+		fi
+		export FOUNT_AUTO_INSTALLED_PACKAGES
 		return 0
 	else
 		echo "Error: Failed to install '$command_name' using any known package manager." >&2
@@ -149,7 +145,7 @@ test_browser() {
 	elif [ "$OS_TYPE" = "Darwin" ]; then
 		# 尝试使用 defaults read
 		local default_browser_bundle_id
-		default_browser_bundle_id=$(defaults read ~/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist 2>/dev/null | grep -B 1 "LSHandlerURLScheme = https;" | sed -n -e 's/^.*RoleAll = "//' -e 's/";//p' | head -n 1)
+		default_browser_bundle_id=$(defaults read ~/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist 2>/dev/null | grep -B 1 "LSHandlerURLScheme = https;" | sed -n -e 's/^.*RoleAll = "//' -e 's/";//p' | head -n 1)||true
 		if [ -n "$default_browser_bundle_id" ]; then
 			browser_detected=1
 		fi
@@ -285,6 +281,5 @@ else
 	echo "Fount installation complete."
 fi
 
-export FOUNT_AUTO_INSTALLED_PACKAGES
 # 执行真正的 fount 核心脚本
 "$FOUNT_DIR/run.sh" "${new_args[@]}"

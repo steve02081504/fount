@@ -268,7 +268,7 @@ test_browser() {
 	elif [ "$OS_TYPE" = "Darwin" ]; then
 		# 尝试使用 defaults read
 		local default_browser_bundle_id
-		default_browser_bundle_id=$(defaults read ~/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist 2>/dev/null | grep -B 1 "LSHandlerURLScheme = https;" | sed -n -e 's/^.*RoleAll = "//' -e 's/";//p' | head -n 1)
+		default_browser_bundle_id=$(defaults read ~/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist 2>/dev/null | grep -B 1 "LSHandlerURLScheme = https;" | sed -n -e 's/^.*RoleAll = "//' -e 's/";//p' | head -n 1)||true
 		if [ -n "$default_browser_bundle_id" ]; then
 			browser_detected=1
 		fi

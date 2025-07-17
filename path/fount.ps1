@@ -59,7 +59,7 @@ function Test-Browser {
 		if ($progId) {
 			(Get-ItemProperty -Path "Registry::HKEY_CLASSES_ROOT\$progId\shell\open\command" -Name "(default)" -ErrorAction Stop).'(default)'
 		}
-	} catch { }
+	} catch { <# ignore #> }
 	if (!$browser) {
 		Test-Winget
 		winget install --id Google.Chrome -e --source winget
