@@ -73,7 +73,10 @@ function Test-Browser {
 	} catch { <# ignore #> }
 }
 
-if ($args.Count -gt 0 -and $args[0] -eq 'open') {
+if ($args.Count -gt 0 -and $args[0] -eq 'nop') {
+	exit 0
+}
+elseif ($args.Count -gt 0 -and $args[0] -eq 'open') {
 	if (Test-Path -Path "$FOUNT_DIR/data") {
 		if ($IN_DOCKER) {
 			$runargs = $args[1..$args.Count]

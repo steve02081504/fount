@@ -576,6 +576,7 @@ ensure_fount_path
 # 函数: 确保核心依赖可用
 ensure_dependencies() {
 	case "$1" in
+	nop) return 0 ;;
 	open | protocolhandle)
 		test_browser
 		install_package "nc" "netcat gnu-netcat openbsd-netcat netcat-openbsd nmap-ncat" || install_package "socat" "socat"
