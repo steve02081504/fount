@@ -90,6 +90,36 @@ if ($args.Length -eq 0) {
 	$newargs = @("open", "keepalive")
 }
 
+$Script:Insalled_winget = 0
+$Script:Insalled_chrome = 0
+
+function RefreshPath {
+	$env:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+}
+function Test-Winget {
+	if (!(Get-Command winget -ErrorAction SilentlyContinue)) {
+		Import-Module Appx
+		Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe
+		$Script:Insalled_winget = 1
+	}
+	RefreshPath
+}
+function Test-Browser {
+	$browser = try {
+		$progId = (Get-ItemProperty -Path "Registry::HKEY_CURRENT_USER\Software\Microsoft\Windows\Shell\Associations\UrlAssociations\https\UserChoice" -Name "ProgId" -ErrorAction Stop).'ProgId'
+
+		if ($progId) {
+			(Get-ItemProperty -Path "Registry::HKEY_CLASSES_ROOT\$progId\shell\open\command" -Name "(default)" -ErrorAction Stop).'(default)'
+		}
+	} catch { }
+	if (!$browser) {
+		Test-Winget
+		winget install --id Google.Chrome -e --source winget
+		$Script:Insalled_chrome = 1
+		RefreshPath
+	}
+}
+
 $statusServerJob = $null
 try {
 	if (!(Get-Command fount.ps1 -ErrorAction Ignore)) {
@@ -117,6 +147,8 @@ try {
 			}
 			$statusServerJob = Start-Job -ScriptBlock $statusServerScriptBlock
 			$newargs = $newargs | Where-Object { $_ -ne 'open' }
+			Test-Browser
+			Start-Process 'https://steve02081504.github.io/fount/wait/install'
 		}
 		Remove-Item $env:FOUNT_DIR -Confirm -ErrorAction Ignore -Recurse
 		if (Get-Command git -ErrorAction Ignore) {
@@ -143,6 +175,16 @@ try {
 			exit 1
 		}
 		$Script:fountDir = $env:FOUNT_DIR
+		if ($Script:Insalled_winget) {
+			New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
+			Set-Content "$FOUNT_DIR/data/installer/auto_installed_winget" '1'
+			$Script:Insalled_winget = 0
+		}
+		if ($Script:Insalled_chrome) {
+			New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
+			Set-Content "$FOUNT_DIR/data/installer/auto_installed_chrome" '1'
+			$Script:Insalled_chrome = 0
+		}
 	}
 	else {
 		$Script:fountDir = (Get-Command fount.ps1).Path | Split-Path -Parent | Split-Path -Parent
@@ -157,6 +199,13 @@ finally {
 		Write-Host "Shutting down installation status server..."
 		$statusServerJob | Stop-Job -Force
 		$statusServerJob | Remove-Job -Force
+	}
+	if ($Script:Insalled_chrome) {
+		winget uninstall --id Google.Chrome -e --source winget
+	}
+	if ($Script:Insalled_winget) {
+		Import-Module Appx
+		Remove-AppxPackage -Package Microsoft.DesktopAppInstaller_8wekyb3d8bbwe
 	}
 }
 
