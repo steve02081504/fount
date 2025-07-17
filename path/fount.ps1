@@ -40,17 +40,47 @@ function Test-PWSHModule([string]$ModuleName) {
 	}
 }
 
+function RefreshPath {
+	$env:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+}
+function Test-Winget {
+	if (!(Get-Command winget -ErrorAction SilentlyContinue)) {
+		Import-Module Appx
+		Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe
+		New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
+		Set-Content "$FOUNT_DIR/data/installer/auto_installed_winget" '1'
+		RefreshPath
+	}
+}
+function Test-Browser {
+	$browser = try {
+		$progId = (Get-ItemProperty -Path "Registry::HKEY_CURRENT_USER\Software\Microsoft\Windows\Shell\Associations\UrlAssociations\https\UserChoice" -Name "ProgId" -ErrorAction Stop).'ProgId'
+
+		if ($progId) {
+			(Get-ItemProperty -Path "Registry::HKEY_CLASSES_ROOT\$progId\shell\open\command" -Name "(default)" -ErrorAction Stop).'(default)'
+		}
+	} catch { <# ignore #> }
+	if (!$browser) {
+		Test-Winget
+		winget install --id Google.Chrome -e --source winget
+		New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
+		Set-Content "$FOUNT_DIR/data/installer/auto_installed_chrome" '1'
+		RefreshPath
+	}
+}
+
 if ($args.Count -gt 0 -and $args[0] -eq 'open') {
 	if (Test-Path -Path "$FOUNT_DIR/data") {
 		if ($IN_DOCKER) {
 			$runargs = $args[1..$args.Count]
 			fount.ps1 @runargs
-			exit
+			exit $LastExitCode
 		}
+		Test-Browser
 		Start-Process 'https://steve02081504.github.io/fount/wait'
 		$runargs = $args[1..$args.Count]
 		fount.ps1 @runargs
-		exit
+		exit $LastExitCode
 	}
 	else {
 		$statusServerScriptBlock = {
@@ -77,20 +107,23 @@ if ($args.Count -gt 0 -and $args[0] -eq 'open') {
 		$statusServerJob = Start-Job -ScriptBlock $statusServerScriptBlock
 		try {
 			$runargs = $args[1..$args.Count]
+			Test-Browser
+			Start-Process 'https://steve02081504.github.io/fount/wait/install'
 			fount.ps1 @runargs
-			exit
+			exit $LastExitCode
 		}
 		finally {
 			Stop-Job $statusServerJob
 			Remove-Job $statusServerJob
 		}
+		exit 1
 	}
 }
 elseif ($args.Count -gt 0 -and $args[0] -eq 'background') {
 	if ($IN_DOCKER) {
 		$runargs = $args[1..$args.Count]
 		fount.ps1 @runargs
-		exit
+		exit $LastExitCode
 	}
 	Test-PWSHModule ps12exe
 	$TempDir = [System.IO.Path]::GetTempPath()
@@ -100,13 +133,13 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'background') {
 	}
 	$runargs = $args[1..$args.Count]
 	Start-Process -FilePath $exepath -ArgumentList $runargs
-	exit
+	exit 0
 }
 elseif ($args.Count -gt 0 -and $args[0] -eq 'protocolhandle') {
 	if ($IN_DOCKER) {
 		$runargs = $args[1..$args.Count]
 		fount.ps1 @runargs
-		exit
+		exit $LastExitCode
 	}
 	$protocolUrl = $args[1]
 	if (-not $protocolUrl) {
@@ -120,6 +153,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'protocolhandle') {
 	Test-PWSHModule fount-pwsh
 	Start-Job -ScriptBlock {
 		param ($targetUrl)
+		Test-Browser
 		while (-not (Test-FountRunning)) {
 			Start-Sleep -Seconds 1
 		}
@@ -127,7 +161,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'protocolhandle') {
 	} -ArgumentList $targetUrl
 	$runargs = $args[2..$args.Count]
 	fount.ps1 @runargs
-	exit
+	exit $LastExitCode
 }
 
 # 向用户的$Profile中注册导入fount-pwsh
@@ -237,13 +271,7 @@ if (!$IsWindows) {
 # Git 安装和更新
 if (!(Get-Command git -ErrorAction SilentlyContinue)) {
 	Write-Host "Git is not installed, attempting to install..."
-	if (!(Get-Command winget -ErrorAction SilentlyContinue)) {
-		Import-Module Appx
-		Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe
-		New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
-		Set-Content "$FOUNT_DIR/data/installer/auto_installed_winget" '1'
-	}
-	$env:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+	Test-Winget
 	if (Get-Command winget -ErrorAction SilentlyContinue) {
 		winget install --id Git.Git -e --source winget
 		New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
@@ -252,7 +280,7 @@ if (!(Get-Command git -ErrorAction SilentlyContinue)) {
 	else {
 		Write-Host "Failed to install Git because Winget is failed to install, please install it manually."
 	}
-	$env:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+	RefreshPath
 	if (!(Get-Command git -ErrorAction SilentlyContinue)) {
 		Write-Host "Failed to install Git, please install it manually."
 	}
@@ -341,7 +369,7 @@ if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
 	Write-Host "Deno missing, auto installing..."
 	Invoke-RestMethod https://deno.land/install.ps1 | Invoke-Expression
 	if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
-		$env:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+		RefreshPath
 	}
 	if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
 		Write-Host "Deno installation failed, attempting auto installing to fount's path folder..."
@@ -380,7 +408,7 @@ function deno_upgrade() {
 	}
 	if (!$deno_ver) {
 		Write-Error "For some reason deno doesn't work, you may need to join https://discord.gg/deno to get support" -ErrorAction Ignore
-		exit
+		exit 1
 	}
 	$deno_update_channel = "stable"
 	if ($deno_ver.Contains("+")) {
@@ -665,6 +693,11 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 	if (Test-Path "$FOUNT_DIR/data/installer/auto_installed_git") {
 		Write-Host "Uninstalling Git..."
 		winget uninstall --id Git.Git -e --source winget
+	}
+
+	if (Test-Path "$FOUNT_DIR/data/installer/auto_installed_chrome") {
+		Write-Host "Uninstalling Chrome..."
+		winget uninstall --id Google.Chrome -e --source winget
 	}
 
 	if (Test-Path "$FOUNT_DIR/data/installer/auto_installed_winget") {

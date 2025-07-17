@@ -16,6 +16,7 @@ if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
 fi
 
 STATUS_SERVER_PID=""
+OS_TYPE=$(uname -s)
 
 trap '[[ -n "$STATUS_SERVER_PID" ]] && kill "$STATUS_SERVER_PID" 2>/dev/null' EXIT
 
@@ -116,21 +117,45 @@ install_package() {
 
 	if command -v "$command_name" &>/dev/null; then
 		# 跟踪自动安装的包
-		case ";$FOUNT_AUTO_INSTALLED_PACKAGES;" in
-		*";$installed_pkg_name;"*) ;; # Already tracked
-		*)
-			if [ -z "$FOUNT_AUTO_INSTALLED_PACKAGES" ]; then
-				FOUNT_AUTO_INSTALLED_PACKAGES="$installed_pkg_name"
-			else
-				FOUNT_AUTO_INSTALLED_PACKAGES="$FOUNT_AUTO_INSTALLED_PACKAGES;$installed_pkg_name"
-			fi
-			;;
-		esac
+		if [ -z "$FOUNT_AUTO_INSTALLED_PACKAGES" ]; then
+			FOUNT_AUTO_INSTALLED_PACKAGES="$installed_pkg_name"
+		else
+			FOUNT_AUTO_INSTALLED_PACKAGES="$FOUNT_AUTO_INSTALLED_PACKAGES;$installed_pkg_name"
+		fi
+		export FOUNT_AUTO_INSTALLED_PACKAGES
 		return 0
 	else
 		echo "Error: Failed to install '$command_name' using any known package manager." >&2
 		return 1
 	fi
+}
+
+test_browser() {
+	local browser_detected=0
+
+	if [ "$OS_TYPE" = "Linux" ]; then
+		install_package "xdg-settings" "xdg-utils"
+		if command -v xdg-settings &>/dev/null; then
+			local default_browser_desktop
+			default_browser_desktop=$(xdg-settings get default-web-browser 2>/dev/null)
+			if [[ -n "$default_browser_desktop" && "$default_browser_desktop" == *".desktop"* ]]; then
+				browser_detected=1
+			fi
+		fi
+	elif [ "$OS_TYPE" = "Darwin" ]; then
+		# 尝试使用 defaults read
+		local default_browser_bundle_id
+		default_browser_bundle_id=$(defaults read ~/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist 2>/dev/null | grep -B 1 "LSHandlerURLScheme = https;" | sed -n -e 's/^.*RoleAll = "//' -e 's/";//p' | head -n 1)||true
+		if [ -n "$default_browser_bundle_id" ]; then
+			browser_detected=1
+		fi
+	fi
+
+	if [ $browser_detected -eq 0 ]; then
+		echo "No default web browser detected. Attempting to install Google Chrome..."
+		install_package "google-chrome" "google-chrome google-chrome-stable"
+	fi
+	return 0
 }
 
 # 默认安装目录
@@ -170,6 +195,7 @@ else
 		fi
 
 		if [[ -n "$STATUS_SERVER_PID" ]]; then
+			test_browser
 			URL='https://steve02081504.github.io/fount/wait/install'
 			if [[ "$(uname -s)" == "Linux" ]]; then
 				(xdg-open "$URL" &)
@@ -255,6 +281,5 @@ else
 	echo "Fount installation complete."
 fi
 
-export FOUNT_AUTO_INSTALLED_PACKAGES
 # 执行真正的 fount 核心脚本
 "$FOUNT_DIR/run.sh" "${new_args[@]}"
