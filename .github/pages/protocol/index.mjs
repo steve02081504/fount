@@ -20,14 +20,14 @@ async function ping(hostUrl) {
 }
 
 function useUrlProtocol(hostUrl) {
-	const redirectUrl = fountProtocolUrl
-		? new URL('/protocolhandler', hostUrl)
-		: new URL('/shells/home', hostUrl)
 	if (fountProtocolUrl) {
+		const redirectUrl = new URL('/protocolhandler', hostUrl)
 		redirectUrl.searchParams.set('url', fountProtocolUrl)
 		redirectUrl.searchParams.set('from', 'jumppage')
+		window.location.href = redirectUrl.href
+	} else {
+		window.location.href = new URL('/shells/home', hostUrl).href
 	}
-	window.location.href = redirectUrl.href
 }
 
 async function main() {
@@ -43,8 +43,7 @@ async function main() {
 	}
 
 	const newHostUrl = await getFountHostUrl()
-	if (newHostUrl)
-		return useUrlProtocol(newHostUrl)
+	if (newHostUrl) return useUrlProtocol(newHostUrl)
 	alert(geti18n('protocolhandler.fountNotFound'))
 	window.location.href = 'https://github.com/steve02081504/fount'
 }
