@@ -12,7 +12,7 @@ body.scroll-lock {
 }
 
 .hero.bg-image-loaded {
-	background-image: url(https://repository-images.githubusercontent.com/862251163/ef021bff-96a0-4e73-b3d0-7e7fbab660e8);
+	background-image: url("https://repository-images.githubusercontent.com/862251163/ef021bff-96a0-4e73-b3d0-7e7fbab660e8");
 	/* 确保背景图的显示方式与SVG的模拟方式一致 */
 	background-size: cover;
 	background-position: center;
@@ -26,7 +26,8 @@ body.scroll-lock {
 	position: absolute;
 	inset: 0;
 	z-index: 1;
-	display: flex; /* 保持flex以便居中 */
+	display: flex;
+	/* 保持flex以便居中 */
 	align-items: center;
 	justify-content: center;
 	transition: opacity 0.8s ease-in;
@@ -46,14 +47,18 @@ body.scroll-lock {
 .hero .hero-overlay,
 .hero .hero-content {
 	position: relative;
-	z-index: 2; /* Ensures it's above the SVG animation */
-	opacity: 0; /* Initially transparent */
-	transition: opacity 0.8s ease-in; /* Ready for fade-in effect */
+	z-index: 2;
+	/* Ensures it's above the SVG animation */
+	opacity: 0;
+	/* Initially transparent */
+	transition: opacity 0.8s ease-in;
+	/* Ready for fade-in effect */
 }
 
 /* Class to make elements visible after the animation */
 .visible-after-intro {
-	opacity: 1 !important; /* !important ensures it overrides daisyUI's bg-opacity-60 */
+	opacity: 1 !important;
+	/* !important ensures it overrides daisyUI's bg-opacity-60 */
 }
 
 /* === End: Hero Animation Styles === */
