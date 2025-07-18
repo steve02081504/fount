@@ -87,7 +87,7 @@ function Test-Browser {
 		if ($Failed) {
 			$ChromeSetup = "ChromeSetup.exe"
 			Invoke-WebRequest -Uri 'http://dl.google.com/chrome/install/chrome_installer.exe' -OutFile "$env:TEMP\$ChromeSetup"
-			& "$env:TEMP\$ChromeSetup" /silent /install
+			& "$env:TEMP\$ChromeSetup" /install
 			$Process2Monitor = "ChromeSetup"
 			do {
 				Start-Sleep -Seconds 2
@@ -495,8 +495,10 @@ function run {
 # 安装依赖
 if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $args[0] -eq 'init')) {
 	if (!(Test-Path -Path "$FOUNT_DIR/.noupdate")) {
-		git -C "$FOUNT_DIR" clean -fd
-		git -C "$FOUNT_DIR" reset --hard "origin/master"
+		if (Get-Command git -ErrorAction Ignore) {
+			git -C "$FOUNT_DIR" clean -fd
+			git -C "$FOUNT_DIR" reset --hard "origin/master"
+		}
 	}
 	if (Test-Path -Path "$FOUNT_DIR/node_modules") {
 		run shutdown
