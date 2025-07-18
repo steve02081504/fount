@@ -909,8 +909,11 @@ run() {
 # 安装 fount 依赖
 if [[ ! -d "$FOUNT_DIR/node_modules" || ($# -gt 0 && $1 = 'init') ]]; then
 	if [ ! -f "$FOUNT_DIR/.noupdate" ]; then
-		git -C "$FOUNT_DIR" clean -fd
-		git -C "$FOUNT_DIR" reset --hard "origin/master"
+		install_package "git" "git git-core" || true
+		if command -v git &>/dev/null; then
+			git -C "$FOUNT_DIR" clean -fd
+			git -C "$FOUNT_DIR" reset --hard "origin/master"
+		fi
 	fi
 	if [[ -d "$FOUNT_DIR/node_modules" ]]; then run "shutdown"; fi
 	echo "Installing dependencies..."

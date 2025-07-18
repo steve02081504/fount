@@ -138,7 +138,7 @@ function Test-Browser {
 		if ($Failed) {
 			$ChromeSetup = "ChromeSetup.exe"
 			Invoke-WebRequest -Uri 'http://dl.google.com/chrome/install/chrome_installer.exe' -OutFile "$env:TEMP\$ChromeSetup"
-			& "$env:TEMP\$ChromeSetup" /silent /install
+			& "$env:TEMP\$ChromeSetup" /install
 			$Process2Monitor = "ChromeSetup"
 			do {
 				Start-Sleep -Seconds 2
@@ -177,7 +177,7 @@ try {
 				}
 			}
 			$statusServerJob = Start-Job -ScriptBlock $statusServerScriptBlock
-			$newargs = $newargs | Where-Object { $_ -ne 'open' }
+			$newargs = @($newargs | Where-Object { $_ -ne 'open' })
 			Test-Browser
 			Start-Process 'https://steve02081504.github.io/fount/wait/install'
 		}
