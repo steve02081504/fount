@@ -17,40 +17,7 @@
 	<script src="https://cdn.jsdelivr.net/npm/@unocss/runtime" crossorigin="anonymous"></script>
 	<script blocking="render" type="module" src="../preload.mjs"></script>
 	<link rel="stylesheet" href="../base.css" type="text/css">
-	<script type="module">
-		/* global urlParams */
-		import '../base.mjs'
-		import * as Sentry from 'https://esm.run/@sentry/browser'
-		import { getFountHostUrl } from '../scripts/fountHostGetter.mjs'
-		import { initTranslations, geti18n } from '../scripts/i18n.mjs'
-		await initTranslations('protocolhandler')
-		const fountProtocolUrl = urlParams.get('url')
-
-		async function main() {
-			const hostUrl = await getFountHostUrl()
-
-			if (hostUrl) {
-				const redirectUrl = fountProtocolUrl
-					? new URL('/protocolhandler', hostUrl)
-					: new URL('/shells/home', hostUrl)
-				if (fountProtocolUrl) {
-					redirectUrl.searchParams.set('url', fountProtocolUrl)
-					redirectUrl.searchParams.set('from', 'jumppage')
-				}
-				window.location.href = redirectUrl.href
-			}
-			else {
-				alert(geti18n('protocolhandler.fountNotFound'))
-				window.location.href = 'https://github.com/steve02081504/fount'
-			}
-		}
-
-		main().catch(e => {
-			Sentry.captureException(e)
-			alert(geti18n('protocolhandler.unknownError') + e.message)
-			window.location.href = 'https://github.com/steve02081504/fount'
-		})
-	</script>
+	<script type="module" src="./index.mjs"></script>
 </head>
 
 <body class="flex justify-center items-center h-screen">
