@@ -27,7 +27,7 @@ function extractIpAndPortFromUrl(urlString) {
 }
 
 // 测试 Fount 服务是否可用
-export async function isFountServiceAvailable(host) {
+async function isFountServiceAvailable(host) {
 	try {
 		const url = new URL('/api/ping', host)
 		const response = await fetch(url, { method: 'GET', mode: 'cors', signal: AbortSignal.timeout(500) })
@@ -169,3 +169,5 @@ export async function getFountHostUrl(hostUrl = urlParams.get('hostUrl') ?? loca
 	saveFountHostUrl(result)
 	return result
 }
+
+export { isFountServiceAvailable }
