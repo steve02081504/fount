@@ -14,52 +14,39 @@ async function ping(hostUrl) {
 	const timeout = setTimeout(() => controller.abort(), 1000)
 	const res = await fetch(new URL('/api/ping', hostUrl), {
 		signal: controller.signal,
-	}).catch(() => null)
+	}).catch(() => 0)
 	clearTimeout(timeout)
-	return res?.ok ?? false
+	return res?.ok
+}
+
+function useUrlProtocol(hostUrl) {
+	const redirectUrl = fountProtocolUrl
+		? new URL('/protocolhandler', hostUrl)
+		: new URL('/shells/home', hostUrl)
+	if (fountProtocolUrl) {
+		redirectUrl.searchParams.set('url', fountProtocolUrl)
+		redirectUrl.searchParams.set('from', 'jumppage')
+	}
+	window.location.href = redirectUrl.href
 }
 
 async function main() {
 	await initTranslations('protocolhandler')
-	const hostUrl = localStorage.getItem('hostUrl')
+	const hostUrl = urlParams.get('hostUrl') ?? localStorage.getItem('fountHostUrl')
 	if (hostUrl) {
 		const isOnline = await ping(hostUrl)
-		if (isOnline) {
-			const redirectUrl = fountProtocolUrl
-				? new URL('/protocolhandler', hostUrl)
-				: new URL('/shells/home', hostUrl)
-			if (fountProtocolUrl) {
-				redirectUrl.searchParams.set('url', fountProtocolUrl)
-				redirectUrl.searchParams.set('from', 'jumppage')
-			}
-			window.location.href = redirectUrl.href
-			return
-		}
+		if (isOnline) return useUrlProtocol(hostUrl)
 
 		const url = new URL(hostUrl)
-		if (['localhost', '127.0.0.1'].includes(url.hostname)) {
-			if (fountProtocolUrl) {
-				window.open(fountProtocolUrl, '_self')
-				return
-			}
-		}
+		if (fountProtocolUrl && ['localhost', '127.0.0.1'].includes(url.hostname))
+			return window.open(fountProtocolUrl, '_self')
 	}
 
 	const newHostUrl = await getFountHostUrl()
-	if (newHostUrl) {
-		const redirectUrl = fountProtocolUrl
-			? new URL('/protocolhandler', newHostUrl)
-			: new URL('/shells/home', newHostUrl)
-		if (fountProtocolUrl) {
-			redirectUrl.searchParams.set('url', fountProtocolUrl)
-			redirectUrl.searchParams.set('from', 'jumppage')
-		}
-		window.location.href = redirectUrl.href
-	}
-	else {
-		alert(geti18n('protocolhandler.fountNotFound'))
-		window.location.href = 'https://github.com/steve02081504/fount'
-	}
+	if (newHostUrl)
+		return useUrlProtocol(newHostUrl)
+	alert(geti18n('protocolhandler.fountNotFound'))
+	window.location.href = 'https://github.com/steve02081504/fount'
 }
 
 main().catch(e => {
