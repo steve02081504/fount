@@ -28,7 +28,7 @@ import { Buffer } from 'node:buffer'
 /**
  * Sets up the API endpoints for chat operations within the application.
  *
- * @param {import('npm:express').Router} router - The express router to which the endpoints will be attached.
+ * @param {import('npm:websocket-express').Router} router - The express router to which the endpoints will be attached.
  *
  * This function defines several POST and GET routes for managing chat functionalities, such as creating new chats,
  * adding or removing characters, setting world and persona, triggering character replies, modifying timelines, and

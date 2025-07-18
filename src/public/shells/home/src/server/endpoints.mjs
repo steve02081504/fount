@@ -2,7 +2,7 @@ import { authenticate, getUserByReq } from '../../../../../server/auth.mjs'
 import { expandHomeRegistry } from './home.mjs'
 
 /**
- * @param {import('npm:express').Router} router
+ * @param {import('npm:websocket-express').Router} router
  */
 export function setEndpoints(router) {
 	router.get('/api/shells/home/gethomeregistry', authenticate, async (req, res) => {
