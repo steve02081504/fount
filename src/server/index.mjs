@@ -64,7 +64,7 @@ if (command_obj) try {
 } catch (err) {
 	if (!(command_obj.type === 'shutdown' && String(err).endsWith('read ECONNRESET')))
 		console.error(await geti18n('fountConsole.ipc.sendCommandFailed', { error: err }))
-	process.exit(1)
+	else throw err
 }
 
 if (!okey) process.exit(0)
