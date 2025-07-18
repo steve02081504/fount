@@ -253,6 +253,34 @@ uninstall_package() {
 	return 1
 }
 
+test_browser() {
+	local browser_detected=0
+
+	if [ "$OS_TYPE" = "Linux" ]; then
+		install_package "xdg-settings" "xdg-utils"
+		if command -v xdg-settings &>/dev/null; then
+			local default_browser_desktop
+			default_browser_desktop=$(xdg-settings get default-web-browser 2>/dev/null)
+			if [[ -n "$default_browser_desktop" && "$default_browser_desktop" == *".desktop"* ]]; then
+				browser_detected=1
+			fi
+		fi
+	elif [ "$OS_TYPE" = "Darwin" ]; then
+		# 尝试使用 defaults read
+		local default_browser_bundle_id
+		default_browser_bundle_id=$(defaults read ~/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist 2>/dev/null | grep -B 1 "LSHandlerURLScheme = https;" | sed -n -e 's/^.*RoleAll = "//' -e 's/";//p' | head -n 1)||true
+		if [ -n "$default_browser_bundle_id" ]; then
+			browser_detected=1
+		fi
+	fi
+
+	if [ $browser_detected -eq 0 ]; then
+		echo "No default web browser detected. Attempting to install Google Chrome..."
+		install_package "google-chrome" "google-chrome google-chrome-stable"
+	fi
+	return 0
+}
+
 # 函数: 运行 Deno，考虑 glibc-runner 如果可用
 run_deno() {
 	local deno_args=("$@")
@@ -548,7 +576,9 @@ ensure_fount_path
 # 函数: 确保核心依赖可用
 ensure_dependencies() {
 	case "$1" in
+	nop) return 0 ;;
 	open | protocolhandle)
+		test_browser
 		install_package "nc" "netcat gnu-netcat openbsd-netcat netcat-openbsd nmap-ncat" || install_package "socat" "socat"
 		install_package "jq" "jq"
 		if [[ "$OS_TYPE" == "Linux" ]]; then install_package "xdg-open" "xdg-utils"; fi
@@ -879,8 +909,11 @@ run() {
 # 安装 fount 依赖
 if [[ ! -d "$FOUNT_DIR/node_modules" || ($# -gt 0 && $1 = 'init') ]]; then
 	if [ ! -f "$FOUNT_DIR/.noupdate" ]; then
-		git -C "$FOUNT_DIR" clean -fd
-		git -C "$FOUNT_DIR" reset --hard "origin/master"
+		install_package "git" "git git-core" || true
+		if command -v git &>/dev/null; then
+			git -C "$FOUNT_DIR" clean -fd
+			git -C "$FOUNT_DIR" reset --hard "origin/master"
+		fi
 	fi
 	if [[ -d "$FOUNT_DIR/node_modules" ]]; then run "shutdown"; fi
 	echo "Installing dependencies..."
