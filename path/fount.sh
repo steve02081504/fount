@@ -371,19 +371,18 @@ urlencode() {
 # 函数: 创建桌面快捷方式
 create_desktop_shortcut() {
 	echo "Creating desktop shortcut..."
-	local shortcut_name="fount"
 	local icon_path="$FOUNT_DIR/src/pages/favicon.ico"
 
 	if [ "$OS_TYPE" = "Linux" ]; then
 		install_package "xdg-open" "xdg-utils" || return 1
 
-		local desktop_file_path="$HOME/.local/share/applications/$shortcut_name.desktop"
+		local desktop_file_path="$HOME/.local/share/applications/fount.desktop"
 		mkdir -p "$(dirname "$desktop_file_path")"
 		cat <<EOF >"$desktop_file_path"
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=$shortcut_name
+Name=fount
 Comment=Fount Application
 Exec=$FOUNT_DIR/path/fount open keepalive
 Icon=$icon_path
@@ -416,7 +415,7 @@ EOF
 		echo "fount:// protocol handler registered."
 
 	elif [ "$OS_TYPE" = "Darwin" ]; then
-		local app_path="$HOME/Desktop/$shortcut_name.app"
+		local app_path="$HOME/Desktop/fount.app"
 		rm -rf "$app_path" # Clean up old version first
 		echo "Creating macOS application bundle at $app_path"
 
@@ -450,7 +449,7 @@ EOF
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>$shortcut_name</string>
+	<string>fount</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
