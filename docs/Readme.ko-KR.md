@@ -2,7 +2,7 @@
 
 > 당신만의 몰입형 AI 캐릭터 동반자
 
-[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/steve02081504/fount)
 [![Docker Image Size](https://img.shields.io/docker/image-size/steve02081504/fount)](https://github.com/users/steve02081504/packages/container/package/fount)
 [![GitHub repo size](https://img.shields.io/github/repo-size/steve02081504/fount)](https://github.com/steve02081504/fount/archive/refs/heads/master.zip)
@@ -240,10 +240,16 @@ Fount의 세계는 단순한 단어와 코드를 넘어, 눈을 즐겁게 하고
 Fount 로고의 SVG 파일은 [여기](../imgs/)에서 찾을 수 있습니다.
 
 ```markdown
-[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
 ```
 
-[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
+
+```markdown
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://github.com/topics/fount-character)
+```
+
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://github.com/topics/fount-character)
 
 | 색상 형식 | 코드 |
 | :---: | :---: |
@@ -256,14 +262,6 @@ Fount 로고의 SVG 파일은 [여기](../imgs/)에서 찾을 수 있습니다.
 다른 사용자가 단 한 번의 클릭으로 당신의 창작물을 Fount 세계에 설치하는 것을 상상해보세요. 컴포넌트의 ZIP 링크나 Git 리포지토리 링크를 Fount의 프로토콜 링크와 결합하기만 하면 됩니다.
 
 `https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;` + `당신의_컴포넌트_링크`
-
-이것을 배지와 결합하여 아름답고 실용적인 버튼을 만들어보세요.
-
-```markdown
-[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
-```
-
-[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
 
 ---
 
