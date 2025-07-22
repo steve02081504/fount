@@ -15,7 +15,7 @@ Sentry.init({
 	tracePropagationTargets: [window.location.origin || 'localhost'],
 })
 
-await import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill@master/index.mjs')
+await import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill/index.mjs')
 
 // register service worker
 if ('serviceWorker' in navigator)

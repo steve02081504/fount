@@ -235,12 +235,13 @@ async function cleanupExpiredCache() {
  */
 async function fetchAndCache(request) {
 	try {
-		const can_cors = await fetch(request, { method: 'HEAD' }).then(response => response.headers.get('Access-Control-Allow-Origin'))
+		const cache = await caches.open(CACHE_NAME)
+		const cachedResponse = await cache.match(request)
+		const can_cors = cachedResponse ? cachedResponse.headers.get('Access-Control-Allow-Origin') : new URL(request.url).origin !== self.location.origin && await fetch(request, { method: 'HEAD' }).then(response => response.headers.get('Access-Control-Allow-Origin'))
 		const networkResponse = await fetch(request, { mode: can_cors ? 'cors' : undefined })
 
 		if (networkResponse.type == 'opaque');
 		else if (networkResponse && networkResponse.ok) {
-			const cache = await caches.open(CACHE_NAME)
 			const responseToCache = networkResponse.clone()
 			const now = Date.now()
 

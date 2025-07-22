@@ -12,7 +12,7 @@ Sentry.init({
 	tracePropagationTargets: [window.location.origin || 'https://steve02081504.github.io'],
 })
 
-await import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill@master/index.mjs')
+await import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill/index.mjs')
 
 /* global urlParams */
 export let theme_now
