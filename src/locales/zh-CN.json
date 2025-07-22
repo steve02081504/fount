@@ -63,7 +63,27 @@
 		},
 		"tray": {
 			"readIconFailed": "读取图标文件失败: ${error}",
-			"createTrayFailed": "创建托盘失败: ${error}"
+			"createTrayFailed": "创建托盘失败: ${error}",
+			"title": "Fount",
+			"tooltip": "Fount",
+			"items": {
+				"open": {
+					"title": "打开",
+					"tooltip": "打开 fount"
+				},
+				"github": {
+					"title": "GitHub",
+					"tooltip": "打开 fount 的 GitHub"
+				},
+				"discord": {
+					"title": "Discord",
+					"tooltip": "打开 fount 的 Discord"
+				},
+				"exit": {
+					"title": "退出",
+					"tooltip": "退出应用程序"
+				}
+			}
 		},
 		"discordbot": {
 			"botStarted": "char ${charname} 已在discord bot ${botusername} 上登录"

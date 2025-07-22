@@ -41,30 +41,30 @@ export async function createTray() {
 		systray = new SysTray({
 			menu: {
 				icon: base64Icon,
-				title: 'Fount',
-				tooltip: 'Fount',
+				title: await geti18n('fountConsole.tray.title'),
+				tooltip: await geti18n('fountConsole.tray.tooltip'),
 				items: [
 					{
-						title: 'Open',
-						tooltip: 'Open fount',
+						title: await geti18n('fountConsole.tray.items.open.title'),
+						tooltip: await geti18n('fountConsole.tray.items.open.tooltip'),
 						checked: false,
 						enabled: true
 					},
 					{
-						title: 'github',
-						tooltip: 'Open founts github',
+						title: await geti18n('fountConsole.tray.items.github.title'),
+						tooltip: await geti18n('fountConsole.tray.items.github.tooltip'),
 						checked: false,
 						enabled: true
 					},
 					{
-						title: 'Discord',
-						tooltip: 'Open founts discord',
+						title: await geti18n('fountConsole.tray.items.discord.title'),
+						tooltip: await geti18n('fountConsole.tray.items.discord.tooltip'),
 						checked: false,
 						enabled: true
 					},
 					{
-						title: 'Exit',
-						tooltip: 'Exit application',
+						title: await geti18n('fountConsole.tray.items.exit.title'),
+						tooltip: await geti18n('fountConsole.tray.items.exit.tooltip'),
 						checked: false,
 						enabled: true
 					}
