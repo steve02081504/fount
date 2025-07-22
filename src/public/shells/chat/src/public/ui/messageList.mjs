@@ -61,13 +61,13 @@ export async function renderMessage(message) {
 
 		// 获取 dropdown items
 		dropdownMenu.querySelector('.copy-markdown-button').addEventListener('click', async () => {
-			try{
+			try {
 				await navigator.clipboard.writeText(messageMarkdownContent)
 			} catch (error) { alert(error) }
 			dropdownMenu.hidePopover()
 		})
 		dropdownMenu.querySelector('.copy-text-button').addEventListener('click', async () => {
-			try{
+			try {
 				await navigator.clipboard.writeText(messageContentElement.textContent.trim())
 			} catch (error) { alert(error) }
 			dropdownMenu.hidePopover()

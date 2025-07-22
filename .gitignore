@@ -4,7 +4,7 @@
 /temp.txt
 /.idea
 /.noupdate
-/data/
+/data
 /.vm_data_*
 /node_modules
 /path/deno

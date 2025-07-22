@@ -75,7 +75,7 @@ export async function createTray() {
 		})
 
 		systray.onClick(action => {
-			switch(action.seq_id) {
+			switch (action.seq_id) {
 				case 0:
 					open(hosturl)
 					break
