@@ -69,7 +69,7 @@
 			"items": {
 				"open": {
 					"title": "Offen",
-					"tooltip": null
+					"tooltip": "Oeffne fount"
 				},
 				"github": {
 					"title": "Github",
