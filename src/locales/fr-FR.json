@@ -63,7 +63,27 @@
 		},
 		"tray": {
 			"readIconFailed": "Erreur lors de la lecture du fichier d'icône : ${error}",
-			"createTrayFailed": "Erreur lors de la création de l'icône dans la zone de notification : ${error}"
+			"createTrayFailed": "Erreur lors de la création de l'icône dans la zone de notification : ${error}",
+			"title": "Source",
+			"tooltip": "Source",
+			"items": {
+				"open": {
+					"title": "Ouvrir",
+					"tooltip": "Bougie ouvre"
+				},
+				"github": {
+					"title": "Github",
+					"tooltip": "GiTHub de Fount ouvrir"
+				},
+				"discord": {
+					"title": "Discorde",
+					"tooltip": "Open Discord de Fount"
+				},
+				"exit": {
+					"title": "quitter",
+					"tooltip": "Quitter la demande"
+				}
+			}
 		},
 		"discordbot": {
 			"botStarted": "Le personnage ${charname} s'est connecté au bot Discord ${botusername}."

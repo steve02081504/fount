@@ -63,7 +63,27 @@
 		},
 		"tray": {
 			"readIconFailed": "Failed to read icon file: ${error}",
-			"createTrayFailed": "Failed to create tray: ${error}"
+			"createTrayFailed": "Failed to create tray: ${error}",
+			"title": "Fount",
+			"tooltip": "Fount",
+			"items": {
+				"open": {
+					"title": "Open",
+					"tooltip": "Open fount"
+				},
+				"github": {
+					"title": "GitHub",
+					"tooltip": "Open fount's GitHub"
+				},
+				"discord": {
+					"title": "Discord",
+					"tooltip": "Open fount's Discord"
+				},
+				"exit": {
+					"title": "quit",
+					"tooltip": "Exit the application"
+				}
+			}
 		},
 		"discordbot": {
 			"botStarted": "Character ${charname} has logged in to the Discord bot ${botusername}."

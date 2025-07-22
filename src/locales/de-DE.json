@@ -63,7 +63,27 @@
 		},
 		"tray": {
 			"readIconFailed": "Fehler beim Lesen der Icon-Datei: ${error}",
-			"createTrayFailed": "Fehler beim Erstellen des Trays: ${error}"
+			"createTrayFailed": "Fehler beim Erstellen des Trays: ${error}",
+			"title": "Quelle",
+			"tooltip": "Quelle",
+			"items": {
+				"open": {
+					"title": "Offen",
+					"tooltip": null
+				},
+				"github": {
+					"title": "Github",
+					"tooltip": "Open Fount's Github"
+				},
+				"discord": {
+					"title": "Zwietracht",
+					"tooltip": "Open Fount's Zwietracht"
+				},
+				"exit": {
+					"title": "aufhören",
+					"tooltip": "Beenden Sie die Anwendung"
+				}
+			}
 		},
 		"discordbot": {
 			"botStarted": "Char ${charname} hat sich beim Discord-Bot ${botusername} angemeldet."

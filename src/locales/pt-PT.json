@@ -63,7 +63,27 @@
 		},
 		"tray": {
 			"readIconFailed": "Falha ao ler o ficheiro do ícone: ${error}",
-			"createTrayFailed": "Falha ao criar o ícone na área de notificação: ${error}"
+			"createTrayFailed": "Falha ao criar o ícone na área de notificação: ${error}",
+			"title": "Fonte",
+			"tooltip": "Fonte",
+			"items": {
+				"open": {
+					"title": "Abrir",
+					"tooltip": "Fonte aberta"
+				},
+				"github": {
+					"title": "Github",
+					"tooltip": "Open Github da font"
+				},
+				"discord": {
+					"title": "Discórdia",
+					"tooltip": "Discord de Fount"
+				},
+				"exit": {
+					"title": "desistir",
+					"tooltip": "Saia do aplicativo"
+				}
+			}
 		},
 		"discordbot": {
 			"botStarted": "O personagem ${charname} ligou-se ao bot Discord ${botusername}."

@@ -63,7 +63,27 @@
 		},
 		"tray": {
 			"readIconFailed": "आइकन फ़ाइल पढ़ने में विफल: ${error}",
-			"createTrayFailed": "ट्रे बनाने में विफल: ${error}"
+			"createTrayFailed": "ट्रे बनाने में विफल: ${error}",
+			"title": "झरना",
+			"tooltip": "झरना",
+			"items": {
+				"open": {
+					"title": "खुला",
+					"tooltip": "खुला फाउंट"
+				},
+				"github": {
+					"title": "GitHub",
+					"tooltip": "फाउंट के गिथब को खोलें"
+				},
+				"discord": {
+					"title": "कलह",
+					"tooltip": "फाउंट की कलह खोलें"
+				},
+				"exit": {
+					"title": "छोड़ना",
+					"tooltip": "आवेदन से बाहर निकलें"
+				}
+			}
 		},
 		"discordbot": {
 			"botStarted": "कैरेक्टर ${charname} ने डिस्कॉर्ड बॉट ${botusername} पर लॉगिन किया है।"

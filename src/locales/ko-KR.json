@@ -63,7 +63,27 @@
 		},
 		"tray": {
 			"readIconFailed": "아이콘 파일을 읽는 데 실패했습니다: ${error}",
-			"createTrayFailed": "트레이 아이콘 생성에 실패했습니다: ${error}"
+			"createTrayFailed": "트레이 아이콘 생성에 실패했습니다: ${error}",
+			"title": "세례반",
+			"tooltip": "세례반",
+			"items": {
+				"open": {
+					"title": "열려 있는",
+					"tooltip": "열린 분노"
+				},
+				"github": {
+					"title": "github",
+					"tooltip": "오픈 파운트의 github"
+				},
+				"discord": {
+					"title": "불화",
+					"tooltip": "오픈 파운트의 불화"
+				},
+				"exit": {
+					"title": "그만두다",
+					"tooltip": "신청서를 종료하십시오"
+				}
+			}
 		},
 		"discordbot": {
 			"botStarted": "캐릭터 ${charname}님이 Discord 봇 ${botusername}에 로그인했습니다."

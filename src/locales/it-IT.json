@@ -63,7 +63,27 @@
 		},
 		"tray": {
 			"readIconFailed": "Impossibile leggere il file dell'icona: ${error}",
-			"createTrayFailed": "Impossibile creare l'icona nell'area di notifica: ${error}"
+			"createTrayFailed": "Impossibile creare l'icona nell'area di notifica: ${error}",
+			"title": "Fonte",
+			"tooltip": "Fonte",
+			"items": {
+				"open": {
+					"title": "Aprire",
+					"tooltip": "Fonte aperta"
+				},
+				"github": {
+					"title": "Github",
+					"tooltip": "Apri il github di fonte"
+				},
+				"discord": {
+					"title": "Discordia",
+					"tooltip": "Open Fount's Discord"
+				},
+				"exit": {
+					"title": "esentato",
+					"tooltip": "Esci dall'applicazione"
+				}
+			}
 		},
 		"discordbot": {
 			"botStarted": "Il personaggio ${charname} ha effettuato l'accesso al bot Discord ${botusername}."

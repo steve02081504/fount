@@ -63,7 +63,27 @@
 		},
 		"tray": {
 			"readIconFailed": "アイコンファイルの読み込みに失敗しました：${error}",
-			"createTrayFailed": "トレイアイコンの作成に失敗しました：${error}"
+			"createTrayFailed": "トレイアイコンの作成に失敗しました：${error}",
+			"title": "噴水",
+			"tooltip": "噴水",
+			"items": {
+				"open": {
+					"title": "開ける",
+					"tooltip": "噴水を開きます"
+				},
+				"github": {
+					"title": "github",
+					"tooltip": "Fount's Githubを開きます"
+				},
+				"discord": {
+					"title": "不和",
+					"tooltip": "Open Fount's scord"
+				},
+				"exit": {
+					"title": "やめる",
+					"tooltip": "アプリケーションを終了します"
+				}
+			}
 		},
 		"discordbot": {
 			"botStarted": "キャラクター「${charname}」がDiscordボット「${botusername}」にログインしました。"
