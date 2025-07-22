@@ -25,9 +25,9 @@ function useUrlProtocol(hostUrl) {
 		redirectUrl.searchParams.set('url', fountProtocolUrl)
 		redirectUrl.searchParams.set('from', 'jumppage')
 		window.location.href = redirectUrl.href
-	} else {
-		window.location.href = new URL('/shells/home', hostUrl).href
 	}
+	else
+		window.location.href = new URL('/shells/home', hostUrl).href
 }
 
 async function main() {

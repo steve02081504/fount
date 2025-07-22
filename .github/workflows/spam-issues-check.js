@@ -1,3 +1,4 @@
+/* global module */
 /** @param {import('@types/github-script').AsyncFunctionArguments} AsyncFunctionArguments */
 module.exports = async ({ github, context }) => {
 	const issueBody = context.payload.issue.body.toLowerCase()
@@ -20,7 +21,7 @@ module.exports = async ({ github, context }) => {
 	// 2. 如果匹配数量大于3，则认为是垃圾信息，直接关闭并锁定
 	if (matchCount > 3) {
 		console.log('This issue is spam report. Closing and locking it.')
-		const commentBody = `> This issue has been automatically closed and locked because suggesting it is spam or a miscategorized report.`
+		const commentBody = '> This issue has been automatically closed and locked because suggesting it is spam or a miscategorized report.'
 
 		// 发表简短评论
 		await github.rest.issues.createComment({

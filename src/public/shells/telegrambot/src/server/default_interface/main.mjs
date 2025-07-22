@@ -6,6 +6,7 @@ import {
 } from './tools.mjs'
 import { localhostLocales } from '../../../../../../scripts/i18n.mjs'
 import { getPartInfo } from '../../../../../../scripts/locale.mjs'
+import { loadDefaultPersona } from '../../../../../../server/managers/persona_manager.mjs'
 
 /** @typedef {import('npm:telegraf').Telegraf} TelegrafInstance */
 /** @typedef {import('npm:telegraf').Context} TelegrafContext */
@@ -28,7 +29,7 @@ async function tryFewTimes(func, { times = 3, WhenFailsWaitFor = 2000 } = {}) {
 			return await func()
 		} catch (error) {
 			lastError = error
-			console.warn(`[TelegramDefaultInterface] tryFewTimes: Attempt ${i + 1} failed. Error: ${error.message?.replace(/([!#()*+.=>[\]_`{|}~\-])/g, '\\$1')}`)
+			console.warn(`[TelegramDefaultInterface] tryFewTimes: Attempt ${i + 1} failed. Error: ${error.message?.replace(/([!#()*+.=>[\]_`{|}~-])/g, '\\$1')}`)
 			if (i < times - 1) await new Promise(resolve => setTimeout(resolve, WhenFailsWaitFor))
 		}
 
@@ -183,7 +184,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 					UserCharname: ctx.from.first_name || ctx.from.username || `User_${ctx.from.id}`,
 					ReplyToCharname: ctx.from.first_name || ctx.from.username || `User_${ctx.from.id}`,
 					locales: localhostLocales,
-					time: new Date(), world: null, user: null, char: charAPI, other_chars: [], plugins: {},
+					time: new Date(), world: null, user: loadDefaultPersona(ownerUsername), char: charAPI, other_chars: [], plugins: {},
 					chat_scoped_char_memory: ChannelCharScopedMemory[logicalChannelId],
 					chat_log: ChannelChatLogs[logicalChannelId].map(e => ({ ...e })),
 					AddChatLogEntry: AddChatLogEntryViaCharAPI,

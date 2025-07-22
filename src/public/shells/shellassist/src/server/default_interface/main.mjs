@@ -2,6 +2,7 @@ import { GetShellWorld } from './world.mjs'
 import { recommend_command_plugin } from './recommend_command.mjs'
 import { localhostLocales } from '../../../../../../../src/scripts/i18n.mjs'
 import { getPartInfo } from '../../../../../../scripts/locale.mjs'
+import { loadDefaultPersona } from '../../../../../../server/managers/persona_manager.mjs'
 /** @typedef {import('../../../../../../../src/public/shells/chat/decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t */
 
 /**
@@ -9,7 +10,7 @@ import { getPartInfo } from '../../../../../../scripts/locale.mjs'
  * @param {import('../../../../../../decl/charAPI.ts').CharAPI_t} char_API
  * @param {string} char_name
  */
-export function GetDefaultShellAssistInterface(char_API, char_name) {
+export function GetDefaultShellAssistInterface(char_API, username, char_name) {
 	if (!char_API?.interfaces?.chat?.GetReply)
 		throw new Error('charAPI.interfaces.chat.GetReply is required for ShellAssistInterface.')
 	/**
@@ -113,7 +114,7 @@ ${args.screen}
 			locales: localhostLocales,
 			time: new Date(),
 			world: GetShellWorld(args.shelltype),
-			user: null,
+			user: loadDefaultPersona(username),
 			char: char_API,
 			other_chars: [],
 			plugins: {
