@@ -63,7 +63,27 @@
 		},
 		"tray": {
 			"readIconFailed": "आइकन फ़ाइल पढ़ने में विफल: ${error}",
-			"createTrayFailed": "ट्रे बनाने में विफल: ${error}"
+			"createTrayFailed": "ट्रे बनाने में विफल: ${error}",
+			"title": "Fount",
+			"tooltip": "Fount",
+			"items": {
+				"open": {
+					"title": "खोलें",
+					"tooltip": "Fount खोलें"
+				},
+				"github": {
+					"title": "GitHub",
+					"tooltip": "Fount का GitHub खोलें"
+				},
+				"discord": {
+					"title": "Discord",
+					"tooltip": "Fount का Discord खोलें"
+				},
+				"exit": {
+					"title": "बाहर निकलें",
+					"tooltip": "एप्लिकेशन से बाहर निकलें"
+				}
+			}
 		},
 		"discordbot": {
 			"botStarted": "कैरेक्टर ${charname} ने डिस्कॉर्ड बॉट ${botusername} पर लॉगिन किया है।"

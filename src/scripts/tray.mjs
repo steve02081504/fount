@@ -1,10 +1,11 @@
 import { on_shutdown } from 'npm:on-shutdown'
-import { __dirname } from '../server/server.mjs'
+import { __dirname, hosturl } from '../server/server.mjs'
 import fs from 'node:fs'
 import os from 'node:os'
 const SysTray = (await import('npm:systray').catch(_ => 0))?.default?.default //??????
 import { geti18n } from '../scripts/i18n.mjs'
 import process from 'node:process'
+import open from 'npm:open'
 
 async function getBase64Icon(iconPath) {
 	try {
@@ -40,12 +41,30 @@ export async function createTray() {
 		systray = new SysTray({
 			menu: {
 				icon: base64Icon,
-				title: 'Fount',
-				tooltip: 'Fount',
+				title: await geti18n('fountConsole.tray.title'),
+				tooltip: await geti18n('fountConsole.tray.tooltip'),
 				items: [
 					{
-						title: 'Exit',
-						tooltip: 'Exit application',
+						title: await geti18n('fountConsole.tray.items.open.title'),
+						tooltip: await geti18n('fountConsole.tray.items.open.tooltip'),
+						checked: false,
+						enabled: true
+					},
+					{
+						title: await geti18n('fountConsole.tray.items.github.title'),
+						tooltip: await geti18n('fountConsole.tray.items.github.tooltip'),
+						checked: false,
+						enabled: true
+					},
+					{
+						title: await geti18n('fountConsole.tray.items.discord.title'),
+						tooltip: await geti18n('fountConsole.tray.items.discord.tooltip'),
+						checked: false,
+						enabled: true
+					},
+					{
+						title: await geti18n('fountConsole.tray.items.exit.title'),
+						tooltip: await geti18n('fountConsole.tray.items.exit.tooltip'),
 						checked: false,
 						enabled: true
 					}
@@ -56,10 +75,18 @@ export async function createTray() {
 		})
 
 		systray.onClick(action => {
-			if (action.seq_id === 0) {
-				systray?.kill?.()
-				systray = null
-				process.exit()
+			switch(action.seq_id) {
+				case 0:
+					open(hosturl)
+					break
+				case 1:
+					open('https://github.com/steve02081504/fount')
+					break
+				case 2:
+					open('https://discord.gg/GtR9Quzq2v')
+					break
+				case 3:
+					process.exit(0)
 			}
 		})
 

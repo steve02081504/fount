@@ -63,7 +63,27 @@
 		},
 		"tray": {
 			"readIconFailed": "Falha ao ler o ficheiro do ícone: ${error}",
-			"createTrayFailed": "Falha ao criar o ícone na área de notificação: ${error}"
+			"createTrayFailed": "Falha ao criar o ícone na área de notificação: ${error}",
+			"title": "Fount",
+			"tooltip": "Fount",
+			"items": {
+				"open": {
+					"title": "Abrir",
+					"tooltip": "Abrir Fount"
+				},
+				"github": {
+					"title": "GitHub",
+					"tooltip": "Abrir o GitHub do Fount"
+				},
+				"discord": {
+					"title": "Discord",
+					"tooltip": "Abrir o Discord do Fount"
+				},
+				"exit": {
+					"title": "Sair",
+					"tooltip": "Sair da aplicação"
+				}
+			}
 		},
 		"discordbot": {
 			"botStarted": "O personagem ${charname} ligou-se ao bot Discord ${botusername}."

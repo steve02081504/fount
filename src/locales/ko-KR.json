@@ -63,7 +63,27 @@
 		},
 		"tray": {
 			"readIconFailed": "아이콘 파일을 읽는 데 실패했습니다: ${error}",
-			"createTrayFailed": "트레이 아이콘 생성에 실패했습니다: ${error}"
+			"createTrayFailed": "트레이 아이콘 생성에 실패했습니다: ${error}",
+			"title": "Fount",
+			"tooltip": "Fount",
+			"items": {
+				"open": {
+					"title": "열기",
+					"tooltip": "Fount 열기"
+				},
+				"github": {
+					"title": "GitHub",
+					"tooltip": "Fount의 GitHub 열기"
+				},
+				"discord": {
+					"title": "Discord",
+					"tooltip": "Fount의 Discord 열기"
+				},
+				"exit": {
+					"title": "종료",
+					"tooltip": "애플리케이션 종료"
+				}
+			}
 		},
 		"discordbot": {
 			"botStarted": "캐릭터 ${charname}님이 Discord 봇 ${botusername}에 로그인했습니다."

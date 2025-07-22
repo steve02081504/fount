@@ -63,7 +63,27 @@
 		},
 		"tray": {
 			"readIconFailed": "Đọc tệp biểu tượng thất bại: ${error}",
-			"createTrayFailed": "Tạo biểu tượng trên khay hệ thống thất bại: ${error}"
+			"createTrayFailed": "Tạo biểu tượng trên khay hệ thống thất bại: ${error}",
+			"title": "Fount",
+			"tooltip": "Fount",
+			"items": {
+				"open": {
+					"title": "Mở",
+					"tooltip": "Mở Fount"
+				},
+				"github": {
+					"title": "GitHub",
+					"tooltip": "Mở GitHub của Fount"
+				},
+				"discord": {
+					"title": "Discord",
+					"tooltip": "Mở Discord của Fount"
+				},
+				"exit": {
+					"title": "Thoát",
+					"tooltip": "Thoát khỏi ứng dụng"
+				}
+			}
 		},
 		"discordbot": {
 			"botStarted": "Nhân vật ${charname} đã đăng nhập vào bot Discord ${botusername}."

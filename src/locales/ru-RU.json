@@ -63,7 +63,27 @@
 		},
 		"tray": {
 			"readIconFailed": "Не удалось прочитать файл значка: ${error}",
-			"createTrayFailed": "Не удалось создать значок в области уведомлений: ${error}"
+			"createTrayFailed": "Не удалось создать значок в области уведомлений: ${error}",
+			"title": "Fount",
+			"tooltip": "Fount",
+			"items": {
+				"open": {
+					"title": "Открыть",
+					"tooltip": "Открыть Fount"
+				},
+				"github": {
+					"title": "GitHub",
+					"tooltip": "Открыть Fount на GitHub"
+				},
+				"discord": {
+					"title": "Discord",
+					"tooltip": "Открыть Fount в Discord"
+				},
+				"exit": {
+					"title": "Выход",
+					"tooltip": "Выйти из приложения"
+				}
+			}
 		},
 		"discordbot": {
 			"botStarted": "Персонаж ${charname} вошел в Discord бот ${botusername}."
