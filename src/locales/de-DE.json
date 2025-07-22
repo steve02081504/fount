@@ -151,6 +151,27 @@
 			"close_page": "Seite schließen"
 		}
 	},
+	"startPage": {
+		"title": "Fount!",
+		"newTabFailed": {
+			"title": "Neuer Tab konnte nicht geöffnet werden",
+			"instruction": "Der Start von Fount ist jedes Mal um 1-2s langsamer, wenn die Berechtigung zum Öffnen von Pop-up-Fenstern fehlt.",
+			"tryAllow": "Möchten Sie Fount die Berechtigung zum Öffnen von Pop-up-Fenstern erteilen?",
+			"buttons": {
+				"retry": "Erneut versuchen",
+				"skip": "Überspringen",
+				"ignore": "Dauerhaft ignorieren"
+			},
+			"ignoreConfirm": {
+				"title": "Dauerhaft ignorieren bestätigen?",
+				"instruction": "2s bei jedem Start zu verschwenden, bedeutet einen ganzen Tag bei 50.000 Starts zu verschwenden 💀",
+				"buttons": {
+					"confirm": "Bestätigen",
+					"cancel": "Abbrechen"
+				}
+			}
+		}
+	},
 	"auth": {
 		"title": "Authentifizierung",
 		"subtitle": "Benutzerdaten werden lokal gespeichert",

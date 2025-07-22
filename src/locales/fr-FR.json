@@ -151,6 +151,27 @@
 			"close_page": "Fermer la page"
 		}
 	},
+	"startPage": {
+		"title": "Fount!",
+		"newTabFailed": {
+			"title": "L'ouverture du nouvel onglet a échoué",
+			"instruction": "Le démarrage de Fount est plus lent de 1 à 2 secondes à chaque fois sans l'autorisation d'afficher des fenêtres pop-up.",
+			"tryAllow": "Essayer de donner à Fount l'autorisation d'afficher des fenêtres pop-up ?",
+			"buttons": {
+				"retry": "Réessayer",
+				"skip": "Ignorer",
+				"ignore": "Toujours ignorer"
+			},
+			"ignoreConfirm": {
+				"title": "Confirmer l'ignorance permanente ?",
+				"instruction": "Perdre 2s à chaque démarrage, c'est perdre 1 jour entier pour cinquante mille démarrages 💀",
+				"buttons": {
+					"confirm": "Confirmer",
+					"cancel": "Annuler"
+				}
+			}
+		}
+	},
 	"auth": {
 		"title": "Authentification",
 		"subtitle": "Les données utilisateur sont stockées localement.",

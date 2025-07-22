@@ -151,6 +151,27 @@
 			"close_page": "Đóng trang"
 		}
 	},
+	"startPage": {
+		"title": "Fount!",
+		"newTabFailed": {
+			"title": "Không thể mở tab mới",
+			"instruction": "Việc khởi động Fount sẽ chậm hơn 1-2 giây mỗi lần nếu không có quyền mở cửa sổ pop-up.",
+			"tryAllow": "Thử cấp quyền mở cửa sổ pop-up cho Fount?",
+			"buttons": {
+				"retry": "Thử lại",
+				"skip": "Bỏ qua",
+				"ignore": "Luôn bỏ qua"
+			},
+			"ignoreConfirm": {
+				"title": "Xác nhận bỏ qua vĩnh viễn?",
+				"instruction": "Lãng phí 2 giây mỗi lần khởi động tương đương với việc lãng phí cả một ngày cho năm mươi nghìn lần khởi động 💀",
+				"buttons": {
+					"confirm": "Xác nhận",
+					"cancel": "Hủy"
+				}
+			}
+		}
+	},
 	"auth": {
 		"title": "Xác thực",
 		"subtitle": "Dữ liệu người dùng được lưu trữ cục bộ.",

@@ -151,6 +151,27 @@
 			"close_page": "페이지 닫기"
 		}
 	},
+	"startPage": {
+		"title": "Fount!",
+		"newTabFailed": {
+			"title": "새 탭을 열지 못했습니다",
+			"instruction": "팝업 창 권한이 없으면 Fount 시작이 매번 1-2초씩 느려집니다.",
+			"tryAllow": "Fount에 팝업 창 권한을 부여하시겠습니까?",
+			"buttons": {
+				"retry": "재시도",
+				"skip": "건너뛰기",
+				"ignore": "항상 무시"
+			},
+			"ignoreConfirm": {
+				"title": "영구적으로 무시하시겠습니까?",
+				"instruction": "시작할 때마다 2초를 낭비하면 5만 번 시작 시 하루를 낭비하는 것과 같습니다 💀",
+				"buttons": {
+					"confirm": "확인",
+					"cancel": "취소"
+				}
+			}
+		}
+	},
 	"auth": {
 		"title": "인증",
 		"subtitle": "사용자 데이터는 로컬에 저장됩니다.",

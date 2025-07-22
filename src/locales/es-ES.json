@@ -151,6 +151,27 @@
 			"close_page": "Cerrar página"
 		}
 	},
+	"startPage": {
+		"title": "¡Fount!",
+		"newTabFailed": {
+			"title": "No se pudo abrir una nueva pestaña",
+			"instruction": "El inicio de Fount es 1-2 segundos más lento cada vez sin permiso para ventanas emergentes.",
+			"tryAllow": "¿Intentar dar permiso a Fount para ventanas emergentes?",
+			"buttons": {
+				"retry": "Reintentar",
+				"skip": "Omitir",
+				"ignore": "Ignorar para siempre"
+			},
+			"ignoreConfirm": {
+				"title": "¿Confirmar ignorar para siempre?",
+				"instruction": "Perder 2 segundos en cada inicio es perder 1 día entero cada cincuenta mil inicios 💀",
+				"buttons": {
+					"confirm": "Confirmar",
+					"cancel": "Cancelar"
+				}
+			}
+		}
+	},
 	"auth": {
 		"title": "Autenticación",
 		"subtitle": "Los datos del usuario se almacenan localmente",

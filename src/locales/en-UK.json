@@ -151,6 +151,27 @@
 			"close_page": "Close page"
 		}
 	},
+	"startPage": {
+		"title": "Fount!",
+		"newTabFailed": {
+			"title": "Failed to open new tab",
+			"instruction": "Fount's startup is 1-2s slower each time without window pop-up permission.",
+			"tryAllow": "Try giving Fount window pop-up permission?",
+			"buttons": {
+				"retry": "Retry",
+				"skip": "Skip",
+				"ignore": "Ignore forever"
+			},
+			"ignoreConfirm": {
+				"title": "Confirm permanent ignore?",
+				"instruction": "Wasting 2s on one start is wasting 1 whole day on fifty thousand starts 💀",
+				"buttons": {
+					"confirm": "Confirm",
+					"cancel": "Cancel"
+				}
+			}
+		}
+	},
 	"auth": {
 		"title": "Authentication",
 		"subtitle": "User data is stored locally",

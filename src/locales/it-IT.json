@@ -151,6 +151,27 @@
 			"close_page": "Chiudi pagina"
 		}
 	},
+	"startPage": {
+		"title": "Fount!",
+		"newTabFailed": {
+			"title": "Impossibile aprire una nuova scheda",
+			"instruction": "L'avvio di Fount è più lento di 1-2 secondi ogni volta senza il permesso per le finestre a comparsa.",
+			"tryAllow": "Vuoi provare a dare a Fount il permesso per le finestre a comparsa?",
+			"buttons": {
+				"retry": "Riprova",
+				"skip": "Salta",
+				"ignore": "Ignora per sempre"
+			},
+			"ignoreConfirm": {
+				"title": "Confermare di ignorare per sempre?",
+				"instruction": "Sprecare 2 secondi a ogni avvio significa sprecare 1 giorno intero per cinquantamila avvii 💀",
+				"buttons": {
+					"confirm": "Conferma",
+					"cancel": "Annulla"
+				}
+			}
+		}
+	},
 	"auth": {
 		"title": "Autenticazione",
 		"subtitle": "I dati utente sono archiviati localmente.",
