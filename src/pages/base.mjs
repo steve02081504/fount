@@ -8,16 +8,11 @@ Sentry.init({
 	sendDefaultPii: true,
 	tunnel: '/api/sentrytunnel',
 	integrations: [
-		Sentry.browserTracingIntegration(),
-		Sentry.browserProfilingIntegration()
+		Sentry.browserTracingIntegration()
 	],
 	// Performance Monitoring
 	tracesSampleRate: 1.0,
 	tracePropagationTargets: [window.location.origin || 'localhost'],
-	// Profiling
-	profilesSampleRate: 1.0,
-	// Logging
-	_experiments: { enableLogs: true },
 })
 
 await import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill@master/index.mjs')

@@ -71,7 +71,6 @@ function openMetadataDB() {
 			const db = event.target.result
 			if (!db.objectStoreNames.contains(STORE_NAME)) {
 				const store = db.createObjectStore(STORE_NAME, { keyPath: 'url' })
-				// 创建 'timestamp' 索引，用于高效查询过期项目。
 				store.createIndex('timestamp', 'timestamp', { unique: false })
 				console.log('[SW DB] Object store and index created.')
 			}
@@ -79,12 +78,10 @@ function openMetadataDB() {
 
 		request.onsuccess = event => {
 			const db = event.target.result
-			// 监听数据库连接意外关闭的事件，以便在发生时重置 dbPromise。
 			db.onclose = () => {
 				console.warn('[SW DB] Database connection closed unexpectedly.')
 				dbPromise = null
 			}
-			// 监听数据库错误事件。
 			db.onerror = (event) => {
 				console.error('[SW DB] Database error:', event.target.error)
 				dbPromise = null
@@ -94,12 +91,11 @@ function openMetadataDB() {
 
 		request.onerror = event => {
 			console.error('[SW DB] Database open error:', event.target.error)
-			dbPromise = null // 打开失败时也重置
+			dbPromise = null
 			reject(event.target.error)
 		}
 
 		request.onblocked = () => {
-			// 当其他页面持有未关闭的旧版本数据库连接时，会触发此事件。
 			console.warn('[SW DB] Database open blocked. Please close other tabs using the database.')
 		}
 	})
@@ -128,7 +124,7 @@ async function performTransaction(mode, callback) {
 		})
 	} catch (error) {
 		console.error(`[SW DB] Transaction failed with mode ${mode}:`, error)
-		throw error // 将异常向上抛出，以便调用者可以处理。
+		throw error
 	}
 }
 
@@ -150,23 +146,24 @@ async function updateTimestamp(url, timestamp) {
 
 /**
  * @description 从 IndexedDB 中获取指定 URL 的时间戳。
+ * 此函数通过复用 `performTransaction` 来简化事务管理，并利用闭包从异步回调中捕获结果。
  * @param {string} url - 资源的 URL。
- * @returns {Promise<number | null>} 返回找到的时间戳，如果未找到则返回 null。
+ * @returns {Promise<number | null>} 返回找到的时间戳，如果未找到或发生错误则返回 null。
  */
 async function getTimestamp(url) {
+	let timestamp = null // 在外部作用域定义变量以捕获事务内的结果
 	try {
-		const db = await openMetadataDB()
-		const transaction = db.transaction(STORE_NAME, 'readonly')
-		const store = transaction.objectStore(STORE_NAME)
-		const request = store.get(url)
-
-		return new Promise((resolve, reject) => {
-			request.onsuccess = () => resolve(request.result ? request.result.timestamp : null)
-			request.onerror = () => reject(request.error)
+		await performTransaction('readonly', store => {
+			const request = store.get(url)
+			request.onsuccess = () => {
+				if (request.result)
+					timestamp = request.result.timestamp
+			}
 		})
+		return timestamp // 返回在事务中成功获取的值
 	} catch (error) {
 		console.error(`[SW DB] Failed to get timestamp for ${url}:`, error)
-		return null
+		return null // 保持错误处理行为不变
 	}
 }
 
@@ -174,8 +171,7 @@ async function getTimestamp(url) {
  * @description 清理过期的缓存和 IndexedDB 中的元数据。
  * 这是一个安全的两步操作：
  * 1. 在一个原子性的 IndexedDB 事务中，查找并删除所有过期的元数据记录。
- * 2. 只有在数据库事务成功提交后，才开始从 Cache Storage 中删除对应的缓存资源。
- * 这种方式确保了数据的一致性，避免了只删除缓存而未删除元数据（或反之）的情况。
+ * 2. 数据库事务成功后，并行地从 Cache Storage 中删除对应的缓存资源以提高效率。
  * @returns {Promise<void>}
  */
 async function cleanupExpiredCache() {
@@ -184,13 +180,13 @@ async function cleanupExpiredCache() {
 	const urlsToDelete = []
 
 	try {
-		// 步骤 1: 在单个事务中原子化地识别并删除过期的元数据。
 		const db = await openMetadataDB()
 		const transaction = db.transaction(STORE_NAME, 'readwrite')
 		const store = transaction.objectStore(STORE_NAME)
 		const index = store.index('timestamp')
 		const range = IDBKeyRange.upperBound(expiryThreshold)
 
+		// 步骤 1: 在单个事务中原子化地识别并删除过期的元数据。
 		await new Promise((resolve, reject) => {
 			const cursorRequest = index.openCursor(range)
 			cursorRequest.onerror = event => reject(event.target.error)
@@ -198,15 +194,13 @@ async function cleanupExpiredCache() {
 				const cursor = event.target.result
 				if (cursor) {
 					urlsToDelete.push(cursor.value.url)
-					cursor.delete() // 在遍历过程中直接删除，此操作属于当前事务。
+					cursor.delete()
 					cursor.continue()
-				} else
-					resolve() // 游标遍历完成。
-
+				} else resolve()
 			}
 		})
 
-		// 等待事务完成，以确保所有数据库删除操作都已成功提交。
+		// 等待事务完成，确保所有数据库删除操作已提交。
 		await new Promise((resolve, reject) => {
 			transaction.oncomplete = resolve
 			transaction.onerror = reject
@@ -214,109 +208,119 @@ async function cleanupExpiredCache() {
 		})
 
 		if (urlsToDelete.length === 0)
-			return
+			return console.log('[SW Cleanup] No expired items to clean up.')
 
-		// 步骤 2: 在数据库清理成功后，安全地清理 Cache Storage。
+		console.log(`[SW Cleanup] Found ${urlsToDelete.length} expired items. Proceeding to delete from cache.`)
+
+		// 步骤 2: 并行删除缓存条目，以提高清理大量项目时的效率。
 		const cache = await caches.open(CACHE_NAME)
-		let deletedCount = 0
-		for (const url of urlsToDelete)
-			if (await cache.delete(url))
-				deletedCount++
+		const deletePromises = urlsToDelete.map(url => cache.delete(url))
+		// 使用 Promise.allSettled 确保即使某个删除失败，其他删除操作也能继续完成。
+		const results = await Promise.allSettled(deletePromises)
+		const successfulDeletes = results.filter(r => r.status === 'fulfilled' && r.value === true)
+		const deletedCount = successfulDeletes.length
+
+		console.log(`[SW Cleanup] Successfully deleted ${deletedCount} of ${urlsToDelete.length} items from Cache Storage.`)
+
 	} catch (error) {
 		console.error('[SW Cleanup] Cache cleanup process failed:', error)
 	}
 }
 
+/**
+ * @description 获取资源并智能地处理缓存和重定向。
+ * 这是解决重定向问题的核心。它会正确地缓存重定向响应和最终内容。
+ * @param {Request} request - 要获取和缓存的请求。
+ * @returns {Promise<Response>} 返回一个适合直接响应给浏览器的 Response 对象。
+ */
+async function fetchAndCache(request) {
+	try {
+		const can_cors = await fetch(request, { method: 'HEAD' }).then(response => response.headers.get('Access-Control-Allow-Origin'))
+		const networkResponse = await fetch(request, { mode: can_cors ? 'cors' : undefined })
+
+		if (networkResponse.type == 'opaque');
+		else if (networkResponse && networkResponse.ok) {
+			const cache = await caches.open(CACHE_NAME)
+			const responseToCache = networkResponse.clone()
+			const now = Date.now()
+
+			if (networkResponse.redirected) {
+				await cache.put(networkResponse.url, responseToCache)
+				await updateTimestamp(networkResponse.url, now)
+
+				const redirectResponse = Response.redirect(networkResponse.url, 301)
+
+				await cache.put(request, redirectResponse.clone())
+				await updateTimestamp(request.url, now)
+
+				return redirectResponse
+			} else {
+				await cache.put(request, responseToCache)
+				await updateTimestamp(request.url, now)
+			}
+		} else if (networkResponse)
+			console.warn(`[SW ${CACHE_NAME}] Fetch for ${request.url} responded with ${networkResponse.status} ${networkResponse.statusText}. Not caching.`)
+
+		return networkResponse
+	} catch (error) {
+		console.error(`[SW ${CACHE_NAME}] fetchAndCache failed for ${request.url}:`, error)
+		throw error
+	}
+}
 
 // --- 缓存策略 ---
 
 /**
  * @description 缓存优先策略（Cache-First），结合了后台更新和节流。
- * 这是一个 Stale-While-Revalidate 策略的变体。
- * 1. 如果缓存中存在响应，立即返回它。
- * 2. 同时，在后台检查是否需要发起网络请求来更新缓存。
- * 3. 后台更新受 `BACKGROUND_FETCH_THROTTLE_MS` 常量节流，避免在短时间内对同一资源进行重复请求。
+ * 这是一个 Stale-While-Revalidate 策略的变体，能立即从缓存响应，同时在后台更新资源。
  * @param {Request} request - fetch 事件中的请求对象。
  * @returns {Promise<Response>} 返回一个解析为 Response 对象的 Promise。
  */
 async function handleCacheFirst(request) {
-	const { url } = request
 	const cache = await caches.open(CACHE_NAME)
 	const cachedResponse = await cache.match(request)
 
 	const now = Date.now()
-	let shouldFetchInBackground = true
-	const storedTimestamp = await getTimestamp(url)
+	const storedTimestamp = await getTimestamp(request.url)
+	const isThrottled = storedTimestamp && (now - storedTimestamp < BACKGROUND_FETCH_THROTTLE_MS)
 
-	// 如果最近已经进行过后台更新，则跳过本次更新。
-	if (storedTimestamp && (now - storedTimestamp < BACKGROUND_FETCH_THROTTLE_MS))
-		shouldFetchInBackground = false
-
-	// 定义一个在后台执行的网络请求和缓存更新任务。
 	const backgroundUpdateTask = async () => {
-		if (!shouldFetchInBackground)
-			return null
+		if (isThrottled) return
 		try {
-			const networkResponse = await fetch(request)
-			// 仅缓存有效的、非不透明的响应。
-			if (networkResponse && networkResponse.ok && networkResponse.type !== 'opaque') {
-				const responseToCache = networkResponse.clone()
-				await cache.put(request, responseToCache)
-				await updateTimestamp(url, Date.now())
-			}
-			else if (networkResponse && networkResponse.type !== 'opaque')
-				console.warn(`[SW ${CACHE_NAME}] Background fetch for ${url} responded with ${networkResponse.status} ${networkResponse.statusText}. Not caching.`)
-
-			return networkResponse // 返回网络响应，供无缓存时使用。
+			await fetchAndCache(request.clone())
 		} catch (error) {
-			console.warn(`[SW ${CACHE_NAME}] Background network fetch failed for ${url}:`, error)
-			return null
+			console.warn(`[SW ${CACHE_NAME}] Background network fetch failed for ${request.url}:`, error)
 		}
 	}
 
-	// 启动后台更新任务，不阻塞主流程。
-	const networkPromise = backgroundUpdateTask()
+	if (cachedResponse) {
+		backgroundUpdateTask()
+		return cachedResponse
+	}
 
-	if (cachedResponse) return cachedResponse // 如果有缓存，立即返回。
-
-	const networkResponse = await networkPromise
-	if (networkResponse) return networkResponse
-
-	// 当缓存和网络都失败时，抛出错误。
-	throw new Error(`Failed to fetch ${url} from both cache and network.`)
+	try {
+		return await fetchAndCache(request)
+	} catch (error) {
+		console.error(`[SW ${CACHE_NAME}] Failed to fetch ${request.url} from network after cache miss.`)
+		throw error
+	}
 }
 
 /**
  * @description 网络优先策略（Network-First）。
- * 1. 总是先尝试从网络获取最新资源。
- * 2. 如果网络请求成功，返回该响应，并异步地更新缓存。
- * 3. 如果网络请求失败（例如，离线），则尝试从缓存中提供备用响应。
+ * 优先从网络获取最新资源，如果网络失败，则回退到缓存。
  * @param {Request} request - fetch 事件中的请求对象。
  * @returns {Promise<Response>} 返回一个解析为 Response 对象的 Promise。
  */
 async function handleNetworkFirst(request) {
-	const { url } = request
 	try {
-		const networkResponse = await fetch(request)
-
-		// 仅缓存成功的、非不透明的响应。
-		if (networkResponse && networkResponse.ok && networkResponse.type !== 'opaque') {
-			const cache = await caches.open(CACHE_NAME)
-			const responseToCache = networkResponse.clone();
-			// 异步更新缓存，不阻塞对客户端的响应。
-			(async () => {
-				await cache.put(request, responseToCache)
-				await updateTimestamp(url, Date.now())
-			})()
-		}
-
-		return networkResponse
+		return await fetchAndCache(request)
 	} catch (error) {
-		console.warn(`[SW ${CACHE_NAME}] Network fetch failed for ${url}. Attempting to serve from cache.`)
+		console.warn(`[SW ${CACHE_NAME}] Network fetch failed for ${request.url}. Attempting to serve from cache.`)
 		const cache = await caches.open(CACHE_NAME)
 		const cachedResponse = await cache.match(request)
 		if (cachedResponse) return cachedResponse
-		console.error(`[SW ${CACHE_NAME}] Cache miss after network failure for: ${url}.`)
+		console.error(`[SW ${CACHE_NAME}] Cache miss after network failure for: ${request.url}.`)
 		throw error
 	}
 }
@@ -325,8 +329,7 @@ async function handleNetworkFirst(request) {
 // --- 路由表 ---
 /**
  * @description 使用路由表来管理请求处理逻辑。
- * 这种方式比使用 if-else 链更具声明性、可读性和可扩展性。
- * `fetch` 事件处理器会按顺序遍历此数组，并执行第一个匹配规则的处理器。
+ * `fetch` 事件处理器会遍历此数组，并执行第一个匹配规则的处理器。
  * @type {Array<{condition: (context: {event: FetchEvent, request: Request, url: URL}) => boolean, handler: (context: {event: FetchEvent, request: Request, url: URL}) => Promise<Response> | null}>}
  */
 const routes = [
@@ -345,9 +348,9 @@ const routes = [
 		condition: ({ url }) => url.origin !== self.location.origin,
 		handler: ({ event }) => handleCacheFirst(event.request),
 	},
-	// 默认规则，对所有同源资源使用网络优先策略。
+	// 默认规则：对所有同源资源使用网络优先策略。
 	{
-		condition: () => true, // 始终匹配，作为最后的 fallback。
+		condition: () => true, // 作为最后的 fallback 规则。
 		handler: ({ event }) => handleNetworkFirst(event.request),
 	},
 ]
@@ -357,17 +360,14 @@ const routes = [
 
 self.addEventListener('install', event => {
 	console.log(`[SW ${CACHE_NAME}] Installing...`)
-	// `self.skipWaiting()` 强制新的 Service Worker 在安装后立即激活，
-	// 取代旧的 Service Worker，而无需等待页面重新加载。
+	// 强制新的 Service Worker 在安装后立即激活，取代旧版本。
 	event.waitUntil(self.skipWaiting())
 })
 
 self.addEventListener('activate', event => {
 	event.waitUntil(
 		(async () => {
-			// 注册定期后台同步任务，用于自动清理过期缓存。
-			// Periodic Background Sync API 比 setTimeout 更可靠，因为它由操作系统调度，
-			// 即使 Service Worker 终止也能在适当的时候被唤醒执行。
+			// 尝试注册定期后台同步任务，用于自动清理过期缓存。
 			if ('periodicSync' in self.registration)
 				try {
 					await self.registration.periodicSync.register(PERIODIC_SYNC_TAG, {
@@ -377,7 +377,7 @@ self.addEventListener('activate', event => {
 					console.error('[SW] Periodic background sync failed to register:', err)
 				}
 
-			// `self.clients.claim()` 确保新的 Service Worker 立即控制所有当前打开的客户端（页面）。
+			// 确保新的 Service Worker 立即控制所有当前打开的客户端（页面）。
 			await self.clients.claim()
 			// 在激活时立即执行一次清理，以处理可能在 SW 非活动期间过期的项目。
 			await cleanupExpiredCache()
@@ -386,18 +386,16 @@ self.addEventListener('activate', event => {
 })
 
 /**
- * @description 监听定期后台同步事件。
- * 当浏览器认为条件合适（例如网络连接良好，电量充足）且达到了最小间隔时间时，会触发此事件。
+ * @description 监听定期后台同步事件，用于执行缓存清理。
  */
 self.addEventListener('periodicsync', event => {
+	// 确保只响应该 Service Worker 注册的清理任务。
 	if (event.tag === PERIODIC_SYNC_TAG)
-		// 仅当事件标签与我们注册的清理任务标签匹配时，才执行清理操作。
 		event.waitUntil(cleanupExpiredCache())
 })
 
 /**
- * @description 拦截所有网络请求。
- * 这是 Service Worker 的核心功能。
+ * @description 拦截所有网络请求，并根据路由表进行处理。
  */
 self.addEventListener('fetch', event => {
 	const requestUrl = new URL(event.request.url)
@@ -406,13 +404,11 @@ self.addEventListener('fetch', event => {
 	for (const route of routes)
 		if (route.condition({ event, request: event.request, url: requestUrl })) {
 			const handlerResult = route.handler({ event, request: event.request, url: requestUrl })
-			// 如果处理器返回一个 Promise<Response>，则使用它来响应请求。
 			if (handlerResult) {
 				event.respondWith(handlerResult)
 				return // 找到匹配的处理器后，终止循环。
 			}
-			// 如果处理器返回 null，则表示跳过 Service Worker 的处理，
-			// 让请求按照浏览器的默认行为继续。通过 return 退出监听器即可实现。
+			// 如果处理器返回 null，则跳过 Service Worker，让浏览器默认处理。
 			return
 		}
 })

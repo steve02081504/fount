@@ -2,6 +2,7 @@ import * as Sentry from 'npm:@sentry/deno'
 import express from 'npm:express@^5.1.0'
 import cookieParser from 'npm:cookie-parser@^1.4.0'
 import fileUpload from 'npm:express-fileupload@^1.5.0'
+import cors from 'npm:cors'
 import fs from 'node:fs'
 import process from 'node:process'
 import https from 'node:https'
@@ -58,15 +59,15 @@ mainRouter.use(diff_if_auth(
 	express.json({ limit: 5 * 1024 * 1024 })
 ))
 mainRouter.use(diff_if_auth(
+	cors(),
+	(_req, _res, next) => next()
+))
+mainRouter.use(diff_if_auth(
 	express.urlencoded({ limit: Infinity, extended: true }),
 	express.urlencoded({ limit: 5 * 1024 * 1024, extended: true })
 ))
 mainRouter.use(fileUpload())
 mainRouter.use(cookieParser())
-mainRouter.use((req, res, next) => {
-	if (req.accepts('html')) res.set('Document-Policy', 'js-profiling')
-	return next()
-})
 
 const PartsRouters = {}
 const partsAPIregex = new RegExp(`^/(api|ws)/(${partsList.join('|')})/`)
