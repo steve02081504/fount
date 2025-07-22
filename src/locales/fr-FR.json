@@ -64,24 +64,24 @@
 		"tray": {
 			"readIconFailed": "Erreur lors de la lecture du fichier d'icône : ${error}",
 			"createTrayFailed": "Erreur lors de la création de l'icône dans la zone de notification : ${error}",
-			"title": "Source",
-			"tooltip": "Source",
+			"title": "Fount",
+			"tooltip": "Fount",
 			"items": {
 				"open": {
 					"title": "Ouvrir",
-					"tooltip": "Bougie ouvre"
+					"tooltip": "Ouvrir Fount"
 				},
 				"github": {
-					"title": "Github",
-					"tooltip": "GiTHub de Fount ouvrir"
+					"title": "GitHub",
+					"tooltip": "Ouvrir le GitHub de Fount"
 				},
 				"discord": {
-					"title": "Discorde",
-					"tooltip": "Open Discord de Fount"
+					"title": "Discord",
+					"tooltip": "Ouvrir le Discord de Fount"
 				},
 				"exit": {
-					"title": "quitter",
-					"tooltip": "Quitter la demande"
+					"title": "Quitter",
+					"tooltip": "Quitter l'application"
 				}
 			}
 		},

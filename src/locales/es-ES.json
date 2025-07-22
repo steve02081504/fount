@@ -64,23 +64,23 @@
 		"tray": {
 			"readIconFailed": "Error al leer el archivo del icono: ${error}",
 			"createTrayFailed": "Error al crear el icono de la bandeja: ${error}",
-			"title": "Fuente",
-			"tooltip": "Fuente",
+			"title": "Fount",
+			"tooltip": "Fount",
 			"items": {
 				"open": {
-					"title": "Abierto",
-					"tooltip": "Fuente abierta"
+					"title": "Abrir",
+					"tooltip": "Abrir Fount"
 				},
 				"github": {
-					"title": "Github",
-					"tooltip": "Github de la fuente abierta"
+					"title": "GitHub",
+					"tooltip": "Abrir el GitHub de Fount"
 				},
 				"discord": {
-					"title": "Discordia",
-					"tooltip": "Abre la discordia de la fuente"
+					"title": "Discord",
+					"tooltip": "Abrir el Discord de Fount"
 				},
 				"exit": {
-					"title": "abandonar",
+					"title": "Salir",
 					"tooltip": "Salir de la aplicación"
 				}
 			}

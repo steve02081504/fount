@@ -64,24 +64,24 @@
 		"tray": {
 			"readIconFailed": "아이콘 파일을 읽는 데 실패했습니다: ${error}",
 			"createTrayFailed": "트레이 아이콘 생성에 실패했습니다: ${error}",
-			"title": "세례반",
-			"tooltip": "세례반",
+			"title": "Fount",
+			"tooltip": "Fount",
 			"items": {
 				"open": {
-					"title": "열려 있는",
-					"tooltip": "열린 분노"
+					"title": "열기",
+					"tooltip": "Fount 열기"
 				},
 				"github": {
-					"title": "github",
-					"tooltip": "오픈 파운트의 github"
+					"title": "GitHub",
+					"tooltip": "Fount의 GitHub 열기"
 				},
 				"discord": {
-					"title": "불화",
-					"tooltip": "오픈 파운트의 불화"
+					"title": "Discord",
+					"tooltip": "Fount의 Discord 열기"
 				},
 				"exit": {
-					"title": "그만두다",
-					"tooltip": "신청서를 종료하십시오"
+					"title": "종료",
+					"tooltip": "애플리케이션 종료"
 				}
 			}
 		},

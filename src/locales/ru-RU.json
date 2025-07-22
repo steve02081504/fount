@@ -64,24 +64,24 @@
 		"tray": {
 			"readIconFailed": "Не удалось прочитать файл значка: ${error}",
 			"createTrayFailed": "Не удалось создать значок в области уведомлений: ${error}",
-			"title": "Источник",
-			"tooltip": "Источник",
+			"title": "Fount",
+			"tooltip": "Fount",
 			"items": {
 				"open": {
 					"title": "Открыть",
-					"tooltip": "Открытый источник"
+					"tooltip": "Открыть Fount"
 				},
 				"github": {
 					"title": "GitHub",
-					"tooltip": "Открыть GitHub"
+					"tooltip": "Открыть Fount на GitHub"
 				},
 				"discord": {
-					"title": "Раздор",
-					"tooltip": "Открытый раздор фонда"
+					"title": "Discord",
+					"tooltip": "Открыть Fount в Discord"
 				},
 				"exit": {
-					"title": "покидать",
-					"tooltip": "Выйдите из приложения"
+					"title": "Выход",
+					"tooltip": "Выйти из приложения"
 				}
 			}
 		},

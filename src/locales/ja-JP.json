@@ -64,23 +64,23 @@
 		"tray": {
 			"readIconFailed": "アイコンファイルの読み込みに失敗しました：${error}",
 			"createTrayFailed": "トレイアイコンの作成に失敗しました：${error}",
-			"title": "噴水",
-			"tooltip": "噴水",
+			"title": "Fount",
+			"tooltip": "Fount",
 			"items": {
 				"open": {
-					"title": "開ける",
-					"tooltip": "噴水を開きます"
+					"title": "開く",
+					"tooltip": "Fountを開く"
 				},
 				"github": {
-					"title": "github",
-					"tooltip": "Fount's Githubを開きます"
+					"title": "GitHub",
+					"tooltip": "FountのGitHubを開く"
 				},
 				"discord": {
-					"title": "不和",
-					"tooltip": "Open Fount's scord"
+					"title": "Discord",
+					"tooltip": "FountのDiscordを開く"
 				},
 				"exit": {
-					"title": "やめる",
+					"title": "終了",
 					"tooltip": "アプリケーションを終了します"
 				}
 			}

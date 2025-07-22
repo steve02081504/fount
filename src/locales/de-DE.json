@@ -64,24 +64,24 @@
 		"tray": {
 			"readIconFailed": "Fehler beim Lesen der Icon-Datei: ${error}",
 			"createTrayFailed": "Fehler beim Erstellen des Trays: ${error}",
-			"title": "Quelle",
-			"tooltip": "Quelle",
+			"title": "Fount",
+			"tooltip": "Fount",
 			"items": {
 				"open": {
-					"title": "Offen",
-					"tooltip": "Oeffne fount"
+					"title": "Öffnen",
+					"tooltip": "Fount öffnen"
 				},
 				"github": {
-					"title": "Github",
-					"tooltip": "Open Fount's Github"
+					"title": "GitHub",
+					"tooltip": "Fount auf GitHub öffnen"
 				},
 				"discord": {
-					"title": "Zwietracht",
-					"tooltip": "Open Fount's Zwietracht"
+					"title": "Discord",
+					"tooltip": "Fount auf Discord öffnen"
 				},
 				"exit": {
-					"title": "aufhören",
-					"tooltip": "Beenden Sie die Anwendung"
+					"title": "Beenden",
+					"tooltip": "Anwendung beenden"
 				}
 			}
 		},

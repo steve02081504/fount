@@ -64,24 +64,24 @@
 		"tray": {
 			"readIconFailed": "Falha ao ler o ficheiro do ícone: ${error}",
 			"createTrayFailed": "Falha ao criar o ícone na área de notificação: ${error}",
-			"title": "Fonte",
-			"tooltip": "Fonte",
+			"title": "Fount",
+			"tooltip": "Fount",
 			"items": {
 				"open": {
 					"title": "Abrir",
-					"tooltip": "Fonte aberta"
+					"tooltip": "Abrir Fount"
 				},
 				"github": {
-					"title": "Github",
-					"tooltip": "Open Github da font"
+					"title": "GitHub",
+					"tooltip": "Abrir o GitHub do Fount"
 				},
 				"discord": {
-					"title": "Discórdia",
-					"tooltip": "Discord de Fount"
+					"title": "Discord",
+					"tooltip": "Abrir o Discord do Fount"
 				},
 				"exit": {
-					"title": "desistir",
-					"tooltip": "Saia do aplicativo"
+					"title": "Sair",
+					"tooltip": "Sair da aplicação"
 				}
 			}
 		},

@@ -73,14 +73,14 @@
 				},
 				"github": {
 					"title": "GitHub",
-					"tooltip": "Mở github của Fount"
+					"tooltip": "Mở GitHub của Fount"
 				},
 				"discord": {
-					"title": "Bất hòa",
+					"title": "Discord",
 					"tooltip": "Mở Discord của Fount"
 				},
 				"exit": {
-					"title": "từ bỏ",
+					"title": "Thoát",
 					"tooltip": "Thoát khỏi ứng dụng"
 				}
 			}

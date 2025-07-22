@@ -64,24 +64,24 @@
 		"tray": {
 			"readIconFailed": "आइकन फ़ाइल पढ़ने में विफल: ${error}",
 			"createTrayFailed": "ट्रे बनाने में विफल: ${error}",
-			"title": "झरना",
-			"tooltip": "झरना",
+			"title": "Fount",
+			"tooltip": "Fount",
 			"items": {
 				"open": {
-					"title": "खुला",
-					"tooltip": "खुला फाउंट"
+					"title": "खोलें",
+					"tooltip": "Fount खोलें"
 				},
 				"github": {
 					"title": "GitHub",
-					"tooltip": "फाउंट के गिथब को खोलें"
+					"tooltip": "Fount का GitHub खोलें"
 				},
 				"discord": {
-					"title": "कलह",
-					"tooltip": "फाउंट की कलह खोलें"
+					"title": "Discord",
+					"tooltip": "Fount का Discord खोलें"
 				},
 				"exit": {
-					"title": "छोड़ना",
-					"tooltip": "आवेदन से बाहर निकलें"
+					"title": "बाहर निकलें",
+					"tooltip": "एप्लिकेशन से बाहर निकलें"
 				}
 			}
 		},

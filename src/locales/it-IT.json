@@ -64,23 +64,23 @@
 		"tray": {
 			"readIconFailed": "Impossibile leggere il file dell'icona: ${error}",
 			"createTrayFailed": "Impossibile creare l'icona nell'area di notifica: ${error}",
-			"title": "Fonte",
-			"tooltip": "Fonte",
+			"title": "Fount",
+			"tooltip": "Fount",
 			"items": {
 				"open": {
-					"title": "Aprire",
-					"tooltip": "Fonte aperta"
+					"title": "Apri",
+					"tooltip": "Apri Fount"
 				},
 				"github": {
-					"title": "Github",
-					"tooltip": "Apri il github di fonte"
+					"title": "GitHub",
+					"tooltip": "Apri il GitHub di Fount"
 				},
 				"discord": {
-					"title": "Discordia",
-					"tooltip": "Open Fount's Discord"
+					"title": "Discord",
+					"tooltip": "Apri il Discord di Fount"
 				},
 				"exit": {
-					"title": "esentato",
+					"title": "Esci",
 					"tooltip": "Esci dall'applicazione"
 				}
 			}

@@ -80,7 +80,7 @@
 					"tooltip": "Open fount's Discord"
 				},
 				"exit": {
-					"title": "quit",
+					"title": "Exit",
 					"tooltip": "Exit the application"
 				}
 			}
