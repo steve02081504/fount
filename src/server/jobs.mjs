@@ -35,16 +35,16 @@ export function EndJob(username, parttype, partname, uid) {
 }
 async function startJobsOfUser(username) {
 	const jobs = getUserByUsername(username).jobs ?? {}
+	const promises = []
 	for (const parttype in jobs)
 		for (const partname in jobs[parttype])
 			for (const uid in jobs[parttype][partname])
-				try {
+				promises.push((async () => {
 					console.log(await geti18n('fountConsole.jobs.restartingJob', { username, parttype, partname, uid }))
 					const part = await loadPart(username, parttype, partname)
 					await part.interfaces.jobs.ReStartJob(username, jobs[parttype][partname][uid] ?? uid)
-				} catch (err) {
-					console.error(err)
-				}
+				})().catch(console.error))
+	await Promise.all(promises)
 }
 export async function ReStartJobs() {
 	await Promise.all(getAllUserNames().map(startJobsOfUser))
