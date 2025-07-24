@@ -100,8 +100,11 @@ body {
 	}
 
 	.drawer-side {
-		z-index: 60;
-		background-color: var(--color-base-100);
+		z-index: 80;
+	}
+
+	.sidebar-content {
+		background-color: var(--color-base-200);
 	}
 }
 

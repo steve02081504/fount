@@ -11,4 +11,4 @@ export const arrayBufferToBase64 = (buffer) => {
 
 export const SWIPE_THRESHOLD = 50
 export const TRANSITION_DURATION = 500
-export const DEFAULT_AVATAR = 'https://gravatar.com/avatar/0?d=mp&f=y'
+export const DEFAULT_AVATAR = 'https://api.iconify.design/line-md/person.svg'
