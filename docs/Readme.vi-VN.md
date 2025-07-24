@@ -2,7 +2,7 @@
 
 > Người bạn đồng hành AI đắm chìm của bạn
 
-[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/steve02081504/fount)
 [![Docker Image Size](https://img.shields.io/docker/image-size/steve02081504/fount)](https://github.com/users/steve02081504/packages/container/package/fount)
 [![GitHub repo size](https://img.shields.io/github/repo-size/steve02081504/fount)](https://github.com/steve02081504/fount/archive/refs/heads/master.zip)
@@ -238,10 +238,16 @@ Thế giới của Fount không chỉ là từ ngữ và mã lệnh; đó là m�
 Bạn có thể tự hào hiển thị huy hiệu này trong kho lưu trữ của mình hoặc bất cứ nơi nào bạn muốn trưng bày tác phẩm của mình. Tìm các tệp SVG của logo Fount [tại đây](../imgs/).
 
 ```markdown
-[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
 ```
 
-[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
+
+```markdown
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://github.com/topics/fount-character)
+```
+
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://github.com/topics/fount-character)
 
 | Định dạng màu | Mã |
 | :---: | :---: |
@@ -254,14 +260,6 @@ Bạn có thể tự hào hiển thị huy hiệu này trong kho lưu trữ củ
 Hãy tưởng tượng những người khác cài đặt sáng tạo của bạn vào thế giới Fount của họ chỉ bằng một cú nhấp chuột. Chỉ cần kết hợp liên kết ZIP hoặc kho Git của thành phần của bạn với liên kết giao thức của Fount.
 
 `https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;` + `Liên_kết_thành_phần_của_bạn`
-
-Kết hợp nó với một huy hiệu để tạo ra một nút vừa đẹp mắt vừa thiết thực:
-
-```markdown
-[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
-```
-
-[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
 
 ---
 

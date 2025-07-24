@@ -63,7 +63,27 @@
 		},
 		"tray": {
 			"readIconFailed": "Impossibile leggere il file dell'icona: ${error}",
-			"createTrayFailed": "Impossibile creare l'icona nell'area di notifica: ${error}"
+			"createTrayFailed": "Impossibile creare l'icona nell'area di notifica: ${error}",
+			"title": "Fount",
+			"tooltip": "Fount",
+			"items": {
+				"open": {
+					"title": "Apri",
+					"tooltip": "Apri Fount"
+				},
+				"github": {
+					"title": "GitHub",
+					"tooltip": "Apri il GitHub di Fount"
+				},
+				"discord": {
+					"title": "Discord",
+					"tooltip": "Apri il Discord di Fount"
+				},
+				"exit": {
+					"title": "Esci",
+					"tooltip": "Esci dall'applicazione"
+				}
+			}
 		},
 		"discordbot": {
 			"botStarted": "Il personaggio ${charname} ha effettuato l'accesso al bot Discord ${botusername}."
@@ -129,6 +149,27 @@
 			"description1": "Sembra esserci un problema con il programma di installazione di Fount.",
 			"description2": "Controlla il tuo terminale e riprova.",
 			"close_page": "Chiudi pagina"
+		}
+	},
+	"startPage": {
+		"title": "Fount!",
+		"newTabFailed": {
+			"title": "Impossibile aprire una nuova scheda",
+			"instruction": "L'avvio di Fount è più lento di 1-2 secondi ogni volta senza il permesso per le finestre a comparsa.",
+			"tryAllow": "Vuoi provare a dare a Fount il permesso per le finestre a comparsa?",
+			"buttons": {
+				"retry": "Riprova",
+				"skip": "Salta",
+				"ignore": "Ignora per sempre"
+			},
+			"ignoreConfirm": {
+				"title": "Confermare di ignorare per sempre?",
+				"instruction": "Sprecare 2 secondi a ogni avvio significa sprecare 1 giorno intero per cinquantamila avvii 💀",
+				"buttons": {
+					"confirm": "Conferma",
+					"cancel": "Annulla"
+				}
+			}
 		}
 	},
 	"auth": {

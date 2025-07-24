@@ -2,7 +2,7 @@
 
 > Ваш иммерсивный компаньон с ИИ-персонажем
 
-[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/steve02081504/fount)
 [![Docker Image Size](https://img.shields.io/docker/image-size/steve02081504/fount)](https://github.com/users/steve02081504/packages/container/package/fount)
 [![GitHub repo size](https://img.shields.io/github/repo-size/steve02081504/fount)](https://github.com/steve02081504/fount/archive/refs/heads/master.zip)
@@ -238,10 +238,16 @@ fount remove
 Вы можете с гордостью разместить этот значок в своем репозитории или в любом другом месте, где хотите показать свою работу. Файлы SVG логотипа Fount можно найти [здесь](../imgs/).
 
 ```markdown
-[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
 ```
 
-[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
+
+```markdown
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://github.com/topics/fount-character)
+```
+
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://github.com/topics/fount-character)
 
 | Формат цвета | Код |
 | :---: | :---: |
@@ -254,14 +260,6 @@ fount remove
 Представьте, что другие устанавливают ваши творения в свой мир Fount одним щелчком мыши. Просто объедините ссылку на ZIP-архив или Git-репозиторий вашего компонента со ссылкой протокола Fount.
 
 `https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;` + `Ссылка_на_ваш_компонент`
-
-Объедините это со значком для создания кнопки, которая будет одновременно красивой и практичной:
-
-```markdown
-[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
-```
-
-[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
 
 ---
 

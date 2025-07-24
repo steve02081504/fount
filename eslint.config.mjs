@@ -16,6 +16,7 @@ const commonPlugins = {
 const commonRules = {
 	'remove-duplicates/remove-array-duplicates': ['error'],
 	'no-undef': ['error'],
+	'no-useless-escape': ['error'],
 	semi: ['error', 'never'],
 	'no-duplicate-imports': ['error'],
 	curly: ['error', 'multi'],

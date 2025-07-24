@@ -1,6 +1,7 @@
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
+import { FullProxy } from 'npm:full-proxy'
 import { loadAIsourceFromNameOrConfigData } from '../../../server/managers/AIsource_manager.mjs'
 
 export default {
@@ -93,13 +94,7 @@ async function GetSource(config, { username, SaveConfig }) {
 			const selectedSource = selectSourceByWeight()
 			return await selectedSource.StructCall(prompt_struct)
 		},
-		tokenizer: new Proxy({}, {
-			get: (prop) => Reflect.get(selectSourceByWeight().tokenizer, prop),
-			set: (prop, value) => Reflect.set(selectSourceByWeight().tokenizer, prop, value),
-			getOwnPropertyDescriptor: (prop) => Reflect.getOwnPropertyDescriptor(selectSourceByWeight().tokenizer, prop),
-			has: (prop) => Reflect.has(selectSourceByWeight().tokenizer, prop),
-			ownKeys: () => Reflect.ownKeys(selectSourceByWeight().tokenizer),
-		})
+		tokenizer: new FullProxy(() => selectSourceByWeight().tokenizer),
 	}
 	return result
 }

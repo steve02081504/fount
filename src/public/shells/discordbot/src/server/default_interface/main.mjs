@@ -2,6 +2,7 @@ import { Events, ChannelType, GatewayIntentBits, Partials, escapeMarkdown } from
 import { Buffer } from 'node:buffer'
 import { getMessageFullContent, splitDiscordReply } from './tools.mjs'
 import { localhostLocales } from '../../../../../../scripts/i18n.mjs'
+import { loadDefaultPersona } from '../../../../../../server/managers/persona_manager.mjs'
 
 /** @typedef {import('npm:discord.js').Message} Message */
 /** @typedef {import('../../../../chat/decl/chatLog.ts').chatLogEntry_t} FountChatLogEntryBase */
@@ -261,13 +262,13 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 
 				const generateChatReplyRequest = () => ({
 					supported_functions: { markdown: true, files: true, add_message: true },
-					username: config.OwnerUserName,
+					username: ownerUsername,
 					chat_name: triggerMessage.channel.type === ChannelType.DM ? `DM with ${triggerMessage.author.tag}` : `${triggerMessage.guild?.name || 'N/A'}: #${triggerMessage.channel.name}`,
 					char_id: botCharname,
 					Charname: client.user.displayName || client.user.username,
 					UserCharname: config.OwnerUserName,
 					ReplyToCharname: userInfoCache[triggerMessage.author.id] || triggerMessage.author.username,
-					locales: localhostLocales, time: new Date(), world: null, user: null, char: charAPI, other_chars: [], plugins: {},
+					locales: localhostLocales, time: new Date(), world: null, user: loadDefaultPersona(ownerUsername), char: charAPI, other_chars: [], plugins: {},
 					chat_scoped_char_memory, chat_log: ChannelChatLogs[channelId].map(e => ({ ...e })), // 传递副本
 					AddChatLogEntry, Update: async () => generateChatReplyRequest(),
 					extension: { platform: 'discord', trigger_message_id: triggerMessage.id, channel_id: channelId, guild_id: triggerMessage.guild?.id }

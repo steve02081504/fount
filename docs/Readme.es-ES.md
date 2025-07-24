@@ -2,7 +2,7 @@
 
 > Tu Compañero Inmersivo de Personajes IA
 
-[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/steve02081504/fount)
 [![Docker Image Size](https://img.shields.io/docker/image-size/steve02081504/fount)](https://github.com/users/steve02081504/packages/container/package/fount)
 [![GitHub repo size](https://img.shields.io/github/repo-size/steve02081504/fount)](https://github.com/steve02081504/fount/archive/refs/heads/master.zip)
@@ -238,10 +238,16 @@ El mundo de Fount es más que palabras y código; es un festín para los ojos y 
 Puedes mostrar con orgullo esta insignia en tu repositorio o en cualquier lugar donde desees exhibir tu trabajo. Encuentra los archivos SVG del logotipo de Fount [aquí](../imgs/).
 
 ```markdown
-[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
 ```
 
-[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
+
+```markdown
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://github.com/topics/fount-character)
+```
+
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://github.com/topics/fount-character)
 
 | Formato de Color | Código |
 | :---: | :---: |
@@ -254,14 +260,6 @@ Puedes mostrar con orgullo esta insignia en tu repositorio o en cualquier lugar 
 Imagina que otros instalan tus creaciones en su mundo de Fount con un solo clic. Simplemente combina el enlace ZIP o del repositorio Git de tu componente con el enlace de protocolo de Fount.
 
 `https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;` + `Tu_Enlace_de_Componente`
-
-Combínalo con una insignia para crear un botón que sea tanto hermoso como práctico:
-
-```markdown
-[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
-```
-
-[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
 
 ---
 

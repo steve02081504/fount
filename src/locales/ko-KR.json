@@ -63,7 +63,27 @@
 		},
 		"tray": {
 			"readIconFailed": "아이콘 파일을 읽는 데 실패했습니다: ${error}",
-			"createTrayFailed": "트레이 아이콘 생성에 실패했습니다: ${error}"
+			"createTrayFailed": "트레이 아이콘 생성에 실패했습니다: ${error}",
+			"title": "Fount",
+			"tooltip": "Fount",
+			"items": {
+				"open": {
+					"title": "열기",
+					"tooltip": "Fount 열기"
+				},
+				"github": {
+					"title": "GitHub",
+					"tooltip": "Fount의 GitHub 열기"
+				},
+				"discord": {
+					"title": "Discord",
+					"tooltip": "Fount의 Discord 열기"
+				},
+				"exit": {
+					"title": "종료",
+					"tooltip": "애플리케이션 종료"
+				}
+			}
 		},
 		"discordbot": {
 			"botStarted": "캐릭터 ${charname}님이 Discord 봇 ${botusername}에 로그인했습니다."
@@ -129,6 +149,27 @@
 			"description1": "Fount 설치 프로그램에 문제가 발생한 것 같습니다.",
 			"description2": "터미널을 확인하고 다시 시도해주세요.",
 			"close_page": "페이지 닫기"
+		}
+	},
+	"startPage": {
+		"title": "Fount!",
+		"newTabFailed": {
+			"title": "새 탭을 열지 못했습니다",
+			"instruction": "팝업 창 권한이 없으면 Fount 시작이 매번 1-2초씩 느려집니다.",
+			"tryAllow": "Fount에 팝업 창 권한을 부여하시겠습니까?",
+			"buttons": {
+				"retry": "재시도",
+				"skip": "건너뛰기",
+				"ignore": "항상 무시"
+			},
+			"ignoreConfirm": {
+				"title": "영구적으로 무시하시겠습니까?",
+				"instruction": "시작할 때마다 2초를 낭비하면 5만 번 시작 시 하루를 낭비하는 것과 같습니다 💀",
+				"buttons": {
+					"confirm": "확인",
+					"cancel": "취소"
+				}
+			}
 		}
 	},
 	"auth": {

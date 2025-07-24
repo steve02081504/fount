@@ -93,7 +93,7 @@ async function renderItemView(itemType, itemDetails, itemName) {
 async function attachCardEventListeners(itemElement, itemDetails, itemName, interfacesRegistry) {
 	const actionsContainer = itemElement.querySelector('.card-actions > div')
 	actionsContainer.innerHTML = '' // Clear existing buttons
-	actionsContainer.addEventListener('wheel', handleMouseWheelScroll)
+	actionsContainer.addEventListener('wheel', handleMouseWheelScroll, { passive: false })
 
 	// Add interface buttons
 	for (const interfaceItem of interfacesRegistry)

@@ -90,7 +90,7 @@ export async function renderMarkdown(markdown) {
 	return createDOMFromHtmlString(await renderMarkdownAsString(markdown))
 }
 
-document.head.innerHTML += '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css" />'
+document.head.prepend(Object.assign(document.createElement('link'), { rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css' }))
 const markdown_style = document.createElement('link')
 markdown_style.rel = 'stylesheet'
 onThemeChange((theme, is_dark) => {

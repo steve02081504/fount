@@ -63,7 +63,27 @@
 		},
 		"tray": {
 			"readIconFailed": "Не удалось прочитать файл значка: ${error}",
-			"createTrayFailed": "Не удалось создать значок в области уведомлений: ${error}"
+			"createTrayFailed": "Не удалось создать значок в области уведомлений: ${error}",
+			"title": "Fount",
+			"tooltip": "Fount",
+			"items": {
+				"open": {
+					"title": "Открыть",
+					"tooltip": "Открыть Fount"
+				},
+				"github": {
+					"title": "GitHub",
+					"tooltip": "Открыть Fount на GitHub"
+				},
+				"discord": {
+					"title": "Discord",
+					"tooltip": "Открыть Fount в Discord"
+				},
+				"exit": {
+					"title": "Выход",
+					"tooltip": "Выйти из приложения"
+				}
+			}
 		},
 		"discordbot": {
 			"botStarted": "Персонаж ${charname} вошел в Discord бот ${botusername}."
@@ -129,6 +149,27 @@
 			"description1": "Кажется, с установщиком Fount что-то не так.",
 			"description2": "Пожалуйста, проверьте свой терминал и попробуйте снова.",
 			"close_page": "Закрыть страницу"
+		}
+	},
+	"startPage": {
+		"title": "Fount!",
+		"newTabFailed": {
+			"title": "Не удалось открыть новую вкладку",
+			"instruction": "Запуск Fount каждый раз происходит на 1-2 секунды медленнее без разрешения на всплывающие окна.",
+			"tryAllow": "Попробовать дать Fount разрешение на всплывающие окна?",
+			"buttons": {
+				"retry": "Повторить",
+				"skip": "Пропустить",
+				"ignore": "Игнорировать всегда"
+			},
+			"ignoreConfirm": {
+				"title": "Подтвердить постоянное игнорирование?",
+				"instruction": "Потеря 2 секунд при каждом запуске — это целые сутки, потраченные впустую за пятьдесят тысяч запусков 💀",
+				"buttons": {
+					"confirm": "Подтвердить",
+					"cancel": "Отмена"
+				}
+			}
 		}
 	},
 	"auth": {

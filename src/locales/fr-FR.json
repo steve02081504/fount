@@ -63,7 +63,27 @@
 		},
 		"tray": {
 			"readIconFailed": "Erreur lors de la lecture du fichier d'icône : ${error}",
-			"createTrayFailed": "Erreur lors de la création de l'icône dans la zone de notification : ${error}"
+			"createTrayFailed": "Erreur lors de la création de l'icône dans la zone de notification : ${error}",
+			"title": "Fount",
+			"tooltip": "Fount",
+			"items": {
+				"open": {
+					"title": "Ouvrir",
+					"tooltip": "Ouvrir Fount"
+				},
+				"github": {
+					"title": "GitHub",
+					"tooltip": "Ouvrir le GitHub de Fount"
+				},
+				"discord": {
+					"title": "Discord",
+					"tooltip": "Ouvrir le Discord de Fount"
+				},
+				"exit": {
+					"title": "Quitter",
+					"tooltip": "Quitter l'application"
+				}
+			}
 		},
 		"discordbot": {
 			"botStarted": "Le personnage ${charname} s'est connecté au bot Discord ${botusername}."
@@ -129,6 +149,27 @@
 			"description1": "Un problème semble être survenu avec le programme d'installation de Fount.",
 			"description2": "Veuillez vérifier votre terminal et réessayer.",
 			"close_page": "Fermer la page"
+		}
+	},
+	"startPage": {
+		"title": "Fount!",
+		"newTabFailed": {
+			"title": "L'ouverture du nouvel onglet a échoué",
+			"instruction": "Le démarrage de Fount est plus lent de 1 à 2 secondes à chaque fois sans l'autorisation d'afficher des fenêtres pop-up.",
+			"tryAllow": "Essayer de donner à Fount l'autorisation d'afficher des fenêtres pop-up ?",
+			"buttons": {
+				"retry": "Réessayer",
+				"skip": "Ignorer",
+				"ignore": "Toujours ignorer"
+			},
+			"ignoreConfirm": {
+				"title": "Confirmer l'ignorance permanente ?",
+				"instruction": "Perdre 2s à chaque démarrage, c'est perdre 1 jour entier pour cinquante mille démarrages 💀",
+				"buttons": {
+					"confirm": "Confirmer",
+					"cancel": "Annuler"
+				}
+			}
 		}
 	},
 	"auth": {

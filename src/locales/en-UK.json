@@ -63,7 +63,27 @@
 		},
 		"tray": {
 			"readIconFailed": "Failed to read icon file: ${error}",
-			"createTrayFailed": "Failed to create tray: ${error}"
+			"createTrayFailed": "Failed to create tray: ${error}",
+			"title": "Fount",
+			"tooltip": "Fount",
+			"items": {
+				"open": {
+					"title": "Open",
+					"tooltip": "Open fount"
+				},
+				"github": {
+					"title": "GitHub",
+					"tooltip": "Open fount's GitHub"
+				},
+				"discord": {
+					"title": "Discord",
+					"tooltip": "Open fount's Discord"
+				},
+				"exit": {
+					"title": "Exit",
+					"tooltip": "Exit the application"
+				}
+			}
 		},
 		"discordbot": {
 			"botStarted": "Character ${charname} has logged in to the Discord bot ${botusername}."
@@ -129,6 +149,27 @@
 			"description1": "There seems to be something wrong with the fount installer.",
 			"description2": "Please check your terminal and try again.",
 			"close_page": "Close page"
+		}
+	},
+	"startPage": {
+		"title": "Fount!",
+		"newTabFailed": {
+			"title": "Failed to open new tab",
+			"instruction": "Fount's startup is 1-2s slower each time without window pop-up permission.",
+			"tryAllow": "Try giving Fount window pop-up permission?",
+			"buttons": {
+				"retry": "Retry",
+				"skip": "Skip",
+				"ignore": "Ignore forever"
+			},
+			"ignoreConfirm": {
+				"title": "Confirm permanent ignore?",
+				"instruction": "Wasting 2s on one start is wasting 1 whole day on fifty thousand starts 💀",
+				"buttons": {
+					"confirm": "Confirm",
+					"cancel": "Cancel"
+				}
+			}
 		}
 	},
 	"auth": {

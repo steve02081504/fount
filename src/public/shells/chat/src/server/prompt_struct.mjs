@@ -39,9 +39,9 @@ export async function buildPromptStruct(
 	}
 
 	while (detail_level--) {
-		if (world) result.world_prompt = await world.interfaces.chat.GetPrompt(args, result, detail_level)
-		if (user) result.user_prompt = await user.interfaces.chat.GetPrompt(args, result, detail_level)
-		if (char) result.char_prompt = await char.interfaces.chat.GetPrompt(args, result, detail_level)
+		if (world?.interfaces?.chat) result.world_prompt = await world.interfaces.chat.GetPrompt(args, result, detail_level)
+		if (user?.interfaces?.chat) result.user_prompt = await user.interfaces.chat.GetPrompt(args, result, detail_level)
+		if (char?.interfaces?.chat) result.char_prompt = await char.interfaces.chat.GetPrompt(args, result, detail_level)
 		for (const other_char of Object.keys(other_chars))
 			result.other_chars_prompt[other_char] = await other_chars[other_char].interfaces.chat?.GetPromptForOther?.(args, result, detail_level)
 		for (const plugin of Object.keys(plugins)) {

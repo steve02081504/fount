@@ -1,7 +1,6 @@
 import * as Sentry from 'npm:@sentry/deno'
 Sentry.init({
 	dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
-	_experiments: { enableLogs: true },
 })
 import 'https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill@master/index.mjs'
 

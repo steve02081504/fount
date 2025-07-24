@@ -63,7 +63,27 @@
 		},
 		"tray": {
 			"readIconFailed": "Đọc tệp biểu tượng thất bại: ${error}",
-			"createTrayFailed": "Tạo biểu tượng trên khay hệ thống thất bại: ${error}"
+			"createTrayFailed": "Tạo biểu tượng trên khay hệ thống thất bại: ${error}",
+			"title": "Fount",
+			"tooltip": "Fount",
+			"items": {
+				"open": {
+					"title": "Mở",
+					"tooltip": "Mở Fount"
+				},
+				"github": {
+					"title": "GitHub",
+					"tooltip": "Mở GitHub của Fount"
+				},
+				"discord": {
+					"title": "Discord",
+					"tooltip": "Mở Discord của Fount"
+				},
+				"exit": {
+					"title": "Thoát",
+					"tooltip": "Thoát khỏi ứng dụng"
+				}
+			}
 		},
 		"discordbot": {
 			"botStarted": "Nhân vật ${charname} đã đăng nhập vào bot Discord ${botusername}."
@@ -129,6 +149,27 @@
 			"description1": "Dường như có sự cố với trình cài đặt Fount.",
 			"description2": "Vui lòng kiểm tra terminal của bạn và thử lại.",
 			"close_page": "Đóng trang"
+		}
+	},
+	"startPage": {
+		"title": "Fount!",
+		"newTabFailed": {
+			"title": "Không thể mở tab mới",
+			"instruction": "Việc khởi động Fount sẽ chậm hơn 1-2 giây mỗi lần nếu không có quyền mở cửa sổ pop-up.",
+			"tryAllow": "Thử cấp quyền mở cửa sổ pop-up cho Fount?",
+			"buttons": {
+				"retry": "Thử lại",
+				"skip": "Bỏ qua",
+				"ignore": "Luôn bỏ qua"
+			},
+			"ignoreConfirm": {
+				"title": "Xác nhận bỏ qua vĩnh viễn?",
+				"instruction": "Lãng phí 2 giây mỗi lần khởi động tương đương với việc lãng phí cả một ngày cho năm mươi nghìn lần khởi động 💀",
+				"buttons": {
+					"confirm": "Xác nhận",
+					"cancel": "Hủy"
+				}
+			}
 		}
 	},
 	"auth": {

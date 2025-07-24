@@ -63,7 +63,27 @@
 		},
 		"tray": {
 			"readIconFailed": "读取图标文件失败: ${error}",
-			"createTrayFailed": "创建托盘失败: ${error}"
+			"createTrayFailed": "创建托盘失败: ${error}",
+			"title": "Fount",
+			"tooltip": "Fount",
+			"items": {
+				"open": {
+					"title": "打开",
+					"tooltip": "打开 fount"
+				},
+				"github": {
+					"title": "GitHub",
+					"tooltip": "打开 fount 的 GitHub"
+				},
+				"discord": {
+					"title": "Discord",
+					"tooltip": "打开 fount 的 Discord"
+				},
+				"exit": {
+					"title": "退出",
+					"tooltip": "退出应用程序"
+				}
+			}
 		},
 		"discordbot": {
 			"botStarted": "char ${charname} 已在discord bot ${botusername} 上登录"
@@ -129,6 +149,27 @@
 			"description1": "fount 安装程序似乎出了问题。",
 			"description2": "请检查您的终端并重试。",
 			"close_page": "关闭页面"
+		}
+	},
+	"startPage": {
+		"title": "fount!",
+		"newTabFailed": {
+			"title": "新标签页打开失败",
+			"instruction": "fount的启动在没有窗口弹出权限时每次都会慢1-2s",
+			"tryAllow": "试试给fount添加窗口弹出权限？",
+			"buttons": {
+				"retry": "重试",
+				"skip": "跳过",
+				"ignore": "永久忽略"
+			},
+			"ignoreConfirm": {
+				"title": "确认永久忽略？",
+				"instruction": "启动一次浪费2s，启动五万次浪费整整1天 💀",
+				"buttons": {
+					"confirm": "确认",
+					"cancel": "取消"
+				}
+			}
 		}
 	},
 	"auth": {

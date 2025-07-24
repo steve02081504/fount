@@ -63,7 +63,27 @@
 		},
 		"tray": {
 			"readIconFailed": "Fehler beim Lesen der Icon-Datei: ${error}",
-			"createTrayFailed": "Fehler beim Erstellen des Trays: ${error}"
+			"createTrayFailed": "Fehler beim Erstellen des Trays: ${error}",
+			"title": "Fount",
+			"tooltip": "Fount",
+			"items": {
+				"open": {
+					"title": "Öffnen",
+					"tooltip": "Fount öffnen"
+				},
+				"github": {
+					"title": "GitHub",
+					"tooltip": "Fount auf GitHub öffnen"
+				},
+				"discord": {
+					"title": "Discord",
+					"tooltip": "Fount auf Discord öffnen"
+				},
+				"exit": {
+					"title": "Beenden",
+					"tooltip": "Anwendung beenden"
+				}
+			}
 		},
 		"discordbot": {
 			"botStarted": "Char ${charname} hat sich beim Discord-Bot ${botusername} angemeldet."
@@ -129,6 +149,27 @@
 			"description1": "Mit dem Fount-Installationsprogramm scheint etwas nicht zu stimmen.",
 			"description2": "Bitte überprüfen Sie Ihr Terminal und versuchen Sie es erneut.",
 			"close_page": "Seite schließen"
+		}
+	},
+	"startPage": {
+		"title": "Fount!",
+		"newTabFailed": {
+			"title": "Neuer Tab konnte nicht geöffnet werden",
+			"instruction": "Der Start von Fount ist jedes Mal um 1-2s langsamer, wenn die Berechtigung zum Öffnen von Pop-up-Fenstern fehlt.",
+			"tryAllow": "Möchten Sie Fount die Berechtigung zum Öffnen von Pop-up-Fenstern erteilen?",
+			"buttons": {
+				"retry": "Erneut versuchen",
+				"skip": "Überspringen",
+				"ignore": "Dauerhaft ignorieren"
+			},
+			"ignoreConfirm": {
+				"title": "Dauerhaft ignorieren bestätigen?",
+				"instruction": "2s bei jedem Start zu verschwenden, bedeutet einen ganzen Tag bei 50.000 Starts zu verschwenden 💀",
+				"buttons": {
+					"confirm": "Bestätigen",
+					"cancel": "Abbrechen"
+				}
+			}
 		}
 	},
 	"auth": {

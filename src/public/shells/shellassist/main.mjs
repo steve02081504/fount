@@ -24,7 +24,7 @@ export default {
 				const char = await LoadChar(username, data.charname)
 				if (!char.interfaces.shellassist) {
 					const { GetDefaultShellAssistInterface } = await import('./src/server/default_interface/main.mjs')
-					char.interfaces.shellassist = await GetDefaultShellAssistInterface(char, data.charname)
+					char.interfaces.shellassist = await GetDefaultShellAssistInterface(char, username, data.charname)
 				}
 				const result = await char.interfaces.shellassist.Assist({
 					...data,

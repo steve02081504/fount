@@ -2,7 +2,7 @@
 
 > आपका इमर्सिव एआई कैरेक्टर कंपेनियन
 
-[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/steve02081504/fount)
 [![Docker Image Size](https://img.shields.io/docker/image-size/steve02081504/fount)](https://github.com/users/steve02081504/packages/container/package/fount)
 [![GitHub repo size](https://img.shields.io/github/repo-size/steve02081504/fount)](https://github.com/steve02081504/fount/archive/refs/heads/master.zip)
@@ -238,10 +238,16 @@ fount remove
 आप इस बैज को गर्व से अपने रिपॉजिटरी में या कहीं भी प्रदर्शित कर सकते हैं जहाँ आप अपना काम दिखाना चाहते हैं। फाउंट लोगो की SVG फाइलें [यहां](../imgs/) पाएँ।
 
 ```markdown
-[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
 ```
 
-[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
+
+```markdown
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://github.com/topics/fount-character)
+```
+
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://github.com/topics/fount-character)
 
 | रंग प्रारूप | कोड |
 | :---: | :---: |
@@ -254,14 +260,6 @@ fount remove
 कल्पना कीजिए कि दूसरे आपकी रचनाओं को एक क्लिक में अपनी फाउंट दुनिया में स्थापित कर रहे हैं। बस अपने घटक के ज़िप या गिट रिपॉजिटरी लिंक को फाउंट के प्रोटोकॉल लिंक के साथ मिलाएं।
 
 `https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;` + `आपका_घटक_लिंक`
-
-इसे एक बैज के साथ मिलाकर एक ऐसा बटन बनाएँ जो सुंदर और व्यावहारिक दोनों हो:
-
-```markdown
-[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
-```
-
-[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;https://github.com/steve02081504/GentianAphrodite/releases/latest/download/GentianAphrodite.zip)
 
 ---
 

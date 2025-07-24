@@ -10,11 +10,9 @@ Sentry.init({
 	// Performance Monitoring
 	tracesSampleRate: 1.0,
 	tracePropagationTargets: [window.location.origin || 'https://steve02081504.github.io'],
-	// Logging
-	_experiments: { enableLogs: true },
 })
 
-await import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill@master/index.mjs')
+await import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill/index.mjs')
 
 /* global urlParams */
 export let theme_now
@@ -56,6 +54,6 @@ export function setBaseDir(v) {
 }
 
 window.addEventListener('load', async () => {
-	console.log(await fetch('https://cdn.jsdelivr.net/gh/steve02081504/fount/imgs/icon_ascii.txt').then(r => r.text()))
+	console.log(await fetch('https://cdn.jsdelivr.net/gh/steve02081504/fount/imgs/icon_ansi_ascii.txt').then(r => r.text()))
 	console.log('Curious? Join us and build future together: https://github.com/steve02081504/fount')
 })

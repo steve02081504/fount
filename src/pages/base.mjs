@@ -8,19 +8,14 @@ Sentry.init({
 	sendDefaultPii: true,
 	tunnel: '/api/sentrytunnel',
 	integrations: [
-		Sentry.browserTracingIntegration(),
-		Sentry.browserProfilingIntegration()
+		Sentry.browserTracingIntegration()
 	],
 	// Performance Monitoring
 	tracesSampleRate: 1.0,
 	tracePropagationTargets: [window.location.origin || 'localhost'],
-	// Profiling
-	profilesSampleRate: 1.0,
-	// Logging
-	_experiments: { enableLogs: true },
 })
 
-await import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill@master/index.mjs')
+await import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill/index.mjs')
 
 // register service worker
 if ('serviceWorker' in navigator)
@@ -52,6 +47,6 @@ document.addEventListener('keydown', event => {
 })
 
 window.addEventListener('load', async () => {
-	console.log(await fetch('https://cdn.jsdelivr.net/gh/steve02081504/fount/imgs/icon_ascii.txt').then(r => r.text()))
+	console.log(await fetch('https://cdn.jsdelivr.net/gh/steve02081504/fount/imgs/icon_ansi_ascii.txt').then(r => r.text()))
 	console.log('Curious? Join us and build future together: https://github.com/steve02081504/fount')
 })

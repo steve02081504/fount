@@ -63,7 +63,27 @@
 		},
 		"tray": {
 			"readIconFailed": "Falha ao ler o ficheiro do ícone: ${error}",
-			"createTrayFailed": "Falha ao criar o ícone na área de notificação: ${error}"
+			"createTrayFailed": "Falha ao criar o ícone na área de notificação: ${error}",
+			"title": "Fount",
+			"tooltip": "Fount",
+			"items": {
+				"open": {
+					"title": "Abrir",
+					"tooltip": "Abrir Fount"
+				},
+				"github": {
+					"title": "GitHub",
+					"tooltip": "Abrir o GitHub do Fount"
+				},
+				"discord": {
+					"title": "Discord",
+					"tooltip": "Abrir o Discord do Fount"
+				},
+				"exit": {
+					"title": "Sair",
+					"tooltip": "Sair da aplicação"
+				}
+			}
 		},
 		"discordbot": {
 			"botStarted": "O personagem ${charname} ligou-se ao bot Discord ${botusername}."
@@ -129,6 +149,27 @@
 			"description1": "Parece haver algo de errado com o instalador do Fount.",
 			"description2": "Verifique o seu terminal e tente novamente.",
 			"close_page": "Fechar página"
+		}
+	},
+	"startPage": {
+		"title": "Fount!",
+		"newTabFailed": {
+			"title": "Falha ao abrir novo separador",
+			"instruction": "O arranque do Fount é 1-2s mais lento sempre que não há permissão para janelas de pop-up.",
+			"tryAllow": "Tentar dar permissão de pop-up ao Fount?",
+			"buttons": {
+				"retry": "Tentar Novamente",
+				"skip": "Saltar",
+				"ignore": "Ignorar para sempre"
+			},
+			"ignoreConfirm": {
+				"title": "Confirmar ignorar para sempre?",
+				"instruction": "Desperdiçar 2s num arranque, é desperdiçar 1 dia inteiro em cinquenta mil arranques 💀",
+				"buttons": {
+					"confirm": "Confirmar",
+					"cancel": "Cancelar"
+				}
+			}
 		}
 	},
 	"auth": {
