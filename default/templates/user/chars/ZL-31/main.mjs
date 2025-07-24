@@ -711,7 +711,7 @@ Một số mã nguồn đến từ [GentianAphrodite](https://github.com/steve02
 			// 设置角色的配置数据
 			SetData: async (data) => {
 				// 如果传入了AI源的配置
-				if (data.AIsource)  AIsource = await loadAIsource(username, data.AIsource) // 加载AI源
+				if (data.AIsource) AIsource = await loadAIsource(username, data.AIsource) // 加载AI源
 				else AIsource = await loadDefaultAIsource(username) // 或加载默认AI源（若未设置默认AI源则为undefined）
 			}
 		},

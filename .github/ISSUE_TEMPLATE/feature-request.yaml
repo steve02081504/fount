@@ -1,17 +1,17 @@
-name: "feature request🎨"
+name: 'feature request🎨'
 description: Suggest idea
 title: a feature request
 labels: enhancement
-assignees: 
+assignees:
   - steve02081504
 body:
   - type: checkboxes
     attributes:
       label: 检查清单 Prerequisites
       options:
-      - label: "请确保你已经检索了已关闭的问题，以确保你的问题没有被重复提交\nMake sure you have retrieved closed issues to make sure your issue has not been submitted repeatedly"
-        id: closed-issues
-        required: true
+        - label: "请确保你已经检索了已关闭的问题，以确保你的问题没有被重复提交\nMake sure you have retrieved closed issues to make sure your issue has not been submitted repeatedly"
+          id: closed-issues
+          required: true
 
   - type: textarea
     id: problem

@@ -20,7 +20,7 @@ Bạn đã bao giờ khao khát một cuộc hành trình bên cạnh một nhâ
 
 Hay có lẽ bạn đã hình dung về một người bạn tâm giao kỹ thuật số, một trợ lý AI nhạy bén như những tạo vật tiên tiến nhất, dễ dàng điều khiển thế giới số của bạn?
 
-Hoặc có thể, chỉ đơn giản là, bạn đã tìm kiếm một sự kết nối vượt ra ngoài những điều bình thường, một thế giới nơi ranh giới thực tại lu mờ, và một sự thấu hiểu thân mật, *không chút giấu giếm* được hé mở?
+Hoặc có thể, chỉ đơn giản là, bạn đã tìm kiếm một sự kết nối vượt ra ngoài những điều bình thường, một thế giới nơi ranh giới thực tại lu mờ, và một sự thấu hiểu thân mật, _không chút giấu giếm_ được hé mở?
 
 Sau gần một năm phát triển tận tụy, với sự đóng góp của hơn mười cá nhân đầy nhiệt huyết và một cộng đồng sôi nổi với hơn 1000 người dùng, Fount giờ đây là một nền tảng tương tác AI trưởng thành, ổn định và không ngừng phát triển. Đây là một hành trình, và chúng tôi tin rằng, nó gần gũi hơn bạn tưởng.
 
@@ -31,13 +31,13 @@ Những nhân vật lạc lối, những câu chuyện bị lãng quên? [**Cộ
 <details open>
 <summary><strong>Một thoáng nhìn vào thế giới của fount</strong></summary>
 
-| Ảnh chụp màn hình |
-| :---: |
-| **Trang chủ** |
+|                                      Ảnh chụp màn hình                                       |
+| :------------------------------------------------------------------------------------------: |
+|                                        **Trang chủ**                                         |
 | ![Hình ảnh](https://github.com/user-attachments/assets/c1954a7a-6c73-4fb0-bd12-f790a038bd0e) |
-| **Chọn chủ đề** |
+|                                       **Chọn chủ đề**                                        |
 | ![Hình ảnh](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074) |
-| **Trò chuyện** |
+|                                        **Trò chuyện**                                        |
 | ![Hình ảnh](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d) |
 
 </details>
@@ -56,24 +56,24 @@ Fount được xây dựng cho tương lai, sẵn sàng đón nhận những tí
 
 ## Đắm chìm trong thế giới của các tính năng
 
-* **Cuộc trò chuyện liền mạch, mọi lúc mọi nơi**
-    Một lời thì thầm bắt đầu trên máy tính của bạn có thể được tiếp tục một cách liền mạch trên điện thoại hoặc máy tính bảng. fount giữ cho các cuộc trò chuyện của bạn được đồng bộ, kết nối bạn với các nhân vật của mình dù bạn ở bất cứ đâu.
+- **Cuộc trò chuyện liền mạch, mọi lúc mọi nơi**
+  Một lời thì thầm bắt đầu trên máy tính của bạn có thể được tiếp tục một cách liền mạch trên điện thoại hoặc máy tính bảng. fount giữ cho các cuộc trò chuyện của bạn được đồng bộ, kết nối bạn với các nhân vật của mình dù bạn ở bất cứ đâu.
 
-* **Trò chuyện biểu cảm, đắm chìm**
-    fount khai thác toàn bộ sức mạnh của HTML, cho phép các nhân vật tự biểu đạt qua văn bản đa dạng, hình ảnh, và thậm chí cả các yếu tố tương tác, làm cho mỗi cuộc trò chuyện trở nên sống động và sâu sắc.
+- **Trò chuyện biểu cảm, đắm chìm**
+  fount khai thác toàn bộ sức mạnh của HTML, cho phép các nhân vật tự biểu đạt qua văn bản đa dạng, hình ảnh, và thậm chí cả các yếu tố tương tác, làm cho mỗi cuộc trò chuyện trở nên sống động và sâu sắc.
 
-* **Hội tụ của những tâm hồn: Trò chuyện nhóm nguyên bản**
-    Mời nhiều nhân vật vào cùng một cuộc trò chuyện và chứng kiến những tương tác năng động và hấp dẫn của họ, tạo ra những câu chuyện độc nhất của riêng bạn.
+- **Hội tụ của những tâm hồn: Trò chuyện nhóm nguyên bản**
+  Mời nhiều nhân vật vào cùng một cuộc trò chuyện và chứng kiến những tương tác năng động và hấp dẫn của họ, tạo ra những câu chuyện độc nhất của riêng bạn.
 
-* **Giao diện đẹp, có thể tùy chỉnh**
-    Chọn từ hơn 30 chủ đề tuyệt đẹp, hoặc tạo ra chủ đề của riêng bạn. fount là khung vẽ cá nhân của bạn.
+- **Giao diện đẹp, có thể tùy chỉnh**
+  Chọn từ hơn 30 chủ đề tuyệt đẹp, hoặc tạo ra chủ đề của riêng bạn. fount là khung vẽ cá nhân của bạn.
 
-* **Hoạt động ở mọi nơi bạn đến**
-    fount hoạt động liền mạch trên Windows, macOS, Linux, và cả Android, thích ứng với nhu cầu của bạn thông qua cài đặt trực tiếp hoặc sự linh hoạt của Docker.
+- **Hoạt động ở mọi nơi bạn đến**
+  fount hoạt động liền mạch trên Windows, macOS, Linux, và cả Android, thích ứng với nhu cầu của bạn thông qua cài đặt trực tiếp hoặc sự linh hoạt của Docker.
 
-* **(Dành cho người dùng cao cấp) Tích hợp nguồn AI không giới hạn: Ôm trọn vô biên**
-    Fount cung cấp sự *lựa chọn* và *linh hoạt* không gì sánh bằng trong việc kết nối với các nguồn AI. Mã JavaScript tùy chỉnh trong trình tạo nguồn AI cho phép bạn kết nối với *bất kỳ* nguồn AI nào – OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral, và nhiều hơn nữa. Tạo các biểu thức chính quy phức tạp, gọi các thư viện API khổng lồ, và nhúng các tài nguyên đa phương tiện, tất cả trong luồng mã của bạn. Logic giao tiếp uốn mình theo ý *bạn*, được định hình bởi sức mạnh của mã lệnh.
-    ![Hình ảnh](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
+- **(Dành cho người dùng cao cấp) Tích hợp nguồn AI không giới hạn: Ôm trọn vô biên**
+  Fount cung cấp sự _lựa chọn_ và _linh hoạt_ không gì sánh bằng trong việc kết nối với các nguồn AI. Mã JavaScript tùy chỉnh trong trình tạo nguồn AI cho phép bạn kết nối với _bất kỳ_ nguồn AI nào – OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral, và nhiều hơn nữa. Tạo các biểu thức chính quy phức tạp, gọi các thư viện API khổng lồ, và nhúng các tài nguyên đa phương tiện, tất cả trong luồng mã của bạn. Logic giao tiếp uốn mình theo ý _bạn_, được định hình bởi sức mạnh của mã lệnh.
+  ![Hình ảnh](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
 
 ---
 
@@ -81,18 +81,18 @@ Fount được xây dựng cho tương lai, sẵn sàng đón nhận những tí
 
 Fount nỗ lực dệt các nhân vật vào chính kết cấu cuộc sống của bạn, mang đến sự đồng hành và hỗ trợ vượt ra ngoài màn hình.
 
-* **Tích hợp Discord/Telegram**
-    Kết nối các nhân vật của bạn với các cộng đồng Discord hoặc Telegram thông qua các Bot Shells tích hợp, biến họ thành những thành viên sống động trong vòng kết nối của bạn.
-    ![Hình ảnh](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
-    ![Hình ảnh](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
-    ![Hình ảnh](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
+- **Tích hợp Discord/Telegram**
+  Kết nối các nhân vật của bạn với các cộng đồng Discord hoặc Telegram thông qua các Bot Shells tích hợp, biến họ thành những thành viên sống động trong vòng kết nối của bạn.
+  ![Hình ảnh](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
+  ![Hình ảnh](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
+  ![Hình ảnh](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
 
-* **Sự tĩnh lặng của terminal (với [fount-pwsh](https://github.com/steve02081504/fount-pwsh))**
-    Khi một lệnh terminal thất bại, hãy để nhân vật của bạn đưa ra lời hướng dẫn lặng lẽ, xoa dịu sự cô đơn của thế giới kỹ thuật số.
-    ![Hình ảnh](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
+- **Sự tĩnh lặng của terminal (với [fount-pwsh](https://github.com/steve02081504/fount-pwsh))**
+  Khi một lệnh terminal thất bại, hãy để nhân vật của bạn đưa ra lời hướng dẫn lặng lẽ, xoa dịu sự cô đơn của thế giới kỹ thuật số.
+  ![Hình ảnh](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
 
-* **Mở rộng Shell không giới hạn**
-    Với một chút kỹ năng lập trình, hãy tạo ra các fount Shell của riêng bạn, mở rộng tầm ảnh hưởng của các nhân vật đến bất kỳ nơi nào bạn có thể tưởng tượng.
+- **Mở rộng Shell không giới hạn**
+  Với một chút kỹ năng lập trình, hãy tạo ra các fount Shell của riêng bạn, mở rộng tầm ảnh hưởng của các nhân vật đến bất kỳ nơi nào bạn có thể tưởng tượng.
 
 ---
 
@@ -100,26 +100,26 @@ Fount nỗ lực dệt các nhân vật vào chính kết cấu cuộc sống c�
 
 Đối với người sáng tạo, fount cung cấp một con đường rõ ràng hơn để thổi hồn vào các nhân vật AI của bạn.
 
-* **Tạo nhân vật đột phá với sự hỗ trợ của AI**
-    Mô tả nhân vật của bạn trong một câu duy nhất, và trợ lý AI thông minh của chúng tôi sẽ tạo ra một nhân cách được hiện thực hóa đầy đủ. Điều này đơn giản hóa việc thiết lập ban đầu, cho phép bạn tập trung vào việc tinh chỉnh và tương tác với sáng tạo của mình.
+- **Tạo nhân vật đột phá với sự hỗ trợ của AI**
+  Mô tả nhân vật của bạn trong một câu duy nhất, và trợ lý AI thông minh của chúng tôi sẽ tạo ra một nhân cách được hiện thực hóa đầy đủ. Điều này đơn giản hóa việc thiết lập ban đầu, cho phép bạn tập trung vào việc tinh chỉnh và tương tác với sáng tạo của mình.
 
-* **Sức mạnh của mã lệnh, dễ dàng hơn bạn tưởng**
-    Trong Fount, mã lệnh là một dạng phép thuật hiện đại. Với sự hướng dẫn nhẹ nhàng từ cộng đồng của chúng tôi và sự trợ giúp sáng suốt từ AI, việc học nó trở nên dễ dàng một cách đáng ngạc nhiên. Bạn sẽ thấy rằng việc định nghĩa logic nhân vật bằng mã lệnh có thể là một cách trực quan và dễ bảo trì để tạo ra các nhân vật có phản ứng được *dệt* nên từ chính logic của bạn.
+- **Sức mạnh của mã lệnh, dễ dàng hơn bạn tưởng**
+  Trong Fount, mã lệnh là một dạng phép thuật hiện đại. Với sự hướng dẫn nhẹ nhàng từ cộng đồng của chúng tôi và sự trợ giúp sáng suốt từ AI, việc học nó trở nên dễ dàng một cách đáng ngạc nhiên. Bạn sẽ thấy rằng việc định nghĩa logic nhân vật bằng mã lệnh có thể là một cách trực quan và dễ bảo trì để tạo ra các nhân vật có phản ứng được _dệt_ nên từ chính logic của bạn.
 
-* **Bắt đầu với phép thuật sẵn có: Một kho tàng mẫu**
-    Cộng đồng Fount cung cấp rất nhiều mẫu nhân vật và nhân cách được tạo sẵn. Chúng hoạt động như những "bản thiết kế sống động", dễ dàng điều chỉnh và tùy chỉnh, cung cấp một điểm khởi đầu tuyệt vời.
+- **Bắt đầu với phép thuật sẵn có: Một kho tàng mẫu**
+  Cộng đồng Fount cung cấp rất nhiều mẫu nhân vật và nhân cách được tạo sẵn. Chúng hoạt động như những "bản thiết kế sống động", dễ dàng điều chỉnh và tùy chỉnh, cung cấp một điểm khởi đầu tuyệt vời.
 
-* **Tài nguyên nhúng**
-    Dệt hình ảnh, âm thanh và các tài nguyên khác trực tiếp vào các nhân vật của bạn, làm cho sự hiện diện của họ trở nên hữu hình hơn.
-    ![Hình ảnh](https://github.com/user-attachments/assets/9740cd43-06fd-46c0-a114-e4bd99f13045)
+- **Tài nguyên nhúng**
+  Dệt hình ảnh, âm thanh và các tài nguyên khác trực tiếp vào các nhân vật của bạn, làm cho sự hiện diện của họ trở nên hữu hình hơn.
+  ![Hình ảnh](https://github.com/user-attachments/assets/9740cd43-06fd-46c0-a114-e4bd99f13045)
 
-* **Tích hợp liên tục**
-    Sử dụng [fount-charCI](https://github.com/marketplace/actions/fount-charci) để bảo vệ quá trình phát triển nhân vật của bạn. Nó tự động chạy thử nghiệm khi có commit và báo cáo sự cố trong thời gian thực.
-    ![Hình ảnh](https://github.com/user-attachments/assets/3f6a188d-6643-4d70-8bd1-b75f00c76439)
-    ![Hình ảnh](https://github.com/user-attachments/assets/30eb8374-64c2-41bc-a7d1-f15596352260)
+- **Tích hợp liên tục**
+  Sử dụng [fount-charCI](https://github.com/marketplace/actions/fount-charci) để bảo vệ quá trình phát triển nhân vật của bạn. Nó tự động chạy thử nghiệm khi có commit và báo cáo sự cố trong thời gian thực.
+  ![Hình ảnh](https://github.com/user-attachments/assets/3f6a188d-6643-4d70-8bd1-b75f00c76439)
+  ![Hình ảnh](https://github.com/user-attachments/assets/30eb8374-64c2-41bc-a7d1-f15596352260)
 
-* **Khả năng tương thích với phiên bản cũ**
-    fount đón nhận quá khứ, cung cấp các module tương thích để chạy các thẻ nhân vật của SillyTavern và Risu (mặc dù không hỗ trợ di chuyển các nhân vật hiện có).
+- **Khả năng tương thích với phiên bản cũ**
+  fount đón nhận quá khứ, cung cấp các module tương thích để chạy các thẻ nhân vật của SillyTavern và Risu (mặc dù không hỗ trợ di chuyển các nhân vật hiện có).
 
 ---
 
@@ -131,13 +131,13 @@ Fount được xây dựng trên một kiến trúc mạnh mẽ và có khả n�
 
 Trong thế giới của fount, tính mô-đun là tối cao. Một hệ sinh thái phong phú gồm các thành phần đan xen vào nhau để tạo nên tấm thảm trải nghiệm của bạn. Tất cả chúng đều có thể được người dùng cài đặt, mở rộng và tùy chỉnh một cách dễ dàng.
 
-* **chars (nhân vật):** Trái tim của fount, nơi các cá tính được sinh ra.
-* **worlds (thế giới):** *Hơn cả những cuốn sách truyền thuyết.* Chúng là những kiến trúc sư thầm lặng của thực tại, có khả năng bổ sung kiến thức, ảnh hưởng đến quyết định và thậm chí thao túng lịch sử trò chuyện.
-* **personas (nhân cách người dùng):** *Hơn cả những hồ sơ người dùng.* Nhân cách sở hữu sức mạnh bóp méo và thậm chí chiếm quyền kiểm soát lời nói và nhận thức của bạn, cho phép nhập vai thực sự đắm chìm.
-* **shells (giao diện tương tác):** Cánh cổng dẫn đến tâm hồn của fount, mở rộng tầm ảnh hưởng của các nhân vật ra ngoài giao diện.
-* **ImportHandlers (bộ xử lý nhập khẩu):** Bàn tay chào đón của fount, bắc cầu nối khoảng cách giữa các định dạng nhân vật khác nhau.
-* **AIsources (nguồn AI):** Sức mạnh thô sơ thổi bùng tâm trí các nhân vật của bạn.
-* **AIsourceGenerators (trình tạo nguồn AI):** Những nhà giả kim của fount, cung cấp các mẫu và logic thông qua JavaScript để tạo kết nối với *bất kỳ* nguồn AI nào có thể tưởng tượng được.
+- **chars (nhân vật):** Trái tim của fount, nơi các cá tính được sinh ra.
+- **worlds (thế giới):** _Hơn cả những cuốn sách truyền thuyết._ Chúng là những kiến trúc sư thầm lặng của thực tại, có khả năng bổ sung kiến thức, ảnh hưởng đến quyết định và thậm chí thao túng lịch sử trò chuyện.
+- **personas (nhân cách người dùng):** _Hơn cả những hồ sơ người dùng._ Nhân cách sở hữu sức mạnh bóp méo và thậm chí chiếm quyền kiểm soát lời nói và nhận thức của bạn, cho phép nhập vai thực sự đắm chìm.
+- **shells (giao diện tương tác):** Cánh cổng dẫn đến tâm hồn của fount, mở rộng tầm ảnh hưởng của các nhân vật ra ngoài giao diện.
+- **ImportHandlers (bộ xử lý nhập khẩu):** Bàn tay chào đón của fount, bắc cầu nối khoảng cách giữa các định dạng nhân vật khác nhau.
+- **AIsources (nguồn AI):** Sức mạnh thô sơ thổi bùng tâm trí các nhân vật của bạn.
+- **AIsourceGenerators (trình tạo nguồn AI):** Những nhà giả kim của fount, cung cấp các mẫu và logic thông qua JavaScript để tạo kết nối với _bất kỳ_ nguồn AI nào có thể tưởng tượng được.
 
 ![Hình ảnh](https://github.com/user-attachments/assets/8487a04a-7040-4844-81a6-705687856757)
 
@@ -146,14 +146,14 @@ Trong thế giới của fount, tính mô-đun là tối cao. Một hệ sinh th
 <details>
 <summary><strong>Cài đặt và Gỡ bỏ: Một cuộc gặp gỡ và chia tay thanh lịch</strong></summary>
 
-## Cài đặt: Dệt fount vào thế giới của bạn – *Thật nhẹ nhàng*
+## Cài đặt: Dệt fount vào thế giới của bạn – _Thật nhẹ nhàng_
 
 Hãy bắt đầu hành trình của bạn với fount, một nền tảng ổn định và đáng tin cậy. Chỉ với vài cú nhấp chuột hoặc lệnh đơn giản, thế giới của fount sẽ từ từ mở ra.
 
 > [!CAUTION]
 > Trong thế giới của fount, các nhân vật có thể tự do thực thi các lệnh JavaScript, mang lại cho chúng những khả năng mạnh mẽ. Do đó, hãy chọn các nhân vật mà bạn tin tưởng với sự cẩn trọng như khi kết bạn trong đời thực để đảm bảo an toàn cho các tệp cục bộ của bạn.
 
-### Linux/macOS/Android: Lời thì thầm của Shell – *Một dòng lệnh, và bạn đã sẵn sàng*
+### Linux/macOS/Android: Lời thì thầm của Shell – _Một dòng lệnh, và bạn đã sẵn sàng_
 
 ```bash
 # Nếu cần, hãy định nghĩa biến môi trường $FOUNT_DIR để chỉ định thư mục fount
@@ -176,31 +176,31 @@ curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/mast
 . "$HOME/.profile"
 ```
 
-### Windows: Lựa chọn con đường – *Đơn giản là chính nó*
+### Windows: Lựa chọn con đường – _Đơn giản là chính nó_
 
-* **Trực tiếp và không phức tạp (Khuyến nghị):** Tải tệp `.exe` từ [Releases](https://github.com/steve02081504/fount/releases) và chạy nó.
+- **Trực tiếp và không phức tạp (Khuyến nghị):** Tải tệp `.exe` từ [Releases](https://github.com/steve02081504/fount/releases) và chạy nó.
 
-* **Sức mạnh của PowerShell:**
+- **Sức mạnh của PowerShell:**
 
-    ```powershell
-    # Nếu cần, hãy định nghĩa biến môi trường $env:FOUNT_DIR để chỉ định thư mục fount
-    irm https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1 | iex
-    ```
+  ```powershell
+  # Nếu cần, hãy định nghĩa biến môi trường $env:FOUNT_DIR để chỉ định thư mục fount
+  irm https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1 | iex
+  ```
 
-    Để chạy thử:
+  Để chạy thử:
 
-    ```powershell
-    $scriptContent = Invoke-RestMethod https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1
-    Invoke-Expression "function fountInstaller { $scriptContent }"
-    fountInstaller init
-    ```
+  ```powershell
+  $scriptContent = Invoke-RestMethod https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1
+  Invoke-Expression "function fountInstaller { $scriptContent }"
+  fountInstaller init
+  ```
 
 ### Cài đặt Git: Dành cho những ai yêu thích một chút phép thuật
 
 Nếu bạn đã cài đặt Git, việc đón nhận fount cũng đơn giản như chạy một tập lệnh.
 
-* **Đối với Windows:** Mở Command Prompt hoặc PowerShell của bạn và chỉ cần nhấp đúp vào `run.bat`.
-* **Đối với Linux/macOS/Android:** Mở terminal của bạn và thực thi `./run.sh`.
+- **Đối với Windows:** Mở Command Prompt hoặc PowerShell của bạn và chỉ cần nhấp đúp vào `run.bat`.
+- **Đối với Linux/macOS/Android:** Mở terminal của bạn và thực thi `./run.sh`.
 
 ### Docker: Ôm trọn vùng chứa
 
@@ -222,8 +222,8 @@ fount remove
 
 Nếu bạn gặp bất kỳ khó khăn nào trên hành trình của mình, xin hãy liên hệ. Chúng tôi ở đây để giúp đỡ và cam kết giải quyết hầu hết các vấn đề trong vòng 10 phút đến 24 giờ.
 
-* **GitHub Issues:** Báo cáo bất kỳ lỗi nào hoặc đề xuất tính năng mới qua [GitHub Issues](https://github.com/steve02081504/fount/issues).
-* **Cộng đồng Discord:** Tham gia [cộng đồng Discord sôi nổi của chúng tôi](https://discord.gg/GtR9Quzq2v) để được hỗ trợ và thảo luận trực tuyến.
+- **GitHub Issues:** Báo cáo bất kỳ lỗi nào hoặc đề xuất tính năng mới qua [GitHub Issues](https://github.com/steve02081504/fount/issues).
+- **Cộng đồng Discord:** Tham gia [cộng đồng Discord sôi nổi của chúng tôi](https://discord.gg/GtR9Quzq2v) để được hỗ trợ và thảo luận trực tuyến.
 
 Tiếng nói của bạn sẽ được lắng nghe. Chỉ cần khởi động lại fount, và bóng tối sẽ tan biến.
 
@@ -249,11 +249,11 @@ Bạn có thể tự hào hiển thị huy hiệu này trong kho lưu trữ củ
 
 [![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://github.com/topics/fount-character)
 
-| Định dạng màu | Mã |
-| :---: | :---: |
-| HEX | `#0e3c5c` |
-| RGB | `rgb(14, 60, 92)` |
-| HSL | `hsl(205, 74%, 21%)` |
+| Định dạng màu |          Mã          |
+| :-----------: | :------------------: |
+|      HEX      |      `#0e3c5c`       |
+|      RGB      |  `rgb(14, 60, 92)`   |
+|      HSL      | `hsl(205, 74%, 21%)` |
 
 ### Liên kết cài đặt tự động: Phép thuật trong tầm tay
 
@@ -267,20 +267,20 @@ Hãy tưởng tượng những người khác cài đặt sáng tạo của bạ
 
 Frontend của Fount được dệt nên từ các công nghệ web hiện đại, nhưng không phải tất cả các trình duyệt đều cộng hưởng hoàn hảo với linh hồn của nó. Để có trải nghiệm thanh thản và mượt mà nhất, chúng tôi đề xuất những người bạn đồng hành hòa hợp với nhịp điệu của fount:
 
-* [**Google Chrome**](https://www.google.com/chrome/) / [**Microsoft Edge**](https://www.microsoft.com/edge/) / [**Opera**](https://www.opera.com/): Chúng chuyển động đồng bộ với tinh thần của fount, mang lại hiệu suất và khả năng tương thích tốt nhất cho một sự tương tác mượt mà như thơ.
+- [**Google Chrome**](https://www.google.com/chrome/) / [**Microsoft Edge**](https://www.microsoft.com/edge/) / [**Opera**](https://www.opera.com/): Chúng chuyển động đồng bộ với tinh thần của fount, mang lại hiệu suất và khả năng tương thích tốt nhất cho một sự tương tác mượt mà như thơ.
 
 Tuy nhiên, một số trình duyệt lại đi một con đường khác, và cuộc gặp gỡ của chúng với fount có thể mang một nốt nhạc lạc điệu:
 
-* **Mozilla Firefox**: Nó giống như một kẻ lang thang bướng bỉnh, thường không vội vàng trong việc đón nhận các công nghệ mới, đôi khi chọn cách mãi mãi nán lại trong quá khứ. Tuy nhiên, sự kiên định này có thể dẫn đến một số tiếc nuối:
-  * Thiếu hỗ trợ cho [`speculationrules`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/speculationrules), mỗi lần khởi động nguội và xử lý giao thức của fount sẽ chậm hơn 1-2 giây so với bình thường—những khoảnh khắc bị đánh cắp một cách lặng lẽ.
-  * Việc thiếu hỗ trợ cho định vị [CSS `anchor`](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning) sẽ để lại một vài trang với một chút bụi không hoàn hảo, làm hỏng một tâm trạng vốn dĩ phải trong trẻo.
-  * Việc thiếu hỗ trợ cho [`blocking="render"`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script) có thể khiến các trang fount nhấp nháy khi tải, làm tổn thương mắt bạn.
-  * Theo báo cáo lỗi từ backend, chỉ trong thế giới của Firefox, các trang fount đôi khi gặp phải các lỗi bí ẩn hoặc trông kỳ lạ—khi điều đó xảy ra, hãy thử làm mới; có thể nó sẽ xua tan màn sương.
+- **Mozilla Firefox**: Nó giống như một kẻ lang thang bướng bỉnh, thường không vội vàng trong việc đón nhận các công nghệ mới, đôi khi chọn cách mãi mãi nán lại trong quá khứ. Tuy nhiên, sự kiên định này có thể dẫn đến một số tiếc nuối:
+  - Thiếu hỗ trợ cho [`speculationrules`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/speculationrules), mỗi lần khởi động nguội và xử lý giao thức của fount sẽ chậm hơn 1-2 giây so với bình thường—những khoảnh khắc bị đánh cắp một cách lặng lẽ.
+  - Việc thiếu hỗ trợ cho định vị [CSS `anchor`](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning) sẽ để lại một vài trang với một chút bụi không hoàn hảo, làm hỏng một tâm trạng vốn dĩ phải trong trẻo.
+  - Việc thiếu hỗ trợ cho [`blocking="render"`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script) có thể khiến các trang fount nhấp nháy khi tải, làm tổn thương mắt bạn.
+  - Theo báo cáo lỗi từ backend, chỉ trong thế giới của Firefox, các trang fount đôi khi gặp phải các lỗi bí ẩn hoặc trông kỳ lạ—khi điều đó xảy ra, hãy thử làm mới; có thể nó sẽ xua tan màn sương.
 
-* **Apple Safari**: Hỗ trợ của nó cho các tiêu chuẩn web "mới nổi" (vài năm tuổi) có thể tốt hơn một chút so với Firefox, nhưng không nhiều.
-  * Cũng thiếu hỗ trợ cho [`speculationrules`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/speculationrules), điều này có nghĩa là việc khởi động của fount vẫn sẽ có một chút chậm trễ, lãng phí những khoảnh khắc quý giá của bạn.
+- **Apple Safari**: Hỗ trợ của nó cho các tiêu chuẩn web "mới nổi" (vài năm tuổi) có thể tốt hơn một chút so với Firefox, nhưng không nhiều.
+  - Cũng thiếu hỗ trợ cho [`speculationrules`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/speculationrules), điều này có nghĩa là việc khởi động của fount vẫn sẽ có một chút chậm trễ, lãng phí những khoảnh khắc quý giá của bạn.
 
-* **Brave**: Mặc dù dựa trên Chromium, tấm khiên bảo vệ quyền riêng tư đáng gờm của nó đôi khi có thể vô tình che khuất một phần ánh sáng của fount, ảnh hưởng đến hoạt động bình thường của một số tính năng.
+- **Brave**: Mặc dù dựa trên Chromium, tấm khiên bảo vệ quyền riêng tư đáng gờm của nó đôi khi có thể vô tình che khuất một phần ánh sáng của fount, ảnh hưởng đến hoạt động bình thường của một số tính năng.
 
 ---
 
@@ -294,7 +294,7 @@ Tuy nhiên, một số trình duyệt lại đi một con đường khác, và c
 
 ### Lời kết: Chạm tay người nghệ nhân
 
-Ngoài những lời thì thầm của AI, fount còn mang đến một sự kết nối sâu sắc hơn – *chạm tay người nghệ nhân*. Trong cộng đồng của chúng tôi, bạn sẽ tìm thấy vô số nhân vật và mẫu nhân cách được tạo sẵn, *mỗi cái là một nền tảng được điêu khắc tỉ mỉ, chờ đợi tầm nhìn độc đáo của bạn đến đánh thức*.
+Ngoài những lời thì thầm của AI, fount còn mang đến một sự kết nối sâu sắc hơn – _chạm tay người nghệ nhân_. Trong cộng đồng của chúng tôi, bạn sẽ tìm thấy vô số nhân vật và mẫu nhân cách được tạo sẵn, _mỗi cái là một nền tảng được điêu khắc tỉ mỉ, chờ đợi tầm nhìn độc đáo của bạn đến đánh thức_.
 
 fount trao cho bạn sức mạnh để tạo ra và tương tác với các nhân vật AI một cách tự nhiên, đắm chìm và mang đậm dấu ấn cá nhân. Dù bạn là một nhà sáng tạo dày dặn kinh nghiệm hay chỉ mới bắt đầu hành trình của mình, fount đều chào đón bạn.
 

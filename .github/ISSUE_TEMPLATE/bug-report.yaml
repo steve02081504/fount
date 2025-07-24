@@ -1,4 +1,4 @@
-name: "bug report🕷"
+name: 'bug report🕷'
 description: help us improve
 title: a bug
 labels: bug
@@ -8,12 +8,12 @@ body:
     attributes:
       label: 检查清单 Prerequisites
       options:
-      - label: "请确保你是在最新版本中遇见此问题\nMake sure you have this bug in the latest release"
-        id: latest-release
-        required: true
-      - label: "请确保你已经检索了已关闭的问题，以确保你的问题没有被重复提交\nMake sure you have retrieved closed issues to make sure your issue has not been submitted repeatedly"
-        id: closed-issues
-        required: true
+        - label: "请确保你是在最新版本中遇见此问题\nMake sure you have this bug in the latest release"
+          id: latest-release
+          required: true
+        - label: "请确保你已经检索了已关闭的问题，以确保你的问题没有被重复提交\nMake sure you have retrieved closed issues to make sure your issue has not been submitted repeatedly"
+          id: closed-issues
+          required: true
 
   - type: textarea
     id: bug-description
@@ -52,7 +52,7 @@ body:
       description: |
         如果可以，请添加截图以帮助解释你的问题
         If applicable, add screenshots to help explain your problem.
-      
+
   - type: textarea
     id: additional-context
     attributes:

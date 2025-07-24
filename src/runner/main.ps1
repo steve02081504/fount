@@ -142,7 +142,7 @@ function Test-Browser {
 			$Process2Monitor = "ChromeSetup"
 			do {
 				Start-Sleep -Seconds 2
-			} while(Get-Process | Where-Object { $Process2Monitor -contains $_.Name } | Select-Object -ExpandProperty Name)
+			} while (Get-Process | Where-Object { $Process2Monitor -contains $_.Name } | Select-Object -ExpandProperty Name)
 			Remove-Item "$env:TEMP\$ChromeSetup" -ErrorAction SilentlyContinue
 
 			$Script:Insalled_chrome = 1

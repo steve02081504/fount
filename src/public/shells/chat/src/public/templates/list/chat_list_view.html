@@ -9,7 +9,7 @@
 				<div class="px-2 flex items-center">
 					<div class="avatar-group -space-x-6 rtl:space-x-reverse">
 						${avatars.map(avatar => `<div class="avatar">
-							<div class="w-8"><img src="${avatar.url || 'https://api.iconify.design/line-md/person.svg'}" alt="${avatar.name}" width="100%" height="100%"/></div>
+							<div class="w-8"><img src="${avatar.url || 'https://api.iconify.design/line-md/person.svg'}" alt="${avatar.name}" width="100%" height="100%" /></div>
 						</div>`).join('')}
 					</div>
 					<p class="text-sm font-semibold text-base-content ml-2">${chars.join(', ')}</p>

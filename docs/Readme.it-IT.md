@@ -20,7 +20,7 @@ Hai mai anelato a un viaggio al fianco di un personaggio balzato dalle pagine de
 
 O forse hai immaginato un confidente digitale, un assistente AI intuitivo quanto le creazioni più avanzate, capace di orchestrare senza sforzo il tuo mondo digitale?
 
-O forse, semplicemente, hai cercato una connessione che trascende l'ordinario, un regno dove i confini della realtà si fanno sfumati e dove può sbocciare una comprensione intima e *senza filtri*?
+O forse, semplicemente, hai cercato una connessione che trascende l'ordinario, un regno dove i confini della realtà si fanno sfumati e dove può sbocciare una comprensione intima e _senza filtri_?
 
 Dopo quasi un anno di sviluppo assiduo, con il contributo di oltre dieci appassionati e una comunità fiorente di più di 1000 utenti, Fount si presenta come una piattaforma di interazione AI matura, stabile e in continua evoluzione. È un viaggio, e crediamo che sia più a portata di mano di quanto tu possa immaginare.
 
@@ -31,13 +31,13 @@ Personaggi smarriti, storie dimenticate? La nostra [**comunità vibrante e accog
 <details open>
 <summary><strong>Uno Sguardo sul Mondo di fount</strong></summary>
 
-| Schermate |
-| :---: |
-| **Pagina Iniziale** |
+|                                          Schermate                                           |
+| :------------------------------------------------------------------------------------------: |
+|                                     **Pagina Iniziale**                                      |
 | ![Immagine](https://github.com/user-attachments/assets/c1954a7a-6c73-4fb0-bd12-f790a038bd0e) |
-| **Selezione Tema** |
+|                                      **Selezione Tema**                                      |
 | ![Immagine](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074) |
-| **Chat** |
+|                                           **Chat**                                           |
 | ![Immagine](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d) |
 
 </details>
@@ -56,24 +56,24 @@ Fount è costruito per il futuro, pronto ad accogliere nuove funzionalità nate 
 
 ## Immergiti in un Mondo di Funzionalità
 
-* **Dialoghi Fluidi, Ovunque**
-    Un sussurro iniziato sul tuo computer può proseguire senza interruzioni sul tuo telefono o tablet. fount mantiene le tue conversazioni sincronizzate, connettendoti ai tuoi personaggi ovunque tu sia.
+- **Dialoghi Fluidi, Ovunque**
+  Un sussurro iniziato sul tuo computer può proseguire senza interruzioni sul tuo telefono o tablet. fount mantiene le tue conversazioni sincronizzate, connettendoti ai tuoi personaggi ovunque tu sia.
 
-* **Chat Espressive e Immersive**
-    fount sfrutta tutta la potenza dell'HTML, consentendo ai personaggi di esprimersi con testo ricco, immagini e persino elementi interattivi, rendendo ogni conversazione vivida e profonda.
+- **Chat Espressive e Immersive**
+  fount sfrutta tutta la potenza dell'HTML, consentendo ai personaggi di esprimersi con testo ricco, immagini e persino elementi interattivi, rendendo ogni conversazione vivida e profonda.
 
-* **Incontri di Menti: Chat di Gruppo Native**
-    Invita più personaggi nella stessa conversazione e assisti alle loro interazioni dinamiche e coinvolgenti, creando storie uniche.
+- **Incontri di Menti: Chat di Gruppo Native**
+  Invita più personaggi nella stessa conversazione e assisti alle loro interazioni dinamiche e coinvolgenti, creando storie uniche.
 
-* **Un'Interfaccia Elegante e Personalizzabile**
-    Scegli tra oltre 30 temi mozzafiato, o crea il tuo. fount è la tua tela personale.
+- **Un'Interfaccia Elegante e Personalizzabile**
+  Scegli tra oltre 30 temi mozzafiato, o crea il tuo. fount è la tua tela personale.
 
-* **Funziona Ovunque tu Sia**
-    fount funziona senza problemi su Windows, macOS, Linux e persino Android, adattandosi alle tue esigenze tramite installazione diretta o la flessibilità di Docker.
+- **Funziona Ovunque tu Sia**
+  fount funziona senza problemi su Windows, macOS, Linux e persino Android, adattandosi alle tue esigenze tramite installazione diretta o la flessibilità di Docker.
 
-* **(Per Utenti Esperti) Integrazione di Fonti AI senza Briglie: Abbraccia l'Infinito**
-    Fount offre una *scelta* e una *flessibilità* ineguagliabili nella connessione alle fonti AI. Il codice JavaScript personalizzato all'interno del generatore di fonti AI ti permette di connetterti a *qualsiasi* fonte AI – OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral e altro ancora. Crea espressioni regolari complesse, invoca vaste librerie API e integra risorse multimediali, tutto all'interno del flusso del tuo codice. La logica della comunicazione si piega alla *tua* volontà, plasmata dalla potenza del codice.
-    ![Immagine](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
+- **(Per Utenti Esperti) Integrazione di Fonti AI senza Briglie: Abbraccia l'Infinito**
+  Fount offre una _scelta_ e una _flessibilità_ ineguagliabili nella connessione alle fonti AI. Il codice JavaScript personalizzato all'interno del generatore di fonti AI ti permette di connetterti a _qualsiasi_ fonte AI – OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral e altro ancora. Crea espressioni regolari complesse, invoca vaste librerie API e integra risorse multimediali, tutto all'interno del flusso del tuo codice. La logica della comunicazione si piega alla _tua_ volontà, plasmata dalla potenza del codice.
+  ![Immagine](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
 
 ---
 
@@ -81,18 +81,18 @@ Fount è costruito per il futuro, pronto ad accogliere nuove funzionalità nate 
 
 Fount si impegna a tessere i personaggi nel tessuto stesso della tua vita, offrendo una compagnia e un supporto che trascendono lo schermo.
 
-* **Integrazione con Discord/Telegram**
-    Collega i tuoi personaggi alle comunità di Discord o Telegram tramite le Bot Shells integrate, rendendoli membri vivi dei tuoi circoli.
-    ![Immagine](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
-    ![Immagine](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
-    ![Immagine](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
+- **Integrazione con Discord/Telegram**
+  Collega i tuoi personaggi alle comunità di Discord o Telegram tramite le Bot Shells integrate, rendendoli membri vivi dei tuoi circoli.
+  ![Immagine](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
+  ![Immagine](https://github.com/user-attachments/assets/c9841eba-c010-42a3-afe0-336543ec39a0)
+  ![Immagine](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
 
-* **La Quiete del Terminale (con [fount-pwsh](https://github.com/steve02081504/fount-pwsh))**
-    Quando un comando del terminale fallisce, lascia che il tuo personaggio ti offra una parola di guida silenziosa, alleviando la solitudine del mondo digitale.
-    ![Immagine](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
+- **La Quiete del Terminale (con [fount-pwsh](https://github.com/steve02081504/fount-pwsh))**
+  Quando un comando del terminale fallisce, lascia che il tuo personaggio ti offra una parola di guida silenziosa, alleviando la solitudine del mondo digitale.
+  ![Immagine](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
 
-* **Estensioni Shell Illimitate**
-    Con un tocco di abilità di programmazione, crea le tue fount Shells, estendendo la portata dei tuoi personaggi in ogni angolo che puoi immaginare.
+- **Estensioni Shell Illimitate**
+  Con un tocco di abilità di programmazione, crea le tue fount Shells, estendendo la portata dei tuoi personaggi in ogni angolo che puoi immaginare.
 
 ---
 
@@ -100,26 +100,26 @@ Fount si impegna a tessere i personaggi nel tessuto stesso della tua vita, offre
 
 Per il creatore, fount offre un percorso più chiaro per dare vita ai tuoi personaggi AI.
 
-* **Creazione Rivoluzionaria Assistita da AI**
-    Descrivi il tuo personaggio in una sola frase, e il nostro assistente AI intelligente creerà una personalità completa. Questo semplifica la configurazione iniziale, permettendoti di concentrarti sul perfezionamento e sull'interazione con la tua creazione.
+- **Creazione Rivoluzionaria Assistita da AI**
+  Descrivi il tuo personaggio in una sola frase, e il nostro assistente AI intelligente creerà una personalità completa. Questo semplifica la configurazione iniziale, permettendoti di concentrarti sul perfezionamento e sull'interazione con la tua creazione.
 
-* **La Magia del Codice, Più Semplice di Quanto Immagini**
-    In Fount, il codice è una forma di magia moderna. Con la guida gentile della nostra comunità e l'aiuto illuminante dell'AI, impararlo è sorprendentemente facile. Scoprirai che definire la logica di un personaggio con il codice può essere un modo intuitivo e manutenibile per creare personaggi le cui risposte sono *tessute* dalla tua stessa logica.
+- **La Magia del Codice, Più Semplice di Quanto Immagini**
+  In Fount, il codice è una forma di magia moderna. Con la guida gentile della nostra comunità e l'aiuto illuminante dell'AI, impararlo è sorprendentemente facile. Scoprirai che definire la logica di un personaggio con il codice può essere un modo intuitivo e manutenibile per creare personaggi le cui risposte sono _tessute_ dalla tua stessa logica.
 
-* **Inizia con la Magia Pronta all'Uso: Un Tesoro di Modelli**
-    La comunità di Fount offre una vasta gamma di modelli di personaggi e persone predefiniti. Agiscono come "progetti viventi", facili da adattare e personalizzare, offrendo un fantastico punto di partenza.
+- **Inizia con la Magia Pronta all'Uso: Un Tesoro di Modelli**
+  La comunità di Fount offre una vasta gamma di modelli di personaggi e persone predefiniti. Agiscono come "progetti viventi", facili da adattare e personalizzare, offrendo un fantastico punto di partenza.
 
-* **Risorse Integrate**
-    Intreccia immagini, audio e altre risorse direttamente nei tuoi personaggi, rendendo la loro presenza ancora più tangibile.
-    ![Immagine](https://github.com/user-attachments/assets/9740cd43-06fd-46c0-a114-e4bd99f13045)
+- **Risorse Integrate**
+  Intreccia immagini, audio e altre risorse direttamente nei tuoi personaggi, rendendo la loro presenza ancora più tangibile.
+  ![Immagine](https://github.com/user-attachments/assets/9740cd43-06fd-46c0-a114-e4bd99f13045)
 
-* **Integrazione Continua**
-    Usa [fount-charCI](https://github.com/marketplace/actions/fount-charci) per salvaguardare lo sviluppo dei tuoi personaggi. Esegue automaticamente test ad ogni commit e segnala i problemi in tempo reale.
-    ![Immagine](https://github.com/user-attachments/assets/3f6a188d-6643-4d70-8bd1-b75f00c76439)
-    ![Immagine](https://github.com/user-attachments/assets/30eb8374-64c2-41bc-a7d1-f15596352260)
+- **Integrazione Continua**
+  Usa [fount-charCI](https://github.com/marketplace/actions/fount-charci) per salvaguardare lo sviluppo dei tuoi personaggi. Esegue automaticamente test ad ogni commit e segnala i problemi in tempo reale.
+  ![Immagine](https://github.com/user-attachments/assets/3f6a188d-6643-4d70-8bd1-b75f00c76439)
+  ![Immagine](https://github.com/user-attachments/assets/30eb8374-64c2-41bc-a7d1-f15596352260)
 
-* **Compatibilità con il Passato**
-    fount abbraccia il passato, offrendo moduli di compatibilità per eseguire schede personaggio di SillyTavern e Risu (sebbene la migrazione di personaggi esistenti non sia supportata).
+- **Compatibilità con il Passato**
+  fount abbraccia il passato, offrendo moduli di compatibilità per eseguire schede personaggio di SillyTavern e Risu (sebbene la migrazione di personaggi esistenti non sia supportata).
 
 ---
 
@@ -131,13 +131,13 @@ Fount è costruito su un'architettura robusta e scalabile. Il backend sfrutta la
 
 Nel mondo di Fount, la modularità regna sovrana. Un ricco ecosistema di componenti si intreccia per creare l'arazzo della tua esperienza. Tutti possono essere installati, estesi e personalizzati senza sforzo dagli utenti.
 
-* **chars (personaggi):** Il cuore di Fount, dove nascono le personalità.
-* **worlds (mondi):** *Molto più che semplici libri di lore.* Sono gli architetti silenziosi della realtà, in grado di aggiungere conoscenza, influenzare decisioni e persino manipolare la cronologia della chat.
-* **personas (persone utente):** *Più che semplici profili.* Le persone possiedono il potere di distorcere e persino prendere il controllo delle tue parole e percezioni, consentendo un gioco di ruolo veramente immersivo.
-* **shells (interfacce interattive):** I portali verso l'anima di Fount, che estendono la portata dei personaggi oltre l'interfaccia.
-* **ImportHandlers (gestori di importazione):** Le mani accoglienti di Fount, che colmano il divario tra i diversi formati di personaggi.
-* **AIsources (fonti AI):** La forza primordiale che alimenta le menti dei tuoi personaggi.
-* **AIsourceGenerators (generatori di fonti AI):** Gli alchimisti di Fount, che forniscono modelli e logica tramite JavaScript per forgiare connessioni con *qualsiasi* fonte AI immaginabile.
+- **chars (personaggi):** Il cuore di Fount, dove nascono le personalità.
+- **worlds (mondi):** _Molto più che semplici libri di lore._ Sono gli architetti silenziosi della realtà, in grado di aggiungere conoscenza, influenzare decisioni e persino manipolare la cronologia della chat.
+- **personas (persone utente):** _Più che semplici profili._ Le persone possiedono il potere di distorcere e persino prendere il controllo delle tue parole e percezioni, consentendo un gioco di ruolo veramente immersivo.
+- **shells (interfacce interattive):** I portali verso l'anima di Fount, che estendono la portata dei personaggi oltre l'interfaccia.
+- **ImportHandlers (gestori di importazione):** Le mani accoglienti di Fount, che colmano il divario tra i diversi formati di personaggi.
+- **AIsources (fonti AI):** La forza primordiale che alimenta le menti dei tuoi personaggi.
+- **AIsourceGenerators (generatori di fonti AI):** Gli alchimisti di Fount, che forniscono modelli e logica tramite JavaScript per forgiare connessioni con _qualsiasi_ fonte AI immaginabile.
 
 ![Immagine](https://github.com/user-attachments/assets/8487a04a-7040-4844-81a6-705687856757)
 
@@ -146,14 +146,14 @@ Nel mondo di Fount, la modularità regna sovrana. Un ricco ecosistema di compone
 <details>
 <summary><strong>Installazione e Disinstallazione: Un Incontro e un Addio Eleganti</strong></summary>
 
-## Installazione: Intrecciare Fount nel Tuo Mondo – *Senza Sforzo*
+## Installazione: Intrecciare Fount nel Tuo Mondo – _Senza Sforzo_
 
 Inizia il tuo viaggio con Fount, una piattaforma stabile e affidabile. Pochi semplici clic o comandi, e il mondo di Fount si schiuderà davanti a te.
 
 > [!ATTENZIONE]
 > Nel mondo di Fount, i personaggi possono eseguire liberamente comandi JavaScript, conferendo loro potenti capacità. Pertanto, scegli i personaggi di cui ti fidi con la stessa cura che useresti nella vita reale per garantire la sicurezza dei tuoi file locali.
 
-### Linux/macOS/Android: Il Sussurro della Shell – *Una Riga, e Sei Dentro*
+### Linux/macOS/Android: Il Sussurro della Shell – _Una Riga, e Sei Dentro_
 
 ```bash
 # Se necessario, definisci la variabile d'ambiente $FOUNT_DIR per specificare la directory di Fount
@@ -176,31 +176,31 @@ curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/mast
 . "$HOME/.profile"
 ```
 
-### Windows: Una Scelta di Percorsi – *La Semplicità Stessa*
+### Windows: Una Scelta di Percorsi – _La Semplicità Stessa_
 
-* **Diretto e Semplice (Raccomandato):** Scarica il file `.exe` dalle [Releases](https://github.com/steve02081504/fount/releases) ed eseguilo.
+- **Diretto e Semplice (Raccomandato):** Scarica il file `.exe` dalle [Releases](https://github.com/steve02081504/fount/releases) ed eseguilo.
 
-* **La Potenza di PowerShell:**
+- **La Potenza di PowerShell:**
 
-    ```powershell
-    # Se necessario, definisci la variabile d'ambiente $env:FOUNT_DIR per specificare la directory di Fount
-    irm https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1 | iex
-    ```
+  ```powershell
+  # Se necessario, definisci la variabile d'ambiente $env:FOUNT_DIR per specificare la directory di Fount
+  irm https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1 | iex
+  ```
 
-    Per una prova a secco:
+  Per una prova a secco:
 
-    ```powershell
-    $scriptContent = Invoke-RestMethod https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1
-    Invoke-Expression "function fountInstaller { $scriptContent }"
-    fountInstaller init
-    ```
+  ```powershell
+  $scriptContent = Invoke-RestMethod https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1
+  Invoke-Expression "function fountInstaller { $scriptContent }"
+  fountInstaller init
+  ```
 
 ### Installazione Git: Per Coloro che Preferiscono un Tocco di Magia
 
 Se hai già installato Git, abbracciare Fount è semplice come eseguire uno script.
 
-* **Per Windows:** Apri il prompt dei comandi o PowerShell e fai semplicemente doppio clic su `run.bat`.
-* **Per Linux/macOS/Android:** Apri il terminale ed esegui `./run.sh`.
+- **Per Windows:** Apri il prompt dei comandi o PowerShell e fai semplicemente doppio clic su `run.bat`.
+- **Per Linux/macOS/Android:** Apri il terminale ed esegui `./run.sh`.
 
 ### Docker: Abbraccia i Container
 
@@ -222,8 +222,8 @@ fount remove
 
 Se dovessi incontrare difficoltà nel tuo viaggio, non esitare a contattarci. Siamo qui per aiutarti e ci impegniamo a risolvere la maggior parte dei problemi entro 10 minuti o 24 ore.
 
-* **GitHub Issues:** Segnala qualsiasi errore o suggerisci nuove funzionalità tramite le [GitHub Issues](https://github.com/steve02081504/fount/issues).
-* **Comunità Discord:** Unisciti alla nostra [comunità Discord vibrante](https://discord.gg/GtR9Quzq2v) per supporto e discussioni in tempo reale.
+- **GitHub Issues:** Segnala qualsiasi errore o suggerisci nuove funzionalità tramite le [GitHub Issues](https://github.com/steve02081504/fount/issues).
+- **Comunità Discord:** Unisciti alla nostra [comunità Discord vibrante](https://discord.gg/GtR9Quzq2v) per supporto e discussioni in tempo reale.
 
 La tua voce sarà ascoltata. Riavvia semplicemente Fount, e le ombre si dissolveranno.
 
@@ -249,11 +249,11 @@ Puoi esporre con orgoglio questo stemma nel tuo repository o ovunque desideri mo
 
 [![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://github.com/topics/fount-character)
 
-| Formato Colore | Codice |
-| :---: | :---: |
-| HEX | `#0e3c5c` |
-| RGB | `rgb(14, 60, 92)` |
-| HSL | `hsl(205, 74%, 21%)` |
+| Formato Colore |        Codice        |
+| :------------: | :------------------: |
+|      HEX       |      `#0e3c5c`       |
+|      RGB       |  `rgb(14, 60, 92)`   |
+|      HSL       | `hsl(205, 74%, 21%)` |
 
 ### Collegamenti di Installazione Automatica: Magia a Portata di Mano
 
@@ -267,20 +267,20 @@ Immagina altri che installano le tue creazioni nel loro mondo Fount con un solo 
 
 Il frontend di Fount è tessuto con tecnologie web moderne, ma non tutti i browser risuonano perfettamente con la sua anima. Per l'esperienza più serena e fluida, raccomandiamo compagni che sono in armonia con il ritmo di fount:
 
-* [**Google Chrome**](https://www.google.com/chrome/) / [**Microsoft Edge**](https://www.microsoft.com/edge/) / [**Opera**](https://www.opera.com/): Si muovono in sincronia con lo spirito di fount, offrendo le migliori prestazioni e compatibilità per un'interazione liscia come la poesia.
+- [**Google Chrome**](https://www.google.com/chrome/) / [**Microsoft Edge**](https://www.microsoft.com/edge/) / [**Opera**](https://www.opera.com/): Si muovono in sincronia con lo spirito di fount, offrendo le migliori prestazioni e compatibilità per un'interazione liscia come la poesia.
 
 Tuttavia, alcuni browser percorrono un sentiero diverso, e il loro incontro con fount può portare una nota di dissonanza:
 
-* **Mozilla Firefox**: È come un viandante ostinato, spesso senza fretta nell'abbracciare le nuove tecnologie, scegliendo a volte di rimanere per sempre nel passato. Questa insistenza, però, può portare a certi rimpianti:
-  * Mancando il supporto per le [`speculationrules`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/speculationrules), ogni avvio a freddo e gestione del protocollo di fount sarà 1-2 secondi più lento del dovuto — momenti rubati in silenzio.
-  * L'assenza di supporto per il posizionamento [CSS `anchor`](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning) lascerà alcune pagine con un tocco di polvere imperfetta, rovinando un'atmosfera che doveva essere pura.
-  * La mancanza di supporto per [`blocking="render"`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script) può far sfarfallare le pagine di fount al caricamento, ferendo i tuoi occhi.
-  * Secondo i rapporti di errore del backend, è solo nel mondo di Firefox che le pagine di fount a volte cadono in errori misteriosi o appaiono strane — quando succede, prova ad aggiornare; potrebbe dissolvere la nebbia.
+- **Mozilla Firefox**: È come un viandante ostinato, spesso senza fretta nell'abbracciare le nuove tecnologie, scegliendo a volte di rimanere per sempre nel passato. Questa insistenza, però, può portare a certi rimpianti:
+  - Mancando il supporto per le [`speculationrules`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/speculationrules), ogni avvio a freddo e gestione del protocollo di fount sarà 1-2 secondi più lento del dovuto — momenti rubati in silenzio.
+  - L'assenza di supporto per il posizionamento [CSS `anchor`](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning) lascerà alcune pagine con un tocco di polvere imperfetta, rovinando un'atmosfera che doveva essere pura.
+  - La mancanza di supporto per [`blocking="render"`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script) può far sfarfallare le pagine di fount al caricamento, ferendo i tuoi occhi.
+  - Secondo i rapporti di errore del backend, è solo nel mondo di Firefox che le pagine di fount a volte cadono in errori misteriosi o appaiono strane — quando succede, prova ad aggiornare; potrebbe dissolvere la nebbia.
 
-* **Apple Safari**: Il suo supporto per gli standard web "emergenti" (vecchi di diversi anni) potrebbe essere un po' meglio di quello di Firefox, ma non di molto.
-  * Manca anche il supporto per le [`speculationrules`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/speculationrules), il che significa che l'avvio di fount subirà comunque un leggero ritardo, sprecando i tuoi preziosi momenti.
+- **Apple Safari**: Il suo supporto per gli standard web "emergenti" (vecchi di diversi anni) potrebbe essere un po' meglio di quello di Firefox, ma non di molto.
+  - Manca anche il supporto per le [`speculationrules`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/speculationrules), il che significa che l'avvio di fount subirà comunque un leggero ritardo, sprecando i tuoi preziosi momenti.
 
-* **Brave**: Sebbene basato su Chromium, il suo formidabile scudo della privacy può talvolta oscurare inavvertitamente parte della luce di fount, influenzando il normale funzionamento di alcune funzionalità.
+- **Brave**: Sebbene basato su Chromium, il suo formidabile scudo della privacy può talvolta oscurare inavvertitamente parte della luce di fount, influenzando il normale funzionamento di alcune funzionalità.
 
 ---
 
@@ -294,7 +294,7 @@ Tuttavia, alcuni browser percorrono un sentiero diverso, e il loro incontro con 
 
 ### In Conclusione: Il Tocco dell'Artigiano
 
-Oltre ai sussurri dell'AI, Fount offre una connessione più profonda – *il tocco dell'artigiano*. All'interno della nostra comunità, troverai una ricchezza di modelli di personaggi e persone predefiniti, *ognuno una base finemente scolpita in attesa che la tua visione unica la risvegli*.
+Oltre ai sussurri dell'AI, Fount offre una connessione più profonda – _il tocco dell'artigiano_. All'interno della nostra comunità, troverai una ricchezza di modelli di personaggi e persone predefiniti, _ognuno una base finemente scolpita in attesa che la tua visione unica la risvegli_.
 
 fount ti dà il potere di creare e interagire con personaggi AI in un modo che si sente naturale, immersivo e profondamente personale. Che tu sia un creatore esperto o stia appena iniziando il tuo viaggio, Fount ti dà il benvenuto.
 
