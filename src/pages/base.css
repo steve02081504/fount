@@ -32,6 +32,7 @@
 
 .markdown-body .highlight pre,
 .markdown-body pre {
+	color: var(--color-base-content);
 	background-color: var(--color-base-100);
 }
 
