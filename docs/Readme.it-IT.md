@@ -26,8 +26,6 @@ Dopo quasi un anno di sviluppo assiduo, con il contributo di oltre dieci appassi
 
 Personaggi smarriti, storie dimenticate? La nostra [**comunità vibrante e accogliente**](https://discord.gg/GtR9Quzq2v) ti attende – un rifugio dove spiriti affini si incontrano, dove sviluppatori e creatori condividono la loro saggezza e le loro opere.
 
-<br>
-
 <details open>
 <summary><strong>Uno Sguardo sul Mondo di fount</strong></summary>
 
@@ -41,8 +39,6 @@ Personaggi smarriti, storie dimenticate? La nostra [**comunità vibrante e accog
 | ![Immagine](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d) |
 
 </details>
-
-<br>
 
 ## Che cos'è fount?
 
@@ -141,12 +137,9 @@ Nel mondo di Fount, la modularità regna sovrana. Un ricco ecosistema di compone
 
 ![Immagine](https://github.com/user-attachments/assets/8487a04a-7040-4844-81a6-705687856757)
 
-<br>
+## Installazione e Disinstallazione: Un Incontro e un Addio Eleganti
 
-<details>
-<summary><strong>Installazione e Disinstallazione: Un Incontro e un Addio Eleganti</strong></summary>
-
-## Installazione: Intrecciare Fount nel Tuo Mondo – _Senza Sforzo_
+### Installazione: Intrecciare Fount nel Tuo Mondo – _Senza Sforzo_
 
 Inizia il tuo viaggio con Fount, una piattaforma stabile e affidabile. Pochi semplici clic o comandi, e il mondo di Fount si schiuderà davanti a te.
 
@@ -208,15 +201,11 @@ Se hai già installato Git, abbracciare Fount è semplice come eseguire uno scri
 docker pull ghcr.io/steve02081504/fount
 ```
 
-## Disinstallazione: Un Addio Elegante
+### Disinstallazione: Un Addio Elegante
 
 ```bash
 fount remove
 ```
-
-</details>
-
-<br>
 
 ## Incontro con un'Ombra? Non Temere
 

@@ -26,8 +26,6 @@
 
 길 잃은 캐릭터, 잊혀진 이야기들. 저희의 [**활기차고 따뜻한 커뮤니티**](https://discord.gg/GtR9Quzq2v)가 당신을 기다립니다. 그곳은 같은 뜻을 가진 이들이 모여, 개발자와 창작자 모두가 자신의 지혜와 창작물을 나누는 안식처입니다.
 
-<br>
-
 <details open>
 <summary><strong>fount의 세계 엿보기</strong></summary>
 
@@ -41,8 +39,6 @@
 | ![이미지](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d) |
 
 </details>
-
-<br>
 
 ## Fount란 무엇인가요?
 
@@ -141,12 +137,9 @@ fount의 세계에서는 모듈성이 최고입니다. 풍부한 컴포넌트 �
 
 ![이미지](https://github.com/user-attachments/assets/8487a04a-7040-4844-81a6-705687856757)
 
-<br>
+## 설치와 제거: 우아한 만남과 작별
 
-<details>
-<summary><strong>설치와 제거: 우아한 만남과 작별</strong></summary>
-
-## 설치: fount를 당신의 세계에 엮어 넣기 – _손쉽게_
+### 설치: Fount를 당신의 세계에 엮어 넣기 – _손쉽게_
 
 안정적이고 신뢰할 수 있는 플랫폼, fount와 함께 여정을 시작하세요. 몇 번의 간단한 클릭이나 명령만으로 fount의 세계가 펼쳐집니다.
 
@@ -208,15 +201,11 @@ Git이 이미 설치되어 있다면, fount를 받아들이는 것은 스크립�
 docker pull ghcr.io/steve02081504/fount
 ```
 
-## 제거: 우아한 작별
+### 제거: 우아한 작별
 
 ```bash
 fount remove
 ```
-
-</details>
-
-<br>
 
 ## 그림자를 만났나요? 두려워 마세요
 

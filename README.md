@@ -41,8 +41,6 @@ With nearly a year of dedicated development, contributions from over 10 passiona
 
 Lost characters, forgotten stories? Our [**vibrant and welcoming community**](https://discord.gg/GtR9Quzq2v) awaits—a haven where kindred spirits gather, where developers and creators alike share their wisdom and creations.
 
-<br>
-
 <details open>
 <summary><strong>A Glimpse into the World of fount</strong></summary>
 
@@ -56,8 +54,6 @@ Lost characters, forgotten stories? Our [**vibrant and welcoming community**](ht
 | ![Image](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d) |
 
 </details>
-
-<br>
 
 ## What is fount?
 
@@ -156,12 +152,9 @@ In the world of fount, modularity reigns supreme. A rich ecosystem of components
 
 ![Image](https://github.com/user-attachments/assets/8487a04a-7040-4844-81a6-705687856757)
 
-<br>
+## Installation & Removal: An Elegant Encounter and Farewell
 
-<details>
-<summary><strong>Installation & Removal: An Elegant Encounter and Farewell</strong></summary>
-
-## Installation: Weaving fount into Your World – _Effortlessly_
+### Installation: Weaving Fount Into Your World – _Effortlessly_
 
 Embark on your journey with fount, a stable and reliable platform. A few simple clicks or commands, and the world of fount unfolds.
 
@@ -210,7 +203,7 @@ curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/mast
   fountInstaller init
   ```
 
-### Git Installation: For those who prefer a touch of magic
+### Git Installation: For Those Who Prefer a Touch of Magic
 
 If you already have Git installed, embracing fount is as simple as running a script.
 
@@ -223,15 +216,11 @@ If you already have Git installed, embracing fount is as simple as running a scr
 docker pull ghcr.io/steve02081504/fount
 ```
 
-## Removal: A Graceful Farewell
+### Removal: A Graceful Farewell
 
 ```bash
 fount remove
 ```
-
-</details>
-
-<br>
 
 ## Encountering a Shadow? Fear Not
 
