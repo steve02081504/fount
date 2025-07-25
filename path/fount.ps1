@@ -160,14 +160,20 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'background') {
 		fount.ps1 @runargs
 		exit $LastExitCode
 	}
-	Test-PWSHModule ps12exe
-	$TempDir = [System.IO.Path]::GetTempPath()
-	$exepath = Join-Path $TempDir "fount-background.exe"
-	if (!(Test-Path $exepath)) {
-		ps12exe -inputFile "$FOUNT_DIR/src/runner/background.ps1" -outputFile $exepath
+	if (Test-Path -Path "$FOUNT_DIR/.nobackground") {
+		$runargs = $args[1..$args.Count]
+		Start-Process -FilePath fount.ps1 -ArgumentList $runargs
 	}
-	$runargs = $args[1..$args.Count]
-	Start-Process -FilePath $exepath -ArgumentList $runargs
+	else {
+		Test-PWSHModule ps12exe
+		$TempDir = [System.IO.Path]::GetTempPath()
+		$exepath = Join-Path $TempDir "fount-background.exe"
+		if (!(Test-Path $exepath)) {
+			ps12exe -inputFile "$FOUNT_DIR/src/runner/background.ps1" -outputFile $exepath
+		}
+		$runargs = $args[1..$args.Count]
+		Start-Process -FilePath $exepath -ArgumentList $runargs
+	}
 	exit 0
 }
 elseif ($args.Count -gt 0 -and $args[0] -eq 'protocolhandle') {
