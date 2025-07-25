@@ -139,7 +139,7 @@ Trong thế giới của fount, tính mô-đun là tối cao. Một hệ sinh th
 
 ## Cài đặt và Gỡ bỏ: Một cuộc gặp gỡ và chia tay thanh lịch
 
-### Cài đặt: Dệt fount vào thế giới của bạn – _Thật nhẹ nhàng_
+### Cài đặt: Dệt Fount vào thế giới của bạn – _Thật nhẹ nhàng_
 
 Hãy bắt đầu hành trình của bạn với fount, một nền tảng ổn định và đáng tin cậy. Chỉ với vài cú nhấp chuột hoặc lệnh đơn giản, thế giới của fount sẽ từ từ mở ra.
 
