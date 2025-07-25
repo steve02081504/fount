@@ -139,7 +139,7 @@ In the world of fount, modularity reigns supreme. A rich ecosystem of components
 
 ## Installation & Removal: An Elegant Encounter and Farewell
 
-### Installation: Weaving fount into Your World – _Effortlessly_
+### Installation: Weaving Fount Into Your World – _Effortlessly_
 
 Embark on your journey with fount, a stable and reliable platform. A few simple clicks or commands, and the world of fount unfolds.
 
