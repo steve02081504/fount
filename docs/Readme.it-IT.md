@@ -26,8 +26,6 @@ Dopo quasi un anno di sviluppo assiduo, con il contributo di oltre dieci appassi
 
 Personaggi smarriti, storie dimenticate? La nostra [**comunità vibrante e accogliente**](https://discord.gg/GtR9Quzq2v) ti attende – un rifugio dove spiriti affini si incontrano, dove sviluppatori e creatori condividono la loro saggezza e le loro opere.
 
-<br>
-
 <details open>
 <summary><strong>Uno Sguardo sul Mondo di fount</strong></summary>
 
@@ -41,8 +39,6 @@ Personaggi smarriti, storie dimenticate? La nostra [**comunità vibrante e accog
 | ![Immagine](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d) |
 
 </details>
-
-<br>
 
 ## Che cos'è fount?
 
@@ -141,8 +137,6 @@ Nel mondo di Fount, la modularità regna sovrana. Un ricco ecosistema di compone
 
 ![Immagine](https://github.com/user-attachments/assets/8487a04a-7040-4844-81a6-705687856757)
 
-<br>
-
 ## Installazione e Disinstallazione: Un Incontro e un Addio Eleganti
 
 ### Installazione: Intrecciare Fount nel Tuo Mondo – _Senza Sforzo_
@@ -212,8 +206,6 @@ docker pull ghcr.io/steve02081504/fount
 ```bash
 fount remove
 ```
-
-<br>
 
 ## Incontro con un'Ombra? Non Temere
 

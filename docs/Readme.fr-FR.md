@@ -26,8 +26,6 @@ Avec près d'un an de développement dédié, les contributions de plus de 10 pe
 
 Personnages perdus, histoires oubliées ? Notre [**communauté dynamique et accueillante**](https://discord.gg/GtR9Quzq2v) vous attend – un havre où les esprits apparentés se rassemblent, où les développeurs et les créateurs partagent leur sagesse et leurs créations.
 
-<br>
-
 <details open>
 <summary><strong>Un Aperçu du Monde de fount</strong></summary>
 
@@ -41,8 +39,6 @@ Personnages perdus, histoires oubliées ? Notre [**communauté dynamique et accu
 | ![Image](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d) |
 
 </details>
-
-<br>
 
 ## Qu'est-ce que fount ?
 
@@ -141,8 +137,6 @@ Dans le monde de fount, la modularité règne en maître. Un riche écosystème 
 
 ![Image](https://github.com/user-attachments/assets/8487a04a-7040-4844-81a6-705687856757)
 
-<br>
-
 ## Installation & Suppression : Une Rencontre et un Adieu Élégants
 
 ### Installation : Intégrer fount à votre monde – _Sans Effort_
@@ -212,8 +206,6 @@ docker pull ghcr.io/steve02081504/fount
 ```bash
 fount remove
 ```
-
-<br>
 
 ## Vous Rencontrez une Ombre ? N'ayez Crainte
 

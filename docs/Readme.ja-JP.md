@@ -26,8 +26,6 @@
 
 道に迷ったキャラクター、忘れ去られた物語？私たちの[**活気に満ちた、そして温かいコミュニティ**](https://discord.gg/GtR9Quzq2v)があなたを待っています。そこは、志を同じくする者たちが集い、開発者もクリエイターも、その知恵と創造物を分かち合う安息の地です。
 
-<br>
-
 <details open>
 <summary><strong>fountの世界を垣間見る</strong></summary>
 
@@ -41,8 +39,6 @@
 | ![画像](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d) |
 
 </details>
-
-<br>
 
 ## fountとは？
 
@@ -141,8 +137,6 @@ fountの世界では、モジュール性が至上です。豊かなコンポー
 
 ![画像](https://github.com/user-attachments/assets/8487a04a-7040-4844-81a6-705687856757)
 
-<br>
-
 ## インストールと削除：優雅な出会いと別れ
 
 ### インストール：fountをあなたの世界に織り込む – _楽々と_
@@ -212,8 +206,6 @@ docker pull ghcr.io/steve02081504/fount
 ```bash
 fount remove
 ```
-
-<br>
 
 ## 影に遭遇しましたか？恐れることはありません
 

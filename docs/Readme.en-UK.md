@@ -26,8 +26,6 @@ With nearly a year of dedicated development, contributions from over 10 passiona
 
 Lost characters, forgotten stories? Our [**vibrant and welcoming community**](https://discord.gg/GtR9Quzq2v) awaits—a haven where kindred spirits gather, where developers and creators alike share their wisdom and creations.
 
-<br>
-
 <details open>
 <summary><strong>A Glimpse into the World of fount</strong></summary>
 
@@ -41,8 +39,6 @@ Lost characters, forgotten stories? Our [**vibrant and welcoming community**](ht
 | ![Image](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d) |
 
 </details>
-
-<br>
 
 ## What is fount?
 
@@ -141,8 +137,6 @@ In the world of fount, modularity reigns supreme. A rich ecosystem of components
 
 ![Image](https://github.com/user-attachments/assets/8487a04a-7040-4844-81a6-705687856757)
 
-<br>
-
 ## Installation & Removal: An Elegant Encounter and Farewell
 
 ### Installation: Weaving fount into Your World – _Effortlessly_
@@ -212,8 +206,6 @@ docker pull ghcr.io/steve02081504/fount
 ```bash
 fount remove
 ```
-
-<br>
 
 ## Encountering a Shadow? Fear Not
 

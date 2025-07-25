@@ -26,8 +26,6 @@ Sau gần một năm phát triển tận tụy, với sự đóng góp của hơ
 
 Những nhân vật lạc lối, những câu chuyện bị lãng quên? [**Cộng đồng sôi nổi và thân thiện**](https://discord.gg/GtR9Quzq2v) của chúng tôi đang chờ đón bạn – một bến đỗ cho những tâm hồn đồng điệu, nơi các nhà phát triển và nhà sáng tạo chia sẻ trí tuệ và tác phẩm của mình.
 
-<br>
-
 <details open>
 <summary><strong>Một thoáng nhìn vào thế giới của fount</strong></summary>
 
@@ -41,8 +39,6 @@ Những nhân vật lạc lối, những câu chuyện bị lãng quên? [**Cộ
 | ![Hình ảnh](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d) |
 
 </details>
-
-<br>
 
 ## fount là gì?
 
@@ -141,8 +137,6 @@ Trong thế giới của fount, tính mô-đun là tối cao. Một hệ sinh th
 
 ![Hình ảnh](https://github.com/user-attachments/assets/8487a04a-7040-4844-81a6-705687856757)
 
-<br>
-
 ## Cài đặt và Gỡ bỏ: Một cuộc gặp gỡ và chia tay thanh lịch
 
 ### Cài đặt: Dệt fount vào thế giới của bạn – _Thật nhẹ nhàng_
@@ -212,8 +206,6 @@ docker pull ghcr.io/steve02081504/fount
 ```bash
 fount remove
 ```
-
-<br>
 
 ## Gặp phải bóng tối? Đừng sợ hãi
 

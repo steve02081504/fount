@@ -26,8 +26,6 @@
 
 倘若你感到迷失于角色的海洋，或是在寻觅被遗忘的故事，我们[**充满活力且友好的社区**](https://discord.gg/GtR9Quzq2v)期待你的到来。那是一个志同道合者的港湾，开发者与创作者们在此分享他们的智慧与创作。
 
-<br>
-
 <details open>
 <summary><strong>一瞥 fount 的世界</strong></summary>
 
@@ -41,8 +39,6 @@
 | ![图片](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d) |
 
 </details>
-
-<br>
 
 ## fount 是什么？
 
@@ -141,8 +137,6 @@ Fount 构建于一个强大且可扩展的架构之上。后端利用 [Deno](htt
 
 ![图片](https://github.com/user-attachments/assets/8487a04a-7040-4844-81a6-705687856757)
 
-<br>
-
 ## 安装与卸除：一场优雅的相遇与告别
 
 ### 安装：将 fount 编织入你的世界 – _毫不费力_
@@ -213,8 +207,6 @@ docker pull ghcr.io/steve02081504/fount
 ```bash
 fount remove
 ```
-
-<br>
 
 ## 遭遇阴影？不必惊慌
 
