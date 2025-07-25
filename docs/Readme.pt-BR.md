@@ -143,10 +143,9 @@ No mundo do Fount, a modularidade reina suprema. Um rico ecossistema de componen
 
 <br>
 
-<details>
-<summary><strong>Instalação e Remoção: Um Encontro e Despedida Elegantes</strong></summary>
+## Instalação e Remoção: Um Encontro e Despedida Elegantes
 
-## Instalação: Tecendo o Fount em Seu Mundo – _Sem Esforço_
+### Instalação: Tecendo o Fount em Seu Mundo – _Sem Esforço_
 
 Embarque em sua jornada com o Fount, uma plataforma estável e confiável. Alguns cliques ou comandos simples, e o mundo do Fount se revela.
 
@@ -208,13 +207,11 @@ Se você já tem o Git instalado, abraçar o Fount é tão simples quanto execut
 docker pull ghcr.io/steve02081504/fount
 ```
 
-## Remoção: Uma Despedida Graciosa
+### Remoção: Uma Despedida Graciosa
 
 ```bash
 fount remove
 ```
-
-</details>
 
 <br>
 

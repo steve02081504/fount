@@ -143,10 +143,9 @@ In der Welt von fount regiert die Modularität. Ein reichhaltiges Ökosystem von
 
 <br>
 
-<details>
-<summary><strong>Installation & Deinstallation: Eine elegante Begegnung und ein Abschied</strong></summary>
+## Installation & Deinstallation: Eine elegante Begegnung und ein Abschied
 
-## Installation: Fount in deine Welt einweben – _Mühelos_
+### Installation: Fount in deine Welt einweben – _Mühelos_
 
 Beginne deine Reise mit Fount, einer stabilen und zuverlässigen Plattform. Ein paar einfache Klicks oder Befehle, und die Welt von Fount entfaltet sich.
 
@@ -208,13 +207,11 @@ Wenn du Git bereits installiert hast, ist die Annahme von Fount so einfach wie d
 docker pull ghcr.io/steve02081504/fount
 ```
 
-## Deinstallation: Ein graziöser Abschied
+### Deinstallation: Ein graziöser Abschied
 
 ```bash
 fount remove
 ```
-
-</details>
 
 <br>
 

@@ -143,10 +143,9 @@ Fount 构建于一个强大且可扩展的架构之上。后端利用 [Deno](htt
 
 <br>
 
-<details>
-<summary><strong>安装与卸除：一场优雅的相遇与告别</strong></summary>
+## 安装与卸除：一场优雅的相遇与告别
 
-## 安装：将 fount 编织入你的世界 – _毫不费力_
+### 安装：将 fount 编织入你的世界 – _毫不费力_
 
 以 fount 开启你的旅程，这是一个稳定可靠的平台。只需几次简单的点击或命令，fount 的世界便会徐徐展开。
 
@@ -209,13 +208,11 @@ curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/mast
 docker pull ghcr.io/steve02081504/fount
 ```
 
-## 删除：优雅的告别
+### 删除：优雅的告别
 
 ```bash
 fount remove
 ```
-
-</details>
 
 <br>
 

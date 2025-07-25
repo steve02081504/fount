@@ -143,10 +143,9 @@ In the world of fount, modularity reigns supreme. A rich ecosystem of components
 
 <br>
 
-<details>
-<summary><strong>Installation & Removal: An Elegant Encounter and Farewell</strong></summary>
+## Installation & Removal: An Elegant Encounter and Farewell
 
-## Installation: Weaving fount into Your World – _Effortlessly_
+### Installation: Weaving fount into Your World – _Effortlessly_
 
 Embark on your journey with fount, a stable and reliable platform. A few simple clicks or commands, and the world of fount unfolds.
 
@@ -208,13 +207,11 @@ If you already have Git installed, embracing fount is as simple as running a scr
 docker pull ghcr.io/steve02081504/fount
 ```
 
-## Removal: A Graceful Farewell
+### Removal: A Graceful Farewell
 
 ```bash
 fount remove
 ```
-
-</details>
 
 <br>
 

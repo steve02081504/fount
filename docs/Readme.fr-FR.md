@@ -143,10 +143,9 @@ Dans le monde de fount, la modularité règne en maître. Un riche écosystème 
 
 <br>
 
-<details>
-<summary><strong>Installation & Suppression : Une Rencontre et un Adieu Élégants</strong></summary>
+## Installation & Suppression : Une Rencontre et un Adieu Élégants
 
-## Installation : Intégrer fount à votre monde – _Sans Effort_
+### Installation : Intégrer fount à votre monde – _Sans Effort_
 
 Embarquez pour votre voyage avec fount, une plateforme stable et fiable. Quelques clics ou commandes simples, et le monde de fount se dévoile.
 
@@ -208,13 +207,11 @@ Si Git est déjà installé, adopter fount est aussi simple que d'exécuter un s
 docker pull ghcr.io/steve02081504/fount
 ```
 
-## Suppression : Un Adieu Gracieux
+### Suppression : Un Adieu Gracieux
 
 ```bash
 fount remove
 ```
-
-</details>
 
 <br>
 
