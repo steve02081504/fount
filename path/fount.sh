@@ -677,7 +677,26 @@ echo -e "HTTP/1.1 200 OK\r\nAccess-Control-Allow-Origin: *\r\nContent-Type: appl
 		fi
 		;;
 	background)
-		nohup "$0" "${@:2}" >/dev/null 2>&1 &
+		if [ -f "$FOUNT_DIR/.nobackground" ]; then
+			if command -v xterm &>/dev/null; then
+				xterm -e "$0" "${@:2}" &
+			elif command -v gnome-terminal &>/dev/null; then
+				gnome-terminal -- "$0" "${@:2}"
+			elif command -v terminator &>/dev/null; then
+				terminator -- "$0" "${@:2}"
+			elif command -v konsole &>/dev/null; then
+				konsole -- "$0" "${@:2}"
+			elif command -v xfce4-terminal &>/dev/null; then
+				xfce4-terminal -- "$0" "${@:2}"
+			elif command -v lxterminal &>/dev/null; then
+				lxterminal -- "$0" "${@:2}"
+			else
+				echo "Error: No terminal emulator found." >&2
+				nohup "$0" "${@:2}" >/dev/null 2>&1 &
+			fi
+		else
+			nohup "$0" "${@:2}" >/dev/null 2>&1 &
+		fi
 		exit 0
 		;;
 	protocolhandle)

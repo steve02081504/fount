@@ -4,6 +4,7 @@
 /temp.txt
 /.idea
 /.noupdate
+/.nobackground
 /data
 /.vm_data_*
 /node_modules
