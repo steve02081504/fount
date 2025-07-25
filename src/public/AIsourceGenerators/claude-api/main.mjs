@@ -1,4 +1,4 @@
-// 导入 Anthropic SDK 和 Fount 需要的工具函数
+// 导入 Anthropic SDK 和 fount 需要的工具函数
 import Anthropic from 'npm:@anthropic-ai/sdk'
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
 import * as mime from 'npm:mime-types'
@@ -102,10 +102,10 @@ async function GetSource(config) {
 
 		// 结构化的多模态调用
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
-			// 使用 Fount 工具函数获取独立的系统提示
+			// 使用 fount 工具函数获取独立的系统提示
 			const system_prompt = structPromptToSingleNoChatLog(prompt_struct)
 
-			// 使用 Fount 工具函数合并聊天记录，并转换为 Claude 的格式
+			// 使用 fount 工具函数合并聊天记录，并转换为 Claude 的格式
 			const messages = await Promise.all(margeStructPromptChatLog(prompt_struct).map(async (chatLogEntry) => {
 				const role = chatLogEntry.role === 'user' || chatLogEntry.role === 'system' ? 'user' : 'assistant'
 

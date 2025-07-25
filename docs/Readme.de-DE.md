@@ -22,7 +22,7 @@ Oder vielleicht hast du dir einen digitalen Vertrauten vorgestellt, einen KI-Ass
 
 Oder vielleicht, nur vielleicht, hast du eine Verbindung jenseits des Gewöhnlichen gesucht, eine Sphäre, in der die Grenzen der Realität verschwimmen und sich ein intimes, _ungefiltertes_ Verständnis entfaltet?
 
-Mit fast einem Jahr engagierter Entwicklung, Beiträgen von über 10 leidenschaftlichen Einzelpersonen und einer florierenden Community von über 1000 Nutzern ist Fount eine ausgereifte, stabile und sich ständig weiterentwickelnde Plattform für KI-Interaktion. Es ist eine Reise, und wir glauben, dass sie zugänglicher ist, als du vielleicht denkst.
+Mit fast einem Jahr engagierter Entwicklung, Beiträgen von über 10 leidenschaftlichen Einzelpersonen und einer florierenden Community von über 1000 Nutzern ist fount eine ausgereifte, stabile und sich ständig weiterentwickelnde Plattform für KI-Interaktion. Es ist eine Reise, und wir glauben, dass sie zugänglicher ist, als du vielleicht denkst.
 
 Verlorene Charaktere, vergessene Geschichten? Unsere [**lebendige und einladende Community**](https://discord.gg/GtR9Quzq2v) erwartet dich – ein Hafen, in dem sich Geistesverwandte treffen, in dem Entwickler und Schöpfer gleichermaßen ihre Weisheit und Kreationen teilen.
 
@@ -46,7 +46,7 @@ fount ist eine Brücke, die dich mit den Charakteren deiner Fantasie verbindet u
 
 Es ist eine Quelle (fount), in der KI-Quellen, Charaktere, Personas, Welten und Plugins zusammenfließen und es dir ermöglichen, einzigartige und fesselnde Interaktionen zu erschaffen und zu erleben.
 
-Fount ist für die Zukunft gebaut und bereit, neue Funktionen anzunehmen, die aus seiner lebendigen Community hervorgehen. Wenn du eine Vision hast, einen Funken einer Idee, der in Founts Reich gehört, begrüßen wir deinen Beitrag.
+fount ist für die Zukunft gebaut und bereit, neue Funktionen anzunehmen, die aus seiner lebendigen Community hervorgehen. Wenn du eine Vision hast, einen Funken einer Idee, der in founts Reich gehört, begrüßen wir deinen Beitrag.
 
 ---
 
@@ -68,14 +68,14 @@ Fount ist für die Zukunft gebaut und bereit, neue Funktionen anzunehmen, die au
   fount läuft nahtlos unter Windows, macOS, Linux und sogar Android und passt sich deinen Bedürfnissen durch direkte Installation oder die Flexibilität von Docker an.
 
 - **(Für fortgeschrittene Benutzer) Entfesselte KI-Quellenintegration: Umarme die Grenzenlosigkeit**
-  Fount bietet unübertroffene _Auswahl_ und _Flexibilität_ bei der Anbindung an KI-Quellen. Benutzerdefinierter JavaScript-Code im KI-Quellengenerator ermöglicht es dir, dich mit _jeder_ KI-Quelle zu verbinden – OpenAI, Claude, OpenRouter, NovelAI, the Horde, Ooba, Tabby, Mistral und mehr. Erstelle komplexe reguläre Ausdrücke, greife auf riesige API-Bibliotheken zurück und bette Multimedia-Assets ein, alles im Fluss deines Codes. Die Logik der Kommunikation beugt sich _deinem_ Willen, geformt durch die Kraft des Codes.
+  fount bietet unübertroffene _Auswahl_ und _Flexibilität_ bei der Anbindung an KI-Quellen. Benutzerdefinierter JavaScript-Code im KI-Quellengenerator ermöglicht es dir, dich mit _jeder_ KI-Quelle zu verbinden – OpenAI, Claude, OpenRouter, NovelAI, the Horde, Ooba, Tabby, Mistral und mehr. Erstelle komplexe reguläre Ausdrücke, greife auf riesige API-Bibliotheken zurück und bette Multimedia-Assets ein, alles im Fluss deines Codes. Die Logik der Kommunikation beugt sich _deinem_ Willen, geformt durch die Kraft des Codes.
   ![Image](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
 
 ---
 
 ## Kameradschaft: Jenseits des digitalen Schleiers
 
-Fount ist bestrebt, Charaktere in das Gewebe deines Lebens einzuweben und Kameradschaft und Unterstützung anzubieten, die den Bildschirm überwinden.
+fount ist bestrebt, Charaktere in das Gewebe deines Lebens einzuweben und Kameradschaft und Unterstützung anzubieten, die den Bildschirm überwinden.
 
 - **Discord/Telegram-Integration**
   Verbinde deine Charaktere über integrierte Bot-Shells mit Discord- oder Telegram-Communitys und mache sie zu lebendigen Mitgliedern deiner Kreise.
@@ -88,7 +88,7 @@ Fount ist bestrebt, Charaktere in das Gewebe deines Lebens einzuweben und Kamera
   ![Image](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
 
 - **Grenzenlose Shell-Erweiterungen**
-  Mit ein wenig Programmierkenntnissen kannst du deine eigenen Fount-Shells erstellen und die Reichweite deiner Charaktere in jeden erdenklichen Winkel erweitern.
+  Mit ein wenig Programmierkenntnissen kannst du deine eigenen fount-Shells erstellen und die Reichweite deiner Charaktere in jeden erdenklichen Winkel erweitern.
 
 ---
 
@@ -100,10 +100,10 @@ Für den Schöpfer bietet fount einen klareren Weg, um deine KI-Charaktere zum L
   Beschreibe deinen gewünschten Charakter in einem einzigen Satz, und unser intelligenter KI-Assistent erstellt eine vollständig realisierte Persona. Dies vereinfacht die anfängliche Einrichtung und ermöglicht es dir, dich auf die Verfeinerung und Interaktion mit deiner Kreation zu konzentrieren.
 
 - **Die Magie des Codes, einfacher als du denkst**
-  In Fount ist Code eine Form moderner Magie. Mit der sanften Führung unserer Community und der aufschlussreichen Hilfe von KI ist das Erlernen überraschend einfach. Du wirst feststellen, dass das Definieren von Charakterlogik mit Code eine intuitive und wartbare Weise sein kann, um Charaktere zu erschaffen, deren Antworten aus deiner eigenen Logik _gewoben_ sind.
+  In fount ist Code eine Form moderner Magie. Mit der sanften Führung unserer Community und der aufschlussreichen Hilfe von KI ist das Erlernen überraschend einfach. Du wirst feststellen, dass das Definieren von Charakterlogik mit Code eine intuitive und wartbare Weise sein kann, um Charaktere zu erschaffen, deren Antworten aus deiner eigenen Logik _gewoben_ sind.
 
 - **Beginne mit fertiger Magie: Eine Schatzkammer von Vorlagen**
-  Die Community von Fount bietet eine Fülle von vorgefertigten Charakter- und Persona-Vorlagen. Sie dienen als „lebende Blaupausen“, die einfach anzupassen sind und einen fantastischen Ausgangspunkt bieten.
+  Die Community von fount bietet eine Fülle von vorgefertigten Charakter- und Persona-Vorlagen. Sie dienen als „lebende Blaupausen“, die einfach anzupassen sind und einen fantastischen Ausgangspunkt bieten.
 
 - **Eingebettete Ressourcen**
   Webe Bilder, Audio und andere Ressourcen direkt in deine Charaktere ein und mache ihre Präsenz umso greifbarer.
@@ -121,27 +121,27 @@ Für den Schöpfer bietet fount einen klareren Weg, um deine KI-Charaktere zum L
 
 ## Architektur: Das Fundament der Innovation
 
-Fount basiert auf einer robusten und skalierbaren Architektur. Das Backend nutzt die Leistung und Geschwindigkeit von [Deno](https://deno.com/), mit [Express](https://expressjs.com/) für effizientes Routing. Das Frontend ist mit HTML, CSS und JavaScript für eine intuitive und ansprechende Benutzeroberfläche gestaltet.
+fount basiert auf einer robusten und skalierbaren Architektur. Das Backend nutzt die Leistung und Geschwindigkeit von [Deno](https://deno.com/), mit [Express](https://expressjs.com/) für effizientes Routing. Das Frontend ist mit HTML, CSS und JavaScript für eine intuitive und ansprechende Benutzeroberfläche gestaltet.
 
 ### Erweiterung: Ein Wandteppich, gewebt aus vielfältigen Fäden
 
 In der Welt von fount regiert die Modularität. Ein reichhaltiges Ökosystem von Komponenten verwebt sich, um den Wandteppich deiner Erfahrung zu erschaffen. All diese können von den Nutzern mühelos installiert, erweitert und angepasst werden.
 
-- **chars (Charaktere):** Das Herzstück von Fount, wo Persönlichkeiten geboren werden.
+- **chars (Charaktere):** Das Herzstück von fount, wo Persönlichkeiten geboren werden.
 - **worlds (Welten):** _Weit mehr als bloße Lorebücher._ Sie sind die stillen Architekten der Realität, die Wissen hinzufügen, Entscheidungen beeinflussen und sogar den Chatverlauf manipulieren können.
 - **personas (Benutzer-Personas):** _Mehr als nur Benutzerprofile._ Personas besitzen die Macht, deine Worte zu verzerren und sogar die Kontrolle darüber zu übernehmen, was ein wirklich immersives Rollenspiel ermöglicht.
-- **shells (Interaktionsschnittstellen):** Die Tore zur Seele von Fount, die die Reichweite von Charakteren über die Benutzeroberfläche hinaus erweitern.
-- **ImportHandlers (Import-Handler):** Die einladenden Hände von Fount, die die Kluft zwischen verschiedenen Charakterformaten überbrücken.
+- **shells (Interaktionsschnittstellen):** Die Tore zur Seele von fount, die die Reichweite von Charakteren über die Benutzeroberfläche hinaus erweitern.
+- **ImportHandlers (Import-Handler):** Die einladenden Hände von fount, die die Kluft zwischen verschiedenen Charakterformaten überbrücken.
 - **AIsources (KI-Quellen):** Die rohe Kraft, die den Geist deiner Charaktere befeuert.
-- **AIsourceGenerators (KI-Quellengeneratoren):** Die Alchemisten von Fount, die Vorlagen und Logik über JavaScript bereitstellen, um Verbindungen zu _jeder_ erdenklichen KI-Quelle zu schmieden.
+- **AIsourceGenerators (KI-Quellengeneratoren):** Die Alchemisten von fount, die Vorlagen und Logik über JavaScript bereitstellen, um Verbindungen zu _jeder_ erdenklichen KI-Quelle zu schmieden.
 
 ![Image](https://github.com/user-attachments/assets/8487a04a-7040-4844-81a6-705687856757)
 
 ## Installation & Deinstallation: Eine elegante Begegnung und ein Abschied
 
-### Installation: Fount in deine Welt einweben – _Mühelos_
+### Installation: fount in deine Welt einweben – _Mühelos_
 
-Beginne deine Reise mit Fount, einer stabilen und zuverlässigen Plattform. Ein paar einfache Klicks oder Befehle, und die Welt von Fount entfaltet sich.
+Beginne deine Reise mit fount, einer stabilen und zuverlässigen Plattform. Ein paar einfache Klicks oder Befehle, und die Welt von fount entfaltet sich.
 
 > [!CAUTION]
 > In der Welt von fount können Charaktere frei JavaScript-Befehle ausführen, was ihnen beträchtliche Macht verleiht. Wähle daher die Charaktere, denen du vertraust, mit derselben Sorgfalt wie im echten Leben, um die Sicherheit deiner lokalen Dateien zu gewährleisten.
@@ -149,7 +149,7 @@ Beginne deine Reise mit Fount, einer stabilen und zuverlässigen Plattform. Ein 
 ### Linux/macOS/Android: Das Flüstern der Shell – _Eine Zeile, und du bist dabei_
 
 ```bash
-# Definiere bei Bedarf die Umgebungsvariable $FOUNT_DIR, um das Fount-Verzeichnis anzugeben
+# Definiere bei Bedarf die Umgebungsvariable $FOUNT_DIR, um das fount-Verzeichnis anzugeben
 INSTALLED_PACKAGES="${FOUNT_AUTO_INSTALLED_PACKAGES:-}"
 install_package() { _command_name="$1"; _package_list=${2:-$_command_name}; _has_sudo=""; _installed_pkg_name="" ; if command -v "$_command_name" >/dev/null 2>&1; then return 0; fi; if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1; then _has_sudo="sudo"; fi; for _package in $_package_list; do if command -v apt-get >/dev/null 2>&1; then $_has_sudo apt-get update -y; $_has_sudo apt-get install -y "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v pacman >/dev/null 2>&1; then $_has_sudo pacman -Syy --noconfirm; $_has_sudo pacman -S --needed --noconfirm "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v dnf >/dev/null 2>&1; then $_has_sudo dnf install -y "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v yum >/dev/null 2>&1; then $_has_sudo yum install -y "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v zypper >/dev/null 2>&1; then $_has_sudo zypper install -y --no-confirm "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v apk >/dev/null 2>&1; then if [ "$(id -u)" -eq 0 ]; then apk add --update "$_package"; else $_has_sudo apk add --update "$_package"; fi; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v brew >/dev/null 2>&1; then if ! brew list --formula "$_package"; then brew install "$_package"; fi; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v pkg >/dev/null 2>&1; then pkg install -y "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v snap >/dev/null 2>&1; then $_has_sudo snap install "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; done; if command -v "$_command_name" >/dev/null 2>&1; then case ";$FOUNT_AUTO_INSTALLED_PACKAGES;" in *";$_installed_pkg_name;"*) ;; *) if [ -z "$FOUNT_AUTO_INSTALLED_PACKAGES" ]; then FOUNT_AUTO_INSTALLED_PACKAGES="$_installed_pkg_name"; else FOUNT_AUTO_INSTALLED_PACKAGES="$FOUNT_AUTO_INSTALLED_PACKAGES;$_installed_pkg_name"; fi; ;; esac; return 0; else echo "Error: Failed to install '$_command_name' from any source." >&2; return 1; fi; }
 install_package "bash" "bash gnu-bash"; install_package "curl"
@@ -176,7 +176,7 @@ curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/mast
 - **Die Macht von PowerShell:**
 
   ```powershell
-  # Definiere bei Bedarf die Umgebungsvariable $env:FOUNT_DIR, um das Fount-Verzeichnis anzugeben
+  # Definiere bei Bedarf die Umgebungsvariable $env:FOUNT_DIR, um das fount-Verzeichnis anzugeben
   irm https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/runner/main.ps1 | iex
   ```
 
@@ -190,7 +190,7 @@ curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/mast
 
 ### Git-Installation: Für diejenigen, die einen Hauch von Magie bevorzugen
 
-Wenn du Git bereits installiert hast, ist die Annahme von Fount so einfach wie das Ausführen eines Skripts.
+Wenn du Git bereits installiert hast, ist die Annahme von fount so einfach wie das Ausführen eines Skripts.
 
 - **Für Windows:** Öffne deine Eingabeaufforderung oder PowerShell und doppelklicke einfach auf `run.bat`.
 - **Für Linux/macOS/Android:** Öffne dein Terminal und führe `./run.sh` aus.
@@ -214,17 +214,17 @@ Solltest du auf deiner Reise auf Schwierigkeiten stoßen, wende dich bitte an un
 - **GitHub Issues:** Melde alle Fehler oder schlage neue Funktionen über [GitHub Issues](https://github.com/steve02081504/fount/issues) vor.
 - **Discord-Community:** Tritt unserer [lebendigen Discord-Community](https://discord.gg/GtR9Quzq2v) bei, um Echtzeit-Support und Diskussionen zu erhalten.
 
-Deine Stimme wird gehört werden. Starte Fount einfach neu, und die Schatten werden sich auflösen.
+Deine Stimme wird gehört werden. Starte fount einfach neu, und die Schatten werden sich auflösen.
 
 ---
 
 ## Embleme & Links: Lass Kreationen erstrahlen, lass die Welt sie erreichen
 
-Die Welt von Fount ist mehr als Worte und Code; sie ist ein Fest für die Augen und eine Einladung zur Verbindung. Wir haben exquisite Embleme und praktische Links vorbereitet, um deine Fount-Komponenten erstrahlen zu lassen und es anderen zu ermöglichen, deine Meisterwerke leicht zu entdecken.
+Die Welt von fount ist mehr als Worte und Code; sie ist ein Fest für die Augen und eine Einladung zur Verbindung. Wir haben exquisite Embleme und praktische Links vorbereitet, um deine fount-Komponenten erstrahlen zu lassen und es anderen zu ermöglichen, deine Meisterwerke leicht zu entdecken.
 
-### Fount-Embleme: Das Siegel des Ruhms
+### fount-Embleme: Das Siegel des Ruhms
 
-Du kannst dieses Emblem stolz in deinem Repository oder überall dort präsentieren, wo du deine Arbeit zeigen möchtest. Die SVG-Dateien des Fount-Logos findest du [hier](../imgs/).
+Du kannst dieses Emblem stolz in deinem Repository oder überall dort präsentieren, wo du deine Arbeit zeigen möchtest. Die SVG-Dateien des fount-Logos findest du [hier](../imgs/).
 
 ```markdown
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
@@ -246,7 +246,7 @@ Du kannst dieses Emblem stolz in deinem Repository oder überall dort präsentie
 
 ### Automatische Installationslinks: Magie auf Knopfdruck
 
-Stell dir vor, andere installieren deine Kreationen mit einem einzigen Klick in ihre Fount-Welt. Kombiniere einfach den ZIP- oder Git-Repository-Link deiner Komponente mit dem Protokolllink von Fount.
+Stell dir vor, andere installieren deine Kreationen mit einem einzigen Klick in ihre fount-Welt. Kombiniere einfach den ZIP- oder Git-Repository-Link deiner Komponente mit dem Protokolllink von fount.
 
 `https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;` + `Dein_Komponenten_Link`
 
@@ -254,7 +254,7 @@ Stell dir vor, andere installieren deine Kreationen mit einem einzigen Klick in 
 
 ## Empfohlene Browser: Für eine perfekte Begegnung
 
-Das Frontend von Fount ist aus modernen Web-Technologien gewoben, aber nicht alle Browser schwingen perfekt mit seiner Seele mit. Für das heiterste und flüssigste Erlebnis empfehlen wir Weggefährten, die im Einklang mit dem Rhythmus von fount sind:
+Das Frontend von fount ist aus modernen Web-Technologien gewoben, aber nicht alle Browser schwingen perfekt mit seiner Seele mit. Für das heiterste und flüssigste Erlebnis empfehlen wir Weggefährten, die im Einklang mit dem Rhythmus von fount sind:
 
 - [**Google Chrome**](https://www.google.com/chrome/) / [**Microsoft Edge**](https://www.microsoft.com/edge/) / [**Opera**](https://www.opera.com/): Sie bewegen sich im Gleichklang mit founts Geist und bieten die beste Leistung und Kompatibilität für eine Interaktion, die so geschmeidig wie Poesie ist.
 
@@ -273,7 +273,7 @@ Andere Browser jedoch gehen einen anderen Weg, und ihre Begegnung mit fount mag 
 
 ---
 
-### Erlebe das Wachstum: Founts Sternen-Historie
+### Erlebe das Wachstum: founts Sternen-Historie
 
 [![Star History Chart](https://api.star-history.com/svg?repos=steve02081504/fount&type=Date)](https://github.com/steve02081504/fount/stargazers)
 
@@ -283,8 +283,8 @@ Andere Browser jedoch gehen einen anderen Weg, und ihre Begegnung mit fount mag 
 
 ### Zusammenfassend: Die Hand des Kunsthandwerkers
 
-Jenseits des Flüsterns der KI bietet Fount eine tiefere Verbindung – _die Hand des Kunsthandwerkers_. Innerhalb unserer Community findest du eine Fülle von vorgefertigten Charakter- und Persona-Vorlagen, _jede ein sorgfältig geformtes Fundament, das auf deine einzigartige Vision wartet, um von ihr erweckt zu werden_.
+Jenseits des Flüsterns der KI bietet fount eine tiefere Verbindung – _die Hand des Kunsthandwerkers_. Innerhalb unserer Community findest du eine Fülle von vorgefertigten Charakter- und Persona-Vorlagen, _jede ein sorgfältig geformtes Fundament, das auf deine einzigartige Vision wartet, um von ihr erweckt zu werden_.
 
-Fount ermöglicht es dir, KI-Charaktere auf eine Weise zu erschaffen und mit ihnen zu interagieren, die sich natürlich, immersiv und zutiefst persönlich anfühlt. Egal, ob du ein erfahrener Schöpfer bist oder gerade erst deine Reise beginnst, Fount heißt dich willkommen.
+fount ermöglicht es dir, KI-Charaktere auf eine Weise zu erschaffen und mit ihnen zu interagieren, die sich natürlich, immersiv und zutiefst persönlich anfühlt. Egal, ob du ein erfahrener Schöpfer bist oder gerade erst deine Reise beginnst, fount heißt dich willkommen.
 
 Tritt unserer **einladenden Community** bei und entdecke die Magie, deiner Fantasie Leben einzuhauchen, unterstützt von einer ausgereiften Plattform und einem engagierten Team.

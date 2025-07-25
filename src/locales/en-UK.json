@@ -64,8 +64,8 @@
 		"tray": {
 			"readIconFailed": "Failed to read icon file: ${error}",
 			"createTrayFailed": "Failed to create tray: ${error}",
-			"title": "Fount",
-			"tooltip": "Fount",
+			"title": "fount",
+			"tooltip": "fount",
 			"items": {
 				"open": {
 					"title": "Open",
@@ -93,7 +93,7 @@
 		}
 	},
 	"protocolhandler": {
-		"title": "Handling Fount Protocol",
+		"title": "Handling fount Protocol",
 		"processing": "Processing protocol...",
 		"invalidProtocol": "Invalid protocol",
 		"insufficientParams": "Insufficient parameters",
@@ -101,7 +101,7 @@
 		"shellCommandSent": "Shell command sent",
 		"shellCommandFailed": "Failed to send shell command",
 		"shellCommandError": "Error sending shell command",
-		"fountNotFound": "Oh dear :(\n\nFount was not found. Perhaps you need to install it first?",
+		"fountNotFound": "Oh dear :(\n\nfount was not found. Perhaps you need to install it first?",
 		"unknownError": "Oh dear :(\n\nAn error occurred:\n"
 	},
 	"installer_wait_screen": {
@@ -124,7 +124,7 @@
 		},
 		"feature4": {
 			"title": "Unbound AI source integration",
-			"description": "Fount offers unparalleled choice and flexibility. Connect to <i>any</i> AI sources—OpenAI, Claude, OpenRouter, NovelAI, etc. Communication logic will be shaped by the power of code according to your wishes."
+			"description": "fount offers unparalleled choice and flexibility. Connect to <i>any</i> AI sources—OpenAI, Claude, OpenRouter, NovelAI, etc. Communication logic will be shaped by the power of code according to your wishes."
 		},
 		"theme_selector": {
 			"title": "Choose your appearance",
@@ -138,7 +138,7 @@
 		"footer": {
 			"ready_text": "Ready to start your journey?",
 			"wait_text": "Please wait a moment...",
-			"launch_button": "Fount is installing...",
+			"launch_button": "fount is installing...",
 			"open_fount": "Open fount",
 			"open_or_install_fount": "Open/Install fount",
 			"error_message": "Oh dear :(\n\nAn error occurred:\n"
@@ -152,11 +152,11 @@
 		}
 	},
 	"startPage": {
-		"title": "Fount!",
+		"title": "fount!",
 		"newTabFailed": {
 			"title": "Failed to open new tab",
-			"instruction": "Fount's startup is 1-2s slower each time without window pop-up permission.",
-			"tryAllow": "Try giving Fount window pop-up permission?",
+			"instruction": "fount's startup is 1-2s slower each time without window pop-up permission.",
+			"tryAllow": "Try giving fount window pop-up permission?",
 			"buttons": {
 				"retry": "Retry",
 				"skip": "Skip",
@@ -230,7 +230,7 @@
 	"tutorial": {
 		"title": "Tutorial?",
 		"modal": {
-			"title": "Welcome to Fount!",
+			"title": "Welcome to fount!",
 			"instruction": "Would you like to take the introductory tutorial?",
 			"buttons": {
 				"start": "Start Tutorial",
@@ -251,7 +251,7 @@
 	},
 	"home": {
 		"title": "Home",
-		"escapeConfirm": "Are you sure you want to leave Fount?",
+		"escapeConfirm": "Are you sure you want to leave fount?",
 		"filterInput": {
 			"placeholder": "Search..."
 		},
@@ -799,14 +799,14 @@
 	},
 	"terminal_assistant": {
 		"title": "Terminal Assistant",
-		"initialMessage": "Fount supports deploying your favourite characters to your terminal to assist you in coding!",
+		"initialMessage": "fount supports deploying your favourite characters to your terminal to assist you in coding!",
 		"initialMessageLink": "Click here to learn more"
 	},
 	"access": {
-		"title": "Access Fount on other devices",
-		"heading": "Want to access Fount on other devices?",
+		"title": "Access fount on other devices",
+		"heading": "Want to access fount on other devices?",
 		"instruction": {
-			"sameLAN": "Ensure the device and Fount host are on the same local area network.",
+			"sameLAN": "Ensure the device and fount host are on the same local area network.",
 			"accessthis": "Visit this URL:"
 		},
 		"copyButton": "Copy URL",
@@ -815,7 +815,7 @@
 	"proxy": {
 		"title": "API Proxy",
 		"heading": "OpenAI API Proxy Address",
-		"instruction": "Enter the following address into any application that requires the OpenAI API format to use the AI sources in Fount!",
+		"instruction": "Enter the following address into any application that requires the OpenAI API format to use the AI sources in fount!",
 		"copyButton": "Copy Address",
 		"copied": "Address copied to clipboard!"
 	},
@@ -908,7 +908,7 @@
 	},
 	"badges_maker": {
 		"title": "fount! Badge Converter",
-		"card_title": "Fount Badge Link Converter",
+		"card_title": "fount Badge Link Converter",
 		"original_url_label": "Paste img.shields.io URL",
 		"original_url_placeholder": "For example: https://img.shields.io/badge/Hello-World-blue",
 		"new_url_label": "The generated new URL",

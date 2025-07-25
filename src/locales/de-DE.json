@@ -64,20 +64,20 @@
 		"tray": {
 			"readIconFailed": "Fehler beim Lesen der Icon-Datei: ${error}",
 			"createTrayFailed": "Fehler beim Erstellen des Trays: ${error}",
-			"title": "Fount",
-			"tooltip": "Fount",
+			"title": "fount",
+			"tooltip": "fount",
 			"items": {
 				"open": {
 					"title": "Öffnen",
-					"tooltip": "Fount öffnen"
+					"tooltip": "fount öffnen"
 				},
 				"github": {
 					"title": "GitHub",
-					"tooltip": "Fount auf GitHub öffnen"
+					"tooltip": "fount auf GitHub öffnen"
 				},
 				"discord": {
 					"title": "Discord",
-					"tooltip": "Fount auf Discord öffnen"
+					"tooltip": "fount auf Discord öffnen"
 				},
 				"exit": {
 					"title": "Beenden",
@@ -93,7 +93,7 @@
 		}
 	},
 	"protocolhandler": {
-		"title": "Fount-Protokoll verarbeiten",
+		"title": "fount-Protokoll verarbeiten",
 		"processing": "Protokoll wird verarbeitet...",
 		"invalidProtocol": "Ungültiges Protokoll",
 		"insufficientParams": "Unzureichende Parameter",
@@ -101,30 +101,30 @@
 		"shellCommandSent": "Shell-Befehl gesendet",
 		"shellCommandFailed": "Senden des Shell-Befehls fehlgeschlagen",
 		"shellCommandError": "Fehler beim Senden des Shell-Befehls",
-		"fountNotFound": "Och nö :(\n\nFount wurde nicht gefunden. Vielleicht müssen Sie es zuerst installieren?",
+		"fountNotFound": "Och nö :(\n\nfount wurde nicht gefunden. Vielleicht müssen Sie es zuerst installieren?",
 		"unknownError": "Och nö :(\n\nEin Fehler ist aufgetreten:\n"
 	},
 	"installer_wait_screen": {
-		"title": "Willkommen bei Fount!",
+		"title": "Willkommen bei fount!",
 		"hero": {
 			"title": "Ihr immersiver KI-Charakterbegleiter",
-			"description": "Fount ist eine KI-gestützte Charakter-Interaktionsplattform, die <i>Sie</i> befähigt. Es ist eine Brücke, die Sie mit Ihren imaginären Charakteren verbindet und es Ihnen ermöglicht, problemlos mit ihnen zu sprechen, Ihre eigenen Charaktere zu erstellen und sie mit der Welt zu teilen."
+			"description": "fount ist eine KI-gestützte Charakter-Interaktionsplattform, die <i>Sie</i> befähigt. Es ist eine Brücke, die Sie mit Ihren imaginären Charakteren verbindet und es Ihnen ermöglicht, problemlos mit ihnen zu sprechen, Ihre eigenen Charaktere zu erstellen und sie mit der Welt zu teilen."
 		},
 		"feature1": {
 			"title": "Nahtlose Dialoge – überall",
-			"description": "Chatten Sie auf Ihrem Computer und fahren Sie nahtlos auf Ihrem Telefon oder Tablet fort. Fount hält Ihre Gespräche synchron, sodass Sie überall mit Ihren Charakteren in Kontakt bleiben. Läuft unter Windows, macOS, Linux und sogar Android."
+			"description": "Chatten Sie auf Ihrem Computer und fahren Sie nahtlos auf Ihrem Telefon oder Tablet fort. fount hält Ihre Gespräche synchron, sodass Sie überall mit Ihren Charakteren in Kontakt bleiben. Läuft unter Windows, macOS, Linux und sogar Android."
 		},
 		"feature2": {
 			"title": "Schöne, anpassbare Benutzeroberfläche",
-			"description": "Wählen Sie aus über 30 wunderschönen Designs oder erstellen Sie Ihr eigenes. Fount ist Ihre persönliche Leinwand. Drücken Sie sich aus, passen Sie die Umgebung an Ihre Vorlieben an und schaffen Sie ein wirklich persönliches Erlebnis."
+			"description": "Wählen Sie aus über 30 wunderschönen Designs oder erstellen Sie Ihr eigenes. fount ist Ihre persönliche Leinwand. Drücken Sie sich aus, passen Sie die Umgebung an Ihre Vorlieben an und schaffen Sie ein wirklich persönliches Erlebnis."
 		},
 		"feature3": {
 			"title": "Ausdrucksstarker, immersiver Chat",
-			"description": "Fount nutzt die volle Leistungsfähigkeit von HTML und ermöglicht es Charakteren, sich durch Rich Text, Bilder und sogar interaktive Elemente auszudrücken. Führen Sie dynamische und ansprechende Gruppenchats mit mehreren Charakteren gleichzeitig."
+			"description": "fount nutzt die volle Leistungsfähigkeit von HTML und ermöglicht es Charakteren, sich durch Rich Text, Bilder und sogar interaktive Elemente auszudrücken. Führen Sie dynamische und ansprechende Gruppenchats mit mehreren Charakteren gleichzeitig."
 		},
 		"feature4": {
 			"title": "Uneingeschränkte Integration von KI-Quellen",
-			"description": "Fount bietet beispiellose Auswahl und Flexibilität. Verbinden Sie sich mit <i>jeder</i> KI-Quelle – OpenAI, Claude, OpenRouter, NovelAI usw. Die Kommunikationslogik wird nach <i>Ihrem</i> Willen durch die Macht des Codes geformt."
+			"description": "fount bietet beispiellose Auswahl und Flexibilität. Verbinden Sie sich mit <i>jeder</i> KI-Quelle – OpenAI, Claude, OpenRouter, NovelAI usw. Die Kommunikationslogik wird nach <i>Ihrem</i> Willen durch die Macht des Codes geformt."
 		},
 		"theme_selector": {
 			"title": "Wählen Sie Ihr Aussehen",
@@ -138,25 +138,25 @@
 		"footer": {
 			"ready_text": "Bereit, Ihre Reise zu beginnen?",
 			"wait_text": "Bitte warten Sie einen Moment...",
-			"launch_button": "Fount wird installiert...",
-			"open_fount": "Fount öffnen",
-			"open_or_install_fount": "Fount öffnen/installieren",
+			"launch_button": "fount wird installiert...",
+			"open_fount": "fount öffnen",
+			"open_or_install_fount": "fount öffnen/installieren",
 			"error_message": "Och nö :(\n\nEin Fehler ist aufgetreten:\n"
 		},
 		"error": {
 			"title": "Installation fehlgeschlagen!",
 			"connection_failed": "Verbindung fehlgeschlagen!",
-			"description1": "Mit dem Fount-Installationsprogramm scheint etwas nicht zu stimmen.",
+			"description1": "Mit dem fount-Installationsprogramm scheint etwas nicht zu stimmen.",
 			"description2": "Bitte überprüfen Sie Ihr Terminal und versuchen Sie es erneut.",
 			"close_page": "Seite schließen"
 		}
 	},
 	"startPage": {
-		"title": "Fount!",
+		"title": "fount!",
 		"newTabFailed": {
 			"title": "Neuer Tab konnte nicht geöffnet werden",
-			"instruction": "Der Start von Fount ist jedes Mal um 1-2s langsamer, wenn die Berechtigung zum Öffnen von Pop-up-Fenstern fehlt.",
-			"tryAllow": "Möchten Sie Fount die Berechtigung zum Öffnen von Pop-up-Fenstern erteilen?",
+			"instruction": "Der Start von fount ist jedes Mal um 1-2s langsamer, wenn die Berechtigung zum Öffnen von Pop-up-Fenstern fehlt.",
+			"tryAllow": "Möchten Sie fount die Berechtigung zum Öffnen von Pop-up-Fenstern erteilen?",
 			"buttons": {
 				"retry": "Erneut versuchen",
 				"skip": "Überspringen",
@@ -230,7 +230,7 @@
 	"tutorial": {
 		"title": "Tutorial?",
 		"modal": {
-			"title": "Willkommen bei Fount!",
+			"title": "Willkommen bei fount!",
 			"instruction": "Möchten Sie das Einsteiger-Tutorial durchgehen?",
 			"buttons": {
 				"start": "Tutorial starten",
@@ -251,7 +251,7 @@
 	},
 	"home": {
 		"title": "Startseite",
-		"escapeConfirm": "Sind Sie sicher, dass Sie Fount verlassen möchten?",
+		"escapeConfirm": "Sind Sie sicher, dass Sie fount verlassen möchten?",
 		"filterInput": {
 			"placeholder": "Suchen..."
 		},
@@ -799,14 +799,14 @@
 	},
 	"terminal_assistant": {
 		"title": "Terminal-Assistent",
-		"initialMessage": "Fount unterstützt die Bereitstellung Ihrer Lieblingscharaktere in Ihrem Terminal, um Sie beim Programmieren zu unterstützen!",
+		"initialMessage": "fount unterstützt die Bereitstellung Ihrer Lieblingscharaktere in Ihrem Terminal, um Sie beim Programmieren zu unterstützen!",
 		"initialMessageLink": "Klicken Sie hier, um mehr zu erfahren"
 	},
 	"access": {
-		"title": "Auf Fount von anderen Geräten zugreifen",
-		"heading": "Möchten Sie auf Fount von anderen Geräten zugreifen?",
+		"title": "Auf fount von anderen Geräten zugreifen",
+		"heading": "Möchten Sie auf fount von anderen Geräten zugreifen?",
 		"instruction": {
-			"sameLAN": "Stellen Sie sicher, dass sich das Gerät und der Fount-Host im selben lokalen Netzwerk befinden.",
+			"sameLAN": "Stellen Sie sicher, dass sich das Gerät und der fount-Host im selben lokalen Netzwerk befinden.",
 			"accessthis": "Rufen Sie folgende URL auf:"
 		},
 		"copyButton": "URL kopieren",
@@ -815,7 +815,7 @@
 	"proxy": {
 		"title": "API-Proxy",
 		"heading": "OpenAI API Proxy-Adresse",
-		"instruction": "Fügen Sie die folgende Adresse in jede Anwendung ein, die das OpenAI-API-Format benötigt, um die KI-Quellen in Fount zu verwenden!",
+		"instruction": "Fügen Sie die folgende Adresse in jede Anwendung ein, die das OpenAI-API-Format benötigt, um die KI-Quellen in fount zu verwenden!",
 		"copyButton": "Adresse kopieren",
 		"copied": "Adresse in die Zwischenablage kopiert!"
 	},
@@ -907,8 +907,8 @@
 		}
 	},
 	"badges_maker": {
-		"title": "Fount! Abzeichenwandler",
-		"card_title": "Fount Abzeichen Link Konverter",
+		"title": "fount! Abzeichenwandler",
+		"card_title": "fount Abzeichen Link Konverter",
 		"original_url_label": "img.shields.io URL einfügen",
 		"original_url_placeholder": "Zum Beispiel: https://img.shields.io/badge/Hello-World-blue",
 		"new_url_label": "Generierte neue URL",

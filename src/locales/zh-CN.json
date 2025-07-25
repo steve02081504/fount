@@ -64,8 +64,8 @@
 		"tray": {
 			"readIconFailed": "读取图标文件失败: ${error}",
 			"createTrayFailed": "创建托盘失败: ${error}",
-			"title": "Fount",
-			"tooltip": "Fount",
+			"title": "fount",
+			"tooltip": "fount",
 			"items": {
 				"open": {
 					"title": "打开",
@@ -93,7 +93,7 @@
 		}
 	},
 	"protocolhandler": {
-		"title": "处理 Fount 协议",
+		"title": "处理 fount 协议",
 		"processing": "正在处理协议...",
 		"invalidProtocol": "无效的协议",
 		"insufficientParams": "参数不足",
@@ -124,7 +124,7 @@
 		},
 		"feature4": {
 			"title": "不受束缚的 AI 源集成",
-			"description": "Fount 提供无与伦比的选择和灵活性。连接到<i>任何</i> AI 源——OpenAI、Claude、OpenRouter、NovelAI 等。通信逻辑将根据<i>您的</i>意愿，通过代码的力量来塑造。"
+			"description": "fount 提供无与伦比的选择和灵活性。连接到<i>任何</i> AI 源——OpenAI、Claude、OpenRouter、NovelAI 等。通信逻辑将根据<i>您的</i>意愿，通过代码的力量来塑造。"
 		},
 		"theme_selector": {
 			"title": "选择您的外观",
@@ -138,7 +138,7 @@
 		"footer": {
 			"ready_text": "准备好开始您的旅程了吗？",
 			"wait_text": "稍候片刻...",
-			"launch_button": "Fount 正在安装...",
+			"launch_button": "fount 正在安装...",
 			"open_fount": "打开 fount",
 			"open_or_install_fount": "打开/安装 fount",
 			"error_message": "awww :(\n\n发生错误：\n"
@@ -799,14 +799,14 @@
 	},
 	"terminal_assistant": {
 		"title": "终端辅助",
-		"initialMessage": "Fount 支持将你喜欢的角色部署到你的终端中辅助你编码！",
+		"initialMessage": "fount 支持将你喜欢的角色部署到你的终端中辅助你编码！",
 		"initialMessageLink": "点击这里了解更多信息"
 	},
 	"access": {
-		"title": "在其他设备上访问 Fount",
-		"heading": "想在其他设备上访问 Fount 吗？",
+		"title": "在其他设备上访问 fount",
+		"heading": "想在其他设备上访问 fount 吗？",
 		"instruction": {
-			"sameLAN": "确保设备和 Fount 主机在同一个局域网下",
+			"sameLAN": "确保设备和 fount 主机在同一个局域网下",
 			"accessthis": "访问以下网址："
 		},
 		"copyButton": "复制网址",
@@ -908,7 +908,7 @@
 	},
 	"badges_maker": {
 		"title": "fount! 徽章转换器",
-		"card_title": "Fount 徽章链接转换器",
+		"card_title": "fount 徽章链接转换器",
 		"original_url_label": "粘贴 img.shields.io 网址",
 		"original_url_placeholder": "例如: https://img.shields.io/badge/Hello-World-blue",
 		"new_url_label": "生成的新网址",

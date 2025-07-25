@@ -76,7 +76,7 @@ async function ImportAsData(username, dataBuffer) {
 
 
 		// 如果是 SillyTavern V2 卡片，直接使用 ST 导入器逻辑（如果可以调用的话）
-		// 或者在这里实现一个简化的 STv2 到 Fount Part 的转换。
+		// 或者在这里实现一个简化的 STv2 到 fount Part 的转换。
 		// 目前这个 Risu 导入器专注于 CCv3 (和通过 PNG 导入的 CCv2)。
 		// 如果 sourceSpec 是 'ccv2' 或 'ccv2_generic'，ccv3Card 实际上是 STv2 格式。
 		// 我们可以直接用它，或者用一个适配器转成我们期望的 STv2 格式。
@@ -138,7 +138,7 @@ async function ImportAsData(username, dataBuffer) {
 						name: assetDef.name,
 						ext: assetDef.ext,
 						original_uri: originalUri, // 保留原始 URI 供参考
-						fount_uri: savedRelPath // Fount 内部的相对路径
+						fount_uri: savedRelPath // fount 内部的相对路径
 					})
 
 					// 如果这个资源是主头像，也单独处理一下
@@ -210,7 +210,7 @@ async function ImportAsData(username, dataBuffer) {
 		if (needsReload)
 			await loadPart(username, 'chars', charName)
 		else
-			// 尝试动态导入，如果 Fount 支持的话。否则 loadPart 应该处理首次加载。
+			// 尝试动态导入，如果 fount 支持的话。否则 loadPart 应该处理首次加载。
 			import(url.pathToFileURL(targetMainMjsPath)).catch(err => console.error(`Dynamic import of ${targetMainMjsPath} failed:`, err))
 
 		console.log(`Risu character "${charName}" imported successfully to ${targetPath}`)

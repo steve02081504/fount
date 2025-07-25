@@ -64,20 +64,20 @@
 		"tray": {
 			"readIconFailed": "Đọc tệp biểu tượng thất bại: ${error}",
 			"createTrayFailed": "Tạo biểu tượng trên khay hệ thống thất bại: ${error}",
-			"title": "Fount",
-			"tooltip": "Fount",
+			"title": "fount",
+			"tooltip": "fount",
 			"items": {
 				"open": {
 					"title": "Mở",
-					"tooltip": "Mở Fount"
+					"tooltip": "Mở fount"
 				},
 				"github": {
 					"title": "GitHub",
-					"tooltip": "Mở GitHub của Fount"
+					"tooltip": "Mở GitHub của fount"
 				},
 				"discord": {
 					"title": "Discord",
-					"tooltip": "Mở Discord của Fount"
+					"tooltip": "Mở Discord của fount"
 				},
 				"exit": {
 					"title": "Thoát",
@@ -93,7 +93,7 @@
 		}
 	},
 	"protocolhandler": {
-		"title": "Xử lý giao thức Fount",
+		"title": "Xử lý giao thức fount",
 		"processing": "Đang xử lý giao thức...",
 		"invalidProtocol": "Giao thức không hợp lệ.",
 		"insufficientParams": "Không đủ tham số.",
@@ -101,30 +101,30 @@
 		"shellCommandSent": "Lệnh Shell đã được gửi.",
 		"shellCommandFailed": "Gửi lệnh Shell thất bại.",
 		"shellCommandError": "Đã xảy ra lỗi khi gửi lệnh Shell.",
-		"fountNotFound": "Ối... :(\n\nKhông tìm thấy Fount. Có lẽ bạn cần cài đặt trước?",
+		"fountNotFound": "Ối... :(\n\nKhông tìm thấy fount. Có lẽ bạn cần cài đặt trước?",
 		"unknownError": "Ối... :(\n\nĐã xảy ra lỗi:\n"
 	},
 	"installer_wait_screen": {
-		"title": "Chào mừng đến với Fount!",
+		"title": "Chào mừng đến với fount!",
 		"hero": {
 			"title": "Bạn Đồng Hành Nhân Vật AI Đầy Lôi Cuốn",
-			"description": "Fount là một nền tảng tương tác nhân vật được hỗ trợ bởi AI, thiết kế để trao quyền cho <i>bạn</i>. Đây là cầu nối giúp bạn kết nối với các nhân vật trong tưởng tượng, cho phép bạn dễ dàng trò chuyện, tạo ra nhân vật của riêng mình và chia sẻ chúng với thế giới."
+			"description": "fount là một nền tảng tương tác nhân vật được hỗ trợ bởi AI, thiết kế để trao quyền cho <i>bạn</i>. Đây là cầu nối giúp bạn kết nối với các nhân vật trong tưởng tượng, cho phép bạn dễ dàng trò chuyện, tạo ra nhân vật của riêng mình và chia sẻ chúng với thế giới."
 		},
 		"feature1": {
 			"title": "Đối thoại liền mạch, mọi lúc mọi nơi",
-			"description": "Bắt đầu trò chuyện trên máy tính và tiếp tục một cách liền mạch trên điện thoại hoặc máy tính bảng của bạn. Fount giữ cho các cuộc trò chuyện luôn được đồng bộ, giúp bạn giữ liên lạc với nhân vật của mình dù bạn ở bất cứ đâu. Hoạt động trên Windows, macOS, Linux và cả Android."
+			"description": "Bắt đầu trò chuyện trên máy tính và tiếp tục một cách liền mạch trên điện thoại hoặc máy tính bảng của bạn. fount giữ cho các cuộc trò chuyện luôn được đồng bộ, giúp bạn giữ liên lạc với nhân vật của mình dù bạn ở bất cứ đâu. Hoạt động trên Windows, macOS, Linux và cả Android."
 		},
 		"feature2": {
 			"title": "Giao diện đẹp mắt, tùy chỉnh dễ dàng",
-			"description": "Chọn từ hơn 30 chủ đề đẹp mắt, hoặc tự tạo chủ đề của riêng bạn. Fount là không gian sáng tạo của riêng bạn. Thể hiện bản thân, tùy chỉnh môi trường theo sở thích và tận hưởng trải nghiệm được cá nhân hóa thực sự."
+			"description": "Chọn từ hơn 30 chủ đề đẹp mắt, hoặc tự tạo chủ đề của riêng bạn. fount là không gian sáng tạo của riêng bạn. Thể hiện bản thân, tùy chỉnh môi trường theo sở thích và tận hưởng trải nghiệm được cá nhân hóa thực sự."
 		},
 		"feature3": {
 			"title": "Trò chuyện biểu cảm, nhập vai sâu sắc",
-			"description": "Fount tận dụng sức mạnh của HTML, cho phép các nhân vật thể hiện bản thân qua văn bản đa dạng, hình ảnh và cả các yếu tố tương tác. Tham gia vào các cuộc trò chuyện nhóm năng động và hấp dẫn với nhiều nhân vật cùng một lúc."
+			"description": "fount tận dụng sức mạnh của HTML, cho phép các nhân vật thể hiện bản thân qua văn bản đa dạng, hình ảnh và cả các yếu tố tương tác. Tham gia vào các cuộc trò chuyện nhóm năng động và hấp dẫn với nhiều nhân vật cùng một lúc."
 		},
 		"feature4": {
 			"title": "Tích hợp Nguồn AI không giới hạn",
-			"description": "Fount mang đến sự lựa chọn và linh hoạt vô song. Kết nối với <i>bất kỳ</i> nguồn AI nào – OpenAI, Claude, OpenRouter, NovelAI, v.v. Logic giao tiếp sẽ được định hình bởi sức mạnh của mã nguồn, theo ý muốn của <i>bạn</i>."
+			"description": "fount mang đến sự lựa chọn và linh hoạt vô song. Kết nối với <i>bất kỳ</i> nguồn AI nào – OpenAI, Claude, OpenRouter, NovelAI, v.v. Logic giao tiếp sẽ được định hình bởi sức mạnh của mã nguồn, theo ý muốn của <i>bạn</i>."
 		},
 		"theme_selector": {
 			"title": "Chọn giao diện của bạn",
@@ -138,25 +138,25 @@
 		"footer": {
 			"ready_text": "Sẵn sàng bắt đầu hành trình của bạn?",
 			"wait_text": "Vui lòng đợi một lát...",
-			"launch_button": "Fount đang được cài đặt...",
-			"open_fount": "Mở Fount",
-			"open_or_install_fount": "Mở/Cài đặt Fount",
+			"launch_button": "fount đang được cài đặt...",
+			"open_fount": "Mở fount",
+			"open_or_install_fount": "Mở/Cài đặt fount",
 			"error_message": "Ối... :(\n\nĐã xảy ra lỗi:\n"
 		},
 		"error": {
 			"title": "Cài đặt thất bại!",
 			"connection_failed": "Kết nối thất bại!",
-			"description1": "Dường như có sự cố với trình cài đặt Fount.",
+			"description1": "Dường như có sự cố với trình cài đặt fount.",
 			"description2": "Vui lòng kiểm tra terminal của bạn và thử lại.",
 			"close_page": "Đóng trang"
 		}
 	},
 	"startPage": {
-		"title": "Fount!",
+		"title": "fount!",
 		"newTabFailed": {
 			"title": "Không thể mở tab mới",
-			"instruction": "Việc khởi động Fount sẽ chậm hơn 1-2 giây mỗi lần nếu không có quyền mở cửa sổ pop-up.",
-			"tryAllow": "Thử cấp quyền mở cửa sổ pop-up cho Fount?",
+			"instruction": "Việc khởi động fount sẽ chậm hơn 1-2 giây mỗi lần nếu không có quyền mở cửa sổ pop-up.",
+			"tryAllow": "Thử cấp quyền mở cửa sổ pop-up cho fount?",
 			"buttons": {
 				"retry": "Thử lại",
 				"skip": "Bỏ qua",
@@ -230,7 +230,7 @@
 	"tutorial": {
 		"title": "Thử hướng dẫn nhé?",
 		"modal": {
-			"title": "Chào mừng bạn đến với Fount!",
+			"title": "Chào mừng bạn đến với fount!",
 			"instruction": "Bạn có muốn xem hướng dẫn cho người mới bắt đầu không?",
 			"buttons": {
 				"start": "Bắt đầu hướng dẫn",
@@ -251,7 +251,7 @@
 	},
 	"home": {
 		"title": "Trang chủ",
-		"escapeConfirm": "Bạn có chắc chắn muốn thoát Fount không?",
+		"escapeConfirm": "Bạn có chắc chắn muốn thoát fount không?",
 		"filterInput": {
 			"placeholder": "Tìm kiếm..."
 		},
@@ -799,14 +799,14 @@
 	},
 	"terminal_assistant": {
 		"title": "Trợ lý Terminal",
-		"initialMessage": "Fount hỗ trợ triển khai các nhân vật yêu thích của bạn vào terminal để trợ giúp bạn trong quá trình lập trình!",
+		"initialMessage": "fount hỗ trợ triển khai các nhân vật yêu thích của bạn vào terminal để trợ giúp bạn trong quá trình lập trình!",
 		"initialMessageLink": "Nhấp vào đây để tìm hiểu thêm."
 	},
 	"access": {
-		"title": "Truy cập Fount trên các thiết bị khác",
-		"heading": "Bạn muốn truy cập Fount trên các thiết bị khác?",
+		"title": "Truy cập fount trên các thiết bị khác",
+		"heading": "Bạn muốn truy cập fount trên các thiết bị khác?",
 		"instruction": {
-			"sameLAN": "Đảm bảo thiết bị và máy chủ Fount đang ở trên cùng một mạng LAN.",
+			"sameLAN": "Đảm bảo thiết bị và máy chủ fount đang ở trên cùng một mạng LAN.",
 			"accessthis": "Truy cập địa chỉ sau:"
 		},
 		"copyButton": "Sao chép địa chỉ",
@@ -815,7 +815,7 @@
 	"proxy": {
 		"title": "Proxy API",
 		"heading": "Địa chỉ Proxy API OpenAI",
-		"instruction": "Nhập địa chỉ sau vào bất kỳ ứng dụng nào yêu cầu định dạng API OpenAI để sử dụng các nguồn AI trong Fount!",
+		"instruction": "Nhập địa chỉ sau vào bất kỳ ứng dụng nào yêu cầu định dạng API OpenAI để sử dụng các nguồn AI trong fount!",
 		"copyButton": "Sao chép địa chỉ",
 		"copied": "Địa chỉ đã được sao chép vào bộ nhớ tạm!"
 	},
@@ -907,8 +907,8 @@
 		}
 	},
 	"badges_maker": {
-		"title": "Fount! Bộ chuyển đổi huy hiệu",
-		"card_title": "Bộ chuyển đổi liên kết huy hiệu Fount",
+		"title": "fount! Bộ chuyển đổi huy hiệu",
+		"card_title": "Bộ chuyển đổi liên kết huy hiệu fount",
 		"original_url_label": "Dán URL img.shields.io",
 		"original_url_placeholder": "Ví dụ: https://img.shields.io/badge/hello-world-blue",
 		"new_url_label": "URL mới được tạo",

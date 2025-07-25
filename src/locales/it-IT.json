@@ -64,20 +64,20 @@
 		"tray": {
 			"readIconFailed": "Impossibile leggere il file dell'icona: ${error}",
 			"createTrayFailed": "Impossibile creare l'icona nell'area di notifica: ${error}",
-			"title": "Fount",
-			"tooltip": "Fount",
+			"title": "fount",
+			"tooltip": "fount",
 			"items": {
 				"open": {
 					"title": "Apri",
-					"tooltip": "Apri Fount"
+					"tooltip": "Apri fount"
 				},
 				"github": {
 					"title": "GitHub",
-					"tooltip": "Apri il GitHub di Fount"
+					"tooltip": "Apri il GitHub di fount"
 				},
 				"discord": {
 					"title": "Discord",
-					"tooltip": "Apri il Discord di Fount"
+					"tooltip": "Apri il Discord di fount"
 				},
 				"exit": {
 					"title": "Esci",
@@ -93,7 +93,7 @@
 		}
 	},
 	"protocolhandler": {
-		"title": "Gestione Protocollo Fount",
+		"title": "Gestione Protocollo fount",
 		"processing": "Elaborazione del protocollo in corso...",
 		"invalidProtocol": "Protocollo non valido.",
 		"insufficientParams": "Parametri insufficienti.",
@@ -101,30 +101,30 @@
 		"shellCommandSent": "Comando shell inviato.",
 		"shellCommandFailed": "Impossibile inviare il comando shell.",
 		"shellCommandError": "Errore durante l'invio del comando shell.",
-		"fountNotFound": "Uffa :(\n\nFount non trovato. Forse devi prima installarlo?",
+		"fountNotFound": "Uffa :(\n\nfount non trovato. Forse devi prima installarlo?",
 		"unknownError": "Uffa :(\n\nSi è verificato un errore:\n"
 	},
 	"installer_wait_screen": {
-		"title": "Benvenuto in Fount!",
+		"title": "Benvenuto in fount!",
 		"hero": {
 			"title": "Il Tuo Compagno Immersivo di Personaggi AI",
-			"description": "Fount è una piattaforma di interazione con personaggi basata sull'IA, progettata per dare più potere a <i>te</i>. È un ponte che ti connette con i personaggi della tua immaginazione, permettendoti di parlare facilmente con loro, creare i tuoi personaggi e condividerli con il mondo."
+			"description": "fount è una piattaforma di interazione con personaggi basata sull'IA, progettata per dare più potere a <i>te</i>. È un ponte che ti connette con i personaggi della tua immaginazione, permettendoti di parlare facilmente con loro, creare i tuoi personaggi e condividerli con il mondo."
 		},
 		"feature1": {
 			"title": "Dialoghi fluidi, ovunque",
-			"description": "Inizia a chattare sul tuo computer e prosegui senza interruzioni sul tuo telefono o tablet. Fount mantiene sincronizzate le tue conversazioni, così puoi restare in contatto con il tuo personaggio ovunque tu vada. Funziona su Windows, macOS, Linux e persino Android."
+			"description": "Inizia a chattare sul tuo computer e prosegui senza interruzioni sul tuo telefono o tablet. fount mantiene sincronizzate le tue conversazioni, così puoi restare in contatto con il tuo personaggio ovunque tu vada. Funziona su Windows, macOS, Linux e persino Android."
 		},
 		"feature2": {
 			"title": "Interfaccia elegante e personalizzabile",
-			"description": "Scegli tra oltre 30 temi magnifici o crea il tuo. Fount è la tua tela personale. Esprimiti, personalizza l'ambiente secondo le tue preferenze e vivi un'esperienza davvero unica."
+			"description": "Scegli tra oltre 30 temi magnifici o crea il tuo. fount è la tua tela personale. Esprimiti, personalizza l'ambiente secondo le tue preferenze e vivi un'esperienza davvero unica."
 		},
 		"feature3": {
 			"title": "Chat espressiva e coinvolgente",
-			"description": "Fount sfrutta la potenza dell'HTML, consentendo ai personaggi di esprimersi attraverso testo formattato, immagini e persino elementi interattivi. Partecipa a chat di gruppo dinamiche e avvincenti con più personaggi contemporaneamente."
+			"description": "fount sfrutta la potenza dell'HTML, consentendo ai personaggi di esprimersi attraverso testo formattato, immagini e persino elementi interattivi. Partecipa a chat di gruppo dinamiche e avvincenti con più personaggi contemporaneamente."
 		},
 		"feature4": {
 			"title": "Integrazione illimitata con sorgenti IA",
-			"description": "Fount offre scelta e flessibilità senza pari. Connettiti a <i>qualsiasi</i> sorgente IA: OpenAI, Claude, OpenRouter, NovelAI, ecc. La logica di comunicazione sarà modellata dalla potenza del codice, secondo i <i>tuoi</i> desideri."
+			"description": "fount offre scelta e flessibilità senza pari. Connettiti a <i>qualsiasi</i> sorgente IA: OpenAI, Claude, OpenRouter, NovelAI, ecc. La logica di comunicazione sarà modellata dalla potenza del codice, secondo i <i>tuoi</i> desideri."
 		},
 		"theme_selector": {
 			"title": "Scegli il tuo aspetto",
@@ -138,25 +138,25 @@
 		"footer": {
 			"ready_text": "Pronto per iniziare il tuo viaggio?",
 			"wait_text": "Attendi un momento...",
-			"launch_button": "Fount è in fase di installazione...",
-			"open_fount": "Apri Fount",
-			"open_or_install_fount": "Apri/Installa Fount",
+			"launch_button": "fount è in fase di installazione...",
+			"open_fount": "Apri fount",
+			"open_or_install_fount": "Apri/Installa fount",
 			"error_message": "Uffa :(\n\nSi è verificato un errore:\n"
 		},
 		"error": {
 			"title": "Installazione non riuscita!",
 			"connection_failed": "Connessione non riuscita!",
-			"description1": "Sembra esserci un problema con il programma di installazione di Fount.",
+			"description1": "Sembra esserci un problema con il programma di installazione di fount.",
 			"description2": "Controlla il tuo terminale e riprova.",
 			"close_page": "Chiudi pagina"
 		}
 	},
 	"startPage": {
-		"title": "Fount!",
+		"title": "fount!",
 		"newTabFailed": {
 			"title": "Impossibile aprire una nuova scheda",
-			"instruction": "L'avvio di Fount è più lento di 1-2 secondi ogni volta senza il permesso per le finestre a comparsa.",
-			"tryAllow": "Vuoi provare a dare a Fount il permesso per le finestre a comparsa?",
+			"instruction": "L'avvio di fount è più lento di 1-2 secondi ogni volta senza il permesso per le finestre a comparsa.",
+			"tryAllow": "Vuoi provare a dare a fount il permesso per le finestre a comparsa?",
 			"buttons": {
 				"retry": "Riprova",
 				"skip": "Salta",
@@ -230,7 +230,7 @@
 	"tutorial": {
 		"title": "Ti va un tutorial?",
 		"modal": {
-			"title": "Benvenuto in Fount!",
+			"title": "Benvenuto in fount!",
 			"instruction": "Vuoi seguire il tutorial per principianti?",
 			"buttons": {
 				"start": "Inizia il tutorial",
@@ -251,7 +251,7 @@
 	},
 	"home": {
 		"title": "Home",
-		"escapeConfirm": "Sei sicuro di voler uscire da Fount?",
+		"escapeConfirm": "Sei sicuro di voler uscire da fount?",
 		"filterInput": {
 			"placeholder": "Cerca..."
 		},
@@ -799,14 +799,14 @@
 	},
 	"terminal_assistant": {
 		"title": "Assistente Terminale",
-		"initialMessage": "Fount supporta l'integrazione dei tuoi personaggi preferiti nel terminale per assisterti nella programmazione!",
+		"initialMessage": "fount supporta l'integrazione dei tuoi personaggi preferiti nel terminale per assisterti nella programmazione!",
 		"initialMessageLink": "Clicca qui per saperne di più."
 	},
 	"access": {
-		"title": "Accedi a Fount su altri dispositivi",
-		"heading": "Vuoi accedere a Fount da altri dispositivi?",
+		"title": "Accedi a fount su altri dispositivi",
+		"heading": "Vuoi accedere a fount da altri dispositivi?",
 		"instruction": {
-			"sameLAN": "Assicurati che il dispositivo e l'host Fount siano sulla stessa rete locale.",
+			"sameLAN": "Assicurati che il dispositivo e l'host fount siano sulla stessa rete locale.",
 			"accessthis": "Visita questo URL:"
 		},
 		"copyButton": "Copia URL",
@@ -815,7 +815,7 @@
 	"proxy": {
 		"title": "Proxy API",
 		"heading": "Indirizzo Proxy API OpenAI",
-		"instruction": "Inserisci il seguente indirizzo in qualsiasi applicazione che richieda il formato API OpenAI per utilizzare le sorgenti IA in Fount!",
+		"instruction": "Inserisci il seguente indirizzo in qualsiasi applicazione che richieda il formato API OpenAI per utilizzare le sorgenti IA in fount!",
 		"copyButton": "Copia indirizzo",
 		"copied": "Indirizzo copiato negli appunti!"
 	},
@@ -907,8 +907,8 @@
 		}
 	},
 	"badges_maker": {
-		"title": "Fount! Convertitore di Badge",
-		"card_title": "Convertitore di Link Badge Fount",
+		"title": "fount! Convertitore di Badge",
+		"card_title": "Convertitore di Link Badge fount",
 		"original_url_label": "Incolla URL img.shields.io",
 		"original_url_placeholder": "Ad esempio: https://img.shields.io/badge/hello-world-blue",
 		"new_url_label": "Nuovo URL generato",

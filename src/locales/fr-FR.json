@@ -64,20 +64,20 @@
 		"tray": {
 			"readIconFailed": "Erreur lors de la lecture du fichier d'icône : ${error}",
 			"createTrayFailed": "Erreur lors de la création de l'icône dans la zone de notification : ${error}",
-			"title": "Fount",
-			"tooltip": "Fount",
+			"title": "fount",
+			"tooltip": "fount",
 			"items": {
 				"open": {
 					"title": "Ouvrir",
-					"tooltip": "Ouvrir Fount"
+					"tooltip": "Ouvrir fount"
 				},
 				"github": {
 					"title": "GitHub",
-					"tooltip": "Ouvrir le GitHub de Fount"
+					"tooltip": "Ouvrir le GitHub de fount"
 				},
 				"discord": {
 					"title": "Discord",
-					"tooltip": "Ouvrir le Discord de Fount"
+					"tooltip": "Ouvrir le Discord de fount"
 				},
 				"exit": {
 					"title": "Quitter",
@@ -93,7 +93,7 @@
 		}
 	},
 	"protocolhandler": {
-		"title": "Traitement du Protocole Fount",
+		"title": "Traitement du Protocole fount",
 		"processing": "Traitement du protocole en cours...",
 		"invalidProtocol": "Protocole invalide.",
 		"insufficientParams": "Paramètres insuffisants.",
@@ -101,30 +101,30 @@
 		"shellCommandSent": "Commande shell envoyée.",
 		"shellCommandFailed": "Échec de l'envoi de la commande shell.",
 		"shellCommandError": "Erreur lors de l'envoi de la commande shell.",
-		"fountNotFound": "Oh là là :(\n\nFount introuvable. Peut-être devez-vous d'abord l'installer ?",
+		"fountNotFound": "Oh là là :(\n\nfount introuvable. Peut-être devez-vous d'abord l'installer ?",
 		"unknownError": "Oh là là :(\n\nUne erreur s'est produite :\n"
 	},
 	"installer_wait_screen": {
-		"title": "Bienvenue sur Fount !",
+		"title": "Bienvenue sur fount !",
 		"hero": {
 			"title": "Votre Compagnon IA Immersif de Personnages",
-			"description": "Fount est une plateforme d'interaction avec des personnages, animée par l'IA et conçue pour <i>vous</i> donner le pouvoir. C'est un pont qui vous connecte avec les personnages de votre imagination, vous permettant de dialoguer aisément avec eux, de créer vos propres personnages et de les partager avec le monde."
+			"description": "fount est une plateforme d'interaction avec des personnages, animée par l'IA et conçue pour <i>vous</i> donner le pouvoir. C'est un pont qui vous connecte avec les personnages de votre imagination, vous permettant de dialoguer aisément avec eux, de créer vos propres personnages et de les partager avec le monde."
 		},
 		"feature1": {
 			"title": "Dialogues fluides, n'importe où",
-			"description": "Commencez à discuter sur votre ordinateur et poursuivez en toute fluidité sur votre téléphone ou tablette. Fount synchronise vos conversations pour que vous restiez en contact avec votre personnage où que vous alliez. Disponible sur Windows, macOS, Linux et même Android."
+			"description": "Commencez à discuter sur votre ordinateur et poursuivez en toute fluidité sur votre téléphone ou tablette. fount synchronise vos conversations pour que vous restiez en contact avec votre personnage où que vous alliez. Disponible sur Windows, macOS, Linux et même Android."
 		},
 		"feature2": {
 			"title": "Interface superbe et personnalisable",
-			"description": "Choisissez parmi plus de 30 thèmes magnifiques ou créez le vôtre. Fount est votre toile personnelle. Exprimez-vous, personnalisez l'environnement selon vos préférences et vivez une expérience véritablement unique."
+			"description": "Choisissez parmi plus de 30 thèmes magnifiques ou créez le vôtre. fount est votre toile personnelle. Exprimez-vous, personnalisez l'environnement selon vos préférences et vivez une expérience véritablement unique."
 		},
 		"feature3": {
 			"title": "Chat expressif et immersif",
-			"description": "Fount exploite la puissance du HTML, permettant aux personnages de s'exprimer à travers du texte enrichi, des images et même des éléments interactifs. Participez à des discussions de groupe dynamiques et captivantes avec plusieurs personnages simultanément."
+			"description": "fount exploite la puissance du HTML, permettant aux personnages de s'exprimer à travers du texte enrichi, des images et même des éléments interactifs. Participez à des discussions de groupe dynamiques et captivantes avec plusieurs personnages simultanément."
 		},
 		"feature4": {
 			"title": "Intégration illimitée de sources d'IA",
-			"description": "Fount offre un choix et une flexibilité inégalés. Connectez-vous à <i>n'importe quelle</i> source d'IA – OpenAI, Claude, OpenRouter, NovelAI, etc. La logique de communication sera façonnée par la puissance du code, selon <i>vos</i> désirs."
+			"description": "fount offre un choix et une flexibilité inégalés. Connectez-vous à <i>n'importe quelle</i> source d'IA – OpenAI, Claude, OpenRouter, NovelAI, etc. La logique de communication sera façonnée par la puissance du code, selon <i>vos</i> désirs."
 		},
 		"theme_selector": {
 			"title": "Choisissez votre apparence",
@@ -138,25 +138,25 @@
 		"footer": {
 			"ready_text": "Prêt à commencer votre voyage ?",
 			"wait_text": "Veuillez patienter un instant...",
-			"launch_button": "Fount est en cours d'installation...",
-			"open_fount": "Ouvrir Fount",
-			"open_or_install_fount": "Ouvrir/Installer Fount",
+			"launch_button": "fount est en cours d'installation...",
+			"open_fount": "Ouvrir fount",
+			"open_or_install_fount": "Ouvrir/Installer fount",
 			"error_message": "Oh là là :(\n\nUne erreur s'est produite :\n"
 		},
 		"error": {
 			"title": "Échec de l'installation !",
 			"connection_failed": "Échec de la connexion !",
-			"description1": "Un problème semble être survenu avec le programme d'installation de Fount.",
+			"description1": "Un problème semble être survenu avec le programme d'installation de fount.",
 			"description2": "Veuillez vérifier votre terminal et réessayer.",
 			"close_page": "Fermer la page"
 		}
 	},
 	"startPage": {
-		"title": "Fount!",
+		"title": "fount!",
 		"newTabFailed": {
 			"title": "L'ouverture du nouvel onglet a échoué",
-			"instruction": "Le démarrage de Fount est plus lent de 1 à 2 secondes à chaque fois sans l'autorisation d'afficher des fenêtres pop-up.",
-			"tryAllow": "Essayer de donner à Fount l'autorisation d'afficher des fenêtres pop-up ?",
+			"instruction": "Le démarrage de fount est plus lent de 1 à 2 secondes à chaque fois sans l'autorisation d'afficher des fenêtres pop-up.",
+			"tryAllow": "Essayer de donner à fount l'autorisation d'afficher des fenêtres pop-up ?",
 			"buttons": {
 				"retry": "Réessayer",
 				"skip": "Ignorer",
@@ -230,7 +230,7 @@
 	"tutorial": {
 		"title": "Un tutoriel ?",
 		"modal": {
-			"title": "Bienvenue sur Fount !",
+			"title": "Bienvenue sur fount !",
 			"instruction": "Voulez-vous suivre le tutoriel d'introduction ?",
 			"buttons": {
 				"start": "Commencer le tutoriel",
@@ -251,7 +251,7 @@
 	},
 	"home": {
 		"title": "Accueil",
-		"escapeConfirm": "Êtes-vous sûr de vouloir quitter Fount ?",
+		"escapeConfirm": "Êtes-vous sûr de vouloir quitter fount ?",
 		"filterInput": {
 			"placeholder": "Rechercher..."
 		},
@@ -799,14 +799,14 @@
 	},
 	"terminal_assistant": {
 		"title": "Assistant Terminal",
-		"initialMessage": "Fount prend en charge le déploiement de vos personnages préférés dans votre terminal pour vous assister lors du codage !",
+		"initialMessage": "fount prend en charge le déploiement de vos personnages préférés dans votre terminal pour vous assister lors du codage !",
 		"initialMessageLink": "Cliquez ici pour en savoir plus"
 	},
 	"access": {
-		"title": "Accéder à Fount sur d'autres appareils",
-		"heading": "Vous voulez accéder à Fount sur d'autres appareils ?",
+		"title": "Accéder à fount sur d'autres appareils",
+		"heading": "Vous voulez accéder à fount sur d'autres appareils ?",
 		"instruction": {
-			"sameLAN": "Assurez-vous que l'appareil et l'hôte Fount sont sur le même réseau local.",
+			"sameLAN": "Assurez-vous que l'appareil et l'hôte fount sont sur le même réseau local.",
 			"accessthis": "Visitez cette URL :"
 		},
 		"copyButton": "Copier l'URL",
@@ -815,7 +815,7 @@
 	"proxy": {
 		"title": "Proxy API",
 		"heading": "Adresse du Proxy API OpenAI",
-		"instruction": "Saisissez l'adresse suivante dans toute application nécessitant le format API OpenAI pour utiliser les sources d'IA dans Fount !",
+		"instruction": "Saisissez l'adresse suivante dans toute application nécessitant le format API OpenAI pour utiliser les sources d'IA dans fount !",
 		"copyButton": "Copier l'adresse",
 		"copied": "Adresse copiée dans le presse-papiers !"
 	},
@@ -907,8 +907,8 @@
 		}
 	},
 	"badges_maker": {
-		"title": "Fount! Convertisseur de Badges",
-		"card_title": "Convertisseur de Liens de Badges Fount",
+		"title": "fount! Convertisseur de Badges",
+		"card_title": "Convertisseur de Liens de Badges fount",
 		"original_url_label": "Collez l'URL img.shields.io",
 		"original_url_placeholder": "Par exemple : https://img.shields.io/badge/Hello-World-blue",
 		"new_url_label": "Nouvelle URL générée",

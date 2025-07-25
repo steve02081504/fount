@@ -1,9 +1,9 @@
 import { Telegraf } from 'npm:telegraf@^4.16.3' // 引入 Telegraf
 import { on_shutdown } from 'npm:on-shutdown' // 用于注册进程关闭时的回调
-import { loadShellData, loadTempData, saveShellData } from '../../../../../server/setting_loader.mjs' // Fount 的数据加载/保存工具
+import { loadShellData, loadTempData, saveShellData } from '../../../../../server/setting_loader.mjs' // fount 的数据加载/保存工具
 import { LoadChar } from '../../../../../server/managers/char_manager.mjs' // 加载角色
 import { getAllUserNames } from '../../../../../server/auth.mjs' // 获取所有用户名
-import { StartJob, EndJob } from '../../../../../server/jobs.mjs' // Fount 的任务管理
+import { StartJob, EndJob } from '../../../../../server/jobs.mjs' // fount 的任务管理
 import { geti18n } from '../../../../../scripts/i18n.mjs' // 国际化
 import { events } from '../../../../../server/events.mjs'
 
@@ -133,7 +133,7 @@ export async function runBot(username, botname) {
 	try {
 		// 等待机器人启动完成，并将 Telegraf 实例存回缓存
 		botCache[botname] = await botCache[botname]
-		// 在 Fount 任务系统中注册此机器人为一个正在运行的任务
+		// 在 fount 任务系统中注册此机器人为一个正在运行的任务
 		StartJob(username, 'shells', 'telegrambot', botname)
 	} catch (error) {
 		// 如果启动失败，从缓存中移除，并向上抛出错误
@@ -159,7 +159,7 @@ export async function stopBot(username, botname) {
 		// 无论停止是否成功，都从缓存中移除
 		delete botCache[botname]
 	}
-	// 在 Fount 任务系统中标记此机器人任务已结束
+	// 在 fount 任务系统中标记此机器人任务已结束
 	EndJob(username, 'shells', 'telegrambot', botname)
 }
 
@@ -172,9 +172,9 @@ export function getRunningBotList(username) {
 	return Object.keys(loadTempData(username, 'telegrambot_cache'))
 }
 
-// 注册一个在 Fount 进程关闭时执行的回调
+// 注册一个在 fount 进程关闭时执行的回调
 on_shutdown(async () => {
-	const users = getAllUserNames() // 获取所有 Fount 用户
+	const users = getAllUserNames() // 获取所有 fount 用户
 	for (const username of users) {
 		const botCache = loadTempData(username, 'telegrambot_cache')
 		for (const botname of Object.keys(botCache)) try {

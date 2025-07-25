@@ -212,12 +212,12 @@ else
 		fi
 	fi
 
-	echo "Installing Fount into $FOUNT_DIR..."
+	echo "Installing fount into $FOUNT_DIR..."
 	rm -rf "$FOUNT_DIR"
 	mkdir -p "$(dirname "$FOUNT_DIR")"
 
 	if install_package "git" "git git-core"; then
-		echo "Cloning Fount repository..."
+		echo "Cloning fount repository..."
 		if git clone https://github.com/steve02081504/fount.git "$FOUNT_DIR" --depth 1 --single-branch --branch "$FOUNT_BRANCH"; then
 			echo "Clone successful."
 		else
@@ -236,7 +236,7 @@ else
 		ZIP_URL="https://github.com/steve02081504/fount/archive/refs/heads/$FOUNT_BRANCH.zip"
 		ZIP_FILE="$TMP_DIR/fount.zip"
 
-		echo "Downloading Fount from $ZIP_URL..."
+		echo "Downloading fount from $ZIP_URL..."
 		if command -v curl &>/dev/null; then
 			curl -L -o "$ZIP_FILE" "$ZIP_URL"
 		else
@@ -249,7 +249,7 @@ else
 			exit 1
 		fi
 
-		echo "Unzipping Fount..."
+		echo "Unzipping fount..."
 		if ! unzip -o "$ZIP_FILE" -d "$TMP_DIR"; then
 			echo "Error: Unzip failed." >&2
 			exit 1
@@ -267,7 +267,7 @@ else
 	fi
 
 	if [ ! -f "$FOUNT_DIR/path/fount.sh" ]; then
-		echo "Error: Fount installation failed. Main script not found." >&2
+		echo "Error: fount installation failed. Main script not found." >&2
 		exit 1
 	fi
 
@@ -278,7 +278,7 @@ else
 	find "$FOUNT_DIR" -name "*.sh" -exec chmod +x {} +
 	find "$FOUNT_DIR/path" -type f -exec chmod +x {} +
 
-	echo "Fount installation complete."
+	echo "fount installation complete."
 fi
 
 # 执行真正的 fount 核心脚本

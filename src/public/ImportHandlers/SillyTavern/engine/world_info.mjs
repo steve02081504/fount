@@ -3,7 +3,7 @@ import { world_info_logic, world_info_position, extension_prompt_roles } from '.
 import { escapeRegExp, parseRegexFromString } from './tools.mjs' // 假设 tools.mjs 包含这些工具函数
 import { evaluateMacros } from './marco.mjs' // 假设宏引擎已修改并接受 chat_scoped_char_memory
 
-export const WISettings = { // WI 设置，可以保持默认值或根据 Fount 环境调整
+export const WISettings = { // WI 设置，可以保持默认值或根据 fount 环境调整
 	depth: 4, // 扫描深度，表示在多少轮对话中查找关键词
 	isSensitive: false, // 是否区分大小写
 	isFullWordMatch: true // 是否全词匹配

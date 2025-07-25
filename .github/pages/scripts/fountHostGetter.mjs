@@ -26,21 +26,21 @@ function extractIpAndPortFromUrl(urlString) {
 	}
 }
 
-// 测试 Fount 服务是否可用
+// 测试 fount 服务是否可用
 export async function isFountServiceAvailable(host) {
 	try {
 		const url = new URL('/api/ping', host)
 		const response = await fetch(url, { method: 'GET', mode: 'cors', signal: AbortSignal.timeout(500) })
 		const data = await response.json()
 		if (data?.cilent_name != 'fount') return false
-		console.debug(`[isFountServiceAvailable] Fount service at ${host} is available.`)
+		console.debug(`[isFountServiceAvailable] fount service at ${host} is available.`)
 		return true
 	} catch (error) {
 		return false // 任何错误都表示不可用
 	}
 }
 
-// 扫描本地网络以查找 Fount 服务
+// 扫描本地网络以查找 fount 服务
 async function scanLocalNetworkForFount(baseIP, port) {
 	console.debug(`[scanLocalNetworkForFount] Scanning with base IP: ${baseIP}, Port: ${port}`)
 	const batchSize = 8
@@ -54,17 +54,17 @@ async function scanLocalNetworkForFount(baseIP, port) {
 		const batchResults = await Promise.all(promise_arr)
 		const found = batchResults.find(host => host)
 		if (found) {
-			console.info(`[scanLocalNetworkForFount] Fount service found at: ${found}`)
+			console.info(`[scanLocalNetworkForFount] fount service found at: ${found}`)
 			return found
 		}
 	}
-	console.warn(`[scanLocalNetworkForFount] Fount service not found on ${baseIP}, Port: ${port}`)
+	console.warn(`[scanLocalNetworkForFount] fount service not found on ${baseIP}, Port: ${port}`)
 	return null
 }
 
-// 在 IPv4 网络上映射 Fount 主机
+// 在 IPv4 网络上映射 fount 主机
 async function mapFountHostOnIPv4(hostUrl) {
-	console.debug(`[mapFountHostOnIPv4] Mapping Fount host on IPv4 for URL: ${hostUrl}`)
+	console.debug(`[mapFountHostOnIPv4] Mapping fount host on IPv4 for URL: ${hostUrl}`)
 	const { ip, port } = extractIpAndPortFromUrl(hostUrl)
 	let foundHost = await scanLocalNetworkForFount(ip, port)
 	if (foundHost)
@@ -75,7 +75,7 @@ async function mapFountHostOnIPv4(hostUrl) {
 		foundHost = await scanLocalNetworkForFount(ip, DEFAULT_FOUNT_PORT)
 		if (foundHost) return foundHost
 	}
-	console.warn(`[mapFountHostOnIPv4] Fount service not found for ${hostUrl}`)
+	console.warn(`[mapFountHostOnIPv4] fount service not found for ${hostUrl}`)
 	return null
 }
 
@@ -98,27 +98,27 @@ function getLocalIPFromWebRTC() {
 	}).catch(() => null)
 }
 
-// 获取 Fount 主机 URL
+// 获取 fount 主机 URL
 async function mappingFountHostUrl(hostUrl) {
-	console.debug(`[getFountHostUrl] Attempting to get Fount host URL. Initial hostUrl: ${hostUrl}`)
+	console.debug(`[getFountHostUrl] Attempting to get fount host URL. Initial hostUrl: ${hostUrl}`)
 
 	if (await isFountServiceAvailable('http://localhost:8931')) { // 永远先检查 localhost —— 要不然用户为什么要运行本地服务器?
-		console.info('[getFountHostUrl] Fount service is available at localhost')
+		console.info('[getFountHostUrl] fount service is available at localhost')
 		return 'http://localhost:8931'
 	}
 	if (await isFountServiceAvailable('http://10.0.2.2:8931')) { // 安卓模拟器到本机
-		console.info('[getFountHostUrl] Fount service is available at 10.0.2.2')
+		console.info('[getFountHostUrl] fount service is available at 10.0.2.2')
 		return 'http://10.0.2.2:8931'
 	}
 	if (await isFountServiceAvailable(hostUrl)) {
-		console.info(`[getFountHostUrl] Fount service is available at provided hostUrl: ${hostUrl}`)
+		console.info(`[getFountHostUrl] fount service is available at provided hostUrl: ${hostUrl}`)
 		return hostUrl
 	}
 	if (isValidIPv4Address(hostUrl)) {
 		console.debug('[getFountHostUrl] hostUrl is a valid IPv4 address. Attempting to map.')
 		const result = await mapFountHostOnIPv4(hostUrl)
 		if (result) {
-			console.info(`[getFountHostUrl] Fount service found via IPv4 mapping: ${result}`)
+			console.info(`[getFountHostUrl] fount service found via IPv4 mapping: ${result}`)
 			return result
 		}
 	}
@@ -129,7 +129,7 @@ async function mappingFountHostUrl(hostUrl) {
 		console.info(`[getFountHostUrl] Got local IP via WebRTC: ${localIp}. Scanning its subnet.`)
 		const result = await mapFountHostOnIPv4(`http://${localIp}:${DEFAULT_FOUNT_PORT}`)
 		if (result) {
-			console.info(`[getFountHostUrl] Fount service found via WebRTC quick scan: ${result}`)
+			console.info(`[getFountHostUrl] fount service found via WebRTC quick scan: ${result}`)
 			return result
 		}
 	}
@@ -149,13 +149,13 @@ async function mappingFountHostUrl(hostUrl) {
 			console.debug(`[getFountHostUrl] Trying common host: ${commonHost}`)
 			const result = await mapFountHostOnIPv4(commonHost)
 			if (result) {
-				console.info(`[getFountHostUrl] Fount service found via common host: ${result}`)
+				console.info(`[getFountHostUrl] fount service found via common host: ${result}`)
 				return result
 			}
 		}
 	}
 
-	console.warn(`[getFountHostUrl] Could not determine Fount host URL. Returning initial hostUrl: ${hostUrl}`)
+	console.warn(`[getFountHostUrl] Could not determine fount host URL. Returning initial hostUrl: ${hostUrl}`)
 	return hostUrl // 即使找不到也返回原始值
 }
 

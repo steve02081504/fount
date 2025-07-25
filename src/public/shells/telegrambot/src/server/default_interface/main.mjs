@@ -54,7 +54,7 @@ function constructLogicalChannelIdForDefault(chatId, threadId) {
 /**
  * 为没有自定义 Telegram 接口的角色创建一个简单的默认 Telegram 接口。
  * @param {CharAPI_t} charAPI - 角色的 API 对象。
- * @param {string} ownerUsername - Fount 系统的用户名。
+ * @param {string} ownerUsername - fount 系统的用户名。
  * @param {string} botCharname - 当前机器人绑定的角色名称。
  * @returns {Promise<Object>} 一个包含 Telegram 接口方法的对象。
  */

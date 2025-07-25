@@ -37,7 +37,7 @@ Or perhaps you've envisioned a digital confidant, an AI assistant as intuitive a
 
 Or maybe, just maybe, you've sought a connection beyond the ordinary, a realm where reality's edges blur, and an intimate, _unfiltered_ understanding unfolds?
 
-With nearly a year of dedicated development, contributions from over 10 passionate individuals, and a thriving community of over 1000 users, Fount stands as a mature, stable, and ever-evolving platform for AI interaction. It's a journey, and one we believe is more accessible than you might imagine.
+With nearly a year of dedicated development, contributions from over 10 passionate individuals, and a thriving community of over 1000 users, fount stands as a mature, stable, and ever-evolving platform for AI interaction. It's a journey, and one we believe is more accessible than you might imagine.
 
 Lost characters, forgotten stories? Our [**vibrant and welcoming community**](https://discord.gg/GtR9Quzq2v) awaits—a haven where kindred spirits gather, where developers and creators alike share their wisdom and creations.
 
@@ -61,7 +61,7 @@ fount is a bridge, connecting you to the characters of your imagination, allowin
 
 It is a wellspring (fount), where AI sources, characters, personas, worlds, and plugins flow together, allowing you to create and experience unique and compelling interactions.
 
-Fount is built for the future, ready to embrace new features born from its vibrant community. If you have a vision, a spark of an idea that belongs within fount's realm, we welcome your contribution.
+fount is built for the future, ready to embrace new features born from its vibrant community. If you have a vision, a spark of an idea that belongs within fount's realm, we welcome your contribution.
 
 ---
 
@@ -83,14 +83,14 @@ Fount is built for the future, ready to embrace new features born from its vibra
   fount runs seamlessly on Windows, macOS, Linux, and even Android, adapting to your needs through direct installation or the flexibility of Docker.
 
 - **(For Advanced Users) Unshackled AI Source Integration: Embrace the Boundless**
-  Fount offers unparalleled _choice_ and _flexibility_ in connecting to AI sources. Custom JavaScript code within the AI source generator allows you to connect to _any_ AI source—OpenAI, Claude, OpenRouter, NovelAI, the Horde, Ooba, Tabby, Mistral, and more. Craft intricate regular expressions, call upon vast API libraries, and embed multimedia assets, all within the flow of your code. The logic of communication bends to _your_ will, shaped by the power of code.
+  fount offers unparalleled _choice_ and _flexibility_ in connecting to AI sources. Custom JavaScript code within the AI source generator allows you to connect to _any_ AI source—OpenAI, Claude, OpenRouter, NovelAI, the Horde, Ooba, Tabby, Mistral, and more. Craft intricate regular expressions, call upon vast API libraries, and embed multimedia assets, all within the flow of your code. The logic of communication bends to _your_ will, shaped by the power of code.
   ![Image](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
 
 ---
 
 ## Companionship: Beyond the Digital Veil
 
-Fount strives to weave characters into the very fabric of your life, offering companionship and support that transcends the screen.
+fount strives to weave characters into the very fabric of your life, offering companionship and support that transcends the screen.
 
 - **Discord/Telegram Integration**
   Connect your characters to Discord or Telegram communities through built-in Bot Shells, making them living members of your circles.
@@ -115,10 +115,10 @@ For the creator, fount offers a clearer path to bringing your AI characters to l
   Describe your character in a single sentence, and our intelligent AI assistant will craft a fully realized persona. This simplifies the initial setup, allowing you to focus on refining and interacting with your creation.
 
 - **The Magic of Code, Easier Than You Imagine**
-  In Fount, code is a form of modern magic. With the gentle guidance of our community and the illuminating aid of AI, learning it is surprisingly easy. You'll find that defining character logic with code can be an intuitive and maintainable way to craft characters whose responses are _woven_ from your own logic.
+  In fount, code is a form of modern magic. With the gentle guidance of our community and the illuminating aid of AI, learning it is surprisingly easy. You'll find that defining character logic with code can be an intuitive and maintainable way to craft characters whose responses are _woven_ from your own logic.
 
 - **Start with Ready-Made Magic: A Treasure Trove of Templates**
-  Fount's community provides a wealth of pre-crafted character and persona templates. They act as "living blueprints," easy to adapt and customize, providing a fantastic starting point.
+  fount's community provides a wealth of pre-crafted character and persona templates. They act as "living blueprints," easy to adapt and customize, providing a fantastic starting point.
 
 - **Embedded Resources**
   Weave images, audio, and other resources directly into your characters, making their presence all the more tangible.
@@ -136,7 +136,7 @@ For the creator, fount offers a clearer path to bringing your AI characters to l
 
 ## Architecture: The Foundation of Innovation
 
-Fount is built upon a robust and scalable architecture. The backend leverages the power and speed of [Deno](https://deno.com/), with [Express](https://expressjs.com/) for efficient routing. The frontend is crafted with HTML, CSS, and JavaScript for an intuitive and appealing interface.
+fount is built upon a robust and scalable architecture. The backend leverages the power and speed of [Deno](https://deno.com/), with [Express](https://expressjs.com/) for efficient routing. The frontend is crafted with HTML, CSS, and JavaScript for an intuitive and appealing interface.
 
 ### Expansion: A Tapestry Woven from Diverse Threads
 
@@ -154,7 +154,7 @@ In the world of fount, modularity reigns supreme. A rich ecosystem of components
 
 ## Installation & Removal: An Elegant Encounter and Farewell
 
-### Installation: Weaving Fount Into Your World – _Effortlessly_
+### Installation: Weaving fount Into Your World – _Effortlessly_
 
 Embark on your journey with fount, a stable and reliable platform. A few simple clicks or commands, and the world of fount unfolds.
 
@@ -235,11 +235,11 @@ Your voice will be heard. Simply restart fount, and the shadows will dissipate.
 
 ## Badges & Links: Let Creations Shine, Let the World Connect
 
-The world of Fount is more than words and code; it's a feast for the eyes and an invitation to connect. We have prepared exquisite badges and convenient links to make your Fount components shine and allow others to easily discover your masterpieces.
+The world of fount is more than words and code; it's a feast for the eyes and an invitation to connect. We have prepared exquisite badges and convenient links to make your fount components shine and allow others to easily discover your masterpieces.
 
-### Fount Badges: The Seal of Glory
+### fount Badges: The Seal of Glory
 
-You can proudly display this badge in your repository or anywhere you wish to showcase your work. Find the SVG files of the Fount logo [here](./imgs/).
+You can proudly display this badge in your repository or anywhere you wish to showcase your work. Find the SVG files of the fount logo [here](./imgs/).
 
 ```markdown
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
@@ -261,7 +261,7 @@ You can proudly display this badge in your repository or anywhere you wish to sh
 
 ### Automatic Installation Links: Magic at Your Fingertips
 
-Imagine others installing your creations into their Fount world with a single click. Simply combine your component's ZIP or Git repository link with Fount's protocol link.
+Imagine others installing your creations into their fount world with a single click. Simply combine your component's ZIP or Git repository link with fount's protocol link.
 
 `https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;` + `Your_Component_Link`
 
@@ -269,7 +269,7 @@ Imagine others installing your creations into their Fount world with a single cl
 
 ## Recommended Browsers: For a Perfect Encounter
 
-Fount's frontend is woven from modern web technologies, but not all browsers resonate perfectly with its soul. For the most serene and fluid experience, we recommend companions that are in harmony with fount's rhythm:
+fount's frontend is woven from modern web technologies, but not all browsers resonate perfectly with its soul. For the most serene and fluid experience, we recommend companions that are in harmony with fount's rhythm:
 
 - [**Google Chrome**](https://www.google.com/chrome/) / [**Microsoft Edge**](https://www.microsoft.com/edge/) / [**Opera**](https://www.opera.com/): They move in sync with fount's spirit, offering the best performance and compatibility for an interaction as smooth as poetry.
 

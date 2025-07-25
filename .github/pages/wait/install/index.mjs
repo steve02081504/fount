@@ -175,7 +175,7 @@ async function main() {
 		observer.observe(section)
 	})
 
-	// Start Fount service check
+	// Start fount service check
 	async function checkFountInstallerAlive() {
 		try {
 			const response = await fetch('http://localhost:8930')

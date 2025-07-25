@@ -333,7 +333,7 @@ function fount_upgrade {
 		return
 	}
 	if (!(Test-Path -Path "$FOUNT_DIR/.git")) {
-		Write-Host "Fount's git repository not found, initializing a new one..."
+		Write-Host "fount's git repository not found, initializing a new one..."
 		git -C "$FOUNT_DIR" init -b master
 		git -C "$FOUNT_DIR" remote add origin https://github.com/steve02081504/fount.git
 		Write-Host "Fetching from remote and resetting to master..."
@@ -654,7 +654,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 	$UserPath = $UserPath | Where-Object { !$_.StartsWith("$FOUNT_DIR") }
 	$UserPath = $UserPath -join ';'
 	[System.Environment]::SetEnvironmentVariable('PATH', $UserPath, [System.EnvironmentVariableTarget]::User)
-	Write-Host "Fount removed from PATH."
+	Write-Host "fount removed from PATH."
 
 	# Remove fount-pwsh from PowerShell Profile
 	Write-Host "Removing fount-pwsh from PowerShell Profile..."
@@ -786,9 +786,9 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 	while ((Get-ChildItem $parent -ErrorAction Ignore | Measure-Object).Count -eq 0) {
 		Remove-Item -Path $parent -Recurse -Force -ErrorAction SilentlyContinue
 	}
-	Write-Host "Fount installation directory removed."
+	Write-Host "fount installation directory removed."
 
-	Write-Host "Fount uninstallation complete."
+	Write-Host "fount uninstallation complete."
 	exit 0
 }
 else {

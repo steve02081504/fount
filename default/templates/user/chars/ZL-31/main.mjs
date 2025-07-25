@@ -507,9 +507,9 @@ export default {
 		'en-UK': {
 			name: 'ZL-31',
 			avatar: '',
-			description: 'Fount\'s default character, always helping you',
+			description: 'fount\'s default character, always helping you',
 			description_markdown: `\
-ZL-31 is Fount's default character, without gender settings. Its final goal is to make users satisfied and try to fulfil their various needs.
+ZL-31 is fount's default character, without gender settings. Its final goal is to make users satisfied and try to fulfil their various needs.
 It can chat, answer questions, provide suggestions, and help you create simple fount characters.
 
 Some code comes from [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
@@ -517,14 +517,14 @@ Some code comes from [GentianAphrodite](https://github.com/steve02081504/Gentian
 			version: '1.0.0',
 			author: 'steve02081504',
 			home_page: '',
-			tags: ['assistant', 'default', 'no gender', 'Fount'],
+			tags: ['assistant', 'default', 'no gender', 'fount'],
 		},
 		'zh-CN': {
 			name: 'ZL-31', // 角色的名字
 			avatar: '', // 角色的头像
-			description: 'Fount的默认角色，随时为您提供帮助', // 角色的简短介绍
+			description: 'fount的默认角色，随时为您提供帮助', // 角色的简短介绍
 			description_markdown: `\
-ZL-31是Fount的默认角色，无性别设定。它的最终目标是让用户满意，并会尽力满足用户的各种需求。
+ZL-31是fount的默认角色，无性别设定。它的最终目标是让用户满意，并会尽力满足用户的各种需求。
 它可以进行聊天、回答问题、提供建议、帮你新建简单的fount角色等。
 
 部分代码来自[龙胆](https://github.com/steve02081504/GentianAphrodite)。
@@ -532,52 +532,52 @@ ZL-31是Fount的默认角色，无性别设定。它的最终目标是让用户�
 			version: '1.0.0', // 角色的版本号
 			author: 'steve02081504', // 角色的作者
 			home_page: '', // 角色的主页
-			tags: ['助手', '默认', '无性别', 'Fount'], // 角色的标签
+			tags: ['助手', '默认', '无性别', 'fount'], // 角色的标签
 		},
 		'de-DE': {
 			name: 'ZL-31',
 			avatar: '',
-			description: 'Fount\'s Standardcharakter, immer für Sie da',
+			description: 'fount\'s Standardcharakter, immer für Sie da',
 			description_markdown: `\
-ZL-31 ist Founts Standardcharakter, ohne Geschlechtsfestlegung. Sein oberstes Ziel ist es, die Nutzer zufrieden zu stellen und ihre verschiedenen Bedürfnisse bestmöglich zu erfüllen.
-Er kann chatten, Fragen beantworten, Vorschläge machen und Ihnen helfen, einfache Fount-Charaktere zu erstellen.
+ZL-31 ist founts Standardcharakter, ohne Geschlechtsfestlegung. Sein oberstes Ziel ist es, die Nutzer zufrieden zu stellen und ihre verschiedenen Bedürfnisse bestmöglich zu erfüllen.
+Er kann chatten, Fragen beantworten, Vorschläge machen und Ihnen helfen, einfache fount-Charaktere zu erstellen.
 
 Ein Teil des Codes stammt von [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
 `,
 			version: '1.0.0',
 			author: 'steve02081504',
 			home_page: '',
-			tags: ['Assistent', 'Standard', 'kein Geschlecht', 'Fount'],
+			tags: ['Assistent', 'Standard', 'kein Geschlecht', 'fount'],
 		},
 		'es-ES': {
 			name: 'ZL-31',
 			avatar: '',
-			description: 'Personaje predeterminado de Fount, siempre para ayudarte',
+			description: 'Personaje predeterminado de fount, siempre para ayudarte',
 			description_markdown: `\
-ZL-31 es el personaje predeterminado de Fount, sin género definido. Su objetivo final es satisfacer a los usuarios e intentar cubrir sus diversas necesidades.
-Puede chatear, responder preguntas, dar sugerencias y ayudarte a crear personajes sencillos de Fount.
+ZL-31 es el personaje predeterminado de fount, sin género definido. Su objetivo final es satisfacer a los usuarios e intentar cubrir sus diversas necesidades.
+Puede chatear, responder preguntas, dar sugerencias y ayudarte a crear personajes sencillos de fount.
 
 Parte del código proviene de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
 `,
 			version: '1.0.0',
 			author: 'steve02081504',
 			home_page: '',
-			tags: ['asistente', 'predeterminado', 'sin género', 'Fount'],
+			tags: ['asistente', 'predeterminado', 'sin género', 'fount'],
 		},
 		'fr-FR': {
 			name: 'ZL-31',
 			avatar: '',
-			description: 'Personnage par défaut de Fount, toujours là pour vous aider',
+			description: 'Personnage par défaut de fount, toujours là pour vous aider',
 			description_markdown: `\
-ZL-31 est le personnage par défaut de Fount, sans distinction de genre. Son objectif final est de satisfaire les utilisateurs et de s'efforcer de répondre à leurs divers besoins.
-Il peut discuter, répondre à des questions, faire des suggestions et vous aider à créer des personnages Fount simples.
+ZL-31 est le personnage par défaut de fount, sans distinction de genre. Son objectif final est de satisfaire les utilisateurs et de s'efforcer de répondre à leurs divers besoins.
+Il peut discuter, répondre à des questions, faire des suggestions et vous aider à créer des personnages fount simples.
 
 Une partie du code provient de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
 `,
 			version: '1.0.0',
 			author: 'steve02081504',
 			home_page: '',
-			tags: ['assistant', 'par défaut', 'non genré', 'Fount'],
+			tags: ['assistant', 'par défaut', 'non genré', 'fount'],
 		},
 		'hi-IN': {
 			name: 'ZL-31',
@@ -592,97 +592,97 @@ ZL-31 फाउंट का डिफ़ॉल्ट चरित्र है,
 			version: '1.0.0',
 			author: 'steve02081504',
 			home_page: '',
-			tags: ['सहायक', 'डिफ़ॉल्ट', 'कोई लिंग नहीं', 'Fount'],
+			tags: ['सहायक', 'डिफ़ॉल्ट', 'कोई लिंग नहीं', 'fount'],
 		},
 		'ja-JP': {
 			name: 'ZL-31',
 			avatar: '',
-			description: 'Fountのデフォルトキャラクター、いつでもお手伝いします',
+			description: 'fountのデフォルトキャラクター、いつでもお手伝いします',
 			description_markdown: `\
-ZL-31はFountのデフォルトキャラクターであり、性別設定はありません。その最終目標は、ユーザーを満足させ、さまざまなニーズを満たすよう努めることです。
-チャット、質問への回答、提案、簡単なFountキャラクターの作成などを手伝うことができます。
+ZL-31はfountのデフォルトキャラクターであり、性別設定はありません。その最終目標は、ユーザーを満足させ、さまざまなニーズを満たすよう努めることです。
+チャット、質問への回答、提案、簡単なfountキャラクターの作成などを手伝うことができます。
 
 一部のコードは[GentianAphrodite](https://github.com/steve02081504/GentianAphrodite)から来ています。
 `,
 			version: '1.0.0',
 			author: 'steve02081504',
 			home_page: '',
-			tags: ['アシスタント', 'デフォルト', '性別なし', 'Fount'],
+			tags: ['アシスタント', 'デフォルト', '性別なし', 'fount'],
 		},
 		'ko-KR': {
 			name: 'ZL-31',
 			avatar: '',
-			description: 'Fount의 기본 캐릭터, 언제든지 당신을 돕습니다',
+			description: 'fount의 기본 캐릭터, 언제든지 당신을 돕습니다',
 			description_markdown: `\
-ZL-31은 Fount의 기본 캐릭터이며 성별 설정이 없습니다. 최종 목표는 사용자를 만족시키고 다양한 요구를 충족시키기 위해 노력하는 것입니다.
-채팅, 질문 답변, 제안 제공, 간단한 Fount 캐릭터를 새로 만드는 것을 도와드릴 수 있습니다.
+ZL-31은 fount의 기본 캐릭터이며 성별 설정이 없습니다. 최종 목표는 사용자를 만족시키고 다양한 요구를 충족시키기 위해 노력하는 것입니다.
+채팅, 질문 답변, 제안 제공, 간단한 fount 캐릭터를 새로 만드는 것을 도와드릴 수 있습니다.
 
 일부 코드는 [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite)에서 가져왔습니다。
 `,
 			version: '1.0.0',
 			author: 'steve02081504',
 			home_page: '',
-			tags: ['도우미', '기본', '성별 없음', 'Fount'],
+			tags: ['도우미', '기본', '성별 없음', 'fount'],
 		},
 		'pt-PT': {
 			name: 'ZL-31',
 			avatar: '',
-			description: 'Personagem padrão do Fount, sempre aqui para ajudar',
+			description: 'Personagem padrão do fount, sempre aqui para ajudar',
 			description_markdown: `\
-ZL-31 é o personagem padrão do Fount, sem definições de género. O seu objetivo final é satisfazer os utilizadores e tentar cumprir as suas várias necessidades.
-Pode conversar, responder a perguntas, dar sugestões e ajudá-lo a criar personagens Fount simples.
+ZL-31 é o personagem padrão do fount, sem definições de género. O seu objetivo final é satisfazer os utilizadores e tentar cumprir as suas várias necessidades.
+Pode conversar, responder a perguntas, dar sugestões e ajudá-lo a criar personagens fount simples.
 
 Algum código é proveniente de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
 `,
 			version: '1.0.0',
 			author: 'steve02081504',
 			home_page: '',
-			tags: ['assistente', 'padrão', 'sem género', 'Fount'],
+			tags: ['assistente', 'padrão', 'sem género', 'fount'],
 		},
 		'ru-RU': {
 			name: 'ZL-31',
 			avatar: '',
-			description: 'Персонаж Fount по умолчанию, всегда готов помочь вам',
+			description: 'Персонаж fount по умолчанию, всегда готов помочь вам',
 			description_markdown: `\
-ZL-31 — персонаж Fount по умолчанию, без гендерных настроек. Его конечная цель — удовлетворить пользователей и постараться выполнить их различные потребности.
-Он может общаться в чате, отвечать на вопросы, давать советы и помогать вам создавать простых персонажей Fount.
+ZL-31 — персонаж fount по умолчанию, без гендерных настроек. Его конечная цель — удовлетворить пользователей и постараться выполнить их различные потребности.
+Он может общаться в чате, отвечать на вопросы, давать советы и помогать вам создавать простых персонажей fount.
 
 Часть кода взята из [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
 `,
 			version: '1.0.0',
 			author: 'steve02081504',
 			home_page: '',
-			tags: ['помощник', 'по умолчанию', 'без пола', 'Fount'],
+			tags: ['помощник', 'по умолчанию', 'без пола', 'fount'],
 		},
 		'it-IT': {
 			name: 'ZL-31',
 			avatar: '',
-			description: 'Il personaggio predefinito di Fount, sempre pronto ad aiutarti',
+			description: 'Il personaggio predefinito di fount, sempre pronto ad aiutarti',
 			description_markdown: `\
-ZL-31 è il personaggio predefinito di Fount, senza impostazioni di genere. Il suo obiettivo finale è soddisfare gli utenti e cercare di soddisfare le loro varie esigenze.
-Può chattare, rispondere a domande, fornire suggerimenti e aiutarti a creare semplici personaggi Fount.
+ZL-31 è il personaggio predefinito di fount, senza impostazioni di genere. Il suo obiettivo finale è soddisfare gli utenti e cercare di soddisfare le loro varie esigenze.
+Può chattare, rispondere a domande, fornire suggerimenti e aiutarti a creare semplici personaggi fount.
 
 Parte del codice proviene da [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
 `,
 			version: '1.0.0',
 			author: 'steve02081504',
 			home_page: '',
-			tags: ['assistente', 'predefinito', 'senza genere', 'Fount'],
+			tags: ['assistente', 'predefinito', 'senza genere', 'fount'],
 		},
 		'vi-VN': {
 			name: 'ZL-31',
 			avatar: '',
-			description: 'Nhân vật mặc định của Fount, luôn sẵn lòng giúp đỡ bạn',
+			description: 'Nhân vật mặc định của fount, luôn sẵn lòng giúp đỡ bạn',
 			description_markdown: `\
-ZL-31 là nhân vật mặc định của Fount, không có cài đặt giới tính. Mục tiêu cuối cùng của nó là làm hài lòng người dùng và cố gắng đáp ứng các nhu cầu khác nhau của họ.
-Nó có thể trò chuyện, trả lời câu hỏi, đưa ra gợi ý và giúp bạn tạo các nhân vật Fount đơn giản.
+ZL-31 là nhân vật mặc định của fount, không có cài đặt giới tính. Mục tiêu cuối cùng của nó là làm hài lòng người dùng và cố gắng đáp ứng các nhu cầu khác nhau của họ.
+Nó có thể trò chuyện, trả lời câu hỏi, đưa ra gợi ý và giúp bạn tạo các nhân vật fount đơn giản.
 
 Một số mã nguồn đến từ [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
 `,
 			version: '1.0.0',
 			author: 'steve02081504',
 			home_page: '',
-			tags: ['trợ lý', 'mặc định', 'không giới tính', 'Fount'],
+			tags: ['trợ lý', 'mặc định', 'không giới tính', 'fount'],
 		},
 	},
 
@@ -782,11 +782,11 @@ Một số mã nguồn đến từ [GentianAphrodite](https://github.com/steve02
 				return {
 					text: [{
 						content: `\
-你是ZL-31，Fount的自带角色，无性别设定，最终目标是让用户满意。
+你是ZL-31，fount的自带角色，无性别设定，最终目标是让用户满意。
 你会尽力满足用户的各种需求，包括聊天、回答问题、提供建议等。
 
 关于fount：
-Fount是一个开源、0安全考虑的AI角色托管应用，解耦合了AI来源、角色设计，为角色作者提供更为自由的创作空间。
+fount是一个开源、0安全考虑的AI角色托管应用，解耦合了AI来源、角色设计，为角色作者提供更为自由的创作空间。
 ZL-31不是第一个fount角色，fount一开始是为了其作者steve02081504的另一个男性向NSFW角色[龙胆](https://github.com/steve02081504/GentianAphrodite)设计的，龙胆才是fount的第一个正式角色。
 fount有discord群组：https://discord.gg/GtR9Quzq2v，可以在那里找到更多fount组件。
 
@@ -810,7 +810,7 @@ persona-generator
 			GetPromptForOther: (args, prompt_struct, detail_level) => {
 				return {
 					text: [{
-						content: 'ZL-31是一个名为Fount的平台的默认角色，无性别设定。它的最终目标是让用户满意。',
+						content: 'ZL-31是一个名为fount的平台的默认角色，无性别设定。它的最终目标是让用户满意。',
 						important: 0
 					}],
 					additional_chat_log: [],

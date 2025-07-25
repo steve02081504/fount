@@ -64,20 +64,20 @@
 		"tray": {
 			"readIconFailed": "アイコンファイルの読み込みに失敗しました：${error}",
 			"createTrayFailed": "トレイアイコンの作成に失敗しました：${error}",
-			"title": "Fount",
-			"tooltip": "Fount",
+			"title": "fount",
+			"tooltip": "fount",
 			"items": {
 				"open": {
 					"title": "開く",
-					"tooltip": "Fountを開く"
+					"tooltip": "fountを開く"
 				},
 				"github": {
 					"title": "GitHub",
-					"tooltip": "FountのGitHubを開く"
+					"tooltip": "fountのGitHubを開く"
 				},
 				"discord": {
 					"title": "Discord",
-					"tooltip": "FountのDiscordを開く"
+					"tooltip": "fountのDiscordを開く"
 				},
 				"exit": {
 					"title": "終了",
@@ -93,7 +93,7 @@
 		}
 	},
 	"protocolhandler": {
-		"title": "Fountプロトコルの処理",
+		"title": "fountプロトコルの処理",
 		"processing": "プロトコルを処理中です...",
 		"invalidProtocol": "無効なプロトコルです。",
 		"insufficientParams": "パラメーターが不足しています。",
@@ -101,30 +101,30 @@
 		"shellCommandSent": "シェルコマンドを送信しました。",
 		"shellCommandFailed": "シェルコマンドの送信に失敗しました。",
 		"shellCommandError": "シェルコマンドの送信中にエラーが発生しました。",
-		"fountNotFound": "あらら…\n\nFountが見つかりませんでした。最初にインストールする必要がありますか？",
+		"fountNotFound": "あらら…\n\nfountが見つかりませんでした。最初にインストールする必要がありますか？",
 		"unknownError": "あらら…\n\nエラーが発生しました：\n"
 	},
 	"installer_wait_screen": {
-		"title": "Fountへようこそ！",
+		"title": "fountへようこそ！",
 		"hero": {
 			"title": "あなただけの没入型AIキャラクターコンパニオン",
-			"description": "Fountは、<i>あなた</i>の可能性を最大限に引き出すために設計された、AI搭載のキャラクター対話プラットフォームです。想像の世界のキャラクターたちとあなたを繋ぐ架け橋となり、気軽に会話を楽しんだり、自分だけのキャラクターを創り出して世界と共有したりすることを可能にします。"
+			"description": "fountは、<i>あなた</i>の可能性を最大限に引き出すために設計された、AI搭載のキャラクター対話プラットフォームです。想像の世界のキャラクターたちとあなたを繋ぐ架け橋となり、気軽に会話を楽しんだり、自分だけのキャラクターを創り出して世界と共有したりすることを可能にします。"
 		},
 		"feature1": {
 			"title": "どこでもシームレスな対話を",
-			"description": "PCで始めたチャットを、スマートフォンやタブレットでシームレスに継続。Fountが会話を常に同期し、どこにいてもあなたのキャラクターと繋がっていられます。Windows、macOS、Linux、そしてAndroidにも対応しています。"
+			"description": "PCで始めたチャットを、スマートフォンやタブレットでシームレスに継続。fountが会話を常に同期し、どこにいてもあなたのキャラクターと繋がっていられます。Windows、macOS、Linux、そしてAndroidにも対応しています。"
 		},
 		"feature2": {
 			"title": "美しく、カスタマイズ可能なインターフェース",
-			"description": "30種類以上の美しいテーマから選択、または独自のテーマを作成しましょう。Fountはあなたのパーソナルキャンバスです。自分らしさを表現し、好みに合わせて環境をカスタマイズして、真にパーソナルな体験を手に入れましょう。"
+			"description": "30種類以上の美しいテーマから選択、または独自のテーマを作成しましょう。fountはあなたのパーソナルキャンバスです。自分らしさを表現し、好みに合わせて環境をカスタマイズして、真にパーソナルな体験を手に入れましょう。"
 		},
 		"feature3": {
 			"title": "表現力豊かで、没入感あふれるチャット",
-			"description": "FountはHTMLの力を最大限に活用し、キャラクターがリッチテキスト、画像、さらにはインタラクティブな要素を通じて自己表現することを可能にします。複数のキャラクターと同時に、ダイナミックで魅力的なグループチャットをお楽しみください。"
+			"description": "fountはHTMLの力を最大限に活用し、キャラクターがリッチテキスト、画像、さらにはインタラクティブな要素を通じて自己表現することを可能にします。複数のキャラクターと同時に、ダイナミックで魅力的なグループチャットをお楽しみください。"
 		},
 		"feature4": {
 			"title": "AIソースとの自由な連携",
-			"description": "Fountは、比類のない選択肢と柔軟性を提供します。OpenAI、Claude、OpenRouter、NovelAIなど、<i>あらゆる</i>AIソースに接続可能です。コミュニケーションのロジックは、あなたの意のままに、コードの力によって形作られます。"
+			"description": "fountは、比類のない選択肢と柔軟性を提供します。OpenAI、Claude、OpenRouter、NovelAIなど、<i>あらゆる</i>AIソースに接続可能です。コミュニケーションのロジックは、あなたの意のままに、コードの力によって形作られます。"
 		},
 		"theme_selector": {
 			"title": "テーマを選択",
@@ -138,25 +138,25 @@
 		"footer": {
 			"ready_text": "冒険を始める準備はできましたか？",
 			"wait_text": "しばらくお待ちください...",
-			"launch_button": "Fountをインストール中...",
-			"open_fount": "Fountを開く",
-			"open_or_install_fount": "Fountを開く/インストール",
+			"launch_button": "fountをインストール中...",
+			"open_fount": "fountを開く",
+			"open_or_install_fount": "fountを開く/インストール",
 			"error_message": "あらら…\n\nエラーが発生しました：\n"
 		},
 		"error": {
 			"title": "インストールに失敗しました！",
 			"connection_failed": "接続に失敗しました！",
-			"description1": "Fountインストーラーに問題が発生したようです。",
+			"description1": "fountインストーラーに問題が発生したようです。",
 			"description2": "ターミナルを確認して、もう一度お試しください。",
 			"close_page": "ページを閉じる"
 		}
 	},
 	"startPage": {
-		"title": "Fount!",
+		"title": "fount!",
 		"newTabFailed": {
 			"title": "新しいタブを開けませんでした",
-			"instruction": "ポップアップウィンドウの許可がない場合、Fountの起動が毎回1〜2秒遅くなります。",
-			"tryAllow": "Fountにポップアップウィンドウの許可を与えてみませんか？",
+			"instruction": "ポップアップウィンドウの許可がない場合、fountの起動が毎回1〜2秒遅くなります。",
+			"tryAllow": "fountにポップアップウィンドウの許可を与えてみませんか？",
 			"buttons": {
 				"retry": "再試行",
 				"skip": "スキップ",
@@ -230,7 +230,7 @@
 	"tutorial": {
 		"title": "チュートリアルはいかがですか？",
 		"modal": {
-			"title": "Fountへようこそ！",
+			"title": "fountへようこそ！",
 			"instruction": "入門チュートリアルを開始しますか？",
 			"buttons": {
 				"start": "チュートリアル開始",
@@ -251,7 +251,7 @@
 	},
 	"home": {
 		"title": "ホーム",
-		"escapeConfirm": "Fountを終了しますか？",
+		"escapeConfirm": "fountを終了しますか？",
 		"filterInput": {
 			"placeholder": "検索..."
 		},
@@ -799,14 +799,14 @@
 	},
 	"terminal_assistant": {
 		"title": "ターミナルアシスタント",
-		"initialMessage": "Fountは、お気に入りのキャラクターをターミナルに導入し、コーディング作業をサポートします！",
+		"initialMessage": "fountは、お気に入りのキャラクターをターミナルに導入し、コーディング作業をサポートします！",
 		"initialMessageLink": "詳細はこちら"
 	},
 	"access": {
-		"title": "他のデバイスからFountにアクセス",
-		"heading": "他のデバイスからFountにアクセスしますか？",
+		"title": "他のデバイスからfountにアクセス",
+		"heading": "他のデバイスからfountにアクセスしますか？",
 		"instruction": {
-			"sameLAN": "デバイスとFountホストが同じローカルネットワーク上にあることを確認してください。",
+			"sameLAN": "デバイスとfountホストが同じローカルネットワーク上にあることを確認してください。",
 			"accessthis": "次のURLにアクセスしてください："
 		},
 		"copyButton": "URLをコピー",
@@ -815,7 +815,7 @@
 	"proxy": {
 		"title": "APIプロキシ",
 		"heading": "OpenAI API プロキシアドレス",
-		"instruction": "Fount内のAIソースを使用するには、このアドレスをOpenAI API形式に対応したアプリケーションに入力してください！",
+		"instruction": "fount内のAIソースを使用するには、このアドレスをOpenAI API形式に対応したアプリケーションに入力してください！",
 		"copyButton": "アドレスをコピー",
 		"copied": "アドレスをクリップボードにコピーしました！"
 	},
@@ -907,8 +907,8 @@
 		}
 	},
 	"badges_maker": {
-		"title": "Fount! バッジコンバーター",
-		"card_title": "Fountバッジリンクコンバーター",
+		"title": "fount! バッジコンバーター",
+		"card_title": "fountバッジリンクコンバーター",
 		"original_url_label": "img.shields.io URLを貼り付けます",
 		"original_url_placeholder": "例：https://img.shields.io/badge/hello-world-blue",
 		"new_url_label": "生成された新しいURL",

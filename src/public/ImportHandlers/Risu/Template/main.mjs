@@ -18,7 +18,7 @@ let AIsource = null
 let username = ''
 
 const chardir = import.meta.dirname
-// Fount 的资源 URL 格式，确保 charname 部分已正确编码
+// fount 的资源 URL 格式，确保 charname 部分已正确编码
 const charnameForUrl = encodeURIComponent(path.basename(chardir))
 const charurl = `/chars/${charnameForUrl}`
 const charjson = path.join(chardir, 'chardata.json')
@@ -40,15 +40,15 @@ function getMacroEnv(userCharName) {
 // 函数：构建国际化的 info 对象
 function buildCharInfo(charData) {
 	const info = {}
-	// Fount 的默认语言键通常是 '' 或特定语言如 'en'。CCv3 使用 ISO 639-1 ('en', 'zh').
+	// fount 的默认语言键通常是 '' 或特定语言如 'en'。CCv3 使用 ISO 639-1 ('en', 'zh').
 	// 我们将使用 CCv3 的语言代码作为键，并为 '' 设置一个后备。
-	const defaultLocaleKey = '' // Fount 使用的默认/后备 locale key
+	const defaultLocaleKey = '' // fount 使用的默认/后备 locale key
 
 	// --- 辅助函数：为特定语言创建 info 对象 ---
 	const createInfoForLang = (note) => {
 		// 注意：chardata.creator_notes 已经是经过 evaluateMacros 的（如果ST的宏在其中）
 		// 但CCv3的creator_notes通常是纯文本，宏处理应在显示时。
-		// 因此，这里我们直接使用 note，宏将在Fount显示时处理（如果Fount的UI层面支持）。
+		// 因此，这里我们直接使用 note，宏将在fount显示时处理（如果fount的UI层面支持）。
 		// 或者，如果希望在导入时就评估宏，则调用 evaluateMacros。
 		// 为保持与原模板一致（原模板在info中评估宏），我们也在这里评估。
 		const evaluatedNote = evaluateMacros(note || '', getMacroEnv('User')) // 'User' 作为占位符
@@ -73,8 +73,8 @@ function buildCharInfo(charData) {
 		for (const langCode in charData.extensions.creator_notes_multilingual)
 			if (Object.hasOwnProperty.call(charData.extensions.creator_notes_multilingual, langCode)) {
 				const noteForLang = charData.extensions.creator_notes_multilingual[langCode]
-				// Fount 的 locale 通常是 'en-US', 'zh-CN' 等。CCv3 的是 'en', 'zh'。
-				// 直接使用 CCv3 的 langCode。Fount 在查找时应能处理 'en' 匹配 'en-US' 的情况。
+				// fount 的 locale 通常是 'en-US', 'zh-CN' 等。CCv3 的是 'en', 'zh'。
+				// 直接使用 CCv3 的 langCode。fount 在查找时应能处理 'en' 匹配 'en-US' 的情况。
 				if (langCode !== defaultLocaleKey)  //避免覆盖已经由 `chardata.creator_notes` 设置的默认条目
 					info[langCode] = createInfoForLang(noteForLang)
 				else if (!info[defaultLocaleKey].description_markdown && noteForLang)
@@ -83,10 +83,10 @@ function buildCharInfo(charData) {
 			}
 
 
-	// 如果 Fount 强制要求 'en' 存在，且 '' 不是 'en' 的有效代理，可以在这里确保 'en' 条目
+	// 如果 fount 强制要求 'en' 存在，且 '' 不是 'en' 的有效代理，可以在这里确保 'en' 条目
 	if (!info.en && info[''] && chardata.creator_notes === (chardata.extensions?.creator_notes_multilingual?.en || chardata.creator_notes)) {
 		// 如果 '' 的内容实际上是英文内容，并且没有显式的 'en'，可以考虑复制一份
-		// 但更好的做法是让Fount的locale匹配机制处理 '' 和 'en'
+		// 但更好的做法是让fount的locale匹配机制处理 '' 和 'en'
 	}
 
 
@@ -148,7 +148,7 @@ const charAPI_definition = { // 先定义结构主体
 				if (index < 0 || index >= greetings.length) index = 0 // 安全索引
 
 				const selectedGreeting = greetings[index]
-				const env = getMacroEnv(args.UserCharname) // args.UserCharname 来自 Fount 调用 GetGreeting 时的参数
+				const env = getMacroEnv(args.UserCharname) // args.UserCharname 来自 fount 调用 GetGreeting 时的参数
 				const result = evaluateMacros(selectedGreeting, env, args.chat_scoped_char_memory, args.chat_log)
 
 				return {
@@ -177,7 +177,7 @@ const charAPI_definition = { // 先定义结构主体
 					content_for_show: formatRisuOutput(runRegex(chardata, result, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.promptOnly))
 				}
 			},
-			GetPrompt: (promptArgs /* Fount prompt_struct_args_t */) => {
+			GetPrompt: (promptArgs /* fount prompt_struct_args_t */) => {
 				// 确保传递给 promptBuilder 的 Charname 是我们期望的（考虑 nickname）
 				const effectiveCharName = chardata.extensions?.ccv3_nickname || chardata.name
 				const builderArgs = {
@@ -207,7 +207,7 @@ const charAPI_definition = { // 先定义结构主体
 				}
 
 				function AddLongTimeLog(entry) {
-					entry.charVisibility = [args.char_id] // char_id 来自 Fount 的参数
+					entry.charVisibility = [args.char_id] // char_id 来自 fount 的参数
 					result?.logContextBefore?.push?.(entry)
 					prompt_struct.char_prompt.additional_chat_log.push(entry)
 				}
@@ -218,8 +218,8 @@ const charAPI_definition = { // 先定义结构主体
 					result.files = (result.files || []).concat(requestResult.files || [])
 					result.extension = { ...result.extension, ...requestResult.extension }
 
-					// 插件处理逻辑 (如果你的Fount系统有插件)
-					const plugins = args.plugins || {} // 从 Fount 运行时获取
+					// 插件处理逻辑 (如果你的fount系统有插件)
+					const plugins = args.plugins || {} // 从 fount 运行时获取
 					for (const plugin of Object.values(plugins))
 						if (plugin?.interfaces?.chat?.ReplyHandler) {
 							const handled = await plugin.interfaces.chat.ReplyHandler(result, { ...args, prompt_struct, AddLongTimeLog })

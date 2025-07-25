@@ -22,7 +22,7 @@ Ou peut-être avez-vous imaginé un confident numérique, un assistant IA aussi 
 
 Ou peut-être, juste peut-être, avez-vous recherché une connexion au-delà de l'ordinaire, un royaume où les bords de la réalité s'estompent et où une compréhension intime et _non filtrée_ se déploie ?
 
-Avec près d'un an de développement dédié, les contributions de plus de 10 personnes passionnées et une communauté florissante de plus de 1000 utilisateurs, Fount se présente comme une plateforme mature, stable et en constante évolution pour l'interaction avec l'IA. C'est un voyage, et nous pensons qu'il est plus accessible que vous ne l'imaginez.
+Avec près d'un an de développement dédié, les contributions de plus de 10 personnes passionnées et une communauté florissante de plus de 1000 utilisateurs, fount se présente comme une plateforme mature, stable et en constante évolution pour l'interaction avec l'IA. C'est un voyage, et nous pensons qu'il est plus accessible que vous ne l'imaginez.
 
 Personnages perdus, histoires oubliées ? Notre [**communauté dynamique et accueillante**](https://discord.gg/GtR9Quzq2v) vous attend – un havre où les esprits apparentés se rassemblent, où les développeurs et les créateurs partagent leur sagesse et leurs créations.
 
@@ -46,7 +46,7 @@ fount est un pont qui vous relie aux personnages de votre imagination, vous perm
 
 C'est une source (fount), où les sources d'IA, les personnages, les personnalités, les mondes et les plugins convergent, vous permettant de créer et de vivre des interactions uniques et captivantes.
 
-Fount est conçu pour l'avenir, prêt à accueillir de nouvelles fonctionnalités nées de sa communauté dynamique. Si vous avez une vision, une étincelle d'idée qui appartient au royaume de fount, nous accueillons votre contribution.
+fount est conçu pour l'avenir, prêt à accueillir de nouvelles fonctionnalités nées de sa communauté dynamique. Si vous avez une vision, une étincelle d'idée qui appartient au royaume de fount, nous accueillons votre contribution.
 
 ---
 
@@ -68,14 +68,14 @@ Fount est conçu pour l'avenir, prêt à accueillir de nouvelles fonctionnalité
   fount fonctionne de manière transparente sur Windows, macOS, Linux et même Android, s'adaptant à vos besoins grâce à une installation directe ou à la flexibilité de Docker.
 
 - **(Pour les Utilisateurs Avancés) Intégration de Sources d'IA sans Entraves : Embrassez l'Illimité**
-  Fount offre un _choix_ et une _flexibilité_ inégalés dans la connexion aux sources d'IA. Le code JavaScript personnalisé au sein du générateur de sources d'IA vous permet de vous connecter à _n'importe quelle_ source d'IA : OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral, et plus encore. Créez des expressions régulières complexes, faites appel à de vastes bibliothèques d'API, et intégrez des ressources multimédias, le tout dans le flux de votre code. La logique de la communication se plie à _votre_ volonté, façonnée par la puissance du code.
+  fount offre un _choix_ et une _flexibilité_ inégalés dans la connexion aux sources d'IA. Le code JavaScript personnalisé au sein du générateur de sources d'IA vous permet de vous connecter à _n'importe quelle_ source d'IA : OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral, et plus encore. Créez des expressions régulières complexes, faites appel à de vastes bibliothèques d'API, et intégrez des ressources multimédias, le tout dans le flux de votre code. La logique de la communication se plie à _votre_ volonté, façonnée par la puissance du code.
   ![Image](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
 
 ---
 
 ## Compagnie : Au-delà du Voile Numérique
 
-Fount s'efforce de tisser des personnages dans le tissu même de votre vie, offrant une compagnie et un soutien qui transcendent l'écran.
+fount s'efforce de tisser des personnages dans le tissu même de votre vie, offrant une compagnie et un soutien qui transcendent l'écran.
 
 - **Intégration Discord/Telegram**
   Connectez vos personnages à vos communautés Discord ou Telegram grâce aux Bot Shells intégrés, faisant d'eux des membres vivants de vos cercles.
@@ -100,10 +100,10 @@ Pour le créateur, fount offre un chemin plus clair pour donner vie à vos perso
   Décrivez votre personnage en une seule phrase, et notre assistant IA intelligent créera une personnalité pleinement réalisée. Cela simplifie la configuration initiale, vous permettant de vous concentrer sur le raffinement et l'interaction avec votre création.
 
 - **La Magie du Code, Plus Facile que Vous ne l'Imaginez**
-  Dans Fount, le code est une forme de magie moderne. Avec les conseils bienveillants de notre communauté et l'aide éclairante de l'IA, l'apprendre est étonnamment facile. Vous découvrirez que définir la logique des personnages avec du code peut être une manière intuitive et maintenable de créer des personnages dont les réponses sont _tissées_ à partir de votre propre logique.
+  Dans fount, le code est une forme de magie moderne. Avec les conseils bienveillants de notre communauté et l'aide éclairante de l'IA, l'apprendre est étonnamment facile. Vous découvrirez que définir la logique des personnages avec du code peut être une manière intuitive et maintenable de créer des personnages dont les réponses sont _tissées_ à partir de votre propre logique.
 
 - **Commencez avec une Magie Prête à l'Emploi : Un Trésor de Modèles**
-  La communauté de Fount fournit une multitude de modèles de personnages et de personnalités préfabriqués. Ils agissent comme des « plans vivants », faciles à adapter et à personnaliser, constituant un point de départ fantastique.
+  La communauté de fount fournit une multitude de modèles de personnages et de personnalités préfabriqués. Ils agissent comme des « plans vivants », faciles à adapter et à personnaliser, constituant un point de départ fantastique.
 
 - **Ressources Intégrées**
   Intégrez des images, de l'audio et d'autres ressources directement dans vos personnages, rendant leur présence d'autant plus tangible.
@@ -121,7 +121,7 @@ Pour le créateur, fount offre un chemin plus clair pour donner vie à vos perso
 
 ## Architecture : Le Fondement de l'Innovation
 
-Fount est construit sur une architecture robuste et évolutive. Le backend exploite la puissance et la vitesse de [Deno](https://deno.com/), avec [Express](https://expressjs.com/) pour un routage efficace. Le frontend est conçu avec HTML, CSS et JavaScript pour une interface intuitive et attrayante.
+fount est construit sur une architecture robuste et évolutive. Le backend exploite la puissance et la vitesse de [Deno](https://deno.com/), avec [Express](https://expressjs.com/) pour un routage efficace. Le frontend est conçu avec HTML, CSS et JavaScript pour une interface intuitive et attrayante.
 
 ### Expansion : Une Tapisserie Tissée de Fils Divers
 
@@ -139,7 +139,7 @@ Dans le monde de fount, la modularité règne en maître. Un riche écosystème 
 
 ## Installation & Suppression : Une Rencontre et un Adieu Élégants
 
-### Installation : Intégrer Fount à votre monde – _Sans Effort_
+### Installation : Intégrer fount à votre monde – _Sans Effort_
 
 Embarquez pour votre voyage avec fount, une plateforme stable et fiable. Quelques clics ou commandes simples, et le monde de fount se dévoile.
 
@@ -220,11 +220,11 @@ Votre voix sera entendue. Redémarrez simplement fount, et les ombres se dissipe
 
 ## Badges & Liens : Laissez Vos Créations Briller, Laissez le Monde se Connecter
 
-Le monde de Fount est plus que des mots et du code ; c'est un festin pour les yeux et une invitation à se connecter. Nous avons préparé des badges exquis et des liens pratiques pour faire briller vos composants Fount et permettre aux autres de découvrir facilement vos chefs-d'œuvre.
+Le monde de fount est plus que des mots et du code ; c'est un festin pour les yeux et une invitation à se connecter. Nous avons préparé des badges exquis et des liens pratiques pour faire briller vos composants fount et permettre aux autres de découvrir facilement vos chefs-d'œuvre.
 
-### Badges Fount : Le Sceau de la Gloire
+### Badges fount : Le Sceau de la Gloire
 
-Vous pouvez fièrement afficher ce badge dans votre dépôt ou partout où vous souhaitez présenter votre travail. Retrouvez les fichiers SVG du logo Fount [ici](../imgs/).
+Vous pouvez fièrement afficher ce badge dans votre dépôt ou partout où vous souhaitez présenter votre travail. Retrouvez les fichiers SVG du logo fount [ici](../imgs/).
 
 ```markdown
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
@@ -246,7 +246,7 @@ Vous pouvez fièrement afficher ce badge dans votre dépôt ou partout où vous 
 
 ### Liens d'Installation Automatique : La Magie au Bout des Doigts
 
-Imaginez que d'autres installent vos créations dans leur monde Fount d'un simple clic. Combinez simplement le lien ZIP ou du dépôt Git de votre composant avec le lien de protocole de Fount.
+Imaginez que d'autres installent vos créations dans leur monde fount d'un simple clic. Combinez simplement le lien ZIP ou du dépôt Git de votre composant avec le lien de protocole de fount.
 
 `https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;` + `Votre_Lien_de_Composant`
 
@@ -254,7 +254,7 @@ Imaginez que d'autres installent vos créations dans leur monde Fount d'un simpl
 
 ## Navigateurs Recommandés : Pour une Rencontre Parfaite
 
-Le frontend de Fount est tissé de technologies web modernes, mais tous les navigateurs ne résonnent pas parfaitement avec son âme. Pour l'expérience la plus sereine et fluide, nous recommandons des compagnons qui sont en harmonie avec le rythme de fount :
+Le frontend de fount est tissé de technologies web modernes, mais tous les navigateurs ne résonnent pas parfaitement avec son âme. Pour l'expérience la plus sereine et fluide, nous recommandons des compagnons qui sont en harmonie avec le rythme de fount :
 
 - [**Google Chrome**](https://www.google.com/chrome/) / [**Microsoft Edge**](https://www.microsoft.com/edge/) / [**Opera**](https://www.opera.com/) : Ils évoluent en synchronie avec l'esprit de fount, offrant les meilleures performances et compatibilité pour une interaction aussi douce que de la poésie.
 

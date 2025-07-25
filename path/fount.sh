@@ -12,7 +12,7 @@ if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
 	exit $?
 fi
 
-# 转义后的Fount路径用于sed
+# 转义后的fount路径用于sed
 ESCAPED_FOUNT_DIR=$(echo "$FOUNT_DIR" | sed 's/\//\\\//g')
 
 # 自动安装包列表文件及标记文件
@@ -383,7 +383,7 @@ create_desktop_shortcut() {
 Version=1.0
 Type=Application
 Name=fount
-Comment=Fount Application
+Comment=fount Application
 Exec=$FOUNT_DIR/path/fount open keepalive
 Icon=$icon_path
 Terminal=true
@@ -468,7 +468,7 @@ EOF
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>Fount Protocol</string>
+			<string>fount Protocol</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>fount</string>
@@ -492,7 +492,7 @@ on run argv
 		end repeat
 	end if
 
-	set final_command_in_terminal to ":; (" & command_to_execute & "; echo; echo \"Fount has exited. Press Enter to close this window...\"; read -r)"
+	set final_command_in_terminal to ":; (" & command_to_execute & "; echo; echo \"fount has exited. Press Enter to close this window...\"; read -r)"
 
 	tell application "Terminal"
 		activate
@@ -616,10 +616,10 @@ timeout=60 elapsed=0
 while ! test_fount_running_internal; do
 	sleep 1; elapsed=$((elapsed + 1))
 	if [ "$elapsed" -ge "$timeout" ]; then
-		echo "Error: Fount server did not start in time." >&2; exit 1
+		echo "Error: fount server did not start in time." >&2; exit 1
 	fi
 done
-echo "Fount server is running. Opening URL..." >&2
+echo "fount server is running. Opening URL..." >&2
 os_type=$(uname -s)
 if [ "$os_type" = "Linux" ]; then
 	xdg-open "$TARGET_URL" >/dev/null 2>&1
@@ -719,7 +719,7 @@ fi
 fount_upgrade() {
 	ensure_dependencies "upgrade" || return 0
 	if [ ! -d "$FOUNT_DIR/.git" ]; then
-		echo "Fount's git repository not found, initializing a new one..."
+		echo "fount's git repository not found, initializing a new one..."
 		git -C "$FOUNT_DIR" init -b master
 		git -C "$FOUNT_DIR" remote add origin https://github.com/steve02081504/fount.git
 		echo "Fetching from remote and resetting to master..."
@@ -772,7 +772,7 @@ fount_upgrade() {
 	fi
 }
 
-# 更新 Fount
+# 更新 fount
 if [[ $# -eq 0 || $1 != "shutdown" ]]; then
 	if [ -f "$FOUNT_DIR/.noupdate" ]; then
 		echo "Skipping fount update due to .noupdate file."
@@ -955,7 +955,7 @@ init)
 keepalive)
 	runargs=("${@:2}")
 	while ! run "${runargs[@]}"; do
-		echo "Fount exited with an error, attempting to upgrade and restart..." >&2
+		echo "fount exited with an error, attempting to upgrade and restart..." >&2
 		deno_upgrade
 		fount_upgrade
 		run "${runargs[@]}"
@@ -998,7 +998,7 @@ remove)
 		echo "Removed empty parent directory: $parent_dir"
 		parent_dir=$(dirname "$parent_dir")
 	done
-	echo "Fount uninstallation complete."
+	echo "fount uninstallation complete."
 	exit 0
 	;;
 *)

@@ -22,7 +22,7 @@ Hay có lẽ bạn đã hình dung về một người bạn tâm giao kỹ thu�
 
 Hoặc có thể, chỉ đơn giản là, bạn đã tìm kiếm một sự kết nối vượt ra ngoài những điều bình thường, một thế giới nơi ranh giới thực tại lu mờ, và một sự thấu hiểu thân mật, _không chút giấu giếm_ được hé mở?
 
-Sau gần một năm phát triển tận tụy, với sự đóng góp của hơn mười cá nhân đầy nhiệt huyết và một cộng đồng sôi nổi với hơn 1000 người dùng, Fount giờ đây là một nền tảng tương tác AI trưởng thành, ổn định và không ngừng phát triển. Đây là một hành trình, và chúng tôi tin rằng, nó gần gũi hơn bạn tưởng.
+Sau gần một năm phát triển tận tụy, với sự đóng góp của hơn mười cá nhân đầy nhiệt huyết và một cộng đồng sôi nổi với hơn 1000 người dùng, fount giờ đây là một nền tảng tương tác AI trưởng thành, ổn định và không ngừng phát triển. Đây là một hành trình, và chúng tôi tin rằng, nó gần gũi hơn bạn tưởng.
 
 Những nhân vật lạc lối, những câu chuyện bị lãng quên? [**Cộng đồng sôi nổi và thân thiện**](https://discord.gg/GtR9Quzq2v) của chúng tôi đang chờ đón bạn – một bến đỗ cho những tâm hồn đồng điệu, nơi các nhà phát triển và nhà sáng tạo chia sẻ trí tuệ và tác phẩm của mình.
 
@@ -46,7 +46,7 @@ fount là một cây cầu, kết nối bạn với các nhân vật trong trí 
 
 Đó là một mạch nguồn (fount), nơi các nguồn AI, nhân vật, nhân cách, thế giới và plugin hội tụ, cho phép bạn tạo ra và trải nghiệm những tương tác độc đáo và hấp dẫn.
 
-Fount được xây dựng cho tương lai, sẵn sàng đón nhận những tính năng mới từ cộng đồng sôi nổi của mình. Nếu bạn có một tầm nhìn, một tia sáng ý tưởng thuộc về thế giới fount, chúng tôi hoan nghênh sự đóng góp của bạn.
+fount được xây dựng cho tương lai, sẵn sàng đón nhận những tính năng mới từ cộng đồng sôi nổi của mình. Nếu bạn có một tầm nhìn, một tia sáng ý tưởng thuộc về thế giới fount, chúng tôi hoan nghênh sự đóng góp của bạn.
 
 ---
 
@@ -68,14 +68,14 @@ Fount được xây dựng cho tương lai, sẵn sàng đón nhận những tí
   fount hoạt động liền mạch trên Windows, macOS, Linux, và cả Android, thích ứng với nhu cầu của bạn thông qua cài đặt trực tiếp hoặc sự linh hoạt của Docker.
 
 - **(Dành cho người dùng cao cấp) Tích hợp nguồn AI không giới hạn: Ôm trọn vô biên**
-  Fount cung cấp sự _lựa chọn_ và _linh hoạt_ không gì sánh bằng trong việc kết nối với các nguồn AI. Mã JavaScript tùy chỉnh trong trình tạo nguồn AI cho phép bạn kết nối với _bất kỳ_ nguồn AI nào – OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral, và nhiều hơn nữa. Tạo các biểu thức chính quy phức tạp, gọi các thư viện API khổng lồ, và nhúng các tài nguyên đa phương tiện, tất cả trong luồng mã của bạn. Logic giao tiếp uốn mình theo ý _bạn_, được định hình bởi sức mạnh của mã lệnh.
+  fount cung cấp sự _lựa chọn_ và _linh hoạt_ không gì sánh bằng trong việc kết nối với các nguồn AI. Mã JavaScript tùy chỉnh trong trình tạo nguồn AI cho phép bạn kết nối với _bất kỳ_ nguồn AI nào – OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral, và nhiều hơn nữa. Tạo các biểu thức chính quy phức tạp, gọi các thư viện API khổng lồ, và nhúng các tài nguyên đa phương tiện, tất cả trong luồng mã của bạn. Logic giao tiếp uốn mình theo ý _bạn_, được định hình bởi sức mạnh của mã lệnh.
   ![Hình ảnh](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
 
 ---
 
 ## Đồng hành: Vượt ngoài những giới hạn kỹ thuật số
 
-Fount nỗ lực dệt các nhân vật vào chính kết cấu cuộc sống của bạn, mang đến sự đồng hành và hỗ trợ vượt ra ngoài màn hình.
+fount nỗ lực dệt các nhân vật vào chính kết cấu cuộc sống của bạn, mang đến sự đồng hành và hỗ trợ vượt ra ngoài màn hình.
 
 - **Tích hợp Discord/Telegram**
   Kết nối các nhân vật của bạn với các cộng đồng Discord hoặc Telegram thông qua các Bot Shells tích hợp, biến họ thành những thành viên sống động trong vòng kết nối của bạn.
@@ -100,10 +100,10 @@ Fount nỗ lực dệt các nhân vật vào chính kết cấu cuộc sống c�
   Mô tả nhân vật của bạn trong một câu duy nhất, và trợ lý AI thông minh của chúng tôi sẽ tạo ra một nhân cách được hiện thực hóa đầy đủ. Điều này đơn giản hóa việc thiết lập ban đầu, cho phép bạn tập trung vào việc tinh chỉnh và tương tác với sáng tạo của mình.
 
 - **Sức mạnh của mã lệnh, dễ dàng hơn bạn tưởng**
-  Trong Fount, mã lệnh là một dạng phép thuật hiện đại. Với sự hướng dẫn nhẹ nhàng từ cộng đồng của chúng tôi và sự trợ giúp sáng suốt từ AI, việc học nó trở nên dễ dàng một cách đáng ngạc nhiên. Bạn sẽ thấy rằng việc định nghĩa logic nhân vật bằng mã lệnh có thể là một cách trực quan và dễ bảo trì để tạo ra các nhân vật có phản ứng được _dệt_ nên từ chính logic của bạn.
+  Trong fount, mã lệnh là một dạng phép thuật hiện đại. Với sự hướng dẫn nhẹ nhàng từ cộng đồng của chúng tôi và sự trợ giúp sáng suốt từ AI, việc học nó trở nên dễ dàng một cách đáng ngạc nhiên. Bạn sẽ thấy rằng việc định nghĩa logic nhân vật bằng mã lệnh có thể là một cách trực quan và dễ bảo trì để tạo ra các nhân vật có phản ứng được _dệt_ nên từ chính logic của bạn.
 
 - **Bắt đầu với phép thuật sẵn có: Một kho tàng mẫu**
-  Cộng đồng Fount cung cấp rất nhiều mẫu nhân vật và nhân cách được tạo sẵn. Chúng hoạt động như những "bản thiết kế sống động", dễ dàng điều chỉnh và tùy chỉnh, cung cấp một điểm khởi đầu tuyệt vời.
+  Cộng đồng fount cung cấp rất nhiều mẫu nhân vật và nhân cách được tạo sẵn. Chúng hoạt động như những "bản thiết kế sống động", dễ dàng điều chỉnh và tùy chỉnh, cung cấp một điểm khởi đầu tuyệt vời.
 
 - **Tài nguyên nhúng**
   Dệt hình ảnh, âm thanh và các tài nguyên khác trực tiếp vào các nhân vật của bạn, làm cho sự hiện diện của họ trở nên hữu hình hơn.
@@ -121,7 +121,7 @@ Fount nỗ lực dệt các nhân vật vào chính kết cấu cuộc sống c�
 
 ## Kiến trúc: Nền tảng của sự đổi mới
 
-Fount được xây dựng trên một kiến trúc mạnh mẽ và có khả năng mở rộng. Backend tận dụng sức mạnh và tốc độ của [Deno](https://deno.com/), với [Express](https://expressjs.com/) để định tuyến hiệu quả. Frontend được tạo ra bằng HTML, CSS và JavaScript để có một giao diện trực quan và hấp dẫn.
+fount được xây dựng trên một kiến trúc mạnh mẽ và có khả năng mở rộng. Backend tận dụng sức mạnh và tốc độ của [Deno](https://deno.com/), với [Express](https://expressjs.com/) để định tuyến hiệu quả. Frontend được tạo ra bằng HTML, CSS và JavaScript để có một giao diện trực quan và hấp dẫn.
 
 ### Mở rộng: Một tấm thảm dệt từ những sợi chỉ đa dạng
 
@@ -139,7 +139,7 @@ Trong thế giới của fount, tính mô-đun là tối cao. Một hệ sinh th
 
 ## Cài đặt và Gỡ bỏ: Một cuộc gặp gỡ và chia tay thanh lịch
 
-### Cài đặt: Dệt Fount vào thế giới của bạn – _Thật nhẹ nhàng_
+### Cài đặt: Dệt fount vào thế giới của bạn – _Thật nhẹ nhàng_
 
 Hãy bắt đầu hành trình của bạn với fount, một nền tảng ổn định và đáng tin cậy. Chỉ với vài cú nhấp chuột hoặc lệnh đơn giản, thế giới của fount sẽ từ từ mở ra.
 
@@ -220,11 +220,11 @@ Tiếng nói của bạn sẽ được lắng nghe. Chỉ cần khởi động l
 
 ## Huy hiệu và Liên kết: Để sáng tạo tỏa sáng, để thế giới kết nối
 
-Thế giới của Fount không chỉ là từ ngữ và mã lệnh; đó là một bữa tiệc cho thị giác và một lời mời kết nối. Chúng tôi đã chuẩn bị những huy hiệu tinh xảo và các liên kết tiện lợi để làm cho các thành phần Fount của bạn tỏa sáng và cho phép người khác dễ dàng khám phá những kiệt tác của bạn.
+Thế giới của fount không chỉ là từ ngữ và mã lệnh; đó là một bữa tiệc cho thị giác và một lời mời kết nối. Chúng tôi đã chuẩn bị những huy hiệu tinh xảo và các liên kết tiện lợi để làm cho các thành phần fount của bạn tỏa sáng và cho phép người khác dễ dàng khám phá những kiệt tác của bạn.
 
-### Huy hiệu Fount: Con dấu của vinh quang
+### Huy hiệu fount: Con dấu của vinh quang
 
-Bạn có thể tự hào hiển thị huy hiệu này trong kho lưu trữ của mình hoặc bất cứ nơi nào bạn muốn trưng bày tác phẩm của mình. Tìm các tệp SVG của logo Fount [tại đây](../imgs/).
+Bạn có thể tự hào hiển thị huy hiệu này trong kho lưu trữ của mình hoặc bất cứ nơi nào bạn muốn trưng bày tác phẩm của mình. Tìm các tệp SVG của logo fount [tại đây](../imgs/).
 
 ```markdown
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
@@ -246,7 +246,7 @@ Bạn có thể tự hào hiển thị huy hiệu này trong kho lưu trữ củ
 
 ### Liên kết cài đặt tự động: Phép thuật trong tầm tay
 
-Hãy tưởng tượng những người khác cài đặt sáng tạo của bạn vào thế giới Fount của họ chỉ bằng một cú nhấp chuột. Chỉ cần kết hợp liên kết ZIP hoặc kho Git của thành phần của bạn với liên kết giao thức của Fount.
+Hãy tưởng tượng những người khác cài đặt sáng tạo của bạn vào thế giới fount của họ chỉ bằng một cú nhấp chuột. Chỉ cần kết hợp liên kết ZIP hoặc kho Git của thành phần của bạn với liên kết giao thức của fount.
 
 `https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;` + `Liên_kết_thành_phần_của_bạn`
 
@@ -254,7 +254,7 @@ Hãy tưởng tượng những người khác cài đặt sáng tạo của bạ
 
 ## Trình duyệt được đề xuất: Cho một cuộc gặp gỡ hoàn hảo
 
-Frontend của Fount được dệt nên từ các công nghệ web hiện đại, nhưng không phải tất cả các trình duyệt đều cộng hưởng hoàn hảo với linh hồn của nó. Để có trải nghiệm thanh thản và mượt mà nhất, chúng tôi đề xuất những người bạn đồng hành hòa hợp với nhịp điệu của fount:
+Frontend của fount được dệt nên từ các công nghệ web hiện đại, nhưng không phải tất cả các trình duyệt đều cộng hưởng hoàn hảo với linh hồn của nó. Để có trải nghiệm thanh thản và mượt mà nhất, chúng tôi đề xuất những người bạn đồng hành hòa hợp với nhịp điệu của fount:
 
 - [**Google Chrome**](https://www.google.com/chrome/) / [**Microsoft Edge**](https://www.microsoft.com/edge/) / [**Opera**](https://www.opera.com/): Chúng chuyển động đồng bộ với tinh thần của fount, mang lại hiệu suất và khả năng tương thích tốt nhất cho một sự tương tác mượt mà như thơ.
 

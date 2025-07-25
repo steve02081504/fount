@@ -583,14 +583,14 @@ def process_registry_item_info(item_object_in_list, reg_key_list_name, item_inde
 
 def process_home_registries(map_lang_to_path, global_ref_lang_codes):
 	if not os.path.isdir(FOUNT_DIR):
-		print(f"警告: Fount 目录 '{FOUNT_DIR}' 不存在，跳过 home_registry.json 处理。")
+		print(f"警告: fount 目录 '{FOUNT_DIR}' 不存在，跳过 home_registry.json 处理。")
 		return
 	available_locale_langs = set(map_lang_to_path.keys())
 	if not available_locale_langs:
 		print("警告: 没有加载任何有效的区域设置语言，无法处理 home_registry.json。")
 		return
 
-	print(f"\n--- 开始处理 Fount 目录 '{FOUNT_DIR}' 下的 home_registry.json 文件 ---")
+	print(f"\n--- 开始处理 fount 目录 '{FOUNT_DIR}' 下的 home_registry.json 文件 ---")
 	print(f"可用的区域语言 (来自 locales): {', '.join(sorted(list(available_locale_langs)))}")
 	registry_keys_to_process = ["home_function_buttons", "home_char_interfaces", "home_world_interfaces", "home_persona_interfaces", "home_common_interfaces"]
 
@@ -623,12 +623,12 @@ def process_home_registries(map_lang_to_path, global_ref_lang_codes):
 						print(f"  错误: 保存 {filepath} 时出错: {e}")
 				else:
 					print(f"  文件 {filepath} 无需更改。")
-	print("--- Fount 目录 home_registry.json 文件处理完毕 ---")
+	print("--- fount 目录 home_registry.json 文件处理完毕 ---")
 
 
 def check_used_keys_in_fount(fount_dir, reference_loc_data, reference_lang_code):
 	if not os.path.isdir(fount_dir):
-		print(f"警告: Fount 目录 '{fount_dir}' 不存在，跳过i18n键使用情况检查。")
+		print(f"警告: fount 目录 '{fount_dir}' 不存在，跳过i18n键使用情况检查。")
 		return
 
 	print(f"\n--- 开始在 FOUNT 目录 '{fount_dir}' 中检查 MJS/HTML 文件中的 i18n 键 ---")

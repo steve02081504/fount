@@ -7,7 +7,7 @@ export default {
 			name: 'telegrambot',
 			avatar: 'https://api.iconify.design/line-md/telegram.svg', // 使用SVG图标
 			description: 'Run your char as a Telegram bot.',
-			description_markdown: 'Integrate your Fount character with Telegram to interact with users on the platform.',
+			description_markdown: 'Integrate your fount character with Telegram to interact with users on the platform.',
 			version: '1.0.0',
 			author: 'steve02081504', // 您的名字
 			home_page: '', // 项目主页或相关链接
@@ -16,7 +16,7 @@ export default {
 		'zh-CN': {
 			name: 'Telegram机器人',
 			description: '将您的角色作为Telegram机器人运行。',
-			description_markdown: '将您的Fount角色与Telegram集成，以便在该平台上与用户互动。',
+			description_markdown: '将您的fount角色与Telegram集成，以便在该平台上与用户互动。',
 			tags: ['Telegram', '机器人', '聊天', '集成']
 		}
 		// 可以添加更多语言的本地化信息
@@ -32,7 +32,7 @@ export default {
 
 	interfaces: {
 		invokes: {
-			// 处理通过 Fount 命令行/脚本调用的情况，例如 'run shells <user> telegrambot <botname> start'
+			// 处理通过 fount 命令行/脚本调用的情况，例如 'run shells <user> telegrambot <botname> start'
 			ArgumentsHandler: async (user, args) => {
 				const botname = args[0]
 				const action = args[1] ?? 'start' // 默认为 'start'
@@ -48,7 +48,7 @@ export default {
 			}
 		},
 		jobs: {
-			// 当 Fount 启动时，如果之前有正在运行的机器人，则重新启动它们
+			// 当 fount 启动时，如果之前有正在运行的机器人，则重新启动它们
 			ReStartJob: async (user, botname) => {
 				let sleep_time = 0
 				while (true) try {

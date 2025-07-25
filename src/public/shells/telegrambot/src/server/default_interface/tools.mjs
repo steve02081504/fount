@@ -15,7 +15,7 @@ import { getPartInfo } from '../../../../../../scripts/locale.mjs'
 /** @typedef {import('../../../../chat/decl/chatLog.ts').chatReply_t} ChatReply_t */
 
 /**
- * 简化的 Fount 聊天日志条目类型，用于默认接口。
+ * 简化的 fount 聊天日志条目类型，用于默认接口。
  * 扩展信息与自定义接口的 fountEntry.extension 结构尽量保持一致。
  * @typedef { (FountChatLogEntryBase & {
  *  extension?: {
@@ -177,7 +177,7 @@ export function aiMarkdownToTelegramHtml(aiMarkdownText) {
 }
 
 /**
- * 将 Telegram 的消息上下文转换为 Fount 的聊天日志条目格式。
+ * 将 Telegram 的消息上下文转换为 fount 的聊天日志条目格式。
  * @param {import('npm:telegraf').Context} ctx - Telegraf 的消息上下文.
  * @param {import('npm:telegraf').NarrowedContext<import('npm:telegraf').Context, import('npm:telegraf').Types.Update.MessageUpdate> | { message: TelegramMessageType }} messageHolder - 包含 message 对象的上下文或包装器.
  * @param {TelegramBotInfo} botInfo - 机器人自身的信息。

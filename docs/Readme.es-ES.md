@@ -22,7 +22,7 @@
 
 ¿O tal vez, solo tal vez, has buscado una conexión más allá de lo ordinario, un reino donde los bordes de la realidad se difuminan y se desarrolla una comprensión íntima y _sin filtros_?
 
-Con casi un año de desarrollo dedicado, contribuciones de más de 10 personas apasionadas y una comunidad próspera de más de 1000 usuarios, Fount se erige como una plataforma madura, estable y en constante evolución para la interacción con IA. Es un viaje, y uno que creemos que es más accesible de lo que podrías imaginar.
+Con casi un año de desarrollo dedicado, contribuciones de más de 10 personas apasionadas y una comunidad próspera de más de 1000 usuarios, fount se erige como una plataforma madura, estable y en constante evolución para la interacción con IA. Es un viaje, y uno que creemos que es más accesible de lo que podrías imaginar.
 
 ¿Personajes perdidos, historias olvidadas? Nuestra [**comunidad vibrante y acogedora**](https://discord.gg/GtR9Quzq2v) te espera: un refugio donde se reúnen espíritus afines, donde desarrolladores y creadores por igual comparten su sabiduría y creaciones.
 
@@ -46,7 +46,7 @@ fount es un puente que te conecta con los personajes de tu imaginación, permiti
 
 Es una fuente (fount), donde las fuentes de IA, los personajes, las personas, los mundos y los plugins fluyen juntos, permitiéndote crear y experimentar interacciones únicas y convincentes.
 
-Fount está construido para el futuro, listo para abrazar nuevas características nacidas de su vibrante comunidad. Si tienes una visión, una chispa de una idea que pertenece al reino de fount, damos la bienvenida a tu contribución.
+fount está construido para el futuro, listo para abrazar nuevas características nacidas de su vibrante comunidad. Si tienes una visión, una chispa de una idea que pertenece al reino de fount, damos la bienvenida a tu contribución.
 
 ---
 
@@ -68,14 +68,14 @@ Fount está construido para el futuro, listo para abrazar nuevas característica
   fount se ejecuta sin problemas en Windows, macOS, Linux e incluso Android, adaptándose a tus necesidades a través de la instalación directa o la flexibilidad de Docker.
 
 - **(Para Usuarios Avanzados) Integración de Fuentes de IA sin Ataduras: Abraza lo Ilimitado**
-  Fount ofrece _elección_ y _flexibilidad_ incomparables al conectarse a fuentes de IA. El código JavaScript personalizado dentro del generador de fuentes de IA te permite conectarte a _cualquier_ fuente de IA: OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral y más. Crea expresiones regulares intrincadas, recurre a vastas bibliotecas de API e incrusta activos multimedia, todo dentro del flujo de tu código. La lógica de la comunicación se doblega a _tu_ voluntad, moldeada por el poder del código.
+  fount ofrece _elección_ y _flexibilidad_ incomparables al conectarse a fuentes de IA. El código JavaScript personalizado dentro del generador de fuentes de IA te permite conectarte a _cualquier_ fuente de IA: OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral y más. Crea expresiones regulares intrincadas, recurre a vastas bibliotecas de API e incrusta activos multimedia, todo dentro del flujo de tu código. La lógica de la comunicación se doblega a _tu_ voluntad, moldeada por el poder del código.
   ![Imagen](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
 
 ---
 
 ## Compañerismo: Más Allá del Velo Digital
 
-Fount se esfuerza por tejer personajes en el tejido mismo de tu vida, ofreciendo compañía y apoyo que trascienden la pantalla.
+fount se esfuerza por tejer personajes en el tejido mismo de tu vida, ofreciendo compañía y apoyo que trascienden la pantalla.
 
 - **Integración con Discord/Telegram**
   Conecta a tus personajes a las comunidades de Discord o Telegram a través de los Bot Shells integrados, convirtiéndolos en miembros vivos de tus círculos.
@@ -100,10 +100,10 @@ Para el creador, fount ofrece un camino más claro para dar vida a tus personaje
   Describe tu personaje en una sola frase, y nuestro asistente inteligente de IA creará una persona completamente realizada. Esto simplifica la configuración inicial, permitiéndote centrarte en refinar e interactuar con tu creación.
 
 - **La Magia del Código, Más Fácil de lo que Imaginas**
-  En Fount, el código es una forma de magia moderna. Con la amable guía de nuestra comunidad y la ayuda esclarecedora de la IA, aprenderlo es sorprendentemente fácil. Descubrirás que definir la lógica del personaje con código puede ser una forma intuitiva y mantenible de crear personajes cuyas respuestas están _tejidas_ a partir de tu propia lógica.
+  En fount, el código es una forma de magia moderna. Con la amable guía de nuestra comunidad y la ayuda esclarecedora de la IA, aprenderlo es sorprendentemente fácil. Descubrirás que definir la lógica del personaje con código puede ser una forma intuitiva y mantenible de crear personajes cuyas respuestas están _tejidas_ a partir de tu propia lógica.
 
 - **Comienza con Magia Lista para Usar: Un Tesoro de Plantillas**
-  La comunidad de Fount proporciona una gran cantidad de plantillas de personajes y personas prefabricadas. Actúan como "planos vivos", fáciles de adaptar y personalizar, proporcionando un fantástico punto de partida.
+  La comunidad de fount proporciona una gran cantidad de plantillas de personajes y personas prefabricadas. Actúan como "planos vivos", fáciles de adaptar y personalizar, proporcionando un fantástico punto de partida.
 
 - **Recursos Incrustados**
   Teje imágenes, audio y otros recursos directamente en tus personajes, haciendo su presencia aún más tangible.
@@ -121,7 +121,7 @@ Para el creador, fount ofrece un camino más claro para dar vida a tus personaje
 
 ## Arquitectura: El Fundamento de la Innovación
 
-Fount está construido sobre una arquitectura robusta y escalable. El backend aprovecha el poder y la velocidad de [Deno](https://deno.com/), con [Express](https://expressjs.com/) para un enrutamiento eficiente. El frontend está elaborado con HTML, CSS y JavaScript para una interfaz intuitiva y atractiva.
+fount está construido sobre una arquitectura robusta y escalable. El backend aprovecha el poder y la velocidad de [Deno](https://deno.com/), con [Express](https://expressjs.com/) para un enrutamiento eficiente. El frontend está elaborado con HTML, CSS y JavaScript para una interfaz intuitiva y atractiva.
 
 ### Expansión: Un Tapiz Tejido con Diversos Hilos
 
@@ -139,7 +139,7 @@ En el mundo de fount, la modularidad reina suprema. Un rico ecosistema de compon
 
 ## Instalación y Eliminación: Un Encuentro y Despedida Elegante
 
-### Instalación: Tejiendo Fount en tu Mundo – _Sin Esfuerzo_
+### Instalación: Tejiendo fount en tu Mundo – _Sin Esfuerzo_
 
 Embárcate en tu viaje con fount, una plataforma estable y confiable. Unos pocos clics o comandos simples, y el mundo de fount se despliega.
 
@@ -220,11 +220,11 @@ Tu voz será escuchada. Simplemente reinicia fount, y las sombras se disiparán.
 
 ## Insignias y Enlaces: Deja que tus Creaciones Brillen, Deja que el Mundo las Alcance
 
-El mundo de Fount es más que palabras y código; es un festín para los ojos y una invitación a conectar. Hemos preparado insignias exquisitas y enlaces convenientes para hacer que tus componentes de Fount brillen y permitir que otros descubran fácilmente tus obras maestras.
+El mundo de fount es más que palabras y código; es un festín para los ojos y una invitación a conectar. Hemos preparado insignias exquisitas y enlaces convenientes para hacer que tus componentes de fount brillen y permitir que otros descubran fácilmente tus obras maestras.
 
-### Insignias de Fount: El Sello de la Gloria
+### Insignias de fount: El Sello de la Gloria
 
-Puedes mostrar con orgullo esta insignia en tu repositorio o en cualquier lugar donde desees exhibir tu trabajo. Encuentra los archivos SVG del logotipo de Fount [aquí](../imgs/).
+Puedes mostrar con orgullo esta insignia en tu repositorio o en cualquier lugar donde desees exhibir tu trabajo. Encuentra los archivos SVG del logotipo de fount [aquí](../imgs/).
 
 ```markdown
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
@@ -246,7 +246,7 @@ Puedes mostrar con orgullo esta insignia en tu repositorio o en cualquier lugar 
 
 ### Enlaces de Instalación Automática: Magia al Alcance de tu Mano
 
-Imagina que otros instalan tus creaciones en su mundo de Fount con un solo clic. Simplemente combina el enlace ZIP o del repositorio Git de tu componente con el enlace de protocolo de Fount.
+Imagina que otros instalan tus creaciones en su mundo de fount con un solo clic. Simplemente combina el enlace ZIP o del repositorio Git de tu componente con el enlace de protocolo de fount.
 
 `https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;` + `Tu_Enlace_de_Componente`
 
@@ -254,7 +254,7 @@ Imagina que otros instalan tus creaciones en su mundo de Fount con un solo clic.
 
 ## Navegadores Recomendados: Para un Encuentro Perfecto
 
-El frontend de Fount está tejido con tecnologías web modernas, pero no todos los navegadores resuenan perfectamente con su alma. Para la experiencia más serena y fluida, recomendamos compañeros que estén en armonía con el ritmo de fount:
+El frontend de fount está tejido con tecnologías web modernas, pero no todos los navegadores resuenan perfectamente con su alma. Para la experiencia más serena y fluida, recomendamos compañeros que estén en armonía con el ritmo de fount:
 
 - [**Google Chrome**](https://www.google.com/chrome/) / [**Microsoft Edge**](https://www.microsoft.com/edge/) / [**Opera**](https://www.opera.com/): Se mueven en sincronía con el espíritu de fount, ofreciendo el mejor rendimiento y compatibilidad para una interacción tan suave como la poesía.
 
