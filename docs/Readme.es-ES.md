@@ -139,7 +139,7 @@ En el mundo de fount, la modularidad reina suprema. Un rico ecosistema de compon
 
 ## Instalación y Eliminación: Un Encuentro y Despedida Elegante
 
-### Instalación: Tejiendo fount en tu Mundo – _Sin Esfuerzo_
+### Instalación: Tejiendo Fount en tu Mundo – _Sin Esfuerzo_
 
 Embárcate en tu viaje con fount, una plataforma estable y confiable. Unos pocos clics o comandos simples, y el mundo de fount se despliega.
 
