@@ -1,5 +1,5 @@
 import { on_shutdown } from 'npm:on-shutdown'
-import { __dirname, hosturl } from '../server/server.mjs'
+import { __dirname, hosturl, restartor } from '../server/server.mjs'
 import fs from 'node:fs'
 import os from 'node:os'
 const SysTray = (await import('npm:systray').catch(_ => 0))?.default?.default //??????
@@ -28,14 +28,7 @@ export async function createTray() {
 	try {
 		if (systray) systray.kill()
 		systray = null
-		let iconPath = ''
-		const platform = os.platform()
-
-		if (platform === 'win32')
-			iconPath = __dirname + '/src/pages/favicon.ico'
-		else
-			iconPath = __dirname + '/src/pages/favicon.png'
-
+		const iconPath = __dirname + (os.platform() === 'win32' ? '/src/pages/favicon.ico' : '/src/pages/favicon.png')
 		const base64Icon = await getBase64Icon(iconPath)
 
 		systray = new SysTray({
@@ -63,6 +56,12 @@ export async function createTray() {
 						enabled: true
 					},
 					{
+						title: await geti18n('fountConsole.tray.items.restart.title'),
+						tooltip: await geti18n('fountConsole.tray.items.restart.tooltip'),
+						checked: false,
+						enabled: true
+					},
+					{
 						title: await geti18n('fountConsole.tray.items.exit.title'),
 						tooltip: await geti18n('fountConsole.tray.items.exit.tooltip'),
 						checked: false,
@@ -86,6 +85,9 @@ export async function createTray() {
 					open('https://discord.gg/GtR9Quzq2v')
 					break
 				case 3:
+					restartor()
+					break
+				case 4:
 					process.exit(0)
 			}
 		})

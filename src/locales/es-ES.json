@@ -79,6 +79,10 @@
 					"title": "Discord",
 					"tooltip": "Abrir el Discord de fount"
 				},
+				"restart": {
+					"title": "Reiniciar",
+					"tooltip": "Reiniciar la aplicación"
+				},
 				"exit": {
 					"title": "Salir",
 					"tooltip": "Salir de la aplicación"

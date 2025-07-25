@@ -7,7 +7,7 @@ import { LoadImportHandler, UnloadImportHandler } from '../../public/shells/inst
 import { loadWorld, unloadWorld } from './world_manager.mjs'
 import { on_shutdown } from 'npm:on-shutdown'
 import { events } from '../events.mjs'
-import process from 'node:process'
+import { restartor } from '../server.mjs'
 
 export const partsList = [
 	'shells', 'chars', 'personas', 'worlds', 'AIsources', 'AIsourceGenerators',
@@ -75,5 +75,5 @@ events.on('BeforeUserRenamed', async ({ oldUsername, newUsername }) => {
 })
 
 export async function reloadPart(username, parttype, partname) {
-	process.exit(1) // we ll prey that the hole server will be restarted by the user or something
+	restartor() // we ll restart the entire server because fucking deno not support hot reload of signal js file
 }

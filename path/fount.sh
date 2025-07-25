@@ -955,7 +955,6 @@ init)
 keepalive)
 	runargs=("${@:2}")
 	while ! run "${runargs[@]}"; do
-		echo "fount exited with an error, attempting to upgrade and restart..." >&2
 		deno_upgrade
 		fount_upgrade
 		run "${runargs[@]}"
@@ -1002,7 +1001,13 @@ remove)
 	exit 0
 	;;
 *)
-	run "$@"
+	runargs=("${@:2}")
+	run "${runargs[@]}"
+	while $? -eq 131; do
+		deno_upgrade
+		fount_upgrade
+		run "${runargs[@]}"
+	done
 	;;
 esac
 

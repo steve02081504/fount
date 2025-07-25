@@ -79,6 +79,10 @@
 					"title": "Discord",
 					"tooltip": "fountのDiscordを開く"
 				},
+				"restart": {
+					"title": "再起動",
+					"tooltip": "アプリケーションを再起動します"
+				},
 				"exit": {
 					"title": "終了",
 					"tooltip": "アプリケーションを終了します"

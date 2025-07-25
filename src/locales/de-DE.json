@@ -79,6 +79,10 @@
 					"title": "Discord",
 					"tooltip": "fount auf Discord öffnen"
 				},
+				"restart": {
+					"title": "Neu starten",
+					"tooltip": "Anwendung neu starten"
+				},
 				"exit": {
 					"title": "Beenden",
 					"tooltip": "Anwendung beenden"

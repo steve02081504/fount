@@ -79,6 +79,10 @@
 					"title": "Discord",
 					"tooltip": "Mở Discord của fount"
 				},
+				"restart": {
+					"title": "Khỏi dụng",
+					"tooltip": "Khỏi dụng ứng dụng"
+				},
 				"exit": {
 					"title": "Thoát",
 					"tooltip": "Thoát khỏi ứng dụng"

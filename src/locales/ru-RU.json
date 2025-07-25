@@ -79,6 +79,10 @@
 					"title": "Discord",
 					"tooltip": "Открыть fount в Discord"
 				},
+				"restart": {
+					"title": "Перезагрузить",
+					"tooltip": "Перезагрузить приложение"
+				},
 				"exit": {
 					"title": "Выход",
 					"tooltip": "Выйти из приложения"

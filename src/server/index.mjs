@@ -17,6 +17,7 @@ console.log(await geti18n('fountConsole.server.standingBy'))
 let args = process.argv.slice(2)
 
 const fount_config = {
+	restartor: () => process.exit(131),
 	data_path: __dirname + '/data',
 }
 

@@ -79,6 +79,10 @@
 					"title": "Discord",
 					"tooltip": "fount का Discord खोलें"
 				},
+				"restart": {
+					"title": "रिस्टार्ट",
+					"tooltip": "एप्लिकेशन रिस्टार्ट करें"
+				},
 				"exit": {
 					"title": "बाहर निकलें",
 					"tooltip": "एप्लिकेशन से बाहर निकलें"

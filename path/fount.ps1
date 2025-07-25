@@ -792,7 +792,12 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 	exit 0
 }
 else {
-	run @args
+	run @runargs
+	while ($LastExitCode -eq 131) {
+		deno_upgrade
+		fount_upgrade
+		run
+	}
 }
 
 if ($ErrorCount -ne $Error.Count) { exit 1 }

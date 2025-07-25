@@ -79,6 +79,10 @@
 					"title": "Discord",
 					"tooltip": "Open fount's Discord"
 				},
+				"restart": {
+					"title": "Restart",
+					"tooltip": "Restart the application"
+				},
 				"exit": {
 					"title": "Exit",
 					"tooltip": "Exit the application"

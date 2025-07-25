@@ -79,6 +79,10 @@
 					"title": "Discord",
 					"tooltip": "打开 fount 的 Discord"
 				},
+				"restart": {
+					"title": "重启",
+					"tooltip": "重启应用程序"
+				},
 				"exit": {
 					"title": "退出",
 					"tooltip": "退出应用程序"

@@ -79,6 +79,10 @@
 					"title": "Discord",
 					"tooltip": "fount의 Discord 열기"
 				},
+				"restart": {
+					"title": "재시작",
+					"tooltip": "애플리케이션 재시작"
+				},
 				"exit": {
 					"title": "종료",
 					"tooltip": "애플리케이션 종료"
