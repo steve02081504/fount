@@ -957,7 +957,7 @@ keepalive)
 	while ! run "${runargs[@]}"; do
 		deno_upgrade
 		fount_upgrade
-		run "${runargs[@]}"
+		run
 	done
 	;;
 remove)
@@ -1001,12 +1001,11 @@ remove)
 	exit 0
 	;;
 *)
-	runargs=("${@:2}")
-	run "${runargs[@]}"
+	run "$@"
 	while $? -eq 131; do
 		deno_upgrade
 		fount_upgrade
-		run "${runargs[@]}"
+		run
 	done
 	;;
 esac

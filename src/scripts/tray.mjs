@@ -70,7 +70,7 @@ export async function createTray() {
 				]
 			},
 			debug: false,
-			copyDir: true
+			copyDir: false
 		})
 
 		systray.onClick(action => {

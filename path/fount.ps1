@@ -155,14 +155,19 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'open') {
 	}
 }
 elseif ($args.Count -gt 0 -and $args[0] -eq 'background') {
+	$runargs = $args[1..$args.Count]
 	if ($IN_DOCKER) {
-		$runargs = $args[1..$args.Count]
 		fount.ps1 @runargs
-		exit $LastExitCode
 	}
-	if (Test-Path -Path "$FOUNT_DIR/.nobackground") {
-		$runargs = $args[1..$args.Count]
-		Start-Process -FilePath fount.ps1 -ArgumentList $runargs
+	elseif (Test-Path -Path "$FOUNT_DIR/.nobackground") {
+		$TargetPath = "powershell.exe"
+		$runargs = $runargs | ForEach-Object { ($_ -replace '\', '\\') -replace '"', '\"' }
+		$Arguments = "-noprofile -nologo -ExecutionPolicy Bypass -File `"$FOUNT_DIR\path\fount.ps1`" `"$($runargs -join '" "')`""
+		if (Test-Path "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe") {
+			$TargetPath = "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe"
+			$Arguments = "-p fount powershell.exe $Arguments"
+		}
+		Start-Process -FilePath $TargetPath -ArgumentList $Arguments
 	}
 	else {
 		Test-PWSHModule ps12exe
@@ -171,7 +176,6 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'background') {
 		if (!(Test-Path $exepath)) {
 			ps12exe -inputFile "$FOUNT_DIR/src/runner/background.ps1" -outputFile $exepath
 		}
-		$runargs = $args[1..$args.Count]
 		Start-Process -FilePath $exepath -ArgumentList $runargs
 	}
 	exit 0
@@ -792,7 +796,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 	exit 0
 }
 else {
-	run @runargs
+	run @args
 	while ($LastExitCode -eq 131) {
 		deno_upgrade
 		fount_upgrade
