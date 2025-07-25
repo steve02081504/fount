@@ -139,7 +139,7 @@ Dans le monde de fount, la modularité règne en maître. Un riche écosystème 
 
 ## Installation & Suppression : Une Rencontre et un Adieu Élégants
 
-### Installation : Intégrer fount à votre monde – _Sans Effort_
+### Installation : Intégrer Fount à votre monde – _Sans Effort_
 
 Embarquez pour votre voyage avec fount, une plateforme stable et fiable. Quelques clics ou commandes simples, et le monde de fount se dévoile.
 
