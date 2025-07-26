@@ -169,3 +169,14 @@ export async function getFountHostUrl(hostUrl = urlParams.get('hostUrl') ?? loca
 	saveFountHostUrl(result)
 	return result
 }
+
+export async function pingFount(hostUrl) {
+	if (!hostUrl) return
+	const controller = new AbortController()
+	const timeout = setTimeout(() => controller.abort(), 1000)
+	const res = await fetch(new URL('/api/ping', hostUrl), {
+		signal: controller.signal,
+	}).catch(() => 0)
+	clearTimeout(timeout)
+	return res?.ok
+}

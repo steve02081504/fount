@@ -1,23 +1,10 @@
 /* global urlParams */
 import '../base.mjs'
 import * as Sentry from 'https://esm.run/@sentry/browser'
-import { getFountHostUrl } from '../scripts/fountHostGetter.mjs'
+import { getFountHostUrl, pingFount } from '../scripts/fountHostGetter.mjs'
 import { initTranslations, alertI18n } from '../scripts/i18n.mjs'
 
 const fountProtocolUrl = urlParams.get('url')
-
-/**
- * @param {string} hostUrl
- */
-async function ping(hostUrl) {
-	const controller = new AbortController()
-	const timeout = setTimeout(() => controller.abort(), 1000)
-	const res = await fetch(new URL('/api/ping', hostUrl), {
-		signal: controller.signal,
-	}).catch(() => 0)
-	clearTimeout(timeout)
-	return res?.ok
-}
 
 function useUrlProtocol(hostUrl) {
 	if (fountProtocolUrl) {
@@ -34,7 +21,7 @@ async function main() {
 	await initTranslations('protocolhandler')
 	const hostUrl = urlParams.get('hostUrl') ?? localStorage.getItem('fountHostUrl')
 	if (hostUrl) {
-		const isOnline = await ping(hostUrl)
+		const isOnline = await pingFount(hostUrl)
 		if (isOnline) return useUrlProtocol(hostUrl)
 
 		const url = new URL(hostUrl)

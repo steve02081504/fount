@@ -1,6 +1,6 @@
 import { setBaseDir, setPreRender, setTheme, theme_now } from '../../base.mjs'
 import { initTranslations, geti18n, alertI18n ,console} from '../../scripts/i18n.mjs'
-import { isFountServiceAvailable, saveFountHostUrl, getFountHostUrl } from '../../scripts/fountHostGetter.mjs'
+import { isFountServiceAvailable, saveFountHostUrl, getFountHostUrl, pingFount } from '../../scripts/fountHostGetter.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
 import * as Sentry from 'https://esm.run/@sentry/browser'
 import { animateSVG } from 'https://cdn.jsdelivr.net/gh/steve02081504/animate-SVG/index.mjs'
@@ -224,7 +224,7 @@ async function main() {
 
 		if (hostUrl) {
 			launchButtonText.textContent = geti18n('installer_wait_screen.footer.open_fount')
-			launchButton.onclick = () => window.location.href = new URL('/shells/home', hostUrl)
+			launchButton.onclick = async () => (await pingFount(hostUrl)) ? window.location.href = new URL('/shells/home', hostUrl) : window.open('fount://page/shells/home', '_self')
 		}
 		return
 	}
