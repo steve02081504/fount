@@ -2,7 +2,7 @@ import { getUserByUsername, getAllUserNames } from './auth.mjs'
 import { save_config } from './server.mjs'
 import { loadPart } from './managers/index.mjs'
 import { events } from './events.mjs'
-import { geti18n } from '../scripts/i18n.mjs'
+import { console } from '../scripts/i18n.mjs'
 
 export function StartJob(username, parttype, partname, uid, data = null) {
 	const jobs = getUserByUsername(username).jobs ??= {}
@@ -40,7 +40,7 @@ async function startJobsOfUser(username) {
 		for (const partname in jobs[parttype])
 			for (const uid in jobs[parttype][partname])
 				promises.push((async () => {
-					console.log(await geti18n('fountConsole.jobs.restartingJob', { username, parttype, partname, uid }))
+					console.logI18n('fountConsole.jobs.restartingJob', { username, parttype, partname, uid })
 					const part = await loadPart(username, parttype, partname)
 					await part.interfaces.jobs.ReStartJob(username, jobs[parttype][partname][uid] ?? uid)
 				})().catch(console.error))

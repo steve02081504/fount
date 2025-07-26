@@ -1,6 +1,6 @@
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
-import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
+import { initTranslations, geti18n, alertI18n } from '../../scripts/i18n.mjs'
 import { importFiles, importText } from './src/public/endpoints.mjs'
 
 usingTemplates('/shells/install/src/public/templates')
@@ -120,13 +120,13 @@ importButton.addEventListener('click', async () => {
 		else
 			await handleTextImport()
 
-		alert(geti18n('import.alerts.importSuccess'))
+		alertI18n('import.alerts.importSuccess')
 	} catch (error) {
 		let errorMessage = error.message || geti18n('import.alerts.unknownError')
 		if (error.errors)
 			errorMessage += `\n${formatErrors(error.errors)}`
 
-		alert(geti18n('import.alerts.importFailed', { error: errorMessage }))
+		alertI18n('import.alerts.importFailed', { error: errorMessage })
 	}
 })
 

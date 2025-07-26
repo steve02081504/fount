@@ -4,7 +4,7 @@ import { loadShellData, loadTempData, saveShellData } from '../../../../../serve
 import { LoadChar } from '../../../../../server/managers/char_manager.mjs'
 import { getAllUserNames } from '../../../../../server/auth.mjs'
 import { StartJob, EndJob } from '../../../../../server/jobs.mjs'
-import { geti18n } from '../../../../../scripts/i18n.mjs'
+import { console } from '../../../../../scripts/i18n.mjs'
 import { events } from '../../../../../server/events.mjs'
 /** @typedef {import('../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
 
@@ -42,10 +42,10 @@ async function startBot(config, char) {
 
 	client.once(Events.ClientReady, async client => {
 		await char.interfaces.discord?.OnceClientReady(client, config.config)
-		console.info(await geti18n('fountConsole.discordbot.botStarted', {
+		console.infoI18n('fountConsole.discordbot.botStarted', {
 			botusername: client.user.username,
 			charname: config.char
-		}))
+		})
 	})
 
 	await client.login(config.token)

@@ -1,5 +1,5 @@
 import { applyTheme } from '../scripts/theme.mjs'
-import { initTranslations, geti18n } from '../scripts/i18n.mjs'
+import { initTranslations, geti18n, console } from '../scripts/i18n.mjs'
 import { ping, generateVerificationCode, login, register } from '../scripts/endpoints.mjs'
 import zxcvbn from 'https://esm.run/zxcvbn'
 

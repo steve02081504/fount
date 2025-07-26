@@ -106,7 +106,7 @@
 		"shellCommandFailed": "Failed to send shell command",
 		"shellCommandError": "Error sending shell command",
 		"fountNotFound": "Oh dear :(\n\nfount was not found. Perhaps you need to install it first?",
-		"unknownError": "Oh dear :(\n\nAn error occurred:\n"
+		"unknownError": "Oh dear :(\n\nAn error occurred:\n${error}"
 	},
 	"installer_wait_screen": {
 		"title": "Welcome to fount!",
@@ -145,7 +145,7 @@
 			"launch_button": "fount is installing...",
 			"open_fount": "Open fount",
 			"open_or_install_fount": "Open/Install fount",
-			"error_message": "Oh dear :(\n\nAn error occurred:\n"
+			"error_message": "Oh dear :(\n\nAn error occurred:\n${error}"
 		},
 		"error": {
 			"title": "Installation failed!",
@@ -921,7 +921,7 @@
 		"preview_label": "Preview",
 		"preview_alt": "Badge Preview",
 		"copied_text": "Copied!",
-		"copy_error": "Unable to copy text:",
+		"copy_error": "Unable to copy text: ${error}",
 		"copy_fail_alert": "Copy failed!"
 	}
 }

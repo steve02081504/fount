@@ -106,7 +106,7 @@
 		"shellCommandFailed": "Senden des Shell-Befehls fehlgeschlagen",
 		"shellCommandError": "Fehler beim Senden des Shell-Befehls",
 		"fountNotFound": "Och nö :(\n\nfount wurde nicht gefunden. Vielleicht müssen Sie es zuerst installieren?",
-		"unknownError": "Och nö :(\n\nEin Fehler ist aufgetreten:\n"
+		"unknownError": "Och nö :(\n\nEin Fehler ist aufgetreten:\n${error}"
 	},
 	"installer_wait_screen": {
 		"title": "Willkommen bei fount!",
@@ -145,7 +145,7 @@
 			"launch_button": "fount wird installiert...",
 			"open_fount": "fount öffnen",
 			"open_or_install_fount": "fount öffnen/installieren",
-			"error_message": "Och nö :(\n\nEin Fehler ist aufgetreten:\n"
+			"error_message": "Och nö :(\n\nEin Fehler ist aufgetreten:\n${error}"
 		},
 		"error": {
 			"title": "Installation fehlgeschlagen!",
@@ -921,7 +921,7 @@
 		"preview_label": "Vorschau",
 		"preview_alt": "Abzeichen-Vorschau",
 		"copied_text": "Kopiert!",
-		"copy_error": "Text konnte nicht kopiert werden:",
+		"copy_error": "Text konnte nicht kopiert werden: ${error}",
 		"copy_fail_alert": "Kopieren fehlgeschlagen!"
 	}
 }

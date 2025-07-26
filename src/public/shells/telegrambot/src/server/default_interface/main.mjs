@@ -4,7 +4,7 @@ import {
 	aiMarkdownToTelegramHtml,
 	escapeHTML
 } from './tools.mjs'
-import { localhostLocales } from '../../../../../../scripts/i18n.mjs'
+import { localhostLocales, console } from '../../../../../../scripts/i18n.mjs'
 import { getPartInfo } from '../../../../../../scripts/locale.mjs'
 import { loadDefaultPersona } from '../../../../../../server/managers/persona_manager.mjs'
 

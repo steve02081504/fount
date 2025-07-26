@@ -106,7 +106,7 @@
 		"shellCommandFailed": "शेल कमांड भेजने में विफल।",
 		"shellCommandError": "शेल कमांड भेजने में त्रुटि।",
 		"fountNotFound": "ओह हो :(\n\nfount नहीं मिला, शायद आपको इसे पहले इंस्टॉल करने की ज़रूरत है?",
-		"unknownError": "ओह हो :(\n\nएक त्रुटि हुई:\n"
+		"unknownError": "ओह हो :(\n\nएक त्रुटि हुई:\n${error}"
 	},
 	"installer_wait_screen": {
 		"title": "fount में आपका स्वागत है!",
@@ -145,7 +145,7 @@
 			"launch_button": "fount इंस्टॉल हो रहा है...",
 			"open_fount": "fount खोलें",
 			"open_or_install_fount": "fount खोलें/इंस्टॉल करें",
-			"error_message": "ओह हो :(\n\nएक त्रुटि हुई:\n"
+			"error_message": "ओह हो :(\n\nएक त्रुटि हुई:\n${error}"
 		},
 		"error": {
 			"title": "इंस्टॉलेशन विफल!",
@@ -921,7 +921,7 @@
 		"preview_label": "पूर्वावलोकन",
 		"preview_alt": "बैज पूर्वावलोकन",
 		"copied_text": "कॉपीड!",
-		"copy_error": "पाठ को कॉपी करने में असमर्थ:",
+		"copy_error": "पाठ को कॉपी करने में असमर्थ: ${error}",
 		"copy_fail_alert": "कॉपी विफल!"
 	}
 }

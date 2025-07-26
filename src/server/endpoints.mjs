@@ -9,7 +9,7 @@ import { hosturl, __dirname, skip_report } from './server.mjs'
 import express from 'npm:express@^5.1.0'
 import cors from 'npm:cors'
 import { Readable } from 'node:stream'
-import { geti18n, getLocaleData } from '../scripts/i18n.mjs'
+import { console, getLocaleData } from '../scripts/i18n.mjs'
 
 /**
  * @param {import('npm:express').Router} router
@@ -42,7 +42,7 @@ export function registerEndpoints(router) {
 		if (req.cookies.accessToken) try {
 			const user = await getUserByReq(req)
 			user.locales = preferredLanguages
-			console.log(await geti18n('fountConsole.route.setLanguagePreference', { username: user.username, preferredLanguages }))
+			console.logI18n('fountConsole.route.setLanguagePreference', { username: user.username, preferredLanguages })
 		} catch { }
 
 		return res.status(200).json(await getLocaleData(preferredLanguages))

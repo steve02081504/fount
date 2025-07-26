@@ -1,4 +1,4 @@
-import { initTranslations } from '../../../scripts/i18n.mjs'
+import { initTranslations, console } from '../../../scripts/i18n.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
 import { currentChatId, addCharacter, createNewChat } from '../src/public/endpoints.mjs'
 initTranslations('chat.new')

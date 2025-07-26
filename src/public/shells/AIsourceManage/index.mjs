@@ -1,6 +1,6 @@
 import { createJsonEditor } from '../../scripts/jsonEditor.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
-import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
+import { initTranslations, console, geti18n, alertI18n, confirmI18n, promptI18n } from '../../scripts/i18n.mjs'
 import { getPartList, setDefaultPart, getDefaultParts } from '../../scripts/parts.mjs'
 import { getConfigTemplate, getAIFile, setAIFile, deleteAIFile, addAIFile } from './src/public/endpoints.mjs'
 
@@ -142,7 +142,7 @@ async function updateEditorContent(data) {
 async function loadEditor(fileName) {
 	if (!fileName) return
 
-	if (isDirty && !confirm(geti18n('aisource_editor.confirm.unsavedChanges')))
+	if (isDirty && !confirmI18n('aisource_editor.confirm.unsavedChanges'))
 		return
 
 	document.querySelectorAll('.file-list-item').forEach(item => item.classList.remove('active'))
@@ -173,11 +173,11 @@ async function loadEditor(fileName) {
 
 async function saveFile() {
 	if (!activeFile) {
-		alert(geti18n('aisource_editor.alerts.noFileSelectedSave'))
+		alertI18n('aisource_editor.alerts.noFileSelectedSave')
 		return
 	}
 	if (!generatorSelect.value) {
-		alert(geti18n('aisource_editor.alerts.noGeneratorSelectedSave'))
+		alertI18n('aisource_editor.alerts.noGeneratorSelectedSave')
 		return
 	}
 	const config = jsonEditor.get().json || JSON.parse(jsonEditor.get().text)
@@ -210,10 +210,10 @@ async function saveFile() {
 
 async function deleteFile() {
 	if (!activeFile) {
-		alert(geti18n('aisource_editor.alerts.noFileSelectedDelete'))
+		alertI18n('aisource_editor.alerts.noFileSelectedDelete')
 		return
 	}
-	if (!confirm(geti18n('aisource_editor.confirm.deleteFile'))) return
+	if (!confirmI18n('aisource_editor.confirm.deleteFile')) return
 
 	await deleteAIFile(activeFile).catch(handleFetchError('aisource_editor.alerts.deleteFileFailed'))
 	console.log('File delete successfully.')
@@ -228,11 +228,11 @@ async function deleteFile() {
 }
 
 async function addFile() {
-	const newFileName = prompt(geti18n('aisource_editor.prompts.newFileName'))
+	const newFileName = promptI18n('aisource_editor.prompts.newFileName')
 	if (!newFileName) return
 
 	if (!isValidFileName(newFileName)) {
-		alert(geti18n('aisource_editor.alerts.invalidFileName'))
+		alertI18n('aisource_editor.alerts.invalidFileName')
 		return
 	}
 

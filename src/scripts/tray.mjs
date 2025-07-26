@@ -3,7 +3,7 @@ import { __dirname, hosturl, restartor } from '../server/server.mjs'
 import fs from 'node:fs'
 import os from 'node:os'
 const SysTray = (await import('npm:systray').catch(_ => 0))?.default?.default //??????
-import { geti18n } from '../scripts/i18n.mjs'
+import { console, geti18n } from '../scripts/i18n.mjs'
 import process from 'node:process'
 import open from 'npm:open'
 
@@ -12,7 +12,7 @@ async function getBase64Icon(iconPath) {
 		const iconData = fs.readFileSync(iconPath)
 		return iconData.toString('base64')
 	} catch (err) {
-		console.error(await geti18n('fountConsole.tray.readIconFailed', { error: err }))
+		console.errorI18n('fountConsole.tray.readIconFailed', { error: err })
 		return ''
 	}
 }
@@ -34,36 +34,36 @@ export async function createTray() {
 		systray = new SysTray({
 			menu: {
 				icon: base64Icon,
-				title: await geti18n('fountConsole.tray.title'),
-				tooltip: await geti18n('fountConsole.tray.tooltip'),
+				title: geti18n('fountConsole.tray.title'),
+				tooltip: geti18n('fountConsole.tray.tooltip'),
 				items: [
 					{
-						title: await geti18n('fountConsole.tray.items.open.title'),
-						tooltip: await geti18n('fountConsole.tray.items.open.tooltip'),
+						title: geti18n('fountConsole.tray.items.open.title'),
+						tooltip: geti18n('fountConsole.tray.items.open.tooltip'),
 						checked: false,
 						enabled: true
 					},
 					{
-						title: await geti18n('fountConsole.tray.items.github.title'),
-						tooltip: await geti18n('fountConsole.tray.items.github.tooltip'),
+						title: geti18n('fountConsole.tray.items.github.title'),
+						tooltip: geti18n('fountConsole.tray.items.github.tooltip'),
 						checked: false,
 						enabled: true
 					},
 					{
-						title: await geti18n('fountConsole.tray.items.discord.title'),
-						tooltip: await geti18n('fountConsole.tray.items.discord.tooltip'),
+						title: geti18n('fountConsole.tray.items.discord.title'),
+						tooltip: geti18n('fountConsole.tray.items.discord.tooltip'),
 						checked: false,
 						enabled: true
 					},
 					{
-						title: await geti18n('fountConsole.tray.items.restart.title'),
-						tooltip: await geti18n('fountConsole.tray.items.restart.tooltip'),
+						title: geti18n('fountConsole.tray.items.restart.title'),
+						tooltip: geti18n('fountConsole.tray.items.restart.tooltip'),
 						checked: false,
 						enabled: true
 					},
 					{
-						title: await geti18n('fountConsole.tray.items.exit.title'),
-						tooltip: await geti18n('fountConsole.tray.items.exit.tooltip'),
+						title: geti18n('fountConsole.tray.items.exit.title'),
+						tooltip: geti18n('fountConsole.tray.items.exit.tooltip'),
 						checked: false,
 						enabled: true
 					}
@@ -94,6 +94,6 @@ export async function createTray() {
 
 		return systray
 	} catch (err) {
-		console.error(await geti18n('fountConsole.tray.createTrayFailed', { error: err }))
+		console.errorI18n('fountConsole.tray.createTrayFailed', { error: err })
 	}
 }

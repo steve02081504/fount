@@ -106,7 +106,7 @@
 		"shellCommandFailed": "셸 명령 전송에 실패했습니다.",
 		"shellCommandError": "셸 명령 전송 중 오류가 발생했습니다.",
 		"fountNotFound": "아이고…\n\nfount를 찾을 수 없습니다. 먼저 설치해야 할까요?",
-		"unknownError": "아이고…\n\n오류가 발생했습니다:\n"
+		"unknownError": "아이고…\n\n오류가 발생했습니다:\n${error}"
 	},
 	"installer_wait_screen": {
 		"title": "fount에 오신 것을 환영합니다!",
@@ -145,7 +145,7 @@
 			"launch_button": "fount 설치 중...",
 			"open_fount": "fount 열기",
 			"open_or_install_fount": "fount 열기/설치하기",
-			"error_message": "아이고…\n\n오류가 발생했습니다:\n"
+			"error_message": "아이고…\n\n오류가 발생했습니다:\n${error}"
 		},
 		"error": {
 			"title": "설치 실패!",
@@ -921,7 +921,7 @@
 		"preview_label": "효과 미리보기",
 		"preview_alt": "배지 미리보기",
 		"copied_text": "복사됨!",
-		"copy_error": "텍스트를 복사할 수 없습니다:",
+		"copy_error": "텍스트를 복사할 수 없습니다: ${error}",
 		"copy_fail_alert": "복사 실패!"
 	}
 }

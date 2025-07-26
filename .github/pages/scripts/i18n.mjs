@@ -83,6 +83,22 @@ export function geti18n(key, params = {}) {
 
 	return translation
 }
+const console = globalThis.console
+console.infoI18n = (key, params = {}) => console.info(geti18n(key, params))
+console.logI18n = (key, params = {}) => console.log(geti18n(key, params))
+console.warnI18n = (key, params = {}) => console.warn(geti18n(key, params))
+console.errorI18n = (key, params = {}) => console.error(geti18n(key, params))
+console.freshLineI18n = (id, key, params = {}) => console.freshLine(id, geti18n(key, params))
+export function alertI18n(key, params = {}) {
+	return alert(geti18n(key, params))
+}
+export function promptI18n(key, params = {}) {
+	return prompt(geti18n(key, params))
+}
+export function confirmI18n(key, params = {}) {
+	return confirm(geti18n(key, params))
+}
+export { console }
 
 /**
  * 将翻译应用到 DOM 元素。

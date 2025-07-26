@@ -4,7 +4,7 @@ import { loadShellData, loadTempData, saveShellData } from '../../../../../serve
 import { LoadChar } from '../../../../../server/managers/char_manager.mjs' // 加载角色
 import { getAllUserNames } from '../../../../../server/auth.mjs' // 获取所有用户名
 import { StartJob, EndJob } from '../../../../../server/jobs.mjs' // fount 的任务管理
-import { geti18n } from '../../../../../scripts/i18n.mjs' // 国际化
+import { console } from '../../../../../scripts/i18n.mjs' // 国际化
 import { events } from '../../../../../server/events.mjs'
 
 /** @typedef {import('../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
@@ -34,10 +34,10 @@ async function startTelegrafBot(botConfig, char) {
 	// 启动机器人
 	// 使用 try-catch 包装 bot.launch() 以便捕获启动时可能发生的错误 (例如无效token)
 	bot.launch() // Telegraf v4 的启动方式
-	console.info(await geti18n('fountConsole.telegrambot.botStarted', {
+	console.infoI18n('fountConsole.telegrambot.botStarted', {
 		botusername: me.username,
 		charname: botConfig.char
-	}))
+	})
 	return bot
 }
 
@@ -113,7 +113,7 @@ export async function runBot(username, botname) {
 	// 'telegrambot_cache' 用于存储正在运行的机器人实例或其启动 Promise
 	const botCache = loadTempData(username, 'telegrambot_cache')
 	if (botCache[botname]) { // 如果机器人已在运行或正在启动，则不执行任何操作
-		console.warn(await geti18n('fountConsole.telegrambot.alreadyRunning', { botname }))
+		console.warnI18n('fountConsole.telegrambot.alreadyRunning', { botname })
 		return
 	}
 

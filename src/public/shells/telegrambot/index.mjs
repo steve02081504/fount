@@ -1,6 +1,6 @@
 import { createJsonEditor } from '../../scripts/jsonEditor.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
-import { initTranslations, geti18n, i18nElement } from '../../scripts/i18n.mjs'
+import { initTranslations, geti18n, i18nElement, alertI18n, promptI18n, confirmI18n, console } from '../../scripts/i18n.mjs'
 import { getPartList } from '../../scripts/parts.mjs'
 import {
 	getBotList,
@@ -57,7 +57,7 @@ function populateCharList() {
 
 async function loadBotConfig(botname) {
 	if (isDirty)
-		if (!confirm(geti18n('telegram_bots.alerts.unsavedChanges'))) {
+		if (!confirmI18n('telegram_bots.alerts.unsavedChanges')) {
 			botListSelect.value = selectedBot // 如果取消则还原选择
 			return
 		}
@@ -91,11 +91,11 @@ async function loadBotConfig(botname) {
 
 // 事件处理函数
 async function handleNewBot() {
-	const botname = prompt(geti18n('telegram_bots.prompts.newBotName'))?.trim()
+	const botname = promptI18n('telegram_bots.prompts.newBotName')?.trim()
 	if (!botname) return
 
 	if (botList.includes(botname)) {
-		alert(geti18n('telegram_bots.alerts.botExists', { botname }))
+		alertI18n('telegram_bots.alerts.botExists', { botname })
 		return
 	}
 
@@ -109,7 +109,7 @@ async function handleNewBot() {
 async function handleDeleteBot() {
 	if (!selectedBot) return
 
-	if (!confirm(geti18n('telegram_bots.alerts.confirmDeleteBot', { botname: selectedBot }))) return
+	if (!confirmI18n('telegram_bots.alerts.confirmDeleteBot', { botname: selectedBot })) return
 
 	await deleteBotConfig(selectedBot)
 	botList = await getBotList()
@@ -131,7 +131,7 @@ async function handleDeleteBot() {
 
 async function handleCharSelectChange() {
 	if (isDirty)
-		if (!confirm(geti18n('telegram_bots.alerts.unsavedChanges'))) {
+		if (!confirmI18n('telegram_bots.alerts.unsavedChanges')) {
 			const currentConfig = await getBotConfig(selectedBot)
 			charSelect.value = currentConfig.char || '' // 如果取消则还原选择
 			return
@@ -158,7 +158,7 @@ async function handleSaveConfig() {
 	try {
 		editorContent = configEditor.get() // {json: ..., text: ...}
 	} catch (err) {
-		alert(geti18n('telegram_bots.alerts.invalidJsonConfig', { error: err.message }))
+		alertI18n('telegram_bots.alerts.invalidJsonConfig', { error: err.message })
 		return
 	}
 
@@ -174,7 +174,7 @@ async function handleSaveConfig() {
 
 	try {
 		await setBotConfig(selectedBot, config)
-		console.log(geti18n('telegram_bots.alerts.configSaved'))
+		console.logI18n('telegram_bots.alerts.configSaved')
 		isDirty = false
 
 		saveStatusIcon.src = 'https://api.iconify.design/line-md/confirm-circle.svg'

@@ -2,7 +2,7 @@ import { renderTemplate, usingTemplates } from '../../../scripts/template.mjs'
 import { renderMarkdownAsString } from '../../../scripts/markdown.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
 import { parseRegexFromString, escapeRegExp } from '../../../scripts/regex.mjs'
-import { initTranslations, geti18n } from '../../../scripts/i18n.mjs'
+import { initTranslations, alertI18n, confirmI18n, console } from '../../../scripts/i18n.mjs'
 import { getChatList, getCharDetails, copyChats, exportChats, deleteChats } from './endpoints.mjs'
 
 usingTemplates('/shells/chat/src/public/templates')
@@ -142,7 +142,7 @@ async function renderChatListItem(chat) {
 				alert(data.message)
 		} catch (error) {
 			console.error('Error copying chat:', error)
-			alert(geti18n('chat_history.alerts.copyError'))
+			alertI18n('chat_history.alerts.copyError')
 		}
 	})
 
@@ -163,13 +163,13 @@ async function renderChatListItem(chat) {
 					alert(data.message)
 		} catch (error) {
 			console.error('Error exporting chat:', error)
-			alert(geti18n('chat_history.alerts.exportError'))
+			alertI18n('chat_history.alerts.exportError')
 		}
 	})
 
 	// 删除聊天
 	chatElement.querySelector('.delete-button').addEventListener('click', async () => {
-		if (confirm(geti18n('chat_history.confirmDeleteChat', { chars: chat.chars.join(', ') })))
+		if (confirmI18n('chat_history.confirmDeleteChat', { chars: chat.chars.join(', ') }))
 			try {
 				const data = await deleteChats([chat.chatid])
 				if (data[0].success) {
@@ -179,7 +179,7 @@ async function renderChatListItem(chat) {
 					alert(data[0].message)
 			} catch (error) {
 				console.error('Error deleting chat:', error)
-				alert(geti18n('chat_history.alerts.deleteError'))
+				alertI18n('chat_history.alerts.deleteError')
 			}
 	})
 
@@ -220,10 +220,10 @@ reverseSelectButton.addEventListener('click', () => {
 // 删除选中
 deleteSelectedButton.addEventListener('click', async () => {
 	if (selectedChats.size === 0) {
-		alert(geti18n('chat_history.alerts.noChatSelectedForDeletion'))
+		alertI18n('chat_history.alerts.noChatSelectedForDeletion')
 		return
 	}
-	if (confirm(geti18n('chat_history.confirmDeleteMultiChats', { count: selectedChats.size })))
+	if (confirmI18n('chat_history.confirmDeleteMultiChats', { count: selectedChats.size }))
 		try {
 			const results = await deleteChats(Array.from(selectedChats))
 			results.forEach(result => {
@@ -237,14 +237,14 @@ deleteSelectedButton.addEventListener('click', async () => {
 			renderChatList()
 		} catch (error) {
 			console.error('Error deleting selected chats:', error)
-			alert(geti18n('chat_history.alerts.deleteError'))
+			alertI18n('chat_history.alerts.deleteError')
 		}
 })
 
 // 导出选中
 exportSelectedButton.addEventListener('click', async () => {
 	if (selectedChats.size === 0) {
-		alert(geti18n('chat_history.alerts.noChatSelectedForExport'))
+		alertI18n('chat_history.alerts.noChatSelectedForExport')
 		return
 	}
 	try {
@@ -262,7 +262,7 @@ exportSelectedButton.addEventListener('click', async () => {
 				alert(result.message)
 	} catch (error) {
 		console.error('Error exporting selected chats:', error)
-		alert(geti18n('chat_history.alerts.exportError'))
+		alertI18n('chat_history.alerts.exportError')
 	}
 })
 

@@ -2,7 +2,7 @@
 import '../base.mjs'
 import * as Sentry from 'https://esm.run/@sentry/browser'
 import { getFountHostUrl } from '../scripts/fountHostGetter.mjs'
-import { initTranslations, geti18n } from '../scripts/i18n.mjs'
+import { initTranslations, alertI18n } from '../scripts/i18n.mjs'
 
 const fountProtocolUrl = urlParams.get('url')
 
@@ -44,12 +44,12 @@ async function main() {
 
 	const newHostUrl = await getFountHostUrl()
 	if (newHostUrl) return useUrlProtocol(newHostUrl)
-	alert(geti18n('protocolhandler.fountNotFound'))
+	alertI18n('protocolhandler.fountNotFound')
 	window.location.href = 'https://github.com/steve02081504/fount'
 }
 
 main().catch(e => {
 	Sentry.captureException(e)
-	alert(geti18n('protocolhandler.unknownError') + e.message)
+	alertI18n('protocolhandler.unknownError', { error:e })
 	window.location.href = 'https://github.com/steve02081504/fount'
 })

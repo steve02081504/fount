@@ -7,7 +7,7 @@ import { loadData, saveData } from './setting_loader.mjs'
 import { loadPart } from './managers/index.mjs'
 import { exec } from '../scripts/exec.mjs'
 import { getLocalizedInfo } from '../scripts/locale.mjs'
-import { geti18n } from '../scripts/i18n.mjs'
+import { console } from '../scripts/i18n.mjs'
 import { loadJsonFile } from '../scripts/json_loader.mjs'
 import { nicerWriteFileSync } from '../scripts/nicerWriteFile.mjs'
 
@@ -131,7 +131,7 @@ export async function baseloadPart(username, parttype, partname, {
 		const currentBranch = await git('rev-parse --abbrev-ref HEAD')
 		const remoteBranch = await git('rev-parse --abbrev-ref --symbolic-full-name "@{u}"')
 		if (!remoteBranch)
-			console.warn(await geti18n('fountConsole.partManager.git.noUpstream', { currentBranch }))
+			console.warnI18n('fountConsole.partManager.git.noUpstream', { currentBranch })
 
 		else {
 			const mergeBase = await git('merge-base ' + currentBranch + ' ' + remoteBranch)
@@ -139,27 +139,27 @@ export async function baseloadPart(username, parttype, partname, {
 			const remoteCommit = await git('rev-parse ' + remoteBranch)
 			const status = await git('status --porcelain')
 			if (status)
-				console.warn(await geti18n('fountConsole.partManager.git.dirtyWorkingDirectory'))
+				console.warnI18n('fountConsole.partManager.git.dirtyWorkingDirectory')
 
 			if (localCommit !== remoteCommit)
 				if (mergeBase === localCommit) {
-					console.log(await geti18n('fountConsole.partManager.git.updating'))
+					console.logI18n('fountConsole.partManager.git.updating')
 					await git('fetch origin')
 					await git('reset --hard ' + remoteBranch)
 				}
 				else if (mergeBase === remoteCommit)
-					console.log(await geti18n('fountConsole.partManager.git.localAhead'))
+					console.logI18n('fountConsole.partManager.git.localAhead')
 
 				else {
-					console.log(await geti18n('fountConsole.partManager.git.diverged'))
+					console.logI18n('fountConsole.partManager.git.diverged')
 					await git('fetch origin')
 					await git('reset --hard ' + remoteBranch)
 				}
 			else
-				console.log(await geti18n('fountConsole.partManager.git.upToDate'))
+				console.logI18n('fountConsole.partManager.git.upToDate')
 		}
 	} catch (e) {
-		console.error(await geti18n('fountConsole.partManager.git.updateFailed', { error: e }))
+		console.errorI18n('fountConsole.partManager.git.updateFailed', { error: e })
 	}
 	else if (fs.existsSync(path + '/.isdefault')) {
 		// 默认组件更新：在载入前自 __dirname + '/default/templates/user/' + parttype + '/' + partname 同步文件
@@ -267,11 +267,11 @@ export async function loadPartBase(username, parttype, partname, Initargs, {
 			parts_init[parttype][partname] = initPart(username, parttype, partname, Initargs, { pathGetter, Initer, afterInit })
 			parts_init[parttype][partname] = await parts_init[parttype][partname]
 			const endTime = new Date()
-			console.log(await geti18n('fountConsole.partManager.partInitTime', {
+			console.logI18n('fountConsole.partManager.partInitTime', {
 				parttype,
 				partname,
 				time: (endTime - startTime) / 1000,
-			}))
+			})
 			parts_init[parttype][partname] = true
 			saveData(username, 'parts_init')
 		}
@@ -290,11 +290,11 @@ export async function loadPartBase(username, parttype, partname, Initargs, {
 				console.error(`Failed to set data for part ${partname}: ${error.message}\n${error.stack}`)
 			}
 			await afterLoad(part)
-			console.log(await geti18n('fountConsole.partManager.partLoadTime', {
+			console.logI18n('fountConsole.partManager.partLoadTime', {
 				parttype,
 				partname,
 				time: (endTime - startTime) / 1000,
-			}))
+			})
 		}
 		if (parts_set[username][parttype][partname] instanceof Promise)
 			parts_set[username][parttype][partname] = await parts_set[username][parttype][partname]

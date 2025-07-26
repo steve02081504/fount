@@ -1,6 +1,6 @@
 import { createJsonEditor } from '../../scripts/jsonEditor.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
-import { initTranslations, geti18n, i18nElement } from '../../scripts/i18n.mjs'
+import { initTranslations, geti18n, i18nElement, promptI18n, alertI18n, confirmI18n, console } from '../../scripts/i18n.mjs'
 import { getPartList } from '../../scripts/parts.mjs'
 import {
 	getBotList,
@@ -58,7 +58,7 @@ function populateCharList() {
 async function loadBotConfig(botname) {
 	// 如果有未保存的更改，提示用户
 	if (isDirty)
-		if (!confirm(geti18n('discord_bots.alerts.unsavedChanges'))) {
+		if (!confirmI18n('discord_bots.alerts.unsavedChanges')) {
 			botListSelect.value = selectedBot // 如果取消则还原选择
 			return
 		}
@@ -97,11 +97,11 @@ async function loadBotConfig(botname) {
 
 // 事件处理函数
 async function handleNewBot() {
-	const botname = prompt(geti18n('discord_bots.prompts.newBotName'))?.trim()
+	const botname = promptI18n('discord_bots.prompts.newBotName')?.trim()
 	if (!botname) return
 
 	if (botList.includes(botname)) {
-		alert(geti18n('discord_bots.alerts.botExists', { botname }))
+		alertI18n('discord_bots.alerts.botExists', { botname })
 		return
 	}
 
@@ -120,7 +120,7 @@ async function handleDeleteBot() {
 	if (!selectedBot) return
 
 	if (isDirty)
-		if (!confirm(geti18n('discord_bots.alerts.unsavedChanges')))
+		if (!confirmI18n('discord_bots.alerts.unsavedChanges'))
 			return
 
 	try {
@@ -149,7 +149,7 @@ async function handleDeleteBot() {
 async function handleCharSelectChange() {
 	// 如果有未保存的更改，提示用户
 	if (isDirty)
-		if (!confirm(geti18n('discord_bots.alerts.unsavedChanges'))) {
+		if (!confirmI18n('discord_bots.alerts.unsavedChanges')) {
 			charSelect.value = configEditor.get().json.char || '' // 如果取消则还原选择
 			return
 		}
@@ -184,7 +184,7 @@ async function handleSaveConfig() {
 
 	try {
 		await setBotConfig(selectedBot, config)
-		console.log(geti18n('discord_bots.alerts.configSaved'))
+		console.logI18n('discord_bots.alerts.configSaved')
 		isDirty = false // 重置未保存标记
 
 		// Show success icon

@@ -106,7 +106,7 @@
 		"shellCommandFailed": "Falha ao enviar o comando shell.",
 		"shellCommandError": "Erro ao enviar o comando shell.",
 		"fountNotFound": "Oh não :(\n\nfount não encontrado. Talvez precise de o instalar primeiro?",
-		"unknownError": "Oh não :(\n\nOcorreu um erro:\n"
+		"unknownError": "Oh não :(\n\nOcorreu um erro:\n${error}"
 	},
 	"installer_wait_screen": {
 		"title": "Bem-vindo ao fount!",
@@ -145,7 +145,7 @@
 			"launch_button": "fount está a instalar...",
 			"open_fount": "Abrir fount",
 			"open_or_install_fount": "Abrir/Instalar fount",
-			"error_message": "Oh não :(\n\nOcorreu um erro:\n"
+			"error_message": "Oh não :(\n\nOcorreu um erro:\n${error}"
 		},
 		"error": {
 			"title": "A instalação falhou!",
@@ -921,7 +921,7 @@
 		"preview_label": "Antevisão",
 		"preview_alt": "Visualização de crachá",
 		"copied_text": "Copiado!",
-		"copy_error": "Não foi possível copiar o texto:",
+		"copy_error": "Não foi possível copiar o texto: ${error}",
 		"copy_fail_alert": "A cópia falhou!"
 	}
 }

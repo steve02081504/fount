@@ -8,11 +8,10 @@ import { __dirname, set_start } from './base.mjs'
 set_start()
 
 import process from 'node:process'
-import { console } from 'npm:@steve02081504/virtual-console'
 import { init } from './server.mjs'
-import { geti18n } from '../scripts/i18n.mjs'
+import { console } from '../scripts/i18n.mjs'
 
-console.log(await geti18n('fountConsole.server.standingBy'))
+console.logI18n('fountConsole.server.standingBy')
 
 let args = process.argv.slice(2)
 
@@ -50,7 +49,7 @@ if (args.length) {
 		}
 	}
 	else {
-		console.error(await geti18n('fountConsole.ipc.invalidCommand'))
+		console.errorI18n('fountConsole.ipc.invalidCommand')
 		process.exit(1)
 	}
 }
@@ -63,7 +62,7 @@ if (command_obj) try {
 	await IPCManager.sendCommand(command_obj.type, command_obj.data)
 } catch (err) {
 	if (!(command_obj.type === 'shutdown' && String(err).endsWith('read ECONNRESET')))
-		console.error(await geti18n('fountConsole.ipc.sendCommandFailed', { error: err }))
+		console.errorI18n('fountConsole.ipc.sendCommandFailed', { error: err })
 	else throw err
 }
 

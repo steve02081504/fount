@@ -106,7 +106,7 @@
 		"shellCommandFailed": "Error al enviar el comando de shell",
 		"shellCommandError": "Error enviando el comando de shell",
 		"fountNotFound": "Ay ay ay :(\n\nfount no encontrado, ¿quizás necesites instalarlo primero?",
-		"unknownError": "Ay ay ay :(\n\nOcurrió un error:\n"
+		"unknownError": "Ay ay ay :(\n\nOcurrió un error:\n${error}"
 	},
 	"installer_wait_screen": {
 		"title": "¡Bienvenido a fount!",
@@ -145,7 +145,7 @@
 			"launch_button": "fount se está instalando...",
 			"open_fount": "Abrir fount",
 			"open_or_install_fount": "Abrir/Instalar fount",
-			"error_message": "Ay ay ay :(\n\nOcurrió un error:\n"
+			"error_message": "Ay ay ay :(\n\nOcurrió un error:\n${error}"
 		},
 		"error": {
 			"title": "¡Error en la instalación!",
@@ -921,7 +921,7 @@
 		"preview_label": "Vista previa",
 		"preview_alt": "Vista previa de la insignia",
 		"copied_text": "¡Copiado!",
-		"copy_error": "Error al copiar el texto:",
+		"copy_error": "Error al copiar el texto: ${error}",
 		"copy_fail_alert": "¡Error al copiar!"
 	}
 }

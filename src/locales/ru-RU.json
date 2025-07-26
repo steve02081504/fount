@@ -106,7 +106,7 @@
 		"shellCommandFailed": "Не удалось отправить команду оболочки.",
 		"shellCommandError": "Ошибка при отправке команды оболочки.",
 		"fountNotFound": "Ой... :(\n\nfount не найден. Возможно, вам нужно сначала его установить?",
-		"unknownError": "Ой... :(\n\nПроизошла ошибка:\n"
+		"unknownError": "Ой... :(\n\nПроизошла ошибка:\n${error}"
 	},
 	"installer_wait_screen": {
 		"title": "Добро пожаловать в fount!",
@@ -145,7 +145,7 @@
 			"launch_button": "fount устанавливается...",
 			"open_fount": "Открыть fount",
 			"open_or_install_fount": "Открыть/Установить fount",
-			"error_message": "Ой... :(\n\nПроизошла ошибка:\n"
+			"error_message": "Ой... :(\n\nПроизошла ошибка:\n${error}"
 		},
 		"error": {
 			"title": "Установка не удалась!",
@@ -921,7 +921,7 @@
 		"preview_label": "Предпросмотр",
 		"preview_alt": "Предварительный просмотр значков",
 		"copied_text": "Скопировано!",
-		"copy_error": "Невозможно скопировать текст:",
+		"copy_error": "Невозможно скопировать текст: ${error}",
 		"copy_fail_alert": "Копирование не удалось!"
 	}
 }

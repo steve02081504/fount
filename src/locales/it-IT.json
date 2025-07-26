@@ -106,7 +106,7 @@
 		"shellCommandFailed": "Impossibile inviare il comando shell.",
 		"shellCommandError": "Errore durante l'invio del comando shell.",
 		"fountNotFound": "Uffa :(\n\nfount non trovato. Forse devi prima installarlo?",
-		"unknownError": "Uffa :(\n\nSi è verificato un errore:\n"
+		"unknownError": "Uffa :(\n\nSi è verificato un errore:\n${error}"
 	},
 	"installer_wait_screen": {
 		"title": "Benvenuto in fount!",
@@ -145,7 +145,7 @@
 			"launch_button": "fount è in fase di installazione...",
 			"open_fount": "Apri fount",
 			"open_or_install_fount": "Apri/Installa fount",
-			"error_message": "Uffa :(\n\nSi è verificato un errore:\n"
+			"error_message": "Uffa :(\n\nSi è verificato un errore:\n${error}"
 		},
 		"error": {
 			"title": "Installazione non riuscita!",
@@ -921,7 +921,7 @@
 		"preview_label": "Anteprima",
 		"preview_alt": "Anteprima del badge",
 		"copied_text": "Copiato!",
-		"copy_error": "Impossibile copiare il testo:",
+		"copy_error": "Impossibile copiare il testo: ${error}",
 		"copy_fail_alert": "Copia fallita!"
 	}
 }

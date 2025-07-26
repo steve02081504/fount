@@ -1,6 +1,5 @@
 import net from 'node:net'
-import { console } from 'npm:@steve02081504/virtual-console'
-import { geti18n } from '../scripts/i18n.mjs'
+import { console, geti18n } from '../scripts/i18n.mjs'
 import { getLoadedPartList, getPartList, loadPart } from './managers/index.mjs'
 import { getPartDetails } from './parts_loader.mjs'
 
@@ -17,14 +16,14 @@ export async function processIPCCommand(command, data) {
 		switch (command) {
 			case 'runpart': {
 				const { username, parttype, partname, args } = data
-				console.log(await geti18n('fountConsole.ipc.runPartLog', { parttype, partname, username, args: JSON.stringify(args) }))
+				console.logI18n('fountConsole.ipc.runPartLog', { parttype, partname, username, args: JSON.stringify(args) })
 				const part = await loadPart(username, parttype, partname)
 				const result = await part.interfaces.invokes.ArgumentsHandler(username, args)
 				return { status: 'ok', data: result }
 			}
 			case 'invokepart': {
 				const { username, parttype, partname, data: invokedata } = data
-				console.log(await geti18n('fountConsole.ipc.invokePartLog', { parttype, partname, username, invokedata: JSON.stringify(invokedata) }))
+				console.logI18n('fountConsole.ipc.invokePartLog', { parttype, partname, username, invokedata: JSON.stringify(invokedata) })
 				const part = await loadPart(username, parttype, partname)
 				const result = await part.interfaces.invokes.IPCInvokeHandler(username, invokedata)
 				return { status: 'ok', data: result }
@@ -47,10 +46,10 @@ export async function processIPCCommand(command, data) {
 			case 'ping':
 				return { status: 'ok', data: 'pong' }
 			default:
-				return { status: 'error', message: await geti18n('fountConsole.ipc.unsupportedCommand') }
+				return { status: 'error', message: geti18n('fountConsole.ipc.unsupportedCommand') }
 		}
 	} catch (err) {
-		console.error(await geti18n('fountConsole.ipc.processMessageError', { error: err }))
+		console.errorI18n('fountConsole.ipc.processMessageError', { error: err })
 		return { status: 'error', message: err.message }
 	}
 }
@@ -86,8 +85,8 @@ export class IPCManager {
 			startServer(this.serverV4, '127.0.0.1'),
 		]).then(async results => {
 			const result = results.every(result => result === true)
-			if (result) console.freshLine('server start', await geti18n('fountConsole.ipc.serverStarted'))
-			else console.log(await geti18n('fountConsole.ipc.instanceRunning'))
+			if (result) console.freshLineI18n('server start', 'fountConsole.ipc.serverStarted')
+			else console.logI18n('fountConsole.ipc.instanceRunning')
 			return result
 		})
 	}
@@ -107,14 +106,14 @@ export class IPCManager {
 					const result = await processIPCCommand(type, commandData)
 					socket.write(JSON.stringify(result) + '\n')
 				} catch (err) {
-					console.error(await geti18n('fountConsole.ipc.processMessageError', { error: err }))
-					socket.write(JSON.stringify({ status: 'error', message: err instanceof SyntaxError ? await geti18n('fountConsole.ipc.invalidCommandFormat') : err.message }) + '\n')
+					console.errorI18n('fountConsole.ipc.processMessageError', { error: err })
+					socket.write(JSON.stringify({ status: 'error', message: err instanceof SyntaxError ? geti18n('fountConsole.ipc.invalidCommandFormat') : err.message }) + '\n')
 				}
 			}
 		})
 
 		socket.on('error', async (err) => {
-			console.error(await geti18n('fountConsole.ipc.socketError', { error: err }))
+			console.errorI18n('fountConsole.ipc.socketError', { error: err })
 		})
 	}
 
@@ -140,10 +139,10 @@ export class IPCManager {
 						if (response.status === 'ok')
 							resolve(response.data) // 返回结果
 						else
-							reject(new Error(response.message || await geti18n('fountConsole.ipc.unknownError')))
+							reject(new Error(response.message || geti18n('fountConsole.ipc.unknownError')))
 					} catch (err) {
-						console.error(await geti18n('fountConsole.ipc.parseResponseFailed', { error: err }))
-						reject(new Error(await geti18n('fountConsole.ipc.cannotParseResponse')))
+						console.errorI18n('fountConsole.ipc.parseResponseFailed', { error: err })
+						reject(new Error(geti18n('fountConsole.ipc.cannotParseResponse')))
 					} finally {
 						client.end() // 处理完成后关闭连接
 					}

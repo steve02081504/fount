@@ -106,7 +106,7 @@
 		"shellCommandFailed": "Échec de l'envoi de la commande shell.",
 		"shellCommandError": "Erreur lors de l'envoi de la commande shell.",
 		"fountNotFound": "Oh là là :(\n\nfount introuvable. Peut-être devez-vous d'abord l'installer ?",
-		"unknownError": "Oh là là :(\n\nUne erreur s'est produite :\n"
+		"unknownError": "Oh là là :(\n\nUne erreur s'est produite :\n${error}"
 	},
 	"installer_wait_screen": {
 		"title": "Bienvenue sur fount !",
@@ -145,7 +145,7 @@
 			"launch_button": "fount est en cours d'installation...",
 			"open_fount": "Ouvrir fount",
 			"open_or_install_fount": "Ouvrir/Installer fount",
-			"error_message": "Oh là là :(\n\nUne erreur s'est produite :\n"
+			"error_message": "Oh là là :(\n\nUne erreur s'est produite :\n${error}"
 		},
 		"error": {
 			"title": "Échec de l'installation !",
@@ -921,7 +921,7 @@
 		"preview_label": "Aperçu",
 		"preview_alt": "Aperçu du badge",
 		"copied_text": "Copié !",
-		"copy_error": "Impossible de copier le texte :",
+		"copy_error": "Impossible de copier le texte : ${error}",
 		"copy_fail_alert": "La copie a échoué !"
 	}
 }

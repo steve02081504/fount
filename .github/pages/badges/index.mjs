@@ -1,4 +1,4 @@
-import { initTranslations, geti18n } from '../scripts/i18n.mjs'
+import { initTranslations, geti18n, alertI18n ,console} from '../scripts/i18n.mjs'
 
 // 获取 DOM 元素
 const originalUrlInput = document.getElementById('originalUrlInput')
@@ -54,8 +54,8 @@ copyButton.addEventListener('click', () => {
 			copyButton.innerText = originalText
 		}, 1500) // 1.5秒后恢复原状
 	}).catch(err => {
-		console.error(geti18n('badges_maker.copy_error'), err)
-		alert(geti18n('badges_maker.copy_fail_alert'))
+		console.errorI18n('badges_maker.copy_error', { error: err })
+		alertI18n('badges_maker.copy_fail_alert')
 	})
 })
 

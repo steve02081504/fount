@@ -1,7 +1,7 @@
 import { Events, ChannelType, GatewayIntentBits, Partials, escapeMarkdown } from 'npm:discord.js'
 import { Buffer } from 'node:buffer'
 import { getMessageFullContent, splitDiscordReply } from './tools.mjs'
-import { localhostLocales } from '../../../../../../scripts/i18n.mjs'
+import { localhostLocales, console } from '../../../../../../scripts/i18n.mjs'
 import { loadDefaultPersona } from '../../../../../../server/managers/persona_manager.mjs'
 
 /** @typedef {import('npm:discord.js').Message} Message */

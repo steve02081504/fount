@@ -8,7 +8,7 @@ import {
 import { renderMarkdown } from '../../scripts/markdown.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 import { parseRegexFromString, escapeRegExp } from '../../scripts/regex.mjs'
-import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
+import { initTranslations, geti18n, confirmI18n, console } from '../../scripts/i18n.mjs'
 import { svgInliner } from '../../scripts/svgInliner.mjs'
 import { getHomeRegistry } from './src/public/endpoints.mjs'
 
@@ -404,7 +404,7 @@ async function initializeApp() {
 	// esc按键
 	document.addEventListener('keydown', event => {
 		if (event.key === 'Escape')
-			if (!confirm(geti18n('home.escapeConfirm')))
+			if (!confirmI18n('home.escapeConfirm'))
 				event.stopImmediatePropagation()
 	}, true)
 }

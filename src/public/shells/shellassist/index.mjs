@@ -1,7 +1,7 @@
 import { applyTheme } from '../../scripts/theme.mjs'
 applyTheme()
 
-import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
+import { initTranslations, geti18n, console } from '../../scripts/i18n.mjs'
 import { setTerminal } from '../../scripts/terminal.mjs'
 
 const terminal = setTerminal(document.getElementById('terminal'))

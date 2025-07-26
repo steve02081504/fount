@@ -106,7 +106,7 @@
 		"shellCommandFailed": "シェルコマンドの送信に失敗しました。",
 		"shellCommandError": "シェルコマンドの送信中にエラーが発生しました。",
 		"fountNotFound": "あらら…\n\nfountが見つかりませんでした。最初にインストールする必要がありますか？",
-		"unknownError": "あらら…\n\nエラーが発生しました：\n"
+		"unknownError": "あらら…\n\nエラーが発生しました：\n${error}"
 	},
 	"installer_wait_screen": {
 		"title": "fountへようこそ！",
@@ -145,7 +145,7 @@
 			"launch_button": "fountをインストール中...",
 			"open_fount": "fountを開く",
 			"open_or_install_fount": "fountを開く/インストール",
-			"error_message": "あらら…\n\nエラーが発生しました：\n"
+			"error_message": "あらら…\n\nエラーが発生しました：\n${error}"
 		},
 		"error": {
 			"title": "インストールに失敗しました！",
@@ -921,7 +921,7 @@
 		"preview_label": "効果プレビュー",
 		"preview_alt": "バッジプレビュー",
 		"copied_text": "コピーしました！",
-		"copy_error": "テキストをコピーできません：",
+		"copy_error": "テキストをコピーできません：${error}",
 		"copy_fail_alert": "コピーが失敗しました！"
 	}
 }

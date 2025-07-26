@@ -2,7 +2,7 @@ import { addUserReply } from '../endpoints.mjs'
 import { appendMessage } from './messageList.mjs'
 import { addDragAndDropSupport } from './dragAndDrop.mjs'
 import { handleFilesSelect } from '../fileHandling.mjs'
-import { geti18n } from '../../../../../scripts/i18n.mjs'
+import { alertI18n, console } from '../../../../../scripts/i18n.mjs'
 
 const messageInputElement = document.getElementById('message-input')
 const sendButtonElement = document.getElementById('send-button')
@@ -86,7 +86,7 @@ async function toggleVoiceRecording() {
 			isRecording = true
 		} catch (error) {
 			console.error('Error accessing microphone:', error)
-			alert(geti18n('chat.voiceRecording.errorAccessingMicrophone'))
+			alertI18n('chat.voiceRecording.errorAccessingMicrophone')
 		}
 }
 

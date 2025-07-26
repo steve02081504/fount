@@ -1,5 +1,5 @@
 import { applyTheme } from '../scripts/theme.mjs'
-import { initTranslations, geti18n } from '../scripts/i18n.mjs'
+import { initTranslations, geti18n, console } from '../scripts/i18n.mjs'
 import { authenticate, runPart } from '../scripts/endpoints.mjs'
 
 const urlParams = new URL(window.location.href)

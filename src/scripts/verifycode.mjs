@@ -1,7 +1,7 @@
 import cryptoRandomString from 'npm:crypto-random-string'
 import { ms } from './ms.mjs'
 import { notify } from './notify.mjs'
-import { geti18n } from '../scripts/i18n.mjs'
+import { console, geti18n } from '../scripts/i18n.mjs'
 
 // 用于存储验证码、过期时间和ID
 let verificationCodes = []
@@ -23,8 +23,8 @@ export async function generateVerificationCode(id) {
 	// 将验证码、过期时间和ID添加到数组
 	verificationCodes.push({ code, expiresAt, id })
 
-	console.log(await geti18n('fountConsole.verification.codeGeneratedLog', { code }))
-	notify(await geti18n('fountConsole.verification.codeNotifyTitle'), await geti18n('fountConsole.verification.codeNotifyBody', { code }))
+	console.logI18n('fountConsole.verification.codeGeneratedLog', { code })
+	notify(geti18n('fountConsole.verification.codeNotifyTitle'), geti18n('fountConsole.verification.codeNotifyBody', { code }))
 }
 
 /**

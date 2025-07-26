@@ -1,5 +1,5 @@
 import { setBaseDir, setPreRender, setTheme, theme_now } from '../../base.mjs'
-import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
+import { initTranslations, geti18n, alertI18n ,console} from '../../scripts/i18n.mjs'
 import { isFountServiceAvailable, saveFountHostUrl, getFountHostUrl } from '../../scripts/fountHostGetter.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
 import * as Sentry from 'https://esm.run/@sentry/browser'
@@ -232,6 +232,6 @@ async function main() {
 
 main().catch(e => {
 	Sentry.captureException(e)
-	alert(geti18n('installer_wait_screen.footer.error_message') + e.message)
+	alertI18n('installer_wait_screen.footer.error_message', { error: e })
 	window.location.href = 'https://github.com/steve02081504/fount'
 })

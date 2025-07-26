@@ -8,12 +8,11 @@ import process from 'node:process'
 import https from 'node:https'
 import http from 'node:http'
 import { __dirname, startTime } from './base.mjs'
-import { console } from 'npm:@steve02081504/virtual-console'
 import { on_shutdown } from 'npm:on-shutdown'
 import { auth_request, getUserByReq, initAuth } from './auth.mjs'
 import { createTray } from '../scripts/tray.mjs'
 import { StartRPC } from '../scripts/discordrpc.mjs'
-import { geti18n } from '../scripts/i18n.mjs'
+import { console } from '../scripts/i18n.mjs'
 import { sentrytunnel } from '../scripts/sentrytunnel.mjs'
 import { partsList } from './managers/index.mjs'
 import { Router as WsAbleRouter } from 'npm:websocket-express@^3.1.3'
@@ -38,10 +37,10 @@ app.use(FinalRouter)
 
 mainRouter.use(async (req, res, next) => {
 	if (!(req.path.endsWith('/heartbeat') || req.path.endsWith('/api/sentrytunnel')))
-		console.log(await geti18n('fountConsole.web.requestReceived', {
+		console.logI18n('fountConsole.web.requestReceived', {
 			method: req.method + ' '.repeat(Math.max(0, 8 - req.method.length)),
 			url: req.url
-		}))
+		})
 	return next()
 })
 function diff_if_auth(if_auth, if_not_auth) {
@@ -149,7 +148,7 @@ export async function init(start_config) {
 	const starts = start_config.starts ?? {}
 	for (const start of ['Base', 'IPC', 'Web', 'Tray', 'DiscordIPC']) starts[start] ??= true
 	if (starts.Base) {
-		console.freshLine('server start', await geti18n('fountConsole.server.start'))
+		console.freshLineI18n('server start', 'fountConsole.server.start')
 		process.on('error', console.log)
 		process.on('unhandledRejection', console.log)
 	}
@@ -176,7 +175,7 @@ export async function init(start_config) {
 
 	if (starts.Web) {
 		hosturl = 'http://localhost:' + config.port
-		console.freshLine('server start', await geti18n('fountConsole.server.starting'))
+		console.freshLineI18n('server start', 'fountConsole.server.starting')
 		const { registerEndpoints } = await import('./endpoints.mjs')
 		registerEndpoints(mainRouter)
 		mainRouter.use(express.static(__dirname + '/src/pages'))
@@ -203,17 +202,17 @@ export async function init(start_config) {
 				}
 				server = https.createServer(options, app).listen(port, async () => {
 					hosturl = 'https://localhost:' + port
-					console.log(await geti18n('fountConsole.server.showUrl.https', {
+					console.logI18n('fountConsole.server.showUrl.https', {
 						url: supportsAnsi ? `\x1b]8;;${hosturl}\x1b\\${hosturl}\x1b]8;;\x1b\\` : hosturl
-					}))
+					})
 					resolve()
 				})
 			}
 			else
 				server = http.createServer(app).listen(port, async () => {
-					console.log(await geti18n('fountConsole.server.showUrl.http', {
+					console.logI18n('fountConsole.server.showUrl.http', {
 						url: supportsAnsi ? `\x1b]8;;${hosturl}\x1b\\${hosturl}\x1b]8;;\x1b\\` : hosturl
-					}))
+					})
 					resolve()
 				})
 			server.on('error', reject)
@@ -222,7 +221,7 @@ export async function init(start_config) {
 
 	if (starts.Tray) iconPromise.then(() => createTray()).then(t => tray = t)
 	if (starts.Base) {
-		console.freshLine('server start', await geti18n('fountConsole.server.ready'))
+		console.freshLineI18n('server start', 'fountConsole.server.ready')
 		const titleBackup = process.title
 		on_shutdown(() => setWindowTitle(titleBackup))
 		setDefaultStuff()
@@ -239,9 +238,9 @@ export async function init(start_config) {
 		console.freshLine('server start', chalk.hex('#0e3c5c')(logo))
 	}
 	const endtime = new Date()
-	console.log(await geti18n('fountConsole.server.usesdTime', {
+	console.logI18n('fountConsole.server.usesdTime', {
 		time: (endtime - startTime) / 1000
-	}))
+	})
 	if (starts.DiscordRPC) StartRPC()
 	if (!fs.existsSync(__dirname + '/src/pages/favicon.ico')) await iconPromise
 	return true

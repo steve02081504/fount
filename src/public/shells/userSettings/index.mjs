@@ -1,4 +1,4 @@
-import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
+import { initTranslations, geti18n, promptI18n, confirmI18n, console } from '../../scripts/i18n.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 import * as api from './src/public/endpoints.mjs'
 
@@ -117,7 +117,7 @@ el.renameUserForm.addEventListener('submit', async (event) => {
 	const newUsername = form.newUsernameRename.value.trim()
 	if (!newUsername) return
 
-	if (!confirm(geti18n('userSettings.renameUser.confirmMessage'))) return
+	if (!confirmI18n('userSettings.renameUser.confirmMessage')) return
 
 	try {
 		const password = await requestPasswordConfirmation()
@@ -185,7 +185,7 @@ async function loadAndDisplayDevices() {
 				revokeButton.dataset.i18n = 'userSettings.userDevices.revokeButton'
 				revokeButton.textContent = geti18n('userSettings.userDevices.revokeButton')
 				revokeButton.onclick = async () => {
-					if (!confirm(geti18n('userSettings.userDevices.revokeConfirm'))) return
+					if (!confirmI18n('userSettings.userDevices.revokeConfirm')) return
 					try {
 						const password = await requestPasswordConfirmation()
 						const revokeResult = await api.revokeDevice(device.jti, password)
@@ -212,9 +212,7 @@ el.refreshDevicesBtn.addEventListener('click', loadAndDisplayDevices)
 
 // 登出处理函数
 el.logoutBtn.addEventListener('click', async () => {
-	// 通常登出不需要二次确认，但如果需要可以取消下面的注释
-	// if (!confirm(geti18n('userSettings.logout.confirmMessage'))) return;
-
+	if (!confirmI18n('userSettings.logout.confirmMessage')) return
 	try {
 		const result = await api.logoutUser() // 调用新的API端点
 		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Logout failed' }))
@@ -231,10 +229,10 @@ el.logoutBtn.addEventListener('click', async () => {
 
 
 el.deleteAccountBtn.addEventListener('click', async () => {
-	if (!confirm(geti18n('userSettings.deleteAccount.confirmMessage1'))) return
+	if (!confirmI18n('userSettings.deleteAccount.confirmMessage1')) return
 
 	const usernameToConfirm = el.userInfoUsername.textContent
-	const enteredUsername = prompt(geti18n('userSettings.deleteAccount.confirmMessage2', { username: usernameToConfirm }))
+	const enteredUsername = promptI18n('userSettings.deleteAccount.confirmMessage2', { username: usernameToConfirm })
 
 	if (enteredUsername === null) return
 	if (enteredUsername !== usernameToConfirm)

@@ -632,7 +632,7 @@ def check_used_keys_in_fount(fount_dir, reference_loc_data, reference_lang_code)
 		return
 
 	print(f"\n--- 开始在 FOUNT 目录 '{fount_dir}' 中检查 MJS/HTML 文件中的 i18n 键 ---")
-	regex_patterns = [re.compile(r"data-i18n=(?:\"([a-zA-Z0-9_.-]+)\"|'([a-zA-Z0-9_.-]+)')"), re.compile(r"geti18n\((?:\"([a-zA-Z0-9_.-]+)\"|'([a-zA-Z0-9_.-]+)')\)")]
+	regex_patterns = [re.compile(r"data-i18n=(?:\"([a-zA-Z0-9_.-]+)\"|'([a-zA-Z0-9_.-]+)')"), re.compile(r"(?:geti|I)18n\((?:\"([a-zA-Z0-9_.-]+)\"|'([a-zA-Z0-9_.-]+)')\)")]
 	found_keys_in_fount_code = set()
 
 	for root, _, files in os.walk(fount_dir):

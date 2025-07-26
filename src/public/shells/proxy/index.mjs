@@ -1,6 +1,6 @@
 import { applyTheme } from '../../scripts/theme.mjs'
 applyTheme()
-import { initTranslations } from '../../scripts/i18n.mjs'
+import { initTranslations, console } from '../../scripts/i18n.mjs'
 initTranslations('proxy')
 import { whoami } from '../../scripts/endpoints.mjs'
 

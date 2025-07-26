@@ -106,7 +106,7 @@
 		"shellCommandFailed": "发送 Shell 命令失败",
 		"shellCommandError": "发送 Shell 命令时出错",
 		"fountNotFound": "awww :(\n\n没有找到 fount，或许你需要先安装一个？",
-		"unknownError": "awww :(\n\n发生错误：\n"
+		"unknownError": "awww :(\n\n发生错误：\n${error}"
 	},
 	"installer_wait_screen": {
 		"title": "欢迎使用 fount！",
@@ -145,7 +145,7 @@
 			"launch_button": "fount 正在安装...",
 			"open_fount": "打开 fount",
 			"open_or_install_fount": "打开/安装 fount",
-			"error_message": "awww :(\n\n发生错误：\n"
+			"error_message": "awww :(\n\n发生错误：\n${error}"
 		},
 		"error": {
 			"title": "安装失败！",
@@ -921,7 +921,7 @@
 		"preview_label": "效果预览",
 		"preview_alt": "徽章预览",
 		"copied_text": "已复制!",
-		"copy_error": "无法复制文本: ",
+		"copy_error": "无法复制文本: ${error}",
 		"copy_fail_alert": "复制失败！"
 	}
 }

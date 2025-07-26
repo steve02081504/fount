@@ -16,7 +16,7 @@ import {
 	getMessageElementByQueueIndex,
 } from './virtualQueue.mjs'
 import { addDragAndDropSupport } from './dragAndDrop.mjs'
-import { geti18n } from '../../../../../scripts/i18n.mjs'
+import { confirmI18n } from '../../../../../scripts/i18n.mjs'
 import { sendNotification } from '../../../../../scripts/sendNotification.mjs'
 
 // 用于存储滑动事件监听器的 Map
@@ -42,7 +42,7 @@ export async function renderMessage(message) {
 	const deleteButton = messageElement.querySelector('.delete-button')
 	if (deleteButton)
 		deleteButton.addEventListener('click', async () => {
-			if (confirm(geti18n('chat.messageList.confirmDeleteMessage'))) {
+			if (confirmI18n('chat.messageList.confirmDeleteMessage')) {
 				const queueIndex = getQueueIndex(messageElement)
 				if (queueIndex === -1) return
 				const chatLogIndex = getChatLogIndexByQueueIndex(queueIndex)

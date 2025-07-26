@@ -6,7 +6,7 @@ import { config, save_config, __dirname, data_path } from './server.mjs'
 import path from 'node:path'
 import argon2 from 'npm:argon2'
 import { ms } from '../scripts/ms.mjs'
-import { geti18n } from '../scripts/i18n.mjs'
+import { console } from '../scripts/i18n.mjs'
 import { loadJsonFile } from '../scripts/json_loader.mjs'
 import { events } from './events.mjs'
 import { is_local_ip, is_local_ip_from_req } from '../scripts/ratelimit.mjs'
@@ -119,12 +119,12 @@ async function verifyToken(token) {
 		})
 		// 检查令牌是否已被撤销 (针对 access token 和 refresh token 统一检查)
 		if (config.data.revokedTokens[payload.jti]) {
-			console.warn(await geti18n('fountConsole.auth.tokenRevoked', { jti: payload.jti }))
+			console.warnI18n('fountConsole.auth.tokenRevoked', { jti: payload.jti })
 			return null
 		}
 		return payload
 	} catch (error) {
-		console.error(await geti18n('fountConsole.auth.tokenVerifyError', { error }))
+		console.errorI18n('fountConsole.auth.tokenVerifyError', { error })
 		return null
 	}
 }
@@ -181,7 +181,7 @@ async function refresh(refreshTokenValue, req) {
 		save_config()
 		return { status: 200, success: true, accessToken, refreshToken: newRefreshToken }
 	} catch (error) {
-		console.error(await geti18n('fountConsole.auth.refreshTokenError', { error: error.message }))
+		console.errorI18n('fountConsole.auth.refreshTokenError', { error: error.message })
 		return { status: 401, success: false, message: 'Error refreshing token' }
 	}
 }
@@ -214,7 +214,7 @@ export async function logout(req, res) {
 					await revokeToken(refreshToken, 'refresh-logout')
 				}
 			} catch (error) {
-				console.error(await geti18n('fountConsole.auth.logoutRefreshTokenProcessError', { error: error.message }))
+				console.errorI18n('fountConsole.auth.logoutRefreshTokenProcessError', { error: error.message })
 			}
 	}
 
@@ -313,7 +313,7 @@ async function revokeToken(token, typeSuffix = 'unknown') {
 	try {
 		const decoded = await jose.decodeJwt(token) // 仅解码以获取 jti 和 exp
 		if (!decoded || !decoded.jti) {
-			console.error(await geti18n('fountConsole.auth.revokeTokenNoJTI'))
+			console.errorI18n('fountConsole.auth.revokeTokenNoJTI')
 			return
 		}
 
@@ -654,7 +654,7 @@ export async function login(username, password, deviceId = 'unknown', req) {
 			authData.lockedUntil = Date.now() + ms(ACCOUNT_LOCK_TIME)
 			authData.loginAttempts = 0 // 达到最大尝试次数后重置
 			save_config()
-			console.log(await geti18n('fountConsole.auth.accountLockedLog', { username }))
+			console.logI18n('fountConsole.auth.accountLockedLog', { username })
 			return { status: 403, success: false, message: `Account locked due to too many failed attempts. Try again in ${ms(ms(ACCOUNT_LOCK_TIME), { long: true })}.` }
 		}
 		save_config()

@@ -106,7 +106,7 @@
 		"shellCommandFailed": "Gửi lệnh Shell thất bại.",
 		"shellCommandError": "Đã xảy ra lỗi khi gửi lệnh Shell.",
 		"fountNotFound": "Ối... :(\n\nKhông tìm thấy fount. Có lẽ bạn cần cài đặt trước?",
-		"unknownError": "Ối... :(\n\nĐã xảy ra lỗi:\n"
+		"unknownError": "Ối... :(\n\nĐã xảy ra lỗi:\n${error}"
 	},
 	"installer_wait_screen": {
 		"title": "Chào mừng đến với fount!",
@@ -145,7 +145,7 @@
 			"launch_button": "fount đang được cài đặt...",
 			"open_fount": "Mở fount",
 			"open_or_install_fount": "Mở/Cài đặt fount",
-			"error_message": "Ối... :(\n\nĐã xảy ra lỗi:\n"
+			"error_message": "Ối... :(\n\nĐã xảy ra lỗi:\n${error}"
 		},
 		"error": {
 			"title": "Cài đặt thất bại!",
@@ -921,7 +921,7 @@
 		"preview_label": "Xem trước",
 		"preview_alt": "Xem trước huy hiệu",
 		"copied_text": "Đã sao chép!",
-		"copy_error": "Không thể sao chép văn bản:",
+		"copy_error": "Không thể sao chép văn bản: ${error}",
 		"copy_fail_alert": "Sao chép không thành công!"
 	}
 }

@@ -2,6 +2,8 @@ import fs from 'node:fs'
 import { __dirname } from '../server/server.mjs'
 import { loadJsonFile } from './json_loader.mjs'
 import { exec } from './exec.mjs'
+import { console as baseConsole } from 'npm:@steve02081504/virtual-console'
+const console = baseConsole
 import process from 'node:process'
 const fountLocaleList = fs.readdirSync(__dirname + '/src/locales').filter((file) => file.endsWith('.json')).map((file) => file.slice(0, -5))
 
@@ -38,11 +40,6 @@ export async function getLocaleData(preferredlocaleList) {
 	return result
 }
 
-export function addPartLocaleData(partname, localeList, loader) {
-	partsLocaleLists[partname] = localeList
-	partsLocaleLoaders[partname] = loader
-}
-
 export const localhostLocales = [...new Set([
 	...[
 		process.env.LANG,
@@ -53,6 +50,13 @@ export const localhostLocales = [...new Set([
 	...navigator.languages || [navigator.language],
 	'en-UK',
 ].filter(Boolean))]
+export let localhostLocaleData = await getLocaleData(localhostLocales)
+
+export async function addPartLocaleData(partname, localeList, loader) {
+	partsLocaleLists[partname] = localeList
+	partsLocaleLoaders[partname] = loader
+	localhostLocaleData = await getLocaleData(localhostLocales)
+}
 
 function getNestedValue(obj, key) {
 	const keys = key.split('.')
@@ -71,9 +75,8 @@ function getNestedValue(obj, key) {
  * @param {object} [params] - 可选的参数，用于插值（例如 {name: "John"}）。
  * @returns {Promise<string>} - 翻译后的文本，如果未找到则返回键本身。
  */
-export async function geti18n(key, params = {}) {
-	const i18n = await getLocaleData(localhostLocales)
-	let translation = getNestedValue(i18n, key)
+export function geti18n(key, params = {}) {
+	let translation = getNestedValue(localhostLocaleData, key)
 
 	if (translation === undefined)
 		console.warn(`Translation key "${key}" not found.`)
@@ -84,3 +87,18 @@ export async function geti18n(key, params = {}) {
 
 	return translation
 }
+console.infoI18n = (key, params = {}) => console.info(geti18n(key, params))
+console.logI18n = (key, params = {}) => console.log(geti18n(key, params))
+console.warnI18n = (key, params = {}) => console.warn(geti18n(key, params))
+console.errorI18n = (key, params = {}) => console.error(geti18n(key, params))
+console.freshLineI18n = (id, key, params = {}) => console.freshLine(id, geti18n(key, params))
+export function alertI18n(key, params = {}) {
+	return alert(geti18n(key, params))
+}
+export function promptI18n(key, params = {}) {
+	return prompt(geti18n(key, params))
+}
+export function confirmI18n(key, params = {}) {
+	return confirm(geti18n(key, params))
+}
+export { console }

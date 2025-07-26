@@ -2,7 +2,7 @@ import { createJsonEditor } from '../../scripts/jsonEditor.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 import { getPartTypes, getParts, getPartDetails, saveConfigData, getConfigData } from './src/public/endpoints.mjs' // 导入 API 模块
 import { showErrorMessage } from './src/public/error.mjs'
-import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
+import { initTranslations, geti18n, confirmI18n, console } from '../../scripts/i18n.mjs'
 
 const jsonEditorContainer = document.getElementById('jsonEditor')
 
@@ -109,7 +109,7 @@ function renderPartSelect() {
  */
 async function loadEditor(partType, partName) {
 	if (isDirty)
-		if (!confirm(geti18n('part_config.alerts.unsavedChanges')))
+		if (!confirmI18n('part_config.alerts.unsavedChanges'))
 			return
 
 	try {
@@ -237,7 +237,7 @@ initializeFromURLParams()
 // 事件监听
 partTypeSelect.addEventListener('change', async () => {
 	if (isDirty)
-		if (!confirm(geti18n('part_config.alerts.unsavedChanges'))) {
+		if (!confirmI18n('part_config.alerts.unsavedChanges')) {
 			partTypeSelect.value = activePartType
 			return
 		}
@@ -255,7 +255,7 @@ partTypeSelect.addEventListener('change', async () => {
 
 partSelect.addEventListener('change', async () => {
 	if (isDirty)
-		if (!confirm(geti18n('part_config.alerts.unsavedChanges'))) {
+		if (!confirmI18n('part_config.alerts.unsavedChanges')) {
 			partSelect.value = activePart
 			return
 		}
