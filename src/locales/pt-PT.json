@@ -139,6 +139,30 @@
 			"description1": "A instalação está muito lenta?",
 			"description2": "Há minijogos aqui para passar o tempo."
 		},
+		"data_showcase": {
+			"title_prefix": "Fonte é a mais",
+			"adjectives": [
+				"Estendido",
+				"Tem potencial",
+				"Dê um passo à frente",
+				"Compatível",
+				"Pequeno e poderoso"
+			],
+			"title_of": "de",
+			"nouns": [
+				"Ai papel virtual",
+				"Agente",
+				"Esposa cibernética",
+				"Assistente Digital"
+			],
+			"platforms": [
+				"Plataforma básica",
+				"Bate -papo front -end",
+				"Corredor"
+			],
+			"active_users": "Número de usuários ativos",
+			"stars": "Estrelas do Github"
+		},
 		"footer": {
 			"ready_text": "Pronto para começar a sua jornada?",
 			"wait_text": "Aguarde um momento...",

@@ -139,6 +139,30 @@
 			"description1": "Cài đặt quá chậm chạp?",
 			"description2": "Có những trò chơi nhỏ ở đây để bạn giải trí trong lúc chờ đợi."
 		},
+		"data_showcase": {
+			"title_prefix": "Fount là nhiều nhất",
+			"adjectives": [
+				"Mở rộng",
+				"Có tiềm năng",
+				"Bước về phía trước",
+				"Tương thích",
+				"Nhỏ và mạnh mẽ"
+			],
+			"title_of": "của",
+			"nouns": [
+				"Vai trò ảo AI",
+				"Đại lý",
+				"Vợ mạng",
+				"Trợ lý kỹ thuật số"
+			],
+			"platforms": [
+				"Nền tảng cơ bản",
+				"Trò chuyện phía trước",
+				"Á hậu"
+			],
+			"active_users": "Số lượng người dùng đang hoạt động",
+			"stars": "Ngôi sao GitHub"
+		},
 		"footer": {
 			"ready_text": "Sẵn sàng bắt đầu hành trình của bạn?",
 			"wait_text": "Vui lòng đợi một lát...",

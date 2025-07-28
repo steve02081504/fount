@@ -139,6 +139,30 @@
 			"description1": "Ist die Installation zu langsam?",
 			"description2": "Hier ist ein kleines Spiel, um sich die Zeit zu vertreiben."
 		},
+		"data_showcase": {
+			"title_prefix": "Fount ist am meisten",
+			"adjectives": [
+				"Erweitert",
+				"Potenzial haben",
+				"Vorwärts gehen",
+				"Kompatibel",
+				"Klein und kraftvoll"
+			],
+			"title_of": "von",
+			"nouns": [
+				"AI Virtuelle Rolle",
+				"Agent",
+				"Cyberfrau",
+				"Digitaler Assistent"
+			],
+			"platforms": [
+				"Grundlegende Plattform",
+				"Chat Front End",
+				"Läufer"
+			],
+			"active_users": "Anzahl der aktiven Benutzer",
+			"stars": "Github Sterne"
+		},
 		"footer": {
 			"ready_text": "Bereit, Ihre Reise zu beginnen?",
 			"wait_text": "Bitte warten Sie einen Moment...",

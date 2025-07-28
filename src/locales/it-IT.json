@@ -139,6 +139,30 @@
 			"description1": "L'installazione è troppo lenta?",
 			"description2": "Ecco un mini-gioco per passare il tempo."
 		},
+		"data_showcase": {
+			"title_prefix": "la fonte è il più",
+			"adjectives": [
+				"Esteso",
+				"Avere potenziale",
+				"Fai un passo avanti",
+				"Compatibile",
+				"Piccolo e potente"
+			],
+			"title_of": "Di",
+			"nouns": [
+				"AI Ruolo virtuale",
+				"Agente",
+				"Moglie informatica",
+				"Assistente digitale"
+			],
+			"platforms": [
+				"Piattaforma di base",
+				"Front -end di chat",
+				"Corridore"
+			],
+			"active_users": "Numero di utenti attivi",
+			"stars": "GitHub stelle"
+		},
 		"footer": {
 			"ready_text": "Pronto per iniziare il tuo viaggio?",
 			"wait_text": "Attendi un momento...",

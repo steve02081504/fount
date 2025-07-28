@@ -139,6 +139,30 @@
 			"description1": "¿La instalación va demasiado lenta?",
 			"description2": "Aquí tienes un minijuego para pasar el rato."
 		},
+		"data_showcase": {
+			"title_prefix": "la fuente es la mayor",
+			"adjectives": [
+				"Extendido",
+				"Tener potencial",
+				"Dar un paso",
+				"Compatible",
+				"Pequeño y poderoso"
+			],
+			"title_of": "de",
+			"nouns": [
+				"Ai rol virtual",
+				"Agente",
+				"Esposa cibernética",
+				"Asistente digital"
+			],
+			"platforms": [
+				"Plataforma básica",
+				"Chat front -end",
+				"Corredor"
+			],
+			"active_users": "Número de usuarios activos",
+			"stars": "Estrellas de Github"
+		},
 		"footer": {
 			"ready_text": "¿Listo para empezar tu aventura?",
 			"wait_text": "Espera un momento...",
