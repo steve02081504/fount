@@ -22,7 +22,7 @@ Ou peut-être avez-vous imaginé un confident numérique, un assistant IA aussi 
 
 Ou peut-être, juste peut-être, avez-vous recherché une connexion au-delà de l'ordinaire, un royaume où les bords de la réalité s'estompent et où une compréhension intime et _non filtrée_ se déploie ?
 
-Avec près d'un an de développement dédié, les contributions de plus de 10 personnes passionnées et une communauté florissante de plus de 1000 utilisateurs, fount se présente comme une plateforme mature, stable et en constante évolution pour l'interaction avec l'IA. C'est un voyage, et nous pensons qu'il est plus accessible que vous ne l'imaginez.
+Avec près de ![Relative date](https://img.shields.io/date/1727107200?label=Temps%20%C3%A9coul%C3%A9) de développement dédié, les contributions de plus de ![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=Contributeurs) personnes passionnées et une communauté florissante de plus de ![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=Utilisateurs%20actifs) utilisateurs, fount se présente comme une plateforme mature, stable et en constante évolution pour l'interaction avec l'IA. C'est un voyage, et nous pensons qu'il est plus accessible que vous ne l'imaginez.
 
 Personnages perdus, histoires oubliées ? Notre [**communauté dynamique et accueillante**](https://discord.gg/GtR9Quzq2v) vous attend – un havre où les esprits apparentés se rassemblent, où les développeurs et les créateurs partagent leur sagesse et leurs créations.
 
@@ -68,7 +68,7 @@ fount est conçu pour l'avenir, prêt à accueillir de nouvelles fonctionnalité
   fount fonctionne de manière transparente sur Windows, macOS, Linux et même Android, s'adaptant à vos besoins grâce à une installation directe ou à la flexibilité de Docker.
 
 - **(Pour les Utilisateurs Avancés) Intégration de Sources d'IA sans Entraves : Embrassez l'Illimité**
-  fount offre un _choix_ et une _flexibilité_ inégalés dans la connexion aux sources d'IA. Le code JavaScript personnalisé au sein du générateur de sources d'IA vous permet de vous connecter à _n'importe quelle_ source d'IA : OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral, et plus encore. Créez des expressions régulières complexes, faites appel à de vastes bibliothèques d'API, et intégrez des ressources multimédias, le tout dans le flux de votre code. La logique de la communication se plie à _votre_ volonté, façonnée par la puissance du code.
+  fount offre un _choix_ et une _flexibilité_ inégalés dans la connexion aux sources d'IA. Le code JavaScript personnalisé au sein du générateur de sources d'IA vous permet de vous connecter à _n'importe quelle_ source d'IA : OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral, et plus encore. Créez des expressions régulières complexes, faites appel à de vastes bibliothèques d'API, et intégrez des ressources multimédias, le tout dans le flux de votre code. fount prend également en charge nativement la création de pools d'API pour un routage intelligent des requêtes. La logique de la communication se plie à _votre_ volonté, façonnée par la puissance du code.
   ![Image](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
 
 ---
@@ -243,6 +243,8 @@ Vous pouvez fièrement afficher ce badge dans votre dépôt ou partout où vous 
 |        HEX        |      `#0e3c5c`       |
 |        RGB        |  `rgb(14, 60, 92)`   |
 |        HSL        | `hsl(205, 74%, 21%)` |
+
+Vous pouvez également utiliser l'[Ajouteur de Badges](https://steve02081504.github.io/fount/badges/) pour ajouter le logo de fount à n'importe quel badge de shields.io.
 
 ### Liens d'Installation Automatique : La Magie au Bout des Doigts
 

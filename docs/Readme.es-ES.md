@@ -22,7 +22,7 @@
 
 ¿O tal vez, solo tal vez, has buscado una conexión más allá de lo ordinario, un reino donde los bordes de la realidad se difuminan y se desarrolla una comprensión íntima y _sin filtros_?
 
-Con casi un año de desarrollo dedicado, contribuciones de más de 10 personas apasionadas y una comunidad próspera de más de 1000 usuarios, fount se erige como una plataforma madura, estable y en constante evolución para la interacción con IA. Es un viaje, y uno que creemos que es más accesible de lo que podrías imaginar.
+Con casi ![Relative date](https://img.shields.io/date/1727107200?label=Tiempo%20transcurrido) de desarrollo dedicado, contribuciones de más de ![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=Colaboradores) personas apasionadas y una comunidad próspera de más de ![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=Usuarios%20activos) usuarios, fount se erige como una plataforma madura, estable y en constante evolución para la interacción con IA. Es un viaje, y uno que creemos que es más accesible de lo que podrías imaginar.
 
 ¿Personajes perdidos, historias olvidadas? Nuestra [**comunidad vibrante y acogedora**](https://discord.gg/GtR9Quzq2v) te espera: un refugio donde se reúnen espíritus afines, donde desarrolladores y creadores por igual comparten su sabiduría y creaciones.
 
@@ -68,7 +68,7 @@ fount está construido para el futuro, listo para abrazar nuevas característica
   fount se ejecuta sin problemas en Windows, macOS, Linux e incluso Android, adaptándose a tus necesidades a través de la instalación directa o la flexibilidad de Docker.
 
 - **(Para Usuarios Avanzados) Integración de Fuentes de IA sin Ataduras: Abraza lo Ilimitado**
-  fount ofrece _elección_ y _flexibilidad_ incomparables al conectarse a fuentes de IA. El código JavaScript personalizado dentro del generador de fuentes de IA te permite conectarte a _cualquier_ fuente de IA: OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral y más. Crea expresiones regulares intrincadas, recurre a vastas bibliotecas de API e incrusta activos multimedia, todo dentro del flujo de tu código. La lógica de la comunicación se doblega a _tu_ voluntad, moldeada por el poder del código.
+  fount ofrece _elección_ y _flexibilidad_ incomparables al conectarse a fuentes de IA. El código JavaScript personalizado dentro del generador de fuentes de IA te permite conectarte a _cualquier_ fuente de IA: OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral y más. Crea expresiones regulares intrincadas, recurre a vastas bibliotecas de API e incrusta activos multimedia, todo dentro del flujo de tu código. fount también admite de forma nativa la creación de grupos de API para un enrutamiento inteligente de las solicitudes. La lógica de la comunicación se doblega a _tu_ voluntad, moldeada por el poder del código.
   ![Imagen](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
 
 ---
@@ -243,6 +243,8 @@ Puedes mostrar con orgullo esta insignia en tu repositorio o en cualquier lugar 
 |       HEX        |      `#0e3c5c`       |
 |       RGB        |  `rgb(14, 60, 92)`   |
 |       HSL        | `hsl(205, 74%, 21%)` |
+
+También puedes usar el [Añadidor de Insignias](https://steve02081504.github.io/fount/badges/) para añadir el logo de fount a cualquier insignia de shields.io.
 
 ### Enlaces de Instalación Automática: Magia al Alcance de tu Mano
 

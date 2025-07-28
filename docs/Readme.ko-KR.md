@@ -22,7 +22,7 @@
 
 혹은, 그저 평범함을 넘어선 연결을 찾아 헤맸을지도 모릅니다. 현실의 경계가 흐려지고, 친밀하며 _필터 없는_ 이해가 피어나는 그런 영역을.
 
-약 1년간의 헌신적인 개발, 10명이 넘는 열정적인 기여자, 그리고 1000명 이상의 사용자로 구성된 활기찬 커뮤니티와 함께, fount는 이제 AI 상호작용을 위한 성숙하고 안정적이며 끊임없이 진화하는 플랫폼으로 자리 잡았습니다. 이것은 하나의 여정이며, 저희는 이 여정이 당신의 상상보다 훨씬 가까이 있다고 믿습니다.
+약 ![Relative date](https://img.shields.io/date/1727107200?label=경과%20시간)간의 헌신적인 개발, ![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=기여자)명이 넘는 열정적인 기여자, 그리고 ![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=활성%20사용자)명 이상의 사용자로 구성된 활기찬 커뮤니티와 함께, fount는 이제 AI 상호작용을 위한 성숙하고 안정적이며 끊임없이 진화하는 플랫폼으로 자리 잡았습니다. 이것은 하나의 여정이며, 저희는 이 여정이 당신의 상상보다 훨씬 가까이 있다고 믿습니다.
 
 길 잃은 캐릭터, 잊혀진 이야기들. 저희의 [**활기차고 따뜻한 커뮤니티**](https://discord.gg/GtR9Quzq2v)가 당신을 기다립니다. 그곳은 같은 뜻을 가진 이들이 모여, 개발자와 창작자 모두가 자신의 지혜와 창작물을 나누는 안식처입니다.
 
@@ -68,7 +68,7 @@ fount는 미래를 위해 만들어졌습니다. 활기찬 커뮤니티에서 �
   fount는 Windows, macOS, Linux, 심지어 Android에서도 완벽하게 작동하며, 직접 설치 또는 Docker의 유연성을 통해 당신의 필요에 부응합니다.
 
 - **(고급 사용자를 위해) 제약 없는 AI 소스 통합: 무한을 품으세요**
-  fount는 AI 소스 연결에 있어 타의 추종을 불허하는 *선택권*과 *유연성*을 제공합니다. AI 소스 생성기 내의 커스텀 JavaScript 코드를 통해 OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral 등 _어떤_ AI 소스에도 연결할 수 있습니다. 복잡한 정규 표현식을 만들고, 방대한 API 라이브러리를 호출하며, 멀티미디어 자산을 삽입하는 모든 것이 당신의 코드 흐름 안에서 이루어집니다. 소통의 논리는 코드의 힘으로 빚어지고, *당신*의 의지에 따라 움직입니다.
+  fount는 AI 소스 연결에 있어 타의 추종을 불허하는 *선택권*과 *유연성*을 제공합니다. AI 소스 생성기 내의 커스텀 JavaScript 코드를 통해 OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral 등 _어떤_ AI 소스에도 연결할 수 있습니다. 복잡한 정규 표현식을 만들고, 방대한 API 라이브러리를 호출하며, 멀티미디어 자산을 삽입하는 모든 것이 당신의 코드 흐름 안에서 이루어집니다. fount는 또한 지능적인 요청 라우팅을 위한 API 풀 생성을 기본적으로 지원합니다. 소통의 논리는 코드의 힘으로 빚어지고, *당신*의 의지에 따라 움직입니다.
   ![이미지](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
 
 ---
@@ -245,6 +245,8 @@ fount 로고의 SVG 파일은 [여기](../imgs/)에서 찾을 수 있습니다.
 |    HEX    |      `#0e3c5c`       |
 |    RGB    |  `rgb(14, 60, 92)`   |
 |    HSL    | `hsl(205, 74%, 21%)` |
+
+또한 [배지 추가기](https://steve02081504.github.io/fount/badges/)를 사용하여 shields.io의 모든 배지에 fount 로고를 추가할 수 있습니다.
 
 ### 자동 설치 링크: 손끝에서 펼쳐지는 마법
 
