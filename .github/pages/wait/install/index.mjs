@@ -1,5 +1,5 @@
 import { setBaseDir, setPreRender, setTheme, theme_now } from '../../base.mjs'
-import { initTranslations, geti18n, alertI18n ,console} from '../../scripts/i18n.mjs'
+import { initTranslations, geti18n, alertI18n, console } from '../../scripts/i18n.mjs'
 import { isFountServiceAvailable, saveFountHostUrl, getFountHostUrl, pingFount } from '../../scripts/fountHostGetter.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
 import * as Sentry from 'https://esm.run/@sentry/browser'
@@ -14,6 +14,9 @@ const launchButtonText = document.getElementById('launchButtonText')
 const launchButtonSpinner = document.getElementById('launchButtonSpinner')
 const footer = document.querySelector('.footer')
 const footerReadyText = document.getElementById('footerReadyText')
+
+const activeUserNum = await fetch('https://data.jsdelivr.com/v1/stats/packages/gh/steve02081504/fount?period=year').then(res => res.json()).then(data => data.hits.total).catch(() => NaN)
+const starNum = await fetch('https://api.github.com/repos/steve02081504/fount').then(res => res.json()).then(data => data.stargazers_count).catch(() => NaN)
 
 // --- Hero Intro Animation ---
 async function playHeroAnimation() {
@@ -150,6 +153,165 @@ function handleThemeClick(previewElement, theme) {
 	document.startViewTransition(applyNewTheme)
 }
 
+// --- Data Showcase Animation ---
+/**
+ * 动画化一个数字计数器，返回一个在动画完成时解析的 Promise。
+ * @param {HTMLElement} element - 显示数字的 DOM 元素。
+ * @param {number} start - 起始数字。
+ * @param {number} end - 结束数字。
+ * @param {number} duration - 动画持续时间（毫秒）。
+ * @param {number} easingPower - 缓动函数的强度，值越大，初始速度越快，末尾速度越慢。
+ */
+function animateCounter(element, start, end, duration, easingPower = 5) {
+	return new Promise(resolve => {
+		if (start === end) {
+			element.textContent = end.toLocaleString()
+			resolve()
+			return
+		}
+		let startTime = null
+
+		const step = (timestamp) => {
+			if (!startTime) startTime = timestamp
+			const progress = Math.min((timestamp - startTime) / duration, 1)
+
+			// 应用一个更强的 ease-out 函数 (easeOutQuint)
+			// 这会使得动画开始时非常快，然后急剧减速，末尾阶段非常缓慢
+			const easedProgress = 1 - Math.pow(1 - progress, easingPower)
+
+			const currentValue = Math.floor(start + (end - start) * easedProgress)
+			element.textContent = currentValue.toLocaleString()
+
+			if (progress < 1) {
+				window.requestAnimationFrame(step)
+			}
+			else {
+				element.textContent = end.toLocaleString()
+				resolve() // 动画完成，解析 Promise
+			}
+		}
+
+		window.requestAnimationFrame(step)
+	})
+}
+
+
+async function startDataShowcaseAnimation() {
+	const adjectives = geti18n('installer_wait_screen.data_showcase.adjectives') || []
+	const nouns = geti18n('installer_wait_screen.data_showcase.nouns') || []
+	const platforms = geti18n('installer_wait_screen.data_showcase.platforms') || []
+
+	const rotatingAdjectiveEl = document.getElementById('rotating-adjective')
+	const rotatingNounEl = document.getElementById('rotating-noun')
+	const rotatingPlatformEl = document.getElementById('rotating-platform')
+
+	if (adjectives.length > 0) setupTextRotation(rotatingAdjectiveEl, adjectives, 2500)
+	if (nouns.length > 0) setupTextRotation(rotatingNounEl, nouns, 2500)
+	if (platforms.length > 0) setupTextRotation(rotatingPlatformEl, platforms, 2500)
+
+	const activeUsersCountEl = document.getElementById('active-users-count')
+	const starsCountEl = document.getElementById('stars-count')
+
+	// 定义动画时长
+	const LONG_ANIMATION_DURATION = 5 * 60 * 1000 // 5 分钟
+	const SHORT_ANIMATION_DURATION = 3000 // 3 秒用于更新
+
+	// 1. 播放初始的、非常长的动画
+	const initialAnimations = []
+	if (!isNaN(activeUserNum)) {
+		const animationPromise = animateCounter(activeUsersCountEl, 0.8 * activeUserNum, activeUserNum, LONG_ANIMATION_DURATION)
+		initialAnimations.push(animationPromise)
+	}
+	if (!isNaN(starNum)) {
+		const animationPromise = animateCounter(starsCountEl, 0.8 * starNum, starNum, LONG_ANIMATION_DURATION)
+		initialAnimations.push(animationPromise)
+	}
+
+	// 2. 等待所有初始动画完成后，启动周期性更新检查
+	await Promise.all(initialAnimations)
+	console.log('Initial number animation complete. Starting periodic updates every minute.')
+
+	// 3. 每隔一分钟重新拉取数字并更新
+	setInterval(async () => {
+		try {
+			// 并行获取新数据
+			const [newActiveUserNumRes, newStarNumRes] = await Promise.all([
+				fetch('https://data.jsdelivr.com/v1/stats/packages/gh/steve02081504/fount?period=year'),
+				fetch('https://api.github.com/repos/steve02081504/fount')
+			])
+
+			const newActiveUserNum = await newActiveUserNumRes.json().then(data => data.hits.total).catch(() => NaN)
+			const newStarNum = await newStarNumRes.json().then(data => data.stargazers_count).catch(() => NaN)
+
+			// 获取当前显示的数字
+			const currentDisplayedUsers = parseInt(activeUsersCountEl.textContent.replace(/,/g, ''), 10)
+			const currentDisplayedStars = parseInt(starsCountEl.textContent.replace(/,/g, ''), 10)
+
+			// 检查用户数是否有变化，并播放更新动画
+			if (!isNaN(newActiveUserNum) && newActiveUserNum !== currentDisplayedUsers) {
+				console.log(`Updating active users from ${currentDisplayedUsers} to ${newActiveUserNum}`)
+				animateCounter(activeUsersCountEl, currentDisplayedUsers, newActiveUserNum, SHORT_ANIMATION_DURATION, 3)
+			}
+
+			// 检查 Star 数是否有变化，并播放更新动画
+			if (!isNaN(newStarNum) && newStarNum !== currentDisplayedStars) {
+				console.log(`Updating stars from ${currentDisplayedStars} to ${newStarNum}`)
+				animateCounter(starsCountEl, currentDisplayedStars, newStarNum, SHORT_ANIMATION_DURATION, 3)
+			}
+		}
+		catch (error) {
+			console.error('Failed to fetch updated stats:', error)
+		}
+	}, 60 * 1000)
+}
+
+function setupTextRotation(container, words, interval) {
+	if (!container || !words || words.length < 2) return
+
+	container.innerHTML = '' // Clear any existing content
+	words.forEach((word) => {
+		const span = document.createElement('span')
+		span.textContent = word
+		container.appendChild(span)
+	})
+
+	const spans = Array.from(container.children)
+	let currentIndex = Math.floor(Math.random() * spans.length)
+
+	const updateText = () => {
+		const currentSpan = spans[currentIndex]
+
+		const nextIndex = Math.floor(Math.random() * spans.length)
+
+		const nextSpan = spans[nextIndex]
+
+		// Adjust container width for the incoming text
+		container.style.width = `${nextSpan.offsetWidth}px`
+
+		// Animate out the current text
+		currentSpan.classList.remove('active')
+		currentSpan.classList.add('exiting')
+
+		// Animate in the next text
+		nextSpan.classList.remove('exiting') // In case it was there from a previous cycle
+		nextSpan.classList.add('active')
+
+		// Clean up the exiting class after animation
+		setTimeout(() => {
+			currentSpan.classList.remove('exiting')
+		}, 500) // a bit longer than transition duration
+
+		currentIndex = nextIndex
+	}
+
+	// Initial state
+	const firstSpan = spans[currentIndex]
+	container.style.width = `${firstSpan.offsetWidth}px`
+	firstSpan.classList.add('active')
+
+	setInterval(updateText, interval)
+}
+
 // --- Main Execution ---
 async function main() {
 	// Start the intro animation and translations in parallel
@@ -174,6 +336,19 @@ async function main() {
 	featureSections.forEach(section => {
 		observer.observe(section)
 	})
+
+	const dataShowcaseSection = document.getElementById('data-showcase')
+	if (dataShowcaseSection) {
+		const dataObserver = new IntersectionObserver((entries) => {
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					startDataShowcaseAnimation()
+					dataObserver.unobserve(entry.target)
+				}
+			})
+		}, { threshold: 0.2 })
+		dataObserver.observe(dataShowcaseSection)
+	}
 
 	// Start fount service check
 	async function checkFountInstallerAlive() {
