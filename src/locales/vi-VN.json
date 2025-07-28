@@ -139,6 +139,30 @@
 			"description1": "Cài đặt quá chậm chạp?",
 			"description2": "Có những trò chơi nhỏ ở đây để bạn giải trí trong lúc chờ đợi."
 		},
+		"data_showcase": {
+			"title_prefix": "fount là nền tảng",
+			"adjectives": [
+				"mở rộng nhất",
+				"tiềm năng nhất",
+				"tiên tiến nhất",
+				"tương thích nhất",
+				"nhỏ gọn và mạnh mẽ nhất"
+			],
+			"title_of": " ",
+			"nouns": [
+				"nhân vật AI",
+				"Agent",
+				"waifu ảo",
+				"trợ lý số"
+			],
+			"platforms": [
+				"nền tảng cơ sở",
+				"giao diện trò chuyện",
+				"môi trường chạy"
+			],
+			"active_users": "Người dùng hoạt động",
+			"stars": "Sao trên GitHub"
+		},
 		"footer": {
 			"ready_text": "Sẵn sàng bắt đầu hành trình của bạn?",
 			"wait_text": "Vui lòng đợi một lát...",

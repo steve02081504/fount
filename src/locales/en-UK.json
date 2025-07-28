@@ -139,6 +139,30 @@
 			"description1": "Installation taking too long?",
 			"description2": "Here's a mini game to pass the time."
 		},
+		"data_showcase": {
+			"title_prefix": "fount is the most",
+			"adjectives": [
+				"extendable",
+				"potential",
+				"forward-thinking",
+				"compatible",
+				"compact and powerful"
+			],
+			"title_of": " ",
+			"nouns": [
+				"AI character",
+				"Agent",
+				"Cyber waifu",
+				"Digital assistant"
+			],
+			"platforms": [
+				"base platform",
+				"chat frontend",
+				"runtime"
+			],
+			"active_users": "Active Users",
+			"stars": "GitHub Stars"
+		},
 		"footer": {
 			"ready_text": "Ready to start your journey?",
 			"wait_text": "Please wait a moment...",

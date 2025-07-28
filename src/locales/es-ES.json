@@ -139,6 +139,30 @@
 			"description1": "¿La instalación va demasiado lenta?",
 			"description2": "Aquí tienes un minijuego para pasar el rato."
 		},
+		"data_showcase": {
+			"title_prefix": "fount es la",
+			"adjectives": [
+				"más ampliable",
+				"más potente",
+				"más avanzada",
+				"más compatible",
+				"más compacta y potente"
+			],
+			"title_of": " ",
+			"nouns": [
+				"personaje de IA",
+				"Agente",
+				"Waifu cibernética",
+				"Asistente digital"
+			],
+			"platforms": [
+				"plataforma base",
+				"interfaz de chat",
+				"entorno de ejecución"
+			],
+			"active_users": "Usuarios activos",
+			"stars": "Estrellas de GitHub"
+		},
 		"footer": {
 			"ready_text": "¿Listo para empezar tu aventura?",
 			"wait_text": "Espera un momento...",

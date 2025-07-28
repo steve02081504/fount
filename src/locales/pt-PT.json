@@ -139,6 +139,30 @@
 			"description1": "A instalação está muito lenta?",
 			"description2": "Há minijogos aqui para passar o tempo."
 		},
+		"data_showcase": {
+			"title_prefix": "fount é a mais",
+			"adjectives": [
+				"extensível",
+				"potente",
+				"avançada",
+				"compatível",
+				"compacta e poderosa"
+			],
+			"title_of": " ",
+			"nouns": [
+				"personagem de IA",
+				"Agente",
+				"waifu cibernética",
+				"assistente digital"
+			],
+			"platforms": [
+				"plataforma base",
+				"frontend de chat",
+				"runtime"
+			],
+			"active_users": "Utilizadores Ativos",
+			"stars": "Estrelas do GitHub"
+		},
 		"footer": {
 			"ready_text": "Pronto para começar a sua jornada?",
 			"wait_text": "Aguarde um momento...",

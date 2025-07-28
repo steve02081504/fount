@@ -139,6 +139,30 @@
 			"description1": "설치가 너무 오래 걸리나요?",
 			"description2": "시간을 보낼 수 있는 미니 게임이 준비되어 있습니다."
 		},
+		"data_showcase": {
+			"title_prefix": "fount는 가장 ",
+			"adjectives": [
+				"확장 가능한",
+				"잠재력 있는",
+				"미래 지향적인",
+				"호환되는",
+				"작고 강력한"
+			],
+			"title_of": "",
+			"nouns": [
+				"AI 캐릭터",
+				"에이전트",
+				"사이버 와이프",
+				"디지털 비서"
+			],
+			"platforms": [
+				"기반 플랫폼",
+				"채팅 프론트엔드",
+				"런타임"
+			],
+			"active_users": "활성 사용자",
+			"stars": "GitHub 스타"
+		},
 		"footer": {
 			"ready_text": "여정을 시작할 준비가 되셨나요?",
 			"wait_text": "잠시만 기다려주세요...",

@@ -139,6 +139,30 @@
 			"description1": "安装太慢了？",
 			"description2": "这里有小游戏用来打发时间。"
 		},
+		"data_showcase": {
+			"title_prefix": "fount是最",
+			"adjectives": [
+				"具有扩展性",
+				"拥有潜力",
+				"大步向前",
+				"具有兼容性",
+				"小巧且强大"
+			],
+			"title_of": "的",
+			"nouns": [
+				"AI虚拟角色",
+				"Agent",
+				"赛博老婆",
+				"数字助手"
+			],
+			"platforms": [
+				"基础平台",
+				"聊天前端",
+				"运行器"
+			],
+			"active_users": "活跃用户数",
+			"stars": "GitHub Stars"
+		},
 		"footer": {
 			"ready_text": "准备好开始您的旅程了吗？",
 			"wait_text": "稍候片刻...",

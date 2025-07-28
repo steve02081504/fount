@@ -139,6 +139,30 @@
 			"description1": "Ist die Installation zu langsam?",
 			"description2": "Hier ist ein kleines Spiel, um sich die Zeit zu vertreiben."
 		},
+		"data_showcase": {
+			"title_prefix": "fount ist die",
+			"adjectives": [
+				"erweiterbarste",
+				"potenteste",
+				"fortschrittlichste",
+				"kompatibelste",
+				"kompakteste und leistungsfähigste"
+			],
+			"title_of": " ",
+			"nouns": [
+				"KI-Charakter",
+				"Agent",
+				"Cyber-Waifu",
+				"Digitaler Assistent"
+			],
+			"platforms": [
+				"Basis-Plattform",
+				"Chat-Frontend",
+				"Laufzeitumgebung"
+			],
+			"active_users": "Aktive Benutzer",
+			"stars": "GitHub-Sterne"
+		},
 		"footer": {
 			"ready_text": "Bereit, Ihre Reise zu beginnen?",
 			"wait_text": "Bitte warten Sie einen Moment...",

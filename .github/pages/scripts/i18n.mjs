@@ -64,7 +64,7 @@ export function geti18n_nowarn(key, params = {}) {
 
 	// 简单的插值处理
 	for (const param in params)
-		translation = translation.replaceAll(`\${${param}}`, params[param])
+		translation = translation?.replaceAll?.(`\${${param}}`, params[param])
 
 	return translation
 }
