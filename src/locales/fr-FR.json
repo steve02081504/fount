@@ -140,28 +140,28 @@
 			"description2": "Voici un mini-jeu pour passer le temps."
 		},
 		"data_showcase": {
-			"title_prefix": "Fount est le plus",
+			"title_prefix": "fount est le plus",
 			"adjectives": [
-				"Étendu",
-				"Avoir un potentiel",
-				"Avancer",
-				"Compatible",
-				"Petit et puissant"
+				"extensible",
+				"potentiel",
+				"avant-gardiste",
+				"compatible",
+				"compact et puissant"
 			],
-			"title_of": "de",
+			"title_of": "",
 			"nouns": [
-				"Rôle virtuel de l'IA",
+				"personnage IA",
 				"Agent",
-				"Cyber Wife",
+				"Cyber-waifu",
 				"Assistant numérique"
 			],
 			"platforms": [
-				"Plate-forme de base",
-				"Chat frontal",
-				"Coureur"
+				"plateforme de base",
+				"frontal de discussion",
+				"runtime"
 			],
-			"active_users": "Nombre d'utilisateurs actifs",
-			"stars": "Étoiles github"
+			"active_users": "Utilisateurs actifs",
+			"stars": "Étoiles GitHub"
 		},
 		"footer": {
 			"ready_text": "Prêt à commencer votre voyage ?",

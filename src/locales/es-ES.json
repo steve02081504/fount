@@ -140,28 +140,28 @@
 			"description2": "Aquí tienes un minijuego para pasar el rato."
 		},
 		"data_showcase": {
-			"title_prefix": "la fuente es la mayor",
+			"title_prefix": "fount es la",
 			"adjectives": [
-				"Extendido",
-				"Tener potencial",
-				"Dar un paso",
-				"Compatible",
-				"Pequeño y poderoso"
+				"más ampliable",
+				"más potente",
+				"más avanzada",
+				"más compatible",
+				"más compacta y potente"
 			],
-			"title_of": "de",
+			"title_of": "",
 			"nouns": [
-				"Ai rol virtual",
+				"personaje de IA",
 				"Agente",
-				"Esposa cibernética",
+				"Waifu cibernética",
 				"Asistente digital"
 			],
 			"platforms": [
-				"Plataforma básica",
-				"Chat front -end",
-				"Corredor"
+				"plataforma base",
+				"interfaz de chat",
+				"entorno de ejecución"
 			],
-			"active_users": "Número de usuarios activos",
-			"stars": "Estrellas de Github"
+			"active_users": "Usuarios activos",
+			"stars": "Estrellas de GitHub"
 		},
 		"footer": {
 			"ready_text": "¿Listo para empezar tu aventura?",

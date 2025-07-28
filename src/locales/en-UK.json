@@ -142,25 +142,25 @@
 		"data_showcase": {
 			"title_prefix": "fount is the most",
 			"adjectives": [
-				"Extended",
-				"Have potential",
-				"Step forward",
-				"Compatible",
-				"Small and powerful"
+				"extendable",
+				"potential",
+				"forward-thinking",
+				"compatible",
+				"compact and powerful"
 			],
-			"title_of": "of",
+			"title_of": "",
 			"nouns": [
-				"AI virtual role",
+				"AI character",
 				"Agent",
-				"Cyber wife",
-				"Digital Assistant"
+				"Cyber waifu",
+				"Digital assistant"
 			],
 			"platforms": [
-				"Basic Platform",
-				"Chat front end",
-				"Runner"
+				"base platform",
+				"chat frontend",
+				"runtime"
 			],
-			"active_users": "Number of active users",
+			"active_users": "Active Users",
 			"stars": "GitHub Stars"
 		},
 		"footer": {

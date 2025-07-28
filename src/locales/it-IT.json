@@ -140,28 +140,28 @@
 			"description2": "Ecco un mini-gioco per passare il tempo."
 		},
 		"data_showcase": {
-			"title_prefix": "la fonte è il più",
+			"title_prefix": "fount è il più",
 			"adjectives": [
-				"Esteso",
-				"Avere potenziale",
-				"Fai un passo avanti",
-				"Compatibile",
-				"Piccolo e potente"
+				"estensibile",
+				"potente",
+				"avanzato",
+				"compatibile",
+				"compatto e potente"
 			],
-			"title_of": "Di",
+			"title_of": "",
 			"nouns": [
-				"AI Ruolo virtuale",
+				"personaggio IA",
 				"Agente",
-				"Moglie informatica",
+				"Cyber waifu",
 				"Assistente digitale"
 			],
 			"platforms": [
-				"Piattaforma di base",
-				"Front -end di chat",
-				"Corridore"
+				"piattaforma base",
+				"frontend di chat",
+				"runtime"
 			],
-			"active_users": "Numero di utenti attivi",
-			"stars": "GitHub stelle"
+			"active_users": "Utenti attivi",
+			"stars": "Stelle di GitHub"
 		},
 		"footer": {
 			"ready_text": "Pronto per iniziare il tuo viaggio?",

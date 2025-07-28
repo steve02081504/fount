@@ -140,28 +140,28 @@
 			"description2": "Hier ist ein kleines Spiel, um sich die Zeit zu vertreiben."
 		},
 		"data_showcase": {
-			"title_prefix": "Fount ist am meisten",
+			"title_prefix": "Fount ist die",
 			"adjectives": [
-				"Erweitert",
-				"Potenzial haben",
-				"Vorwärts gehen",
-				"Kompatibel",
-				"Klein und kraftvoll"
+				"erweiterbarste",
+				"potenteste",
+				"fortschrittlichste",
+				"kompatibelste",
+				"kompakteste und leistungsfähigste"
 			],
-			"title_of": "von",
+			"title_of": "",
 			"nouns": [
-				"AI Virtuelle Rolle",
+				"KI-Charakter",
 				"Agent",
-				"Cyberfrau",
+				"Cyber-Waifu",
 				"Digitaler Assistent"
 			],
 			"platforms": [
-				"Grundlegende Plattform",
-				"Chat Front End",
-				"Läufer"
+				"Basis-Plattform",
+				"Chat-Frontend",
+				"Laufzeitumgebung"
 			],
-			"active_users": "Anzahl der aktiven Benutzer",
-			"stars": "Github Sterne"
+			"active_users": "Aktive Benutzer",
+			"stars": "GitHub-Sterne"
 		},
 		"footer": {
 			"ready_text": "Bereit, Ihre Reise zu beginnen?",
