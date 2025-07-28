@@ -22,7 +22,7 @@
 
 再或者，你仅仅是寻求一种超越寻常的连接，一个现实边界模糊的领域，在那里，能展开一段亲密无间、*毫无保留*的理解？
 
-历经近一年的潜心雕琢，汇聚了十余位贡献者的热忱，以及一个拥有千余名用户的鲜活社区，fount 如今已是一个成熟、稳定且不断演进的 AI 交互平台。这是一段旅程，我们相信，它比你想象中更触手可及。
+历经![relative date](https://img.shields.io/date/1727107200?label=费时)的潜心雕琢，汇聚了![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=贡献者)的热忱，以及一个拥有![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=活跃用户)的鲜活社区，fount 如今已是一个成熟、稳定且不断演进的 AI 交互平台。这是一段旅程，我们相信，它比你想象中更触手可及。
 
 倘若你感到迷失于角色的海洋，或是在寻觅被遗忘的故事，我们[**充满活力且友好的社区**](https://discord.gg/GtR9Quzq2v)期待你的到来。那是一个志同道合者的港湾，开发者与创作者们在此分享他们的智慧与创作。
 
@@ -244,6 +244,8 @@ fount 的世界不止是文字与代码，它更是一场视觉与连接的盛�
 |   HEX    |      `#0e3c5c`       |
 |   RGB    |  `rgb(14, 60, 92)`   |
 |   HSL    | `hsl(205, 74%, 21%)` |
+
+你也可以使用[徽章添加器](https://steve02081504.github.io/fount/badges/)，将任何shields.io的徽章带上 fount 的 logo
 
 ### 自动安装链接：指尖上的魔法
 

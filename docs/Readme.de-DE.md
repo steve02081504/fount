@@ -12,7 +12,7 @@
 
 <a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
-[Möchtest du mehr über die Repo-Architektur erfahren? Schau dir DeepWiki an!](https://deepwiki.com/steve02081504/fount)
+[Möchten Sie mehr über die Repository-Architektur erfahren? Schauen Sie bei DeepWiki vorbei!](https://deepwiki.com/steve02081504/fount)
 
 ![repo img](https://repository-images.githubusercontent.com/862251163/ef021bff-96a0-4e73-b3d0-7e7fbab660e8)
 
@@ -22,7 +22,7 @@ Oder vielleicht hast du dir einen digitalen Vertrauten vorgestellt, einen KI-Ass
 
 Oder vielleicht, nur vielleicht, hast du eine Verbindung jenseits des Gewöhnlichen gesucht, eine Sphäre, in der die Grenzen der Realität verschwimmen und sich ein intimes, _ungefiltertes_ Verständnis entfaltet?
 
-Mit fast einem Jahr engagierter Entwicklung, Beiträgen von über 10 leidenschaftlichen Einzelpersonen und einer florierenden Community von über 1000 Nutzern ist fount eine ausgereifte, stabile und sich ständig weiterentwickelnde Plattform für KI-Interaktion. Es ist eine Reise, und wir glauben, dass sie zugänglicher ist, als du vielleicht denkst.
+Mit fast ![relative date](https://img.shields.io/date/1727107200?label=Verstrichene%20Zeit) engagierter Entwicklung, Beiträgen von über ![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=Mitwirkende) leidenschaftlichen Einzelpersonen und einer florierenden Community von über ![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=Aktive%20Benutzer) Nutzern ist fount eine ausgereifte, stabile und sich ständig weiterentwickelnde Plattform für KI-Interaktion. Es ist eine Reise, und wir glauben, dass sie zugänglicher ist, als du vielleicht denkst.
 
 Verlorene Charaktere, vergessene Geschichten? Unsere [**lebendige und einladende Community**](https://discord.gg/GtR9Quzq2v) erwartet dich – ein Hafen, in dem sich Geistesverwandte treffen, in dem Entwickler und Schöpfer gleichermaßen ihre Weisheit und Kreationen teilen.
 
@@ -68,7 +68,7 @@ fount ist für die Zukunft gebaut und bereit, neue Funktionen anzunehmen, die au
   fount läuft nahtlos unter Windows, macOS, Linux und sogar Android und passt sich deinen Bedürfnissen durch direkte Installation oder die Flexibilität von Docker an.
 
 - **(Für fortgeschrittene Benutzer) Entfesselte KI-Quellenintegration: Umarme die Grenzenlosigkeit**
-  fount bietet unübertroffene _Auswahl_ und _Flexibilität_ bei der Anbindung an KI-Quellen. Benutzerdefinierter JavaScript-Code im KI-Quellengenerator ermöglicht es dir, dich mit _jeder_ KI-Quelle zu verbinden – OpenAI, Claude, OpenRouter, NovelAI, the Horde, Ooba, Tabby, Mistral und mehr. Erstelle komplexe reguläre Ausdrücke, greife auf riesige API-Bibliotheken zurück und bette Multimedia-Assets ein, alles im Fluss deines Codes. Die Logik der Kommunikation beugt sich _deinem_ Willen, geformt durch die Kraft des Codes.
+  fount bietet unübertroffene _Auswahl_ und _Flexibilität_ bei der Anbindung an KI-Quellen. Benutzerdefinierter JavaScript-Code im KI-Quellengenerator ermöglicht es dir, dich mit _jeder_ KI-Quelle zu verbinden – OpenAI, Claude, OpenRouter, NovelAI, the Horde, Ooba, Tabby, Mistral und mehr. Erstelle komplexe reguläre Ausdrücke, greife auf riesige API-Bibliotheken zurück und bette Multimedia-Assets ein, alles im Fluss deines Codes. fount unterstützt auch nativ die Erstellung von API-Pools für intelligentes Anfrage-Routing. Die Logik der Kommunikation beugt sich _deinem_ Willen, geformt durch die Kraft des Codes.
   ![Image](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
 
 ---
@@ -243,6 +243,8 @@ Du kannst dieses Emblem stolz in deinem Repository oder überall dort präsentie
 |    HEX     |      `#0e3c5c`       |
 |    RGB     |  `rgb(14, 60, 92)`   |
 |    HSL     | `hsl(205, 74%, 21%)` |
+
+Du kannst auch den [Badge-Adder](https://steve02081504.github.io/fount/badges/) verwenden, um jedes shields.io-Badge mit dem fount-Logo zu versehen.
 
 ### Automatische Installationslinks: Magie auf Knopfdruck
 

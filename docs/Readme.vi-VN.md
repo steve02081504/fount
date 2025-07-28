@@ -22,7 +22,7 @@ Hay có lẽ bạn đã hình dung về một người bạn tâm giao kỹ thu�
 
 Hoặc có thể, chỉ đơn giản là, bạn đã tìm kiếm một sự kết nối vượt ra ngoài những điều bình thường, một thế giới nơi ranh giới thực tại lu mờ, và một sự thấu hiểu thân mật, _không chút giấu giếm_ được hé mở?
 
-Sau gần một năm phát triển tận tụy, với sự đóng góp của hơn mười cá nhân đầy nhiệt huyết và một cộng đồng sôi nổi với hơn 1000 người dùng, fount giờ đây là một nền tảng tương tác AI trưởng thành, ổn định và không ngừng phát triển. Đây là một hành trình, và chúng tôi tin rằng, nó gần gũi hơn bạn tưởng.
+Sau gần ![relative date](https://img.shields.io/date/1727107200?label=Th%E1%BB%9Di%20gian%20tr%C3%B4i%20qua) phát triển tận tụy, với sự đóng góp của hơn ![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=%C4%90%C3%B3ng%20g%C3%B3p) cá nhân đầy nhiệt huyết và một cộng đồng sôi nổi với hơn ![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=Ng%C6%B0%E1%BB%9Di%20d%C3%B9ng%20ho%E1%BA%A1t%20%C4%91%E1%BB%99ng) người dùng, fount giờ đây là một nền tảng tương tác AI trưởng thành, ổn định và không ngừng phát triển. Đây là một hành trình, và chúng tôi tin rằng, nó gần gũi hơn bạn tưởng.
 
 Những nhân vật lạc lối, những câu chuyện bị lãng quên? [**Cộng đồng sôi nổi và thân thiện**](https://discord.gg/GtR9Quzq2v) của chúng tôi đang chờ đón bạn – một bến đỗ cho những tâm hồn đồng điệu, nơi các nhà phát triển và nhà sáng tạo chia sẻ trí tuệ và tác phẩm của mình.
 
@@ -68,7 +68,7 @@ fount được xây dựng cho tương lai, sẵn sàng đón nhận những tí
   fount hoạt động liền mạch trên Windows, macOS, Linux, và cả Android, thích ứng với nhu cầu của bạn thông qua cài đặt trực tiếp hoặc sự linh hoạt của Docker.
 
 - **(Dành cho người dùng cao cấp) Tích hợp nguồn AI không giới hạn: Ôm trọn vô biên**
-  fount cung cấp sự _lựa chọn_ và _linh hoạt_ không gì sánh bằng trong việc kết nối với các nguồn AI. Mã JavaScript tùy chỉnh trong trình tạo nguồn AI cho phép bạn kết nối với _bất kỳ_ nguồn AI nào – OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral, và nhiều hơn nữa. Tạo các biểu thức chính quy phức tạp, gọi các thư viện API khổng lồ, và nhúng các tài nguyên đa phương tiện, tất cả trong luồng mã của bạn. Logic giao tiếp uốn mình theo ý _bạn_, được định hình bởi sức mạnh của mã lệnh.
+  fount cung cấp sự _lựa chọn_ và _linh hoạt_ không gì sánh bằng trong việc kết nối với các nguồn AI. Mã JavaScript tùy chỉnh trong trình tạo nguồn AI cho phép bạn kết nối với _bất kỳ_ nguồn AI nào – OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral, và nhiều hơn nữa. Tạo các biểu thức chính quy phức tạp, gọi các thư viện API khổng lồ, và nhúng các tài nguyên đa phương tiện, tất cả trong luồng mã của bạn. fount cũng hỗ trợ sẵn việc tạo các nhóm API để định tuyến yêu cầu thông minh. Logic giao tiếp uốn mình theo ý _bạn_, được định hình bởi sức mạnh của mã lệnh.
   ![Hình ảnh](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
 
 ---
@@ -243,6 +243,8 @@ Bạn có thể tự hào hiển thị huy hiệu này trong kho lưu trữ củ
 |      HEX      |      `#0e3c5c`       |
 |      RGB      |  `rgb(14, 60, 92)`   |
 |      HSL      | `hsl(205, 74%, 21%)` |
+
+Bạn cũng có thể sử dụng [Trình thêm huy hiệu](https://steve02081504.github.io/fount/badges/) để thêm logo fount vào bất kỳ huy hiệu nào của shields.io.
 
 ### Liên kết cài đặt tự động: Phép thuật trong tầm tay
 
