@@ -281,5 +281,11 @@ else
 	echo "fount installation complete."
 fi
 
+# 若脚本自身内容和$FOUNT_DIR/src/runner/main.sh的内容不同，则更新自身
+if [[ "$0" == */* ]] && [ -w "$0" ] && ! cmp -s "$FOUNT_DIR/src/runner/main.sh" "$0"; then
+	cp "$FOUNT_DIR/src/runner/main.sh" "$0"
+	chmod +x "$0"
+fi
+
 # 执行真正的 fount 核心脚本
 "$FOUNT_DIR/run.sh" "${new_args[@]}"
