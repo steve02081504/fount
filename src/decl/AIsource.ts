@@ -1,3 +1,4 @@
+import { Buffer } from 'node:buffer'
 import { info_t, locale_t } from './basedefs'
 import { prompt_struct_t } from './prompt_struct.ts'
 
@@ -25,6 +26,14 @@ export class AIsource_t<InputType, OutputType> {
 	}
 	tokenizer: Tokenizer_t<InputType, any>
 }
-export class textAISource_t extends AIsource_t<string, string> {
-	StructCall: (prompt_struct: prompt_struct_t) => string
+export class textAISource_t extends AIsource_t<string, Promise<string>> {
+	StructCall: (prompt_struct: prompt_struct_t) => Promise<{
+		content: string,
+		files: {
+			name: string
+			mime_type: string
+			buffer: Buffer,
+			description: string
+		}[],
+	}>
 }

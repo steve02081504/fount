@@ -1,0 +1,74 @@
+<div class="space-y-4">
+	<!-- Basic Info -->
+	<div>
+		<label for="part-name" class="label">
+			<span class="label-text" data-i18n="eazynew.partName.label">World Name</span>
+		</label>
+		<input type="text" id="part-name" name="name" class="input input-bordered w-full" required data-i18n-placeholder="eazynew.partName.placeholder">
+	</div>
+	<div>
+		<label for="part-description" class="label">
+			<span class="label-text" data-i18n="eazynew.description.label">Description</span>
+		</label>
+		<textarea id="part-description" name="description" class="textarea textarea-bordered w-full" rows="2" data-i18n-placeholder="eazynew.description.placeholder"></textarea>
+	</div>
+	<div>
+		<label for="part-description-md" class="label">
+			<span class="label-text" data-i18n="eazynew.descriptionMarkdown.label">Description (Markdown)</span>
+		</label>
+		<textarea id="part-description-md" name="description_markdown" class="textarea textarea-bordered w-full" rows="4" data-i18n-placeholder="eazynew.descriptionMarkdown.placeholder"></textarea>
+	</div>
+
+	<div>
+		<label for="image-upload" class="label">
+			<span class="label-text" data-i18n="eazynew.imageUpload.label">Avatar Image</span>
+		</label>
+		<input type="file" id="image-upload" name="image" class="file-input file-input-bordered w-full" accept="image/png, image/jpeg, image/webp">
+	</div>
+	<div>
+		<label for="part-author" class="label">
+			<span class="label-text" data-i18n="eazynew.author.label">Author</span>
+		</label>
+		<input type="text" id="part-author" name="author" class="input input-bordered w-full" data-i18n-placeholder="eazynew.author.placeholder">
+	</div>
+	<div>
+		<label for="part-version" class="label">
+			<span class="label-text" data-i18n="eazynew.version.label">Version</span>
+		</label>
+		<input type="text" id="part-version" name="version" class="input input-bordered w-full" data-i18n-placeholder="eazynew.version.placeholder">
+	</div>
+	<div>
+		<label for="part-tags" class="label">
+			<span class="label-text" data-i18n="eazynew.tags.label">Tags</span>
+		</label>
+		<input type="text" id="part-tags" name="tags" class="input input-bordered w-full" data-i18n-placeholder="eazynew.tags.placeholder">
+	</div>
+	<div>
+		<label for="part-home-page" class="label">
+			<span class="label-text" data-i18n="eazynew.homePage.label">Home Page</span>
+		</label>
+		<input type="url" id="part-home-page" name="home_page" class="input input-bordered w-full" data-i18n-placeholder="eazynew.homePage.placeholder">
+	</div>
+	<div>
+		<label for="part-issue-page" class="label">
+			<span class="label-text" data-i18n="eazynew.issuePage.label">Issue Page</span>
+		</label>
+		<input type="url" id="part-issue-page" name="issue_page" class="input input-bordered w-full" data-i18n-placeholder="eazynew.issuePage.placeholder">
+	</div>
+
+	<!-- World Definition -->
+	<hr class="my-4">
+	<h3 class="text-lg font-bold" data-i18n="eazynew.worldDef.heading">World Definition</h3>
+	<div>
+		<label for="prompt-content" class="label">
+			<span class="label-text" data-i18n="eazynew.worldPrompt.label">World Prompt</span>
+		</label>
+		<textarea id="prompt-content" name="prompt" class="textarea textarea-bordered w-full" rows="4" data-i18n-placeholder="eazynew.worldPrompt.placeholder"></textarea>
+	</div>
+	<div>
+		<label for="greeting-content" class="label">
+			<span class="label-text" data-i18n="eazynew.worldGreeting.label">World Greeting</span>
+		</label>
+		<textarea id="greeting-content" name="greeting" class="textarea textarea-bordered w-full" rows="2" data-i18n-placeholder="eazynew.worldGreeting.placeholder"></textarea>
+	</div>
+</div>

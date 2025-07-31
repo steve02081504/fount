@@ -947,5 +947,100 @@
 		"copied_text": "복사됨!",
 		"copy_error": "텍스트를 복사할 수 없습니다: ${error}",
 		"copy_fail_alert": "복사 실패!"
+	},
+	"eazynew": {
+		"title": "빠른 생성",
+		"cardTitle": "템플릿에서 새 파트 만들기",
+		"templateSelect": {
+			"label": "템플릿 선택"
+		},
+		"partName": {
+			"label": "파트 이름",
+			"placeholder": "새 파트에 이름을 지정하세요"
+		},
+		"description": {
+			"label": "설명",
+			"placeholder": "이 파트가 무엇에 관한 것인지 간략하게 설명하세요."
+		},
+		"descriptionMarkdown": {
+			"label": "설명 (마크다운)",
+			"placeholder": "더 자세한 서식을 위해 마크다운을 지원합니다."
+		},
+		"imageUpload": {
+			"label": "아바타 사진"
+		},
+		"charDef": {
+			"heading": "캐릭터 정의"
+		},
+		"personality": {
+			"label": "성격",
+			"placeholder": "캐릭터의 핵심 성격 특성을 설명하세요."
+		},
+		"scenario": {
+			"label": "시나리오",
+			"placeholder": "캐릭터의 배경 또는 설정."
+		},
+		"mesExample": {
+			"label": "메시지 예시",
+			"placeholder": "캐릭터가 할 수 있는 말의 예시."
+		},
+		"firstMessage": {
+			"label": "첫 메시지",
+			"placeholder": "캐릭터가 하는 첫 메시지."
+		},
+		"personaDef": {
+			"heading": "페르소나 정의"
+		},
+		"personaUserName": {
+			"label": "채팅에서 사용할 이름",
+			"placeholder": "예: 캡틴, 탐험가, {{user}}"
+		},
+		"personaAppearance": {
+			"label": "외모",
+			"placeholder": "자신의 외모를 설명하세요."
+		},
+		"personaPersonality": {
+			"label": "성격",
+			"placeholder": "자신의 성격 특성을 설명하세요."
+		},
+		"worldDef": {
+			"heading": "세계관 정의"
+		},
+		"worldPrompt": {
+			"label": "세계관 프롬프트",
+			"placeholder": "세계의 규칙, 환경 및 역할극의 전반적인 맥락을 설명합니다."
+		},
+		"worldGreeting": {
+			"label": "세계관 인사말",
+			"placeholder": "세계가 사용자에게 보내는 첫 메시지."
+		},
+		"author": {
+			"label": "제작자",
+			"placeholder": "이 파트의 제작자는 누구인가요?"
+		},
+		"version": {
+			"label": "버전",
+			"placeholder": "예: 1.0.0"
+		},
+		"tags": {
+			"label": "태그",
+			"placeholder": "쉼표로 구분된 태그"
+		},
+		"homePage": {
+			"label": "홈페이지",
+			"placeholder": "파트 홈페이지의 URL"
+		},
+		"issuePage": {
+			"label": "문제 신고 페이지",
+			"placeholder": "파트 문제 신고 페이지의 URL"
+		},
+		"createButton": "파트 만들기",
+		"alerts": {
+			"success": "파트 '${partName}'이(가) 성공적으로 생성되었습니다!",
+			"error": "오류: ${message}"
+		},
+		"info": {
+			"description": "이 템플릿은 간단한 파트를 빠르게 만드는 데만 사용할 수 있으며, 복잡한 파트는 여전히 수동으로 만들어야 합니다."
+		}
 	}
 }

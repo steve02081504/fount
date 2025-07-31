@@ -947,5 +947,100 @@
 		"copied_text": "Kopiert!",
 		"copy_error": "Text konnte nicht kopiert werden: ${error}",
 		"copy_fail_alert": "Kopieren fehlgeschlagen!"
+	},
+	"eazynew": {
+		"title": "Schnellerstellung",
+		"cardTitle": "Neues Teil aus Vorlage erstellen",
+		"templateSelect": {
+			"label": "Vorlage auswählen"
+		},
+		"partName": {
+			"label": "Teil-Name",
+			"placeholder": "Geben Sie Ihrem neuen Teil einen Namen"
+		},
+		"description": {
+			"label": "Beschreibung",
+			"placeholder": "Beschreiben Sie kurz, worum es bei diesem Teil geht."
+		},
+		"descriptionMarkdown": {
+			"label": "Beschreibung (Markdown)",
+			"placeholder": "Unterstützt Markdown für detailliertere Formatierungen."
+		},
+		"imageUpload": {
+			"label": "Avatar-Bild"
+		},
+		"charDef": {
+			"heading": "Charakterdefinition"
+		},
+		"personality": {
+			"label": "Persönlichkeit",
+			"placeholder": "Beschreiben Sie die grundlegenden Persönlichkeitsmerkmale des Charakters."
+		},
+		"scenario": {
+			"label": "Szenario",
+			"placeholder": "Der Hintergrund oder die Umgebung des Charakters."
+		},
+		"mesExample": {
+			"label": "Nachrichtenbeispiel",
+			"placeholder": "Beispiele dafür, was ein Charakter sagen könnte."
+		},
+		"firstMessage": {
+			"label": "Erste Nachricht",
+			"placeholder": "Die erste Nachricht, die der Charakter sagt."
+		},
+		"personaDef": {
+			"heading": "Persona-Definition"
+		},
+		"personaUserName": {
+			"label": "Ihr Name im Chat",
+			"placeholder": "Zum Beispiel: Kapitän, Entdecker, {{user}}"
+		},
+		"personaAppearance": {
+			"label": "Aussehen",
+			"placeholder": "Beschreiben Sie Ihr Aussehen."
+		},
+		"personaPersonality": {
+			"label": "Persönlichkeit",
+			"placeholder": "Beschreiben Sie Ihre Persönlichkeitsmerkmale."
+		},
+		"worldDef": {
+			"heading": "Welt-Definition"
+		},
+		"worldPrompt": {
+			"label": "Welt-Anweisungen",
+			"placeholder": "Beschreibt die Regeln der Welt, die Umgebung und den globalen Kontext der Rolle."
+		},
+		"worldGreeting": {
+			"label": "Welt-Begrüßung",
+			"placeholder": "Die erste Nachricht, die die Welt an Benutzer sendet."
+		},
+		"author": {
+			"label": "Autor",
+			"placeholder": "Wer ist der Autor dieses Teils?"
+		},
+		"version": {
+			"label": "Version",
+			"placeholder": "Zum Beispiel: 1.0.0"
+		},
+		"tags": {
+			"label": "Tags",
+			"placeholder": "Durch Komma getrennte Tags"
+		},
+		"homePage": {
+			"label": "Homepage",
+			"placeholder": "Die URL der Homepage des Teils"
+		},
+		"issuePage": {
+			"label": "Problemseite",
+			"placeholder": "URL der Problemseite des Teils"
+		},
+		"createButton": "Teil erstellen",
+		"alerts": {
+			"success": "Teil '${partName}' wurde erfolgreich erstellt!",
+			"error": "Fehler: ${message}"
+		},
+		"info": {
+			"description": "Diese Vorlagen können nur verwendet werden, um einfache Teile schnell zu erstellen. Komplexe Teile müssen weiterhin manuell erstellt werden."
+		}
 	}
 }

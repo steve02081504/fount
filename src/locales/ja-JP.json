@@ -947,5 +947,100 @@
 		"copied_text": "コピーしました！",
 		"copy_error": "テキストをコピーできません：${error}",
 		"copy_fail_alert": "コピーが失敗しました！"
+	},
+	"eazynew": {
+		"title": "クイック作成",
+		"cardTitle": "テンプレートから新しいパーツを作成",
+		"templateSelect": {
+			"label": "テンプレートを選択"
+		},
+		"partName": {
+			"label": "パーツ名",
+			"placeholder": "新しいパーツに名前を付けてください"
+		},
+		"description": {
+			"label": "説明",
+			"placeholder": "このパーツが何であるかを簡単に説明してください。"
+		},
+		"descriptionMarkdown": {
+			"label": "説明 (Markdown)",
+			"placeholder": "より詳細な書式設定のためにMarkdownをサポートしています。"
+		},
+		"imageUpload": {
+			"label": "アバター画像"
+		},
+		"charDef": {
+			"heading": "キャラクター定義"
+		},
+		"personality": {
+			"label": "性格",
+			"placeholder": "キャラクターの核となる性格特性を説明してください。"
+		},
+		"scenario": {
+			"label": "シナリオ",
+			"placeholder": "キャラクターの背景や設定。"
+		},
+		"mesExample": {
+			"label": "メッセージ例",
+			"placeholder": "キャラクターが言うかもしれないことの例。"
+		},
+		"firstMessage": {
+			"label": "最初のメッセージ",
+			"placeholder": "キャラクターが言う最初のメッセージ。"
+		},
+		"personaDef": {
+			"heading": "ペルソナ定義"
+		},
+		"personaUserName": {
+			"label": "チャットでのあなたの名前",
+			"placeholder": "例: キャプテン、探検家、{{user}}"
+		},
+		"personaAppearance": {
+			"label": "外見",
+			"placeholder": "あなたの外見を説明してください。"
+		},
+		"personaPersonality": {
+			"label": "性格",
+			"placeholder": "あなたの性格特性を説明してください。"
+		},
+		"worldDef": {
+			"heading": "ワールド定義"
+		},
+		"worldPrompt": {
+			"label": "ワールドプロンプト",
+			"placeholder": "ワールドのルール、環境、およびロールプレイングのグローバルなコンテキストを説明します。"
+		},
+		"worldGreeting": {
+			"label": "ワールドの挨拶",
+			"placeholder": "ワールドがユーザーに送信する最初のメッセージ。"
+		},
+		"author": {
+			"label": "作者",
+			"placeholder": "このパーツの作者は誰ですか？"
+		},
+		"version": {
+			"label": "バージョン",
+			"placeholder": "例: 1.0.0"
+		},
+		"tags": {
+			"label": "タグ",
+			"placeholder": "カンマ区切りのタグ"
+		},
+		"homePage": {
+			"label": "ホームページ",
+			"placeholder": "パーツのホームページのURL"
+		},
+		"issuePage": {
+			"label": "問題報告ページ",
+			"placeholder": "パーツの問題報告ページのURL"
+		},
+		"createButton": "パーツを作成",
+		"alerts": {
+			"success": "パーツ「${partName}」が正常に作成されました！",
+			"error": "エラー: ${message}"
+		},
+		"info": {
+			"description": "これらのテンプレートは、単純なパーツを迅速に作成するためにのみ使用できます。複雑なパーツは、依然として手動で作成する必要があります。"
+		}
 	}
 }

@@ -1,0 +1,47 @@
+{
+	"home_function_buttons": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "快速新建"
+				},
+				"en-UK": {
+					"title": "Quick Create"
+				},
+				"de-DE": {
+					"title": "Schnellerstellung"
+				},
+				"es-ES": {
+					"title": "Creación rápida"
+				},
+				"fr-FR": {
+					"title": "Création rapide"
+				},
+				"hi-IN": {
+					"title": "त्वरित निर्माण"
+				},
+				"it-IT": {
+					"title": "Creazione rapida"
+				},
+				"ja-JP": {
+					"title": "クイック作成"
+				},
+				"ko-KR": {
+					"title": "빠른 생성"
+				},
+				"pt-PT": {
+					"title": "Criação Rápida"
+				},
+				"ru-RU": {
+					"title": "Быстрое создание"
+				},
+				"vi-VN": {
+					"title": "Tạo nhanh"
+				}
+			},
+			"level": 0,
+			"url": "/shells/eazynew/",
+			"button": "<img src=\"https://api.iconify.design/line-md/plus.svg\" class=\"text-icon\" />"
+		}
+	]
+}

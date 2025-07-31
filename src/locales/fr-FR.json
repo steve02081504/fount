@@ -947,5 +947,100 @@
 		"copied_text": "Copié !",
 		"copy_error": "Impossible de copier le texte : ${error}",
 		"copy_fail_alert": "La copie a échoué !"
+	},
+	"eazynew": {
+		"title": "Création rapide",
+		"cardTitle": "Créer une nouvelle pièce à partir d'un modèle",
+		"templateSelect": {
+			"label": "Sélectionnez un modèle"
+		},
+		"partName": {
+			"label": "Nom de la pièce",
+			"placeholder": "Donnez un nom à votre nouvelle pièce"
+		},
+		"description": {
+			"label": "Description",
+			"placeholder": "Décrivez brièvement en quoi consiste cette pièce."
+		},
+		"descriptionMarkdown": {
+			"label": "Description (Markdown)",
+			"placeholder": "Prend en charge Markdown pour une mise en forme plus détaillée."
+		},
+		"imageUpload": {
+			"label": "Image d'avatar"
+		},
+		"charDef": {
+			"heading": "Définition du personnage"
+		},
+		"personality": {
+			"label": "Personnalité",
+			"placeholder": "Décrivez les principaux traits de personnalité du personnage."
+		},
+		"scenario": {
+			"label": "Scénario",
+			"placeholder": "L'arrière-plan ou le cadre du personnage."
+		},
+		"mesExample": {
+			"label": "Exemple de message",
+			"placeholder": "Exemples de ce qu'un personnage pourrait dire."
+		},
+		"firstMessage": {
+			"label": "Premier message",
+			"placeholder": "Le premier message que le personnage dit."
+		},
+		"personaDef": {
+			"heading": "Définition de la persona"
+		},
+		"personaUserName": {
+			"label": "Votre nom dans le chat",
+			"placeholder": "Par exemple : Capitaine, Explorateur, {{user}}"
+		},
+		"personaAppearance": {
+			"label": "Apparence",
+			"placeholder": "Décrivez votre apparence."
+		},
+		"personaPersonality": {
+			"label": "Personnalité",
+			"placeholder": "Décrivez vos traits de personnalité."
+		},
+		"worldDef": {
+			"heading": "Définition du monde"
+		},
+		"worldPrompt": {
+			"label": "Instructions du monde",
+			"placeholder": "Décrit les règles du monde, l'environnement et tout contexte global pour le jeu de rôle."
+		},
+		"worldGreeting": {
+			"label": "Message d'accueil du monde",
+			"placeholder": "Le premier message que le monde envoie aux utilisateurs."
+		},
+		"author": {
+			"label": "Auteur",
+			"placeholder": "Qui est l'auteur de cette pièce ?"
+		},
+		"version": {
+			"label": "Version",
+			"placeholder": "Par exemple : 1.0.0"
+		},
+		"tags": {
+			"label": "Étiquettes",
+			"placeholder": "Étiquettes séparées par des virgules"
+		},
+		"homePage": {
+			"label": "Page d'accueil",
+			"placeholder": "L'URL de la page d'accueil de la pièce"
+		},
+		"issuePage": {
+			"label": "Page des problèmes",
+			"placeholder": "URL de la page des problèmes de la pièce"
+		},
+		"createButton": "Créer la pièce",
+		"alerts": {
+			"success": "La pièce '${partName}' a été créée avec succès !",
+			"error": "Erreur : ${message}"
+		},
+		"info": {
+			"description": "Ces modèles ne peuvent être utilisés que pour créer rapidement des pièces simples ; les pièces complexes doivent toujours être créées manuellement."
+		}
 	}
 }

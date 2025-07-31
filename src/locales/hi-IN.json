@@ -947,5 +947,100 @@
 		"copied_text": "कॉपीड!",
 		"copy_error": "पाठ को कॉपी करने में असमर्थ: ${error}",
 		"copy_fail_alert": "कॉपी विफल!"
+	},
+	"eazynew": {
+		"title": "त्वरित निर्माण",
+		"cardTitle": "टेम्पलेट से नया भाग बनाएँ",
+		"templateSelect": {
+			"label": "एक टेम्पलेट चुनें"
+		},
+		"partName": {
+			"label": "भाग का नाम",
+			"placeholder": "अपने नए भाग को एक नाम दें"
+		},
+		"description": {
+			"label": "विवरण",
+			"placeholder": "संक्षेप में बताएं कि यह भाग किस बारे में है।"
+		},
+		"descriptionMarkdown": {
+			"label": "विवरण (मार्कडाउन)",
+			"placeholder": "अधिक विस्तृत स्वरूपण के लिए मार्कडाउन का समर्थन करता है।"
+		},
+		"imageUpload": {
+			"label": "अवतार चित्र"
+		},
+		"charDef": {
+			"heading": "चरित्र परिभाषा"
+		},
+		"personality": {
+			"label": "व्यक्तित्व",
+			"placeholder": "चरित्र के मूल व्यक्तित्व लक्षणों का वर्णन करें।"
+		},
+		"scenario": {
+			"label": "परिदृश्य",
+			"placeholder": "चरित्र की पृष्ठभूमि या सेटिंग।"
+		},
+		"mesExample": {
+			"label": "संदेश उदाहरण",
+			"placeholder": "एक चरित्र क्या कह सकता है उसके उदाहरण।"
+		},
+		"firstMessage": {
+			"label": "पहला संदेश",
+			"placeholder": "चरित्र द्वारा कहा गया पहला संदेश।"
+		},
+		"personaDef": {
+			"heading": "व्यक्तित्व परिभाषा"
+		},
+		"personaUserName": {
+			"label": "चैट में आपका नाम",
+			"placeholder": "उदाहरण: कप्तान, अन्वेषक, {{user}}"
+		},
+		"personaAppearance": {
+			"label": "उपस्थिति",
+			"placeholder": "अपनी उपस्थिति का वर्णन करें।"
+		},
+		"personaPersonality": {
+			"label": "व्यक्तित्व",
+			"placeholder": "अपने व्यक्तित्व लक्षणों का वर्णन करें।"
+		},
+		"worldDef": {
+			"heading": "विश्व परिभाषा"
+		},
+		"worldPrompt": {
+			"label": "विश्व संकेत",
+			"placeholder": "दुनिया के नियमों, पर्यावरण और भूमिका-खेल के लिए किसी भी वैश्विक संदर्भ का वर्णन करता है।"
+		},
+		"worldGreeting": {
+			"label": "विश्व अभिवादन",
+			"placeholder": "दुनिया द्वारा उपयोगकर्ताओं को भेजा गया पहला संदेश।"
+		},
+		"author": {
+			"label": "लेखक",
+			"placeholder": "इस भाग का लेखक कौन है?"
+		},
+		"version": {
+			"label": "संस्करण",
+			"placeholder": "उदाहरण: 1.0.0"
+		},
+		"tags": {
+			"label": "टैग",
+			"placeholder": "अल्पविराम से अलग किए गए टैग"
+		},
+		"homePage": {
+			"label": "मुखपृष्ठ",
+			"placeholder": "भाग के मुखपृष्ठ का URL"
+		},
+		"issuePage": {
+			"label": "समस्या पृष्ठ",
+			"placeholder": "भाग के समस्या पृष्ठ का URL"
+		},
+		"createButton": "भाग बनाएँ",
+		"alerts": {
+			"success": "भाग '${partName}' सफलतापूर्वक बनाया गया!",
+			"error": "त्रुटि: ${message}"
+		},
+		"info": {
+			"description": "इन टेम्प्लेट का उपयोग केवल साधारण भागों को जल्दी से बनाने के लिए किया जा सकता है; जटिल भागों को अभी भी मैन्युअल रूप से बनाने की आवश्यकता है।"
+		}
 	}
 }

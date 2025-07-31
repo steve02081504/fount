@@ -947,5 +947,100 @@
 		"copied_text": "Copied!",
 		"copy_error": "Unable to copy text: ${error}",
 		"copy_fail_alert": "Copy failed!"
+	},
+	"eazynew": {
+		"title": "Quick Create",
+		"cardTitle": "Create a new part from a template",
+		"templateSelect": {
+			"label": "Select a template"
+		},
+		"partName": {
+			"label": "Part Name",
+			"placeholder": "Give your new part a name"
+		},
+		"description": {
+			"label": "Description",
+			"placeholder": "Briefly describe what this part is about."
+		},
+		"descriptionMarkdown": {
+			"label": "Description (Markdown)",
+			"placeholder": "Supports Markdown for more detailed formatting."
+		},
+		"imageUpload": {
+			"label": "Avatar Picture"
+		},
+		"charDef": {
+			"heading": "Character Definition"
+		},
+		"personality": {
+			"label": "Personality",
+			"placeholder": "Describe the core personality traits of the character."
+		},
+		"scenario": {
+			"label": "Scenario",
+			"placeholder": "The background or setting of the character."
+		},
+		"mesExample": {
+			"label": "Message Example",
+			"placeholder": "Examples of what a character might say."
+		},
+		"firstMessage": {
+			"label": "First Message",
+			"placeholder": "The first message the character says."
+		},
+		"personaDef": {
+			"heading": "Persona Definition"
+		},
+		"personaUserName": {
+			"label": "Your Name in Chat",
+			"placeholder": "e.g., Captain, Explorer, {{user}}"
+		},
+		"personaAppearance": {
+			"label": "Appearance",
+			"placeholder": "Describe your appearance."
+		},
+		"personaPersonality": {
+			"label": "Personality",
+			"placeholder": "Describe your personality traits."
+		},
+		"worldDef": {
+			"heading": "World Definition"
+		},
+		"worldPrompt": {
+			"label": "World Prompt",
+			"placeholder": "Describes the world's rules, environment, and any global context for the role-play."
+		},
+		"worldGreeting": {
+			"label": "World Greeting",
+			"placeholder": "The first message the world sends to users."
+		},
+		"author": {
+			"label": "Author",
+			"placeholder": "Who is the author of this part?"
+		},
+		"version": {
+			"label": "Version",
+			"placeholder": "e.g., 1.0.0"
+		},
+		"tags": {
+			"label": "Tags",
+			"placeholder": "Comma-separated tags"
+		},
+		"homePage": {
+			"label": "Homepage",
+			"placeholder": "The URL of the part's homepage"
+		},
+		"issuePage": {
+			"label": "Issue Page",
+			"placeholder": "URL of the part's issue page"
+		},
+		"createButton": "Create Part",
+		"alerts": {
+			"success": "Part '${partName}' was created successfully!",
+			"error": "Error: ${message}"
+		},
+		"info": {
+			"description": "These templates can only be used to quickly build simple parts; complex parts still need to be created manually."
+		}
 	}
 }

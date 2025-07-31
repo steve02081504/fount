@@ -947,5 +947,100 @@
 		"copied_text": "已复制!",
 		"copy_error": "无法复制文本: ${error}",
 		"copy_fail_alert": "复制失败！"
+	},
+	"eazynew": {
+		"title": "快速新建",
+		"cardTitle": "从模板创建一个新部件",
+		"templateSelect": {
+			"label": "选择一个模板"
+		},
+		"partName": {
+			"label": "部件名称",
+			"placeholder": "给你的新部件起个名字"
+		},
+		"description": {
+			"label": "描述",
+			"placeholder": "简要描述这个部件是关于什么的。"
+		},
+		"descriptionMarkdown": {
+			"label": "描述 (Markdown)",
+			"placeholder": "支持 Markdown 以获得更详细的格式。"
+		},
+		"imageUpload": {
+			"label": "头像图片"
+		},
+		"charDef": {
+			"heading": "角色定义"
+		},
+		"personality": {
+			"label": "性格",
+			"placeholder": "描述角色的核心性格特征。"
+		},
+		"scenario": {
+			"label": "场景",
+			"placeholder": "角色的背景或设定。"
+		},
+		"mesExample": {
+			"label": "消息示例",
+			"placeholder": "角色可能会说的话的例子。"
+		},
+		"firstMessage": {
+			"label": "第一条消息",
+			"placeholder": "角色说的第一句话。"
+		},
+		"personaDef": {
+			"heading": "人设定义"
+		},
+		"personaUserName": {
+			"label": "你在聊天中的名字",
+			"placeholder": "例如：船长、探险家、{{user}}"
+		},
+		"personaAppearance": {
+			"label": "外貌",
+			"placeholder": "描述你的外貌。"
+		},
+		"personaPersonality": {
+			"label": "性格",
+			"placeholder": "描述你的性格特征。"
+		},
+		"worldDef": {
+			"heading": "世界定义"
+		},
+		"worldPrompt": {
+			"label": "世界提示",
+			"placeholder": "描述世界的规则、环境以及角色扮演的任何全局背景。"
+		},
+		"worldGreeting": {
+			"label": "世界问候语",
+			"placeholder": "世界向用户发送的第一条消息。"
+		},
+		"author": {
+			"label": "作者",
+			"placeholder": "这个部件的作者是谁？"
+		},
+		"version": {
+			"label": "版本",
+			"placeholder": "例如：1.0.0"
+		},
+		"tags": {
+			"label": "标签",
+			"placeholder": "用逗号分隔的标签"
+		},
+		"homePage": {
+			"label": "主页",
+			"placeholder": "部件主页的URL"
+		},
+		"issuePage": {
+			"label": "问题页面",
+			"placeholder": "部件问题页面的URL"
+		},
+		"createButton": "创建部件",
+		"alerts": {
+			"success": "部件 '${partName}' 创建成功！",
+			"error": "错误: ${message}"
+		},
+		"info": {
+			"description": "这些模板只能用于快速构建简单的部件，复杂的部件仍然需要手动创建。"
+		}
 	}
 }
