@@ -53,6 +53,12 @@ export function setBaseDir(v) {
 	base_dir = v
 }
 
+if ('serviceWorker' in navigator)
+	navigator.serviceWorker.register('/sw.js')
+		.catch(error => {
+			console.error('Service Worker registration failed: ', error)
+		})
+
 window.addEventListener('load', async () => {
 	console.log(await fetch('https://cdn.jsdelivr.net/gh/steve02081504/fount/imgs/icon_ansi_ascii.txt').then(r => r.text()))
 	console.log('Curious? Join us and build future together: https://github.com/steve02081504/fount')
