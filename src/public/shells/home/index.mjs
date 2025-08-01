@@ -85,12 +85,12 @@ async function renderItemView(itemType, itemDetails, itemName) {
 	const templateName = `${itemType.slice(0, -1)}_list_view`
 	const itemElement = await renderTemplate(templateName, itemDetails)
 	itemElement.dataset.name = itemName
-	await attachCardEventListeners(itemElement, itemDetails, itemName, homeRegistry[`home_${itemType.slice(0, -1)}_interfaces`])
+	await attachCardEventListeners(itemElement, itemDetails, itemName, homeRegistry[`home_${itemType.slice(0, -1)}_interfaces`], itemType)
 	ItemDOMCache[cacheKey] = { info: itemDetails, node: itemElement }  // Cache info and DOM node
 	return itemElement
 }
 
-async function attachCardEventListeners(itemElement, itemDetails, itemName, interfacesRegistry) {
+async function attachCardEventListeners(itemElement, itemDetails, itemName, interfacesRegistry, itemType) {
 	const actionsContainer = itemElement.querySelector('.card-actions > div')
 	actionsContainer.innerHTML = '' // Clear existing buttons
 	actionsContainer.addEventListener('wheel', handleMouseWheelScroll, { passive: false })
@@ -109,9 +109,9 @@ async function attachCardEventListeners(itemElement, itemDetails, itemName, inte
 
 			button.addEventListener('click', () => {
 				if (interfaceItem.onclick)
-					eval(interfaceItem.onclick.replaceAll('${name}', itemName))
+					eval(interfaceItem.onclick.replaceAll('${name}', itemName).replaceAll('${type}', itemType))
 				else
-					window.open(interfaceItem.url.replaceAll('${name}', itemName))
+					window.open(interfaceItem.url.replaceAll('${name}', itemName).replaceAll('${type}', itemType))
 			})
 			actionsContainer.appendChild(button)
 		}
