@@ -187,12 +187,23 @@ async function handleFormSubmit(event) {
 				const urlParams = new URLSearchParams(window.location.search)
 				const redirect = urlParams.get('redirect')
 				localStorage.setItem('hasLoggedIn', 'true')
-				if (redirect)
-					if (hasLoggedIn)
-						window.location.href = decodeURIComponent(redirect) + window.location.hash
-					else
-						window.location.href = `/shells/tutorial?redirect=${redirect}` + window.location.hash
-				else
+				if (redirect) {
+					const allowedDomains = ['example.com', 'anotherexample.com']; // List of allowed domains
+					try {
+						const redirectUrl = new URL(decodeURIComponent(redirect), window.location.origin);
+						if (allowedDomains.includes(redirectUrl.hostname)) {
+							if (hasLoggedIn)
+								window.location.href = redirectUrl.href + window.location.hash
+							else
+								window.location.href = `/shells/tutorial?redirect=${redirect}` + window.location.hash
+						} else {
+							throw new Error('Invalid redirect domain');
+						}
+					} catch (e) {
+						console.error('Invalid redirect URL:', e);
+						window.location.href = `/shells/${hasLoggedIn ? 'home' : 'tutorial'}`
+					}
+				} else
 					window.location.href = `/shells/${hasLoggedIn ? 'home' : 'tutorial'}`
 			} else {
 				console.log('Registration successful!')
