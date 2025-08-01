@@ -947,5 +947,100 @@
 		"copied_text": "Copiado!",
 		"copy_error": "Não foi possível copiar o texto: ${error}",
 		"copy_fail_alert": "A cópia falhou!"
+	},
+	"easynew": {
+		"title": "Criação Rápida",
+		"cardTitle": "Criar uma nova parte a partir de um modelo",
+		"templateSelect": {
+			"label": "Selecione um modelo"
+		},
+		"partName": {
+			"label": "Nome da Peça",
+			"placeholder": "Dê um nome à sua nova peça"
+		},
+		"description": {
+			"label": "Descrição",
+			"placeholder": "Descreva brevemente do que se trata esta peça."
+		},
+		"descriptionMarkdown": {
+			"label": "Descrição (Markdown)",
+			"placeholder": "Suporta Markdown para uma formatação mais detalhada."
+		},
+		"imageUpload": {
+			"label": "Imagem do Avatar"
+		},
+		"charDef": {
+			"heading": "Definição da Personagem"
+		},
+		"personality": {
+			"label": "Personalidade",
+			"placeholder": "Descreva os traços de personalidade centrais da personagem."
+		},
+		"scenario": {
+			"label": "Cenário",
+			"placeholder": "O plano de fundo ou o ambiente da personagem."
+		},
+		"mesExample": {
+			"label": "Exemplo de Mensagem",
+			"placeholder": "Exemplos do que uma personagem poderia dizer."
+		},
+		"firstMessage": {
+			"label": "Primeira Mensagem",
+			"placeholder": "A primeira mensagem que a personagem diz."
+		},
+		"personaDef": {
+			"heading": "Definição da Persona"
+		},
+		"personaUserName": {
+			"label": "O seu Nome no Chat",
+			"placeholder": "Ex: Capitão, Explorador, {{user}}"
+		},
+		"personaAppearance": {
+			"label": "Aparência",
+			"placeholder": "Descreva a sua aparência."
+		},
+		"personaPersonality": {
+			"label": "Personalidade",
+			"placeholder": "Descreva os seus traços de personalidade."
+		},
+		"worldDef": {
+			"heading": "Definição do Mundo"
+		},
+		"worldPrompt": {
+			"label": "Instruções do Mundo",
+			"placeholder": "Descreve as regras do mundo, o ambiente e qualquer contexto global para o role-play."
+		},
+		"worldGreeting": {
+			"label": "Saudação do Mundo",
+			"placeholder": "A primeira mensagem que o mundo envia aos utilizadores."
+		},
+		"author": {
+			"label": "Autor",
+			"placeholder": "Quem é o autor desta peça?"
+		},
+		"version": {
+			"label": "Versão",
+			"placeholder": "Ex: 1.0.0"
+		},
+		"tags": {
+			"label": "Etiquetas",
+			"placeholder": "Etiquetas separadas por vírgulas"
+		},
+		"homePage": {
+			"label": "Página Inicial",
+			"placeholder": "O URL da página inicial da peça"
+		},
+		"issuePage": {
+			"label": "Página de Problemas",
+			"placeholder": "URL da página de problemas da peça"
+		},
+		"createButton": "Criar Peça",
+		"alerts": {
+			"success": "A peça '${partName}' foi criada com sucesso!",
+			"error": "Erro: ${message}"
+		},
+		"info": {
+			"description": "Estes modelos só podem ser usados para criar rapidamente peças simples; peças complexas ainda precisam de ser criadas manualmente."
+		}
 	}
 }

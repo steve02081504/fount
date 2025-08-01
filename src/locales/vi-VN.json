@@ -947,5 +947,100 @@
 		"copied_text": "Đã sao chép!",
 		"copy_error": "Không thể sao chép văn bản: ${error}",
 		"copy_fail_alert": "Sao chép không thành công!"
+	},
+	"easynew": {
+		"title": "Tạo nhanh",
+		"cardTitle": "Tạo một phần mới từ một mẫu",
+		"templateSelect": {
+			"label": "Chọn một mẫu"
+		},
+		"partName": {
+			"label": "Tên phần",
+			"placeholder": "Đặt tên cho phần mới của bạn"
+		},
+		"description": {
+			"label": "Mô tả",
+			"placeholder": "Mô tả ngắn gọn về phần này."
+		},
+		"descriptionMarkdown": {
+			"label": "Mô tả (Markdown)",
+			"placeholder": "Hỗ trợ Markdown để định dạng chi tiết hơn."
+		},
+		"imageUpload": {
+			"label": "Ảnh đại diện"
+		},
+		"charDef": {
+			"heading": "Định nghĩa nhân vật"
+		},
+		"personality": {
+			"label": "Tính cách",
+			"placeholder": "Mô tả các đặc điểm tính cách cốt lõi của nhân vật."
+		},
+		"scenario": {
+			"label": "Bối cảnh",
+			"placeholder": "Bối cảnh hoặc thiết lập của nhân vật."
+		},
+		"mesExample": {
+			"label": "Ví dụ tin nhắn",
+			"placeholder": "Ví dụ về những gì một nhân vật có thể nói."
+		},
+		"firstMessage": {
+			"label": "Tin nhắn đầu tiên",
+			"placeholder": "Tin nhắn đầu tiên mà nhân vật nói."
+		},
+		"personaDef": {
+			"heading": "Định nghĩa Persona"
+		},
+		"personaUserName": {
+			"label": "Tên của bạn trong cuộc trò chuyện",
+			"placeholder": "Ví dụ: Thuyền trưởng, Nhà thám hiểm, {{user}}"
+		},
+		"personaAppearance": {
+			"label": "Ngoại hình",
+			"placeholder": "Mô tả ngoại hình của bạn."
+		},
+		"personaPersonality": {
+			"label": "Tính cách",
+			"placeholder": "Mô tả các đặc điểm tính cách của bạn."
+		},
+		"worldDef": {
+			"heading": "Định nghĩa thế giới"
+		},
+		"worldPrompt": {
+			"label": "Gợi ý thế giới",
+			"placeholder": "Mô tả các quy tắc của thế giới, môi trường và bất kỳ bối cảnh toàn cầu nào cho việc nhập vai."
+		},
+		"worldGreeting": {
+			"label": "Lời chào thế giới",
+			"placeholder": "Tin nhắn đầu tiên mà thế giới gửi cho người dùng."
+		},
+		"author": {
+			"label": "Tác giả",
+			"placeholder": "Ai là tác giả của phần này?"
+		},
+		"version": {
+			"label": "Phiên bản",
+			"placeholder": "Ví dụ: 1.0.0"
+		},
+		"tags": {
+			"label": "Thẻ",
+			"placeholder": "Các thẻ được phân tách bằng dấu phẩy"
+		},
+		"homePage": {
+			"label": "Trang chủ",
+			"placeholder": "URL của trang chủ của phần"
+		},
+		"issuePage": {
+			"label": "Trang vấn đề",
+			"placeholder": "URL của trang vấn đề của phần"
+		},
+		"createButton": "Tạo phần",
+		"alerts": {
+			"success": "Phần '${partName}' đã được tạo thành công!",
+			"error": "Lỗi: ${message}"
+		},
+		"info": {
+			"description": "Các mẫu này chỉ có thể được sử dụng để nhanh chóng xây dựng các phần đơn giản; các phần phức tạp vẫn cần được tạo thủ công."
+		}
 	}
 }

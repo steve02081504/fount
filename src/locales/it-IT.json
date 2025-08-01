@@ -947,5 +947,100 @@
 		"copied_text": "Copiato!",
 		"copy_error": "Impossibile copiare il testo: ${error}",
 		"copy_fail_alert": "Copia fallita!"
+	},
+	"easynew": {
+		"title": "Creazione rapida",
+		"cardTitle": "Crea una nuova parte da un modello",
+		"templateSelect": {
+			"label": "Seleziona un modello"
+		},
+		"partName": {
+			"label": "Nome della parte",
+			"placeholder": "Dai un nome alla tua nuova parte"
+		},
+		"description": {
+			"label": "Descrizione",
+			"placeholder": "Descrivi brevemente di cosa tratta questa parte."
+		},
+		"descriptionMarkdown": {
+			"label": "Descrizione (Markdown)",
+			"placeholder": "Supporta Markdown per una formattazione più dettagliata."
+		},
+		"imageUpload": {
+			"label": "Immagine dell'avatar"
+		},
+		"charDef": {
+			"heading": "Definizione del personaggio"
+		},
+		"personality": {
+			"label": "Personalità",
+			"placeholder": "Descrivi i tratti principali della personalità del personaggio."
+		},
+		"scenario": {
+			"label": "Scenario",
+			"placeholder": "Lo sfondo o l'ambientazione del personaggio."
+		},
+		"mesExample": {
+			"label": "Esempio di messaggio",
+			"placeholder": "Esempi di ciò che un personaggio potrebbe dire."
+		},
+		"firstMessage": {
+			"label": "Primo messaggio",
+			"placeholder": "Il primo messaggio che il personaggio dice."
+		},
+		"personaDef": {
+			"heading": "Definizione della persona"
+		},
+		"personaUserName": {
+			"label": "Il tuo nome in chat",
+			"placeholder": "Ad esempio: Capitano, Esploratore, {{user}}"
+		},
+		"personaAppearance": {
+			"label": "Aspetto",
+			"placeholder": "Descrivi il tuo aspetto."
+		},
+		"personaPersonality": {
+			"label": "Personalità",
+			"placeholder": "Descrivi i tuoi tratti di personalità."
+		},
+		"worldDef": {
+			"heading": "Definizione del mondo"
+		},
+		"worldPrompt": {
+			"label": "Istruzioni del mondo",
+			"placeholder": "Descrive le regole del mondo, l'ambiente e qualsiasi contesto globale per il gioco di ruolo."
+		},
+		"worldGreeting": {
+			"label": "Saluto del mondo",
+			"placeholder": "Il primo messaggio che il mondo invia agli utenti."
+		},
+		"author": {
+			"label": "Autore",
+			"placeholder": "Chi è l'autore di questa parte?"
+		},
+		"version": {
+			"label": "Versione",
+			"placeholder": "Ad esempio: 1.0.0"
+		},
+		"tags": {
+			"label": "Tag",
+			"placeholder": "Tag separati da virgola"
+		},
+		"homePage": {
+			"label": "Homepage",
+			"placeholder": "L'URL della homepage della parte"
+		},
+		"issuePage": {
+			"label": "Pagina dei problemi",
+			"placeholder": "URL della pagina dei problemi della parte"
+		},
+		"createButton": "Crea parte",
+		"alerts": {
+			"success": "La parte '${partName}' è stata creata con successo!",
+			"error": "Errore: ${message}"
+		},
+		"info": {
+			"description": "Questi modelli possono essere utilizzati solo per creare rapidamente parti semplici; le parti complesse devono ancora essere create manualmente."
+		}
 	}
 }

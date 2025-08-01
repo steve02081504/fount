@@ -947,5 +947,100 @@
 		"copied_text": "¡Copiado!",
 		"copy_error": "Error al copiar el texto: ${error}",
 		"copy_fail_alert": "¡Error al copiar!"
+	},
+	"easynew": {
+		"title": "Creación rápida",
+		"cardTitle": "Crear una nueva parte desde una plantilla",
+		"templateSelect": {
+			"label": "Seleccionar una plantilla"
+		},
+		"partName": {
+			"label": "Nombre de la parte",
+			"placeholder": "Dale un nombre a tu nueva parte"
+		},
+		"description": {
+			"label": "Descripción",
+			"placeholder": "Describe brevemente de qué trata esta parte."
+		},
+		"descriptionMarkdown": {
+			"label": "Descripción (Markdown)",
+			"placeholder": "Admite Markdown para formatos más detallados."
+		},
+		"imageUpload": {
+			"label": "Imagen de avatar"
+		},
+		"charDef": {
+			"heading": "Definición del personaje"
+		},
+		"personality": {
+			"label": "Personalidad",
+			"placeholder": "Describe los rasgos de personalidad principales del personaje."
+		},
+		"scenario": {
+			"label": "Escenario",
+			"placeholder": "El trasfondo o el entorno del personaje."
+		},
+		"mesExample": {
+			"label": "Ejemplo de mensaje",
+			"placeholder": "Ejemplos de lo que un personaje podría decir."
+		},
+		"firstMessage": {
+			"label": "Primer mensaje",
+			"placeholder": "El primer mensaje que dice el personaje."
+		},
+		"personaDef": {
+			"heading": "Definición de la persona"
+		},
+		"personaUserName": {
+			"label": "Tu nombre en el chat",
+			"placeholder": "Por ejemplo: Capitán, Explorador, {{user}}"
+		},
+		"personaAppearance": {
+			"label": "Apariencia",
+			"placeholder": "Describe tu apariencia."
+		},
+		"personaPersonality": {
+			"label": "Personalidad",
+			"placeholder": "Describe tus rasgos de personalidad."
+		},
+		"worldDef": {
+			"heading": "Definición del mundo"
+		},
+		"worldPrompt": {
+			"label": "Indicaciones del mundo",
+			"placeholder": "Describe las reglas del mundo, el entorno y cualquier contexto global para el juego de rol."
+		},
+		"worldGreeting": {
+			"label": "Saludo del mundo",
+			"placeholder": "El primer mensaje que el mundo envía a los usuarios."
+		},
+		"author": {
+			"label": "Autor",
+			"placeholder": "¿Quién es el autor de esta parte?"
+		},
+		"version": {
+			"label": "Versión",
+			"placeholder": "Por ejemplo: 1.0.0"
+		},
+		"tags": {
+			"label": "Etiquetas",
+			"placeholder": "Etiquetas separadas por comas"
+		},
+		"homePage": {
+			"label": "Página de inicio",
+			"placeholder": "La URL de la página de inicio de la parte"
+		},
+		"issuePage": {
+			"label": "Página de incidencias",
+			"placeholder": "URL de la página de incidencias de la parte"
+		},
+		"createButton": "Crear parte",
+		"alerts": {
+			"success": "¡La parte '${partName}' se ha creado correctamente!",
+			"error": "Error: ${message}"
+		},
+		"info": {
+			"description": "Estas plantillas solo se pueden usar para crear rápidamente partes simples; las partes complejas aún deben crearse manualmente."
+		}
 	}
 }

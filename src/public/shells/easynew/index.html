@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="darkreader-lock">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta property="og:title" content="Fount EasyNew: Effortless Part Creation" />
+	<meta property="og:url" content="https://steve02081504.github.io/fount/protocol?url=fount://page/shells/easynew/">
+	<meta property="og:type" content="website" />
+	<meta property="og:description" content="Quickly scaffold new Fount parts like characters, worlds, and plugins using predefined or custom templates. Your next creation is just a few clicks away." />
+	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/ef021bff-96a0-4e73-b3d0-7e7fbab660e8">
+	<title data-i18n="easynew.title"></title>
+	<link rel="icon" href="/favicon.ico">
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@unocss/runtime" crossorigin="anonymous"></script>
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<script type="module" src="/base.mjs"></script>
+	<link rel="stylesheet" href="./index.css" type="text/css" />
+</head>
+
+<body class="flex justify-center items-start h-screen p-4">
+	<div class="container mx-auto w-full lg:w-2/3">
+		<div class="card bg-base-100 shadow-xl">
+			<div class="card-body">
+				<h1 class="card-title text-2xl font-bold mb-4" data-i18n="easynew.cardTitle"></h1>
+
+				<div class="alert alert-info mb-4">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+					</svg>
+					<span data-i18n="easynew.info.description"></span>
+				</div>
+
+				<div class="space-y-4">
+					<div>
+						<label for="template-select" class="label">
+							<span class="label-text" data-i18n="easynew.templateSelect.label"></span>
+						</label>
+						<select id="template-select" class="select select-bordered w-full"></select>
+					</div>
+
+					<form id="create-part-form" class="space-y-4">
+						<div id="template-form-container" class="p-4 border border-base-300 rounded-md">
+							<!-- Template HTML will be injected here -->
+						</div>
+						<div class="card-actions justify-end">
+							<button type="submit" id="submit-button" class="btn btn-primary">
+								<span id="submit-spinner" class="loading loading-spinner hidden"></span>
+								<span data-i18n="easynew.createButton"></span>
+							</button>
+						</div>
+					</form>
+				</div>
+
+				<div id="response-message" class="mt-4"></div>
+			</div>
+		</div>
+	</div>
+	<script type="module" src="./index.mjs"></script>
+</body>
+
+</html>
