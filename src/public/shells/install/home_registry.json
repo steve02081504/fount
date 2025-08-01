@@ -85,7 +85,7 @@
 				}
 			},
 			"level": 0,
-			"url": "/shells/install/uninstall?type=chars&name=${name}",
+			"url": "/shells/install/uninstall?type=${type}&name=${name}",
 			"button": "<img src=\"https://api.iconify.design/line-md/account-delete.svg\"/>",
 			"type": "error"
 		}
