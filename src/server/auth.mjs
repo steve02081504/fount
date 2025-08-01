@@ -10,6 +10,7 @@ import { console } from '../scripts/i18n.mjs'
 import { loadJsonFile } from '../scripts/json_loader.mjs'
 import { events } from './events.mjs'
 import { is_local_ip, is_local_ip_from_req } from '../scripts/ratelimit.mjs'
+import { partsList } from './managers/index.mjs'
 
 const ACCESS_TOKEN_EXPIRY = '15m' // Access Token 有效期
 export const REFRESH_TOKEN_EXPIRY = '30d' // Refresh Token 有效期 (字符串形式)
@@ -673,7 +674,7 @@ export async function login(username, password, deviceId = 'unknown', req) {
 		// 自`/default/user`复制到用户目录
 		fse.copySync(path.join(__dirname, '/default/templates/user'), userdir)
 	} catch { }
-	for (const subdir of ['AIsources', 'chars', 'personas', 'settings', 'shells', 'worlds', 'ImportHandlers', 'AIsourceGenerators'])
+	for (const subdir of ['settings', ...partsList])
 		try { fs.mkdirSync(userdir + '/' + subdir, { recursive: true }) } catch (error) {
 			console.error('Failed to create directory:', userdir + '/' + subdir, error)
 		}

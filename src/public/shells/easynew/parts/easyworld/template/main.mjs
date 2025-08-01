@@ -74,11 +74,11 @@ export default {
 					extension: {},
 				}
 			},
-			async GetGreeting(arg, index) {
+			async GetGreeting(args, index) {
 				if (!partData.greeting) return null
 				const context = {
-					char: { name: arg.Charname },
-					user: { name: arg.UserCharname },
+					char: { name: args.Charname },
+					user: { name: args.UserCharname },
 					args,
 					index,
 				}
