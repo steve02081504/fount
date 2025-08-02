@@ -1042,5 +1042,38 @@
 		"info": {
 			"description": "이 템플릿은 간단한 파트를 빠르게 만드는 데만 사용할 수 있으며, 복잡한 파트는 여전히 수동으로 만들어야 합니다."
 		}
+	},
+	"export": {
+		"title": "파트 내보내기",
+		"pageTitle": "파트 내보내기",
+		"labels": {
+			"partType": "파트 유형 선택",
+			"part": "파트 선택"
+		},
+		"placeholders": {
+			"partTypeSelect": "선택해주세요",
+			"partSelect": "선택해주세요"
+		},
+		"export": {
+			"title": "내보내기 옵션"
+		},
+		"buttons": {
+			"export": "내보내기",
+			"exportWithData": "내보내기 (데이터 포함)"
+		},
+		"editor": {
+			"disabledIndicator": "먼저 파트를 선택해주세요"
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "오류"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "파트 유형을 가져오는 데 실패했습니다.",
+			"fetchPartsFailed": "파트 목록을 가져오는 데 실패했습니다.",
+			"loadPartDetailsFailed": "파트 세부 정보를 불러오는 데 실패했습니다.",
+			"exportFailed": "내보내기에 실패했습니다."
+		}
 	}
 }

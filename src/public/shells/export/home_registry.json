@@ -1,0 +1,47 @@
+{
+	"home_function_buttons": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "导出部件"
+				},
+				"en-UK": {
+					"title": "Export Part"
+				},
+				"de-DE": {
+					"title": "Part exportieren"
+				},
+				"es-ES": {
+					"title": "Exportar Parte"
+				},
+				"fr-FR": {
+					"title": "Exporter Pièce"
+				},
+				"hi-IN": {
+					"title": "पार्ट निर्यात करें"
+				},
+				"it-IT": {
+					"title": "Esporta Parte"
+				},
+				"ja-JP": {
+					"title": "パートをエクスポート"
+				},
+				"ko-KR": {
+					"title": "파트 내보내기"
+				},
+				"pt-PT": {
+					"title": "Exportar Parte"
+				},
+				"ru-RU": {
+					"title": "Экспортировать часть"
+				},
+				"vi-VN": {
+					"title": "Xuất bộ phận"
+				}
+			},
+			"level": 2,
+			"url": "/shells/export",
+			"button": "<img src=\"https://api.iconify.design/line-md/folder-arrow-right.svg\" class=\"text-icon\"/>"
+		}
+	]
+}

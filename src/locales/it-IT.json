@@ -1042,5 +1042,38 @@
 		"info": {
 			"description": "Questi modelli possono essere utilizzati solo per creare rapidamente parti semplici; le parti complesse devono ancora essere create manualmente."
 		}
+	},
+	"export": {
+		"title": "Esportatore di Parti",
+		"pageTitle": "Esportatore di Parti",
+		"labels": {
+			"partType": "Seleziona un tipo di parte",
+			"part": "Seleziona una Parte"
+		},
+		"placeholders": {
+			"partTypeSelect": "Seleziona",
+			"partSelect": "Seleziona"
+		},
+		"export": {
+			"title": "Opzioni di Esportazione"
+		},
+		"buttons": {
+			"export": "Esporta",
+			"exportWithData": "Esporta (con dati)"
+		},
+		"editor": {
+			"disabledIndicator": "Seleziona prima una parte"
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Errore"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "Impossibile ottenere i tipi di parte.",
+			"fetchPartsFailed": "Impossibile ottenere l'elenco delle parti.",
+			"loadPartDetailsFailed": "Impossibile caricare i dettagli della parte.",
+			"exportFailed": "Esportazione non riuscita."
+		}
 	}
 }

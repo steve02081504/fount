@@ -1042,5 +1042,38 @@
 		"info": {
 			"description": "Diese Vorlagen können nur verwendet werden, um einfache Teile schnell zu erstellen. Komplexe Teile müssen weiterhin manuell erstellt werden."
 		}
+	},
+	"export": {
+		"title": "Part-Exporter",
+		"pageTitle": "Part-Exporter",
+		"labels": {
+			"partType": "Wählen Sie einen Part-Typ",
+			"part": "Wählen Sie einen Part"
+		},
+		"placeholders": {
+			"partTypeSelect": "Bitte auswählen",
+			"partSelect": "Bitte auswählen"
+		},
+		"export": {
+			"title": "Exportoptionen"
+		},
+		"buttons": {
+			"export": "Exportieren",
+			"exportWithData": "Exportieren (mit Daten)"
+		},
+		"editor": {
+			"disabledIndicator": "Bitte wählen Sie zuerst einen Part aus"
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Fehler"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "Part-Typen konnten nicht abgerufen werden.",
+			"fetchPartsFailed": "Die Part-Liste konnte nicht abgerufen werden.",
+			"loadPartDetailsFailed": "Part-Details konnten nicht geladen werden.",
+			"exportFailed": "Export fehlgeschlagen."
+		}
 	}
 }

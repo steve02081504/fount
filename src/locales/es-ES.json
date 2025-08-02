@@ -1042,5 +1042,38 @@
 		"info": {
 			"description": "Estas plantillas solo se pueden usar para crear rápidamente partes simples; las partes complejas aún deben crearse manualmente."
 		}
+	},
+	"export": {
+		"title": "Exportador de Partes",
+		"pageTitle": "Exportador de Partes",
+		"labels": {
+			"partType": "Selecciona un tipo de parte",
+			"part": "Selecciona una Parte"
+		},
+		"placeholders": {
+			"partTypeSelect": "Por favor, selecciona",
+			"partSelect": "Por favor, selecciona"
+		},
+		"export": {
+			"title": "Opciones de Exportación"
+		},
+		"buttons": {
+			"export": "Exportar",
+			"exportWithData": "Exportar (con datos)"
+		},
+		"editor": {
+			"disabledIndicator": "Por favor, selecciona una parte primero"
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Error"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "Error al obtener los tipos de partes.",
+			"fetchPartsFailed": "Error al obtener la lista de partes.",
+			"loadPartDetailsFailed": "Error al cargar los detalles de la parte.",
+			"exportFailed": "Error al exportar."
+		}
 	}
 }
