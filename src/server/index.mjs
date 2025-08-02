@@ -59,7 +59,8 @@ const okey = await init(fount_config)
 if (command_obj) try {
 	if (!fount_config.starts.IPC) throw new Error('cannot send command when IPC not enabled')
 	const { IPCManager } = await import('./ipc_server.mjs')
-	await IPCManager.sendCommand(command_obj.type, command_obj.data)
+	const { outputs } = await IPCManager.sendCommand(command_obj.type, command_obj.data)
+	console.log(outputs)
 } catch (err) {
 	if (!(command_obj.type === 'shutdown' && String(err).endsWith('read ECONNRESET')))
 		console.errorI18n('fountConsole.ipc.sendCommandFailed', { error: err })
