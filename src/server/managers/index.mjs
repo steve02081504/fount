@@ -3,7 +3,7 @@ import { getPartListBase, parts_set } from '../parts_loader.mjs'
 import { LoadChar, UnloadChar } from './char_manager.mjs'
 import { loadPersona, unloadPersona } from './persona_manager.mjs'
 import { loadAIsource, loadAIsourceGenerator, unloadAIsource, unloadAIsourceGenerator } from './AIsource_manager.mjs'
-import { LoadImportHandler, UnloadImportHandler } from '../../public/shells/install/src/server/importHandler_manager.mjs'
+import { LoadImportHandler, UnloadImportHandler } from './ImportHandlers_manager.mjs'
 import { loadWorld, unloadWorld } from './world_manager.mjs'
 import { on_shutdown } from 'npm:on-shutdown'
 import { events } from '../events.mjs'
@@ -23,6 +23,8 @@ const loadMethods = {
 	'ImportHandlers': LoadImportHandler
 }
 export function loadPart(username, parttype, partname) {
+	if (!loadMethods[parttype])
+		throw new Error(`Part loader for type "${parttype}" is not registered.`)
 	return loadMethods[parttype](username, partname)
 }
 

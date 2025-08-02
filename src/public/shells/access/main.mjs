@@ -1,4 +1,4 @@
-import { hosturl_in_local_ip } from '../../../../server/server.mjs'
+import { get_hosturl_in_local_ip } from '../../../scripts/ratelimit.mjs'
 import qrcode from 'npm:qrcode-terminal'
 
 export default {
@@ -19,12 +19,12 @@ export default {
 	interfaces: {
 		invokes: {
 			ArgumentsHandler: async (user, args) => {
-				const url = await hosturl_in_local_ip()
+				const url = get_hosturl_in_local_ip()
 				console.log(`Access fount on other devices in the same network via: ${url}`)
 				qrcode.generate(url, { small: true })
 			},
 			IPCInvokeHandler: async (user, args) => {
-				return hosturl_in_local_ip()
+				return get_hosturl_in_local_ip()
 			}
 		}
 	}
