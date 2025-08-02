@@ -1042,5 +1042,38 @@
 		"info": {
 			"description": "Các mẫu này chỉ có thể được sử dụng để nhanh chóng xây dựng các phần đơn giản; các phần phức tạp vẫn cần được tạo thủ công."
 		}
+	},
+	"export": {
+		"title": "Trình xuất Part",
+		"pageTitle": "Trình xuất Part",
+		"labels": {
+			"partType": "Chọn một loại part",
+			"part": "Chọn một Part"
+		},
+		"placeholders": {
+			"partTypeSelect": "Vui lòng chọn",
+			"partSelect": "Vui lòng chọn"
+		},
+		"export": {
+			"title": "Tùy chọn xuất"
+		},
+		"buttons": {
+			"export": "Xuất",
+			"exportWithData": "Xuất (kèm dữ liệu)"
+		},
+		"editor": {
+			"disabledIndicator": "Vui lòng chọn một part trước"
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Lỗi"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "Không thể lấy loại part.",
+			"fetchPartsFailed": "Không thể lấy danh sách part.",
+			"loadPartDetailsFailed": "Không thể tải chi tiết part.",
+			"exportFailed": "Xuất thất bại."
+		}
 	}
 }

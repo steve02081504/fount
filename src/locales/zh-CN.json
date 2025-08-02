@@ -1042,5 +1042,38 @@
 		"info": {
 			"description": "这些模板只能用于快速构建简单的部件，复杂的部件仍然需要手动创建。"
 		}
+	},
+	"export": {
+		"title": "部件导出器",
+		"pageTitle": "部件导出器",
+		"labels": {
+			"partType": "选择部件类型",
+			"part": "选择部件"
+		},
+		"placeholders": {
+			"partTypeSelect": "请选择",
+			"partSelect": "请选择"
+		},
+		"export": {
+			"title": "导出选项"
+		},
+		"buttons": {
+			"export": "导出",
+			"exportWithData": "导出 (包含数据)"
+		},
+		"editor": {
+			"disabledIndicator": "请先选择一个部件"
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "错误"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "获取部件类型失败。",
+			"fetchPartsFailed": "获取部件列表失败。",
+			"loadPartDetailsFailed": "加载部件详情失败。",
+			"exportFailed": "导出失败。"
+		}
 	}
 }

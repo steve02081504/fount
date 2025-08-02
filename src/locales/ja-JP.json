@@ -1042,5 +1042,38 @@
 		"info": {
 			"description": "これらのテンプレートは、単純なパーツを迅速に作成するためにのみ使用できます。複雑なパーツは、依然として手動で作成する必要があります。"
 		}
+	},
+	"export": {
+		"title": "パーツエクスポーター",
+		"pageTitle": "パーツエクスポーター",
+		"labels": {
+			"partType": "パーツタイプを選択",
+			"part": "パーツを選択"
+		},
+		"placeholders": {
+			"partTypeSelect": "選択してください",
+			"partSelect": "選択してください"
+		},
+		"export": {
+			"title": "エクスポートオプション"
+		},
+		"buttons": {
+			"export": "エクスポート",
+			"exportWithData": "エクスポート (データを含む)"
+		},
+		"editor": {
+			"disabledIndicator": "最初にパーツを選択してください"
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "エラー"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "パーツタイプの取得に失敗しました。",
+			"fetchPartsFailed": "パーツリストの取得に失敗しました。",
+			"loadPartDetailsFailed": "パーツ詳細の読み込みに失敗しました。",
+			"exportFailed": "エクスポートに失敗しました。"
+		}
 	}
 }

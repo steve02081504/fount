@@ -1042,5 +1042,38 @@
 		"info": {
 			"description": "इन टेम्प्लेट का उपयोग केवल साधारण भागों को जल्दी से बनाने के लिए किया जा सकता है; जटिल भागों को अभी भी मैन्युअल रूप से बनाने की आवश्यकता है।"
 		}
+	},
+	"export": {
+		"title": "पार्ट निर्यातक",
+		"pageTitle": "पार्ट निर्यातक",
+		"labels": {
+			"partType": "एक पार्ट प्रकार चुनें",
+			"part": "एक पार्ट चुनें"
+		},
+		"placeholders": {
+			"partTypeSelect": "कृपया चुनें",
+			"partSelect": "कृपया चुनें"
+		},
+		"export": {
+			"title": "निर्यात विकल्प"
+		},
+		"buttons": {
+			"export": "निर्यात",
+			"exportWithData": "निर्यात (डेटा के साथ)"
+		},
+		"editor": {
+			"disabledIndicator": "कृपया पहले एक पार्ट चुनें"
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "त्रुटि"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "पार्ट प्रकार प्राप्त करने में विफल।",
+			"fetchPartsFailed": "पार्ट सूची प्राप्त करने में विफल।",
+			"loadPartDetailsFailed": "पार्ट विवरण लोड करने में विफल।",
+			"exportFailed": "निर्यात विफल रहा।"
+		}
 	}
 }

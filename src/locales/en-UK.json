@@ -1042,5 +1042,38 @@
 		"info": {
 			"description": "These templates can only be used to quickly build simple parts; complex parts still need to be created manually."
 		}
+	},
+	"export": {
+		"title": "Part Exporter",
+		"pageTitle": "Part Exporter",
+		"labels": {
+			"partType": "Select a part type",
+			"part": "Select a Part"
+		},
+		"placeholders": {
+			"partTypeSelect": "Please select",
+			"partSelect": "Please select"
+		},
+		"export": {
+			"title": "Export Options"
+		},
+		"buttons": {
+			"export": "Export",
+			"exportWithData": "Export (with data)"
+		},
+		"editor": {
+			"disabledIndicator": "Please select a part first"
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Error"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "Failed to get part types.",
+			"fetchPartsFailed": "Failed to get the list of parts.",
+			"loadPartDetailsFailed": "Failed to load part details.",
+			"exportFailed": "Export failed."
+		}
 	}
 }

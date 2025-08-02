@@ -1042,5 +1042,38 @@
 		"info": {
 			"description": "Estes modelos só podem ser usados para criar rapidamente peças simples; peças complexas ainda precisam de ser criadas manualmente."
 		}
+	},
+	"export": {
+		"title": "Exportador de Peças",
+		"pageTitle": "Exportador de Peças",
+		"labels": {
+			"partType": "Selecione um tipo de peça",
+			"part": "Selecione uma Peça"
+		},
+		"placeholders": {
+			"partTypeSelect": "Selecione",
+			"partSelect": "Selecione"
+		},
+		"export": {
+			"title": "Opções de Exportação"
+		},
+		"buttons": {
+			"export": "Exportar",
+			"exportWithData": "Exportar (com dados)"
+		},
+		"editor": {
+			"disabledIndicator": "Selecione primeiro uma peça"
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Erro"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "Falha ao obter os tipos de peça.",
+			"fetchPartsFailed": "Falha ao obter a lista de peças.",
+			"loadPartDetailsFailed": "Falha ao carregar os detalhes da peça.",
+			"exportFailed": "A exportação falhou."
+		}
 	}
 }
