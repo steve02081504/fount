@@ -38,6 +38,7 @@ export async function exportPart(username, partType, partName, withData) {
 	try {
 		fountJson = await loadJsonFile(fountJsonPath)
 	} catch (error) {
+		if (error.code != 'ENOENT') throw error
 		fountJson = {
 			type: partType,
 			dirname: partName,
