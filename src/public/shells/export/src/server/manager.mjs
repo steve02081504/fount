@@ -1,9 +1,9 @@
 import { GetPartPath } from '../../../../../server/parts_loader.mjs'
-import { loadJsonFile, saveJsonFile } from '../../../../../scripts/json_loader.mjs'
+import { loadJsonFile } from '../../../../../scripts/json_loader.mjs'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import os from 'node:os'
-import { zipDir } from "../../../../ImportHandlers/fount/zip.mjs";
+import { zipDir } from '../../../../ImportHandlers/fount/zip.mjs'
 
 /**
  * Gets the fount.json for a part.
@@ -19,14 +19,12 @@ export async function getFountJson(username, partType, partName) {
 		return await loadJsonFile(fountJsonPath)
 	}
 	catch (error) {
-		if (error.code === 'ENOENT') {
-			return {
-				type: partType,
-				dirname: partName,
-				data_files: [],
-			}
+		if (error.code != 'ENOENT') throw error
+		return {
+			type: partType,
+			dirname: partName,
+			data_files: [],
 		}
-		throw error
 	}
 }
 

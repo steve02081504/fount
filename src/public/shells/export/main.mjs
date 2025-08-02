@@ -13,5 +13,5 @@ export default {
 	Load: ({ router }) => {
 		setEndpoints(router)
 	},
-	Unload: () => {},
+	Unload: () => { },
 }
