@@ -10,6 +10,7 @@
 				"https": "HTTPS 服务器运行在 ${url}",
 				"http": "HTTP 服务器运行在 ${url}"
 			},
+			"localUrl": "通过同一网络下的其他设备访问fount：${url}",
 			"standingBy": "standing by..."
 		},
 		"jobs": {

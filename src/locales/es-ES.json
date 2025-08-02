@@ -10,6 +10,7 @@
 				"https": "Servidor HTTPS en ejecución en ${url}",
 				"http": "Servidor HTTP en ejecución en ${url}"
 			},
+			"localUrl": "Acceso a fount desde otros dispositivos en la misma red: ${url}",
 			"standingBy": "En espera..."
 		},
 		"jobs": {

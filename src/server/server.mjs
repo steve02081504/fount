@@ -21,6 +21,7 @@ import { startTimerHeartbeat } from './timers.mjs'
 import supportsAnsi from 'npm:supports-ansi'
 import { loadJsonFile, saveJsonFile } from '../scripts/json_loader.mjs'
 import { nicerWriteFileSync } from '../scripts/nicerWriteFile.mjs'
+import { get_hosturl_in_local_ip } from '../scripts/ratelimit.mjs'
 import figlet from 'npm:figlet'
 import chalk from 'npm:chalk'
 
@@ -217,6 +218,13 @@ export async function init(start_config) {
 				})
 			server.on('error', reject)
 		})
+
+		try {
+			const local_url = get_hosturl_in_local_ip()
+			console.logI18n('fountConsole.server.localUrl', { url: local_url })
+			const qrcode = await import('npm:qrcode-terminal')
+			qrcode.generate(local_url, { small: true })
+		} catch (e) { /* ignore */ }
 	}
 
 	if (starts.Tray) iconPromise.then(() => createTray()).then(t => tray = t)

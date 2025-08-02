@@ -10,6 +10,7 @@
 				"https": "Máy chủ HTTPS đang chạy tại ${url}",
 				"http": "Máy chủ HTTP đang chạy tại ${url}"
 			},
+			"localUrl": "Truy cập fount từ các thiết bị khác trên cùng mạng: ${url}",
 			"standingBy": "Đang chờ..."
 		},
 		"jobs": {

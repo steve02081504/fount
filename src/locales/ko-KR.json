@@ -10,6 +10,7 @@
 				"https": "HTTPS 서버가 ${url}에서 실행 중입니다.",
 				"http": "HTTP 서버가 ${url}에서 실행 중입니다."
 			},
+			"localUrl": "동일한 네트워크의 다른 장치에서 fount에 액세스: ${url}",
 			"standingBy": "대기 중..."
 		},
 		"jobs": {

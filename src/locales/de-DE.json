@@ -10,6 +10,7 @@
 				"https": "HTTPS-Server läuft auf ${url}",
 				"http": "HTTP-Server läuft auf ${url}"
 			},
+			"localUrl": "Zugriff auf fount von anderen Geräten im selben Netzwerk: ${url}",
 			"standingBy": "In Bereitschaft..."
 		},
 		"jobs": {

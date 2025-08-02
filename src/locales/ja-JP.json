@@ -10,6 +10,7 @@
 				"https": "HTTPSサーバーが ${url} で実行されています。",
 				"http": "HTTPサーバーが ${url} で実行されています。"
 			},
+			"localUrl": "同じネットワーク上の他のデバイスからのfountへのアクセス：${url}",
 			"standingBy": "スタンバイ中..."
 		},
 		"jobs": {
