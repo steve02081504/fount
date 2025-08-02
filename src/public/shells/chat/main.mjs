@@ -1,10 +1,16 @@
-import open from 'npm:open'
 import { hosturl } from '../../../server/server.mjs'
-import { loadChat, addchar, newChat, setPersona, setWorld } from './src/server/chat.mjs'
 import { setEndpoints } from './src/server/endpoints.mjs'
 import { cleanFilesInterval } from './src/server/files.mjs'
+import { actions } from './src/server/actions.mjs'
 
 let loading_count = 0
+
+async function handleAction(user, action, params) {
+	if (!actions[action])
+		throw new Error(`Unknown command: ${action}. Available commands: ${Object.keys(actions).join(', ')}`)
+
+	return actions[action]({ user, ...params })
+}
 
 export default {
 	info: {
@@ -33,39 +39,62 @@ export default {
 		invokes: {
 			ArgumentsHandler: async (user, args) => {
 				const command = args[0]
-				let chatId
+				let params = {}
+				let result
 
-				if (command === 'start') {
-					const charName = args[1]
-					chatId = await newChat(user)
-					open(hosturl + '/shells/chat/#' + chatId)
-					if (charName) await addchar(chatId, charName)
-
-					console.log(`Started new chat with ID: ${chatId}${charName ? `, added character: ${charName}` : ''}`)
-				} else if (command === 'asjson') {
-					const chatInfo = JSON.parse(args[1])
-					if (chatInfo.id)
-						await loadChat(chatId = chatInfo.id, user)
-					else
-						chatId = await newChat(user)
-
-					if (chatInfo.world)
-						await setWorld(chatId, chatInfo.world)
-					if (chatInfo.persona)
-						await setPersona(chatId, chatInfo.persona)
-					if (chatInfo.chars)
-						for (const char of chatInfo.chars)
-							await addchar(chatId, char)
-
-					console.log(`Loaded chat from JSON: ${args[1]}`)
-				} else if (command === 'load') {
-					chatId = args[1]
-					if (!chatId) throw 'Chat ID is required for load command.'
-					open(hosturl + '/shells/chat/#' + chatId)
-					console.log(`Loaded chat with ID: ${chatId}`)
+				switch (command) {
+					case 'start':
+						params = { charName: args[1] }
+						result = await handleAction(user, command, params)
+						console.log(`Started new chat at: ${hosturl}/shells/chat/#${result}`)
+						break
+					case 'asjson':
+						params = { chatInfo: JSON.parse(args[1]) }
+						result = await handleAction(user, command, params)
+						console.log(`Loaded chat from JSON: ${args[1]}`)
+						break
+					case 'load':
+						params = { chatId: args[1] }
+						result = await handleAction(user, command, params)
+						console.log(`Continue chat at: ${hosturl}/shells/chat/#${result}`)
+						break
+					case 'tail':
+						params = { chatId: args[1], n: parseInt(args[2] || '5', 10) }
+						result = await handleAction(user, command, params)
+						result.forEach(log => {
+							console.log(`[${new Date(log.time_stamp).toLocaleString()}] ${log.name}: ${log.content}`)
+						})
+						break
+					case 'send':
+						params = { chatId: args[1], message: { content: args[2] } }
+						await handleAction(user, command, params)
+						console.log(`Message sent to chat ${args[1]}`)
+						break
+					case 'edit-message':
+						params = { chatId: args[1], index: parseInt(args[2], 10), newContent: { content: args.slice(3).join(' ') } }
+						await handleAction(user, command, params)
+						console.log(`Message at index ${args[2]} in chat ${args[1]} edited.`)
+						break
+					default:
+						const [chatId, ...rest] = args.slice(1)
+						const paramMap = {
+							'remove-char': { charName: rest[0] },
+							'set-persona': { personaName: rest[0] },
+							'set-world': { worldName: rest[0] },
+							'set-char-frequency': { charName: rest[0], frequency: parseFloat(rest[1]) },
+							'trigger-reply': { charName: rest[0] },
+							'delete-message': { index: parseInt(rest[0], 10) },
+							'modify-timeline': { delta: parseInt(rest[0], 10) }
+						}
+						params = { chatId, ...paramMap[command] || {} }
+						result = await handleAction(user, command, params)
+						if (result !== undefined) console.log(result)
+						break
 				}
-				else
-					throw `Unknown command: ${command}`
+			},
+			IPCInvokeHandler: async (user, data) => {
+				const { command, ...params } = data
+				return handleAction(user, command, params)
 			}
 		}
 	}

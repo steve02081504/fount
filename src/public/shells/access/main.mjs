@@ -1,3 +1,13 @@
+import { actions } from './src/server/actions.mjs'
+import qrcode from 'npm:qrcode-terminal'
+
+async function handleAction(user, action, params) {
+	if (!actions[action])
+		throw new Error(`Unknown action: ${action}.`)
+
+	return actions[action]({ user, ...params })
+}
+
 export default {
 	info: {
 		'': {
@@ -13,4 +23,17 @@ export default {
 	},
 	Load: async ({ router }) => { },
 	Unload: async () => { },
+	interfaces: {
+		invokes: {
+			ArgumentsHandler: async (user, args) => {
+				const url = await handleAction(user, 'default', {})
+				console.log(`Access fount on other devices in the same network via: ${url}`)
+				qrcode.generate(url, { small: true })
+			},
+			IPCInvokeHandler: async (user, args) => {
+				return handleAction(user, 'default', args)
+			}
+		}
+	}
 }
+

@@ -145,7 +145,7 @@ export let restartor
 export async function init(start_config) {
 	restartor = start_config.restartor
 	data_path = start_config.data_path
-	const starts = start_config.starts ?? {}
+	const starts = start_config.starts ??= {}
 	for (const start of ['Base', 'IPC', 'Web', 'Tray', 'DiscordIPC']) starts[start] ??= true
 	if (starts.Base) {
 		console.freshLineI18n('server start', 'fountConsole.server.start')

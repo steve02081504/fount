@@ -2,6 +2,7 @@ import net from 'node:net'
 import { console, geti18n } from '../scripts/i18n.mjs'
 import { getLoadedPartList, getPartList, loadPart } from './managers/index.mjs'
 import { getPartDetails } from './parts_loader.mjs'
+import { VirtualConsole } from 'npm:@steve02081504/virtual-console'
 
 const IPC_PORT = 16698 // 选择一个不太可能冲突的端口
 
@@ -18,8 +19,9 @@ export async function processIPCCommand(command, data) {
 				const { username, parttype, partname, args } = data
 				console.logI18n('fountConsole.ipc.runPartLog', { parttype, partname, username, args: JSON.stringify(args) })
 				const part = await loadPart(username, parttype, partname)
-				const result = await part.interfaces.invokes.ArgumentsHandler(username, args)
-				return { status: 'ok', data: result }
+				const vc = new VirtualConsole()
+				const result = await vc.hookAsyncContext(async () => await part.interfaces.invokes.ArgumentsHandler(username, args))
+				return { status: 'ok', data: { result, outputs: vc.outputs } }
 			}
 			case 'invokepart': {
 				const { username, parttype, partname, data: invokedata } = data

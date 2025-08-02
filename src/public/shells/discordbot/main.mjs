@@ -1,5 +1,13 @@
-import { runBot, stopBot } from './src/server/bot.mjs'
+import { runBot } from './src/server/bot.mjs'
 import { setEndpoints } from './src/server/endpoints.mjs'
+import { actions } from './actions.mjs'
+
+async function handleAction(user, action, params) {
+	if (!actions[action])
+		throw new Error(`Unknown action: ${action}. Available actions: ${Object.keys(actions).join(', ')}`)
+
+	return actions[action]({ user, ...params })
+}
 
 export default {
 	info: {
@@ -22,14 +30,20 @@ export default {
 	interfaces: {
 		invokes: {
 			ArgumentsHandler: async (user, args) => {
-				const botname = args[0]
-				const action = args[1] ?? 'start'
-				if (action === 'stop')
-					await stopBot(user, botname)
-				else if (action === 'start')
-					await runBot(user, botname)
-				else
-					throw `Unknown action: ${action}`
+				const [action, name, jsonData] = args
+				const params = {
+					botname: name,
+					charname: name,
+					configData: jsonData ? JSON.parse(jsonData) : undefined
+				}
+				const result = await handleAction(user, action, params)
+				if (result !== undefined)
+					console.log(result)
+
+			},
+			IPCInvokeHandler: async (user, data) => {
+				const { action, ...params } = data
+				return handleAction(user, action, params)
 			}
 		},
 		jobs: {

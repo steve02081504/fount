@@ -1,7 +1,12 @@
 import { setEndpoints } from './src/server/endpoints.mjs'
-import { importPart, importPartByText } from './src/server/Installer_handler.mjs'
-import { uninstallPartBase } from '../../../server/parts_loader.mjs'
-import fs from 'node:fs/promises'
+import { actions } from './actions.mjs'
+
+async function handleAction(user, action, params) {
+	if (!actions[action])
+		throw new Error(`Invalid action. Available actions: ${Object.keys(actions).join(', ')}`)
+
+	return actions[action]({ user, ...params })
+}
 
 export default {
 	info: {
@@ -25,32 +30,20 @@ export default {
 		invokes: {
 			ArgumentsHandler: async (user, args) => {
 				const action = args[0]
+				let params = {}
+				if (action === 'install')
+					params = { input: args[1] }
+				else if (action === 'uninstall')
+					params = { partType: args[1], partName: args[2] }
 
-				if (action === 'install') {
-					const input = args[1]
-					// 检查输入是否为有效的文件路径
-					try {
-						const stats = await fs.stat(input)
-						if (stats.isFile()) {
-							const fileData = await fs.readFile(input)
-							await importPart(user, fileData)
-							console.log(`Installed from file: ${input}`)
-						}
-						else throw new Error('Input is not a valid file path')
-					}
-					catch (error) {
-						await importPartByText(user, input)
-						console.log(`Installed from text: ${input}`)
-					}
-				}
-				else if (action === 'uninstall') {
-					const partType = args[1]
-					const partName = args[2]
-					await uninstallPartBase(user, partType, partName)
-					console.log(`Uninstalled ${partType}: ${partName}`)
-				} else
-					throw 'Invalid action. Use "install" or "uninstall".'
+				const result = await handleAction(user, action, params)
+				console.log(result)
+			},
+			IPCInvokeHandler: async (user, data) => {
+				const { action, ...params } = data
+				return handleAction(user, action, params)
 			}
 		}
 	}
 }
+

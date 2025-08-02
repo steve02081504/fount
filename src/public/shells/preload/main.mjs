@@ -1,4 +1,8 @@
-import { loadPart } from '../../../server/managers/index.mjs'
+import { actions } from './actions.mjs'
+
+async function handleAction(user, params) {
+	return actions.default({ user, ...params })
+}
 
 export default {
 	info: {
@@ -19,11 +23,12 @@ export default {
 	interfaces: {
 		invokes: {
 			ArgumentsHandler: async (user, args) => {
-				loadPart(user, args[0], args[1])
+				await handleAction(user, { parttype: args[0], partname: args[1] })
 			},
 			IPCInvokeHandler: async (user, data) => {
-				loadPart(user, data.parttype, data.partname)
+				await handleAction(user, data)
 			}
 		}
 	}
 }
+

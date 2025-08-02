@@ -1,4 +1,12 @@
 import { setEndpoints } from './src/server/endpoints.mjs'
+import { actions } from './src/server/actions.mjs'
+
+async function handleAction(user, action, params) {
+	if (!actions[action])
+		throw new Error(`Unknown action: ${action}. Available actions: ${Object.keys(actions).join(', ')}`)
+
+	return actions[action]({ user, ...params })
+}
 
 export default {
 	info: {
@@ -16,5 +24,25 @@ export default {
 	Load: ({ router }) => {
 		setEndpoints(router)
 	},
-	Unload: () => { }
+	Unload: () => { },
+	interfaces: {
+		invokes: {
+			ArgumentsHandler: async (user, args) => {
+				const [action, sourceName, jsonData] = args
+				const params = {
+					sourceName,
+					config: jsonData ? JSON.parse(jsonData) : undefined
+				}
+				const result = await handleAction(user, action, params)
+				if (result !== undefined)
+					console.log(result)
+
+			},
+			IPCInvokeHandler: async (user, data) => {
+				const { action, ...params } = data
+				return handleAction(user, action, params)
+			}
+		}
+	}
 }
+
