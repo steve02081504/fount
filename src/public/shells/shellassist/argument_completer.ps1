@@ -1,10 +1,7 @@
-# PowerShell 参数补全脚本，用于 Fount 的 'preload' shell。
+# PowerShell 参数补全脚本，用于 Fount 的 'shellassist' shell。
 #
 # 使用方法:
-#   fount run shells <username> preload <partType> <partName>
-#
-# 作用:
-#   提前加载一个部件到内存中，以便后续更快地访问。
+#   fount run shells <username> shellassist <charName>
 #
 # Fount 自动提供的参数:
 #   $Username:       执行命令的当前用户名。
@@ -23,21 +20,15 @@ param(
 )
 
 try {
-	# 从命令 AST 中提取 'run shells <username> preload' 之后的参数。
+	# 从命令 AST 中提取 'run shells <username> shellassist' 之后的参数。
 	$commandElements = $CommandAst.CommandElements
-	$preloadIndex = $runIndex + 3 # 'preload' 命令的索引
+	$shellIndex = $runIndex + 3
 
 	# 根据当前正在输入的参数位置 (相对于 shell 名称) 提供不同的补全建议。
-	switch ($commandElements.Count - ($preloadIndex + 1)) {
+	switch ($commandElements.Count - ($shellIndex + 1)) {
 		0 {
-			# 位置 0: 补全部件类型 (partType)。
-			Get-FountParts | Where-Object { $_.StartsWith($WordToComplete) }
-			break
-		}
-		1 {
-			# 位置 1: 补全部件名称 (partName)。
-			$partType = $commandElements[$preloadIndex + 1].Value
-			Get-FountPartList -parttype $partType -Username $Username | Where-Object { $_.StartsWith($WordToComplete) }
+			# 位置 0: 补全角色名称 (charName)。
+			Get-FountPartList -parttype chars -Username $Username | Where-Object { $_.StartsWith($WordToComplete) }
 			break
 		}
 	}
@@ -45,5 +36,5 @@ try {
 catch {
 	# 异常处理
 	Write-Host
-	Write-Host "Error providing argument completion for preload: $_" -ForegroundColor Red
+	Write-Host "Error providing argument completion for shellassist: $_" -ForegroundColor Red
 }

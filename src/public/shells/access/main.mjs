@@ -1,3 +1,6 @@
+import { hosturl_in_local_ip } from '../../../../server/server.mjs'
+import qrcode from 'npm:qrcode-terminal'
+
 export default {
 	info: {
 		'': {
@@ -13,4 +16,16 @@ export default {
 	},
 	Load: async ({ router }) => { },
 	Unload: async () => { },
+	interfaces: {
+		invokes: {
+			ArgumentsHandler: async (user, args) => {
+				const url = await hosturl_in_local_ip()
+				console.log(`Access fount on other devices in the same network via: ${url}`)
+				qrcode.generate(url, { small: true })
+			},
+			IPCInvokeHandler: async (user, args) => {
+				return hosturl_in_local_ip()
+			}
+		}
+	}
 }

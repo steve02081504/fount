@@ -1,4 +1,6 @@
 import { setEndpoints } from './src/server/endpoints.mjs'
+import { hosturl } from '../../../server/server.mjs'
+import qrcode from 'npm:qrcode-terminal'
 
 export default {
 	info: {
@@ -16,5 +18,18 @@ export default {
 	Load: ({ router }) => {
 		setEndpoints(router)
 	},
-	Unload: () => { }
+	Unload: () => { },
+	interfaces: {
+		invokes: {
+			ArgumentsHandler: async (user, args) => {
+				const url = `${hosturl}/asuser/${user}/api/shells/proxy/calling/openai`
+				console.log(`Your OpenAI-compatible API endpoint is: ${url}`)
+				qrcode.generate(url, { small: true })
+				console.log(`You can use it with any OpenAI-compatible client, for example, to list models, run: curl ${url}/v1/models -H "Authorization: Bearer <your_fount_token>"`)
+			},
+			IPCInvokeHandler: async (user, args) => {
+				return `${hosturl}/asuser/${user}/api/shells/proxy/calling/openai`
+			}
+		}
+	}
 }

@@ -50,6 +50,21 @@ export default {
 					console.log(`Uninstalled ${partType}: ${partName}`)
 				} else
 					throw 'Invalid action. Use "install" or "uninstall".'
+			},
+			IPCInvokeHandler: async (user, { action, input, partType, partName, buffer }) => {
+				switch (action) {
+					case 'installFromText':
+						await importPartByText(user, input)
+						return 'Installed from text.'
+					case 'installFromBuffer':
+						await importPart(user, buffer)
+						return 'Installed from buffer.'
+					case 'uninstall':
+						await uninstallPartBase(user, partType, partName)
+						return `Uninstalled ${partType}: ${partName}`
+					default:
+						throw 'Invalid action. Use "installFromText", "installFromBuffer", or "uninstall".'
+				}
 			}
 		}
 	}

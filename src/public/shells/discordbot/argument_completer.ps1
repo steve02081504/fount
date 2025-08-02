@@ -1,12 +1,25 @@
-﻿# argument_completer.ps1 for discordbot shell
-
-# 参数：
-#   $Username:       用户名。
-#   $WordToComplete: 用户正在输入的单词。
-#   $CommandAst:     命令的抽象语法树 (AST)。
-#   $CursorPosition:  光标在命令行中的位置。
-#   $runIndex:  'run shells' 命令在 CommandAst 中的索引。
-#   $Argindex:        当前参数在 CommandAst 中的索引。
+# PowerShell 参数补全脚本，用于 Fount 的 'discordbot' shell。
+#
+# 使用方法:
+#   fount run shells <username> discordbot <action> [args...]
+#
+# 支持的 Action:
+#   - list: 列出所有已配置的 Discord 机器人。
+#   - create <botname>: 创建一个新的机器人配置。
+#   - delete <botname>: 删除一个机器人配置。
+#   - config <botname> <configData>: 为机器人设置 JSON 配置。
+#   - get-config <botname>: 获取一个机器人的配置。
+#   - get-template <charName>: 获取一个角色的 Discord Bot 配置模板。
+#   - start <botname>: 启动一个机器人。
+#   - stop <botname>: 停止一个机器人。
+#
+# Fount 自动提供的参数:
+#   $Username:       执行命令的当前用户名。
+#   $WordToComplete: 用户当前正在输入、需要补全的单词。
+#   $CommandAst:     当前命令的抽象语法树 (AST)，用于分析命令结构。
+#   $CursorPosition: 光标在整个命令行中的位置。
+#   $runIndex:       'run' 命令在 CommandAst 中的索引，用于定位 shell 命令的起始位置。
+#   $Argindex:       当前光标所在参数在 CommandAst 中的索引。
 param(
 	[string]$Username,
 	[string]$WordToComplete,
@@ -16,54 +29,65 @@ param(
 	[int]$Argindex
 )
 
-# 获取指定用户的 Discord 机器人列表。
+# 辅助函数：获取指定用户的已配置 Discord 机器人列表。
 function Get-BotList([string]$Username) {
-	# $PSScriptRoot 是当前脚本所在的目录。
-	# 构造 discordbot_configs.json 文件的路径。
 	$jsonPath = "$PSScriptRoot/../../../../data/users/$Username/shells/discordbot/bot_configs.json"
-	# 检查文件是否存在。
 	if (Test-Path $jsonPath -PathType Leaf) {
-		# 读取 JSON 文件并将其转换为哈希表。
-		$botData = Get-Content $jsonPath | ConvertFrom-Json -AsHashtable
-		# 返回具有 token 属性的机器人名称。
-		# Where-Object 过滤出有token的机器人。
-		$botData.Keys | Where-Object { $botData[$_].token }
+		try {
+			$botData = Get-Content $jsonPath | ConvertFrom-Json -AsHashtable
+			# 返回已配置机器人的名称 (即 JSON 文件中的顶级键)。
+			return @($botData.Keys)
+		}
+		catch {
+			# 如果 JSON 文件格式错误或为空，则返回空数组。
+			return @()
+		}
 	}
-	else {
-		# 如果配置文件不存在，则发出警告。 Write-Warning 比 Write-Host 更适合这种情况，因为它会将消息写入警告流。
-		Write-Warning "No config file found for $Username"
-	}
+	return @()
 }
 
 try {
-	# 提取 'run shells <username> discordbot' 之后的参数。
+	# 从命令 AST 中提取 'run shells <username> discordbot' 之后的参数。
 	$commandElements = $CommandAst.CommandElements
-	# $discordBotIndex 是 'discordbot' 命令的索引。
 	$discordBotIndex = $runIndex + 3
 
-	# 根据参数构建补全逻辑。
-	# switch 语句根据 'discordbot' 命令之后的参数数量进行分支。
-	# $commandElements.Count - ($discordBotIndex + 1) 计算 'discordbot' 之后的参数数量。
+	# 定义所有可用的操作命令。
+	$actions = @("list", "create", "delete", "config", "get-config", "get-template", "start", "stop")
+
+	# 根据当前正在输入的参数位置 (相对于 shell 名称) 提供不同的补全建议。
 	switch ($commandElements.Count - ($discordBotIndex + 1)) {
 		0 {
-			# 补全 botname（'discordbot' 之后的第一个参数）。
-			Get-BotList -Username $Username | Where-Object { $_.StartsWith($WordToComplete) }
+			# 位置 0: 补全第一个参数 (操作命令)。
+			$actions | Where-Object { $_.StartsWith($WordToComplete) }
 			break
 		}
 		1 {
-			# 补全 action（'discordbot' 之后的第二个参数）。
-			# 提供 'start' 和 'stop' 作为选项。
-			@("start", "stop") | Where-Object { $_.StartsWith($WordToComplete) }
-			break
-		}
-		default {
-			# 对于其他参数，不提供补全。
+			# 位置 1: 根据前一个参数 (action) 补全第二个参数。
+			$action = $commandElements[$discordBotIndex + 1].Value
+			switch ($action) {
+				"delete"
+				"config"
+				"get-config"
+				"start"
+				"stop" {
+					# 对于这些操作，第二个参数是已存在的机器人名称。
+					Get-BotList -Username $Username | Where-Object { $_.StartsWith($WordToComplete) }
+					break
+				}
+				"get-template" {
+					# 对于 'get-template'，第二个参数是角色名称。
+					Get-FountPartList -parttype chars -Username $Username | Where-Object { $_.StartsWith($WordToComplete) }
+					break
+				}
+				# 'list' 命令没有第二个参数。
+				# 'create' 的第二个参数是新名称，不适合从现有列表补全。
+			}
 			break
 		}
 	}
 }
 catch {
-	# 捕获并显示错误信息。
+	# 异常处理
 	Write-Host
-	Write-Host "An error occurred during argument completion: $_" -ForegroundColor Red
+	Write-Host "Error providing argument completion for discordbot: $_" -ForegroundColor Red
 }
