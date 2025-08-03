@@ -86,7 +86,7 @@ export default {
 							'delete-message': { index: parseInt(rest[0], 10) },
 							'modify-timeline': { delta: parseInt(rest[0], 10) }
 						}
-						params = { chatId, ...paramMap[command] || {} }
+						params = { chatId, ...paramMap[command] }
 						result = await handleAction(user, command, params)
 						if (result !== undefined) console.log(result)
 						break
