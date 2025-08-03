@@ -1,7 +1,7 @@
 import { setEndpoints } from './src/server/endpoints.mjs'
-import { actions } from './actions.mjs'
 
 async function handleAction(user, action, params) {
+	const { actions } = await import('./actions.mjs')
 	if (!actions[action])
 		throw new Error(`Unknown action: ${action}. Available actions: ${Object.keys(actions).join(', ')}`)
 

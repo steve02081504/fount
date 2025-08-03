@@ -1,4 +1,4 @@
-import { changeUserPassword, revokeUserDeviceByJti, getUserDictionary, getUserByUsername as getUserConfig, renameUser, deleteUserAccount } from '../../../../../server/auth.mjs'
+import { changeUserPassword, revokeUserDeviceByJti, getUserDictionary, getUserByUsername as getUserConfig, renameUser, deleteUserAccount } from '../../../server/auth.mjs'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 

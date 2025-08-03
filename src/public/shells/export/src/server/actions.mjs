@@ -1,4 +1,4 @@
-import { exportPart } from './src/server/manager.mjs'
+import { exportPart } from './manager.mjs'
 
 export const actions = {
 	default: async ({ user, partType, partName, withData }) => {

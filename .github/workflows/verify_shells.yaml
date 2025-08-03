@@ -1,0 +1,51 @@
+name: Verify Shells
+
+on:
+  push:
+    paths:
+      - 'src/public/shells/**/*.mjs'
+  pull_request:
+    paths:
+      - 'src/public/shells/**/*.mjs'
+
+jobs:
+  verify-shells:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        id: deno
+        with:
+          deno-version: vx.x.x
+          cache: true
+      - uses: actions/cache@v4
+        with:
+          path: ./node_modules
+          key: fount-CI-node-modules
+      - name: test each shell
+        run: |
+          deno run --node-modules-dir=auto --allow-all --allow-scripts ./.github/workflows/verify_shells.mjs
+      - name: Delete Previous Cache # 删除之前的缓存确保缓存随着项目运行而更新
+        continue-on-error: true
+        shell: bash
+        run: |
+          cd $GITHUB_ACTION_PATH/fount/.vm_data_charCI/users/$CI_username/chars/$CI_charname
+          gh extension install actions/gh-actions-cache
+          gh actions-cache delete "fount-CI-node-modules" --confirm
+          gh actions-cache delete "deno-cache-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-${{ hashFiles('**/deno.lock') }}" --confirm
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Save Cache
+        uses: actions/cache/save@v4
+        with:
+          path: ./node_modules
+          key: fount-CI-node-modules
+      - name: get deno dir
+        shell: bash
+        run: echo "DENO_DIR=$(deno info --json | jq -r '.denoDir')" >> $GITHUB_ENV
+      - name: Save Cache
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.DENO_DIR }}
+          key: deno-cache-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-${{ hashFiles('**/deno.lock') }}

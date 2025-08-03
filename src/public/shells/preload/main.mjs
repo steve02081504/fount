@@ -1,7 +1,9 @@
-import { actions } from './actions.mjs'
+async function handleAction(user, action, params) {
+	const { actions } = await import('./src/server/actions.mjs')
+	if (!actions[action])
+		throw new Error(`Unknown action: ${action}. Available actions: ${Object.keys(actions).join(', ')}`)
 
-async function handleAction(user, params) {
-	return actions.default({ user, ...params })
+	return actions[action]({ user, ...params })
 }
 
 export default {
@@ -23,10 +25,10 @@ export default {
 	interfaces: {
 		invokes: {
 			ArgumentsHandler: async (user, args) => {
-				await handleAction(user, { parttype: args[0], partname: args[1] })
+				await handleAction(user, 'default', { parttype: args[0], partname: args[1] })
 			},
 			IPCInvokeHandler: async (user, data) => {
-				await handleAction(user, data)
+				await handleAction(user, 'default', data)
 			}
 		}
 	}

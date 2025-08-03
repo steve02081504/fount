@@ -1,5 +1,5 @@
-import { importPart, importPartByText } from './src/server/Installer_handler.mjs'
-import { uninstallPartBase } from '../../../../server/parts_loader.mjs'
+import { importPart, importPartByText } from './Installer_handler.mjs'
+import { uninstallPartBase } from '../../../../../server/parts_loader.mjs'
 import fs from 'node:fs/promises'
 
 export const actions = {

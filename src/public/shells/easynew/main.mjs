@@ -1,14 +1,14 @@
 import { setEndpoints } from './src/server/main.mjs'
-import { actions } from './actions.mjs'
 
 async function handleAction(user, action, params) {
+	const { actions } = await import('./src/server/actions.mjs')
 	if (!actions[action])
 		throw new Error(`Unknown action: ${action}. Available actions: ${Object.keys(actions).join(', ')}`)
 
 	return actions[action]({ user, ...params })
 }
 
-/** @type {import('../../../../decl/shellAPI.ts').ShellAPI_t} */
+/** @type {import('../../../decl/shellAPI.ts').ShellAPI_t} */
 export default {
 	info: {
 		'': {

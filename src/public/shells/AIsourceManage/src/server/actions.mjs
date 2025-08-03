@@ -1,4 +1,5 @@
-import { getPartList, setDefaultPart } from '../../../../../../server/parts_loader.mjs'
+import { getPartList } from '../../../../../server/managers/index.mjs'
+import { setDefaultPart } from '../../../../../server/parts_loader.mjs'
 import { addAISourceFile, deleteAISourceFile, getAISourceFile, saveAISourceFile } from './manager.mjs'
 
 export const actions = {

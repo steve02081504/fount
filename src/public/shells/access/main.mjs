@@ -1,9 +1,7 @@
-import { actions } from './src/server/actions.mjs'
-import qrcode from 'npm:qrcode-terminal'
-
 async function handleAction(user, action, params) {
+	const { actions } = await import('./src/server/actions.mjs')
 	if (!actions[action])
-		throw new Error(`Unknown action: ${action}.`)
+		throw new Error(`Unknown action: ${action}. Available actions: ${Object.keys(actions).join(', ')}`)
 
 	return actions[action]({ user, ...params })
 }
@@ -28,6 +26,7 @@ export default {
 			ArgumentsHandler: async (user, args) => {
 				const url = await handleAction(user, 'default', {})
 				console.log(`Access fount on other devices in the same network via: ${url}`)
+				const qrcode = await import('npm:qrcode-terminal')
 				qrcode.generate(url, { small: true })
 			},
 			IPCInvokeHandler: async (user, args) => {

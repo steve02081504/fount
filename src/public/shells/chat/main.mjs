@@ -1,13 +1,13 @@
 import { hosturl } from '../../../server/server.mjs'
 import { setEndpoints } from './src/server/endpoints.mjs'
 import { cleanFilesInterval } from './src/server/files.mjs'
-import { actions } from './src/server/actions.mjs'
 
 let loading_count = 0
 
 async function handleAction(user, action, params) {
+	const { actions } = await import('./src/server/actions.mjs')
 	if (!actions[action])
-		throw new Error(`Unknown command: ${action}. Available commands: ${Object.keys(actions).join(', ')}`)
+		throw new Error(`Unknown action: ${action}. Available actions: ${Object.keys(actions).join(', ')}`)
 
 	return actions[action]({ user, ...params })
 }
@@ -75,7 +75,7 @@ export default {
 						await handleAction(user, command, params)
 						console.log(`Message at index ${args[2]} in chat ${args[1]} edited.`)
 						break
-					default:
+					default: {
 						const [chatId, ...rest] = args.slice(1)
 						const paramMap = {
 							'remove-char': { charName: rest[0] },
@@ -90,6 +90,7 @@ export default {
 						result = await handleAction(user, command, params)
 						if (result !== undefined) console.log(result)
 						break
+					}
 				}
 			},
 			IPCInvokeHandler: async (user, data) => {

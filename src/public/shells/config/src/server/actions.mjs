@@ -1,4 +1,4 @@
-import { getPartData, setPartData } from './src/server/manager.mjs'
+import { getPartData, setPartData } from './manager.mjs'
 
 export const actions = {
 	get: async ({ user, partType, partName }) => {

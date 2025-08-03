@@ -1,4 +1,4 @@
-import { runBot, stopBot, getBotList, setBotConfig, deleteBotConfig, getBotConfig as getPartData, getBotConfigTemplate } from './src/server/bot.mjs'
+import { runBot, stopBot, getBotList, setBotConfig, deleteBotConfig, getBotConfig as getPartData, getBotConfigTemplate } from './bot.mjs'
 
 export const actions = {
 	list: ({ user }) => getBotList(user),
