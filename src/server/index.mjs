@@ -10,6 +10,7 @@ set_start()
 import process from 'node:process'
 import { init } from './server.mjs'
 import { console } from '../scripts/i18n.mjs'
+import { existsSync } from 'node:fs'
 
 console.logI18n('fountConsole.server.standingBy')
 
@@ -18,6 +19,10 @@ let args = process.argv.slice(2)
 const fount_config = {
 	restartor: () => process.exit(131),
 	data_path: __dirname + '/data',
+	starts: {
+		Jobs: !existsSync(__dirname + '/.nojobs'),
+		Timers: !existsSync(__dirname + '/.notimers'),
+	}
 }
 
 let command_obj

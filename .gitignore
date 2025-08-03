@@ -5,6 +5,8 @@
 /.idea
 /.noupdate
 /.nobackground
+/.nojobs
+/.notimers
 /data
 /.vm_data_*
 /node_modules
