@@ -1,0 +1,40 @@
+name: Set Executable Permissions
+
+permissions:
+  contents: write
+
+on:
+  push:
+    paths:
+      - '**.sh'
+      - '**.fish'
+      - '**.zsh'
+      - '**.ps1'
+      - '**.bat'
+      - 'path/**'
+    tags-ignore:
+      - '*'
+    branches:
+      - '*'
+  workflow_dispatch:
+
+jobs:
+  set-permissions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set execute permission for sh files
+        run: |
+          find . -maxdepth 1 \( -name "*.sh" -o -name "*.ps1" -o -name "*.fish" -o -name "*.zsh" -o -name "*.bat" \) -print0 | xargs -0 chmod +x
+          find ./path -maxdepth 1 -type f -print0 | xargs -0 chmod +x
+          chmod -x ./path/desktop.ini
+      - name: git add all
+        run: git add -A
+      - name: Push changes
+        uses: actions-go/push@master
+        with:
+          author-email: taromati2@outlook.com
+          author-name: Taromati2
+          commit-message: 'file update~'
+          remote: origin
+          token: ${{ secrets.GITHUB_TOKEN }}

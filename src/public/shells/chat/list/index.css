@@ -1,0 +1,30 @@
+.chat-list-item {
+	padding: 0;
+	/* 确保 chat-list-item 的 padding 不被其他样式覆盖 */
+}
+
+.avatar-group img {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	margin-right: 5px;
+}
+
+.multiline-truncate {
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	/* 折叠时只显示两行 */
+	line-clamp: 2;
+	/* 折叠时只显示两行 */
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* 为了使 markdown-body 在 collapse-content 中正常显示，可能需要确保其宽度 */
+.collapse-content .markdown-body {
+	width: 100%;
+	/* 或者您需要的宽度 */
+	overflow-wrap: break-word;
+	/* 防止长单词溢出 */
+}

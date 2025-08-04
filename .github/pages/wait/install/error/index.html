@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="darkreader-lock">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title data-i18n="installer_wait_screen.error.title"></title>
+	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b">
+	<meta property="og:title" content="fount!">
+	<link rel="icon" type="image/svg+xml" href="https://steve02081504.github.io/fount/imgs/icon.svg">
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/themes.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@unocss/runtime" crossorigin="anonymous"></script>
+	<script blocking="render" type="module" src="../../../preload.mjs"></script>
+	<link rel="stylesheet" href="../../../base.css" type="text/css">
+	<script type="module">
+		import { setBaseDir } from '../../../base.mjs'
+		import { initTranslations } from '../../../scripts/i18n.mjs'
+
+		setBaseDir('../../..')
+		initTranslations('installer_wait_screen.error')
+	</script>
+</head>
+
+<body class="flex justify-center items-center h-screen">
+	<div role="alert" class="alert alert-error max-w-md">
+		<img src="https://api.iconify.design/line-md/alert.svg" class="flex-shrink-0 w-6 h-6" />
+		<div>
+			<h3 class="font-bold" data-i18n="installer_wait_screen.error.connection_failed"></h3>
+			<div class="text-xs" data-i18n="installer_wait_screen.error.description1"></div>
+			<div class="text-xs" data-i18n="installer_wait_screen.error.description2"></div>
+		</div>
+		<button class="btn btn-sm btn-primary" onclick="window.close()" data-i18n="installer_wait_screen.error.close_page"></button>
+	</div>
+</body>
+
+</html>

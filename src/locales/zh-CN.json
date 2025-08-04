@@ -1,0 +1,1098 @@
+{
+	"lang": "zh-CN",
+	"fountConsole": {
+		"server": {
+			"start": "正在启动服务器",
+			"starting": "服务器启动中...",
+			"ready": "服务器已启动",
+			"showUrl": {
+				"https": "HTTPS 服务器运行在 ${url}",
+				"http": "HTTP 服务器运行在 ${url}"
+			},
+			"localUrl": "通过同一网络下的其他设备访问fount：${url}",
+			"standingBy": "Standing by..."
+		},
+		"jobs": {
+			"restartingJob": "正在重启用户 ${username} 的 ${parttype} ${partname} 任务：${uid}"
+		},
+		"ipc": {
+			"sendCommandFailed": "发送命令失败：${error}",
+			"invalidCommand": "无效的命令，请使用\"fount run <组件类型> <用户名> <组件名> <参数...>\"",
+			"runPartLog": "运行 ${parttype} ${partname} 作为 ${username}，参数：${args}",
+			"invokePartLog": "调用 ${parttype} ${partname} 作为 ${username}，参数：${invokedata}",
+			"unsupportedCommand": "不支持的命令类型",
+			"processMessageError": "处理 IPC 消息时出错：${error}",
+			"invalidCommandFormat": "无效的命令格式",
+			"socketError": "Socket 错误: ${error}",
+			"instanceRunning": "另一个实例正在运行",
+			"serverStarted": "IPC 服务器已启动",
+			"parseResponseFailed": "解析服务器响应失败: ${error}",
+			"cannotParseResponse": "无法解析服务器响应",
+			"unknownError": "未知错误"
+		},
+		"partManager": {
+			"git": {
+				"noUpstream": "没有为分支 '${currentBranch}' 配置上游分支，跳过更新检查。",
+				"dirtyWorkingDirectory": "工作目录不干净。请暂存或提交你的更改后再更新。",
+				"updating": "从远程仓库更新中...",
+				"localAhead": "本地分支领先于远程分支。无需更新。",
+				"diverged": "本地和远程分支已分叉。强制更新中...",
+				"upToDate": "已是最新。",
+				"updateFailed": "从远程仓库更新组件失败：${error}"
+			},
+			"partInited": "${parttype}组件${partname}已初始化",
+			"partLoaded": "${parttype}组件${partname}已加载"
+		},
+		"web": {
+			"requestReceived": "接受到请求：${method} ${url}"
+		},
+		"route": {
+			"setLanguagePreference": "用户 ${username} 设置首选语言: ${preferredLanguages}"
+		},
+		"auth": {
+			"tokenVerifyError": "令牌验证错误: ${error}",
+			"refreshTokenError": "刷新令牌错误: ${error}",
+			"logoutRefreshTokenProcessError": "登出刷新令牌处理错误: ${error}",
+			"revokeTokenNoJTI": "无法撤销没有 jti 的令牌",
+			"accountLockedLog": "用户 ${username} 账户因多次登录失败被锁定"
+		},
+		"verification": {
+			"codeGeneratedLog": "验证码: ${code} (60秒后过期)",
+			"codeNotifyTitle": "验证码",
+			"codeNotifyBody": "验证码: ${code} (60秒后过期)"
+		},
+		"tray": {
+			"readIconFailed": "读取图标文件失败: ${error}",
+			"createTrayFailed": "创建托盘失败: ${error}",
+			"title": "fount",
+			"tooltip": "fount",
+			"items": {
+				"open": {
+					"title": "打开",
+					"tooltip": "打开 fount"
+				},
+				"github": {
+					"title": "GitHub",
+					"tooltip": "打开 fount 的 GitHub"
+				},
+				"discord": {
+					"title": "Discord",
+					"tooltip": "打开 fount 的 Discord"
+				},
+				"restart": {
+					"title": "重启",
+					"tooltip": "重启应用程序"
+				},
+				"exit": {
+					"title": "退出",
+					"tooltip": "退出应用程序"
+				}
+			}
+		},
+		"discordbot": {
+			"botStarted": "角色 ${charname} 已在 Discord Bot ${botusername} 上登录"
+		},
+		"telegrambot": {
+			"botStarted": "角色 ${charname} 已在 Telegram Bot ${botusername} 上登录"
+		}
+	},
+	"protocolhandler": {
+		"title": "处理 fount 协议",
+		"processing": "正在处理协议...",
+		"invalidProtocol": "无效的协议",
+		"insufficientParams": "参数不足",
+		"unknownCommand": "未知的命令",
+		"shellCommandSent": "Shell 命令已发送",
+		"shellCommandFailed": "发送 Shell 命令失败",
+		"shellCommandError": "发送 Shell 命令时出错",
+		"fountNotFound": "哎呀 :(\n\n没有找到 fount，或许你需要先安装一个？",
+		"unknownError": "哎呀 :(\n\n发生错误：\n${error}"
+	},
+	"installer_wait_screen": {
+		"title": "欢迎使用 fount！",
+		"hero": {
+			"title": "您的沉浸式 AI 角色伴侣",
+			"description": "fount 是一个由 AI 驱动的角色互动平台，旨在赋能<i>您</i>。它是一座桥梁，将您与您想象中的角色连接起来，让您轻松地与他们对话、创建自己的角色并与世界分享。"
+		},
+		"feature1": {
+			"title": "无缝对话，随时随地",
+			"description": "在电脑上开始聊天，在手机或平板电脑上无缝继续。fount 让您的对话保持同步，无论您走到哪里，都能与您的角色保持联系。可在 Windows、macOS、Linux 甚至 Android 上运行。"
+		},
+		"feature2": {
+			"title": "美观、可定制的界面",
+			"description": "从 30 多个精美主题中选择，或创建您自己的主题。fount 是您的个人画布。表达自我，根据您的喜好定制环境，获得真正个性化的体验。"
+		},
+		"feature3": {
+			"title": "富有表现力、沉浸式的聊天",
+			"description": "fount 充分利用 HTML 的强大功能，允许角色通过富文本、图像甚至交互元素表达自己。同时与多个角色进行动态且引人入胜的群聊。"
+		},
+		"feature4": {
+			"title": "不受束缚的 AI 源集成",
+			"description": "fount 提供无与伦比的选择和灵活性。连接到<i>任何</i> AI 源——OpenAI、Claude、OpenRouter、NovelAI 等。通信逻辑将根据<i>您的</i>意愿，通过代码的力量来塑造。"
+		},
+		"theme_selector": {
+			"title": "选择您的外观",
+			"description": "选择一个主题来个性化您的体验。"
+		},
+		"mini_game": {
+			"title": "玩点小游戏",
+			"description1": "安装太慢了？",
+			"description2": "这里有小游戏用来打发时间。"
+		},
+		"data_showcase": {
+			"title_prefix": "fount是最",
+			"adjectives": [
+				"具有扩展性",
+				"拥有潜力",
+				"大步向前",
+				"具有兼容性",
+				"小巧且强大"
+			],
+			"title_of": "的",
+			"nouns": [
+				"AI虚拟角色",
+				"Agent",
+				"赛博老婆",
+				"数字助手"
+			],
+			"platforms": [
+				"基础平台",
+				"聊天前端",
+				"运行器"
+			],
+			"active_users": "活跃用户数",
+			"stars": "GitHub Stars"
+		},
+		"footer": {
+			"ready_text": "准备好开始您的旅程了吗？",
+			"wait_text": "稍候片刻...",
+			"launch_button": "fount 正在安装...",
+			"open_fount": "打开 fount",
+			"open_or_install_fount": "打开/安装 fount",
+			"error_message": "哎呀 :(\n\n发生错误：\n${error}"
+		},
+		"error": {
+			"title": "安装失败！",
+			"connection_failed": "连接失败！",
+			"description1": "fount 安装程序似乎出了问题。",
+			"description2": "请检查您的终端并重试。",
+			"close_page": "关闭页面"
+		}
+	},
+	"startPage": {
+		"title": "fount!",
+		"newTabFailed": {
+			"title": "新标签页打开失败",
+			"instruction": "fount的启动在没有窗口弹出权限时每次都会慢1-2s",
+			"tryAllow": "试试给fount添加窗口弹出权限？",
+			"buttons": {
+				"retry": "重试",
+				"skip": "跳过",
+				"ignore": "永久忽略"
+			},
+			"ignoreConfirm": {
+				"title": "确认永久忽略？",
+				"instruction": "启动一次浪费2s，启动五万次浪费整整1天 💀",
+				"buttons": {
+					"confirm": "确认",
+					"cancel": "取消"
+				}
+			}
+		}
+	},
+	"auth": {
+		"title": "认证",
+		"subtitle": "用户数据存储在本地",
+		"usernameLabel": "用户名:",
+		"usernameInput": {
+			"placeholder": "请输入用户名"
+		},
+		"passwordLabel": "密码:",
+		"passwordInput": {
+			"placeholder": "请输入密码"
+		},
+		"confirmPasswordLabel": "确认密码:",
+		"confirmPasswordInput": {
+			"placeholder": "请再次输入密码"
+		},
+		"verificationCodeLabel": "验证码:",
+		"verificationCodeInput": {
+			"placeholder": "请输入验证码"
+		},
+		"sendCodeButton": "发送验证码",
+		"login": {
+			"title": "登录",
+			"submitButton": "登录",
+			"toggleLink": {
+				"text": "没有账号？",
+				"link": "立即注册"
+			}
+		},
+		"register": {
+			"title": "注册",
+			"submitButton": "注册",
+			"toggleLink": {
+				"text": "已有账号？",
+				"link": "立即登录"
+			}
+		},
+		"error": {
+			"passwordMismatch": "两次密码不一致。",
+			"loginError": "登录出错。",
+			"registrationError": "注册出错。",
+			"verificationCodeError": "验证码错误或已过期。",
+			"verificationCodeSent": "验证码发送成功。",
+			"verificationCodeSendError": "验证码发送失败。",
+			"verificationCodeRateLimit": "发送验证码过于频繁，请稍后再试。",
+			"lowPasswordStrength": "密码强度太低。",
+			"accountAlreadyExists": "账户已存在"
+		},
+		"passwordStrength": {
+			"veryWeak": "非常弱",
+			"weak": "弱",
+			"normal": "一般",
+			"strong": "强",
+			"veryStrong": "非常强"
+		}
+	},
+	"tutorial": {
+		"title": "来点教程？",
+		"modal": {
+			"title": "欢迎使用fount！",
+			"instruction": "走一遍新手教程吗？",
+			"buttons": {
+				"start": "开始教程",
+				"skip": "跳过"
+			}
+		},
+		"endScreen": {
+			"title": "太棒啦！教程完成！",
+			"subtitle": "现在你已经学会操作啦！",
+			"endButton": "下一步！"
+		},
+		"progressMessages": {
+			"mouseMove": "请使用您的手指尝试握住鼠标${mouseIcon}<br/>随后移动它",
+			"keyboardPress": "请找到您的键盘${keyboardIcon}<br/>尝试使用您的手指按压键盘",
+			"mobileTouchMove": "请找到您的手机${phoneIcon}<br/>尝试使用您的任意手指触摸屏幕，再移动它",
+			"mobileClick": "请尝试使用您的任意手指触碰手机屏幕${phoneIcon}<br/>之后松开"
+		}
+	},
+	"home": {
+		"title": "主页",
+		"escapeConfirm": "确定要离开fount吗？",
+		"filterInput": {
+			"placeholder": "搜索..."
+		},
+		"sidebarTitle": "详情",
+		"itemDescription": "在此处选择一个项目以查看详细信息。",
+		"noDescription": "无描述信息",
+		"alerts": {
+			"fetchHomeRegistryFailed": "获取主页注册信息失败"
+		},
+		"functionMenu": {
+			"icon": {
+				"alt": "功能菜单"
+			}
+		},
+		"chars": {
+			"tab": "角色",
+			"title": "角色选择",
+			"subtitle": "选择一个角色，然后开启聊天！",
+			"none": "空空如也",
+			"card": {
+				"refreshButton": {
+					"alt": "刷新",
+					"title": "刷新"
+				},
+				"noTags": "无标签",
+				"version": "版本",
+				"author": "作者",
+				"home_page": "主页",
+				"issue_page": "问题反馈",
+				"defaultCheckbox": {
+					"title": "设为默认角色"
+				}
+			}
+		},
+		"worlds": {
+			"tab": "世界",
+			"title": "世界选择",
+			"subtitle": "选择世界，沉浸其中！",
+			"none": "空空如也",
+			"card": {
+				"refreshButton": {
+					"alt": "刷新",
+					"title": "刷新"
+				},
+				"noTags": "无标签",
+				"version": "版本",
+				"author": "作者",
+				"home_page": "主页",
+				"issue_page": "问题反馈",
+				"defaultCheckbox": {
+					"title": "设为默认世界"
+				}
+			}
+		},
+		"personas": {
+			"tab": "人设",
+			"title": "人设选择",
+			"subtitle": "选择人设，体验人生。",
+			"none": "空空如也",
+			"card": {
+				"refreshButton": {
+					"alt": "刷新",
+					"title": "刷新"
+				},
+				"noTags": "无标签",
+				"version": "版本",
+				"author": "作者",
+				"home_page": "主页",
+				"issue_page": "问题反馈",
+				"defaultCheckbox": {
+					"title": "设为默认人设"
+				}
+			}
+		}
+	},
+	"themeManage": {
+		"title": "主题管理",
+		"instruction": "选择一个主题！",
+		"themes": {
+			"auto": "自动",
+			"light": "亮色",
+			"dark": "暗色",
+			"cupcake": "杯糕",
+			"bumblebee": "蜂蜜糖",
+			"emerald": "绿宝石",
+			"corporate": "公司",
+			"synthwave": "合成波",
+			"retro": "复古",
+			"cyberpunk": "赛博朋克",
+			"valentine": "情人节",
+			"halloween": "万圣节",
+			"garden": "花园",
+			"forest": "森林",
+			"aqua": "深海",
+			"lofi": "lo-fi",
+			"pastel": "浅色",
+			"fantasy": "幻想",
+			"wireframe": "线框",
+			"black": "黑色",
+			"luxury": "奢华",
+			"dracula": "恶魔",
+			"cmyk": "CMYK",
+			"autumn": "秋天",
+			"business": "商业",
+			"acid": "酸性",
+			"lemonade": "柠檬汁",
+			"night": "夜晚",
+			"coffee": "咖啡",
+			"winter": "冬天",
+			"dim": "昏暗",
+			"nord": "北方",
+			"sunset": "日落",
+			"caramellatte": "焦糖拿铁",
+			"abyss": "深渊",
+			"silk": "丝绒"
+		}
+	},
+	"import": {
+		"title": "导入",
+		"tabs": {
+			"fileImport": "文件导入",
+			"textImport": "文本导入"
+		},
+		"dropArea": {
+			"icon": {
+				"alt": "上传图标"
+			},
+			"text": "拖放文件到此处或点击选择文件"
+		},
+		"textArea": {
+			"placeholder": "输入要导入的文本..."
+		},
+		"buttons": {
+			"import": "导入"
+		},
+		"alerts": {
+			"importSuccess": "导入成功",
+			"importFailed": "导入失败: ${error}",
+			"unknownError": "未知错误"
+		},
+		"errors": {
+			"noFileSelected": "请选择文件",
+			"fileImportFailed": "文件导入失败: ${message}",
+			"noTextContent": "请输入文本内容",
+			"textImportFailed": "文本导入失败: ${message}",
+			"unknownError": "未知错误",
+			"handler": "处理器",
+			"error": "错误"
+		},
+		"fileItem": {
+			"removeButton": {
+				"title": "删除"
+			},
+			"removeButtonIcon": {
+				"alt": "删除"
+			}
+		}
+	},
+	"aisource_editor": {
+		"title": "AI 来源编辑器",
+		"fileList": {
+			"title": "AI 来源列表",
+			"addButton": {
+				"title": "+"
+			}
+		},
+		"configTitle": "AI 来源配置",
+		"generatorSelect": {
+			"label": "选择生成器",
+			"placeholder": "请选择"
+		},
+		"buttons": {
+			"save": "保存",
+			"delete": "删除"
+		},
+		"tooltips": {
+			"setDefault": "设为默认"
+		},
+		"alerts": {
+			"fetchFileListFailed": "获取文件列表失败: ${error}",
+			"fetchGeneratorListFailed": "获取生成器列表失败: ${error}",
+			"fetchDefaultsFailed": "获取默认组件失败: ${error}",
+			"fetchFileDataFailed": "获取文件数据失败: ${error}",
+			"noFileSelectedSave": "没有选择要保存的文件。",
+			"saveFileFailed": "保存文件失败: ${error}",
+			"setDefaultFailed": "设置默认 AI 源失败: ${error}",
+			"noFileSelectedDelete": "没有选择要删除的文件。",
+			"deleteFileFailed": "删除文件失败: ${error}",
+			"invalidFileName": "文件名不能包含以下字符： / \\ : * ? \" < > |",
+			"addFileFailed": "添加文件失败: ${error}",
+			"fetchConfigTemplateFailed": "获取配置模板失败",
+			"noGeneratorSelectedSave": "请选择生成器后再保存"
+		},
+		"confirm": {
+			"unsavedChanges": "您有未保存的更改。是否要放弃更改？",
+			"deleteFile": "确定要删除文件吗?",
+			"unsavedChangesBeforeUnload": "您有未保存的更改。确定要离开此页面吗？"
+		},
+		"prompts": {
+			"newFileName": "请输入新的 AI 来源文件名 (请勿包含后缀名):"
+		},
+		"editor": {
+			"disabledIndicator": "请先选择生成器"
+		},
+		"common_config_interface": {
+			"apiKeyRequired": "需要 API 密钥才能列出模型。",
+			"loadingModels": "正在加载模型...",
+			"availableModels": "可用模型：",
+			"copyModelIdTooltip": "点击以复制模型 ID",
+			"copied": "已复制！",
+			"loadModelsFailed": "加载模型失败：${message}"
+		}
+	},
+	"part_config": {
+		"title": "组件配置",
+		"pageTitle": "组件配置",
+		"labels": {
+			"partType": "选择组件类型",
+			"part": "选择组件"
+		},
+		"placeholders": {
+			"partTypeSelect": "请选择",
+			"partSelect": "请选择"
+		},
+		"editor": {
+			"title": "组件配置",
+			"disabledIndicator": "此组件不支持配置",
+			"buttons": {
+				"save": "保存"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "错误提示"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "获取组件类型失败",
+			"fetchPartsFailed": "获取组件列表失败",
+			"loadEditorFailed": "加载编辑器失败",
+			"saveConfigFailed": "保存组件配置失败",
+			"unsavedChanges": "您有未保存的更改。是否要放弃更改？",
+			"beforeUnload": "您有未保存的更改。确定要离开吗？"
+		}
+	},
+	"uninstall": {
+		"title": "卸载",
+		"titleWithName": "卸载 ${type}/${name}",
+		"confirmMessage": "您确定要卸载 ${type}: ${name} 吗？",
+		"invalidParamsTitle": "参数无效",
+		"infoMessage": {
+			"icon": {
+				"alt": "信息图标"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "错误图标"
+			}
+		},
+		"buttons": {
+			"confirm": "确认卸载",
+			"cancel": "取消",
+			"back": "返回"
+		},
+		"alerts": {
+			"success": "成功卸载 ${type}: ${name}",
+			"failed": "卸载失败: ${error}",
+			"invalidParams": "无效的请求参数。",
+			"httpError": "HTTP 错误！状态码：${status}"
+		}
+	},
+	"chat": {
+		"new": {
+			"title": "新聊天"
+		},
+		"title": "聊天",
+		"sidebar": {
+			"world": {
+				"icon": {
+					"alt": "世界图标"
+				},
+				"title": "世界"
+			},
+			"persona": {
+				"icon": {
+					"alt": "用户角色图标"
+				},
+				"title": "用户角色"
+			},
+			"charList": {
+				"icon": {
+					"alt": "角色列表图标"
+				},
+				"title": "角色列表",
+				"buttons": {
+					"addChar": {
+						"title": "添加角色"
+					},
+					"addCharIcon": {
+						"alt": "添加角色图标"
+					}
+				}
+			},
+			"noSelection": "无",
+			"noDescription": "无描述信息"
+		},
+		"chatArea": {
+			"title": "聊天",
+			"menuButton": {
+				"title": "菜单"
+			},
+			"menuButtonIcon": {
+				"alt": "菜单图标"
+			},
+			"input": {
+				"placeholder": "输入信息...\nCtrl+Enter 发送"
+			},
+			"sendButton": {
+				"title": "发送"
+			},
+			"sendButtonIcon": {
+				"alt": "发送图标"
+			},
+			"uploadButton": {
+				"title": "上传"
+			},
+			"uploadButtonIcon": {
+				"alt": "上传图标"
+			},
+			"voiceButton": {
+				"title": "录音"
+			},
+			"voiceButtonIcon": {
+				"alt": "录音图标"
+			},
+			"photoButton": {
+				"title": "照片"
+			},
+			"photoButtonIcon": {
+				"alt": "照片图标"
+			}
+		},
+		"rightSidebar": {
+			"title": "描述信息"
+		},
+		"messageList": {
+			"confirmDeleteMessage": "确认删除此消息？"
+		},
+		"voiceRecording": {
+			"errorAccessingMicrophone": "无法访问麦克风"
+		},
+		"messageView": {
+			"buttons": {
+				"edit": {
+					"title": "编辑"
+				},
+				"editIcon": {
+					"alt": "编辑图标"
+				},
+				"more": {
+					"title": "更多"
+				},
+				"moreIcon": {
+					"alt": "更多图标"
+				}
+			},
+			"dropdown": {
+				"delete": "删除",
+				"deleteIcon": {
+					"alt": "删除图标"
+				},
+				"copyMarkdown": "复制为markdown",
+				"copyMarkdownIcon": {
+					"alt": "复制为markdown图标"
+				},
+				"copyText": "复制为纯文本",
+				"copyTextIcon": {
+					"alt": "复制文本图标"
+				},
+				"copyHtml": "复制为html",
+				"copyHtmlIcon": {
+					"alt": "复制HTML图标"
+				}
+			}
+		},
+		"messageEdit": {
+			"input": {
+				"placeholder": "输入内容..."
+			},
+			"buttons": {
+				"confirm": {
+					"title": "确认"
+				},
+				"confirmIcon": {
+					"alt": "确认图标"
+				},
+				"cancel": {
+					"title": "取消"
+				},
+				"cancelIcon": {
+					"alt": "取消图标"
+				},
+				"upload": {
+					"title": "上传"
+				},
+				"uploadIcon": {
+					"alt": "上传图标"
+				}
+			}
+		},
+		"attachment": {
+			"buttons": {
+				"download": {
+					"title": "下载"
+				},
+				"downloadIcon": {
+					"alt": "下载图标"
+				},
+				"delete": {
+					"title": "删除"
+				},
+				"deleteIcon": {
+					"alt": "删除图标"
+				}
+			}
+		},
+		"charCard": {
+			"frequencyLabel": "频率",
+			"buttons": {
+				"removeChar": {
+					"title": "移出对话"
+				},
+				"removeCharIcon": {
+					"alt": "移除角色图标"
+				},
+				"forceReply": {
+					"title": "强制回复"
+				},
+				"forceReplyIcon": {
+					"alt": "强制回复图标"
+				}
+			}
+		}
+	},
+	"chat_history": {
+		"title": "聊天记录",
+		"pageTitle": "聊天记录",
+		"sortOptions": {
+			"time_desc": "时间降序",
+			"time_asc": "时间升序"
+		},
+		"filterInput": {
+			"placeholder": "搜索..."
+		},
+		"selectAll": "全选",
+		"buttons": {
+			"reverseSelect": "反选",
+			"deleteSelected": "删除选中",
+			"exportSelected": "导出选中"
+		},
+		"confirmDeleteChat": "确定要删除与 ${chars} 的聊天记录吗？",
+		"confirmDeleteMultiChats": "确定要删除选中的 ${count} 条聊天记录吗？",
+		"alerts": {
+			"noChatSelectedForDeletion": "请选择要删除的聊天记录",
+			"noChatSelectedForExport": "请选择要导出的聊天记录",
+			"copyError": "复制失败",
+			"deleteError": "删除失败",
+			"exportError": "导出失败"
+		},
+		"chatItemButtons": {
+			"continue": "继续",
+			"copy": "复制",
+			"export": "导出",
+			"delete": "删除"
+		}
+	},
+	"discord_bots": {
+		"title": "Discord Bot",
+		"cardTitle": "Discord Bot",
+		"buttons": {
+			"newBot": "新建",
+			"deleteBot": "删除"
+		},
+		"configCard": {
+			"title": "Bot配置",
+			"labels": {
+				"character": "绑定角色",
+				"apiKey": "Discord API 密钥",
+				"config": "配置"
+			},
+			"charSelectPlaceholder": "选择角色",
+			"apiKeyInput": {
+				"placeholder": "请输入 API 密钥"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "切换显示 API 密钥"
+			},
+			"buttons": {
+				"saveConfig": "保存配置",
+				"startBot": "启动",
+				"stopBot": "停止"
+			}
+		},
+		"prompts": {
+			"newBotName": "请输入新的 Bot 名称："
+		},
+		"alerts": {
+			"botExists": "名为 \"${botname}\" 的 Bot 已存在，请使用其他名称。",
+			"unsavedChanges": "您有未保存的更改。是否要放弃更改？",
+			"configSaved": "配置保存成功",
+			"httpError": "HTTP 错误",
+			"beforeUnload": "您有未保存的更改。确定要离开吗？"
+		}
+	},
+	"telegram_bots": {
+		"title": "Telegram Bot",
+		"cardTitle": "Telegram Bot管理",
+		"buttons": {
+			"newBot": "新建",
+			"deleteBot": "删除"
+		},
+		"configCard": {
+			"title": "Bot配置",
+			"labels": {
+				"character": "绑定角色",
+				"botToken": "Telegram Bot Token",
+				"config": "配置"
+			},
+			"charSelectPlaceholder": "选择角色",
+			"botTokenInput": {
+				"placeholder": "请输入 Telegram Bot Token"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "切换显示 API 密钥"
+			},
+			"buttons": {
+				"saveConfig": "保存配置",
+				"startBot": "启动",
+				"stopBot": "停止"
+			}
+		},
+		"prompts": {
+			"newBotName": "请输入新的 Bot 名称："
+		},
+		"alerts": {
+			"botExists": "名为 “${botname}” 的bot已存在，请使用其他名称。",
+			"unsavedChanges": "您有未保存的更改。确定要放弃这些更改吗？",
+			"configSaved": "配置已成功保存！",
+			"httpError": "HTTP 错误",
+			"beforeUnload": "您有未保存的更改。确定要离开当前页面吗？"
+		}
+	},
+	"terminal_assistant": {
+		"title": "终端辅助",
+		"initialMessage": "fount 支持将你喜欢的角色部署到你的终端中辅助你编码！",
+		"initialMessageLink": "点击这里了解更多信息"
+	},
+	"access": {
+		"title": "在其他设备上访问 fount",
+		"heading": "想在其他设备上访问 fount 吗？",
+		"instruction": {
+			"sameLAN": "确保设备和 fount 主机在同一个局域网下",
+			"accessthis": "访问以下网址："
+		},
+		"copyButton": "复制网址",
+		"copied": "网址已复制到剪贴板！"
+	},
+	"proxy": {
+		"title": "API 代理",
+		"heading": "OpenAI API 代理地址",
+		"instruction": "将以下地址填入任意需要 OpenAI API 格式的应用中，即可使用在 fount 中的AI源！",
+		"copyButton": "复制地址",
+		"copied": "地址已复制到剪贴板！"
+	},
+	"404": {
+		"title": "页面未找到",
+		"pageNotFoundText": "糟糕！您似乎来到了一个不存在的页面。",
+		"homepageButton": "返回首页"
+	},
+	"userSettings": {
+		"title": "用户设置",
+		"PageTitle": "用户设置",
+		"apiError": "API 请求失败: ${message}",
+		"generalError": "发生错误: ${message}",
+		"userInfo": {
+			"title": "用户信息",
+			"usernameLabel": "用户名:",
+			"creationDateLabel": "账户创建日期:",
+			"folderSizeLabel": "用户数据大小:",
+			"folderPathLabel": "用户数据路径:",
+			"copyPathBtnTitle": "复制路径",
+			"copiedAlert": "路径已复制到剪贴板！"
+		},
+		"changePassword": {
+			"title": "修改密码",
+			"currentPasswordLabel": "当前密码:",
+			"newPasswordLabel": "新密码:",
+			"confirmNewPasswordLabel": "确认新密码:",
+			"submitButton": "修改密码",
+			"errorMismatch": "新密码两次输入不一致。",
+			"success": "密码修改成功。"
+		},
+		"renameUser": {
+			"title": "重命名用户",
+			"newUsernameLabel": "新用户名:",
+			"submitButton": "重命名用户",
+			"confirmMessage": "您确定要更改用户名吗？这将需要您重新登录。",
+			"success": "用户已成功重命名为 “${newUsername}”。您现在将被注销。"
+		},
+		"userDevices": {
+			"title": "用户设备/会话",
+			"refreshButtonTitle": "刷新列表",
+			"noDevicesFound": "未找到任何设备或会话。",
+			"deviceInfo": "设备ID: ${deviceId}",
+			"thisDevice": "当前设备",
+			"deviceDetails": "最后上线: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
+			"revokeButton": "撤销",
+			"revokeConfirm": "您确定要从此设备/会话注销吗？",
+			"revokeSuccess": "设备/会话已成功撤销。"
+		},
+		"logout": {
+			"title": "登出",
+			"description": "这将从当前设备注销您的账户。",
+			"buttonText": "登出",
+			"confirmMessage": "您确定要登出吗？",
+			"successMessage": "已成功登出。即将跳转到登录页面..."
+		},
+		"deleteAccount": {
+			"title": "删除账户",
+			"warning": "警告：此操作将永久删除您的账户和所有相关数据，且无法恢复。",
+			"submitButton": "删除我的账户",
+			"confirmMessage1": "警告！您确定要永久删除您的账户吗？此操作无法撤销。",
+			"confirmMessage2": "为确认删除，请输入您的用户名“${username}”：",
+			"usernameMismatch": "输入的用户名与当前用户不匹配。删除操作已取消。",
+			"success": "账户已成功删除。您现在将被注销。"
+		},
+		"passwordConfirm": {
+			"title": "确认操作",
+			"message": "为继续此操作，请输入您的当前密码：",
+			"passwordLabel": "密码:",
+			"confirmButton": "确认",
+			"cancelButton": "取消"
+		}
+	},
+	"badges_maker": {
+		"title": "fount! 徽章转换器",
+		"card_title": "fount 徽章链接转换器",
+		"original_url_label": "粘贴 img.shields.io 网址",
+		"original_url_placeholder": "例如: https://img.shields.io/badge/Hello-World-blue",
+		"new_url_label": "生成的新网址",
+		"new_url_placeholder": "这里会显示转换后的网址",
+		"copy_button": "复制",
+		"preview_label": "效果预览",
+		"preview_alt": "徽章预览",
+		"copied_text": "已复制!",
+		"copy_error": "无法复制文本: ${error}",
+		"copy_fail_alert": "复制失败！"
+	},
+	"easynew": {
+		"title": "快速新建",
+		"cardTitle": "从模板创建一个新组件",
+		"templateSelect": {
+			"label": "选择一个模板"
+		},
+		"partName": {
+			"label": "组件名称",
+			"placeholder": "为你的新组件起个名字"
+		},
+		"description": {
+			"label": "描述",
+			"placeholder": "简要描述这个组件是关于什么的。"
+		},
+		"descriptionMarkdown": {
+			"label": "描述 (Markdown)",
+			"placeholder": "支持 Markdown 以获得更详细的格式。"
+		},
+		"imageUpload": {
+			"label": "头像图片"
+		},
+		"charDef": {
+			"heading": "角色定义"
+		},
+		"personality": {
+			"label": "性格",
+			"placeholder": "描述角色的核心性格特征。"
+		},
+		"scenario": {
+			"label": "场景",
+			"placeholder": "角色的背景或设定。"
+		},
+		"mesExample": {
+			"label": "消息示例",
+			"placeholder": "角色可能会说的话的例子。"
+		},
+		"firstMessage": {
+			"label": "第一条消息",
+			"placeholder": "角色说的第一句话。"
+		},
+		"personaDef": {
+			"heading": "人设定义"
+		},
+		"personaUserName": {
+			"label": "你在聊天中的名字",
+			"placeholder": "例如：船长、探险家"
+		},
+		"personaAppearance": {
+			"label": "外貌",
+			"placeholder": "描述你的外貌。"
+		},
+		"personaPersonality": {
+			"label": "性格",
+			"placeholder": "描述你的性格特征。"
+		},
+		"worldDef": {
+			"heading": "世界定义"
+		},
+		"worldPrompt": {
+			"label": "世界提示",
+			"placeholder": "描述世界的规则、环境以及角色扮演的任何全局背景。"
+		},
+		"worldGreeting": {
+			"label": "世界问候语",
+			"placeholder": "世界向用户发送的第一条消息。"
+		},
+		"author": {
+			"label": "作者",
+			"placeholder": "这个组件的作者是谁？"
+		},
+		"version": {
+			"label": "版本",
+			"placeholder": "例如：1.0.0"
+		},
+		"tags": {
+			"label": "标签",
+			"placeholder": "用逗号分隔的标签"
+		},
+		"homePage": {
+			"label": "主页",
+			"placeholder": "组件主页的URL"
+		},
+		"issuePage": {
+			"label": "问题页面",
+			"placeholder": "组件问题页面的URL"
+		},
+		"createButton": "创建组件",
+		"alerts": {
+			"success": "组件 '${partName}' 创建成功！",
+			"error": "错误: ${message}"
+		},
+		"info": {
+			"description": "这些模板只能用于快速构建简单的组件，复杂的组件仍然需要手动创建。"
+		}
+	},
+	"export": {
+		"title": "组件导出器",
+		"pageTitle": "组件导出器",
+		"pageSubtitle": "导出你喜欢的内容",
+		"steps": {
+			"partType": "选择类型",
+			"part": "选择组件",
+			"action": "导出"
+		},
+		"options": {
+			"withData": "包含数据文件",
+			"withDataDescription": "包含标记为数据的文件，例如角色记忆。"
+		},
+		"labels": {
+			"partType": "选择组件类型",
+			"part": "选择组件"
+		},
+		"placeholders": {
+			"partTypeSelect": "请选择",
+			"partSelect": "请选择"
+		},
+		"export": {
+			"title": "导出选项"
+		},
+		"editor": {
+			"disabledIndicator": "请先选择一个组件",
+			"disabledIndicatorHint": "请选择要导出的组件类型和组件"
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "错误"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "获取组件类型失败。",
+			"fetchPartsFailed": "获取组件列表失败。",
+			"loadPartDetailsFailed": "加载组件详情失败。",
+			"exportFailed": "导出失败。",
+			"shareLinkCopied": "分享链接已复制到剪贴板！",
+			"shareFailed": "创建分享链接失败。"
+		},
+		"shareMenu": {
+			"title": "选择分享时长",
+			"1h": "1 小时",
+			"12h": "12 小时",
+			"24h": "24 小时",
+			"72h": "72 小时",
+			"cancel": "取消"
+		},
+		"litterbox": {
+			"poweredBy": "分享功能由 litterbox.moe 支持",
+			"sponsorLink": "赞助他们"
+		},
+		"buttons": {
+			"export": "导出",
+			"exportWithData": "导出 (包含数据)",
+			"copyShareLink": "复制分享链接",
+			"generateShareLink": "生成分享链接",
+			"generateShareLinkWithData": "生成分享链接 (包含数据)"
+		}
+	}
+}

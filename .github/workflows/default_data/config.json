@@ -1,0 +1,24 @@
+{
+	"port": 8931,
+	"data": {
+		"users": {
+			"CI-user": {
+				"username": "CI-user",
+				"auth": {
+					"userId": "114514",
+					"password": "1919810",
+					"loginAttempts": 0,
+					"lockedUntil": null,
+					"refreshTokens": []
+				},
+				"jobs": {},
+				"locales": [],
+				"defaultParts": {},
+				"timers": {}
+			}
+		},
+		"revokedTokens": {}
+	},
+	"privateKey": "-----BEGIN PRIVATE KEY-----\nMIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgBiR+4xFJsgG5AkxG\njhHn9/u7h9fUpgF0sIyP8q32kV2hRANCAARnSzgUtiNMHemHManmTG/5sDN5vEeJ\nZM7l2MZN/iV1UMLOEwe4daiB1hVZimX89sv9Cq+lIlqMLZI8VxUqXFQl\n-----END PRIVATE KEY-----\n",
+	"publicKey": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEZ0s4FLYjTB3phzGp5kxv+bAzebxH\niWTO5djGTf4ldVDCzhMHuHWogdYVWYpl/PbL/QqvpSJajC2SPFcVKlxUJQ==\n-----END PUBLIC KEY-----\n"
+}

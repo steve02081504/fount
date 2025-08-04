@@ -1,0 +1,62 @@
+{
+	"home_function_buttons": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "切换主题"
+				},
+				"en-UK": {
+					"title": "Switch Theme"
+				},
+				"ar-SA": {
+					"title": "موضوع التبديل"
+				},
+				"de-DE": {
+					"title": "Theme wechseln"
+				},
+				"es-ES": {
+					"title": "Cambiar Tema"
+				},
+				"fr-FR": {
+					"title": "Changer de Thème"
+				},
+				"hi-IN": {
+					"title": "थीम बदलें"
+				},
+				"is-IS": {
+					"title": "Skiptaþema"
+				},
+				"it-IT": {
+					"title": "Cambia Tema"
+				},
+				"ja-JP": {
+					"title": "テーマ切り替え"
+				},
+				"ko-KR": {
+					"title": "테마 변경"
+				},
+				"nl-NL": {
+					"title": "Schakel thema"
+				},
+				"pt-PT": {
+					"title": "Mudar Tema"
+				},
+				"ru-RU": {
+					"title": "Сменить тему"
+				},
+				"uk-UA": {
+					"title": "Тема перемикання"
+				},
+				"vi-VN": {
+					"title": "Đổi chủ đề"
+				},
+				"zh-TW": {
+					"title": "切換主題"
+				}
+			},
+			"level": 0,
+			"url": "/shells/themeManage/",
+			"button": "<img src=\"https://api.iconify.design/line-md/mushroom.svg\" class=\"text-icon\"/>"
+		}
+	]
+}

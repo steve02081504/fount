@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="darkreader-lock">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta property="og:title" content="Crafting Emblems: A fount Badge Converter" />
+	<meta property="og:url" content="https://steve02081504.github.io/fount/badges/">
+	<meta property="og:type" content="website" />
+	<meta property="og:description" content="For when your project whispers for a touch of fount's soul. Convert shields.io badges, imbuing them with a new, resonant identity." />
+	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b">
+	<link rel="icon" type="image/svg+xml" href="https://steve02081504.github.io/fount/imgs/icon.svg">
+	<title data-i18n="badges_maker.title"></title>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/themes.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@unocss/runtime" crossorigin="anonymous"></script>
+	<script blocking="render" type="module" src="../preload.mjs"></script>
+	<link rel="stylesheet" href="../base.css" type="text/css">
+</head>
+
+<body class="flex justify-center items-center h-screen bg-base-100 p-4">
+
+	<div class="card w-full max-w-2xl bg-base-200 shadow-xl">
+		<div class="card-body">
+			<h2 class="card-title text-2xl mb-4" data-i18n="badges_maker.card_title"></h2>
+
+			<!-- 输入区域 -->
+			<div class="form-control w-full">
+				<label class="label" for="originalUrlInput">
+					<span class="label-text" data-i18n="badges_maker.original_url_label"></span>
+				</label>
+				<input type="text" id="originalUrlInput" data-i18n-placeholder="badges_maker.original_url_placeholder" class="input input-bordered w-full" />
+			</div>
+
+			<!-- 输出区域 -->
+			<div class="form-control w-full mt-4">
+				<label class="label" for="newUrlOutput">
+					<span class="label-text" data-i18n="badges_maker.new_url_label"></span>
+				</label>
+				<div class="join w-full">
+					<input type="text" id="newUrlOutput" data-i18n-placeholder="badges_maker.new_url_placeholder" class="input input-bordered join-item w-full" readonly />
+					<button id="copyButton" class="btn btn-primary join-item" disabled data-i18n="badges_maker.copy_button"></button>
+				</div>
+			</div>
+
+			<!-- 预览区域 -->
+			<div id="previewContainer" class="mt-6 hidden">
+				<label class="label">
+					<span class="label-text" data-i18n="badges_maker.preview_label"></span>
+				</label>
+				<div class="bg-base-100 p-4 rounded-lg flex justify-center items-center">
+					<img id="badgePreview" data-i18n-alt="badges_maker.preview_alt" src="">
+				</div>
+			</div>
+
+		</div>
+	</div>
+	<script type="module" src="./index.mjs"></script>
+</body>
+
+</html>

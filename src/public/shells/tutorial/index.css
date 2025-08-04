@@ -1,0 +1,14 @@
+body {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 100vh;
+}
+
+#progressBar {
+	text-align: center;
+}
+
+#progressText img {
+	display: inline-block;
+}

@@ -1,0 +1,62 @@
+{
+	"home_function_buttons": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "快速新建"
+				},
+				"en-UK": {
+					"title": "Quick Create"
+				},
+				"ar-SA": {
+					"title": "إنشاء سريع"
+				},
+				"de-DE": {
+					"title": "Schnellerstellung"
+				},
+				"es-ES": {
+					"title": "Creación rápida"
+				},
+				"fr-FR": {
+					"title": "Création rapide"
+				},
+				"hi-IN": {
+					"title": "त्वरित निर्माण"
+				},
+				"is-IS": {
+					"title": "Flýtigerð"
+				},
+				"it-IT": {
+					"title": "Creazione rapida"
+				},
+				"ja-JP": {
+					"title": "クイック作成"
+				},
+				"ko-KR": {
+					"title": "빠른 생성"
+				},
+				"nl-NL": {
+					"title": "Bouw snel nieuw"
+				},
+				"pt-PT": {
+					"title": "Criação Rápida"
+				},
+				"ru-RU": {
+					"title": "Быстрое создание"
+				},
+				"uk-UA": {
+					"title": "Швидко побудувати нове"
+				},
+				"vi-VN": {
+					"title": "Tạo nhanh"
+				},
+				"zh-TW": {
+					"title": "快速新建"
+				}
+			},
+			"level": 0,
+			"url": "/shells/easynew/",
+			"button": "<img src=\"https://api.iconify.design/line-md/plus.svg\" class=\"text-icon\" />"
+		}
+	]
+}

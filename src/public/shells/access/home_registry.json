@@ -1,0 +1,62 @@
+{
+	"home_function_buttons": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "在其他设备访问"
+				},
+				"en-UK": {
+					"title": "Access on other devices"
+				},
+				"ar-SA": {
+					"title": "الوصول من أجهزة أخرى"
+				},
+				"de-DE": {
+					"title": "Zugriff auf anderen Geräten"
+				},
+				"es-ES": {
+					"title": "Acceso en otros dispositivos"
+				},
+				"fr-FR": {
+					"title": "Accès sur d'autres appareils"
+				},
+				"hi-IN": {
+					"title": "अन्य डिवाइस पर पहुँचें"
+				},
+				"is-IS": {
+					"title": "Aðgangur að öðrum tækjum"
+				},
+				"it-IT": {
+					"title": "Accesso su altri dispositivi"
+				},
+				"ja-JP": {
+					"title": "他のデバイスへのアクセス"
+				},
+				"ko-KR": {
+					"title": "다른 디바이스에서 접속"
+				},
+				"nl-NL": {
+					"title": "Toegang op andere apparaten"
+				},
+				"pt-PT": {
+					"title": "Acesso em outros dispositivos"
+				},
+				"ru-RU": {
+					"title": "Доступ на других устройствах"
+				},
+				"uk-UA": {
+					"title": "Доступ на інші пристрої"
+				},
+				"vi-VN": {
+					"title": "Truy cập trên thiết bị khác"
+				},
+				"zh-TW": {
+					"title": "在其他設備訪問"
+				}
+			},
+			"level": 100,
+			"url": "/shells/access",
+			"button": "<img src=\"https://api.iconify.design/line-md/cloud-alt-twotone.svg\" class=\"text-icon\"/>"
+		}
+	]
+}

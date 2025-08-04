@@ -1,0 +1,187 @@
+body {
+	margin: 0;
+}
+
+/* 聊天消息样式 */
+.chat-message {
+	position: relative;
+	transition: transform 0.3s ease;
+}
+
+.chat-message:hover {
+	transform: translateX(5px);
+}
+
+.chat-message .message-content {
+	max-width: calc(var(--chat-header-width) - 83px);
+}
+
+/* 左右箭头 */
+.chat-message .arrow {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	cursor: pointer;
+	opacity: 0;
+	transition: opacity 0.2s ease;
+	z-index: 10;
+}
+
+.chat-message:hover .arrow {
+	opacity: 0.8;
+}
+
+.chat-message .arrow.left {
+	left: 10px;
+}
+
+.chat-message .arrow.right {
+	right: 10px;
+}
+
+/* 平滑过渡效果 */
+.smooth-transition {
+	transition: opacity 0.5s ease-in-out;
+}
+
+/* 消息按钮组 (编辑和删除) */
+.chat-message .button-group {
+	display: none;
+	position: absolute;
+	top: 5px;
+	right: 5px;
+}
+
+.chat-message:hover .button-group {
+	display: inline-block;
+}
+
+/* 编辑区域 */
+.chat-message .edit-area {
+	min-width: 80%;
+}
+
+/* 编辑区域按钮组 */
+.chat-message .edit-area .edit-button-group {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+/* 附件容器 */
+.attachment {
+	min-width: 100px;
+	min-height: 100px;
+	position: relative;
+	border-radius: 5px;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	border: 1px solid #ccc;
+}
+
+/* 附件预览 */
+.attachment .preview {
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
+	background-color: rgba(0, 0, 0, 0.2);
+}
+
+.attachment .preview-img {
+	cursor: zoom-in;
+	max-width: 100px;
+	max-height: 100px;
+}
+
+/* 附件文件名 */
+.attachment .file-name {
+	display: block;
+	text-align: center;
+	font-size: 0.8em;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	width: 100%;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.5);
+	color: #fff;
+	padding: 2px 0;
+}
+
+/* 附件按钮组 */
+.attachment .attachment-button-group {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	display: none;
+}
+
+.attachment:hover .attachment-button-group {
+	display: block;
+}
+
+/* 发送区域附件预览容器 */
+.attachment-preview {
+	display: flex;
+	gap: 10px;
+	margin-top: 10px;
+}
+
+/* 发送区域附件样式 */
+.attachment-preview .attachment {
+	border: 1px dashed #ccc;
+	padding: 5px;
+}
+
+.attachment-preview .preview-img,
+.attachment-edit-preview .preview-img {
+	width: 64px;
+	height: 64px;
+}
+
+.attachment-preview .file-name {
+	font-size: 0.7em;
+}
+
+/* 消息中的附件容器 */
+.attachments {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin-top: 10px;
+}
+
+/* 编辑区域附件预览容器 */
+.attachment-edit-preview {
+	display: flex;
+	gap: 10px;
+	margin-top: 10px;
+}
+
+/* 拖拽区域样式 */
+.dragover {
+	border: 2px dashed #007bff;
+}
+
+/* 模态框样式 */
+.modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.8);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 100;
+}
+
+.modal-img {
+	max-width: 90%;
+	max-height: 90%;
+	object-fit: contain;
+}

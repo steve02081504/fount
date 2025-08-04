@@ -1,0 +1,80 @@
+<div class="space-y-4">
+	<!-- Basic Info -->
+	<div>
+		<label for="part-name" class="label">
+			<span class="label-text" data-i18n="easynew.partName.label">Persona Name</span>
+		</label>
+		<input type="text" id="part-name" name="name" class="input input-bordered w-full" required data-i18n-placeholder="easynew.partName.placeholder">
+	</div>
+	<div>
+		<label for="part-description" class="label">
+			<span class="label-text" data-i18n="easynew.description.label">Description</span>
+		</label>
+		<textarea id="part-description" name="description" class="textarea textarea-bordered w-full" rows="2" data-i18n-placeholder="easynew.description.placeholder"></textarea>
+	</div>
+	<div>
+		<label for="part-description-md" class="label">
+			<span class="label-text" data-i18n="easynew.descriptionMarkdown.label">Description (Markdown)</span>
+		</label>
+		<textarea id="part-description-md" name="description_markdown" class="textarea textarea-bordered w-full" rows="4" data-i18n-placeholder="easynew.descriptionMarkdown.placeholder"></textarea>
+	</div>
+
+	<div>
+		<label for="image-upload" class="label">
+			<span class="label-text" data-i18n="easynew.imageUpload.label">Avatar Image</span>
+		</label>
+		<input type="file" id="image-upload" name="image" class="file-input file-input-bordered w-full" accept="image/png, image/jpeg, image/webp">
+	</div>
+	<div>
+		<label for="part-author" class="label">
+			<span class="label-text" data-i18n="easynew.author.label">Author</span>
+		</label>
+		<input type="text" id="part-author" name="author" class="input input-bordered w-full" data-i18n-placeholder="easynew.author.placeholder">
+	</div>
+	<div>
+		<label for="part-version" class="label">
+			<span class="label-text" data-i18n="easynew.version.label">Version</span>
+		</label>
+		<input type="text" id="part-version" name="version" class="input input-bordered w-full" data-i18n-placeholder="easynew.version.placeholder">
+	</div>
+	<div>
+		<label for="part-tags" class="label">
+			<span class="label-text" data-i18n="easynew.tags.label">Tags</span>
+		</label>
+		<input type="text" id="part-tags" name="tags" class="input input-bordered w-full" data-i18n-placeholder="easynew.tags.placeholder">
+	</div>
+	<div>
+		<label for="part-home-page" class="label">
+			<span class="label-text" data-i18n="easynew.homePage.label">Home Page</span>
+		</label>
+		<input type="url" id="part-home-page" name="home_page" class="input input-bordered w-full" data-i18n-placeholder="easynew.homePage.placeholder">
+	</div>
+	<div>
+		<label for="part-issue-page" class="label">
+			<span class="label-text" data-i18n="easynew.issuePage.label">Issue Page</span>
+		</label>
+		<input type="url" id="part-issue-page" name="issue_page" class="input input-bordered w-full" data-i18n-placeholder="easynew.issuePage.placeholder">
+	</div>
+
+	<!-- Persona Definition -->
+	<hr class="my-4">
+	<h3 class="text-lg font-bold" data-i18n="easynew.personaDef.heading">Persona Definition</h3>
+	<div>
+		<label for="persona-user-name" class="label">
+			<span class="label-text" data-i18n="easynew.personaUserName.label">Your Name in Chat</span>
+		</label>
+		<input type="text" id="persona-user-name" name="user_name" class="input input-bordered w-full" data-i18n-placeholder="easynew.personaUserName.placeholder">
+	</div>
+	<div>
+		<label for="persona-appearance" class="label">
+			<span class="label-text" data-i18n="easynew.personaAppearance.label">Appearance</span>
+		</label>
+		<textarea id="persona-appearance" name="appearance" class="textarea textarea-bordered w-full" rows="2" data-i18n-placeholder="easynew.personaAppearance.placeholder"></textarea>
+	</div>
+	<div>
+		<label for="persona-personality" class="label">
+			<span class="label-text" data-i18n="easynew.personaPersonality.label">Personality</span>
+		</label>
+		<textarea id="persona-personality" name="personality" class="textarea textarea-bordered w-full" rows="3" data-i18n-placeholder="easynew.personaPersonality.placeholder"></textarea>
+	</div>
+</div>

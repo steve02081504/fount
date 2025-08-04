@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="darkreader-lock">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta property="og:title" content="The Threshold of Self: Entering Your fount Sanctuary" />
+	<meta property="og:url" content="https://steve02081504.github.io/fount/protocol?url=fount://page/login/">
+	<meta property="og:type" content="website" />
+	<meta property="og:description" content="Here, you define your presence. Whether returning to a familiar haven or carving out a new space for your stories, this is where your personal fount journey begins." />
+	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b">
+	<title data-i18n="auth.title"></title>
+	<link rel="icon" href="/favicon.ico">
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@unocss/runtime" crossorigin="anonymous"></script>
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<script type="module" src="/base.mjs"></script>
+	<link rel="stylesheet" href="./index.css" type="text/css" />
+</head>
+
+<body>
+	<div class="p-4">
+		<div class="card w-96 bg-base-100 shadow-xl">
+			<div class="card-body">
+				<form id="auth-form">
+					<h2 class="card-title" id="form-title"></h2>
+					<p class="text-xs text-gray-500" id="form-subtitle" data-i18n="auth.subtitle"></p>
+					<p class="text-error text-xs" id="error-message"></p>
+					<div class="form-control">
+						<label class="label" for="username">
+							<span class="label-text" data-i18n="auth.usernameLabel"></span>
+						</label>
+						<input type="text" id="username" name="username" class="input" required data-i18n="auth.usernameInput" autocomplete="username" />
+					</div>
+					<div class="form-control">
+						<label class="label" for="password">
+							<span class="label-text" data-i18n="auth.passwordLabel"></span>
+						</label>
+						<input type="password" id="password" name="password" class="input" required data-i18n="auth.passwordInput" autocomplete="current-password" />
+						<div id="password-strength-feedback" class="text-xs mt-1"></div>
+					</div>
+					<div class="form-control" id="confirm-password-group">
+						<label class="label" for="confirm-password">
+							<span class="label-text" data-i18n="auth.confirmPasswordLabel"></span>
+						</label>
+						<input type="password" id="confirm-password" name="confirm-password" class="input" data-i18n="auth.confirmPasswordInput" autocomplete="new-password">
+					</div>
+					<div class="form-control" id="verification-code-group">
+						<label class="label" for="verification-code">
+							<span class="label-text" data-i18n="auth.verificationCodeLabel"></span>
+						</label>
+						<div class="flex gap-2">
+							<input type="text" id="verification-code" name="verification-code" class="input" required data-i18n="auth.verificationCodeInput" autocomplete="one-time-code" />
+							<button class="btn btn-primary" type="button" id="send-verification-code-btn" data-i18n="auth.sendCodeButton"></button>
+						</div>
+					</div>
+					<div class="card-actions justify-end mt-4">
+						<button class="btn btn-primary" type="submit" id="submit-btn" data-i18n="auth.login.submitButton"></button>
+					</div>
+					<p class="text-sm mt-2" id="toggle-link"></p>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<script type="module" src="./index.mjs"></script>
+</body>
+
+</html>

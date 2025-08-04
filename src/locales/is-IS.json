@@ -1,0 +1,1098 @@
+{
+	"lang": "is-IS",
+	"fountConsole": {
+		"server": {
+			"start": "Ræsi netþjón",
+			"starting": "Netþjónn er að ræsa...",
+			"ready": "Netþjónn er ræstur",
+			"showUrl": {
+				"https": "HTTPS netþjónn keyrir á ${url}",
+				"http": "HTTP netþjónn keyrir á ${url}"
+			},
+			"localUrl": "Opnaðu fount á öðrum tækjum á sama neti: ${url}",
+			"standingBy": "Standing by..."
+		},
+		"jobs": {
+			"restartingJob": "Endurræsi ${parttype} ${partname} verkefni fyrir notanda ${username}: ${uid}"
+		},
+		"ipc": {
+			"sendCommandFailed": "Mistókst að senda skipun: ${error}",
+			"invalidCommand": "Ógild skipun, vinsamlegast notaðu \"fount run <íhlutagerð> <notandanafn> <íhlutarheiti> <færibreytur...>\"",
+			"runPartLog": "Keyri ${parttype} ${partname} sem ${username}, með færibreytum: ${args}",
+			"invokePartLog": "Kalla á ${parttype} ${partname} sem ${username}, með gögnum: ${invokedata}",
+			"unsupportedCommand": "Óstudd tegund skipunar",
+			"processMessageError": "Villa við vinnslu IPC skilaboða: ${error}",
+			"invalidCommandFormat": "Ógilt skipanasnið",
+			"socketError": "Socket villa: ${error}",
+			"instanceRunning": "Annað tilvik er þegar í gangi",
+			"serverStarted": "IPC netþjónn er ræstur",
+			"parseResponseFailed": "Mistókst að þátta svar netþjóns: ${error}",
+			"cannotParseResponse": "Gat ekki þáttað svar netþjóns",
+			"unknownError": "Óþekkt villa"
+		},
+		"partManager": {
+			"git": {
+				"noUpstream": "Engin uppstreymisgrein er skilgreind fyrir greinina '${currentBranch}', sleppi uppfærsluskoðun.",
+				"dirtyWorkingDirectory": "Vinnusvæðið er ekki hreint. Vinsamlegast geymdu eða festu breytingarnar þínar áður en þú uppfærir.",
+				"updating": "Uppfæri frá fjarlægu kóðasafni...",
+				"localAhead": "Staðbundin grein er á undan fjarlægri grein. Engin þörf á uppfærslu.",
+				"diverged": "Staðbundnar og fjarlægar greinar hafa skilist að. Þvinga uppfærslu...",
+				"upToDate": "Þegar uppfært.",
+				"updateFailed": "Mistókst að uppfæra íhlut frá fjarlægu kóðasafni: ${error}"
+			},
+			"partInited": "${parttype} hluti ${partname} hefur verið frumstilltur",
+			"partLoaded": "${parttype} hluti ${partname} er hlaðinn"
+		},
+		"web": {
+			"requestReceived": "Tók á móti beiðni: ${method} ${url}"
+		},
+		"route": {
+			"setLanguagePreference": "Notandi ${username} stillti valinn tungumál: ${preferredLanguages}"
+		},
+		"auth": {
+			"tokenVerifyError": "Villa við staðfestingu auðkennis: ${error}",
+			"refreshTokenError": "Villa við endurnýjun auðkennis: ${error}",
+			"logoutRefreshTokenProcessError": "Villa við vinnslu endurnýjunar auðkennis við útskráningu: ${error}",
+			"revokeTokenNoJTI": "Get ekki afturkallað auðkenni án jti",
+			"accountLockedLog": "Aðgangur notanda ${username} hefur verið læstur vegna margra misheppnaðra innskráningartilrauna"
+		},
+		"verification": {
+			"codeGeneratedLog": "Staðfestingarkóði: ${code} (rennur út eftir 60 sekúndur)",
+			"codeNotifyTitle": "Staðfestingarkóði",
+			"codeNotifyBody": "Staðfestingarkóðinn þinn er: ${code} (rennur út eftir 60 sekúndur)"
+		},
+		"tray": {
+			"readIconFailed": "Mistókst að lesa táknmyndaskrá: ${error}",
+			"createTrayFailed": "Mistókst að búa til táknmynd á verkefnaslá: ${error}",
+			"title": "fount",
+			"tooltip": "fount",
+			"items": {
+				"open": {
+					"title": "Opna",
+					"tooltip": "Opna fount"
+				},
+				"github": {
+					"title": "GitHub",
+					"tooltip": "Opna GitHub síðu fount"
+				},
+				"discord": {
+					"title": "Discord",
+					"tooltip": "Opna Discord þjón fount"
+				},
+				"restart": {
+					"title": "Endurræsa",
+					"tooltip": "Endurræsa forritið"
+				},
+				"exit": {
+					"title": "Hætta",
+					"tooltip": "Hætta í forritinu"
+				}
+			}
+		},
+		"discordbot": {
+			"botStarted": "Persónan ${charname} hefur skráð sig inn á Discord Bot ${botusername}"
+		},
+		"telegrambot": {
+			"botStarted": "Persónan ${charname} hefur skráð sig inn á Telegram Bot ${botusername}"
+		}
+	},
+	"protocolhandler": {
+		"title": "Meðhöndla fount samskiptareglu",
+		"processing": "Vinn úr samskiptareglu...",
+		"invalidProtocol": "Ógild samskiptaregla",
+		"insufficientParams": "Ófullnægjandi færibreytur",
+		"unknownCommand": "Óþekkt skipun",
+		"shellCommandSent": "Skeljarskipun send",
+		"shellCommandFailed": "Mistókst að senda skeljarskipun",
+		"shellCommandError": "Villa við sendingu skeljarskipunar",
+		"fountNotFound": "Æji :(\n\nFann ekki fount, þarftu kannski að setja það upp fyrst?",
+		"unknownError": "Æji :(\n\nVilla kom upp:\n${error}"
+	},
+	"installer_wait_screen": {
+		"title": "Velkomin í fount!",
+		"hero": {
+			"title": "Þinn yfirgripsmikli gervigreindar-persónufélagi",
+			"description": "fount er gervigreindarknúinn samskiptavettvangur fyrir persónur, hannaður til að styrkja <i>þig</i>. Það er brú sem tengir þig við persónur úr ímyndunaraflinu, sem gerir þér kleift að spjalla við þær áreynslulaust, búa til þínar eigin persónur og deila þeim með heiminum."
+		},
+		"feature1": {
+			"title": "Samfelld samtöl, hvar og hvenær sem er",
+			"description": "Byrjaðu spjall í tölvunni þinni og haltu áfram óaðfinnanlega í símanum eða spjaldtölvunni. fount heldur samtölunum þínum samstilltum, svo þú ert alltaf í sambandi við persónurnar þínar, hvert sem þú ferð. Keyrir á Windows, macOS, Linux og jafnvel Android."
+		},
+		"feature2": {
+			"title": "Fallegt, sérhannað viðmót",
+			"description": "Veldu úr yfir 30 fallegum þemum, eða búðu til þitt eigið. fount er þitt persónulega strigamálverk. Tjáðu þig, sérsníddu umhverfið að þínum smekk og fáðu sannarlega persónulega upplifun."
+		},
+		"feature3": {
+			"title": "Tjáningarríkt, yfirgripsmikið spjall",
+			"description": "fount nýtir kraft HTML til fulls og leyfir persónum að tjá sig með ríkulegum texta, myndum og jafnvel gagnvirkum þáttum. Taktu þátt í kraftmiklum og grípandi hópaspjöllum með mörgum persónum í einu."
+		},
+		"feature4": {
+			"title": "Óheft samþætting gervigreindarheimilda",
+			"description": "fount býður upp á óviðjafnanlegt val og sveigjanleika. Tengstu við <i>hvaða</i> gervigreindarheimild sem er - OpenAI, Claude, OpenRouter, NovelAI og fleiri. Samskiptarökfræðin mun mótast af <i>þínum</i> vilja, með krafti kóðans."
+		},
+		"theme_selector": {
+			"title": "Veldu þitt útlit",
+			"description": "Veldu þema til að sérsníða upplifun þína."
+		},
+		"mini_game": {
+			"title": "Spilaðu smáleik",
+			"description1": "Er uppsetningin of hæg?",
+			"description2": "Hér er smáleikur til að drepa tímann."
+		},
+		"data_showcase": {
+			"title_prefix": "fount er",
+			"adjectives": [
+				"sveigjanlegasta",
+				"möguleikaríkasta",
+				"framfarasæknasta",
+				"samhæfanlegasta",
+				"minnsta og öflugasta"
+			],
+			"title_of": "",
+			"nouns": [
+				"gervigreindar-sýndarpersóna",
+				"Agent",
+				"net-eiginkona",
+				"stafrænn aðstoðarmaður"
+			],
+			"platforms": [
+				"grunnvettvangur",
+				"spjall-framendi",
+				"keyrsluforrit"
+			],
+			"active_users": "Fjöldi virkra notenda",
+			"stars": "GitHub stjörnur"
+		},
+		"footer": {
+			"ready_text": "Tilbúin(n) að hefja ferðalagið?",
+			"wait_text": "Vinsamlegast bíðið augnablik...",
+			"launch_button": "fount er í uppsetningu...",
+			"open_fount": "Opna fount",
+			"open_or_install_fount": "Opna/setja upp fount",
+			"error_message": "Æji :(\n\nVilla kom upp:\n${error}"
+		},
+		"error": {
+			"title": "Uppsetning mistókst!",
+			"connection_failed": "Tenging mistókst!",
+			"description1": "Svo virðist sem eitthvað hafi farið úrskeiðis í uppsetningarforriti fount.",
+			"description2": "Vinsamlegast athugaðu flugstöðina þína og reyndu aftur.",
+			"close_page": "Loka síðu"
+		}
+	},
+	"startPage": {
+		"title": "fount!",
+		"newTabFailed": {
+			"title": "Mistókst að opna nýjan flipa",
+			"instruction": "Ræsing fount er alltaf 1-2 sekúndum hægari án leyfis fyrir sprettiglugga",
+			"tryAllow": "Viltu prófa að gefa fount leyfi fyrir sprettiglugga?",
+			"buttons": {
+				"retry": "Reyna aftur",
+				"skip": "Sleppa",
+				"ignore": "Hunsa varanlega"
+			},
+			"ignoreConfirm": {
+				"title": "Ertu viss um að hunsa varanlega?",
+				"instruction": "Að sóa 2 sekúndum í hverri ræsingu, sóa heilum degi eftir fimmtíu þúsund ræsingar 💀",
+				"buttons": {
+					"confirm": "Staðfesta",
+					"cancel": "Hætta við"
+				}
+			}
+		}
+	},
+	"auth": {
+		"title": "Auðkenning",
+		"subtitle": "Notandagögn eru geymd staðbundið",
+		"usernameLabel": "Notandanafn:",
+		"usernameInput": {
+			"placeholder": "Sláðu inn notandanafn"
+		},
+		"passwordLabel": "Lykilorð:",
+		"passwordInput": {
+			"placeholder": "Sláðu inn lykilorð"
+		},
+		"confirmPasswordLabel": "Staðfesta lykilorð:",
+		"confirmPasswordInput": {
+			"placeholder": "Sláðu inn lykilorðið aftur"
+		},
+		"verificationCodeLabel": "Staðfestingarkóði:",
+		"verificationCodeInput": {
+			"placeholder": "Sláðu inn staðfestingarkóða"
+		},
+		"sendCodeButton": "Senda staðfestingarkóða",
+		"login": {
+			"title": "Innskráning",
+			"submitButton": "Skrá inn",
+			"toggleLink": {
+				"text": "Ekki með aðgang?",
+				"link": "Nýskráning"
+			}
+		},
+		"register": {
+			"title": "Nýskráning",
+			"submitButton": "Nýskrá",
+			"toggleLink": {
+				"text": "Þegar með aðgang?",
+				"link": "Skrá inn"
+			}
+		},
+		"error": {
+			"passwordMismatch": "Lykilorðin stemma ekki.",
+			"loginError": "Villa við innskráningu.",
+			"registrationError": "Villa við nýskráningu.",
+			"verificationCodeError": "Staðfestingarkóði rangur eða útrunninn.",
+			"verificationCodeSent": "Staðfestingarkóði sendur.",
+			"verificationCodeSendError": "Mistókst að senda staðfestingarkóða.",
+			"verificationCodeRateLimit": "Of margar tilraunir til að senda kóða, vinsamlegast reyndu aftur síðar.",
+			"lowPasswordStrength": "Lykilorðið er of veikt.",
+			"accountAlreadyExists": "Aðgangur er þegar til"
+		},
+		"passwordStrength": {
+			"veryWeak": "Mjög veikt",
+			"weak": "Veikt",
+			"normal": "Meðalsterkt",
+			"strong": "Sterkt",
+			"veryStrong": "Mjög sterkt"
+		}
+	},
+	"tutorial": {
+		"title": "Viltu smá kennslu?",
+		"modal": {
+			"title": "Velkomin í fount!",
+			"instruction": "Viltu fara í gegnum byrjendakennsluna?",
+			"buttons": {
+				"start": "Hefja kennslu",
+				"skip": "Sleppa"
+			}
+		},
+		"endScreen": {
+			"title": "Frábært! Kennslu lokið!",
+			"subtitle": "Nú kanntu á þetta!",
+			"endButton": "Næsta skref!"
+		},
+		"progressMessages": {
+			"mouseMove": "Finndu nú músina þína og reyndu, með fingrum þínum, að ná góðu taki á henni ${mouseIcon}<br/>Hreyfðu hana svo til og frá.",
+			"keyboardPress": "Finndu nú lyklaborðið þitt ${keyboardIcon}<br/>og reyndu að nota fingur þinn til að ýta á einhvern takkann.",
+			"mobileTouchMove": "Finndu nú farsímann þinn ${phoneIcon}<br/>Reyndu að nota hvaða fingur sem er til að snerta skjáinn og hreyfa hann svo.",
+			"mobileClick": "Reyndu nú að nota einhvern af fingrum þínum til að snerta skjá farsímans ${phoneIcon}<br/>og lyftu honum svo aftur."
+		}
+	},
+	"home": {
+		"title": "Forsíða",
+		"escapeConfirm": "Ertu viss um að þú viljir yfirgefa fount?",
+		"filterInput": {
+			"placeholder": "Leita..."
+		},
+		"sidebarTitle": "Nánar",
+		"itemDescription": "Veldu atriði hér til að sjá nánari upplýsingar.",
+		"noDescription": "Engin lýsing",
+		"alerts": {
+			"fetchHomeRegistryFailed": "Mistókst að sækja skráningu forsíðu"
+		},
+		"functionMenu": {
+			"icon": {
+				"alt": "Aðgerðavalmynd"
+			}
+		},
+		"chars": {
+			"tab": "Persónur",
+			"title": "Persónuval",
+			"subtitle": "Veldu persónu og byrjaðu að spjalla!",
+			"none": "Tómatóm",
+			"card": {
+				"refreshButton": {
+					"alt": "Endurhlaða",
+					"title": "Endurhlaða"
+				},
+				"noTags": "Engin merki",
+				"version": "Útgáfa",
+				"author": "Höfundur",
+				"home_page": "Heimasíða",
+				"issue_page": "Tilkynna villu",
+				"defaultCheckbox": {
+					"title": "Sjálfgefin persóna"
+				}
+			}
+		},
+		"worlds": {
+			"tab": "Heimar",
+			"title": "Heimavals",
+			"subtitle": "Veldu heim og sökktu þér niður!",
+			"none": "Tómatóm",
+			"card": {
+				"refreshButton": {
+					"alt": "Endurhlaða",
+					"title": "Endurhlaða"
+				},
+				"noTags": "Engin merki",
+				"version": "Útgáfa",
+				"author": "Höfundur",
+				"home_page": "Heimasíða",
+				"issue_page": "Tilkynna villu",
+				"defaultCheckbox": {
+					"title": "Sjálfgefinn heimur"
+				}
+			}
+		},
+		"personas": {
+			"tab": "Sjálfsmyndir",
+			"title": "Sjálfsmyndarval",
+			"subtitle": "Veldu sjálfsmynd, upplifðu lífið.",
+			"none": "Tómatóm",
+			"card": {
+				"refreshButton": {
+					"alt": "Endurhlaða",
+					"title": "Endurhlaða"
+				},
+				"noTags": "Engin merki",
+				"version": "Útgáfa",
+				"author": "Höfundur",
+				"home_page": "Heimasíða",
+				"issue_page": "Tilkynna villu",
+				"defaultCheckbox": {
+					"title": "Sjálfgefin sjálfsmynd"
+				}
+			}
+		}
+	},
+	"themeManage": {
+		"title": "Þemastjórnun",
+		"instruction": "Veldu þema!",
+		"themes": {
+			"auto": "Sjálfvirkt",
+			"light": "Ljóst",
+			"dark": "Dökkt",
+			"cupcake": "Muffins",
+			"bumblebee": "Humla",
+			"emerald": "Smaragður",
+			"corporate": "Fyrirtækja",
+			"synthwave": "Synthwave",
+			"retro": "Retró",
+			"cyberpunk": "Netpönk",
+			"valentine": "Valentínus",
+			"halloween": "Hrekkjavaka",
+			"garden": "Garður",
+			"forest": "Skógur",
+			"aqua": "Vatna",
+			"lofi": "Lofi",
+			"pastel": "Pastel",
+			"fantasy": "Fantasía",
+			"wireframe": "Vírrammi",
+			"black": "Svart",
+			"luxury": "Lúxus",
+			"dracula": "Drakúla",
+			"cmyk": "CMYK",
+			"autumn": "Haust",
+			"business": "Viðskipta",
+			"acid": "Sýru",
+			"lemonade": "Límónaði",
+			"night": "Nótt",
+			"coffee": "Kaffi",
+			"winter": "Vetur",
+			"dim": "Dimmt",
+			"nord": "Norrænt",
+			"sunset": "Sólarlag",
+			"caramellatte": "Karamellu Latte",
+			"abyss": "Hyldýpi",
+			"silk": "Silki"
+		}
+	},
+	"import": {
+		"title": "Innflutningur",
+		"tabs": {
+			"fileImport": "Flytja inn skrá",
+			"textImport": "Flytja inn texta"
+		},
+		"dropArea": {
+			"icon": {
+				"alt": "Upphalstákn"
+			},
+			"text": "Dragðu og slepptu skrám hér eða smelltu til að velja skrár"
+		},
+		"textArea": {
+			"placeholder": "Sláðu inn texta til að flytja inn..."
+		},
+		"buttons": {
+			"import": "Flytja inn"
+		},
+		"alerts": {
+			"importSuccess": "Innflutningur tókst",
+			"importFailed": "Innflutningur mistókst: ${error}",
+			"unknownError": "Óþekkt villa"
+		},
+		"errors": {
+			"noFileSelected": "Vinsamlegast veldu skrá",
+			"fileImportFailed": "Innflutningur á skrá mistókst: ${message}",
+			"noTextContent": "Vinsamlegast sláðu inn texta",
+			"textImportFailed": "Innflutningur á texta mistókst: ${message}",
+			"unknownError": "Óþekkt villa",
+			"handler": "Meðhöndlari",
+			"error": "Villa"
+		},
+		"fileItem": {
+			"removeButton": {
+				"title": "Fjarlægja"
+			},
+			"removeButtonIcon": {
+				"alt": "Fjarlægja"
+			}
+		}
+	},
+	"aisource_editor": {
+		"title": "Ritill fyrir gervigreindarheimildir",
+		"fileList": {
+			"title": "Listi yfir gervigreindarheimildir",
+			"addButton": {
+				"title": "+"
+			}
+		},
+		"configTitle": "Stillingar gervigreindarheimildar",
+		"generatorSelect": {
+			"label": "Veldu rafal",
+			"placeholder": "Vinsamlegast veldu"
+		},
+		"buttons": {
+			"save": "Vista",
+			"delete": "Eyða"
+		},
+		"tooltips": {
+			"setDefault": "Sjálfgefið"
+		},
+		"alerts": {
+			"fetchFileListFailed": "Mistókst að sækja skráalista: ${error}",
+			"fetchGeneratorListFailed": "Mistókst að sækja rafalalista: ${error}",
+			"fetchDefaultsFailed": "Mistókst að sækja sjálfgefna íhluti: ${error}",
+			"fetchFileDataFailed": "Mistókst að sækja skráargögn: ${error}",
+			"noFileSelectedSave": "Engin skrá valin til að vista.",
+			"saveFileFailed": "Mistókst að vista skrá: ${error}",
+			"setDefaultFailed": "Mistókst að stilla sjálfgefna gervigreindarheimild: ${error}",
+			"noFileSelectedDelete": "Engin skrá valin til að eyða.",
+			"deleteFileFailed": "Mistókst að eyða skrá: ${error}",
+			"invalidFileName": "Skráarheiti má ekki innihalda eftirfarandi stafi: / \\ : * ? \" < > |",
+			"addFileFailed": "Mistókst að bæta við skrá: ${error}",
+			"fetchConfigTemplateFailed": "Mistókst að sækja stillingasniðmát",
+			"noGeneratorSelectedSave": "Vinsamlegast veldu rafal áður en þú vistar"
+		},
+		"confirm": {
+			"unsavedChanges": "Þú hefur óvistaðar breytingar. Viltu henda þeim?",
+			"deleteFile": "Ertu viss um að þú viljir eyða skránni?",
+			"unsavedChangesBeforeUnload": "Þú hefur óvistaðar breytingar. Ertu viss um að þú viljir yfirgefa þessa síðu?"
+		},
+		"prompts": {
+			"newFileName": "Vinsamlegast sláðu inn nýtt skráarheiti fyrir gervigreindarheimild (án skráarendingar):"
+		},
+		"editor": {
+			"disabledIndicator": "Vinsamlegast veldu rafal fyrst"
+		},
+		"common_config_interface": {
+			"apiKeyRequired": "API lykill er nauðsynlegur til að lista upp líkönin.",
+			"loadingModels": "Hleður líkönum...",
+			"availableModels": "Líkön í boði:",
+			"copyModelIdTooltip": "Smelltu til að afrita líkanauðkennið",
+			"copied": "Afritað!",
+			"loadModelsFailed": "Mistókst að hlaða líkönum: ${message}"
+		}
+	},
+	"part_config": {
+		"title": "Stillingar íhlutar",
+		"pageTitle": "Stillingar íhlutar",
+		"labels": {
+			"partType": "Veldu tegund íhlutar",
+			"part": "Veldu íhlut"
+		},
+		"placeholders": {
+			"partTypeSelect": "Vinsamlegast veldu",
+			"partSelect": "Vinsamlegast veldu"
+		},
+		"editor": {
+			"title": "Stillingar íhlutar",
+			"disabledIndicator": "Þessi íhlutur styður ekki stillingar",
+			"buttons": {
+				"save": "Vista"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Villutilkynning"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "Mistókst að sækja tegundir íhluta",
+			"fetchPartsFailed": "Mistókst að sækja lista yfir íhluti",
+			"loadEditorFailed": "Mistókst að hlaða ritil",
+			"saveConfigFailed": "Mistókst að vista stillingar íhlutar",
+			"unsavedChanges": "Þú hefur óvistaðar breytingar. Viltu henda þeim?",
+			"beforeUnload": "Þú hefur óvistaðar breytingar. Ertu viss um að þú viljir fara?"
+		}
+	},
+	"uninstall": {
+		"title": "Fjarlægja",
+		"titleWithName": "Fjarlægja ${type}/${name}",
+		"confirmMessage": "Ertu viss um að þú viljir fjarlægja ${type}: ${name}?",
+		"invalidParamsTitle": "Ógildar færibreytur",
+		"infoMessage": {
+			"icon": {
+				"alt": "Upplýsingatákn"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Villutákn"
+			}
+		},
+		"buttons": {
+			"confirm": "Staðfesta fjarlægingu",
+			"cancel": "Hætta við",
+			"back": "Til baka"
+		},
+		"alerts": {
+			"success": "Tókst að fjarlægja ${type}: ${name}",
+			"failed": "Fjarlæging mistókst: ${error}",
+			"invalidParams": "Ógildar beiðnisfæribreytur.",
+			"httpError": "HTTP villa! Stöðukóði: ${status}"
+		}
+	},
+	"chat": {
+		"new": {
+			"title": "Nýtt spjall"
+		},
+		"title": "Spjall",
+		"sidebar": {
+			"world": {
+				"icon": {
+					"alt": "Heimstákn"
+				},
+				"title": "Heimur"
+			},
+			"persona": {
+				"icon": {
+					"alt": "Notandapersónutákn"
+				},
+				"title": "Notandapersóna"
+			},
+			"charList": {
+				"icon": {
+					"alt": "Persónulistatákn"
+				},
+				"title": "Persónulisti",
+				"buttons": {
+					"addChar": {
+						"title": "Bæta við persónu"
+					},
+					"addCharIcon": {
+						"alt": "Bæta við persónu tákn"
+					}
+				}
+			},
+			"noSelection": "Ekkert",
+			"noDescription": "Engin lýsing"
+		},
+		"chatArea": {
+			"title": "Spjall",
+			"menuButton": {
+				"title": "Valmynd"
+			},
+			"menuButtonIcon": {
+				"alt": "Valmyndartákn"
+			},
+			"input": {
+				"placeholder": "Skrifaðu skilaboð...\nCtrl+Enter til að senda"
+			},
+			"sendButton": {
+				"title": "Senda"
+			},
+			"sendButtonIcon": {
+				"alt": "Senditákn"
+			},
+			"uploadButton": {
+				"title": "Hlaða upp"
+			},
+			"uploadButtonIcon": {
+				"alt": "Upphalstákn"
+			},
+			"voiceButton": {
+				"title": "Hljóðupptaka"
+			},
+			"voiceButtonIcon": {
+				"alt": "Hljóðupptökutákn"
+			},
+			"photoButton": {
+				"title": "Mynd"
+			},
+			"photoButtonIcon": {
+				"alt": "Myndatákn"
+			}
+		},
+		"rightSidebar": {
+			"title": "Lýsing"
+		},
+		"messageList": {
+			"confirmDeleteMessage": "Ertu viss um að þú viljir eyða þessum skilaboðum?"
+		},
+		"voiceRecording": {
+			"errorAccessingMicrophone": "Gat ekki nálgast hljóðnema"
+		},
+		"messageView": {
+			"buttons": {
+				"edit": {
+					"title": "Breyta"
+				},
+				"editIcon": {
+					"alt": "Breytingartákn"
+				},
+				"more": {
+					"title": "Meira"
+				},
+				"moreIcon": {
+					"alt": "Meira tákn"
+				}
+			},
+			"dropdown": {
+				"delete": "Eyða",
+				"deleteIcon": {
+					"alt": "Eyðingartákn"
+				},
+				"copyMarkdown": "Afrita sem Markdown",
+				"copyMarkdownIcon": {
+					"alt": "Afrita sem Markdown tákn"
+				},
+				"copyText": "Afrita sem venjulegan texta",
+				"copyTextIcon": {
+					"alt": "Afrita texta tákn"
+				},
+				"copyHtml": "Afrita sem HTML",
+				"copyHtmlIcon": {
+					"alt": "Afrita HTML tákn"
+				}
+			}
+		},
+		"messageEdit": {
+			"input": {
+				"placeholder": "Sláðu inn efni..."
+			},
+			"buttons": {
+				"confirm": {
+					"title": "Staðfesta"
+				},
+				"confirmIcon": {
+					"alt": "Staðfestingartákn"
+				},
+				"cancel": {
+					"title": "Hætta við"
+				},
+				"cancelIcon": {
+					"alt": "Hætta við tákn"
+				},
+				"upload": {
+					"title": "Hlaða upp"
+				},
+				"uploadIcon": {
+					"alt": "Upphalstákn"
+				}
+			}
+		},
+		"attachment": {
+			"buttons": {
+				"download": {
+					"title": "Sækja"
+				},
+				"downloadIcon": {
+					"alt": "Sækja tákn"
+				},
+				"delete": {
+					"title": "Eyða"
+				},
+				"deleteIcon": {
+					"alt": "Eyða tákn"
+				}
+			}
+		},
+		"charCard": {
+			"frequencyLabel": "Tíðni",
+			"buttons": {
+				"removeChar": {
+					"title": "Fjarlægja úr samtali"
+				},
+				"removeCharIcon": {
+					"alt": "Fjarlægja persónu tákn"
+				},
+				"forceReply": {
+					"title": "Þvinga svar"
+				},
+				"forceReplyIcon": {
+					"alt": "Þvinga svar tákn"
+				}
+			}
+		}
+	},
+	"chat_history": {
+		"title": "Spjallferill",
+		"pageTitle": "Spjallferill",
+		"sortOptions": {
+			"time_desc": "Tími, nýjast fyrst",
+			"time_asc": "Tími, elst fyrst"
+		},
+		"filterInput": {
+			"placeholder": "Leita..."
+		},
+		"selectAll": "Velja allt",
+		"buttons": {
+			"reverseSelect": "Víxla vali",
+			"deleteSelected": "Eyða völdu",
+			"exportSelected": "Flytja út valið"
+		},
+		"confirmDeleteChat": "Ertu viss um að þú viljir eyða spjallferlinum við ${chars}?",
+		"confirmDeleteMultiChats": "Ertu viss um að þú viljir eyða völdum ${count} spjallferlum?",
+		"alerts": {
+			"noChatSelectedForDeletion": "Vinsamlegast veldu spjallferla til að eyða",
+			"noChatSelectedForExport": "Vinsamlegast veldu spjallferla til að flytja út",
+			"copyError": "Afritun mistókst",
+			"deleteError": "Eyðing mistókst",
+			"exportError": "Útflutningur mistókst"
+		},
+		"chatItemButtons": {
+			"continue": "Halda áfram",
+			"copy": "Afrita",
+			"export": "Flytja út",
+			"delete": "Eyða"
+		}
+	},
+	"discord_bots": {
+		"title": "Discord Bot",
+		"cardTitle": "Discord Bot",
+		"buttons": {
+			"newBot": "Nýr Bot",
+			"deleteBot": "Eyða Bot"
+		},
+		"configCard": {
+			"title": "Bot stillingar",
+			"labels": {
+				"character": "Tengd persóna",
+				"apiKey": "Discord API lykill",
+				"config": "Stillingar"
+			},
+			"charSelectPlaceholder": "Veldu persónu",
+			"apiKeyInput": {
+				"placeholder": "Sláðu inn API lykil"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "Sýna/fela API lykil"
+			},
+			"buttons": {
+				"saveConfig": "Vista stillingar",
+				"startBot": "Ræsa",
+				"stopBot": "Stöðva"
+			}
+		},
+		"prompts": {
+			"newBotName": "Sláðu inn nafn á nýja Bot-inn:"
+		},
+		"alerts": {
+			"botExists": "Bot með nafnið \"${botname}\" er þegar til, vinsamlegast notaðu annað nafn.",
+			"unsavedChanges": "Þú hefur óvistaðar breytingar. Viltu henda þeim?",
+			"configSaved": "Stillingar vistaðar",
+			"httpError": "HTTP villa",
+			"beforeUnload": "Þú hefur óvistaðar breytingar. Ertu viss um að þú viljir fara?"
+		}
+	},
+	"telegram_bots": {
+		"title": "Telegram Bot",
+		"cardTitle": "Stjórnun Telegram Bot",
+		"buttons": {
+			"newBot": "Nýr Bot",
+			"deleteBot": "Eyða Bot"
+		},
+		"configCard": {
+			"title": "Bot stillingar",
+			"labels": {
+				"character": "Tengd persóna",
+				"botToken": "Telegram Bot Token",
+				"config": "Stillingar"
+			},
+			"charSelectPlaceholder": "Veldu persónu",
+			"botTokenInput": {
+				"placeholder": "Sláðu inn Telegram Bot Token"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "Sýna/fela API lykil"
+			},
+			"buttons": {
+				"saveConfig": "Vista stillingar",
+				"startBot": "Ræsa",
+				"stopBot": "Stöðva"
+			}
+		},
+		"prompts": {
+			"newBotName": "Sláðu inn nafn á nýja Bot-inn:"
+		},
+		"alerts": {
+			"botExists": "Bot með nafnið \"${botname}\" er þegar til, vinsamlegast notaðu annað nafn.",
+			"unsavedChanges": "Þú hefur óvistaðar breytingar. Viltu henda þeim?",
+			"configSaved": "Stillingar vistaðar!",
+			"httpError": "HTTP villa",
+			"beforeUnload": "Þú hefur óvistaðar breytingar. Ertu viss um að þú viljir yfirgefa þessa síðu?"
+		}
+	},
+	"terminal_assistant": {
+		"title": "Flugstöðvar-aðstoðarmaður",
+		"initialMessage": "fount styður að setja uppáhalds persónuna þína í flugstöðina til að hjálpa þér við forritun!",
+		"initialMessageLink": "Smelltu hér til að fá frekari upplýsingar"
+	},
+	"access": {
+		"title": "Aðgangur að fount á öðrum tækjum",
+		"heading": "Viltu fá aðgang að fount á öðrum tækjum?",
+		"instruction": {
+			"sameLAN": "Gakktu úr skugga um að tækið og fount-vélin séu á sama staðarneti",
+			"accessthis": "Farðu á eftirfarandi vefslóð:"
+		},
+		"copyButton": "Afrita slóð",
+		"copied": "Slóð afrituð á klippiborð!"
+	},
+	"proxy": {
+		"title": "API milliliður",
+		"heading": "OpenAI API milliliðaslóð",
+		"instruction": "Settu eftirfarandi slóð inn í hvaða forrit sem krefst OpenAI API sniðs til að nota gervigreindarheimildirnar í fount!",
+		"copyButton": "Afrita slóð",
+		"copied": "Slóð afrituð á klippiborð!"
+	},
+	"404": {
+		"title": "Síða fannst ekki",
+		"pageNotFoundText": "Úps! Svo virðist sem þú hafir lent á síðu sem er ekki til.",
+		"homepageButton": "Aftur á forsíðu"
+	},
+	"userSettings": {
+		"title": "Notandastillingar",
+		"PageTitle": "Notandastillingar",
+		"apiError": "API beiðni mistókst: ${message}",
+		"generalError": "Villa kom upp: ${message}",
+		"userInfo": {
+			"title": "Notandaupplýsingar",
+			"usernameLabel": "Notandanafn:",
+			"creationDateLabel": "Aðgangur stofnaður:",
+			"folderSizeLabel": "Stærð notandagagna:",
+			"folderPathLabel": "Slóð notandagagna:",
+			"copyPathBtnTitle": "Afrita slóð",
+			"copiedAlert": "Slóð afrituð á klippiborð!"
+		},
+		"changePassword": {
+			"title": "Breyta lykilorði",
+			"currentPasswordLabel": "Núverandi lykilorð:",
+			"newPasswordLabel": "Nýtt lykilorð:",
+			"confirmNewPasswordLabel": "Staðfesta nýtt lykilorð:",
+			"submitButton": "Breyta lykilorði",
+			"errorMismatch": "Nýju lykilorðin stemma ekki.",
+			"success": "Lykilorði breytt."
+		},
+		"renameUser": {
+			"title": "Endurnefna notanda",
+			"newUsernameLabel": "Nýtt notandanafn:",
+			"submitButton": "Endurnefna notanda",
+			"confirmMessage": "Ertu viss um að þú viljir breyta notandanafninu þínu? Þú þarft að skrá þig inn aftur.",
+			"success": "Notanda hefur verið endurnefnt í \"${newUsername}\". Þú verður nú skráð(ur) út."
+		},
+		"userDevices": {
+			"title": "Tæki/Setur notanda",
+			"refreshButtonTitle": "Endurhlaða lista",
+			"noDevicesFound": "Engin tæki eða setur fundust.",
+			"deviceInfo": "Tækisauðkenni: ${deviceId}",
+			"thisDevice": "Þetta tæki",
+			"deviceDetails": "Síðast séð: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
+			"revokeButton": "Afturkalla",
+			"revokeConfirm": "Ertu viss um að þú viljir skrá þig út úr þessu tæki/setu?",
+			"revokeSuccess": "Tæki/seta hefur verið afturkölluð."
+		},
+		"logout": {
+			"title": "Útskráning",
+			"description": "Þetta mun skrá þig út af aðganginum þínum á þessu tæki.",
+			"buttonText": "Skrá út",
+			"confirmMessage": "Ertu viss um að þú viljir skrá þig út?",
+			"successMessage": "Útskráning tókst. Vísar þér á innskráningarsíðu..."
+		},
+		"deleteAccount": {
+			"title": "Eyða aðgangi",
+			"warning": "AÐVÖRUN: Þessi aðgerð mun eyða aðganginum þínum og öllum tengdum gögnum varanlega og er óafturkræf.",
+			"submitButton": "Eyða aðganginum mínum",
+			"confirmMessage1": "AÐVÖRUN! Ertu viss um að þú viljir eyða aðganginum þínum varanlega? Þessi aðgerð er óafturkræf.",
+			"confirmMessage2": "Til að staðfesta eyðingu, vinsamlegast sláðu inn notandanafnið þitt \"${username}\":",
+			"usernameMismatch": "Innslegið notandanafn passar ekki við núverandi notanda. Eyðingu hætt.",
+			"success": "Aðgangi hefur verið eytt. Þú verður nú skráð(ur) út."
+		},
+		"passwordConfirm": {
+			"title": "Staðfesta aðgerð",
+			"message": "Til að halda áfram með þessa aðgerð, vinsamlegast sláðu inn núverandi lykilorð þitt:",
+			"passwordLabel": "Lykilorð:",
+			"confirmButton": "Staðfesta",
+			"cancelButton": "Hætta við"
+		}
+	},
+	"badges_maker": {
+		"title": "fount! Merkja-breytir",
+		"card_title": "fount merkja-hlekkjabreytir",
+		"original_url_label": "Límdu img.shields.io vefslóð",
+		"original_url_placeholder": "T.d.: https://img.shields.io/badge/Hello-World-blue",
+		"new_url_label": "Nýstofnuð vefslóð",
+		"new_url_placeholder": "Umbreytt vefslóð birtist hér",
+		"copy_button": "Afrita",
+		"preview_label": "Forskoðun",
+		"preview_alt": "Merkjaforskoðun",
+		"copied_text": "Afritað!",
+		"copy_error": "Gat ekki afritað texta: ${error}",
+		"copy_fail_alert": "Afritun mistókst!"
+	},
+	"easynew": {
+		"title": "Flýtileið",
+		"cardTitle": "Búa til nýjan íhlut úr sniðmáti",
+		"templateSelect": {
+			"label": "Veldu sniðmát"
+		},
+		"partName": {
+			"label": "Nafn íhlutar",
+			"placeholder": "Gefðu nýja íhlutnum þínum nafn"
+		},
+		"description": {
+			"label": "Lýsing",
+			"placeholder": "Lýstu í stuttu máli um hvað þessi íhlutur snýst."
+		},
+		"descriptionMarkdown": {
+			"label": "Lýsing (Markdown)",
+			"placeholder": "Styður Markdown fyrir ítarlegri snið."
+		},
+		"imageUpload": {
+			"label": "Prófílmynd"
+		},
+		"charDef": {
+			"heading": "Skilgreining persónu"
+		},
+		"personality": {
+			"label": "Persónuleiki",
+			"placeholder": "Lýstu kjarnaeinkennum persónunnar."
+		},
+		"scenario": {
+			"label": "Sviðsmynd",
+			"placeholder": "Bakgrunnur eða umgjörð persónunnar."
+		},
+		"mesExample": {
+			"label": "Dæmi um skilaboð",
+			"placeholder": "Dæmi um hvað persónan gæti sagt."
+		},
+		"firstMessage": {
+			"label": "Fyrstu skilaboð",
+			"placeholder": "Það fyrsta sem persónan segir."
+		},
+		"personaDef": {
+			"heading": "Skilgreining sjálfsmyndar"
+		},
+		"personaUserName": {
+			"label": "Nafnið þitt í spjallinu",
+			"placeholder": "T.d.: Kapteinn, Landkönnuður"
+		},
+		"personaAppearance": {
+			"label": "Útlit",
+			"placeholder": "Lýstu útliti þínu."
+		},
+		"personaPersonality": {
+			"label": "Persónuleiki",
+			"placeholder": "Lýstu persónueinkennum þínum."
+		},
+		"worldDef": {
+			"heading": "Skilgreining heims"
+		},
+		"worldPrompt": {
+			"label": "Leiðbeiningar heims",
+			"placeholder": "Lýstu reglum heimsins, umhverfi og öllum almennum bakgrunni fyrir hlutverkaleikinn."
+		},
+		"worldGreeting": {
+			"label": "Kveðja heimsins",
+			"placeholder": "Fyrstu skilaboðin sem heimurinn sendir notandanum."
+		},
+		"author": {
+			"label": "Höfundur",
+			"placeholder": "Hver er höfundur þessa íhlutar?"
+		},
+		"version": {
+			"label": "Útgáfa",
+			"placeholder": "T.d.: 1.0.0"
+		},
+		"tags": {
+			"label": "Merki",
+			"placeholder": "Merki aðskilin með kommu"
+		},
+		"homePage": {
+			"label": "Heimasíða",
+			"placeholder": "URL á heimasíðu íhlutarins"
+		},
+		"issuePage": {
+			"label": "Villuskýrslusíða",
+			"placeholder": "URL á villuskýrslusíðu íhlutarins"
+		},
+		"createButton": "Búa til íhlut",
+		"alerts": {
+			"success": "Íhlutur '${partName}' búinn til!",
+			"error": "Villa: ${message}"
+		},
+		"info": {
+			"description": "Þessi sniðmát eru aðeins til að byggja einfalda íhluti hratt, flóknir íhlutir þurfa enn handvirka smíði."
+		}
+	},
+	"export": {
+		"title": "Íhluta-útflytjandi",
+		"pageTitle": "Íhluta-útflytjandi",
+		"pageSubtitle": "Flytja út uppáhalds efnið þitt",
+		"steps": {
+			"partType": "Veldu gerð",
+			"part": "Veldu íhluti",
+			"action": "Útflutningur"
+		},
+		"options": {
+			"withData": "Inniheldur gagnaskrár",
+			"withDataDescription": "Inniheldur skrár merktar sem gögn, svo sem persónuminningar."
+		},
+		"labels": {
+			"partType": "Veldu tegund íhlutar",
+			"part": "Veldu íhlut"
+		},
+		"placeholders": {
+			"partTypeSelect": "Vinsamlegast veldu",
+			"partSelect": "Vinsamlegast veldu"
+		},
+		"export": {
+			"title": "Útflutningsvalkostir"
+		},
+		"editor": {
+			"disabledIndicator": "Vinsamlegast veldu íhlut fyrst",
+			"disabledIndicatorHint": "Vinsamlegast veldu gerð íhluta og íhlutinn sem þú vilt flytja út"
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Villa"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "Mistókst að sækja tegundir íhluta.",
+			"fetchPartsFailed": "Mistókst að sækja lista yfir íhluti.",
+			"loadPartDetailsFailed": "Mistókst að hlaða upplýsingum um íhlut.",
+			"exportFailed": "Útflutningur mistókst.",
+			"shareLinkCopied": "Deilingarhlekkur afritaður á klippiborð!",
+			"shareFailed": "Mistókst að búa til deilingarhlekk."
+		},
+		"shareMenu": {
+			"title": "Veldu lengd deilingar",
+			"1h": "1 klukkustund",
+			"12h": "12 klukkustundir",
+			"24h": "24 klukkustundir",
+			"72h": "72 klukkustundir",
+			"cancel": "Hætta við"
+		},
+		"litterbox": {
+			"poweredBy": "Deilingarþjónusta knúin af litterbox.moe",
+			"sponsorLink": "Styrktu þau"
+		},
+		"buttons": {
+			"export": "Flytja út",
+			"exportWithData": "Flytja út (með gögnum)",
+			"copyShareLink": "Afrita deilingarhlekk",
+			"generateShareLink": "Búa til deilingarhlekk",
+			"generateShareLinkWithData": "Búa til deilingarhlekk (með gögnum)"
+		}
+	}
+}

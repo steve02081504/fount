@@ -1,0 +1,123 @@
+{
+	"home_function_buttons": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "管理Discord Bot"
+				},
+				"en-UK": {
+					"title": "Discord Bot Config"
+				},
+				"ar-SA": {
+					"title": "إدارة بوت ديسكورد"
+				},
+				"de-DE": {
+					"title": "Discord Bot konfigurieren"
+				},
+				"es-ES": {
+					"title": "Configuración del Bot de Discord"
+				},
+				"fr-FR": {
+					"title": "Configuration du Bot Discord"
+				},
+				"hi-IN": {
+					"title": "डिस्कॉर्ड बॉट कॉन्फ़िगर करें"
+				},
+				"is-IS": {
+					"title": "Stjórna Discord Bot"
+				},
+				"it-IT": {
+					"title": "Configura Bot Discord"
+				},
+				"ja-JP": {
+					"title": "Discord Botの設定"
+				},
+				"ko-KR": {
+					"title": "Discord Bot 구성"
+				},
+				"nl-NL": {
+					"title": "Beheer Discord Bot"
+				},
+				"pt-PT": {
+					"title": "Configuração do Bot Discord"
+				},
+				"ru-RU": {
+					"title": "Настройка Discord Bot"
+				},
+				"uk-UA": {
+					"title": "Керуйте розбратами бота"
+				},
+				"vi-VN": {
+					"title": "Cấu hình Discord Bot"
+				},
+				"zh-TW": {
+					"title": "管理Discord Bot"
+				}
+			},
+			"level": 1,
+			"url": "/shells/discordbot",
+			"button": "<img src=\"https://api.iconify.design/line-md/discord.svg\" class=\"text-icon\"/>"
+		}
+	],
+	"home_char_interfaces": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "配置Discord Bot"
+				},
+				"en-UK": {
+					"title": "Discord Bot Config"
+				},
+				"ar-SA": {
+					"title": "تكوين روبوت الخلاف"
+				},
+				"de-DE": {
+					"title": "Discord Bot konfigurieren"
+				},
+				"es-ES": {
+					"title": "Configuración del Bot de Discord"
+				},
+				"fr-FR": {
+					"title": "Configuration du Bot Discord"
+				},
+				"hi-IN": {
+					"title": "डिस्कॉर्ड बॉट कॉन्फ़िगर करें"
+				},
+				"is-IS": {
+					"title": "Stilla Discord Bot"
+				},
+				"it-IT": {
+					"title": "Configura Bot Discord"
+				},
+				"ja-JP": {
+					"title": "Discord Botの設定"
+				},
+				"ko-KR": {
+					"title": "Discord Bot 구성"
+				},
+				"nl-NL": {
+					"title": "Discord Bot configureren"
+				},
+				"pt-PT": {
+					"title": "Configuração do Bot Discord"
+				},
+				"ru-RU": {
+					"title": "Настройка Discord Bot"
+				},
+				"uk-UA": {
+					"title": "Налаштування Discord Bot"
+				},
+				"vi-VN": {
+					"title": "Cấu hình Discord Bot"
+				},
+				"zh-TW": {
+					"title": "配置Discord Bot"
+				}
+			},
+			"level": 1,
+			"interface": "discord",
+			"url": "/shells/discordbot?name=${name}&char=${name}",
+			"button": "<img src=\"https://api.iconify.design/line-md/discord.svg\"/>"
+		}
+	]
+}

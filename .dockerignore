@@ -1,0 +1,15 @@
+/.git
+.gitignore
+/.github
+/.esh
+/.vscode
+/README.md
+AGENTS.md
+/LICENSE
+/docs
+/src/runner
+/node_modules
+/eslint.config.mjs
+*.bat
+*.ps1
+desktop.ini

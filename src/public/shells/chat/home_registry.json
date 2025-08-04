@@ -1,0 +1,123 @@
+{
+	"home_function_buttons": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "浏览历史记录"
+				},
+				"en-UK": {
+					"title": "View History"
+				},
+				"ar-SA": {
+					"title": "عرض السجل"
+				},
+				"de-DE": {
+					"title": "Verlauf anzeigen"
+				},
+				"es-ES": {
+					"title": "Ver historial"
+				},
+				"fr-FR": {
+					"title": "Voir l'historique"
+				},
+				"hi-IN": {
+					"title": "इतिहास देखें"
+				},
+				"is-IS": {
+					"title": "Vafra sögu"
+				},
+				"it-IT": {
+					"title": "Visualizza cronologia"
+				},
+				"ja-JP": {
+					"title": "履歴を見る"
+				},
+				"ko-KR": {
+					"title": "기록 보기"
+				},
+				"nl-NL": {
+					"title": "Geschiedenis bekijken"
+				},
+				"pt-PT": {
+					"title": "Ver histórico"
+				},
+				"ru-RU": {
+					"title": "Просмотреть историю"
+				},
+				"uk-UA": {
+					"title": "Історія перегляду"
+				},
+				"vi-VN": {
+					"title": "Xem lịch sử"
+				},
+				"zh-TW": {
+					"title": "瀏覽歷史記錄"
+				}
+			},
+			"level": 1,
+			"url": "/shells/chat/list",
+			"button": "<img src=\"https://api.iconify.design/line-md/chat-round.svg\" class=\"text-icon\"/>"
+		}
+	],
+	"home_char_interfaces": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "聊天"
+				},
+				"en-UK": {
+					"title": "Chat"
+				},
+				"ar-SA": {
+					"title": "محادثة"
+				},
+				"de-DE": {
+					"title": "Chat"
+				},
+				"es-ES": {
+					"title": "Chat"
+				},
+				"fr-FR": {
+					"title": "Chat"
+				},
+				"hi-IN": {
+					"title": "चैट"
+				},
+				"is-IS": {
+					"title": "Spjall"
+				},
+				"it-IT": {
+					"title": "Chat"
+				},
+				"ja-JP": {
+					"title": "チャット"
+				},
+				"ko-KR": {
+					"title": "채팅"
+				},
+				"nl-NL": {
+					"title": "kletsen"
+				},
+				"pt-PT": {
+					"title": "Chat"
+				},
+				"ru-RU": {
+					"title": "Чат"
+				},
+				"uk-UA": {
+					"title": "чат"
+				},
+				"vi-VN": {
+					"title": "Chat"
+				},
+				"zh-TW": {
+					"title": "聊天"
+				}
+			},
+			"level": 0,
+			"interface": "chat",
+			"url": "/shells/chat/new?char=${name}",
+			"button": "<img src=\"https://api.iconify.design/line-md/chat-round.svg\"/>"
+		}
+	]
+}

@@ -1,0 +1,59 @@
+import { gc } from '../scripts/gc.mjs'
+import { console } from '../scripts/i18n.mjs'
+
+import { getUserByUsername, getAllUserNames } from './auth.mjs'
+import { events } from './events.mjs'
+import { loadPart } from './managers/index.mjs'
+import { save_config } from './server.mjs'
+
+export function StartJob(username, parttype, partname, uid, data = null) {
+	const jobs = getUserByUsername(username).jobs ??= {}
+	jobs[parttype] ??= {}
+	jobs[parttype][partname] ??= {}
+	jobs[parttype][partname][uid] = data
+	try {
+		save_config()
+	}
+	catch (err) {
+		console.error(err)
+		EndJob(username, parttype, partname, uid)
+	}
+}
+export function EndJob(username, parttype, partname, uid) {
+	const jobs = getUserByUsername(username).jobs ??= {}
+	if (jobs?.[parttype]?.[partname]?.[uid] !== undefined) {
+		delete jobs[parttype][partname][uid]
+		if (Object.keys(jobs[parttype][partname]).length === 0) {
+			delete jobs[parttype][partname]
+			if (Object.keys(jobs[parttype]).length === 0)
+				delete jobs[parttype]
+		}
+		save_config()
+	}
+	else {
+		console.warn('Job not found:', { username, parttype, partname, uid })
+		throw new Error('Job not found')
+	}
+}
+async function startJobsOfUser(username) {
+	const jobs = getUserByUsername(username).jobs ?? {}
+	const promises = []
+	for (const parttype in jobs)
+		for (const partname in jobs[parttype])
+			for (const uid in jobs[parttype][partname])
+				promises.push((async () => {
+					console.logI18n('fountConsole.jobs.restartingJob', { username, parttype, partname, uid })
+					const part = await loadPart(username, parttype, partname)
+					await part.interfaces.jobs.ReStartJob(username, jobs[parttype][partname][uid] ?? uid)
+				})().catch(console.error))
+	await Promise.all(promises)
+	return promises.length
+}
+export async function ReStartJobs() {
+	const count = (await Promise.all(getAllUserNames().map(startJobsOfUser))).reduce((a, b) => a + b, 0)
+	if (count) gc()
+}
+
+events.on('AfterUserRenamed', async ({ oldUsername, newUsername }) => {
+	await startJobsOfUser(newUsername)
+})
