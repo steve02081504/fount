@@ -1,0 +1,10 @@
+body {
+	overflow: hidden;
+	margin: 0;
+}
+
+@media (max-width: 1024px) {
+	#terminal {
+		width: 100%;
+	}
+}

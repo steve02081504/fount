@@ -1,0 +1,28 @@
+/* 自定义样式 */
+.file-list {
+	overflow-y: auto;
+}
+
+.file-list-item {
+	cursor: pointer;
+	padding: 0.5rem;
+	border-bottom: 1px solid #4a4a4a;
+	transition: background-color 0.2s;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.file-list-item:hover {
+	background-color: var(--color-base-200);
+}
+
+.file-list-item.active {
+	background-color: var(--color-neutral);
+	color: var(--color-neutral-content);
+}
+
+.file-list-item.selected-item {
+	border-left: 4px solid var(--color-primary);
+	background-color: var(--color-base-300);
+}

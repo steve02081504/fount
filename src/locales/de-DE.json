@@ -1,0 +1,1090 @@
+{
+	"lang": "de-DE",
+	"fountConsole": {
+		"server": {
+			"start": "Server wird gestartet",
+			"starting": "Server startet...",
+			"ready": "Server ist gestartet",
+			"usesdTime": "Hochfahrzeit: ${time}s",
+			"showUrl": {
+				"https": "HTTPS-Server läuft auf ${url}",
+				"http": "HTTP-Server läuft auf ${url}"
+			},
+			"localUrl": "Zugriff auf fount von anderen Geräten im selben Netzwerk: ${url}",
+			"standingBy": "Standing by..."
+		},
+		"jobs": {
+			"restartingJob": "Starte ${parttype}-Aufgabe ${partname} für Benutzer ${username} neu: ${uid}"
+		},
+		"ipc": {
+			"sendCommandFailed": "Senden des Befehls fehlgeschlagen: ${error}",
+			"invalidCommand": "Ungültiger Befehl. Bitte verwenden Sie \"fount run <Komponente-Typ> <Benutzername> <Komponente-Name> <Parameter...>\".",
+			"runPartLog": "Starte ${parttype} ${partname} als ${username} mit Parametern: ${args}",
+			"invokePartLog": "Rufe ${parttype} ${partname} als ${username} mit Parametern: ${invokedata} auf.",
+			"unsupportedCommand": "Nicht unterstützter Befehlstyp",
+			"processMessageError": "Fehler beim Verarbeiten der IPC-Nachricht: ${error}",
+			"invalidCommandFormat": "Ungültiges Befehlsformat",
+			"socketError": "Socket-Fehler: ${error}",
+			"instanceRunning": "Eine andere Instanz wird bereits ausgeführt",
+			"serverStarted": "IPC-Server gestartet",
+			"parseResponseFailed": "Fehler beim Parsen der Serverantwort: ${error}",
+			"cannotParseResponse": "Serverantwort kann nicht geparst werden",
+			"unknownError": "Unbekannter Fehler"
+		},
+		"partManager": {
+			"git": {
+				"noUpstream": "Kein Upstream-Branch für Branch '${currentBranch}' konfiguriert, Update-Prüfung wird übersprungen.",
+				"dirtyWorkingDirectory": "Arbeitsverzeichnis ist nicht sauber. Bitte stashen oder committen Sie Ihre Änderungen vor dem Update.",
+				"updating": "Wird vom Remote-Repository aktualisiert...",
+				"localAhead": "Lokaler Branch ist dem Remote-Branch voraus. Kein Update erforderlich.",
+				"diverged": "Lokaler und Remote-Branch sind auseinandergelaufen. Erzwinge Update...",
+				"upToDate": "Bereits aktuell.",
+				"updateFailed": "Fehler beim Aktualisieren von Parts vom Remote-Repository: ${error}"
+			},
+			"partInitTime": "Initialisierungszeit für ${parttype}-Komponente ${partname}: ${time}s",
+			"partLoadTime": "${parttype}-Komponente ${partname} Ladezeit: ${time}s"
+		},
+		"web": {
+			"requestReceived": "Anfrage erhalten: ${method} ${url}"
+		},
+		"route": {
+			"setLanguagePreference": "Benutzer ${username} hat die bevorzugte Sprache eingestellt: ${preferredLanguages}"
+		},
+		"auth": {
+			"tokenVerifyError": "Token-Verifizierungsfehler: ${error}",
+			"refreshTokenError": "Fehler beim Aktualisieren des Tokens: ${error}",
+			"logoutRefreshTokenProcessError": "Fehler beim Verarbeiten des Logout-Refresh-Tokens: ${error}",
+			"revokeTokenNoJTI": "Token ohne JTI kann nicht widerrufen werden.",
+			"accountLockedLog": "Benutzerkonto ${username} wurde aufgrund zu vieler fehlgeschlagener Anmeldeversuche gesperrt."
+		},
+		"verification": {
+			"codeGeneratedLog": "Verifizierungscode: ${code} (läuft nach 60 Sekunden ab)",
+			"codeNotifyTitle": "Verifizierungscode",
+			"codeNotifyBody": "Verifizierungscode: ${code} (läuft nach 60 Sekunden ab)"
+		},
+		"tray": {
+			"readIconFailed": "Fehler beim Lesen der Icon-Datei: ${error}",
+			"createTrayFailed": "Fehler beim Erstellen des Trays: ${error}",
+			"title": "fount",
+			"tooltip": "fount",
+			"items": {
+				"open": {
+					"title": "Öffnen",
+					"tooltip": "fount öffnen"
+				},
+				"github": {
+					"title": "GitHub",
+					"tooltip": "fount auf GitHub öffnen"
+				},
+				"discord": {
+					"title": "Discord",
+					"tooltip": "fount auf Discord öffnen"
+				},
+				"restart": {
+					"title": "Neu starten",
+					"tooltip": "Anwendung neu starten"
+				},
+				"exit": {
+					"title": "Beenden",
+					"tooltip": "Anwendung beenden"
+				}
+			}
+		},
+		"discordbot": {
+			"botStarted": "Char ${charname} hat sich beim Discord-Bot ${botusername} angemeldet."
+		},
+		"telegrambot": {
+			"botStarted": "Char ${charname} hat sich beim Telegram-Bot ${botusername} angemeldet."
+		}
+	},
+	"protocolhandler": {
+		"title": "fount-Protokoll verarbeiten",
+		"processing": "Protokoll wird verarbeitet...",
+		"invalidProtocol": "Ungültiges Protokoll",
+		"insufficientParams": "Unzureichende Parameter",
+		"unknownCommand": "Unbekannter Befehl",
+		"shellCommandSent": "Shell-Befehl gesendet",
+		"shellCommandFailed": "Senden des Shell-Befehls fehlgeschlagen",
+		"shellCommandError": "Fehler beim Senden des Shell-Befehls",
+		"fountNotFound": "Och nö :(\n\nfount wurde nicht gefunden. Vielleicht müssen Sie es zuerst installieren?",
+		"unknownError": "Och nö :(\n\nEin Fehler ist aufgetreten:\n${error}"
+	},
+	"installer_wait_screen": {
+		"title": "Willkommen bei fount!",
+		"hero": {
+			"title": "Ihr immersiver KI-Charakterbegleiter",
+			"description": "fount ist eine KI-gestützte Charakter-Interaktionsplattform, die <i>Sie</i> befähigt. Es ist eine Brücke, die Sie mit Ihren imaginären Charakteren verbindet und es Ihnen ermöglicht, problemlos mit ihnen zu sprechen, Ihre eigenen Charaktere zu erstellen und sie mit der Welt zu teilen."
+		},
+		"feature1": {
+			"title": "Nahtlose Dialoge – überall",
+			"description": "Chatten Sie auf Ihrem Computer und fahren Sie nahtlos auf Ihrem Telefon oder Tablet fort. fount hält Ihre Gespräche synchron, sodass Sie überall mit Ihren Charakteren in Kontakt bleiben. Läuft unter Windows, macOS, Linux und sogar Android."
+		},
+		"feature2": {
+			"title": "Schöne, anpassbare Benutzeroberfläche",
+			"description": "Wählen Sie aus über 30 wunderschönen Designs oder erstellen Sie Ihr eigenes. fount ist Ihre persönliche Leinwand. Drücken Sie sich aus, passen Sie die Umgebung an Ihre Vorlieben an und schaffen Sie ein wirklich persönliches Erlebnis."
+		},
+		"feature3": {
+			"title": "Ausdrucksstarker, immersiver Chat",
+			"description": "fount nutzt die volle Leistungsfähigkeit von HTML und ermöglicht es Charakteren, sich durch Rich Text, Bilder und sogar interaktive Elemente auszudrücken. Führen Sie dynamische und ansprechende Gruppenchats mit mehreren Charakteren gleichzeitig."
+		},
+		"feature4": {
+			"title": "Uneingeschränkte Integration von KI-Quellen",
+			"description": "fount bietet beispiellose Auswahl und Flexibilität. Verbinden Sie sich mit <i>jeder</i> KI-Quelle – OpenAI, Claude, OpenRouter, NovelAI usw. Die Kommunikationslogik wird nach <i>Ihrem</i> Willen durch die Macht des Codes geformt."
+		},
+		"theme_selector": {
+			"title": "Wählen Sie Ihr Aussehen",
+			"description": "Wählen Sie ein Design, um Ihre Erfahrung zu personalisieren."
+		},
+		"mini_game": {
+			"title": "Spielen Sie ein kleines Spiel",
+			"description1": "Ist die Installation zu langsam?",
+			"description2": "Hier ist ein kleines Spiel, um sich die Zeit zu vertreiben."
+		},
+		"data_showcase": {
+			"title_prefix": "fount ist",
+			"adjectives": [
+				"erweiterbarste",
+				"potenteste",
+				"fortschrittlichste",
+				"kompatibelste",
+				"kompakteste und leistungsfähigste"
+			],
+			"title_of": " ",
+			"nouns": [
+				"ein KI-Charakter",
+				"ein Agent",
+				"eine Cyber-Waifu",
+				"ein Digitaler Assistent"
+			],
+			"platforms": [
+				"Basis-Plattform",
+				"Chat-Frontend",
+				"Laufzeitumgebung"
+			],
+			"active_users": "Aktive Benutzer",
+			"stars": "GitHub-Sterne"
+		},
+		"footer": {
+			"ready_text": "Bereit, Ihre Reise zu beginnen?",
+			"wait_text": "Bitte warten Sie einen Moment...",
+			"launch_button": "fount wird installiert...",
+			"open_fount": "fount öffnen",
+			"open_or_install_fount": "fount öffnen/installieren",
+			"error_message": "Och nö :(\n\nEin Fehler ist aufgetreten:\n${error}"
+		},
+		"error": {
+			"title": "Installation fehlgeschlagen!",
+			"connection_failed": "Verbindung fehlgeschlagen!",
+			"description1": "Mit dem fount-Installationsprogramm scheint etwas nicht zu stimmen.",
+			"description2": "Bitte überprüfen Sie Ihr Terminal und versuchen Sie es erneut.",
+			"close_page": "Seite schließen"
+		}
+	},
+	"startPage": {
+		"title": "fount!",
+		"newTabFailed": {
+			"title": "Neuer Tab konnte nicht geöffnet werden",
+			"instruction": "Der Start von fount ist jedes Mal um 1-2s langsamer, wenn die Berechtigung zum Öffnen von Pop-up-Fenstern fehlt.",
+			"tryAllow": "Möchten Sie fount die Berechtigung zum Öffnen von Pop-up-Fenstern erteilen?",
+			"buttons": {
+				"retry": "Erneut versuchen",
+				"skip": "Überspringen",
+				"ignore": "Dauerhaft ignorieren"
+			},
+			"ignoreConfirm": {
+				"title": "Dauerhaft ignorieren bestätigen?",
+				"instruction": "2s bei jedem Start zu verschwenden, bedeutet einen ganzen Tag bei 50.000 Starts zu verschwenden 💀",
+				"buttons": {
+					"confirm": "Bestätigen",
+					"cancel": "Abbrechen"
+				}
+			}
+		}
+	},
+	"auth": {
+		"title": "Authentifizierung",
+		"subtitle": "Benutzerdaten werden lokal gespeichert",
+		"usernameLabel": "Benutzername:",
+		"usernameInput": {
+			"placeholder": "Bitte Benutzernamen eingeben"
+		},
+		"passwordLabel": "Passwort:",
+		"passwordInput": {
+			"placeholder": "Bitte Passwort eingeben"
+		},
+		"confirmPasswordLabel": "Passwort bestätigen:",
+		"confirmPasswordInput": {
+			"placeholder": "Bitte Passwort erneut eingeben"
+		},
+		"verificationCodeLabel": "Verifizierungscode:",
+		"verificationCodeInput": {
+			"placeholder": "Bitte Verifizierungscode eingeben"
+		},
+		"sendCodeButton": "Code senden",
+		"login": {
+			"title": "Anmelden",
+			"submitButton": "Anmelden",
+			"toggleLink": {
+				"text": "Kein Konto?",
+				"link": "Jetzt registrieren"
+			}
+		},
+		"register": {
+			"title": "Registrieren",
+			"submitButton": "Registrieren",
+			"toggleLink": {
+				"text": "Bereits ein Konto?",
+				"link": "Jetzt anmelden"
+			}
+		},
+		"error": {
+			"passwordMismatch": "Passwörter stimmen nicht überein.",
+			"loginError": "Fehler beim Anmelden.",
+			"registrationError": "Fehler bei der Registrierung.",
+			"verificationCodeError": "Verifizierungscode falsch oder abgelaufen.",
+			"verificationCodeSent": "Verifizierungscode erfolgreich gesendet.",
+			"verificationCodeSendError": "Verifizierungscode konnte nicht gesendet werden.",
+			"verificationCodeRateLimit": "Zu viele Anfragen zum Senden des Verifizierungscodes. Bitte später erneut versuchen.",
+			"lowPasswordStrength": "Passwort ist zu schwach.",
+			"accountAlreadyExists": "Konto existiert bereits"
+		},
+		"passwordStrength": {
+			"veryWeak": "Sehr schwach",
+			"weak": "Schwach",
+			"normal": "Normal",
+			"strong": "Stark",
+			"veryStrong": "Sehr stark"
+		}
+	},
+	"tutorial": {
+		"title": "Tutorial?",
+		"modal": {
+			"title": "Willkommen bei fount!",
+			"instruction": "Möchten Sie das Einsteiger-Tutorial durchgehen?",
+			"buttons": {
+				"start": "Tutorial starten",
+				"skip": "Überspringen"
+			}
+		},
+		"endScreen": {
+			"title": "Fantastisch! Tutorial abgeschlossen!",
+			"subtitle": "Jetzt wissen Sie, wie man es bedient!",
+			"endButton": "Weiter!"
+		},
+		"progressMessages": {
+			"mouseMove": "Bitte finden Sie Ihre Maus ${mouseIcon} und versuchen Sie, sie mit Ihrer Hand zu bewegen.",
+			"keyboardPress": "Drücken Sie eine Taste auf Ihrer Tastatur ${keyboardIcon}.",
+			"mobileTouchMove": "Finden Sie Ihr Telefon ${phoneIcon}. Berühren Sie nun mit einem Ihrer Finger den Bildschirm und bewegen Sie ihn. Ja, genau so!",
+			"mobileClick": "Das ist Ihr Telefon ${phoneIcon}. Bitte tippen Sie mit einem Finger kurz auf den Bildschirm und heben Sie ihn dann wieder an. Perfekt!"
+		}
+	},
+	"home": {
+		"title": "Startseite",
+		"escapeConfirm": "Sind Sie sicher, dass Sie fount verlassen möchten?",
+		"filterInput": {
+			"placeholder": "Suchen..."
+		},
+		"sidebarTitle": "Details",
+		"itemDescription": "Wählen Sie ein Element aus, um Details anzuzeigen.",
+		"noDescription": "Keine Beschreibung verfügbar",
+		"alerts": {
+			"fetchHomeRegistryFailed": "Fehler beim Abrufen der Startseitenregistrierung"
+		},
+		"functionMenu": {
+			"icon": {
+				"alt": "Funktionsmenü"
+			}
+		},
+		"chars": {
+			"tab": "Charaktere",
+			"title": "Charakterauswahl",
+			"subtitle": "Wählen Sie einen Charakter und starten Sie den Chat!",
+			"none": "Nichts vorhanden",
+			"card": {
+				"refreshButton": {
+					"alt": "Aktualisieren",
+					"title": "Aktualisieren"
+				},
+				"noTags": "Keine Tags",
+				"version": "Version",
+				"author": "Autor",
+				"home_page": "Startseite",
+				"issue_page": "Problemseite",
+				"defaultCheckbox": {
+					"title": "Als Standardcharakter festlegen"
+				}
+			}
+		},
+		"worlds": {
+			"tab": "Welten",
+			"title": "Weltenauswahl",
+			"subtitle": "Wähle eine Welt und tauche ein!",
+			"none": "Nichts vorhanden",
+			"card": {
+				"refreshButton": {
+					"alt": "Aktualisieren",
+					"title": "Aktualisieren"
+				},
+				"noTags": "Keine Tags",
+				"version": "Version",
+				"author": "Autor",
+				"home_page": "Startseite",
+				"issue_page": "Problem melden",
+				"defaultCheckbox": {
+					"title": "Als Standardwelt festlegen"
+				}
+			}
+		},
+		"personas": {
+			"tab": "Personas",
+			"title": "Personenauswahl",
+			"subtitle": "Wählen Sie eine Persona und erleben Sie das Leben.",
+			"none": "Nichts vorhanden",
+			"card": {
+				"refreshButton": {
+					"alt": "Aktualisieren",
+					"title": "Aktualisieren"
+				},
+				"noTags": "Keine Tags",
+				"version": "Version",
+				"author": "Autor",
+				"home_page": "Startseite",
+				"issue_page": "Problem melden",
+				"defaultCheckbox": {
+					"title": "Als Standardpersona festlegen"
+				}
+			}
+		}
+	},
+	"themeManage": {
+		"title": "Design-Verwaltung",
+		"instruction": "Wählen Sie ein Design!",
+		"themes": {
+			"auto": "Automatisch",
+			"light": "Hell",
+			"dark": "Dunkel",
+			"cupcake": "Cupcake",
+			"bumblebee": "Bumblebee",
+			"emerald": "Emerald",
+			"corporate": "Corporate",
+			"synthwave": "Synthwave",
+			"retro": "Retro",
+			"cyberpunk": "Cyberpunk",
+			"valentine": "Valentine",
+			"halloween": "Halloween",
+			"garden": "Garden",
+			"forest": "Forest",
+			"aqua": "Aqua",
+			"lofi": "Lo-fi",
+			"pastel": "Pastel",
+			"fantasy": "Fantasy",
+			"wireframe": "Wireframe",
+			"black": "Black",
+			"luxury": "Luxury",
+			"dracula": "Dracula",
+			"cmyk": "CMYK",
+			"autumn": "Autumn",
+			"business": "Business",
+			"acid": "Acid",
+			"lemonade": "Lemonade",
+			"night": "Night",
+			"coffee": "Coffee",
+			"winter": "Winter",
+			"dim": "Dim",
+			"nord": "Nord",
+			"sunset": "Sunset",
+			"caramellatte": "Caramel Latte",
+			"abyss": "Abyss",
+			"silk": "Silk"
+		}
+	},
+	"import": {
+		"title": "Importieren",
+		"tabs": {
+			"fileImport": "Datei importieren",
+			"textImport": "Text importieren"
+		},
+		"dropArea": {
+			"icon": {
+				"alt": "Upload-Symbol"
+			},
+			"text": "Dateien hierher ziehen oder zum Auswählen klicken"
+		},
+		"textArea": {
+			"placeholder": "Text zum Importieren eingeben..."
+		},
+		"buttons": {
+			"import": "Importieren"
+		},
+		"alerts": {
+			"importSuccess": "Import erfolgreich",
+			"importFailed": "Import fehlgeschlagen: ${error}",
+			"unknownError": "Unbekannter Fehler"
+		},
+		"errors": {
+			"noFileSelected": "Bitte wählen Sie eine Datei aus",
+			"fileImportFailed": "Dateiimport fehlgeschlagen: ${message}",
+			"noTextContent": "Bitte geben Sie Textinhalt ein",
+			"textImportFailed": "Textimport fehlgeschlagen: ${message}",
+			"unknownError": "Unbekannter Fehler",
+			"handler": "Handler",
+			"error": "Fehler"
+		},
+		"fileItem": {
+			"removeButton": {
+				"title": "Entfernen"
+			},
+			"removeButtonIcon": {
+				"alt": "Entfernen"
+			}
+		}
+	},
+	"aisource_editor": {
+		"title": "KI-Quelleneditor",
+		"fileList": {
+			"title": "KI-Quellenliste",
+			"addButton": {
+				"title": "+"
+			}
+		},
+		"configTitle": "KI-Quellenkonfiguration",
+		"generatorSelect": {
+			"label": "Generator auswählen",
+			"placeholder": "Bitte auswählen"
+		},
+		"buttons": {
+			"save": "Speichern",
+			"delete": "Löschen"
+		},
+		"tooltips": {
+			"setDefault": "Standardmäßig festgelegt"
+		},
+		"alerts": {
+			"fetchFileListFailed": "Fehler beim Abrufen der Dateiliste: ${error}",
+			"fetchGeneratorListFailed": "Fehler beim Abrufen der Generatorliste: ${error}",
+			"fetchDefaultsFailed": "Die Standardkomponente nicht erhalten: ${error}",
+			"fetchFileDataFailed": "Fehler beim Abrufen der Dateidaten: ${error}",
+			"noFileSelectedSave": "Keine Datei zum Speichern ausgewählt.",
+			"saveFileFailed": "Fehler beim Speichern der Datei: ${error}",
+			"setDefaultFailed": "Festlegen der Standard-AI-Quelle fehlgeschlagen: ${error}",
+			"noFileSelectedDelete": "Keine Datei zum Löschen ausgewählt.",
+			"deleteFileFailed": "Fehler beim Löschen der Datei: ${error}",
+			"invalidFileName": "Der Dateiname darf folgende Zeichen nicht enthalten: / \\ : * ? \" < > |",
+			"addFileFailed": "Fehler beim Hinzufügen der Datei: ${error}",
+			"fetchConfigTemplateFailed": "Fehler beim Abrufen der Konfigurationsvorlage",
+			"noGeneratorSelectedSave": "Bitte wählen Sie zuerst einen Generator aus, bevor Sie speichern."
+		},
+		"confirm": {
+			"unsavedChanges": "Sie haben ungespeicherte Änderungen. Möchten Sie die Änderungen verwerfen?",
+			"deleteFile": "Sind Sie sicher, dass Sie die Datei löschen möchten?",
+			"unsavedChangesBeforeUnload": "Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie diese Seite verlassen möchten?"
+		},
+		"prompts": {
+			"newFileName": "Bitte geben Sie einen neuen KI-Quelldatei-Namen ein (ohne Erweiterung):"
+		},
+		"editor": {
+			"disabledIndicator": "Bitte wählen Sie zuerst einen Generator aus."
+		}
+	},
+	"part_config": {
+		"title": "Komponentenkonfiguration",
+		"pageTitle": "Komponentenkonfiguration",
+		"labels": {
+			"partType": "Komponententyp auswählen",
+			"part": "Komponente auswählen"
+		},
+		"placeholders": {
+			"partTypeSelect": "Bitte auswählen",
+			"partSelect": "Bitte auswählen"
+		},
+		"editor": {
+			"title": "Komponenten-Konfiguration",
+			"disabledIndicator": "Diese Komponente unterstützt keine Konfiguration.",
+			"buttons": {
+				"save": "Speichern"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Fehlerhinweis"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "Fehler beim Abrufen der Komponententypen.",
+			"fetchPartsFailed": "Fehler beim Abrufen der Komponentenliste.",
+			"loadEditorFailed": "Fehler beim Laden des Editors.",
+			"saveConfigFailed": "Fehler beim Speichern der Komponentenkonfiguration.",
+			"unsavedChanges": "Sie haben ungespeicherte Änderungen. Möchten Sie die Änderungen verwerfen?",
+			"beforeUnload": "Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie die Seite verlassen möchten?"
+		}
+	},
+	"uninstall": {
+		"title": "Deinstallieren",
+		"titleWithName": "Deinstalliere ${type}/${name}",
+		"confirmMessage": "Sind Sie sicher, dass Sie ${type}: ${name} deinstallieren möchten?",
+		"invalidParamsTitle": "Ungültige Parameter",
+		"infoMessage": {
+			"icon": {
+				"alt": "Info-Symbol"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Fehlersymbol"
+			}
+		},
+		"buttons": {
+			"confirm": "Deinstallation bestätigen",
+			"cancel": "Abbrechen",
+			"back": "Zurück"
+		},
+		"alerts": {
+			"success": "${type}: ${name} erfolgreich deinstalliert",
+			"failed": "Deinstallation fehlgeschlagen: ${error}",
+			"invalidParams": "Ungültige Anfrageparameter.",
+			"httpError": "HTTP-Fehler! Statuscode: ${status}"
+		}
+	},
+	"chat": {
+		"new": {
+			"title": "Neuer Chat"
+		},
+		"title": "Chat",
+		"sidebar": {
+			"world": {
+				"icon": {
+					"alt": "Weltsymbol"
+				},
+				"title": "Welt"
+			},
+			"persona": {
+				"icon": {
+					"alt": "Benutzer-Persona-Symbol"
+				},
+				"title": "Benutzer-Persona"
+			},
+			"charList": {
+				"icon": {
+					"alt": "Charakterlistensymbol"
+				},
+				"title": "Charakterliste",
+				"buttons": {
+					"addChar": {
+						"title": "Charakter hinzufügen"
+					},
+					"addCharIcon": {
+						"alt": "Charakter hinzufügen Symbol"
+					}
+				}
+			},
+			"noSelection": "Keine Auswahl",
+			"noDescription": "Keine Beschreibung verfügbar"
+		},
+		"chatArea": {
+			"title": "Chat",
+			"menuButton": {
+				"title": "Menü"
+			},
+			"menuButtonIcon": {
+				"alt": "Menüsymbol"
+			},
+			"input": {
+				"placeholder": "Nachricht eingeben...\nStrg+Enter zum Senden"
+			},
+			"sendButton": {
+				"title": "Senden"
+			},
+			"sendButtonIcon": {
+				"alt": "Senden-Symbol"
+			},
+			"uploadButton": {
+				"title": "Hochladen"
+			},
+			"uploadButtonIcon": {
+				"alt": "Hochladen-Symbol"
+			},
+			"voiceButton": {
+				"title": "Sprachaufnahme"
+			},
+			"voiceButtonIcon": {
+				"alt": "Sprachaufnahme-Symbol"
+			},
+			"photoButton": {
+				"title": "Foto"
+			},
+			"photoButtonIcon": {
+				"alt": "Foto-Symbol"
+			}
+		},
+		"rightSidebar": {
+			"title": "Beschreibung"
+		},
+		"messageList": {
+			"confirmDeleteMessage": "Diese Nachricht wirklich löschen?"
+		},
+		"voiceRecording": {
+			"errorAccessingMicrophone": "Fehler beim Zugriff auf das Mikrofon."
+		},
+		"messageView": {
+			"buttons": {
+				"edit": {
+					"title": "Bearbeiten"
+				},
+				"editIcon": {
+					"alt": "Bearbeiten-Symbol"
+				},
+				"more": {
+					"title": "Mehr"
+				},
+				"moreIcon": {
+					"alt": "Mehr-Symbol"
+				}
+			},
+			"dropdown": {
+				"delete": "Löschen",
+				"deleteIcon": {
+					"alt": "Löschen-Symbol"
+				},
+				"copyMarkdown": "Als Markdown kopieren",
+				"copyMarkdownIcon": {
+					"alt": "Als Markdown kopieren Symbol"
+				},
+				"copyText": "Als reinen Text kopieren",
+				"copyTextIcon": {
+					"alt": "Als reinen Text kopieren Symbol"
+				},
+				"copyHtml": "Als HTML kopieren",
+				"copyHtmlIcon": {
+					"alt": "Als HTML kopieren Symbol"
+				}
+			}
+		},
+		"messageEdit": {
+			"input": {
+				"placeholder": "Inhalt eingeben..."
+			},
+			"buttons": {
+				"confirm": {
+					"title": "Bestätigen"
+				},
+				"confirmIcon": {
+					"alt": "Bestätigen-Symbol"
+				},
+				"cancel": {
+					"title": "Abbrechen"
+				},
+				"cancelIcon": {
+					"alt": "Abbrechen-Symbol"
+				},
+				"upload": {
+					"title": "Hochladen"
+				},
+				"uploadIcon": {
+					"alt": "Hochladen-Symbol"
+				}
+			}
+		},
+		"attachment": {
+			"buttons": {
+				"download": {
+					"title": "Herunterladen"
+				},
+				"downloadIcon": {
+					"alt": "Herunterladen-Symbol"
+				},
+				"delete": {
+					"title": "Löschen"
+				},
+				"deleteIcon": {
+					"alt": "Löschen-Symbol"
+				}
+			}
+		},
+		"charCard": {
+			"frequencyLabel": "Häufigkeit",
+			"buttons": {
+				"removeChar": {
+					"title": "Aus Chat entfernen"
+				},
+				"removeCharIcon": {
+					"alt": "Charakter entfernen Symbol"
+				},
+				"forceReply": {
+					"title": "Antwort erzwingen"
+				},
+				"forceReplyIcon": {
+					"alt": "Antwort erzwingen Symbol"
+				}
+			}
+		}
+	},
+	"chat_history": {
+		"title": "Chatverlauf",
+		"pageTitle": "Chatverlauf",
+		"sortOptions": {
+			"time_desc": "Zeit absteigend",
+			"time_asc": "Zeit aufsteigend"
+		},
+		"filterInput": {
+			"placeholder": "Suchen..."
+		},
+		"selectAll": "Alle auswählen",
+		"buttons": {
+			"reverseSelect": "Auswahl umkehren",
+			"deleteSelected": "Ausgewählte löschen",
+			"exportSelected": "Ausgewählte exportieren"
+		},
+		"confirmDeleteChat": "Möchten Sie den Chatverlauf mit ${chars} wirklich löschen?",
+		"confirmDeleteMultiChats": "Möchten Sie die ausgewählten ${count} Chatverläufe wirklich löschen?",
+		"alerts": {
+			"noChatSelectedForDeletion": "Bitte wählen Sie Chatverläufe zum Löschen aus.",
+			"noChatSelectedForExport": "Bitte wählen Sie Chatverläufe zum Exportieren aus.",
+			"copyError": "Kopieren fehlgeschlagen",
+			"deleteError": "Löschen fehlgeschlagen",
+			"exportError": "Export fehlgeschlagen"
+		},
+		"chatItemButtons": {
+			"continue": "Fortsetzen",
+			"copy": "Kopieren",
+			"export": "Exportieren",
+			"delete": "Löschen"
+		}
+	},
+	"discord_bots": {
+		"title": "Discord-Bots",
+		"cardTitle": "Discord-Bots",
+		"buttons": {
+			"newBot": "Neu",
+			"deleteBot": "Löschen"
+		},
+		"configCard": {
+			"title": "Bot-Konfiguration",
+			"labels": {
+				"character": "Charakter",
+				"apiKey": "Discord API-Schlüssel",
+				"config": "Konfiguration"
+			},
+			"charSelectPlaceholder": "Charakter auswählen",
+			"apiKeyInput": {
+				"placeholder": "API-Schlüssel eingeben"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "API-Schlüssel Sichtbarkeit umschalten"
+			},
+			"buttons": {
+				"saveConfig": "Konfiguration speichern",
+				"startBot": "Starten",
+				"stopBot": "Stoppen"
+			}
+		},
+		"prompts": {
+			"newBotName": "Bitte geben Sie einen neuen Bot-Namen ein:"
+		},
+		"alerts": {
+			"botExists": "Ein Bot namens \"${botname}\" existiert bereits. Bitte verwenden Sie einen anderen Namen.",
+			"unsavedChanges": "Sie haben ungespeicherte Änderungen. Möchten Sie die Änderungen verwerfen?",
+			"configSaved": "Konfiguration erfolgreich gespeichert.",
+			"httpError": "HTTP-Fehler",
+			"beforeUnload": "Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie die Seite verlassen möchten?"
+		}
+	},
+	"telegram_bots": {
+		"title": "Telegram-Bots",
+		"cardTitle": "Telegram-Bot-Verwaltung",
+		"buttons": {
+			"newBot": "Neu",
+			"deleteBot": "Löschen"
+		},
+		"configCard": {
+			"title": "Bot-Konfiguration",
+			"labels": {
+				"character": "Verknüpfter Charakter",
+				"botToken": "Telegram Bot-Token",
+				"config": "Konfiguration"
+			},
+			"charSelectPlaceholder": "Charakter auswählen",
+			"botTokenInput": {
+				"placeholder": "Telegram Bot-Token eingeben"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "Bot-Token Sichtbarkeit umschalten"
+			},
+			"buttons": {
+				"saveConfig": "Konfiguration speichern",
+				"startBot": "Starten",
+				"stopBot": "Stoppen"
+			}
+		},
+		"prompts": {
+			"newBotName": "Bitte geben Sie einen neuen Bot-Namen ein:"
+		},
+		"alerts": {
+			"botExists": "Ein Bot namens \"${botname}\" existiert bereits. Bitte verwenden Sie einen anderen Namen.",
+			"unsavedChanges": "Sie haben ungespeicherte Änderungen. Möchten Sie diese Änderungen verwerfen?",
+			"configSaved": "Die Konfiguration wurde erfolgreich gespeichert!",
+			"httpError": "HTTP-Fehler",
+			"beforeUnload": "Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie die aktuelle Seite verlassen möchten?"
+		}
+	},
+	"terminal_assistant": {
+		"title": "Terminal-Assistent",
+		"initialMessage": "fount unterstützt die Bereitstellung Ihrer Lieblingscharaktere in Ihrem Terminal, um Sie beim Programmieren zu unterstützen!",
+		"initialMessageLink": "Klicken Sie hier, um mehr zu erfahren"
+	},
+	"access": {
+		"title": "Auf fount von anderen Geräten zugreifen",
+		"heading": "Möchten Sie auf fount von anderen Geräten zugreifen?",
+		"instruction": {
+			"sameLAN": "Stellen Sie sicher, dass sich das Gerät und der fount-Host im selben lokalen Netzwerk befinden.",
+			"accessthis": "Rufen Sie folgende URL auf:"
+		},
+		"copyButton": "URL kopieren",
+		"copied": "URL in die Zwischenablage kopiert!"
+	},
+	"proxy": {
+		"title": "API-Proxy",
+		"heading": "OpenAI API Proxy-Adresse",
+		"instruction": "Fügen Sie die folgende Adresse in jede Anwendung ein, die das OpenAI-API-Format benötigt, um die KI-Quellen in fount zu verwenden!",
+		"copyButton": "Adresse kopieren",
+		"copied": "Adresse in die Zwischenablage kopiert!"
+	},
+	"404": {
+		"title": "Seite nicht gefunden",
+		"pageNotFoundText": "Hoppla! Sie scheinen auf einer Seite gelandet zu sein, die nicht existiert.",
+		"homepageButton": "Zur Startseite zurückkehren"
+	},
+	"userSettings": {
+		"title": "Benutzereinstellungen",
+		"PageTitle": "Benutzereinstellungen",
+		"apiError": "API-Anfrage fehlgeschlagen: ${message}",
+		"generalError": "Es ist ein Fehler aufgetreten: ${message}",
+		"userInfo": {
+			"title": "Benutzerinformationen",
+			"usernameLabel": "Benutzername:",
+			"creationDateLabel": "Kontoerstellungsdatum:",
+			"folderSizeLabel": "Größe der Benutzerdaten:",
+			"folderPathLabel": "Pfad der Benutzerdaten:",
+			"copyPathBtnTitle": "Pfad kopieren",
+			"copiedAlert": "Der Pfad wurde in die Zwischenablage kopiert!"
+		},
+		"changePassword": {
+			"title": "Passwort ändern",
+			"currentPasswordLabel": "Aktuelles Passwort:",
+			"newPasswordLabel": "Neues Passwort:",
+			"confirmNewPasswordLabel": "Neues Passwort bestätigen:",
+			"submitButton": "Passwort ändern",
+			"errorMismatch": "Die neuen Passwörter stimmen nicht überein.",
+			"success": "Passwort erfolgreich geändert."
+		},
+		"renameUser": {
+			"title": "Benutzer umbenennen",
+			"newUsernameLabel": "Neuer Benutzername:",
+			"submitButton": "Benutzer umbenennen",
+			"confirmMessage": "Sind Sie sicher, dass Sie Ihren Benutzernamen ändern möchten? Sie müssen sich danach neu anmelden.",
+			"success": "Der Benutzer wurde erfolgreich in \"${newUsername}\" umbenannt. Sie werden jetzt abgemeldet."
+		},
+		"userDevices": {
+			"title": "Benutzergeräte/-sitzungen",
+			"refreshButtonTitle": "Liste aktualisieren",
+			"noDevicesFound": "Es wurden keine Geräte oder Sitzungen gefunden.",
+			"deviceInfo": "Geräte-ID: ${deviceId}",
+			"thisDevice": "Dieses Gerät",
+			"deviceDetails": "Zuletzt online: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
+			"revokeButton": "Widerrufen",
+			"revokeConfirm": "Sind Sie sicher, dass Sie sich von diesem Gerät/dieser Sitzung abmelden möchten?",
+			"revokeSuccess": "Das Gerät/Die Sitzung wurde erfolgreich widerrufen."
+		},
+		"logout": {
+			"title": "Abmelden",
+			"description": "Dadurch wird Ihr Konto vom aktuellen Gerät abgemeldet.",
+			"buttonText": "Abmelden",
+			"confirmMessage": "Sind Sie sicher, dass Sie sich abmelden möchten?",
+			"successMessage": "Erfolgreich abgemeldet. Sie werden zur Anmeldeseite weitergeleitet..."
+		},
+		"deleteAccount": {
+			"title": "Konto löschen",
+			"warning": "Warnung: Diese Aktion löscht Ihr Konto und alle zugehörigen Daten dauerhaft und kann nicht wiederhergestellt werden.",
+			"submitButton": "Mein Konto löschen",
+			"confirmMessage1": "Warnung! Sind Sie sicher, dass Sie Ihr Konto dauerhaft löschen möchten? Dieser Vorgang kann nicht rückgängig gemacht werden.",
+			"confirmMessage2": "Um die Löschung zu bestätigen, geben Sie bitte Ihren Benutzernamen \"${username}\" ein:",
+			"usernameMismatch": "Der eingegebene Benutzername stimmt nicht mit dem aktuellen Benutzer überein. Der Löschvorgang wurde abgebrochen.",
+			"success": "Das Konto wurde erfolgreich gelöscht. Sie werden jetzt abgemeldet."
+		},
+		"passwordConfirm": {
+			"title": "Vorgang bestätigen",
+			"message": "Um diesen Vorgang fortzusetzen, geben Sie bitte Ihr aktuelles Passwort ein:",
+			"passwordLabel": "Passwort:",
+			"confirmButton": "Bestätigen",
+			"cancelButton": "Abbrechen"
+		}
+	},
+	"badges_maker": {
+		"title": "fount! Abzeichenwandler",
+		"card_title": "fount Abzeichen Link Konverter",
+		"original_url_label": "img.shields.io URL einfügen",
+		"original_url_placeholder": "Zum Beispiel: https://img.shields.io/badge/Hello-World-blue",
+		"new_url_label": "Generierte neue URL",
+		"new_url_placeholder": "Die konvertierte URL wird hier angezeigt",
+		"copy_button": "Kopieren",
+		"preview_label": "Vorschau",
+		"preview_alt": "Abzeichen-Vorschau",
+		"copied_text": "Kopiert!",
+		"copy_error": "Text konnte nicht kopiert werden: ${error}",
+		"copy_fail_alert": "Kopieren fehlgeschlagen!"
+	},
+	"easynew": {
+		"title": "Schnellerstellung",
+		"cardTitle": "Eine neue Komponente aus einer Vorlage erstellen",
+		"templateSelect": {
+			"label": "Vorlage auswählen"
+		},
+		"partName": {
+			"label": "Komponentenname",
+			"placeholder": "Geben Sie Ihrer neuen Komponente einen Namen"
+		},
+		"description": {
+			"label": "Beschreibung",
+			"placeholder": "Beschreiben Sie kurz, worum es bei dieser Komponente geht."
+		},
+		"descriptionMarkdown": {
+			"label": "Beschreibung (Markdown)",
+			"placeholder": "Unterstützt Markdown für detailliertere Formatierungen."
+		},
+		"imageUpload": {
+			"label": "Avatar-Bild"
+		},
+		"charDef": {
+			"heading": "Charakterdefinition"
+		},
+		"personality": {
+			"label": "Persönlichkeit",
+			"placeholder": "Beschreiben Sie die grundlegenden Persönlichkeitsmerkmale des Charakters."
+		},
+		"scenario": {
+			"label": "Szenario",
+			"placeholder": "Der Hintergrund oder die Umgebung des Charakters."
+		},
+		"mesExample": {
+			"label": "Nachrichtenbeispiel",
+			"placeholder": "Beispiele dafür, was ein Charakter sagen könnte."
+		},
+		"firstMessage": {
+			"label": "Erste Nachricht",
+			"placeholder": "Die erste Nachricht, die der Charakter sagt."
+		},
+		"personaDef": {
+			"heading": "Persona-Definition"
+		},
+		"personaUserName": {
+			"label": "Ihr Name im Chat",
+			"placeholder": "Zum Beispiel: Kapitän, Entdecker"
+		},
+		"personaAppearance": {
+			"label": "Aussehen",
+			"placeholder": "Beschreiben Sie Ihr Aussehen."
+		},
+		"personaPersonality": {
+			"label": "Persönlichkeit",
+			"placeholder": "Beschreiben Sie Ihre Persönlichkeitsmerkmale."
+		},
+		"worldDef": {
+			"heading": "Welt-Definition"
+		},
+		"worldPrompt": {
+			"label": "Welt-Anweisungen",
+			"placeholder": "Beschreibt die Regeln der Welt, die Umgebung und den globalen Kontext der Rolle."
+		},
+		"worldGreeting": {
+			"label": "Welt-Begrüßung",
+			"placeholder": "Die erste Nachricht, die die Welt an Benutzer sendet."
+		},
+		"author": {
+			"label": "Autor",
+			"placeholder": "Wer ist der Autor dieser Komponente?"
+		},
+		"version": {
+			"label": "Version",
+			"placeholder": "Zum Beispiel: 1.0.0"
+		},
+		"tags": {
+			"label": "Tags",
+			"placeholder": "Durch Komma getrennte Tags"
+		},
+		"homePage": {
+			"label": "Homepage",
+			"placeholder": "Die URL der Homepage der Komponente"
+		},
+		"issuePage": {
+			"label": "Problemseite",
+			"placeholder": "URL der Problemseite der Komponente"
+		},
+		"createButton": "Komponente erstellen",
+		"alerts": {
+			"success": "Komponente '${partName}' wurde erfolgreich erstellt!",
+			"error": "Fehler: ${message}"
+		},
+		"info": {
+			"description": "Diese Vorlagen können nur verwendet werden, um einfache Teile schnell zu erstellen. Komplexe Teile müssen weiterhin manuell erstellt werden."
+		}
+	},
+	"export": {
+		"title": "Komponenten-Exporter",
+		"pageTitle": "Komponenten-Exporter",
+		"pageSubtitle": "Exportieren Sie Ihre Lieblingsinhalte",
+		"steps": {
+			"partType": "Wählen Sie einen Typ",
+			"part": "Wählen Sie Komponenten aus",
+			"action": "Export"
+		},
+		"options": {
+			"withData": "Enthält Datendateien",
+			"withDataDescription": "Enthält Dateien, die als Daten markiert sind, wie z. B. Charaktererinnerungen."
+		},
+		"labels": {
+			"partType": "Wählen Sie einen Komponententyp",
+			"part": "Wählen Sie eine Komponente"
+		},
+		"placeholders": {
+			"partTypeSelect": "Bitte auswählen",
+			"partSelect": "Bitte auswählen"
+		},
+		"export": {
+			"title": "Exportoptionen"
+		},
+		"editor": {
+			"disabledIndicator": "Bitte wählen Sie zuerst ein Komponent aus",
+			"disabledIndicatorHint": "Bitte wählen Sie den Komponententyp und die Komponente aus, die Sie exportieren möchten"
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Fehler"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "Komponente-Typen konnten nicht abgerufen werden.",
+			"fetchPartsFailed": "Die Komponente-Liste konnte nicht abgerufen werden.",
+			"loadPartDetailsFailed": "Komponente-Details konnten nicht geladen werden.",
+			"exportFailed": "Export fehlgeschlagen.",
+			"shareLinkCopied": "Share Link wurde in die Zwischenablage kopiert!",
+			"shareFailed": "Der Freigabelink konnte nicht erstellt werden."
+		},
+		"shareMenu": {
+			"title": "Wählen Sie die Freigabezeit",
+			"1h": "1 Stunde",
+			"12h": "12 Stunden",
+			"24h": "24 Stunden",
+			"72h": "72 Stunden",
+			"cancel": "Stornieren"
+		},
+		"litterbox": {
+			"poweredBy": "Die Freigabefunktion wird von Litterbox.moe unterstützt",
+			"sponsorLink": "Unterstütze sie"
+		},
+		"buttons": {
+			"export": "Exportieren",
+			"exportWithData": "Exportieren (mit Daten)",
+			"generateShareLink": "Freigabelink generieren",
+			"generateShareLinkWithData": "Freigabelink generieren (einschließlich Daten)"
+		}
+	}
+}

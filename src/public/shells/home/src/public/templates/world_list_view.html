@@ -1,0 +1,29 @@
+<div class="card-container bg-base-100 shadow-xl group">
+	<div class="card-content" style="background-image: url(${info.avatar || 'https://api.iconify.design/line-md/map-marker-radius.svg'}); background-size: contain; background-position: center; background-repeat: no-repeat;">
+		<button class="refresh-button">
+			<img src="https://api.iconify.design/line-md/rotate-270.svg" data-i18n="home.worlds.card.refreshButton" class="text-icon">
+		</button>
+		<div class="text-content">
+			<h2 class="card-title">${info.name}</h2>
+			<p class="line-clamp-3">${info.description}</p>
+			<div class="card-actions justify-end w-full">
+				<div class="flex flex-nowrap gap-2 overflow-x-auto max-w-full"></div>
+			</div>
+		</div>
+	</div>
+
+	<div class="details-container z-[60] h-full p-4 bg-base-100 bg-opacity-50">
+		<div class="border border-primary">
+			<input type="checkbox" class="checkbox checkbox-sm default-checkbox" data-i18n="home.worlds.card.defaultCheckbox" />
+			<div class="tags-container overflow-y-auto">
+				${(info.tags && info.tags.length > 0) ? info.tags.map((tag) => `<span class="badge badge-primary cursor-pointer">${tag}</span>`).join(' ') : geti18n('home.worlds.card.noTags')}
+			</div>
+			<div class="char-details-container overflow-y-auto">
+				${info.version ? `<div class="char-info-item">${geti18n('home.worlds.card.version')}：<code>${info.version}</code></div>` : ''}
+				${info.author ? `<div class="char-info-item">${geti18n('home.worlds.card.author')}：${info.author}</div>` : ''}
+				${info.home_page ? `<div class="char-info-item"><a href="${info.home_page}" class="link link-primary" target="_blank">${geti18n('home.worlds.card.home_page')}</a></div>` : ''}
+				${info.issue_page ? `<div class="char-info-item"><a href="${info.issue_page}" class="link link-primary" target="_blank">${info.issue_page}</a></div>` : ''}
+			</div>
+		</div>
+	</div>
+</div>

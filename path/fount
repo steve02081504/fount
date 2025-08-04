@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+# fount脚本需要兼容mac的上古版本bash，尽量避免使用新版本语法
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+"$SCRIPT_DIR/fount.sh" "$@"
+exit $?

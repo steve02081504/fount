@@ -1,0 +1,58 @@
+name: Test Running
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'src/runner/**'
+      - 'path/**'
+    tags-ignore:
+      - '*'
+    branches:
+      - '*'
+
+jobs:
+  test-fount:
+    timeout-minutes: 4
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Extract branch name
+        shell: bash
+        run: |
+          touch .nodelete
+          echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+        id: extract_branch
+
+      - name: test script (bash)
+        shell: bash
+        run: |
+          export FOUNT_DIR="$PWD/fount"
+          export FOUNT_BRANCH="${{ steps.extract_branch.outputs.branch }}"
+          curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/${{ steps.extract_branch.outputs.branch }}/src/runner/main.sh | bash -s init
+          ./fount/path/fount.sh remove
+
+      - name: test script (pwsh)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          $env:FOUNT_DIR = "$PWD/fount"
+          $env:FOUNT_BRANCH = "${{ steps.extract_branch.outputs.branch }}"
+          $scriptContent = Invoke-RestMethod https://raw.githubusercontent.com/steve02081504/fount/refs/heads/${{ steps.extract_branch.outputs.branch }}/src/runner/main.ps1
+          Invoke-Expression "function fountInstaller { $scriptContent }"
+          fountInstaller init
+          ./fount/path/fount.ps1 remove
+
+      - name: test script (pwsh)
+        if: runner.os != 'Windows'
+        shell: pwsh
+        run: |
+          $env:FOUNT_DIR = "$PWD/fount"
+          $env:FOUNT_BRANCH = "${{ steps.extract_branch.outputs.branch }}"
+          $scriptContent = Invoke-RestMethod https://raw.githubusercontent.com/steve02081504/fount/refs/heads/${{ steps.extract_branch.outputs.branch }}/src/runner/main.ps1
+          Invoke-Expression "function fountInstaller { $scriptContent }"
+          fountInstaller init
+          ./fount/path/fount.ps1 remove

@@ -1,0 +1,62 @@
+{
+	"home_function_buttons": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "终端辅助"
+				},
+				"en-UK": {
+					"title": "Terminal Assist"
+				},
+				"ar-SA": {
+					"title": "المساعدة الطرفية"
+				},
+				"de-DE": {
+					"title": "Terminal-Assistenz"
+				},
+				"es-ES": {
+					"title": "Asistencia de Terminal"
+				},
+				"fr-FR": {
+					"title": "Assistant Terminal"
+				},
+				"hi-IN": {
+					"title": "टर्मिनल असिस्ट"
+				},
+				"is-IS": {
+					"title": "Terminal Assistance"
+				},
+				"it-IT": {
+					"title": "Assistenza Terminale"
+				},
+				"ja-JP": {
+					"title": "ターミナルアシスト"
+				},
+				"ko-KR": {
+					"title": "터미널 지원"
+				},
+				"nl-NL": {
+					"title": "Terminale hulp"
+				},
+				"pt-PT": {
+					"title": "Assistente de Terminal"
+				},
+				"ru-RU": {
+					"title": "Терминал-Ассистент"
+				},
+				"uk-UA": {
+					"title": "Термінальна допомога"
+				},
+				"vi-VN": {
+					"title": "Hỗ trợ Terminal"
+				},
+				"zh-TW": {
+					"title": "終端輔助"
+				}
+			},
+			"level": 2,
+			"url": "/shells/shellassist",
+			"button": "<img src=\"https://api.iconify.design/line-md/laptop.svg\" class=\"text-icon\"/>"
+		}
+	]
+}

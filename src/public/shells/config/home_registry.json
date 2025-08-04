@@ -1,0 +1,123 @@
+{
+	"home_function_buttons": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "组件配置"
+				},
+				"en-UK": {
+					"title": "Component Configuration"
+				},
+				"ar-SA": {
+					"title": "تكوين المكون"
+				},
+				"de-DE": {
+					"title": "Komponentenkonfiguration"
+				},
+				"es-ES": {
+					"title": "Configuración de Componente"
+				},
+				"fr-FR": {
+					"title": "Configuration des Composants"
+				},
+				"hi-IN": {
+					"title": "घटक कॉन्फ़िगरेशन"
+				},
+				"is-IS": {
+					"title": "Stillingar íhluta"
+				},
+				"it-IT": {
+					"title": "Configurazione Componente"
+				},
+				"ja-JP": {
+					"title": "コンポーネント設定"
+				},
+				"ko-KR": {
+					"title": "컴포넌트 설정"
+				},
+				"nl-NL": {
+					"title": "Componentconfiguratie"
+				},
+				"pt-PT": {
+					"title": "Configuração de Componente"
+				},
+				"ru-RU": {
+					"title": "Настройка компонента"
+				},
+				"uk-UA": {
+					"title": "Конфігурація компонентів"
+				},
+				"vi-VN": {
+					"title": "Cấu hình thành phần"
+				},
+				"zh-TW": {
+					"title": "組件配置"
+				}
+			},
+			"level": 1,
+			"url": "/shells/config",
+			"button": "<img src=\"https://api.iconify.design/line-md/cog.svg\" class=\"text-icon\"/>"
+		}
+	],
+	"home_common_interfaces": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "配置"
+				},
+				"en-UK": {
+					"title": "Config"
+				},
+				"ar-SA": {
+					"title": "إعدادات"
+				},
+				"de-DE": {
+					"title": "Konfiguration"
+				},
+				"es-ES": {
+					"title": "Configuración"
+				},
+				"fr-FR": {
+					"title": "Configuration"
+				},
+				"hi-IN": {
+					"title": "कॉन्फ़िग"
+				},
+				"is-IS": {
+					"title": "Stillingar"
+				},
+				"it-IT": {
+					"title": "Configurazione"
+				},
+				"ja-JP": {
+					"title": "設定"
+				},
+				"ko-KR": {
+					"title": "구성"
+				},
+				"nl-NL": {
+					"title": "Configuratie"
+				},
+				"pt-PT": {
+					"title": "Configuração"
+				},
+				"ru-RU": {
+					"title": "Конфигурация"
+				},
+				"uk-UA": {
+					"title": "Конфігурація"
+				},
+				"vi-VN": {
+					"title": "Cấu hình"
+				},
+				"zh-TW": {
+					"title": "配置"
+				}
+			},
+			"level": 0,
+			"interface": "config",
+			"url": "/shells/config?type=${type}&name=${name}",
+			"button": "<img src=\"https://api.iconify.design/line-md/cog.svg\"/>"
+		}
+	]
+}

@@ -1,0 +1,62 @@
+{
+	"home_function_buttons": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "用户设置"
+				},
+				"en-UK": {
+					"title": "User Settings"
+				},
+				"ar-SA": {
+					"title": "إعدادات المستخدم"
+				},
+				"de-DE": {
+					"title": "Benutzereinstellungen"
+				},
+				"es-ES": {
+					"title": "Configuración de Usuario"
+				},
+				"fr-FR": {
+					"title": "Paramètres Utilisateur"
+				},
+				"hi-IN": {
+					"title": "उपयोगकर्ता सेटिंग्स"
+				},
+				"is-IS": {
+					"title": "Notendastillingar"
+				},
+				"it-IT": {
+					"title": "Impostazioni Utente"
+				},
+				"ja-JP": {
+					"title": "ユーザー設定"
+				},
+				"ko-KR": {
+					"title": "사용자 설정"
+				},
+				"nl-NL": {
+					"title": "Gebruikersinstellingen"
+				},
+				"pt-PT": {
+					"title": "Configurações de Usuário"
+				},
+				"ru-RU": {
+					"title": "Настройки пользователя"
+				},
+				"uk-UA": {
+					"title": "Налаштування користувача"
+				},
+				"vi-VN": {
+					"title": "Cài đặt Người dùng"
+				},
+				"zh-TW": {
+					"title": "用戶設置"
+				}
+			},
+			"level": 100,
+			"url": "/shells/userSettings",
+			"button": "<img src=\"https://api.iconify.design/line-md/account.svg\" class=\"text-icon\"/>"
+		}
+	]
+}

@@ -1,0 +1,123 @@
+{
+	"home_function_buttons": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "导入"
+				},
+				"en-UK": {
+					"title": "Import"
+				},
+				"ar-SA": {
+					"title": "استيراد"
+				},
+				"de-DE": {
+					"title": "Importieren"
+				},
+				"es-ES": {
+					"title": "Importar"
+				},
+				"fr-FR": {
+					"title": "Importer"
+				},
+				"hi-IN": {
+					"title": "आयात करें"
+				},
+				"is-IS": {
+					"title": "Flytja inn"
+				},
+				"it-IT": {
+					"title": "Importa"
+				},
+				"ja-JP": {
+					"title": "インポート"
+				},
+				"ko-KR": {
+					"title": "가져오기"
+				},
+				"nl-NL": {
+					"title": "Importeren"
+				},
+				"pt-PT": {
+					"title": "Importar"
+				},
+				"ru-RU": {
+					"title": "Импорт"
+				},
+				"uk-UA": {
+					"title": "Імпорт"
+				},
+				"vi-VN": {
+					"title": "Nhập khẩu"
+				},
+				"zh-TW": {
+					"title": "匯入"
+				}
+			},
+			"level": 0,
+			"url": "/shells/install",
+			"button": "<img src=\"https://api.iconify.design/line-md/document-add.svg\" class=\"text-icon\"/>"
+		}
+	],
+	"home_common_interfaces": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "删除"
+				},
+				"en-UK": {
+					"title": "Delete"
+				},
+				"ar-SA": {
+					"title": "حذف"
+				},
+				"de-DE": {
+					"title": "Löschen"
+				},
+				"es-ES": {
+					"title": "Eliminar"
+				},
+				"fr-FR": {
+					"title": "Supprimer"
+				},
+				"hi-IN": {
+					"title": "हटाएं"
+				},
+				"is-IS": {
+					"title": "Eyða"
+				},
+				"it-IT": {
+					"title": "Elimina"
+				},
+				"ja-JP": {
+					"title": "削除"
+				},
+				"ko-KR": {
+					"title": "삭제"
+				},
+				"nl-NL": {
+					"title": "Verwijderen"
+				},
+				"pt-PT": {
+					"title": "Eliminar"
+				},
+				"ru-RU": {
+					"title": "Удалить"
+				},
+				"uk-UA": {
+					"title": "видаляти"
+				},
+				"vi-VN": {
+					"title": "Xóa"
+				},
+				"zh-TW": {
+					"title": "刪除"
+				}
+			},
+			"level": 9,
+			"url": "/shells/install/uninstall?type=${type}&name=${name}",
+			"button": "<img src=\"https://api.iconify.design/line-md/account-delete.svg\"/>",
+			"type": "error"
+		}
+	]
+}

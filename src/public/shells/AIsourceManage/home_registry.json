@@ -1,0 +1,62 @@
+{
+	"home_function_buttons": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "管理AI源"
+				},
+				"en-UK": {
+					"title": "Manage AI Sources"
+				},
+				"ar-SA": {
+					"title": "إدارة مصادر الذكاء الاصطناعي"
+				},
+				"de-DE": {
+					"title": "KI-Quellen verwalten"
+				},
+				"es-ES": {
+					"title": "Gestionar Fuentes de IA"
+				},
+				"fr-FR": {
+					"title": "Gérer les Sources d'IA"
+				},
+				"hi-IN": {
+					"title": "एआई स्रोत प्रबंधित करें"
+				},
+				"is-IS": {
+					"title": "Stjórna AI heimildum"
+				},
+				"it-IT": {
+					"title": "Gestisci Fonti AI"
+				},
+				"ja-JP": {
+					"title": "AIソースを管理"
+				},
+				"ko-KR": {
+					"title": "AI 소스 관리"
+				},
+				"nl-NL": {
+					"title": "Beheer AI -bronnen"
+				},
+				"pt-PT": {
+					"title": "Gerenciar Fontes de IA"
+				},
+				"ru-RU": {
+					"title": "Управление источниками ИИ"
+				},
+				"uk-UA": {
+					"title": "Керуйте джерелами AI"
+				},
+				"vi-VN": {
+					"title": "Quản lý nguồn AI"
+				},
+				"zh-TW": {
+					"title": "管理AI源"
+				}
+			},
+			"level": 1,
+			"url": "/shells/AIsourceManage",
+			"button": "<img src=\"https://api.iconify.design/line-md/engine.svg\" class=\"text-icon\"/>"
+		}
+	]
+}

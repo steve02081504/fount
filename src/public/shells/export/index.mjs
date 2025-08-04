@@ -1,0 +1,277 @@
+import { applyTheme } from '../../scripts/theme.mjs'
+import { getPartTypes, getPartList, getFountJson, exportPart, createShareLink } from './src/public/endpoints.mjs'
+import { showMessage } from './src/public/toast.mjs'
+import { initTranslations, geti18n, console } from '../../scripts/i18n.mjs'
+
+// DOM Elements
+const partTypeSelect = document.getElementById('partTypeSelect')
+const partSelect = document.getElementById('partSelect')
+const exportButton = document.getElementById('exportButton')
+const shareButton = document.getElementById('shareButton')
+const exportStatusIcon = document.getElementById('exportStatusIcon')
+const shareStatusIcon = document.getElementById('shareStatusIcon')
+const disabledIndicator = document.getElementById('disabledIndicator')
+const includeDataCheckbox = document.getElementById('includeDataCheckbox')
+const dataToggleContainer = document.getElementById('dataToggleContainer')
+
+const stepPartType = document.getElementById('stepPartType')
+const stepPart = document.getElementById('stepPart')
+const stepAction = document.getElementById('stepAction')
+
+// State
+let partTypes = []
+let parts = []
+let activePartType = null
+let activePart = null
+let fountJson = null
+
+// --- UI Control ---
+
+function updateStep(currentStep) {
+	stepPartType.classList.toggle('step-primary', currentStep >= 1)
+	stepPart.classList.toggle('step-primary', currentStep >= 2)
+	stepAction.classList.toggle('step-primary', currentStep >= 3)
+}
+
+function showExportArea(show) {
+	disabledIndicator.classList.toggle('hidden', show)
+}
+
+function showDataToggle(show) {
+	dataToggleContainer.classList.toggle('hidden', !show)
+}
+
+// --- Data Fetching ---
+
+async function fetchPartTypes() {
+	try {
+		partTypes = await getPartTypes()
+		renderPartTypeSelect()
+	} catch (err) {
+		console.error('Failed to fetch part types:', err)
+		showMessage(geti18n('export.alerts.fetchPartTypesFailed') + ': ' + err.message, 'error')
+	}
+}
+
+async function fetchParts(partType) {
+	try {
+		parts = await getPartList(partType)
+		renderPartSelect()
+	} catch (err) {
+		console.error('Failed to fetch parts:', err)
+		showMessage(geti18n('export.alerts.fetchPartsFailed') + ': ' + err.message, 'error')
+	}
+}
+
+async function loadPartDetails(partType, partName) {
+	try {
+		fountJson = await getFountJson(partType, partName)
+		const hasDataFiles = fountJson && fountJson.data_files && fountJson.data_files?.length > 0
+		showDataToggle(hasDataFiles)
+		showExportArea(true)
+		updateStep(3)
+	} catch (err) {
+		showMessage(geti18n('export.alerts.loadPartDetailsFailed') + ': ' + err.message, 'error')
+		console.error('Failed to load part details:', err)
+		showExportArea(false)
+	}
+}
+
+// --- Rendering ---
+
+function renderPartTypeSelect() {
+	const fragment = document.createDocumentFragment()
+	const defaultOption = document.createElement('option')
+	defaultOption.disabled = true
+	defaultOption.selected = true
+	defaultOption.textContent = geti18n('export.placeholders.partTypeSelect')
+	fragment.appendChild(defaultOption)
+
+	partTypes.forEach(partType => {
+		const option = document.createElement('option')
+		option.value = partType
+		option.textContent = partType
+		fragment.appendChild(option)
+	})
+
+	partTypeSelect.innerHTML = ''
+	partTypeSelect.appendChild(fragment)
+}
+
+function renderPartSelect() {
+	const fragment = document.createDocumentFragment()
+	const defaultOption = document.createElement('option')
+	defaultOption.disabled = true
+	defaultOption.selected = true
+	defaultOption.textContent = geti18n('export.placeholders.partSelect')
+	fragment.appendChild(defaultOption)
+
+	parts.forEach(partName => {
+		const option = document.createElement('option')
+		option.value = partName
+		option.textContent = partName
+		fragment.appendChild(option)
+	})
+
+	partSelect.innerHTML = ''
+	partSelect.disabled = false
+	partSelect.appendChild(fragment)
+}
+
+// --- Actions ---
+
+async function handleExport() {
+	if (!activePartType || !activePart) return
+
+	const withData = includeDataCheckbox.checked
+	const button = exportButton
+	const icon = exportStatusIcon
+
+	setButtonLoading(button, icon, true)
+
+	try {
+		const blob = await exportPart(activePartType, activePart, withData)
+		const url = URL.createObjectURL(blob)
+		const a = document.createElement('a')
+		a.href = url
+		a.download = `${activePart}${withData ? '_with_data' : ''}.zip`
+		document.body.appendChild(a)
+		a.click()
+		document.body.removeChild(a)
+		URL.revokeObjectURL(url)
+		setButtonState(icon, 'success')
+	} catch (err) {
+		showMessage(geti18n('export.alerts.exportFailed') + ': ' + err.message, 'error')
+		console.error('Failed to export part:', err)
+		setButtonState(icon, 'error')
+	}
+
+	setTimeout(() => setButtonLoading(button, icon, false), 2000)
+}
+
+async function handleShareAction(expiration) {
+	if (!activePartType || !activePart || !expiration) return
+
+	if (document.activeElement) document.activeElement.blur()
+
+	const withData = includeDataCheckbox.checked
+	const button = shareButton
+	const icon = shareStatusIcon
+
+	setButtonLoading(button, icon, true)
+
+	try {
+		const link = await createShareLink(activePartType, activePart, expiration, withData)
+		await navigator.clipboard.writeText(link)
+		showMessage(geti18n('export.alerts.shareLinkCopied'), 'success')
+		setButtonState(icon, 'success')
+	} catch (err) {
+		showMessage(geti18n('export.alerts.shareFailed') + ': ' + err.message, 'error')
+		console.error('Failed to create share link:', err)
+		setButtonState(icon, 'error')
+	}
+
+	setTimeout(() => setButtonLoading(button, icon, false), 2000)
+}
+
+// --- UI Helpers ---
+
+function setButtonLoading(button, icon, isLoading) {
+	button.disabled = isLoading
+	if (isLoading)
+		icon.innerHTML = '<img src="https://api.iconify.design/line-md/loading-loop.svg" class="h-6 w-6" />'
+	else
+		icon.innerHTML = ''
+}
+
+function setButtonState(icon, state) {
+	const iconUrl = state === 'success'
+		? 'https://api.iconify.design/line-md/confirm-circle.svg'
+		: 'https://api.iconify.design/line-md/emoji-frown.svg'
+	icon.innerHTML = `<img src="${iconUrl}" class="h-6 w-6" />`
+}
+
+// --- URL Management ---
+
+function getURLParams() {
+	return new URLSearchParams(window.location.search)
+}
+
+function updateURLParams(partType, partName) {
+	const urlParams = new URLSearchParams()
+	if (partType) urlParams.set('type', partType)
+	if (partName) urlParams.set('name', partName)
+
+	const newURL = `${window.location.pathname}?${urlParams.toString()}`
+	window.history.pushState({ path: newURL }, '', newURL)
+}
+
+// --- Initialization ---
+
+async function initializeFromURLParams() {
+	const urlParams = getURLParams()
+	const partType = urlParams.get('type')
+	const partName = urlParams.get('name')
+
+	await fetchPartTypes()
+
+	if (partType) {
+		partTypeSelect.value = partType
+		activePartType = partType
+		updateStep(2)
+		await fetchParts(partType)
+
+		if (partName) {
+			partSelect.value = partName
+			activePart = partName
+			await loadPartDetails(partType, partName)
+		} else
+			showExportArea(false)
+	} else {
+		showExportArea(false)
+		updateStep(1)
+	}
+}
+
+function init() {
+	applyTheme()
+	initTranslations('export')
+	initializeFromURLParams()
+
+	// Event Listeners
+	partTypeSelect.addEventListener('change', async () => {
+		activePartType = partTypeSelect.value
+		activePart = null
+		fountJson = null
+		partSelect.selectedIndex = 0
+		showExportArea(false)
+		showDataToggle(false)
+		updateStep(2)
+		updateURLParams(activePartType, null)
+		await fetchParts(activePartType)
+	})
+
+	partSelect.addEventListener('change', async () => {
+		activePart = partSelect.value
+		if (activePart) {
+			updateURLParams(activePartType, activePart)
+			await loadPartDetails(activePartType, activePart)
+		} else {
+			showExportArea(false)
+			showDataToggle(false)
+			updateStep(2)
+			updateURLParams(activePartType, null)
+		}
+	})
+
+	exportButton.addEventListener('click', handleExport)
+
+	document.getElementById('shareMenu').addEventListener('click', (event) => {
+		if (event.target.tagName === 'A')
+			handleShareAction(event.target.dataset.value)
+	})
+
+	window.addEventListener('popstate', initializeFromURLParams)
+}
+
+init()

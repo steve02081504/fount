@@ -1,0 +1,1090 @@
+{
+	"lang": "ru-RU",
+	"fountConsole": {
+		"server": {
+			"start": "Сервер запускается.",
+			"starting": "Сервер запускается...",
+			"ready": "Сервер запущен.",
+			"usesdTime": "Время запуска: ${time}s",
+			"showUrl": {
+				"https": "HTTPS-сервер запущен на ${url}",
+				"http": "HTTP-сервер запущен на ${url}"
+			},
+			"localUrl": "Доступ к fount с других устройств в той же сети: ${url}",
+			"standingBy": "Standing by..."
+		},
+		"jobs": {
+			"restartingJob": "Перезапуск задачи ${partname} (${parttype}) для пользователя ${username}: ${uid}."
+		},
+		"ipc": {
+			"sendCommandFailed": "Не удалось отправить команду: ${error}",
+			"invalidCommand": "Неверная команда, пожалуйста, используйте \"fount run <Тип компонента> <имя пользователя> <Имя компонента> <параметры...>\".",
+			"runPartLog": "Запуск ${parttype} ${partname} от имени ${username}, параметры: ${args}.",
+			"invokePartLog": "Вызов ${parttype} ${partname} от имени ${username}, параметры: ${invokedata}.",
+			"unsupportedCommand": "Неподдерживаемый тип команды.",
+			"processMessageError": "Ошибка при обработке IPC-сообщения: ${error}",
+			"invalidCommandFormat": "Неверный формат команды.",
+			"socketError": "Ошибка сокета: ${error}",
+			"instanceRunning": "Другой экземпляр уже запущен.",
+			"serverStarted": "IPC-сервер запущен.",
+			"parseResponseFailed": "Не удалось обработать ответ сервера: ${error}",
+			"cannotParseResponse": "Невозможно обработать ответ сервера.",
+			"unknownError": "Неизвестная ошибка."
+		},
+		"partManager": {
+			"git": {
+				"noUpstream": "Для ветки '${currentBranch}' не настроена вышестоящая ветка. Проверка обновлений пропущена.",
+				"dirtyWorkingDirectory": "Рабочий каталог нечист. Пожалуйста, сделайте 'stash' или 'commit' ваших изменений перед обновлением.",
+				"updating": "Обновление из удаленного репозитория...",
+				"localAhead": "Локальная ветка опережает удаленную. Обновление не требуется.",
+				"diverged": "Локальная и удаленная ветки разошлись. Выполняется принудительное обновление...",
+				"upToDate": "Уже установлена последняя версия.",
+				"updateFailed": "Не удалось обновить компоненты из удаленного репозитория: ${error}"
+			},
+			"partInitTime": "Компонент ${parttype} ${partname}, время инициализации: ${time}s",
+			"partLoadTime": "Компонент ${parttype} ${partname}, время загрузки: ${time}s"
+		},
+		"web": {
+			"requestReceived": "Получен запрос: ${method} ${url}"
+		},
+		"route": {
+			"setLanguagePreference": "Пользователь ${username} установил предпочитаемый язык: ${preferredLanguages}"
+		},
+		"auth": {
+			"tokenVerifyError": "Ошибка проверки токена: ${error}",
+			"refreshTokenError": "Ошибка токена обновления: ${error}",
+			"logoutRefreshTokenProcessError": "Ошибка обработки токена обновления при выходе из системы: ${error}",
+			"revokeTokenNoJTI": "Невозможно отозвать токен без JTI.",
+			"accountLockedLog": "Учетная запись пользователя ${username} заблокирована из-за многочисленных неудачных попыток входа."
+		},
+		"verification": {
+			"codeGeneratedLog": "Проверочный код: ${code} (истекает через 60 секунд)",
+			"codeNotifyTitle": "Проверочный код",
+			"codeNotifyBody": "Проверочный код: ${code} (истекает через 60 секунд)"
+		},
+		"tray": {
+			"readIconFailed": "Не удалось прочитать файл значка: ${error}",
+			"createTrayFailed": "Не удалось создать значок в области уведомлений: ${error}",
+			"title": "fount",
+			"tooltip": "fount",
+			"items": {
+				"open": {
+					"title": "Открыть",
+					"tooltip": "Открыть fount"
+				},
+				"github": {
+					"title": "GitHub",
+					"tooltip": "Открыть fount на GitHub"
+				},
+				"discord": {
+					"title": "Discord",
+					"tooltip": "Открыть fount в Discord"
+				},
+				"restart": {
+					"title": "Перезагрузить",
+					"tooltip": "Перезагрузить приложение"
+				},
+				"exit": {
+					"title": "Выход",
+					"tooltip": "Выйти из приложения"
+				}
+			}
+		},
+		"discordbot": {
+			"botStarted": "Персонаж ${charname} вошел в Discord бот ${botusername}."
+		},
+		"telegrambot": {
+			"botStarted": "Персонаж ${charname} вошел в Telegram бот ${botusername}."
+		}
+	},
+	"protocolhandler": {
+		"title": "Обработка протокола fount",
+		"processing": "Обработка протокола...",
+		"invalidProtocol": "Недопустимый протокол.",
+		"insufficientParams": "Недостаточно параметров.",
+		"unknownCommand": "Неизвестная команда.",
+		"shellCommandSent": "Команда оболочки отправлена.",
+		"shellCommandFailed": "Не удалось отправить команду оболочки.",
+		"shellCommandError": "Ошибка при отправке команды оболочки.",
+		"fountNotFound": "Эх... :(\n\nfount не найден. Возможно, вам нужно сначала его установить?",
+		"unknownError": "Ой... :(\n\nПроизошла ошибка:\n${error}"
+	},
+	"installer_wait_screen": {
+		"title": "Добро пожаловать в fount!",
+		"hero": {
+			"title": "Ваш иммерсивный AI-компаньон для персонажей",
+			"description": "fount — это платформа для взаимодействия с персонажами на базе ИИ, созданная, чтобы расширить <i>ваши</i> возможности. Это мост, соединяющий вас с воображаемыми персонажами и позволяющий легко общаться с ними, создавать собственных персонажей и делиться ими со всем миром."
+		},
+		"feature1": {
+			"title": "Бесшовный диалог, где угодно",
+			"description": "Начните общаться на компьютере и плавно продолжайте на телефоне или планшете. fount синхронизирует ваши диалоги, позволяя оставаться на связи с персонажем, где бы вы ни были. Работает на Windows, macOS, Linux и даже Android."
+		},
+		"feature2": {
+			"title": "Красивый, настраиваемый интерфейс",
+			"description": "Выберите из более чем 30 великолепных тем или создайте свою собственную. fount — это ваш личный холст. Выражайте себя, настраивайте окружение по своему вкусу и получайте по-настоящему персонализированный опыт."
+		},
+		"feature3": {
+			"title": "Выразительный, захватывающий чат",
+			"description": "fount использует всю мощь HTML, позволяя персонажам выражать себя с помощью форматированного текста, изображений и даже интерактивных элементов. Ведите динамичные и увлекательные групповые чаты с несколькими персонажами одновременно."
+		},
+		"feature4": {
+			"title": "Свободная интеграция AI-источников",
+			"description": "fount предлагает непревзойденный выбор и гибкость. Подключайтесь к <i>любым</i> AI-источникам — OpenAI, Claude, OpenRouter, NovelAI и т.д. Логика общения будет формироваться силой кода в соответствии с <i>вашими</i> пожеланиями."
+		},
+		"theme_selector": {
+			"title": "Выберите оформление",
+			"description": "Выберите тему, чтобы персонализировать свой опыт."
+		},
+		"mini_game": {
+			"title": "Сыграйте в мини-игру",
+			"description1": "Установка идет слишком долго?",
+			"description2": "Здесь есть мини-игры, чтобы скоротать время."
+		},
+		"data_showcase": {
+			"title_prefix": "fount — самый",
+			"adjectives": [
+				"расширяемый",
+				"потенциальный",
+				"продвинутый",
+				"совместимый",
+				"компактный и мощный"
+			],
+			"title_of": " ",
+			"nouns": [
+				"ИИ-персонаж",
+				"Агент",
+				"Кибер-вайфу",
+				"Цифровой помощник"
+			],
+			"platforms": [
+				"базовая платформа",
+				"фронтенд чата",
+				"рантайм"
+			],
+			"active_users": "Активные пользователи",
+			"stars": "Звёзды на GitHub"
+		},
+		"footer": {
+			"ready_text": "Готовы начать свое путешествие?",
+			"wait_text": "Пожалуйста, подождите немного...",
+			"launch_button": "fount устанавливается...",
+			"open_fount": "Открыть fount",
+			"open_or_install_fount": "Открыть/Установить fount",
+			"error_message": "Эх... :(\n\nПроизошла ошибка:\n${error}"
+		},
+		"error": {
+			"title": "Установка не удалась!",
+			"connection_failed": "Не удалось подключиться!",
+			"description1": "Кажется, с установщиком fount что-то не так.",
+			"description2": "Пожалуйста, проверьте свой терминал и попробуйте снова.",
+			"close_page": "Закрыть страницу"
+		}
+	},
+	"startPage": {
+		"title": "fount!",
+		"newTabFailed": {
+			"title": "Не удалось открыть новую вкладку",
+			"instruction": "Запуск fount каждый раз происходит на 1-2 секунды медленнее без разрешения на всплывающие окна.",
+			"tryAllow": "Попробовать дать fount разрешение на всплывающие окна?",
+			"buttons": {
+				"retry": "Повторить",
+				"skip": "Пропустить",
+				"ignore": "Игнорировать всегда"
+			},
+			"ignoreConfirm": {
+				"title": "Подтвердить постоянное игнорирование?",
+				"instruction": "Потеря 2 секунд при каждом запуске — это целые сутки, потраченные впустую за пятьдесят тысяч запусков 💀",
+				"buttons": {
+					"confirm": "Подтвердить",
+					"cancel": "Отмена"
+				}
+			}
+		}
+	},
+	"auth": {
+		"title": "Аутентификация",
+		"subtitle": "Данные пользователя хранятся локально.",
+		"usernameLabel": "Имя пользователя:",
+		"usernameInput": {
+			"placeholder": "Введите имя пользователя"
+		},
+		"passwordLabel": "Пароль:",
+		"passwordInput": {
+			"placeholder": "Введите пароль"
+		},
+		"confirmPasswordLabel": "Подтвердите пароль:",
+		"confirmPasswordInput": {
+			"placeholder": "Введите пароль еще раз"
+		},
+		"verificationCodeLabel": "Проверочный код:",
+		"verificationCodeInput": {
+			"placeholder": "Введите проверочный код"
+		},
+		"sendCodeButton": "Отправить код",
+		"login": {
+			"title": "Войти",
+			"submitButton": "Войти",
+			"toggleLink": {
+				"text": "Нет аккаунта?",
+				"link": "Зарегистрироваться"
+			}
+		},
+		"register": {
+			"title": "Регистрация",
+			"submitButton": "Зарегистрироваться",
+			"toggleLink": {
+				"text": "Уже есть аккаунт?",
+				"link": "Войти"
+			}
+		},
+		"error": {
+			"passwordMismatch": "Пароли не совпадают.",
+			"loginError": "Ошибка входа.",
+			"registrationError": "Ошибка регистрации.",
+			"verificationCodeError": "Проверочный код неверный или устарел.",
+			"verificationCodeSent": "Проверочный код успешно отправлен.",
+			"verificationCodeSendError": "Не удалось отправить проверочный код.",
+			"verificationCodeRateLimit": "Слишком много запросов на отправку проверочного кода. Пожалуйста, попробуйте позже.",
+			"lowPasswordStrength": "Пароль слишком простой.",
+			"accountAlreadyExists": "Аккаунт уже существует."
+		},
+		"passwordStrength": {
+			"veryWeak": "Очень слабый",
+			"weak": "Слабый",
+			"normal": "Средний",
+			"strong": "Надежный",
+			"veryStrong": "Очень надежный"
+		}
+	},
+	"tutorial": {
+		"title": "Как насчет обучения?",
+		"modal": {
+			"title": "Добро пожаловать в fount!",
+			"instruction": "Хотите пройти вводное обучение?",
+			"buttons": {
+				"start": "Начать обучение",
+				"skip": "Пропустить"
+			}
+		},
+		"endScreen": {
+			"title": "Отлично! Обучение завершено!",
+			"subtitle": "Теперь вы знаете, как им пользоваться!",
+			"endButton": "Начать!"
+		},
+		"progressMessages": {
+			"mouseMove": "Пожалуйста, попробуйте подвигать мышью ${mouseIcon}.",
+			"keyboardPress": "Пожалуйста, найдите клавиатуру ${keyboardIcon}<br/>и нажмите любую клавишу.",
+			"mobileTouchMove": "Пожалуйста, коснитесь экрана телефона ${phoneIcon} пальцем<br/>и проведите им по экрану.",
+			"mobileClick": "Пожалуйста, коснитесь экрана телефона ${phoneIcon} пальцем и отпустите."
+		}
+	},
+	"home": {
+		"title": "Главная",
+		"escapeConfirm": "Вы уверены, что хотите выйти из fount?",
+		"filterInput": {
+			"placeholder": "Поиск..."
+		},
+		"sidebarTitle": "Подробности",
+		"itemDescription": "Выберите элемент для просмотра подробностей.",
+		"noDescription": "Описание отсутствует.",
+		"alerts": {
+			"fetchHomeRegistryFailed": "Не удалось получить информацию из реестра главной страницы."
+		},
+		"functionMenu": {
+			"icon": {
+				"alt": "Меню функций"
+			}
+		},
+		"chars": {
+			"tab": "Персонажи",
+			"title": "Выбор персонажа",
+			"subtitle": "Выберите персонажа и начните общение!",
+			"none": "Здесь ничего нет",
+			"card": {
+				"refreshButton": {
+					"alt": "Обновить",
+					"title": "Обновить"
+				},
+				"noTags": "Нет тегов",
+				"version": "Версия",
+				"author": "Автор",
+				"home_page": "Домашняя страница",
+				"issue_page": "Сообщить о проблеме",
+				"defaultCheckbox": {
+					"title": "Сделать персонажем по умолчанию"
+				}
+			}
+		},
+		"worlds": {
+			"tab": "Миры",
+			"title": "Выбор мира",
+			"subtitle": "Выберите мир и погрузитесь в него!",
+			"none": "Здесь ничего нет",
+			"card": {
+				"refreshButton": {
+					"alt": "Обновить",
+					"title": "Обновить"
+				},
+				"noTags": "Нет тегов",
+				"version": "Версия",
+				"author": "Автор",
+				"home_page": "Домашняя страница",
+				"issue_page": "Сообщить о проблеме",
+				"defaultCheckbox": {
+					"title": "Сделать миром по умолчанию"
+				}
+			}
+		},
+		"personas": {
+			"tab": "Персоны",
+			"title": "Выбор персоны",
+			"subtitle": "Выберите персону и проживите новую жизнь.",
+			"none": "Здесь ничего нет",
+			"card": {
+				"refreshButton": {
+					"alt": "Обновить",
+					"title": "Обновить"
+				},
+				"noTags": "Нет тегов",
+				"version": "Версия",
+				"author": "Автор",
+				"home_page": "Домашняя страница",
+				"issue_page": "Сообщить о проблеме",
+				"defaultCheckbox": {
+					"title": "Сделать персоной по умолчанию"
+				}
+			}
+		}
+	},
+	"themeManage": {
+		"title": "Управление темами",
+		"instruction": "Выберите тему!",
+		"themes": {
+			"auto": "Автоматически",
+			"light": "Светлая",
+			"dark": "Темная",
+			"cupcake": "Капкейк",
+			"bumblebee": "Бамблби",
+			"emerald": "Изумруд",
+			"corporate": "Корпоративная",
+			"synthwave": "Синтвейв",
+			"retro": "Ретро",
+			"cyberpunk": "Киберпанк",
+			"valentine": "Валентинка",
+			"halloween": "Хэллоуин",
+			"garden": "Сад",
+			"forest": "Лес",
+			"aqua": "Аква",
+			"lofi": "Lo-fi",
+			"pastel": "Пастельная",
+			"fantasy": "Фэнтези",
+			"wireframe": "Каркас",
+			"black": "Черная",
+			"luxury": "Люкс",
+			"dracula": "Дракула",
+			"cmyk": "CMYK",
+			"autumn": "Осень",
+			"business": "Бизнес",
+			"acid": "Эйсид",
+			"lemonade": "Лимонад",
+			"night": "Ночь",
+			"coffee": "Кофе",
+			"winter": "Зима",
+			"dim": "Тусклая",
+			"nord": "Норд",
+			"sunset": "Закат",
+			"caramellatte": "Карамельный латте",
+			"abyss": "Бездна",
+			"silk": "Шелк"
+		}
+	},
+	"import": {
+		"title": "Импорт",
+		"tabs": {
+			"fileImport": "Импорт из файла",
+			"textImport": "Импорт текста"
+		},
+		"dropArea": {
+			"icon": {
+				"alt": "Значок загрузки"
+			},
+			"text": "Перетащите файлы сюда или нажмите, чтобы выбрать файлы."
+		},
+		"textArea": {
+			"placeholder": "Введите текст для импорта..."
+		},
+		"buttons": {
+			"import": "Импортировать"
+		},
+		"alerts": {
+			"importSuccess": "Импорт успешно завершен.",
+			"importFailed": "Ошибка импорта: ${error}",
+			"unknownError": "Неизвестная ошибка."
+		},
+		"errors": {
+			"noFileSelected": "Пожалуйста, выберите файл.",
+			"fileImportFailed": "Ошибка импорта файла: ${message}",
+			"noTextContent": "Пожалуйста, введите текст.",
+			"textImportFailed": "Ошибка импорта текста: ${message}",
+			"unknownError": "Неизвестная ошибка.",
+			"handler": "Обработчик",
+			"error": "Ошибка"
+		},
+		"fileItem": {
+			"removeButton": {
+				"title": "Удалить"
+			},
+			"removeButtonIcon": {
+				"alt": "Удалить"
+			}
+		}
+	},
+	"aisource_editor": {
+		"title": "Редактор AI-источников",
+		"fileList": {
+			"title": "Список AI-источников",
+			"addButton": {
+				"title": "+"
+			}
+		},
+		"configTitle": "Настройка AI-источника",
+		"generatorSelect": {
+			"label": "Выберите генератор",
+			"placeholder": "Пожалуйста, выберите"
+		},
+		"buttons": {
+			"save": "Сохранить",
+			"delete": "Удалить"
+		},
+		"tooltips": {
+			"setDefault": "Установить по умолчанию"
+		},
+		"alerts": {
+			"fetchFileListFailed": "Не удалось получить список файлов: ${error}",
+			"fetchGeneratorListFailed": "Не удалось получить список генераторов: ${error}",
+			"fetchDefaultsFailed": "Не удалось получить компонент по умолчанию: ${error}",
+			"fetchFileDataFailed": "Не удалось получить данные файла: ${error}",
+			"noFileSelectedSave": "Файл для сохранения не выбран.",
+			"saveFileFailed": "Не удалось сохранить файл: ${error}",
+			"setDefaultFailed": "Установка исходного источника AI по умолчанию не удалось: ${error}",
+			"noFileSelectedDelete": "Файл для удаления не выбран.",
+			"deleteFileFailed": "Не удалось удалить файл: ${error}",
+			"invalidFileName": "Имя файла не может содержать следующие символы: / \\ : * ? \" < > |",
+			"addFileFailed": "Не удалось добавить файл: ${error}",
+			"fetchConfigTemplateFailed": "Не удалось получить шаблон конфигурации.",
+			"noGeneratorSelectedSave": "Пожалуйста, выберите генератор перед сохранением."
+		},
+		"confirm": {
+			"unsavedChanges": "У вас есть несохраненные изменения. Хотите их отменить?",
+			"deleteFile": "Вы уверены, что хотите удалить этот файл?",
+			"unsavedChangesBeforeUnload": "У вас есть несохраненные изменения. Вы уверены, что хотите покинуть эту страницу?"
+		},
+		"prompts": {
+			"newFileName": "Пожалуйста, введите имя нового файла AI-источника (без расширения):"
+		},
+		"editor": {
+			"disabledIndicator": "Пожалуйста, сначала выберите генератор."
+		}
+	},
+	"part_config": {
+		"title": "Настройка компонента",
+		"pageTitle": "Настройка компонента",
+		"labels": {
+			"partType": "Выберите тип компонента",
+			"part": "Выберите компонент"
+		},
+		"placeholders": {
+			"partTypeSelect": "Пожалуйста, выберите",
+			"partSelect": "Пожалуйста, выберите"
+		},
+		"editor": {
+			"title": "Настройка компонента",
+			"disabledIndicator": "Этот компонент не поддерживает настройку.",
+			"buttons": {
+				"save": "Сохранить"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Значок ошибки"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "Не удалось получить типы компонентов.",
+			"fetchPartsFailed": "Не удалось получить список компонентов.",
+			"loadEditorFailed": "Не удалось загрузить редактор.",
+			"saveConfigFailed": "Не удалось сохранить настройку компонента.",
+			"unsavedChanges": "У вас есть несохраненные изменения. Хотите их отменить?",
+			"beforeUnload": "У вас есть несохраненные изменения. Вы уверены, что хотите покинуть страницу?"
+		}
+	},
+	"uninstall": {
+		"title": "Удалить",
+		"titleWithName": "Удалить ${type}/${name}",
+		"confirmMessage": "Вы уверены, что хотите удалить ${type}: ${name}?",
+		"invalidParamsTitle": "Недопустимые параметры",
+		"infoMessage": {
+			"icon": {
+				"alt": "Значок информации"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Значок ошибки"
+			}
+		},
+		"buttons": {
+			"confirm": "Подтвердить удаление",
+			"cancel": "Отмена",
+			"back": "Назад"
+		},
+		"alerts": {
+			"success": "${type}: ${name} успешно удален(о).",
+			"failed": "Не удалось удалить: ${error}",
+			"invalidParams": "Недопустимые параметры запроса.",
+			"httpError": "Ошибка HTTP! Код состояния: ${status}"
+		}
+	},
+	"chat": {
+		"new": {
+			"title": "Новый чат"
+		},
+		"title": "Чат",
+		"sidebar": {
+			"world": {
+				"icon": {
+					"alt": "Значок мира"
+				},
+				"title": "Мир"
+			},
+			"persona": {
+				"icon": {
+					"alt": "Значок персоны пользователя"
+				},
+				"title": "Персона пользователя"
+			},
+			"charList": {
+				"icon": {
+					"alt": "Значок списка персонажей"
+				},
+				"title": "Список персонажей",
+				"buttons": {
+					"addChar": {
+						"title": "Добавить персонажа"
+					},
+					"addCharIcon": {
+						"alt": "Значок добавления персонажа"
+					}
+				}
+			},
+			"noSelection": "Не выбрано",
+			"noDescription": "Описание отсутствует."
+		},
+		"chatArea": {
+			"title": "Чат",
+			"menuButton": {
+				"title": "Меню"
+			},
+			"menuButtonIcon": {
+				"alt": "Значок меню"
+			},
+			"input": {
+				"placeholder": "Введите сообщение...\nCtrl+Enter для отправки"
+			},
+			"sendButton": {
+				"title": "Отправить"
+			},
+			"sendButtonIcon": {
+				"alt": "Значок отправки"
+			},
+			"uploadButton": {
+				"title": "Загрузить"
+			},
+			"uploadButtonIcon": {
+				"alt": "Значок загрузки"
+			},
+			"voiceButton": {
+				"title": "Голосовой ввод"
+			},
+			"voiceButtonIcon": {
+				"alt": "Значок голосового ввода"
+			},
+			"photoButton": {
+				"title": "Фото"
+			},
+			"photoButtonIcon": {
+				"alt": "Значок фото"
+			}
+		},
+		"rightSidebar": {
+			"title": "Подробности"
+		},
+		"messageList": {
+			"confirmDeleteMessage": "Вы уверены, что хотите удалить это сообщение?"
+		},
+		"voiceRecording": {
+			"errorAccessingMicrophone": "Не удалось получить доступ к микрофону."
+		},
+		"messageView": {
+			"buttons": {
+				"edit": {
+					"title": "Редактировать"
+				},
+				"editIcon": {
+					"alt": "Значок редактирования"
+				},
+				"more": {
+					"title": "Ещё"
+				},
+				"moreIcon": {
+					"alt": "Значок 'Ещё'"
+				}
+			},
+			"dropdown": {
+				"delete": "Удалить",
+				"deleteIcon": {
+					"alt": "Значок «Удалить»"
+				},
+				"copyMarkdown": "Копировать как Markdown",
+				"copyMarkdownIcon": {
+					"alt": "Значок «Копировать как Markdown»"
+				},
+				"copyText": "Копировать как простой текст",
+				"copyTextIcon": {
+					"alt": "Значок «Копировать как простой текст»"
+				},
+				"copyHtml": "Копировать как HTML",
+				"copyHtmlIcon": {
+					"alt": "Значок «Копировать как HTML»"
+				}
+			}
+		},
+		"messageEdit": {
+			"input": {
+				"placeholder": "Введите текст..."
+			},
+			"buttons": {
+				"confirm": {
+					"title": "Подтвердить"
+				},
+				"confirmIcon": {
+					"alt": "Значок подтверждения"
+				},
+				"cancel": {
+					"title": "Отмена"
+				},
+				"cancelIcon": {
+					"alt": "Значок отмены"
+				},
+				"upload": {
+					"title": "Загрузить"
+				},
+				"uploadIcon": {
+					"alt": "Значок загрузки"
+				}
+			}
+		},
+		"attachment": {
+			"buttons": {
+				"download": {
+					"title": "Скачать"
+				},
+				"downloadIcon": {
+					"alt": "Значок скачивания"
+				},
+				"delete": {
+					"title": "Удалить"
+				},
+				"deleteIcon": {
+					"alt": "Значок удаления"
+				}
+			}
+		},
+		"charCard": {
+			"frequencyLabel": "Частота",
+			"buttons": {
+				"removeChar": {
+					"title": "Удалить из чата"
+				},
+				"removeCharIcon": {
+					"alt": "Значок удаления персонажа"
+				},
+				"forceReply": {
+					"title": "Принудительный ответ"
+				},
+				"forceReplyIcon": {
+					"alt": "Значок принудительного ответа"
+				}
+			}
+		}
+	},
+	"chat_history": {
+		"title": "История чатов",
+		"pageTitle": "История чатов",
+		"sortOptions": {
+			"time_desc": "По времени (сначала новые)",
+			"time_asc": "По времени (сначала старые)"
+		},
+		"filterInput": {
+			"placeholder": "Поиск..."
+		},
+		"selectAll": "Выбрать все",
+		"buttons": {
+			"reverseSelect": "Обратить выбор",
+			"deleteSelected": "Удалить выбранные",
+			"exportSelected": "Экспортировать выбранные"
+		},
+		"confirmDeleteChat": "Вы уверены, что хотите удалить историю чата с ${chars}?",
+		"confirmDeleteMultiChats": "Вы уверены, что хотите удалить выбранные ${count} истории чатов?",
+		"alerts": {
+			"noChatSelectedForDeletion": "Пожалуйста, выберите чаты для удаления.",
+			"noChatSelectedForExport": "Пожалуйста, выберите чаты для экспорта.",
+			"copyError": "Копирование не удалось.",
+			"deleteError": "Удаление не удалось.",
+			"exportError": "Экспорт не удалось."
+		},
+		"chatItemButtons": {
+			"continue": "Продолжить",
+			"copy": "Копировать",
+			"export": "Экспортировать",
+			"delete": "Удалить"
+		}
+	},
+	"discord_bots": {
+		"title": "Discord боты",
+		"cardTitle": "Discord боты",
+		"buttons": {
+			"newBot": "Создать",
+			"deleteBot": "Удалить"
+		},
+		"configCard": {
+			"title": "Настройка бота",
+			"labels": {
+				"character": "Персонаж",
+				"apiKey": "API-ключ Discord",
+				"config": "Конфигурация"
+			},
+			"charSelectPlaceholder": "Выберите персонажа",
+			"apiKeyInput": {
+				"placeholder": "Введите API-ключ"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "Показать/скрыть API-ключ"
+			},
+			"buttons": {
+				"saveConfig": "Сохранить конфигурацию",
+				"startBot": "Запустить",
+				"stopBot": "Остановить"
+			}
+		},
+		"prompts": {
+			"newBotName": "Пожалуйста, введите имя нового бота:"
+		},
+		"alerts": {
+			"botExists": "Бот с именем «${botname}» уже существует. Пожалуйста, используйте другое имя.",
+			"unsavedChanges": "У вас есть несохраненные изменения. Хотите их отменить?",
+			"configSaved": "Конфигурация успешно сохранена.",
+			"httpError": "Ошибка HTTP.",
+			"beforeUnload": "У вас есть несохраненные изменения. Вы уверены, что хотите покинуть страницу?"
+		}
+	},
+	"telegram_bots": {
+		"title": "Боты Telegram",
+		"cardTitle": "Управление ботами Telegram",
+		"buttons": {
+			"newBot": "Создать",
+			"deleteBot": "Удалить"
+		},
+		"configCard": {
+			"title": "Настройка бота",
+			"labels": {
+				"character": "Связанный персонаж",
+				"botToken": "Токен Telegram бота",
+				"config": "Конфигурация"
+			},
+			"charSelectPlaceholder": "Выберите персонажа",
+			"botTokenInput": {
+				"placeholder": "Введите токен Telegram бота"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "Показать/скрыть токен бота"
+			},
+			"buttons": {
+				"saveConfig": "Сохранить конфигурацию",
+				"startBot": "Запустить",
+				"stopBot": "Остановить"
+			}
+		},
+		"prompts": {
+			"newBotName": "Пожалуйста, введите имя нового бота:"
+		},
+		"alerts": {
+			"botExists": "Бот с именем «${botname}» уже существует. Пожалуйста, используйте другое имя.",
+			"unsavedChanges": "У вас есть несохраненные изменения. Вы уверены, что хотите их отменить?",
+			"configSaved": "Конфигурация успешно сохранена!",
+			"httpError": "Ошибка HTTP.",
+			"beforeUnload": "У вас есть несохраненные изменения. Вы уверены, что хотите покинуть эту страницу?"
+		}
+	},
+	"terminal_assistant": {
+		"title": "Терминальный помощник",
+		"initialMessage": "fount поддерживает развертывание ваших любимых персонажей в терминале для помощи в написании кода!",
+		"initialMessageLink": "Нажмите здесь, чтобы узнать больше."
+	},
+	"access": {
+		"title": "Доступ к fount на других устройствах",
+		"heading": "Хотите получить доступ к fount на других устройствах?",
+		"instruction": {
+			"sameLAN": "Убедитесь, что устройство и хост fount находятся в одной локальной сети.",
+			"accessthis": "Перейдите по этому URL:"
+		},
+		"copyButton": "Копировать URL",
+		"copied": "URL скопирован в буфер обмена!"
+	},
+	"proxy": {
+		"title": "API прокси",
+		"heading": "Адрес прокси OpenAI API",
+		"instruction": "Введите следующий адрес в любое приложение, требующее формат OpenAI API, чтобы использовать AI-источники в fount!",
+		"copyButton": "Копировать адрес",
+		"copied": "Адрес скопирован в буфер обмена!"
+	},
+	"404": {
+		"title": "Страница не найдена",
+		"pageNotFoundText": "Ой! Кажется, вы зашли на несуществующую страницу.",
+		"homepageButton": "Вернуться на главную страницу"
+	},
+	"userSettings": {
+		"title": "Настройки пользователя",
+		"PageTitle": "Настройки пользователя",
+		"apiError": "Ошибка запроса API: ${message}",
+		"generalError": "Произошла ошибка: ${message}",
+		"userInfo": {
+			"title": "Информация о пользователе",
+			"usernameLabel": "Имя пользователя:",
+			"creationDateLabel": "Дата создания учетной записи:",
+			"folderSizeLabel": "Размер данных пользователя:",
+			"folderPathLabel": "Путь к данным пользователя:",
+			"copyPathBtnTitle": "Копировать путь",
+			"copiedAlert": "Путь скопирован в буфер обмена!"
+		},
+		"changePassword": {
+			"title": "Изменить пароль",
+			"currentPasswordLabel": "Текущий пароль:",
+			"newPasswordLabel": "Новый пароль:",
+			"confirmNewPasswordLabel": "Подтвердите новый пароль:",
+			"submitButton": "Изменить пароль",
+			"errorMismatch": "Новые пароли не совпадают.",
+			"success": "Пароль успешно изменен."
+		},
+		"renameUser": {
+			"title": "Переименовать пользователя",
+			"newUsernameLabel": "Новое имя пользователя:",
+			"submitButton": "Переименовать пользователя",
+			"confirmMessage": "Вы уверены, что хотите изменить имя пользователя? Потребуется повторный вход в систему.",
+			"success": "Имя пользователя успешно изменено на «${newUsername}». Теперь будет выполнен выход из системы."
+		},
+		"userDevices": {
+			"title": "Устройства и сеансы пользователя",
+			"refreshButtonTitle": "Обновить список",
+			"noDevicesFound": "Устройства или сеансы не найдены.",
+			"deviceInfo": "ID устройства: ${deviceId}",
+			"thisDevice": "Это устройство",
+			"deviceDetails": "Последний онлайн: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
+			"revokeButton": "Отозвать",
+			"revokeConfirm": "Вы уверены, что хотите отозвать доступ для этого устройства/сеанса?",
+			"revokeSuccess": "Устройство/сеанс успешно отозван."
+		},
+		"logout": {
+			"title": "Выйти",
+			"description": "Это выполнит выход из вашей учетной записи на текущем устройстве.",
+			"buttonText": "Выйти",
+			"confirmMessage": "Вы уверены, что хотите выйти?",
+			"successMessage": "Выход выполнен успешно. Перенаправление на страницу входа..."
+		},
+		"deleteAccount": {
+			"title": "Удалить учетную запись",
+			"warning": "Внимание: это действие навсегда удалит вашу учетную запись и все связанные с ней данные и не может быть отменено.",
+			"submitButton": "Удалить мою учетную запись",
+			"confirmMessage1": "Внимание! Вы уверены, что хотите навсегда удалить свою учетную запись? Это действие необратимо.",
+			"confirmMessage2": "Для подтверждения удаления введите ваше имя пользователя «${username}»:",
+			"usernameMismatch": "Введенное имя пользователя не совпадает с текущим. Операция удаления отменена.",
+			"success": "Учетная запись успешно удалена. Теперь будет выполнен выход из системы."
+		},
+		"passwordConfirm": {
+			"title": "Подтверждение операции",
+			"message": "Для продолжения введите текущий пароль:",
+			"passwordLabel": "Пароль:",
+			"confirmButton": "Подтвердить",
+			"cancelButton": "Отмена"
+		}
+	},
+	"badges_maker": {
+		"title": "fount! Конвертер значков",
+		"card_title": "Конвертер ссылок на значки fount",
+		"original_url_label": "Вставьте URL img.shields.io",
+		"original_url_placeholder": "Например: https://img.shields.io/badge/hello-world-blue",
+		"new_url_label": "Сгенерированный новый URL",
+		"new_url_placeholder": "Конвертированный URL будет отображаться здесь",
+		"copy_button": "Копировать",
+		"preview_label": "Предпросмотр",
+		"preview_alt": "Предварительный просмотр значков",
+		"copied_text": "Скопировано!",
+		"copy_error": "Невозможно скопировать текст: ${error}",
+		"copy_fail_alert": "Копирование не удалось!"
+	},
+	"easynew": {
+		"title": "Быстрое создание",
+		"cardTitle": "Создать новый компонент из шаблона",
+		"templateSelect": {
+			"label": "Выберите шаблон"
+		},
+		"partName": {
+			"label": "Название компонента",
+			"placeholder": "Дайте вашему новому компоненту имя"
+		},
+		"description": {
+			"label": "Описание",
+			"placeholder": "Кратко опишите, о чем эта часть."
+		},
+		"descriptionMarkdown": {
+			"label": "Описание (Markdown)",
+			"placeholder": "Поддерживает Markdown для более подробного форматирования."
+		},
+		"imageUpload": {
+			"label": "Изображение аватара"
+		},
+		"charDef": {
+			"heading": "Определение персонажа"
+		},
+		"personality": {
+			"label": "Личность",
+			"placeholder": "Опишите основные черты личности персонажа."
+		},
+		"scenario": {
+			"label": "Сценарий",
+			"placeholder": "Предыстория или окружение персонажа."
+		},
+		"mesExample": {
+			"label": "Пример сообщения",
+			"placeholder": "Примеры того, что может сказать персонаж."
+		},
+		"firstMessage": {
+			"label": "Первое сообщение",
+			"placeholder": "Первое сообщение, которое говорит персонаж."
+		},
+		"personaDef": {
+			"heading": "Определение персоны"
+		},
+		"personaUserName": {
+			"label": "Ваше имя в чате",
+			"placeholder": "Например: Капитан, Исследователь"
+		},
+		"personaAppearance": {
+			"label": "Внешность",
+			"placeholder": "Опишите свою внешность."
+		},
+		"personaPersonality": {
+			"label": "Личность",
+			"placeholder": "Опишите свои черты личности."
+		},
+		"worldDef": {
+			"heading": "Определение мира"
+		},
+		"worldPrompt": {
+			"label": "Инструкции для мира",
+			"placeholder": "Описывает правила мира, окружение и любой глобальный контекст для ролевой игры."
+		},
+		"worldGreeting": {
+			"label": "Приветствие мира",
+			"placeholder": "Первое сообщение, которое мир отправляет пользователям."
+		},
+		"author": {
+			"label": "Автор",
+			"placeholder": "Кто автор этой части?"
+		},
+		"version": {
+			"label": "Версия",
+			"placeholder": "Например: 1.0.0"
+		},
+		"tags": {
+			"label": "Теги",
+			"placeholder": "Теги, разделенные запятыми"
+		},
+		"homePage": {
+			"label": "Домашняя страница",
+			"placeholder": "URL домашней страницы части"
+		},
+		"issuePage": {
+			"label": "Страница проблем",
+			"placeholder": "URL страницы проблем части"
+		},
+		"createButton": "Создать компонент",
+		"alerts": {
+			"success": "Компонент '${partName}' был успешно создан!",
+			"error": "Ошибка: ${message}"
+		},
+		"info": {
+			"description": "Эти шаблоны можно использовать только для быстрого создания простых частей; сложные части все равно нужно создавать вручную."
+		}
+	},
+	"export": {
+		"title": "Экспорт Компонентов",
+		"pageTitle": "Экспорт Компонентов",
+		"pageSubtitle": "Экспортируйте ваш любимый контент",
+		"steps": {
+			"partType": "Выберите тип",
+			"part": "Выберите компоненты",
+			"action": "Экспорт"
+		},
+		"options": {
+			"withData": "Содержит файлы данных",
+			"withDataDescription": "Содержит файлы, помеченные как данные, такие как воспоминания персонажа."
+		},
+		"labels": {
+			"partType": "Выберите тип части",
+			"part": "Выберите Часть"
+		},
+		"placeholders": {
+			"partTypeSelect": "Пожалуйста, выберите",
+			"partSelect": "Пожалуйста, выберите"
+		},
+		"export": {
+			"title": "Параметры экспорта"
+		},
+		"editor": {
+			"disabledIndicator": "Пожалуйста, сначала выберите часть",
+			"disabledIndicatorHint": "Пожалуйста, выберите тип компонента и компонент, который вы хотите экспортировать"
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Ошибка"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "Не удалось получить типы частей.",
+			"fetchPartsFailed": "Не удалось получить список частей.",
+			"loadPartDetailsFailed": "Не удалось загрузить детали части.",
+			"exportFailed": "Экспорт не удался.",
+			"shareLinkCopied": "Поделиться ссылка была скопирована в буфер обмена!",
+			"shareFailed": "Не удалось создать ссылку для обмена."
+		},
+		"shareMenu": {
+			"title": "Выберите время обмена",
+			"1h": "1 час",
+			"12h": "12 часов",
+			"24h": "24 часа",
+			"72h": "72 часа",
+			"cancel": "Отмена"
+		},
+		"litterbox": {
+			"poweredBy": "Функция обмена поддерживается LitterBox.moe",
+			"sponsorLink": "Спонсировать их"
+		},
+		"buttons": {
+			"export": "Экспорт",
+			"exportWithData": "Экспорт (с данными)",
+			"generateShareLink": "Создать ссылку для обмена",
+			"generateShareLinkWithData": "Создать ссылку для обмена (включая данные)"
+		}
+	}
+}

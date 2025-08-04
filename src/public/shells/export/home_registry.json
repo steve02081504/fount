@@ -1,0 +1,122 @@
+{
+	"home_function_buttons": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "导出组件"
+				},
+				"en-UK": {
+					"title": "Export Part"
+				},
+				"ar-SA": {
+					"title": "مكونات التصدير"
+				},
+				"de-DE": {
+					"title": "Part exportieren"
+				},
+				"es-ES": {
+					"title": "Exportar Parte"
+				},
+				"fr-FR": {
+					"title": "Exporter Pièce"
+				},
+				"hi-IN": {
+					"title": "पार्ट निर्यात करें"
+				},
+				"is-IS": {
+					"title": "Útflutningshluta"
+				},
+				"it-IT": {
+					"title": "Esporta Parte"
+				},
+				"ja-JP": {
+					"title": "パートをエクスポート"
+				},
+				"ko-KR": {
+					"title": "파트 내보내기"
+				},
+				"nl-NL": {
+					"title": "Exporteren componenten"
+				},
+				"pt-PT": {
+					"title": "Exportar Parte"
+				},
+				"ru-RU": {
+					"title": "Экспортировать часть"
+				},
+				"uk-UA": {
+					"title": "Експортні компоненти"
+				},
+				"vi-VN": {
+					"title": "Xuất bộ phận"
+				},
+				"zh-TW": {
+					"title": "導出組件"
+				}
+			},
+			"level": 2,
+			"url": "/shells/export",
+			"button": "<img src=\"https://api.iconify.design/line-md/folder-arrow-right.svg\" class=\"text-icon\" />"
+		}
+	],
+	"home_common_interfaces": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "导出"
+				},
+				"en-UK": {
+					"title": "Export"
+				},
+				"ar-SA": {
+					"title": "تصدير"
+				},
+				"de-DE": {
+					"title": "Exportieren"
+				},
+				"es-ES": {
+					"title": "Exportar"
+				},
+				"fr-FR": {
+					"title": "Exporter"
+				},
+				"hi-IN": {
+					"title": "निर्यात"
+				},
+				"is-IS": {
+					"title": "Flytja út"
+				},
+				"it-IT": {
+					"title": "Esporta"
+				},
+				"ja-JP": {
+					"title": "エクスポート"
+				},
+				"ko-KR": {
+					"title": "내보내기"
+				},
+				"nl-NL": {
+					"title": "Exporteren"
+				},
+				"pt-PT": {
+					"title": "Exportar"
+				},
+				"ru-RU": {
+					"title": "Экспорт"
+				},
+				"uk-UA": {
+					"title": "Експорт"
+				},
+				"vi-VN": {
+					"title": "Xuất"
+				},
+				"zh-TW": {
+					"title": "匯出"
+				}
+			},
+			"level": 2,
+			"url": "/shells/export?type=${type}&name=${name}",
+			"button": "<img src=\"https://api.iconify.design/line-md/folder-arrow-right.svg\" />"
+		}
+	]
+}

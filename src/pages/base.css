@@ -1,0 +1,45 @@
+[un-cloak], .hidden {
+	display: none;
+}
+
+.text-icon {
+	color: var(--color-base-content);
+}
+
+.jsoneditor-container {
+	width: 100%;
+	--jse-theme-color: var(--color-primary) !important;
+	--jse-a-color: var(--color-primary) !important;
+	--jse-menu-color: var(--color-primary-content) !important;
+	--jse-theme-color-highlight: var(--color-info) !important;
+}
+
+.markdown-body {
+	color: var(--color-base-content);
+	background-color: #11451400;
+}
+
+.markdown-body img {
+	display: inline-block;
+	margin-right: 2px;
+}
+
+.markdown-body figure {
+	display: block;
+	overflow-x: auto;
+	white-space: pre;
+}
+
+.markdown-body .highlight pre,
+.markdown-body pre {
+	color: var(--color-base-content);
+	background-color: var(--color-base-100);
+}
+
+[style*="--shiki-light"][style*="--shiki-dark"] {
+	color: var(--shiki-light)
+}
+
+[color-scheme="dark"] [style*="--shiki-light"][style*="--shiki-dark"] {
+	color: var(--shiki-dark)
+}
