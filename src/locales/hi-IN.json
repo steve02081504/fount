@@ -1083,6 +1083,7 @@
 		"buttons": {
 			"export": "निर्यात",
 			"exportWithData": "निर्यात (डेटा के साथ)",
+			"copyShareLink": "शेयर लिंक कॉपी करें",
 			"generateShareLink": "एक शेयर लिंक उत्पन्न करें",
 			"generateShareLinkWithData": "शेयर लिंक उत्पन्न करें (डेटा सहित)"
 		}

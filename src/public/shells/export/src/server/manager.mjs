@@ -1,10 +1,11 @@
 import { GetPartPath } from '../../../../../server/parts_loader.mjs'
 import { loadJsonFile } from '../../../../../scripts/json_loader.mjs'
-import fs from 'node:fs/promises'
+import fsp from 'node:fs/promises'
+import fs from 'node:fs'
 import path from 'node:path'
 import os from 'node:os'
 import { zipDir } from '../../../../ImportHandlers/fount/zip.mjs'
-import { nicerWriteFileSync } from '../../../../../scripts/nicerWriteFile.mjs'
+import { exec } from '../../../../../scripts/exec.mjs'
 
 const LITTERBOX_API_URL = 'https://litterbox.catbox.moe/resources/internals/api.php'
 
@@ -18,17 +19,33 @@ const LITTERBOX_API_URL = 'https://litterbox.catbox.moe/resources/internals/api.
 export async function getFountJson(username, partType, partName) {
 	const partPath = GetPartPath(username, partType, partName)
 	const fountJsonPath = path.join(partPath, 'fount.json')
+	let json
 	try {
-		return await loadJsonFile(fountJsonPath)
+		json = await loadJsonFile(fountJsonPath)
 	}
 	catch (error) {
 		if (error.code != 'ENOENT') throw error
-		return {
+		json = {
 			type: partType,
 			dirname: partName,
 			data_files: [],
 		}
 	}
+
+	if (!json.share_link) {
+		const partPath = GetPartPath(username, partType, partName)
+		const gitPath = path.join(partPath, '.git')
+
+		if (fs.existsSync(gitPath)) try {
+			const { stdout: remoteUrl } = await exec(`git -C "${partPath}" remote get-url origin`)
+			if (remoteUrl.trim()) json.share_link = remoteUrl.trim()
+		}
+		catch (err) {
+			console.warn(`Could not get git remote for ${partName}:`, err)
+		}
+	}
+
+	return json
 }
 
 export async function exportPart(username, partType, partName, withData) {
@@ -47,22 +64,22 @@ export async function exportPart(username, partType, partName, withData) {
 	}
 
 	const tempDir = path.join(os.tmpdir(), `fount_export_${Date.now()}`)
-	await fs.mkdir(tempDir, { recursive: true })
+	await fsp.mkdir(tempDir, { recursive: true })
 	try {
-		const files = await fs.readdir(partPath)
+		const files = await fsp.readdir(partPath)
 		for (const file of files)
 			if (withData || !fountJson.data_files?.includes?.(file)) try {
-				await fs.cp(path.join(partPath, file), path.join(tempDir, file), { recursive: true })
+				await fsp.cp(path.join(partPath, file), path.join(tempDir, file), { recursive: true })
 			} catch (error) {
 				console.error(error)
 			}
 
-		nicerWriteFileSync(path.join(tempDir, 'fount.json'), JSON.stringify(fountJson, null, '\t') + '\n', 'utf8')
+		if (!fs.existsSync(fountJsonPath)) fs.writeFileSync(path.join(tempDir, 'fount.json'), JSON.stringify(fountJson, null, '\t') + '\n', 'utf8')
 
 		return await zipDir(tempDir)
 	}
 	finally {
-		await fs.rm(tempDir, { recursive: true, force: true })
+		await fsp.rm(tempDir, { recursive: true, force: true })
 	}
 }
 

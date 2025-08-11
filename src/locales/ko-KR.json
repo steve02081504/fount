@@ -1083,6 +1083,7 @@
 		"buttons": {
 			"export": "내보내기",
 			"exportWithData": "내보내기 (데이터 포함)",
+			"copyShareLink": "공유 링크 복사",
 			"generateShareLink": "공유 링크 생성",
 			"generateShareLinkWithData": "공유 링크 생성 (데이터 포함)"
 		}

@@ -1083,6 +1083,7 @@
 		"buttons": {
 			"export": "Xuất",
 			"exportWithData": "Xuất (kèm dữ liệu)",
+			"copyShareLink": "Sao chép liên kết chia sẻ",
 			"generateShareLink": "Tạo liên kết chia sẻ",
 			"generateShareLinkWithData": "Tạo liên kết chia sẻ (bao gồm dữ liệu)"
 		}

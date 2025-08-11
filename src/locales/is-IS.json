@@ -1083,6 +1083,7 @@
 		"buttons": {
 			"export": "Flytja út",
 			"exportWithData": "Flytja út (með gögnum)",
+			"copyShareLink": "Afrita deilingarhlekk",
 			"generateShareLink": "Búa til deilingarhlekk",
 			"generateShareLinkWithData": "Búa til deilingarhlekk (með gögnum)"
 		}

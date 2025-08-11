@@ -1083,7 +1083,8 @@
 		"buttons": {
 			"export": "匯出",
 			"exportWithData": "匯出 (包含資料)",
-			"generateShareLink": "產生分享連結",
+			"copyShareLink": "複製分享連結",
+			"generateShareLink": "建立分享連結",
 			"generateShareLinkWithData": "產生分享連結 (包含資料)"
 		}
 	}

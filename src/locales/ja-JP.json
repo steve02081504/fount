@@ -1083,6 +1083,7 @@
 		"buttons": {
 			"export": "エクスポート",
 			"exportWithData": "エクスポート (データを含む)",
+			"copyShareLink": "共有リンクをコピー",
 			"generateShareLink": "共有リンクを生成",
 			"generateShareLinkWithData": "共有リンク生成 (データ込)"
 		}
