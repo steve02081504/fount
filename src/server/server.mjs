@@ -57,7 +57,9 @@ export async function init(start_config) {
 	data_path = start_config.data_path
 	const starts = start_config.starts ??= {}
 	for (const start of ['Base', 'IPC', 'Web', 'Tray', 'DiscordIPC']) starts[start] ??= true
+	let logoPromise
 	if (starts.Base) {
+		logoPromise = runSimpleWorker('logogener')
 		starts.Base = Object.assign({
 			Jobs: true,
 			Timers: true,
@@ -94,9 +96,11 @@ export async function init(start_config) {
 				} catch (e) {
 					console.error(e)
 					res.statusCode = 500
-					res.end('Internal Server Error')
+					res.end('Internal Server Error: Could not load web server.')
 				}
 			}
+
+			const ansi_hosturl = supportsAnsi ? `\x1b]8;;${hosturl}\x1b\\${hosturl}\x1b]8;;\x1b\\` : hosturl
 
 			if (httpsConfig && httpsConfig.enabled) {
 				// 启用 HTTPS
@@ -105,17 +109,13 @@ export async function init(start_config) {
 					cert: fs.readFileSync(httpsConfig.certFile),
 				}
 				server = https.createServer(options, requestListener).listen(port, async () => {
-					console.logI18n('fountConsole.server.showUrl.https', {
-						url: supportsAnsi ? `\x1b]8;;${hosturl}\x1b\\${hosturl}\x1b]8;;\x1b\\` : hosturl
-					})
+					console.logI18n('fountConsole.server.showUrl.https', { url: ansi_hosturl })
 					resolve()
 				})
 			}
 			else
 				server = http.createServer(requestListener).listen(port, async () => {
-					console.logI18n('fountConsole.server.showUrl.http', {
-						url: supportsAnsi ? `\x1b]8;;${hosturl}\x1b\\${hosturl}\x1b]8;;\x1b\\` : hosturl
-					})
+					console.logI18n('fountConsole.server.showUrl.http', { url: ansi_hosturl })
 					resolve()
 				})
 
@@ -138,7 +138,7 @@ export async function init(start_config) {
 		setDefaultStuff()
 		if (starts.Base.Jobs) ReStartJobs()
 		if (starts.Base.Timers) startTimerHeartbeat()
-		console.freshLine('server start', await runSimpleWorker('logogener'))
+		console.freshLine('server start', await logoPromise)
 	}
 	const endtime = new Date()
 	console.logI18n('fountConsole.server.usesdTime', {
