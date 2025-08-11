@@ -1083,7 +1083,8 @@
 		"buttons": {
 			"export": "Exportar",
 			"exportWithData": "Exportar (con datos)",
-			"generateShareLink": "Generar un enlace compartido",
+			"copyShareLink": "Copiar enlace compartido",
+			"generateShareLink": "Generar enlace compartido",
 			"generateShareLinkWithData": "Generar un enlace compartido (con datos)"
 		}
 	}

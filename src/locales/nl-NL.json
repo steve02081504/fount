@@ -1083,6 +1083,7 @@
 		"buttons": {
 			"export": "Exporteren",
 			"exportWithData": "Exporteren (incl. data)",
+			"copyShareLink": "Deellink kopiëren",
 			"generateShareLink": "Deellink genereren",
 			"generateShareLinkWithData": "Deellink genereren (incl. data)"
 		}

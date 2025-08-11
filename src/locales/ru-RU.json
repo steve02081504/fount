@@ -1083,7 +1083,8 @@
 		"buttons": {
 			"export": "Экспорт",
 			"exportWithData": "Экспорт (с данными)",
-			"generateShareLink": "Создать ссылку для обмена",
+			"copyShareLink": "Копировать ссылку для обмена",
+			"generateShareLink": "Сгенерировать ссылку для обмена",
 			"generateShareLinkWithData": "Создать ссылку для обмена (включая данные)"
 		}
 	}

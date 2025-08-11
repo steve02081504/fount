@@ -1083,7 +1083,8 @@
 		"buttons": {
 			"export": "Експортувати",
 			"exportWithData": "Експортувати (з даними)",
-			"generateShareLink": "Згенерувати посилання для поширення",
+			"copyShareLink": "Копіювати посилання для поширення",
+			"generateShareLink": "Створити посилання для поширення",
 			"generateShareLinkWithData": "Згенерувати посилання (з даними)"
 		}
 	}
