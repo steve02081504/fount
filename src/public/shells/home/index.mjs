@@ -98,7 +98,7 @@ async function attachCardEventListeners(itemElement, itemDetails, itemName, inte
 	// Add interface buttons
 	for (const interfaceItem of interfacesRegistry)
 		if (!interfaceItem.interface || itemDetails.supportedInterfaces.includes(interfaceItem.interface)) {
-			const button = document.createElement('button')
+			const button = document.createElement('a')
 			const classes = ['btn', `btn-${interfaceItem.type ?? 'primary'}`, ...interfaceItem.classes ? interfaceItem.classes.split(' ') : []]
 			button.classList.add(...classes)
 			if (interfaceItem.style) button.style.cssText = interfaceItem.style
@@ -107,12 +107,10 @@ async function attachCardEventListeners(itemElement, itemDetails, itemName, inte
 			button.title = interfaceItem.info.title
 			svgInliner(button)
 
-			button.addEventListener('click', () => {
-				if (interfaceItem.onclick)
-					eval(interfaceItem.onclick.replaceAll('${name}', itemName).replaceAll('${type}', itemType))
-				else
-					window.open(interfaceItem.url.replaceAll('${name}', itemName).replaceAll('${type}', itemType))
-			})
+			if (interfaceItem.onclick)
+				button.addEventListener('click', () => eval(interfaceItem.onclick.replaceAll('${name}', itemName).replaceAll('${type}', itemType)))
+			else
+				button.href = interfaceItem.url.replaceAll('${name}', itemName).replaceAll('${type}', itemType)
 			actionsContainer.appendChild(button)
 		}
 
@@ -327,14 +325,12 @@ async function displayFunctionButtons() {
 		titleSpan.textContent = buttonItem.info.title
 
 		button.append(iconSpan, titleSpan)
-		button.addEventListener('click', () => {
-			if (buttonItem.action)
-				eval(buttonItem.action)
-			else if (buttonItem.url)
-				window.open(buttonItem.url)
-			else
-				console.warn('No action defined for this button')
-		})
+		if (buttonItem.action)
+			button.addEventListener('click', () => eval(buttonItem.action))
+		else if (buttonItem.url)
+			button.href = buttonItem.url
+		else
+			console.warn('No action defined for this button')
 		li.appendChild(button)
 		functionButtonsContainer.appendChild(li)
 	}
