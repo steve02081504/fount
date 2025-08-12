@@ -32,7 +32,7 @@ if (args.length) {
 	const command = args[0]
 	args = args.slice(1)
 
-	if (command === 'run') {
+	if (command == 'run') {
 		const username = args[0]
 		const parttype = args[1]
 		const partname = args[2]
@@ -43,7 +43,7 @@ if (args.length) {
 			data: { username, parttype, partname, args },
 		}
 	}
-	else if (command === 'shutdown') {
+	else if (command == 'shutdown') {
 		command_obj = {
 			type: 'shutdown',
 		}
