@@ -87,11 +87,14 @@ export async function init(start_config) {
 
 		console.freshLineI18n('server start', 'fountConsole.server.starting')
 		await new Promise((resolve, reject) => {
+			let appPromise
 			const requestListener = async (req, res) => {
 				try {
-					const { app } = await import('./web_server/index.mjs')
-					server.removeListener('request', requestListener)
-					server.on('request', app)
+					const app = await (appPromise ??= import('./web_server/index.mjs').then(({ app }) => {
+						server.removeListener('request', requestListener)
+						server.on('request', app)
+						return app
+					}))
 					return app(req, res)
 				} catch (e) {
 					console.error(e)
