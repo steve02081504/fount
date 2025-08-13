@@ -5,7 +5,6 @@
 			"start": "A iniciar o servidor",
 			"starting": "A iniciar o servidor...",
 			"ready": "Servidor pronto.",
-			"usesdTime": "Tempo de arranque: ${time}s",
 			"showUrl": {
 				"https": "Servidor HTTPS a correr em ${url}",
 				"http": "Servidor HTTP a correr em ${url}"
@@ -41,8 +40,8 @@
 				"upToDate": "Já está atualizado.",
 				"updateFailed": "Falha ao atualizar os componentes do repositório remoto: ${error}"
 			},
-			"partInitTime": "Componente ${parttype} ${partname}, tempo de inicialização: ${time}s",
-			"partLoadTime": "Componente ${parttype} ${partname}, tempo de carregamento: ${time}s"
+			"partInited": "${parttype} componente ${partname} foi inicializado",
+			"partLoaded": "${parttype} componente ${partname} está carregado"
 		},
 		"web": {
 			"requestReceived": "Pedido recebido: ${method} ${url}"

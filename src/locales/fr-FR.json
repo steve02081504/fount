@@ -5,7 +5,6 @@
 			"start": "Démarrage du serveur",
 			"starting": "Serveur en cours de démarrage...",
 			"ready": "Serveur démarré",
-			"usesdTime": "Temps de démarrage : ${time}s",
 			"showUrl": {
 				"https": "Serveur HTTPS en cours d'exécution sur ${url}",
 				"http": "Serveur HTTP en cours d'exécution sur ${url}"
@@ -41,8 +40,8 @@
 				"upToDate": "Déjà à jour.",
 				"updateFailed": "Échec de la mise à jour des composants depuis le dépôt distant : ${error}"
 			},
-			"partInitTime": "Composant ${parttype} ${partname}, temps d'initialisation : ${time}s",
-			"partLoadTime": "Composant ${parttype} ${partname}, temps de chargement : ${time}s"
+			"partInited": "Le composant ${parttype} ${partname} a été initialisé",
+			"partLoaded": "Le composant ${parttype} ${partname} est chargé"
 		},
 		"web": {
 			"requestReceived": "Requête reçue : ${method} ${url}"

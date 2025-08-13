@@ -5,7 +5,6 @@
 			"start": "सर्वर शुरू किया जा रहा है",
 			"starting": "सर्वर शुरू हो रहा है...",
 			"ready": "सर्वर तैयार है",
-			"usesdTime": "शुरू होने में लगा समय: ${time}s",
 			"showUrl": {
 				"https": "HTTPS सर्वर ${url} पर चल रहा है",
 				"http": "HTTP सर्वर ${url} पर चल रहा है"
@@ -41,8 +40,8 @@
 				"upToDate": "पहले से ही अपडेटेड है।",
 				"updateFailed": "रिमोट रिपॉजिटरी से घटक अपडेट करने में विफल: ${error}"
 			},
-			"partInitTime": "${parttype} घटक ${partname} आरंभ होने का समय: ${time}s",
-			"partLoadTime": "${parttype} घटक ${partname} लोड होने का समय: ${time}s"
+			"partInited": "${parttype} घटक ${partname} को आरंभीकृत किया गया है",
+			"partLoaded": "${parttype} घटक ${partname} लोड किया गया है"
 		},
 		"web": {
 			"requestReceived": "अनुरोध प्राप्त हुआ: ${method} ${url}"

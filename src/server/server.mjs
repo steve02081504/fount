@@ -14,6 +14,7 @@ import supportsAnsi from 'npm:supports-ansi'
 import { loadJsonFile, saveJsonFile } from '../scripts/json_loader.mjs'
 import { get_hosturl_in_local_ip } from '../scripts/ratelimit.mjs'
 import { runSimpleWorker } from '../workers/index.mjs'
+import { getMemoryUsage } from '../scripts/gc.mjs'
 
 export let data_path
 
@@ -59,7 +60,7 @@ export async function init(start_config) {
 	for (const start of ['Base', 'IPC', 'Web', 'Tray', 'DiscordIPC']) starts[start] ??= true
 	let logoPromise
 	if (starts.Base) {
-		logoPromise = runSimpleWorker('logogener')
+		if (start_config.needs_output) logoPromise = runSimpleWorker('logogener')
 		starts.Base = Object.assign({
 			Jobs: true,
 			Timers: true,
@@ -125,7 +126,7 @@ export async function init(start_config) {
 			server.on('error', reject)
 		})
 
-		try {
+		if (start_config.needs_output) try {
 			const local_url = get_hosturl_in_local_ip()
 			console.logI18n('fountConsole.server.localUrl', { url: local_url })
 			const qrcode = await import('npm:qrcode-terminal')
@@ -139,14 +140,18 @@ export async function init(start_config) {
 		const titleBackup = process.title
 		on_shutdown(() => setWindowTitle(titleBackup))
 		setDefaultStuff()
-		if (starts.Base.Jobs) ReStartJobs()
-		if (starts.Base.Timers) startTimerHeartbeat()
-		console.freshLine('server start', await logoPromise)
+		if (start_config.needs_output) console.freshLine('server start', await logoPromise)
 	}
 	const endtime = new Date()
-	console.logI18n('fountConsole.server.usesdTime', {
-		time: (endtime - startTime) / 1000
+	console.log({
+		startTime,
+		totalTimeInMs: (endtime - startTime),
+		totalMemoryChangeInMB: getMemoryUsage() / 1024 / 1024
 	})
+	if (starts.Base) {
+		if (starts.Base.Jobs) ReStartJobs()
+		if (starts.Base.Timers) startTimerHeartbeat()
+	}
 	if (starts.DiscordRPC) StartRPC()
 	if (!fs.existsSync(__dirname + '/src/pages/favicon.ico')) await iconPromise
 	return true

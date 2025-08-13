@@ -16,8 +16,11 @@
 				"run",
 				"--unstable",
 				"--inspect-wait",
+				"--allow-scripts",
 				"--allow-all",
-				"--allow-scripts"
+				"-c",
+				"${workspaceFolder}/deno.json",
+				"--v8-flags=--expose-gc"
 			],
 			"attachSimplePort": 9229
 		}

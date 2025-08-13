@@ -5,7 +5,6 @@
 			"start": "Запуск сервера",
 			"starting": "Сервер запускається...",
 			"ready": "Сервер запущено",
-			"usesdTime": "Час запуску: ${time}с",
 			"showUrl": {
 				"https": "HTTPS сервер працює на ${url}",
 				"http": "HTTP сервер працює на ${url}"
@@ -41,8 +40,8 @@
 				"upToDate": "У вас остання версія.",
 				"updateFailed": "Не вдалося оновити компонент з віддаленого репозиторію: ${error}"
 			},
-			"partInitTime": "Час ініціалізації компонента ${parttype} ${partname}: ${time}с",
-			"partLoadTime": "Час завантаження компонента ${parttype} ${partname}: ${time}с"
+			"partInited": "${parttype} компонент ${partname} був ініціалізований",
+			"partLoaded": "${parttype} компонент ${partname} завантажено"
 		},
 		"web": {
 			"requestReceived": "Отримано запит: ${method} ${url}"

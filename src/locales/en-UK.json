@@ -5,7 +5,6 @@
 			"start": "Starting server",
 			"starting": "Server starting...",
 			"ready": "Server is ready",
-			"usesdTime": "Startup time: ${time}s",
 			"showUrl": {
 				"https": "HTTPS server running on ${url}",
 				"http": "HTTP server running on ${url}"
@@ -41,8 +40,8 @@
 				"upToDate": "Already up-to-date.",
 				"updateFailed": "Failed to update components from remote repository: ${error}"
 			},
-			"partInitTime": "${parttype} component '${partname}' initialisation time: ${time}s",
-			"partLoadTime": "${parttype} Component ${partname} loading time: ${time}s"
+			"partInited": "${parttype} component ${partname} has been initialized",
+			"partLoaded": "${parttype} component ${partname} is loaded"
 		},
 		"web": {
 			"requestReceived": "Request received: ${method} ${url}"

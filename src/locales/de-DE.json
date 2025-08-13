@@ -5,7 +5,6 @@
 			"start": "Server wird gestartet",
 			"starting": "Server startet...",
 			"ready": "Server ist gestartet",
-			"usesdTime": "Hochfahrzeit: ${time}s",
 			"showUrl": {
 				"https": "HTTPS-Server läuft auf ${url}",
 				"http": "HTTP-Server läuft auf ${url}"
@@ -41,8 +40,8 @@
 				"upToDate": "Bereits aktuell.",
 				"updateFailed": "Fehler beim Aktualisieren von Parts vom Remote-Repository: ${error}"
 			},
-			"partInitTime": "Initialisierungszeit für ${parttype}-Komponente ${partname}: ${time}s",
-			"partLoadTime": "${parttype}-Komponente ${partname} Ladezeit: ${time}s"
+			"partInited": "${parttype} -Komponente ${partname} wurde initialisiert",
+			"partLoaded": "${parttype} -Komponente ${partname} ist geladen"
 		},
 		"web": {
 			"requestReceived": "Anfrage erhalten: ${method} ${url}"

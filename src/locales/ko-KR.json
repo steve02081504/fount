@@ -5,7 +5,6 @@
 			"start": "서버를 시작하고 있습니다.",
 			"starting": "서버 시작 중...",
 			"ready": "서버가 준비되었습니다.",
-			"usesdTime": "시작 소요 시간: ${time}s",
 			"showUrl": {
 				"https": "HTTPS 서버가 ${url}에서 실행 중입니다.",
 				"http": "HTTP 서버가 ${url}에서 실행 중입니다."
@@ -41,8 +40,8 @@
 				"upToDate": "이미 최신 버전입니다.",
 				"updateFailed": "원격 리포지토리에서 컴포넌트 업데이트에 실패했습니다: ${error}"
 			},
-			"partInitTime": "${parttype} 컴포넌트 ${partname} 초기화 시간: ${time}s",
-			"partLoadTime": "${parttype} 컴포넌트 ${partname} 로드 시간: ${time}s"
+			"partInited": "${parttype} 컴포넌트 ${partname}이(가) 초기화되었습니다",
+			"partLoaded": "${parttype} 컴포넌트 ${partname}이(가) 로드되었습니다"
 		},
 		"web": {
 			"requestReceived": "요청 수신됨: ${method} ${url}"
