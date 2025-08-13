@@ -3,6 +3,7 @@ import { save_config } from './server.mjs'
 import { loadPart } from './managers/index.mjs'
 import { events } from './events.mjs'
 import { console } from '../scripts/i18n.mjs'
+import { gc } from '../scripts/gc.mjs'
 
 export function StartJob(username, parttype, partname, uid, data = null) {
 	const jobs = getUserByUsername(username).jobs ??= {}
@@ -45,14 +46,11 @@ async function startJobsOfUser(username) {
 					await part.interfaces.jobs.ReStartJob(username, jobs[parttype][partname][uid] ?? uid)
 				})().catch(console.error))
 	await Promise.all(promises)
+	return promises.length
 }
 export async function ReStartJobs() {
-	await Promise.all(getAllUserNames().map(startJobsOfUser))
-	globalThis.gc({
-		execution: 'sync',
-		flavor: 'last-resort',
-		type: 'major'
-	})
+	const count = (await Promise.all(getAllUserNames().map(startJobsOfUser))).reduce((a, b) => a + b, 0)
+	if (count) gc()
 }
 
 events.on('AfterUserRenamed', async ({ oldUsername, newUsername }) => {

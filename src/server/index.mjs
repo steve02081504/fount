@@ -18,6 +18,7 @@ let args = process.argv.slice(2)
 const fount_config = {
 	restartor: () => process.exit(131),
 	data_path: __dirname + '/data',
+	needs_output: process.stdout.writable && process.stdout.isTTY,
 	starts: {
 		Base: {
 			Jobs: !existsSync(__dirname + '/.nojobs'),

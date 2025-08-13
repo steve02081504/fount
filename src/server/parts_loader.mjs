@@ -12,6 +12,7 @@ import { console } from '../scripts/i18n.mjs'
 import { loadJsonFile } from '../scripts/json_loader.mjs'
 import { nicerWriteFileSync } from '../scripts/nicerWriteFile.mjs'
 import { getPartRouter, deletePartRouter } from './web_server/parts_router.mjs'
+import { doProfile } from '../scripts/profiler.mjs'
 
 export function setDefaultPart(user, parttype, partname) {
 	if (Object(user) instanceof String) user = getUserByUsername(user)
@@ -263,39 +264,39 @@ export async function loadPartBase(username, parttype, partname, Initargs, {
 	const parts_config = loadData(username, 'parts_config')
 	try {
 		if (!parts_init[parttype]?.[partname]) {
-			const startTime = new Date()
-			parts_init[parttype] ??= {}
-			parts_init[parttype][partname] = initPart(username, parttype, partname, Initargs, { pathGetter, Initer, afterInit })
-			parts_init[parttype][partname] = await parts_init[parttype][partname]
-			const endTime = new Date()
-			console.logI18n('fountConsole.partManager.partInitTime', {
-				parttype,
-				partname,
-				time: (endTime - startTime) / 1000,
+			const profile = await doProfile(async () => {
+				parts_init[parttype] ??= {}
+				parts_init[parttype][partname] = initPart(username, parttype, partname, Initargs, { pathGetter, Initer, afterInit })
+				parts_init[parttype][partname] = await parts_init[parttype][partname]
 			})
+			console.logI18n('fountConsole.partManager.partInited', {
+				parttype,
+				partname
+			})
+			console.log(profile)
 			parts_init[parttype][partname] = true
 			saveData(username, 'parts_init')
 		}
 		if (parts_init[parttype][partname] instanceof Promise)
 			parts_init[parttype][partname] = await parts_init[parttype][partname]
 		if (!parts_set[username][parttype][partname]) {
-			const startTime = new Date()
-			/** @type {T} */
-			parts_set[username][parttype][partname] = baseloadPart(username, parttype, partname, { pathGetter, Loader: async (path) => await Loader(path, Initargs) })
-			const part = parts_set[username][parttype][partname] = await parts_set[username][parttype][partname]
-			const endTime = new Date()
-			try {
-				await part.interfaces?.config?.SetData?.(parts_config[parttype]?.[partname] ?? {})
-			}
-			catch (error) {
-				console.error(`Failed to set data for part ${partname}: ${error.message}\n${error.stack}`)
-			}
-			await afterLoad(part)
-			console.logI18n('fountConsole.partManager.partLoadTime', {
-				parttype,
-				partname,
-				time: (endTime - startTime) / 1000,
+			const profile = await doProfile(async () => {
+				/** @type {T} */
+				parts_set[username][parttype][partname] = baseloadPart(username, parttype, partname, { pathGetter, Loader: async (path) => await Loader(path, Initargs) })
+				const part = parts_set[username][parttype][partname] = await parts_set[username][parttype][partname]
+				try {
+					await part.interfaces?.config?.SetData?.(parts_config[parttype]?.[partname] ?? {})
+				}
+				catch (error) {
+					console.error(`Failed to set data for part ${partname}: ${error.message}\n${error.stack}`)
+				}
+				await afterLoad(part)
 			})
+			console.logI18n('fountConsole.partManager.partLoaded', {
+				parttype,
+				partname
+			})
+			console.log(profile)
 		}
 		if (parts_set[username][parttype][partname] instanceof Promise)
 			parts_set[username][parttype][partname] = await parts_set[username][parttype][partname]
