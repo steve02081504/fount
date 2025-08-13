@@ -5,7 +5,6 @@
 			"start": "Server starten",
 			"starting": "Server wordt gestart...",
 			"ready": "Server is gestart",
-			"usesdTime": "Opstarttijd: ${time}s",
 			"showUrl": {
 				"https": "HTTPS-server draait op ${url}",
 				"http": "HTTP-server draait op ${url}"
@@ -41,8 +40,8 @@
 				"upToDate": "Al up-to-date.",
 				"updateFailed": "Bijwerken van component vanuit externe repository mislukt: ${error}"
 			},
-			"partInitTime": "Initialisatietijd van component ${parttype} ${partname}: ${time}s",
-			"partLoadTime": "Laadtijd van component ${parttype} ${partname}: ${time}s"
+			"partInited": "${parttype} component ${partname} is geïnitialiseerd",
+			"partLoaded": "${parttype} component ${partname} is geladen"
 		},
 		"web": {
 			"requestReceived": "Verzoek ontvangen: ${method} ${url}"

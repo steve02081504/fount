@@ -5,7 +5,6 @@
 			"start": "Ræsi netþjón",
 			"starting": "Netþjónn er að ræsa...",
 			"ready": "Netþjónn er ræstur",
-			"usesdTime": "Tók ${time}s að ræsa",
 			"showUrl": {
 				"https": "HTTPS netþjónn keyrir á ${url}",
 				"http": "HTTP netþjónn keyrir á ${url}"
@@ -41,8 +40,8 @@
 				"upToDate": "Þegar uppfært.",
 				"updateFailed": "Mistókst að uppfæra íhlut frá fjarlægu kóðasafni: ${error}"
 			},
-			"partInitTime": "Frumstillingartími fyrir íhlut ${parttype} ${partname}: ${time}s",
-			"partLoadTime": "Hleðslutími fyrir íhlut ${parttype} ${partname}: ${time}s"
+			"partInited": "${parttype} hluti ${partname} hefur verið frumstilltur",
+			"partLoaded": "${parttype} hluti ${partname} er hlaðinn"
 		},
 		"web": {
 			"requestReceived": "Tók á móti beiðni: ${method} ${url}"

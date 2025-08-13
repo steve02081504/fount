@@ -5,7 +5,6 @@
 			"start": "正在啟動伺服器",
 			"starting": "伺服器啟動中...",
 			"ready": "伺服器已啟動",
-			"usesdTime": "啟動耗時：${time}s",
 			"showUrl": {
 				"https": "HTTPS 伺服器運行在 ${url}",
 				"http": "HTTP 伺服器運行在 ${url}"
@@ -41,8 +40,8 @@
 				"upToDate": "已是最新。",
 				"updateFailed": "從遠端倉庫更新組件失敗：${error}"
 			},
-			"partInitTime": "${parttype}組件${partname}初始化時間：${time}s",
-			"partLoadTime": "${parttype}組件${partname}載入時間：${time}s"
+			"partInited": "${parttype} 組件 ${partname} 已初始化",
+			"partLoaded": "${parttype} 組件 ${partname} 已載入"
 		},
 		"web": {
 			"requestReceived": "接收到請求：${method} ${url}"

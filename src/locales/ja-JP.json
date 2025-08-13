@@ -5,7 +5,6 @@
 			"start": "サーバーを起動しています。",
 			"starting": "サーバー起動中...",
 			"ready": "サーバーが起動しました。",
-			"usesdTime": "起動時間：${time}s",
 			"showUrl": {
 				"https": "HTTPSサーバーが ${url} で実行されています。",
 				"http": "HTTPサーバーが ${url} で実行されています。"
@@ -41,8 +40,8 @@
 				"upToDate": "既に最新です。",
 				"updateFailed": "リモートリポジトリから部品を更新できませんでした：${error}"
 			},
-			"partInitTime": "${parttype}コンポーネント「${partname}」の初期化時間：${time}s",
-			"partLoadTime": "${parttype}コンポーネント「${partname}」の読み込み時間：${time}s"
+			"partInited": "${parttype}コンポーネント${partname}が初期化されました",
+			"partLoaded": "${parttype}コンポーネント${partname}がロードされました"
 		},
 		"web": {
 			"requestReceived": "リクエストを受信しました：${method} ${url}"

@@ -5,7 +5,6 @@
 			"start": "Сервер запускается.",
 			"starting": "Сервер запускается...",
 			"ready": "Сервер запущен.",
-			"usesdTime": "Время запуска: ${time}s",
 			"showUrl": {
 				"https": "HTTPS-сервер запущен на ${url}",
 				"http": "HTTP-сервер запущен на ${url}"
@@ -41,8 +40,8 @@
 				"upToDate": "Уже установлена последняя версия.",
 				"updateFailed": "Не удалось обновить компоненты из удаленного репозитория: ${error}"
 			},
-			"partInitTime": "Компонент ${parttype} ${partname}, время инициализации: ${time}s",
-			"partLoadTime": "Компонент ${parttype} ${partname}, время загрузки: ${time}s"
+			"partInited": "${parttype} компонент ${partname} был инициализирован",
+			"partLoaded": "${parttype} компонент ${partname} загружен"
 		},
 		"web": {
 			"requestReceived": "Получен запрос: ${method} ${url}"

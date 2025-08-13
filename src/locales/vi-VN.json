@@ -5,7 +5,6 @@
 			"start": "Đang khởi động máy chủ.",
 			"starting": "Máy chủ đang khởi động...",
 			"ready": "Máy chủ đã sẵn sàng.",
-			"usesdTime": "Thời gian khởi động: ${time}s",
 			"showUrl": {
 				"https": "Máy chủ HTTPS đang chạy tại ${url}",
 				"http": "Máy chủ HTTP đang chạy tại ${url}"
@@ -41,8 +40,8 @@
 				"upToDate": "Đã là phiên bản mới nhất.",
 				"updateFailed": "Cập nhật thành phần từ kho lưu trữ từ xa thất bại: ${error}"
 			},
-			"partInitTime": "Thời gian khởi tạo thành phần ${parttype} ${partname}: ${time}s",
-			"partLoadTime": "Thời gian tải thành phần ${parttype} ${partname}: ${time}s"
+			"partInited": "${parttype} Thành phần ${partname} đã được khởi tạo",
+			"partLoaded": "${parttype} Thành phần ${partname} được tải"
 		},
 		"web": {
 			"requestReceived": "Đã nhận được yêu cầu: ${method} ${url}"

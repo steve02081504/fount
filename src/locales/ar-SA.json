@@ -5,7 +5,6 @@
 			"start": "جاري بدء الخادم",
 			"starting": "الخادم قيد البدء...",
 			"ready": "الخادم جاهز",
-			"usesdTime": "الوقت المستغرق للبدء: ${time} ثانية",
 			"showUrl": {
 				"https": "خادم HTTPS يعمل على ${url}",
 				"http": "خادم HTTP يعمل على ${url}"
@@ -41,8 +40,8 @@
 				"upToDate": "أنت على أحدث إصدار.",
 				"updateFailed": "فشل تحديث المكون من المستودع البعيد: ${error}"
 			},
-			"partInitTime": "وقت تهيئة المكون ${parttype} ${partname}: ‏${time} ثانية",
-			"partLoadTime": "وقت تحميل المكون ${parttype} ${partname}: ‏${time} ثانية"
+			"partInited": "تم تهيئة ${parttype} ${partname}",
+			"partLoaded": "${parttype} مكون ${partname} تم تحميله"
 		},
 		"web": {
 			"requestReceived": "تم استلام طلب: ${method} ${url}"
