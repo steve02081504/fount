@@ -24,6 +24,13 @@ if ('serviceWorker' in navigator)
 			console.error('Service Worker registration failed: ', error)
 		})
 
+if (new Date().getDate() === 1 && new Date().getMonth() === 3)
+	if (Math.random() < 0.01)
+		if (navigator.userLanguage == 'zh-CN' || navigator.userLanguage == 'zh' || navigator.language == 'zh-CN' || navigator.language == 'zh')
+			window.location.href = 'https://96110.pages.dev/CloudFlare/CF'
+		else
+			window.location.href = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+
 // set prerender rules
 if (HTMLScriptElement.supports?.('speculationrules')) {
 	const specScript = document.createElement('script')
