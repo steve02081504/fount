@@ -52,6 +52,13 @@ export const localhostLocales = [...new Set([
 ].filter(Boolean))]
 export let localhostLocaleData = await getLocaleData(localhostLocales)
 
+// 中国大陆且今天周四
+if (localhostLocales[0] === 'zh-CN')
+	setInterval(() => {
+		if (new Date().getDay() === 4)
+			console.error('%cException Error Syntax Unexpected string: Crazy Thursday vivo 50', 'color: red')
+	}, 5 * 60 * 1000)
+
 export async function addPartLocaleData(partname, localeList, loader) {
 	partsLocaleLists[partname] = localeList
 	partsLocaleLoaders[partname] = loader
