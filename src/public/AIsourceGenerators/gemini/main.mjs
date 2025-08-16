@@ -4,6 +4,8 @@ import * as mime from 'npm:mime-types'
 import { hash as calculateHash } from 'node:crypto'
 import { escapeRegExp } from '../../../scripts/escape.mjs'
 import process from 'node:process'
+import fs from 'node:fs'
+import path from 'node:path'
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
@@ -45,6 +47,9 @@ const supportedFileTypes = [
 export default {
 	interfaces: {
 		AIsource: {
+			GetConfigDisplayContent: async () => ({
+				js: fs.readFileSync(path.join(import.meta.dirname, 'display.mjs'), 'utf-8')
+			}),
 			GetConfigTemplate: async () => configTemplate,
 			GetSource,
 		}

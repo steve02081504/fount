@@ -145,7 +145,7 @@ export async function init(start_config) {
 	const endtime = new Date()
 	console.log({
 		startTime,
-		totalTimeInMs: (endtime - startTime),
+		totalTimeInMs: endtime - startTime,
 		totalMemoryChangeInMB: getMemoryUsage() / 1024 / 1024
 	})
 	if (starts.Base) {

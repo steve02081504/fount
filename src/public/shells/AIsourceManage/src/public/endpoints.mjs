@@ -3,6 +3,12 @@ export async function getConfigTemplate(generatorName) {
 	return response.json()
 }
 
+export async function getConfigDisplay(generatorName) {
+	if (!generatorName) return { html: '', js: '' }
+	const response = await fetch(`/api/shells/AIsourceManage/getConfigDisplay?${new URLSearchParams({ generator: generatorName })}`)
+	return response.json()
+}
+
 export async function getAIFile(AISourceFile) {
 	const response = await fetch(`/api/shells/AIsourceManage/getfile?${new URLSearchParams({ AISourceFile })}`)
 	return response.json()

@@ -2,12 +2,13 @@ import { createJsonEditor } from '../../scripts/jsonEditor.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 import { initTranslations, console, geti18n, alertI18n, confirmI18n, promptI18n } from '../../scripts/i18n.mjs'
 import { getPartList, setDefaultPart, getDefaultParts } from '../../scripts/parts.mjs'
-import { getConfigTemplate, getAIFile, setAIFile, deleteAIFile, addAIFile } from './src/public/endpoints.mjs'
+import { getConfigTemplate, getAIFile, setAIFile, deleteAIFile, addAIFile, getConfigDisplay } from './src/public/endpoints.mjs'
 
 const jsonEditorContainer = document.getElementById('jsonEditor')
+const generatorDisplayContainer = document.getElementById('generatorDisplay')
 const disabledIndicator = document.getElementById('disabledIndicator') // 获取遮罩层元素
 
-const fileListDiv = document.getElementById('fileList')
+const fileListContainer = document.getElementById('fileList')
 const generatorSelect = document.getElementById('generatorSelect')
 const saveButton = document.getElementById('saveButton')
 const saveStatusIcon = document.getElementById('saveStatusIcon')
@@ -20,6 +21,7 @@ let fileList = []
 let generatorList = []
 let isDirty = false // 标记是否有未保存的更改
 let defaultParts = {} // Store default parts
+let onJsonUpdate = () => 0
 
 // 统一的错误处理函数
 function handleFetchError(customMessage) {
@@ -47,7 +49,7 @@ async function fetchDefaultParts() {
 }
 
 function renderFileList() {
-	fileListDiv.innerHTML = ''
+	fileListContainer.innerHTML = ''
 	fileList.forEach(fileName => {
 		const listItem = document.createElement('div')
 		listItem.classList.add('file-list-item')
@@ -89,7 +91,7 @@ function renderFileList() {
 		// Prevent checkbox click from triggering list item click
 		checkboxContainer.addEventListener('click', (event) => event.stopPropagation())
 		listItem.addEventListener('click', () => loadEditor(fileName))
-		fileListDiv.appendChild(listItem)
+		fileListContainer.appendChild(listItem)
 	})
 
 	updateDefaultPartDisplay() // Apply styles for default item
@@ -102,7 +104,7 @@ function renderFileList() {
 
 function updateDefaultPartDisplay() {
 	const defaultPartName = defaultParts.AIsources
-	fileListDiv.querySelectorAll('.file-list-item').forEach(el => {
+	fileListContainer.querySelectorAll('.file-list-item').forEach(el => {
 		const isDefault = el.dataset.name === defaultPartName
 		el.classList.toggle('selected-item', isDefault)
 		const checkbox = el.querySelector('.default-checkbox')
@@ -125,6 +127,28 @@ async function fetchConfigTemplate(generatorName) {
 	return await getConfigTemplate(generatorName).catch(handleFetchError('aisource_editor.alerts.fetchConfigTemplateFailed'))
 }
 
+async function loadGeneratorAddons(generatorName) {
+	generatorDisplayContainer.innerHTML = ''
+	onJsonUpdate = () => 0
+
+	if (!generatorName) return
+
+	try {
+		const { html, js: displayScript } = await getConfigDisplay(generatorName)
+		generatorDisplayContainer.innerHTML = html
+		if (displayScript) {
+			const jsonUpdateListener = await eval('(async () => {' + displayScript + '})()')
+			if (typeof jsonUpdateListener === 'function')
+				onJsonUpdate = jsonUpdateListener
+			else
+				console.error('Generator JS did not evaluate to a function.')
+		}
+	} catch (e) {
+		console.error('Error loading or evaluating generator addons:', e)
+		generatorDisplayContainer.innerHTML = `<div class="text-error">Error loading generator display: ${e.message}</div>`
+	}
+}
+
 function disableEditor() {
 	if (jsonEditor) jsonEditor.updateProps({ readOnly: true })
 	disabledIndicator.classList.remove('hidden') // 显示遮罩
@@ -136,7 +160,20 @@ function enableEditor() {
 }
 
 async function updateEditorContent(data) {
-	if (jsonEditor) jsonEditor.set({ json: data || {} })
+	if (jsonEditor) {
+		jsonEditor.set({ json: data || {} })
+		if (onJsonUpdate)
+			onJsonUpdate({
+				data: data || {},
+				containers: {
+					generatorDisplay: generatorDisplayContainer,
+					jsonEditor: jsonEditorContainer
+				},
+				editors: {
+					json: jsonEditor
+				}
+			})
+	}
 }
 
 async function loadEditor(fileName) {
@@ -146,16 +183,30 @@ async function loadEditor(fileName) {
 		return
 
 	document.querySelectorAll('.file-list-item').forEach(item => item.classList.remove('active'))
-	const activeItem = fileListDiv.querySelector(`.file-list-item[data-name="${fileName}"]`)
+	const activeItem = fileListContainer.querySelector(`.file-list-item[data-name="${fileName}"]`)
 	if (activeItem) activeItem.classList.add('active')
 
 	activeFile = fileName
 	const data = await getAIFile(fileName).catch(handleFetchError('aisource_editor.alerts.fetchFileDataFailed'))
 	generatorSelect.value = data.generator
 
+	await loadGeneratorAddons(data.generator)
+
 	if (!jsonEditor)
 		jsonEditor = createJsonEditor(jsonEditorContainer, {
-			onChange: () => { isDirty = true },
+			onChange: () => {
+				isDirty = true
+				onJsonUpdate({
+					data: jsonEditor.get().json || JSON.parse(jsonEditor.get().text),
+					containers: {
+						generatorDisplay: generatorDisplayContainer,
+						jsonEditor: jsonEditorContainer
+					},
+					editors: {
+						json: jsonEditor
+					}
+				})
+			},
 			onSave: saveFile
 		})
 
@@ -263,6 +314,7 @@ addFileButton.addEventListener('click', addFile)
 
 generatorSelect.addEventListener('change', async () => {
 	const selectedGenerator = generatorSelect.value
+	await loadGeneratorAddons(selectedGenerator)
 	if (selectedGenerator) {
 		const template = await fetchConfigTemplate(selectedGenerator)
 		updateEditorContent(template)

@@ -33,3 +33,8 @@ export async function getConfigTemplate(username, generatorname) {
 	const generator = await loadAIsourceGenerator(username, generatorname)
 	return await generator.interfaces.AIsource.GetConfigTemplate()
 }
+
+export async function getConfigDisplay(username, generatorname) {
+	const generator = await loadAIsourceGenerator(username, generatorname)
+	return await generator.interfaces.AIsource?.GetConfigDisplayContent?.() || { html: '', js: '' }
+}

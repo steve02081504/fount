@@ -18,6 +18,7 @@ export class AIsourceGenerator_t {
 			SetData: (data: any) => Promise<void>
 		},
 		AIsource: {
+			GetConfigDisplayContent: () => Promise<{ html?: string, js?: string }>
 			GetConfigTemplate: () => Promise<any>
 			GetSource: (config: any, args: { username: string, SaveConfig: () => Promise<void> }) => Promise<AIsource_t<any, any>>
 		}
