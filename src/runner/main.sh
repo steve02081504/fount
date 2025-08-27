@@ -2,6 +2,13 @@
 
 # fount脚本需要兼容mac的上古版本bash，尽量避免使用新版本语法
 
+# --- 彩色输出定义 ---
+C_RESET='\033[0m'
+C_RED='\033[0;31m'
+C_GREEN='\033[0;32m'
+C_YELLOW='\033[0;33m'
+C_CYAN='\033[0;36m'
+
 # 若未定义，则默认 fount 安装分支
 FOUNT_BRANCH="${FOUNT_BRANCH:-"master"}"
 
@@ -18,12 +25,19 @@ fi
 STATUS_SERVER_PID=""
 OS_TYPE=$(uname -s)
 
-trap '[[ -n "$STATUS_SERVER_PID" ]] && kill "$STATUS_SERVER_PID" 2>/dev/null' EXIT
+# 确保在脚本退出时，状态服务器进程能被清理
+cleanup() {
+	if [[ -n "$STATUS_SERVER_PID" ]]; then
+		kill "$STATUS_SERVER_PID" 2>/dev/null
+		STATUS_SERVER_PID=""
+	fi
+}
+trap cleanup EXIT
 
 # 初始化自动安装的包列表
 FOUNT_AUTO_INSTALLED_PACKAGES="${FOUNT_AUTO_INSTALLED_PACKAGES:-}"
 
-# 辅助函数: 智能地使用包管理器进行安装 (包含更新逻辑)
+# 辅助函数: 智能地使用包管理器进行安装
 install_with_manager() {
 	local manager_cmd="$1"
 	local package_to_install="$2"
@@ -31,48 +45,19 @@ install_with_manager() {
 	local install_args=""
 	local has_sudo=""
 
-	if ! command -v "$manager_cmd" &>/dev/null; then
-		return 1
-	fi
-
-	if [[ $(id -u) -ne 0 ]] && command -v sudo &>/dev/null; then
-		has_sudo="sudo"
-	fi
+	if ! command -v "$manager_cmd" &>/dev/null; then return 1; fi
+	if [[ $(id -u) -ne 0 ]] && command -v sudo &>/dev/null; then has_sudo="sudo"; fi
 
 	case "$manager_cmd" in
-	"apt-get")
-		update_args="update -y"
-		install_args="install -y"
-		;;
-	"pacman")
-		update_args="-Syy --noconfirm"
-		install_args="-S --needed --noconfirm"
-		;;
-	"dnf")
-		update_args="makecache"
-		install_args="install -y"
-		;;
-	"yum")
-		update_args="makecache fast"
-		install_args="install -y"
-		;;
-	"zypper")
-		update_args="refresh"
-		install_args="install -y --no-confirm"
-		;;
-	"pkg")
-		update_args="update -y"
-		install_args="install -y"
-		;;
+	"apt-get") update_args="update -y"; install_args="install -y" ;;
+	"pacman") update_args="-Syy --noconfirm"; install_args="-S --needed --noconfirm" ;;
+	"dnf") update_args="makecache"; install_args="install -y" ;;
+	"yum") update_args="makecache fast"; install_args="install -y" ;;
+	"zypper") update_args="refresh"; install_args="install -y --no-confirm" ;;
+	"pkg") update_args="update -y"; install_args="install -y" ;;
 	"apk") install_args="add --update" ;;
-	"brew")
-		has_sudo=""
-		install_args="install"
-		;;
-	"snap")
-		has_sudo="sudo"
-		install_args="install"
-		;;
+	"brew") has_sudo=""; install_args="install" ;;
+	"snap") has_sudo="sudo"; install_args="install" ;;
 	*) return 1 ;;
 	esac
 
@@ -84,7 +69,7 @@ install_with_manager() {
 	$has_sudo "$manager_cmd" $install_args "$package_to_install"
 }
 
-# 函数: 安装包 (高效、健壮版)
+# 函数: 安装包
 install_package() {
 	local command_name="$1"
 	local package_list_str="${2:-$command_name}"
@@ -92,9 +77,7 @@ install_package() {
 	local package_list=($package_list_str)
 	local installed_pkg_name=""
 
-	if command -v "$command_name" &>/dev/null; then
-		return 0
-	fi
+	if command -v "$command_name" &>/dev/null; then return 0; fi
 
 	for package in "${package_list[@]}"; do
 		if
@@ -116,7 +99,6 @@ install_package() {
 	done
 
 	if command -v "$command_name" &>/dev/null; then
-		# 跟踪自动安装的包
 		if [ -z "$FOUNT_AUTO_INSTALLED_PACKAGES" ]; then
 			FOUNT_AUTO_INSTALLED_PACKAGES="$installed_pkg_name"
 		else
@@ -125,7 +107,7 @@ install_package() {
 		export FOUNT_AUTO_INSTALLED_PACKAGES
 		return 0
 	else
-		echo "Error: Failed to install '$command_name' using any known package manager." >&2
+		echo -e "${C_RED}Error: $command_name installation failed.${C_RESET}" >&2
 		return 1
 	fi
 }
@@ -143,16 +125,15 @@ test_browser() {
 			fi
 		fi
 	elif [ "$OS_TYPE" = "Darwin" ]; then
-		# 尝试使用 defaults read
 		local default_browser_bundle_id
-		default_browser_bundle_id=$(defaults read ~/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist 2>/dev/null | grep -B 1 "LSHandlerURLScheme = https;" | sed -n -e 's/^.*RoleAll = "//' -e 's/";//p' | head -n 1)||true
+		default_browser_bundle_id=$(defaults read ~/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist 2>/dev/null | grep -B 1 "LSHandlerURLScheme = https;" | sed -n -e 's/^.*RoleAll = "//' -e 's/";//p' | head -n 1) || true
 		if [ -n "$default_browser_bundle_id" ]; then
 			browser_detected=1
 		fi
 	fi
 
 	if [ $browser_detected -eq 0 ]; then
-		echo "No default web browser detected. Attempting to install Google Chrome..."
+		echo "Default web browser is not detected, attempting to install..."
 		install_package "google-chrome" "google-chrome google-chrome-stable"
 	fi
 	return 0
@@ -170,7 +151,7 @@ if command -v fount.sh &>/dev/null; then
 	# 从现有命令推断出安装目录
 	FOUNT_DIR="$(dirname "$(dirname "$(command -v fount.sh)")")"
 else
-	# 检测环境，决定是否启动快速反馈流程
+	# 检测环境
 	IN_DOCKER=0
 	if [ -f "/.dockerenv" ] || grep -q 'docker\|containerd' /proc/1/cgroup 2>/dev/null; then
 		IN_DOCKER=1
@@ -208,20 +189,20 @@ else
 			done
 			new_args=("${temp_args[@]}")
 		else
-			echo "Warning: Could not start status server. Proceeding with standard installation."
+			echo -e "${C_YELLOW}Warning: Could not start status server. Proceeding with standard installation.${C_RESET}"
 		fi
 	fi
 
-	echo "Installing fount into $FOUNT_DIR..."
+	echo -e "Installing fount into ${C_CYAN}$FOUNT_DIR${C_RESET}..."
 	rm -rf "$FOUNT_DIR"
 	mkdir -p "$(dirname "$FOUNT_DIR")"
 
 	if install_package "git" "git git-core"; then
 		echo "Cloning fount repository..."
 		if git clone https://github.com/steve02081504/fount.git "$FOUNT_DIR" --depth 1 --single-branch --branch "$FOUNT_BRANCH"; then
-			echo "Clone successful."
+			echo -e "${C_GREEN}Clone successful.${C_RESET}"
 		else
-			echo "Git clone failed, falling back to zip download..."
+			echo -e "${C_YELLOW}Git clone failed, falling back to zip download...${C_RESET}"
 			rm -rf "$FOUNT_DIR"
 		fi
 	fi
@@ -238,36 +219,36 @@ else
 
 		echo "Downloading fount from $ZIP_URL..."
 		if command -v curl &>/dev/null; then
-			curl -L -o "$ZIP_FILE" "$ZIP_URL"
+			curl --progress-bar -L -o "$ZIP_FILE" "$ZIP_URL"
 		else
-			wget -O "$ZIP_FILE" "$ZIP_URL"
+			wget -q --show-progress -O "$ZIP_FILE" "$ZIP_URL"
 		fi
 
 		# shellcheck disable=SC2181
 		if [ $? -ne 0 ]; then
-			echo "Error: Download failed." >&2
+			echo -e "${C_RED}Error: Download failed.${C_RESET}" >&2
 			exit 1
 		fi
 
 		echo "Unzipping fount..."
-		if ! unzip -o "$ZIP_FILE" -d "$TMP_DIR"; then
-			echo "Error: Unzip failed." >&2
+		if ! unzip -q -o "$ZIP_FILE" -d "$TMP_DIR"; then
+			echo -e "${C_RED}Error: Unzip failed.${C_RESET}" >&2
 			exit 1
 		fi
 
 		extracted_dir=$(find "$TMP_DIR" -maxdepth 1 -type d -name "fount-*" | head -n 1)
 
 		if [ -z "$extracted_dir" ] || [ ! -d "$extracted_dir" ]; then
-			echo "Error: Could not find extracted fount directory in $TMP_DIR" >&2
+			echo -e "${C_RED}Error: Could not find extracted fount directory in $TMP_DIR${C_RESET}" >&2
 			exit 1
 		fi
 
 		mkdir -p "$FOUNT_DIR"
-		mv "$TMP_DIR"/fount-*/* "$FOUNT_DIR"
+		mv "$extracted_dir"/* "$FOUNT_DIR"
 	fi
 
 	if [ ! -f "$FOUNT_DIR/path/fount.sh" ]; then
-		echo "Error: fount installation failed. Main script not found." >&2
+		echo -e "${C_RED}Error: fount installation failed. Main script not found.${C_RESET}" >&2
 		exit 1
 	fi
 
@@ -277,9 +258,14 @@ else
 	fi
 	find "$FOUNT_DIR" -name "*.sh" -exec chmod +x {} +
 	find "$FOUNT_DIR/path" -type f -exec chmod +x {} +
-	chmod -x "$FOUNT_DIR/path/desktop.ini"
+	chmod -x "$FOUNT_DIR/path/desktop.ini" 2>/dev/null || true
 
-	echo "fount installation complete."
+	echo -e "${C_GREEN}fount installation complete.${C_RESET}"
+
+	if [[ -n "$STATUS_SERVER_PID" ]]; then
+		kill "$STATUS_SERVER_PID" 2>/dev/null
+		STATUS_SERVER_PID=""
+	fi
 fi
 
 # 若脚本自身内容和$FOUNT_DIR/src/runner/main.sh的内容不同，则更新自身

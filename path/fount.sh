@@ -2,6 +2,13 @@
 
 # fount脚本需要兼容mac的上古版本bash，尽量避免使用新版本语法
 
+# --- 彩色输出定义 ---
+C_RESET='\033[0m'
+C_RED='\033[0;31m'
+C_GREEN='\033[0;32m'
+C_YELLOW='\033[0;33m'
+C_CYAN='\033[0;36m'
+
 # 定义常量和路径
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 FOUNT_DIR=$(dirname "$SCRIPT_DIR")
@@ -210,7 +217,7 @@ install_package() {
 		fi
 	done
 
-	echo "Error: Failed to install '$command_name' using any available package manager." >&2
+	echo -e "${C_RED}Error: $command_name installation failed.${C_RESET}" >&2
 	return 1
 }
 
@@ -249,7 +256,7 @@ uninstall_package() {
 		return 0
 	fi
 
-	echo "Failed to uninstall $package_name. It might not be installed or managed by a recognized package manager." >&2
+	echo -e "${C_YELLOW}Failed to remove ${package_name}. It might not be installed or managed by a recognized package manager.${C_RESET}" >&2
 	return 1
 }
 
@@ -268,14 +275,14 @@ test_browser() {
 	elif [ "$OS_TYPE" = "Darwin" ]; then
 		# 尝试使用 defaults read
 		local default_browser_bundle_id
-		default_browser_bundle_id=$(defaults read ~/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist 2>/dev/null | grep -B 1 "LSHandlerURLScheme = https;" | sed -n -e 's/^.*RoleAll = "//' -e 's/";//p' | head -n 1)||true
+		default_browser_bundle_id=$(defaults read ~/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist 2>/dev/null | grep -B 1 "LSHandlerURLScheme = https;" | sed -n -e 's/^.*RoleAll = "//' -e 's/";//p' | head -n 1) || true
 		if [ -n "$default_browser_bundle_id" ]; then
 			browser_detected=1
 		fi
 	fi
 
 	if [ $browser_detected -eq 0 ]; then
-		echo "No default web browser detected. Attempting to install Google Chrome..."
+		echo "Default web browser is not detected, attempting to install..."
 		install_package "google-chrome" "google-chrome google-chrome-stable"
 	fi
 	return 0
@@ -302,7 +309,7 @@ patch_deno() {
 	deno_bin=$(command -v deno)
 
 	if [[ -z "$deno_bin" ]]; then
-		echo "Error: Deno executable not found before patching. Cannot patch." >&2
+		echo -e "${C_RED}Error: Deno executable not found before patching. Cannot patch.${C_RESET}" >&2
 		return 1
 	fi
 
@@ -323,13 +330,13 @@ patch_deno() {
 		interp_path="${PREFIX}/glibc/lib/ld-linux.so.2"
 		;;
 	*)
-		echo "Error: Unsupported architecture for patching: $arch" >&2
+		echo -e "${C_RED}Error: Unsupported architecture for patching: $arch${C_RESET}" >&2
 		return 1
 		;;
 	esac
 
 	if ! patchelf --set-rpath "${ORIGIN}/../glibc/lib" --set-interpreter "$interp_path" "$deno_bin"; then
-		echo "Error: Failed to patch Deno executable with patchelf." >&2
+		echo -e "${C_RED}Error: Failed to patch Deno executable with patchelf.${C_RESET}" >&2
 		return 1
 	else
 		mkdir -p ~/.deno/bin
@@ -370,7 +377,6 @@ urlencode() {
 
 # 函数: 创建桌面快捷方式
 create_desktop_shortcut() {
-	echo "Creating desktop shortcut..."
 	local icon_path="$FOUNT_DIR/src/pages/favicon.ico"
 
 	if [ "$OS_TYPE" = "Linux" ]; then
@@ -390,9 +396,8 @@ Terminal=true
 Categories=Utility;
 EOF
 		chmod +x "$desktop_file_path"
-		echo "Desktop shortcut created at $desktop_file_path"
+		echo -e "Desktop shortcut created at ${C_CYAN}$desktop_file_path${C_RESET}"
 
-		echo "Registering fount:// protocol handler..."
 		local protocol_desktop_file_path="$HOME/.local/share/applications/fount-protocol.desktop"
 		mkdir -p "$(dirname "$protocol_desktop_file_path")"
 		cat <<EOF >"$protocol_desktop_file_path"
@@ -417,7 +422,6 @@ EOF
 	elif [ "$OS_TYPE" = "Darwin" ]; then
 		local app_path="$HOME/Desktop/fount.app"
 		rm -rf "$app_path" # Clean up old version first
-		echo "Creating macOS application bundle at $app_path"
 
 		mkdir -p "$app_path/Contents/MacOS" "$app_path/Contents/Resources"
 		local icns_path="$FOUNT_DIR/src/pages/favicon.icns"
@@ -504,7 +508,7 @@ EOF
 		if command -v osacompile &>/dev/null; then
 			osacompile -o "$compiled_applescript" "$temp_applescript_file"
 		else
-			echo "Error: 'osacompile' not found. Cannot create macOS app." >&2
+			echo -e "${C_RED}Error: 'osacompile' not found. Cannot create macOS app.${C_RESET}" >&2
 			return 1
 		fi
 
@@ -520,7 +524,7 @@ EOF
 		local LSREGISTER_PATH="/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister"
 		if [ -f "$LSREGISTER_PATH" ]; then
 			if ! "$LSREGISTER_PATH" -f "$app_path"; then
-				echo "Warning: Failed to register application with LaunchServices using lsregister." >&2
+				echo -e "${C_YELLOW}Warning: Failed to register application with LaunchServices using lsregister.${C_RESET}" >&2
 				# 操你妈，跟你爆了
 				killall lsd
 			fi
@@ -530,29 +534,29 @@ EOF
 		fi
 
 		if [ -d "$app_path" ]; then
-			echo "Desktop application created at $app_path"
+			echo -e "Desktop shortcut created at ${C_CYAN}$app_path${C_RESET}"
 		else
-			echo "Error: Failed to create Desktop application." >&2
+			echo -e "${C_RED}Error: Failed to create Desktop application.${C_RESET}" >&2
 			return 1
 		fi
 	else
-		echo "Warning: Desktop shortcut creation not supported for your OS ($OS_TYPE)."
+		echo -e "${C_YELLOW}Warning: Desktop shortcut creation not supported for your OS ($OS_TYPE).${C_RESET}"
 	fi
 	return 0
 }
 
 # 函数: 移除桌面快捷方式
 remove_desktop_shortcut() {
-	echo "Removing desktop shortcut..."
+	echo "Removing Desktop Shortcut..."
 	if [ "$OS_TYPE" = "Linux" ]; then
 		rm -f "$HOME/.local/share/applications/fount.desktop" "$HOME/.local/share/applications/fount-protocol.desktop"
 		if command -v update-desktop-database &>/dev/null; then
 			update-desktop-database "$HOME/.local/share/applications"
 		fi
-		echo "Linux desktop entries removed."
+		echo "Desktop Shortcut removed."
 	elif [ "$OS_TYPE" = "Darwin" ]; then
 		rm -rf "$HOME/Desktop/fount.app"
-		echo "macOS desktop application removed."
+		echo "Desktop Shortcut removed."
 	fi
 }
 
@@ -562,7 +566,6 @@ ensure_fount_path() {
 		local profile_files=("$HOME/.profile" "$HOME/.bashrc" "$HOME/.zshrc")
 		for profile_file in "${profile_files[@]}"; do
 			if [ -f "$profile_file" ] && ! grep -q "export PATH=.*$ESCAPED_FOUNT_DIR/path" "$profile_file"; then
-				echo "Adding fount path to $profile_file..."
 				if [ "$(tail -c 1 "$profile_file")" != $'\n' ]; then echo >>"$profile_file"; fi
 				echo "export PATH=\"\$PATH:$FOUNT_DIR/path\"" >>"$profile_file"
 			fi
@@ -619,7 +622,6 @@ while ! test_fount_running_internal; do
 		echo "Error: fount server did not start in time." >&2; exit 1
 	fi
 done
-echo "fount server is running. Opening URL..." >&2
 os_type=$(uname -s)
 if [ "$os_type" = "Linux" ]; then
 	xdg-open "$TARGET_URL" >/dev/null 2>&1
@@ -654,11 +656,11 @@ if [[ $# -gt 0 ]]; then
 			if command -v nc &>/dev/null; then
 				while true; do {
 					while IFS= read -r -t 2 line && [[ "$line" != $'\r' ]]; do :; done
-echo -e "HTTP/1.1 200 OK\r\nAccess-Control-Allow-Origin: *\r\nContent-Type: application/json\r\nConnection: close\r\n\r\n{\"message\":\"pong\"}"
+					echo -e "HTTP/1.1 200 OK\r\nAccess-Control-Allow-Origin: *\r\nContent-Type: application/json\r\nConnection: close\r\n\r\n{\"message\":\"pong\"}"
 				} | nc -l 8930 -q 0; done >/dev/null 2>&1 &
 				STATUS_SERVER_PID=$!
 			elif command -v socat &>/dev/null; then
-(socat -T 5 TCP-LISTEN:8930,reuseaddr,fork SYSTEM:"read; echo -e 'HTTP/1.1 200 OK\r\nAccess-Control-Allow-Origin: *\r\nContent-Type: application/json\r\nConnection: close\r\n\r\n{\"message\":\"pong\"}'") >/dev/null 2>&1 &
+				(socat -T 5 TCP-LISTEN:8930,reuseaddr,fork SYSTEM:"read; echo -e 'HTTP/1.1 200 OK\r\nAccess-Control-Allow-Origin: *\r\nContent-Type: application/json\r\nConnection: close\r\n\r\n{\"message\":\"pong\"}'") >/dev/null 2>&1 &
 				STATUS_SERVER_PID=$!
 			fi
 
@@ -670,7 +672,7 @@ echo -e "HTTP/1.1 200 OK\r\nAccess-Control-Allow-Origin: *\r\nContent-Type: appl
 					(open "$URL" &)
 				fi
 			else
-				echo "Warning: Could not start status server. Proceeding with standard installation."
+				echo -e "${C_YELLOW}Warning: Could not start status server. Proceeding with standard installation.${C_RESET}"
 			fi
 			"$0" "${@:2}"
 			exit $?
@@ -691,7 +693,7 @@ echo -e "HTTP/1.1 200 OK\r\nAccess-Control-Allow-Origin: *\r\nContent-Type: appl
 			elif command -v lxterminal &>/dev/null; then
 				lxterminal -- "$0" "${@:2}"
 			else
-				echo "Error: No terminal emulator found." >&2
+				echo -e "${C_RED}Error: No terminal emulator found.${C_RESET}" >&2
 				nohup "$0" "${@:2}" >/dev/null 2>&1 &
 			fi
 		else
@@ -702,7 +704,7 @@ echo -e "HTTP/1.1 200 OK\r\nAccess-Control-Allow-Origin: *\r\nContent-Type: appl
 	protocolhandle)
 		protocolUrl="$2"
 		if [ -z "$protocolUrl" ]; then
-			echo "Error: No URL provided." >&2
+			echo -e "${C_RED}Error: No URL provided for protocolhandle.${C_RESET}" >&2
 			exit 1
 		fi
 		ensure_dependencies "protocolhandle" || exit 1
@@ -724,20 +726,20 @@ fount_upgrade() {
 		git -C "$FOUNT_DIR" remote add origin https://github.com/steve02081504/fount.git
 		echo "Fetching from remote and resetting to master..."
 		if ! git -C "$FOUNT_DIR" fetch origin master --depth 1; then
-			echo "Failed to fetch from 'origin'."
+			echo -e "${C_RED}Failed to fetch from 'origin'.${C_RESET}"
 			return 1
 		fi
 		local diff_output
 		diff_output=$(git -C "$FOUNT_DIR" diff "origin/master")
 		if [ -n "$diff_output" ]; then
-			echo "Warning: Local changes diff will be saved before overwriting."
+			echo -e "${C_YELLOW}Local changes diff will be saved before overwriting.${C_RESET}"
 			local timestamp
 			timestamp=$(date +'%Y%m%d_%H%M%S')
 			local tmp_dir="${TMPDIR:-/tmp}"
 			local diff_file_name="fount-local-changes-diff_$timestamp.diff"
 			local diff_file_path="$tmp_dir/$diff_file_name"
-			echo "$diff_output" > "$diff_file_path"
-			echo "A backup of your local changes has been saved to: $diff_file_path"
+			echo "$diff_output" >"$diff_file_path"
+			echo -e "${C_GREEN}A backup of your local changes has been saved to: ${C_CYAN}$diff_file_path${C_RESET}"
 		fi
 		git -C "$FOUNT_DIR" clean -fd
 		git -C "$FOUNT_DIR" reset --hard "origin/master"
@@ -755,12 +757,12 @@ fount_upgrade() {
 		local remoteBranch
 		remoteBranch=$(git -C "$FOUNT_DIR" rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null)
 		if [ -z "$remoteBranch" ]; then
-			echo "Warning: No upstream branch configured for '$currentBranch'. Setting to 'origin/master'." >&2
+			echo -e "${C_YELLOW}Warning: No upstream branch configured for '$currentBranch'. Setting upstream to 'origin/master'.${C_RESET}" >&2
 			git -C "$FOUNT_DIR" branch --set-upstream-to origin/master "$currentBranch"
 			remoteBranch="origin/master"
 		fi
 		if [ -n "$(git -C "$FOUNT_DIR" status --porcelain)" ]; then
-			echo "Warning: Working directory not clean. Stash or commit your changes before updating." >&2
+			echo -e "${C_YELLOW}Warning: Working directory is not clean. Stash or commit your changes before updating.${C_RESET}" >&2
 		fi
 		local mergeBase
 		mergeBase=$(git -C "$FOUNT_DIR" merge-base "$currentBranch" "$remoteBranch")
@@ -770,12 +772,12 @@ fount_upgrade() {
 		remoteCommit=$(git -C "$FOUNT_DIR" rev-parse "$remoteBranch")
 		if [ "$localCommit" != "$remoteCommit" ]; then
 			if [ "$mergeBase" = "$localCommit" ]; then
-				echo "Updating from remote repository (fast-forward)..."
+				echo "Updating from remote repository..."
 				git -C "$FOUNT_DIR" reset --hard "$remoteBranch"
 			elif [ "$mergeBase" = "$remoteCommit" ]; then
 				echo "Local branch is ahead of remote. No update needed."
 			else
-				echo "Branches have diverged. Force updating..."
+				echo "Local and remote branches have diverged. Force updating..."
 				git -C "$FOUNT_DIR" reset --hard "$remoteBranch"
 			fi
 		else
@@ -787,7 +789,7 @@ fount_upgrade() {
 # 更新 fount
 if [[ $# -eq 0 || $1 != "shutdown" ]]; then
 	if [ -f "$FOUNT_DIR/.noupdate" ]; then
-		echo "Skipping fount update due to .noupdate file."
+		echo "Skipping fount update due to .noupdate file"
 	else
 		fount_upgrade
 	fi
@@ -834,9 +836,9 @@ install_deno() {
 		patch_deno
 		touch "$AUTO_INSTALLED_DENO_FLAG"
 	else
-		echo "Deno not found, attempting to install..."
+		echo "Deno missing, auto installing..."
 		if ! curl -fsSL https://deno.land/install.sh | sh -s -- -y; then
-			echo "Deno standard installation script failed. Attempting direct download..."
+			echo "Deno installation failed, attempting auto installing to fount's path folder..."
 			ensure_dependencies "deno_install_fallback" || exit 1
 			local deno_dl_url
 			deno_dl_url="https://github.com/denoland/deno/releases/latest/download/deno-"
@@ -854,7 +856,7 @@ install_deno() {
 				chmod +x "$FOUNT_DIR/path/deno"
 				export PATH="$PATH:$FOUNT_DIR/path"
 			else
-				echo "Error: Failed to manually install Deno." >&2
+				echo -e "${C_RED}Deno missing, you cant run fount without deno${C_RESET}" >&2
 				exit 1
 			fi
 		fi
@@ -864,7 +866,7 @@ install_deno() {
 		touch "$AUTO_INSTALLED_DENO_FLAG"
 	fi
 	if ! command -v deno &>/dev/null; then
-		echo "Error: Deno installation failed." >&2
+		echo -e "${C_RED}Deno missing, you cant run fount without deno${C_RESET}" >&2
 		exit 1
 	fi
 }
@@ -872,11 +874,10 @@ install_deno
 
 # 函数: 升级 Deno
 deno_upgrade() {
-	echo "Checking for Deno updates..."
 	local deno_version_before
 	deno_version_before=$(run_deno -V 2>&1)
 	if [[ -z "$deno_version_before" ]]; then
-		echo "Error: Could not determine current Deno version. Skipping upgrade." >&2
+		echo -e "${C_RED}For some reason deno doesn't work, you may need to join https://discord.gg/deno to get support${C_RESET}" >&2
 		return
 	fi
 
@@ -887,22 +888,20 @@ deno_upgrade() {
 		deno_upgrade_channel="rc"
 	fi
 
-	echo "Attempting to upgrade Deno on the '$deno_upgrade_channel' channel..."
 	if ! run_deno upgrade -q "$deno_upgrade_channel"; then
-		echo "Deno upgrade command failed." >&2
 		if [[ $IN_TERMUX -eq 1 ]]; then
-			echo "Attempting to reinstall Deno for Termux..."
+			echo "Deno upgrade command failed, attempting to reinstall Deno for Termux..."
 			rm -rf "$HOME/.deno"
 			install_deno
 		else
-			echo "Warning: Deno upgrade may have failed. Please check for errors." >&2
+			echo -e "${C_YELLOW}Warning: Deno upgrade may have failed. Please check for errors.${C_RESET}" >&2
 		fi
 	fi
 }
 
-if [[ $# -eq 0 || $1 != "shutdown" ]]; then
+if [[ $# -eq 0 || ($1 != "shutdown" && $1 != "geneexe") ]]; then
 	if [ $IN_DOCKER -eq 1 ]; then
-		echo "Skipping Deno upgrade in Docker environment."
+		echo "Skipping deno upgrade in Docker environment"
 	else
 		deno_upgrade
 	fi
@@ -912,7 +911,8 @@ fi
 # 函数: 运行 fount
 run() {
 	if [[ $(id -u) -eq 0 ]]; then
-		echo "Warning: Not Recommended: Running fount as root." >&2
+		echo -e "${C_YELLOW}Not Recommended: Running fount as root grants full system access for all fount parts.${C_RESET}" >&2
+		echo -e "${C_YELLOW}Unless you know what you are doing, it is recommended to run fount as a common user.${C_RESET}" >&2
 	fi
 	if [[ $IN_TERMUX -eq 1 ]]; then
 		local LANG_BACKUP
@@ -955,9 +955,9 @@ if [[ ! -d "$FOUNT_DIR/node_modules" || ($# -gt 0 && $1 = 'init') ]]; then
 	if [ $IN_DOCKER -eq 0 ] && [ $IN_TERMUX -eq 0 ]; then
 		create_desktop_shortcut
 	fi
-	echo "======================================================"
-	echo "WARNING: DO NOT install any untrusted fount parts on your system, they can do ANYTHING."
-	echo "======================================================"
+	echo -e "${C_GREEN}======================================================${C_RESET}"
+	echo -e "${C_YELLOW}DO NOT install any untrusted fount parts on your system, they can do ANYTHING.${C_RESET}"
+	echo -e "${C_GREEN}======================================================${C_RESET}"
 fi
 
 # 主要参数处理逻辑
@@ -967,16 +967,20 @@ init)
 	;;
 keepalive)
 	runargs=("${@:2}")
-	while ! run "${runargs[@]}"; do
+	run "${runargs[@]}"
+	# shellcheck disable=SC2181
+	while [ $? -ne 0 ]; do
 		deno_upgrade
 		fount_upgrade
 		run
 	done
 	;;
 remove)
-	echo "Initiating fount uninstallation..."
 	run shutdown
 	run_deno clean
+	echo "Removing fount..."
+
+	echo "Removing fount from PATH..."
 	profile_files=("$HOME/.profile" "$HOME/.bashrc" "$HOME/.zshrc")
 	for profile_file in "${profile_files[@]}"; do
 		if [ -f "$profile_file" ]; then
@@ -986,12 +990,18 @@ remove)
 	done
 	PATH=$(echo "$PATH" | tr ':' '\n' | grep -v "$FOUNT_DIR/path" | tr '\n' ':' | sed 's/:*$//')
 	export PATH
+	echo "fount removed from PATH."
+
+	echo "Removing fount:// protocol handler..."
 	remove_desktop_shortcut
+
+	echo "Removing Installed system packages..."
 	if [[ $IN_TERMUX -eq 1 ]]; then
 		for package in "${INSTALLED_PACMAN_PACKAGES_ARRAY[@]}"; do pacman -R --noconfirm "$package"; done
 	fi
 	load_installed_packages
 	for package in "${INSTALLED_SYSTEM_PACKAGES_ARRAY[@]}"; do uninstall_package "$package"; done
+
 	if [ -f "$AUTO_INSTALLED_DENO_FLAG" ]; then
 		echo "Uninstalling Deno..."
 		rm -rf "$HOME/.deno"
@@ -1002,25 +1012,28 @@ remove)
 		export PATH
 		rm -f "$AUTO_INSTALLED_DENO_FLAG"
 	fi
-	echo "Removing fount installation directory: $FOUNT_DIR"
+
+	echo "Removing fount installation directory..."
 	rm -rf "$FOUNT_DIR"
-	# 进一步ls和删除$FOUNT_DIR的父目录直到其不为空
+	# 只要父目录为空，继续删他妈的
 	parent_dir=$(dirname "$FOUNT_DIR")
 	while rmdir "$parent_dir" 2>/dev/null; do
-		echo "Removed empty parent directory: $parent_dir"
 		parent_dir=$(dirname "$parent_dir")
 	done
+	echo "fount installation directory removed."
+
 	echo "fount uninstallation complete."
 	exit 0
 	;;
 *)
 	run "$@"
-	while $? -eq 131; do
+	exit_code=$?
+	while [ $exit_code -eq 131 ]; do
 		deno_upgrade
 		fount_upgrade
 		run
+		exit_code=$?
 	done
+	exit $exit_code
 	;;
 esac
-
-exit $?

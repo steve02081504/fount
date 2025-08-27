@@ -1,5 +1,10 @@
 #!/bin/sh
 # shellcheck disable=SC1007
+
+# --- 彩色输出定义 ---
+C_RESET='\033[0m'
+C_RED='\033[0;31m'
+
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
 FOUNT_AUTO_INSTALLED_PACKAGES="${FOUNT_AUTO_INSTALLED_PACKAGES:-}"
 
@@ -8,7 +13,7 @@ install_package() {
 	_command_name="$1"
 	_package_list=${2:-$_command_name}
 	_has_sudo=""
-	_installed_pkg_name="" # 用于记录最终成功安装的包名
+	_installed_pkg_name=""
 
 	# 1. 如果命令已存在，直接成功返回
 	if command -v "$_command_name" >/dev/null 2>&1; then
@@ -22,101 +27,35 @@ install_package() {
 
 	# 3. 遍历所有候选包名
 	for _package in $_package_list; do
-		# 4. 对每个候选包，依次尝试所有包管理器
-
-		# 尝试 apt-get
+		# 4. 依次尝试所有支持的包管理器
 		if command -v apt-get >/dev/null 2>&1; then
-			$_has_sudo apt-get update -y
-			$_has_sudo apt-get install -y "$_package"
-			if command -v "$_command_name" >/dev/null 2>&1; then
-				_installed_pkg_name="$_package"
-				break
-			fi
-		fi
-
-		# 尝试 pacman
-		if command -v pacman >/dev/null 2>&1; then
-			$_has_sudo pacman -Syy --noconfirm
-			$_has_sudo pacman -S --needed --noconfirm "$_package"
-			if command -v "$_command_name" >/dev/null 2>&1; then
-				_installed_pkg_name="$_package"
-				break
-			fi
-		fi
-
-		# 尝试 dnf
-		if command -v dnf >/dev/null 2>&1; then
+			$_has_sudo apt-get update -y && $_has_sudo apt-get install -y "$_package"
+		elif command -v pacman >/dev/null 2>&1; then
+			$_has_sudo pacman -Syy --noconfirm && $_has_sudo pacman -S --needed --noconfirm "$_package"
+		elif command -v dnf >/dev/null 2>&1; then
 			$_has_sudo dnf install -y "$_package"
-			if command -v "$_command_name" >/dev/null 2>&1; then
-				_installed_pkg_name="$_package"
-				break
-			fi
-		fi
-
-		# 尝试 yum
-		if command -v yum >/dev/null 2>&1; then
+		elif command -v yum >/dev/null 2>&1; then
 			$_has_sudo yum install -y "$_package"
-			if command -v "$_command_name" >/dev/null 2>&1; then
-				_installed_pkg_name="$_package"
-				break
-			fi
-		fi
-
-		# 尝试 zypper
-		if command -v zypper >/dev/null 2>&1; then
+		elif command -v zypper >/dev/null 2>&1; then
 			$_has_sudo zypper install -y --no-confirm "$_package"
-			if command -v "$_command_name" >/dev/null 2>&1; then
-				_installed_pkg_name="$_package"
-				break
-			fi
-		fi
-
-		# 尝试 apk
-		if command -v apk >/dev/null 2>&1; then
-			# apk 需要 root 权限，但通常在容器中，sudo 可能不存在
-			if [ "$(id -u)" -eq 0 ]; then
-				apk add --update "$_package"
-			else
-				$_has_sudo apk add --update "$_package"
-			fi
-			if command -v "$_command_name" >/dev/null 2>&1; then
-				_installed_pkg_name="$_package"
-				break
-			fi
-		fi
-
-		# 尝试 brew
-		if command -v brew >/dev/null 2>&1; then
-			# brew 不应该使用 sudo
-			if ! brew list --formula "$_package"; then
-				brew install "$_package"
-			fi
-			if command -v "$_command_name" >/dev/null 2>&1; then
-				_installed_pkg_name="$_package"
-				break
-			fi
-		fi
-
-		# 尝试 pkg (Termux)
-		if command -v pkg >/dev/null 2>&1; then
+		elif command -v pkg >/dev/null 2>&1; then
 			pkg install -y "$_package"
-			if command -v "$_command_name" >/dev/null 2>&1; then
-				_installed_pkg_name="$_package"
-				break
-			fi
+		elif command -v apk >/dev/null 2>&1; then
+			if [ "$(id -u)" -eq 0 ]; then apk add --update "$_package"; else $_has_sudo apk add --update "$_package"; fi
+		elif command -v brew >/dev/null 2>&1; then
+			brew install "$_package"
+		elif command -v snap >/dev/null 2>&1; then
+			$_has_sudo snap install "$_package"
 		fi
 
-		# 尝试 snap
-		if command -v snap >/dev/null 2>&1; then
-			$_has_sudo snap install "$_package"
-			if command -v "$_command_name" >/dev/null 2>&1; then
-				_installed_pkg_name="$_package"
-				break
-			fi
+		# 5. 检查安装是否成功，如果成功则跳出循环
+		if command -v "$_command_name" >/dev/null 2>&1; then
+			_installed_pkg_name="$_package"
+			break
 		fi
 	done
 
-	# 5. 检查最终结果
+	# 6. 检查最终结果
 	if command -v "$_command_name" >/dev/null 2>&1; then
 		# 跟踪自动安装的包
 		case ";$FOUNT_AUTO_INSTALLED_PACKAGES;" in
@@ -129,9 +68,10 @@ install_package() {
 			fi
 			;;
 		esac
+		export FOUNT_AUTO_INSTALLED_PACKAGES
 		return 0
 	else
-		echo "Error: Failed to install '$_command_name' from any source." >&2
+		printf "%b\n" "${C_RED}Error: $_command_name installation failed.${C_RESET}" >&2
 		return 1
 	fi
 }
@@ -139,7 +79,7 @@ install_package() {
 # 1. 确保 bash 可用
 install_package "bash" "bash gnu-bash"
 if ! command -v bash >/dev/null 2>&1; then
-	echo "FATAL: Could not find or install bash. Cannot continue." >&2
+	printf "%b\n" "${C_RED}FATAL: Could not find or install bash. Cannot continue.${C_RESET}" >&2
 	exit 1
 fi
 
