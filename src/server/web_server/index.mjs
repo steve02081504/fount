@@ -1,8 +1,8 @@
 import * as Sentry from 'npm:@sentry/deno'
-import cookieParser from 'npm:cookie-parser@^1.4.0'
+import cookieParser from 'npm:cookie-parser'
 import cors from 'npm:cors'
-import fileUpload from 'npm:express-fileupload@^1.5.0'
-import express from 'npm:express@^5.1.0'
+import fileUpload from 'npm:express-fileupload'
+import express from 'npm:express'
 
 import { console } from '../../scripts/i18n.mjs'
 import { sentrytunnel } from '../../scripts/sentrytunnel.mjs'

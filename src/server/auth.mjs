@@ -3,7 +3,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import argon2 from 'npm:argon2'
-import fse from 'npm:fs-extra@11.2.0'
+import fse from 'npm:fs-extra'
 import * as jose from 'npm:jose'
 
 import { console } from '../scripts/i18n.mjs'

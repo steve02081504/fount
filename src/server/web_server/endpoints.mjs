@@ -1,7 +1,7 @@
 import { Readable } from 'node:stream'
 
 import cors from 'npm:cors'
-import express from 'npm:express@^5.1.0'
+import express from 'npm:express'
 
 import { console, getLocaleData } from '../../scripts/i18n.mjs'
 import { ms } from '../../scripts/ms.mjs'

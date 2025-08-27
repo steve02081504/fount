@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import url from 'node:url'
 
-import { move, remove } from 'npm:fs-extra@11.2.0'
+import { move, remove } from 'npm:fs-extra'
 
 import { exec } from '../../../scripts/exec.mjs'
 import { loadJsonFile } from '../../../scripts/json_loader.mjs'
