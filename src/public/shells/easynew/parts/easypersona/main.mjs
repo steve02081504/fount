@@ -1,6 +1,6 @@
 import path from 'node:path'
 
-import fs from 'npm:fs-extra'
+import fs from 'npm:fs-extra@11.2.0'
 import sanitizeFilename from 'npm:sanitize-filename'
 
 import { saveJsonFile } from '../../../../../scripts/json_loader.mjs'
