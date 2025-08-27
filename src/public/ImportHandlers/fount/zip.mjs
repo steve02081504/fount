@@ -53,16 +53,15 @@ export async function isFountPart(buffer) {
 		// Zip failed, let's try 7z. This requires a temp file.
 		const tempFilePath7z = path.join(tmpdir(), `fount_import_check_${Date.now()}.tmp`)
 		try {
-			await writeFile(tempFilePath7z, buffer)
+			await writeFile(tempFilePath7z, Buffer.from(buffer))
 			const sevenZipPath = await get7zPath()
 			return await new Promise((resolve, reject) => {
 				const stream = seven.list(tempFilePath7z, { $bin: sevenZipPath })
-				let found = false
 				stream.on('data', (file) => {
-					if (file.file.split('\\').join('/') === 'fount.json')
-						found = true
+					const normalizedPath = path.normalize(file.file).replace(/\\/g, '/')
+					if(normalizedPath == 'fount.json') resolve(true)
 				})
-				stream.on('end', () => resolve(found))
+				stream.on('end', () => resolve(false))
 				stream.on('error', (err) => reject(err))
 			})
 		} catch (err7z) {
@@ -101,7 +100,7 @@ export async function unzipDirectory(buffer, targetPath) {
 		// Zip failed, let's try 7z. This requires a temp file.
 		tempFilePath7z = path.join(tmpdir(), `fount_import_extract_${Date.now()}.tmp`)
 		try {
-			await writeFile(tempFilePath7z, buffer)
+			await writeFile(tempFilePath7z, Buffer.from(buffer))
 			const sevenZipPath = await get7zPath()
 			await new Promise((resolve, reject) => {
 				const stream = seven.extractFull(tempFilePath7z, targetPath, { $bin: sevenZipPath })
