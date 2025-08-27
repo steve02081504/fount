@@ -256,8 +256,8 @@ else
 	if [[ "$OSTYPE" == "darwin"* ]]; then
 		xattr -dr com.apple.quarantine "$FOUNT_DIR" 2>/dev/null || true
 	fi
-	find "$FOUNT_DIR" -name "*.sh" -exec chmod +x {} +
-	find "$FOUNT_DIR/path" -type f -exec chmod +x {} +
+	find "$FOUNT_DIR" -type f \( -name "*.sh" -o -name "*.ps1" -o -name "*.fish" -o -name "*.zsh" -o -name "*.bat" \) -print0 | xargs -0 chmod +x
+	find "$FOUNT_DIR/path" -maxdepth 1 -type f -print0 | xargs -0 chmod +x
 	chmod -x "$FOUNT_DIR/path/desktop.ini" 2>/dev/null || true
 
 	echo -e "${C_GREEN}fount installation complete.${C_RESET}"
