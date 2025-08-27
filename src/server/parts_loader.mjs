@@ -452,27 +452,13 @@ export function getPartListBase(username, parttype, {
 	return partlist.map(ResultMapper)
 }
 
-/**
- * Retrieves detailed information about a part, either from cache or by loading the part.
- *
- * @async
- * @param {string} username - The username of the user.
- * @param {string} parttype - The type of the part.
- * @param {string} partname - The name of the part.
- * @param {boolean} [nocache=false] - If true, bypasses the cache and forces loading the part.
- * @returns {Promise<PartDetails>} A promise that resolves to the detailed part information.
- */
-export async function getPartDetails(username, parttype, partname, nocache = false) {
+async function nocacheGetPartBaseDetails(username, parttype, partname) {
 	const parts_details_cache = loadData(username, 'parts_details_cache')
-	/** @type {PartDetails | undefined} */
-	let details = parts_details_cache?.[parttype]?.[partname]
-	if (nocache || isPartLoaded(username, parttype, partname)) details = undefined
-	const { locales } = getUserByUsername(username)
-	if (!details) try {
+	try {
 		const part = await baseloadPart(username, parttype, partname).catch(() => loadPart(username, parttype, partname))
 		const info = await part?.interfaces?.info?.UpdateInfo?.() || part?.info
 		parts_details_cache[parttype] ??= {}
-		details = parts_details_cache[parttype][partname] = {
+		return parts_details_cache[parttype][partname] = {
 			info: JSON.parse(JSON.stringify(info)),
 			supportedInterfaces: Object.keys(part.interfaces || {}),
 		}
@@ -488,6 +474,27 @@ export async function getPartDetails(username, parttype, partname, nocache = fal
 			supportedInterfaces: [],
 		}
 	}
+}
+
+/**
+ * Retrieves detailed information about a part, either from cache or by loading the part.
+ *
+ * @async
+ * @param {string} username - The username of the user.
+ * @param {string} parttype - The type of the part.
+ * @param {string} partname - The name of the part.
+ * @param {boolean} [nocache=false] - If true, bypasses the cache and forces loading the part.
+ * @returns {Promise<PartDetails>} A promise that resolves to the detailed part information.
+ */
+export async function getPartDetails(username, parttype, partname, nocache = false) {
+	/** @type {PartDetails | undefined} */
+	let details = nocache ? undefined : loadData(username, 'parts_details_cache')?.[parttype]?.[partname]
+	const { locales } = getUserByUsername(username)
+	if (!details) details = await nocacheGetPartBaseDetails(username, parttype, partname)
+	else if (isPartLoaded(username, parttype, partname)) await Promise.any([
+		nocacheGetPartBaseDetails(username, parttype, partname).then(result => details = result),
+		new Promise(resolve => setTimeout(resolve, 500))
+	])
 	return {
 		...details,
 		info: getLocalizedInfo(details.info, locales)
