@@ -715,7 +715,7 @@ echo -e "HTTP/1.1 200 OK\r\nAccess-Control-Allow-Origin: *\r\nContent-Type: appl
 	esac
 fi
 
-# 函数: 升级 fount (恢复的健壮版本)
+# 函数: 升级 fount
 fount_upgrade() {
 	ensure_dependencies "upgrade" || return 0
 	if [ ! -d "$FOUNT_DIR/.git" ]; then
@@ -726,6 +726,18 @@ fount_upgrade() {
 		if ! git -C "$FOUNT_DIR" fetch origin master --depth 1; then
 			echo "Failed to fetch from 'origin'."
 			return 1
+		fi
+		local diff_output
+		diff_output=$(git -C "$FOUNT_DIR" diff "origin/master")
+		if [ -n "$diff_output" ]; then
+			echo "Warning: Local changes diff will be saved before overwriting."
+			local timestamp
+			timestamp=$(date +'%Y%m%d_%H%M%S')
+			local tmp_dir="${TMPDIR:-/tmp}"
+			local diff_file_name="fount-local-changes-diff_$timestamp.diff"
+			local diff_file_path="$tmp_dir/$diff_file_name"
+			echo "$diff_output" > "$diff_file_path"
+			echo "A backup of your local changes has been saved to: $diff_file_path"
 		fi
 		git -C "$FOUNT_DIR" clean -fd
 		git -C "$FOUNT_DIR" reset --hard "origin/master"

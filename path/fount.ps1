@@ -343,6 +343,16 @@ function fount_upgrade {
 		Write-Host "Fetching from remote and resetting to master..."
 		git -C "$FOUNT_DIR" fetch origin master --depth 1
 		if ($LastExitCode) { Write-Error "Failed to fetch from 'origin'."; return }
+		$diffOutput = git -C "$FOUNT_DIR" diff "origin/master"
+		if ($diffOutput) {
+			Write-Host "Local changes diff will be saved before overwriting." -ForegroundColor Yellow
+			$timestamp = (Get-Date -Format 'yyyyMMdd_HHmmss')
+			$diffFileName = "fount-local-changes-diff_$timestamp.diff"
+			$diffFilePath = Join-Path -Path $env:TEMP -ChildPath $diffFileName
+			$diffOutput | Out-File -FilePath $diffFilePath -Encoding utf8
+			Write-Host "A backup of your local changes has been saved to: " -ForegroundColor Green -NoNewline
+			Write-Host $diffFilePath -ForegroundColor Cyan
+		}
 		git -C "$FOUNT_DIR" clean -fd
 		git -C "$FOUNT_DIR" reset --hard "origin/master"
 	}
