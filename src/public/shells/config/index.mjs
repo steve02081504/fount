@@ -119,9 +119,9 @@ async function loadPartAddons(partType, partName) {
 		partDisplayContainer.innerHTML = html
 		await svgInliner(i18nElement(partDisplayContainer))
 		if (displayScript) {
-			const eval_result = await async_eval(displayScript, { geti18n })
+			const eval_result = await async_eval(displayScript, { geti18n, partType, partName, element: partDisplayContainer })
 			if (eval_result.error) throw eval_result.error
-			onJsonUpdate = eval_result.result
+			onJsonUpdate = eval_result.result || (() => 0)
 		}
 	} catch (e) {
 		console.error('Error loading or evaluating part addons:', e)

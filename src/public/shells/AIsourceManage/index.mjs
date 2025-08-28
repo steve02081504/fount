@@ -151,9 +151,9 @@ async function loadGeneratorAddons(generatorName) {
 		generatorDisplayContainer.innerHTML = html
 		await svgInliner(i18nElement(generatorDisplayContainer))
 		if (displayScript) {
-			const eval_result = await async_eval(displayScript, { geti18n })
+			const eval_result = await async_eval(displayScript, { geti18n, partName: generatorName, element: generatorDisplayContainer })
 			if (eval_result.error) throw eval_result.error
-			onJsonUpdate = eval_result.result
+			onJsonUpdate = eval_result.result || (() => 0)
 		}
 	} catch (e) {
 		console.error('Error loading or evaluating generator addons:', e)
