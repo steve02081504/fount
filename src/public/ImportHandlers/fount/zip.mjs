@@ -1,3 +1,4 @@
+import { Buffer } from 'node:buffer'
 import { writeFile, mkdir, readdir, stat, readFile, rm } from 'node:fs/promises'
 import os, { tmpdir } from 'node:os'
 import path from 'node:path'

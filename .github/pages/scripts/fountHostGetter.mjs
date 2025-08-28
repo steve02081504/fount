@@ -87,7 +87,7 @@ function getLocalIPFromWebRTC() {
 		})
 		pc.createDataChannel('')
 		pc.onicecandidate = (event) => {
-			const match = event?.candidate?.candidate?.match?.(/(\d+\.\d+\.\d+\.\d+)/)
+			const match = event?.candidate?.candidate?.match?.(/((?:\d+\.){3}\d+)/)
 			if (match && !match[1].startsWith('127.')) {
 				pc.close()
 				resolve(match[1])
