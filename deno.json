@@ -6,6 +6,7 @@
 		"npm:express": "npm:express@^5.1.0",
 		"npm:express-fileupload": "npm:express-fileupload@^1.5.0",
 		"npm:websocket-express": "npm:websocket-express@^3.1.3",
-		"npm:cookie-parser": "npm:cookie-parser@^1.4.0"
+		"npm:cookie-parser": "npm:cookie-parser@^1.4.0",
+		"npm:@steve02081504/virtual-console": "npm:@steve02081504/virtual-console@^0.0.6"
 	}
 }
