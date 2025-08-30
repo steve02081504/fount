@@ -485,6 +485,7 @@
 			"disabledIndicator": "Vui lòng chọn một trình tạo trước."
 		},
 		"common_config_interface": {
+			"empty_generator": "Trình tạo kế thừa từ nguồn AI này có lỗi trong khi tải và có thể đã được gỡ cài đặt hoặc đổi tên.",
 			"apiKeyRequired": "Cần có khóa API để liệt kê các mô hình.",
 			"loadingModels": "Đang tải các mô hình...",
 			"availableModels": "Các mô hình có sẵn:",

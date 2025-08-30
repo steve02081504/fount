@@ -485,6 +485,7 @@
 			"disabledIndicator": "Seleziona prima un generatore."
 		},
 		"common_config_interface": {
+			"empty_generator": "Il generatore legacy di questa fonte di intelligenza artificiale ha un errore durante il caricamento e potrebbe essere stato disinstallato o rinominato.",
 			"apiKeyRequired": "È necessaria una chiave API per elencare i modelli.",
 			"loadingModels": "Caricamento modelli...",
 			"availableModels": "Modelli disponibili:",

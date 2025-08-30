@@ -485,6 +485,7 @@
 			"disabledIndicator": "Bitte wählen Sie zuerst einen Generator aus."
 		},
 		"common_config_interface": {
+			"empty_generator": "Der Legacy -Generator dieser KI -Quelle hat beim Laden einen Fehler und wurde möglicherweise deinstalliert oder umbenannt.",
 			"apiKeyRequired": "Ein API-Schlüssel ist erforderlich, um die Modelle aufzulisten.",
 			"loadingModels": "Modelle werden geladen...",
 			"availableModels": "Verfügbare Modelle:",

@@ -485,6 +485,7 @@
 			"disabledIndicator": "Por favor, selecciona primero un generador"
 		},
 		"common_config_interface": {
+			"empty_generator": "El generador heredado de esta fuente de IA tiene un error al cargar y puede haber sido desinstalado o renombrado.",
 			"apiKeyRequired": "Se necesita una clave de API para listar los modelos.",
 			"loadingModels": "Cargando modelos...",
 			"availableModels": "Modelos disponibles:",

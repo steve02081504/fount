@@ -485,6 +485,7 @@
 			"disabledIndicator": "Kies eerst een generator"
 		},
 		"common_config_interface": {
+			"empty_generator": "De legacy -generator van deze AI -bron heeft een fout tijdens het laden en is mogelijk verwijderd of hernoemd.",
 			"apiKeyRequired": "Een API-sleutel is vereist om de modellen op te halen.",
 			"loadingModels": "Modellen laden...",
 			"availableModels": "Beschikbare modellen:",

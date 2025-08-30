@@ -485,6 +485,7 @@
 			"disabledIndicator": "Vinsamlegast veldu rafal fyrst"
 		},
 		"common_config_interface": {
+			"empty_generator": "Legacy rafallinn frá þessum AI uppsprettu hefur villu við hleðslu og kann að hafa verið fjarlægður eða endurnefnt.",
 			"apiKeyRequired": "API lykill er nauðsynlegur til að lista upp líkönin.",
 			"loadingModels": "Hleður líkönum...",
 			"availableModels": "Líkön í boði:",

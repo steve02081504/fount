@@ -485,6 +485,7 @@
 			"disabledIndicator": "الرجاء اختيار مولد أولاً"
 		},
 		"common_config_interface": {
+			"empty_generator": "يحتوي المولد القديم من مصدر AI هذا على خطأ أثناء التحميل وقد يتم إلغاء تثبيته أو إعادة تسميته.",
 			"apiKeyRequired": "مفتاح API مطلوب لعرض النماذج.",
 			"loadingModels": "جاري تحميل النماذج...",
 			"availableModels": "النماذج المتاحة:",

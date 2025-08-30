@@ -485,6 +485,7 @@
 			"disabledIndicator": "最初にジェネレーターを選択してください。"
 		},
 		"common_config_interface": {
+			"empty_generator": "このAIソースのレガシージェネレーターには、読み込み中にエラーがあり、アンインストールまたは名前が変更されている可能性があります。",
 			"apiKeyRequired": "モデルを一覧表示するにはAPIキーが必要です。",
 			"loadingModels": "モデルを読み込み中...",
 			"availableModels": "利用可能なモデル：",

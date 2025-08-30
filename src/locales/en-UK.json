@@ -485,6 +485,7 @@
 			"disabledIndicator": "Please select a generator first"
 		},
 		"common_config_interface": {
+			"empty_generator": "The legacy generator from this AI source has an error while loading and may have been uninstalled or renamed.",
 			"apiKeyRequired": "An API key is required to list the models.",
 			"loadingModels": "Loading models...",
 			"availableModels": "Available models:",
