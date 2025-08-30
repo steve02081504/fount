@@ -136,12 +136,9 @@ async function GetSource(config, { SaveConfig }) {
 			])
 		},
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
-			const messages = []
-			margeStructPromptChatLog(prompt_struct).forEach((chatLogEntry) => {
+			const messages = margeStructPromptChatLog(prompt_struct).map((chatLogEntry) => {
 				const uid = Math.random().toString(36).slice(2, 10)
-				messages.push({
-					role: chatLogEntry.role === 'user' ? 'user' : chatLogEntry.role === 'system' ? 'system' : 'assistant',
-					content: `\
+				const textContent = `\
 <message "${uid}">
 <sender>${chatLogEntry.name}</sender>
 <content>
@@ -149,7 +146,30 @@ ${chatLogEntry.content}
 </content>
 </message "${uid}">
 `
-				})
+				/** @type {{role: 'user'|'assistant'|'system', content: string | object[]}} */
+				const message = {
+					role: chatLogEntry.role === 'user' ? 'user' : chatLogEntry.role === 'system' ? 'system' : 'assistant',
+					content: textContent,
+				}
+
+				if (chatLogEntry.files && chatLogEntry.files.length > 0) {
+					const contentParts = [{ type: 'text', text: textContent }]
+
+					for (const file of chatLogEntry.files)
+						if (file.mime_type && file.mime_type.startsWith('image/'))
+							contentParts.push({
+								type: 'image_url',
+								image_url: {
+									url: `data:${file.mime_type};base64,${file.buffer.toString('base64')}`,
+								},
+							})
+
+
+					if (contentParts.length > 1)
+						message.content = contentParts
+				}
+
+				return message
 			})
 
 			const system_prompt = structPromptToSingleNoChatLog(prompt_struct)

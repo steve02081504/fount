@@ -485,6 +485,7 @@
 			"disabledIndicator": "请先选择生成器"
 		},
 		"common_config_interface": {
+			"empty_generator": "此AI来源的旧有生成器在加载时出错，可能已被卸载或重命名。",
 			"apiKeyRequired": "需要 API 密钥才能列出模型。",
 			"loadingModels": "正在加载模型...",
 			"availableModels": "可用模型：",
