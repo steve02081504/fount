@@ -107,6 +107,12 @@
 		"shellCommandError": "发送 Shell 命令时出错",
 		"fountNotFound": "哎呀 :(\n\n没有找到 fount，或许你需要先安装一个？",
 		"unknownError": "哎呀 :(\n\n发生错误：\n${error}"
+		"runPartConfirm": {
+			"title": "确认运行",
+			"message": "您确定要运行 ${parttype} 的 ${partname} 吗？",
+			"confirm": "确认",
+			"cancel": "取消"
+		}
 	},
 	"installer_wait_screen": {
 		"title": "欢迎使用 fount！",

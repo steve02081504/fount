@@ -26,6 +26,16 @@
 			<progress class="progress w-56"></progress>
 		</div>
 	</div>
+	<dialog id="confirmation_modal" class="modal">
+		<div class="modal-box">
+			<h3 class="font-bold text-lg" data-i18n="protocolhandler.runPartConfirm.title"></h3>
+			<p class="py-4" id="confirmation_message"></p>
+			<div class="modal-action">
+				<button class="btn btn-primary" id="confirm_btn" data-i18n="protocolhandler.runPartConfirm.confirm"></button>
+				<button class="btn" id="cancel_btn" data-i18n="protocolhandler.runPartConfirm.cancel"></button>
+			</div>
+		</div>
+	</dialog>
 	<script type="module" src="./index.mjs"></script>
 </body>
 
