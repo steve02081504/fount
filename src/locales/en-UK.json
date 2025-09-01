@@ -10,7 +10,10 @@
 				"http": "HTTP server running on ${url}"
 			},
 			"localUrl": "Accessing fount from other devices on the same network: ${url}",
-			"standingBy": "Standing by..."
+			"standingBy": "Standing by...",
+			"update": {
+				"restarting": "A new version was discovered and the update is being restarted..."
+			}
 		},
 		"jobs": {
 			"restartingJob": "Restarting ${parttype} ${partname} job for user ${username}: ${uid}"
@@ -106,7 +109,13 @@
 		"shellCommandFailed": "Failed to send shell command",
 		"shellCommandError": "Error sending shell command",
 		"fountNotFound": "Oh dear :(\n\nfount was not found. Perhaps you need to install it first?",
-		"unknownError": "Oh dear :(\n\nAn error occurred:\n${error}"
+		"unknownError": "Oh dear :(\n\nAn error occurred:\n${error}",
+		"runPartConfirm": {
+			"title": "Confirm running",
+			"message": "Are you sure you want to run ${parttype} of ${partname}?",
+			"confirm": "confirm",
+			"cancel": "Cancel"
+		}
 	},
 	"installer_wait_screen": {
 		"title": "Welcome to fount!",

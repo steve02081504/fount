@@ -10,7 +10,10 @@
 				"http": "HTTP सर्वर ${url} पर चल रहा है"
 			},
 			"localUrl": "एक ही नेटवर्क पर अन्य उपकरणों से fount तक पहुंच: ${url}",
-			"standingBy": "Standing by..."
+			"standingBy": "Standing by...",
+			"update": {
+				"restarting": "एक नए संस्करण की खोज की गई थी और अपडेट को फिर से शुरू किया जा रहा है ..."
+			}
 		},
 		"jobs": {
 			"restartingJob": "उपयोगकर्ता ${username} का ${parttype} ${partname} कार्य (${uid}) पुनः आरंभ किया जा रहा है"
@@ -106,7 +109,13 @@
 		"shellCommandFailed": "शेल कमांड भेजने में विफल।",
 		"shellCommandError": "शेल कमांड भेजने में त्रुटि।",
 		"fountNotFound": "ओह हो :(\n\nfount नहीं मिला, शायद आपको इसे पहले इंस्टॉल करने की ज़रूरत है?",
-		"unknownError": "ओह हो :(\n\nएक त्रुटि हुई:\n${error}"
+		"unknownError": "ओह हो :(\n\nएक त्रुटि हुई:\n${error}",
+		"runPartConfirm": {
+			"title": "दौड़ने की पुष्टि करें",
+			"message": "क्या आप सुनिश्चित हैं कि आप ${parttype} का ${partname} चलाना चाहते हैं?",
+			"confirm": "पुष्टि करना",
+			"cancel": "रद्द करना"
+		}
 	},
 	"installer_wait_screen": {
 		"title": "fount में आपका स्वागत है!",

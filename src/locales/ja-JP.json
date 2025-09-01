@@ -10,7 +10,10 @@
 				"http": "HTTPサーバーが ${url} で実行されています。"
 			},
 			"localUrl": "同じネットワーク上の他のデバイスからのfountへのアクセス：${url}",
-			"standingBy": "Standing by..."
+			"standingBy": "Standing by...",
+			"update": {
+				"restarting": "新しいバージョンが発見され、更新が再起動されています..."
+			}
 		},
 		"jobs": {
 			"restartingJob": "ユーザー「${username}」の${parttype}「${partname}」ジョブ（${uid}）を再起動しています。"
@@ -106,7 +109,13 @@
 		"shellCommandFailed": "シェルコマンドの送信に失敗しました。",
 		"shellCommandError": "シェルコマンドの送信中にエラーが発生しました。",
 		"fountNotFound": "あらら…\n\nfountが見つかりませんでした。最初にインストールする必要がありますか？",
-		"unknownError": "あらら…\n\nエラーが発生しました：\n${error}"
+		"unknownError": "あらら…\n\nエラーが発生しました：\n${error}",
+		"runPartConfirm": {
+			"title": "ランニングを確認します",
+			"message": "${parttype}の${partname}を実行しますか？",
+			"confirm": "確認する",
+			"cancel": "キャンセル"
+		}
 	},
 	"installer_wait_screen": {
 		"title": "fountへようこそ！",

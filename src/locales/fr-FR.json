@@ -10,7 +10,10 @@
 				"http": "Serveur HTTP en cours d'exécution sur ${url}"
 			},
 			"localUrl": "Accès à fount depuis d'autres appareils sur le même réseau : ${url}",
-			"standingBy": "Standing by..."
+			"standingBy": "Standing by...",
+			"update": {
+				"restarting": "Une nouvelle version a été découverte et la mise à jour est redémarrée ..."
+			}
 		},
 		"jobs": {
 			"restartingJob": "Redémarrage de la tâche ${partname} (${parttype}) pour l'utilisateur ${username} : ${uid}"
@@ -106,7 +109,13 @@
 		"shellCommandFailed": "Échec de l'envoi de la commande shell.",
 		"shellCommandError": "Erreur lors de l'envoi de la commande shell.",
 		"fountNotFound": "Oh là là :(\n\nfount introuvable. Peut-être devez-vous d'abord l'installer ?",
-		"unknownError": "Oh là là :(\n\nUne erreur s'est produite :\n${error}"
+		"unknownError": "Oh là là :(\n\nUne erreur s'est produite :\n${error}",
+		"runPartConfirm": {
+			"title": "Confirmer la course",
+			"message": "Êtes-vous sûr de vouloir exécuter ${parttype} de ${partname}?",
+			"confirm": "confirmer",
+			"cancel": "Annuler"
+		}
 	},
 	"installer_wait_screen": {
 		"title": "Bienvenue sur fount !",

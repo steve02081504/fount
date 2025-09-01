@@ -10,7 +10,10 @@
 				"http": "Máy chủ HTTP đang chạy tại ${url}"
 			},
 			"localUrl": "Truy cập fount từ các thiết bị khác trên cùng mạng: ${url}",
-			"standingBy": "Standing by..."
+			"standingBy": "Standing by...",
+			"update": {
+				"restarting": "Một phiên bản mới đã được phát hiện và bản cập nhật đang được khởi động lại ..."
+			}
 		},
 		"jobs": {
 			"restartingJob": "Đang khởi động lại tác vụ ${partname} (${parttype}) của người dùng ${username}: ${uid}."
@@ -106,7 +109,13 @@
 		"shellCommandFailed": "Gửi lệnh Shell thất bại.",
 		"shellCommandError": "Đã xảy ra lỗi khi gửi lệnh Shell.",
 		"fountNotFound": "Ối... :(\n\nKhông tìm thấy fount. Có lẽ bạn cần cài đặt trước?",
-		"unknownError": "Ối... :(\n\nĐã xảy ra lỗi:\n${error}"
+		"unknownError": "Ối... :(\n\nĐã xảy ra lỗi:\n${error}",
+		"runPartConfirm": {
+			"title": "Xác nhận đang chạy",
+			"message": "Bạn có chắc bạn muốn chạy ${parttype} của ${partname}?",
+			"confirm": "xác nhận",
+			"cancel": "Hủy bỏ"
+		}
 	},
 	"installer_wait_screen": {
 		"title": "Chào mừng đến với fount!",

@@ -10,7 +10,10 @@
 				"http": "HTTP-сервер запущен на ${url}"
 			},
 			"localUrl": "Доступ к fount с других устройств в той же сети: ${url}",
-			"standingBy": "Standing by..."
+			"standingBy": "Standing by...",
+			"update": {
+				"restarting": "Была обнаружена новая версия, и обновление перезапускается ..."
+			}
 		},
 		"jobs": {
 			"restartingJob": "Перезапуск задачи ${partname} (${parttype}) для пользователя ${username}: ${uid}."
@@ -106,7 +109,13 @@
 		"shellCommandFailed": "Не удалось отправить команду оболочки.",
 		"shellCommandError": "Ошибка при отправке команды оболочки.",
 		"fountNotFound": "Эх... :(\n\nfount не найден. Возможно, вам нужно сначала его установить?",
-		"unknownError": "Ой... :(\n\nПроизошла ошибка:\n${error}"
+		"unknownError": "Ой... :(\n\nПроизошла ошибка:\n${error}",
+		"runPartConfirm": {
+			"title": "Подтвердите бег",
+			"message": "Вы уверены, что хотите запустить ${parttype} ${partname}?",
+			"confirm": "подтверждать",
+			"cancel": "Отмена"
+		}
 	},
 	"installer_wait_screen": {
 		"title": "Добро пожаловать в fount!",

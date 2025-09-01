@@ -10,7 +10,10 @@
 				"http": "خادم HTTP يعمل على ${url}"
 			},
 			"localUrl": "للوصول إلى fount من أجهزة أخرى على نفس الشبكة: ${url}",
-			"standingBy": "Standing by..."
+			"standingBy": "Standing by...",
+			"update": {
+				"restarting": "تم اكتشاف نسخة جديدة ويتم إعادة تشغيل التحديث ..."
+			}
 		},
 		"jobs": {
 			"restartingJob": "جاري إعادة تشغيل مهمة ${parttype} ${partname} للمستخدم ${username}: ‏${uid}"
@@ -106,7 +109,13 @@
 		"shellCommandFailed": "فشل إرسال أمر الواجهة",
 		"shellCommandError": "حدث خطأ أثناء إرسال أمر الواجهة",
 		"fountNotFound": "يا للأسف :(\n\nلم يتم العثور على fount، ربما تحتاج إلى تثبيته أولاً؟",
-		"unknownError": "يا للأسف :(\n\nحدث خطأ:\n${error}"
+		"unknownError": "يا للأسف :(\n\nحدث خطأ:\n${error}",
+		"runPartConfirm": {
+			"title": "تأكيد الجري",
+			"message": "هل أنت متأكد من أنك تريد تشغيل ${parttype} من ${partname}؟",
+			"confirm": "يتأكد",
+			"cancel": "يلغي"
+		}
 	},
 	"installer_wait_screen": {
 		"title": "مرحبًا بك في fount!",

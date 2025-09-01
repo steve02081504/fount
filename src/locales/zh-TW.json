@@ -10,7 +10,10 @@
 				"http": "HTTP 伺服器運行在 ${url}"
 			},
 			"localUrl": "透過同一網路下的其他裝置存取fount：${url}",
-			"standingBy": "Standing by..."
+			"standingBy": "Standing by...",
+			"update": {
+				"restarting": "發現新版本，正在重啟更新..."
+			}
 		},
 		"jobs": {
 			"restartingJob": "正在重啟使用者 ${username} 的 ${parttype} ${partname} 任務：${uid}"
@@ -106,7 +109,13 @@
 		"shellCommandFailed": "傳送 Shell 指令失敗",
 		"shellCommandError": "傳送 Shell 指令時出錯",
 		"fountNotFound": "哎呀 :(\n\n沒有找到 fount，或許你需要先安裝一個？",
-		"unknownError": "哎呀 :(\n\n發生錯誤：\n${error}"
+		"unknownError": "哎呀 :(\n\n發生錯誤：\n${error}",
+		"runPartConfirm": {
+			"title": "確認運行",
+			"message": "您確定要運行 ${parttype} 的 ${partname} 嗎？",
+			"confirm": "確認",
+			"cancel": "取消"
+		}
 	},
 	"installer_wait_screen": {
 		"title": "歡迎使用 fount！",

@@ -10,7 +10,10 @@
 				"http": "HTTP сервер працює на ${url}"
 			},
 			"localUrl": "Доступ до fount з інших пристроїв у тій самій мережі: ${url}",
-			"standingBy": "Standing by..."
+			"standingBy": "Standing by...",
+			"update": {
+				"restarting": "Була виявлена ​​нова версія та оновлення перезапускається ..."
+			}
 		},
 		"jobs": {
 			"restartingJob": "Перезапуск завдання ${parttype} ${partname} для користувача ${username}: ${uid}"
@@ -106,7 +109,13 @@
 		"shellCommandFailed": "Не вдалося надіслати команду оболонки",
 		"shellCommandError": "Помилка при надсиланні команди оболонки",
 		"fountNotFound": "От халепа :(\n\nНе знайдено fount, можливо, вам потрібно спочатку його встановити?",
-		"unknownError": "От халепа :(\n\nСталася помилка:\n${error}"
+		"unknownError": "От халепа :(\n\nСталася помилка:\n${error}",
+		"runPartConfirm": {
+			"title": "Підтвердити біг",
+			"message": "Ви впевнені, що хочете запустити ${parttype} ${partname}?",
+			"confirm": "підтверджувати",
+			"cancel": "Скасувати"
+		}
 	},
 	"installer_wait_screen": {
 		"title": "Ласкаво просимо до fount!",

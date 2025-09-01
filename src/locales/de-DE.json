@@ -10,7 +10,10 @@
 				"http": "HTTP-Server läuft auf ${url}"
 			},
 			"localUrl": "Zugriff auf fount von anderen Geräten im selben Netzwerk: ${url}",
-			"standingBy": "Standing by..."
+			"standingBy": "Standing by...",
+			"update": {
+				"restarting": "Eine neue Version wurde entdeckt und das Update wird neu gestartet ..."
+			}
 		},
 		"jobs": {
 			"restartingJob": "Starte ${parttype}-Aufgabe ${partname} für Benutzer ${username} neu: ${uid}"
@@ -106,7 +109,13 @@
 		"shellCommandFailed": "Senden des Shell-Befehls fehlgeschlagen",
 		"shellCommandError": "Fehler beim Senden des Shell-Befehls",
 		"fountNotFound": "Och nö :(\n\nfount wurde nicht gefunden. Vielleicht müssen Sie es zuerst installieren?",
-		"unknownError": "Och nö :(\n\nEin Fehler ist aufgetreten:\n${error}"
+		"unknownError": "Och nö :(\n\nEin Fehler ist aufgetreten:\n${error}",
+		"runPartConfirm": {
+			"title": "Laufen bestätigen",
+			"message": "Sind Sie sicher, dass Sie ${parttype} von ${partname} ausführen möchten?",
+			"confirm": "bestätigen",
+			"cancel": "Stornieren"
+		}
 	},
 	"installer_wait_screen": {
 		"title": "Willkommen bei fount!",

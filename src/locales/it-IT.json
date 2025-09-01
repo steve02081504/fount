@@ -10,7 +10,10 @@
 				"http": "Server HTTP in esecuzione su ${url}"
 			},
 			"localUrl": "Accesso a fount da altri dispositivi sulla stessa rete: ${url}",
-			"standingBy": "Standing by..."
+			"standingBy": "Standing by...",
+			"update": {
+				"restarting": "È stata scoperta una nuova versione e l'aggiornamento viene riavviato ..."
+			}
 		},
 		"jobs": {
 			"restartingJob": "Riavvio attività ${parttype} ${partname} per l'utente ${username}: ${uid}."
@@ -106,7 +109,13 @@
 		"shellCommandFailed": "Impossibile inviare il comando shell.",
 		"shellCommandError": "Errore durante l'invio del comando shell.",
 		"fountNotFound": "Uffa :(\n\nfount non trovato. Forse devi prima installarlo?",
-		"unknownError": "Uffa :(\n\nSi è verificato un errore:\n${error}"
+		"unknownError": "Uffa :(\n\nSi è verificato un errore:\n${error}",
+		"runPartConfirm": {
+			"title": "Conferma la corsa",
+			"message": "Sei sicuro di voler eseguire ${parttype} di ${partname}?",
+			"confirm": "confermare",
+			"cancel": "Cancellare"
+		}
 	},
 	"installer_wait_screen": {
 		"title": "Benvenuto in fount!",

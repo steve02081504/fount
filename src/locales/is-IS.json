@@ -10,7 +10,10 @@
 				"http": "HTTP netþjónn keyrir á ${url}"
 			},
 			"localUrl": "Opnaðu fount á öðrum tækjum á sama neti: ${url}",
-			"standingBy": "Standing by..."
+			"standingBy": "Standing by...",
+			"update": {
+				"restarting": "Ný útgáfa uppgötvaðist og verið er að endurræsa uppfærsluna ..."
+			}
 		},
 		"jobs": {
 			"restartingJob": "Endurræsi ${parttype} ${partname} verkefni fyrir notanda ${username}: ${uid}"
@@ -106,7 +109,13 @@
 		"shellCommandFailed": "Mistókst að senda skeljarskipun",
 		"shellCommandError": "Villa við sendingu skeljarskipunar",
 		"fountNotFound": "Æji :(\n\nFann ekki fount, þarftu kannski að setja það upp fyrst?",
-		"unknownError": "Æji :(\n\nVilla kom upp:\n${error}"
+		"unknownError": "Æji :(\n\nVilla kom upp:\n${error}",
+		"runPartConfirm": {
+			"title": "Staðfestu hlaup",
+			"message": "Ertu viss um að þú viljir keyra ${parttype} af ${partname}?",
+			"confirm": "Staðfestu",
+			"cancel": "Hætta við"
+		}
 	},
 	"installer_wait_screen": {
 		"title": "Velkomin í fount!",

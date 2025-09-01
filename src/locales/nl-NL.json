@@ -10,7 +10,10 @@
 				"http": "HTTP-server draait op ${url}"
 			},
 			"localUrl": "Toegang tot fount vanaf andere apparaten op hetzelfde netwerk: ${url}",
-			"standingBy": "Standing by..."
+			"standingBy": "Standing by...",
+			"update": {
+				"restarting": "Een nieuwe versie werd ontdekt en de update wordt opnieuw gestart ..."
+			}
 		},
 		"jobs": {
 			"restartingJob": "Herstart taak ${parttype} ${partname} voor gebruiker ${username}: ${uid}"
@@ -106,7 +109,13 @@
 		"shellCommandFailed": "Verzenden van Shell-commando mislukt",
 		"shellCommandError": "Fout bij verzenden van Shell-commando",
 		"fountNotFound": "Oeps :(\n\nKan fount niet vinden, misschien moet je het eerst installeren?",
-		"unknownError": "Oeps :(\n\nEr is een fout opgetreden:\n${error}"
+		"unknownError": "Oeps :(\n\nEr is een fout opgetreden:\n${error}",
+		"runPartConfirm": {
+			"title": "Bevestig hardlopen",
+			"message": "Weet u zeker dat u ${parttype} van ${partname} wilt uitvoeren?",
+			"confirm": "bevestigen",
+			"cancel": "Annuleren"
+		}
 	},
 	"installer_wait_screen": {
 		"title": "Welkom bij fount!",
