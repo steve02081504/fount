@@ -10,7 +10,10 @@
 				"http": "HTTP 服务器运行在 ${url}"
 			},
 			"localUrl": "通过同一网络下的其他设备访问fount：${url}",
-			"standingBy": "Standing by..."
+			"standingBy": "Standing by...",
+			"update": {
+				"restarting": "发现新版本，正在重启更新..."
+			}
 		},
 		"jobs": {
 			"restartingJob": "正在重启用户 ${username} 的 ${parttype} ${partname} 任务：${uid}"
@@ -106,7 +109,7 @@
 		"shellCommandFailed": "发送 Shell 命令失败",
 		"shellCommandError": "发送 Shell 命令时出错",
 		"fountNotFound": "哎呀 :(\n\n没有找到 fount，或许你需要先安装一个？",
-		"unknownError": "哎呀 :(\n\n发生错误：\n${error}"
+		"unknownError": "哎呀 :(\n\n发生错误：\n${error}",
 		"runPartConfirm": {
 			"title": "确认运行",
 			"message": "您确定要运行 ${parttype} 的 ${partname} 吗？",

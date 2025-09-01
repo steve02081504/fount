@@ -13,6 +13,8 @@ import { loadJsonFile, saveJsonFile } from '../scripts/json_loader.mjs'
 import { get_hosturl_in_local_ip } from '../scripts/ratelimit.mjs'
 import { createTray } from '../scripts/tray.mjs'
 import { runSimpleWorker } from '../workers/index.mjs'
+import { exec } from '../scripts/exec.mjs'
+import idleManager from './idle.mjs'
 
 import { initAuth } from './auth.mjs'
 import { __dirname, startTime } from './base.mjs'
@@ -57,6 +59,30 @@ export function skip_report(err) {
 export let hosturl
 export let tray
 export let restartor
+
+async function checkUpstreamAndRestart() {
+	if (!fs.existsSync(__dirname + '/.git')) return
+	try {
+		const git = (...args) => exec('git -C "' + __dirname + '" ' + args.join(' ')).then(r => r.stdout.trim())
+
+		await git('fetch')
+
+		if (!await git('rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}').catch(() => null)) return
+
+		const localCommit = await git('rev-parse', 'HEAD')
+		const remoteCommit = await git('rev-parse', '@{u}')
+
+		if (localCommit !== remoteCommit) {
+			const mergeBase = await git('merge-base', 'HEAD', '@{u}')
+			if (mergeBase === localCommit) {
+				console.logI18n('fountConsole.server.update.restarting')
+				if (restartor) await restartor()
+			}
+		}
+	} catch (e) {
+		console.errorI18n('fountConsole.partManager.git.updateFailed', { error: e })
+	}
+}
 
 export async function init(start_config) {
 	restartor = start_config.restartor
@@ -159,5 +185,9 @@ export async function init(start_config) {
 	}
 	if (starts.DiscordRPC) StartRPC()
 	if (!fs.existsSync(__dirname + '/src/pages/favicon.ico')) await iconPromise
+
+	idleManager.onIdle(checkUpstreamAndRestart)
+	idleManager.start()
+
 	return true
 }
