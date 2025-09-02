@@ -111,7 +111,7 @@
 		"fountNotFound": "Ay ay ay :(\n\nfount no encontrado, ¿quizás necesites instalarlo primero?",
 		"unknownError": "Ay ay ay :(\n\nOcurrió un error:\n${error}",
 		"runPartConfirm": {
-			"title": "Confirmar correr",
+			"title": "Confirmar ejecución",
 			"message": "¿Estás seguro de que quieres ejecutar ${parttype} de ${partname}?",
 			"confirm": "confirmar",
 			"cancel": "Cancelar"
@@ -516,7 +516,7 @@
 		},
 		"editor": {
 			"title": "Configuración de Componente",
-			"disabledIndicator": "Esta componente no admite configuración",
+			"disabledIndicator": "Este componente no admite configuración",
 			"buttons": {
 				"save": "Guardar"
 			}
@@ -1086,7 +1086,7 @@
 			"shareFailed": "No se pudo crear un enlace de compartir."
 		},
 		"shareMenu": {
-			"title": "Elija el tiempo de intercambio",
+			"title": "Elija la duración para compartir",
 			"1h": "1 hora",
 			"12h": "12 horas",
 			"24h": "24 horas",

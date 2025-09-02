@@ -306,7 +306,7 @@
 		"chars": {
 			"tab": "角色",
 			"title": "角色选择",
-			"subtitle": "选择一个角色，然后开启聊天！",
+			"subtitle": "选择一个角色，开始聊天吧！",
 			"none": "空空如也",
 			"card": {
 				"refreshButton": {

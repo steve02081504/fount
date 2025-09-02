@@ -111,10 +111,10 @@
 		"fountNotFound": "يا للأسف :(\n\nلم يتم العثور على fount، ربما تحتاج إلى تثبيته أولاً؟",
 		"unknownError": "يا للأسف :(\n\nحدث خطأ:\n${error}",
 		"runPartConfirm": {
-			"title": "تأكيد الجري",
+			"title": "تأكيد التشغيل",
 			"message": "هل أنت متأكد من أنك تريد تشغيل ${parttype} من ${partname}؟",
-			"confirm": "يتأكد",
-			"cancel": "يلغي"
+			"confirm": "تأكيد",
+			"cancel": "إلغاء"
 		}
 	},
 	"installer_wait_screen": {

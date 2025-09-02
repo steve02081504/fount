@@ -1041,7 +1041,7 @@
 			"error": "Lỗi: ${message}"
 		},
 		"info": {
-			"description": "Các mẫu này chỉ có thể được sử dụng để nhanh chóng xây dựng các phần đơn giản; các phần phức tạp vẫn cần được tạo thủ công."
+			"description": "Các mẫu này chỉ có thể được sử dụng để nhanh chóng xây dựng các thành phần đơn giản; các thành phần phức tạp vẫn cần được tạo thủ công."
 		}
 	},
 	"export": {

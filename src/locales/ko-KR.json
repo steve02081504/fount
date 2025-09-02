@@ -306,7 +306,7 @@
 		"chars": {
 			"tab": "캐릭터",
 			"title": "캐릭터 선택",
-			"subtitle": "캐릭터를 선택하고 채팅을 시작하세요!",
+			"subtitle": "캐릭터를 선택해서 채팅을 시작해 보세요!",
 			"none": "표시할 내용이 없습니다",
 			"card": {
 				"refreshButton": {

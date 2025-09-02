@@ -111,10 +111,10 @@
 		"fountNotFound": "Och nö :(\n\nfount wurde nicht gefunden. Vielleicht müssen Sie es zuerst installieren?",
 		"unknownError": "Och nö :(\n\nEin Fehler ist aufgetreten:\n${error}",
 		"runPartConfirm": {
-			"title": "Laufen bestätigen",
+			"title": "Ausführung bestätigen",
 			"message": "Sind Sie sicher, dass Sie ${parttype} von ${partname} ausführen möchten?",
 			"confirm": "bestätigen",
-			"cancel": "Stornieren"
+			"cancel": "Abbrechen"
 		}
 	},
 	"installer_wait_screen": {
@@ -494,7 +494,7 @@
 			"disabledIndicator": "Bitte wählen Sie zuerst einen Generator aus."
 		},
 		"common_config_interface": {
-			"empty_generator": "Der Legacy -Generator dieser KI -Quelle hat beim Laden einen Fehler und wurde möglicherweise deinstalliert oder umbenannt.",
+			"empty_generator": "Der Generator für diese KI-Quelle konnte nicht geladen werden. Möglicherweise wurde er deinstalliert oder umbenannt.",
 			"apiKeyRequired": "Ein API-Schlüssel ist erforderlich, um die Modelle aufzulisten.",
 			"loadingModels": "Modelle werden geladen...",
 			"availableModels": "Verfügbare Modelle:",
@@ -1041,7 +1041,7 @@
 			"error": "Fehler: ${message}"
 		},
 		"info": {
-			"description": "Diese Vorlagen können nur verwendet werden, um einfache Teile schnell zu erstellen. Komplexe Teile müssen weiterhin manuell erstellt werden."
+			"description": "Diese Vorlagen können nur verwendet werden, um einfache Komponenten schnell zu erstellen. Komplexe Komponenten müssen weiterhin manuell erstellt werden."
 		}
 	},
 	"export": {
@@ -1091,7 +1091,7 @@
 			"12h": "12 Stunden",
 			"24h": "24 Stunden",
 			"72h": "72 Stunden",
-			"cancel": "Stornieren"
+			"cancel": "Abbrechen"
 		},
 		"litterbox": {
 			"poweredBy": "Die Freigabefunktion wird von Litterbox.moe unterstützt",

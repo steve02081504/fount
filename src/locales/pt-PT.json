@@ -111,7 +111,7 @@
 		"fountNotFound": "Puxa vida :(\n\nfount não encontrado. Talvez precise de o instalar primeiro?",
 		"unknownError": "Oh não :(\n\nOcorreu um erro:\n${error}",
 		"runPartConfirm": {
-			"title": "Confirme a corrida",
+			"title": "Confirmar execução",
 			"message": "Tem certeza de que deseja executar ${parttype} de ${partname}?",
 			"confirm": "confirmar",
 			"cancel": "Cancelar"
@@ -1041,7 +1041,7 @@
 			"error": "Erro: ${message}"
 		},
 		"info": {
-			"description": "Estes modelos só podem ser usados para criar rapidamente peças simples; peças complexas ainda precisam de ser criadas manualmente."
+			"description": "Estes modelos só podem ser usados para criar rapidamente componentes simples; componentes complexos ainda precisam de ser criadas manualmente."
 		}
 	},
 	"export": {

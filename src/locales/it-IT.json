@@ -111,10 +111,10 @@
 		"fountNotFound": "Uffa :(\n\nfount non trovato. Forse devi prima installarlo?",
 		"unknownError": "Uffa :(\n\nSi è verificato un errore:\n${error}",
 		"runPartConfirm": {
-			"title": "Conferma la corsa",
+			"title": "Conferma esecuzione",
 			"message": "Sei sicuro di voler eseguire ${parttype} di ${partname}?",
 			"confirm": "confermare",
-			"cancel": "Cancellare"
+			"cancel": "Annulla"
 		}
 	},
 	"installer_wait_screen": {
@@ -957,7 +957,7 @@
 		},
 		"partName": {
 			"label": "Nome del componente",
-			"placeholder": "Dai un nome alla tua nuova componente"
+			"placeholder": "Dai un nome al tuo nuovo componente"
 		},
 		"description": {
 			"label": "Descrizione",
@@ -1041,7 +1041,7 @@
 			"error": "Errore: ${message}"
 		},
 		"info": {
-			"description": "Questi modelli possono essere utilizzati solo per creare rapidamente componenti semplici; le componenti complesse devono ancora essere create manualmente."
+			"description": "Questi modelli possono essere utilizzati solo per creare rapidamente componenti semplici; i componenti complessi devono ancora essere create manualmente."
 		}
 	},
 	"export": {

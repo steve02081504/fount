@@ -111,9 +111,9 @@
 		"fountNotFound": "Oeps :(\n\nKan fount niet vinden, misschien moet je het eerst installeren?",
 		"unknownError": "Oeps :(\n\nEr is een fout opgetreden:\n${error}",
 		"runPartConfirm": {
-			"title": "Bevestig hardlopen",
+			"title": "Uitvoering bevestigen",
 			"message": "Weet u zeker dat u ${parttype} van ${partname} wilt uitvoeren?",
-			"confirm": "bevestigen",
+			"confirm": "Bevestigen",
 			"cancel": "Annuleren"
 		}
 	},
@@ -494,7 +494,7 @@
 			"disabledIndicator": "Kies eerst een generator"
 		},
 		"common_config_interface": {
-			"empty_generator": "De legacy -generator van deze AI -bron heeft een fout tijdens het laden en is mogelijk verwijderd of hernoemd.",
+			"empty_generator": "De verouderde generator van deze AI-bron kon niet worden geladen en is mogelijk verwijderd of van naam veranderd.",
 			"apiKeyRequired": "Een API-sleutel is vereist om de modellen op te halen.",
 			"loadingModels": "Modellen laden...",
 			"availableModels": "Beschikbare modellen:",

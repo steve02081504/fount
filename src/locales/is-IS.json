@@ -111,7 +111,7 @@
 		"fountNotFound": "Æji :(\n\nFann ekki fount, þarftu kannski að setja það upp fyrst?",
 		"unknownError": "Æji :(\n\nVilla kom upp:\n${error}",
 		"runPartConfirm": {
-			"title": "Staðfestu hlaup",
+			"title": "Staðfesta keyrslu",
 			"message": "Ertu viss um að þú viljir keyra ${parttype} af ${partname}?",
 			"confirm": "Staðfestu",
 			"cancel": "Hætta við"

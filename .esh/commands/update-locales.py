@@ -985,7 +985,7 @@ def save_locale_files(all_data, ref_path):
 
 	for filepath, ordered_data in sorted(all_data.items()):
 		try:
-			with open(filepath, "w", encoding="utf-8", newline="\n") as f:
+			with open(filepath, "w", encoding="utf-8", newline="\n", errors="replace") as f:
 				json.dump(ordered_data, f, ensure_ascii=False, indent="\t", default=str)
 				f.write("\n")
 			print(f"  - 已保存: {os.path.basename(filepath)}")
