@@ -266,7 +266,7 @@ export default {
 			avatar: '', // 可选：导入器本身的图标
 			description: 'Imports Risu Character Cards (V3) in .png, .charx, or .json format, and from realm.risuai.net URLs.',
 			description_markdown: 'Imports Risu Character Cards (V3) in `.png`, `.charx`, or `.json` format, and from `realm.risuai.net` URLs.\nSupports CCv3 features including embedded assets and lorebooks.',
-			version: '1.0.0',
+			version: '0.0.1',
 			author: 'steve02081504',
 			home_page: '', // 可选：相关链接
 			tags: ['risu', 'character card', 'ccv3', 'import'],

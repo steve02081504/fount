@@ -1,4 +1,4 @@
-# PowerShell 参数补全脚本，用于 Fount 的 'AIsourceManage' shell。
+# PowerShell 参数补全脚本，用于 fount 的 'AIsourceManage' shell。
 #
 # 使用方法:
 #   fount run shells <username> AIsourceManage <action> [sourceName]
@@ -11,7 +11,7 @@
 #   - set <sourceName> <data>: 设置一个 AI 源的配置 (data 为 JSON 字符串)。
 #   - set-default <sourceName>: 将一个 AI 源设置为默认。
 #
-# Fount 自动提供的参数:
+# fount 自动提供的参数:
 #   $Username:       执行命令的当前用户名。
 #   $WordToComplete: 用户当前正在输入、需要补全的单词。
 #   $CommandAst:     当前命令的抽象语法树 (AST)，用于分析命令结构。
@@ -46,7 +46,7 @@ try {
 			$action = $commandElements[$shellIndex + 1].Value
 			switch ($action) {
 				{ $_ -in "delete", "get", "set", "set-default" } {
-					# 对于这些需要指定已存在源的命令，调用 Fount 的内部函数来获取 AI 源列表，并进行补全。
+					# 对于这些需要指定已存在源的命令，调用 fount 的内部函数来获取 AI 源列表，并进行补全。
 					Get-FountPartList -parttype AIsources -Username $Username | Where-Object { $_.StartsWith($WordToComplete) }
 					break
 				}

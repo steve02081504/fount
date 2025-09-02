@@ -1,4 +1,4 @@
-# PowerShell 参数补全脚本，用于 Fount 的 'config' shell。
+# PowerShell 参数补全脚本，用于 fount 的 'config' shell。
 #
 # 使用方法:
 #   fount run shells <username> config <action> <partType> <partName> [data]
@@ -7,7 +7,7 @@
 #   - get <partType> <partName>: 获取指定部件的配置。
 #   - set <partType> <partName> <data>: 设置指定部件的配置 (data 为 JSON 字符串)。
 #
-# Fount 自动提供的参数:
+# fount 自动提供的参数:
 #   $Username:       执行命令的当前用户名。
 #   $WordToComplete: 用户当前正在输入、需要补全的单词。
 #   $CommandAst:     当前命令的抽象语法树 (AST)，用于分析命令结构。
@@ -37,7 +37,7 @@ try {
 		}
 		1 {
 			# 位置 1: 补全部件类型 (partType)。
-			# 使用 Fount 内置函数获取所有可用的部件类型。
+			# 使用 fount 内置函数获取所有可用的部件类型。
 			Get-FountParts | Where-Object { $_.StartsWith($WordToComplete) }
 			break
 		}

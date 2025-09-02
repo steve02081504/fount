@@ -1,14 +1,14 @@
 # AI Agent Guide: Shell Architecture & Creation
 
-**Objective**: This document provides AI agents with a clear, actionable guide to the architecture of Fount Shells and the standard procedure for creating new ones.
+**Objective**: This document provides AI agents with a clear, actionable guide to the architecture of fount Shells and the standard procedure for creating new ones.
 
-**Instruction**: **You must follow this architecture strictly.** Adherence to this pattern ensures that new user interfaces (Shells) are modular, maintainable, and integrate correctly with the Fount ecosystem.
+**Instruction**: **You must follow this architecture strictly.** Adherence to this pattern ensures that new user interfaces (Shells) are modular, maintainable, and integrate correctly with the fount ecosystem.
 
 ---
 
 ## 1. Standard Shell Architecture
 
-A Fount Shell is a self-contained UI module. It consists of a frontend (HTML/CSS/JS) and a dedicated set of backend API endpoints. The standard file structure is as follows:
+A fount Shell is a self-contained UI module. It consists of a frontend (HTML/CSS/JS) and a dedicated set of backend API endpoints. The standard file structure is as follows:
 
 ```tree
 /src/public/shells/<your-shell-name>/
@@ -32,10 +32,10 @@ A Fount Shell is a self-contained UI module. It consists of a frontend (HTML/CSS
 ### Key File Responsibilities
 
 1. **`main.mjs` (Backend Entry Point)**
-   - **Role**: The Shell's manifest and lifecycle manager. This is how the Fount `parts_loader` interacts with your Shell.
+   - **Role**: The Shell's manifest and lifecycle manager. This is how the fount `parts_loader` interacts with your Shell.
    - **Exports**: A default object with `info`, `Load`, and `Unload`.
    - `Load({ router })`: This function is **required**. It is called when the Shell is loaded. Its primary job is to receive the Express `router` and pass it to your `setEndpoints` function to register the Shell's API routes.
-   - `interfaces`: (Optional) Defines handlers for Fount's command-line (`invokes`) or scheduled task (`jobs`) systems.
+   - `interfaces`: (Optional) Defines handlers for fount's command-line (`invokes`) or scheduled task (`jobs`) systems.
 
 2. **`/src/server/endpoints.mjs` (Backend API Definitions)**
    - **Role**: To define all API endpoints for this Shell.
@@ -46,7 +46,7 @@ A Fount Shell is a self-contained UI module. It consists of a frontend (HTML/CSS
    - **Pattern**: For each backend endpoint, export a corresponding `async` function that uses `fetch` to call it. This decouples your main UI logic from the raw API URLs and request details.
 
 4. **`home_registry.json` (Home Shell Integration)**
-   - **Role**: Makes your Shell discoverable and accessible from the main Fount `home` shell.
+   - **Role**: Makes your Shell discoverable and accessible from the main fount `home` shell.
    - `home_function_buttons`: Adds a button to the main menu on the `home` shell that links to your Shell.
    - `home_*_interfaces`: Adds action buttons to the cards on the `home` shell (e.g., adds a "Configure" button to all `char` parts that links to your shell).
 
@@ -73,7 +73,7 @@ touch src/public/shells/my-new-shell/src/public/endpoints.mjs
 
 ### Step 2: Implement `main.mjs` (Backend Entry)
 
-This file registers the shell with Fount.
+This file registers the shell with fount.
 
 ```javascript
 // src/public/shells/my-new-shell/main.mjs
@@ -84,7 +84,7 @@ export default {
     '': {
       name: 'my-new-shell',
       description: 'A description for my new shell.',
-      version: '1.0.0',
+      version: '0.0.1',
       author: 'YourName',
     },
   },
@@ -129,7 +129,7 @@ Define the UI structure.
   <head>
     <meta charset="UTF-8" />
     <title data-i18n="my-new-shell.title">My New Shell</title>
-    <!-- Standard Fount CSS and JS includes -->
+    <!-- Standard fount CSS and JS includes -->
     <link
       href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css"
       rel="stylesheet"
@@ -196,4 +196,4 @@ fetchDataBtn.addEventListener('click', async () => {
 });
 ```
 
-After completing these steps, restart the Fount server. The new shell will be available at `/shells/my-new-shell/`.
+After completing these steps, restart the fount server. The new shell will be available at `/shells/my-new-shell/`.

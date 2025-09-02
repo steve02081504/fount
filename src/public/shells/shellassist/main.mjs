@@ -9,7 +9,7 @@ export default {
 			avatar: '',
 			description: 'Interactive terminal access within fount.',
 			description_markdown: 'Provides an interactive terminal connected to the fount server environment.',
-			version: '1.0.0',
+			version: '0.0.1',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['terminal', 'shell', 'interactive']

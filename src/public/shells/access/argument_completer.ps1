@@ -1,11 +1,11 @@
-# PowerShell 参数补全脚本，用于 Fount 的 'access' shell。
+# PowerShell 参数补全脚本，用于 fount 的 'access' shell。
 #
 # 使用方法:
 #   fount run shells <username> access
 #
 # 此命令无需额外参数。
 #
-# Fount 自动提供的参数:
+# fount 自动提供的参数:
 #   $Username:       执行命令的当前用户名。
 #   $WordToComplete: 用户当前正在输入、需要补全的单词。
 #   $CommandAst:     当前命令的抽象语法树 (AST)，用于分析命令结构。

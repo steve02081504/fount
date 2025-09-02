@@ -78,7 +78,7 @@ async function GetSource(config, { username, SaveConfig }) {
 				provider: config.provider || 'unknown',
 				description: 'Selects a source randomly based on configured weights.',
 				description_markdown: 'Selects a source randomly based on configured weights.',
-				version: '1.0.0',
+				version: '0.0.1',
 				author: 'steve02081504',
 				home_page: '',
 				tags: ['random', 'weighted', 'router'],

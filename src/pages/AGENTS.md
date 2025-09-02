@@ -17,7 +17,7 @@
 
 ### 1.2. "Part" Interaction API (`parts.mjs`)
 
-- **Purpose**: Functions for fetching and managing Fount "parts" (e.g., characters, worlds).
+- **Purpose**: Functions for fetching and managing fount "parts" (e.g., characters, worlds).
 - `async getPartList(partType)`: Retrieves a list of all available parts of a specified type (e.g., 'chars').
 - `async getCharDetails(charname)`: Fetches detailed information for a specific character. (Similar functions exist for `worlds` and `personas`).
 - `async setDefaultPart(parttype, partname)`: Sets the user's default part for a given type.

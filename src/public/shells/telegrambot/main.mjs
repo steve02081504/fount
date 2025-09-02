@@ -16,7 +16,7 @@ export default {
 			avatar: 'https://api.iconify.design/line-md/telegram.svg', // 使用SVG图标
 			description: 'Run your char as a Telegram Bot.',
 			description_markdown: 'Integrate your fount character with Telegram to interact with users on the platform.',
-			version: '1.0.0',
+			version: '0.0.1',
 			author: 'steve02081504', // 您的名字
 			home_page: '', // 项目主页或相关链接
 			tags: ['telegram', 'bot', 'chat', 'integration']

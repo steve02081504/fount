@@ -7,7 +7,7 @@ export default {
 			avatar: '',
 			description: 'default description',
 			description_markdown: 'default description',
-			version: '1.0.0',
+			version: '0.0.1',
 			author: 'steve02081504',
 			home_page: '',
 			tags: []

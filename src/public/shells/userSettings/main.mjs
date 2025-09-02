@@ -12,7 +12,7 @@ export default {
 	info: {
 		'': {
 			name: 'user-settings',
-			version: '1.0.0',
+			version: '0.0.1',
 			author: 'steve02081504',
 			description: 'Provides API endpoints for user settings management.'
 		}

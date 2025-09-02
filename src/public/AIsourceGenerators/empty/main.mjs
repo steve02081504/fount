@@ -7,7 +7,7 @@ export default {
 				html: '<div class="text-warning" data-i18n="aisource_editor.common_config_interface.empty_generator"></div>'
 			}),
 			GetConfigTemplate: async () => ({
-				"to de or not to de": "this is an question"
+				'to de or not to de': 'this is an question'
 			}),
 			GetSource,
 		}
@@ -26,7 +26,7 @@ async function GetSource(config) {
 				provider: 'fount',
 				description: 'Empty AI Source',
 				description_markdown: 'A placeholder for a missing AI source generator.',
-				version: '1.0.0',
+				version: '0.0.1',
 				author: 'steve02081504',
 				home_page: '',
 				tags: ['empty', 'placeholder'],

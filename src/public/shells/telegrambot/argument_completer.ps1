@@ -1,4 +1,4 @@
-# PowerShell 参数补全脚本，用于 Fount 的 'telegrambot' shell。
+# PowerShell 参数补全脚本，用于 fount 的 'telegrambot' shell。
 #
 # 使用方法:
 #   fount run shells <username> telegrambot <action> [args...]
@@ -13,7 +13,7 @@
 #   - start <botname>: 启动一个bot。
 #   - stop <botname>: 停止一个bot。
 #
-# Fount 自动提供的参数:
+# fount 自动提供的参数:
 #   $Username:       执行命令的当前用户名。
 #   $WordToComplete: 用户当前正在输入、需要补全的单词。
 #   $CommandAst:     当前命令的抽象语法树 (AST)，用于分析命令结构。

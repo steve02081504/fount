@@ -1,8 +1,8 @@
-# Fount Project Architecture & AI Agent Prompting Guide
+# fount Project Architecture & AI Agent Prompting Guide
 
 ## 1. Project Overview
 
-Fount is a modular, multi-user, and extensible framework for building interactive chat experiences with AI characters. Its core is a robust backend server that manages users, AI connections, and various **"parts"** that define the application's behavior. The architecture is designed for high customizability, allowing developers to create unique characters, worlds, user interfaces (shells), and plugins.
+fount is a modular, multi-user, and extensible framework for building interactive chat experiences with AI characters. Its core is a robust backend server that manages users, AI connections, and various **"parts"** that define the application's behavior. The architecture is designed for high customizability, allowing developers to create unique characters, worlds, user interfaces (shells), and plugins.
 
 ## 2. Core Architecture: The "Part-Based" System
 
@@ -55,7 +55,7 @@ These TypeScript files define the interfaces that all "parts" must adhere to. **
 
 ## 5. Task Implementation Patterns
 
-To effectively modify or extend Fount, follow these patterns:
+To effectively modify or extend fount, follow these patterns:
 
 - **To change a character's personality**: Modify the `GetPrompt` method in the character's `main.mjs` file (`/data/users/<user>/chars/<charname>/`).
 - **To add a new chat feature/command**: Create a new **Plugin** part. Use `GetPrompt` to inform the AI and `ReplyHandler` to execute the logic.
@@ -76,10 +76,10 @@ For more specific development tasks, refer to the following detailed guides:
 
 ## 7. AI Agent Guidelines
 
-As an AI agent, your primary goal is to assist in developing Fount by strictly adhering to its architecture and conventions.
+As an AI agent, your primary goal is to assist in developing fount by strictly adhering to its architecture and conventions.
 
 1. **Check for Specific Guides First**: Before starting any task, **you must first search for and read any `AGENTS.md` file located in the relevant subdirectory.** For example, if the task involves a Shell, you must read `/src/public/shells/AGENTS.md`. These specific guides take precedence over the general guidelines in this document.
-2. **Respect the Architecture**: Fount is a **"part-based"** system. All new functionality should be implemented within the appropriate part type (Shell, Char, Plugin, etc.). Do not add logic to the core server unless absolutely necessary.
+2. **Respect the Architecture**: fount is a **"part-based"** system. All new functionality should be implemented within the appropriate part type (Shell, Char, Plugin, etc.). Do not add logic to the core server unless absolutely necessary.
 3. **Consult General Documentation**: After checking for specific guides, review this document and the linked guides in Section 6. They provide the necessary context and patterns to follow.
 4. **Follow Existing Patterns**: Before creating a new part (e.g., a Shell, Char, or Plugin), **you must find and analyze a similar, existing part first.** For example, when creating a new Shell, examine the directory structure and files of another Shell like `discordbot` or `chat`. This is the most critical step to ensure new components integrate correctly. Mimic the observed file structure, naming conventions, and architectural patterns. Do not introduce external dependencies (like `package.json`) or architectural patterns not already present in similar parts.
 5. **API-Driven UI**: Shells (UIs) must be decoupled from the backend. All communication should happen through well-defined API endpoints. Follow the pattern of defining backend routes in `src/server/web_server/endpoints.mjs` and creating corresponding fetch helpers in `src/pages/scripts/endpoints.mjs`.

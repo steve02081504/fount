@@ -1,4 +1,4 @@
-# PowerShell 参数补全脚本，用于 Fount 的 'userSettings' shell。
+# PowerShell 参数补全脚本，用于 fount 的 'userSettings' shell。
 #
 # 使用方法:
 #   fount run shells <username> userSettings <action> [args...]
@@ -11,7 +11,7 @@
 #   - rename-user <newUsername> <password>: 重命名用户。
 #   - delete-account <password>: 删除当前用户账户。
 #
-# Fount 自动提供的参数:
+# fount 自动提供的参数:
 #   $Username:       执行命令的当前用户名。
 #   $WordToComplete: 用户当前正在输入、需要补全的单词。
 #   $CommandAst:     当前命令的抽象语法树 (AST)，用于分析命令结构。

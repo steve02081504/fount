@@ -281,7 +281,7 @@ export default {
 			avatar: '',
 			description: '一个简单的复读机',
 			description_markdown: '这是一个复读机角色，它会复读用户的上一条消息。',
-			version: '1.0.0',
+			version: '0.0.1',
 			author: '${args.UserCharname} & ZL-31',
 			home_page: '',
 			tags: ['复读', '工具'],
@@ -515,7 +515,7 @@ It can chat, answer questions, provide suggestions, and help you create simple f
 
 Some code comes from [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
 `,
-			version: '1.0.0',
+			version: '0.0.1',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['assistant', 'default', 'no gender', 'fount'],
@@ -530,7 +530,7 @@ ZL-31是fount的默认角色，无性别设定。它的最终目标是让用户�
 
 部分代码来自[龙胆](https://github.com/steve02081504/GentianAphrodite)。
 `, // 角色的详细介绍，支持Markdown语法
-			version: '1.0.0', // 角色的版本号
+			version: '0.0.1', // 角色的版本号
 			author: 'steve02081504', // 角色的作者
 			home_page: '', // 角色的主页
 			tags: ['助手', '默认', '无性别', 'fount'], // 角色的标签
@@ -545,7 +545,7 @@ Er kann chatten, Fragen beantworten, Vorschläge machen und Ihnen helfen, einfac
 
 Ein Teil des Codes stammt von [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
 `,
-			version: '1.0.0',
+			version: '0.0.1',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['Assistent', 'Standard', 'kein Geschlecht', 'fount'],
@@ -560,7 +560,7 @@ Puede chatear, responder preguntas, dar sugerencias y ayudarte a crear personaje
 
 Parte del código proviene de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
 `,
-			version: '1.0.0',
+			version: '0.0.1',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['asistente', 'predeterminado', 'sin género', 'fount'],
@@ -575,7 +575,7 @@ Il peut discuter, répondre à des questions, faire des suggestions et vous aide
 
 Une partie du code provient de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
 `,
-			version: '1.0.0',
+			version: '0.0.1',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['assistant', 'par défaut', 'non genré', 'fount'],
@@ -590,7 +590,7 @@ ZL-31 फाउंट का डिफ़ॉल्ट चरित्र है,
 
 कुछ कोड [जेंटियनएफ़्रोडाइट](https://github.com/steve02081504/GentianAphrodite) से आया है।
 `,
-			version: '1.0.0',
+			version: '0.0.1',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['सहायक', 'डिफ़ॉल्ट', 'कोई लिंग नहीं', 'fount'],
@@ -605,7 +605,7 @@ ZL-31はfountのデフォルトキャラクターであり、性別設定はあ�
 
 一部のコードは[GentianAphrodite](https://github.com/steve02081504/GentianAphrodite)から来ています。
 `,
-			version: '1.0.0',
+			version: '0.0.1',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['アシスタント', 'デフォルト', '性別なし', 'fount'],
@@ -620,7 +620,7 @@ ZL-31은 fount의 기본 캐릭터이며 성별 설정이 없습니다. 최종 �
 
 일부 코드는 [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite)에서 가져왔습니다。
 `,
-			version: '1.0.0',
+			version: '0.0.1',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['도우미', '기본', '성별 없음', 'fount'],
@@ -635,7 +635,7 @@ Pode conversar, responder a perguntas, dar sugestões e ajudá-lo a criar person
 
 Algum código é proveniente de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
 `,
-			version: '1.0.0',
+			version: '0.0.1',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['assistente', 'padrão', 'sem género', 'fount'],
@@ -650,7 +650,7 @@ ZL-31 — персонаж fount по умолчанию, без гендерн�
 
 Часть кода взята из [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
 `,
-			version: '1.0.0',
+			version: '0.0.1',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['помощник', 'по умолчанию', 'без пола', 'fount'],
@@ -665,7 +665,7 @@ Può chattare, rispondere a domande, fornire suggerimenti e aiutarti a creare se
 
 Parte del codice proviene da [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
 `,
-			version: '1.0.0',
+			version: '0.0.1',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['assistente', 'predefinito', 'senza genere', 'fount'],
@@ -680,7 +680,7 @@ Nó có thể trò chuyện, trả lời câu hỏi, đưa ra gợi ý và giúp
 
 Một số mã nguồn đến từ [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
 `,
-			version: '1.0.0',
+			version: '0.0.1',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['trợ lý', 'mặc định', 'không giới tính', 'fount'],

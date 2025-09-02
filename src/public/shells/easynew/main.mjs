@@ -14,7 +14,7 @@ export default {
 		'': {
 			name: 'EasyNew',
 			description: 'Easily create new parts from templates.',
-			version: '1.0.0',
+			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['tool', 'creator'],
 		},
