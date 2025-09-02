@@ -44,7 +44,7 @@ export function registerEndpoints(router) {
 			hosturl_in_local_ip,
 		})
 	})
-	
+
 	router.get('/api/getlocaledata', async (req, res) => {
 		const browserLanguages = req.headers['accept-language']?.split?.(',')?.map?.((lang) => lang.trim().split(';')[0]) || []
 		const userPreferredLanguages = req.query.preferred?.split?.(',') || []

@@ -997,10 +997,10 @@ def generate_list_csv(all_data):
     """Generates list.csv from all loaded locale data."""
     print("\n--- Generating list.csv ---")
     csv_path = os.path.join(LOCALE_DIR, "list.csv")
-    
+
     header = "lang,name\n"
     rows = []
-    
+
     lang_data = {}
     for file_path, data in all_data.items():
         lang_code_from_file = get_lang_from_filename(file_path)

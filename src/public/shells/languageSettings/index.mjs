@@ -137,7 +137,7 @@ function handleSave() {
 }
 
 function handleReset() {
-	localStorage.removeItem(LOCAL_STORAGE_KEY)
+	localStorage.removeItem('userPreferredLanguages')
 	userPreferredLocales = []
 	initTranslations('languageSettings', []) // Reset to browser default
 	renderPreferredLanguages()

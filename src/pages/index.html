@@ -33,12 +33,12 @@
 				theme: localStorage.getItem('theme'),
 				hostUrl,
 				userPreferredLanguages: localStorage.getItem('userPreferredLanguages') || undefined
-			}));
-		}
+			}))
+}
 
 		document.getElementById('skipButton').addEventListener('click', () => {
-			window.location.href = 'https://steve02081504.github.io/fount/values_update?' + getCommonUrlParams({ redirect: hostUrl + '/shells/home' });
-		})
+			window.location.href = 'https://steve02081504.github.io/fount/values_update?' + getCommonUrlParams({ redirect: hostUrl + '/shells/home' })
+})
 
 		let retry = 1
 		setInterval(() => {

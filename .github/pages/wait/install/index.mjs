@@ -412,10 +412,10 @@ async function main() {
 				footerReadyText.textContent = geti18n('installer_wait_screen.footer.ready_text')
 				launchButtonText.textContent = geti18n('installer_wait_screen.footer.open_fount')
 				launchButton.onclick = () => {
-					const params = new URLSearchParams();
-					params.set('theme', theme_now);
-					params.set('userPreferredLanguages', localStorage.getItem('fountUserPreferredLanguage') || '[]');
-					window.location.href = hostUrl + '?' + params.toString();
+					const params = new URLSearchParams()
+					params.set('theme', theme_now)
+					params.set('userPreferredLanguages', localStorage.getItem('fountUserPreferredLanguage') || '[]')
+					window.location.href = hostUrl + '?' + params.toString()
 				}
 				launchButtonSpinner.style.display = 'none'
 

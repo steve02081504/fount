@@ -60,7 +60,7 @@ export async function isFountPart(buffer) {
 				const stream = seven.list(tempFilePath7z, { $bin: sevenZipPath })
 				stream.on('data', (file) => {
 					const normalizedPath = path.normalize(file.file).replace(/\\/g, '/')
-					if(normalizedPath == 'fount.json') resolve(true)
+					if (normalizedPath == 'fount.json') resolve(true)
 				})
 				stream.on('end', () => resolve(false))
 				stream.on('error', (err) => reject(err))
