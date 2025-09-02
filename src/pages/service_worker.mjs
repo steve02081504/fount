@@ -237,7 +237,7 @@ async function fetchAndCache(request) {
 	try {
 		const cache = await caches.open(CACHE_NAME)
 		let error, networkResponse = await fetch(request).catch(_ => { error = _ })
-		if (networkResponse?.type === 'opaque' || !networkResponse.ok) {
+		if (networkResponse?.type === 'opaque' || !networkResponse?.ok) {
 			const cachedResponse = await cache.match(request)
 			const can_cors = cachedResponse ? cachedResponse.headers.get('Access-Control-Allow-Origin') : new URL(request.url).origin !== self.location.origin && await fetch(request.url, { method: 'HEAD' }).then(response => response.headers.get('Access-Control-Allow-Origin')).catch(_ => null)
 			const newNetworkResponse = await fetch(request.url, { ...request, mode: can_cors ? 'cors' : request.mode === 'no-cors' ? 'no-cors' : undefined, url: undefined }).catch(_ => { error = _ })
