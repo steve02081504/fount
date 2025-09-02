@@ -7,21 +7,19 @@ import { on_shutdown } from 'npm:on-shutdown'
 import supportsAnsi from 'npm:supports-ansi'
 
 import { StartRPC } from '../scripts/discordrpc.mjs'
+import { exec } from '../scripts/exec.mjs'
 import { getMemoryUsage } from '../scripts/gc.mjs'
 import { console } from '../scripts/i18n.mjs'
 import { loadJsonFile, saveJsonFile } from '../scripts/json_loader.mjs'
 import { get_hosturl_in_local_ip } from '../scripts/ratelimit.mjs'
 import { createTray } from '../scripts/tray.mjs'
 import { runSimpleWorker } from '../workers/index.mjs'
-import { exec } from '../scripts/exec.mjs'
-import idleManager from './idle.mjs'
 
 import { initAuth } from './auth.mjs'
 import { __dirname, startTime } from './base.mjs'
+import idleManager from './idle.mjs'
 import { ReStartJobs } from './jobs.mjs'
 import { startTimerHeartbeat } from './timers.mjs'
-
-
 
 export let data_path
 

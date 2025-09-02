@@ -1,25 +1,25 @@
 const defaultConfig = {
 	timeout: 30000, // 30 seconds
 	checkInterval: 5 * 60 * 1000 // 5 minutes
-};
+}
 
 export class IdleManager {
-	#lastBusyTime;
-	#runningActions = 0;
-	#idleRuns = [];
-	#idleRunOnces = [];
-	#config;
+	#lastBusyTime
+	#runningActions = 0
+	#idleRuns = []
+	#idleRunOnces = []
+	#config
 
 	constructor(config = {}) {
-		this.#config = { ...defaultConfig, ...config };
-		this.#lastBusyTime = Date.now();
+		this.#config = { ...defaultConfig, ...config }
+		this.#lastBusyTime = Date.now()
 	}
 
 	/**
 	 * Marks the system as busy.
 	 */
 	markBusy() {
-		this.#lastBusyTime = Date.now();
+		this.#lastBusyTime = Date.now()
 	}
 
 	/**
@@ -28,11 +28,11 @@ export class IdleManager {
 	 * @returns {Promise<any>} The result of the action.
 	 */
 	async runAction(action) {
-		this.#runningActions++;
+		this.#runningActions++
 		try {
-			return await action();
+			return await action()
 		} finally {
-			this.#runningActions--;
+			this.#runningActions--
 		}
 	}
 
@@ -42,8 +42,8 @@ export class IdleManager {
 	 * @returns {Promise<any>} The result of the action.
 	 */
 	async runBusyAction(action) {
-		this.markBusy();
-		return await this.runAction(action);
+		this.markBusy()
+		return await this.runAction(action)
 	}
 
 	/**
@@ -51,7 +51,7 @@ export class IdleManager {
 	 * @returns {boolean} True if the system is idle, false otherwise.
 	 */
 	isIdle() {
-		return this.#runningActions === 0 && (Date.now() - this.#lastBusyTime) > this.#config.timeout;
+		return this.#runningActions === 0 && (Date.now() - this.#lastBusyTime) > this.#config.timeout
 	}
 
 	/**
@@ -59,7 +59,7 @@ export class IdleManager {
 	 * @param {Function} action The action to execute on idle.
 	 */
 	onIdle(action) {
-		this.#idleRuns.push(action);
+		this.#idleRuns.push(action)
 	}
 
 	/**
@@ -67,7 +67,7 @@ export class IdleManager {
 	 * @param {Function} action The action to execute once on idle.
 	 */
 	onIdleOnce(action) {
-		this.#idleRunOnces.push(action);
+		this.#idleRunOnces.push(action)
 	}
 
 	/**
@@ -76,16 +76,16 @@ export class IdleManager {
 	 */
 	async #runIdleTasks() {
 		for (const action of this.#idleRuns) try {
-			await action();
+			await action()
 		} catch (e) {
-			console.error("Idle action failed:", e);
+			console.error('Idle action failed:', e)
 		}
 		for (const action of this.#idleRunOnces) try {
-			await action();
+			await action()
 		} catch (e) {
-			console.error("Idle action failed:", e);
+			console.error('Idle action failed:', e)
 		}
-		this.#idleRunOnces.length = 0; // Clear the run-once actions
+		this.#idleRunOnces.length = 0 // Clear the run-once actions
 	}
 
 	/**
@@ -93,9 +93,9 @@ export class IdleManager {
 	 * @private
 	 */
 	async #idleRunner() {
-		if (this.isIdle()) {
-			await this.#runIdleTasks();
-		}
+		if (this.isIdle())
+			await this.#runIdleTasks()
+
 	}
 
 	/**
@@ -103,9 +103,9 @@ export class IdleManager {
 	 */
 	start() {
 		setTimeout(async () => {
-			await this.#idleRunner();
-			this.start(); // Reschedule the next check
-		}, this.#config.checkInterval);
+			await this.#idleRunner()
+			this.start() // Reschedule the next check
+		}, this.#config.checkInterval)
 	}
 
 	/**
@@ -113,10 +113,10 @@ export class IdleManager {
 	 * @param {Partial<defaultConfig>} newConfig The new configuration options.
 	 */
 	setConfig(newConfig) {
-		Object.assign(this.#config, newConfig);
+		Object.assign(this.#config, newConfig)
 	}
 }
 
 // Create and export a single, global instance of the IdleManager.
-const idleManager = new IdleManager();
-export default idleManager;
+const idleManager = new IdleManager()
+export default idleManager
