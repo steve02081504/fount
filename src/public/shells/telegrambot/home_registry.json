@@ -35,6 +35,9 @@
 				"ko-KR": {
 					"title": "Telegram Bot 구성"
 				},
+				"lzh": {
+					"title": "Telegram 靈偶"
+				},
 				"nl-NL": {
 					"title": "Beheer Telegram Bot"
 				},
@@ -94,6 +97,9 @@
 				},
 				"ko-KR": {
 					"title": "Telegram Bot 구성"
+				},
+				"lzh": {
+					"title": "部署Telegram靈偶"
 				},
 				"nl-NL": {
 					"title": "Configureer Telegram Bot"

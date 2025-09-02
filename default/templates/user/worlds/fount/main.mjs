@@ -65,6 +65,10 @@ export default {
 			name: 'Thế giới mặc định của fount',
 			description: 'Sử dụng để hướng dẫn các nhân vật về xuất hiện hỗ trợ cho việc render hoạt hình của fount',
 		},
+		'lzh': {
+			name: '文言',
+			description: 'fount 繪呈之援，以導化身之儀觀',
+		},
 	},
 	Load: (stat) => {
 		username = stat.username // 获取用户名

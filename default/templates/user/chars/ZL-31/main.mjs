@@ -685,6 +685,21 @@ Một số mã nguồn đến từ [GentianAphrodite](https://github.com/steve02
 			home_page: '',
 			tags: ['trợ lý', 'mặc định', 'không giới tính', 'fount'],
 		},
+		'lzh': {
+			name: 'ZL-31',
+			avatar: '',
+			description: 'fount本設化身，常佐君側',
+			description_markdown: `\
+ZL-31乃fount之本設化身，無陰陽之辨。其志在悅君心，力遂諸願。
+可與之清談，問難，獻策，並助汝創簡易之fount化身。
+
+其術蓋取於[龍膽](https://github.com/steve02081504/GentianAphrodite)。
+`,
+			version: '0.0.1',
+			author: 'steve02081504',
+			home_page: '',
+			tags: ['輔佐', '本設', '無陰陽之辨', 'fount'],
+		},
 	},
 
 	// 初始化函数，在角色被启用时调用，可留空
@@ -743,6 +758,8 @@ Một số mã nguồn đến từ [GentianAphrodite](https://github.com/steve02
 						return [{ content: 'Ciao, sono ZL-31, felice di esserti d\'aiuto! Come posso aiutarti?' }, { content: 'Benvenuto/a! Sono ZL-31, cosa posso fare per te?' },][index]
 					case 'vi':
 						return [{ content: 'Chào bạn, tôi là ZL-31, rất vui được phục vụ bạn! Tôi có thể giúp gì cho bạn?' }, { content: 'Chào mừng! Tôi là ZL-31, có gì tôi có thể giúp được không?' },][index]
+					case 'lzh':
+						return [{ content: '吾乃ZL-31，幸為君勞。有何可相助者？' }, { content: '歡迎！吾乃ZL-31，請問有何見教？' },][index]
 					default:
 					case 'en':
 						return [{ content: 'Hi, I\'m ZL-31, glad to help you! What can I help you with?' }, { content: 'Hi! I\'m ZL-31, what can I help you with?' },][index]
@@ -773,6 +790,8 @@ Một số mã nguồn đến từ [GentianAphrodite](https://github.com/steve02
 						return [{ content: 'Ciao a tutti, sono ZL-31, felice di unirmi a questo gruppo!' }, { content: 'Ciao a tutti! Sono ZL-31, spero di trascorrere un bel momento con voi!' },][index]
 					case 'vi':
 						return [{ content: 'Chào mọi người, tôi là ZL-31, rất vui được tham gia nhóm này!' }, { content: 'Chào mọi người! Tôi là ZL-31, hy vọng sẽ có thời gian vui vẻ với các bạn!' },][index]
+					case 'lzh':
+						return [{ content: '諸君安好，吾乃ZL-31，幸入此群！' }, { content: '諸君安好！吾乃ZL-31，願與諸君共樂！' },][index]
 					default:
 					case 'en':
 						return [{ content: 'Hi everyone, I\'m ZL-31, glad to join this group!' }, { content: 'Hi everyone! I\'m ZL-31, hope to have a good time with you!' },][index]
@@ -845,6 +864,8 @@ persona-generator
 							return { content: 'Mi dispiace, non sono ancora stato configurato con una fonte AI, quindi per ora non posso intrattenere conversazioni più complesse. Per favore, configurami con una fonte AI nelle impostazioni.' }
 						case 'vi':
 							return { content: 'Xin lỗi, tôi chưa được cấu hình với nguồn AI, vì vậy tôi không thể thực hiện cuộc trò chuyện phức tạp hơn lúc này. Vui lòng cấu hình nguồn AI cho tôi trong cài đặt.' }
+						case 'lzh':
+							return { content: '歉哉，智源未設，暫難深談。請於規度中為吾置之。' }
 						default:
 						case 'en':
 							return { content: 'Sorry, I haven\'t been configured with an AI source yet, so I can\'t do more complex conversation for now. Please configure me with an AI source in the settings.' }

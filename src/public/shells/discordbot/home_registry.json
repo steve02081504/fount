@@ -35,6 +35,9 @@
 				"ko-KR": {
 					"title": "Discord Bot 구성"
 				},
+				"lzh": {
+					"title": "Discord 靈偶"
+				},
 				"nl-NL": {
 					"title": "Beheer Discord Bot"
 				},
@@ -94,6 +97,9 @@
 				},
 				"ko-KR": {
 					"title": "Discord Bot 구성"
+				},
+				"lzh": {
+					"title": "遣Discord靈偶"
 				},
 				"nl-NL": {
 					"title": "Discord Bot configureren"

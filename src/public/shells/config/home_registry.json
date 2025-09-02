@@ -35,6 +35,9 @@
 				"ko-KR": {
 					"title": "컴포넌트 설정"
 				},
+				"lzh": {
+					"title": "器之規度"
+				},
 				"nl-NL": {
 					"title": "Componentconfiguratie"
 				},
@@ -94,6 +97,9 @@
 				},
 				"ko-KR": {
 					"title": "구성"
+				},
+				"lzh": {
+					"title": "規度"
 				},
 				"nl-NL": {
 					"title": "Configuratie"

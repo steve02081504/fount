@@ -35,6 +35,9 @@
 				"ko-KR": {
 					"title": "파트 내보내기"
 				},
+				"lzh": {
+					"title": "導出器"
+				},
 				"nl-NL": {
 					"title": "Exporteren componenten"
 				},
@@ -94,6 +97,9 @@
 				},
 				"ko-KR": {
 					"title": "내보내기"
+				},
+				"lzh": {
+					"title": "導出"
 				},
 				"nl-NL": {
 					"title": "Exporteren"

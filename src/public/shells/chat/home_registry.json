@@ -35,6 +35,9 @@
 				"ko-KR": {
 					"title": "기록 보기"
 				},
+				"lzh": {
+					"title": "清談之跡"
+				},
 				"nl-NL": {
 					"title": "Geschiedenis bekijken"
 				},
@@ -94,6 +97,9 @@
 				},
 				"ko-KR": {
 					"title": "채팅"
+				},
+				"lzh": {
+					"title": "清談"
 				},
 				"nl-NL": {
 					"title": "kletsen"

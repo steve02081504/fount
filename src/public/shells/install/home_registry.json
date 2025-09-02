@@ -35,6 +35,9 @@
 				"ko-KR": {
 					"title": "가져오기"
 				},
+				"lzh": {
+					"title": "引入"
+				},
 				"nl-NL": {
 					"title": "Importeren"
 				},
@@ -94,6 +97,9 @@
 				},
 				"ko-KR": {
 					"title": "삭제"
+				},
+				"lzh": {
+					"title": "卸"
 				},
 				"nl-NL": {
 					"title": "Verwijderen"
