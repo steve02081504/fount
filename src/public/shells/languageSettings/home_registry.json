@@ -1,0 +1,62 @@
+{
+	"home_function_buttons": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "语言设置"
+				},
+				"en-UK": {
+					"title": "Language Settings"
+				},
+				"ar-SA": {
+					"title": "إعدادات اللغة"
+				},
+				"de-DE": {
+					"title": "Spracheinstellungen"
+				},
+				"es-ES": {
+					"title": "Configuración de idiomas"
+				},
+				"fr-FR": {
+					"title": "Paramètres linguistiques"
+				},
+				"hi-IN": {
+					"title": "भाषा सेटिंग्स"
+				},
+				"is-IS": {
+					"title": "Tungumálastillingar"
+				},
+				"it-IT": {
+					"title": "Impostazioni linguistiche"
+				},
+				"ja-JP": {
+					"title": "言語設定"
+				},
+				"ko-KR": {
+					"title": "언어 설정"
+				},
+				"nl-NL": {
+					"title": "Taalinstellingen"
+				},
+				"pt-PT": {
+					"title": "Configurações de idiomas"
+				},
+				"ru-RU": {
+					"title": "Языковые настройки"
+				},
+				"uk-UA": {
+					"title": "Налаштування мови"
+				},
+				"vi-VN": {
+					"title": "Cài đặt ngôn ngữ"
+				},
+				"zh-TW": {
+					"title": "語言設置"
+				}
+			},
+			"level": 3,
+			"url": "/shells/languageSettings",
+			"button": "<img src=\"https://api.iconify.design/material-symbols/language.svg\" class=\"text-icon\"/>"
+		}
+	]
+}

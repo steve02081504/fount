@@ -3,6 +3,32 @@ import { base_dir } from '../base.mjs'
 let i18n = {}
 let saved_pageid
 let availableLocales = []
+const localeNames = new Map()
+
+/**
+ * Sets the application's language.
+ * @param {string[]} lang - The language code (e.g., 'en-UK', 'zh-CN').
+ */
+export async function setLocales(langs) {
+	localStorage.setItem('fountUserPreferredLanguage', JSON.stringify(langs))
+	await initTranslations()
+}
+
+/**
+ * Returns the list of available locale codes.
+ * @returns {string[]}
+ */
+export function getAvailableLocales() {
+	return availableLocales
+}
+
+/**
+ * Returns a map of locale codes to their native names.
+ * @returns {Map<string, string>}
+ */
+export function getLocaleNames() {
+	return localeNames
+}
 
 /**
  * 从服务器获取多语言数据并初始化翻译。
@@ -12,10 +38,23 @@ export async function initTranslations(pageid = saved_pageid) {
 	saved_pageid = pageid
 
 	try {
-		const response = await fetch(base_dir + '/locales.json')
-		if (!response.ok)
-			throw new Error(`Failed to fetch available locales: ${response.status} ${response.statusText}`)
-		availableLocales = await response.json()
+		const listRes = await fetch(base_dir + '/locales/list.csv')
+
+		if (listRes.ok) {
+			const csvText = await listRes.text()
+			const lines = csvText.split('\n').slice(1) // Skip header
+			availableLocales = []
+			for (const line of lines) {
+				const [code, name] = line.split(',')
+				if (code && name) {
+					const a = code.trim()
+					availableLocales.push(a)
+					localeNames.set(a, name.trim())
+				}
+			}
+		}
+		else
+			console.warn('Could not fetch locales list.csv, language names will not be available.')
 
 		const lang = getbestlocale(navigator.languages || [navigator.language], availableLocales)
 
@@ -31,6 +70,11 @@ export async function initTranslations(pageid = saved_pageid) {
 }
 
 function getbestlocale(preferredlocaleList, localeList) {
+	const savedLangs = JSON.parse(localStorage.getItem('fountUserPreferredLanguage') || '[]')
+	for (const lang of savedLangs)
+		if (localeList.includes(lang))
+			return lang
+
 	for (const preferredlocale of preferredlocaleList) {
 		if (localeList.includes(preferredlocale))
 			return preferredlocale

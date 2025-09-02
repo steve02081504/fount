@@ -39,8 +39,6 @@ jobs:
         run: |
           cp -r ./src/locales ./.github/pages/
           cp -r ./imgs ./.github/pages/
-      - name: Create locales list
-        run: ls -1 ./src/locales | sed 's/\.json$//' | jq -R . | jq -s . > ./.github/pages/locales.json
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact

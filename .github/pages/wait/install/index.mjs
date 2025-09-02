@@ -3,7 +3,7 @@ import * as Sentry from 'https://esm.run/@sentry/browser'
 
 import { setBaseDir, setPreRender, setTheme, theme_now } from '../../base.mjs'
 import { isFountServiceAvailable, saveFountHostUrl, getFountHostUrl, pingFount } from '../../scripts/fountHostGetter.mjs'
-import { initTranslations, geti18n, console } from '../../scripts/i18n.mjs'
+import { initTranslations, geti18n, console, getAvailableLocales, getLocaleNames, setLocales } from '../../scripts/i18n.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
 import { showToast } from '../../scripts/toast.mjs'
 
@@ -321,6 +321,32 @@ function setupTextRotation(container, words, interval) {
 	setInterval(updateText, interval)
 }
 
+async function populateLanguageSelector() {
+	const languageSelector = document.getElementById('language-selector')
+	if (!languageSelector) return
+
+	const locales = getAvailableLocales()
+	const localeNames = getLocaleNames()
+
+	languageSelector.innerHTML = '' // Clear existing items
+
+	locales.forEach(locale => {
+		const li = document.createElement('li')
+		const a = document.createElement('a')
+		a.textContent = localeNames.get(locale) || locale
+		a.addEventListener('click', (e) => {
+			e.preventDefault()
+			setLocales([locale])
+			// Close dropdown after selection
+			if (document.activeElement instanceof HTMLElement)
+				document.activeElement.blur()
+
+		})
+		li.appendChild(a)
+		languageSelector.appendChild(li)
+	})
+}
+
 // --- Main Execution ---
 async function main() {
 	// Start the intro animation and translations in parallel
@@ -328,6 +354,8 @@ async function main() {
 		initTranslations('installer_wait_screen'),
 		playHeroAnimation()
 	])
+
+	populateLanguageSelector() // Call the new function
 
 	// Initial render
 	renderThemePreviews()
@@ -383,7 +411,12 @@ async function main() {
 				setPreRender(hostUrl)
 				footerReadyText.textContent = geti18n('installer_wait_screen.footer.ready_text')
 				launchButtonText.textContent = geti18n('installer_wait_screen.footer.open_fount')
-				launchButton.onclick = () => window.location.href = hostUrl + '?theme=' + theme_now
+				launchButton.onclick = () => {
+					const params = new URLSearchParams();
+					params.set('theme', theme_now);
+					params.set('userPreferredLanguages', localStorage.getItem('fountUserPreferredLanguage') || '[]');
+					window.location.href = hostUrl + '?' + params.toString();
+				}
 				launchButtonSpinner.style.display = 'none'
 
 				if (footer) {

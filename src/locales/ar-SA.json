@@ -1,5 +1,6 @@
 {
 	"lang": "ar-SA",
+	"name": "العربية",
 	"fountConsole": {
 		"server": {
 			"start": "جاري بدء الخادم",
@@ -1021,7 +1022,7 @@
 		},
 		"version": {
 			"label": "الإصدار",
-			"placeholder": "مثال: 1.0.0"
+			"placeholder": "مثال: 0.0.1"
 		},
 		"tags": {
 			"label": "الوسوم",
@@ -1104,5 +1105,18 @@
 			"generateShareLink": "إنشاء رابط مشاركة",
 			"generateShareLinkWithData": "إنشاء رابط مشاركة (مع البيانات)"
 		}
+	},
+	"languageSettings": {
+		"title": "إعدادات اللغة",
+		"description": "إدارة تفضيلات لغتك هنا. ستؤدي اللغات في القائمة إلى الأسبقية على إعدادات المتصفح بالترتيب.",
+		"availableLanguages": "اللغات المتاحة",
+		"addButton": "اضف إليه",
+		"preferredLanguages": "قائمة لغة الأولوية",
+		"resetButton": "إعادة ضبط",
+		"saveButton": "يحفظ",
+		"noPreferredLanguages": "لا لغة سابقة حتى الآن. سيتم استخدام الإعدادات الافتراضية للمتصفح.",
+		"savedMessage": "يتم حفظ إعدادات اللغة!",
+		"resetMessage": "تم إعادة تعيين إعدادات اللغة!",
+		"fetchLocalesFailed": "فشل في الحصول على اللغات المتاحة!"
 	}
 }

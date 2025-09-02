@@ -1,5 +1,6 @@
 {
 	"lang": "hi-IN",
+	"name": "हिन्दी",
 	"fountConsole": {
 		"server": {
 			"start": "सर्वर शुरू किया जा रहा है",
@@ -1021,7 +1022,7 @@
 		},
 		"version": {
 			"label": "संस्करण",
-			"placeholder": "उदाहरण: 1.0.0"
+			"placeholder": "उदाहरण: 0.0.1"
 		},
 		"tags": {
 			"label": "टैग",
@@ -1104,5 +1105,18 @@
 			"generateShareLink": "एक शेयर लिंक उत्पन्न करें",
 			"generateShareLinkWithData": "शेयर लिंक उत्पन्न करें (डेटा सहित)"
 		}
+	},
+	"languageSettings": {
+		"title": "भाषा सेटिंग्स",
+		"description": "अपनी भाषा वरीयताओं को यहां प्रबंधित करें। सूची में भाषाएँ क्रम में ब्राउज़र सेटिंग्स पर पूर्वता लेगी।",
+		"availableLanguages": "उपलब्ध भाषाएँ",
+		"addButton": "इसमें जोड़ें",
+		"preferredLanguages": "प्राथमिकता भाषा सूची",
+		"resetButton": "रीसेट करना",
+		"saveButton": "बचाना",
+		"noPreferredLanguages": "अभी तक कोई पूर्व भाषा नहीं है। ब्राउज़र डिफ़ॉल्ट सेटिंग्स का उपयोग किया जाएगा।",
+		"savedMessage": "भाषा सेटिंग्स बचाई जाती हैं!",
+		"resetMessage": "भाषा सेटिंग्स रीसेट हो गई हैं!",
+		"fetchLocalesFailed": "उपलब्ध भाषाओं को प्राप्त करने में विफल!"
 	}
 }

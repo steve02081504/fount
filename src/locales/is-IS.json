@@ -1,5 +1,6 @@
 {
 	"lang": "is-IS",
+	"name": "Íslenska",
 	"fountConsole": {
 		"server": {
 			"start": "Ræsi netþjón",
@@ -1021,7 +1022,7 @@
 		},
 		"version": {
 			"label": "Útgáfa",
-			"placeholder": "T.d.: 1.0.0"
+			"placeholder": "T.d.: 0.0.1"
 		},
 		"tags": {
 			"label": "Merki",
@@ -1104,5 +1105,18 @@
 			"generateShareLink": "Búa til deilingarhlekk",
 			"generateShareLinkWithData": "Búa til deilingarhlekk (með gögnum)"
 		}
+	},
+	"languageSettings": {
+		"title": "Tungumálastillingar",
+		"description": "Stjórna tungumálakjörum þínum hér. Tungumálin á listanum munu hafa forgang fram yfir vafrastillingarnar í röð.",
+		"availableLanguages": "Tiltæk tungumál",
+		"addButton": "Bæta við",
+		"preferredLanguages": "Forgangslista",
+		"resetButton": "Endurstilla",
+		"saveButton": "Vista",
+		"noPreferredLanguages": "Ekkert fyrri tungumál ennþá. Sjálfgefnar stillingar vafrans verða notaðar.",
+		"savedMessage": "Tungumálastillingar eru vistaðar!",
+		"resetMessage": "Tungumálastillingar hafa verið endurstilltar!",
+		"fetchLocalesFailed": "Ekki tókst að fá tiltæk tungumál!"
 	}
 }

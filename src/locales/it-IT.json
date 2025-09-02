@@ -1,5 +1,6 @@
 {
 	"lang": "it-IT",
+	"name": "Italiano",
 	"fountConsole": {
 		"server": {
 			"start": "Avvio del server...",
@@ -1021,7 +1022,7 @@
 		},
 		"version": {
 			"label": "Versione",
-			"placeholder": "Ad esempio: 1.0.0"
+			"placeholder": "Ad esempio: 0.0.1"
 		},
 		"tags": {
 			"label": "Tag",
@@ -1104,5 +1105,18 @@
 			"generateShareLink": "Genera un link di condivisione",
 			"generateShareLinkWithData": "Genera un link di condivisione (con dati)"
 		}
+	},
+	"languageSettings": {
+		"title": "Impostazioni linguistiche",
+		"description": "Gestisci le tue preferenze linguistiche qui. Le lingue nell'elenco avranno la precedenza sulle impostazioni del browser in ordine.",
+		"availableLanguages": "Lingue disponibili",
+		"addButton": "aggiungere a",
+		"preferredLanguages": "Elenco delle lingue prioritarie",
+		"resetButton": "Reset",
+		"saveButton": "salva",
+		"noPreferredLanguages": "Nessuna lingua precedente ancora. Verranno utilizzate le impostazioni predefinite del browser.",
+		"savedMessage": "Le impostazioni della lingua vengono salvate!",
+		"resetMessage": "Le impostazioni della lingua sono state ripristinate!",
+		"fetchLocalesFailed": "Impossibile ottenere le lingue disponibili!"
 	}
 }

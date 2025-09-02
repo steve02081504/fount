@@ -1,5 +1,6 @@
 {
 	"lang": "fr-FR",
+	"name": "Français",
 	"fountConsole": {
 		"server": {
 			"start": "Démarrage du serveur",
@@ -1021,7 +1022,7 @@
 		},
 		"version": {
 			"label": "Version",
-			"placeholder": "Par exemple : 1.0.0"
+			"placeholder": "Par exemple : 0.0.1"
 		},
 		"tags": {
 			"label": "Étiquettes",
@@ -1104,5 +1105,18 @@
 			"generateShareLink": "Générer un lien de partage",
 			"generateShareLinkWithData": "Générer un lien de partage (données incluses)"
 		}
+	},
+	"languageSettings": {
+		"title": "Paramètres linguistiques",
+		"description": "Gérez vos préférences linguistiques ici. Les langues de la liste auront la priorité sur les paramètres du navigateur dans l'ordre.",
+		"availableLanguages": "Langues disponibles",
+		"addButton": "Ajouter à",
+		"preferredLanguages": "Liste des langues prioritaires",
+		"resetButton": "Réinitialiser",
+		"saveButton": "sauvegarder",
+		"noPreferredLanguages": "Pas encore de langue antérieure. Les paramètres par défaut du navigateur seront utilisés.",
+		"savedMessage": "Les paramètres linguistiques sont enregistrés!",
+		"resetMessage": "Les paramètres de la langue ont été réinitialisés!",
+		"fetchLocalesFailed": "Impossible d'obtenir des langues disponibles!"
 	}
 }

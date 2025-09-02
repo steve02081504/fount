@@ -1,5 +1,6 @@
 {
 	"lang": "en-UK",
+	"name": "English (UK)",
 	"fountConsole": {
 		"server": {
 			"start": "Starting server",
@@ -1021,7 +1022,7 @@
 		},
 		"version": {
 			"label": "Version",
-			"placeholder": "e.g., 1.0.0"
+			"placeholder": "e.g., 0.0.1"
 		},
 		"tags": {
 			"label": "Tags",
@@ -1104,5 +1105,18 @@
 			"generateShareLink": "Generate a share link",
 			"generateShareLinkWithData": "Generate a share link (including data)"
 		}
+	},
+	"languageSettings": {
+		"title": "Language settings",
+		"description": "Manage your language preferences here. The languages ​​in the list will take precedence over the browser settings in order.",
+		"availableLanguages": "Available Languages",
+		"addButton": "Add to",
+		"preferredLanguages": "Priority Language List",
+		"resetButton": "Reset",
+		"saveButton": "save",
+		"noPreferredLanguages": "No prior language yet. The browser default settings will be used.",
+		"savedMessage": "Language settings are saved!",
+		"resetMessage": "Language settings have been reset!",
+		"fetchLocalesFailed": "Failed to get available languages!"
 	}
 }

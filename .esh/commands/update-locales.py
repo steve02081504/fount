@@ -428,7 +428,7 @@ def normalize_and_sync_dicts(
 
 	# 单次遍历所有键
 	for key in combined_keys:
-		if key == "lang" and path == "":
+		if key in ["lang", "name"] and path == "":
 			continue
 
 		current_path = f"{path}.{key}" if path else key
@@ -993,6 +993,40 @@ def save_locale_files(all_data, ref_path):
 			print(f"  - 错误: 保存 {os.path.basename(filepath)} 时出错: {e}")
 
 
+def generate_list_csv(all_data):
+    """Generates list.csv from all loaded locale data."""
+    print("\n--- Generating list.csv ---")
+    csv_path = os.path.join(LOCALE_DIR, "list.csv")
+    
+    header = "lang,name\n"
+    rows = []
+    
+    lang_data = {}
+    for file_path, data in all_data.items():
+        lang_code_from_file = get_lang_from_filename(file_path)
+        lang = data.get("lang", lang_code_from_file)
+        if lang != lang_code_from_file:
+             print(f"  - Warning: lang in {os.path.basename(file_path)} ('{lang}') differs from filename ('{lang_code_from_file}'). Using filename.")
+             lang = lang_code_from_file
+        name = data.get("name")
+        if lang and name:
+            lang_data[lang] = name
+        else:
+            print(f"  - Warning: Missing 'lang' or 'name' in {os.path.basename(file_path)}. Skipping.")
+
+    sorted_langs = sorted(lang_data.keys())
+    for lang in sorted_langs:
+        rows.append(f"{lang},{lang_data[lang]}\n")
+
+    try:
+        with open(csv_path, "w", encoding="utf-8", newline="") as f:
+            f.write(header)
+            f.writelines(rows)
+        print(f"  - Successfully generated list.csv with {len(rows)} entries.")
+    except Exception as e:
+        print(f"  - Error: Failed to write to {csv_path}: {e}")
+
+
 # --- 主逻辑 (重构后) ---
 def main():
 	"""主执行函数"""
@@ -1017,6 +1051,8 @@ def main():
 		process_home_registries(lang_to_path, REFERENCE_LANG_CODES)
 	else:
 		print("\n警告: 无有效区域设置，跳过 home_registry.json 处理。")
+
+	generate_list_csv(all_data)
 
 	print("\n脚本执行完毕。")
 

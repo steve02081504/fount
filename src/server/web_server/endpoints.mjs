@@ -3,7 +3,7 @@ import { Readable } from 'node:stream'
 import cors from 'npm:cors'
 import express from 'npm:express'
 
-import { console, getLocaleData } from '../../scripts/i18n.mjs'
+import { console, getLocaleData, fountLocaleList } from '../../scripts/i18n.mjs'
 import { ms } from '../../scripts/ms.mjs'
 import { get_hosturl_in_local_ip, is_local_ip, is_local_ip_from_req, rateLimit } from '../../scripts/ratelimit.mjs'
 import { generateVerificationCode, verifyVerificationCode } from '../../scripts/verifycode.mjs'
@@ -44,16 +44,27 @@ export function registerEndpoints(router) {
 			hosturl_in_local_ip,
 		})
 	})
+	
 	router.get('/api/getlocaledata', async (req, res) => {
-		const preferredLanguages = req.headers['accept-language']?.split?.(',')?.map?.((lang) => lang.trim().split(';')[0])
+		const browserLanguages = req.headers['accept-language']?.split?.(',')?.map?.((lang) => lang.trim().split(';')[0]) || []
+		const userPreferredLanguages = req.query.preferred?.split?.(',') || []
+
+		// 合并语言列表，用户设置的优先，然后去重
+		const preferredLanguages = [...new Set([...userPreferredLanguages, ...browserLanguages])]
+
 		if (req.cookies.accessToken) try {
 			const user = await getUserByReq(req)
 			user.locales = preferredLanguages
-			console.logI18n('fountConsole.route.setLanguagePreference', { username: user.username, preferredLanguages })
+			console.logI18n('fountConsole.route.setLanguagePreference', { username: user.username, preferredLanguages: preferredLanguages.join(', ') })
 		} catch { }
 
 		return res.status(200).json(await getLocaleData(preferredLanguages))
 	})
+
+	router.get('/api/getavailablelocales', async (req, res) => {
+		res.status(200).json(fountLocaleList)
+	})
+
 	router.post('/api/login', rateLimit({ maxRequests: 5, windowMs: ms('1m') }), async (req, res) => {
 		const { username, password, deviceid } = req.body
 		const result = await login(username, password, deviceid, req)

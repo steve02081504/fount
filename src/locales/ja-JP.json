@@ -1,5 +1,6 @@
 {
 	"lang": "ja-JP",
+	"name": "日本語",
 	"fountConsole": {
 		"server": {
 			"start": "サーバーを起動しています。",
@@ -1021,7 +1022,7 @@
 		},
 		"version": {
 			"label": "バージョン",
-			"placeholder": "例: 1.0.0"
+			"placeholder": "例: 0.0.1"
 		},
 		"tags": {
 			"label": "タグ",
@@ -1104,5 +1105,18 @@
 			"generateShareLink": "共有リンクを生成",
 			"generateShareLinkWithData": "共有リンク生成 (データ込)"
 		}
+	},
+	"languageSettings": {
+		"title": "言語設定",
+		"description": "ここで言語の好みを管理します。リスト内の言語は、ブラウザの設定よりも優先されます。",
+		"availableLanguages": "利用可能な言語",
+		"addButton": "に追加",
+		"preferredLanguages": "優先言語リスト",
+		"resetButton": "リセット",
+		"saveButton": "保存",
+		"noPreferredLanguages": "以前の言語はまだありません。ブラウザのデフォルト設定が使用されます。",
+		"savedMessage": "言語設定が保存されます！",
+		"resetMessage": "言語設定がリセットされました！",
+		"fetchLocalesFailed": "利用可能な言語を取得できませんでした！"
 	}
 }

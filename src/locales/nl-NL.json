@@ -1,5 +1,6 @@
 {
 	"lang": "nl-NL",
+	"name": "Nederlands",
 	"fountConsole": {
 		"server": {
 			"start": "Server starten",
@@ -1021,7 +1022,7 @@
 		},
 		"version": {
 			"label": "Versie",
-			"placeholder": "Bijv: 1.0.0"
+			"placeholder": "Bijv: 0.0.1"
 		},
 		"tags": {
 			"label": "Tags",
@@ -1104,5 +1105,18 @@
 			"generateShareLink": "Deellink genereren",
 			"generateShareLinkWithData": "Deellink genereren (incl. data)"
 		}
+	},
+	"languageSettings": {
+		"title": "Taalinstellingen",
+		"description": "Beheer hier uw taalvoorkeuren. De talen in de lijst hebben voorrang op de browserinstellingen in volgorde.",
+		"availableLanguages": "Beschikbare talen",
+		"addButton": "Toevoegen aan",
+		"preferredLanguages": "Prioriteitstaallijst",
+		"resetButton": "Resetten",
+		"saveButton": "redden",
+		"noPreferredLanguages": "Nog geen eerdere taal. De standaardinstellingen van de browser worden gebruikt.",
+		"savedMessage": "Taalinstellingen worden opgeslagen!",
+		"resetMessage": "Taalinstellingen zijn gereset!",
+		"fetchLocalesFailed": "Kan niet beschikbare talen krijgen!"
 	}
 }

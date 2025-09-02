@@ -1,5 +1,6 @@
 {
 	"lang": "vi-VN",
+	"name": "Tiếng Việt",
 	"fountConsole": {
 		"server": {
 			"start": "Đang khởi động máy chủ.",
@@ -1021,7 +1022,7 @@
 		},
 		"version": {
 			"label": "Phiên bản",
-			"placeholder": "Ví dụ: 1.0.0"
+			"placeholder": "Ví dụ: 0.0.1"
 		},
 		"tags": {
 			"label": "Thẻ",
@@ -1104,5 +1105,18 @@
 			"generateShareLink": "Tạo liên kết chia sẻ",
 			"generateShareLinkWithData": "Tạo liên kết chia sẻ (bao gồm dữ liệu)"
 		}
+	},
+	"languageSettings": {
+		"title": "Cài đặt ngôn ngữ",
+		"description": "Quản lý sở thích ngôn ngữ của bạn ở đây. Các ngôn ngữ trong danh sách sẽ được ưu tiên hơn các cài đặt trình duyệt theo thứ tự.",
+		"availableLanguages": "Ngôn ngữ có sẵn",
+		"addButton": "Thêm vào",
+		"preferredLanguages": "Danh sách ngôn ngữ ưu tiên",
+		"resetButton": "Cài lại",
+		"saveButton": "cứu",
+		"noPreferredLanguages": "Chưa có ngôn ngữ trước. Các cài đặt mặc định của trình duyệt sẽ được sử dụng.",
+		"savedMessage": "Cài đặt ngôn ngữ được lưu!",
+		"resetMessage": "Cài đặt ngôn ngữ đã được đặt lại!",
+		"fetchLocalesFailed": "Không nhận được ngôn ngữ có sẵn!"
 	}
 }

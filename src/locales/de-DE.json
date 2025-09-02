@@ -1,5 +1,6 @@
 {
 	"lang": "de-DE",
+	"name": "Deutsch",
 	"fountConsole": {
 		"server": {
 			"start": "Server wird gestartet",
@@ -1021,7 +1022,7 @@
 		},
 		"version": {
 			"label": "Version",
-			"placeholder": "Zum Beispiel: 1.0.0"
+			"placeholder": "Zum Beispiel: 0.0.1"
 		},
 		"tags": {
 			"label": "Tags",
@@ -1104,5 +1105,18 @@
 			"generateShareLink": "Freigabelink generieren",
 			"generateShareLinkWithData": "Freigabelink generieren (einschließlich Daten)"
 		}
+	},
+	"languageSettings": {
+		"title": "Spracheinstellungen",
+		"description": "Verwalten Sie hier Ihre Spracheinstellungen. Die Sprachen in der Liste haben Vorrang vor den Browsereinstellungen in der Reihenfolge.",
+		"availableLanguages": "Verfügbare Sprachen",
+		"addButton": "Hinzufügen zu",
+		"preferredLanguages": "Prioritätssprachliste",
+		"resetButton": "Zurücksetzen",
+		"saveButton": "speichern",
+		"noPreferredLanguages": "Noch keine frühere Sprache. Die Browser -Standardeinstellungen werden verwendet.",
+		"savedMessage": "Spracheinstellungen werden gespeichert!",
+		"resetMessage": "Spracheinstellungen wurden zurückgesetzt!",
+		"fetchLocalesFailed": "Versäumte, verfügbare Sprachen zu erhalten!"
 	}
 }

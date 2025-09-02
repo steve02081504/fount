@@ -8,7 +8,8 @@ applyTheme()
 initTranslations('access')
 
 const url = await hosturl_in_local_ip() + '/?' + new URLSearchParams({
-	theme: localStorage.getItem('theme') || 'dark'
+	theme: localStorage.getItem('theme') || 'dark',
+	userPreferredLanguages: localStorage.getItem('userPreferredLanguages') || '[]'
 })
 
 const accessUrl = document.getElementById('accessUrl')

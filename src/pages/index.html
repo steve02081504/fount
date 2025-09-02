@@ -25,23 +25,26 @@
 		const hostUrl = window.location.origin
 		const urlParams = new URLSearchParams(window.location.search)
 		if (urlParams.get('theme')) setTheme(urlParams.get('theme'))
+		if (urlParams.get('userPreferredLanguages'))
+			localStorage.setItem('userPreferredLanguages', urlParams.get('userPreferredLanguages'))
 
-		document.getElementById('skipButton').addEventListener('click', () => {
-			window.location.href = 'https://steve02081504.github.io/fount/values_update?' + new URLSearchParams({
+		function getCommonUrlParams(params = {}) {
+			return new URLSearchParams(Object.assign(params, {
 				theme: localStorage.getItem('theme'),
 				hostUrl,
-				redirect: hostUrl + '/shells/home',
-			})
+				userPreferredLanguages: localStorage.getItem('userPreferredLanguages') || undefined
+			}));
+		}
+
+		document.getElementById('skipButton').addEventListener('click', () => {
+			window.location.href = 'https://steve02081504.github.io/fount/values_update?' + getCommonUrlParams({ redirect: hostUrl + '/shells/home' });
 		})
 
 		let retry = 1
 		setInterval(() => {
 			if (retry) {
 				retry = 0
-				const newTab = window.open('https://steve02081504.github.io/fount/values_update?' + new URLSearchParams({
-					theme: localStorage.getItem('theme'),
-					hostUrl,
-				}).toString(), '_blank')
+				const newTab = window.open('https://steve02081504.github.io/fount/values_update?' + getCommonUrlParams(), '_blank')
 
 				if (newTab) {
 					newTab.blur()

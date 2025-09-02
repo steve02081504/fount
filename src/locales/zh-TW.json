@@ -1,5 +1,6 @@
 {
 	"lang": "zh-TW",
+	"name": "繁體中文",
 	"fountConsole": {
 		"server": {
 			"start": "正在啟動伺服器",
@@ -1021,7 +1022,7 @@
 		},
 		"version": {
 			"label": "版本",
-			"placeholder": "例如：1.0.0"
+			"placeholder": "例如：0.0.1"
 		},
 		"tags": {
 			"label": "標籤",
@@ -1104,5 +1105,18 @@
 			"generateShareLink": "建立分享連結",
 			"generateShareLinkWithData": "產生分享連結 (包含資料)"
 		}
+	},
+	"languageSettings": {
+		"title": "語言設置",
+		"description": "在此處管理您的語言偏好。列表中的語言將按順序優先於瀏覽器設置。",
+		"availableLanguages": "可用語言",
+		"addButton": "添加",
+		"preferredLanguages": "優先語言列表",
+		"resetButton": "重置",
+		"saveButton": "保存",
+		"noPreferredLanguages": "暫無優先語言。將使用瀏覽器默認設置。",
+		"savedMessage": "語言設置已保存！",
+		"resetMessage": "語言設置已重置！",
+		"fetchLocalesFailed": "獲取可用語言失敗！"
 	}
 }

@@ -9,16 +9,35 @@ import { exec } from './exec.mjs'
 import { loadJsonFile } from './json_loader.mjs'
 
 const console = baseConsole
-const fountLocaleList = fs.readdirSync(__dirname + '/src/locales').filter((file) => file.endsWith('.json')).map((file) => file.slice(0, -5))
+export const fountLocaleList = fs.readFileSync(__dirname + '/src/locales/list.csv', 'utf8')
+	.trim()
+	.split('\n')
+	.slice(1) // Skip header
+	.map(line => {
+		const [id, ...nameParts] = line.split(',')
+		return { id: id.trim(), name: nameParts.join(',').trim() }
+	})
+	.filter(locale => locale.id)
 
 export function getbestlocale(preferredlocaleList, localeList) {
-	for (const preferredlocale of preferredlocaleList) {
-		if (localeList.includes(preferredlocale))
-			return preferredlocale
-		const temp = localeList.find((name) => name.startsWith(preferredlocale.split('-')[0]))
-		if (temp) return temp
+	const available = new Set(localeList.map(l => l?.id ?? l).filter(Boolean))
+
+	for (const preferred of preferredlocaleList ?? []) {
+		if (typeof preferred !== 'string' || !preferred) continue
+
+		// 1. Exact match
+		if (available.has(preferred))
+			return preferred
+
+
+		// 2. Partial match (e.g., 'en' from 'en-US')
+		const prefix = preferred.split('-')[0]
+		for (const locale of available)
+			if (locale.startsWith(prefix))
+				return locale
 	}
-	return 'en-UK'
+
+	return 'en-UK' // Default
 }
 
 const fountLocaleCache = {}

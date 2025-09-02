@@ -1,5 +1,6 @@
 {
 	"lang": "pt-PT",
+	"name": "Português",
 	"fountConsole": {
 		"server": {
 			"start": "A iniciar o servidor",
@@ -1021,7 +1022,7 @@
 		},
 		"version": {
 			"label": "Versão",
-			"placeholder": "Ex: 1.0.0"
+			"placeholder": "Ex: 0.0.1"
 		},
 		"tags": {
 			"label": "Etiquetas",
@@ -1104,5 +1105,18 @@
 			"generateShareLink": "Gerar link de partilha",
 			"generateShareLinkWithData": "Gerar um link de compartilhamento (incluindo dados)"
 		}
+	},
+	"languageSettings": {
+		"title": "Configurações de idiomas",
+		"description": "Gerencie suas preferências de idioma aqui. Os idiomas da lista terão precedência sobre as configurações do navegador em ordem.",
+		"availableLanguages": "Idiomas disponíveis",
+		"addButton": "adicionar à",
+		"preferredLanguages": "Lista de idiomas prioritária",
+		"resetButton": "Reiniciar",
+		"saveButton": "salvar",
+		"noPreferredLanguages": "Ainda não há idioma anterior. As configurações padrão do navegador serão usadas.",
+		"savedMessage": "As configurações de idioma são salvas!",
+		"resetMessage": "As configurações de idioma foram redefinidas!",
+		"fetchLocalesFailed": "Falha ao obter os idiomas disponíveis!"
 	}
 }

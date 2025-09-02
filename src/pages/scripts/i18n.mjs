@@ -1,15 +1,22 @@
 let i18n = {}
 let saved_pageid
 
+function loadPreferredLangs() {
+	return JSON.parse(localStorage.getItem('userPreferredLanguages') || '[]')
+}
+
 /**
  * 从服务器获取多语言数据并初始化翻译。
  * @param {string} [pageid]
+ * @param {string[]} [preferredLangs] - 用户手动设置的优先语言列表
  */
-export async function initTranslations(pageid = saved_pageid) {
+export async function initTranslations(pageid = saved_pageid, preferredLangs = loadPreferredLangs()) {
 	saved_pageid = pageid
-
 	try {
-		const response = await fetch('/api/getlocaledata')
+		const url = new URL('/api/getlocaledata', location.origin)
+		url.searchParams.set('preferred', preferredLangs.join(','))
+
+		const response = await fetch(url)
 		if (!response.ok)
 			throw new Error(`Failed to fetch translations: ${response.status} ${response.statusText}`)
 
