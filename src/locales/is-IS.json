@@ -176,7 +176,6 @@
 		"footer": {
 			"ready_text": "Tilbúin(n) að hefja ferðalagið?",
 			"wait_text": "Vinsamlegast bíðið augnablik...",
-			"launch_button": "fount er í uppsetningu...",
 			"open_fount": "Opna fount",
 			"open_or_install_fount": "Opna/setja upp fount",
 			"error_message": "Æji :(\n\nVilla kom upp:\n${error}"

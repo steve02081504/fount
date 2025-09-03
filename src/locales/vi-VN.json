@@ -176,7 +176,6 @@
 		"footer": {
 			"ready_text": "Sẵn sàng bắt đầu hành trình của bạn?",
 			"wait_text": "Vui lòng đợi một lát...",
-			"launch_button": "fount đang được cài đặt...",
 			"open_fount": "Mở fount",
 			"open_or_install_fount": "Mở/Cài đặt fount",
 			"error_message": "Ối... :(\n\nĐã xảy ra lỗi:\n${error}"

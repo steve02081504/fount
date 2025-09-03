@@ -176,7 +176,6 @@
 		"footer": {
 			"ready_text": "準備好開始您的旅程了嗎？",
 			"wait_text": "請稍候片刻...",
-			"launch_button": "fount 正在安裝...",
 			"open_fount": "開啟 fount",
 			"open_or_install_fount": "開啟/安裝 fount",
 			"error_message": "哎呀 :(\n\n發生錯誤：\n${error}"

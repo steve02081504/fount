@@ -176,7 +176,6 @@
 		"footer": {
 			"ready_text": "Klaar om je reis te beginnen?",
 			"wait_text": "Een ogenblik geduld...",
-			"launch_button": "fount wordt geïnstalleerd...",
 			"open_fount": "Open fount",
 			"open_or_install_fount": "Open/Installeer fount",
 			"error_message": "Oeps :(\n\nEr is een fout opgetreden:\n${error}"

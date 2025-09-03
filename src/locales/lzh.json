@@ -176,7 +176,6 @@
 		"footer": {
 			"ready_text": "啟程乎？",
 			"wait_text": "稍待...",
-			"launch_button": "fount 安設中...",
 			"open_fount": "啟 fount",
 			"open_or_install_fount": "啟/安 fount",
 			"error_message": "悲哉 :(\n\n有誤：\n${error}"

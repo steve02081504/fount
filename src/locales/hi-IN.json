@@ -176,7 +176,6 @@
 		"footer": {
 			"ready_text": "अपनी यात्रा शुरू करने के लिए तैयार हैं?",
 			"wait_text": "कृपया थोड़ा इंतज़ार करें...",
-			"launch_button": "fount इंस्टॉल हो रहा है...",
 			"open_fount": "fount खोलें",
 			"open_or_install_fount": "fount खोलें/इंस्टॉल करें",
 			"error_message": "ओह हो :(\n\nएक त्रुटि हुई:\n${error}"

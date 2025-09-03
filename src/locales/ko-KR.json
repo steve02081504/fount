@@ -176,7 +176,6 @@
 		"footer": {
 			"ready_text": "여정을 시작할 준비가 되셨나요?",
 			"wait_text": "잠시만 기다려주세요...",
-			"launch_button": "fount 설치 중...",
 			"open_fount": "fount 열기",
 			"open_or_install_fount": "fount 열기/설치하기",
 			"error_message": "아이고…\n\n오류가 발생했습니다:\n${error}"

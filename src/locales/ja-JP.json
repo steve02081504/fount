@@ -176,7 +176,6 @@
 		"footer": {
 			"ready_text": "冒険を始める準備はできましたか？",
 			"wait_text": "しばらくお待ちください...",
-			"launch_button": "fountをインストール中...",
 			"open_fount": "fountを開く",
 			"open_or_install_fount": "fountを開く/インストール",
 			"error_message": "あらら…\n\nエラーが発生しました：\n${error}"

@@ -176,7 +176,6 @@
 		"footer": {
 			"ready_text": "Готовы начать свое путешествие?",
 			"wait_text": "Пожалуйста, подождите немного...",
-			"launch_button": "fount устанавливается...",
 			"open_fount": "Открыть fount",
 			"open_or_install_fount": "Открыть/Установить fount",
 			"error_message": "Эх... :(\n\nПроизошла ошибка:\n${error}"

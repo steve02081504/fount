@@ -176,7 +176,6 @@
 		"footer": {
 			"ready_text": "هل أنت مستعد لبدء رحلتك؟",
 			"wait_text": "يرجى الانتظار لحظة...",
-			"launch_button": "fount قيد التثبيت...",
 			"open_fount": "فتح fount",
 			"open_or_install_fount": "فتح/تثبيت fount",
 			"error_message": "يا للأسف :(\n\nحدث خطأ:\n${error}"
