@@ -1,11 +1,12 @@
-import { exec } from 'node:child_process'
 import process from 'node:process'
 
 import notifier from 'npm:node-notifier'
 
 import { __dirname } from '../server/base.mjs'
+import { setDefaultStuff } from '../server/server.mjs'
 
 import { in_docker, in_termux } from './env.mjs'
+import { exec } from './exec.mjs'
 
 
 export async function notify(title, message, options = {}) {
@@ -13,7 +14,7 @@ export async function notify(title, message, options = {}) {
 		exec(`\
 Add-Type -AssemblyName System.Windows.Forms
 [System.Windows.Forms.MessageBox]::Show('${message.replace(/'/g, '\'\'')}', '${title.replace(/'/g, '\'\'')}', 0, [System.Windows.Forms.MessageBoxIcon]::Information)
-`, { 'shell': 'powershell.exe' })
+`, { 'shell': 'powershell.exe' }).then(() => setDefaultStuff()).catch(console.error)
 		return
 	}
 	if (in_docker || in_termux) return

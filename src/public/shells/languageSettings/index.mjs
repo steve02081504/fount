@@ -1,5 +1,4 @@
-import { loadPreferredLangs, savePreferredLangs } from "../../scripts/i18n.mjs";
-import { initTranslations, geti18n, i18nElement, console } from '../../scripts/i18n.mjs'
+import { initTranslations, geti18n, i18nElement, console, loadPreferredLangs, savePreferredLangs } from '../../scripts/i18n.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 
