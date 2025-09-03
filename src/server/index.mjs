@@ -27,6 +27,8 @@ const fount_config = {
 		Base: {
 			Jobs: !existsSync(__dirname + '/.nojobs'),
 			Timers: !existsSync(__dirname + '/.notimers'),
+			Idle: !existsSync(__dirname + '/.noidle'),
+			AutoUpdate: !existsSync(__dirname + '/.noupdate'),
 		}
 	}
 }

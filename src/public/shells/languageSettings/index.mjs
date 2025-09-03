@@ -1,3 +1,4 @@
+import { loadPreferredLangs, savePreferredLangs } from "../../scripts/i18n.mjs";
 import { initTranslations, geti18n, i18nElement, console } from '../../scripts/i18n.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
@@ -25,15 +26,6 @@ function showToast(messageKey) {
 		toastNotification.classList.remove('visible')
 		toastNotification.classList.add('invisible')
 	}, 2000)
-}
-
-function savePreferredLocales() {
-	localStorage.setItem('userPreferredLanguages', JSON.stringify(userPreferredLocales))
-}
-
-function loadPreferredLocales() {
-	const saved = localStorage.getItem('userPreferredLanguages')
-	return saved ? JSON.parse(saved) : []
 }
 
 function getLocaleName(id) {
@@ -131,15 +123,13 @@ function deleteLocale(id) {
 }
 
 function handleSave() {
-	savePreferredLocales()
-	initTranslations('languageSettings', userPreferredLocales) // Re-initialize translations with new preference
+	savePreferredLangs(userPreferredLocales)
 	showToast('languageSettings.savedMessage')
 }
 
 function handleReset() {
-	localStorage.removeItem('userPreferredLanguages')
 	userPreferredLocales = []
-	initTranslations('languageSettings', []) // Reset to browser default
+	savePreferredLangs(userPreferredLocales)
 	renderPreferredLanguages()
 	showToast('languageSettings.resetMessage')
 }
@@ -150,7 +140,7 @@ async function init() {
 	usingTemplates('/shells/languageSettings/templates')
 	await initTranslations('languageSettings') // Initialize page-specific translations
 
-	userPreferredLocales = loadPreferredLocales()
+	userPreferredLocales = loadPreferredLangs()
 
 	await fetchAvailableLocales()
 

@@ -216,7 +216,7 @@ function createRotatingText(container, initialWords, interval) {
 		container.innerHTML = ''
 		spans = words.map(word => {
 			const span = document.createElement('span')
-			span.textContent = word
+			span.innerHTML = word.replaceAll(' ', '&nbsp;')
 			container.appendChild(span)
 			return span
 		})

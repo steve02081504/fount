@@ -1,6 +1,6 @@
 import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
-import { initTranslations, geti18n, confirmI18n, console } from '../../scripts/i18n.mjs'
+import { initTranslations, geti18n, confirmI18n, console, onLanguageChange } from '../../scripts/i18n.mjs'
 import { renderMarkdown } from '../../scripts/markdown.mjs'
 import {
 	getCharDetails, noCacheGetCharDetails, getCharList,
@@ -47,9 +47,6 @@ const handleMouseWheelScroll = (event) => {
 	event.preventDefault()
 }
 
-window.addEventListener('languagechange', () => {
-	itemDetailsCache = {}
-})
 
 // --- Item Details Fetching ---
 async function getItemDetails(itemType, itemName, useCache = true) {
@@ -77,7 +74,7 @@ async function getItemDetails(itemType, itemName, useCache = true) {
 }
 
 // --- Rendering ---
-const ItemDOMCache = {}
+let ItemDOMCache = {}
 
 async function renderItemView(itemType, itemDetails, itemName) {
 	const cacheKey = `${itemType}-${itemName}`
@@ -360,6 +357,13 @@ async function updateTabContent(itemType) {
 async function initializeApp() {
 	applyTheme()
 	await initTranslations('home') // Initialize i18n first
+
+	onLanguageChange(async () => {
+		itemDetailsCache = {}
+		ItemDOMCache = {}
+		await fetchData()
+		await updateTabContent(currentItemType)
+	})
 
 	// Fetch initial data
 	await fetchData()

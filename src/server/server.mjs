@@ -90,10 +90,7 @@ export async function init(start_config) {
 	let logoPromise
 	if (starts.Base) {
 		if (start_config.needs_output) logoPromise = runSimpleWorker('logogener')
-		starts.Base = Object.assign({
-			Jobs: true,
-			Timers: true,
-		}, starts.Base)
+		for (const base of ['Jobs', 'Timers', 'Idle', 'AutoUpdate']) starts.Base[base] ??= true
 		console.freshLineI18n('server start', 'fountConsole.server.start')
 		process.on('error', console.log)
 		process.on('unhandledRejection', console.log)
@@ -180,12 +177,11 @@ export async function init(start_config) {
 	if (starts.Base) {
 		if (starts.Base.Jobs) ReStartJobs()
 		if (starts.Base.Timers) startTimerHeartbeat()
+		if (starts.Base.Idle) idleManager.start()
+		if (starts.Base.AutoUpdate) idleManager.onIdle(checkUpstreamAndRestart)
 	}
 	if (starts.DiscordRPC) StartRPC()
 	if (!fs.existsSync(__dirname + '/src/pages/favicon.ico')) await iconPromise
-
-	idleManager.onIdle(checkUpstreamAndRestart)
-	idleManager.start()
 
 	return true
 }

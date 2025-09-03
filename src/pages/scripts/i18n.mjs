@@ -1,8 +1,25 @@
+const fn_arr = [initTranslations]
+
+export function onLanguageChange(fn) {
+	fn_arr.push(fn)
+}
+async function runLanguageChange() {
+	for (const fn of fn_arr) await fn()
+}
+
 let i18n = {}
 let saved_pageid
+let lastKnownLangs
 
-function loadPreferredLangs() {
+export function loadPreferredLangs() {
 	return JSON.parse(localStorage.getItem('userPreferredLanguages') || '[]')
+}
+
+export function savePreferredLangs(langs) {
+	const oldLangs = loadPreferredLangs()
+	if (JSON.stringify(langs) == JSON.stringify(oldLangs)) return
+	localStorage.setItem('userPreferredLanguages', JSON.stringify(langs))
+	runLanguageChange()
 }
 
 /**
@@ -12,6 +29,7 @@ function loadPreferredLangs() {
  */
 export async function initTranslations(pageid = saved_pageid, preferredLangs = loadPreferredLangs()) {
 	saved_pageid = pageid
+	lastKnownLangs = preferredLangs
 	try {
 		const url = new URL('/api/getlocaledata', location.origin)
 		url.searchParams.set('preferred', preferredLangs.join(','))
@@ -128,5 +146,12 @@ export function i18nElement(element) {
 }
 
 window.addEventListener('languagechange', () => {
-	initTranslations()
+	runLanguageChange()
+})
+window.addEventListener('visibilitychange', () => {
+	if (document.visibilityState != 'visible') return
+
+	const preferredLangs = loadPreferredLangs()
+	if (JSON.stringify(lastKnownLangs) != JSON.stringify(preferredLangs))
+		runLanguageChange()
 })
