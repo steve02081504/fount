@@ -1,5 +1,5 @@
 export async function ping() {
-	const response = await fetch('/api/ping')
+	const response = await fetch('/api/ping', { cache: 'no-cache' })
 	return response.json()
 }
 

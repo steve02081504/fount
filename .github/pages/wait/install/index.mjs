@@ -315,7 +315,7 @@ function populateLanguageSelector() {
 // --- Fount Service Connection Logic ---
 const checkFountInstallerAlive = async () => {
 	try {
-		return (await fetch('http://localhost:8930')).ok
+		return (await fetch('http://localhost:8930', { cache: 'no-cache' })).ok
 	}
 	catch {
 		return false

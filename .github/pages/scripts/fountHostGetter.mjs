@@ -30,7 +30,7 @@ function extractIpAndPortFromUrl(urlString) {
 export async function isFountServiceAvailable(host) {
 	try {
 		const url = new URL('/api/ping', host)
-		const response = await fetch(url, { method: 'GET', mode: 'cors', signal: AbortSignal.timeout(500) })
+		const response = await fetch(url, { method: 'GET', mode: 'cors', cache: 'no-cache', signal: AbortSignal.timeout(500) })
 		const data = await response.json()
 		if (data?.cilent_name != 'fount') return false
 		console.debug(`[isFountServiceAvailable] fount service at ${host} is available.`)
@@ -176,6 +176,7 @@ export async function pingFount(hostUrl) {
 	const timeout = setTimeout(() => controller.abort(), 1000)
 	const res = await fetch(new URL('/api/ping', hostUrl), {
 		signal: controller.signal,
+		cache: 'no-cache'
 	}).catch(() => 0)
 	clearTimeout(timeout)
 	return res?.ok
