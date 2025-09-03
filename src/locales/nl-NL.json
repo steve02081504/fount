@@ -150,7 +150,7 @@
 			"description2": "Hier is een spelletje om de tijd te doden."
 		},
 		"data_showcase": {
-			"title_prefix": "fount is het meest",
+			"title_prefix": "fount is het meest ",
 			"adjectives": [
 				"uitbreidbaar",
 				"potentieelrijk",
@@ -158,12 +158,12 @@
 				"compatibel",
 				"compact en krachtig"
 			],
-			"title_of": "e",
+			"title_of": " e ",
 			"nouns": [
-				"AI virtueel personage",
-				"Agent",
-				"cyber-waifu",
-				"digitale assistent"
+				"AI virtueel personage ",
+				"Agent ",
+				"cyber-waifu ",
+				"digitale assistent "
 			],
 			"platforms": [
 				"basisplatform",

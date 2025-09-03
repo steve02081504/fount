@@ -150,7 +150,7 @@
 			"description2": "Voici un mini-jeu pour passer le temps."
 		},
 		"data_showcase": {
-			"title_prefix": "fount est l'expérience la plus",
+			"title_prefix": "fount est l'expérience la plus ",
 			"adjectives": [
 				"extensible",
 				"puissante",
@@ -160,10 +160,10 @@
 			],
 			"title_of": " ",
 			"nouns": [
-				"personnage IA",
-				"Agent",
-				"Cyber-waifu",
-				"Assistant numérique"
+				"personnage IA ",
+				"Agent ",
+				"Cyber-waifu ",
+				"Assistant numérique "
 			],
 			"platforms": [
 				"plateforme de base",

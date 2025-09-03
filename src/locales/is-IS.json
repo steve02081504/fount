@@ -150,7 +150,7 @@
 			"description2": "Hér er smáleikur til að drepa tímann."
 		},
 		"data_showcase": {
-			"title_prefix": "fount er",
+			"title_prefix": "fount er ",
 			"adjectives": [
 				"sveigjanlegasta",
 				"möguleikaríkasta",
@@ -158,12 +158,12 @@
 				"samhæfanlegasta",
 				"minnsta og öflugasta"
 			],
-			"title_of": "",
+			"title_of": " ",
 			"nouns": [
-				"gervigreindar-sýndarpersóna",
-				"Agent",
-				"net-eiginkona",
-				"stafrænn aðstoðarmaður"
+				"gervigreindar-sýndarpersóna ",
+				"Agent ",
+				"net-eiginkona ",
+				"stafrænn aðstoðarmaður "
 			],
 			"platforms": [
 				"grunnvettvangur",

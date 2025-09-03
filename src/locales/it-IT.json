@@ -150,7 +150,7 @@
 			"description2": "Ecco un mini-gioco per passare il tempo."
 		},
 		"data_showcase": {
-			"title_prefix": "fount è il più",
+			"title_prefix": "fount è il più ",
 			"adjectives": [
 				"estensibile",
 				"potente",
@@ -160,10 +160,10 @@
 			],
 			"title_of": " ",
 			"nouns": [
-				"personaggio IA",
-				"Agente",
-				"Cyber waifu",
-				"Assistente digitale"
+				"personaggio IA ",
+				"Agente ",
+				"Cyber waifu ",
+				"Assistente digitale "
 			],
 			"platforms": [
 				"piattaforma base",

@@ -150,7 +150,7 @@
 			"description2": "Há minijogos aqui para passar o tempo."
 		},
 		"data_showcase": {
-			"title_prefix": "fount é a mais",
+			"title_prefix": "fount é a mais ",
 			"adjectives": [
 				"extensível",
 				"potente",
@@ -160,10 +160,10 @@
 			],
 			"title_of": " ",
 			"nouns": [
-				"personagem de IA",
-				"Agente",
-				"waifu cibernética",
-				"assistente digital"
+				"personagem de IA ",
+				"Agente ",
+				"waifu cibernética ",
+				"assistente digital "
 			],
 			"platforms": [
 				"plataforma base",

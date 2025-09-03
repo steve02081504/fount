@@ -150,7 +150,7 @@
 			"description2": "Hier ist ein kleines Spiel, um sich die Zeit zu vertreiben."
 		},
 		"data_showcase": {
-			"title_prefix": "fount ist",
+			"title_prefix": "fount ist ",
 			"adjectives": [
 				"erweiterbarste",
 				"potenteste",
@@ -160,10 +160,10 @@
 			],
 			"title_of": " ",
 			"nouns": [
-				"ein KI-Charakter",
-				"ein Agent",
-				"eine Cyber-Waifu",
-				"ein Digitaler Assistent"
+				"ein KI-Charakter ",
+				"ein Agent ",
+				"eine Cyber-Waifu ",
+				"ein Digitaler Assistent "
 			],
 			"platforms": [
 				"Basis-Plattform",

@@ -150,7 +150,7 @@
 			"description2": "Here's a mini game to pass the time."
 		},
 		"data_showcase": {
-			"title_prefix": "fount is the most",
+			"title_prefix": "fount is the most ",
 			"adjectives": [
 				"extendable",
 				"versatile",
@@ -160,10 +160,10 @@
 			],
 			"title_of": " ",
 			"nouns": [
-				"AI character",
-				"Agent",
-				"Cyber waifu",
-				"Digital assistant"
+				"AI character ",
+				"Agent ",
+				"Cyber waifu ",
+				"Digital assistant "
 			],
 			"platforms": [
 				"base platform",

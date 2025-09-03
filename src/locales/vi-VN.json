@@ -150,7 +150,7 @@
 			"description2": "Có những trò chơi nhỏ ở đây để bạn giải trí trong lúc chờ đợi."
 		},
 		"data_showcase": {
-			"title_prefix": "fount là nền tảng",
+			"title_prefix": "fount là nền tảng ",
 			"adjectives": [
 				"mở rộng nhất",
 				"tiềm năng nhất",
@@ -160,10 +160,10 @@
 			],
 			"title_of": " ",
 			"nouns": [
-				"nhân vật AI",
-				"Agent",
-				"waifu ảo",
-				"trợ lý số"
+				"nhân vật AI ",
+				"Agent ",
+				"waifu ảo ",
+				"trợ lý số "
 			],
 			"platforms": [
 				"nền tảng cơ sở",

@@ -150,7 +150,7 @@
 			"description2": "Aquí tienes un minijuego para pasar el rato."
 		},
 		"data_showcase": {
-			"title_prefix": "fount es la",
+			"title_prefix": "fount es la ",
 			"adjectives": [
 				"más ampliable",
 				"más potente",
@@ -160,10 +160,10 @@
 			],
 			"title_of": " ",
 			"nouns": [
-				"personaje de IA",
-				"Agente",
-				"Waifu cibernética",
-				"Asistente digital"
+				"personaje de IA ",
+				"Agente ",
+				"Waifu cibernética ",
+				"Asistente digital "
 			],
 			"platforms": [
 				"plataforma base",
