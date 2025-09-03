@@ -7,11 +7,11 @@ const localeNames = new Map()
 
 /**
  * Sets the application's language.
- * @param {string[]} lang - The language code (e.g., 'en-UK', 'zh-CN').
+ * @param {string[]} langs - The language codes (e.g., 'en-UK', 'zh-CN').
  */
 export async function setLocales(langs) {
 	localStorage.setItem('fountUserPreferredLanguage', JSON.stringify(langs))
-	await initTranslations()
+	await initTranslations(saved_pageid, langs)
 }
 
 /**
@@ -34,7 +34,7 @@ export function getLocaleNames() {
  * 从服务器获取多语言数据并初始化翻译。
  * @param {string} [pageid]
  */
-export async function initTranslations(pageid = saved_pageid) {
+export async function initTranslations(pageid = saved_pageid, preferredlocales = JSON.parse(localStorage.getItem('fountUserPreferredLanguage') || '[]')) {
 	saved_pageid = pageid
 
 	try {
@@ -56,7 +56,7 @@ export async function initTranslations(pageid = saved_pageid) {
 		else
 			console.warn('Could not fetch locales list.csv, language names will not be available.')
 
-		const lang = getbestlocale(navigator.languages || [navigator.language], availableLocales)
+		const lang = getbestlocale([...preferredlocales, ...navigator.languages || [navigator.language]], availableLocales)
 
 		const translationResponse = await fetch(base_dir + `/locales/${lang}.json`)
 		if (!translationResponse.ok)
@@ -69,19 +69,25 @@ export async function initTranslations(pageid = saved_pageid) {
 	}
 }
 
+/**
+ * Determines the best locale to use based on a prioritized list.
+ * The priority is:
+ * 1. The explicit list passed as the first argument (for immediate user actions).
+ * 2. The list saved in localStorage (for session persistence).
+ * 3. The browser's language settings.
+ * 4. A hardcoded fallback ('en-UK').
+ * @param {string[]} preferredlocaleList - The list of preferred locales, including the newly selected one and browser defaults.
+ * @param {string[]} localeList - The list of available locales for the application.
+ * @returns {string} The best matching locale code.
+ */
 function getbestlocale(preferredlocaleList, localeList) {
-	const savedLangs = JSON.parse(localStorage.getItem('fountUserPreferredLanguage') || '[]')
-	for (const lang of savedLangs)
-		if (localeList.includes(lang))
-			return lang
-
 	for (const preferredlocale of preferredlocaleList) {
 		if (localeList.includes(preferredlocale))
 			return preferredlocale
 		const temp = localeList.find((name) => name.startsWith(preferredlocale.split('-')[0]))
 		if (temp) return temp
 	}
-	return 'en-UK' // Fallback
+	return 'en-UK'
 }
 
 function getNestedValue(obj, key) {
