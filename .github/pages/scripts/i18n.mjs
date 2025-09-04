@@ -45,11 +45,10 @@ export async function initTranslations(pageid = saved_pageid, preferredlocales =
 			const lines = csvText.split('\n').slice(1) // Skip header
 			availableLocales = []
 			for (const line of lines) {
-				const [code, name] = line.split(',')
+				const [code, name] = line.split(',').map(item => item.trim())
 				if (code && name) {
-					const a = code.trim()
-					availableLocales.push(a)
-					localeNames.set(a, name.trim())
+					availableLocales.push(code)
+					localeNames.set(code, name)
 				}
 			}
 		}

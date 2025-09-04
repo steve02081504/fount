@@ -12,7 +12,7 @@ let saved_pageid
 let lastKnownLangs
 
 export function loadPreferredLangs() {
-	return JSON.parse(localStorage.getItem('userPreferredLanguages') || '[]')
+	return JSON.parse(localStorage.getItem('userPreferredLanguages') || '[]').filter(Boolean)
 }
 
 export function savePreferredLangs(langs) {
