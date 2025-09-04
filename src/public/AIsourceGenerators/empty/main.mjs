@@ -35,19 +35,18 @@ async function GetSource(config) {
 		is_paid: false,
 		extension: {},
 
-		Unload: () => { },
-		Call: async (prompt) => {
+		Call: async prompt => {
 			throw error
 		},
-		StructCall: async (prompt_struct) => {
+		StructCall: async prompt_struct => {
 			throw error
 		},
 		tokenizer: {
 			free: () => 0,
-			encode: (prompt) => prompt,
-			decode: (tokens) => tokens,
-			decode_single: (token) => token,
-			get_token_count: (prompt) => prompt.length
+			encode: prompt => prompt,
+			decode: tokens => tokens,
+			decode_single: token => token,
+			get_token_count: prompt => prompt.length
 		}
 	}
 	return result

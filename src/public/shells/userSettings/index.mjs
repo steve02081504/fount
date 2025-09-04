@@ -91,7 +91,7 @@ el.copyFolderPathBtn.addEventListener('click', async () => {
 	}
 })
 
-el.changePasswordForm.addEventListener('submit', async (event) => {
+el.changePasswordForm.addEventListener('submit', async event => {
 	event.preventDefault()
 	const form = event.target
 	const currentPassword = form.currentPassword.value
@@ -112,7 +112,7 @@ el.changePasswordForm.addEventListener('submit', async (event) => {
 	}
 })
 
-el.renameUserForm.addEventListener('submit', async (event) => {
+el.renameUserForm.addEventListener('submit', async event => {
 	event.preventDefault()
 	const form = event.target
 	const newUsername = form.newUsernameRename.value.trim()

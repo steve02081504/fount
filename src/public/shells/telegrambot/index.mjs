@@ -295,7 +295,7 @@ toggleTokenButton.addEventListener('click', handleToggleToken)
 saveConfigButton.addEventListener('click', handleSaveConfig)
 startStopBotButton.addEventListener('click', handleStartStopBot)
 
-window.addEventListener('beforeunload', (event) => {
+window.addEventListener('beforeunload', event => {
 	if (isDirty) {
 		event.preventDefault()
 		event.returnValue = geti18n('telegram_bots.alerts.beforeUnload')

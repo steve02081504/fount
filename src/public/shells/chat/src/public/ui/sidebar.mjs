@@ -180,7 +180,7 @@ async function renderCharList(data) {
 	}
 
 	// 更新可用角色列表
-	const availableChars = allChars.filter((char) => !charList.includes(char))
+	const availableChars = allChars.filter(char => !charList.includes(char))
 	const charSelectOldList = Array.from(charSelect.options).map(option => option.value)
 	const { added: charSelectAdded, removed: charSelectRemoved } = compareLists(charSelectOldList, availableChars)
 
@@ -215,7 +215,7 @@ async function renderCharDetails(charName, frequency_num) {
 		addCardEventListeners(charCard, charData)
 		// 添加滑动条的事件监听
 		const frequencySlider = charCard.querySelector('.frequency-slider')
-		frequencySlider.addEventListener('input', (event) => {
+		frequencySlider.addEventListener('input', event => {
 			const frequency = event.target.value / 100
 			setCharReplyFrequency(charName, frequency)
 		})
@@ -314,7 +314,7 @@ export async function setupSidebar() {
 	})
 
 	// 点击非右侧边栏关闭右侧边栏
-	document.addEventListener('click', (event) => {
+	document.addEventListener('click', event => {
 		if (!rightSidebarContainer.contains(event.target))
 			hideRightSidebar()
 	})

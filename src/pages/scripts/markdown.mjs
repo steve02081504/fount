@@ -22,8 +22,8 @@ function remarkDisable(options = {}) {
 }
 
 function rehypeAddDaisyuiClass() {
-	return (tree) => {
-		visit(tree, 'element', (node) => {
+	return tree => {
+		visit(tree, 'element', node => {
 			if (node.tagName === 'hr')
 				node.properties.className = ['divider', 'divider-primary', ...node.properties.className || []]
 			else if (node.tagName === 'table')

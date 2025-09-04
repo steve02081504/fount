@@ -71,10 +71,8 @@ async function GetSource(config) {
 		is_paid: true,
 		extension: {},
 
-		Unload: () => { },
-
 		// 简单的文本调用
-		Call: async (prompt) => {
+		Call: async prompt => {
 			const params = {
 				model: config.model,
 				messages: [{ role: 'user', content: prompt }],
@@ -107,7 +105,7 @@ async function GetSource(config) {
 			const system_prompt = structPromptToSingleNoChatLog(prompt_struct)
 
 			// 使用 fount 工具函数合并聊天记录，并转换为 Claude 的格式
-			const messages = await Promise.all(margeStructPromptChatLog(prompt_struct).map(async (chatLogEntry) => {
+			const messages = await Promise.all(margeStructPromptChatLog(prompt_struct).map(async chatLogEntry => {
 				const role = chatLogEntry.role === 'user' || chatLogEntry.role === 'system' ? 'user' : 'assistant'
 
 				// 内容可以是文本和图片的混合数组
@@ -189,7 +187,7 @@ ${chatLogEntry.content}
 			if (text.match(/<\/sender>\s*<content>/))
 				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1].split(new RegExp(
 					`(${(prompt_struct.alternative_charnames || []).map(Object).map(
-						(stringOrReg) => {
+						stringOrReg => {
 							if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
 							return stringOrReg.source
 						}
@@ -206,10 +204,10 @@ ${chatLogEntry.content}
 		},
 		tokenizer: {
 			free: () => 0,
-			encode: (prompt) => prompt,
-			decode: (tokens) => tokens,
-			decode_single: (token) => token,
-			get_token_count: (prompt) => prompt?.length ?? 0,
+			encode: prompt => prompt,
+			decode: tokens => tokens,
+			decode_single: token => token,
+			get_token_count: prompt => prompt?.length ?? 0,
 		}
 	}
 

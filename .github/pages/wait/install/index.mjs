@@ -109,7 +109,7 @@ async function renderThemePreviews() {
 	if (!theme_now) autoPreview.classList.add('selected-theme')
 	themeList.appendChild(autoPreview)
 
-	const previewPromises = themes.map(async (theme) => {
+	const previewPromises = themes.map(async theme => {
 		const preview = await renderTemplate('theme_preview', { theme })
 		if (!preview) {
 			console.error(`Failed to render preview for theme: ${theme}`)
@@ -146,7 +146,7 @@ function animateCounter(element, start, end, duration, easingPower = 5) {
 			return resolve()
 		}
 		let startTime = null
-		const step = (timestamp) => {
+		const step = timestamp => {
 			if (!startTime) startTime = timestamp
 			const progress = Math.min((timestamp - startTime) / duration, 1)
 			const easedProgress = 1 - (1 - progress) ** easingPower
@@ -265,7 +265,7 @@ function createRotatingText(container, initialWords, interval) {
 	start()
 
 	return {
-		updateWords: (newWords) => {
+		updateWords: newWords => {
 			words = newWords
 			setup()
 			currentIndex %= words.length
@@ -299,7 +299,7 @@ function populateLanguageSelector() {
 		const li = document.createElement('li')
 		const a = document.createElement('a')
 		a.textContent = localeNames.get(locale) || locale
-		a.onclick = async (e) => {
+		a.onclick = async e => {
 			e.preventDefault()
 			await setLocales([locale])
 			updateRotatingSubtitles()
@@ -391,7 +391,7 @@ async function main() {
 	renderThemePreviews()
 
 	// Set up Intersection Observers for animations
-	const observer = new IntersectionObserver((entries) => {
+	const observer = new IntersectionObserver(entries => {
 		entries.forEach(entry => {
 			if (entry.isIntersecting) {
 				entry.target.classList.add('visible')
@@ -404,7 +404,7 @@ async function main() {
 
 	const dataShowcaseSection = document.getElementById('data-showcase')
 	if (dataShowcaseSection) {
-		const dataObserver = new IntersectionObserver((entries) => {
+		const dataObserver = new IntersectionObserver(entries => {
 			if (entries[0].isIntersecting) {
 				startDataShowcaseAnimation()
 				dataObserver.unobserve(dataShowcaseSection)

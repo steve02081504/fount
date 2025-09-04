@@ -41,7 +41,7 @@ const configTemplate = {
 
 async function GetSource(config, { username, SaveConfig }) {
 	const unnamedSources = []
-	const weightedSources = await Promise.all(config.sources.map(async (item) => {
+	const weightedSources = await Promise.all(config.sources.map(async item => {
 		if (Object(item.weight) instanceof Number || item.weight <= 0)
 			throw new Error(`Source item must have a positive numerical 'weight'. Invalid item: ${JSON.stringify(item.source)}`)
 		const sourceInstance = await loadAIsourceFromNameOrConfigData(username, item.source, unnamedSources, {
@@ -87,7 +87,7 @@ async function GetSource(config, { username, SaveConfig }) {
 		is_paid: weightedSources.some(s => s.source.is_paid),
 
 		Unload: () => Promise.all(unnamedSources.map(source => source.Unload())),
-		Call: async (prompt) => {
+		Call: async prompt => {
 			const selectedSource = selectSourceByWeight()
 			return await selectedSource.Call(prompt)
 		},

@@ -131,7 +131,7 @@ export default {
 					result.content = requestResult.content
 					result.files = result.files.concat(requestResult.files || [])
 					for (const replyHandler of [
-						...Object.values(arg.plugins).map((plugin) => plugin.interfaces?.chat?.ReplyHandler)
+						...Object.values(arg.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
 					].filter(Boolean))
 						if (await replyHandler(result, { ...arg, prompt_struct, AddLongTimeLog }))
 							continue regen

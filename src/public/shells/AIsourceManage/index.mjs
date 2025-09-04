@@ -31,7 +31,7 @@ let onJsonUpdate = () => 0
 
 // 统一的错误处理函数
 function handleFetchError(customMessage) {
-	return (error) => {
+	return error => {
 		const text = geti18n(customMessage, { error: error.stack })
 		console.error(text)
 		showToast(text, 'error')
@@ -77,7 +77,7 @@ function renderFileList() {
 		checkboxContainer.appendChild(checkbox)
 		listItem.appendChild(checkboxContainer)
 
-		checkbox.addEventListener('change', async (event) => {
+		checkbox.addEventListener('change', async event => {
 			event.stopPropagation() // Prevent click from triggering loadEditor
 			const isChecked = event.target.checked
 			const newDefault = isChecked ? fileName : null
@@ -95,7 +95,7 @@ function renderFileList() {
 		})
 
 		// Prevent checkbox click from triggering list item click
-		checkboxContainer.addEventListener('click', (event) => event.stopPropagation())
+		checkboxContainer.addEventListener('click', event => event.stopPropagation())
 		listItem.addEventListener('click', () => loadEditor(fileName))
 		fileListContainer.appendChild(listItem)
 	})
@@ -340,7 +340,7 @@ generatorSelect.addEventListener('change', async () => {
 		disableEditor()
 })
 
-window.addEventListener('beforeunload', (event) => {
+window.addEventListener('beforeunload', event => {
 	if (isDirty) {
 		event.preventDefault()
 		event.returnValue = geti18n('aisource_editor.confirm.unsavedChangesBeforeUnload')

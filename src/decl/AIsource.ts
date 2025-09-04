@@ -1,6 +1,6 @@
 import { Buffer } from 'node:buffer'
 
-import { info_t, locale_t } from './basedefs'
+import { info_t, locale_t } from './basedefs.ts'
 import { prompt_struct_t } from './prompt_struct.ts'
 
 class Tokenizer_t<InputType, TokenType> {
@@ -18,7 +18,7 @@ export class AIsource_t<InputType, OutputType> {
 	is_paid: boolean
 	extension: object
 
-	Unload: () => Promise<void>
+	Unload?: () => Promise<void>
 	Call: (prompt: InputType) => OutputType
 	interfaces: {
 		info?: {

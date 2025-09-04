@@ -145,14 +145,14 @@ function updateColors() {
 }
 
 // MutationObserver用于监视data-theme属性的变化
-const observer = new MutationObserver((mutationsList) => {
+const observer = new MutationObserver(mutationsList => {
 	for (const mutation of mutationsList)
 		if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme')
 			setTimeout(themeHeartbeat)
 })
 observer.observe(document.documentElement, { attributes: true })
 
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
 	setTheme(localStorage.getItem('theme'))
 })
 {

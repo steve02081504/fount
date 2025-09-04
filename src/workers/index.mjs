@@ -6,7 +6,7 @@ export function runWorker(name) {
 export function runSimpleWorker(name) {
 	const worker = runWorker(name)
 	return new Promise((resolve, reject) => {
-		worker.onmessage = (event) => {
+		worker.onmessage = event => {
 			worker.terminate()
 			switch (event.data.type) {
 				case 'resolve': {
@@ -17,7 +17,7 @@ export function runSimpleWorker(name) {
 				}
 			}
 		}
-		worker.onerror = (error) => {
+		worker.onerror = error => {
 			worker.terminate()
 			reject(error)
 		}

@@ -28,7 +28,7 @@ export function setTheme(theme) {
 }
 setTheme(urlParams.get('theme') ?? localStorage.getItem('fountTheme') ?? 'dark')
 svgInliner(document)
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
 	setTheme(localStorage.getItem('theme'))
 })
 

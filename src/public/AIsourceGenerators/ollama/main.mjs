@@ -56,8 +56,7 @@ async function GetSource(config) {
 		is_paid: false,
 		extension: {},
 
-		Unload: () => { },
-		Call: async (prompt) => {
+		Call: async prompt => {
 			const response = await ollama.generate({
 				model: config.model,
 				prompt,
@@ -69,7 +68,7 @@ async function GetSource(config) {
 			}
 		},
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
-			const messages = margeStructPromptChatLog(prompt_struct).map((chatLogEntry) => {
+			const messages = margeStructPromptChatLog(prompt_struct).map(chatLogEntry => {
 				const images = (chatLogEntry.files || [])
 					.filter(file => file.mime_type && file.mime_type.startsWith('image/'))
 					.map(file => file.buffer.toString('base64'))
@@ -100,7 +99,7 @@ async function GetSource(config) {
 
 
 			if (config.convert_config?.roleReminding ?? true) {
-				const isMutiChar = new Set(prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name).filter(Boolean)).size > 2
+				const isMutiChar = new Set(prompt_struct.chat_log.map(chatLogEntry => chatLogEntry.name).filter(Boolean)).size > 2
 				if (isMutiChar)
 					messages.push({
 						role: 'system',

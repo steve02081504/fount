@@ -31,7 +31,7 @@ export async function loadAIsourceFromConfigData(username, data, { SaveConfig })
 export async function loadAIsource(username, AIsourcename) {
 	return loadPartBase(username, 'AIsources', AIsourcename, null, {
 		pathGetter: () => GetPath(username, AIsourcename),
-		Loader: async (path) => {
+		Loader: async path => {
 			let data
 			try { data = loadJsonFile(path + '.json') }
 			catch (e) { throw skip_report(e) }
@@ -43,7 +43,7 @@ export async function loadAIsource(username, AIsourcename) {
 			AIsource.filename = AIsourcename
 			return AIsource
 		},
-		Initer: () => { }
+		Initer: _ => 0
 	})
 }
 

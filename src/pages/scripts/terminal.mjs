@@ -51,7 +51,7 @@ export function setTerminal(element) {
 	window.addEventListener('resize', () => {
 		fiter.fit()
 	})
-	terminal.element.addEventListener('contextmenu', async (event) => {
+	terminal.element.addEventListener('contextmenu', async event => {
 		event.preventDefault()
 		const selectedText = terminal.getSelection()
 		if (selectedText) {

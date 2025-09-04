@@ -1,6 +1,6 @@
 import { chatReplyRequest_t } from '../public/shells/chat/decl/chatLog.ts'
 
-import { locale_t, info_t } from './basedefs'
+import { locale_t, info_t } from './basedefs.ts'
 import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts'
 
 export type ReplyHandler_t = (reply: chatLogEntry_t, args: chatReplyRequest_t & {
@@ -10,10 +10,10 @@ export type ReplyHandler_t = (reply: chatLogEntry_t, args: chatReplyRequest_t & 
 
 export class pluginAPI_t {
 	info: info_t
-	Init: () => Promise<void>
-	Load: () => Promise<void>
-	Unload: (reason: string) => Promise<void>
-	Uninstall: (reason: string, from: string) => Promise<void>
+	Init?: () => Promise<void>
+	Load?: () => Promise<void>
+	Unload?: (reason: string) => Promise<void>
+	Uninstall?: (reason: string, from: string) => Promise<void>
 
 	interfaces: {
 		info?: {

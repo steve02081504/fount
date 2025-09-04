@@ -41,7 +41,7 @@ let homeRegistry
 let defaultParts = {} // Store default parts
 
 // Utility for mouse wheel scrolling
-const handleMouseWheelScroll = (event) => {
+const handleMouseWheelScroll = event => {
 	const scrollContainer = event.currentTarget
 	scrollContainer.scrollLeft += Math.sign(event.deltaY) * 40
 	event.preventDefault()
@@ -117,7 +117,7 @@ async function attachCardEventListeners(itemElement, itemDetails, itemName, inte
 
 	// Tag click events
 	itemElement.querySelectorAll('.badge').forEach(tagElement => {
-		tagElement.addEventListener('click', (event) => {
+		tagElement.addEventListener('click', event => {
 			event.stopPropagation()
 			const tag = tagElement.textContent.trim()
 			filterInput.value = filterInput.value.split(' ').includes(tag)
@@ -133,7 +133,7 @@ async function attachCardEventListeners(itemElement, itemDetails, itemName, inte
 		if (window.innerWidth < 1024) drawerToggle.checked = true
 	}
 
-	itemElement.addEventListener('click', (event) => {
+	itemElement.addEventListener('click', event => {
 		if (window.innerWidth < 1024 && !event.target.closest('button'))
 			clickHandler()
 	})
@@ -153,7 +153,7 @@ async function attachCardEventListeners(itemElement, itemDetails, itemName, inte
 		defaultCheckbox.checked = defaultParts[currentItemType.slice(0, -1)] === itemName
 		if (defaultCheckbox.checked) itemElement.classList.add('selected-item')
 
-		defaultCheckbox.addEventListener('change', async (event) => {
+		defaultCheckbox.addEventListener('change', async event => {
 			const isChecked = event.target.checked
 			// Update default part in backend
 			const response = await setDefaultPart(currentItemType.slice(0, -1), isChecked ? itemName : null)
@@ -415,7 +415,7 @@ async function initializeApp() {
 
 async function fetchData() {
 	await Promise.all([
-		getHomeRegistry().then(async (data) => {
+		getHomeRegistry().then(async data => {
 			homeRegistry = data
 			await displayFunctionButtons()
 		}).catch(error => console.error('Failed to fetch home registry:', error)),

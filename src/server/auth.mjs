@@ -149,7 +149,7 @@ async function refresh(refreshTokenValue, req) {
 		if (!user || !user.auth || !user.auth.refreshTokens)
 			return { status: 401, success: false, message: 'User not found or refresh tokens unavailable' }
 
-		const userRefreshTokenEntry = user.auth.refreshTokens.find((token) => token.jti === decoded.jti)
+		const userRefreshTokenEntry = user.auth.refreshTokens.find(token => token.jti === decoded.jti)
 
 		// 再次验证 refreshToken 是否存在于用户记录中，以及 deviceId 是否匹配
 		if (!userRefreshTokenEntry || userRefreshTokenEntry.deviceId !== decoded.deviceId) {
@@ -174,7 +174,7 @@ async function refresh(refreshTokenValue, req) {
 		const newRefreshToken = await generateRefreshToken({ username: decoded.username, userId: decoded.userId }, userRefreshTokenEntry.deviceId)
 		const decodedNewRefreshToken = jose.decodeJwt(newRefreshToken)
 		// 移除旧的 refreshToken，添加新的 refreshToken
-		user.auth.refreshTokens = user.auth.refreshTokens.filter((token) => token.jti !== decoded.jti)
+		user.auth.refreshTokens = user.auth.refreshTokens.filter(token => token.jti !== decoded.jti)
 		user.auth.refreshTokens.push({
 			jti: decodedNewRefreshToken.jti,
 			deviceId: userRefreshTokenEntry.deviceId,
@@ -211,7 +211,7 @@ export async function logout(req, res) {
 				const decodedRefreshToken = await jose.decodeJwt(refreshToken) // 仅解码，不验证，因为可能已过期但仍需从用户列表中移除
 				if (decodedRefreshToken?.jti) {
 					// 从用户的 refreshToken 列表中移除当前的 refreshToken
-					const tokenIndex = userConfig.auth.refreshTokens.findIndex((token) => token.jti === decodedRefreshToken.jti)
+					const tokenIndex = userConfig.auth.refreshTokens.findIndex(token => token.jti === decodedRefreshToken.jti)
 					if (tokenIndex !== -1)
 						userConfig.auth.refreshTokens.splice(tokenIndex, 1)
 
@@ -689,7 +689,7 @@ export async function login(username, password, deviceId = 'unknown', req) {
 	const decodedRefreshToken = jose.decodeJwt(refreshTokenString) // 解码 refreshToken 以获取 jti 和 exp
 
 	// 移除同一个设备上的旧的 refresh token (如果策略是每个设备只保留一个会话)
-	authData.refreshTokens = authData.refreshTokens.filter((token) => token.deviceId !== deviceId)
+	authData.refreshTokens = authData.refreshTokens.filter(token => token.deviceId !== deviceId)
 
 	// 存储新的 refresh token 信息
 	authData.refreshTokens.push({
@@ -745,7 +745,7 @@ function cleanupRefreshTokens() {
 		const user = config.data.users[username]
 		if (user?.auth?.refreshTokens) {
 			const initialLength = user.auth.refreshTokens.length
-			user.auth.refreshTokens = user.auth.refreshTokens.filter((token) => {
+			user.auth.refreshTokens = user.auth.refreshTokens.filter(token => {
 				const stillValid = token.expiry > now
 				const notGloballyRevoked = !config.data.revokedTokens[token.jti]
 				return stillValid && notGloballyRevoked

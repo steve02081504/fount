@@ -34,7 +34,7 @@ export function setEndpoints(router) {
 
 			const allTemplates = {}
 
-			const findTemplates = async (basePath) => {
+			const findTemplates = async basePath => {
 				if (!fs.existsSync(basePath)) return
 				const templateNames = await fs.readdir(basePath)
 				for (const templateName of templateNames) {

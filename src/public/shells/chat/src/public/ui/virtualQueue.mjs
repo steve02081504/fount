@@ -263,7 +263,7 @@ async function appendMessages() {
  */
 function updateLastCharMessageArrows() {
 	// 移除旧箭头
-	chatMessagesContainer.querySelectorAll('.arrow').forEach((arrow) => arrow.remove())
+	chatMessagesContainer.querySelectorAll('.arrow').forEach(arrow => arrow.remove())
 
 	let potentialNewSwipableElement = null // 潜在的下一个可滑动元素
 
@@ -383,7 +383,7 @@ export async function replaceMessageInQueue(queueIndex, message, element = null)
 	// 平滑替换动画
 	oldMessageElement.style.transition = `opacity ${TRANSITION_DURATION / 1000}s ease-in-out`
 	oldMessageElement.style.opacity = '0'
-	await new Promise((resolve) => setTimeout(resolve, TRANSITION_DURATION))
+	await new Promise(resolve => setTimeout(resolve, TRANSITION_DURATION))
 
 	try {
 		oldMessageElement.replaceWith(element) // DOM 替换

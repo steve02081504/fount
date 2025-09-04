@@ -5,12 +5,12 @@ import { locale_t, info_t } from './basedefs'
 // no idea but it's necessary now
 export class shellAPI_t {
 	info: info_t
-	Init: () => Promise<void>
-	Load: (args: { router: Router }) => Promise<void>
-	Unload: (args: { router: Router }) => Promise<void>
-	Uninstall: (reason: string, from: string) => Promise<void>
+	Init?: () => Promise<void>
+	Load?: (args: { router: Router }) => Promise<void>
+	Unload?: (args: { router: Router }) => Promise<void>
+	Uninstall?: (reason: string, from: string) => Promise<void>
 
-	interfaces: {
+	interfaces?: {
 		info?: {
 			UpdateInfo: (locales: locale_t[]) => Promise<info_t>,
 		},

@@ -44,8 +44,7 @@ async function GetSource(config) {
 		is_paid: false,
 		extension: {},
 
-		Unload: () => { },
-		Call: async (prompt) => {
+		Call: async prompt => {
 			return {
 				content: generator.generate({
 					prompt,
@@ -55,7 +54,7 @@ async function GetSource(config) {
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
 			let prompt = structPromptToSingleNoChatLog(prompt_struct)
 			prompt += `\
-\n${prompt_struct.chat_log.map((item) => `${item.name}: ${item.content}\n${endToken}`).join('\n')}
+\n${prompt_struct.chat_log.map(item => `${item.name}: ${item.content}\n${endToken}`).join('\n')}
 ${prompt_struct.Charname}: `
 			return {
 				content: generator.generate({
@@ -65,10 +64,10 @@ ${prompt_struct.Charname}: `
 		},
 		tokenizer: {
 			free: () => 0,
-			encode: (prompt) => prompt,
-			decode: (tokens) => tokens,
-			decode_single: (token) => token,
-			get_token_count: (prompt) => prompt.length
+			encode: prompt => prompt,
+			decode: tokens => tokens,
+			decode_single: token => token,
+			get_token_count: prompt => prompt.length
 		}
 	}
 

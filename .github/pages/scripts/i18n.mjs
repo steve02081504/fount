@@ -84,7 +84,7 @@ function getbestlocale(preferredlocaleList, localeList) {
 	for (const preferredlocale of preferredlocaleList) {
 		if (localeList.includes(preferredlocale))
 			return preferredlocale
-		const temp = localeList.find((name) => name.startsWith(preferredlocale.split('-')[0]))
+		const temp = localeList.find(name => name.startsWith(preferredlocale.split('-')[0]))
 		if (temp) return temp
 	}
 	return 'en-UK'
@@ -168,7 +168,7 @@ function applyTranslations() {
 
 export function i18nElement(element) {
 	const elements = element.querySelectorAll('[data-i18n]')
-	elements.forEach((element) => {
+	elements.forEach(element => {
 		const key = element.dataset.i18n
 		if (!key) return
 		if (getNestedValue(i18n, key) instanceof Object) {

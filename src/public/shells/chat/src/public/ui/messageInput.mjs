@@ -22,7 +22,7 @@ let audioChunks = []
 
 export function initializeMessageInput() {
 	uploadButtonElement.addEventListener('click', () => fileInputElement.click())
-	fileInputElement.addEventListener('change', (event) => handleFilesSelect(event, SelectedFiles, attachmentPreviewContainer))
+	fileInputElement.addEventListener('change', event => handleFilesSelect(event, SelectedFiles, attachmentPreviewContainer))
 	addDragAndDropSupport(messageInputElement, SelectedFiles, attachmentPreviewContainer)
 	sendButtonElement.addEventListener('click', sendMessage)
 	messageInputElement.addEventListener('keydown', handleKeyPress)
@@ -42,7 +42,7 @@ function togglePhotoSection() {
 	const input = document.createElement('input')
 	input.type = 'file'
 	input.accept = 'image/*'
-	input.addEventListener('change', (event) => {
+	input.addEventListener('change', event => {
 		const { files } = event.target
 		if (files.length > 0)
 			handleFilesSelect({ target: { files } }, SelectedFiles, attachmentPreviewContainer)
@@ -65,7 +65,7 @@ async function toggleVoiceRecording() {
 			mediaRecorder = new MediaRecorder(stream)
 			audioChunks = []
 
-			mediaRecorder.ondataavailable = (event) => {
+			mediaRecorder.ondataavailable = event => {
 				audioChunks.push(event.data)
 			}
 
@@ -79,7 +79,7 @@ async function toggleVoiceRecording() {
 						files: [audioFile],
 					},
 				}
-				stream.getTracks().forEach((track) => track.stop())
+				stream.getTracks().forEach(track => track.stop())
 				isRecording = await handleFilesSelect(fakeEvent, SelectedFiles, attachmentPreviewContainer)
 			}
 

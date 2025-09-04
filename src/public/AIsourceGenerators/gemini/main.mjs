@@ -103,7 +103,7 @@ function estimateTextTokens(contents) {
  * @returns {Promise<Array<object>>} - 截断后的聊天历史记录
  */
 async function findOptimalHistorySlice(ai, model, limit, history, prefixMessages = [], suffixMessages = []) {
-	const getTokens = async (contents) => {
+	const getTokens = async contents => {
 		try {
 			const res = await ai.models.countTokens({ model, contents })
 			return res.totalTokens
@@ -207,9 +207,9 @@ async function GetSource(config) {
 	const default_config = {
 		responseMimeType: 'text/plain',
 		safetySettings: Object.values(HarmCategory)
-			.filter((category) => is_ImageGeneration ? true : !category.includes('IMAGE'))
-			.filter((category) => category != HarmCategory.HARM_CATEGORY_UNSPECIFIED)
-			.map((category) => ({
+			.filter(category => is_ImageGeneration ? true : !category.includes('IMAGE'))
+			.filter(category => category != HarmCategory.HARM_CATEGORY_UNSPECIFIED)
+			.map(category => ({
 				category,
 				threshold: HarmBlockThreshold.BLOCK_NONE
 			}))
@@ -234,8 +234,7 @@ async function GetSource(config) {
 		is_paid: false,
 		extension: {},
 
-		Unload: () => { },
-		Call: async (prompt) => {
+		Call: async prompt => {
 			const model_params = {
 				model: config.model,
 				contents: [{ role: 'user', parts: [{ text: prompt }] }],
@@ -286,7 +285,7 @@ system:
 
 			let totalFileTokens = 0 // 单独跟踪文件 token
 
-			const chatHistory = await Promise.all(margeStructPromptChatLog(prompt_struct).map(async (chatLogEntry) => {
+			const chatHistory = await Promise.all(margeStructPromptChatLog(prompt_struct).map(async chatLogEntry => {
 				const uid = Math.random().toString(36).slice(2, 10)
 
 				const fileParts = await Promise.all((chatLogEntry.files || []).map(async file => {
@@ -524,7 +523,7 @@ ${is_ImageGeneration
 			if (text.match(/<\/sender>\s*<content>/))
 				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1].split(new RegExp(
 					`(${(prompt_struct.alternative_charnames || []).map(Object).map(
-						(stringOrReg) => {
+						stringOrReg => {
 							if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
 							return stringOrReg.source
 						}
@@ -542,17 +541,17 @@ ${is_ImageGeneration
 		},
 		tokenizer: {
 			free: () => { /* no-op */ },
-			encode: (prompt) => {
+			encode: prompt => {
 				console.warn('Gemini tokenizer.encode is a no-op, returning prompt as-is.')
 				return prompt
 			},
-			decode: (tokens) => {
+			decode: tokens => {
 				console.warn('Gemini tokenizer.decode is a no-op, returning tokens as-is.')
 				return tokens
 			},
-			decode_single: (token) => token,
+			decode_single: token => token,
 			// 更新 tokenizer 以使用真实 API 进行计算
-			get_token_count: async (prompt) => {
+			get_token_count: async prompt => {
 				if (!prompt) return 0
 				try {
 					const response = await ai.models.countTokens({

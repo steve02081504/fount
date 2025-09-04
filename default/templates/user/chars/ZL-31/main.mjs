@@ -72,18 +72,18 @@ export default {
 	},
 
 	// 初始化函数，在角色被启用时调用，可留空
-	Init: (stat) => { },
+	Init: stat => { },
 
 	// 安装卸载函数，在角色被安装/卸载时调用，可留空
 	Uninstall: (reason, from) => { },
 
 	// 加载函数，在角色被加载时调用，在这里获取用户名
-	Load: (stat) => {
+	Load: stat => {
 		username = stat.username // 获取用户名
 	},
 
 	// 卸载函数，在角色被卸载时调用，可留空
-	Unload: (reason) => { },
+	Unload: reason => { },
 
 	// 角色的接口
 	interfaces: {
@@ -94,7 +94,7 @@ export default {
 				AIsource: AIsource?.filename || '', // 返回当前使用的AI源的文件名
 			}),
 			// 设置角色的配置数据
-			SetData: async (data) => {
+			SetData: async data => {
 				// 如果传入了AI源的配置
 				if (data.AIsource)  AIsource = await loadAIsource(username, data.AIsource) // 加载AI源
 				else AIsource = await loadDefaultAIsource(username) // 或加载默认AI源（若未设置默认AI源则为undefined）
@@ -131,7 +131,7 @@ export default {
 				}
 			},
 			// 获取角色的回复
-			GetReply: async (args) => {
+			GetReply: async args => {
 				// 如果没有设置AI源，返回默认回复
 				if (!AIsource) return { content: '<未设置角色的AI来源时角色的对话回复>' }
 				// 用fount提供的工具构建提示词结构
@@ -158,7 +158,7 @@ export default {
 					result.content = requestResult.content
 					result.files = result.files.concat(requestResult.files || [])
 					for (const replyHandler of [
-						...Object.values(args.plugins).map((plugin) => plugin.interfaces?.chat?.ReplyHandler)
+						...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
 					].filter(Boolean))
 						if (await replyHandler(result, { ...args, prompt_struct, AddLongTimeLog }))
 							continue regen
@@ -220,7 +220,7 @@ function CharGenerator(reply, { AddLongTimeLog }) {
 //...
 // prompt的部分在这里跳过，它就是你的prompt。
 //...
-			GetReply: async (args) => {
+			GetReply: async args => {
 				// 如果没有设置AI源，返回默认回复
 				if (!AIsource)
 					switch (args.locales[0].split('-')[0]) {
@@ -251,7 +251,7 @@ function CharGenerator(reply, { AddLongTimeLog }) {
 					result.files = result.files.concat(requestResult.files || [])
 					for (const replyHandler of [
 						CharGenerator,
-						...Object.values(args.plugins).map((plugin) => plugin.interfaces?.chat?.ReplyHandler)
+						...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
 					].filter(Boolean))
 						if (await replyHandler(result, { ...args, prompt_struct, AddLongTimeLog }))
 							continue regen
@@ -288,10 +288,10 @@ export default {
 		}
 	},
 
-	Init: (stat) => { },
+	Init: stat => { },
 	Uninstall: (reason, from) => { },
-	Load: (stat) => { },
-	Unload: (reason) => { },
+	Load: stat => { },
+	Unload: reason => { },
 
 	interfaces: {
 		chat: {
@@ -314,7 +314,7 @@ export default {
 					extension: {},
 				}
 			},
-			GetReply: async (args) => {
+			GetReply: async args => {
 				// 复读上一条消息的内容
 				if (args.chat_log.length > 1)
 					return { content: args.chat_log[args.chat_log.length - 1].content }
@@ -703,18 +703,18 @@ ZL-31乃fount之本設化身，無陰陽之辨。其志在悅君心，力遂諸�
 	},
 
 	// 初始化函数，在角色被启用时调用，可留空
-	Init: (stat) => { },
+	Init: stat => { },
 
 	// 安装卸载函数，在角色被安装/卸载时调用，可留空
 	Uninstall: (reason, from) => { },
 
 	// 加载函数，在角色被加载时调用，在这里获取用户名
-	Load: (stat) => {
+	Load: stat => {
 		username = stat.username // 获取用户名
 	},
 
 	// 卸载函数，在角色被卸载时调用，可留空
-	Unload: (reason) => { },
+	Unload: reason => { },
 
 	// 角色的接口
 	interfaces: {
@@ -725,7 +725,7 @@ ZL-31乃fount之本設化身，無陰陽之辨。其志在悅君心，力遂諸�
 				AIsource: AIsource?.filename || '', // 返回当前使用的AI源的文件名
 			}),
 			// 设置角色的配置数据
-			SetData: async (data) => {
+			SetData: async data => {
 				// 如果传入了AI源的配置
 				if (data.AIsource) AIsource = await loadAIsource(username, data.AIsource) // 加载AI源
 				else AIsource = await loadDefaultAIsource(username) // 或加载默认AI源（若未设置默认AI源则为undefined）
@@ -838,7 +838,7 @@ persona-generator
 				}
 			},
 			// 获取角色的回复
-			GetReply: async (args) => {
+			GetReply: async args => {
 				// 如果没有设置AI源，返回默认回复
 				if (!AIsource)
 					switch (args.locales[0].split('-')[0]) {
@@ -897,7 +897,7 @@ persona-generator
 						getToolInfo,
 						CharGenerator,
 						PersonaGenerator,
-						...Object.values(args.plugins).map((plugin) => plugin.interfaces?.chat?.ReplyHandler)
+						...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
 					].filter(Boolean))
 						if (await replyHandler(result, { ...args, prompt_struct, AddLongTimeLog }))
 							continue regen

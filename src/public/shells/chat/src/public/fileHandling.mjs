@@ -11,7 +11,7 @@ export async function handleFilesSelect(event, selectedFiles, attachmentPreviewC
 
 	for (const file of files) {
 		const reader = new FileReader()
-		reader.onload = async (e) => {
+		reader.onload = async e => {
 			const newFile = {
 				name: file.name,
 				mime_type: file.type,

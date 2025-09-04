@@ -312,14 +312,14 @@ function init() {
 	exportButton.addEventListener('click', handleExport)
 	includeDataCheckbox.addEventListener('change', updateShareButtonUI)
 
-	shareButton.addEventListener('click', (event) => {
+	shareButton.addEventListener('click', event => {
 		if (fountJson?.share_link) {
 			event.preventDefault()
 			handleDirectShare()
 		}
 	})
 
-	document.getElementById('shareMenu').addEventListener('click', (event) => {
+	document.getElementById('shareMenu').addEventListener('click', event => {
 		if (event.target.tagName === 'A')
 			handleShareAction(event.target.dataset.value)
 	})

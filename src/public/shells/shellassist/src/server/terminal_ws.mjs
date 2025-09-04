@@ -17,7 +17,7 @@ async function spawnShell() {
 
 export async function handleTerminalConnection(ws) {
 	const ptyProcess = await spawnShell()
-	ws.on('message', (message) => {
+	ws.on('message', message => {
 		try {
 			let inputData = ''
 			if (Object(message) instanceof String) inputData = message
@@ -37,13 +37,13 @@ export async function handleTerminalConnection(ws) {
 		}
 	})
 
-	ptyProcess.on('data', (data) => {
+	ptyProcess.on('data', data => {
 		if (ws.readyState === ws.OPEN) ws.send(data)
 	})
 
 	ws.on('close', () => { ptyProcess.kill() })
 
-	ws.on('error', (error) => {
+	ws.on('error', error => {
 		console.error('WebSocket error for shellassist terminal:', error)
 		ptyProcess.kill()
 	})

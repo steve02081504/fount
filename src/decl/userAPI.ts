@@ -6,15 +6,15 @@ import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_
 export class UserAPI_t {
 	info: info_t
 	// calls only on install, and if fail, all file under this persona's folder will be deleted
-	Init: () => Promise<void>
+	Init?: () => Promise<void>
 	// calls on every start, pop a message if fail
-	Load: () => Promise<void>
+	Load?: () => Promise<void>
 	// calls on every unload
-	Unload: (reason: string) => Promise<void>
+	Unload?: (reason: string) => Promise<void>
 	// calls on uninstall
-	Uninstall: (reason: string, from: string) => Promise<void>
+	Uninstall?: (reason: string, from: string) => Promise<void>
 
-	interfaces: {
+	interfaces?: {
 		info?: {
 			UpdateInfo: (locales: locale_t[]) => Promise<info_t>,
 		},

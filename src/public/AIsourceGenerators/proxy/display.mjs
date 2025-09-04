@@ -2,7 +2,7 @@
 
 let last_url = ''
 let last_apikey = ''
-const normalizeUrl = (url) => {
+const normalizeUrl = url => {
 	let urlObj
 	try {
 		urlObj = new URL(url)

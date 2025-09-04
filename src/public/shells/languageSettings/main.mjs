@@ -10,8 +10,5 @@ export default {
 			home_page: '',
 			tags: ['settings', 'system']
 		}
-	},
-	Load: () => { },
-	Unload: () => { },
-	interfaces: {}
+	}
 }

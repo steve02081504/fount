@@ -83,7 +83,7 @@ async function GetSource(config, { username, SaveConfig }) {
 		extension: {},
 
 		Unload: () => Promise.all(unnamedSources.map(source => source.Unload())),
-		Call: async (prompt) => base_source.Call(prompt),
+		Call: async prompt => base_source.Call(prompt),
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
 			const new_prompt_struct = {
 				char_id: prompt_struct.char_id,
@@ -177,10 +177,10 @@ async function GetSource(config, { username, SaveConfig }) {
 		},
 		tokenizer: {
 			free: () => 0,
-			encode: (prompt) => base_source.tokenizer.encode(prompt),
-			decode: (tokens) => base_source.tokenizer.decode(tokens),
-			decode_single: (token) => base_source.tokenizer.decode_single(token),
-			get_token_count: (prompt) => base_source.tokenizer.get_token_count(prompt),
+			encode: prompt => base_source.tokenizer.encode(prompt),
+			decode: tokens => base_source.tokenizer.decode(tokens),
+			decode_single: token => base_source.tokenizer.decode_single(token),
+			get_token_count: prompt => base_source.tokenizer.get_token_count(prompt),
 		}
 	}
 	return result

@@ -66,7 +66,7 @@ export class DuckDuckGoAPI {
 	async handlerStream(model, rb, returnStream) {
 		let bwzChunk = ''
 		let previousText = ''
-		const handChunkData = (chunk) => {
+		const handChunkData = chunk => {
 			chunk = chunk.trim()
 			if (bwzChunk !== '') {
 				chunk = bwzChunk + chunk
@@ -97,7 +97,7 @@ export class DuckDuckGoAPI {
 						continue
 
 
-					chunkStr.split('\n').forEach((line) => {
+					chunkStr.split('\n').forEach(line => {
 						if (line.length < 6)
 							return
 
@@ -145,8 +145,8 @@ export class DuckDuckGoAPI {
 			if (['user', 'assistant'].includes(role)) {
 				const contentStr = Array.isArray(message.content)
 					? message.content
-						.filter((item) => item.text)
-						.map((item) => item.text)
+						.filter(item => item.text)
+						.map(item => item.text)
 						.join('') || ''
 					: message.content
 				content += `${role}:${contentStr};\r\n`

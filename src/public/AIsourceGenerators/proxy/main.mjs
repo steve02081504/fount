@@ -55,14 +55,14 @@ async function GetSource(config, { SaveConfig }) {
 
 			text = await result.text()
 			if (text.startsWith('data:'))
-				text = text.split('\n').filter((line) => line.startsWith('data:')).map(line => line.slice(5).trim()).map(JSON.parse).map((json) => json.choices[0].delta.content).join('')
+				text = text.split('\n').filter(line => line.startsWith('data:')).map(line => line.slice(5).trim()).map(JSON.parse).map(json => json.choices[0].delta.content).join('')
 			else {
 				let json
 				try { json = JSON.parse(text) }
 				catch { json = await result.json() }
 				text = json.choices[0].message.content
 				let imgindex = 0
-				files = (await Promise.all(json.choices[0].message?.images?.map?.(async (imageurl) => ({
+				files = (await Promise.all(json.choices[0].message?.images?.map?.(async imageurl => ({
 					name: `image${imgindex++}.png`,
 					buffer: await (await fetch(imageurl)).arrayBuffer(),
 					mimetype: 'image/png'
@@ -82,7 +82,7 @@ async function GetSource(config, { SaveConfig }) {
 			{ urlSuffix: '/chat/completions' },
 		]
 		if (config.url.endsWith('/chat/completions'))
-			retryConfigs = retryConfigs.filter((config) => !config?.urlSuffix?.endsWith?.('/chat/completions'))
+			retryConfigs = retryConfigs.filter(config => !config?.urlSuffix?.endsWith?.('/chat/completions'))
 
 		for (const retryConfig of retryConfigs) {
 			const currentConfig = { ...config } // 复制配置，避免修改原始配置
@@ -126,8 +126,7 @@ async function GetSource(config, { SaveConfig }) {
 		is_paid: false,
 		extension: {},
 
-		Unload: () => { },
-		Call: async (prompt) => {
+		Call: async prompt => {
 			return await callBaseEx([
 				{
 					role: 'system',
@@ -136,7 +135,7 @@ async function GetSource(config, { SaveConfig }) {
 			])
 		},
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
-			const messages = margeStructPromptChatLog(prompt_struct).map((chatLogEntry) => {
+			const messages = margeStructPromptChatLog(prompt_struct).map(chatLogEntry => {
 				const uid = Math.random().toString(36).slice(2, 10)
 				const textContent = `\
 <message "${uid}">
@@ -185,7 +184,7 @@ ${chatLogEntry.content}
 				})
 
 			if (config.convert_config?.roleReminding ?? true) {
-				const isMutiChar = new Set(prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name).filter(Boolean)).size > 2
+				const isMutiChar = new Set(prompt_struct.chat_log.map(chatLogEntry => chatLogEntry.name).filter(Boolean)).size > 2
 				if (isMutiChar)
 					messages.push({
 						role: 'system',
@@ -200,7 +199,7 @@ ${chatLogEntry.content}
 			if (text.match(/<\/sender>\s*<content>/))
 				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1].split(new RegExp(
 					`(${(prompt_struct.alternative_charnames || []).map(Object).map(
-						(stringOrReg) => {
+						stringOrReg => {
 							if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
 							return stringOrReg.source
 						}
@@ -217,10 +216,10 @@ ${chatLogEntry.content}
 		},
 		tokenizer: {
 			free: () => 0,
-			encode: (prompt) => prompt,
-			decode: (tokens) => tokens,
-			decode_single: (token) => token,
-			get_token_count: (prompt) => prompt.length
+			encode: prompt => prompt,
+			decode: tokens => tokens,
+			decode_single: token => token,
+			get_token_count: prompt => prompt.length
 		}
 	}
 	return result

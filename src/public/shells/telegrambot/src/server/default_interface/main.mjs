@@ -90,7 +90,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 		 */
 		const aiReplyObjectCache = {}
 
-		bot.on('message', async (ctx_generic) => {
+		bot.on('message', async ctx_generic => {
 			/** @type {import('npm:telegraf').NarrowedContext<TelegrafContext, import('npm:telegraf').Types.Update.MessageUpdate>} */
 			const ctx = ctx_generic
 			const logicalChannelId = constructLogicalChannelIdForDefault(ctx.chat.id, ctx.message.message_thread_id)
@@ -141,7 +141,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 					...ctx.message.message_thread_id && { message_thread_id: ctx.message.message_thread_id }
 				}))
 
-				const AddChatLogEntryViaCharAPI = async (replyFromChar) => {
+				const AddChatLogEntryViaCharAPI = async replyFromChar => {
 					if (replyFromChar && (replyFromChar.content || replyFromChar.files?.length)) {
 						const aiMarkdownContent = replyFromChar.content || ''
 						if (aiMarkdownContent.trim()) {

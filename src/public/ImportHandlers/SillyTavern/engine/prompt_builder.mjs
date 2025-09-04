@@ -69,7 +69,7 @@ export function promptBuilder(
 		const { content } = entry
 		switch (entry.extensions.position) {
 			case world_info_position.atDepth: {
-				const existingDepthIndex = WIDepthEntries.findIndex((e) => e.depth === (entry.depth ?? DEFAULT_DEPTH) && e.role === entry.extensions.role)
+				const existingDepthIndex = WIDepthEntries.findIndex(e => e.depth === (entry.depth ?? DEFAULT_DEPTH) && e.role === entry.extensions.role)
 				if (existingDepthIndex !== -1)
 					WIDepthEntries[existingDepthIndex].entries.unshift(content)
 				else
@@ -112,7 +112,7 @@ export function promptBuilder(
 
 	const additional_chat_log = []
 	for (let index = 0; index < chatLog.length; index++) {
-		const WIDepth = WIDepthEntries.filter((e) => e.depth === index)
+		const WIDepth = WIDepthEntries.filter(e => e.depth === index)
 		for (const entrie of WIDepth) {
 			const role = ['system', 'user', 'assistant'][entrie.role]
 			additional_chat_log.push({

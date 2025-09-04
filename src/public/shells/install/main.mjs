@@ -24,7 +24,6 @@ export default {
 	Load: ({ router }) => {
 		setEndpoints(router)
 	},
-	Unload: () => { },
 
 	interfaces: {
 		invokes: {

@@ -208,7 +208,7 @@ class chatLogEntry_t {
 		return {
 			...this,
 			timeSlice: this.timeSlice.toJSON(),
-			files: this.files.map((file) => ({
+			files: this.files.map(file => ({
 				...file,
 				buffer: file.buffer.toString('base64')
 			}))
@@ -225,7 +225,7 @@ class chatLogEntry_t {
 		return {
 			...this,
 			timeSlice: await this.timeSlice.toData(),
-			files: await Promise.all(this.files.map(async (file) => ({
+			files: await Promise.all(this.files.map(async file => ({
 				...file,
 				buffer: 'file:' + await addfile(username, file.buffer)
 			})))
@@ -243,7 +243,7 @@ class chatLogEntry_t {
 		return Object.assign(new chatLogEntry_t(), {
 			...json,
 			timeSlice: await timeSlice_t.fromJSON(json.timeSlice, username),
-			files: await Promise.all(json.files.map(async (file) => ({
+			files: await Promise.all(json.files.map(async file => ({
 				...file,
 				buffer: file.buffer.startsWith('file:') ? await getfile(username, file.buffer.slice(5)) : Buffer.from(file.buffer, 'base64')
 			})))
@@ -310,7 +310,7 @@ class chatMetadata_t {
 	toJSON() {
 		return {
 			username: this.username,
-			chatLog: this.chatLog.map((log) => log.toJSON()),
+			chatLog: this.chatLog.map(log => log.toJSON()),
 			timeLines: this.timeLines.map(entry => entry.toJSON()),
 			timeLineIndex: this.timeLineIndex,
 		}
@@ -323,7 +323,7 @@ class chatMetadata_t {
 	async toData() {
 		return {
 			username: this.username,
-			chatLog: await Promise.all(this.chatLog.map(async (log) => log.toData(this.username))),
+			chatLog: await Promise.all(this.chatLog.map(async log => log.toData(this.username))),
 			timeLines: await Promise.all(this.timeLines.map(async entry => entry.toData(this.username))),
 			timeLineIndex: this.timeLineIndex,
 		}
@@ -466,7 +466,7 @@ async function getChatRequest(chatid, charname) {
 		locales,
 		chat_log: chatMetadata.chatLog,
 		Update: () => getChatRequest(chatid, charname),
-		AddChatLogEntry: async (entry) => {
+		AddChatLogEntry: async entry => {
 			if (!chatMetadata.LastTimeSlice.chars[charname]) throw new Error('Char not in this chat')
 			return addChatLogEntry(chatid, await BuildChatLogEntryFromCharReply(
 				entry,
@@ -896,7 +896,7 @@ async function getCharReplyFrequency(chatid) {
  * @returns {Promise<string | undefined>} 下一个发言的角色ID，如果没有可选角色则返回 undefined。
  */
 async function getNextCharForReply(frequency_data) {
-	const all_freq = frequency_data.map((x) => x.frequency).reduce((a, b) => a + b, 0)
+	const all_freq = frequency_data.map(x => x.frequency).reduce((a, b) => a + b, 0)
 	let random = Math.random() * all_freq
 
 	for (const { charname, frequency } of frequency_data)
@@ -1015,7 +1015,7 @@ export async function getChatList(username) {
 		if (data.username === username)
 			chatIdsOnDisk.add(chatid)
 
-	const chatListPromises = Array.from(chatIdsOnDisk).map(async (chatid) => {
+	const chatListPromises = Array.from(chatIdsOnDisk).map(async chatid => {
 		const cachedData = chatMetadatas.get(chatid)
 
 		if (cachedData?.chatMetadata) {
@@ -1047,7 +1047,7 @@ export async function getChatList(username) {
  */
 export async function deleteChat(chatids, username) {
 	const basedir = getUserDictionary(username) + '/shells/chat/chats/'
-	const deletePromises = chatids.map(async (chatid) => {
+	const deletePromises = chatids.map(async chatid => {
 		try {
 			if (fs.existsSync(basedir + chatid + '.json')) await fs.promises.unlink(basedir + chatid + '.json')
 			chatMetadatas.delete(chatid)
@@ -1068,7 +1068,7 @@ export async function deleteChat(chatids, username) {
  * @returns {Promise<{chatid: string, success: boolean, newChatId?: string, message: string}[]>} 每个聊天复制操作的结果数组。
  */
 export async function copyChat(chatids, username) {
-	const copyPromises = chatids.map(async (chatid) => {
+	const copyPromises = chatids.map(async chatid => {
 		const originalChat = await loadChat(chatid)
 		if (!originalChat)
 			return { chatid, success: false, message: 'Original chat not found' }
@@ -1089,7 +1089,7 @@ export async function copyChat(chatids, username) {
  * @returns {Promise<{chatid: string, success: boolean, data?: chatMetadata_t, message: string, error?: string}[]>} 每个聊天导出操作的结果数组。
  */
 export async function exportChat(chatids) {
-	const exportPromises = chatids.map(async (chatid) => {
+	const exportPromises = chatids.map(async chatid => {
 		try {
 			const chat = await loadChat(chatid)
 			if (!chat) return { chatid, success: false, message: 'Chat not found', error: 'Chat not found' }
@@ -1233,7 +1233,7 @@ export async function getHeartbeatData(chatid, start) {
 }
 
 // 事件处理器
-events.on('AfterUserDeleted', async (payload) => {
+events.on('AfterUserDeleted', async payload => {
 	const { username } = payload
 	// 从内存缓存中清除
 	const chatIdsToDeleteFromCache = []

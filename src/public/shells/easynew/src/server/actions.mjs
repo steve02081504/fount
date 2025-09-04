@@ -10,7 +10,7 @@ async function getTemplates(username) {
 
 	const allTemplates = {}
 
-	const findTemplates = async (basePath) => {
+	const findTemplates = async basePath => {
 		try {
 			const templateNames = await fs.readdir(basePath)
 			for (const templateName of templateNames) {

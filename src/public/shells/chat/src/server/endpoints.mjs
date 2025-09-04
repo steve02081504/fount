@@ -78,7 +78,7 @@ export function setEndpoints(router) {
 	router.post('/api/shells/chat/adduserreply', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { reply } = req.body
-		reply.files = reply?.files?.map((file) => ({
+		reply.files = reply?.files?.map(file => ({
 			...file,
 			buffer: Buffer.from(file.buffer, 'base64')
 		}))
@@ -99,7 +99,7 @@ export function setEndpoints(router) {
 
 	router.post('/api/shells/chat/editmessage', async (req, res) => {
 		const { chatid, index, content } = req.body
-		content.files = content?.files?.map((file) => ({
+		content.files = content?.files?.map(file => ({
 			...file,
 			buffer: Buffer.from(file.buffer, 'base64')
 		}))
@@ -117,7 +117,7 @@ export function setEndpoints(router) {
 		const { chatid, start, end } = req.query
 		const startNum = parseInt(start, 10)
 		const endNum = parseInt(end, 10)
-		res.status(200).json(await GetChatLog(chatid, startNum, endNum).then((log) => Promise.all(log.map((entry) => entry.toData(username)))))
+		res.status(200).json(await GetChatLog(chatid, startNum, endNum).then(log => Promise.all(log.map(entry => entry.toData(username)))))
 	})
 
 	router.get('/api/shells/chat/heartbeat', authenticate, async (req, res) => {

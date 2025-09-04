@@ -3,7 +3,7 @@
 let last_host = ''
 
 // Ollama's model list endpoint is /api/tags
-const getModelsUrl = (host) => {
+const getModelsUrl = host => {
 	let urlObj
 	try {
 		urlObj = new URL(host)

@@ -82,7 +82,7 @@ function openMetadataDB() {
 				console.warn('[SW DB] Database connection closed unexpectedly.')
 				dbPromise = null
 			}
-			db.onerror = (event) => {
+			db.onerror = event => {
 				console.error('[SW DB] Database error:', event.target.error)
 				dbPromise = null
 			}

@@ -54,7 +54,7 @@ async function GetSource(config, { username, SaveConfig }) {
 		extension: {},
 
 		Unload: () => Promise.all(unnamedSources.map(source => source.Unload())),
-		Call: async (prompt) => {
+		Call: async prompt => {
 			if (sources.length === 0) throw new Error('no source selected')
 			let error_num = 0
 			while (true) try {
@@ -84,10 +84,10 @@ async function GetSource(config, { username, SaveConfig }) {
 		},
 		tokenizer: {
 			free: () => 0,
-			encode: (prompt) => prompt,
-			decode: (tokens) => tokens,
-			decode_single: (token) => token,
-			get_token_count: (prompt) => prompt.length
+			encode: prompt => prompt,
+			decode: tokens => tokens,
+			decode_single: token => token,
+			get_token_count: prompt => prompt.length
 		}
 	}
 	return result

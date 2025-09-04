@@ -94,7 +94,7 @@ async function handleChatCompletionsRequest(req, res, username, model) {
 
 
 	const AIsource = await loadAIsource(username, model)
-	const fountMessages = messages.map((message) => ({
+	const fountMessages = messages.map(message => ({
 		role: message.role === 'user' ? 'user' : message.role === 'assistant' ? 'char' : 'system', // Default to system if unknown? Consider erroring.
 		content: message.content
 	}))

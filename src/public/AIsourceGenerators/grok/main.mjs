@@ -62,7 +62,7 @@ async function GetSource(config) {
 			// 清理操作（如果有的话）
 		},
 
-		Call: async (prompt) => {
+		Call: async prompt => {
 			const messages = [{ role: 'user', content: prompt }]
 			const model = config.model || 'grok-3'
 			const returnStream = config?.stream || false
@@ -75,7 +75,7 @@ async function GetSource(config) {
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
 
 			const messages = []
-			margeStructPromptChatLog(prompt_struct).forEach((chatLogEntry) => {
+			margeStructPromptChatLog(prompt_struct).forEach(chatLogEntry => {
 				const uid = Math.random().toString(36).slice(2, 10)
 				messages.push({
 					role: chatLogEntry.role === 'user' ? 'user' : chatLogEntry.role === 'system' ? 'system' : 'assistant',
@@ -104,7 +104,7 @@ ${chatLogEntry.content}
 
 
 			if (config.convert_config?.roleReminding ?? true) {
-				const isMutiChar = new Set(prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name).filter(Boolean)).size > 2
+				const isMutiChar = new Set(prompt_struct.chat_log.map(chatLogEntry => chatLogEntry.name).filter(Boolean)).size > 2
 				if (isMutiChar)
 					messages.push({
 						role: 'system',
@@ -118,7 +118,7 @@ ${chatLogEntry.content}
 			if (text.match(/<\/sender>\s*<content>/))
 				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1].split(new RegExp(
 					`(${(prompt_struct.alternative_charnames || []).map(Object).map(
-						(stringOrReg) => {
+						stringOrReg => {
 							if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
 							return stringOrReg.source
 						}
@@ -135,10 +135,10 @@ ${chatLogEntry.content}
 
 		tokenizer: {
 			free: () => 0, // 或者根据实际情况计算
-			encode: (prompt) => prompt, // Grok 不需要特殊的编码
-			decode: (tokens) => tokens,
-			decode_single: (token) => token,
-			get_token_count: (prompt) => grok.countTokens(prompt),
+			encode: prompt => prompt, // Grok 不需要特殊的编码
+			decode: tokens => tokens,
+			decode_single: token => token,
+			get_token_count: prompt => grok.countTokens(prompt),
 		},
 		generateImage: async (prompt, n) => {
 			const images = await grok.generateImage(prompt, n)

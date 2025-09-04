@@ -130,7 +130,7 @@ export function structPromptToSingle(/** @type {prompt_struct_t} */ prompt) {
 	const result = [structPromptToSingleNoChatLog(prompt)]
 
 	result.push('聊天记录如下：')
-	margeStructPromptChatLog(prompt).forEach((chatLogEntry) => {
+	margeStructPromptChatLog(prompt).forEach(chatLogEntry => {
 		result.push(chatLogEntry.name + ': ' + chatLogEntry.content)
 	})
 

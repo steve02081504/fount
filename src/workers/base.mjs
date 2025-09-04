@@ -1,7 +1,7 @@
 export let __dirname
 let main
 export function setMain(fn) { main = fn }
-self.onmessage = async (e) => {
+self.onmessage = async e => {
 	switch (e.data.type) {
 		case 'init': {
 			__dirname = e.data.__dirname

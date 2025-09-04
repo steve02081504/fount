@@ -49,7 +49,7 @@ export async function initChar(username, charname) {
 		charname,
 		state,
 	}, {
-		afterInit: async (char) => {
+		afterInit: async char => {
 			state.init_count++
 			saveCharData(username)
 		}

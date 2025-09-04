@@ -33,7 +33,7 @@ command_body
 					]
 				}
 			},
-			ReplyHandler: async (result) => {
+			ReplyHandler: async result => {
 				const match = result.content.match(/<recommend_command>(?<command>[\S\s]*?)<\/recommend_command>/)
 				const command = match?.groups?.command?.trim() // Extract and trim the command
 

@@ -46,7 +46,7 @@ function buildCharInfo(charData) {
 	const defaultLocaleKey = '' // fount 使用的默认/后备 locale key
 
 	// --- 辅助函数：为特定语言创建 info 对象 ---
-	const createInfoForLang = (note) => {
+	const createInfoForLang = note => {
 		// 注意：chardata.creator_notes 已经是经过 evaluateMacros 的（如果ST的宏在其中）
 		// 但CCv3的creator_notes通常是纯文本，宏处理应在显示时。
 		// 因此，这里我们直接使用 note，宏将在fount显示时处理（如果fount的UI层面支持）。
@@ -111,14 +111,8 @@ function formatRisuOutput(text) {
 const charAPI_definition = { // 先定义结构主体
 	info: {}, // 将由 buildCharInfo 动态填充
 
-	Init: () => { },
-	Uninstall: () => { },
-	Load: (stat) => {
+	Load: stat => {
 		username = stat.username
-	},
-	Unload: () => {
-		AIsource = null
-		username = ''
 	},
 
 	interfaces: {
@@ -127,7 +121,7 @@ const charAPI_definition = { // 先定义结构主体
 				AIsource: AIsource?.filename || '',
 				chardata, // STv2 格式
 			}),
-			SetData: async (data) => {
+			SetData: async data => {
 				if (data.chardata) {
 					chardata = data.chardata
 					charAPI_definition.info = buildCharInfo(chardata)
@@ -187,7 +181,7 @@ const charAPI_definition = { // 先定义结构主体
 				}
 				return promptBuilder(builderArgs, chardata, AIsource?.filename || 'default_model')
 			},
-			GetReply: async (args) => {
+			GetReply: async args => {
 				if (!AIsource)
 					return {
 						// 此处的提示可以考虑根据 args.locales 进行 i18n，但属于模板细节优化
@@ -240,13 +234,13 @@ const charAPI_definition = { // 先定义结构主体
 					extension: result.extension,
 				}
 			},
-			GetReplyFrequency: async (args) => {
+			GetReplyFrequency: async args => {
 				if (Object(chardata.extensions?.talkativeness) instanceof Number)
 					return Math.max(0.1, Number(chardata.extensions.talkativeness) * 2) // ST 逻辑
 
 				return 1 // 默认频率
 			},
-			MessageEdit: (args) => {
+			MessageEdit: args => {
 				const env = getMacroEnv(args.UserCharname) // UserCharname可能需要从args的上下文中获取
 				const editedContent = evaluateMacros(args.edited.content, env, args.chat_scoped_char_memory, args.chat_log)
 				return {

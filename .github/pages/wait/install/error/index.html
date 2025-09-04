@@ -34,7 +34,7 @@
 				const li = document.createElement('li')
 				const a = document.createElement('a')
 				a.textContent = localeNames.get(locale) || locale
-				a.addEventListener('click', (e) => {
+				a.addEventListener('click', e => {
 					e.preventDefault()
 					setLocales([locale])
 					// Close dropdown after selection

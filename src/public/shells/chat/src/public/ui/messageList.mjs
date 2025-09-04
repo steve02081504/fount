@@ -189,7 +189,7 @@ export async function editMessageStart(message, queueIndex, chatLogIndex) {
 
 	// --- 文件选择处理 ---
 	if (fileEditInput && attachmentPreview)
-		fileEditInput.addEventListener('change', (event) =>
+		fileEditInput.addEventListener('change', event =>
 			handleFilesSelect(event, selectedFiles, attachmentPreview) // 更新 selectedFiles 和预览
 		)
 
@@ -228,20 +228,20 @@ export function enableSwipe(messageElement) {
 	let touchStartX = 0, touchStartY = 0, isDragging = false, swipeHandled = false
 
 	// --- 定义命名的监听器函数 ---
-	const handleTouchStart = (event) => {
+	const handleTouchStart = event => {
 		if (event.touches.length !== 1) return
 		touchStartX = event.touches[0].clientX
 		touchStartY = event.touches[0].clientY
 		isDragging = true
 		swipeHandled = false
 	}
-	const handleTouchMove = (event) => {
+	const handleTouchMove = event => {
 		if (!isDragging || event.touches.length !== 1) return
 		const deltaX = event.touches[0].clientX - touchStartX
 		const deltaY = event.touches[0].clientY - touchStartY
 		if (Math.abs(deltaY) > Math.abs(deltaX)) isDragging = false // 垂直滚动优先
 	}
-	const handleTouchEnd = async (event) => {
+	const handleTouchEnd = async event => {
 		if (!isDragging || swipeHandled || event.changedTouches.length !== 1) { isDragging = false; return }
 		const deltaX = event.changedTouches[0].clientX - touchStartX
 		const deltaY = event.changedTouches[0].clientY - touchStartY

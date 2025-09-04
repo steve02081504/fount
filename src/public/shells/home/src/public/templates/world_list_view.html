@@ -16,7 +16,7 @@
 		<div class="border border-primary">
 			<input type="checkbox" class="checkbox checkbox-sm default-checkbox" data-i18n="home.worlds.card.defaultCheckbox" />
 			<div class="tags-container overflow-y-auto">
-				${(info.tags && info.tags.length > 0) ? info.tags.map((tag) => `<span class="badge badge-primary cursor-pointer">${tag}</span>`).join(' ') : geti18n('home.worlds.card.noTags')}
+				${(info.tags && info.tags.length > 0) ? info.tags.map(tag => `<span class="badge badge-primary cursor-pointer">${tag}</span>`).join(' ') : geti18n('home.worlds.card.noTags')}
 			</div>
 			<div class="char-details-container overflow-y-auto">
 				${info.version ? `<div class="char-info-item">${geti18n('home.worlds.card.version')}：<code>${info.version}</code></div>` : ''}

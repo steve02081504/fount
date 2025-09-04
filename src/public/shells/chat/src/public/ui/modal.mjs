@@ -23,7 +23,7 @@ export function openModal(contentSrc, contentType) {
 	modalContentElement.style.maxHeight = '90vh'
 	modal.appendChild(modalContentElement)
 
-	modal.addEventListener('click', (e) => {
+	modal.addEventListener('click', e => {
 		// Close only if the modal background (not the content itself) is clicked
 		if (e.target === modal) {
 			// If it's a video, pause it before removing the modal

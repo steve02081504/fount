@@ -259,7 +259,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 			}
 
 			try {
-				const AddChatLogEntry = async (replyFromChar) => { // AI调用的中间消息发送函数
+				const AddChatLogEntry = async replyFromChar => { // AI调用的中间消息发送函数
 					if (replyFromChar && (replyFromChar.content || replyFromChar.files?.length))
 						await sendSplitReply(replyFromChar)
 
@@ -296,7 +296,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 			}
 		}
 
-		client.on(Events.MessageCreate, async (message) => {
+		client.on(Events.MessageCreate, async message => {
 			let fullMessage = message
 			if (fullMessage.partial)
 				try { fullMessage = await tryFewTimes(() => message.fetch()) }

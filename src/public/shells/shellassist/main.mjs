@@ -18,7 +18,6 @@ export default {
 	Load: ({ router }) => {
 		setEndpoints(router)
 	},
-	Unload: () => { },
 	interfaces: {
 		invokes: {
 			IPCInvokeHandler: async (username, data) => {

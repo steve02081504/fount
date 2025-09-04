@@ -3,8 +3,8 @@ import { Buffer } from 'node:buffer'
 import { locale_t, role_t, timeStamp_t } from '../../../../decl/basedefs.ts'
 import { CharAPI_t } from '../../../../decl/charAPI.ts'
 import { pluginAPI_t } from '../../../../decl/pluginAPI.ts'
-import { UserAPI_t } from '../../../../decl/UserAPI.ts'
-import { WorldAPI_t } from '../../../../decl/WorldAPI.ts'
+import { UserAPI_t } from '../../../../decl/userAPI.ts'
+import { WorldAPI_t } from '../../../../decl/worldAPI.ts'
 
 export class chatReply_t {
 	name?: string

@@ -47,9 +47,7 @@ async function GetSource(config, { SaveConfig }) { // 接收 SaveConfig
 		is_paid: false,
 		extension: {},
 
-		Unload: () => { },
-
-		Call: async (prompt) => {
+		Call: async prompt => {
 			const messages = [{ role: 'user', content: prompt }]
 			const system_prompt = 'You are a helpful assistant.' //Call方法可以加个默认的system
 			if (system_prompt)
@@ -63,7 +61,7 @@ async function GetSource(config, { SaveConfig }) { // 接收 SaveConfig
 
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
 			const messages = []
-			prompt_struct.chat_log.forEach((chatLogEntry) => {
+			prompt_struct.chat_log.forEach(chatLogEntry => {
 				const uid = Math.random().toString(36).slice(2, 10)
 				messages.push({
 					role: chatLogEntry.role === 'user' ? 'user' : chatLogEntry.role === 'system' ? 'system' : 'assistant',
@@ -92,7 +90,7 @@ ${chatLogEntry.content}
 			if (text.match(/<\/sender>\s*<content>/))
 				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1].split(new RegExp(
 					`(${(prompt_struct.alternative_charnames || []).map(Object).map(
-						(stringOrReg) => {
+						stringOrReg => {
 							if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
 							return stringOrReg.source
 						}
@@ -109,10 +107,10 @@ ${chatLogEntry.content}
 
 		tokenizer: {
 			free: () => 0,
-			encode: (prompt) => prompt, // 实际上不需要
-			decode: (tokens) => tokens, // 实际上不需要
-			decode_single: (token) => token, // 实际上不需要
-			get_token_count: (prompt) => countTokens(prompt),
+			encode: prompt => prompt, // 实际上不需要
+			decode: tokens => tokens, // 实际上不需要
+			decode_single: token => token, // 实际上不需要
+			get_token_count: prompt => countTokens(prompt),
 		}
 	}
 

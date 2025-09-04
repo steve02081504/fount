@@ -56,12 +56,12 @@ function connectRemoteTerminal() {
 		sendRemoteSocketMessage({ type: 'resize', data: { cols: terminal.cols, rows: terminal.rows } })
 	}
 
-	remoteSocket.onmessage = (event) => {
+	remoteSocket.onmessage = event => {
 		if (!terminal.element) return
 		terminal.write(event.data)
 	}
 
-	const handleDisconnect = (eventMessage) => {
+	const handleDisconnect = eventMessage => {
 		if (!isRemoteSessionActive && remoteSocket?.readyState !== WebSocket.CONNECTING && remoteSocket?.readyState !== WebSocket.OPEN)
 			return
 		isRemoteSessionActive = false
@@ -78,12 +78,12 @@ function connectRemoteTerminal() {
 		setTimeout(connectRemoteTerminal, RECONNECT_DELAY)
 	}
 
-	remoteSocket.onerror = (error) => {
+	remoteSocket.onerror = error => {
 		console.error('Remote WebSocket error:', error)
 		handleDisconnect('Connection error.')
 	}
 
-	remoteSocket.onclose = (event) => {
+	remoteSocket.onclose = event => {
 		console.log('Remote WebSocket closed:', event)
 		handleDisconnect(`Connection closed (Code: ${event.code}).`)
 	}

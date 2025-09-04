@@ -53,12 +53,9 @@ export default {
 		}
 	},
 
-	Init: () => { },
-	Uninstall: () => { },
-	Load: (stat) => {
+	Load: stat => {
 		username = stat.username
 	},
-	Unload: () => { },
 
 	interfaces: {
 		config: {
@@ -66,7 +63,7 @@ export default {
 				AIsource: AIsource?.filename || '',
 				chardata,
 			}),
-			SetData: async (data) => {
+			SetData: async data => {
 				if (data.chardata) {
 					chardata = data.chardata
 					saveJsonFile(charjson, chardata)
@@ -110,7 +107,7 @@ export default {
 				return promptBuilder(args, chardata, AIsource?.filename)
 			},
 			// no GetPromptForOther, ST card does not support it
-			GetReply: async (args) => {
+			GetReply: async args => {
 				if (!AIsource) return {
 					content: 'this character does not have an AI source, set the AI source first',
 				}
@@ -138,7 +135,7 @@ export default {
 					result.content = requestResult.content
 					result.files = result.files.concat(requestResult.files || [])
 					for (const replyHandler of [
-						...Object.values(args.plugins).map((plugin) => plugin.interfaces?.chat?.ReplyHandler)
+						...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
 					].filter(Boolean))
 						if (await replyHandler(result, { ...args, prompt_struct, AddLongTimeLog }))
 							continue regen
@@ -151,11 +148,11 @@ export default {
 					files: result.files
 				}
 			},
-			GetReplyFrequency: async (args) => {
+			GetReplyFrequency: async args => {
 				if (chardata.extensions.talkativeness) return Number(chardata.extensions.talkativeness) * 2
 				return 1
 			},
-			MessageEdit: (args) => {
+			MessageEdit: args => {
 				return {
 					...args.edited,
 					content: runRegex(chardata, args.edited.content, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.markdownOnly && !e.promptOnly && (e.runOnEdit ?? true)),

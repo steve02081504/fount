@@ -175,14 +175,14 @@ export async function baseloadPart(username, parttype, partname, {
 			if (fs.statSync(templatePath + '/' + fileOrDir).isDirectory()) {
 				if (!fs.existsSync(userPath + '/' + fileOrDir))
 					fs.mkdirSync(userPath + '/' + fileOrDir, { recursive: true })
-				fs.readdirSync(fileOrDir).forEach((path) => mapper(fileOrDir + '/' + path))
+				fs.readdirSync(fileOrDir).forEach(path => mapper(fileOrDir + '/' + path))
 			}
 			else
 				nicerWriteFileSync(userPath + '/' + fileOrDir, fs.readFileSync(templatePath + '/' + fileOrDir))
 		}
 		fs.readdirSync(templatePath).forEach(mapper)
 	}
-	return await Promise.resolve(Loader(path)).catch((e) => {
+	return await Promise.resolve(Loader(path)).catch(e => {
 		const parts_details_cache = loadData(username, 'parts_details_cache')
 		delete parts_details_cache[parttype]?.[partname]
 		saveData(username, 'parts_details_cache')
@@ -224,9 +224,9 @@ export async function baseMjsPartUnloader(path) {
  * @param {Object} [functions] - Optional functions to customize the loading and initialization process.
  * @param {() => string} [functions.pathGetter=GetPartPath] - Function to get the part's path.
  * @param {(path: string, Initargs: Initargs_t) => Promise<T>} [functions.Loader=defaultLoader] - Function to load the part from the path. Defaults to baseMjsPartLoader and calls part.Load.
- * @param {(part: T) => void} [functions.afterLoad=(part) => {}] - Function to be called after the part is loaded.
+ * @param {(part: T) => void} [functions.afterLoad=part => {}] - Function to be called after the part is loaded.
  * @param {(path: string, Initargs: Initargs_t) => Promise<T>} [functions.Initer=defaultIniter] - Function to initialize the part from the path. Defaults to baseMjsPartLoader and calls part.Init.
- * @param {(part: T) => void} [functions.afterInit=(part) => {}] - Function to be called after the part is initialized.
+ * @param {(part: T) => void} [functions.afterInit=part => {}] - Function to be called after the part is initialized.
  * @returns {Promise<FullProxy<T>>} A promise that resolves to a FullProxy of the loaded and initialized part instance.
  */
 export async function loadPartBase(username, parttype, partname, Initargs, {
@@ -242,13 +242,13 @@ export async function loadPartBase(username, parttype, partname, Initargs, {
 			throw e
 		}
 	},
-	afterLoad = (part) => { },
+	afterLoad = part => { },
 	Initer = async (path, Initargs) => {
 		const part = await baseMjsPartLoader(path)
 		await part.Init?.(Initargs)
 		return part
 	},
-	afterInit = (part) => { },
+	afterInit = part => { },
 } = {}) {
 	Initargs = {
 		router: getPartRouter(username, parttype, partname),
@@ -285,7 +285,7 @@ export async function loadPartBase(username, parttype, partname, Initargs, {
 		if (!parts_set[username][parttype][partname]) {
 			const profile = await doProfile(async () => {
 				/** @type {T} */
-				parts_set[username][parttype][partname] = baseloadPart(username, parttype, partname, { pathGetter, Loader: async (path) => await Loader(path, Initargs) })
+				parts_set[username][parttype][partname] = baseloadPart(username, parttype, partname, { pathGetter, Loader: async path => await Loader(path, Initargs) })
 				const part = parts_set[username][parttype][partname] = await parts_set[username][parttype][partname]
 				try {
 					await part.interfaces?.config?.SetData?.(parts_config[parttype]?.[partname] ?? {})
@@ -323,7 +323,7 @@ export async function loadPartBase(username, parttype, partname, Initargs, {
  * @param {Object} [options] - Optional functions to customize the initialization process.
  * @param {() => string} [options.pathGetter=GetPartPath] - Function to get the part's path.
  * @param {(path: string, Initargs: Initargs_t) => Promise<T>} [options.Initer=defaultIniter] - Function to initialize the part from the path. Defaults to baseMjsPartLoader and calls part.Init.
- * @param {(part: T) => void} [options.afterInit=(part) => {}] - Function to be called after the part is initialized.
+ * @param {(part: T) => void} [options.afterInit=part => {}] - Function to be called after the part is initialized.
  */
 export async function initPart(username, parttype, partname, Initargs, {
 	pathGetter = () => GetPartPath(username, parttype, partname),
@@ -332,7 +332,7 @@ export async function initPart(username, parttype, partname, Initargs, {
 		await part.Init?.(Initargs)
 		return part
 	},
-	afterInit = (part) => { },
+	afterInit = part => { },
 } = {}) {
 	const part = await Initer(pathGetter(), Initargs)
 	await afterInit(part)
@@ -349,12 +349,12 @@ export async function initPart(username, parttype, partname, Initargs, {
  * @param {string} partname - The name of the part.
  * @param {UnloadArgs_t} unLoadargs - Arguments to be passed to the part's Unload function.
  * @param {Object} [options] - Optional functions to customize the unLoading process.
- * @param {(part: T) => Promise<void>} [options.unLoader=(part) => part.Unload?.(unLoadargs)] - Function to unload the part. Defaults to calling part.Unload.
+ * @param {(part: T) => Promise<void>} [options.unLoader=part => part.Unload?.(unLoadargs)] - Function to unload the part. Defaults to calling part.Unload.
  * @returns {Promise<void>} A promise that resolves when the part is unloaded.
  */
 export async function unloadPartBase(username, parttype, partname, unLoadargs, {
 	pathGetter = () => GetPartPath(username, parttype, partname),
-	unLoader = (part) => part.Unload?.(unLoadargs),
+	unLoader = part => part.Unload?.(unLoadargs),
 	afterUnload = baseMjsPartUnloader,
 } = {}) {
 	/** @type {T} */
@@ -387,14 +387,14 @@ export async function unloadPartBase(username, parttype, partname, unLoadargs, {
  * @param {UninstallArgs_t} uninstallArgs - Arguments to be passed to the part's Uninstall function.
  * @param {Object} [options] - Optional functions to customize the uninstallation process.
  * @param {(path: string) => Promise<T>} [options.Loader=baseMjsPartLoader] - Function to load the part from the path (used if part is not already loaded for uninstall).
- * @param {(part: T) => Promise<void>} [options.unLoader=(part) => part.Unload?.(unLoadargs)] - Function to unload the part. Defaults to calling part.Unload.
+ * @param {(part: T) => Promise<void>} [options.unLoader=part => part.Unload?.(unLoadargs)] - Function to unload the part. Defaults to calling part.Unload.
  * @param {() => string} [options.pathGetter=GetPartPath] - Function to get the part's path.
  * @param {(part: T, path: string) => Promise<void>} [options.Uninstaller=defaultUninstaller] - Function to uninstall the part. Defaults to calling part.Uninstall and removing the directory.
  * @returns {Promise<void>} A promise that resolves when the part is uninstalled.
  */
 export async function uninstallPartBase(username, parttype, partname, unLoadargs, uninstallArgs, {
 	Loader = baseMjsPartLoader,
-	unLoader = (part) => part.Unload?.(unLoadargs),
+	unLoader = part => part.Unload?.(unLoadargs),
 	pathGetter = () => GetPartPath(username, parttype, partname),
 	Uninstaller = async (part, path) => {
 		await part?.Uninstall?.(uninstallArgs)
@@ -436,12 +436,12 @@ export async function uninstallPartBase(username, parttype, partname, unLoadargs
  * @param {string} parttype - The type of the part.
  * @param {Object} [options] - Optional filters and mappers for the part list.
  * @param {(file: fs.Dirent) => boolean} [options.PathFilter=defaultPathFilter] - Function to filter directory entries. Defaults to checking for directories with 'main.mjs'.
- * @param {(file: fs.Dirent) => string} [options.ResultMapper=(file) => file.name] - Function to map directory entry to result. Defaults to returning file name.
+ * @param {(file: fs.Dirent) => string} [options.ResultMapper=file => file.name] - Function to map directory entry to result. Defaults to returning file name.
  * @returns {string[]} An array of part names.
  */
 export function getPartListBase(username, parttype, {
-	PathFilter = (file) => fs.existsSync(file.parentPath + '/' + file.name + '/main.mjs'),
-	ResultMapper = (file) => file.name
+	PathFilter = file => fs.existsSync(file.parentPath + '/' + file.name + '/main.mjs'),
+	ResultMapper = file => file.name
 } = {}) {
 	const part_dir = getUserDictionary(username) + '/' + parttype
 	let partlist = fs.readdirSync(part_dir, { withFileTypes: true }).filter(PathFilter)

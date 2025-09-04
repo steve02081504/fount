@@ -37,7 +37,7 @@ export async function parseRisuModule(moduleBuffer) {
 			pos += 4
 			return len
 		}
-		const readData = (len) => {
+		const readData = len => {
 			const data = moduleBuffer.subarray(pos, pos + len)
 			pos += len
 			return data

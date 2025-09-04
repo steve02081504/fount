@@ -70,7 +70,7 @@ export default {
 			description: 'fount 繪呈之援，以導化身之儀觀',
 		},
 	},
-	Load: (stat) => {
+	Load: stat => {
 		username = stat.username // 获取用户名
 	},
 	interfaces: {
@@ -82,7 +82,7 @@ export default {
 					summarySize: 20, // 每次总结多少消息
 				}
 			},
-			SetData: async (data) => {
+			SetData: async data => {
 				if (data.summaryAIsource)
 					summary.AIsource = await loadAIsource(username, data.summaryAIsource)
 				else
@@ -92,7 +92,7 @@ export default {
 			}
 		},
 		chat: {
-			GetChatLogForCharname: async (args) => {
+			GetChatLogForCharname: async args => {
 				let chatLog = args.chat_log.map(x => x)
 				if (!chatLog.length) return chatLog
 				// 找到最后一个有extension.summary的消息
@@ -119,9 +119,9 @@ ${chatLog[0].extension.summary}
 					// 发送总结请求
 					const newSummary = await summary.AIsource.Call(`\
 以下是一段历史记录：
-${SummaryChatLog.map((chatLogEntry) => chatLogEntry.name + ':\n<content>' + chatLogEntry.content + '</content>').join('\n\n')}
+${SummaryChatLog.map(chatLogEntry => chatLogEntry.name + ':\n<content>' + chatLogEntry.content + '</content>').join('\n\n')}
 请你总结上文，给出摘要内容。
-`).then((res) => res.content)
+`).then(res => res.content)
 					// 添加总结到消息的extension中
 					chatLog = chatLog.slice(summary.size)
 					chatLog[0].extension ??= {}

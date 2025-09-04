@@ -328,7 +328,7 @@ saveConfigButton.addEventListener('click', handleSaveConfig)
 startStopBotButton.addEventListener('click', handleStartStopBot)
 
 // 离开页面时提醒
-window.addEventListener('beforeunload', (event) => {
+window.addEventListener('beforeunload', event => {
 	if (isDirty) {
 		event.preventDefault()
 		event.returnValue = geti18n('discord_bots.alerts.beforeUnload')

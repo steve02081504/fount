@@ -123,7 +123,7 @@ function applyTranslations() {
 
 export function i18nElement(element) {
 	const elements = element.querySelectorAll('[data-i18n]')
-	elements.forEach((element) => {
+	elements.forEach(element => {
 		const key = element.dataset.i18n
 		if (!key) return
 		if (getNestedValue(i18n, key) instanceof Object) {

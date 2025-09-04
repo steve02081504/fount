@@ -68,7 +68,7 @@ export const localhostLocales = [...new Set([
 		process.env.LANG,
 		process.env.LANGUAGE,
 		process.env.LC_ALL,
-		await exec('locale -uU').then((r) => r.stdout.trim()).catch(() => undefined),
+		await exec('locale -uU').then(r => r.stdout.trim()).catch(() => undefined),
 	].filter(Boolean).map(locale => locale.split('.')[0].replace('_', '-')),
 	...navigator.languages || [navigator.language],
 	'en-UK',

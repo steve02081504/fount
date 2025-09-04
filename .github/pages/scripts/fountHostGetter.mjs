@@ -2,7 +2,7 @@
 const DEFAULT_FOUNT_PORT = 8931
 
 // 验证 IPv4 地址
-const isValidIPv4Address = (ip) => {
+const isValidIPv4Address = ip => {
 	console.debug(`[isValidIPv4Address] Validating IP: ${ip}`)
 	const isValid = /^(\d{1,3}\.){3}\d{1,3}$/.test(ip) && ip.split('.').every(part => +part >= 0 && +part <= 255)
 	console.debug(`[isValidIPv4Address] IP ${ip} is valid: ${isValid}`)
@@ -81,12 +81,12 @@ async function mapFountHostOnIPv4(hostUrl) {
 
 // 从 WebRTC 获取本地 IP
 function getLocalIPFromWebRTC() {
-	return new Promise((resolve) => {
+	return new Promise(resolve => {
 		const pc = new RTCPeerConnection({
 			iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
 		})
 		pc.createDataChannel('')
-		pc.onicecandidate = (event) => {
+		pc.onicecandidate = event => {
 			const match = event?.candidate?.candidate?.match?.(/((?:\d+\.){3}\d+)/)
 			if (match && !match[1].startsWith('127.')) {
 				pc.close()

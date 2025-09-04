@@ -30,7 +30,7 @@ const configTemplate = {
 
 async function GetSource(config, { username, SaveConfig }) {
 	const unnamedSources = []
-	const sources = await Promise.all(config.sources.map((source) => loadAIsourceFromNameOrConfigData(username, source, unnamedSources, {
+	const sources = await Promise.all(config.sources.map(source => loadAIsourceFromNameOrConfigData(username, source, unnamedSources, {
 		SaveConfig
 	})))
 	/** @type {AIsource_t} */
@@ -53,7 +53,7 @@ async function GetSource(config, { username, SaveConfig }) {
 		extension: {},
 
 		Unload: () => Promise.all(unnamedSources.map(source => source.Unload())),
-		Call: async (prompt) => {
+		Call: async prompt => {
 			if (sources.length === 0) throw new Error('no source selected')
 			let index = 0
 			while (true) try {
@@ -79,10 +79,10 @@ async function GetSource(config, { username, SaveConfig }) {
 		},
 		tokenizer: {
 			free: () => 0,
-			encode: (prompt) => prompt,
-			decode: (tokens) => tokens,
-			decode_single: (token) => token,
-			get_token_count: (prompt) => prompt.length
+			encode: prompt => prompt,
+			decode: tokens => tokens,
+			decode_single: token => token,
+			get_token_count: prompt => prompt.length
 		}
 	}
 	return result

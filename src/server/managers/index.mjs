@@ -28,10 +28,10 @@ export function loadPart(username, parttype, partname) {
 }
 
 const pathFilters = {
-	'AIsources': (file) => file.isFile() && file.name.endsWith('.json')
+	'AIsources': file => file.isFile() && file.name.endsWith('.json')
 }
 const ResultMappers = {
-	'AIsources': (file) => file.name.slice(0, -5)
+	'AIsources': file => file.name.slice(0, -5)
 }
 export function getPartList(username, parttype) {
 	return getPartListBase(username, parttype, {

@@ -1,7 +1,7 @@
 // grokAPI.mjs
 import axios from 'npm:axios'
 
-const getStandardHeaders = (cookie) => {
+const getStandardHeaders = cookie => {
 	return {
 		accept: '*/*',
 		'accept-encoding': 'gzip, deflate',
@@ -316,7 +316,7 @@ export class GrokAPI {
 			let fullResponse = ''
 			let thinkingBlockActive = false
 
-			response.data.on('data', (chunk) => {
+			response.data.on('data', chunk => {
 				buffer += chunk.toString()
 				while (true) {
 					const newlineIndex = buffer.indexOf('\n')

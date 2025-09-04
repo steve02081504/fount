@@ -46,7 +46,7 @@ export function registerEndpoints(router) {
 	})
 
 	router.get('/api/getlocaledata', async (req, res) => {
-		const browserLanguages = req.headers['accept-language']?.split?.(',')?.map?.((lang) => lang.trim().split(';')[0]) || []
+		const browserLanguages = req.headers['accept-language']?.split?.(',')?.map?.(lang => lang.trim().split(';')[0]) || []
 		const userPreferredLanguages = req.query.preferred?.split?.(',') || []
 
 		// 合并语言列表，用户设置的优先，然后去重

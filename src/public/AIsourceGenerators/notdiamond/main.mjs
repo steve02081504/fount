@@ -56,8 +56,7 @@ async function GetSource(config) {
 		is_paid: false,
 		extension: {},
 
-		Unload: () => { },
-		Call: async (prompt) => {
+		Call: async prompt => {
 			const result = await callBase([
 				{
 					role: 'system',
@@ -70,7 +69,7 @@ async function GetSource(config) {
 		},
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
 			const messages = []
-			margeStructPromptChatLog(prompt_struct).forEach((chatLogEntry) => {
+			margeStructPromptChatLog(prompt_struct).forEach(chatLogEntry => {
 				const uid = Math.random().toString(36).slice(2, 10)
 				messages.push({
 					role: chatLogEntry.role === 'user' ? 'user' : chatLogEntry.role === 'system' ? 'system' : 'assistant',
@@ -92,7 +91,7 @@ ${chatLogEntry.content}
 			})
 
 			if (config.convert_config?.roleReminding ?? true) {
-				const isMutiChar = new Set(prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name).filter(Boolean)).size > 2
+				const isMutiChar = new Set(prompt_struct.chat_log.map(chatLogEntry => chatLogEntry.name).filter(Boolean)).size > 2
 				if (isMutiChar)
 					messages.push({
 						role: 'system',
@@ -105,7 +104,7 @@ ${chatLogEntry.content}
 			if (text.match(/<\/sender>\s*<content>/))
 				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1].split(new RegExp(
 					`(${(prompt_struct.alternative_charnames || []).map(Object).map(
-						(stringOrReg) => {
+						stringOrReg => {
 							if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
 							return stringOrReg.source
 						}
@@ -121,10 +120,10 @@ ${chatLogEntry.content}
 		},
 		tokenizer: {
 			free: () => 0,
-			encode: (prompt) => prompt,
-			decode: (tokens) => tokens,
-			decode_single: (token) => token,
-			get_token_count: (prompt) => notDiamond.countTokens(prompt)
+			encode: prompt => prompt,
+			decode: tokens => tokens,
+			decode_single: token => token,
+			get_token_count: prompt => notDiamond.countTokens(prompt)
 		}
 	}
 

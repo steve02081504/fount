@@ -16,7 +16,7 @@ export function GetShellWorld(shelltype) {
 		},
 		interfaces: {
 			chat: {
-				GetPrompt: (args) => {
+				GetPrompt: args => {
 					return {
 						text: [
 							{

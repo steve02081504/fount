@@ -1,4 +1,5 @@
 import net from 'node:net'
+import process from 'node:process'
 
 import { VirtualConsole } from 'npm:@steve02081504/virtual-console'
 
@@ -65,17 +66,17 @@ export class IPCManager {
 	}
 
 	async startServer() {
-		this.serverV6 = net.createServer((socket) => {
+		this.serverV6 = net.createServer(socket => {
 			this.handleConnection(socket)
 		})
 
-		this.serverV4 = net.createServer((socket) => {
+		this.serverV4 = net.createServer(socket => {
 			this.handleConnection(socket)
 		})
 
 		const startServer = (server, address) => {
 			return new Promise((resolve, reject) => {
-				server.on('error', async (err) => {
+				server.on('error', async err => {
 					if (err.code === 'EADDRINUSE') resolve(false)
 					else reject(err)
 				})
@@ -98,7 +99,7 @@ export class IPCManager {
 	handleConnection(socket) {
 		let data = ''
 
-		socket.on('data', async (chunk) => {
+		socket.on('data', async chunk => {
 			data += chunk
 			if (data.includes('\n')) {
 				const parts = data.split('\n')
@@ -116,7 +117,7 @@ export class IPCManager {
 			}
 		})
 
-		socket.on('error', async (err) => {
+		socket.on('error', async err => {
 			console.errorI18n('fountConsole.ipc.socketError', { error: err })
 		})
 	}
@@ -127,7 +128,7 @@ export class IPCManager {
 
 			let responseData = ''
 
-			client.on('data', async (chunk) => {
+			client.on('data', async chunk => {
 				responseData += chunk
 				// 检查消息分隔符（换行符）
 				if (responseData.includes('\n')) {
@@ -150,7 +151,7 @@ export class IPCManager {
 				}
 			})
 
-			client.on('error', (err) => {
+			client.on('error', err => {
 				client.destroy()
 				reject(err)
 			})

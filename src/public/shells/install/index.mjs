@@ -35,7 +35,7 @@ textImportTab.addEventListener('click', () => {
 })
 
 // 文件拖放处理
-dropArea.addEventListener('dragover', (event) => {
+dropArea.addEventListener('dragover', event => {
 	event.preventDefault()
 	dropArea.classList.add('dragover')
 })
@@ -44,7 +44,7 @@ dropArea.addEventListener('dragleave', () => {
 	dropArea.classList.remove('dragover')
 })
 
-dropArea.addEventListener('drop', async (event) => {
+dropArea.addEventListener('drop', async event => {
 	event.preventDefault()
 	dropArea.classList.remove('dragover')
 	await handleDroppedItems(event.dataTransfer.items)
@@ -55,7 +55,7 @@ dropArea.addEventListener('click', () => {
 	const input = document.createElement('input')
 	input.type = 'file'
 	input.multiple = true
-	input.addEventListener('change', async (event) => {
+	input.addEventListener('change', async event => {
 		await handleFiles(event.target.files)
 	})
 	input.click()
@@ -81,7 +81,7 @@ async function traverseFileTree(entry) {
 			entry.file(file => resolve([file]))
 		else if (entry.isDirectory) {
 			const directoryReader = entry.createReader()
-			directoryReader.readEntries(async (entries) => {
+			directoryReader.readEntries(async entries => {
 				const files = []
 				for (const subEntry of entries)
 					files.push(...await traverseFileTree(subEntry))

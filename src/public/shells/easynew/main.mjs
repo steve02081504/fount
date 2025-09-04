@@ -24,8 +24,6 @@ export default {
 		setEndpoints(router)
 	},
 
-	Unload: () => { },
-
 	interfaces: {
 		invokes: {
 			ArgumentsHandler: async (user, args) => {

@@ -3,7 +3,7 @@ import droll from 'npm:droll'
 import moment from 'npm:moment/moment.js'
 import seedrandom from 'npm:seedrandom'
 
-const STRING_HASH = (str) => sha256(str).toString()
+const STRING_HASH = str => sha256(str).toString()
 
 function getVariable(memory, name, args = {}, isGlobal = false) {
 	const storage = isGlobal ? memory?.globalVariables : memory?.variables
@@ -102,7 +102,7 @@ function replaceVariableMacros(input, memory) {
 function getTimeSinceLastMessage(chatLog) {
 	if (!chatLog || chatLog.length === 0) return 'just now'
 	const lastMessage = chatLog
-		.filter((message) => message.role !== 'system')
+		.filter(message => message.role !== 'system')
 		.toReversed()
 		.find((_, index, arr) => arr[index + 1]?.role === 'user')
 	if (lastMessage?.time_stamp)

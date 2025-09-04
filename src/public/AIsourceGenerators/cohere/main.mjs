@@ -44,11 +44,10 @@ async function GetSource(config) {
 		is_paid: false,
 		extension: {},
 
-		Unload: () => { },
-		Call: async (prompt) => {
+		Call: async prompt => {
 			const result = await cohere.generate({ prompt, model: config.model })
 			return {
-				content: result.generations.map((generation) => generation.text).join('\n')
+				content: result.generations.map(generation => generation.text).join('\n')
 			}
 		},
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
@@ -60,7 +59,7 @@ async function GetSource(config) {
 					content: system_prompt
 				}]
 			}
-			margeStructPromptChatLog(prompt_struct).forEach((chatLogEntry) => {
+			margeStructPromptChatLog(prompt_struct).forEach(chatLogEntry => {
 				const uid = Math.random().toString(36).slice(2, 10)
 				request.messages.push({
 					role: chatLogEntry.role === 'user' ? 'user' : chatLogEntry.role === 'system' ? 'system' : 'assistant',
@@ -76,7 +75,7 @@ ${chatLogEntry.content}
 			})
 
 			if (config.convert_config?.roleReminding ?? true) {
-				const isMutiChar = new Set(prompt_struct.chat_log.map((chatLogEntry) => chatLogEntry.name).filter(Boolean)).size > 2
+				const isMutiChar = new Set(prompt_struct.chat_log.map(chatLogEntry => chatLogEntry.name).filter(Boolean)).size > 2
 				if (isMutiChar)
 					request.messages.push({
 						role: 'system',
@@ -85,13 +84,13 @@ ${chatLogEntry.content}
 			}
 
 			const result = await cohere.chat(request)
-			let text = result?.message?.content?.map((message) => message?.text)?.filter((text) => text)?.join('\n')
+			let text = result?.message?.content?.map(message => message?.text)?.filter(text => text)?.join('\n')
 			if (!text) throw result
 
 			if (text.match(/<\/sender>\s*<content>/))
 				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1].split(new RegExp(
 					`(${(prompt_struct.alternative_charnames || []).map(Object).map(
-						(stringOrReg) => {
+						stringOrReg => {
 							if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
 							return stringOrReg.source
 						}
@@ -111,22 +110,22 @@ ${chatLogEntry.content}
 		},
 		tokenizer: {
 			free: () => 0,
-			encode: (prompt) => cohere.tokenize({
+			encode: prompt => cohere.tokenize({
 				model: config.model,
 				text: prompt
-			}).then((result) => result.tokens),
-			decode: (tokens) => cohere.detokenize({
+			}).then(result => result.tokens),
+			decode: tokens => cohere.detokenize({
 				model: config.model,
 				tokens
-			}).then((result) => result.text),
-			decode_single: (token) => cohere.detokenize({
+			}).then(result => result.text),
+			decode_single: token => cohere.detokenize({
 				model: config.model,
 				tokens: [token]
-			}).then((result) => result.text),
-			get_token_count: (prompt) => cohere.tokenize({
+			}).then(result => result.text),
+			get_token_count: prompt => cohere.tokenize({
 				model: config.model,
 				text: prompt
-			}).then((result) => result.tokens.length)
+			}).then(result => result.tokens.length)
 		}
 	}
 
