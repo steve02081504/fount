@@ -90,6 +90,7 @@ export async function init(start_config) {
 	let logoPromise
 	if (starts.Base) {
 		if (start_config.needs_output) logoPromise = runSimpleWorker('logogener')
+		starts.Base = Object(starts.Base)
 		for (const base of ['Jobs', 'Timers', 'Idle', 'AutoUpdate']) starts.Base[base] ??= true
 		console.freshLineI18n('server start', 'fountConsole.server.start')
 		process.on('error', console.log)
