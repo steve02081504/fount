@@ -12,7 +12,6 @@ import { __dirname } from '../base.mjs'
 import { PartsRouter } from './parts_router.mjs'
 
 export const app = express()
-app.set('trust proxy', 'loopback')
 const mainRouter = express.Router()
 const FinalRouter = express.Router()
 

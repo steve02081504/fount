@@ -116,7 +116,7 @@ export async function init(start_config) {
 		iconPromise = runSimpleWorker('icongener').catch(console.error)
 
 	if (starts.Web) {
-		const { port, https: httpsConfig } = config // 获取 HTTPS 配置
+		const { port, https: httpsConfig, trust_proxy } = config // 获取 HTTPS 配置
 		hosturl = (httpsConfig && httpsConfig.enabled ? 'https' : 'http') + '://localhost:' + port
 		let server
 
@@ -126,6 +126,7 @@ export async function init(start_config) {
 			const requestListener = async (req, res) => {
 				try {
 					const app = await (appPromise ??= import('./web_server/index.mjs').then(({ app }) => {
+						app.set('trust proxy', trust_proxy ?? 'loopback')
 						server.removeListener('request', requestListener)
 						server.on('request', app)
 						return app

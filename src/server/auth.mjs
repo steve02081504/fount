@@ -617,6 +617,11 @@ export function getUserDictionary(username) {
 	return path.resolve(user?.UserDictionary || path.join(data_path, 'users', username))
 }
 
+let avgVerifyTime = (_ => {
+	const startTime = Date.now()
+	argon2.verify('$argon2id$v=19$m=65536,t=3,p=4$ZHVtbXlkYXRh$ZHVtbXlkYXRhZGF0YQ', 'dummydata').catch(() => { })
+	return Date.now() - startTime
+})()
 /**
  * 用户登录
  * @param {string} username - 用户名
@@ -641,6 +646,8 @@ export async function login(username, password, deviceId = 'unknown', req) {
 				return { status: 200, success: true, message: 'Login successful', accessToken, refreshToken: refreshTokenString }
 			}
 		}
+		// 防止计时攻击
+		await new Promise(resolve => setTimeout(resolve, avgVerifyTime * 0.8 + (Math.random() - 0.5) * avgVerifyTime * 0.2))
 		return Object.assign({ status: 401, success: false, message: 'Invalid username or password' }, local_return)
 	}
 	if (!user) return await failedLogin({ status: 401, success: false, message: 'User not found' })
@@ -652,7 +659,9 @@ export async function login(username, password, deviceId = 'unknown', req) {
 		return { status: 403, success: false, message: `Account locked. Try again in ${timeLeft}.` }
 	}
 
+	const startTime = Date.now()
 	const isValidPassword = await verifyPassword(password, authData.password)
+	avgVerifyTime = (avgVerifyTime * 3 + (Date.now() - startTime)) / 4
 	if (!isValidPassword) {
 		authData.loginAttempts = (authData.loginAttempts || 0) + 1
 		if (authData.loginAttempts >= MAX_LOGIN_ATTEMPTS) {
