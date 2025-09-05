@@ -4,6 +4,7 @@ import { ping, generateVerificationCode, login, register } from '../scripts/endp
 import { initTranslations, geti18n, console } from '../scripts/i18n.mjs'
 import { applyTheme } from '../scripts/theme.mjs'
 import { showToast } from '../scripts/toast.mjs'
+import { redirectToLoginInfo } from '../scripts/loginInfoRedirect.mjs'
 
 
 const form = document.getElementById('auth-form')
@@ -186,17 +187,30 @@ async function handleFormSubmit(event) {
 		if (response.ok)
 			if (isLoginForm) {
 				console.log('Login successful!')
-				// 跳转参数？
+				let logins = {}
+				try {
+					logins = JSON.parse(localStorage.getItem('login_infos')) || {}
+				} catch (e) {
+					console.error('Error parsing login_infos from localStorage', e)
+					logins = {}
+				}
+				logins[username] = password
+				localStorage.setItem('login_infos', JSON.stringify(logins))
+
 				const urlParams = new URLSearchParams(window.location.search)
 				const redirect = urlParams.get('redirect')
 				localStorage.setItem('hasLoggedIn', 'true')
+
+				let finalRedirectUrl
 				if (redirect)
 					if (hasLoggedIn)
-						window.location.href = decodeURIComponent(redirect) + window.location.hash
+						finalRedirectUrl = decodeURIComponent(redirect)
 					else
-						window.location.href = `/shells/tutorial?redirect=${redirect}` + window.location.hash
+						finalRedirectUrl = `/shells/tutorial?redirect=${redirect}`
 				else
-					window.location.href = `/shells/${hasLoggedIn ? 'home' : 'tutorial'}`
+					finalRedirectUrl = `/shells/${hasLoggedIn ? 'home' : 'tutorial'}`
+
+				await redirectToLoginInfo(finalRedirectUrl + window.location.hash, username, password)
 			} else {
 				console.log('Registration successful!')
 				toggleForm() // 注册成功后自动切换到登录表单
@@ -236,8 +250,22 @@ async function initializeApp() {
 	localStorage.setItem('theme', localStorage.getItem('theme') || 'dark')
 	applyTheme()
 	await initTranslations('auth')
-	initializeForm()
 	setupEventListeners()
+
+	await initializeForm()
+	const urlParams = new URLSearchParams(window.location.search)
+	const usernameParam = urlParams.get('username')
+	const passwordParam = urlParams.get('password')
+	const autologinParam = urlParams.get('autologin') || urlParams.has('autologin')
+
+	const usernameInput = document.getElementById('username')
+	if (usernameParam) usernameInput.value = usernameParam
+	if (passwordParam) passwordInput.value = passwordParam
+
+	if (JSON.parse(autologinParam)) {
+		if (!isLoginForm) toggleForm()
+		submitBtn.click()
+	}
 }
 
 // 执行初始化
