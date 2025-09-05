@@ -32,7 +32,7 @@ export async function isFountServiceAvailable(host) {
 		const url = new URL('/api/ping', host)
 		const response = await fetch(url, { method: 'GET', mode: 'cors', cache: 'no-cache', signal: AbortSignal.timeout(500) })
 		const data = await response.json()
-		if (data?.cilent_name != 'fount') return false
+		if (data?.client_name != 'fount') return false
 		console.debug(`[isFountServiceAvailable] fount service at ${host} is available.`)
 		return true
 	} catch (error) {

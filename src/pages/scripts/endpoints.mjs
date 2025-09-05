@@ -1,10 +1,10 @@
-export async function ping() {
-	const response = await fetch('/api/ping', { cache: 'no-cache' })
+export async function ping(with_cache = false) {
+	const response = await fetch('/api/ping', { cache: with_cache ? 'default' : 'no-cache' })
 	return response.json()
 }
 
 export async function hosturl_in_local_ip() {
-	return ping().then(data => data.hosturl_in_local_ip).catch(() => window.location.origin)
+	return ping(1).then(data => data.hosturl_in_local_ip).catch(() => window.location.origin)
 }
 
 export async function generateVerificationCode() {

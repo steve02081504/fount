@@ -13,8 +13,7 @@ import { processIPCCommand } from '../ipc_server/index.mjs'
 import { partsList } from '../managers/base.mjs'
 import { getLoadedPartList, getPartList, loadPart } from '../managers/index.mjs'
 import { getDefaultParts, getPartDetails, setDefaultPart } from '../parts_loader.mjs'
-import { hosturl, skip_report, currentGitCommit } from '../server.mjs'
-
+import { hosturl, skip_report, currentGitCommit, config } from '../server.mjs'
 
 
 
@@ -22,7 +21,6 @@ import { hosturl, skip_report, currentGitCommit } from '../server.mjs'
  * @param {import('npm:express').Router} router
  */
 export function registerEndpoints(router) {
-	// 注册路由
 	router.get('/api/test/error', (req, res) => {
 		throw skip_report(new Error('test error'))
 	})
@@ -39,15 +37,14 @@ export function registerEndpoints(router) {
 		if (is_local_ip || await auth_request(req, res)) try { hosturl_in_local_ip = get_hosturl_in_local_ip() } catch { }
 		return res.status(200).json({
 			message: 'pong',
-			cilent_name: 'fount',
+			client_name: 'fount',
+			ver: currentGitCommit,
+			uuid: config.uuid,
 			is_local_ip,
 			hosturl_in_local_ip,
 		})
 	})
 
-	router.get('/api/version', (req, res) => {
-		res.status(200).json({ ver: currentGitCommit })
-	})
 	router.get('/api/getlocaledata', async (req, res) => {
 		const browserLanguages = req.headers['accept-language']?.split?.(',')?.map?.(lang => lang.trim().split(';')[0]) || []
 		const userPreferredLanguages = req.query.preferred?.split?.(',')?.map?.(lang => lang.trim()) || []

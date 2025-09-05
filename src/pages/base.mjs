@@ -55,7 +55,7 @@ document.addEventListener('keydown', event => {
 
 let currentVer
 async function checkVersion() {
-	const ver = await fetch('/api/version').then(r => r.json()).then(j => j.ver).catch(() => currentVer)
+	const ver = await fetch('/api/ping').then(r => r.json()).then(j => j.ver).catch(() => currentVer)
 	currentVer ??= ver
 	if (currentVer != ver) window.location.reload(true)
 }

@@ -58,7 +58,8 @@ async function getFakePrivateKey() {
 /**
  * 初始化认证模块，加载或生成密钥对
  */
-export async function initAuth() { // config 参数已从全局 config 替代
+export async function initAuth() {
+	config.uuid ??= crypto.randomUUID()
 	if (!config.privateKey || !config.publicKey) {
 		Object.assign(config, genNewKeyPair())
 		save_config()
