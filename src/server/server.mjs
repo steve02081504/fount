@@ -7,8 +7,8 @@ import { on_shutdown } from 'npm:on-shutdown'
 import supportsAnsi from 'npm:supports-ansi'
 
 import { StartRPC } from '../scripts/discordrpc.mjs'
-import { exec } from '../scripts/exec.mjs'
 import { getMemoryUsage } from '../scripts/gc.mjs'
+import { git } from '../scripts/git.mjs'
 import { console } from '../scripts/i18n.mjs'
 import { loadJsonFile, saveJsonFile } from '../scripts/json_loader.mjs'
 import { get_hosturl_in_local_ip } from '../scripts/ratelimit.mjs'
@@ -58,23 +58,20 @@ export let hosturl
 export let tray
 export let restartor
 
-export let currentGitSha = null
+export const currentGitCommit = await git('rev-parse', 'HEAD').catch(() => null)
 
 async function checkUpstreamAndRestart() {
 	if (!fs.existsSync(__dirname + '/.git')) return
 	try {
-		const git = (...args) => exec('git -C "' + __dirname + '" ' + args.join(' ')).then(r => r.stdout.trim())
-
 		await git('fetch')
 
 		if (!await git('rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}').catch(() => null)) return
 
-		const localCommit = await git('rev-parse', 'HEAD')
 		const remoteCommit = await git('rev-parse', '@{u}')
 
-		if (localCommit !== remoteCommit) {
+		if (currentGitCommit !== remoteCommit) {
 			const mergeBase = await git('merge-base', 'HEAD', '@{u}')
-			if (mergeBase === localCommit) {
+			if (mergeBase === currentGitCommit) {
 				console.logI18n('fountConsole.server.update.restarting')
 				if (restartor) await restartor()
 			}
@@ -91,11 +88,6 @@ export async function init(start_config) {
 	for (const start of ['Base', 'IPC', 'Web', 'Tray', 'DiscordIPC']) starts[start] ??= true
 	let logoPromise
 	if (starts.Base) {
-		if (fs.existsSync(__dirname + '/.git')) try {
-			currentGitSha = await exec('git -C "' + __dirname + '" rev-parse HEAD').then(r => r.stdout.trim())
-		} catch (e) {
-			console.errorI18n('fountConsole.partManager.git.updateFailed', { error: e })
-		}
 		if (start_config.needs_output) logoPromise = runSimpleWorker('logogener')
 		starts.Base = Object(starts.Base)
 		for (const base of ['Jobs', 'Timers', 'Idle', 'AutoUpdate']) starts.Base[base] ??= true

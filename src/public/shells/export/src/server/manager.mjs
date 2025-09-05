@@ -3,7 +3,7 @@ import fsp from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 
-import { exec } from '../../../../../scripts/exec.mjs'
+import { git } from '../../../../../scripts/git.mjs'
 import { loadJsonFile } from '../../../../../scripts/json_loader.mjs'
 import { GetPartPath } from '../../../../../server/parts_loader.mjs'
 import { sevenZipDir, zipDir } from '../../../../ImportHandlers/fount/zip.mjs'
@@ -38,7 +38,7 @@ export async function getFountJson(username, partType, partName) {
 		const gitPath = path.join(partPath, '.git')
 
 		if (fs.existsSync(gitPath)) try {
-			const { stdout: remoteUrl } = await exec(`git -C "${partPath}" remote get-url origin`)
+			const { stdout: remoteUrl } = await git.withPath(partPath)('remote get-url origin')
 			if (remoteUrl.trim()) json.share_link = remoteUrl.trim()
 		}
 		catch (err) {

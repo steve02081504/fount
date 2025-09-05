@@ -6,7 +6,7 @@ import url from 'node:url'
 
 import { move, remove } from 'npm:fs-extra'
 
-import { exec } from '../../../scripts/exec.mjs'
+import { run_git } from '../../../scripts/git.mjs'
 import { loadJsonFile } from '../../../scripts/json_loader.mjs'
 import { loadPart } from '../../../server/managers/index.mjs'
 import { isPartLoaded } from '../../../server/parts_loader.mjs'
@@ -115,14 +115,7 @@ async function ImportByText(username, text) {
 								await rm(path.join(targetPath, file), { recursive: true, force: true })
 					}
 					await moveWithMerge(tempDir, targetPath)
-					/**
-					 * Executes a git command within the part's directory.
-					 * @param {...string} args - Git command arguments.
-					 * @returns {Promise<string>} - Promise resolving to the trimmed stdout of the git command.
-					 */
-					async function git(...args) {
-						return (await exec('git -C "' + targetPath + '" ' + args.join(' '))).stdout.trim()
-					}
+					const git = run_git.withPath(targetPath)
 					const remoteBranch = await git('rev-parse --abbrev-ref --symbolic-full-name "@{u}"')
 					await git('fetch origin')
 					await git('reset --hard ' + remoteBranch)

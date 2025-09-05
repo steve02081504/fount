@@ -13,7 +13,7 @@ import { processIPCCommand } from '../ipc_server/index.mjs'
 import { partsList } from '../managers/base.mjs'
 import { getLoadedPartList, getPartList, loadPart } from '../managers/index.mjs'
 import { getDefaultParts, getPartDetails, setDefaultPart } from '../parts_loader.mjs'
-import { hosturl, skip_report, currentGitSha } from '../server.mjs'
+import { hosturl, skip_report, currentGitCommit } from '../server.mjs'
 
 
 
@@ -44,9 +44,9 @@ export function registerEndpoints(router) {
 			hosturl_in_local_ip,
 		})
 	})
-			
+
 	router.get('/api/version', (req, res) => {
-		res.status(200).json({ sha: currentGitSha })
+		res.status(200).json({ ver: currentGitCommit })
 	})
 	router.get('/api/getlocaledata', async (req, res) => {
 		const browserLanguages = req.headers['accept-language']?.split?.(',')?.map?.(lang => lang.trim().split(';')[0]) || []

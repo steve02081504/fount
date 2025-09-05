@@ -3,7 +3,7 @@ import url from 'node:url'
 
 import { FullProxy } from 'npm:full-proxy'
 
-import { exec } from '../scripts/exec.mjs'
+import { run_git } from '../scripts/git.mjs'
 import { console } from '../scripts/i18n.mjs'
 import { loadJsonFile } from '../scripts/json_loader.mjs'
 import { getLocalizedInfo } from '../scripts/locale.mjs'
@@ -125,14 +125,7 @@ export async function baseloadPart(username, parttype, partname, {
 	const path = pathGetter()
 
 	if (fs.existsSync(path + '/.git')) try {
-		/**
-		 * Executes a git command within the part's directory.
-		 * @param {...string} args - Git command arguments.
-		 * @returns {Promise<string>} - Promise resolving to the trimmed stdout of the git command.
-		 */
-		function git(...args) {
-			return exec('git -C "' + path + '" ' + args.join(' ')).then(r => r.stdout.trim())
-		}
+		const git = run_git.withPath(path)
 		await git('fetch origin')
 		const currentBranch = await git('rev-parse --abbrev-ref HEAD')
 		const remoteBranch = await git('rev-parse --abbrev-ref --symbolic-full-name "@{u}"')

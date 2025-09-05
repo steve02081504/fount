@@ -53,11 +53,11 @@ document.addEventListener('keydown', event => {
 		else window.close()
 })
 
-let currentGitSha
+let currentVer
 async function checkVersion() {
-	const sha = await fetch('/api/version').then(r => r.json()).then(j => j.sha).catch(() => currentGitSha)
-	currentGitSha ??= sha
-	if (currentGitSha != sha) window.location.reload(true)
+	const ver = await fetch('/api/version').then(r => r.json()).then(j => j.ver).catch(() => currentVer)
+	currentVer ??= ver
+	if (currentVer != ver) window.location.reload(true)
 }
 checkVersion()
 setInterval(checkVersion, 60000)
