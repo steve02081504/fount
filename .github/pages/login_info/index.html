@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="darkreader-lock">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta property="og:title" content="fount Credentials Manager" />
+	<meta property="og:type" content="website" />
+	<meta property="og:description" content="A page for securely managing your fount login credentials." />
+	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b">
+	<link rel="icon" type="image/svg+xml" href="https://steve02081504.github.io/fount/imgs/icon.svg">
+	<title>fount!</title>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/themes.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@unocss/runtime" crossorigin="anonymous"></script>
+	<script blocking="render" type="module" src="../preload.mjs"></script>
+	<link rel="stylesheet" href="../base.css" type="text/css">
+	<script type="module" src="../base.mjs"></script>
+	<script type="module">
+		/* global urlParams */
+		const uuid = urlParams.get('uuid')
+		const username = urlParams.get('username')
+		const password = urlParams.get('password')
+		const redirectUrl = urlParams.get('redirect')
+
+		if (uuid && username && password && redirectUrl) { // Save mode
+			const credentials = { username, password }
+			localStorage.setItem(`fount-login-${uuid}`, JSON.stringify(credentials))
+			window.location.href = (decodeURIComponent(redirectUrl))
+		}
+		else if (uuid && redirectUrl) { // Load mode
+			const stored = localStorage.getItem(`fount-login-${uuid}`)
+			const targetUrl = new URL(decodeURIComponent(redirectUrl))
+			if (stored)
+				try {
+					const { username, password } = JSON.parse(stored)
+					if (username && password) {
+						targetUrl.searchParams.set('username', username)
+						targetUrl.searchParams.set('password', password)
+					}
+				} catch (e) {
+					console.error('Failed to parse stored credentials:', e)
+				}
+
+			window.location.href = (targetUrl.href)
+		}
+	</script>
+</head>
+
+<body class="flex justify-center items-center h-screen">
+	<span class="loading loading-ring loading-lg"></span>
+</body>
+
+</html>
