@@ -58,6 +58,8 @@ export let hosturl
 export let tray
 export let restartor
 
+export let currentGitSha = null
+
 async function checkUpstreamAndRestart() {
 	if (!fs.existsSync(__dirname + '/.git')) return
 	try {
@@ -89,6 +91,11 @@ export async function init(start_config) {
 	for (const start of ['Base', 'IPC', 'Web', 'Tray', 'DiscordIPC']) starts[start] ??= true
 	let logoPromise
 	if (starts.Base) {
+		if (fs.existsSync(__dirname + '/.git')) try {
+			currentGitSha = await exec('git -C "' + __dirname + '" rev-parse HEAD').then(r => r.stdout.trim())
+		} catch (e) {
+			console.errorI18n('fountConsole.partManager.git.updateFailed', { error: e })
+		}
 		if (start_config.needs_output) logoPromise = runSimpleWorker('logogener')
 		starts.Base = Object(starts.Base)
 		for (const base of ['Jobs', 'Timers', 'Idle', 'AutoUpdate']) starts.Base[base] ??= true

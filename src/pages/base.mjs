@@ -53,6 +53,18 @@ document.addEventListener('keydown', event => {
 		else window.close()
 })
 
+let currentGitSha
+async function checkVersion() {
+	const sha = await fetch('/api/version').then(r => r.json()).then(j => j.sha).catch(() => currentGitSha)
+	currentGitSha ??= sha
+	if (currentGitSha != sha) window.location.reload(true)
+}
+checkVersion()
+setInterval(checkVersion, 60000)
+document.addEventListener('visibilitychange', () => {
+	if (document.visibilityState === 'visible') checkVersion()
+})
+
 window.addEventListener('load', async () => {
 	console.log(await fetch('https://cdn.jsdelivr.net/gh/steve02081504/fount/imgs/icon_ansi_ascii.txt').then(r => r.text()))
 	console.log('Curious? Join us and build future together: https://github.com/steve02081504/fount')
