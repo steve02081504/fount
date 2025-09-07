@@ -19,8 +19,8 @@
 	<script blocking="render" type="module" src="/preload.mjs"></script>
 	<script type="module" src="/base.mjs"></script>
 	<script type="module">
+		import { redirectToLoginInfo } from './scripts/credentialManager.mjs'
 		import { initTranslations } from './scripts/i18n.mjs'
-		import { redirectToLoginInfo } from './scripts/loginInfoRedirect.mjs'
 		import { setTheme } from './scripts/theme.mjs'
 		initTranslations('startPage')
 		const hostUrl = window.location.origin
@@ -43,7 +43,7 @@
 
 		let retry = 1
 		const hasLoggedIn = localStorage.getItem('hasLoggedIn') === 'true'
-		if (!hasLoggedIn) return redirectToLoginInfo('/login')
+		if (!hasLoggedIn) redirectToLoginInfo('/login')
 		else setInterval(() => {
 			if (!retry) return
 			retry = 0

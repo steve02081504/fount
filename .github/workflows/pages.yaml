@@ -39,6 +39,7 @@ jobs:
         run: |
           cp -r ./src/locales ./.github/pages/
           cp -r ./imgs ./.github/pages/
+          cp -rn ./src/scripts ./.github/pages/
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact

@@ -1,9 +1,8 @@
 import zxcvbn from 'https://esm.run/zxcvbn'
 
-import { decrypt } from '../scripts/crypto.mjs'
+import { retrieveAndDecryptCredentials, redirectToLoginInfo } from '../scripts/credentialManager.mjs'
 import { ping, generateVerificationCode, login, register } from '../scripts/endpoints.mjs'
 import { initTranslations, geti18n, console } from '../scripts/i18n.mjs'
-import { redirectToLoginInfo } from '../scripts/loginInfoRedirect.mjs'
 import { applyTheme } from '../scripts/theme.mjs'
 import { showToast } from '../scripts/toast.mjs'
 
@@ -186,20 +185,9 @@ async function handleFormSubmit(event) {
 		if (response.ok)
 			if (isLoginForm) {
 				console.log('Login successful!')
-				let logins = {}
-				try {
-					logins = JSON.parse(localStorage.getItem('login_infos')) || {}
-				} catch (e) {
-					console.error('Error parsing login_infos from localStorage', e)
-					logins = {}
-				}
-				logins[username] = password
-				localStorage.setItem('login_infos', JSON.stringify(logins))
-
 				const urlParams = new URLSearchParams(window.location.search)
 				const redirect = urlParams.get('redirect')
 				localStorage.setItem('hasLoggedIn', 'true')
-
 				let finalRedirectUrl
 				if (redirect)
 					if (hasLoggedIn)
@@ -261,25 +249,13 @@ async function initializeApp() {
 	try {
 		const hashParams = new URLSearchParams(window.location.hash.substring(1))
 		const uuid = hashParams.get('uuid')
-		const encryptedCredsFromHash = hashParams.get('encrypted_creds')
-		const from = urlParams.get('from') // 'from' can stay in query
+		const from = urlParams.get('from')
 		const fileId = urlParams.get('fileId')
-		let encryptedData
 
-		if (from === 'clipboard')
-			encryptedData = await navigator.clipboard.readText()
+		const plaintextCredentials = await retrieveAndDecryptCredentials(fileId, from, hashParams, uuid)
 
-		else if (fileId) {
-			const resp = await fetch(`https://litter.catbox.moe/${fileId}`)
-			if (!resp.ok) throw new Error(`Failed to fetch credentials from file: ${resp.statusText}`)
-			encryptedData = await resp.text()
-		}
-		else if (encryptedCredsFromHash)
-			encryptedData = decodeURIComponent(encryptedCredsFromHash)
-
-		if (encryptedData && uuid) {
-			const decrypted = await decrypt(encryptedData, uuid)
-			const { username, password } = JSON.parse(decrypted)
+		if (plaintextCredentials) {
+			const { username, password } = JSON.parse(plaintextCredentials)
 			usernameInput.value = username
 			passwordInput.value = password
 		}

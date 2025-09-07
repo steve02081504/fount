@@ -1,8 +1,11 @@
 import qrcode from 'https://esm.run/qrcode-generator'
 
-import { uploadToCatbox } from '../../scripts/catbox.mjs'
-import { encrypt } from '../../scripts/crypto.mjs'
-import { hosturl_in_local_ip, whoami, ping } from '../../scripts/endpoints.mjs'
+import {
+	redirectToLoginInfo,
+	retrieveAndDecryptCredentials,
+	generateLoginInfoUrl,
+} from '../../scripts/credentialManager.mjs'
+import { hosturl_in_local_ip, ping } from '../../scripts/endpoints.mjs'
 import { initTranslations } from '../../scripts/i18n.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 
@@ -17,58 +20,39 @@ const toast = document.getElementById('toast')
 let url
 
 try {
-	const [{ username }, { uuid }] = await Promise.all([whoami(), ping()])
+	const hashParams = new URLSearchParams(window.location.hash.substring(1))
+	const uuid_from_hash = hashParams.get('uuid')
+	const fileId = new URLSearchParams(window.location.search).get('fileId')
+	const from = new URLSearchParams(window.location.search).get('from')
 
-	let password = ''
-	try {
-		const logins = JSON.parse(localStorage.getItem('login_infos')) || {}
-		if (logins[username]) password = logins[username]
-	}
-	catch (e) {
-		console.error('Could not get logins from storage', e)
-	}
-
-	const baseUrl = await hosturl_in_local_ip()
-
-	if (password) {
-		const redirectUrl = new URL(`${baseUrl}/login`)
-		redirectUrl.searchParams.set('autologin', 'true')
-		redirectUrl.searchParams.set('userPreferredLanguages', localStorage.getItem('userPreferredLanguages') || '[]')
-		redirectUrl.searchParams.set('theme', localStorage.getItem('theme') || 'dark')
-
-		const loginInfoUrl = new URL('https://steve02081504.github.io/fount/login_info/')
-		loginInfoUrl.searchParams.set('redirect', encodeURIComponent(redirectUrl.href))
-
-		const encryptedData = await encrypt(JSON.stringify({ username, password }), uuid)
-		const hashParams = new URLSearchParams()
-		hashParams.set('uuid', uuid)
-
-		// Try to upload to catbox
+	let plaintextCredentials = null
+	if (uuid_from_hash)
 		try {
-			const fileId = await uploadToCatbox(encryptedData, '1h')
-			loginInfoUrl.searchParams.set('fileId', fileId)
-			console.log(`Generated access URL with Catbox fileId: ${fileId}`)
+			plaintextCredentials = await retrieveAndDecryptCredentials(fileId, from, hashParams, uuid_from_hash)
 		} catch (e) {
-			console.warn('Catbox upload failed for access URL, falling back to URL hash.', e)
-			// Fallback to URL hash
-			hashParams.set('encrypted_creds', encodeURIComponent(encryptedData))
+			console.error('Failed to retrieve credentials', e)
 		}
 
-		loginInfoUrl.hash = hashParams.toString()
+	if (plaintextCredentials)
+		try {
+			const credentials = JSON.parse(plaintextCredentials)
+			const { uuid } = await ping()
+			const baseUrl = await hosturl_in_local_ip()
 
-		url = loginInfoUrl.href
-	}
-	else {
-		const targetUrl = new URL(baseUrl)
-		targetUrl.searchParams.set('theme', localStorage.getItem('theme') || 'dark')
-		targetUrl.searchParams.set('userPreferredLanguages', localStorage.getItem('userPreferredLanguages') || '[]')
-		url = targetUrl.href
-	}
-	accessUrl.value = url
+			url = await generateLoginInfoUrl(credentials, uuid, baseUrl)
+
+			accessUrl.value = url
+			if (url) generateQRCode(url, qrcodeContainer)
+		} catch (error) {
+			console.error('Error generating final access URL:', error)
+			accessUrl.value = 'Error: ' + error.message
+		}
+	else
+		redirectToLoginInfo(window.location.href)
 }
-catch (error) {
-	console.error('Error getting URL for QR code:', error)
-	accessUrl.value = 'Error generating access URL: ' + error.message
+catch (e) {
+	console.error('Main access shell error', e)
+	accessUrl.value = 'Error: ' + e.message
 }
 
 function generateQRCode(url, container) {
@@ -92,5 +76,3 @@ copyButton.addEventListener('click', () => {
 			}, 2000)
 		})
 })
-
-if (url) generateQRCode(url, qrcodeContainer)
