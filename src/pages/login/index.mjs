@@ -1,11 +1,11 @@
 import zxcvbn from 'https://esm.run/zxcvbn'
 
+import { decrypt } from '../scripts/crypto.mjs'
 import { ping, generateVerificationCode, login, register } from '../scripts/endpoints.mjs'
 import { initTranslations, geti18n, console } from '../scripts/i18n.mjs'
+import { redirectToLoginInfo } from '../scripts/loginInfoRedirect.mjs'
 import { applyTheme } from '../scripts/theme.mjs'
 import { showToast } from '../scripts/toast.mjs'
-import { redirectToLoginInfo } from '../scripts/loginInfoRedirect.mjs'
-
 
 const form = document.getElementById('auth-form')
 const formTitle = document.getElementById('form-title')
@@ -181,7 +181,6 @@ async function handleFormSubmit(event) {
 		else
 			response = await register(username, password, deviceid, verificationcode)
 
-
 		const data = await response.json()
 
 		if (response.ok)
@@ -210,7 +209,7 @@ async function handleFormSubmit(event) {
 				else
 					finalRedirectUrl = `/shells/${hasLoggedIn ? 'home' : 'tutorial'}`
 
-				await redirectToLoginInfo(finalRedirectUrl + window.location.hash, username, password)
+				redirectToLoginInfo(finalRedirectUrl + window.location.hash, username, password)
 			} else {
 				console.log('Registration successful!')
 				toggleForm() // 注册成功后自动切换到登录表单
@@ -257,10 +256,44 @@ async function initializeApp() {
 	const usernameParam = urlParams.get('username')
 	const passwordParam = urlParams.get('password')
 	const autologinParam = urlParams.get('autologin') || urlParams.has('autologin')
-
 	const usernameInput = document.getElementById('username')
-	if (usernameParam) usernameInput.value = usernameParam
-	if (passwordParam) passwordInput.value = passwordParam
+
+	try {
+		const hashParams = new URLSearchParams(window.location.hash.substring(1))
+		const uuid = hashParams.get('uuid')
+		const encryptedCredsFromHash = hashParams.get('encrypted_creds')
+		const from = urlParams.get('from') // 'from' can stay in query
+		const fileId = urlParams.get('fileId')
+		let encryptedData
+
+		if (from === 'clipboard')
+			encryptedData = await navigator.clipboard.readText()
+
+		else if (fileId) {
+			const resp = await fetch(`https://litter.catbox.moe/${fileId}`)
+			if (!resp.ok) throw new Error(`Failed to fetch credentials from file: ${resp.statusText}`)
+			encryptedData = await resp.text()
+		}
+		else if (encryptedCredsFromHash)
+			encryptedData = decodeURIComponent(encryptedCredsFromHash)
+
+		if (encryptedData && uuid) {
+			const decrypted = await decrypt(encryptedData, uuid)
+			const { username, password } = JSON.parse(decrypted)
+			usernameInput.value = username
+			passwordInput.value = password
+		}
+		else {
+			// Legacy plaintext params
+			const usernameParam = urlParams.get('username')
+			const passwordParam = urlParams.get('password')
+			if (usernameParam) usernameInput.value = usernameParam
+			if (passwordParam) passwordInput.value = passwordParam
+		}
+	}
+	catch (e) {
+		console.error('Failed to obtain credentials for autologin.', e)
+	}
 
 	if (JSON.parse(autologinParam)) {
 		if (!isLoginForm) toggleForm()

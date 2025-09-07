@@ -18,33 +18,95 @@
 	<link rel="stylesheet" href="../base.css" type="text/css">
 	<script type="module" src="../base.mjs"></script>
 	<script type="module">
-		/* global urlParams */
-		const uuid = urlParams.get('uuid')
-		const username = urlParams.get('username')
-		const password = urlParams.get('password')
-		const redirectUrl = urlParams.get('redirect')
+		import { uploadToCatbox } from '../scripts/catbox.mjs'
+		import { encrypt, decrypt } from '../scripts/crypto.mjs'
 
-		if (uuid && username && password && redirectUrl) { // Save mode
-			const credentials = { username, password }
-			localStorage.setItem(`fount-login-${uuid}`, JSON.stringify(credentials))
-			window.location.href = (decodeURIComponent(redirectUrl))
-		}
-		else if (uuid && redirectUrl) { // Load mode
-			const stored = localStorage.getItem(`fount-login-${uuid}`)
-			const targetUrl = new URL(decodeURIComponent(redirectUrl))
-			if (stored)
-				try {
-					const { username, password } = JSON.parse(stored)
-					if (username && password) {
-						targetUrl.searchParams.set('username', username)
-						targetUrl.searchParams.set('password', password)
-					}
-				} catch (e) {
-					console.error('Failed to parse stored credentials:', e)
+		(async () => {
+			/* global urlParams */
+			const hashParams = new URLSearchParams(window.location.hash.substring(1))
+			const uuid = hashParams.get('uuid')
+			const redirectUrl = urlParams.get('redirect')
+			const fileId = urlParams.get('fileId')
+			const from = urlParams.get('from')
+
+			if (!uuid || !redirectUrl) {
+				console.error('Missing uuid from hash or redirectUrl from query')
+				return
+			}
+
+			let plaintextCredentials = null // This will be a JSON string
+
+			try {
+				if (fileId) { // From Catbox link
+					const resp = await fetch(`https://litter.catbox.moe/${fileId}`)
+					if (!resp.ok) throw new Error(`Failed to fetch credentials from file: ${resp.statusText}`)
+					const encryptedData = await resp.text()
+					plaintextCredentials = await decrypt(encryptedData, uuid) // Decrypts to a JSON string
 				}
+				else if (from === 'clipboard_encrypted') { // From login page (encrypted)
+					const encryptedData = await navigator.clipboard.readText()
+					plaintextCredentials = await decrypt(encryptedData, uuid)
+				}
+				else { // Fallback: from URL hash
+					const encryptedFromHash = hashParams.get('encrypted_creds')
+					if (encryptedFromHash)
+						plaintextCredentials = await decrypt(decodeURIComponent(encryptedFromHash), uuid)
+				}
+			}
+			catch (e) {
+				console.error('Failed to obtain credentials:', e)
+			}
 
-			window.location.href = (targetUrl.href)
-		}
+			if (plaintextCredentials) { // Save mode: save PLAINTEXT to localStorage
+				localStorage.setItem(`fount-login-${uuid}`, plaintextCredentials)
+				window.location.href = decodeURIComponent(redirectUrl)
+			}
+			else { // Load mode: load plaintext, encrypt, then transfer securely
+				const storedPlaintext = localStorage.getItem(`fount-login-${uuid}`)
+				const targetUrl = new URL(decodeURIComponent(redirectUrl))
+
+				if (storedPlaintext)
+					try {
+						const encryptedData = await encrypt(storedPlaintext, uuid)
+						const targetHashParams = new URLSearchParams(targetUrl.hash.substring(1))
+						targetHashParams.set('uuid', uuid) // Pass UUID via hash
+
+						// 1. Try to use clipboard
+						try {
+							await navigator.clipboard.writeText(encryptedData)
+							targetUrl.searchParams.set('from', 'clipboard')
+							console.log('Encrypted credentials copied to clipboard for transfer.')
+							window.location.href = targetUrl.href
+							return
+						}
+						catch (e) {
+							console.warn('Clipboard write failed, falling back to Catbox.', e)
+						}
+
+						// 2. Fallback to Catbox
+						try {
+							const fileId = await uploadToCatbox(encryptedData, '1h')
+							targetUrl.searchParams.set('fileId', fileId)
+							console.log(`Encrypted credentials uploaded to Catbox for transfer with fileId: ${fileId}`)
+							window.location.href = targetUrl.href
+							return
+						}
+						catch (catboxErr) {
+							console.warn('Catbox upload failed, falling back to URL hash.', catboxErr)
+						}
+
+						// 3. Fallback to URL hash
+						targetHashParams.set('encrypted_creds', encodeURIComponent(encryptedData))
+						targetUrl.hash = targetHashParams.toString()
+					}
+					catch (encryptErr) {
+						console.error('Failed to encrypt credentials for transfer:', encryptErr)
+						// If encryption fails, we cannot proceed securely. Redirect without credentials.
+					}
+
+				window.location.href = targetUrl.href
+			}
+		})().catch(console.error)
 	</script>
 </head>
 
