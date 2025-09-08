@@ -1117,5 +1117,16 @@
 		"savedMessage": "语言设置已保存！",
 		"resetMessage": "语言设置已重置！",
 		"fetchLocalesFailed": "获取可用语言失败！"
+	},
+	"login_info": {
+		"modal": {
+			"title": "凭证转移错误",
+			"retrieve_error": "尝试保存您的登录凭证时发生错误：\n${error}\n您可以继续但无法保存登录信息。",
+			"transfer_error": "尝试转移您的登录凭证时发生错误：\n${error}\n您可以继续但无法获取登录信息。",
+			"buttons": {
+				"ignore": "忽略并继续",
+				"retry": "重试"
+			}
+		}
 	}
 }

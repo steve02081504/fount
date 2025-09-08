@@ -1117,5 +1117,16 @@
 		"savedMessage": "Les paramètres linguistiques sont enregistrés!",
 		"resetMessage": "Les paramètres de la langue ont été réinitialisés!",
 		"fetchLocalesFailed": "Impossible d'obtenir des langues disponibles!"
+	},
+	"login_info": {
+		"modal": {
+			"title": "Erreur de transfert de certificat",
+			"retrieve_error": "Une erreur s'est produite en essayant de sauvegarder vos identifiants de connexion:\n${error}\nVous pouvez continuer mais ne pouvez pas enregistrer les informations de connexion.",
+			"transfer_error": "Une erreur s'est produite en essayant de transférer vos identifiants de connexion:\n${error}\nVous pouvez continuer mais ne pouvez pas récupérer les informations de connexion.",
+			"buttons": {
+				"ignore": "Ignorer et continuer",
+				"retry": "Réessayer"
+			}
+		}
 	}
 }

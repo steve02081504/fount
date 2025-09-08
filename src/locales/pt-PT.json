@@ -1117,5 +1117,16 @@
 		"savedMessage": "As configurações de idioma são salvas!",
 		"resetMessage": "As configurações de idioma foram redefinidas!",
 		"fetchLocalesFailed": "Falha ao obter os idiomas disponíveis!"
+	},
+	"login_info": {
+		"modal": {
+			"title": "Erro de transferência de certificado",
+			"retrieve_error": "Ocorreu um erro ao tentar guardar as suas credenciais de início de sessão:\n${error}\nPode continuar, mas não pode guardar as informações de início de sessão.",
+			"transfer_error": "Ocorreu um erro ao tentar transferir as suas credenciais de início de sessão:\n${error}\nPode continuar, mas não pode obter as informações de início de sessão.",
+			"buttons": {
+				"ignore": "Ignore e continue",
+				"retry": "Tente novamente"
+			}
+		}
 	}
 }

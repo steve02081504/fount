@@ -1117,5 +1117,16 @@
 		"savedMessage": "Language settings are saved!",
 		"resetMessage": "Language settings have been reset!",
 		"fetchLocalesFailed": "Failed to get available languages!"
+	},
+	"login_info": {
+		"modal": {
+			"title": "Certificate transfer error",
+			"retrieve_error": "An error occurred while trying to save your login credentials:\n${error}\nYou can continue but cannot save the login information.",
+			"transfer_error": "An error occurred while trying to transfer your login credentials:\n${error}\nYou can continue but cannot get login information.",
+			"buttons": {
+				"ignore": "Ignore and continue",
+				"retry": "Try again"
+			}
+		}
 	}
 }

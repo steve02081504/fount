@@ -10,17 +10,18 @@
 	<meta property="og:description" content="A page for securely managing your fount login credentials." />
 	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b">
 	<link rel="icon" type="image/svg+xml" href="https://steve02081504.github.io/fount/imgs/icon.svg">
-	<title>fount!</title>
+	<title>fount Credentials Manager</title>
 	<link href="https://cdn.jsdelivr.net/npm/daisyui/themes.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
 	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
 	<script src="https://cdn.jsdelivr.net/npm/@unocss/runtime" crossorigin="anonymous"></script>
 	<script blocking="render" type="module" src="../preload.mjs"></script>
 	<link rel="stylesheet" href="../base.css" type="text/css">
-	<script type="module" src="../base.mjs"></script>
 	<script type="module">
+		import '../base.mjs'
+		import { initTranslations, console, geti18n } from '../../scripts/i18n.mjs'
 		import { transferEncryptedCredentials, receiveAndValidateEncryptedCredentials } from '../scripts/credentialManager.mjs'
-
 		/* global urlParams */
+		initTranslations('login_info')
 		const hashParams = new URLSearchParams(window.location.hash.substring(1))
 		const uuid = hashParams.get('uuid')
 		const redirectUrl = urlParams.get('redirect')
@@ -45,14 +46,14 @@
 				window.location.href = targetUrl.href
 			} catch (error) {
 				console.error('Failed to receive credentials:', error)
-				errorMessageElement.textContent = `An error occurred while trying to retrieve your login credentials: ${error.message}\nYou can continue without logging in.`
+				errorMessageElement.textContent = geti18n('login_info.modal.retrieve_error', { error: error.message })
 				throw error
 			}
 			else try {// load
 				await transferEncryptedCredentials(uuid, redirectUrl)
 			} catch (error) {
 				console.error('Failed to transfer credentials:', error)
-				errorMessageElement.textContent = `An error occurred while trying to transfer your login credentials: ${error.message}\nYou can continue without login info.`
+				errorMessageElement.textContent = geti18n('login_info.modal.transfer_error', { error: error.message })
 				throw error
 			}
 		}
@@ -78,11 +79,11 @@
 
 	<dialog id="error_modal" class="modal">
 		<div class="modal-box">
-			<h3 class="font-bold text-lg">Credential Transfer Error</h3>
+			<h3 class="font-bold text-lg" data-i18n="login_info.modal.title"></h3>
 			<p class="py-4" id="error_modal_message"></p>
 			<div class="modal-action">
-				<button class="btn" id="ignore_and_continue_btn">Ignore and Continue</button>
-				<button class="btn btn-primary" id="retry_btn">Retry</button>
+				<button class="btn" id="ignore_and_continue_btn" data-i18n="login_info.modal.buttons.ignore"></button>
+				<button class="btn btn-primary" id="retry_btn" data-i18n="login_info.modal.buttons.retry"></button>
 			</div>
 		</div>
 	</dialog>

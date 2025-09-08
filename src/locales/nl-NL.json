@@ -1117,5 +1117,16 @@
 		"savedMessage": "Taalinstellingen worden opgeslagen!",
 		"resetMessage": "Taalinstellingen zijn gereset!",
 		"fetchLocalesFailed": "Kan niet beschikbare talen krijgen!"
+	},
+	"login_info": {
+		"modal": {
+			"title": "Certificaatoverdrachtsfout",
+			"retrieve_error": "Er is een fout opgetreden bij het proberen uw inloggegevens op te slaan:\n${error}\nU kunt doorgaan, maar kunt de inloggegevens niet opslaan.",
+			"transfer_error": "Er is een fout opgetreden bij het proberen uw inloggegevens over te dragen:\n${error}\nU kunt doorgaan, maar kunt geen inloggegevens ophalen.",
+			"buttons": {
+				"ignore": "Negeer en ga door",
+				"retry": "Opnieuw proberen"
+			}
+		}
 	}
 }

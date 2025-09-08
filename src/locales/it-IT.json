@@ -1117,5 +1117,16 @@
 		"savedMessage": "Le impostazioni della lingua vengono salvate!",
 		"resetMessage": "Le impostazioni della lingua sono state ripristinate!",
 		"fetchLocalesFailed": "Impossibile ottenere le lingue disponibili!"
+	},
+	"login_info": {
+		"modal": {
+			"title": "Errore di trasferimento del certificato",
+			"retrieve_error": "Si è verificato un errore durante il tentativo di salvare le credenziali di accesso:\n${error}\nPuoi continuare ma non puoi salvare le informazioni di accesso.",
+			"transfer_error": "Si è verificato un errore durante il tentativo di trasferire le credenziali di accesso:\n${error}\nPuoi continuare ma non puoi ottenere informazioni di accesso.",
+			"buttons": {
+				"ignore": "Ignora e continua",
+				"retry": "Riprova"
+			}
+		}
 	}
 }

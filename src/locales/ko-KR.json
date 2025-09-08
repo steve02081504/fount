@@ -1117,5 +1117,16 @@
 		"savedMessage": "언어 설정이 저장됩니다!",
 		"resetMessage": "언어 설정이 재설정되었습니다!",
 		"fetchLocalesFailed": "사용 가능한 언어를 얻지 못했습니다!"
+	},
+	"login_info": {
+		"modal": {
+			"title": "인증서 전송 오류",
+			"retrieve_error": "로그인 정보를 저장하는 동안 오류가 발생했습니다.\n${error}\n계속할 수는 있지만 로그인 정보를 저장할 수는 없습니다.",
+			"transfer_error": "로그인 정보를 전송하는 동안 오류가 발생했습니다.\n${error}\n계속할 수는 있지만 로그인 정보를 얻을 수는 없습니다.",
+			"buttons": {
+				"ignore": "무시하고 계속",
+				"retry": "재시도"
+			}
+		}
 	}
 }

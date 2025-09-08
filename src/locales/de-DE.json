@@ -1117,5 +1117,16 @@
 		"savedMessage": "Spracheinstellungen werden gespeichert!",
 		"resetMessage": "Spracheinstellungen wurden zurückgesetzt!",
 		"fetchLocalesFailed": "Versäumte, verfügbare Sprachen zu erhalten!"
+	},
+	"login_info": {
+		"modal": {
+			"title": "Zertifikatübertragungsfehler",
+			"retrieve_error": "Beim Versuch, Ihre Anmeldeinformationen zu speichern, ist ein Fehler aufgetreten:\n${error}\nSie können fortfahren, die Anmeldeinformationen jedoch nicht speichern.",
+			"transfer_error": "Beim Versuch, Ihre Anmeldeinformationen zu übertragen, trat ein Fehler auf:\n${error}\nSie können fortfahren, können jedoch keine Anmeldeinformationen abrufen.",
+			"buttons": {
+				"ignore": "Ignorieren und fortfahren",
+				"retry": "Erneut versuchen"
+			}
+		}
 	}
 }

@@ -1,13 +1,12 @@
 import { animateSVG } from 'https://cdn.jsdelivr.net/gh/steve02081504/animate-SVG/index.mjs'
 import * as Sentry from 'https://esm.run/@sentry/browser'
 
-import { setBaseDir, setPreRender, setTheme, theme_now } from '../../base.mjs'
+import { setPreRender, setTheme, theme_now } from '../../base.mjs'
 import { isFountServiceAvailable, saveFountHostUrl, getFountHostUrl, pingFount } from '../../scripts/fountHostGetter.mjs'
 import { initTranslations, geti18n, console, getAvailableLocales, getLocaleNames, setLocales } from '../../scripts/i18n.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
 import { showToast } from '../../scripts/toast.mjs'
 
-setBaseDir('../..')
 usingTemplates('wait/install/templates')
 const hostUrl = 'http://localhost:8931'
 

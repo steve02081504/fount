@@ -1117,5 +1117,16 @@
 		"savedMessage": "Cài đặt ngôn ngữ được lưu!",
 		"resetMessage": "Cài đặt ngôn ngữ đã được đặt lại!",
 		"fetchLocalesFailed": "Không nhận được ngôn ngữ có sẵn!"
+	},
+	"login_info": {
+		"modal": {
+			"title": "Lỗi chuyển chứng chỉ",
+			"retrieve_error": "Đã xảy ra lỗi trong khi cố gắng lưu thông tin đăng nhập của bạn:\n${error}\nBạn có thể tiếp tục nhưng không thể lưu thông tin đăng nhập.",
+			"transfer_error": "Đã xảy ra lỗi trong khi cố gắng chuyển thông tin đăng nhập của bạn:\n${error}\nBạn có thể tiếp tục nhưng không thể lấy thông tin đăng nhập.",
+			"buttons": {
+				"ignore": "Bỏ qua và tiếp tục",
+				"retry": "Thử lại"
+			}
+		}
 	}
 }

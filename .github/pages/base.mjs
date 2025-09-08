@@ -51,10 +51,7 @@ export function setPreRender(hostUrl = urlParams.get('hostUrl') ?? localStorage.
 	}
 }
 
-export let base_dir = '..'
-export function setBaseDir(v) {
-	base_dir = v
-}
+export const base_dir = '../'.repeat(window.location.pathname.split('/').length - 3).slice(0, -1)
 
 if ('serviceWorker' in navigator)
 	navigator.serviceWorker.register('/sw.js')
