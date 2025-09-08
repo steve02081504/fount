@@ -19,6 +19,7 @@
 	<script blocking="render" type="module" src="/preload.mjs"></script>
 	<script type="module" src="/base.mjs"></script>
 	<script type="module">
+		import { redirectToLoginInfo } from './scripts/credentialManager.mjs'
 		import { initTranslations } from './scripts/i18n.mjs'
 		import { setTheme } from './scripts/theme.mjs'
 		initTranslations('startPage')
@@ -34,28 +35,29 @@
 				hostUrl,
 				userPreferredLanguages: localStorage.getItem('userPreferredLanguages') || undefined
 			}))
-}
+		}
 
 		document.getElementById('skipButton').addEventListener('click', () => {
 			window.location.href = 'https://steve02081504.github.io/fount/values_update?' + getCommonUrlParams({ redirect: hostUrl + '/shells/home' })
-})
+		})
 
 		let retry = 1
-		setInterval(() => {
-			if (retry) {
-				retry = 0
-				const newTab = window.open('https://steve02081504.github.io/fount/values_update?' + getCommonUrlParams(), '_blank')
+		const hasLoggedIn = localStorage.getItem('hasLoggedIn') === 'true'
+		if (!hasLoggedIn) redirectToLoginInfo('/login')
+		else setInterval(() => {
+			if (!retry) return
+			retry = 0
+			const newTab = window.open('https://steve02081504.github.io/fount/values_update?' + getCommonUrlParams(), '_blank')
 
-				if (newTab) {
-					newTab.blur()
-					window.focus()
-					window.location.href = '/shells/home'
-				}
-				else if (localStorage.getItem('startPage.NewTabWarning.ignore'))
-					document.getElementById('skipButton').click()
-				else
-					document.getElementById('newTabFailedModal').classList.add('modal-open')
+			if (newTab) {
+				newTab.blur()
+				window.focus()
+				window.location.href = '/shells/home'
 			}
+			else if (localStorage.getItem('startPage.NewTabWarning.ignore'))
+				document.getElementById('skipButton').click()
+			else
+				document.getElementById('newTabFailedModal').classList.add('modal-open')
 		}, 500)
 
 		document.getElementById('retryButton').addEventListener('click', () => {

@@ -1,10 +1,10 @@
 import zxcvbn from 'https://esm.run/zxcvbn'
 
+import { retrieveAndDecryptCredentials, redirectToLoginInfo } from '../scripts/credentialManager.mjs'
 import { ping, generateVerificationCode, login, register } from '../scripts/endpoints.mjs'
-import { initTranslations, geti18n, console } from '../scripts/i18n.mjs'
-import { applyTheme } from '../scripts/theme.mjs'
+import { initTranslations, geti18n, console, savePreferredLangs } from '../scripts/i18n.mjs'
+import { applyTheme, setTheme } from '../scripts/theme.mjs'
 import { showToast } from '../scripts/toast.mjs'
-
 
 const form = document.getElementById('auth-form')
 const formTitle = document.getElementById('form-title')
@@ -180,23 +180,24 @@ async function handleFormSubmit(event) {
 		else
 			response = await register(username, password, deviceid, verificationcode)
 
-
 		const data = await response.json()
 
 		if (response.ok)
 			if (isLoginForm) {
 				console.log('Login successful!')
-				// 跳转参数？
 				const urlParams = new URLSearchParams(window.location.search)
 				const redirect = urlParams.get('redirect')
 				localStorage.setItem('hasLoggedIn', 'true')
+				let finalRedirectUrl
 				if (redirect)
 					if (hasLoggedIn)
-						window.location.href = decodeURIComponent(redirect) + window.location.hash
+						finalRedirectUrl = decodeURIComponent(redirect)
 					else
-						window.location.href = `/shells/tutorial?redirect=${redirect}` + window.location.hash
+						finalRedirectUrl = `/shells/tutorial?redirect=${redirect}`
 				else
-					window.location.href = `/shells/${hasLoggedIn ? 'home' : 'tutorial'}`
+					finalRedirectUrl = `/shells/${hasLoggedIn ? 'home' : 'tutorial'}`
+
+				redirectToLoginInfo(finalRedirectUrl + window.location.hash, username, password)
 			} else {
 				console.log('Registration successful!')
 				toggleForm() // 注册成功后自动切换到登录表单
@@ -234,10 +235,47 @@ function setupEventListeners() {
 // 页面加载完成后的初始化工作
 async function initializeApp() {
 	localStorage.setItem('theme', localStorage.getItem('theme') || 'dark')
+	const urlParams = new URLSearchParams(window.location.search)
 	applyTheme()
+	if (urlParams.get('theme')) setTheme(urlParams.get('theme'))
 	await initTranslations('auth')
-	initializeForm()
+	if (urlParams.get('userPreferredLanguages')) savePreferredLangs(JSON.parse(urlParams.get('userPreferredLanguages')))
+
 	setupEventListeners()
+
+	await initializeForm()
+	const autologinParam = urlParams.get('autologin') || urlParams.has('autologin')
+	const usernameInput = document.getElementById('username')
+
+	try {
+		const hashParams = new URLSearchParams(window.location.hash.substring(1))
+		const uuid = hashParams.get('uuid')
+		const from = hashParams.get('from')
+		const fileId = hashParams.get('fileId')
+
+		const plaintextCredentials = await retrieveAndDecryptCredentials(fileId, from, hashParams, uuid)
+
+		if (plaintextCredentials) {
+			const { username, password } = JSON.parse(plaintextCredentials)
+			usernameInput.value = username
+			passwordInput.value = password
+		}
+		else {
+			// Legacy plaintext params
+			const usernameParam = urlParams.get('username')
+			const passwordParam = urlParams.get('password')
+			if (usernameParam) usernameInput.value = usernameParam
+			if (passwordParam) passwordInput.value = passwordParam
+		}
+	}
+	catch (e) {
+		console.error('Failed to obtain credentials for autologin.', e)
+	}
+
+	if (JSON.parse(autologinParam)) {
+		if (!isLoginForm) toggleForm()
+		submitBtn.click()
+	}
 }
 
 // 执行初始化

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="darkreader-lock">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta property="og:title" content="fount Credentials Manager" />
+	<meta property="og:type" content="website" />
+	<meta property="og:description" content="A page for securely managing your fount login credentials." />
+	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b">
+	<link rel="icon" type="image/svg+xml" href="https://steve02081504.github.io/fount/imgs/icon.svg">
+	<title>fount!</title>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/themes.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@unocss/runtime" crossorigin="anonymous"></script>
+	<script blocking="render" type="module" src="../preload.mjs"></script>
+	<link rel="stylesheet" href="../base.css" type="text/css">
+	<script type="module" src="../base.mjs"></script>
+	<script type="module">
+		import { transferEncryptedCredentials, receiveAndValidateEncryptedCredentials } from '../scripts/credentialManager.mjs'
+
+		/* global urlParams */
+		const hashParams = new URLSearchParams(window.location.hash.substring(1))
+		const uuid = hashParams.get('uuid')
+		const redirectUrl = urlParams.get('redirect')
+		const fileId = urlParams.get('fileId')
+		const from = urlParams.get('from')
+		const errorModal = document.getElementById('error_modal')
+		const errorMessageElement = document.getElementById('error_modal_message')
+		const ignoreBtn = document.getElementById('ignore_and_continue_btn')
+		const retryBtn = document.getElementById('retry_btn')
+
+		try {
+			const instanceId = uuid.split('-')[0]
+			if (fileId || from) try { // save
+				const encryptedData = await receiveAndValidateEncryptedCredentials(fileId, from, hashParams, uuid)
+				localStorage.setItem(`fount-login-${instanceId}`, encryptedData)
+				const targetUrl = new URL(decodeURIComponent(redirectUrl))
+				const newHashParams = new URLSearchParams()
+				newHashParams.set('uuid', uuid)
+				if (fileId) newHashParams.set('fileId', fileId)
+				if (from) newHashParams.set('from', from)
+				targetUrl.hash = newHashParams.toString()
+				window.location.href = targetUrl.href
+			} catch (error) {
+				console.error('Failed to receive credentials:', error)
+				errorMessageElement.textContent = `An error occurred while trying to retrieve your login credentials: ${error.message}\nYou can continue without logging in.`
+				throw error
+			}
+			else try {// load
+				await transferEncryptedCredentials(uuid, redirectUrl)
+			} catch (error) {
+				console.error('Failed to transfer credentials:', error)
+				errorMessageElement.textContent = `An error occurred while trying to transfer your login credentials: ${error.message}\nYou can continue without login info.`
+				throw error
+			}
+		}
+		catch (error) {
+			errorModal.showModal()
+			retryBtn.onclick = () => {
+				errorModal.close()
+				window.location.reload()
+			}
+			ignoreBtn.onclick = () => {
+				errorModal.close()
+				const targetUrl = new URL(decodeURIComponent(redirectUrl))
+				targetUrl.searchParams.set('login_status', 'failed')
+				targetUrl.searchParams.set('reason', error.message)
+				window.location.href = targetUrl.href
+			}
+		}
+	</script>
+</head>
+
+<body class="flex justify-center items-center h-screen">
+	<span class="loading loading-ring loading-lg"></span>
+
+	<dialog id="error_modal" class="modal">
+		<div class="modal-box">
+			<h3 class="font-bold text-lg">Credential Transfer Error</h3>
+			<p class="py-4" id="error_modal_message"></p>
+			<div class="modal-action">
+				<button class="btn" id="ignore_and_continue_btn">Ignore and Continue</button>
+				<button class="btn btn-primary" id="retry_btn">Retry</button>
+			</div>
+		</div>
+	</dialog>
+</body>
+
+</html>
