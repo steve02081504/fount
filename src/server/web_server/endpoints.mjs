@@ -13,9 +13,7 @@ import { processIPCCommand } from '../ipc_server/index.mjs'
 import { partsList } from '../managers/base.mjs'
 import { getLoadedPartList, getPartList, loadPart } from '../managers/index.mjs'
 import { getDefaultParts, getPartDetails, setDefaultPart } from '../parts_loader.mjs'
-import { hosturl, skip_report, currentGitCommit, config } from '../server.mjs'
-
-
+import { hosturl, skip_report, currentGitCommit, config, save_config } from '../server.mjs'
 
 /**
  * @param {import('npm:express').Router} router
@@ -216,6 +214,20 @@ export function registerEndpoints(router) {
 		const user = await getUserByReq(req)
 		const { parttype, partname } = req.body
 		setDefaultPart(user, parttype, partname)
+		res.status(200).json({ message: 'success' })
+	})
+
+	router.get('/api/getusersetting', authenticate, async (req, res) => {
+		const user = await getUserByReq(req)
+		const { key } = req.query
+		res.status(200).json({ key, value: user[key] })
+	})
+
+	router.post('/api/setusersetting', authenticate, async (req, res) => {
+		const user = await getUserByReq(req)
+		const { key, value } = req.body
+		user[key] = value
+		save_config()
 		res.status(200).json({ message: 'success' })
 	})
 }

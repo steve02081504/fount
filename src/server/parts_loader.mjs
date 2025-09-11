@@ -469,6 +469,17 @@ async function nocacheGetPartBaseDetails(username, parttype, partname) {
 	}
 }
 
+function getSfwInfo(info) {
+	if (!info) return info
+	const sfwInfo = { ...info }
+	for (const key in info)
+		if (key.startsWith('sfw_')) {
+			const originalKey = key.substring(4) // remove 'sfw_'
+			sfwInfo[originalKey] = info[key]
+		}
+	return sfwInfo
+}
+
 /**
  * Retrieves detailed information about a part, either from cache or by loading the part.
  *
@@ -482,14 +493,14 @@ async function nocacheGetPartBaseDetails(username, parttype, partname) {
 export async function getPartDetails(username, parttype, partname, nocache = false) {
 	/** @type {PartDetails | undefined} */
 	let details = nocache ? undefined : loadData(username, 'parts_details_cache')?.[parttype]?.[partname]
-	const { locales } = getUserByUsername(username)
+	const user = getUserByUsername(username)
 	if (!details) details = await nocacheGetPartBaseDetails(username, parttype, partname)
 	else if (isPartLoaded(username, parttype, partname)) await Promise.any([
 		nocacheGetPartBaseDetails(username, parttype, partname).then(result => details = result),
-		new Promise(resolve => setTimeout(resolve, 500))
+		new Promise(resolve => setTimeout(resolve, 500)),
 	])
-	return {
-		...details,
-		info: getLocalizedInfo(details.info, locales)
-	}
+	let info = getLocalizedInfo(details.info, user.locales)
+	if (user.sfw) info = getSfwInfo(info)
+
+	return { ...details, info }
 }

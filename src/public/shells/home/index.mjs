@@ -1,5 +1,6 @@
 import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
+import { getUserSetting, setUserSetting } from '../../scripts/endpoints.mjs'
 import { initTranslations, geti18n, confirmI18n, console, onLanguageChange } from '../../scripts/i18n.mjs'
 import { renderMarkdown } from '../../scripts/markdown.mjs'
 import {
@@ -25,6 +26,7 @@ const itemDescription = document.getElementById('item-description')
 const drawerToggle = document.getElementById('drawer-toggle')
 const functionButtonsContainer = document.getElementById('function-buttons-container')
 const filterInput = document.getElementById('filter-input')
+const sfwToggle = document.getElementById('sfw-toggle')
 const pageTitle = document.getElementById('page-title')
 const instruction = document.getElementById('subtitle')
 
@@ -39,6 +41,7 @@ let itemDetailsCache = {} // Combined cache
 let currentItemType = sessionStorage.getItem('fount.home.lastTab') || 'chars' // Persist tab selection
 let homeRegistry
 let defaultParts = {} // Store default parts
+let isSfw = false
 
 // Utility for mouse wheel scrolling
 const handleMouseWheelScroll = event => {
@@ -46,7 +49,6 @@ const handleMouseWheelScroll = event => {
 	scrollContainer.scrollLeft += Math.sign(event.deltaY) * 40
 	event.preventDefault()
 }
-
 
 // --- Item Details Fetching ---
 async function getItemDetails(itemType, itemName, useCache = true) {
@@ -353,17 +355,34 @@ async function updateTabContent(itemType) {
 	itemDescription.innerHTML = geti18n('home.itemDescription') // Reset sidebar
 }
 
+async function refreshCurrentTab() {
+	itemDetailsCache = {}
+	ItemDOMCache = {}
+	await fetchData()
+	await updateTabContent(currentItemType)
+}
+
 // --- Initialization ---
 async function initializeApp() {
 	applyTheme()
 	await initTranslations('home') // Initialize i18n first
 
-	onLanguageChange(async () => {
-		itemDetailsCache = {}
-		ItemDOMCache = {}
-		await fetchData()
-		await updateTabContent(currentItemType)
+	// SFW Toggle Initialization
+	sfwToggle.checked = isSfw = await getUserSetting('sfw').catch(() => false)
+	sfwToggle.addEventListener('change', async () => {
+		if (sfwToggle.checked == isSfw) return // No change
+		try {
+			await setUserSetting('sfw', isSfw = sfwToggle.checked)
+		}
+		catch (e) {
+			console.error('Failed to set SFW state', e)
+			sfwToggle.checked = isSfw = !isSfw
+			return
+		}
+		refreshCurrentTab()
 	})
+
+	onLanguageChange(refreshCurrentTab)
 
 	// Fetch initial data
 	await fetchData()

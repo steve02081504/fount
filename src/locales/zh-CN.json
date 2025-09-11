@@ -292,6 +292,7 @@
 		"filterInput": {
 			"placeholder": "搜索..."
 		},
+		"sfwToggle": "SFW",
 		"sidebarTitle": "详情",
 		"itemDescription": "在此处选择一个项目以查看详细信息。",
 		"noDescription": "无描述信息",
