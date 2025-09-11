@@ -292,6 +292,7 @@
 		"filterInput": {
 			"placeholder": "搜尋..."
 		},
+		"sfwToggle": "安全內容",
 		"sidebarTitle": "詳情",
 		"itemDescription": "在此處選擇一個項目以查看詳細資訊。",
 		"noDescription": "無描述資訊",
@@ -672,7 +673,11 @@
 				},
 				"copyHtml": "複製為html",
 				"copyHtmlIcon": {
-					"alt": "複製HTML圖示"
+					"alt": "複製html圖示"
+				},
+				"downloadHtml": "下載為html",
+				"downloadHtmlIcon": {
+					"alt": "下載html圖示"
 				}
 			}
 		},

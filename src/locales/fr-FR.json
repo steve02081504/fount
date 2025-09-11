@@ -292,6 +292,7 @@
 		"filterInput": {
 			"placeholder": "Rechercher..."
 		},
+		"sfwToggle": "Contenu sûr",
 		"sidebarTitle": "Détails",
 		"itemDescription": "Sélectionnez un élément pour en voir les détails.",
 		"noDescription": "Aucune description disponible.",
@@ -673,6 +674,10 @@
 				"copyHtml": "Copier au format HTML",
 				"copyHtmlIcon": {
 					"alt": "Icône Copier au format HTML"
+				},
+				"downloadHtml": "Télécharger en HTML",
+				"downloadHtmlIcon": {
+					"alt": "Icône de téléchargement HTML"
 				}
 			}
 		},

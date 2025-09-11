@@ -292,6 +292,7 @@
 		"filterInput": {
 			"placeholder": "検索..."
 		},
+		"sfwToggle": "一般コンテンツ",
 		"sidebarTitle": "詳細",
 		"itemDescription": "項目を選択すると、ここに詳細が表示されます。",
 		"noDescription": "説明はありません。",
@@ -673,6 +674,10 @@
 				"copyHtml": "HTMLとしてコピー",
 				"copyHtmlIcon": {
 					"alt": "HTMLとしてコピーアイコン"
+				},
+				"downloadHtml": "HTMLとしてダウンロード",
+				"downloadHtmlIcon": {
+					"alt": "HTMLダウンロードアイコン"
 				}
 			}
 		},

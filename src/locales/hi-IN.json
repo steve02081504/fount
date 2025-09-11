@@ -292,6 +292,7 @@
 		"filterInput": {
 			"placeholder": "खोजें..."
 		},
+		"sfwToggle": "सुरक्षित सामग्री",
 		"sidebarTitle": "विवरण",
 		"itemDescription": "विवरण देखने के लिए यहाँ एक आइटम चुनें।",
 		"noDescription": "कोई विवरण नहीं।",
@@ -673,6 +674,10 @@
 				"copyHtml": "HTML के रूप में कॉपी करें",
 				"copyHtmlIcon": {
 					"alt": "आइकन: HTML के रूप में कॉपी करें"
+				},
+				"downloadHtml": "HTML डाउनलोड करें",
+				"downloadHtmlIcon": {
+					"alt": "एचटीएमएल डाउनलोड आइकन"
 				}
 			}
 		},

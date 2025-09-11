@@ -292,6 +292,7 @@
 		"filterInput": {
 			"placeholder": "Leita..."
 		},
+		"sfwToggle": "Vinnustaðavænt",
 		"sidebarTitle": "Nánar",
 		"itemDescription": "Veldu atriði hér til að sjá nánari upplýsingar.",
 		"noDescription": "Engin lýsing",
@@ -673,6 +674,10 @@
 				"copyHtml": "Afrita sem HTML",
 				"copyHtmlIcon": {
 					"alt": "Afrita HTML tákn"
+				},
+				"downloadHtml": "Sæktu sem HTML",
+				"downloadHtmlIcon": {
+					"alt": "Sæktu HTML táknmynd"
 				}
 			}
 		},

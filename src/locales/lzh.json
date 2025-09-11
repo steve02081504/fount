@@ -292,6 +292,7 @@
 		"filterInput": {
 			"placeholder": "尋覓..."
 		},
+		"sfwToggle": "淨域",
 		"sidebarTitle": "詳覽",
 		"itemDescription": "請擇一物以觀其詳。",
 		"noDescription": "無述",
@@ -673,6 +674,10 @@
 				"copyHtml": "錄為織文",
 				"copyHtmlIcon": {
 					"alt": "謄織文"
+				},
+				"downloadHtml": "下載為織文",
+				"downloadHtmlIcon": {
+					"alt": "下載織文圖示"
 				}
 			}
 		},

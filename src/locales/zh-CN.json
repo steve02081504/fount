@@ -292,7 +292,7 @@
 		"filterInput": {
 			"placeholder": "搜索..."
 		},
-		"sfwToggle": "SFW",
+		"sfwToggle": "安全内容",
 		"sidebarTitle": "详情",
 		"itemDescription": "在此处选择一个项目以查看详细信息。",
 		"noDescription": "无描述信息",
@@ -673,7 +673,11 @@
 				},
 				"copyHtml": "复制为html",
 				"copyHtmlIcon": {
-					"alt": "复制HTML图标"
+					"alt": "复制html图标"
+				},
+				"downloadHtml": "下载为html",
+				"downloadHtmlIcon": {
+					"alt": "下载html图标"
 				}
 			}
 		},

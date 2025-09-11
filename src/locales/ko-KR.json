@@ -292,6 +292,7 @@
 		"filterInput": {
 			"placeholder": "검색..."
 		},
+		"sfwToggle": "일반 콘텐츠",
 		"sidebarTitle": "세부 정보",
 		"itemDescription": "자세한 내용을 보려면 여기에서 항목을 선택하세요.",
 		"noDescription": "설명이 없습니다.",
@@ -673,6 +674,10 @@
 				"copyHtml": "HTML로 복사",
 				"copyHtmlIcon": {
 					"alt": "HTML로 복사 아이콘"
+				},
+				"downloadHtml": "HTML로 다운로드",
+				"downloadHtmlIcon": {
+					"alt": "HTML 다운로드 아이콘"
 				}
 			}
 		},
