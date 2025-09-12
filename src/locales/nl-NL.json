@@ -292,6 +292,7 @@
 		"filterInput": {
 			"placeholder": "Zoeken..."
 		},
+		"sfwToggle": "Veilige inhoud",
 		"sidebarTitle": "Details",
 		"itemDescription": "Selecteer hier een item om de details te bekijken.",
 		"noDescription": "Geen beschrijving",
@@ -672,7 +673,11 @@
 				},
 				"copyHtml": "Kopiëren als html",
 				"copyHtmlIcon": {
-					"alt": "Kopieer HTML pictogram"
+					"alt": "Kopieer html pictogram"
+				},
+				"downloadHtml": "Download als html",
+				"downloadHtmlIcon": {
+					"alt": "html-downloadpictogram"
 				}
 			}
 		},

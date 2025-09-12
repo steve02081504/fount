@@ -11,6 +11,8 @@ let i18n = {}
 let saved_pageid
 let lastKnownLangs
 
+export let main_locale = 'en-UK'
+
 export function loadPreferredLangs() {
 	return JSON.parse(localStorage.getItem('userPreferredLanguages') || '[]').filter(Boolean)
 }
@@ -30,6 +32,7 @@ export function savePreferredLangs(langs) {
 export async function initTranslations(pageid = saved_pageid, preferredLangs = loadPreferredLangs()) {
 	saved_pageid = pageid
 	lastKnownLangs = preferredLangs
+	main_locale = [...preferredLangs, navigator.language, ...navigator.languages, 'en-UK'].filter(Boolean)[0]
 	try {
 		const url = new URL('/api/getlocaledata', location.origin)
 		url.searchParams.set('preferred', preferredLangs.join(','))

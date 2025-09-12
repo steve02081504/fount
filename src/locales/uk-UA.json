@@ -292,6 +292,7 @@
 		"filterInput": {
 			"placeholder": "Пошук..."
 		},
+		"sfwToggle": "Безпечний контент",
 		"sidebarTitle": "Деталі",
 		"itemDescription": "Оберіть елемент, щоб переглянути деталі.",
 		"noDescription": "Немає опису",
@@ -672,7 +673,11 @@
 				},
 				"copyHtml": "Копіювати як html",
 				"copyHtmlIcon": {
-					"alt": "Іконка копіювання HTML"
+					"alt": "Іконка копіювання html"
+				},
+				"downloadHtml": "Завантажити як html",
+				"downloadHtmlIcon": {
+					"alt": "Піктограма завантаження html"
 				}
 			}
 		},

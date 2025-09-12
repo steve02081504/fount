@@ -18,8 +18,8 @@
 	<link rel="stylesheet" href="../base.css" type="text/css">
 	<script type="module">
 		import '../base.mjs'
-		import { initTranslations, console, geti18n } from '../../scripts/i18n.mjs'
 		import { transferEncryptedCredentials, receiveAndValidateEncryptedCredentials } from '../scripts/credentialManager.mjs'
+		import { initTranslations, console, geti18n } from '../scripts/i18n.mjs'
 		/* global urlParams */
 		initTranslations('login_info')
 		const hashParams = new URLSearchParams(window.location.hash.substring(1))

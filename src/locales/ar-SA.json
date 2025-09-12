@@ -292,6 +292,7 @@
 		"filterInput": {
 			"placeholder": "بحث..."
 		},
+		"sfwToggle": "محتوى آمن",
 		"sidebarTitle": "التفاصيل",
 		"itemDescription": "اختر عنصرًا هنا لعرض التفاصيل.",
 		"noDescription": "لا يوجد وصف",
@@ -672,7 +673,11 @@
 				},
 				"copyHtml": "نسخ بصيغة html",
 				"copyHtmlIcon": {
-					"alt": "أيقونة نسخ HTML"
+					"alt": "أيقونة نسخ html"
+				},
+				"downloadHtml": "تنزيل html",
+				"downloadHtmlIcon": {
+					"alt": "أيقونة تنزيل html"
 				}
 			}
 		},

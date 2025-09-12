@@ -292,6 +292,7 @@
 		"filterInput": {
 			"placeholder": "Tìm kiếm..."
 		},
+		"sfwToggle": "Nội dung an toàn",
 		"sidebarTitle": "Chi tiết",
 		"itemDescription": "Chọn một mục ở đây để xem chi tiết.",
 		"noDescription": "Không có mô tả.",
@@ -673,6 +674,10 @@
 				"copyHtml": "Sao chép dưới dạng HTML",
 				"copyHtmlIcon": {
 					"alt": "Biểu tượng Sao chép dạng HTML"
+				},
+				"downloadHtml": "Tải về HTML",
+				"downloadHtmlIcon": {
+					"alt": "Biểu tượng tải xuống HTML"
 				}
 			}
 		},
