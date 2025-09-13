@@ -353,8 +353,6 @@ export async function unloadPartBase(username, parttype, partname, unLoadargs, {
 	/** @type {T} */
 	const part = parts_set[username][parttype][partname]
 	if (!part) return
-	if (getDefaultParts(username)[parttype] == partname)
-		setDefaultPart(username, parttype, null)
 	try {
 		await unLoader(part)
 		await deletePartRouter(username, parttype, partname)
@@ -396,6 +394,8 @@ export async function uninstallPartBase(username, parttype, partname, unLoadargs
 } = {}) {
 	/** @type {T | undefined} */
 	let part = parts_set[username][parttype][partname]
+	if (getDefaultParts(username)[parttype] == partname)
+		setDefaultPart(username, parttype, null)
 	try {
 		await unloadPartBase(username, parttype, partname, unLoadargs, { unLoader })
 	} catch (error) {
