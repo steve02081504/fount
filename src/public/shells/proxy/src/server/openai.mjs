@@ -185,7 +185,6 @@ export function setOpenAIAPIEndpoints(router) {
 	router.get(basePath + '/v1/models', authenticate, async (req, res) => {
 		try {
 			const { username } = await getUserByReq(req)
-			console.log(req.cookies.accessToken, username) // Keep for debugging if needed
 			const modelList = await getPartList(username, 'AIsources')
 			const formattedModels = {
 				object: 'list',
@@ -193,7 +192,7 @@ export function setOpenAIAPIEndpoints(router) {
 					id: model,
 					object: 'model',
 					created: Math.floor(Date.now() / 1000),
-					owned_by: username, // Or a generic owner like "organization-owner" if preferred
+					owned_by: username,
 				})),
 			}
 			res.status(200).json(formattedModels)
