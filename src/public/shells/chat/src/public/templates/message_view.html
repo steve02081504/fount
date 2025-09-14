@@ -7,7 +7,7 @@
 	<div class="chat-bubble relative ${
 		content.match(/<(?<tag>video|iframe)\b[^>]*>.*?<\/\k<tag>>/gs) ? 'w-full' : ''
 	}">
-		<div class="button-group absolute top-1 right-1 join">
+		<div class="button-group join">
 			<button class="edit-button btn btn-xs btn-primary join-item" data-i18n="chat.messageView.buttons.edit">
 				<img src="https://api.iconify.design/line-md/edit.svg" data-i18n="chat.messageView.buttons.editIcon" />
 			</button>
@@ -15,7 +15,7 @@
 				<img src="https://api.iconify.design/line-md/list-3.svg" data-i18n="chat.messageView.buttons.moreIcon" />
 			</button>
 		</div>
-		<ul class="dropdown menu w-52 rounded-box bg-base-100 shadow-sm" popover id="popover-${safeTimeStamp}" style="position-anchor:--anchor-${safeTimeStamp}">
+		<ul class="dropdown dropdown-end menu w-52 rounded-box bg-base-100 shadow-sm" popover id="popover-${safeTimeStamp}" style="position-anchor:--anchor-${safeTimeStamp}">
 			<li>
 				<a class="delete-button">
 					<img src="https://api.iconify.design/line-md/remove.svg" class="w-4 h-4" data-i18n="chat.messageView.dropdown.deleteIcon" />
