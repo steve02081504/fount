@@ -19,7 +19,7 @@ body {
 /* 左右箭头 */
 .chat-message .arrow {
 	position: absolute;
-	top: 50%;
+	top: 60%;
 	transform: translateY(-50%);
 	cursor: pointer;
 	opacity: 0;
@@ -47,9 +47,11 @@ body {
 /* 消息按钮组 (编辑和删除) */
 .chat-message .button-group {
 	display: none;
-	position: absolute;
+	position: sticky;
 	top: 5px;
 	right: 5px;
+	z-index: 10;
+	float: right;
 }
 
 .chat-message:hover .button-group {
@@ -66,6 +68,10 @@ body {
 	display: flex;
 	flex-direction: column;
 	gap: 4px;
+	position: sticky;
+	top: 5px;
+	align-self: flex-start;
+	z-index: 10;
 }
 
 /* 附件容器 */

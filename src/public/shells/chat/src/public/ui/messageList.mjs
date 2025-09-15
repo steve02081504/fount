@@ -123,6 +123,7 @@ export async function renderMessage(message) {
 	// 获取 dropdown 菜单元素
 	const dropdownMenu = messageElement.querySelector('.dropdown')
 	if (dropdownMenu) {
+		messageElement.addEventListener('mouseleave', () => dropdownMenu.hidePopover())
 		// 获取消息内容
 		const messageContentElement = messageElement.querySelector('.message-content')
 		const messageMarkdownContent = message.content_for_show || message.content
