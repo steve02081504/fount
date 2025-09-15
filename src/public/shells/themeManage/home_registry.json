@@ -58,7 +58,7 @@
 				}
 			},
 			"level": 0,
-			"url": "/shells/themeManage/",
+			"url": "/shells/themeManage",
 			"button": "<img src=\"https://api.iconify.design/line-md/mushroom.svg\" class=\"text-icon\"/>"
 		}
 	]

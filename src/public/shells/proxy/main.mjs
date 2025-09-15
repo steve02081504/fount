@@ -1,7 +1,7 @@
 import qrcode from 'npm:qrcode-terminal'
 
-import { actions } from './actions.mjs'
-import { setEndpoints } from './src/server/endpoints.mjs'
+import { actions } from './src/actions.mjs'
+import { setEndpoints } from './src/endpoints.mjs'
 
 async function handleAction(user, params) {
 	return actions.default({ user, ...params })

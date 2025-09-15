@@ -8,128 +8,155 @@
 
 ## 1. Standard Shell Architecture
 
-A fount Shell is a self-contained UI module. It consists of a frontend (HTML/CSS/JS) and a dedicated set of backend API endpoints. The standard file structure is as follows:
+A fount Shell is a self-contained module that provides a user interface and corresponding backend logic. It consists of a frontend (served as static files) and a backend (integrated into the main fount server).
+
+The standard file structure is as follows. Note the clear separation between the backend code (`src/`) and the frontend code (`public/`).
 
 ```tree
 /src/public/shells/<your-shell-name>/
 │
 ├── main.mjs                # [REQUIRED] Backend entry point. Implements ShellAPI_t.
-├── index.html              # [REQUIRED] Frontend main HTML page.
-├── index.mjs               # [REQUIRED] Frontend main JavaScript logic.
-├── index.css               # (Optional) Custom styles for the shell.
-├── home_registry.json      # (Optional) Registers this shell's features on the Home shell.
+├── home_registry.json      # (Optional) Registers this shell on the Home page UI.
+├── argument_completer.ps1  # (Optional) PowerShell script for CLI argument completion.
 │
-└── src/
-    ├── server/
-    │   ├── endpoints.mjs   # [STANDARD] Defines all backend Express.js API routes.
-    │   └── ...             # (Optional) Other backend logic modules (e.g., manager.js).
-    │
-    └── public/
-        ├── endpoints.mjs   # [STANDARD] Frontend helpers to fetch from the backend APIs.
-        └── ...             # (Optional) Other frontend scripts, templates, etc.
+├── public/                 # [REQUIRED] All frontend files go here.
+│   ├── index.html          # [REQUIRED] The main HTML file for the shell.
+│   ├── index.mjs           # [REQUIRED] The main JavaScript entry point for the frontend.
+│   └── index.css           # (Optional) Custom styles for the shell.
+│
+└── src/                    # [REQUIRED] All backend files go here.
+    ├── endpoints.mjs       # [STANDARD] Defines backend Express.js routes (HTTP & WebSocket).
+    └── ...                 # (Optional) Other backend logic modules.
 ```
 
-### Key File Responsibilities
+### Key File & Directory Responsibilities
 
-1. **`main.mjs` (Backend Entry Point)**
-   - **Role**: The Shell's manifest and lifecycle manager. This is how the fount `parts_loader` interacts with your Shell.
-   - **Exports**: A default object with `info`, `Load`, and `Unload`.
-   - `Load({ router })`: This function is **required**. It is called when the Shell is loaded. Its primary job is to receive the Express `router` and pass it to your `setEndpoints` function to register the Shell's API routes.
-   - `interfaces`: (Optional) Defines handlers for fount's command-line (`invokes`) or scheduled task (`jobs`) systems.
+1.  **`main.mjs` (Backend Entry Point)**
+    - **Role**: The Shell's manifest and lifecycle manager. This is how the fount `parts_loader` interacts with your Shell.
+    - **`info`**: Metadata about the shell (name, description, author, etc.).
+    - **`Load({ router })`**: This function is **required**. It's called when the Shell is loaded. Its primary job is to receive an Express `router` instance and use it to register the Shell's backend routes (both HTTP and WebSocket).
+    - **`interfaces.invokes.IPCInvokeHandler`**: (Advanced) A powerful function that handles direct, non-HTTP server-side actions. It's ideal for complex operations that don't fit the simple request/response model, such as the AI-driven logic in `shellassist`.
 
-2. **`/src/server/endpoints.mjs` (Backend API Definitions)**
-   - **Role**: To define all API endpoints for this Shell.
-   - **Pattern**: Export a single function `setEndpoints(router)`. Inside this function, attach all your `router.get()`, `router.post()`, etc., routes. **All routes must be protected by the `authenticate` middleware.**
+2.  **`public/` (Frontend Directory)**
+    - **Role**: Contains all static assets for the user interface. These files are served directly to the user's browser.
+    - **`index.html`**: The main page structure. It should include standard fount headers (`/base.css`, `/preload.mjs`, `/base.mjs`).
+    - **`index.mjs`**: The core frontend logic. It should import and use common scripts from `@src/pages/scripts/` for tasks like theming (`applyTheme`), translation (`initTranslations`), and using pre-built components (`setTerminal`).
 
-3. **`/src/public/endpoints.mjs` (Frontend API Client)**
-   - **Role**: To create a clean, reusable API layer for your frontend.
-   - **Pattern**: For each backend endpoint, export a corresponding `async` function that uses `fetch` to call it. This decouples your main UI logic from the raw API URLs and request details.
+3.  **`src/` (Backend Directory)**
+    - **Role**: Contains all the Node.js backend logic for the shell.
+    - **`endpoints.mjs`**: Exports a `setEndpoints(router)` function. This is where you define all your API endpoints (`router.get`, `router.post`) and WebSocket handlers (`router.ws`). This keeps all routing logic organized in one place.
 
-4. **`home_registry.json` (Home Shell Integration)**
-   - **Role**: Makes your Shell discoverable and accessible from the main fount `home` shell.
-   - `home_function_buttons`: Adds a button to the main menu on the `home` shell that links to your Shell.
-   - `home_*_interfaces`: Adds action buttons to the cards on the `home` shell (e.g., adds a "Configure" button to all `char` parts that links to your shell).
+4.  **`home_registry.json` (Home Shell Integration)**
+    - **Role**: Makes your Shell discoverable and accessible from the main fount `home` shell UI.
+    - `home_function_buttons`: Adds a button to the main menu on the `home` shell that links to your Shell's `index.html`.
+
+5.  **`argument_completer.ps1` (CLI Integration)**
+    - **Role**: Provides context-aware command-line completion for users interacting with your shell via the fount CLI (`fount run shells ...`). This enhances usability for power users.
 
 ---
 
-## 2. How to Create a New Shell
+## 2. How to Create a New Shell (Using `shellassist` as a Guide)
 
-Follow these steps precisely to create a new Shell named `my-new-shell`.
+This example demonstrates a modern, interactive shell.
 
-### Step 1: Create Directory and Files
+### Step 1: Create Directory Structure
 
-Create the standard directory structure and empty files.
+Create the standard directory structure.
 
 ```bash
 # From fount root directory
-mkdir -p src/public/shells/my-new-shell/src/server
-mkdir -p src/public/shells/my-new-shell/src/public
+mkdir -p src/public/shells/my-new-shell/public
+mkdir -p src/public/shells/my-new-shell/src
 touch src/public/shells/my-new-shell/main.mjs
-touch src/public/shells/my-new-shell/index.html
-touch src/public/shells/my-new-shell/index.mjs
-touch src/public/shells/my-new-shell/src/server/endpoints.mjs
-touch src/public/shells/my-new-shell/src/public/endpoints.mjs
+touch src/public/shells/my-new-shell/public/index.html
+touch src/public/shells/my-new-shell/public/index.mjs
+touch src/public/shells/my-new-shell/src/endpoints.mjs
 ```
 
 ### Step 2: Implement `main.mjs` (Backend Entry)
 
-This file registers the shell with fount.
+This file registers the shell and its routes. For an interactive shell, you might also define an `IPCInvokeHandler`.
 
 ```javascript
 // src/public/shells/my-new-shell/main.mjs
-import { setEndpoints } from './src/server/endpoints.mjs';
+import { setEndpoints } from './src/endpoints.mjs';
+// If you have complex logic, you might import a handler
+// import { myCustomInvokeHandler } from './src/invoke_handler.mjs';
 
 export default {
   info: {
     '': {
       name: 'my-new-shell',
-      description: 'A description for my new shell.',
+      description: 'A description for my new interactive shell.',
       version: '0.0.1',
       author: 'YourName',
     },
   },
+  // The Load function is passed a router to register its endpoints
   Load: ({ router }) => {
     setEndpoints(router);
   },
   Unload: () => {},
+  // (Optional) For complex, non-HTTP interactions
+  interfaces: {
+    invokes: {
+      // This handler can be called directly from other parts of the server
+      // See shellassist/main.mjs for a real-world example
+      IPCInvokeHandler: async (username, data) => {
+        console.log(`IPCInvokeHandler called for ${username} with data:`, data);
+        // return myCustomInvokeHandler(username, data);
+        return { status: 'ok' };
+      },
+    },
+  },
 };
 ```
 
-### Step 3: Define Backend API (`/src/server/endpoints.mjs`)
+### Step 3: Define Backend Endpoints (`src/endpoints.mjs`)
 
-Define the server-side logic.
+Define the server-side logic, including WebSocket handlers for real-time communication.
 
 ```javascript
-// src/public/shells/my-new-shell/src/server/endpoints.mjs
-import { authenticate, getUserByReq } from '../../../../../server/auth.mjs';
+// src/public/shells/my-new-shell/src/endpoints.mjs
+import { handleTerminalConnection } from './terminal_ws.mjs'; // Example from shellassist
 
 export function setEndpoints(router) {
-  router.get(
-    '/api/shells/my-new-shell/getData',
-    authenticate,
-    async (req, res) => {
-      const { username } = await getUserByReq(req);
-      res.status(200).json({
-        message: `Hello, ${username}! This is data from my new shell.`,
-        timestamp: new Date(),
-      });
-    },
-  );
+  // Standard HTTP endpoint
+  router.get('/api/shells/my-new-shell/info', (req, res) => {
+    res.status(200).json({ message: 'Welcome to my new shell!' });
+  });
+
+  // WebSocket endpoint for interactive terminal
+  // The 'ws' method is added by the 'express-ws' middleware used in fount
+  router.ws('/ws/shells/my-new-shell/terminal', (ws, req) => {
+    console.log('WebSocket connection established!');
+    // The actual terminal logic would be in a separate module
+    // handleTerminalConnection(ws); // See shellassist/src/terminal_ws.mjs
+
+    ws.on('message', (msg) => {
+      ws.send(`You sent: ${msg}`);
+    });
+
+    ws.on('close', () => {
+      console.log('WebSocket was closed');
+    });
+  });
 }
 ```
 
-### Step 4: Create Frontend HTML (`index.html`)
+### Step 4: Create Frontend (`public/index.html` & `public/index.mjs`)
 
-Define the UI structure.
+Define the UI and connect it to the backend. For an interactive terminal, we use `xterm.js` via the shared `terminal.mjs` script.
+
+**`public/index.html`:**
 
 ```html
-<!-- src/public/shells/my-new-shell/index.html -->
 <!DOCTYPE html>
 <html data-theme="dark">
   <head>
     <meta charset="UTF-8" />
-    <title data-i18n="my-new-shell.title">My New Shell</title>
-    <!-- Standard fount CSS and JS includes -->
+    <title>My New Shell</title>
+    <!-- Standard fount includes -->
     <link
       href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css"
       rel="stylesheet"
@@ -139,60 +166,60 @@ Define the UI structure.
     <script src="https://cdn.jsdelivr.net/npm/@unocss/runtime"></script>
     <script blocking="render" type="module" src="/preload.mjs"></script>
     <script type="module" src="/base.mjs"></script>
+    <!-- Xterm.js styles for the terminal -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/xterm/css/xterm.min.css"
+    />
   </head>
-  <body>
-    <div class="container mx-auto p-4">
-      <h1 class="text-2xl" data-i18n="my-new-shell.pageTitle">My New Shell</h1>
-      <button id="fetchDataBtn" class="btn btn-primary">Fetch Data</button>
-      <pre id="data-container" class="mt-4 p-4 bg-base-200 rounded-box"></pre>
-    </div>
-    <!-- Include this page's main script -->
+  <body class="flex flex-col h-screen items-center justify-center p-4">
+    <!-- Container for the terminal -->
+    <div
+      id="terminal"
+      class="mockup-code border bg-base-content w-full h-full"
+    ></div>
+    <!-- Main script for this page -->
     <script type="module" src="./index.mjs"></script>
   </body>
 </html>
 ```
 
-### Step 5: Implement Frontend API Client (`/src/public/endpoints.mjs`)
-
-Create the `fetch` helper function.
+**`public/index.mjs`:**
 
 ```javascript
-// src/public/shells/my-new-shell/src/public/endpoints.mjs
-export async function getData() {
-  const response = await fetch('/api/shells/my-new-shell/getData');
-  if (!response.ok) {
-    throw new Error(`API request failed with status ${response.status}`);
-  }
-  return response.json();
-}
-```
-
-### Step 6: Write Frontend Logic (`index.mjs`)
-
-Connect the UI to the API client.
-
-```javascript
-// src/public/shells/my-new-shell/index.mjs
 import { applyTheme } from '../../scripts/theme.mjs';
-import { initTranslations } from '../../scripts/i18n.mjs';
-import { getData } from './src/public/endpoints.mjs';
+import { initTranslations, geti18n } from '../../scripts/i18n.mjs';
+import { setTerminal } from '../../scripts/terminal.mjs'; // Shared terminal helper
 
 // Standard Initialization
 applyTheme();
-initTranslations('my-new-shell'); // Use a unique pageid for i18n
+await initTranslations('my-new-shell');
 
-const fetchDataBtn = document.getElementById('fetchDataBtn');
-const dataContainer = document.getElementById('data-container');
+// 1. Create a terminal instance using the shared helper
+const terminal = setTerminal(document.getElementById('terminal'));
+terminal.writeln('Welcome to My New Shell!');
 
-fetchDataBtn.addEventListener('click', async () => {
-  try {
-    dataContainer.textContent = 'Loading...';
-    const data = await getData();
-    dataContainer.textContent = JSON.stringify(data, null, 2);
-  } catch (error) {
-    dataContainer.textContent = `Error: ${error.message}`;
-    console.error(error);
-  }
+// 2. Connect to the WebSocket backend
+const socketProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+const socketUrl = `${socketProtocol}//${window.location.host}/ws/shells/my-new-shell/terminal`;
+const ws = new WebSocket(socketUrl);
+
+ws.onopen = () => {
+  terminal.writeln('WebSocket connection established.');
+};
+
+ws.onmessage = (event) => {
+  // Write data from the server directly to the terminal
+  terminal.write(event.data);
+};
+
+ws.onclose = () => {
+  terminal.writeln('WebSocket connection closed.');
+};
+
+// 3. Send data from the terminal to the server
+terminal.onData((data) => {
+  ws.send(data);
 });
 ```
 

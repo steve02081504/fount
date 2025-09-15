@@ -5,7 +5,7 @@ import { regex_placement } from '../../../../../src/public/ImportHandlers/SillyT
 import { evaluateMacros } from '../../../../../src/public/ImportHandlers/SillyTavern/engine/marco.mjs' // 复用ST引擎
 import { promptBuilder } from '../../../../../src/public/ImportHandlers/SillyTavern/engine/prompt_builder.mjs' // 复用ST引擎
 import { runRegex } from '../../../../../src/public/ImportHandlers/SillyTavern/engine/regex.mjs' // 复用ST引擎
-import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/server/prompt_struct.mjs' // 调整路径
+import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/prompt_struct.mjs' // 调整路径
 import { saveJsonFile } from '../../../../../src/scripts/json_loader.mjs' // 调整路径
 import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs' // 调整路径
 // 复用ST引擎 (getCharacterSource可能需要调整或我们直接用转换时存的source_url)

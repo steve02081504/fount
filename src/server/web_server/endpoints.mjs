@@ -1,7 +1,7 @@
+import fs from 'node:fs'
 import { Readable } from 'node:stream'
 
 import cors from 'npm:cors'
-import express from 'npm:express'
 
 import { console, getLocaleData, fountLocaleList } from '../../scripts/i18n.mjs'
 import { ms } from '../../scripts/ms.mjs'
@@ -160,8 +160,6 @@ export function registerEndpoints(router) {
 		res.status(200).json({ message: 'Shell command sent successfully.' })
 	})
 
-	const user_static = {}
-	const public_static = express.static(__dirname + '/src/public')
 	for (const part of partsList) {
 		router.get('/api/getlist/' + part, authenticate, async (req, res) => {
 			const { username } = await getUserByReq(req)
@@ -200,9 +198,21 @@ export function registerEndpoints(router) {
 			router[method](new RegExp('^/(api|ws)/' + part + '/'), authenticate, autoloader)
 		router.get(new RegExp('^/' + part + '/'), authenticate, autoloader, async (req, res, next) => {
 			const { username } = await getUserByReq(req)
-			user_static[username] ??= express.static(getUserDictionary(username))
-			return user_static[username](req, res, next)
-		}, public_static)
+			const oripath = decodeURIComponent(req.path)
+			const patharr = oripath.split('/')
+			patharr[patharr.length - 1] ||= 'index.html'
+			const partName = patharr[2]
+			const realPath = part + '/' + partName + '/public/' + patharr.slice(3).join('/')
+			const userPath = getUserDictionary(username) + '/' + realPath
+			const publicPath = __dirname + '/src/public/' + realPath
+			let path
+			if (fs.existsSync(userPath)) path = userPath
+			else if (fs.existsSync(publicPath)) path = publicPath
+			else return next()
+
+			if (fs.statSync(path).isDirectory()) return res.status(301).redirect(req.originalUrl.replace(oripath, oripath + '/'))
+			else return res.status(200).sendFile(path)
+		})
 	}
 
 	router.get('/api/getdefaultparts', authenticate, async (req, res) => {
