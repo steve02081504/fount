@@ -2,7 +2,7 @@
 import * as mime from 'npm:mime-types'
 
 import { escapeRegExp } from '../../../scripts/escape.mjs'
-import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
+import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/prompt_struct.mjs'
 
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */

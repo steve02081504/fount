@@ -1,6 +1,6 @@
 import { LoadChar } from '../../../server/managers/char_manager.mjs'
 
-import { setEndpoints } from './src/server/endpoints.mjs'
+import { setEndpoints } from './src/endpoints.mjs'
 
 export default {
 	info: {
@@ -23,7 +23,7 @@ export default {
 			IPCInvokeHandler: async (username, data) => {
 				const char = await LoadChar(username, data.charname)
 				if (!char.interfaces.shellassist) {
-					const { GetDefaultShellAssistInterface } = await import('./src/server/default_interface/main.mjs')
+					const { GetDefaultShellAssistInterface } = await import('./src/default_interface/main.mjs')
 					char.interfaces.shellassist = await GetDefaultShellAssistInterface(char, username, data.charname)
 				}
 				const result = await char.interfaces.shellassist.Assist({

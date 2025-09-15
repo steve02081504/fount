@@ -6,7 +6,7 @@ import { getCharacterSource } from '../../../../../src/public/ImportHandlers/Sil
 import { evaluateMacros } from '../../../../../src/public/ImportHandlers/SillyTavern/engine/marco.mjs'
 import { promptBuilder } from '../../../../../src/public/ImportHandlers/SillyTavern/engine/prompt_builder.mjs'
 import { runRegex } from '../../../../../src/public/ImportHandlers/SillyTavern/engine/regex.mjs'
-import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/server/prompt_struct.mjs'
+import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/prompt_struct.mjs'
 import { saveJsonFile } from '../../../../../src/scripts/json_loader.mjs'
 import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
 

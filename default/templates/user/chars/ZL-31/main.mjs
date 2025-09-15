@@ -5,8 +5,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/server/prompt_struct.mjs'
 import { __dirname } from '../../../../../src/server/base.mjs'
+import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/prompt_struct.mjs'
 import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
 
 // AI源的实例
@@ -44,7 +44,7 @@ fount角色以mjs文件语法所书写，其可以自由导入任何npm或jsr包
  */
 
 import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
-import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/server/prompt_struct.mjs'
+import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/prompt_struct.mjs'
 
 // AI源的实例
 /** @type {import('../../../../../src/decl/AIsource.ts').AIsource_t} */

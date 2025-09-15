@@ -21,7 +21,7 @@
 		import { transferEncryptedCredentials, receiveAndValidateEncryptedCredentials } from '../scripts/credentialManager.mjs'
 		import { initTranslations, console, geti18n } from '../scripts/i18n.mjs'
 		/* global urlParams */
-		initTranslations('login_info')
+		await initTranslations('login_info')
 		const hashParams = new URLSearchParams(window.location.hash.substring(1))
 		const uuid = hashParams.get('uuid')
 		const redirectUrl = urlParams.get('redirect')
