@@ -14,6 +14,9 @@
 				"de-DE": {
 					"title": "Importieren"
 				},
+				"emoji": {
+					"title": "📥"
+				},
 				"es-ES": {
 					"title": "Importar"
 				},
@@ -76,6 +79,9 @@
 				},
 				"de-DE": {
 					"title": "Löschen"
+				},
+				"emoji": {
+					"title": "🗑️"
 				},
 				"es-ES": {
 					"title": "Eliminar"
