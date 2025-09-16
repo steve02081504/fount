@@ -3,7 +3,7 @@
 
 import path from 'node:path'
 
-import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/server/prompt_struct.mjs'
+import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/prompt_struct.mjs'
 import { formatStr } from '../../../../../src/scripts/format.mjs'
 import { loadJsonFile, saveJsonFile } from '../../../../../src/scripts/json_loader.mjs'
 import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'

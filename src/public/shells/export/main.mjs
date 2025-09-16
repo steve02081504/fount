@@ -1,10 +1,10 @@
 
 import fs from 'node:fs/promises'
 
-import { setEndpoints } from './src/server/endpoints.mjs'
+import { setEndpoints } from './src/endpoints.mjs'
 
 async function handleAction(user, action, params) {
-	const { actions } = await import('./src/server/actions.mjs')
+	const { actions } = await import('./src/actions.mjs')
 	if (!actions[action])
 		throw new Error(`Unknown action: ${action}. Available actions: ${Object.keys(actions).join(', ')}`)
 

@@ -1,5 +1,5 @@
 import { escapeRegExp } from '../../../scripts/regex.mjs'
-import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
+import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/prompt_struct.mjs'
 
 import { DuckDuckGoAPI } from './duckduckgo.mjs'
 

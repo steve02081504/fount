@@ -24,7 +24,7 @@ import { downloadRisuCard, downloadAsset } from './risu-api.mjs'
 async function saveAndNormalizeAsset(assetBuffer, originalName, targetDir, assetSubDir, assetTypeForLog = 'asset') {
 	const safeOriginalName = sanitizeFilename(originalName || `${assetTypeForLog}_${Date.now()}`)
 	const targetAssetPath = assetSubDir + '/' + safeOriginalName
-	const fullTargetPath = targetDir + '/' + targetAssetPath
+	const fullTargetPath = path.join(targetDir, 'public', targetAssetPath)
 
 	await mkdir(path.dirname(fullTargetPath), { recursive: true })
 	await writeFile(fullTargetPath, assetBuffer)
@@ -146,8 +146,11 @@ async function ImportAsData(username, dataBuffer) {
 					})
 
 					// 如果这个资源是主头像，也单独处理一下
-					if (assetDef.type === 'icon' && assetDef.name === 'main' && !fsSync.existsSync(path.join(targetPath, `image.${assetDef.ext || 'png'}`)))
-						await writeFile(path.join(targetPath, `image.${assetDef.ext || 'png'}`), assetBuffer)
+					if (assetDef.type === 'icon' && assetDef.name === 'main' && !fsSync.existsSync(path.join(targetPath, 'public', `image.${assetDef.ext || 'png'}`))) {
+						const imagePath = path.join(targetPath, 'public', `image.${assetDef.ext || 'png'}`)
+						await mkdir(path.dirname(imagePath), { recursive: true })
+						await writeFile(imagePath, assetBuffer)
+					}
 				} catch (err) {
 					console.error(`Failed to process asset ${assetDef.name} (uri: ${originalUri}): ${err.message}`)
 				}
@@ -156,9 +159,10 @@ async function ImportAsData(username, dataBuffer) {
 
 		// 如果循环完 card.data.assets 后主头像仍未写入，且 mainImageBuffer 存在 (来自PNG或CHARX提取)
 		// 则将其保存为 image.png
-		const avatarPath = path.join(targetPath, 'image.png')
+		const avatarPath = path.join(targetPath, 'public', 'image.png')
 		if (!fsSync.existsSync(avatarPath) && mainImageBuffer)
 			try {
+				await mkdir(path.dirname(avatarPath), { recursive: true })
 				// 尝试确定原始扩展名，但为简单起见，这里统一保存为png
 				// 你可能需要一个图像转换库（如sharp）来确保它是PNG格式
 				// 或者保存为 image.<original_ext> 并让模板处理
@@ -179,8 +183,8 @@ async function ImportAsData(username, dataBuffer) {
 				try {
 					const filename = path.basename(internalPath)
 					// 将 CHARX 内部的 assets/ 目录结构映射到 risu_assets/charx_provided/
-					const relativeSavePath = path.join('risu_assets', 'charx_provided', internalPath.substring('assets/'.length))
-					const fullSavePath = path.join(targetPath, relativeSavePath)
+					const relativeSavePath = ['risu_assets', 'charx_provided', internalPath.substring('assets/'.length)].join('/')
+					const fullSavePath = path.join(targetPath, 'public', relativeSavePath)
 					await mkdir(path.dirname(fullSavePath), { recursive: true })
 					await writeFile(fullSavePath, buffer)
 					processedAssetsForST.push({ // 记录这些额外保存的资源

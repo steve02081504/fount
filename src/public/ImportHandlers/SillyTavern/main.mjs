@@ -43,7 +43,9 @@ async function ImportAsData(username, data) {
 	saveJsonFile(chardataPath, chardata)
 	// save image to the character
 	const image = data_reader.remove(data)
-	const imagePath = path.join(targetPath, 'image.png')
+	const publicDir = path.join(targetPath, 'public')
+	await fs.ensureDir(publicDir)
+	const imagePath = path.join(publicDir, 'image.png')
 	await fs.writeFile(imagePath, image)
 }
 

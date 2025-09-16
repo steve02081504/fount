@@ -48,7 +48,7 @@ These TypeScript files define the interfaces that all "parts" must adhere to. **
 ## 4. Core Data Structures
 
 - **`prompt_struct_t` (`@src/decl/prompt_struct.ts`)**: The central data structure for building a prompt for the AI. It aggregates context from all active parts.
-- **Chat State (`@src/public/shells/chat/src/server/chat.mjs`)**:
+- **Chat State (`@src/public/shells/chat/src/chat.mjs`)**:
   - **`chatMetadata_t`**: Represents the entire state of a single chat session. This is the primary object saved to disk as a JSON file.
   - **`timeSlice_t`**: A snapshot of the chat's context at a specific point in time (i.e., for a single message). **Crucial for maintaining state consistency.**
   - **`chatLogEntry_t`**: A single message in the chat log, containing a `timeSlice` property.

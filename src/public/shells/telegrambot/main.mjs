@@ -1,6 +1,6 @@
-import { actions } from './actions.mjs'
-import { runBot } from './src/server/bot.mjs'
-import { setEndpoints } from './src/server/endpoints.mjs'
+import { actions } from './src/actions.mjs'
+import { runBot } from './src/bot.mjs'
+import { setEndpoints } from './src/endpoints.mjs'
 
 async function handleAction(user, action, params) {
 	if (!actions[action])

@@ -1,5 +1,5 @@
 async function handleAction(user, action, params) {
-	const { actions } = await import('./src/server/actions.mjs')
+	const { actions } = await import('./src/actions.mjs')
 	if (!actions[action])
 		throw new Error(`Unknown action: ${action}. Available actions: ${Object.keys(actions).join(', ')}`)
 

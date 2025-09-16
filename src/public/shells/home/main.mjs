@@ -1,4 +1,4 @@
-import { setEndpoints } from './src/server/endpoints.mjs'
+import { setEndpoints } from './src/endpoints.mjs'
 
 export default {
 	info: {

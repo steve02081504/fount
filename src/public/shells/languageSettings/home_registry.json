@@ -14,6 +14,9 @@
 				"de-DE": {
 					"title": "Spracheinstellungen"
 				},
+				"emoji": {
+					"title": "🗣️⚙️"
+				},
 				"es-ES": {
 					"title": "Configuración de idiomas"
 				},
@@ -59,7 +62,7 @@
 			},
 			"level": 3,
 			"url": "/shells/languageSettings",
-			"button": "<img src=\"https://api.iconify.design/material-symbols/language.svg\" class=\"text-icon\"/>"
+			"button": "<img src=\"https://api.iconify.design/heroicons/language.svg\" class=\"text-icon\"/>"
 		}
 	]
 }

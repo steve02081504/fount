@@ -50,7 +50,11 @@ export async function New(context) {
 	const imageFile = files?.image
 	partData.has_avatar = !!imageFile
 
-	if (imageFile) await fs.writeFile(path.join(targetPath, 'image.png'), imageFile.data)
+	if (imageFile) {
+		const publicDir = path.join(targetPath, 'public')
+		await fs.ensureDir(publicDir)
+		await fs.writeFile(path.join(publicDir, 'image.png'), imageFile.data)
+	}
 
 	// Create partdata.json
 	const templateDataPath = path.join(templateDir, 'template_partdata.json')

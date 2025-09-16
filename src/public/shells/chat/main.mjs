@@ -1,12 +1,12 @@
 import { hosturl } from '../../../server/server.mjs'
 
-import { setEndpoints } from './src/server/endpoints.mjs'
-import { cleanFilesInterval } from './src/server/files.mjs'
+import { setEndpoints } from './src/endpoints.mjs'
+import { cleanFilesInterval } from './src/files.mjs'
 
 let loading_count = 0
 
 async function handleAction(user, action, params) {
-	const { actions } = await import('./src/server/actions.mjs')
+	const { actions } = await import('./src/actions.mjs')
 	if (!actions[action])
 		throw new Error(`Unknown action: ${action}. Available actions: ${Object.keys(actions).join(', ')}`)
 

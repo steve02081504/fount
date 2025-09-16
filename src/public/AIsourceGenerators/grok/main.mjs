@@ -1,6 +1,6 @@
 // main.mjs
 import { escapeRegExp } from '../../../scripts/escape.mjs'
-import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/server/prompt_struct.mjs'
+import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/prompt_struct.mjs'
 
 import { GrokAPI } from './grokAPI.mjs'
 
