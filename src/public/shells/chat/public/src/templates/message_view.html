@@ -1,13 +1,13 @@
-<div class="chat-message chat chat-start mb-4" id="message-${safeTimeStamp}" data-template-type="message">
-	<div class="chat-image avatar">
+<div class="chat-message chat chat-start mb-4 group" id="message-${safeTimeStamp}" data-template-type="message">
+	<div class="chat-image avatar mr-2.5 -mb-2.5">
 		<div class="w-10 mask mask-squircle rounded-full">
 			<img src="${avatar}" alt="${name}" width="100%" height="100%" />
 		</div>
 	</div>
-	<div class="chat-bubble relative ${
+	<div class="chat-bubble relative p-[15px] min-w-[150px] ${
 		content.match(/<(?<tag>video|iframe)\b[^>]*>.*?<\/\k<tag>>/gs) ? 'w-full' : ''
 	}">
-		<div class="button-group join">
+		<div class="button-group join absolute top-1 right-1 mt-[3px]">
 			<button class="edit-button btn btn-xs btn-primary join-item" data-i18n="chat.messageView.buttons.edit">
 				<img src="https://api.iconify.design/line-md/edit.svg" data-i18n="chat.messageView.buttons.editIcon" />
 			</button>
@@ -47,7 +47,7 @@
 				</a>
 			</li>
 		</ul>
-		<div class="text-sm font-bold text-primary flex items-center gap-2">
+		<div class="text-sm font-bold text-primary flex items-center gap-2 mb-[5px]">
 			${name}
 		</div>
 		<div class="message-content markdown-body mt-1">
@@ -55,7 +55,7 @@
 		</div>
 		<div class="attachments"></div>
 	</div>
-	<div class="chat-footer opacity-50">
+	<div class="chat-footer opacity-50 mt-[5px]">
 		${time_stamp}
 	</div>
 </div>
