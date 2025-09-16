@@ -148,6 +148,7 @@ async function loadGeneratorAddons(generatorName) {
 
 	try {
 		const { html, js: displayScript } = await getConfigDisplay(generatorName)
+		await initTranslations() // refresh translations for dynamic content maybe used in part i18n data
 		generatorDisplayContainer.innerHTML = html
 		await svgInliner(i18nElement(generatorDisplayContainer))
 		if (displayScript) {
