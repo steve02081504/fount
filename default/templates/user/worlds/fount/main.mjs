@@ -69,6 +69,10 @@ export default {
 			name: 'fount 預設之世',
 			description: 'fount 繪呈之援，以導化身之儀觀',
 		},
+		'emoji': {
+			name: '⛲🌐',
+			description: 'ℹ️👤🧑‍🎨🖼️➡️🧭',
+		},
 	},
 	Load: stat => {
 		username = stat.username // 获取用户名

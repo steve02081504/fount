@@ -14,6 +14,9 @@
 				"de-DE": {
 					"title": "Komponentenkonfiguration"
 				},
+				"emoji": {
+					"title": "🧩⚙️"
+				},
 				"es-ES": {
 					"title": "Configuración de Componente"
 				},
@@ -76,6 +79,9 @@
 				},
 				"de-DE": {
 					"title": "Konfiguration"
+				},
+				"emoji": {
+					"title": "⚙️"
 				},
 				"es-ES": {
 					"title": "Configuración"

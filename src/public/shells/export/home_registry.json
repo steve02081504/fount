@@ -14,6 +14,9 @@
 				"de-DE": {
 					"title": "Part exportieren"
 				},
+				"emoji": {
+					"title": "🧩📤"
+				},
 				"es-ES": {
 					"title": "Exportar Parte"
 				},
@@ -76,6 +79,9 @@
 				},
 				"de-DE": {
 					"title": "Exportieren"
+				},
+				"emoji": {
+					"title": "📤"
 				},
 				"es-ES": {
 					"title": "Exportar"
