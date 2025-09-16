@@ -720,6 +720,9 @@ fi
 # 函数: 升级 fount
 fount_upgrade() {
 	ensure_dependencies "upgrade" || return 0
+	if git config --global --get-all safe.directory | grep -q -xF "$FOUNT_DIR"; then : else
+		git config --global --add safe.directory "$FOUNT_DIR"
+	fi
 	if [ ! -d "$FOUNT_DIR/.git" ]; then
 		echo "fount's git repository not found, initializing a new one..."
 		git -C "$FOUNT_DIR" init -b master
@@ -990,10 +993,14 @@ remove)
 	done
 	PATH=$(echo "$PATH" | tr ':' '\n' | grep -v "$FOUNT_DIR/path" | tr '\n' ':' | sed 's/:*$//')
 	export PATH
-	echo "fount removed from PATH."
 
 	echo "Removing fount:// protocol handler..."
 	remove_desktop_shortcut
+
+	echo "Removing fount from git safe.directory..."
+	if command -v git &>/dev/null && git config --global --get-all safe.directory | grep -q -xF "$FOUNT_DIR"; then
+		git config --global --unset safe.directory "$FOUNT_DIR"
+	fi
 
 	echo "Removing Installed system packages..."
 	if [[ $IN_TERMUX -eq 1 ]]; then

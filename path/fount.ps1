@@ -336,6 +336,9 @@ function fount_upgrade {
 		Write-Host "Git is not installed, skipping git pull"
 		return
 	}
+	if ($FOUNT_DIR -in $(git config --global --get-all safe.directory)) {} else {
+		git config --global --add safe.directory "$FOUNT_DIR"
+	}
 	if (!(Test-Path -Path "$FOUNT_DIR/.git")) {
 		Write-Host "fount's git repository not found, initializing a new one..."
 		git -C "$FOUNT_DIR" init -b master
@@ -690,7 +693,12 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 	$UserPath = $UserPath | Where-Object { !$_.StartsWith("$FOUNT_DIR") }
 	$UserPath = $UserPath -join ';'
 	[System.Environment]::SetEnvironmentVariable('PATH', $UserPath, [System.EnvironmentVariableTarget]::User)
-	Write-Host "fount removed from PATH."
+
+	# Remove fount from git safe.directory
+	Write-Host "Removing fount from git safe.directory..."
+	if ((Get-Command git -ErrorAction Ignore) -and ($FOUNT_DIR -in $(git config --global --get-all safe.directory))) {
+		git config --global --unset safe.directory "$FOUNT_DIR"
+	}
 
 	# Remove fount-pwsh from PowerShell Profile
 	Write-Host "Removing fount-pwsh from PowerShell Profile..."
