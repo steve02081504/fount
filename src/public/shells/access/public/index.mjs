@@ -1,4 +1,4 @@
-import qrcode from 'https://esm.run/qrcode-generator'
+import qrcode from 'https://esm.sh/qrcode-generator'
 
 import {
 	redirectToLoginInfo,

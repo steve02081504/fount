@@ -1,8 +1,8 @@
-import { ClipboardAddon } from 'https://esm.run/@xterm/addon-clipboard'
-import { FitAddon } from 'https://esm.run/@xterm/addon-fit'
-import { WebLinksAddon } from 'https://esm.run/@xterm/addon-web-links'
-import chroma from 'https://esm.run/chroma-js'
-import { Terminal } from 'https://esm.run/xterm'
+import { ClipboardAddon } from 'https://esm.sh/@xterm/addon-clipboard'
+import { FitAddon } from 'https://esm.sh/@xterm/addon-fit'
+import { WebLinksAddon } from 'https://esm.sh/@xterm/addon-web-links'
+import chroma from 'https://esm.sh/chroma-js'
+import { Terminal } from 'https://esm.sh/xterm'
 
 import { onThemeChange } from './theme.mjs'
 

@@ -1,4 +1,4 @@
-import chroma from 'https://esm.run/chroma-js'
+import chroma from 'https://esm.sh/chroma-js'
 
 'use strict'
 

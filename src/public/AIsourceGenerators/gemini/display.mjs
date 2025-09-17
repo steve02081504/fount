@@ -18,7 +18,7 @@ return async ({ data, containers }) => {
 	div.innerHTML = `<div>${geti18n('aisource_editor.common_config_interface.loadingModels')}</div>`
 
 	try {
-		const { GoogleGenAI } = await import('https://esm.run/@google/genai')
+		const { GoogleGenAI } = await import('https://esm.sh/@google/genai')
 
 		const ai = new GoogleGenAI({
 			apiKey: apikey,

@@ -4,7 +4,7 @@
  * @param {string} secret The secret to derive the key from (e.g., fount UUID).
  * @returns {Promise<CryptoKey>} The derived CryptoKey.
  */
-import CryptoJS from 'https://esm.run/crypto-js'
+import CryptoJS from 'https://esm.sh/crypto-js'
 
 async function getKey(secret) {
 	const salt = CryptoJS.enc.Utf8.parse('fount-credential-salt')

@@ -1,5 +1,5 @@
 /** @type {import('npm:@sentry/browser')} */
-import * as Sentry from 'https://esm.run/@sentry/browser'
+import * as Sentry from 'https://esm.sh/@sentry/browser'
 
 import { svgInliner } from './scripts/svgInliner.mjs'
 

@@ -1,4 +1,4 @@
-import zxcvbn from 'https://esm.run/zxcvbn'
+import zxcvbn from 'https://esm.sh/zxcvbn'
 
 import { retrieveAndDecryptCredentials, redirectToLoginInfo } from '../scripts/credentialManager.mjs'
 import { ping, generateVerificationCode, login, register } from '../scripts/endpoints.mjs'

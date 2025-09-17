@@ -1,5 +1,5 @@
 import { animateSVG } from 'https://cdn.jsdelivr.net/gh/steve02081504/animate-SVG/index.mjs'
-import * as Sentry from 'https://esm.run/@sentry/browser'
+import * as Sentry from 'https://esm.sh/@sentry/browser'
 
 import { setPreRender, setTheme, theme_now } from '../../base.mjs'
 import { isFountServiceAvailable, saveFountHostUrl, getFountHostUrl, pingFount } from '../../scripts/fountHostGetter.mjs'
