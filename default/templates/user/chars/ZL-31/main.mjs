@@ -5,8 +5,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { __dirname } from '../../../../../src/server/base.mjs'
 import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/prompt_struct.mjs'
+import { __dirname } from '../../../../../src/server/base.mjs'
 import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
 
 // AI源的实例

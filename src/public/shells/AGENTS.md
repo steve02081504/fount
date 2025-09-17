@@ -31,27 +31,27 @@ The standard file structure is as follows. Note the clear separation between the
 
 ### Key File & Directory Responsibilities
 
-1.  **`main.mjs` (Backend Entry Point)**
-    - **Role**: The Shell's manifest and lifecycle manager. This is how the fount `parts_loader` interacts with your Shell.
-    - **`info`**: Metadata about the shell (name, description, author, etc.).
-    - **`Load({ router })`**: This function is **required**. It's called when the Shell is loaded. Its primary job is to receive an Express `router` instance and use it to register the Shell's backend routes (both HTTP and WebSocket).
-    - **`interfaces.invokes.IPCInvokeHandler`**: (Advanced) A powerful function that handles direct, non-HTTP server-side actions. It's ideal for complex operations that don't fit the simple request/response model, such as the AI-driven logic in `shellassist`.
+1. **`main.mjs` (Backend Entry Point)**
+   - **Role**: The Shell's manifest and lifecycle manager. This is how the fount `parts_loader` interacts with your Shell.
+   - **`info`**: Metadata about the shell (name, description, author, etc.).
+   - **`Load({ router })`**: This function is **required**. It's called when the Shell is loaded. Its primary job is to receive an Express `router` instance and use it to register the Shell's backend routes (both HTTP and WebSocket).
+   - **`interfaces.invokes.IPCInvokeHandler`**: (Advanced) A powerful function that handles direct, non-HTTP server-side actions. It's ideal for complex operations that don't fit the simple request/response model, such as the AI-driven logic in `shellassist`.
 
-2.  **`public/` (Frontend Directory)**
-    - **Role**: Contains all static assets for the user interface. These files are served directly to the user's browser.
-    - **`index.html`**: The main page structure. It should include standard fount headers (`/base.css`, `/preload.mjs`, `/base.mjs`).
-    - **`index.mjs`**: The core frontend logic. It should import and use common scripts from `@src/pages/scripts/` for tasks like theming (`applyTheme`), translation (`initTranslations`), and using pre-built components (`setTerminal`).
+2. **`public/` (Frontend Directory)**
+   - **Role**: Contains all static assets for the user interface. These files are served directly to the user's browser.
+   - **`index.html`**: The main page structure. It should include standard fount headers (`/base.css`, `/preload.mjs`, `/base.mjs`).
+   - **`index.mjs`**: The core frontend logic. It should import and use common scripts from `@src/pages/scripts/` for tasks like theming (`applyTheme`), translation (`initTranslations`), and using pre-built components (`setTerminal`).
 
-3.  **`src/` (Backend Directory)**
-    - **Role**: Contains all the Node.js backend logic for the shell.
-    - **`endpoints.mjs`**: Exports a `setEndpoints(router)` function. This is where you define all your API endpoints (`router.get`, `router.post`) and WebSocket handlers (`router.ws`). This keeps all routing logic organized in one place.
+3. **`src/` (Backend Directory)**
+   - **Role**: Contains all the Node.js backend logic for the shell.
+   - **`endpoints.mjs`**: Exports a `setEndpoints(router)` function. This is where you define all your API endpoints (`router.get`, `router.post`) and WebSocket handlers (`router.ws`). This keeps all routing logic organized in one place.
 
-4.  **`home_registry.json` (Home Shell Integration)**
-    - **Role**: Makes your Shell discoverable and accessible from the main fount `home` shell UI.
-    - `home_function_buttons`: Adds a button to the main menu on the `home` shell that links to your Shell's `index.html`.
+4. **`home_registry.json` (Home Shell Integration)**
+   - **Role**: Makes your Shell discoverable and accessible from the main fount `home` shell UI.
+   - `home_function_buttons`: Adds a button to the main menu on the `home` shell that links to your Shell's `index.html`.
 
-5.  **`argument_completer.ps1` (CLI Integration)**
-    - **Role**: Provides context-aware command-line completion for users interacting with your shell via the fount CLI (`fount run shells ...`). This enhances usability for power users.
+5. **`argument_completer.ps1` (CLI Integration)**
+   - **Role**: Provides context-aware command-line completion for users interacting with your shell via the fount CLI (`fount run shells ...`). This enhances usability for power users.
 
 ---
 
