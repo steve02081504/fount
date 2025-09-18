@@ -1,4 +1,8 @@
 {
-	"contextFileName": "AGENTS.md",
-	"autoAccept": true
+	"tools": {
+		"autoAccept": true
+	},
+	"context": {
+		"fileName": "AGENTS.md"
+	}
 }
