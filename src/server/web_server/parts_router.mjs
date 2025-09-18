@@ -1,6 +1,6 @@
 import express from 'npm:express'
-import { Router as WsAbleRouter } from 'npm:websocket-express'
 
+import { WsAbleRouter } from '../../scripts/WsAbleRouter.mjs'
 import { getUserByReq } from '../auth.mjs'
 import { partsList } from '../managers/base.mjs'
 
