@@ -11,7 +11,7 @@ import { login, register, logout, authenticate, getUserByReq, getUserDictionary,
 import { __dirname } from '../base.mjs'
 import { processIPCCommand } from '../ipc_server/index.mjs'
 import { partsList } from '../managers/base.mjs'
-import { getLoadedPartList, getPartList, loadPart } from '../managers/index.mjs'
+import { getLoadedPartList, getPartList } from '../managers/index.mjs'
 import { getDefaultParts, getPartDetails, setDefaultPart } from '../parts_loader.mjs'
 import { hosturl, skip_report, currentGitCommit, config, save_config } from '../server.mjs'
 
@@ -19,6 +19,27 @@ import { hosturl, skip_report, currentGitCommit, config, save_config } from '../
  * @param {import('npm:express').Router} router
  */
 export function registerEndpoints(router) {
+	router.ws('/ws/test/echo', (ws, req) => {
+		console.log('WebSocket test connection established.')
+		ws.on('message', message => {
+			console.log('Received from /ws/test/echo:', message.toString())
+			ws.send(message.toString())
+		})
+		ws.on('close', () => {
+			console.log('WebSocket test connection closed.')
+		})
+	})
+	router.ws('/ws/test/auth_echo', authenticate, (ws, req) => {
+		console.log('WebSocket auth_test connection established.')
+		ws.on('message', message => {
+			console.log('Received from /ws/test/auth_echo:', message.toString())
+			ws.send(message.toString())
+		})
+		ws.on('close', () => {
+			console.log('WebSocket auth_test connection closed.')
+		})
+	})
+
 	router.get('/api/test/error', (req, res) => {
 		throw skip_report(new Error('test error'))
 	})
@@ -175,28 +196,7 @@ export function registerEndpoints(router) {
 			const details = await getPartDetails(username, part, name, nocache)
 			res.status(200).json(details)
 		})
-		const autoloader = async (req, res, next) => {
-			const path = decodeURIComponent(req.path)
-			const partName = (() => {
-				let patharr = path.split('/')
-				const partIndex = patharr.indexOf(part)
-				patharr = patharr.slice(partIndex + 1)
-				return patharr[0]
-			})()
-			if (!partName) return next()
-			const pathext = path.split('.').pop()
-			if (pathext != path && !['html', 'js', 'mjs', ''].includes(pathext)) return next() // 跳过纯资源路径
-			try {
-				const { username } = await getUserByReq(req)
-				const loader = loadPart(username, part, partName)
-				if (path.startsWith('/api/') || path.startsWith('/ws/')) await loader
-			} catch (e) { }
-
-			return next()
-		}
-		for (const method of ['get', 'post', 'delete', 'patch', 'put'])
-			router[method](new RegExp('^/(api|ws)/' + part + '/'), authenticate, autoloader)
-		router.get(new RegExp('^/' + part + '/'), authenticate, autoloader, async (req, res, next) => {
+		router.get(new RegExp('^/' + part + '/'), authenticate, async (req, res, next) => {
 			const { username } = await getUserByReq(req)
 			const oripath = decodeURIComponent(req.path)
 			const patharr = oripath.split('/')

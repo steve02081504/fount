@@ -122,13 +122,13 @@ import { handleTerminalConnection } from './terminal_ws.mjs'; // Example from sh
 
 export function setEndpoints(router) {
   // Standard HTTP endpoint
-  router.get('/api/shells/my-new-shell/info', (req, res) => {
+  router.get('/api/shells/my-new-shell/info', authenticate, (req, res) => {
     res.status(200).json({ message: 'Welcome to my new shell!' });
   });
 
   // WebSocket endpoint for interactive terminal
   // The 'ws' method is added by the 'express-ws' middleware used in fount
-  router.ws('/ws/shells/my-new-shell/terminal', (ws, req) => {
+  router.ws('/ws/shells/my-new-shell/terminal', authenticate, (ws, req) => {
     console.log('WebSocket connection established!');
     // The actual terminal logic would be in a separate module
     // handleTerminalConnection(ws); // See shellassist/src/terminal_ws.mjs

@@ -115,19 +115,31 @@ export async function init(start_config) {
 		console.freshLineI18n('server start', 'fountConsole.server.starting')
 		await new Promise((resolve, reject) => {
 			let appPromise
+			const getApp = () => appPromise ??= import('./web_server/index.mjs').then(({ app }) => {
+				app.set('trust proxy', trust_proxy ?? 'loopback')
+				server.removeListener('request', requestListener)
+				server.on('request', app)
+				server.removeListener('upgrade', upgradeListener)
+				server.on('upgrade', app.ws_on_upgrade)
+				return app
+			})
 			const requestListener = async (req, res) => {
 				try {
-					const app = await (appPromise ??= import('./web_server/index.mjs').then(({ app }) => {
-						app.set('trust proxy', trust_proxy ?? 'loopback')
-						server.removeListener('request', requestListener)
-						server.on('request', app)
-						return app
-					}))
+					const app = await getApp()
 					return app(req, res)
 				} catch (e) {
 					console.error(e)
 					res.statusCode = 500
 					res.end('Internal Server Error: Could not load web server.')
+				}
+			}
+			const upgradeListener = async (req, socket, head) => {
+				try {
+					const app = await getApp()
+					return app.ws_on_upgrade(req, socket, head)
+				} catch (e) {
+					console.error(e)
+					socket.end()
 				}
 			}
 
@@ -150,6 +162,7 @@ export async function init(start_config) {
 					resolve()
 				})
 
+			server.on('upgrade', upgradeListener)
 			server.on('error', reject)
 		})
 

@@ -46,25 +46,25 @@ export function setEndpoints(router) {
 		res.status(200).json({ chatid: await newChat(username) })
 	})
 
-	router.post('/api/shells/chat/addchar', async (req, res) => {
+	router.post('/api/shells/chat/addchar', authenticate, async (req, res) => {
 		res.status(200).json(await addchar(req.body.chatid, req.body.charname))
 	})
 
-	router.post('/api/shells/chat/removechar', async (req, res) => {
+	router.post('/api/shells/chat/removechar', authenticate, async (req, res) => {
 		await removechar(req.body.chatid, req.body.charname)
 		res.status(200).json({ message: 'removechar ok' })
 	})
 
-	router.post('/api/shells/chat/setworld', async (req, res) => {
+	router.post('/api/shells/chat/setworld', authenticate, async (req, res) => {
 		res.status(200).json(await setWorld(req.body.chatid, req.body.worldname))
 	})
 
-	router.post('/api/shells/chat/setpersona', async (req, res) => {
+	router.post('/api/shells/chat/setpersona', authenticate, async (req, res) => {
 		await setPersona(req.body.chatid, req.body.personaname)
 		res.status(200).json({ message: 'setpersona ok' })
 	})
 
-	router.post('/api/shells/chat/triggercharreply', async (req, res) => {
+	router.post('/api/shells/chat/triggercharreply', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		res.status(200).json(await (await triggerCharReply(req.body.chatid, req.body.charname))?.toData?.(username))
 	})
@@ -91,13 +91,13 @@ export function setEndpoints(router) {
 		res.status(200).json(entry)
 	})
 
-	router.post('/api/shells/chat/deletemessage', async (req, res) => {
+	router.post('/api/shells/chat/deletemessage', authenticate, async (req, res) => {
 		const { chatid, index } = req.body
 		await deleteMessage(chatid, index)
 		res.status(200).json({ message: 'deletemessage ok' })
 	})
 
-	router.post('/api/shells/chat/editmessage', async (req, res) => {
+	router.post('/api/shells/chat/editmessage', authenticate, async (req, res) => {
 		const { chatid, index, content } = req.body
 		content.files = content?.files?.map(file => ({
 			...file,
@@ -131,12 +131,12 @@ export function setEndpoints(router) {
 		res.status(200).json(await GetChatLogLength(chatid))
 	})
 
-	router.get('/api/shells/chat/getpersonaname', async (req, res) => {
+	router.get('/api/shells/chat/getpersonaname', authenticate, async (req, res) => {
 		const { chatid } = req.query
 		res.status(200).json(await GetUserPersonaName(chatid))
 	})
 
-	router.get('/api/shells/chat/getworldname', async (req, res) => {
+	router.get('/api/shells/chat/getworldname', authenticate, async (req, res) => {
 		const { chatid } = req.query
 		res.status(200).json(await GetWorldName(chatid))
 	})

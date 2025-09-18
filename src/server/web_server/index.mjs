@@ -6,13 +6,14 @@ import fileUpload from 'npm:express-fileupload'
 
 import { console } from '../../scripts/i18n.mjs'
 import { sentrytunnel } from '../../scripts/sentrytunnel.mjs'
+import { WsAbleApp, WsAbleRouter } from '../../scripts/WsAbleRouter.mjs'
 import { auth_request } from '../auth.mjs'
 import { __dirname } from '../base.mjs'
 
 import { PartsRouter } from './parts_router.mjs'
 
-export const app = express()
-const mainRouter = express.Router()
+export const app = WsAbleApp()
+const mainRouter = WsAbleRouter()
 const FinalRouter = express.Router()
 
 app.use(mainRouter)
