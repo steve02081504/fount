@@ -13,6 +13,7 @@ import { __dirname } from '../base.mjs'
 import { PartsRouter } from './parts_router.mjs'
 
 export const app = WsAbleApp()
+app.disable('x-powered-by')
 const mainRouter = WsAbleRouter()
 const FinalRouter = express.Router()
 
@@ -20,12 +21,15 @@ app.use(mainRouter)
 app.use(PartsRouter)
 app.use(FinalRouter)
 
-mainRouter.use(async (req, res, next) => {
+mainRouter.use((req, res, next) => {
 	if (!(req.path.endsWith('/heartbeat') || req.path.endsWith('/api/sentrytunnel')))
 		console.logI18n('fountConsole.web.requestReceived', {
 			method: req.method + ' '.repeat(Math.max(0, 8 - req.method.length)),
 			url: req.url
 		})
+	if (new Date().getMonth() === 3 && new Date().getDate() === 1)
+		res.setHeader('X-Powered-By', 'Skynet/0.2')
+	else res.setHeader('X-Powered-By', 'PHP/4.2.0')
 	return next()
 })
 function diff_if_auth(if_auth, if_not_auth) {
