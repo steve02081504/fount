@@ -52,7 +52,7 @@ export function usingTemplates(path) {
 	templatePath = (base_dir + '/' + path).replace(/\/+/g, '/').replace(/\/$/g, '')
 }
 
-export async function renderTemplate(template, data) {
+export async function renderTemplate(template, data = {}) {
 	data.geti18n ??= geti18n
 	template_cache[template] ??= fetch(templatePath + '/' + template + '.html').then(response => response.text())
 	let html = template_cache[template] = await template_cache[template]
@@ -80,7 +80,7 @@ export async function renderTemplate(template, data) {
 	return i18nElement(await svgInliner(createDOMFromHtmlString(result)))
 }
 
-export async function renderTemplateAsHtmlString(template, data) {
+export async function renderTemplateAsHtmlString(template, data = {}) {
 	const html = await renderTemplate(template, data)
 	return html.outerHTML
 }
