@@ -938,6 +938,27 @@
 			"passwordLabel": "密碼:",
 			"confirmButton": "確認",
 			"cancelButton": "取消"
+		},
+		"apiKeys": {
+			"title": "API 密鑰",
+			"description": "管理外部應用程式的 API 密鑰。",
+			"descriptionPlaceholder": "新密鑰描述",
+			"createButton": "創建",
+			"noKeysFound": "未找到任何 API 密鑰。",
+			"refreshButtonTitle": "刷新列表",
+			"keyDetails": "描述: ${description} | 創建於: ${createdAt} | 最後使用: ${lastUsed}",
+			"neverUsed": "從未使用",
+			"revokeButton": "撤銷",
+			"revokeConfirm": "您確定要撤銷此 API 密鑰嗎？",
+			"revokeSuccess": "API 密鑰已成功撤銷。",
+			"errorDescriptionRequired": "需要提供描述。",
+			"createSuccess": "API 密鑰創建成功。"
+		},
+		"newApiKey": {
+			"title": "新 API 密鑰已創建",
+			"warning": "請複制您的新 API 密鑰。您將無法再次看到它！",
+			"copyButtonTitle": "複製新 API 密鑰",
+			"closeButton": "我已復制我的密鑰"
 		}
 	},
 	"badges_maker": {
@@ -1133,5 +1154,43 @@
 				"retry": "重試"
 			}
 		}
+	},
+	"browser_integration": {
+		"title": "瀏覽器集成",
+		"header": "瀏覽器集成",
+		"description": "為了讓您的 fount 角色能夠與網頁互動，需要安裝此瀏覽器集成腳本。它充當角色與瀏覽器之間的橋樑，使他們能夠查看頁面內容並執行操作。",
+		"install_script_title": "安裝腳本",
+		"install_script_description": "點擊下面的按鈕來安裝瀏覽器集成腳本。您必須先安裝一個像油猴 (Tampermonkey) 一樣的用戶腳本管理器。",
+		"install_button": "安裝",
+		"install_from_url_tip": "瀏覽器不允許你安裝？複製這個網址並在油猴擴充功能中從url中導入腳本。",
+		"what_is_manager": "什麼是油猴腳本管理器？",
+		"manager_explanation": "油猴腳本管理器是一個瀏覽器擴展，允許您安裝和運行修改網頁的腳本。要使用 fount 集成腳本，您需要其中一個擴展。",
+		"popular_managers": "熱門選擇：",
+		"csp_warning": "你可能需要安裝擴充功能停用CSP來使得集成功能正常運行，對於chrome可以使用<a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"link\">這個擴充功能</a>。",
+		"connected_pages_title": "已連接的頁面",
+		"no_pages_connected": {
+			"title": "暫無連接",
+			"description": "請先安裝腳本，然後在其他瀏覽器標籤頁中訪問任意網站，這裡將自動顯示。"
+		},
+		"fetch_pages_error": "加載已連接頁面列表失敗。",
+		"page_title": "頁面標題",
+		"page_url": "URL",
+		"page_status": "狀態",
+		"status_focused": "當前窗口",
+		"status_unfocused": "背景",
+		"copy_button": "複製",
+		"copied_message": "已復製到剪貼簿"
+	},
+	"browser_integration_script": {
+		"hostChange": {
+			"securityWarningTitle": "--- fount 安全警告 ---",
+			"message": "當前頁面 (\"${origin}\") 正試圖將您的 fount 主機地址更改為:\n\n\"${newHost}\"\n\n警告：批准此操作將允許新主機完全控制您的瀏覽器集成功能，可能導致敏感資訊洩露或賬戶被盜用。\n只有在您確信這是您本人操作（例如，遷移 fount 伺服器）時才應批准。\n\n您確定要允許這次更改嗎？",
+			"uuidMismatchError": "fount 安全錯誤：主機 ${newHost} 的標識 (UUID) 與您現有的不匹配。操作已取消。",
+			"verificationError": "fount 安全錯誤：無法驗證新的主機 \"${newHost}\"。請檢查地址是否正確以及服務是否正在運行。"
+		},
+		"update": {
+			"prompt": "fount 瀏覽器集成腳本的新版本可用。是否現在打開更新頁面？"
+		},
+		"csp_warning": "fount 瀏覽器集成腳本檢測到頁面存在CSP策略，這可能導致集成腳本無法正常運行。請考慮安裝擴充功能停用CSP。"
 	}
 }

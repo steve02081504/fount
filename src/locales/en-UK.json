@@ -938,6 +938,27 @@
 			"passwordLabel": "Password:",
 			"confirmButton": "Confirm",
 			"cancelButton": "Cancel"
+		},
+		"apiKeys": {
+			"title": "API Key",
+			"description": "Manage the API key for external applications.",
+			"descriptionPlaceholder": "New key description",
+			"createButton": "create",
+			"noKeysFound": "No API keys were found.",
+			"refreshButtonTitle": "Refresh the list",
+			"keyDetails": "Description: ${description} | Created in: ${createdAt} | Last used: ${lastUsed}",
+			"neverUsed": "Never used",
+			"revokeButton": "Revoke",
+			"revokeConfirm": "Are you sure you want to revoke this API key?",
+			"revokeSuccess": "The API key has been successfully revoked.",
+			"errorDescriptionRequired": "A description is required.",
+			"createSuccess": "The API key was created successfully."
+		},
+		"newApiKey": {
+			"title": "New API key has been created",
+			"warning": "Please copy your new API key. You won't be able to see it again!",
+			"copyButtonTitle": "Copy new API key",
+			"closeButton": "I've copied my key"
 		}
 	},
 	"badges_maker": {
@@ -1133,5 +1154,43 @@
 				"retry": "Try again"
 			}
 		}
+	},
+	"browser_integration": {
+		"title": "Browser integration",
+		"header": "Browser integration",
+		"description": "In order for your fount role to interact with the web page, you need to install this browser integration script. It acts as a bridge between the character and the browser, allowing them to view the page content and perform actions.",
+		"install_script_title": "Installation script",
+		"install_script_description": "Click the button below to install the browser integration script. You must first install a userscript manager.",
+		"install_button": "Install",
+		"install_from_url_tip": "Does your browser not allow you to install it? Copy this URL and import the script from the url in the Tampermonkey plugin.",
+		"what_is_manager": "What is a userscript manager?",
+		"manager_explanation": "A userscript manager is a browser extension that allows you to install and run scripts that modify web pages. To use the fount integration script, you need one of the extensions.",
+		"popular_managers": "Popular Choices:",
+		"csp_warning": "You may need to install the plugin to turn off CSP to make the integration function work properly. For chrome you can use <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"link\">this plugin</a>.",
+		"connected_pages_title": "Connected page",
+		"no_pages_connected": {
+			"title": "No connection yet",
+			"description": "Please install the script first, and then visit any website in other browser tabs, which will be automatically displayed here."
+		},
+		"fetch_pages_error": "Failed to load the linked page list.",
+		"page_title": "Page title",
+		"page_url": "URL",
+		"page_status": "Status",
+		"status_focused": "Current window",
+		"status_unfocused": "In the background",
+		"copy_button": "Copy",
+		"copied_message": "Copied to clipboard"
+	},
+	"browser_integration_script": {
+		"hostChange": {
+			"securityWarningTitle": "--- fount Safety Warning ---",
+			"message": "The current page (\"${origin}\") is trying to change your fount host address to:\n\n\"${newHost}\"\n\nWarning: Approving this action will allow the new host to fully control your browser integration features, which may lead to sensitive information leakage or account theft.\nApproval should only be made if you are sure that this is your own operation (for example, migrating a fount server).\n\nAre you sure you want to allow this change?",
+			"uuidMismatchError": "fount security error: The identity (UUID) of host ${newHost} does not match your existing one. The operation has been cancelled.",
+			"verificationError": "fount security error: Unable to verify new host \"${newHost}\". Please check if the address is correct and if the service is running."
+		},
+		"update": {
+			"prompt": "A new version of the fount browser integration script is available. Is the update page now open?"
+		},
+		"csp_warning": "The fount browser integration script detects that the CSP policy exists on the page, which may cause the integration script to not work properly. Please consider installing the plugin to close the CSP."
 	}
 }

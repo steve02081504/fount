@@ -216,7 +216,6 @@ export function setOpenAIAPIEndpoints(router) {
 			if (!model)
 				return res.status(400).json({ error: { message: 'Model name not specified in path or request body.', type: 'invalid_request_error', code: 'parameter_missing' } })
 
-
 			// Call the core logic function
 			await handleCompletionsRequest(req, res, username, model)
 		} catch (error) {

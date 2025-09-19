@@ -150,7 +150,7 @@
 			"description2": "Aquí tienes un minijuego para pasar el rato."
 		},
 		"data_showcase": {
-			"title_prefix": "fount es la ",
+			"title_prefix": "fount es el más ",
 			"adjectives": [
 				"más ampliable",
 				"más potente",
@@ -938,6 +938,27 @@
 			"passwordLabel": "Contraseña:",
 			"confirmButton": "Confirmar",
 			"cancelButton": "Cancelar"
+		},
+		"apiKeys": {
+			"title": "Clave de API",
+			"description": "Administre la clave API para aplicaciones externas.",
+			"descriptionPlaceholder": "Nueva descripción clave",
+			"createButton": "crear",
+			"noKeysFound": "No se encontraron claves API.",
+			"refreshButtonTitle": "Actualiza la lista",
+			"keyDetails": "Descripción: ${description} | Creado en: ${createdAt} | Último usado: ${lastUsed}",
+			"neverUsed": "Nunca usado",
+			"revokeButton": "Revocar",
+			"revokeConfirm": "¿Estás seguro de que quieres revocar esta clave API?",
+			"revokeSuccess": "La clave API ha sido revocada con éxito.",
+			"errorDescriptionRequired": "Se requiere una descripción.",
+			"createSuccess": "La clave API se creó con éxito."
+		},
+		"newApiKey": {
+			"title": "Se ha creado una nueva clave API",
+			"warning": "Copie su nueva clave API. ¡No podrás volver a verlo!",
+			"copyButtonTitle": "Copiar nueva clave API",
+			"closeButton": "He copiado mi clave"
 		}
 	},
 	"badges_maker": {
@@ -1133,5 +1154,43 @@
 				"retry": "Reintentar"
 			}
 		}
+	},
+	"browser_integration": {
+		"title": "Integración del navegador",
+		"header": "Integración del navegador",
+		"description": "Para que su papel de fount interactúe con la página web, debe instalar este script de integración del navegador. Actúa como un puente entre el personaje y el navegador, lo que les permite ver el contenido de la página y realizar acciones.",
+		"install_script_title": "Script de instalación",
+		"install_script_description": "Haga clic en el botón de abajo para instalar el script de integración del navegador. Primero debe instalar un gestor de scripts de usuario como Tampermonkey.",
+		"install_button": "Instalar",
+		"install_from_url_tip": "¿Su navegador no le permite instalarlo? Copie esta URL e importe el script de la URL en el complemento Tampermonkey.",
+		"what_is_manager": "¿Qué es un gestor de scripts de usuario?",
+		"manager_explanation": "Un gestor de scripts de usuario es una extensión del navegador que le permite instalar y ejecutar scripts que modifican las páginas web. Para usar el script de integración de fount, necesita una de las extensiones.",
+		"popular_managers": "Opciones populares:",
+		"csp_warning": "Es posible que deba instalar el complemento para desactivar CSP para que la función de integración funcione correctamente. Para Chrome, puede usar <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"link\">este complemento</a>.",
+		"connected_pages_title": "Página conectada",
+		"no_pages_connected": {
+			"title": "No hay conexión todavía",
+			"description": "Instale primero el script y luego visite cualquier sitio web en otras pestañas del navegador, que se mostrará automáticamente aquí."
+		},
+		"fetch_pages_error": "No se pudo cargar la lista de páginas vinculada.",
+		"page_title": "Título de página",
+		"page_url": "Url",
+		"page_status": "Estado",
+		"status_focused": "Ventana actual",
+		"status_unfocused": "En segundo plano",
+		"copy_button": "Copiar",
+		"copied_message": "Copiado al portapapeles"
+	},
+	"browser_integration_script": {
+		"hostChange": {
+			"securityWarningTitle": "--- Advertencia de seguridad de fount ---",
+			"message": "La página actual (\"${origin}\") está tratando de cambiar su dirección de host de fount a:\n\n\"${newHost}\"\n\nADVERTENCIA: Aprobar esta acción permitirá que el nuevo host controle completamente las funciones de integración de su navegador, lo que puede conducir a fugas de información confidencial o robo de cuenta.\nLa aprobación solo debe hacerse si está seguro de que esta es su propia operación (por ejemplo, migrar un servidor de fount).\n\n¿Estás seguro de que quieres permitir este cambio?",
+			"uuidMismatchError": "Error de seguridad de fount: la identidad (UUID) de host ${newHost} no coincide con su existente. La operación ha sido cancelada.",
+			"verificationError": "Error de seguridad de fount: no se puede verificar el nuevo host \"${newHost}\". Verifique si la dirección es correcta y si el servicio se está ejecutando."
+		},
+		"update": {
+			"prompt": "Hay disponible una nueva versión del script de integración del navegador fount. ¿Está ahora abierta la página de actualización?"
+		},
+		"csp_warning": "El script de integración del navegador de fount detecta que la política CSP existe en la página, lo que puede hacer que el script de integración no funcione correctamente. Considere instalar el complemento para desactivar el CSP."
 	}
 }

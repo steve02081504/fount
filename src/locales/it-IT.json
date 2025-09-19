@@ -938,6 +938,27 @@
 			"passwordLabel": "Password:",
 			"confirmButton": "Conferma",
 			"cancelButton": "Annulla"
+		},
+		"apiKeys": {
+			"title": "Chiave API",
+			"description": "Gestisci la chiave API per applicazioni esterne.",
+			"descriptionPlaceholder": "Nuova descrizione della chiave",
+			"createButton": "creare",
+			"noKeysFound": "Non sono state trovate chiavi API.",
+			"refreshButtonTitle": "Aggiorna l'elenco",
+			"keyDetails": "Descrizione: ${description} | Creato in: ${createdAt} | Ultimo usato: ${lastUsed}",
+			"neverUsed": "Mai usato",
+			"revokeButton": "Revocare",
+			"revokeConfirm": "Sei sicuro di voler revocare questa chiave API?",
+			"revokeSuccess": "La chiave API è stata revocata con successo.",
+			"errorDescriptionRequired": "È richiesta una descrizione.",
+			"createSuccess": "La chiave API è stata creata correttamente."
+		},
+		"newApiKey": {
+			"title": "È stata creata una nuova chiave API",
+			"warning": "Si prega di copiare la tua nuova chiave API. Non sarai in grado di vederlo di nuovo!",
+			"copyButtonTitle": "Copia nuova chiave API",
+			"closeButton": "Ho copiato la mia chiave"
 		}
 	},
 	"badges_maker": {
@@ -1133,5 +1154,43 @@
 				"retry": "Riprova"
 			}
 		}
+	},
+	"browser_integration": {
+		"title": "Integrazione del browser",
+		"header": "Integrazione del browser",
+		"description": "Affinché il ruolo di fount interagisca con la pagina Web, è necessario installare questo script di integrazione del browser. Agisce come un ponte tra il personaggio e il browser, consentendo loro di visualizzare il contenuto della pagina ed eseguire azioni.",
+		"install_script_title": "Script di installazione",
+		"install_script_description": "Fai clic sul pulsante in basso per installare lo script di integrazione del browser. È necessario prima installare un gestore di userscript come Tampermonkey.",
+		"install_button": "Installare",
+		"install_from_url_tip": "Il tuo browser non ti consente di installarlo? Copia questo URL e importa lo script dall'URL nel plugin Tampermonkey.",
+		"what_is_manager": "Cos'è un gestore di userscript?",
+		"manager_explanation": "Un gestore di userscript è un'estensione del browser che consente di installare ed eseguire script che modificano le pagine Web. Per utilizzare lo script di integrazione fount, è necessario una delle estensioni.",
+		"popular_managers": "Scelte popolari:",
+		"csp_warning": "Potrebbe essere necessario installare il plug -in per disattivare CSP per far funzionare correttamente la funzione di integrazione. Per Chrome è possibile utilizzare <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"link\">questo plug-in</a>.",
+		"connected_pages_title": "Pagina connessa",
+		"no_pages_connected": {
+			"title": "Nessuna connessione ancora",
+			"description": "Si prega di installare prima lo script e quindi visitare qualsiasi sito Web in altre schede del browser, che verranno automaticamente visualizzate qui."
+		},
+		"fetch_pages_error": "Impossibile caricare l'elenco delle pagine collegate.",
+		"page_title": "Titolo della pagina",
+		"page_url": "URL",
+		"page_status": "stato",
+		"status_focused": "Finestra corrente",
+		"status_unfocused": "In background",
+		"copy_button": "copia",
+		"copied_message": "Copiato negli appunti"
+	},
+	"browser_integration_script": {
+		"hostChange": {
+			"securityWarningTitle": "--- Avviso di sicurezza fount ---",
+			"message": "La pagina corrente (\"${origin}\") sta cercando di modificare l'indirizzo host di fount in:\n\n\"${newHost}\"\n\nATTENZIONE: l'approvazione di questa azione consentirà al nuovo host di controllare completamente le funzionalità di integrazione del browser, che possono portare a perdite di informazioni sensibili o furto di account.\nL'approvazione dovrebbe essere effettuata solo se sei sicuro che questa è la tua operazione (ad esempio, migrare un server fount).\n\nSei sicuro di voler consentire questo cambiamento?",
+			"uuidMismatchError": "Errore di sicurezza fount: Identity (UUID) dell'host ${newHost} non corrisponde a quello esistente. L'operazione è stata annullata.",
+			"verificationError": "Errore di sicurezza fount: impossibile verificare il nuovo host \"${newHost}\". Si prega di verificare se l'indirizzo è corretto e se il servizio è in esecuzione."
+		},
+		"update": {
+			"prompt": "È disponibile una nuova versione dello script di integrazione del browser fount. La pagina di aggiornamento è ora aperta?"
+		},
+		"csp_warning": "Lo script di integrazione del browser fount rileva che la politica CSP esiste sulla pagina, che può impedire il corretto funzionamento dello script di integrazione. Si prega di considerare l'installazione del plug -in per disattivare il CSP."
 	}
 }

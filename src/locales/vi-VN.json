@@ -938,6 +938,27 @@
 			"passwordLabel": "Mật khẩu:",
 			"confirmButton": "Xác nhận",
 			"cancelButton": "Hủy"
+		},
+		"apiKeys": {
+			"title": "Khóa API",
+			"description": "Quản lý khóa API cho các ứng dụng bên ngoài.",
+			"descriptionPlaceholder": "Mô tả khóa mới",
+			"createButton": "tạo",
+			"noKeysFound": "Không có khóa API được tìm thấy.",
+			"refreshButtonTitle": "Làm mới danh sách",
+			"keyDetails": "Mô tả: ${description} | Được tạo trong: ${createdAt} | Được sử dụng lần cuối: ${lastUsed}",
+			"neverUsed": "Không bao giờ được sử dụng",
+			"revokeButton": "Thu hồi",
+			"revokeConfirm": "Bạn có chắc là bạn muốn thu hồi khóa API này không?",
+			"revokeSuccess": "Khóa API đã bị thu hồi thành công.",
+			"errorDescriptionRequired": "Một mô tả là bắt buộc.",
+			"createSuccess": "Khóa API đã được tạo thành công."
+		},
+		"newApiKey": {
+			"title": "Khóa API mới đã được tạo",
+			"warning": "Vui lòng sao chép khóa API mới của bạn. Bạn sẽ không thể nhìn thấy nó một lần nữa!",
+			"copyButtonTitle": "Sao chép khóa API mới",
+			"closeButton": "Tôi đã sao chép khóa của mình"
 		}
 	},
 	"badges_maker": {
@@ -1133,5 +1154,43 @@
 				"retry": "Thử lại"
 			}
 		}
+	},
+	"browser_integration": {
+		"title": "Tích hợp trình duyệt",
+		"header": "Tích hợp trình duyệt",
+		"description": "Để vai trò fount của bạn tương tác với trang web, bạn cần cài đặt tập lệnh tích hợp trình duyệt này. Nó hoạt động như một cầu nối giữa ký tự và trình duyệt, cho phép họ xem nội dung trang và thực hiện các hành động.",
+		"install_script_title": "Tập lệnh cài đặt",
+		"install_script_description": "Nhấp vào nút bên dưới để cài đặt tập lệnh tích hợp trình duyệt. Trước tiên bạn phải cài đặt một trình quản lý userscript như Tampermonkey.",
+		"install_button": "Cài đặt",
+		"install_from_url_tip": "Trình duyệt của bạn không cho phép bạn cài đặt nó? Sao chép URL này và nhập tập lệnh từ URL trong plugin Tampermonkey.",
+		"what_is_manager": "Trình quản lý userscript là gì?",
+		"manager_explanation": "Một trình quản lý userscript là một tiện ích mở rộng trình duyệt cho phép bạn cài đặt và chạy các tập lệnh sửa đổi các trang web. Để sử dụng tập lệnh tích hợp fount, bạn cần một trong các tiện ích mở rộng.",
+		"popular_managers": "Lựa chọn phổ biến:",
+		"csp_warning": "Bạn có thể cần cài đặt plugin để tắt CSP để làm cho chức năng tích hợp hoạt động đúng. Đối với Chrome, bạn có thể sử dụng <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"link\">Allow CSP Content Security Policy</a>.",
+		"connected_pages_title": "Trang được kết nối",
+		"no_pages_connected": {
+			"title": "Chưa kết nối",
+			"description": "Vui lòng cài đặt tập lệnh trước, sau đó truy cập bất kỳ trang web nào trong các tab trình duyệt khác, sẽ được tự động hiển thị tại đây."
+		},
+		"fetch_pages_error": "Không tải danh sách trang được liên kết.",
+		"page_title": "Tiêu đề trang",
+		"page_url": "URL",
+		"page_status": "tình trạng",
+		"status_focused": "Cửa sổ hiện tại",
+		"status_unfocused": "Trong nền",
+		"copy_button": "sao chép",
+		"copied_message": "Được sao chép vào bảng tạm"
+	},
+	"browser_integration_script": {
+		"hostChange": {
+			"securityWarningTitle": "--- Cảnh báo an toàn fount ---",
+			"message": "Trang hiện tại (\"${origin}\") đang cố gắng thay đổi địa chỉ máy chủ fount của bạn thành:\n\n\"${newHost}\"\n\nCảnh báo: Phê duyệt hành động này sẽ cho phép máy chủ mới kiểm soát hoàn toàn các tính năng tích hợp trình duyệt của bạn, điều này có thể dẫn đến rò rỉ thông tin nhạy cảm hoặc trộm cắp tài khoản.\nPhê duyệt chỉ nên được thực hiện nếu bạn chắc chắn rằng đây là hoạt động của riêng bạn (ví dụ: di chuyển một máy chủ fount).\n\nBạn có chắc là bạn muốn cho phép thay đổi này?",
+			"uuidMismatchError": "Lỗi bảo mật fount: Danh tính (UUID) của máy chủ ${newHost} không khớp với danh tính hiện tại của bạn. Các hoạt động đã bị hủy bỏ.",
+			"verificationError": "Lỗi bảo mật fount: Không thể xác minh máy chủ mới \"${newHost}\". Vui lòng kiểm tra xem địa chỉ có chính xác không và nếu dịch vụ đang chạy."
+		},
+		"update": {
+			"prompt": "Một phiên bản mới của tập lệnh tích hợp trình duyệt fount có sẵn. Bây giờ trang cập nhật có mở không?"
+		},
+		"csp_warning": "Tập lệnh tích hợp trình duyệt fount phát hiện chính sách CSP tồn tại trên trang, điều này có thể khiến tập lệnh tích hợp không hoạt động chính xác. Vui lòng xem xét cài đặt plugin để tắt CSP."
 	}
 }

@@ -938,6 +938,27 @@
 			"passwordLabel": "Lykilorð:",
 			"confirmButton": "Staðfesta",
 			"cancelButton": "Hætta við"
+		},
+		"apiKeys": {
+			"title": "API lykill",
+			"description": "Stjórna API lyklinum fyrir utanaðkomandi forrit.",
+			"descriptionPlaceholder": "Ný lykillýsing",
+			"createButton": "Búa til",
+			"noKeysFound": "Engir API lyklar fundust.",
+			"refreshButtonTitle": "Endurnærðu listann",
+			"keyDetails": "Lýsing: ${description} | Búin til í: ${createdAt} | Síðast notað: ${lastUsed}",
+			"neverUsed": "Aldrei notað",
+			"revokeButton": "Afturkalla",
+			"revokeConfirm": "Ertu viss um að þú viljir afturkalla þennan API lykil?",
+			"revokeSuccess": "API lykillinn hefur verið afturkallaður.",
+			"errorDescriptionRequired": "Lýsing er krafist.",
+			"createSuccess": "API lykillinn var búinn til með góðum árangri."
+		},
+		"newApiKey": {
+			"title": "Nýr API lykill hefur verið búinn til",
+			"warning": "Vinsamlegast afritaðu nýja API lykilinn þinn. Þú munt ekki geta séð það aftur!",
+			"copyButtonTitle": "Afritaðu nýjan API lykil",
+			"closeButton": "Ég hef afritað lykilinn minn"
 		}
 	},
 	"badges_maker": {
@@ -1133,5 +1154,43 @@
 				"retry": "Reyndu aftur"
 			}
 		}
+	},
+	"browser_integration": {
+		"title": "Sameining vafra",
+		"header": "Sameining vafra",
+		"description": "Til þess að fount hlutverk þitt geti haft samskipti við vefsíðuna þarftu að setja upp þetta samþættingarhandrit vafra. Það virkar sem brú milli persónunnar og vafrans, sem gerir þeim kleift að skoða innihald síðunnar og framkvæma aðgerðir.",
+		"install_script_title": "Uppsetningarhandrit",
+		"install_script_description": "Smelltu á hnappinn hér að neðan til að setja upp samþættingarhandrit vafrans. Þú verður fyrst að setja upp notandaforskriftarstjóra eins og Tampermonkey.",
+		"install_button": "Settu upp",
+		"install_from_url_tip": "Leyfir vafrinn þér ekki að setja hann upp? Afritaðu þessa slóð og fluttu handritið frá slóðinni í Tampermonkey viðbótinni.",
+		"what_is_manager": "Hvað er notandaforskriftarstjóri?",
+		"manager_explanation": "Notandaforskriftarstjóri er vafralenging sem gerir þér kleift að setja upp og keyra forskriftir sem breyta vefsíðum. Til að nota fount Integration handritið þarftu eina af viðbætunum.",
+		"popular_managers": "Vinsælir kostir:",
+		"csp_warning": "Þú gætir þurft að setja upp viðbótina til að slökkva á CSP til að gera samþættingaraðgerðina rétt. Fyrir Chrome er hægt að nota <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"link\"> this plugin </a>.",
+		"connected_pages_title": "Tengd blaðsíða",
+		"no_pages_connected": {
+			"title": "Engin tenging ennþá",
+			"description": "Vinsamlegast settu upp handritið fyrst og heimsóttu síðan hvaða vefsíðu sem er í öðrum flipum vafra, sem verður sjálfkrafa birt hér."
+		},
+		"fetch_pages_error": "Ekki tókst að hlaða tengda síðulistann.",
+		"page_title": "Blaðsíðuheiti",
+		"page_url": "Url",
+		"page_status": "Staða",
+		"status_focused": "Núverandi gluggi",
+		"status_unfocused": "Í bakgrunni",
+		"copy_button": "Afritaðu",
+		"copied_message": "Afritað á klemmuspjald"
+	},
+	"browser_integration_script": {
+		"hostChange": {
+			"securityWarningTitle": "--- fount Safety Warning ---",
+			"message": "Núverandi síða (\"${origin}\") er að reyna að breyta heimilisfangi þínu í fount í:\n\n\"${newHost}\"\n\nViðvörun: Að samþykkja þessa aðgerð gerir nýja gestgjafanum kleift að stjórna að fullu samþættingaraðgerðum vafrans, sem getur leitt til viðkvæmra upplýsinga leka eða þjófnaðar reikninga.\nSamþykki ætti aðeins að vera gert ef þú ert viss um að þetta er þín eigin aðgerð (til dæmis að flytja fount netþjón).\n\nErtu viss um að þú viljir leyfa þessa breytingu?",
+			"uuidMismatchError": "fount öryggisvilla: sjálfsmynd (UUID) hýsingaraðila ${newHost} passar ekki við núverandi. Aðgerðinni hefur verið aflýst.",
+			"verificationError": "fount öryggisvilla: Ekki er hægt að sannreyna nýjan gestgjafa „${newHost}“. Vinsamlegast athugaðu hvort heimilisfangið er rétt og hvort þjónustan er í gangi."
+		},
+		"update": {
+			"prompt": "Ný útgáfa af samþættingarhandriti fount vafra er fáanleg. Er uppfærslusíðan núna opin?"
+		},
+		"csp_warning": "Sameiningarhandrit fount vafra skynjar að CSP stefnan er til á síðunni, sem getur valdið því að samþættingarhandritið virkar ekki sem skyldi. Vinsamlegast íhugaðu að setja viðbótina til að loka CSP."
 	}
 }

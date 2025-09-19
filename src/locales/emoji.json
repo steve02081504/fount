@@ -106,9 +106,9 @@
 		"invalidProtocol": "❓",
 		"insufficientParams": "👎",
 		"unknownCommand": "🤷‍♂️➡️",
-		"shellCommandSent": "셸➡️✅",
-		"shellCommandFailed": "셸➡️❌",
-		"shellCommandError": "셸➡️⁉️",
+		"shellCommandSent": "💻➡️✅",
+		"shellCommandFailed": "💻➡️❌",
+		"shellCommandError": "💻➡️⁉️",
 		"fountNotFound": "😢\n\n🤷‍♂️⛲, 📥❓",
 		"unknownError": "😢\n\n❌:\n${error}",
 		"runPartConfirm": {
@@ -938,6 +938,27 @@
 			"passwordLabel": "🔑:",
 			"confirmButton": "✅",
 			"cancelButton": "❌"
+		},
+		"apiKeys": {
+			"title": "🔑",
+			"description": "⚙️🔑",
+			"descriptionPlaceholder": "✍️",
+			"createButton": "✨",
+			"noKeysFound": "🤷‍♀️",
+			"refreshButtonTitle": "🔄",
+			"keyDetails": "📝 ${description} 🗓️ ${createdAt} ⏳ ${lastUsed}",
+			"neverUsed": "⏳",
+			"revokeButton": "🗑️",
+			"revokeConfirm": "🤔🗑️❓",
+			"revokeSuccess": "✅🗑️",
+			"errorDescriptionRequired": "❗️✍️",
+			"createSuccess": "✅✨"
+		},
+		"newApiKey": {
+			"title": "✨🔑",
+			"warning": "⚠️📋",
+			"copyButtonTitle": "📋🔑",
+			"closeButton": "✅📋"
 		}
 	},
 	"badges_maker": {
@@ -1133,5 +1154,43 @@
 				"retry": "🔄"
 			}
 		}
+	},
+	"browser_integration": {
+		"title": "🌐🔗",
+		"header": "🌐🔗",
+		"description": "📝🌐🔗",
+		"install_script_title": "📜➕",
+		"install_script_description": "📝📜➕",
+		"install_button": "📥",
+		"install_from_url_tip": "💡🔗",
+		"what_is_manager": "❓🐒🔧",
+		"manager_explanation": "ℹ️🐒🔧",
+		"popular_managers": "⭐",
+		"csp_warning": "⚠️🛡️",
+		"connected_pages_title": "🔗📄",
+		"no_pages_connected": {
+			"title": "🚫🔗",
+			"description": "📝🚫🔗"
+		},
+		"fetch_pages_error": "❗️🔄",
+		"page_title": "📄🏷️",
+		"page_url": "🔗",
+		"page_status": "🚦",
+		"status_focused": "🎯",
+		"status_unfocused": "💤",
+		"copy_button": "📋",
+		"copied_message": "✅📋"
+	},
+	"browser_integration_script": {
+		"hostChange": {
+			"securityWarningTitle": "⚠️🛡️",
+			"message": "⚠️ \"${origin}\" ➡️ \"${newHost}\" ❓",
+			"uuidMismatchError": "❗️🆔 ${newHost}",
+			"verificationError": "❗️❓ ${newHost}"
+		},
+		"update": {
+			"prompt": "🔄⬆️❓"
+		},
+		"csp_warning": "⚠️🛡️📜"
 	}
 }

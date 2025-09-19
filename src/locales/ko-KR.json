@@ -938,6 +938,27 @@
 			"passwordLabel": "비밀번호:",
 			"confirmButton": "확인",
 			"cancelButton": "취소"
+		},
+		"apiKeys": {
+			"title": "API 키",
+			"description": "외부 응용 프로그램의 API 키를 관리하십시오.",
+			"descriptionPlaceholder": "새로운 키 설명",
+			"createButton": "생성",
+			"noKeysFound": "API 키가 발견되지 않았습니다.",
+			"refreshButtonTitle": "목록을 새로 고치십시오",
+			"keyDetails": "설명 : ${description} | 생성 : ${createdAt} | 마지막 사용 : ${lastUsed}",
+			"neverUsed": "사용하지 않았습니다",
+			"revokeButton": "해지",
+			"revokeConfirm": "이 API 키를 취소 하시겠습니까?",
+			"revokeSuccess": "API 키가 성공적으로 취소되었습니다.",
+			"errorDescriptionRequired": "설명이 필요합니다.",
+			"createSuccess": "API 키는 성공적으로 생성되었습니다."
+		},
+		"newApiKey": {
+			"title": "새로운 API 키가 만들어졌습니다",
+			"warning": "새 API 키를 복사하십시오. 당신은 그것을 다시 볼 수 없을 것입니다!",
+			"copyButtonTitle": "새 API 키를 복사하십시오",
+			"closeButton": "내 키를 복사했습니다"
 		}
 	},
 	"badges_maker": {
@@ -1133,5 +1154,43 @@
 				"retry": "재시도"
 			}
 		}
+	},
+	"browser_integration": {
+		"title": "브라우저 통합",
+		"header": "브라우저 통합",
+		"description": "fount 역할이 웹 페이지와 상호 작용하려면이 브라우저 통합 스크립트를 설치해야합니다. 캐릭터와 브라우저 사이의 브리지 역할을하여 페이지 컨텐츠를보고 작업을 수행 할 수 있습니다.",
+		"install_script_title": "설치 스크립트",
+		"install_script_description": "아래 버튼을 클릭하여 브라우저 통합 스크립트를 설치하십시오. 먼저 Tampermonkey와 같은 유저스크립트 관리자를 설치해야합니다.",
+		"install_button": "설치하다",
+		"install_from_url_tip": "브라우저를 설치할 수 없습니까? 이 URL을 복사하고 Tampermonkey 플러그인에서 URL에서 스크립트를 가져 오십시오.",
+		"what_is_manager": "유저스크립트 관리자란 무엇입니까?",
+		"manager_explanation": "유저스크립트 관리자는 웹 페이지를 수정하는 스크립트를 설치하고 실행할 수있는 브라우저 확장자입니다. fount 통합 스크립트를 사용하려면 확장자 중 하나가 필요합니다.",
+		"popular_managers": "인기있는 선택 :",
+		"csp_warning": "통합 기능이 올바르게 작동하도록 CSP를 끄려면 플러그인을 설치해야 할 수도 있습니다. Chrome의 경우 <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"link\">CSP을 끄기</a>를 사용할 수 있습니다.",
+		"connected_pages_title": "연결된 페이지",
+		"no_pages_connected": {
+			"title": "아직 연결이 없습니다",
+			"description": "먼저 스크립트를 설치 한 다음 다른 브라우저 탭의 웹 사이트를 방문하십시오. 여기에는 자동으로 표시됩니다."
+		},
+		"fetch_pages_error": "링크 된 페이지 목록을로드하지 못했습니다.",
+		"page_title": "페이지 제목",
+		"page_url": "URL",
+		"page_status": "상태",
+		"status_focused": "현재 창",
+		"status_unfocused": "백그라운드에서",
+		"copy_button": "복사",
+		"copied_message": "클립 보드에 복사"
+	},
+	"browser_integration_script": {
+		"hostChange": {
+			"securityWarningTitle": "--- fount 안전 경고 ---",
+			"message": "현재 페이지 ( \"${origin}\")는 fount 호스트 주소를 다음과 같이 변경하려고합니다.\n\n\"${newHost}\"\n\n경고 :이 조치를 승인하면 새 호스트가 브라우저 통합 기능을 완전히 제어 할 수 있으므로 민감한 정보 유출 또는 계정 도난으로 이어질 수 있습니다.\n승인은 이것이 자신의 작업 (예 : fount 서버 마이그레이션)인지 확인하는 경우에만 이루어져야합니다.\n\n이 변경을 허용 하시겠습니까?",
+			"uuidMismatchError": "fount 보안 오류: 호스트 ${newHost}의 식별자(UUID)가 기존의 것과 일치하지 않습니다. 작업이 취소되었습니다.",
+			"verificationError": "fount 보안 오류 : 새 호스트 \"${newHost}\"를 확인할 수 없습니다. 주소가 올바른지 확인하고 서비스가 실행 중인지 확인하십시오."
+		},
+		"update": {
+			"prompt": "fount 브라우저 통합 스크립트의 새 버전을 사용할 수 있습니다. 업데이트 페이지가 지금 열려 있습니까?"
+		},
+		"csp_warning": "fount Browser Integration 스크립트는 CSP 정책이 페이지에 존재 함을 감지하여 통합 스크립트가 제대로 작동하지 않을 수 있습니다. CSP를 끄려면 플러그인 설치를 고려하십시오."
 	}
 }

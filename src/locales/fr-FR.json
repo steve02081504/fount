@@ -280,7 +280,7 @@
 			"endButton": "C'est parti !"
 		},
 		"progressMessages": {
-			"mouseMove": "Veuillez localiser votre souris ${mouseIcon}. Maintenant, essayez de la déplacer avec votre main.",
+			"mouseMove": "Veuillez localiser cet appareil curieux qu'est votre souris ${mouseIcon}. Tentez maintenant, avec votre main, de la faire glisser sur votre bureau.",
 			"keyboardPress": "Appuyez sur une touche de votre clavier ${keyboardIcon}.",
 			"mobileTouchMove": "Voici votre téléphone ${phoneIcon}. Avec un de vos doigts, touchez l'écran, puis faites-le glisser. Ne lâchez pas !",
 			"mobileClick": "Veuillez appuyer sur l'écran de votre téléphone ${phoneIcon} avec un doigt, puis retirez-le rapidement. C'est ce qu'on appelle un clic !"
@@ -938,6 +938,27 @@
 			"passwordLabel": "Mot de passe :",
 			"confirmButton": "Confirmer",
 			"cancelButton": "Annuler"
+		},
+		"apiKeys": {
+			"title": "Clé API",
+			"description": "Gérez la clé API pour les applications externes.",
+			"descriptionPlaceholder": "Nouvelle description clé",
+			"createButton": "créer",
+			"noKeysFound": "Aucune clé API n'a été trouvée.",
+			"refreshButtonTitle": "Actualiser la liste",
+			"keyDetails": "Description: ${description} | Créé dans: ${createdAt} | Dernière utilisée: ${lastUsed}",
+			"neverUsed": "Jamais utilisé",
+			"revokeButton": "Révoquer",
+			"revokeConfirm": "Êtes-vous sûr de vouloir révoquer cette clé API?",
+			"revokeSuccess": "La clé API a été révoquée avec succès.",
+			"errorDescriptionRequired": "Une description est requise.",
+			"createSuccess": "La clé API a été créée avec succès."
+		},
+		"newApiKey": {
+			"title": "Une nouvelle clé API a été créée",
+			"warning": "Veuillez copier votre nouvelle clé API. Vous ne pourrez pas le revoir!",
+			"copyButtonTitle": "Copier la nouvelle clé API",
+			"closeButton": "J'ai copié ma clé"
 		}
 	},
 	"badges_maker": {
@@ -1133,5 +1154,43 @@
 				"retry": "Réessayer"
 			}
 		}
+	},
+	"browser_integration": {
+		"title": "Intégration du navigateur",
+		"header": "Intégration du navigateur",
+		"description": "Pour que votre rôle fount interagisse avec la page Web, vous devez installer ce script d'intégration du navigateur. Il agit comme un pont entre le caractère et le navigateur, leur permettant de visualiser le contenu de la page et d'effectuer des actions.",
+		"install_script_title": "Script d'installation",
+		"install_script_description": "Cliquez sur le bouton ci-dessous pour installer le script d'intégration du navigateur. Vous devez d'abord installer un gestionnaire de scripts utilisateur comme Tampermonkey.",
+		"install_button": "Installer",
+		"install_from_url_tip": "Votre navigateur ne vous permet-il pas de l'installer? Copiez cette URL et importez le script de l'URL dans le plugin Tampermonkey.",
+		"what_is_manager": "Qu'est-ce qu'un gestionnaire de scripts utilisateur ?",
+		"manager_explanation": "Un gestionnaire de scripts utilisateur est une extension de navigateur qui vous permet d'installer et d'exécuter des scripts qui modifient les pages Web. Pour utiliser le script d'intégration fount, vous avez besoin d'une des extensions.",
+		"popular_managers": "Choix populaires:",
+		"csp_warning": "Vous devrez peut-être installer le plugin pour désactiver CSP pour que la fonction d'intégration fonctionne correctement. Pour Chrome, vous pouvez utiliser <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"link\">ce plugin</a>.",
+		"connected_pages_title": "Page connectée",
+		"no_pages_connected": {
+			"title": "Aucune connexion encore",
+			"description": "Veuillez d'abord installer le script, puis visiter n'importe quel site Web dans d'autres onglets de navigateur, qui seront automatiquement affichés ici."
+		},
+		"fetch_pages_error": "Impossible de charger la liste des pages liées.",
+		"page_title": "Titre de la page",
+		"page_url": "URL",
+		"page_status": "Statut",
+		"status_focused": "Fenêtre actuelle",
+		"status_unfocused": "En arrière-plan",
+		"copy_button": "Copier",
+		"copied_message": "Copié dans le presse-papiers"
+	},
+	"browser_integration_script": {
+		"hostChange": {
+			"securityWarningTitle": "--- Avertissement de sécurité fount ---",
+			"message": "La page actuelle (\"${origin}\") essaie de modifier votre adresse hôte fount pour:\n\n\"${newHost}\"\n\nAVERTISSEMENT: l'approbation de cette action permettra au nouvel hôte de contrôler pleinement les fonctionnalités d'intégration de votre navigateur, ce qui peut entraîner une fuite d'informations sensibles ou un vol de compte.\nL'approbation ne doit être faite que si vous êtes sûr qu'il s'agit de votre propre opération (par exemple, la migration d'un serveur fount).\n\nÊtes-vous sûr d'autoriser ce changement?",
+			"uuidMismatchError": "Erreur de sécurité fount: l'identité (UUID) de l'hôte ${newHost} ne correspond pas à votre existant. L'opération a été annulée.",
+			"verificationError": "Erreur de sécurité fount: Impossible de vérifier le nouvel hôte \"${newHost}\". Veuillez vérifier si l'adresse est correcte et si le service est en cours d'exécution."
+		},
+		"update": {
+			"prompt": "Une nouvelle version du script d'intégration du navigateur fount est disponible. La page de mise à jour est-elle maintenant ouverte?"
+		},
+		"csp_warning": "Le script d'intégration du navigateur fount détecte que la politique CSP existe sur la page, ce qui peut empêcher le script d'intégration de fonctionner correctement. Veuillez envisager d'installer le plugin pour désactiver le CSP."
 	}
 }

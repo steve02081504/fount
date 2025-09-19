@@ -938,6 +938,27 @@
 			"passwordLabel": "Palavra-passe:",
 			"confirmButton": "Confirmar",
 			"cancelButton": "Cancelar"
+		},
+		"apiKeys": {
+			"title": "Chave da API",
+			"description": "Gerencie a chave da API para aplicativos externos.",
+			"descriptionPlaceholder": "Nova descrição -chave",
+			"createButton": "criar",
+			"noKeysFound": "Nenhuma chave de API foi encontrada.",
+			"refreshButtonTitle": "Atualize a lista",
+			"keyDetails": "Descrição: ${description} | Criado em: ${createdAt} | Última usada: ${lastUsed}",
+			"neverUsed": "Nunca usado",
+			"revokeButton": "Revogar",
+			"revokeConfirm": "Tem certeza de que deseja revogar esta chave da API?",
+			"revokeSuccess": "A chave da API foi revogada com sucesso.",
+			"errorDescriptionRequired": "Uma descrição é necessária.",
+			"createSuccess": "A chave da API foi criada com sucesso."
+		},
+		"newApiKey": {
+			"title": "Nova chave de API foi criada",
+			"warning": "Copie sua nova chave de API. Você não poderá ver de novo!",
+			"copyButtonTitle": "Copie a nova chave da API",
+			"closeButton": "Eu copiei minha chave"
 		}
 	},
 	"badges_maker": {
@@ -1133,5 +1154,43 @@
 				"retry": "Tente novamente"
 			}
 		}
+	},
+	"browser_integration": {
+		"title": "Integração do navegador",
+		"header": "Integração do navegador",
+		"description": "Para que sua função de fount interaja com a página da web, você precisa instalar este script de integração do navegador. Ele atua como uma ponte entre o personagem e o navegador, permitindo que eles visualizem o conteúdo da página e executem ações.",
+		"install_script_title": "Script de instalação",
+		"install_script_description": "Clique no botão abaixo para instalar o script de integração do navegador. Você deve primeiro instalar um gestor de scripts de utilizador como o Tampermonkey.",
+		"install_button": "Instalar",
+		"install_from_url_tip": "Seu navegador não permite que você o instale? Copie este URL e importe o script do URL no plugin Tampermonkey.",
+		"what_is_manager": "O que é um gestor de scripts de utilizador?",
+		"manager_explanation": "Um gestor de scripts de utilizador é uma extensão do navegador que permite instalar e executar scripts que modificam as páginas da Web. Para usar o script de integração fount, você precisa de uma das extensões.",
+		"popular_managers": "Escolhas populares:",
+		"csp_warning": "Pode ser necessário instalar o plug -in para desativar o CSP para fazer com que a função de integração funcione corretamente. Para o Chrome, você pode usar <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"link\">Permitir CSP</a>.",
+		"connected_pages_title": "Página conectada",
+		"no_pages_connected": {
+			"title": "Sem conexão ainda",
+			"description": "Instale o script primeiro e visite qualquer site em outras guias do navegador, que serão exibidas automaticamente aqui."
+		},
+		"fetch_pages_error": "Falha ao carregar a lista de página vinculada.",
+		"page_title": "Título da página",
+		"page_url": "Url",
+		"page_status": "estado",
+		"status_focused": "Janela atual",
+		"status_unfocused": "Nos bastidores",
+		"copy_button": "cópia",
+		"copied_message": "Copiado para a área de transferência"
+	},
+	"browser_integration_script": {
+		"hostChange": {
+			"securityWarningTitle": "--- Aviso de segurança da fonte ---",
+			"message": "A página atual (\"${origin}\") está tentando alterar seu endereço de host para:\n\n\"${newHost}\"\n\nAVISO: A aprovação desta ação permitirá que o novo host controla totalmente seus recursos de integração do navegador, o que pode levar a vazamentos sensíveis de informações ou roubo de contas.\nA aprovação só deve ser feita se você tiver certeza de que esta é sua própria operação (por exemplo, migrando um servidor fount).\n\nTem certeza de que deseja permitir essa alteração?",
+			"uuidMismatchError": "Erro de segurança da fonte: a identidade (UUID) do host ${newHost} não corresponde à sua existente. A operação foi cancelada.",
+			"verificationError": "Erro de segurança da fonte: Não é possível verificar o novo host \"${newHost}\". Verifique se o endereço está correto e se o serviço estiver em execução."
+		},
+		"update": {
+			"prompt": "Uma nova versão do script de integração do navegador FOUNT está disponível. A página de atualização está agora aberta?"
+		},
+		"csp_warning": "O script de integração do navegador da fonte detecta que a política do CSP existe na página, o que pode fazer com que o script de integração não funcione corretamente. Por favor, considere instalar o plug -in para fechar o CSP."
 	}
 }

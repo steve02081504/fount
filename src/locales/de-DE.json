@@ -318,7 +318,7 @@
 				"version": "Version",
 				"author": "Autor",
 				"home_page": "Startseite",
-				"issue_page": "Problemseite",
+				"issue_page": "Problem melden",
 				"defaultCheckbox": {
 					"title": "Als Standardcharakter festlegen"
 				}
@@ -938,6 +938,27 @@
 			"passwordLabel": "Passwort:",
 			"confirmButton": "Bestätigen",
 			"cancelButton": "Abbrechen"
+		},
+		"apiKeys": {
+			"title": "API-Schlüssel",
+			"description": "Verwalten Sie den API-Schlüssel für externe Anwendungen.",
+			"descriptionPlaceholder": "Neue Schlüsselbeschreibung",
+			"createButton": "erstellen",
+			"noKeysFound": "Es wurden keine API-Schlüssel gefunden.",
+			"refreshButtonTitle": "Aktualisieren Sie die Liste",
+			"keyDetails": "Beschreibung: ${description} | Erstellt in: ${createdAt} | Zuletzt gebraucht: ${lastUsed}",
+			"neverUsed": "Nie benutzt",
+			"revokeButton": "Widerrufen",
+			"revokeConfirm": "Sind Sie sicher, dass Sie diesen API-Schlüssel widerrufen möchten?",
+			"revokeSuccess": "Der API-Schlüssel wurde erfolgreich widerrufen.",
+			"errorDescriptionRequired": "Eine Beschreibung ist erforderlich.",
+			"createSuccess": "Der API-Schlüssel wurde erfolgreich erstellt."
+		},
+		"newApiKey": {
+			"title": "Neuer API-Schlüssel wurde erstellt",
+			"warning": "Bitte kopieren Sie Ihren neuen API-Schlüssel. Sie werden es nicht wieder sehen können!",
+			"copyButtonTitle": "Kopieren Sie den neuen API-Schlüssel",
+			"closeButton": "Ich habe meinen Schlüssel kopiert"
 		}
 	},
 	"badges_maker": {
@@ -1133,5 +1154,43 @@
 				"retry": "Erneut versuchen"
 			}
 		}
+	},
+	"browser_integration": {
+		"title": "Browserintegration",
+		"header": "Browserintegration",
+		"description": "Damit Ihre fount -Rolle mit der Webseite interagieren kann, müssen Sie dieses Browser -Integrationsskript installieren. Es fungiert als Brücke zwischen dem Charakter und dem Browser, sodass sie den Seiteninhalt anzeigen und Aktionen ausführen können.",
+		"install_script_title": "Installationsskript",
+		"install_script_description": "Klicken Sie auf die Schaltfläche unten, um das Browser -Integrationsskript zu installieren. Sie müssen zuerst einen Tampermonkey (oder einen ähnlichen Skript-Manager) installieren.",
+		"install_button": "Installieren",
+		"install_from_url_tip": "Ermöglicht Ihr Browser die Installation nicht? Kopieren Sie diese URL und importieren Sie das Skript aus der URL im Tampermonkey-Plugin.",
+		"what_is_manager": "Was ist ein Userscript-Manager?",
+		"manager_explanation": "Ein Userscript-Manager ist eine Browser-Erweiterung, mit der Sie Skripte installieren und ausführen können, die Webseiten ändern. Um das fount -Integrationsskript zu verwenden, benötigen Sie eine der Erweiterungen.",
+		"popular_managers": "Beliebte Entscheidungen:",
+		"csp_warning": "Möglicherweise müssen Sie das Plugin installieren, um CSP auszuschalten, damit die Integrationsfunktion ordnungsgemäß funktioniert. Für Chrome können Sie <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"link\">dieses Plugin</a> verwenden.",
+		"connected_pages_title": "Verbundene Seite",
+		"no_pages_connected": {
+			"title": "Noch keine Verbindung",
+			"description": "Bitte installieren Sie das Skript zuerst und besuchen Sie dann eine Website in anderen Registerkarten in Browser, die hier automatisch angezeigt werden."
+		},
+		"fetch_pages_error": "Das Laden der Liste der verknüpften Seiten ist fehlgeschlagen.",
+		"page_title": "Seitentitel",
+		"page_url": "URL",
+		"page_status": "Status",
+		"status_focused": "Aktuelles Fenster",
+		"status_unfocused": "Im Hintergrund",
+		"copy_button": "Kopieren",
+		"copied_message": "Kopiert in die Zwischenablage"
+	},
+	"browser_integration_script": {
+		"hostChange": {
+			"securityWarningTitle": "--- fount Sicherheitswarnung ---",
+			"message": "Die aktuelle Seite (\"${origin}\") versucht, Ihre fount -Host -Adresse in:\n\n\"${newHost}\"\n\nWARNUNG: Die Genehmigung dieser Aktion ermöglicht es dem neuen Host, Ihre Browser -Integrationsfunktionen vollständig zu steuern, was zu einem sensiblen Informationen oder dem Kontodiebstahl führen kann.\nDie Genehmigung sollte nur erfolgen, wenn Sie sicher sind, dass dies Ihr eigener Vorgang ist (z. B. migrieren Sie einen fount -Server).\n\nSind Sie sicher, dass Sie diese Änderung zulassen möchten?",
+			"uuidMismatchError": "fount -Sicherheitsfehler: Die Identität (UUID) von Host ${newHost} stimmt nicht mit Ihrem vorhandenen überein. Die Operation wurde storniert.",
+			"verificationError": "FOUNT -Sicherheitsfehler: Der neue Host \"${newHost}\" kann nicht verifiziert werden. Bitte überprüfen Sie, ob die Adresse korrekt ist und ob der Dienst ausgeführt wird."
+		},
+		"update": {
+			"prompt": "Eine neue Version des fount -Browser -Integrationsskripts ist verfügbar. Ist die Update -Seite jetzt geöffnet?"
+		},
+		"csp_warning": "Das fount -Browser -Integrationsskript erkennt, dass die CSP -Richtlinie auf der Seite vorhanden ist, wodurch das Integrationsskript nicht ordnungsgemäß funktioniert. Bitte erwägen Sie, das Plugin zu installieren, um CSP auszuschalten."
 	}
 }

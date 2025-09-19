@@ -938,6 +938,27 @@
 			"passwordLabel": "信物:",
 			"confirmButton": "可",
 			"cancelButton": "否"
+		},
+		"apiKeys": {
+			"title": "符鑰",
+			"description": "司外用之符鑰。",
+			"descriptionPlaceholder": "新符鑰之述",
+			"createButton": "創",
+			"noKeysFound": "未見符鑰。",
+			"refreshButtonTitle": "新其覽",
+			"keyDetails": "述: ${description} | 製於: ${createdAt} | 末用: ${lastUsed}",
+			"neverUsed": "未嘗用",
+			"revokeButton": "廢止",
+			"revokeConfirm": "確欲廢此符鑰乎？",
+			"revokeSuccess": "符鑰已廢。",
+			"errorDescriptionRequired": "述不可缺。",
+			"createSuccess": "符鑰創成。"
+		},
+		"newApiKey": {
+			"title": "新符鑰已創",
+			"warning": "請錄新符鑰。一去不復見！",
+			"copyButtonTitle": "錄此新鑰",
+			"closeButton": "已錄之"
 		}
 	},
 	"badges_maker": {
@@ -1133,5 +1154,43 @@
 				"retry": "再試"
 			}
 		}
+	},
+	"browser_integration": {
+		"title": "融於覽器",
+		"header": "覽器統合",
+		"description": "欲使 fount 之役交於網頁，須置此統合之策。其為役與覽器之橋，以窺頁中之文，行其所事。",
+		"install_script_title": "置策",
+		"install_script_description": "點此置覽器統合之策。然須先置油猴策管。",
+		"install_button": "置",
+		"install_from_url_tip": "覽器不允？錄此網址，於油猴策管中取之。",
+		"what_is_manager": "油猴策管何物也？",
+		"manager_explanation": "油猴策管，覽器之輔具，所以置策易頁也。欲用 fount 統合之策，必先有此物。",
+		"popular_managers": "常用者：",
+		"csp_warning": "或需置輔具以停 CSP，方能使統合之功順行。Chrome 可用<a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"link\">此輔具</a>。",
+		"connected_pages_title": "已連之頁",
+		"no_pages_connected": {
+			"title": "尚無連接",
+			"description": "請先置策，而後巡覽他頁，此處將自行呈現。"
+		},
+		"fetch_pages_error": "取已連之頁不成。",
+		"page_title": "頁名",
+		"page_url": "網址",
+		"page_status": "情狀",
+		"status_focused": "當前",
+		"status_unfocused": "在後",
+		"copy_button": "錄",
+		"copied_message": "已錄"
+	},
+	"browser_integration_script": {
+		"hostChange": {
+			"securityWarningTitle": "--- fount 安危之警 ---",
+			"message": "當前之頁（「${origin}」）欲易君之 fount 主址為：\n\n「${newHost}」\n\n警曰：許此操作，則新主將盡制君覽器統合之能，或致密聞外泄、帳戶見竊。\n確為己行（如遷 fount 之服），方可應允。\n\n確許此易乎？",
+			"uuidMismatchError": "fount 安危之誤：主址 ${newHost} 之標識（UUID）與舊不符。操作已止。",
+			"verificationError": "fount 安危之誤：未能驗證新主址「${newHost}」。請查其址是否無誤，其役是否在行。"
+		},
+		"update": {
+			"prompt": "fount 覽器統合之策有新版。今啟新頁乎？"
+		},
+		"csp_warning": "fount 覽器統合之策察覺頁中有 CSP 策略，或致其功不行。請思置輔具以停之。"
 	}
 }

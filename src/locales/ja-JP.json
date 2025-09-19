@@ -938,6 +938,27 @@
 			"passwordLabel": "パスワード:",
 			"confirmButton": "確認",
 			"cancelButton": "キャンセル"
+		},
+		"apiKeys": {
+			"title": "APIキー",
+			"description": "外部アプリケーションのAPIキーを管理します。",
+			"descriptionPlaceholder": "新しいキー説明",
+			"createButton": "作成",
+			"noKeysFound": "APIキーは見つかりませんでした。",
+			"refreshButtonTitle": "リストを更新します",
+			"keyDetails": "説明：${description} |作成：${createdAt} |最終使用：${lastUsed}",
+			"neverUsed": "未使用",
+			"revokeButton": "取り消す",
+			"revokeConfirm": "このAPIキーを取り消したいですか？",
+			"revokeSuccess": "APIキーは正常に取り消されました。",
+			"errorDescriptionRequired": "説明が必要です。",
+			"createSuccess": "APIキーは正常に作成されました。"
+		},
+		"newApiKey": {
+			"title": "新しいAPIキーが作成されました",
+			"warning": "新しいAPIキーをコピーしてください。二度と見ることができません！",
+			"copyButtonTitle": "新しいAPIキーをコピーします",
+			"closeButton": "キーをコピーしました"
 		}
 	},
 	"badges_maker": {
@@ -1133,5 +1154,43 @@
 				"retry": "再試行"
 			}
 		}
+	},
+	"browser_integration": {
+		"title": "ブラウザの統合",
+		"header": "ブラウザの統合",
+		"description": "fountロールがWebページと対話するには、このブラウザ統合スクリプトをインストールする必要があります。キャラクターとブラウザの間のブリッジとして機能し、ページコンテンツを表示してアクションを実行できるようにします。",
+		"install_script_title": "インストールスクリプト",
+		"install_script_description": "下のボタンをクリックして、ブラウザ統合スクリプトをインストールします。最初にTampermonkey のようなユーザースクリプトマネージャーをインストールする必要があります。",
+		"install_button": "インストール",
+		"install_from_url_tip": "ブラウザはインストールできませんか？このURLをコピーして、Tampermonkey プラグインのURLからスクリプトをインポートします。",
+		"what_is_manager": "ユーザースクリプトマネージャーとは何ですか？",
+		"manager_explanation": "ユーザースクリプトマネージャーは、Webページを変更するスクリプトをインストールおよび実行できるブラウザ拡張機能です。 fount Integration Scriptを使用するには、拡張機能の1つが必要です。",
+		"popular_managers": "人気のある選択肢：",
+		"csp_warning": "統合機能を適切に動作させるために、CSPを無効にするプラグインのインストールが必要になる場合があります。Chromeの場合は<a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"link\">こちらのプラグイン</a>をご利用いただけます。",
+		"connected_pages_title": "接続されたページ",
+		"no_pages_connected": {
+			"title": "まだ接続がありません",
+			"description": "最初にスクリプトをインストールしてから、他のブラウザタブのWebサイトにアクセスしてください。ここでは自動的に表示されます。"
+		},
+		"fetch_pages_error": "リンクされたページリストのロードに失敗しました。",
+		"page_title": "ページタイトル",
+		"page_url": "URL",
+		"page_status": "状態",
+		"status_focused": "現在のウィンドウ",
+		"status_unfocused": "バックグラウンド",
+		"copy_button": "コピー",
+		"copied_message": "クリップボードにコピーします"
+	},
+	"browser_integration_script": {
+		"hostChange": {
+			"securityWarningTitle": "--- fount 安全警告---",
+			"message": "現在のページ（ \"${origin}\"）は、ファウントホストアドレスを次のように変更しようとしています。\n\n「${newHost}」\n\n警告：このアクションを承認すると、新しいホストがブラウザの統合機能を完全に制御できるようになり、機密情報の漏れやアカウントの盗難につながる可能性があります。\n承認は、これがあなた自身の操作であると確信している場合にのみ行う必要があります（たとえば、fount サーバーの移行）。\n\nこの変更を許可したいですか？",
+			"uuidMismatchError": "fount セキュリティエラー：ホスト${newHost}のID（UUID）は、既存のものと一致しません。操作はキャンセルされました。",
+			"verificationError": "セキュリティエラーのファウント：新しいホスト「${newHost}」を確認できません。住所が正しいかどうか、およびサービスが実行されているかどうかを確認してください。"
+		},
+		"update": {
+			"prompt": "fount Browser Integration Scriptの新しいバージョンが利用可能です。更新ページは開いていますか？"
+		},
+		"csp_warning": "fount Browser Integration Scriptは、CSPポリシーがページに存在することを検出し、統合スクリプトが適切に機能しない可能性があります。 CSPを無効にするためにプラグインをインストールすることを検討してください。"
 	}
 }

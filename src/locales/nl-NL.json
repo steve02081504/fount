@@ -938,6 +938,27 @@
 			"passwordLabel": "Wachtwoord:",
 			"confirmButton": "Bevestigen",
 			"cancelButton": "Annuleren"
+		},
+		"apiKeys": {
+			"title": "API -sleutel",
+			"description": "Beheer de API -sleutel voor externe toepassingen.",
+			"descriptionPlaceholder": "Nieuwe sleutelbeschrijving",
+			"createButton": "creëren",
+			"noKeysFound": "Er werden geen API-sleutels gevonden.",
+			"refreshButtonTitle": "Vernieuw de lijst",
+			"keyDetails": "Beschrijving: ${description} | Gemaakt in: ${createdAt} | Laatst gebruikt: ${lastUsed}",
+			"neverUsed": "Nooit gebruikt",
+			"revokeButton": "Herroepen",
+			"revokeConfirm": "Weet u zeker dat u deze API -sleutel wilt intrekken?",
+			"revokeSuccess": "De API -sleutel is succesvol ingetrokken.",
+			"errorDescriptionRequired": "Een beschrijving is vereist.",
+			"createSuccess": "De API -sleutel is met succes gemaakt."
+		},
+		"newApiKey": {
+			"title": "Er is een nieuwe API -sleutel gemaakt",
+			"warning": "Kopieer uw nieuwe API -sleutel. Je kunt het niet meer zien!",
+			"copyButtonTitle": "Kopieer een nieuwe API -sleutel",
+			"closeButton": "Ik heb mijn sleutel gekopieerd"
 		}
 	},
 	"badges_maker": {
@@ -1133,5 +1154,43 @@
 				"retry": "Opnieuw proberen"
 			}
 		}
+	},
+	"browser_integration": {
+		"title": "Browserintegratie",
+		"header": "Browserintegratie",
+		"description": "Om uw fount -rol te laten communiceren met de webpagina, moet u dit browser -integratiescript installeren. Het fungeert als een brug tussen het personage en de browser, waardoor ze de pagina -inhoud kunnen bekijken en acties kunnen uitvoeren.",
+		"install_script_title": "Installatiescript",
+		"install_script_description": "Klik op de onderstaande knop om het script van de browserintegratie te installeren. U moet eerst een userscriptmanager zoals Tampermonkey installeren.",
+		"install_button": "Installeren",
+		"install_from_url_tip": "Staat uw browser u niet toe het te installeren? Kopieer deze URL en importeer het script vanuit de URL in de Tampermonkey-plug-in.",
+		"what_is_manager": "Wat is een userscriptbeheerder?",
+		"manager_explanation": "Een userscriptbeheerder is een browserverlenging waarmee u scripts kunt installeren en uitvoeren die webpagina's wijzigen. Om het fount Integration Script te gebruiken, hebt u een van de extensies nodig.",
+		"popular_managers": "Populaire keuzes:",
+		"csp_warning": "Mogelijk moet u de plug -in installeren om CSP uit te schakelen om de integratiefunctie goed te laten werken. Voor Chrome kunt u <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"link\"> deze plugin </a>.",
+		"connected_pages_title": "Verbonden pagina",
+		"no_pages_connected": {
+			"title": "Nog geen verbinding",
+			"description": "Installeer het script eerst en bezoek vervolgens een website in andere browsertabs, die hier automatisch worden weergegeven."
+		},
+		"fetch_pages_error": "Kan de gekoppelde pagina -lijst niet laden.",
+		"page_title": "Paginietitel",
+		"page_url": "Url",
+		"page_status": "Status",
+		"status_focused": "Huidig ​​venster",
+		"status_unfocused": "Op de achtergrond",
+		"copy_button": "kopiëren",
+		"copied_message": "Gekopieerd naar klembord"
+	},
+	"browser_integration_script": {
+		"hostChange": {
+			"securityWarningTitle": "--- fount Veiligheidswaarschuwing ---",
+			"message": "De huidige pagina (\"${origin}\") probeert uw fount-hostadres te wijzigen in:\n\n\"${newHost}\"\n\nWaarschuwing: door deze actie goed te keuren, kan de nieuwe host uw browserintegratiefuncties volledig beheersen, wat kan leiden tot gevoelige informatielekkage of accountdiefstal.\nEr mag alleen goedkeuring worden gemaakt als u er zeker van bent dat dit uw eigen bewerking is (bijvoorbeeld een fount-server migreren).\n\nWeet u zeker dat u deze wijziging wilt toestaan?",
+			"uuidMismatchError": "fount-beveiligingsfout: de identiteit (UUID) van host ${newHost} komt niet overeen met uw bestaande. De bewerking is geannuleerd.",
+			"verificationError": "fount-beveiligingsfout: niet in staat om nieuwe host \"${newHost}\" te verifiëren. Controleer of het adres correct is en of de service wordt uitgevoerd."
+		},
+		"update": {
+			"prompt": "Een nieuwe versie van het fount Browser Integration Script is beschikbaar. Is de updatepagina nu geopend?"
+		},
+		"csp_warning": "Het fount Browser Integration Script detecteert dat het CSP -beleid op de pagina bestaat, waardoor het integratiescript niet goed werkt. Overweeg de plug -in te installeren om CSP uit te schakelen."
 	}
 }

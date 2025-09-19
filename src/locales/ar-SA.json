@@ -938,6 +938,27 @@
 			"passwordLabel": "كلمة المرور:",
 			"confirmButton": "تأكيد",
 			"cancelButton": "إلغاء"
+		},
+		"apiKeys": {
+			"title": "مفتاح API",
+			"description": "إدارة مفتاح API للتطبيقات الخارجية.",
+			"descriptionPlaceholder": "وصف رئيسي جديد",
+			"createButton": "إنشاء",
+			"noKeysFound": "لم يتم العثور على مفاتيح API.",
+			"refreshButtonTitle": "تحديث القائمة",
+			"keyDetails": "الوصف: ${description} | تم إنشاؤها في: ${createdAt} | آخر استخدام: ${lastUsed}",
+			"neverUsed": "لم تستخدم",
+			"revokeButton": "إلغاء",
+			"revokeConfirm": "هل أنت متأكد من أنك تريد إلغاء مفتاح API هذا؟",
+			"revokeSuccess": "تم إلغاء مفتاح API بنجاح.",
+			"errorDescriptionRequired": "وصف مطلوب.",
+			"createSuccess": "تم إنشاء مفتاح API بنجاح."
+		},
+		"newApiKey": {
+			"title": "تم إنشاء مفتاح API جديد",
+			"warning": "يرجى نسخ مفتاح API الجديد الخاص بك. لن تتمكن من رؤيته مرة أخرى!",
+			"copyButtonTitle": "نسخ مفتاح API جديد",
+			"closeButton": "لقد قمت بنسخ مفتاحي"
 		}
 	},
 	"badges_maker": {
@@ -1133,5 +1154,43 @@
 				"retry": "إعادة المحاولة"
 			}
 		}
+	},
+	"browser_integration": {
+		"title": "تكامل المتصفح",
+		"header": "تكامل المتصفح",
+		"description": "لكي يتفاعل دور النافورة مع صفحة الويب ، تحتاج إلى تثبيت البرنامج النصي لتكامل المتصفح هذا. إنه بمثابة جسر بين الحرف والمتصفح ، مما يسمح لهم بعرض محتوى الصفحة وأداء الإجراءات.",
+		"install_script_title": "البرنامج النصي للتثبيت",
+		"install_script_description": "انقر فوق الزر أدناه لتثبيت البرنامج النصي لتكامل المتصفح. يجب أولاً تثبيت مدير نصوص مستخدم مثل Tampermonkey.",
+		"install_button": "تثبيت",
+		"install_from_url_tip": "ألا يسمح لك متصفحك بتثبيته؟ انسخ عنوان URL هذا واستيراد البرنامج النصي من عنوان URL في المكون الإضافي Tampermonkey.",
+		"what_is_manager": "ما هو مدير نصوص المستخدم (Userscript Manager)؟",
+		"manager_explanation": "Monkey Script Manager هو امتداد متصفح يتيح لك تثبيت البرامج النصية وتشغيلها تعدل صفحات الويب. لاستخدام البرنامج النصي لتكامل النافورة ، تحتاج إلى واحدة من الامتدادات.",
+		"popular_managers": "الخيارات الشعبية:",
+		"csp_warning": "قد تحتاج إلى تثبيت المكون الإضافي لإيقاف تشغيل CSP لجعل وظيفة التكامل تعمل بشكل صحيح. بالنسبة لـ Chrome ، يمكنك استخدام <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"link\">هذا المكون</a>.",
+		"connected_pages_title": "صفحة متصلة",
+		"no_pages_connected": {
+			"title": "لا اتصال بعد",
+			"description": "يرجى تثبيت البرنامج النصي أولاً ، ثم زيارة أي موقع ويب في علامات تبويب المتصفح الأخرى ، والتي سيتم عرضها تلقائيًا هنا."
+		},
+		"fetch_pages_error": "فشل في تحميل قائمة الصفحة المرتبطة.",
+		"page_title": "عنوان الصفحة",
+		"page_url": "عنوان URL",
+		"page_status": "الحالة",
+		"status_focused": "النافذة الحالية",
+		"status_unfocused": "في الخلفية",
+		"copy_button": "نسخ",
+		"copied_message": "نسخ إلى الحافظة"
+	},
+	"browser_integration_script": {
+		"hostChange": {
+			"securityWarningTitle": "--- تحذير سلامة النافورة ---",
+			"message": "تحاول الصفحة الحالية (\"${origin}\") تغيير عنوان مضيف النافورة إلى:\n\n\"${newHost}\"\n\nتحذير: سيسمح الموافقة على هذا الإجراء للمضيف الجديد بالتحكم بالكامل في ميزات تكامل المتصفح ، مما قد يؤدي إلى تسرب حساس للمعلومات أو سرقة الحساب.\nيجب أن يتم الموافقة فقط إذا كنت متأكدًا من أن هذه هي عمليتك الخاصة (على سبيل المثال ، ترحيل خادم نافورة).\n\nهل أنت متأكد من أنك تريد السماح لهذا التغيير؟",
+			"uuidMismatchError": "خطأ أمان FOUNT: لا تتطابق هوية (UUID) للمضيف ${newHost}. تم إلغاء العملية.",
+			"verificationError": "خطأ أمان FOUNT: غير قادر على التحقق من مضيف جديد \"${newHost}\". يرجى التحقق مما إذا كان العنوان صحيحًا وما إذا كانت الخدمة قيد التشغيل."
+		},
+		"update": {
+			"prompt": "يتوفر إصدار جديد من البرنامج النصي للتكامل مع متصفح fount. هل صفحة التحديث مفتوحة الآن؟"
+		},
+		"csp_warning": "يكتشف البرنامج النصي لتكامل متصفح fount أن سياسة CSP موجودة على الصفحة ، مما قد يتسبب في عدم عمل البرنامج النصي للتكامل بشكل صحيح. يرجى النظر في تثبيت البرنامج المساعد لإغلاق CSP."
 	}
 }
