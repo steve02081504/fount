@@ -42,6 +42,12 @@ export default {
 					case 'delete-account':
 						params.password = args[1]
 						break
+					case 'create-apikey':
+						params.description = args[1]
+						break
+					case 'revoke-apikey':
+						params.jti = args[1]
+						break
 				}
 				const result = await handleAction(user, action, params)
 				if (result !== undefined)

@@ -7,8 +7,7 @@ import {
 	changeUserPassword, revokeUserDeviceByJti,
 	renameUser, deleteUserAccount,
 	getUserDictionary, getUserByUsername as getUserConfig,
-	REFRESH_TOKEN_EXPIRY_DURATION,
-	logout as authLogout // 导入 auth.mjs 中的 logout 函数
+	REFRESH_TOKEN_EXPIRY_DURATION
 } from '../../../../server/auth.mjs'
 
 // Helper to calculate directory size
@@ -53,27 +52,22 @@ export function setEndpoints(router) {
 		const userFullConfig = getUserConfig(userReqData.username)
 		const userDirectory = getUserDictionary(userReqData.username)
 
+		let creationDate = userFullConfig?.createdAt || Date.now()
 		try {
-			let creationDate = userFullConfig?.createdAt || Date.now()
-			try {
-				const dirStats = await fs_promises.stat(userDirectory)
-				if (!userFullConfig?.createdAt && dirStats?.birthtimeMs) creationDate = dirStats.birthtimeMs
-			} catch (dirError) { /* Dir might not exist yet, use now or config */ }
+			const dirStats = await fs_promises.stat(userDirectory)
+			if (!userFullConfig?.createdAt && dirStats?.birthtimeMs) creationDate = dirStats.birthtimeMs
+		} catch (dirError) { /* Dir might not exist yet, use now or config */ }
 
-			const folderSizeNum = await getDirectorySize(userDirectory)
-			const folderSize = formatBytes(folderSizeNum)
+		const folderSizeNum = await getDirectorySize(userDirectory)
+		const folderSize = formatBytes(folderSizeNum)
 
-			res.json({
-				success: true,
-				username: userReqData.username,
-				creationDate,
-				folderSize,
-				folderPath: userDirectory
-			})
-		} catch (error) {
-			console.error('User Settings Shell: Error fetching user stats:', error)
-			res.status(500).json({ success: false, message: 'Error fetching user statistics.' })
-		}
+		res.json({
+			success: true,
+			username: userReqData.username,
+			creationDate,
+			folderSize,
+			folderPath: userDirectory
+		})
 	})
 
 	router.post('/api/shells/userSettings/change_password', authenticate, async (req, res) => {
@@ -91,14 +85,7 @@ export function setEndpoints(router) {
 		if (!userReqData) return res.status(401).json({ success: false, message: 'Unauthorized' })
 
 		const userFullConfig = getUserConfig(userReqData.username)
-		// let currentRefreshTokenJti = null // 这个信息现在由客户端自行判断或从服务端获取后比较
-		// try {
-		// 	const refreshTokenCookie = req.cookies.refreshToken
-		// 	if (refreshTokenCookie) currentRefreshTokenJti = jose.decodeJwt(refreshTokenCookie)?.jti
-		// } catch(e) { /* ignore */ }
-
-		if (!userFullConfig?.auth?.refreshTokens)
-			return res.json({ success: true, devices: [] })
+		if (!userFullConfig?.auth?.refreshTokens) return res.json({ success: true, devices: [] })
 
 		const devices = userFullConfig.auth.refreshTokens.map(token => ({
 			deviceId: token.deviceId,
@@ -148,9 +135,5 @@ export function setEndpoints(router) {
 			res.clearCookie('refreshToken', { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax' })
 		}
 		res.status(result.success ? 200 : result.message.includes('Invalid password') ? 401 : 400).json(result)
-	})
-
-	router.post('/api/shells/userSettings/logout', authenticate, async (req, res) => {
-		await authLogout(req, res)
 	})
 }

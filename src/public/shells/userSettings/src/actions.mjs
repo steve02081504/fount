@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import { changeUserPassword, revokeUserDeviceByJti, getUserDictionary, getUserByUsername as getUserConfig, renameUser, deleteUserAccount } from '../../../server/auth.mjs'
+import { changeUserPassword, revokeUserDeviceByJti, getUserDictionary, getUserByUsername as getUserConfig, renameUser, deleteUserAccount, generateApiKey, revokeApiKey } from '../../../server/auth.mjs'
 
 async function getDirectorySize(directoryPath) {
 	let totalSize = 0
@@ -62,5 +62,18 @@ export const actions = {
 	'delete-account': async ({ user, password }) => {
 		if (!password) throw new Error('Password is required.')
 		return await deleteUserAccount(user, password)
+	},
+	'list-apikeys': ({ user }) => {
+		const userConfig = getUserConfig(user)
+		return userConfig.auth.apiKeys || []
+	},
+	'create-apikey': async ({ user, description }) => {
+		if (!description) throw new Error('Description is required.')
+		const { apiKey } = await generateApiKey(user, description)
+		return { apiKey, message: 'Store it securely, it will not be shown again.' }
+	},
+	'revoke-apikey': async ({ user, jti }) => {
+		if (!jti) throw new Error('JTI of the key to revoke is required.')
+		return await revokeApiKey(user, jti)
 	}
 }

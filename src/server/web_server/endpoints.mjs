@@ -7,7 +7,7 @@ import { console, getLocaleData, fountLocaleList } from '../../scripts/i18n.mjs'
 import { ms } from '../../scripts/ms.mjs'
 import { get_hosturl_in_local_ip, is_local_ip, is_local_ip_from_req, rateLimit } from '../../scripts/ratelimit.mjs'
 import { generateVerificationCode, verifyVerificationCode } from '../../scripts/verifycode.mjs'
-import { login, register, logout, authenticate, getUserByReq, getUserDictionary, generateAccessToken, auth_request } from '../auth.mjs'
+import { login, register, logout, authenticate, getUserByReq, getUserDictionary, generateAccessToken, auth_request, generateApiKey, revokeApiKey } from '../auth.mjs'
 import { __dirname } from '../base.mjs'
 import { processIPCCommand } from '../ipc_server/index.mjs'
 import { partsList } from '../managers/base.mjs'
@@ -114,6 +114,27 @@ export function registerEndpoints(router) {
 	})
 
 	router.post('/api/logout', logout)
+
+	router.post('/api/apikey/create', authenticate, async (req, res) => {
+		const user = await getUserByReq(req)
+		const { description } = req.body
+		const { apiKey, jti } = await generateApiKey(user.username, description)
+		res.status(201).json({ success: true, apiKey, jti, message: 'API Key created successfully. Store it securely, it will not be shown again.' })
+	})
+
+	router.get('/api/apikey/list', authenticate, async (req, res) => {
+		const user = await getUserByReq(req)
+		res.status(200).json(user.auth.apiKeys || [])
+	})
+
+	router.post('/api/apikey/revoke', authenticate, async (req, res) => {
+		const user = await getUserByReq(req)
+		const { jti } = req.body
+		if (!jti) return res.status(400).json({ success: false, error: 'JTI of the key to revoke is required.' })
+
+		const result = await revokeApiKey(user.username, jti)
+		res.status(result.success ? 200 : 404).json(result)
+	})
 
 	router.get('/api/whoami', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)

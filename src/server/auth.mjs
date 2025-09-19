@@ -48,8 +48,7 @@ async function importKeyPair(keyPair) {
 }
 async function getFakePrivateKey() {
 	let fakeKeyPair
-	do
-		fakeKeyPair = genNewKeyPair()
+	do fakeKeyPair = genNewKeyPair()
 	while (fakeKeyPair.privateKey == config.privateKey)
 	const importedFakeKeyPair = await importKeyPair(fakeKeyPair)
 	return importedFakeKeyPair.privateKey
@@ -60,19 +59,20 @@ async function getFakePrivateKey() {
  */
 export async function initAuth() {
 	config.uuid ??= crypto.randomUUID()
-	if (!config.privateKey || !config.publicKey) {
+	if (!config.privateKey || !config.publicKey)
 		Object.assign(config, genNewKeyPair())
-		save_config()
-	}
 	const keyPair = await importKeyPair(config)
 	privateKey = keyPair.privateKey
 	publicKey = keyPair.publicKey
 
 	config.data.revokedTokens ??= {}
+	config.data.apiKeys ??= {}
 	config.data.users ??= {}
 	for (const user in config.data.users)
-		if (config.data.users[user].auth)
+		if (config.data.users[user].auth) {
 			config.data.users[user].auth.refreshTokens ??= []
+			config.data.users[user].auth.apiKeys ??= []
+		}
 
 	cleanupRevokedTokens()
 	cleanupRefreshTokens()
@@ -155,8 +155,7 @@ async function refresh(refreshTokenValue, req) {
 		// 再次验证 refreshToken 是否存在于用户记录中，以及 deviceId 是否匹配
 		if (!userRefreshTokenEntry || userRefreshTokenEntry.deviceId !== decoded.deviceId) {
 			// 如果 JTI 存在于用户记录中但 deviceId 不匹配，这可能是一个安全问题，撤销该 JTI
-			if (userRefreshTokenEntry)
-				await revokeToken(refreshTokenValue, 'refresh-device-mismatch')
+			if (userRefreshTokenEntry) await revokeToken(refreshTokenValue, 'refresh-device-mismatch')
 
 			return { status: 401, success: false, message: 'Refresh token not found for user or device mismatch' }
 		}
@@ -201,9 +200,7 @@ export async function logout(req, res) {
 	const { cookies: { accessToken, refreshToken } } = req
 	const user = await getUserByReq(req) // 使用 getUserByReq 获取用户信息
 
-	if (accessToken)
-		await revokeToken(accessToken, 'access-logout')
-
+	if (accessToken) await revokeToken(accessToken, 'access-logout')
 
 	if (refreshToken && user) {
 		const userConfig = getUserByUsername(user.username) // 获取完整的用户配置
@@ -213,8 +210,7 @@ export async function logout(req, res) {
 				if (decodedRefreshToken?.jti) {
 					// 从用户的 refreshToken 列表中移除当前的 refreshToken
 					const tokenIndex = userConfig.auth.refreshTokens.findIndex(token => token.jti === decodedRefreshToken.jti)
-					if (tokenIndex !== -1)
-						userConfig.auth.refreshTokens.splice(tokenIndex, 1)
+					if (tokenIndex !== -1) userConfig.auth.refreshTokens.splice(tokenIndex, 1)
 
 					// 将其添加到全局 revokedTokens
 					await revokeToken(refreshToken, 'refresh-logout')
@@ -236,11 +232,52 @@ export async function logout(req, res) {
  * @param {object} res - Express 响应对象
  * @returns {Promise<void>} - 只在成功时resolve
  */
+async function verifyApiKey(apiKey) {
+	try {
+		const hash = crypto.createHash('sha256').update(apiKey).digest('hex')
+		const keyInfo = config.data.apiKeys[hash]
+
+		if (!keyInfo) return null
+
+		const user = getUserByUsername(keyInfo.username)
+		if (!user) {
+			// Data inconsistency, key exists but user doesn't. Clean it up.
+			delete config.data.apiKeys[hash]
+			save_config()
+			return null
+		}
+
+		// Update last used time
+		const userKeyInfo = user.auth.apiKeys.find(k => k.jti === keyInfo.jti)
+		if (userKeyInfo) userKeyInfo.lastUsed = Date.now()
+
+		return user
+	} catch (error) {
+		console.error('API key verification error:', error)
+		return null
+	}
+}
+
 export async function try_auth_request(req, res) {
 	if (req.user) return
-	const { accessToken, refreshToken } = req.cookies
 
-	const Unauthorized = (message = 'Unauthorized') => { throw message }
+	const Unauthorized = (message = 'Unauthorized') => { console.error(message); throw message }
+
+	// API Key Authentication
+	let apiKey
+	if (req.ws) apiKey = req.headers['sec-websocket-protocol']?.split?.(',')?.[0]?.trim?.()
+	else {
+		const authHeader = req.headers.authorization
+		if (authHeader?.startsWith?.('Bearer ')) apiKey = authHeader.substring(7)
+	}
+
+	if (apiKey) {
+		const user = await verifyApiKey(apiKey)
+		if (user) { req.user = user; return }
+		return Unauthorized('Invalid API Key')
+	}
+
+	const { accessToken, refreshToken } = req.cookies
 
 	if (!accessToken) return Unauthorized()
 
@@ -384,6 +421,7 @@ async function createUser(username, password) {
 			loginAttempts: 0,
 			lockedUntil: null,
 			refreshTokens: [], // 初始化 refreshTokens 数组
+			apiKeys: [],
 		},
 		// 合并默认用户模板
 		...loadJsonFile(path.join(__dirname, 'default', 'templates', 'user.json')),
@@ -432,6 +470,71 @@ export async function changeUserPassword(username, currentPassword, newPassword)
 	return { success: true, message: 'Password changed successfully' }
 }
 
+/**
+ * 生成 API Key
+ * @param {string} username
+ * @param {string} description
+ * @returns {Promise<{apiKey: string, jti: string}>}
+ */
+export async function generateApiKey(username, description = 'New API Key') {
+	const user = getUserByUsername(username)
+	if (!user) throw new Error('User not found')
+
+	const apiKey = `${crypto.randomBytes(32).toString('base64url')}`
+	const hash = crypto.createHash('sha256').update(apiKey).digest('hex')
+	const jti = crypto.randomUUID()
+	const now = Date.now()
+
+	config.data.apiKeys ??= {}
+	// Add to global lookup table
+	config.data.apiKeys[hash] = {
+		username,
+		jti,
+	}
+
+	user.auth.apiKeys ??= []
+	// Add to user's list of keys (for management)
+	user.auth.apiKeys.push({
+		jti,
+		description,
+		createdAt: now,
+		lastUsed: null,
+		prefix: apiKey.substring(0, 7), // Store a prefix for identification e.g., Abc123
+	})
+
+	save_config()
+
+	return { apiKey, jti } // Return plaintext key and its JTI
+}
+
+/**
+ * 撤销 API Key
+ * @param {string} username
+ * @param {string} jti
+ * @returns {Promise<{success: boolean, message: string}>}
+ */
+export async function revokeApiKey(username, jti) {
+	const user = getUserByUsername(username)
+	if (!user || !user.auth || !user.auth.apiKeys)
+		return { success: false, message: 'User or API keys not found' }
+
+	const keyIndex = user.auth.apiKeys.findIndex(key => key.jti === jti)
+	if (keyIndex === -1)
+		return { success: false, message: 'API key not found for this user' }
+
+	// Find the hash to remove from the global table by JTI
+	const hashToRemove = Object.keys(config.data.apiKeys).find(
+		hash => config.data.apiKeys[hash].jti === jti,
+	)
+
+	if (hashToRemove) delete config.data.apiKeys[hashToRemove]
+
+	user.auth.apiKeys.splice(keyIndex, 1)
+	save_config()
+
+	return { success: true, message: 'API key revoked successfully' }
+}
+
 
 /**
  * 根据 JTI 撤销用户的某个设备（Refresh Token）
@@ -446,17 +549,14 @@ export async function revokeUserDeviceByJti(username, tokenJti, password) {
 	if (!user || !user.auth || !user.auth.refreshTokens)
 		return { success: false, message: 'User or device list not found' }
 
-
 	// 验证用户密码
 	const isValidPassword = await verifyPassword(password, user.auth.password)
 	if (!isValidPassword)
 		return { success: false, message: 'Invalid password for user action' }
 
-
 	const tokenIndex = user.auth.refreshTokens.findIndex(token => token.jti === tokenJti)
 	if (tokenIndex === -1)
 		return { success: false, message: 'Device (JTI) not found for this user' }
-
 
 	const revokedToken = user.auth.refreshTokens.splice(tokenIndex, 1)[0]
 	if (revokedToken && revokedToken.jti)
@@ -466,7 +566,6 @@ export async function revokeUserDeviceByJti(username, tokenJti, password) {
 			type: 'refresh-revoked-by-user-jti',
 			revokedAt: Date.now()
 		}
-
 
 	save_config()
 	return { success: true, message: 'Device access (JTI) revoked successfully' }
@@ -482,7 +581,6 @@ export async function deleteUserAccount(username, password) {
 	const user = getUserByUsername(username)
 	if (!user || !user.auth)
 		return { success: false, message: 'User not found.' }
-
 
 	const isValidPassword = await verifyPassword(password, user.auth.password)
 	if (!isValidPassword)
@@ -528,7 +626,6 @@ export async function renameUser(currentUsername, newUsername, password) {
 	if (!user || !user.auth)
 		return { success: false, message: 'Current user not found.' }
 
-
 	const isValidPassword = await verifyPassword(password, user.auth.password)
 	if (!isValidPassword)
 		return { success: false, message: 'Invalid password for renaming user.' }
@@ -561,7 +658,6 @@ export async function renameUser(currentUsername, newUsername, password) {
 				console.log(`User data directory moved from ${oldUserPath} to ${newUserPath}`)
 			} else
 				console.log(`User data directory path is effectively the same (case-insensitive), no move needed: ${oldUserPath}`)
-
 		else {
 			console.warn(`Old user data directory not found: ${oldUserPath}. Nothing to move.`)
 			// 即使旧目录不存在，也应确保新目录存在
@@ -594,18 +690,11 @@ export async function renameUser(currentUsername, newUsername, password) {
  * 从请求中获取用户信息（username, userId）
  * 依赖 authenticate 中间件已填充 req.user
  * @param {object} req - Express 请求对象
- * @returns {Promise<object|null>}
+ * @returns {Promise<object|undefined>} 用户对象或 undefined
  */
 export async function getUserByReq(req) {
-	if (req.user) return req.user
-
-	const token = req.cookies?.accessToken
-	if (!token) return null
-
-	const decoded = await jose.decodeJwt(token) // 不要使用 verifyToken
-	if (!decoded) return null
-
-	return req.user = config.data.users[decoded.username]
+	if (!req.user) throw new Error('Request is not authenticated. Make sure to use the authenticate middleware.')
+	return req.user
 }
 
 /**
@@ -672,7 +761,6 @@ export async function login(username, password, deviceId = 'unknown', req) {
 			console.logI18n('fountConsole.auth.accountLockedLog', { username })
 			return { status: 403, success: false, message: `Account locked due to too many failed attempts. Try again in ${ms(ms(ACCOUNT_LOCK_TIME), { long: true })}.` }
 		}
-		save_config()
 		return await failedLogin()
 	}
 
@@ -760,8 +848,7 @@ function cleanupRefreshTokens() {
 				const notGloballyRevoked = !config.data.revokedTokens[token.jti]
 				return stillValid && notGloballyRevoked
 			})
-			if (user.auth.refreshTokens.length !== initialLength)
-				cleaned = true
+			if (user.auth.refreshTokens.length !== initialLength) cleaned = true
 		}
 	}
 
@@ -770,10 +857,8 @@ function cleanupRefreshTokens() {
 
 function cleanupLoginFailures() {
 	for (const ip in loginFailures)
-		if (loginFailures[ip] < MAX_LOGIN_ATTEMPTS)
-			delete loginFailures[ip]
-		else
-			loginFailures[ip] -= MAX_LOGIN_ATTEMPTS
+		if (loginFailures[ip] < MAX_LOGIN_ATTEMPTS) delete loginFailures[ip]
+		else loginFailures[ip] -= MAX_LOGIN_ATTEMPTS
 }
 
 // 定时清理任务

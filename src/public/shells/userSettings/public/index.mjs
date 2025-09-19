@@ -24,9 +24,22 @@ const el = { // DOM 元素引用
 	confirmPasswordBtn: document.getElementById('confirmPasswordBtn'),
 	cancelPasswordBtn: document.getElementById('cancelPasswordBtn'),
 	alertContainer: document.getElementById('alertContainer'),
+	// API Key elements
+	createApiKeyForm: document.getElementById('createApiKeyForm'),
+	apiKeyListContainer: document.getElementById('apiKeyListContainer'),
+	apiKeyList: document.getElementById('apiKeyList'),
+	noApiKeysText: document.getElementById('noApiKeysText'),
+	refreshApiKeysBtn: document.getElementById('refreshApiKeysBtn'),
+	newApiKeyModal: document.getElementById('newApiKeyModal'),
+	newApiKeyInput: document.getElementById('newApiKeyInput'),
+	copyNewApiKeyBtn: document.getElementById('copyNewApiKeyBtn'),
 }
 
 let passwordConfirmationContext = { resolve: null, reject: null }
+let cachedPassword = null // 用于短期缓存密码
+let passwordCacheTimeoutId = null // 用于存储 setTimeout 的 ID
+
+const PASSWORD_CACHE_DURATION = 3 * 60 * 1000 // 3分钟
 
 // 辅助函数：显示提示消息
 function showAlert(messageKey, type = 'info', duration = 4000, interpolateParams = {}) {
@@ -43,6 +56,13 @@ function showAlert(messageKey, type = 'info', duration = 4000, interpolateParams
 // 辅助函数：请求密码确认
 function requestPasswordConfirmation() {
 	return new Promise((resolve, reject) => {
+		// 检查是否有缓存的密码
+		if (cachedPassword) {
+			console.log('Using cached password.')
+			resolve(cachedPassword)
+			return
+		}
+
 		passwordConfirmationContext = { resolve, reject }
 		el.confirmationPasswordInput.value = ''
 		el.passwordConfirmationModal.showModal()
@@ -51,7 +71,22 @@ function requestPasswordConfirmation() {
 }
 
 el.confirmPasswordBtn.addEventListener('click', () => {
-	passwordConfirmationContext.resolve?.(el.confirmationPasswordInput.value)
+	const password = el.confirmationPasswordInput.value
+	passwordConfirmationContext.resolve?.(password)
+	// 缓存密码
+	cachedPassword = password
+
+	// 清除之前的定时器（如果存在）
+	if (passwordCacheTimeoutId)
+		clearTimeout(passwordCacheTimeoutId)
+
+	// 设置新的定时器，在3分钟后清除缓存密码
+	passwordCacheTimeoutId = setTimeout(() => {
+		cachedPassword = null
+		passwordCacheTimeoutId = null
+		console.log('Cached password cleared after 3 minutes.')
+	}, PASSWORD_CACHE_DURATION)
+
 	el.passwordConfirmationModal.close()
 })
 
@@ -252,12 +287,104 @@ el.deleteAccountBtn.addEventListener('click', async () => {
 	}
 })
 
+// --- API Key Management ---
+
+async function loadAndDisplayApiKeys() {
+	el.apiKeyList.innerHTML = '<div class="text-center py-4"><span class="loading loading-dots loading-md"></span></div>'
+	el.noApiKeysText.classList.add('hidden')
+
+	try {
+		const result = await api.getApiKeys()
+		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Get API keys failed' }))
+
+		el.apiKeyList.innerHTML = ''
+		if (result.apiKeys.length === 0) {
+			el.noApiKeysText.classList.remove('hidden')
+			return
+		}
+
+		result.apiKeys.sort((a, b) => b.createdAt - a.createdAt).forEach(key => {
+			const li = document.createElement('li')
+			li.className = 'p-3 bg-base-100 rounded-lg shadow flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2'
+
+			const keyInfoDiv = document.createElement('div')
+			keyInfoDiv.innerHTML = `<strong class="block text-sm font-mono">${key.prefix}...</strong>`
+
+			const detailsText = geti18n('userSettings.apiKeys.keyDetails', {
+				description: key.description || 'N/A',
+				createdAt: new Date(key.createdAt).toLocaleString(),
+				lastUsed: key.lastUsed ? new Date(key.lastUsed).toLocaleString() : geti18n('userSettings.apiKeys.neverUsed'),
+			})
+			keyInfoDiv.innerHTML += `<small class="block text-xs opacity-70">${detailsText.replaceAll('<', '&lt;').replaceAll('>', '&gt;')}</small>`
+			li.appendChild(keyInfoDiv)
+
+			const revokeButton = document.createElement('button')
+			revokeButton.className = 'btn btn-xs btn-error btn-outline self-start sm:self-center'
+			revokeButton.dataset.i18n = 'userSettings.apiKeys.revokeButton'
+			revokeButton.textContent = geti18n('userSettings.apiKeys.revokeButton')
+			revokeButton.onclick = async () => {
+				if (!confirmI18n('userSettings.apiKeys.revokeConfirm')) return
+				try {
+					const revokeResult = await api.revokeApiKey(key.jti)
+					if (!revokeResult.success)
+						throw new Error(revokeResult.message || geti18n('userSettings.apiError', { message: 'revoke failed' }))
+
+					showAlert('userSettings.apiKeys.revokeSuccess', 'success')
+					loadAndDisplayApiKeys()
+				} catch (error) {
+					showAlert('userSettings.generalError', 'error', 5000, { message: error.message })
+				}
+			}
+			li.appendChild(revokeButton)
+			el.apiKeyList.appendChild(li)
+		})
+	} catch (error) {
+		el.apiKeyList.innerHTML = ''
+		el.noApiKeysText.classList.remove('hidden')
+		showAlert('userSettings.generalError', 'error', 5000, { message: error.message })
+	}
+}
+
+el.refreshApiKeysBtn.addEventListener('click', loadAndDisplayApiKeys)
+
+el.createApiKeyForm.addEventListener('submit', async (event) => {
+	event.preventDefault()
+	const form = event.target
+	const description = form.newApiKeyDescription.value.trim()
+	if (!description) return showAlert('userSettings.apiKeys.errorDescriptionRequired', 'error')
+
+	try {
+		const result = await api.createApiKey(description)
+		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Create API key failed' }))
+
+		el.newApiKeyInput.value = result.apiKey
+		el.newApiKeyModal.showModal()
+		showAlert('userSettings.apiKeys.createSuccess', 'success')
+		form.reset()
+		loadAndDisplayApiKeys()
+	} catch (error) {
+		showAlert('userSettings.generalError', 'error', 5000, { message: error.message })
+	}
+})
+
+el.copyNewApiKeyBtn.addEventListener('click', async () => {
+	try {
+		await navigator.clipboard.writeText(el.newApiKeyInput.value)
+		showAlert('userSettings.newApiKey.copiedAlert', 'success')
+	} catch (err) {
+		console.error('Failed to copy API key: ', err)
+		showAlert('userSettings.generalError', 'error', 5000, { message: 'Failed to copy API key.' })
+	}
+})
+
+
 async function initializeApp() {
 	await initTranslations('userSettings')
 	applyTheme()
 
 	await loadUserInfo()
 	await loadAndDisplayDevices()
+	await loadAndDisplayApiKeys()
 }
 
 initializeApp().catch(error => {

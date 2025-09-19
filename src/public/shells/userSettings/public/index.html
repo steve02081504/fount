@@ -105,6 +105,29 @@
 				</div>
 			</section>
 
+			<!-- API Keys -->
+			<section class="card bg-base-200 shadow-xl">
+				<div class="card-body">
+					<div class="flex justify-between items-center mb-4">
+						<h2 class="card-title" data-i18n="userSettings.apiKeys.title"></h2>
+						<button id="refreshApiKeysBtn" class="btn btn-sm btn-ghost" data-i18n-title="userSettings.apiKeys.refreshButtonTitle">
+							<img src="https://api.iconify.design/line-md/rotate-270.svg" class="w-5 h-5" data-i18n-alt="userSettings.apiKeys.refreshButtonTitle" />
+						</button>
+					</div>
+					<p class="text-sm opacity-80" data-i18n="userSettings.apiKeys.description"></p>
+
+					<form id="createApiKeyForm" class="flex items-center gap-2 pt-4">
+						<input type="text" id="newApiKeyDescription" name="newApiKeyDescription" class="input input-bordered input-sm flex-grow" data-i18n-placeholder="userSettings.apiKeys.descriptionPlaceholder" required />
+						<button type="submit" class="btn btn-sm btn-primary" data-i18n="userSettings.apiKeys.createButton"></button>
+					</form>
+
+					<div id="apiKeyListContainer" class="max-h-96 overflow-y-auto pt-4">
+						<p id="noApiKeysText" class="text-center hidden py-4" data-i18n="userSettings.apiKeys.noKeysFound"></p>
+						<div id="apiKeyList" class="space-y-3"></div>
+					</div>
+				</div>
+			</section>
+
 			<!-- 登出 -->
 			<section class="card bg-base-200 shadow-xl">
 				<div class="card-body">
@@ -149,6 +172,27 @@
 
 	<!-- 提示消息容器 -->
 	<div id="alertContainer" class="toast toast-bottom toast-end z-[100]"></div>
+
+	<!-- 新 API Key 模态框 -->
+	<dialog id="newApiKeyModal" class="modal">
+		<div class="modal-box">
+			<form method="dialog"> <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button></form>
+			<h3 class="font-bold text-lg" data-i18n="userSettings.newApiKey.title"></h3>
+			<p class="py-4 text-warning" data-i18n="userSettings.newApiKey.warning"></p>
+			<div class="form-control">
+				<div class="relative">
+					<input type="text" id="newApiKeyInput" class="input input-bordered w-full pr-10" readonly />
+					<button id="copyNewApiKeyBtn" class="btn btn-sm btn-ghost absolute top-1/2 right-1 transform -translate-y-1/2" data-i18n-title="userSettings.newApiKey.copyButtonTitle">
+						<img src="https://api.iconify.design/material-symbols/content-copy-outline.svg" class="w-4 h-4" />
+					</button>
+				</div>
+			</div>
+			<div class="modal-action">
+				<form method="dialog"><button class="btn" data-i18n="userSettings.newApiKey.closeButton"></button></form>
+			</div>
+		</div>
+		<form method="dialog" class="modal-backdrop"><button>close</button></form>
+	</dialog>
 
 	<script type="module" src="./index.mjs"></script>
 </body>

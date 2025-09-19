@@ -1,6 +1,6 @@
 // Helper function to make API calls
 async function callApi(endpoint, method = 'POST', body) {
-	const response = await fetch(`/api/shells/userSettings/${endpoint}`, {
+	const response = await fetch(`/api/${endpoint}`, {
 		method,
 		headers: { 'Content-Type': 'application/json' },
 		body: body ? JSON.stringify(body) : undefined,
@@ -18,29 +18,41 @@ async function callApi(endpoint, method = 'POST', body) {
 }
 
 export async function getUserStats() {
-	return callApi('stats', 'GET')
+	return callApi('shells/userSettings/stats', 'GET')
 }
 
 export async function changePassword(currentPassword, newPassword) {
-	return callApi('change_password', 'POST', { currentPassword, newPassword })
+	return callApi('shells/userSettings/change_password', 'POST', { currentPassword, newPassword })
 }
 
 export async function getDevices() {
-	return callApi('devices', 'GET')
+	return callApi('shells/userSettings/devices', 'GET')
 }
 
 export async function revokeDevice(tokenJti, password) {
-	return callApi('revoke_device', 'POST', { tokenJti, password })
+	return callApi('shells/userSettings/revoke_device', 'POST', { tokenJti, password })
 }
 
 export async function renameUser(newUsername, password) {
-	return callApi('rename_user', 'POST', { newUsername, password })
+	return callApi('shells/userSettings/rename_user', 'POST', { newUsername, password })
 }
 
 export async function deleteAccount(password) {
-	return callApi('delete_account', 'POST', { password })
+	return callApi('shells/userSettings/delete_account', 'POST', { password })
 }
 
 export async function logoutUser() {
-	return callApi('logout', 'POST') // 不需要 body
+	return callApi('logout', 'POST')
+}
+
+export async function getApiKeys() {
+	return callApi('apikey/list', 'GET')
+}
+
+export async function createApiKey(description) {
+	return callApi('apikey/create', 'POST', { description })
+}
+
+export async function revokeApiKey(jti) {
+	return callApi('apikey/revoke', 'POST', { jti })
 }
