@@ -499,6 +499,7 @@ function isRoot {
 		$UID -eq 0
 	}
 }
+$is_debug = $false
 function run {
 	if ($IsWindows) {
 		Get-Process tray_windows_release -ErrorAction Ignore | Where-Object { $_.CPU -gt 0.5 } | Stop-Process
@@ -507,9 +508,8 @@ function run {
 		Write-Warning "Not Recommended: Running fount as root grants full system access for all fount parts."
 		Write-Warning "Unless you know what you are doing, it is recommended to run fount as a common user."
 	}
-	if ($args.Count -gt 0 -and $args[0] -eq 'debug') {
-		$newargs = $args[1..$args.Count]
-		deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags=--expose-gc "$FOUNT_DIR/src/server/index.mjs" @newargs
+	if ($is_debug) {
+		deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags=--expose-gc "$FOUNT_DIR/src/server/index.mjs" @args
 	}
 	else {
 		deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --v8-flags=--expose-gc "$FOUNT_DIR/src/server/index.mjs" @args
@@ -671,6 +671,10 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'init') {
 }
 elseif ($args.Count -gt 0 -and $args[0] -eq 'keepalive') {
 	$runargs = $args[1..$args.Count]
+	if ($runargs.Count -gt 0 -and $runargs[0] -eq 'debug') {
+		$runargs = $runargs[1..$runargs.Count]
+		$is_debug = $true
+	}
 	run @runargs
 	while ($LastExitCode) {
 		if (Test-Path -Path "$FOUNT_DIR/.noupdate") {
@@ -841,7 +845,12 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 	exit 0
 }
 else {
-	run @args
+	$runargs = $args
+	if ($runargs.Count -gt 0 -and $runargs[0] -eq 'debug') {
+		$runargs = $runargs[1..$runargs.Count]
+		$is_debug = $true
+	}
+	run @runargs
 	while ($LastExitCode -eq 131) {
 		if (Test-Path -Path "$FOUNT_DIR/.noupdate") {
 			Write-Host "Skipping fount update due to .noupdate file"

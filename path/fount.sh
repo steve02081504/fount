@@ -910,7 +910,7 @@ if [[ $# -eq 0 || ($1 != "shutdown" && $1 != "geneexe") ]]; then
 	fi
 	run_deno -V
 fi
-
+is_debug=0
 # 函数: 运行 fount
 run() {
 	if [[ $(id -u) -eq 0 ]]; then
@@ -929,8 +929,8 @@ run() {
 			run_sed_inplace '/proot-distro login ubuntu/d' "/data/data/com.termux/files/home/.bashrc"
 		fi
 	fi
-	if [[ $# -gt 0 && $1 = 'debug' ]]; then
-		run_deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags=--expose-gc "$FOUNT_DIR/src/server/index.mjs" "${@:2}"
+	if [[ $is_debug -eq 1 ]]; then
+		run_deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags=--expose-gc "$FOUNT_DIR/src/server/index.mjs" "$@"
 	else
 		run_deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --v8-flags=--expose-gc "$FOUNT_DIR/src/server/index.mjs" "$@"
 	fi
@@ -970,6 +970,10 @@ init)
 	;;
 keepalive)
 	runargs=("${@:2}")
+	if [[ "${runargs[0]}" == "debug" ]]; then
+		is_debug=1
+		runargs=("${runargs[@]:1}")
+	fi
 	run "${runargs[@]}"
 	# shellcheck disable=SC2181
 	while [ $? -ne 0 ]; do
@@ -1037,7 +1041,12 @@ remove)
 	exit 0
 	;;
 *)
-	run "$@"
+	runargs=("${@}")
+	if [[ "${runargs[0]}" == "debug" ]]; then
+		is_debug=1
+		runargs=("${runargs[@]:1}")
+	fi
+	run "${runargs[@]}"
 	exit_code=$?
 	while [ $exit_code -eq 131 ]; do
 		if [ -f "$FOUNT_DIR/.noupdate" ]; then
