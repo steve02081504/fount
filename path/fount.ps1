@@ -675,8 +675,35 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'keepalive') {
 		$runargs = $runargs[1..$runargs.Count]
 		$is_debug = $true
 	}
+
+	$restart_timestamps = New-Object System.Collections.Generic.List[datetime]
+
 	run @runargs
 	while ($LastExitCode) {
+		$current_time = Get-Date
+		$restart_timestamps.Add($current_time)
+
+		# Remove timestamps older than 3 minutes
+		$three_minutes_ago = $current_time.AddMinutes(-3)
+		for ($i = $restart_timestamps.Count - 1; $i -ge 0; $i--) {
+			if ($restart_timestamps[$i] -lt $three_minutes_ago) {
+				$restart_timestamps.RemoveAt($i)
+			}
+		}
+
+		if ($restart_timestamps.Count -ge 7) {
+			Write-Warning "fount has restarted 7 times in the last 3 minutes. Forcing re-initialization..."
+			$restart_timestamps.Clear()
+
+			& $PSScriptRoot/fount.ps1 init
+			if ($LastExitCode -ne 0) {
+				Write-Error "fount init failed. Exiting."
+				exit 1
+			}
+
+			Write-Host "Re-initialization complete. Attempting to restart fount..."
+		}
+
 		if (Test-Path -Path "$FOUNT_DIR/.noupdate") {
 			Write-Host "Skipping fount update due to .noupdate file"
 		}

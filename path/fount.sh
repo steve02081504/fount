@@ -974,9 +974,38 @@ keepalive)
 		is_debug=1
 		runargs=("${runargs[@]:1}")
 	fi
+
+	restart_timestamps=()
+
 	run "${runargs[@]}"
 	# shellcheck disable=SC2181
 	while [ $? -ne 0 ]; do
+		current_time=$(date +%s)
+		restart_timestamps+=("$current_time")
+
+		# Remove timestamps older than 3 minutes (180 seconds)
+		three_minutes_ago=$((current_time - 180))
+		temp_timestamps=()
+		for ts in "${restart_timestamps[@]}"; do
+			if [ "$ts" -ge "$three_minutes_ago" ]; then
+				temp_timestamps+=("$ts")
+			fi
+		done
+		restart_timestamps=("${temp_timestamps[@]}")
+
+		if [ "${#restart_timestamps[@]}" -ge 7 ]; then
+			echo -e "${C_YELLOW}fount has restarted 7 times in the last 3 minutes. Forcing re-initialization...${C_RESET}" >&2
+			restart_timestamps=()
+
+			"$0" init
+			if [ $? -ne 0 ]; then
+				echo -e "${C_RED}fount init failed. Exiting.${C_RESET}" >&2
+				exit 1
+			fi
+
+			echo "Re-initialization complete. Attempting to restart fount..."
+		fi
+
 		if [ -f "$FOUNT_DIR/.noupdate" ]; then
 			echo "Skipping fount update due to .noupdate file"
 		else
