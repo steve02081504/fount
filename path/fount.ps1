@@ -673,8 +673,13 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'keepalive') {
 	$runargs = $args[1..$args.Count]
 	run @runargs
 	while ($LastExitCode) {
-		deno_upgrade
-		fount_upgrade
+		if (Test-Path -Path "$FOUNT_DIR/.noupdate") {
+			Write-Host "Skipping fount update due to .noupdate file"
+		}
+		else {
+			deno_upgrade
+			fount_upgrade
+		}
 		run
 	}
 }
@@ -838,8 +843,13 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 else {
 	run @args
 	while ($LastExitCode -eq 131) {
-		deno_upgrade
-		fount_upgrade
+		if (Test-Path -Path "$FOUNT_DIR/.noupdate") {
+			Write-Host "Skipping fount update due to .noupdate file"
+		}
+		else {
+			deno_upgrade
+			fount_upgrade
+		}
 		run
 	}
 }

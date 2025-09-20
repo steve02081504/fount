@@ -973,8 +973,12 @@ keepalive)
 	run "${runargs[@]}"
 	# shellcheck disable=SC2181
 	while [ $? -ne 0 ]; do
-		deno_upgrade
-		fount_upgrade
+		if [ -f "$FOUNT_DIR/.noupdate" ]; then
+			echo "Skipping fount update due to .noupdate file"
+		else
+			deno_upgrade
+			fount_upgrade
+		fi
 		run
 	done
 	;;
@@ -1036,8 +1040,12 @@ remove)
 	run "$@"
 	exit_code=$?
 	while [ $exit_code -eq 131 ]; do
-		deno_upgrade
-		fount_upgrade
+		if [ -f "$FOUNT_DIR/.noupdate" ]; then
+			echo "Skipping fount update due to .noupdate file"
+		else
+			deno_upgrade
+			fount_upgrade
+		fi
 		run
 		exit_code=$?
 	done
