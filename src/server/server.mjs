@@ -13,6 +13,7 @@ import { console } from '../scripts/i18n.mjs'
 import { loadJsonFile, saveJsonFile } from '../scripts/json_loader.mjs'
 import { get_hosturl_in_local_ip } from '../scripts/ratelimit.mjs'
 import { createTray } from '../scripts/tray.mjs'
+import { on_upgrade } from '../scripts/WsAbleRouter.mjs'
 import { runSimpleWorker } from '../workers/index.mjs'
 
 import { initAuth } from './auth.mjs'
@@ -164,6 +165,7 @@ export async function init(start_config) {
 
 			server.on('upgrade', upgradeListener)
 			server.on('error', reject)
+			server.on('upgrade', on_upgrade)
 		})
 
 		if (start_config.needs_output) try {
