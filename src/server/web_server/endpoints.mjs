@@ -7,7 +7,7 @@ import { console, getLocaleData, fountLocaleList } from '../../scripts/i18n.mjs'
 import { ms } from '../../scripts/ms.mjs'
 import { get_hosturl_in_local_ip, is_local_ip, is_local_ip_from_req, rateLimit } from '../../scripts/ratelimit.mjs'
 import { generateVerificationCode, verifyVerificationCode } from '../../scripts/verifycode.mjs'
-import { login, register, logout, authenticate, getUserByReq, getUserDictionary, generateAccessToken, auth_request, generateApiKey, revokeApiKey } from '../auth.mjs'
+import { login, register, logout, authenticate, getUserByReq, getUserDictionary, getUserByUsername, generateAccessToken, auth_request, generateApiKey, revokeApiKey } from '../auth.mjs'
 import { __dirname } from '../base.mjs'
 import { processIPCCommand } from '../ipc_server/index.mjs'
 import { partsList } from '../managers/base.mjs'
@@ -124,7 +124,15 @@ export function registerEndpoints(router) {
 
 	router.get('/api/apikey/list', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		res.status(200).json(user.auth.apiKeys || [])
+		const userConfig = getUserByUsername(user.username)
+		const apiKeys = (userConfig.auth.apiKeys || []).map(key => ({
+			jti: key.jti,
+			prefix: key.prefix,
+			description: key.description,
+			createdAt: key.createdAt,
+			lastUsed: key.lastUsed,
+		}))
+		res.status(200).json({ success: true, apiKeys })
 	})
 
 	router.post('/api/apikey/revoke', authenticate, async (req, res) => {
