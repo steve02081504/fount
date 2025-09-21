@@ -15,10 +15,11 @@ export function WsAbleRouter(router = express.Router(), httpServer = null) {
 			ip: req.socket.remoteAddress,
 		})
 
-		const res = new http.ServerResponse(req)
-		Object.assign(res, {
-			end: _ => socket.end(),
-		})
+		const res = {
+			setHeader: () => { },
+			getHeader: () => undefined,
+			removeHeader: () => { },
+		}
 
 		try {
 			await router(req, res)
