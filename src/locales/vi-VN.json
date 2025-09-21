@@ -1179,7 +1179,38 @@
 		"status_focused": "Cửa sổ hiện tại",
 		"status_unfocused": "Trong nền",
 		"copy_button": "sao chép",
-		"copied_message": "Được sao chép vào bảng tạm"
+		"copied_message": "Được sao chép vào bảng tạm",
+		"autorun": {
+			"title": "Tự động chạy tập lệnh",
+			"description": "Quản lý các đoạn trích JavaScript được tự động thực hiện khi khớp một trang web cụ thể. Các tập lệnh này có thể được cung cấp bởi vai trò AI hoặc trình cắm của bạn để nâng cao hoặc tự động hóa trải nghiệm duyệt web của bạn.",
+			"form_title": "Thêm một tập lệnh mới",
+			"comment_label": "Nhận xét (tùy chọn)",
+			"url_regex_label": "URL biểu thức chính quy",
+			"script_label": "Mã JavaScript",
+			"add_button": "Thêm tập lệnh",
+			"list_title": "Các tập lệnh được cấu hình",
+			"view_script_button": "Xem tập lệnh",
+			"delete_button": "xóa bỏ",
+			"confirm_delete": "Bạn có chắc là bạn muốn xóa tập lệnh này? Hoạt động này không thể bị hủy bỏ.",
+			"add_success": "Tập lệnh chạy tự động đã được thêm vào thành công!",
+			"delete_success": "Kịch bản đã bị xóa thành công.",
+			"no_scripts": {
+				"title": "Không chạy tập lệnh tự động",
+				"description": "Bạn chưa cấu hình bất kỳ tập lệnh nào. Vui lòng sử dụng biểu mẫu ở trên để thêm mẫu đầu tiên."
+			},
+			"table": {
+				"comment": "Nhận xét",
+				"url_regex": "URL biểu thức chính quy",
+				"created_at": "Được tạo ra trong"
+			},
+			"view_script_modal_title": "Xem tập lệnh",
+			"view_script_modal_close_button": "Đóng"
+		},
+		"error": {
+			"load_failed": "Không tải tập lệnh tự động: ${message}",
+			"add_failed": "Không thể thêm tập lệnh: ${message}",
+			"delete_failed": "Xóa tập lệnh không thành công: ${message}"
+		}
 	},
 	"browser_integration_script": {
 		"hostChange": {

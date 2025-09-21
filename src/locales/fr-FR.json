@@ -1179,7 +1179,38 @@
 		"status_focused": "Fenêtre actuelle",
 		"status_unfocused": "En arrière-plan",
 		"copy_button": "Copier",
-		"copied_message": "Copié dans le presse-papiers"
+		"copied_message": "Copié dans le presse-papiers",
+		"autorun": {
+			"title": "Exécuter automatiquement les scripts",
+			"description": "Gérez les extraits JavaScript qui sont automatiquement exécutés lors de la correspondance d'un site Web spécifique. Ces scripts peuvent être fournis par votre rôle d'IA ou votre plug-in pour améliorer ou automatiser votre expérience de navigation.",
+			"form_title": "Ajouter un nouveau script",
+			"comment_label": "Commentaires (facultatif)",
+			"url_regex_label": "Expression régulière de l'URL",
+			"script_label": "Code javascript",
+			"add_button": "Ajouter un script",
+			"list_title": "Scripts configurés",
+			"view_script_button": "Afficher le script",
+			"delete_button": "supprimer",
+			"confirm_delete": "Êtes-vous sûr de vouloir supprimer ce script? Cette opération ne peut pas être annulée.",
+			"add_success": "Le script en cours d'exécution automatique a été ajouté avec succès!",
+			"delete_success": "Le script a été supprimé avec succès.",
+			"no_scripts": {
+				"title": "Aucun script automatique en cours d'exécution",
+				"description": "Vous n'avez pas encore configuré de scripts. Veuillez utiliser le formulaire ci-dessus pour ajouter le premier."
+			},
+			"table": {
+				"comment": "Commentaires",
+				"url_regex": "Expression régulière de l'URL",
+				"created_at": "Créé dans"
+			},
+			"view_script_modal_title": "Afficher le script",
+			"view_script_modal_close_button": "Fermer"
+		},
+		"error": {
+			"load_failed": "Échec du chargement du script automatique: ${message}",
+			"add_failed": "Échec de l'ajout de script: ${message}",
+			"delete_failed": "Supprimer le script a échoué: ${message}"
+		}
 	},
 	"browser_integration_script": {
 		"hostChange": {

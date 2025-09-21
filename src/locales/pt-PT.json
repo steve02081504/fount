@@ -1179,7 +1179,38 @@
 		"status_focused": "Janela atual",
 		"status_unfocused": "Nos bastidores",
 		"copy_button": "cópia",
-		"copied_message": "Copiado para a área de transferência"
+		"copied_message": "Copiado para a área de transferência",
+		"autorun": {
+			"title": "Execute automaticamente scripts",
+			"description": "Gerencie trechos JavaScript que são executados automaticamente ao corresponder a um site específico. Esses scripts podem ser fornecidos por sua função ou plug-in de IA para aprimorar ou automatizar sua experiência de navegação.",
+			"form_title": "Adicione um novo script",
+			"comment_label": "Comentários (opcional)",
+			"url_regex_label": "Expressão regular de URL",
+			"script_label": "Código JavaScript",
+			"add_button": "Adicione o script",
+			"list_title": "Scripts configurados",
+			"view_script_button": "Veja o script",
+			"delete_button": "excluir",
+			"confirm_delete": "Tem certeza de que deseja excluir este script? Esta operação não pode ser cancelada.",
+			"add_success": "O script automático em execução foi adicionado com sucesso!",
+			"delete_success": "O script foi excluído com sucesso.",
+			"no_scripts": {
+				"title": "Nenhum script automático em execução",
+				"description": "Você ainda não configurou nenhum script. Por favor, use o formulário acima para adicionar o primeiro."
+			},
+			"table": {
+				"comment": "Comentários",
+				"url_regex": "Expressão regular de URL",
+				"created_at": "Criado em"
+			},
+			"view_script_modal_title": "Veja o script",
+			"view_script_modal_close_button": "Fechar"
+		},
+		"error": {
+			"load_failed": "Falha ao carregar o script automático: ${message}",
+			"add_failed": "Falha ao adicionar script: ${message}",
+			"delete_failed": "Excluir script falhou: ${message}"
+		}
 	},
 	"browser_integration_script": {
 		"hostChange": {

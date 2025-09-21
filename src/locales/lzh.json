@@ -1179,7 +1179,38 @@
 		"status_focused": "當前",
 		"status_unfocused": "在後",
 		"copy_button": "錄",
-		"copied_message": "已錄"
+		"copied_message": "已錄",
+		"autorun": {
+			"title": "術自運",
+			"description": "掌瓊琚之術，遇特定之網而自行。或由智巧、或由插件，以利遊覽。",
+			"form_title": "添新術",
+			"comment_label": "註（可略）",
+			"url_regex_label": "網址定式",
+			"script_label": "術之文",
+			"add_button": "添之",
+			"list_title": "備術一覽",
+			"view_script_button": "覽其術",
+			"delete_button": "去之",
+			"confirm_delete": "確欲去之乎？此舉無悔。",
+			"add_success": "術已添矣。",
+			"delete_success": "術已去矣。",
+			"no_scripts": {
+				"title": "術自運",
+				"description": "掌瓊琚之術，遇特定之網而自行。或由智巧、或由插件，以利遊覽。"
+			},
+			"table": {
+				"comment": "註",
+				"url_regex": "網址定式",
+				"created_at": "成于"
+			},
+			"view_script_modal_title": "覽術",
+			"view_script_modal_close_button": "閉"
+		},
+		"error": {
+			"load_failed": "載術不成：${message}",
+			"add_failed": "添術不成：${message}",
+			"delete_failed": "去術不成：${message}"
+		}
 	},
 	"browser_integration_script": {
 		"hostChange": {

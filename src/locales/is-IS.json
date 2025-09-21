@@ -1179,7 +1179,38 @@
 		"status_focused": "Núverandi gluggi",
 		"status_unfocused": "Í bakgrunni",
 		"copy_button": "Afritaðu",
-		"copied_message": "Afritað á klemmuspjald"
+		"copied_message": "Afritað á klemmuspjald",
+		"autorun": {
+			"title": "Keyra sjálfkrafa forskriftir",
+			"description": "Stjórnaðu JavaScript búningum sem eru sjálfkrafa keyrðir þegar þú passar við ákveðna vefsíðu. Þessar forskriftir geta verið veittar með AI hlutverki þínu eða viðbót til að auka eða gera sjálfvirkan vafraupplifun þína.",
+			"form_title": "Bættu við nýju handriti",
+			"comment_label": "Athugasemdir (valfrjálst)",
+			"url_regex_label": "Vefslóð regluleg tjáning",
+			"script_label": "JavaScript kóða",
+			"add_button": "Bæta við handriti",
+			"list_title": "Stillt forskriftir",
+			"view_script_button": "Skoðaðu handritið",
+			"delete_button": "Eyða",
+			"confirm_delete": "Ertu viss um að þú viljir eyða þessu handriti? Ekki er hægt að hætta við þessa aðgerð.",
+			"add_success": "Sjálfvirka keyrsluhandritinu hefur verið bætt við með góðum árangri!",
+			"delete_success": "Handritinu hefur verið eytt með góðum árangri.",
+			"no_scripts": {
+				"title": "Ekkert sjálfvirkt handrit í gangi",
+				"description": "Þú hefur ekki stillt nein forskriftir ennþá. Vinsamlegast notaðu formið hér að ofan til að bæta við því fyrsta."
+			},
+			"table": {
+				"comment": "Athugasemdir",
+				"url_regex": "Vefslóð regluleg tjáning",
+				"created_at": "Búið til í"
+			},
+			"view_script_modal_title": "Skoðaðu handritið",
+			"view_script_modal_close_button": "Lokun"
+		},
+		"error": {
+			"load_failed": "Ekki tókst að hlaða sjálfvirka handritið: ${message}",
+			"add_failed": "Ekki tókst að bæta við handriti: ${message}",
+			"delete_failed": "Eyða handrit mistókst: ${message}"
+		}
 	},
 	"browser_integration_script": {
 		"hostChange": {

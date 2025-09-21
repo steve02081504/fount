@@ -1179,7 +1179,38 @@
 		"status_focused": "Aktuelles Fenster",
 		"status_unfocused": "Im Hintergrund",
 		"copy_button": "Kopieren",
-		"copied_message": "Kopiert in die Zwischenablage"
+		"copied_message": "Kopiert in die Zwischenablage",
+		"autorun": {
+			"title": "Automatisch Skripte ausführen",
+			"description": "Verwalten Sie JavaScript -Snippets, die bei der Übereinstimmung mit einer bestimmten Website automatisch ausgeführt werden. Diese Skripte können von Ihrer KI-Rolle oder Ihrem Plug-In bereitgestellt werden, um Ihr Browsing-Erlebnis zu verbessern oder zu automatisieren.",
+			"form_title": "Fügen Sie ein neues Skript hinzu",
+			"comment_label": "Kommentare (optional)",
+			"url_regex_label": "URL regelmäßiger Ausdruck",
+			"script_label": "JavaScript -Code",
+			"add_button": "Skript hinzufügen",
+			"list_title": "Konfigurierte Skripte",
+			"view_script_button": "Das Skript anzeigen",
+			"delete_button": "löschen",
+			"confirm_delete": "Sind Sie sicher, dass Sie dieses Skript löschen möchten? Diese Operation kann nicht storniert werden.",
+			"add_success": "Das automatische Skript wurde erfolgreich hinzugefügt!",
+			"delete_success": "Das Skript wurde erfolgreich gelöscht.",
+			"no_scripts": {
+				"title": "Kein automatisches Skript ausgeführt",
+				"description": "Sie haben noch keine Skripte konfiguriert. Bitte verwenden Sie das obige Formular, um das erste hinzuzufügen."
+			},
+			"table": {
+				"comment": "Kommentare",
+				"url_regex": "URL regelmäßiger Ausdruck",
+				"created_at": "Erstellt in"
+			},
+			"view_script_modal_title": "Das Skript anzeigen",
+			"view_script_modal_close_button": "Schließen"
+		},
+		"error": {
+			"load_failed": "Das automatische Skript konnte nicht geladen werden: ${message}",
+			"add_failed": "Fehler beim Hinzufügen des Skripts: ${message}",
+			"delete_failed": "Löschen des Skripts fehlgeschlagen: ${message}"
+		}
 	},
 	"browser_integration_script": {
 		"hostChange": {

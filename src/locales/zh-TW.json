@@ -1179,7 +1179,38 @@
 		"status_focused": "當前窗口",
 		"status_unfocused": "背景",
 		"copy_button": "複製",
-		"copied_message": "已復製到剪貼簿"
+		"copied_message": "已復製到剪貼簿",
+		"autorun": {
+			"title": "自動運行腳本",
+			"description": "管理在匹配特定網站時自動執行的JavaScript片段。這些腳本可以由您的AI角色或插件提供，以增強或自動化您的瀏覽體驗。",
+			"form_title": "添加新腳本",
+			"comment_label": "註釋（可選）",
+			"url_regex_label": "URL 正則表達式",
+			"script_label": "JavaScript 代碼",
+			"add_button": "添加腳本",
+			"list_title": "已配置的腳本",
+			"view_script_button": "查看腳本",
+			"delete_button": "刪除",
+			"confirm_delete": "您確定要刪除此腳本嗎？此操作無法撤銷。",
+			"add_success": "自動運行腳本已成功添加！",
+			"delete_success": "腳本已成功刪除。",
+			"no_scripts": {
+				"title": "沒有自動運行腳本",
+				"description": "您還沒有配置任何腳本。請使用上面的表單添加第一個。"
+			},
+			"table": {
+				"comment": "註釋",
+				"url_regex": "URL 正則表達式",
+				"created_at": "創建於"
+			},
+			"view_script_modal_title": "查看腳本",
+			"view_script_modal_close_button": "關閉"
+		},
+		"error": {
+			"load_failed": "加載自動運行腳本失敗：${message}",
+			"add_failed": "添加腳本失敗：${message}",
+			"delete_failed": "刪除腳本失敗：${message}"
+		}
 	},
 	"browser_integration_script": {
 		"hostChange": {

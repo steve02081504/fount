@@ -1179,7 +1179,38 @@
 		"status_focused": "Huidig ​​venster",
 		"status_unfocused": "Op de achtergrond",
 		"copy_button": "kopiëren",
-		"copied_message": "Gekopieerd naar klembord"
+		"copied_message": "Gekopieerd naar klembord",
+		"autorun": {
+			"title": "Voer automatisch scripts uit",
+			"description": "Beheer JavaScript -fragmenten die automatisch worden uitgevoerd bij het matchen van een specifieke website. Deze scripts kunnen worden verstrekt door uw AI-rol of plug-in om uw browse-ervaring te verbeteren of te automatiseren.",
+			"form_title": "Voeg een nieuw script toe",
+			"comment_label": "Opmerkingen (optioneel)",
+			"url_regex_label": "URL Regelmatige expressie",
+			"script_label": "JavaScript -code",
+			"add_button": "Script toevoegen",
+			"list_title": "Geconfigureerde scripts",
+			"view_script_button": "Bekijk het script",
+			"delete_button": "verwijderen",
+			"confirm_delete": "Weet u zeker dat u dit script wilt verwijderen? Deze bewerking kan niet worden geannuleerd.",
+			"add_success": "Het automatische lopende script is met succes toegevoegd!",
+			"delete_success": "Het script is met succes verwijderd.",
+			"no_scripts": {
+				"title": "Geen automatisch script uitgevoerd",
+				"description": "U hebt nog geen scripts geconfigureerd. Gebruik het bovenstaande formulier om de eerste toe te voegen."
+			},
+			"table": {
+				"comment": "Opmerkingen",
+				"url_regex": "URL Regelmatige expressie",
+				"created_at": "Gemaakt in"
+			},
+			"view_script_modal_title": "Bekijk het script",
+			"view_script_modal_close_button": "Sluiten"
+		},
+		"error": {
+			"load_failed": "Kan het automatische script niet laden: ${message}",
+			"add_failed": "Script niet toevoegen: ${message}",
+			"delete_failed": "Delete script mislukt: ${message}"
+		}
 	},
 	"browser_integration_script": {
 		"hostChange": {

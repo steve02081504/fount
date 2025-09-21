@@ -1179,7 +1179,38 @@
 		"status_focused": "🎯",
 		"status_unfocused": "💤",
 		"copy_button": "📋",
-		"copied_message": "✅📋"
+		"copied_message": "✅📋",
+		"autorun": {
+			"title": "📜▶️✨",
+			"description": "🔧📜 ➡️ 🌐✨",
+			"form_title": "➕📜",
+			"comment_label": "💬",
+			"url_regex_label": "🔗📝",
+			"script_label": "📜",
+			"add_button": "➕",
+			"list_title": "📋📜",
+			"view_script_button": "👀",
+			"delete_button": "🗑️",
+			"confirm_delete": "🗑️⚠️❓",
+			"add_success": "✅✨",
+			"delete_success": "🗑️✅",
+			"no_scripts": {
+				"title": "📜▶️✨",
+				"description": "👆🔧📜 ➡️ 🌐✨"
+			},
+			"table": {
+				"comment": "💬",
+				"url_regex": "🔗📝",
+				"created_at": "🗓️"
+			},
+			"view_script_modal_title": "👀📜",
+			"view_script_modal_close_button": "❌"
+		},
+		"error": {
+			"load_failed": "⚠️📜 ${message}",
+			"add_failed": "⚠️➕ ${message}",
+			"delete_failed": "⚠️🗑️ ${message}"
+		}
 	},
 	"browser_integration_script": {
 		"hostChange": {

@@ -1179,7 +1179,38 @@
 		"status_focused": "현재 창",
 		"status_unfocused": "백그라운드에서",
 		"copy_button": "복사",
-		"copied_message": "클립 보드에 복사"
+		"copied_message": "클립 보드에 복사",
+		"autorun": {
+			"title": "스크립트를 자동으로 실행합니다",
+			"description": "특정 웹 사이트와 일치 할 때 자동으로 실행되는 JavaScript 스 니펫을 관리합니다. 이 스크립트는 AI 역할 또는 플러그인에서 제공하여 브라우징 경험을 향상 시키거나 자동화 할 수 있습니다.",
+			"form_title": "새 스크립트를 추가하십시오",
+			"comment_label": "댓글 (선택 사항)",
+			"url_regex_label": "URL 정규 표현식",
+			"script_label": "자바 스크립트 코드",
+			"add_button": "스크립트 추가",
+			"list_title": "구성된 스크립트",
+			"view_script_button": "스크립트 보기",
+			"delete_button": "삭제",
+			"confirm_delete": "이 스크립트를 삭제 하시겠습니까? 이 작업은 취소 할 수 없습니다.",
+			"add_success": "자동 실행 스크립트가 성공적으로 추가되었습니다!",
+			"delete_success": "스크립트가 성공적으로 삭제되었습니다.",
+			"no_scripts": {
+				"title": "자동 스크립트가 실행되지 않습니다",
+				"description": "아직 스크립트를 구성하지 않았습니다. 위의 양식을 사용하여 첫 번째 양식을 추가하십시오."
+			},
+			"table": {
+				"comment": "의견",
+				"url_regex": "URL 정규 표현식",
+				"created_at": "만들어졌습니다"
+			},
+			"view_script_modal_title": "스크립트 보기",
+			"view_script_modal_close_button": "닫기"
+		},
+		"error": {
+			"load_failed": "자동 스크립트를로드하지 못했습니다 : ${message}",
+			"add_failed": "스크립트를 추가하지 못했습니다 : ${message}",
+			"delete_failed": "스크립트 삭제 실패 : ${message}"
+		}
 	},
 	"browser_integration_script": {
 		"hostChange": {

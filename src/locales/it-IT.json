@@ -1179,7 +1179,38 @@
 		"status_focused": "Finestra corrente",
 		"status_unfocused": "In background",
 		"copy_button": "copia",
-		"copied_message": "Copiato negli appunti"
+		"copied_message": "Copiato negli appunti",
+		"autorun": {
+			"title": "Esegui automaticamente script",
+			"description": "Gestisci frammenti JavaScript che vengono eseguiti automaticamente quando si abbinano un sito Web specifico. Questi script possono essere forniti dal ruolo di AI o dal plug-in per migliorare o automatizzare l'esperienza di navigazione.",
+			"form_title": "Aggiungi un nuovo script",
+			"comment_label": "Commenti (opzionale)",
+			"url_regex_label": "URL Espressione regolare",
+			"script_label": "Codice JavaScript",
+			"add_button": "Aggiungi script",
+			"list_title": "Script configurati",
+			"view_script_button": "Visualizza lo script",
+			"delete_button": "eliminare",
+			"confirm_delete": "Sei sicuro di voler eliminare questo script? Questa operazione non può essere annullata.",
+			"add_success": "Lo script automatico in esecuzione è stato aggiunto correttamente!",
+			"delete_success": "Lo script è stato eliminato con successo.",
+			"no_scripts": {
+				"title": "Nessun script automatico in esecuzione",
+				"description": "Non hai ancora configurato alcun script. Si prega di utilizzare il modulo sopra per aggiungere il primo."
+			},
+			"table": {
+				"comment": "Commenti",
+				"url_regex": "URL Espressione regolare",
+				"created_at": "Creato in"
+			},
+			"view_script_modal_title": "Visualizza lo script",
+			"view_script_modal_close_button": "Chiudi"
+		},
+		"error": {
+			"load_failed": "Impossibile caricare lo script automatico: ${message}",
+			"add_failed": "Impossibile aggiungere script: ${message}",
+			"delete_failed": "Elimina lo script non riuscito: ${message}"
+		}
 	},
 	"browser_integration_script": {
 		"hostChange": {

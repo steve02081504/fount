@@ -1179,7 +1179,38 @@
 		"status_focused": "Current window",
 		"status_unfocused": "In the background",
 		"copy_button": "Copy",
-		"copied_message": "Copied to clipboard"
+		"copied_message": "Copied to clipboard",
+		"autorun": {
+			"title": "Automatically run scripts",
+			"description": "Manage JavaScript snippets that are automatically executed when matching a specific website. These scripts can be provided by your AI role or plug-in to enhance or automate your browsing experience.",
+			"form_title": "Add a new script",
+			"comment_label": "Comments (optional)",
+			"url_regex_label": "URL regular expression",
+			"script_label": "JavaScript Code",
+			"add_button": "Add script",
+			"list_title": "Configured scripts",
+			"view_script_button": "View the script",
+			"delete_button": "delete",
+			"confirm_delete": "Are you sure you want to delete this script? This operation cannot be cancelled.",
+			"add_success": "The automatic running script has been added successfully!",
+			"delete_success": "The script has been deleted successfully.",
+			"no_scripts": {
+				"title": "No automatic script running",
+				"description": "You have not configured any scripts yet. Please use the form above to add the first one."
+			},
+			"table": {
+				"comment": "Comments",
+				"url_regex": "URL regular expression",
+				"created_at": "Created in"
+			},
+			"view_script_modal_title": "View the script",
+			"view_script_modal_close_button": "Close"
+		},
+		"error": {
+			"load_failed": "Failed to load the automatic script: ${message}",
+			"add_failed": "Failed to add script: ${message}",
+			"delete_failed": "Delete script failed: ${message}"
+		}
 	},
 	"browser_integration_script": {
 		"hostChange": {

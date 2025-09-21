@@ -1179,7 +1179,38 @@
 		"status_focused": "現在のウィンドウ",
 		"status_unfocused": "バックグラウンド",
 		"copy_button": "コピー",
-		"copied_message": "クリップボードにコピーします"
+		"copied_message": "クリップボードにコピーします",
+		"autorun": {
+			"title": "スクリプトを自動的に実行します",
+			"description": "特定のWebサイトと一致するときに自動的に実行されるJavaScriptスニペットを管理します。これらのスクリプトは、閲覧体験を強化または自動化するために、AIの役割またはプラグインによって提供できます。",
+			"form_title": "新しいスクリプトを追加します",
+			"comment_label": "コメント（オプション）",
+			"url_regex_label": "URL正規表現",
+			"script_label": "JavaScriptコード",
+			"add_button": "スクリプトを追加",
+			"list_title": "構成されたスクリプト",
+			"view_script_button": "スクリプトを表示",
+			"delete_button": "削除",
+			"confirm_delete": "このスクリプトを削除したいですか？この操作はキャンセルできません。",
+			"add_success": "自動実行スクリプトが正常に追加されました！",
+			"delete_success": "スクリプトは正常に削除されました。",
+			"no_scripts": {
+				"title": "自動スクリプトの実行はありません",
+				"description": "まだスクリプトを構成していません。上記のフォームを使用して、最初のフォームを追加してください。"
+			},
+			"table": {
+				"comment": "コメント",
+				"url_regex": "URL正規表現",
+				"created_at": "で作成されました"
+			},
+			"view_script_modal_title": "スクリプトを表示",
+			"view_script_modal_close_button": "閉じる"
+		},
+		"error": {
+			"load_failed": "自動スクリプトのロードに失敗しました：${message}",
+			"add_failed": "スクリプトの追加に失敗しました：${message}",
+			"delete_failed": "削除スクリプトが失敗しました：${message}"
+		}
 	},
 	"browser_integration_script": {
 		"hostChange": {

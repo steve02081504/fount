@@ -1179,7 +1179,38 @@
 		"status_focused": "当前窗口",
 		"status_unfocused": "后台",
 		"copy_button": "复制",
-		"copied_message": "已复制到剪贴板"
+		"copied_message": "已复制到剪贴板",
+		"autorun": {
+			"title": "自动运行脚本",
+			"description": "管理在匹配特定网站时自动执行的JavaScript片段。这些脚本可以由您的AI角色或插件提供，以增强或自动化您的浏览体验。",
+			"form_title": "添加新脚本",
+			"comment_label": "注释（可选）",
+			"url_regex_label": "URL 正则表达式",
+			"script_label": "JavaScript 代码",
+			"add_button": "添加脚本",
+			"list_title": "已配置的脚本",
+			"view_script_button": "查看脚本",
+			"delete_button": "删除",
+			"confirm_delete": "您确定要删除此脚本吗？此操作无法撤销。",
+			"add_success": "自动运行脚本已成功添加！",
+			"delete_success": "脚本已成功删除。",
+			"no_scripts": {
+				"title": "没有自动运行脚本",
+				"description": "您还没有配置任何脚本。请使用上面的表单添加第一个。"
+			},
+			"table": {
+				"comment": "注释",
+				"url_regex": "URL 正则表达式",
+				"created_at": "创建于"
+			},
+			"view_script_modal_title": "查看脚本",
+			"view_script_modal_close_button": "关闭"
+		},
+		"error": {
+			"load_failed": "加载自动运行脚本失败：${message}",
+			"add_failed": "添加脚本失败：${message}",
+			"delete_failed": "删除脚本失败：${message}"
+		}
 	},
 	"browser_integration_script": {
 		"hostChange": {

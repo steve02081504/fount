@@ -1179,7 +1179,38 @@
 		"status_focused": "النافذة الحالية",
 		"status_unfocused": "في الخلفية",
 		"copy_button": "نسخ",
-		"copied_message": "نسخ إلى الحافظة"
+		"copied_message": "نسخ إلى الحافظة",
+		"autorun": {
+			"title": "تشغيل البرامج النصية تلقائيا",
+			"description": "إدارة مقتطفات JavaScript التي يتم تنفيذها تلقائيًا عند مطابقة موقع ويب معين. يمكن توفير هذه البرامج النصية من خلال دور AI الخاص بك أو المكون الإضافي لتعزيز أو أتمتة تجربة التصفح الخاصة بك.",
+			"form_title": "أضف نصًا جديدًا",
+			"comment_label": "التعليقات (اختياري)",
+			"url_regex_label": "نمط URL",
+			"script_label": "رمز JavaScript",
+			"add_button": "أضف البرنامج النصي",
+			"list_title": "البرامج النصية المكونة",
+			"view_script_button": "عرض البرنامج النصي",
+			"delete_button": "حذف",
+			"confirm_delete": "هل أنت متأكد أنك تريد حذف هذا البرنامج النصي؟ لا يمكن إلغاء هذه العملية.",
+			"add_success": "تمت إضافة نص التشغيل التلقائي بنجاح!",
+			"delete_success": "تم حذف البرنامج النصي بنجاح.",
+			"no_scripts": {
+				"title": "لا يوجد نص تلقائي يعمل",
+				"description": "لم تقم بتكوين أي نصوص حتى الآن. يرجى استخدام النموذج أعلاه لإضافة الأول."
+			},
+			"table": {
+				"comment": "تعليقات",
+				"url_regex": "نمط URL",
+				"created_at": "تم إنشاؤها في"
+			},
+			"view_script_modal_title": "عرض البرنامج النصي",
+			"view_script_modal_close_button": "إغلاق"
+		},
+		"error": {
+			"load_failed": "فشل تحميل البرنامج النصي التلقائي: ${message}",
+			"add_failed": "فشل في إضافة البرنامج النصي: ${message}",
+			"delete_failed": "فشل حذف البرنامج النصي: ${message}"
+		}
 	},
 	"browser_integration_script": {
 		"hostChange": {
