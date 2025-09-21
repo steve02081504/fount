@@ -63,6 +63,44 @@
 			</div>
 		</div>
 
+		<!-- Auto-run Scripts Manager -->
+		<div class="card bg-base-100 shadow-xl mt-6">
+			<div class="card-body">
+				<h2 class="card-title" data-i18n="browser_integration.autorun.title"></h2>
+				<p class="text-sm opacity-70" data-i18n="browser_integration.autorun.description"></p>
+
+				<!-- Add/Edit Form -->
+				<form id="autorun-script-form" class="mt-4 p-4 border border-base-300 rounded-lg">
+					<h3 class="font-bold mb-2" data-i18n="browser_integration.autorun.form_title"></h3>
+					<div class="grid md:grid-cols-2 gap-4">
+						<div class="form-control">
+							<label class="label"><span class="label-text" data-i18n="browser_integration.autorun.url_regex_label"></span></label>
+							<input type="text" id="autorun-url-regex" class="input input-bordered" placeholder="https://www.google.com/.*" required />
+						</div>
+						<div class="form-control">
+							<label class="label"><span class="label-text" data-i18n="browser_integration.autorun.comment_label"></span></label>
+							<input type="text" id="autorun-comment" class="input input-bordered" placeholder="e.g., Google search helper" />
+						</div>
+					</div>
+					<div class="form-control mt-4">
+						<label class="label"><span class="label-text" data-i18n="browser_integration.autorun.script_label"></span></label>
+						<textarea id="autorun-script" class="textarea textarea-bordered font-mono" rows="6" placeholder="console.log('Hello from fount!');" required></textarea>
+					</div>
+					<div class="card-actions justify-end mt-4">
+						<button type="submit" class="btn btn-primary" data-i18n="browser_integration.autorun.add_button"></button>
+					</div>
+				</form>
+
+				<!-- Script List -->
+				<div class="mt-6">
+					<h3 class="font-bold mb-2" data-i18n="browser_integration.autorun.list_title"></h3>
+					<div id="autorun-script-list" class="overflow-x-auto">
+						<!-- Script table will be rendered here -->
+					</div>
+				</div>
+			</div>
+		</div>
+
 
 		<div id="userscript-manager-instructions">
 			<div class="divider my-8"></div>
@@ -78,6 +116,21 @@
 			</div>
 		</div>
 	</div>
+
+	<!-- View Script Modal -->
+	<dialog id="view-script-modal" class="modal">
+		<div class="modal-box w-11/12 max-w-5xl">
+			<h3 id="view-script-modal-title" class="font-bold text-lg"></h3>
+			<div class="mt-4 bg-base-200 p-4 rounded-lg">
+				<pre><code id="view-script-modal-content" class="font-mono text-sm"></code></pre>
+			</div>
+			<div class="modal-action">
+				<form method="dialog">
+					<button class="btn" data-i18n="browser_integration.autorun.view_script_modal_close_button"></button>
+				</form>
+			</div>
+		</div>
+	</dialog>
 
 	<script type="module" src="/shells/browserIntegration/index.mjs"></script>
 </body>

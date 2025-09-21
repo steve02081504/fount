@@ -15,12 +15,22 @@ import { randomUUID } from 'node:crypto'
 const pendingRequests = new Map()
 let pageIdCounter = 0
 
+/**
+ * Manages all browser pages connected via userscript for a single user.
+ * Isolates pages, handles focus tracking, and proxies commands.
+ */
 class UserPageManager {
 	constructor(username) {
 		this.username = username
-		/** @type {PageInfo[]} */
+		/** 
+		 * A list of all pages (active or recently disconnected) for this user.
+		 * @type {PageInfo[]} 
+		 */
 		this.pages = []
-		/** @type {number | undefined} */
+		/** 
+		 * The ID of the page that currently has the browser's focus.
+		 * @type {number | undefined} 
+		 */
 		this.focusedPageId = undefined
 	}
 
@@ -30,6 +40,13 @@ class UserPageManager {
 		return this.pages.find(p => p.id === pageId)
 	}
 
+	/**
+	 * Adds a new page to the manager or revives a recently disconnected one.
+	 * @param {import('npm:ws').WebSocket} ws The WebSocket connection object.
+	 * @param {string} url The URL of the connected page.
+	 * @param {string} title The title of the connected page.
+	 * @returns {PageInfo} The created or revived page information object.
+	 */
 	addPage(ws, url, title) {
 		// Deduplication logic
 		const RECONNECT_THRESHOLD_MS = 10000 // 10 seconds
@@ -133,6 +150,12 @@ class UserPageManager {
 
 	// --- Userscript Communication ---
 
+	/**
+	 * Sends a command to a specific page and returns a Promise that resolves with the result.
+	 * @param {number} pageId The ID of the target page.
+	 * @param {object} command The command object to send.
+	 * @returns {Promise<any>} A promise that resolves with the payload from the userscript or rejects on error/timeout.
+	 */
 	sendRequest(pageId, command) {
 		return new Promise((resolve, reject) => {
 			const page = this.findPageById(pageId)
@@ -155,6 +178,10 @@ class UserPageManager {
 	}
 
 	// --- Cleanup ---
+	/**
+	 * Removes old, disconnected page entries from the `pages` list to prevent memory leaks.
+	 * @param {number} maxAgeMs The maximum age in milliseconds for a disconnected entry to be kept.
+	 */
 	cleanupOldPages(maxAgeMs) {
 		const originalCount = this.pages.length
 		this.pages = this.pages.filter(p => {

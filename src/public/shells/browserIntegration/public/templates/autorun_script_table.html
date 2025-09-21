@@ -1,0 +1,27 @@
+<table class="table">
+	<thead>
+		<tr>
+			<th data-i18n="browser_integration.autorun.table.comment"></th>
+			<th data-i18n="browser_integration.autorun.table.url_regex"></th>
+			<th data-i18n="browser_integration.autorun.table.created_at"></th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		${scripts.map(script => `
+		<tr>
+			<td>
+				<div class="font-bold">${(script.comment || '').replaceAll('<', '&lt;')}</div>
+			</td>
+			<td>
+				<code class="p-1 bg-base-300 rounded text-sm">${script.urlRegex.replaceAll('<', '&lt;')}</code>
+			</td>
+			<td>${new Date(script.createdAt).toLocaleString()}</td>
+			<th class="text-right">
+				<button class="btn btn-ghost btn-xs view-script-btn" data-i18n="browser_integration.autorun.view_script_button" data-script-id="${script.id}"></button>
+				<button class="btn btn-error btn-xs delete-script-btn" data-i18n="browser_integration.autorun.delete_button" data-script-id="${script.id}"></button>
+			</th>
+		</tr>
+		`).join('')}
+	</tbody>
+</table>

@@ -10,6 +10,11 @@
 // @connect      cdn.jsdelivr.net
 // @connect      steve02081504.github.io
 // @connect      *
+// This permission is required to connect to the user's fount instance,
+// which could be running on localhost, a local network IP, or a custom domain.
+// While powerful, it's necessary for the script's core functionality.
+// The script includes security measures, such as user confirmation for host changes,
+// to mitigate risks associated with this permission.
 // @grant        GM.setValue
 // @grant        GM.getValue
 // @grant        GM.xmlHttpRequest
@@ -139,6 +144,31 @@ async function initTranslations() {
 		console.error('fount userscript: Error initializing translations:', error)
 	}
 }
+const AUTORUN_SCRIPTS_KEY = 'fount_autorun_scripts'
+
+window.addEventListener('fount-autorun-script-update', async (e) => {
+	const { action, script } = e.detail // script is the full object {id, urlRegex, script}
+	if (!action || !script) return
+
+	console.log(`fount userscript: Received auto-run script update. Action: ${action}, ID: ${script.id}`)
+
+	const storedScripts = await GM.getValue(AUTORUN_SCRIPTS_KEY, [])
+	let updatedScripts = []
+
+	if (action === 'add') {
+		// Remove existing script with same ID to ensure update works
+		updatedScripts = storedScripts.filter(s => s.id !== script.id)
+		updatedScripts.push(script)
+	} else if (action === 'delete') 
+		updatedScripts = storedScripts.filter(s => s.id !== script.id)
+	else 
+		return // Unknown action
+    
+
+	await GM.setValue(AUTORUN_SCRIPTS_KEY, updatedScripts)
+	console.log(`fount userscript: Updated auto-run scripts stored. Total: ${updatedScripts.length}`)
+})
+
 // --- End i18n ---
 
 let pageId = -1
@@ -184,7 +214,9 @@ window.addEventListener('fount-host-info', async (e) => {
 	// Case 1: Initial Setup (no host is currently stored)
 	if (!storedHost) {
 		// CRITICAL: Only allow the fount page itself to perform the initial setup.
-		// This prevents malicious sites from setting the host for the first time.
+		// This prevents a malicious site from setting the host for the first time
+		// just by having the user visit it. The user MUST visit their fount
+		// instance to kick off the relationship.
 		if (newHost === window.location.host) {
 			console.log(`fount userscript: Performing initial setup for host: ${newHost}`)
 			try {
@@ -449,6 +481,27 @@ function sendResponse(requestId, payload, isError = false) {
 	ws.send(JSON.stringify({ type: 'response', requestId, pageId, payload, isError }))
 }
 
+async function runMatchingScripts() {
+	const scripts = await GM.getValue(AUTORUN_SCRIPTS_KEY, [])
+	if (scripts.length === 0) return
+
+	console.log(`fount userscript: Checking ${scripts.length} auto-run script(s) for this URL.`)
+	const url = window.location.href
+	const { async_eval } = await import('https://esm.sh/@steve02081504/async-eval')
+
+	for (const script of scripts) 
+		try {
+			const regex = new RegExp(script.urlRegex)
+			if (regex.test(url)) {
+				console.log(`fount userscript: Running script ${script.id} (${script.comment || 'No comment'})`)
+				await async_eval(script.script)
+			}
+		} catch (e) {
+			console.error(`fount userscript: Error executing auto-run script ${script.id}:`, e)
+		}
+    
+}
+
 function getVisibleElementsHtml() {
 	const visibleElements = new Set()
 	const allElements = document.querySelectorAll('body, body *')
@@ -497,8 +550,35 @@ const getCircularReplacer = () => {
 	}
 }
 
+async function syncScriptsFromServer() {
+	console.log('fount userscript: Attempting to sync auto-run scripts from server...')
+	const { host, protocol } = await getStoredData()
+	if (!host) {
+		console.log('fount userscript: Sync skipped, no host configured.')
+		return // No host, can't sync
+	}
+
+	try {
+		const { success, scripts } = await makeApiRequest(host, protocol, '/api/shells/browserIntegration/autorun-scripts')
+		if (success && Array.isArray(scripts)) {
+			await GM.setValue(AUTORUN_SCRIPTS_KEY, scripts)
+			console.log(`fount userscript: Sync successful. Updated local storage with ${scripts.length} script(s).`)
+		} else 
+			throw new Error('Server response was not successful or scripts were not an array.')
+        
+	} catch (error) {
+		console.error('fount userscript: Sync failed. Using local scripts as fallback.', error.message)
+		// "失败则用本地" - Do nothing, the existing local storage will be used.
+	}
+}
+
 console.log('fount userscript loaded.')
-findAndConnect()
+async function initialize() {
+	await syncScriptsFromServer()
+	runMatchingScripts()
+	findAndConnect()
+}
+initialize()
 
 window.addEventListener('focus', notifyFocus)
 window.addEventListener('blur', notifyFocus)

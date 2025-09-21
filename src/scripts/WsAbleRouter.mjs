@@ -1,5 +1,3 @@
-import http from 'node:http'
-
 import express from 'npm:express'
 import { WebSocketServer } from 'npm:ws'
 

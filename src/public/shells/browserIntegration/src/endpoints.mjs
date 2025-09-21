@@ -1,6 +1,7 @@
 import { authenticate, getUserByReq } from '../../../../server/auth.mjs'
 import { loadPart } from '../../../../server/managers/index.mjs'
 
+import * as autoRunManager from './autorun.mjs'
 import { handleConnection, getConnectedPages, getBrowseHistory } from './ws.mjs'
 
 export function setEndpoints(router) {
@@ -12,7 +13,7 @@ export function setEndpoints(router) {
 	// API for the shell's own frontend
 	router.get('/api/shells/browserIntegration/pages', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
-		res.json(getConnectedPages(username))
+		res.json({ success: true, data: getConnectedPages(username) })
 	})
 
 	router.get('/api/shells/browserIntegration/history', authenticate, async (req, res) => {
@@ -34,5 +35,29 @@ export function setEndpoints(router) {
 		} else
 			res.status(500).json({ error: 'Browser integration part or callback interface not found.' })
 
+	})
+
+	// New endpoints for auto-run scripts
+	router.get('/api/shells/browserIntegration/autorun-scripts', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const scripts = autoRunManager.listAutoRunScripts(username)
+		res.json({ success: true, scripts })
+	})
+
+	router.post('/api/shells/browserIntegration/autorun-scripts', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		try {
+			const newScript = autoRunManager.addAutoRunScript(username, req.body)
+			res.status(201).json({ success: true, script: newScript })
+		} catch (error) {
+			res.status(400).json({ success: false, message: error.message })
+		}
+	})
+
+	router.delete('/api/shells/browserIntegration/autorun-scripts/:id', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const { id } = req.params
+		const result = autoRunManager.removeAutoRunScript(username, id)
+		res.status(result.success ? 200 : 404).json(result)
 	})
 }
