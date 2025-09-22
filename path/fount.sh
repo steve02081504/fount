@@ -911,6 +911,28 @@ if [[ $# -eq 0 || ($1 != "shutdown" && $1 != "geneexe") ]]; then
 	run_deno -V
 fi
 is_debug=0
+debug_on() {
+	is_debug=1
+	if [[ $OS_TYPE == "Darwin" ]]; then
+		if [ -d "/Applications/Google Chrome.app" ]; then
+			open -a "Google Chrome" --new --args --new-window
+			osascript -e 'tell application "Google Chrome" to tell the active tab of its first window to set URL to "chrome://inspect"'
+		fi
+	else
+		if command -v google-chrome &>/dev/null; then
+			install_package xdotool "xdotool" || true
+			install_package xclip "xclip" || true
+			original_clip=$(xclip -o -selection clipboard 2>/dev/null)
+			echo -n "chrome://inspect" | xclip -selection clipboard
+			google-chrome --new-window &
+			sleep 2
+			xdotool key ctrl+l
+			xdotool key ctrl+v
+			xdotool key Return
+			echo -n "$original_clip" | xclip -selection clipboard
+		fi
+	fi
+}
 # 函数: 运行 fount
 run() {
 	if [[ $(id -u) -eq 0 ]]; then
@@ -971,7 +993,7 @@ init)
 keepalive)
 	runargs=("${@:2}")
 	if [[ "${runargs[0]}" == "debug" ]]; then
-		is_debug=1
+		debug_on
 		runargs=("${runargs[@]:1}")
 	fi
 
@@ -1072,7 +1094,7 @@ remove)
 *)
 	runargs=("${@}")
 	if [[ "${runargs[0]}" == "debug" ]]; then
-		is_debug=1
+		debug_on
 		runargs=("${runargs[@]:1}")
 	fi
 	run "${runargs[@]}"

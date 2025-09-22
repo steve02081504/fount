@@ -499,7 +499,20 @@ function isRoot {
 		$UID -eq 0
 	}
 }
-$is_debug = $false
+$Script:is_debug = $false
+function debug_on {
+	$Script:is_debug = $true
+	if (Get-Command chrome -ErrorAction Ignore) {
+		$originalClipboard = Get-Clipboard
+		Set-Clipboard -Value "chrome://inspect"
+		Start-Process "chrome.exe" "--new-window"
+		Start-Sleep -Seconds 2
+		[System.Windows.Forms.SendKeys]::SendWait("^{l}")
+		[System.Windows.Forms.SendKeys]::SendWait("^{v}")
+		[System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
+		Set-Clipboard -Value $originalClipboard
+	}
+}
 function run {
 	if ($IsWindows) {
 		Get-Process tray_windows_release -ErrorAction Ignore | Where-Object { $_.CPU -gt 0.5 } | Stop-Process
@@ -508,7 +521,7 @@ function run {
 		Write-Warning "Not Recommended: Running fount as root grants full system access for all fount parts."
 		Write-Warning "Unless you know what you are doing, it is recommended to run fount as a common user."
 	}
-	if ($is_debug) {
+	if ($Script:is_debug) {
 		deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags=--expose-gc "$FOUNT_DIR/src/server/index.mjs" @args
 	}
 	else {
@@ -673,7 +686,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'keepalive') {
 	$runargs = $args[1..$args.Count]
 	if ($runargs.Count -gt 0 -and $runargs[0] -eq 'debug') {
 		$runargs = $runargs[1..$runargs.Count]
-		$is_debug = $true
+		debug_on
 	}
 
 	$restart_timestamps = New-Object System.Collections.Generic.List[datetime]
@@ -875,7 +888,7 @@ else {
 	$runargs = $args
 	if ($runargs.Count -gt 0 -and $runargs[0] -eq 'debug') {
 		$runargs = $runargs[1..$runargs.Count]
-		$is_debug = $true
+		debug_on
 	}
 	run @runargs
 	while ($LastExitCode -eq 131) {
