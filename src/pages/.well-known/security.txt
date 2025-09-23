@@ -1,0 +1,2 @@
+Contact: https://github.com/steve02081504/fount/security/advisories/new
+Preferred-Languages: en, zh, jp

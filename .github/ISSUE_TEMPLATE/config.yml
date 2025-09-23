@@ -1,2 +1,6 @@
 # disable blank issue creation
 blank_issues_enabled: false
+contact_links:
+  - name: 'report a security vulnerability🛡'
+    url: 'https://github.com/steve02081504/fount/security/advisories/new'
+    about: 'responsible disclosure of security vulnerabilities'

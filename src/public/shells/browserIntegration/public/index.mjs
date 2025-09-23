@@ -1,5 +1,4 @@
 import { initTranslations, geti18n } from '../../../scripts/i18n.mjs'
-import * as partsApi from '../../../scripts/parts.mjs'
 import { renderTemplate, usingTemplates } from '../../../scripts/template.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
 import { showToast } from '../../../scripts/toast.mjs'

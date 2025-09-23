@@ -1,65 +1,41 @@
 import * as Sentry from 'npm:@sentry/deno'
-import cookieParser from 'npm:cookie-parser'
-import cors from 'npm:cors'
 import express from 'npm:express'
-import fileUpload from 'npm:express-fileupload'
 
-import { console } from '../../scripts/i18n.mjs'
 import { sentrytunnel } from '../../scripts/sentrytunnel.mjs'
 import { WsAbleApp, WsAbleRouter } from '../../scripts/WsAbleRouter.mjs'
-import { auth_request } from '../auth.mjs'
 import { __dirname } from '../base.mjs'
 
+import { registerEndpoints } from './endpoints.mjs'
+import { diff_if_auth, registerMiddleware } from './middleware.mjs'
 import { PartsRouter } from './parts_router.mjs'
+import { registerResources } from './resources.mjs'
+import { registerWellKnowns } from './well-knowns.mjs'
 
 export const app = WsAbleApp()
 app.disable('x-powered-by')
 const mainRouter = WsAbleRouter()
 const FinalRouter = express.Router()
 
+// Define the order of routers
 app.use(mainRouter)
 app.use(PartsRouter)
 app.use(FinalRouter)
 
-mainRouter.use((req, res, next) => {
-	if (!(req.path.endsWith('/heartbeat') || req.path.endsWith('/api/sentrytunnel')))
-		console.logI18n('fountConsole.web.requestReceived', {
-			method: req.method + ' '.repeat(Math.max(0, 8 - req.method.length)),
-			url: req.url
-		})
-	if (new Date().getMonth() === 3 && new Date().getDate() === 1)
-		res.setHeader('X-Powered-By', 'Skynet/0.2')
-	else res.setHeader('X-Powered-By', 'PHP/4.2.0')
-	return next()
-})
-function diff_if_auth(if_auth, if_not_auth) {
-	return async (req, res, next) => {
-		if (await auth_request(req)) return if_auth(req, res, next)
-		return if_not_auth(req, res, next)
-	}
-}
+// Add the sentrytunnel endpoint for bug reports
 mainRouter.post('/api/sentrytunnel', diff_if_auth(
 	express.raw({ type: '*/*', limit: Infinity }),
 	express.raw({ type: '*/*', limit: 5 * 1024 * 1024 })
 ), sentrytunnel)
-mainRouter.use(diff_if_auth(
-	express.json({ limit: Infinity }),
-	express.json({ limit: 5 * 1024 * 1024 })
-))
-mainRouter.use(diff_if_auth(
-	cors(),
-	(_req, _res, next) => next()
-))
-mainRouter.use(diff_if_auth(
-	express.urlencoded({ limit: Infinity, extended: true }),
-	express.urlencoded({ limit: 5 * 1024 * 1024, extended: true })
-))
-mainRouter.use(diff_if_auth(
-	fileUpload({ limits: { fileSize: Infinity } }),
-	fileUpload({ limits: { fileSize: 5 * 1024 * 1024 } })
-))
-mainRouter.use(cookieParser())
 
+// Setup middleware on the main router
+registerMiddleware(mainRouter)
+
+// Setup API, well-known, and resource endpoints on the main router
+registerEndpoints(mainRouter)
+registerWellKnowns(mainRouter)
+registerResources(mainRouter)
+
+// Setup final handlers (404, errors)
 FinalRouter.use((req, res) => {
 	if (req.path.startsWith('/api/') || req.path.startsWith('/ws/')) return res.status(404).json({ message: 'API Not found' })
 	if (req.accepts('html')) return res.status(404).sendFile(__dirname + '/src/pages/404/index.html')
@@ -70,21 +46,7 @@ const errorHandler = (err, req, res, next) => {
 	console.error(err)
 	res.status(500).json({ message: 'Internal Server Error', errors: err.errors, error: err.message })
 }
+
 PartsRouter.use(errorHandler)
 FinalRouter.use(errorHandler)
 app.use(errorHandler)
-
-const { registerEndpoints } = await import('./endpoints.mjs')
-registerEndpoints(mainRouter)
-mainRouter.use((req, res, next) => {
-	if (req.method != 'GET') return next()
-	switch (req.path) {
-		case '/apple-touch-icon-precomposed.png':
-		case '/apple-touch-icon.png':
-			return res.sendFile(__dirname + '/src/pages/favicon.png')
-		case '/favicon.svg':
-			return res.sendFile(__dirname + '/imgs/icon.svg')
-	}
-	return next()
-})
-mainRouter.use(express.static(__dirname + '/src/pages'))
