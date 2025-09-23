@@ -52,7 +52,7 @@ function showViewScriptModal(scriptId) {
 
 	viewScriptModalTitle.textContent = script.comment || geti18n('browser_integration.autorun.view_script_modal_title')
 	viewScriptModalContent.textContent = script.script // textContent is safe for displaying code
-    
+
 	viewScriptModal.showModal()
 }
 
@@ -85,9 +85,9 @@ async function loadAndRenderAutoRunScripts() {
 		if (!result.success) throw new Error(result.message)
 
 		autorunScriptList.innerHTML = ''
-		if (result.scripts.length === 0) 
+		if (result.scripts.length === 0)
 			autorunScriptList.appendChild(await renderTemplate('autorun_empty_state'))
-		 else {
+		else {
 			autoRunScriptsCache.clear()
 			result.scripts.forEach(script => autoRunScriptsCache.set(script.id, script))
 			autorunScriptList.appendChild(await renderTemplate('autorun_script_table', {

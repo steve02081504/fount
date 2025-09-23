@@ -22,14 +22,14 @@ let pageIdCounter = 0
 class UserPageManager {
 	constructor(username) {
 		this.username = username
-		/** 
+		/**
 		 * A list of all pages (active or recently disconnected) for this user.
-		 * @type {PageInfo[]} 
+		 * @type {PageInfo[]}
 		 */
 		this.pages = []
-		/** 
+		/**
 		 * The ID of the page that currently has the browser's focus.
-		 * @type {number | undefined} 
+		 * @type {number | undefined}
 		 */
 		this.focusedPageId = undefined
 	}

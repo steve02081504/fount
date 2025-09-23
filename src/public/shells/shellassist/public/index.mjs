@@ -1,4 +1,3 @@
-
 import { initTranslations, geti18n, console } from '../../scripts/i18n.mjs'
 import { setTerminal } from '../../scripts/terminal.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'

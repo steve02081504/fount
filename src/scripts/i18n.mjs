@@ -23,12 +23,9 @@ export function getbestlocale(preferredlocaleList, localeList) {
 	const available = new Set(localeList.map(l => l?.id ?? l).filter(Boolean))
 
 	for (const preferred of preferredlocaleList ?? []) {
-		if (typeof preferred !== 'string' || !preferred) continue
-
 		// 1. Exact match
 		if (available.has(preferred))
 			return preferred
-
 
 		// 2. Partial match (e.g., 'en' from 'en-US')
 		const prefix = preferred.split('-')[0]

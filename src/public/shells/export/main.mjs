@@ -1,4 +1,3 @@
-
 import fs from 'node:fs/promises'
 
 import { setEndpoints } from './src/endpoints.mjs'

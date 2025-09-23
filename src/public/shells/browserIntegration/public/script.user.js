@@ -538,7 +538,7 @@ function notifyFocus() {
 const getCircularReplacer = () => {
 	const seen = new WeakSet()
 	return (key, value) => {
-		if (typeof value === 'object' && value !== null) {
+		if (value?.constructor === Object) {
 			if (seen.has(value)) return '[Circular]'
 			seen.add(value)
 		}

@@ -1,4 +1,3 @@
-
 import { authenticate } from '../auth.mjs'
 import { __dirname } from '../base.mjs'
 import { config } from '../server.mjs'

@@ -1,4 +1,3 @@
-
 /**
  * Gets a real regex object from a slash-delimited regex string
  *

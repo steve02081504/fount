@@ -11,7 +11,7 @@
 		${scripts.map(script => `
 		<tr>
 			<td>
-				<div class="font-bold">${(script.comment || '').replaceAll('<', '&lt;')}</div>
+				<div class="font-bold">${(script.comment || '').replaceAll('<', '&lt;' )}</div>
 			</td>
 			<td>
 				<code class="p-1 bg-base-300 rounded text-sm">${script.urlRegex.replaceAll('<', '&lt;')}</code>

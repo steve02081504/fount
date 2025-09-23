@@ -1,4 +1,3 @@
-
 /**
  * Gets localized information from a part's info object based on the provided locales.
  *
