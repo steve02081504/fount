@@ -345,7 +345,7 @@ async function handleInstallerFlow() {
 			launchButton.onclick = () => {
 				const params = new URLSearchParams({
 					theme: theme_now,
-					userPreferredLanguages: localStorage.getItem('fountUserPreferredLanguage') || '[]'
+					userPreferredLanguages: localStorage.getItem('fountUserPreferredLanguages') || '[]'
 				})
 				window.location.href = `${hostUrl}?${params}`
 			}

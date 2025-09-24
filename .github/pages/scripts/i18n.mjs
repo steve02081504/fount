@@ -10,7 +10,7 @@ const localeNames = new Map()
  * @param {string[]} langs - The language codes (e.g., 'en-UK', 'zh-CN').
  */
 export async function setLocales(langs) {
-	localStorage.setItem('fountUserPreferredLanguage', JSON.stringify(langs))
+	localStorage.setItem('fountUserPreferredLanguages', JSON.stringify(langs))
 	await initTranslations(saved_pageid, langs)
 }
 
@@ -34,7 +34,7 @@ export function getLocaleNames() {
  * 从服务器获取多语言数据并初始化翻译。
  * @param {string} [pageid]
  */
-export async function initTranslations(pageid = saved_pageid, preferredlocales = JSON.parse(localStorage.getItem('fountUserPreferredLanguage')) || []) {
+export async function initTranslations(pageid = saved_pageid, preferredlocales = JSON.parse(localStorage.getItem('fountUserPreferredLanguages')) || []) {
 	saved_pageid = pageid
 
 	try {
