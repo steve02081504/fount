@@ -15,7 +15,8 @@ import { events } from './events.mjs'
 import { partsList } from './managers/base.mjs'
 import { config, save_config, data_path } from './server.mjs'
 
-const ACCESS_TOKEN_EXPIRY = '15m' // Access Token 有效期
+const ACCESS_TOKEN_EXPIRY = '1d' // Access Token 有效期
+export const ACCESS_TOKEN_EXPIRY_DURATION = ms(ACCESS_TOKEN_EXPIRY) // Access Token 有效期 (毫秒数)
 export const REFRESH_TOKEN_EXPIRY = '30d' // Refresh Token 有效期 (字符串形式)
 export const REFRESH_TOKEN_EXPIRY_DURATION = ms(REFRESH_TOKEN_EXPIRY) // Refresh Token 有效期 (毫秒数)
 const ACCOUNT_LOCK_TIME = '10m' // 账户锁定时间
@@ -324,8 +325,8 @@ export async function try_auth_request(req, res) {
 		}
 
 		// 刷新成功，设置新的 accessToken 和 refreshToken 到 Cookie
-		res.cookie('accessToken', refreshResult.accessToken, { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax' })
-		res.cookie('refreshToken', refreshResult.refreshToken, { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax' })
+		res.cookie('accessToken', refreshResult.accessToken, { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax', maxAge: ACCESS_TOKEN_EXPIRY_DURATION })
+		res.cookie('refreshToken', refreshResult.refreshToken, { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax', maxAge: REFRESH_TOKEN_EXPIRY_DURATION })
 
 		req.cookies.accessToken = refreshResult.accessToken // 更新当前请求的cookies对象，供后续逻辑使用
 		req.cookies.refreshToken = refreshResult.refreshToken // 如果滚动了，也更新
