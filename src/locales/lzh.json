@@ -5,65 +5,65 @@
 		"server": {
 			"start": "服務初啟",
 			"starting": "服務啟中...",
-			"ready": "服務已備",
+			"ready": "萬事俱備",
 			"showUrl": {
-				"https": "密網行于 ${url}",
-				"http": "常道行于 ${url}"
+				"https": "密網通衢於 ${url}",
+				"http": "常道通衢於 ${url}"
 			},
-			"localUrl": "欲攜他具同游，可循此址：${url}",
+			"localUrl": "欲攜他器同游，可循此徑：${url}",
 			"standingBy": "Standing by...",
 			"update": {
-				"restarting": "新令已至，更而復始..."
+				"restarting": "新令已至，當革故鼎新..."
 			}
 		},
 		"jobs": {
 			"restartingJob": "為 ${username} 重啟 ${parttype} 之 ${partname} 職：${uid}"
 		},
 		"ipc": {
-			"sendCommandFailed": "傳令失利：${error}",
-			"invalidCommand": "令式有誤，當循：\"fount run <類> <名> <件> <參...>\"",
-			"runPartLog": "為 ${username} 運 ${parttype} 之 ${partname}，其參如左：${args}",
-			"invokePartLog": "為 ${username} 召 ${parttype} 之 ${partname}，其參如左：${invokedata}",
-			"unsupportedCommand": "此令未識",
+			"sendCommandFailed": "傳令失機：${error}",
+			"invalidCommand": "令式有誤，當循此法：\"fount run <類> <名> <件> <參...>\"",
+			"runPartLog": "為 ${username} 運 ${parttype} 之 ${partname}，其參列如左：${args}",
+			"invokePartLog": "為 ${username} 召 ${parttype} 之 ${partname}，其參列如左：${invokedata}",
+			"unsupportedCommand": "此令未識，難以從命",
 			"processMessageError": "處內令有失：${error}",
 			"invalidCommandFormat": "令式不合",
-			"socketError": "節點有誤: ${error}",
-			"instanceRunning": "已有他體運行",
+			"socketError": "節點有誤：${error}",
+			"instanceRunning": "已有他體運行，請勿再擾",
 			"serverStarted": "內令司已立",
-			"parseResponseFailed": "解復令失利: ${error}",
-			"cannotParseResponse": "復令難解",
-			"unknownError": "未知之禍"
+			"parseResponseFailed": "解復令失利：${error}",
+			"cannotParseResponse": "復令難解，如窺天書",
+			"unknownError": "天有不測之禍"
 		},
 		"partManager": {
 			"git": {
-				"noUpstream": "支 '${currentBranch}' 未設上源，遂不察新。",
+				"noUpstream": "支 '${currentBranch}' 未溯其源，遂袖手旁觀。",
 				"dirtyWorkingDirectory": "案牘未清，請先藏納或呈獻。",
-				"updating": "正從遠方擷取...",
-				"localAhead": "本地為先，無需更新。",
-				"diverged": "兩支分歧，強行更新...",
-				"upToDate": "已是最新。",
+				"updating": "正從遠方擷英採華...",
+				"localAhead": "本地已先，無需更新。",
+				"diverged": "兵分兩路，強渡陳倉...",
+				"upToDate": "已是最新，無需再動。",
 				"updateFailed": "自遠方更新機件失利：${error}"
 			},
-			"partInited": "${parttype}之器【${partname}】已啟",
-			"partLoaded": "${parttype}之器【${partname}】已載"
+			"partInited": "${parttype}之器【${partname}】已然啓動",
+			"partLoaded": "${parttype}之器【${partname}】已然備妥"
 		},
 		"web": {
 			"requestReceived": "承奉來使：${method} ${url}"
 		},
 		"route": {
-			"setLanguagePreference": "用戶 ${username} 定其雅言: ${preferredLanguages}"
+			"setLanguagePreference": "用者 ${username} 定其雅言為: ${preferredLanguages}"
 		},
 		"auth": {
 			"tokenVerifyError": "令牌勘驗有誤: ${error}",
 			"refreshTokenError": "令牌重煥有誤: ${error}",
-			"logoutRefreshTokenProcessError": "告退時重煥令牌有誤: ${error}",
-			"revokeTokenNoJTI": "無 jti 之令牌不可撤。",
-			"accountLockedLog": "用戶 ${username} 屢登臺不成，名號已鎖。"
+			"logoutRefreshTokenProcessError": "告退之時，重煥令牌有誤: ${error}",
+			"revokeTokenNoJTI": "無 jti 之令牌，如無根之木，不可撤也。",
+			"accountLockedLog": "用者 ${username} 屢登臺不成，已閉門思過。"
 		},
 		"verification": {
-			"codeGeneratedLog": "驗碼已生: ${code} (瞬息即逝)",
+			"codeGeneratedLog": "驗碼已生: ${code} (稍縱即逝)",
 			"codeNotifyTitle": "驗碼",
-			"codeNotifyBody": "驗碼: ${code} (瞬息即逝)"
+			"codeNotifyBody": "此乃驗碼: ${code} (稍縱即逝，務必把握)"
 		},
 		"tray": {
 			"readIconFailed": "讀像有失: ${error}",
@@ -72,24 +72,24 @@
 			"tooltip": "fount",
 			"items": {
 				"open": {
-					"title": "啟",
+					"title": "開門揖客",
 					"tooltip": "啟 fount"
 				},
 				"github": {
-					"title": "源碼庫",
-					"tooltip": "啟 fount 之源碼庫"
+					"title": "源碼寶庫",
+					"tooltip": "啟 fount 之源碼寶庫"
 				},
 				"discord": {
-					"title": "Discord",
-					"tooltip": "啟 fount 之 Discord"
+					"title": "Discord雅集",
+					"tooltip": "啟 fount 之 Discord 雅集"
 				},
 				"restart": {
-					"title": "重啟",
-					"tooltip": "重啟應用"
+					"title": "重整旗鼓",
+					"tooltip": "重啟 fount"
 				},
 				"exit": {
-					"title": "告退",
-					"tooltip": "退出應用"
+					"title": "掛冠而去",
+					"tooltip": "退出 fount"
 				}
 			}
 		},
@@ -101,44 +101,44 @@
 		}
 	},
 	"installer_wait_screen": {
-		"title": "幸會 fount！",
+		"title": "幸會fount！",
 		"hero": {
-			"title": "汝之靈伴，心念所生",
-			"description": "fount，神思所驅，幻身之臺也。意在予<i>汝</i>神便。其為津梁，繫汝於遐思之靈，與之清談，創塑己身，公諸天下，皆易如反掌。"
+			"title": "靈犀一點，應念而生",
+			"description": "fount者，神思所驅，幻身之臺也。意在予<i>君</i>神便。其為津梁，繫君於遐思之靈，與之清談，創塑己身，公諸天下，皆易如反掌。"
 		},
 		"feature1": {
-			"title": "晤言無礙，隨處皆安",
-			"description": "始於案前清談，繼於掌中晤言，行止無礙。fount 令汝言談相續，身在何方，皆可與化身相伴。Windows、macOS、Linux、Android，無不咸宜。"
+			"title": "雲程萬里，晤言無間",
+			"description": "始於案前清談，繼於掌中晤言，行止無礙。fount 令君言談相續，身在何方，皆可與化身相伴。Windows、macOS、Linux、Android，無不咸宜。"
 		},
 		"feature2": {
-			"title": "儀觀萬象，隨心所制",
-			"description": "三十餘種風貌，任汝擇選，亦可自成一家。fount 乃汝之畫卷。書汝之意，隨汝之好，成汝之境。"
+			"title": "儀態萬方，隨心所化",
+			"description": "三十餘種風貌，任君擇選，亦可自成一家。fount 乃君之畫卷。書君之意，隨君之好，成君之境。"
 		},
 		"feature3": {
 			"title": "意通神會，身臨其境",
 			"description": "fount 盡用織紋之妙，化身得以富文、圖像乃至互動之法表情達意。可與眾多化身共聚一堂，動靜皆宜，相談甚歡。"
 		},
 		"feature4": {
-			"title": "智源萬流，兼容並包",
+			"title": "海納百川，有容乃大",
 			"description": "fount 供無雙之選，無窮之變。可接<i>任意</i>智源——OpenAI、Claude、OpenRouter、NovelAI 等。通靈之法，皆由君之符碼之力隨心塑造。"
 		},
 		"theme_selector": {
-			"title": "擇汝風貌",
-			"description": "擇一風貌以合汝心。"
+			"title": "擇君風貌",
+			"description": "擇一風貌以合君心。"
 		},
 		"mini_game": {
-			"title": "聊以自娛",
-			"description1": "安設遲緩乎？",
-			"description2": "此有小物可遣時日。"
+			"title": "聊以解憂",
+			"description1": "安設遲緩，可有煩憂？",
+			"description2": "此有小物可遣時日，聊博一粲。"
 		},
 		"data_showcase": {
-			"title_prefix": "fount 至為",
+			"title_prefix": "fount 乃",
 			"adjectives": [
-				"可廣",
-				"可期",
-				"日進",
-				"可容",
-				"精悍"
+				"海納百川",
+				"前途無量",
+				"日新月異",
+				"兼容並蓄",
+				"精悍絕倫"
 			],
 			"title_of": "之",
 			"nouns": [
@@ -152,21 +152,21 @@
 				"談陣",
 				"行器"
 			],
-			"active_users": "在席之客",
-			"stars": "源庫之星"
+			"active_users": "在席高朋",
+			"stars": "源庫星輝"
 		},
 		"footer": {
 			"ready_text": "啟程乎？",
-			"wait_text": "稍待...",
+			"wait_text": "稍安勿躁...",
 			"open_fount": "啟 fount",
 			"open_or_install_fount": "啟/安 fount",
-			"error_message": "悲哉 :(\n\n有誤：\n${error}"
+			"error_message": "嗚呼哀哉 :(\n\n禍起蕭牆：\n${error}"
 		},
 		"error": {
 			"title": "安設失利。",
-			"connection_failed": "連接失利。",
-			"description1": "fount 安設似有誤。",
-			"description2": "請察終端而後重試。",
+			"connection_failed": "連接之途，遇阻不通。",
+			"description1": "fount 安設似有不諧。",
+			"description2": "請察終端而後重試，或能力挽狂瀾。",
 			"close_page": "闔頁"
 		}
 	},
@@ -174,16 +174,16 @@
 		"title": "處 fount 規儀",
 		"processing": "處規儀中...",
 		"invalidProtocol": "規儀無效",
-		"insufficientParams": "參數不足",
+		"insufficientParams": "參數不足，難為無米之炊",
 		"unknownCommand": "未知之令",
 		"shellCommandSent": "外令已發",
 		"shellCommandFailed": "發外令失利",
 		"shellCommandError": "發外令有誤",
-		"fountNotFound": "悲哉 :(\n\n未尋獲 fount，或需先安設之？",
-		"unknownError": "悲哉 :(\n\n有誤：\n${error}",
+		"fountNotFound": "嗚呼哀哉 :(\n\n未尋獲 fount，莫非需先安設之？",
+		"unknownError": "嗚呼哀哉 :(\n\n天有不測風雲：\n${error}",
 		"runPartConfirm": {
-			"title": "確認",
-			"message": "汝確欲行此 ${parttype} 之 ${partname} 乎？",
+			"title": "請君三思",
+			"message": "君確欲行此 ${parttype} 之 ${partname} 乎？",
 			"confirm": "然",
 			"cancel": "否"
 		}
@@ -192,8 +192,8 @@
 		"title": "fount!",
 		"newTabFailed": {
 			"title": "新頁開啟失利",
-			"instruction": "fount 啟時，若無彈窗之權，每次皆緩一二息。",
-			"tryAllow": "試允 fount 彈窗之權？",
+			"instruction": "fount 啟時，若無彈窗之權，每次皆緩一二息，誠為憾事。",
+			"tryAllow": "試允 fount 彈窗之權，以求其速？",
 			"buttons": {
 				"retry": "重試",
 				"skip": "略過",
@@ -201,7 +201,7 @@
 			},
 			"ignoreConfirm": {
 				"title": "確欲永不理會乎？",
-				"instruction": "啟一次耗二息，五萬次耗一日也 💀",
+				"instruction": "啟一次耗二息，五萬次耗一日也，人生幾何 💀",
 				"buttons": {
 					"confirm": "然",
 					"cancel": "否"
@@ -213,7 +213,7 @@
 		"title": "欲習之乎？",
 		"modal": {
 			"title": "幸會 fount！",
-			"instruction": "欲循新手之儀軌乎？",
+			"instruction": "欲循新手之儀軌，初窺門徑乎？",
 			"buttons": {
 				"start": "始",
 				"skip": "略"
@@ -221,30 +221,30 @@
 		},
 		"endScreen": {
 			"title": "善哉！教習畢。",
-			"subtitle": "今汝已識操作之法。",
+			"subtitle": "今君已識操作之法，可縱橫馳騁矣。",
 			"endButton": "進。"
 		},
 		"progressMessages": {
-			"mouseMove": "請以指握靈鼠${mouseIcon}，<br/>而後隨意移動。",
-			"keyboardPress": "請尋指上乾坤${keyboardIcon}，<br/>而後輕按一二。",
-			"mobileTouchMove": "請尋掌中乾坤${phoneIcon}，<br/>而後以任意手指觸之，再移動。",
-			"mobileClick": "請以任意手指輕觸掌中乾坤${phoneIcon}，<br/>而後釋之。"
+			"mouseMove": "請以玉指，輕握靈鼠${mouseIcon}，<br/>而後隨心所欲，縱橫其間。",
+			"keyboardPress": "請於指掌之間，尋此乾坤之器${keyboardIcon}，<br/>而後以雷霆之勢，輕按一二，以驗其靈。",
+			"mobileTouchMove": "請尋掌中乾坤${phoneIcon}，<br/>而後以任意手指觸之，復加以游移，以觀其變。",
+			"mobileClick": "請以任意手指輕觸掌中乾坤${phoneIcon}，<br/>而後釋之，如蜻蜓點水。"
 		}
 	},
 	"auth": {
 		"title": "勘驗",
-		"subtitle": "用者之資訊皆存於本地",
+		"subtitle": "用者之資訊皆藏於本地，穩如泰山",
 		"usernameLabel": "名號:",
 		"usernameInput": {
-			"placeholder": "請入名號"
+			"placeholder": "請入君之名號"
 		},
 		"passwordLabel": "信物:",
 		"passwordInput": {
-			"placeholder": "請入信物"
+			"placeholder": "請入君之信物"
 		},
 		"confirmPasswordLabel": "復核信物:",
 		"confirmPasswordInput": {
-			"placeholder": "請再入信物"
+			"placeholder": "請再入信物以核"
 		},
 		"verificationCodeLabel": "驗碼:",
 		"verificationCodeInput": {
@@ -274,23 +274,23 @@
 			"verificationCodeError": "驗碼有誤或已失效。",
 			"verificationCodeSent": "驗碼已發。",
 			"verificationCodeSendError": "發驗碼失利。",
-			"verificationCodeRateLimit": "馳報過驟，請少待。",
-			"lowPasswordStrength": "信物不堅。",
-			"accountAlreadyExists": "名號已存。"
+			"verificationCodeRateLimit": "馳報過驟，請少待片刻。",
+			"lowPasswordStrength": "信物不堅，易為人所窺。",
+			"accountAlreadyExists": "此名號已為捷足者所得。"
 		},
 		"passwordStrength": {
-			"veryWeak": "劣",
-			"weak": "弱",
-			"normal": "中",
-			"strong": "強",
-			"veryStrong": "固"
+			"veryWeak": "不堪一擊",
+			"weak": "脆弱",
+			"normal": "尚可",
+			"strong": "堅固",
+			"veryStrong": "牢不可破"
 		}
 	},
 	"login_info": {
 		"modal": {
 			"title": "憑證傳送之誤",
-			"retrieve_error": "錄存登錄憑證時有誤：\n${error}\n可續行，然憑證不得存也。",
-			"transfer_error": "傳送登錄憑證時有誤：\n${error}\n可續行，然憑證不得取也。",
+			"retrieve_error": "錄存登錄憑證時有誤：\n${error}\n可續行，然憑證不得存，如鏡花水月。",
+			"transfer_error": "傳送登錄憑證時有誤：\n${error}\n可續行，然憑證不得取，如緣木求魚。",
 			"buttons": {
 				"ignore": "略而續行",
 				"retry": "再試"
@@ -299,7 +299,7 @@
 	},
 	"home": {
 		"title": "門戶",
-		"escapeConfirm": "確欲離 fount 乎？",
+		"escapeConfirm": "君真欲掛冠而去乎？",
 		"filterInput": {
 			"placeholder": "尋覓..."
 		},
@@ -317,8 +317,8 @@
 		},
 		"chars": {
 			"tab": "化身",
-			"title": "擇化身",
-			"subtitle": "擇一化身，以啟清談。",
+			"title": "點將遣行",
+			"subtitle": "擇一化身，以啟玄談。",
 			"none": "空空如也",
 			"card": {
 				"refreshButton": {
@@ -420,7 +420,7 @@
 				"alt": "菜單"
 			},
 			"input": {
-				"placeholder": "請言...\n合 Ctrl 與 Enter 以遣之"
+				"placeholder": "請暢所欲言...\n合 Ctrl 與 Enter 可傳書。"
 			},
 			"sendButton": {
 				"title": "發"
@@ -451,7 +451,7 @@
 			"title": "詳述"
 		},
 		"messageList": {
-			"confirmDeleteMessage": "確欲刪此一言乎？"
+			"confirmDeleteMessage": "覆水難收，真欲刪此一言乎？"
 		},
 		"voiceRecording": {
 			"errorAccessingMicrophone": "麥克風不可用"
@@ -569,8 +569,8 @@
 			"deleteSelected": "刪所擇",
 			"exportSelected": "出所擇"
 		},
-		"confirmDeleteChat": "確欲刪與 ${chars} 之清談之跡乎？",
-		"confirmDeleteMultiChats": "確欲刪所擇之 ${count} 條談跡乎？",
+		"confirmDeleteChat": "確欲刪與 ${chars} 之清談之跡乎？此舉不可復也。",
+		"confirmDeleteMultiChats": "確欲刪所擇之 ${count} 條談跡乎？此舉不可復也。",
 		"alerts": {
 			"noChatSelectedForDeletion": "請擇欲刪之談跡",
 			"noChatSelectedForExport": "請擇欲出之談跡",
@@ -629,16 +629,16 @@
 			"heading": "身分之定"
 		},
 		"personaUserName": {
-			"label": "汝於清談中之名",
+			"label": "君於清談中之名",
 			"placeholder": "例：船長、探險家"
 		},
 		"personaAppearance": {
 			"label": "外貌",
-			"placeholder": "述汝外貌。"
+			"placeholder": "述君外貌。"
 		},
 		"personaPersonality": {
 			"label": "性情",
-			"placeholder": "述汝性情。"
+			"placeholder": "述君性情。"
 		},
 		"worldDef": {
 			"heading": "世界之定"
@@ -649,7 +649,7 @@
 		},
 		"worldGreeting": {
 			"label": "世界問候",
-			"placeholder": "世界予汝之開場白。"
+			"placeholder": "世界予君之開場白。"
 		},
 		"author": {
 			"label": "作者",
@@ -673,11 +673,11 @@
 		},
 		"createButton": "創建",
 		"alerts": {
-			"success": "器 '${partName}' 創建功成。",
+			"success": "器 '${partName}' 創建功成，可喜可賀。",
 			"error": "有誤: ${message}"
 		},
 		"info": {
-			"description": "此等範本僅可用於速建簡易之器，繁複者仍需手動創建。"
+			"description": "此等範本僅可用於速建簡易之器，繁複者仍需手動創建，所謂大道至簡也。"
 		}
 	},
 	"import": {
@@ -724,7 +724,7 @@
 	"export": {
 		"title": "導出器",
 		"pageTitle": "導出器",
-		"pageSubtitle": "出汝所喜之物",
+		"pageSubtitle": "出君所喜之物",
 		"steps": {
 			"partType": "擇類",
 			"part": "擇器",
@@ -785,7 +785,7 @@
 	"uninstall": {
 		"title": "卸",
 		"titleWithName": "卸 ${type}/${name}",
-		"confirmMessage": "汝確欲卸此 ${type}: ${name} 乎？",
+		"confirmMessage": "君確欲卸此 ${type}: ${name} 乎？",
 		"invalidParamsTitle": "參數無效",
 		"infoMessage": {
 			"icon": {
@@ -837,7 +837,7 @@
 			"newUsernameLabel": "新名號:",
 			"submitButton": "更易名號",
 			"confirmMessage": "確欲更易名號乎？此舉將需重新登臺。",
-			"success": "名號已更為 “${newUsername}”。汝將告退。"
+			"success": "名號已更為 “${newUsername}”。君將告退。"
 		},
 		"userDevices": {
 			"title": "用者之器/當席",
@@ -859,16 +859,16 @@
 		},
 		"deleteAccount": {
 			"title": "銷戶",
-			"warning": "警：此舉將永銷汝之戶籍及所有資訊，不可復原。",
+			"warning": "警：此舉將永銷君之戶籍及所有資訊，破鏡難圓，請三思。",
 			"submitButton": "銷此戶籍",
-			"confirmMessage1": "警！確欲永銷汝之戶籍乎？此舉不可撤銷。",
+			"confirmMessage1": "警！確欲永銷君之戶籍乎？此舉不可撤銷。",
 			"confirmMessage2": "為彰其信，請書君之名號“${username}”：",
 			"usernameMismatch": "所入名號不合。銷戶已止。",
-			"success": "戶籍已銷。汝將告退。"
+			"success": "戶籍已銷。君將告退。"
 		},
 		"passwordConfirm": {
 			"title": "確認",
-			"message": "為繼續，請入汝之當前信物：",
+			"message": "為繼續，請入君之當前信物：",
 			"passwordLabel": "信物:",
 			"confirmButton": "可",
 			"cancelButton": "否"
@@ -890,14 +890,14 @@
 		},
 		"newApiKey": {
 			"title": "新符鑰已創",
-			"warning": "請錄新符鑰。一去不復見！",
+			"warning": "請錄新符鑰。機不可失，時不再來！",
 			"copyButtonTitle": "錄此新鑰",
 			"closeButton": "已錄之"
 		}
 	},
 	"languageSettings": {
 		"title": "雅言規度",
-		"description": "此處可定汝之雅言好尚。凡所列之言，將先於觀器之常設而用。",
+		"description": "此處可定君之雅言好尚。凡所列之言，將先於觀器之常設而用。",
 		"availableLanguages": "諸雅言備選",
 		"addButton": "添",
 		"preferredLanguages": "所尚雅言之列",
@@ -1185,7 +1185,7 @@
 	},
 	"terminal_assistant": {
 		"title": "終端輔佐",
-		"initialMessage": "fount 可將汝所喜之化身部署於終端，以輔編碼。",
+		"initialMessage": "fount 可將君所喜之化身部署於終端，以輔編碼。",
 		"initialMessageLink": "點此詳閱"
 	},
 	"access": {
@@ -1205,16 +1205,16 @@
 		"endpointSectionTitle": "API端點",
 		"endpointInstruction": "此乃與他服務整合之基址。",
 		"usageExampleTitle": "用法示例",
-		"usageExampleInstruction": "此爲如何用`curl`獲取可用模型列表之例。",
+		"usageExampleInstruction": "此為如何用`curl`獲取可用模型列表之例。",
 		"copyButton": "謄",
 		"copied": "已謄至剪貼板",
 		"apiKeySectionTitle": "爾之API密鑰",
 		"apiKey": "爾之API密鑰：",
-		"noApiKey": "爾尚未爲此頁生成API密鑰。",
+		"noApiKey": "爾尚未為此頁生成API密鑰。",
 		"generateApiKeyButton": "生成新鑰",
 		"copyApiKeyButton": "謄",
 		"apiKeyCopied": "API密鑰已謄！",
-		"queryStringSectionTitle": "無法在請求頭中設置APIKey？(不安全)",
+		"queryStringSectionTitle": "無法在請求頭中設置APIKey？(此法不甚安穩)",
 		"queryStringWarning": "當爾之應用不支持在請求頭（Authorization header）中發送API密鑰時，可用此備用之法。切記：徑以密鑰置於網址，恐錄於日誌史載，徒增其險。",
 		"copyQueryStringUrlButton": "包含API密鑰之URL（查詢字符串）"
 	},
@@ -1233,8 +1233,8 @@
 		"copy_fail_alert": "謄錄失利！"
 	},
 	"404": {
-		"title": "頁面未尋獲",
-		"pageNotFoundText": "嗚呼！汝似入無有之境。",
-		"homepageButton": "返門戶"
+		"title": "蹤跡難尋",
+		"pageNotFoundText": "嗚呼！君誤入無何有之鄉矣。",
+		"homepageButton": "歸去來兮"
 	}
 }

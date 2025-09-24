@@ -3,9 +3,9 @@
 	"name": "🤓",
 	"fountConsole": {
 		"server": {
-			"start": "🚀",
+			"start": "🚀✨",
 			"starting": "⏳",
-			"ready": "✅",
+			"ready": "✅🎉",
 			"showUrl": {
 				"https": "🔒 ${url}",
 				"http": "🌐 ${url}"
@@ -36,8 +36,8 @@
 		},
 		"partManager": {
 			"git": {
-				"noUpstream": "🚫 upstream '${currentBranch}', 🤷‍♂️✅",
-				"dirtyWorkingDirectory": "🧼➡️, 🙏💾",
+				"noUpstream": "🚫☁️ '${currentBranch}', 🤷‍♂️",
+				"dirtyWorkingDirectory": "⚠️📝, 🙏💾",
 				"updating": "☁️🔄",
 				"localAhead": "🏠➡️☁️, ✅",
 				"diverged": "🔀, 💪🔄",
@@ -57,7 +57,7 @@
 			"tokenVerifyError": "🔑✅❌: ${error}",
 			"refreshTokenError": "🔄🔑❌: ${error}",
 			"logoutRefreshTokenProcessError": "🚪🔄🔑❌: ${error}",
-			"revokeTokenNoJTI": "🚫🔑 jti",
+			"revokeTokenNoJTI": "🚫🔑🆔",
 			"accountLockedLog": "👤 ${username} 🔒"
 		},
 		"verification": {
@@ -103,19 +103,19 @@
 	"installer_wait_screen": {
 		"title": "👋 ⛲❗️",
 		"hero": {
-			"title": "🤖🤝",
-			"description": "⛲ 🤖 🤝, ✨"
+			"title": "✨🤖🤝",
+			"description": "⛲: 🗣️🤖, ✍️👤, 🤝🌍"
 		},
 		"feature1": {
-			"title": "💬 💻📱",
-			"description": "💻 🐧 🤖"
+			"title": "☁️💬 💻📱",
+			"description": "💻🐧🤖🍎"
 		},
 		"feature2": {
 			"title": "🎨🖌️",
 			"description": "✨ 30+ 🎨"
 		},
 		"feature3": {
-			"title": "💬🖼️🤩",
+			"title": "💬🖼️🎮",
 			"description": "📝 🖼️ 🎮"
 		},
 		"feature4": {
@@ -132,7 +132,7 @@
 			"description2": "🎮⏰"
 		},
 		"data_showcase": {
-			"title_prefix": "⛲👍",
+			"title_prefix": "⛲➡️",
 			"adjectives": [
 				"🧩",
 				"💡",
@@ -148,7 +148,7 @@
 				"🦾"
 			],
 			"platforms": [
-				"🏛️",
+				"🖥️",
 				"💬",
 				"🏃‍♂️"
 			],
@@ -158,14 +158,14 @@
 		"footer": {
 			"ready_text": "🚀❓",
 			"wait_text": "⏳...",
-			"open_fount": "📂 ⛲",
-			"open_or_install_fount": "📂/📥 ⛲",
+			"open_fount": "▶️ ⛲",
+			"open_or_install_fount": "▶️/📥 ⛲",
 			"error_message": "😢\n\n❌:\n${error}"
 		},
 		"error": {
 			"title": "📥❌❗️",
 			"connection_failed": "🔌❌❗️",
-			"description1": "⛲📥 ❓",
+			"description1": "⛲📥😵",
 			"description2": "💻👀 🔄",
 			"close_page": "📄➡️🗑️"
 		}
@@ -173,8 +173,8 @@
 	"protocolhandler": {
 		"title": "⚙️ ⛲",
 		"processing": "⚙️⏳",
-		"invalidProtocol": "❓",
-		"insufficientParams": "👎",
+		"invalidProtocol": "🚫🔗",
+		"insufficientParams": "❓🔢",
 		"unknownCommand": "🤷‍♂️➡️",
 		"shellCommandSent": "💻➡️✅",
 		"shellCommandFailed": "💻➡️❌",
@@ -182,7 +182,7 @@
 		"fountNotFound": "😢\n\n🤷‍♂️⛲, 📥❓",
 		"unknownError": "😢\n\n❌:\n${error}",
 		"runPartConfirm": {
-			"title": "✅▶️",
+			"title": "🤔❓",
 			"message": "🤔▶️ ${parttype} ${partname}❓",
 			"confirm": "✅",
 			"cancel": "❌"
@@ -192,15 +192,15 @@
 		"title": "⛲❗️",
 		"newTabFailed": {
 			"title": "🆕📄❌",
-			"instruction": "⏳ 1-2s",
-			"tryAllow": "🙏 ✨ ⛲ ❓",
+			"instruction": "⚠️➡️⏳",
+			"tryAllow": "🙏🔓➡️🚀❓",
 			"buttons": {
 				"retry": "🔄",
 				"skip": "⏭️",
 				"ignore": "🚫♾️"
 			},
 			"ignoreConfirm": {
-				"title": "✅ 🚫♾️❓",
+				"title": "🤔🚫♾️❓",
 				"instruction": "⏳➡️📆 💀",
 				"buttons": {
 					"confirm": "✅",
@@ -222,7 +222,7 @@
 		"endScreen": {
 			"title": "🎉🎓✅❗️",
 			"subtitle": "👍",
-			"endButton": "➡️❗️"
+			"endButton": "🚀"
 		},
 		"progressMessages": {
 			"mouseMove": "👆🖱️${mouseIcon}<br/>➡️",
@@ -253,7 +253,7 @@
 		"sendCodeButton": "➡️🔢",
 		"login": {
 			"title": "🚪➡️",
-			"submitButton": "➡️",
+			"submitButton": "✅➡️",
 			"toggleLink": {
 				"text": "🤷‍♂️👤❓",
 				"link": "✍️🆕"
@@ -271,12 +271,12 @@
 			"passwordMismatch": "🔑 ≠ 🔑🔑",
 			"loginError": "🚪➡️❌",
 			"registrationError": "🆕👤❌",
-			"verificationCodeError": "🔢❌",
+			"verificationCodeError": "🔢❌/⏳",
 			"verificationCodeSent": "🔢➡️✅",
 			"verificationCodeSendError": "🔢➡️❌",
 			"verificationCodeRateLimit": "🔢➡️⏳",
 			"lowPasswordStrength": "🔑👎",
-			"accountAlreadyExists": "👤✅"
+			"accountAlreadyExists": "👤🙅"
 		},
 		"passwordStrength": {
 			"veryWeak": "😫",
@@ -1199,8 +1199,8 @@
 		"copied": "📋✅❗️"
 	},
 	"proxy": {
-		"title": "🤖🔄",
-		"heading": "🤖🔄🚪",
+		"title": "🤖🔌",
+		"heading": "🤖🔌🚪",
 		"instruction": "🔑➡️⛲🤝💻",
 		"endpointSectionTitle": "🌐📍",
 		"endpointInstruction": "🔗➡️🌍",
