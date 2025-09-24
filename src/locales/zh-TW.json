@@ -100,24 +100,6 @@
 			"botStarted": "角色 ${charname} 已在 Telegram Bot ${botusername} 上登入"
 		}
 	},
-	"protocolhandler": {
-		"title": "處理 fount 協定",
-		"processing": "正在處理協定...",
-		"invalidProtocol": "無效的協定",
-		"insufficientParams": "參數不足",
-		"unknownCommand": "未知的指令",
-		"shellCommandSent": "Shell 指令已傳送",
-		"shellCommandFailed": "傳送 Shell 指令失敗",
-		"shellCommandError": "傳送 Shell 指令時出錯",
-		"fountNotFound": "哎呀 :(\n\n沒有找到 fount，或許你需要先安裝一個？",
-		"unknownError": "哎呀 :(\n\n發生錯誤：\n${error}",
-		"runPartConfirm": {
-			"title": "確認運行",
-			"message": "您確定要運行 ${parttype} 的 ${partname} 嗎？",
-			"confirm": "確認",
-			"cancel": "取消"
-		}
-	},
 	"installer_wait_screen": {
 		"title": "歡迎使用 fount！",
 		"hero": {
@@ -188,6 +170,24 @@
 			"close_page": "關閉頁面"
 		}
 	},
+	"protocolhandler": {
+		"title": "處理 fount 協定",
+		"processing": "正在處理協定...",
+		"invalidProtocol": "無效的協定",
+		"insufficientParams": "參數不足",
+		"unknownCommand": "未知的指令",
+		"shellCommandSent": "Shell 指令已傳送",
+		"shellCommandFailed": "傳送 Shell 指令失敗",
+		"shellCommandError": "傳送 Shell 指令時出錯",
+		"fountNotFound": "哎呀 :(\n\n沒有找到 fount，或許你需要先安裝一個？",
+		"unknownError": "哎呀 :(\n\n發生錯誤：\n${error}",
+		"runPartConfirm": {
+			"title": "確認運行",
+			"message": "您確定要運行 ${parttype} 的 ${partname} 嗎？",
+			"confirm": "確認",
+			"cancel": "取消"
+		}
+	},
 	"startPage": {
 		"title": "fount!",
 		"newTabFailed": {
@@ -207,6 +207,28 @@
 					"cancel": "取消"
 				}
 			}
+		}
+	},
+	"tutorial": {
+		"title": "來點教學？",
+		"modal": {
+			"title": "歡迎使用fount！",
+			"instruction": "要走一遍新手教學嗎？",
+			"buttons": {
+				"start": "開始教學",
+				"skip": "跳過"
+			}
+		},
+		"endScreen": {
+			"title": "太棒啦！教學完成！",
+			"subtitle": "現在你已經學會操作啦！",
+			"endButton": "下一步！"
+		},
+		"progressMessages": {
+			"mouseMove": "請使用您的手指嘗試握住滑鼠${mouseIcon}<br/>隨後移動它",
+			"keyboardPress": "請找到您的鍵盤${keyboardIcon}<br/>嘗試使用您的手指按壓鍵盤",
+			"mobileTouchMove": "請找到您的手機${phoneIcon}<br/>嘗試使用您的任意一根手指觸碰螢幕，再移動它",
+			"mobileClick": "請嘗試使用您的任意一根手指觸碰手機螢幕${phoneIcon}<br/>之後放開"
 		}
 	},
 	"auth": {
@@ -264,26 +286,15 @@
 			"veryStrong": "非常強"
 		}
 	},
-	"tutorial": {
-		"title": "來點教學？",
+	"login_info": {
 		"modal": {
-			"title": "歡迎使用fount！",
-			"instruction": "要走一遍新手教學嗎？",
+			"title": "憑證傳輸錯誤",
+			"retrieve_error": "嘗試儲存您的登入憑證時發生錯誤：\n${error}\n您可以繼續但無法儲存登入資訊。",
+			"transfer_error": "嘗試轉移您的登入憑證時發生錯誤：\n${error}\n您可以繼續但無法取得登入資訊。",
 			"buttons": {
-				"start": "開始教學",
-				"skip": "跳過"
+				"ignore": "忽略並繼續",
+				"retry": "重試"
 			}
-		},
-		"endScreen": {
-			"title": "太棒啦！教學完成！",
-			"subtitle": "現在你已經學會操作啦！",
-			"endButton": "下一步！"
-		},
-		"progressMessages": {
-			"mouseMove": "請使用您的手指嘗試握住滑鼠${mouseIcon}<br/>隨後移動它",
-			"keyboardPress": "請找到您的鍵盤${keyboardIcon}<br/>嘗試使用您的手指按壓鍵盤",
-			"mobileTouchMove": "請找到您的手機${phoneIcon}<br/>嘗試使用您的任意一根手指觸碰螢幕，再移動它",
-			"mobileClick": "請嘗試使用您的任意一根手指觸碰手機螢幕${phoneIcon}<br/>之後放開"
 		}
 	},
 	"home": {
@@ -363,204 +374,6 @@
 					"title": "設為預設人設"
 				}
 			}
-		}
-	},
-	"themeManage": {
-		"title": "主題管理",
-		"instruction": "選擇一個主題！",
-		"themes": {
-			"auto": "自動",
-			"light": "亮色",
-			"dark": "暗色",
-			"cupcake": "杯子蛋糕",
-			"bumblebee": "蜜蜂",
-			"emerald": "綠寶石",
-			"corporate": "企業",
-			"synthwave": "合成波",
-			"retro": "復古",
-			"cyberpunk": "賽博龐克",
-			"valentine": "情人節",
-			"halloween": "萬聖節",
-			"garden": "花園",
-			"forest": "森林",
-			"aqua": "深海",
-			"lofi": "lo-fi",
-			"pastel": "粉彩",
-			"fantasy": "奇幻",
-			"wireframe": "線框",
-			"black": "黑色",
-			"luxury": "奢華",
-			"dracula": "惡魔",
-			"cmyk": "CMYK",
-			"autumn": "秋天",
-			"business": "商業",
-			"acid": "酸性",
-			"lemonade": "檸檬水",
-			"night": "夜晚",
-			"coffee": "咖啡",
-			"winter": "冬天",
-			"dim": "昏暗",
-			"nord": "北歐",
-			"sunset": "日落",
-			"caramellatte": "焦糖拿鐵",
-			"abyss": "深淵",
-			"silk": "絲綢"
-		}
-	},
-	"import": {
-		"title": "匯入",
-		"tabs": {
-			"fileImport": "檔案匯入",
-			"textImport": "文字匯入"
-		},
-		"dropArea": {
-			"icon": {
-				"alt": "上傳圖示"
-			},
-			"text": "拖放檔案到此處或點擊選擇檔案"
-		},
-		"textArea": {
-			"placeholder": "輸入要匯入的文字..."
-		},
-		"buttons": {
-			"import": "匯入"
-		},
-		"alerts": {
-			"importSuccess": "匯入成功",
-			"importFailed": "匯入失敗: ${error}",
-			"unknownError": "未知錯誤"
-		},
-		"errors": {
-			"noFileSelected": "請選擇檔案",
-			"fileImportFailed": "檔案匯入失敗: ${message}",
-			"noTextContent": "請輸入文字內容",
-			"textImportFailed": "文字匯入失敗: ${message}",
-			"unknownError": "未知錯誤",
-			"handler": "處理器",
-			"error": "錯誤"
-		},
-		"fileItem": {
-			"removeButton": {
-				"title": "移除"
-			},
-			"removeButtonIcon": {
-				"alt": "移除"
-			}
-		}
-	},
-	"aisource_editor": {
-		"title": "AI 來源編輯器",
-		"fileList": {
-			"title": "AI 來源列表",
-			"addButton": {
-				"title": "+"
-			}
-		},
-		"configTitle": "AI 來源設定",
-		"generatorSelect": {
-			"label": "選擇產生器",
-			"placeholder": "請選擇"
-		},
-		"buttons": {
-			"save": "儲存",
-			"delete": "刪除"
-		},
-		"tooltips": {
-			"setDefault": "設為預設"
-		},
-		"alerts": {
-			"fetchFileListFailed": "獲取檔案列表失敗: ${error}",
-			"fetchGeneratorListFailed": "獲取產生器列表失敗: ${error}",
-			"fetchDefaultsFailed": "獲取預設組件失敗: ${error}",
-			"fetchFileDataFailed": "獲取檔案資料失敗: ${error}",
-			"noFileSelectedSave": "沒有選擇要儲存的檔案。",
-			"saveFileFailed": "儲存檔案失敗: ${error}",
-			"setDefaultFailed": "設定預設 AI 來源失敗: ${error}",
-			"noFileSelectedDelete": "沒有選擇要刪除的檔案。",
-			"deleteFileFailed": "刪除檔案失敗: ${error}",
-			"invalidFileName": "檔案名稱不能包含以下字元： / \\ : * ? \" < > |",
-			"addFileFailed": "新增檔案失敗: ${error}",
-			"fetchConfigTemplateFailed": "獲取設定範本失敗",
-			"noGeneratorSelectedSave": "請選擇產生器後再儲存"
-		},
-		"confirm": {
-			"unsavedChanges": "您有未儲存的變更。是否要放棄變更？",
-			"deleteFile": "確定要刪除檔案嗎?",
-			"unsavedChangesBeforeUnload": "您有未儲存的變更。確定要離開此頁面嗎？"
-		},
-		"prompts": {
-			"newFileName": "請輸入新的 AI 來源檔案名稱 (請勿包含副檔名):"
-		},
-		"editor": {
-			"disabledIndicator": "請先選擇產生器"
-		},
-		"common_config_interface": {
-			"empty_generator": "此AI來源的舊有生成器在加載時出錯，可能已被卸載或重命名。",
-			"apiKeyRequired": "需要 API 金鑰才能列出模型。",
-			"loadingModels": "正在載入模型...",
-			"availableModels": "可用模型：",
-			"copyModelIdTooltip": "點擊複製模型 ID",
-			"copied": "已複製！",
-			"loadModelsFailed": "載入模型失敗： ${message}"
-		}
-	},
-	"part_config": {
-		"title": "組件設定",
-		"pageTitle": "組件設定",
-		"labels": {
-			"partType": "選擇組件類型",
-			"part": "選擇組件"
-		},
-		"placeholders": {
-			"partTypeSelect": "請選擇",
-			"partSelect": "請選擇"
-		},
-		"editor": {
-			"title": "組件設定",
-			"disabledIndicator": "此組件不支援設定",
-			"buttons": {
-				"save": "儲存"
-			}
-		},
-		"errorMessage": {
-			"icon": {
-				"alt": "錯誤提示"
-			}
-		},
-		"alerts": {
-			"fetchPartTypesFailed": "獲取組件類型失敗",
-			"fetchPartsFailed": "獲取組件列表失敗",
-			"loadEditorFailed": "載入編輯器失敗",
-			"saveConfigFailed": "儲存組件設定失敗",
-			"unsavedChanges": "您有未儲存的變更。是否要放棄變更？",
-			"beforeUnload": "您有未儲存的變更。確定要離開嗎？"
-		}
-	},
-	"uninstall": {
-		"title": "解除安裝",
-		"titleWithName": "解除安裝 ${type}/${name}",
-		"confirmMessage": "您確定要解除安裝 ${type}: ${name} 嗎？",
-		"invalidParamsTitle": "參數無效",
-		"infoMessage": {
-			"icon": {
-				"alt": "資訊圖示"
-			}
-		},
-		"errorMessage": {
-			"icon": {
-				"alt": "錯誤圖示"
-			}
-		},
-		"buttons": {
-			"confirm": "確認解除安裝",
-			"cancel": "取消",
-			"back": "返回"
-		},
-		"alerts": {
-			"success": "成功解除安裝 ${type}: ${name}",
-			"failed": "解除安裝失敗: ${error}",
-			"invalidParams": "無效的請求參數。",
-			"httpError": "HTTP 錯誤！狀態碼：${status}"
 		}
 	},
 	"chat": {
@@ -772,209 +585,6 @@
 			"delete": "刪除"
 		}
 	},
-	"discord_bots": {
-		"title": "Discord Bot",
-		"cardTitle": "Discord Bot",
-		"buttons": {
-			"newBot": "新建",
-			"deleteBot": "刪除"
-		},
-		"configCard": {
-			"title": "Bot設定",
-			"labels": {
-				"character": "綁定角色",
-				"apiKey": "Discord API 金鑰",
-				"config": "設定"
-			},
-			"charSelectPlaceholder": "選擇角色",
-			"apiKeyInput": {
-				"placeholder": "請輸入 API 金鑰"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "切換顯示 API 金鑰"
-			},
-			"buttons": {
-				"saveConfig": "儲存設定",
-				"startBot": "啟動",
-				"stopBot": "停止"
-			}
-		},
-		"prompts": {
-			"newBotName": "請輸入新的 Bot 名稱："
-		},
-		"alerts": {
-			"botExists": "名為 \"${botname}\" 的 Bot 已存在，請使用其他名稱。",
-			"unsavedChanges": "您有未儲存的變更。是否要放棄變更？",
-			"configSaved": "設定儲存成功",
-			"httpError": "HTTP 錯誤",
-			"beforeUnload": "您有未儲存的變更。確定要離開嗎？"
-		}
-	},
-	"telegram_bots": {
-		"title": "Telegram Bot",
-		"cardTitle": "Telegram Bot管理",
-		"buttons": {
-			"newBot": "新建",
-			"deleteBot": "刪除"
-		},
-		"configCard": {
-			"title": "Bot設定",
-			"labels": {
-				"character": "綁定角色",
-				"botToken": "Telegram Bot Token",
-				"config": "設定"
-			},
-			"charSelectPlaceholder": "選擇角色",
-			"botTokenInput": {
-				"placeholder": "請輸入 Telegram Bot Token"
-			},
-			"toggleBotTokenIcon": {
-				"alt": "切換顯示 API 金鑰"
-			},
-			"buttons": {
-				"saveConfig": "儲存設定",
-				"startBot": "啟動",
-				"stopBot": "停止"
-			}
-		},
-		"prompts": {
-			"newBotName": "請輸入新的 Bot 名稱："
-		},
-		"alerts": {
-			"botExists": "名為 “${botname}” 的bot已存在，請使用其他名稱。",
-			"unsavedChanges": "您有未儲存的變更。確定要放棄這些變更嗎？",
-			"configSaved": "設定已成功儲存！",
-			"httpError": "HTTP 錯誤",
-			"beforeUnload": "您有未儲存的變更。確定要離開當前頁面嗎？"
-		}
-	},
-	"terminal_assistant": {
-		"title": "終端機助理",
-		"initialMessage": "fount 支援將你喜歡的角色部署到你的終端機中輔助你寫程式！",
-		"initialMessageLink": "點擊這裡了解更多資訊"
-	},
-	"access": {
-		"title": "在其他裝置上存取 fount",
-		"heading": "想在其他裝置上存取 fount 嗎？",
-		"instruction": {
-			"sameLAN": "確保裝置和 fount 主機在同一個區域網路下",
-			"accessthis": "存取以下網址："
-		},
-		"copyButton": "複製網址",
-		"copied": "網址已複製到剪貼簿！"
-	},
-	"proxy": {
-		"title": "API 代理",
-		"heading": "OpenAI API 代理網址",
-		"instruction": "將以下網址填入任意需要 OpenAI API 格式的應用程式中，即可使用在 fount 中的AI來源！",
-		"copyButton": "複製網址",
-		"copied": "網址已複製到剪貼簿！"
-	},
-	"404": {
-		"title": "頁面未找到",
-		"pageNotFoundText": "糟糕！您似乎來到了一個不存在的頁面。",
-		"homepageButton": "返回首頁"
-	},
-	"userSettings": {
-		"title": "使用者設定",
-		"PageTitle": "使用者設定",
-		"apiError": "API 請求失敗: ${message}",
-		"generalError": "發生錯誤: ${message}",
-		"userInfo": {
-			"title": "使用者資訊",
-			"usernameLabel": "使用者名稱:",
-			"creationDateLabel": "帳號建立日期:",
-			"folderSizeLabel": "使用者資料大小:",
-			"folderPathLabel": "使用者資料路徑:",
-			"copyPathBtnTitle": "複製路徑",
-			"copiedAlert": "路徑已複製到剪貼簿！"
-		},
-		"changePassword": {
-			"title": "修改密碼",
-			"currentPasswordLabel": "目前密碼:",
-			"newPasswordLabel": "新密碼:",
-			"confirmNewPasswordLabel": "確認新密碼:",
-			"submitButton": "修改密碼",
-			"errorMismatch": "新密碼兩次輸入不一致。",
-			"success": "密碼修改成功。"
-		},
-		"renameUser": {
-			"title": "重命名使用者",
-			"newUsernameLabel": "新使用者名稱:",
-			"submitButton": "重命名使用者",
-			"confirmMessage": "您確定要更改使用者名稱嗎？這將需要您重新登入。",
-			"success": "使用者已成功重命名為 「${newUsername}」。您現在將被登出。"
-		},
-		"userDevices": {
-			"title": "使用者裝置/會話",
-			"refreshButtonTitle": "重新整理列表",
-			"noDevicesFound": "未找到任何裝置或會話。",
-			"deviceInfo": "裝置ID: ${deviceId}",
-			"thisDevice": "目前裝置",
-			"deviceDetails": "最後上線: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
-			"revokeButton": "撤銷",
-			"revokeConfirm": "您確定要從此裝置/會話登出嗎？",
-			"revokeSuccess": "裝置/會話已成功撤銷。"
-		},
-		"logout": {
-			"title": "登出",
-			"description": "這將從目前裝置登出您的帳號。",
-			"buttonText": "登出",
-			"confirmMessage": "您確定要登出嗎？",
-			"successMessage": "已成功登出。即將跳轉到登入頁面..."
-		},
-		"deleteAccount": {
-			"title": "刪除帳號",
-			"warning": "警告：此操作將永久刪除您的帳號和所有相關資料，且無法恢復。",
-			"submitButton": "刪除我的帳號",
-			"confirmMessage1": "警告！您確定要永久刪除您的帳號嗎？此操作無法撤銷。",
-			"confirmMessage2": "為確認刪除，請輸入您的使用者名稱「${username}」：",
-			"usernameMismatch": "輸入的使用者名稱與目前使用者不符。刪除操作已取消。",
-			"success": "帳號已成功刪除。您現在將被登出。"
-		},
-		"passwordConfirm": {
-			"title": "確認操作",
-			"message": "為繼續此操作，請輸入您的目前密碼：",
-			"passwordLabel": "密碼:",
-			"confirmButton": "確認",
-			"cancelButton": "取消"
-		},
-		"apiKeys": {
-			"title": "API 密鑰",
-			"description": "管理外部應用程式的 API 密鑰。",
-			"descriptionPlaceholder": "新密鑰描述",
-			"createButton": "創建",
-			"noKeysFound": "未找到任何 API 密鑰。",
-			"refreshButtonTitle": "刷新列表",
-			"keyDetails": "描述: ${description} | 創建於: ${createdAt} | 最後使用: ${lastUsed}",
-			"neverUsed": "從未使用",
-			"revokeButton": "撤銷",
-			"revokeConfirm": "您確定要撤銷此 API 密鑰嗎？",
-			"revokeSuccess": "API 密鑰已成功撤銷。",
-			"errorDescriptionRequired": "需要提供描述。",
-			"createSuccess": "API 密鑰創建成功。"
-		},
-		"newApiKey": {
-			"title": "新 API 密鑰已創建",
-			"warning": "請複制您的新 API 密鑰。您將無法再次看到它！",
-			"copyButtonTitle": "複製新 API 密鑰",
-			"closeButton": "我已復制我的密鑰"
-		}
-	},
-	"badges_maker": {
-		"title": "fount! 徽章轉換器",
-		"card_title": "fount 徽章連結轉換器",
-		"original_url_label": "貼上 img.shields.io 網址",
-		"original_url_placeholder": "例如: https://img.shields.io/badge/Hello-World-blue",
-		"new_url_label": "產生的新網址",
-		"new_url_placeholder": "這裡會顯示轉換後的網址",
-		"copy_button": "複製",
-		"preview_label": "效果預覽",
-		"preview_alt": "徽章預覽",
-		"copied_text": "已複製!",
-		"copy_error": "無法複製文字: ${error}",
-		"copy_fail_alert": "複製失敗！"
-	},
 	"easynew": {
 		"title": "快速新建",
 		"cardTitle": "從範本建立一個新組件",
@@ -1070,6 +680,47 @@
 			"description": "這些範本只能用於快速建構簡單的組件，複雜的組件仍然需要手動建立。"
 		}
 	},
+	"import": {
+		"title": "匯入",
+		"tabs": {
+			"fileImport": "檔案匯入",
+			"textImport": "文字匯入"
+		},
+		"dropArea": {
+			"icon": {
+				"alt": "上傳圖示"
+			},
+			"text": "拖放檔案到此處或點擊選擇檔案"
+		},
+		"textArea": {
+			"placeholder": "輸入要匯入的文字..."
+		},
+		"buttons": {
+			"import": "匯入"
+		},
+		"alerts": {
+			"importSuccess": "匯入成功",
+			"importFailed": "匯入失敗: ${error}",
+			"unknownError": "未知錯誤"
+		},
+		"errors": {
+			"noFileSelected": "請選擇檔案",
+			"fileImportFailed": "檔案匯入失敗: ${message}",
+			"noTextContent": "請輸入文字內容",
+			"textImportFailed": "文字匯入失敗: ${message}",
+			"unknownError": "未知錯誤",
+			"handler": "處理器",
+			"error": "錯誤"
+		},
+		"fileItem": {
+			"removeButton": {
+				"title": "移除"
+			},
+			"removeButtonIcon": {
+				"alt": "移除"
+			}
+		}
+	},
 	"export": {
 		"title": "組件匯出器",
 		"pageTitle": "組件匯出器",
@@ -1131,6 +782,119 @@
 			"generateShareLinkWithData": "產生分享連結 (包含資料)"
 		}
 	},
+	"uninstall": {
+		"title": "解除安裝",
+		"titleWithName": "解除安裝 ${type}/${name}",
+		"confirmMessage": "您確定要解除安裝 ${type}: ${name} 嗎？",
+		"invalidParamsTitle": "參數無效",
+		"infoMessage": {
+			"icon": {
+				"alt": "資訊圖示"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "錯誤圖示"
+			}
+		},
+		"buttons": {
+			"confirm": "確認解除安裝",
+			"cancel": "取消",
+			"back": "返回"
+		},
+		"alerts": {
+			"success": "成功解除安裝 ${type}: ${name}",
+			"failed": "解除安裝失敗: ${error}",
+			"invalidParams": "無效的請求參數。",
+			"httpError": "HTTP 錯誤！狀態碼：${status}"
+		}
+	},
+	"userSettings": {
+		"title": "使用者設定",
+		"PageTitle": "使用者設定",
+		"apiError": "API 請求失敗: ${message}",
+		"generalError": "發生錯誤: ${message}",
+		"userInfo": {
+			"title": "使用者資訊",
+			"usernameLabel": "使用者名稱:",
+			"creationDateLabel": "帳號建立日期:",
+			"folderSizeLabel": "使用者資料大小:",
+			"folderPathLabel": "使用者資料路徑:",
+			"copyPathBtnTitle": "複製路徑",
+			"copiedAlert": "路徑已複製到剪貼簿！"
+		},
+		"changePassword": {
+			"title": "修改密碼",
+			"currentPasswordLabel": "目前密碼:",
+			"newPasswordLabel": "新密碼:",
+			"confirmNewPasswordLabel": "確認新密碼:",
+			"submitButton": "修改密碼",
+			"errorMismatch": "新密碼兩次輸入不一致。",
+			"success": "密碼修改成功。"
+		},
+		"renameUser": {
+			"title": "重命名使用者",
+			"newUsernameLabel": "新使用者名稱:",
+			"submitButton": "重命名使用者",
+			"confirmMessage": "您確定要更改使用者名稱嗎？這將需要您重新登入。",
+			"success": "使用者已成功重命名為 「${newUsername}」。您現在將被登出。"
+		},
+		"userDevices": {
+			"title": "使用者裝置/會話",
+			"refreshButtonTitle": "重新整理列表",
+			"noDevicesFound": "未找到任何裝置或會話。",
+			"deviceInfo": "裝置ID: ${deviceId}",
+			"thisDevice": "目前裝置",
+			"deviceDetails": "最後上線: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
+			"revokeButton": "撤銷",
+			"revokeConfirm": "您確定要從此裝置/會話登出嗎？",
+			"revokeSuccess": "裝置/會話已成功撤銷。"
+		},
+		"logout": {
+			"title": "登出",
+			"description": "這將從目前裝置登出您的帳號。",
+			"buttonText": "登出",
+			"confirmMessage": "您確定要登出嗎？",
+			"successMessage": "已成功登出。即將跳轉到登入頁面..."
+		},
+		"deleteAccount": {
+			"title": "刪除帳號",
+			"warning": "警告：此操作將永久刪除您的帳號和所有相關資料，且無法恢復。",
+			"submitButton": "刪除我的帳號",
+			"confirmMessage1": "警告！您確定要永久刪除您的帳號嗎？此操作無法撤銷。",
+			"confirmMessage2": "為確認刪除，請輸入您的使用者名稱「${username}」：",
+			"usernameMismatch": "輸入的使用者名稱與目前使用者不符。刪除操作已取消。",
+			"success": "帳號已成功刪除。您現在將被登出。"
+		},
+		"passwordConfirm": {
+			"title": "確認操作",
+			"message": "為繼續此操作，請輸入您的目前密碼：",
+			"passwordLabel": "密碼:",
+			"confirmButton": "確認",
+			"cancelButton": "取消"
+		},
+		"apiKeys": {
+			"title": "API 密鑰",
+			"description": "管理外部應用程式的 API 密鑰。",
+			"descriptionPlaceholder": "新密鑰描述",
+			"createButton": "創建",
+			"noKeysFound": "未找到任何 API 密鑰。",
+			"refreshButtonTitle": "刷新列表",
+			"keyDetails": "描述: ${description} | 創建於: ${createdAt} | 最後使用: ${lastUsed}",
+			"neverUsed": "從未使用",
+			"revokeButton": "撤銷",
+			"revokeConfirm": "您確定要撤銷此 API 密鑰嗎？",
+			"revokeSuccess": "API 密鑰已成功撤銷。",
+			"errorDescriptionRequired": "需要提供描述。",
+			"createSuccess": "API 密鑰創建成功。"
+		},
+		"newApiKey": {
+			"title": "新 API 密鑰已創建",
+			"warning": "請複制您的新 API 密鑰。您將無法再次看到它！",
+			"copyButtonTitle": "複製新 API 密鑰",
+			"closeButton": "我已復制我的密鑰"
+		}
+	},
 	"languageSettings": {
 		"title": "語言設置",
 		"description": "在此處管理您的語言偏好。列表中的語言將按順序優先於瀏覽器設置。",
@@ -1144,15 +908,210 @@
 		"resetMessage": "語言設置已重置！",
 		"fetchLocalesFailed": "獲取可用語言失敗！"
 	},
-	"login_info": {
-		"modal": {
-			"title": "憑證傳輸錯誤",
-			"retrieve_error": "嘗試儲存您的登入憑證時發生錯誤：\n${error}\n您可以繼續但無法儲存登入資訊。",
-			"transfer_error": "嘗試轉移您的登入憑證時發生錯誤：\n${error}\n您可以繼續但無法取得登入資訊。",
+	"themeManage": {
+		"title": "主題管理",
+		"instruction": "選擇一個主題！",
+		"themes": {
+			"auto": "自動",
+			"light": "亮色",
+			"dark": "暗色",
+			"cupcake": "杯子蛋糕",
+			"bumblebee": "蜜蜂",
+			"emerald": "綠寶石",
+			"corporate": "企業",
+			"synthwave": "合成波",
+			"retro": "復古",
+			"cyberpunk": "賽博龐克",
+			"valentine": "情人節",
+			"halloween": "萬聖節",
+			"garden": "花園",
+			"forest": "森林",
+			"aqua": "深海",
+			"lofi": "lo-fi",
+			"pastel": "粉彩",
+			"fantasy": "奇幻",
+			"wireframe": "線框",
+			"black": "黑色",
+			"luxury": "奢華",
+			"dracula": "惡魔",
+			"cmyk": "CMYK",
+			"autumn": "秋天",
+			"business": "商業",
+			"acid": "酸性",
+			"lemonade": "檸檬水",
+			"night": "夜晚",
+			"coffee": "咖啡",
+			"winter": "冬天",
+			"dim": "昏暗",
+			"nord": "北歐",
+			"sunset": "日落",
+			"caramellatte": "焦糖拿鐵",
+			"abyss": "深淵",
+			"silk": "絲綢"
+		}
+	},
+	"part_config": {
+		"title": "組件設定",
+		"pageTitle": "組件設定",
+		"labels": {
+			"partType": "選擇組件類型",
+			"part": "選擇組件"
+		},
+		"placeholders": {
+			"partTypeSelect": "請選擇",
+			"partSelect": "請選擇"
+		},
+		"editor": {
+			"title": "組件設定",
+			"disabledIndicator": "此組件不支援設定",
 			"buttons": {
-				"ignore": "忽略並繼續",
-				"retry": "重試"
+				"save": "儲存"
 			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "錯誤提示"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "獲取組件類型失敗",
+			"fetchPartsFailed": "獲取組件列表失敗",
+			"loadEditorFailed": "載入編輯器失敗",
+			"saveConfigFailed": "儲存組件設定失敗",
+			"unsavedChanges": "您有未儲存的變更。是否要放棄變更？",
+			"beforeUnload": "您有未儲存的變更。確定要離開嗎？"
+		}
+	},
+	"aisource_editor": {
+		"title": "AI 來源編輯器",
+		"fileList": {
+			"title": "AI 來源列表",
+			"addButton": {
+				"title": "+"
+			}
+		},
+		"configTitle": "AI 來源設定",
+		"generatorSelect": {
+			"label": "選擇產生器",
+			"placeholder": "請選擇"
+		},
+		"buttons": {
+			"save": "儲存",
+			"delete": "刪除"
+		},
+		"tooltips": {
+			"setDefault": "設為預設"
+		},
+		"alerts": {
+			"fetchFileListFailed": "獲取檔案列表失敗: ${error}",
+			"fetchGeneratorListFailed": "獲取產生器列表失敗: ${error}",
+			"fetchDefaultsFailed": "獲取預設組件失敗: ${error}",
+			"fetchFileDataFailed": "獲取檔案資料失敗: ${error}",
+			"noFileSelectedSave": "沒有選擇要儲存的檔案。",
+			"saveFileFailed": "儲存檔案失敗: ${error}",
+			"setDefaultFailed": "設定預設 AI 來源失敗: ${error}",
+			"noFileSelectedDelete": "沒有選擇要刪除的檔案。",
+			"deleteFileFailed": "刪除檔案失敗: ${error}",
+			"invalidFileName": "檔案名稱不能包含以下字元： / \\ : * ? \" < > |",
+			"addFileFailed": "新增檔案失敗: ${error}",
+			"fetchConfigTemplateFailed": "獲取設定範本失敗",
+			"noGeneratorSelectedSave": "請選擇產生器後再儲存"
+		},
+		"confirm": {
+			"unsavedChanges": "您有未儲存的變更。是否要放棄變更？",
+			"deleteFile": "確定要刪除檔案嗎?",
+			"unsavedChangesBeforeUnload": "您有未儲存的變更。確定要離開此頁面嗎？"
+		},
+		"prompts": {
+			"newFileName": "請輸入新的 AI 來源檔案名稱 (請勿包含副檔名):"
+		},
+		"editor": {
+			"disabledIndicator": "請先選擇產生器"
+		},
+		"common_config_interface": {
+			"empty_generator": "此AI來源的舊有生成器在加載時出錯，可能已被卸載或重命名。",
+			"apiKeyRequired": "需要 API 金鑰才能列出模型。",
+			"loadingModels": "正在載入模型...",
+			"availableModels": "可用模型：",
+			"copyModelIdTooltip": "點擊複製模型 ID",
+			"copied": "已複製！",
+			"loadModelsFailed": "載入模型失敗： ${message}"
+		}
+	},
+	"discord_bots": {
+		"title": "Discord Bot",
+		"cardTitle": "Discord Bot",
+		"buttons": {
+			"newBot": "新建",
+			"deleteBot": "刪除"
+		},
+		"configCard": {
+			"title": "Bot設定",
+			"labels": {
+				"character": "綁定角色",
+				"apiKey": "Discord API 金鑰",
+				"config": "設定"
+			},
+			"charSelectPlaceholder": "選擇角色",
+			"apiKeyInput": {
+				"placeholder": "請輸入 API 金鑰"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "切換顯示 API 金鑰"
+			},
+			"buttons": {
+				"saveConfig": "儲存設定",
+				"startBot": "啟動",
+				"stopBot": "停止"
+			}
+		},
+		"prompts": {
+			"newBotName": "請輸入新的 Bot 名稱："
+		},
+		"alerts": {
+			"botExists": "名為 \"${botname}\" 的 Bot 已存在，請使用其他名稱。",
+			"unsavedChanges": "您有未儲存的變更。是否要放棄變更？",
+			"configSaved": "設定儲存成功",
+			"httpError": "HTTP 錯誤",
+			"beforeUnload": "您有未儲存的變更。確定要離開嗎？"
+		}
+	},
+	"telegram_bots": {
+		"title": "Telegram Bot",
+		"cardTitle": "Telegram Bot管理",
+		"buttons": {
+			"newBot": "新建",
+			"deleteBot": "刪除"
+		},
+		"configCard": {
+			"title": "Bot設定",
+			"labels": {
+				"character": "綁定角色",
+				"botToken": "Telegram Bot Token",
+				"config": "設定"
+			},
+			"charSelectPlaceholder": "選擇角色",
+			"botTokenInput": {
+				"placeholder": "請輸入 Telegram Bot Token"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "切換顯示 API 金鑰"
+			},
+			"buttons": {
+				"saveConfig": "儲存設定",
+				"startBot": "啟動",
+				"stopBot": "停止"
+			}
+		},
+		"prompts": {
+			"newBotName": "請輸入新的 Bot 名稱："
+		},
+		"alerts": {
+			"botExists": "名為 “${botname}” 的bot已存在，請使用其他名稱。",
+			"unsavedChanges": "您有未儲存的變更。確定要放棄這些變更嗎？",
+			"configSaved": "設定已成功儲存！",
+			"httpError": "HTTP 錯誤",
+			"beforeUnload": "您有未儲存的變更。確定要離開當前頁面嗎？"
 		}
 	},
 	"browser_integration": {
@@ -1223,5 +1182,46 @@
 			"prompt": "fount 瀏覽器集成腳本的新版本可用。是否現在打開更新頁面？"
 		},
 		"csp_warning": "fount 瀏覽器集成腳本檢測到頁面存在CSP策略，這可能導致集成腳本無法正常運行。請考慮安裝擴充功能停用CSP。"
+	},
+	"terminal_assistant": {
+		"title": "終端機助理",
+		"initialMessage": "fount 支援將你喜歡的角色部署到你的終端機中輔助你寫程式！",
+		"initialMessageLink": "點擊這裡了解更多資訊"
+	},
+	"access": {
+		"title": "在其他裝置上存取 fount",
+		"heading": "想在其他裝置上存取 fount 嗎？",
+		"instruction": {
+			"sameLAN": "確保裝置和 fount 主機在同一個區域網路下",
+			"accessthis": "存取以下網址："
+		},
+		"copyButton": "複製網址",
+		"copied": "網址已複製到剪貼簿！"
+	},
+	"proxy": {
+		"title": "API 代理",
+		"heading": "OpenAI API 代理網址",
+		"instruction": "將以下網址填入任意需要 OpenAI API 格式的應用程式中，即可使用在 fount 中的AI來源！",
+		"copyButton": "複製網址",
+		"copied": "網址已複製到剪貼簿！"
+	},
+	"badges_maker": {
+		"title": "fount! 徽章轉換器",
+		"card_title": "fount 徽章連結轉換器",
+		"original_url_label": "貼上 img.shields.io 網址",
+		"original_url_placeholder": "例如: https://img.shields.io/badge/Hello-World-blue",
+		"new_url_label": "產生的新網址",
+		"new_url_placeholder": "這裡會顯示轉換後的網址",
+		"copy_button": "複製",
+		"preview_label": "效果預覽",
+		"preview_alt": "徽章預覽",
+		"copied_text": "已複製!",
+		"copy_error": "無法複製文字: ${error}",
+		"copy_fail_alert": "複製失敗！"
+	},
+	"404": {
+		"title": "頁面未找到",
+		"pageNotFoundText": "糟糕！您似乎來到了一個不存在的頁面。",
+		"homepageButton": "返回首頁"
 	}
 }

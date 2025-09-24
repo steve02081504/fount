@@ -100,24 +100,6 @@
 			"botStarted": "कैरेक्टर ${charname} ने टेलीग्राम बॉट ${botusername} पर लॉगिन किया है।"
 		}
 	},
-	"protocolhandler": {
-		"title": "fount प्रोटोकॉल संसाधित हो रहा है",
-		"processing": "प्रोटोकॉल संसाधित हो रहा है...",
-		"invalidProtocol": "अमान्य प्रोटोकॉल।",
-		"insufficientParams": "अपर्याप्त पैरामीटर।",
-		"unknownCommand": "अज्ञात कमांड।",
-		"shellCommandSent": "शेल कमांड भेज दिया गया है।",
-		"shellCommandFailed": "शेल कमांड भेजने में विफल।",
-		"shellCommandError": "शेल कमांड भेजने में त्रुटि।",
-		"fountNotFound": "ओह हो :(\n\nfount नहीं मिला, शायद आपको इसे पहले इंस्टॉल करने की ज़रूरत है?",
-		"unknownError": "ओह हो :(\n\nएक त्रुटि हुई:\n${error}",
-		"runPartConfirm": {
-			"title": "चलाने की पुष्टि करें",
-			"message": "क्या आप सुनिश्चित हैं कि आप ${parttype} का ${partname} चलाना चाहते हैं?",
-			"confirm": "पुष्टि करना",
-			"cancel": "रद्द करना"
-		}
-	},
 	"installer_wait_screen": {
 		"title": "fount में आपका स्वागत है!",
 		"hero": {
@@ -188,6 +170,24 @@
 			"close_page": "पेज बंद करें"
 		}
 	},
+	"protocolhandler": {
+		"title": "fount प्रोटोकॉल संसाधित हो रहा है",
+		"processing": "प्रोटोकॉल संसाधित हो रहा है...",
+		"invalidProtocol": "अमान्य प्रोटोकॉल।",
+		"insufficientParams": "अपर्याप्त पैरामीटर।",
+		"unknownCommand": "अज्ञात कमांड।",
+		"shellCommandSent": "शेल कमांड भेज दिया गया है।",
+		"shellCommandFailed": "शेल कमांड भेजने में विफल।",
+		"shellCommandError": "शेल कमांड भेजने में त्रुटि।",
+		"fountNotFound": "ओह हो :(\n\nfount नहीं मिला, शायद आपको इसे पहले इंस्टॉल करने की ज़रूरत है?",
+		"unknownError": "ओह हो :(\n\nएक त्रुटि हुई:\n${error}",
+		"runPartConfirm": {
+			"title": "चलाने की पुष्टि करें",
+			"message": "क्या आप सुनिश्चित हैं कि आप ${parttype} का ${partname} चलाना चाहते हैं?",
+			"confirm": "पुष्टि करना",
+			"cancel": "रद्द करना"
+		}
+	},
 	"startPage": {
 		"title": "fount!",
 		"newTabFailed": {
@@ -207,6 +207,28 @@
 					"cancel": "रद्द करें"
 				}
 			}
+		}
+	},
+	"tutorial": {
+		"title": "एक ट्यूटोरियल कैसा रहेगा?",
+		"modal": {
+			"title": "fount में आपका स्वागत है!",
+			"instruction": "क्या आप शुरुआती ट्यूटोरियल देखना चाहेंगे?",
+			"buttons": {
+				"start": "ट्यूटोरियल शुरू करें",
+				"skip": "छोड़ दें"
+			}
+		},
+		"endScreen": {
+			"title": "बहुत बढ़िया! ट्यूटोरियल पूरा हुआ!",
+			"subtitle": "अब आप जान गए हैं कि इसे कैसे चलाना है!",
+			"endButton": "चलिए शुरू करते हैं!"
+		},
+		"progressMessages": {
+			"mouseMove": "कृपया माउस ${mouseIcon} को हिलाने का प्रयास करें।",
+			"keyboardPress": "कृपया अपने कीबोर्ड ${keyboardIcon} पर कोई कुंजी दबाएँ।",
+			"mobileTouchMove": "कृपया अपने फ़ोन ${phoneIcon} की स्क्रीन को उंगली से स्पर्श करें और फिर उसे स्वाइप करें।",
+			"mobileClick": "कृपया अपने फ़ोन ${phoneIcon} की स्क्रीन को उंगली से टैप करें।"
 		}
 	},
 	"auth": {
@@ -264,26 +286,15 @@
 			"veryStrong": "बहुत मज़बूत"
 		}
 	},
-	"tutorial": {
-		"title": "एक ट्यूटोरियल कैसा रहेगा?",
+	"login_info": {
 		"modal": {
-			"title": "fount में आपका स्वागत है!",
-			"instruction": "क्या आप शुरुआती ट्यूटोरियल देखना चाहेंगे?",
+			"title": "प्रमाणपत्र अंतरण त्रुटि",
+			"retrieve_error": "आपकी लॉगिन जानकारी सहेजते समय एक त्रुटि हुई:\n${error}\nआप जारी रख सकते हैं लेकिन लॉगिन जानकारी नहीं सहेज सकते।",
+			"transfer_error": "आपकी लॉगिन जानकारी को स्थानांतरित करने की कोशिश करते समय एक त्रुटि हुई:\n${error}\nआप जारी रख सकते हैं लेकिन लॉगिन जानकारी प्राप्त नहीं कर सकते।",
 			"buttons": {
-				"start": "ट्यूटोरियल शुरू करें",
-				"skip": "छोड़ दें"
+				"ignore": "अनदेखा करें और जारी रखें",
+				"retry": "पुनः प्रयास करें"
 			}
-		},
-		"endScreen": {
-			"title": "बहुत बढ़िया! ट्यूटोरियल पूरा हुआ!",
-			"subtitle": "अब आप जान गए हैं कि इसे कैसे चलाना है!",
-			"endButton": "चलिए शुरू करते हैं!"
-		},
-		"progressMessages": {
-			"mouseMove": "कृपया माउस ${mouseIcon} को हिलाने का प्रयास करें।",
-			"keyboardPress": "कृपया अपने कीबोर्ड ${keyboardIcon} पर कोई कुंजी दबाएँ।",
-			"mobileTouchMove": "कृपया अपने फ़ोन ${phoneIcon} की स्क्रीन को उंगली से स्पर्श करें और फिर उसे स्वाइप करें।",
-			"mobileClick": "कृपया अपने फ़ोन ${phoneIcon} की स्क्रीन को उंगली से टैप करें।"
 		}
 	},
 	"home": {
@@ -363,204 +374,6 @@
 					"title": "डिफ़ॉल्ट पर्सोना के रूप में सेट करें"
 				}
 			}
-		}
-	},
-	"themeManage": {
-		"title": "थीम प्रबंधन",
-		"instruction": "एक थीम चुनें!",
-		"themes": {
-			"auto": "स्वचालित",
-			"light": "हल्का",
-			"dark": "गहरा",
-			"cupcake": "कपकेक",
-			"bumblebee": "बम्बलबी",
-			"emerald": "पन्ना",
-			"corporate": "कॉर्पोरेट",
-			"synthwave": "सिंथवेव",
-			"retro": "रेट्रो",
-			"cyberpunk": "साइबरपंक",
-			"valentine": "वेलेंटाइन",
-			"halloween": "हेलोवीन",
-			"garden": "गार्डन",
-			"forest": "फ़ॉरेस्ट",
-			"aqua": "एक्वा",
-			"lofi": "लो-फ़ाई",
-			"pastel": "पेस्टल",
-			"fantasy": "फैंटेसी",
-			"wireframe": "वायरफ़्रेम",
-			"black": "काला",
-			"luxury": "लक्ज़री",
-			"dracula": "ड्रैकुला",
-			"cmyk": "CMYK",
-			"autumn": "शरद",
-			"business": "व्यापार",
-			"acid": "एसिड",
-			"lemonade": "लेमोनेड",
-			"night": "रात",
-			"coffee": "कॉफ़ी",
-			"winter": "सर्दी",
-			"dim": "मंद",
-			"nord": "नॉर्ड",
-			"sunset": "सूर्यास्त",
-			"caramellatte": "कारमेल लाटे",
-			"abyss": "अगाध",
-			"silk": "रेशम"
-		}
-	},
-	"import": {
-		"title": "आयात करें",
-		"tabs": {
-			"fileImport": "फ़ाइल आयात करें",
-			"textImport": "टेक्स्ट आयात करें"
-		},
-		"dropArea": {
-			"icon": {
-				"alt": "अपलोड आइकन"
-			},
-			"text": "फ़ाइलें यहाँ खींचें और छोड़ें या फ़ाइलें चुनने के लिए क्लिक करें।"
-		},
-		"textArea": {
-			"placeholder": "आयात करने के लिए टेक्स्ट दर्ज करें..."
-		},
-		"buttons": {
-			"import": "आयात करें"
-		},
-		"alerts": {
-			"importSuccess": "आयात सफल रहा।",
-			"importFailed": "आयात विफल: ${error}",
-			"unknownError": "अज्ञात त्रुटि।"
-		},
-		"errors": {
-			"noFileSelected": "कृपया एक फ़ाइल चुनें।",
-			"fileImportFailed": "फ़ाइल आयात विफल: ${message}",
-			"noTextContent": "कृपया टेक्स्ट सामग्री दर्ज करें।",
-			"textImportFailed": "टेक्स्ट आयात विफल: ${message}",
-			"unknownError": "अज्ञात त्रुटि।",
-			"handler": "हैंडलर",
-			"error": "त्रुटि"
-		},
-		"fileItem": {
-			"removeButton": {
-				"title": "हटाएँ"
-			},
-			"removeButtonIcon": {
-				"alt": "हटाएँ"
-			}
-		}
-	},
-	"aisource_editor": {
-		"title": "AI सोर्स एडिटर",
-		"fileList": {
-			"title": "AI सोर्स सूची",
-			"addButton": {
-				"title": "+"
-			}
-		},
-		"configTitle": "AI सोर्स कॉन्फ़िगरेशन",
-		"generatorSelect": {
-			"label": "जनरेटर चुनें",
-			"placeholder": "कृपया चुनें"
-		},
-		"buttons": {
-			"save": "सहेजें",
-			"delete": "हटाएँ"
-		},
-		"tooltips": {
-			"setDefault": "डिफाल्ट के रूप में सेट"
-		},
-		"alerts": {
-			"fetchFileListFailed": "फ़ाइल सूची प्राप्त करने में विफल: ${error}",
-			"fetchGeneratorListFailed": "जनरेटर सूची प्राप्त करने में विफल: ${error}",
-			"fetchDefaultsFailed": "डिफ़ॉल्ट घटक प्राप्त करने में विफल: ${error}",
-			"fetchFileDataFailed": "फ़ाइल डेटा प्राप्त करने में विफल: ${error}",
-			"noFileSelectedSave": "सहेजने के लिए कोई फ़ाइल नहीं चुनी गई।",
-			"saveFileFailed": "फ़ाइल सहेजने में विफल: ${error}",
-			"setDefaultFailed": "डिफ़ॉल्ट AI स्रोत सेट करना विफल रहा: ${error}",
-			"noFileSelectedDelete": "हटाने के लिए कोई फ़ाइल नहीं चुनी गई।",
-			"deleteFileFailed": "फ़ाइल हटाने में विफल: ${error}",
-			"invalidFileName": "फ़ाइल नाम में ये वर्ण नहीं हो सकते: / \\ : * ? \" < > |",
-			"addFileFailed": "फ़ाइल जोड़ने में विफल: ${error}",
-			"fetchConfigTemplateFailed": "कॉन्फ़िगरेशन टेम्पलेट प्राप्त करने में विफल।",
-			"noGeneratorSelectedSave": "कृपया सहेजने से पहले एक जनरेटर चुनें।"
-		},
-		"confirm": {
-			"unsavedChanges": "आपके पास बिना सहेजे बदलाव हैं। क्या आप बदलावों को छोड़ना चाहते हैं?",
-			"deleteFile": "क्या आप वाकई फ़ाइल हटाना चाहते हैं?",
-			"unsavedChangesBeforeUnload": "आपके पास बिना सहेजे बदलाव हैं। क्या आप वाकई यह पेज छोड़ना चाहते हैं?"
-		},
-		"prompts": {
-			"newFileName": "कृपया एक नया AI सोर्स फ़ाइल नाम दर्ज करें (बिना एक्सटेंशन के):"
-		},
-		"editor": {
-			"disabledIndicator": "कृपया पहले एक जनरेटर चुनें।"
-		},
-		"common_config_interface": {
-			"empty_generator": "इस AI स्रोत से विरासत जनरेटर को लोड करते समय एक त्रुटि होती है और हो सकता है कि उसे अनइंस्टॉल या नामांकित किया गया हो।",
-			"apiKeyRequired": "मॉडलों को सूचीबद्ध करने के लिए एक एपीआई कुंजी की आवश्यकता है।",
-			"loadingModels": "मॉडल लोड हो रहे हैं...",
-			"availableModels": "उपलब्ध मॉडल:",
-			"copyModelIdTooltip": "मॉडल आईडी कॉपी करने के लिए क्लिक करें",
-			"copied": "कॉपी किया गया!",
-			"loadModelsFailed": "मॉडल लोड करने में त्रुटि: ${message}"
-		}
-	},
-	"part_config": {
-		"title": "घटक कॉन्फ़िगरेशन",
-		"pageTitle": "घटक कॉन्फ़िगरेशन",
-		"labels": {
-			"partType": "घटक प्रकार चुनें",
-			"part": "घटक चुनें"
-		},
-		"placeholders": {
-			"partTypeSelect": "कृपया चुनें",
-			"partSelect": "कृपया चुनें"
-		},
-		"editor": {
-			"title": "घटक कॉन्फ़िगरेशन",
-			"disabledIndicator": "यह घटक कॉन्फ़िगरेशन का समर्थन नहीं करता है।",
-			"buttons": {
-				"save": "सहेजें"
-			}
-		},
-		"errorMessage": {
-			"icon": {
-				"alt": "त्रुटि आइकन"
-			}
-		},
-		"alerts": {
-			"fetchPartTypesFailed": "घटक प्रकार प्राप्त करने में विफल।",
-			"fetchPartsFailed": "घटक सूची प्राप्त करने में विफल।",
-			"loadEditorFailed": "संपादक लोड करने में विफल।",
-			"saveConfigFailed": "घटक कॉन्फ़िगरेशन सहेजने में विफल।",
-			"unsavedChanges": "आपके पास बिना सहेजे बदलाव हैं। क्या आप बदलावों को छोड़ना चाहते हैं?",
-			"beforeUnload": "आपके पास बिना सहेजे बदलाव हैं। क्या आप वाकई यह पेज छोड़ना चाहते हैं?"
-		}
-	},
-	"uninstall": {
-		"title": "अनइंस्टॉल करें",
-		"titleWithName": "${type}/${name} अनइंस्टॉल करें",
-		"confirmMessage": "क्या आप वाकई ${type}: ${name} अनइंस्टॉल करना चाहते हैं?",
-		"invalidParamsTitle": "अमान्य पैरामीटर।",
-		"infoMessage": {
-			"icon": {
-				"alt": "जानकारी आइकन"
-			}
-		},
-		"errorMessage": {
-			"icon": {
-				"alt": "त्रुटि आइकन"
-			}
-		},
-		"buttons": {
-			"confirm": "अनइंस्टॉल की पुष्टि करें",
-			"cancel": "रद्द करें",
-			"back": "वापस"
-		},
-		"alerts": {
-			"success": "${type}: ${name} सफलतापूर्वक अनइंस्टॉल कर दिया गया है।",
-			"failed": "अनइंस्टॉल विफल: ${error}",
-			"invalidParams": "अमान्य अनुरोध पैरामीटर।",
-			"httpError": "HTTP त्रुटि! स्थिति कोड: ${status}"
 		}
 	},
 	"chat": {
@@ -772,209 +585,6 @@
 			"delete": "हटाएँ"
 		}
 	},
-	"discord_bots": {
-		"title": "डिस्कॉर्ड बॉट",
-		"cardTitle": "डिस्कॉर्ड बॉट",
-		"buttons": {
-			"newBot": "नया",
-			"deleteBot": "हटाएँ"
-		},
-		"configCard": {
-			"title": "बॉट कॉन्फ़िगरेशन",
-			"labels": {
-				"character": "कैरेक्टर",
-				"apiKey": "डिस्कॉर्ड API कुंजी",
-				"config": "कॉन्फ़िगरेशन"
-			},
-			"charSelectPlaceholder": "कैरेक्टर चुनें",
-			"apiKeyInput": {
-				"placeholder": "API कुंजी दर्ज करें"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "API कुंजी दृश्यता टॉगल करें"
-			},
-			"buttons": {
-				"saveConfig": "कॉन्फ़िगरेशन सहेजें",
-				"startBot": "शुरू करें",
-				"stopBot": "बंद करें"
-			}
-		},
-		"prompts": {
-			"newBotName": "कृपया एक नया बॉट नाम दर्ज करें:"
-		},
-		"alerts": {
-			"botExists": "\"${botname}\" नाम का बॉट पहले से मौजूद है, कृपया कोई दूसरा नाम इस्तेमाल करें।",
-			"unsavedChanges": "आपके पास बिना सहेजे बदलाव हैं। क्या आप बदलावों को छोड़ना चाहते हैं?",
-			"configSaved": "कॉन्फ़िगरेशन सफलतापूर्वक सहेज लिया गया है।",
-			"httpError": "HTTP त्रुटि।",
-			"beforeUnload": "आपके पास बिना सहेजे बदलाव हैं। क्या आप वाकई यह पेज छोड़ना चाहते हैं?"
-		}
-	},
-	"telegram_bots": {
-		"title": "टेलीग्राम बॉट",
-		"cardTitle": "टेलीग्राम बॉट प्रबंधन",
-		"buttons": {
-			"newBot": "नया",
-			"deleteBot": "हटाएँ"
-		},
-		"configCard": {
-			"title": "बॉट कॉन्फ़िगरेशन",
-			"labels": {
-				"character": "संबद्ध कैरेक्टर",
-				"botToken": "टेलीग्राम बॉट टोकन",
-				"config": "कॉन्फ़िगरेशन"
-			},
-			"charSelectPlaceholder": "कैरेक्टर चुनें",
-			"botTokenInput": {
-				"placeholder": "टेलीग्राम बॉट टोकन दर्ज करें"
-			},
-			"toggleBotTokenIcon": {
-				"alt": "बॉट टोकन दृश्यता टॉगल करें"
-			},
-			"buttons": {
-				"saveConfig": "कॉन्फ़िगरेशन सहेजें",
-				"startBot": "शुरू करें",
-				"stopBot": "बंद करें"
-			}
-		},
-		"prompts": {
-			"newBotName": "कृपया एक नया बॉट नाम दर्ज करें:"
-		},
-		"alerts": {
-			"botExists": "\"${botname}\" नाम का बॉट पहले से मौजूद है, कृपया कोई दूसरा नाम इस्तेमाल करें।",
-			"unsavedChanges": "आपके पास सहेजे न गए बदलाव हैं। क्या आप वाकई इन बदलावों को छोड़ना चाहते हैं?",
-			"configSaved": "कॉन्फ़िगरेशन सफलतापूर्वक सहेज लिया गया है!",
-			"httpError": "HTTP त्रुटि।",
-			"beforeUnload": "आपके पास सहेजे न गए बदलाव हैं। क्या आप वाकई यह पेज छोड़ना चाहते हैं?"
-		}
-	},
-	"terminal_assistant": {
-		"title": "टर्मिनल सहायक",
-		"initialMessage": "fount आपको कोडिंग में सहायता के लिए आपके पसंदीदा कैरेक्टर को आपके टर्मिनल में तैनात करने में मदद करता है!",
-		"initialMessageLink": "और जानने के लिए यहाँ क्लिक करें।"
-	},
-	"access": {
-		"title": "अन्य डिवाइस पर fount एक्सेस करें",
-		"heading": "क्या आप अन्य डिवाइस पर fount एक्सेस करना चाहते हैं?",
-		"instruction": {
-			"sameLAN": "सुनिश्चित करें कि डिवाइस और fount होस्ट एक ही स्थानीय नेटवर्क पर हैं।",
-			"accessthis": "इस URL पर जाएँ:"
-		},
-		"copyButton": "URL कॉपी करें",
-		"copied": "URL क्लिपबोर्ड पर कॉपी कर दिया गया है!"
-	},
-	"proxy": {
-		"title": "API प्रॉक्सी",
-		"heading": "OpenAI API प्रॉक्सी पता",
-		"instruction": "fount में AI सोर्स का उपयोग करने के लिए, निम्नलिखित पते को किसी भी ऐसे एप्लिकेशन में दर्ज करें जिसे OpenAI API प्रारूप की आवश्यकता हो!",
-		"copyButton": "पता कॉपी करें",
-		"copied": "पता क्लिपबोर्ड पर कॉपी कर दिया गया है!"
-	},
-	"404": {
-		"title": "पेज नहीं मिला",
-		"pageNotFoundText": "ओह! ऐसा लगता है कि आप एक ऐसे पेज पर आ गए हैं जो मौजूद नहीं है।",
-		"homepageButton": "होमपेज पर वापस जाएँ"
-	},
-	"userSettings": {
-		"title": "उपयोगकर्ता सेटिंग्स",
-		"PageTitle": "उपयोगकर्ता सेटिंग्स",
-		"apiError": "API अनुरोध विफल: ${message}",
-		"generalError": "एक त्रुटि हुई: ${message}",
-		"userInfo": {
-			"title": "उपयोगकर्ता जानकारी",
-			"usernameLabel": "उपयोगकर्ता नाम:",
-			"creationDateLabel": "खाता बनाने की तिथि:",
-			"folderSizeLabel": "उपयोगकर्ता डेटा आकार:",
-			"folderPathLabel": "उपयोगकर्ता डेटा पथ:",
-			"copyPathBtnTitle": "पथ कॉपी करें",
-			"copiedAlert": "पथ क्लिपबोर्ड पर कॉपी कर दिया गया है!"
-		},
-		"changePassword": {
-			"title": "पासवर्ड बदलें",
-			"currentPasswordLabel": "वर्तमान पासवर्ड:",
-			"newPasswordLabel": "नया पासवर्ड:",
-			"confirmNewPasswordLabel": "नए पासवर्ड की पुष्टि करें:",
-			"submitButton": "पासवर्ड बदलें",
-			"errorMismatch": "नए पासवर्ड मेल नहीं खाते।",
-			"success": "पासवर्ड सफलतापूर्वक बदल दिया गया है।"
-		},
-		"renameUser": {
-			"title": "उपयोगकर्ता का नाम बदलें",
-			"newUsernameLabel": "नया उपयोगकर्ता नाम:",
-			"submitButton": "उपयोगकर्ता का नाम बदलें",
-			"confirmMessage": "क्या आप वाकई अपना उपयोगकर्ता नाम बदलना चाहते हैं? इसके लिए आपको फिर से लॉग इन करना होगा।",
-			"success": "उपयोगकर्ता का नाम सफलतापूर्वक \"${newUsername}\" में बदल दिया गया है। अब आप लॉग आउट हो जाएँगे।"
-		},
-		"userDevices": {
-			"title": "उपयोगकर्ता डिवाइस/सत्र",
-			"refreshButtonTitle": "सूची ताज़ा करें",
-			"noDevicesFound": "कोई डिवाइस या सत्र नहीं मिला।",
-			"deviceInfo": "डिवाइस ID: ${deviceId}",
-			"thisDevice": "यह डिवाइस",
-			"deviceDetails": "अंतिम बार ऑनलाइन: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
-			"revokeButton": "रद्द करें",
-			"revokeConfirm": "क्या आप वाकई इस डिवाइस/सत्र का एक्सेस रद्द करना चाहते हैं?",
-			"revokeSuccess": "डिवाइस/सत्र सफलतापूर्वक रद्द कर दिया गया है।"
-		},
-		"logout": {
-			"title": "लॉग आउट करें",
-			"description": "यह आपको वर्तमान डिवाइस से आपके खाते से लॉग आउट कर देगा।",
-			"buttonText": "लॉग आउट करें",
-			"confirmMessage": "क्या आप वाकई लॉग आउट करना चाहते हैं?",
-			"successMessage": "सफलतापूर्वक लॉग आउट कर दिया गया है। आपको जल्द ही लॉगिन पेज पर रीडायरेक्ट कर दिया जाएगा।"
-		},
-		"deleteAccount": {
-			"title": "खाता हटाएँ",
-			"warning": "चेतावनी: यह कार्रवाई आपके खाते और उससे जुड़े सभी डेटा को स्थायी रूप से हटा देगी और इसे पुनर्स्थापित नहीं किया जा सकता है।",
-			"submitButton": "मेरा खाता हटाएँ",
-			"confirmMessage1": "चेतावनी! क्या आप वाकई अपना खाता स्थायी रूप से हटाना चाहते हैं? यह कार्रवाई रद्द नहीं की जा सकती।",
-			"confirmMessage2": "हटाने की पुष्टि करने के लिए, कृपया अपना उपयोगकर्ता नाम \"${username}\" दर्ज करें:",
-			"usernameMismatch": "दर्ज किया गया उपयोगकर्ता नाम वर्तमान उपयोगकर्ता से मेल नहीं खाता है। हटाने की कार्रवाई रद्द कर दी गई है।",
-			"success": "खाता सफलतापूर्वक हटा दिया गया है। अब आप लॉग आउट हो जाएँगे।"
-		},
-		"passwordConfirm": {
-			"title": "कार्रवाई की पुष्टि करें",
-			"message": "जारी रखने के लिए, कृपया अपना वर्तमान पासवर्ड दर्ज करें:",
-			"passwordLabel": "पासवर्ड:",
-			"confirmButton": "पुष्टि करें",
-			"cancelButton": "रद्द करें"
-		},
-		"apiKeys": {
-			"title": "एपीआई कुंजी",
-			"description": "बाहरी अनुप्रयोगों के लिए एपीआई कुंजी प्रबंधित करें।",
-			"descriptionPlaceholder": "नई कुंजी विवरण",
-			"createButton": "बनाएं",
-			"noKeysFound": "कोई एपीआई कीज़ नहीं मिली।",
-			"refreshButtonTitle": "सूची को ताज़ा करें",
-			"keyDetails": "विवरण: ${description} | में बनाया गया: ${createdAt} | अंतिम उपयोग: ${lastUsed}",
-			"neverUsed": "कभी भी इस्तेमाल नहीं किया",
-			"revokeButton": "रद्द करना",
-			"revokeConfirm": "क्या आप सुनिश्चित हैं कि आप इस एपीआई कुंजी को रद्द करना चाहते हैं?",
-			"revokeSuccess": "एपीआई कुंजी को सफलतापूर्वक रद्द कर दिया गया है।",
-			"errorDescriptionRequired": "एक विवरण आवश्यक है।",
-			"createSuccess": "एपीआई कुंजी सफलतापूर्वक बनाई गई थी।"
-		},
-		"newApiKey": {
-			"title": "नई एपीआई कुंजी बनाई गई है",
-			"warning": "कृपया अपनी नई एपीआई कुंजी कॉपी करें। आप इसे फिर से नहीं देख पाएंगे!",
-			"copyButtonTitle": "नई एपीआई कुंजी कॉपी करें",
-			"closeButton": "मैंने अपनी चाबी की नकल की है"
-		}
-	},
-	"badges_maker": {
-		"title": "fount! बैज कन्वर्टर",
-		"card_title": "fount बैज लिंक कन्वर्टर",
-		"original_url_label": "img.shields.io URL पेस्ट करें",
-		"original_url_placeholder": "उदाहरण के लिए: https://img.shields.io/badge/hello-world-blue",
-		"new_url_label": "उत्पन्न नया URL",
-		"new_url_placeholder": "परिवर्तित URL यहां प्रदर्शित किया जाएगा",
-		"copy_button": "कॉपी",
-		"preview_label": "पूर्वावलोकन",
-		"preview_alt": "बैज पूर्वावलोकन",
-		"copied_text": "कॉपीड!",
-		"copy_error": "पाठ को कॉपी करने में असमर्थ: ${error}",
-		"copy_fail_alert": "कॉपी विफल!"
-	},
 	"easynew": {
 		"title": "त्वरित निर्माण",
 		"cardTitle": "टेम्पलेट से नया घटक बनाएँ",
@@ -1070,6 +680,47 @@
 			"description": "इन टेम्प्लेट का उपयोग केवल साधारण भागों को जल्दी से बनाने के लिए किया जा सकता है; जटिल भागों को अभी भी मैन्युअल रूप से बनाने की आवश्यकता है।"
 		}
 	},
+	"import": {
+		"title": "आयात करें",
+		"tabs": {
+			"fileImport": "फ़ाइल आयात करें",
+			"textImport": "टेक्स्ट आयात करें"
+		},
+		"dropArea": {
+			"icon": {
+				"alt": "अपलोड आइकन"
+			},
+			"text": "फ़ाइलें यहाँ खींचें और छोड़ें या फ़ाइलें चुनने के लिए क्लिक करें।"
+		},
+		"textArea": {
+			"placeholder": "आयात करने के लिए टेक्स्ट दर्ज करें..."
+		},
+		"buttons": {
+			"import": "आयात करें"
+		},
+		"alerts": {
+			"importSuccess": "आयात सफल रहा।",
+			"importFailed": "आयात विफल: ${error}",
+			"unknownError": "अज्ञात त्रुटि।"
+		},
+		"errors": {
+			"noFileSelected": "कृपया एक फ़ाइल चुनें।",
+			"fileImportFailed": "फ़ाइल आयात विफल: ${message}",
+			"noTextContent": "कृपया टेक्स्ट सामग्री दर्ज करें।",
+			"textImportFailed": "टेक्स्ट आयात विफल: ${message}",
+			"unknownError": "अज्ञात त्रुटि।",
+			"handler": "हैंडलर",
+			"error": "त्रुटि"
+		},
+		"fileItem": {
+			"removeButton": {
+				"title": "हटाएँ"
+			},
+			"removeButtonIcon": {
+				"alt": "हटाएँ"
+			}
+		}
+	},
 	"export": {
 		"title": "घटक निर्यातक",
 		"pageTitle": "घटक निर्यातक",
@@ -1131,6 +782,119 @@
 			"generateShareLinkWithData": "शेयर लिंक उत्पन्न करें (डेटा सहित)"
 		}
 	},
+	"uninstall": {
+		"title": "अनइंस्टॉल करें",
+		"titleWithName": "${type}/${name} अनइंस्टॉल करें",
+		"confirmMessage": "क्या आप वाकई ${type}: ${name} अनइंस्टॉल करना चाहते हैं?",
+		"invalidParamsTitle": "अमान्य पैरामीटर।",
+		"infoMessage": {
+			"icon": {
+				"alt": "जानकारी आइकन"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "त्रुटि आइकन"
+			}
+		},
+		"buttons": {
+			"confirm": "अनइंस्टॉल की पुष्टि करें",
+			"cancel": "रद्द करें",
+			"back": "वापस"
+		},
+		"alerts": {
+			"success": "${type}: ${name} सफलतापूर्वक अनइंस्टॉल कर दिया गया है।",
+			"failed": "अनइंस्टॉल विफल: ${error}",
+			"invalidParams": "अमान्य अनुरोध पैरामीटर।",
+			"httpError": "HTTP त्रुटि! स्थिति कोड: ${status}"
+		}
+	},
+	"userSettings": {
+		"title": "उपयोगकर्ता सेटिंग्स",
+		"PageTitle": "उपयोगकर्ता सेटिंग्स",
+		"apiError": "API अनुरोध विफल: ${message}",
+		"generalError": "एक त्रुटि हुई: ${message}",
+		"userInfo": {
+			"title": "उपयोगकर्ता जानकारी",
+			"usernameLabel": "उपयोगकर्ता नाम:",
+			"creationDateLabel": "खाता बनाने की तिथि:",
+			"folderSizeLabel": "उपयोगकर्ता डेटा आकार:",
+			"folderPathLabel": "उपयोगकर्ता डेटा पथ:",
+			"copyPathBtnTitle": "पथ कॉपी करें",
+			"copiedAlert": "पथ क्लिपबोर्ड पर कॉपी कर दिया गया है!"
+		},
+		"changePassword": {
+			"title": "पासवर्ड बदलें",
+			"currentPasswordLabel": "वर्तमान पासवर्ड:",
+			"newPasswordLabel": "नया पासवर्ड:",
+			"confirmNewPasswordLabel": "नए पासवर्ड की पुष्टि करें:",
+			"submitButton": "पासवर्ड बदलें",
+			"errorMismatch": "नए पासवर्ड मेल नहीं खाते।",
+			"success": "पासवर्ड सफलतापूर्वक बदल दिया गया है।"
+		},
+		"renameUser": {
+			"title": "उपयोगकर्ता का नाम बदलें",
+			"newUsernameLabel": "नया उपयोगकर्ता नाम:",
+			"submitButton": "उपयोगकर्ता का नाम बदलें",
+			"confirmMessage": "क्या आप वाकई अपना उपयोगकर्ता नाम बदलना चाहते हैं? इसके लिए आपको फिर से लॉग इन करना होगा।",
+			"success": "उपयोगकर्ता का नाम सफलतापूर्वक \"${newUsername}\" में बदल दिया गया है। अब आप लॉग आउट हो जाएँगे।"
+		},
+		"userDevices": {
+			"title": "उपयोगकर्ता डिवाइस/सत्र",
+			"refreshButtonTitle": "सूची ताज़ा करें",
+			"noDevicesFound": "कोई डिवाइस या सत्र नहीं मिला।",
+			"deviceInfo": "डिवाइस ID: ${deviceId}",
+			"thisDevice": "यह डिवाइस",
+			"deviceDetails": "अंतिम बार ऑनलाइन: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
+			"revokeButton": "रद्द करें",
+			"revokeConfirm": "क्या आप वाकई इस डिवाइस/सत्र का एक्सेस रद्द करना चाहते हैं?",
+			"revokeSuccess": "डिवाइस/सत्र सफलतापूर्वक रद्द कर दिया गया है।"
+		},
+		"logout": {
+			"title": "लॉग आउट करें",
+			"description": "यह आपको वर्तमान डिवाइस से आपके खाते से लॉग आउट कर देगा।",
+			"buttonText": "लॉग आउट करें",
+			"confirmMessage": "क्या आप वाकई लॉग आउट करना चाहते हैं?",
+			"successMessage": "सफलतापूर्वक लॉग आउट कर दिया गया है। आपको जल्द ही लॉगिन पेज पर रीडायरेक्ट कर दिया जाएगा।"
+		},
+		"deleteAccount": {
+			"title": "खाता हटाएँ",
+			"warning": "चेतावनी: यह कार्रवाई आपके खाते और उससे जुड़े सभी डेटा को स्थायी रूप से हटा देगी और इसे पुनर्स्थापित नहीं किया जा सकता है।",
+			"submitButton": "मेरा खाता हटाएँ",
+			"confirmMessage1": "चेतावनी! क्या आप वाकई अपना खाता स्थायी रूप से हटाना चाहते हैं? यह कार्रवाई रद्द नहीं की जा सकती।",
+			"confirmMessage2": "हटाने की पुष्टि करने के लिए, कृपया अपना उपयोगकर्ता नाम \"${username}\" दर्ज करें:",
+			"usernameMismatch": "दर्ज किया गया उपयोगकर्ता नाम वर्तमान उपयोगकर्ता से मेल नहीं खाता है। हटाने की कार्रवाई रद्द कर दी गई है।",
+			"success": "खाता सफलतापूर्वक हटा दिया गया है। अब आप लॉग आउट हो जाएँगे।"
+		},
+		"passwordConfirm": {
+			"title": "कार्रवाई की पुष्टि करें",
+			"message": "जारी रखने के लिए, कृपया अपना वर्तमान पासवर्ड दर्ज करें:",
+			"passwordLabel": "पासवर्ड:",
+			"confirmButton": "पुष्टि करें",
+			"cancelButton": "रद्द करें"
+		},
+		"apiKeys": {
+			"title": "एपीआई कुंजी",
+			"description": "बाहरी अनुप्रयोगों के लिए एपीआई कुंजी प्रबंधित करें।",
+			"descriptionPlaceholder": "नई कुंजी विवरण",
+			"createButton": "बनाएं",
+			"noKeysFound": "कोई एपीआई कीज़ नहीं मिली।",
+			"refreshButtonTitle": "सूची को ताज़ा करें",
+			"keyDetails": "विवरण: ${description} | में बनाया गया: ${createdAt} | अंतिम उपयोग: ${lastUsed}",
+			"neverUsed": "कभी भी इस्तेमाल नहीं किया",
+			"revokeButton": "रद्द करना",
+			"revokeConfirm": "क्या आप सुनिश्चित हैं कि आप इस एपीआई कुंजी को रद्द करना चाहते हैं?",
+			"revokeSuccess": "एपीआई कुंजी को सफलतापूर्वक रद्द कर दिया गया है।",
+			"errorDescriptionRequired": "एक विवरण आवश्यक है।",
+			"createSuccess": "एपीआई कुंजी सफलतापूर्वक बनाई गई थी।"
+		},
+		"newApiKey": {
+			"title": "नई एपीआई कुंजी बनाई गई है",
+			"warning": "कृपया अपनी नई एपीआई कुंजी कॉपी करें। आप इसे फिर से नहीं देख पाएंगे!",
+			"copyButtonTitle": "नई एपीआई कुंजी कॉपी करें",
+			"closeButton": "मैंने अपनी चाबी की नकल की है"
+		}
+	},
 	"languageSettings": {
 		"title": "भाषा सेटिंग्स",
 		"description": "अपनी भाषा वरीयताओं को यहां प्रबंधित करें। सूची में भाषाएँ क्रम में ब्राउज़र सेटिंग्स पर पूर्वता लेगी।",
@@ -1144,15 +908,210 @@
 		"resetMessage": "भाषा सेटिंग्स रीसेट हो गई हैं!",
 		"fetchLocalesFailed": "उपलब्ध भाषाओं को प्राप्त करने में विफल!"
 	},
-	"login_info": {
-		"modal": {
-			"title": "प्रमाणपत्र अंतरण त्रुटि",
-			"retrieve_error": "आपकी लॉगिन जानकारी सहेजते समय एक त्रुटि हुई:\n${error}\nआप जारी रख सकते हैं लेकिन लॉगिन जानकारी नहीं सहेज सकते।",
-			"transfer_error": "आपकी लॉगिन जानकारी को स्थानांतरित करने की कोशिश करते समय एक त्रुटि हुई:\n${error}\nआप जारी रख सकते हैं लेकिन लॉगिन जानकारी प्राप्त नहीं कर सकते।",
+	"themeManage": {
+		"title": "थीम प्रबंधन",
+		"instruction": "एक थीम चुनें!",
+		"themes": {
+			"auto": "स्वचालित",
+			"light": "हल्का",
+			"dark": "गहरा",
+			"cupcake": "कपकेक",
+			"bumblebee": "बम्बलबी",
+			"emerald": "पन्ना",
+			"corporate": "कॉर्पोरेट",
+			"synthwave": "सिंथवेव",
+			"retro": "रेट्रो",
+			"cyberpunk": "साइबरपंक",
+			"valentine": "वेलेंटाइन",
+			"halloween": "हेलोवीन",
+			"garden": "गार्डन",
+			"forest": "फ़ॉरेस्ट",
+			"aqua": "एक्वा",
+			"lofi": "लो-फ़ाई",
+			"pastel": "पेस्टल",
+			"fantasy": "फैंटेसी",
+			"wireframe": "वायरफ़्रेम",
+			"black": "काला",
+			"luxury": "लक्ज़री",
+			"dracula": "ड्रैकुला",
+			"cmyk": "CMYK",
+			"autumn": "शरद",
+			"business": "व्यापार",
+			"acid": "एसिड",
+			"lemonade": "लेमोनेड",
+			"night": "रात",
+			"coffee": "कॉफ़ी",
+			"winter": "सर्दी",
+			"dim": "मंद",
+			"nord": "नॉर्ड",
+			"sunset": "सूर्यास्त",
+			"caramellatte": "कारमेल लाटे",
+			"abyss": "अगाध",
+			"silk": "रेशम"
+		}
+	},
+	"part_config": {
+		"title": "घटक कॉन्फ़िगरेशन",
+		"pageTitle": "घटक कॉन्फ़िगरेशन",
+		"labels": {
+			"partType": "घटक प्रकार चुनें",
+			"part": "घटक चुनें"
+		},
+		"placeholders": {
+			"partTypeSelect": "कृपया चुनें",
+			"partSelect": "कृपया चुनें"
+		},
+		"editor": {
+			"title": "घटक कॉन्फ़िगरेशन",
+			"disabledIndicator": "यह घटक कॉन्फ़िगरेशन का समर्थन नहीं करता है।",
 			"buttons": {
-				"ignore": "अनदेखा करें और जारी रखें",
-				"retry": "पुनः प्रयास करें"
+				"save": "सहेजें"
 			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "त्रुटि आइकन"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "घटक प्रकार प्राप्त करने में विफल।",
+			"fetchPartsFailed": "घटक सूची प्राप्त करने में विफल।",
+			"loadEditorFailed": "संपादक लोड करने में विफल।",
+			"saveConfigFailed": "घटक कॉन्फ़िगरेशन सहेजने में विफल।",
+			"unsavedChanges": "आपके पास बिना सहेजे बदलाव हैं। क्या आप बदलावों को छोड़ना चाहते हैं?",
+			"beforeUnload": "आपके पास बिना सहेजे बदलाव हैं। क्या आप वाकई यह पेज छोड़ना चाहते हैं?"
+		}
+	},
+	"aisource_editor": {
+		"title": "AI सोर्स एडिटर",
+		"fileList": {
+			"title": "AI सोर्स सूची",
+			"addButton": {
+				"title": "+"
+			}
+		},
+		"configTitle": "AI सोर्स कॉन्फ़िगरेशन",
+		"generatorSelect": {
+			"label": "जनरेटर चुनें",
+			"placeholder": "कृपया चुनें"
+		},
+		"buttons": {
+			"save": "सहेजें",
+			"delete": "हटाएँ"
+		},
+		"tooltips": {
+			"setDefault": "डिफाल्ट के रूप में सेट"
+		},
+		"alerts": {
+			"fetchFileListFailed": "फ़ाइल सूची प्राप्त करने में विफल: ${error}",
+			"fetchGeneratorListFailed": "जनरेटर सूची प्राप्त करने में विफल: ${error}",
+			"fetchDefaultsFailed": "डिफ़ॉल्ट घटक प्राप्त करने में विफल: ${error}",
+			"fetchFileDataFailed": "फ़ाइल डेटा प्राप्त करने में विफल: ${error}",
+			"noFileSelectedSave": "सहेजने के लिए कोई फ़ाइल नहीं चुनी गई।",
+			"saveFileFailed": "फ़ाइल सहेजने में विफल: ${error}",
+			"setDefaultFailed": "डिफ़ॉल्ट AI स्रोत सेट करना विफल रहा: ${error}",
+			"noFileSelectedDelete": "हटाने के लिए कोई फ़ाइल नहीं चुनी गई।",
+			"deleteFileFailed": "फ़ाइल हटाने में विफल: ${error}",
+			"invalidFileName": "फ़ाइल नाम में ये वर्ण नहीं हो सकते: / \\ : * ? \" < > |",
+			"addFileFailed": "फ़ाइल जोड़ने में विफल: ${error}",
+			"fetchConfigTemplateFailed": "कॉन्फ़िगरेशन टेम्पलेट प्राप्त करने में विफल।",
+			"noGeneratorSelectedSave": "कृपया सहेजने से पहले एक जनरेटर चुनें।"
+		},
+		"confirm": {
+			"unsavedChanges": "आपके पास बिना सहेजे बदलाव हैं। क्या आप बदलावों को छोड़ना चाहते हैं?",
+			"deleteFile": "क्या आप वाकई फ़ाइल हटाना चाहते हैं?",
+			"unsavedChangesBeforeUnload": "आपके पास बिना सहेजे बदलाव हैं। क्या आप वाकई यह पेज छोड़ना चाहते हैं?"
+		},
+		"prompts": {
+			"newFileName": "कृपया एक नया AI सोर्स फ़ाइल नाम दर्ज करें (बिना एक्सटेंशन के):"
+		},
+		"editor": {
+			"disabledIndicator": "कृपया पहले एक जनरेटर चुनें।"
+		},
+		"common_config_interface": {
+			"empty_generator": "इस AI स्रोत से विरासत जनरेटर को लोड करते समय एक त्रुटि होती है और हो सकता है कि उसे अनइंस्टॉल या नामांकित किया गया हो।",
+			"apiKeyRequired": "मॉडलों को सूचीबद्ध करने के लिए एक एपीआई कुंजी की आवश्यकता है।",
+			"loadingModels": "मॉडल लोड हो रहे हैं...",
+			"availableModels": "उपलब्ध मॉडल:",
+			"copyModelIdTooltip": "मॉडल आईडी कॉपी करने के लिए क्लिक करें",
+			"copied": "कॉपी किया गया!",
+			"loadModelsFailed": "मॉडल लोड करने में त्रुटि: ${message}"
+		}
+	},
+	"discord_bots": {
+		"title": "डिस्कॉर्ड बॉट",
+		"cardTitle": "डिस्कॉर्ड बॉट",
+		"buttons": {
+			"newBot": "नया",
+			"deleteBot": "हटाएँ"
+		},
+		"configCard": {
+			"title": "बॉट कॉन्फ़िगरेशन",
+			"labels": {
+				"character": "कैरेक्टर",
+				"apiKey": "डिस्कॉर्ड API कुंजी",
+				"config": "कॉन्फ़िगरेशन"
+			},
+			"charSelectPlaceholder": "कैरेक्टर चुनें",
+			"apiKeyInput": {
+				"placeholder": "API कुंजी दर्ज करें"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "API कुंजी दृश्यता टॉगल करें"
+			},
+			"buttons": {
+				"saveConfig": "कॉन्फ़िगरेशन सहेजें",
+				"startBot": "शुरू करें",
+				"stopBot": "बंद करें"
+			}
+		},
+		"prompts": {
+			"newBotName": "कृपया एक नया बॉट नाम दर्ज करें:"
+		},
+		"alerts": {
+			"botExists": "\"${botname}\" नाम का बॉट पहले से मौजूद है, कृपया कोई दूसरा नाम इस्तेमाल करें।",
+			"unsavedChanges": "आपके पास बिना सहेजे बदलाव हैं। क्या आप बदलावों को छोड़ना चाहते हैं?",
+			"configSaved": "कॉन्फ़िगरेशन सफलतापूर्वक सहेज लिया गया है।",
+			"httpError": "HTTP त्रुटि।",
+			"beforeUnload": "आपके पास बिना सहेजे बदलाव हैं। क्या आप वाकई यह पेज छोड़ना चाहते हैं?"
+		}
+	},
+	"telegram_bots": {
+		"title": "टेलीग्राम बॉट",
+		"cardTitle": "टेलीग्राम बॉट प्रबंधन",
+		"buttons": {
+			"newBot": "नया",
+			"deleteBot": "हटाएँ"
+		},
+		"configCard": {
+			"title": "बॉट कॉन्फ़िगरेशन",
+			"labels": {
+				"character": "संबद्ध कैरेक्टर",
+				"botToken": "टेलीग्राम बॉट टोकन",
+				"config": "कॉन्फ़िगरेशन"
+			},
+			"charSelectPlaceholder": "कैरेक्टर चुनें",
+			"botTokenInput": {
+				"placeholder": "टेलीग्राम बॉट टोकन दर्ज करें"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "बॉट टोकन दृश्यता टॉगल करें"
+			},
+			"buttons": {
+				"saveConfig": "कॉन्फ़िगरेशन सहेजें",
+				"startBot": "शुरू करें",
+				"stopBot": "बंद करें"
+			}
+		},
+		"prompts": {
+			"newBotName": "कृपया एक नया बॉट नाम दर्ज करें:"
+		},
+		"alerts": {
+			"botExists": "\"${botname}\" नाम का बॉट पहले से मौजूद है, कृपया कोई दूसरा नाम इस्तेमाल करें।",
+			"unsavedChanges": "आपके पास सहेजे न गए बदलाव हैं। क्या आप वाकई इन बदलावों को छोड़ना चाहते हैं?",
+			"configSaved": "कॉन्फ़िगरेशन सफलतापूर्वक सहेज लिया गया है!",
+			"httpError": "HTTP त्रुटि।",
+			"beforeUnload": "आपके पास सहेजे न गए बदलाव हैं। क्या आप वाकई यह पेज छोड़ना चाहते हैं?"
 		}
 	},
 	"browser_integration": {
@@ -1223,5 +1182,46 @@
 			"prompt": "फाउंट ब्राउज़र एकीकरण स्क्रिप्ट का एक नया संस्करण उपलब्ध है। क्या अद्यतन पृष्ठ अब खुला है?"
 		},
 		"csp_warning": "fount ब्राउज़र एकीकरण स्क्रिप्ट पता लगाता है कि पृष्ठ पर सीएसपी नीति मौजूद है, जिसके कारण एकीकरण स्क्रिप्ट ठीक से काम नहीं कर सकती है। कृपया सीएसपी को बंद करने के लिए प्लगइन स्थापित करने पर विचार करें।"
+	},
+	"terminal_assistant": {
+		"title": "टर्मिनल सहायक",
+		"initialMessage": "fount आपको कोडिंग में सहायता के लिए आपके पसंदीदा कैरेक्टर को आपके टर्मिनल में तैनात करने में मदद करता है!",
+		"initialMessageLink": "और जानने के लिए यहाँ क्लिक करें।"
+	},
+	"access": {
+		"title": "अन्य डिवाइस पर fount एक्सेस करें",
+		"heading": "क्या आप अन्य डिवाइस पर fount एक्सेस करना चाहते हैं?",
+		"instruction": {
+			"sameLAN": "सुनिश्चित करें कि डिवाइस और fount होस्ट एक ही स्थानीय नेटवर्क पर हैं।",
+			"accessthis": "इस URL पर जाएँ:"
+		},
+		"copyButton": "URL कॉपी करें",
+		"copied": "URL क्लिपबोर्ड पर कॉपी कर दिया गया है!"
+	},
+	"proxy": {
+		"title": "API प्रॉक्सी",
+		"heading": "OpenAI API प्रॉक्सी पता",
+		"instruction": "fount में AI सोर्स का उपयोग करने के लिए, निम्नलिखित पते को किसी भी ऐसे एप्लिकेशन में दर्ज करें जिसे OpenAI API प्रारूप की आवश्यकता हो!",
+		"copyButton": "पता कॉपी करें",
+		"copied": "पता क्लिपबोर्ड पर कॉपी कर दिया गया है!"
+	},
+	"badges_maker": {
+		"title": "fount! बैज कन्वर्टर",
+		"card_title": "fount बैज लिंक कन्वर्टर",
+		"original_url_label": "img.shields.io URL पेस्ट करें",
+		"original_url_placeholder": "उदाहरण के लिए: https://img.shields.io/badge/hello-world-blue",
+		"new_url_label": "उत्पन्न नया URL",
+		"new_url_placeholder": "परिवर्तित URL यहां प्रदर्शित किया जाएगा",
+		"copy_button": "कॉपी",
+		"preview_label": "पूर्वावलोकन",
+		"preview_alt": "बैज पूर्वावलोकन",
+		"copied_text": "कॉपीड!",
+		"copy_error": "पाठ को कॉपी करने में असमर्थ: ${error}",
+		"copy_fail_alert": "कॉपी विफल!"
+	},
+	"404": {
+		"title": "पेज नहीं मिला",
+		"pageNotFoundText": "ओह! ऐसा लगता है कि आप एक ऐसे पेज पर आ गए हैं जो मौजूद नहीं है।",
+		"homepageButton": "होमपेज पर वापस जाएँ"
 	}
 }

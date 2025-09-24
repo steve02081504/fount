@@ -100,24 +100,6 @@
 			"botStarted": "Personage ${charname} is ingelogd op Telegram Bot ${botusername}"
 		}
 	},
-	"protocolhandler": {
-		"title": "fount-protocol verwerken",
-		"processing": "Protocol wordt verwerkt...",
-		"invalidProtocol": "Ongeldig protocol",
-		"insufficientParams": "Onvoldoende parameters",
-		"unknownCommand": "Onbekend commando",
-		"shellCommandSent": "Shell-commando verzonden",
-		"shellCommandFailed": "Verzenden van Shell-commando mislukt",
-		"shellCommandError": "Fout bij verzenden van Shell-commando",
-		"fountNotFound": "Oeps :(\n\nKan fount niet vinden, misschien moet je het eerst installeren?",
-		"unknownError": "Oeps :(\n\nEr is een fout opgetreden:\n${error}",
-		"runPartConfirm": {
-			"title": "Uitvoering bevestigen",
-			"message": "Weet u zeker dat u ${parttype} van ${partname} wilt uitvoeren?",
-			"confirm": "Bevestigen",
-			"cancel": "Annuleren"
-		}
-	},
 	"installer_wait_screen": {
 		"title": "Welkom bij fount!",
 		"hero": {
@@ -188,6 +170,24 @@
 			"close_page": "Pagina sluiten"
 		}
 	},
+	"protocolhandler": {
+		"title": "fount-protocol verwerken",
+		"processing": "Protocol wordt verwerkt...",
+		"invalidProtocol": "Ongeldig protocol",
+		"insufficientParams": "Onvoldoende parameters",
+		"unknownCommand": "Onbekend commando",
+		"shellCommandSent": "Shell-commando verzonden",
+		"shellCommandFailed": "Verzenden van Shell-commando mislukt",
+		"shellCommandError": "Fout bij verzenden van Shell-commando",
+		"fountNotFound": "Oeps :(\n\nKan fount niet vinden, misschien moet je het eerst installeren?",
+		"unknownError": "Oeps :(\n\nEr is een fout opgetreden:\n${error}",
+		"runPartConfirm": {
+			"title": "Uitvoering bevestigen",
+			"message": "Weet u zeker dat u ${parttype} van ${partname} wilt uitvoeren?",
+			"confirm": "Bevestigen",
+			"cancel": "Annuleren"
+		}
+	},
 	"startPage": {
 		"title": "fount!",
 		"newTabFailed": {
@@ -207,6 +207,28 @@
 					"cancel": "Annuleren"
 				}
 			}
+		}
+	},
+	"tutorial": {
+		"title": "Een tutorial nodig?",
+		"modal": {
+			"title": "Welkom bij fount!",
+			"instruction": "Wil je de tutorial voor beginners doorlopen?",
+			"buttons": {
+				"start": "Start tutorial",
+				"skip": "Overslaan"
+			}
+		},
+		"endScreen": {
+			"title": "Geweldig! Tutorial voltooid!",
+			"subtitle": "Nu weet je hoe het werkt!",
+			"endButton": "Volgende!"
+		},
+		"progressMessages": {
+			"mouseMove": "Probeer alstublieft met uw vingers de muis vast te houden ${mouseIcon}<br/>en beweeg deze vervolgens",
+			"keyboardPress": "Zoek alstublieft uw toetsenbord ${keyboardIcon}<br/>en probeer met uw vingers op het toetsenbord te drukken",
+			"mobileTouchMove": "Zoek alstublieft uw mobiele telefoon ${phoneIcon}<br/>probeer met een van uw vingers het scherm aan te raken en beweeg deze vervolgens",
+			"mobileClick": "Probeer alstublieft met een van uw vingers het scherm van de telefoon aan te raken ${phoneIcon}<br/>en laat daarna los"
 		}
 	},
 	"auth": {
@@ -264,26 +286,15 @@
 			"veryStrong": "Zeer sterk"
 		}
 	},
-	"tutorial": {
-		"title": "Een tutorial nodig?",
+	"login_info": {
 		"modal": {
-			"title": "Welkom bij fount!",
-			"instruction": "Wil je de tutorial voor beginners doorlopen?",
+			"title": "Certificaatoverdrachtsfout",
+			"retrieve_error": "Er is een fout opgetreden bij het proberen uw inloggegevens op te slaan:\n${error}\nU kunt doorgaan, maar kunt de inloggegevens niet opslaan.",
+			"transfer_error": "Er is een fout opgetreden bij het proberen uw inloggegevens over te dragen:\n${error}\nU kunt doorgaan, maar kunt geen inloggegevens ophalen.",
 			"buttons": {
-				"start": "Start tutorial",
-				"skip": "Overslaan"
+				"ignore": "Negeer en ga door",
+				"retry": "Opnieuw proberen"
 			}
-		},
-		"endScreen": {
-			"title": "Geweldig! Tutorial voltooid!",
-			"subtitle": "Nu weet je hoe het werkt!",
-			"endButton": "Volgende!"
-		},
-		"progressMessages": {
-			"mouseMove": "Probeer alstublieft met uw vingers de muis vast te houden ${mouseIcon}<br/>en beweeg deze vervolgens",
-			"keyboardPress": "Zoek alstublieft uw toetsenbord ${keyboardIcon}<br/>en probeer met uw vingers op het toetsenbord te drukken",
-			"mobileTouchMove": "Zoek alstublieft uw mobiele telefoon ${phoneIcon}<br/>probeer met een van uw vingers het scherm aan te raken en beweeg deze vervolgens",
-			"mobileClick": "Probeer alstublieft met een van uw vingers het scherm van de telefoon aan te raken ${phoneIcon}<br/>en laat daarna los"
 		}
 	},
 	"home": {
@@ -363,204 +374,6 @@
 					"title": "Instellen als standaardpersona"
 				}
 			}
-		}
-	},
-	"themeManage": {
-		"title": "Themabeheer",
-		"instruction": "Kies een thema!",
-		"themes": {
-			"auto": "Automatisch",
-			"light": "Licht",
-			"dark": "Donker",
-			"cupcake": "Cupcake",
-			"bumblebee": "Hommel",
-			"emerald": "Smaragd",
-			"corporate": "Zakelijk",
-			"synthwave": "Synthwave",
-			"retro": "Retro",
-			"cyberpunk": "Cyberpunk",
-			"valentine": "Valentijn",
-			"halloween": "Halloween",
-			"garden": "Tuin",
-			"forest": "Bos",
-			"aqua": "Aqua",
-			"lofi": "Lo-fi",
-			"pastel": "Pastel",
-			"fantasy": "Fantasie",
-			"wireframe": "Draadmodel",
-			"black": "Zwart",
-			"luxury": "Luxe",
-			"dracula": "Dracula",
-			"cmyk": "CMYK",
-			"autumn": "Herfst",
-			"business": "Zakelijk",
-			"acid": "Acid",
-			"lemonade": "Limonade",
-			"night": "Nacht",
-			"coffee": "Koffie",
-			"winter": "Winter",
-			"dim": "Gedimd",
-			"nord": "Nord",
-			"sunset": "Zonsondergang",
-			"caramellatte": "Caramel Latte",
-			"abyss": "Afgrond",
-			"silk": "Zijde"
-		}
-	},
-	"import": {
-		"title": "Importeren",
-		"tabs": {
-			"fileImport": "Bestand importeren",
-			"textImport": "Tekst importeren"
-		},
-		"dropArea": {
-			"icon": {
-				"alt": "Upload-pictogram"
-			},
-			"text": "Sleep bestanden hierheen of klik om bestanden te selecteren"
-		},
-		"textArea": {
-			"placeholder": "Voer de te importeren tekst in..."
-		},
-		"buttons": {
-			"import": "Importeren"
-		},
-		"alerts": {
-			"importSuccess": "Succesvol geïmporteerd",
-			"importFailed": "Importeren mislukt: ${error}",
-			"unknownError": "Onbekende fout"
-		},
-		"errors": {
-			"noFileSelected": "Selecteer een bestand",
-			"fileImportFailed": "Bestandsimport mislukt: ${message}",
-			"noTextContent": "Voer tekstinhoud in",
-			"textImportFailed": "Tekstimport mislukt: ${message}",
-			"unknownError": "Onbekende fout",
-			"handler": "Handler",
-			"error": "Fout"
-		},
-		"fileItem": {
-			"removeButton": {
-				"title": "Verwijderen"
-			},
-			"removeButtonIcon": {
-				"alt": "Verwijderen"
-			}
-		}
-	},
-	"aisource_editor": {
-		"title": "AI-bron editor",
-		"fileList": {
-			"title": "AI-bronnenlijst",
-			"addButton": {
-				"title": "+"
-			}
-		},
-		"configTitle": "AI-bron configuratie",
-		"generatorSelect": {
-			"label": "Kies een generator",
-			"placeholder": "Maak een keuze"
-		},
-		"buttons": {
-			"save": "Opslaan",
-			"delete": "Verwijderen"
-		},
-		"tooltips": {
-			"setDefault": "Instellen als standaard"
-		},
-		"alerts": {
-			"fetchFileListFailed": "Ophalen van bestandslijst mislukt: ${error}",
-			"fetchGeneratorListFailed": "Ophalen van generatorlijst mislukt: ${error}",
-			"fetchDefaultsFailed": "Ophalen van standaardcomponenten mislukt: ${error}",
-			"fetchFileDataFailed": "Ophalen van bestandsgegevens mislukt: ${error}",
-			"noFileSelectedSave": "Geen bestand geselecteerd om op te slaan.",
-			"saveFileFailed": "Opslaan van bestand mislukt: ${error}",
-			"setDefaultFailed": "Instellen van standaard AI-bron mislukt: ${error}",
-			"noFileSelectedDelete": "Geen bestand geselecteerd om te verwijderen.",
-			"deleteFileFailed": "Verwijderen van bestand mislukt: ${error}",
-			"invalidFileName": "Bestandsnaam mag de volgende tekens niet bevatten: / \\ : * ? \" < > |",
-			"addFileFailed": "Toevoegen van bestand mislukt: ${error}",
-			"fetchConfigTemplateFailed": "Ophalen van configuratiesjabloon mislukt",
-			"noGeneratorSelectedSave": "Kies een generator voordat je opslaat"
-		},
-		"confirm": {
-			"unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je de wijzigingen negeren?",
-			"deleteFile": "Weet je zeker dat je het bestand wilt verwijderen?",
-			"unsavedChangesBeforeUnload": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je deze pagina wilt verlaten?"
-		},
-		"prompts": {
-			"newFileName": "Voer een nieuwe bestandsnaam voor de AI-bron in (zonder extensie):"
-		},
-		"editor": {
-			"disabledIndicator": "Kies eerst een generator"
-		},
-		"common_config_interface": {
-			"empty_generator": "De verouderde generator van deze AI-bron kon niet worden geladen en is mogelijk verwijderd of van naam veranderd.",
-			"apiKeyRequired": "Een API-sleutel is vereist om de modellen op te halen.",
-			"loadingModels": "Modellen laden...",
-			"availableModels": "Beschikbare modellen:",
-			"copyModelIdTooltip": "Klik om de model-ID te kopiëren",
-			"copied": "Gekopieerd!",
-			"loadModelsFailed": "Kon de modellen niet laden: ${message}"
-		}
-	},
-	"part_config": {
-		"title": "Componentconfiguratie",
-		"pageTitle": "Componentconfiguratie",
-		"labels": {
-			"partType": "Kies componenttype",
-			"part": "Kies component"
-		},
-		"placeholders": {
-			"partTypeSelect": "Maak een keuze",
-			"partSelect": "Maak een keuze"
-		},
-		"editor": {
-			"title": "Componentconfiguratie",
-			"disabledIndicator": "Dit component ondersteunt geen configuratie",
-			"buttons": {
-				"save": "Opslaan"
-			}
-		},
-		"errorMessage": {
-			"icon": {
-				"alt": "Foutmelding"
-			}
-		},
-		"alerts": {
-			"fetchPartTypesFailed": "Ophalen van componenttypes mislukt",
-			"fetchPartsFailed": "Ophalen van componentenlijst mislukt",
-			"loadEditorFailed": "Laden van editor mislukt",
-			"saveConfigFailed": "Opslaan van componentconfiguratie mislukt",
-			"unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je de wijzigingen negeren?",
-			"beforeUnload": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je wilt vertrekken?"
-		}
-	},
-	"uninstall": {
-		"title": "De-installeren",
-		"titleWithName": "De-installeer ${type}/${name}",
-		"confirmMessage": "Weet je zeker dat je ${type}: ${name} wilt de-installeren?",
-		"invalidParamsTitle": "Ongeldige parameters",
-		"infoMessage": {
-			"icon": {
-				"alt": "Informatiepictogram"
-			}
-		},
-		"errorMessage": {
-			"icon": {
-				"alt": "Foutpictogram"
-			}
-		},
-		"buttons": {
-			"confirm": "De-installatie bevestigen",
-			"cancel": "Annuleren",
-			"back": "Terug"
-		},
-		"alerts": {
-			"success": "Succesvol gede-ïnstalleerd: ${type}: ${name}",
-			"failed": "De-installatie mislukt: ${error}",
-			"invalidParams": "Ongeldige verzoekparameters.",
-			"httpError": "HTTP-fout! Statuscode: ${status}"
 		}
 	},
 	"chat": {
@@ -772,209 +585,6 @@
 			"delete": "Verwijderen"
 		}
 	},
-	"discord_bots": {
-		"title": "Discord Bot",
-		"cardTitle": "Discord Bot",
-		"buttons": {
-			"newBot": "Nieuwe Bot",
-			"deleteBot": "Bot verwijderen"
-		},
-		"configCard": {
-			"title": "Botconfiguratie",
-			"labels": {
-				"character": "Gekoppeld personage",
-				"apiKey": "Discord API-sleutel",
-				"config": "Configuratie"
-			},
-			"charSelectPlaceholder": "Kies personage",
-			"apiKeyInput": {
-				"placeholder": "Voer API-sleutel in"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "API-sleutel tonen/verbergen"
-			},
-			"buttons": {
-				"saveConfig": "Configuratie opslaan",
-				"startBot": "Starten",
-				"stopBot": "Stoppen"
-			}
-		},
-		"prompts": {
-			"newBotName": "Voer een naam in voor de nieuwe Bot:"
-		},
-		"alerts": {
-			"botExists": "Een Bot met de naam \"${botname}\" bestaat al, gebruik een andere naam.",
-			"unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je deze negeren?",
-			"configSaved": "Configuratie succesvol opgeslagen",
-			"httpError": "HTTP-fout",
-			"beforeUnload": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je wilt vertrekken?"
-		}
-	},
-	"telegram_bots": {
-		"title": "Telegram Bot",
-		"cardTitle": "Telegram Bot Beheer",
-		"buttons": {
-			"newBot": "Nieuwe Bot",
-			"deleteBot": "Bot verwijderen"
-		},
-		"configCard": {
-			"title": "Botconfiguratie",
-			"labels": {
-				"character": "Gekoppeld personage",
-				"botToken": "Telegram Bot Token",
-				"config": "Configuratie"
-			},
-			"charSelectPlaceholder": "Kies personage",
-			"botTokenInput": {
-				"placeholder": "Voer Telegram Bot Token in"
-			},
-			"toggleBotTokenIcon": {
-				"alt": "API-sleutel tonen/verbergen"
-			},
-			"buttons": {
-				"saveConfig": "Configuratie opslaan",
-				"startBot": "Starten",
-				"stopBot": "Stoppen"
-			}
-		},
-		"prompts": {
-			"newBotName": "Voer een naam in voor de nieuwe Bot:"
-		},
-		"alerts": {
-			"botExists": "Een Bot met de naam \"${botname}\" bestaat al, gebruik een andere naam.",
-			"unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je deze negeren?",
-			"configSaved": "Configuratie succesvol opgeslagen!",
-			"httpError": "HTTP-fout",
-			"beforeUnload": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je deze pagina wilt verlaten?"
-		}
-	},
-	"terminal_assistant": {
-		"title": "Terminal-assistent",
-		"initialMessage": "fount ondersteunt het implementeren van je favoriete personage in je terminal om je te helpen met coderen!",
-		"initialMessageLink": "Klik hier voor meer informatie"
-	},
-	"access": {
-		"title": "Toegang tot fount op andere apparaten",
-		"heading": "Wil je fount op andere apparaten gebruiken?",
-		"instruction": {
-			"sameLAN": "Zorg ervoor dat het apparaat en de fount-host zich op hetzelfde lokale netwerk bevinden",
-			"accessthis": "Bezoek het volgende adres:"
-		},
-		"copyButton": "Adres kopiëren",
-		"copied": "Adres gekopieerd naar klembord!"
-	},
-	"proxy": {
-		"title": "API Proxy",
-		"heading": "OpenAI API-proxyadres",
-		"instruction": "Voer het volgende adres in een applicatie in die het OpenAI API-formaat vereist om de AI-bronnen in fount te gebruiken!",
-		"copyButton": "Adres kopiëren",
-		"copied": "Adres gekopieerd naar klembord!"
-	},
-	"404": {
-		"title": "Pagina niet gevonden",
-		"pageNotFoundText": "Oeps! Het lijkt erop dat je op een pagina bent beland die niet bestaat.",
-		"homepageButton": "Terug naar startpagina"
-	},
-	"userSettings": {
-		"title": "Gebruikersinstellingen",
-		"PageTitle": "Gebruikersinstellingen",
-		"apiError": "API-verzoek mislukt: ${message}",
-		"generalError": "Er is een fout opgetreden: ${message}",
-		"userInfo": {
-			"title": "Gebruikersinformatie",
-			"usernameLabel": "Gebruikersnaam:",
-			"creationDateLabel": "Account aangemaakt op:",
-			"folderSizeLabel": "Grootte gebruikersgegevens:",
-			"folderPathLabel": "Pad naar gebruikersgegevens:",
-			"copyPathBtnTitle": "Pad kopiëren",
-			"copiedAlert": "Pad gekopieerd naar klembord!"
-		},
-		"changePassword": {
-			"title": "Wachtwoord wijzigen",
-			"currentPasswordLabel": "Huidig wachtwoord:",
-			"newPasswordLabel": "Nieuw wachtwoord:",
-			"confirmNewPasswordLabel": "Bevestig nieuw wachtwoord:",
-			"submitButton": "Wachtwoord wijzigen",
-			"errorMismatch": "De nieuwe wachtwoorden komen niet overeen.",
-			"success": "Wachtwoord succesvol gewijzigd."
-		},
-		"renameUser": {
-			"title": "Gebruiker hernoemen",
-			"newUsernameLabel": "Nieuwe gebruikersnaam:",
-			"submitButton": "Gebruiker hernoemen",
-			"confirmMessage": "Weet je zeker dat je je gebruikersnaam wilt wijzigen? Je moet opnieuw inloggen.",
-			"success": "Gebruiker succesvol hernoemd naar \"${newUsername}\". Je wordt nu uitgelogd."
-		},
-		"userDevices": {
-			"title": "Gebruikersapparaten/sessies",
-			"refreshButtonTitle": "Lijst vernieuwen",
-			"noDevicesFound": "Geen apparaten of sessies gevonden.",
-			"deviceInfo": "Apparaat-ID: ${deviceId}",
-			"thisDevice": "Dit apparaat",
-			"deviceDetails": "Laatst gezien: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
-			"revokeButton": "Intrekken",
-			"revokeConfirm": "Weet je zeker dat je wilt uitloggen van dit apparaat/deze sessie?",
-			"revokeSuccess": "Apparaat/sessie succesvol ingetrokken."
-		},
-		"logout": {
-			"title": "Uitloggen",
-			"description": "Dit logt je account uit op het huidige apparaat.",
-			"buttonText": "Uitloggen",
-			"confirmMessage": "Weet je zeker dat je wilt uitloggen?",
-			"successMessage": "Succesvol uitgelogd. Je wordt doorgestuurd naar de inlogpagina..."
-		},
-		"deleteAccount": {
-			"title": "Account verwijderen",
-			"warning": "WAARSCHUWING: Deze actie verwijdert je account en alle bijbehorende gegevens permanent en kan niet ongedaan worden gemaakt.",
-			"submitButton": "Mijn account verwijderen",
-			"confirmMessage1": "WAARSCHUWING! Weet je zeker dat je je account permanent wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
-			"confirmMessage2": "Om de verwijdering te bevestigen, voer je je gebruikersnaam \"${username}\" in:",
-			"usernameMismatch": "De ingevoerde gebruikersnaam komt niet overeen met de huidige gebruiker. Verwijdering geannuleerd.",
-			"success": "Account succesvol verwijderd. Je wordt nu uitgelogd."
-		},
-		"passwordConfirm": {
-			"title": "Actie bevestigen",
-			"message": "Voer je huidige wachtwoord in om deze actie voort te zetten:",
-			"passwordLabel": "Wachtwoord:",
-			"confirmButton": "Bevestigen",
-			"cancelButton": "Annuleren"
-		},
-		"apiKeys": {
-			"title": "API -sleutel",
-			"description": "Beheer de API -sleutel voor externe toepassingen.",
-			"descriptionPlaceholder": "Nieuwe sleutelbeschrijving",
-			"createButton": "creëren",
-			"noKeysFound": "Er werden geen API-sleutels gevonden.",
-			"refreshButtonTitle": "Vernieuw de lijst",
-			"keyDetails": "Beschrijving: ${description} | Gemaakt in: ${createdAt} | Laatst gebruikt: ${lastUsed}",
-			"neverUsed": "Nooit gebruikt",
-			"revokeButton": "Herroepen",
-			"revokeConfirm": "Weet u zeker dat u deze API -sleutel wilt intrekken?",
-			"revokeSuccess": "De API -sleutel is succesvol ingetrokken.",
-			"errorDescriptionRequired": "Een beschrijving is vereist.",
-			"createSuccess": "De API -sleutel is met succes gemaakt."
-		},
-		"newApiKey": {
-			"title": "Er is een nieuwe API -sleutel gemaakt",
-			"warning": "Kopieer uw nieuwe API -sleutel. Je kunt het niet meer zien!",
-			"copyButtonTitle": "Kopieer een nieuwe API -sleutel",
-			"closeButton": "Ik heb mijn sleutel gekopieerd"
-		}
-	},
-	"badges_maker": {
-		"title": "fount! Badge-omzetter",
-		"card_title": "fount Badge Link-omzetter",
-		"original_url_label": "Plak img.shields.io-URL",
-		"original_url_placeholder": "Bijv: https://img.shields.io/badge/Hello-World-blue",
-		"new_url_label": "Nieuwe gegenereerde URL",
-		"new_url_placeholder": "De omgezette URL verschijnt hier",
-		"copy_button": "Kopiëren",
-		"preview_label": "Voorbeeld",
-		"preview_alt": "Badge-voorbeeld",
-		"copied_text": "Gekopieerd!",
-		"copy_error": "Kan tekst niet kopiëren: ${error}",
-		"copy_fail_alert": "Kopiëren mislukt!"
-	},
 	"easynew": {
 		"title": "Snel nieuw",
 		"cardTitle": "Maak een nieuw component van een sjabloon",
@@ -1070,6 +680,47 @@
 			"description": "Deze sjablonen kunnen alleen worden gebruikt om snel eenvoudige componenten te bouwen, complexe componenten moeten nog steeds handmatig worden gemaakt."
 		}
 	},
+	"import": {
+		"title": "Importeren",
+		"tabs": {
+			"fileImport": "Bestand importeren",
+			"textImport": "Tekst importeren"
+		},
+		"dropArea": {
+			"icon": {
+				"alt": "Upload-pictogram"
+			},
+			"text": "Sleep bestanden hierheen of klik om bestanden te selecteren"
+		},
+		"textArea": {
+			"placeholder": "Voer de te importeren tekst in..."
+		},
+		"buttons": {
+			"import": "Importeren"
+		},
+		"alerts": {
+			"importSuccess": "Succesvol geïmporteerd",
+			"importFailed": "Importeren mislukt: ${error}",
+			"unknownError": "Onbekende fout"
+		},
+		"errors": {
+			"noFileSelected": "Selecteer een bestand",
+			"fileImportFailed": "Bestandsimport mislukt: ${message}",
+			"noTextContent": "Voer tekstinhoud in",
+			"textImportFailed": "Tekstimport mislukt: ${message}",
+			"unknownError": "Onbekende fout",
+			"handler": "Handler",
+			"error": "Fout"
+		},
+		"fileItem": {
+			"removeButton": {
+				"title": "Verwijderen"
+			},
+			"removeButtonIcon": {
+				"alt": "Verwijderen"
+			}
+		}
+	},
 	"export": {
 		"title": "Component-exporteerder",
 		"pageTitle": "Component-exporteerder",
@@ -1131,6 +782,119 @@
 			"generateShareLinkWithData": "Deellink genereren (incl. data)"
 		}
 	},
+	"uninstall": {
+		"title": "De-installeren",
+		"titleWithName": "De-installeer ${type}/${name}",
+		"confirmMessage": "Weet je zeker dat je ${type}: ${name} wilt de-installeren?",
+		"invalidParamsTitle": "Ongeldige parameters",
+		"infoMessage": {
+			"icon": {
+				"alt": "Informatiepictogram"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Foutpictogram"
+			}
+		},
+		"buttons": {
+			"confirm": "De-installatie bevestigen",
+			"cancel": "Annuleren",
+			"back": "Terug"
+		},
+		"alerts": {
+			"success": "Succesvol gede-ïnstalleerd: ${type}: ${name}",
+			"failed": "De-installatie mislukt: ${error}",
+			"invalidParams": "Ongeldige verzoekparameters.",
+			"httpError": "HTTP-fout! Statuscode: ${status}"
+		}
+	},
+	"userSettings": {
+		"title": "Gebruikersinstellingen",
+		"PageTitle": "Gebruikersinstellingen",
+		"apiError": "API-verzoek mislukt: ${message}",
+		"generalError": "Er is een fout opgetreden: ${message}",
+		"userInfo": {
+			"title": "Gebruikersinformatie",
+			"usernameLabel": "Gebruikersnaam:",
+			"creationDateLabel": "Account aangemaakt op:",
+			"folderSizeLabel": "Grootte gebruikersgegevens:",
+			"folderPathLabel": "Pad naar gebruikersgegevens:",
+			"copyPathBtnTitle": "Pad kopiëren",
+			"copiedAlert": "Pad gekopieerd naar klembord!"
+		},
+		"changePassword": {
+			"title": "Wachtwoord wijzigen",
+			"currentPasswordLabel": "Huidig wachtwoord:",
+			"newPasswordLabel": "Nieuw wachtwoord:",
+			"confirmNewPasswordLabel": "Bevestig nieuw wachtwoord:",
+			"submitButton": "Wachtwoord wijzigen",
+			"errorMismatch": "De nieuwe wachtwoorden komen niet overeen.",
+			"success": "Wachtwoord succesvol gewijzigd."
+		},
+		"renameUser": {
+			"title": "Gebruiker hernoemen",
+			"newUsernameLabel": "Nieuwe gebruikersnaam:",
+			"submitButton": "Gebruiker hernoemen",
+			"confirmMessage": "Weet je zeker dat je je gebruikersnaam wilt wijzigen? Je moet opnieuw inloggen.",
+			"success": "Gebruiker succesvol hernoemd naar \"${newUsername}\". Je wordt nu uitgelogd."
+		},
+		"userDevices": {
+			"title": "Gebruikersapparaten/sessies",
+			"refreshButtonTitle": "Lijst vernieuwen",
+			"noDevicesFound": "Geen apparaten of sessies gevonden.",
+			"deviceInfo": "Apparaat-ID: ${deviceId}",
+			"thisDevice": "Dit apparaat",
+			"deviceDetails": "Laatst gezien: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
+			"revokeButton": "Intrekken",
+			"revokeConfirm": "Weet je zeker dat je wilt uitloggen van dit apparaat/deze sessie?",
+			"revokeSuccess": "Apparaat/sessie succesvol ingetrokken."
+		},
+		"logout": {
+			"title": "Uitloggen",
+			"description": "Dit logt je account uit op het huidige apparaat.",
+			"buttonText": "Uitloggen",
+			"confirmMessage": "Weet je zeker dat je wilt uitloggen?",
+			"successMessage": "Succesvol uitgelogd. Je wordt doorgestuurd naar de inlogpagina..."
+		},
+		"deleteAccount": {
+			"title": "Account verwijderen",
+			"warning": "WAARSCHUWING: Deze actie verwijdert je account en alle bijbehorende gegevens permanent en kan niet ongedaan worden gemaakt.",
+			"submitButton": "Mijn account verwijderen",
+			"confirmMessage1": "WAARSCHUWING! Weet je zeker dat je je account permanent wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
+			"confirmMessage2": "Om de verwijdering te bevestigen, voer je je gebruikersnaam \"${username}\" in:",
+			"usernameMismatch": "De ingevoerde gebruikersnaam komt niet overeen met de huidige gebruiker. Verwijdering geannuleerd.",
+			"success": "Account succesvol verwijderd. Je wordt nu uitgelogd."
+		},
+		"passwordConfirm": {
+			"title": "Actie bevestigen",
+			"message": "Voer je huidige wachtwoord in om deze actie voort te zetten:",
+			"passwordLabel": "Wachtwoord:",
+			"confirmButton": "Bevestigen",
+			"cancelButton": "Annuleren"
+		},
+		"apiKeys": {
+			"title": "API -sleutel",
+			"description": "Beheer de API -sleutel voor externe toepassingen.",
+			"descriptionPlaceholder": "Nieuwe sleutelbeschrijving",
+			"createButton": "creëren",
+			"noKeysFound": "Er werden geen API-sleutels gevonden.",
+			"refreshButtonTitle": "Vernieuw de lijst",
+			"keyDetails": "Beschrijving: ${description} | Gemaakt in: ${createdAt} | Laatst gebruikt: ${lastUsed}",
+			"neverUsed": "Nooit gebruikt",
+			"revokeButton": "Herroepen",
+			"revokeConfirm": "Weet u zeker dat u deze API -sleutel wilt intrekken?",
+			"revokeSuccess": "De API -sleutel is succesvol ingetrokken.",
+			"errorDescriptionRequired": "Een beschrijving is vereist.",
+			"createSuccess": "De API -sleutel is met succes gemaakt."
+		},
+		"newApiKey": {
+			"title": "Er is een nieuwe API -sleutel gemaakt",
+			"warning": "Kopieer uw nieuwe API -sleutel. Je kunt het niet meer zien!",
+			"copyButtonTitle": "Kopieer een nieuwe API -sleutel",
+			"closeButton": "Ik heb mijn sleutel gekopieerd"
+		}
+	},
 	"languageSettings": {
 		"title": "Taalinstellingen",
 		"description": "Beheer hier uw taalvoorkeuren. De talen in de lijst hebben voorrang op de browserinstellingen in volgorde.",
@@ -1144,15 +908,210 @@
 		"resetMessage": "Taalinstellingen zijn gereset!",
 		"fetchLocalesFailed": "Kan niet beschikbare talen krijgen!"
 	},
-	"login_info": {
-		"modal": {
-			"title": "Certificaatoverdrachtsfout",
-			"retrieve_error": "Er is een fout opgetreden bij het proberen uw inloggegevens op te slaan:\n${error}\nU kunt doorgaan, maar kunt de inloggegevens niet opslaan.",
-			"transfer_error": "Er is een fout opgetreden bij het proberen uw inloggegevens over te dragen:\n${error}\nU kunt doorgaan, maar kunt geen inloggegevens ophalen.",
+	"themeManage": {
+		"title": "Themabeheer",
+		"instruction": "Kies een thema!",
+		"themes": {
+			"auto": "Automatisch",
+			"light": "Licht",
+			"dark": "Donker",
+			"cupcake": "Cupcake",
+			"bumblebee": "Hommel",
+			"emerald": "Smaragd",
+			"corporate": "Zakelijk",
+			"synthwave": "Synthwave",
+			"retro": "Retro",
+			"cyberpunk": "Cyberpunk",
+			"valentine": "Valentijn",
+			"halloween": "Halloween",
+			"garden": "Tuin",
+			"forest": "Bos",
+			"aqua": "Aqua",
+			"lofi": "Lo-fi",
+			"pastel": "Pastel",
+			"fantasy": "Fantasie",
+			"wireframe": "Draadmodel",
+			"black": "Zwart",
+			"luxury": "Luxe",
+			"dracula": "Dracula",
+			"cmyk": "CMYK",
+			"autumn": "Herfst",
+			"business": "Zakelijk",
+			"acid": "Acid",
+			"lemonade": "Limonade",
+			"night": "Nacht",
+			"coffee": "Koffie",
+			"winter": "Winter",
+			"dim": "Gedimd",
+			"nord": "Nord",
+			"sunset": "Zonsondergang",
+			"caramellatte": "Caramel Latte",
+			"abyss": "Afgrond",
+			"silk": "Zijde"
+		}
+	},
+	"part_config": {
+		"title": "Componentconfiguratie",
+		"pageTitle": "Componentconfiguratie",
+		"labels": {
+			"partType": "Kies componenttype",
+			"part": "Kies component"
+		},
+		"placeholders": {
+			"partTypeSelect": "Maak een keuze",
+			"partSelect": "Maak een keuze"
+		},
+		"editor": {
+			"title": "Componentconfiguratie",
+			"disabledIndicator": "Dit component ondersteunt geen configuratie",
 			"buttons": {
-				"ignore": "Negeer en ga door",
-				"retry": "Opnieuw proberen"
+				"save": "Opslaan"
 			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Foutmelding"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "Ophalen van componenttypes mislukt",
+			"fetchPartsFailed": "Ophalen van componentenlijst mislukt",
+			"loadEditorFailed": "Laden van editor mislukt",
+			"saveConfigFailed": "Opslaan van componentconfiguratie mislukt",
+			"unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je de wijzigingen negeren?",
+			"beforeUnload": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je wilt vertrekken?"
+		}
+	},
+	"aisource_editor": {
+		"title": "AI-bron editor",
+		"fileList": {
+			"title": "AI-bronnenlijst",
+			"addButton": {
+				"title": "+"
+			}
+		},
+		"configTitle": "AI-bron configuratie",
+		"generatorSelect": {
+			"label": "Kies een generator",
+			"placeholder": "Maak een keuze"
+		},
+		"buttons": {
+			"save": "Opslaan",
+			"delete": "Verwijderen"
+		},
+		"tooltips": {
+			"setDefault": "Instellen als standaard"
+		},
+		"alerts": {
+			"fetchFileListFailed": "Ophalen van bestandslijst mislukt: ${error}",
+			"fetchGeneratorListFailed": "Ophalen van generatorlijst mislukt: ${error}",
+			"fetchDefaultsFailed": "Ophalen van standaardcomponenten mislukt: ${error}",
+			"fetchFileDataFailed": "Ophalen van bestandsgegevens mislukt: ${error}",
+			"noFileSelectedSave": "Geen bestand geselecteerd om op te slaan.",
+			"saveFileFailed": "Opslaan van bestand mislukt: ${error}",
+			"setDefaultFailed": "Instellen van standaard AI-bron mislukt: ${error}",
+			"noFileSelectedDelete": "Geen bestand geselecteerd om te verwijderen.",
+			"deleteFileFailed": "Verwijderen van bestand mislukt: ${error}",
+			"invalidFileName": "Bestandsnaam mag de volgende tekens niet bevatten: / \\ : * ? \" < > |",
+			"addFileFailed": "Toevoegen van bestand mislukt: ${error}",
+			"fetchConfigTemplateFailed": "Ophalen van configuratiesjabloon mislukt",
+			"noGeneratorSelectedSave": "Kies een generator voordat je opslaat"
+		},
+		"confirm": {
+			"unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je de wijzigingen negeren?",
+			"deleteFile": "Weet je zeker dat je het bestand wilt verwijderen?",
+			"unsavedChangesBeforeUnload": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je deze pagina wilt verlaten?"
+		},
+		"prompts": {
+			"newFileName": "Voer een nieuwe bestandsnaam voor de AI-bron in (zonder extensie):"
+		},
+		"editor": {
+			"disabledIndicator": "Kies eerst een generator"
+		},
+		"common_config_interface": {
+			"empty_generator": "De verouderde generator van deze AI-bron kon niet worden geladen en is mogelijk verwijderd of van naam veranderd.",
+			"apiKeyRequired": "Een API-sleutel is vereist om de modellen op te halen.",
+			"loadingModels": "Modellen laden...",
+			"availableModels": "Beschikbare modellen:",
+			"copyModelIdTooltip": "Klik om de model-ID te kopiëren",
+			"copied": "Gekopieerd!",
+			"loadModelsFailed": "Kon de modellen niet laden: ${message}"
+		}
+	},
+	"discord_bots": {
+		"title": "Discord Bot",
+		"cardTitle": "Discord Bot",
+		"buttons": {
+			"newBot": "Nieuwe Bot",
+			"deleteBot": "Bot verwijderen"
+		},
+		"configCard": {
+			"title": "Botconfiguratie",
+			"labels": {
+				"character": "Gekoppeld personage",
+				"apiKey": "Discord API-sleutel",
+				"config": "Configuratie"
+			},
+			"charSelectPlaceholder": "Kies personage",
+			"apiKeyInput": {
+				"placeholder": "Voer API-sleutel in"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "API-sleutel tonen/verbergen"
+			},
+			"buttons": {
+				"saveConfig": "Configuratie opslaan",
+				"startBot": "Starten",
+				"stopBot": "Stoppen"
+			}
+		},
+		"prompts": {
+			"newBotName": "Voer een naam in voor de nieuwe Bot:"
+		},
+		"alerts": {
+			"botExists": "Een Bot met de naam \"${botname}\" bestaat al, gebruik een andere naam.",
+			"unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je deze negeren?",
+			"configSaved": "Configuratie succesvol opgeslagen",
+			"httpError": "HTTP-fout",
+			"beforeUnload": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je wilt vertrekken?"
+		}
+	},
+	"telegram_bots": {
+		"title": "Telegram Bot",
+		"cardTitle": "Telegram Bot Beheer",
+		"buttons": {
+			"newBot": "Nieuwe Bot",
+			"deleteBot": "Bot verwijderen"
+		},
+		"configCard": {
+			"title": "Botconfiguratie",
+			"labels": {
+				"character": "Gekoppeld personage",
+				"botToken": "Telegram Bot Token",
+				"config": "Configuratie"
+			},
+			"charSelectPlaceholder": "Kies personage",
+			"botTokenInput": {
+				"placeholder": "Voer Telegram Bot Token in"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "API-sleutel tonen/verbergen"
+			},
+			"buttons": {
+				"saveConfig": "Configuratie opslaan",
+				"startBot": "Starten",
+				"stopBot": "Stoppen"
+			}
+		},
+		"prompts": {
+			"newBotName": "Voer een naam in voor de nieuwe Bot:"
+		},
+		"alerts": {
+			"botExists": "Een Bot met de naam \"${botname}\" bestaat al, gebruik een andere naam.",
+			"unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je deze negeren?",
+			"configSaved": "Configuratie succesvol opgeslagen!",
+			"httpError": "HTTP-fout",
+			"beforeUnload": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je deze pagina wilt verlaten?"
 		}
 	},
 	"browser_integration": {
@@ -1223,5 +1182,46 @@
 			"prompt": "Een nieuwe versie van het fount Browser Integration Script is beschikbaar. Is de updatepagina nu geopend?"
 		},
 		"csp_warning": "Het fount Browser Integration Script detecteert dat het CSP -beleid op de pagina bestaat, waardoor het integratiescript niet goed werkt. Overweeg de plug -in te installeren om CSP uit te schakelen."
+	},
+	"terminal_assistant": {
+		"title": "Terminal-assistent",
+		"initialMessage": "fount ondersteunt het implementeren van je favoriete personage in je terminal om je te helpen met coderen!",
+		"initialMessageLink": "Klik hier voor meer informatie"
+	},
+	"access": {
+		"title": "Toegang tot fount op andere apparaten",
+		"heading": "Wil je fount op andere apparaten gebruiken?",
+		"instruction": {
+			"sameLAN": "Zorg ervoor dat het apparaat en de fount-host zich op hetzelfde lokale netwerk bevinden",
+			"accessthis": "Bezoek het volgende adres:"
+		},
+		"copyButton": "Adres kopiëren",
+		"copied": "Adres gekopieerd naar klembord!"
+	},
+	"proxy": {
+		"title": "API Proxy",
+		"heading": "OpenAI API-proxyadres",
+		"instruction": "Voer het volgende adres in een applicatie in die het OpenAI API-formaat vereist om de AI-bronnen in fount te gebruiken!",
+		"copyButton": "Adres kopiëren",
+		"copied": "Adres gekopieerd naar klembord!"
+	},
+	"badges_maker": {
+		"title": "fount! Badge-omzetter",
+		"card_title": "fount Badge Link-omzetter",
+		"original_url_label": "Plak img.shields.io-URL",
+		"original_url_placeholder": "Bijv: https://img.shields.io/badge/Hello-World-blue",
+		"new_url_label": "Nieuwe gegenereerde URL",
+		"new_url_placeholder": "De omgezette URL verschijnt hier",
+		"copy_button": "Kopiëren",
+		"preview_label": "Voorbeeld",
+		"preview_alt": "Badge-voorbeeld",
+		"copied_text": "Gekopieerd!",
+		"copy_error": "Kan tekst niet kopiëren: ${error}",
+		"copy_fail_alert": "Kopiëren mislukt!"
+	},
+	"404": {
+		"title": "Pagina niet gevonden",
+		"pageNotFoundText": "Oeps! Het lijkt erop dat je op een pagina bent beland die niet bestaat.",
+		"homepageButton": "Terug naar startpagina"
 	}
 }

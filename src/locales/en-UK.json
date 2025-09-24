@@ -100,24 +100,6 @@
 			"botStarted": "Character ${charname} has logged in to the Telegram bot ${botusername}."
 		}
 	},
-	"protocolhandler": {
-		"title": "Handling fount Protocol",
-		"processing": "Processing protocol...",
-		"invalidProtocol": "Invalid protocol",
-		"insufficientParams": "Insufficient parameters",
-		"unknownCommand": "Unknown command",
-		"shellCommandSent": "Shell command sent",
-		"shellCommandFailed": "Failed to send shell command",
-		"shellCommandError": "Error sending shell command",
-		"fountNotFound": "Oh dear :(\n\nfount was not found. Perhaps you need to install it first?",
-		"unknownError": "Oh dear :(\n\nAn error occurred:\n${error}",
-		"runPartConfirm": {
-			"title": "Confirm running",
-			"message": "Are you sure you want to run ${parttype} of ${partname}?",
-			"confirm": "confirm",
-			"cancel": "Cancel"
-		}
-	},
 	"installer_wait_screen": {
 		"title": "Welcome to fount!",
 		"hero": {
@@ -188,6 +170,24 @@
 			"close_page": "Close page"
 		}
 	},
+	"protocolhandler": {
+		"title": "Handling fount Protocol",
+		"processing": "Processing protocol...",
+		"invalidProtocol": "Invalid protocol",
+		"insufficientParams": "Insufficient parameters",
+		"unknownCommand": "Unknown command",
+		"shellCommandSent": "Shell command sent",
+		"shellCommandFailed": "Failed to send shell command",
+		"shellCommandError": "Error sending shell command",
+		"fountNotFound": "Oh dear :(\n\nfount was not found. Perhaps you need to install it first?",
+		"unknownError": "Oh dear :(\n\nAn error occurred:\n${error}",
+		"runPartConfirm": {
+			"title": "Confirm running",
+			"message": "Are you sure you want to run ${parttype} of ${partname}?",
+			"confirm": "confirm",
+			"cancel": "Cancel"
+		}
+	},
 	"startPage": {
 		"title": "fount!",
 		"newTabFailed": {
@@ -207,6 +207,28 @@
 					"cancel": "Cancel"
 				}
 			}
+		}
+	},
+	"tutorial": {
+		"title": "Tutorial?",
+		"modal": {
+			"title": "Welcome to fount!",
+			"instruction": "Would you like to take the introductory tutorial?",
+			"buttons": {
+				"start": "Start Tutorial",
+				"skip": "Skip"
+			}
+		},
+		"endScreen": {
+			"title": "Awesome! Tutorial Completed!",
+			"subtitle": "You're now familiar with the basics!",
+			"endButton": "Get Started!"
+		},
+		"progressMessages": {
+			"mouseMove": "Please locate your mouse device ${mouseIcon}. Now, attempt to move it across your desk.",
+			"keyboardPress": "Press a key on your keyboard ${keyboardIcon}.",
+			"mobileTouchMove": "Please locate your phone device ${phoneIcon}. Now, using one of your fingers, make contact with the screen and then proceed to slide it.",
+			"mobileClick": "With your phone ${phoneIcon} in hand, please use a finger to briefly touch the screen and then lift it. Excellent!"
 		}
 	},
 	"auth": {
@@ -264,26 +286,15 @@
 			"veryStrong": "Very strong"
 		}
 	},
-	"tutorial": {
-		"title": "Tutorial?",
+	"login_info": {
 		"modal": {
-			"title": "Welcome to fount!",
-			"instruction": "Would you like to take the introductory tutorial?",
+			"title": "Certificate transfer error",
+			"retrieve_error": "An error occurred while trying to save your login credentials:\n${error}\nYou can continue but cannot save the login information.",
+			"transfer_error": "An error occurred while trying to transfer your login credentials:\n${error}\nYou can continue but cannot get login information.",
 			"buttons": {
-				"start": "Start Tutorial",
-				"skip": "Skip"
+				"ignore": "Ignore and continue",
+				"retry": "Try again"
 			}
-		},
-		"endScreen": {
-			"title": "Awesome! Tutorial Completed!",
-			"subtitle": "You're now familiar with the basics!",
-			"endButton": "Get Started!"
-		},
-		"progressMessages": {
-			"mouseMove": "Please locate your mouse device ${mouseIcon}. Now, attempt to move it across your desk.",
-			"keyboardPress": "Press a key on your keyboard ${keyboardIcon}.",
-			"mobileTouchMove": "Please locate your phone device ${phoneIcon}. Now, using one of your fingers, make contact with the screen and then proceed to slide it.",
-			"mobileClick": "With your phone ${phoneIcon} in hand, please use a finger to briefly touch the screen and then lift it. Excellent!"
 		}
 	},
 	"home": {
@@ -363,204 +374,6 @@
 					"title": "Set as default persona"
 				}
 			}
-		}
-	},
-	"themeManage": {
-		"title": "Theme Management",
-		"instruction": "Choose a theme!",
-		"themes": {
-			"auto": "Automatic",
-			"light": "Light",
-			"dark": "Dark",
-			"cupcake": "Cupcake",
-			"bumblebee": "Bumblebee",
-			"emerald": "Emerald",
-			"corporate": "Corporate",
-			"synthwave": "Synthwave",
-			"retro": "Retro",
-			"cyberpunk": "Cyberpunk",
-			"valentine": "Valentine",
-			"halloween": "Halloween",
-			"garden": "Garden",
-			"forest": "Forest",
-			"aqua": "Aqua",
-			"lofi": "Lo-fi",
-			"pastel": "Pastel",
-			"fantasy": "Fantasy",
-			"wireframe": "Wireframe",
-			"black": "Black",
-			"luxury": "Luxury",
-			"dracula": "Dracula",
-			"cmyk": "CMYK",
-			"autumn": "Autumn",
-			"business": "Business",
-			"acid": "Acid",
-			"lemonade": "Lemonade",
-			"night": "Night",
-			"coffee": "Coffee",
-			"winter": "Winter",
-			"dim": "Dim",
-			"nord": "Nord",
-			"sunset": "Sunset",
-			"caramellatte": "Caramel Latte",
-			"abyss": "Abyss",
-			"silk": "Silk"
-		}
-	},
-	"import": {
-		"title": "Import",
-		"tabs": {
-			"fileImport": "File Import",
-			"textImport": "Text Import"
-		},
-		"dropArea": {
-			"icon": {
-				"alt": "Upload Icon"
-			},
-			"text": "Drag and drop files here or click to select files"
-		},
-		"textArea": {
-			"placeholder": "Enter text to import..."
-		},
-		"buttons": {
-			"import": "Import"
-		},
-		"alerts": {
-			"importSuccess": "Import successful",
-			"importFailed": "Import failed: ${error}",
-			"unknownError": "Unknown error"
-		},
-		"errors": {
-			"noFileSelected": "Please select a file",
-			"fileImportFailed": "File import failed: ${message}",
-			"noTextContent": "Please enter text content",
-			"textImportFailed": "Text import failed: ${message}",
-			"unknownError": "Unknown error",
-			"handler": "Handler",
-			"error": "Error"
-		},
-		"fileItem": {
-			"removeButton": {
-				"title": "Remove"
-			},
-			"removeButtonIcon": {
-				"alt": "Remove"
-			}
-		}
-	},
-	"aisource_editor": {
-		"title": "AI Source Editor",
-		"fileList": {
-			"title": "AI Source List",
-			"addButton": {
-				"title": "+"
-			}
-		},
-		"configTitle": "AI Source Configuration",
-		"generatorSelect": {
-			"label": "Select Generator",
-			"placeholder": "Please select"
-		},
-		"buttons": {
-			"save": "Save",
-			"delete": "Delete"
-		},
-		"tooltips": {
-			"setDefault": "Set as default"
-		},
-		"alerts": {
-			"fetchFileListFailed": "Failed to get file list: ${error}",
-			"fetchGeneratorListFailed": "Failed to get generator list: ${error}",
-			"fetchDefaultsFailed": "Failed to get the default component: ${error}",
-			"fetchFileDataFailed": "Failed to get file data: ${error}",
-			"noFileSelectedSave": "No file selected to save.",
-			"saveFileFailed": "Failed to save file: ${error}",
-			"setDefaultFailed": "Setting the default AI source failed: ${error}",
-			"noFileSelectedDelete": "No file selected to delete.",
-			"deleteFileFailed": "Failed to delete file: ${error}",
-			"invalidFileName": "File name cannot contain the following characters: / \\ : * ? \" < > |",
-			"addFileFailed": "Failed to add file: ${error}",
-			"fetchConfigTemplateFailed": "Failed to fetch config template",
-			"noGeneratorSelectedSave": "Please select a generator before saving"
-		},
-		"confirm": {
-			"unsavedChanges": "You have unsaved changes. Do you want to discard changes?",
-			"deleteFile": "Are you sure you want to delete the file?",
-			"unsavedChangesBeforeUnload": "You have unsaved changes. Are you sure you want to leave this page?"
-		},
-		"prompts": {
-			"newFileName": "Please enter a new AI source file name (without extension):"
-		},
-		"editor": {
-			"disabledIndicator": "Please select a generator first"
-		},
-		"common_config_interface": {
-			"empty_generator": "The legacy generator from this AI source has an error while loading and may have been uninstalled or renamed.",
-			"apiKeyRequired": "An API key is required to list the models.",
-			"loadingModels": "Loading models...",
-			"availableModels": "Available models:",
-			"copyModelIdTooltip": "Click to copy the model ID",
-			"copied": "Copied!",
-			"loadModelsFailed": "Failed to load models: ${message}"
-		}
-	},
-	"part_config": {
-		"title": "Component Configuration",
-		"pageTitle": "Component Configuration",
-		"labels": {
-			"partType": "Select Component Type",
-			"part": "Select Component"
-		},
-		"placeholders": {
-			"partTypeSelect": "Please select",
-			"partSelect": "Please select"
-		},
-		"editor": {
-			"title": "Component Configuration",
-			"disabledIndicator": "This component does not support configuration",
-			"buttons": {
-				"save": "Save"
-			}
-		},
-		"errorMessage": {
-			"icon": {
-				"alt": "Error Icon"
-			}
-		},
-		"alerts": {
-			"fetchPartTypesFailed": "Failed to get component types.",
-			"fetchPartsFailed": "Failed to get component list.",
-			"loadEditorFailed": "Failed to load editor.",
-			"saveConfigFailed": "Failed to save component configuration.",
-			"unsavedChanges": "You have unsaved changes. Do you want to discard changes?",
-			"beforeUnload": "You have unsaved changes. Are you sure you want to leave?"
-		}
-	},
-	"uninstall": {
-		"title": "Uninstall",
-		"titleWithName": "Uninstall ${type}/${name}",
-		"confirmMessage": "Are you sure you want to uninstall ${type}: ${name}?",
-		"invalidParamsTitle": "Invalid Parameters",
-		"infoMessage": {
-			"icon": {
-				"alt": "Info Icon"
-			}
-		},
-		"errorMessage": {
-			"icon": {
-				"alt": "Error Icon"
-			}
-		},
-		"buttons": {
-			"confirm": "Confirm Uninstall",
-			"cancel": "Cancel",
-			"back": "Back"
-		},
-		"alerts": {
-			"success": "${type}: ${name} uninstalled successfully",
-			"failed": "Uninstall failed: ${error}",
-			"invalidParams": "Invalid request parameters",
-			"httpError": "HTTP Error! Status code: ${status}"
 		}
 	},
 	"chat": {
@@ -772,209 +585,6 @@
 			"delete": "Delete"
 		}
 	},
-	"discord_bots": {
-		"title": "Discord Bots",
-		"cardTitle": "Discord Bots",
-		"buttons": {
-			"newBot": "New",
-			"deleteBot": "Delete"
-		},
-		"configCard": {
-			"title": "Bot Configuration",
-			"labels": {
-				"character": "Character",
-				"apiKey": "Discord API Key",
-				"config": "Configuration"
-			},
-			"charSelectPlaceholder": "Select Character",
-			"apiKeyInput": {
-				"placeholder": "Enter API Key"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "Toggle API Key Visibility"
-			},
-			"buttons": {
-				"saveConfig": "Save Configuration",
-				"startBot": "Start",
-				"stopBot": "Stop"
-			}
-		},
-		"prompts": {
-			"newBotName": "Please enter a new Bot name:"
-		},
-		"alerts": {
-			"botExists": "A bot named \"${botname}\" already exists. Please use another name.",
-			"unsavedChanges": "You have unsaved changes. Do you want to discard these changes?",
-			"configSaved": "Configuration saved successfully",
-			"httpError": "HTTP Error",
-			"beforeUnload": "You have unsaved changes. Are you sure you want to leave?"
-		}
-	},
-	"telegram_bots": {
-		"title": "Telegram Bots",
-		"cardTitle": "Telegram Bot Management",
-		"buttons": {
-			"newBot": "New",
-			"deleteBot": "Delete"
-		},
-		"configCard": {
-			"title": "Bot Configuration",
-			"labels": {
-				"character": "Linked Character",
-				"botToken": "Telegram Bot Token",
-				"config": "Configuration"
-			},
-			"charSelectPlaceholder": "Select Character",
-			"botTokenInput": {
-				"placeholder": "Enter Telegram Bot Token"
-			},
-			"toggleBotTokenIcon": {
-				"alt": "Toggle Bot Token Visibility"
-			},
-			"buttons": {
-				"saveConfig": "Save Configuration",
-				"startBot": "Start",
-				"stopBot": "Stop"
-			}
-		},
-		"prompts": {
-			"newBotName": "Please enter a new Bot name:"
-		},
-		"alerts": {
-			"botExists": "A bot named \"${botname}\" already exists. Please use a different name.",
-			"unsavedChanges": "You have unsaved changes. Are you sure you want to discard these changes?",
-			"configSaved": "Configuration has been saved successfully!",
-			"httpError": "HTTP Error",
-			"beforeUnload": "You have unsaved changes. Are you sure you want to leave the current page?"
-		}
-	},
-	"terminal_assistant": {
-		"title": "Terminal Assistant",
-		"initialMessage": "fount supports deploying your favourite characters to your terminal to assist you in coding!",
-		"initialMessageLink": "Click here to learn more"
-	},
-	"access": {
-		"title": "Access fount on other devices",
-		"heading": "Want to access fount on other devices?",
-		"instruction": {
-			"sameLAN": "Ensure the device and fount host are on the same local area network.",
-			"accessthis": "Visit this URL:"
-		},
-		"copyButton": "Copy URL",
-		"copied": "URL copied to clipboard!"
-	},
-	"proxy": {
-		"title": "API Proxy",
-		"heading": "OpenAI API Proxy Address",
-		"instruction": "Enter the following address into any application that requires the OpenAI API format to use the AI sources in fount!",
-		"copyButton": "Copy Address",
-		"copied": "Address copied to clipboard!"
-	},
-	"404": {
-		"title": "Page Not Found",
-		"pageNotFoundText": "Oops! It seems you've stumbled upon a page that doesn't exist.",
-		"homepageButton": "Back to Homepage"
-	},
-	"userSettings": {
-		"title": "User Settings",
-		"PageTitle": "User Settings",
-		"apiError": "API request failed: ${message}",
-		"generalError": "An error occurred: ${message}",
-		"userInfo": {
-			"title": "User Information",
-			"usernameLabel": "Username:",
-			"creationDateLabel": "Account Creation Date:",
-			"folderSizeLabel": "User Data Size:",
-			"folderPathLabel": "User Data Path:",
-			"copyPathBtnTitle": "Copy Path",
-			"copiedAlert": "Path copied to clipboard!"
-		},
-		"changePassword": {
-			"title": "Change Password",
-			"currentPasswordLabel": "Current Password:",
-			"newPasswordLabel": "New Password:",
-			"confirmNewPasswordLabel": "Confirm New Password:",
-			"submitButton": "Change Password",
-			"errorMismatch": "The new passwords do not match.",
-			"success": "Password changed successfully."
-		},
-		"renameUser": {
-			"title": "Rename User",
-			"newUsernameLabel": "New Username:",
-			"submitButton": "Rename User",
-			"confirmMessage": "Are you sure you want to change your username? This will require you to log in again.",
-			"success": "User successfully renamed to \"${newUsername}\". You will now be logged out."
-		},
-		"userDevices": {
-			"title": "User Devices/Sessions",
-			"refreshButtonTitle": "Refresh List",
-			"noDevicesFound": "No devices or sessions found.",
-			"deviceInfo": "Device ID: ${deviceId}",
-			"thisDevice": "This Device",
-			"deviceDetails": "Last online: ${lastSeen} | IP: ${ipAddress} | User Agent: ${userAgent}",
-			"revokeButton": "Revoke",
-			"revokeConfirm": "Are you sure you want to revoke this device/session?",
-			"revokeSuccess": "Device/session successfully revoked."
-		},
-		"logout": {
-			"title": "Log Out",
-			"description": "This will log you out of your account on the current device.",
-			"buttonText": "Log Out",
-			"confirmMessage": "Are you sure you want to log out?",
-			"successMessage": "Logged out successfully. Redirecting to the login page..."
-		},
-		"deleteAccount": {
-			"title": "Delete Account",
-			"warning": "Warning: This action will permanently delete your account and all related data, and it cannot be recovered.",
-			"submitButton": "Delete My Account",
-			"confirmMessage1": "Warning! Are you sure you want to permanently delete your account? This action cannot be undone.",
-			"confirmMessage2": "To confirm deletion, please enter your username \"${username}\":",
-			"usernameMismatch": "The entered username does not match the current user. Deletion has been cancelled.",
-			"success": "Account successfully deleted. You will now be logged out."
-		},
-		"passwordConfirm": {
-			"title": "Confirm Operation",
-			"message": "To continue, please enter your current password:",
-			"passwordLabel": "Password:",
-			"confirmButton": "Confirm",
-			"cancelButton": "Cancel"
-		},
-		"apiKeys": {
-			"title": "API Key",
-			"description": "Manage the API key for external applications.",
-			"descriptionPlaceholder": "New key description",
-			"createButton": "create",
-			"noKeysFound": "No API keys were found.",
-			"refreshButtonTitle": "Refresh the list",
-			"keyDetails": "Description: ${description} | Created in: ${createdAt} | Last used: ${lastUsed}",
-			"neverUsed": "Never used",
-			"revokeButton": "Revoke",
-			"revokeConfirm": "Are you sure you want to revoke this API key?",
-			"revokeSuccess": "The API key has been successfully revoked.",
-			"errorDescriptionRequired": "A description is required.",
-			"createSuccess": "The API key was created successfully."
-		},
-		"newApiKey": {
-			"title": "New API key has been created",
-			"warning": "Please copy your new API key. You won't be able to see it again!",
-			"copyButtonTitle": "Copy new API key",
-			"closeButton": "I've copied my key"
-		}
-	},
-	"badges_maker": {
-		"title": "fount! Badge Converter",
-		"card_title": "fount Badge Link Converter",
-		"original_url_label": "Paste img.shields.io URL",
-		"original_url_placeholder": "For example: https://img.shields.io/badge/Hello-World-blue",
-		"new_url_label": "The generated new URL",
-		"new_url_placeholder": "The converted URL will be displayed here",
-		"copy_button": "Copy",
-		"preview_label": "Preview",
-		"preview_alt": "Badge Preview",
-		"copied_text": "Copied!",
-		"copy_error": "Unable to copy text: ${error}",
-		"copy_fail_alert": "Copy failed!"
-	},
 	"easynew": {
 		"title": "Quick Create",
 		"cardTitle": "Create a new component from a template",
@@ -1070,6 +680,47 @@
 			"description": "These templates can only be used to quickly build simple components; complex components still need to be created manually."
 		}
 	},
+	"import": {
+		"title": "Import",
+		"tabs": {
+			"fileImport": "File Import",
+			"textImport": "Text Import"
+		},
+		"dropArea": {
+			"icon": {
+				"alt": "Upload Icon"
+			},
+			"text": "Drag and drop files here or click to select files"
+		},
+		"textArea": {
+			"placeholder": "Enter text to import..."
+		},
+		"buttons": {
+			"import": "Import"
+		},
+		"alerts": {
+			"importSuccess": "Import successful",
+			"importFailed": "Import failed: ${error}",
+			"unknownError": "Unknown error"
+		},
+		"errors": {
+			"noFileSelected": "Please select a file",
+			"fileImportFailed": "File import failed: ${message}",
+			"noTextContent": "Please enter text content",
+			"textImportFailed": "Text import failed: ${message}",
+			"unknownError": "Unknown error",
+			"handler": "Handler",
+			"error": "Error"
+		},
+		"fileItem": {
+			"removeButton": {
+				"title": "Remove"
+			},
+			"removeButtonIcon": {
+				"alt": "Remove"
+			}
+		}
+	},
 	"export": {
 		"title": "Component Exporter",
 		"pageTitle": "Component Exporter",
@@ -1131,6 +782,119 @@
 			"generateShareLinkWithData": "Generate a share link (including data)"
 		}
 	},
+	"uninstall": {
+		"title": "Uninstall",
+		"titleWithName": "Uninstall ${type}/${name}",
+		"confirmMessage": "Are you sure you want to uninstall ${type}: ${name}?",
+		"invalidParamsTitle": "Invalid Parameters",
+		"infoMessage": {
+			"icon": {
+				"alt": "Info Icon"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Error Icon"
+			}
+		},
+		"buttons": {
+			"confirm": "Confirm Uninstall",
+			"cancel": "Cancel",
+			"back": "Back"
+		},
+		"alerts": {
+			"success": "${type}: ${name} uninstalled successfully",
+			"failed": "Uninstall failed: ${error}",
+			"invalidParams": "Invalid request parameters",
+			"httpError": "HTTP Error! Status code: ${status}"
+		}
+	},
+	"userSettings": {
+		"title": "User Settings",
+		"PageTitle": "User Settings",
+		"apiError": "API request failed: ${message}",
+		"generalError": "An error occurred: ${message}",
+		"userInfo": {
+			"title": "User Information",
+			"usernameLabel": "Username:",
+			"creationDateLabel": "Account Creation Date:",
+			"folderSizeLabel": "User Data Size:",
+			"folderPathLabel": "User Data Path:",
+			"copyPathBtnTitle": "Copy Path",
+			"copiedAlert": "Path copied to clipboard!"
+		},
+		"changePassword": {
+			"title": "Change Password",
+			"currentPasswordLabel": "Current Password:",
+			"newPasswordLabel": "New Password:",
+			"confirmNewPasswordLabel": "Confirm New Password:",
+			"submitButton": "Change Password",
+			"errorMismatch": "The new passwords do not match.",
+			"success": "Password changed successfully."
+		},
+		"renameUser": {
+			"title": "Rename User",
+			"newUsernameLabel": "New Username:",
+			"submitButton": "Rename User",
+			"confirmMessage": "Are you sure you want to change your username? This will require you to log in again.",
+			"success": "User successfully renamed to \"${newUsername}\". You will now be logged out."
+		},
+		"userDevices": {
+			"title": "User Devices/Sessions",
+			"refreshButtonTitle": "Refresh List",
+			"noDevicesFound": "No devices or sessions found.",
+			"deviceInfo": "Device ID: ${deviceId}",
+			"thisDevice": "This Device",
+			"deviceDetails": "Last online: ${lastSeen} | IP: ${ipAddress} | User Agent: ${userAgent}",
+			"revokeButton": "Revoke",
+			"revokeConfirm": "Are you sure you want to revoke this device/session?",
+			"revokeSuccess": "Device/session successfully revoked."
+		},
+		"logout": {
+			"title": "Log Out",
+			"description": "This will log you out of your account on the current device.",
+			"buttonText": "Log Out",
+			"confirmMessage": "Are you sure you want to log out?",
+			"successMessage": "Logged out successfully. Redirecting to the login page..."
+		},
+		"deleteAccount": {
+			"title": "Delete Account",
+			"warning": "Warning: This action will permanently delete your account and all related data, and it cannot be recovered.",
+			"submitButton": "Delete My Account",
+			"confirmMessage1": "Warning! Are you sure you want to permanently delete your account? This action cannot be undone.",
+			"confirmMessage2": "To confirm deletion, please enter your username \"${username}\":",
+			"usernameMismatch": "The entered username does not match the current user. Deletion has been cancelled.",
+			"success": "Account successfully deleted. You will now be logged out."
+		},
+		"passwordConfirm": {
+			"title": "Confirm Operation",
+			"message": "To continue, please enter your current password:",
+			"passwordLabel": "Password:",
+			"confirmButton": "Confirm",
+			"cancelButton": "Cancel"
+		},
+		"apiKeys": {
+			"title": "API Key",
+			"description": "Manage the API key for external applications.",
+			"descriptionPlaceholder": "New key description",
+			"createButton": "create",
+			"noKeysFound": "No API keys were found.",
+			"refreshButtonTitle": "Refresh the list",
+			"keyDetails": "Description: ${description} | Created in: ${createdAt} | Last used: ${lastUsed}",
+			"neverUsed": "Never used",
+			"revokeButton": "Revoke",
+			"revokeConfirm": "Are you sure you want to revoke this API key?",
+			"revokeSuccess": "The API key has been successfully revoked.",
+			"errorDescriptionRequired": "A description is required.",
+			"createSuccess": "The API key was created successfully."
+		},
+		"newApiKey": {
+			"title": "New API key has been created",
+			"warning": "Please copy your new API key. You won't be able to see it again!",
+			"copyButtonTitle": "Copy new API key",
+			"closeButton": "I've copied my key"
+		}
+	},
 	"languageSettings": {
 		"title": "Language settings",
 		"description": "Manage your language preferences here. The languages ​​in the list will take precedence over the browser settings in order.",
@@ -1144,15 +908,210 @@
 		"resetMessage": "Language settings have been reset!",
 		"fetchLocalesFailed": "Failed to get available languages!"
 	},
-	"login_info": {
-		"modal": {
-			"title": "Certificate transfer error",
-			"retrieve_error": "An error occurred while trying to save your login credentials:\n${error}\nYou can continue but cannot save the login information.",
-			"transfer_error": "An error occurred while trying to transfer your login credentials:\n${error}\nYou can continue but cannot get login information.",
+	"themeManage": {
+		"title": "Theme Management",
+		"instruction": "Choose a theme!",
+		"themes": {
+			"auto": "Automatic",
+			"light": "Light",
+			"dark": "Dark",
+			"cupcake": "Cupcake",
+			"bumblebee": "Bumblebee",
+			"emerald": "Emerald",
+			"corporate": "Corporate",
+			"synthwave": "Synthwave",
+			"retro": "Retro",
+			"cyberpunk": "Cyberpunk",
+			"valentine": "Valentine",
+			"halloween": "Halloween",
+			"garden": "Garden",
+			"forest": "Forest",
+			"aqua": "Aqua",
+			"lofi": "Lo-fi",
+			"pastel": "Pastel",
+			"fantasy": "Fantasy",
+			"wireframe": "Wireframe",
+			"black": "Black",
+			"luxury": "Luxury",
+			"dracula": "Dracula",
+			"cmyk": "CMYK",
+			"autumn": "Autumn",
+			"business": "Business",
+			"acid": "Acid",
+			"lemonade": "Lemonade",
+			"night": "Night",
+			"coffee": "Coffee",
+			"winter": "Winter",
+			"dim": "Dim",
+			"nord": "Nord",
+			"sunset": "Sunset",
+			"caramellatte": "Caramel Latte",
+			"abyss": "Abyss",
+			"silk": "Silk"
+		}
+	},
+	"part_config": {
+		"title": "Component Configuration",
+		"pageTitle": "Component Configuration",
+		"labels": {
+			"partType": "Select Component Type",
+			"part": "Select Component"
+		},
+		"placeholders": {
+			"partTypeSelect": "Please select",
+			"partSelect": "Please select"
+		},
+		"editor": {
+			"title": "Component Configuration",
+			"disabledIndicator": "This component does not support configuration",
 			"buttons": {
-				"ignore": "Ignore and continue",
-				"retry": "Try again"
+				"save": "Save"
 			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Error Icon"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "Failed to get component types.",
+			"fetchPartsFailed": "Failed to get component list.",
+			"loadEditorFailed": "Failed to load editor.",
+			"saveConfigFailed": "Failed to save component configuration.",
+			"unsavedChanges": "You have unsaved changes. Do you want to discard changes?",
+			"beforeUnload": "You have unsaved changes. Are you sure you want to leave?"
+		}
+	},
+	"aisource_editor": {
+		"title": "AI Source Editor",
+		"fileList": {
+			"title": "AI Source List",
+			"addButton": {
+				"title": "+"
+			}
+		},
+		"configTitle": "AI Source Configuration",
+		"generatorSelect": {
+			"label": "Select Generator",
+			"placeholder": "Please select"
+		},
+		"buttons": {
+			"save": "Save",
+			"delete": "Delete"
+		},
+		"tooltips": {
+			"setDefault": "Set as default"
+		},
+		"alerts": {
+			"fetchFileListFailed": "Failed to get file list: ${error}",
+			"fetchGeneratorListFailed": "Failed to get generator list: ${error}",
+			"fetchDefaultsFailed": "Failed to get the default component: ${error}",
+			"fetchFileDataFailed": "Failed to get file data: ${error}",
+			"noFileSelectedSave": "No file selected to save.",
+			"saveFileFailed": "Failed to save file: ${error}",
+			"setDefaultFailed": "Setting the default AI source failed: ${error}",
+			"noFileSelectedDelete": "No file selected to delete.",
+			"deleteFileFailed": "Failed to delete file: ${error}",
+			"invalidFileName": "File name cannot contain the following characters: / \\ : * ? \" < > |",
+			"addFileFailed": "Failed to add file: ${error}",
+			"fetchConfigTemplateFailed": "Failed to fetch config template",
+			"noGeneratorSelectedSave": "Please select a generator before saving"
+		},
+		"confirm": {
+			"unsavedChanges": "You have unsaved changes. Do you want to discard changes?",
+			"deleteFile": "Are you sure you want to delete the file?",
+			"unsavedChangesBeforeUnload": "You have unsaved changes. Are you sure you want to leave this page?"
+		},
+		"prompts": {
+			"newFileName": "Please enter a new AI source file name (without extension):"
+		},
+		"editor": {
+			"disabledIndicator": "Please select a generator first"
+		},
+		"common_config_interface": {
+			"empty_generator": "The legacy generator from this AI source has an error while loading and may have been uninstalled or renamed.",
+			"apiKeyRequired": "An API key is required to list the models.",
+			"loadingModels": "Loading models...",
+			"availableModels": "Available models:",
+			"copyModelIdTooltip": "Click to copy the model ID",
+			"copied": "Copied!",
+			"loadModelsFailed": "Failed to load models: ${message}"
+		}
+	},
+	"discord_bots": {
+		"title": "Discord Bots",
+		"cardTitle": "Discord Bots",
+		"buttons": {
+			"newBot": "New",
+			"deleteBot": "Delete"
+		},
+		"configCard": {
+			"title": "Bot Configuration",
+			"labels": {
+				"character": "Character",
+				"apiKey": "Discord API Key",
+				"config": "Configuration"
+			},
+			"charSelectPlaceholder": "Select Character",
+			"apiKeyInput": {
+				"placeholder": "Enter API Key"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "Toggle API Key Visibility"
+			},
+			"buttons": {
+				"saveConfig": "Save Configuration",
+				"startBot": "Start",
+				"stopBot": "Stop"
+			}
+		},
+		"prompts": {
+			"newBotName": "Please enter a new Bot name:"
+		},
+		"alerts": {
+			"botExists": "A bot named \"${botname}\" already exists. Please use another name.",
+			"unsavedChanges": "You have unsaved changes. Do you want to discard these changes?",
+			"configSaved": "Configuration saved successfully",
+			"httpError": "HTTP Error",
+			"beforeUnload": "You have unsaved changes. Are you sure you want to leave?"
+		}
+	},
+	"telegram_bots": {
+		"title": "Telegram Bots",
+		"cardTitle": "Telegram Bot Management",
+		"buttons": {
+			"newBot": "New",
+			"deleteBot": "Delete"
+		},
+		"configCard": {
+			"title": "Bot Configuration",
+			"labels": {
+				"character": "Linked Character",
+				"botToken": "Telegram Bot Token",
+				"config": "Configuration"
+			},
+			"charSelectPlaceholder": "Select Character",
+			"botTokenInput": {
+				"placeholder": "Enter Telegram Bot Token"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "Toggle Bot Token Visibility"
+			},
+			"buttons": {
+				"saveConfig": "Save Configuration",
+				"startBot": "Start",
+				"stopBot": "Stop"
+			}
+		},
+		"prompts": {
+			"newBotName": "Please enter a new Bot name:"
+		},
+		"alerts": {
+			"botExists": "A bot named \"${botname}\" already exists. Please use a different name.",
+			"unsavedChanges": "You have unsaved changes. Are you sure you want to discard these changes?",
+			"configSaved": "Configuration has been saved successfully!",
+			"httpError": "HTTP Error",
+			"beforeUnload": "You have unsaved changes. Are you sure you want to leave the current page?"
 		}
 	},
 	"browser_integration": {
@@ -1223,5 +1182,46 @@
 			"prompt": "A new version of the fount browser integration script is available. Is the update page now open?"
 		},
 		"csp_warning": "The fount browser integration script detects that the CSP policy exists on the page, which may cause the integration script to not work properly. Please consider installing the plugin to close the CSP."
+	},
+	"terminal_assistant": {
+		"title": "Terminal Assistant",
+		"initialMessage": "fount supports deploying your favourite characters to your terminal to assist you in coding!",
+		"initialMessageLink": "Click here to learn more"
+	},
+	"access": {
+		"title": "Access fount on other devices",
+		"heading": "Want to access fount on other devices?",
+		"instruction": {
+			"sameLAN": "Ensure the device and fount host are on the same local area network.",
+			"accessthis": "Visit this URL:"
+		},
+		"copyButton": "Copy URL",
+		"copied": "URL copied to clipboard!"
+	},
+	"proxy": {
+		"title": "API Proxy",
+		"heading": "OpenAI API Proxy Address",
+		"instruction": "Enter the following address into any application that requires the OpenAI API format to use the AI sources in fount!",
+		"copyButton": "Copy Address",
+		"copied": "Address copied to clipboard!"
+	},
+	"badges_maker": {
+		"title": "fount! Badge Converter",
+		"card_title": "fount Badge Link Converter",
+		"original_url_label": "Paste img.shields.io URL",
+		"original_url_placeholder": "For example: https://img.shields.io/badge/Hello-World-blue",
+		"new_url_label": "The generated new URL",
+		"new_url_placeholder": "The converted URL will be displayed here",
+		"copy_button": "Copy",
+		"preview_label": "Preview",
+		"preview_alt": "Badge Preview",
+		"copied_text": "Copied!",
+		"copy_error": "Unable to copy text: ${error}",
+		"copy_fail_alert": "Copy failed!"
+	},
+	"404": {
+		"title": "Page Not Found",
+		"pageNotFoundText": "Oops! It seems you've stumbled upon a page that doesn't exist.",
+		"homepageButton": "Back to Homepage"
 	}
 }

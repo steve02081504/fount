@@ -100,24 +100,6 @@
 			"botStarted": "تم تسجيل دخول الشخصية ${charname} على بوت التليجرام ${botusername}"
 		}
 	},
-	"protocolhandler": {
-		"title": "معالجة بروتوكول fount",
-		"processing": "جاري معالجة البروتوكول...",
-		"invalidProtocol": "بروتوكول غير صالح",
-		"insufficientParams": "معلمات غير كافية",
-		"unknownCommand": "أمر غير معروف",
-		"shellCommandSent": "تم إرسال أمر الواجهة",
-		"shellCommandFailed": "فشل إرسال أمر الواجهة",
-		"shellCommandError": "حدث خطأ أثناء إرسال أمر الواجهة",
-		"fountNotFound": "يا للأسف :(\n\nلم يتم العثور على fount، ربما تحتاج إلى تثبيته أولاً؟",
-		"unknownError": "يا للأسف :(\n\nحدث خطأ:\n${error}",
-		"runPartConfirm": {
-			"title": "تأكيد التشغيل",
-			"message": "هل أنت متأكد من أنك تريد تشغيل ${parttype} من ${partname}؟",
-			"confirm": "تأكيد",
-			"cancel": "إلغاء"
-		}
-	},
 	"installer_wait_screen": {
 		"title": "مرحبًا بك في fount!",
 		"hero": {
@@ -188,6 +170,24 @@
 			"close_page": "إغلاق الصفحة"
 		}
 	},
+	"protocolhandler": {
+		"title": "معالجة بروتوكول fount",
+		"processing": "جاري معالجة البروتوكول...",
+		"invalidProtocol": "بروتوكول غير صالح",
+		"insufficientParams": "معلمات غير كافية",
+		"unknownCommand": "أمر غير معروف",
+		"shellCommandSent": "تم إرسال أمر الواجهة",
+		"shellCommandFailed": "فشل إرسال أمر الواجهة",
+		"shellCommandError": "حدث خطأ أثناء إرسال أمر الواجهة",
+		"fountNotFound": "يا للأسف :(\n\nلم يتم العثور على fount، ربما تحتاج إلى تثبيته أولاً؟",
+		"unknownError": "يا للأسف :(\n\nحدث خطأ:\n${error}",
+		"runPartConfirm": {
+			"title": "تأكيد التشغيل",
+			"message": "هل أنت متأكد من أنك تريد تشغيل ${parttype} من ${partname}؟",
+			"confirm": "تأكيد",
+			"cancel": "إلغاء"
+		}
+	},
 	"startPage": {
 		"title": "fount!",
 		"newTabFailed": {
@@ -207,6 +207,28 @@
 					"cancel": "إلغاء"
 				}
 			}
+		}
+	},
+	"tutorial": {
+		"title": "هل ترغب في بعض الإرشادات؟",
+		"modal": {
+			"title": "مرحبًا بك في fount!",
+			"instruction": "هل تود المرور بالبرنامج التعليمي للمبتدئين؟",
+			"buttons": {
+				"start": "بدء البرنامج التعليمي",
+				"skip": "تخطي"
+			}
+		},
+		"endScreen": {
+			"title": "رائع! اكتمل البرنامج التعليمي!",
+			"subtitle": "لقد تعلمت الآن كيفية العمل!",
+			"endButton": "الخطوة التالية!"
+		},
+		"progressMessages": {
+			"mouseMove": "لطفًا، حاول أن تمسك الفأرة ${mouseIcon} بيدك وحركها برفق",
+			"keyboardPress": "الرجاء العثور على لوحة المفاتيح الخاصة بك ${keyboardIcon}<br/>حاول استخدام أصابعك للضغط على لوحة المفاتيح",
+			"mobileTouchMove": "الرجاء العثور على هاتفك المحمول ${phoneIcon}<br/>حاول استخدام أي من أصابعك للمس الشاشة، ثم حركها",
+			"mobileClick": "الرجاء محاولة استخدام أي من أصابعك للمس شاشة الهاتف ${phoneIcon}<br/>ثم ارفع إصبعك"
 		}
 	},
 	"auth": {
@@ -264,26 +286,15 @@
 			"veryStrong": "قوية جدًا"
 		}
 	},
-	"tutorial": {
-		"title": "هل ترغب في بعض الإرشادات؟",
+	"login_info": {
 		"modal": {
-			"title": "مرحبًا بك في fount!",
-			"instruction": "هل تود المرور بالبرنامج التعليمي للمبتدئين؟",
+			"title": "خطأ في نقل الشهادة",
+			"retrieve_error": "حدث خطأ أثناء محاولة حفظ بيانات اعتماد تسجيل الدخول الخاصة بك:\n${error}\nيمكنك المتابعة ولكن لا يمكنك حفظ معلومات تسجيل الدخول.",
+			"transfer_error": "حدث خطأ أثناء محاولة نقل بيانات اعتماد تسجيل الدخول الخاصة بك:\n${error}\nيمكنك المتابعة ولكن لا يمكنك الحصول على معلومات تسجيل الدخول.",
 			"buttons": {
-				"start": "بدء البرنامج التعليمي",
-				"skip": "تخطي"
+				"ignore": "تجاهل ومتابعة",
+				"retry": "إعادة المحاولة"
 			}
-		},
-		"endScreen": {
-			"title": "رائع! اكتمل البرنامج التعليمي!",
-			"subtitle": "لقد تعلمت الآن كيفية العمل!",
-			"endButton": "الخطوة التالية!"
-		},
-		"progressMessages": {
-			"mouseMove": "لطفًا، حاول أن تمسك الفأرة ${mouseIcon} بيدك وحركها برفق",
-			"keyboardPress": "الرجاء العثور على لوحة المفاتيح الخاصة بك ${keyboardIcon}<br/>حاول استخدام أصابعك للضغط على لوحة المفاتيح",
-			"mobileTouchMove": "الرجاء العثور على هاتفك المحمول ${phoneIcon}<br/>حاول استخدام أي من أصابعك للمس الشاشة، ثم حركها",
-			"mobileClick": "الرجاء محاولة استخدام أي من أصابعك للمس شاشة الهاتف ${phoneIcon}<br/>ثم ارفع إصبعك"
 		}
 	},
 	"home": {
@@ -363,204 +374,6 @@
 					"title": "تعيين كهوية افتراضية"
 				}
 			}
-		}
-	},
-	"themeManage": {
-		"title": "إدارة السمات",
-		"instruction": "اختر سمة!",
-		"themes": {
-			"auto": "تلقائي",
-			"light": "فاتح",
-			"dark": "داكن",
-			"cupcake": "كب كيك",
-			"bumblebee": "نحلة",
-			"emerald": "زمرد",
-			"corporate": "شركات",
-			"synthwave": "سينث ويف",
-			"retro": "ريترو",
-			"cyberpunk": "سايبربانك",
-			"valentine": "فالنتاين",
-			"halloween": "هالوين",
-			"garden": "حديقة",
-			"forest": "غابة",
-			"aqua": "مائي",
-			"lofi": "لو-فاي",
-			"pastel": "باستيل",
-			"fantasy": "خيال",
-			"wireframe": "إطار سلكي",
-			"black": "أسود",
-			"luxury": "فاخر",
-			"dracula": "دراكولا",
-			"cmyk": "CMYK",
-			"autumn": "خريف",
-			"business": "أعمال",
-			"acid": "حمضي",
-			"lemonade": "ليموناضة",
-			"night": "ليل",
-			"coffee": "قهوة",
-			"winter": "شتاء",
-			"dim": "خافت",
-			"nord": "شمالي",
-			"sunset": "غروب",
-			"caramellatte": "كراميل لاتيه",
-			"abyss": "هاوية",
-			"silk": "حرير"
-		}
-	},
-	"import": {
-		"title": "استيراد",
-		"tabs": {
-			"fileImport": "استيراد ملف",
-			"textImport": "استيراد نص"
-		},
-		"dropArea": {
-			"icon": {
-				"alt": "أيقونة الرفع"
-			},
-			"text": "اسحب وأفلت الملفات هنا أو انقر لتحديد الملفات"
-		},
-		"textArea": {
-			"placeholder": "أدخل النص المراد استيراده..."
-		},
-		"buttons": {
-			"import": "استيراد"
-		},
-		"alerts": {
-			"importSuccess": "تم الاستيراد بنجاح",
-			"importFailed": "فشل الاستيراد: ${error}",
-			"unknownError": "خطأ غير معروف"
-		},
-		"errors": {
-			"noFileSelected": "الرجاء تحديد ملف",
-			"fileImportFailed": "فشل استيراد الملف: ${message}",
-			"noTextContent": "الرجاء إدخال محتوى نصي",
-			"textImportFailed": "فشل استيراد النص: ${message}",
-			"unknownError": "خطأ غير معروف",
-			"handler": "المعالج",
-			"error": "خطأ"
-		},
-		"fileItem": {
-			"removeButton": {
-				"title": "حذف"
-			},
-			"removeButtonIcon": {
-				"alt": "حذف"
-			}
-		}
-	},
-	"aisource_editor": {
-		"title": "محرر مصدر الذكاء الاصطناعي",
-		"fileList": {
-			"title": "قائمة مصادر الذكاء الاصطناعي",
-			"addButton": {
-				"title": "+"
-			}
-		},
-		"configTitle": "تهيئة مصدر الذكاء الاصطناعي",
-		"generatorSelect": {
-			"label": "اختر مولدًا",
-			"placeholder": "الرجاء الاختيار"
-		},
-		"buttons": {
-			"save": "حفظ",
-			"delete": "حذف"
-		},
-		"tooltips": {
-			"setDefault": "تعيين كافتراضي"
-		},
-		"alerts": {
-			"fetchFileListFailed": "فشل في جلب قائمة الملفات: ${error}",
-			"fetchGeneratorListFailed": "فشل في جلب قائمة المولدات: ${error}",
-			"fetchDefaultsFailed": "فشل في جلب المكونات الافتراضية: ${error}",
-			"fetchFileDataFailed": "فشل في جلب بيانات الملف: ${error}",
-			"noFileSelectedSave": "لم يتم تحديد أي ملف للحفظ.",
-			"saveFileFailed": "فشل حفظ الملف: ${error}",
-			"setDefaultFailed": "فشل تعيين مصدر الذكاء الاصطناعي الافتراضي: ${error}",
-			"noFileSelectedDelete": "لم يتم تحديد أي ملف للحذف.",
-			"deleteFileFailed": "فشل حذف الملف: ${error}",
-			"invalidFileName": "لا يمكن أن يحتوي اسم الملف على الأحرف التالية: / \\ : * ? \" < > |",
-			"addFileFailed": "فشل إضافة الملف: ${error}",
-			"fetchConfigTemplateFailed": "فشل في جلب قالب التهيئة",
-			"noGeneratorSelectedSave": "الرجاء اختيار مولد قبل الحفظ"
-		},
-		"confirm": {
-			"unsavedChanges": "لديك تغييرات غير محفوظة. هل تريد التخلص منها؟",
-			"deleteFile": "هل أنت متأكد من أنك تريد حذف الملف؟",
-			"unsavedChangesBeforeUnload": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد مغادرة هذه الصفحة؟"
-		},
-		"prompts": {
-			"newFileName": "الرجاء إدخال اسم ملف مصدر الذكاء الاصطناعي الجديد (بدون لاحقة):"
-		},
-		"editor": {
-			"disabledIndicator": "الرجاء اختيار مولد أولاً"
-		},
-		"common_config_interface": {
-			"empty_generator": "يحتوي المولد القديم من مصدر AI هذا على خطأ أثناء التحميل وقد يتم إلغاء تثبيته أو إعادة تسميته.",
-			"apiKeyRequired": "مفتاح API مطلوب لعرض النماذج.",
-			"loadingModels": "جاري تحميل النماذج...",
-			"availableModels": "النماذج المتاحة:",
-			"copyModelIdTooltip": "انقر لنسخ معرف النموذج",
-			"copied": "تم النسخ!",
-			"loadModelsFailed": "فشل تحميل النماذج: ${message}"
-		}
-	},
-	"part_config": {
-		"title": "تهيئة المكون",
-		"pageTitle": "تهيئة المكون",
-		"labels": {
-			"partType": "اختر نوع المكون",
-			"part": "اختر المكون"
-		},
-		"placeholders": {
-			"partTypeSelect": "الرجاء الاختيار",
-			"partSelect": "الرجاء الاختيار"
-		},
-		"editor": {
-			"title": "تهيئة المكون",
-			"disabledIndicator": "هذا المكون لا يدعم التهيئة",
-			"buttons": {
-				"save": "حفظ"
-			}
-		},
-		"errorMessage": {
-			"icon": {
-				"alt": "تنبيه خطأ"
-			}
-		},
-		"alerts": {
-			"fetchPartTypesFailed": "فشل في جلب أنواع المكونات",
-			"fetchPartsFailed": "فشل في جلب قائمة المكونات",
-			"loadEditorFailed": "فشل تحميل المحرر",
-			"saveConfigFailed": "فشل حفظ تهيئة المكون",
-			"unsavedChanges": "لديك تغييرات غير محفوظة. هل تريد التخلص منها؟",
-			"beforeUnload": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد المغادرة؟"
-		}
-	},
-	"uninstall": {
-		"title": "إلغاء التثبيت",
-		"titleWithName": "إلغاء تثبيت ${type}/${name}",
-		"confirmMessage": "هل أنت متأكد من أنك تريد إلغاء تثبيت ${type}: ‏${name}؟",
-		"invalidParamsTitle": "معلمات غير صالحة",
-		"infoMessage": {
-			"icon": {
-				"alt": "أيقونة المعلومات"
-			}
-		},
-		"errorMessage": {
-			"icon": {
-				"alt": "أيقونة الخطأ"
-			}
-		},
-		"buttons": {
-			"confirm": "تأكيد إلغاء التثبيت",
-			"cancel": "إلغاء",
-			"back": "رجوع"
-		},
-		"alerts": {
-			"success": "تم إلغاء تثبيت ${type}: ‏${name} بنجاح",
-			"failed": "فشل إلغاء التثبيت: ${error}",
-			"invalidParams": "معلمات طلب غير صالحة.",
-			"httpError": "خطأ HTTP! رمز الحالة: ${status}"
 		}
 	},
 	"chat": {
@@ -772,209 +585,6 @@
 			"delete": "حذف"
 		}
 	},
-	"discord_bots": {
-		"title": "بوتات Discord",
-		"cardTitle": "بوت Discord",
-		"buttons": {
-			"newBot": "بوت جديد",
-			"deleteBot": "حذف البوت"
-		},
-		"configCard": {
-			"title": "تهيئة البوت",
-			"labels": {
-				"character": "ربط الشخصية",
-				"apiKey": "مفتاح API لـ Discord",
-				"config": "تهيئة"
-			},
-			"charSelectPlaceholder": "اختر شخصية",
-			"apiKeyInput": {
-				"placeholder": "الرجاء إدخال مفتاح API"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "تبديل عرض مفتاح API"
-			},
-			"buttons": {
-				"saveConfig": "حفظ التهيئة",
-				"startBot": "بدء",
-				"stopBot": "إيقاف"
-			}
-		},
-		"prompts": {
-			"newBotName": "الرجاء إدخال اسم البوت الجديد:"
-		},
-		"alerts": {
-			"botExists": "البوت بالاسم \"${botname}\" موجود بالفعل، يرجى استخدام اسم آخر.",
-			"unsavedChanges": "لديك تغييرات غير محفوظة. هل تريد التخلص منها؟",
-			"configSaved": "تم حفظ التهيئة بنجاح",
-			"httpError": "خطأ HTTP",
-			"beforeUnload": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد المغادرة؟"
-		}
-	},
-	"telegram_bots": {
-		"title": "بوتات Telegram",
-		"cardTitle": "إدارة بوتات Telegram",
-		"buttons": {
-			"newBot": "بوت جديد",
-			"deleteBot": "حذف البوت"
-		},
-		"configCard": {
-			"title": "تهيئة البوت",
-			"labels": {
-				"character": "ربط الشخصية",
-				"botToken": "رمز بوت Telegram",
-				"config": "تهيئة"
-			},
-			"charSelectPlaceholder": "اختر شخصية",
-			"botTokenInput": {
-				"placeholder": "الرجاء إدخال رمز بوت Telegram"
-			},
-			"toggleBotTokenIcon": {
-				"alt": "تبديل عرض مفتاح API"
-			},
-			"buttons": {
-				"saveConfig": "حفظ التهيئة",
-				"startBot": "بدء",
-				"stopBot": "إيقاف"
-			}
-		},
-		"prompts": {
-			"newBotName": "الرجاء إدخال اسم البوت الجديد:"
-		},
-		"alerts": {
-			"botExists": "البوت بالاسم \"${botname}\" موجود بالفعل، يرجى استخدام اسم آخر.",
-			"unsavedChanges": "لديك تغييرات غير محفوظة. هل تريد التخلص منها؟",
-			"configSaved": "تم حفظ التهيئة بنجاح!",
-			"httpError": "خطأ HTTP",
-			"beforeUnload": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد مغادرة الصفحة الحالية؟"
-		}
-	},
-	"terminal_assistant": {
-		"title": "مساعد الطرفية",
-		"initialMessage": "يدعم fount نشر شخصيتك المفضلة في الطرفية لمساعدتك في البرمجة!",
-		"initialMessageLink": "انقر هنا لمعرفة المزيد"
-	},
-	"access": {
-		"title": "الوصول إلى fount على أجهزة أخرى",
-		"heading": "هل تريد الوصول إلى fount على أجهزة أخرى؟",
-		"instruction": {
-			"sameLAN": "تأكد من أن الجهاز ومضيف fount على نفس الشبكة المحلية",
-			"accessthis": "قم بزيارة العنوان التالي:"
-		},
-		"copyButton": "نسخ الرابط",
-		"copied": "تم نسخ الرابط إلى الحافظة!"
-	},
-	"proxy": {
-		"title": "وكيل API",
-		"heading": "عنوان وكيل OpenAI API",
-		"instruction": "املأ العنوان التالي في أي تطبيق يتطلب تنسيق OpenAI API لاستخدام مصادر الذكاء الاصطناعي في fount!",
-		"copyButton": "نسخ العنوان",
-		"copied": "تم نسخ العنوان إلى الحافظة!"
-	},
-	"404": {
-		"title": "الصفحة غير موجودة",
-		"pageNotFoundText": "عفوًا! يبدو أنك وصلت إلى صفحة غير موجودة.",
-		"homepageButton": "العودة إلى الصفحة الرئيسية"
-	},
-	"userSettings": {
-		"title": "إعدادات المستخدم",
-		"PageTitle": "إعدادات المستخدم",
-		"apiError": "فشل طلب API: ‏${message}",
-		"generalError": "حدث خطأ: ${message}",
-		"userInfo": {
-			"title": "معلومات المستخدم",
-			"usernameLabel": "اسم المستخدم:",
-			"creationDateLabel": "تاريخ إنشاء الحساب:",
-			"folderSizeLabel": "حجم بيانات المستخدم:",
-			"folderPathLabel": "مسار بيانات المستخدم:",
-			"copyPathBtnTitle": "نسخ المسار",
-			"copiedAlert": "تم نسخ المسار إلى الحافظة!"
-		},
-		"changePassword": {
-			"title": "تغيير كلمة المرور",
-			"currentPasswordLabel": "كلمة المرور الحالية:",
-			"newPasswordLabel": "كلمة المرور الجديدة:",
-			"confirmNewPasswordLabel": "تأكيد كلمة المرور الجديدة:",
-			"submitButton": "تغيير كلمة المرور",
-			"errorMismatch": "كلمتا المرور الجديدتان غير متطابقتين.",
-			"success": "تم تغيير كلمة المرور بنجاح."
-		},
-		"renameUser": {
-			"title": "إعادة تسمية المستخدم",
-			"newUsernameLabel": "اسم المستخدم الجديد:",
-			"submitButton": "إعادة تسمية المستخدم",
-			"confirmMessage": "هل أنت متأكد من أنك تريد تغيير اسم المستخدم الخاص بك؟ سيتطلب هذا منك تسجيل الدخول مرة أخرى.",
-			"success": "تمت إعادة تسمية المستخدم بنجاح إلى \"${newUsername}\". سيتم الآن تسجيل خروجك."
-		},
-		"userDevices": {
-			"title": "أجهزة/جلسات المستخدم",
-			"refreshButtonTitle": "تحديث القائمة",
-			"noDevicesFound": "لم يتم العثور على أجهزة أو جلسات.",
-			"deviceInfo": "معرف الجهاز: ${deviceId}",
-			"thisDevice": "هذا الجهاز",
-			"deviceDetails": "آخر ظهور: ${lastSeen} | IP: ‏${ipAddress} | UA: ‏${userAgent}",
-			"revokeButton": "إبطال",
-			"revokeConfirm": "هل أنت متأكد من أنك تريد تسجيل الخروج من هذا الجهاز/الجلسة؟",
-			"revokeSuccess": "تم إبطال الجهاز/الجلسة بنجاح."
-		},
-		"logout": {
-			"title": "تسجيل الخروج",
-			"description": "سيؤدي هذا إلى تسجيل خروج حسابك من الجهاز الحالي.",
-			"buttonText": "تسجيل الخروج",
-			"confirmMessage": "هل أنت متأكد من أنك تريد تسجيل الخروج؟",
-			"successMessage": "تم تسجيل الخروج بنجاح. سيتم توجيهك إلى صفحة تسجيل الدخول..."
-		},
-		"deleteAccount": {
-			"title": "حذف الحساب",
-			"warning": "تحذير: هذا الإجراء سيحذف حسابك وجميع البيانات ذات الصلة بشكل دائم ولا يمكن التراجع عنه.",
-			"submitButton": "حذف حسابي",
-			"confirmMessage1": "تحذير! هل أنت متأكد من أنك تريد حذف حسابك بشكل دائم؟ لا يمكن التراجع عن هذا الإجراء.",
-			"confirmMessage2": "لتأكيد الحذف، يرجى إدخال اسم المستخدم الخاص بك \"${username}\":",
-			"usernameMismatch": "اسم المستخدم الذي تم إدخاله لا يتطابق مع المستخدم الحالي. تم إلغاء عملية الحذف.",
-			"success": "تم حذف الحساب بنجاح. سيتم الآن تسجيل خروجك."
-		},
-		"passwordConfirm": {
-			"title": "تأكيد الإجراء",
-			"message": "لمتابعة هذا الإجراء، يرجى إدخال كلمة المرور الحالية:",
-			"passwordLabel": "كلمة المرور:",
-			"confirmButton": "تأكيد",
-			"cancelButton": "إلغاء"
-		},
-		"apiKeys": {
-			"title": "مفتاح API",
-			"description": "إدارة مفتاح API للتطبيقات الخارجية.",
-			"descriptionPlaceholder": "وصف رئيسي جديد",
-			"createButton": "إنشاء",
-			"noKeysFound": "لم يتم العثور على مفاتيح API.",
-			"refreshButtonTitle": "تحديث القائمة",
-			"keyDetails": "الوصف: ${description} | تم إنشاؤها في: ${createdAt} | آخر استخدام: ${lastUsed}",
-			"neverUsed": "لم تستخدم",
-			"revokeButton": "إلغاء",
-			"revokeConfirm": "هل أنت متأكد من أنك تريد إلغاء مفتاح API هذا؟",
-			"revokeSuccess": "تم إلغاء مفتاح API بنجاح.",
-			"errorDescriptionRequired": "وصف مطلوب.",
-			"createSuccess": "تم إنشاء مفتاح API بنجاح."
-		},
-		"newApiKey": {
-			"title": "تم إنشاء مفتاح API جديد",
-			"warning": "يرجى نسخ مفتاح API الجديد الخاص بك. لن تتمكن من رؤيته مرة أخرى!",
-			"copyButtonTitle": "نسخ مفتاح API جديد",
-			"closeButton": "لقد قمت بنسخ مفتاحي"
-		}
-	},
-	"badges_maker": {
-		"title": "fount! محول الشارات",
-		"card_title": "محول روابط شارات fount",
-		"original_url_label": "الصق رابط img.shields.io",
-		"original_url_placeholder": "مثال: https://img.shields.io/badge/Hello-World-blue",
-		"new_url_label": "الرابط الجديد الذي تم إنشاؤه",
-		"new_url_placeholder": "سيظهر الرابط المحول هنا",
-		"copy_button": "نسخ",
-		"preview_label": "معاينة التأثير",
-		"preview_alt": "معاينة الشارة",
-		"copied_text": "تم النسخ!",
-		"copy_error": "لا يمكن نسخ النص: ${error}",
-		"copy_fail_alert": "فشل النسخ!"
-	},
 	"easynew": {
 		"title": "إنشاء سريع",
 		"cardTitle": "إنشاء مكون جديد من قالب",
@@ -1070,6 +680,47 @@
 			"description": "يمكن استخدام هذه القوالب فقط لبناء مكونات بسيطة بسرعة، لا يزال إنشاء المكونات المعقدة يتطلب إنشاءًا يدويًا."
 		}
 	},
+	"import": {
+		"title": "استيراد",
+		"tabs": {
+			"fileImport": "استيراد ملف",
+			"textImport": "استيراد نص"
+		},
+		"dropArea": {
+			"icon": {
+				"alt": "أيقونة الرفع"
+			},
+			"text": "اسحب وأفلت الملفات هنا أو انقر لتحديد الملفات"
+		},
+		"textArea": {
+			"placeholder": "أدخل النص المراد استيراده..."
+		},
+		"buttons": {
+			"import": "استيراد"
+		},
+		"alerts": {
+			"importSuccess": "تم الاستيراد بنجاح",
+			"importFailed": "فشل الاستيراد: ${error}",
+			"unknownError": "خطأ غير معروف"
+		},
+		"errors": {
+			"noFileSelected": "الرجاء تحديد ملف",
+			"fileImportFailed": "فشل استيراد الملف: ${message}",
+			"noTextContent": "الرجاء إدخال محتوى نصي",
+			"textImportFailed": "فشل استيراد النص: ${message}",
+			"unknownError": "خطأ غير معروف",
+			"handler": "المعالج",
+			"error": "خطأ"
+		},
+		"fileItem": {
+			"removeButton": {
+				"title": "حذف"
+			},
+			"removeButtonIcon": {
+				"alt": "حذف"
+			}
+		}
+	},
 	"export": {
 		"title": "مصدر المكونات",
 		"pageTitle": "مصدر المكونات",
@@ -1131,6 +782,119 @@
 			"generateShareLinkWithData": "إنشاء رابط مشاركة (مع البيانات)"
 		}
 	},
+	"uninstall": {
+		"title": "إلغاء التثبيت",
+		"titleWithName": "إلغاء تثبيت ${type}/${name}",
+		"confirmMessage": "هل أنت متأكد من أنك تريد إلغاء تثبيت ${type}: ‏${name}؟",
+		"invalidParamsTitle": "معلمات غير صالحة",
+		"infoMessage": {
+			"icon": {
+				"alt": "أيقونة المعلومات"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "أيقونة الخطأ"
+			}
+		},
+		"buttons": {
+			"confirm": "تأكيد إلغاء التثبيت",
+			"cancel": "إلغاء",
+			"back": "رجوع"
+		},
+		"alerts": {
+			"success": "تم إلغاء تثبيت ${type}: ‏${name} بنجاح",
+			"failed": "فشل إلغاء التثبيت: ${error}",
+			"invalidParams": "معلمات طلب غير صالحة.",
+			"httpError": "خطأ HTTP! رمز الحالة: ${status}"
+		}
+	},
+	"userSettings": {
+		"title": "إعدادات المستخدم",
+		"PageTitle": "إعدادات المستخدم",
+		"apiError": "فشل طلب API: ‏${message}",
+		"generalError": "حدث خطأ: ${message}",
+		"userInfo": {
+			"title": "معلومات المستخدم",
+			"usernameLabel": "اسم المستخدم:",
+			"creationDateLabel": "تاريخ إنشاء الحساب:",
+			"folderSizeLabel": "حجم بيانات المستخدم:",
+			"folderPathLabel": "مسار بيانات المستخدم:",
+			"copyPathBtnTitle": "نسخ المسار",
+			"copiedAlert": "تم نسخ المسار إلى الحافظة!"
+		},
+		"changePassword": {
+			"title": "تغيير كلمة المرور",
+			"currentPasswordLabel": "كلمة المرور الحالية:",
+			"newPasswordLabel": "كلمة المرور الجديدة:",
+			"confirmNewPasswordLabel": "تأكيد كلمة المرور الجديدة:",
+			"submitButton": "تغيير كلمة المرور",
+			"errorMismatch": "كلمتا المرور الجديدتان غير متطابقتين.",
+			"success": "تم تغيير كلمة المرور بنجاح."
+		},
+		"renameUser": {
+			"title": "إعادة تسمية المستخدم",
+			"newUsernameLabel": "اسم المستخدم الجديد:",
+			"submitButton": "إعادة تسمية المستخدم",
+			"confirmMessage": "هل أنت متأكد من أنك تريد تغيير اسم المستخدم الخاص بك؟ سيتطلب هذا منك تسجيل الدخول مرة أخرى.",
+			"success": "تمت إعادة تسمية المستخدم بنجاح إلى \"${newUsername}\". سيتم الآن تسجيل خروجك."
+		},
+		"userDevices": {
+			"title": "أجهزة/جلسات المستخدم",
+			"refreshButtonTitle": "تحديث القائمة",
+			"noDevicesFound": "لم يتم العثور على أجهزة أو جلسات.",
+			"deviceInfo": "معرف الجهاز: ${deviceId}",
+			"thisDevice": "هذا الجهاز",
+			"deviceDetails": "آخر ظهور: ${lastSeen} | IP: ‏${ipAddress} | UA: ‏${userAgent}",
+			"revokeButton": "إبطال",
+			"revokeConfirm": "هل أنت متأكد من أنك تريد تسجيل الخروج من هذا الجهاز/الجلسة؟",
+			"revokeSuccess": "تم إبطال الجهاز/الجلسة بنجاح."
+		},
+		"logout": {
+			"title": "تسجيل الخروج",
+			"description": "سيؤدي هذا إلى تسجيل خروج حسابك من الجهاز الحالي.",
+			"buttonText": "تسجيل الخروج",
+			"confirmMessage": "هل أنت متأكد من أنك تريد تسجيل الخروج؟",
+			"successMessage": "تم تسجيل الخروج بنجاح. سيتم توجيهك إلى صفحة تسجيل الدخول..."
+		},
+		"deleteAccount": {
+			"title": "حذف الحساب",
+			"warning": "تحذير: هذا الإجراء سيحذف حسابك وجميع البيانات ذات الصلة بشكل دائم ولا يمكن التراجع عنه.",
+			"submitButton": "حذف حسابي",
+			"confirmMessage1": "تحذير! هل أنت متأكد من أنك تريد حذف حسابك بشكل دائم؟ لا يمكن التراجع عن هذا الإجراء.",
+			"confirmMessage2": "لتأكيد الحذف، يرجى إدخال اسم المستخدم الخاص بك \"${username}\":",
+			"usernameMismatch": "اسم المستخدم الذي تم إدخاله لا يتطابق مع المستخدم الحالي. تم إلغاء عملية الحذف.",
+			"success": "تم حذف الحساب بنجاح. سيتم الآن تسجيل خروجك."
+		},
+		"passwordConfirm": {
+			"title": "تأكيد الإجراء",
+			"message": "لمتابعة هذا الإجراء، يرجى إدخال كلمة المرور الحالية:",
+			"passwordLabel": "كلمة المرور:",
+			"confirmButton": "تأكيد",
+			"cancelButton": "إلغاء"
+		},
+		"apiKeys": {
+			"title": "مفتاح API",
+			"description": "إدارة مفتاح API للتطبيقات الخارجية.",
+			"descriptionPlaceholder": "وصف رئيسي جديد",
+			"createButton": "إنشاء",
+			"noKeysFound": "لم يتم العثور على مفاتيح API.",
+			"refreshButtonTitle": "تحديث القائمة",
+			"keyDetails": "الوصف: ${description} | تم إنشاؤها في: ${createdAt} | آخر استخدام: ${lastUsed}",
+			"neverUsed": "لم تستخدم",
+			"revokeButton": "إلغاء",
+			"revokeConfirm": "هل أنت متأكد من أنك تريد إلغاء مفتاح API هذا؟",
+			"revokeSuccess": "تم إلغاء مفتاح API بنجاح.",
+			"errorDescriptionRequired": "وصف مطلوب.",
+			"createSuccess": "تم إنشاء مفتاح API بنجاح."
+		},
+		"newApiKey": {
+			"title": "تم إنشاء مفتاح API جديد",
+			"warning": "يرجى نسخ مفتاح API الجديد الخاص بك. لن تتمكن من رؤيته مرة أخرى!",
+			"copyButtonTitle": "نسخ مفتاح API جديد",
+			"closeButton": "لقد قمت بنسخ مفتاحي"
+		}
+	},
 	"languageSettings": {
 		"title": "إعدادات اللغة",
 		"description": "إدارة تفضيلات لغتك هنا. ستؤدي اللغات في القائمة إلى الأسبقية على إعدادات المتصفح بالترتيب.",
@@ -1144,15 +908,210 @@
 		"resetMessage": "تم إعادة تعيين إعدادات اللغة!",
 		"fetchLocalesFailed": "فشل في الحصول على اللغات المتاحة!"
 	},
-	"login_info": {
-		"modal": {
-			"title": "خطأ في نقل الشهادة",
-			"retrieve_error": "حدث خطأ أثناء محاولة حفظ بيانات اعتماد تسجيل الدخول الخاصة بك:\n${error}\nيمكنك المتابعة ولكن لا يمكنك حفظ معلومات تسجيل الدخول.",
-			"transfer_error": "حدث خطأ أثناء محاولة نقل بيانات اعتماد تسجيل الدخول الخاصة بك:\n${error}\nيمكنك المتابعة ولكن لا يمكنك الحصول على معلومات تسجيل الدخول.",
+	"themeManage": {
+		"title": "إدارة السمات",
+		"instruction": "اختر سمة!",
+		"themes": {
+			"auto": "تلقائي",
+			"light": "فاتح",
+			"dark": "داكن",
+			"cupcake": "كب كيك",
+			"bumblebee": "نحلة",
+			"emerald": "زمرد",
+			"corporate": "شركات",
+			"synthwave": "سينث ويف",
+			"retro": "ريترو",
+			"cyberpunk": "سايبربانك",
+			"valentine": "فالنتاين",
+			"halloween": "هالوين",
+			"garden": "حديقة",
+			"forest": "غابة",
+			"aqua": "مائي",
+			"lofi": "لو-فاي",
+			"pastel": "باستيل",
+			"fantasy": "خيال",
+			"wireframe": "إطار سلكي",
+			"black": "أسود",
+			"luxury": "فاخر",
+			"dracula": "دراكولا",
+			"cmyk": "CMYK",
+			"autumn": "خريف",
+			"business": "أعمال",
+			"acid": "حمضي",
+			"lemonade": "ليموناضة",
+			"night": "ليل",
+			"coffee": "قهوة",
+			"winter": "شتاء",
+			"dim": "خافت",
+			"nord": "شمالي",
+			"sunset": "غروب",
+			"caramellatte": "كراميل لاتيه",
+			"abyss": "هاوية",
+			"silk": "حرير"
+		}
+	},
+	"part_config": {
+		"title": "تهيئة المكون",
+		"pageTitle": "تهيئة المكون",
+		"labels": {
+			"partType": "اختر نوع المكون",
+			"part": "اختر المكون"
+		},
+		"placeholders": {
+			"partTypeSelect": "الرجاء الاختيار",
+			"partSelect": "الرجاء الاختيار"
+		},
+		"editor": {
+			"title": "تهيئة المكون",
+			"disabledIndicator": "هذا المكون لا يدعم التهيئة",
 			"buttons": {
-				"ignore": "تجاهل ومتابعة",
-				"retry": "إعادة المحاولة"
+				"save": "حفظ"
 			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "تنبيه خطأ"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "فشل في جلب أنواع المكونات",
+			"fetchPartsFailed": "فشل في جلب قائمة المكونات",
+			"loadEditorFailed": "فشل تحميل المحرر",
+			"saveConfigFailed": "فشل حفظ تهيئة المكون",
+			"unsavedChanges": "لديك تغييرات غير محفوظة. هل تريد التخلص منها؟",
+			"beforeUnload": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد المغادرة؟"
+		}
+	},
+	"aisource_editor": {
+		"title": "محرر مصدر الذكاء الاصطناعي",
+		"fileList": {
+			"title": "قائمة مصادر الذكاء الاصطناعي",
+			"addButton": {
+				"title": "+"
+			}
+		},
+		"configTitle": "تهيئة مصدر الذكاء الاصطناعي",
+		"generatorSelect": {
+			"label": "اختر مولدًا",
+			"placeholder": "الرجاء الاختيار"
+		},
+		"buttons": {
+			"save": "حفظ",
+			"delete": "حذف"
+		},
+		"tooltips": {
+			"setDefault": "تعيين كافتراضي"
+		},
+		"alerts": {
+			"fetchFileListFailed": "فشل في جلب قائمة الملفات: ${error}",
+			"fetchGeneratorListFailed": "فشل في جلب قائمة المولدات: ${error}",
+			"fetchDefaultsFailed": "فشل في جلب المكونات الافتراضية: ${error}",
+			"fetchFileDataFailed": "فشل في جلب بيانات الملف: ${error}",
+			"noFileSelectedSave": "لم يتم تحديد أي ملف للحفظ.",
+			"saveFileFailed": "فشل حفظ الملف: ${error}",
+			"setDefaultFailed": "فشل تعيين مصدر الذكاء الاصطناعي الافتراضي: ${error}",
+			"noFileSelectedDelete": "لم يتم تحديد أي ملف للحذف.",
+			"deleteFileFailed": "فشل حذف الملف: ${error}",
+			"invalidFileName": "لا يمكن أن يحتوي اسم الملف على الأحرف التالية: / \\ : * ? \" < > |",
+			"addFileFailed": "فشل إضافة الملف: ${error}",
+			"fetchConfigTemplateFailed": "فشل في جلب قالب التهيئة",
+			"noGeneratorSelectedSave": "الرجاء اختيار مولد قبل الحفظ"
+		},
+		"confirm": {
+			"unsavedChanges": "لديك تغييرات غير محفوظة. هل تريد التخلص منها؟",
+			"deleteFile": "هل أنت متأكد من أنك تريد حذف الملف؟",
+			"unsavedChangesBeforeUnload": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد مغادرة هذه الصفحة؟"
+		},
+		"prompts": {
+			"newFileName": "الرجاء إدخال اسم ملف مصدر الذكاء الاصطناعي الجديد (بدون لاحقة):"
+		},
+		"editor": {
+			"disabledIndicator": "الرجاء اختيار مولد أولاً"
+		},
+		"common_config_interface": {
+			"empty_generator": "يحتوي المولد القديم من مصدر AI هذا على خطأ أثناء التحميل وقد يتم إلغاء تثبيته أو إعادة تسميته.",
+			"apiKeyRequired": "مفتاح API مطلوب لعرض النماذج.",
+			"loadingModels": "جاري تحميل النماذج...",
+			"availableModels": "النماذج المتاحة:",
+			"copyModelIdTooltip": "انقر لنسخ معرف النموذج",
+			"copied": "تم النسخ!",
+			"loadModelsFailed": "فشل تحميل النماذج: ${message}"
+		}
+	},
+	"discord_bots": {
+		"title": "بوتات Discord",
+		"cardTitle": "بوت Discord",
+		"buttons": {
+			"newBot": "بوت جديد",
+			"deleteBot": "حذف البوت"
+		},
+		"configCard": {
+			"title": "تهيئة البوت",
+			"labels": {
+				"character": "ربط الشخصية",
+				"apiKey": "مفتاح API لـ Discord",
+				"config": "تهيئة"
+			},
+			"charSelectPlaceholder": "اختر شخصية",
+			"apiKeyInput": {
+				"placeholder": "الرجاء إدخال مفتاح API"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "تبديل عرض مفتاح API"
+			},
+			"buttons": {
+				"saveConfig": "حفظ التهيئة",
+				"startBot": "بدء",
+				"stopBot": "إيقاف"
+			}
+		},
+		"prompts": {
+			"newBotName": "الرجاء إدخال اسم البوت الجديد:"
+		},
+		"alerts": {
+			"botExists": "البوت بالاسم \"${botname}\" موجود بالفعل، يرجى استخدام اسم آخر.",
+			"unsavedChanges": "لديك تغييرات غير محفوظة. هل تريد التخلص منها؟",
+			"configSaved": "تم حفظ التهيئة بنجاح",
+			"httpError": "خطأ HTTP",
+			"beforeUnload": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد المغادرة؟"
+		}
+	},
+	"telegram_bots": {
+		"title": "بوتات Telegram",
+		"cardTitle": "إدارة بوتات Telegram",
+		"buttons": {
+			"newBot": "بوت جديد",
+			"deleteBot": "حذف البوت"
+		},
+		"configCard": {
+			"title": "تهيئة البوت",
+			"labels": {
+				"character": "ربط الشخصية",
+				"botToken": "رمز بوت Telegram",
+				"config": "تهيئة"
+			},
+			"charSelectPlaceholder": "اختر شخصية",
+			"botTokenInput": {
+				"placeholder": "الرجاء إدخال رمز بوت Telegram"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "تبديل عرض مفتاح API"
+			},
+			"buttons": {
+				"saveConfig": "حفظ التهيئة",
+				"startBot": "بدء",
+				"stopBot": "إيقاف"
+			}
+		},
+		"prompts": {
+			"newBotName": "الرجاء إدخال اسم البوت الجديد:"
+		},
+		"alerts": {
+			"botExists": "البوت بالاسم \"${botname}\" موجود بالفعل، يرجى استخدام اسم آخر.",
+			"unsavedChanges": "لديك تغييرات غير محفوظة. هل تريد التخلص منها؟",
+			"configSaved": "تم حفظ التهيئة بنجاح!",
+			"httpError": "خطأ HTTP",
+			"beforeUnload": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد مغادرة الصفحة الحالية؟"
 		}
 	},
 	"browser_integration": {
@@ -1223,5 +1182,46 @@
 			"prompt": "يتوفر إصدار جديد من البرنامج النصي للتكامل مع متصفح fount. هل صفحة التحديث مفتوحة الآن؟"
 		},
 		"csp_warning": "يكتشف البرنامج النصي لتكامل متصفح fount أن سياسة CSP موجودة على الصفحة ، مما قد يتسبب في عدم عمل البرنامج النصي للتكامل بشكل صحيح. يرجى النظر في تثبيت البرنامج المساعد لإغلاق CSP."
+	},
+	"terminal_assistant": {
+		"title": "مساعد الطرفية",
+		"initialMessage": "يدعم fount نشر شخصيتك المفضلة في الطرفية لمساعدتك في البرمجة!",
+		"initialMessageLink": "انقر هنا لمعرفة المزيد"
+	},
+	"access": {
+		"title": "الوصول إلى fount على أجهزة أخرى",
+		"heading": "هل تريد الوصول إلى fount على أجهزة أخرى؟",
+		"instruction": {
+			"sameLAN": "تأكد من أن الجهاز ومضيف fount على نفس الشبكة المحلية",
+			"accessthis": "قم بزيارة العنوان التالي:"
+		},
+		"copyButton": "نسخ الرابط",
+		"copied": "تم نسخ الرابط إلى الحافظة!"
+	},
+	"proxy": {
+		"title": "وكيل API",
+		"heading": "عنوان وكيل OpenAI API",
+		"instruction": "املأ العنوان التالي في أي تطبيق يتطلب تنسيق OpenAI API لاستخدام مصادر الذكاء الاصطناعي في fount!",
+		"copyButton": "نسخ العنوان",
+		"copied": "تم نسخ العنوان إلى الحافظة!"
+	},
+	"badges_maker": {
+		"title": "fount! محول الشارات",
+		"card_title": "محول روابط شارات fount",
+		"original_url_label": "الصق رابط img.shields.io",
+		"original_url_placeholder": "مثال: https://img.shields.io/badge/Hello-World-blue",
+		"new_url_label": "الرابط الجديد الذي تم إنشاؤه",
+		"new_url_placeholder": "سيظهر الرابط المحول هنا",
+		"copy_button": "نسخ",
+		"preview_label": "معاينة التأثير",
+		"preview_alt": "معاينة الشارة",
+		"copied_text": "تم النسخ!",
+		"copy_error": "لا يمكن نسخ النص: ${error}",
+		"copy_fail_alert": "فشل النسخ!"
+	},
+	"404": {
+		"title": "الصفحة غير موجودة",
+		"pageNotFoundText": "عفوًا! يبدو أنك وصلت إلى صفحة غير موجودة.",
+		"homepageButton": "العودة إلى الصفحة الرئيسية"
 	}
 }

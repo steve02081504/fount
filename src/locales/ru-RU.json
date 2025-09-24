@@ -100,24 +100,6 @@
 			"botStarted": "Персонаж ${charname} вошел в Telegram бот ${botusername}."
 		}
 	},
-	"protocolhandler": {
-		"title": "Обработка протокола fount",
-		"processing": "Обработка протокола...",
-		"invalidProtocol": "Недопустимый протокол.",
-		"insufficientParams": "Недостаточно параметров.",
-		"unknownCommand": "Неизвестная команда.",
-		"shellCommandSent": "Команда оболочки отправлена.",
-		"shellCommandFailed": "Не удалось отправить команду оболочки.",
-		"shellCommandError": "Ошибка при отправке команды оболочки.",
-		"fountNotFound": "Эх... :(\n\nfount не найден. Возможно, вам нужно сначала его установить?",
-		"unknownError": "Ой... :(\n\nПроизошла ошибка:\n${error}",
-		"runPartConfirm": {
-			"title": "Подтвердите запуск",
-			"message": "Вы уверены, что хотите запустить ${parttype} ${partname}?",
-			"confirm": "подтверждать",
-			"cancel": "Отмена"
-		}
-	},
 	"installer_wait_screen": {
 		"title": "Добро пожаловать в fount!",
 		"hero": {
@@ -188,6 +170,24 @@
 			"close_page": "Закрыть страницу"
 		}
 	},
+	"protocolhandler": {
+		"title": "Обработка протокола fount",
+		"processing": "Обработка протокола...",
+		"invalidProtocol": "Недопустимый протокол.",
+		"insufficientParams": "Недостаточно параметров.",
+		"unknownCommand": "Неизвестная команда.",
+		"shellCommandSent": "Команда оболочки отправлена.",
+		"shellCommandFailed": "Не удалось отправить команду оболочки.",
+		"shellCommandError": "Ошибка при отправке команды оболочки.",
+		"fountNotFound": "Эх... :(\n\nfount не найден. Возможно, вам нужно сначала его установить?",
+		"unknownError": "Ой... :(\n\nПроизошла ошибка:\n${error}",
+		"runPartConfirm": {
+			"title": "Подтвердите запуск",
+			"message": "Вы уверены, что хотите запустить ${parttype} ${partname}?",
+			"confirm": "подтверждать",
+			"cancel": "Отмена"
+		}
+	},
 	"startPage": {
 		"title": "fount!",
 		"newTabFailed": {
@@ -207,6 +207,28 @@
 					"cancel": "Отмена"
 				}
 			}
+		}
+	},
+	"tutorial": {
+		"title": "Как насчет обучения?",
+		"modal": {
+			"title": "Добро пожаловать в fount!",
+			"instruction": "Хотите пройти вводное обучение?",
+			"buttons": {
+				"start": "Начать обучение",
+				"skip": "Пропустить"
+			}
+		},
+		"endScreen": {
+			"title": "Отлично! Обучение завершено!",
+			"subtitle": "Теперь вы знаете, как им пользоваться!",
+			"endButton": "Начать!"
+		},
+		"progressMessages": {
+			"mouseMove": "Пожалуйста, попробуйте подвигать мышью ${mouseIcon}.",
+			"keyboardPress": "Пожалуйста, найдите клавиатуру ${keyboardIcon}<br/>и нажмите любую клавишу.",
+			"mobileTouchMove": "Пожалуйста, коснитесь экрана телефона ${phoneIcon} пальцем<br/>и проведите им по экрану.",
+			"mobileClick": "Пожалуйста, коснитесь экрана телефона ${phoneIcon} пальцем и отпустите."
 		}
 	},
 	"auth": {
@@ -264,26 +286,15 @@
 			"veryStrong": "Очень надежный"
 		}
 	},
-	"tutorial": {
-		"title": "Как насчет обучения?",
+	"login_info": {
 		"modal": {
-			"title": "Добро пожаловать в fount!",
-			"instruction": "Хотите пройти вводное обучение?",
+			"title": "Ошибка передачи сертификата",
+			"retrieve_error": "Произошла ошибка при попытке сохранить учетные данные для входа:\n${error}\nВы можете продолжить, но не можете сохранить информацию о входе.",
+			"transfer_error": "Произошла ошибка при попытке перенести учетные данные для входа:\n${error}\nВы можете продолжить, но не можете получить информацию о входе.",
 			"buttons": {
-				"start": "Начать обучение",
-				"skip": "Пропустить"
+				"ignore": "Игнорировать и продолжить",
+				"retry": "Повторить"
 			}
-		},
-		"endScreen": {
-			"title": "Отлично! Обучение завершено!",
-			"subtitle": "Теперь вы знаете, как им пользоваться!",
-			"endButton": "Начать!"
-		},
-		"progressMessages": {
-			"mouseMove": "Пожалуйста, попробуйте подвигать мышью ${mouseIcon}.",
-			"keyboardPress": "Пожалуйста, найдите клавиатуру ${keyboardIcon}<br/>и нажмите любую клавишу.",
-			"mobileTouchMove": "Пожалуйста, коснитесь экрана телефона ${phoneIcon} пальцем<br/>и проведите им по экрану.",
-			"mobileClick": "Пожалуйста, коснитесь экрана телефона ${phoneIcon} пальцем и отпустите."
 		}
 	},
 	"home": {
@@ -363,204 +374,6 @@
 					"title": "Сделать персоной по умолчанию"
 				}
 			}
-		}
-	},
-	"themeManage": {
-		"title": "Управление темами",
-		"instruction": "Выберите тему!",
-		"themes": {
-			"auto": "Автоматически",
-			"light": "Светлая",
-			"dark": "Темная",
-			"cupcake": "Капкейк",
-			"bumblebee": "Бамблби",
-			"emerald": "Изумруд",
-			"corporate": "Корпоративная",
-			"synthwave": "Синтвейв",
-			"retro": "Ретро",
-			"cyberpunk": "Киберпанк",
-			"valentine": "Валентинка",
-			"halloween": "Хэллоуин",
-			"garden": "Сад",
-			"forest": "Лес",
-			"aqua": "Аква",
-			"lofi": "Lo-fi",
-			"pastel": "Пастельная",
-			"fantasy": "Фэнтези",
-			"wireframe": "Каркас",
-			"black": "Черная",
-			"luxury": "Люкс",
-			"dracula": "Дракула",
-			"cmyk": "CMYK",
-			"autumn": "Осень",
-			"business": "Бизнес",
-			"acid": "Эйсид",
-			"lemonade": "Лимонад",
-			"night": "Ночь",
-			"coffee": "Кофе",
-			"winter": "Зима",
-			"dim": "Тусклая",
-			"nord": "Норд",
-			"sunset": "Закат",
-			"caramellatte": "Карамельный латте",
-			"abyss": "Бездна",
-			"silk": "Шелк"
-		}
-	},
-	"import": {
-		"title": "Импорт",
-		"tabs": {
-			"fileImport": "Импорт из файла",
-			"textImport": "Импорт текста"
-		},
-		"dropArea": {
-			"icon": {
-				"alt": "Значок загрузки"
-			},
-			"text": "Перетащите файлы сюда или нажмите, чтобы выбрать файлы."
-		},
-		"textArea": {
-			"placeholder": "Введите текст для импорта..."
-		},
-		"buttons": {
-			"import": "Импортировать"
-		},
-		"alerts": {
-			"importSuccess": "Импорт успешно завершен.",
-			"importFailed": "Ошибка импорта: ${error}",
-			"unknownError": "Неизвестная ошибка."
-		},
-		"errors": {
-			"noFileSelected": "Пожалуйста, выберите файл.",
-			"fileImportFailed": "Ошибка импорта файла: ${message}",
-			"noTextContent": "Пожалуйста, введите текст.",
-			"textImportFailed": "Ошибка импорта текста: ${message}",
-			"unknownError": "Неизвестная ошибка.",
-			"handler": "Обработчик",
-			"error": "Ошибка"
-		},
-		"fileItem": {
-			"removeButton": {
-				"title": "Удалить"
-			},
-			"removeButtonIcon": {
-				"alt": "Удалить"
-			}
-		}
-	},
-	"aisource_editor": {
-		"title": "Редактор AI-источников",
-		"fileList": {
-			"title": "Список AI-источников",
-			"addButton": {
-				"title": "+"
-			}
-		},
-		"configTitle": "Настройка AI-источника",
-		"generatorSelect": {
-			"label": "Выберите генератор",
-			"placeholder": "Пожалуйста, выберите"
-		},
-		"buttons": {
-			"save": "Сохранить",
-			"delete": "Удалить"
-		},
-		"tooltips": {
-			"setDefault": "Установить по умолчанию"
-		},
-		"alerts": {
-			"fetchFileListFailed": "Не удалось получить список файлов: ${error}",
-			"fetchGeneratorListFailed": "Не удалось получить список генераторов: ${error}",
-			"fetchDefaultsFailed": "Не удалось получить компонент по умолчанию: ${error}",
-			"fetchFileDataFailed": "Не удалось получить данные файла: ${error}",
-			"noFileSelectedSave": "Файл для сохранения не выбран.",
-			"saveFileFailed": "Не удалось сохранить файл: ${error}",
-			"setDefaultFailed": "Установка исходного источника AI по умолчанию не удалось: ${error}",
-			"noFileSelectedDelete": "Файл для удаления не выбран.",
-			"deleteFileFailed": "Не удалось удалить файл: ${error}",
-			"invalidFileName": "Имя файла не может содержать следующие символы: / \\ : * ? \" < > |",
-			"addFileFailed": "Не удалось добавить файл: ${error}",
-			"fetchConfigTemplateFailed": "Не удалось получить шаблон конфигурации.",
-			"noGeneratorSelectedSave": "Пожалуйста, выберите генератор перед сохранением."
-		},
-		"confirm": {
-			"unsavedChanges": "У вас есть несохраненные изменения. Хотите их отменить?",
-			"deleteFile": "Вы уверены, что хотите удалить этот файл?",
-			"unsavedChangesBeforeUnload": "У вас есть несохраненные изменения. Вы уверены, что хотите покинуть эту страницу?"
-		},
-		"prompts": {
-			"newFileName": "Пожалуйста, введите имя нового файла AI-источника (без расширения):"
-		},
-		"editor": {
-			"disabledIndicator": "Пожалуйста, сначала выберите генератор."
-		},
-		"common_config_interface": {
-			"empty_generator": "Унаследованный генератор из этого источника ИИ имеет ошибку при загрузке и может быть удален или переименован в переименование.",
-			"apiKeyRequired": "Для получения списка моделей требуется ключ API.",
-			"loadingModels": "Загрузка моделей...",
-			"availableModels": "Доступные модели:",
-			"copyModelIdTooltip": "Нажмите, чтобы скопировать ID модели",
-			"copied": "Скопировано!",
-			"loadModelsFailed": "Не удалось загрузить модели: ${message}"
-		}
-	},
-	"part_config": {
-		"title": "Настройка компонента",
-		"pageTitle": "Настройка компонента",
-		"labels": {
-			"partType": "Выберите тип компонента",
-			"part": "Выберите компонент"
-		},
-		"placeholders": {
-			"partTypeSelect": "Пожалуйста, выберите",
-			"partSelect": "Пожалуйста, выберите"
-		},
-		"editor": {
-			"title": "Настройка компонента",
-			"disabledIndicator": "Этот компонент не поддерживает настройку.",
-			"buttons": {
-				"save": "Сохранить"
-			}
-		},
-		"errorMessage": {
-			"icon": {
-				"alt": "Значок ошибки"
-			}
-		},
-		"alerts": {
-			"fetchPartTypesFailed": "Не удалось получить типы компонентов.",
-			"fetchPartsFailed": "Не удалось получить список компонентов.",
-			"loadEditorFailed": "Не удалось загрузить редактор.",
-			"saveConfigFailed": "Не удалось сохранить настройку компонента.",
-			"unsavedChanges": "У вас есть несохраненные изменения. Хотите их отменить?",
-			"beforeUnload": "У вас есть несохраненные изменения. Вы уверены, что хотите покинуть страницу?"
-		}
-	},
-	"uninstall": {
-		"title": "Удалить",
-		"titleWithName": "Удалить ${type}/${name}",
-		"confirmMessage": "Вы уверены, что хотите удалить ${type}: ${name}?",
-		"invalidParamsTitle": "Недопустимые параметры",
-		"infoMessage": {
-			"icon": {
-				"alt": "Значок информации"
-			}
-		},
-		"errorMessage": {
-			"icon": {
-				"alt": "Значок ошибки"
-			}
-		},
-		"buttons": {
-			"confirm": "Подтвердить удаление",
-			"cancel": "Отмена",
-			"back": "Назад"
-		},
-		"alerts": {
-			"success": "${type}: ${name} успешно удален(о).",
-			"failed": "Не удалось удалить: ${error}",
-			"invalidParams": "Недопустимые параметры запроса.",
-			"httpError": "Ошибка HTTP! Код состояния: ${status}"
 		}
 	},
 	"chat": {
@@ -772,209 +585,6 @@
 			"delete": "Удалить"
 		}
 	},
-	"discord_bots": {
-		"title": "Discord боты",
-		"cardTitle": "Discord боты",
-		"buttons": {
-			"newBot": "Создать",
-			"deleteBot": "Удалить"
-		},
-		"configCard": {
-			"title": "Настройка бота",
-			"labels": {
-				"character": "Персонаж",
-				"apiKey": "API-ключ Discord",
-				"config": "Конфигурация"
-			},
-			"charSelectPlaceholder": "Выберите персонажа",
-			"apiKeyInput": {
-				"placeholder": "Введите API-ключ"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "Показать/скрыть API-ключ"
-			},
-			"buttons": {
-				"saveConfig": "Сохранить конфигурацию",
-				"startBot": "Запустить",
-				"stopBot": "Остановить"
-			}
-		},
-		"prompts": {
-			"newBotName": "Пожалуйста, введите имя нового бота:"
-		},
-		"alerts": {
-			"botExists": "Бот с именем «${botname}» уже существует. Пожалуйста, используйте другое имя.",
-			"unsavedChanges": "У вас есть несохраненные изменения. Хотите их отменить?",
-			"configSaved": "Конфигурация успешно сохранена.",
-			"httpError": "Ошибка HTTP.",
-			"beforeUnload": "У вас есть несохраненные изменения. Вы уверены, что хотите покинуть страницу?"
-		}
-	},
-	"telegram_bots": {
-		"title": "Боты Telegram",
-		"cardTitle": "Управление ботами Telegram",
-		"buttons": {
-			"newBot": "Создать",
-			"deleteBot": "Удалить"
-		},
-		"configCard": {
-			"title": "Настройка бота",
-			"labels": {
-				"character": "Связанный персонаж",
-				"botToken": "Токен Telegram бота",
-				"config": "Конфигурация"
-			},
-			"charSelectPlaceholder": "Выберите персонажа",
-			"botTokenInput": {
-				"placeholder": "Введите токен Telegram бота"
-			},
-			"toggleBotTokenIcon": {
-				"alt": "Показать/скрыть токен бота"
-			},
-			"buttons": {
-				"saveConfig": "Сохранить конфигурацию",
-				"startBot": "Запустить",
-				"stopBot": "Остановить"
-			}
-		},
-		"prompts": {
-			"newBotName": "Пожалуйста, введите имя нового бота:"
-		},
-		"alerts": {
-			"botExists": "Бот с именем «${botname}» уже существует. Пожалуйста, используйте другое имя.",
-			"unsavedChanges": "У вас есть несохраненные изменения. Вы уверены, что хотите их отменить?",
-			"configSaved": "Конфигурация успешно сохранена!",
-			"httpError": "Ошибка HTTP.",
-			"beforeUnload": "У вас есть несохраненные изменения. Вы уверены, что хотите покинуть эту страницу?"
-		}
-	},
-	"terminal_assistant": {
-		"title": "Терминальный помощник",
-		"initialMessage": "fount поддерживает развертывание ваших любимых персонажей в терминале для помощи в написании кода!",
-		"initialMessageLink": "Нажмите здесь, чтобы узнать больше."
-	},
-	"access": {
-		"title": "Доступ к fount на других устройствах",
-		"heading": "Хотите получить доступ к fount на других устройствах?",
-		"instruction": {
-			"sameLAN": "Убедитесь, что устройство и хост fount находятся в одной локальной сети.",
-			"accessthis": "Перейдите по этому URL:"
-		},
-		"copyButton": "Копировать URL",
-		"copied": "URL скопирован в буфер обмена!"
-	},
-	"proxy": {
-		"title": "API прокси",
-		"heading": "Адрес прокси OpenAI API",
-		"instruction": "Введите следующий адрес в любое приложение, требующее формат OpenAI API, чтобы использовать AI-источники в fount!",
-		"copyButton": "Копировать адрес",
-		"copied": "Адрес скопирован в буфер обмена!"
-	},
-	"404": {
-		"title": "Страница не найдена",
-		"pageNotFoundText": "Ой! Кажется, вы зашли на несуществующую страницу.",
-		"homepageButton": "Вернуться на главную страницу"
-	},
-	"userSettings": {
-		"title": "Настройки пользователя",
-		"PageTitle": "Настройки пользователя",
-		"apiError": "Ошибка запроса API: ${message}",
-		"generalError": "Произошла ошибка: ${message}",
-		"userInfo": {
-			"title": "Информация о пользователе",
-			"usernameLabel": "Имя пользователя:",
-			"creationDateLabel": "Дата создания учетной записи:",
-			"folderSizeLabel": "Размер данных пользователя:",
-			"folderPathLabel": "Путь к данным пользователя:",
-			"copyPathBtnTitle": "Копировать путь",
-			"copiedAlert": "Путь скопирован в буфер обмена!"
-		},
-		"changePassword": {
-			"title": "Изменить пароль",
-			"currentPasswordLabel": "Текущий пароль:",
-			"newPasswordLabel": "Новый пароль:",
-			"confirmNewPasswordLabel": "Подтвердите новый пароль:",
-			"submitButton": "Изменить пароль",
-			"errorMismatch": "Новые пароли не совпадают.",
-			"success": "Пароль успешно изменен."
-		},
-		"renameUser": {
-			"title": "Переименовать пользователя",
-			"newUsernameLabel": "Новое имя пользователя:",
-			"submitButton": "Переименовать пользователя",
-			"confirmMessage": "Вы уверены, что хотите изменить имя пользователя? Потребуется повторный вход в систему.",
-			"success": "Имя пользователя успешно изменено на «${newUsername}». Теперь будет выполнен выход из системы."
-		},
-		"userDevices": {
-			"title": "Устройства и сеансы пользователя",
-			"refreshButtonTitle": "Обновить список",
-			"noDevicesFound": "Устройства или сеансы не найдены.",
-			"deviceInfo": "ID устройства: ${deviceId}",
-			"thisDevice": "Это устройство",
-			"deviceDetails": "Последний онлайн: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
-			"revokeButton": "Отозвать",
-			"revokeConfirm": "Вы уверены, что хотите отозвать доступ для этого устройства/сеанса?",
-			"revokeSuccess": "Устройство/сеанс успешно отозван."
-		},
-		"logout": {
-			"title": "Выйти",
-			"description": "Это выполнит выход из вашей учетной записи на текущем устройстве.",
-			"buttonText": "Выйти",
-			"confirmMessage": "Вы уверены, что хотите выйти?",
-			"successMessage": "Выход выполнен успешно. Перенаправление на страницу входа..."
-		},
-		"deleteAccount": {
-			"title": "Удалить учетную запись",
-			"warning": "Внимание: это действие навсегда удалит вашу учетную запись и все связанные с ней данные и не может быть отменено.",
-			"submitButton": "Удалить мою учетную запись",
-			"confirmMessage1": "Внимание! Вы уверены, что хотите навсегда удалить свою учетную запись? Это действие необратимо.",
-			"confirmMessage2": "Для подтверждения удаления введите ваше имя пользователя «${username}»:",
-			"usernameMismatch": "Введенное имя пользователя не совпадает с текущим. Операция удаления отменена.",
-			"success": "Учетная запись успешно удалена. Теперь будет выполнен выход из системы."
-		},
-		"passwordConfirm": {
-			"title": "Подтверждение операции",
-			"message": "Для продолжения введите текущий пароль:",
-			"passwordLabel": "Пароль:",
-			"confirmButton": "Подтвердить",
-			"cancelButton": "Отмена"
-		},
-		"apiKeys": {
-			"title": "API -ключ",
-			"description": "Управляйте ключом API для внешних приложений.",
-			"descriptionPlaceholder": "Новое описание ключа",
-			"createButton": "создавать",
-			"noKeysFound": "Ключей API не найдено.",
-			"refreshButtonTitle": "Обновить список",
-			"keyDetails": "Описание: ${description} | Создано в: ${createdAt} | Последнее использование: ${lastUsed}",
-			"neverUsed": "Никогда не использовался",
-			"revokeButton": "Отозвать",
-			"revokeConfirm": "Вы уверены, что хотите отозвать этот ключ API?",
-			"revokeSuccess": "Ключ API был успешно отозван.",
-			"errorDescriptionRequired": "Описание требуется.",
-			"createSuccess": "Ключ API был успешно создан."
-		},
-		"newApiKey": {
-			"title": "Новый ключ API был создан",
-			"warning": "Пожалуйста, скопируйте свой новый ключ API. Вы не сможете увидеть это снова!",
-			"copyButtonTitle": "Скопируйте новый ключ API",
-			"closeButton": "Я скопировал свой ключ"
-		}
-	},
-	"badges_maker": {
-		"title": "fount! Конвертер значков",
-		"card_title": "Конвертер ссылок на значки fount",
-		"original_url_label": "Вставьте URL img.shields.io",
-		"original_url_placeholder": "Например: https://img.shields.io/badge/hello-world-blue",
-		"new_url_label": "Сгенерированный новый URL",
-		"new_url_placeholder": "Конвертированный URL будет отображаться здесь",
-		"copy_button": "Копировать",
-		"preview_label": "Предпросмотр",
-		"preview_alt": "Предпросмотр значка",
-		"copied_text": "Скопировано!",
-		"copy_error": "Невозможно скопировать текст: ${error}",
-		"copy_fail_alert": "Копирование не удалось!"
-	},
 	"easynew": {
 		"title": "Быстрое создание",
 		"cardTitle": "Создать новый компонент из шаблона",
@@ -1070,6 +680,47 @@
 			"description": "Эти шаблоны можно использовать только для быстрого создания простых компонентов; сложные компоненты все равно нужно создавать вручную."
 		}
 	},
+	"import": {
+		"title": "Импорт",
+		"tabs": {
+			"fileImport": "Импорт из файла",
+			"textImport": "Импорт текста"
+		},
+		"dropArea": {
+			"icon": {
+				"alt": "Значок загрузки"
+			},
+			"text": "Перетащите файлы сюда или нажмите, чтобы выбрать файлы."
+		},
+		"textArea": {
+			"placeholder": "Введите текст для импорта..."
+		},
+		"buttons": {
+			"import": "Импортировать"
+		},
+		"alerts": {
+			"importSuccess": "Импорт успешно завершен.",
+			"importFailed": "Ошибка импорта: ${error}",
+			"unknownError": "Неизвестная ошибка."
+		},
+		"errors": {
+			"noFileSelected": "Пожалуйста, выберите файл.",
+			"fileImportFailed": "Ошибка импорта файла: ${message}",
+			"noTextContent": "Пожалуйста, введите текст.",
+			"textImportFailed": "Ошибка импорта текста: ${message}",
+			"unknownError": "Неизвестная ошибка.",
+			"handler": "Обработчик",
+			"error": "Ошибка"
+		},
+		"fileItem": {
+			"removeButton": {
+				"title": "Удалить"
+			},
+			"removeButtonIcon": {
+				"alt": "Удалить"
+			}
+		}
+	},
 	"export": {
 		"title": "Экспорт Компонентов",
 		"pageTitle": "Экспорт Компонентов",
@@ -1131,6 +782,119 @@
 			"generateShareLinkWithData": "Создать ссылку для обмена (включая данные)"
 		}
 	},
+	"uninstall": {
+		"title": "Удалить",
+		"titleWithName": "Удалить ${type}/${name}",
+		"confirmMessage": "Вы уверены, что хотите удалить ${type}: ${name}?",
+		"invalidParamsTitle": "Недопустимые параметры",
+		"infoMessage": {
+			"icon": {
+				"alt": "Значок информации"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Значок ошибки"
+			}
+		},
+		"buttons": {
+			"confirm": "Подтвердить удаление",
+			"cancel": "Отмена",
+			"back": "Назад"
+		},
+		"alerts": {
+			"success": "${type}: ${name} успешно удален(о).",
+			"failed": "Не удалось удалить: ${error}",
+			"invalidParams": "Недопустимые параметры запроса.",
+			"httpError": "Ошибка HTTP! Код состояния: ${status}"
+		}
+	},
+	"userSettings": {
+		"title": "Настройки пользователя",
+		"PageTitle": "Настройки пользователя",
+		"apiError": "Ошибка запроса API: ${message}",
+		"generalError": "Произошла ошибка: ${message}",
+		"userInfo": {
+			"title": "Информация о пользователе",
+			"usernameLabel": "Имя пользователя:",
+			"creationDateLabel": "Дата создания учетной записи:",
+			"folderSizeLabel": "Размер данных пользователя:",
+			"folderPathLabel": "Путь к данным пользователя:",
+			"copyPathBtnTitle": "Копировать путь",
+			"copiedAlert": "Путь скопирован в буфер обмена!"
+		},
+		"changePassword": {
+			"title": "Изменить пароль",
+			"currentPasswordLabel": "Текущий пароль:",
+			"newPasswordLabel": "Новый пароль:",
+			"confirmNewPasswordLabel": "Подтвердите новый пароль:",
+			"submitButton": "Изменить пароль",
+			"errorMismatch": "Новые пароли не совпадают.",
+			"success": "Пароль успешно изменен."
+		},
+		"renameUser": {
+			"title": "Переименовать пользователя",
+			"newUsernameLabel": "Новое имя пользователя:",
+			"submitButton": "Переименовать пользователя",
+			"confirmMessage": "Вы уверены, что хотите изменить имя пользователя? Потребуется повторный вход в систему.",
+			"success": "Имя пользователя успешно изменено на «${newUsername}». Теперь будет выполнен выход из системы."
+		},
+		"userDevices": {
+			"title": "Устройства и сеансы пользователя",
+			"refreshButtonTitle": "Обновить список",
+			"noDevicesFound": "Устройства или сеансы не найдены.",
+			"deviceInfo": "ID устройства: ${deviceId}",
+			"thisDevice": "Это устройство",
+			"deviceDetails": "Последний онлайн: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
+			"revokeButton": "Отозвать",
+			"revokeConfirm": "Вы уверены, что хотите отозвать доступ для этого устройства/сеанса?",
+			"revokeSuccess": "Устройство/сеанс успешно отозван."
+		},
+		"logout": {
+			"title": "Выйти",
+			"description": "Это выполнит выход из вашей учетной записи на текущем устройстве.",
+			"buttonText": "Выйти",
+			"confirmMessage": "Вы уверены, что хотите выйти?",
+			"successMessage": "Выход выполнен успешно. Перенаправление на страницу входа..."
+		},
+		"deleteAccount": {
+			"title": "Удалить учетную запись",
+			"warning": "Внимание: это действие навсегда удалит вашу учетную запись и все связанные с ней данные и не может быть отменено.",
+			"submitButton": "Удалить мою учетную запись",
+			"confirmMessage1": "Внимание! Вы уверены, что хотите навсегда удалить свою учетную запись? Это действие необратимо.",
+			"confirmMessage2": "Для подтверждения удаления введите ваше имя пользователя «${username}»:",
+			"usernameMismatch": "Введенное имя пользователя не совпадает с текущим. Операция удаления отменена.",
+			"success": "Учетная запись успешно удалена. Теперь будет выполнен выход из системы."
+		},
+		"passwordConfirm": {
+			"title": "Подтверждение операции",
+			"message": "Для продолжения введите текущий пароль:",
+			"passwordLabel": "Пароль:",
+			"confirmButton": "Подтвердить",
+			"cancelButton": "Отмена"
+		},
+		"apiKeys": {
+			"title": "API -ключ",
+			"description": "Управляйте ключом API для внешних приложений.",
+			"descriptionPlaceholder": "Новое описание ключа",
+			"createButton": "создавать",
+			"noKeysFound": "Ключей API не найдено.",
+			"refreshButtonTitle": "Обновить список",
+			"keyDetails": "Описание: ${description} | Создано в: ${createdAt} | Последнее использование: ${lastUsed}",
+			"neverUsed": "Никогда не использовался",
+			"revokeButton": "Отозвать",
+			"revokeConfirm": "Вы уверены, что хотите отозвать этот ключ API?",
+			"revokeSuccess": "Ключ API был успешно отозван.",
+			"errorDescriptionRequired": "Описание требуется.",
+			"createSuccess": "Ключ API был успешно создан."
+		},
+		"newApiKey": {
+			"title": "Новый ключ API был создан",
+			"warning": "Пожалуйста, скопируйте свой новый ключ API. Вы не сможете увидеть это снова!",
+			"copyButtonTitle": "Скопируйте новый ключ API",
+			"closeButton": "Я скопировал свой ключ"
+		}
+	},
 	"languageSettings": {
 		"title": "Языковые настройки",
 		"description": "Управляйте своими языковыми предпочтениями здесь. Языки в списке будут иметь приоритет над настройками браузера по порядку.",
@@ -1144,15 +908,210 @@
 		"resetMessage": "Настройки языка были сброшены!",
 		"fetchLocalesFailed": "Не удалось получить доступные языки!"
 	},
-	"login_info": {
-		"modal": {
-			"title": "Ошибка передачи сертификата",
-			"retrieve_error": "Произошла ошибка при попытке сохранить учетные данные для входа:\n${error}\nВы можете продолжить, но не можете сохранить информацию о входе.",
-			"transfer_error": "Произошла ошибка при попытке перенести учетные данные для входа:\n${error}\nВы можете продолжить, но не можете получить информацию о входе.",
+	"themeManage": {
+		"title": "Управление темами",
+		"instruction": "Выберите тему!",
+		"themes": {
+			"auto": "Автоматически",
+			"light": "Светлая",
+			"dark": "Темная",
+			"cupcake": "Капкейк",
+			"bumblebee": "Бамблби",
+			"emerald": "Изумруд",
+			"corporate": "Корпоративная",
+			"synthwave": "Синтвейв",
+			"retro": "Ретро",
+			"cyberpunk": "Киберпанк",
+			"valentine": "Валентинка",
+			"halloween": "Хэллоуин",
+			"garden": "Сад",
+			"forest": "Лес",
+			"aqua": "Аква",
+			"lofi": "Lo-fi",
+			"pastel": "Пастельная",
+			"fantasy": "Фэнтези",
+			"wireframe": "Каркас",
+			"black": "Черная",
+			"luxury": "Люкс",
+			"dracula": "Дракула",
+			"cmyk": "CMYK",
+			"autumn": "Осень",
+			"business": "Бизнес",
+			"acid": "Эйсид",
+			"lemonade": "Лимонад",
+			"night": "Ночь",
+			"coffee": "Кофе",
+			"winter": "Зима",
+			"dim": "Тусклая",
+			"nord": "Норд",
+			"sunset": "Закат",
+			"caramellatte": "Карамельный латте",
+			"abyss": "Бездна",
+			"silk": "Шелк"
+		}
+	},
+	"part_config": {
+		"title": "Настройка компонента",
+		"pageTitle": "Настройка компонента",
+		"labels": {
+			"partType": "Выберите тип компонента",
+			"part": "Выберите компонент"
+		},
+		"placeholders": {
+			"partTypeSelect": "Пожалуйста, выберите",
+			"partSelect": "Пожалуйста, выберите"
+		},
+		"editor": {
+			"title": "Настройка компонента",
+			"disabledIndicator": "Этот компонент не поддерживает настройку.",
 			"buttons": {
-				"ignore": "Игнорировать и продолжить",
-				"retry": "Повторить"
+				"save": "Сохранить"
 			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Значок ошибки"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "Не удалось получить типы компонентов.",
+			"fetchPartsFailed": "Не удалось получить список компонентов.",
+			"loadEditorFailed": "Не удалось загрузить редактор.",
+			"saveConfigFailed": "Не удалось сохранить настройку компонента.",
+			"unsavedChanges": "У вас есть несохраненные изменения. Хотите их отменить?",
+			"beforeUnload": "У вас есть несохраненные изменения. Вы уверены, что хотите покинуть страницу?"
+		}
+	},
+	"aisource_editor": {
+		"title": "Редактор AI-источников",
+		"fileList": {
+			"title": "Список AI-источников",
+			"addButton": {
+				"title": "+"
+			}
+		},
+		"configTitle": "Настройка AI-источника",
+		"generatorSelect": {
+			"label": "Выберите генератор",
+			"placeholder": "Пожалуйста, выберите"
+		},
+		"buttons": {
+			"save": "Сохранить",
+			"delete": "Удалить"
+		},
+		"tooltips": {
+			"setDefault": "Установить по умолчанию"
+		},
+		"alerts": {
+			"fetchFileListFailed": "Не удалось получить список файлов: ${error}",
+			"fetchGeneratorListFailed": "Не удалось получить список генераторов: ${error}",
+			"fetchDefaultsFailed": "Не удалось получить компонент по умолчанию: ${error}",
+			"fetchFileDataFailed": "Не удалось получить данные файла: ${error}",
+			"noFileSelectedSave": "Файл для сохранения не выбран.",
+			"saveFileFailed": "Не удалось сохранить файл: ${error}",
+			"setDefaultFailed": "Установка исходного источника AI по умолчанию не удалось: ${error}",
+			"noFileSelectedDelete": "Файл для удаления не выбран.",
+			"deleteFileFailed": "Не удалось удалить файл: ${error}",
+			"invalidFileName": "Имя файла не может содержать следующие символы: / \\ : * ? \" < > |",
+			"addFileFailed": "Не удалось добавить файл: ${error}",
+			"fetchConfigTemplateFailed": "Не удалось получить шаблон конфигурации.",
+			"noGeneratorSelectedSave": "Пожалуйста, выберите генератор перед сохранением."
+		},
+		"confirm": {
+			"unsavedChanges": "У вас есть несохраненные изменения. Хотите их отменить?",
+			"deleteFile": "Вы уверены, что хотите удалить этот файл?",
+			"unsavedChangesBeforeUnload": "У вас есть несохраненные изменения. Вы уверены, что хотите покинуть эту страницу?"
+		},
+		"prompts": {
+			"newFileName": "Пожалуйста, введите имя нового файла AI-источника (без расширения):"
+		},
+		"editor": {
+			"disabledIndicator": "Пожалуйста, сначала выберите генератор."
+		},
+		"common_config_interface": {
+			"empty_generator": "Унаследованный генератор из этого источника ИИ имеет ошибку при загрузке и может быть удален или переименован в переименование.",
+			"apiKeyRequired": "Для получения списка моделей требуется ключ API.",
+			"loadingModels": "Загрузка моделей...",
+			"availableModels": "Доступные модели:",
+			"copyModelIdTooltip": "Нажмите, чтобы скопировать ID модели",
+			"copied": "Скопировано!",
+			"loadModelsFailed": "Не удалось загрузить модели: ${message}"
+		}
+	},
+	"discord_bots": {
+		"title": "Discord боты",
+		"cardTitle": "Discord боты",
+		"buttons": {
+			"newBot": "Создать",
+			"deleteBot": "Удалить"
+		},
+		"configCard": {
+			"title": "Настройка бота",
+			"labels": {
+				"character": "Персонаж",
+				"apiKey": "API-ключ Discord",
+				"config": "Конфигурация"
+			},
+			"charSelectPlaceholder": "Выберите персонажа",
+			"apiKeyInput": {
+				"placeholder": "Введите API-ключ"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "Показать/скрыть API-ключ"
+			},
+			"buttons": {
+				"saveConfig": "Сохранить конфигурацию",
+				"startBot": "Запустить",
+				"stopBot": "Остановить"
+			}
+		},
+		"prompts": {
+			"newBotName": "Пожалуйста, введите имя нового бота:"
+		},
+		"alerts": {
+			"botExists": "Бот с именем «${botname}» уже существует. Пожалуйста, используйте другое имя.",
+			"unsavedChanges": "У вас есть несохраненные изменения. Хотите их отменить?",
+			"configSaved": "Конфигурация успешно сохранена.",
+			"httpError": "Ошибка HTTP.",
+			"beforeUnload": "У вас есть несохраненные изменения. Вы уверены, что хотите покинуть страницу?"
+		}
+	},
+	"telegram_bots": {
+		"title": "Боты Telegram",
+		"cardTitle": "Управление ботами Telegram",
+		"buttons": {
+			"newBot": "Создать",
+			"deleteBot": "Удалить"
+		},
+		"configCard": {
+			"title": "Настройка бота",
+			"labels": {
+				"character": "Связанный персонаж",
+				"botToken": "Токен Telegram бота",
+				"config": "Конфигурация"
+			},
+			"charSelectPlaceholder": "Выберите персонажа",
+			"botTokenInput": {
+				"placeholder": "Введите токен Telegram бота"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "Показать/скрыть токен бота"
+			},
+			"buttons": {
+				"saveConfig": "Сохранить конфигурацию",
+				"startBot": "Запустить",
+				"stopBot": "Остановить"
+			}
+		},
+		"prompts": {
+			"newBotName": "Пожалуйста, введите имя нового бота:"
+		},
+		"alerts": {
+			"botExists": "Бот с именем «${botname}» уже существует. Пожалуйста, используйте другое имя.",
+			"unsavedChanges": "У вас есть несохраненные изменения. Вы уверены, что хотите их отменить?",
+			"configSaved": "Конфигурация успешно сохранена!",
+			"httpError": "Ошибка HTTP.",
+			"beforeUnload": "У вас есть несохраненные изменения. Вы уверены, что хотите покинуть эту страницу?"
 		}
 	},
 	"browser_integration": {
@@ -1223,5 +1182,46 @@
 			"prompt": "Доступна новая версия сценария интеграции браузера fount Browser. Страница обновления теперь открыта?"
 		},
 		"csp_warning": "Сценарий интеграции браузера fount Browser обнаруживает, что политика CSP существует на странице, что может привести к тому, что сценарий интеграции не работает должным образом. Пожалуйста, рассмотрите возможность установки плагина для отключения CSP."
+	},
+	"terminal_assistant": {
+		"title": "Терминальный помощник",
+		"initialMessage": "fount поддерживает развертывание ваших любимых персонажей в терминале для помощи в написании кода!",
+		"initialMessageLink": "Нажмите здесь, чтобы узнать больше."
+	},
+	"access": {
+		"title": "Доступ к fount на других устройствах",
+		"heading": "Хотите получить доступ к fount на других устройствах?",
+		"instruction": {
+			"sameLAN": "Убедитесь, что устройство и хост fount находятся в одной локальной сети.",
+			"accessthis": "Перейдите по этому URL:"
+		},
+		"copyButton": "Копировать URL",
+		"copied": "URL скопирован в буфер обмена!"
+	},
+	"proxy": {
+		"title": "API прокси",
+		"heading": "Адрес прокси OpenAI API",
+		"instruction": "Введите следующий адрес в любое приложение, требующее формат OpenAI API, чтобы использовать AI-источники в fount!",
+		"copyButton": "Копировать адрес",
+		"copied": "Адрес скопирован в буфер обмена!"
+	},
+	"badges_maker": {
+		"title": "fount! Конвертер значков",
+		"card_title": "Конвертер ссылок на значки fount",
+		"original_url_label": "Вставьте URL img.shields.io",
+		"original_url_placeholder": "Например: https://img.shields.io/badge/hello-world-blue",
+		"new_url_label": "Сгенерированный новый URL",
+		"new_url_placeholder": "Конвертированный URL будет отображаться здесь",
+		"copy_button": "Копировать",
+		"preview_label": "Предпросмотр",
+		"preview_alt": "Предпросмотр значка",
+		"copied_text": "Скопировано!",
+		"copy_error": "Невозможно скопировать текст: ${error}",
+		"copy_fail_alert": "Копирование не удалось!"
+	},
+	"404": {
+		"title": "Страница не найдена",
+		"pageNotFoundText": "Ой! Кажется, вы зашли на несуществующую страницу.",
+		"homepageButton": "Вернуться на главную страницу"
 	}
 }

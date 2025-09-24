@@ -100,24 +100,6 @@
 			"botStarted": "Le personnage ${charname} s'est connecté au bot Telegram ${botusername}."
 		}
 	},
-	"protocolhandler": {
-		"title": "Traitement du Protocole fount",
-		"processing": "Traitement du protocole en cours...",
-		"invalidProtocol": "Protocole invalide.",
-		"insufficientParams": "Paramètres insuffisants.",
-		"unknownCommand": "Commande inconnue.",
-		"shellCommandSent": "Commande shell envoyée.",
-		"shellCommandFailed": "Échec de l'envoi de la commande shell.",
-		"shellCommandError": "Erreur lors de l'envoi de la commande shell.",
-		"fountNotFound": "Oh là là :(\n\nfount introuvable. Peut-être devez-vous d'abord l'installer ?",
-		"unknownError": "Oh là là :(\n\nUne erreur s'est produite :\n${error}",
-		"runPartConfirm": {
-			"title": "Confirmer l'exécution",
-			"message": "Êtes-vous sûr de vouloir exécuter ${parttype} de ${partname} ?",
-			"confirm": "confirmer",
-			"cancel": "Annuler"
-		}
-	},
 	"installer_wait_screen": {
 		"title": "Bienvenue sur fount !",
 		"hero": {
@@ -188,6 +170,24 @@
 			"close_page": "Fermer la page"
 		}
 	},
+	"protocolhandler": {
+		"title": "Traitement du Protocole fount",
+		"processing": "Traitement du protocole en cours...",
+		"invalidProtocol": "Protocole invalide.",
+		"insufficientParams": "Paramètres insuffisants.",
+		"unknownCommand": "Commande inconnue.",
+		"shellCommandSent": "Commande shell envoyée.",
+		"shellCommandFailed": "Échec de l'envoi de la commande shell.",
+		"shellCommandError": "Erreur lors de l'envoi de la commande shell.",
+		"fountNotFound": "Oh là là :(\n\nfount introuvable. Peut-être devez-vous d'abord l'installer ?",
+		"unknownError": "Oh là là :(\n\nUne erreur s'est produite :\n${error}",
+		"runPartConfirm": {
+			"title": "Confirmer l'exécution",
+			"message": "Êtes-vous sûr de vouloir exécuter ${parttype} de ${partname} ?",
+			"confirm": "confirmer",
+			"cancel": "Annuler"
+		}
+	},
 	"startPage": {
 		"title": "fount !",
 		"newTabFailed": {
@@ -207,6 +207,28 @@
 					"cancel": "Annuler"
 				}
 			}
+		}
+	},
+	"tutorial": {
+		"title": "Un tutoriel ?",
+		"modal": {
+			"title": "Bienvenue sur fount !",
+			"instruction": "Voulez-vous suivre le tutoriel d'introduction ?",
+			"buttons": {
+				"start": "Commencer le tutoriel",
+				"skip": "Passer"
+			}
+		},
+		"endScreen": {
+			"title": "Bravo ! Tutoriel terminé !",
+			"subtitle": "Vous maîtrisez maintenant les bases de l'application !",
+			"endButton": "C'est parti !"
+		},
+		"progressMessages": {
+			"mouseMove": "Veuillez localiser cet appareil curieux qu'est votre souris ${mouseIcon}. Tentez maintenant, avec votre main, de la faire glisser sur votre bureau.",
+			"keyboardPress": "Appuyez sur une touche de votre clavier ${keyboardIcon}.",
+			"mobileTouchMove": "Voici votre téléphone ${phoneIcon}. Avec un de vos doigts, touchez l'écran, puis faites-le glisser. Ne lâchez pas !",
+			"mobileClick": "Veuillez appuyer sur l'écran de votre téléphone ${phoneIcon} avec un doigt, puis retirez-le rapidement. C'est ce qu'on appelle un clic !"
 		}
 	},
 	"auth": {
@@ -264,26 +286,15 @@
 			"veryStrong": "Très fort"
 		}
 	},
-	"tutorial": {
-		"title": "Un tutoriel ?",
+	"login_info": {
 		"modal": {
-			"title": "Bienvenue sur fount !",
-			"instruction": "Voulez-vous suivre le tutoriel d'introduction ?",
+			"title": "Erreur de transfert de certificat",
+			"retrieve_error": "Une erreur s'est produite en essayant de sauvegarder vos identifiants de connexion:\n${error}\nVous pouvez continuer mais ne pouvez pas enregistrer les informations de connexion.",
+			"transfer_error": "Une erreur s'est produite en essayant de transférer vos identifiants de connexion:\n${error}\nVous pouvez continuer mais ne pouvez pas récupérer les informations de connexion.",
 			"buttons": {
-				"start": "Commencer le tutoriel",
-				"skip": "Passer"
+				"ignore": "Ignorer et continuer",
+				"retry": "Réessayer"
 			}
-		},
-		"endScreen": {
-			"title": "Bravo ! Tutoriel terminé !",
-			"subtitle": "Vous maîtrisez maintenant les bases de l'application !",
-			"endButton": "C'est parti !"
-		},
-		"progressMessages": {
-			"mouseMove": "Veuillez localiser cet appareil curieux qu'est votre souris ${mouseIcon}. Tentez maintenant, avec votre main, de la faire glisser sur votre bureau.",
-			"keyboardPress": "Appuyez sur une touche de votre clavier ${keyboardIcon}.",
-			"mobileTouchMove": "Voici votre téléphone ${phoneIcon}. Avec un de vos doigts, touchez l'écran, puis faites-le glisser. Ne lâchez pas !",
-			"mobileClick": "Veuillez appuyer sur l'écran de votre téléphone ${phoneIcon} avec un doigt, puis retirez-le rapidement. C'est ce qu'on appelle un clic !"
 		}
 	},
 	"home": {
@@ -363,204 +374,6 @@
 					"title": "Définir comme persona par défaut"
 				}
 			}
-		}
-	},
-	"themeManage": {
-		"title": "Gestion des thèmes",
-		"instruction": "Choisissez un thème !",
-		"themes": {
-			"auto": "Automatique",
-			"light": "Clair",
-			"dark": "Sombre",
-			"cupcake": "Cupcake",
-			"bumblebee": "Bumblebee",
-			"emerald": "Émeraude",
-			"corporate": "Corporate",
-			"synthwave": "Synthwave",
-			"retro": "Rétro",
-			"cyberpunk": "Cyberpunk",
-			"valentine": "Saint-Valentin",
-			"halloween": "Halloween",
-			"garden": "Jardin",
-			"forest": "Forêt",
-			"aqua": "Aqua",
-			"lofi": "Lo-fi",
-			"pastel": "Pastel",
-			"fantasy": "Fantaisie",
-			"wireframe": "Filaire",
-			"black": "Noir",
-			"luxury": "Luxe",
-			"dracula": "Dracula",
-			"cmyk": "CMJN",
-			"autumn": "Automne",
-			"business": "Affaires",
-			"acid": "Acid",
-			"lemonade": "Limonade",
-			"night": "Nuit",
-			"coffee": "Café",
-			"winter": "Hiver",
-			"dim": "Tamisé",
-			"nord": "Nordique",
-			"sunset": "Crépuscule",
-			"caramellatte": "Caramel Latte",
-			"abyss": "Abysse",
-			"silk": "Soie"
-		}
-	},
-	"import": {
-		"title": "Importer",
-		"tabs": {
-			"fileImport": "Importer un fichier",
-			"textImport": "Importer du texte"
-		},
-		"dropArea": {
-			"icon": {
-				"alt": "Icône d'importation"
-			},
-			"text": "Faites glisser et déposez des fichiers ici ou cliquez pour sélectionner des fichiers."
-		},
-		"textArea": {
-			"placeholder": "Saisissez le texte à importer..."
-		},
-		"buttons": {
-			"import": "Importer"
-		},
-		"alerts": {
-			"importSuccess": "Importation réussie",
-			"importFailed": "Échec de l'importation : ${error}",
-			"unknownError": "Erreur inconnue"
-		},
-		"errors": {
-			"noFileSelected": "Veuillez sélectionner un fichier.",
-			"fileImportFailed": "Échec de l'importation du fichier : ${message}",
-			"noTextContent": "Veuillez saisir du contenu texte.",
-			"textImportFailed": "Échec de l'importation du texte : ${message}",
-			"unknownError": "Erreur inconnue",
-			"handler": "Gestionnaire",
-			"error": "Erreur"
-		},
-		"fileItem": {
-			"removeButton": {
-				"title": "Supprimer"
-			},
-			"removeButtonIcon": {
-				"alt": "Supprimer"
-			}
-		}
-	},
-	"aisource_editor": {
-		"title": "Éditeur de Source d'IA",
-		"fileList": {
-			"title": "Liste des Sources d'IA",
-			"addButton": {
-				"title": "+"
-			}
-		},
-		"configTitle": "Configuration de la Source d'IA",
-		"generatorSelect": {
-			"label": "Sélectionner un générateur",
-			"placeholder": "Veuillez sélectionner"
-		},
-		"buttons": {
-			"save": "Enregistrer",
-			"delete": "Supprimer"
-		},
-		"tooltips": {
-			"setDefault": "Par défaut"
-		},
-		"alerts": {
-			"fetchFileListFailed": "Échec de la récupération de la liste des fichiers : ${error}",
-			"fetchGeneratorListFailed": "Échec de la récupération de la liste des générateurs : ${error}",
-			"fetchDefaultsFailed": "Échec de l'obtention du composant par défaut : ${error}",
-			"fetchFileDataFailed": "Échec de la récupération des données du fichier : ${error}",
-			"noFileSelectedSave": "Aucun fichier sélectionné à enregistrer.",
-			"saveFileFailed": "Échec de l'enregistrement du fichier : ${error}",
-			"setDefaultFailed": "Échec de la définition de la source d'IA par défaut : ${error}",
-			"noFileSelectedDelete": "Aucun fichier sélectionné à supprimer.",
-			"deleteFileFailed": "Échec de la suppression du fichier : ${error}",
-			"invalidFileName": "Le nom de fichier ne peut pas contenir les caractères suivants : / \\ : * ? \" < > |",
-			"addFileFailed": "Échec de l'ajout du fichier : ${error}",
-			"fetchConfigTemplateFailed": "Échec de la récupération du modèle de configuration",
-			"noGeneratorSelectedSave": "Veuillez sélectionner un générateur avant d'enregistrer"
-		},
-		"confirm": {
-			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous annuler les modifications ?",
-			"deleteFile": "Êtes-vous sûr de vouloir supprimer le fichier ?",
-			"unsavedChangesBeforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter cette page ?"
-		},
-		"prompts": {
-			"newFileName": "Veuillez saisir un nouveau nom de fichier pour la source d'IA (sans extension) :"
-		},
-		"editor": {
-			"disabledIndicator": "Veuillez d'abord sélectionner un générateur"
-		},
-		"common_config_interface": {
-			"empty_generator": "Le générateur hérité de cette source AI a une erreur lors du chargement et peut avoir été désinstallé ou renommé.",
-			"apiKeyRequired": "Une clé API est requise pour lister les modèles.",
-			"loadingModels": "Chargement des modèles...",
-			"availableModels": "Modèles disponibles :",
-			"copyModelIdTooltip": "Cliquez pour copier l'ID du modèle",
-			"copied": "Copié !",
-			"loadModelsFailed": "Échec du chargement des modèles : ${message}"
-		}
-	},
-	"part_config": {
-		"title": "Configuration des Composants",
-		"pageTitle": "Configuration des Composants",
-		"labels": {
-			"partType": "Sélectionner le type de composant",
-			"part": "Sélectionner le composant"
-		},
-		"placeholders": {
-			"partTypeSelect": "Veuillez sélectionner",
-			"partSelect": "Veuillez sélectionner"
-		},
-		"editor": {
-			"title": "Configuration du Composant",
-			"disabledIndicator": "Ce composant ne prend pas en charge la configuration",
-			"buttons": {
-				"save": "Enregistrer"
-			}
-		},
-		"errorMessage": {
-			"icon": {
-				"alt": "Icône d'erreur"
-			}
-		},
-		"alerts": {
-			"fetchPartTypesFailed": "Échec de la récupération des types de composants.",
-			"fetchPartsFailed": "Échec de la récupération de la liste des composants.",
-			"loadEditorFailed": "Échec du chargement de l'éditeur.",
-			"saveConfigFailed": "Échec de l'enregistrement de la configuration du composant.",
-			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous annuler les modifications ?",
-			"beforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter ?"
-		}
-	},
-	"uninstall": {
-		"title": "Désinstaller",
-		"titleWithName": "Désinstaller ${type}/${name}",
-		"confirmMessage": "Êtes-vous sûr de vouloir désinstaller ${type} : ${name} ?",
-		"invalidParamsTitle": "Paramètres invalides",
-		"infoMessage": {
-			"icon": {
-				"alt": "Icône d'information"
-			}
-		},
-		"errorMessage": {
-			"icon": {
-				"alt": "Icône d'erreur"
-			}
-		},
-		"buttons": {
-			"confirm": "Confirmer la désinstallation",
-			"cancel": "Annuler",
-			"back": "Retour"
-		},
-		"alerts": {
-			"success": "${type} : ${name} désinstallé avec succès",
-			"failed": "Échec de la désinstallation : ${error}",
-			"invalidParams": "Paramètres de requête non valides",
-			"httpError": "Erreur HTTP ! Code d'état : ${status}"
 		}
 	},
 	"chat": {
@@ -772,209 +585,6 @@
 			"delete": "Supprimer"
 		}
 	},
-	"discord_bots": {
-		"title": "Bots Discord",
-		"cardTitle": "Bots Discord",
-		"buttons": {
-			"newBot": "Nouveau",
-			"deleteBot": "Supprimer"
-		},
-		"configCard": {
-			"title": "Configuration du bot",
-			"labels": {
-				"character": "Personnage",
-				"apiKey": "Clé API Discord",
-				"config": "Configuration"
-			},
-			"charSelectPlaceholder": "Sélectionner un personnage",
-			"apiKeyInput": {
-				"placeholder": "Saisir la clé API"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "Afficher/Masquer la clé API"
-			},
-			"buttons": {
-				"saveConfig": "Enregistrer la configuration",
-				"startBot": "Démarrer",
-				"stopBot": "Arrêter"
-			}
-		},
-		"prompts": {
-			"newBotName": "Veuillez saisir un nouveau nom pour le bot :"
-		},
-		"alerts": {
-			"botExists": "Un bot nommé \"${botname}\" existe déjà. Veuillez utiliser un autre nom.",
-			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous annuler les modifications ?",
-			"configSaved": "Configuration enregistrée avec succès",
-			"httpError": "Erreur HTTP",
-			"beforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter ?"
-		}
-	},
-	"telegram_bots": {
-		"title": "Bots Telegram",
-		"cardTitle": "Gestion des bots Telegram",
-		"buttons": {
-			"newBot": "Nouveau",
-			"deleteBot": "Supprimer"
-		},
-		"configCard": {
-			"title": "Configuration du bot",
-			"labels": {
-				"character": "Personnage lié",
-				"botToken": "Jeton du bot Telegram",
-				"config": "Configuration"
-			},
-			"charSelectPlaceholder": "Sélectionner un personnage",
-			"botTokenInput": {
-				"placeholder": "Saisissez le jeton du bot Telegram"
-			},
-			"toggleBotTokenIcon": {
-				"alt": "Afficher/Masquer le jeton du bot"
-			},
-			"buttons": {
-				"saveConfig": "Enregistrer la configuration",
-				"startBot": "Démarrer",
-				"stopBot": "Arrêter"
-			}
-		},
-		"prompts": {
-			"newBotName": "Veuillez saisir un nouveau nom pour le bot :"
-		},
-		"alerts": {
-			"botExists": "Un bot nommé \"${botname}\" existe déjà. Veuillez utiliser un autre nom.",
-			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous vraiment annuler ces modifications ?",
-			"configSaved": "La configuration a été enregistrée avec succès !",
-			"httpError": "Erreur HTTP",
-			"beforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter cette page ?"
-		}
-	},
-	"terminal_assistant": {
-		"title": "Assistant Terminal",
-		"initialMessage": "fount prend en charge le déploiement de vos personnages préférés dans votre terminal pour vous assister lors du codage !",
-		"initialMessageLink": "Cliquez ici pour en savoir plus"
-	},
-	"access": {
-		"title": "Accéder à fount sur d'autres appareils",
-		"heading": "Vous voulez accéder à fount sur d'autres appareils ?",
-		"instruction": {
-			"sameLAN": "Assurez-vous que l'appareil et l'hôte fount sont sur le même réseau local.",
-			"accessthis": "Visitez cette URL :"
-		},
-		"copyButton": "Copier l'URL",
-		"copied": "URL copiée dans le presse-papiers !"
-	},
-	"proxy": {
-		"title": "Proxy API",
-		"heading": "Adresse du Proxy API OpenAI",
-		"instruction": "Saisissez l'adresse suivante dans toute application nécessitant le format API OpenAI pour utiliser les sources d'IA dans fount !",
-		"copyButton": "Copier l'adresse",
-		"copied": "Adresse copiée dans le presse-papiers !"
-	},
-	"404": {
-		"title": "Page non trouvée",
-		"pageNotFoundText": "Oups ! Il semble que vous soyez arrivé sur une page qui n'existe pas.",
-		"homepageButton": "Retour à la page d'accueil"
-	},
-	"userSettings": {
-		"title": "Paramètres utilisateur",
-		"PageTitle": "Paramètres utilisateur",
-		"apiError": "La requête API a échoué : ${message}",
-		"generalError": "Une erreur s'est produite : ${message}",
-		"userInfo": {
-			"title": "Informations utilisateur",
-			"usernameLabel": "Nom d'utilisateur :",
-			"creationDateLabel": "Date de création du compte :",
-			"folderSizeLabel": "Taille des données utilisateur :",
-			"folderPathLabel": "Chemin des données utilisateur :",
-			"copyPathBtnTitle": "Copier le chemin",
-			"copiedAlert": "Chemin copié dans le presse-papiers !"
-		},
-		"changePassword": {
-			"title": "Modifier le mot de passe",
-			"currentPasswordLabel": "Mot de passe actuel :",
-			"newPasswordLabel": "Nouveau mot de passe :",
-			"confirmNewPasswordLabel": "Confirmer le nouveau mot de passe :",
-			"submitButton": "Modifier le mot de passe",
-			"errorMismatch": "Les nouveaux mots de passe ne correspondent pas.",
-			"success": "Mot de passe modifié avec succès."
-		},
-		"renameUser": {
-			"title": "Renommer l'utilisateur",
-			"newUsernameLabel": "Nouveau nom d'utilisateur :",
-			"submitButton": "Renommer l'utilisateur",
-			"confirmMessage": "Êtes-vous sûr de vouloir changer votre nom d'utilisateur ? Cela nécessitera une nouvelle connexion.",
-			"success": "L'utilisateur a été renommé \"${newUsername}\" avec succès. Vous allez maintenant être déconnecté."
-		},
-		"userDevices": {
-			"title": "Appareils et sessions utilisateur",
-			"refreshButtonTitle": "Actualiser la liste",
-			"noDevicesFound": "Aucun appareil ou session trouvé.",
-			"deviceInfo": "ID de l'appareil : ${deviceId}",
-			"thisDevice": "Cet appareil",
-			"deviceDetails": "Dernière connexion : ${lastSeen} | IP : ${ipAddress} | UA : ${userAgent}",
-			"revokeButton": "Révoquer",
-			"revokeConfirm": "Révoquer l'accès pour cet appareil/cette session ?",
-			"revokeSuccess": "Appareil/Session révoqué avec succès."
-		},
-		"logout": {
-			"title": "Se déconnecter",
-			"description": "Ceci déconnectera votre compte de l'appareil actuel.",
-			"buttonText": "Se déconnecter",
-			"confirmMessage": "Êtes-vous sûr de vouloir vous déconnecter ?",
-			"successMessage": "Déconnexion réussie. Redirection vers la page de connexion en cours..."
-		},
-		"deleteAccount": {
-			"title": "Supprimer le compte",
-			"warning": "Attention : Cette action supprimera définitivement votre compte et toutes les données associées. Elle est irréversible.",
-			"submitButton": "Supprimer mon compte",
-			"confirmMessage1": "Attention ! Êtes-vous sûr de vouloir supprimer définitivement votre compte ? Cette action est irréversible.",
-			"confirmMessage2": "Pour confirmer la suppression, veuillez saisir votre nom d'utilisateur \"${username}\" :",
-			"usernameMismatch": "Le nom d'utilisateur saisi ne correspond pas à l'utilisateur actuel. La suppression a été annulée.",
-			"success": "Le compte a été supprimé avec succès. Vous allez maintenant être déconnecté."
-		},
-		"passwordConfirm": {
-			"title": "Confirmer l'opération",
-			"message": "Pour continuer, veuillez saisir votre mot de passe actuel :",
-			"passwordLabel": "Mot de passe :",
-			"confirmButton": "Confirmer",
-			"cancelButton": "Annuler"
-		},
-		"apiKeys": {
-			"title": "Clé API",
-			"description": "Gérez la clé API pour les applications externes.",
-			"descriptionPlaceholder": "Nouvelle description clé",
-			"createButton": "créer",
-			"noKeysFound": "Aucune clé API n'a été trouvée.",
-			"refreshButtonTitle": "Actualiser la liste",
-			"keyDetails": "Description: ${description} | Créé dans: ${createdAt} | Dernière utilisée: ${lastUsed}",
-			"neverUsed": "Jamais utilisé",
-			"revokeButton": "Révoquer",
-			"revokeConfirm": "Êtes-vous sûr de vouloir révoquer cette clé API?",
-			"revokeSuccess": "La clé API a été révoquée avec succès.",
-			"errorDescriptionRequired": "Une description est requise.",
-			"createSuccess": "La clé API a été créée avec succès."
-		},
-		"newApiKey": {
-			"title": "Une nouvelle clé API a été créée",
-			"warning": "Veuillez copier votre nouvelle clé API. Vous ne pourrez pas le revoir!",
-			"copyButtonTitle": "Copier la nouvelle clé API",
-			"closeButton": "J'ai copié ma clé"
-		}
-	},
-	"badges_maker": {
-		"title": "fount ! Convertisseur de Badges",
-		"card_title": "Convertisseur de Liens de Badges fount",
-		"original_url_label": "Collez l'URL img.shields.io",
-		"original_url_placeholder": "Par exemple : https ://img.shields.io/badge/Hello-World-blue",
-		"new_url_label": "Nouvelle URL générée",
-		"new_url_placeholder": "L'URL convertie sera affichée ici",
-		"copy_button": "Copier",
-		"preview_label": "Aperçu",
-		"preview_alt": "Aperçu du badge",
-		"copied_text": "Copié !",
-		"copy_error": "Impossible de copier le texte : ${error}",
-		"copy_fail_alert": "La copie a échoué !"
-	},
 	"easynew": {
 		"title": "Création rapide",
 		"cardTitle": "Créer un nouveau composant à partir d'un modèle",
@@ -1070,6 +680,47 @@
 			"description": "Ces modèles ne peuvent être utilisés que pour créer rapidement des composants simples ; les composants complexes doivent toujours être créés manuellement."
 		}
 	},
+	"import": {
+		"title": "Importer",
+		"tabs": {
+			"fileImport": "Importer un fichier",
+			"textImport": "Importer du texte"
+		},
+		"dropArea": {
+			"icon": {
+				"alt": "Icône d'importation"
+			},
+			"text": "Faites glisser et déposez des fichiers ici ou cliquez pour sélectionner des fichiers."
+		},
+		"textArea": {
+			"placeholder": "Saisissez le texte à importer..."
+		},
+		"buttons": {
+			"import": "Importer"
+		},
+		"alerts": {
+			"importSuccess": "Importation réussie",
+			"importFailed": "Échec de l'importation : ${error}",
+			"unknownError": "Erreur inconnue"
+		},
+		"errors": {
+			"noFileSelected": "Veuillez sélectionner un fichier.",
+			"fileImportFailed": "Échec de l'importation du fichier : ${message}",
+			"noTextContent": "Veuillez saisir du contenu texte.",
+			"textImportFailed": "Échec de l'importation du texte : ${message}",
+			"unknownError": "Erreur inconnue",
+			"handler": "Gestionnaire",
+			"error": "Erreur"
+		},
+		"fileItem": {
+			"removeButton": {
+				"title": "Supprimer"
+			},
+			"removeButtonIcon": {
+				"alt": "Supprimer"
+			}
+		}
+	},
 	"export": {
 		"title": "Exportateur de Composants",
 		"pageTitle": "Exportateur de Composants",
@@ -1131,6 +782,119 @@
 			"generateShareLinkWithData": "Générer un lien de partage (données incluses)"
 		}
 	},
+	"uninstall": {
+		"title": "Désinstaller",
+		"titleWithName": "Désinstaller ${type}/${name}",
+		"confirmMessage": "Êtes-vous sûr de vouloir désinstaller ${type} : ${name} ?",
+		"invalidParamsTitle": "Paramètres invalides",
+		"infoMessage": {
+			"icon": {
+				"alt": "Icône d'information"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Icône d'erreur"
+			}
+		},
+		"buttons": {
+			"confirm": "Confirmer la désinstallation",
+			"cancel": "Annuler",
+			"back": "Retour"
+		},
+		"alerts": {
+			"success": "${type} : ${name} désinstallé avec succès",
+			"failed": "Échec de la désinstallation : ${error}",
+			"invalidParams": "Paramètres de requête non valides",
+			"httpError": "Erreur HTTP ! Code d'état : ${status}"
+		}
+	},
+	"userSettings": {
+		"title": "Paramètres utilisateur",
+		"PageTitle": "Paramètres utilisateur",
+		"apiError": "La requête API a échoué : ${message}",
+		"generalError": "Une erreur s'est produite : ${message}",
+		"userInfo": {
+			"title": "Informations utilisateur",
+			"usernameLabel": "Nom d'utilisateur :",
+			"creationDateLabel": "Date de création du compte :",
+			"folderSizeLabel": "Taille des données utilisateur :",
+			"folderPathLabel": "Chemin des données utilisateur :",
+			"copyPathBtnTitle": "Copier le chemin",
+			"copiedAlert": "Chemin copié dans le presse-papiers !"
+		},
+		"changePassword": {
+			"title": "Modifier le mot de passe",
+			"currentPasswordLabel": "Mot de passe actuel :",
+			"newPasswordLabel": "Nouveau mot de passe :",
+			"confirmNewPasswordLabel": "Confirmer le nouveau mot de passe :",
+			"submitButton": "Modifier le mot de passe",
+			"errorMismatch": "Les nouveaux mots de passe ne correspondent pas.",
+			"success": "Mot de passe modifié avec succès."
+		},
+		"renameUser": {
+			"title": "Renommer l'utilisateur",
+			"newUsernameLabel": "Nouveau nom d'utilisateur :",
+			"submitButton": "Renommer l'utilisateur",
+			"confirmMessage": "Êtes-vous sûr de vouloir changer votre nom d'utilisateur ? Cela nécessitera une nouvelle connexion.",
+			"success": "L'utilisateur a été renommé \"${newUsername}\" avec succès. Vous allez maintenant être déconnecté."
+		},
+		"userDevices": {
+			"title": "Appareils et sessions utilisateur",
+			"refreshButtonTitle": "Actualiser la liste",
+			"noDevicesFound": "Aucun appareil ou session trouvé.",
+			"deviceInfo": "ID de l'appareil : ${deviceId}",
+			"thisDevice": "Cet appareil",
+			"deviceDetails": "Dernière connexion : ${lastSeen} | IP : ${ipAddress} | UA : ${userAgent}",
+			"revokeButton": "Révoquer",
+			"revokeConfirm": "Révoquer l'accès pour cet appareil/cette session ?",
+			"revokeSuccess": "Appareil/Session révoqué avec succès."
+		},
+		"logout": {
+			"title": "Se déconnecter",
+			"description": "Ceci déconnectera votre compte de l'appareil actuel.",
+			"buttonText": "Se déconnecter",
+			"confirmMessage": "Êtes-vous sûr de vouloir vous déconnecter ?",
+			"successMessage": "Déconnexion réussie. Redirection vers la page de connexion en cours..."
+		},
+		"deleteAccount": {
+			"title": "Supprimer le compte",
+			"warning": "Attention : Cette action supprimera définitivement votre compte et toutes les données associées. Elle est irréversible.",
+			"submitButton": "Supprimer mon compte",
+			"confirmMessage1": "Attention ! Êtes-vous sûr de vouloir supprimer définitivement votre compte ? Cette action est irréversible.",
+			"confirmMessage2": "Pour confirmer la suppression, veuillez saisir votre nom d'utilisateur \"${username}\" :",
+			"usernameMismatch": "Le nom d'utilisateur saisi ne correspond pas à l'utilisateur actuel. La suppression a été annulée.",
+			"success": "Le compte a été supprimé avec succès. Vous allez maintenant être déconnecté."
+		},
+		"passwordConfirm": {
+			"title": "Confirmer l'opération",
+			"message": "Pour continuer, veuillez saisir votre mot de passe actuel :",
+			"passwordLabel": "Mot de passe :",
+			"confirmButton": "Confirmer",
+			"cancelButton": "Annuler"
+		},
+		"apiKeys": {
+			"title": "Clé API",
+			"description": "Gérez la clé API pour les applications externes.",
+			"descriptionPlaceholder": "Nouvelle description clé",
+			"createButton": "créer",
+			"noKeysFound": "Aucune clé API n'a été trouvée.",
+			"refreshButtonTitle": "Actualiser la liste",
+			"keyDetails": "Description: ${description} | Créé dans: ${createdAt} | Dernière utilisée: ${lastUsed}",
+			"neverUsed": "Jamais utilisé",
+			"revokeButton": "Révoquer",
+			"revokeConfirm": "Êtes-vous sûr de vouloir révoquer cette clé API?",
+			"revokeSuccess": "La clé API a été révoquée avec succès.",
+			"errorDescriptionRequired": "Une description est requise.",
+			"createSuccess": "La clé API a été créée avec succès."
+		},
+		"newApiKey": {
+			"title": "Une nouvelle clé API a été créée",
+			"warning": "Veuillez copier votre nouvelle clé API. Vous ne pourrez pas le revoir!",
+			"copyButtonTitle": "Copier la nouvelle clé API",
+			"closeButton": "J'ai copié ma clé"
+		}
+	},
 	"languageSettings": {
 		"title": "Paramètres linguistiques",
 		"description": "Gérez vos préférences linguistiques ici. Les langues de la liste auront la priorité sur les paramètres du navigateur dans l'ordre.",
@@ -1144,15 +908,210 @@
 		"resetMessage": "Les paramètres de la langue ont été réinitialisés!",
 		"fetchLocalesFailed": "Impossible d'obtenir des langues disponibles!"
 	},
-	"login_info": {
-		"modal": {
-			"title": "Erreur de transfert de certificat",
-			"retrieve_error": "Une erreur s'est produite en essayant de sauvegarder vos identifiants de connexion:\n${error}\nVous pouvez continuer mais ne pouvez pas enregistrer les informations de connexion.",
-			"transfer_error": "Une erreur s'est produite en essayant de transférer vos identifiants de connexion:\n${error}\nVous pouvez continuer mais ne pouvez pas récupérer les informations de connexion.",
+	"themeManage": {
+		"title": "Gestion des thèmes",
+		"instruction": "Choisissez un thème !",
+		"themes": {
+			"auto": "Automatique",
+			"light": "Clair",
+			"dark": "Sombre",
+			"cupcake": "Cupcake",
+			"bumblebee": "Bumblebee",
+			"emerald": "Émeraude",
+			"corporate": "Corporate",
+			"synthwave": "Synthwave",
+			"retro": "Rétro",
+			"cyberpunk": "Cyberpunk",
+			"valentine": "Saint-Valentin",
+			"halloween": "Halloween",
+			"garden": "Jardin",
+			"forest": "Forêt",
+			"aqua": "Aqua",
+			"lofi": "Lo-fi",
+			"pastel": "Pastel",
+			"fantasy": "Fantaisie",
+			"wireframe": "Filaire",
+			"black": "Noir",
+			"luxury": "Luxe",
+			"dracula": "Dracula",
+			"cmyk": "CMJN",
+			"autumn": "Automne",
+			"business": "Affaires",
+			"acid": "Acid",
+			"lemonade": "Limonade",
+			"night": "Nuit",
+			"coffee": "Café",
+			"winter": "Hiver",
+			"dim": "Tamisé",
+			"nord": "Nordique",
+			"sunset": "Crépuscule",
+			"caramellatte": "Caramel Latte",
+			"abyss": "Abysse",
+			"silk": "Soie"
+		}
+	},
+	"part_config": {
+		"title": "Configuration des Composants",
+		"pageTitle": "Configuration des Composants",
+		"labels": {
+			"partType": "Sélectionner le type de composant",
+			"part": "Sélectionner le composant"
+		},
+		"placeholders": {
+			"partTypeSelect": "Veuillez sélectionner",
+			"partSelect": "Veuillez sélectionner"
+		},
+		"editor": {
+			"title": "Configuration du Composant",
+			"disabledIndicator": "Ce composant ne prend pas en charge la configuration",
 			"buttons": {
-				"ignore": "Ignorer et continuer",
-				"retry": "Réessayer"
+				"save": "Enregistrer"
 			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Icône d'erreur"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "Échec de la récupération des types de composants.",
+			"fetchPartsFailed": "Échec de la récupération de la liste des composants.",
+			"loadEditorFailed": "Échec du chargement de l'éditeur.",
+			"saveConfigFailed": "Échec de l'enregistrement de la configuration du composant.",
+			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous annuler les modifications ?",
+			"beforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter ?"
+		}
+	},
+	"aisource_editor": {
+		"title": "Éditeur de Source d'IA",
+		"fileList": {
+			"title": "Liste des Sources d'IA",
+			"addButton": {
+				"title": "+"
+			}
+		},
+		"configTitle": "Configuration de la Source d'IA",
+		"generatorSelect": {
+			"label": "Sélectionner un générateur",
+			"placeholder": "Veuillez sélectionner"
+		},
+		"buttons": {
+			"save": "Enregistrer",
+			"delete": "Supprimer"
+		},
+		"tooltips": {
+			"setDefault": "Par défaut"
+		},
+		"alerts": {
+			"fetchFileListFailed": "Échec de la récupération de la liste des fichiers : ${error}",
+			"fetchGeneratorListFailed": "Échec de la récupération de la liste des générateurs : ${error}",
+			"fetchDefaultsFailed": "Échec de l'obtention du composant par défaut : ${error}",
+			"fetchFileDataFailed": "Échec de la récupération des données du fichier : ${error}",
+			"noFileSelectedSave": "Aucun fichier sélectionné à enregistrer.",
+			"saveFileFailed": "Échec de l'enregistrement du fichier : ${error}",
+			"setDefaultFailed": "Échec de la définition de la source d'IA par défaut : ${error}",
+			"noFileSelectedDelete": "Aucun fichier sélectionné à supprimer.",
+			"deleteFileFailed": "Échec de la suppression du fichier : ${error}",
+			"invalidFileName": "Le nom de fichier ne peut pas contenir les caractères suivants : / \\ : * ? \" < > |",
+			"addFileFailed": "Échec de l'ajout du fichier : ${error}",
+			"fetchConfigTemplateFailed": "Échec de la récupération du modèle de configuration",
+			"noGeneratorSelectedSave": "Veuillez sélectionner un générateur avant d'enregistrer"
+		},
+		"confirm": {
+			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous annuler les modifications ?",
+			"deleteFile": "Êtes-vous sûr de vouloir supprimer le fichier ?",
+			"unsavedChangesBeforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter cette page ?"
+		},
+		"prompts": {
+			"newFileName": "Veuillez saisir un nouveau nom de fichier pour la source d'IA (sans extension) :"
+		},
+		"editor": {
+			"disabledIndicator": "Veuillez d'abord sélectionner un générateur"
+		},
+		"common_config_interface": {
+			"empty_generator": "Le générateur hérité de cette source AI a une erreur lors du chargement et peut avoir été désinstallé ou renommé.",
+			"apiKeyRequired": "Une clé API est requise pour lister les modèles.",
+			"loadingModels": "Chargement des modèles...",
+			"availableModels": "Modèles disponibles :",
+			"copyModelIdTooltip": "Cliquez pour copier l'ID du modèle",
+			"copied": "Copié !",
+			"loadModelsFailed": "Échec du chargement des modèles : ${message}"
+		}
+	},
+	"discord_bots": {
+		"title": "Bots Discord",
+		"cardTitle": "Bots Discord",
+		"buttons": {
+			"newBot": "Nouveau",
+			"deleteBot": "Supprimer"
+		},
+		"configCard": {
+			"title": "Configuration du bot",
+			"labels": {
+				"character": "Personnage",
+				"apiKey": "Clé API Discord",
+				"config": "Configuration"
+			},
+			"charSelectPlaceholder": "Sélectionner un personnage",
+			"apiKeyInput": {
+				"placeholder": "Saisir la clé API"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "Afficher/Masquer la clé API"
+			},
+			"buttons": {
+				"saveConfig": "Enregistrer la configuration",
+				"startBot": "Démarrer",
+				"stopBot": "Arrêter"
+			}
+		},
+		"prompts": {
+			"newBotName": "Veuillez saisir un nouveau nom pour le bot :"
+		},
+		"alerts": {
+			"botExists": "Un bot nommé \"${botname}\" existe déjà. Veuillez utiliser un autre nom.",
+			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous annuler les modifications ?",
+			"configSaved": "Configuration enregistrée avec succès",
+			"httpError": "Erreur HTTP",
+			"beforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter ?"
+		}
+	},
+	"telegram_bots": {
+		"title": "Bots Telegram",
+		"cardTitle": "Gestion des bots Telegram",
+		"buttons": {
+			"newBot": "Nouveau",
+			"deleteBot": "Supprimer"
+		},
+		"configCard": {
+			"title": "Configuration du bot",
+			"labels": {
+				"character": "Personnage lié",
+				"botToken": "Jeton du bot Telegram",
+				"config": "Configuration"
+			},
+			"charSelectPlaceholder": "Sélectionner un personnage",
+			"botTokenInput": {
+				"placeholder": "Saisissez le jeton du bot Telegram"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "Afficher/Masquer le jeton du bot"
+			},
+			"buttons": {
+				"saveConfig": "Enregistrer la configuration",
+				"startBot": "Démarrer",
+				"stopBot": "Arrêter"
+			}
+		},
+		"prompts": {
+			"newBotName": "Veuillez saisir un nouveau nom pour le bot :"
+		},
+		"alerts": {
+			"botExists": "Un bot nommé \"${botname}\" existe déjà. Veuillez utiliser un autre nom.",
+			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous vraiment annuler ces modifications ?",
+			"configSaved": "La configuration a été enregistrée avec succès !",
+			"httpError": "Erreur HTTP",
+			"beforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter cette page ?"
 		}
 	},
 	"browser_integration": {
@@ -1223,5 +1182,46 @@
 			"prompt": "Une nouvelle version du script d'intégration du navigateur fount est disponible. La page de mise à jour est-elle maintenant ouverte?"
 		},
 		"csp_warning": "Le script d'intégration du navigateur fount détecte que la politique CSP existe sur la page, ce qui peut empêcher le script d'intégration de fonctionner correctement. Veuillez envisager d'installer le plugin pour désactiver le CSP."
+	},
+	"terminal_assistant": {
+		"title": "Assistant Terminal",
+		"initialMessage": "fount prend en charge le déploiement de vos personnages préférés dans votre terminal pour vous assister lors du codage !",
+		"initialMessageLink": "Cliquez ici pour en savoir plus"
+	},
+	"access": {
+		"title": "Accéder à fount sur d'autres appareils",
+		"heading": "Vous voulez accéder à fount sur d'autres appareils ?",
+		"instruction": {
+			"sameLAN": "Assurez-vous que l'appareil et l'hôte fount sont sur le même réseau local.",
+			"accessthis": "Visitez cette URL :"
+		},
+		"copyButton": "Copier l'URL",
+		"copied": "URL copiée dans le presse-papiers !"
+	},
+	"proxy": {
+		"title": "Proxy API",
+		"heading": "Adresse du Proxy API OpenAI",
+		"instruction": "Saisissez l'adresse suivante dans toute application nécessitant le format API OpenAI pour utiliser les sources d'IA dans fount !",
+		"copyButton": "Copier l'adresse",
+		"copied": "Adresse copiée dans le presse-papiers !"
+	},
+	"badges_maker": {
+		"title": "fount ! Convertisseur de Badges",
+		"card_title": "Convertisseur de Liens de Badges fount",
+		"original_url_label": "Collez l'URL img.shields.io",
+		"original_url_placeholder": "Par exemple : https ://img.shields.io/badge/Hello-World-blue",
+		"new_url_label": "Nouvelle URL générée",
+		"new_url_placeholder": "L'URL convertie sera affichée ici",
+		"copy_button": "Copier",
+		"preview_label": "Aperçu",
+		"preview_alt": "Aperçu du badge",
+		"copied_text": "Copié !",
+		"copy_error": "Impossible de copier le texte : ${error}",
+		"copy_fail_alert": "La copie a échoué !"
+	},
+	"404": {
+		"title": "Page non trouvée",
+		"pageNotFoundText": "Oups ! Il semble que vous soyez arrivé sur une page qui n'existe pas.",
+		"homepageButton": "Retour à la page d'accueil"
 	}
 }

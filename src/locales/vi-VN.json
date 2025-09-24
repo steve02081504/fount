@@ -100,24 +100,6 @@
 			"botStarted": "Nhân vật ${charname} đã đăng nhập vào bot Telegram ${botusername}."
 		}
 	},
-	"protocolhandler": {
-		"title": "Xử lý giao thức fount",
-		"processing": "Đang xử lý giao thức...",
-		"invalidProtocol": "Giao thức không hợp lệ.",
-		"insufficientParams": "Không đủ tham số.",
-		"unknownCommand": "Lệnh không xác định.",
-		"shellCommandSent": "Lệnh Shell đã được gửi.",
-		"shellCommandFailed": "Gửi lệnh Shell thất bại.",
-		"shellCommandError": "Đã xảy ra lỗi khi gửi lệnh Shell.",
-		"fountNotFound": "Ối... :(\n\nKhông tìm thấy fount. Có lẽ bạn cần cài đặt trước?",
-		"unknownError": "Ối... :(\n\nĐã xảy ra lỗi:\n${error}",
-		"runPartConfirm": {
-			"title": "Xác nhận đang chạy",
-			"message": "Bạn có chắc bạn muốn chạy ${parttype} của ${partname}?",
-			"confirm": "xác nhận",
-			"cancel": "Hủy bỏ"
-		}
-	},
 	"installer_wait_screen": {
 		"title": "Chào mừng đến với fount!",
 		"hero": {
@@ -188,6 +170,24 @@
 			"close_page": "Đóng trang"
 		}
 	},
+	"protocolhandler": {
+		"title": "Xử lý giao thức fount",
+		"processing": "Đang xử lý giao thức...",
+		"invalidProtocol": "Giao thức không hợp lệ.",
+		"insufficientParams": "Không đủ tham số.",
+		"unknownCommand": "Lệnh không xác định.",
+		"shellCommandSent": "Lệnh Shell đã được gửi.",
+		"shellCommandFailed": "Gửi lệnh Shell thất bại.",
+		"shellCommandError": "Đã xảy ra lỗi khi gửi lệnh Shell.",
+		"fountNotFound": "Ối... :(\n\nKhông tìm thấy fount. Có lẽ bạn cần cài đặt trước?",
+		"unknownError": "Ối... :(\n\nĐã xảy ra lỗi:\n${error}",
+		"runPartConfirm": {
+			"title": "Xác nhận đang chạy",
+			"message": "Bạn có chắc bạn muốn chạy ${parttype} của ${partname}?",
+			"confirm": "xác nhận",
+			"cancel": "Hủy bỏ"
+		}
+	},
 	"startPage": {
 		"title": "fount!",
 		"newTabFailed": {
@@ -207,6 +207,28 @@
 					"cancel": "Hủy"
 				}
 			}
+		}
+	},
+	"tutorial": {
+		"title": "Thử hướng dẫn nhé?",
+		"modal": {
+			"title": "Chào mừng bạn đến với fount!",
+			"instruction": "Bạn có muốn xem hướng dẫn cho người mới bắt đầu không?",
+			"buttons": {
+				"start": "Bắt đầu hướng dẫn",
+				"skip": "Bỏ qua"
+			}
+		},
+		"endScreen": {
+			"title": "Tuyệt vời! Hướng dẫn đã hoàn tất!",
+			"subtitle": "Bây giờ bạn đã biết cách thao tác rồi!",
+			"endButton": "Bắt đầu nào!"
+		},
+		"progressMessages": {
+			"mouseMove": "Vui lòng di chuyển chuột ${mouseIcon}.",
+			"keyboardPress": "Vui lòng tìm bàn phím ${keyboardIcon} của bạn<br/>và thử nhấn một phím bất kỳ.",
+			"mobileTouchMove": "Hãy tìm điện thoại của bạn ${phoneIcon}. Bây giờ, dùng một ngón tay, chạm vào màn hình và sau đó lướt nhẹ trên bề mặt.",
+			"mobileClick": "Hãy dùng một ngón tay chạm nhẹ vào màn hình điện thoại ${phoneIcon} rồi nhấc ra ngay. Bạn làm được rồi!"
 		}
 	},
 	"auth": {
@@ -264,26 +286,15 @@
 			"veryStrong": "Rất mạnh"
 		}
 	},
-	"tutorial": {
-		"title": "Thử hướng dẫn nhé?",
+	"login_info": {
 		"modal": {
-			"title": "Chào mừng bạn đến với fount!",
-			"instruction": "Bạn có muốn xem hướng dẫn cho người mới bắt đầu không?",
+			"title": "Lỗi chuyển chứng chỉ",
+			"retrieve_error": "Đã xảy ra lỗi trong khi cố gắng lưu thông tin đăng nhập của bạn:\n${error}\nBạn có thể tiếp tục nhưng không thể lưu thông tin đăng nhập.",
+			"transfer_error": "Đã xảy ra lỗi trong khi cố gắng chuyển thông tin đăng nhập của bạn:\n${error}\nBạn có thể tiếp tục nhưng không thể lấy thông tin đăng nhập.",
 			"buttons": {
-				"start": "Bắt đầu hướng dẫn",
-				"skip": "Bỏ qua"
+				"ignore": "Bỏ qua và tiếp tục",
+				"retry": "Thử lại"
 			}
-		},
-		"endScreen": {
-			"title": "Tuyệt vời! Hướng dẫn đã hoàn tất!",
-			"subtitle": "Bây giờ bạn đã biết cách thao tác rồi!",
-			"endButton": "Bắt đầu nào!"
-		},
-		"progressMessages": {
-			"mouseMove": "Vui lòng di chuyển chuột ${mouseIcon}.",
-			"keyboardPress": "Vui lòng tìm bàn phím ${keyboardIcon} của bạn<br/>và thử nhấn một phím bất kỳ.",
-			"mobileTouchMove": "Hãy tìm điện thoại của bạn ${phoneIcon}. Bây giờ, dùng một ngón tay, chạm vào màn hình và sau đó lướt nhẹ trên bề mặt.",
-			"mobileClick": "Hãy dùng một ngón tay chạm nhẹ vào màn hình điện thoại ${phoneIcon} rồi nhấc ra ngay. Bạn làm được rồi!"
 		}
 	},
 	"home": {
@@ -363,204 +374,6 @@
 					"title": "Đặt làm Persona mặc định"
 				}
 			}
-		}
-	},
-	"themeManage": {
-		"title": "Quản lý chủ đề",
-		"instruction": "Chọn một chủ đề!",
-		"themes": {
-			"auto": "Tự động",
-			"light": "Sáng",
-			"dark": "Tối",
-			"cupcake": "Cupcake",
-			"bumblebee": "Bumblebee",
-			"emerald": "Ngọc lục bảo",
-			"corporate": "Doanh nghiệp",
-			"synthwave": "Synthwave",
-			"retro": "Retro",
-			"cyberpunk": "Cyberpunk",
-			"valentine": "Valentine",
-			"halloween": "Halloween",
-			"garden": "Sân vườn",
-			"forest": "Rừng",
-			"aqua": "Aqua",
-			"lofi": "Lo-fi",
-			"pastel": "Pastel",
-			"fantasy": "Huyền ảo",
-			"wireframe": "Khung dây",
-			"black": "Đen",
-			"luxury": "Sang trọng",
-			"dracula": "Dracula",
-			"cmyk": "CMYK",
-			"autumn": "Mùa thu",
-			"business": "Kinh doanh",
-			"acid": "Acid",
-			"lemonade": "Chanh",
-			"night": "Ban đêm",
-			"coffee": "Cà phê",
-			"winter": "Mùa đông",
-			"dim": "Mờ ảo",
-			"nord": "Nord",
-			"sunset": "Hoàng hôn",
-			"caramellatte": "Caramel Latte",
-			"abyss": "Vực thẳm",
-			"silk": "Lụa"
-		}
-	},
-	"import": {
-		"title": "Nhập",
-		"tabs": {
-			"fileImport": "Nhập tệp",
-			"textImport": "Nhập văn bản"
-		},
-		"dropArea": {
-			"icon": {
-				"alt": "Biểu tượng tải lên"
-			},
-			"text": "Kéo và thả tệp vào đây hoặc nhấp để chọn tệp."
-		},
-		"textArea": {
-			"placeholder": "Nhập văn bản cần nhập..."
-		},
-		"buttons": {
-			"import": "Nhập"
-		},
-		"alerts": {
-			"importSuccess": "Nhập thành công.",
-			"importFailed": "Nhập thất bại: ${error}",
-			"unknownError": "Lỗi không xác định."
-		},
-		"errors": {
-			"noFileSelected": "Vui lòng chọn một tệp.",
-			"fileImportFailed": "Nhập tệp thất bại: ${message}",
-			"noTextContent": "Vui lòng nhập nội dung văn bản.",
-			"textImportFailed": "Nhập văn bản thất bại: ${message}",
-			"unknownError": "Lỗi không xác định.",
-			"handler": "Trình xử lý",
-			"error": "Lỗi"
-		},
-		"fileItem": {
-			"removeButton": {
-				"title": "Xóa"
-			},
-			"removeButtonIcon": {
-				"alt": "Xóa"
-			}
-		}
-	},
-	"aisource_editor": {
-		"title": "Trình chỉnh sửa Nguồn AI",
-		"fileList": {
-			"title": "Danh sách Nguồn AI",
-			"addButton": {
-				"title": "+"
-			}
-		},
-		"configTitle": "Cấu hình Nguồn AI",
-		"generatorSelect": {
-			"label": "Chọn trình tạo",
-			"placeholder": "Vui lòng chọn"
-		},
-		"buttons": {
-			"save": "Lưu",
-			"delete": "Xóa"
-		},
-		"tooltips": {
-			"setDefault": "Đặt làm mặc định"
-		},
-		"alerts": {
-			"fetchFileListFailed": "Lấy danh sách tệp thất bại: ${error}",
-			"fetchGeneratorListFailed": "Lấy danh sách trình tạo thất bại: ${error}",
-			"fetchDefaultsFailed": "Không nhận được thành phần mặc định: ${error}",
-			"fetchFileDataFailed": "Lấy dữ liệu tệp thất bại: ${error}",
-			"noFileSelectedSave": "Chưa chọn tệp để lưu.",
-			"saveFileFailed": "Lưu tệp thất bại: ${error}",
-			"setDefaultFailed": "Đặt nguồn AI mặc định không thành công: ${error}",
-			"noFileSelectedDelete": "Chưa chọn tệp để xóa.",
-			"deleteFileFailed": "Xóa tệp thất bại: ${error}",
-			"invalidFileName": "Tên tệp không được chứa các ký tự sau: / \\ : * ? \" < > |",
-			"addFileFailed": "Thêm tệp thất bại: ${error}",
-			"fetchConfigTemplateFailed": "Lấy mẫu cấu hình thất bại.",
-			"noGeneratorSelectedSave": "Vui lòng chọn một trình tạo trước khi lưu."
-		},
-		"confirm": {
-			"unsavedChanges": "Bạn có những thay đổi chưa được lưu. Bạn có muốn hủy bỏ những thay đổi này không?",
-			"deleteFile": "Bạn có chắc chắn muốn xóa tệp này không?",
-			"unsavedChangesBeforeUnload": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời khỏi trang này không?"
-		},
-		"prompts": {
-			"newFileName": "Vui lòng nhập tên tệp nguồn AI mới (không bao gồm phần mở rộng):"
-		},
-		"editor": {
-			"disabledIndicator": "Vui lòng chọn một trình tạo trước."
-		},
-		"common_config_interface": {
-			"empty_generator": "Trình tạo kế thừa từ nguồn AI này có lỗi trong khi tải và có thể đã được gỡ cài đặt hoặc đổi tên.",
-			"apiKeyRequired": "Cần có khóa API để liệt kê các mô hình.",
-			"loadingModels": "Đang tải các mô hình...",
-			"availableModels": "Các mô hình có sẵn:",
-			"copyModelIdTooltip": "Bấm để sao chép ID mô hình",
-			"copied": "Đã sao chép!",
-			"loadModelsFailed": "Không thể tải các mô hình: ${message}"
-		}
-	},
-	"part_config": {
-		"title": "Cấu hình thành phần",
-		"pageTitle": "Cấu hình thành phần",
-		"labels": {
-			"partType": "Chọn loại thành phần",
-			"part": "Chọn thành phần"
-		},
-		"placeholders": {
-			"partTypeSelect": "Vui lòng chọn",
-			"partSelect": "Vui lòng chọn"
-		},
-		"editor": {
-			"title": "Cấu hình thành phần",
-			"disabledIndicator": "Thành phần này không hỗ trợ cấu hình.",
-			"buttons": {
-				"save": "Lưu"
-			}
-		},
-		"errorMessage": {
-			"icon": {
-				"alt": "Biểu tượng lỗi"
-			}
-		},
-		"alerts": {
-			"fetchPartTypesFailed": "Lấy loại thành phần thất bại.",
-			"fetchPartsFailed": "Lấy danh sách thành phần thất bại.",
-			"loadEditorFailed": "Tải trình chỉnh sửa thất bại.",
-			"saveConfigFailed": "Lưu cấu hình thành phần thất bại.",
-			"unsavedChanges": "Bạn có những thay đổi chưa được lưu. Bạn có muốn hủy bỏ những thay đổi này không?",
-			"beforeUnload": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời đi không?"
-		}
-	},
-	"uninstall": {
-		"title": "Gỡ cài đặt",
-		"titleWithName": "Gỡ cài đặt ${type}/${name}",
-		"confirmMessage": "Bạn có chắc chắn muốn gỡ cài đặt ${type}: ${name} không?",
-		"invalidParamsTitle": "Tham số không hợp lệ",
-		"infoMessage": {
-			"icon": {
-				"alt": "Biểu tượng thông tin"
-			}
-		},
-		"errorMessage": {
-			"icon": {
-				"alt": "Biểu tượng lỗi"
-			}
-		},
-		"buttons": {
-			"confirm": "Xác nhận gỡ cài đặt",
-			"cancel": "Hủy",
-			"back": "Quay lại"
-		},
-		"alerts": {
-			"success": "Đã gỡ cài đặt thành công ${type}: ${name}.",
-			"failed": "Gỡ cài đặt thất bại: ${error}",
-			"invalidParams": "Tham số yêu cầu không hợp lệ.",
-			"httpError": "Lỗi HTTP! Mã trạng thái: ${status}"
 		}
 	},
 	"chat": {
@@ -772,209 +585,6 @@
 			"delete": "Xóa"
 		}
 	},
-	"discord_bots": {
-		"title": "Bot Discord",
-		"cardTitle": "Bot Discord",
-		"buttons": {
-			"newBot": "Tạo mới",
-			"deleteBot": "Xóa"
-		},
-		"configCard": {
-			"title": "Cấu hình Bot",
-			"labels": {
-				"character": "Nhân vật",
-				"apiKey": "Khóa API Discord",
-				"config": "Cấu hình"
-			},
-			"charSelectPlaceholder": "Chọn nhân vật",
-			"apiKeyInput": {
-				"placeholder": "Nhập Khóa API"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "Hiện/ẩn Khóa API"
-			},
-			"buttons": {
-				"saveConfig": "Lưu cấu hình",
-				"startBot": "Khởi động",
-				"stopBot": "Dừng"
-			}
-		},
-		"prompts": {
-			"newBotName": "Vui lòng nhập tên Bot mới:"
-		},
-		"alerts": {
-			"botExists": "Bot có tên \"${botname}\" đã tồn tại, vui lòng sử dụng tên khác.",
-			"unsavedChanges": "Bạn có những thay đổi chưa được lưu. Bạn có muốn hủy bỏ những thay đổi này không?",
-			"configSaved": "Cấu hình đã được lưu thành công.",
-			"httpError": "Lỗi HTTP.",
-			"beforeUnload": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời đi không?"
-		}
-	},
-	"telegram_bots": {
-		"title": "Bot Telegram",
-		"cardTitle": "Quản lý Bot Telegram",
-		"buttons": {
-			"newBot": "Tạo mới",
-			"deleteBot": "Xóa"
-		},
-		"configCard": {
-			"title": "Cấu hình Bot",
-			"labels": {
-				"character": "Nhân vật đã liên kết",
-				"botToken": "Token Bot Telegram",
-				"config": "Cấu hình"
-			},
-			"charSelectPlaceholder": "Chọn nhân vật",
-			"botTokenInput": {
-				"placeholder": "Nhập Token Bot Telegram"
-			},
-			"toggleBotTokenIcon": {
-				"alt": "Hiện/ẩn token bot"
-			},
-			"buttons": {
-				"saveConfig": "Lưu cấu hình",
-				"startBot": "Khởi động",
-				"stopBot": "Dừng"
-			}
-		},
-		"prompts": {
-			"newBotName": "Vui lòng nhập tên Bot mới:"
-		},
-		"alerts": {
-			"botExists": "Bot với tên \"${botname}\" đã tồn tại, vui lòng sử dụng tên khác.",
-			"unsavedChanges": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn hủy bỏ những thay đổi này không?",
-			"configSaved": "Cấu hình đã được lưu thành công!",
-			"httpError": "Lỗi HTTP.",
-			"beforeUnload": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời khỏi trang này không?"
-		}
-	},
-	"terminal_assistant": {
-		"title": "Trợ lý Terminal",
-		"initialMessage": "fount hỗ trợ triển khai các nhân vật yêu thích của bạn vào terminal để trợ giúp bạn trong quá trình lập trình!",
-		"initialMessageLink": "Nhấp vào đây để tìm hiểu thêm."
-	},
-	"access": {
-		"title": "Truy cập fount trên các thiết bị khác",
-		"heading": "Bạn muốn truy cập fount trên các thiết bị khác?",
-		"instruction": {
-			"sameLAN": "Đảm bảo thiết bị và máy chủ fount đang ở trên cùng một mạng LAN.",
-			"accessthis": "Truy cập địa chỉ sau:"
-		},
-		"copyButton": "Sao chép địa chỉ",
-		"copied": "Địa chỉ đã được sao chép vào bộ nhớ tạm!"
-	},
-	"proxy": {
-		"title": "Proxy API",
-		"heading": "Địa chỉ Proxy API OpenAI",
-		"instruction": "Nhập địa chỉ sau vào bất kỳ ứng dụng nào yêu cầu định dạng API OpenAI để sử dụng các nguồn AI trong fount!",
-		"copyButton": "Sao chép địa chỉ",
-		"copied": "Địa chỉ đã được sao chép vào bộ nhớ tạm!"
-	},
-	"404": {
-		"title": "Không tìm thấy trang",
-		"pageNotFoundText": "Ối! Có vẻ như bạn đã truy cập vào một trang không tồn tại.",
-		"homepageButton": "Quay lại trang chủ"
-	},
-	"userSettings": {
-		"title": "Cài đặt người dùng",
-		"PageTitle": "Cài đặt người dùng",
-		"apiError": "Yêu cầu API thất bại: ${message}",
-		"generalError": "Đã có lỗi xảy ra: ${message}",
-		"userInfo": {
-			"title": "Thông tin người dùng",
-			"usernameLabel": "Tên người dùng:",
-			"creationDateLabel": "Ngày tạo tài khoản:",
-			"folderSizeLabel": "Kích thước dữ liệu người dùng:",
-			"folderPathLabel": "Đường dẫn dữ liệu người dùng:",
-			"copyPathBtnTitle": "Sao chép đường dẫn",
-			"copiedAlert": "Đường dẫn đã được sao chép vào bộ nhớ tạm!"
-		},
-		"changePassword": {
-			"title": "Đổi mật khẩu",
-			"currentPasswordLabel": "Mật khẩu hiện tại:",
-			"newPasswordLabel": "Mật khẩu mới:",
-			"confirmNewPasswordLabel": "Xác nhận mật khẩu mới:",
-			"submitButton": "Đổi mật khẩu",
-			"errorMismatch": "Mật khẩu mới không khớp.",
-			"success": "Đổi mật khẩu thành công."
-		},
-		"renameUser": {
-			"title": "Đổi tên người dùng",
-			"newUsernameLabel": "Tên người dùng mới:",
-			"submitButton": "Đổi tên người dùng",
-			"confirmMessage": "Bạn có chắc chắn muốn đổi tên người dùng không? Sau khi đổi, bạn sẽ cần đăng nhập lại.",
-			"success": "Tên người dùng đã được đổi thành \"${newUsername}\" thành công. Bây giờ bạn sẽ bị đăng xuất."
-		},
-		"userDevices": {
-			"title": "Thiết bị/Phiên hoạt động",
-			"refreshButtonTitle": "Làm mới danh sách",
-			"noDevicesFound": "Không tìm thấy thiết bị hoặc phiên hoạt động nào.",
-			"deviceInfo": "ID thiết bị: ${deviceId}",
-			"thisDevice": "Thiết bị này",
-			"deviceDetails": "Hoạt động lần cuối: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
-			"revokeButton": "Thu hồi",
-			"revokeConfirm": "Bạn có chắc chắn muốn thu hồi quyền truy cập cho thiết bị/phiên này không?",
-			"revokeSuccess": "Thiết bị/Phiên hoạt động đã được thu hồi thành công."
-		},
-		"logout": {
-			"title": "Đăng xuất",
-			"description": "Thao tác này sẽ đăng xuất tài khoản của bạn khỏi thiết bị hiện tại.",
-			"buttonText": "Đăng xuất",
-			"confirmMessage": "Bạn có chắc chắn muốn đăng xuất không?",
-			"successMessage": "Đăng xuất thành công. Bạn sẽ được chuyển đến trang đăng nhập sau giây lát..."
-		},
-		"deleteAccount": {
-			"title": "Xóa tài khoản",
-			"warning": "Cảnh báo: Hành động này sẽ xóa vĩnh viễn tài khoản của bạn cùng tất cả dữ liệu liên quan và không thể khôi phục.",
-			"submitButton": "Xóa tài khoản của tôi",
-			"confirmMessage1": "Cảnh báo! Bạn có chắc chắn muốn xóa vĩnh viễn tài khoản của mình không? Hành động này không thể hoàn tác.",
-			"confirmMessage2": "Để xác nhận việc xóa, vui lòng nhập tên người dùng \"${username}\" của bạn:",
-			"usernameMismatch": "Tên người dùng đã nhập không khớp với người dùng hiện tại. Thao tác xóa đã bị hủy.",
-			"success": "Tài khoản đã được xóa thành công. Bây giờ bạn sẽ bị đăng xuất."
-		},
-		"passwordConfirm": {
-			"title": "Xác nhận thao tác",
-			"message": "Để tiếp tục, vui lòng nhập mật khẩu hiện tại của bạn:",
-			"passwordLabel": "Mật khẩu:",
-			"confirmButton": "Xác nhận",
-			"cancelButton": "Hủy"
-		},
-		"apiKeys": {
-			"title": "Khóa API",
-			"description": "Quản lý khóa API cho các ứng dụng bên ngoài.",
-			"descriptionPlaceholder": "Mô tả khóa mới",
-			"createButton": "tạo",
-			"noKeysFound": "Không có khóa API được tìm thấy.",
-			"refreshButtonTitle": "Làm mới danh sách",
-			"keyDetails": "Mô tả: ${description} | Được tạo trong: ${createdAt} | Được sử dụng lần cuối: ${lastUsed}",
-			"neverUsed": "Không bao giờ được sử dụng",
-			"revokeButton": "Thu hồi",
-			"revokeConfirm": "Bạn có chắc là bạn muốn thu hồi khóa API này không?",
-			"revokeSuccess": "Khóa API đã bị thu hồi thành công.",
-			"errorDescriptionRequired": "Một mô tả là bắt buộc.",
-			"createSuccess": "Khóa API đã được tạo thành công."
-		},
-		"newApiKey": {
-			"title": "Khóa API mới đã được tạo",
-			"warning": "Vui lòng sao chép khóa API mới của bạn. Bạn sẽ không thể nhìn thấy nó một lần nữa!",
-			"copyButtonTitle": "Sao chép khóa API mới",
-			"closeButton": "Tôi đã sao chép khóa của mình"
-		}
-	},
-	"badges_maker": {
-		"title": "fount! Bộ chuyển đổi huy hiệu",
-		"card_title": "Bộ chuyển đổi liên kết huy hiệu fount",
-		"original_url_label": "Dán URL img.shields.io",
-		"original_url_placeholder": "Ví dụ: https://img.shields.io/badge/hello-world-blue",
-		"new_url_label": "URL mới được tạo",
-		"new_url_placeholder": "URL được chuyển đổi sẽ được hiển thị tại đây",
-		"copy_button": "Sao chép",
-		"preview_label": "Xem trước",
-		"preview_alt": "Xem trước huy hiệu",
-		"copied_text": "Đã sao chép!",
-		"copy_error": "Không thể sao chép văn bản: ${error}",
-		"copy_fail_alert": "Sao chép không thành công!"
-	},
 	"easynew": {
 		"title": "Tạo nhanh",
 		"cardTitle": "Tạo một thành phần mới từ một mẫu",
@@ -1070,6 +680,47 @@
 			"description": "Các mẫu này chỉ có thể được sử dụng để nhanh chóng xây dựng các thành phần đơn giản; các thành phần phức tạp vẫn cần được tạo thủ công."
 		}
 	},
+	"import": {
+		"title": "Nhập",
+		"tabs": {
+			"fileImport": "Nhập tệp",
+			"textImport": "Nhập văn bản"
+		},
+		"dropArea": {
+			"icon": {
+				"alt": "Biểu tượng tải lên"
+			},
+			"text": "Kéo và thả tệp vào đây hoặc nhấp để chọn tệp."
+		},
+		"textArea": {
+			"placeholder": "Nhập văn bản cần nhập..."
+		},
+		"buttons": {
+			"import": "Nhập"
+		},
+		"alerts": {
+			"importSuccess": "Nhập thành công.",
+			"importFailed": "Nhập thất bại: ${error}",
+			"unknownError": "Lỗi không xác định."
+		},
+		"errors": {
+			"noFileSelected": "Vui lòng chọn một tệp.",
+			"fileImportFailed": "Nhập tệp thất bại: ${message}",
+			"noTextContent": "Vui lòng nhập nội dung văn bản.",
+			"textImportFailed": "Nhập văn bản thất bại: ${message}",
+			"unknownError": "Lỗi không xác định.",
+			"handler": "Trình xử lý",
+			"error": "Lỗi"
+		},
+		"fileItem": {
+			"removeButton": {
+				"title": "Xóa"
+			},
+			"removeButtonIcon": {
+				"alt": "Xóa"
+			}
+		}
+	},
 	"export": {
 		"title": "Trình xuất Thành phần",
 		"pageTitle": "Trình xuất Thành phần",
@@ -1131,6 +782,119 @@
 			"generateShareLinkWithData": "Tạo liên kết chia sẻ (bao gồm dữ liệu)"
 		}
 	},
+	"uninstall": {
+		"title": "Gỡ cài đặt",
+		"titleWithName": "Gỡ cài đặt ${type}/${name}",
+		"confirmMessage": "Bạn có chắc chắn muốn gỡ cài đặt ${type}: ${name} không?",
+		"invalidParamsTitle": "Tham số không hợp lệ",
+		"infoMessage": {
+			"icon": {
+				"alt": "Biểu tượng thông tin"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Biểu tượng lỗi"
+			}
+		},
+		"buttons": {
+			"confirm": "Xác nhận gỡ cài đặt",
+			"cancel": "Hủy",
+			"back": "Quay lại"
+		},
+		"alerts": {
+			"success": "Đã gỡ cài đặt thành công ${type}: ${name}.",
+			"failed": "Gỡ cài đặt thất bại: ${error}",
+			"invalidParams": "Tham số yêu cầu không hợp lệ.",
+			"httpError": "Lỗi HTTP! Mã trạng thái: ${status}"
+		}
+	},
+	"userSettings": {
+		"title": "Cài đặt người dùng",
+		"PageTitle": "Cài đặt người dùng",
+		"apiError": "Yêu cầu API thất bại: ${message}",
+		"generalError": "Đã có lỗi xảy ra: ${message}",
+		"userInfo": {
+			"title": "Thông tin người dùng",
+			"usernameLabel": "Tên người dùng:",
+			"creationDateLabel": "Ngày tạo tài khoản:",
+			"folderSizeLabel": "Kích thước dữ liệu người dùng:",
+			"folderPathLabel": "Đường dẫn dữ liệu người dùng:",
+			"copyPathBtnTitle": "Sao chép đường dẫn",
+			"copiedAlert": "Đường dẫn đã được sao chép vào bộ nhớ tạm!"
+		},
+		"changePassword": {
+			"title": "Đổi mật khẩu",
+			"currentPasswordLabel": "Mật khẩu hiện tại:",
+			"newPasswordLabel": "Mật khẩu mới:",
+			"confirmNewPasswordLabel": "Xác nhận mật khẩu mới:",
+			"submitButton": "Đổi mật khẩu",
+			"errorMismatch": "Mật khẩu mới không khớp.",
+			"success": "Đổi mật khẩu thành công."
+		},
+		"renameUser": {
+			"title": "Đổi tên người dùng",
+			"newUsernameLabel": "Tên người dùng mới:",
+			"submitButton": "Đổi tên người dùng",
+			"confirmMessage": "Bạn có chắc chắn muốn đổi tên người dùng không? Sau khi đổi, bạn sẽ cần đăng nhập lại.",
+			"success": "Tên người dùng đã được đổi thành \"${newUsername}\" thành công. Bây giờ bạn sẽ bị đăng xuất."
+		},
+		"userDevices": {
+			"title": "Thiết bị/Phiên hoạt động",
+			"refreshButtonTitle": "Làm mới danh sách",
+			"noDevicesFound": "Không tìm thấy thiết bị hoặc phiên hoạt động nào.",
+			"deviceInfo": "ID thiết bị: ${deviceId}",
+			"thisDevice": "Thiết bị này",
+			"deviceDetails": "Hoạt động lần cuối: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
+			"revokeButton": "Thu hồi",
+			"revokeConfirm": "Bạn có chắc chắn muốn thu hồi quyền truy cập cho thiết bị/phiên này không?",
+			"revokeSuccess": "Thiết bị/Phiên hoạt động đã được thu hồi thành công."
+		},
+		"logout": {
+			"title": "Đăng xuất",
+			"description": "Thao tác này sẽ đăng xuất tài khoản của bạn khỏi thiết bị hiện tại.",
+			"buttonText": "Đăng xuất",
+			"confirmMessage": "Bạn có chắc chắn muốn đăng xuất không?",
+			"successMessage": "Đăng xuất thành công. Bạn sẽ được chuyển đến trang đăng nhập sau giây lát..."
+		},
+		"deleteAccount": {
+			"title": "Xóa tài khoản",
+			"warning": "Cảnh báo: Hành động này sẽ xóa vĩnh viễn tài khoản của bạn cùng tất cả dữ liệu liên quan và không thể khôi phục.",
+			"submitButton": "Xóa tài khoản của tôi",
+			"confirmMessage1": "Cảnh báo! Bạn có chắc chắn muốn xóa vĩnh viễn tài khoản của mình không? Hành động này không thể hoàn tác.",
+			"confirmMessage2": "Để xác nhận việc xóa, vui lòng nhập tên người dùng \"${username}\" của bạn:",
+			"usernameMismatch": "Tên người dùng đã nhập không khớp với người dùng hiện tại. Thao tác xóa đã bị hủy.",
+			"success": "Tài khoản đã được xóa thành công. Bây giờ bạn sẽ bị đăng xuất."
+		},
+		"passwordConfirm": {
+			"title": "Xác nhận thao tác",
+			"message": "Để tiếp tục, vui lòng nhập mật khẩu hiện tại của bạn:",
+			"passwordLabel": "Mật khẩu:",
+			"confirmButton": "Xác nhận",
+			"cancelButton": "Hủy"
+		},
+		"apiKeys": {
+			"title": "Khóa API",
+			"description": "Quản lý khóa API cho các ứng dụng bên ngoài.",
+			"descriptionPlaceholder": "Mô tả khóa mới",
+			"createButton": "tạo",
+			"noKeysFound": "Không có khóa API được tìm thấy.",
+			"refreshButtonTitle": "Làm mới danh sách",
+			"keyDetails": "Mô tả: ${description} | Được tạo trong: ${createdAt} | Được sử dụng lần cuối: ${lastUsed}",
+			"neverUsed": "Không bao giờ được sử dụng",
+			"revokeButton": "Thu hồi",
+			"revokeConfirm": "Bạn có chắc là bạn muốn thu hồi khóa API này không?",
+			"revokeSuccess": "Khóa API đã bị thu hồi thành công.",
+			"errorDescriptionRequired": "Một mô tả là bắt buộc.",
+			"createSuccess": "Khóa API đã được tạo thành công."
+		},
+		"newApiKey": {
+			"title": "Khóa API mới đã được tạo",
+			"warning": "Vui lòng sao chép khóa API mới của bạn. Bạn sẽ không thể nhìn thấy nó một lần nữa!",
+			"copyButtonTitle": "Sao chép khóa API mới",
+			"closeButton": "Tôi đã sao chép khóa của mình"
+		}
+	},
 	"languageSettings": {
 		"title": "Cài đặt ngôn ngữ",
 		"description": "Quản lý sở thích ngôn ngữ của bạn ở đây. Các ngôn ngữ trong danh sách sẽ được ưu tiên hơn các cài đặt trình duyệt theo thứ tự.",
@@ -1144,15 +908,210 @@
 		"resetMessage": "Cài đặt ngôn ngữ đã được đặt lại!",
 		"fetchLocalesFailed": "Không nhận được ngôn ngữ có sẵn!"
 	},
-	"login_info": {
-		"modal": {
-			"title": "Lỗi chuyển chứng chỉ",
-			"retrieve_error": "Đã xảy ra lỗi trong khi cố gắng lưu thông tin đăng nhập của bạn:\n${error}\nBạn có thể tiếp tục nhưng không thể lưu thông tin đăng nhập.",
-			"transfer_error": "Đã xảy ra lỗi trong khi cố gắng chuyển thông tin đăng nhập của bạn:\n${error}\nBạn có thể tiếp tục nhưng không thể lấy thông tin đăng nhập.",
+	"themeManage": {
+		"title": "Quản lý chủ đề",
+		"instruction": "Chọn một chủ đề!",
+		"themes": {
+			"auto": "Tự động",
+			"light": "Sáng",
+			"dark": "Tối",
+			"cupcake": "Cupcake",
+			"bumblebee": "Bumblebee",
+			"emerald": "Ngọc lục bảo",
+			"corporate": "Doanh nghiệp",
+			"synthwave": "Synthwave",
+			"retro": "Retro",
+			"cyberpunk": "Cyberpunk",
+			"valentine": "Valentine",
+			"halloween": "Halloween",
+			"garden": "Sân vườn",
+			"forest": "Rừng",
+			"aqua": "Aqua",
+			"lofi": "Lo-fi",
+			"pastel": "Pastel",
+			"fantasy": "Huyền ảo",
+			"wireframe": "Khung dây",
+			"black": "Đen",
+			"luxury": "Sang trọng",
+			"dracula": "Dracula",
+			"cmyk": "CMYK",
+			"autumn": "Mùa thu",
+			"business": "Kinh doanh",
+			"acid": "Acid",
+			"lemonade": "Chanh",
+			"night": "Ban đêm",
+			"coffee": "Cà phê",
+			"winter": "Mùa đông",
+			"dim": "Mờ ảo",
+			"nord": "Nord",
+			"sunset": "Hoàng hôn",
+			"caramellatte": "Caramel Latte",
+			"abyss": "Vực thẳm",
+			"silk": "Lụa"
+		}
+	},
+	"part_config": {
+		"title": "Cấu hình thành phần",
+		"pageTitle": "Cấu hình thành phần",
+		"labels": {
+			"partType": "Chọn loại thành phần",
+			"part": "Chọn thành phần"
+		},
+		"placeholders": {
+			"partTypeSelect": "Vui lòng chọn",
+			"partSelect": "Vui lòng chọn"
+		},
+		"editor": {
+			"title": "Cấu hình thành phần",
+			"disabledIndicator": "Thành phần này không hỗ trợ cấu hình.",
 			"buttons": {
-				"ignore": "Bỏ qua và tiếp tục",
-				"retry": "Thử lại"
+				"save": "Lưu"
 			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Biểu tượng lỗi"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "Lấy loại thành phần thất bại.",
+			"fetchPartsFailed": "Lấy danh sách thành phần thất bại.",
+			"loadEditorFailed": "Tải trình chỉnh sửa thất bại.",
+			"saveConfigFailed": "Lưu cấu hình thành phần thất bại.",
+			"unsavedChanges": "Bạn có những thay đổi chưa được lưu. Bạn có muốn hủy bỏ những thay đổi này không?",
+			"beforeUnload": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời đi không?"
+		}
+	},
+	"aisource_editor": {
+		"title": "Trình chỉnh sửa Nguồn AI",
+		"fileList": {
+			"title": "Danh sách Nguồn AI",
+			"addButton": {
+				"title": "+"
+			}
+		},
+		"configTitle": "Cấu hình Nguồn AI",
+		"generatorSelect": {
+			"label": "Chọn trình tạo",
+			"placeholder": "Vui lòng chọn"
+		},
+		"buttons": {
+			"save": "Lưu",
+			"delete": "Xóa"
+		},
+		"tooltips": {
+			"setDefault": "Đặt làm mặc định"
+		},
+		"alerts": {
+			"fetchFileListFailed": "Lấy danh sách tệp thất bại: ${error}",
+			"fetchGeneratorListFailed": "Lấy danh sách trình tạo thất bại: ${error}",
+			"fetchDefaultsFailed": "Không nhận được thành phần mặc định: ${error}",
+			"fetchFileDataFailed": "Lấy dữ liệu tệp thất bại: ${error}",
+			"noFileSelectedSave": "Chưa chọn tệp để lưu.",
+			"saveFileFailed": "Lưu tệp thất bại: ${error}",
+			"setDefaultFailed": "Đặt nguồn AI mặc định không thành công: ${error}",
+			"noFileSelectedDelete": "Chưa chọn tệp để xóa.",
+			"deleteFileFailed": "Xóa tệp thất bại: ${error}",
+			"invalidFileName": "Tên tệp không được chứa các ký tự sau: / \\ : * ? \" < > |",
+			"addFileFailed": "Thêm tệp thất bại: ${error}",
+			"fetchConfigTemplateFailed": "Lấy mẫu cấu hình thất bại.",
+			"noGeneratorSelectedSave": "Vui lòng chọn một trình tạo trước khi lưu."
+		},
+		"confirm": {
+			"unsavedChanges": "Bạn có những thay đổi chưa được lưu. Bạn có muốn hủy bỏ những thay đổi này không?",
+			"deleteFile": "Bạn có chắc chắn muốn xóa tệp này không?",
+			"unsavedChangesBeforeUnload": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời khỏi trang này không?"
+		},
+		"prompts": {
+			"newFileName": "Vui lòng nhập tên tệp nguồn AI mới (không bao gồm phần mở rộng):"
+		},
+		"editor": {
+			"disabledIndicator": "Vui lòng chọn một trình tạo trước."
+		},
+		"common_config_interface": {
+			"empty_generator": "Trình tạo kế thừa từ nguồn AI này có lỗi trong khi tải và có thể đã được gỡ cài đặt hoặc đổi tên.",
+			"apiKeyRequired": "Cần có khóa API để liệt kê các mô hình.",
+			"loadingModels": "Đang tải các mô hình...",
+			"availableModels": "Các mô hình có sẵn:",
+			"copyModelIdTooltip": "Bấm để sao chép ID mô hình",
+			"copied": "Đã sao chép!",
+			"loadModelsFailed": "Không thể tải các mô hình: ${message}"
+		}
+	},
+	"discord_bots": {
+		"title": "Bot Discord",
+		"cardTitle": "Bot Discord",
+		"buttons": {
+			"newBot": "Tạo mới",
+			"deleteBot": "Xóa"
+		},
+		"configCard": {
+			"title": "Cấu hình Bot",
+			"labels": {
+				"character": "Nhân vật",
+				"apiKey": "Khóa API Discord",
+				"config": "Cấu hình"
+			},
+			"charSelectPlaceholder": "Chọn nhân vật",
+			"apiKeyInput": {
+				"placeholder": "Nhập Khóa API"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "Hiện/ẩn Khóa API"
+			},
+			"buttons": {
+				"saveConfig": "Lưu cấu hình",
+				"startBot": "Khởi động",
+				"stopBot": "Dừng"
+			}
+		},
+		"prompts": {
+			"newBotName": "Vui lòng nhập tên Bot mới:"
+		},
+		"alerts": {
+			"botExists": "Bot có tên \"${botname}\" đã tồn tại, vui lòng sử dụng tên khác.",
+			"unsavedChanges": "Bạn có những thay đổi chưa được lưu. Bạn có muốn hủy bỏ những thay đổi này không?",
+			"configSaved": "Cấu hình đã được lưu thành công.",
+			"httpError": "Lỗi HTTP.",
+			"beforeUnload": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời đi không?"
+		}
+	},
+	"telegram_bots": {
+		"title": "Bot Telegram",
+		"cardTitle": "Quản lý Bot Telegram",
+		"buttons": {
+			"newBot": "Tạo mới",
+			"deleteBot": "Xóa"
+		},
+		"configCard": {
+			"title": "Cấu hình Bot",
+			"labels": {
+				"character": "Nhân vật đã liên kết",
+				"botToken": "Token Bot Telegram",
+				"config": "Cấu hình"
+			},
+			"charSelectPlaceholder": "Chọn nhân vật",
+			"botTokenInput": {
+				"placeholder": "Nhập Token Bot Telegram"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "Hiện/ẩn token bot"
+			},
+			"buttons": {
+				"saveConfig": "Lưu cấu hình",
+				"startBot": "Khởi động",
+				"stopBot": "Dừng"
+			}
+		},
+		"prompts": {
+			"newBotName": "Vui lòng nhập tên Bot mới:"
+		},
+		"alerts": {
+			"botExists": "Bot với tên \"${botname}\" đã tồn tại, vui lòng sử dụng tên khác.",
+			"unsavedChanges": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn hủy bỏ những thay đổi này không?",
+			"configSaved": "Cấu hình đã được lưu thành công!",
+			"httpError": "Lỗi HTTP.",
+			"beforeUnload": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời khỏi trang này không?"
 		}
 	},
 	"browser_integration": {
@@ -1223,5 +1182,46 @@
 			"prompt": "Một phiên bản mới của tập lệnh tích hợp trình duyệt fount có sẵn. Bây giờ trang cập nhật có mở không?"
 		},
 		"csp_warning": "Tập lệnh tích hợp trình duyệt fount phát hiện chính sách CSP tồn tại trên trang, điều này có thể khiến tập lệnh tích hợp không hoạt động chính xác. Vui lòng xem xét cài đặt plugin để tắt CSP."
+	},
+	"terminal_assistant": {
+		"title": "Trợ lý Terminal",
+		"initialMessage": "fount hỗ trợ triển khai các nhân vật yêu thích của bạn vào terminal để trợ giúp bạn trong quá trình lập trình!",
+		"initialMessageLink": "Nhấp vào đây để tìm hiểu thêm."
+	},
+	"access": {
+		"title": "Truy cập fount trên các thiết bị khác",
+		"heading": "Bạn muốn truy cập fount trên các thiết bị khác?",
+		"instruction": {
+			"sameLAN": "Đảm bảo thiết bị và máy chủ fount đang ở trên cùng một mạng LAN.",
+			"accessthis": "Truy cập địa chỉ sau:"
+		},
+		"copyButton": "Sao chép địa chỉ",
+		"copied": "Địa chỉ đã được sao chép vào bộ nhớ tạm!"
+	},
+	"proxy": {
+		"title": "Proxy API",
+		"heading": "Địa chỉ Proxy API OpenAI",
+		"instruction": "Nhập địa chỉ sau vào bất kỳ ứng dụng nào yêu cầu định dạng API OpenAI để sử dụng các nguồn AI trong fount!",
+		"copyButton": "Sao chép địa chỉ",
+		"copied": "Địa chỉ đã được sao chép vào bộ nhớ tạm!"
+	},
+	"badges_maker": {
+		"title": "fount! Bộ chuyển đổi huy hiệu",
+		"card_title": "Bộ chuyển đổi liên kết huy hiệu fount",
+		"original_url_label": "Dán URL img.shields.io",
+		"original_url_placeholder": "Ví dụ: https://img.shields.io/badge/hello-world-blue",
+		"new_url_label": "URL mới được tạo",
+		"new_url_placeholder": "URL được chuyển đổi sẽ được hiển thị tại đây",
+		"copy_button": "Sao chép",
+		"preview_label": "Xem trước",
+		"preview_alt": "Xem trước huy hiệu",
+		"copied_text": "Đã sao chép!",
+		"copy_error": "Không thể sao chép văn bản: ${error}",
+		"copy_fail_alert": "Sao chép không thành công!"
+	},
+	"404": {
+		"title": "Không tìm thấy trang",
+		"pageNotFoundText": "Ối! Có vẻ như bạn đã truy cập vào một trang không tồn tại.",
+		"homepageButton": "Quay lại trang chủ"
 	}
 }

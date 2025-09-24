@@ -100,24 +100,6 @@
 			"botStarted": "캐릭터 ${charname}님이 Telegram 봇 ${botusername}에 로그인했습니다."
 		}
 	},
-	"protocolhandler": {
-		"title": "fount 프로토콜 처리",
-		"processing": "프로토콜 처리 중...",
-		"invalidProtocol": "잘못된 프로토콜입니다.",
-		"insufficientParams": "매개변수가 부족합니다.",
-		"unknownCommand": "알 수 없는 명령입니다.",
-		"shellCommandSent": "셸 명령이 전송되었습니다.",
-		"shellCommandFailed": "셸 명령 전송에 실패했습니다.",
-		"shellCommandError": "셸 명령 전송 중 오류가 발생했습니다.",
-		"fountNotFound": "아이고…\n\nfount를 찾을 수 없습니다. 먼저 설치해야 할까요?",
-		"unknownError": "아이고…\n\n오류가 발생했습니다:\n${error}",
-		"runPartConfirm": {
-			"title": "실행을 확인하십시오",
-			"message": "${parttype}의 ${partname}을 실행 하시겠습니까?",
-			"confirm": "확인하다",
-			"cancel": "취소"
-		}
-	},
 	"installer_wait_screen": {
 		"title": "fount에 오신 것을 환영합니다!",
 		"hero": {
@@ -188,6 +170,24 @@
 			"close_page": "페이지 닫기"
 		}
 	},
+	"protocolhandler": {
+		"title": "fount 프로토콜 처리",
+		"processing": "프로토콜 처리 중...",
+		"invalidProtocol": "잘못된 프로토콜입니다.",
+		"insufficientParams": "매개변수가 부족합니다.",
+		"unknownCommand": "알 수 없는 명령입니다.",
+		"shellCommandSent": "셸 명령이 전송되었습니다.",
+		"shellCommandFailed": "셸 명령 전송에 실패했습니다.",
+		"shellCommandError": "셸 명령 전송 중 오류가 발생했습니다.",
+		"fountNotFound": "아이고…\n\nfount를 찾을 수 없습니다. 먼저 설치해야 할까요?",
+		"unknownError": "아이고…\n\n오류가 발생했습니다:\n${error}",
+		"runPartConfirm": {
+			"title": "실행을 확인하십시오",
+			"message": "${parttype}의 ${partname}을 실행 하시겠습니까?",
+			"confirm": "확인하다",
+			"cancel": "취소"
+		}
+	},
 	"startPage": {
 		"title": "fount!",
 		"newTabFailed": {
@@ -207,6 +207,28 @@
 					"cancel": "취소"
 				}
 			}
+		}
+	},
+	"tutorial": {
+		"title": "튜토리얼 어떠세요?",
+		"modal": {
+			"title": "fount에 오신 것을 환영합니다!",
+			"instruction": "시작 가이드를 진행하시겠습니까?",
+			"buttons": {
+				"start": "가이드 시작",
+				"skip": "건너뛰기"
+			}
+		},
+		"endScreen": {
+			"title": "훌륭합니다! 가이드 완료!",
+			"subtitle": "이제 fount 사용법을 익혔습니다!",
+			"endButton": "시작하기!"
+		},
+		"progressMessages": {
+			"mouseMove": "마우스 ${mouseIcon}를 움직여 보세요.",
+			"keyboardPress": "키보드 ${keyboardIcon}에서 아무 키나 눌러보세요.",
+			"mobileTouchMove": "휴대폰 ${phoneIcon}을(를) 찾아보세요. 이제 손가락 중 하나를 사용하여 화면에 접촉한 후, 그대로 미끄러뜨리세요.",
+			"mobileClick": "손가락으로 휴대폰 ${phoneIcon} 화면을 한 번 가볍게 두드린 다음 바로 떼어보세요. 참 쉽죠?"
 		}
 	},
 	"auth": {
@@ -264,26 +286,15 @@
 			"veryStrong": "매우 강함"
 		}
 	},
-	"tutorial": {
-		"title": "튜토리얼 어떠세요?",
+	"login_info": {
 		"modal": {
-			"title": "fount에 오신 것을 환영합니다!",
-			"instruction": "시작 가이드를 진행하시겠습니까?",
+			"title": "인증서 전송 오류",
+			"retrieve_error": "로그인 정보를 저장하는 동안 오류가 발생했습니다.\n${error}\n계속할 수는 있지만 로그인 정보를 저장할 수는 없습니다.",
+			"transfer_error": "로그인 정보를 전송하는 동안 오류가 발생했습니다.\n${error}\n계속할 수는 있지만 로그인 정보를 얻을 수는 없습니다.",
 			"buttons": {
-				"start": "가이드 시작",
-				"skip": "건너뛰기"
+				"ignore": "무시하고 계속",
+				"retry": "재시도"
 			}
-		},
-		"endScreen": {
-			"title": "훌륭합니다! 가이드 완료!",
-			"subtitle": "이제 fount 사용법을 익혔습니다!",
-			"endButton": "시작하기!"
-		},
-		"progressMessages": {
-			"mouseMove": "마우스 ${mouseIcon}를 움직여 보세요.",
-			"keyboardPress": "키보드 ${keyboardIcon}에서 아무 키나 눌러보세요.",
-			"mobileTouchMove": "휴대폰 ${phoneIcon}을(를) 찾아보세요. 이제 손가락 중 하나를 사용하여 화면에 접촉한 후, 그대로 미끄러뜨리세요.",
-			"mobileClick": "손가락으로 휴대폰 ${phoneIcon} 화면을 한 번 가볍게 두드린 다음 바로 떼어보세요. 참 쉽죠?"
 		}
 	},
 	"home": {
@@ -363,204 +374,6 @@
 					"title": "기본 페르소나로 설정"
 				}
 			}
-		}
-	},
-	"themeManage": {
-		"title": "테마 관리",
-		"instruction": "테마를 선택하세요!",
-		"themes": {
-			"auto": "자동",
-			"light": "라이트",
-			"dark": "다크",
-			"cupcake": "컵케이크",
-			"bumblebee": "범블비",
-			"emerald": "에메랄드",
-			"corporate": "코퍼레이트",
-			"synthwave": "신스웨이브",
-			"retro": "레트로",
-			"cyberpunk": "사이버펑크",
-			"valentine": "밸런타인",
-			"halloween": "할로윈",
-			"garden": "가든",
-			"forest": "포레스트",
-			"aqua": "아쿠아",
-			"lofi": "Lo-fi",
-			"pastel": "파스텔",
-			"fantasy": "판타지",
-			"wireframe": "와이어프레임",
-			"black": "블랙",
-			"luxury": "럭셔리",
-			"dracula": "드라큘라",
-			"cmyk": "CMYK",
-			"autumn": "어텀",
-			"business": "비즈니스",
-			"acid": "애시드",
-			"lemonade": "레모네이드",
-			"night": "나이트",
-			"coffee": "커피",
-			"winter": "윈터",
-			"dim": "딤",
-			"nord": "노드",
-			"sunset": "선셋",
-			"caramellatte": "카라멜 라떼",
-			"abyss": "어비스",
-			"silk": "실크"
-		}
-	},
-	"import": {
-		"title": "가져오기",
-		"tabs": {
-			"fileImport": "파일 가져오기",
-			"textImport": "텍스트 가져오기"
-		},
-		"dropArea": {
-			"icon": {
-				"alt": "업로드 아이콘"
-			},
-			"text": "여기에 파일을 드래그 앤 드롭하거나 클릭하여 파일을 선택하세요."
-		},
-		"textArea": {
-			"placeholder": "가져올 텍스트를 입력하세요..."
-		},
-		"buttons": {
-			"import": "가져오기"
-		},
-		"alerts": {
-			"importSuccess": "성공적으로 가져왔습니다.",
-			"importFailed": "가져오기에 실패했습니다: ${error}",
-			"unknownError": "알 수 없는 오류가 발생했습니다."
-		},
-		"errors": {
-			"noFileSelected": "파일을 선택해주세요.",
-			"fileImportFailed": "파일 가져오기에 실패했습니다: ${message}",
-			"noTextContent": "텍스트 내용을 입력해주세요.",
-			"textImportFailed": "텍스트 가져오기에 실패했습니다: ${message}",
-			"unknownError": "알 수 없는 오류가 발생했습니다.",
-			"handler": "핸들러",
-			"error": "오류"
-		},
-		"fileItem": {
-			"removeButton": {
-				"title": "제거"
-			},
-			"removeButtonIcon": {
-				"alt": "제거"
-			}
-		}
-	},
-	"aisource_editor": {
-		"title": "AI 소스 에디터",
-		"fileList": {
-			"title": "AI 소스 목록",
-			"addButton": {
-				"title": "+"
-			}
-		},
-		"configTitle": "AI 소스 설정",
-		"generatorSelect": {
-			"label": "생성기 선택",
-			"placeholder": "선택해주세요"
-		},
-		"buttons": {
-			"save": "저장",
-			"delete": "삭제"
-		},
-		"tooltips": {
-			"setDefault": "기본값으로 설정"
-		},
-		"alerts": {
-			"fetchFileListFailed": "파일 목록을 가져오는 데 실패했습니다: ${error}",
-			"fetchGeneratorListFailed": "생성기 목록을 가져오는 데 실패했습니다: ${error}",
-			"fetchDefaultsFailed": "기본 구성 요소를 불러오지 못했습니다: ${error}",
-			"fetchFileDataFailed": "파일 데이터를 가져오는 데 실패했습니다: ${error}",
-			"noFileSelectedSave": "저장할 파일이 선택되지 않았습니다.",
-			"saveFileFailed": "파일 저장에 실패했습니다: ${error}",
-			"setDefaultFailed": "기본 AI 소스 설정 실패 : ${error}",
-			"noFileSelectedDelete": "삭제할 파일이 선택되지 않았습니다.",
-			"deleteFileFailed": "파일 삭제에 실패했습니다: ${error}",
-			"invalidFileName": "파일 이름에는 다음 문자를 사용할 수 없습니다: / \\ : * ? \" < > |",
-			"addFileFailed": "파일 추가에 실패했습니다: ${error}",
-			"fetchConfigTemplateFailed": "설정 템플릿을 가져오는 데 실패했습니다.",
-			"noGeneratorSelectedSave": "저장하기 전에 생성기를 선택해주세요."
-		},
-		"confirm": {
-			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까?",
-			"deleteFile": "이 파일을 삭제하시겠습니까?",
-			"unsavedChangesBeforeUnload": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 나가시겠습니까?"
-		},
-		"prompts": {
-			"newFileName": "새 AI 소스 파일 이름을 입력하세요 (확장자 제외):"
-		},
-		"editor": {
-			"disabledIndicator": "먼저 생성기를 선택해주세요."
-		},
-		"common_config_interface": {
-			"empty_generator": "이 AI 소스의 레거시 생성기는로드하는 동안 오류가 있으며 제거되지 않거나 이름이 바뀌었을 수 있습니다.",
-			"apiKeyRequired": "모델 목록을 불러오려면 API 키가 필요합니다.",
-			"loadingModels": "모델을 불러오는 중...",
-			"availableModels": "사용 가능한 모델:",
-			"copyModelIdTooltip": "클릭하여 모델 ID 복사",
-			"copied": "복사 완료!",
-			"loadModelsFailed": "모델을 불러오지 못했습니다: ${message}"
-		}
-	},
-	"part_config": {
-		"title": "컴포넌트 설정",
-		"pageTitle": "컴포넌트 설정",
-		"labels": {
-			"partType": "컴포넌트 유형 선택",
-			"part": "컴포넌트 선택"
-		},
-		"placeholders": {
-			"partTypeSelect": "선택해주세요",
-			"partSelect": "선택해주세요"
-		},
-		"editor": {
-			"title": "컴포넌트 설정",
-			"disabledIndicator": "이 컴포넌트는 설정을 지원하지 않습니다.",
-			"buttons": {
-				"save": "저장"
-			}
-		},
-		"errorMessage": {
-			"icon": {
-				"alt": "오류 아이콘"
-			}
-		},
-		"alerts": {
-			"fetchPartTypesFailed": "컴포넌트 유형을 가져오는 데 실패했습니다.",
-			"fetchPartsFailed": "컴포넌트 목록을 가져오는 데 실패했습니다.",
-			"loadEditorFailed": "에디터를 로드하는 데 실패했습니다.",
-			"saveConfigFailed": "컴포넌트 설정을 저장하는 데 실패했습니다.",
-			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까?",
-			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 나가시겠습니까?"
-		}
-	},
-	"uninstall": {
-		"title": "제거",
-		"titleWithName": "${type}/${name} 제거",
-		"confirmMessage": "${type}: ${name}을(를) 제거하시겠습니까?",
-		"invalidParamsTitle": "잘못된 매개변수",
-		"infoMessage": {
-			"icon": {
-				"alt": "정보 아이콘"
-			}
-		},
-		"errorMessage": {
-			"icon": {
-				"alt": "오류 아이콘"
-			}
-		},
-		"buttons": {
-			"confirm": "제거 확인",
-			"cancel": "취소",
-			"back": "뒤로"
-		},
-		"alerts": {
-			"success": "${type}: ${name}이(가) 성공적으로 제거되었습니다.",
-			"failed": "제거에 실패했습니다: ${error}",
-			"invalidParams": "잘못된 요청 매개변수입니다.",
-			"httpError": "HTTP 오류! 상태 코드: ${status}"
 		}
 	},
 	"chat": {
@@ -772,209 +585,6 @@
 			"delete": "삭제"
 		}
 	},
-	"discord_bots": {
-		"title": "Discord 봇",
-		"cardTitle": "Discord 봇",
-		"buttons": {
-			"newBot": "새로 만들기",
-			"deleteBot": "삭제"
-		},
-		"configCard": {
-			"title": "봇 설정",
-			"labels": {
-				"character": "캐릭터",
-				"apiKey": "Discord API 키",
-				"config": "설정"
-			},
-			"charSelectPlaceholder": "캐릭터 선택",
-			"apiKeyInput": {
-				"placeholder": "API 키를 입력하세요"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "API 키 표시/숨기기"
-			},
-			"buttons": {
-				"saveConfig": "설정 저장",
-				"startBot": "시작",
-				"stopBot": "중지"
-			}
-		},
-		"prompts": {
-			"newBotName": "새 봇 이름을 입력하세요:"
-		},
-		"alerts": {
-			"botExists": "\"${botname}\" 이름의 봇이 이미 존재합니다. 다른 이름을 사용해주세요.",
-			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까?",
-			"configSaved": "설정이 성공적으로 저장되었습니다.",
-			"httpError": "HTTP 오류가 발생했습니다.",
-			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 나가시겠습니까?"
-		}
-	},
-	"telegram_bots": {
-		"title": "텔레그램 봇",
-		"cardTitle": "텔레그램 봇 관리",
-		"buttons": {
-			"newBot": "새로 만들기",
-			"deleteBot": "삭제"
-		},
-		"configCard": {
-			"title": "봇 설정",
-			"labels": {
-				"character": "연결된 캐릭터",
-				"botToken": "텔레그램 봇 토큰",
-				"config": "설정"
-			},
-			"charSelectPlaceholder": "캐릭터 선택",
-			"botTokenInput": {
-				"placeholder": "텔레그램 봇 토큰을 입력하세요"
-			},
-			"toggleBotTokenIcon": {
-				"alt": "봇 토큰 표시/숨기기"
-			},
-			"buttons": {
-				"saveConfig": "설정 저장",
-				"startBot": "시작",
-				"stopBot": "중지"
-			}
-		},
-		"prompts": {
-			"newBotName": "새 봇 이름을 입력하세요:"
-		},
-		"alerts": {
-			"botExists": "\"${botname}\" 이름의 봇이 이미 존재합니다. 다른 이름을 사용해주세요.",
-			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까?",
-			"configSaved": "설정이 성공적으로 저장되었습니다!",
-			"httpError": "HTTP 오류가 발생했습니다.",
-			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 나가시겠습니까?"
-		}
-	},
-	"terminal_assistant": {
-		"title": "터미널 어시스턴트",
-		"initialMessage": "fount는 코딩 작업을 돕기 위해 즐겨찾는 캐릭터를 터미널에 배포하는 기능을 지원합니다!",
-		"initialMessageLink": "자세한 내용은 여기를 클릭하세요."
-	},
-	"access": {
-		"title": "다른 기기에서 fount에 접속",
-		"heading": "다른 기기에서 fount에 접속하시겠습니까?",
-		"instruction": {
-			"sameLAN": "기기와 fount 호스트가 동일한 로컬 네트워크에 있는지 확인하세요.",
-			"accessthis": "다음 URL로 접속하세요:"
-		},
-		"copyButton": "URL 복사",
-		"copied": "URL이 클립보드에 복사되었습니다!"
-	},
-	"proxy": {
-		"title": "API 프록시",
-		"heading": "OpenAI API 프록시 주소",
-		"instruction": "fount의 AI 소스를 사용하려면, OpenAI API 형식이 필요한 애플리케이션에 다음 주소를 입력하세요!",
-		"copyButton": "주소 복사",
-		"copied": "주소가 클립보드에 복사되었습니다!"
-	},
-	"404": {
-		"title": "페이지를 찾을 수 없습니다",
-		"pageNotFoundText": "이런! 존재하지 않는 페이지에 접속한 것 같습니다.",
-		"homepageButton": "홈페이지로 돌아가기"
-	},
-	"userSettings": {
-		"title": "사용자 설정",
-		"PageTitle": "사용자 설정",
-		"apiError": "API 요청에 실패했습니다: ${message}",
-		"generalError": "오류가 발생했습니다: ${message}",
-		"userInfo": {
-			"title": "사용자 정보",
-			"usernameLabel": "사용자 이름:",
-			"creationDateLabel": "계정 생성일:",
-			"folderSizeLabel": "사용자 데이터 크기:",
-			"folderPathLabel": "사용자 데이터 경로:",
-			"copyPathBtnTitle": "경로 복사",
-			"copiedAlert": "경로가 클립보드에 복사되었습니다!"
-		},
-		"changePassword": {
-			"title": "비밀번호 변경",
-			"currentPasswordLabel": "현재 비밀번호:",
-			"newPasswordLabel": "새 비밀번호:",
-			"confirmNewPasswordLabel": "새 비밀번호 확인:",
-			"submitButton": "비밀번호 변경",
-			"errorMismatch": "새 비밀번호가 일치하지 않습니다.",
-			"success": "비밀번호가 성공적으로 변경되었습니다."
-		},
-		"renameUser": {
-			"title": "사용자 이름 변경",
-			"newUsernameLabel": "새 사용자 이름:",
-			"submitButton": "사용자 이름 변경",
-			"confirmMessage": "사용자 이름을 변경하시겠습니까? 변경 후 다시 로그인해야 합니다.",
-			"success": "사용자 이름이 \"${newUsername}\"(으)로 성공적으로 변경되었습니다. 이제 로그아웃됩니다."
-		},
-		"userDevices": {
-			"title": "사용자 기기/세션",
-			"refreshButtonTitle": "목록 새로고침",
-			"noDevicesFound": "기기 또는 세션이 없습니다.",
-			"deviceInfo": "기기 ID: ${deviceId}",
-			"thisDevice": "이 기기",
-			"deviceDetails": "마지막 접속: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
-			"revokeButton": "해지",
-			"revokeConfirm": "이 기기/세션의 액세스 권한을 해지하시겠습니까?",
-			"revokeSuccess": "기기/세션이 성공적으로 해지되었습니다."
-		},
-		"logout": {
-			"title": "로그아웃",
-			"description": "현재 기기에서 계정을 로그아웃합니다.",
-			"buttonText": "로그아웃",
-			"confirmMessage": "로그아웃하시겠습니까?",
-			"successMessage": "성공적으로 로그아웃되었습니다. 잠시 후 로그인 페이지로 이동합니다..."
-		},
-		"deleteAccount": {
-			"title": "계정 삭제",
-			"warning": "경고: 이 작업은 계정과 모든 관련 데이터를 영구적으로 삭제하며 복구할 수 없습니다.",
-			"submitButton": "내 계정 삭제",
-			"confirmMessage1": "경고! 계정을 영구적으로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
-			"confirmMessage2": "삭제를 확인하려면 사용자 이름 \"${username}\"을(를) 입력하세요:",
-			"usernameMismatch": "입력한 사용자 이름이 현재 사용자와 일치하지 않습니다. 삭제 작업이 취소되었습니다.",
-			"success": "계정이 성공적으로 삭제되었습니다. 이제 로그아웃됩니다."
-		},
-		"passwordConfirm": {
-			"title": "작업 확인",
-			"message": "계속하려면 현재 비밀번호를 입력하세요:",
-			"passwordLabel": "비밀번호:",
-			"confirmButton": "확인",
-			"cancelButton": "취소"
-		},
-		"apiKeys": {
-			"title": "API 키",
-			"description": "외부 응용 프로그램의 API 키를 관리하십시오.",
-			"descriptionPlaceholder": "새로운 키 설명",
-			"createButton": "생성",
-			"noKeysFound": "API 키가 발견되지 않았습니다.",
-			"refreshButtonTitle": "목록을 새로 고치십시오",
-			"keyDetails": "설명 : ${description} | 생성 : ${createdAt} | 마지막 사용 : ${lastUsed}",
-			"neverUsed": "사용하지 않았습니다",
-			"revokeButton": "해지",
-			"revokeConfirm": "이 API 키를 취소 하시겠습니까?",
-			"revokeSuccess": "API 키가 성공적으로 취소되었습니다.",
-			"errorDescriptionRequired": "설명이 필요합니다.",
-			"createSuccess": "API 키는 성공적으로 생성되었습니다."
-		},
-		"newApiKey": {
-			"title": "새로운 API 키가 만들어졌습니다",
-			"warning": "새 API 키를 복사하십시오. 당신은 그것을 다시 볼 수 없을 것입니다!",
-			"copyButtonTitle": "새 API 키를 복사하십시오",
-			"closeButton": "내 키를 복사했습니다"
-		}
-	},
-	"badges_maker": {
-		"title": "fount! 배지 변환기",
-		"card_title": "fount 배지 링크 컨버터",
-		"original_url_label": "img.shields.io URL을 붙여넣으세요",
-		"original_url_placeholder": "예: https://img.shields.io/badge/hello-world-blue",
-		"new_url_label": "생성된 새 URL",
-		"new_url_placeholder": "변환된 URL이 여기에 표시됩니다",
-		"copy_button": "복사",
-		"preview_label": "배지 미리보기",
-		"preview_alt": "배지 미리보기",
-		"copied_text": "복사됨!",
-		"copy_error": "텍스트를 복사할 수 없습니다: ${error}",
-		"copy_fail_alert": "복사 실패!"
-	},
 	"easynew": {
 		"title": "빠른 생성",
 		"cardTitle": "템플릿에서 새 컴포넌트 만들기",
@@ -1070,6 +680,47 @@
 			"description": "이 템플릿은 간단한 컴포넌트를 빠르게 만드는 데만 사용할 수 있으며, 복잡한 컴포넌트는 여전히 수동으로 만들어야 합니다."
 		}
 	},
+	"import": {
+		"title": "가져오기",
+		"tabs": {
+			"fileImport": "파일 가져오기",
+			"textImport": "텍스트 가져오기"
+		},
+		"dropArea": {
+			"icon": {
+				"alt": "업로드 아이콘"
+			},
+			"text": "여기에 파일을 드래그 앤 드롭하거나 클릭하여 파일을 선택하세요."
+		},
+		"textArea": {
+			"placeholder": "가져올 텍스트를 입력하세요..."
+		},
+		"buttons": {
+			"import": "가져오기"
+		},
+		"alerts": {
+			"importSuccess": "성공적으로 가져왔습니다.",
+			"importFailed": "가져오기에 실패했습니다: ${error}",
+			"unknownError": "알 수 없는 오류가 발생했습니다."
+		},
+		"errors": {
+			"noFileSelected": "파일을 선택해주세요.",
+			"fileImportFailed": "파일 가져오기에 실패했습니다: ${message}",
+			"noTextContent": "텍스트 내용을 입력해주세요.",
+			"textImportFailed": "텍스트 가져오기에 실패했습니다: ${message}",
+			"unknownError": "알 수 없는 오류가 발생했습니다.",
+			"handler": "핸들러",
+			"error": "오류"
+		},
+		"fileItem": {
+			"removeButton": {
+				"title": "제거"
+			},
+			"removeButtonIcon": {
+				"alt": "제거"
+			}
+		}
+	},
 	"export": {
 		"title": "컴포넌트 내보내기",
 		"pageTitle": "컴포넌트 내보내기",
@@ -1131,6 +782,119 @@
 			"generateShareLinkWithData": "공유 링크 생성 (데이터 포함)"
 		}
 	},
+	"uninstall": {
+		"title": "제거",
+		"titleWithName": "${type}/${name} 제거",
+		"confirmMessage": "${type}: ${name}을(를) 제거하시겠습니까?",
+		"invalidParamsTitle": "잘못된 매개변수",
+		"infoMessage": {
+			"icon": {
+				"alt": "정보 아이콘"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "오류 아이콘"
+			}
+		},
+		"buttons": {
+			"confirm": "제거 확인",
+			"cancel": "취소",
+			"back": "뒤로"
+		},
+		"alerts": {
+			"success": "${type}: ${name}이(가) 성공적으로 제거되었습니다.",
+			"failed": "제거에 실패했습니다: ${error}",
+			"invalidParams": "잘못된 요청 매개변수입니다.",
+			"httpError": "HTTP 오류! 상태 코드: ${status}"
+		}
+	},
+	"userSettings": {
+		"title": "사용자 설정",
+		"PageTitle": "사용자 설정",
+		"apiError": "API 요청에 실패했습니다: ${message}",
+		"generalError": "오류가 발생했습니다: ${message}",
+		"userInfo": {
+			"title": "사용자 정보",
+			"usernameLabel": "사용자 이름:",
+			"creationDateLabel": "계정 생성일:",
+			"folderSizeLabel": "사용자 데이터 크기:",
+			"folderPathLabel": "사용자 데이터 경로:",
+			"copyPathBtnTitle": "경로 복사",
+			"copiedAlert": "경로가 클립보드에 복사되었습니다!"
+		},
+		"changePassword": {
+			"title": "비밀번호 변경",
+			"currentPasswordLabel": "현재 비밀번호:",
+			"newPasswordLabel": "새 비밀번호:",
+			"confirmNewPasswordLabel": "새 비밀번호 확인:",
+			"submitButton": "비밀번호 변경",
+			"errorMismatch": "새 비밀번호가 일치하지 않습니다.",
+			"success": "비밀번호가 성공적으로 변경되었습니다."
+		},
+		"renameUser": {
+			"title": "사용자 이름 변경",
+			"newUsernameLabel": "새 사용자 이름:",
+			"submitButton": "사용자 이름 변경",
+			"confirmMessage": "사용자 이름을 변경하시겠습니까? 변경 후 다시 로그인해야 합니다.",
+			"success": "사용자 이름이 \"${newUsername}\"(으)로 성공적으로 변경되었습니다. 이제 로그아웃됩니다."
+		},
+		"userDevices": {
+			"title": "사용자 기기/세션",
+			"refreshButtonTitle": "목록 새로고침",
+			"noDevicesFound": "기기 또는 세션이 없습니다.",
+			"deviceInfo": "기기 ID: ${deviceId}",
+			"thisDevice": "이 기기",
+			"deviceDetails": "마지막 접속: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
+			"revokeButton": "해지",
+			"revokeConfirm": "이 기기/세션의 액세스 권한을 해지하시겠습니까?",
+			"revokeSuccess": "기기/세션이 성공적으로 해지되었습니다."
+		},
+		"logout": {
+			"title": "로그아웃",
+			"description": "현재 기기에서 계정을 로그아웃합니다.",
+			"buttonText": "로그아웃",
+			"confirmMessage": "로그아웃하시겠습니까?",
+			"successMessage": "성공적으로 로그아웃되었습니다. 잠시 후 로그인 페이지로 이동합니다..."
+		},
+		"deleteAccount": {
+			"title": "계정 삭제",
+			"warning": "경고: 이 작업은 계정과 모든 관련 데이터를 영구적으로 삭제하며 복구할 수 없습니다.",
+			"submitButton": "내 계정 삭제",
+			"confirmMessage1": "경고! 계정을 영구적으로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+			"confirmMessage2": "삭제를 확인하려면 사용자 이름 \"${username}\"을(를) 입력하세요:",
+			"usernameMismatch": "입력한 사용자 이름이 현재 사용자와 일치하지 않습니다. 삭제 작업이 취소되었습니다.",
+			"success": "계정이 성공적으로 삭제되었습니다. 이제 로그아웃됩니다."
+		},
+		"passwordConfirm": {
+			"title": "작업 확인",
+			"message": "계속하려면 현재 비밀번호를 입력하세요:",
+			"passwordLabel": "비밀번호:",
+			"confirmButton": "확인",
+			"cancelButton": "취소"
+		},
+		"apiKeys": {
+			"title": "API 키",
+			"description": "외부 응용 프로그램의 API 키를 관리하십시오.",
+			"descriptionPlaceholder": "새로운 키 설명",
+			"createButton": "생성",
+			"noKeysFound": "API 키가 발견되지 않았습니다.",
+			"refreshButtonTitle": "목록을 새로 고치십시오",
+			"keyDetails": "설명 : ${description} | 생성 : ${createdAt} | 마지막 사용 : ${lastUsed}",
+			"neverUsed": "사용하지 않았습니다",
+			"revokeButton": "해지",
+			"revokeConfirm": "이 API 키를 취소 하시겠습니까?",
+			"revokeSuccess": "API 키가 성공적으로 취소되었습니다.",
+			"errorDescriptionRequired": "설명이 필요합니다.",
+			"createSuccess": "API 키는 성공적으로 생성되었습니다."
+		},
+		"newApiKey": {
+			"title": "새로운 API 키가 만들어졌습니다",
+			"warning": "새 API 키를 복사하십시오. 당신은 그것을 다시 볼 수 없을 것입니다!",
+			"copyButtonTitle": "새 API 키를 복사하십시오",
+			"closeButton": "내 키를 복사했습니다"
+		}
+	},
 	"languageSettings": {
 		"title": "언어 설정",
 		"description": "여기에서 언어 선호도를 관리하십시오. 목록의 언어는 순서대로 브라우저 설정보다 우선합니다.",
@@ -1144,15 +908,210 @@
 		"resetMessage": "언어 설정이 재설정되었습니다!",
 		"fetchLocalesFailed": "사용 가능한 언어를 얻지 못했습니다!"
 	},
-	"login_info": {
-		"modal": {
-			"title": "인증서 전송 오류",
-			"retrieve_error": "로그인 정보를 저장하는 동안 오류가 발생했습니다.\n${error}\n계속할 수는 있지만 로그인 정보를 저장할 수는 없습니다.",
-			"transfer_error": "로그인 정보를 전송하는 동안 오류가 발생했습니다.\n${error}\n계속할 수는 있지만 로그인 정보를 얻을 수는 없습니다.",
+	"themeManage": {
+		"title": "테마 관리",
+		"instruction": "테마를 선택하세요!",
+		"themes": {
+			"auto": "자동",
+			"light": "라이트",
+			"dark": "다크",
+			"cupcake": "컵케이크",
+			"bumblebee": "범블비",
+			"emerald": "에메랄드",
+			"corporate": "코퍼레이트",
+			"synthwave": "신스웨이브",
+			"retro": "레트로",
+			"cyberpunk": "사이버펑크",
+			"valentine": "밸런타인",
+			"halloween": "할로윈",
+			"garden": "가든",
+			"forest": "포레스트",
+			"aqua": "아쿠아",
+			"lofi": "Lo-fi",
+			"pastel": "파스텔",
+			"fantasy": "판타지",
+			"wireframe": "와이어프레임",
+			"black": "블랙",
+			"luxury": "럭셔리",
+			"dracula": "드라큘라",
+			"cmyk": "CMYK",
+			"autumn": "어텀",
+			"business": "비즈니스",
+			"acid": "애시드",
+			"lemonade": "레모네이드",
+			"night": "나이트",
+			"coffee": "커피",
+			"winter": "윈터",
+			"dim": "딤",
+			"nord": "노드",
+			"sunset": "선셋",
+			"caramellatte": "카라멜 라떼",
+			"abyss": "어비스",
+			"silk": "실크"
+		}
+	},
+	"part_config": {
+		"title": "컴포넌트 설정",
+		"pageTitle": "컴포넌트 설정",
+		"labels": {
+			"partType": "컴포넌트 유형 선택",
+			"part": "컴포넌트 선택"
+		},
+		"placeholders": {
+			"partTypeSelect": "선택해주세요",
+			"partSelect": "선택해주세요"
+		},
+		"editor": {
+			"title": "컴포넌트 설정",
+			"disabledIndicator": "이 컴포넌트는 설정을 지원하지 않습니다.",
 			"buttons": {
-				"ignore": "무시하고 계속",
-				"retry": "재시도"
+				"save": "저장"
 			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "오류 아이콘"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "컴포넌트 유형을 가져오는 데 실패했습니다.",
+			"fetchPartsFailed": "컴포넌트 목록을 가져오는 데 실패했습니다.",
+			"loadEditorFailed": "에디터를 로드하는 데 실패했습니다.",
+			"saveConfigFailed": "컴포넌트 설정을 저장하는 데 실패했습니다.",
+			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까?",
+			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 나가시겠습니까?"
+		}
+	},
+	"aisource_editor": {
+		"title": "AI 소스 에디터",
+		"fileList": {
+			"title": "AI 소스 목록",
+			"addButton": {
+				"title": "+"
+			}
+		},
+		"configTitle": "AI 소스 설정",
+		"generatorSelect": {
+			"label": "생성기 선택",
+			"placeholder": "선택해주세요"
+		},
+		"buttons": {
+			"save": "저장",
+			"delete": "삭제"
+		},
+		"tooltips": {
+			"setDefault": "기본값으로 설정"
+		},
+		"alerts": {
+			"fetchFileListFailed": "파일 목록을 가져오는 데 실패했습니다: ${error}",
+			"fetchGeneratorListFailed": "생성기 목록을 가져오는 데 실패했습니다: ${error}",
+			"fetchDefaultsFailed": "기본 구성 요소를 불러오지 못했습니다: ${error}",
+			"fetchFileDataFailed": "파일 데이터를 가져오는 데 실패했습니다: ${error}",
+			"noFileSelectedSave": "저장할 파일이 선택되지 않았습니다.",
+			"saveFileFailed": "파일 저장에 실패했습니다: ${error}",
+			"setDefaultFailed": "기본 AI 소스 설정 실패 : ${error}",
+			"noFileSelectedDelete": "삭제할 파일이 선택되지 않았습니다.",
+			"deleteFileFailed": "파일 삭제에 실패했습니다: ${error}",
+			"invalidFileName": "파일 이름에는 다음 문자를 사용할 수 없습니다: / \\ : * ? \" < > |",
+			"addFileFailed": "파일 추가에 실패했습니다: ${error}",
+			"fetchConfigTemplateFailed": "설정 템플릿을 가져오는 데 실패했습니다.",
+			"noGeneratorSelectedSave": "저장하기 전에 생성기를 선택해주세요."
+		},
+		"confirm": {
+			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까?",
+			"deleteFile": "이 파일을 삭제하시겠습니까?",
+			"unsavedChangesBeforeUnload": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 나가시겠습니까?"
+		},
+		"prompts": {
+			"newFileName": "새 AI 소스 파일 이름을 입력하세요 (확장자 제외):"
+		},
+		"editor": {
+			"disabledIndicator": "먼저 생성기를 선택해주세요."
+		},
+		"common_config_interface": {
+			"empty_generator": "이 AI 소스의 레거시 생성기는로드하는 동안 오류가 있으며 제거되지 않거나 이름이 바뀌었을 수 있습니다.",
+			"apiKeyRequired": "모델 목록을 불러오려면 API 키가 필요합니다.",
+			"loadingModels": "모델을 불러오는 중...",
+			"availableModels": "사용 가능한 모델:",
+			"copyModelIdTooltip": "클릭하여 모델 ID 복사",
+			"copied": "복사 완료!",
+			"loadModelsFailed": "모델을 불러오지 못했습니다: ${message}"
+		}
+	},
+	"discord_bots": {
+		"title": "Discord 봇",
+		"cardTitle": "Discord 봇",
+		"buttons": {
+			"newBot": "새로 만들기",
+			"deleteBot": "삭제"
+		},
+		"configCard": {
+			"title": "봇 설정",
+			"labels": {
+				"character": "캐릭터",
+				"apiKey": "Discord API 키",
+				"config": "설정"
+			},
+			"charSelectPlaceholder": "캐릭터 선택",
+			"apiKeyInput": {
+				"placeholder": "API 키를 입력하세요"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "API 키 표시/숨기기"
+			},
+			"buttons": {
+				"saveConfig": "설정 저장",
+				"startBot": "시작",
+				"stopBot": "중지"
+			}
+		},
+		"prompts": {
+			"newBotName": "새 봇 이름을 입력하세요:"
+		},
+		"alerts": {
+			"botExists": "\"${botname}\" 이름의 봇이 이미 존재합니다. 다른 이름을 사용해주세요.",
+			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까?",
+			"configSaved": "설정이 성공적으로 저장되었습니다.",
+			"httpError": "HTTP 오류가 발생했습니다.",
+			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 나가시겠습니까?"
+		}
+	},
+	"telegram_bots": {
+		"title": "텔레그램 봇",
+		"cardTitle": "텔레그램 봇 관리",
+		"buttons": {
+			"newBot": "새로 만들기",
+			"deleteBot": "삭제"
+		},
+		"configCard": {
+			"title": "봇 설정",
+			"labels": {
+				"character": "연결된 캐릭터",
+				"botToken": "텔레그램 봇 토큰",
+				"config": "설정"
+			},
+			"charSelectPlaceholder": "캐릭터 선택",
+			"botTokenInput": {
+				"placeholder": "텔레그램 봇 토큰을 입력하세요"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "봇 토큰 표시/숨기기"
+			},
+			"buttons": {
+				"saveConfig": "설정 저장",
+				"startBot": "시작",
+				"stopBot": "중지"
+			}
+		},
+		"prompts": {
+			"newBotName": "새 봇 이름을 입력하세요:"
+		},
+		"alerts": {
+			"botExists": "\"${botname}\" 이름의 봇이 이미 존재합니다. 다른 이름을 사용해주세요.",
+			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까?",
+			"configSaved": "설정이 성공적으로 저장되었습니다!",
+			"httpError": "HTTP 오류가 발생했습니다.",
+			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 나가시겠습니까?"
 		}
 	},
 	"browser_integration": {
@@ -1223,5 +1182,46 @@
 			"prompt": "fount 브라우저 통합 스크립트의 새 버전을 사용할 수 있습니다. 업데이트 페이지가 지금 열려 있습니까?"
 		},
 		"csp_warning": "fount Browser Integration 스크립트는 CSP 정책이 페이지에 존재 함을 감지하여 통합 스크립트가 제대로 작동하지 않을 수 있습니다. CSP를 끄려면 플러그인 설치를 고려하십시오."
+	},
+	"terminal_assistant": {
+		"title": "터미널 어시스턴트",
+		"initialMessage": "fount는 코딩 작업을 돕기 위해 즐겨찾는 캐릭터를 터미널에 배포하는 기능을 지원합니다!",
+		"initialMessageLink": "자세한 내용은 여기를 클릭하세요."
+	},
+	"access": {
+		"title": "다른 기기에서 fount에 접속",
+		"heading": "다른 기기에서 fount에 접속하시겠습니까?",
+		"instruction": {
+			"sameLAN": "기기와 fount 호스트가 동일한 로컬 네트워크에 있는지 확인하세요.",
+			"accessthis": "다음 URL로 접속하세요:"
+		},
+		"copyButton": "URL 복사",
+		"copied": "URL이 클립보드에 복사되었습니다!"
+	},
+	"proxy": {
+		"title": "API 프록시",
+		"heading": "OpenAI API 프록시 주소",
+		"instruction": "fount의 AI 소스를 사용하려면, OpenAI API 형식이 필요한 애플리케이션에 다음 주소를 입력하세요!",
+		"copyButton": "주소 복사",
+		"copied": "주소가 클립보드에 복사되었습니다!"
+	},
+	"badges_maker": {
+		"title": "fount! 배지 변환기",
+		"card_title": "fount 배지 링크 컨버터",
+		"original_url_label": "img.shields.io URL을 붙여넣으세요",
+		"original_url_placeholder": "예: https://img.shields.io/badge/hello-world-blue",
+		"new_url_label": "생성된 새 URL",
+		"new_url_placeholder": "변환된 URL이 여기에 표시됩니다",
+		"copy_button": "복사",
+		"preview_label": "배지 미리보기",
+		"preview_alt": "배지 미리보기",
+		"copied_text": "복사됨!",
+		"copy_error": "텍스트를 복사할 수 없습니다: ${error}",
+		"copy_fail_alert": "복사 실패!"
+	},
+	"404": {
+		"title": "페이지를 찾을 수 없습니다",
+		"pageNotFoundText": "이런! 존재하지 않는 페이지에 접속한 것 같습니다.",
+		"homepageButton": "홈페이지로 돌아가기"
 	}
 }

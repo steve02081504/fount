@@ -100,24 +100,6 @@
 			"botStarted": "Persónan ${charname} hefur skráð sig inn á Telegram Bot ${botusername}"
 		}
 	},
-	"protocolhandler": {
-		"title": "Meðhöndla fount samskiptareglu",
-		"processing": "Vinn úr samskiptareglu...",
-		"invalidProtocol": "Ógild samskiptaregla",
-		"insufficientParams": "Ófullnægjandi færibreytur",
-		"unknownCommand": "Óþekkt skipun",
-		"shellCommandSent": "Skeljarskipun send",
-		"shellCommandFailed": "Mistókst að senda skeljarskipun",
-		"shellCommandError": "Villa við sendingu skeljarskipunar",
-		"fountNotFound": "Æji :(\n\nFann ekki fount, þarftu kannski að setja það upp fyrst?",
-		"unknownError": "Æji :(\n\nVilla kom upp:\n${error}",
-		"runPartConfirm": {
-			"title": "Staðfesta keyrslu",
-			"message": "Ertu viss um að þú viljir keyra ${parttype} af ${partname}?",
-			"confirm": "Staðfestu",
-			"cancel": "Hætta við"
-		}
-	},
 	"installer_wait_screen": {
 		"title": "Velkomin í fount!",
 		"hero": {
@@ -188,6 +170,24 @@
 			"close_page": "Loka síðu"
 		}
 	},
+	"protocolhandler": {
+		"title": "Meðhöndla fount samskiptareglu",
+		"processing": "Vinn úr samskiptareglu...",
+		"invalidProtocol": "Ógild samskiptaregla",
+		"insufficientParams": "Ófullnægjandi færibreytur",
+		"unknownCommand": "Óþekkt skipun",
+		"shellCommandSent": "Skeljarskipun send",
+		"shellCommandFailed": "Mistókst að senda skeljarskipun",
+		"shellCommandError": "Villa við sendingu skeljarskipunar",
+		"fountNotFound": "Æji :(\n\nFann ekki fount, þarftu kannski að setja það upp fyrst?",
+		"unknownError": "Æji :(\n\nVilla kom upp:\n${error}",
+		"runPartConfirm": {
+			"title": "Staðfesta keyrslu",
+			"message": "Ertu viss um að þú viljir keyra ${parttype} af ${partname}?",
+			"confirm": "Staðfestu",
+			"cancel": "Hætta við"
+		}
+	},
 	"startPage": {
 		"title": "fount!",
 		"newTabFailed": {
@@ -207,6 +207,28 @@
 					"cancel": "Hætta við"
 				}
 			}
+		}
+	},
+	"tutorial": {
+		"title": "Viltu smá kennslu?",
+		"modal": {
+			"title": "Velkomin í fount!",
+			"instruction": "Viltu fara í gegnum byrjendakennsluna?",
+			"buttons": {
+				"start": "Hefja kennslu",
+				"skip": "Sleppa"
+			}
+		},
+		"endScreen": {
+			"title": "Frábært! Kennslu lokið!",
+			"subtitle": "Nú kanntu á þetta!",
+			"endButton": "Næsta skref!"
+		},
+		"progressMessages": {
+			"mouseMove": "Finndu nú músina þína og reyndu, með fingrum þínum, að ná góðu taki á henni ${mouseIcon}<br/>Hreyfðu hana svo til og frá.",
+			"keyboardPress": "Finndu nú lyklaborðið þitt ${keyboardIcon}<br/>og reyndu að nota fingur þinn til að ýta á einhvern takkann.",
+			"mobileTouchMove": "Finndu nú farsímann þinn ${phoneIcon}<br/>Reyndu að nota hvaða fingur sem er til að snerta skjáinn og hreyfa hann svo.",
+			"mobileClick": "Reyndu nú að nota einhvern af fingrum þínum til að snerta skjá farsímans ${phoneIcon}<br/>og lyftu honum svo aftur."
 		}
 	},
 	"auth": {
@@ -264,26 +286,15 @@
 			"veryStrong": "Mjög sterkt"
 		}
 	},
-	"tutorial": {
-		"title": "Viltu smá kennslu?",
+	"login_info": {
 		"modal": {
-			"title": "Velkomin í fount!",
-			"instruction": "Viltu fara í gegnum byrjendakennsluna?",
+			"title": "Villa við flutning vottorðs",
+			"retrieve_error": "Villa kom upp þegar reynt var að vista innskráningarskilríki þitt:\n${error}\nÞú getur haldið áfram en getur ekki vistað innskráningarupplýsingar.",
+			"transfer_error": "Villa kom upp þegar reynt var að flytja innskráningarskilríki þitt:\n${error}\nÞú getur haldið áfram en getur ekki fengið innskráningarupplýsingar.",
 			"buttons": {
-				"start": "Hefja kennslu",
-				"skip": "Sleppa"
+				"ignore": "Hunsa og halda áfram",
+				"retry": "Reyndu aftur"
 			}
-		},
-		"endScreen": {
-			"title": "Frábært! Kennslu lokið!",
-			"subtitle": "Nú kanntu á þetta!",
-			"endButton": "Næsta skref!"
-		},
-		"progressMessages": {
-			"mouseMove": "Finndu nú músina þína og reyndu, með fingrum þínum, að ná góðu taki á henni ${mouseIcon}<br/>Hreyfðu hana svo til og frá.",
-			"keyboardPress": "Finndu nú lyklaborðið þitt ${keyboardIcon}<br/>og reyndu að nota fingur þinn til að ýta á einhvern takkann.",
-			"mobileTouchMove": "Finndu nú farsímann þinn ${phoneIcon}<br/>Reyndu að nota hvaða fingur sem er til að snerta skjáinn og hreyfa hann svo.",
-			"mobileClick": "Reyndu nú að nota einhvern af fingrum þínum til að snerta skjá farsímans ${phoneIcon}<br/>og lyftu honum svo aftur."
 		}
 	},
 	"home": {
@@ -363,204 +374,6 @@
 					"title": "Sjálfgefin sjálfsmynd"
 				}
 			}
-		}
-	},
-	"themeManage": {
-		"title": "Þemastjórnun",
-		"instruction": "Veldu þema!",
-		"themes": {
-			"auto": "Sjálfvirkt",
-			"light": "Ljóst",
-			"dark": "Dökkt",
-			"cupcake": "Muffins",
-			"bumblebee": "Humla",
-			"emerald": "Smaragður",
-			"corporate": "Fyrirtækja",
-			"synthwave": "Synthwave",
-			"retro": "Retró",
-			"cyberpunk": "Netpönk",
-			"valentine": "Valentínus",
-			"halloween": "Hrekkjavaka",
-			"garden": "Garður",
-			"forest": "Skógur",
-			"aqua": "Vatna",
-			"lofi": "Lofi",
-			"pastel": "Pastel",
-			"fantasy": "Fantasía",
-			"wireframe": "Vírrammi",
-			"black": "Svart",
-			"luxury": "Lúxus",
-			"dracula": "Drakúla",
-			"cmyk": "CMYK",
-			"autumn": "Haust",
-			"business": "Viðskipta",
-			"acid": "Sýru",
-			"lemonade": "Límónaði",
-			"night": "Nótt",
-			"coffee": "Kaffi",
-			"winter": "Vetur",
-			"dim": "Dimmt",
-			"nord": "Norrænt",
-			"sunset": "Sólarlag",
-			"caramellatte": "Karamellu Latte",
-			"abyss": "Hyldýpi",
-			"silk": "Silki"
-		}
-	},
-	"import": {
-		"title": "Innflutningur",
-		"tabs": {
-			"fileImport": "Flytja inn skrá",
-			"textImport": "Flytja inn texta"
-		},
-		"dropArea": {
-			"icon": {
-				"alt": "Upphalstákn"
-			},
-			"text": "Dragðu og slepptu skrám hér eða smelltu til að velja skrár"
-		},
-		"textArea": {
-			"placeholder": "Sláðu inn texta til að flytja inn..."
-		},
-		"buttons": {
-			"import": "Flytja inn"
-		},
-		"alerts": {
-			"importSuccess": "Innflutningur tókst",
-			"importFailed": "Innflutningur mistókst: ${error}",
-			"unknownError": "Óþekkt villa"
-		},
-		"errors": {
-			"noFileSelected": "Vinsamlegast veldu skrá",
-			"fileImportFailed": "Innflutningur á skrá mistókst: ${message}",
-			"noTextContent": "Vinsamlegast sláðu inn texta",
-			"textImportFailed": "Innflutningur á texta mistókst: ${message}",
-			"unknownError": "Óþekkt villa",
-			"handler": "Meðhöndlari",
-			"error": "Villa"
-		},
-		"fileItem": {
-			"removeButton": {
-				"title": "Fjarlægja"
-			},
-			"removeButtonIcon": {
-				"alt": "Fjarlægja"
-			}
-		}
-	},
-	"aisource_editor": {
-		"title": "Ritill fyrir gervigreindarheimildir",
-		"fileList": {
-			"title": "Listi yfir gervigreindarheimildir",
-			"addButton": {
-				"title": "+"
-			}
-		},
-		"configTitle": "Stillingar gervigreindarheimildar",
-		"generatorSelect": {
-			"label": "Veldu rafal",
-			"placeholder": "Vinsamlegast veldu"
-		},
-		"buttons": {
-			"save": "Vista",
-			"delete": "Eyða"
-		},
-		"tooltips": {
-			"setDefault": "Sjálfgefið"
-		},
-		"alerts": {
-			"fetchFileListFailed": "Mistókst að sækja skráalista: ${error}",
-			"fetchGeneratorListFailed": "Mistókst að sækja rafalalista: ${error}",
-			"fetchDefaultsFailed": "Mistókst að sækja sjálfgefna íhluti: ${error}",
-			"fetchFileDataFailed": "Mistókst að sækja skráargögn: ${error}",
-			"noFileSelectedSave": "Engin skrá valin til að vista.",
-			"saveFileFailed": "Mistókst að vista skrá: ${error}",
-			"setDefaultFailed": "Mistókst að stilla sjálfgefna gervigreindarheimild: ${error}",
-			"noFileSelectedDelete": "Engin skrá valin til að eyða.",
-			"deleteFileFailed": "Mistókst að eyða skrá: ${error}",
-			"invalidFileName": "Skráarheiti má ekki innihalda eftirfarandi stafi: / \\ : * ? \" < > |",
-			"addFileFailed": "Mistókst að bæta við skrá: ${error}",
-			"fetchConfigTemplateFailed": "Mistókst að sækja stillingasniðmát",
-			"noGeneratorSelectedSave": "Vinsamlegast veldu rafal áður en þú vistar"
-		},
-		"confirm": {
-			"unsavedChanges": "Þú hefur óvistaðar breytingar. Viltu henda þeim?",
-			"deleteFile": "Ertu viss um að þú viljir eyða skránni?",
-			"unsavedChangesBeforeUnload": "Þú hefur óvistaðar breytingar. Ertu viss um að þú viljir yfirgefa þessa síðu?"
-		},
-		"prompts": {
-			"newFileName": "Vinsamlegast sláðu inn nýtt skráarheiti fyrir gervigreindarheimild (án skráarendingar):"
-		},
-		"editor": {
-			"disabledIndicator": "Vinsamlegast veldu rafal fyrst"
-		},
-		"common_config_interface": {
-			"empty_generator": "Legacy rafallinn frá þessum AI uppsprettu hefur villu við hleðslu og kann að hafa verið fjarlægður eða endurnefnt.",
-			"apiKeyRequired": "API lykill er nauðsynlegur til að lista upp líkönin.",
-			"loadingModels": "Hleður líkönum...",
-			"availableModels": "Líkön í boði:",
-			"copyModelIdTooltip": "Smelltu til að afrita líkanauðkennið",
-			"copied": "Afritað!",
-			"loadModelsFailed": "Mistókst að hlaða líkönum: ${message}"
-		}
-	},
-	"part_config": {
-		"title": "Stillingar íhlutar",
-		"pageTitle": "Stillingar íhlutar",
-		"labels": {
-			"partType": "Veldu tegund íhlutar",
-			"part": "Veldu íhlut"
-		},
-		"placeholders": {
-			"partTypeSelect": "Vinsamlegast veldu",
-			"partSelect": "Vinsamlegast veldu"
-		},
-		"editor": {
-			"title": "Stillingar íhlutar",
-			"disabledIndicator": "Þessi íhlutur styður ekki stillingar",
-			"buttons": {
-				"save": "Vista"
-			}
-		},
-		"errorMessage": {
-			"icon": {
-				"alt": "Villutilkynning"
-			}
-		},
-		"alerts": {
-			"fetchPartTypesFailed": "Mistókst að sækja tegundir íhluta",
-			"fetchPartsFailed": "Mistókst að sækja lista yfir íhluti",
-			"loadEditorFailed": "Mistókst að hlaða ritil",
-			"saveConfigFailed": "Mistókst að vista stillingar íhlutar",
-			"unsavedChanges": "Þú hefur óvistaðar breytingar. Viltu henda þeim?",
-			"beforeUnload": "Þú hefur óvistaðar breytingar. Ertu viss um að þú viljir fara?"
-		}
-	},
-	"uninstall": {
-		"title": "Fjarlægja",
-		"titleWithName": "Fjarlægja ${type}/${name}",
-		"confirmMessage": "Ertu viss um að þú viljir fjarlægja ${type}: ${name}?",
-		"invalidParamsTitle": "Ógildar færibreytur",
-		"infoMessage": {
-			"icon": {
-				"alt": "Upplýsingatákn"
-			}
-		},
-		"errorMessage": {
-			"icon": {
-				"alt": "Villutákn"
-			}
-		},
-		"buttons": {
-			"confirm": "Staðfesta fjarlægingu",
-			"cancel": "Hætta við",
-			"back": "Til baka"
-		},
-		"alerts": {
-			"success": "Tókst að fjarlægja ${type}: ${name}",
-			"failed": "Fjarlæging mistókst: ${error}",
-			"invalidParams": "Ógildar beiðnisfæribreytur.",
-			"httpError": "HTTP villa! Stöðukóði: ${status}"
 		}
 	},
 	"chat": {
@@ -772,209 +585,6 @@
 			"delete": "Eyða"
 		}
 	},
-	"discord_bots": {
-		"title": "Discord Bot",
-		"cardTitle": "Discord Bot",
-		"buttons": {
-			"newBot": "Nýr Bot",
-			"deleteBot": "Eyða Bot"
-		},
-		"configCard": {
-			"title": "Bot stillingar",
-			"labels": {
-				"character": "Tengd persóna",
-				"apiKey": "Discord API lykill",
-				"config": "Stillingar"
-			},
-			"charSelectPlaceholder": "Veldu persónu",
-			"apiKeyInput": {
-				"placeholder": "Sláðu inn API lykil"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "Sýna/fela API lykil"
-			},
-			"buttons": {
-				"saveConfig": "Vista stillingar",
-				"startBot": "Ræsa",
-				"stopBot": "Stöðva"
-			}
-		},
-		"prompts": {
-			"newBotName": "Sláðu inn nafn á nýja Bot-inn:"
-		},
-		"alerts": {
-			"botExists": "Bot með nafnið \"${botname}\" er þegar til, vinsamlegast notaðu annað nafn.",
-			"unsavedChanges": "Þú hefur óvistaðar breytingar. Viltu henda þeim?",
-			"configSaved": "Stillingar vistaðar",
-			"httpError": "HTTP villa",
-			"beforeUnload": "Þú hefur óvistaðar breytingar. Ertu viss um að þú viljir fara?"
-		}
-	},
-	"telegram_bots": {
-		"title": "Telegram Bot",
-		"cardTitle": "Stjórnun Telegram Bot",
-		"buttons": {
-			"newBot": "Nýr Bot",
-			"deleteBot": "Eyða Bot"
-		},
-		"configCard": {
-			"title": "Bot stillingar",
-			"labels": {
-				"character": "Tengd persóna",
-				"botToken": "Telegram Bot Token",
-				"config": "Stillingar"
-			},
-			"charSelectPlaceholder": "Veldu persónu",
-			"botTokenInput": {
-				"placeholder": "Sláðu inn Telegram Bot Token"
-			},
-			"toggleBotTokenIcon": {
-				"alt": "Sýna/fela API lykil"
-			},
-			"buttons": {
-				"saveConfig": "Vista stillingar",
-				"startBot": "Ræsa",
-				"stopBot": "Stöðva"
-			}
-		},
-		"prompts": {
-			"newBotName": "Sláðu inn nafn á nýja Bot-inn:"
-		},
-		"alerts": {
-			"botExists": "Bot með nafnið \"${botname}\" er þegar til, vinsamlegast notaðu annað nafn.",
-			"unsavedChanges": "Þú hefur óvistaðar breytingar. Viltu henda þeim?",
-			"configSaved": "Stillingar vistaðar!",
-			"httpError": "HTTP villa",
-			"beforeUnload": "Þú hefur óvistaðar breytingar. Ertu viss um að þú viljir yfirgefa þessa síðu?"
-		}
-	},
-	"terminal_assistant": {
-		"title": "Flugstöðvar-aðstoðarmaður",
-		"initialMessage": "fount styður að setja uppáhalds persónuna þína í flugstöðina til að hjálpa þér við forritun!",
-		"initialMessageLink": "Smelltu hér til að fá frekari upplýsingar"
-	},
-	"access": {
-		"title": "Aðgangur að fount á öðrum tækjum",
-		"heading": "Viltu fá aðgang að fount á öðrum tækjum?",
-		"instruction": {
-			"sameLAN": "Gakktu úr skugga um að tækið og fount-vélin séu á sama staðarneti",
-			"accessthis": "Farðu á eftirfarandi vefslóð:"
-		},
-		"copyButton": "Afrita slóð",
-		"copied": "Slóð afrituð á klippiborð!"
-	},
-	"proxy": {
-		"title": "API milliliður",
-		"heading": "OpenAI API milliliðaslóð",
-		"instruction": "Settu eftirfarandi slóð inn í hvaða forrit sem krefst OpenAI API sniðs til að nota gervigreindarheimildirnar í fount!",
-		"copyButton": "Afrita slóð",
-		"copied": "Slóð afrituð á klippiborð!"
-	},
-	"404": {
-		"title": "Síða fannst ekki",
-		"pageNotFoundText": "Úps! Svo virðist sem þú hafir lent á síðu sem er ekki til.",
-		"homepageButton": "Aftur á forsíðu"
-	},
-	"userSettings": {
-		"title": "Notandastillingar",
-		"PageTitle": "Notandastillingar",
-		"apiError": "API beiðni mistókst: ${message}",
-		"generalError": "Villa kom upp: ${message}",
-		"userInfo": {
-			"title": "Notandaupplýsingar",
-			"usernameLabel": "Notandanafn:",
-			"creationDateLabel": "Aðgangur stofnaður:",
-			"folderSizeLabel": "Stærð notandagagna:",
-			"folderPathLabel": "Slóð notandagagna:",
-			"copyPathBtnTitle": "Afrita slóð",
-			"copiedAlert": "Slóð afrituð á klippiborð!"
-		},
-		"changePassword": {
-			"title": "Breyta lykilorði",
-			"currentPasswordLabel": "Núverandi lykilorð:",
-			"newPasswordLabel": "Nýtt lykilorð:",
-			"confirmNewPasswordLabel": "Staðfesta nýtt lykilorð:",
-			"submitButton": "Breyta lykilorði",
-			"errorMismatch": "Nýju lykilorðin stemma ekki.",
-			"success": "Lykilorði breytt."
-		},
-		"renameUser": {
-			"title": "Endurnefna notanda",
-			"newUsernameLabel": "Nýtt notandanafn:",
-			"submitButton": "Endurnefna notanda",
-			"confirmMessage": "Ertu viss um að þú viljir breyta notandanafninu þínu? Þú þarft að skrá þig inn aftur.",
-			"success": "Notanda hefur verið endurnefnt í \"${newUsername}\". Þú verður nú skráð(ur) út."
-		},
-		"userDevices": {
-			"title": "Tæki/Setur notanda",
-			"refreshButtonTitle": "Endurhlaða lista",
-			"noDevicesFound": "Engin tæki eða setur fundust.",
-			"deviceInfo": "Tækisauðkenni: ${deviceId}",
-			"thisDevice": "Þetta tæki",
-			"deviceDetails": "Síðast séð: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
-			"revokeButton": "Afturkalla",
-			"revokeConfirm": "Ertu viss um að þú viljir skrá þig út úr þessu tæki/setu?",
-			"revokeSuccess": "Tæki/seta hefur verið afturkölluð."
-		},
-		"logout": {
-			"title": "Útskráning",
-			"description": "Þetta mun skrá þig út af aðganginum þínum á þessu tæki.",
-			"buttonText": "Skrá út",
-			"confirmMessage": "Ertu viss um að þú viljir skrá þig út?",
-			"successMessage": "Útskráning tókst. Vísar þér á innskráningarsíðu..."
-		},
-		"deleteAccount": {
-			"title": "Eyða aðgangi",
-			"warning": "AÐVÖRUN: Þessi aðgerð mun eyða aðganginum þínum og öllum tengdum gögnum varanlega og er óafturkræf.",
-			"submitButton": "Eyða aðganginum mínum",
-			"confirmMessage1": "AÐVÖRUN! Ertu viss um að þú viljir eyða aðganginum þínum varanlega? Þessi aðgerð er óafturkræf.",
-			"confirmMessage2": "Til að staðfesta eyðingu, vinsamlegast sláðu inn notandanafnið þitt \"${username}\":",
-			"usernameMismatch": "Innslegið notandanafn passar ekki við núverandi notanda. Eyðingu hætt.",
-			"success": "Aðgangi hefur verið eytt. Þú verður nú skráð(ur) út."
-		},
-		"passwordConfirm": {
-			"title": "Staðfesta aðgerð",
-			"message": "Til að halda áfram með þessa aðgerð, vinsamlegast sláðu inn núverandi lykilorð þitt:",
-			"passwordLabel": "Lykilorð:",
-			"confirmButton": "Staðfesta",
-			"cancelButton": "Hætta við"
-		},
-		"apiKeys": {
-			"title": "API lykill",
-			"description": "Stjórna API lyklinum fyrir utanaðkomandi forrit.",
-			"descriptionPlaceholder": "Ný lykillýsing",
-			"createButton": "Búa til",
-			"noKeysFound": "Engir API lyklar fundust.",
-			"refreshButtonTitle": "Endurnærðu listann",
-			"keyDetails": "Lýsing: ${description} | Búin til í: ${createdAt} | Síðast notað: ${lastUsed}",
-			"neverUsed": "Aldrei notað",
-			"revokeButton": "Afturkalla",
-			"revokeConfirm": "Ertu viss um að þú viljir afturkalla þennan API lykil?",
-			"revokeSuccess": "API lykillinn hefur verið afturkallaður.",
-			"errorDescriptionRequired": "Lýsing er krafist.",
-			"createSuccess": "API lykillinn var búinn til með góðum árangri."
-		},
-		"newApiKey": {
-			"title": "Nýr API lykill hefur verið búinn til",
-			"warning": "Vinsamlegast afritaðu nýja API lykilinn þinn. Þú munt ekki geta séð það aftur!",
-			"copyButtonTitle": "Afritaðu nýjan API lykil",
-			"closeButton": "Ég hef afritað lykilinn minn"
-		}
-	},
-	"badges_maker": {
-		"title": "fount! Merkja-breytir",
-		"card_title": "fount merkja-hlekkjabreytir",
-		"original_url_label": "Límdu img.shields.io vefslóð",
-		"original_url_placeholder": "T.d.: https://img.shields.io/badge/Hello-World-blue",
-		"new_url_label": "Nýstofnuð vefslóð",
-		"new_url_placeholder": "Umbreytt vefslóð birtist hér",
-		"copy_button": "Afrita",
-		"preview_label": "Forskoðun",
-		"preview_alt": "Merkjaforskoðun",
-		"copied_text": "Afritað!",
-		"copy_error": "Gat ekki afritað texta: ${error}",
-		"copy_fail_alert": "Afritun mistókst!"
-	},
 	"easynew": {
 		"title": "Flýtileið",
 		"cardTitle": "Búa til nýjan íhlut úr sniðmáti",
@@ -1070,6 +680,47 @@
 			"description": "Þessi sniðmát eru aðeins til að byggja einfalda íhluti hratt, flóknir íhlutir þurfa enn handvirka smíði."
 		}
 	},
+	"import": {
+		"title": "Innflutningur",
+		"tabs": {
+			"fileImport": "Flytja inn skrá",
+			"textImport": "Flytja inn texta"
+		},
+		"dropArea": {
+			"icon": {
+				"alt": "Upphalstákn"
+			},
+			"text": "Dragðu og slepptu skrám hér eða smelltu til að velja skrár"
+		},
+		"textArea": {
+			"placeholder": "Sláðu inn texta til að flytja inn..."
+		},
+		"buttons": {
+			"import": "Flytja inn"
+		},
+		"alerts": {
+			"importSuccess": "Innflutningur tókst",
+			"importFailed": "Innflutningur mistókst: ${error}",
+			"unknownError": "Óþekkt villa"
+		},
+		"errors": {
+			"noFileSelected": "Vinsamlegast veldu skrá",
+			"fileImportFailed": "Innflutningur á skrá mistókst: ${message}",
+			"noTextContent": "Vinsamlegast sláðu inn texta",
+			"textImportFailed": "Innflutningur á texta mistókst: ${message}",
+			"unknownError": "Óþekkt villa",
+			"handler": "Meðhöndlari",
+			"error": "Villa"
+		},
+		"fileItem": {
+			"removeButton": {
+				"title": "Fjarlægja"
+			},
+			"removeButtonIcon": {
+				"alt": "Fjarlægja"
+			}
+		}
+	},
 	"export": {
 		"title": "Íhluta-útflytjandi",
 		"pageTitle": "Íhluta-útflytjandi",
@@ -1131,6 +782,119 @@
 			"generateShareLinkWithData": "Búa til deilingarhlekk (með gögnum)"
 		}
 	},
+	"uninstall": {
+		"title": "Fjarlægja",
+		"titleWithName": "Fjarlægja ${type}/${name}",
+		"confirmMessage": "Ertu viss um að þú viljir fjarlægja ${type}: ${name}?",
+		"invalidParamsTitle": "Ógildar færibreytur",
+		"infoMessage": {
+			"icon": {
+				"alt": "Upplýsingatákn"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Villutákn"
+			}
+		},
+		"buttons": {
+			"confirm": "Staðfesta fjarlægingu",
+			"cancel": "Hætta við",
+			"back": "Til baka"
+		},
+		"alerts": {
+			"success": "Tókst að fjarlægja ${type}: ${name}",
+			"failed": "Fjarlæging mistókst: ${error}",
+			"invalidParams": "Ógildar beiðnisfæribreytur.",
+			"httpError": "HTTP villa! Stöðukóði: ${status}"
+		}
+	},
+	"userSettings": {
+		"title": "Notandastillingar",
+		"PageTitle": "Notandastillingar",
+		"apiError": "API beiðni mistókst: ${message}",
+		"generalError": "Villa kom upp: ${message}",
+		"userInfo": {
+			"title": "Notandaupplýsingar",
+			"usernameLabel": "Notandanafn:",
+			"creationDateLabel": "Aðgangur stofnaður:",
+			"folderSizeLabel": "Stærð notandagagna:",
+			"folderPathLabel": "Slóð notandagagna:",
+			"copyPathBtnTitle": "Afrita slóð",
+			"copiedAlert": "Slóð afrituð á klippiborð!"
+		},
+		"changePassword": {
+			"title": "Breyta lykilorði",
+			"currentPasswordLabel": "Núverandi lykilorð:",
+			"newPasswordLabel": "Nýtt lykilorð:",
+			"confirmNewPasswordLabel": "Staðfesta nýtt lykilorð:",
+			"submitButton": "Breyta lykilorði",
+			"errorMismatch": "Nýju lykilorðin stemma ekki.",
+			"success": "Lykilorði breytt."
+		},
+		"renameUser": {
+			"title": "Endurnefna notanda",
+			"newUsernameLabel": "Nýtt notandanafn:",
+			"submitButton": "Endurnefna notanda",
+			"confirmMessage": "Ertu viss um að þú viljir breyta notandanafninu þínu? Þú þarft að skrá þig inn aftur.",
+			"success": "Notanda hefur verið endurnefnt í \"${newUsername}\". Þú verður nú skráð(ur) út."
+		},
+		"userDevices": {
+			"title": "Tæki/Setur notanda",
+			"refreshButtonTitle": "Endurhlaða lista",
+			"noDevicesFound": "Engin tæki eða setur fundust.",
+			"deviceInfo": "Tækisauðkenni: ${deviceId}",
+			"thisDevice": "Þetta tæki",
+			"deviceDetails": "Síðast séð: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
+			"revokeButton": "Afturkalla",
+			"revokeConfirm": "Ertu viss um að þú viljir skrá þig út úr þessu tæki/setu?",
+			"revokeSuccess": "Tæki/seta hefur verið afturkölluð."
+		},
+		"logout": {
+			"title": "Útskráning",
+			"description": "Þetta mun skrá þig út af aðganginum þínum á þessu tæki.",
+			"buttonText": "Skrá út",
+			"confirmMessage": "Ertu viss um að þú viljir skrá þig út?",
+			"successMessage": "Útskráning tókst. Vísar þér á innskráningarsíðu..."
+		},
+		"deleteAccount": {
+			"title": "Eyða aðgangi",
+			"warning": "AÐVÖRUN: Þessi aðgerð mun eyða aðganginum þínum og öllum tengdum gögnum varanlega og er óafturkræf.",
+			"submitButton": "Eyða aðganginum mínum",
+			"confirmMessage1": "AÐVÖRUN! Ertu viss um að þú viljir eyða aðganginum þínum varanlega? Þessi aðgerð er óafturkræf.",
+			"confirmMessage2": "Til að staðfesta eyðingu, vinsamlegast sláðu inn notandanafnið þitt \"${username}\":",
+			"usernameMismatch": "Innslegið notandanafn passar ekki við núverandi notanda. Eyðingu hætt.",
+			"success": "Aðgangi hefur verið eytt. Þú verður nú skráð(ur) út."
+		},
+		"passwordConfirm": {
+			"title": "Staðfesta aðgerð",
+			"message": "Til að halda áfram með þessa aðgerð, vinsamlegast sláðu inn núverandi lykilorð þitt:",
+			"passwordLabel": "Lykilorð:",
+			"confirmButton": "Staðfesta",
+			"cancelButton": "Hætta við"
+		},
+		"apiKeys": {
+			"title": "API lykill",
+			"description": "Stjórna API lyklinum fyrir utanaðkomandi forrit.",
+			"descriptionPlaceholder": "Ný lykillýsing",
+			"createButton": "Búa til",
+			"noKeysFound": "Engir API lyklar fundust.",
+			"refreshButtonTitle": "Endurnærðu listann",
+			"keyDetails": "Lýsing: ${description} | Búin til í: ${createdAt} | Síðast notað: ${lastUsed}",
+			"neverUsed": "Aldrei notað",
+			"revokeButton": "Afturkalla",
+			"revokeConfirm": "Ertu viss um að þú viljir afturkalla þennan API lykil?",
+			"revokeSuccess": "API lykillinn hefur verið afturkallaður.",
+			"errorDescriptionRequired": "Lýsing er krafist.",
+			"createSuccess": "API lykillinn var búinn til með góðum árangri."
+		},
+		"newApiKey": {
+			"title": "Nýr API lykill hefur verið búinn til",
+			"warning": "Vinsamlegast afritaðu nýja API lykilinn þinn. Þú munt ekki geta séð það aftur!",
+			"copyButtonTitle": "Afritaðu nýjan API lykil",
+			"closeButton": "Ég hef afritað lykilinn minn"
+		}
+	},
 	"languageSettings": {
 		"title": "Tungumálastillingar",
 		"description": "Stjórna tungumálakjörum þínum hér. Tungumálin á listanum munu hafa forgang fram yfir vafrastillingarnar í röð.",
@@ -1144,15 +908,210 @@
 		"resetMessage": "Tungumálastillingar hafa verið endurstilltar!",
 		"fetchLocalesFailed": "Ekki tókst að fá tiltæk tungumál!"
 	},
-	"login_info": {
-		"modal": {
-			"title": "Villa við flutning vottorðs",
-			"retrieve_error": "Villa kom upp þegar reynt var að vista innskráningarskilríki þitt:\n${error}\nÞú getur haldið áfram en getur ekki vistað innskráningarupplýsingar.",
-			"transfer_error": "Villa kom upp þegar reynt var að flytja innskráningarskilríki þitt:\n${error}\nÞú getur haldið áfram en getur ekki fengið innskráningarupplýsingar.",
+	"themeManage": {
+		"title": "Þemastjórnun",
+		"instruction": "Veldu þema!",
+		"themes": {
+			"auto": "Sjálfvirkt",
+			"light": "Ljóst",
+			"dark": "Dökkt",
+			"cupcake": "Muffins",
+			"bumblebee": "Humla",
+			"emerald": "Smaragður",
+			"corporate": "Fyrirtækja",
+			"synthwave": "Synthwave",
+			"retro": "Retró",
+			"cyberpunk": "Netpönk",
+			"valentine": "Valentínus",
+			"halloween": "Hrekkjavaka",
+			"garden": "Garður",
+			"forest": "Skógur",
+			"aqua": "Vatna",
+			"lofi": "Lofi",
+			"pastel": "Pastel",
+			"fantasy": "Fantasía",
+			"wireframe": "Vírrammi",
+			"black": "Svart",
+			"luxury": "Lúxus",
+			"dracula": "Drakúla",
+			"cmyk": "CMYK",
+			"autumn": "Haust",
+			"business": "Viðskipta",
+			"acid": "Sýru",
+			"lemonade": "Límónaði",
+			"night": "Nótt",
+			"coffee": "Kaffi",
+			"winter": "Vetur",
+			"dim": "Dimmt",
+			"nord": "Norrænt",
+			"sunset": "Sólarlag",
+			"caramellatte": "Karamellu Latte",
+			"abyss": "Hyldýpi",
+			"silk": "Silki"
+		}
+	},
+	"part_config": {
+		"title": "Stillingar íhlutar",
+		"pageTitle": "Stillingar íhlutar",
+		"labels": {
+			"partType": "Veldu tegund íhlutar",
+			"part": "Veldu íhlut"
+		},
+		"placeholders": {
+			"partTypeSelect": "Vinsamlegast veldu",
+			"partSelect": "Vinsamlegast veldu"
+		},
+		"editor": {
+			"title": "Stillingar íhlutar",
+			"disabledIndicator": "Þessi íhlutur styður ekki stillingar",
 			"buttons": {
-				"ignore": "Hunsa og halda áfram",
-				"retry": "Reyndu aftur"
+				"save": "Vista"
 			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Villutilkynning"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "Mistókst að sækja tegundir íhluta",
+			"fetchPartsFailed": "Mistókst að sækja lista yfir íhluti",
+			"loadEditorFailed": "Mistókst að hlaða ritil",
+			"saveConfigFailed": "Mistókst að vista stillingar íhlutar",
+			"unsavedChanges": "Þú hefur óvistaðar breytingar. Viltu henda þeim?",
+			"beforeUnload": "Þú hefur óvistaðar breytingar. Ertu viss um að þú viljir fara?"
+		}
+	},
+	"aisource_editor": {
+		"title": "Ritill fyrir gervigreindarheimildir",
+		"fileList": {
+			"title": "Listi yfir gervigreindarheimildir",
+			"addButton": {
+				"title": "+"
+			}
+		},
+		"configTitle": "Stillingar gervigreindarheimildar",
+		"generatorSelect": {
+			"label": "Veldu rafal",
+			"placeholder": "Vinsamlegast veldu"
+		},
+		"buttons": {
+			"save": "Vista",
+			"delete": "Eyða"
+		},
+		"tooltips": {
+			"setDefault": "Sjálfgefið"
+		},
+		"alerts": {
+			"fetchFileListFailed": "Mistókst að sækja skráalista: ${error}",
+			"fetchGeneratorListFailed": "Mistókst að sækja rafalalista: ${error}",
+			"fetchDefaultsFailed": "Mistókst að sækja sjálfgefna íhluti: ${error}",
+			"fetchFileDataFailed": "Mistókst að sækja skráargögn: ${error}",
+			"noFileSelectedSave": "Engin skrá valin til að vista.",
+			"saveFileFailed": "Mistókst að vista skrá: ${error}",
+			"setDefaultFailed": "Mistókst að stilla sjálfgefna gervigreindarheimild: ${error}",
+			"noFileSelectedDelete": "Engin skrá valin til að eyða.",
+			"deleteFileFailed": "Mistókst að eyða skrá: ${error}",
+			"invalidFileName": "Skráarheiti má ekki innihalda eftirfarandi stafi: / \\ : * ? \" < > |",
+			"addFileFailed": "Mistókst að bæta við skrá: ${error}",
+			"fetchConfigTemplateFailed": "Mistókst að sækja stillingasniðmát",
+			"noGeneratorSelectedSave": "Vinsamlegast veldu rafal áður en þú vistar"
+		},
+		"confirm": {
+			"unsavedChanges": "Þú hefur óvistaðar breytingar. Viltu henda þeim?",
+			"deleteFile": "Ertu viss um að þú viljir eyða skránni?",
+			"unsavedChangesBeforeUnload": "Þú hefur óvistaðar breytingar. Ertu viss um að þú viljir yfirgefa þessa síðu?"
+		},
+		"prompts": {
+			"newFileName": "Vinsamlegast sláðu inn nýtt skráarheiti fyrir gervigreindarheimild (án skráarendingar):"
+		},
+		"editor": {
+			"disabledIndicator": "Vinsamlegast veldu rafal fyrst"
+		},
+		"common_config_interface": {
+			"empty_generator": "Legacy rafallinn frá þessum AI uppsprettu hefur villu við hleðslu og kann að hafa verið fjarlægður eða endurnefnt.",
+			"apiKeyRequired": "API lykill er nauðsynlegur til að lista upp líkönin.",
+			"loadingModels": "Hleður líkönum...",
+			"availableModels": "Líkön í boði:",
+			"copyModelIdTooltip": "Smelltu til að afrita líkanauðkennið",
+			"copied": "Afritað!",
+			"loadModelsFailed": "Mistókst að hlaða líkönum: ${message}"
+		}
+	},
+	"discord_bots": {
+		"title": "Discord Bot",
+		"cardTitle": "Discord Bot",
+		"buttons": {
+			"newBot": "Nýr Bot",
+			"deleteBot": "Eyða Bot"
+		},
+		"configCard": {
+			"title": "Bot stillingar",
+			"labels": {
+				"character": "Tengd persóna",
+				"apiKey": "Discord API lykill",
+				"config": "Stillingar"
+			},
+			"charSelectPlaceholder": "Veldu persónu",
+			"apiKeyInput": {
+				"placeholder": "Sláðu inn API lykil"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "Sýna/fela API lykil"
+			},
+			"buttons": {
+				"saveConfig": "Vista stillingar",
+				"startBot": "Ræsa",
+				"stopBot": "Stöðva"
+			}
+		},
+		"prompts": {
+			"newBotName": "Sláðu inn nafn á nýja Bot-inn:"
+		},
+		"alerts": {
+			"botExists": "Bot með nafnið \"${botname}\" er þegar til, vinsamlegast notaðu annað nafn.",
+			"unsavedChanges": "Þú hefur óvistaðar breytingar. Viltu henda þeim?",
+			"configSaved": "Stillingar vistaðar",
+			"httpError": "HTTP villa",
+			"beforeUnload": "Þú hefur óvistaðar breytingar. Ertu viss um að þú viljir fara?"
+		}
+	},
+	"telegram_bots": {
+		"title": "Telegram Bot",
+		"cardTitle": "Stjórnun Telegram Bot",
+		"buttons": {
+			"newBot": "Nýr Bot",
+			"deleteBot": "Eyða Bot"
+		},
+		"configCard": {
+			"title": "Bot stillingar",
+			"labels": {
+				"character": "Tengd persóna",
+				"botToken": "Telegram Bot Token",
+				"config": "Stillingar"
+			},
+			"charSelectPlaceholder": "Veldu persónu",
+			"botTokenInput": {
+				"placeholder": "Sláðu inn Telegram Bot Token"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "Sýna/fela API lykil"
+			},
+			"buttons": {
+				"saveConfig": "Vista stillingar",
+				"startBot": "Ræsa",
+				"stopBot": "Stöðva"
+			}
+		},
+		"prompts": {
+			"newBotName": "Sláðu inn nafn á nýja Bot-inn:"
+		},
+		"alerts": {
+			"botExists": "Bot með nafnið \"${botname}\" er þegar til, vinsamlegast notaðu annað nafn.",
+			"unsavedChanges": "Þú hefur óvistaðar breytingar. Viltu henda þeim?",
+			"configSaved": "Stillingar vistaðar!",
+			"httpError": "HTTP villa",
+			"beforeUnload": "Þú hefur óvistaðar breytingar. Ertu viss um að þú viljir yfirgefa þessa síðu?"
 		}
 	},
 	"browser_integration": {
@@ -1223,5 +1182,46 @@
 			"prompt": "Ný útgáfa af samþættingarhandriti fount vafra er fáanleg. Er uppfærslusíðan núna opin?"
 		},
 		"csp_warning": "Sameiningarhandrit fount vafra skynjar að CSP stefnan er til á síðunni, sem getur valdið því að samþættingarhandritið virkar ekki sem skyldi. Vinsamlegast íhugaðu að setja viðbótina til að loka CSP."
+	},
+	"terminal_assistant": {
+		"title": "Flugstöðvar-aðstoðarmaður",
+		"initialMessage": "fount styður að setja uppáhalds persónuna þína í flugstöðina til að hjálpa þér við forritun!",
+		"initialMessageLink": "Smelltu hér til að fá frekari upplýsingar"
+	},
+	"access": {
+		"title": "Aðgangur að fount á öðrum tækjum",
+		"heading": "Viltu fá aðgang að fount á öðrum tækjum?",
+		"instruction": {
+			"sameLAN": "Gakktu úr skugga um að tækið og fount-vélin séu á sama staðarneti",
+			"accessthis": "Farðu á eftirfarandi vefslóð:"
+		},
+		"copyButton": "Afrita slóð",
+		"copied": "Slóð afrituð á klippiborð!"
+	},
+	"proxy": {
+		"title": "API milliliður",
+		"heading": "OpenAI API milliliðaslóð",
+		"instruction": "Settu eftirfarandi slóð inn í hvaða forrit sem krefst OpenAI API sniðs til að nota gervigreindarheimildirnar í fount!",
+		"copyButton": "Afrita slóð",
+		"copied": "Slóð afrituð á klippiborð!"
+	},
+	"badges_maker": {
+		"title": "fount! Merkja-breytir",
+		"card_title": "fount merkja-hlekkjabreytir",
+		"original_url_label": "Límdu img.shields.io vefslóð",
+		"original_url_placeholder": "T.d.: https://img.shields.io/badge/Hello-World-blue",
+		"new_url_label": "Nýstofnuð vefslóð",
+		"new_url_placeholder": "Umbreytt vefslóð birtist hér",
+		"copy_button": "Afrita",
+		"preview_label": "Forskoðun",
+		"preview_alt": "Merkjaforskoðun",
+		"copied_text": "Afritað!",
+		"copy_error": "Gat ekki afritað texta: ${error}",
+		"copy_fail_alert": "Afritun mistókst!"
+	},
+	"404": {
+		"title": "Síða fannst ekki",
+		"pageNotFoundText": "Úps! Svo virðist sem þú hafir lent á síðu sem er ekki til.",
+		"homepageButton": "Aftur á forsíðu"
 	}
 }

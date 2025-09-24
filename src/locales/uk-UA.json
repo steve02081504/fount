@@ -100,24 +100,6 @@
 			"botStarted": "Персонаж ${charname} увійшов у систему на Telegram Bot ${botusername}"
 		}
 	},
-	"protocolhandler": {
-		"title": "Обробка протоколу fount",
-		"processing": "Обробка протоколу...",
-		"invalidProtocol": "Невірний протокол",
-		"insufficientParams": "Недостатньо параметрів",
-		"unknownCommand": "Невідома команда",
-		"shellCommandSent": "Команду оболонки надіслано",
-		"shellCommandFailed": "Не вдалося надіслати команду оболонки",
-		"shellCommandError": "Помилка при надсиланні команди оболонки",
-		"fountNotFound": "От халепа :(\n\nНе знайдено fount, можливо, вам потрібно спочатку його встановити?",
-		"unknownError": "От халепа :(\n\nСталася помилка:\n${error}",
-		"runPartConfirm": {
-			"title": "Підтвердити запуск",
-			"message": "Ви впевнені, що хочете запустити ${parttype} ${partname}?",
-			"confirm": "підтверджувати",
-			"cancel": "Скасувати"
-		}
-	},
 	"installer_wait_screen": {
 		"title": "Ласкаво просимо до fount!",
 		"hero": {
@@ -188,6 +170,24 @@
 			"close_page": "Закрити сторінку"
 		}
 	},
+	"protocolhandler": {
+		"title": "Обробка протоколу fount",
+		"processing": "Обробка протоколу...",
+		"invalidProtocol": "Невірний протокол",
+		"insufficientParams": "Недостатньо параметрів",
+		"unknownCommand": "Невідома команда",
+		"shellCommandSent": "Команду оболонки надіслано",
+		"shellCommandFailed": "Не вдалося надіслати команду оболонки",
+		"shellCommandError": "Помилка при надсиланні команди оболонки",
+		"fountNotFound": "От халепа :(\n\nНе знайдено fount, можливо, вам потрібно спочатку його встановити?",
+		"unknownError": "От халепа :(\n\nСталася помилка:\n${error}",
+		"runPartConfirm": {
+			"title": "Підтвердити запуск",
+			"message": "Ви впевнені, що хочете запустити ${parttype} ${partname}?",
+			"confirm": "підтверджувати",
+			"cancel": "Скасувати"
+		}
+	},
 	"startPage": {
 		"title": "fount!",
 		"newTabFailed": {
@@ -207,6 +207,28 @@
 					"cancel": "Скасувати"
 				}
 			}
+		}
+	},
+	"tutorial": {
+		"title": "Пройдемо навчання?",
+		"modal": {
+			"title": "Ласкаво просимо до fount!",
+			"instruction": "Бажаєте пройти навчальний курс для початківців?",
+			"buttons": {
+				"start": "Розпочати навчання",
+				"skip": "Пропустити"
+			}
+		},
+		"endScreen": {
+			"title": "Чудово! Навчання завершено!",
+			"subtitle": "Тепер ви знаєте, що робити!",
+			"endButton": "Наступний крок!"
+		},
+		"progressMessages": {
+			"mouseMove": "Будь ласка, спробуйте взяти мишку ${mouseIcon} у свою руку...<br/>а потім посуньте її.",
+			"keyboardPress": "Будь ласка, знайдіть свою клавіатуру ${keyboardIcon}...<br/>і спробуйте натиснути на неї пальцем.",
+			"mobileTouchMove": "Будь ласка, знайдіть свій телефон ${phoneIcon}...<br/>спробуйте торкнутися екрана будь-яким пальцем, а потім посуньте його.",
+			"mobileClick": "Будь ласка, спробуйте торкнутися екрана телефону ${phoneIcon} будь-яким пальцем...<br/>а потім відпустіть."
 		}
 	},
 	"auth": {
@@ -264,26 +286,15 @@
 			"veryStrong": "Дуже сильний"
 		}
 	},
-	"tutorial": {
-		"title": "Пройдемо навчання?",
+	"login_info": {
 		"modal": {
-			"title": "Ласкаво просимо до fount!",
-			"instruction": "Бажаєте пройти навчальний курс для початківців?",
+			"title": "Помилка передачі сертифіката",
+			"retrieve_error": "Помилка сталася під час спроби зберегти ваші облікові дані:\n${error}\nВи можете продовжувати, але не можете зберегти інформацію про вхід.",
+			"transfer_error": "Помилка сталася під час спроби передати ваші облікові дані:\n${error}\nВи можете продовжувати, але не можете отримати інформацію про вхід.",
 			"buttons": {
-				"start": "Розпочати навчання",
-				"skip": "Пропустити"
+				"ignore": "Ігнорувати та продовжити",
+				"retry": "Повторити"
 			}
-		},
-		"endScreen": {
-			"title": "Чудово! Навчання завершено!",
-			"subtitle": "Тепер ви знаєте, що робити!",
-			"endButton": "Наступний крок!"
-		},
-		"progressMessages": {
-			"mouseMove": "Будь ласка, спробуйте взяти мишку ${mouseIcon} у свою руку...<br/>а потім посуньте її.",
-			"keyboardPress": "Будь ласка, знайдіть свою клавіатуру ${keyboardIcon}...<br/>і спробуйте натиснути на неї пальцем.",
-			"mobileTouchMove": "Будь ласка, знайдіть свій телефон ${phoneIcon}...<br/>спробуйте торкнутися екрана будь-яким пальцем, а потім посуньте його.",
-			"mobileClick": "Будь ласка, спробуйте торкнутися екрана телефону ${phoneIcon} будь-яким пальцем...<br/>а потім відпустіть."
 		}
 	},
 	"home": {
@@ -363,204 +374,6 @@
 					"title": "Встановити як персону за замовчуванням"
 				}
 			}
-		}
-	},
-	"themeManage": {
-		"title": "Керування темами",
-		"instruction": "Оберіть тему!",
-		"themes": {
-			"auto": "Автоматична",
-			"light": "Світла",
-			"dark": "Темна",
-			"cupcake": "Кексик",
-			"bumblebee": "Джміль",
-			"emerald": "Смарагдова",
-			"corporate": "Корпоративна",
-			"synthwave": "Synthwave",
-			"retro": "Ретро",
-			"cyberpunk": "Кіберпанк",
-			"valentine": "Валентинка",
-			"halloween": "Хелловін",
-			"garden": "Садова",
-			"forest": "Лісова",
-			"aqua": "Морська",
-			"lofi": "Lo-fi",
-			"pastel": "Пастельна",
-			"fantasy": "Фентезі",
-			"wireframe": "Каркасна",
-			"black": "Чорна",
-			"luxury": "Розкішна",
-			"dracula": "Дракула",
-			"cmyk": "CMYK",
-			"autumn": "Осіння",
-			"business": "Ділова",
-			"acid": "Кислотна",
-			"lemonade": "Лимонад",
-			"night": "Нічна",
-			"coffee": "Кавова",
-			"winter": "Зимова",
-			"dim": "Приглушена",
-			"nord": "Скандинавська",
-			"sunset": "Захід сонця",
-			"caramellatte": "Карамель-лате",
-			"abyss": "Безодня",
-			"silk": "Шовкова"
-		}
-	},
-	"import": {
-		"title": "Імпорт",
-		"tabs": {
-			"fileImport": "Імпорт з файлу",
-			"textImport": "Імпорт тексту"
-		},
-		"dropArea": {
-			"icon": {
-				"alt": "Іконка завантаження"
-			},
-			"text": "Перетягніть файли сюди або натисніть, щоб вибрати"
-		},
-		"textArea": {
-			"placeholder": "Введіть текст для імпорту..."
-		},
-		"buttons": {
-			"import": "Імпортувати"
-		},
-		"alerts": {
-			"importSuccess": "Імпортовано успішно",
-			"importFailed": "Помилка імпорту: ${error}",
-			"unknownError": "Невідома помилка"
-		},
-		"errors": {
-			"noFileSelected": "Будь ласка, виберіть файл",
-			"fileImportFailed": "Помилка імпорту файлу: ${message}",
-			"noTextContent": "Будь ласка, введіть текстовий вміст",
-			"textImportFailed": "Помилка імпорту тексту: ${message}",
-			"unknownError": "Невідома помилка",
-			"handler": "Обробник",
-			"error": "Помилка"
-		},
-		"fileItem": {
-			"removeButton": {
-				"title": "Видалити"
-			},
-			"removeButtonIcon": {
-				"alt": "Видалити"
-			}
-		}
-	},
-	"aisource_editor": {
-		"title": "Редактор AI-джерел",
-		"fileList": {
-			"title": "Список AI-джерел",
-			"addButton": {
-				"title": "+"
-			}
-		},
-		"configTitle": "Налаштування AI-джерела",
-		"generatorSelect": {
-			"label": "Оберіть генератор",
-			"placeholder": "Будь ласка, оберіть"
-		},
-		"buttons": {
-			"save": "Зберегти",
-			"delete": "Видалити"
-		},
-		"tooltips": {
-			"setDefault": "Встановити за замовчуванням"
-		},
-		"alerts": {
-			"fetchFileListFailed": "Не вдалося отримати список файлів: ${error}",
-			"fetchGeneratorListFailed": "Не вдалося отримати список генераторів: ${error}",
-			"fetchDefaultsFailed": "Не вдалося отримати компоненти за замовчуванням: ${error}",
-			"fetchFileDataFailed": "Не вдалося отримати дані файлу: ${error}",
-			"noFileSelectedSave": "Не вибрано файл для збереження.",
-			"saveFileFailed": "Не вдалося зберегти файл: ${error}",
-			"setDefaultFailed": "Не вдалося встановити AI-джерело за замовчуванням: ${error}",
-			"noFileSelectedDelete": "Не вибрано файл для видалення.",
-			"deleteFileFailed": "Не вдалося видалити файл: ${error}",
-			"invalidFileName": "Назва файлу не може містити наступні символи: / \\ : * ? \" < > |",
-			"addFileFailed": "Не вдалося додати файл: ${error}",
-			"fetchConfigTemplateFailed": "Не вдалося отримати шаблон конфігурації",
-			"noGeneratorSelectedSave": "Будь ласка, оберіть генератор перед збереженням"
-		},
-		"confirm": {
-			"unsavedChanges": "У вас є незбережені зміни. Ви хочете їх скасувати?",
-			"deleteFile": "Ви впевнені, що хочете видалити файл?",
-			"unsavedChangesBeforeUnload": "У вас є незбережені зміни. Ви впевнені, що хочете покинути цю сторінку?"
-		},
-		"prompts": {
-			"newFileName": "Будь ласка, введіть назву нового файлу AI-джерела (без розширення):"
-		},
-		"editor": {
-			"disabledIndicator": "Будь ласка, спочатку оберіть генератор"
-		},
-		"common_config_interface": {
-			"empty_generator": "Спадковий генератор з цього джерела AI має помилку під час завантаження і, можливо, був видалений або перейменований.",
-			"apiKeyRequired": "Для отримання списку моделей потрібен ключ API.",
-			"loadingModels": "Завантаження моделей...",
-			"availableModels": "Доступні моделі:",
-			"copyModelIdTooltip": "Натисніть, щоб скопіювати ID моделі",
-			"copied": "Скопійовано!",
-			"loadModelsFailed": "Не вдалося завантажити моделі: ${message}"
-		}
-	},
-	"part_config": {
-		"title": "Налаштування компонента",
-		"pageTitle": "Налаштування компонента",
-		"labels": {
-			"partType": "Оберіть тип компонента",
-			"part": "Оберіть компонент"
-		},
-		"placeholders": {
-			"partTypeSelect": "Будь ласка, оберіть",
-			"partSelect": "Будь ласка, оберіть"
-		},
-		"editor": {
-			"title": "Налаштування компонента",
-			"disabledIndicator": "Цей компонент не підтримує налаштування",
-			"buttons": {
-				"save": "Зберегти"
-			}
-		},
-		"errorMessage": {
-			"icon": {
-				"alt": "Повідомлення про помилку"
-			}
-		},
-		"alerts": {
-			"fetchPartTypesFailed": "Не вдалося отримати типи компонентів",
-			"fetchPartsFailed": "Не вдалося отримати список компонентів",
-			"loadEditorFailed": "Не вдалося завантажити редактор",
-			"saveConfigFailed": "Не вдалося зберегти налаштування компонента",
-			"unsavedChanges": "У вас є незбережені зміни. Ви хочете їх скасувати?",
-			"beforeUnload": "У вас є незбережені зміни. Ви впевнені, що хочете піти?"
-		}
-	},
-	"uninstall": {
-		"title": "Видалення",
-		"titleWithName": "Видалити ${type}/${name}",
-		"confirmMessage": "Ви впевнені, що хочете видалити ${type}: ${name}?",
-		"invalidParamsTitle": "Невірні параметри",
-		"infoMessage": {
-			"icon": {
-				"alt": "Іконка інформації"
-			}
-		},
-		"errorMessage": {
-			"icon": {
-				"alt": "Іконка помилки"
-			}
-		},
-		"buttons": {
-			"confirm": "Підтвердити видалення",
-			"cancel": "Скасувати",
-			"back": "Назад"
-		},
-		"alerts": {
-			"success": "Успішно видалено ${type}: ${name}",
-			"failed": "Помилка видалення: ${error}",
-			"invalidParams": "Невірні параметри запиту.",
-			"httpError": "HTTP-помилка! Статус: ${status}"
 		}
 	},
 	"chat": {
@@ -772,209 +585,6 @@
 			"delete": "Видалити"
 		}
 	},
-	"discord_bots": {
-		"title": "Discord Bot",
-		"cardTitle": "Discord Bot",
-		"buttons": {
-			"newBot": "Створити",
-			"deleteBot": "Видалити"
-		},
-		"configCard": {
-			"title": "Налаштування бота",
-			"labels": {
-				"character": "Прив'язаний персонаж",
-				"apiKey": "Discord API ключ",
-				"config": "Конфігурація"
-			},
-			"charSelectPlaceholder": "Оберіть персонажа",
-			"apiKeyInput": {
-				"placeholder": "Введіть API ключ"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "Перемкнути видимість API ключа"
-			},
-			"buttons": {
-				"saveConfig": "Зберегти конфігурацію",
-				"startBot": "Запустити",
-				"stopBot": "Зупинити"
-			}
-		},
-		"prompts": {
-			"newBotName": "Будь ласка, введіть назву нового бота:"
-		},
-		"alerts": {
-			"botExists": "Бот з назвою \"${botname}\" вже існує, будь ласка, використайте іншу назву.",
-			"unsavedChanges": "У вас є незбережені зміни. Ви хочете їх скасувати?",
-			"configSaved": "Конфігурацію успішно збережено",
-			"httpError": "HTTP-помилка",
-			"beforeUnload": "У вас є незбережені зміни. Ви впевнені, що хочете піти?"
-		}
-	},
-	"telegram_bots": {
-		"title": "Telegram Bot",
-		"cardTitle": "Керування Telegram ботами",
-		"buttons": {
-			"newBot": "Створити",
-			"deleteBot": "Видалити"
-		},
-		"configCard": {
-			"title": "Налаштування бота",
-			"labels": {
-				"character": "Прив'язаний персонаж",
-				"botToken": "Telegram Bot Token",
-				"config": "Конфігурація"
-			},
-			"charSelectPlaceholder": "Оберіть персонажа",
-			"botTokenInput": {
-				"placeholder": "Введіть Telegram Bot Token"
-			},
-			"toggleBotTokenIcon": {
-				"alt": "Перемкнути видимість API ключа"
-			},
-			"buttons": {
-				"saveConfig": "Зберегти конфігурацію",
-				"startBot": "Запустити",
-				"stopBot": "Зупинити"
-			}
-		},
-		"prompts": {
-			"newBotName": "Будь ласка, введіть назву нового бота:"
-		},
-		"alerts": {
-			"botExists": "Бот з назвою \"${botname}\" вже існує, будь ласка, використайте іншу назву.",
-			"unsavedChanges": "У вас є незбережені зміни. Ви впевнені, що хочете їх скасувати?",
-			"configSaved": "Конфігурацію успішно збережено!",
-			"httpError": "HTTP-помилка",
-			"beforeUnload": "У вас є незбережені зміни. Ви впевнені, що хочете покинути поточну сторінку?"
-		}
-	},
-	"terminal_assistant": {
-		"title": "Помічник у терміналі",
-		"initialMessage": "fount підтримує розгортання вашого улюбленого персонажа у вашому терміналі для допомоги в кодуванні!",
-		"initialMessageLink": "Натисніть тут, щоб дізнатися більше"
-	},
-	"access": {
-		"title": "Доступ до fount на інших пристроях",
-		"heading": "Хочете отримати доступ до fount на інших пристроях?",
-		"instruction": {
-			"sameLAN": "Переконайтеся, що пристрій та хост fount знаходяться в одній локальній мережі",
-			"accessthis": "Відвідайте наступну адресу:"
-		},
-		"copyButton": "Копіювати адресу",
-		"copied": "Адресу скопійовано в буфер обміну!"
-	},
-	"proxy": {
-		"title": "API проксі",
-		"heading": "Адреса проксі для OpenAI API",
-		"instruction": "Вставте наступну адресу в будь-яку програму, що вимагає формат OpenAI API, щоб використовувати AI-джерела з fount!",
-		"copyButton": "Копіювати адресу",
-		"copied": "Адресу скопійовано в буфер обміну!"
-	},
-	"404": {
-		"title": "Сторінку не знайдено",
-		"pageNotFoundText": "Ой! Схоже, ви потрапили на сторінку, якої не існує.",
-		"homepageButton": "Повернутися на головну"
-	},
-	"userSettings": {
-		"title": "Налаштування користувача",
-		"PageTitle": "Налаштування користувача",
-		"apiError": "Помилка API запиту: ${message}",
-		"generalError": "Сталася помилка: ${message}",
-		"userInfo": {
-			"title": "Інформація про користувача",
-			"usernameLabel": "Ім'я користувача:",
-			"creationDateLabel": "Дата створення акаунта:",
-			"folderSizeLabel": "Розмір даних користувача:",
-			"folderPathLabel": "Шлях до даних користувача:",
-			"copyPathBtnTitle": "Копіювати шлях",
-			"copiedAlert": "Шлях скопійовано в буфер обміну!"
-		},
-		"changePassword": {
-			"title": "Змінити пароль",
-			"currentPasswordLabel": "Поточний пароль:",
-			"newPasswordLabel": "Новий пароль:",
-			"confirmNewPasswordLabel": "Підтвердіть новий пароль:",
-			"submitButton": "Змінити пароль",
-			"errorMismatch": "Нові паролі не збігаються.",
-			"success": "Пароль успішно змінено."
-		},
-		"renameUser": {
-			"title": "Змінити ім'я користувача",
-			"newUsernameLabel": "Нове ім'я користувача:",
-			"submitButton": "Змінити ім'я",
-			"confirmMessage": "Ви впевнені, що хочете змінити ім'я користувача? Вам доведеться увійти знову.",
-			"success": "Ім'я користувача успішно змінено на \"${newUsername}\". Зараз ви будете вилогінені."
-		},
-		"userDevices": {
-			"title": "Пристрої/сесії користувача",
-			"refreshButtonTitle": "Оновити список",
-			"noDevicesFound": "Не знайдено жодних пристроїв або сесій.",
-			"deviceInfo": "ID пристрою: ${deviceId}",
-			"thisDevice": "Цей пристрій",
-			"deviceDetails": "Останній раз онлайн: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
-			"revokeButton": "Відкликати",
-			"revokeConfirm": "Ви впевнені, що хочете вийти з цього пристрою/сесії?",
-			"revokeSuccess": "Пристрій/сесію успішно відкликано."
-		},
-		"logout": {
-			"title": "Вихід",
-			"description": "Це виведе вас з вашого акаунта на поточному пристрої.",
-			"buttonText": "Вийти",
-			"confirmMessage": "Ви впевнені, що хочете вийти?",
-			"successMessage": "Ви успішно вийшли. Перенаправлення на сторінку входу..."
-		},
-		"deleteAccount": {
-			"title": "Видалити акаунт",
-			"warning": "УВАГА: Ця дія назавжди видалить ваш акаунт та всі пов'язані з ним дані без можливості відновлення.",
-			"submitButton": "Видалити мій акаунт",
-			"confirmMessage1": "УВАГА! Ви впевнені, що хочете назавжди видалити свій акаунт? Цю дію неможливо скасувати.",
-			"confirmMessage2": "Для підтвердження видалення, будь ласка, введіть своє ім'я користувача \"${username}\":",
-			"usernameMismatch": "Введене ім'я користувача не збігається з поточним. Операцію видалення скасовано.",
-			"success": "Акаунт успішно видалено. Зараз ви будете вилогінені."
-		},
-		"passwordConfirm": {
-			"title": "Підтвердження дії",
-			"message": "Для продовження цієї операції, будь ласка, введіть ваш поточний пароль:",
-			"passwordLabel": "Пароль:",
-			"confirmButton": "Підтвердити",
-			"cancelButton": "Скасувати"
-		},
-		"apiKeys": {
-			"title": "Ключ API",
-			"description": "Керуйте ключем API для зовнішніх програм.",
-			"descriptionPlaceholder": "Новий ключовий опис",
-			"createButton": "створити",
-			"noKeysFound": "Клавіш API не знайдено.",
-			"refreshButtonTitle": "Оновіть список",
-			"keyDetails": "Опис: ${description} | Створено в: ${createdAt} | Востаннє використаний: ${lastUsed}",
-			"neverUsed": "Ніколи не використовувався",
-			"revokeButton": "Відкликати",
-			"revokeConfirm": "Ви впевнені, що хочете відкликати цей ключ API?",
-			"revokeSuccess": "Ключ API успішно відкликаний.",
-			"errorDescriptionRequired": "Необхідний опис.",
-			"createSuccess": "Ключ API був створений успішно."
-		},
-		"newApiKey": {
-			"title": "Створено новий ключ API",
-			"warning": "Будь ласка, скопіюйте свій новий ключ API. Ви більше не зможете це побачити!",
-			"copyButtonTitle": "Скопіюйте новий ключ API",
-			"closeButton": "Я скопіював свій ключ"
-		}
-	},
-	"badges_maker": {
-		"title": "fount! Конвертер значків",
-		"card_title": "Конвертер посилань для значків fount",
-		"original_url_label": "Вставте URL-адресу img.shields.io",
-		"original_url_placeholder": "Наприклад: https://img.shields.io/badge/Hello-World-blue",
-		"new_url_label": "Згенерована нова URL-адреса",
-		"new_url_placeholder": "Тут відобразиться перетворена URL-адреса",
-		"copy_button": "Копіювати",
-		"preview_label": "Попередній перегляд",
-		"preview_alt": "Попередній перегляд значка",
-		"copied_text": "Скопійовано!",
-		"copy_error": "Не вдалося скопіювати текст: ${error}",
-		"copy_fail_alert": "Не вдалося скопіювати!"
-	},
 	"easynew": {
 		"title": "Швидке створення",
 		"cardTitle": "Створити новий компонент з шаблону",
@@ -1070,6 +680,47 @@
 			"description": "Ці шаблони можна використовувати лише для швидкого створення простих компонентів, складні компоненти все ще потребують ручного створення."
 		}
 	},
+	"import": {
+		"title": "Імпорт",
+		"tabs": {
+			"fileImport": "Імпорт з файлу",
+			"textImport": "Імпорт тексту"
+		},
+		"dropArea": {
+			"icon": {
+				"alt": "Іконка завантаження"
+			},
+			"text": "Перетягніть файли сюди або натисніть, щоб вибрати"
+		},
+		"textArea": {
+			"placeholder": "Введіть текст для імпорту..."
+		},
+		"buttons": {
+			"import": "Імпортувати"
+		},
+		"alerts": {
+			"importSuccess": "Імпортовано успішно",
+			"importFailed": "Помилка імпорту: ${error}",
+			"unknownError": "Невідома помилка"
+		},
+		"errors": {
+			"noFileSelected": "Будь ласка, виберіть файл",
+			"fileImportFailed": "Помилка імпорту файлу: ${message}",
+			"noTextContent": "Будь ласка, введіть текстовий вміст",
+			"textImportFailed": "Помилка імпорту тексту: ${message}",
+			"unknownError": "Невідома помилка",
+			"handler": "Обробник",
+			"error": "Помилка"
+		},
+		"fileItem": {
+			"removeButton": {
+				"title": "Видалити"
+			},
+			"removeButtonIcon": {
+				"alt": "Видалити"
+			}
+		}
+	},
 	"export": {
 		"title": "Експортер компонентів",
 		"pageTitle": "Експортер компонентів",
@@ -1131,6 +782,119 @@
 			"generateShareLinkWithData": "Згенерувати посилання (з даними)"
 		}
 	},
+	"uninstall": {
+		"title": "Видалення",
+		"titleWithName": "Видалити ${type}/${name}",
+		"confirmMessage": "Ви впевнені, що хочете видалити ${type}: ${name}?",
+		"invalidParamsTitle": "Невірні параметри",
+		"infoMessage": {
+			"icon": {
+				"alt": "Іконка інформації"
+			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Іконка помилки"
+			}
+		},
+		"buttons": {
+			"confirm": "Підтвердити видалення",
+			"cancel": "Скасувати",
+			"back": "Назад"
+		},
+		"alerts": {
+			"success": "Успішно видалено ${type}: ${name}",
+			"failed": "Помилка видалення: ${error}",
+			"invalidParams": "Невірні параметри запиту.",
+			"httpError": "HTTP-помилка! Статус: ${status}"
+		}
+	},
+	"userSettings": {
+		"title": "Налаштування користувача",
+		"PageTitle": "Налаштування користувача",
+		"apiError": "Помилка API запиту: ${message}",
+		"generalError": "Сталася помилка: ${message}",
+		"userInfo": {
+			"title": "Інформація про користувача",
+			"usernameLabel": "Ім'я користувача:",
+			"creationDateLabel": "Дата створення акаунта:",
+			"folderSizeLabel": "Розмір даних користувача:",
+			"folderPathLabel": "Шлях до даних користувача:",
+			"copyPathBtnTitle": "Копіювати шлях",
+			"copiedAlert": "Шлях скопійовано в буфер обміну!"
+		},
+		"changePassword": {
+			"title": "Змінити пароль",
+			"currentPasswordLabel": "Поточний пароль:",
+			"newPasswordLabel": "Новий пароль:",
+			"confirmNewPasswordLabel": "Підтвердіть новий пароль:",
+			"submitButton": "Змінити пароль",
+			"errorMismatch": "Нові паролі не збігаються.",
+			"success": "Пароль успішно змінено."
+		},
+		"renameUser": {
+			"title": "Змінити ім'я користувача",
+			"newUsernameLabel": "Нове ім'я користувача:",
+			"submitButton": "Змінити ім'я",
+			"confirmMessage": "Ви впевнені, що хочете змінити ім'я користувача? Вам доведеться увійти знову.",
+			"success": "Ім'я користувача успішно змінено на \"${newUsername}\". Зараз ви будете вилогінені."
+		},
+		"userDevices": {
+			"title": "Пристрої/сесії користувача",
+			"refreshButtonTitle": "Оновити список",
+			"noDevicesFound": "Не знайдено жодних пристроїв або сесій.",
+			"deviceInfo": "ID пристрою: ${deviceId}",
+			"thisDevice": "Цей пристрій",
+			"deviceDetails": "Останній раз онлайн: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
+			"revokeButton": "Відкликати",
+			"revokeConfirm": "Ви впевнені, що хочете вийти з цього пристрою/сесії?",
+			"revokeSuccess": "Пристрій/сесію успішно відкликано."
+		},
+		"logout": {
+			"title": "Вихід",
+			"description": "Це виведе вас з вашого акаунта на поточному пристрої.",
+			"buttonText": "Вийти",
+			"confirmMessage": "Ви впевнені, що хочете вийти?",
+			"successMessage": "Ви успішно вийшли. Перенаправлення на сторінку входу..."
+		},
+		"deleteAccount": {
+			"title": "Видалити акаунт",
+			"warning": "УВАГА: Ця дія назавжди видалить ваш акаунт та всі пов'язані з ним дані без можливості відновлення.",
+			"submitButton": "Видалити мій акаунт",
+			"confirmMessage1": "УВАГА! Ви впевнені, що хочете назавжди видалити свій акаунт? Цю дію неможливо скасувати.",
+			"confirmMessage2": "Для підтвердження видалення, будь ласка, введіть своє ім'я користувача \"${username}\":",
+			"usernameMismatch": "Введене ім'я користувача не збігається з поточним. Операцію видалення скасовано.",
+			"success": "Акаунт успішно видалено. Зараз ви будете вилогінені."
+		},
+		"passwordConfirm": {
+			"title": "Підтвердження дії",
+			"message": "Для продовження цієї операції, будь ласка, введіть ваш поточний пароль:",
+			"passwordLabel": "Пароль:",
+			"confirmButton": "Підтвердити",
+			"cancelButton": "Скасувати"
+		},
+		"apiKeys": {
+			"title": "Ключ API",
+			"description": "Керуйте ключем API для зовнішніх програм.",
+			"descriptionPlaceholder": "Новий ключовий опис",
+			"createButton": "створити",
+			"noKeysFound": "Клавіш API не знайдено.",
+			"refreshButtonTitle": "Оновіть список",
+			"keyDetails": "Опис: ${description} | Створено в: ${createdAt} | Востаннє використаний: ${lastUsed}",
+			"neverUsed": "Ніколи не використовувався",
+			"revokeButton": "Відкликати",
+			"revokeConfirm": "Ви впевнені, що хочете відкликати цей ключ API?",
+			"revokeSuccess": "Ключ API успішно відкликаний.",
+			"errorDescriptionRequired": "Необхідний опис.",
+			"createSuccess": "Ключ API був створений успішно."
+		},
+		"newApiKey": {
+			"title": "Створено новий ключ API",
+			"warning": "Будь ласка, скопіюйте свій новий ключ API. Ви більше не зможете це побачити!",
+			"copyButtonTitle": "Скопіюйте новий ключ API",
+			"closeButton": "Я скопіював свій ключ"
+		}
+	},
 	"languageSettings": {
 		"title": "Налаштування мови",
 		"description": "Керуйте своїми мовними уподобаннями тут. Мови в списку будуть мати перевагу над налаштуваннями браузера в порядку.",
@@ -1144,15 +908,210 @@
 		"resetMessage": "Налаштування мови були скинуті!",
 		"fetchLocalesFailed": "Не вдалося отримати доступні мови!"
 	},
-	"login_info": {
-		"modal": {
-			"title": "Помилка передачі сертифіката",
-			"retrieve_error": "Помилка сталася під час спроби зберегти ваші облікові дані:\n${error}\nВи можете продовжувати, але не можете зберегти інформацію про вхід.",
-			"transfer_error": "Помилка сталася під час спроби передати ваші облікові дані:\n${error}\nВи можете продовжувати, але не можете отримати інформацію про вхід.",
+	"themeManage": {
+		"title": "Керування темами",
+		"instruction": "Оберіть тему!",
+		"themes": {
+			"auto": "Автоматична",
+			"light": "Світла",
+			"dark": "Темна",
+			"cupcake": "Кексик",
+			"bumblebee": "Джміль",
+			"emerald": "Смарагдова",
+			"corporate": "Корпоративна",
+			"synthwave": "Synthwave",
+			"retro": "Ретро",
+			"cyberpunk": "Кіберпанк",
+			"valentine": "Валентинка",
+			"halloween": "Хелловін",
+			"garden": "Садова",
+			"forest": "Лісова",
+			"aqua": "Морська",
+			"lofi": "Lo-fi",
+			"pastel": "Пастельна",
+			"fantasy": "Фентезі",
+			"wireframe": "Каркасна",
+			"black": "Чорна",
+			"luxury": "Розкішна",
+			"dracula": "Дракула",
+			"cmyk": "CMYK",
+			"autumn": "Осіння",
+			"business": "Ділова",
+			"acid": "Кислотна",
+			"lemonade": "Лимонад",
+			"night": "Нічна",
+			"coffee": "Кавова",
+			"winter": "Зимова",
+			"dim": "Приглушена",
+			"nord": "Скандинавська",
+			"sunset": "Захід сонця",
+			"caramellatte": "Карамель-лате",
+			"abyss": "Безодня",
+			"silk": "Шовкова"
+		}
+	},
+	"part_config": {
+		"title": "Налаштування компонента",
+		"pageTitle": "Налаштування компонента",
+		"labels": {
+			"partType": "Оберіть тип компонента",
+			"part": "Оберіть компонент"
+		},
+		"placeholders": {
+			"partTypeSelect": "Будь ласка, оберіть",
+			"partSelect": "Будь ласка, оберіть"
+		},
+		"editor": {
+			"title": "Налаштування компонента",
+			"disabledIndicator": "Цей компонент не підтримує налаштування",
 			"buttons": {
-				"ignore": "Ігнорувати та продовжити",
-				"retry": "Повторити"
+				"save": "Зберегти"
 			}
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Повідомлення про помилку"
+			}
+		},
+		"alerts": {
+			"fetchPartTypesFailed": "Не вдалося отримати типи компонентів",
+			"fetchPartsFailed": "Не вдалося отримати список компонентів",
+			"loadEditorFailed": "Не вдалося завантажити редактор",
+			"saveConfigFailed": "Не вдалося зберегти налаштування компонента",
+			"unsavedChanges": "У вас є незбережені зміни. Ви хочете їх скасувати?",
+			"beforeUnload": "У вас є незбережені зміни. Ви впевнені, що хочете піти?"
+		}
+	},
+	"aisource_editor": {
+		"title": "Редактор AI-джерел",
+		"fileList": {
+			"title": "Список AI-джерел",
+			"addButton": {
+				"title": "+"
+			}
+		},
+		"configTitle": "Налаштування AI-джерела",
+		"generatorSelect": {
+			"label": "Оберіть генератор",
+			"placeholder": "Будь ласка, оберіть"
+		},
+		"buttons": {
+			"save": "Зберегти",
+			"delete": "Видалити"
+		},
+		"tooltips": {
+			"setDefault": "Встановити за замовчуванням"
+		},
+		"alerts": {
+			"fetchFileListFailed": "Не вдалося отримати список файлів: ${error}",
+			"fetchGeneratorListFailed": "Не вдалося отримати список генераторів: ${error}",
+			"fetchDefaultsFailed": "Не вдалося отримати компоненти за замовчуванням: ${error}",
+			"fetchFileDataFailed": "Не вдалося отримати дані файлу: ${error}",
+			"noFileSelectedSave": "Не вибрано файл для збереження.",
+			"saveFileFailed": "Не вдалося зберегти файл: ${error}",
+			"setDefaultFailed": "Не вдалося встановити AI-джерело за замовчуванням: ${error}",
+			"noFileSelectedDelete": "Не вибрано файл для видалення.",
+			"deleteFileFailed": "Не вдалося видалити файл: ${error}",
+			"invalidFileName": "Назва файлу не може містити наступні символи: / \\ : * ? \" < > |",
+			"addFileFailed": "Не вдалося додати файл: ${error}",
+			"fetchConfigTemplateFailed": "Не вдалося отримати шаблон конфігурації",
+			"noGeneratorSelectedSave": "Будь ласка, оберіть генератор перед збереженням"
+		},
+		"confirm": {
+			"unsavedChanges": "У вас є незбережені зміни. Ви хочете їх скасувати?",
+			"deleteFile": "Ви впевнені, що хочете видалити файл?",
+			"unsavedChangesBeforeUnload": "У вас є незбережені зміни. Ви впевнені, що хочете покинути цю сторінку?"
+		},
+		"prompts": {
+			"newFileName": "Будь ласка, введіть назву нового файлу AI-джерела (без розширення):"
+		},
+		"editor": {
+			"disabledIndicator": "Будь ласка, спочатку оберіть генератор"
+		},
+		"common_config_interface": {
+			"empty_generator": "Спадковий генератор з цього джерела AI має помилку під час завантаження і, можливо, був видалений або перейменований.",
+			"apiKeyRequired": "Для отримання списку моделей потрібен ключ API.",
+			"loadingModels": "Завантаження моделей...",
+			"availableModels": "Доступні моделі:",
+			"copyModelIdTooltip": "Натисніть, щоб скопіювати ID моделі",
+			"copied": "Скопійовано!",
+			"loadModelsFailed": "Не вдалося завантажити моделі: ${message}"
+		}
+	},
+	"discord_bots": {
+		"title": "Discord Bot",
+		"cardTitle": "Discord Bot",
+		"buttons": {
+			"newBot": "Створити",
+			"deleteBot": "Видалити"
+		},
+		"configCard": {
+			"title": "Налаштування бота",
+			"labels": {
+				"character": "Прив'язаний персонаж",
+				"apiKey": "Discord API ключ",
+				"config": "Конфігурація"
+			},
+			"charSelectPlaceholder": "Оберіть персонажа",
+			"apiKeyInput": {
+				"placeholder": "Введіть API ключ"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "Перемкнути видимість API ключа"
+			},
+			"buttons": {
+				"saveConfig": "Зберегти конфігурацію",
+				"startBot": "Запустити",
+				"stopBot": "Зупинити"
+			}
+		},
+		"prompts": {
+			"newBotName": "Будь ласка, введіть назву нового бота:"
+		},
+		"alerts": {
+			"botExists": "Бот з назвою \"${botname}\" вже існує, будь ласка, використайте іншу назву.",
+			"unsavedChanges": "У вас є незбережені зміни. Ви хочете їх скасувати?",
+			"configSaved": "Конфігурацію успішно збережено",
+			"httpError": "HTTP-помилка",
+			"beforeUnload": "У вас є незбережені зміни. Ви впевнені, що хочете піти?"
+		}
+	},
+	"telegram_bots": {
+		"title": "Telegram Bot",
+		"cardTitle": "Керування Telegram ботами",
+		"buttons": {
+			"newBot": "Створити",
+			"deleteBot": "Видалити"
+		},
+		"configCard": {
+			"title": "Налаштування бота",
+			"labels": {
+				"character": "Прив'язаний персонаж",
+				"botToken": "Telegram Bot Token",
+				"config": "Конфігурація"
+			},
+			"charSelectPlaceholder": "Оберіть персонажа",
+			"botTokenInput": {
+				"placeholder": "Введіть Telegram Bot Token"
+			},
+			"toggleBotTokenIcon": {
+				"alt": "Перемкнути видимість API ключа"
+			},
+			"buttons": {
+				"saveConfig": "Зберегти конфігурацію",
+				"startBot": "Запустити",
+				"stopBot": "Зупинити"
+			}
+		},
+		"prompts": {
+			"newBotName": "Будь ласка, введіть назву нового бота:"
+		},
+		"alerts": {
+			"botExists": "Бот з назвою \"${botname}\" вже існує, будь ласка, використайте іншу назву.",
+			"unsavedChanges": "У вас є незбережені зміни. Ви впевнені, що хочете їх скасувати?",
+			"configSaved": "Конфігурацію успішно збережено!",
+			"httpError": "HTTP-помилка",
+			"beforeUnload": "У вас є незбережені зміни. Ви впевнені, що хочете покинути поточну сторінку?"
 		}
 	},
 	"browser_integration": {
@@ -1223,5 +1182,46 @@
 			"prompt": "Доступна нова версія сценарію інтеграції браузера fount. Чи відкрита сторінка оновлення?"
 		},
 		"csp_warning": "Сценарій інтеграції браузера fount виявляє, що політика CSP існує на сторінці, що може призвести до того, що сценарій інтеграції не працює належним чином. Будь ласка, подумайте про встановлення плагіна щоб вимкнути CSP."
+	},
+	"terminal_assistant": {
+		"title": "Помічник у терміналі",
+		"initialMessage": "fount підтримує розгортання вашого улюбленого персонажа у вашому терміналі для допомоги в кодуванні!",
+		"initialMessageLink": "Натисніть тут, щоб дізнатися більше"
+	},
+	"access": {
+		"title": "Доступ до fount на інших пристроях",
+		"heading": "Хочете отримати доступ до fount на інших пристроях?",
+		"instruction": {
+			"sameLAN": "Переконайтеся, що пристрій та хост fount знаходяться в одній локальній мережі",
+			"accessthis": "Відвідайте наступну адресу:"
+		},
+		"copyButton": "Копіювати адресу",
+		"copied": "Адресу скопійовано в буфер обміну!"
+	},
+	"proxy": {
+		"title": "API проксі",
+		"heading": "Адреса проксі для OpenAI API",
+		"instruction": "Вставте наступну адресу в будь-яку програму, що вимагає формат OpenAI API, щоб використовувати AI-джерела з fount!",
+		"copyButton": "Копіювати адресу",
+		"copied": "Адресу скопійовано в буфер обміну!"
+	},
+	"badges_maker": {
+		"title": "fount! Конвертер значків",
+		"card_title": "Конвертер посилань для значків fount",
+		"original_url_label": "Вставте URL-адресу img.shields.io",
+		"original_url_placeholder": "Наприклад: https://img.shields.io/badge/Hello-World-blue",
+		"new_url_label": "Згенерована нова URL-адреса",
+		"new_url_placeholder": "Тут відобразиться перетворена URL-адреса",
+		"copy_button": "Копіювати",
+		"preview_label": "Попередній перегляд",
+		"preview_alt": "Попередній перегляд значка",
+		"copied_text": "Скопійовано!",
+		"copy_error": "Не вдалося скопіювати текст: ${error}",
+		"copy_fail_alert": "Не вдалося скопіювати!"
+	},
+	"404": {
+		"title": "Сторінку не знайдено",
+		"pageNotFoundText": "Ой! Схоже, ви потрапили на сторінку, якої не існує.",
+		"homepageButton": "Повернутися на головну"
 	}
 }
