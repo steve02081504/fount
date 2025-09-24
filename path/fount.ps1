@@ -506,6 +506,7 @@ function debug_on {
 		$originalClipboard = Get-Clipboard
 		Set-Clipboard -Value "chrome://inspect"
 		Start-Process "chrome.exe" "--new-window"
+		Add-Type -AssemblyName System.Windows.Forms
 		Start-Sleep -Seconds 2
 		[System.Windows.Forms.SendKeys]::SendWait("^{l}")
 		[System.Windows.Forms.SendKeys]::SendWait("^{v}")

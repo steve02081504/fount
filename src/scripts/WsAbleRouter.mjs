@@ -31,14 +31,27 @@ export function WsAbleRouter(router = express.Router(), httpServer = null) {
 		}
 	}
 	router.ws = (path, ...handlers) => {
-		const wss = new WebSocketServer({ noServer: true })
+		const wss = new WebSocketServer({
+			noServer: true,
+			perMessageDeflate: true,
+			handleProtocols: (protocols) => {
+				if (protocols.size > 0) return protocols.values().next().value
+				return false
+			}
+		})
 		const handler = handlers.pop()
 		wss.on('connection', handler)
+		wss.on('wsClientError', (error, socket, request) => {
+			console.error('WebSocket client error:', error)
+			if (socket.writable) socket.destroy()
+		})
 		router.get(path, ...handlers, (req, res) => {
 			if (!req.ws) return res.status(400).json({ message: 'This is a WebSocket-only endpoint.' })
-			req.ws.isHandled = true
 			const { socket, head } = req.ws
-			wss.handleUpgrade(req, socket, head, ws => wss.emit('connection', ws, req))
+			wss.handleUpgrade(req, socket, head, ws => {
+				req.ws.isHandled = true
+				wss.emit('connection', ws, req)
+			})
 		})
 		return router
 	}
