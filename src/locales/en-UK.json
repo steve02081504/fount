@@ -1200,10 +1200,23 @@
 	},
 	"proxy": {
 		"title": "API Proxy",
-		"heading": "OpenAI API Proxy Address",
-		"instruction": "Enter the following address into any application that requires the OpenAI API format to use the AI sources in fount!",
-		"copyButton": "Copy Address",
-		"copied": "Address copied to clipboard!"
+		"heading": "API Proxy Gateway",
+		"instruction": "Generate and manage your API keys on this page to integrate fount with other applications.",
+		"endpointSectionTitle": "API Endpoint",
+		"endpointInstruction": "This is the base URL for integration with other services.",
+		"usageExampleTitle": "Usage Example",
+		"usageExampleInstruction": "Here is an example of how to get the list of available models using `curl`.",
+		"copyButton": "Copy",
+		"copied": "Copied to clipboard",
+		"apiKeySectionTitle": "Your API Keys",
+		"apiKey": "Your API Key:",
+		"noApiKey": "You have not generated an API key for this page yet.",
+		"generateApiKeyButton": "Generate New Key",
+		"copyApiKeyButton": "Copy",
+		"apiKeyCopied": "API key copied!",
+		"queryStringSectionTitle": "Can't set APIKey in request header? (Insecure)",
+		"queryStringWarning": "Use this alternative method when your application does not support sending the API key in the request header (Authorization header). Please note: Placing the API key directly in the URL poses a security risk as it may be logged in server logs or browser history.",
+		"copyQueryStringUrlButton": "URL with API Key (Query String)"
 	},
 	"badges_maker": {
 		"title": "fount! Badge Converter",

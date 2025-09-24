@@ -1200,10 +1200,23 @@
 	},
 	"proxy": {
 		"title": "API-Proxy",
-		"heading": "OpenAI API Proxy-Adresse",
-		"instruction": "Fügen Sie die folgende Adresse in jede Anwendung ein, die das OpenAI-API-Format benötigt, um die KI-Quellen in fount zu verwenden!",
-		"copyButton": "Adresse kopieren",
-		"copied": "Adresse in die Zwischenablage kopiert!"
+		"heading": "API-Proxy-Gateway",
+		"instruction": "Erstellen und verwalten Sie auf dieser Seite Ihre API-Schlüssel, um fount in andere Anwendungen zu integrieren.",
+		"endpointSectionTitle": "API-Endpunkt",
+		"endpointInstruction": "Dies ist die Basis-URL für die Integration mit anderen Diensten.",
+		"usageExampleTitle": "Anwendungsbeispiel",
+		"usageExampleInstruction": "Hier ist ein Beispiel, wie Sie mit `curl` die Liste der verfügbaren Modelle abrufen können.",
+		"copyButton": "Kopieren",
+		"copied": "In die Zwischenablage kopiert",
+		"apiKeySectionTitle": "Ihre API-Schlüssel",
+		"apiKey": "Ihr API-Schlüssel:",
+		"noApiKey": "Sie haben noch keinen API-Schlüssel für diese Seite generiert.",
+		"generateApiKeyButton": "Neuen Schlüssel generieren",
+		"copyApiKeyButton": "Kopieren",
+		"apiKeyCopied": "API-Schlüssel kopiert!",
+		"queryStringSectionTitle": "API-Schlüssel kann nicht im Anfrage-Header gesetzt werden? (Unsicher)",
+		"queryStringWarning": "Verwenden Sie diese alternative Methode, wenn Ihre Anwendung das Senden des API-Schlüssels im Anfrage-Header (Authorization-Header) nicht unterstützt. Bitte beachten Sie: Das direkte Platzieren des API-Schlüssels in der URL stellt ein Sicherheitsrisiko dar, da er in Serverprotokollen oder im Browserverlauf protokolliert werden könnte.",
+		"copyQueryStringUrlButton": "URL mit API-Schlüssel (Query-String)"
 	},
 	"badges_maker": {
 		"title": "fount! Abzeichenwandler",

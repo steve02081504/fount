@@ -1200,10 +1200,23 @@
 	},
 	"proxy": {
 		"title": "API 代理",
-		"heading": "OpenAI API 代理地址",
-		"instruction": "将以下地址填入任意需要 OpenAI API 格式的应用中，即可使用在 fount 中的AI源！",
-		"copyButton": "复制地址",
-		"copied": "地址已复制到剪贴板！"
+		"heading": "API 代理网关",
+		"instruction": "在此页面生成并管理您的 API 密钥，以将 fount 与其他应用程序集成。",
+		"endpointSectionTitle": "API 端点",
+		"endpointInstruction": "这是与其他服务集成的基本 URL。",
+		"usageExampleTitle": "用法示例",
+		"usageExampleInstruction": "以下是如何使用 `curl` 获取可用模型列表的示例。",
+		"copyButton": "复制",
+		"copied": "已复制到剪贴板",
+		"apiKeySectionTitle": "您的 API 密钥",
+		"apiKey": "您的 API 密钥：",
+		"noApiKey": "您还没有为此页面生成 API 密钥。",
+		"generateApiKeyButton": "生成新密钥",
+		"copyApiKeyButton": "复制",
+		"apiKeyCopied": "API 密钥已复制！",
+		"queryStringSectionTitle": "无法在请求头中设置 APIKey？(不安全)",
+		"queryStringWarning": "当您的应用程序不支持在请求头（Authorization header）中发送 API 密钥时，可以使用此备用方法。请注意：将 API 密钥直接放在 URL 中存在安全风险，因为它可能被记录在服务器日志或浏览器历史中。",
+		"copyQueryStringUrlButton": "包含 API 密钥的 URL (查询字符串)"
 	},
 	"badges_maker": {
 		"title": "fount! 徽章转换器",

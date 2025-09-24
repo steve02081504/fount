@@ -1200,10 +1200,23 @@
 	},
 	"proxy": {
 		"title": "Proxy API",
-		"heading": "Địa chỉ Proxy API OpenAI",
-		"instruction": "Nhập địa chỉ sau vào bất kỳ ứng dụng nào yêu cầu định dạng API OpenAI để sử dụng các nguồn AI trong fount!",
-		"copyButton": "Sao chép địa chỉ",
-		"copied": "Địa chỉ đã được sao chép vào bộ nhớ tạm!"
+		"heading": "Cổng Proxy API",
+		"instruction": "Tạo và quản lý các khóa API của bạn trên trang này để tích hợp fount với các ứng dụng khác.",
+		"endpointSectionTitle": "Điểm cuối API",
+		"endpointInstruction": "Đây là URL cơ sở để tích hợp với các dịch vụ khác.",
+		"usageExampleTitle": "Ví dụ sử dụng",
+		"usageExampleInstruction": "Đây là ví dụ về cách lấy danh sách các mô hình có sẵn bằng `curl`.",
+		"copyButton": "Sao chép",
+		"copied": "Đã sao chép vào bộ nhớ tạm",
+		"apiKeySectionTitle": "Khóa API của bạn",
+		"apiKey": "Khóa API của bạn:",
+		"noApiKey": "Bạn chưa tạo khóa API cho trang này.",
+		"generateApiKeyButton": "Tạo khóa mới",
+		"copyApiKeyButton": "Sao chép",
+		"apiKeyCopied": "Đã sao chép khóa API!",
+		"queryStringSectionTitle": "Không thể đặt APIKey trong tiêu đề yêu cầu? (Không an toàn)",
+		"queryStringWarning": "Sử dụng phương pháp thay thế này khi ứng dụng của bạn không hỗ trợ gửi khóa API trong tiêu đề yêu cầu (tiêu đề Authorization). Xin lưu ý: Đặt khóa API trực tiếp vào URL có rủi ro bảo mật vì nó có thể được ghi lại trong nhật ký máy chủ hoặc lịch sử trình duyệt.",
+		"copyQueryStringUrlButton": "URL có khóa API (Chuỗi truy vấn)"
 	},
 	"badges_maker": {
 		"title": "fount! Bộ chuyển đổi huy hiệu",

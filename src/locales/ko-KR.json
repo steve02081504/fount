@@ -1200,10 +1200,23 @@
 	},
 	"proxy": {
 		"title": "API 프록시",
-		"heading": "OpenAI API 프록시 주소",
-		"instruction": "fount의 AI 소스를 사용하려면, OpenAI API 형식이 필요한 애플리케이션에 다음 주소를 입력하세요!",
-		"copyButton": "주소 복사",
-		"copied": "주소가 클립보드에 복사되었습니다!"
+		"heading": "API 프록시 게이트웨이",
+		"instruction": "이 페이지에서 API 키를 생성하고 관리하여 fount를 다른 애플리케이션과 통합하세요.",
+		"endpointSectionTitle": "API 엔드포인트",
+		"endpointInstruction": "다른 서비스와 통합하기 위한 기본 URL입니다.",
+		"usageExampleTitle": "사용 예제",
+		"usageExampleInstruction": "`curl`을 사용하여 사용 가능한 모델 목록을 가져오는 방법의 예입니다.",
+		"copyButton": "복사",
+		"copied": "클립보드에 복사됨",
+		"apiKeySectionTitle": "내 API 키",
+		"apiKey": "내 API 키:",
+		"noApiKey": "아직 이 페이지에 대한 API 키를 생성하지 않았습니다.",
+		"generateApiKeyButton": "새 키 생성",
+		"copyApiKeyButton": "복사",
+		"apiKeyCopied": "API 키가 복사되었습니다!",
+		"queryStringSectionTitle": "요청 헤더에 APIKey를 설정할 수 없나요? (안전하지 않음)",
+		"queryStringWarning": "애플리케이션이 요청 헤더(Authorization 헤더)에서 API 키 전송을 지원하지 않는 경우 이 대체 방법을 사용하세요. 참고: API 키를 URL에 직접 넣는 것은 서버 로그나 브라우저 기록에 기록될 수 있으므로 보안 위험이 있습니다.",
+		"copyQueryStringUrlButton": "API 키가 포함된 URL (쿼리 문자열)"
 	},
 	"badges_maker": {
 		"title": "fount! 배지 변환기",

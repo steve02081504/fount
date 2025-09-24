@@ -1,5 +1,4 @@
 import fs from 'node:fs'
-import { Readable } from 'node:stream'
 
 import cors from 'npm:cors'
 
@@ -7,13 +6,13 @@ import { console, getLocaleData, fountLocaleList } from '../../scripts/i18n.mjs'
 import { ms } from '../../scripts/ms.mjs'
 import { get_hosturl_in_local_ip, is_local_ip, is_local_ip_from_req, rateLimit } from '../../scripts/ratelimit.mjs'
 import { generateVerificationCode, verifyVerificationCode } from '../../scripts/verifycode.mjs'
-import { login, register, logout, authenticate, getUserByReq, getUserDictionary, getUserByUsername, generateAccessToken, auth_request, generateApiKey, revokeApiKey } from '../auth.mjs'
+import { login, register, logout, authenticate, getUserByReq, getUserDictionary, getUserByUsername, auth_request, generateApiKey, revokeApiKey, verifyApiKey } from '../auth.mjs'
 import { __dirname } from '../base.mjs'
 import { processIPCCommand } from '../ipc_server/index.mjs'
 import { partsList } from '../managers/base.mjs'
 import { getLoadedPartList, getPartList } from '../managers/index.mjs'
 import { getDefaultParts, getPartDetails, setDefaultPart } from '../parts_loader.mjs'
-import { hosturl, skip_report, currentGitCommit, config, save_config } from '../server.mjs'
+import { skip_report, currentGitCommit, config, save_config } from '../server.mjs'
 
 /**
  * @param {import('npm:express').Router} router
@@ -144,55 +143,17 @@ export function registerEndpoints(router) {
 		res.status(result.success ? 200 : 404).json(result)
 	})
 
+	router.post('/api/apikey/verify', async (req, res) => {
+		const { apiKey } = req.body
+		if (!apiKey) return res.status(400).json({ success: false, error: 'API key is required.' })
+
+		const user = await verifyApiKey(apiKey)
+		res.status(200).json({ success: true, valid: !!user })
+	})
+
 	router.get('/api/whoami', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		res.status(200).json({ username })
-	})
-
-	router.all(/asuser\/([^/]*)\/(.*)/, async (req, res) => {
-		if (!is_local_ip_from_req(req))
-			return res.status(403).send('Access allowed only from local IP.')
-		try {
-			const username = req.params[0]
-			const targetPathAndQuery = req.params[1]
-			const targetUrl = hosturl + '/' + targetPathAndQuery
-
-			console.log(`AsUser: Forwarding request for user '${username}' to: ${targetUrl}`)
-
-			const accessToken = await generateAccessToken({ username })
-
-			const forwardedHeaders = {
-				...req.headers,
-				'cookie': `accessToken=${accessToken}; ${Object.entries(req.cookies || {}).map(([k, v]) => `${k}=${v}`).join('; ')}`,
-				'x-forwarded-for': req.headers['x-forwarded-for'] || req.socket.remoteAddress,
-			}
-			delete forwardedHeaders.host
-
-			const response = await fetch(targetUrl, {
-				method: req.method,
-				headers: forwardedHeaders,
-				body: req.method == 'GET' ? undefined : req.body && JSON.stringify(req.body),
-				redirect: 'manual'
-			})
-
-			response.headers.forEach((value, name) => {
-				res.setHeader(name, value)
-			})
-
-			res.status(response.status)
-			if (response.body) {
-				const nodeReadableStream = Readable.fromWeb(response.body)
-				nodeReadableStream.pipe(res)
-			}
-			else
-				res.end()
-		} catch (error) {
-			console.error(`AsUser: Proxy Error for ${req.method} ${req.originalUrl}:`, error)
-			if (!res.headersSent)
-				res.status(502).send('Bad Gateway: Error forwarding request.')
-			else
-				res.socket.destroy()
-		}
 	})
 
 	router.post('/api/authenticate', authenticate, (req, res) => {

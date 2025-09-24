@@ -1200,10 +1200,23 @@
 	},
 	"proxy": {
 		"title": "API中介",
-		"heading": "OpenAI API 中介",
-		"instruction": "將此址填入需 OpenAI API 之應用，即可用 fount 中之智源。",
-		"copyButton": "謄錄此址",
-		"copied": "此址已錄！"
+		"heading": "API中介關隘",
+		"instruction": "於此頁生成並掌管爾之API密鑰，以便將fount與他用整合。",
+		"endpointSectionTitle": "API端點",
+		"endpointInstruction": "此乃與他服務整合之基址。",
+		"usageExampleTitle": "用法示例",
+		"usageExampleInstruction": "此爲如何用`curl`獲取可用模型列表之例。",
+		"copyButton": "謄",
+		"copied": "已謄至剪貼板",
+		"apiKeySectionTitle": "爾之API密鑰",
+		"apiKey": "爾之API密鑰：",
+		"noApiKey": "爾尚未爲此頁生成API密鑰。",
+		"generateApiKeyButton": "生成新鑰",
+		"copyApiKeyButton": "謄",
+		"apiKeyCopied": "API密鑰已謄！",
+		"queryStringSectionTitle": "無法在請求頭中設置APIKey？(不安全)",
+		"queryStringWarning": "當爾之應用不支持在請求頭（Authorization header）中發送API密鑰時，可用此備用之法。切記：徑以密鑰置於網址，恐錄於日誌史載，徒增其險。",
+		"copyQueryStringUrlButton": "包含API密鑰之URL（查詢字符串）"
 	},
 	"badges_maker": {
 		"title": "fount 徽章轉換器",

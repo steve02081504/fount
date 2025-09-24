@@ -1200,10 +1200,23 @@
 	},
 	"proxy": {
 		"title": "API Proxy",
-		"heading": "OpenAI API-proxyadres",
-		"instruction": "Voer het volgende adres in een applicatie in die het OpenAI API-formaat vereist om de AI-bronnen in fount te gebruiken!",
-		"copyButton": "Adres kopiëren",
-		"copied": "Adres gekopieerd naar klembord!"
+		"heading": "API Proxy Gateway",
+		"instruction": "Genereer en beheer uw API-sleutels op deze pagina om fount te integreren met andere applicaties.",
+		"endpointSectionTitle": "API-eindpunt",
+		"endpointInstruction": "Dit is de basis-URL voor integratie met andere services.",
+		"usageExampleTitle": "Gebruiksvoorbeeld",
+		"usageExampleInstruction": "Hier is een voorbeeld van hoe u de lijst met beschikbare modellen kunt ophalen met `curl`.",
+		"copyButton": "Kopiëren",
+		"copied": "Gekopieerd naar klembord",
+		"apiKeySectionTitle": "Uw API-sleutels",
+		"apiKey": "Uw API-sleutel:",
+		"noApiKey": "U heeft nog geen API-sleutel voor deze pagina gegenereerd.",
+		"generateApiKeyButton": "Nieuwe sleutel genereren",
+		"copyApiKeyButton": "Kopiëren",
+		"apiKeyCopied": "API-sleutel gekopieerd!",
+		"queryStringSectionTitle": "Kunt u de APIKey niet in de request header instellen? (Onveilig)",
+		"queryStringWarning": "Gebruik deze alternatieve methode wanneer uw applicatie het verzenden van de API-sleutel in de request header (Authorization header) niet ondersteunt. Let op: het rechtstreeks plaatsen van de API-sleutel in de URL brengt een veiligheidsrisico met zich mee, omdat deze kan worden vastgelegd in serverlogboeken of de browsergeschiedenis.",
+		"copyQueryStringUrlButton": "URL met API-sleutel (Query String)"
 	},
 	"badges_maker": {
 		"title": "fount! Badge-omzetter",

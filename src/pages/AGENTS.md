@@ -52,7 +52,7 @@
 
 - **Purpose**: A powerful engine for rendering HTML from templates.
 - `usingTemplates(path)`: Sets the base path for your template files (e.g., `/shells/chat/src/public/templates`).
-- `async renderTemplate(templateName, data)`: Fetches an `.html` template, injects the `data` object, and returns a rendered DOM element. **This is the primary method for creating complex UI elements.**
+- `async renderTemplate(templateName, data)`: Fetches an `.html` template, injects the `data` object, and returns a rendered DOM element. **This is the primary method for creating complex UI elements.** It automatically translates any `data-i18n` attributes within the template, so you do not need to call `i18nElement` on the result.
 - `createDocumentFragmentFromHtmlString(htmlString)`: Safely creates a DOM fragment from a raw HTML string, correctly handling `<script>` and `<link>` tags.
 
 ### 3.2. Markdown Rendering (`markdown.mjs`)
@@ -74,7 +74,7 @@
 - **Purpose**: Handles all multi-language text translation.
 - `async initTranslations(pageid)`: **Call this early** in your page script. It fetches the language data for the specified page.
 - `geti18n(key, params)`: Retrieves the translated string for a given key (e.g., `home.title`). Supports interpolation with `params`.
-- `i18nElement(element)`: **Use this after rendering new content.** It automatically translates all descendant elements that have a `data-i18n` attribute.
+- `i18nElement(element)`: **Use this after rendering new content** that was not created by `renderTemplate`. It automatically translates all descendant elements that have a `data-i18n` attribute. The `renderTemplate` function handles this automatically.
 
 ---
 

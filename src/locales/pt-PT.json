@@ -1200,10 +1200,23 @@
 	},
 	"proxy": {
 		"title": "Proxy de API",
-		"heading": "Endereço do Proxy da API OpenAI",
-		"instruction": "Introduza o endereço seguinte em qualquer aplicação que necessite do formato da API OpenAI para usar as fontes de IA no fount!",
-		"copyButton": "Copiar Endereço",
-		"copied": "Endereço copiado para a área de transferência!"
+		"heading": "Gateway de Proxy de API",
+		"instruction": "Gere e gira as suas chaves de API nesta página para integrar o fount com outras aplicações.",
+		"endpointSectionTitle": "Endpoint da API",
+		"endpointInstruction": "Este é o URL base para integração com outros serviços.",
+		"usageExampleTitle": "Exemplo de Utilização",
+		"usageExampleInstruction": "Aqui está um exemplo de como obter a lista de modelos disponíveis usando `curl`.",
+		"copyButton": "Copiar",
+		"copied": "Copiado para a área de transferência",
+		"apiKeySectionTitle": "As Suas Chaves de API",
+		"apiKey": "A Sua Chave de API:",
+		"noApiKey": "Ainda não gerou uma chave de API para esta página.",
+		"generateApiKeyButton": "Gerar Nova Chave",
+		"copyApiKeyButton": "Copiar",
+		"apiKeyCopied": "Chave de API copiada!",
+		"queryStringSectionTitle": "Não consegue definir a APIKey no cabeçalho do pedido? (Inseguro)",
+		"queryStringWarning": "Use este método alternativo quando a sua aplicação não suportar o envio da chave de API no cabeçalho do pedido (cabeçalho de Autorização). Atenção: Colocar a chave de API diretamente no URL representa um risco de segurança, pois pode ser registada nos logs do servidor ou no histórico do navegador.",
+		"copyQueryStringUrlButton": "URL com Chave de API (Query String)"
 	},
 	"badges_maker": {
 		"title": "fount! Conversor de Crachás",

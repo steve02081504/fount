@@ -1200,10 +1200,23 @@
 	},
 	"proxy": {
 		"title": "وكيل API",
-		"heading": "عنوان وكيل OpenAI API",
-		"instruction": "املأ العنوان التالي في أي تطبيق يتطلب تنسيق OpenAI API لاستخدام مصادر الذكاء الاصطناعي في fount!",
-		"copyButton": "نسخ العنوان",
-		"copied": "تم نسخ العنوان إلى الحافظة!"
+		"heading": "بوابة وكيل API",
+		"instruction": "قم بإنشاء وإدارة مفاتيح API الخاصة بك في هذه الصفحة لدمج fount مع التطبيقات الأخرى.",
+		"endpointSectionTitle": "نقطة نهاية API",
+		"endpointInstruction": "هذا هو عنوان URL الأساسي للتكامل مع الخدمات الأخرى.",
+		"usageExampleTitle": "مثال على الاستخدام",
+		"usageExampleInstruction": "إليك مثال على كيفية الحصول على قائمة النماذج المتاحة باستخدام `curl`.",
+		"copyButton": "نسخ",
+		"copied": "تم النسخ إلى الحافظة",
+		"apiKeySectionTitle": "مفاتيح API الخاصة بك",
+		"apiKey": "مفتاح API الخاص بك:",
+		"noApiKey": "لم تقم بإنشاء مفتاح API لهذه الصفحة بعد.",
+		"generateApiKeyButton": "إنشاء مفتاح جديد",
+		"copyApiKeyButton": "نسخ",
+		"apiKeyCopied": "تم نسخ مفتاح API!",
+		"queryStringSectionTitle": "لا يمكن تعيين مفتاح API في رأس الطلب؟ (غير آمن)",
+		"queryStringWarning": "استخدم هذه الطريقة البديلة عندما لا يدعم تطبيقك إرسال مفتاح API في رأس الطلب (Authorization header). يرجى ملاحظة: وضع مفتاح API مباشرة في عنوان URL يشكل خطرًا أمنيًا حيث يمكن تسجيله في سجلات الخادم أو سجل المتصفح.",
+		"copyQueryStringUrlButton": "عنوان URL مع مفتاح API (سلسلة استعلام)"
 	},
 	"badges_maker": {
 		"title": "fount! محول الشارات",

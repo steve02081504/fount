@@ -1200,10 +1200,23 @@
 	},
 	"proxy": {
 		"title": "Proxy API",
-		"heading": "Adresse du Proxy API OpenAI",
-		"instruction": "Saisissez l'adresse suivante dans toute application nécessitant le format API OpenAI pour utiliser les sources d'IA dans fount !",
-		"copyButton": "Copier l'adresse",
-		"copied": "Adresse copiée dans le presse-papiers !"
+		"heading": "Passerelle du Proxy API",
+		"instruction": "Générez et gérez vos clés API sur cette page pour intégrer fount avec d'autres applications.",
+		"endpointSectionTitle": "Point de Terminaison de l'API",
+		"endpointInstruction": "Ceci est l'URL de base pour l'intégration avec d'autres services.",
+		"usageExampleTitle": "Exemple d'Utilisation",
+		"usageExampleInstruction": "Voici un exemple de la manière d'obtenir la liste des modèles disponibles en utilisant `curl`.",
+		"copyButton": "Copier",
+		"copied": "Copié dans le presse-papiers",
+		"apiKeySectionTitle": "Vos Clés API",
+		"apiKey": "Votre Clé API :",
+		"noApiKey": "Vous n'avez pas encore généré de clé API pour cette page.",
+		"generateApiKeyButton": "Générer une Nouvelle Clé",
+		"copyApiKeyButton": "Copier",
+		"apiKeyCopied": "Clé API copiée !",
+		"queryStringSectionTitle": "Impossible de définir la clé API dans l'en-tête de la requête ? (Non sécurisé)",
+		"queryStringWarning": "Utilisez cette méthode alternative lorsque votre application ne prend pas en charge l'envoi de la clé API dans l'en-tête de la requête (en-tête Authorization). Attention : Placer la clé API directement dans l'URL présente un risque de sécurité car elle peut être enregistrée dans les journaux du serveur ou l'historique du navigateur.",
+		"copyQueryStringUrlButton": "URL avec Clé API (Query String)"
 	},
 	"badges_maker": {
 		"title": "fount ! Convertisseur de Badges",

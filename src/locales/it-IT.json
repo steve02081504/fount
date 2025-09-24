@@ -1200,10 +1200,23 @@
 	},
 	"proxy": {
 		"title": "Proxy API",
-		"heading": "Indirizzo Proxy API OpenAI",
-		"instruction": "Inserisci il seguente indirizzo in qualsiasi applicazione che richieda il formato API OpenAI per utilizzare le sorgenti IA in fount!",
-		"copyButton": "Copia indirizzo",
-		"copied": "Indirizzo copiato negli appunti!"
+		"heading": "Gateway Proxy API",
+		"instruction": "Genera e gestisci le tue chiavi API in questa pagina per integrare fount con altre applicazioni.",
+		"endpointSectionTitle": "Endpoint API",
+		"endpointInstruction": "Questo è l'URL di base per l'integrazione con altri servizi.",
+		"usageExampleTitle": "Esempio di Utilizzo",
+		"usageExampleInstruction": "Ecco un esempio di come ottenere l'elenco dei modelli disponibili utilizzando `curl`.",
+		"copyButton": "Copia",
+		"copied": "Copiato negli appunti",
+		"apiKeySectionTitle": "Le Tue Chiavi API",
+		"apiKey": "La Tua Chiave API:",
+		"noApiKey": "Non hai ancora generato una chiave API per questa pagina.",
+		"generateApiKeyButton": "Genera Nuova Chiave",
+		"copyApiKeyButton": "Copia",
+		"apiKeyCopied": "Chiave API copiata!",
+		"queryStringSectionTitle": "Impossibile impostare la APIKey nell'header della richiesta? (Non sicuro)",
+		"queryStringWarning": "Utilizza questo metodo alternativo quando la tua applicazione non supporta l'invio della chiave API nell'header della richiesta (header Authorization). Nota bene: inserire la chiave API direttamente nell'URL comporta un rischio per la sicurezza in quanto potrebbe essere registrata nei log del server o nella cronologia del browser.",
+		"copyQueryStringUrlButton": "URL con Chiave API (Query String)"
 	},
 	"badges_maker": {
 		"title": "fount! Convertitore di Badge",

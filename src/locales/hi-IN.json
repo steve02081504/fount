@@ -1200,10 +1200,23 @@
 	},
 	"proxy": {
 		"title": "API प्रॉक्सी",
-		"heading": "OpenAI API प्रॉक्सी पता",
-		"instruction": "fount में AI सोर्स का उपयोग करने के लिए, निम्नलिखित पते को किसी भी ऐसे एप्लिकेशन में दर्ज करें जिसे OpenAI API प्रारूप की आवश्यकता हो!",
-		"copyButton": "पता कॉपी करें",
-		"copied": "पता क्लिपबोर्ड पर कॉपी कर दिया गया है!"
+		"heading": "API प्रॉक्सी गेटवे",
+		"instruction": "fount को अन्य एप्लिकेशनों के साथ एकीकृत करने के लिए इस पेज पर अपनी API कुंजियाँ उत्पन्न और प्रबंधित करें।",
+		"endpointSectionTitle": "API एंडपॉइंट",
+		"endpointInstruction": "यह अन्य सेवाओं के साथ एकीकरण के लिए आधार URL है।",
+		"usageExampleTitle": "उपयोग का उदाहरण",
+		"usageExampleInstruction": "`curl` का उपयोग करके उपलब्ध मॉडलों की सूची कैसे प्राप्त करें, इसका एक उदाहरण यहाँ दिया गया है।",
+		"copyButton": "कॉपी करें",
+		"copied": "क्लिपबोर्ड पर कॉपी किया गया",
+		"apiKeySectionTitle": "आपकी API कुंजियाँ",
+		"apiKey": "आपकी API कुंजी:",
+		"noApiKey": "आपने अभी तक इस पेज के लिए कोई API कुंजी उत्पन्न नहीं की है।",
+		"generateApiKeyButton": "नई कुंजी उत्पन्न करें",
+		"copyApiKeyButton": "कॉपी करें",
+		"apiKeyCopied": "API कुंजी कॉपी हो गई!",
+		"queryStringSectionTitle": "अनुरोध हेडर में APIKey सेट नहीं कर सकते? (असुरक्षित)",
+		"queryStringWarning": "इस वैकल्पिक विधि का उपयोग तब करें जब आपका एप्लिकेशन अनुरोध हेडर (Authorization header) में API कुंजी भेजने का समर्थन नहीं करता है। कृपया ध्यान दें: API कुंजी को सीधे URL में रखने से सुरक्षा जोखिम होता है क्योंकि यह सर्वर लॉग या ब्राउज़र इतिहास में दर्ज हो सकता है।",
+		"copyQueryStringUrlButton": "API कुंजी के साथ URL (क्वेरी स्ट्रिंग)"
 	},
 	"badges_maker": {
 		"title": "fount! बैज कन्वर्टर",

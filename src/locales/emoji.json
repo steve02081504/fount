@@ -1200,10 +1200,23 @@
 	},
 	"proxy": {
 		"title": "🤖🔄",
-		"heading": "🤖🔄🌐",
-		"instruction": "➡️🌐 ➡️ 🤖",
-		"copyButton": "📋🌐",
-		"copied": "📋✅❗️"
+		"heading": "🤖🔄🚪",
+		"instruction": "🔑➡️⛲🤝💻",
+		"endpointSectionTitle": "🌐📍",
+		"endpointInstruction": "🔗➡️🌍",
+		"usageExampleTitle": "🧑‍💻💡",
+		"usageExampleInstruction": "`curl` ➡️❓➡️🤖",
+		"copyButton": "📋",
+		"copied": "📋✅",
+		"apiKeySectionTitle": "🔑✨",
+		"apiKey": "🔑:",
+		"noApiKey": "🤷‍♂️🔑❓",
+		"generateApiKeyButton": "➕🔑",
+		"copyApiKeyButton": "📋",
+		"apiKeyCopied": "🔑📋✅",
+		"queryStringSectionTitle": "🚫👤🔑❓ (🔓💥)",
+		"queryStringWarning": "⚠️🔑➡️🌐 ➡️ 📜🕵️‍♂️",
+		"copyQueryStringUrlButton": "🌐?🔑=..."
 	},
 	"badges_maker": {
 		"title": "⛲❗️ 🎖️✨",

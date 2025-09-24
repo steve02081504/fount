@@ -1200,10 +1200,23 @@
 	},
 	"proxy": {
 		"title": "APIプロキシ",
-		"heading": "OpenAI API プロキシアドレス",
-		"instruction": "fount内のAIソースを使用するには、このアドレスをOpenAI API形式に対応したアプリケーションに入力してください！",
-		"copyButton": "アドレスをコピー",
-		"copied": "アドレスをクリップボードにコピーしました！"
+		"heading": "APIプロキシゲートウェイ",
+		"instruction": "このページでAPIキーを生成・管理し、fountを他のアプリケーションと統合します。",
+		"endpointSectionTitle": "APIエンドポイント",
+		"endpointInstruction": "これは他のサービスと統合するためのベースURLです。",
+		"usageExampleTitle": "使用例",
+		"usageExampleInstruction": "`curl`を使用して利用可能なモデルのリストを取得する方法の例です。",
+		"copyButton": "コピー",
+		"copied": "クリップボードにコピーしました",
+		"apiKeySectionTitle": "あなたのAPIキー",
+		"apiKey": "あなたのAPIキー：",
+		"noApiKey": "このページのAPIキーはまだ生成されていません。",
+		"generateApiKeyButton": "新しいキーを生成",
+		"copyApiKeyButton": "コピー",
+		"apiKeyCopied": "APIキーをコピーしました！",
+		"queryStringSectionTitle": "リクエストヘッダーにAPIKeyを設定できませんか？ (非推奨)",
+		"queryStringWarning": "アプリケーションがリクエストヘッダー（Authorizationヘッダー）でのAPIキー送信をサポートしていない場合、この代替方法を使用してください。注意：APIキーを直接URLに含めることは、サーバーのログやブラウザの履歴に記録される可能性があるため、セキュリティ上のリスクを伴います。",
+		"copyQueryStringUrlButton": "APIキーを含むURL（クエリ文字列）"
 	},
 	"badges_maker": {
 		"title": "fount! バッジコンバーター",

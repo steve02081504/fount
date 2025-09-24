@@ -1200,10 +1200,23 @@
 	},
 	"proxy": {
 		"title": "API milliliður",
-		"heading": "OpenAI API milliliðaslóð",
-		"instruction": "Settu eftirfarandi slóð inn í hvaða forrit sem krefst OpenAI API sniðs til að nota gervigreindarheimildirnar í fount!",
-		"copyButton": "Afrita slóð",
-		"copied": "Slóð afrituð á klippiborð!"
+		"heading": "API milliliðagátt",
+		"instruction": "Búðu til og stjórnaðu API lyklunum þínum á þessari síðu til að samþætta fount við önnur forrit.",
+		"endpointSectionTitle": "API endapunktur",
+		"endpointInstruction": "Þetta er grunnslóðin fyrir samþættingu við aðrar þjónustur.",
+		"usageExampleTitle": "Notkunardæmi",
+		"usageExampleInstruction": "Hér er dæmi um hvernig á að fá lista yfir tiltæk módel með `curl`.",
+		"copyButton": "Afrita",
+		"copied": "Afritað á klippiborð",
+		"apiKeySectionTitle": "Þínir API lyklar",
+		"apiKey": "Þinn API lykill:",
+		"noApiKey": "Þú hefur ekki enn búið til API lykil fyrir þessa síðu.",
+		"generateApiKeyButton": "Búa til nýjan lykil",
+		"copyApiKeyButton": "Afrita",
+		"apiKeyCopied": "API lykill afritaður!",
+		"queryStringSectionTitle": "Geturðu ekki stillt APIKey í haus beiðni? (Óöruggt)",
+		"queryStringWarning": "Notaðu þessa varaleið þegar forritið þitt styður ekki sendingu API lykilsins í haus beiðninnar (Authorization haus). Vinsamlegast athugið: Að setja API lykilinn beint í slóðina felur í sér öryggisáhættu þar sem hann gæti verið skráður í annálum netþjóna eða vafraferli.",
+		"copyQueryStringUrlButton": "Slóð með API lykli (Fyrirspurnarstrengur)"
 	},
 	"badges_maker": {
 		"title": "fount! Merkja-breytir",

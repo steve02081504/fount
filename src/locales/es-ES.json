@@ -1200,10 +1200,23 @@
 	},
 	"proxy": {
 		"title": "Proxy de API",
-		"heading": "Dirección del Proxy de API de OpenAI",
-		"instruction": "¡Introduce la siguiente dirección en cualquier aplicación que requiera el formato de API de OpenAI para usar los orígenes de IA en fount!",
-		"copyButton": "Copiar dirección",
-		"copied": "¡Dirección copiada al portapapeles!"
+		"heading": "Puerta de Enlace del Proxy de API",
+		"instruction": "Genere y gestione sus claves de API en esta página para integrar fount con otras aplicaciones.",
+		"endpointSectionTitle": "Punto Final de la API",
+		"endpointInstruction": "Esta es la URL base para la integración con otros servicios.",
+		"usageExampleTitle": "Ejemplo de Uso",
+		"usageExampleInstruction": "Aquí hay un ejemplo de cómo obtener la lista de modelos disponibles usando `curl`.",
+		"copyButton": "Copiar",
+		"copied": "Copiado al portapapeles",
+		"apiKeySectionTitle": "Sus Claves de API",
+		"apiKey": "Su Clave de API:",
+		"noApiKey": "Aún no ha generado una clave de API para esta página.",
+		"generateApiKeyButton": "Generar Nueva Clave",
+		"copyApiKeyButton": "Copiar",
+		"apiKeyCopied": "¡Clave de API copiada!",
+		"queryStringSectionTitle": "¿No puede establecer la APIKey en la cabecera de la solicitud? (Inseguro)",
+		"queryStringWarning": "Utilice este método alternativo cuando su aplicación no admita el envío de la clave de API en la cabecera de la solicitud (Authorization header). Tenga en cuenta: Colocar la clave de API directamente en la URL presenta un riesgo de seguridad, ya que podría quedar registrada en los registros del servidor o en el historial del navegador.",
+		"copyQueryStringUrlButton": "URL con Clave de API (Query String)"
 	},
 	"badges_maker": {
 		"title": "¡fount! Convertidor de Insignias",

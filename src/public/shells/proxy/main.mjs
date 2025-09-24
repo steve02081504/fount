@@ -27,9 +27,11 @@ export default {
 		invokes: {
 			ArgumentsHandler: async (user, args) => {
 				const url = await handleAction(user, {})
+				const webUI = new URL('/shells/proxy', url).href
 				console.log(`Your OpenAI-compatible API endpoint is: ${url}`)
-				qrcode.generate(url, { small: true })
-				console.log(`You can use it with any OpenAI-compatible client, for example, to list models, run: curl ${url}/v1/models -H "Authorization: Bearer <your_fount_token>"`)
+				console.log(`Please go to ${webUI} to generate an API key.`)
+				qrcode.generate(webUI, { small: true })
+				console.log(`You can use it with any OpenAI-compatible client, for example, to list models, run: curl ${url}/v1/models -H "Authorization: Bearer <your_fount_apikey>"`)
 			},
 			IPCInvokeHandler: async (user, args) => {
 				return handleAction(user, args)

@@ -9,7 +9,6 @@ import * as jose from 'npm:jose'
 import { console } from '../scripts/i18n.mjs'
 import { loadJsonFile } from '../scripts/json_loader.mjs'
 import { ms } from '../scripts/ms.mjs'
-import { is_local_ip, is_local_ip_from_req } from '../scripts/ratelimit.mjs'
 
 import { __dirname } from './base.mjs'
 import { events } from './events.mjs'
@@ -26,6 +25,8 @@ const BRUTE_FORCE_FAKE_SUCCESS_RATE = 1 / 3 // 1/3 chance of fake success
 
 let privateKey, publicKey // 用于JWT签名的密钥对
 const loginFailures = {} // { [ip]: count }
+const jwtCache = new Map()
+const JWT_CACHE_SIZE = 32
 
 function genNewKeyPair() {
 	const { privateKey: newPrivateKey, publicKey: newPublicKey } = crypto.generateKeyPairSync('ec', {
@@ -119,6 +120,23 @@ async function generateRefreshToken(payload, deviceId = 'unknown', signingKey = 
  * @returns {Promise<object|null>} 解码后的 payload 或 null
  */
 async function verifyToken(token) {
+	if (jwtCache.has(token)) {
+		const cachedPayload = jwtCache.get(token)
+		// Check expiry from cached payload
+		if (cachedPayload.exp * 1000 > Date.now()) {
+			// Also need to re-check if revoked, as revocation status can change
+			if (config.data.revokedTokens[cachedPayload.jti]) {
+				jwtCache.delete(token) // remove from cache if revoked
+				return null
+			}
+			// Move to end of map to mark as recently used
+			jwtCache.delete(token)
+			jwtCache.set(token, cachedPayload)
+			return cachedPayload
+		}
+		// Token expired, remove from cache
+		jwtCache.delete(token)
+	}
 	try {
 		const { payload } = await jose.jwtVerify(token, publicKey, {
 			algorithms: ['ES256'],
@@ -128,6 +146,15 @@ async function verifyToken(token) {
 			console.warnI18n('fountConsole.auth.tokenRevoked', { jti: payload.jti })
 			return null
 		}
+
+		// Add to cache
+		if (jwtCache.size >= JWT_CACHE_SIZE) {
+			// delete oldest entry
+			const oldestKey = jwtCache.keys().next().value
+			jwtCache.delete(oldestKey)
+		}
+		jwtCache.set(token, payload)
+
 		return payload
 	} catch (error) {
 		console.errorI18n('fountConsole.auth.tokenVerifyError', { error })
@@ -232,7 +259,7 @@ export async function logout(req, res) {
  * @param {object} res - Express 响应对象
  * @returns {Promise<void>} - 只在成功时resolve
  */
-async function verifyApiKey(apiKey) {
+export async function verifyApiKey(apiKey) {
 	try {
 		const hash = crypto.createHash('sha256').update(apiKey).digest('hex')
 		const keyInfo = config.data.apiKeys[hash]
@@ -269,6 +296,7 @@ export async function try_auth_request(req, res) {
 	else {
 		const authHeader = req.headers.authorization
 		if (authHeader?.startsWith?.('Bearer ')) apiKey = authHeader.substring(7)
+		if (!apiKey) apiKey = req.query?.['fount-apikey']
 	}
 
 	if (apiKey) {
@@ -280,12 +308,6 @@ export async function try_auth_request(req, res) {
 	const { accessToken, refreshToken } = req.cookies
 
 	if (!accessToken) return Unauthorized()
-
-	if (is_local_ip_from_req(req)) {
-		const decoded = await jose.decodeJwt(accessToken)
-		req.user = config.data.users[decoded.username]
-		if (decoded && req.user) return
-	}
 
 	let decodedAccessToken = await verifyToken(accessToken)
 
@@ -724,17 +746,14 @@ export async function login(username, password, deviceId = 'unknown', req) {
 	const ip = req.ip
 	const user = getUserByUsername(username)
 	async function failedLogin(local_return = {}) {
-		if (!is_local_ip(ip)) {
-			local_return = {}
-			loginFailures[ip] = (loginFailures[ip] || 0) + 1
+		loginFailures[ip] = (loginFailures[ip] || 0) + 1
 
-			if (loginFailures[ip] >= BRUTE_FORCE_THRESHOLD && Math.random() < BRUTE_FORCE_FAKE_SUCCESS_RATE) {
-				const fakePrivateKey = await getFakePrivateKey()
-				const userId = crypto.randomUUID()
-				const accessToken = await generateAccessToken({ username, userId }, fakePrivateKey)
-				const refreshTokenString = await generateRefreshToken({ username, userId }, deviceId, fakePrivateKey)
-				return { status: 200, success: true, message: 'Login successful', accessToken, refreshToken: refreshTokenString }
-			}
+		if (loginFailures[ip] >= BRUTE_FORCE_THRESHOLD && Math.random() < BRUTE_FORCE_FAKE_SUCCESS_RATE) {
+			const fakePrivateKey = await getFakePrivateKey()
+			const userId = crypto.randomUUID()
+			const accessToken = await generateAccessToken({ username, userId }, fakePrivateKey)
+			const refreshTokenString = await generateRefreshToken({ username, userId }, deviceId, fakePrivateKey)
+			return { status: 200, success: true, message: 'Login successful', accessToken, refreshToken: refreshTokenString }
 		}
 		// 防止计时攻击
 		await new Promise(resolve => setTimeout(resolve, avgVerifyTime * 0.8 + (Math.random() - 0.5) * avgVerifyTime * 0.2))
