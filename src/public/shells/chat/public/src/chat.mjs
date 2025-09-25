@@ -1,52 +1,32 @@
 import { setupCss } from './ui/css.mjs'
-import { setupSidebar, triggerSidebarHeartbeat } from './ui/sidebar.mjs'
-import { initializeVirtualQueue, triggerVirtualQueueHeartbeat } from './ui/virtualQueue.mjs'
+import { initializeMessageInput } from './ui/messageInput.mjs'
+import { setupSidebar } from './ui/sidebar.mjs'
+import { initializeWebSocket } from './websocket.mjs'
 
-export const heartbeat_interval = 1000 // 1s
+// These are shared state used by the sidebar.
+// They will be updated by events from the websocket.
 export let charList = []
 export let worldName = null
 export let personaName = null
-let stopHeartbeatting = false
 
-async function doHeartbeat() {
-	try {
-		if (stopHeartbeatting) return
-		const data = await triggerVirtualQueueHeartbeat()
-
-		charList = data.charlist
-		worldName = data.worldname
-		personaName = data.personaname
-
-		await triggerSidebarHeartbeat(data)
-	}
-	finally {
-		setTimeout(doHeartbeat, heartbeat_interval)
-	}
+export function setCharList(list) {
+	charList = list
 }
-
-export function startHeartbeat() {
-	stopHeartbeatting = false
+export function setWorldName(name) {
+	worldName = name
 }
-
-export function stopHeartbeat() {
-	stopHeartbeatting = true
+export function setPersonaName(name) {
+	personaName = name
 }
 
 export async function initializeChat() {
 	setupCss()
-	await initializeVirtualQueue()
-
-	doHeartbeat()
-
-	document.addEventListener('visibilitychange', () => {
-		if (document.visibilityState == 'visible')
-			startHeartbeat()
-		else if (window?.Notification?.permission != 'granted')
-			stopHeartbeat()
-	})
+	initializeWebSocket() // This will connect and fetch initial data
 
 	if (window.Notification && Notification?.permission != 'granted')
 		Notification.requestPermission()
 
 	setupSidebar()
+	// This was in index.mjs, but it makes more sense here as it's part of the chat UI
+	initializeMessageInput()
 }

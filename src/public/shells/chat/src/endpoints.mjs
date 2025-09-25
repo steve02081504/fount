@@ -23,7 +23,8 @@ import {
 	editMessage,
 	GetChatLogLength,
 	setCharSpeakingFrequency,
-	getHeartbeatData
+	getInitialData,
+	registerChatUiSocket
 } from './chat.mjs'
 import { addfile, getfile } from './files.mjs'
 
@@ -31,114 +32,104 @@ import { addfile, getfile } from './files.mjs'
  * Sets up the API endpoints for chat operations within the application.
  *
  * @param {import('npm:websocket-express').Router} router - The express router to which the endpoints will be attached.
- *
- * This function defines several POST and GET routes for managing chat functionalities, such as creating new chats,
- * adding or removing characters, setting world and persona, triggering character replies, modifying timelines, and
- * managing messages. Additionally, it provides endpoints for retrieving chat-related data like character lists, chat
- * logs, and persona/world names. File operations such as adding and retrieving files are also supported.
- *
- * Authentication is required for most endpoints to ensure secure access to chat data.
  */
-
 export function setEndpoints(router) {
+	router.ws('/ws/shells/chat/ui/:chatid', authenticate, async (ws, req) => {
+		const { chatid } = req.params
+		const { username } = await getUserByReq(req)
+		registerChatUiSocket(chatid, ws)
+
+		ws.on('message', async (msg) => {
+			try {
+				const { id, command, params } = JSON.parse(msg)
+
+				const handle = async (action, params) => {
+					const result = await action(params)
+					ws.send(JSON.stringify({ type: 'response', id, payload: result }))
+				}
+
+				const handleWithChatId = (action, params) => handle(p => action(chatid, ...Object.values(p)), params)
+
+				switch (command) {
+					case 'get_initial_data':
+						await handle(() => getInitialData(chatid))
+						break
+					case 'add_char':
+						await handleWithChatId(addchar, params)
+						break
+					case 'remove_char':
+						await handleWithChatId(removechar, params)
+						break
+					case 'set_world':
+						await handleWithChatId(setWorld, params)
+						break
+					case 'set_persona':
+						await handleWithChatId(setPersona, params)
+						break
+					case 'trigger_char_reply':
+						await handleWithChatId(triggerCharReply, params)
+						break
+					case 'set_char_reply_frequency':
+						await handleWithChatId(setCharSpeakingFrequency, params)
+						break
+					case 'add_user_reply': {
+						const { reply, callback } = params
+						reply.files = reply?.files?.map(file => ({
+							...file,
+							buffer: Buffer.from(file.buffer, 'base64')
+						}))
+						const entry = await addUserReply(chatid, reply)
+						const payload = callback === false ? null : await entry.toData(username)
+						ws.send(JSON.stringify({ type: 'response', id, payload }))
+						break
+					}
+					case 'modify_timeline':
+						await handleWithChatId(modifyTimeLine, params)
+						break
+					case 'delete_message':
+						await handleWithChatId(deleteMessage, params)
+						break
+					case 'edit_message': {
+						const { index, content } = params
+						content.files = content?.files?.map(file => ({
+							...file,
+							buffer: Buffer.from(file.buffer, 'base64')
+						}))
+						const entry = await editMessage(chatid, index, content)
+						ws.send(JSON.stringify({ type: 'response', id, payload: await entry.toData(username) }))
+						break
+					}
+					case 'get_char_list':
+						await handle(() => getCharListOfChat(chatid))
+						break
+					case 'get_chat_log':
+						await handle(p => GetChatLog(chatid, ...Object.values(p)).then(log => Promise.all(log.map(entry => entry.toData(username)))), params)
+						break
+					case 'get_chat_log_length':
+						await handle(() => GetChatLogLength(chatid))
+						break
+					case 'get_persona_name':
+						await handle(() => GetUserPersonaName(chatid))
+						break
+					case 'get_world_name':
+						await handle(() => GetWorldName(chatid))
+						break
+					default:
+						ws.send(JSON.stringify({ type: 'response', id, error: `Unknown command: ${command}` }))
+				}
+			} catch (error) {
+				console.error('Error processing WebSocket message:', error)
+				// Optionally send an error response back to the client
+				const { id } = JSON.parse(msg)
+				if (id)
+					ws.send(JSON.stringify({ type: 'response', id, error: error.message }))
+			}
+		})
+	})
+
 	router.post('/api/shells/chat/new', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		res.status(200).json({ chatid: await newChat(username) })
-	})
-
-	router.post('/api/shells/chat/addchar', authenticate, async (req, res) => {
-		res.status(200).json(await addchar(req.body.chatid, req.body.charname))
-	})
-
-	router.post('/api/shells/chat/removechar', authenticate, async (req, res) => {
-		await removechar(req.body.chatid, req.body.charname)
-		res.status(200).json({ message: 'removechar ok' })
-	})
-
-	router.post('/api/shells/chat/setworld', authenticate, async (req, res) => {
-		res.status(200).json(await setWorld(req.body.chatid, req.body.worldname))
-	})
-
-	router.post('/api/shells/chat/setpersona', authenticate, async (req, res) => {
-		await setPersona(req.body.chatid, req.body.personaname)
-		res.status(200).json({ message: 'setpersona ok' })
-	})
-
-	router.post('/api/shells/chat/triggercharreply', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
-		res.status(200).json(await (await triggerCharReply(req.body.chatid, req.body.charname))?.toData?.(username))
-	})
-
-	router.post('/api/shells/chat/setcharreplyfrequency', authenticate, async (req, res) => {
-		const { chatid, charname, frequency } = req.body
-		await setCharSpeakingFrequency(chatid, charname, frequency)
-		res.status(200).json({ message: 'setcharreplyfrequency ok' })
-	})
-
-	router.post('/api/shells/chat/adduserreply', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
-		const { reply } = req.body
-		reply.files = reply?.files?.map(file => ({
-			...file,
-			buffer: Buffer.from(file.buffer, 'base64')
-		}))
-		res.status(200).json(await (await addUserReply(req.body.chatid, req.body.reply)).toData(username))
-	})
-
-	router.post('/api/shells/chat/modifytimeline', authenticate, async (req, res) => {
-		const { chatid, delta } = req.body
-		const entry = await modifyTimeLine(chatid, delta)
-		res.status(200).json(entry)
-	})
-
-	router.post('/api/shells/chat/deletemessage', authenticate, async (req, res) => {
-		const { chatid, index } = req.body
-		await deleteMessage(chatid, index)
-		res.status(200).json({ message: 'deletemessage ok' })
-	})
-
-	router.post('/api/shells/chat/editmessage', authenticate, async (req, res) => {
-		const { chatid, index, content } = req.body
-		content.files = content?.files?.map(file => ({
-			...file,
-			buffer: Buffer.from(file.buffer, 'base64')
-		}))
-		const entry = await editMessage(chatid, index, content)
-		res.status(200).json(entry)
-	})
-
-	router.get('/api/shells/chat/getcharlist', authenticate, async (req, res) => {
-		const { chatid } = req.query
-		res.status(200).json(await getCharListOfChat(chatid))
-	})
-
-	router.get('/api/shells/chat/getchatlog', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
-		const { chatid, start, end } = req.query
-		const startNum = parseInt(start, 10)
-		const endNum = parseInt(end, 10)
-		res.status(200).json(await GetChatLog(chatid, startNum, endNum).then(log => Promise.all(log.map(entry => entry.toData(username)))))
-	})
-
-	router.get('/api/shells/chat/heartbeat', authenticate, async (req, res) => {
-		const { chatid, start } = req.query
-		const startNum = parseInt(start, 10)
-		res.status(200).json(await getHeartbeatData(chatid, startNum))
-	})
-
-	router.get('/api/shells/chat/getchatloglength', authenticate, async (req, res) => {
-		const { chatid } = req.query
-		res.status(200).json(await GetChatLogLength(chatid))
-	})
-
-	router.get('/api/shells/chat/getpersonaname', authenticate, async (req, res) => {
-		const { chatid } = req.query
-		res.status(200).json(await GetUserPersonaName(chatid))
-	})
-
-	router.get('/api/shells/chat/getworldname', authenticate, async (req, res) => {
-		const { chatid } = req.query
-		res.status(200).json(await GetWorldName(chatid))
 	})
 
 	router.get('/api/shells/chat/getchatlist', authenticate, async (req, res) => {

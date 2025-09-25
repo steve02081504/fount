@@ -22,28 +22,51 @@ const autoRunScriptsCache = new Map()
 
 async function renderPages(pages) {
 	pagesListDiv.innerHTML = ''
-	if (pages.length === 0) pagesListDiv.appendChild(await renderTemplate('empty_state'))
-	else pagesListDiv.appendChild(await renderTemplate('page_table', { pages }))
+	if (pages.length === 0)
+		pagesListDiv.appendChild(await renderTemplate('empty_state'))
+	else
+		pagesListDiv.appendChild(await renderTemplate('page_table', { pages }))
 }
 
-async function fetchAndRenderPages() {
-	try {
-		const result = await api.getConnectedPages()
-		if (!result.success) throw new Error(result.message)
+function connectWebSocket() {
+	const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+	const wsUrl = `${wsProtocol}//${window.location.host}/ws/shells/browserIntegration/ui`
+	const ws = new WebSocket(wsUrl)
 
-		const newPagesJson = JSON.stringify(result.data)
-		if (lastPages === newPagesJson) return
+	ws.onopen = () => {
+		console.log('Connected to UI WebSocket.')
+	}
 
-		lastPages = newPagesJson
-		await renderPages(result.data)
-	} catch (error) {
-		lastPages = ''
-		console.error('Failed to fetch and render pages:', error)
-		pagesListDiv.innerHTML = ''
-		pagesListDiv.appendChild(await renderTemplate('error_message'))
+	ws.onmessage = async (event) => {
+		try {
+			const msg = JSON.parse(event.data)
+			if (msg.type === 'pages_update') {
+				const pages = msg.payload
+				const newPagesJson = JSON.stringify(pages)
+				if (lastPages === newPagesJson) return // Avoid unnecessary re-renders
+				lastPages = newPagesJson
+
+				await renderPages(pages)
+			}
+		} catch (error) {
+			console.error('Error processing WebSocket message:', error)
+		}
+	}
+
+ 	ws.onclose = async () => {
+		const RECONNECT_DELAY = 5000;
+		console.log(`UI WebSocket disconnected. Reconnecting in ${RECONNECT_DELAY / 1000} seconds...`);
+		// Clear the list to show a disconnected/error state
+		pagesListDiv.innerHTML = '';
+		pagesListDiv.appendChild(await renderTemplate('error_message'));
+		setTimeout(connectWebSocket, RECONNECT_DELAY);
+	};
+
+	ws.onerror = (err) => {
+		console.error('UI WebSocket error:', err)
+		// Don't call ws.close() here, as onclose will be called automatically.
 	}
 }
-
 
 
 function showViewScriptModal(scriptId) {
@@ -171,8 +194,7 @@ async function main() {
 			.catch(e => showToast(e.message, 'error'))
 	})
 
-	fetchAndRenderPages()
-	setInterval(fetchAndRenderPages, 5000)
+	connectWebSocket()
 
 	await loadAndRenderAutoRunScripts()
 }

@@ -104,7 +104,8 @@ async function initTranslations() {
 				const [code] = line.split(',').map(item => item.trim())
 				if (code) availableLocales.push(code)
 			}
-		} else
+		}
+		else
 			console.warn('fount userscript: Could not fetch locales list.csv.')
 
 		// Determine best locale
@@ -154,7 +155,8 @@ window.addEventListener('fount-autorun-script-update', async (e) => {
 		// Remove existing script with same ID to ensure update works
 		updatedScripts = storedScripts.filter(s => s.id !== script.id)
 		updatedScripts.push(script)
-	} else if (action === 'delete')
+	}
+	else if (action === 'delete')
 		updatedScripts = storedScripts.filter(s => s.id !== script.id)
 	else return // Unknown action
 
@@ -567,9 +569,9 @@ async function loadUserLocalesFromFount() {
 			await GM.setValue('fount_user_preferred_locales', locales)
 			console.log('fount userscript: User preferred locales fetched and stored from fount server.')
 		}
-	} else {
-		console.log('fount userscript: No host stored, skipping fetching user preferred locales from server.')
 	}
+	else
+		console.log('fount userscript: No host stored, skipping fetching user preferred locales from server.')
 }
 
 console.log('fount userscript loaded.')

@@ -3,11 +3,11 @@ import { loadPart } from '../../../../server/managers/index.mjs'
 
 import {
 	handleConnection,
-	getConnectedPages,
 	getBrowseHistory,
 	listAutoRunScripts,
 	addAutoRunScript,
-	removeAutoRunScript
+	removeAutoRunScript,
+	getUserManager
 } from './api.mjs'
 
 export function setEndpoints(router) {
@@ -16,10 +16,10 @@ export function setEndpoints(router) {
 		handleConnection(ws, username)
 	})
 
-	// API for the shell's own frontend
-	router.get('/api/shells/browserIntegration/pages', authenticate, async (req, res) => {
+	router.ws('/ws/shells/browserIntegration/ui', authenticate, async (ws, req) => {
 		const { username } = await getUserByReq(req)
-		res.json({ success: true, data: getConnectedPages(username) })
+		const manager = getUserManager(username)
+		manager.registerUi(ws)
 	})
 
 	router.get('/api/shells/browserIntegration/history', authenticate, async (req, res) => {

@@ -1,7 +1,7 @@
 import { geti18n } from '../../../../../scripts/i18n.mjs'
 import { renderMarkdown } from '../../../../../scripts/markdown.mjs'
 import {
-	getCharList,
+	getCharList as getAllCharsList,
 	getCharDetails,
 	getWorldList,
 	getWorldDetails,
@@ -9,10 +9,8 @@ import {
 	getPersonaDetails,
 } from '../../../../../scripts/parts.mjs'
 import { renderTemplate } from '../../../../../scripts/template.mjs'
-import { charList, worldName, personaName } from '../chat.mjs'
+import { charList, worldName, personaName, setCharList, setWorldName, setPersonaName } from '../chat.mjs'
 import { addCharacter, setPersona, setWorld, removeCharacter, triggerCharacterReply, setCharReplyFrequency } from '../endpoints.mjs'
-
-import { appendMessage } from './messageList.mjs'
 
 const worldSelect = document.getElementById('world-select')
 const worldDetailsContainer = document.getElementById('world-details')
@@ -22,11 +20,8 @@ const charSelect = document.getElementById('char-select')
 const charDetailsContainer = document.getElementById('char-details')
 const addCharButton = document.getElementById('add-char-button')
 const itemDescription = document.getElementById('item-description')
-const rightSidebar = document.getElementById('right-sidebar')
 const rightSidebarContainer = document.getElementById('right-sidebar-container')
 const leftDrawerCheckbox = document.getElementById('left-drawer')
-const leftSidebarContainer = document.getElementById('left-sidebar-container')
-const chatContainer = document.querySelector('.chat-container')
 
 // 缓存DOM
 const cachedDom = {
@@ -57,12 +52,12 @@ function compareLists(oldList, newList) {
  * @param {Function} detailsRenderer 渲染详情的函数
  * @param {boolean} forceUpdate 是否强制更新详情, 为 true 时强制更新
  */
-async function updateSelectList(selectElement, currentName, listGetter, detailsRenderer, forceUpdate = false) {
+async function updateSelectList(selectElement, currentName, listGetter, detailsRenderer, { forceUpdate = false } = {}) {
 	const newList = await listGetter()
 	newList.unshift('') // 添加一个空选项
 
 	const oldList = Array.from(selectElement.options).map(option => option.value)
-	const { added, removed, unchanged } = compareLists(oldList, newList)
+	const { added, removed } = compareLists(oldList, newList)
 
 	// 删除已移除的选项
 	removed.forEach(name => {
@@ -93,7 +88,7 @@ async function updateSelectList(selectElement, currentName, listGetter, detailsR
  * 渲染世界信息列表
  */
 async function renderWorldList() {
-	await updateSelectList(worldSelect, worldName, getWorldList, renderWorldDetails)
+	await updateSelectList(worldSelect, worldName, getWorldList, renderWorldDetails, { forceUpdate: true })
 }
 
 /**
@@ -107,7 +102,7 @@ async function renderWorldDetails(worldName) {
 	let worldData
 	if (!cachedDom.world[worldName]) {
 		worldData = await getWorldDetails(worldName)
-		if (!worldData) throw new Error(`世界 ${worldName} 不存在`)
+		if (!worldData) return // Don't throw error, just ignore.
 		const worldCard = cachedDom.world[worldName] = await renderTemplate('world_info_chat_view', {
 			avatar: '',
 			...worldData.info
@@ -123,7 +118,7 @@ async function renderWorldDetails(worldName) {
  * 渲染角色信息列表
  */
 async function renderPersonaList() {
-	await updateSelectList(personaSelect, personaName, getPersonaList, renderPersonaDetails)
+	await updateSelectList(personaSelect, personaName, getPersonaList, renderPersonaDetails, { forceUpdate: true })
 }
 
 /**
@@ -137,7 +132,7 @@ async function renderPersonaDetails(personaName) {
 	let personaData
 	if (!cachedDom.persona[personaName]) {
 		personaData = await getPersonaDetails(personaName)
-		if (!personaData) throw new Error(`用户角色 ${personaName} 不存在`)
+		if (!personaData) return
 		const personaCard = cachedDom.persona[personaName] = await renderTemplate('persona_info_chat_view', personaData.info)
 		addCardEventListeners(personaCard, personaData)
 	}
@@ -151,7 +146,7 @@ async function renderPersonaDetails(personaName) {
  */
 async function renderCharList(data) {
 	if (!data) return
-	const allChars = await getCharList()
+	const allChars = await getAllCharsList()
 	const currentCharsRendered = Array.from(charDetailsContainer.children).map(child => child.getAttribute('data-char-name'))
 	const { added, removed, unchanged } = compareLists(currentCharsRendered, charList)
 
@@ -171,9 +166,10 @@ async function renderCharList(data) {
 	// 更新已存在的角色 (如果频率数据有更新)
 	for (const char of unchanged) {
 		const charCard = charDetailsContainer.querySelector(`[data-char-name="${char}"]`)
+		if (!charCard) continue
 		const frequencySlider = charCard.querySelector('.frequency-slider')
 		const currentFrequency = parseInt(frequencySlider.value)
-		const newFrequency = Math.round(data.frequency_data[char] * 100)
+		const newFrequency = Math.round((data.frequency_data[char] || 0.5) * 100)
 
 		if (currentFrequency !== newFrequency)
 			frequencySlider.value = newFrequency
@@ -206,7 +202,7 @@ async function renderCharDetails(charName, frequency_num) {
 	let charData
 	if (!cachedDom.character[charName]) {
 		charData = await getCharDetails(charName)
-		if (!charData) throw new Error(`角色 ${charName} 不存在`)
+		if (!charData) return
 		const charCard = cachedDom.character[charName] = await renderTemplate('char_info_chat_view', {
 			...charData.info,
 			frequency_num
@@ -215,6 +211,7 @@ async function renderCharDetails(charName, frequency_num) {
 		addCardEventListeners(charCard, charData)
 		// 添加滑动条的事件监听
 		const frequencySlider = charCard.querySelector('.frequency-slider')
+		frequencySlider.value = Math.round((frequency_num || 0.5) * 100)
 		frequencySlider.addEventListener('input', event => {
 			const frequency = event.target.value / 100
 			setCharReplyFrequency(charName, frequency)
@@ -223,19 +220,13 @@ async function renderCharDetails(charName, frequency_num) {
 		// 添加移除按钮的事件监听
 		const removeCharButton = charCard.querySelector('.remove-char-button')
 		removeCharButton.addEventListener('click', async () => {
-			await appendMessage(await removeCharacter(charName))
-			charList.splice(charList.indexOf(charName), 1)
-			delete cachedDom.character[charName]
-			const charCardToRemove = charDetailsContainer.querySelector(`[data-char-name="${charName}"]`)
-			if (charCardToRemove)
-				charDetailsContainer.removeChild(charCardToRemove)
-			await renderCharList()
+			await removeCharacter(charName)
 		})
 
 		// 添加强制回复按钮的事件监听
 		const forceReplyButton = charCard.querySelector('.force-reply-button')
 		forceReplyButton.addEventListener('click', async () => {
-			appendMessage(await triggerCharacterReply(charName))
+			await triggerCharacterReply(charName)
 		})
 	}
 
@@ -293,24 +284,19 @@ function hideRightSidebar() {
 export async function setupSidebar() {
 	worldSelect.addEventListener('change', async () => {
 		const newWorldName = worldSelect.value === '' ? null : worldSelect.value
-		await appendMessage(await setWorld(newWorldName))
-		await renderWorldDetails(newWorldName)
+		await setWorld(newWorldName)
 	})
 
 	personaSelect.addEventListener('change', async () => {
 		const newPersonaName = personaSelect.value === '' ? null : personaSelect.value
-		await appendMessage(await setPersona(newPersonaName))
-		await renderPersonaDetails(newPersonaName)
+		await setPersona(newPersonaName)
 	})
 
 	addCharButton.addEventListener('click', async () => {
 		const charName = charSelect.value
-		if (charName && !charList.includes(charName)) {
-			await appendMessage(await addCharacter(charName))
-			charList.push(charName)
-			await renderCharDetails(charName)
-			await renderCharList()
-		}
+		if (charName && !charList.includes(charName))
+			await addCharacter(charName)
+
 	})
 
 	// 点击非右侧边栏关闭右侧边栏
@@ -325,11 +311,79 @@ export async function setupSidebar() {
 	})
 }
 
-export async function triggerSidebarHeartbeat(data) {
-	if (!leftDrawerCheckbox.checked) return
+export async function updateSidebar(data) {
+	if (!leftDrawerCheckbox.checked && document.documentElement.clientWidth < 1024) return
+
+	setCharList(data.charlist)
+	setWorldName(data.worldname)
+	setPersonaName(data.personaname)
 
 	// 尝试更新数据
 	await renderWorldList()
 	await renderPersonaList()
 	await renderCharList(data)
+}
+
+export async function handleWorldSet(worldname) {
+	if (!leftDrawerCheckbox.checked && document.documentElement.clientWidth < 1024) return
+	setWorldName(worldname)
+	worldSelect.value = worldname || ''
+	await renderWorldDetails(worldname)
+}
+
+export async function handlePersonaSet(personaname) {
+	if (!leftDrawerCheckbox.checked && document.documentElement.clientWidth < 1024) return
+	setPersonaName(personaname)
+	personaSelect.value = personaname || ''
+	await renderPersonaDetails(personaname)
+}
+
+export async function handleCharAdded(charname) {
+	if (!leftDrawerCheckbox.checked && document.documentElement.clientWidth < 1024) return
+	if (charList.includes(charname)) return // Already there
+
+	charList.push(charname)
+	setCharList(charList)
+
+	// Add to UI
+	await renderCharDetails(charname, 0.5) // Assume default frequency 0.5
+
+	// Remove from select dropdown
+	const optionToRemove = charSelect.querySelector(`option[value="${charname}"]`)
+	if (optionToRemove) charSelect.removeChild(optionToRemove)
+}
+
+export async function handleCharRemoved(charname) {
+	if (!leftDrawerCheckbox.checked && document.documentElement.clientWidth < 1024) return
+	const index = charList.indexOf(charname)
+	if (index === -1) return // Not there
+
+	charList.splice(index, 1)
+	setCharList(charList)
+
+	// Remove from UI
+	const charCardToRemove = charDetailsContainer.querySelector(`[data-char-name="${charname}"]`)
+	if (charCardToRemove) {
+		charDetailsContainer.removeChild(charCardToRemove)
+		delete cachedDom.character[charname]
+	}
+
+	// Add back to select dropdown
+	if (!charSelect.querySelector(`option[value="${charname}"]`)) {
+		const option = document.createElement('option')
+		option.value = charname
+		option.text = charname
+		charSelect.add(option)
+	}
+}
+
+export async function handleCharFrequencySet(charname, frequency) {
+	if (!leftDrawerCheckbox.checked && document.documentElement.clientWidth < 1024) return
+	const charCard = charDetailsContainer.querySelector(`[data-char-name="${charname}"]`)
+	if (!charCard) return
+
+	const frequencySlider = charCard.querySelector('.frequency-slider')
+	const newFrequency = Math.round(frequency * 100)
+	if (frequencySlider.value != newFrequency)
+		frequencySlider.value = newFrequency
 }

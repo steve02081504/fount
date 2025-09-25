@@ -1,24 +1,33 @@
 import { initTranslations, console } from '../../../scripts/i18n.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
 import { showToast } from '../../../scripts/toast.mjs'
-import { currentChatId, addCharacter, createNewChat } from '../src/endpoints.mjs'
+import { currentChatId, createNewChat, addCharacter } from '../src/endpoints.mjs'
+import { initializeWebSocket } from '../src/websocket.mjs'
+
 await initTranslations('chat.new')
 applyTheme()
 
 function logger(e) {
 	console.error(e)
-	showToast(e, 'error')
-	throw e
+	showToast(e.message || String(e), 'error')
 }
 
-await createNewChat().catch(logger)
+try {
+	await createNewChat() // Sets currentChatId
 
-const serchParams = new URLSearchParams(window.location.search)
+	// Initialize WebSocket connection on the new page
+	initializeWebSocket()
 
-if (serchParams.has('char'))
-	await addCharacter(serchParams.get('char')).catch(logger)
+	const searchParams = new URLSearchParams(window.location.search)
+	const charToAdd = searchParams.get('char')
 
-// jump to chat
-window.history.replaceState(null, null, '/shells/chat/#' + currentChatId)
-window.location = '/shells/chat/#' + currentChatId
-window.location.reload()
+	if (charToAdd) 
+		// Add character directly on this page after WebSocket is initialized
+		await addCharacter(charToAdd)
+	
+
+	// Redirect to the main chat page without the 'char' query parameter
+	window.location.href = `/shells/chat/#${currentChatId}`
+} catch (e) {
+	logger(e)
+}

@@ -1,5 +1,4 @@
-import { getChatLog, getChatLogLength, triggerHeartbeat } from '../../src/endpoints.mjs'
-import { startHeartbeat, stopHeartbeat } from '../chat.mjs'
+import { getChatLog, getChatLogLength } from '../../src/endpoints.mjs'
 import { modifyTimeLine } from '../endpoints.mjs'
 import { TRANSITION_DURATION } from '../utils.mjs'
 
@@ -89,75 +88,21 @@ function observeSentinels() {
 	isLoading = false // 准备好处理新的交叉事件
 }
 
-export async function initializeVirtualQueue() {
+export async function initializeFromInitialData(initialData) {
 	try {
 		isLoading = true
-		chatLogLength = await getChatLogLength()
-		startIndex = Math.max(0, chatLogLength - BUFFER_SIZE)
-		queue = await getChatLog(startIndex, chatLogLength)
+		chatLogLength = initialData.logLength
+		queue = initialData.initialLog
+		startIndex = Math.max(0, chatLogLength - queue.length)
 
 		initializeObserver()
-		await renderQueue() // 内部会调用 updateLastCharMessageArrows
+		await renderQueue()
 
 		chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight
 	} finally {
-		observeSentinels() // 开始观察并重置 isLoading
+		observeSentinels()
 	}
 }
-
-function messageIsEqual(a, b) {
-	if (a.content != b.content || a.time_stamp != b.time_stamp || a.role != b.role) return false
-	if ((a.files || []).length != (b.files || []).length) return false
-	for (let i = 0; i < a.files.length; i++) {
-		if (!a.files[i] || !b.files[i]) return false
-		for (const key of ['name', 'buffer', 'mime_type', 'description'])
-			if (a.files[i][key] != b.files[i][key]) return false
-	}
-	return true
-}
-
-export async function triggerVirtualQueueHeartbeat() {
-	if (chatLogLength === null || !observer) return
-
-	const data = await triggerHeartbeat(startIndex).catch(error => {
-		if (error.error == 'Chat not found') {
-			window.close()
-			window.location = '/shells/home'
-		}
-		else if (error.response.status == 401)
-			window.location = '/login?redirect=' + encodeURIComponent(window.location)
-		console.error('[Heartbeat] Error when handling heartbeat:', error)
-	})
-	if (!data) return
-	const { Messages } = data
-	delete data.Messages
-
-	if (!Messages || !Array.isArray(Messages)) {
-		console.warn('[Heartbeat] Invalid heartbeat Messages:', Messages)
-		return data
-	}
-
-	if (Messages.length !== queue.length) { // 数量变化
-		const its_in_bottom = chatMessagesContainer.scrollTop >= chatMessagesContainer.scrollHeight - chatMessagesContainer.clientHeight - 5
-		queue = Messages
-		const newTotalLength = startIndex + queue.length
-		// 更新总长度 (可能增减)
-		if (newTotalLength !== chatLogLength)
-			chatLogLength = newTotalLength
-
-		await renderQueue() // 重绘
-		observeSentinels() // 观察新哨兵
-		if (its_in_bottom)
-			chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight
-	} else  // 内容变化检查
-		for (let i = 0; i < queue.length; i++) {
-			if (!Messages[i]) continue
-			if (!messageIsEqual(queue[i], Messages[i]))
-				await replaceMessageInQueue(i, Messages[i]) // 只替换变化的
-		}
-	return data
-}
-
 
 async function renderQueue() {
 	const fragment = document.createDocumentFragment()
@@ -297,23 +242,11 @@ function updateLastCharMessageArrows() {
 					// --- 箭头点击事件 (修改时间线) ---
 					leftArrow.addEventListener('click', async () => {
 						removeArrows()
-						const index = getQueueIndex(lastMessageElement); if (index === -1) return
-						await stopHeartbeat()
-						try {
-							const modifiedMessage = await modifyTimeLine(-1) // 后退
-							if (modifiedMessage) await replaceMessageInQueue(index, modifiedMessage)
-							else updateLastCharMessageArrows() // 恢复箭头
-						} catch (error) { updateLastCharMessageArrows() } finally { await startHeartbeat() }
+						await modifyTimeLine(-1) // 后退
 					})
 					rightArrow.addEventListener('click', async () => {
 						removeArrows()
-						const index = getQueueIndex(lastMessageElement); if (index === -1) return
-						await stopHeartbeat()
-						try {
-							const modifiedMessage = await modifyTimeLine(1) // 前进
-							if (modifiedMessage) await replaceMessageInQueue(index, modifiedMessage)
-							else updateLastCharMessageArrows() // 恢复箭头
-						} catch (error) { updateLastCharMessageArrows() } finally { await startHeartbeat() }
+						await modifyTimeLine(1) // 前进
 					})
 					// --- 箭头逻辑结束 ---
 				} else
@@ -455,4 +388,44 @@ export function cleanupVirtualQueueObserver() {
 		disableSwipe(currentSwipableElement)
 
 	currentSwipableElement = null // 重置滑动元素记录
+}
+
+// --- Handlers for websocket events ---
+async function triggerFullRefresh() {
+	try {
+		isLoading = true
+		chatLogLength = await getChatLogLength()
+		startIndex = Math.max(0, chatLogLength - BUFFER_SIZE)
+		queue = await getChatLog(startIndex, chatLogLength)
+
+		await renderQueue()
+
+		chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight
+	} finally {
+		observeSentinels()
+	}
+}
+
+export async function handleMessageAdded(message) {
+	await appendMessageToQueue(message)
+}
+
+export async function handleMessageReplaced(index, message) {
+	const queueIndex = index - startIndex
+	if (queueIndex >= 0 && queueIndex < queue.length)
+		await replaceMessageInQueue(queueIndex, message)
+	else {
+		console.warn(`Received message replacement for index ${index}, which is outside the current view. Triggering full refresh.`)
+		await triggerFullRefresh()
+	}
+}
+
+export async function handleMessageDeleted(index) {
+	const queueIndex = index - startIndex
+	if (queueIndex >= 0 && queueIndex < queue.length)
+		await deleteMessageInQueue(queueIndex)
+	else {
+		console.warn(`Received message deletion for index ${index}, which is outside the current view. Triggering full refresh.`)
+		await triggerFullRefresh()
+	}
 }

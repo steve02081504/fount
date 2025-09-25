@@ -1,5 +1,6 @@
 // Handle WebSocket connections from userscripts
 import { randomUUID } from 'node:crypto'
+
 import { loadShellData, saveShellData } from '../../../../server/setting_loader.mjs'
 
 /**
@@ -33,6 +34,45 @@ class UserPageManager {
 		 * @type {number | undefined}
 		 */
 		this.focusedPageId = undefined
+		/**
+		 * A set of WebSocket connections to the shell's UI.
+		 * @type {Set<import('npm:ws').WebSocket>}
+		 */
+		this.uiSockets = new Set()
+	}
+
+	// --- UI Communication ---
+
+	registerUi(ws) {
+		this.uiSockets.add(ws)
+		console.log(`UI WebSocket registered for ${this.username}. Total: ${this.uiSockets.size}`)
+
+		// Send initial state
+		ws.send(JSON.stringify({
+			type: 'pages_update',
+			payload: this.getConnectedPages()
+		}))
+
+		ws.on('close', () => {
+			this.uiSockets.delete(ws)
+			console.log(`UI WebSocket disconnected for ${this.username}. Total: ${this.uiSockets.size}`)
+		})
+	}
+
+	broadcastUiUpdate() {
+		if (this.uiSockets.size === 0) return
+
+		const payload = {
+			type: 'pages_update',
+			payload: this.getConnectedPages()
+		}
+		const message = JSON.stringify(payload)
+
+		for (const ws of this.uiSockets)
+			if (ws.readyState === ws.OPEN)
+				ws.send(message)
+
+
 	}
 
 	// --- Page Management ---
@@ -95,6 +135,8 @@ class UserPageManager {
 
 			if (this.focusedPageId === pageId)
 				this.focusedPageId = undefined
+
+			this.broadcastUiUpdate()
 		}
 	}
 
@@ -122,6 +164,7 @@ class UserPageManager {
 		}
 
 		console.log(`Focus changed for ${this.username}/${pageId}: ${hasFocus}`)
+		this.broadcastUiUpdate()
 	}
 
 	// --- Data Retrieval ---
@@ -200,7 +243,7 @@ class UserPageManager {
 // Map<username, UserPageManager>
 const userManagers = new Map()
 
-function getUserManager(username) {
+export function getUserManager(username) {
 	if (!userManagers.has(username))
 		userManagers.set(username, new UserPageManager(username))
 

@@ -14,6 +14,8 @@ import { getLoadedPartList, getPartList } from '../managers/index.mjs'
 import { getDefaultParts, getPartDetails, setDefaultPart } from '../parts_loader.mjs'
 import { skip_report, currentGitCommit, config, save_config } from '../server.mjs'
 
+import { register as registerNotifier } from './notify.mjs'
+
 /**
  * @param {import('npm:express').Router} router
  */
@@ -37,6 +39,11 @@ export function registerEndpoints(router) {
 		ws.on('close', () => {
 			console.log('WebSocket auth_test connection closed.')
 		})
+	})
+
+	router.ws('/ws/notify', authenticate, async (ws, req) => {
+		const { username } = await getUserByReq(req)
+		registerNotifier(username, ws)
 	})
 
 	router.get('/api/test/error', (req, res) => {
