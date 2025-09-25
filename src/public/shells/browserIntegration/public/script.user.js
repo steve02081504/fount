@@ -83,6 +83,7 @@ async function geti18n(key, params = {}) {
 async function initTranslations() {
 	const base_dir = 'https://steve02081504.github.io/fount'
 	const availableLocales = []
+	const userPreferredLangs = await GM.getValue('fount_user_preferred_locales', [])
 
 	try {
 		// Fetch available locales from list.csv
@@ -101,15 +102,13 @@ async function initTranslations() {
 			const lines = csvText.split('\n').slice(1) // Skip header
 			for (const line of lines) {
 				const [code] = line.split(',').map(item => item.trim())
-				if (code)
-					availableLocales.push(code)
-
+				if (code) availableLocales.push(code)
 			}
 		} else
 			console.warn('fount userscript: Could not fetch locales list.csv.')
 
 		// Determine best locale
-		const preferredLocales = [...navigator.languages || [navigator.language]]
+		const preferredLocales = [...new Set([...userPreferredLangs, ...navigator.languages || [navigator.language]])].filter(Boolean)
 		let lang = 'en-UK' // Fallback
 		for (const preferredLocale of preferredLocales) {
 			if (availableLocales.includes(preferredLocale)) { lang = preferredLocale; break }
@@ -157,9 +156,7 @@ window.addEventListener('fount-autorun-script-update', async (e) => {
 		updatedScripts.push(script)
 	} else if (action === 'delete')
 		updatedScripts = storedScripts.filter(s => s.id !== script.id)
-	else
-		return // Unknown action
-
+	else return // Unknown action
 
 	await GM.setValue(AUTORUN_SCRIPTS_KEY, updatedScripts)
 	console.log(`fount userscript: Updated auto-run scripts stored. Total: ${updatedScripts.length}`)
@@ -223,6 +220,7 @@ window.addEventListener('fount-host-info', async (e) => {
 				clearTimeout(connectionTimeoutId)
 				currentRetryDelay = INITIAL_RETRY_DELAY
 				if (ws) ws.close()
+				loadUserLocalesFromFount()
 				findAndConnect()
 			} catch (error) {
 				console.error(`fount userscript: Initial setup for host ${newHost} failed verification.`, error)
@@ -260,6 +258,7 @@ window.addEventListener('fount-host-info', async (e) => {
 					clearTimeout(connectionTimeoutId)
 					currentRetryDelay = INITIAL_RETRY_DELAY
 					if (ws) ws.close()
+					loadUserLocalesFromFount()
 					findAndConnect()
 				}
 				else
@@ -289,13 +288,8 @@ async function makeApiRequest(host, protocol, endpoint, options = {}) {
 
 	const headers = {}
 
-	if (apikey)
-		headers['Authorization'] = `Bearer ${apikey}`
-
-
-	if (method === 'POST')
-		headers['Content-Type'] = 'application/json'
-
+	if (apikey) headers['Authorization'] = `Bearer ${apikey}`
+	if (method === 'POST') headers['Content-Type'] = 'application/json'
 
 	return new Promise((resolve, reject) => {
 		GM.xmlHttpRequest({
@@ -549,10 +543,7 @@ const getCircularReplacer = () => {
 async function syncScriptsFromServer() {
 	console.log('fount userscript: Attempting to sync auto-run scripts from server...')
 	const { host, protocol } = await getStoredData()
-	if (!host) {
-		console.log('fount userscript: Sync skipped, no host configured.')
-		return // No host, can't sync
-	}
+	if (!host) return console.log('fount userscript: Sync skipped, no host configured.')
 
 	try {
 		const { success, scripts } = await makeApiRequest(host, protocol, '/api/shells/browserIntegration/autorun-scripts')
@@ -564,12 +555,26 @@ async function syncScriptsFromServer() {
 
 	} catch (error) {
 		console.error('fount userscript: Sync failed. Using local scripts as fallback.', error.message)
-		// "失败则用本地" - Do nothing, the existing local storage will be used.
+	}
+}
+
+// fetch and store user preferred locales from fount
+async function loadUserLocalesFromFount() {
+	const { host, protocol } = await getStoredData()
+	if (host) {
+		const { value: locales } = await makeApiRequest(host, protocol, '/api/getusersetting?key=locales')
+		if (locales && Array.isArray(locales)) {
+			await GM.setValue('fount_user_preferred_locales', locales)
+			console.log('fount userscript: User preferred locales fetched and stored from fount server.')
+		}
+	} else {
+		console.log('fount userscript: No host stored, skipping fetching user preferred locales from server.')
 	}
 }
 
 console.log('fount userscript loaded.')
 async function initialize() {
+	loadUserLocalesFromFount()
 	await syncScriptsFromServer()
 	runMatchingScripts()
 	findAndConnect()

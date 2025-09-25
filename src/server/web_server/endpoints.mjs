@@ -71,10 +71,13 @@ export function registerEndpoints(router) {
 		const preferredLanguages = [...new Set([...userPreferredLanguages, ...browserLanguages])].filter(Boolean)
 
 		if (req.cookies.accessToken) try {
+			await authenticate(req, res)
 			const user = await getUserByReq(req)
 			user.locales = preferredLanguages
 			console.logI18n('fountConsole.route.setLanguagePreference', { username: user.username, preferredLanguages: preferredLanguages.join(', ') })
-		} catch { }
+		} catch(error) {
+			console.error('Error setting language preference for user:', error)
+		}
 
 		return res.status(200).json(await getLocaleData(preferredLanguages))
 	})

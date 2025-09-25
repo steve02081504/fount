@@ -364,7 +364,7 @@ export async function authenticate(req, res, next) {
 
 	try {
 		await try_auth_request(req, res)
-		return next()
+		return next?.()
 	} catch (e) {
 		return Unauthorized(e)
 	}

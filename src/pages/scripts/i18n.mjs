@@ -1,10 +1,14 @@
-const fn_arr = [initTranslations]
-
-export function onLanguageChange(fn) {
-	fn_arr.push(fn)
+const languageChangeCallbacks = [initTranslations]
+export function onLanguageChange(callback) {
+	languageChangeCallbacks.push(callback)
 }
 async function runLanguageChange() {
-	for (const fn of fn_arr) await fn()
+	for (const callback of languageChangeCallbacks) try {
+		await callback()
+	}
+	catch (e) {
+		console.error('Error in language change callback:', e)
+	}
 }
 
 let i18n = {}
@@ -54,8 +58,7 @@ function getNestedValue(obj, key) {
 	for (const k of keys)
 		if (value && value instanceof Object && k in value)
 			value = value[k]
-		else
-			return undefined
+		else return undefined
 
 	return value
 }
