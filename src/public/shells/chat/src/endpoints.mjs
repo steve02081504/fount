@@ -119,10 +119,7 @@ export function setEndpoints(router) {
 				}
 			} catch (error) {
 				console.error('Error processing WebSocket message:', error)
-				// Optionally send an error response back to the client
-				const { id } = JSON.parse(msg)
-				if (id)
-					ws.send(JSON.stringify({ type: 'response', id, error: error.message }))
+				import('https://esm.sh/@sentry/browser').then(Sentry => Sentry.captureException(error))
 			}
 		})
 	})

@@ -50,6 +50,7 @@ function connectWebSocket() {
 			}
 		} catch (error) {
 			console.error('Error processing WebSocket message:', error)
+			import('https://esm.sh/@sentry/browser').then(Sentry => Sentry.captureException(error))
 		}
 	}
 
