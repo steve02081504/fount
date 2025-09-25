@@ -76,7 +76,10 @@ export class CharAPI_t {
 		telegram?: {
 			BotSetup?: (bot: Telegraf, config: any) => Promise<void>;
 			GetBotConfigTemplate?: () => Promise<any>;
-		}
+		},
+		browserIntegration?: {
+			BrowserJsCallback: (arg: { data: any, pageId: number, script: string }) => Promise<void>;
+		},
 		shellassist?: {
 			Assist: (data: {
 				username: string
