@@ -1,5 +1,6 @@
 // Handle WebSocket connections from userscripts
 import { randomUUID } from 'node:crypto'
+import { loadShellData, saveShellData } from '../../../../server/setting_loader.mjs'
 
 /**
  * @typedef {object} PageInfo
@@ -122,7 +123,6 @@ class UserPageManager {
 
 		console.log(`Focus changed for ${this.username}/${pageId}: ${hasFocus}`)
 	}
-
 
 	// --- Data Retrieval ---
 
@@ -299,4 +299,58 @@ export async function getVisibleHtml(username, pageId) {
 
 export async function runJsOnPage(username, pageId, script, callbackInfo = null) {
 	return await getUserManager(username).sendRequest(pageId, { type: 'run_js', payload: { script, callbackInfo } })
+}
+
+// --- Auto-run Scripts ---
+
+const DATA_NAME = 'autorun_scripts'
+
+function getScriptsData(username) {
+	const data = loadShellData(username, 'browserIntegration', DATA_NAME)
+	if (!data.scripts)
+		data.scripts = []
+
+	return data
+}
+
+export function listAutoRunScripts(username) {
+	const data = getScriptsData(username)
+	return data.scripts
+}
+
+export function addAutoRunScript(username, { urlRegex, script, comment }) {
+	if (!urlRegex || !script)
+		throw new Error('Missing required fields for auto-run script.')
+
+	const data = getScriptsData(username)
+	const newScript = {
+		id: randomUUID(),
+		urlRegex,
+		script,
+		comment: comment || '',
+		createdAt: new Date().toISOString(),
+	}
+	data.scripts.push(newScript)
+	saveShellData(username, 'browserIntegration', DATA_NAME)
+	return newScript
+}
+
+export function removeAutoRunScript(username, id) {
+	const data = getScriptsData(username)
+	const initialLength = data.scripts.length
+	data.scripts = data.scripts.filter(s => s.id !== id)
+	if (data.scripts.length === initialLength)
+		return { success: false, message: 'Script not found.' }
+
+	saveShellData(username, 'browserIntegration', DATA_NAME)
+	return { success: true, message: 'Script removed.' }
+}
+
+export function updateAutoRunScript(username, id, fields) {
+	const data = getScriptsData(username)
+	const script = data.scripts.find(s => s.id === id)
+	if (!script) return { success: false, message: 'Script not found.' }
+	Object.assign(script, { ...fields, id })
+	saveShellData(username, 'browserIntegration', DATA_NAME)
+	return { success: true, message: 'Script updated.', script }
 }

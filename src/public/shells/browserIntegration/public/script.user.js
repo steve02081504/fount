@@ -450,7 +450,7 @@ async function handleCommand(msg) {
 						try {
 							const response = await makeApiRequest(host, protocol, '/api/shells/browserIntegration/callback', {
 								method: 'POST',
-								data: { ...callbackInfo, data }
+								data: { ...callbackInfo, data, pageId, script }
 							})
 							console.log('fount userscript: Callback sent successfully.', response)
 						} catch (error) {
