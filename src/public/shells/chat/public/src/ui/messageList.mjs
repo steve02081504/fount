@@ -244,6 +244,20 @@ export async function editMessageStart(message, queueIndex, chatLogIndex) {
 	if (editInput && attachmentPreview)
 		addDragAndDropSupport(editInput, selectedFiles, attachmentPreview)
 
+	// keyboard shortcuts for editing
+	if (editInput)
+		editInput.addEventListener('keydown', event => {
+			if (event.key === 'Enter' && event.ctrlKey) {
+				event.preventDefault() // Prevent newline
+				event.stopPropagation() // Prevent bubbling
+				confirmButton.click()
+			}
+			else if (event.key === 'Escape') {
+				event.preventDefault() // Prevent default action
+				event.stopPropagation() // Prevent bubbling
+				cancelButton.click()
+			}
+		})
 
 	// --- 确认编辑 ---
 	if (confirmButton && editInput)
