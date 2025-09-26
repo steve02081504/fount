@@ -1,6 +1,5 @@
 import { confirmI18n, main_locale } from '../../../../../scripts/i18n.mjs'
 import { renderMarkdownAsString } from '../../../../../scripts/markdown.mjs'
-import { sendNotification } from '../../../../../scripts/sendNotification.mjs'
 import { renderTemplate, renderTemplateAsHtmlString } from '../../../../../scripts/template.mjs'
 import { showToast } from '../../../../../scripts/toast.mjs'
 import {
@@ -17,7 +16,6 @@ import {
 	getQueueIndex,
 	replaceMessageInQueue,
 	getChatLogIndexByQueueIndex,
-	deleteMessageInQueue,
 	getMessageElementByQueueIndex,
 } from './virtualQueue.mjs'
 
@@ -116,7 +114,6 @@ export async function renderMessage(message) {
 				const chatLogIndex = getChatLogIndexByQueueIndex(queueIndex)
 				if (chatLogIndex === -1) return
 				await deleteMessage(chatLogIndex)
-				await deleteMessageInQueue(queueIndex) // virtualQueue 处理移除和重绘
 			}
 		})
 
@@ -197,15 +194,6 @@ export async function renderMessage(message) {
 		}
 	}
 
-	// --- 特殊处理 'char' 消息 ---
-	if (message.role == 'char')
-		// 桌面通知 (如果页面在后台)
-		if (document.visibilityState != 'visible')
-			sendNotification(message.name ?? 'Character', {
-				body: message.content,
-				icon: message.avatar || DEFAULT_AVATAR
-			})
-
 	return messageElement
 }
 
@@ -263,8 +251,7 @@ export async function editMessageStart(message, queueIndex, chatLogIndex) {
 	if (confirmButton && editInput)
 		confirmButton.addEventListener('click', async () => {
 			const newMessage = { ...message, content: editInput.value, files: selectedFiles }
-			const updatedMessage = await editMessage(chatLogIndex, newMessage) // 后端编辑
-			await replaceMessageInQueue(queueIndex, updatedMessage) // 更新队列和 DOM
+			await editMessage(chatLogIndex, newMessage) // 后端编辑
 		})
 
 
@@ -355,10 +342,8 @@ export function enableSwipe(messageElement) {
 			if (checkForHorizontalScrollbar(targetElement)) return // 忽略带水平滚动的元素
 
 			swipeHandled = true
-			const index = getQueueIndex(messageElement); if (index === -1) return
 			const direction = deltaX > 0 ? -1 : 1 // 右滑-1(后退), 左滑+1(前进)
-			const modifiedMessage = await modifyTimeLine(direction)
-			if (modifiedMessage) await replaceMessageInQueue(index, modifiedMessage)
+			await modifyTimeLine(direction)
 		}
 	}
 	const handleTouchCancel = () => { isDragging = false }

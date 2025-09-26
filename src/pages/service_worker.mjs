@@ -362,6 +362,70 @@ const routes = [
 ]
 
 
+// --- WebSocket Notification Client ---
+
+let ws = null
+let reconnectTimeout = null
+const RECONNECT_DELAY = 5000 // 5 seconds
+
+function connectWebSocket() {
+	// Use a relative URL that will be resolved correctly by the browser
+	// against the service worker's origin.
+	const wsUrl = new URL('/ws/notify', self.location.href)
+	wsUrl.protocol = wsUrl.protocol.replace('http', 'ws')
+
+	console.log('[SW WS] Attempting to connect to', wsUrl.href)
+
+	ws = new WebSocket(wsUrl)
+
+	ws.onopen = () => {
+		console.log('[SW WS] Connection established.')
+		// Reset reconnect timeout on successful connection
+		if (reconnectTimeout) {
+			clearTimeout(reconnectTimeout)
+			reconnectTimeout = null
+		}
+	}
+
+	ws.onmessage = event => {
+		console.log('[SW WS] Message received:', event.data)
+		try {
+			const { title, options, targetUrl } = JSON.parse(event.data)
+			if (!title) return
+			if (!targetUrl) self.registration.showNotification(title, options)
+			else event.waitUntil(
+					self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
+						let shouldShowNotification = true
+						for (const client of windowClients) {
+							const clientUrl = new URL(client.url)
+							const notificationTargetUrl = new URL(targetUrl, self.location.origin)
+							if (clientUrl.pathname === notificationTargetUrl.pathname && clientUrl.search === notificationTargetUrl.search && client.focused) {
+								shouldShowNotification = false
+								break
+							}
+						}
+						if (shouldShowNotification) self.registration.showNotification(title, options)
+					})
+				)
+		} catch (error) {
+			console.error('[SW WS] Error parsing message or showing notification:', error)
+		}
+	}
+
+	ws.onclose = event => {
+		console.warn(`[SW WS] Connection closed. Code: ${event.code}, Reason: ${event.reason}. Reconnecting in ${RECONNECT_DELAY / 1000}s.`)
+		ws = null
+		if (!reconnectTimeout) reconnectTimeout = setTimeout(connectWebSocket, RECONNECT_DELAY)
+	}
+
+	ws.onerror = error => {
+		console.error('[SW WS] WebSocket error:', error)
+	}
+}
+
+// Start WebSocket connection
+connectWebSocket()
+
 // --- Service Worker 事件监听器 ---
 
 self.addEventListener('install', event => {
@@ -398,6 +462,27 @@ self.addEventListener('periodicsync', event => {
 	// 确保只响应该 Service Worker 注册的清理任务。
 	if (event.tag === PERIODIC_SYNC_TAG)
 		event.waitUntil(cleanupExpiredCache())
+})
+
+self.addEventListener('notificationclick', event => {
+	event.notification.close()
+	const urlToOpen = event.notification.data?.url
+	if (urlToOpen)
+		event.waitUntil(
+			self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
+				// Check if a window is already open with the same URL.
+				const existingClient = windowClients.find(client => {
+					const clientUrl = new URL(client.url)
+					const targetUrl = new URL(urlToOpen, self.location.origin)
+					return clientUrl.pathname === targetUrl.pathname && clientUrl.search === targetUrl.search && clientUrl.hash === targetUrl.hash
+				})
+
+				if (existingClient)
+					return existingClient.focus()
+				else
+					return self.clients.openWindow(urlToOpen)
+			})
+		)
 })
 
 /**

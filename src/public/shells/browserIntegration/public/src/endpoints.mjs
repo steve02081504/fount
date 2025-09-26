@@ -16,10 +16,6 @@ async function callApi(endpoint, method = 'POST', body) {
 	}
 }
 
-export function getConnectedPages() {
-	return callApi('pages', 'GET')
-}
-
 export function getAutoRunScripts() {
 	return callApi('autorun-scripts', 'GET')
 }
