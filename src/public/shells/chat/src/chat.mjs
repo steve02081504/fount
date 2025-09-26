@@ -732,19 +732,16 @@ async function handleAutoReply(chatid, freq_data, initial_char) {
 	while (true) {
 		freq_data = freq_data.filter(f => f.charname !== char)
 		const nextreply = await getNextCharForReply(freq_data)
-		if (nextreply)
-			try {
-				await triggerCharReply(chatid, nextreply)
-				return
-			}
-			catch (error) {
-				console.error(error)
-				char = nextreply
-			}
-
+		if (nextreply) try {
+			await triggerCharReply(chatid, nextreply)
+			return
+		}
+		catch (error) {
+			console.error(error)
+			char = nextreply
+		}
 		else
 			return
-
 	}
 }
 
@@ -778,7 +775,6 @@ async function addChatLogEntry(chatid, entry) {
 		await entry.timeSlice.world.interfaces.chat.AfterAddChatLogEntry(await getChatRequest(chatid, undefined), freq_data)
 	else
 		handleAutoReply(chatid, freq_data, entry.timeSlice.charname ?? null)
-
 
 	return entry
 }

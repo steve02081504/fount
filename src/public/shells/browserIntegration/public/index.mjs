@@ -28,6 +28,7 @@ async function renderPages(pages) {
 		pagesListDiv.appendChild(await renderTemplate('page_table', { pages }))
 }
 
+const RECONNECT_DELAY = 5000
 function connectWebSocket() {
 	const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
 	const wsUrl = `${wsProtocol}//${window.location.host}/ws/shells/browserIntegration/ui`
@@ -55,7 +56,6 @@ function connectWebSocket() {
 	}
 
  	ws.onclose = async () => {
-		const RECONNECT_DELAY = 5000
 		console.log(`UI WebSocket disconnected. Reconnecting in ${RECONNECT_DELAY / 1000} seconds...`)
 		// Clear the list to show a disconnected/error state
 		pagesListDiv.innerHTML = ''

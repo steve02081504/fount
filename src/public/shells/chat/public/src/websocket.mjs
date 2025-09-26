@@ -1,13 +1,12 @@
 import { currentChatId } from './endpoints.mjs'
 import {
-	updateSidebar,
 	handleWorldSet,
 	handlePersonaSet,
 	handleCharAdded,
 	handleCharRemoved,
 	handleCharFrequencySet,
 } from './ui/sidebar.mjs'
-import { handleMessageAdded, handleMessageDeleted, handleMessageReplaced, initializeFromInitialData } from './ui/virtualQueue.mjs'
+import { handleMessageAdded, handleMessageDeleted, handleMessageReplaced } from './ui/virtualQueue.mjs'
 
 let ws = null
 
@@ -20,16 +19,6 @@ function connect() {
 
 	ws.onopen = async () => {
 		console.log(`Chat UI WebSocket connected for chat ${currentChatId}.`)
-		// Request initial data upon connection
-		const response = await fetch(`/api/shells/chat/${currentChatId}/initial-data`)
-		const initialData = await response.json()
-		await initializeFromInitialData(initialData)
-		await updateSidebar({
-			charlist: initialData.charlist,
-			worldname: initialData.worldname,
-			personaname: initialData.personaname,
-			frequency_data: initialData.frequency_data,
-		})
 	}
 
 	ws.onmessage = (event) => {

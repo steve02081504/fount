@@ -1,6 +1,8 @@
+import { currentChatId } from './endpoints.mjs'
 import { setupCss } from './ui/css.mjs'
 import { initializeMessageInput } from './ui/messageInput.mjs'
-import { setupSidebar } from './ui/sidebar.mjs'
+import { setupSidebar, updateSidebar } from './ui/sidebar.mjs'
+import { initializeVirtualQueue } from './ui/virtualQueue.mjs'
 import { initializeWebSocket } from './websocket.mjs'
 
 // These are shared state used by the sidebar.
@@ -21,7 +23,17 @@ export function setPersonaName(name) {
 
 export async function initializeChat() {
 	setupCss()
-	initializeWebSocket() // This will connect and fetch initial data
+	initializeWebSocket()
+
+	const response = await fetch(`/api/shells/chat/${currentChatId}/initial-data`)
+	const initialData = await response.json()
+	initializeVirtualQueue(initialData)
+	updateSidebar({
+		charlist: initialData.charlist,
+		worldname: initialData.worldname,
+		personaname: initialData.personaname,
+		frequency_data: initialData.frequency_data,
+	})
 
 	if (window.Notification && Notification?.permission != 'granted')
 		Notification.requestPermission()

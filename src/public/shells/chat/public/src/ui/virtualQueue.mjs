@@ -88,7 +88,7 @@ function observeSentinels() {
 	isLoading = false // 准备好处理新的交叉事件
 }
 
-export async function initializeFromInitialData(initialData) {
+export async function initializeVirtualQueue(initialData) {
 	try {
 		isLoading = true
 		chatLogLength = initialData.logLength
@@ -329,7 +329,6 @@ export async function replaceMessageInQueue(queueIndex, message, element = null)
 	// 如果替换的是最后一个元素，更新箭头/滑动状态
 	if (queueIndex === queue.length - 1)
 		updateLastCharMessageArrows()
-
 }
 
 export function getQueueIndex(element) {

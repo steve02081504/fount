@@ -23,6 +23,14 @@ const itemDescription = document.getElementById('item-description')
 const rightSidebarContainer = document.getElementById('right-sidebar-container')
 const leftDrawerCheckbox = document.getElementById('left-drawer')
 
+/**
+ * 检查侧边栏更新是否允许
+ * @returns {boolean}
+ */
+function isSidebarUpdateAllowed() {
+	return leftDrawerCheckbox.checked || document.documentElement.clientWidth >= 1024
+}
+
 // 缓存DOM
 const cachedDom = {
 	world: {},
@@ -312,7 +320,7 @@ export async function setupSidebar() {
 }
 
 export async function updateSidebar(data) {
-	if (!leftDrawerCheckbox.checked && document.documentElement.clientWidth < 1024) return
+	if (!isSidebarUpdateAllowed()) return
 
 	setCharList(data.charlist)
 	setWorldName(data.worldname)
@@ -325,21 +333,21 @@ export async function updateSidebar(data) {
 }
 
 export async function handleWorldSet(worldname) {
-	if (!leftDrawerCheckbox.checked && document.documentElement.clientWidth < 1024) return
+	if (!isSidebarUpdateAllowed()) return
 	setWorldName(worldname)
 	worldSelect.value = worldname || ''
 	await renderWorldDetails(worldname)
 }
 
 export async function handlePersonaSet(personaname) {
-	if (!leftDrawerCheckbox.checked && document.documentElement.clientWidth < 1024) return
+	if (!isSidebarUpdateAllowed()) return
 	setPersonaName(personaname)
 	personaSelect.value = personaname || ''
 	await renderPersonaDetails(personaname)
 }
 
 export async function handleCharAdded(charname) {
-	if (!leftDrawerCheckbox.checked && document.documentElement.clientWidth < 1024) return
+	if (!isSidebarUpdateAllowed()) return
 	if (charList.includes(charname)) return // Already there
 
 	charList.push(charname)
@@ -354,7 +362,7 @@ export async function handleCharAdded(charname) {
 }
 
 export async function handleCharRemoved(charname) {
-	if (!leftDrawerCheckbox.checked && document.documentElement.clientWidth < 1024) return
+	if (!isSidebarUpdateAllowed()) return
 	const index = charList.indexOf(charname)
 	if (index === -1) return // Not there
 
@@ -378,7 +386,7 @@ export async function handleCharRemoved(charname) {
 }
 
 export async function handleCharFrequencySet(charname, frequency) {
-	if (!leftDrawerCheckbox.checked && document.documentElement.clientWidth < 1024) return
+	if (!isSidebarUpdateAllowed()) return
 	const charCard = charDetailsContainer.querySelector(`[data-char-name="${charname}"]`)
 	if (!charCard) return
 

@@ -99,7 +99,7 @@ async function sendMessage() {
 	if (isRecording) await toggleVoiceRecording()
 
 	try {
-		await appendMessage(await addUserReply({ content: messageText, files: SelectedFiles }))
+		await addUserReply({ content: messageText, files: SelectedFiles })
 		messageInputElement.value = ''
 		SelectedFiles.length = 0
 		attachmentPreviewContainer.innerHTML = ''

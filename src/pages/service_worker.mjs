@@ -408,6 +408,8 @@ function connectWebSocket() {
 	}
 }
 
+// Start WebSocket connection
+connectWebSocket()
 
 // --- Service Worker 事件监听器 ---
 
@@ -434,8 +436,6 @@ self.addEventListener('activate', event => {
 			await self.clients.claim()
 			// 在激活时立即执行一次清理，以处理可能在 SW 非活动期间过期的项目。
 			await cleanupExpiredCache()
-			// Start WebSocket connection
-			connectWebSocket()
 		})()
 	)
 })
