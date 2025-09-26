@@ -768,7 +768,7 @@ async function addChatLogEntry(chatid, entry) {
 			data: {
 				url: `/shells/chat/#${chatid}`, // URL to open on click
 			},
-		})
+		}, `/shells/chat/#${chatid}`)
 
 	const freq_data = await getCharReplyFrequency(chatid)
 	if (entry.timeSlice.world?.interfaces?.chat?.AfterAddChatLogEntry)

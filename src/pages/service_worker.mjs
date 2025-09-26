@@ -390,8 +390,23 @@ function connectWebSocket() {
 	ws.onmessage = event => {
 		console.log('[SW WS] Message received:', event.data)
 		try {
-			const { title, options } = JSON.parse(event.data)
-			if (title) self.registration.showNotification(title, options)
+			const { title, options, targetUrl } = JSON.parse(event.data)
+			if (!title) return
+			if (!targetUrl) self.registration.showNotification(title, options)
+			else event.waitUntil(
+					self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
+						let shouldShowNotification = true
+						for (const client of windowClients) {
+							const clientUrl = new URL(client.url)
+							const notificationTargetUrl = new URL(targetUrl, self.location.origin)
+							if (clientUrl.pathname === notificationTargetUrl.pathname && clientUrl.search === notificationTargetUrl.search && client.focused) {
+								shouldShowNotification = false
+								break
+							}
+						}
+						if (shouldShowNotification) self.registration.showNotification(title, options)
+					})
+				)
 		} catch (error) {
 			console.error('[SW WS] Error parsing message or showing notification:', error)
 		}

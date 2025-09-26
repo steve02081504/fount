@@ -4,7 +4,6 @@ import { addUserReply } from '../endpoints.mjs'
 import { handleFilesSelect } from '../fileHandling.mjs'
 
 import { addDragAndDropSupport } from './dragAndDrop.mjs'
-import { appendMessage } from './messageList.mjs'
 
 const messageInputElement = document.getElementById('message-input')
 const sendButtonElement = document.getElementById('send-button')

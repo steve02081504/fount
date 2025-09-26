@@ -43,10 +43,10 @@ export function unregister(username, ws) {
  * @param {string} title - The notification title.
  * @param {NotificationOptions} options - The notification options.
  */
-export function sendNotification(username, title, options) {
+export function sendNotification(username, title, options, targetUrl = null) {
 	const connections = userConnections.get(username)
 	if (connections && connections.size > 0) {
-		const payload = JSON.stringify({ title, options })
+		const payload = JSON.stringify({ title, options, targetUrl })
 		console.log(`[Notify] Broadcasting notification to ${connections.size} clients for user: ${username}`)
 		for (const ws of connections)
 			if (ws.readyState === ws.OPEN)
