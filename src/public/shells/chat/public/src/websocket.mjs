@@ -10,8 +10,6 @@ import {
 import { handleMessageAdded, handleMessageDeleted, handleMessageReplaced, initializeFromInitialData } from './ui/virtualQueue.mjs'
 
 let ws = null
-const pendingRequests = new Map()
-let messageIdCounter = 0
 
 function connect() {
 	if (!currentChatId) return
@@ -23,7 +21,8 @@ function connect() {
 	ws.onopen = async () => {
 		console.log(`Chat UI WebSocket connected for chat ${currentChatId}.`)
 		// Request initial data upon connection
-		const initialData = await sendRequest('get_initial_data')
+		const response = await fetch(`/api/shells/chat/${currentChatId}/initial-data`)
+		const initialData = await response.json()
 		await initializeFromInitialData(initialData)
 		await updateSidebar({
 			charlist: initialData.charlist,
@@ -36,20 +35,8 @@ function connect() {
 	ws.onmessage = (event) => {
 		try {
 			const msg = JSON.parse(event.data)
-
-			if (msg.type === 'response') {
-				if (pendingRequests.has(msg.id)) {
-					const { resolve, reject } = pendingRequests.get(msg.id)
-					if (msg.error)
-						reject(new Error(msg.error))
-					else
-						resolve(msg.payload)
-
-					pendingRequests.delete(msg.id)
-				}
-			} else
-				// Handle broadcast events
-				handleBroadcastEvent(msg)
+			// Handle broadcast events
+			handleBroadcastEvent(msg)
 
 		} catch (error) {
 			console.error('Error processing WebSocket message:', error)
@@ -58,11 +45,11 @@ function connect() {
 	}
 
 	ws.onclose = () => {
-		const RECONNECT_DELAY = 3000;
-		console.log(`Chat UI WebSocket disconnected. Reconnecting in ${RECONNECT_DELAY / 1000} seconds...`);
-		ws = null;
-		setTimeout(connect, RECONNECT_DELAY);
-	};
+		const RECONNECT_DELAY = 3000
+		console.log(`Chat UI WebSocket disconnected. Reconnecting in ${RECONNECT_DELAY / 1000} seconds...`)
+		ws = null
+		setTimeout(connect, RECONNECT_DELAY)
+	}
 
 	ws.onerror = (err) => {
 		console.error('Chat UI WebSocket error:', err)
@@ -102,37 +89,6 @@ async function handleBroadcastEvent(event) {
 		default:
 			console.warn(`Unknown broadcast event type: ${type}`)
 	}
-}
-
-export function sendRequest(command, params = {}) {
-	return new Promise((resolve, reject) => {
-		if (!ws || ws.readyState !== WebSocket.OPEN) {
-			// Queue the request if the socket is connecting, otherwise reject.
-			if (ws && ws.readyState === WebSocket.CONNECTING) {
-				const onOpen = () => {
-					ws.removeEventListener('open', onOpen)
-					sendRequest(command, params).then(resolve, reject)
-				}
-				ws.addEventListener('open', onOpen)
-			} else
-				reject(new Error('WebSocket is not connected.'))
-
-			return
-		}
-
-		const id = messageIdCounter++
-		pendingRequests.set(id, { resolve, reject })
-
-		// Timeout for the request
-		setTimeout(() => {
-			if (pendingRequests.has(id)) {
-				pendingRequests.delete(id)
-				reject(new Error(`Request ${id} (${command}) timed out.`))
-			}
-		}, 30000) // 30 seconds timeout
-
-		ws.send(JSON.stringify({ id, command, params }))
-	})
 }
 
 export function initializeWebSocket() {
