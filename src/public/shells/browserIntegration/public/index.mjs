@@ -55,13 +55,13 @@ function connectWebSocket() {
 	}
 
  	ws.onclose = async () => {
-		const RECONNECT_DELAY = 5000;
-		console.log(`UI WebSocket disconnected. Reconnecting in ${RECONNECT_DELAY / 1000} seconds...`);
+		const RECONNECT_DELAY = 5000
+		console.log(`UI WebSocket disconnected. Reconnecting in ${RECONNECT_DELAY / 1000} seconds...`)
 		// Clear the list to show a disconnected/error state
-		pagesListDiv.innerHTML = '';
-		pagesListDiv.appendChild(await renderTemplate('error_message'));
-		setTimeout(connectWebSocket, RECONNECT_DELAY);
-	};
+		pagesListDiv.innerHTML = ''
+		pagesListDiv.appendChild(await renderTemplate('error_message'))
+		setTimeout(connectWebSocket, RECONNECT_DELAY)
+	}
 
 	ws.onerror = (err) => {
 		console.error('UI WebSocket error:', err)
