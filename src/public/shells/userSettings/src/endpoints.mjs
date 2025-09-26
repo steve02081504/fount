@@ -56,8 +56,8 @@ export function setEndpoints(router) {
 			if (!userFullConfig?.createdAt && dirStats?.birthtimeMs) creationDate = dirStats.birthtimeMs
 		} catch (dirError) { /* Dir might not exist yet, use now or config */ }
 
-		const folderSizeNum = await getDirectorySize(userDirectory)
-		const folderSize = formatBytes(folderSizeNum)
+		const folderSizeNum = getDirectorySize(userDirectory).then(size => userReqData.directorySize = size)
+		const folderSize = formatBytes(userReqData.directorySize || await folderSizeNum)
 
 		res.json({
 			success: true,
