@@ -113,28 +113,43 @@ install_package() {
 }
 
 test_browser() {
-	local browser_detected=0
+	local run_as_user=""
+	local user_home=$HOME
+
+	if [ "$(id -u)" -eq 0 ] && [ -n "$SUDO_USER" ]; then
+		user_home=$(eval echo "~$SUDO_USER")
+		run_as_user="env HOME=$user_home sudo -u $SUDO_USER"
+	fi
 
 	if [ "$OS_TYPE" = "Linux" ]; then
+		if command -v update-alternatives &>/dev/null; then
+			local system_browser
+			system_browser=$(update-alternatives --query x-www-browser | grep -o '/.*' | head -n1)
+			if [ -n "$system_browser" ]; then
+				return 1
+			fi
+		fi
 		install_package "xdg-settings" "xdg-utils"
 		if command -v xdg-settings &>/dev/null; then
 			local default_browser_desktop
-			default_browser_desktop=$(xdg-settings get default-web-browser 2>/dev/null)
+			default_browser_desktop=$($run_as_user xdg-settings get default-web-browser 2>/dev/null)
 			if [[ -n "$default_browser_desktop" && "$default_browser_desktop" == *".desktop"* ]]; then
-				browser_detected=1
+				return 1
 			fi
 		fi
 	elif [ "$OS_TYPE" = "Darwin" ]; then
+		# 尝试使用 defaults read
 		local default_browser_bundle_id
-		default_browser_bundle_id=$(defaults read ~/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist 2>/dev/null | grep -B 1 "LSHandlerURLScheme = https;" | sed -n -e 's/^.*RoleAll = "//' -e 's/";//p' | head -n 1) || true
+		default_browser_bundle_id=$($run_as_user defaults read "${user_home}"/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist 2>/dev/null | grep -B 1 "LSHandlerURLScheme = https;" | sed -n -e 's/^.*RoleAll = "//' -e 's/";//p' | head -n 1) || true
 		if [ -n "$default_browser_bundle_id" ]; then
-			browser_detected=1
+			return 1
 		fi
 	fi
 
-	if [ $browser_detected -eq 0 ]; then
-		echo "Default web browser is not detected, attempting to install..."
-		install_package "google-chrome" "google-chrome google-chrome-stable"
+	echo "Default web browser is not detected, attempting to install..."
+	install_package "google-chrome" "google-chrome google-chrome-stable"
+	if ! command -v google-chrome &>/dev/null; then
+		install_package "chromium-browser" "chromium-browser chromium"
 	fi
 	return 0
 }
