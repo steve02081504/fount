@@ -459,7 +459,7 @@ self.addEventListener('notificationclick', event => {
 				const existingClient = windowClients.find(client => {
 					const clientUrl = new URL(client.url)
 					const targetUrl = new URL(urlToOpen, self.location.origin)
-					return clientUrl.pathname === targetUrl.pathname && clientUrl.hash === targetUrl.hash
+					return clientUrl.pathname === targetUrl.pathname && clientUrl.search === targetUrl.search && clientUrl.hash === targetUrl.hash
 				})
 
 				if (existingClient)
