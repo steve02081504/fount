@@ -37,13 +37,7 @@
 			if (fileId || from) try { // save
 				const encryptedData = await receiveAndValidateEncryptedCredentials(fileId, from, hashParams, uuid)
 				localStorage.setItem(`fount-login-${instanceId}`, encryptedData)
-				const targetUrl = new URL(decodeURIComponent(redirectUrl))
-				const newHashParams = new URLSearchParams()
-				newHashParams.set('uuid', uuid)
-				if (fileId) newHashParams.set('fileId', fileId)
-				if (from) newHashParams.set('from', from)
-				targetUrl.hash = newHashParams.toString()
-				window.location.href = targetUrl.href
+				window.location.href = decodeURIComponent(redirectUrl)
 			} catch (error) {
 				console.error('Failed to receive credentials:', error)
 				errorMessageElement.textContent = geti18n('login_info.modal.retrieve_error', { error: error.message })
