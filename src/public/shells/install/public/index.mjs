@@ -123,7 +123,8 @@ importButton.addEventListener('click', async () => {
 			await handleTextImport()
 
 		showToast(geti18n('import.alerts.importSuccess'), 'success')
-	} catch (error) {
+	}
+	catch (error) {
 		let errorMessage = error.message || geti18n('import.alerts.unknownError')
 		if (error.errors)
 			errorMessage += `\n${formatErrors(error.errors)}`

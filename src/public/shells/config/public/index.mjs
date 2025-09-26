@@ -43,7 +43,8 @@ async function fetchPartTypes() {
 	try {
 		partTypes = await getPartTypes()
 		renderPartTypeSelect()
-	} catch (err) {
+	}
+	catch (err) {
 		console.error('Failed to fetch part types:', err)
 		showErrorMessage(geti18n('part_config.alerts.fetchPartTypesFailed') + ': ' + err.message)
 	}
@@ -79,7 +80,8 @@ async function fetchParts(partType) {
 	try {
 		parts = await getParts(partType)
 		renderPartSelect()
-	} catch (err) {
+	}
+	catch (err) {
 		console.error('Failed to fetch parts:', err)
 		showErrorMessage(geti18n('part_config.alerts.fetchPartsFailed') + ': ' + err.message)
 	}
@@ -124,7 +126,8 @@ async function loadPartAddons(partType, partName) {
 			if (eval_result.error) throw eval_result.error
 			onJsonUpdate = eval_result.result || (() => 0)
 		}
-	} catch (e) {
+	}
+	catch (e) {
 		console.error('Error loading or evaluating part addons:', e)
 		partDisplayContainer.innerHTML = `<div class="text-error">Error loading part display: ${e.message}</div>`
 	}
@@ -171,7 +174,8 @@ async function loadEditor(partType, partName) {
 			disableEditorAndSaveButton()
 			isDirty = false
 			return
-		} else {
+		}
+		else {
 			disabledIndicator.classList.add('hidden')
 			saveButton.disabled = false
 			jsonEditor.updateProps({ readOnly: false })
@@ -196,7 +200,8 @@ async function loadEditor(partType, partName) {
 		})
 
 		isDirty = false
-	} catch (err) {
+	}
+	catch (err) {
 		console.error('Failed to load editor:', err)
 		disableEditorAndSaveButton()
 		showErrorMessage(geti18n('part_config.alerts.loadEditorFailed') + ': ' + err.message)
@@ -223,7 +228,8 @@ async function saveConfig() {
 		isDirty = false
 
 		saveStatusIcon.src = 'https://api.iconify.design/line-md/confirm-circle.svg'
-	} catch (err) {
+	}
+	catch (err) {
 		showErrorMessage(geti18n('part_config.alerts.saveConfigFailed') + ': ' + err.message)
 		console.error('Failed to save part config:', err)
 
@@ -279,9 +285,10 @@ async function initializeFromURLParams() {
 			partSelect.value = partName
 			activePart = partName
 			await loadEditor(partType, partName)
-		} else
-			disableEditorAndSaveButton()
-	} else {
+		}
+		else disableEditorAndSaveButton()
+	}
+	else {
 		await fetchPartTypes()
 		disableEditorAndSaveButton()
 	}

@@ -37,7 +37,8 @@ async function handleIntersection(entries) {
 			if (startIndex > 0) {
 				observer.unobserve(sentinelTop)
 				await prependMessages()
-			} else {
+			}
+			else {
 				isLoading = false
 				observeSentinels() // 即使在顶部，也重新观察
 			}
@@ -46,15 +47,18 @@ async function handleIntersection(entries) {
 			if (currentCount < chatLogLength) {
 				observer.unobserve(sentinelBottom)
 				await appendMessages()
-			} else {
+			}
+			else {
 				isLoading = false
 				observeSentinels() // 即使在底部，也重新观察
 			}
-		} else {
+		}
+		else {
 			isLoading = false
 			console.warn(`[Intersection] 未知的哨兵目标: ${entry.target.id}`)
 		}
-	} catch (error) {
+	}
+	catch (error) {
 		console.error('[Intersection] 处理交叉事件出错:', error)
 		isLoading = false
 		observeSentinels() // 尝试恢复
@@ -99,7 +103,8 @@ export async function initializeVirtualQueue(initialData) {
 		await renderQueue()
 
 		chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight
-	} finally {
+	}
+	finally {
 		observeSentinels()
 	}
 }
@@ -157,16 +162,19 @@ async function prependMessages() {
 				const newFirstElementRect = newFirstElementCorrespondingToOld.getBoundingClientRect()
 				const scrollAdjustment = newFirstElementRect.top - oldFirstElementRect.top
 				chatMessagesContainer.scrollTop = oldScrollTop + scrollAdjustment
-			} else
-				console.warn('[Prepend] 无法恢复精确滚动位置')
-		} else {
+			}
+			else console.warn('[Prepend] 无法恢复精确滚动位置')
+		}
+		else {
 			startIndex = newStartIndex // 即使没获取到也更新，防重试
 			isLoading = false
 		}
-	} catch (error) {
+	}
+	catch (error) {
 		console.error('[Prepend] 加载更早消息出错:', error)
 		isLoading = false
-	} finally {
+	}
+	finally {
 		observeSentinels() // 重新观察哨兵
 	}
 }
@@ -193,12 +201,14 @@ async function appendMessages() {
 				startIndex += excess
 			}
 			await renderQueue() // 重绘 (不需要调整滚动)
-		} else
-			isLoading = false
-	} catch (error) {
+		}
+		else isLoading = false
+	}
+	catch (error) {
 		console.error('[Append] 加载后续消息出错:', error)
 		isLoading = false
-	} finally {
+	}
+	finally {
 		observeSentinels() // 重新观察哨兵
 	}
 }
@@ -249,8 +259,8 @@ function updateLastCharMessageArrows() {
 						await modifyTimeLine(1) // 前进
 					})
 					// --- 箭头逻辑结束 ---
-				} else
-					potentialNewSwipableElement = null // 找不到内容元素，无法添加箭头/滑动
+				}
+				else potentialNewSwipableElement = null // 找不到内容元素，无法添加箭头/滑动
 			}
 		}
 	}
@@ -287,7 +297,8 @@ export async function appendMessageToQueue(message) {
 
 		if (shouldScrollToBottom)
 			chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight
-	} finally {
+	}
+	finally {
 		observeSentinels()
 	}
 }
@@ -320,7 +331,8 @@ export async function replaceMessageInQueue(queueIndex, message, element = null)
 
 	try {
 		oldMessageElement.replaceWith(element) // DOM 替换
-	} catch (error) {
+	}
+	catch (error) {
 		console.error('[Replace] 替换 DOM 元素出错:', error)
 		isLoading = true; await renderQueue(); observeSentinels() // 尝试重绘恢复
 		return
@@ -400,7 +412,8 @@ async function triggerFullRefresh() {
 		await renderQueue()
 
 		chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight
-	} finally {
+	}
+	finally {
 		observeSentinels()
 	}
 }

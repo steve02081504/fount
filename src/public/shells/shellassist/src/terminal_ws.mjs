@@ -32,7 +32,8 @@ export async function handleTerminalConnection(ws) {
 				ptyProcess.write(parsedMessage.data)
 			else
 				console.warn('Received valid JSON but with unexpected type:', parsedMessage)
-		} catch (e) {
+		}
+		catch (e) {
 			console.error('Failed to parse client message as JSON, or error in processing:', e)
 		}
 	})

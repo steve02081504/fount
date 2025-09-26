@@ -82,7 +82,7 @@ export function registerEndpoints(router) {
 			const user = await getUserByReq(req)
 			user.locales = preferredLanguages
 			console.logI18n('fountConsole.route.setLanguagePreference', { username: user.username, preferredLanguages: preferredLanguages.join(', ') })
-		} catch(error) {
+		} catch (error) {
 			console.error('Error setting language preference for user:', error)
 		}
 

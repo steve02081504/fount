@@ -26,7 +26,8 @@ async function checkResErr(res, throwIt = true) {
 			const text = await res.text()
 			json = JSON.parse(text)
 			errAPI = json.error
-		} catch (parseError) {
+		}
+		catch {
 			err.message += ' ' + await res.text() // 原始响应文本
 			if (throwIt) throw err
 			return err
@@ -39,15 +40,14 @@ async function checkResErr(res, throwIt = true) {
 			errAPI.type && (err.type = errAPI.type)
 
 			// 429 错误特殊处理
-			if (429 === res.status)
-				try {
-					const errorData = JSON.parse(errAPI.message)
-					if (errorData.resetsAt) {
-						const hours = ((new Date(1e3 * errorData.resetsAt).getTime() - Date.now()) / 1e3 / 60 / 60).toFixed(1)
-						err.message += `, expires in ${hours} hours`
-					}
-					err.exceeded_limit = true // 添加标记
-				} catch { }
+			if (429 === res.status) try {
+				const errorData = JSON.parse(errAPI.message)
+				if (errorData.resetsAt) {
+					const hours = ((new Date(1e3 * errorData.resetsAt).getTime() - Date.now()) / 1e3 / 60 / 60).toFixed(1)
+					err.message += `, expires in ${hours} hours`
+				}
+				err.exceeded_limit = true // 添加标记
+			} catch { }
 		}
 
 		if (throwIt) throw err
@@ -127,56 +127,51 @@ export class ClaudeAPI {
 		let attempts = 0
 		const maxAttempts = this.config.cookie_counter > 0 ? this.config.cookie_counter : 3 // 默认重试 3 次
 
-		while (attempts < maxAttempts)
-			try {
-				const headers = AI.hdr()
-				headers.Cookie = `sessionKey=${this.getCookies()}`
-				const rProxy = this.config.r_proxy || AI.end()
+		while (attempts < maxAttempts) try {
+			const headers = AI.hdr()
+			headers.Cookie = `sessionKey=${this.getCookies()}`
+			const rProxy = this.config.r_proxy || AI.end()
 
-				const orgsResponse = await fetch(`${rProxy}/api/organizations`, {
-					method: 'GET',
-					headers,
-				})
+			const orgsResponse = await fetch(`${rProxy}/api/organizations`, {
+				method: 'GET',
+				headers,
+			})
 
-				const orgsErr = await checkResErr(orgsResponse, false)
-				if (orgsErr)
-					throw orgsErr // 抛出自定义错误
-
-
-				const orgs = await orgsResponse.json()
-				const org = orgs?.[0]
-				if (!org || org.error)
-					throw new Error(`Couldn't get account info: ${org?.error?.message || orgsResponse.statusText}`)
+			const orgsErr = await checkResErr(orgsResponse, false)
+			if (orgsErr)
+				throw orgsErr // 抛出自定义错误
 
 
-				if (!org?.uuid)
-					throw new Error('Invalid account id')
+			const orgs = await orgsResponse.json()
+			const org = orgs?.[0]
+			if (!org || org.error)
+				throw new Error(`Couldn't get account info: ${org?.error?.message || orgsResponse.statusText}`)
 
 
-				this.uuidOrg = org.uuid
-				console.log(`Logged in to Claude API. Organization UUID: ${this.uuidOrg}`)
-				return // 成功获取到 uuidOrg，直接返回
-			} catch (error) {
-				console.error(`First login attempt ${attempts + 1} failed:`, error)
-				attempts++
-
-				if (this.shouldRotateCookie(error)) {
-					this.failedCookies.add(this.config.cookie_array[this.currentIndex])
-					await this.cookieChanger() // 轮换 Cookie，但不清理
-				} else if (this.shouldCleanCookie(error))
-					if (this.config.cookie_array.length > 1)
-						this.cookieCleaner(error.message) // 清理 Cookie
-
-					else
-						console.warn('Only one cookie available, or cookies are exhausted.')
+			if (!org?.uuid)
+				throw new Error('Invalid account id')
 
 
-				if (attempts < maxAttempts) {
-					console.log('Retrying in 5 seconds...')
-					await new Promise(resolve => setTimeout(resolve, 5000)) // 等待 5 秒
-				}
+			this.uuidOrg = org.uuid
+			console.log(`Logged in to Claude API. Organization UUID: ${this.uuidOrg}`)
+			return // 成功获取到 uuidOrg，直接返回
+		} catch (error) {
+			console.error(`First login attempt ${attempts + 1} failed:`, error)
+			attempts++
+
+			if (this.shouldRotateCookie(error)) {
+				this.failedCookies.add(this.config.cookie_array[this.currentIndex])
+				await this.cookieChanger() // 轮换 Cookie，但不清理
 			}
+			else if (this.shouldCleanCookie(error))
+				if (this.config.cookie_array.length > 1) this.cookieCleaner(error.message) // 清理 Cookie
+				else console.warn('Only one cookie available, or cookies are exhausted.')
 
+			if (attempts < maxAttempts) {
+				console.log('Retrying in 5 seconds...')
+				await new Promise(resolve => setTimeout(resolve, 5000)) // 等待 5 秒
+			}
+		}
 
 		// 所有尝试都失败了
 		console.error('First login failed after multiple attempts.')
@@ -229,7 +224,8 @@ export class ClaudeAPI {
 			// this.config.cookie_index = this.currentIndex; //移除
 			console.log(`Rotated to cookie index ${this.currentIndex + 1}.`)
 			this.SaveConfig()
-		} finally {
+		}
+		finally {
 			this.changing = false // 确保标记被重置
 		}
 	}
@@ -310,9 +306,8 @@ export class ClaudeAPI {
 		if (shouldRenew) {
 			this.conversationUuid = randomUUID() // 创建新的对话 UUID
 			console.log('Starting new conversation, UUID:', this.conversationUuid)
-		} else
-			console.log('Continuing conversation, UUID:', this.conversationUuid)
-
+		}
+		else console.log('Continuing conversation, UUID:', this.conversationUuid)
 
 		// 更新 prevPrompt 和 prevMessages (在 shouldRenewChat 之后)
 		this.prevPrompt = {
@@ -325,68 +320,65 @@ export class ClaudeAPI {
 
 
 		let attempt = 0
-		while (attempt < this.config.cookie_array.length + 1)
-			try {
-				const headers = AI.hdr(this.conversationUuid) // 传入 conversationUuid
-				headers.Cookie = `sessionKey=${this.getCookies()}`
-				const rProxy = this.config.r_proxy || AI.end()
+		while (attempt < this.config.cookie_array.length + 1) try {
+			const headers = AI.hdr(this.conversationUuid) // 传入 conversationUuid
+			headers.Cookie = `sessionKey=${this.getCookies()}`
+			const rProxy = this.config.r_proxy || AI.end()
 
-				// 构建 prompt 字符串 (简单拼接)
-				const prompt = messages.map(msg => `${msg.role}: ${msg.content}`).join('\n\n') + '\n\nAssistant:'
-				//console.log(prompt);
+			// 构建 prompt 字符串 (简单拼接)
+			const prompt = messages.map(msg => `${msg.role}: ${msg.content}`).join('\n\n') + '\n\nAssistant:'
+			//console.log(prompt);
 
-				const payload = {
-					completion: {
-						prompt,
-						timezone: AI.zone(),
-						model: model || this.config.model, // 如果提供了模型，则使用，否则使用配置中的模型
-					},
-					organization_uuid: this.uuidOrg,
-					conversation_uuid: this.conversationUuid,
-					text: prompt,  // 这里的 text 似乎和 prompt 重复，根据实际 API 调整
-					attachments: [], // 根据需要添加
-				}
-
-
-				const response = await fetch(`${rProxy}/api/organizations/${this.uuidOrg}/chat_conversations/${this.conversationUuid}/completion`, {
-					method: 'POST',
-					headers,
-					body: JSON.stringify(payload),
-				})
-
-				const err = await checkResErr(response, false)
-				if (err)
-					throw err
-
-				let responseJSON = await response.json()
-
-				const claudeSim = new ClewdSimulation(this.config, model) // 传入配置
-				responseJSON = claudeSim.processResponse(responseJSON) // 处理响应
-				this.prevImpersonated = claudeSim.impersonated // 更新状态
-
-				if (responseJSON.completion)
-					return responseJSON.completion
-				else
-					throw new Error('Claude API error: empty response')
-			} catch (error) {
-				console.error('Claude API call failed:', error)
-
-				if (this.shouldRotateCookie(error)) {
-					this.failedCookies.add(this.config.cookie_array[this.currentIndex])
-					this.cookieChanger()
-					attempt = 0 // 重置尝试次数
-					await this.waitForChange()
-				} else if (this.shouldCleanCookie(error)) {
-					if (this.config.cookie_array.length > 1)
-						this.cookieCleaner(error.message) // 清理 Cookie
-
-					else
-						console.warn('Only one cookie available, or cookies are exhausted.')
-					attempt = 0
-					await this.waitForChange()
-				} else
-					attempt++
+			const payload = {
+				completion: {
+					prompt,
+					timezone: AI.zone(),
+					model: model || this.config.model, // 如果提供了模型，则使用，否则使用配置中的模型
+				},
+				organization_uuid: this.uuidOrg,
+				conversation_uuid: this.conversationUuid,
+				text: prompt,  // 这里的 text 似乎和 prompt 重复，根据实际 API 调整
+				attachments: [], // 根据需要添加
 			}
+
+
+			const response = await fetch(`${rProxy}/api/organizations/${this.uuidOrg}/chat_conversations/${this.conversationUuid}/completion`, {
+				method: 'POST',
+				headers,
+				body: JSON.stringify(payload),
+			})
+
+			const err = await checkResErr(response, false)
+			if (err)
+				throw err
+
+			let responseJSON = await response.json()
+
+			const claudeSim = new ClewdSimulation(this.config, model) // 传入配置
+			responseJSON = claudeSim.processResponse(responseJSON) // 处理响应
+			this.prevImpersonated = claudeSim.impersonated // 更新状态
+
+			if (responseJSON.completion)
+				return responseJSON.completion
+			else
+				throw new Error('Claude API error: empty response')
+		} catch (error) {
+			console.error('Claude API call failed:', error)
+
+			if (this.shouldRotateCookie(error)) {
+				this.failedCookies.add(this.config.cookie_array[this.currentIndex])
+				this.cookieChanger()
+				attempt = 0 // 重置尝试次数
+				await this.waitForChange()
+			}
+			else if (this.shouldCleanCookie(error)) {
+				if (this.config.cookie_array.length > 1) this.cookieCleaner(error.message) // 清理 Cookie
+				else console.warn('Only one cookie available, or cookies are exhausted.')
+				attempt = 0
+				await this.waitForChange()
+			}
+			else attempt++
+		}
 
 		throw new Error('All configured cookies have failed.')
 	}

@@ -57,7 +57,8 @@ function filterChatList() {
 		if (filter.startsWith('+') || filter.startsWith('-')) filter = filter.slice(1)
 		try {
 			return parseRegexFromString(filter)
-		} catch (_) {
+		}
+		catch {
 			return new RegExp(escapeRegExp(filter))
 		}
 	}
@@ -165,9 +166,10 @@ async function renderChatListItem(chat) {
 			if (data.success) {
 				chatList = await getChatList() // refresh chat list
 				renderChatList()
-			} else
-				showToast(data.message, 'error')
-		} catch (error) {
+			}
+			else showToast(data.message, 'error')
+		}
+		catch (error) {
 			console.error('Error copying chat:', error)
 			showToast(geti18n('chat_history.alerts.copyError'), 'error')
 		}
@@ -186,9 +188,10 @@ async function renderChatListItem(chat) {
 					a.download = `chat-${chat.chatid}.json`
 					a.click()
 					URL.revokeObjectURL(url)
-				} else
-					showToast(data.message, 'error')
-		} catch (error) {
+				}
+				else showToast(data.message, 'error')
+		}
+		catch (error) {
 			console.error('Error exporting chat:', error)
 			showToast(geti18n('chat_history.alerts.exportError'), 'error')
 		}
@@ -196,18 +199,17 @@ async function renderChatListItem(chat) {
 
 	// 删除聊天
 	chatElement.querySelector('.delete-button').addEventListener('click', async () => {
-		if (confirmI18n('chat_history.confirmDeleteChat', { chars: chat.chars.join(', ') }))
-			try {
-				const data = await deleteChats([chat.chatid])
-				if (data[0].success) {
-					chatList = chatList.filter(c => c.chatid !== chat.chatid)
-					renderChatList()
-				} else
-					showToast(data[0].message, 'error')
-			} catch (error) {
-				console.error('Error deleting chat:', error)
-				showToast(geti18n('chat_history.alerts.deleteError'), 'error')
+		if (confirmI18n('chat_history.confirmDeleteChat', { chars: chat.chars.join(', ') })) try {
+			const data = await deleteChats([chat.chatid])
+			if (data[0].success) {
+				chatList = chatList.filter(c => c.chatid !== chat.chatid)
+				renderChatList()
 			}
+			else showToast(data[0].message, 'error')
+		} catch (error) {
+			console.error('Error deleting chat:', error)
+			showToast(geti18n('chat_history.alerts.deleteError'), 'error')
+		}
 	})
 
 	return chatElement
@@ -250,22 +252,21 @@ deleteSelectedButton.addEventListener('click', async () => {
 		showToast(geti18n('chat_history.alerts.noChatSelectedForDeletion'), 'error')
 		return
 	}
-	if (confirmI18n('chat_history.confirmDeleteMultiChats', { count: selectedChats.size }))
-		try {
-			const results = await deleteChats(Array.from(selectedChats))
-			results.forEach(result => {
-				if (result.success) {
-					// Remove only successfully deleted chats from the UI
-					chatList = chatList.filter(c => c.chatid !== result.chatid)
-					selectedChats.delete(result.chatid) // Also remove from selectedChats
-				} else
-					showToast(result.message, 'error')
-			})
-			renderChatList()
-		} catch (error) {
-			console.error('Error deleting selected chats:', error)
-			showToast(geti18n('chat_history.alerts.deleteError'), 'error')
-		}
+	if (confirmI18n('chat_history.confirmDeleteMultiChats', { count: selectedChats.size })) try {
+		const results = await deleteChats(Array.from(selectedChats))
+		results.forEach(result => {
+			if (result.success) {
+				// Remove only successfully deleted chats from the UI
+				chatList = chatList.filter(c => c.chatid !== result.chatid)
+				selectedChats.delete(result.chatid) // Also remove from selectedChats
+			}
+			else showToast(result.message, 'error')
+		})
+		renderChatList()
+	} catch (error) {
+		console.error('Error deleting selected chats:', error)
+		showToast(geti18n('chat_history.alerts.deleteError'), 'error')
+	}
 })
 
 // 导出选中
@@ -285,9 +286,10 @@ exportSelectedButton.addEventListener('click', async () => {
 				a.download = `chat-${result.chatid}.json`
 				a.click()
 				URL.revokeObjectURL(url)
-			} else
-				showToast(result.message, 'error')
-	} catch (error) {
+			}
+			else showToast(result.message, 'error')
+	}
+	catch (error) {
 		console.error('Error exporting selected chats:', error)
 		showToast(geti18n('chat_history.alerts.exportError'), 'error')
 	}

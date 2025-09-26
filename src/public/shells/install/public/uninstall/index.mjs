@@ -64,11 +64,13 @@ if (type && name) {
 			showMessage(result.message || geti18n('uninstall.alerts.success', { type, name }), 'info')
 			confirmButton.disabled = true // 卸载成功后禁用按钮
 			cancelButton.textContent = geti18n('uninstall.buttons.back')//更改`取消`为`返回`
-		} catch (error) {
+		}
+		catch (error) {
 			showMessage(geti18n('uninstall.alerts.failed', { error: error.message }), 'error')
 		}
 	})
-} else {
+}
+else {
 	title.textContent = geti18n('uninstall.invalidParamsTitle')
 	showMessage(geti18n('uninstall.alerts.invalidParams'), 'error')
 }

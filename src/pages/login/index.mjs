@@ -129,11 +129,13 @@ async function handleSendVerificationCode() {
 					sendCodeCooldown = false
 				}
 			}, 1000)
-		} else if (response.status === 429)
+		}
+		else if (response.status === 429)
 			errorMessage.textContent = geti18n('auth.error.verificationCodeRateLimit')
 		else
 			errorMessage.textContent = geti18n('auth.error.verificationCodeSendError')
-	} catch (error) {
+	}
+	catch (error) {
 		console.error('Error sending verification code:', error)
 		errorMessage.textContent = geti18n('auth.error.verificationCodeSendError')
 	}
@@ -198,13 +200,15 @@ async function handleFormSubmit(event) {
 					finalRedirectUrl = `/shells/${hasLoggedIn ? 'home' : 'tutorial'}`
 
 				redirectToLoginInfo(finalRedirectUrl + window.location.hash, username, password)
-			} else {
+			}
+			else {
 				console.log('Registration successful!')
 				toggleForm() // 注册成功后自动切换到登录表单
 			}
 		else
 			errorMessage.textContent = data.message
-	} catch (error) {
+	}
+	catch (error) {
 		console.error('Error during form submission:', error)
 		errorMessage.textContent = isLoginForm
 			? geti18n('auth.error.loginError')

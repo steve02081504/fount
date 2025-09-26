@@ -14,7 +14,8 @@ export const actions = {
 				return `Installed from file: ${input}`
 			}
 			throw new Error('Input is not a valid file path')
-		} catch (error) {
+		}
+		catch {
 			await importPartByText(user, input)
 			return `Installed from text: ${input}`
 		}

@@ -157,7 +157,8 @@ async function verifyToken(token) {
 		jwtCache.set(token, payload)
 
 		return payload
-	} catch (error) {
+	}
+	catch (error) {
 		console.errorI18n('fountConsole.auth.tokenVerifyError', { error })
 		return null
 	}
@@ -213,7 +214,8 @@ async function refresh(refreshTokenValue, req) {
 		})
 		save_config()
 		return { status: 200, success: true, accessToken, refreshToken: newRefreshToken }
-	} catch (error) {
+	}
+	catch (error) {
 		console.errorI18n('fountConsole.auth.refreshTokenError', { error: error.message })
 		return { status: 401, success: false, message: 'Error refreshing token' }
 	}
@@ -232,20 +234,19 @@ export async function logout(req, res) {
 
 	if (refreshToken && user) {
 		const userConfig = getUserByUsername(user.username) // 获取完整的用户配置
-		if (userConfig?.auth?.refreshTokens)
-			try {
-				const decodedRefreshToken = await jose.decodeJwt(refreshToken) // 仅解码，不验证，因为可能已过期但仍需从用户列表中移除
-				if (decodedRefreshToken?.jti) {
-					// 从用户的 refreshToken 列表中移除当前的 refreshToken
-					const tokenIndex = userConfig.auth.refreshTokens.findIndex(token => token.jti === decodedRefreshToken.jti)
-					if (tokenIndex !== -1) userConfig.auth.refreshTokens.splice(tokenIndex, 1)
+		if (userConfig?.auth?.refreshTokens) try {
+			const decodedRefreshToken = await jose.decodeJwt(refreshToken) // 仅解码，不验证，因为可能已过期但仍需从用户列表中移除
+			if (decodedRefreshToken?.jti) {
+				// 从用户的 refreshToken 列表中移除当前的 refreshToken
+				const tokenIndex = userConfig.auth.refreshTokens.findIndex(token => token.jti === decodedRefreshToken.jti)
+				if (tokenIndex !== -1) userConfig.auth.refreshTokens.splice(tokenIndex, 1)
 
-					// 将其添加到全局 revokedTokens
-					await revokeToken(refreshToken, 'refresh-logout')
-				}
-			} catch (error) {
-				console.errorI18n('fountConsole.auth.logoutRefreshTokenProcessError', { error: error.message })
+				// 将其添加到全局 revokedTokens
+				await revokeToken(refreshToken, 'refresh-logout')
 			}
+		} catch (error) {
+			console.errorI18n('fountConsole.auth.logoutRefreshTokenProcessError', { error: error.message })
+		}
 	}
 
 	res.clearCookie('accessToken', { httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https', sameSite: 'Lax' })
@@ -280,7 +281,8 @@ export async function verifyApiKey(apiKey) {
 		if (userKeyInfo) userKeyInfo.lastUsed = Date.now()
 
 		return user
-	} catch (error) {
+	}
+	catch (error) {
 		console.error('API key verification error:', error)
 		return null
 	}
@@ -365,7 +367,8 @@ export async function authenticate(req, res, next) {
 	try {
 		await try_auth_request(req, res)
 		return next?.()
-	} catch (e) {
+	}
+	catch (e) {
 		return Unauthorized(e)
 	}
 }
@@ -395,7 +398,8 @@ async function revokeToken(token, typeSuffix = 'unknown') {
 			revokedAt: Date.now()
 		}
 		save_config()
-	} catch (e) {
+	}
+	catch (e) {
 		console.error(`Error decoding token for revocation: ${e.message}`)
 	}
 }
@@ -679,7 +683,8 @@ export async function renameUser(currentUsername, newUsername, password) {
 				fse.ensureDirSync(path.dirname(newUserPath)) // 确保目标目录的父目录存在
 				fse.moveSync(oldUserPath, newUserPath, { overwrite: true })
 				console.log(`User data directory moved from ${oldUserPath} to ${newUserPath}`)
-			} else
+			}
+			else
 				console.log(`User data directory path is effectively the same (case-insensitive), no move needed: ${oldUserPath}`)
 		else {
 			console.warn(`Old user data directory not found: ${oldUserPath}. Nothing to move.`)
@@ -689,7 +694,8 @@ export async function renameUser(currentUsername, newUsername, password) {
 				console.log(`Ensured new user data directory exists at: ${newUserPath}`)
 			}
 		}
-	} catch (error) {
+	}
+	catch (error) {
 		console.error(`Error moving user data directory from ${oldUserPath} to ${newUserPath}:`, error)
 		// 如果移动失败，不应该保存配置更改，以避免数据和配置不一致
 		return { success: false, message: `Error moving user data directory: ${error.message}. Username change not saved.` }

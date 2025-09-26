@@ -60,26 +60,24 @@ async function handleCompletionsRequest(req, res, username, model) {
 		// Send DONE signal
 		res.write('data: [DONE]\n\n')
 		res.end()
-	} else
-		// Non-stream response
-		res.status(200).json({
-			id: completionId,
-			object: 'text_completion',
-			created: createdTimestamp,
-			model,
-			choices: [{
-				text: text_result,
-				index: 0,
-				logprobs: null,
-				finish_reason: 'stop',
-			}],
-			usage: { // Note: Token counts are still estimates
-				prompt_tokens: promptText.length,
-				completion_tokens: text_result.length,
-				total_tokens: promptText.length + text_result.length,
-			},
-		})
-
+	}
+	else res.status(200).json({
+		id: completionId,
+		object: 'text_completion',
+		created: createdTimestamp,
+		model,
+		choices: [{
+			text: text_result,
+			index: 0,
+			logprobs: null,
+			finish_reason: 'stop',
+		}],
+		usage: { // Note: Token counts are still estimates
+			prompt_tokens: promptText.length,
+			completion_tokens: text_result.length,
+			total_tokens: promptText.length + text_result.length,
+		},
+	})
 }
 
 // --- Helper Function for Chat Completions Logic ---
@@ -153,28 +151,26 @@ async function handleChatCompletionsRequest(req, res, username, model) {
 		// Send DONE signal
 		res.write('data: [DONE]\n\n')
 		res.end()
-	} else
-		// Non-stream response
-		res.status(200).json({
-			id: chatId,
-			object: 'chat.completion',
-			created: createdTimestamp,
-			model,
-			choices: [{
-				index: 0,
-				message: {
-					role: 'assistant',
-					content: text_result,
-				},
-				finish_reason: 'stop',
-			}],
-			usage: { // Note: Token counts are placeholders
-				prompt_tokens: 0,
-				completion_tokens: 0,
-				total_tokens: 0,
+	}
+	else res.status(200).json({
+		id: chatId,
+		object: 'chat.completion',
+		created: createdTimestamp,
+		model,
+		choices: [{
+			index: 0,
+			message: {
+				role: 'assistant',
+				content: text_result,
 			},
-		})
-
+			finish_reason: 'stop',
+		}],
+		usage: { // Note: Token counts are placeholders
+			prompt_tokens: 0,
+			completion_tokens: 0,
+			total_tokens: 0,
+		},
+	})
 }
 
 
@@ -196,7 +192,8 @@ export function setOpenAIAPIEndpoints(router) {
 				})),
 			}
 			res.status(200).json(formattedModels)
-		} catch (error) {
+		}
+		catch (error) {
 			console.error('Error fetching models:', error)
 			// Differentiate auth errors from other errors if possible based on getUserByReq
 			if (error.message === 'Unauthorized' || error.status === 401)
@@ -218,7 +215,8 @@ export function setOpenAIAPIEndpoints(router) {
 
 			// Call the core logic function
 			await handleCompletionsRequest(req, res, username, model)
-		} catch (error) {
+		}
+		catch (error) {
 			console.error('Error processing completions request:', error)
 			// Differentiate auth errors from other errors if possible
 			if (error.message === 'Unauthorized' || error.status === 401)
@@ -241,7 +239,8 @@ export function setOpenAIAPIEndpoints(router) {
 
 			// Call the core logic function
 			await handleChatCompletionsRequest(req, res, username, model)
-		} catch (error) {
+		}
+		catch (error) {
 			console.error('Error processing chat completions request:', error)
 			// Differentiate auth errors from other errors if possible
 			if (error.message === 'Unauthorized' || error.status === 401)

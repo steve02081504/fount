@@ -7,16 +7,17 @@ const getModelsUrl = host => {
 	let urlObj
 	try {
 		urlObj = new URL(host)
-	} catch (e) {
+	}
+	catch {
 		// try to fix the url
 		if (!host.startsWith('http'))
 			try {
 				urlObj = new URL('http://' + host)
-			} catch (e2) {
+			}
+			catch {
 				return null
 			}
-		else
-			return null
+		else return null
 	}
 	urlObj.pathname = '/api/tags'
 	return urlObj.toString()
@@ -65,7 +66,8 @@ ${model_ids.map(id => `
 }
 </div>
 `
-	} catch (error) {
+	}
+	catch (error) {
 		console.error('Failed to fetch models:', error)
 		div.innerHTML = `
 <div class="text-error" style="overflow-wrap: break-word;">${geti18n('aisource_editor.common_config_interface.loadModelsFailed', { message: error.message })}</div>

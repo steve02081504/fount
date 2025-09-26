@@ -531,7 +531,8 @@ export async function setPersona(chatid, personaname) {
 	if (!personaname) {
 		timeSlice.player = undefined
 		timeSlice.player_id = undefined
-	} else {
+	}
+	else {
 		timeSlice.player = await loadPersona(username, personaname)
 		timeSlice.player_id = personaname
 	}
@@ -583,7 +584,8 @@ export async function setWorld(chatid, worldname) {
 		const greeting_entrie = await BuildChatLogEntryFromCharReply(result, timeSlice, null, undefined, username)
 		await addChatLogEntry(chatid, greeting_entrie) // 此处已广播
 		return greeting_entrie
-	} catch (error) {
+	}
+	catch {
 		chatMetadata.LastTimeSlice.world = timeSlice.world
 		chatMetadata.LastTimeSlice.world_id = timeSlice.world_id
 	}
@@ -636,7 +638,8 @@ export async function addchar(chatid, charname) {
 		const greeting_entrie = await BuildChatLogEntryFromCharReply(result, timeSlice, char, charname, username)
 		await addChatLogEntry(chatid, greeting_entrie) // 此处已广播
 		return greeting_entrie
-	} catch (error) {
+	}
+	catch (error) {
 		console.error(error)
 		chatMetadata.LastTimeSlice.chars[charname] = timeSlice.chars[charname]
 	}
@@ -815,7 +818,8 @@ export async function modifyTimeLine(chatid, delta) {
 					default:
 						result = await char.interfaces.chat.GetReply(await getChatRequest(chatid, charname))
 				}
-			} catch (e) {
+			}
+			catch (e) {
 				result = {
 					content: ['```', e.message, e.stack || '', '```'].filter(Boolean).join('\n'),
 				}
@@ -987,7 +991,8 @@ export async function triggerCharReply(chatid, charname) {
 			result = await timeSlice.world.interfaces.chat.GetCharReply(request, charname)
 		else
 			result = await char.interfaces.chat.GetReply(request)
-	} catch (e) {
+	}
+	catch (e) {
 		result = {
 			content: ['```', e.message, e.stack || '', '```'].filter(Boolean).join('\n'),
 		}
@@ -1107,7 +1112,8 @@ export async function deleteChat(chatids, username) {
 			if (fs.existsSync(basedir + chatid + '.json')) await fs.promises.unlink(basedir + chatid + '.json')
 			chatMetadatas.delete(chatid)
 			return { chatid, success: true, message: 'Chat deleted successfully' }
-		} catch (error) {
+		}
+		catch (error) {
 			console.error(`Error deleting chat ${chatid}:`, error)
 			return { chatid, success: false, message: 'Error deleting chat', error: error.message }
 		}
@@ -1149,7 +1155,8 @@ export async function exportChat(chatids) {
 			const chat = await loadChat(chatid)
 			if (!chat) return { chatid, success: false, message: 'Chat not found', error: 'Chat not found' }
 			return { chatid, success: true, data: chat }
-		} catch (error) {
+		}
+		catch (error) {
 			console.error(`Error exporting chat ${chatid}:`, error)
 			return { chatid, success: false, message: 'Error exporting chat', error: error.message }
 		}

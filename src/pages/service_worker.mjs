@@ -122,7 +122,8 @@ async function performTransaction(mode, callback) {
 			transaction.onerror = () => reject(transaction.error)
 			transaction.onabort = () => reject(new Error('Transaction aborted'))
 		})
-	} catch (error) {
+	}
+	catch (error) {
 		console.error(`[SW DB] Transaction failed with mode ${mode}:`, error)
 		throw error
 	}
@@ -139,7 +140,8 @@ async function updateTimestamp(url, timestamp) {
 		await performTransaction('readwrite', store => {
 			store.put({ url, timestamp })
 		})
-	} catch (error) {
+	}
+	catch (error) {
 		console.error(`[SW DB] Failed to update timestamp for ${url}:`, error)
 	}
 }
@@ -161,7 +163,8 @@ async function getTimestamp(url) {
 			}
 		})
 		return timestamp // 返回在事务中成功获取的值
-	} catch (error) {
+	}
+	catch (error) {
 		console.error(`[SW DB] Failed to get timestamp for ${url}:`, error)
 		return null // 保持错误处理行为不变
 	}
@@ -196,7 +199,8 @@ async function cleanupExpiredCache() {
 					urlsToDelete.push(cursor.value.url)
 					cursor.delete()
 					cursor.continue()
-				} else resolve()
+				}
+				else resolve()
 			}
 		})
 
@@ -222,7 +226,8 @@ async function cleanupExpiredCache() {
 
 		console.log(`[SW Cleanup] Successfully deleted ${deletedCount} of ${urlsToDelete.length} items from Cache Storage.`)
 
-	} catch (error) {
+	}
+	catch (error) {
 		console.error('[SW Cleanup] Cache cleanup process failed:', error)
 	}
 }
@@ -260,15 +265,18 @@ async function fetchAndCache(request) {
 				await updateTimestamp(request.url, now)
 
 				return redirectResponse
-			} else {
+			}
+			else {
 				await cache.put(request, responseToCache)
 				await updateTimestamp(request.url, now)
 			}
-		} else if (networkResponse)
+		}
+		else if (networkResponse)
 			console.warn(`[SW ${CACHE_NAME}] Fetch for ${request.url} responded with ${networkResponse.status} ${networkResponse.statusText}. Not caching.`)
 
 		return networkResponse
-	} catch (error) {
+	}
+	catch (error) {
 		console.error(`[SW ${CACHE_NAME}] fetchAndCache failed for ${request.url}:`, error)
 		throw error
 	}
@@ -291,8 +299,7 @@ async function handleCacheFirst(request) {
 	const isThrottled = storedTimestamp && (now - storedTimestamp < BACKGROUND_FETCH_THROTTLE_MS)
 
 	const backgroundUpdateTask = async () => {
-		if (isThrottled) return
-		try {
+		if (!isThrottled) try {
 			await fetchAndCache(request.clone())
 		} catch (error) {
 			console.warn(`[SW ${CACHE_NAME}] Background network fetch failed for ${request.url}:`, error)
@@ -306,7 +313,8 @@ async function handleCacheFirst(request) {
 
 	try {
 		return await fetchAndCache(request)
-	} catch (error) {
+	}
+	catch (error) {
 		console.error(`[SW ${CACHE_NAME}] Failed to fetch ${request.url} from network after cache miss.`)
 		throw error
 	}
@@ -321,7 +329,8 @@ async function handleCacheFirst(request) {
 async function handleNetworkFirst(request) {
 	try {
 		return await fetchAndCache(request)
-	} catch (error) {
+	}
+	catch (error) {
 		console.warn(`[SW ${CACHE_NAME}] Network fetch failed for ${request.url}. Attempting to serve from cache.`)
 		const cache = await caches.open(CACHE_NAME)
 		const cachedResponse = await cache.match(request)
@@ -394,20 +403,21 @@ function connectWebSocket() {
 			if (!title) return
 			if (!targetUrl) self.registration.showNotification(title, options)
 			else event.waitUntil(
-					self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
-						let shouldShowNotification = true
-						for (const client of windowClients) {
-							const clientUrl = new URL(client.url)
-							const notificationTargetUrl = new URL(targetUrl, self.location.origin)
-							if (clientUrl.pathname === notificationTargetUrl.pathname && clientUrl.search === notificationTargetUrl.search && client.focused) {
-								shouldShowNotification = false
-								break
-							}
+				self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
+					let shouldShowNotification = true
+					for (const client of windowClients) {
+						const clientUrl = new URL(client.url)
+						const notificationTargetUrl = new URL(targetUrl, self.location.origin)
+						if (clientUrl.pathname === notificationTargetUrl.pathname && clientUrl.search === notificationTargetUrl.search && client.focused) {
+							shouldShowNotification = false
+							break
 						}
-						if (shouldShowNotification) self.registration.showNotification(title, options)
-					})
-				)
-		} catch (error) {
+					}
+					if (shouldShowNotification) self.registration.showNotification(title, options)
+				})
+			)
+		}
+		catch (error) {
 			console.error('[SW WS] Error parsing message or showing notification:', error)
 		}
 	}
@@ -438,14 +448,13 @@ self.addEventListener('activate', event => {
 	event.waitUntil(
 		(async () => {
 			// 尝试注册定期后台同步任务，用于自动清理过期缓存。
-			if ('periodicSync' in self.registration)
-				try {
-					await self.registration.periodicSync.register(PERIODIC_SYNC_TAG, {
-						minInterval: 24 * 60 * 60 * 1000, // 至少每 24 小时执行一次。
-					})
-				} catch (err) {
-					console.error('[SW] Periodic background sync failed to register:', err)
-				}
+			if ('periodicSync' in self.registration) try {
+				await self.registration.periodicSync.register(PERIODIC_SYNC_TAG, {
+					minInterval: 24 * 60 * 60 * 1000, // 至少每 24 小时执行一次。
+				})
+			} catch (err) {
+				console.error('[SW] Periodic background sync failed to register:', err)
+			}
 
 			// 确保新的 Service Worker 立即控制所有当前打开的客户端（页面）。
 			await self.clients.claim()

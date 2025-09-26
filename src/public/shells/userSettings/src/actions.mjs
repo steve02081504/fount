@@ -9,13 +9,11 @@ async function getDirectorySize(directoryPath) {
 		const dirents = await fs.readdir(directoryPath, { withFileTypes: true })
 		for (const dirent of dirents) {
 			const fullPath = path.join(directoryPath, dirent.name)
-			if (dirent.isDirectory())
-				totalSize += await getDirectorySize(fullPath)
-			else if (dirent.isFile())
-				totalSize += (await fs.stat(fullPath)).size
-
+			if (dirent.isDirectory()) totalSize += await getDirectorySize(fullPath)
+			else if (dirent.isFile()) totalSize += (await fs.stat(fullPath)).size
 		}
-	} catch (error) {
+	}
+	catch (error) {
 		if (error.code !== 'ENOENT') console.warn(`Error calculating size for ${directoryPath}: ${error.message}`)
 		return 0
 	}

@@ -115,7 +115,8 @@ class AuthManager {
 			this._user_info = await response.json()
 			this._refresh_token = this._user_info.get('refresh_token', '')
 			this._log_values()
-		} catch (e) {
+		}
+		catch (e) {
 			this._logger.error(`登录请求错误: ${e}`)
 		}
 	}
@@ -133,7 +134,8 @@ class AuthManager {
 			this._user_info = await response.json()
 			this._refresh_token = this._user_info.get('refresh_token', '')
 			this._log_values()
-		} catch (e) {
+		}
+		catch (e) {
 			this._logger.error(`刷新令牌请求错误: ${e}`)
 		}
 	}
@@ -161,7 +163,6 @@ class AuthManager {
 		if (this._api_key)
 			return this._api_key
 
-
 		try {
 			const login_url = `${_BASE_URL}/login`
 			const response = await this._make_request('GET', login_url)
@@ -183,7 +184,8 @@ class AuthManager {
 
 			this._api_key = api_key_match[1]
 			return this._api_key
-		} catch (e) {
+		}
+		catch (e) {
 			this._logger.error(`获取API密钥时发生错误: ${e}`)
 			return ''
 		}
@@ -229,7 +231,8 @@ class AuthManager {
 				throw new Error(`请求错误 (${method} ${url}): ${response.status}`)
 
 			return response
-		} catch (e) {
+		}
+		catch (e) {
 			this._logger.error(`请求错误 (${method} ${url}): ${e}`)
 			throw e
 		}
@@ -284,7 +287,8 @@ function create_openai_chunk(content, model, finish_reason = null, usage = null)
 function count_tokens(text, model = 'gpt-3.5-turbo-0301') {
 	try {
 		return encoding_for_model(model).encode(text).length
-	} catch (KeyError) {
+	}
+	catch {
 		return get_encoding('cl100k_base').encode(text).length
 	}
 }

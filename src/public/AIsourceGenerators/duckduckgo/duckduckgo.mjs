@@ -30,7 +30,8 @@ export class DuckDuckGoAPI {
 				},
 			})
 			return response.headers.get('x-vqd-4')
-		} catch (error) {
+		}
+		catch (error) {
 			console.error('Request token error: ', error)
 			throw error
 		}
@@ -116,7 +117,8 @@ export class DuckDuckGoAPI {
 										encoder.encode(`data: ${JSON.stringify(this.newChatCompletionChunkWithModel(originReq.message, model))}\n\n`)
 									)
 							}
-						} else {
+						}
+						else {
 							if (returnStream)
 								controller.enqueue(encoder.encode(`data: ${JSON.stringify(this.newStopChunkWithModel('stop', model))}\n\n`))
 							else

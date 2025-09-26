@@ -133,7 +133,8 @@ async function GetSource(config) {
 				try {
 					const response = await ollama.encode({ model: config.model, prompt })
 					return response.tokens.length
-				} catch (error) {
+				}
+				catch (error) {
 					console.warn('Failed to get token count from Ollama API, falling back to character count.', error)
 					return (prompt?.length ?? 0) / 4
 				}

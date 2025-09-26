@@ -8,13 +8,15 @@ export function openModal(contentSrc, contentType) {
 		modalContentElement = document.createElement('img')
 		modalContentElement.src = contentSrc
 		modalContentElement.classList.add('modal-img')
-	} else if (contentType === 'video') {
+	}
+	else if (contentType === 'video') {
 		modalContentElement = document.createElement('video')
 		modalContentElement.src = contentSrc
 		modalContentElement.controls = true
 		modalContentElement.autoplay = true
 		modalContentElement.classList.add('modal-video')
-	} else {
+	}
+	else {
 		console.error('Unsupported content type for modal:', contentType)
 		return // Don't open modal for unsupported types
 	}

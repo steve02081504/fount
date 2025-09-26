@@ -107,7 +107,8 @@ async function findOptimalHistorySlice(ai, model, limit, history, prefixMessages
 		try {
 			const res = await ai.models.countTokens({ model, contents })
 			return res.totalTokens
-		} catch (e) {
+		}
+		catch (e) {
 			console.error('Token counting failed:', e)
 			// 如果计算失败，则返回无穷大以触发截断
 			return Infinity
@@ -139,9 +140,8 @@ async function findOptimalHistorySlice(ai, model, limit, history, prefixMessages
 			// 当前数量的 token 未超限，尝试保留更多
 			bestK = mid
 			low = mid + 1
-		} else
-			// 超限了，需要减少记录数量
-			high = mid - 1
+		}
+		else high = mid - 1 // 超限了，需要减少记录数量
 
 	}
 
@@ -255,7 +255,8 @@ async function GetSource(config) {
 				const result = await ai.models.generateContentStream(model_params)
 				for await (const chunk of result)
 					handle_parts(chunk.candidates?.[0]?.content?.parts)
-			} else {
+			}
+			else {
 				const response = await ai.models.generateContent(model_params)
 				handle_parts(response.candidates?.[0]?.content?.parts)
 			}
@@ -297,7 +298,7 @@ system:
 					if (detectedCharset && detectedCharset.toLowerCase() !== 'utf-8') try {
 						const decodedString = bufferToUpload.toString(detectedCharset)
 						bufferToUpload = Buffer.from(decodedString, 'utf-8')
-					} catch (_) { }
+					} catch { }
 					let mime_type = file.mime_type?.split?.(';')?.[0]
 
 					if (!supportedFileTypes.includes(mime_type)) {
@@ -429,7 +430,8 @@ ${is_ImageGeneration
 					tempHistory.splice(insertIndex, 0, systemPromptMessage)
 				}
 				finalMessages = [...baseMessages, ...tempHistory, ...pauseDeclareMessages]
-			} else {
+			}
+			else {
 				const historyForProcessing = [...chatHistory]
 
 				// --- 2a. 基于本地估算的预截断 ---
@@ -515,7 +517,8 @@ ${is_ImageGeneration
 				const result = await ai.models.generateContentStream(model_params)
 				for await (const chunk of result)
 					handle_parts(chunk.candidates?.[0]?.content?.parts)
-			} else {
+			}
+			else {
 				const response = await ai.models.generateContent(model_params)
 				handle_parts(response.candidates?.[0]?.content?.parts)
 			}

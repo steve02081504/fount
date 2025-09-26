@@ -70,7 +70,8 @@ async function handleRunPart(parts) {
 				if (history.length > 2) history.go(-2)
 				else throw new Error('No history')
 			else history.back()
-		} catch (_) {
+		}
+		catch {
 			window.location.href = '/'
 		}
 	}
@@ -91,7 +92,8 @@ async function handleRunPart(parts) {
 			messageEl.textContent = geti18n('protocolhandler.shellCommandSent')
 		else
 			messageEl.textContent = geti18n('protocolhandler.shellCommandFailed')
-	} catch (error) {
+	}
+	catch (error) {
 		console.error('Error sending shell command:', error)
 		messageEl.textContent = geti18n('protocolhandler.shellCommandError')
 	}

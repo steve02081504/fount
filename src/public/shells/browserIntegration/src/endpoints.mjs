@@ -38,8 +38,8 @@ export function setEndpoints(router) {
 		if (browserIntegrationPart.interfaces?.browserIntegration?.callback) {
 			await browserIntegrationPart.interfaces.browserIntegration.BrowserJsCallback({ data, pageId, script })
 			res.status(200).json({ message: 'Callback processed successfully.' })
-		} else
-			res.status(500).json({ error: 'Browser integration part or callback interface not found.' })
+		}
+		else res.status(500).json({ error: 'Browser integration part or callback interface not found.' })
 	})
 
 	// New endpoints for auto-run scripts
@@ -54,7 +54,8 @@ export function setEndpoints(router) {
 		try {
 			const newScript = addAutoRunScript(username, req.body)
 			res.status(201).json({ success: true, script: newScript })
-		} catch (error) {
+		}
+		catch (error) {
 			res.status(400).json({ success: false, message: error.message })
 		}
 	})

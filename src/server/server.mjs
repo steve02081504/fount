@@ -61,8 +61,7 @@ export let restartor
 export const currentGitCommit = await git('rev-parse', 'HEAD').catch(() => null)
 
 async function checkUpstreamAndRestart() {
-	if (!fs.existsSync(__dirname + '/.git')) return
-	try {
+	if (fs.existsSync(__dirname + '/.git')) try {
 		await git('fetch')
 
 		if (!await git('rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}').catch(() => null)) return
@@ -127,7 +126,8 @@ export async function init(start_config) {
 				try {
 					const app = await getApp()
 					return app(req, res)
-				} catch (e) {
+				}
+				catch (e) {
 					console.error(e)
 					res.statusCode = 500
 					res.end('Internal Server Error: Could not load web server.')
@@ -137,7 +137,8 @@ export async function init(start_config) {
 				try {
 					const app = await getApp()
 					return app.ws_on_upgrade(req, socket, head)
-				} catch (e) {
+				}
+				catch (e) {
 					console.error(e)
 					socket.end()
 				}

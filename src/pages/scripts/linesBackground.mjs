@@ -216,7 +216,8 @@ function handlePointerMove(event) {
 		// 更新鼠标位置
 		pointers[0].x = event.clientX
 		pointers[0].y = event.clientY
-	} else {
+	}
+	else {
 		// 更新触摸点位置
 		const pointer = pointers.find(p => p.id === event.pointerId)
 		if (pointer) {
@@ -277,7 +278,8 @@ export function updateColors() {
 		config.color = chroma(primaryColor).rgb().join(',') // 获取 RGB 值
 		config.backgroundColor = chroma(baseColor200).hex()
 		if (updateColorsErrorInterval) updateColorsErrorInterval = clearInterval(updateColorsErrorInterval)
-	} catch (error) {
+	}
+	catch (error) {
 		console.error('Error parsing color with chroma-js:', error) // 日志：chroma-js 解析错误
 		// 处理错误，例如使用默认颜色
 		config.color = '255, 255, 255'

@@ -180,7 +180,8 @@ export function convertCCv3ToSTv2(ccv3Card, risuModule, userLanguage = 'en') {
 					if (value === 'after_char' || value === 'after_desc' || value === 'personality' || value === 'scenario') { // 粗略映射
 						stWiEntry.extensions.position = world_info_position.after
 						stWiEntry.position = 'after_char'
-					} else {
+					}
+					else {
 						stWiEntry.extensions.position = world_info_position.before
 						stWiEntry.position = 'before_char'
 					}
@@ -202,8 +203,8 @@ export function convertCCv3ToSTv2(ccv3Card, risuModule, userLanguage = 'en') {
 						stWiEntry.selective = true
 						stWiEntry.secondary_keys = value.split(',').map(k => k.trim())
 						stWiEntry.extensions.selectiveLogic = world_info_logic.NOT_ANY
-					} else
-						console.warn(`WI entry already has selective keys, cannot easily apply @@exclude_keys: ${value}`)
+					}
+					else console.warn(`WI entry already has selective keys, cannot easily apply @@exclude_keys: ${value}`)
 
 					break
 				// 其他 decorators 如 activate_only_every, instruct_depth 等，映射复杂或ST无直接对应，暂时忽略

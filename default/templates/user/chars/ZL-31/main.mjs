@@ -412,9 +412,7 @@ export default {
 		})
 
 		return true
-	} catch (error) {
-		console.error(error)
-	}
+	} catch (error) { console.error(error) }
 
 	return false
 }
@@ -448,7 +446,8 @@ function CharGenerator(reply, { AddLongTimeLog }) {
 		})
 
 		return true
-	} catch (e) {
+	}
+	catch (e) {
 		AddLongTimeLog({
 			name: 'system',
 			role: 'system',
@@ -489,7 +488,8 @@ function PersonaGenerator(reply, { AddLongTimeLog }) {
 		})
 
 		return true
-	} catch (e) {
+	}
+	catch (e) {
 		AddLongTimeLog({
 			name: 'system',
 			role: 'system',

@@ -6,19 +6,16 @@ import { currentChatId, createNewChat, addCharacter } from '../src/endpoints.mjs
 await initTranslations('chat.new')
 applyTheme()
 
-function logger(e) {
-	console.error(e)
-	showToast(e.message || String(e), 'error')
-	throw e
-}
-
 try {
 	await createNewChat()
 	const searchParams = new URLSearchParams(window.location.search)
 	const charToAdd = searchParams.get('char')
 	if (charToAdd) await addCharacter(charToAdd)
-} catch (e) {
-	logger(e)
+}
+catch (e) {
+	console.error(e)
+	showToast(e.message || String(e), 'error')
+	throw e
 }
 
 window.history.replaceState(null, null, '/shells/chat/#' + currentChatId)

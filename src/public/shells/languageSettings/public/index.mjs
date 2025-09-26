@@ -90,7 +90,8 @@ async function fetchAvailableLocales() {
 		const data = await response.json()
 		availableLocales = data
 		populateAvailableLanguagesSelect()
-	} catch (error) {
+	}
+	catch (error) {
 		console.error('Error fetching available locales:', error)
 		showToast('languageSettings.fetchLocalesFailed')
 	}

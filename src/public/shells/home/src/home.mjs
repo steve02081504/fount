@@ -45,15 +45,14 @@ export async function loadHomeRegistry(username) {
 	user_home_registry.home_persona_interfaces ??= {}
 	user_home_registry.home_common_interfaces ??= {}
 	const shell_list = await getPartListBase(username, 'shells')
-	for (const shell of shell_list)
-		try {
-			const home_registry = loadJsonFile(GetPartPath(username, 'shells', shell) + '/home_registry.json')
-			user_home_registry.home_function_buttons[shell] = home_registry.home_function_buttons ?? []
-			user_home_registry.home_char_interfaces[shell] = home_registry.home_char_interfaces ?? []
-			user_home_registry.home_world_interfaces[shell] = home_registry.home_world_interfaces ?? []
-			user_home_registry.home_persona_interfaces[shell] = home_registry.home_persona_interfaces ?? []
-			user_home_registry.home_common_interfaces[shell] = home_registry.home_common_interfaces ?? []
-		} catch (e) { }
+	for (const shell of shell_list) try {
+		const home_registry = loadJsonFile(GetPartPath(username, 'shells', shell) + '/home_registry.json')
+		user_home_registry.home_function_buttons[shell] = home_registry.home_function_buttons ?? []
+		user_home_registry.home_char_interfaces[shell] = home_registry.home_char_interfaces ?? []
+		user_home_registry.home_world_interfaces[shell] = home_registry.home_world_interfaces ?? []
+		user_home_registry.home_persona_interfaces[shell] = home_registry.home_persona_interfaces ?? []
+		user_home_registry.home_common_interfaces[shell] = home_registry.home_common_interfaces ?? []
+	} catch (e) { }
 }
 
 /**

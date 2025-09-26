@@ -63,9 +63,7 @@ async function TimerHeartbeat() {
 								part.interfaces.timers.TimerCallback(user, uid, timer.callbackdata)
 							)
 							need_save = true
-						} catch (err) {
-							console.error(err)
-						}
+						} catch (err) { console.error(err) }
 					}
 				}
 	}

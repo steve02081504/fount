@@ -120,7 +120,8 @@ async function handleDeleteBot() {
 	if (botList.length > 0) {
 		botListSelect.selectedIndex = 0
 		await loadBotConfig(botList[0])
-	} else {
+	}
+	else {
 		selectedBot = null
 		tokenInput.value = ''
 		charSelect.value = ''
@@ -159,7 +160,8 @@ async function handleSaveConfig() {
 	let editorContent
 	try {
 		editorContent = configEditor.get() // {json: ..., text: ...}
-	} catch (err) {
+	}
+	catch (err) {
 		showToast(geti18n('telegram_bots.alerts.invalidJsonConfig', { error: err.message }), 'error')
 		return
 	}
@@ -180,7 +182,8 @@ async function handleSaveConfig() {
 		isDirty = false
 
 		saveStatusIcon.src = 'https://api.iconify.design/line-md/confirm-circle.svg'
-	} catch (error) {
+	}
+	catch (error) {
 		showToast(error.message + '\n' + error.error || error.errors?.join('\n') || '', 'error')
 		console.error(error)
 		saveStatusIcon.src = 'https://api.iconify.design/line-md/emoji-frown.svg'
@@ -207,14 +210,16 @@ async function handleStartStopBot() {
 			startStopStatusText.textContent = geti18n('telegram_bots.configCard.buttons.startBot')
 			startStopBotButton.classList.remove('btn-error')
 			startStopBotButton.classList.add('btn-success')
-		} else {
+		}
+		else {
 			await startBot(selectedBot)
 			startStopStatusText.textContent = geti18n('telegram_bots.configCard.buttons.stopBot')
 			startStopBotButton.classList.remove('btn-success')
 			startStopBotButton.classList.add('btn-error')
 		}
 		startStopStatusIcon.src = 'https://api.iconify.design/line-md/confirm-circle.svg'
-	} catch (error) {
+	}
+	catch (error) {
 		showToast(error.message + '\n' + error.error || error.errors?.join('\n') || '', 'error')
 		console.error(error)
 		startStopStatusIcon.src = 'https://api.iconify.design/line-md/emoji-frown.svg'
@@ -238,7 +243,8 @@ async function updateStartStopButtonState() {
 		startStopStatusText.textContent = geti18n('telegram_bots.configCard.buttons.stopBot')
 		startStopBotButton.classList.remove('btn-success')
 		startStopBotButton.classList.add('btn-error')
-	} else {
+	}
+	else {
 		startStopStatusText.textContent = geti18n('telegram_bots.configCard.buttons.startBot')
 		startStopBotButton.classList.remove('btn-error')
 		startStopBotButton.classList.add('btn-success')
@@ -260,18 +266,18 @@ async function initializeFromURLParams() {
 	populateCharList()
 
 	if (botName) {
-		if (!botList.includes(botName))
-			try {
-				await newBotConfig(botName)
-				botList = await getBotList()
-				populateBotList()
-			} catch (error) {
-				console.error('Failed to create new bot from URL parameter:', error)
-			}
+		if (!botList.includes(botName)) try {
+			await newBotConfig(botName)
+			botList = await getBotList()
+			populateBotList()
+		} catch (error) {
+			console.error('Failed to create new bot from URL parameter:', error)
+		}
 
 		botListSelect.value = botName
 		await loadBotConfig(botName)
-	} else if (botList.length > 0) {
+	}
+	else if (botList.length > 0) {
 		botListSelect.selectedIndex = 0
 		await loadBotConfig(botList[0])
 	}

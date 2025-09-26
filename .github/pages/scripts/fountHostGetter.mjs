@@ -20,7 +20,8 @@ function extractIpAndPortFromUrl(urlString) {
 		}
 		console.debug(`[extractIpAndPortFromUrl] Extracted IP: ${extractedData.ip}, Port: ${extractedData.port}`)
 		return extractedData
-	} catch (error) {
+	}
+	catch (error) {
 		console.error(`[extractIpAndPortFromUrl] Error extracting IP and port from ${urlString}:`, error)
 		return null
 	}
@@ -35,7 +36,8 @@ export async function isFountServiceAvailable(host) {
 		if (data?.client_name != 'fount') return false
 		console.debug(`[isFountServiceAvailable] fount service at ${host} is available.`)
 		return true
-	} catch (error) {
+	}
+	catch {
 		return false // 任何错误都表示不可用
 	}
 }

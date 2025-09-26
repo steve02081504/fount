@@ -46,7 +46,8 @@ ${model_ids.map(id => `
 }
 </div>
 `
-	} catch (error) {
+	}
+	catch (error) {
 		console.error('Failed to fetch models:', error)
 		div.innerHTML = `
 <div class="text-error" style="overflow-wrap: break-word;">${geti18n('aisource_editor.common_config_interface.loadModelsFailed', { message: error.message })}</div>

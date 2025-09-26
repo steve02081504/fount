@@ -19,15 +19,13 @@ async function getDirectorySize(directoryPath) {
 			const fullPath = path.join(directoryPath, dirent.name)
 			if (dirent.isDirectory())
 				totalSize += await getDirectorySize(fullPath)
-			else if (dirent.isFile())
-				try {
-					const stats = await fs_promises.stat(fullPath)
-					totalSize += stats.size
-				} catch (statError) {
-					// console.warn(`Could not stat file ${fullPath}: ${statError.message}`);
-				}
+			else if (dirent.isFile()) try {
+				const stats = await fs_promises.stat(fullPath)
+				totalSize += stats.size
+			} catch { }
 		}
-	} catch (error) {
+	}
+	catch (error) {
 		if (error.code !== 'ENOENT') console.warn(`Error calculating size for ${directoryPath}: ${error.message}`)
 		return 0
 	}

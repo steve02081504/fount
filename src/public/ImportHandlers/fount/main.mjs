@@ -60,7 +60,8 @@ async function ImportAsData(username, data) {
 	await mkdir(tempDir, { recursive: true })
 	try {
 		await unzipDirectory(data, tempDir)
-	} catch (err) {
+	}
+	catch (err) {
 		console.error('Unzip failed:', err)
 		await rm(tempDir, { recursive: true, force: true })
 		throw new Error(`Unzip failed: ${err.stack || err}`)
@@ -85,7 +86,8 @@ async function ImportAsData(username, data) {
 			loadPart(username, meta.type, meta.dirname)
 		else
 			import(url.pathToFileURL(path.join(targetPath, 'main.mjs'))).catch(x => x)
-	} catch (err) {
+	}
+	catch (err) {
 		rm(tempDir, { recursive: true, force: true }).catch(x => x)
 		throw new Error(`loadMeta failed: ${err.message || err}`)
 	}
@@ -124,7 +126,8 @@ async function ImportByText(username, text) {
 					else
 						import(url.pathToFileURL(path.join(targetPath, 'main.mjs'))).catch(x => x)
 					continue
-				} catch (err) {
+				}
+				catch (err) {
 					errors.push(err)
 					console.error(`Git clone failed for ${line}:`, err)
 				}
@@ -146,9 +149,7 @@ async function ImportByText(username, text) {
 					await ImportAsData(username, buffer)
 					continue
 				}
-			} catch (err) {
-				errors.push(err)
-			}
+			} catch (err) { errors.push(err) }
 			throw new Error(`Failed to import from ${line}: ${errors.map(err => err.stack || err).join('\n')}`)
 		}
 }

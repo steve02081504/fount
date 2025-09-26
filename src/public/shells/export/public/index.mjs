@@ -52,7 +52,8 @@ function updateShareButtonUI() {
 	if (hasShareLink) {
 		shareButton.removeAttribute('tabindex')
 		shareButtonText.textContent = geti18n('export.buttons.copyShareLink')
-	} else {
+	}
+	else {
 		shareButton.setAttribute('tabindex', '0')
 		shareButtonText.textContent = geti18n('export.buttons.generateShareLink')
 	}
@@ -64,7 +65,8 @@ async function fetchPartTypes() {
 	try {
 		partTypes = await getPartTypes()
 		renderPartTypeSelect()
-	} catch (err) {
+	}
+	catch (err) {
 		console.error('Failed to fetch part types:', err)
 		showToast(geti18n('export.alerts.fetchPartTypesFailed') + ': ' + err.message, 'error')
 	}
@@ -74,7 +76,8 @@ async function fetchParts(partType) {
 	try {
 		parts = await getPartList(partType)
 		renderPartSelect()
-	} catch (err) {
+	}
+	catch (err) {
 		console.error('Failed to fetch parts:', err)
 		showToast(geti18n('export.alerts.fetchPartsFailed') + ': ' + err.message, 'error')
 	}
@@ -88,7 +91,8 @@ async function loadPartDetails(partType, partName) {
 		showDataToggle(hasDataFiles)
 		showExportArea(true)
 		updateStep(3)
-	} catch (err) {
+	}
+	catch (err) {
 		showToast(geti18n('export.alerts.loadPartDetailsFailed') + ': ' + err.message, 'error')
 		console.error('Failed to load part details:', err)
 		showExportArea(false)
@@ -158,7 +162,8 @@ async function handleExport() {
 		document.body.removeChild(a)
 		URL.revokeObjectURL(url)
 		setButtonState(icon, 'success')
-	} catch (err) {
+	}
+	catch (err) {
 		showToast(geti18n('export.alerts.exportFailed') + ': ' + err.message, 'error')
 		console.error('Failed to export part:', err)
 		setButtonState(icon, 'error')
@@ -182,7 +187,8 @@ async function handleDirectShare() {
 		await navigator.clipboard.writeText(link)
 		showToast(geti18n('export.alerts.shareLinkCopied'), 'success')
 		setButtonState(icon, 'success')
-	} catch (err) {
+	}
+	catch (err) {
 		showToast(geti18n('export.alerts.shareFailed') + ': ' + err.message, 'error')
 		console.error('Failed to copy share link:', err)
 		setButtonState(icon, 'error')
@@ -207,7 +213,8 @@ async function handleShareAction(expiration) {
 		await navigator.clipboard.writeText(link)
 		showToast(geti18n('export.alerts.shareLinkCopied'), 'success')
 		setButtonState(icon, 'success')
-	} catch (err) {
+	}
+	catch (err) {
 		showToast(geti18n('export.alerts.shareFailed') + ': ' + err.message, 'error')
 		console.error('Failed to create share link:', err)
 		setButtonState(icon, 'error')
@@ -267,9 +274,10 @@ async function initializeFromURLParams() {
 			partSelect.value = partName
 			activePart = partName
 			await loadPartDetails(partType, partName)
-		} else
-			showExportArea(false)
-	} else {
+		}
+		else showExportArea(false)
+	}
+	else {
 		showExportArea(false)
 		updateStep(1)
 	}
@@ -299,7 +307,8 @@ async function init() {
 		if (activePart) {
 			updateURLParams(activePartType, activePart)
 			await loadPartDetails(activePartType, activePart)
-		} else {
+		}
+		else {
 			fountJson = null
 			updateShareButtonUI()
 			showExportArea(false)

@@ -47,7 +47,8 @@ export async function initTranslations(pageid = saved_pageid, preferredLangs = l
 
 		i18n = await response.json()
 		applyTranslations()
-	} catch (error) {
+	}
+	catch (error) {
 		console.error('Error initializing translations:', error)
 	}
 }

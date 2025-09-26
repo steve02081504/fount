@@ -75,7 +75,8 @@ function generateFullHtmlForMessage(messageContentHtml) {
 			document.documentElement.setAttribute('color-scheme', 'dark')
 			styleLink.href = 'https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown-dark.min.css'
 			document.body.style.backgroundColor = '#0d1117'
-		} else {
+		}
+		else {
 			document.documentElement.setAttribute('color-scheme', 'light')
 			styleLink.href = 'https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown-light.min.css'
 			document.body.style.backgroundColor = '#ffffff'
@@ -161,7 +162,8 @@ export async function renderMessage(message) {
 					a.click()
 					document.body.removeChild(a)
 					URL.revokeObjectURL(url)
-				} catch (error) {
+				}
+				catch (error) {
 					showToast(error, 'error')
 				}
 				dropdownMenu.hidePopover()

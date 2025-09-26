@@ -47,7 +47,8 @@ function connectWebSocket() {
 
 				await renderPages(pages)
 			}
-		} catch (error) {
+		}
+		catch (error) {
 			console.error('Error processing WebSocket message:', error)
 			import('https://esm.sh/@sentry/browser').then(Sentry => Sentry.captureException(error))
 		}
@@ -79,8 +80,7 @@ function showViewScriptModal(scriptId) {
 }
 
 async function handleDeleteScript(scriptId) {
-	if (!confirm(geti18n('browser_integration.autorun.confirm_delete'))) return
-	try {
+	if (confirm(geti18n('browser_integration.autorun.confirm_delete'))) try {
 		// 1. Delete metadata from server
 		const deleteResult = await api.deleteAutoRunScript(scriptId)
 		if (!deleteResult.success) throw new Error(deleteResult.message)
@@ -116,7 +116,6 @@ async function loadAndRenderAutoRunScripts() {
 				scripts: result.scripts
 			}))
 		}
-
 	} catch (error) {
 		console.error('Failed to load auto-run scripts:', error)
 		autorunScriptList.innerHTML = `<p class="text-error">${geti18n('browser_integration.error.load_failed', { message: error.message })}</p>`
@@ -157,7 +156,8 @@ async function handleAddScript(e) {
 		showToast(geti18n('browser_integration.autorun.add_success'), 'success')
 		autorunScriptForm.reset()
 		loadAndRenderAutoRunScripts() // This will re-render the list from the server's metadata
-	} catch (error) {
+	}
+	catch (error) {
 		showToast(geti18n('browser_integration.error.add_failed', { message: error.message }), 'error')
 	}
 }

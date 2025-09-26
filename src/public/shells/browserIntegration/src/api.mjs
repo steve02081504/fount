@@ -106,7 +106,8 @@ class UserPageManager {
 			if (existingPage.title !== title) existingPage.title = title
 			page = existingPage
 			console.log(`Userscript page re-connected for ${this.username}: ${page.id} - ${title}`)
-		} else {
+		}
+		else {
 			// Create a new page entry
 			const newPageId = pageIdCounter++
 			page = {
@@ -153,10 +154,10 @@ class UserPageManager {
 			const currentPage = this.findPageById(pageId)
 			if (currentPage) currentPage.hasFocus = true
 			this.focusedPageId = pageId
-		} else {
+		}
+		else {
 			// If the page losing focus is the one we have on record, clear the record
-			if (previouslyFocusedPageId === pageId)
-				this.focusedPageId = undefined
+			if (previouslyFocusedPageId === pageId) this.focusedPageId = undefined
 
 			// Ensure the page's own state is updated
 			const currentPage = this.findPageById(pageId)
@@ -297,7 +298,8 @@ export function handleConnection(ws, username) {
 				default:
 					console.warn(`Unknown message type from ${username}/${currentPageId}: ${data.type}`)
 			}
-		} catch (e) {
+		}
+		catch (e) {
 			console.error(`Failed to parse message from userscript ${username}/${currentPageId}:`, e)
 		}
 	})

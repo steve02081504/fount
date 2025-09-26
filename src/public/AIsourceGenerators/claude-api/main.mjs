@@ -86,17 +86,14 @@ async function GetSource(config) {
 				for await (const event of stream)
 					if (event.type === 'content_block_delta' && event.delta.type === 'text_delta')
 						text += event.delta.text
-
-
-			} else {
+			}
+			else {
 				const message = await client.messages.create(params)
 				// Claude 的响应 content 是一个数组，我们只取文本部分
 				text = message.content.filter(block => block.type === 'text').map(block => block.text).join('')
 			}
 
-			return {
-				content: text,
-			}
+			return { content: text }
 		},
 
 		// 结构化的多模态调用
@@ -140,7 +137,8 @@ ${chatLogEntry.content}
 										data: file.buffer.toString('base64'),
 									}
 								})
-							} catch (error) {
+							}
+							catch (error) {
 								console.error(`Failed to process image file ${file.name}:`, error)
 								// 如果处理失败，可以添加一条错误信息文本
 								content.push({
@@ -177,9 +175,8 @@ ${chatLogEntry.content}
 				for await (const event of stream)
 					if (event.type === 'content_block_delta' && event.delta.type === 'text_delta')
 						text += event.delta.text
-
-
-			} else {
+			}
+			else {
 				const message = await client.messages.create(params)
 				text = message.content.filter(block => block.type === 'text').map(block => block.text).join('')
 			}

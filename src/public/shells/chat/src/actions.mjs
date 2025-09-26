@@ -15,8 +15,8 @@ export const actions = {
 		if (chatInfo.id) {
 			chatId = chatInfo.id
 			await loadChat(chatId, user)
-		} else
-			chatId = await newChat(user)
+		}
+		else chatId = await newChat(user)
 
 
 		if (chatInfo.world) await setWorld(chatId, chatInfo.world)

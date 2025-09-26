@@ -87,7 +87,8 @@ function renderFileList() {
 				// Update local state and UI on success
 				defaultParts.AIsources = newDefault
 				updateDefaultPartDisplay()
-			} catch (error) {
+			}
+			catch (error) {
 				handleFetchError('aisource_editor.alerts.setDefaultFailed')(error)
 				// Revert checkbox on failure
 				event.target.checked = !isChecked
@@ -156,7 +157,8 @@ async function loadGeneratorAddons(generatorName) {
 			if (eval_result.error) throw eval_result.error
 			onJsonUpdate = eval_result.result || (() => 0)
 		}
-	} catch (e) {
+	}
+	catch (e) {
 		console.error('Error loading or evaluating generator addons:', e)
 		generatorDisplayContainer.innerHTML = `<div class="text-error">Error loading generator display: ${e.message}</div>`
 	}
@@ -262,7 +264,8 @@ async function saveFile() {
 		isDirty = false
 
 		saveStatusIcon.src = 'https://api.iconify.design/line-md/confirm-circle.svg'
-	} catch (error) {
+	}
+	catch (error) {
 		showToast(error.message + '\n' + error.error || error.errors?.join('\n') || '', 'error')
 		console.error(error)
 

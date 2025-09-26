@@ -136,7 +136,8 @@ async function initTranslations() {
 			else
 				throw new Error(`Failed to fetch translations: ${translationResponse.status} ${translationResponse.statusText}`)
 		}
-	} catch (error) {
+	}
+	catch (error) {
 		console.error('fount userscript: Error initializing translations:', error)
 	}
 }
@@ -224,7 +225,8 @@ window.addEventListener('fount-host-info', async (e) => {
 				if (ws) ws.close()
 				loadUserLocalesFromFount()
 				findAndConnect()
-			} catch (error) {
+			}
+			catch (error) {
 				console.error(`fount userscript: Initial setup for host ${newHost} failed verification.`, error)
 			}
 		}
@@ -265,11 +267,13 @@ window.addEventListener('fount-host-info', async (e) => {
 				}
 				else
 					alert(geti18n('browser_integration_script.hostChange.uuidMismatchError', { newHost }))
-			} catch (error) {
+			}
+			catch (error) {
 				console.error(`fount userscript: New host ${newHost} failed verification.`, error)
 				alert(geti18n('browser_integration_script.hostChange.verificationError', { newHost }))
 			}
-		} else {
+		}
+		else {
 			console.warn(`fount userscript: User REJECTED host change to ${newHost}. Adding to block list for 1 hour.`)
 			blockedHosts.set(newHost, Date.now())
 		}
@@ -305,7 +309,8 @@ async function makeApiRequest(host, protocol, endpoint, options = {}) {
 					try {
 						const data = response.responseText ? JSON.parse(response.responseText) : {}
 						resolve(data)
-					} catch (e) {
+					}
+					catch (e) {
 						reject(new Error(`Failed to parse response from ${endpoint}`))
 					}
 				else
@@ -345,7 +350,8 @@ async function findAndConnect() {
 		await pingHost(host, protocol)
 		const { username } = await whoami(host, protocol)
 		connect(host, protocol, username, apikey) // Pass apikey to connect
-	} catch (error) {
+	}
+	catch {
 		console.error(`fount userscript: Host ${host} is unreachable. Retrying in ${currentRetryDelay / 1000}s.`)
 		currentHost = null
 		connectionTimeoutId = setTimeout(findAndConnect, currentRetryDelay)
@@ -449,7 +455,8 @@ async function handleCommand(msg) {
 								data: { ...callbackInfo, data, pageId, script }
 							})
 							console.log('fount userscript: Callback sent successfully.', response)
-						} catch (error) {
+						}
+						catch (error) {
 							console.error('fount userscript: Error sending callback.', error)
 						}
 					}
@@ -462,7 +469,8 @@ async function handleCommand(msg) {
 				throw new Error(`Unknown command type: ${msg.type}`)
 		}
 		sendResponse(msg.requestId, payload)
-	} catch (error) {
+	}
+	catch (error) {
 		console.error(`fount userscript: error handling command ${msg.type}:`, error)
 		sendResponse(msg.requestId, { error: error.message, stack: error.stack }, true)
 	}
@@ -481,17 +489,15 @@ async function runMatchingScripts() {
 	const url = window.location.href
 	const { async_eval } = await import('https://esm.sh/@steve02081504/async-eval')
 
-	for (const script of scripts)
-		try {
-			const regex = new RegExp(script.urlRegex)
-			if (regex.test(url)) {
-				console.log(`fount userscript: Running script ${script.id} (${script.comment || 'No comment'})`)
-				await async_eval(script.script)
-			}
-		} catch (e) {
-			console.error(`fount userscript: Error executing auto-run script ${script.id}:`, e)
+	for (const script of scripts) try {
+		const regex = new RegExp(script.urlRegex)
+		if (regex.test(url)) {
+			console.log(`fount userscript: Running script ${script.id} (${script.comment || 'No comment'})`)
+			await async_eval(script.script)
 		}
-
+	} catch (e) {
+		console.error(`fount userscript: Error executing auto-run script ${script.id}:`, e)
+	}
 }
 
 function getVisibleElementsHtml() {
@@ -552,10 +558,10 @@ async function syncScriptsFromServer() {
 		if (success && Array.isArray(scripts)) {
 			await GM.setValue(AUTORUN_SCRIPTS_KEY, scripts)
 			console.log(`fount userscript: Sync successful. Updated local storage with ${scripts.length} script(s).`)
-		} else
-			throw new Error('Server response was not successful or scripts were not an array.')
-
-	} catch (error) {
+		}
+		else throw new Error('Server response was not successful or scripts were not an array.')
+	}
+	catch (error) {
 		console.error('fount userscript: Sync failed. Using local scripts as fallback.', error.message)
 	}
 }

@@ -92,7 +92,8 @@ async function loadBotConfig(botname) {
 		isDirty = false // 重置未保存标记
 
 		await updateStartStopButtonState()
-	} catch (error) {
+	}
+	catch (error) {
 		console.error(error)
 	}
 }
@@ -113,7 +114,8 @@ async function handleNewBot() {
 		populateBotList()
 		botListSelect.value = botname
 		await loadBotConfig(botname)
-	} catch (error) {
+	}
+	catch (error) {
 		console.error(error)
 	}
 }
@@ -137,15 +139,12 @@ async function handleDeleteBot() {
 			charSelect.value = ''
 			if (configEditor)
 				configEditor.set({ json: {} })
-		} else
-			// 如果删除的不是当前选中的 bot，则重新加载当前选中的 bot 的配置
-			await loadBotConfig(botListSelect.value)
+		}
+		else await loadBotConfig(botListSelect.value) // 如果删除的不是当前选中的 bot，则重新加载当前选中的 bot 的配置
 
 		// 无论如何，都要更新 isDirty 状态
 		isDirty = false
-	} catch (error) {
-		console.error(error)
-	}
+	} catch (error) { console.error(error) }
 }
 
 async function handleCharSelectChange() {
@@ -191,7 +190,8 @@ async function handleSaveConfig() {
 
 		// Show success icon
 		saveStatusIcon.src = 'https://api.iconify.design/line-md/confirm-circle.svg'
-	} catch (error) {
+	}
+	catch (error) {
 		showToast(error.message + '\n' + error.error || error.errors?.join('\n') || '', 'error')
 		console.error(error)
 
@@ -221,7 +221,8 @@ async function handleStartStopBot() {
 			startStopStatusText.textContent = geti18n('discord_bots.configCard.buttons.startBot')
 			startStopBotButton.classList.remove('btn-error')
 			startStopBotButton.classList.add('btn-success')
-		} else {
+		}
+		else {
 			await startBot(selectedBot)
 			startStopStatusText.textContent = geti18n('discord_bots.configCard.buttons.stopBot')
 			startStopBotButton.classList.remove('btn-success')
@@ -229,7 +230,8 @@ async function handleStartStopBot() {
 		}
 
 		startStopStatusIcon.src = 'https://api.iconify.design/line-md/confirm-circle.svg'
-	} catch (error) {
+	}
+	catch (error) {
 		showToast(error.message + '\n' + error.error || error.errors?.join('\n') || '', 'error')
 		console.error(error)
 
@@ -255,12 +257,14 @@ async function updateStartStopButtonState() {
 			startStopStatusText.textContent = geti18n('discord_bots.configCard.buttons.stopBot')
 			startStopBotButton.classList.remove('btn-success')
 			startStopBotButton.classList.add('btn-error')
-		} else {
+		}
+		else {
 			startStopStatusText.textContent = geti18n('discord_bots.configCard.buttons.startBot')
 			startStopBotButton.classList.remove('btn-error')
 			startStopBotButton.classList.add('btn-success')
 		}
-	} catch (error) {
+	}
+	catch (error) {
 		console.error('Failed to update start/stop button state:', error)
 	}
 }
@@ -288,19 +292,18 @@ async function initializeFromURLParams() {
 		populateCharList()
 
 		if (botName) {
-			if (!botList.includes(botName))
-				// 如果 botName 不存在，则创建新的 bot
-				try {
-					await newBotConfig(botName)
-					botList = await getBotList()
-					populateBotList()
-				} catch (error) {
-					console.error('Failed to create new bot from URL parameter:', error)
-				}
+			if (!botList.includes(botName)) try { // 如果 botName 不存在，则创建新的 bot
+				await newBotConfig(botName)
+				botList = await getBotList()
+				populateBotList()
+			} catch (error) {
+				console.error('Failed to create new bot from URL parameter:', error)
+			}
 
 			botListSelect.value = botName
 			await loadBotConfig(botName)
-		} else if (botList.length > 0) {
+		}
+		else if (botList.length > 0) {
 			// 如果没有提供 botName 且 botList 不为空，则加载第一个 Bot 的配置
 			botListSelect.selectedIndex = 0 // 确保选中第一个选项
 			await loadBotConfig(botList[0]) // 手动加载第一个 Bot 的配置
@@ -308,7 +311,8 @@ async function initializeFromURLParams() {
 
 		if (charName)
 			charSelect.value = charName
-	} catch (error) {
+	}
+	catch (error) {
 		console.error('Failed to initialize from URL parameters:', error)
 	}
 }

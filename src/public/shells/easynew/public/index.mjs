@@ -21,7 +21,8 @@ async function loadTemplates() {
 			templateSelect.appendChild(option)
 		}
 		await loadTemplateUI()
-	} catch (error) {
+	}
+	catch (error) {
 		console.error('Failed to load templates:', error)
 	}
 }
@@ -37,7 +38,8 @@ async function loadTemplateUI() {
 		const html = await getTemplateHtml(selectedTemplate)
 		templateFormContainer.innerHTML = html
 		i18nElement(templateFormContainer)
-	} catch (error) {
+	}
+	catch (error) {
 		console.error(`Failed to load UI for template ${selectedTemplate}:`, error)
 		templateFormContainer.innerHTML = '<p class="text-error">Failed to load template UI.</p>'
 	}
@@ -64,10 +66,12 @@ async function handleFormSubmit(event) {
 		responseMessage.classList.add('alert', 'alert-success')
 		form.reset()
 		await loadTemplateUI()
-	} catch (error) {
+	}
+	catch (error) {
 		responseMessage.textContent = geti18n('easynew.alerts.error', { message: error.message })
 		responseMessage.classList.add('alert', 'alert-error')
-	} finally {
+	}
+	finally {
 		submitButton.disabled = false
 		submitSpinner.classList.add('hidden')
 	}

@@ -31,7 +31,8 @@ export class IdleManager {
 		this.#runningActions++
 		try {
 			return await action()
-		} finally {
+		}
+		finally {
 			this.#runningActions--
 		}
 	}

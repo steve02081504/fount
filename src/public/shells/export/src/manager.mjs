@@ -56,7 +56,8 @@ export async function exportPart(username, partType, partName, withData) {
 
 	try {
 		fountJson = await loadJsonFile(fountJsonPath)
-	} catch (error) {
+	}
+	catch (error) {
 		if (error.code != 'ENOENT') throw error
 		fountJson = {
 			type: partType,
@@ -71,9 +72,7 @@ export async function exportPart(username, partType, partName, withData) {
 		for (const file of files)
 			if (withData || !fountJson.data_files?.includes?.(file)) try {
 				await fsp.cp(path.join(partPath, file), path.join(tempDir, file), { recursive: true })
-			} catch (error) {
-				console.error(error)
-			}
+			} catch (error) { console.error(error) }
 
 		if (!fs.existsSync(fountJsonPath)) fs.writeFileSync(path.join(tempDir, 'fount.json'), JSON.stringify(fountJson, null, '\t') + '\n', 'utf8')
 

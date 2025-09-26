@@ -328,7 +328,8 @@ export async function generateLoginInfoUrl(credentials, uuid, baseUrl) {
 	try {
 		const fileId = await uploadToCatbox(encryptedData, '1h')
 		loginInfoUrl.searchParams.set('fileId', fileId)
-	} catch (e) {
+	}
+	catch (e) {
 		console.warn('Catbox upload failed, falling back to URL hash.', e)
 		hashParams.set('encrypted_creds', encodeURIComponent(encryptedData))
 	}

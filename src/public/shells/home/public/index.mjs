@@ -204,7 +204,8 @@ function parseRegexFilter(filter) {
 	if (filter.startsWith('+') || filter.startsWith('-')) filter = filter.slice(1)
 	try {
 		return parseRegexFromString(filter)
-	} catch (_) {
+	}
+	catch {
 		return new RegExp(escapeRegExp(filter))
 	}
 }

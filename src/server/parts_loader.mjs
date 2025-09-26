@@ -398,14 +398,10 @@ export async function uninstallPartBase(username, parttype, partname, unLoadargs
 		setDefaultPart(username, parttype, null)
 	try {
 		await unloadPartBase(username, parttype, partname, unLoadargs, { unLoader })
-	} catch (error) {
-		console.error(error)
-	}
+	} catch (error) { console.error(error) }
 	try {
 		part ??= await baseloadPart(username, parttype, partname, { Loader, pathGetter })
-	} catch (error) {
-		console.error(error)
-	}
+	} catch (error) { console.error(error) }
 	await Uninstaller(part, pathGetter())
 	delete parts_set[username][parttype][partname]
 	const parts_details_cache = loadData(username, 'parts_details_cache')

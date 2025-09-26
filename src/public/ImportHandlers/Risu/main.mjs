@@ -52,32 +52,23 @@ async function ImportAsData(username, dataBuffer) {
 			risuModuleDef = charxData.moduleData
 			mainImageBuffer = charxData.mainImage // 可能为 undefined
 			sourceSpec = 'ccv3' // CHARX 总是 CCv3
-		} catch (err) {
-			errors.push(err)
-		}
+		} catch (err) { errors.push(err) }
 		try {
 			const pngData = await extractPngCardData(dataBuffer)
 			ccv3Card = pngData.card
 			pngEmbeddedAssets = pngData.assets
 			mainImageBuffer = pngData.image // PNG 本身作为主图片
 			sourceSpec = pngData.spec // 'ccv3', 'ccv2', or 'ccv2_generic'
-		} catch (err) {
-			errors.push(err)
-		}
+		} catch (err) { errors.push(err) }
 		try {
 			ccv3Card = JSON.parse(dataBuffer.toString('utf-8'))
 			// JSON 文件没有内嵌资源或主图片文件，依赖 card.data.assets 中的 HTTP/Data URI
 			sourceSpec = ccv3Card.spec === 'chara_card_v3' ? 'ccv3' : ccv3Card.spec === 'chara_card_v2' ? 'ccv2' : 'unknown_json'
-		} catch (err) {
-			errors.push(err)
-		}
-		if (!ccv3Card)
-			throw new Error(`Unsupported file type.\nErrors: ${errors.map(e => e.stack).join('\n')}`)
+		} catch (err) { errors.push(err) }
+		if (!ccv3Card) throw new Error(`Unsupported file type.\nErrors: ${errors.map(e => e.stack).join('\n')}`)
 
 
-		if (!ccv3Card.data)
-			throw new Error('Invalid or missing card data.')
-
+		if (!ccv3Card.data) throw new Error('Invalid or missing card data.')
 
 		// 如果是 SillyTavern V2 卡片，直接使用 ST 导入器逻辑（如果可以调用的话）
 		// 或者在这里实现一个简化的 STv2 到 fount Part 的转换。
@@ -110,22 +101,27 @@ async function ImportAsData(username, dataBuffer) {
 						const internalPath = assetDef.uri.substring('embeded://'.length)
 						assetBuffer = charxAssets.get(internalPath)
 						if (!assetBuffer) throw new Error(`Embedded asset not found in CHARX: ${internalPath}`)
-					} else if (assetDef.uri.startsWith('__asset:')) { // PNG 内嵌 (ccardlib 风格)
+					}
+					else if (assetDef.uri.startsWith('__asset:')) { // PNG 内嵌 (ccardlib 风格)
 						const assetId = assetDef.uri.substring('__asset:'.length)
 						assetBuffer = pngEmbeddedAssets.get(assetId)
 						if (!assetBuffer) throw new Error(`PNG embedded asset not found: ${assetId}`)
-					} else if (assetDef.uri.startsWith('data:')) {
+					}
+					else if (assetDef.uri.startsWith('data:')) {
 						const parts = assetDef.uri.split(',')
 						const b64data = parts[1]
 						assetBuffer = Buffer.from(b64data, 'base64')
-					} else if (assetDef.uri.startsWith('http')) {
+					}
+					else if (assetDef.uri.startsWith('http')) {
 						console.log(`Downloading asset: ${assetDef.uri}`)
 						assetBuffer = await downloadAsset(assetDef.uri)
-					} else if (assetDef.uri === 'ccdefault:')
+					}
+					else if (assetDef.uri === 'ccdefault:')
 						if (mainImageBuffer) { // 仅当PNG导入时，ccdefault: 指向PNG本身
 							assetBuffer = mainImageBuffer
 							assetFilename = `image_default.${assetDef.ext || 'png'}` // 主图片通常是png
-						} else {
+						}
+						else {
 							// 对于非PNG导入，或无法确定ccdefault，跳过或用占位符
 							console.warn(`ccdefault: URI encountered for non-PNG or missing main image, asset "${assetDef.name}" skipped.`)
 							continue
@@ -151,7 +147,8 @@ async function ImportAsData(username, dataBuffer) {
 						await mkdir(path.dirname(imagePath), { recursive: true })
 						await writeFile(imagePath, assetBuffer)
 					}
-				} catch (err) {
+				}
+				catch (err) {
 					console.error(`Failed to process asset ${assetDef.name} (uri: ${originalUri}): ${err.message}`)
 				}
 			}
@@ -168,7 +165,8 @@ async function ImportAsData(username, dataBuffer) {
 				// 或者保存为 image.<original_ext> 并让模板处理
 				await writeFile(avatarPath, mainImageBuffer)
 				console.log('Saved main image buffer as image.png')
-			} catch (imgErr) {
+			}
+			catch (imgErr) {
 				console.error('Failed to save main image buffer:', imgErr)
 			}
 		else if (!fsSync.existsSync(avatarPath))
@@ -179,24 +177,23 @@ async function ImportAsData(username, dataBuffer) {
 		for (const [internalPath, buffer] of charxAssets.entries()) {
 			// 检查是否已被 card.data.assets 处理过 (通过 embeded:// URI)
 			const alreadyProcessed = processedAssetsForST.some(pa => pa.original_uri === `embeded://${internalPath}`)
-			if (!alreadyProcessed && internalPath.startsWith('assets/'))  // 只保存 assets/ 目录下的
-				try {
-					const filename = path.basename(internalPath)
-					// 将 CHARX 内部的 assets/ 目录结构映射到 risu_assets/charx_provided/
-					const relativeSavePath = ['risu_assets', 'charx_provided', internalPath.substring('assets/'.length)].join('/')
-					const fullSavePath = path.join(targetPath, 'public', relativeSavePath)
-					await mkdir(path.dirname(fullSavePath), { recursive: true })
-					await writeFile(fullSavePath, buffer)
-					processedAssetsForST.push({ // 记录这些额外保存的资源
-						type: 'charx_unreferenced_asset',
-						name: filename,
-						ext: path.extname(filename).substring(1),
-						original_uri: `embeded://${internalPath}`,
-						fount_uri: relativeSavePath
-					})
-				} catch (err) {
-					console.error(`Failed to save unreferenced CHARX asset ${internalPath}: ${err.message}`)
-				}
+			if (!alreadyProcessed && internalPath.startsWith('assets/')) try { // 只保存 assets/ 目录下的
+				const filename = path.basename(internalPath)
+				// 将 CHARX 内部的 assets/ 目录结构映射到 risu_assets/charx_provided/
+				const relativeSavePath = ['risu_assets', 'charx_provided', internalPath.substring('assets/'.length)].join('/')
+				const fullSavePath = path.join(targetPath, 'public', relativeSavePath)
+				await mkdir(path.dirname(fullSavePath), { recursive: true })
+				await writeFile(fullSavePath, buffer)
+				processedAssetsForST.push({ // 记录这些额外保存的资源
+					type: 'charx_unreferenced_asset',
+					name: filename,
+					ext: path.extname(filename).substring(1),
+					original_uri: `embeded://${internalPath}`,
+					fount_uri: relativeSavePath
+				})
+			} catch (err) {
+				console.error(`Failed to save unreferenced CHARX asset ${internalPath}: ${err.message}`)
+			}
 		}
 
 		// 转换数据到 STv2 格式
@@ -222,11 +219,13 @@ async function ImportAsData(username, dataBuffer) {
 			import(url.pathToFileURL(targetMainMjsPath)).catch(err => console.error(`Dynamic import of ${targetMainMjsPath} failed:`, err))
 
 		console.log(`Risu character "${charName}" imported successfully to ${targetPath}`)
-	} catch (error) {
+	}
+	catch (error) {
 		console.error('Error during Risu import:', error)
 		await rm(tempExtractDir, { recursive: true, force: true }).catch(() => { }) // 清理临时目录
 		throw error // 重新抛出错误，让上层处理
-	} finally {
+	}
+	finally {
 		await rm(tempExtractDir, { recursive: true, force: true }).catch(() => { })
 	}
 }
@@ -246,17 +245,18 @@ async function ImportByText(username, text) {
 					const { buffer, filename: downloadedFilename } = await downloadRisuCard(uuid)
 					await ImportAsData(username, buffer, downloadedFilename)
 					continue // 处理完这个 URL，继续下一个
-				} catch (err) {
+				}
+				catch (err) {
 					console.error(`Failed to import Risu card from URL ${line}:`, err)
 					errors.push(`Failed for ${line}: ${err.message}`)
 					// 不再尝试作为通用文件下载，因为这很可能是特定于Risu的链接
 				}
-			} else
-				// 如果不是 Risu 特有链接，可以尝试作为通用文件下载 (如果你的fount/main.mjs有这个逻辑)
-				// 但这个 Risu 导入器主要处理 Risu 卡，其他 URL 可以忽略或交给通用导入器
-				errors.push(`non-Risu URL: ${line}`)
-		} else
-			errors.push(`Invalid line (not a URL): ${line}`)
+			}
+			// 如果不是 Risu 特有链接，可以尝试作为通用文件下载 (如果你的fount/main.mjs有这个逻辑)
+			// 但这个 Risu 导入器主要处理 Risu 卡，其他 URL 可以忽略或交给通用导入器
+			else errors.push(`non-Risu URL: ${line}`)
+		}
+		else errors.push(`Invalid line (not a URL): ${line}`)
 
 	if (errors.length > 0)
 		throw new Error(`Some Risu imports failed:\n${errors.join('\n')}`)

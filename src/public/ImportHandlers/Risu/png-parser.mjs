@@ -23,35 +23,30 @@ export async function extractPngCardData(pngBuffer) {
 	const ccv3Chunk = chunks.find(c => c.name === 'tEXt' && decodeText(c.data).keyword === 'ccv3')
 	const ccv2Chunk = chunks.find(c => c.name === 'tEXt' && decodeText(c.data).keyword === 'chara')
 
-	if (ccv3Chunk)
-		try {
-			const cardJsonString = Buffer.from(decodeText(ccv3Chunk.data).text, 'base64').toString('utf-8')
-			card = JSON.parse(cardJsonString)
-			spec = 'ccv3'
-		} catch (e) {
-			console.error('Failed to parse ccv3 chunk:', e)
-			// 如果 ccv3 解析失败，尝试 ccv2
+	if (ccv3Chunk) try {
+		const cardJsonString = Buffer.from(decodeText(ccv3Chunk.data).text, 'base64').toString('utf-8')
+		card = JSON.parse(cardJsonString)
+		spec = 'ccv3'
+	} catch (e) {
+		console.error('Failed to parse ccv3 chunk:', e)
+		// 如果 ccv3 解析失败，尝试 ccv2
+	}
+
+
+	if (!card && ccv2Chunk) try { // 如果没有ccv3或ccv3解析失败，尝试ccv2
+		const cardJsonString = Buffer.from(decodeText(ccv2Chunk.data).text, 'base64').toString('utf-8')
+		card = JSON.parse(cardJsonString)
+		if (card.spec === 'chara_card_v2')  // 确认是 STv2 卡
+			spec = 'ccv2'
+		else { // 其他基于 chara chunk 的卡片，可能需要进一步判断或标记为未知v2
+			spec = 'ccv2_generic'
+			console.warn('Found "chara" chunk, but not a standard Tavern V2 spec. Treating as generic V2.')
 		}
+	} catch (e) {
+		console.error('Failed to parse chara (ccv2) chunk:', e)
+	}
 
-
-	if (!card && ccv2Chunk)  // 如果没有ccv3或ccv3解析失败，尝试ccv2
-		try {
-			const cardJsonString = Buffer.from(decodeText(ccv2Chunk.data).text, 'base64').toString('utf-8')
-			card = JSON.parse(cardJsonString)
-			if (card.spec === 'chara_card_v2')  // 确认是 STv2 卡
-				spec = 'ccv2'
-			else { // 其他基于 chara chunk 的卡片，可能需要进一步判断或标记为未知v2
-				spec = 'ccv2_generic'
-				console.warn('Found "chara" chunk, but not a standard Tavern V2 spec. Treating as generic V2.')
-			}
-		} catch (e) {
-			console.error('Failed to parse chara (ccv2) chunk:', e)
-		}
-
-
-	if (!card)
-		throw new Error('No valid character data found in PNG chunks (ccv3 or chara).')
-
+	if (!card) throw new Error('No valid character data found in PNG chunks (ccv3 or chara).')
 
 	const assetChunks = chunks.filter(c => c.name === 'tEXt' && decodeText(c.data).keyword.startsWith('chara-ext-asset_:'))
 	for (const chunk of assetChunks) {

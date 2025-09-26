@@ -6,19 +6,21 @@ const normalizeUrl = url => {
 	let urlObj
 	try {
 		urlObj = new URL(url)
-	} catch (e) {
+	}
+	catch {
 		if (!url.startsWith('http'))
 			try {
 				urlObj = new URL('https://' + url)
-			} catch (e2) {
+			}
+			catch {
 				try {
 					urlObj = new URL('http://' + url)
-				} catch (e3) {
+				}
+				catch {
 					return null
 				}
 			}
-		else
-			return null
+		else return null
 	}
 	if (urlObj.pathname.includes('/chat/completions'))
 		urlObj.pathname = urlObj.pathname.replace(/\/chat\/completions.*$/, '/models')
@@ -65,7 +67,8 @@ ${model_ids.map(id => `
 }
 </div>
 `
-	} catch (error) {
+	}
+	catch (error) {
 		console.error('Failed to fetch models:', error)
 		div.innerHTML = `
 <div class="text-error" style="overflow-wrap: break-word;">${geti18n('aisource_editor.common_config_interface.loadModelsFailed', { message: error.message })}</div>
