@@ -690,14 +690,21 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'keepalive') {
 		debug_on
 	}
 
+	$startTime = Get-Date
+	$initAttempted = $false
 	$restart_timestamps = New-Object System.Collections.Generic.List[datetime]
 
 	run @runargs
 	while ($LastExitCode) {
+		$elapsedTime = (Get-Date) - $startTime
+		if ($elapsedTime.TotalMinutes -lt 3 -and $initAttempted) {
+			Write-Error "fount failed to start within a short time even after an automatic repair attempt. Please check the logs for errors."
+			exit 1
+		}
+
 		$current_time = Get-Date
 		$restart_timestamps.Add($current_time)
 
-		# Remove timestamps older than 3 minutes
 		$three_minutes_ago = $current_time.AddMinutes(-3)
 		for ($i = $restart_timestamps.Count - 1; $i -ge 0; $i--) {
 			if ($restart_timestamps[$i] -lt $three_minutes_ago) {
@@ -706,7 +713,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'keepalive') {
 		}
 
 		if ($restart_timestamps.Count -ge 7) {
-			Write-Warning "fount has restarted 7 times in the last 3 minutes. Forcing re-initialization..."
+			Write-Warning "fount has restarted many times in the last short time. Forcing re-initialization..."
 			$restart_timestamps.Clear()
 
 			& $PSScriptRoot/fount.ps1 init
@@ -714,7 +721,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'keepalive') {
 				Write-Error "fount init failed. Exiting."
 				exit 1
 			}
-
+			$initAttempted = $true
 			Write-Host "Re-initialization complete. Attempting to restart fount..."
 		}
 

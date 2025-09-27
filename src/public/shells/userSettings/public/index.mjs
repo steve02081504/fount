@@ -84,7 +84,6 @@ el.confirmPasswordBtn.addEventListener('click', () => {
 	passwordCacheTimeoutId = setTimeout(() => {
 		cachedPassword = null
 		passwordCacheTimeoutId = null
-		console.log('Cached password cleared after 3 minutes.')
 	}, PASSWORD_CACHE_DURATION)
 
 	el.passwordConfirmationModal.close()
