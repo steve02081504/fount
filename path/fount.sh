@@ -1019,15 +1019,22 @@ keepalive)
 		runargs=("${runargs[@]:1}")
 	fi
 
+	start_time=$(date +%s)
+	init_attempted=0
 	restart_timestamps=()
 
 	run "${runargs[@]}"
 	# shellcheck disable=SC2181
 	while [ $? -ne 0 ]; do
 		current_time=$(date +%s)
+		elapsed_time=$((current_time - start_time))
+		if [ "$elapsed_time" -lt 180 ] && [ "$init_attempted" -eq 1 ]; then
+			echo -e "${C_RED}fount failed to start within a short time even after an automatic repair attempt. Please check the logs for errors.${C_RESET}" >&2
+			exit 1
+		fi
+
 		restart_timestamps+=("$current_time")
 
-		# Remove timestamps older than 3 minutes (180 seconds)
 		three_minutes_ago=$((current_time - 180))
 		temp_timestamps=()
 		for ts in "${restart_timestamps[@]}"; do
@@ -1038,7 +1045,7 @@ keepalive)
 		restart_timestamps=("${temp_timestamps[@]}")
 
 		if [ "${#restart_timestamps[@]}" -ge 7 ]; then
-			echo -e "${C_YELLOW}fount has restarted 7 times in the last 3 minutes. Forcing re-initialization...${C_RESET}" >&2
+			echo -e "${C_YELLOW}fount has restarted many times in the last short time. Forcing re-initialization...${C_RESET}" >&2
 			restart_timestamps=()
 
 			"$0" init
@@ -1046,7 +1053,7 @@ keepalive)
 				echo -e "${C_RED}fount init failed. Exiting.${C_RESET}" >&2
 				exit 1
 			fi
-
+			init_attempted=1
 			echo "Re-initialization complete. Attempting to restart fount..."
 		fi
 
