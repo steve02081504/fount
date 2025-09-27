@@ -197,9 +197,7 @@ async function refresh(refreshTokenValue, req) {
 		// 生成新的 access token
 		const accessToken = await generateAccessToken({ username: decoded.username, userId: decoded.userId })
 
-		// (可选) 滚动刷新 Refresh Token：生成新的 Refresh Token，并使旧的失效
-		// 为了简化，并减少客户端状态管理，这里可以不滚动刷新 Refresh Token，而是沿用旧的，直到它过期
-		// 如果决定滚动：
+		// 滚动刷新 Refresh Token：生成新的 Refresh Token，并使旧的失效
 		const newRefreshToken = await generateRefreshToken({ username: decoded.username, userId: decoded.userId }, userRefreshTokenEntry.deviceId)
 		const decodedNewRefreshToken = jose.decodeJwt(newRefreshToken)
 		// 移除旧的 refreshToken，添加新的 refreshToken
@@ -212,7 +210,7 @@ async function refresh(refreshTokenValue, req) {
 			userAgent: req?.headers?.['user-agent'],
 			lastSeen: Date.now()
 		})
-		save_config()
+		// 为了硬盘寿命考虑不立即保存，反正真意外丢了也就重新登录罢了
 		return { status: 200, success: true, accessToken, refreshToken: newRefreshToken }
 	}
 	catch (error) {
