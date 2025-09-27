@@ -384,12 +384,13 @@ function connect(host, protocol, username, apikey) {
 // --- Self-Update ---
 async function checkForUpdate() {
 	if (!currentHost) return
-	const { protocol } = await getStoredData()
+	const { protocol, apikey } = await getStoredData()
 	const scriptUrl = `${protocol}//${currentHost}/shells/browserIntegration/public/script.user.js`
 
 	GM.xmlHttpRequest({
 		method: 'GET',
 		url: scriptUrl,
+		headers: { Authorization: `Bearer ${apikey}` },
 		async onload(response) {
 			if (response.status !== 200) return
 			const remoteVersion = response.responseText.match(/@version\s+([^\s]+)/)?.[1]
