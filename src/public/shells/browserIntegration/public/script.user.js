@@ -390,6 +390,7 @@ async function checkForUpdate() {
 	GM.xmlHttpRequest({
 		method: 'GET',
 		url: scriptUrl,
+		headers: { Authorization: `Bearer ${apikey}` },
 		async onload(response) {
 			if (response.status !== 200) return
 			const remoteVersion = response.responseText.match(/@version\s+([^\s]+)/)?.[1]
