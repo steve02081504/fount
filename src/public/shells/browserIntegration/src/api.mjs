@@ -45,7 +45,6 @@ class UserPageManager {
 
 	registerUi(ws) {
 		this.uiSockets.add(ws)
-		console.log(`UI WebSocket registered for ${this.username}. Total: ${this.uiSockets.size}`)
 
 		// Send initial state
 		ws.send(JSON.stringify({
@@ -55,7 +54,6 @@ class UserPageManager {
 
 		ws.on('close', () => {
 			this.uiSockets.delete(ws)
-			console.log(`UI WebSocket disconnected for ${this.username}. Total: ${this.uiSockets.size}`)
 		})
 	}
 
@@ -105,7 +103,6 @@ class UserPageManager {
 			existingPage.hasFocus = true
 			if (existingPage.title !== title) existingPage.title = title
 			page = existingPage
-			console.log(`Userscript page re-connected for ${this.username}: ${page.id} - ${title}`)
 		}
 		else {
 			// Create a new page entry
@@ -120,7 +117,6 @@ class UserPageManager {
 				disconnectedAt: null,
 			}
 			this.pages.push(page)
-			console.log(`Userscript page registered for ${this.username}: ${page.id} - ${title}`)
 		}
 
 		this.updatePageFocus(page.id, true)
@@ -164,7 +160,6 @@ class UserPageManager {
 			if (currentPage) currentPage.hasFocus = false
 		}
 
-		console.log(`Focus changed for ${this.username}/${pageId}: ${hasFocus}`)
 		this.broadcastUiUpdate()
 	}
 
@@ -227,16 +222,12 @@ class UserPageManager {
 	 * @param {number} maxAgeMs The maximum age in milliseconds for a disconnected entry to be kept.
 	 */
 	cleanupOldPages(maxAgeMs) {
-		const originalCount = this.pages.length
 		this.pages = this.pages.filter(p => {
 			if (p.ws) return true // Keep connected
 			if (!p.disconnectedAt) return false // Should not happen
 			const age = Date.now() - p.disconnectedAt.getTime()
 			return age < maxAgeMs
 		})
-
-		if (this.pages.length < originalCount)
-			console.log(`Cleaned up ${originalCount - this.pages.length} old page entries for ${this.username}.`)
 	}
 }
 
@@ -264,7 +255,6 @@ setInterval(() => {
 export function handleConnection(ws, username) {
 	let currentPageId = -1
 	const manager = getUserManager(username)
-	console.log(`Userscript page connecting for user ${username}...`)
 
 	ws.on('message', message => {
 		try {
@@ -305,11 +295,7 @@ export function handleConnection(ws, username) {
 	})
 
 	ws.on('close', () => {
-		if (currentPageId === -1) {
-			console.log(`Uninitialized userscript page disconnected for ${username}.`)
-			return
-		}
-		console.log(`Userscript page disconnected for ${username}: ${currentPageId}`)
+		if (currentPageId === -1) return
 		manager.removePage(currentPageId)
 	})
 

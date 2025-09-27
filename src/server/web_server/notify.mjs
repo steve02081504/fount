@@ -13,7 +13,6 @@ export function register(username, ws) {
 	if (!userConnections.has(username)) userConnections.set(username, new Set())
 
 	userConnections.get(username).add(ws)
-	console.log(`[Notify] WebSocket connection registered for user: ${username}. Total connections: ${userConnections.get(username).size}`)
 
 	ws.on('close', () => {
 		unregister(username, ws)
@@ -29,11 +28,8 @@ export function unregister(username, ws) {
 	const connections = userConnections.get(username)
 	if (connections) {
 		connections.delete(ws)
-		console.log(`[Notify] WebSocket connection unregistered for user: ${username}. Remaining connections: ${connections.size}`)
-		if (connections.size === 0) {
+		if (connections.size === 0)
 			userConnections.delete(username)
-			console.log(`[Notify] No more connections for user: ${username}. Deleting user entry.`)
-		}
 	}
 }
 
@@ -47,7 +43,6 @@ export function sendNotification(username, title, options, targetUrl = null) {
 	const connections = userConnections.get(username)
 	if (connections && connections.size > 0) {
 		const payload = JSON.stringify({ title, options, targetUrl })
-		console.log(`[Notify] Broadcasting notification to ${connections.size} clients for user: ${username}`)
 		for (const ws of connections)
 			if (ws.readyState === ws.OPEN)
 				ws.send(payload)
