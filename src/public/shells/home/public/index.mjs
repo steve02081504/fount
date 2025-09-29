@@ -9,7 +9,7 @@ import {
 	getWorldList, getWorldDetails, noCacheGetWorldDetails,
 	setDefaultPart, getDefaultParts
 } from '../../scripts/parts.mjs'
-import { parseRegexFromString, escapeRegExp } from '../../scripts/regex.mjs'
+import { getFiltersFromString, compileFilter } from '../../scripts/search.mjs'
 import { svgInliner } from '../../scripts/svgInliner.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
@@ -122,9 +122,11 @@ async function attachCardEventListeners(itemElement, itemDetails, itemName, inte
 		tagElement.addEventListener('click', event => {
 			event.stopPropagation()
 			const tag = tagElement.textContent.trim()
-			filterInput.value = filterInput.value.split(' ').includes(tag)
-				? filterInput.value.split(' ').filter(t => t && t !== tag).join(' ')
-				: filterInput.value ? `${filterInput.value} ${tag}` : tag
+			const tagTerm = tag.includes(' ') ? `"${tag}"` : tag
+			const filters = new Set(getFiltersFromString(filterInput.value))
+			filters.has(tagTerm) ? filters.delete(tagTerm) : filters.add(tagTerm)
+			filterInput.value = [...filters].join(' ')
+
 			filterItemList()
 		})
 	})
@@ -198,33 +200,6 @@ async function displayItemInfo(itemDetails) {
 }
 
 // --- Filtering ---
-
-// Helper function for parsing regex filter
-function parseRegexFilter(filter) {
-	if (filter.startsWith('+') || filter.startsWith('-')) filter = filter.slice(1)
-	try {
-		return parseRegexFromString(filter)
-	}
-	catch {
-		return new RegExp(escapeRegExp(filter))
-	}
-}
-
-function applyFilters(itemName, itemType, commonFilters, forceFilters, excludeFilters) {
-	const cacheKey = `${itemType}-${itemName}`
-	const itemData = itemDetailsCache[cacheKey]
-
-	// Should be in cache if fetched previously
-	if (!itemData) return false
-
-	const itemString = JSON.stringify(itemData)
-
-	const hasCommonMatch = commonFilters.length === 0 || commonFilters.some(filter => filter.test(itemString))
-	const hasForceMatch = forceFilters.every(filter => filter.test(itemString))
-	const hasExcludeMatch = excludeFilters.some(filter => filter.test(itemString))
-	return hasCommonMatch && hasForceMatch && !hasExcludeMatch
-}
-
 async function filterItemList() {
 	// Trigger re-render based on filters
 	await displayItemList(currentItemType)
@@ -260,16 +235,7 @@ async function displayItemList(itemType) {
 	const allItemNames = await getItemList(itemType)
 
 	// Get current filters
-	const filterValue = filterInput.value.toLowerCase()
-	const filtersArray = filterValue.split(' ').filter(f => f)
-	const [commonFilters, forceFilters, excludeFilters] = [[], [], []]
-
-	filtersArray.forEach(filterStr => {
-		const regex = parseRegexFilter(filterStr)
-		if (filterStr.startsWith('+')) forceFilters.push(regex)
-		else if (filterStr.startsWith('-')) excludeFilters.push(regex)
-		else commonFilters.push(regex)
-	})
+	const filterFn = compileFilter(filterInput.value)
 
 	const skeletons = Array(allItemNames.length).fill(0).map(_ => {
 		const skeleton = document.createElement('div')
@@ -286,7 +252,7 @@ async function displayItemList(itemType) {
 			const itemDetails = await getItemDetails(itemType, itemName, true)
 
 			// Apply filters
-			if (applyFilters(itemName, itemType, commonFilters, forceFilters, excludeFilters)) {
+			if (filterFn(itemDetails)) {
 				const itemElement = await renderItemView(itemType, itemDetails, itemName)
 				itemElement.classList.add(`${itemType}-card`)
 				targetContainer.replaceChild(itemElement, skeleton)

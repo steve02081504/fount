@@ -1,6 +1,6 @@
 import { initTranslations, geti18n, confirmI18n, console } from '../../../scripts/i18n.mjs'
 import { renderMarkdown, renderMarkdownAsString } from '../../../scripts/markdown.mjs'
-import { parseRegexFromString, escapeRegExp } from '../../../scripts/regex.mjs'
+import { compileFilter } from '../../../scripts/search.mjs'
 import { renderTemplate, usingTemplates } from '../../../scripts/template.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
 import { showToast } from '../../../scripts/toast.mjs'
@@ -9,6 +9,7 @@ import { getChatList, getCharDetails, copyChats, exportChats, deleteChats } from
 
 usingTemplates('/shells/chat/src/templates')
 
+const chatItemDOMCache = new Map()
 const chatListContainer = document.getElementById('chat-list-container')
 const sortSelect = document.getElementById('sort-select')
 const filterInput = document.getElementById('filter-input')
@@ -21,66 +22,10 @@ let chatList = []
 const selectedChats = new Set()
 
 /**
- * Applies all filter conditions to a chat.
- * @param {object} chat - The chat object.
- * @param {RegExp[]} commonFilters - Array of common filters.
- * @param {RegExp[]} forceFilters - Array of forced filters.
- * @param {RegExp[]} excludeFilters - Array of excluded filters.
- * @returns {boolean} - True if the chat matches all conditions, false otherwise.
- */
-function applyFilters(chat, commonFilters, forceFilters, excludeFilters) {
-	const chatString = JSON.stringify(chat)
-
-	// Check for common filters (at least one must match)
-	const hasCommonMatch = commonFilters.length === 0 || commonFilters.some(filter => filter.test(chatString))
-
-	// Check for forced filters (all must match)
-	const hasForceMatch = forceFilters.every(filter => filter.test(chatString))
-
-	// Check for excluded filters (none must match)
-	const hasExcludeMatch = excludeFilters.some(filter => filter.test(chatString))
-
-	return hasCommonMatch && hasForceMatch && !hasExcludeMatch
-}
-
-/**
  * Filters the chat list based on user input.
  */
 function filterChatList() {
-	const filters = filterInput.value.toLowerCase().split(' ').filter(f => f)
-
-	const commonFilters = []
-	const forceFilters = []
-	const excludeFilters = []
-
-	function parseRegexFilter(filter) {
-		if (filter.startsWith('+') || filter.startsWith('-')) filter = filter.slice(1)
-		try {
-			return parseRegexFromString(filter)
-		}
-		catch {
-			return new RegExp(escapeRegExp(filter))
-		}
-	}
-
-	// Categorize filters
-	for (const filter of filters) {
-		const regex = parseRegexFilter(filter)
-
-		if (filter.startsWith('+'))
-			forceFilters.push(regex)
-		else if (filter.startsWith('-'))
-			excludeFilters.push(regex)
-		else
-			commonFilters.push(regex)
-	}
-
-	// Apply filters and get filtered chat list
-	const filteredChatList = chatList.filter(chat =>
-		applyFilters(chat, commonFilters, forceFilters, excludeFilters)
-	)
-
-	return filteredChatList
+	return chatList.filter(compileFilter(filterInput.value))
 }
 
 async function renderChatList() {
@@ -95,8 +40,9 @@ async function renderChatList() {
 				return timeB - timeA
 		})
 
+	const chats = await Promise.all(filteredAndSortedList.map(renderChatListItem))
 	chatListContainer.innerHTML = ''
-	chatListContainer.append(...await Promise.all(filteredAndSortedList.map(renderChatListItem)))
+	chatListContainer.append(...chats)
 
 	// 每次渲染列表后重置选择状态
 	selectedChats.clear()
@@ -128,6 +74,15 @@ export async function renderMarkdownPreview(markdown, significantNodeLimit) {
 }
 
 async function renderChatListItem(chat) {
+	if (chatItemDOMCache.has(chat.chatid)) {
+		const cachedData = chatItemDOMCache.get(chat.chatid)
+		if (cachedData.lastMessageTime === chat.lastMessageTime) {
+			const chatElement = cachedData.element
+			const selectCheckbox = chatElement.querySelector('.select-checkbox')
+			selectCheckbox.checked = selectedChats.has(chat.chatid)
+			return chatElement
+		}
+	}
 	const lastMsgTime = new Date(chat.lastMessageTime).toLocaleString()
 	const data = {
 		...chat,
@@ -202,6 +157,7 @@ async function renderChatListItem(chat) {
 		if (confirmI18n('chat_history.confirmDeleteChat', { chars: chat.chars.join(', ') })) try {
 			const data = await deleteChats([chat.chatid])
 			if (data[0].success) {
+				chatItemDOMCache.delete(chat.chatid)
 				chatList = chatList.filter(c => c.chatid !== chat.chatid)
 				renderChatList()
 			}
@@ -212,6 +168,10 @@ async function renderChatListItem(chat) {
 		}
 	})
 
+	chatItemDOMCache.set(chat.chatid, {
+		element: chatElement,
+		lastMessageTime: chat.lastMessageTime,
+	})
 	return chatElement
 }
 
@@ -257,6 +217,7 @@ deleteSelectedButton.addEventListener('click', async () => {
 		results.forEach(result => {
 			if (result.success) {
 				// Remove only successfully deleted chats from the UI
+				chatItemDOMCache.delete(result.chatid)
 				chatList = chatList.filter(c => c.chatid !== result.chatid)
 				selectedChats.delete(result.chatid) // Also remove from selectedChats
 			}

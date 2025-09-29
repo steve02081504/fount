@@ -1,5 +1,17 @@
 import { base_dir } from '../base.mjs'
 
+const languageChangeCallbacks = [initTranslations]
+export function onLanguageChange(callback) {
+	languageChangeCallbacks.push(callback)
+}
+async function runLanguageChange() {
+	for (const callback of languageChangeCallbacks) try {
+		await callback()
+	} catch (e) {
+		console.error('Error in language change callback:', e)
+	}
+}
+
 let i18n = {}
 let saved_pageid
 let availableLocales = []
@@ -62,7 +74,7 @@ export async function initTranslations(pageid = saved_pageid, preferredlocales =
 			throw new Error(`Failed to fetch translations: ${translationResponse.status} ${translationResponse.statusText}`)
 
 		i18n = await translationResponse.json()
-		applyTranslations()
+		runLanguageChange()
 	}
 	catch (error) {
 		console.error('Error initializing translations:', error)
@@ -191,5 +203,5 @@ export function i18nElement(element) {
 }
 
 window.addEventListener('languagechange', () => {
-	initTranslations()
+	runLanguageChange()
 })
