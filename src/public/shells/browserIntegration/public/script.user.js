@@ -187,11 +187,26 @@ async function getStoredData() {
 }
 
 async function setStoredData(host, uuid, protocol, apikey) {
+	// 保存当前主机信息
 	await GM.setValue('fount_host', host)
 	await GM.setValue('fount_uuid', uuid)
 	await GM.setValue('fount_protocol', protocol)
 	await GM.setValue('fount_apikey', apikey)
+
+	// 更新历史主机列表
+	const previousHosts = await GM.getValue('fount_previous_hosts', [])
+	const newHostEntry = { host, protocol }
+
+	// 将新主机添加到列表开头，并移除旧的重复项
+	const updatedHosts = [
+		newHostEntry,
+		...previousHosts.filter(p => p.host !== host)
+	]
+
+	// 限制历史记录长度并保存
+	await GM.setValue('fount_previous_hosts', updatedHosts.slice(0, 13))
 }
+
 
 // --- SECURE HOST CHANGE LISTENER ---
 window.addEventListener('fount-host-info', async (e) => {
@@ -210,7 +225,7 @@ window.addEventListener('fount-host-info', async (e) => {
 			console.log(`fount userscript: Performing initial setup for host: ${newHost}`)
 			try {
 				const pingData = await pingHost(newHost, newProtocol)
-				const { username } = await whoami(newHost, newProtocol)
+				await whoami(newHost, newProtocol)
 				const { apiKey } = await makeApiRequest(newHost, newProtocol, '/api/apikey/create', { method: 'POST', data: { description: 'Browser Integration Userscript' } })
 				await setStoredData(newHost, pingData.uuid, newProtocol, apiKey)
 				clearTimeout(connectionTimeoutId)
@@ -239,8 +254,8 @@ window.addEventListener('fount-host-info', async (e) => {
 
 		// User Authorization: Ask the user for explicit permission with a clear warning.
 		const origin = window.location.hostname
-		const warningMessage = geti18n('browser_integration_script.hostChange.securityWarningTitle') + '\n\n' +
-			geti18n('browser_integration_script.hostChange.message', { origin, newHost })
+		const warningMessage = await geti18n('browser_integration_script.hostChange.securityWarningTitle') + '\n\n' +
+			await geti18n('browser_integration_script.hostChange.message', { origin, newHost })
 
 		if (window.confirm(warningMessage)) {
 			console.log(`fount userscript: User approved host change to ${newHost}. Verifying...`)
@@ -249,7 +264,7 @@ window.addEventListener('fount-host-info', async (e) => {
 				// The UUID check is a good secondary measure, but user confirmation is the primary defense.
 				if (!storedUuid || storedUuid === pingData.uuid) {
 					console.log('fount userscript: Host verification successful. Updating and reconnecting.')
-					const { username } = await whoami(newHost, newProtocol)
+					await whoami(newHost, newProtocol)
 					const { apiKey } = await makeApiRequest(newHost, newProtocol, '/api/apikey/create', { method: 'POST', data: { description: 'Browser Integration Userscript' } })
 					await setStoredData(newHost, pingData.uuid, newProtocol, apiKey)
 					clearTimeout(connectionTimeoutId)
@@ -259,11 +274,11 @@ window.addEventListener('fount-host-info', async (e) => {
 					findAndConnect()
 				}
 				else
-					alert(geti18n('browser_integration_script.hostChange.uuidMismatchError', { newHost }))
+					alert(await geti18n('browser_integration_script.hostChange.uuidMismatchError', { newHost }))
 			}
 			catch (error) {
 				console.error(`fount userscript: New host ${newHost} failed verification.`, error)
-				alert(geti18n('browser_integration_script.hostChange.verificationError', { newHost }))
+				alert(await geti18n('browser_integration_script.hostChange.verificationError', { newHost }))
 			}
 		}
 		else {
@@ -328,21 +343,35 @@ function whoami(host, protocol) {
 // --- WebSocket Connection ---
 
 async function findAndConnect() {
-	if (ws) return // Already connected or connecting
+	if (ws) return
+	const { host: currentHost, protocol: currentProtocol } = await getStoredData()
 
-	const { host, protocol, apikey } = await getStoredData()
-	if (!host) return
+	const uniqueHosts = Array.from(new Map([
+		{ host: currentHost, protocol: currentProtocol },
+		...await GM.getValue('fount_previous_hosts', [])
+	].filter(item => item.host).map(item => [item.host, item])).values())
 
-	try {
-		await pingHost(host, protocol)
-		const { username } = await whoami(host, protocol)
-		connect(host, protocol, username, apikey) // Pass apikey to connect
-	}
-	catch {
-		currentHost = null
-		connectionTimeoutId = setTimeout(findAndConnect, currentRetryDelay)
-		currentRetryDelay = Math.min(currentRetryDelay + RETRY_INCREMENT, MAX_RETRY_DELAY)
-	}
+	if (!uniqueHosts.length) return
+
+	for (const { host, protocol } of uniqueHosts)
+		try {
+			const { username } = await whoami(host, protocol)
+			const { apikey: storedApiKey, uuid: storedUuid } = await getStoredData()
+
+			// 如果连接成功的是一个备用主机，则将其提升为当前主机
+			if (host !== currentHost)
+				await setStoredData(host, storedUuid, protocol, storedApiKey)
+
+			connect(host, protocol, username, storedApiKey)
+			return
+		} catch (error) {
+			console.warn(`fount userscript: Failed to connect to ${host}. Trying next...`, error.message)
+		}
+
+	console.error('fount userscript: All known hosts failed to connect. Retrying after backoff period.')
+	currentHost = null
+	connectionTimeoutId = setTimeout(findAndConnect, currentRetryDelay)
+	currentRetryDelay = Math.min(currentRetryDelay + RETRY_INCREMENT, MAX_RETRY_DELAY)
 }
 
 function connect(host, protocol, username, apikey) {
