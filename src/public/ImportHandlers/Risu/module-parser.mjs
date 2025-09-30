@@ -72,7 +72,7 @@ export async function parseRisuModule(moduleBuffer) {
 				break
 			}
 			const mark = readByte()
-			if (mark === 0) { // 提前遇到文件结束标记
+			if (!mark) { // 提前遇到文件结束标记
 				console.warn(`Module parsing: found EOF mark after ${i} assets, expected ${expectedAssetCount}.`)
 				break
 			}

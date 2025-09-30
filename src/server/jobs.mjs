@@ -23,9 +23,9 @@ export function EndJob(username, parttype, partname, uid) {
 	const jobs = getUserByUsername(username).jobs ??= {}
 	if (jobs?.[parttype]?.[partname]?.[uid] !== undefined) {
 		delete jobs[parttype][partname][uid]
-		if (Object.keys(jobs[parttype][partname]).length === 0) {
+		if (!Object.keys(jobs[parttype][partname]).length) {
 			delete jobs[parttype][partname]
-			if (Object.keys(jobs[parttype]).length === 0)
+			if (!Object.keys(jobs[parttype]).length)
 				delete jobs[parttype]
 		}
 		save_config()

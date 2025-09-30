@@ -28,7 +28,7 @@ export function unregister(username, ws) {
 	const connections = userConnections.get(username)
 	if (connections) {
 		connections.delete(ws)
-		if (connections.size === 0)
+		if (!connections.size)
 			userConnections.delete(username)
 	}
 }

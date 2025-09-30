@@ -53,7 +53,7 @@ export function compileFilter(filterString) {
 		const itemString = JSON.stringify(item)
 		if (excludeFilters.some(filter => filter.test(itemString))) return false
 		if (!forceFilters.every(filter => filter.test(itemString))) return false
-		return commonFilters.length === 0 || commonFilters.some(filter => filter.test(itemString))
+		return !commonFilters.length || commonFilters.some(filter => filter.test(itemString))
 	}
 }
 
@@ -149,9 +149,8 @@ export function createSearchableDropdown({
 		if (selectedItem) {
 			triggerInput.value = getItemText(selectedItem)
 			// Synchronize dataset.value if it's not already set to this value.
-			if (dropdownElement.dataset.value !== String(newValue)) {
+			if (dropdownElement.dataset.value !== String(newValue))
 				dropdownElement.dataset.value = newValue
-			}
 		} else {
 			// If value is invalid, reset to placeholder.
 			triggerInput.value = triggerInput.placeholder || 'Select an option...'

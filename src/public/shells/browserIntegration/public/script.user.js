@@ -454,7 +454,7 @@ async function handleCommand(msg) {
 						const { host, protocol } = await getStoredData()
 						if (!host) return
 						try {
-							const response = await makeApiRequest(host, protocol, '/api/shells/browserIntegration/callback', {
+							await makeApiRequest(host, protocol, '/api/shells/browserIntegration/callback', {
 								method: 'POST',
 								data: { ...callbackInfo, data, pageId, script }
 							})
@@ -485,7 +485,7 @@ function sendResponse(requestId, payload, isError = false) {
 
 async function runMatchingScripts() {
 	const scripts = await GM.getValue(AUTORUN_SCRIPTS_KEY, [])
-	if (scripts.length === 0) return
+	if (!scripts.length) return
 
 	const url = window.location.href
 	const { async_eval } = await import('https://esm.sh/@steve02081504/async-eval')

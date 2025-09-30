@@ -181,7 +181,7 @@ async function loadAndDisplayDevices() {
 		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Failed to load devices' }))
 
 		el.deviceList.innerHTML = ''
-		if (result.devices.length === 0) {
+		if (!result.devices.length) {
 			el.noDevicesText.classList.remove('hidden')
 			return
 		}
@@ -303,7 +303,7 @@ async function loadAndDisplayApiKeys() {
 		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Get API keys failed' }))
 
 		el.apiKeyList.innerHTML = ''
-		if (result.apiKeys.length === 0) {
+		if (!result.apiKeys.length) {
 			el.noApiKeysText.classList.remove('hidden')
 			return
 		}

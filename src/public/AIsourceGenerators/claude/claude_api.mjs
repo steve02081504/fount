@@ -105,8 +105,7 @@ export class ClaudeAPI {
 
 	// 获取 Cookie
 	getCookies() {
-		if (!this.config.cookie_array || this.config.cookie_array.length === 0)
-			return ''
+		if (!this.config.cookie_array?.length) return ''
 
 		const cookie = this.config.cookie_array[this.currentIndex] || ''
 		const match = cookie.match(/(?:(claude[_-][\d_a-z-]*?)@)?(?:sessionKey=)?(sk-ant-sid01-[\w-]+(?:-[\w-]{6}AA)?)/)
@@ -115,14 +114,10 @@ export class ClaudeAPI {
 
 	// 首次登录，获取 uuidOrg
 	async firstLogin() {
-		if (!this.config.cookie_array || this.config.cookie_array.length === 0 || this.uuidOrg)
+		if (!this.config.cookie_array?.length || this.uuidOrg)
 			return
 
-
-		if (!this.getCookies()) {
-			console.warn('No valid cookie found.')
-			return
-		}
+		if (!this.getCookies()) return console.warn('No valid cookie found.')
 
 		let attempts = 0
 		const maxAttempts = this.config.cookie_counter > 0 ? this.config.cookie_counter : 3 // 默认重试 3 次
@@ -147,10 +142,7 @@ export class ClaudeAPI {
 			if (!org || org.error)
 				throw new Error(`Couldn't get account info: ${org?.error?.message || orgsResponse.statusText}`)
 
-
-			if (!org?.uuid)
-				throw new Error('Invalid account id')
-
+			if (!org?.uuid) throw new Error('Invalid account id')
 
 			this.uuidOrg = org.uuid
 			console.log(`Logged in to Claude API. Organization UUID: ${this.uuidOrg}`)
@@ -199,7 +191,7 @@ export class ClaudeAPI {
 	// Cookie 轮换
 	async cookieChanger() {
 		if (!this.config.cookie_array || this.config.cookie_array.length <= 1) {
-			if (this.config.cookie_array.length === 0) return
+			if (!this.config.cookie_array.length) return
 			else
 				console.warn('Only one cookie available, or cookies are exhausted.')
 			return
@@ -232,9 +224,7 @@ export class ClaudeAPI {
 
 	// Cookie 清理
 	cookieCleaner(flag) {
-		if (!this.config.cookie_array || this.config.cookie_array.length === 0)
-			return // Nothing to clean if the array is empty
-
+		if (!this.config.cookie_array?.length) return
 
 		const currentCookie = this.config.cookie_array[this.currentIndex]
 		console.log(`Cleaning cookie: ${currentCookie} due to: ${flag}`)
@@ -289,7 +279,7 @@ export class ClaudeAPI {
 
 	// 主 API 调用函数
 	async callClaudeAPI(messages, model) {
-		if (!this.config.cookie_array || this.config.cookie_array.length === 0)
+		if (!this.config.cookie_array?.length)
 			throw new Error('No cookies configured. Please add at least one Claude API cookie to the configuration.')
 
 		// 检查 uuidOrg

@@ -55,9 +55,7 @@ export class GrokAPI {
 	}
 
 	async getNextCookie(useLastSuccessful = true, isThinkModel = false) {
-		if (this.cookies.length === 0)
-			return ''
-
+		if (!this.cookies.length) return ''
 
 		try {
 			await this.acquireLock()
@@ -455,11 +453,8 @@ export class GrokAPI {
 				}
 			})
 			response.data.on('end', async () => {
-				if (generatedImages.length === 0)
-					resolve([])
-
-				else
-					resolve(generatedImages)
+				if (!generatedImages.length) resolve([])
+				else resolve(generatedImages)
 
 				const cookie = await this.getNextCookie()
 				await this.checkCurrentCookieQuota(cookie)

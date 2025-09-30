@@ -56,7 +56,7 @@ async function GetSource(config, { username, SaveConfig }) {
 
 		Unload: () => Promise.all(unnamedSources.map(source => source.Unload())),
 		Call: async prompt => {
-			if (sources.length === 0) throw new Error('no source selected')
+			if (!sources.length) throw new Error('no source selected')
 			const results = await Promise.all(sources.map(source => {
 				const info = getPartInfo(source, getUserByUsername(username).locales)
 				return source.Call(prompt).then(
@@ -75,7 +75,7 @@ ${err.stack || err}
 			return results.join('\n')
 		},
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
-			if (sources.length === 0) throw new Error('no source selected')
+			if (!sources.length) throw new Error('no source selected')
 			const files = []
 			const results = await Promise.all(sources.map(source => {
 				const info = getPartInfo(source, getUserByUsername(username).locales)

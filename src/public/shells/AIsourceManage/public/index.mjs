@@ -292,7 +292,7 @@ async function deleteFile() {
 	await fetchFileList()
 
 	//  不清空 jsonEditor，而是禁用并清空
-	if (fileList.length === 0) {
+	if (!fileList.length) {
 		updateEditorContent({})
 		disableEditor()
 	}

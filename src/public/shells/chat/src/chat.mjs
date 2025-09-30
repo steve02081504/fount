@@ -39,15 +39,14 @@ export function registerChatUiSocket(chatid, ws) {
 	ws.on('close', () => {
 		socketSet.delete(ws)
 		console.log(`Chat UI WebSocket disconnected for chat ${chatid}. Total: ${socketSet.size}`)
-		if (socketSet.size === 0)
+		if (!socketSet.size)
 			chatUiSockets.delete(chatid)
-
 	})
 }
 
 function broadcastChatEvent(chatid, event) {
 	const sockets = chatUiSockets.get(chatid)
-	if (!sockets || sockets.size === 0) return
+	if (!sockets?.size) return
 
 	const message = JSON.stringify(event)
 	for (const ws of sockets)
@@ -560,7 +559,7 @@ export async function setWorld(chatid, worldname) {
 	const timeSlice = chatMetadata.LastTimeSlice.copy()
 	const world = timeSlice.world = await loadWorld(username, worldname)
 	timeSlice.world_id = worldname
-	if (world.interfaces.chat.GetGreeting && chatLog.length === 0)
+	if (world.interfaces.chat.GetGreeting && !chatLog.length)
 		timeSlice.greeting_type = 'world_single'
 	else if (world.interfaces.chat.GetGroupGreeting && chatLog.length > 0)
 		timeSlice.greeting_type = 'world_group'

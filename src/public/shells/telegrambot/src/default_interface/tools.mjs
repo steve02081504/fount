@@ -95,7 +95,7 @@ export function telegramEntitiesToAiMarkdown(text, entities, botInfo, replyToMes
 	}
 	if (!text) return aiMarkdown.trim()
 	const textChars = Array.from(text)
-	if (!entities || entities.length === 0) return aiMarkdown + text
+	if (!entities?.length) return aiMarkdown + text
 	const parts = []
 	let lastOffset = 0
 	const sortedEntities = [...entities].sort((a, b) => a.offset - b.offset)
@@ -294,7 +294,7 @@ export async function TelegramMessageToFountChatLogEntry(ctx, messageHolder, bot
 		console.error(`[TelegramDefaultInterface] 文件处理失败 (消息ID ${message.message_id}):`, error)
 	}
 
-	if (!content.trim() && files.length === 0 && !cachedAIReply)
+	if (!content.trim() && !files.length && !cachedAIReply)
 		return null
 
 	/** @type {chatLogEntry_t_simple} */

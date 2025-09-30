@@ -127,7 +127,7 @@ async function findOptimalHistorySlice(ai, model, limit, history, prefixMessages
 
 	while (low <= high) {
 		const mid = Math.floor((low + high) / 2)
-		if (mid === 0) {
+		if (!mid) {
 			low = mid + 1
 			continue
 		}

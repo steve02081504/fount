@@ -22,7 +22,7 @@ const autoRunScriptsCache = new Map()
 
 async function renderPages(pages) {
 	pagesListDiv.innerHTML = ''
-	if (pages.length === 0) pagesListDiv.appendChild(await renderTemplate('empty_state'))
+	if (!pages.length) pagesListDiv.appendChild(await renderTemplate('empty_state'))
 	else pagesListDiv.appendChild(await renderTemplate('page_table', { pages }))
 }
 
@@ -107,7 +107,7 @@ async function loadAndRenderAutoRunScripts() {
 		if (!result.success) throw new Error(result.message)
 
 		autorunScriptList.innerHTML = ''
-		if (result.scripts.length === 0)
+		if (!result.scripts.length)
 			autorunScriptList.appendChild(await renderTemplate('autorun_empty_state'))
 		else {
 			autoRunScriptsCache.clear()

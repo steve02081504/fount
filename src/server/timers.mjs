@@ -28,9 +28,9 @@ export function removeTimer(username, parttype, partname, uid) {
 	const timers = getUserByUsername(username).timers ?? {}
 	if (timers[parttype]?.[partname]?.[uid]) {
 		delete timers[parttype][partname][uid]
-		if (Object.keys(timers[parttype][partname]).length === 0) {
+		if (!Object.keys(timers[parttype][partname]).length) {
 			delete timers[parttype][partname]
-			if (Object.keys(timers[parttype]).length === 0)
+			if (!Object.keys(timers[parttype]).length)
 				delete timers[parttype]
 		}
 		save_config()

@@ -87,7 +87,7 @@ async function handleChatCompletionsRequest(req, res, username, model) {
 	if (n > 1)
 		return res.status(400).json({ error: { message: 'n > 1 is not supported.', type: 'invalid_request_error', code: 'parameter_not_supported' } })
 
-	if (!messages || !Array.isArray(messages) || messages.length === 0)
+	if (!messages || !Array.isArray(messages) || !messages.length)
 		return res.status(400).json({ error: { message: '\'messages\' is required and must be a non-empty array.', type: 'invalid_request_error', code: 'parameter_missing_or_invalid' } })
 
 

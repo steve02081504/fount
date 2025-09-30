@@ -201,7 +201,7 @@ export function getBotList(username) {
 // Event Handlers
 events.on('BeforeUserDeleted', async ({ username }) => {
 	const runningBots = getRunningBotList(username)
-	for (const botname of runningBots)try {
+	for (const botname of runningBots) try {
 		await stopBot(username, botname)
 		console.log(`Telegram Bot: Stopped bot ${botname} for deleted user ${username}`)
 	} catch (error) {
@@ -211,7 +211,7 @@ events.on('BeforeUserDeleted', async ({ username }) => {
 
 events.on('BeforeUserRenamed', async ({ oldUsername, newUsername }) => {
 	const runningBotsOldUser = getRunningBotList(oldUsername)
-	for (const botname of runningBotsOldUser)try {
+	for (const botname of runningBotsOldUser) try {
 		await stopBot(oldUsername, botname)
 		console.log(`Telegram Bot: Stopped bot ${botname} for old username ${oldUsername}`)
 	} catch (error) {

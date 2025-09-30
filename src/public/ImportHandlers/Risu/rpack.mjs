@@ -4,7 +4,7 @@ let wasm
 let cachedUint8ArrayMemory0 = null
 
 function getUint8ArrayMemory0() {
-	if (cachedUint8ArrayMemory0 === null || cachedUint8ArrayMemory0.byteLength === 0)
+	if (!cachedUint8ArrayMemory0?.byteLength)
 		cachedUint8ArrayMemory0 = new Uint8Array(wasm.memory.buffer)
 
 	return cachedUint8ArrayMemory0

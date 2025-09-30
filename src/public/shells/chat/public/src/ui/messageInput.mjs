@@ -92,7 +92,7 @@ async function toggleVoiceRecording() {
 
 async function sendMessage() {
 	const messageText = messageInputElement.value.trim()
-	if (!messageText && SelectedFiles.length === 0) return
+	if (!messageText && !SelectedFiles.length) return
 
 	if (isRecording) await toggleVoiceRecording()
 

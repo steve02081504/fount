@@ -58,7 +58,7 @@ class UserPageManager {
 	}
 
 	broadcastUiUpdate() {
-		if (this.uiSockets.size === 0) return
+		if (!this.uiSockets.size) return
 
 		const payload = {
 			type: 'pages_update',

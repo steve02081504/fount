@@ -211,7 +211,7 @@ async function cleanupExpiredCache() {
 			transaction.onabort = () => reject(new Error('Cleanup transaction aborted'))
 		})
 
-		if (urlsToDelete.length === 0)
+		if (!urlsToDelete.length)
 			return console.log('[SW Cleanup] No expired items to clean up.')
 
 		console.log(`[SW Cleanup] Found ${urlsToDelete.length} expired items. Proceeding to delete from cache.`)

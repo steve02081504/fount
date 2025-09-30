@@ -10,7 +10,7 @@ export function setEndpoints(router) {
 		if (!user)
 			return res.status(401).json({ message: '未授权' })
 
-		if (!req.files || Object.keys(req.files).length === 0)
+		if (!Object.keys(req.files || {}).length)
 			return res.status(400).json({ message: '未上传文件' })
 
 		for (const file of Object.values(req.files))

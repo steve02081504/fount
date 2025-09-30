@@ -96,7 +96,7 @@ function replaceVariableMacros(input, memory) {
 
 
 function getTimeSinceLastMessage(chatLog) {
-	if (!chatLog || chatLog.length === 0) return 'just now'
+	if (!chatLog?.length) return 'just now'
 	const lastMessage = chatLog
 		.filter(message => message.role !== 'system')
 		.toReversed()

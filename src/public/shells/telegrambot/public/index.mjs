@@ -70,7 +70,7 @@ async function loadBotConfig(botname) {
 	charSelect.value = config.char || ''
 
 	// 加载初始角色模板
-	if (config.char && (!config.config || Object.keys(config.config).length === 0)) {
+	if (config.char && (!config.config || !Object.keys(config.config).length)) {
 		const template = await getBotConfigTemplate(config.char)
 		if (template) config.config = template
 	}

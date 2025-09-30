@@ -128,7 +128,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 		}
 
 		function MargeChatLog(log) {
-			if (!log || log.length === 0) return []
+			if (!log?.length) return []
 			const newlog = []
 			let last = null
 			for (const currentEntry of log) {
@@ -137,7 +137,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 				if (entry.extension) entry.extension = { ...entry.extension } // 深拷贝extension
 
 				if (last && last.name === entry.name && last.role === entry.role &&
-					entry.time_stamp - last.time_stamp < 3 * 60000 && (last.files?.length || 0) === 0) {
+					entry.time_stamp - last.time_stamp < 3 * 60000 && !last.files?.length) {
 					last.content += '\n' + entry.content
 					if (entry.files?.length > 0) last.files = [...last.files || [], ...entry.files]
 					last.time_stamp = entry.time_stamp
@@ -228,7 +228,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 					fileChunks.push(filesToSend.slice(i, i + MAX_FILES_PER_MESSAGE))
 
 
-				if (textChunks.length === 0 && fileChunks.length === 0) return // 无任何内容，不发送
+				if (!textChunks.length && !fileChunks.length) return // 无任何内容，不发送
 
 				// 1. 发送所有文本消息。最后一个文本块会带上第一个文件块（如果存在）。
 				for (let i = 0; i < textChunks.length; i++) {
@@ -240,7 +240,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 						payload.files = fileChunks.shift() // 附加并从待处理队列中移除
 
 
-					const isLastOverallMessage = isLastTextMessage && fileChunks.length === 0
+					const isLastOverallMessage = isLastTextMessage && !fileChunks.length
 					await sendAndCache(payload, isLastOverallMessage ? fountReply : undefined)
 				}
 

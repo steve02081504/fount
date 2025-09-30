@@ -42,7 +42,7 @@ export async function handleFilesSelect(event, selectedFiles, attachmentPreviewC
 export async function handlePaste(event, selectedFiles, attachmentPreviewContainer) {
 	const { items } = event.clipboardData || window.clipboardData
 	for (const item of items)
-		if (item.type.indexOf('image') === 0) {
+		if (!item.type.indexOf('image')) {
 			const blob = item.getAsFile()
 			if (blob) {
 				// 为 blob 创建一个唯一的文件名，例如使用时间戳和随机数

@@ -101,7 +101,7 @@ function preBuiltWIEntries(WIentries) {
 
 			[...entrie.keys, ...entrie.secondary_keys].forEach(key => { key.lastIndex = 0 }) // 重置正则表达式 lastIndex
 			if (isAnyMatch(entrie.keys, content)) { // 如果主关键词匹配
-				if (entrie.secondary_keys.length === 0) return true // 如果没有辅助关键词，则激活
+				if (!entrie.secondary_keys.length) return true // 如果没有辅助关键词，则激活
 				switch (entrie.extensions.selectiveLogic) { // 根据选择逻辑判断是否激活
 					case world_info_logic.AND_ALL: return isAllMatch(entrie.secondary_keys, content) // 所有辅助关键词都匹配
 					case world_info_logic.AND_ANY: return isAnyMatch(entrie.secondary_keys, content) // 任何一个辅助关键词匹配

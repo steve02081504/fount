@@ -52,7 +52,7 @@ export class IdleManager {
 	 * @returns {boolean} True if the system is idle, false otherwise.
 	 */
 	isIdle() {
-		return this.#runningActions === 0 && (Date.now() - this.#lastBusyTime) > this.#config.timeout
+		return !this.#runningActions && (Date.now() - this.#lastBusyTime) > this.#config.timeout
 	}
 
 	/**

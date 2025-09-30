@@ -208,7 +208,7 @@ reverseSelectButton.addEventListener('click', () => {
 
 // 删除选中
 deleteSelectedButton.addEventListener('click', async () => {
-	if (selectedChats.size === 0) {
+	if (!selectedChats.size) {
 		showToast(geti18n('chat_history.alerts.noChatSelectedForDeletion'), 'error')
 		return
 	}
@@ -232,7 +232,7 @@ deleteSelectedButton.addEventListener('click', async () => {
 
 // 导出选中
 exportSelectedButton.addEventListener('click', async () => {
-	if (selectedChats.size === 0) {
+	if (!selectedChats.size) {
 		showToast(geti18n('chat_history.alerts.noChatSelectedForExport'), 'error')
 		return
 	}

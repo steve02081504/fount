@@ -36,7 +36,7 @@ function getLocaleName(id) {
 async function renderPreferredLanguages() {
 	preferredLanguagesList.innerHTML = '' // Clear current list
 
-	if (userPreferredLocales.length === 0) {
+	if (!userPreferredLocales.length) {
 		preferredLanguagesList.innerHTML = '<p class="text-center text-base-content-secondary" data-i18n="languageSettings.noPreferredLanguages"></p>'
 		i18nElement(preferredLanguagesList)
 		return
@@ -47,7 +47,7 @@ async function renderPreferredLanguages() {
 		const listItem = await renderTemplate('preferred_locale_item', {
 			localeId,
 			localeName: getLocaleName(localeId),
-			isFirst: i === 0,
+			isFirst: !i,
 			isLast: i === userPreferredLocales.length - 1,
 		})
 
@@ -79,7 +79,7 @@ function populateAvailableLanguagesSelect() {
 	})
 
 	// If all are disabled, disable the add button
-	addLanguageButton.disabled = availableLanguagesSelect.querySelectorAll('option:not([disabled])').length === 0
+	addLanguageButton.disabled = !availableLanguagesSelect.querySelectorAll('option:not([disabled])').length
 }
 
 // --- Event Handlers ---

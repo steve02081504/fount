@@ -2,7 +2,7 @@ export async function sentrytunnel(req, res) {
 	try {
 		const envelopeBytes = req.body
 
-		if (!envelopeBytes || envelopeBytes.length === 0)
+		if (!envelopeBytes?.length)
 			return res.status(400).json({ error: 'Empty request body' })
 
 		const envelopeString = envelopeBytes.toString('utf-8')
