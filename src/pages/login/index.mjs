@@ -275,6 +275,13 @@ async function initializeApp() {
 	catch (e) {
 		console.error('Failed to obtain credentials for autologin.', e)
 	}
+	finally {
+		const hashParams = new URLSearchParams(window.location.hash.substring(1))
+		hashParams.delete('uuid')
+		hashParams.delete('from')
+		hashParams.delete('fileId')
+		window.location.hash = hashParams.toString()
+	}
 
 	if (JSON.parse(autologinParam)) {
 		if (!isLoginForm) toggleForm()

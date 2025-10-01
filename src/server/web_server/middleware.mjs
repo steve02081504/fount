@@ -8,7 +8,7 @@ import { auth_request } from '../auth.mjs'
 
 export function diff_if_auth(if_auth, if_not_auth) {
 	return async (req, res, next) => {
-		if (await auth_request(req)) return if_auth(req, res, next)
+		if (await auth_request(req, res)) return if_auth(req, res, next)
 		return if_not_auth(req, res, next)
 	}
 }

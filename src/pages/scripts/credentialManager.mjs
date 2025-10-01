@@ -320,6 +320,7 @@ export async function generateLoginInfoUrl(credentials, uuid, baseUrl) {
 
 	const loginInfoUrl = new URL('https://steve02081504.github.io/fount/login_info/')
 	loginInfoUrl.searchParams.set('redirect', encodeURIComponent(redirectUrl.href))
+	loginInfoUrl.searchParams.set('forward', 'true')
 
 	const encryptedData = await encrypt(JSON.stringify(credentials), uuid)
 	const hashParams = new URLSearchParams()

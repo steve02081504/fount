@@ -764,7 +764,7 @@ export async function login(username, password, deviceId = 'unknown', req) {
 		await new Promise(resolve => setTimeout(resolve, avgVerifyTime * 0.8 + (Math.random() - 0.5) * avgVerifyTime * 0.2))
 		return Object.assign({ status: 401, success: false, message: 'Invalid username or password' }, local_return)
 	}
-	if (!user) return await failedLogin({ status: 401, success: false, message: 'User not found' })
+	if (!user) return await failedLogin()
 
 	const authData = user.auth
 
@@ -783,7 +783,7 @@ export async function login(username, password, deviceId = 'unknown', req) {
 			authData.loginAttempts = 0 // 达到最大尝试次数后重置
 			save_config()
 			console.logI18n('fountConsole.auth.accountLockedLog', { username })
-			return { status: 403, success: false, message: `Account locked due to too many failed attempts. Try again in ${ms(ms(ACCOUNT_LOCK_TIME), { long: true })}.` }
+			return { status: 403, success: false, message: `Account locked due to too many failed attempts. Try again in ${ACCOUNT_LOCK_TIME}.` }
 		}
 		return await failedLogin()
 	}

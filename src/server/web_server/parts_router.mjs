@@ -11,8 +11,10 @@ const PartsRouters = {}
 const partsAPIregex = new RegExp(`^/(api|ws)/(${partsList.join('|')})/`)
 PartsRouter.use(async (req, res, next) => {
 	if (!partsAPIregex.test(req.path)) return next()
-	try { await auth_request(req, res) }
-	catch (error) { console.error('skip part router because auth error:', error) }
+	if(!await auth_request(req, res)) {
+		console.error('skip part router because auth failed')
+		return next()
+	}
 	const { username } = await getUserByReq(req)
 	if (!username) return next()
 	const parttype = req.path.split('/')[2]

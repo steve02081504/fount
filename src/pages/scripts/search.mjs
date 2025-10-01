@@ -41,7 +41,8 @@ export function compileFilter(filterString) {
 	}
 
 	getFiltersFromString(filterString).forEach(filterStr => {
-		const { prefix, term } = /^(?<prefix>[+-]?)("(?<term>.+)"|(?<term>\S+))$/.exec(filterStr)?.groups || {}
+		const { prefix, quotedTerm, unquotedTerm } = /^(?<prefix>[+-]?)("(?<quotedTerm>.+)"|(?<unquotedTerm>\S+))\s*$/.exec(filterStr)?.groups || {}
+		const term = quotedTerm || unquotedTerm
 		FiltersMap[prefix].push(parseRegexFilter(term))
 	})
 
