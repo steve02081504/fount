@@ -72,6 +72,20 @@ export const localhostLocales = [...new Set([
 ].filter(Boolean))]
 export let localhostLocaleData = await getLocaleData(localhostLocales)
 
+fs.watch(`${__dirname}/src/locales`, (_event, filename) => {
+	if (!filename?.endsWith('.json')) return
+	const locale = filename.slice(0, -5)
+	console.log(`Detected change in ${filename}.`)
+
+	// Clear cache for the changed file, if it exists
+	if (fountLocaleCache[locale]) delete fountLocaleCache[locale]
+
+	// Always re-evaluate and reload the locale data for the current session
+	getLocaleData(localhostLocales).then((data) => {
+		localhostLocaleData = data
+	})
+})
+
 // 中国大陆且今天周四
 if (localhostLocales[0] === 'zh-CN')
 	setInterval(() => {
