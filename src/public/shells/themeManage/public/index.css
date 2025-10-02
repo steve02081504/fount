@@ -11,7 +11,8 @@
 
 .selected-theme {
 	outline: 4px solid;
-	outline-color: theme('colors.primary');
+	outline-color: oklch(var(--p));
+	outline-offset: 2px;
 }
 
 .auto-theme-container {

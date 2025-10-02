@@ -13,7 +13,7 @@
 			"localUrl": "Acceso a fount desde otros dispositivos en la misma red: ${url}",
 			"standingBy": "Standing by...",
 			"update": {
-				"restarting": "Se descubrió una nueva versión y la actualización se está reiniciando ..."
+				"restarting": "Se descubrió una nueva versión y la actualización se está reiniciando..."
 			}
 		},
 		"jobs": {
@@ -102,6 +102,11 @@
 	},
 	"installer_wait_screen": {
 		"title": "¡Bienvenido a fount!",
+		"language_selector": {
+			"search": {
+				"placeholder": "Buscar idioma..."
+			}
+		},
 		"hero": {
 			"title": "Tu Compañero Inmersivo de Personajes con IA",
 			"description": "fount es una plataforma de interacción de personajes impulsada por IA, diseñada para <i>empoderarte</i>. Es un puente que te conecta con los personajes que imaginas, permitiéndote hablar fácilmente con ellos, crear tus propios personajes y compartirlos con el mundo."
@@ -124,7 +129,10 @@
 		},
 		"theme_selector": {
 			"title": "Elige tu apariencia",
-			"description": "Selecciona un tema para personalizar tu experiencia."
+			"description": "Selecciona un tema para personalizar tu experiencia.",
+			"search": {
+				"placeholder": "Buscar temas..."
+			}
 		},
 		"mini_game": {
 			"title": "Juega a un minijuego",
@@ -742,6 +750,12 @@
 			"partTypeSelect": "Por favor, selecciona",
 			"partSelect": "Por favor, selecciona"
 		},
+		"partSelectDropdown": {
+			"placeholder": "Seleccionar..."
+		},
+		"partSearch": {
+			"placeholder": "Buscar..."
+		},
 		"export": {
 			"title": "Opciones de Exportación"
 		},
@@ -899,18 +913,27 @@
 		"title": "Configuración de idiomas",
 		"description": "Administre sus preferencias de idioma aquí. Los idiomas en la lista tendrán prioridad sobre la configuración del navegador en orden.",
 		"availableLanguages": "Idiomas disponibles",
-		"addButton": "añadir",
 		"preferredLanguages": "Lista de idiomas prioritarios",
 		"resetButton": "Reiniciar",
-		"saveButton": "ahorrar",
+		"saveButton": "Guardar",
 		"noPreferredLanguages": "No hay lenguaje previo todavía. Se utilizará la configuración predeterminada del navegador.",
-		"savedMessage": "¡La configuración del idioma se guardan!",
+		"savedMessage": "¡La configuración de idioma se ha guardado!",
 		"resetMessage": "¡La configuración del idioma se ha restablecido!",
-		"fetchLocalesFailed": "¡No pudo obtener idiomas disponibles!"
+		"fetchLocalesFailed": "¡No pudo obtener idiomas disponibles!",
+		"select": {
+			"placeholder": "Selecciona un idioma..."
+		},
+		"search": {
+			"placeholder": "Buscar idioma..."
+		}
 	},
 	"themeManage": {
 		"title": "Gestión de temas",
 		"instruction": "¡Elige un tema!",
+		"search": {
+			"placeholder": "Buscar temas...",
+			"noResult": "No se encontraron temas coincidentes."
+		},
 		"themes": {
 			"auto": "Automático",
 			"light": "Claro",
@@ -1045,6 +1068,18 @@
 			"newBot": "Nuevo",
 			"deleteBot": "Eliminar"
 		},
+		"botSelectDropdown": {
+			"placeholder": "Elige un bot"
+		},
+		"botSearch": {
+			"placeholder": "Buscar bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Selecciona un rol"
+		},
+		"charSearch": {
+			"placeholder": "Buscar personajes..."
+		},
 		"configCard": {
 			"title": "Configuración del Bot",
 			"labels": {
@@ -1079,6 +1114,18 @@
 	"telegram_bots": {
 		"title": "Bots de Telegram",
 		"cardTitle": "Gestión de Bots de Telegram",
+		"botSelectDropdown": {
+			"placeholder": "Elige un bot"
+		},
+		"botSearch": {
+			"placeholder": "Buscar bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Selecciona un rol"
+		},
+		"charSearch": {
+			"placeholder": "Buscar personajes..."
+		},
 		"buttons": {
 			"newBot": "Nuevo",
 			"deleteBot": "Eliminar"

@@ -102,6 +102,11 @@
 	},
 	"installer_wait_screen": {
 		"title": "👋 ⛲❗️",
+		"language_selector": {
+			"search": {
+				"placeholder": "🔍🗣️"
+			}
+		},
 		"hero": {
 			"title": "✨🤖🤝",
 			"description": "⛲: 🗣️🤖, ✍️👤, 🤝🌍"
@@ -120,11 +125,14 @@
 		},
 		"feature4": {
 			"title": "🔗🤖🌐",
-			"description": "🔗 OpenAI, Claude, ..."
+			"description": "🔗 OpenAI, Claude,..."
 		},
 		"theme_selector": {
 			"title": "🎨💅",
-			"description": "🖌️✨"
+			"description": "🖌️✨",
+			"search": {
+				"placeholder": "🔍🎨"
+			}
 		},
 		"mini_game": {
 			"title": "🎮",
@@ -742,6 +750,12 @@
 			"partTypeSelect": "🤔",
 			"partSelect": "🤔"
 		},
+		"partSelectDropdown": {
+			"placeholder": "👇"
+		},
+		"partSearch": {
+			"placeholder": "🔍"
+		},
 		"export": {
 			"title": "📤"
 		},
@@ -899,18 +913,27 @@
 		"title": "🗣️⚙️",
 		"description": "⚙️🗣️, ❤️➡️🌐",
 		"availableLanguages": "✅🗣️",
-		"addButton": "➕",
 		"preferredLanguages": "❤️🗣️",
 		"resetButton": "🔄",
 		"saveButton": "💾",
 		"noPreferredLanguages": "🤷‍♂️❤️🗣️, ➡️🌐",
 		"savedMessage": "🗣️⚙️💾✅❗️",
 		"resetMessage": "🗣️⚙️🔄✅❗️",
-		"fetchLocalesFailed": "🗣️📥❌❗️"
+		"fetchLocalesFailed": "🗣️📥❌❗️",
+		"select": {
+			"placeholder": "👉🗣️"
+		},
+		"search": {
+			"placeholder": "🔍🗣️"
+		}
 	},
 	"themeManage": {
 		"title": "🎨",
 		"instruction": "🤔🎨❗️",
+		"search": {
+			"placeholder": "🔍🎨",
+			"noResult": "🤷‍♀️🚫"
+		},
 		"themes": {
 			"auto": "⚙️",
 			"light": "☀️",
@@ -1045,6 +1068,18 @@
 			"newBot": "🆕",
 			"deleteBot": "🗑️"
 		},
+		"botSelectDropdown": {
+			"placeholder": "👉🤖"
+		},
+		"botSearch": {
+			"placeholder": "🔍🤖"
+		},
+		"charSelectDropdown": {
+			"placeholder": "👉👤"
+		},
+		"charSearch": {
+			"placeholder": "🔍👤"
+		},
 		"configCard": {
 			"title": "🤖⚙️",
 			"labels": {
@@ -1079,6 +1114,18 @@
 	"telegram_bots": {
 		"title": "🤖✈️",
 		"cardTitle": "🤖✈️",
+		"botSelectDropdown": {
+			"placeholder": "👉🤖"
+		},
+		"botSearch": {
+			"placeholder": "🔍🤖"
+		},
+		"charSelectDropdown": {
+			"placeholder": "👉👤"
+		},
+		"charSearch": {
+			"placeholder": "🔍👤"
+		},
 		"buttons": {
 			"newBot": "🆕",
 			"deleteBot": "🗑️"

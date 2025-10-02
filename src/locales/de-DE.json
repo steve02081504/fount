@@ -13,7 +13,7 @@
 			"localUrl": "Zugriff auf fount von anderen Geräten im selben Netzwerk: ${url}",
 			"standingBy": "Standing by...",
 			"update": {
-				"restarting": "Eine neue Version wurde entdeckt und das Update wird neu gestartet ..."
+				"restarting": "Eine neue Version wurde entdeckt und das Update wird neu gestartet..."
 			}
 		},
 		"jobs": {
@@ -102,6 +102,11 @@
 	},
 	"installer_wait_screen": {
 		"title": "Willkommen bei fount!",
+		"language_selector": {
+			"search": {
+				"placeholder": "Sprache suchen..."
+			}
+		},
 		"hero": {
 			"title": "Ihr immersiver KI-Charakterbegleiter",
 			"description": "fount ist eine KI-gestützte Charakter-Interaktionsplattform, die <i>Sie</i> befähigt. Es ist eine Brücke, die Sie mit Ihren imaginären Charakteren verbindet und es Ihnen ermöglicht, problemlos mit ihnen zu sprechen, Ihre eigenen Charaktere zu erstellen und sie mit der Welt zu teilen."
@@ -124,7 +129,10 @@
 		},
 		"theme_selector": {
 			"title": "Wählen Sie Ihr Aussehen",
-			"description": "Wählen Sie ein Design, um Ihre Erfahrung zu personalisieren."
+			"description": "Wählen Sie ein Design, um Ihre Erfahrung zu personalisieren.",
+			"search": {
+				"placeholder": "Themen suchen..."
+			}
 		},
 		"mini_game": {
 			"title": "Spielen Sie ein kleines Spiel",
@@ -742,6 +750,12 @@
 			"partTypeSelect": "Bitte auswählen",
 			"partSelect": "Bitte auswählen"
 		},
+		"partSelectDropdown": {
+			"placeholder": "Bitte auswählen"
+		},
+		"partSearch": {
+			"placeholder": "Suchen..."
+		},
 		"export": {
 			"title": "Exportoptionen"
 		},
@@ -899,18 +913,27 @@
 		"title": "Spracheinstellungen",
 		"description": "Verwalten Sie hier Ihre Spracheinstellungen. Die Sprachen in der Liste haben Vorrang vor den Browsereinstellungen in der Reihenfolge.",
 		"availableLanguages": "Verfügbare Sprachen",
-		"addButton": "Hinzufügen zu",
 		"preferredLanguages": "Prioritätssprachliste",
 		"resetButton": "Zurücksetzen",
-		"saveButton": "speichern",
-		"noPreferredLanguages": "Noch keine frühere Sprache. Die Browser -Standardeinstellungen werden verwendet.",
+		"saveButton": "Speichern",
+		"noPreferredLanguages": "Noch keine bevorzugte Sprache festgelegt. Es werden die Standardeinstellungen des Browsers verwendet.",
 		"savedMessage": "Spracheinstellungen werden gespeichert!",
 		"resetMessage": "Spracheinstellungen wurden zurückgesetzt!",
-		"fetchLocalesFailed": "Versäumte, verfügbare Sprachen zu erhalten!"
+		"fetchLocalesFailed": "Versäumte, verfügbare Sprachen zu erhalten!",
+		"select": {
+			"placeholder": "Sprache auswählen..."
+		},
+		"search": {
+			"placeholder": "Sprache suchen..."
+		}
 	},
 	"themeManage": {
 		"title": "Design-Verwaltung",
 		"instruction": "Wählen Sie ein Design!",
+		"search": {
+			"placeholder": "Themen suchen...",
+			"noResult": "Keine passenden Themen gefunden."
+		},
 		"themes": {
 			"auto": "Automatisch",
 			"light": "Hell",
@@ -1045,6 +1068,18 @@
 			"newBot": "Neu",
 			"deleteBot": "Löschen"
 		},
+		"botSelectDropdown": {
+			"placeholder": "Bot auswählen"
+		},
+		"botSearch": {
+			"placeholder": "Bot suchen..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Rolle auswählen"
+		},
+		"charSearch": {
+			"placeholder": "Rollen suchen..."
+		},
 		"configCard": {
 			"title": "Bot-Konfiguration",
 			"labels": {
@@ -1079,6 +1114,18 @@
 	"telegram_bots": {
 		"title": "Telegram-Bots",
 		"cardTitle": "Telegram-Bot-Verwaltung",
+		"botSelectDropdown": {
+			"placeholder": "Bot auswählen"
+		},
+		"botSearch": {
+			"placeholder": "Bot suchen..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Rolle auswählen"
+		},
+		"charSearch": {
+			"placeholder": "Rollen suchen..."
+		},
 		"buttons": {
 			"newBot": "Neu",
 			"deleteBot": "Löschen"

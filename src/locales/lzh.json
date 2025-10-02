@@ -102,6 +102,11 @@
 	},
 	"installer_wait_screen": {
 		"title": "幸會fount！",
+		"language_selector": {
+			"search": {
+				"placeholder": "寻雅言…"
+			}
+		},
 		"hero": {
 			"title": "靈犀一點，應念而生",
 			"description": "fount者，神思所驅，幻身之臺也。意在予<i>君</i>神便。其為津梁，繫君於遐思之靈，與之清談，創塑己身，公諸天下，皆易如反掌。"
@@ -124,7 +129,10 @@
 		},
 		"theme_selector": {
 			"title": "擇君風貌",
-			"description": "擇一風貌以合君心。"
+			"description": "擇一風貌以合君心。",
+			"search": {
+				"placeholder": "觅风貌…"
+			}
 		},
 		"mini_game": {
 			"title": "聊以解憂",
@@ -742,6 +750,12 @@
 			"partTypeSelect": "請擇",
 			"partSelect": "請擇"
 		},
+		"partSelectDropdown": {
+			"placeholder": "請擇"
+		},
+		"partSearch": {
+			"placeholder": "尋..."
+		},
 		"export": {
 			"title": "導出選項"
 		},
@@ -899,18 +913,27 @@
 		"title": "雅言規度",
 		"description": "此處可定君之雅言好尚。凡所列之言，將先於觀器之常設而用。",
 		"availableLanguages": "諸雅言備選",
-		"addButton": "添",
 		"preferredLanguages": "所尚雅言之列",
 		"resetButton": "復初",
 		"saveButton": "存",
 		"noPreferredLanguages": "尚無所尚雅言。將循觀器之常設。",
 		"savedMessage": "雅言之序已存！",
 		"resetMessage": "雅言之序已復初！",
-		"fetchLocalesFailed": "取諸雅言備選失利！"
+		"fetchLocalesFailed": "取諸雅言備選失利！",
+		"select": {
+			"placeholder": "择一雅言…"
+		},
+		"search": {
+			"placeholder": "寻雅言…"
+		}
 	},
 	"themeManage": {
 		"title": "風貌",
 		"instruction": "擇一風貌。",
+		"search": {
+			"placeholder": "觅风貌…",
+			"noResult": "遍寻无获。"
+		},
 		"themes": {
 			"auto": "隨天時",
 			"light": "白晝",
@@ -1045,6 +1068,18 @@
 			"newBot": "新建",
 			"deleteBot": "刪除"
 		},
+		"botSelectDropdown": {
+			"placeholder": "择一灵偶"
+		},
+		"botSearch": {
+			"placeholder": "寻灵偶…"
+		},
+		"charSelectDropdown": {
+			"placeholder": "择一角色"
+		},
+		"charSearch": {
+			"placeholder": "寻角色…"
+		},
 		"configCard": {
 			"title": "靈偶規度",
 			"labels": {
@@ -1079,6 +1114,18 @@
 	"telegram_bots": {
 		"title": "Telegram 靈偶",
 		"cardTitle": "Telegram 靈偶",
+		"botSelectDropdown": {
+			"placeholder": "择一灵偶"
+		},
+		"botSearch": {
+			"placeholder": "寻灵偶…"
+		},
+		"charSelectDropdown": {
+			"placeholder": "择一角色"
+		},
+		"charSearch": {
+			"placeholder": "寻角色…"
+		},
 		"buttons": {
 			"newBot": "新建",
 			"deleteBot": "刪除"

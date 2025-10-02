@@ -102,6 +102,11 @@
 	},
 	"installer_wait_screen": {
 		"title": "fountへようこそ！",
+		"language_selector": {
+			"search": {
+				"placeholder": "言語を検索..."
+			}
+		},
 		"hero": {
 			"title": "あなただけの没入型AIキャラクターコンパニオン",
 			"description": "fountは、<i>あなた</i>の可能性を最大限に引き出すために設計された、AI搭載のキャラクター対話プラットフォームです。想像の世界のキャラクターとあなたを繋ぐ架け橋となり、気軽に会話を楽しんだり、自分だけのキャラクターを創り出して世界と共有したりすることを可能にします。"
@@ -124,7 +129,10 @@
 		},
 		"theme_selector": {
 			"title": "テーマを選択",
-			"description": "テーマを選択して、あなただけの体験をカスタマイズしましょう。"
+			"description": "テーマを選択して、あなただけの体験をカスタマイズしましょう。",
+			"search": {
+				"placeholder": "テーマを検索..."
+			}
 		},
 		"mini_game": {
 			"title": "ミニゲームでひと息",
@@ -742,6 +750,12 @@
 			"partTypeSelect": "選択してください",
 			"partSelect": "選択してください"
 		},
+		"partSelectDropdown": {
+			"placeholder": "選択してください"
+		},
+		"partSearch": {
+			"placeholder": "検索..."
+		},
 		"export": {
 			"title": "エクスポートオプション"
 		},
@@ -899,18 +913,27 @@
 		"title": "言語設定",
 		"description": "ここで言語の好みを管理します。リスト内の言語は、ブラウザの設定よりも優先されます。",
 		"availableLanguages": "利用可能な言語",
-		"addButton": "に追加",
 		"preferredLanguages": "優先言語リスト",
 		"resetButton": "リセット",
 		"saveButton": "保存",
-		"noPreferredLanguages": "以前の言語はまだありません。ブラウザのデフォルト設定が使用されます。",
+		"noPreferredLanguages": "優先言語が設定されていません。ブラウザのデフォルト設定が使用されます。",
 		"savedMessage": "言語設定が保存されます！",
 		"resetMessage": "言語設定がリセットされました！",
-		"fetchLocalesFailed": "利用可能な言語を取得できませんでした！"
+		"fetchLocalesFailed": "利用可能な言語を取得できませんでした！",
+		"select": {
+			"placeholder": "言語を選択..."
+		},
+		"search": {
+			"placeholder": "言語を検索..."
+		}
 	},
 	"themeManage": {
 		"title": "テーマ管理",
 		"instruction": "テーマを選択してください！",
+		"search": {
+			"placeholder": "テーマを検索...",
+			"noResult": "一致するテーマが見つかりませんでした。"
+		},
 		"themes": {
 			"auto": "自動",
 			"light": "ライト",
@@ -1045,6 +1068,18 @@
 			"newBot": "新規作成",
 			"deleteBot": "削除"
 		},
+		"botSelectDropdown": {
+			"placeholder": "ボットを選択"
+		},
+		"botSearch": {
+			"placeholder": "ボットを検索..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "役割を選択"
+		},
+		"charSearch": {
+			"placeholder": "役割を検索..."
+		},
 		"configCard": {
 			"title": "ボット設定",
 			"labels": {
@@ -1079,6 +1114,18 @@
 	"telegram_bots": {
 		"title": "Telegramボット",
 		"cardTitle": "Telegramボット管理",
+		"botSelectDropdown": {
+			"placeholder": "ボットを選択"
+		},
+		"botSearch": {
+			"placeholder": "ボットを検索..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "役割を選択"
+		},
+		"charSearch": {
+			"placeholder": "役割を検索..."
+		},
 		"buttons": {
 			"newBot": "新規作成",
 			"deleteBot": "削除"

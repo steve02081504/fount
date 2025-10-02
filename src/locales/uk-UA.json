@@ -13,7 +13,7 @@
 			"localUrl": "Доступ до fount з інших пристроїв у тій самій мережі: ${url}",
 			"standingBy": "Standing by...",
 			"update": {
-				"restarting": "Була виявлена ​​нова версія та оновлення перезапускається ..."
+				"restarting": "Була виявлена ​​нова версія та оновлення перезапускається..."
 			}
 		},
 		"jobs": {
@@ -102,6 +102,11 @@
 	},
 	"installer_wait_screen": {
 		"title": "Ласкаво просимо до fount!",
+		"language_selector": {
+			"search": {
+				"placeholder": "Пошук мови..."
+			}
+		},
 		"hero": {
 			"title": "Ваш імерсивний AI-супутник-персонаж",
 			"description": "fount — це платформа для взаємодії з персонажами, керована AI, створена, щоб надати можливості саме <i>вам</i>. Це міст, що з'єднує вас із вигаданими персонажами, дозволяючи вам легко спілкуватися з ними, створювати власних персонажів та ділитися ними зі світом."
@@ -124,7 +129,10 @@
 		},
 		"theme_selector": {
 			"title": "Оберіть свій вигляд",
-			"description": "Оберіть тему, щоб персоналізувати свій досвід."
+			"description": "Оберіть тему, щоб персоналізувати свій досвід.",
+			"search": {
+				"placeholder": "Пошук тем..."
+			}
 		},
 		"mini_game": {
 			"title": "Зіграйте в гру",
@@ -742,6 +750,12 @@
 			"partTypeSelect": "Будь ласка, оберіть",
 			"partSelect": "Будь ласка, оберіть"
 		},
+		"partSelectDropdown": {
+			"placeholder": "Будь ласка, виберіть"
+		},
+		"partSearch": {
+			"placeholder": "Шукати..."
+		},
 		"export": {
 			"title": "Опції експорту"
 		},
@@ -899,18 +913,27 @@
 		"title": "Налаштування мови",
 		"description": "Керуйте своїми мовними уподобаннями тут. Мови в списку будуть мати перевагу над налаштуваннями браузера в порядку.",
 		"availableLanguages": "Наявні мови",
-		"addButton": "Додати",
 		"preferredLanguages": "Список мовних пріоритетів",
 		"resetButton": "Скинути",
-		"saveButton": "заощадити",
-		"noPreferredLanguages": "Ще немає попередньої мови. Будуть використані налаштування за замовчуванням браузера.",
+		"saveButton": "Зберегти",
+		"noPreferredLanguages": "Бажану мову не вибрано. Буде використано налаштування браузера за замовчуванням.",
 		"savedMessage": "Налаштування мови зберігаються!",
 		"resetMessage": "Налаштування мови були скинуті!",
-		"fetchLocalesFailed": "Не вдалося отримати доступні мови!"
+		"fetchLocalesFailed": "Не вдалося отримати доступні мови!",
+		"select": {
+			"placeholder": "Виберіть мову..."
+		},
+		"search": {
+			"placeholder": "Пошук мови..."
+		}
 	},
 	"themeManage": {
 		"title": "Керування темами",
 		"instruction": "Оберіть тему!",
+		"search": {
+			"placeholder": "Пошук тем...",
+			"noResult": "Відповідних тем не знайдено."
+		},
 		"themes": {
 			"auto": "Автоматична",
 			"light": "Світла",
@@ -1045,6 +1068,18 @@
 			"newBot": "Створити",
 			"deleteBot": "Видалити"
 		},
+		"botSelectDropdown": {
+			"placeholder": "Виберіть бота"
+		},
+		"botSearch": {
+			"placeholder": "Знайти бота..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Виберіть роль"
+		},
+		"charSearch": {
+			"placeholder": "Шукати персонажів..."
+		},
 		"configCard": {
 			"title": "Налаштування бота",
 			"labels": {
@@ -1079,6 +1114,18 @@
 	"telegram_bots": {
 		"title": "Telegram Bot",
 		"cardTitle": "Керування Telegram ботами",
+		"botSelectDropdown": {
+			"placeholder": "Виберіть бота"
+		},
+		"botSearch": {
+			"placeholder": "Знайти бота..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Виберіть роль"
+		},
+		"charSearch": {
+			"placeholder": "Шукати персонажів..."
+		},
 		"buttons": {
 			"newBot": "Створити",
 			"deleteBot": "Видалити"

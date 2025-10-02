@@ -13,7 +13,7 @@
 			"localUrl": "동일한 네트워크의 다른 장치에서 fount에 액세스: ${url}",
 			"standingBy": "Standing by...",
 			"update": {
-				"restarting": "새 버전이 발견되었고 업데이트가 다시 시작됩니다 ..."
+				"restarting": "새 버전이 발견되었고 업데이트가 다시 시작됩니다..."
 			}
 		},
 		"jobs": {
@@ -102,6 +102,11 @@
 	},
 	"installer_wait_screen": {
 		"title": "fount에 오신 것을 환영합니다!",
+		"language_selector": {
+			"search": {
+				"placeholder": "언어 검색..."
+			}
+		},
 		"hero": {
 			"title": "당신만의 몰입형 AI 캐릭터 동반자",
 			"description": "fount는 <i>당신</i>에게 특별한 경험을 선사하기 위해 설계된 AI 기반 캐릭터 인터랙션 플랫폼입니다. 상상 속 캐릭터와 당신을 연결하여 손쉽게 대화하고, 자신만의 캐릭터를 만들어 세상과 공유할 수 있게 해주는 다리입니다."
@@ -124,7 +129,10 @@
 		},
 		"theme_selector": {
 			"title": "테마 선택",
-			"description": "테마를 선택하여 당신의 경험을 개인화하세요."
+			"description": "테마를 선택하여 당신의 경험을 개인화하세요.",
+			"search": {
+				"placeholder": "테마 검색..."
+			}
 		},
 		"mini_game": {
 			"title": "미니 게임 한판!",
@@ -742,6 +750,12 @@
 			"partTypeSelect": "선택해주세요",
 			"partSelect": "선택해주세요"
 		},
+		"partSelectDropdown": {
+			"placeholder": "선택하세요"
+		},
+		"partSearch": {
+			"placeholder": "검색..."
+		},
 		"export": {
 			"title": "내보내기 옵션"
 		},
@@ -899,18 +913,27 @@
 		"title": "언어 설정",
 		"description": "여기에서 언어 선호도를 관리하십시오. 목록의 언어는 순서대로 브라우저 설정보다 우선합니다.",
 		"availableLanguages": "사용 가능한 언어",
-		"addButton": "추가",
 		"preferredLanguages": "우선 언어 목록",
-		"resetButton": "다시 놓기",
-		"saveButton": "구하다",
-		"noPreferredLanguages": "아직 사전 언어가 없습니다. 브라우저 기본 설정이 사용됩니다.",
+		"resetButton": "초기화",
+		"saveButton": "저장",
+		"noPreferredLanguages": "선호하는 언어가 설정되지 않았습니다. 브라우저 기본 설정이 사용됩니다.",
 		"savedMessage": "언어 설정이 저장됩니다!",
 		"resetMessage": "언어 설정이 재설정되었습니다!",
-		"fetchLocalesFailed": "사용 가능한 언어를 얻지 못했습니다!"
+		"fetchLocalesFailed": "사용 가능한 언어를 얻지 못했습니다!",
+		"select": {
+			"placeholder": "언어 선택..."
+		},
+		"search": {
+			"placeholder": "언어 검색..."
+		}
 	},
 	"themeManage": {
 		"title": "테마 관리",
 		"instruction": "테마를 선택하세요!",
+		"search": {
+			"placeholder": "테마 검색...",
+			"noResult": "일치하는 테마가 없습니다."
+		},
 		"themes": {
 			"auto": "자동",
 			"light": "라이트",
@@ -1045,6 +1068,18 @@
 			"newBot": "새로 만들기",
 			"deleteBot": "삭제"
 		},
+		"botSelectDropdown": {
+			"placeholder": "봇을 선택하세요"
+		},
+		"botSearch": {
+			"placeholder": "봇 검색..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "역할을 선택하세요"
+		},
+		"charSearch": {
+			"placeholder": "캐릭터 검색..."
+		},
 		"configCard": {
 			"title": "봇 설정",
 			"labels": {
@@ -1079,6 +1114,18 @@
 	"telegram_bots": {
 		"title": "텔레그램 봇",
 		"cardTitle": "텔레그램 봇 관리",
+		"botSelectDropdown": {
+			"placeholder": "봇을 선택하세요"
+		},
+		"botSearch": {
+			"placeholder": "봇 검색..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "역할을 선택하세요"
+		},
+		"charSearch": {
+			"placeholder": "캐릭터 검색..."
+		},
 		"buttons": {
 			"newBot": "새로 만들기",
 			"deleteBot": "삭제"

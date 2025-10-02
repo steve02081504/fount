@@ -13,7 +13,7 @@
 			"localUrl": "Opnaðu fount á öðrum tækjum á sama neti: ${url}",
 			"standingBy": "Standing by...",
 			"update": {
-				"restarting": "Ný útgáfa uppgötvaðist og verið er að endurræsa uppfærsluna ..."
+				"restarting": "Ný útgáfa uppgötvaðist og verið er að endurræsa uppfærsluna..."
 			}
 		},
 		"jobs": {
@@ -102,6 +102,11 @@
 	},
 	"installer_wait_screen": {
 		"title": "Velkomin í fount!",
+		"language_selector": {
+			"search": {
+				"placeholder": "Leita að tungumáli..."
+			}
+		},
 		"hero": {
 			"title": "Þinn yfirgripsmikli gervigreindar-persónufélagi",
 			"description": "fount er gervigreindarknúinn samskiptavettvangur fyrir persónur, hannaður til að styrkja <i>þig</i>. Það er brú sem tengir þig við persónur úr ímyndunaraflinu, sem gerir þér kleift að spjalla við þær áreynslulaust, búa til þínar eigin persónur og deila þeim með heiminum."
@@ -124,7 +129,10 @@
 		},
 		"theme_selector": {
 			"title": "Veldu þitt útlit",
-			"description": "Veldu þema til að sérsníða upplifun þína."
+			"description": "Veldu þema til að sérsníða upplifun þína.",
+			"search": {
+				"placeholder": "Leita að þema..."
+			}
 		},
 		"mini_game": {
 			"title": "Spilaðu smáleik",
@@ -742,6 +750,12 @@
 			"partTypeSelect": "Vinsamlegast veldu",
 			"partSelect": "Vinsamlegast veldu"
 		},
+		"partSelectDropdown": {
+			"placeholder": "Vinsamlegast veldu"
+		},
+		"partSearch": {
+			"placeholder": "Leita..."
+		},
 		"export": {
 			"title": "Útflutningsvalkostir"
 		},
@@ -899,18 +913,27 @@
 		"title": "Tungumálastillingar",
 		"description": "Stjórna tungumálakjörum þínum hér. Tungumálin á listanum munu hafa forgang fram yfir vafrastillingarnar í röð.",
 		"availableLanguages": "Tiltæk tungumál",
-		"addButton": "Bæta við",
 		"preferredLanguages": "Forgangslista",
 		"resetButton": "Endurstilla",
 		"saveButton": "Vista",
 		"noPreferredLanguages": "Ekkert fyrri tungumál ennþá. Sjálfgefnar stillingar vafrans verða notaðar.",
 		"savedMessage": "Tungumálastillingar eru vistaðar!",
 		"resetMessage": "Tungumálastillingar hafa verið endurstilltar!",
-		"fetchLocalesFailed": "Ekki tókst að fá tiltæk tungumál!"
+		"fetchLocalesFailed": "Ekki tókst að fá tiltæk tungumál!",
+		"select": {
+			"placeholder": "Veldu tungumál..."
+		},
+		"search": {
+			"placeholder": "Leita að tungumáli..."
+		}
 	},
 	"themeManage": {
 		"title": "Þemastjórnun",
 		"instruction": "Veldu þema!",
+		"search": {
+			"placeholder": "Leita að þema...",
+			"noResult": "Engin samsvarandi þemu fundust."
+		},
 		"themes": {
 			"auto": "Sjálfvirkt",
 			"light": "Ljóst",
@@ -1045,6 +1068,18 @@
 			"newBot": "Nýr Bot",
 			"deleteBot": "Eyða Bot"
 		},
+		"botSelectDropdown": {
+			"placeholder": "Veldu vélmenni"
+		},
+		"botSearch": {
+			"placeholder": "Leita að boti..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Veldu hlutverk"
+		},
+		"charSearch": {
+			"placeholder": "Leitaðu að hlutverkum..."
+		},
 		"configCard": {
 			"title": "Bot stillingar",
 			"labels": {
@@ -1079,6 +1114,18 @@
 	"telegram_bots": {
 		"title": "Telegram Bot",
 		"cardTitle": "Stjórnun Telegram Bot",
+		"botSelectDropdown": {
+			"placeholder": "Veldu vélmenni"
+		},
+		"botSearch": {
+			"placeholder": "Leita að boti..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Veldu hlutverk"
+		},
+		"charSearch": {
+			"placeholder": "Leitaðu að hlutverkum..."
+		},
 		"buttons": {
 			"newBot": "Nýr Bot",
 			"deleteBot": "Eyða Bot"

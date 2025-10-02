@@ -105,37 +105,47 @@ export function createSearchableDropdown({
 	textKey,
 	valueKey,
 	onSelect = () => { },
-	dataAccessor = item => item
+	dataAccessor = item => item,
+	disabled = false,
 }) {
-	const oldInput = dropdownElement.querySelector('input') || { dataset: {} }
+	const is_builted_dropdown = dropdownElement.querySelector('.dropdown-content')
+	const triggerPlaceholder = is_builted_dropdown ? dropdownElement.querySelector('input').placeholder : dropdownElement.placeholder || 'Select an option...'
+	const oldSearchInput = is_builted_dropdown ? dropdownElement.querySelector('.dropdown-content').querySelector('input') : dropdownElement.querySelector('input') || { dataset: {} }
+	const searchPlaceholder = oldSearchInput.placeholder || 'Search...'
+
 	// Ensure the dropdownElement has the 'dropdown' class
 	dropdownElement.classList.add('dropdown', 'searchable-dropdown')
 	dropdownElement.setAttribute('role', 'combobox')
 	dropdownElement.setAttribute('aria-haspopup', 'listbox')
 
-	const uniqueId = `dropdown-list-${Math.random().toString(36).substring(2, 9)}`
+	if (disabled)
+		dropdownElement.innerHTML = `<input type="text" placeholder="${triggerPlaceholder}" class="input input-bordered w-full" tabindex="0" role="button" readonly aria-autocomplete="list" aria-expanded="false" disabled />`
+	else {
+		const uniqueId = `dropdown-list-${Math.random().toString(36).substring(2, 9)}`
 
-	// Create the dropdown content HTML structure
-	dropdownElement.innerHTML = `\
-<input type="text" placeholder="Select an option..." class="input input-bordered w-full cursor-pointer" tabindex="0" role="button" readonly aria-autocomplete="list" aria-controls="${uniqueId}" aria-expanded="false" />
+		// Create the dropdown content HTML structure
+		dropdownElement.innerHTML = `\
+<input type="text" placeholder="${triggerPlaceholder}" class="input input-bordered w-full cursor-pointer" tabindex="0" role="button" readonly aria-autocomplete="list" aria-controls="${uniqueId}" aria-expanded="false" />
 <div tabindex="0" id="${uniqueId}" class="dropdown-content z-50 p-4 shadow bg-base-100 rounded-box w-full flex flex-col gap-4 mt-2" role="listbox">
-	<input type="text" placeholder="Search..." class="input input-bordered w-full" />
+	<input type="text" placeholder="${searchPlaceholder}" class="input input-bordered w-full" />
 	<ul class="flex flex-col w-full p-0 max-h-48 overflow-y-auto bg-base-100 rounded-box">
 		<!-- Options will be inserted here -->
 	</ul>
 </div>
 `
+	}
+	const dropdownContent = dropdownElement.querySelector('.dropdown-content')
+	const searchInput = (disabled ? dropdownElement : dropdownContent).querySelector('input')
+
+	// Placeholders are now set in the template string, but we can still respect oldInput for search
+	searchInput.placeholder = oldSearchInput.placeholder || searchInput.placeholder
+	Object.assign(searchInput.dataset, oldSearchInput.dataset)
+
+	if (disabled) return dropdownElement
 
 	// Get references to the newly created elements
 	const triggerInput = dropdownElement.querySelector('input:not(.dropdown-content input)')
-	const dropdownContent = dropdownElement.querySelector('.dropdown-content')
-	const searchInput = dropdownContent.querySelector('input')
 	const optionsList = dropdownContent.querySelector('ul')
-	searchInput.placeholder = oldInput.placeholder || searchInput.placeholder
-	Object.assign(searchInput.dataset, oldInput.dataset)
-
-	// Use existing placeholder from the triggerInput or set a default
-	triggerInput.placeholder = dropdownElement.placeholder || triggerInput.placeholder
 
 	const getItemText = itemData => itemData[textKey] || itemData
 	const getItemValue = itemData => itemData[valueKey] || itemData
@@ -152,10 +162,12 @@ export function createSearchableDropdown({
 			// Synchronize dataset.value if it's not already set to this value.
 			if (dropdownElement.dataset.value !== String(newValue))
 				dropdownElement.dataset.value = newValue
-		} else {
+		}
+		else {
 			// If value is invalid, reset to placeholder.
-			triggerInput.value = triggerInput.placeholder || 'Select an option...'
+			triggerInput.value = ''
 			delete dropdownElement.dataset.value
+			onSelect(null)
 		}
 	}
 

@@ -108,7 +108,12 @@
 			</div>
 
 			<!-- Theme List -->
-			<div id="theme-list" class="lg:w-1/2 grid gap-4 max-h-[80vh] overflow-y-auto grid-cols-[repeat(auto-fit,minmax(160px,1fr))] p-4 lg:p-6"></div>
+			<div class="lg:w-1/2 flex flex-col max-h-[80vh]">
+				<div class="w-full p-4">
+					<input id="theme-search-input" type="search" data-i18n="themeManage.search" class="input input-bordered w-full" />
+				</div>
+				<div id="theme-list" class="flex-1 grid gap-4 overflow-y-auto grid-cols-[repeat(auto-fit,minmax(160px,1fr))] p-4 lg:p-6 pt-0"></div>
+			</div>
 		</div>
 	</div>
 

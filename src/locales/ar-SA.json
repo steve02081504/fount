@@ -13,7 +13,7 @@
 			"localUrl": "للوصول إلى fount من أجهزة أخرى على نفس الشبكة: ${url}",
 			"standingBy": "Standing by...",
 			"update": {
-				"restarting": "تم اكتشاف نسخة جديدة ويتم إعادة تشغيل التحديث ..."
+				"restarting": "تم اكتشاف نسخة جديدة ويتم إعادة تشغيل التحديث..."
 			}
 		},
 		"jobs": {
@@ -102,6 +102,11 @@
 	},
 	"installer_wait_screen": {
 		"title": "مرحبًا بك في fount!",
+		"language_selector": {
+			"search": {
+				"placeholder": "ابحث عن لغة..."
+			}
+		},
 		"hero": {
 			"title": "شريكك الغامر في شخصيات الذكاء الاصطناعي",
 			"description": "fount هي منصة تفاعل مع شخصيات مدعومة بالذكاء الاصطناعي، مصممة لتمكين<i>ك</i>. إنها جسر يربطك بالشخصيات التي تتخيلها، مما يتيح لك التحدث معهم بسهولة، وإنشاء شخصياتك الخاصة ومشاركتها مع العالم."
@@ -124,7 +129,10 @@
 		},
 		"theme_selector": {
 			"title": "اختر مظهرك",
-			"description": "اختر سمة لتخصيص تجربتك."
+			"description": "اختر سمة لتخصيص تجربتك.",
+			"search": {
+				"placeholder": "ابحث عن سمة..."
+			}
 		},
 		"mini_game": {
 			"title": "العب لعبة صغيرة",
@@ -742,6 +750,12 @@
 			"partTypeSelect": "الرجاء الاختيار",
 			"partSelect": "الرجاء الاختيار"
 		},
+		"partSelectDropdown": {
+			"placeholder": "الرجاء تحديد"
+		},
+		"partSearch": {
+			"placeholder": "بحث..."
+		},
 		"export": {
 			"title": "خيارات التصدير"
 		},
@@ -899,18 +913,27 @@
 		"title": "إعدادات اللغة",
 		"description": "إدارة تفضيلات لغتك هنا. ستؤدي اللغات في القائمة إلى الأسبقية على إعدادات المتصفح بالترتيب.",
 		"availableLanguages": "اللغات المتاحة",
-		"addButton": "اضف إليه",
 		"preferredLanguages": "قائمة لغة الأولوية",
 		"resetButton": "إعادة ضبط",
-		"saveButton": "يحفظ",
-		"noPreferredLanguages": "لا لغة سابقة حتى الآن. سيتم استخدام الإعدادات الافتراضية للمتصفح.",
+		"saveButton": "حفظ",
+		"noPreferredLanguages": "لم يتم تعيين لغة مفضلة بعد. سيتم استخدام الإعدادات الافتراضية للمتصفح.",
 		"savedMessage": "يتم حفظ إعدادات اللغة!",
 		"resetMessage": "تم إعادة تعيين إعدادات اللغة!",
-		"fetchLocalesFailed": "فشل في الحصول على اللغات المتاحة!"
+		"fetchLocalesFailed": "فشل في الحصول على اللغات المتاحة!",
+		"select": {
+			"placeholder": "اختر لغة..."
+		},
+		"search": {
+			"placeholder": "ابحث عن لغة..."
+		}
 	},
 	"themeManage": {
 		"title": "إدارة السمات",
 		"instruction": "اختر سمة!",
+		"search": {
+			"placeholder": "ابحث عن سمة...",
+			"noResult": "لم يتم العثور على مواضيع مطابقة."
+		},
 		"themes": {
 			"auto": "تلقائي",
 			"light": "فاتح",
@@ -1045,6 +1068,18 @@
 			"newBot": "بوت جديد",
 			"deleteBot": "حذف البوت"
 		},
+		"botSelectDropdown": {
+			"placeholder": "اختر روبوت"
+		},
+		"botSearch": {
+			"placeholder": "ابحث عن بوت..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "اختر شخصية"
+		},
+		"charSearch": {
+			"placeholder": "ابحث عن شخصية..."
+		},
 		"configCard": {
 			"title": "تهيئة البوت",
 			"labels": {
@@ -1079,6 +1114,18 @@
 	"telegram_bots": {
 		"title": "بوتات Telegram",
 		"cardTitle": "إدارة بوتات Telegram",
+		"botSelectDropdown": {
+			"placeholder": "اختر روبوت"
+		},
+		"botSearch": {
+			"placeholder": "ابحث عن بوت..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "اختر شخصية"
+		},
+		"charSearch": {
+			"placeholder": "ابحث عن شخصية..."
+		},
 		"buttons": {
 			"newBot": "بوت جديد",
 			"deleteBot": "حذف البوت"

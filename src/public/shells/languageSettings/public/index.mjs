@@ -1,10 +1,10 @@
-import { initTranslations, geti18n, i18nElement, console, loadPreferredLangs, savePreferredLangs } from '../../scripts/i18n.mjs'
-import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
-import { applyTheme } from '../../scripts/theme.mjs'
+import { initTranslations, geti18n, i18nElement, loadPreferredLangs, savePreferredLangs } from '/scripts/i18n.mjs'
+import { renderTemplate, usingTemplates } from '/scripts/template.mjs'
+import { applyTheme } from '/scripts/theme.mjs'
+import { createSearchableDropdown } from '/scripts/search.mjs'
 
 // --- DOM Elements ---
-const availableLanguagesSelect = document.getElementById('availableLanguagesSelect')
-const addLanguageButton = document.getElementById('addLanguageButton')
+const availableLanguagesDropdown = document.getElementById('availableLanguagesDropdown')
 const preferredLanguagesList = document.getElementById('preferredLanguagesList')
 const saveButton = document.getElementById('saveButton')
 const resetButton = document.getElementById('resetButton')
@@ -32,6 +32,29 @@ function getLocaleName(id) {
 	return locale ? locale.name : id // Fallback to ID if name not found
 }
 
+function updateAvailableLanguagesDropdown() {
+	i18nElement(availableLanguagesDropdown) // Translate placeholders first
+
+	const currentPreferredSet = new Set(userPreferredLocales)
+	const filteredAvailableLocales = availableLocales.filter(locale => !currentPreferredSet.has(locale.id))
+
+	createSearchableDropdown({
+		dropdownElement: availableLanguagesDropdown,
+		dataList: filteredAvailableLocales,
+		textKey: 'name',
+		valueKey: 'id',
+		onSelect: (selectedItem) => {
+			if (selectedItem && !userPreferredLocales.includes(selectedItem.id)) {
+				userPreferredLocales.push(selectedItem.id)
+				renderPreferredLanguages()
+			}
+			// Return false to allow the dropdown to close automatically
+			return false
+		},
+		dataAccessor: item => `${item.name} ${item.id}`,
+	})
+}
+
 // --- Core UI Rendering ---
 async function renderPreferredLanguages() {
 	preferredLanguagesList.innerHTML = '' // Clear current list
@@ -39,6 +62,8 @@ async function renderPreferredLanguages() {
 	if (!userPreferredLocales.length) {
 		preferredLanguagesList.innerHTML = '<p class="text-center text-base-content-secondary" data-i18n="languageSettings.noPreferredLanguages"></p>'
 		i18nElement(preferredLanguagesList)
+		if (availableLocales.length > 0)
+			updateAvailableLanguagesDropdown()
 		return
 	}
 
@@ -59,27 +84,7 @@ async function renderPreferredLanguages() {
 		preferredLanguagesList.appendChild(listItem)
 	}
 
-	// Update available languages select to disable already preferred ones
-	populateAvailableLanguagesSelect()
-}
-
-function populateAvailableLanguagesSelect() {
-	availableLanguagesSelect.innerHTML = '' // Clear existing options
-
-	const currentPreferredSet = new Set(userPreferredLocales)
-
-	availableLocales.forEach(locale => {
-		const option = document.createElement('option')
-		option.value = locale.id
-		option.textContent = locale.name
-		if (currentPreferredSet.has(locale.id))
-			option.disabled = true
-
-		availableLanguagesSelect.appendChild(option)
-	})
-
-	// If all are disabled, disable the add button
-	addLanguageButton.disabled = !availableLanguagesSelect.querySelectorAll('option:not([disabled])').length
+	updateAvailableLanguagesDropdown()
 }
 
 // --- Event Handlers ---
@@ -89,19 +94,10 @@ async function fetchAvailableLocales() {
 		if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
 		const data = await response.json()
 		availableLocales = data
-		populateAvailableLanguagesSelect()
 	}
 	catch (error) {
 		console.error('Error fetching available locales:', error)
 		showToast('languageSettings.fetchLocalesFailed')
-	}
-}
-
-function handleAddLanguage() {
-	const selectedId = availableLanguagesSelect.value
-	if (selectedId && !userPreferredLocales.includes(selectedId)) {
-		userPreferredLocales.push(selectedId)
-		renderPreferredLanguages()
 	}
 }
 
@@ -145,7 +141,6 @@ async function init() {
 	await fetchAvailableLocales()
 
 	// Attach event listeners
-	addLanguageButton.addEventListener('click', handleAddLanguage)
 	saveButton.addEventListener('click', handleSave)
 	resetButton.addEventListener('click', handleReset)
 

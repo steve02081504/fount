@@ -1,12 +1,13 @@
-import { initTranslations, geti18n, console } from '../../scripts/i18n.mjs'
-import { applyTheme } from '../../scripts/theme.mjs'
-import { showToast } from '../../scripts/toast.mjs'
+import { initTranslations, geti18n, i18nElement } from '/scripts/i18n.mjs'
+import { applyTheme } from '/scripts/theme.mjs'
+import { showToast } from '/scripts/toast.mjs'
+import { createSearchableDropdown } from '/scripts/search.mjs'
 
 import { getPartTypes, getPartList, getFountJson, exportPart, createShareLink } from './src/endpoints.mjs'
 
 // DOM Elements
 const partTypeSelect = document.getElementById('partTypeSelect')
-const partSelect = document.getElementById('partSelect')
+const partNameDropdown = document.getElementById('partNameDropdown')
 const exportButton = document.getElementById('exportButton')
 const shareButton = document.getElementById('shareButton')
 const exportStatusIcon = document.getElementById('exportStatusIcon')
@@ -43,9 +44,6 @@ function showDataToggle(show) {
 	dataToggleContainer.classList.toggle('hidden', !show)
 }
 
-/**
- * Updates the share button's appearance and behavior based on whether a share_link exists.
- */
 function updateShareButtonUI() {
 	const hasShareLink = !includeDataCheckbox.checked && fountJson?.share_link
 
@@ -75,7 +73,7 @@ async function fetchPartTypes() {
 async function fetchParts(partType) {
 	try {
 		parts = await getPartList(partType)
-		renderPartSelect()
+		renderPartDropdown()
 	}
 	catch (err) {
 		console.error('Failed to fetch parts:', err)
@@ -120,24 +118,40 @@ function renderPartTypeSelect() {
 	partTypeSelect.appendChild(fragment)
 }
 
-function renderPartSelect() {
-	const fragment = document.createDocumentFragment()
-	const defaultOption = document.createElement('option')
-	defaultOption.disabled = true
-	defaultOption.selected = true
-	defaultOption.textContent = geti18n('export.placeholders.partSelect')
-	fragment.appendChild(defaultOption)
+function renderPartDropdown() {
+	i18nElement(partNameDropdown.parentElement)
 
-	parts.forEach(partName => {
-		const option = document.createElement('option')
-		option.value = partName
-		option.textContent = partName
-		fragment.appendChild(option)
+	const disabled = !parts || parts.length === 0
+	const dataList = disabled ? [] : parts.map(name => ({ name, value: name }))
+
+	if (activePart)
+		partNameDropdown.dataset.value = activePart
+	else
+		delete partNameDropdown.dataset.value
+
+	createSearchableDropdown({
+		dropdownElement: partNameDropdown,
+		dataList,
+		textKey: 'name',
+		valueKey: 'value',
+		disabled,
+		onSelect: async (selectedItem) => {
+			activePart = selectedItem ? selectedItem.value : null
+			if (activePart) {
+				updateURLParams(activePartType, activePart)
+				await loadPartDetails(activePartType, activePart)
+			}
+			else {
+				fountJson = null
+				updateShareButtonUI()
+				showExportArea(false)
+				showDataToggle(false)
+				updateStep(2)
+				updateURLParams(activePartType, null)
+			}
+			return false
+		},
 	})
-
-	partSelect.innerHTML = ''
-	partSelect.disabled = false
-	partSelect.appendChild(fragment)
 }
 
 // --- Actions ---
@@ -172,9 +186,6 @@ async function handleExport() {
 	setTimeout(() => setButtonLoading(button, icon, false), 2000)
 }
 
-/**
- * Handles copying the permanent share link to the clipboard.
- */
 async function handleDirectShare() {
 	if (!fountJson || !fountJson.share_link) return
 
@@ -271,7 +282,7 @@ async function initializeFromURLParams() {
 		await fetchParts(partType)
 
 		if (partName) {
-			partSelect.value = partName
+			partNameDropdown.dataset.value = partName // <-- Add this line
 			activePart = partName
 			await loadPartDetails(partType, partName)
 		}
@@ -280,6 +291,7 @@ async function initializeFromURLParams() {
 	else {
 		showExportArea(false)
 		updateStep(1)
+		renderPartDropdown()
 	}
 }
 
@@ -294,28 +306,15 @@ async function init() {
 		activePart = null
 		fountJson = null
 		updateShareButtonUI()
-		partSelect.selectedIndex = 0
+
+		parts = []
+		renderPartDropdown()
+
 		showExportArea(false)
 		showDataToggle(false)
 		updateStep(2)
 		updateURLParams(activePartType, null)
 		await fetchParts(activePartType)
-	})
-
-	partSelect.addEventListener('change', async () => {
-		activePart = partSelect.value
-		if (activePart) {
-			updateURLParams(activePartType, activePart)
-			await loadPartDetails(activePartType, activePart)
-		}
-		else {
-			fountJson = null
-			updateShareButtonUI()
-			showExportArea(false)
-			showDataToggle(false)
-			updateStep(2)
-			updateURLParams(activePartType, null)
-		}
 	})
 
 	exportButton.addEventListener('click', handleExport)
