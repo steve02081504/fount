@@ -1,6 +1,6 @@
 import { base_dir } from '../base.mjs'
 
-const languageChangeCallbacks = [initTranslations]
+const languageChangeCallbacks = []
 export function onLanguageChange(callback) {
 	languageChangeCallbacks.push(callback)
 }
@@ -74,7 +74,7 @@ export async function initTranslations(pageid = saved_pageid, preferredlocales =
 			throw new Error(`Failed to fetch translations: ${translationResponse.status} ${translationResponse.statusText}`)
 
 		i18n = await translationResponse.json()
-		runLanguageChange()
+		applyTranslations()
 	}
 	catch (error) {
 		console.error('Error initializing translations:', error)
