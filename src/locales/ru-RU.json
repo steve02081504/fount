@@ -320,6 +320,9 @@
 			"fetchHomeRegistryFailed": "Не удалось получить информацию из реестра главной страницы."
 		},
 		"functionMenu": {
+			"search": {
+				"placeholder": "Поиск..."
+			},
 			"icon": {
 				"alt": "Меню функций"
 			}

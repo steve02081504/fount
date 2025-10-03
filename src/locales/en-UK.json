@@ -320,6 +320,9 @@
 			"fetchHomeRegistryFailed": "Failed to fetch home registry information."
 		},
 		"functionMenu": {
+			"search": {
+				"placeholder": "Search..."
+			},
 			"icon": {
 				"alt": "Function Menu"
 			}

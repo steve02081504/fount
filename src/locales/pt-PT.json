@@ -320,6 +320,9 @@
 			"fetchHomeRegistryFailed": "Falha ao obter as informações do registo da página inicial."
 		},
 		"functionMenu": {
+			"search": {
+				"placeholder": "Pesquisar..."
+			},
 			"icon": {
 				"alt": "Menu de funções"
 			}

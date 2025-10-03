@@ -320,6 +320,9 @@
 			"fetchHomeRegistryFailed": "فشل في جلب سجل الصفحة الرئيسية"
 		},
 		"functionMenu": {
+			"search": {
+				"placeholder": "بحث..."
+			},
 			"icon": {
 				"alt": "قائمة الوظائف"
 			}

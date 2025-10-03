@@ -320,6 +320,9 @@
 			"fetchHomeRegistryFailed": "獲取首頁註冊資訊失敗"
 		},
 		"functionMenu": {
+			"search": {
+				"placeholder": "搜尋..."
+			},
 			"icon": {
 				"alt": "功能選單"
 			}

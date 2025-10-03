@@ -320,6 +320,9 @@
 			"fetchHomeRegistryFailed": "Mistókst að sækja skráningu forsíðu"
 		},
 		"functionMenu": {
+			"search": {
+				"placeholder": "Leita..."
+			},
 			"icon": {
 				"alt": "Aðgerðavalmynd"
 			}
