@@ -46,7 +46,7 @@ export function getLocaleNames() {
  * 从服务器获取多语言数据并初始化翻译。
  * @param {string} [pageid]
  */
-export async function initTranslations(pageid = saved_pageid, preferredlocales = JSON.parse(localStorage.getItem('fountUserPreferredLanguages')) || '[]') {
+export async function initTranslations(pageid = saved_pageid, preferredlocales = eval(localStorage.getItem('fountUserPreferredLanguages')) || []) {
 	saved_pageid = pageid
 
 	try {
