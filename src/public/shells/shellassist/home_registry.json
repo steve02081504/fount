@@ -1,68 +1,134 @@
 {
 	"home_function_buttons": [
 		{
+			"id": "integration_related",
 			"info": {
 				"zh-CN": {
-					"title": "终端辅助"
+					"title": "集成"
 				},
 				"en-UK": {
-					"title": "Terminal Assist"
+					"title": "Integrations"
 				},
 				"ar-SA": {
-					"title": "المساعدة الطرفية"
+					"title": "التكاملات"
 				},
 				"de-DE": {
-					"title": "Terminal-Assistenz"
+					"title": "Integrationen"
 				},
 				"emoji": {
-					"title": "💻🦾"
+					"title": "🔗"
 				},
 				"es-ES": {
-					"title": "Asistencia de Terminal"
+					"title": "Integraciones"
 				},
 				"fr-FR": {
-					"title": "Assistant Terminal"
+					"title": "Intégrations"
 				},
 				"hi-IN": {
-					"title": "टर्मिनल असिस्ट"
+					"title": "एकीकरण"
 				},
 				"is-IS": {
-					"title": "Terminal Assistance"
+					"title": "Samþættingar"
 				},
 				"it-IT": {
-					"title": "Assistenza Terminale"
+					"title": "Integrazioni"
 				},
 				"ja-JP": {
-					"title": "ターミナルアシスト"
+					"title": "統合"
 				},
 				"ko-KR": {
-					"title": "터미널 지원"
+					"title": "통합"
 				},
 				"lzh": {
-					"title": "終端輔佐"
+					"title": "關聯"
 				},
 				"nl-NL": {
-					"title": "Terminale hulp"
+					"title": "Integraties"
 				},
 				"pt-PT": {
-					"title": "Assistente de Terminal"
+					"title": "Integração relacionada"
 				},
 				"ru-RU": {
-					"title": "Терминал-Ассистент"
+					"title": "Интеграции"
 				},
 				"uk-UA": {
-					"title": "Термінальна допомога"
+					"title": "Інтеграція, пов’язана"
 				},
 				"vi-VN": {
-					"title": "Hỗ trợ Terminal"
+					"title": "Tích hợp liên quan"
 				},
 				"zh-TW": {
-					"title": "終端輔助"
+					"title": "整合"
 				}
 			},
-			"level": 2,
-			"url": "/shells/shellassist",
-			"button": "<img src=\"https://api.iconify.design/line-md/laptop.svg\" class=\"text-icon\"/>"
+			"level": 3,
+			"button": "<img src=\"https://api.iconify.design/line-md/link.svg\" />",
+			"sub_items": [
+				{
+					"info": {
+						"zh-CN": {
+							"title": "终端辅助"
+						},
+						"en-UK": {
+							"title": "Terminal Assist"
+						},
+						"ar-SA": {
+							"title": "المساعدة الطرفية"
+						},
+						"de-DE": {
+							"title": "Terminal-Assistenz"
+						},
+						"emoji": {
+							"title": "💻🦾"
+						},
+						"es-ES": {
+							"title": "Asistencia de Terminal"
+						},
+						"fr-FR": {
+							"title": "Assistant Terminal"
+						},
+						"hi-IN": {
+							"title": "टर्मिनल असिस्ट"
+						},
+						"is-IS": {
+							"title": "Terminal Assistance"
+						},
+						"it-IT": {
+							"title": "Assistenza Terminale"
+						},
+						"ja-JP": {
+							"title": "ターミナルアシスト"
+						},
+						"ko-KR": {
+							"title": "터미널 지원"
+						},
+						"lzh": {
+							"title": "終端輔佐"
+						},
+						"nl-NL": {
+							"title": "Terminale hulp"
+						},
+						"pt-PT": {
+							"title": "Assistente de Terminal"
+						},
+						"ru-RU": {
+							"title": "Терминал-Ассистент"
+						},
+						"uk-UA": {
+							"title": "Термінальна допомога"
+						},
+						"vi-VN": {
+							"title": "Hỗ trợ Terminal"
+						},
+						"zh-TW": {
+							"title": "終端輔助"
+						}
+					},
+					"level": 2,
+					"url": "/shells/shellassist",
+					"button": "<img src=\"https://api.iconify.design/line-md/laptop.svg\" class=\"text-icon\"/>"
+				}
+			]
 		}
 	]
 }

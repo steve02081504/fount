@@ -1,68 +1,134 @@
 {
 	"home_function_buttons": [
 		{
+			"id": "component_related",
 			"info": {
 				"zh-CN": {
-					"title": "导出组件"
+					"title": "组件"
 				},
 				"en-UK": {
-					"title": "Export Part"
+					"title": "Components"
 				},
 				"ar-SA": {
-					"title": "مكونات التصدير"
+					"title": "مكونات"
 				},
 				"de-DE": {
-					"title": "Part exportieren"
+					"title": "Komponenten"
 				},
 				"emoji": {
-					"title": "🧩📤"
+					"title": "🧩"
 				},
 				"es-ES": {
-					"title": "Exportar Parte"
+					"title": "Componentes"
 				},
 				"fr-FR": {
-					"title": "Exporter Pièce"
+					"title": "Composants"
 				},
 				"hi-IN": {
-					"title": "पार्ट निर्यात करें"
+					"title": "घटक"
 				},
 				"is-IS": {
-					"title": "Útflutningshluta"
+					"title": "Íhlutir"
 				},
 				"it-IT": {
-					"title": "Esporta Parte"
+					"title": "Componenti"
 				},
 				"ja-JP": {
-					"title": "パートをエクスポート"
+					"title": "コンポーネント"
 				},
 				"ko-KR": {
-					"title": "파트 내보내기"
+					"title": "컴포넌트"
 				},
 				"lzh": {
-					"title": "導出器"
+					"title": "組件"
 				},
 				"nl-NL": {
-					"title": "Exporteren componenten"
+					"title": "Componenten"
 				},
 				"pt-PT": {
-					"title": "Exportar Parte"
+					"title": "Relacionado ao componente"
 				},
 				"ru-RU": {
-					"title": "Экспортировать часть"
+					"title": "Компоненты"
 				},
 				"uk-UA": {
-					"title": "Експортні компоненти"
+					"title": "Компонент"
 				},
 				"vi-VN": {
-					"title": "Xuất bộ phận"
+					"title": "Liên quan đến thành phần"
 				},
 				"zh-TW": {
-					"title": "導出組件"
+					"title": "組件"
 				}
 			},
-			"level": 2,
-			"url": "/shells/export",
-			"button": "<img src=\"https://api.iconify.design/line-md/folder-arrow-right.svg\" class=\"text-icon\" />"
+			"level": 1,
+			"button": "<img src=\"https://api.iconify.design/mdi/puzzle-outline.svg\" />",
+			"sub_items": [
+				{
+					"info": {
+						"zh-CN": {
+							"title": "导出组件"
+						},
+						"en-UK": {
+							"title": "Export Part"
+						},
+						"ar-SA": {
+							"title": "مكونات التصدير"
+						},
+						"de-DE": {
+							"title": "Part exportieren"
+						},
+						"emoji": {
+							"title": "🧩📤"
+						},
+						"es-ES": {
+							"title": "Exportar Parte"
+						},
+						"fr-FR": {
+							"title": "Exporter Pièce"
+						},
+						"hi-IN": {
+							"title": "पार्ट निर्यात करें"
+						},
+						"is-IS": {
+							"title": "Útflutningshluta"
+						},
+						"it-IT": {
+							"title": "Esporta Parte"
+						},
+						"ja-JP": {
+							"title": "パートをエクスポート"
+						},
+						"ko-KR": {
+							"title": "파트 내보내기"
+						},
+						"lzh": {
+							"title": "導出器"
+						},
+						"nl-NL": {
+							"title": "Exporteren componenten"
+						},
+						"pt-PT": {
+							"title": "Exportar Parte"
+						},
+						"ru-RU": {
+							"title": "Экспортировать часть"
+						},
+						"uk-UA": {
+							"title": "Експортні компоненти"
+						},
+						"vi-VN": {
+							"title": "Xuất bộ phận"
+						},
+						"zh-TW": {
+							"title": "導出組件"
+						}
+					},
+					"level": 2,
+					"url": "/shells/export",
+					"button": "<img src=\"https://api.iconify.design/line-md/folder-arrow-right.svg\" class=\"text-icon\" />"
+				}
+			]
 		}
 	],
 	"home_common_interfaces": [

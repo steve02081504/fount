@@ -60,7 +60,7 @@
 					"title": "在其他設備訪問"
 				}
 			},
-			"level": 100,
+			"level": 99,
 			"url": "/shells/access",
 			"button": "<img src=\"https://api.iconify.design/line-md/cloud-alt-twotone.svg\" class=\"text-icon\"/>"
 		}

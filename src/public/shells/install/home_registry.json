@@ -1,68 +1,134 @@
 {
 	"home_function_buttons": [
 		{
+			"id": "component_related",
 			"info": {
 				"zh-CN": {
-					"title": "导入"
+					"title": "组件"
 				},
 				"en-UK": {
-					"title": "Import"
+					"title": "Components"
 				},
 				"ar-SA": {
-					"title": "استيراد"
+					"title": "مكونات"
 				},
 				"de-DE": {
-					"title": "Importieren"
+					"title": "Komponenten"
 				},
 				"emoji": {
-					"title": "📥"
+					"title": "🧩"
 				},
 				"es-ES": {
-					"title": "Importar"
+					"title": "Componentes"
 				},
 				"fr-FR": {
-					"title": "Importer"
+					"title": "Composants"
 				},
 				"hi-IN": {
-					"title": "आयात करें"
+					"title": "घटक"
 				},
 				"is-IS": {
-					"title": "Flytja inn"
+					"title": "Íhlutir"
 				},
 				"it-IT": {
-					"title": "Importa"
+					"title": "Componenti"
 				},
 				"ja-JP": {
-					"title": "インポート"
+					"title": "コンポーネント"
 				},
 				"ko-KR": {
-					"title": "가져오기"
+					"title": "컴포넌트"
 				},
 				"lzh": {
-					"title": "引入"
+					"title": "組件"
 				},
 				"nl-NL": {
-					"title": "Importeren"
+					"title": "Componenten"
 				},
 				"pt-PT": {
-					"title": "Importar"
+					"title": "Relacionado ao componente"
 				},
 				"ru-RU": {
-					"title": "Импорт"
+					"title": "Компоненты"
 				},
 				"uk-UA": {
-					"title": "Імпорт"
+					"title": "Компонент"
 				},
 				"vi-VN": {
-					"title": "Nhập khẩu"
+					"title": "Liên quan đến thành phần"
 				},
 				"zh-TW": {
-					"title": "匯入"
+					"title": "組件"
 				}
 			},
-			"level": 0,
-			"url": "/shells/install",
-			"button": "<img src=\"https://api.iconify.design/line-md/document-add.svg\" class=\"text-icon\"/>"
+			"level": 1,
+			"button": "<img src=\"https://api.iconify.design/mdi/puzzle-outline.svg\" />",
+			"sub_items": [
+				{
+					"info": {
+						"zh-CN": {
+							"title": "导入"
+						},
+						"en-UK": {
+							"title": "Import"
+						},
+						"ar-SA": {
+							"title": "استيراد"
+						},
+						"de-DE": {
+							"title": "Importieren"
+						},
+						"emoji": {
+							"title": "📥"
+						},
+						"es-ES": {
+							"title": "Importar"
+						},
+						"fr-FR": {
+							"title": "Importer"
+						},
+						"hi-IN": {
+							"title": "आयात करें"
+						},
+						"is-IS": {
+							"title": "Flytja inn"
+						},
+						"it-IT": {
+							"title": "Importa"
+						},
+						"ja-JP": {
+							"title": "インポート"
+						},
+						"ko-KR": {
+							"title": "가져오기"
+						},
+						"lzh": {
+							"title": "引入"
+						},
+						"nl-NL": {
+							"title": "Importeren"
+						},
+						"pt-PT": {
+							"title": "Importar"
+						},
+						"ru-RU": {
+							"title": "Импорт"
+						},
+						"uk-UA": {
+							"title": "Імпорт"
+						},
+						"vi-VN": {
+							"title": "Nhập khẩu"
+						},
+						"zh-TW": {
+							"title": "匯入"
+						}
+					},
+					"level": 0,
+					"url": "/shells/install",
+					"button": "<img src=\"https://api.iconify.design/line-md/document-add.svg\" class=\"text-icon\"/>"
+				}
+			]
 		}
 	],
 	"home_common_interfaces": [
