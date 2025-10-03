@@ -1,3 +1,6 @@
+/** @type {import('npm:@sentry/browser')} */
+import * as Sentry from 'https://esm.sh/@sentry/browser'
+
 import { base_dir } from '../base.mjs'
 
 const languageChangeCallbacks = []
@@ -178,27 +181,34 @@ function applyTranslations() {
 	i18nElement(document)
 }
 
-export function i18nElement(element) {
+export function i18nElement(element, {
+	skip_report = false
+} = {}) {
 	const elements = element.querySelectorAll('[data-i18n]')
+	let updated = skip_report
 	elements.forEach(element => {
+		function update(attr, value) {
+			if (element[attr] == value) return
+			element[attr] = value
+			updated = true
+		}
 		const key = element.dataset.i18n
 		if (!key) return
 		if (getNestedValue(i18n, key) instanceof Object) {
 			const attributes = ['placeholder', 'title', 'label', 'text', 'value', 'alt']
-
-			for (const attr of attributes) {
+			for (let attr of attributes) {
 				const specificKey = `${key}.${attr}`
 				const translation = geti18n_nowarn(specificKey)
 				if (translation === undefined) continue
-				if (attr === 'text')
-					element.textContent = translation
-				else
-					element[attr] = translation
+				if (attr === 'text') attr = 'textContent'
+				update(attr, translation)
 			}
 		}
 		else
 			element.innerHTML = geti18n(key)
 	})
+	if (!updated)
+		Sentry.captureException(new Error('i18nElement() did not update any attributes for element.'))
 	return element
 }
 
