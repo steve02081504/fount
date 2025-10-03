@@ -58,7 +58,7 @@ export let hosturl
 export let tray
 export let restartor
 
-export const currentGitCommit = await git('rev-parse', 'HEAD').catch(() => null)
+export let currentGitCommit = await git('rev-parse', 'HEAD').catch(() => null)
 
 async function checkUpstreamAndRestart() {
 	if (fs.existsSync(__dirname + '/.git')) try {
@@ -68,12 +68,24 @@ async function checkUpstreamAndRestart() {
 
 		const remoteCommit = await git('rev-parse', '@{u}')
 
-		if (currentGitCommit !== remoteCommit) {
-			const mergeBase = await git('merge-base', 'HEAD', '@{u}')
-			if (mergeBase === currentGitCommit) {
-				console.logI18n('fountConsole.server.update.restarting')
-				if (restartor) await restartor()
-			}
+		if (currentGitCommit == remoteCommit) return
+		const mergeBase = await git('merge-base', 'HEAD', '@{u}')
+		if (mergeBase !== currentGitCommit) return // Not a fast-forward merge
+
+		const changedFiles = await git('diff', '--name-only', 'HEAD', '@{u}').then(out => out.replace(/\\/g, '/').split('\n').filter(Boolean))
+		const needsRestart = changedFiles.some(file =>
+			file.endsWith('.mjs') && file.startsWith('src/') &&
+			!file.startsWith('src/pages/') &&
+			!/^src\/public\/[^\/]+\/[^/]+\/public\//.test(file)
+		)
+
+		if (needsRestart) {
+			console.logI18n('fountConsole.server.update.restarting')
+			if (restartor) await restartor()
+		}
+		else {
+			await git('reset', '--hard', '@{u}')
+			currentGitCommit = await git('rev-parse', 'HEAD')
 		}
 	} catch (e) {
 		console.errorI18n('fountConsole.partManager.git.updateFailed', { error: e })
