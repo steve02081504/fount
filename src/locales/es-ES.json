@@ -295,6 +295,7 @@
 		}
 	},
 	"login_info": {
+		"title": "Información de inicio de sesión",
 		"modal": {
 			"title": "Error de transferencia de certificado",
 			"retrieve_error": "Se produjo un error al intentar guardar sus credenciales de inicio de sesión:\n${error}\nPuede continuar pero no puede guardar la información de inicio de sesión.",

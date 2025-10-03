@@ -295,6 +295,7 @@
 		}
 	},
 	"login_info": {
+		"title": "Informations de connexion",
 		"modal": {
 			"title": "Erreur de transfert de certificat",
 			"retrieve_error": "Une erreur s'est produite en essayant de sauvegarder vos identifiants de connexion:\n${error}\nVous pouvez continuer mais ne pouvez pas enregistrer les informations de connexion.",

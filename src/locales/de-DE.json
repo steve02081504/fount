@@ -295,6 +295,7 @@
 		}
 	},
 	"login_info": {
+		"title": "Anmeldeinformationen",
 		"modal": {
 			"title": "Zertifikatübertragungsfehler",
 			"retrieve_error": "Beim Versuch, Ihre Anmeldeinformationen zu speichern, ist ein Fehler aufgetreten:\n${error}\nSie können fortfahren, die Anmeldeinformationen jedoch nicht speichern.",

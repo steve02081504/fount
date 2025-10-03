@@ -295,6 +295,7 @@
 		}
 	},
 	"login_info": {
+		"title": "登錄資訊",
 		"modal": {
 			"title": "憑證傳送之誤",
 			"retrieve_error": "錄存登錄憑證時有誤：\n${error}\n可續行，然憑證不得存，如鏡花水月。",

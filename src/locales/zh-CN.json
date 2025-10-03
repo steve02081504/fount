@@ -295,6 +295,7 @@
 		}
 	},
 	"login_info": {
+		"title": "登录信息",
 		"modal": {
 			"title": "凭证转移错误",
 			"retrieve_error": "尝试保存您的登录凭证时发生错误：\n${error}\n您可以继续但无法保存登录信息。",

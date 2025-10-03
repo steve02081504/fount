@@ -295,6 +295,7 @@
 		}
 	},
 	"login_info": {
+		"title": "Login Information",
 		"modal": {
 			"title": "Certificate transfer error",
 			"retrieve_error": "An error occurred while trying to save your login credentials:\n${error}\nYou can continue but cannot save the login information.",
