@@ -295,6 +295,7 @@
 		}
 	},
 	"login_info": {
+		"title": "登入資訊",
 		"modal": {
 			"title": "憑證傳輸錯誤",
 			"retrieve_error": "嘗試儲存您的登入憑證時發生錯誤：\n${error}\n您可以繼續但無法儲存登入資訊。",

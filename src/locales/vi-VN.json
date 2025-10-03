@@ -295,6 +295,7 @@
 		}
 	},
 	"login_info": {
+		"title": "Thông tin đăng nhập",
 		"modal": {
 			"title": "Lỗi chuyển chứng chỉ",
 			"retrieve_error": "Đã xảy ra lỗi trong khi cố gắng lưu thông tin đăng nhập của bạn:\n${error}\nBạn có thể tiếp tục nhưng không thể lưu thông tin đăng nhập.",

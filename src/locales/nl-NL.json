@@ -295,6 +295,7 @@
 		}
 	},
 	"login_info": {
+		"title": "Inloggegevens",
 		"modal": {
 			"title": "Certificaatoverdrachtsfout",
 			"retrieve_error": "Er is een fout opgetreden bij het proberen uw inloggegevens op te slaan:\n${error}\nU kunt doorgaan, maar kunt de inloggegevens niet opslaan.",

@@ -295,6 +295,7 @@
 		}
 	},
 	"login_info": {
+		"title": "Innskráningarupplýsingar",
 		"modal": {
 			"title": "Villa við flutning vottorðs",
 			"retrieve_error": "Villa kom upp þegar reynt var að vista innskráningarskilríki þitt:\n${error}\nÞú getur haldið áfram en getur ekki vistað innskráningarupplýsingar.",

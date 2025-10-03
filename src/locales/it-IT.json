@@ -295,6 +295,7 @@
 		}
 	},
 	"login_info": {
+		"title": "Informazioni di accesso",
 		"modal": {
 			"title": "Errore di trasferimento del certificato",
 			"retrieve_error": "Si è verificato un errore durante il tentativo di salvare le credenziali di accesso:\n${error}\nPuoi continuare ma non puoi salvare le informazioni di accesso.",

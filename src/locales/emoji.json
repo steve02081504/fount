@@ -295,6 +295,7 @@
 		}
 	},
 	"login_info": {
+		"title": "🔐",
 		"modal": {
 			"title": "🔐❌",
 			"retrieve_error": "🔐💾❌:\n${error}\n➡️🤷‍♂️💾",
