@@ -1,68 +1,134 @@
 {
 	"home_function_buttons": [
 		{
+			"id": "component_related",
 			"info": {
 				"zh-CN": {
-					"title": "组件配置"
+					"title": "组件"
 				},
 				"en-UK": {
-					"title": "Component Configuration"
+					"title": "Components"
 				},
 				"ar-SA": {
-					"title": "تكوين المكون"
+					"title": "مكونات"
 				},
 				"de-DE": {
-					"title": "Komponentenkonfiguration"
+					"title": "Komponenten"
 				},
 				"emoji": {
-					"title": "🧩⚙️"
+					"title": "🧩"
 				},
 				"es-ES": {
-					"title": "Configuración de Componente"
+					"title": "Componentes"
 				},
 				"fr-FR": {
-					"title": "Configuration des Composants"
+					"title": "Composants"
 				},
 				"hi-IN": {
-					"title": "घटक कॉन्फ़िगरेशन"
+					"title": "घटक"
 				},
 				"is-IS": {
-					"title": "Stillingar íhluta"
+					"title": "Íhlutir"
 				},
 				"it-IT": {
-					"title": "Configurazione Componente"
+					"title": "Componenti"
 				},
 				"ja-JP": {
-					"title": "コンポーネント設定"
+					"title": "コンポーネント"
 				},
 				"ko-KR": {
-					"title": "컴포넌트 설정"
+					"title": "컴포넌트"
 				},
 				"lzh": {
-					"title": "器之規度"
+					"title": "組件"
 				},
 				"nl-NL": {
-					"title": "Componentconfiguratie"
+					"title": "Componenten"
 				},
 				"pt-PT": {
-					"title": "Configuração de Componente"
+					"title": "Relacionado ao componente"
 				},
 				"ru-RU": {
-					"title": "Настройка компонента"
+					"title": "Компоненты"
 				},
 				"uk-UA": {
-					"title": "Конфігурація компонентів"
+					"title": "Компонент"
 				},
 				"vi-VN": {
-					"title": "Cấu hình thành phần"
+					"title": "Liên quan đến thành phần"
 				},
 				"zh-TW": {
-					"title": "組件配置"
+					"title": "組件"
 				}
 			},
 			"level": 1,
-			"url": "/shells/config",
-			"button": "<img src=\"https://api.iconify.design/line-md/cog.svg\" class=\"text-icon\"/>"
+			"button": "<img src=\"https://api.iconify.design/mdi/puzzle-outline.svg\" />",
+			"sub_items": [
+				{
+					"info": {
+						"zh-CN": {
+							"title": "组件配置"
+						},
+						"en-UK": {
+							"title": "Component Configuration"
+						},
+						"ar-SA": {
+							"title": "تكوين المكون"
+						},
+						"de-DE": {
+							"title": "Komponentenkonfiguration"
+						},
+						"emoji": {
+							"title": "🧩⚙️"
+						},
+						"es-ES": {
+							"title": "Configuración de Componente"
+						},
+						"fr-FR": {
+							"title": "Configuration des Composants"
+						},
+						"hi-IN": {
+							"title": "घटक कॉन्फ़िगरेशन"
+						},
+						"is-IS": {
+							"title": "Stillingar íhluta"
+						},
+						"it-IT": {
+							"title": "Configurazione Componente"
+						},
+						"ja-JP": {
+							"title": "コンポーネント設定"
+						},
+						"ko-KR": {
+							"title": "컴포넌트 설정"
+						},
+						"lzh": {
+							"title": "器之規度"
+						},
+						"nl-NL": {
+							"title": "Componentconfiguratie"
+						},
+						"pt-PT": {
+							"title": "Configuração de Componente"
+						},
+						"ru-RU": {
+							"title": "Настройка компонента"
+						},
+						"uk-UA": {
+							"title": "Конфігурація компонентів"
+						},
+						"vi-VN": {
+							"title": "Cấu hình thành phần"
+						},
+						"zh-TW": {
+							"title": "組件配置"
+						}
+					},
+					"level": 1,
+					"url": "/shells/config",
+					"button": "<img src=\"https://api.iconify.design/line-md/cog.svg\" class=\"text-icon\"/>"
+				}
+			]
 		}
 	],
 	"home_common_interfaces": [

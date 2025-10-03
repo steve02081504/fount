@@ -279,31 +279,68 @@ async function displayFunctionButtons() {
 	functionButtonsContainer.innerHTML = '' // Clear existing buttons
 	if (!homeRegistry?.home_function_buttons) return // Avoid error if registry is not loaded
 
-	for (const buttonItem of homeRegistry.home_function_buttons) {
+	const createMenuItem = (buttonItem) => {
 		const li = document.createElement('li')
-		const button = document.createElement('a')
-		const classes = ['flex', 'items-center', 'justify-start', ...buttonItem.classes ? buttonItem.classes.split(' ') : []]
-		button.classList.add(...classes)
-		if (buttonItem.style) button.style.cssText = buttonItem.style
 
-		const iconSpan = document.createElement('span')
-		iconSpan.classList.add('mr-2')
-		iconSpan.innerHTML = buttonItem.button ?? '<img src="https://api.iconify.design/line-md/question-circle.svg" class="text-icon" />'
-		svgInliner(iconSpan)
+		// A button is a submenu if it has sub_items
+		if (buttonItem.sub_items?.length) {
+			const details = document.createElement('details')
+			const summary = document.createElement('summary')
 
-		const titleSpan = document.createElement('span')
-		titleSpan.textContent = buttonItem.info.title
+			const iconSpan = document.createElement('span')
+			iconSpan.classList.add('mr-2')
+			iconSpan.innerHTML = buttonItem.button ?? '<img src="https://api.iconify.design/line-md/folder-filled.svg" class="text-icon" />'
+			svgInliner(iconSpan)
 
-		button.append(iconSpan, titleSpan)
-		if (buttonItem.action)
-			button.addEventListener('click', () => async_eval(buttonItem.action, { geti18n }))
-		else if (buttonItem.url)
-			button.href = buttonItem.url
-		else
-			console.warn('No action defined for this button')
-		li.appendChild(button)
-		functionButtonsContainer.appendChild(li)
+			const titleSpan = document.createElement('span')
+			titleSpan.textContent = buttonItem.info.title
+
+			summary.append(iconSpan, titleSpan)
+			details.appendChild(summary)
+
+			const ul = document.createElement('ul')
+			ul.classList.add('rounded-t-none')
+
+			// Sort children by level before rendering
+			const sortedChildren = buttonItem.sub_items.sort((a, b) => (a.level ?? 0) - (b.level ?? 0))
+
+			sortedChildren.forEach(child => {
+				ul.appendChild(createMenuItem(child))
+			})
+			details.appendChild(ul)
+			li.appendChild(details)
+		}
+		else {
+			// It's a regular button
+			const button = document.createElement('a')
+			const classes = ['flex', 'items-center', 'justify-start', ...buttonItem.classes ? buttonItem.classes.split(' ') : []]
+			button.classList.add(...classes)
+			if (buttonItem.style) button.style.cssText = buttonItem.style
+
+			const iconSpan = document.createElement('span')
+			iconSpan.classList.add('mr-2')
+			iconSpan.innerHTML = buttonItem.button ?? '<img src="https://api.iconify.design/line-md/question-circle.svg" class="text-icon" />'
+			svgInliner(iconSpan)
+
+			const titleSpan = document.createElement('span')
+			titleSpan.textContent = buttonItem.info.title
+
+			button.append(iconSpan, titleSpan)
+			if (buttonItem.action)
+				button.addEventListener('click', () => async_eval(buttonItem.action, { geti18n }))
+			 else if (buttonItem.url)
+				button.href = buttonItem.url
+			 else if (!buttonItem.sub_items)  // Don't warn for menu containers that are empty
+				console.warn('No action defined for this button', buttonItem)
+
+			li.appendChild(button)
+		}
+		return li
 	}
+
+	homeRegistry.home_function_buttons.forEach(buttonItem => {
+		functionButtonsContainer.appendChild(createMenuItem(buttonItem))
+	})
 }
 
 // --- Tab Management ---

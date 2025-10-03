@@ -1,68 +1,134 @@
 {
 	"home_function_buttons": [
 		{
+			"id": "other",
 			"info": {
 				"zh-CN": {
-					"title": "作为代理"
+					"title": "其他"
 				},
 				"en-UK": {
-					"title": "As Proxy"
+					"title": "Other"
 				},
 				"ar-SA": {
-					"title": "كوكيل"
+					"title": "أخرى"
 				},
 				"de-DE": {
-					"title": "Als Proxy"
+					"title": "Sonstiges"
 				},
 				"emoji": {
-					"title": "🤖🔄"
+					"title": "📦"
 				},
 				"es-ES": {
-					"title": "Como Proxy"
+					"title": "Otros"
 				},
 				"fr-FR": {
-					"title": "En tant que Proxy"
+					"title": "Autres"
 				},
 				"hi-IN": {
-					"title": "प्रॉक्सी के रूप में"
+					"title": "अन्य"
 				},
 				"is-IS": {
-					"title": "Sem umboðsmaður"
+					"title": "Annað"
 				},
 				"it-IT": {
-					"title": "Come Proxy"
+					"title": "Altro"
 				},
 				"ja-JP": {
-					"title": "プロキシとして"
+					"title": "その他"
 				},
 				"ko-KR": {
-					"title": "프록시로"
+					"title": "기타"
 				},
 				"lzh": {
-					"title": "API中介"
+					"title": "雜項"
 				},
 				"nl-NL": {
-					"title": "Als agent"
+					"title": "Overig"
 				},
 				"pt-PT": {
-					"title": "Como Proxy"
+					"title": "outro"
 				},
 				"ru-RU": {
-					"title": "Как прокси"
+					"title": "Прочее"
 				},
 				"uk-UA": {
-					"title": "Як агент"
+					"title": "інший"
 				},
 				"vi-VN": {
-					"title": "Làm Proxy"
+					"title": "khác"
 				},
 				"zh-TW": {
-					"title": "作為代理"
+					"title": "其他"
 				}
 			},
-			"level": 2,
-			"url": "/shells/proxy",
-			"button": "<img src=\"https://api.iconify.design/line-md/cloud-alt-braces.svg\" class=\"text-icon\"/>"
+			"level": 100,
+			"button": "<img src=\"https://api.iconify.design/basil/other-1-outline.svg\" />",
+			"sub_items": [
+				{
+					"info": {
+						"zh-CN": {
+							"title": "作为代理"
+						},
+						"en-UK": {
+							"title": "As Proxy"
+						},
+						"ar-SA": {
+							"title": "كوكيل"
+						},
+						"de-DE": {
+							"title": "Als Proxy"
+						},
+						"emoji": {
+							"title": "🤖🔄"
+						},
+						"es-ES": {
+							"title": "Como Proxy"
+						},
+						"fr-FR": {
+							"title": "En tant que Proxy"
+						},
+						"hi-IN": {
+							"title": "प्रॉक्सी के रूप में"
+						},
+						"is-IS": {
+							"title": "Sem umboðsmaður"
+						},
+						"it-IT": {
+							"title": "Come Proxy"
+						},
+						"ja-JP": {
+							"title": "プロキシとして"
+						},
+						"ko-KR": {
+							"title": "프록시로"
+						},
+						"lzh": {
+							"title": "API中介"
+						},
+						"nl-NL": {
+							"title": "Als agent"
+						},
+						"pt-PT": {
+							"title": "Como Proxy"
+						},
+						"ru-RU": {
+							"title": "Как прокси"
+						},
+						"uk-UA": {
+							"title": "Як агент"
+						},
+						"vi-VN": {
+							"title": "Làm Proxy"
+						},
+						"zh-TW": {
+							"title": "作為代理"
+						}
+					},
+					"level": 2,
+					"url": "/shells/proxy",
+					"button": "<img src=\"https://api.iconify.design/line-md/cloud-alt-braces.svg\" class=\"text-icon\"/>"
+				}
+			]
 		}
 	]
 }
