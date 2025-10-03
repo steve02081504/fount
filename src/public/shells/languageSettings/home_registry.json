@@ -1,68 +1,134 @@
 {
 	"home_function_buttons": [
 		{
+			"id": "settings",
 			"info": {
 				"zh-CN": {
-					"title": "语言设置"
+					"title": "设置"
 				},
 				"en-UK": {
-					"title": "Language Settings"
+					"title": "Settings"
 				},
 				"ar-SA": {
-					"title": "إعدادات اللغة"
+					"title": "الإعدادات"
 				},
 				"de-DE": {
-					"title": "Spracheinstellungen"
+					"title": "Einstellungen"
 				},
 				"emoji": {
-					"title": "🗣️⚙️"
+					"title": "⚙️"
 				},
 				"es-ES": {
-					"title": "Configuración de idiomas"
+					"title": "Ajustes"
 				},
 				"fr-FR": {
-					"title": "Paramètres linguistiques"
+					"title": "Paramètres"
 				},
 				"hi-IN": {
-					"title": "भाषा सेटिंग्स"
+					"title": "सेटिंग्स"
 				},
 				"is-IS": {
-					"title": "Tungumálastillingar"
+					"title": "Stillingar"
 				},
 				"it-IT": {
-					"title": "Impostazioni linguistiche"
+					"title": "Impostazioni"
 				},
 				"ja-JP": {
-					"title": "言語設定"
+					"title": "設定"
 				},
 				"ko-KR": {
-					"title": "언어 설정"
+					"title": "설정"
 				},
 				"lzh": {
-					"title": "雅言規度"
+					"title": "规度"
 				},
 				"nl-NL": {
-					"title": "Taalinstellingen"
+					"title": "Instellingen"
 				},
 				"pt-PT": {
-					"title": "Configurações de idiomas"
+					"title": "Configurações"
 				},
 				"ru-RU": {
-					"title": "Языковые настройки"
+					"title": "Настройки"
 				},
 				"uk-UA": {
-					"title": "Налаштування мови"
+					"title": "Налаштування"
 				},
 				"vi-VN": {
-					"title": "Cài đặt ngôn ngữ"
+					"title": "cài đặt"
 				},
 				"zh-TW": {
-					"title": "語言設置"
+					"title": "設定"
 				}
 			},
-			"level": 3,
-			"url": "/shells/languageSettings",
-			"button": "<img src=\"https://api.iconify.design/heroicons/language.svg\" class=\"text-icon\"/>"
+			"level": 90,
+			"button": "<img src=\"https://api.iconify.design/line-md/cog-filled.svg\" />",
+			"sub_items": [
+				{
+					"info": {
+						"zh-CN": {
+							"title": "语言设置"
+						},
+						"en-UK": {
+							"title": "Language Settings"
+						},
+						"ar-SA": {
+							"title": "إعدادات اللغة"
+						},
+						"de-DE": {
+							"title": "Spracheinstellungen"
+						},
+						"emoji": {
+							"title": "🗣️⚙️"
+						},
+						"es-ES": {
+							"title": "Configuración de idiomas"
+						},
+						"fr-FR": {
+							"title": "Paramètres linguistiques"
+						},
+						"hi-IN": {
+							"title": "भाषा सेटिंग्स"
+						},
+						"is-IS": {
+							"title": "Tungumálastillingar"
+						},
+						"it-IT": {
+							"title": "Impostazioni linguistiche"
+						},
+						"ja-JP": {
+							"title": "言語設定"
+						},
+						"ko-KR": {
+							"title": "언어 설정"
+						},
+						"lzh": {
+							"title": "雅言規度"
+						},
+						"nl-NL": {
+							"title": "Taalinstellingen"
+						},
+						"pt-PT": {
+							"title": "Configurações de idiomas"
+						},
+						"ru-RU": {
+							"title": "Языковые настройки"
+						},
+						"uk-UA": {
+							"title": "Налаштування мови"
+						},
+						"vi-VN": {
+							"title": "Cài đặt ngôn ngữ"
+						},
+						"zh-TW": {
+							"title": "語言設置"
+						}
+					},
+					"level": 3,
+					"url": "/shells/languageSettings",
+					"button": "<img src=\"https://api.iconify.design/heroicons/language.svg\" class=\"text-icon\"/>"
+				}
+			]
 		}
 	]
 }

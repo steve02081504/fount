@@ -1,68 +1,134 @@
 {
 	"home_function_buttons": [
 		{
+			"id": "settings",
 			"info": {
 				"zh-CN": {
-					"title": "用户设置"
+					"title": "设置"
 				},
 				"en-UK": {
-					"title": "User Settings"
+					"title": "Settings"
 				},
 				"ar-SA": {
-					"title": "إعدادات المستخدم"
+					"title": "الإعدادات"
 				},
 				"de-DE": {
-					"title": "Benutzereinstellungen"
+					"title": "Einstellungen"
 				},
 				"emoji": {
-					"title": "👤⚙️"
+					"title": "⚙️"
 				},
 				"es-ES": {
-					"title": "Configuración de Usuario"
+					"title": "Ajustes"
 				},
 				"fr-FR": {
-					"title": "Paramètres Utilisateur"
+					"title": "Paramètres"
 				},
 				"hi-IN": {
-					"title": "उपयोगकर्ता सेटिंग्स"
+					"title": "सेटिंग्स"
 				},
 				"is-IS": {
-					"title": "Notendastillingar"
+					"title": "Stillingar"
 				},
 				"it-IT": {
-					"title": "Impostazioni Utente"
+					"title": "Impostazioni"
 				},
 				"ja-JP": {
-					"title": "ユーザー設定"
+					"title": "設定"
 				},
 				"ko-KR": {
-					"title": "사용자 설정"
+					"title": "설정"
 				},
 				"lzh": {
-					"title": "用者規度"
+					"title": "规度"
 				},
 				"nl-NL": {
-					"title": "Gebruikersinstellingen"
+					"title": "Instellingen"
 				},
 				"pt-PT": {
-					"title": "Configurações de Usuário"
+					"title": "Configurações"
 				},
 				"ru-RU": {
-					"title": "Настройки пользователя"
+					"title": "Настройки"
 				},
 				"uk-UA": {
-					"title": "Налаштування користувача"
+					"title": "Налаштування"
 				},
 				"vi-VN": {
-					"title": "Cài đặt Người dùng"
+					"title": "cài đặt"
 				},
 				"zh-TW": {
-					"title": "用戶設置"
+					"title": "設定"
 				}
 			},
-			"level": 100,
-			"url": "/shells/userSettings",
-			"button": "<img src=\"https://api.iconify.design/line-md/account.svg\" class=\"text-icon\"/>"
+			"level": 90,
+			"button": "<img src=\"https://api.iconify.design/line-md/cog-filled.svg\" />",
+			"sub_items": [
+				{
+					"info": {
+						"zh-CN": {
+							"title": "用户设置"
+						},
+						"en-UK": {
+							"title": "User Settings"
+						},
+						"ar-SA": {
+							"title": "إعدادات المستخدم"
+						},
+						"de-DE": {
+							"title": "Benutzereinstellungen"
+						},
+						"emoji": {
+							"title": "👤⚙️"
+						},
+						"es-ES": {
+							"title": "Configuración de Usuario"
+						},
+						"fr-FR": {
+							"title": "Paramètres Utilisateur"
+						},
+						"hi-IN": {
+							"title": "उपयोगकर्ता सेटिंग्स"
+						},
+						"is-IS": {
+							"title": "Notendastillingar"
+						},
+						"it-IT": {
+							"title": "Impostazioni Utente"
+						},
+						"ja-JP": {
+							"title": "ユーザー設定"
+						},
+						"ko-KR": {
+							"title": "사용자 설정"
+						},
+						"lzh": {
+							"title": "用者規度"
+						},
+						"nl-NL": {
+							"title": "Gebruikersinstellingen"
+						},
+						"pt-PT": {
+							"title": "Configurações de Usuário"
+						},
+						"ru-RU": {
+							"title": "Настройки пользователя"
+						},
+						"uk-UA": {
+							"title": "Налаштування користувача"
+						},
+						"vi-VN": {
+							"title": "Cài đặt Người dùng"
+						},
+						"zh-TW": {
+							"title": "用戶設置"
+						}
+					},
+					"level": 100,
+					"url": "/shells/userSettings",
+					"button": "<img src=\"https://api.iconify.design/line-md/account.svg\" class=\"text-icon\"/>"
+				}
+			]
 		}
 	]
 }

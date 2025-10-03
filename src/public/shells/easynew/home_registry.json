@@ -1,68 +1,134 @@
 {
 	"home_function_buttons": [
 		{
+			"id": "component_related",
 			"info": {
 				"zh-CN": {
-					"title": "快速新建"
+					"title": "组件"
 				},
 				"en-UK": {
-					"title": "Quick Create"
+					"title": "Components"
 				},
 				"ar-SA": {
-					"title": "إنشاء سريع"
+					"title": "مكونات"
 				},
 				"de-DE": {
-					"title": "Schnellerstellung"
+					"title": "Komponenten"
 				},
 				"emoji": {
-					"title": "✨🆕"
+					"title": "🧩"
 				},
 				"es-ES": {
-					"title": "Creación rápida"
+					"title": "Componentes"
 				},
 				"fr-FR": {
-					"title": "Création rapide"
+					"title": "Composants"
 				},
 				"hi-IN": {
-					"title": "त्वरित निर्माण"
+					"title": "घटक"
 				},
 				"is-IS": {
-					"title": "Flýtigerð"
+					"title": "Íhlutir"
 				},
 				"it-IT": {
-					"title": "Creazione rapida"
+					"title": "Componenti"
 				},
 				"ja-JP": {
-					"title": "クイック作成"
+					"title": "コンポーネント"
 				},
 				"ko-KR": {
-					"title": "빠른 생성"
+					"title": "컴포넌트"
 				},
 				"lzh": {
-					"title": "速建"
+					"title": "組件"
 				},
 				"nl-NL": {
-					"title": "Bouw snel nieuw"
+					"title": "Componenten"
 				},
 				"pt-PT": {
-					"title": "Criação Rápida"
+					"title": "Relacionado ao componente"
 				},
 				"ru-RU": {
-					"title": "Быстрое создание"
+					"title": "Компоненты"
 				},
 				"uk-UA": {
-					"title": "Швидко побудувати нове"
+					"title": "Компонент"
 				},
 				"vi-VN": {
-					"title": "Tạo nhanh"
+					"title": "Liên quan đến thành phần"
 				},
 				"zh-TW": {
-					"title": "快速新建"
+					"title": "組件"
 				}
 			},
-			"level": 0,
-			"url": "/shells/easynew",
-			"button": "<img src=\"https://api.iconify.design/line-md/plus.svg\" class=\"text-icon\" />"
+			"level": 1,
+			"button": "<img src=\"https://api.iconify.design/mdi/puzzle-outline.svg\" />",
+			"sub_items": [
+				{
+					"info": {
+						"zh-CN": {
+							"title": "快速新建"
+						},
+						"en-UK": {
+							"title": "Quick Create"
+						},
+						"ar-SA": {
+							"title": "إنشاء سريع"
+						},
+						"de-DE": {
+							"title": "Schnellerstellung"
+						},
+						"emoji": {
+							"title": "✨🆕"
+						},
+						"es-ES": {
+							"title": "Creación rápida"
+						},
+						"fr-FR": {
+							"title": "Création rapide"
+						},
+						"hi-IN": {
+							"title": "त्वरित निर्माण"
+						},
+						"is-IS": {
+							"title": "Flýtigerð"
+						},
+						"it-IT": {
+							"title": "Creazione rapida"
+						},
+						"ja-JP": {
+							"title": "クイック作成"
+						},
+						"ko-KR": {
+							"title": "빠른 생성"
+						},
+						"lzh": {
+							"title": "速建"
+						},
+						"nl-NL": {
+							"title": "Bouw snel nieuw"
+						},
+						"pt-PT": {
+							"title": "Criação Rápida"
+						},
+						"ru-RU": {
+							"title": "Быстрое создание"
+						},
+						"uk-UA": {
+							"title": "Швидко побудувати нове"
+						},
+						"vi-VN": {
+							"title": "Tạo nhanh"
+						},
+						"zh-TW": {
+							"title": "快速新建"
+						}
+					},
+					"level": 0,
+					"url": "/shells/easynew",
+					"button": "<img src=\"https://api.iconify.design/line-md/plus.svg\" class=\"text-icon\" />"
+				}
+			]
 		}
 	]
 }

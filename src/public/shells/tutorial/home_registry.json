@@ -1,68 +1,134 @@
 {
 	"home_function_buttons": [
 		{
+			"id": "other",
 			"info": {
 				"zh-CN": {
-					"title": "重玩教程"
+					"title": "其他"
 				},
 				"en-UK": {
-					"title": "Replay Tutorial"
+					"title": "Other"
 				},
 				"ar-SA": {
-					"title": "إعادة تشغيل البرنامج التعليمي"
+					"title": "أخرى"
 				},
 				"de-DE": {
-					"title": "Tutorial erneut spielen"
+					"title": "Sonstiges"
 				},
 				"emoji": {
-					"title": "🎓❓"
+					"title": "📦"
 				},
 				"es-ES": {
-					"title": "Repetir Tutorial"
+					"title": "Otros"
 				},
 				"fr-FR": {
-					"title": "Rejouer le tutoriel"
+					"title": "Autres"
 				},
 				"hi-IN": {
-					"title": "ट्यूटोरियल फिर से चलाएं"
+					"title": "अन्य"
 				},
 				"is-IS": {
-					"title": "Endurspilunarleiðbeiningar"
+					"title": "Annað"
 				},
 				"it-IT": {
-					"title": "Ripeti Tutorial"
+					"title": "Altro"
 				},
 				"ja-JP": {
-					"title": "チュートリアルをリプレイ"
+					"title": "その他"
 				},
 				"ko-KR": {
-					"title": "튜토리얼 다시 재생"
+					"title": "기타"
 				},
 				"lzh": {
-					"title": "再習儀軌"
+					"title": "雜項"
 				},
 				"nl-NL": {
-					"title": "Herhaling van de tutorial"
+					"title": "Overig"
 				},
 				"pt-PT": {
-					"title": "Repetir Tutorial"
+					"title": "outro"
 				},
 				"ru-RU": {
-					"title": "Повторить туториал"
+					"title": "Прочее"
 				},
 				"uk-UA": {
-					"title": "Підручник з повтору"
+					"title": "інший"
 				},
 				"vi-VN": {
-					"title": "Chơi lại hướng dẫn"
+					"title": "khác"
 				},
 				"zh-TW": {
-					"title": "重玩教程"
+					"title": "其他"
 				}
 			},
-			"level": 99,
-			"url": "/shells/tutorial",
-			"button": "<img src=\"https://api.iconify.design/line-md/backup-restore.svg\" class=\"text-icon\"/>"
+			"level": 100,
+			"button": "<img src=\"https://api.iconify.design/basil/other-1-outline.svg\" />",
+			"sub_items": [
+				{
+					"info": {
+						"zh-CN": {
+							"title": "重玩教程"
+						},
+						"en-UK": {
+							"title": "Replay Tutorial"
+						},
+						"ar-SA": {
+							"title": "إعادة تشغيل البرنامج التعليمي"
+						},
+						"de-DE": {
+							"title": "Tutorial erneut spielen"
+						},
+						"emoji": {
+							"title": "🎓❓"
+						},
+						"es-ES": {
+							"title": "Repetir Tutorial"
+						},
+						"fr-FR": {
+							"title": "Rejouer le tutoriel"
+						},
+						"hi-IN": {
+							"title": "ट्यूटोरियल फिर से चलाएं"
+						},
+						"is-IS": {
+							"title": "Endurspilunarleiðbeiningar"
+						},
+						"it-IT": {
+							"title": "Ripeti Tutorial"
+						},
+						"ja-JP": {
+							"title": "チュートリアルをリプレイ"
+						},
+						"ko-KR": {
+							"title": "튜토리얼 다시 재생"
+						},
+						"lzh": {
+							"title": "再習儀軌"
+						},
+						"nl-NL": {
+							"title": "Herhaling van de tutorial"
+						},
+						"pt-PT": {
+							"title": "Repetir Tutorial"
+						},
+						"ru-RU": {
+							"title": "Повторить туториал"
+						},
+						"uk-UA": {
+							"title": "Підручник з повтору"
+						},
+						"vi-VN": {
+							"title": "Chơi lại hướng dẫn"
+						},
+						"zh-TW": {
+							"title": "重玩教程"
+						}
+					},
+					"level": 99,
+					"url": "/shells/tutorial",
+					"button": "<img src=\"https://api.iconify.design/line-md/backup-restore.svg\" class=\"text-icon\"/>"
+				}
+			]
 		}
 	]
 }
