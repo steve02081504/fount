@@ -320,6 +320,9 @@
 			"fetchHomeRegistryFailed": "होम रजिस्ट्री जानकारी प्राप्त करने में विफल।"
 		},
 		"functionMenu": {
+			"search": {
+				"placeholder": "खोजें..."
+			},
 			"icon": {
 				"alt": "फ़ंक्शन मेनू"
 			}

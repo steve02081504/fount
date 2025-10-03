@@ -320,6 +320,9 @@
 			"fetchHomeRegistryFailed": "ホームレジストリ情報の取得に失敗しました。"
 		},
 		"functionMenu": {
+			"search": {
+				"placeholder": "検索..."
+			},
 			"icon": {
 				"alt": "機能メニュー"
 			}

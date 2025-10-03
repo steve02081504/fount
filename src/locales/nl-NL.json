@@ -320,6 +320,9 @@
 			"fetchHomeRegistryFailed": "Ophalen van startpaginagegevens mislukt"
 		},
 		"functionMenu": {
+			"search": {
+				"placeholder": "Zoeken..."
+			},
 			"icon": {
 				"alt": "Functiemenu"
 			}

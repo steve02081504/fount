@@ -320,6 +320,9 @@
 			"fetchHomeRegistryFailed": "Не вдалося отримати реєстр головної сторінки"
 		},
 		"functionMenu": {
+			"search": {
+				"placeholder": "Пошук..."
+			},
 			"icon": {
 				"alt": "Меню функцій"
 			}

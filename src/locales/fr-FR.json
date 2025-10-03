@@ -320,6 +320,9 @@
 			"fetchHomeRegistryFailed": "Échec de la récupération des informations du registre d'accueil."
 		},
 		"functionMenu": {
+			"search": {
+				"placeholder": "Rechercher..."
+			},
 			"icon": {
 				"alt": "Menu des fonctions"
 			}

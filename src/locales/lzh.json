@@ -320,6 +320,9 @@
 			"fetchHomeRegistryFailed": "取門戶名錄失利"
 		},
 		"functionMenu": {
+			"search": {
+				"placeholder": "索功用..."
+			},
 			"icon": {
 				"alt": "功用"
 			}

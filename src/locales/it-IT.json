@@ -320,6 +320,9 @@
 			"fetchHomeRegistryFailed": "Impossibile recuperare le informazioni del registro home."
 		},
 		"functionMenu": {
+			"search": {
+				"placeholder": "Cerca..."
+			},
 			"icon": {
 				"alt": "Menu funzioni"
 			}

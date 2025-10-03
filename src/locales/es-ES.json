@@ -320,6 +320,9 @@
 			"fetchHomeRegistryFailed": "Error al obtener la información del registro de inicio."
 		},
 		"functionMenu": {
+			"search": {
+				"placeholder": "Buscar..."
+			},
 			"icon": {
 				"alt": "Menú de funciones"
 			}

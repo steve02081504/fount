@@ -320,6 +320,9 @@
 			"fetchHomeRegistryFailed": "🏠📥❌"
 		},
 		"functionMenu": {
+			"search": {
+				"placeholder": "🔎..."
+			},
 			"icon": {
 				"alt": "⚙️"
 			}

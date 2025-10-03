@@ -338,9 +338,50 @@ async function displayFunctionButtons() {
 		return li
 	}
 
-	homeRegistry.home_function_buttons.forEach(buttonItem => {
-		functionButtonsContainer.appendChild(createMenuItem(buttonItem))
-	})
+	const searchInput = document.createElement('input')
+	searchInput.type = 'text'
+	searchInput.classList.add('input', 'input-sm', 'w-full')
+	searchInput.dataset.i18n = 'home.functionMenu.search'
+	searchInput.placeholder = geti18n('home.functionMenu.search.placeholder')
+	searchInput.addEventListener('click', e => e.stopPropagation())
+	functionButtonsContainer.appendChild(searchInput)
+
+	const menuItemsContainer = document.createElement('ul')
+	menuItemsContainer.classList.add('menu', 'p-0', 'w-full')
+	functionButtonsContainer.appendChild(menuItemsContainer)
+
+	const renderMenu = (items) => {
+		menuItemsContainer.innerHTML = ''
+		items.forEach(buttonItem => {
+			menuItemsContainer.appendChild(createMenuItem(buttonItem))
+		})
+	}
+
+	const originalItems = homeRegistry.home_function_buttons
+
+	const allButtons = []
+	function flatten(items) {
+		items.forEach(item => {
+			allButtons.push(item)
+			if (item.sub_items)
+				flatten(item.sub_items)
+		})
+	}
+	flatten(originalItems)
+	const leafButtons = allButtons.filter(item => !item.sub_items?.length)
+
+	const filterAndRender = () => {
+		const filterValue = searchInput.value
+		if (!filterValue) return renderMenu(originalItems)
+
+		const filterFn = compileFilter(filterValue)
+		const filteredButtons = leafButtons.filter(button => filterFn(button.info))
+		renderMenu(filteredButtons)
+	}
+
+	searchInput.addEventListener('input', filterAndRender)
+
+	renderMenu(originalItems) // Initial render
 }
 
 // --- Tab Management ---

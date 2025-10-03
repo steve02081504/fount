@@ -320,6 +320,9 @@
 			"fetchHomeRegistryFailed": "Lấy thông tin đăng ký trang chủ thất bại."
 		},
 		"functionMenu": {
+			"search": {
+				"placeholder": "Tìm kiếm..."
+			},
 			"icon": {
 				"alt": "Menu chức năng"
 			}

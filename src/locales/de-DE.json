@@ -320,6 +320,9 @@
 			"fetchHomeRegistryFailed": "Fehler beim Abrufen der Startseitenregistrierung"
 		},
 		"functionMenu": {
+			"search": {
+				"placeholder": "Suchen..."
+			},
 			"icon": {
 				"alt": "Funktionsmenü"
 			}
