@@ -375,12 +375,12 @@ def sync_unique_key(dict_has_key, dict_missing_key, lang_has_key, lang_missing_k
 		# 如果语言不在列表中，给予一个极大的值，视为最低优先级
 		priority_has_key = reference_codes.index(lang_has_key)
 	except ValueError:
-		priority_has_key = float('inf')
+		priority_has_key = float("inf")
 
 	try:
 		priority_missing_key = reference_codes.index(lang_missing_key)
 	except ValueError:
-		priority_missing_key = float('inf')
+		priority_missing_key = float("inf")
 
 	# 逻辑判断：
 	# 1. 持有键的语言 (lang_has_key) 优先级更高
@@ -399,6 +399,7 @@ def sync_unique_key(dict_has_key, dict_missing_key, lang_has_key, lang_missing_k
 	# 在这种模糊情况下，我们默认采取更安全的操作：翻译并添加，而不是删除。
 	else:
 		return handle_missing_key_translation(dict_missing_key, dict_has_key, key, lang_missing_key, lang_has_key, path)
+
 
 def normalize_and_sync_dicts(
 	dict_a,
@@ -449,6 +450,7 @@ def normalize_and_sync_dicts(
 				changed_overall = True
 
 	return changed_overall
+
 
 def reorder_keys_like_reference(target_dict, reference_dict):
 	if not isinstance(target_dict, OrderedDict) or not isinstance(reference_dict, OrderedDict):
@@ -543,42 +545,55 @@ def reorder_info_dict_keys(current_info_dict: OrderedDict, global_ref_lang_codes
 
 def process_registry_item_info(item_object_in_list, reg_key_list_name, item_index, available_locale_langs, global_ref_lang_codes):
 	"""
-	Processes the 'info' dictionary of a single item from a home_registry.json list.
-	Modifies item_object_in_list['info'] in place.
+	(Recursively) Processes the 'info' dictionary of a single item and its sub_items.
+	Modifies item_object_in_list in place.
 	Returns True if changes were made, False otherwise.
 	"""
-	if not (isinstance(item_object_in_list, (dict, OrderedDict)) and "info" in item_object_in_list and isinstance(item_object_in_list["info"], (dict, OrderedDict))):
+	item_changed = False
+	if not isinstance(item_object_in_list, (dict, OrderedDict)):
 		return False
 
-	current_info_dict = item_object_in_list["info"]
-	if not isinstance(current_info_dict, OrderedDict):
-		current_info_dict = OrderedDict(current_info_dict.items())
+	# Process the 'info' of the current item
+	if "info" in item_object_in_list and isinstance(item_object_in_list["info"], (dict, OrderedDict)):
+		current_info_dict = item_object_in_list["info"]
+		if not isinstance(current_info_dict, OrderedDict):
+			current_info_dict = OrderedDict(current_info_dict.items())
 
-	original_info_dict_for_comparison = copy.deepcopy(current_info_dict)
-	item_id_str = item_object_in_list.get("id", "未知ID")
-	item_description = f"'{reg_key_list_name}' 项目 {item_index} (ID: {item_id_str})"
+		original_info_dict_for_comparison = copy.deepcopy(current_info_dict)
+		item_id_str = item_object_in_list.get("id", f"索引 {item_index}")
+		item_description = f"'{reg_key_list_name}' 项目 (ID: {item_id_str})"
 
-	remove_unavailable_languages_from_info(current_info_dict, available_locale_langs, item_description)
+		remove_unavailable_languages_from_info(current_info_dict, available_locale_langs, item_description)
 
-	present_info_langs_after_delete = set(current_info_dict.keys())
-	langs_to_add_to_info = available_locale_langs - present_info_langs_after_delete
+		present_info_langs_after_delete = set(current_info_dict.keys())
+		langs_to_add_to_info = available_locale_langs - present_info_langs_after_delete
 
-	if langs_to_add_to_info:
-		if not present_info_langs_after_delete:
-			print(f"    - 警告: {item_description} 的 info 为空，无法为 '{', '.join(sorted(list(langs_to_add_to_info)))}' 添加翻译。")
+		if langs_to_add_to_info:
+			if not present_info_langs_after_delete:
+				print(f"    - 警告: {item_description} 的 info 为空，无法为 '{', '.join(sorted(list(langs_to_add_to_info)))}' 添加翻译。")
+			else:
+				source_lang, source_data = determine_translation_source_for_info(current_info_dict, global_ref_lang_codes)
+				if source_lang and source_data:
+					translate_missing_languages_for_info(current_info_dict, langs_to_add_to_info, source_lang, source_data, item_description)
+
+		final_ordered_info_dict = reorder_info_dict_keys(current_info_dict, global_ref_lang_codes)
+
+		if final_ordered_info_dict != original_info_dict_for_comparison:
+			item_object_in_list["info"] = final_ordered_info_dict
+			item_changed = True
 		else:
-			source_lang, source_data = determine_translation_source_for_info(current_info_dict, global_ref_lang_codes)
-			if source_lang and source_data:
-				translate_missing_languages_for_info(current_info_dict, langs_to_add_to_info, source_lang, source_data, item_description)
+			# Restore original object to avoid minor (e.g. dict vs OrderedDict) changes that are not actual content changes
+			item_object_in_list["info"] = original_info_dict_for_comparison
 
-	final_ordered_info_dict = reorder_info_dict_keys(current_info_dict, global_ref_lang_codes)
+	# Recursively process sub_items
+	if "sub_items" in item_object_in_list and isinstance(item_object_in_list["sub_items"], list):
+		parent_id = item_object_in_list.get("id", f"索引 {item_index}")
+		sub_item_list_name = f"{reg_key_list_name} -> {parent_id}"
+		for i, sub_item in enumerate(item_object_in_list["sub_items"]):
+			if process_registry_item_info(sub_item, sub_item_list_name, i, available_locale_langs, global_ref_lang_codes):
+				item_changed = True
 
-	if final_ordered_info_dict != original_info_dict_for_comparison:
-		item_object_in_list["info"] = final_ordered_info_dict
-		return True
-	else:
-		item_object_in_list["info"] = original_info_dict_for_comparison
-		return False
+	return item_changed
 
 
 def process_home_registries(map_lang_to_path, global_ref_lang_codes):
@@ -994,37 +1009,37 @@ def save_locale_files(all_data, ref_path):
 
 
 def generate_list_csv(all_data):
-    """Generates list.csv from all loaded locale data."""
-    print("\n--- Generating list.csv ---")
-    csv_path = os.path.join(LOCALE_DIR, "list.csv")
+	"""Generates list.csv from all loaded locale data."""
+	print("\n--- Generating list.csv ---")
+	csv_path = os.path.join(LOCALE_DIR, "list.csv")
 
-    header = "lang,name\n"
-    rows = []
+	header = "lang,name\n"
+	rows = []
 
-    lang_data = {}
-    for file_path, data in all_data.items():
-        lang_code_from_file = get_lang_from_filename(file_path)
-        lang = data.get("lang", lang_code_from_file)
-        if lang != lang_code_from_file:
-             print(f"  - Warning: lang in {os.path.basename(file_path)} ('{lang}') differs from filename ('{lang_code_from_file}'). Using filename.")
-             lang = lang_code_from_file
-        name = data.get("name")
-        if lang and name:
-            lang_data[lang] = name
-        else:
-            print(f"  - Warning: Missing 'lang' or 'name' in {os.path.basename(file_path)}. Skipping.")
+	lang_data = {}
+	for file_path, data in all_data.items():
+		lang_code_from_file = get_lang_from_filename(file_path)
+		lang = data.get("lang", lang_code_from_file)
+		if lang != lang_code_from_file:
+			print(f"  - Warning: lang in {os.path.basename(file_path)} ('{lang}') differs from filename ('{lang_code_from_file}'). Using filename.")
+			lang = lang_code_from_file
+		name = data.get("name")
+		if lang and name:
+			lang_data[lang] = name
+		else:
+			print(f"  - Warning: Missing 'lang' or 'name' in {os.path.basename(file_path)}. Skipping.")
 
-    sorted_langs = sorted(lang_data.keys())
-    for lang in sorted_langs:
-        rows.append(f"{lang},{lang_data[lang]}\n")
+	sorted_langs = sorted(lang_data.keys())
+	for lang in sorted_langs:
+		rows.append(f"{lang},{lang_data[lang]}\n")
 
-    try:
-        with open(csv_path, "w", encoding="utf-8", newline="") as f:
-            f.write(header)
-            f.writelines(rows)
-        print(f"  - Successfully generated list.csv with {len(rows)} entries.")
-    except Exception as e:
-        print(f"  - Error: Failed to write to {csv_path}: {e}")
+	try:
+		with open(csv_path, "w", encoding="utf-8", newline="") as f:
+			f.write(header)
+			f.writelines(rows)
+		print(f"  - Successfully generated list.csv with {len(rows)} entries.")
+	except Exception as e:
+		print(f"  - Error: Failed to write to {csv_path}: {e}")
 
 
 # --- 主逻辑 (重构后) ---
