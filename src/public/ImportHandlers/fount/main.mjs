@@ -86,15 +86,17 @@ async function ImportAsData(username, data) {
 			loadPart(username, meta.type, meta.dirname)
 		else
 			import(url.pathToFileURL(path.join(targetPath, 'main.mjs'))).catch(x => x)
+		return [{ parttype: meta.type, partname: meta.dirname }]
 	}
 	catch (err) {
-		rm(tempDir, { recursive: true, force: true }).catch(x => x)
+		await rm(tempDir, { recursive: true, force: true }).catch(x => x)
 		throw new Error(`loadMeta failed: ${err.message || err}`)
 	}
 }
 
 async function ImportByText(username, text) {
 	const lines = text.trim().split('\n').map(line => line.trim()).filter(line => line)
+	const installedParts = []
 	for (const line of lines)
 		if (line.startsWith('http')) {
 			const errors = []
@@ -125,6 +127,7 @@ async function ImportByText(username, text) {
 						loadPart(username, meta.type, meta.dirname)
 					else
 						import(url.pathToFileURL(path.join(targetPath, 'main.mjs'))).catch(x => x)
+					installedParts.push({ parttype: meta.type, partname: meta.dirname })
 					continue
 				}
 				catch (err) {
@@ -146,12 +149,13 @@ async function ImportByText(username, text) {
 				request = await fetch(line)
 				if (request.ok) {
 					const buffer = await request.arrayBuffer()
-					await ImportAsData(username, buffer)
+					installedParts.push(...await ImportAsData(username, buffer))
 					continue
 				}
 			} catch (err) { errors.push(err) }
 			throw new Error(`Failed to import from ${line}: ${errors.map(err => err.stack || err).join('\n')}`)
 		}
+	return installedParts
 }
 
 export default {

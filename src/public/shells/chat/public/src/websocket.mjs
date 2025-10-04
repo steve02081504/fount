@@ -1,3 +1,5 @@
+import { onServerEvent } from '../../../../../scripts/server_events.mjs'
+
 import { currentChatId } from './endpoints.mjs'
 import {
 	handleWorldSet,
@@ -5,6 +7,8 @@ import {
 	handleCharAdded,
 	handleCharRemoved,
 	handleCharFrequencySet,
+	addPartToSelect,
+	removePartFromSelect,
 } from './ui/sidebar.mjs'
 import { handleMessageAdded, handleMessageDeleted, handleMessageReplaced } from './ui/virtualQueue.mjs'
 
@@ -83,4 +87,14 @@ async function handleBroadcastEvent(event) {
 export function initializeWebSocket() {
 	if (ws) return
 	connect()
+
+	onServerEvent('part-installed', ({ parttype, partname }) => {
+		console.log(`[Chat WS] Received part-install: ${parttype}/${partname}`)
+		addPartToSelect(parttype, partname)
+	})
+
+	onServerEvent('part-uninstalled', ({ parttype, partname }) => {
+		console.log(`[Chat WS] Received part-uninstall: ${parttype}/${partname}`)
+		removePartFromSelect(parttype, partname)
+	})
 }

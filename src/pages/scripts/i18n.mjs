@@ -1,6 +1,8 @@
 /** @type {import('npm:@sentry/browser')} */
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
+import { onServerEvent } from './server_events.mjs'
+
 const languageChangeCallbacks = [initTranslations]
 export function onLanguageChange(callback) {
 	languageChangeCallbacks.push(callback)
@@ -171,4 +173,9 @@ window.addEventListener('visibilitychange', () => {
 	const preferredLangs = loadPreferredLangs()
 	if (JSON.stringify(lastKnownLangs) != JSON.stringify(preferredLangs))
 		runLanguageChange()
+})
+
+onServerEvent('locale-updated', () => {
+	console.log('Received locale update notification. Re-initializing translations...')
+	initTranslations()
 })

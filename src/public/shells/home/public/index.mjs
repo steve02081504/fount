@@ -10,6 +10,7 @@ import {
 	setDefaultPart, getDefaultParts
 } from '../../scripts/parts.mjs'
 import { getFiltersFromString, compileFilter } from '../../scripts/search.mjs'
+import { onServerEvent } from '../../scripts/server_events.mjs'
 import { svgInliner } from '../../scripts/svgInliner.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
@@ -38,6 +39,7 @@ const worldsTabDesktop = document.getElementById('worlds-tab-desktop')
 const personasTabDesktop = document.getElementById('personas-tab-desktop')
 
 let itemDetailsCache = {} // Combined cache
+let partListsCache = {} // Cache for item lists
 let currentItemType = sessionStorage.getItem('fount.home.lastTab') || 'chars' // Persist tab selection
 let homeRegistry
 let defaultParts = {} // Store default parts
@@ -266,12 +268,16 @@ async function displayItemList(itemType) {
 }
 
 async function getItemList(itemType) {
+	if (partListsCache[itemType]) return partListsCache[itemType]
+
+	let promise
 	switch (itemType) {
-		case 'chars': return await getCharList()
-		case 'worlds': return await getWorldList()
-		case 'personas': return await getPersonaList()
-		default: return []
+		case 'chars': promise = getCharList(); break
+		case 'worlds': promise = getWorldList(); break
+		case 'personas': promise = getPersonaList(); break
+		default: promise = Promise.resolve([]); break
 	}
+	return partListsCache[itemType] = await promise
 }
 
 // --- Function Buttons ---
@@ -403,6 +409,7 @@ async function updateTabContent(itemType) {
 async function refreshCurrentTab() {
 	itemDetailsCache = {}
 	ItemDOMCache = {}
+	partListsCache = {}
 	await fetchData()
 	await updateTabContent(currentItemType)
 }
@@ -462,11 +469,45 @@ async function initializeApp() {
 	// Filter input event (consider debouncing)
 	filterInput.addEventListener('input', filterItemList)
 
-	// Refresh data on focus
-	window.addEventListener('focus', async () => {
-		await fetchData()
-		// Refresh and display filtered list
-		await filterItemList()
+	// The focus listener is no longer needed as all updates are handled by websockets.
+
+	onServerEvent('default-part-updated', ({ parttype, partname }) => {
+		console.log(`Received default-part-update: ${parttype}=${partname}`)
+		if (partname)
+			defaultParts[parttype] = partname
+		else
+			delete defaultParts[parttype]
+
+		updateDefaultPartDisplay()
+	})
+
+	onServerEvent('home-registry-updated', async () => {
+		console.log('Received home-registry-update, refreshing...')
+		await getHomeRegistry().then(async data => {
+			homeRegistry = data
+			await displayFunctionButtons()
+			// The registry also affects item cards, so we need to refresh them
+			await filterItemList()
+		}).catch(error => console.error('Failed to fetch home registry:', error))
+	})
+
+	onServerEvent('part-installed', async ({ parttype, partname }) => {
+		partListsCache[parttype]?.push?.(partname)
+
+		if (parttype === currentItemType)
+			await displayItemList(currentItemType)
+	})
+
+	onServerEvent('part-uninstalled', async ({ parttype, partname }) => {
+		if (partListsCache[parttype]) {
+			const index = partListsCache[parttype].indexOf(partname)
+			if (index + 1) partListsCache[parttype].splice(index, 1)
+		}
+		delete itemDetailsCache[`${parttype}-${partname}`]
+		delete ItemDOMCache[`${parttype}-${partname}`]
+
+		if (parttype === currentItemType)
+			await displayItemList(currentItemType)
 	})
 
 	// esc按键

@@ -14,7 +14,7 @@ import { getLoadedPartList, getPartList } from '../managers/index.mjs'
 import { getDefaultParts, getPartDetails, setDefaultPart } from '../parts_loader.mjs'
 import { skip_report, currentGitCommit, config, save_config } from '../server.mjs'
 
-import { register as registerNotifier } from './notify.mjs'
+import { register as registerNotifier } from './event_dispatcher.mjs'
 
 /**
  * @param {import('npm:express').Router} router

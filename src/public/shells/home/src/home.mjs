@@ -5,6 +5,7 @@ import { getLocalizedInfo } from '../../../../scripts/locale.mjs'
 import { getUserByUsername } from '../../../../server/auth.mjs'
 import { getPartListBase, GetPartPath } from '../../../../server/parts_loader.mjs'
 import { loadTempData } from '../../../../server/setting_loader.mjs'
+import { sendEventToUser } from '../../../../server/web_server/event_dispatcher.mjs'
 
 const watchedDirs = new Set()
 let registryLastChanged = Date.now()
@@ -58,6 +59,7 @@ export async function loadHomeRegistry(username) {
 				if (filename !== 'home_registry.json') return
 				console.log(`Home registry file changed in dir: ${dirPath}. Invalidating caches on next request.`)
 				registryLastChanged = Date.now()
+				sendEventToUser(username, 'home-registry-updated', null)
 			})
 			watchedDirs.add(dirPath)
 		} catch (e) {

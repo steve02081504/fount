@@ -256,9 +256,6 @@ exportSelectedButton.addEventListener('click', async () => {
 	}
 })
 
-// 在焦点返回时重新渲染聊天列表
-window.addEventListener('focus', getChatList().then(renderChatList))
-
 async function initializeApp() {
 	applyTheme()
 	await initTranslations('chat_history') // Initialize translations for 'chat_history'

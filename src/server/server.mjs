@@ -20,6 +20,7 @@ import { __dirname, startTime } from './base.mjs'
 import idleManager from './idle.mjs'
 import { ReStartJobs } from './jobs.mjs'
 import { startTimerHeartbeat } from './timers.mjs'
+import { sendEventToAll } from './web_server/event_dispatcher.mjs'
 
 export let data_path
 
@@ -76,7 +77,7 @@ async function checkUpstreamAndRestart() {
 		const needsRestart = changedFiles.some(file =>
 			file.endsWith('.mjs') && file.startsWith('src/') &&
 			!file.startsWith('src/pages/') &&
-			!/^src\/public\/[^\/]+\/[^/]+\/public\//.test(file)
+			!/^src\/public\/[^/]+\/[^/]+\/public\//.test(file)
 		)
 
 		if (needsRestart) {
@@ -86,6 +87,7 @@ async function checkUpstreamAndRestart() {
 		else {
 			await git('reset', '--hard', '@{u}')
 			currentGitCommit = await git('rev-parse', 'HEAD')
+			sendEventToAll('server-updated', { commitId: currentGitCommit })
 		}
 	} catch (e) {
 		console.errorI18n('fountConsole.partManager.git.updateFailed', { error: e })

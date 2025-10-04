@@ -219,6 +219,7 @@ async function ImportAsData(username, dataBuffer) {
 			import(url.pathToFileURL(targetMainMjsPath)).catch(err => console.error(`Dynamic import of ${targetMainMjsPath} failed:`, err))
 
 		console.log(`Risu character "${charName}" imported successfully to ${targetPath}`)
+		return [{ parttype: 'chars', partname: charName }]
 	}
 	catch (error) {
 		console.error('Error during Risu import:', error)
@@ -233,6 +234,7 @@ async function ImportAsData(username, dataBuffer) {
 async function ImportByText(username, text) {
 	const lines = text.trim().split('\n').map(line => line.trim()).filter(line => line)
 	const errors = []
+	const installedParts = []
 
 	for (const line of lines)
 		if (line.startsWith('http')) {
@@ -243,7 +245,7 @@ async function ImportByText(username, text) {
 				try {
 					console.log(`Downloading Risu card with UUID: ${uuid}`)
 					const { buffer, filename: downloadedFilename } = await downloadRisuCard(uuid)
-					await ImportAsData(username, buffer, downloadedFilename)
+					installedParts.push(...await ImportAsData(username, buffer, downloadedFilename))
 					continue // 处理完这个 URL，继续下一个
 				}
 				catch (err) {
@@ -258,8 +260,9 @@ async function ImportByText(username, text) {
 		}
 		else errors.push(`Invalid line (not a URL): ${line}`)
 
-	if (errors.length > 0)
+	if (errors.length)
 		throw new Error(`Some Risu imports failed:\n${errors.join('\n')}`)
+	return installedParts
 }
 
 
