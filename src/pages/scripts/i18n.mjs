@@ -95,10 +95,10 @@ export function geti18n_nowarn(key, params = {}) {
 export function geti18n(key, params = {}) {
 	const translation = geti18n_nowarn(key, params)
 
-	if (translation === undefined)
-		console.warn(`Translation key "${key}" not found.`)
+	if (translation !== undefined) return translation
 
-	return translation
+	console.warn(`Translation key "${key}" not found.`)
+	Sentry.captureException(new Error(`Translation key "${key}" not found.`))
 }
 const console = globalThis.console
 console.infoI18n = (key, params = {}) => console.info(geti18n(key, params))
