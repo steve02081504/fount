@@ -178,7 +178,7 @@ function applyTranslations() {
 		descriptionMeta.content = geti18n(`${saved_pageid}.description`)
 	document.documentElement.lang = geti18n('lang')
 
-	i18nElement(document)
+	i18nElement(document, { skip_report: true })
 }
 
 export function i18nElement(element, {
