@@ -1,6 +1,6 @@
 import { loadJsonFileIfExists } from '../../../../scripts/json_loader.mjs'
 import { LoadImportHandler } from '../../../../server/managers/ImportHandlers_manager.mjs'
-import { getPartListBase, GetPartPath } from '../../../../server/parts_loader.mjs'
+import { getPartListBase, GetPartPath, notifyPartInstall } from '../../../../server/parts_loader.mjs'
 import { skip_report } from '../../../../server/server.mjs'
 
 function getImportHandlerList(username) {
@@ -17,7 +17,11 @@ export async function importPart(username, data) {
 
 	for (const importHandler of ImportHandlers) try {
 		const handler = await LoadImportHandler(username, importHandler)
-		await handler.interfaces.import.ImportAsData(username, data)
+		const installedParts = await handler.interfaces.import.ImportAsData(username, data)
+		if (installedParts && installedParts.length > 0)
+			for (const part of installedParts)
+				notifyPartInstall(username, part.parttype, part.partname)
+
 		return
 	} catch (err) {
 		errors.push({ handler: importHandler, error: err.message || String(err) })
@@ -35,7 +39,11 @@ export async function importPartByText(username, text) {
 
 	for (const importHandler of ImportHandlers) try {
 		const handler = await LoadImportHandler(username, importHandler)
-		await handler.interfaces.import.ImportByText(username, text)
+		const installedParts = await handler.interfaces.import.ImportByText(username, text)
+		if (installedParts && installedParts.length > 0)
+			for (const part of installedParts)
+				notifyPartInstall(username, part.parttype, part.partname)
+
 		return
 	} catch (err) {
 		errors.push({ handler: importHandler, error: err.message || String(err) })

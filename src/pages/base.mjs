@@ -3,6 +3,8 @@
 /** @type {import('npm:@sentry/browser')} */
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
+import { onServerEvent } from './scripts/server_events.mjs'
+
 Sentry.init({
 	dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
 	sendDefaultPii: true,
@@ -53,17 +55,14 @@ document.addEventListener('keydown', event => {
 		else window.close()
 })
 
-let currentVer
-async function checkVersion() {
-	const ver = await fetch('/api/ping').then(r => r.json()).then(j => j.ver).catch(() => currentVer)
-	currentVer ??= ver
-	if (currentVer != ver) window.location.reload(true)
+let currentCommitId
+function handleVersionUpdate({ commitId }) {
+	if (!commitId) return
+	currentCommitId ??= commitId
+	if (currentCommitId !== commitId) window.location.reload(true)
 }
-checkVersion()
-setInterval(checkVersion, 60000)
-document.addEventListener('visibilitychange', () => {
-	if (document.visibilityState === 'visible') checkVersion()
-})
+onServerEvent('server-updated', handleVersionUpdate)
+onServerEvent('server-reconnected', handleVersionUpdate)
 
 window.addEventListener('load', async () => {
 	await fetch('https://cdn.jsdelivr.net/gh/steve02081504/fount/imgs/icon_ansi_ascii.txt').then(r => r.text()).then(console.log).catch(_ => 0)

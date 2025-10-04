@@ -15,7 +15,7 @@ import { loadPersona } from '../../../../server/managers/persona_manager.mjs'
 import { loadWorld } from '../../../../server/managers/world_manager.mjs'
 import { getDefaultParts } from '../../../../server/parts_loader.mjs'
 import { skip_report } from '../../../../server/server.mjs'
-import { sendNotification } from '../../../../server/web_server/notify.mjs'
+import { sendNotification } from '../../../../server/web_server/event_dispatcher.mjs'
 
 import { addfile, getfile } from './files.mjs'
 

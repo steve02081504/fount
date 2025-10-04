@@ -4,6 +4,7 @@ import process from 'node:process'
 import { console as baseConsole } from 'npm:@steve02081504/virtual-console'
 
 import { __dirname } from '../server/base.mjs'
+import { sendEventToAll } from '../server/web_server/event_dispatcher.mjs'
 
 import { exec } from './exec.mjs'
 import { loadJsonFile } from './json_loader.mjs'
@@ -83,6 +84,7 @@ fs.watch(`${__dirname}/src/locales`, (_event, filename) => {
 	// Always re-evaluate and reload the locale data for the current session
 	getLocaleData(localhostLocales).then((data) => {
 		localhostLocaleData = data
+		sendEventToAll('locale-updated', null)
 	})
 })
 

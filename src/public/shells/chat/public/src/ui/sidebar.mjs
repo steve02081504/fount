@@ -395,3 +395,74 @@ export async function handleCharFrequencySet(charname, frequency) {
 	if (frequencySlider.value != newFrequency)
 		frequencySlider.value = newFrequency
 }
+
+/**
+ * Adds a part to the relevant select list in the sidebar.
+ * @param {string} parttype - The type of the part (e.g., 'worlds', 'personas', 'chars').
+ * @param {string} partname - The name of the part.
+ */
+export function addPartToSelect(parttype, partname) {
+	let selectElement
+	switch (parttype) {
+		case 'worlds':
+			selectElement = worldSelect
+			break
+		case 'personas':
+			selectElement = personaSelect
+			break
+		case 'chars':
+			selectElement = charSelect
+			break
+		default:
+			return
+	}
+
+	if (!selectElement || selectElement.querySelector(`option[value="${partname}"]`)) return
+
+	const option = document.createElement('option')
+	option.value = partname
+	option.text = partname
+	selectElement.add(option)
+}
+
+/**
+ * Removes a part from the relevant select list and active UI in the sidebar.
+ * @param {string} parttype - The type of the part (e.g., 'worlds', 'personas', 'chars').
+ * @param {string} partname - The name of the part.
+ */
+export function removePartFromSelect(parttype, partname) {
+	let selectElement
+	let cacheType
+	switch (parttype) {
+		case 'worlds':
+			selectElement = worldSelect
+			cacheType = 'world'
+			break
+		case 'personas':
+			selectElement = personaSelect
+			cacheType = 'persona'
+			break
+		case 'chars':
+			selectElement = charSelect
+			cacheType = 'character'
+			break
+		default:
+			return
+	}
+
+	// Remove from dropdown
+	if (selectElement) {
+		const optionToRemove = selectElement.querySelector(`option[value="${partname}"]`)
+		if (optionToRemove) selectElement.removeChild(optionToRemove)
+	}
+
+	// If it's a char, also remove from the active list in the chat
+	if (parttype === 'chars') {
+		const charCardToRemove = charDetailsContainer.querySelector(`[data-char-name="${partname}"]`)
+		if (charCardToRemove) charDetailsContainer.removeChild(charCardToRemove)
+	}
+
+	// Clean up cache
+	if (cacheType && cachedDom[cacheType]?.[partname])
+		delete cachedDom[cacheType][partname]
+}

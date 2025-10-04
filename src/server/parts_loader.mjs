@@ -15,6 +15,7 @@ import { __dirname } from './base.mjs'
 import { loadPart } from './managers/index.mjs'
 import { save_config, setDefaultStuff } from './server.mjs'
 import { loadData, saveData } from './setting_loader.mjs'
+import { sendEventToUser } from './web_server/event_dispatcher.mjs'
 import { getPartRouter, deletePartRouter } from './web_server/parts_router.mjs'
 
 export function setDefaultPart(user, parttype, partname) {
@@ -24,10 +25,15 @@ export function setDefaultPart(user, parttype, partname) {
 	if (!partname) delete defaultParts[parttype]
 	else defaultParts[parttype] = partname
 	save_config()
+	sendEventToUser(user.username, 'default-part-updated', { parttype, partname })
 }
 export function getDefaultParts(user) {
 	if (Object(user) instanceof String) user = getUserByUsername(user)
 	return user?.defaultParts || {}
+}
+export function notifyPartInstall(username, parttype, partname) {
+	console.log(`Notifying client of part installation: ${parttype}/${partname} for ${username}`)
+	sendEventToUser(username, 'part-installed', { parttype, partname })
 }
 /**
  * @typedef {Object} PartInfo
@@ -403,6 +409,7 @@ export async function uninstallPartBase(username, parttype, partname, unLoadargs
 		part ??= await baseloadPart(username, parttype, partname, { Loader, pathGetter })
 	} catch (error) { console.error(error) }
 	await Uninstaller(part, pathGetter())
+	sendEventToUser(username, 'part-uninstalled', { parttype, partname })
 	delete parts_set[username][parttype][partname]
 	const parts_details_cache = loadData(username, 'parts_details_cache')
 	parts_details_cache[parttype] ??= {}

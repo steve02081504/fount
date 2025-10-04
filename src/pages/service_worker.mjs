@@ -377,6 +377,34 @@ let ws = null
 let reconnectTimeout = null
 const RECONNECT_DELAY = 5000 // 5 seconds
 
+const wsMessageHandlers = {
+	notification: data => {
+		const { title, options, targetUrl } = data
+		if (!title) return
+
+		if (!targetUrl) self.registration.showNotification(title, options)
+		else self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
+			let shouldShowNotification = true
+			for (const client of windowClients) {
+				const clientUrl = new URL(client.url)
+				const notificationTargetUrl = new URL(targetUrl, self.location.origin)
+				if (clientUrl.pathname === notificationTargetUrl.pathname && clientUrl.search === notificationTargetUrl.search && client.focused) {
+					shouldShowNotification = false
+					break
+				}
+			}
+			if (shouldShowNotification)
+				self.registration.showNotification(title, options)
+		})
+	},
+	default: message => {
+		self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
+			for (const client of windowClients) client.postMessage(message)
+		})
+	},
+}
+
+
 function connectWebSocket() {
 	// Use a relative URL that will be resolved correctly by the browser
 	// against the service worker's origin.
@@ -397,28 +425,16 @@ function connectWebSocket() {
 	}
 
 	ws.onmessage = event => {
-		console.log('[SW WS] Message received:', event.data)
 		try {
-			const { title, options, targetUrl } = JSON.parse(event.data)
-			if (!title) return
-			if (!targetUrl) self.registration.showNotification(title, options)
-			else event.waitUntil(
-				self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
-					let shouldShowNotification = true
-					for (const client of windowClients) {
-						const clientUrl = new URL(client.url)
-						const notificationTargetUrl = new URL(targetUrl, self.location.origin)
-						if (clientUrl.pathname === notificationTargetUrl.pathname && clientUrl.search === notificationTargetUrl.search && client.focused) {
-							shouldShowNotification = false
-							break
-						}
-					}
-					if (shouldShowNotification) self.registration.showNotification(title, options)
-				})
-			)
+			const message = JSON.parse(event.data)
+			if (!message.type) return console.warn('[SW WS] Received message without a type:', message)
+
+			const handler = wsMessageHandlers[message.type]
+			if (handler) handler(message.data)
+			else wsMessageHandlers.default(message)
 		}
 		catch (error) {
-			console.error('[SW WS] Error parsing message or showing notification:', error)
+			console.error('[SW WS] Error parsing message or handling it:', error)
 		}
 	}
 
