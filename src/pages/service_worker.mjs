@@ -211,21 +211,13 @@ async function cleanupExpiredCache() {
 			transaction.onabort = () => reject(new Error('Cleanup transaction aborted'))
 		})
 
-		if (!urlsToDelete.length)
-			return console.log('[SW Cleanup] No expired items to clean up.')
-
-		console.log(`[SW Cleanup] Found ${urlsToDelete.length} expired items. Proceeding to delete from cache.`)
+		if (!urlsToDelete.length) return
 
 		// 步骤 2: 并行删除缓存条目，以提高清理大量项目时的效率。
 		const cache = await caches.open(CACHE_NAME)
 		const deletePromises = urlsToDelete.map(url => cache.delete(url))
 		// 使用 Promise.allSettled 确保即使某个删除失败，其他删除操作也能继续完成。
-		const results = await Promise.allSettled(deletePromises)
-		const successfulDeletes = results.filter(r => r.status === 'fulfilled' && r.value === true)
-		const deletedCount = successfulDeletes.length
-
-		console.log(`[SW Cleanup] Successfully deleted ${deletedCount} of ${urlsToDelete.length} items from Cache Storage.`)
-
+		await Promise.allSettled(deletePromises)
 	}
 	catch (error) {
 		console.error('[SW Cleanup] Cache cleanup process failed:', error)
@@ -411,17 +403,13 @@ function connectWebSocket() {
 	const wsUrl = new URL('/ws/notify', self.location.href)
 	wsUrl.protocol = wsUrl.protocol.replace('http', 'ws')
 
-	console.log('[SW WS] Attempting to connect to', wsUrl.href)
-
 	ws = new WebSocket(wsUrl)
 
 	ws.onopen = () => {
-		console.log('[SW WS] Connection established.')
 		// Reset reconnect timeout on successful connection
-		if (reconnectTimeout) {
-			clearTimeout(reconnectTimeout)
-			reconnectTimeout = null
-		}
+		if (!reconnectTimeout) return
+		clearTimeout(reconnectTimeout)
+		reconnectTimeout = null
 	}
 
 	ws.onmessage = event => {
@@ -455,7 +443,6 @@ connectWebSocket()
 // --- Service Worker 事件监听器 ---
 
 self.addEventListener('install', event => {
-	console.log(`[SW ${CACHE_NAME}] Installing...`)
 	// 强制新的 Service Worker 在安装后立即激活，取代旧版本。
 	event.waitUntil(self.skipWaiting())
 })
@@ -469,6 +456,7 @@ self.addEventListener('activate', event => {
 					minInterval: 24 * 60 * 60 * 1000, // 至少每 24 小时执行一次。
 				})
 			} catch (err) {
+				if (err.name === 'NotAllowedError') return
 				console.error('[SW] Periodic background sync failed to register:', err)
 			}
 
