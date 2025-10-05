@@ -284,7 +284,10 @@
 			"verificationCodeSendError": "Не вдалося надіслати код підтвердження.",
 			"verificationCodeRateLimit": "Занадто часті спроби надіслати код, спробуйте пізніше.",
 			"lowPasswordStrength": "Пароль занадто слабкий.",
-			"accountAlreadyExists": "Такий акаунт вже існує"
+			"accountAlreadyExists": "Такий акаунт вже існує",
+			"powTokenInvalid": "Недійсний токен PoW",
+			"powNotSolved": "Будь ласка, спочатку пройдіть перевірку PoW.",
+			"powError": "Помилка перевірки POW"
 		},
 		"passwordStrength": {
 			"veryWeak": "Дуже слабкий",
@@ -1287,5 +1290,12 @@
 		"title": "Сторінку не знайдено",
 		"pageNotFoundText": "Ой! Схоже, ви потрапили на сторінку, якої не існує.",
 		"homepageButton": "Повернутися на головну"
+	},
+	"pow_captcha": {
+		"initial": "Я не робот",
+		"verifying": "Перевірка ...",
+		"solved": "Перевірка успішна",
+		"error": "Перевірка не вдалася",
+		"wasm_disabled": "Увімкніть WASM для швидшої перевірки"
 	}
 }

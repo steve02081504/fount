@@ -284,7 +284,10 @@
 			"verificationCodeSendError": "Не удалось отправить проверочный код.",
 			"verificationCodeRateLimit": "Слишком много запросов на отправку проверочного кода. Пожалуйста, попробуйте позже.",
 			"lowPasswordStrength": "Пароль слишком простой.",
-			"accountAlreadyExists": "Аккаунт уже существует."
+			"accountAlreadyExists": "Аккаунт уже существует.",
+			"powTokenInvalid": "Неверный токен PoW",
+			"powNotSolved": "Пожалуйста, сначала пройдите проверку PoW",
+			"powError": "Ошибка проверки PoW"
 		},
 		"passwordStrength": {
 			"veryWeak": "Очень слабый",
@@ -1287,5 +1290,12 @@
 		"title": "Страница не найдена",
 		"pageNotFoundText": "Ой! Кажется, вы зашли на несуществующую страницу.",
 		"homepageButton": "Вернуться на главную страницу"
+	},
+	"pow_captcha": {
+		"initial": "Я не робот",
+		"verifying": "Проверка ...",
+		"solved": "Проверка успешна",
+		"error": "Проверка не удалась",
+		"wasm_disabled": "Включите WASM для более быстрой проверки."
 	}
 }

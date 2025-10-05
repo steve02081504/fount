@@ -284,7 +284,10 @@
 			"verificationCodeSendError": "🔢➡️❌",
 			"verificationCodeRateLimit": "🔢➡️⏳",
 			"lowPasswordStrength": "🔑👎",
-			"accountAlreadyExists": "👤🙅"
+			"accountAlreadyExists": "👤🙅",
+			"powTokenInvalid": "🎟️❌",
+			"powNotSolved": "1️⃣🧩",
+			"powError": "⚙️💥"
 		},
 		"passwordStrength": {
 			"veryWeak": "😫",
@@ -1287,5 +1290,12 @@
 		"title": "🤷‍♂️📄",
 		"pageNotFoundText": "😢 ➡️ 🤷‍♂️📄",
 		"homepageButton": "➡️🏠"
+	},
+	"pow_captcha": {
+		"initial": "🤖❓",
+		"verifying": "🤔⏳",
+		"solved": "✅✨",
+		"error": "❌👎",
+		"wasm_disabled": "⚙️➡️🚀"
 	}
 }

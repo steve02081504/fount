@@ -284,7 +284,10 @@
 			"verificationCodeSendError": "验证码发送失败。",
 			"verificationCodeRateLimit": "发送验证码过于频繁，请稍后再试。",
 			"lowPasswordStrength": "密码强度太低。",
-			"accountAlreadyExists": "账户已存在"
+			"accountAlreadyExists": "账户已存在",
+			"powTokenInvalid": "无效的 PoW 令牌",
+			"powNotSolved": "请先完成 PoW 验证",
+			"powError": "PoW 验证出错"
 		},
 		"passwordStrength": {
 			"veryWeak": "非常弱",
@@ -1287,5 +1290,12 @@
 		"title": "页面未找到",
 		"pageNotFoundText": "糟糕！您似乎来到了一个不存在的页面。",
 		"homepageButton": "返回首页"
+	},
+	"pow_captcha": {
+		"initial": "我不是机器人",
+		"verifying": "正在验证...",
+		"solved": "验证成功",
+		"error": "验证失败",
+		"wasm_disabled": "启用 WASM 可加快验证速度"
 	}
 }
