@@ -11,7 +11,7 @@ const PartsRouters = {}
 const partsAPIregex = new RegExp(`^/(api|ws)/(${partsList.join('|')})/`)
 PartsRouter.use(async (req, res, next) => {
 	if (!partsAPIregex.test(req.path)) return next()
-	if(!await auth_request(req, res)) {
+	if (!await auth_request(req, res)) {
 		console.error('skip part router because auth failed')
 		return next()
 	}

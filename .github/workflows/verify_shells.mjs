@@ -14,7 +14,7 @@ const fount_config = {
 		Web: false,
 		Tray: false,
 		DiscordIPC: false,
-		Base : {
+		Base: {
 			Jobs: false,
 			Timers: false,
 		}

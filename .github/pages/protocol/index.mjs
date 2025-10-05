@@ -39,6 +39,6 @@ async function main() {
 
 main().catch(e => {
 	Sentry.captureException(e)
-	showToast(geti18n('protocolhandler.unknownError', { error:e }), 'error')
+	showToast(geti18n('protocolhandler.unknownError', { error: e }), 'error')
 	setTimeout(() => window.location.href = 'https://github.com/steve02081504/fount', 5000)
 })

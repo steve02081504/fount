@@ -334,9 +334,9 @@ async function displayFunctionButtons() {
 			button.append(iconSpan, titleSpan)
 			if (buttonItem.action)
 				button.addEventListener('click', () => async_eval(buttonItem.action, { geti18n }))
-			 else if (buttonItem.url)
+			else if (buttonItem.url)
 				button.href = buttonItem.url
-			 else if (!buttonItem.sub_items)  // Don't warn for menu containers that are empty
+			else if (!buttonItem.sub_items)  // Don't warn for menu containers that are empty
 				console.warn('No action defined for this button', buttonItem)
 
 			li.appendChild(button)

@@ -125,34 +125,35 @@ body.scroll-lock {
 
 /* Data Showcase Section */
 .rotating-text-container {
-    position: relative;
-    display: inline-block;
-    vertical-align: bottom;
-    text-align: left;
-    transition: width 0.3s ease-in-out;
-    height: 1.2em; /* Match line-height to prevent jump */
+	position: relative;
+	display: inline-block;
+	vertical-align: bottom;
+	text-align: left;
+	transition: width 0.3s ease-in-out;
+	height: 1.2em;
+	/* Match line-height to prevent jump */
 }
 
-.rotating-text-container > span {
-    position: absolute;
-    white-space: nowrap;
-    top: 0;
-    left: 0;
-    opacity: 0;
-    transform: translateY(100%);
-    transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+.rotating-text-container>span {
+	position: absolute;
+	white-space: nowrap;
+	top: 0;
+	left: 0;
+	opacity: 0;
+	transform: translateY(100%);
+	transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
 }
 
-.rotating-text-container > span.active {
-    opacity: 1;
-    transform: translateY(0);
+.rotating-text-container>span.active {
+	opacity: 1;
+	transform: translateY(0);
 }
 
-.rotating-text-container > span.exiting {
-    opacity: 0;
-    transform: translateY(-100%);
+.rotating-text-container>span.exiting {
+	opacity: 0;
+	transform: translateY(-100%);
 }
 
 #data-showcase .stat-value {
-    transition: all 0.5s ease-out;
+	transition: all 0.5s ease-out;
 }
