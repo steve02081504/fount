@@ -284,7 +284,9 @@
 			"verificationCodeSendError": "فشل إرسال رمز التحقق.",
 			"verificationCodeRateLimit": "لقد أرسلت رموز التحقق بشكل متكرر جدًا، يرجى المحاولة لاحقًا.",
 			"lowPasswordStrength": "قوة كلمة المرور ضعيفة جدًا.",
-			"accountAlreadyExists": "الحساب موجود بالفعل"
+			"accountAlreadyExists": "الحساب موجود بالفعل",
+			"powNotSolved": "يرجى إكمال التحقق من إثبات العمل (PoW) أولاً",
+			"powError": "خطأ في التحقق من إثبات العمل (PoW)"
 		},
 		"passwordStrength": {
 			"veryWeak": "ضعيفة جدًا",
@@ -1287,5 +1289,12 @@
 		"title": "الصفحة غير موجودة",
 		"pageNotFoundText": "عفوًا! يبدو أنك وصلت إلى صفحة غير موجودة.",
 		"homepageButton": "العودة إلى الصفحة الرئيسية"
+	},
+	"pow_captcha": {
+		"initial": "أنا لست روبوت",
+		"verifying": "التحقق ...",
+		"solved": "تم التحقق بنجاح",
+		"error": "فشل التحقق",
+		"wasm_disabled": "تمكين WASM للتحقق بشكل أسرع"
 	}
 }

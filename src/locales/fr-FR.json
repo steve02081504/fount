@@ -284,7 +284,9 @@
 			"verificationCodeSendError": "Échec de l'envoi du code de vérification.",
 			"verificationCodeRateLimit": "Trop de demandes de code de vérification. Veuillez réessayer plus tard.",
 			"lowPasswordStrength": "Le mot de passe est trop faible.",
-			"accountAlreadyExists": "Ce compte existe déjà."
+			"accountAlreadyExists": "Ce compte existe déjà.",
+			"powNotSolved": "Veuillez d'abord terminer la vérification PoW",
+			"powError": "Erreur de vérification PoW"
 		},
 		"passwordStrength": {
 			"veryWeak": "Très faible",
@@ -1287,5 +1289,12 @@
 		"title": "Page non trouvée",
 		"pageNotFoundText": "Oups ! Il semble que vous soyez arrivé sur une page qui n'existe pas.",
 		"homepageButton": "Retour à la page d'accueil"
+	},
+	"pow_captcha": {
+		"initial": "Je ne suis pas un robot",
+		"verifying": "Vérification en cours...",
+		"solved": "Vérification réussie",
+		"error": "Échec de la vérification",
+		"wasm_disabled": "Activer WASM pour une vérification plus rapide"
 	}
 }
