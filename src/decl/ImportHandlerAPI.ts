@@ -22,8 +22,8 @@ export class importHandlerAPI_t {
 			SetData: (data: any) => Promise<void>
 		},
 		import: {
-			ImportAsData: (username: string, chardata: Buffer) => Promise<Array<{parttype:string;partname:string}>>;
-			ImportByText: (username: string, text: string) => Promise<Array<{parttype:string;partname:string}>>;
+			ImportAsData: (username: string, chardata: Buffer) => Promise<Array<{ parttype: string; partname: string }>>;
+			ImportByText: (username: string, text: string) => Promise<Array<{ parttype: string; partname: string }>>;
 		}
 	}
 }
