@@ -15,7 +15,7 @@ import { events } from './events.mjs'
 import { partsList } from './managers/base.mjs'
 import { config, save_config, data_path } from './server.mjs'
 
-const ACCESS_TOKEN_EXPIRY = '1d' // Access Token 有效期
+const ACCESS_TOKEN_EXPIRY = '15m' // Access Token 有效期
 export const ACCESS_TOKEN_EXPIRY_DURATION = ms(ACCESS_TOKEN_EXPIRY) // Access Token 有效期 (毫秒数)
 export const REFRESH_TOKEN_EXPIRY = '30d' // Refresh Token 有效期 (字符串形式)
 export const REFRESH_TOKEN_EXPIRY_DURATION = ms(REFRESH_TOKEN_EXPIRY) // Refresh Token 有效期 (毫秒数)
@@ -170,7 +170,7 @@ async function verifyToken(token) {
  * @param {object} req - Express 请求对象, 用于获取 IP 和 User-Agent
  * @returns {Promise<object>} 包含状态码、新令牌或错误消息的对象
  */
-async function refresh(refreshTokenValue, req) {
+async function base_refresh(refreshTokenValue, req) {
 	try {
 		const decoded = await verifyToken(refreshTokenValue) // verifyToken 内部已检查全局 revokedTokens
 		if (!decoded) return { status: 401, success: false, message: 'Invalid or revoked refresh token' }
@@ -217,6 +217,15 @@ async function refresh(refreshTokenValue, req) {
 		console.errorI18n('fountConsole.auth.refreshTokenError', { error: error.message })
 		return { status: 401, success: false, message: 'Error refreshing token' }
 	}
+}
+
+const refresh_cache = {}
+async function refresh(refreshTokenValue, req) {
+	refresh_cache[refreshTokenValue] ??= { count: 0 }
+	refresh_cache[refreshTokenValue].promise ??= base_refresh(refreshTokenValue, req)
+	refresh_cache[refreshTokenValue].count++
+	try { return await refresh_cache[refreshTokenValue].promise }
+	finally { if (!--refresh_cache[refreshTokenValue].count) delete refresh_cache[refreshTokenValue] }
 }
 
 /**
