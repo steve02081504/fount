@@ -54,8 +54,7 @@ export async function createPOWCaptcha(container) {
 	onLanguageChange(updateI18n)
 
 	// Clear container and append widget
-	container.innerHTML = ''
-	container.appendChild(widget)
+	container.replaceChildren(widget)
 
 	const cap = new window.Cap({ apiEndpoint: '/api/pow/' }, widget)
 

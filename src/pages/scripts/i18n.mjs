@@ -30,11 +30,11 @@ export function loadPreferredLangs() {
 	return JSON.parse(localStorage.getItem('userPreferredLanguages') || '[]').filter(Boolean)
 }
 
-export function savePreferredLangs(langs) {
+export async function savePreferredLangs(langs) {
 	const oldLangs = loadPreferredLangs()
 	if (JSON.stringify(langs) == JSON.stringify(oldLangs)) return
 	localStorage.setItem('userPreferredLanguages', JSON.stringify(langs))
-	applyTranslations()
+	await initTranslations()
 }
 
 /**
@@ -169,18 +169,18 @@ export function i18nElement(element, {
 	return element
 }
 
-window.addEventListener('languagechange', () => {
-	applyTranslations()
+window.addEventListener('languagechange', async () => {
+	await initTranslations()
 })
-window.addEventListener('visibilitychange', () => {
+window.addEventListener('visibilitychange', async () => {
 	if (document.visibilityState != 'visible') return
 
 	const preferredLangs = loadPreferredLangs()
 	if (JSON.stringify(lastKnownLangs) != JSON.stringify(preferredLangs))
-		applyTranslations()
+		await initTranslations()
 })
 
-onServerEvent('locale-updated', () => {
+onServerEvent('locale-updated', async () => {
 	console.log('Received locale update notification. Re-initializing translations...')
-	initTranslations()
+	await initTranslations()
 })

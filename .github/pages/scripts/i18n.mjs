@@ -30,7 +30,7 @@ const localeNames = new Map()
  */
 export async function setLocales(langs) {
 	localStorage.setItem('fountUserPreferredLanguages', JSON.stringify(langs))
-	applyTranslations()
+	await initTranslations()
 }
 
 /**
@@ -217,6 +217,6 @@ export function i18nElement(element, {
 	return element
 }
 
-window.addEventListener('languagechange', () => {
-	applyTranslations()
+window.addEventListener('languagechange', async () => {
+	await initTranslations()
 })
