@@ -8,7 +8,6 @@ import { showToast } from '../scripts/toast.mjs'
 
 const form = document.getElementById('auth-form')
 const formTitle = document.getElementById('form-title')
-const formSubtitle = document.getElementById('form-subtitle')
 const submitBtn = document.getElementById('submit-btn')
 const toggleLink = document.getElementById('toggle-link')
 const confirmPasswordGroup = document.getElementById('confirm-password-group')
