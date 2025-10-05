@@ -10,7 +10,8 @@ try {
 		console.warn('@risuai/rpack-rust loaded, but decodeRPack is not a function. Module parsing might fail.')
 		decodeRPack = null // 确保后续逻辑知道它不可用
 	}
-} catch (err) {
+}
+catch (err) {
 	console.warn('Failed to load @risuai/rpack-rust. Risu module (.risum) parsing will be limited or disabled.', err)
 	decodeRPack = null
 }
@@ -71,7 +72,7 @@ export async function parseRisuModule(moduleBuffer) {
 				break
 			}
 			const mark = readByte()
-			if (mark === 0) { // 提前遇到文件结束标记
+			if (!mark) { // 提前遇到文件结束标记
 				console.warn(`Module parsing: found EOF mark after ${i} assets, expected ${expectedAssetCount}.`)
 				break
 			}
@@ -89,7 +90,8 @@ export async function parseRisuModule(moduleBuffer) {
 
 
 		return { moduleDef, assetsData }
-	} catch (error) {
+	}
+	catch (error) {
 		console.error('Error parsing Risu module:', error)
 		return null
 	}

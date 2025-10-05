@@ -20,6 +20,7 @@ import { __dirname, startTime } from './base.mjs'
 import idleManager from './idle.mjs'
 import { ReStartJobs } from './jobs.mjs'
 import { startTimerHeartbeat } from './timers.mjs'
+import { sendEventToAll } from './web_server/event_dispatcher.mjs'
 
 export let data_path
 
@@ -58,23 +59,35 @@ export let hosturl
 export let tray
 export let restartor
 
-export const currentGitCommit = await git('rev-parse', 'HEAD').catch(() => null)
+export let currentGitCommit = await git('rev-parse', 'HEAD').catch(() => null)
 
 async function checkUpstreamAndRestart() {
-	if (!fs.existsSync(__dirname + '/.git')) return
-	try {
+	if (fs.existsSync(__dirname + '/.git')) try {
 		await git('fetch')
 
 		if (!await git('rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}').catch(() => null)) return
 
 		const remoteCommit = await git('rev-parse', '@{u}')
 
-		if (currentGitCommit !== remoteCommit) {
-			const mergeBase = await git('merge-base', 'HEAD', '@{u}')
-			if (mergeBase === currentGitCommit) {
-				console.logI18n('fountConsole.server.update.restarting')
-				if (restartor) await restartor()
-			}
+		if (currentGitCommit == remoteCommit) return
+		const mergeBase = await git('merge-base', 'HEAD', '@{u}')
+		if (mergeBase !== currentGitCommit) return // Not a fast-forward merge
+
+		const changedFiles = await git('diff', '--name-only', 'HEAD', '@{u}').then(out => out.replace(/\\/g, '/').split('\n').filter(Boolean))
+		const needsRestart = changedFiles.some(file =>
+			file.endsWith('.mjs') && file.startsWith('src/') &&
+			!file.startsWith('src/pages/') &&
+			!/^src\/public\/[^/]+\/[^/]+\/public\//.test(file)
+		)
+
+		if (needsRestart) {
+			console.logI18n('fountConsole.server.update.restarting')
+			if (restartor) await restartor()
+		}
+		else {
+			await git('reset', '--hard', '@{u}')
+			currentGitCommit = await git('rev-parse', 'HEAD')
+			sendEventToAll('server-updated', { commitId: currentGitCommit })
 		}
 	} catch (e) {
 		console.errorI18n('fountConsole.partManager.git.updateFailed', { error: e })
@@ -127,7 +140,8 @@ export async function init(start_config) {
 				try {
 					const app = await getApp()
 					return app(req, res)
-				} catch (e) {
+				}
+				catch (e) {
 					console.error(e)
 					res.statusCode = 500
 					res.end('Internal Server Error: Could not load web server.')
@@ -137,7 +151,8 @@ export async function init(start_config) {
 				try {
 					const app = await getApp()
 					return app.ws_on_upgrade(req, socket, head)
-				} catch (e) {
+				}
+				catch (e) {
 					console.error(e)
 					socket.end()
 				}

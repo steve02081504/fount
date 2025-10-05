@@ -3,11 +3,11 @@ import { loadPart } from '../../../../server/managers/index.mjs'
 
 import {
 	handleConnection,
-	getConnectedPages,
 	getBrowseHistory,
 	listAutoRunScripts,
 	addAutoRunScript,
-	removeAutoRunScript
+	removeAutoRunScript,
+	getUserManager
 } from './api.mjs'
 
 export function setEndpoints(router) {
@@ -16,10 +16,10 @@ export function setEndpoints(router) {
 		handleConnection(ws, username)
 	})
 
-	// API for the shell's own frontend
-	router.get('/api/shells/browserIntegration/pages', authenticate, async (req, res) => {
+	router.ws('/ws/shells/browserIntegration/ui', authenticate, async (ws, req) => {
 		const { username } = await getUserByReq(req)
-		res.json({ success: true, data: getConnectedPages(username) })
+		const manager = getUserManager(username)
+		manager.registerUi(ws)
 	})
 
 	router.get('/api/shells/browserIntegration/history', authenticate, async (req, res) => {
@@ -38,8 +38,8 @@ export function setEndpoints(router) {
 		if (browserIntegrationPart.interfaces?.browserIntegration?.callback) {
 			await browserIntegrationPart.interfaces.browserIntegration.BrowserJsCallback({ data, pageId, script })
 			res.status(200).json({ message: 'Callback processed successfully.' })
-		} else
-			res.status(500).json({ error: 'Browser integration part or callback interface not found.' })
+		}
+		else res.status(500).json({ error: 'Browser integration part or callback interface not found.' })
 	})
 
 	// New endpoints for auto-run scripts
@@ -54,7 +54,8 @@ export function setEndpoints(router) {
 		try {
 			const newScript = addAutoRunScript(username, req.body)
 			res.status(201).json({ success: true, script: newScript })
-		} catch (error) {
+		}
+		catch (error) {
 			res.status(400).json({ success: false, message: error.message })
 		}
 	})

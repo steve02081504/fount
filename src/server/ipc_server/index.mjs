@@ -53,7 +53,8 @@ export async function processIPCCommand(command, data) {
 			default:
 				return { status: 'error', message: geti18n('fountConsole.ipc.unsupportedCommand') }
 		}
-	} catch (err) {
+	}
+	catch (err) {
 		console.errorI18n('fountConsole.ipc.processMessageError', { error: err })
 		return { status: 'error', message: err.message }
 	}
@@ -110,7 +111,8 @@ export class IPCManager {
 					const { type, data: commandData } = JSON.parse(message)
 					const result = await processIPCCommand(type, commandData)
 					socket.write(JSON.stringify(result) + '\n')
-				} catch (err) {
+				}
+				catch (err) {
 					console.errorI18n('fountConsole.ipc.processMessageError', { error: err })
 					socket.write(JSON.stringify({ status: 'error', message: err instanceof SyntaxError ? geti18n('fountConsole.ipc.invalidCommandFormat') : err.message }) + '\n')
 				}
@@ -131,23 +133,19 @@ export class IPCManager {
 			client.on('data', async chunk => {
 				responseData += chunk
 				// 检查消息分隔符（换行符）
-				if (responseData.includes('\n')) {
+				if (responseData.includes('\n')) try {
 					const parts = responseData.split('\n')
 					const message = parts[0] // 提取完整消息
 					responseData = parts.slice(1).join('\n') // 剩余数据保留
 
-					try {
-						const response = JSON.parse(message)
-						if (response.status === 'ok')
-							resolve(response.data) // 返回结果
-						else
-							reject(new Error(response.message || geti18n('fountConsole.ipc.unknownError')))
-					} catch (err) {
-						console.errorI18n('fountConsole.ipc.parseResponseFailed', { error: err })
-						reject(new Error(geti18n('fountConsole.ipc.cannotParseResponse')))
-					} finally {
-						client.end() // 处理完成后关闭连接
-					}
+					const response = JSON.parse(message)
+					if (response.status === 'ok') resolve(response.data) // 返回结果
+					else reject(new Error(response.message || geti18n('fountConsole.ipc.unknownError')))
+				} catch (err) {
+					console.errorI18n('fountConsole.ipc.parseResponseFailed', { error: err })
+					reject(new Error(geti18n('fountConsole.ipc.cannotParseResponse')))
+				} finally {
+					client.end() // 处理完成后关闭连接
 				}
 			})
 

@@ -55,9 +55,7 @@ export class GrokAPI {
 	}
 
 	async getNextCookie(useLastSuccessful = true, isThinkModel = false) {
-		if (this.cookies.length === 0)
-			return ''
-
+		if (!this.cookies.length) return ''
 
 		try {
 			await this.acquireLock()
@@ -79,7 +77,8 @@ export class GrokAPI {
 
 			// 直接使用 this.cookies[selectedIndex]，不再需要拼接 "sso="
 			return `sso=${this.cookies[selectedIndex]}`
-		} finally {
+		}
+		finally {
 			this.releaseLock()
 		}
 	}
@@ -96,16 +95,15 @@ export class GrokAPI {
 				{ headers }
 			)
 			return response.data
-		} catch (error) {
+		}
+		catch (error) {
 			console.error(`Failed to check quota for cookie: ${error.message}`)
 			return null
 		}
 	}
 
 	async checkCurrentCookieQuota(cookie, isThinkModel = false) {
-		if (!cookie) return
-
-		try {
+		if (cookie) try {
 			const cookieValue = cookie.replace('sso=', '')
 			const quota = await this.checkQuota(cookieValue, isThinkModel)
 			if (quota) {
@@ -140,7 +138,8 @@ export class GrokAPI {
 				{ headers }
 			)
 			return response.data.fileMetadataId
-		} catch (error) {
+		}
+		catch (error) {
 			console.error('File upload error:', error)
 			throw error
 		}
@@ -174,7 +173,8 @@ export class GrokAPI {
 						try {
 							const fileId = await this.uploadFileToGrok(base64Content, fileName, mimeType, cookie)
 							fileIds.push({ id: fileId, fileName })
-						} catch (error) {
+						}
+						catch (error) {
 							console.error(`Failed to upload image ${fileName}:`, error)
 						}
 					}
@@ -208,10 +208,10 @@ export class GrokAPI {
 					allFileIds.push(...fileResults.map(f => f.id))
 					const imageNames = fileResults.map(f => f.fileName).join(', ')
 					messageText += `${message.role}: ${textContent}\n[Attached images: ${imageNames}]\n`
-				} else
-					messageText += `${message.role}: ${textContent}\n`
-			} else
-				messageText += `${message.role}: ${message.content}\n`
+				}
+				else messageText += `${message.role}: ${textContent}\n`
+			}
+			else messageText += `${message.role}: ${message.content}\n`
 
 
 
@@ -256,46 +256,44 @@ export class GrokAPI {
 		else
 			this.currentCookieIndex = startIndex
 
-		for (let i = 0; i < this.cookies.length; i++)
-			try {
-				const cookie = await this.getNextCookie(false, isThinkModel)
-				const headers = getStandardHeaders(cookie)
-				const response = await axios.post(
-					'https://grok.com/rest/app-chat/conversations/new',
-					grokPayload,
-					{ headers, responseType: 'stream' }
-				)
-				const currentCookie = cookie.replace('sso=', '')
-				const index = this.cookies.findIndex(c => c === currentCookie)
-				if (isThinkModel)
-					this.lastSuccessfulThinkCookieIndex = index
-				else
-					this.lastSuccessfulCookieIndex = index
+		for (let i = 0; i < this.cookies.length; i++) try {
+			const cookie = await this.getNextCookie(false, isThinkModel)
+			const headers = getStandardHeaders(cookie)
+			const response = await axios.post(
+				'https://grok.com/rest/app-chat/conversations/new',
+				grokPayload,
+				{ headers, responseType: 'stream' }
+			)
+			const currentCookie = cookie.replace('sso=', '')
+			const index = this.cookies.findIndex(c => c === currentCookie)
+			if (isThinkModel)
+				this.lastSuccessfulThinkCookieIndex = index
+			else
+				this.lastSuccessfulCookieIndex = index
 
-				return response
-			} catch (error) {
-				const isLastCookie = i === this.cookies.length - 1
-				if (error.response && [429, 401, 403].includes(error.response.status)) {
-					console.log(`Cookie ${i + 1} 失败，状态码: ${error.response.status}`)
-					if (isLastCookie) {
-						console.log('已到达最后一个Cookie，重新从第1个开始尝试')
-						if (isThinkModel)
-							this.currentThinkCookieIndex = 0
-						else
-							this.currentCookieIndex = 0
-
-						continue
-					}
+			return response
+		} catch (error) {
+			const isLastCookie = i === this.cookies.length - 1
+			if (error.response && [429, 401, 403].includes(error.response.status)) {
+				console.log(`Cookie ${i + 1} 失败，状态码: ${error.response.status}`)
+				if (isLastCookie) {
+					console.log('已到达最后一个Cookie，重新从第1个开始尝试')
 					if (isThinkModel)
-						this.currentThinkCookieIndex++
+						this.currentThinkCookieIndex = 0
 					else
-						this.currentCookieIndex++
+						this.currentCookieIndex = 0
 
 					continue
 				}
-				throw error
-			}
+				if (isThinkModel)
+					this.currentThinkCookieIndex++
+				else
+					this.currentCookieIndex++
 
+				continue
+			}
+			throw error
+		}
 
 		throw new Error('All cookies have been tried and failed')
 	}
@@ -354,7 +352,8 @@ export class GrokAPI {
 									thinkingBlockActive = false
 								}
 						}
-					} catch (e) {
+					}
+					catch (e) {
 						console.warn('Incomplete or invalid JSON, skipping chunk', e)
 					}
 				}
@@ -381,27 +380,23 @@ export class GrokAPI {
 			const lines = buffer.split('\n')
 			buffer = lines.pop() || ''
 
-			for (const line of lines) {
-				if (!line.trim()) continue
-				try {
-					if (line.startsWith('{"result":')) {
-						const data = JSON.parse(line)
-						if (data.result?.response?.modelResponse?.message)
-							fullResponse = data.result.response.modelResponse.message
-					}
-				} catch (e) {
-					console.warn('Failed to parse line in non-stream mode')
+			for (const line of lines) if (line.trim()) try {
+				if (line.startsWith('{"result":')) {
+					const data = JSON.parse(line)
+					if (data.result?.response?.modelResponse?.message)
+						fullResponse = data.result.response.modelResponse.message
 				}
+			} catch {
+				console.warn('Failed to parse line in non-stream mode')
 			}
 		}
-		if (buffer.trim())
-			try {
-				const data = JSON.parse(buffer)
-				if (data.result?.response?.modelResponse?.message)
-					fullResponse = data.result.response.modelResponse.message
-			} catch (e) {
-				console.warn('Failed to parse final buffer in non-stream mode')
-			}
+		if (buffer.trim()) try {
+			const data = JSON.parse(buffer)
+			if (data.result?.response?.modelResponse?.message)
+				fullResponse = data.result.response.modelResponse.message
+		} catch {
+			console.warn('Failed to parse final buffer in non-stream mode')
+		}
 
 		if (isThinkModel)
 			fullResponse = '\n<think>\n' + fullResponse + '\n</think>\n'
@@ -443,9 +438,7 @@ export class GrokAPI {
 					if (newlineIndex === -1) break
 					const line = buffer.slice(0, newlineIndex)
 					buffer = buffer.slice(newlineIndex + 1)
-					if (!line.trim()) continue
-
-					try {
+					if (line.trim()) try {
 						if (line.startsWith('{"result":')) {
 							const data = JSON.parse(line)
 							if (data.result?.response?.modelResponse?.generatedImageUrls)
@@ -460,11 +453,8 @@ export class GrokAPI {
 				}
 			})
 			response.data.on('end', async () => {
-				if (generatedImages.length === 0)
-					resolve([])
-
-				else
-					resolve(generatedImages)
+				if (!generatedImages.length) resolve([])
+				else resolve(generatedImages)
 
 				const cookie = await this.getNextCookie()
 				await this.checkCurrentCookieQuota(cookie)

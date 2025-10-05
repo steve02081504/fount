@@ -50,7 +50,8 @@ export async function isFountPart(buffer) {
 		const file = zip.files['fount.json']
 		// If it's a valid zip, we have our answer.
 		return !!(file && !file.dir)
-	} catch (zipErr) {
+	}
+	catch (zipErr) {
 		// Zip failed, let's try 7z. This requires a temp file.
 		const tempFilePath7z = path.join(tmpdir(), `fount_import_check_${Date.now()}.tmp`)
 		try {
@@ -65,11 +66,13 @@ export async function isFountPart(buffer) {
 				stream.on('end', () => resolve(false))
 				stream.on('error', err => reject(err))
 			})
-		} catch (err7z) {
+		}
+		catch (err7z) {
 			// Both failed
 			console.error('isFountPart check failed for both zip and 7z.', { 'zip_error': zipErr, '7z_error': err7z })
 			return false
-		} finally {
+		}
+		finally {
 			await rm(tempFilePath7z, { force: true }).catch(() => { })
 		}
 	}
@@ -97,7 +100,8 @@ export async function unzipDirectory(buffer, targetPath) {
 				await writeFile(fullPath, fileBuffer)
 			}
 		}
-	} catch (_zipErr) {
+	}
+	catch {
 		// Zip failed, let's try 7z. This requires a temp file.
 		tempFilePath7z = path.join(tmpdir(), `fount_import_extract_${Date.now()}.tmp`)
 		try {
@@ -108,11 +112,13 @@ export async function unzipDirectory(buffer, targetPath) {
 				stream.on('end', () => resolve())
 				stream.on('error', err => reject(err))
 			})
-		} catch (err7z) {
+		}
+		catch (err7z) {
 			// Both failed.
 			throw new Error(`Failed to extract archive: Not a supported zip or 7z file. Details: ${err7z.message || err7z}`)
 		}
-	} finally {
+	}
+	finally {
 		if (tempFilePath7z) await rm(tempFilePath7z, { force: true }).catch(() => { })
 	}
 }
@@ -131,7 +137,8 @@ export async function readZipfileAsJSON(buffer, zipPath) {
 	try {
 		const filebuffer = await readZipfile(buffer, zipPath)
 		return JSON.parse(filebuffer.toString())
-	} catch (err) {
+	}
+	catch (err) {
 		throw new Error(`Failed to parse JSON file in ZIP ${zipPath}, ${err.message || err}`)
 	}
 }

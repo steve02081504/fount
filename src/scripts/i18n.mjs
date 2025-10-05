@@ -4,6 +4,7 @@ import process from 'node:process'
 import { console as baseConsole } from 'npm:@steve02081504/virtual-console'
 
 import { __dirname } from '../server/base.mjs'
+import { sendEventToAll } from '../server/web_server/event_dispatcher.mjs'
 
 import { exec } from './exec.mjs'
 import { loadJsonFile } from './json_loader.mjs'
@@ -71,6 +72,21 @@ export const localhostLocales = [...new Set([
 	'en-UK',
 ].filter(Boolean))]
 export let localhostLocaleData = await getLocaleData(localhostLocales)
+
+fs.watch(`${__dirname}/src/locales`, (_event, filename) => {
+	if (!filename?.endsWith('.json')) return
+	const locale = filename.slice(0, -5)
+	console.log(`Detected change in ${filename}.`)
+
+	// Clear cache for the changed file, if it exists
+	if (fountLocaleCache[locale]) delete fountLocaleCache[locale]
+
+	// Always re-evaluate and reload the locale data for the current session
+	getLocaleData(localhostLocales).then((data) => {
+		localhostLocaleData = data
+		sendEventToAll('locale-updated', null)
+	})
+})
 
 // 中国大陆且今天周四
 if (localhostLocales[0] === 'zh-CN')

@@ -78,7 +78,8 @@ export function telegramEntitiesToAiMarkdown(text, entities, botInfo, replyToMes
 			const isTruncated = repliedTextContent.length > maxLength
 			const previewText = repliedTextContent.substring(0, maxLength) + (isTruncated ? '...' : '')
 			repliedPreview = telegramEntitiesToAiMarkdown(previewText, repliedEntities, undefined, undefined)
-		} else if (replyToMessage.photo)
+		}
+		else if (replyToMessage.photo)
 			repliedPreview = '[图片]'
 		else if (replyToMessage.video)
 			repliedPreview = '[视频]'
@@ -94,7 +95,7 @@ export function telegramEntitiesToAiMarkdown(text, entities, botInfo, replyToMes
 	}
 	if (!text) return aiMarkdown.trim()
 	const textChars = Array.from(text)
-	if (!entities || entities.length === 0) return aiMarkdown + text
+	if (!entities?.length) return aiMarkdown + text
 	const parts = []
 	let lastOffset = 0
 	const sortedEntities = [...entities].sort((a, b) => a.offset - b.offset)
@@ -161,7 +162,8 @@ export function aiMarkdownToTelegramHtml(aiMarkdownText) {
 				inBlockquote = true
 			}
 			processedLines.push(quoteContent)
-		} else {
+		}
+		else {
 			if (inBlockquote) {
 				processedLines.push('</blockquote>')
 				inBlockquote = false
@@ -238,7 +240,8 @@ export async function TelegramMessageToFountChatLogEntry(ctx, messageHolder, bot
 				mime_type: 'image/jpeg',
 				description: message.caption || '图片'
 			})
-		} else if (telegramApi && 'document' in message && message.document) {
+		}
+		else if (telegramApi && 'document' in message && message.document) {
 			const doc = message.document
 			const fileLink = await telegramApi.getFileLink(doc.file_id)
 			const response = await fetch(fileLink.href)
@@ -249,7 +252,8 @@ export async function TelegramMessageToFountChatLogEntry(ctx, messageHolder, bot
 				mime_type: doc.mime_type || 'application/octet-stream',
 				description: message.caption || '文件'
 			})
-		} else if (telegramApi && 'voice' in message && message.voice) {
+		}
+		else if (telegramApi && 'voice' in message && message.voice) {
 			const { voice } = message
 			const fileLink = await telegramApi.getFileLink(voice.file_id)
 			const response = await fetch(fileLink.href)
@@ -260,7 +264,8 @@ export async function TelegramMessageToFountChatLogEntry(ctx, messageHolder, bot
 				mime_type: voice.mime_type || 'audio/ogg',
 				description: '语音消息'
 			})
-		} else if (telegramApi && 'audio' in message && message.audio) {
+		}
+		else if (telegramApi && 'audio' in message && message.audio) {
 			const { audio } = message
 			const fileLink = await telegramApi.getFileLink(audio.file_id)
 			const response = await fetch(fileLink.href)
@@ -271,7 +276,8 @@ export async function TelegramMessageToFountChatLogEntry(ctx, messageHolder, bot
 				mime_type: audio.mime_type || 'audio/mpeg',
 				description: audio.title || '音频文件'
 			})
-		} else if (telegramApi && 'video' in message && message.video) {
+		}
+		else if (telegramApi && 'video' in message && message.video) {
 			const { video } = message
 			const fileLink = await telegramApi.getFileLink(video.file_id)
 			const response = await fetch(fileLink.href)
@@ -283,11 +289,12 @@ export async function TelegramMessageToFountChatLogEntry(ctx, messageHolder, bot
 				description: message.caption || '视频文件'
 			})
 		}
-	} catch (error) {
+	}
+	catch (error) {
 		console.error(`[TelegramDefaultInterface] 文件处理失败 (消息ID ${message.message_id}):`, error)
 	}
 
-	if (!content.trim() && files.length === 0 && !cachedAIReply)
+	if (!content.trim() && !files.length && !cachedAIReply)
 		return null
 
 	/** @type {chatLogEntry_t_simple} */
@@ -330,24 +337,22 @@ export function splitTelegramReply(reply, split_length = 4096) {
 				currentMessage += '\n'
 
 			currentMessage += line
-		} else
-			if (line.length > split_length) {
-				if (currentMessage) {
-					messages.push(currentMessage)
-					currentMessage = ''
-				}
-				for (let i = 0; i < line.length; i += split_length)
-					messages.push(line.substring(i, Math.min(i + split_length, line.length)))
-			} else {
-				if (currentMessage)
-					messages.push(currentMessage)
-
-				currentMessage = line
+		}
+		else if (line.length > split_length) {
+			if (currentMessage) {
+				messages.push(currentMessage)
+				currentMessage = ''
 			}
+			for (let i = 0; i < line.length; i += split_length)
+				messages.push(line.substring(i, Math.min(i + split_length, line.length)))
+		}
+		else {
+			if (currentMessage) messages.push(currentMessage)
 
+			currentMessage = line
+		}
 
-	if (currentMessage)
-		messages.push(currentMessage)
+	if (currentMessage) messages.push(currentMessage)
 
 	return messages.filter(msg => msg.trim().length > 0)
 }

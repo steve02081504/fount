@@ -13,7 +13,7 @@
 			"localUrl": "Acesso ao fount a partir de outros dispositivos na mesma rede: ${url}",
 			"standingBy": "Standing by...",
 			"update": {
-				"restarting": "Uma nova versão foi descoberta e a atualização está sendo reiniciada ..."
+				"restarting": "Uma nova versão foi descoberta e a atualização está a ser reiniciada..."
 			}
 		},
 		"jobs": {
@@ -102,6 +102,11 @@
 	},
 	"installer_wait_screen": {
 		"title": "Bem-vindo ao fount!",
+		"language_selector": {
+			"search": {
+				"placeholder": "Pesquisar idioma..."
+			}
+		},
 		"hero": {
 			"title": "O Seu Companheiro Imersivo de Personagens IA",
 			"description": "fount é uma plataforma de interação com personagens alimentada por IA, desenhada para <i>lhe</i> dar poder. É uma ponte que o conecta com as suas personagens imaginadas, permitindo-lhe conversar facilmente com elas, criar as suas próprias personagens e partilhá-las com o mundo."
@@ -124,7 +129,10 @@
 		},
 		"theme_selector": {
 			"title": "Escolha a sua aparência",
-			"description": "Escolha um tema para personalizar a sua experiência."
+			"description": "Escolha um tema para personalizar a sua experiência.",
+			"search": {
+				"placeholder": "Pesquisar temas..."
+			}
 		},
 		"mini_game": {
 			"title": "Jogue um minijogo",
@@ -287,6 +295,7 @@
 		}
 	},
 	"login_info": {
+		"title": "Informação de início de sessão",
 		"modal": {
 			"title": "Erro de transferência de certificado",
 			"retrieve_error": "Ocorreu um erro ao tentar guardar as suas credenciais de início de sessão:\n${error}\nPode continuar, mas não pode guardar as informações de início de sessão.",
@@ -311,6 +320,9 @@
 			"fetchHomeRegistryFailed": "Falha ao obter as informações do registo da página inicial."
 		},
 		"functionMenu": {
+			"search": {
+				"placeholder": "Pesquisar..."
+			},
 			"icon": {
 				"alt": "Menu de funções"
 			}
@@ -742,6 +754,12 @@
 			"partTypeSelect": "Selecione",
 			"partSelect": "Selecione"
 		},
+		"partSelectDropdown": {
+			"placeholder": "Selecione"
+		},
+		"partSearch": {
+			"placeholder": "Procurar..."
+		},
 		"export": {
 			"title": "Opções de Exportação"
 		},
@@ -899,18 +917,27 @@
 		"title": "Configurações de idiomas",
 		"description": "Gerencie suas preferências de idioma aqui. Os idiomas da lista terão precedência sobre as configurações do navegador em ordem.",
 		"availableLanguages": "Idiomas disponíveis",
-		"addButton": "adicionar à",
 		"preferredLanguages": "Lista de idiomas prioritária",
 		"resetButton": "Reiniciar",
-		"saveButton": "salvar",
+		"saveButton": "Guardar",
 		"noPreferredLanguages": "Ainda não há idioma anterior. As configurações padrão do navegador serão usadas.",
 		"savedMessage": "As configurações de idioma são salvas!",
 		"resetMessage": "As configurações de idioma foram redefinidas!",
-		"fetchLocalesFailed": "Falha ao obter os idiomas disponíveis!"
+		"fetchLocalesFailed": "Falha ao obter os idiomas disponíveis!",
+		"select": {
+			"placeholder": "Escolha um idioma..."
+		},
+		"search": {
+			"placeholder": "Pesquisar idioma..."
+		}
 	},
 	"themeManage": {
 		"title": "Gestão de Temas",
 		"instruction": "Escolha um tema!",
+		"search": {
+			"placeholder": "Pesquisar temas...",
+			"noResult": "Não foram encontrados temas correspondentes."
+		},
 		"themes": {
 			"auto": "Automático",
 			"light": "Claro",
@@ -1045,6 +1072,18 @@
 			"newBot": "Novo",
 			"deleteBot": "Eliminar"
 		},
+		"botSelectDropdown": {
+			"placeholder": "Escolha um bot"
+		},
+		"botSearch": {
+			"placeholder": "Pesquisar bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Selecione uma personagem"
+		},
+		"charSearch": {
+			"placeholder": "Pesquisar personagens..."
+		},
 		"configCard": {
 			"title": "Configuração do Bot",
 			"labels": {
@@ -1079,6 +1118,18 @@
 	"telegram_bots": {
 		"title": "Bots do Telegram",
 		"cardTitle": "Gestão de Bots do Telegram",
+		"botSelectDropdown": {
+			"placeholder": "Escolha um bot"
+		},
+		"botSearch": {
+			"placeholder": "Pesquisar bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Selecione uma personagem"
+		},
+		"charSearch": {
+			"placeholder": "Pesquisar personagens..."
+		},
 		"buttons": {
 			"newBot": "Novo",
 			"deleteBot": "Eliminar"

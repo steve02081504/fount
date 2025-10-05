@@ -9,7 +9,8 @@ import {
 	getWorldList, getWorldDetails, noCacheGetWorldDetails,
 	setDefaultPart, getDefaultParts
 } from '../../scripts/parts.mjs'
-import { parseRegexFromString, escapeRegExp } from '../../scripts/regex.mjs'
+import { getFiltersFromString, compileFilter } from '../../scripts/search.mjs'
+import { onServerEvent } from '../../scripts/server_events.mjs'
 import { svgInliner } from '../../scripts/svgInliner.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
@@ -38,6 +39,7 @@ const worldsTabDesktop = document.getElementById('worlds-tab-desktop')
 const personasTabDesktop = document.getElementById('personas-tab-desktop')
 
 let itemDetailsCache = {} // Combined cache
+let partListsCache = {} // Cache for item lists
 let currentItemType = sessionStorage.getItem('fount.home.lastTab') || 'chars' // Persist tab selection
 let homeRegistry
 let defaultParts = {} // Store default parts
@@ -122,9 +124,11 @@ async function attachCardEventListeners(itemElement, itemDetails, itemName, inte
 		tagElement.addEventListener('click', event => {
 			event.stopPropagation()
 			const tag = tagElement.textContent.trim()
-			filterInput.value = filterInput.value.split(' ').includes(tag)
-				? filterInput.value.split(' ').filter(t => t && t !== tag).join(' ')
-				: filterInput.value ? `${filterInput.value} ${tag}` : tag
+			const tagTerm = tag.includes(' ') ? `"${tag}"` : tag
+			const filters = new Set(getFiltersFromString(filterInput.value))
+			filters.has(tagTerm) ? filters.delete(tagTerm) : filters.add(tagTerm)
+			filterInput.value = [...filters].join(' ')
+
 			filterItemList()
 		})
 	})
@@ -198,32 +202,6 @@ async function displayItemInfo(itemDetails) {
 }
 
 // --- Filtering ---
-
-// Helper function for parsing regex filter
-function parseRegexFilter(filter) {
-	if (filter.startsWith('+') || filter.startsWith('-')) filter = filter.slice(1)
-	try {
-		return parseRegexFromString(filter)
-	} catch (_) {
-		return new RegExp(escapeRegExp(filter))
-	}
-}
-
-function applyFilters(itemName, itemType, commonFilters, forceFilters, excludeFilters) {
-	const cacheKey = `${itemType}-${itemName}`
-	const itemData = itemDetailsCache[cacheKey]
-
-	// Should be in cache if fetched previously
-	if (!itemData) return false
-
-	const itemString = JSON.stringify(itemData)
-
-	const hasCommonMatch = commonFilters.length === 0 || commonFilters.some(filter => filter.test(itemString))
-	const hasForceMatch = forceFilters.every(filter => filter.test(itemString))
-	const hasExcludeMatch = excludeFilters.some(filter => filter.test(itemString))
-	return hasCommonMatch && hasForceMatch && !hasExcludeMatch
-}
-
 async function filterItemList() {
 	// Trigger re-render based on filters
 	await displayItemList(currentItemType)
@@ -259,16 +237,7 @@ async function displayItemList(itemType) {
 	const allItemNames = await getItemList(itemType)
 
 	// Get current filters
-	const filterValue = filterInput.value.toLowerCase()
-	const filtersArray = filterValue.split(' ').filter(f => f)
-	const [commonFilters, forceFilters, excludeFilters] = [[], [], []]
-
-	filtersArray.forEach(filterStr => {
-		const regex = parseRegexFilter(filterStr)
-		if (filterStr.startsWith('+')) forceFilters.push(regex)
-		else if (filterStr.startsWith('-')) excludeFilters.push(regex)
-		else commonFilters.push(regex)
-	})
+	const filterFn = compileFilter(filterInput.value)
 
 	const skeletons = Array(allItemNames.length).fill(0).map(_ => {
 		const skeleton = document.createElement('div')
@@ -285,7 +254,7 @@ async function displayItemList(itemType) {
 			const itemDetails = await getItemDetails(itemType, itemName, true)
 
 			// Apply filters
-			if (applyFilters(itemName, itemType, commonFilters, forceFilters, excludeFilters)) {
+			if (filterFn(itemDetails)) {
 				const itemElement = await renderItemView(itemType, itemDetails, itemName)
 				itemElement.classList.add(`${itemType}-card`)
 				targetContainer.replaceChild(itemElement, skeleton)
@@ -299,12 +268,16 @@ async function displayItemList(itemType) {
 }
 
 async function getItemList(itemType) {
+	if (partListsCache[itemType]) return partListsCache[itemType]
+
+	let promise
 	switch (itemType) {
-		case 'chars': return await getCharList()
-		case 'worlds': return await getWorldList()
-		case 'personas': return await getPersonaList()
-		default: return []
+		case 'chars': promise = getCharList(); break
+		case 'worlds': promise = getWorldList(); break
+		case 'personas': promise = getPersonaList(); break
+		default: promise = Promise.resolve([]); break
 	}
+	return partListsCache[itemType] = await promise
 }
 
 // --- Function Buttons ---
@@ -312,31 +285,109 @@ async function displayFunctionButtons() {
 	functionButtonsContainer.innerHTML = '' // Clear existing buttons
 	if (!homeRegistry?.home_function_buttons) return // Avoid error if registry is not loaded
 
-	for (const buttonItem of homeRegistry.home_function_buttons) {
+	const createMenuItem = (buttonItem) => {
 		const li = document.createElement('li')
-		const button = document.createElement('a')
-		const classes = ['flex', 'items-center', 'justify-start', ...buttonItem.classes ? buttonItem.classes.split(' ') : []]
-		button.classList.add(...classes)
-		if (buttonItem.style) button.style.cssText = buttonItem.style
 
-		const iconSpan = document.createElement('span')
-		iconSpan.classList.add('mr-2')
-		iconSpan.innerHTML = buttonItem.button ?? '<img src="https://api.iconify.design/line-md/question-circle.svg" class="text-icon" />'
-		svgInliner(iconSpan)
+		// A button is a submenu if it has sub_items
+		if (buttonItem.sub_items?.length) {
+			const details = document.createElement('details')
+			const summary = document.createElement('summary')
 
-		const titleSpan = document.createElement('span')
-		titleSpan.textContent = buttonItem.info.title
+			const iconSpan = document.createElement('span')
+			iconSpan.classList.add('mr-2')
+			iconSpan.innerHTML = buttonItem.button ?? '<img src="https://api.iconify.design/line-md/folder-filled.svg" class="text-icon" />'
+			svgInliner(iconSpan)
 
-		button.append(iconSpan, titleSpan)
-		if (buttonItem.action)
-			button.addEventListener('click', () => async_eval(buttonItem.action, { geti18n }))
-		else if (buttonItem.url)
-			button.href = buttonItem.url
-		else
-			console.warn('No action defined for this button')
-		li.appendChild(button)
-		functionButtonsContainer.appendChild(li)
+			const titleSpan = document.createElement('span')
+			titleSpan.textContent = buttonItem.info.title
+
+			summary.append(iconSpan, titleSpan)
+			details.appendChild(summary)
+
+			const ul = document.createElement('ul')
+			ul.classList.add('rounded-t-none')
+
+			// Sort children by level before rendering
+			const sortedChildren = buttonItem.sub_items.sort((a, b) => (a.level ?? 0) - (b.level ?? 0))
+
+			sortedChildren.forEach(child => {
+				ul.appendChild(createMenuItem(child))
+			})
+			details.appendChild(ul)
+			li.appendChild(details)
+		}
+		else {
+			// It's a regular button
+			const button = document.createElement('a')
+			const classes = ['flex', 'items-center', 'justify-start', ...buttonItem.classes ? buttonItem.classes.split(' ') : []]
+			button.classList.add(...classes)
+			if (buttonItem.style) button.style.cssText = buttonItem.style
+
+			const iconSpan = document.createElement('span')
+			iconSpan.classList.add('mr-2')
+			iconSpan.innerHTML = buttonItem.button ?? '<img src="https://api.iconify.design/line-md/question-circle.svg" class="text-icon" />'
+			svgInliner(iconSpan)
+
+			const titleSpan = document.createElement('span')
+			titleSpan.textContent = buttonItem.info.title
+
+			button.append(iconSpan, titleSpan)
+			if (buttonItem.action)
+				button.addEventListener('click', () => async_eval(buttonItem.action, { geti18n }))
+			 else if (buttonItem.url)
+				button.href = buttonItem.url
+			 else if (!buttonItem.sub_items)  // Don't warn for menu containers that are empty
+				console.warn('No action defined for this button', buttonItem)
+
+			li.appendChild(button)
+		}
+		return li
 	}
+
+	const searchInput = document.createElement('input')
+	searchInput.type = 'text'
+	searchInput.classList.add('input', 'input-sm', 'w-full')
+	searchInput.dataset.i18n = 'home.functionMenu.search'
+	searchInput.placeholder = geti18n('home.functionMenu.search.placeholder')
+	searchInput.addEventListener('click', e => e.stopPropagation())
+	functionButtonsContainer.appendChild(searchInput)
+
+	const menuItemsContainer = document.createElement('ul')
+	menuItemsContainer.classList.add('menu', 'p-0', 'w-full')
+	functionButtonsContainer.appendChild(menuItemsContainer)
+
+	const renderMenu = (items) => {
+		menuItemsContainer.innerHTML = ''
+		items.forEach(buttonItem => {
+			menuItemsContainer.appendChild(createMenuItem(buttonItem))
+		})
+	}
+
+	const originalItems = homeRegistry.home_function_buttons
+
+	const allButtons = []
+	function flatten(items) {
+		items.forEach(item => {
+			allButtons.push(item)
+			if (item.sub_items)
+				flatten(item.sub_items)
+		})
+	}
+	flatten(originalItems)
+	const leafButtons = allButtons.filter(item => !item.sub_items?.length)
+
+	const filterAndRender = () => {
+		const filterValue = searchInput.value
+		if (!filterValue) return renderMenu(originalItems)
+
+		const filterFn = compileFilter(filterValue)
+		const filteredButtons = leafButtons.filter(button => filterFn(button.info))
+		renderMenu(filteredButtons)
+	}
+
+	searchInput.addEventListener('input', filterAndRender)
+
+	renderMenu(originalItems) // Initial render
 }
 
 // --- Tab Management ---
@@ -358,6 +409,7 @@ async function updateTabContent(itemType) {
 async function refreshCurrentTab() {
 	itemDetailsCache = {}
 	ItemDOMCache = {}
+	partListsCache = {}
 	await fetchData()
 	await updateTabContent(currentItemType)
 }
@@ -417,11 +469,45 @@ async function initializeApp() {
 	// Filter input event (consider debouncing)
 	filterInput.addEventListener('input', filterItemList)
 
-	// Refresh data on focus
-	window.addEventListener('focus', async () => {
-		await fetchData()
-		// Refresh and display filtered list
-		await filterItemList()
+	// The focus listener is no longer needed as all updates are handled by websockets.
+
+	onServerEvent('default-part-updated', ({ parttype, partname }) => {
+		console.log(`Received default-part-update: ${parttype}=${partname}`)
+		if (partname)
+			defaultParts[parttype] = partname
+		else
+			delete defaultParts[parttype]
+
+		updateDefaultPartDisplay()
+	})
+
+	onServerEvent('home-registry-updated', async () => {
+		console.log('Received home-registry-update, refreshing...')
+		await getHomeRegistry().then(async data => {
+			homeRegistry = data
+			await displayFunctionButtons()
+			// The registry also affects item cards, so we need to refresh them
+			await filterItemList()
+		}).catch(error => console.error('Failed to fetch home registry:', error))
+	})
+
+	onServerEvent('part-installed', async ({ parttype, partname }) => {
+		partListsCache[parttype]?.push?.(partname)
+
+		if (parttype === currentItemType)
+			await displayItemList(currentItemType)
+	})
+
+	onServerEvent('part-uninstalled', async ({ parttype, partname }) => {
+		if (partListsCache[parttype]) {
+			const index = partListsCache[parttype].indexOf(partname)
+			if (index + 1) partListsCache[parttype].splice(index, 1)
+		}
+		delete itemDetailsCache[`${parttype}-${partname}`]
+		delete ItemDOMCache[`${parttype}-${partname}`]
+
+		if (parttype === currentItemType)
+			await displayItemList(currentItemType)
 	})
 
 	// esc按键

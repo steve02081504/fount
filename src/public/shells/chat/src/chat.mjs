@@ -15,6 +15,7 @@ import { loadPersona } from '../../../../server/managers/persona_manager.mjs'
 import { loadWorld } from '../../../../server/managers/world_manager.mjs'
 import { getDefaultParts } from '../../../../server/parts_loader.mjs'
 import { skip_report } from '../../../../server/server.mjs'
+import { sendNotification } from '../../../../server/web_server/event_dispatcher.mjs'
 
 import { addfile, getfile } from './files.mjs'
 
@@ -25,6 +26,33 @@ import { addfile, getfile } from './files.mjs'
  * @type {Map<string, { username: string, chatMetadata: chatMetadata_t | null }>}
  */
 const chatMetadatas = new Map()
+const chatUiSockets = new Map()
+
+export function registerChatUiSocket(chatid, ws) {
+	if (!chatUiSockets.has(chatid))
+		chatUiSockets.set(chatid, new Set())
+
+	const socketSet = chatUiSockets.get(chatid)
+	socketSet.add(ws)
+	console.log(`Chat UI WebSocket registered for chat ${chatid}. Total: ${socketSet.size}`)
+
+	ws.on('close', () => {
+		socketSet.delete(ws)
+		console.log(`Chat UI WebSocket disconnected for chat ${chatid}. Total: ${socketSet.size}`)
+		if (!socketSet.size)
+			chatUiSockets.delete(chatid)
+	})
+}
+
+function broadcastChatEvent(chatid, event) {
+	const sockets = chatUiSockets.get(chatid)
+	if (!sockets?.size) return
+
+	const message = JSON.stringify(event)
+	for (const ws of sockets)
+		if (ws.readyState === ws.OPEN)
+			ws.send(message)
+}
 
 /**
  * @description 初始化 chatMetadatas 映射表。
@@ -502,13 +530,14 @@ export async function setPersona(chatid, personaname) {
 	if (!personaname) {
 		timeSlice.player = undefined
 		timeSlice.player_id = undefined
-		if (is_VividChat(chatMetadata)) saveChat(chatid)
-		return
 	}
-	timeSlice.player = await loadPersona(username, personaname)
-	timeSlice.player_id = personaname
+	else {
+		timeSlice.player = await loadPersona(username, personaname)
+		timeSlice.player_id = personaname
+	}
 
 	if (is_VividChat(chatMetadata)) saveChat(chatid)
+	broadcastChatEvent(chatid, { type: 'persona_set', payload: { personaname } })
 }
 
 /**
@@ -523,16 +552,19 @@ export async function setWorld(chatid, worldname) {
 		chatMetadata.LastTimeSlice.world = undefined
 		chatMetadata.LastTimeSlice.world_id = undefined
 		if (is_VividChat(chatMetadata)) saveChat(chatid)
+		broadcastChatEvent(chatid, { type: 'world_set', payload: { worldname: null } })
 		return null
 	}
 	const { username, chatLog } = chatMetadata
 	const timeSlice = chatMetadata.LastTimeSlice.copy()
 	const world = timeSlice.world = await loadWorld(username, worldname)
 	timeSlice.world_id = worldname
-	if (world.interfaces.chat.GetGreeting && chatLog.length === 0)
+	if (world.interfaces.chat.GetGreeting && !chatLog.length)
 		timeSlice.greeting_type = 'world_single'
 	else if (world.interfaces.chat.GetGroupGreeting && chatLog.length > 0)
 		timeSlice.greeting_type = 'world_group'
+
+	broadcastChatEvent(chatid, { type: 'world_set', payload: { worldname } })
 
 	try {
 		const request = await getChatRequest(chatid, undefined)
@@ -545,11 +577,14 @@ export async function setWorld(chatid, worldname) {
 				result = await world.interfaces.chat.GetGroupGreeting(request, 0)
 				break
 		}
-		if (!result) return
+		if (!result)
+			return
+
 		const greeting_entrie = await BuildChatLogEntryFromCharReply(result, timeSlice, null, undefined, username)
-		await addChatLogEntry(chatid, greeting_entrie) // 此处已保存，无需额外调用
+		await addChatLogEntry(chatid, greeting_entrie) // 此处已广播
 		return greeting_entrie
-	} catch (error) {
+	}
+	catch {
 		chatMetadata.LastTimeSlice.world = timeSlice.world
 		chatMetadata.LastTimeSlice.world_id = timeSlice.world_id
 	}
@@ -576,9 +611,12 @@ export async function addchar(chatid, charname) {
 	else
 		timeSlice.greeting_type = 'single'
 
-	if (timeSlice.chars[charname]) return null
+	if (timeSlice.chars[charname])
+		return null
+
 
 	const char = timeSlice.chars[charname] = await LoadChar(username, charname)
+	broadcastChatEvent(chatid, { type: 'char_added', payload: { charname } })
 
 	// 获取问候语
 	const request = await getChatRequest(chatid, charname)
@@ -593,11 +631,14 @@ export async function addchar(chatid, charname) {
 				result = await char.interfaces.chat.GetGroupGreeting(request, 0)
 				break
 		}
-		if (!result) return null
+		if (!result)
+			return null
+
 		const greeting_entrie = await BuildChatLogEntryFromCharReply(result, timeSlice, char, charname, username)
-		await addChatLogEntry(chatid, greeting_entrie) // 此处已保存，无需额外调用
+		await addChatLogEntry(chatid, greeting_entrie) // 此处已广播
 		return greeting_entrie
-	} catch (error) {
+	}
+	catch (error) {
 		console.error(error)
 		chatMetadata.LastTimeSlice.chars[charname] = timeSlice.chars[charname]
 	}
@@ -614,6 +655,7 @@ export async function removechar(chatid, charname) {
 	const chatMetadata = await loadChat(chatid)
 	delete chatMetadata.LastTimeSlice.chars[charname]
 	if (is_VividChat(chatMetadata)) saveChat(chatid)
+	broadcastChatEvent(chatid, { type: 'char_removed', payload: { charname } })
 }
 
 /**
@@ -626,6 +668,7 @@ export async function setCharSpeakingFrequency(chatid, charname, frequency) {
 	const chatMetadata = await loadChat(chatid)
 	chatMetadata.LastTimeSlice.chars_speaking_frequency[charname] = frequency
 	if (is_VividChat(chatMetadata)) saveChat(chatid)
+	broadcastChatEvent(chatid, { type: 'char_frequency_set', payload: { charname, frequency } })
 }
 
 /**
@@ -686,6 +729,24 @@ export async function GetWorldName(chatid) {
  * @param {chatLogEntry_t} entry - 要添加的聊天记录条目。
  * @returns {Promise<chatLogEntry_t>} 已添加的聊天记录条目。
  */
+async function handleAutoReply(chatid, freq_data, initial_char) {
+	let char = initial_char
+	while (true) {
+		freq_data = freq_data.filter(f => f.charname !== char)
+		const nextreply = await getNextCharForReply(freq_data)
+		if (nextreply) try {
+			await triggerCharReply(chatid, nextreply)
+			return
+		}
+		catch (error) {
+			console.error(error)
+			char = nextreply
+		}
+		else
+			return
+	}
+}
+
 async function addChatLogEntry(chatid, entry) {
 	const chatMetadata = await loadChat(chatid)
 	if (entry.timeSlice.world?.interfaces?.chat?.AddChatLogEntry)
@@ -699,29 +760,23 @@ async function addChatLogEntry(chatid, entry) {
 	chatMetadata.LastTimeSlice = entry.timeSlice
 
 	if (is_VividChat(chatMetadata)) saveChat(chatid)
+	broadcastChatEvent(chatid, { type: 'message_added', payload: await entry.toData(chatMetadata.username) })
 
-	let freq_data = await getCharReplyFrequency(chatid)
+	// If the message is from a character, send a push notification via the service worker.
+	if (entry.role === 'char')
+		sendNotification(chatMetadata.username, entry.name ?? 'Character', {
+			body: entry.content,
+			icon: entry.avatar || '/favicon.svg', // Use a default icon
+			data: {
+				url: `/shells/chat/#${chatid}`, // URL to open on click
+			},
+		}, `/shells/chat/#${chatid}`)
+
+	const freq_data = await getCharReplyFrequency(chatid)
 	if (entry.timeSlice.world?.interfaces?.chat?.AfterAddChatLogEntry)
 		await entry.timeSlice.world.interfaces.chat.AfterAddChatLogEntry(await getChatRequest(chatid, undefined), freq_data)
-	else {
-		let char = entry.timeSlice.charname ?? null
-			; (async () => {
-			while (true) {
-				freq_data = freq_data.filter(f => f.charname !== char)
-				const nextreply = await getNextCharForReply(freq_data)
-				if (nextreply) try {
-					await triggerCharReply(chatid, nextreply)
-					return
-				}
-				catch (error) {
-					console.error(error)
-					char = nextreply
-				}
-				else
-					return
-			}
-		})()
-	}
+	else
+		handleAutoReply(chatid, freq_data, entry.timeSlice.charname ?? null)
 
 	return entry
 }
@@ -762,7 +817,8 @@ export async function modifyTimeLine(chatid, delta) {
 					default:
 						result = await char.interfaces.chat.GetReply(await getChatRequest(chatid, charname))
 				}
-			} catch (e) {
+			}
+			catch (e) {
 				result = {
 					content: ['```', e.message, e.stack || '', '```'].filter(Boolean).join('\n'),
 				}
@@ -794,8 +850,10 @@ export async function modifyTimeLine(chatid, delta) {
 	chatMetadata.LastTimeSlice = entry.timeSlice
 
 	if (is_VividChat(chatMetadata)) saveChat(chatid)
+	chatMetadata.chatLog[chatMetadata.chatLog.length - 1] = entry
+	broadcastChatEvent(chatid, { type: 'message_replaced', payload: { index: chatMetadata.chatLog.length - 1, entry: await entry.toData(chatMetadata.username) } })
 
-	return chatMetadata.chatLog[chatMetadata.chatLog.length - 1] = entry
+	return entry
 }
 
 /**
@@ -932,7 +990,8 @@ export async function triggerCharReply(chatid, charname) {
 			result = await timeSlice.world.interfaces.chat.GetCharReply(request, charname)
 		else
 			result = await char.interfaces.chat.GetReply(request)
-	} catch (e) {
+	}
+	catch (e) {
 		result = {
 			content: ['```', e.message, e.stack || '', '```'].filter(Boolean).join('\n'),
 		}
@@ -1052,7 +1111,8 @@ export async function deleteChat(chatids, username) {
 			if (fs.existsSync(basedir + chatid + '.json')) await fs.promises.unlink(basedir + chatid + '.json')
 			chatMetadatas.delete(chatid)
 			return { chatid, success: true, message: 'Chat deleted successfully' }
-		} catch (error) {
+		}
+		catch (error) {
 			console.error(`Error deleting chat ${chatid}:`, error)
 			return { chatid, success: false, message: 'Error deleting chat', error: error.message }
 		}
@@ -1094,7 +1154,8 @@ export async function exportChat(chatids) {
 			const chat = await loadChat(chatid)
 			if (!chat) return { chatid, success: false, message: 'Chat not found', error: 'Chat not found' }
 			return { chatid, success: true, data: chat }
-		} catch (error) {
+		}
+		catch (error) {
 			console.error(`Error exporting chat ${chatid}:`, error)
 			return { chatid, success: false, message: 'Error exporting chat', error: error.message }
 		}
@@ -1146,6 +1207,7 @@ export async function deleteMessage(chatid, index) {
 		chatMetadata.LastTimeSlice = new timeSlice_t()
 
 	if (is_VividChat(chatMetadata)) saveChat(chatid)
+	broadcastChatEvent(chatid, { type: 'message_deleted', payload: { index } })
 }
 
 /**
@@ -1209,17 +1271,17 @@ export async function editMessage(chatid, index, new_content) {
 		chatMetadata.timeLines[chatMetadata.timeLineIndex] = entry
 
 	if (is_VividChat(chatMetadata)) saveChat(chatid)
+	broadcastChatEvent(chatid, { type: 'message_edited', payload: { index, entry: await entry.toData(chatMetadata.username) } })
 
 	return entry
 }
 
 /**
- * @description 获取用于客户端心跳轮询的数据。
+ * @description 获取用于客户端初始化的数据。
  * @param {string} chatid - 聊天ID。
- * @param {number} start - 需要获取的消息记录的起始索引。
- * @returns {Promise<object>} 包含聊天状态和新消息的心跳数据。
+ * @returns {Promise<object>} 包含聊天状态和消息的心跳数据。
  */
-export async function getHeartbeatData(chatid, start) {
+export async function getInitialData(chatid) {
 	const chatMetadata = await loadChat(chatid)
 	if (!chatMetadata) throw skip_report(new Error('Chat not found'))
 	const timeSlice = chatMetadata.LastTimeSlice
@@ -1228,7 +1290,8 @@ export async function getHeartbeatData(chatid, start) {
 		worldname: timeSlice.world_id,
 		personaname: timeSlice.player_id,
 		frequency_data: timeSlice.chars_speaking_frequency,
-		Messages: await Promise.all(chatMetadata.chatLog.slice(start).map(x => x.toData(chatMetadata.username))),
+		logLength: chatMetadata.chatLog.length,
+		initialLog: await Promise.all(chatMetadata.chatLog.slice(-20).map(x => x.toData(chatMetadata.username))),
 	}
 }
 

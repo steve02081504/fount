@@ -20,10 +20,10 @@ async function getTemplates(username) {
 					allTemplates[templateName] = true
 
 			}
-		} catch (error) {
+		}
+		catch (error) {
 			if (error.code !== 'ENOENT')
 				console.error(`Error reading templates from ${basePath}:`, error)
-
 		}
 	}
 

@@ -83,6 +83,7 @@ async function geti18n(key, params = {}) {
 async function initTranslations() {
 	const base_dir = 'https://steve02081504.github.io/fount'
 	const availableLocales = []
+	const userPreferredLangs = await GM.getValue('fount_user_preferred_locales', [])
 
 	try {
 		// Fetch available locales from list.csv
@@ -101,15 +102,14 @@ async function initTranslations() {
 			const lines = csvText.split('\n').slice(1) // Skip header
 			for (const line of lines) {
 				const [code] = line.split(',').map(item => item.trim())
-				if (code)
-					availableLocales.push(code)
-
+				if (code) availableLocales.push(code)
 			}
-		} else
+		}
+		else
 			console.warn('fount userscript: Could not fetch locales list.csv.')
 
 		// Determine best locale
-		const preferredLocales = [...navigator.languages || [navigator.language]]
+		const preferredLocales = [...new Set([...userPreferredLangs, ...navigator.languages || [navigator.language]])].filter(Boolean)
 		let lang = 'en-UK' // Fallback
 		for (const preferredLocale of preferredLocales) {
 			if (availableLocales.includes(preferredLocale)) { lang = preferredLocale; break }
@@ -129,14 +129,12 @@ async function initTranslations() {
 				})
 			})
 
-			if (translationResponse.status === 200) {
+			if (translationResponse.status === 200)
 				i18n.loaded = JSON.parse(translationResponse.responseText)
-				console.log(`fount userscript: Loaded translations for ${lang}.`)
-			}
-			else
-				throw new Error(`Failed to fetch translations: ${translationResponse.status} ${translationResponse.statusText}`)
+			else throw new Error(`Failed to fetch translations: ${translationResponse.status} ${translationResponse.statusText}`)
 		}
-	} catch (error) {
+	}
+	catch (error) {
 		console.error('fount userscript: Error initializing translations:', error)
 	}
 }
@@ -146,8 +144,6 @@ window.addEventListener('fount-autorun-script-update', async (e) => {
 	const { action, script } = e.detail // script is the full object {id, urlRegex, script}
 	if (!action || !script) return
 
-	console.log(`fount userscript: Received auto-run script update. Action: ${action}, ID: ${script.id}`)
-
 	const storedScripts = await GM.getValue(AUTORUN_SCRIPTS_KEY, [])
 	let updatedScripts = []
 
@@ -155,14 +151,12 @@ window.addEventListener('fount-autorun-script-update', async (e) => {
 		// Remove existing script with same ID to ensure update works
 		updatedScripts = storedScripts.filter(s => s.id !== script.id)
 		updatedScripts.push(script)
-	} else if (action === 'delete')
+	}
+	else if (action === 'delete')
 		updatedScripts = storedScripts.filter(s => s.id !== script.id)
-	else
-		return // Unknown action
-
+	else return // Unknown action
 
 	await GM.setValue(AUTORUN_SCRIPTS_KEY, updatedScripts)
-	console.log(`fount userscript: Updated auto-run scripts stored. Total: ${updatedScripts.length}`)
 })
 
 // --- End i18n ---
@@ -193,12 +187,26 @@ async function getStoredData() {
 }
 
 async function setStoredData(host, uuid, protocol, apikey) {
+	// 保存当前主机信息
 	await GM.setValue('fount_host', host)
 	await GM.setValue('fount_uuid', uuid)
 	await GM.setValue('fount_protocol', protocol)
 	await GM.setValue('fount_apikey', apikey)
-	console.log(`fount userscript: Stored host: ${host}, uuid: ${uuid}, protocol: ${protocol}, apikey: ${apikey ? '********' : 'none'}`)
+
+	// 更新历史主机列表
+	const previousHosts = await GM.getValue('fount_previous_hosts', [])
+	const newHostEntry = { host, protocol }
+
+	// 将新主机添加到列表开头，并移除旧的重复项
+	const updatedHosts = [
+		newHostEntry,
+		...previousHosts.filter(p => p.host !== host)
+	]
+
+	// 限制历史记录长度并保存
+	await GM.setValue('fount_previous_hosts', updatedHosts.slice(0, 13))
 }
+
 
 // --- SECURE HOST CHANGE LISTENER ---
 window.addEventListener('fount-host-info', async (e) => {
@@ -217,14 +225,16 @@ window.addEventListener('fount-host-info', async (e) => {
 			console.log(`fount userscript: Performing initial setup for host: ${newHost}`)
 			try {
 				const pingData = await pingHost(newHost, newProtocol)
-				const { username } = await whoami(newHost, newProtocol)
+				await whoami(newHost, newProtocol)
 				const { apiKey } = await makeApiRequest(newHost, newProtocol, '/api/apikey/create', { method: 'POST', data: { description: 'Browser Integration Userscript' } })
 				await setStoredData(newHost, pingData.uuid, newProtocol, apiKey)
 				clearTimeout(connectionTimeoutId)
 				currentRetryDelay = INITIAL_RETRY_DELAY
 				if (ws) ws.close()
+				loadUserLocalesFromFount()
 				findAndConnect()
-			} catch (error) {
+			}
+			catch (error) {
 				console.error(`fount userscript: Initial setup for host ${newHost} failed verification.`, error)
 			}
 		}
@@ -244,8 +254,8 @@ window.addEventListener('fount-host-info', async (e) => {
 
 		// User Authorization: Ask the user for explicit permission with a clear warning.
 		const origin = window.location.hostname
-		const warningMessage = geti18n('browser_integration_script.hostChange.securityWarningTitle') + '\n\n' +
-			geti18n('browser_integration_script.hostChange.message', { origin, newHost })
+		const warningMessage = await geti18n('browser_integration_script.hostChange.securityWarningTitle') + '\n\n' +
+			await geti18n('browser_integration_script.hostChange.message', { origin, newHost })
 
 		if (window.confirm(warningMessage)) {
 			console.log(`fount userscript: User approved host change to ${newHost}. Verifying...`)
@@ -254,21 +264,24 @@ window.addEventListener('fount-host-info', async (e) => {
 				// The UUID check is a good secondary measure, but user confirmation is the primary defense.
 				if (!storedUuid || storedUuid === pingData.uuid) {
 					console.log('fount userscript: Host verification successful. Updating and reconnecting.')
-					const { username } = await whoami(newHost, newProtocol)
+					await whoami(newHost, newProtocol)
 					const { apiKey } = await makeApiRequest(newHost, newProtocol, '/api/apikey/create', { method: 'POST', data: { description: 'Browser Integration Userscript' } })
 					await setStoredData(newHost, pingData.uuid, newProtocol, apiKey)
 					clearTimeout(connectionTimeoutId)
 					currentRetryDelay = INITIAL_RETRY_DELAY
 					if (ws) ws.close()
+					loadUserLocalesFromFount()
 					findAndConnect()
 				}
 				else
-					alert(geti18n('browser_integration_script.hostChange.uuidMismatchError', { newHost }))
-			} catch (error) {
-				console.error(`fount userscript: New host ${newHost} failed verification.`, error)
-				alert(geti18n('browser_integration_script.hostChange.verificationError', { newHost }))
+					alert(await geti18n('browser_integration_script.hostChange.uuidMismatchError', { newHost }))
 			}
-		} else {
+			catch (error) {
+				console.error(`fount userscript: New host ${newHost} failed verification.`, error)
+				alert(await geti18n('browser_integration_script.hostChange.verificationError', { newHost }))
+			}
+		}
+		else {
 			console.warn(`fount userscript: User REJECTED host change to ${newHost}. Adding to block list for 1 hour.`)
 			blockedHosts.set(newHost, Date.now())
 		}
@@ -277,10 +290,8 @@ window.addEventListener('fount-host-info', async (e) => {
 
 	// Case 3: Same host broadcast (no change needed, can be used for keep-alive or re-verification)
 	// This part ensures that if the script is running on the fount page itself, it can trigger a connection attempt.
-	if (!ws || ws.readyState === WebSocket.CLOSED) {
-		console.log('fount userscript: Received broadcast from current host. Attempting to connect/reconnect...')
+	if (!ws || ws.readyState === WebSocket.CLOSED)
 		findAndConnect()
-	}
 })
 
 async function makeApiRequest(host, protocol, endpoint, options = {}) {
@@ -289,13 +300,8 @@ async function makeApiRequest(host, protocol, endpoint, options = {}) {
 
 	const headers = {}
 
-	if (apikey)
-		headers['Authorization'] = `Bearer ${apikey}`
-
-
-	if (method === 'POST')
-		headers['Content-Type'] = 'application/json'
-
+	if (apikey) headers['Authorization'] = `Bearer ${apikey}`
+	if (method === 'POST') headers['Content-Type'] = 'application/json'
 
 	return new Promise((resolve, reject) => {
 		GM.xmlHttpRequest({
@@ -309,7 +315,8 @@ async function makeApiRequest(host, protocol, endpoint, options = {}) {
 					try {
 						const data = response.responseText ? JSON.parse(response.responseText) : {}
 						resolve(data)
-					} catch (e) {
+					}
+					catch (e) {
 						reject(new Error(`Failed to parse response from ${endpoint}`))
 					}
 				else
@@ -336,30 +343,39 @@ function whoami(host, protocol) {
 // --- WebSocket Connection ---
 
 async function findAndConnect() {
-	if (ws) return // Already connected or connecting
+	if (ws) return
+	const { host: currentHost, protocol: currentProtocol } = await getStoredData()
 
-	const { host, protocol, apikey } = await getStoredData()
-	if (!host) {
-		console.log('fount userscript: No host stored. Waiting for setup from a trusted fount page.')
-		return
-	}
+	const uniqueHosts = Array.from(new Map([
+		{ host: currentHost, protocol: currentProtocol },
+		...await GM.getValue('fount_previous_hosts', [])
+	].filter(item => item.host).map(item => [item.host, item])).values())
 
-	try {
-		console.log(`fount userscript: Verifying host: ${host}...`)
-		await pingHost(host, protocol)
-		const { username } = await whoami(host, protocol)
-		connect(host, protocol, username, apikey) // Pass apikey to connect
-	} catch (error) {
-		console.error(`fount userscript: Host ${host} is unreachable. Retrying in ${currentRetryDelay / 1000}s.`)
-		currentHost = null
-		connectionTimeoutId = setTimeout(findAndConnect, currentRetryDelay)
-		currentRetryDelay = Math.min(currentRetryDelay + RETRY_INCREMENT, MAX_RETRY_DELAY)
-	}
+	if (!uniqueHosts.length) return
+
+	for (const { host, protocol } of uniqueHosts)
+		try {
+			const { username } = await whoami(host, protocol)
+			const { apikey: storedApiKey, uuid: storedUuid } = await getStoredData()
+
+			// 如果连接成功的是一个备用主机，则将其提升为当前主机
+			if (host !== currentHost)
+				await setStoredData(host, storedUuid, protocol, storedApiKey)
+
+			connect(host, protocol, username, storedApiKey)
+			return
+		} catch (error) {
+			console.warn(`fount userscript: Failed to connect to ${host}. Trying next...`, error.message)
+		}
+
+	console.error('fount userscript: All known hosts failed to connect. Retrying after backoff period.')
+	currentHost = null
+	connectionTimeoutId = setTimeout(findAndConnect, currentRetryDelay)
+	currentRetryDelay = Math.min(currentRetryDelay + RETRY_INCREMENT, MAX_RETRY_DELAY)
 }
 
 function connect(host, protocol, username, apikey) {
 	if (ws) return
-	console.log(`fount userscript: Connecting to WebSocket at ${host} for user ${username}...`)
 	currentHost = host
 
 	const wsProtocol = protocol === 'https:' ? 'wss:' : 'ws:'
@@ -368,7 +384,6 @@ function connect(host, protocol, username, apikey) {
 	ws = new WebSocket(`${wsProtocol}//${host}/ws/shells/browserIntegration/page`, apikey)
 
 	ws.onopen = () => {
-		console.log('fount userscript: WebSocket connected.')
 		currentRetryDelay = INITIAL_RETRY_DELAY
 		ws.send(JSON.stringify({ type: 'init', payload: { url: window.location.href, title: document.title, username } }))
 		checkForUpdate()
@@ -378,14 +393,12 @@ function connect(host, protocol, username, apikey) {
 		const msg = JSON.parse(event.data)
 		if (msg.type === 'init_success') {
 			pageId = msg.payload.pageId
-			console.log(`fount userscript: Registered with pageId: ${pageId}`)
 			return
 		}
 		if (msg.requestId) handleCommand(msg)
 	}
 
 	ws.onclose = () => {
-		console.log(`fount userscript: WebSocket disconnected. Reconnecting in ${currentRetryDelay / 1000} seconds...`)
 		ws = null
 		pageId = null
 		connectionTimeoutId = setTimeout(findAndConnect, currentRetryDelay)
@@ -400,13 +413,13 @@ function connect(host, protocol, username, apikey) {
 // --- Self-Update ---
 async function checkForUpdate() {
 	if (!currentHost) return
-	const { protocol } = await getStoredData()
+	const { protocol, apikey } = await getStoredData()
 	const scriptUrl = `${protocol}//${currentHost}/shells/browserIntegration/public/script.user.js`
-	console.log('fount userscript: Checking for updates...')
 
 	GM.xmlHttpRequest({
 		method: 'GET',
 		url: scriptUrl,
+		headers: { Authorization: `Bearer ${apikey}` },
 		async onload(response) {
 			if (response.status !== 200) return
 			const remoteVersion = response.responseText.match(/@version\s+([^\s]+)/)?.[1]
@@ -414,13 +427,9 @@ async function checkForUpdate() {
 
 			const localVersion = GM_info.script.version
 
-			if (remoteVersion !== localVersion) {
-				console.log(`fount userscript: Source code has changed on the server. Please update from: ${scriptUrl}`)
+			if (remoteVersion !== localVersion)
 				if (window.confirm(await geti18n('browser_integration_script.update.prompt')))
 					window.open(scriptUrl, '_blank')
-			}
-			else
-				console.log('fount userscript: Script is up to date.')
 		}
 	})
 }
@@ -443,17 +452,14 @@ async function handleCommand(msg) {
 				if (callbackInfo)
 					callback = async (data) => {
 						const { host, protocol } = await getStoredData()
-						if (!host) {
-							console.error('fount userscript: Cannot send callback, host not found.')
-							return
-						}
+						if (!host) return
 						try {
-							const response = await makeApiRequest(host, protocol, '/api/shells/browserIntegration/callback', {
+							await makeApiRequest(host, protocol, '/api/shells/browserIntegration/callback', {
 								method: 'POST',
 								data: { ...callbackInfo, data, pageId, script }
 							})
-							console.log('fount userscript: Callback sent successfully.', response)
-						} catch (error) {
+						}
+						catch (error) {
 							console.error('fount userscript: Error sending callback.', error)
 						}
 					}
@@ -466,8 +472,8 @@ async function handleCommand(msg) {
 				throw new Error(`Unknown command type: ${msg.type}`)
 		}
 		sendResponse(msg.requestId, payload)
-	} catch (error) {
-		console.error(`fount userscript: error handling command ${msg.type}:`, error)
+	}
+	catch (error) {
 		sendResponse(msg.requestId, { error: error.message, stack: error.stack }, true)
 	}
 }
@@ -479,23 +485,17 @@ function sendResponse(requestId, payload, isError = false) {
 
 async function runMatchingScripts() {
 	const scripts = await GM.getValue(AUTORUN_SCRIPTS_KEY, [])
-	if (scripts.length === 0) return
+	if (!scripts.length) return
 
-	console.log(`fount userscript: Checking ${scripts.length} auto-run script(s) for this URL.`)
 	const url = window.location.href
 	const { async_eval } = await import('https://esm.sh/@steve02081504/async-eval')
 
-	for (const script of scripts)
-		try {
-			const regex = new RegExp(script.urlRegex)
-			if (regex.test(url)) {
-				console.log(`fount userscript: Running script ${script.id} (${script.comment || 'No comment'})`)
-				await async_eval(script.script)
-			}
-		} catch (e) {
-			console.error(`fount userscript: Error executing auto-run script ${script.id}:`, e)
-		}
-
+	for (const script of scripts) try {
+		const regex = new RegExp(script.urlRegex)
+		if (regex.test(url)) await async_eval(script.script)
+	} catch (e) {
+		console.error(`fount userscript: Error executing auto-run script ${script.id}:`, e)
+	}
 }
 
 function getVisibleElementsHtml() {
@@ -547,29 +547,31 @@ const getCircularReplacer = () => {
 }
 
 async function syncScriptsFromServer() {
-	console.log('fount userscript: Attempting to sync auto-run scripts from server...')
 	const { host, protocol } = await getStoredData()
-	if (!host) {
-		console.log('fount userscript: Sync skipped, no host configured.')
-		return // No host, can't sync
-	}
+	if (!host) return
 
 	try {
 		const { success, scripts } = await makeApiRequest(host, protocol, '/api/shells/browserIntegration/autorun-scripts')
-		if (success && Array.isArray(scripts)) {
+		if (success && Array.isArray(scripts))
 			await GM.setValue(AUTORUN_SCRIPTS_KEY, scripts)
-			console.log(`fount userscript: Sync successful. Updated local storage with ${scripts.length} script(s).`)
-		} else
-			throw new Error('Server response was not successful or scripts were not an array.')
-
-	} catch (error) {
+		else throw new Error('Server response was not successful or scripts were not an array.')
+	}
+	catch (error) {
 		console.error('fount userscript: Sync failed. Using local scripts as fallback.', error.message)
-		// "失败则用本地" - Do nothing, the existing local storage will be used.
 	}
 }
 
-console.log('fount userscript loaded.')
+// fetch and store user preferred locales from fount
+async function loadUserLocalesFromFount() {
+	const { host, protocol } = await getStoredData()
+	if (!host) return
+	const { value: locales } = await makeApiRequest(host, protocol, '/api/getusersetting?key=locales')
+	if (locales && Array.isArray(locales))
+		await GM.setValue('fount_user_preferred_locales', locales)
+}
+
 async function initialize() {
+	loadUserLocalesFromFount()
 	await syncScriptsFromServer()
 	runMatchingScripts()
 	findAndConnect()

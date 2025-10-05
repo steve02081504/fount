@@ -15,7 +15,8 @@ async function getBase64Icon(iconPath) {
 	try {
 		const iconData = fs.readFileSync(iconPath)
 		return iconData.toString('base64')
-	} catch (err) {
+	}
+	catch (err) {
 		console.errorI18n('fountConsole.tray.readIconFailed', { error: err })
 		return ''
 	}
@@ -97,7 +98,8 @@ export async function createTray() {
 		})
 
 		return systray
-	} catch (err) {
+	}
+	catch (err) {
 		console.errorI18n('fountConsole.tray.createTrayFailed', { error: err })
 	}
 }

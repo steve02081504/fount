@@ -13,7 +13,7 @@
 			"localUrl": "Truy cập fount từ các thiết bị khác trên cùng mạng: ${url}",
 			"standingBy": "Standing by...",
 			"update": {
-				"restarting": "Một phiên bản mới đã được phát hiện và bản cập nhật đang được khởi động lại ..."
+				"restarting": "Một phiên bản mới đã được phát hiện và bản cập nhật đang được khởi động lại..."
 			}
 		},
 		"jobs": {
@@ -102,6 +102,11 @@
 	},
 	"installer_wait_screen": {
 		"title": "Chào mừng đến với fount!",
+		"language_selector": {
+			"search": {
+				"placeholder": "Tìm kiếm ngôn ngữ..."
+			}
+		},
 		"hero": {
 			"title": "Bạn Đồng Hành Nhân Vật AI Đầy Lôi Cuốn",
 			"description": "fount là một nền tảng tương tác nhân vật được hỗ trợ bởi AI, thiết kế để trao quyền cho <i>bạn</i>. Đây là cầu nối giúp bạn kết nối với các nhân vật trong tưởng tượng, cho phép bạn dễ dàng trò chuyện, tạo ra nhân vật của riêng mình và chia sẻ chúng với thế giới."
@@ -124,7 +129,10 @@
 		},
 		"theme_selector": {
 			"title": "Chọn giao diện của bạn",
-			"description": "Chọn một chủ đề để cá nhân hóa trải nghiệm của bạn."
+			"description": "Chọn một chủ đề để cá nhân hóa trải nghiệm của bạn.",
+			"search": {
+				"placeholder": "Tìm kiếm chủ đề..."
+			}
 		},
 		"mini_game": {
 			"title": "Chơi một vài game nhỏ",
@@ -287,6 +295,7 @@
 		}
 	},
 	"login_info": {
+		"title": "Thông tin đăng nhập",
 		"modal": {
 			"title": "Lỗi chuyển chứng chỉ",
 			"retrieve_error": "Đã xảy ra lỗi trong khi cố gắng lưu thông tin đăng nhập của bạn:\n${error}\nBạn có thể tiếp tục nhưng không thể lưu thông tin đăng nhập.",
@@ -311,6 +320,9 @@
 			"fetchHomeRegistryFailed": "Lấy thông tin đăng ký trang chủ thất bại."
 		},
 		"functionMenu": {
+			"search": {
+				"placeholder": "Tìm kiếm..."
+			},
 			"icon": {
 				"alt": "Menu chức năng"
 			}
@@ -742,6 +754,12 @@
 			"partTypeSelect": "Vui lòng chọn",
 			"partSelect": "Vui lòng chọn"
 		},
+		"partSelectDropdown": {
+			"placeholder": "Vui lòng chọn"
+		},
+		"partSearch": {
+			"placeholder": "Tìm kiếm..."
+		},
 		"export": {
 			"title": "Tùy chọn xuất"
 		},
@@ -899,18 +917,27 @@
 		"title": "Cài đặt ngôn ngữ",
 		"description": "Quản lý sở thích ngôn ngữ của bạn ở đây. Các ngôn ngữ trong danh sách sẽ được ưu tiên hơn các cài đặt trình duyệt theo thứ tự.",
 		"availableLanguages": "Ngôn ngữ có sẵn",
-		"addButton": "Thêm vào",
 		"preferredLanguages": "Danh sách ngôn ngữ ưu tiên",
-		"resetButton": "Cài lại",
-		"saveButton": "cứu",
+		"resetButton": "Đặt lại",
+		"saveButton": "Lưu",
 		"noPreferredLanguages": "Chưa có ngôn ngữ trước. Các cài đặt mặc định của trình duyệt sẽ được sử dụng.",
 		"savedMessage": "Cài đặt ngôn ngữ được lưu!",
 		"resetMessage": "Cài đặt ngôn ngữ đã được đặt lại!",
-		"fetchLocalesFailed": "Không nhận được ngôn ngữ có sẵn!"
+		"fetchLocalesFailed": "Không nhận được ngôn ngữ có sẵn!",
+		"select": {
+			"placeholder": "Chọn một ngôn ngữ..."
+		},
+		"search": {
+			"placeholder": "Tìm kiếm ngôn ngữ..."
+		}
 	},
 	"themeManage": {
 		"title": "Quản lý chủ đề",
 		"instruction": "Chọn một chủ đề!",
+		"search": {
+			"placeholder": "Tìm kiếm chủ đề...",
+			"noResult": "Không tìm thấy chủ đề phù hợp."
+		},
 		"themes": {
 			"auto": "Tự động",
 			"light": "Sáng",
@@ -1045,6 +1072,18 @@
 			"newBot": "Tạo mới",
 			"deleteBot": "Xóa"
 		},
+		"botSelectDropdown": {
+			"placeholder": "Chọn một bot"
+		},
+		"botSearch": {
+			"placeholder": "Tìm kiếm bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Chọn một vai trò"
+		},
+		"charSearch": {
+			"placeholder": "Tìm kiếm nhân vật..."
+		},
 		"configCard": {
 			"title": "Cấu hình Bot",
 			"labels": {
@@ -1079,6 +1118,18 @@
 	"telegram_bots": {
 		"title": "Bot Telegram",
 		"cardTitle": "Quản lý Bot Telegram",
+		"botSelectDropdown": {
+			"placeholder": "Chọn một bot"
+		},
+		"botSearch": {
+			"placeholder": "Tìm kiếm bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Chọn một vai trò"
+		},
+		"charSearch": {
+			"placeholder": "Tìm kiếm nhân vật..."
+		},
 		"buttons": {
 			"newBot": "Tạo mới",
 			"deleteBot": "Xóa"

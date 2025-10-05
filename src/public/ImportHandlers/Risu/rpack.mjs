@@ -4,7 +4,7 @@ let wasm
 let cachedUint8ArrayMemory0 = null
 
 function getUint8ArrayMemory0() {
-	if (cachedUint8ArrayMemory0 === null || cachedUint8ArrayMemory0.byteLength === 0)
+	if (!cachedUint8ArrayMemory0?.byteLength)
 		cachedUint8ArrayMemory0 = new Uint8Array(wasm.memory.buffer)
 
 	return cachedUint8ArrayMemory0
@@ -56,7 +56,8 @@ export async function encodeRPack(datas) {
 		const v2 = getArrayU8FromWasm0(r0, r1).slice()
 		wasm.__wbindgen_free(r0, r1 * 1, 1)
 		return v2
-	} finally {
+	}
+	finally {
 		wasm.__wbindgen_add_to_stack_pointer(16)
 	}
 }
@@ -77,7 +78,8 @@ export async function decodeRPack(datas) {
 		const v2 = getArrayU8FromWasm0(r0, r1).slice()
 		wasm.__wbindgen_free(r0, r1 * 1, 1)
 		return v2
-	} finally {
+	}
+	finally {
 		wasm.__wbindgen_add_to_stack_pointer(16)
 	}
 }

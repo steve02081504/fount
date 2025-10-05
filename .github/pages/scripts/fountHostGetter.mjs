@@ -20,7 +20,8 @@ function extractIpAndPortFromUrl(urlString) {
 		}
 		console.debug(`[extractIpAndPortFromUrl] Extracted IP: ${extractedData.ip}, Port: ${extractedData.port}`)
 		return extractedData
-	} catch (error) {
+	}
+	catch (error) {
 		console.error(`[extractIpAndPortFromUrl] Error extracting IP and port from ${urlString}:`, error)
 		return null
 	}
@@ -35,7 +36,8 @@ export async function isFountServiceAvailable(host) {
 		if (data?.client_name != 'fount') return false
 		console.debug(`[isFountServiceAvailable] fount service at ${host} is available.`)
 		return true
-	} catch (error) {
+	}
+	catch {
 		return false // 任何错误都表示不可用
 	}
 }
@@ -102,18 +104,18 @@ function getLocalIPFromWebRTC() {
 async function mappingFountHostUrl(hostUrl) {
 	console.debug(`[getFountHostUrl] Attempting to get fount host URL. Initial hostUrl: ${hostUrl}`)
 
-	if (await isFountServiceAvailable('http://localhost:8931')) { // 永远先检查 localhost —— 要不然用户为什么要运行本地服务器?
-		console.info('[getFountHostUrl] fount service is available at localhost')
-		return 'http://localhost:8931'
-	}
-	if (await isFountServiceAvailable('http://10.0.2.2:8931')) { // 安卓模拟器到本机
-		console.info('[getFountHostUrl] fount service is available at 10.0.2.2')
-		return 'http://10.0.2.2:8931'
-	}
-	if (await isFountServiceAvailable(hostUrl)) {
-		console.info(`[getFountHostUrl] fount service is available at provided hostUrl: ${hostUrl}`)
-		return hostUrl
-	}
+	for (const host of [...new Set([
+		'http://localhost:8931', // 永远先检查 localhost —— 要不然用户为什么要运行本地服务器?
+		'http://10.0.2.2:8931', // 安卓模拟器到本机
+		hostUrl,
+		...JSON.parse(localStorage.getItem('fountPreviousHostUrls') || '[]')
+	])])
+		if (await isFountServiceAvailable(host)) {
+			console.info(`[getFountHostUrl] fount service is available at: ${host}`)
+			return host
+		}
+
+	// 如果 hostUrl 是一个有效的 IPv4 地址
 	if (isValidIPv4Address(hostUrl)) {
 		console.debug('[getFountHostUrl] hostUrl is a valid IPv4 address. Attempting to map.')
 		const result = await mapFountHostOnIPv4(hostUrl)
@@ -161,6 +163,20 @@ async function mappingFountHostUrl(hostUrl) {
 
 export function saveFountHostUrl(hostUrl) {
 	localStorage.setItem('fountHostUrl', hostUrl ?? '')
+	if (!hostUrl) return
+	const url = new URL(hostUrl)
+	// Dispatch host info for browser integration script
+	const event = new CustomEvent('fount-host-info', {
+		detail: {
+			protocol: url.protocol,
+			host: url.host,
+		}
+	})
+	window.dispatchEvent(event)
+	localStorage.setItem('fountPreviousHostUrls', JSON.stringify([...new Set([
+		hostUrl,
+		...JSON.parse(localStorage.getItem('fountPreviousHostUrls') || '[]')
+	])].slice(0, 13)))
 }
 
 export async function getFountHostUrl(hostUrl = urlParams.get('hostUrl') ?? localStorage.getItem('fountHostUrl')) {

@@ -139,7 +139,7 @@ const charAPI_definition = { // 先定义结构主体
 					...chardata?.alternate_greetings || []
 				].filter(g => g.trim())
 
-				if (greetings.length === 0) greetings.push(`Hello, I am ${chardata.name}.`) // 默认问候
+				if (!greetings.length) greetings.push(`Hello, I am ${chardata.name}.`) // 默认问候
 				if (index < 0 || index >= greetings.length) index = 0 // 安全索引
 
 				const selectedGreeting = greetings[index]
@@ -156,7 +156,7 @@ const charAPI_definition = { // 先定义结构主体
 				// 这同样不是一个多语言结构
 				const groupGreetings = (chardata.extensions?.group_greetings || []).filter(g => g.trim())
 
-				if (groupGreetings.length === 0)  // 如果没有专门的群组问候，可以使用常规问候
+				if (!groupGreetings.length)  // 如果没有专门的群组问候，可以使用常规问候
 					return charAPI_definition.interfaces.chat.GetGreeting(args, index) // 注意：这里要用 charAPI_definition 引用
 
 				if (index < 0 || index >= groupGreetings.length) index = 0

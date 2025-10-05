@@ -13,7 +13,7 @@
 			"localUrl": "Toegang tot fount vanaf andere apparaten op hetzelfde netwerk: ${url}",
 			"standingBy": "Standing by...",
 			"update": {
-				"restarting": "Een nieuwe versie werd ontdekt en de update wordt opnieuw gestart ..."
+				"restarting": "Er is een nieuwe versie gevonden. De update wordt opnieuw gestart..."
 			}
 		},
 		"jobs": {
@@ -102,6 +102,11 @@
 	},
 	"installer_wait_screen": {
 		"title": "Welkom bij fount!",
+		"language_selector": {
+			"search": {
+				"placeholder": "Taal zoeken..."
+			}
+		},
 		"hero": {
 			"title": "Jouw meeslepende AI-personagepartner",
 			"description": "fount is een AI-aangedreven platform voor personage-interactie, ontworpen om <i>jou</i> de controle te geven. Het is een brug die je verbindt met de personages uit je verbeelding, waardoor je moeiteloos met hen kunt praten, je eigen personages kunt creëren en ze met de wereld kunt delen."
@@ -124,7 +129,10 @@
 		},
 		"theme_selector": {
 			"title": "Kies je uiterlijk",
-			"description": "Kies een thema om je ervaring te personaliseren."
+			"description": "Kies een thema om je ervaring te personaliseren.",
+			"search": {
+				"placeholder": "Thema's zoeken..."
+			}
 		},
 		"mini_game": {
 			"title": "Speel een spelletje",
@@ -287,6 +295,7 @@
 		}
 	},
 	"login_info": {
+		"title": "Inloggegevens",
 		"modal": {
 			"title": "Certificaatoverdrachtsfout",
 			"retrieve_error": "Er is een fout opgetreden bij het proberen uw inloggegevens op te slaan:\n${error}\nU kunt doorgaan, maar kunt de inloggegevens niet opslaan.",
@@ -311,6 +320,9 @@
 			"fetchHomeRegistryFailed": "Ophalen van startpaginagegevens mislukt"
 		},
 		"functionMenu": {
+			"search": {
+				"placeholder": "Zoeken..."
+			},
 			"icon": {
 				"alt": "Functiemenu"
 			}
@@ -742,6 +754,12 @@
 			"partTypeSelect": "Maak een keuze",
 			"partSelect": "Maak een keuze"
 		},
+		"partSelectDropdown": {
+			"placeholder": "Selecteer..."
+		},
+		"partSearch": {
+			"placeholder": "Zoeken..."
+		},
 		"export": {
 			"title": "Exportopties"
 		},
@@ -899,18 +917,27 @@
 		"title": "Taalinstellingen",
 		"description": "Beheer hier uw taalvoorkeuren. De talen in de lijst hebben voorrang op de browserinstellingen in volgorde.",
 		"availableLanguages": "Beschikbare talen",
-		"addButton": "Toevoegen aan",
 		"preferredLanguages": "Prioriteitstaallijst",
 		"resetButton": "Resetten",
-		"saveButton": "redden",
-		"noPreferredLanguages": "Nog geen eerdere taal. De standaardinstellingen van de browser worden gebruikt.",
+		"saveButton": "Opslaan",
+		"noPreferredLanguages": "Nog geen voorkeurstaal ingesteld. De standaardinstellingen van de browser worden gebruikt.",
 		"savedMessage": "Taalinstellingen worden opgeslagen!",
 		"resetMessage": "Taalinstellingen zijn gereset!",
-		"fetchLocalesFailed": "Kan niet beschikbare talen krijgen!"
+		"fetchLocalesFailed": "Kan niet beschikbare talen krijgen!",
+		"select": {
+			"placeholder": "Kies een taal..."
+		},
+		"search": {
+			"placeholder": "Taal zoeken..."
+		}
 	},
 	"themeManage": {
 		"title": "Themabeheer",
 		"instruction": "Kies een thema!",
+		"search": {
+			"placeholder": "Thema's zoeken...",
+			"noResult": "Geen overeenkomende thema's gevonden."
+		},
 		"themes": {
 			"auto": "Automatisch",
 			"light": "Licht",
@@ -1045,6 +1072,18 @@
 			"newBot": "Nieuwe Bot",
 			"deleteBot": "Bot verwijderen"
 		},
+		"botSelectDropdown": {
+			"placeholder": "Kies een bot"
+		},
+		"botSearch": {
+			"placeholder": "Bot zoeken..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Selecteer een rol"
+		},
+		"charSearch": {
+			"placeholder": "Personages zoeken..."
+		},
 		"configCard": {
 			"title": "Botconfiguratie",
 			"labels": {
@@ -1079,6 +1118,18 @@
 	"telegram_bots": {
 		"title": "Telegram Bot",
 		"cardTitle": "Telegram Bot Beheer",
+		"botSelectDropdown": {
+			"placeholder": "Kies een bot"
+		},
+		"botSearch": {
+			"placeholder": "Bot zoeken..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Selecteer een rol"
+		},
+		"charSearch": {
+			"placeholder": "Personages zoeken..."
+		},
 		"buttons": {
 			"newBot": "Nieuwe Bot",
 			"deleteBot": "Bot verwijderen"

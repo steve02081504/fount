@@ -86,8 +86,7 @@ async function GetSource(config, { SaveConfig }) {
 
 		for (const retryConfig of retryConfigs) {
 			const currentConfig = { ...config } // 复制配置，避免修改原始配置
-			if (retryConfig.urlSuffix)
-				currentConfig.url += retryConfig.urlSuffix
+			if (retryConfig.urlSuffix) currentConfig.url += retryConfig.urlSuffix
 
 			try {
 				const result = await callBase(messages, currentConfig)
@@ -101,9 +100,7 @@ async function GetSource(config, { SaveConfig }) {
 				}
 
 				return result
-			} catch (error) {
-				errors.push(error)
-			}
+			} catch (error) { errors.push(error) }
 		}
 		throw errors.length == 1 ? errors[0] : errors
 	}

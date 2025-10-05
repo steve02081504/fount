@@ -102,6 +102,11 @@
 	},
 	"installer_wait_screen": {
 		"title": "Welcome to fount!",
+		"language_selector": {
+			"search": {
+				"placeholder": "Search language..."
+			}
+		},
 		"hero": {
 			"title": "Your Immersive AI Character Companion",
 			"description": "fount is an AI-powered role interaction platform designed to empower <i>you</i>. It is a bridge that connects you with your imagined characters, allowing you to easily talk to them, create your own characters, and share them with the world."
@@ -124,7 +129,10 @@
 		},
 		"theme_selector": {
 			"title": "Choose your appearance",
-			"description": "Choose a theme to personalise your experience."
+			"description": "Choose a theme to personalise your experience.",
+			"search": {
+				"placeholder": "Search themes..."
+			}
 		},
 		"mini_game": {
 			"title": "Play a little game",
@@ -287,6 +295,7 @@
 		}
 	},
 	"login_info": {
+		"title": "Login Information",
 		"modal": {
 			"title": "Certificate transfer error",
 			"retrieve_error": "An error occurred while trying to save your login credentials:\n${error}\nYou can continue but cannot save the login information.",
@@ -311,6 +320,9 @@
 			"fetchHomeRegistryFailed": "Failed to fetch home registry information."
 		},
 		"functionMenu": {
+			"search": {
+				"placeholder": "Search..."
+			},
 			"icon": {
 				"alt": "Function Menu"
 			}
@@ -742,6 +754,12 @@
 			"partTypeSelect": "Please select",
 			"partSelect": "Please select"
 		},
+		"partSelectDropdown": {
+			"placeholder": "Please select"
+		},
+		"partSearch": {
+			"placeholder": "Search..."
+		},
 		"export": {
 			"title": "Export Options"
 		},
@@ -899,18 +917,27 @@
 		"title": "Language settings",
 		"description": "Manage your language preferences here. The languages ​​in the list will take precedence over the browser settings in order.",
 		"availableLanguages": "Available Languages",
-		"addButton": "Add to",
 		"preferredLanguages": "Priority Language List",
 		"resetButton": "Reset",
-		"saveButton": "save",
-		"noPreferredLanguages": "No prior language yet. The browser default settings will be used.",
+		"saveButton": "Save",
+		"noPreferredLanguages": "No preferred language has been set. Your browser's default settings will be used.",
 		"savedMessage": "Language settings are saved!",
 		"resetMessage": "Language settings have been reset!",
-		"fetchLocalesFailed": "Failed to get available languages!"
+		"fetchLocalesFailed": "Failed to get available languages!",
+		"select": {
+			"placeholder": "Choose a language..."
+		},
+		"search": {
+			"placeholder": "Search language..."
+		}
 	},
 	"themeManage": {
 		"title": "Theme Management",
 		"instruction": "Choose a theme!",
+		"search": {
+			"placeholder": "Search themes...",
+			"noResult": "No matching themes found."
+		},
 		"themes": {
 			"auto": "Automatic",
 			"light": "Light",
@@ -1045,6 +1072,18 @@
 			"newBot": "New",
 			"deleteBot": "Delete"
 		},
+		"botSelectDropdown": {
+			"placeholder": "Choose a Bot"
+		},
+		"botSearch": {
+			"placeholder": "Search for a bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Select a role"
+		},
+		"charSearch": {
+			"placeholder": "Search for roles..."
+		},
 		"configCard": {
 			"title": "Bot Configuration",
 			"labels": {
@@ -1079,6 +1118,18 @@
 	"telegram_bots": {
 		"title": "Telegram Bots",
 		"cardTitle": "Telegram Bot Management",
+		"botSelectDropdown": {
+			"placeholder": "Choose a Bot"
+		},
+		"botSearch": {
+			"placeholder": "Search for a bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Select a role"
+		},
+		"charSearch": {
+			"placeholder": "Search for roles..."
+		},
 		"buttons": {
 			"newBot": "New",
 			"deleteBot": "Delete"

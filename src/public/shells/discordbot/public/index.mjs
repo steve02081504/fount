@@ -1,8 +1,9 @@
-import { initTranslations, geti18n, i18nElement, promptI18n, confirmI18n, console } from '../../scripts/i18n.mjs'
-import { createJsonEditor } from '../../scripts/jsonEditor.mjs'
-import { getPartList } from '../../scripts/parts.mjs'
-import { applyTheme } from '../../scripts/theme.mjs'
-import { showToast } from '../../scripts/toast.mjs'
+import { initTranslations, geti18n, i18nElement, promptI18n, confirmI18n } from '/scripts/i18n.mjs'
+import { createJsonEditor } from '/scripts/jsonEditor.mjs'
+import { getPartList } from '/scripts/parts.mjs'
+import { applyTheme } from '/scripts/theme.mjs'
+import { showToast } from '/scripts/toast.mjs'
+import { createSearchableDropdown } from '/scripts/search.mjs'
 
 import {
 	getBotList,
@@ -19,9 +20,9 @@ import {
 const configEditorContainer = document.getElementById('config-editor')
 
 const newBotButton = document.getElementById('new-bot')
-const botListSelect = document.getElementById('bot-list')
+const botListDropdown = document.getElementById('bot-list-dropdown')
 const deleteBotButton = document.getElementById('delete-bot')
-const charSelect = document.getElementById('char-select')
+const charSelectDropdown = document.getElementById('char-select-dropdown')
 const tokenInput = document.getElementById('token-input')
 const toggleTokenButton = document.getElementById('toggle-token')
 const saveConfigButton = document.getElementById('save-config')
@@ -37,41 +38,77 @@ let selectedBot = null
 let isDirty = false // 标记是否有未保存的更改
 
 // UI 更新函数
-function populateBotList() {
-	botListSelect.innerHTML = ''
-	botList.forEach(bot => {
-		const option = document.createElement('option')
-		option.value = bot
-		option.text = bot
-		botListSelect.appendChild(option)
+function renderBotDropdown() {
+	i18nElement(botListDropdown.parentElement)
+	const disabled = !botList || botList.length === 0
+	const dataList = disabled ? [] : botList.map(name => ({ name, value: name }))
+
+	if (selectedBot)
+		botListDropdown.dataset.value = selectedBot
+	else
+		delete botListDropdown.dataset.value
+
+	createSearchableDropdown({
+		dropdownElement: botListDropdown,
+		dataList,
+		textKey: 'name',
+		valueKey: 'value',
+		disabled,
+		onSelect: async (selectedItem) => {
+			const botName = selectedItem ? selectedItem.value : null
+			if (botName == selectedBot) return
+			if (!isDirty) return
+			if (!confirmI18n('discord_bots.alerts.unsavedChanges')) return true
+			await loadBotConfig(botName)
+		}
 	})
 }
 
-function populateCharList() {
-	charSelect.innerHTML = `<option value="" disabled selected>${geti18n('discord_bots.configCard.charSelectPlaceholder')}</option>`
-	charList.forEach(char => {
-		const option = document.createElement('option')
-		option.value = char
-		option.text = char
-		charSelect.appendChild(option)
+function renderCharDropdown() {
+	i18nElement(charSelectDropdown.parentElement)
+	const disabled = !charList || charList.length === 0
+	const dataList = disabled ? [] : charList.map(name => ({ name, value: name }))
+
+	const currentConfig = configEditor?.get()?.json
+	if (currentConfig?.char)
+		charSelectDropdown.dataset.value = currentConfig.char
+	else
+		delete charSelectDropdown.dataset.value
+
+	createSearchableDropdown({
+		dropdownElement: charSelectDropdown,
+		dataList,
+		textKey: 'name',
+		valueKey: 'value',
+		disabled,
+		onSelect: (selectedItem) => {
+			const charName = selectedItem ? selectedItem.value : null
+			const currentConfig = configEditor?.get()?.json
+			if (charName !== currentConfig?.char)
+				handleCharSelectChange(charName)
+		}
 	})
 }
 
 async function loadBotConfig(botname) {
-	// 如果有未保存的更改，提示用户
-	if (isDirty)
-		if (!confirmI18n('discord_bots.alerts.unsavedChanges')) {
-			botListSelect.value = selectedBot // 如果取消则还原选择
-			return
-		}
-
 	selectedBot = botname
+
+	if (!botname) {
+		tokenInput.value = ''
+		charSelectDropdown.dataset.value = ''
+		if (configEditor)
+			configEditor.set({ json: {} })
+		isDirty = false
+		await updateStartStopButtonState()
+		return
+	}
+
 	try {
 		const config = await getBotConfig(botname)
 		tokenInput.value = config.token || ''
-		charSelect.value = config.char || ''
 
-		// 加载初始角色模板
+		charSelectDropdown.dataset.value = config.char || ''
+
 		if (config.char && !Object.keys(config.config).length) {
 			const template = await getBotConfigTemplate(config.char)
 			if (template) config.config = template
@@ -80,19 +117,17 @@ async function loadBotConfig(botname) {
 		if (!configEditor)
 			configEditor = createJsonEditor(configEditorContainer, {
 				onChange: (updatedContent, previousContent, { error, patchResult }) => {
-					if (!error) {
-						config.config = updatedContent.json
-						isDirty = true // 标记为有未保存的更改
-					}
+					if (!error) isDirty = true
 				},
 				onSave: handleSaveConfig
 			})
 
 		configEditor.set({ json: config.config || {} })
-		isDirty = false // 重置未保存标记
+		isDirty = false
 
 		await updateStartStopButtonState()
-	} catch (error) {
+	}
+	catch (error) {
 		console.error(error)
 	}
 }
@@ -110,10 +145,11 @@ async function handleNewBot() {
 	try {
 		await newBotConfig(botname)
 		botList = await getBotList()
-		populateBotList()
-		botListSelect.value = botname
+		renderBotDropdown()
+		botListDropdown.dataset.value = botname
 		await loadBotConfig(botname)
-	} catch (error) {
+	}
+	catch (error) {
 		console.error(error)
 	}
 }
@@ -126,42 +162,33 @@ async function handleDeleteBot() {
 			return
 
 	try {
+		const oldBotIndex = botList.indexOf(selectedBot)
 		await deleteBotConfig(selectedBot)
 		botList = await getBotList()
-		populateBotList()
 
-		// 如果删除的是当前选中的 bot，则 selectedBot 设为 null，否则保持不变
-		if (selectedBot === botListSelect.value) {
-			selectedBot = null
-			tokenInput.value = ''
-			charSelect.value = ''
-			if (configEditor)
-				configEditor.set({ json: {} })
-		} else
-			// 如果删除的不是当前选中的 bot，则重新加载当前选中的 bot 的配置
-			await loadBotConfig(botListSelect.value)
+		let nextBotToLoad = null
+		if (botList.length > 0) {
+			const newIndex = Math.min(oldBotIndex, botList.length - 1)
+			nextBotToLoad = botList[newIndex]
+		}
 
-		// 无论如何，都要更新 isDirty 状态
-		isDirty = false
-	} catch (error) {
-		console.error(error)
+		await loadBotConfig(nextBotToLoad)
+		renderBotDropdown()
 	}
+	catch (error) { console.error(error) }
 }
 
-async function handleCharSelectChange() {
-	// 如果有未保存的更改，提示用户
+async function handleCharSelectChange(selectedChar) {
 	if (isDirty)
 		if (!confirmI18n('discord_bots.alerts.unsavedChanges')) {
-			charSelect.value = configEditor.get().json.char || '' // 如果取消则还原选择
+			charSelectDropdown.dataset.value = configEditor.get().json.char || ''
 			return
 		}
 
-	const selectedChar = charSelect.value // 获取选择的角色
-
-	isDirty = true // 更改了选项，标记为 dirty
-	const template = await getBotConfigTemplate(selectedChar) // 获取模板
+	isDirty = true
+	const template = await getBotConfigTemplate(selectedChar)
 	if (template && configEditor)
-		configEditor.set({ json: template }) // 更新编辑器内容
+		configEditor.set({ json: template })
 }
 
 function handleToggleToken() {
@@ -175,40 +202,37 @@ async function handleSaveConfig() {
 
 	const config = {
 		token: tokenInput.value,
-		char: charSelect.value,
+		char: charSelectDropdown.dataset.value,
 		config: configEditor.get().json || JSON.parse(configEditor.get().text),
 	}
 
-	// Show loading icon and disable button
 	saveStatusIcon.src = 'https://api.iconify.design/line-md/loading-loop.svg'
 	saveStatusIcon.classList.remove('hidden')
 	saveConfigButton.disabled = true
 
 	try {
 		await setBotConfig(selectedBot, config)
-		console.logI18n('discord_bots.alerts.configSaved')
-		isDirty = false // 重置未保存标记
+		showToast(geti18n('discord_bots.alerts.configSaved'), 'success')
+		isDirty = false
 
-		// Show success icon
 		saveStatusIcon.src = 'https://api.iconify.design/line-md/confirm-circle.svg'
-	} catch (error) {
+	}
+	catch (error) {
 		showToast(error.message + '\n' + error.error || error.errors?.join('\n') || '', 'error')
 		console.error(error)
 
-		// Show error icon
 		saveStatusIcon.src = 'https://api.iconify.design/line-md/emoji-frown.svg'
 	}
 
 	setTimeout(() => {
 		saveStatusIcon.classList.add('hidden')
 		saveConfigButton.disabled = false
-	}, 2000) // 2 seconds delay
+	}, 2000)
 }
 
 async function handleStartStopBot() {
 	if (!selectedBot) return
 
-	// Show loading icon and disable button
 	startStopStatusIcon.src = 'https://api.iconify.design/line-md/loading-loop.svg'
 	startStopStatusIcon.classList.remove('hidden')
 	startStopBotButton.disabled = true
@@ -221,7 +245,8 @@ async function handleStartStopBot() {
 			startStopStatusText.textContent = geti18n('discord_bots.configCard.buttons.startBot')
 			startStopBotButton.classList.remove('btn-error')
 			startStopBotButton.classList.add('btn-success')
-		} else {
+		}
+		else {
 			await startBot(selectedBot)
 			startStopStatusText.textContent = geti18n('discord_bots.configCard.buttons.stopBot')
 			startStopBotButton.classList.remove('btn-success')
@@ -229,7 +254,8 @@ async function handleStartStopBot() {
 		}
 
 		startStopStatusIcon.src = 'https://api.iconify.design/line-md/confirm-circle.svg'
-	} catch (error) {
+	}
+	catch (error) {
 		showToast(error.message + '\n' + error.error || error.errors?.join('\n') || '', 'error')
 		console.error(error)
 
@@ -255,82 +281,89 @@ async function updateStartStopButtonState() {
 			startStopStatusText.textContent = geti18n('discord_bots.configCard.buttons.stopBot')
 			startStopBotButton.classList.remove('btn-success')
 			startStopBotButton.classList.add('btn-error')
-		} else {
+		}
+		else {
 			startStopStatusText.textContent = geti18n('discord_bots.configCard.buttons.startBot')
 			startStopBotButton.classList.remove('btn-error')
 			startStopBotButton.classList.add('btn-success')
 		}
-	} catch (error) {
+	}
+	catch (error) {
 		console.error('Failed to update start/stop button state:', error)
 	}
 }
 
-/**
- * 解析 URL 参数
- * @returns {URLSearchParams} URL 参数对象
- */
 function getURLParams() {
 	return new URLSearchParams(window.location.search)
 }
 
-/**
- * 根据 URL 参数进行初始化
- */
 async function initializeFromURLParams() {
 	const urlParams = getURLParams()
-	const botName = urlParams.get('name') // 使用 'name' 参数
-	const charName = urlParams.get('char') // 使用 'char' 参数
+	const botName = urlParams.get('name')
+	const charName = urlParams.get('char')
 
 	try {
+		// 1. Fetch lists
 		botList = await getBotList()
 		charList = await getPartList('chars')
-		populateBotList()
-		populateCharList()
 
-		if (botName) {
-			if (!botList.includes(botName))
-				// 如果 botName 不存在，则创建新的 bot
-				try {
-					await newBotConfig(botName)
-					botList = await getBotList()
-					populateBotList()
-				} catch (error) {
-					console.error('Failed to create new bot from URL parameter:', error)
-				}
+		// 2. Render the dropdowns with the lists
+		renderBotDropdown()
+		renderCharDropdown()
 
-			botListSelect.value = botName
-			await loadBotConfig(botName)
-		} else if (botList.length > 0) {
-			// 如果没有提供 botName 且 botList 不为空，则加载第一个 Bot 的配置
-			botListSelect.selectedIndex = 0 // 确保选中第一个选项
-			await loadBotConfig(botList[0]) // 手动加载第一个 Bot 的配置
+		// 3. Determine which bot to load
+		let botToLoad = null
+		if (botName && botList.includes(botName))
+			botToLoad = botName
+		else if (botName && !botList.includes(botName))
+			// If bot from URL doesn't exist, create it
+			try {
+				await newBotConfig(botName)
+				botList = await getBotList()
+				renderBotDropdown() // re-render with new list
+				botToLoad = botName
+			} catch (error) {
+				console.error('Failed to create new bot from URL parameter:', error)
+			}
+		else if (botList.length > 0)
+			botToLoad = botList[0]
+
+		// 4. Load the bot if one was determined
+		if (botToLoad) {
+			// Set the dropdown value and load the config
+			botListDropdown.dataset.value = botToLoad
+			await loadBotConfig(botToLoad)
 		}
 
+		// 5. Set the character from URL param, this has precedence
 		if (charName)
-			charSelect.value = charName
-	} catch (error) {
+			charSelectDropdown.dataset.value = charName
+	}
+	catch (error) {
 		console.error('Failed to initialize from URL parameters:', error)
 	}
 }
 
 // 初始化
-applyTheme()
-await initTranslations('discord_bots')
-initializeFromURLParams()
+async function init() {
+	applyTheme()
+	await initTranslations('discord_bots')
+	initializeFromURLParams()
 
-// 事件监听
-newBotButton.addEventListener('click', handleNewBot)
-deleteBotButton.addEventListener('click', handleDeleteBot)
-botListSelect.addEventListener('change', () => loadBotConfig(botListSelect.value))
-charSelect.addEventListener('change', handleCharSelectChange)
-toggleTokenButton.addEventListener('click', handleToggleToken)
-saveConfigButton.addEventListener('click', handleSaveConfig)
-startStopBotButton.addEventListener('click', handleStartStopBot)
+	// 事件监听
+	newBotButton.addEventListener('click', handleNewBot)
+	deleteBotButton.addEventListener('click', handleDeleteBot)
+	toggleTokenButton.addEventListener('click', handleToggleToken)
+	saveConfigButton.addEventListener('click', handleSaveConfig)
+	startStopBotButton.addEventListener('click', handleStartStopBot)
 
-// 离开页面时提醒
-window.addEventListener('beforeunload', event => {
-	if (isDirty) {
-		event.preventDefault()
-		event.returnValue = geti18n('discord_bots.alerts.beforeUnload')
-	}
-})
+	// 离开页面时提醒
+	window.addEventListener('beforeunload', event => {
+		if (isDirty) {
+			event.preventDefault()
+			event.returnValue = geti18n('discord_bots.alerts.beforeUnload')
+		}
+	})
+}
+
+init()

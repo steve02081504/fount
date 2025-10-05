@@ -320,6 +320,7 @@ export async function generateLoginInfoUrl(credentials, uuid, baseUrl) {
 
 	const loginInfoUrl = new URL('https://steve02081504.github.io/fount/login_info/')
 	loginInfoUrl.searchParams.set('redirect', encodeURIComponent(redirectUrl.href))
+	loginInfoUrl.searchParams.set('forward', 'true')
 
 	const encryptedData = await encrypt(JSON.stringify(credentials), uuid)
 	const hashParams = new URLSearchParams()
@@ -328,7 +329,8 @@ export async function generateLoginInfoUrl(credentials, uuid, baseUrl) {
 	try {
 		const fileId = await uploadToCatbox(encryptedData, '1h')
 		loginInfoUrl.searchParams.set('fileId', fileId)
-	} catch (e) {
+	}
+	catch (e) {
 		console.warn('Catbox upload failed, falling back to URL hash.', e)
 		hashParams.set('encrypted_creds', encodeURIComponent(encryptedData))
 	}

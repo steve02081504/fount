@@ -4,7 +4,6 @@ import { addUserReply } from '../endpoints.mjs'
 import { handleFilesSelect } from '../fileHandling.mjs'
 
 import { addDragAndDropSupport } from './dragAndDrop.mjs'
-import { appendMessage } from './messageList.mjs'
 
 const messageInputElement = document.getElementById('message-input')
 const sendButtonElement = document.getElementById('send-button')
@@ -58,48 +57,47 @@ async function toggleVoiceRecording() {
 			await new Promise(resolve => setTimeout(resolve, 100))
 			isRecording = await isRecording
 		}
-	} else
-		// Start recording
-		try {
-			const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-			mediaRecorder = new MediaRecorder(stream)
-			audioChunks = []
+	}
+	else try { // Start recording
+		const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+		mediaRecorder = new MediaRecorder(stream)
+		audioChunks = []
 
-			mediaRecorder.ondataavailable = event => {
-				audioChunks.push(event.data)
-			}
-
-			mediaRecorder.onstop = async () => {
-				const audioBlob = new Blob(audioChunks, { type: 'audio/wav' })
-				const audioFile = new File([audioBlob], `voice_message_${Date.now()}.wav`, { type: 'audio/wav' })
-
-				// Simulate a file input change event to use handleFilesSelect
-				const fakeEvent = {
-					target: {
-						files: [audioFile],
-					},
-				}
-				stream.getTracks().forEach(track => track.stop())
-				isRecording = await handleFilesSelect(fakeEvent, SelectedFiles, attachmentPreviewContainer)
-			}
-
-			mediaRecorder.start()
-			voiceButtonElement.innerHTML = await fetch('https://api.iconify.design/line-md/square.svg').then(res => res.text())
-			isRecording = true
-		} catch (error) {
-			console.error('Error accessing microphone:', error)
-			showToast(geti18n('chat.voiceRecording.errorAccessingMicrophone'), 'error')
+		mediaRecorder.ondataavailable = event => {
+			audioChunks.push(event.data)
 		}
+
+		mediaRecorder.onstop = async () => {
+			const audioBlob = new Blob(audioChunks, { type: 'audio/wav' })
+			const audioFile = new File([audioBlob], `voice_message_${Date.now()}.wav`, { type: 'audio/wav' })
+
+			// Simulate a file input change event to use handleFilesSelect
+			const fakeEvent = {
+				target: {
+					files: [audioFile],
+				},
+			}
+			stream.getTracks().forEach(track => track.stop())
+			isRecording = await handleFilesSelect(fakeEvent, SelectedFiles, attachmentPreviewContainer)
+		}
+
+		mediaRecorder.start()
+		voiceButtonElement.innerHTML = await fetch('https://api.iconify.design/line-md/square.svg').then(res => res.text())
+		isRecording = true
+	} catch (error) {
+		console.error('Error accessing microphone:', error)
+		showToast(geti18n('chat.voiceRecording.errorAccessingMicrophone'), 'error')
+	}
 }
 
 async function sendMessage() {
 	const messageText = messageInputElement.value.trim()
-	if (!messageText && SelectedFiles.length === 0) return
+	if (!messageText && !SelectedFiles.length) return
 
 	if (isRecording) await toggleVoiceRecording()
 
 	try {
-		await appendMessage(await addUserReply({ content: messageText, files: SelectedFiles }))
+		await addUserReply({ content: messageText, files: SelectedFiles })
 		messageInputElement.value = ''
 		SelectedFiles.length = 0
 		attachmentPreviewContainer.innerHTML = ''

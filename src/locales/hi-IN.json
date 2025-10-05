@@ -13,7 +13,7 @@
 			"localUrl": "एक ही नेटवर्क पर अन्य उपकरणों से fount तक पहुंच: ${url}",
 			"standingBy": "Standing by...",
 			"update": {
-				"restarting": "एक नए संस्करण की खोज की गई थी और अपडेट को फिर से शुरू किया जा रहा है ..."
+				"restarting": "एक नए संस्करण की खोज की गई थी और अपडेट को फिर से शुरू किया जा रहा है..."
 			}
 		},
 		"jobs": {
@@ -102,6 +102,11 @@
 	},
 	"installer_wait_screen": {
 		"title": "fount में आपका स्वागत है!",
+		"language_selector": {
+			"search": {
+				"placeholder": "भाषा खोजें..."
+			}
+		},
 		"hero": {
 			"title": "आपका इमर्सिव AI कैरेक्टर साथी",
 			"description": "fount एक AI-संचालित कैरेक्टर इंटरैक्शन प्लेटफॉर्म है, जिसे <i>आपको</i> सशक्त बनाने के लिए डिज़ाइन किया गया है। यह एक ऐसा पुल है जो आपको आपकी कल्पना के पात्रों से जोड़ता है, जिससे आप उनसे आसानी से बात कर सकते हैं, अपने खुद के कैरेक्टर बना सकते हैं, और उन्हें दुनिया के साथ साझा कर सकते हैं।"
@@ -124,7 +129,10 @@
 		},
 		"theme_selector": {
 			"title": "अपनी पसंद का लुक चुनें",
-			"description": "अपने अनुभव को निजीकृत करने के लिए एक थीम चुनें।"
+			"description": "अपने अनुभव को निजीकृत करने के लिए एक थीम चुनें।",
+			"search": {
+				"placeholder": "थीम खोजें..."
+			}
 		},
 		"mini_game": {
 			"title": "एक छोटा गेम खेलें",
@@ -287,6 +295,7 @@
 		}
 	},
 	"login_info": {
+		"title": "लॉगिन जानकारी",
 		"modal": {
 			"title": "प्रमाणपत्र अंतरण त्रुटि",
 			"retrieve_error": "आपकी लॉगिन जानकारी सहेजते समय एक त्रुटि हुई:\n${error}\nआप जारी रख सकते हैं लेकिन लॉगिन जानकारी नहीं सहेज सकते।",
@@ -311,6 +320,9 @@
 			"fetchHomeRegistryFailed": "होम रजिस्ट्री जानकारी प्राप्त करने में विफल।"
 		},
 		"functionMenu": {
+			"search": {
+				"placeholder": "खोजें..."
+			},
 			"icon": {
 				"alt": "फ़ंक्शन मेनू"
 			}
@@ -742,6 +754,12 @@
 			"partTypeSelect": "कृपया चुनें",
 			"partSelect": "कृपया चुनें"
 		},
+		"partSelectDropdown": {
+			"placeholder": "चुनें..."
+		},
+		"partSearch": {
+			"placeholder": "खोज..."
+		},
 		"export": {
 			"title": "निर्यात विकल्प"
 		},
@@ -899,18 +917,27 @@
 		"title": "भाषा सेटिंग्स",
 		"description": "अपनी भाषा वरीयताओं को यहां प्रबंधित करें। सूची में भाषाएँ क्रम में ब्राउज़र सेटिंग्स पर पूर्वता लेगी।",
 		"availableLanguages": "उपलब्ध भाषाएँ",
-		"addButton": "इसमें जोड़ें",
 		"preferredLanguages": "प्राथमिकता भाषा सूची",
-		"resetButton": "रीसेट करना",
-		"saveButton": "बचाना",
+		"resetButton": "रीसेट करें",
+		"saveButton": "सहेजें",
 		"noPreferredLanguages": "अभी तक कोई पूर्व भाषा नहीं है। ब्राउज़र डिफ़ॉल्ट सेटिंग्स का उपयोग किया जाएगा।",
 		"savedMessage": "भाषा सेटिंग्स बचाई जाती हैं!",
 		"resetMessage": "भाषा सेटिंग्स रीसेट हो गई हैं!",
-		"fetchLocalesFailed": "उपलब्ध भाषाओं को प्राप्त करने में विफल!"
+		"fetchLocalesFailed": "उपलब्ध भाषाओं को प्राप्त करने में विफल!",
+		"select": {
+			"placeholder": "एक भाषा चुनें..."
+		},
+		"search": {
+			"placeholder": "भाषा खोजें..."
+		}
 	},
 	"themeManage": {
 		"title": "थीम प्रबंधन",
 		"instruction": "एक थीम चुनें!",
+		"search": {
+			"placeholder": "थीम खोजें...",
+			"noResult": "कोई मिलता-जुलता विषय नहीं मिला।"
+		},
 		"themes": {
 			"auto": "स्वचालित",
 			"light": "हल्का",
@@ -1045,6 +1072,18 @@
 			"newBot": "नया",
 			"deleteBot": "हटाएँ"
 		},
+		"botSelectDropdown": {
+			"placeholder": "एक बॉट चुनें"
+		},
+		"botSearch": {
+			"placeholder": "बॉट खोजें..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "एक भूमिका का चयन करें"
+		},
+		"charSearch": {
+			"placeholder": "पात्र खोजें..."
+		},
 		"configCard": {
 			"title": "बॉट कॉन्फ़िगरेशन",
 			"labels": {
@@ -1079,6 +1118,18 @@
 	"telegram_bots": {
 		"title": "टेलीग्राम बॉट",
 		"cardTitle": "टेलीग्राम बॉट प्रबंधन",
+		"botSelectDropdown": {
+			"placeholder": "एक बॉट चुनें"
+		},
+		"botSearch": {
+			"placeholder": "बॉट खोजें..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "एक भूमिका का चयन करें"
+		},
+		"charSearch": {
+			"placeholder": "पात्र खोजें..."
+		},
 		"buttons": {
 			"newBot": "नया",
 			"deleteBot": "हटाएँ"

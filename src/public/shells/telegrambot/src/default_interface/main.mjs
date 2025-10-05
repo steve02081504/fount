@@ -25,14 +25,13 @@ import {
  */
 async function tryFewTimes(func, { times = 3, WhenFailsWaitFor = 2000 } = {}) {
 	let lastError
-	for (let i = 0; i < times; i++)
-		try {
-			return await func()
-		} catch (error) {
-			lastError = error
-			console.warn(`[TelegramDefaultInterface] tryFewTimes: Attempt ${i + 1} failed. Error: ${error.message?.replace(/([!#()*+.=>[\]_`{|}~-])/g, '\\$1')}`)
-			if (i < times - 1) await new Promise(resolve => setTimeout(resolve, WhenFailsWaitFor))
-		}
+	for (let i = 0; i < times; i++) try {
+		return await func()
+	} catch (error) {
+		lastError = error
+		console.warn(`[TelegramDefaultInterface] tryFewTimes: Attempt ${i + 1} failed. Error: ${error.message?.replace(/([!#()*+.=>[\]_`{|}~-])/g, '\\$1')}`)
+		if (i < times - 1) await new Promise(resolve => setTimeout(resolve, WhenFailsWaitFor))
+	}
 
 	console.error(`[TelegramDefaultInterface] tryFewTimes: All ${times} attempts failed. Last error:`, lastError)
 	throw lastError
@@ -233,7 +232,8 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 							if (isLastFile && aiMarkdownContent.trim()) {
 								captionAiMarkdown = aiMarkdownContent
 								mainTextSentAsCaption = true
-							} else if (filesToProcess.length === 1 && aiMarkdownContent.trim()) {
+							}
+							else if (filesToProcess.length === 1 && aiMarkdownContent.trim()) {
 								captionAiMarkdown = aiMarkdownContent
 								mainTextSentAsCaption = true
 							}
@@ -260,34 +260,33 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 									sentMsg = await tryFewTimes(() => ctx.replyWithVideo({ source: fileItem.source, filename: fileItem.filename }, sendOptionsWithCaption))
 								else
 									sentMsg = await tryFewTimes(() => ctx.replyWithDocument({ source: fileItem.source, filename: fileItem.filename }, sendOptionsWithCaption))
-							} catch (e) {
+							}
+							catch (e) {
 								console.error(`[TelegramDefaultInterface] 发送文件 ${fileItem.filename} 失败:`, e)
 								const fallbackText = `[文件发送失败: ${fileItem.filename}] ${captionAiMarkdown || ''}`.trim()
-								if (fallbackText)
-									try {
-										// ctx.reply 的第二个参数是 Extra
-										sentMsg = await tryFewTimes(() => ctx.reply(escapeHTML(fallbackText.substring(0, 4000)), baseSendOptionsForReply))
-									} catch (e2) { console.error('[TelegramDefaultInterface] 发送文件失败的回退消息也失败:', e2) }
+								if (fallbackText) try {
+									// ctx.reply 的第二个参数是 Extra
+									sentMsg = await tryFewTimes(() => ctx.reply(escapeHTML(fallbackText.substring(0, 4000)), baseSendOptionsForReply))
+								} catch (e2) { console.error('[TelegramDefaultInterface] 发送文件失败的回退消息也失败:', e2) }
 							}
 							if (sentMsg && !firstSentTelegramMessage) firstSentTelegramMessage = sentMsg
 						}
 						if (!mainTextSentAsCaption && aiMarkdownContent.trim()) {
 							const htmlContent = aiMarkdownToTelegramHtml(aiMarkdownContent)
 							const textParts = splitTelegramReply(htmlContent)
-							for (const part of textParts)
-								try {
-									const sentMsg = await tryFewTimes(() => ctx.reply(part, baseSendOptionsForReply))
-									if (sentMsg && !firstSentTelegramMessage) firstSentTelegramMessage = sentMsg
-								} catch (e) { console.error('[TelegramDefaultInterface] 发送剩余HTML文本失败:', e) }
-						}
-					} else if (aiMarkdownContent.trim()) {
-						const htmlContent = aiMarkdownToTelegramHtml(aiMarkdownContent)
-						const textParts = splitTelegramReply(htmlContent)
-						for (const part of textParts)
-							try {
+							for (const part of textParts) try {
 								const sentMsg = await tryFewTimes(() => ctx.reply(part, baseSendOptionsForReply))
 								if (sentMsg && !firstSentTelegramMessage) firstSentTelegramMessage = sentMsg
-							} catch (e) { console.error('[TelegramDefaultInterface] 发送HTML文本消息失败:', e) }
+							} catch (e) { console.error('[TelegramDefaultInterface] 发送剩余HTML文本失败:', e) }
+						}
+					}
+					else if (aiMarkdownContent.trim()) {
+						const htmlContent = aiMarkdownToTelegramHtml(aiMarkdownContent)
+						const textParts = splitTelegramReply(htmlContent)
+						for (const part of textParts) try {
+							const sentMsg = await tryFewTimes(() => ctx.reply(part, baseSendOptionsForReply))
+							if (sentMsg && !firstSentTelegramMessage) firstSentTelegramMessage = sentMsg
+						} catch (e) { console.error('[TelegramDefaultInterface] 发送HTML文本消息失败:', e) }
 					}
 
 					if (firstSentTelegramMessage && aiFinalReply) {
@@ -305,7 +304,8 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 						}
 					}
 				}
-			} catch (error) {
+			}
+			catch (error) {
 				console.error(`[TelegramDefaultInterface] 处理消息并回复时出错 (chat ${logicalChannelId}):`, error)
 				await tryFewTimes(() => ctx.reply(escapeHTML(errorMessageText)))
 			}

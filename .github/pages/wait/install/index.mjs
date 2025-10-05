@@ -4,6 +4,7 @@ import * as Sentry from 'https://esm.sh/@sentry/browser'
 import { setPreRender, setTheme, theme_now } from '../../base.mjs'
 import { isFountServiceAvailable, saveFountHostUrl, getFountHostUrl, pingFount } from '../../scripts/fountHostGetter.mjs'
 import { initTranslations, geti18n, console, getAvailableLocales, getLocaleNames, setLocales } from '../../scripts/i18n.mjs'
+import { makeSearchable } from '../../scripts/search.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
 import { showToast } from '../../scripts/toast.mjs'
 
@@ -17,6 +18,7 @@ const launchButtonSpinner = document.getElementById('launchButtonSpinner')
 const footer = document.querySelector('.footer')
 const footerReadyText = document.getElementById('footerReadyText')
 const themeList = document.getElementById('theme-list')
+const themeSearch = document.getElementById('theme-search')
 const activeUsersCountEl = document.getElementById('active-users-count')
 const starsCountEl = document.getElementById('stars-count')
 
@@ -103,10 +105,12 @@ async function renderThemePreviews() {
 	themeList.innerHTML = ''
 	const themes = await import('https://cdn.jsdelivr.net/npm/daisyui/functions/themeOrder.js').then(m => m.default)
 
+	const allPreviews = []
+
 	const autoPreview = await createAutoPreview()
 	autoPreview.addEventListener('click', () => handleThemeClick(autoPreview, 'auto'))
 	if (!theme_now) autoPreview.classList.add('selected-theme')
-	themeList.appendChild(autoPreview)
+	allPreviews.push({ element: autoPreview, name: 'auto' })
 
 	const previewPromises = themes.map(async theme => {
 		const preview = await renderTemplate('theme_preview', { theme })
@@ -116,11 +120,24 @@ async function renderThemePreviews() {
 		}
 		preview.addEventListener('click', () => handleThemeClick(preview, theme))
 		if (theme_now === theme) preview.classList.add('selected-theme')
-		return preview
+		return { element: preview, name: theme }
 	})
 
 	const renderedPreviews = (await Promise.all(previewPromises)).filter(Boolean)
-	themeList.append(...renderedPreviews)
+	allPreviews.push(...renderedPreviews)
+	themeList.append(...allPreviews.map(p => p.element))
+
+	makeSearchable({
+		searchInput: themeSearch,
+		data: allPreviews,
+		dataAccessor: item => item.name,
+		onUpdate: (filteredItems) => {
+			const visibleElements = new Set(filteredItems)
+			allPreviews.forEach(item => {
+				item.element.style.display = visibleElements.has(item) ? '' : 'none'
+			})
+		}
+	})
 }
 
 function handleThemeClick(previewElement, theme) {
@@ -288,7 +305,8 @@ function updateRotatingSubtitles() {
 // --- Language Selector ---
 function populateLanguageSelector() {
 	const languageSelector = document.getElementById('language-selector')
-	if (!languageSelector) return
+	const languageSearch = document.getElementById('language-search')
+	if (!languageSelector || !languageSearch) return
 
 	languageSelector.innerHTML = '' // Clear existing items
 	const locales = getAvailableLocales()
@@ -305,10 +323,22 @@ function populateLanguageSelector() {
 			document.activeElement?.blur()
 		}
 		li.appendChild(a)
-		return li
+		return { element: li, locale, name: a.textContent }
 	})
 
-	languageSelector.append(...items)
+	languageSelector.append(...items.map(item => item.element))
+
+	makeSearchable({
+		searchInput: languageSearch,
+		data: items,
+		dataAccessor: item => ({ name: item.name, locale: item.locale }),
+		onUpdate: (filteredItems) => {
+			const visibleElements = new Set(filteredItems)
+			items.forEach(item => {
+				item.element.style.display = visibleElements.has(item) ? '' : 'none'
+			})
+		}
+	})
 }
 
 // --- Fount Service Connection Logic ---

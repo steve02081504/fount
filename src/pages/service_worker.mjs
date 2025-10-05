@@ -122,7 +122,8 @@ async function performTransaction(mode, callback) {
 			transaction.onerror = () => reject(transaction.error)
 			transaction.onabort = () => reject(new Error('Transaction aborted'))
 		})
-	} catch (error) {
+	}
+	catch (error) {
 		console.error(`[SW DB] Transaction failed with mode ${mode}:`, error)
 		throw error
 	}
@@ -139,7 +140,8 @@ async function updateTimestamp(url, timestamp) {
 		await performTransaction('readwrite', store => {
 			store.put({ url, timestamp })
 		})
-	} catch (error) {
+	}
+	catch (error) {
 		console.error(`[SW DB] Failed to update timestamp for ${url}:`, error)
 	}
 }
@@ -161,7 +163,8 @@ async function getTimestamp(url) {
 			}
 		})
 		return timestamp // 返回在事务中成功获取的值
-	} catch (error) {
+	}
+	catch (error) {
 		console.error(`[SW DB] Failed to get timestamp for ${url}:`, error)
 		return null // 保持错误处理行为不变
 	}
@@ -196,7 +199,8 @@ async function cleanupExpiredCache() {
 					urlsToDelete.push(cursor.value.url)
 					cursor.delete()
 					cursor.continue()
-				} else resolve()
+				}
+				else resolve()
 			}
 		})
 
@@ -207,22 +211,15 @@ async function cleanupExpiredCache() {
 			transaction.onabort = () => reject(new Error('Cleanup transaction aborted'))
 		})
 
-		if (urlsToDelete.length === 0)
-			return console.log('[SW Cleanup] No expired items to clean up.')
-
-		console.log(`[SW Cleanup] Found ${urlsToDelete.length} expired items. Proceeding to delete from cache.`)
+		if (!urlsToDelete.length) return
 
 		// 步骤 2: 并行删除缓存条目，以提高清理大量项目时的效率。
 		const cache = await caches.open(CACHE_NAME)
 		const deletePromises = urlsToDelete.map(url => cache.delete(url))
 		// 使用 Promise.allSettled 确保即使某个删除失败，其他删除操作也能继续完成。
-		const results = await Promise.allSettled(deletePromises)
-		const successfulDeletes = results.filter(r => r.status === 'fulfilled' && r.value === true)
-		const deletedCount = successfulDeletes.length
-
-		console.log(`[SW Cleanup] Successfully deleted ${deletedCount} of ${urlsToDelete.length} items from Cache Storage.`)
-
-	} catch (error) {
+		await Promise.allSettled(deletePromises)
+	}
+	catch (error) {
 		console.error('[SW Cleanup] Cache cleanup process failed:', error)
 	}
 }
@@ -260,15 +257,18 @@ async function fetchAndCache(request) {
 				await updateTimestamp(request.url, now)
 
 				return redirectResponse
-			} else {
+			}
+			else {
 				await cache.put(request, responseToCache)
 				await updateTimestamp(request.url, now)
 			}
-		} else if (networkResponse)
+		}
+		else if (networkResponse)
 			console.warn(`[SW ${CACHE_NAME}] Fetch for ${request.url} responded with ${networkResponse.status} ${networkResponse.statusText}. Not caching.`)
 
 		return networkResponse
-	} catch (error) {
+	}
+	catch (error) {
 		console.error(`[SW ${CACHE_NAME}] fetchAndCache failed for ${request.url}:`, error)
 		throw error
 	}
@@ -291,8 +291,7 @@ async function handleCacheFirst(request) {
 	const isThrottled = storedTimestamp && (now - storedTimestamp < BACKGROUND_FETCH_THROTTLE_MS)
 
 	const backgroundUpdateTask = async () => {
-		if (isThrottled) return
-		try {
+		if (!isThrottled) try {
 			await fetchAndCache(request.clone())
 		} catch (error) {
 			console.warn(`[SW ${CACHE_NAME}] Background network fetch failed for ${request.url}:`, error)
@@ -306,7 +305,8 @@ async function handleCacheFirst(request) {
 
 	try {
 		return await fetchAndCache(request)
-	} catch (error) {
+	}
+	catch (error) {
 		console.error(`[SW ${CACHE_NAME}] Failed to fetch ${request.url} from network after cache miss.`)
 		throw error
 	}
@@ -321,7 +321,8 @@ async function handleCacheFirst(request) {
 async function handleNetworkFirst(request) {
 	try {
 		return await fetchAndCache(request)
-	} catch (error) {
+	}
+	catch (error) {
 		console.warn(`[SW ${CACHE_NAME}] Network fetch failed for ${request.url}. Attempting to serve from cache.`)
 		const cache = await caches.open(CACHE_NAME)
 		const cachedResponse = await cache.match(request)
@@ -362,10 +363,86 @@ const routes = [
 ]
 
 
+// --- WebSocket Notification Client ---
+
+let ws = null
+let reconnectTimeout = null
+const RECONNECT_DELAY = 5000 // 5 seconds
+
+const wsMessageHandlers = {
+	notification: data => {
+		const { title, options, targetUrl } = data
+		if (!title) return
+
+		if (!targetUrl) self.registration.showNotification(title, options)
+		else self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
+			let shouldShowNotification = true
+			for (const client of windowClients) {
+				const clientUrl = new URL(client.url)
+				const notificationTargetUrl = new URL(targetUrl, self.location.origin)
+				if (clientUrl.pathname === notificationTargetUrl.pathname && clientUrl.search === notificationTargetUrl.search && client.focused) {
+					shouldShowNotification = false
+					break
+				}
+			}
+			if (shouldShowNotification)
+				self.registration.showNotification(title, options)
+		})
+	},
+	default: message => {
+		self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
+			for (const client of windowClients) client.postMessage(message)
+		})
+	},
+}
+
+
+function connectWebSocket() {
+	// Use a relative URL that will be resolved correctly by the browser
+	// against the service worker's origin.
+	const wsUrl = new URL('/ws/notify', self.location.href)
+	wsUrl.protocol = wsUrl.protocol.replace('http', 'ws')
+
+	ws = new WebSocket(wsUrl)
+
+	ws.onopen = () => {
+		// Reset reconnect timeout on successful connection
+		if (!reconnectTimeout) return
+		clearTimeout(reconnectTimeout)
+		reconnectTimeout = null
+	}
+
+	ws.onmessage = event => {
+		try {
+			const message = JSON.parse(event.data)
+			if (!message.type) return console.warn('[SW WS] Received message without a type:', message)
+
+			const handler = wsMessageHandlers[message.type]
+			if (handler) handler(message.data)
+			else wsMessageHandlers.default(message)
+		}
+		catch (error) {
+			console.error('[SW WS] Error parsing message or handling it:', error)
+		}
+	}
+
+	ws.onclose = event => {
+		console.warn(`[SW WS] Connection closed. Code: ${event.code}, Reason: ${event.reason}. Reconnecting in ${RECONNECT_DELAY / 1000}s.`)
+		ws = null
+		if (!reconnectTimeout) reconnectTimeout = setTimeout(connectWebSocket, RECONNECT_DELAY)
+	}
+
+	ws.onerror = error => {
+		console.error('[SW WS] WebSocket error:', error)
+	}
+}
+
+// Start WebSocket connection
+connectWebSocket()
+
 // --- Service Worker 事件监听器 ---
 
 self.addEventListener('install', event => {
-	console.log(`[SW ${CACHE_NAME}] Installing...`)
 	// 强制新的 Service Worker 在安装后立即激活，取代旧版本。
 	event.waitUntil(self.skipWaiting())
 })
@@ -374,14 +451,14 @@ self.addEventListener('activate', event => {
 	event.waitUntil(
 		(async () => {
 			// 尝试注册定期后台同步任务，用于自动清理过期缓存。
-			if ('periodicSync' in self.registration)
-				try {
-					await self.registration.periodicSync.register(PERIODIC_SYNC_TAG, {
-						minInterval: 24 * 60 * 60 * 1000, // 至少每 24 小时执行一次。
-					})
-				} catch (err) {
-					console.error('[SW] Periodic background sync failed to register:', err)
-				}
+			if ('periodicSync' in self.registration) try {
+				await self.registration.periodicSync.register(PERIODIC_SYNC_TAG, {
+					minInterval: 24 * 60 * 60 * 1000, // 至少每 24 小时执行一次。
+				})
+			} catch (err) {
+				if (err.name === 'NotAllowedError') return
+				console.error('[SW] Periodic background sync failed to register:', err)
+			}
 
 			// 确保新的 Service Worker 立即控制所有当前打开的客户端（页面）。
 			await self.clients.claim()
@@ -398,6 +475,27 @@ self.addEventListener('periodicsync', event => {
 	// 确保只响应该 Service Worker 注册的清理任务。
 	if (event.tag === PERIODIC_SYNC_TAG)
 		event.waitUntil(cleanupExpiredCache())
+})
+
+self.addEventListener('notificationclick', event => {
+	event.notification.close()
+	const urlToOpen = event.notification.data?.url
+	if (urlToOpen)
+		event.waitUntil(
+			self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
+				// Check if a window is already open with the same URL.
+				const existingClient = windowClients.find(client => {
+					const clientUrl = new URL(client.url)
+					const targetUrl = new URL(urlToOpen, self.location.origin)
+					return clientUrl.pathname === targetUrl.pathname && clientUrl.search === targetUrl.search && clientUrl.hash === targetUrl.hash
+				})
+
+				if (existingClient)
+					return existingClient.focus()
+				else
+					return self.clients.openWindow(urlToOpen)
+			})
+		)
 })
 
 /**

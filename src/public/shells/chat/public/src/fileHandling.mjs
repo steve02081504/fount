@@ -42,7 +42,7 @@ export async function handleFilesSelect(event, selectedFiles, attachmentPreviewC
 export async function handlePaste(event, selectedFiles, attachmentPreviewContainer) {
 	const { items } = event.clipboardData || window.clipboardData
 	for (const item of items)
-		if (item.type.indexOf('image') === 0) {
+		if (!item.type.indexOf('image')) {
 			const blob = item.getAsFile()
 			if (blob) {
 				// 为 blob 创建一个唯一的文件名，例如使用时间戳和随机数
@@ -87,7 +87,8 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 			openModal(base64Data, 'image')
 		})
 		previewContainer.appendChild(previewImg)
-	} else if (file.mime_type.startsWith('video/')) {
+	}
+	else if (file.mime_type.startsWith('video/')) {
 		const preview = document.createElement('video')
 		preview.classList.add('preview')
 		const videoSrc = `data:${file.mime_type};base64,${file.buffer}`
@@ -99,12 +100,14 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 			openModal(videoSrc, 'video')
 		})
 		previewContainer.appendChild(preview)
-	} else if (file.mime_type.startsWith('audio/')) {
+	}
+	else if (file.mime_type.startsWith('audio/')) {
 		const audio = document.createElement('audio')
 		audio.src = `data:${file.mime_type};base64,${file.buffer}`
 		audio.controls = true
 		previewContainer.appendChild(audio)
-	} else {
+	}
+	else {
 		const preview = document.createElement('img')
 		preview.classList.add('preview', 'icon')
 		preview.src = 'https://api.iconify.design/line-md/file.svg'

@@ -1,4 +1,19 @@
+/** @type {import('npm:@sentry/browser')} */
+import * as Sentry from 'https://esm.sh/@sentry/browser'
+
 import { base_dir } from '../base.mjs'
+
+const languageChangeCallbacks = []
+export function onLanguageChange(callback) {
+	languageChangeCallbacks.push(callback)
+}
+async function runLanguageChange() {
+	for (const callback of languageChangeCallbacks) try {
+		await callback()
+	} catch (e) {
+		console.error('Error in language change callback:', e)
+	}
+}
 
 let i18n = {}
 let saved_pageid
@@ -34,7 +49,7 @@ export function getLocaleNames() {
  * 从服务器获取多语言数据并初始化翻译。
  * @param {string} [pageid]
  */
-export async function initTranslations(pageid = saved_pageid, preferredlocales = JSON.parse(localStorage.getItem('fountUserPreferredLanguages')) || []) {
+export async function initTranslations(pageid = saved_pageid, preferredlocales = eval(localStorage.getItem('fountUserPreferredLanguages')) || []) {
 	saved_pageid = pageid
 
 	try {
@@ -63,7 +78,8 @@ export async function initTranslations(pageid = saved_pageid, preferredlocales =
 
 		i18n = await translationResponse.json()
 		applyTranslations()
-	} catch (error) {
+	}
+	catch (error) {
 		console.error('Error initializing translations:', error)
 	}
 }
@@ -127,10 +143,10 @@ export function geti18n_nowarn(key, params = {}) {
 export function geti18n(key, params = {}) {
 	const translation = geti18n_nowarn(key, params)
 
-	if (translation === undefined)
-		console.warn(`Translation key "${key}" not found.`)
+	if (translation !== undefined) return translation
 
-	return translation
+	console.warn(`Translation key "${key}" not found.`)
+	Sentry.captureException(new Error(`Translation key "${key}" not found.`))
 }
 const console = globalThis.console
 console.infoI18n = (key, params = {}) => console.info(geti18n(key, params))
@@ -162,33 +178,40 @@ function applyTranslations() {
 		descriptionMeta.content = geti18n(`${saved_pageid}.description`)
 	document.documentElement.lang = geti18n('lang')
 
-	i18nElement(document)
+	i18nElement(document, { skip_report: true })
 }
 
-export function i18nElement(element) {
+export function i18nElement(element, {
+	skip_report = false
+} = {}) {
 	const elements = element.querySelectorAll('[data-i18n]')
+	let updated = skip_report
 	elements.forEach(element => {
+		function update(attr, value) {
+			if (element[attr] == value) return
+			element[attr] = value
+			updated = true
+		}
 		const key = element.dataset.i18n
 		if (!key) return
 		if (getNestedValue(i18n, key) instanceof Object) {
 			const attributes = ['placeholder', 'title', 'label', 'text', 'value', 'alt']
-
-			for (const attr of attributes) {
+			for (let attr of attributes) {
 				const specificKey = `${key}.${attr}`
 				const translation = geti18n_nowarn(specificKey)
 				if (translation === undefined) continue
-				if (attr === 'text')
-					element.textContent = translation
-				else
-					element[attr] = translation
+				if (attr === 'text') attr = 'textContent'
+				update(attr, translation)
 			}
 		}
 		else
 			element.innerHTML = geti18n(key)
 	})
+	if (!updated)
+		Sentry.captureException(new Error('i18nElement() did not update any attributes for element.'))
 	return element
 }
 
 window.addEventListener('languagechange', () => {
-	initTranslations()
+	runLanguageChange()
 })

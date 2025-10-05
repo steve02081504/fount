@@ -22,28 +22,51 @@ const autoRunScriptsCache = new Map()
 
 async function renderPages(pages) {
 	pagesListDiv.innerHTML = ''
-	if (pages.length === 0) pagesListDiv.appendChild(await renderTemplate('empty_state'))
+	if (!pages.length) pagesListDiv.appendChild(await renderTemplate('empty_state'))
 	else pagesListDiv.appendChild(await renderTemplate('page_table', { pages }))
 }
 
-async function fetchAndRenderPages() {
-	try {
-		const result = await api.getConnectedPages()
-		if (!result.success) throw new Error(result.message)
+const RECONNECT_DELAY = 5000
+function connectWebSocket() {
+	const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+	const wsUrl = `${wsProtocol}//${window.location.host}/ws/shells/browserIntegration/ui`
+	const ws = new WebSocket(wsUrl)
 
-		const newPagesJson = JSON.stringify(result.data)
-		if (lastPages === newPagesJson) return
+	ws.onopen = () => {
+		console.log('Connected to UI WebSocket.')
+	}
 
-		lastPages = newPagesJson
-		await renderPages(result.data)
-	} catch (error) {
-		lastPages = ''
-		console.error('Failed to fetch and render pages:', error)
+	ws.onmessage = async (event) => {
+		try {
+			const msg = JSON.parse(event.data)
+			if (msg.type === 'pages_update') {
+				const pages = msg.payload
+				const newPagesJson = JSON.stringify(pages)
+				if (lastPages === newPagesJson) return // Avoid unnecessary re-renders
+				lastPages = newPagesJson
+
+				await renderPages(pages)
+			}
+		}
+		catch (error) {
+			console.error('Error processing WebSocket message:', error)
+			import('https://esm.sh/@sentry/browser').then(Sentry => Sentry.captureException(error))
+		}
+	}
+
+	ws.onclose = async () => {
+		console.log(`UI WebSocket disconnected. Reconnecting in ${RECONNECT_DELAY / 1000} seconds...`)
+		// Clear the list to show a disconnected/error state
 		pagesListDiv.innerHTML = ''
 		pagesListDiv.appendChild(await renderTemplate('error_message'))
+		setTimeout(connectWebSocket, RECONNECT_DELAY)
+	}
+
+	ws.onerror = (err) => {
+		console.error('UI WebSocket error:', err)
+		// Don't call ws.close() here, as onclose will be called automatically.
 	}
 }
-
 
 
 function showViewScriptModal(scriptId) {
@@ -57,8 +80,7 @@ function showViewScriptModal(scriptId) {
 }
 
 async function handleDeleteScript(scriptId) {
-	if (!confirm(geti18n('browser_integration.autorun.confirm_delete'))) return
-	try {
+	if (confirm(geti18n('browser_integration.autorun.confirm_delete'))) try {
 		// 1. Delete metadata from server
 		const deleteResult = await api.deleteAutoRunScript(scriptId)
 		if (!deleteResult.success) throw new Error(deleteResult.message)
@@ -85,7 +107,7 @@ async function loadAndRenderAutoRunScripts() {
 		if (!result.success) throw new Error(result.message)
 
 		autorunScriptList.innerHTML = ''
-		if (result.scripts.length === 0)
+		if (!result.scripts.length)
 			autorunScriptList.appendChild(await renderTemplate('autorun_empty_state'))
 		else {
 			autoRunScriptsCache.clear()
@@ -94,7 +116,6 @@ async function loadAndRenderAutoRunScripts() {
 				scripts: result.scripts
 			}))
 		}
-
 	} catch (error) {
 		console.error('Failed to load auto-run scripts:', error)
 		autorunScriptList.innerHTML = `<p class="text-error">${geti18n('browser_integration.error.load_failed', { message: error.message })}</p>`
@@ -135,7 +156,8 @@ async function handleAddScript(e) {
 		showToast(geti18n('browser_integration.autorun.add_success'), 'success')
 		autorunScriptForm.reset()
 		loadAndRenderAutoRunScripts() // This will re-render the list from the server's metadata
-	} catch (error) {
+	}
+	catch (error) {
 		showToast(geti18n('browser_integration.error.add_failed', { message: error.message }), 'error')
 	}
 }
@@ -171,8 +193,7 @@ async function main() {
 			.catch(e => showToast(e.message, 'error'))
 	})
 
-	fetchAndRenderPages()
-	setInterval(fetchAndRenderPages, 5000)
+	connectWebSocket()
 
 	await loadAndRenderAutoRunScripts()
 }

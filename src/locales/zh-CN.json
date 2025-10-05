@@ -102,6 +102,11 @@
 	},
 	"installer_wait_screen": {
 		"title": "欢迎使用 fount！",
+		"language_selector": {
+			"search": {
+				"placeholder": "搜索语言..."
+			}
+		},
 		"hero": {
 			"title": "您的沉浸式 AI 角色伴侣",
 			"description": "fount 是一个由 AI 驱动的角色互动平台，旨在赋能<i>您</i>。它是一座桥梁，将您与您想象中的角色连接起来，让您轻松地与他们对话、创建自己的角色并与世界分享。"
@@ -124,7 +129,10 @@
 		},
 		"theme_selector": {
 			"title": "选择您的外观",
-			"description": "选择一个主题来个性化您的体验。"
+			"description": "选择一个主题来个性化您的体验。",
+			"search": {
+				"placeholder": "搜索主题..."
+			}
 		},
 		"mini_game": {
 			"title": "玩点小游戏",
@@ -287,6 +295,7 @@
 		}
 	},
 	"login_info": {
+		"title": "登录信息",
 		"modal": {
 			"title": "凭证转移错误",
 			"retrieve_error": "尝试保存您的登录凭证时发生错误：\n${error}\n您可以继续但无法保存登录信息。",
@@ -311,6 +320,9 @@
 			"fetchHomeRegistryFailed": "获取主页注册信息失败"
 		},
 		"functionMenu": {
+			"search": {
+				"placeholder": "搜索..."
+			},
 			"icon": {
 				"alt": "功能菜单"
 			}
@@ -742,6 +754,12 @@
 			"partTypeSelect": "请选择",
 			"partSelect": "请选择"
 		},
+		"partSelectDropdown": {
+			"placeholder": "请选择"
+		},
+		"partSearch": {
+			"placeholder": "搜索..."
+		},
 		"export": {
 			"title": "导出选项"
 		},
@@ -899,18 +917,27 @@
 		"title": "语言设置",
 		"description": "在此处管理您的语言偏好。列表中的语言将按顺序优先于浏览器设置。",
 		"availableLanguages": "可用语言",
-		"addButton": "添加",
 		"preferredLanguages": "优先语言列表",
 		"resetButton": "重置",
 		"saveButton": "保存",
 		"noPreferredLanguages": "暂无优先语言。将使用浏览器默认设置。",
 		"savedMessage": "语言设置已保存！",
 		"resetMessage": "语言设置已重置！",
-		"fetchLocalesFailed": "获取可用语言失败！"
+		"fetchLocalesFailed": "获取可用语言失败！",
+		"select": {
+			"placeholder": "选择一种语言..."
+		},
+		"search": {
+			"placeholder": "搜索语言..."
+		}
 	},
 	"themeManage": {
 		"title": "主题管理",
 		"instruction": "选择一个主题！",
+		"search": {
+			"placeholder": "搜索主题...",
+			"noResult": "未找到匹配的主题。"
+		},
 		"themes": {
 			"auto": "自动",
 			"light": "亮色",
@@ -1045,6 +1072,18 @@
 			"newBot": "新建",
 			"deleteBot": "删除"
 		},
+		"botSelectDropdown": {
+			"placeholder": "选择一个 Bot"
+		},
+		"botSearch": {
+			"placeholder": "搜索 Bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "选择一个角色"
+		},
+		"charSearch": {
+			"placeholder": "搜索角色..."
+		},
 		"configCard": {
 			"title": "Bot配置",
 			"labels": {
@@ -1079,6 +1118,18 @@
 	"telegram_bots": {
 		"title": "Telegram Bot",
 		"cardTitle": "Telegram Bot管理",
+		"botSelectDropdown": {
+			"placeholder": "选择一个 Bot"
+		},
+		"botSearch": {
+			"placeholder": "搜索 Bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "选择一个角色"
+		},
+		"charSearch": {
+			"placeholder": "搜索角色..."
+		},
 		"buttons": {
 			"newBot": "新建",
 			"deleteBot": "删除"

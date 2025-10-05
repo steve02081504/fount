@@ -77,7 +77,7 @@ export async function renderTemplate(template, data = {}) {
 		}
 	}
 	result += html
-	return i18nElement(await svgInliner(createDOMFromHtmlString(result)))
+	return i18nElement(await svgInliner(createDOMFromHtmlString(result)), { skip_report: true })
 }
 
 export async function renderTemplateAsHtmlString(template, data = {}) {

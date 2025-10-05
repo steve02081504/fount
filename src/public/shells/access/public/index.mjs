@@ -47,11 +47,10 @@ try {
 
 		url = await generateLoginInfoUrl(credentials, uuid, baseUrl)
 	}
-	else if (uuid_from_hash)
-		throw new Error('Failed to retrieve/decrypt credentials from transfer.')
-	else
-		await redirectToLoginInfo(window.location.href)
-} catch (e) {
+	else if (uuid_from_hash) throw new Error('Failed to retrieve/decrypt credentials from transfer.')
+	else await redirectToLoginInfo(window.location.href)
+}
+catch (e) {
 	console.error(e.message)
 	showToast(e.message, 'error')
 	url = await hosturl_in_local_ip().catch(() => e.message) // Fallback to a default URL

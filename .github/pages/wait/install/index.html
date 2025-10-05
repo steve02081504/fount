@@ -8,7 +8,7 @@
 	<meta property="og:title" content="fount! Installation">
 	<meta property="og:url" content="https://steve02081504.github.io/fount/wait/install/">
 	<meta property="og:type" content="website">
-	<meta property="og:description" content="fount! installation progress and feature showcase. Launch fount when ready.">
+	<meta property="og:description" content="Follow the installation's progress and glimpse the features within. Fount will be ready to launch in a moment." />
 	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b">
 	<link rel="icon" type="image/svg+xml" href="https://steve02081504.github.io/fount/imgs/icon.svg">
 	<title data-i18n="installer_wait_screen.title"></title>
@@ -27,9 +27,18 @@
 			<button tabindex="0" role="button" class="btn btn-ghost">
 				<img src="https://api.iconify.design/heroicons/language.svg" class="w-6 h-6 text-icon" alt="Language Selector" />
 			</button>
-			<ul tabindex="0" id="language-selector" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 max-h-60 overflow-y-auto">
-				<!-- Languages will be populated here -->
-			</ul>
+			<div tabindex="0" class="dropdown-content z-[1] rounded-box w-[25rem] shadow-md bg-base-100/30">
+				<div class="card-body p-0">
+					<div class="w-full p-4">
+						<input type="text" id="language-search" class="input input-bordered w-full" data-i18n="installer_wait_screen.language_selector.search" />
+					</div>
+					<div class="flex-1 p-4 pt-0">
+						<ul id="language-selector" class="menu p-0 max-h-60 overflow-y-auto">
+							<!-- Languages will be populated here -->
+						</ul>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 
@@ -198,8 +207,11 @@
 				</div>
 
 				<!-- Theme List -->
-				<div id="theme-list" class="lg:w-1/2 grid gap-4 max-h-[80vh] overflow-y-auto grid-cols-[repeat(auto-fit,minmax(160px,1fr))] p-4 lg:p-6">
-					<!-- Theme previews will be populated by JS -->
+				<div class="lg:w-1/2 flex flex-col gap-4 p-4 lg:p-6 max-h-[80vh]">
+					<input type="text" id="theme-search" class="input input-bordered w-full" data-i18n="installer_wait_screen.theme_selector.search" />
+					<div id="theme-list" class="grid gap-4 overflow-y-auto grid-cols-[repeat(auto-fit,minmax(160px,1fr))]">
+						<!-- Theme previews will be populated by JS -->
+					</div>
 				</div>
 			</div>
 		</div>

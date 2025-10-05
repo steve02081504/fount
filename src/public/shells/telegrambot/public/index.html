@@ -27,7 +27,9 @@
 			<div class="card-body">
 				<h2 class="card-title mb-4" data-i18n="telegram_bots.cardTitle"></h2>
 				<div class="flex flex-col lg:flex-row gap-4 mt-4">
-					<select id="bot-list" class="select select-bordered w-full"></select>
+					<div id="bot-list-dropdown" class="w-full" data-i18n="telegram_bots.botSelectDropdown">
+						<input type="text" data-i18n="telegram_bots.botSearch" />
+					</div>
 					<button id="new-bot" class="btn btn-accent w-full lg:w-auto" data-i18n="telegram_bots.buttons.newBot"></button>
 					<button id="delete-bot" class="btn btn-error w-full lg:w-auto" data-i18n="telegram_bots.buttons.deleteBot"></button>
 				</div>
@@ -41,9 +43,9 @@
 					<label for="char-select" class="label">
 						<span class="label-text" data-i18n="telegram_bots.configCard.labels.character"></span>
 					</label>
-					<select id="char-select" class="select select-bordered w-full">
-						<option value="" disabled selected data-i18n="telegram_bots.configCard.charSelectPlaceholder"></option>
-					</select>
+					<div id="char-select-dropdown" class="w-full" data-i18n="telegram_bots.charSelectDropdown">
+						<input type="text" data-i18n="telegram_bots.charSearch" />
+					</div>
 				</div>
 				<div class="mb-4">
 					<label for="token-input" class="label">

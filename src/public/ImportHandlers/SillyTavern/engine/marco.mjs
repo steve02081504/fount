@@ -9,30 +9,26 @@ function getVariable(memory, name, args = {}, isGlobal = false) {
 	const storage = isGlobal ? memory?.globalVariables : memory?.variables
 	if (!storage) return ''
 	let variable = storage[args.key || name]
-	if (args.index !== undefined)
-		try {
-			variable = JSON.parse(variable)
-			variable = variable?.[args.index]
-			if (variable instanceof Object) variable = JSON.stringify(variable)
-		} catch { }
+	if (args.index !== undefined) try {
+		variable = JSON.parse(variable)
+		variable = variable?.[args.index]
+		if (variable instanceof Object) variable = JSON.stringify(variable)
+	} catch { }
 
 	return variable === '' || isNaN(Number(variable)) ? variable || '' : Number(variable)
 }
 
 function setVariable(memory, name, value, args = {}, isGlobal = false) {
 	const storage = isGlobal ? memory.globalVariables ??= {} : memory.variables ??= {}
-	if (args.index !== undefined)
-		try {
-			let current = JSON.parse(storage[name] ?? 'null')
-			if (current === null) current = Number.isNaN(Number(args.index)) ? {} : []
-			current[args.index] = value
-			storage[name] = JSON.stringify(current)
-			return value
-		} catch { }
+	if (args.index !== undefined) try {
+		let current = JSON.parse(storage[name] ?? 'null')
+		if (current === null) current = Number.isNaN(Number(args.index)) ? {} : []
+		current[args.index] = value
+		storage[name] = JSON.stringify(current)
+		return value
+	} catch { }
 
-
-	storage[name] = value
-	return value
+	return storage[name] = value
 }
 
 function modifyVariable(memory, name, value, isGlobal = false, operation = 'add') {
@@ -100,7 +96,7 @@ function replaceVariableMacros(input, memory) {
 
 
 function getTimeSinceLastMessage(chatLog) {
-	if (!chatLog || chatLog.length === 0) return 'just now'
+	if (!chatLog?.length) return 'just now'
 	const lastMessage = chatLog
 		.filter(message => message.role !== 'system')
 		.toReversed()

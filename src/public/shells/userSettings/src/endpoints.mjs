@@ -19,15 +19,13 @@ async function getDirectorySize(directoryPath) {
 			const fullPath = path.join(directoryPath, dirent.name)
 			if (dirent.isDirectory())
 				totalSize += await getDirectorySize(fullPath)
-			else if (dirent.isFile())
-				try {
-					const stats = await fs_promises.stat(fullPath)
-					totalSize += stats.size
-				} catch (statError) {
-					// console.warn(`Could not stat file ${fullPath}: ${statError.message}`);
-				}
+			else if (dirent.isFile()) try {
+				const stats = await fs_promises.stat(fullPath)
+				totalSize += stats.size
+			} catch { }
 		}
-	} catch (error) {
+	}
+	catch (error) {
 		if (error.code !== 'ENOENT') console.warn(`Error calculating size for ${directoryPath}: ${error.message}`)
 		return 0
 	}
@@ -35,7 +33,7 @@ async function getDirectorySize(directoryPath) {
 }
 
 function formatBytes(bytes, decimals = 2) {
-	if (bytes === 0) return '0 Bytes'
+	if (!bytes) return '0 Bytes'
 	const k = 1024
 	const dm = decimals < 0 ? 0 : decimals
 	const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
@@ -58,8 +56,8 @@ export function setEndpoints(router) {
 			if (!userFullConfig?.createdAt && dirStats?.birthtimeMs) creationDate = dirStats.birthtimeMs
 		} catch (dirError) { /* Dir might not exist yet, use now or config */ }
 
-		const folderSizeNum = await getDirectorySize(userDirectory)
-		const folderSize = formatBytes(folderSizeNum)
+		const folderSizeNum = getDirectorySize(userDirectory).then(size => userReqData.directorySize = size)
+		const folderSize = formatBytes(userReqData.directorySize || await folderSizeNum)
 
 		res.json({
 			success: true,

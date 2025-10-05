@@ -102,6 +102,11 @@
 	},
 	"installer_wait_screen": {
 		"title": "歡迎使用 fount！",
+		"language_selector": {
+			"search": {
+				"placeholder": "搜尋語言..."
+			}
+		},
 		"hero": {
 			"title": "您的沉浸式 AI 角色夥伴",
 			"description": "fount 是一個由 AI 驅動的角色互動平台，旨在賦能<i>您</i>。它是一座橋樑，將您與您想像中的角色連結起來，讓您輕鬆地與他們對話、創建自己的角色並與世界分享。"
@@ -124,7 +129,10 @@
 		},
 		"theme_selector": {
 			"title": "選擇您的外觀",
-			"description": "選擇一個主題來個人化您的體驗。"
+			"description": "選擇一個主題來個人化您的體驗。",
+			"search": {
+				"placeholder": "搜尋主題..."
+			}
 		},
 		"mini_game": {
 			"title": "玩點小遊戲",
@@ -287,6 +295,7 @@
 		}
 	},
 	"login_info": {
+		"title": "登入資訊",
 		"modal": {
 			"title": "憑證傳輸錯誤",
 			"retrieve_error": "嘗試儲存您的登入憑證時發生錯誤：\n${error}\n您可以繼續但無法儲存登入資訊。",
@@ -311,6 +320,9 @@
 			"fetchHomeRegistryFailed": "獲取首頁註冊資訊失敗"
 		},
 		"functionMenu": {
+			"search": {
+				"placeholder": "搜尋..."
+			},
 			"icon": {
 				"alt": "功能選單"
 			}
@@ -742,6 +754,12 @@
 			"partTypeSelect": "請選擇",
 			"partSelect": "請選擇"
 		},
+		"partSelectDropdown": {
+			"placeholder": "請選擇"
+		},
+		"partSearch": {
+			"placeholder": "搜尋..."
+		},
 		"export": {
 			"title": "匯出選項"
 		},
@@ -899,18 +917,27 @@
 		"title": "語言設置",
 		"description": "在此處管理您的語言偏好。列表中的語言將按順序優先於瀏覽器設置。",
 		"availableLanguages": "可用語言",
-		"addButton": "添加",
 		"preferredLanguages": "優先語言列表",
 		"resetButton": "重置",
-		"saveButton": "保存",
-		"noPreferredLanguages": "暫無優先語言。將使用瀏覽器默認設置。",
+		"saveButton": "儲存",
+		"noPreferredLanguages": "尚未設定偏好語言。將使用瀏覽器預設設定。",
 		"savedMessage": "語言設置已保存！",
 		"resetMessage": "語言設置已重置！",
-		"fetchLocalesFailed": "獲取可用語言失敗！"
+		"fetchLocalesFailed": "獲取可用語言失敗！",
+		"select": {
+			"placeholder": "選擇一種語言..."
+		},
+		"search": {
+			"placeholder": "搜尋語言..."
+		}
 	},
 	"themeManage": {
 		"title": "主題管理",
 		"instruction": "選擇一個主題！",
+		"search": {
+			"placeholder": "搜尋主題...",
+			"noResult": "未找到相符的主題。"
+		},
 		"themes": {
 			"auto": "自動",
 			"light": "亮色",
@@ -1045,8 +1072,20 @@
 			"newBot": "新建",
 			"deleteBot": "刪除"
 		},
+		"botSelectDropdown": {
+			"placeholder": "選擇一個 Bot"
+		},
+		"botSearch": {
+			"placeholder": "搜尋 Bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "選擇一個角色"
+		},
+		"charSearch": {
+			"placeholder": "搜尋角色..."
+		},
 		"configCard": {
-			"title": "Bot設定",
+			"title": "Bot 設定",
 			"labels": {
 				"character": "綁定角色",
 				"apiKey": "Discord API 金鑰",
@@ -1079,12 +1118,24 @@
 	"telegram_bots": {
 		"title": "Telegram Bot",
 		"cardTitle": "Telegram Bot管理",
+		"botSelectDropdown": {
+			"placeholder": "選擇一個 Bot"
+		},
+		"botSearch": {
+			"placeholder": "搜尋 Bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "選擇一個角色"
+		},
+		"charSearch": {
+			"placeholder": "搜尋角色..."
+		},
 		"buttons": {
 			"newBot": "新建",
 			"deleteBot": "刪除"
 		},
 		"configCard": {
-			"title": "Bot設定",
+			"title": "Bot 設定",
 			"labels": {
 				"character": "綁定角色",
 				"botToken": "Telegram Bot Token",

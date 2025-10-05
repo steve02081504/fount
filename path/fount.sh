@@ -261,29 +261,43 @@ uninstall_package() {
 }
 
 test_browser() {
-	local browser_detected=0
+	local run_as_user=""
+	local user_home=$HOME
+
+	if [ "$(id -u)" -eq 0 ] && [ -n "$SUDO_USER" ]; then
+		user_home=$(eval echo "~$SUDO_USER")
+		run_as_user="env HOME=$user_home sudo -u $SUDO_USER"
+	fi
 
 	if [ "$OS_TYPE" = "Linux" ]; then
+		if command -v update-alternatives &>/dev/null; then
+			local system_browser
+			system_browser=$(update-alternatives --query x-www-browser | grep -o '/.*' | head -n1)
+			if [ -n "$system_browser" ]; then
+				return 1
+			fi
+		fi
 		install_package "xdg-settings" "xdg-utils"
 		if command -v xdg-settings &>/dev/null; then
 			local default_browser_desktop
-			default_browser_desktop=$(xdg-settings get default-web-browser 2>/dev/null)
+			default_browser_desktop=$($run_as_user xdg-settings get default-web-browser 2>/dev/null)
 			if [[ -n "$default_browser_desktop" && "$default_browser_desktop" == *".desktop"* ]]; then
-				browser_detected=1
+				return 1
 			fi
 		fi
 	elif [ "$OS_TYPE" = "Darwin" ]; then
 		# 尝试使用 defaults read
 		local default_browser_bundle_id
-		default_browser_bundle_id=$(defaults read ~/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist 2>/dev/null | grep -B 1 "LSHandlerURLScheme = https;" | sed -n -e 's/^.*RoleAll = "//' -e 's/";//p' | head -n 1) || true
+		default_browser_bundle_id=$($run_as_user defaults read "${user_home}"/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist 2>/dev/null | grep -B 1 "LSHandlerURLScheme = https;" | sed -n -e 's/^.*RoleAll = "//' -e 's/";//p' | head -n 1) || true
 		if [ -n "$default_browser_bundle_id" ]; then
-			browser_detected=1
+			return 1
 		fi
 	fi
 
-	if [ $browser_detected -eq 0 ]; then
-		echo "Default web browser is not detected, attempting to install..."
-		install_package "google-chrome" "google-chrome google-chrome-stable"
+	echo "Default web browser is not detected, attempting to install..."
+	install_package "google-chrome" "google-chrome google-chrome-stable"
+	if ! command -v google-chrome &>/dev/null; then
+		install_package "chromium-browser" "chromium-browser chromium"
 	fi
 	return 0
 }
@@ -919,7 +933,15 @@ debug_on() {
 			osascript -e 'tell application "Google Chrome" to tell the active tab of its first window to set URL to "chrome://inspect"'
 		fi
 	else
+		local browser
 		if command -v google-chrome &>/dev/null; then
+			browser="google-chrome"
+		elif command -v chromium-browser &>/dev/null; then
+			browser="chromium-browser"
+		elif command -v chromium &>/dev/null; then
+			browser="chromium"
+		fi
+		if [ -n "$browser" ]; then
 			install_package xdotool "xdotool" || true
 			install_package xclip "xclip" || true
 			original_clip=$(xclip -o -selection clipboard 2>/dev/null)
@@ -997,15 +1019,22 @@ keepalive)
 		runargs=("${runargs[@]:1}")
 	fi
 
+	start_time=$(date +%s)
+	init_attempted=0
 	restart_timestamps=()
 
 	run "${runargs[@]}"
 	# shellcheck disable=SC2181
 	while [ $? -ne 0 ]; do
 		current_time=$(date +%s)
+		elapsed_time=$((current_time - start_time))
+		if [ "$elapsed_time" -lt 180 ] && [ "$init_attempted" -eq 1 ]; then
+			echo -e "${C_RED}fount failed to start within a short time even after an automatic repair attempt. Please check the logs for errors.${C_RESET}" >&2
+			exit 1
+		fi
+
 		restart_timestamps+=("$current_time")
 
-		# Remove timestamps older than 3 minutes (180 seconds)
 		three_minutes_ago=$((current_time - 180))
 		temp_timestamps=()
 		for ts in "${restart_timestamps[@]}"; do
@@ -1016,7 +1045,7 @@ keepalive)
 		restart_timestamps=("${temp_timestamps[@]}")
 
 		if [ "${#restart_timestamps[@]}" -ge 7 ]; then
-			echo -e "${C_YELLOW}fount has restarted 7 times in the last 3 minutes. Forcing re-initialization...${C_RESET}" >&2
+			echo -e "${C_YELLOW}fount has restarted many times in the last short time. Forcing re-initialization...${C_RESET}" >&2
 			restart_timestamps=()
 
 			"$0" init
@@ -1024,7 +1053,7 @@ keepalive)
 				echo -e "${C_RED}fount init failed. Exiting.${C_RESET}" >&2
 				exit 1
 			fi
-
+			init_attempted=1
 			echo "Re-initialization complete. Attempting to restart fount..."
 		fi
 

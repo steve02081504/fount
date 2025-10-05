@@ -35,7 +35,8 @@ export function parseRegexFromString(input) {
 	// Then we return the regex. If it fails, it was invalid syntax.
 	try {
 		return new RegExp(pattern, flags)
-	} catch (e) {
+	}
+	catch {
 		return null
 	}
 }

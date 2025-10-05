@@ -56,7 +56,8 @@ async function generateApiKey() {
 		apiKey = data.apiKey
 		localStorage.setItem('proxy-apikey', apiKey)
 		renderApiKey()
-	} catch (error) {
+	}
+	catch (error) {
 		showToast(error.message, 'error')
 	}
 }
@@ -81,8 +82,9 @@ async function renderApiKey() {
 			})
 
 		proxyApiUrlQueryInput.value = `${apiUrl}?fount-apikey=${apiKey}`
-	} else {
-		const generateButtonElement = await renderTemplate('generate_api_key_button', {})
+	}
+	else {
+		const generateButtonElement = await renderTemplate('generate_api_key_button')
 		apiKeySection.appendChild(generateButtonElement)
 
 		document.getElementById('generateApiKeyButton').addEventListener('click', generateApiKey)

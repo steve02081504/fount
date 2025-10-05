@@ -1,5 +1,6 @@
 // Handle WebSocket connections from userscripts
 import { randomUUID } from 'node:crypto'
+
 import { loadShellData, saveShellData } from '../../../../server/setting_loader.mjs'
 
 /**
@@ -33,6 +34,43 @@ class UserPageManager {
 		 * @type {number | undefined}
 		 */
 		this.focusedPageId = undefined
+		/**
+		 * A set of WebSocket connections to the shell's UI.
+		 * @type {Set<import('npm:ws').WebSocket>}
+		 */
+		this.uiSockets = new Set()
+	}
+
+	// --- UI Communication ---
+
+	registerUi(ws) {
+		this.uiSockets.add(ws)
+
+		// Send initial state
+		ws.send(JSON.stringify({
+			type: 'pages_update',
+			payload: this.getConnectedPages()
+		}))
+
+		ws.on('close', () => {
+			this.uiSockets.delete(ws)
+		})
+	}
+
+	broadcastUiUpdate() {
+		if (!this.uiSockets.size) return
+
+		const payload = {
+			type: 'pages_update',
+			payload: this.getConnectedPages()
+		}
+		const message = JSON.stringify(payload)
+
+		for (const ws of this.uiSockets)
+			if (ws.readyState === ws.OPEN)
+				ws.send(message)
+
+
 	}
 
 	// --- Page Management ---
@@ -65,8 +103,8 @@ class UserPageManager {
 			existingPage.hasFocus = true
 			if (existingPage.title !== title) existingPage.title = title
 			page = existingPage
-			console.log(`Userscript page re-connected for ${this.username}: ${page.id} - ${title}`)
-		} else {
+		}
+		else {
 			// Create a new page entry
 			const newPageId = pageIdCounter++
 			page = {
@@ -79,7 +117,6 @@ class UserPageManager {
 				disconnectedAt: null,
 			}
 			this.pages.push(page)
-			console.log(`Userscript page registered for ${this.username}: ${page.id} - ${title}`)
 		}
 
 		this.updatePageFocus(page.id, true)
@@ -95,6 +132,8 @@ class UserPageManager {
 
 			if (this.focusedPageId === pageId)
 				this.focusedPageId = undefined
+
+			this.broadcastUiUpdate()
 		}
 	}
 
@@ -111,17 +150,17 @@ class UserPageManager {
 			const currentPage = this.findPageById(pageId)
 			if (currentPage) currentPage.hasFocus = true
 			this.focusedPageId = pageId
-		} else {
+		}
+		else {
 			// If the page losing focus is the one we have on record, clear the record
-			if (previouslyFocusedPageId === pageId)
-				this.focusedPageId = undefined
+			if (previouslyFocusedPageId === pageId) this.focusedPageId = undefined
 
 			// Ensure the page's own state is updated
 			const currentPage = this.findPageById(pageId)
 			if (currentPage) currentPage.hasFocus = false
 		}
 
-		console.log(`Focus changed for ${this.username}/${pageId}: ${hasFocus}`)
+		this.broadcastUiUpdate()
 	}
 
 	// --- Data Retrieval ---
@@ -183,16 +222,12 @@ class UserPageManager {
 	 * @param {number} maxAgeMs The maximum age in milliseconds for a disconnected entry to be kept.
 	 */
 	cleanupOldPages(maxAgeMs) {
-		const originalCount = this.pages.length
 		this.pages = this.pages.filter(p => {
 			if (p.ws) return true // Keep connected
 			if (!p.disconnectedAt) return false // Should not happen
 			const age = Date.now() - p.disconnectedAt.getTime()
 			return age < maxAgeMs
 		})
-
-		if (this.pages.length < originalCount)
-			console.log(`Cleaned up ${originalCount - this.pages.length} old page entries for ${this.username}.`)
 	}
 }
 
@@ -200,7 +235,7 @@ class UserPageManager {
 // Map<username, UserPageManager>
 const userManagers = new Map()
 
-function getUserManager(username) {
+export function getUserManager(username) {
 	if (!userManagers.has(username))
 		userManagers.set(username, new UserPageManager(username))
 
@@ -220,7 +255,6 @@ setInterval(() => {
 export function handleConnection(ws, username) {
 	let currentPageId = -1
 	const manager = getUserManager(username)
-	console.log(`Userscript page connecting for user ${username}...`)
 
 	ws.on('message', message => {
 		try {
@@ -254,17 +288,14 @@ export function handleConnection(ws, username) {
 				default:
 					console.warn(`Unknown message type from ${username}/${currentPageId}: ${data.type}`)
 			}
-		} catch (e) {
+		}
+		catch (e) {
 			console.error(`Failed to parse message from userscript ${username}/${currentPageId}:`, e)
 		}
 	})
 
 	ws.on('close', () => {
-		if (currentPageId === -1) {
-			console.log(`Uninitialized userscript page disconnected for ${username}.`)
-			return
-		}
-		console.log(`Userscript page disconnected for ${username}: ${currentPageId}`)
+		if (currentPageId === -1) return
 		manager.removePage(currentPageId)
 	})
 

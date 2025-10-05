@@ -32,7 +32,7 @@ export default {
 	},
 	Unload: () => {
 		loading_count--
-		if (loading_count === 0)
+		if (!loading_count)
 			clearInterval(cleanFilesInterval)
 	},
 

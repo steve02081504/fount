@@ -1,6 +1,6 @@
 import { initTranslations, geti18n, confirmI18n, console } from '../../../scripts/i18n.mjs'
 import { renderMarkdown, renderMarkdownAsString } from '../../../scripts/markdown.mjs'
-import { parseRegexFromString, escapeRegExp } from '../../../scripts/regex.mjs'
+import { compileFilter } from '../../../scripts/search.mjs'
 import { renderTemplate, usingTemplates } from '../../../scripts/template.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
 import { showToast } from '../../../scripts/toast.mjs'
@@ -9,6 +9,7 @@ import { getChatList, getCharDetails, copyChats, exportChats, deleteChats } from
 
 usingTemplates('/shells/chat/src/templates')
 
+const chatItemDOMCache = new Map()
 const chatListContainer = document.getElementById('chat-list-container')
 const sortSelect = document.getElementById('sort-select')
 const filterInput = document.getElementById('filter-input')
@@ -21,65 +22,10 @@ let chatList = []
 const selectedChats = new Set()
 
 /**
- * Applies all filter conditions to a chat.
- * @param {object} chat - The chat object.
- * @param {RegExp[]} commonFilters - Array of common filters.
- * @param {RegExp[]} forceFilters - Array of forced filters.
- * @param {RegExp[]} excludeFilters - Array of excluded filters.
- * @returns {boolean} - True if the chat matches all conditions, false otherwise.
- */
-function applyFilters(chat, commonFilters, forceFilters, excludeFilters) {
-	const chatString = JSON.stringify(chat)
-
-	// Check for common filters (at least one must match)
-	const hasCommonMatch = commonFilters.length === 0 || commonFilters.some(filter => filter.test(chatString))
-
-	// Check for forced filters (all must match)
-	const hasForceMatch = forceFilters.every(filter => filter.test(chatString))
-
-	// Check for excluded filters (none must match)
-	const hasExcludeMatch = excludeFilters.some(filter => filter.test(chatString))
-
-	return hasCommonMatch && hasForceMatch && !hasExcludeMatch
-}
-
-/**
  * Filters the chat list based on user input.
  */
 function filterChatList() {
-	const filters = filterInput.value.toLowerCase().split(' ').filter(f => f)
-
-	const commonFilters = []
-	const forceFilters = []
-	const excludeFilters = []
-
-	function parseRegexFilter(filter) {
-		if (filter.startsWith('+') || filter.startsWith('-')) filter = filter.slice(1)
-		try {
-			return parseRegexFromString(filter)
-		} catch (_) {
-			return new RegExp(escapeRegExp(filter))
-		}
-	}
-
-	// Categorize filters
-	for (const filter of filters) {
-		const regex = parseRegexFilter(filter)
-
-		if (filter.startsWith('+'))
-			forceFilters.push(regex)
-		else if (filter.startsWith('-'))
-			excludeFilters.push(regex)
-		else
-			commonFilters.push(regex)
-	}
-
-	// Apply filters and get filtered chat list
-	const filteredChatList = chatList.filter(chat =>
-		applyFilters(chat, commonFilters, forceFilters, excludeFilters)
-	)
-
-	return filteredChatList
+	return chatList.filter(compileFilter(filterInput.value))
 }
 
 async function renderChatList() {
@@ -94,8 +40,9 @@ async function renderChatList() {
 				return timeB - timeA
 		})
 
+	const chats = await Promise.all(filteredAndSortedList.map(renderChatListItem))
 	chatListContainer.innerHTML = ''
-	chatListContainer.append(...await Promise.all(filteredAndSortedList.map(renderChatListItem)))
+	chatListContainer.append(...chats)
 
 	// 每次渲染列表后重置选择状态
 	selectedChats.clear()
@@ -127,6 +74,15 @@ export async function renderMarkdownPreview(markdown, significantNodeLimit) {
 }
 
 async function renderChatListItem(chat) {
+	if (chatItemDOMCache.has(chat.chatid)) {
+		const cachedData = chatItemDOMCache.get(chat.chatid)
+		if (cachedData.lastMessageTime === chat.lastMessageTime) {
+			const chatElement = cachedData.element
+			const selectCheckbox = chatElement.querySelector('.select-checkbox')
+			selectCheckbox.checked = selectedChats.has(chat.chatid)
+			return chatElement
+		}
+	}
 	const lastMsgTime = new Date(chat.lastMessageTime).toLocaleString()
 	const data = {
 		...chat,
@@ -165,9 +121,10 @@ async function renderChatListItem(chat) {
 			if (data.success) {
 				chatList = await getChatList() // refresh chat list
 				renderChatList()
-			} else
-				showToast(data.message, 'error')
-		} catch (error) {
+			}
+			else showToast(data.message, 'error')
+		}
+		catch (error) {
 			console.error('Error copying chat:', error)
 			showToast(geti18n('chat_history.alerts.copyError'), 'error')
 		}
@@ -186,9 +143,10 @@ async function renderChatListItem(chat) {
 					a.download = `chat-${chat.chatid}.json`
 					a.click()
 					URL.revokeObjectURL(url)
-				} else
-					showToast(data.message, 'error')
-		} catch (error) {
+				}
+				else showToast(data.message, 'error')
+		}
+		catch (error) {
 			console.error('Error exporting chat:', error)
 			showToast(geti18n('chat_history.alerts.exportError'), 'error')
 		}
@@ -196,20 +154,24 @@ async function renderChatListItem(chat) {
 
 	// 删除聊天
 	chatElement.querySelector('.delete-button').addEventListener('click', async () => {
-		if (confirmI18n('chat_history.confirmDeleteChat', { chars: chat.chars.join(', ') }))
-			try {
-				const data = await deleteChats([chat.chatid])
-				if (data[0].success) {
-					chatList = chatList.filter(c => c.chatid !== chat.chatid)
-					renderChatList()
-				} else
-					showToast(data[0].message, 'error')
-			} catch (error) {
-				console.error('Error deleting chat:', error)
-				showToast(geti18n('chat_history.alerts.deleteError'), 'error')
+		if (confirmI18n('chat_history.confirmDeleteChat', { chars: chat.chars.join(', ') })) try {
+			const data = await deleteChats([chat.chatid])
+			if (data[0].success) {
+				chatItemDOMCache.delete(chat.chatid)
+				chatList = chatList.filter(c => c.chatid !== chat.chatid)
+				renderChatList()
 			}
+			else showToast(data[0].message, 'error')
+		} catch (error) {
+			console.error('Error deleting chat:', error)
+			showToast(geti18n('chat_history.alerts.deleteError'), 'error')
+		}
 	})
 
+	chatItemDOMCache.set(chat.chatid, {
+		element: chatElement,
+		lastMessageTime: chat.lastMessageTime,
+	})
 	return chatElement
 }
 
@@ -246,31 +208,31 @@ reverseSelectButton.addEventListener('click', () => {
 
 // 删除选中
 deleteSelectedButton.addEventListener('click', async () => {
-	if (selectedChats.size === 0) {
+	if (!selectedChats.size) {
 		showToast(geti18n('chat_history.alerts.noChatSelectedForDeletion'), 'error')
 		return
 	}
-	if (confirmI18n('chat_history.confirmDeleteMultiChats', { count: selectedChats.size }))
-		try {
-			const results = await deleteChats(Array.from(selectedChats))
-			results.forEach(result => {
-				if (result.success) {
-					// Remove only successfully deleted chats from the UI
-					chatList = chatList.filter(c => c.chatid !== result.chatid)
-					selectedChats.delete(result.chatid) // Also remove from selectedChats
-				} else
-					showToast(result.message, 'error')
-			})
-			renderChatList()
-		} catch (error) {
-			console.error('Error deleting selected chats:', error)
-			showToast(geti18n('chat_history.alerts.deleteError'), 'error')
-		}
+	if (confirmI18n('chat_history.confirmDeleteMultiChats', { count: selectedChats.size })) try {
+		const results = await deleteChats(Array.from(selectedChats))
+		results.forEach(result => {
+			if (result.success) {
+				// Remove only successfully deleted chats from the UI
+				chatItemDOMCache.delete(result.chatid)
+				chatList = chatList.filter(c => c.chatid !== result.chatid)
+				selectedChats.delete(result.chatid) // Also remove from selectedChats
+			}
+			else showToast(result.message, 'error')
+		})
+		renderChatList()
+	} catch (error) {
+		console.error('Error deleting selected chats:', error)
+		showToast(geti18n('chat_history.alerts.deleteError'), 'error')
+	}
 })
 
 // 导出选中
 exportSelectedButton.addEventListener('click', async () => {
-	if (selectedChats.size === 0) {
+	if (!selectedChats.size) {
 		showToast(geti18n('chat_history.alerts.noChatSelectedForExport'), 'error')
 		return
 	}
@@ -285,16 +247,14 @@ exportSelectedButton.addEventListener('click', async () => {
 				a.download = `chat-${result.chatid}.json`
 				a.click()
 				URL.revokeObjectURL(url)
-			} else
-				showToast(result.message, 'error')
-	} catch (error) {
+			}
+			else showToast(result.message, 'error')
+	}
+	catch (error) {
 		console.error('Error exporting selected chats:', error)
 		showToast(geti18n('chat_history.alerts.exportError'), 'error')
 	}
 })
-
-// 在焦点返回时重新渲染聊天列表
-window.addEventListener('focus', getChatList().then(renderChatList))
 
 async function initializeApp() {
 	applyTheme()

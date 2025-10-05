@@ -33,7 +33,8 @@ export function WsAbleRouter(router = express.Router(), httpServer = null) {
 				resolve = my_resolve; reject = my_reject
 				return (async () => await router(req, res))().catch(reject)
 			})
-		} catch (e) {
+		}
+		catch (e) {
 			console.error('WebSocket upgrade error:', e)
 			if (!socket.destroyed) socket.destroy()
 		}

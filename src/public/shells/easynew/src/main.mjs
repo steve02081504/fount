@@ -52,7 +52,8 @@ export function setEndpoints(router) {
 
 			res.json(allTemplates)
 
-		} catch (error) {
+		}
+		catch (error) {
 			console.error('Error getting templates:', error)
 			res.status(500).json({ error: 'Failed to get templates.' })
 		}
@@ -67,7 +68,8 @@ export function setEndpoints(router) {
 			const htmlPath = path.join(templateDir, 'index.html')
 			const html = await fs.readFile(htmlPath, 'utf-8')
 			res.json(html)
-		} catch (error) {
+		}
+		catch (error) {
 			console.error('Error getting template HTML:', error)
 			res.status(500).json({ error: 'Failed to get template HTML.' })
 		}
@@ -88,7 +90,8 @@ export function setEndpoints(router) {
 			})
 
 			res.status(201).json({ message: `Part '${partName}' created successfully!`, partName })
-		} catch (error) {
+		}
+		catch (error) {
 			console.error('Error creating part:', error)
 			res.status(500).json({ error: error.message || 'Failed to create part.' })
 		}

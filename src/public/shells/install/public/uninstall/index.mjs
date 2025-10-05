@@ -1,4 +1,5 @@
 import { initTranslations, geti18n } from '../../../scripts/i18n.mjs'
+import { onServerEvent } from '../../../scripts/server_events.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
 import { uninstallPart as uninstallPartEndpoint } from '../src/endpoints.mjs'
 
@@ -60,15 +61,32 @@ if (type && name) {
 	confirmButton.addEventListener('click', async () => {
 		hideMessage()
 		try {
-			const result = await uninstallPart(type, name)
-			showMessage(result.message || geti18n('uninstall.alerts.success', { type, name }), 'info')
-			confirmButton.disabled = true // 卸载成功后禁用按钮
-			cancelButton.textContent = geti18n('uninstall.buttons.back')//更改`取消`为`返回`
-		} catch (error) {
+			await uninstallPart(type, name)
+		}
+		catch (error) {
 			showMessage(geti18n('uninstall.alerts.failed', { error: error.message }), 'error')
 		}
 	})
-} else {
+
+	// Listen for the uninstallation event to update the UI.
+	onServerEvent('part-uninstalled', ({ parttype, partname }) => {
+		if (parttype === type && partname === name) {
+			showMessage(geti18n('uninstall.alerts.success', { type, name }), 'info')
+			confirmButton.disabled = true
+			cancelButton.textContent = geti18n('uninstall.buttons.back')
+		}
+	})
+
+	// Listen for a re-installation event to restore the UI.
+	onServerEvent('part-installed', ({ parttype, partname }) => {
+		if (parttype === type && partname === name) {
+			confirmButton.disabled = false
+			cancelButton.textContent = geti18n('uninstall.buttons.cancel')
+			hideMessage()
+		}
+	})
+}
+else {
 	title.textContent = geti18n('uninstall.invalidParamsTitle')
 	showMessage(geti18n('uninstall.alerts.invalidParams'), 'error')
 }

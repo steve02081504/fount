@@ -13,7 +13,7 @@
 			"localUrl": "Accesso a fount da altri dispositivi sulla stessa rete: ${url}",
 			"standingBy": "Standing by...",
 			"update": {
-				"restarting": "È stata scoperta una nuova versione e l'aggiornamento viene riavviato ..."
+				"restarting": "È stata scoperta una nuova versione e l'aggiornamento viene riavviato..."
 			}
 		},
 		"jobs": {
@@ -102,6 +102,11 @@
 	},
 	"installer_wait_screen": {
 		"title": "Benvenuto in fount!",
+		"language_selector": {
+			"search": {
+				"placeholder": "Cerca lingua..."
+			}
+		},
 		"hero": {
 			"title": "Il Tuo Compagno Immersivo di Personaggi AI",
 			"description": "fount è una piattaforma di interazione con personaggi basata sull'IA, progettata per dare più potere a <i>te</i>. È un ponte che ti connette con i personaggi della tua immaginazione, permettendoti di parlare facilmente con loro, creare i tuoi personaggi e condividerli con il mondo."
@@ -124,7 +129,10 @@
 		},
 		"theme_selector": {
 			"title": "Scegli il tuo aspetto",
-			"description": "Scegli un tema per personalizzare la tua esperienza."
+			"description": "Scegli un tema per personalizzare la tua esperienza.",
+			"search": {
+				"placeholder": "Cerca temi..."
+			}
 		},
 		"mini_game": {
 			"title": "Fai un piccolo gioco",
@@ -287,6 +295,7 @@
 		}
 	},
 	"login_info": {
+		"title": "Informazioni di accesso",
 		"modal": {
 			"title": "Errore di trasferimento del certificato",
 			"retrieve_error": "Si è verificato un errore durante il tentativo di salvare le credenziali di accesso:\n${error}\nPuoi continuare ma non puoi salvare le informazioni di accesso.",
@@ -311,6 +320,9 @@
 			"fetchHomeRegistryFailed": "Impossibile recuperare le informazioni del registro home."
 		},
 		"functionMenu": {
+			"search": {
+				"placeholder": "Cerca..."
+			},
 			"icon": {
 				"alt": "Menu funzioni"
 			}
@@ -742,6 +754,12 @@
 			"partTypeSelect": "Seleziona",
 			"partSelect": "Seleziona"
 		},
+		"partSelectDropdown": {
+			"placeholder": "Seleziona"
+		},
+		"partSearch": {
+			"placeholder": "Cerca..."
+		},
 		"export": {
 			"title": "Opzioni di Esportazione"
 		},
@@ -899,18 +917,27 @@
 		"title": "Impostazioni linguistiche",
 		"description": "Gestisci le tue preferenze linguistiche qui. Le lingue nell'elenco avranno la precedenza sulle impostazioni del browser in ordine.",
 		"availableLanguages": "Lingue disponibili",
-		"addButton": "aggiungere a",
 		"preferredLanguages": "Elenco delle lingue prioritarie",
 		"resetButton": "Reset",
-		"saveButton": "salva",
-		"noPreferredLanguages": "Nessuna lingua precedente ancora. Verranno utilizzate le impostazioni predefinite del browser.",
+		"saveButton": "Salva",
+		"noPreferredLanguages": "Nessuna lingua preferita impostata. Verranno utilizzate le impostazioni predefinite del browser.",
 		"savedMessage": "Le impostazioni della lingua vengono salvate!",
 		"resetMessage": "Le impostazioni della lingua sono state ripristinate!",
-		"fetchLocalesFailed": "Impossibile ottenere le lingue disponibili!"
+		"fetchLocalesFailed": "Impossibile ottenere le lingue disponibili!",
+		"select": {
+			"placeholder": "Scegli una lingua..."
+		},
+		"search": {
+			"placeholder": "Cerca lingua..."
+		}
 	},
 	"themeManage": {
 		"title": "Gestione temi",
 		"instruction": "Scegli un tema!",
+		"search": {
+			"placeholder": "Cerca temi...",
+			"noResult": "Nessun tema corrispondente trovato."
+		},
 		"themes": {
 			"auto": "Automatico",
 			"light": "Chiaro",
@@ -1045,6 +1072,18 @@
 			"newBot": "Nuovo",
 			"deleteBot": "Elimina"
 		},
+		"botSelectDropdown": {
+			"placeholder": "Scegli un bot"
+		},
+		"botSearch": {
+			"placeholder": "Cerca bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Seleziona un ruolo"
+		},
+		"charSearch": {
+			"placeholder": "Cerca ruoli..."
+		},
 		"configCard": {
 			"title": "Configurazione Bot",
 			"labels": {
@@ -1079,6 +1118,18 @@
 	"telegram_bots": {
 		"title": "Bot Telegram",
 		"cardTitle": "Gestione Bot Telegram",
+		"botSelectDropdown": {
+			"placeholder": "Scegli un bot"
+		},
+		"botSearch": {
+			"placeholder": "Cerca bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Seleziona un ruolo"
+		},
+		"charSearch": {
+			"placeholder": "Cerca ruoli..."
+		},
 		"buttons": {
 			"newBot": "Nuovo",
 			"deleteBot": "Elimina"

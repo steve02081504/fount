@@ -1,8 +1,9 @@
-import { initTranslations, geti18n, i18nElement, promptI18n, confirmI18n, console } from '../../scripts/i18n.mjs'
-import { createJsonEditor } from '../../scripts/jsonEditor.mjs'
-import { getPartList } from '../../scripts/parts.mjs'
-import { applyTheme } from '../../scripts/theme.mjs'
-import { showToast } from '../../scripts/toast.mjs'
+import { initTranslations, geti18n, i18nElement, promptI18n, confirmI18n } from '/scripts/i18n.mjs'
+import { createJsonEditor } from '/scripts/jsonEditor.mjs'
+import { getPartList } from '/scripts/parts.mjs'
+import { applyTheme } from '/scripts/theme.mjs'
+import { showToast } from '/scripts/toast.mjs'
+import { createSearchableDropdown } from '/scripts/search.mjs'
 
 import {
 	getBotList,
@@ -19,9 +20,9 @@ import {
 const configEditorContainer = document.getElementById('config-editor')
 
 const newBotButton = document.getElementById('new-bot')
-const botListSelect = document.getElementById('bot-list')
+const botListDropdown = document.getElementById('bot-list-dropdown')
 const deleteBotButton = document.getElementById('delete-bot')
-const charSelect = document.getElementById('char-select')
+const charSelectDropdown = document.getElementById('char-select-dropdown')
 const tokenInput = document.getElementById('token-input')
 const toggleTokenButton = document.getElementById('toggle-token')
 const saveConfigButton = document.getElementById('save-config')
@@ -37,40 +38,76 @@ let selectedBot = null
 let isDirty = false // 标记是否有未保存的更改
 
 // UI 更新函数
-function populateBotList() {
-	botListSelect.innerHTML = ''
-	botList.forEach(bot => {
-		const option = document.createElement('option')
-		option.value = bot
-		option.text = bot
-		botListSelect.appendChild(option)
+function renderBotDropdown() {
+	i18nElement(botListDropdown.parentElement)
+	const disabled = !botList || botList.length === 0
+	const dataList = disabled ? [] : botList.map(name => ({ name, value: name }))
+
+	if (selectedBot)
+		botListDropdown.dataset.value = selectedBot
+	else
+		delete botListDropdown.dataset.value
+
+	createSearchableDropdown({
+		dropdownElement: botListDropdown,
+		dataList,
+		textKey: 'name',
+		valueKey: 'value',
+		disabled,
+		onSelect: async (selectedItem) => {
+			const botName = selectedItem ? selectedItem.value : null
+			if (botName == selectedBot) return
+			if (!isDirty) return
+			if (!confirmI18n('telegram_bots.alerts.unsavedChanges')) return true
+			await loadBotConfig(botName)
+		}
 	})
 }
 
-function populateCharList() {
-	charSelect.innerHTML = `<option value="" disabled selected>${geti18n('telegram_bots.configCard.charSelectPlaceholder')}</option>`
-	charList.forEach(char => {
-		const option = document.createElement('option')
-		option.value = char
-		option.text = char
-		charSelect.appendChild(option)
+function renderCharDropdown() {
+	i18nElement(charSelectDropdown.parentElement)
+	const disabled = !charList || charList.length === 0
+	const dataList = disabled ? [] : charList.map(name => ({ name, value: name }))
+
+	const currentConfig = configEditor?.get()?.json
+	if (currentConfig?.char)
+		charSelectDropdown.dataset.value = currentConfig.char
+	else
+		delete charSelectDropdown.dataset.value
+
+	createSearchableDropdown({
+		dropdownElement: charSelectDropdown,
+		dataList,
+		textKey: 'name',
+		valueKey: 'value',
+		disabled,
+		onSelect: (selectedItem) => {
+			const charName = selectedItem ? selectedItem.value : null
+			const currentConfig = configEditor?.get()?.json
+			if (charName !== currentConfig?.char)
+				handleCharSelectChange(charName)
+		}
 	})
 }
 
 async function loadBotConfig(botname) {
-	if (isDirty)
-		if (!confirmI18n('telegram_bots.alerts.unsavedChanges')) {
-			botListSelect.value = selectedBot // 如果取消则还原选择
-			return
-		}
-
 	selectedBot = botname
+
+	if (!botname) {
+		tokenInput.value = ''
+		charSelectDropdown.dataset.value = ''
+		if (configEditor)
+			configEditor.set({ json: {} })
+		isDirty = false
+		await updateStartStopButtonState()
+		return
+	}
+
 	const config = await getBotConfig(botname)
 	tokenInput.value = config.token || ''
-	charSelect.value = config.char || ''
+	charSelectDropdown.dataset.value = config.char || ''
 
-	// 加载初始角色模板
-	if (config.char && (!config.config || Object.keys(config.config).length === 0)) {
+	if (config.char && (!config.config || !Object.keys(config.config).length)) {
 		const template = await getBotConfigTemplate(config.char)
 		if (template) config.config = template
 	}
@@ -79,14 +116,13 @@ async function loadBotConfig(botname) {
 		configEditor = createJsonEditor(configEditorContainer, {
 			onChange: (updatedContent, previousContent, { error, patchResult }) => {
 				if (!error)
-					// config.config = updatedContent.json // This will be handled by editor.get() later
-					isDirty = true // 标记为有未保存的更改
+					isDirty = true
 			},
 			onSave: handleSaveConfig
 		})
 
 	configEditor.set({ json: config.config || {} })
-	isDirty = false // 重置未保存标记
+	isDirty = false
 
 	await updateStartStopButtonState()
 }
@@ -103,8 +139,8 @@ async function handleNewBot() {
 
 	await newBotConfig(botname)
 	botList = await getBotList()
-	populateBotList()
-	botListSelect.value = botname
+	renderBotDropdown()
+	botListDropdown.dataset.value = botname
 	await loadBotConfig(botname)
 }
 
@@ -113,35 +149,30 @@ async function handleDeleteBot() {
 
 	if (!confirmI18n('telegram_bots.alerts.confirmDeleteBot', { botname: selectedBot })) return
 
+	const oldBotIndex = botList.indexOf(selectedBot)
 	await deleteBotConfig(selectedBot)
 	botList = await getBotList()
-	populateBotList()
 
+	let nextBotToLoad = null
 	if (botList.length > 0) {
-		botListSelect.selectedIndex = 0
-		await loadBotConfig(botList[0])
-	} else {
-		selectedBot = null
-		tokenInput.value = ''
-		charSelect.value = ''
-		if (configEditor)
-			configEditor.set({ json: {} })
+		const newIndex = Math.min(oldBotIndex, botList.length - 1)
+		nextBotToLoad = botList[newIndex]
 	}
-	isDirty = false
+
+	await loadBotConfig(nextBotToLoad)
+	renderBotDropdown()
 }
 
 
-async function handleCharSelectChange() {
+async function handleCharSelectChange(selectedChar) {
 	if (isDirty)
 		if (!confirmI18n('telegram_bots.alerts.unsavedChanges')) {
 			const currentConfig = await getBotConfig(selectedBot)
-			charSelect.value = currentConfig.char || '' // 如果取消则还原选择
+			charSelectDropdown.dataset.value = currentConfig.char || ''
 			return
 		}
 
-	const selectedChar = charSelect.value
-
-	isDirty = true // 更改了选项，标记为 dirty
+	isDirty = true
 	const template = await getBotConfigTemplate(selectedChar)
 	if (template && configEditor)
 		configEditor.set({ json: template })
@@ -158,16 +189,17 @@ async function handleSaveConfig() {
 
 	let editorContent
 	try {
-		editorContent = configEditor.get() // {json: ..., text: ...}
-	} catch (err) {
+		editorContent = configEditor.get()
+	}
+	catch (err) {
 		showToast(geti18n('telegram_bots.alerts.invalidJsonConfig', { error: err.message }), 'error')
 		return
 	}
 
 	const config = {
 		token: tokenInput.value,
-		char: charSelect.value,
-		config: editorContent.json || JSON.parse(editorContent.text || '{}'), // Prioritize json, fallback to parsing text
+		char: charSelectDropdown.dataset.value,
+		config: editorContent.json || JSON.parse(editorContent.text || '{}'),
 	}
 
 	saveStatusIcon.src = 'https://api.iconify.design/line-md/loading-loop.svg'
@@ -176,11 +208,12 @@ async function handleSaveConfig() {
 
 	try {
 		await setBotConfig(selectedBot, config)
-		console.logI18n('telegram_bots.alerts.configSaved')
+		showToast(geti18n('telegram_bots.alerts.configSaved'), 'success')
 		isDirty = false
 
 		saveStatusIcon.src = 'https://api.iconify.design/line-md/confirm-circle.svg'
-	} catch (error) {
+	}
+	catch (error) {
 		showToast(error.message + '\n' + error.error || error.errors?.join('\n') || '', 'error')
 		console.error(error)
 		saveStatusIcon.src = 'https://api.iconify.design/line-md/emoji-frown.svg'
@@ -207,14 +240,16 @@ async function handleStartStopBot() {
 			startStopStatusText.textContent = geti18n('telegram_bots.configCard.buttons.startBot')
 			startStopBotButton.classList.remove('btn-error')
 			startStopBotButton.classList.add('btn-success')
-		} else {
+		}
+		else {
 			await startBot(selectedBot)
 			startStopStatusText.textContent = geti18n('telegram_bots.configCard.buttons.stopBot')
 			startStopBotButton.classList.remove('btn-success')
 			startStopBotButton.classList.add('btn-error')
 		}
 		startStopStatusIcon.src = 'https://api.iconify.design/line-md/confirm-circle.svg'
-	} catch (error) {
+	}
+	catch (error) {
 		showToast(error.message + '\n' + error.error || error.errors?.join('\n') || '', 'error')
 		console.error(error)
 		startStopStatusIcon.src = 'https://api.iconify.design/line-md/emoji-frown.svg'
@@ -238,7 +273,8 @@ async function updateStartStopButtonState() {
 		startStopStatusText.textContent = geti18n('telegram_bots.configCard.buttons.stopBot')
 		startStopBotButton.classList.remove('btn-success')
 		startStopBotButton.classList.add('btn-error')
-	} else {
+	}
+	else {
 		startStopStatusText.textContent = geti18n('telegram_bots.configCard.buttons.startBot')
 		startStopBotButton.classList.remove('btn-error')
 		startStopBotButton.classList.add('btn-success')
@@ -254,50 +290,67 @@ async function initializeFromURLParams() {
 	const botName = urlParams.get('name')
 	const charName = urlParams.get('char')
 
-	botList = await getBotList()
-	charList = await getPartList('chars')
-	populateBotList()
-	populateCharList()
+	try {
+		// 1. Fetch lists
+		botList = await getBotList()
+		charList = await getPartList('chars')
 
-	if (botName) {
-		if (!botList.includes(botName))
+		// 2. Render the dropdowns with the lists
+		renderBotDropdown()
+		renderCharDropdown()
+
+		// 3. Determine which bot to load
+		let botToLoad = null
+		if (botName && botList.includes(botName))
+			botToLoad = botName
+		else if (botName && !botList.includes(botName))
+			// If bot from URL doesn't exist, create it
 			try {
 				await newBotConfig(botName)
 				botList = await getBotList()
-				populateBotList()
+				renderBotDropdown() // re-render with new list
+				botToLoad = botName
 			} catch (error) {
 				console.error('Failed to create new bot from URL parameter:', error)
 			}
+		else if (botList.length > 0)
+			botToLoad = botList[0]
 
-		botListSelect.value = botName
-		await loadBotConfig(botName)
-	} else if (botList.length > 0) {
-		botListSelect.selectedIndex = 0
-		await loadBotConfig(botList[0])
+		// 4. Load the bot if one was determined
+		if (botToLoad) {
+			// Set the dropdown value and load the config
+			botListDropdown.dataset.value = botToLoad
+			await loadBotConfig(botToLoad)
+		}
+
+		// 5. Set the character from URL param, this has precedence
+		if (charName)
+			charSelectDropdown.dataset.value = charName
 	}
-
-	if (charName)
-		charSelect.value = charName
-
+	catch (error) {
+		console.error('Failed to initialize from URL parameters:', error)
+	}
 }
 
 // 初始化
-applyTheme()
-await initTranslations('telegram_bots')
-initializeFromURLParams()
+async function init() {
+	applyTheme()
+	await initTranslations('telegram_bots')
+	initializeFromURLParams()
 
-// 事件监听
-newBotButton.addEventListener('click', handleNewBot)
-deleteBotButton.addEventListener('click', handleDeleteBot)
-botListSelect.addEventListener('change', () => loadBotConfig(botListSelect.value))
-charSelect.addEventListener('change', handleCharSelectChange)
-toggleTokenButton.addEventListener('click', handleToggleToken)
-saveConfigButton.addEventListener('click', handleSaveConfig)
-startStopBotButton.addEventListener('click', handleStartStopBot)
+	// 事件监听
+	newBotButton.addEventListener('click', handleNewBot)
+	deleteBotButton.addEventListener('click', handleDeleteBot)
+	toggleTokenButton.addEventListener('click', handleToggleToken)
+	saveConfigButton.addEventListener('click', handleSaveConfig)
+	startStopBotButton.addEventListener('click', handleStartStopBot)
 
-window.addEventListener('beforeunload', event => {
-	if (isDirty) {
-		event.preventDefault()
-		event.returnValue = geti18n('telegram_bots.alerts.beforeUnload')
-	}
-})
+	window.addEventListener('beforeunload', event => {
+		if (isDirty) {
+			event.preventDefault()
+			event.returnValue = geti18n('telegram_bots.alerts.beforeUnload')
+		}
+	})
+}
+
+init()

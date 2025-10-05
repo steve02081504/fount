@@ -136,7 +136,8 @@ export async function runBot(username, botname) {
 		botCache[botname] = await botCache[botname]
 		// 在 fount 任务系统中注册此bot为一个正在运行的任务
 		StartJob(username, 'shells', 'telegrambot', botname)
-	} catch (error) {
+	}
+	catch (error) {
 		// 如果启动失败，从缓存中移除，并向上抛出错误
 		delete botCache[botname]
 		// 不需要在这里 console.error，因为 startTelegrafBot 已经记录了
@@ -200,22 +201,20 @@ export function getBotList(username) {
 // Event Handlers
 events.on('BeforeUserDeleted', async ({ username }) => {
 	const runningBots = getRunningBotList(username)
-	for (const botname of runningBots)
-		try {
-			await stopBot(username, botname)
-			console.log(`Telegram Bot: Stopped bot ${botname} for deleted user ${username}`)
-		} catch (error) {
-			console.error(`Telegram Bot: Error stopping bot ${botname} for deleted user ${username}:`, error)
-		}
+	for (const botname of runningBots) try {
+		await stopBot(username, botname)
+		console.log(`Telegram Bot: Stopped bot ${botname} for deleted user ${username}`)
+	} catch (error) {
+		console.error(`Telegram Bot: Error stopping bot ${botname} for deleted user ${username}:`, error)
+	}
 })
 
 events.on('BeforeUserRenamed', async ({ oldUsername, newUsername }) => {
 	const runningBotsOldUser = getRunningBotList(oldUsername)
-	for (const botname of runningBotsOldUser)
-		try {
-			await stopBot(oldUsername, botname)
-			console.log(`Telegram Bot: Stopped bot ${botname} for old username ${oldUsername}`)
-		} catch (error) {
-			console.error(`Telegram Bot: Error stopping bot ${botname} for old username ${oldUsername}:`, error)
-		}
+	for (const botname of runningBotsOldUser) try {
+		await stopBot(oldUsername, botname)
+		console.log(`Telegram Bot: Stopped bot ${botname} for old username ${oldUsername}`)
+	} catch (error) {
+		console.error(`Telegram Bot: Error stopping bot ${botname} for old username ${oldUsername}:`, error)
+	}
 })

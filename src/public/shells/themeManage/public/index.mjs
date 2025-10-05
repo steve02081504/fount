@@ -1,4 +1,5 @@
-import { initTranslations } from '../../scripts/i18n.mjs'
+import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
+import { makeSearchable } from '../../scripts/search.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
 import { applyTheme, builtin_themes, setTheme, getCurrentTheme } from '../../scripts/theme.mjs'
 
@@ -7,26 +8,29 @@ await initTranslations('themeManage')
 usingTemplates('/shells/themeManage/templates')
 
 const themeList = document.getElementById('theme-list')
+const searchInput = document.getElementById('theme-search-input')
+const allThemes = ['auto', ...builtin_themes]
 
 // 渲染主题预览
-async function renderThemePreviews() {
+async function renderThemePreviews(themesToRender = allThemes) {
 	themeList.innerHTML = ''
-
+	if (!themesToRender.length) return themeList.append(await renderTemplate('no_result'))
 	const currentTheme = getCurrentTheme()
 
-	// 创建 "Auto" 主题预览
-	const autoPreview = await createAutoPreview()
-	autoPreview.addEventListener('click', () => handleThemeClick(autoPreview, 'auto'))
-	if (!currentTheme) autoPreview.classList.add('selected-theme')
-	themeList.appendChild(autoPreview)
+	const previews = await Promise.all(themesToRender.map(async (theme) => {
+		const isAuto = theme === 'auto'
+		const preview = isAuto
+			? await createAutoPreview()
+			: await renderTemplate('theme_preview', { theme })
 
-	// 创建其他内置主题预览
-	for (const theme of builtin_themes) {
-		const preview = await renderTemplate('theme_preview', { theme })
 		preview.addEventListener('click', () => handleThemeClick(preview, theme))
-		if (currentTheme === theme) preview.classList.add('selected-theme')
-		themeList.appendChild(preview)
-	}
+
+		const isSelected = (isAuto && !currentTheme) || currentTheme === theme
+		if (isSelected)
+			preview.classList.add('selected-theme')
+		return preview
+	}))
+	themeList.append(...previews)
 }
 
 // 创建 "Auto" 主题预览的函数
@@ -72,5 +76,13 @@ async function handleThemeClick(previewElement, theme) {
 	document.startViewTransition(() => applyNewTheme())
 }
 
-// 初始渲染主题预览
-renderThemePreviews()
+// 初始渲染 and search functionality
+makeSearchable({
+	searchInput,
+	data: allThemes,
+	dataAccessor: (theme) => {
+		const name = geti18n(`themeManage.themes.${theme}`) || theme
+		return { name, theme }
+	},
+	onUpdate: renderThemePreviews,
+})

@@ -13,7 +13,7 @@
 			"localUrl": "Accès à fount depuis d'autres appareils sur le même réseau : ${url}",
 			"standingBy": "Standing by...",
 			"update": {
-				"restarting": "Une nouvelle version a été découverte et la mise à jour est redémarrée ..."
+				"restarting": "Une nouvelle version a été découverte et la mise à jour est redémarrée..."
 			}
 		},
 		"jobs": {
@@ -102,6 +102,11 @@
 	},
 	"installer_wait_screen": {
 		"title": "Bienvenue sur fount !",
+		"language_selector": {
+			"search": {
+				"placeholder": "Rechercher une langue..."
+			}
+		},
 		"hero": {
 			"title": "Votre Compagnon IA Immersif de Personnages",
 			"description": "fount est une plateforme d'interaction avec des personnages, animée par l'IA et conçue pour <i>vous</i> donner le pouvoir. C'est un pont qui vous connecte avec les personnages de votre imagination, vous permettant de dialoguer aisément avec eux, de créer vos propres personnages et de les partager avec le monde."
@@ -124,7 +129,10 @@
 		},
 		"theme_selector": {
 			"title": "Choisissez votre apparence",
-			"description": "Choisissez un thème pour personnaliser votre expérience."
+			"description": "Choisissez un thème pour personnaliser votre expérience.",
+			"search": {
+				"placeholder": "Rechercher un thème..."
+			}
 		},
 		"mini_game": {
 			"title": "Jouez à un petit jeu",
@@ -287,6 +295,7 @@
 		}
 	},
 	"login_info": {
+		"title": "Informations de connexion",
 		"modal": {
 			"title": "Erreur de transfert de certificat",
 			"retrieve_error": "Une erreur s'est produite en essayant de sauvegarder vos identifiants de connexion:\n${error}\nVous pouvez continuer mais ne pouvez pas enregistrer les informations de connexion.",
@@ -311,6 +320,9 @@
 			"fetchHomeRegistryFailed": "Échec de la récupération des informations du registre d'accueil."
 		},
 		"functionMenu": {
+			"search": {
+				"placeholder": "Rechercher..."
+			},
 			"icon": {
 				"alt": "Menu des fonctions"
 			}
@@ -742,6 +754,12 @@
 			"partTypeSelect": "Veuillez sélectionner",
 			"partSelect": "Veuillez sélectionner"
 		},
+		"partSelectDropdown": {
+			"placeholder": "Veuillez sélectionner"
+		},
+		"partSearch": {
+			"placeholder": "Rechercher..."
+		},
 		"export": {
 			"title": "Options d'exportation"
 		},
@@ -899,18 +917,27 @@
 		"title": "Paramètres linguistiques",
 		"description": "Gérez vos préférences linguistiques ici. Les langues de la liste auront la priorité sur les paramètres du navigateur dans l'ordre.",
 		"availableLanguages": "Langues disponibles",
-		"addButton": "Ajouter à",
 		"preferredLanguages": "Liste des langues prioritaires",
 		"resetButton": "Réinitialiser",
-		"saveButton": "sauvegarder",
+		"saveButton": "Sauvegarder",
 		"noPreferredLanguages": "Pas encore de langue antérieure. Les paramètres par défaut du navigateur seront utilisés.",
-		"savedMessage": "Les paramètres linguistiques sont enregistrés!",
+		"savedMessage": "Les paramètres de langue ont été enregistrés !",
 		"resetMessage": "Les paramètres de la langue ont été réinitialisés!",
-		"fetchLocalesFailed": "Impossible d'obtenir des langues disponibles!"
+		"fetchLocalesFailed": "Impossible d'obtenir des langues disponibles!",
+		"select": {
+			"placeholder": "Choisissez une langue..."
+		},
+		"search": {
+			"placeholder": "Rechercher une langue..."
+		}
 	},
 	"themeManage": {
 		"title": "Gestion des thèmes",
 		"instruction": "Choisissez un thème !",
+		"search": {
+			"placeholder": "Rechercher un thème...",
+			"noResult": "Aucun thème correspondant trouvé."
+		},
 		"themes": {
 			"auto": "Automatique",
 			"light": "Clair",
@@ -1045,6 +1072,18 @@
 			"newBot": "Nouveau",
 			"deleteBot": "Supprimer"
 		},
+		"botSelectDropdown": {
+			"placeholder": "Choisissez un bot"
+		},
+		"botSearch": {
+			"placeholder": "Rechercher un bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Sélectionnez un rôle"
+		},
+		"charSearch": {
+			"placeholder": "Rechercher des personnages..."
+		},
 		"configCard": {
 			"title": "Configuration du bot",
 			"labels": {
@@ -1079,6 +1118,18 @@
 	"telegram_bots": {
 		"title": "Bots Telegram",
 		"cardTitle": "Gestion des bots Telegram",
+		"botSelectDropdown": {
+			"placeholder": "Choisissez un bot"
+		},
+		"botSearch": {
+			"placeholder": "Rechercher un bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Sélectionnez un rôle"
+		},
+		"charSearch": {
+			"placeholder": "Rechercher des personnages..."
+		},
 		"buttons": {
 			"newBot": "Nouveau",
 			"deleteBot": "Supprimer"

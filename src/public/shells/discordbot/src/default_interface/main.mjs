@@ -19,13 +19,12 @@ import { getMessageFullContent, splitDiscordReply } from './tools.mjs'
 
 async function tryFewTimes(func, { times = 3, WhenFailsWaitFor = 2000 } = {}) {
 	let lastError
-	for (let i = 0; i < times; i++)
-		try {
-			return await func()
-		} catch (error) {
-			lastError = error
-			if (i < times - 1) await new Promise(resolve => setTimeout(resolve, WhenFailsWaitFor))
-		}
+	for (let i = 0; i < times; i++) try {
+		return await func()
+	} catch (error) {
+		lastError = error
+		if (i < times - 1) await new Promise(resolve => setTimeout(resolve, WhenFailsWaitFor))
+	}
 
 	throw lastError
 }
@@ -63,28 +62,26 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 
 		async function DiscordMessageToFountChatLogEntry(discordMessage) {
 			let fullMessage = discordMessage
-			if (fullMessage.partial)
-				try {
-					fullMessage = await tryFewTimes(() => discordMessage.fetch())
-				} catch (error) {
-					console.error(`[SimpleDiscord] 获取部分消息 ${discordMessage.id} 失败:`, error)
-					return null // 获取失败则无法处理
-				}
+			if (fullMessage.partial) try {
+				fullMessage = await tryFewTimes(() => discordMessage.fetch())
+			} catch (error) {
+				console.error(`[SimpleDiscord] 获取部分消息 ${discordMessage.id} 失败:`, error)
+				return null // 获取失败则无法处理
+			}
 
 
 			const { author } = fullMessage
-			if (!userInfoCache[author.id] || Math.random() < 0.1)
-				try {
-					const fetchedUser = await tryFewTimes(() => author.fetch())
-					let displayName = fetchedUser.globalName || fetchedUser.username
-					if (fullMessage.guild && fullMessage.member) {
-						const member = fullMessage.member.partial ? await tryFewTimes(() => fullMessage.member.fetch()) : fullMessage.member
-						displayName = member.displayName || displayName
-					}
-					userInfoCache[author.id] = displayName
-				} catch (e) {
-					if (!userInfoCache[author.id]) userInfoCache[author.id] = author.globalName || author.username || `User_${author.id}`
+			if (!userInfoCache[author.id] || Math.random() < 0.1) try {
+				const fetchedUser = await tryFewTimes(() => author.fetch())
+				let displayName = fetchedUser.globalName || fetchedUser.username
+				if (fullMessage.guild && fullMessage.member) {
+					const member = fullMessage.member.partial ? await tryFewTimes(() => fullMessage.member.fetch()) : fullMessage.member
+					displayName = member.displayName || displayName
 				}
+				userInfoCache[author.id] = displayName
+			} catch (e) {
+				if (!userInfoCache[author.id]) userInfoCache[author.id] = author.globalName || author.username || `User_${author.id}`
+			}
 
 			const finalDisplayName = userInfoCache[author.id] || author.globalName || author.username
 
@@ -95,27 +92,22 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 				...fullMessage.messageSnapshots?.flatMap(s => s.attachments.values()) || []
 			]
 			for (const source of attachmentSources)
-				for (const attachment of source) {
-					if (!attachment.url) continue
-					try {
+				for (const attachment of source)
+					if (attachment.url) try {
 						const buffer = Buffer.from(await tryFewTimes(() => fetch(attachment.url).then(r => r.arrayBuffer())))
 						files.push({ name: attachment.name, buffer, description: attachment.description, mime_type: attachment.contentType })
 					} catch (error) { console.error(`[SimpleDiscord] 获取附件 ${attachment.name} 失败:`, error) }
-				}
 
 			for (const embed of fullMessage.embeds)
-				if (embed.image?.url)
-					try {
-						const { url } = embed.image
-						files.push({
-							name: url.substring(url.lastIndexOf('/') + 1) || 'embedded_image.png',
-							buffer: Buffer.from(await tryFewTimes(() => fetch(url).then(r => r.arrayBuffer()))),
-							description: embed.title || embed.description || '',
-							mime_type: 'image/png' // 简化处理，实际应更精确
-						})
-					} catch (error) { console.error(`[SimpleDiscord] 获取embed图片 ${embed.image.url} 失败:`, error) }
-
-
+				if (embed.image?.url) try {
+					const { url } = embed.image
+					files.push({
+						name: url.substring(url.lastIndexOf('/') + 1) || 'embedded_image.png',
+						buffer: Buffer.from(await tryFewTimes(() => fetch(url).then(r => r.arrayBuffer()))),
+						description: embed.title || embed.description || '',
+						mime_type: 'image/png' // 简化处理，实际应更精确
+					})
+				} catch (error) { console.error(`[SimpleDiscord] 获取embed图片 ${embed.image.url} 失败:`, error) }
 
 			// 核心：从aiReplyObjectCache恢复extension，完全模仿龙胆
 			const cachedAIReply = aiReplyObjectCache[fullMessage.id]
@@ -136,7 +128,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 		}
 
 		function MargeChatLog(log) {
-			if (!log || log.length === 0) return []
+			if (!log?.length) return []
 			const newlog = []
 			let last = null
 			for (const currentEntry of log) {
@@ -145,13 +137,14 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 				if (entry.extension) entry.extension = { ...entry.extension } // 深拷贝extension
 
 				if (last && last.name === entry.name && last.role === entry.role &&
-					entry.time_stamp - last.time_stamp < 3 * 60000 && (last.files?.length || 0) === 0) {
+					entry.time_stamp - last.time_stamp < 3 * 60000 && !last.files?.length) {
 					last.content += '\n' + entry.content
 					if (entry.files?.length > 0) last.files = [...last.files || [], ...entry.files]
 					last.time_stamp = entry.time_stamp
 					if (entry.extension?.discord_message_id)
 						last.extension = { ...last.extension, discord_message_id: entry.extension.discord_message_id }
-				} else {
+				}
+				else {
 					if (last) newlog.push(last)
 					last = entry
 				}
@@ -184,7 +177,8 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 							// 如果移除的条目在缓存中，也一并清除 (虽然理论上DiscordMessageToFountChatLogEntry已经清了)
 							delete aiReplyObjectCache[removed?.extension?.discord_message_id]
 						}
-					} else continue
+					}
+					else continue
 
 					let triggerMessage = currentMessage
 					if (triggerMessage.partial) triggerMessage = await tryFewTimes(() => triggerMessage.fetch())
@@ -196,9 +190,11 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 					if (shouldReply && triggerMessage.author.id !== client.user.id && !triggerMessage.author.bot)
 						await DoMessageReply(triggerMessage, channelId)
 				}
-			} catch (error) {
+			}
+			catch (error) {
 				console.error(`[SimpleDiscord] 处理频道 ${channelId} 消息队列出错:`, error)
-			} finally {
+			}
+			finally {
 				delete ChannelHandlers[channelId]
 			}
 		}
@@ -214,7 +210,8 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 						aiReplyObjectCache[sentDiscordMessage.id] = originalAIReply
 
 					return sentDiscordMessage
-				} catch (error) {
+				}
+				catch (error) {
 					console.error('[SimpleDiscord] 发送消息失败: ', error, 'Payload content length:', payload?.content?.length)
 					// 不在此处向频道发送错误，由顶层处理
 					return null
@@ -231,7 +228,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 					fileChunks.push(filesToSend.slice(i, i + MAX_FILES_PER_MESSAGE))
 
 
-				if (textChunks.length === 0 && fileChunks.length === 0) return // 无任何内容，不发送
+				if (!textChunks.length && !fileChunks.length) return // 无任何内容，不发送
 
 				// 1. 发送所有文本消息。最后一个文本块会带上第一个文件块（如果存在）。
 				for (let i = 0; i < textChunks.length; i++) {
@@ -243,7 +240,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 						payload.files = fileChunks.shift() // 附加并从待处理队列中移除
 
 
-					const isLastOverallMessage = isLastTextMessage && fileChunks.length === 0
+					const isLastOverallMessage = isLastTextMessage && !fileChunks.length
 					await sendAndCache(payload, isLastOverallMessage ? fountReply : undefined)
 				}
 
@@ -284,14 +281,17 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 
 				if (aiFinalReply && (aiFinalReply.content || aiFinalReply.files?.length))
 					await sendSplitReply(aiFinalReply)
-			} catch (error) {
+			}
+			catch (error) {
 				console.error(`[SimpleDiscord] Error in DoMessageReply for message ${triggerMessage.id} in channel ${channelId}:`, error)
 				try {
 					await triggerMessage.channel.send(`Sorry, an error occurred while replying to your message: ${escapeMarkdown(error.message)}`)
-				} catch (sendError) {
+				}
+				catch (sendError) {
 					console.error(`[SimpleDiscord] Failed to send error reply for message ${triggerMessage.id}:`, sendError)
 				}
-			} finally {
+			}
+			finally {
 				if (typingInterval) clearInterval(typingInterval); typingInterval = null
 			}
 		}

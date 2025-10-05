@@ -102,7 +102,8 @@ export async function runBot(username, botname) {
 	try {
 		botCache[botname] = await botCache[botname]
 		StartJob(username, 'shells', 'discordbot', botname)
-	} catch (error) {
+	}
+	catch (error) {
 		delete botCache[botname]
 		throw error
 	}
@@ -145,22 +146,20 @@ export function getBotList(username) {
 // Event Handlers
 events.on('BeforeUserDeleted', async ({ username }) => {
 	const runningBots = getRunningBotList(username)
-	for (const botname of runningBots)
-		try {
-			await stopBot(username, botname)
-			console.log(`Discord Bot: Stopped bot ${botname} for deleted user ${username}`)
-		} catch (error) {
-			console.error(`Discord Bot: Error stopping bot ${botname} for deleted user ${username}:`, error)
-		}
+	for (const botname of runningBots) try {
+		await stopBot(username, botname)
+		console.log(`Discord Bot: Stopped bot ${botname} for deleted user ${username}`)
+	} catch (error) {
+		console.error(`Discord Bot: Error stopping bot ${botname} for deleted user ${username}:`, error)
+	}
 })
 
 events.on('BeforeUserRenamed', async ({ oldUsername, newUsername }) => {
 	const runningBotsOldUser = getRunningBotList(oldUsername)
-	for (const botname of runningBotsOldUser)
-		try {
-			await stopBot(oldUsername, botname)
-			console.log(`Discord Bot: Stopped bot ${botname} for old username ${oldUsername}`)
-		} catch (error) {
-			console.error(`Discord Bot: Error stopping bot ${botname} for old username ${oldUsername}:`, error)
-		}
+	for (const botname of runningBotsOldUser) try {
+		await stopBot(oldUsername, botname)
+		console.log(`Discord Bot: Stopped bot ${botname} for old username ${oldUsername}`)
+	} catch (error) {
+		console.error(`Discord Bot: Error stopping bot ${botname} for old username ${oldUsername}:`, error)
+	}
 })

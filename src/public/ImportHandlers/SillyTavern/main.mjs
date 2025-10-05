@@ -11,12 +11,6 @@ import data_reader from './data_reader.mjs'
 import { GetV2CharDataFromV1 } from './engine/charData.mjs'
 import { getAvailablePath } from './path.mjs'
 
-
-
-
-
-
-
 function RN2N(obj) {
 	if (!obj) return obj
 	if (Object(obj) instanceof String)
@@ -47,16 +41,19 @@ async function ImportAsData(username, data) {
 	await fs.ensureDir(publicDir)
 	const imagePath = path.join(publicDir, 'image.png')
 	await fs.writeFile(imagePath, image)
+	return [{ parttype: 'chars', partname: chardata.name }]
 }
 
 async function ImportByText(username, text) {
 	const lines = text.split('\n').filter(line => line)
+	const importedParts = []
 	for (const line of lines)
 		if (line.startsWith('http')) {
 			const arrayBuffer = await downloadCharacter(line)
 			const buffer = Buffer.from(arrayBuffer)
-			await ImportAsData(username, buffer)
+			importedParts.push(...await ImportAsData(username, buffer))
 		}
+	return importedParts
 }
 
 export default {

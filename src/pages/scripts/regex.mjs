@@ -35,6 +35,7 @@ export function parseRegexFromString(input) {
 export function escapeRegExp(string) {
 	return string.replace(/[$()*+./?[\\-^{|}]/g, '\\$&')
 }
+
 /**
  * Replaces Unicode escape sequences in a string with their corresponding characters.
  *

@@ -32,7 +32,8 @@ originalUrlInput.addEventListener('input', () => {
 		badgePreview.src = newUrl
 		previewContainer.classList.remove('hidden') // 显示预览
 		copyButton.disabled = false // 启用复制按钮
-	} else {
+	}
+	else {
 		// 如果输入无效或为空，则清空输出和预览
 		newUrlOutput.value = ''
 		badgePreview.src = ''

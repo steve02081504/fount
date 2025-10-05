@@ -89,7 +89,7 @@ export class MarkovGenerator {
 		const numNewTokens = newTokens.length
 
 		if (numNewTokens <= this.order) {
-			if (this.totalTrainedTokens === 0)
+			if (!this.totalTrainedTokens)
 				throw new Error(`Training error: Input text has ${numNewTokens} tokens, which is not enough for order ${this.order}. Need at least ${this.order + 1} tokens for initial training.`)
 			return 0
 		}
@@ -115,7 +115,7 @@ export class MarkovGenerator {
 
 		this.totalTrainedTokens += numNewTokens
 
-		if (addedPrefixCount === 0 && numNewTokens > this.order)
+		if (!addedPrefixCount && numNewTokens > this.order)
 			console.warn('Training warning: No new unique prefixes could be generated from the added input text for the given order. The model might not have significantly improved.')
 
 		return numNewTokens // 返回本次处理的 token 数
@@ -138,14 +138,14 @@ export class MarkovGenerator {
 		if (autoTrainning) this.train(prompt + startPrefix)
 
 		// --- 前置检查 ---
-		if (this.model.size === 0)  // 检查模型是否已训练
+		if (!this.model.size)  // 检查模型是否已训练
 			throw new Error('Generation error: Model has not been trained or is empty. Call train() first.')
 
 		if (outputLength < 1)
 			throw new RangeError('Generation error: outputLength must be a positive.')
 
 		const availablePrefixes = Array.from(this.prefixes) // 从 Set 转为 Array
-		if (availablePrefixes.length === 0)  // 检查是否有可用的起始点
+		if (!availablePrefixes.length)  // 检查是否有可用的起始点
 			throw new Error('Generation error: No valid starting prefixes available in the model. Train with more diverse data or adjust order.')
 
 		let currentPrefixTokens = []
@@ -161,7 +161,7 @@ export class MarkovGenerator {
 		while (outputTokens.length < outputLength) {
 			const possibleSuffixes = this.model.get(currentPrefixKey)
 
-			if (!possibleSuffixes || possibleSuffixes.length === 0) {
+			if (!possibleSuffixes?.length) {
 				currentPrefixKey = availablePrefixes[Math.floor(Math.random() * availablePrefixes.length)]
 				currentPrefixTokens = JSON.parse(currentPrefixKey)
 				continue

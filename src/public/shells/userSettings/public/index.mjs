@@ -84,7 +84,6 @@ el.confirmPasswordBtn.addEventListener('click', () => {
 	passwordCacheTimeoutId = setTimeout(() => {
 		cachedPassword = null
 		passwordCacheTimeoutId = null
-		console.log('Cached password cleared after 3 minutes.')
 	}, PASSWORD_CACHE_DURATION)
 
 	el.passwordConfirmationModal.close()
@@ -111,7 +110,8 @@ async function loadUserInfo() {
 		el.userInfoCreationDate.textContent = new Date(stats.creationDate).toLocaleDateString()
 		el.userInfoFolderSize.textContent = stats.folderSize
 		el.userInfoFolderPath.textContent = stats.folderPath
-	} catch (error) {
+	}
+	catch (error) {
 		showAlert('userSettings.generalError', 'error', 5000, { message: error.message })
 	}
 }
@@ -120,7 +120,8 @@ el.copyFolderPathBtn.addEventListener('click', async () => {
 	try {
 		await navigator.clipboard.writeText(el.userInfoFolderPath.textContent)
 		showAlert('userSettings.userInfo.copiedAlert', 'success')
-	} catch (err) {
+	}
+	catch (err) {
 		console.error('Failed to copy path: ', err)
 		showAlert('userSettings.generalError', 'error', 5000, { message: 'Failed to copy path.' })
 	}
@@ -142,7 +143,8 @@ el.changePasswordForm.addEventListener('submit', async event => {
 
 		showAlert('userSettings.changePassword.success', 'success')
 		form.reset()
-	} catch (error) {
+	}
+	catch (error) {
 		showAlert('userSettings.generalError', 'error', 5000, { message: error.message })
 	}
 })
@@ -163,7 +165,8 @@ el.renameUserForm.addEventListener('submit', async event => {
 		showAlert('userSettings.renameUser.success', 'success', 5000, { newUsername })
 		form.reset()
 		setTimeout(() => window.location.href = '/login', 2000)
-	} catch (error) {
+	}
+	catch (error) {
 		if (error.message.includes('cancelled') || error.message.includes('closed')) return
 		showAlert('userSettings.generalError', 'error', 5000, { message: error.message })
 	}
@@ -178,7 +181,7 @@ async function loadAndDisplayDevices() {
 		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Failed to load devices' }))
 
 		el.deviceList.innerHTML = ''
-		if (result.devices.length === 0) {
+		if (!result.devices.length) {
 			el.noDevicesText.classList.remove('hidden')
 			return
 		}
@@ -221,8 +224,7 @@ async function loadAndDisplayDevices() {
 				revokeButton.dataset.i18n = 'userSettings.userDevices.revokeButton'
 				revokeButton.textContent = geti18n('userSettings.userDevices.revokeButton')
 				revokeButton.onclick = async () => {
-					if (!confirmI18n('userSettings.userDevices.revokeConfirm')) return
-					try {
+					if (confirmI18n('userSettings.userDevices.revokeConfirm')) try {
 						const password = await requestPasswordConfirmation()
 						const revokeResult = await api.revokeDevice(device.jti, password)
 						if (!revokeResult.success) throw new Error(revokeResult.message || geti18n('userSettings.apiError', { message: 'Revoke failed' }))
@@ -237,7 +239,8 @@ async function loadAndDisplayDevices() {
 			}
 			el.deviceList.appendChild(li)
 		})
-	} catch (error) {
+	}
+	catch (error) {
 		el.deviceList.innerHTML = ''
 		el.noDevicesText.classList.remove('hidden')
 		showAlert('userSettings.generalError', 'error', 5000, { message: error.message })
@@ -258,7 +261,8 @@ el.logoutBtn.addEventListener('click', async () => {
 		setTimeout(() => {
 			window.location.href = '/login' // 重定向到登录页面
 		}, 1500) // 延迟一点以便用户看到消息
-	} catch (error) {
+	}
+	catch (error) {
 		showAlert('userSettings.generalError', 'error', 5000, { message: error.message })
 	}
 })
@@ -281,7 +285,8 @@ el.deleteAccountBtn.addEventListener('click', async () => {
 
 		showAlert('userSettings.deleteAccount.success', 'success', 5000)
 		setTimeout(() => window.location.href = '/login', 3000)
-	} catch (error) {
+	}
+	catch (error) {
 		if (error.message.includes('cancelled') || error.message.includes('closed')) return
 		showAlert('userSettings.generalError', 'error', 5000, { message: error.message })
 	}
@@ -298,7 +303,7 @@ async function loadAndDisplayApiKeys() {
 		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Get API keys failed' }))
 
 		el.apiKeyList.innerHTML = ''
-		if (result.apiKeys.length === 0) {
+		if (!result.apiKeys.length) {
 			el.noApiKeysText.classList.remove('hidden')
 			return
 		}
@@ -323,8 +328,7 @@ async function loadAndDisplayApiKeys() {
 			revokeButton.dataset.i18n = 'userSettings.apiKeys.revokeButton'
 			revokeButton.textContent = geti18n('userSettings.apiKeys.revokeButton')
 			revokeButton.onclick = async () => {
-				if (!confirmI18n('userSettings.apiKeys.revokeConfirm')) return
-				try {
+				if (confirmI18n('userSettings.apiKeys.revokeConfirm')) try {
 					const revokeResult = await api.revokeApiKey(key.jti)
 					if (!revokeResult.success)
 						throw new Error(revokeResult.message || geti18n('userSettings.apiError', { message: 'revoke failed' }))
@@ -338,7 +342,8 @@ async function loadAndDisplayApiKeys() {
 			li.appendChild(revokeButton)
 			el.apiKeyList.appendChild(li)
 		})
-	} catch (error) {
+	}
+	catch (error) {
 		el.apiKeyList.innerHTML = ''
 		el.noApiKeysText.classList.remove('hidden')
 		showAlert('userSettings.generalError', 'error', 5000, { message: error.message })
@@ -362,7 +367,8 @@ el.createApiKeyForm.addEventListener('submit', async (event) => {
 		showAlert('userSettings.apiKeys.createSuccess', 'success')
 		form.reset()
 		loadAndDisplayApiKeys()
-	} catch (error) {
+	}
+	catch (error) {
 		showAlert('userSettings.generalError', 'error', 5000, { message: error.message })
 	}
 })
@@ -371,7 +377,8 @@ el.copyNewApiKeyBtn.addEventListener('click', async () => {
 	try {
 		await navigator.clipboard.writeText(el.newApiKeyInput.value)
 		showAlert('userSettings.newApiKey.copiedAlert', 'success')
-	} catch (err) {
+	}
+	catch (err) {
 		console.error('Failed to copy API key: ', err)
 		showAlert('userSettings.generalError', 'error', 5000, { message: 'Failed to copy API key.' })
 	}

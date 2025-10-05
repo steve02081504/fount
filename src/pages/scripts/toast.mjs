@@ -1,3 +1,6 @@
+/** @type {import('npm:@sentry/browser')} */
+import * as Sentry from 'https://esm.sh/@sentry/browser'
+
 let toastContainer = null
 
 const icons = {
@@ -21,6 +24,10 @@ function ensureToastContainer() {
 }
 
 export function showToast(message, type = 'info', duration = 4000) {
+	if (!(Object(message) instanceof String)) {
+		Sentry.captureException(new Error(`showToast() called with non-string message: ${message}`))
+		message = String(message)
+	}
 	const container = ensureToastContainer()
 	const alertId = `alert-${Date.now()}`
 	const alertDiv = document.createElement('div')

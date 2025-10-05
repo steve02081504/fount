@@ -21,7 +21,8 @@ export async function downloadCharacter(url) {
 			return downloadChubCharacter(parsed.id)
 		else if (parsed?.type === 'lorebook')
 			throw new Error('Lorebook download not supported')
-	} else if (host.includes('realm.risuai.net'))
+	}
+	else if (host.includes('realm.risuai.net'))
 		return downloadRisuCharacter(parseRisuUrl(url))
 	else if (host.includes('github.com'))
 		return downloadGithubCharacter(parseGithubUrl(url))
@@ -71,7 +72,8 @@ async function downloadPygmalionCharacter(id) {
 		const avatarResult = await fetch(avatarUrl)
 		const avatarBuffer = await avatarResult.arrayBuffer()
 		return write(new Uint8Array(avatarBuffer), JSON.stringify(characterData))
-	} catch (e) {
+	}
+	catch (e) {
 		console.error('Failed to download avatar, using JSON instead', e)
 		return new TextEncoder().encode(JSON.stringify(jsonData))
 	}
@@ -152,7 +154,8 @@ function getUuidFromUrl(url) {
 function getHostFromUrl(url) {
 	try {
 		return new URL(url).hostname
-	} catch {
+	}
+	catch {
 		return ''
 	}
 }

@@ -14,6 +14,8 @@ import { getLoadedPartList, getPartList } from '../managers/index.mjs'
 import { getDefaultParts, getPartDetails, setDefaultPart } from '../parts_loader.mjs'
 import { skip_report, currentGitCommit, config, save_config } from '../server.mjs'
 
+import { register as registerNotifier } from './event_dispatcher.mjs'
+
 /**
  * @param {import('npm:express').Router} router
  */
@@ -37,6 +39,11 @@ export function registerEndpoints(router) {
 		ws.on('close', () => {
 			console.log('WebSocket auth_test connection closed.')
 		})
+	})
+
+	router.ws('/ws/notify', authenticate, async (ws, req) => {
+		const { username } = await getUserByReq(req)
+		registerNotifier(username, ws)
 	})
 
 	router.get('/api/test/error', (req, res) => {
@@ -71,10 +78,13 @@ export function registerEndpoints(router) {
 		const preferredLanguages = [...new Set([...userPreferredLanguages, ...browserLanguages])].filter(Boolean)
 
 		if (req.cookies.accessToken) try {
+			await authenticate(req, res)
 			const user = await getUserByReq(req)
 			user.locales = preferredLanguages
 			console.logI18n('fountConsole.route.setLanguagePreference', { username: user.username, preferredLanguages: preferredLanguages.join(', ') })
-		} catch { }
+		} catch (error) {
+			console.error('Error setting language preference for user:', error)
+		}
 
 		return res.status(200).json(await getLocaleData(preferredLanguages))
 	})

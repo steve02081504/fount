@@ -2,7 +2,7 @@ export async function sentrytunnel(req, res) {
 	try {
 		const envelopeBytes = req.body
 
-		if (!envelopeBytes || envelopeBytes.length === 0)
+		if (!envelopeBytes?.length)
 			return res.status(400).json({ error: 'Empty request body' })
 
 		const envelopeString = envelopeBytes.toString('utf-8')
@@ -37,7 +37,8 @@ export async function sentrytunnel(req, res) {
 			res.setHeader('Content-Type', upstreamContentType)
 
 		res.status(fetchResponse.status).send(responseBody)
-	} catch (e) {
+	}
+	catch (e) {
 		console.error(e)
 		return res.status(500).json({ error: 'Failed to tunnel event to Sentry' })
 	}
