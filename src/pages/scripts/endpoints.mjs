@@ -21,23 +21,23 @@ export async function whoami() {
 	return response.json()
 }
 
-export async function login(username, password, deviceid) {
+export async function login(username, password, deviceid, powToken) {
 	return await fetch('/api/login', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
 		},
-		body: JSON.stringify({ username, password, deviceid }),
+		body: JSON.stringify({ username, password, deviceid, powToken }),
 	})
 }
 
-export async function register(username, password, deviceid, verificationcode) {
+export async function register(username, password, deviceid, verificationcode, powToken) {
 	return await fetch('/api/register', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
 		},
-		body: JSON.stringify({ username, password, deviceid, verificationcode }),
+		body: JSON.stringify({ username, password, deviceid, verificationcode, powToken }),
 	})
 }
 

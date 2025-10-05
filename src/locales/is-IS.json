@@ -284,7 +284,9 @@
 			"verificationCodeSendError": "Mistókst að senda staðfestingarkóða.",
 			"verificationCodeRateLimit": "Of margar tilraunir til að senda kóða, vinsamlegast reyndu aftur síðar.",
 			"lowPasswordStrength": "Lykilorðið er of veikt.",
-			"accountAlreadyExists": "Aðgangur er þegar til"
+			"accountAlreadyExists": "Aðgangur er þegar til",
+			"powNotSolved": "Vinsamlegast kláraðu PoW staðfestingu fyrst",
+			"powError": "PoW sannprófunarvilla"
 		},
 		"passwordStrength": {
 			"veryWeak": "Mjög veikt",
@@ -1287,5 +1289,12 @@
 		"title": "Síða fannst ekki",
 		"pageNotFoundText": "Úps! Svo virðist sem þú hafir lent á síðu sem er ekki til.",
 		"homepageButton": "Aftur á forsíðu"
+	},
+	"pow_captcha": {
+		"initial": "Ég er ekki vélmenni",
+		"verifying": "Staðfestir...",
+		"solved": "Staðfesting tókst",
+		"error": "Staðfesting mistókst",
+		"wasm_disabled": "Virkja WASM fyrir hraðari sannprófun"
 	}
 }

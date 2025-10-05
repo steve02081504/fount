@@ -284,7 +284,9 @@
 			"verificationCodeSendError": "सत्यापन कोड भेजने में विफल।",
 			"verificationCodeRateLimit": "बहुत ज़्यादा सत्यापन कोड अनुरोध। कृपया थोड़ी देर बाद प्रयास करें।",
 			"lowPasswordStrength": "पासवर्ड की ताकत बहुत कम है।",
-			"accountAlreadyExists": "खाता पहले से मौजूद है।"
+			"accountAlreadyExists": "खाता पहले से मौजूद है।",
+			"powNotSolved": "कृपया पहले POW सत्यापन पूरा करें",
+			"powError": "PoW सत्यापन त्रुटि"
 		},
 		"passwordStrength": {
 			"veryWeak": "बहुत कमज़ोर",
@@ -1287,5 +1289,12 @@
 		"title": "पेज नहीं मिला",
 		"pageNotFoundText": "ओह! ऐसा लगता है कि आप एक ऐसे पेज पर आ गए हैं जो मौजूद नहीं है।",
 		"homepageButton": "होमपेज पर वापस जाएँ"
+	},
+	"pow_captcha": {
+		"initial": "मैं रोबोट नहीं हूं",
+		"verifying": "सत्यापित हो रहा है...",
+		"solved": "सत्यापन सफल",
+		"error": "सत्यापन विफल",
+		"wasm_disabled": "तेजी से सत्यापन के लिए WASM सक्षम करें"
 	}
 }
