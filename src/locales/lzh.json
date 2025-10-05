@@ -284,7 +284,10 @@
 			"verificationCodeSendError": "發驗碼失利。",
 			"verificationCodeRateLimit": "馳報過驟，請少待片刻。",
 			"lowPasswordStrength": "信物不堅，易為人所窺。",
-			"accountAlreadyExists": "此名號已為捷足者所得。"
+			"accountAlreadyExists": "此名號已為捷足者所得。",
+			"powTokenInvalid": "功證符節無效",
+			"powNotSolved": "請先竟功證之驗",
+			"powError": "功證之驗有誤"
 		},
 		"passwordStrength": {
 			"veryWeak": "不堪一擊",
@@ -1287,5 +1290,12 @@
 		"title": "蹤跡難尋",
 		"pageNotFoundText": "嗚呼！君誤入無何有之鄉矣。",
 		"homepageButton": "歸去來兮"
+	},
+	"pow_captcha": {
+		"initial": "我非傀儡",
+		"verifying": "考驗中",
+		"solved": "驗訖",
+		"error": "謬",
+		"wasm_disabled": "欲速，啟WASM"
 	}
 }

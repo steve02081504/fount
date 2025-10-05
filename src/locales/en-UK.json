@@ -284,7 +284,10 @@
 			"verificationCodeSendError": "Failed to send verification code.",
 			"verificationCodeRateLimit": "Too many verification code requests. Please try again later.",
 			"lowPasswordStrength": "Password strength is too low.",
-			"accountAlreadyExists": "Account already exists."
+			"accountAlreadyExists": "Account already exists.",
+			"powTokenInvalid": "Invalid PoW token",
+			"powNotSolved": "Please complete PoW verification first",
+			"powError": "PoW verification error"
 		},
 		"passwordStrength": {
 			"veryWeak": "Very weak",
@@ -1287,5 +1290,12 @@
 		"title": "Page Not Found",
 		"pageNotFoundText": "Oops! It seems you've stumbled upon a page that doesn't exist.",
 		"homepageButton": "Back to Homepage"
+	},
+	"pow_captcha": {
+		"initial": "I'm not a robot",
+		"verifying": "Verifying...",
+		"solved": "Verification successful",
+		"error": "Verification failed",
+		"wasm_disabled": "Enable WASM for faster verification"
 	}
 }

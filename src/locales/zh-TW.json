@@ -284,7 +284,10 @@
 			"verificationCodeSendError": "驗證碼傳送失敗。",
 			"verificationCodeRateLimit": "傳送驗證碼過於頻繁，請稍後再試。",
 			"lowPasswordStrength": "密碼強度太低。",
-			"accountAlreadyExists": "帳號已存在"
+			"accountAlreadyExists": "帳號已存在",
+			"powTokenInvalid": "無效的 PoW 權杖",
+			"powNotSolved": "請先完成 PoW 驗證",
+			"powError": "PoW 驗證出錯"
 		},
 		"passwordStrength": {
 			"veryWeak": "非常弱",
@@ -1287,5 +1290,12 @@
 		"title": "頁面未找到",
 		"pageNotFoundText": "糟糕！您似乎來到了一個不存在的頁面。",
 		"homepageButton": "返回首頁"
+	},
+	"pow_captcha": {
+		"initial": "我不是機器人",
+		"verifying": "正在驗證...",
+		"solved": "驗證成功",
+		"error": "驗證失敗",
+		"wasm_disabled": "啟用 WASM 可加快驗證速度"
 	}
 }

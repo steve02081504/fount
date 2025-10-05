@@ -284,7 +284,10 @@
 			"verificationCodeSendError": "Impossibile inviare il codice di verifica.",
 			"verificationCodeRateLimit": "Troppe richieste di invio del codice di verifica. Riprova più tardi.",
 			"lowPasswordStrength": "La password è troppo debole.",
-			"accountAlreadyExists": "L'account esiste già."
+			"accountAlreadyExists": "L'account esiste già.",
+			"powTokenInvalid": "Token PoW non valido",
+			"powNotSolved": "Completa prima la verifica PoW",
+			"powError": "Errore di verifica PoW"
 		},
 		"passwordStrength": {
 			"veryWeak": "Molto debole",
@@ -1287,5 +1290,12 @@
 		"title": "Pagina non trovata",
 		"pageNotFoundText": "Ops! Sembra che tu sia finito in una pagina inesistente.",
 		"homepageButton": "Torna alla Homepage"
+	},
+	"pow_captcha": {
+		"initial": "Non sono un robot",
+		"verifying": "Verifica in corso...",
+		"solved": "Verifica riuscita",
+		"error": "Verifica non riuscita",
+		"wasm_disabled": "Abilita WASM per una verifica più rapida"
 	}
 }
