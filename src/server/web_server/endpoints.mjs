@@ -2,8 +2,9 @@ import fs from 'node:fs'
 
 import cors from 'npm:cors'
 
-import { console, getLocaleData, fountLocaleList } from '../../scripts/i18n.mjs'
+import { console, getLocaleData, fountLocaleList, geti18n } from '../../scripts/i18n.mjs'
 import { ms } from '../../scripts/ms.mjs'
+import { pow } from '../../scripts/pow.mjs'
 import { get_hosturl_in_local_ip, is_local_ip, is_local_ip_from_req, rateLimit } from '../../scripts/ratelimit.mjs'
 import { generateVerificationCode, verifyVerificationCode } from '../../scripts/verifycode.mjs'
 import { login, register, logout, authenticate, getUserByReq, getUserDictionary, getUserByUsername, auth_request, generateApiKey, revokeApiKey, verifyApiKey, ACCESS_TOKEN_EXPIRY_DURATION, REFRESH_TOKEN_EXPIRY_DURATION } from '../auth.mjs'
@@ -70,6 +71,16 @@ export function registerEndpoints(router) {
 		})
 	})
 
+	router.post('/api/pow/challenge', async (req, res) => {
+		res.json(await pow.createChallenge())
+	})
+
+	router.post('/api/pow/redeem', async (req, res) => {
+		const { token, solutions } = req.body
+		if (!token || !solutions) return res.status(400).json({ success: false })
+		res.json(await pow.redeemChallenge({ token, solutions }))
+	})
+
 	router.get('/api/getlocaledata', async (req, res) => {
 		const browserLanguages = req.headers['accept-language']?.split?.(',')?.map?.(lang => lang.trim().split(';')[0]) || []
 		const userPreferredLanguages = req.query.preferred?.split?.(',')?.map?.(lang => lang.trim()) || []
@@ -94,6 +105,11 @@ export function registerEndpoints(router) {
 	})
 
 	router.post('/api/login', rateLimit({ maxRequests: 5, windowMs: ms('1m') }), async (req, res) => {
+		if (!is_local_ip_from_req(req)) {
+			const { powToken } = req.body
+			const { success } = powToken && await pow.validateToken(powToken)
+			if (!success) return res.status(401).json({ message: geti18n('auth.error.powTokenInvalid') })
+		}
 		const { username, password, deviceid } = req.body
 		const result = await login(username, password, deviceid, req)
 		// 在登录成功时设置 Cookie
@@ -113,11 +129,16 @@ export function registerEndpoints(router) {
 	router.post('/api/register', rateLimit({ maxRequests: 5, windowMs: ms('1m') }), async (req, res) => {
 		const { username, password, verificationcode } = req.body
 		const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress
-		if (!is_local_ip(ip))
+		if (!is_local_ip(ip)) {
+			const { powToken } = req.body
+			const { success } = powToken && await pow.validateToken(powToken)
+			if (!success) return res.status(401).json({ message: geti18n('auth.error.powTokenInvalid') })
+
 			if (verifyVerificationCode(verificationcode, ip) === false) {
 				res.status(401).json({ message: 'verification code incorrect' })
 				return
 			}
+		}
 		const result = await register(username, password)
 		res.status(result.status).json(result)
 	})

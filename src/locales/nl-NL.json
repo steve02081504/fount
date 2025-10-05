@@ -284,7 +284,10 @@
 			"verificationCodeSendError": "Verzenden van verificatiecode mislukt.",
 			"verificationCodeRateLimit": "Te vaak een code verzonden, probeer het later opnieuw.",
 			"lowPasswordStrength": "Wachtwoord is te zwak.",
-			"accountAlreadyExists": "Account bestaat al"
+			"accountAlreadyExists": "Account bestaat al",
+			"powTokenInvalid": "Ongeldig PoW-token",
+			"powNotSolved": "Voltooi eerst de PoW-verificatie.",
+			"powError": "PoW-verificatiefout"
 		},
 		"passwordStrength": {
 			"veryWeak": "Zeer zwak",
@@ -1287,5 +1290,12 @@
 		"title": "Pagina niet gevonden",
 		"pageNotFoundText": "Oeps! Het lijkt erop dat je op een pagina bent beland die niet bestaat.",
 		"homepageButton": "Terug naar startpagina"
+	},
+	"pow_captcha": {
+		"initial": "Ik ben geen robot",
+		"verifying": "Bezig met verifiëren...",
+		"solved": "Verificatie succesvol",
+		"error": "Verificatie mislukt",
+		"wasm_disabled": "Schakel WASM in voor snellere verificatie"
 	}
 }

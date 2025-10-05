@@ -284,7 +284,10 @@
 			"verificationCodeSendError": "Falha ao enviar o código de verificação.",
 			"verificationCodeRateLimit": "Demasiados pedidos de código de verificação. Por favor, tente novamente mais tarde.",
 			"lowPasswordStrength": "A segurança da palavra-passe é demasiado fraca.",
-			"accountAlreadyExists": "A conta já existe."
+			"accountAlreadyExists": "A conta já existe.",
+			"powTokenInvalid": "Token PoW inválido",
+			"powNotSolved": "Por favor, conclua a verificação PoW primeiro",
+			"powError": "Erro de verificação PoW"
 		},
 		"passwordStrength": {
 			"veryWeak": "Muito fraca",
@@ -1287,5 +1290,12 @@
 		"title": "Página não encontrada",
 		"pageNotFoundText": "Ups! Parece que acedeu a uma página que não existe.",
 		"homepageButton": "Voltar à Página Inicial"
+	},
+	"pow_captcha": {
+		"initial": "Eu não sou um robô",
+		"verifying": "Verificando ...",
+		"solved": "Verificação bem-sucedida",
+		"error": "Verificação falhou",
+		"wasm_disabled": "Ative o WASM para uma verificação mais rápida"
 	}
 }

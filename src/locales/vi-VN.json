@@ -284,7 +284,10 @@
 			"verificationCodeSendError": "Gửi mã xác minh thất bại.",
 			"verificationCodeRateLimit": "Bạn đã yêu cầu gửi mã xác minh quá nhiều lần. Vui lòng thử lại sau.",
 			"lowPasswordStrength": "Mật khẩu quá yếu.",
-			"accountAlreadyExists": "Tài khoản đã tồn tại."
+			"accountAlreadyExists": "Tài khoản đã tồn tại.",
+			"powTokenInvalid": "Mã thông báo POW không hợp lệ",
+			"powNotSolved": "Vui lòng hoàn thành xác minh POW trước",
+			"powError": "Lỗi xác minh POW"
 		},
 		"passwordStrength": {
 			"veryWeak": "Rất yếu",
@@ -1287,5 +1290,12 @@
 		"title": "Không tìm thấy trang",
 		"pageNotFoundText": "Ối! Có vẻ như bạn đã truy cập vào một trang không tồn tại.",
 		"homepageButton": "Quay lại trang chủ"
+	},
+	"pow_captcha": {
+		"initial": "Tôi không phải là robot",
+		"verifying": "Đang xác minh...",
+		"solved": "Xác minh thành công",
+		"error": "Xác minh thất bại",
+		"wasm_disabled": "Bật WASM để xác minh nhanh hơn"
 	}
 }

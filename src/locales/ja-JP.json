@@ -284,7 +284,10 @@
 			"verificationCodeSendError": "認証コードの送信に失敗しました。",
 			"verificationCodeRateLimit": "認証コードの送信リクエストが多すぎます。しばらくしてから再度お試しください。",
 			"lowPasswordStrength": "パスワードの強度が低すぎます。",
-			"accountAlreadyExists": "このアカウントは既に存在します。"
+			"accountAlreadyExists": "このアカウントは既に存在します。",
+			"powTokenInvalid": "無効なPoWトークン",
+			"powNotSolved": "最初にPoW検証を完了してください",
+			"powError": "POW検証エラー"
 		},
 		"passwordStrength": {
 			"veryWeak": "非常に弱い",
@@ -1287,5 +1290,12 @@
 		"title": "ページが見つかりません",
 		"pageNotFoundText": "おっと！存在しないページにアクセスしたようです。",
 		"homepageButton": "ホームページに戻る"
+	},
+	"pow_captcha": {
+		"initial": "私はロボットではありません",
+		"verifying": "検証中...",
+		"solved": "検証成功",
+		"error": "検証失敗",
+		"wasm_disabled": "検証を高速化するためにWASMを有効にしてください"
 	}
 }
