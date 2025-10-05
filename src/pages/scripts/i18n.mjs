@@ -3,9 +3,13 @@ import * as Sentry from 'https://esm.sh/@sentry/browser'
 
 import { onServerEvent } from './server_events.mjs'
 
-const languageChangeCallbacks = [initTranslations]
+const languageChangeCallbacks = []
 export function onLanguageChange(callback) {
 	languageChangeCallbacks.push(callback)
+}
+export function offLanguageChange(callback) {
+	const index = languageChangeCallbacks.indexOf(callback)
+	if (index > -1) languageChangeCallbacks.splice(index, 1)
 }
 async function runLanguageChange() {
 	for (const callback of languageChangeCallbacks) try {
@@ -16,7 +20,7 @@ async function runLanguageChange() {
 	}
 }
 
-let i18n = {}
+let i18n
 let saved_pageid
 let lastKnownLangs
 
@@ -30,7 +34,7 @@ export function savePreferredLangs(langs) {
 	const oldLangs = loadPreferredLangs()
 	if (JSON.stringify(langs) == JSON.stringify(oldLangs)) return
 	localStorage.setItem('userPreferredLanguages', JSON.stringify(langs))
-	runLanguageChange()
+	applyTranslations()
 }
 
 /**
@@ -51,11 +55,11 @@ export async function initTranslations(pageid = saved_pageid, preferredLangs = l
 			throw new Error(`Failed to fetch translations: ${response.status} ${response.statusText}`)
 
 		i18n = await response.json()
-		applyTranslations()
 	}
 	catch (error) {
 		console.error('Error initializing translations:', error)
 	}
+	if (i18n) applyTranslations()
 }
 
 function getNestedValue(obj, key) {
@@ -131,6 +135,7 @@ function applyTranslations() {
 	document.documentElement.lang = geti18n('lang')
 
 	i18nElement(document, { skip_report: true })
+	runLanguageChange()
 }
 
 export function i18nElement(element, {
@@ -165,14 +170,14 @@ export function i18nElement(element, {
 }
 
 window.addEventListener('languagechange', () => {
-	runLanguageChange()
+	applyTranslations()
 })
 window.addEventListener('visibilitychange', () => {
 	if (document.visibilityState != 'visible') return
 
 	const preferredLangs = loadPreferredLangs()
 	if (JSON.stringify(lastKnownLangs) != JSON.stringify(preferredLangs))
-		runLanguageChange()
+		applyTranslations()
 })
 
 onServerEvent('locale-updated', () => {

@@ -7,6 +7,10 @@ const languageChangeCallbacks = []
 export function onLanguageChange(callback) {
 	languageChangeCallbacks.push(callback)
 }
+export function offLanguageChange(callback) {
+	const index = languageChangeCallbacks.indexOf(callback)
+	if (index > -1) languageChangeCallbacks.splice(index, 1)
+}
 async function runLanguageChange() {
 	for (const callback of languageChangeCallbacks) try {
 		await callback()
@@ -15,7 +19,7 @@ async function runLanguageChange() {
 	}
 }
 
-let i18n = {}
+let i18n
 let saved_pageid
 let availableLocales = []
 const localeNames = new Map()
@@ -26,7 +30,7 @@ const localeNames = new Map()
  */
 export async function setLocales(langs) {
 	localStorage.setItem('fountUserPreferredLanguages', JSON.stringify(langs))
-	await initTranslations(saved_pageid, langs)
+	applyTranslations()
 }
 
 /**
@@ -77,11 +81,11 @@ export async function initTranslations(pageid = saved_pageid, preferredlocales =
 			throw new Error(`Failed to fetch translations: ${translationResponse.status} ${translationResponse.statusText}`)
 
 		i18n = await translationResponse.json()
-		applyTranslations()
 	}
 	catch (error) {
 		console.error('Error initializing translations:', error)
 	}
+	if (i18n) applyTranslations()
 }
 
 /**
@@ -179,6 +183,7 @@ function applyTranslations() {
 	document.documentElement.lang = geti18n('lang')
 
 	i18nElement(document, { skip_report: true })
+	runLanguageChange()
 }
 
 export function i18nElement(element, {
@@ -213,5 +218,5 @@ export function i18nElement(element, {
 }
 
 window.addEventListener('languagechange', () => {
-	runLanguageChange()
+	applyTranslations()
 })
