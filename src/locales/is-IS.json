@@ -1026,10 +1026,12 @@
 		},
 		"buttons": {
 			"save": "Vista",
-			"delete": "Eyða"
-		},
-		"tooltips": {
-			"setDefault": "Sjálfgefið"
+			"delete": "Eyða",
+			"setDefault": {
+				"dataset": {
+					"tip": "Sjálfgefið"
+				}
+			}
 		},
 		"alerts": {
 			"fetchFileListFailed": "Mistókst að sækja skráalista: ${error}",

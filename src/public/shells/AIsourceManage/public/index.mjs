@@ -68,7 +68,7 @@ function renderFileList() {
 		// Default item checkbox
 		const checkboxContainer = document.createElement('div')
 		checkboxContainer.classList.add('tooltip', 'tooltip-left')
-		checkboxContainer.dataset.tip = geti18n('aisource_editor.tooltips.setDefault')
+		checkboxContainer.dataset.i18n = 'aisource_editor.buttons.setDefault'
 
 		const checkbox = document.createElement('input')
 		checkbox.type = 'checkbox'

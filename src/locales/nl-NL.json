@@ -1026,10 +1026,12 @@
 		},
 		"buttons": {
 			"save": "Opslaan",
-			"delete": "Verwijderen"
-		},
-		"tooltips": {
-			"setDefault": "Instellen als standaard"
+			"delete": "Verwijderen",
+			"setDefault": {
+				"dataset": {
+					"tip": "Instellen als standaard"
+				}
+			}
 		},
 		"alerts": {
 			"fetchFileListFailed": "Ophalen van bestandslijst mislukt: ${error}",

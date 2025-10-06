@@ -1026,10 +1026,12 @@
 		},
 		"buttons": {
 			"save": "저장",
-			"delete": "삭제"
-		},
-		"tooltips": {
-			"setDefault": "기본값으로 설정"
+			"delete": "삭제",
+			"setDefault": {
+				"dataset": {
+					"tip": "기본값으로 설정"
+				}
+			}
 		},
 		"alerts": {
 			"fetchFileListFailed": "파일 목록을 가져오는 데 실패했습니다: ${error}",

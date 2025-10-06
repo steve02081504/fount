@@ -1026,10 +1026,12 @@
 		},
 		"buttons": {
 			"save": "Lưu",
-			"delete": "Xóa"
-		},
-		"tooltips": {
-			"setDefault": "Đặt làm mặc định"
+			"delete": "Xóa",
+			"setDefault": {
+				"dataset": {
+					"tip": "Đặt làm mặc định"
+				}
+			}
 		},
 		"alerts": {
 			"fetchFileListFailed": "Lấy danh sách tệp thất bại: ${error}",

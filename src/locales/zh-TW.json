@@ -1026,10 +1026,12 @@
 		},
 		"buttons": {
 			"save": "儲存",
-			"delete": "刪除"
-		},
-		"tooltips": {
-			"setDefault": "設為預設"
+			"delete": "刪除",
+			"setDefault": {
+				"dataset": {
+					"tip": "設為預設"
+				}
+			}
 		},
 		"alerts": {
 			"fetchFileListFailed": "獲取檔案列表失敗: ${error}",

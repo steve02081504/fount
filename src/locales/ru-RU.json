@@ -1026,10 +1026,12 @@
 		},
 		"buttons": {
 			"save": "Сохранить",
-			"delete": "Удалить"
-		},
-		"tooltips": {
-			"setDefault": "Установить по умолчанию"
+			"delete": "Удалить",
+			"setDefault": {
+				"dataset": {
+					"tip": "Установить по умолчанию"
+				}
+			}
 		},
 		"alerts": {
 			"fetchFileListFailed": "Не удалось получить список файлов: ${error}",

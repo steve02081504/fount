@@ -1026,10 +1026,12 @@
 		},
 		"buttons": {
 			"save": "Save",
-			"delete": "Delete"
-		},
-		"tooltips": {
-			"setDefault": "Set as default"
+			"delete": "Delete",
+			"setDefault": {
+				"dataset": {
+					"tip": "Set as default"
+				}
+			}
 		},
 		"alerts": {
 			"fetchFileListFailed": "Failed to get file list: ${error}",

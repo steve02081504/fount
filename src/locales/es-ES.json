@@ -1026,10 +1026,12 @@
 		},
 		"buttons": {
 			"save": "Guardar",
-			"delete": "Eliminar"
-		},
-		"tooltips": {
-			"setDefault": "Establecer como predeterminado"
+			"delete": "Eliminar",
+			"setDefault": {
+				"dataset": {
+					"tip": "Establecer como predeterminado"
+				}
+			}
 		},
 		"alerts": {
 			"fetchFileListFailed": "Error al obtener la lista de archivos: ${error}",

@@ -146,6 +146,8 @@ function translateSingularElement(element) {
 			const translation = geti18n_nowarn(specificKey)
 			if (translation) update(attr, translation)
 		}
+		const dataset = geti18n_nowarn(`${key}.dataset`)
+		if (dataset) Object.assign(element.dataset, dataset)
 	}
 	else {
 		const translation = geti18n(key)
@@ -220,9 +222,9 @@ const i18nObserver = new MutationObserver((mutationsList) => {
 })
 
 // Start observing the document body for configured mutations
-if (document.body)
+function observeBody() {
 	i18nObserver.observe(document.body, { attributeFilter: ['data-i18n'], attributes: true, childList: true, subtree: true })
-else
-	window.addEventListener('DOMContentLoaded', () => {
-		i18nObserver.observe(document.body, { attributeFilter: ['data-i18n'], attributes: true, childList: true, subtree: true })
-	})
+}
+
+if (document.body) observeBody()
+else window.addEventListener('DOMContentLoaded', observeBody)

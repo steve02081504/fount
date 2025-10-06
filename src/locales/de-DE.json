@@ -1026,10 +1026,12 @@
 		},
 		"buttons": {
 			"save": "Speichern",
-			"delete": "Löschen"
-		},
-		"tooltips": {
-			"setDefault": "Standardmäßig festgelegt"
+			"delete": "Löschen",
+			"setDefault": {
+				"dataset": {
+					"tip": "Standardmäßig festgelegt"
+				}
+			}
 		},
 		"alerts": {
 			"fetchFileListFailed": "Fehler beim Abrufen der Dateiliste: ${error}",

@@ -1026,10 +1026,12 @@
 		},
 		"buttons": {
 			"save": "حفظ",
-			"delete": "حذف"
-		},
-		"tooltips": {
-			"setDefault": "تعيين كافتراضي"
+			"delete": "حذف",
+			"setDefault": {
+				"dataset": {
+					"tip": "تعيين كافتراضي"
+				}
+			}
 		},
 		"alerts": {
 			"fetchFileListFailed": "فشل في جلب قائمة الملفات: ${error}",

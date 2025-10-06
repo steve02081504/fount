@@ -1026,10 +1026,12 @@
 		},
 		"buttons": {
 			"save": "保存",
-			"delete": "削除"
-		},
-		"tooltips": {
-			"setDefault": "デフォルトに設定"
+			"delete": "削除",
+			"setDefault": {
+				"dataset": {
+					"tip": "デフォルトに設定"
+				}
+			}
 		},
 		"alerts": {
 			"fetchFileListFailed": "ファイルリストの取得に失敗しました: ${error}",

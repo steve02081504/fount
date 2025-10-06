@@ -1026,10 +1026,12 @@
 		},
 		"buttons": {
 			"save": "सहेजें",
-			"delete": "हटाएँ"
-		},
-		"tooltips": {
-			"setDefault": "डिफाल्ट के रूप में सेट"
+			"delete": "हटाएँ",
+			"setDefault": {
+				"dataset": {
+					"tip": "डिफाल्ट के रूप में सेट"
+				}
+			}
 		},
 		"alerts": {
 			"fetchFileListFailed": "फ़ाइल सूची प्राप्त करने में विफल: ${error}",

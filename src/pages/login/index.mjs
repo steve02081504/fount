@@ -106,7 +106,7 @@ function updateFormDisplay() {
 
 	formTitle.dataset.i18n = `auth.${formType}.title`
 	submitBtn.dataset.i18n = `auth.${formType}.submitButton`
-	toggleLink.innerHTML = `${geti18n(`auth.${formType}.toggleLink.textContent`)}<a href="#" class="link link-primary">${geti18n(`auth.${formType}.toggleLink.link`)}</a>`
+	toggleLink.innerHTML = `<span data-i18n="auth.${formType}.toggleLink.textContent"></span><a href="#" class="link link-primary" data-i18n="auth.${formType}.toggleLink.link"></a>`
 
 	confirmPasswordGroup.style.display = isLoginForm ? 'none' : 'block'
 	verificationCodeGroup.style.display = isLoginForm || isLocalOrigin ? 'none' : 'block'
