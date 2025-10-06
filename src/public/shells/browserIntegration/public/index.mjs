@@ -1,7 +1,7 @@
 import { initTranslations, geti18n } from '../../../scripts/i18n.mjs'
 import { renderTemplate, usingTemplates } from '../../../scripts/template.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
-import { showToast } from '../../../scripts/toast.mjs'
+import { showToast, showToastI18n } from '../../../scripts/toast.mjs'
 
 import * as api from './src/endpoints.mjs'
 
@@ -93,10 +93,10 @@ async function handleDeleteScript(scriptId) {
 			}
 		}))
 
-		showToast(geti18n('browser_integration.autorun.delete_success'), 'success')
+		showToastI18n('success', 'browser_integration.autorun.delete_success')
 		loadAndRenderAutoRunScripts()
 	} catch (error) {
-		showToast(geti18n('browser_integration.error.delete_failed', { message: error.message }), 'error')
+		showToastI18n('error', 'browser_integration.error.delete_failed', { message: error.message })
 	}
 }
 
@@ -153,12 +153,12 @@ async function handleAddScript(e) {
 			}
 		}))
 
-		showToast(geti18n('browser_integration.autorun.add_success'), 'success')
+		showToastI18n('success', 'browser_integration.autorun.add_success')
 		autorunScriptForm.reset()
 		loadAndRenderAutoRunScripts() // This will re-render the list from the server's metadata
 	}
 	catch (error) {
-		showToast(geti18n('browser_integration.error.add_failed', { message: error.message }), 'error')
+		showToastI18n('error', 'browser_integration.error.add_failed', { message: error.message })
 	}
 }
 
@@ -189,8 +189,8 @@ async function main() {
 
 	copyScriptUrlButton.addEventListener('click', () => {
 		navigator.clipboard.writeText(scriptUrlInput.value)
-			.then(() => showToast(geti18n('browser_integration.copied_message'), 'success'))
-			.catch(e => showToast(e.message, 'error'))
+			.then(() => showToastI18n('success', 'browser_integration.copied_message'))
+			.catch(e => showToast('error', e.message))
 	})
 
 	connectWebSocket()

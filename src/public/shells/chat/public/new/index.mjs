@@ -14,7 +14,7 @@ try {
 }
 catch (e) {
 	console.error(e)
-	showToast(e.message || String(e), 'error')
+	showToast('error', e.stack || e.message || e)
 	throw e
 }
 

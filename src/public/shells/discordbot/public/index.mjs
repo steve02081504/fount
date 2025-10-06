@@ -2,7 +2,7 @@ import { initTranslations, geti18n, i18nElement, promptI18n, confirmI18n } from 
 import { createJsonEditor } from '/scripts/jsonEditor.mjs'
 import { getPartList } from '/scripts/parts.mjs'
 import { applyTheme } from '/scripts/theme.mjs'
-import { showToast } from '/scripts/toast.mjs'
+import { showToast, showToastI18n } from '/scripts/toast.mjs'
 import { createSearchableDropdown } from '/scripts/search.mjs'
 
 import {
@@ -138,7 +138,7 @@ async function handleNewBot() {
 	if (!botname) return
 
 	if (botList.includes(botname)) {
-		showToast(geti18n('discord_bots.alerts.botExists', { botname }), 'error')
+		showToastI18n('error', 'discord_bots.alerts.botExists', { botname })
 		return
 	}
 
@@ -212,13 +212,13 @@ async function handleSaveConfig() {
 
 	try {
 		await setBotConfig(selectedBot, config)
-		showToast(geti18n('discord_bots.alerts.configSaved'), 'success')
+		showToastI18n('success', 'discord_bots.alerts.configSaved')
 		isDirty = false
 
 		saveStatusIcon.src = 'https://api.iconify.design/line-md/confirm-circle.svg'
 	}
 	catch (error) {
-		showToast(error.message + '\n' + error.error || error.errors?.join('\n') || '', 'error')
+		showToast('error', error.message + '\n' + error.error || error.errors?.join('\n') || '')
 		console.error(error)
 
 		saveStatusIcon.src = 'https://api.iconify.design/line-md/emoji-frown.svg'
@@ -242,13 +242,13 @@ async function handleStartStopBot() {
 		const isRunning = runningBots.includes(selectedBot)
 		if (isRunning) {
 			await stopBot(selectedBot)
-			startStopStatusText.textContent = geti18n('discord_bots.configCard.buttons.startBot')
+			startStopStatusText.dataset.i18n = 'discord_bots.configCard.buttons.startBot'
 			startStopBotButton.classList.remove('btn-error')
 			startStopBotButton.classList.add('btn-success')
 		}
 		else {
 			await startBot(selectedBot)
-			startStopStatusText.textContent = geti18n('discord_bots.configCard.buttons.stopBot')
+			startStopStatusText.dataset.i18n = 'discord_bots.configCard.buttons.stopBot'
 			startStopBotButton.classList.remove('btn-success')
 			startStopBotButton.classList.add('btn-error')
 		}
@@ -256,7 +256,7 @@ async function handleStartStopBot() {
 		startStopStatusIcon.src = 'https://api.iconify.design/line-md/confirm-circle.svg'
 	}
 	catch (error) {
-		showToast(error.message + '\n' + error.error || error.errors?.join('\n') || '', 'error')
+		showToast('error', error.message + '\n' + error.error || error.errors?.join('\n') || '')
 		console.error(error)
 
 		startStopStatusIcon.src = 'https://api.iconify.design/line-md/emoji-frown.svg'
@@ -270,7 +270,7 @@ async function handleStartStopBot() {
 
 async function updateStartStopButtonState() {
 	if (!selectedBot) {
-		startStopStatusText.textContent = geti18n('discord_bots.configCard.buttons.startBot')
+		startStopStatusText.dataset.i18n = 'discord_bots.configCard.buttons.startBot'
 		startStopBotButton.classList.remove('btn-error')
 		startStopBotButton.classList.add('btn-success')
 		return
@@ -278,12 +278,12 @@ async function updateStartStopButtonState() {
 	try {
 		const runningBots = await getRunningBotList()
 		if (runningBots.includes(selectedBot)) {
-			startStopStatusText.textContent = geti18n('discord_bots.configCard.buttons.stopBot')
+			startStopStatusText.dataset.i18n = 'discord_bots.configCard.buttons.stopBot'
 			startStopBotButton.classList.remove('btn-success')
 			startStopBotButton.classList.add('btn-error')
 		}
 		else {
-			startStopStatusText.textContent = geti18n('discord_bots.configCard.buttons.startBot')
+			startStopStatusText.dataset.i18n = 'discord_bots.configCard.buttons.startBot'
 			startStopBotButton.classList.remove('btn-error')
 			startStopBotButton.classList.add('btn-success')
 		}

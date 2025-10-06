@@ -263,7 +263,7 @@
 			"title": "Iniciar sesión",
 			"submitButton": "Iniciar sesión",
 			"toggleLink": {
-				"text": "¿No tienes cuenta?",
+				"textContent": "¿No tienes cuenta?",
 				"link": "Regístrate ahora"
 			}
 		},
@@ -271,7 +271,7 @@
 			"title": "Registrarse",
 			"submitButton": "Registrarse",
 			"toggleLink": {
-				"text": "¿Ya tienes una cuenta?",
+				"textContent": "¿Ya tienes una cuenta?",
 				"link": "Inicia sesión ahora"
 			}
 		},
@@ -704,7 +704,7 @@
 			"icon": {
 				"alt": "Icono de carga"
 			},
-			"text": "Arrastra y suelta archivos aquí o haz clic para seleccionar archivos"
+			"textContent": "Arrastra y suelta archivos aquí o haz clic para seleccionar archivos"
 		},
 		"textArea": {
 			"placeholder": "Introduce el texto a importar..."
@@ -1026,10 +1026,12 @@
 		},
 		"buttons": {
 			"save": "Guardar",
-			"delete": "Eliminar"
-		},
-		"tooltips": {
-			"setDefault": "Establecer como predeterminado"
+			"delete": "Eliminar",
+			"setDefault": {
+				"dataset": {
+					"tip": "Establecer como predeterminado"
+				}
+			}
 		},
 		"alerts": {
 			"fetchFileListFailed": "Error al obtener la lista de archivos: ${error}",
@@ -1295,6 +1297,59 @@
 		"verifying": "Verificando...",
 		"solved": "Verificación exitosa",
 		"error": "Verificación fallida",
+		"errorMessage": "Verificación fallida: ${error}",
 		"wasm_disabled": "Habilitar WASM para una verificación más rápida"
+	},
+	"zxcvbn": {
+		"warnings": {
+			"straightRow": "Las teclas continuas en el teclado se adivinan fácilmente.",
+			"keyPattern": "Un patrón de teclado corto es fácil de adivinar.",
+			"simpleRepeat": "Los caracteres repetidos como \"AAA\" se adivinan fácilmente.",
+			"extendedRepeat": "Los patrones de caracteres repetidos como \"ABCABCABC\" se adivinan fácilmente.",
+			"sequences": "Las secuencias de caracteres comunes como \"ABC\" se adivinan fácilmente.",
+			"recentYears": "Los últimos años son fáciles de adivinar.",
+			"dates": "La fecha se adivina fácilmente.",
+			"topTen": "Esta es una contraseña demasiado común.",
+			"topHundred": "Esta es una contraseña que a menudo se usa.",
+			"common": "Esta es una contraseña de uso común.",
+			"similarToCommon": "Esto es similar a una contraseña de uso común.",
+			"wordByItself": "Se adivina fácilmente una sola palabra.",
+			"namesByThemselves": "Se adivina fácilmente un solo nombre o apellido.",
+			"commonNames": "Los nombres comunes y los apellidos son fáciles de adivinar.",
+			"userInputs": "La contraseña no debe contener datos personales o relacionados con la página.",
+			"pwned": "Su contraseña ha sido expuesta en una violación de datos de Internet."
+		},
+		"suggestions": {
+			"l33t": "Evite usar sustituciones de letras predecibles, como usar \"@\" en lugar de \"A\".",
+			"reverseWords": "Evite usar la ortografía inversa de palabras comunes.",
+			"allUppercase": "Capitalizar algunas letras en lugar de todas las letras.",
+			"capitalization": "Ponga en mayúscula más de una letra, no solo la primera.",
+			"dates": "Evite usar fechas y años relacionados con usted.",
+			"recentYears": "Evite usar los años más recientes.",
+			"associatedYears": "Evite usar años relacionados con usted.",
+			"sequences": "Evite las secuencias de caracteres comunes.",
+			"repeated": "Evite las palabras y caracteres repetitivos.",
+			"longerKeyboardPattern": "Use patrones de teclado más largos y cambie las direcciones de entrada varias veces.",
+			"anotherWord": "Agregue palabras más poco comunes.",
+			"useWords": "Use múltiples palabras, pero evite frases comunes.",
+			"noNeed": "No necesita usar símbolos, números o letras mayúsculas para crear contraseñas seguras.",
+			"pwned": "Si usa esta contraseña en otro lugar, se le recomienda hacer cambios."
+		},
+		"timeEstimation": {
+			"ltSecond": "Menos de un segundo",
+			"second": "{base} segundo",
+			"seconds": "{base} segundos",
+			"minute": "{base} min",
+			"minutes": "{base} min",
+			"hour": "{base} hora",
+			"hours": "{base} horas",
+			"day": "{base} día",
+			"days": "{base} días",
+			"month": "{base} mes",
+			"months": "{base} meses",
+			"year": "{base} año",
+			"years": "{base} años",
+			"centuries": "Siglos"
+		}
 	}
 }

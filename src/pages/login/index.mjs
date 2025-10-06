@@ -1,8 +1,7 @@
-import zxcvbn from 'https://esm.sh/zxcvbn'
-
 import { retrieveAndDecryptCredentials, redirectToLoginInfo } from '../scripts/credentialManager.mjs'
 import { ping, generateVerificationCode, login, register } from '../scripts/endpoints.mjs'
-import { initTranslations, geti18n, console, savePreferredLangs } from '../scripts/i18n.mjs'
+import { initTranslations, console, savePreferredLangs, onLanguageChange } from '../scripts/i18n.mjs'
+import { initPasswordStrengthMeter } from '../scripts/passwordStrength.mjs'
 import { createPOWCaptcha } from '../scripts/POWcaptcha.mjs'
 import { applyTheme, setTheme } from '../scripts/theme.mjs'
 import { showToast } from '../scripts/toast.mjs'
@@ -24,13 +23,13 @@ let isLoginForm = true
 let verificationCodeSent = false
 let sendCodeCooldown = false
 let powCaptcha = null
+let passwordStrengthMeter = null
 
 const hasLoggedIn = localStorage.getItem('hasLoggedIn') == 'true'
 
 // 初始化表单状态
 function initializeForm() {
 	isLoginForm = hasLoggedIn
-	updateFormDisplay()
 }
 
 function toggleForm() {
@@ -38,52 +37,24 @@ function toggleForm() {
 	updateFormDisplay()
 }
 
-// 切换表单类型（登录/注册）
+// Toggle form type (login/register)
 function handleToggleClick(event) {
 	event.preventDefault()
 	toggleForm()
 }
 
-function evaluatePasswordStrength(password) {
-	const result = zxcvbn(password)
-	let feedbackText = ''
-	let borderColorClass = ''
-
-	switch (result.score) {
-		case 0:
-			borderColorClass = 'border-red-500'
-			feedbackText = geti18n('auth.passwordStrength.veryWeak')
-			break
-		case 1:
-			borderColorClass = 'border-orange-500'
-			feedbackText = geti18n('auth.passwordStrength.weak')
-			break
-		case 2:
-			borderColorClass = 'border-yellow-500'
-			feedbackText = geti18n('auth.passwordStrength.normal')
-			break
-		case 3:
-			borderColorClass = 'border-lime-500'
-			feedbackText = geti18n('auth.passwordStrength.strong')
-			break
-		case 4:
-			borderColorClass = 'border-green-500'
-			feedbackText = geti18n('auth.passwordStrength.veryStrong')
-			break
-	}
-	let fullFeedback = `<strong>${feedbackText}</strong><br/>`
-	if (result.feedback.warning) fullFeedback += result.feedback.warning + '<br/>'
-	if (result.feedback.suggestions) fullFeedback += result.feedback.suggestions.join('<br/>')
-
-	return { borderColorClass, fullFeedback }
+function refreshUIStrings() {
+	updateFormDisplay()
 }
 
 function updateFormDisplay() {
 	const formType = isLoginForm ? 'login' : 'register'
 
-	formTitle.textContent = geti18n(`auth.${formType}.title`)
-	submitBtn.textContent = geti18n(`auth.${formType}.submitButton`)
-	toggleLink.innerHTML = `${geti18n(`auth.${formType}.toggleLink.text`)}<a href="#" class="link link-primary">${geti18n(`auth.${formType}.toggleLink.link`)}</a>`
+	formTitle.dataset.i18n = `auth.${formType}.title`
+	submitBtn.dataset.i18n = `auth.${formType}.submitButton`
+	const [toggleText, toggleButton] = toggleLink.children
+	toggleText.dataset.i18n = `auth.${formType}.toggleLink.textContent`
+	toggleButton.dataset.i18n = `auth.${formType}.toggleLink.link`
 
 	confirmPasswordGroup.style.display = isLoginForm ? 'none' : 'block'
 	verificationCodeGroup.style.display = isLoginForm || isLocalOrigin ? 'none' : 'block'
@@ -114,7 +85,7 @@ async function handleSendVerificationCode() {
 		const response = await generateVerificationCode()
 
 		if (response.ok) {
-			errorMessage.textContent = geti18n('auth.error.verificationCodeSent')
+			errorMessage.dataset.i18n = 'auth.error.verificationCodeSent'
 			verificationCodeSent = true
 			sendCodeCooldown = true
 			let timeLeft = 60
@@ -126,19 +97,19 @@ async function handleSendVerificationCode() {
 				if (timeLeft <= 0) {
 					clearInterval(countdown)
 					sendVerificationCodeBtn.disabled = false
-					sendVerificationCodeBtn.textContent = geti18n('auth.sendCodeButton')
+					sendVerificationCodeBtn.dataset.i18n = 'auth.sendCodeButton'
 					sendCodeCooldown = false
 				}
 			}, 1000)
 		}
 		else if (response.status === 429)
-			errorMessage.textContent = geti18n('auth.error.verificationCodeRateLimit')
+			errorMessage.dataset.i18n = 'auth.error.verificationCodeRateLimit'
 		else
-			errorMessage.textContent = geti18n('auth.error.verificationCodeSendError')
+			errorMessage.dataset.i18n = 'auth.error.verificationCodeSendError'
 	}
 	catch (error) {
 		console.error('Error sending verification code:', error)
-		errorMessage.textContent = geti18n('auth.error.verificationCodeSendError')
+		errorMessage.dataset.i18n = 'auth.error.verificationCodeSendError'
 	}
 }
 
@@ -148,7 +119,7 @@ async function handleFormSubmit(event) {
 
 	const powToken = powCaptcha?.token
 	if (!isLocalOrigin && !powToken) {
-		errorMessage.textContent = geti18n('auth.error.powNotSolved')
+		errorMessage.dataset.i18n = 'auth.error.powNotSolved'
 		return
 	}
 
@@ -160,23 +131,23 @@ async function handleFormSubmit(event) {
 	if (!isLoginForm) {
 		const confirmPassword = document.getElementById('confirm-password').value
 		if (password !== confirmPassword) {
-			errorMessage.textContent = geti18n('auth.error.passwordMismatch')
+			errorMessage.dataset.i18n = 'auth.error.passwordMismatch'
 			return
 		}
-		// 密码强度检查
-		const { borderColorClass } = evaluatePasswordStrength(password)
-		if (borderColorClass === 'border-red-500' || borderColorClass === 'border-orange-500') {
-			errorMessage.textContent = geti18n('auth.error.lowPasswordStrength')
-			return // 阻止表单提交
+		// Password strength check
+		const { score } = passwordStrengthMeter.evaluate()
+		if (score < 2) {
+			errorMessage.dataset.i18n = 'auth.error.lowPasswordStrength'
+			return // Prevent form submission
 		}
 		if (!isLocalOrigin) {
 			if (!verificationCodeSent) {
-				errorMessage.textContent = geti18n('auth.error.verificationCodeError')
+				errorMessage.dataset.i18n = 'auth.error.verificationCodeError'
 				return
 			}
 			verificationcode = document.getElementById('verification-code').value.trim()
 			if (!verificationcode) {
-				errorMessage.textContent = geti18n('auth.error.verificationCodeError')
+				errorMessage.dataset.i18n = 'auth.error.verificationCodeError'
 				return
 			}
 		}
@@ -217,27 +188,14 @@ async function handleFormSubmit(event) {
 	}
 	catch (error) {
 		console.error('Error during form submission:', error)
-		errorMessage.textContent = isLoginForm
-			? geti18n('auth.error.loginError')
-			: geti18n('auth.error.registrationError')
+		errorMessage.dataset.i18n = isLoginForm
+			? 'auth.error.loginError'
+			: 'auth.error.registrationError'
 	}
 }
 
-// 设置事件监听器
+// Set up event listeners
 function setupEventListeners() {
-	const passwordInput = document.getElementById('password')
-	passwordInput.addEventListener('input', () => {
-		const { borderColorClass, fullFeedback } = evaluatePasswordStrength(passwordInput.value)
-
-		// 更新边框颜色
-		passwordInput.classList.remove('border-red-500', 'border-orange-500', 'border-yellow-500', 'border-lime-500', 'border-green-500')
-		passwordInput.classList.add(borderColorClass)
-
-		// 更新密码强度提示文字
-		passwordStrengthFeedback.innerHTML = fullFeedback
-		passwordStrengthFeedback.classList.remove('text-red-500', 'text-orange-500', 'text-yellow-500', 'text-lime-500', 'text-green-500')
-		passwordStrengthFeedback.classList.add(borderColorClass.replace('border-', 'text-'))
-	})
 	toggleLink.addEventListener('click', handleToggleClick)
 	submitBtn.addEventListener('click', handleFormSubmit)
 	sendVerificationCodeBtn.addEventListener('click', handleSendVerificationCode)
@@ -257,13 +215,15 @@ async function initializeApp() {
 		powCaptchaContainer.style.display = 'block'
 		powCaptcha = await createPOWCaptcha(powCaptchaContainer)
 	} catch (err) {
-		errorMessage.textContent = geti18n('auth.error.powError')
+		errorMessage.dataset.i18n = 'auth.error.powError'
 		console.error(err)
 	}
 
+	passwordStrengthMeter = initPasswordStrengthMeter(passwordInput, passwordStrengthFeedback)
 	setupEventListeners()
 
-	await initializeForm()
+	initializeForm()
+	onLanguageChange(refreshUIStrings)
 	const autologinParam = urlParams.get('autologin') || urlParams.has('autologin')
 	const usernameInput = document.getElementById('username')
 
@@ -303,10 +263,10 @@ async function initializeApp() {
 		if (!isLoginForm) toggleForm()
 		if (powCaptcha) try {
 			submitBtn.disabled = true
-			submitBtn.textContent = geti18n('pow_captcha.verifying')
+			submitBtn.dataset.i18n = 'pow_captcha.verifying'
 			await powCaptcha.solve()
 		} catch (err) {
-			errorMessage.textContent = geti18n('auth.error.powError')
+			errorMessage.dataset.i18n = 'auth.error.powError'
 			console.error(err)
 			return
 		} finally {
@@ -319,6 +279,6 @@ async function initializeApp() {
 
 // 执行初始化
 initializeApp().catch(error => {
-	showToast(error.message, 'error')
+	showToast('error', error.message)
 	window.location.href = '/login'
 })

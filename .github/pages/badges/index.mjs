@@ -1,5 +1,5 @@
-import { initTranslations, geti18n, console } from '../scripts/i18n.mjs'
-import { showToast } from '../scripts/toast.mjs'
+import { initTranslations, console } from '../scripts/i18n.mjs'
+import { showToastI18n } from '../scripts/toast.mjs'
 
 // 获取 DOM 元素
 const originalUrlInput = document.getElementById('originalUrlInput')
@@ -26,7 +26,6 @@ originalUrlInput.addEventListener('input', () => {
 			// 如果没有，用 '?' 开始
 			newUrl += '?logo=fount'
 
-
 		// 更新输出框和预览
 		newUrlOutput.value = newUrl
 		badgePreview.src = newUrl
@@ -50,14 +49,14 @@ copyButton.addEventListener('click', () => {
 	// 使用现代的 Clipboard API
 	navigator.clipboard.writeText(urlToCopy).then(() => {
 		// 提供视觉反馈
-		const originalText = copyButton.innerText
-		copyButton.innerText = geti18n('badges_maker.copied_text')
+		const originalText = copyButton.dataset.i18n
+		copyButton.dataset.i18n = 'badges_maker.copied_text'
 		setTimeout(() => {
-			copyButton.innerText = originalText
+			copyButton.dataset.i18n = originalText
 		}, 1500) // 1.5秒后恢复原状
 	}).catch(err => {
 		console.errorI18n('badges_maker.copy_error', { error: err })
-		showToast(geti18n('badges_maker.copy_fail_alert'), 'error')
+		showToastI18n('error', 'badges_maker.copy_fail_alert')
 	})
 })
 

@@ -263,7 +263,7 @@
 			"title": "Iniciar sessão",
 			"submitButton": "Iniciar sessão",
 			"toggleLink": {
-				"text": "Não tem conta?",
+				"textContent": "Não tem conta?",
 				"link": "Registe-se agora"
 			}
 		},
@@ -271,7 +271,7 @@
 			"title": "Registar",
 			"submitButton": "Registar",
 			"toggleLink": {
-				"text": "Já tem uma conta?",
+				"textContent": "Já tem uma conta?",
 				"link": "Iniciar sessão agora"
 			}
 		},
@@ -704,7 +704,7 @@
 			"icon": {
 				"alt": "Ícone de Carregamento"
 			},
-			"text": "Arraste e solte ficheiros aqui ou clique para selecionar ficheiros."
+			"textContent": "Arraste e solte ficheiros aqui ou clique para selecionar ficheiros."
 		},
 		"textArea": {
 			"placeholder": "Digite o texto para importar..."
@@ -1026,10 +1026,12 @@
 		},
 		"buttons": {
 			"save": "Guardar",
-			"delete": "Eliminar"
-		},
-		"tooltips": {
-			"setDefault": "Definido como padrão"
+			"delete": "Eliminar",
+			"setDefault": {
+				"dataset": {
+					"tip": "Definido como padrão"
+				}
+			}
 		},
 		"alerts": {
 			"fetchFileListFailed": "Falha ao obter a lista de ficheiros: ${error}",
@@ -1295,6 +1297,59 @@
 		"verifying": "Verificando ...",
 		"solved": "Verificação bem-sucedida",
 		"error": "Verificação falhou",
+		"errorMessage": "Verificação falhou: ${error}",
 		"wasm_disabled": "Ative o WASM para uma verificação mais rápida"
+	},
+	"zxcvbn": {
+		"warnings": {
+			"straightRow": "As teclas contínuas no teclado são facilmente adivinhadas.",
+			"keyPattern": "Um padrão de teclado curto é fácil de adivinhar.",
+			"simpleRepeat": "Personagens repetidos como \"AAA\" são facilmente adivinhados.",
+			"extendedRepeat": "Padrões repetidos de caracteres como \"abcabcabc\" são facilmente adivinhados.",
+			"sequences": "Sequências de caracteres comuns como \"ABC\" são facilmente adivinhadas.",
+			"recentYears": "Os últimos anos são fáceis de adivinhar.",
+			"dates": "A data é facilmente adivinhada.",
+			"topTen": "Esta é uma senha usada demais.",
+			"topHundred": "Esta é uma senha que geralmente é usada.",
+			"common": "Esta é uma senha comumente usada.",
+			"similarToCommon": "Isso é semelhante a uma senha comumente usada.",
+			"wordByItself": "Uma única palavra é facilmente adivinhada.",
+			"namesByThemselves": "Um único primeiro ou sobrenome é facilmente adivinhado.",
+			"commonNames": "Os nomes e sobrenomes comuns são fáceis de adivinhar.",
+			"userInputs": "A senha não deve conter dados pessoais ou relacionados à página.",
+			"pwned": "Sua senha foi exposta em uma violação de dados da Internet."
+		},
+		"suggestions": {
+			"l33t": "Evite usar substituições de letras previsíveis, como o uso de \"@\" em vez de \"A\".",
+			"reverseWords": "Evite usar ortografia reversa de palavras comuns.",
+			"allUppercase": "Capitalize alguns em vez de todas as letras.",
+			"capitalization": "Mais do que capitalizar a carta inicial.",
+			"dates": "Evite usar datas e anos relacionados a você.",
+			"recentYears": "Evite usar os anos mais recentes.",
+			"associatedYears": "Evite usar anos relacionados a você.",
+			"sequences": "Evite seqüências de caracteres comuns.",
+			"repeated": "Evite palavras e personagens repetitivos.",
+			"longerKeyboardPattern": "Use o modo de teclado mais longo e altere as direções de entrada várias vezes.",
+			"anotherWord": "Adicione mais palavras incomuns.",
+			"useWords": "Use várias palavras, mas evite frases comuns.",
+			"noNeed": "Você não precisa usar símbolos, números ou letras maiúsculas para criar senhas fortes.",
+			"pwned": "Se você usar essa senha em outro lugar, é aconselhado a fazer alterações."
+		},
+		"timeEstimation": {
+			"ltSecond": "Menos de um segundo",
+			"second": "{base} segundo",
+			"seconds": "{base} segundos",
+			"minute": "{base} min",
+			"minutes": "{base} min",
+			"hour": "{base} horas",
+			"hours": "{base} horas",
+			"day": "{base} dia",
+			"days": "{base} dias",
+			"month": "{base} mês",
+			"months": "{base} meses",
+			"year": "{base} anos",
+			"years": "{base} anos",
+			"centuries": "Séculos"
+		}
 	}
 }

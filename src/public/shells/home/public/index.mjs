@@ -348,7 +348,6 @@ async function displayFunctionButtons() {
 	searchInput.type = 'text'
 	searchInput.classList.add('input', 'input-sm', 'w-full')
 	searchInput.dataset.i18n = 'home.functionMenu.search'
-	searchInput.placeholder = geti18n('home.functionMenu.search.placeholder')
 	searchInput.addEventListener('click', e => e.stopPropagation())
 	functionButtonsContainer.appendChild(searchInput)
 
@@ -395,15 +394,39 @@ async function updateTabContent(itemType) {
 	currentItemType = itemType
 	sessionStorage.setItem('fount.home.lastTab', itemType) // Persist tab in sessionStorage
 
-	const pageTitleKey = `home.${itemType}.title`
-	const instructionKey = `home.${itemType}.subtitle`
-	pageTitle.textContent = geti18n(pageTitleKey)
-	instruction.textContent = geti18n(instructionKey)
+	pageTitle.dataset.i18n = `home.${itemType}.title`
+	instruction.dataset.i18n = `home.${itemType}.subtitle`
 
 	// Display items for the new tab
 	await displayItemList(itemType)
 
 	itemDescription.innerHTML = geti18n('home.itemDescription') // Reset sidebar
+
+	// Set active tab UI
+	const tabs = [
+		{ tab: charsTab, tabDesktop: charsTabDesktop, itemType: 'chars' },
+		{ tab: worldsTab, tabDesktop: worldsTabDesktop, itemType: 'worlds' },
+		{ tab: personasTab, tabDesktop: personasTabDesktop, itemType: 'personas' },
+	]
+	tabs.forEach(t => {
+		[t.tab, t.tabDesktop].filter(Boolean).forEach(el => el.classList.remove('tab-active'))
+	})
+	const initialTab = tabs.find(t => t.itemType === itemType)
+	if (initialTab)
+		[initialTab.tab, initialTab.tabDesktop].filter(Boolean).forEach(el => el.classList.add('tab-active'))
+}
+
+async function fetchData() {
+	await Promise.all([
+		getHomeRegistry().then(async data => {
+			homeRegistry = data
+			await displayFunctionButtons()
+		}).catch(error => console.error('Failed to fetch home registry:', error)),
+		getDefaultParts().then(data => {
+			defaultParts = data
+			updateDefaultPartDisplay()
+		}).catch(error => console.error('Failed to fetch default parts:', error)),
+	])
 }
 
 async function refreshCurrentTab() {
@@ -436,35 +459,20 @@ async function initializeApp() {
 
 	onLanguageChange(refreshCurrentTab)
 
-	// Fetch initial data
-	await fetchData()
-
-	const tabs = [
-		{ tab: charsTab, tabDesktop: charsTabDesktop, itemType: 'chars' },
-		{ tab: worldsTab, tabDesktop: worldsTabDesktop, itemType: 'worlds' },
-		{ tab: personasTab, tabDesktop: personasTabDesktop, itemType: 'personas' },
+	const tabConfigs = [
+		{ elements: [charsTab, charsTabDesktop], type: 'chars' },
+		{ elements: [worldsTab, worldsTabDesktop], type: 'worlds' },
+		{ elements: [personasTab, personasTabDesktop], type: 'personas' },
 	]
 
-	tabs.forEach(({ tab, tabDesktop, itemType }) => {
-		[tab, tabDesktop].filter(Boolean).forEach(tabElement => {
-			tabElement.addEventListener('click', async () => {
-				await updateTabContent(itemType)
-				// Remove active class from all tabs, then add to current
-				tabs.forEach(t => {
-					[t.tab, t.tabDesktop].filter(Boolean).forEach(el => el.classList.remove('tab-active'))
-				})
-				tabElement.classList.add('tab-active')
+	tabConfigs.forEach(({ elements, type }) => {
+		elements.filter(Boolean).forEach(el => {
+			el.addEventListener('click', e => {
+				e.preventDefault()
+				updateTabContent(type)
 			})
 		})
 	})
-
-	// Initial display (using the stored tab or default 'chars')
-	await updateTabContent(currentItemType)
-
-	// Set active tab UI
-	const initialTab = tabs.find(t => t.itemType === currentItemType)
-	if (initialTab)
-		[initialTab.tab, initialTab.tabDesktop].filter(Boolean).forEach(el => el.classList.add('tab-active'))
 
 	// Filter input event (consider debouncing)
 	filterInput.addEventListener('input', filterItemList)
@@ -518,20 +526,7 @@ async function initializeApp() {
 	}, true)
 }
 
-async function fetchData() {
-	await Promise.all([
-		getHomeRegistry().then(async data => {
-			homeRegistry = data
-			await displayFunctionButtons()
-		}).catch(error => console.error('Failed to fetch home registry:', error)),
-		getDefaultParts().then(data => {
-			defaultParts = data
-			updateDefaultPartDisplay()
-		}).catch(error => console.error('Failed to fetch default parts:', error)),
-	])
-}
-
 initializeApp().catch(error => {
-	showToast(error.message, 'error')
+	showToast('error', error.message)
 	window.location.href = '/login'
 })

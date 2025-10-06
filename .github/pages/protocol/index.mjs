@@ -3,8 +3,8 @@ import '../base.mjs'
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
 import { getFountHostUrl, pingFount } from '../scripts/fountHostGetter.mjs'
-import { initTranslations, geti18n } from '../scripts/i18n.mjs'
-import { showToast } from '../scripts/toast.mjs'
+import { initTranslations } from '../scripts/i18n.mjs'
+import { showToastI18n } from '../scripts/toast.mjs'
 
 const fountProtocolUrl = urlParams.get('url')
 
@@ -33,12 +33,12 @@ async function main() {
 
 	const newHostUrl = await getFountHostUrl()
 	if (newHostUrl) return useUrlProtocol(newHostUrl)
-	showToast(geti18n('protocolhandler.fountNotFound'), 'error')
+	showToastI18n('error', 'protocolhandler.fountNotFound')
 	setTimeout(() => window.location.href = 'https://github.com/steve02081504/fount', 5000)
 }
 
 main().catch(e => {
 	Sentry.captureException(e)
-	showToast(geti18n('protocolhandler.unknownError', { error: e }), 'error')
+	showToastI18n('error', 'protocolhandler.unknownError', { error: e })
 	setTimeout(() => window.location.href = 'https://github.com/steve02081504/fount', 5000)
 })

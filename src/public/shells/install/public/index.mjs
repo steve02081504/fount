@@ -1,7 +1,7 @@
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
-import { showToast } from '../../scripts/toast.mjs'
+import { showToastI18n } from '../../scripts/toast.mjs'
 
 import { importFiles, importText } from './src/endpoints.mjs'
 
@@ -122,14 +122,14 @@ importButton.addEventListener('click', async () => {
 		else
 			await handleTextImport()
 
-		showToast(geti18n('import.alerts.importSuccess'), 'success')
+		showToastI18n('success', 'import.alerts.importSuccess')
 	}
 	catch (error) {
 		let errorMessage = error.message || geti18n('import.alerts.unknownError')
 		if (error.errors)
 			errorMessage += `\n${formatErrors(error.errors)}`
 
-		showToast(geti18n('import.alerts.importFailed', { error: errorMessage }), 'error')
+		showToastI18n('error', 'import.alerts.importFailed', { error: errorMessage })
 	}
 })
 

@@ -1,6 +1,5 @@
-import { geti18n, offLanguageChange, onLanguageChange } from './i18n.mjs'
-import { onElementRemoved } from './onElementRemoved.mjs'
-import { showToast } from './toast.mjs'
+import { geti18n, setLocalizeLogic } from './i18n.mjs'
+import { showToastI18n } from './toast.mjs'
 
 const capPromise = new Promise((resolve, reject) => {
 	if (window.Cap) return resolve()
@@ -42,29 +41,23 @@ export async function createPOWCaptcha(container) {
 	const widget = document.createElement('cap-widget')
 
 	// Apply translations
-	const updateI18n = () => {
+	setLocalizeLogic(widget, () => {
 		widget.setAttribute('data-cap-i18n-verifying-label', geti18n('pow_captcha.verifying'))
 		widget.setAttribute('data-cap-i18n-initial-state', geti18n('pow_captcha.initial'))
 		widget.setAttribute('data-cap-i18n-solved-label', geti18n('pow_captcha.solved'))
 		widget.setAttribute('data-cap-i18n-error-label', geti18n('pow_captcha.error'))
 		widget.setAttribute('data-cap-i18n-wasm-disabled', geti18n('pow_captcha.wasm_disabled'))
-	}
-
-	updateI18n()
-	onLanguageChange(updateI18n)
+	})
 
 	// Clear container and append widget
 	container.replaceChildren(widget)
 
 	const cap = new window.Cap({ apiEndpoint: '/api/pow/' }, widget)
 
-	// Register cleanup logic for when the element is removed
-	onElementRemoved(widget, () => offLanguageChange(updateI18n))
-
 	// Event listeners for promise resolution
 	widget.addEventListener('error', (e) => {
 		console.error('POW CAPTCHA Error:', e.detail)
-		showToast(geti18n('pow_captcha.error') + `: ${e.detail.message}`, 'error')
+		showToastI18n('error', 'pow_captcha.errorMessage', { error: `${e.detail.message}` })
 	})
 
 	return cap

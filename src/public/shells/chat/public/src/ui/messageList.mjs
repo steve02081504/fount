@@ -130,20 +130,20 @@ export async function renderMessage(message) {
 		dropdownMenu.querySelector('.copy-markdown-button').addEventListener('click', async () => {
 			try {
 				await navigator.clipboard.writeText(messageMarkdownContent)
-			} catch (error) { showToast(error.stack || error.message || error, 'error') }
+			} catch (error) { showToast('error', error.stack || error.message || error) }
 			dropdownMenu.hidePopover()
 		})
 		dropdownMenu.querySelector('.copy-text-button').addEventListener('click', async () => {
 			try {
 				await navigator.clipboard.writeText(messageContentElement.textContent.trim())
-			} catch (error) { showToast(error.stack || error.message || error, 'error') }
+			} catch (error) { showToast('error', error.stack || error.message || error) }
 			dropdownMenu.hidePopover()
 		})
 		dropdownMenu.querySelector('.copy-html-button').addEventListener('click', async () => {
 			try {
 				const fullHtml = generateFullHtmlForMessage(messageContentElement.innerHTML)
 				await navigator.clipboard.writeText(fullHtml)
-			} catch (error) { showToast(error.stack || error.message || error, 'error') }
+			} catch (error) { showToast('error', error.stack || error.message || error) }
 			dropdownMenu.hidePopover()
 		})
 
@@ -164,7 +164,7 @@ export async function renderMessage(message) {
 					URL.revokeObjectURL(url)
 				}
 				catch (error) {
-					showToast(error, 'error')
+					showToast('error', error.stack || error.message || error)
 				}
 				dropdownMenu.hidePopover()
 			})

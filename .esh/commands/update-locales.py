@@ -8,6 +8,8 @@ from deep_translator import GoogleTranslator
 import time
 from collections import OrderedDict, Counter
 import sys
+import concurrent.futures
+import pathspec
 
 # ----------- 配置 -----------
 # locales 文件夹相对于脚本的位置 (根据你的项目结构调整)
@@ -45,6 +47,18 @@ PLACEHOLDER_SIMILARITY_THRESHOLD_FACTOR = 0.7  # 用于计算最大可接受距�
 PLACEHOLDER_ABSOLUTE_DISTANCE_THRESHOLD = 3  # 或者一个固定的最大编辑距离
 # ----------- 配置结束 -----------
 
+def load_gitignore_spec(fount_root_dir):
+	"""Loads .gitignore and returns a pathspec.PathSpec object."""
+	gitignore_path = os.path.join(fount_root_dir, ".gitignore")
+	spec = None
+	if not os.path.exists(gitignore_path):
+		print("警告: 未找到 .gitignore 文件，不应用任何忽略规则。")
+		return spec
+	with open(gitignore_path, "r", encoding="utf-8") as f:
+		spec = pathspec.PathSpec.from_lines("gitwildmatch", f)
+	print(f"已从 .gitignore 加载忽略规则。")
+	return spec
+
 # 获取Google支持的语言代码字典和代码集合
 try:
 	supp_lang_translator = GoogleTranslator(source="auto", target="en")  # 临时实例
@@ -79,7 +93,7 @@ def get_value_at_path(data_dict, key_path):
 		return None, False
 
 
-def update_translation_at_path_in_data(target_lang_data, key_path, new_text_content, is_dict_with_text_field):
+def update_translation_at_path_in_data(target_lang_data, key_path, new_text_content):
 	"""
 	辅助函数，用于更新 all_data 结构中特定路径的翻译字符串。
 	如果 new_text_content 为 None，则表示清空，将设置为空字符串。
@@ -104,20 +118,13 @@ def update_translation_at_path_in_data(target_lang_data, key_path, new_text_cont
 	# 如果 new_text_content 是 None，我们将其视为空字符串，表示清空或重置
 	effective_text_content = "" if new_text_content is None else new_text_content
 
-	if is_dict_with_text_field:
-		if isinstance(original_node_value, (OrderedDict, dict)) and "text" in original_node_value:
-			if original_node_value["text"] != effective_text_content:
-				original_node_value["text"] = effective_text_content
-				made_change = True
-		else:
-			new_node = OrderedDict([("text", effective_text_content)])
-			if original_node_value != new_node:
-				current_level_obj[final_key] = new_node
-				made_change = True
-	else:
-		if original_node_value != effective_text_content:
-			current_level_obj[final_key] = effective_text_content
-			made_change = True
+	# Since key_path always points to a string now, we can simplify the update logic.
+	if not isinstance(original_node_value, str) and original_node_value is not None:
+		print(f"  警告: 路径 '{key_path}' 的目标值不是字符串 (类型: {type(original_node_value).__name__})。将覆盖它。")
+
+	if original_node_value != effective_text_content:
+		current_level_obj[final_key] = effective_text_content
+		made_change = True
 
 	return made_change
 
@@ -289,9 +296,10 @@ def translate_value(value, source_lang, target_lang):
 		return value
 
 
-def normalize_string_or_text_obj(parent_dict_a, parent_dict_b, key, lang_a, lang_b, path):
+def normalize_string_vs_object_with_textContent(parent_dict_a, parent_dict_b, key, lang_a, lang_b, path):
 	"""
-	Normalizes cases where one value is a string and the other is an {'text': 'string'} object.
+	Normalizes cases where one value is a string and the other is an object with a 'textContent' property.
+	This aligns with the logic in i18n.mjs where a string is treated as textContent.
 	Modifies the parent dictionary in place.
 	Returns (val_a, val_b, changed_flag).
 	"""
@@ -300,18 +308,20 @@ def normalize_string_or_text_obj(parent_dict_a, parent_dict_b, key, lang_a, lang
 
 	is_val_a_str = isinstance(val_a, str)
 	is_val_b_str = isinstance(val_b, str)
-	is_val_a_text_obj = isinstance(val_a, OrderedDict) and "text" in val_a and isinstance(val_a["text"], str) and len(val_a) == 1
-	is_val_b_text_obj = isinstance(val_b, OrderedDict) and "text" in val_b and isinstance(val_b["text"], str) and len(val_b) == 1
+	is_val_a_tc_obj = isinstance(val_a, (OrderedDict, dict)) and "textContent" in val_a
+	is_val_b_tc_obj = isinstance(val_b, (OrderedDict, dict)) and "textContent" in val_b
 
-	if is_val_a_str and is_val_b_text_obj:
-		parent_dict_a[key] = OrderedDict([("text", val_a)])
+	# Case 1: A is string, B is object with textContent -> Convert A to object
+	if is_val_a_str and is_val_b_tc_obj:
+		parent_dict_a[key] = OrderedDict([("textContent", val_a)])
 		val_a = parent_dict_a[key]
-		print(f"  - 规范化: @ '{path}' 中 '{lang_a}' 的字符串值已转换为 {{'text': ...}} 以匹配 '{lang_b}'。")
+		print(f"  - 规范化: @ '{path}' 中 '{lang_a}' 的字符串值已转换为 {{'textContent': ...}} 以匹配 '{lang_b}'。")
 		changed_here = True
-	elif is_val_b_str and is_val_a_text_obj:
-		parent_dict_b[key] = OrderedDict([("text", val_b)])
+	# Case 2: B is string, A is object with textContent -> Convert B to object
+	elif is_val_b_str and is_val_a_tc_obj:
+		parent_dict_b[key] = OrderedDict([("textContent", val_b)])
 		val_b = parent_dict_b[key]
-		print(f"  - 规范化: @ '{path}' 中 '{lang_b}' 的字符串值已转换为 {{'text': ...}} 以匹配 '{lang_a}'。")
+		print(f"  - 规范化: @ '{path}' 中 '{lang_b}' 的字符串值已转换为 {{'textContent': ...}} 以匹配 '{lang_a}'。")
 		changed_here = True
 
 	return val_a, val_b, changed_here
@@ -347,7 +357,7 @@ def handle_missing_key_translation(target_dict, source_dict, key, target_lang, s
 def sync_common_key(dict_a, dict_b, key, lang_a, lang_b, reference_codes, path):
 	"""处理在两个字典中都存在的键。"""
 	changed_here = False
-	val_a, val_b, normalized_changed = normalize_string_or_text_obj(dict_a, dict_b, key, lang_a, lang_b, path)
+	val_a, val_b, normalized_changed = normalize_string_vs_object_with_textContent(dict_a, dict_b, key, lang_a, lang_b, path)
 	if normalized_changed:
 		changed_here = True
 
@@ -596,7 +606,7 @@ def process_registry_item_info(item_object_in_list, reg_key_list_name, item_inde
 	return item_changed
 
 
-def process_home_registries(map_lang_to_path, global_ref_lang_codes):
+def process_home_registries(map_lang_to_path, global_ref_lang_codes, gitignore_spec):
 	if not os.path.isdir(FOUNT_DIR):
 		print(f"警告: fount 目录 '{FOUNT_DIR}' 不存在，跳过 home_registry.json 处理。")
 		return
@@ -609,11 +619,16 @@ def process_home_registries(map_lang_to_path, global_ref_lang_codes):
 	print(f"可用的区域语言 (来自 locales): {', '.join(sorted(list(available_locale_langs)))}")
 	registry_keys_to_process = ["home_function_buttons", "home_char_interfaces", "home_world_interfaces", "home_persona_interfaces", "home_common_interfaces"]
 
-	for root, _, files in os.walk(FOUNT_DIR):
+	for root, dirs, files in os.walk(FOUNT_DIR):
+		if gitignore_spec:
+			# Prune directories using pathspec
+			dirs[:] = [d for d in dirs if not gitignore_spec.match_file(os.path.relpath(os.path.join(root, d), FOUNT_DIR))]
+
 		for filename in files:
 			if filename == "home_registry.json":
 				filepath = os.path.join(root, filename)
-				print(f"\n处理文件: {filepath}")
+				if gitignore_spec and gitignore_spec.match_file(os.path.relpath(filepath, FOUNT_DIR)):
+					continue
 				try:
 					with open(filepath, "r", encoding="utf-8") as f:
 						registry_data = json.load(f, object_pairs_hook=OrderedDict)
@@ -636,12 +651,10 @@ def process_home_registries(map_lang_to_path, global_ref_lang_codes):
 							f.write("\n")
 					except Exception as e:
 						print(f"  错误: 保存 {filepath} 时出错: {e}")
-				else:
-					print(f"  文件 {filepath} 无需更改。")
 	print("--- fount 目录 home_registry.json 文件处理完毕 ---")
 
 
-def check_used_keys_in_fount(fount_dir, reference_loc_data, reference_lang_code):
+def check_used_keys_in_fount(fount_dir, reference_loc_data, reference_lang_code, gitignore_spec):
 	if not os.path.isdir(fount_dir):
 		print(f"警告: fount 目录 '{fount_dir}' 不存在，跳过i18n键使用情况检查。")
 		return
@@ -650,8 +663,16 @@ def check_used_keys_in_fount(fount_dir, reference_loc_data, reference_lang_code)
 	regex_patterns = [re.compile(r"data-i18n=(?:\"([a-zA-Z0-9_.-]+)\"|'([a-zA-Z0-9_.-]+)')"), re.compile(r"(?:geti|I)18n\((?:\"([a-zA-Z0-9_.-]+)\"|'([a-zA-Z0-9_.-]+)')\)")]
 	found_keys_in_fount_code = set()
 
-	for root, _, files in os.walk(fount_dir):
+	for root, dirs, files in os.walk(fount_dir):
+		if gitignore_spec:
+			# Prune directories using pathspec
+			dirs[:] = [d for d in dirs if not gitignore_spec.match_file(os.path.relpath(os.path.join(root, d), fount_dir))]
+
 		for filename in files:
+			filepath = os.path.join(root, filename)
+			if gitignore_spec and gitignore_spec.match_file(os.path.relpath(filepath, fount_dir)):
+				continue
+
 			if filename.endswith((".mjs", ".html")):
 				filepath = os.path.join(root, filename)
 				try:
@@ -692,19 +713,15 @@ def extract_placeholders(text_string: str) -> list[str]:
 
 
 def collect_all_translatable_key_paths_recursive(current_data, current_path_prefix, collected_paths):
-	"""递归收集指向可翻译字符串或简单 {"text": "string"} 对象的键路径。"""
+	"""递归收集所有指向字符串值的键路径。"""
 	if isinstance(current_data, str):
 		if current_path_prefix:
 			collected_paths.add(current_path_prefix)
-	elif isinstance(current_data, OrderedDict):
-		is_simple_text_object = "text" in current_data and isinstance(current_data["text"], str) and all(key == "text" for key in current_data.keys())
-		if is_simple_text_object:
-			if current_path_prefix:
-				collected_paths.add(current_path_prefix)
-		else:
-			for key, value in current_data.items():
-				new_prefix = f"{current_path_prefix}.{key}" if current_path_prefix else key
-				collect_all_translatable_key_paths_recursive(value, new_prefix, collected_paths)
+	elif isinstance(current_data, (dict, OrderedDict)):
+		# Recurse into all dictionary values
+		for key, value in current_data.items():
+			new_prefix = f"{current_path_prefix}.{key}" if current_path_prefix else key
+			collect_all_translatable_key_paths_recursive(value, new_prefix, collected_paths)
 
 
 def get_string_values_for_key_path(all_data_files, languages_map, key_path):
@@ -715,15 +732,11 @@ def get_string_values_for_key_path(all_data_files, languages_map, key_path):
 		if not lang_code:
 			continue
 		value_node, found = get_value_at_path(content_dict, key_path)
-		if found:
-			text_content, is_dict_obj = None, False
-			if isinstance(value_node, str):
-				text_content = value_node
-			elif isinstance(value_node, OrderedDict) and "text" in value_node and isinstance(value_node["text"], str) and all(k == "text" for k in value_node.keys()):
-				text_content = value_node["text"]
-				is_dict_obj = True
-			if text_content is not None:
-				string_values_info[lang_code] = {"text": text_content, "file_path": file_path, "is_dict_obj": is_dict_obj}
+		if found and isinstance(value_node, str):
+			# The key_path now always points to a string, so we just need to store it.
+			# The concept of 'is_dict_obj' is no longer needed for placeholder alignment
+			# as the update function will operate directly on the string at its path.
+			string_values_info[lang_code] = {"text": value_node, "file_path": file_path}
 	return string_values_info
 
 
@@ -749,7 +762,7 @@ def handle_placeholder_count_mismatch(lang_code, lang_info, key_path, current_ph
 	"""处理占位符数量不匹配的情况：打印警告并清空翻译。"""
 	reason = f"占位符数量不匹配 (当前: {current_ph_list_ordered_len}, 应为: {most_frequent_count})"
 	print(f"    - 清理翻译: 键 '{key_path}' 在 '{lang_code}'. 原因: {reason}.")
-	return update_translation_at_path_in_data(lang_file_data, key_path, None, lang_info["is_dict_obj"])
+	return update_translation_at_path_in_data(lang_file_data, key_path, None)
 
 
 def handle_placeholder_name_mismatch(lang_code, lang_info, key_path, current_ph_list_ordered, canonical_placeholder_list_ordered, canonical_placeholder_set, lang_file_data) -> bool:
@@ -761,10 +774,10 @@ def handle_placeholder_name_mismatch(lang_code, lang_info, key_path, current_ph_
 	fixed_text, repair_successful = attempt_placeholder_name_fix(original_text, current_ph_list_ordered, canonical_placeholder_list_ordered, canonical_placeholder_set, key_path, lang_code)
 
 	if repair_successful and fixed_text is not None:
-		return update_translation_at_path_in_data(lang_file_data, key_path, fixed_text, lang_info["is_dict_obj"])
+		return update_translation_at_path_in_data(lang_file_data, key_path, fixed_text)
 	else:
 		print(f"      - 无法自信地修复占位符名称。将清理翻译。键: '{key_path}', 语言: '{lang_code}'.")
-		return update_translation_at_path_in_data(lang_file_data, key_path, None, lang_info["is_dict_obj"])
+		return update_translation_at_path_in_data(lang_file_data, key_path, None)
 
 
 def align_placeholders_with_list(original_text_with_placeholders: str, new_placeholder_names: list[str]) -> str:
@@ -903,36 +916,48 @@ def perform_global_placeholder_alignment(all_data_files, languages_map, referenc
 
 
 # --- 主逻辑辅助函数 ---
+def load_single_locale_file(filepath):
+	"""Loads a single locale file and returns its data."""
+	lang = get_lang_from_filename(filepath)
+	if not lang:
+		print(f"  - 警告: 无法从 '{os.path.basename(filepath)}' 提取语言代码，跳过。")
+		return None
+	try:
+		with open(filepath, "r", encoding="utf-8") as f:
+			data = json5.load(f, object_pairs_hook=OrderedDict)
+			if not isinstance(data, OrderedDict):
+				print(f"  - 警告: 文件 {os.path.basename(filepath)} 根部不是对象，跳过。")
+				return None
+		print(f"  - 已加载: {os.path.basename(filepath)} ({lang})")
+		return filepath, lang, data
+	except Exception as e:
+		print(f"  - 错误: 加载或解析 {os.path.basename(filepath)} 失败: {e}。跳过。")
+		return None
+
+
 def load_locale_files():
-	"""从 LOCALE_DIR 加载所有 .json 文件。"""
+	"""从 LOCALE_DIR 并行加载所有 .json 文件。"""
 	if not os.path.isdir(LOCALE_DIR):
 		print(f"错误: 目录 '{LOCALE_DIR}' 不存在。")
 		sys.exit(1)
 
 	all_data, languages, lang_to_path = OrderedDict(), {}, {}
 	print("加载本地化文件...")
-	for filename in sorted(os.listdir(LOCALE_DIR)):
-		if not filename.endswith(".json"):
-			continue
-		filepath = os.path.join(LOCALE_DIR, filename)
-		lang = get_lang_from_filename(filename)
-		if not lang:
-			print(f"  - 警告: 无法从 '{filename}' 提取语言代码，跳过。")
-			continue
-		try:
-			with open(filepath, "r", encoding="utf-8") as f:
-				data = json5.load(f, object_pairs_hook=OrderedDict)
-				if not isinstance(data, OrderedDict):
-					print(f"  - 警告: 文件 {filename} 根部不是对象，跳过。")
-					continue
-				all_data[filepath] = data
-				languages[filepath] = lang
-				if lang in lang_to_path:
-					print(f"  - 警告: 语言代码 '{lang}' 重复。将使用后加载的文件 '{filename}'。")
-				lang_to_path[lang] = filepath
-				print(f"  - 已加载: {filename} ({lang})")
-		except Exception as e:
-			print(f"  - 错误: 加载或解析 {filename} 失败: {e}。跳过。")
+
+	filepaths = [os.path.join(LOCALE_DIR, filename) for filename in sorted(os.listdir(LOCALE_DIR)) if filename.endswith(".json")]
+
+	# The results from map will be in the same order as the filepaths, which is sorted.
+	with concurrent.futures.ThreadPoolExecutor() as executor:
+		results = executor.map(load_single_locale_file, filepaths)
+
+	for result in results:
+		if result:
+			filepath, lang, data = result
+			all_data[filepath] = data
+			languages[filepath] = lang
+			if lang in lang_to_path:
+				print(f"  - 警告: 语言代码 '{lang}' 重复。将使用后加载的文件 '{os.path.basename(filepath)}'。")
+			lang_to_path[lang] = filepath
 
 	if not all_data:
 		print("未找到或加载任何有效的本地化文件。")
@@ -984,7 +1009,7 @@ def run_synchronization_loop(all_data, languages, ref_path):
 
 
 def save_locale_files(all_data, ref_path):
-	"""根据参考文件对所有文件进行排序并保存。"""
+	"""根据参考文件对所有文件进行排序并保存，仅在内容更改时写入。"""
 	if ref_path not in all_data:
 		print(f"\n错误: 参考文件 '{os.path.basename(ref_path)}' 丢失，无法排序。")
 		if not all_data:
@@ -995,15 +1020,32 @@ def save_locale_files(all_data, ref_path):
 
 	print(f"\n--- 开始根据参考文件 '{os.path.basename(ref_path)}' 排序并保存所有文件 ---")
 	ref_data = all_data[ref_path]
+	# First, reorder all data in memory
 	for filepath, data in all_data.items():
 		all_data[filepath] = reorder_keys_like_reference(data, ref_data)
 
+	# Then, iterate and save if changed
 	for filepath, ordered_data in sorted(all_data.items()):
 		try:
-			with open(filepath, "w", encoding="utf-8", newline="\n", errors="replace") as f:
-				json.dump(ordered_data, f, ensure_ascii=False, indent="\t", default=str)
-				f.write("\n")
-			print(f"  - 已保存: {os.path.basename(filepath)}")
+			# 1. Generate new content as a string
+			new_content_str = json.dumps(ordered_data, ensure_ascii=False, indent="\t", default=str) + "\n"
+
+			# 2. Read old content if file exists
+			old_content_str = ""
+			if os.path.exists(filepath):
+				try:
+					with open(filepath, "r", encoding="utf-8") as f:
+						old_content_str = f.read()
+				except Exception as e:
+					print(f"  - 警告: 无法读取现有文件 {os.path.basename(filepath)} 进行比较: {e}")
+					# Force save if reading fails
+					old_content_str = ""
+
+			# 3. Compare and write only if different
+			if old_content_str != new_content_str:
+				with open(filepath, "w", encoding="utf-8", newline="\n", errors="replace") as f:
+					f.write(new_content_str)
+				print(f"  - 已保存 (已修改): {os.path.basename(filepath)}")
 		except Exception as e:
 			print(f"  - 错误: 保存 {os.path.basename(filepath)} 时出错: {e}")
 
@@ -1045,13 +1087,15 @@ def generate_list_csv(all_data):
 # --- 主逻辑 (重构后) ---
 def main():
 	"""主执行函数"""
+	gitignore_spec = load_gitignore_spec(FOUNT_DIR)
+
 	all_data, languages, lang_to_path = load_locale_files()
 
 	ref_path, ref_lang = find_reference_language(lang_to_path, all_data, languages)
 
 	first_ref_lang = next((lang for lang in REFERENCE_LANG_CODES if lang in lang_to_path), ref_lang)
 	if first_ref_lang:
-		check_used_keys_in_fount(FOUNT_DIR, all_data[lang_to_path[first_ref_lang]], first_ref_lang)
+		check_used_keys_in_fount(FOUNT_DIR, all_data[lang_to_path[first_ref_lang]], first_ref_lang, gitignore_spec)
 	else:
 		print("\n警告: 未找到参考语言数据，跳过 FOUNT 目录i18n键检查。")
 
@@ -1063,7 +1107,7 @@ def main():
 	save_locale_files(all_data, ref_path)
 
 	if lang_to_path:
-		process_home_registries(lang_to_path, REFERENCE_LANG_CODES)
+		process_home_registries(lang_to_path, REFERENCE_LANG_CODES, gitignore_spec)
 	else:
 		print("\n警告: 无有效区域设置，跳过 home_registry.json 处理。")
 

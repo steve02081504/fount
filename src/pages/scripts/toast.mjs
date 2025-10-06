@@ -1,6 +1,8 @@
 /** @type {import('npm:@sentry/browser')} */
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
+import { geti18n, setLocalizeLogic } from './i18n.mjs'
+
 let toastContainer = null
 
 const icons = {
@@ -23,7 +25,7 @@ function ensureToastContainer() {
 	return toastContainer
 }
 
-export function showToast(message, type = 'info', duration = 4000) {
+function base_showToast(type, message, duration = 4000) {
 	if (!(Object(message) instanceof String)) {
 		Sentry.captureException(new Error(`showToast() called with non-string message: ${message}`))
 		message = String(message)
@@ -66,6 +68,16 @@ export function showToast(message, type = 'info', duration = 4000) {
 
 	container.appendChild(alertDiv)
 	startTimer()
+	return alertDiv
+}
+export function showToast(type = 'info', message, duration = 4000) {
+	base_showToast(type, message, duration)
+}
+export function showToastI18n(type = 'info', key, params = {}, duration = 4000) {
+	const div = base_showToast(type, '', duration)
+	setLocalizeLogic(div, () => {
+		div.querySelector('span').innerHTML = geti18n(key, params).replace(/\n/g, '<br>')
+	})
 }
 
 const style = document.createElement('style')

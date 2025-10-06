@@ -1,7 +1,7 @@
-import { geti18n, initTranslations, console } from '/scripts/i18n.mjs'
+import { initTranslations, console } from '/scripts/i18n.mjs'
 import { applyTheme } from '/scripts/theme.mjs'
 import { renderTemplate, usingTemplates } from '/scripts/template.mjs'
-import { showToast } from '/scripts/toast.mjs'
+import { showToast, showToastI18n } from '/scripts/toast.mjs'
 
 applyTheme()
 usingTemplates('/shells/proxy/templates')
@@ -58,7 +58,7 @@ async function generateApiKey() {
 		renderApiKey()
 	}
 	catch (error) {
-		showToast(error.message, 'error')
+		showToast('error', error.message)
 	}
 }
 
@@ -70,7 +70,7 @@ async function renderApiKey() {
 
 		document.getElementById('copyApiKeyButton').addEventListener('click', () => {
 			navigator.clipboard.writeText(apiKey)
-			showToast(geti18n('proxy.apiKeyCopied'), 'success')
+			showToastI18n('success', 'proxy.apiKeyCopied')
 		})
 
 		const apiKeyInput = document.getElementById('apiKeyInput')
@@ -97,13 +97,13 @@ if (exampleUrl) exampleUrl.textContent = apiUrl
 
 copyProxyButton.addEventListener('click', () => {
 	navigator.clipboard.writeText(proxyApiUrlInput.value)
-	showToast(geti18n('proxy.copied'), 'success')
+	showToastI18n('success', 'proxy.copied')
 })
 
 copyProxyQueryButton.addEventListener('click', () => {
 	if (proxyApiUrlQueryInput.value) {
 		navigator.clipboard.writeText(proxyApiUrlQueryInput.value)
-		showToast(geti18n('proxy.copied'), 'success')
+		showToastI18n('success', 'proxy.copied')
 	}
 })
 

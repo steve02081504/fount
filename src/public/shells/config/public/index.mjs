@@ -4,9 +4,9 @@ import { initTranslations, i18nElement, geti18n, confirmI18n, console } from '..
 import { createJsonEditor } from '../../scripts/jsonEditor.mjs'
 import { svgInliner } from '../../scripts/svgInliner.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
+import { showToast } from '../../scripts/toast.mjs'
 
 import { getPartTypes, getParts, getPartDetails, saveConfigData, getConfigData, getPartDisplay } from './src/endpoints.mjs' // 导入 API 模块
-import { showErrorMessage } from './src/error.mjs'
 
 const jsonEditorContainer = document.getElementById('jsonEditor')
 const partDisplayContainer = document.getElementById('partDisplay')
@@ -46,7 +46,7 @@ async function fetchPartTypes() {
 	}
 	catch (err) {
 		console.error('Failed to fetch part types:', err)
-		showErrorMessage(geti18n('part_config.alerts.fetchPartTypesFailed') + ': ' + err.message)
+		showToast('error', geti18n('part_config.alerts.fetchPartTypesFailed') + ': ' + err.message)
 	}
 }
 
@@ -58,7 +58,7 @@ function renderPartTypeSelect() {
 	const defaultOption = document.createElement('option')
 	defaultOption.disabled = true
 	defaultOption.selected = true
-	defaultOption.textContent = geti18n('part_config.placeholders.partTypeSelect')
+	defaultOption.dataset.i18n = 'part_config.placeholders.partTypeSelect'
 	fragment.appendChild(defaultOption)
 
 	partTypes.forEach(partType => {
@@ -83,7 +83,7 @@ async function fetchParts(partType) {
 	}
 	catch (err) {
 		console.error('Failed to fetch parts:', err)
-		showErrorMessage(geti18n('part_config.alerts.fetchPartsFailed') + ': ' + err.message)
+		showToast('error', geti18n('part_config.alerts.fetchPartsFailed') + ': ' + err.message)
 	}
 }
 
@@ -95,7 +95,7 @@ function renderPartSelect() {
 	const defaultOption = document.createElement('option')
 	defaultOption.disabled = true
 	defaultOption.selected = true
-	defaultOption.textContent = geti18n('part_config.placeholders.partSelect')
+	defaultOption.dataset.i18n = 'part_config.placeholders.partSelect'
 	fragment.appendChild(defaultOption)
 
 	parts.forEach(partName => {
@@ -204,7 +204,7 @@ async function loadEditor(partType, partName) {
 	catch (err) {
 		console.error('Failed to load editor:', err)
 		disableEditorAndSaveButton()
-		showErrorMessage(geti18n('part_config.alerts.loadEditorFailed') + ': ' + err.message)
+		showToast('error', geti18n('part_config.alerts.loadEditorFailed') + ': ' + err.message)
 	}
 }
 
@@ -230,7 +230,7 @@ async function saveConfig() {
 		saveStatusIcon.src = 'https://api.iconify.design/line-md/confirm-circle.svg'
 	}
 	catch (err) {
-		showErrorMessage(geti18n('part_config.alerts.saveConfigFailed') + ': ' + err.message)
+		showToast('error', geti18n('part_config.alerts.saveConfigFailed') + ': ' + err.message)
 		console.error('Failed to save part config:', err)
 
 		saveStatusIcon.src = 'https://api.iconify.design/line-md/emoji-frown.svg'

@@ -1,6 +1,6 @@
 import { initTranslations, geti18n, i18nElement } from '/scripts/i18n.mjs'
 import { applyTheme } from '/scripts/theme.mjs'
-import { showToast } from '/scripts/toast.mjs'
+import { showToast, showToastI18n } from '/scripts/toast.mjs'
 import { createSearchableDropdown } from '/scripts/search.mjs'
 
 import { getPartTypes, getPartList, getFountJson, exportPart, createShareLink } from './src/endpoints.mjs'
@@ -49,11 +49,11 @@ function updateShareButtonUI() {
 
 	if (hasShareLink) {
 		shareButton.removeAttribute('tabindex')
-		shareButtonText.textContent = geti18n('export.buttons.copyShareLink')
+		shareButtonText.dataset.i18n = 'export.buttons.copyShareLink'
 	}
 	else {
 		shareButton.setAttribute('tabindex', '0')
-		shareButtonText.textContent = geti18n('export.buttons.generateShareLink')
+		shareButtonText.dataset.i18n = 'export.buttons.generateShareLink'
 	}
 }
 
@@ -66,7 +66,7 @@ async function fetchPartTypes() {
 	}
 	catch (err) {
 		console.error('Failed to fetch part types:', err)
-		showToast(geti18n('export.alerts.fetchPartTypesFailed') + ': ' + err.message, 'error')
+		showToast('error', geti18n('export.alerts.fetchPartTypesFailed') + ': ' + err.message)
 	}
 }
 
@@ -77,7 +77,7 @@ async function fetchParts(partType) {
 	}
 	catch (err) {
 		console.error('Failed to fetch parts:', err)
-		showToast(geti18n('export.alerts.fetchPartsFailed') + ': ' + err.message, 'error')
+		showToast('error', geti18n('export.alerts.fetchPartsFailed') + ': ' + err.message)
 	}
 }
 
@@ -91,7 +91,7 @@ async function loadPartDetails(partType, partName) {
 		updateStep(3)
 	}
 	catch (err) {
-		showToast(geti18n('export.alerts.loadPartDetailsFailed') + ': ' + err.message, 'error')
+		showToast('error', geti18n('export.alerts.loadPartDetailsFailed') + ': ' + err.message)
 		console.error('Failed to load part details:', err)
 		showExportArea(false)
 	}
@@ -104,7 +104,7 @@ function renderPartTypeSelect() {
 	const defaultOption = document.createElement('option')
 	defaultOption.disabled = true
 	defaultOption.selected = true
-	defaultOption.textContent = geti18n('export.placeholders.partTypeSelect')
+	defaultOption.dataset.i18n = 'export.placeholders.partTypeSelect'
 	fragment.appendChild(defaultOption)
 
 	partTypes.forEach(partType => {
@@ -178,7 +178,7 @@ async function handleExport() {
 		setButtonState(icon, 'success')
 	}
 	catch (err) {
-		showToast(geti18n('export.alerts.exportFailed') + ': ' + err.message, 'error')
+		showToast('error', geti18n('export.alerts.exportFailed') + ': ' + err.message)
 		console.error('Failed to export part:', err)
 		setButtonState(icon, 'error')
 	}
@@ -196,11 +196,11 @@ async function handleDirectShare() {
 	try {
 		const link = `https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;${fountJson.share_link}`
 		await navigator.clipboard.writeText(link)
-		showToast(geti18n('export.alerts.shareLinkCopied'), 'success')
+		showToastI18n('success', 'export.alerts.shareLinkCopied')
 		setButtonState(icon, 'success')
 	}
 	catch (err) {
-		showToast(geti18n('export.alerts.shareFailed') + ': ' + err.message, 'error')
+		showToast('error', geti18n('export.alerts.shareFailed') + ': ' + err.message)
 		console.error('Failed to copy share link:', err)
 		setButtonState(icon, 'error')
 	}
@@ -222,11 +222,11 @@ async function handleShareAction(expiration) {
 	try {
 		const link = await createShareLink(activePartType, activePart, expiration, withData)
 		await navigator.clipboard.writeText(link)
-		showToast(geti18n('export.alerts.shareLinkCopied'), 'success')
+		showToastI18n('success', 'export.alerts.shareLinkCopied')
 		setButtonState(icon, 'success')
 	}
 	catch (err) {
-		showToast(geti18n('export.alerts.shareFailed') + ': ' + err.message, 'error')
+		showToast('error', geti18n('export.alerts.shareFailed') + ': ' + err.message)
 		console.error('Failed to create share link:', err)
 		setButtonState(icon, 'error')
 	}
