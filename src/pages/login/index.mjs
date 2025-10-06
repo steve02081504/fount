@@ -1,9 +1,8 @@
-import zxcvbn from 'https://esm.sh/zxcvbn'
-
 import { retrieveAndDecryptCredentials, redirectToLoginInfo } from '../scripts/credentialManager.mjs'
 import { ping, generateVerificationCode, login, register } from '../scripts/endpoints.mjs'
 import { initTranslations, geti18n, console, savePreferredLangs, onLanguageChange } from '../scripts/i18n.mjs'
 import { createPOWCaptcha } from '../scripts/POWcaptcha.mjs'
+import { initPasswordStrengthMeter } from '../scripts/passwordStrength.mjs'
 import { applyTheme, setTheme } from '../scripts/theme.mjs'
 import { showToast } from '../scripts/toast.mjs'
 
@@ -24,6 +23,7 @@ let isLoginForm = true
 let verificationCodeSent = false
 let sendCodeCooldown = false
 let powCaptcha = null
+let passwordStrengthMeter = null
 
 const hasLoggedIn = localStorage.getItem('hasLoggedIn') == 'true'
 
@@ -37,68 +37,14 @@ function toggleForm() {
 	updateFormDisplay()
 }
 
-// 切换表单类型（登录/注册）
+// Toggle form type (login/register)
 function handleToggleClick(event) {
 	event.preventDefault()
 	toggleForm()
 }
 
-function evaluatePasswordStrength(password) {
-	const result = zxcvbn(password)
-	let feedbackText = ''
-	let borderColorClass = ''
-
-	switch (result.score) {
-		case 0:
-			borderColorClass = 'border-red-500'
-			feedbackText = 'auth.passwordStrength.veryWeak'
-			break
-		case 1:
-			borderColorClass = 'border-orange-500'
-			feedbackText = 'auth.passwordStrength.weak'
-			break
-		case 2:
-			borderColorClass = 'border-yellow-500'
-			feedbackText = 'auth.passwordStrength.normal'
-			break
-		case 3:
-			borderColorClass = 'border-lime-500'
-			feedbackText = 'auth.passwordStrength.strong'
-			break
-		case 4:
-			borderColorClass = 'border-green-500'
-			feedbackText = 'auth.passwordStrength.veryStrong'
-			break
-	}
-	let fullFeedback = `<strong data-i18n="${feedbackText}"></strong><br/>`
-	if (result.feedback.warning) fullFeedback += result.feedback.warning + '<br/>'
-	if (result.feedback.suggestions) fullFeedback += result.feedback.suggestions.join('<br/>')
-
-	return { borderColorClass, fullFeedback }
-}
-
-function updatePasswordStrengthUI(password) {
-	const { borderColorClass, fullFeedback } = evaluatePasswordStrength(password)
-
-	// 更新边框颜色
-	passwordInput.classList.remove('border-red-500', 'border-orange-500', 'border-yellow-500', 'border-lime-500', 'border-green-500')
-	passwordInput.classList.add(borderColorClass)
-
-	// 更新密码强度提示文字
-	passwordStrengthFeedback.innerHTML = fullFeedback
-	passwordStrengthFeedback.classList.remove('text-red-500', 'text-orange-500', 'text-yellow-500', 'text-lime-500', 'text-green-500')
-	passwordStrengthFeedback.classList.add(borderColorClass.replace('border-', 'text-'))
-}
-
 function refreshUIStrings() {
 	updateFormDisplay()
-	if (passwordInput.value)
-		updatePasswordStrengthUI(passwordInput.value)
-	else {
-		// Clear feedback if password field is empty, as it was likely cleared by the i18n update
-		passwordStrengthFeedback.innerHTML = ''
-		passwordInput.classList.remove('border-red-500', 'border-orange-500', 'border-yellow-500', 'border-lime-500', 'border-green-500')
-	}
 }
 
 function updateFormDisplay() {
@@ -188,11 +134,11 @@ async function handleFormSubmit(event) {
 			errorMessage.dataset.i18n = 'auth.error.passwordMismatch'
 			return
 		}
-		// 密码强度检查
-		const { borderColorClass } = evaluatePasswordStrength(password)
-		if (borderColorClass === 'border-red-500' || borderColorClass === 'border-orange-500') {
+		// Password strength check
+		const { score } = passwordStrengthMeter.evaluate()
+		if (score < 2) {
 			errorMessage.dataset.i18n = 'auth.error.lowPasswordStrength'
-			return // 阻止表单提交
+			return // Prevent form submission
 		}
 		if (!isLocalOrigin) {
 			if (!verificationCodeSent) {
@@ -248,11 +194,8 @@ async function handleFormSubmit(event) {
 	}
 }
 
-// 设置事件监听器
+// Set up event listeners
 function setupEventListeners() {
-	passwordInput.addEventListener('input', () => {
-		updatePasswordStrengthUI(passwordInput.value)
-	})
 	toggleLink.addEventListener('click', handleToggleClick)
 	submitBtn.addEventListener('click', handleFormSubmit)
 	sendVerificationCodeBtn.addEventListener('click', handleSendVerificationCode)
@@ -276,6 +219,7 @@ async function initializeApp() {
 		console.error(err)
 	}
 
+	passwordStrengthMeter = initPasswordStrengthMeter(passwordInput, passwordStrengthFeedback)
 	setupEventListeners()
 
 	initializeForm()

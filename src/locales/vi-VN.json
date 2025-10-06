@@ -1299,5 +1299,57 @@
 		"error": "Xác minh thất bại",
 		"errorMessage": "Xác minh thất bại: ${error}",
 		"wasm_disabled": "Bật WASM để xác minh nhanh hơn"
+	},
+	"zxcvbn": {
+		"warnings": {
+			"straightRow": "Các phím liên tục trên bàn phím dễ dàng đoán.",
+			"keyPattern": "Một mẫu bàn phím ngắn rất dễ đoán.",
+			"simpleRepeat": "Các ký tự lặp đi lặp lại như \"AAA\" dễ dàng đoán được.",
+			"extendedRepeat": "Các mẫu ký tự lặp đi lặp lại như \"ABCABCABC\" dễ dàng đoán được.",
+			"sequences": "Trình tự ký tự phổ biến như \"ABC\" dễ dàng đoán được.",
+			"recentYears": "Những năm gần đây rất dễ đoán.",
+			"dates": "Ngày dễ dàng đoán.",
+			"topTen": "Đây là một mật khẩu được sử dụng quá mức.",
+			"topHundred": "Đây là một mật khẩu thường được sử dụng.",
+			"common": "Đây là một mật khẩu thường được sử dụng.",
+			"similarToCommon": "Điều này tương tự như một mật khẩu thường được sử dụng.",
+			"wordByItself": "Một từ duy nhất có thể dễ dàng đoán.",
+			"namesByThemselves": "Một tên đầu tiên hoặc tên cuối cùng dễ dàng đoán được.",
+			"commonNames": "Tên phổ biến và tên cuối cùng rất dễ đoán.",
+			"userInputs": "Mật khẩu không nên chứa bất kỳ dữ liệu cá nhân hoặc liên quan đến trang nào.",
+			"pwned": "Mật khẩu của bạn đã được phơi bày trong vi phạm dữ liệu Internet."
+		},
+		"suggestions": {
+			"l33t": "Tránh sử dụng các thay thế chữ cái có thể dự đoán được, chẳng hạn như sử dụng \"@\" thay vì \"A\".",
+			"reverseWords": "Tránh sử dụng chính tả ngược của các từ thông thường.",
+			"allUppercase": "Viết hoa một số thay vì tất cả các chữ cái.",
+			"capitalization": "Viết hoa nhiều hơn một chữ cái.",
+			"dates": "Tránh sử dụng ngày và năm liên quan đến bạn.",
+			"recentYears": "Tránh sử dụng những năm gần đây nhất.",
+			"associatedYears": "Tránh sử dụng nhiều năm liên quan đến bạn.",
+			"sequences": "Tránh trình tự ký tự chung.",
+			"repeated": "Tránh các từ và ký tự lặp đi lặp lại.",
+			"longerKeyboardPattern": "Sử dụng chế độ bàn phím dài hơn và thay đổi hướng đầu vào nhiều lần.",
+			"anotherWord": "Thêm nhiều từ không phổ biến.",
+			"useWords": "Sử dụng nhiều từ, nhưng tránh các cụm từ phổ biến.",
+			"noNeed": "Bạn không cần sử dụng các ký hiệu, số hoặc chữ in hoa để tạo mật khẩu mạnh.",
+			"pwned": "Nếu bạn sử dụng mật khẩu này ở nơi khác, bạn nên thay đổi."
+		},
+		"timeEstimation": {
+			"ltSecond": "Ít hơn một giây",
+			"second": "{base} giây",
+			"seconds": "{base} giây",
+			"minute": "{base} phút",
+			"minutes": "{base} phút",
+			"hour": "{base} giờ",
+			"hours": "{base} giờ",
+			"day": "{base} ngày",
+			"days": "{base} ngày",
+			"month": "{base} tháng",
+			"months": "{base} tháng",
+			"year": "{base} năm",
+			"years": "{base} năm",
+			"centuries": "Hàng thế kỷ"
+		}
 	}
 }

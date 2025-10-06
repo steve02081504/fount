@@ -1299,5 +1299,57 @@
 		"error": "확인 실패",
 		"errorMessage": "확인 실패: ${error}",
 		"wasm_disabled": "더 빠른 확인을 위해 WASM을 활성화하세요"
+	},
+	"zxcvbn": {
+		"warnings": {
+			"straightRow": "키보드의 연속 키는 쉽게 추측됩니다.",
+			"keyPattern": "짧은 키보드 패턴은 추측하기 쉽습니다.",
+			"simpleRepeat": "\"AAA\"와 같은 반복된 문자는 쉽게 추측 할 수 있습니다.",
+			"extendedRepeat": "\"abcabcabc\"와 같은 반복된 문자 패턴은 쉽게 추측됩니다.",
+			"sequences": "\"ABC\"와 같은 일반적인 문자 시퀀스는 쉽게 추측됩니다.",
+			"recentYears": "최근 몇 년 동안 추측하기 쉽습니다.",
+			"dates": "날짜는 쉽게 추측됩니다.",
+			"topTen": "이것은 과도한 암호입니다.",
+			"topHundred": "이것은 종종 사용되는 비밀번호입니다.",
+			"common": "이것은 일반적으로 사용되는 비밀번호입니다.",
+			"similarToCommon": "이것은 일반적으로 사용되는 비밀번호와 유사합니다.",
+			"wordByItself": "한 마디도 쉽게 추측 할 수 있습니다.",
+			"namesByThemselves": "단일 이름 또는 성은 쉽게 추측됩니다.",
+			"commonNames": "일반적인 이름과 성은 추측하기 쉽습니다.",
+			"userInputs": "비밀번호에는 개인 또는 페이지 관련 데이터가 포함되어 있지 않아야합니다.",
+			"pwned": "인터넷 데이터 위반으로 비밀번호가 노출되었습니다."
+		},
+		"suggestions": {
+			"l33t": "\"a\"대신 \"@\"를 사용하는 것과 같은 예측 가능한 문자 대체를 사용하지 마십시오.",
+			"reverseWords": "일반적인 단어의 역 철자를 사용하지 마십시오.",
+			"allUppercase": "모든 글자보다는 일부를 대문자로 삼으십시오.",
+			"capitalization": "첫 글자뿐만 아니라 다른 글자도 대문자로 사용하세요.",
+			"dates": "당신과 관련된 날짜와 연도를 사용하지 마십시오.",
+			"recentYears": "가장 최근 몇 년 동안 사용하지 마십시오.",
+			"associatedYears": "당신과 관련된 연도를 사용하지 마십시오.",
+			"sequences": "일반적인 문자 시퀀스를 피하십시오.",
+			"repeated": "반복적 인 단어와 문자를 피하십시오.",
+			"longerKeyboardPattern": "더 긴 키보드 모드를 사용하고 입력 방향을 여러 번 변경하십시오.",
+			"anotherWord": "더 드문 단어를 추가하십시오.",
+			"useWords": "여러 단어를 사용하지만 일반적인 문구를 피하십시오.",
+			"noNeed": "강력한 암호를 만들기 위해 기호, 숫자 또는 대문자를 사용할 필요가 없습니다.",
+			"pwned": "다른 곳 에서이 암호를 사용하는 경우 변경하는 것이 좋습니다."
+		},
+		"timeEstimation": {
+			"ltSecond": "1초 미만",
+			"second": "{base} 초",
+			"seconds": "{base} 초",
+			"minute": "{base} min",
+			"minutes": "{base} min",
+			"hour": "{base} 시간",
+			"hours": "{base} 시간",
+			"day": "{base}일",
+			"days": "{base}일",
+			"month": "{base}개월",
+			"months": "{base}개월",
+			"year": "{base}년",
+			"years": "{base}년",
+			"centuries": "세기"
+		}
 	}
 }

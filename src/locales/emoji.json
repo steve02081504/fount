@@ -1299,5 +1299,57 @@
 		"error": "❌👎",
 		"errorMessage": "❌👎: ${error}",
 		"wasm_disabled": "⚙️➡️🚀"
+	},
+	"zxcvbn": {
+		"warnings": {
+			"straightRow": "⌨️➡️➡️",
+			"keyPattern": "⌨️➡️↗️↘️",
+			"simpleRepeat": "🅰️🅰️🅰️",
+			"extendedRepeat": "🔤🔤🔤",
+			"sequences": "🔢🔤",
+			"recentYears": "📅👎",
+			"dates": "📅",
+			"topTen": "👎👎👎",
+			"topHundred": "👎👎",
+			"common": "👎",
+			"similarToCommon": "🤔👎",
+			"wordByItself": "📖",
+			"namesByThemselves": "👤",
+			"commonNames": "👥",
+			"userInputs": "🚫👤",
+			"pwned": "💻💥🔓"
+		},
+		"suggestions": {
+			"l33t": "🚫🅰️➡️@",
+			"reverseWords": "🚫🔄🔤",
+			"allUppercase": "✅ aBc 🚫 ABC",
+			"capitalization": "✅ aBCd",
+			"dates": "🚫📅",
+			"recentYears": "📅👎",
+			"associatedYears": "🚫🎂",
+			"sequences": "🔢🔤",
+			"repeated": "🚫👯",
+			"longerKeyboardPattern": "⌨️↗️↘️↖️",
+			"anotherWord": "➕📖",
+			"useWords": "📖➕📖➕📖",
+			"noNeed": "💪🔑 ✅ abc 🚫 #1!",
+			"pwned": "💻💥🔓"
+		},
+		"timeEstimation": {
+			"ltSecond": "⚡️",
+			"second": "⏳{base}s",
+			"seconds": "⏳{base}s",
+			"minute": "⏳{base}m",
+			"minutes": "⏳{base}m",
+			"hour": "⏳{base}h",
+			"hours": "⏳{base}h",
+			"day": "⏳{base}d",
+			"days": "⏳{base}d",
+			"month": "🗓️{base}m",
+			"months": "🗓️{base}m",
+			"year": "🗓️{base}y",
+			"years": "🗓️{base}y",
+			"centuries": "🏛️"
+		}
 	}
 }

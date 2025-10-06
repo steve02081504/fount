@@ -1299,5 +1299,57 @@
 		"error": "検証失敗",
 		"errorMessage": "検証失敗：${error}",
 		"wasm_disabled": "検証を高速化するためにWASMを有効にしてください"
+	},
+	"zxcvbn": {
+		"warnings": {
+			"straightRow": "キーボード上の連続キーは簡単に推測できます。",
+			"keyPattern": "短いキーボードパターンは簡単に推測できます。",
+			"simpleRepeat": "「AAA」のような繰り返しの文字は簡単に推測されます。",
+			"extendedRepeat": "「ABCABCABC」のような繰り返しの文字パターンは簡単に推測されます。",
+			"sequences": "「ABC」のような一般的な文字シーケンスは簡単に推測されます。",
+			"recentYears": "近年は推測しやすいです。",
+			"dates": "日付は簡単に推測できます。",
+			"topTen": "これは使い古されたパスワードです。",
+			"topHundred": "これはよく使用されるパスワードです。",
+			"common": "これは一般的に使用されるパスワードです。",
+			"similarToCommon": "これは、一般的に使用されるパスワードに似ています。",
+			"wordByItself": "一言が簡単に推測されます。",
+			"namesByThemselves": "単一の最初の名前または姓は簡単に推測できます。",
+			"commonNames": "一般的な名と姓は簡単に推測できます。",
+			"userInputs": "パスワードには、個人またはページ関連のデータを含めるべきではありません。",
+			"pwned": "パスワードはインターネットデータ侵害で公開されています。"
+		},
+		"suggestions": {
+			"l33t": "「a」の代わりに「@」を使用するなど、予測可能な文字置換を使用しないでください。",
+			"reverseWords": "一般的な単語の逆スペルを使用しないでください。",
+			"allUppercase": "すべての文字ではなくいくつかを大文字にします。",
+			"capitalization": "最初の文字だけでなく、他の文字も大文字にしましょう。",
+			"dates": "あなたに関連する日付や年を使用しないでください。",
+			"recentYears": "最近の年の使用は避けてください。",
+			"associatedYears": "あなたに関連する年を使用しないでください。",
+			"sequences": "一般的な文字シーケンスを避けてください。",
+			"repeated": "繰り返しの単語やキャラクターを避けてください。",
+			"longerKeyboardPattern": "より長いキーボードパターンを使用し、入力方向を複数回変更します。",
+			"anotherWord": "より珍しい単語を追加します。",
+			"useWords": "複数の単語を使用しますが、一般的なフレーズは避けてください。",
+			"noNeed": "強力なパスワードを作成するために、シンボル、数字、または大文字を使用する必要はありません。",
+			"pwned": "他の場所でこのパスワードを使用する場合は、変更を加えることをお勧めします。"
+		},
+		"timeEstimation": {
+			"ltSecond": "秒未満",
+			"second": "{base}秒",
+			"seconds": "{base}秒",
+			"minute": "{base} min",
+			"minutes": "{base} min",
+			"hour": "{base}時間",
+			"hours": "{base}時間",
+			"day": "{base}日",
+			"days": "{base}日",
+			"month": "{base}月",
+			"months": "{base}月",
+			"year": "{base}年",
+			"years": "{base}年",
+			"centuries": "何世紀も"
+		}
 	}
 }

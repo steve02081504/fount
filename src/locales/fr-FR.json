@@ -1299,5 +1299,57 @@
 		"error": "Échec de la vérification",
 		"errorMessage": "Échec de la vérification : ${error}",
 		"wasm_disabled": "Activer WASM pour une vérification plus rapide"
+	},
+	"zxcvbn": {
+		"warnings": {
+			"straightRow": "Les touches continues sur le clavier sont facilement devinées.",
+			"keyPattern": "Un court motif de clavier est facile à deviner.",
+			"simpleRepeat": "Des caractères répétés comme \"AAA\" sont facilement devinés.",
+			"extendedRepeat": "Les modèles de caractère répétés comme \"ABCABABABC\" sont facilement devinés.",
+			"sequences": "Les séquences de caractères communes comme \"ABC\" sont facilement devinées.",
+			"recentYears": "Les dernières années sont faciles à deviner.",
+			"dates": "La date est facilement devinée.",
+			"topTen": "Il s'agit d'un mot de passe surutilisé.",
+			"topHundred": "Il s'agit d'un mot de passe qui est souvent utilisé.",
+			"common": "Il s'agit d'un mot de passe couramment utilisé.",
+			"similarToCommon": "Ceci est similaire à un mot de passe couramment utilisé.",
+			"wordByItself": "Un seul mot est facilement deviné.",
+			"namesByThemselves": "Un seul nom ou nom de famille est facilement deviné.",
+			"commonNames": "Les prénoms et les noms de famille communs sont faciles à deviner.",
+			"userInputs": "Le mot de passe ne doit contenir aucune donnée personnelle ou liée à la page.",
+			"pwned": "Votre mot de passe a été exposé dans une violation de données Internet."
+		},
+		"suggestions": {
+			"l33t": "Évitez d'utiliser des substitutions de lettres prévisibles, comme l'utilisation de \"@\" au lieu de \"A\".",
+			"reverseWords": "Évitez d'utiliser l'orthographe inverse des mots communs.",
+			"allUppercase": "Capitalisez certains plutôt que toutes les lettres.",
+			"capitalization": "Mettez en majuscule plus que la première lettre.",
+			"dates": "Évitez d'utiliser des dates et des années liées à vous.",
+			"recentYears": "Évitez d'utiliser les années les plus récentes.",
+			"associatedYears": "Évitez d'utiliser des années liées à vous.",
+			"sequences": "Évitez les séquences de caractères communes.",
+			"repeated": "Évitez les mots et les caractères répétitifs.",
+			"longerKeyboardPattern": "Utilisez le mode clavier plus long et modifiez plusieurs fois les directions d'entrée.",
+			"anotherWord": "Ajoutez des mots plus rares.",
+			"useWords": "Utilisez plusieurs mots, mais évitez les phrases courantes.",
+			"noNeed": "Vous n'avez pas besoin d'utiliser des symboles, des chiffres ou des majuscules pour créer des mots de passe solides.",
+			"pwned": "Si vous utilisez ce mot de passe ailleurs, il est conseillé d'apporter des modifications."
+		},
+		"timeEstimation": {
+			"ltSecond": "Moins d'une seconde",
+			"second": "{base} seconde",
+			"seconds": "{base} secondes",
+			"minute": "{base} min",
+			"minutes": "{base} min",
+			"hour": "{base} heure",
+			"hours": "{base} heures",
+			"day": "{base} jour",
+			"days": "{base} jours",
+			"month": "{base} mois",
+			"months": "{base} mois",
+			"year": "{base} an",
+			"years": "{base} années",
+			"centuries": "Siècles"
+		}
 	}
 }

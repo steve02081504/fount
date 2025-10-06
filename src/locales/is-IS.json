@@ -1299,5 +1299,57 @@
 		"error": "Staðfesting mistókst",
 		"errorMessage": "Staðfesting mistókst: ${error}",
 		"wasm_disabled": "Virkja WASM fyrir hraðari sannprófun"
+	},
+	"zxcvbn": {
+		"warnings": {
+			"straightRow": "Auðvelt er að giska á stöðugan lykla á lyklaborðinu.",
+			"keyPattern": "Auðvelt er að giska á stutt lyklaborðsmynstur.",
+			"simpleRepeat": "Auðvelt er að giska á endurteknar persónur eins og „AAA“.",
+			"extendedRepeat": "Auðvelt er að giska á endurtekin stafamynstur eins og „ABCABCABC“.",
+			"sequences": "Auðvelt er að giska á algengar stafir eins og „ABC“.",
+			"recentYears": "Auðvelt er að giska á undanfarin ár.",
+			"dates": "Auðvelt er að giska á dagsetningu.",
+			"topTen": "Þetta er ofnotað lykilorð.",
+			"topHundred": "Þetta er lykilorð sem oft er notað.",
+			"common": "Þetta er algengt lykilorð.",
+			"similarToCommon": "Þetta er svipað og algengt lykilorð.",
+			"wordByItself": "Auðvelt er að giska á eitt orð.",
+			"namesByThemselves": "Auðvelt er að giska á eitt fyrsta eða eftirnafn.",
+			"commonNames": "Auðvelt er að giska á algeng nöfn og eftirnöfn.",
+			"userInputs": "Lykilorðið ætti ekki að innihalda nein persónuleg eða blaðsíðutengd gögn.",
+			"pwned": "Lykilorðið þitt hefur verið afhjúpað í internetgögnum."
+		},
+		"suggestions": {
+			"l33t": "Forðastu að nota fyrirsjáanlegar bréfaskipti, svo sem að nota „@“ í stað „A“.",
+			"reverseWords": "Forðastu að nota öfug stafsetning algengra orða.",
+			"allUppercase": "Nýttu sumt frekar en öll bréf.",
+			"capitalization": "Meira en að nýta upphafsbréfið.",
+			"dates": "Forðastu að nota dagsetningar og ár sem tengjast þér.",
+			"recentYears": "Forðastu að nota síðustu árin.",
+			"associatedYears": "Forðastu að nota ár sem tengjast þér.",
+			"sequences": "Forðastu algengar persónur.",
+			"repeated": "Forðastu endurtekin orð og persónur.",
+			"longerKeyboardPattern": "Notaðu lengri lyklaborðsmynstur og breyttu inntaksleiðbeiningum margoft.",
+			"anotherWord": "Bættu við sjaldgæfari orðum.",
+			"useWords": "Notaðu mörg orð, en forðastu algengar setningar.",
+			"noNeed": "Þú þarft ekki að nota tákn, tölur eða hástafi til að búa til sterk lykilorð.",
+			"pwned": "Ef þú notar þetta lykilorð annars staðar er þér bent á að gera breytingar."
+		},
+		"timeEstimation": {
+			"ltSecond": "Minna en sekúndu",
+			"second": "{base} sekúnda",
+			"seconds": "{base} sekúndur",
+			"minute": "{base} mín",
+			"minutes": "{base} mín",
+			"hour": "{base} klukkustund",
+			"hours": "{base} klukkustundir",
+			"day": "{base} dagur",
+			"days": "{base} dagar",
+			"month": "{base} mánuður",
+			"months": "{base} mánuðir",
+			"year": "{base} ár",
+			"years": "{base} ár",
+			"centuries": "Aldir"
+		}
 	}
 }
