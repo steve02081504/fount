@@ -524,8 +524,6 @@ async function initializeApp() {
 			if (!confirmI18n('home.escapeConfirm'))
 				event.stopImmediatePropagation()
 	}, true)
-
-	await refreshCurrentTab()
 }
 
 initializeApp().catch(error => {
