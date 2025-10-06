@@ -3,12 +3,12 @@ import zxcvbn from 'https://esm.sh/zxcvbn'
 import { retrieveAndDecryptCredentials, redirectToLoginInfo } from '../scripts/credentialManager.mjs'
 import { ping, generateVerificationCode, login, register } from '../scripts/endpoints.mjs'
 import { initTranslations, geti18n, console, savePreferredLangs } from '../scripts/i18n.mjs'
+import { createPOWCaptcha } from '../scripts/POWcaptcha.mjs'
 import { applyTheme, setTheme } from '../scripts/theme.mjs'
 import { showToast } from '../scripts/toast.mjs'
 
 const form = document.getElementById('auth-form')
 const formTitle = document.getElementById('form-title')
-const formSubtitle = document.getElementById('form-subtitle')
 const submitBtn = document.getElementById('submit-btn')
 const toggleLink = document.getElementById('toggle-link')
 const confirmPasswordGroup = document.getElementById('confirm-password-group')
@@ -23,6 +23,7 @@ const isLocalOrigin = await ping().then(data => data.is_local_ip).catch(() => fa
 let isLoginForm = true
 let verificationCodeSent = false
 let sendCodeCooldown = false
+let powCaptcha = null
 
 const hasLoggedIn = localStorage.getItem('hasLoggedIn') == 'true'
 
@@ -145,6 +146,12 @@ async function handleSendVerificationCode() {
 async function handleFormSubmit(event) {
 	event.preventDefault()
 
+	const powToken = powCaptcha?.token
+	if (!isLocalOrigin && !powToken) {
+		errorMessage.textContent = geti18n('auth.error.powNotSolved')
+		return
+	}
+
 	const username = document.getElementById('username').value
 	const password = passwordInput.value
 	const deviceid = generateDeviceId()
@@ -157,7 +164,7 @@ async function handleFormSubmit(event) {
 			return
 		}
 		// 密码强度检查
-		const { borderColorClass, fullFeedback } = evaluatePasswordStrength(password)
+		const { borderColorClass } = evaluatePasswordStrength(password)
 		if (borderColorClass === 'border-red-500' || borderColorClass === 'border-orange-500') {
 			errorMessage.textContent = geti18n('auth.error.lowPasswordStrength')
 			return // 阻止表单提交
@@ -178,9 +185,9 @@ async function handleFormSubmit(event) {
 	try {
 		let response
 		if (isLoginForm)
-			response = await login(username, password, deviceid)
+			response = await login(username, password, deviceid, powToken)
 		else
-			response = await register(username, password, deviceid, verificationcode)
+			response = await register(username, password, deviceid, verificationcode, powToken)
 
 		const data = await response.json()
 
@@ -245,6 +252,15 @@ async function initializeApp() {
 	await initTranslations('auth')
 	if (urlParams.get('userPreferredLanguages')) savePreferredLangs(JSON.parse(urlParams.get('userPreferredLanguages')))
 
+	const powCaptchaContainer = document.getElementById('pow-captcha-container')
+	if (!isLocalOrigin) try {
+		powCaptchaContainer.style.display = 'block'
+		powCaptcha = await createPOWCaptcha(powCaptchaContainer)
+	} catch (err) {
+		errorMessage.textContent = geti18n('auth.error.powError')
+		console.error(err)
+	}
+
 	setupEventListeners()
 
 	await initializeForm()
@@ -285,6 +301,18 @@ async function initializeApp() {
 
 	if (JSON.parse(autologinParam)) {
 		if (!isLoginForm) toggleForm()
+		if (powCaptcha) try {
+			submitBtn.disabled = true
+			submitBtn.textContent = geti18n('pow_captcha.verifying')
+			await powCaptcha.solve()
+		} catch (err) {
+			errorMessage.textContent = geti18n('auth.error.powError')
+			console.error(err)
+			return
+		} finally {
+			submitBtn.disabled = false
+			updateFormDisplay()
+		}
 		submitBtn.click()
 	}
 }

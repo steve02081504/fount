@@ -49,9 +49,9 @@ function sendMessageToConnections(connections, type, data) {
 	if (connections && connections.size > 0) {
 		const payload = JSON.stringify({ type, data })
 		for (const ws of connections)
-			if (ws.readyState === ws.OPEN) try{
+			if (ws.readyState === ws.OPEN) try {
 				ws.send(payload)
-			} catch(e) { console.error(e) }
+			} catch (e) { console.error(e) }
 		return true
 	}
 	return false
