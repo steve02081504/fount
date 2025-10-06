@@ -263,7 +263,7 @@
 			"title": "Inloggen",
 			"submitButton": "Inloggen",
 			"toggleLink": {
-				"text": "Geen account?",
+				"textContent": "Geen account?",
 				"link": "Registreer nu"
 			}
 		},
@@ -271,7 +271,7 @@
 			"title": "Registreren",
 			"submitButton": "Registreren",
 			"toggleLink": {
-				"text": "Al een account?",
+				"textContent": "Al een account?",
 				"link": "Log nu in"
 			}
 		},
@@ -704,7 +704,7 @@
 			"icon": {
 				"alt": "Upload-pictogram"
 			},
-			"text": "Sleep bestanden hierheen of klik om bestanden te selecteren"
+			"textContent": "Sleep bestanden hierheen of klik om bestanden te selecteren"
 		},
 		"textArea": {
 			"placeholder": "Voer de te importeren tekst in..."
@@ -1295,6 +1295,7 @@
 		"verifying": "Bezig met verifiëren...",
 		"solved": "Verificatie succesvol",
 		"error": "Verificatie mislukt",
+		"errorMessage": "Verificatie mislukt: ${error}",
 		"wasm_disabled": "Schakel WASM in voor snellere verificatie"
 	}
 }

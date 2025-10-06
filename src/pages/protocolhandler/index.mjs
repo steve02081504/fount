@@ -9,7 +9,7 @@ async function handleProtocol() {
 	const protocol = urlParams.searchParams.get('url')
 
 	if (!protocol || !protocol.startsWith('fount://')) {
-		document.getElementById('message').textContent = geti18n('protocolhandler.invalidProtocol')
+		document.getElementById('message').dataset.i18n = 'protocolhandler.invalidProtocol'
 		return
 	}
 
@@ -27,12 +27,12 @@ async function handleProtocol() {
 	else if (command === 'page')
 		handlePage(parts)
 	else
-		document.getElementById('message').textContent = geti18n('protocolhandler.unknownCommand')
+		document.getElementById('message').dataset.i18n = 'protocolhandler.unknownCommand'
 }
 
 async function handleRunPart(parts) {
 	if (parts.length < 3) {
-		document.getElementById('message').textContent = geti18n('protocolhandler.insufficientParams')
+		document.getElementById('message').dataset.i18n = 'protocolhandler.insufficientParams'
 		return
 	}
 	const parttype = parts[1]
@@ -83,26 +83,26 @@ async function handleRunPart(parts) {
 
 	messageEl.style.display = 'block'
 	progressEl.style.display = 'block'
-	messageEl.textContent = geti18n('protocolhandler.processing')
+	messageEl.dataset.i18n = 'protocolhandler.processing'
 
 	try {
 		const response = await runPart(parttype, partname, args)
 
 		if (response.ok)
-			messageEl.textContent = geti18n('protocolhandler.shellCommandSent')
+			messageEl.dataset.i18n = 'protocolhandler.shellCommandSent'
 		else
-			messageEl.textContent = geti18n('protocolhandler.shellCommandFailed')
+			messageEl.dataset.i18n = 'protocolhandler.shellCommandFailed'
 	}
 	catch (error) {
 		console.error('Error sending shell command:', error)
-		messageEl.textContent = geti18n('protocolhandler.shellCommandError')
+		messageEl.dataset.i18n = 'protocolhandler.shellCommandError'
 	}
 	setTimeout(goBack, 1000)
 }
 
 function handlePage(parts) {
 	if (parts.length < 2) {
-		document.getElementById('message').textContent = geti18n('protocolhandler.insufficientParams')
+		document.getElementById('message').dataset.i18n = 'protocolhandler.insufficientParams'
 		return
 	}
 	parts.shift()

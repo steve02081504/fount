@@ -263,7 +263,7 @@
 			"title": "Accedi",
 			"submitButton": "Accedi",
 			"toggleLink": {
-				"text": "Non hai un account?",
+				"textContent": "Non hai un account?",
 				"link": "Registrati ora"
 			}
 		},
@@ -271,7 +271,7 @@
 			"title": "Registrati",
 			"submitButton": "Registrati",
 			"toggleLink": {
-				"text": "Hai già un account?",
+				"textContent": "Hai già un account?",
 				"link": "Accedi ora"
 			}
 		},
@@ -704,7 +704,7 @@
 			"icon": {
 				"alt": "Icona di caricamento"
 			},
-			"text": "Trascina i file qui oppure fai clic per selezionare i file."
+			"textContent": "Trascina i file qui oppure fai clic per selezionare i file."
 		},
 		"textArea": {
 			"placeholder": "Inserisci il testo da importare..."
@@ -1295,6 +1295,7 @@
 		"verifying": "Verifica in corso...",
 		"solved": "Verifica riuscita",
 		"error": "Verifica non riuscita",
+		"errorMessage": "Verifica non riuscita: ${error}",
 		"wasm_disabled": "Abilita WASM per una verifica più rapida"
 	}
 }

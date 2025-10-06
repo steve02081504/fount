@@ -263,7 +263,7 @@
 			"title": "登录",
 			"submitButton": "登录",
 			"toggleLink": {
-				"text": "没有账号？",
+				"textContent": "没有账号？",
 				"link": "立即注册"
 			}
 		},
@@ -271,7 +271,7 @@
 			"title": "注册",
 			"submitButton": "注册",
 			"toggleLink": {
-				"text": "已有账号？",
+				"textContent": "已有账号？",
 				"link": "立即登录"
 			}
 		},
@@ -704,7 +704,7 @@
 			"icon": {
 				"alt": "上传图标"
 			},
-			"text": "拖放文件到此处或点击选择文件"
+			"textContent": "拖放文件到此处或点击选择文件"
 		},
 		"textArea": {
 			"placeholder": "输入要导入的文本..."
@@ -1295,6 +1295,7 @@
 		"verifying": "正在验证...",
 		"solved": "验证成功",
 		"error": "验证失败",
+		"errorMessage": "验证失败：${error}",
 		"wasm_disabled": "启用 WASM 可加快验证速度"
 	}
 }

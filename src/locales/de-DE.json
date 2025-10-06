@@ -263,7 +263,7 @@
 			"title": "Anmelden",
 			"submitButton": "Anmelden",
 			"toggleLink": {
-				"text": "Kein Konto?",
+				"textContent": "Kein Konto?",
 				"link": "Jetzt registrieren"
 			}
 		},
@@ -271,7 +271,7 @@
 			"title": "Registrieren",
 			"submitButton": "Registrieren",
 			"toggleLink": {
-				"text": "Bereits ein Konto?",
+				"textContent": "Bereits ein Konto?",
 				"link": "Jetzt anmelden"
 			}
 		},
@@ -704,7 +704,7 @@
 			"icon": {
 				"alt": "Upload-Symbol"
 			},
-			"text": "Dateien hierher ziehen oder zum Auswählen klicken"
+			"textContent": "Dateien hierher ziehen oder zum Auswählen klicken"
 		},
 		"textArea": {
 			"placeholder": "Text zum Importieren eingeben..."
@@ -1295,6 +1295,7 @@
 		"verifying": "Wird überprüft...",
 		"solved": "Überprüfung erfolgreich",
 		"error": "Überprüfung fehlgeschlagen",
+		"errorMessage": "Überprüfung fehlgeschlagen: ${error}",
 		"wasm_disabled": "Aktivieren Sie WASM für eine schnellere Überprüfung."
 	}
 }

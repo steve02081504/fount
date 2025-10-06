@@ -40,7 +40,7 @@ return async ({ data, containers }) => {
 	if (modelsUrl === last_host) return
 	last_host = modelsUrl
 
-	div.innerHTML = `<div>${geti18n('aisource_editor.common_config_interface.loadingModels')}</div>`
+	div.innerHTML = '<div data-i18n="aisource_editor.common_config_interface.loadingModels"></div>'
 
 	try {
 		const response = await fetch(modelsUrl)
@@ -56,8 +56,8 @@ return async ({ data, containers }) => {
 		const model_ids = models.map(m => m.name).sort()
 		const copied_text = geti18n('aisource_editor.common_config_interface.copied')
 		div.innerHTML = `
-<h3 class="text-lg font-semibold">${geti18n('aisource_editor.common_config_interface.availableModels')}</h3>
-<p class="text-sm opacity-70">${geti18n('aisource_editor.common_config_interface.copyModelIdTooltip')}</p>
+<h3 class="text-lg font-semibold" data-i18n="aisource_editor.common_config_interface.availableModels"></h3>
+<p class="text-sm opacity-70" data-i18n="aisource_editor.common_config_interface.copyModelIdTooltip"></p>
 <div class="flex flex-wrap gap-2 mt-2">
 ${model_ids.map(id => `
 <code class="p-1 bg-base-300 rounded cursor-pointer hover:bg-primary hover:text-primary-content" title="${geti18n('aisource_editor.common_config_interface.copyModelIdTooltip')}" onclick="navigator.clipboard.writeText('${id}'); this.innerText='${copied_text}'; setTimeout(()=>this.innerText='${id}', 1000)">${id}</code>

@@ -5,7 +5,7 @@ import { createJsonEditor } from '../../scripts/jsonEditor.mjs'
 import { getPartList, setDefaultPart, getDefaultParts } from '../../scripts/parts.mjs'
 import { svgInliner } from '../../scripts/svgInliner.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
-import { showToast } from '../../scripts/toast.mjs'
+import { showToast, showToastI18n } from '../../scripts/toast.mjs'
 
 import { getConfigTemplate, getAIFile, setAIFile, deleteAIFile, addAIFile, getConfigDisplay } from './src/endpoints.mjs'
 
@@ -32,9 +32,8 @@ let onJsonUpdate = () => 0
 // 统一的错误处理函数
 function handleFetchError(customMessage) {
 	return error => {
-		const text = geti18n(customMessage, { error: error.stack })
-		console.error(text)
-		showToast(text, 'error')
+		console.error(geti18n(customMessage, { error: error.stack }))
+		showToastI18n('error', customMessage, { error: error.stack })
 		throw error // Re-throw the error to be caught by the caller if needed.
 	}
 }
@@ -243,11 +242,11 @@ async function loadEditor(fileName) {
 
 async function saveFile() {
 	if (!activeFile) {
-		showToast(geti18n('aisource_editor.alerts.noFileSelectedSave'), 'error')
+		showToastI18n('error', 'aisource_editor.alerts.noFileSelectedSave')
 		return
 	}
 	if (!generatorSelect.value) {
-		showToast(geti18n('aisource_editor.alerts.noGeneratorSelectedSave'), 'error')
+		showToastI18n('error', 'aisource_editor.alerts.noGeneratorSelectedSave')
 		return
 	}
 	const config = jsonEditor.get().json || JSON.parse(jsonEditor.get().text)
@@ -266,7 +265,7 @@ async function saveFile() {
 		saveStatusIcon.src = 'https://api.iconify.design/line-md/confirm-circle.svg'
 	}
 	catch (error) {
-		showToast(error.message + '\n' + error.error || error.errors?.join('\n') || '', 'error')
+		showToast('error', error.message + '\n' + error.error || error.errors?.join('\n') || '')
 		console.error(error)
 
 		saveStatusIcon.src = 'https://api.iconify.design/line-md/emoji-frown.svg'
@@ -281,7 +280,7 @@ async function saveFile() {
 
 async function deleteFile() {
 	if (!activeFile) {
-		showToast(geti18n('aisource_editor.alerts.noFileSelectedDelete'), 'error')
+		showToastI18n('error', 'aisource_editor.alerts.noFileSelectedDelete')
 		return
 	}
 	if (!confirmI18n('aisource_editor.confirm.deleteFile')) return
@@ -303,7 +302,7 @@ async function addFile() {
 	if (!newFileName) return
 
 	if (!isValidFileName(newFileName)) {
-		showToast(geti18n('aisource_editor.alerts.invalidFileName'), 'error')
+		showToastI18n('error', 'aisource_editor.alerts.invalidFileName')
 		return
 	}
 

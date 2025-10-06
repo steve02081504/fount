@@ -263,7 +263,7 @@
 			"title": "🚪➡️",
 			"submitButton": "✅➡️",
 			"toggleLink": {
-				"text": "🤷‍♂️👤❓",
+				"textContent": "🤷‍♂️👤❓",
 				"link": "✍️🆕"
 			}
 		},
@@ -271,7 +271,7 @@
 			"title": "🆕👤",
 			"submitButton": "✅",
 			"toggleLink": {
-				"text": "🙋‍♂️👤❓",
+				"textContent": "🙋‍♂️👤❓",
 				"link": "🚪➡️"
 			}
 		},
@@ -704,7 +704,7 @@
 			"icon": {
 				"alt": "⬆️"
 			},
-			"text": "📥📄"
+			"textContent": "📥📄"
 		},
 		"textArea": {
 			"placeholder": "✍️..."
@@ -1295,6 +1295,7 @@
 		"verifying": "🤔⏳",
 		"solved": "✅✨",
 		"error": "❌👎",
+		"errorMessage": "❌👎: ${error}",
 		"wasm_disabled": "⚙️➡️🚀"
 	}
 }

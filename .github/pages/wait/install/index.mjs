@@ -3,10 +3,10 @@ import * as Sentry from 'https://esm.sh/@sentry/browser'
 
 import { setPreRender, setTheme, theme_now } from '../../base.mjs'
 import { isFountServiceAvailable, saveFountHostUrl, getFountHostUrl, pingFount } from '../../scripts/fountHostGetter.mjs'
-import { initTranslations, geti18n, console, getAvailableLocales, getLocaleNames, setLocales } from '../../scripts/i18n.mjs'
+import { initTranslations, geti18n, console, getAvailableLocales, getLocaleNames, setLocales, onLanguageChange } from '../../scripts/i18n.mjs'
 import { makeSearchable } from '../../scripts/search.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
-import { showToast } from '../../scripts/toast.mjs'
+import { showToastI18n } from '../../scripts/toast.mjs'
 
 usingTemplates('wait/install/templates')
 const hostUrl = 'http://localhost:8931'
@@ -319,7 +319,6 @@ function populateLanguageSelector() {
 		a.onclick = async e => {
 			e.preventDefault()
 			await setLocales([locale])
-			updateRotatingSubtitles()
 			document.activeElement?.blur()
 		}
 		li.appendChild(a)
@@ -354,7 +353,7 @@ const checkFountInstallerAlive = async () => {
 async function handleInstallerFlow() {
 	document.getElementById('theme-selection-section').style.display = 'block'
 	document.getElementById('mini-game-section').style.display = 'block'
-	footerReadyText.textContent = geti18n('installer_wait_screen.footer.wait_text')
+	footerReadyText.dataset.i18n = 'installer_wait_screen.footer.wait_text'
 
 	const timer = setInterval(async () => {
 		if (!await checkFountInstallerAlive()) {
@@ -368,8 +367,8 @@ async function handleInstallerFlow() {
 			saveFountHostUrl(hostUrl)
 			setPreRender(hostUrl)
 
-			footerReadyText.textContent = geti18n('installer_wait_screen.footer.ready_text')
-			launchButtonText.textContent = geti18n('installer_wait_screen.footer.open_fount')
+			footerReadyText.dataset.i18n = 'installer_wait_screen.footer.ready_text'
+			launchButtonText.dataset.i18n = 'installer_wait_screen.footer.open_fount'
 			launchButtonSpinner.style.display = 'none'
 
 			launchButton.onclick = () => {
@@ -389,14 +388,14 @@ async function handleStandaloneFlow() {
 	const savedHostUrl = await getFountHostUrl()
 
 	if (savedHostUrl) {
-		launchButtonText.textContent = geti18n('installer_wait_screen.footer.open_fount')
+		launchButtonText.dataset.i18n = 'installer_wait_screen.footer.open_fount'
 		launchButton.onclick = async () => {
 			const isOnline = await pingFount(savedHostUrl)
 			window.location.href = isOnline ? new URL('/shells/home', savedHostUrl).href : 'fount://page/shells/home'
 		}
 	}
 	else {
-		launchButtonText.textContent = geti18n('installer_wait_screen.footer.open_or_install_fount')
+		launchButtonText.dataset.i18n = 'installer_wait_screen.footer.open_or_install_fount'
 		launchButton.onclick = () => {
 			window.location.href = 'fount://page/shells/home'
 			setTimeout(() => { window.location.href = 'https://github.com/steve02081504/fount' }, 1000)
@@ -415,7 +414,7 @@ async function main() {
 	nounRotator = createRotatingText(document.getElementById('rotating-noun'), [], 2500)
 	platformRotator = createRotatingText(document.getElementById('rotating-platform'), [], 2500)
 
-	updateRotatingSubtitles()
+	onLanguageChange(updateRotatingSubtitles)
 	populateLanguageSelector()
 	renderThemePreviews()
 
@@ -451,6 +450,6 @@ async function main() {
 
 main().catch(e => {
 	Sentry.captureException(e)
-	showToast(geti18n('installer_wait_screen.footer.error_message', { error: e }), 'error')
+	showToastI18n('error', 'installer_wait_screen.footer.error_message', { error: e })
 	setTimeout(() => window.location.href = 'https://github.com/steve02081504/fount', 5000)
 })

@@ -263,7 +263,7 @@
 			"title": "Innskráning",
 			"submitButton": "Skrá inn",
 			"toggleLink": {
-				"text": "Ekki með aðgang?",
+				"textContent": "Ekki með aðgang?",
 				"link": "Nýskráning"
 			}
 		},
@@ -271,7 +271,7 @@
 			"title": "Nýskráning",
 			"submitButton": "Nýskrá",
 			"toggleLink": {
-				"text": "Þegar með aðgang?",
+				"textContent": "Þegar með aðgang?",
 				"link": "Skrá inn"
 			}
 		},
@@ -704,7 +704,7 @@
 			"icon": {
 				"alt": "Upphalstákn"
 			},
-			"text": "Dragðu og slepptu skrám hér eða smelltu til að velja skrár"
+			"textContent": "Dragðu og slepptu skrám hér eða smelltu til að velja skrár"
 		},
 		"textArea": {
 			"placeholder": "Sláðu inn texta til að flytja inn..."
@@ -1295,6 +1295,7 @@
 		"verifying": "Staðfestir...",
 		"solved": "Staðfesting tókst",
 		"error": "Staðfesting mistókst",
+		"errorMessage": "Staðfesting mistókst: ${error}",
 		"wasm_disabled": "Virkja WASM fyrir hraðari sannprófun"
 	}
 }

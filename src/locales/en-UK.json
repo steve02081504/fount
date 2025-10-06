@@ -263,7 +263,7 @@
 			"title": "Log In",
 			"submitButton": "Log In",
 			"toggleLink": {
-				"text": "No account?",
+				"textContent": "No account?",
 				"link": "Register now"
 			}
 		},
@@ -271,7 +271,7 @@
 			"title": "Register",
 			"submitButton": "Register",
 			"toggleLink": {
-				"text": "Already have an account?",
+				"textContent": "Already have an account?",
 				"link": "Log in now"
 			}
 		},
@@ -704,7 +704,7 @@
 			"icon": {
 				"alt": "Upload Icon"
 			},
-			"text": "Drag and drop files here or click to select files"
+			"textContent": "Drag and drop files here or click to select files"
 		},
 		"textArea": {
 			"placeholder": "Enter text to import..."
@@ -1295,6 +1295,7 @@
 		"verifying": "Verifying...",
 		"solved": "Verification successful",
 		"error": "Verification failed",
+		"errorMessage": "Verification failed: ${error}",
 		"wasm_disabled": "Enable WASM for faster verification"
 	}
 }

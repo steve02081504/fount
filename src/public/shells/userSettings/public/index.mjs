@@ -222,7 +222,6 @@ async function loadAndDisplayDevices() {
 				const revokeButton = document.createElement('button')
 				revokeButton.className = 'btn btn-xs btn-error btn-outline self-start sm:self-center'
 				revokeButton.dataset.i18n = 'userSettings.userDevices.revokeButton'
-				revokeButton.textContent = geti18n('userSettings.userDevices.revokeButton')
 				revokeButton.onclick = async () => {
 					if (confirmI18n('userSettings.userDevices.revokeConfirm')) try {
 						const password = await requestPasswordConfirmation()
@@ -326,7 +325,6 @@ async function loadAndDisplayApiKeys() {
 			const revokeButton = document.createElement('button')
 			revokeButton.className = 'btn btn-xs btn-error btn-outline self-start sm:self-center'
 			revokeButton.dataset.i18n = 'userSettings.apiKeys.revokeButton'
-			revokeButton.textContent = geti18n('userSettings.apiKeys.revokeButton')
 			revokeButton.onclick = async () => {
 				if (confirmI18n('userSettings.apiKeys.revokeConfirm')) try {
 					const revokeResult = await api.revokeApiKey(key.jti)

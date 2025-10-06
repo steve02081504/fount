@@ -263,7 +263,7 @@
 			"title": "登入",
 			"submitButton": "登入",
 			"toggleLink": {
-				"text": "沒有帳號？",
+				"textContent": "沒有帳號？",
 				"link": "立即註冊"
 			}
 		},
@@ -271,7 +271,7 @@
 			"title": "註冊",
 			"submitButton": "註冊",
 			"toggleLink": {
-				"text": "已有帳號？",
+				"textContent": "已有帳號？",
 				"link": "立即登入"
 			}
 		},
@@ -704,7 +704,7 @@
 			"icon": {
 				"alt": "上傳圖示"
 			},
-			"text": "拖放檔案到此處或點擊選擇檔案"
+			"textContent": "拖放檔案到此處或點擊選擇檔案"
 		},
 		"textArea": {
 			"placeholder": "輸入要匯入的文字..."
@@ -1295,6 +1295,7 @@
 		"verifying": "正在驗證...",
 		"solved": "驗證成功",
 		"error": "驗證失敗",
+		"errorMessage": "驗證失敗：${error}",
 		"wasm_disabled": "啟用 WASM 可加快驗證速度"
 	}
 }

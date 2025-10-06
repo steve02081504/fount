@@ -263,7 +263,7 @@
 			"title": "Iniciar sessão",
 			"submitButton": "Iniciar sessão",
 			"toggleLink": {
-				"text": "Não tem conta?",
+				"textContent": "Não tem conta?",
 				"link": "Registe-se agora"
 			}
 		},
@@ -271,7 +271,7 @@
 			"title": "Registar",
 			"submitButton": "Registar",
 			"toggleLink": {
-				"text": "Já tem uma conta?",
+				"textContent": "Já tem uma conta?",
 				"link": "Iniciar sessão agora"
 			}
 		},
@@ -704,7 +704,7 @@
 			"icon": {
 				"alt": "Ícone de Carregamento"
 			},
-			"text": "Arraste e solte ficheiros aqui ou clique para selecionar ficheiros."
+			"textContent": "Arraste e solte ficheiros aqui ou clique para selecionar ficheiros."
 		},
 		"textArea": {
 			"placeholder": "Digite o texto para importar..."
@@ -1295,6 +1295,7 @@
 		"verifying": "Verificando ...",
 		"solved": "Verificação bem-sucedida",
 		"error": "Verificação falhou",
+		"errorMessage": "Verificação falhou: ${error}",
 		"wasm_disabled": "Ative o WASM para uma verificação mais rápida"
 	}
 }

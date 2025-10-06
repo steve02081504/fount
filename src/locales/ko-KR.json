@@ -263,7 +263,7 @@
 			"title": "로그인",
 			"submitButton": "로그인",
 			"toggleLink": {
-				"text": "계정이 없으신가요?",
+				"textContent": "계정이 없으신가요?",
 				"link": "지금 회원가입하세요"
 			}
 		},
@@ -271,7 +271,7 @@
 			"title": "회원가입",
 			"submitButton": "회원가입",
 			"toggleLink": {
-				"text": "이미 계정이 있으신가요?",
+				"textContent": "이미 계정이 있으신가요?",
 				"link": "지금 로그인하세요"
 			}
 		},
@@ -704,7 +704,7 @@
 			"icon": {
 				"alt": "업로드 아이콘"
 			},
-			"text": "여기에 파일을 드래그 앤 드롭하거나 클릭하여 파일을 선택하세요."
+			"textContent": "여기에 파일을 드래그 앤 드롭하거나 클릭하여 파일을 선택하세요."
 		},
 		"textArea": {
 			"placeholder": "가져올 텍스트를 입력하세요..."
@@ -1295,6 +1295,7 @@
 		"verifying": "확인 중...",
 		"solved": "확인 성공",
 		"error": "확인 실패",
+		"errorMessage": "확인 실패: ${error}",
 		"wasm_disabled": "더 빠른 확인을 위해 WASM을 활성화하세요"
 	}
 }

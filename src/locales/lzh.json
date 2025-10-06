@@ -263,7 +263,7 @@
 			"title": "登臺",
 			"submitButton": "登臺",
 			"toggleLink": {
-				"text": "尚無名號？",
+				"textContent": "尚無名號？",
 				"link": "即刻立戶"
 			}
 		},
@@ -271,7 +271,7 @@
 			"title": "立戶",
 			"submitButton": "立戶",
 			"toggleLink": {
-				"text": "已有戶？",
+				"textContent": "已有戶？",
 				"link": "即刻登臺"
 			}
 		},
@@ -704,7 +704,7 @@
 			"icon": {
 				"alt": "上傳圖標"
 			},
-			"text": "可將文卷曳至此處，或點擊擇選"
+			"textContent": "可將文卷曳至此處，或點擊擇選"
 		},
 		"textArea": {
 			"placeholder": "輸入欲引入之文字..."
@@ -1295,6 +1295,7 @@
 		"verifying": "考驗中",
 		"solved": "驗訖",
 		"error": "謬",
+		"errorMessage": "謬：${error}",
 		"wasm_disabled": "欲速，啟WASM"
 	}
 }

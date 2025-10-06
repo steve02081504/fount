@@ -1,9 +1,9 @@
-import { initTranslations, geti18n, confirmI18n, console } from '../../../scripts/i18n.mjs'
+import { initTranslations, confirmI18n, console, onLanguageChange } from '../../../scripts/i18n.mjs'
 import { renderMarkdown, renderMarkdownAsString } from '../../../scripts/markdown.mjs'
 import { compileFilter } from '../../../scripts/search.mjs'
 import { renderTemplate, usingTemplates } from '../../../scripts/template.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
-import { showToast } from '../../../scripts/toast.mjs'
+import { showToast, showToastI18n } from '../../../scripts/toast.mjs'
 
 import { getChatList, getCharDetails, copyChats, exportChats, deleteChats } from './endpoints.mjs'
 
@@ -122,11 +122,11 @@ async function renderChatListItem(chat) {
 				chatList = await getChatList() // refresh chat list
 				renderChatList()
 			}
-			else showToast(data.message, 'error')
+			else showToast('error', data.message)
 		}
 		catch (error) {
 			console.error('Error copying chat:', error)
-			showToast(geti18n('chat_history.alerts.copyError'), 'error')
+			showToastI18n('error', 'chat_history.alerts.copyError')
 		}
 	})
 
@@ -144,11 +144,11 @@ async function renderChatListItem(chat) {
 					a.click()
 					URL.revokeObjectURL(url)
 				}
-				else showToast(data.message, 'error')
+				else showToast('error', data.message)
 		}
 		catch (error) {
 			console.error('Error exporting chat:', error)
-			showToast(geti18n('chat_history.alerts.exportError'), 'error')
+			showToastI18n('error', 'chat_history.alerts.exportError')
 		}
 	})
 
@@ -161,10 +161,10 @@ async function renderChatListItem(chat) {
 				chatList = chatList.filter(c => c.chatid !== chat.chatid)
 				renderChatList()
 			}
-			else showToast(data[0].message, 'error')
+			else showToast('error', data[0].message)
 		} catch (error) {
 			console.error('Error deleting chat:', error)
-			showToast(geti18n('chat_history.alerts.deleteError'), 'error')
+			showToastI18n('error', 'chat_history.alerts.deleteError')
 		}
 	})
 
@@ -209,7 +209,7 @@ reverseSelectButton.addEventListener('click', () => {
 // 删除选中
 deleteSelectedButton.addEventListener('click', async () => {
 	if (!selectedChats.size) {
-		showToast(geti18n('chat_history.alerts.noChatSelectedForDeletion'), 'error')
+		showToastI18n('error', 'chat_history.alerts.noChatSelectedForDeletion')
 		return
 	}
 	if (confirmI18n('chat_history.confirmDeleteMultiChats', { count: selectedChats.size })) try {
@@ -221,19 +221,19 @@ deleteSelectedButton.addEventListener('click', async () => {
 				chatList = chatList.filter(c => c.chatid !== result.chatid)
 				selectedChats.delete(result.chatid) // Also remove from selectedChats
 			}
-			else showToast(result.message, 'error')
+			else showToast('error', result.message)
 		})
 		renderChatList()
 	} catch (error) {
 		console.error('Error deleting selected chats:', error)
-		showToast(geti18n('chat_history.alerts.deleteError'), 'error')
+		showToastI18n('error', 'chat_history.alerts.deleteError')
 	}
 })
 
 // 导出选中
 exportSelectedButton.addEventListener('click', async () => {
 	if (!selectedChats.size) {
-		showToast(geti18n('chat_history.alerts.noChatSelectedForExport'), 'error')
+		showToastI18n('error', 'chat_history.alerts.noChatSelectedForExport')
 		return
 	}
 	try {
@@ -248,11 +248,11 @@ exportSelectedButton.addEventListener('click', async () => {
 				a.click()
 				URL.revokeObjectURL(url)
 			}
-			else showToast(result.message, 'error')
+			else showToast('error', result.message)
 	}
 	catch (error) {
 		console.error('Error exporting selected chats:', error)
-		showToast(geti18n('chat_history.alerts.exportError'), 'error')
+		showToastI18n('error', 'chat_history.alerts.exportError')
 	}
 })
 
@@ -260,10 +260,10 @@ async function initializeApp() {
 	applyTheme()
 	await initTranslations('chat_history') // Initialize translations for 'chat_history'
 	chatList = await getChatList()
-	await renderChatList()
+	await onLanguageChange(renderChatList)
 }
 
 initializeApp().catch(error => {
-	showToast(error.message, 'error')
+	showToast('error', error.message)
 	window.location.href = '/login'
 })

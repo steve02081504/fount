@@ -263,7 +263,7 @@
 			"title": "Đăng nhập",
 			"submitButton": "Đăng nhập",
 			"toggleLink": {
-				"text": "Chưa có tài khoản?",
+				"textContent": "Chưa có tài khoản?",
 				"link": "Đăng ký ngay"
 			}
 		},
@@ -271,7 +271,7 @@
 			"title": "Đăng ký",
 			"submitButton": "Đăng ký",
 			"toggleLink": {
-				"text": "Đã có tài khoản?",
+				"textContent": "Đã có tài khoản?",
 				"link": "Đăng nhập ngay"
 			}
 		},
@@ -704,7 +704,7 @@
 			"icon": {
 				"alt": "Biểu tượng tải lên"
 			},
-			"text": "Kéo và thả tệp vào đây hoặc nhấp để chọn tệp."
+			"textContent": "Kéo và thả tệp vào đây hoặc nhấp để chọn tệp."
 		},
 		"textArea": {
 			"placeholder": "Nhập văn bản cần nhập..."
@@ -1295,6 +1295,7 @@
 		"verifying": "Đang xác minh...",
 		"solved": "Xác minh thành công",
 		"error": "Xác minh thất bại",
+		"errorMessage": "Xác minh thất bại: ${error}",
 		"wasm_disabled": "Bật WASM để xác minh nhanh hơn"
 	}
 }
