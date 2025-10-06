@@ -6,9 +6,9 @@ import {
 	generateLoginInfoUrl,
 } from '../../scripts/credentialManager.mjs'
 import { hosturl_in_local_ip, ping } from '../../scripts/endpoints.mjs'
-import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
+import { initTranslations } from '../../scripts/i18n.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
-import { showToast } from '../../scripts/toast.mjs'
+import { showToast, showToastI18n } from '../../scripts/toast.mjs'
 
 applyTheme()
 await initTranslations('access')
@@ -26,7 +26,7 @@ try {
 	const login_status = searchParams.get('login_status')
 	if (login_status === 'failed') {
 		const reason = searchParams.get('reason')
-		showToast(reason || 'Credential transfer failed.', 'error')
+		showToast('error', reason || 'Credential transfer failed.')
 	}
 
 	const uuid_from_hash = hashParams.get('uuid')
@@ -52,7 +52,7 @@ try {
 }
 catch (e) {
 	console.error(e.message)
-	showToast(e.message, 'error')
+	showToast('error', e.message)
 	url = await hosturl_in_local_ip().catch(() => e.message) // Fallback to a default URL
 }
 
@@ -74,6 +74,6 @@ function generateQRCode(url, container) {
 
 copyButton.addEventListener('click', () => {
 	navigator.clipboard.writeText(url)
-		.then(() => showToast(geti18n('access.copied'), 'success'))
-		.catch(e => showToast(e.message, 'error'))
+		.then(() => showToastI18n('success', 'access.copied'))
+		.catch(e => showToast('error', e.message))
 })

@@ -23,7 +23,7 @@ async function uninstallPart(type, name) {
 }
 
 // 显示信息
-function showMessage(message, type = 'info') {
+function showMessage(type, message) {
 	const messageElement = document.getElementById('message-content')
 	const infoMessage = document.getElementById('info-message')
 	const errorElement = document.getElementById('error-content')
@@ -64,16 +64,16 @@ if (type && name) {
 			await uninstallPart(type, name)
 		}
 		catch (error) {
-			showMessage(geti18n('uninstall.alerts.failed', { error: error.message }), 'error')
+			showMessage('error', geti18n('uninstall.alerts.failed', { error: error.message }))
 		}
 	})
 
 	// Listen for the uninstallation event to update the UI.
 	onServerEvent('part-uninstalled', ({ parttype, partname }) => {
 		if (parttype === type && partname === name) {
-			showMessage(geti18n('uninstall.alerts.success', { type, name }), 'info')
+			showMessage('info', geti18n('uninstall.alerts.success', { type, name }))
 			confirmButton.disabled = true
-			cancelButton.textContent = geti18n('uninstall.buttons.back')
+			cancelButton.dataset.i18n = 'uninstall.buttons.back'
 		}
 	})
 
@@ -81,12 +81,12 @@ if (type && name) {
 	onServerEvent('part-installed', ({ parttype, partname }) => {
 		if (parttype === type && partname === name) {
 			confirmButton.disabled = false
-			cancelButton.textContent = geti18n('uninstall.buttons.cancel')
+			cancelButton.dataset.i18n = 'uninstall.buttons.cancel'
 			hideMessage()
 		}
 	})
 }
 else {
-	title.textContent = geti18n('uninstall.invalidParamsTitle')
-	showMessage(geti18n('uninstall.alerts.invalidParams'), 'error')
+	title.dataset.i18n = 'uninstall.invalidParamsTitle'
+	showMessage('error', geti18n('uninstall.alerts.invalidParams'))
 }

@@ -3,9 +3,12 @@ import * as Sentry from 'https://esm.sh/@sentry/browser'
 
 import { base_dir } from '../base.mjs'
 
+import { onElementRemoved } from './onElementRemoved.mjs'
+
 const languageChangeCallbacks = []
 export function onLanguageChange(callback) {
 	languageChangeCallbacks.push(callback)
+	return callback()
 }
 export function offLanguageChange(callback) {
 	const index = languageChangeCallbacks.indexOf(callback)
@@ -17,6 +20,14 @@ async function runLanguageChange() {
 	} catch (e) {
 		console.error('Error in language change callback:', e)
 	}
+}
+
+const LocalizeLogics = new Map()
+export function setLocalizeLogic(element, logic) {
+	if (LocalizeLogics.has(element)) offLanguageChange(LocalizeLogics.get(element))
+	else onElementRemoved(element, () => offLanguageChange(LocalizeLogics.get(element)))
+	LocalizeLogics.set(element, logic)
+	return onLanguageChange(logic)
 }
 
 let i18n
@@ -169,6 +180,36 @@ export function confirmI18n(key, params = {}) {
 }
 export { console }
 
+function translateSingularElement(element) {
+	let updated = false
+	function update(attr, value) {
+		if (element[attr] == value) return
+		element[attr] = value
+		updated = true
+	}
+	const key = element.dataset.i18n
+	if (!key) return updated
+	if (getNestedValue(i18n, key) instanceof Object) {
+		const attributes = ['placeholder', 'title', 'label', 'textContent', 'value', 'alt']
+		for (const attr of attributes) {
+			const specificKey = `${key}.${attr}`
+			const translation = geti18n_nowarn(specificKey)
+			if (translation) update(attr, translation)
+		}
+		const dataset = geti18n_nowarn(`${key}.dataset`)
+		if (dataset) Object.assign(element.dataset, dataset)
+	}
+	else {
+		const translation = geti18n(key)
+		if (!translation) return
+		if (element.innerHTML !== translation) {
+			element.innerHTML = translation
+			updated = true
+		}
+	}
+	return updated
+}
+
 /**
  * 将翻译应用到 DOM 元素。
  * @private
@@ -187,30 +228,15 @@ function applyTranslations() {
 }
 
 export function i18nElement(element, {
-	skip_report = false
+	skip_report = false,
 } = {}) {
-	const elements = element.querySelectorAll('[data-i18n]')
 	let updated = skip_report
-	elements.forEach(element => {
-		function update(attr, value) {
-			if (element[attr] == value) return
-			element[attr] = value
-			updated = true
-		}
-		const key = element.dataset.i18n
-		if (!key) return
-		if (getNestedValue(i18n, key) instanceof Object) {
-			const attributes = ['placeholder', 'title', 'label', 'text', 'value', 'alt']
-			for (let attr of attributes) {
-				const specificKey = `${key}.${attr}`
-				const translation = geti18n_nowarn(specificKey)
-				if (translation === undefined) continue
-				if (attr === 'text') attr = 'textContent'
-				update(attr, translation)
-			}
-		}
-		else
-			element.innerHTML = geti18n(key)
+	if (element.matches?.('[data-i18n]'))
+		if (translateSingularElement(element)) updated = true
+
+	const elements = element.querySelectorAll('[data-i18n]')
+	elements.forEach(el => {
+		if (translateSingularElement(el)) updated = true
 	})
 	if (!updated)
 		Sentry.captureException(new Error('i18nElement() did not update any attributes for element.'))
@@ -220,3 +246,23 @@ export function i18nElement(element, {
 window.addEventListener('languagechange', async () => {
 	await initTranslations()
 })
+
+// Watch for changes in the DOM
+const i18nObserver = new MutationObserver((mutationsList) => {
+	for (const mutation of mutationsList)
+		if (mutation.type === 'childList')
+			mutation.addedNodes.forEach(node => {
+				if (node.nodeType === Node.ELEMENT_NODE)
+					i18nElement(node)
+			})
+		else if (mutation.type === 'attributes')  // No need to check attributeName, since we are filtering
+			translateSingularElement(mutation.target)
+})
+
+// Start observing the document body for configured mutations
+function observeBody() {
+	i18nObserver.observe(document.body, { attributeFilter: ['data-i18n'], attributes: true, childList: true, subtree: true })
+}
+
+if (document.body) observeBody()
+else window.addEventListener('DOMContentLoaded', observeBody)

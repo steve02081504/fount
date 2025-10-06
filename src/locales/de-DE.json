@@ -263,7 +263,7 @@
 			"title": "Anmelden",
 			"submitButton": "Anmelden",
 			"toggleLink": {
-				"text": "Kein Konto?",
+				"textContent": "Kein Konto?",
 				"link": "Jetzt registrieren"
 			}
 		},
@@ -271,7 +271,7 @@
 			"title": "Registrieren",
 			"submitButton": "Registrieren",
 			"toggleLink": {
-				"text": "Bereits ein Konto?",
+				"textContent": "Bereits ein Konto?",
 				"link": "Jetzt anmelden"
 			}
 		},
@@ -704,7 +704,7 @@
 			"icon": {
 				"alt": "Upload-Symbol"
 			},
-			"text": "Dateien hierher ziehen oder zum Auswählen klicken"
+			"textContent": "Dateien hierher ziehen oder zum Auswählen klicken"
 		},
 		"textArea": {
 			"placeholder": "Text zum Importieren eingeben..."
@@ -1026,10 +1026,12 @@
 		},
 		"buttons": {
 			"save": "Speichern",
-			"delete": "Löschen"
-		},
-		"tooltips": {
-			"setDefault": "Standardmäßig festgelegt"
+			"delete": "Löschen",
+			"setDefault": {
+				"dataset": {
+					"tip": "Standardmäßig festgelegt"
+				}
+			}
 		},
 		"alerts": {
 			"fetchFileListFailed": "Fehler beim Abrufen der Dateiliste: ${error}",
@@ -1295,6 +1297,59 @@
 		"verifying": "Wird überprüft...",
 		"solved": "Überprüfung erfolgreich",
 		"error": "Überprüfung fehlgeschlagen",
+		"errorMessage": "Überprüfung fehlgeschlagen: ${error}",
 		"wasm_disabled": "Aktivieren Sie WASM für eine schnellere Überprüfung."
+	},
+	"zxcvbn": {
+		"warnings": {
+			"straightRow": "Kontinuierliche Tasten auf der Tastatur sind leicht zu erraten.",
+			"keyPattern": "Ein kurzes Tastaturmuster ist leicht zu erraten.",
+			"simpleRepeat": "Wiederholte Charaktere wie \"AAA\" sind leicht zu erraten.",
+			"extendedRepeat": "Wiederholte Charaktermuster wie \"abcabcabc\" sind leicht zu erraten.",
+			"sequences": "Gemeinsame Zeichensequenzen wie \"ABC\" sind leicht zu erraten.",
+			"recentYears": "Die letzten Jahre sind leicht zu erraten.",
+			"dates": "Datum ist leicht zu erraten.",
+			"topTen": "Dies ist ein überstrapaziertes Passwort.",
+			"topHundred": "Dies ist ein Passwort, das häufig verwendet wird.",
+			"common": "Dies ist ein häufig verwendetes Passwort.",
+			"similarToCommon": "Dies ähnelt einem häufig verwendeten Passwort.",
+			"wordByItself": "Ein einzelnes Wort ist leicht zu erraten.",
+			"namesByThemselves": "Ein einzelner Vor- oder Nachname ist leicht zu erraten.",
+			"commonNames": "Häufige Vornamen und Nachnamen sind leicht zu erraten.",
+			"userInputs": "Das Passwort sollte keine persönlichen oder Seitenbezogenen Daten enthalten.",
+			"pwned": "Ihr Passwort wurde in einer Internetdatenverletzung offengelegt."
+		},
+		"suggestions": {
+			"l33t": "Vermeiden Sie es, vorhersehbare Buchstabensubstitutionen wie \"@\" anstelle von \"a\" zu verwenden.",
+			"reverseWords": "Vermeiden Sie es, die umgekehrte Schreibweise gemeinsamer Wörter zu verwenden.",
+			"allUppercase": "Schreiben Sie einige, aber nicht alle Buchstaben groß.",
+			"capitalization": "Schreiben Sie mehr als nur den ersten Buchstaben groß.",
+			"dates": "Vermeiden Sie es, Daten und Jahre zu verwenden, die mit Ihnen verbunden sind.",
+			"recentYears": "Vermeiden Sie die letzten Jahre.",
+			"associatedYears": "Vermeiden Sie es, Jahre mit Ihnen zu verwenden.",
+			"sequences": "Vermeiden Sie gemeinsame Zeichensequenzen.",
+			"repeated": "Vermeiden Sie sich wiederholende Wörter und Charaktere.",
+			"longerKeyboardPattern": "Verwenden Sie ein längeres Tastaturmuster und ändern Sie die Tipprichtung mehrfach.",
+			"anotherWord": "Fügen Sie mehr ungewöhnliche Wörter hinzu.",
+			"useWords": "Verwenden Sie mehrere Wörter, vermeiden Sie jedoch häufige Sätze.",
+			"noNeed": "Sie müssen keine Symbole, Zahlen oder Großbuchstaben verwenden, um starke Passwörter zu erstellen.",
+			"pwned": "Wenn Sie dieses Passwort an anderer Stelle verwenden, sollten Sie es ändern."
+		},
+		"timeEstimation": {
+			"ltSecond": "Weniger als eine Sekunde",
+			"second": "{base} Sekunde",
+			"seconds": "{base} Sekunden",
+			"minute": "{base} min",
+			"minutes": "{base} min",
+			"hour": "{base} Stunde",
+			"hours": "{base} Stunden",
+			"day": "{base} Tag",
+			"days": "{base} Tage",
+			"month": "{base} Monat",
+			"months": "{base} Monate",
+			"year": "{base} Jahr",
+			"years": "{base} Jahre",
+			"centuries": "Jahrhunderte"
+		}
 	}
 }
