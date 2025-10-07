@@ -12,7 +12,7 @@ import { __dirname } from '../base.mjs'
 import { processIPCCommand } from '../ipc_server/index.mjs'
 import { partsList } from '../managers/base.mjs'
 import { getLoadedPartList, getPartList } from '../managers/index.mjs'
-import { getDefaultParts, getPartDetails, setDefaultPart } from '../parts_loader.mjs'
+import { getDefaultParts, getPartDetails, setDefaultPart, getAllCachedPartDetails } from '../parts_loader.mjs'
 import { skip_report, currentGitCommit, config, save_config } from '../server.mjs'
 
 import { register as registerNotifier } from './event_dispatcher.mjs'
@@ -210,6 +210,11 @@ export function registerEndpoints(router) {
 		router.get('/api/getloadedlist/' + part, authenticate, async (req, res) => {
 			const { username } = await getUserByReq(req)
 			res.status(200).json(getLoadedPartList(username, part))
+		})
+		router.get('/api/getallcacheddetails/' + part, authenticate, async (req, res) => {
+			const { username } = await getUserByReq(req)
+			const details = await getAllCachedPartDetails(username, part)
+			res.status(200).json(details)
 		})
 		router.get('/api/getdetails/' + part, authenticate, async (req, res) => {
 			const { username } = await getUserByReq(req)
