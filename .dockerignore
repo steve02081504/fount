@@ -3,6 +3,7 @@
 /.github
 /.esh
 /.vscode
+/.gemini
 /README.md
 AGENTS.md
 /LICENSE
@@ -12,4 +13,5 @@ AGENTS.md
 /eslint.config.mjs
 *.bat
 *.ps1
+.directory
 desktop.ini
