@@ -713,6 +713,10 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'keepalive') {
 		}
 
 		if ($restart_timestamps.Count -ge 7) {
+			if (Test-Path -Path "$FOUNT_DIR/.noautoinit") {
+				Write-Warning "fount has restarted many times in the last short time, but auto-reinitialization is disabled by .noautoinit file. Exiting."
+				exit 1
+			}
 			Write-Warning "fount has restarted many times in the last short time. Forcing re-initialization..."
 			$restart_timestamps.Clear()
 
