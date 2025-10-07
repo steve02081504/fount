@@ -1045,6 +1045,10 @@ keepalive)
 		restart_timestamps=("${temp_timestamps[@]}")
 
 		if [ "${#restart_timestamps[@]}" -ge 7 ]; then
+			if [ -f "$FOUNT_DIR/.noautoinit" ]; then
+				echo -e "${C_YELLOW}fount has restarted many times in the last short time, but auto-reinitialization is disabled by .noautoinit file. Exiting.${C_RESET}" >&2
+				exit 1
+			fi
 			echo -e "${C_YELLOW}fount has restarted many times in the last short time. Forcing re-initialization...${C_RESET}" >&2
 			restart_timestamps=()
 
