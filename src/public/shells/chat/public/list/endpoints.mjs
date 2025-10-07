@@ -16,6 +16,8 @@ export async function getChatList() {
 	}
 }
 
+import { getCharDetails as getCharDetails_real } from '../../../../scripts/parts.mjs'
+
 const char_details_cache = {}
 
 /**
@@ -28,17 +30,7 @@ export async function getCharDetails(charname) {
 		return char_details_cache[charname]
 
 
-	const promise = fetch(`/api/getdetails/chars?name=${charname}`)
-		.then(response => {
-			if (response.ok)
-				return response.json()
-			else {
-				console.error('Failed to get char details:', response.status, response.statusText)
-				// Remove the promise from cache on error to allow retries.
-				delete char_details_cache[charname]
-				return {} // Or throw an error, depending on desired error handling.
-			}
-		})
+	const promise = getCharDetails_real(charname)
 		.catch(error => {
 			console.error('Error fetching char details:', error)
 			delete char_details_cache[charname]

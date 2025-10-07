@@ -1,4 +1,4 @@
-import { currentChatId } from './endpoints.mjs'
+import { getInitialData } from './endpoints.mjs'
 import { setupCss } from './ui/css.mjs'
 import { initializeMessageInput } from './ui/messageInput.mjs'
 import { setupSidebar, updateSidebar } from './ui/sidebar.mjs'
@@ -25,8 +25,7 @@ export async function initializeChat() {
 	setupCss()
 	initializeWebSocket()
 
-	const response = await fetch(`/api/shells/chat/${currentChatId}/initial-data`)
-	const initialData = await response.json()
+	const initialData = await getInitialData()
 	initializeVirtualQueue(initialData)
 	updateSidebar({
 		charlist: initialData.charlist,

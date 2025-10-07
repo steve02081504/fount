@@ -5,7 +5,7 @@ import { initTranslations, geti18n, confirmI18n, console, onLanguageChange } fro
 import { renderMarkdown } from '../../scripts/markdown.mjs'
 import {
 	getCharDetails, noCacheGetCharDetails, getPersonaDetails, noCacheGetPersonaDetails, getWorldDetails, noCacheGetWorldDetails,
-	setDefaultPart, getDefaultParts
+	setDefaultPart, getDefaultParts, getAllCachedPartDetails
 } from '../../scripts/parts.mjs'
 import { getFiltersFromString, compileFilter } from '../../scripts/search.mjs'
 import { onServerEvent } from '../../scripts/server_events.mjs'
@@ -14,7 +14,7 @@ import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 import { showToast } from '../../scripts/toast.mjs'
 
-import { getHomeRegistry, getAllCachedPartDetails } from './src/endpoints.mjs'
+import { getHomeRegistry } from './src/endpoints.mjs'
 
 usingTemplates('/shells/home/src/templates')
 

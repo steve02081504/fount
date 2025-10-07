@@ -82,5 +82,9 @@ export function modifyTimeLine(delta) {
 	return callApi('timeline', 'PUT', { delta })
 }
 
+export function getInitialData() {
+	return callApi('initial-data', 'GET')
+}
+
 if (window.location.hash)
 	currentChatId = window.location.hash.substring(1)

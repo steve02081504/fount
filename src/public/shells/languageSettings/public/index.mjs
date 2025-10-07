@@ -1,4 +1,4 @@
-import { initTranslations, i18nElement, loadPreferredLangs, savePreferredLangs } from '/scripts/i18n.mjs'
+import { initTranslations, i18nElement, loadPreferredLangs, savePreferredLangs, getAvailableLocales } from '/scripts/i18n.mjs'
 import { renderTemplate, usingTemplates } from '/scripts/template.mjs'
 import { applyTheme } from '/scripts/theme.mjs'
 import { createSearchableDropdown } from '/scripts/search.mjs'
@@ -77,9 +77,7 @@ async function renderPreferredLanguages() {
 // --- Event Handlers ---
 async function fetchAvailableLocales() {
 	try {
-		const response = await fetch('/api/getavailablelocales')
-		if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
-		const data = await response.json()
+		const data = await getAvailableLocales()
 		availableLocales = data
 	}
 	catch (error) {
