@@ -1,37 +1,37 @@
-import { showToastI18n } from "../../scripts/toast.mjs";
 import { getApiKeys, createApiKey, revokeApiKey, logout } from '../../scripts/endpoints.mjs'
 import { initTranslations, geti18n, promptI18n, confirmI18n, console } from '../../scripts/i18n.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
+import { showToastI18n } from '../../scripts/toast.mjs'
 
 import { getUserStats, changePassword, renameUser, deleteAccount, getDevices, revokeDevice } from './src/endpoints.mjs'
 
 const REFRESH_TOKEN_EXPIRY_DURATION_STRING = 30 * 24 * 60 * 60 * 1000 // '30d'
 
 // DOM 元素引用
-const userInfoUsername = document.getElementById('userInfoUsername');
-const userInfoCreationDate = document.getElementById('userInfoCreationDate');
-const userInfoFolderSize = document.getElementById('userInfoFolderSize');
-const userInfoFolderPath = document.getElementById('userInfoFolderPath');
-const copyFolderPathBtn = document.getElementById('copyFolderPathBtn');
-const changePasswordForm = document.getElementById('changePasswordForm');
-const renameUserForm = document.getElementById('renameUserForm');
-const deviceList = document.getElementById('deviceList');
-const noDevicesText = document.getElementById('noDevicesText');
-const refreshDevicesBtn = document.getElementById('refreshDevicesBtn');
-const logoutBtn = document.getElementById('logoutBtn');
-const deleteAccountBtn = document.getElementById('deleteAccountBtn');
-const passwordConfirmationModal = document.getElementById('passwordConfirmationModal');
-const confirmationPasswordInput = document.getElementById('confirmationPassword');
-const confirmPasswordBtn = document.getElementById('confirmPasswordBtn');
-const cancelPasswordBtn = document.getElementById('cancelPasswordBtn');
+const userInfoUsername = document.getElementById('userInfoUsername')
+const userInfoCreationDate = document.getElementById('userInfoCreationDate')
+const userInfoFolderSize = document.getElementById('userInfoFolderSize')
+const userInfoFolderPath = document.getElementById('userInfoFolderPath')
+const copyFolderPathBtn = document.getElementById('copyFolderPathBtn')
+const changePasswordForm = document.getElementById('changePasswordForm')
+const renameUserForm = document.getElementById('renameUserForm')
+const deviceList = document.getElementById('deviceList')
+const noDevicesText = document.getElementById('noDevicesText')
+const refreshDevicesBtn = document.getElementById('refreshDevicesBtn')
+const logoutBtn = document.getElementById('logoutBtn')
+const deleteAccountBtn = document.getElementById('deleteAccountBtn')
+const passwordConfirmationModal = document.getElementById('passwordConfirmationModal')
+const confirmationPasswordInput = document.getElementById('confirmationPassword')
+const confirmPasswordBtn = document.getElementById('confirmPasswordBtn')
+const cancelPasswordBtn = document.getElementById('cancelPasswordBtn')
 // API Key elements
-const createApiKeyForm = document.getElementById('createApiKeyForm');
-const apiKeyList = document.getElementById('apiKeyList');
-const noApiKeysText = document.getElementById('noApiKeysText');
-const refreshApiKeysBtn = document.getElementById('refreshApiKeysBtn');
-const newApiKeyModal = document.getElementById('newApiKeyModal');
-const newApiKeyInput = document.getElementById('newApiKeyInput');
-const copyNewApiKeyBtn = document.getElementById('copyNewApiKeyBtn');
+const createApiKeyForm = document.getElementById('createApiKeyForm')
+const apiKeyList = document.getElementById('apiKeyList')
+const noApiKeysText = document.getElementById('noApiKeysText')
+const refreshApiKeysBtn = document.getElementById('refreshApiKeysBtn')
+const newApiKeyModal = document.getElementById('newApiKeyModal')
+const newApiKeyInput = document.getElementById('newApiKeyInput')
+const copyNewApiKeyBtn = document.getElementById('copyNewApiKeyBtn')
 
 let passwordConfirmationContext = { resolve: null, reject: null }
 let cachedPassword = null // 用于短期缓存密码
@@ -313,13 +313,15 @@ async function loadAndDisplayApiKeys() {
 			revokeButton.dataset.i18n = 'userSettings.apiKeys.revokeButton'
 			revokeButton.onclick = async () => {
 				if (confirmI18n('userSettings.apiKeys.revokeConfirm')) try {
-					const revokeResult = await revokeApiKey(key.jti)
+					const password = await requestPasswordConfirmation()
+					const revokeResult = await revokeApiKey(key.jti, password)
 					if (!revokeResult.success)
 						throw new Error(revokeResult.message || geti18n('userSettings.apiError', { message: 'revoke failed' }))
 
 					showToastI18n('success', 'userSettings.apiKeys.revokeSuccess')
 					loadAndDisplayApiKeys()
 				} catch (error) {
+					if (error.message.includes('cancelled') || error.message.includes('closed')) return
 					showToastI18n('error', 'userSettings.generalError', { message: error.message })
 				}
 			}

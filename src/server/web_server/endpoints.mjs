@@ -167,11 +167,12 @@ export function registerEndpoints(router) {
 
 	router.post('/api/apikey/revoke', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
-		const { jti } = req.body
+		const { jti, password } = req.body
 		if (!jti) return res.status(400).json({ success: false, error: 'JTI of the key to revoke is required.' })
+		if (!password) return res.status(400).json({ success: false, error: 'Password is required to revoke API key.' })
 
-		const result = await revokeApiKey(user.username, jti)
-		res.status(result.success ? 200 : 404).json(result)
+		const result = await revokeApiKey(user.username, jti, password)
+		res.status(result.success ? 200 : 400).json(result)
 	})
 
 	router.post('/api/apikey/verify', async (req, res) => {
