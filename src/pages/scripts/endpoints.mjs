@@ -17,7 +17,9 @@ export async function generateVerificationCode() {
 }
 
 export async function whoami() {
-	const response = await fetch('/api/whoami')
+	const response = await fetch('/api/whoami', {
+		headers: { Accept: 'application/json' },
+	})
 	return response.json()
 }
 
