@@ -108,7 +108,7 @@ export function geti18n_nowarn(key, params = {}) {
 export function geti18n(key, params = {}) {
 	const translation = geti18n_nowarn(key, params)
 
-	if (translation !== undefined) return translation
+	if (translation) return translation
 
 	console.warn(`Translation key "${key}" not found.`)
 	Sentry.captureException(new Error(`Translation key "${key}" not found.`))
@@ -211,11 +211,12 @@ onServerEvent('locale-updated', async () => {
 
 // Watch for changes in the DOM
 const i18nObserver = new MutationObserver((mutationsList) => {
+	if (!i18n) return
 	for (const mutation of mutationsList)
 		if (mutation.type === 'childList')
 			mutation.addedNodes.forEach(node => {
 				if (node.nodeType === Node.ELEMENT_NODE)
-					i18nElement(node)
+					i18nElement(node, { skip_report: true })
 			})
 		else if (mutation.type === 'attributes')  // No need to check attributeName, since we are filtering
 			translateSingularElement(mutation.target)

@@ -140,7 +140,7 @@ function getNestedValue(obj, key) {
 export function geti18n_nowarn(key, params = {}) {
 	let translation = getNestedValue(i18n, key)
 
-	if (translation === undefined) return
+	if (!translation) return
 
 	// 简单的插值处理
 	for (const param in params)
@@ -249,11 +249,12 @@ window.addEventListener('languagechange', async () => {
 
 // Watch for changes in the DOM
 const i18nObserver = new MutationObserver((mutationsList) => {
+	if (!i18n) return
 	for (const mutation of mutationsList)
 		if (mutation.type === 'childList')
 			mutation.addedNodes.forEach(node => {
 				if (node.nodeType === Node.ELEMENT_NODE)
-					i18nElement(node)
+					i18nElement(node, { skip_report: true })
 			})
 		else if (mutation.type === 'attributes')  // No need to check attributeName, since we are filtering
 			translateSingularElement(mutation.target)
