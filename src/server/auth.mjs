@@ -536,12 +536,18 @@ export async function generateApiKey(username, description = 'New API Key') {
  * 撤销 API Key
  * @param {string} username
  * @param {string} jti
+ * @param {string} password - 用户密码，用于验证操作权限
  * @returns {Promise<{success: boolean, message: string}>}
  */
-export async function revokeApiKey(username, jti) {
+export async function revokeApiKey(username, jti, password) {
 	const user = getUserByUsername(username)
 	if (!user || !user.auth || !user.auth.apiKeys)
 		return { success: false, message: 'User or API keys not found' }
+
+	// 验证用户密码
+	const isValidPassword = await verifyPassword(password, user.auth.password)
+	if (!isValidPassword)
+		return { success: false, message: 'Invalid password for revoking API key' }
 
 	const keyIndex = user.auth.apiKeys.findIndex(key => key.jti === jti)
 	if (keyIndex === -1)

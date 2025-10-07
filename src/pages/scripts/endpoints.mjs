@@ -99,11 +99,11 @@ export async function createApiKey(description) {
 	return response.json()
 }
 
-export async function revokeApiKey(jti) {
+export async function revokeApiKey(jti, password) {
 	const response = await fetch('/api/apikey/revoke', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ jti }),
+		body: JSON.stringify({ jti, password }),
 	})
 	if (!response.ok) return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response }))
 	return response.json()
