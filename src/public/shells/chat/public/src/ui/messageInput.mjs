@@ -1,5 +1,5 @@
-import { geti18n, console } from '../../../../../scripts/i18n.mjs'
-import { showToast } from '../../../../../scripts/toast.mjs'
+import { console } from '../../../../../scripts/i18n.mjs'
+import { showToast, showToastI18n } from '../../../../../scripts/toast.mjs'
 import { addUserReply } from '../endpoints.mjs'
 import { handleFilesSelect } from '../fileHandling.mjs'
 
@@ -86,7 +86,7 @@ async function toggleVoiceRecording() {
 		isRecording = true
 	} catch (error) {
 		console.error('Error accessing microphone:', error)
-		showToast(geti18n('chat.voiceRecording.errorAccessingMicrophone'), 'error')
+		showToastI18n('error', 'chat.voiceRecording.errorAccessingMicrophone')
 	}
 }
 
@@ -103,7 +103,7 @@ async function sendMessage() {
 		attachmentPreviewContainer.innerHTML = ''
 	}
 	catch (error) {
-		showToast(error, 'error')
+		showToast('error', error.stack || error.message || error)
 		console.error(error)
 	}
 }

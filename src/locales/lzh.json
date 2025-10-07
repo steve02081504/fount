@@ -263,7 +263,7 @@
 			"title": "登臺",
 			"submitButton": "登臺",
 			"toggleLink": {
-				"text": "尚無名號？",
+				"textContent": "尚無名號？",
 				"link": "即刻立戶"
 			}
 		},
@@ -271,7 +271,7 @@
 			"title": "立戶",
 			"submitButton": "立戶",
 			"toggleLink": {
-				"text": "已有戶？",
+				"textContent": "已有戶？",
 				"link": "即刻登臺"
 			}
 		},
@@ -704,7 +704,7 @@
 			"icon": {
 				"alt": "上傳圖標"
 			},
-			"text": "可將文卷曳至此處，或點擊擇選"
+			"textContent": "可將文卷曳至此處，或點擊擇選"
 		},
 		"textArea": {
 			"placeholder": "輸入欲引入之文字..."
@@ -1026,10 +1026,12 @@
 		},
 		"buttons": {
 			"save": "存",
-			"delete": "刪"
-		},
-		"tooltips": {
-			"setDefault": "設為預設"
+			"delete": "刪",
+			"setDefault": {
+				"dataset": {
+					"tip": "設為預設"
+				}
+			}
 		},
 		"alerts": {
 			"fetchFileListFailed": "取名錄失利: ${error}",
@@ -1295,6 +1297,59 @@
 		"verifying": "考驗中",
 		"solved": "驗訖",
 		"error": "謬",
+		"errorMessage": "謬：${error}",
 		"wasm_disabled": "欲速，啟WASM"
+	},
+	"zxcvbn": {
+		"warnings": {
+			"straightRow": "鍵序直列，易窺。",
+			"keyPattern": "鍵序短小，易窺。",
+			"simpleRepeat": "疊字為鑰，易窺。",
+			"extendedRepeat": "疊詞為鑰，易窺。",
+			"sequences": "連字為鑰，易窺。",
+			"recentYears": "近年之數，易窺。",
+			"dates": "以期為鑰，易窺。",
+			"topTen": "斯鑰甚為常用。",
+			"topHundred": "斯鑰頗為常用。",
+			"common": "斯鑰甚常。",
+			"similarToCommon": "近似常用之鑰。",
+			"wordByItself": "單詞為鑰，易窺。",
+			"namesByThemselves": "單名獨姓，易窺。",
+			"commonNames": "尋常姓名，易窺。",
+			"userInputs": "密鑰勿涉私密。",
+			"pwned": "此鑰已洩於網。"
+		},
+		"suggestions": {
+			"l33t": "勿以符代字，其法易循。",
+			"reverseWords": "勿反書常用之詞。",
+			"allUppercase": "大寫雜以小寫為佳。",
+			"capitalization": "大寫勿僅用於首。",
+			"dates": "避用生辰年歲。",
+			"recentYears": "近年之數，易窺。",
+			"associatedYears": "勿用與己相關之歲。",
+			"sequences": "連字為鑰，易窺。",
+			"repeated": "勿用疊字疊詞。",
+			"longerKeyboardPattern": "鍵序宜長，其向宜變。",
+			"anotherWord": "宜增僻字。",
+			"useWords": "宜用數詞，然避俗語。",
+			"noNeed": "強鑰何須符數大寫。",
+			"pwned": "此鑰已洩於網。"
+		},
+		"timeEstimation": {
+			"ltSecond": "瞬息之內",
+			"second": "{base}息",
+			"seconds": "{base}息",
+			"minute": "{base}分",
+			"minutes": "{base}分",
+			"hour": "{base}時",
+			"hours": "{base}時",
+			"day": "{base}日",
+			"days": "{base}日",
+			"month": "{base}月",
+			"months": "{base}月",
+			"year": "{base}載",
+			"years": "{base}載",
+			"centuries": "百代"
+		}
 	}
 }

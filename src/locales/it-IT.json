@@ -263,7 +263,7 @@
 			"title": "Accedi",
 			"submitButton": "Accedi",
 			"toggleLink": {
-				"text": "Non hai un account?",
+				"textContent": "Non hai un account?",
 				"link": "Registrati ora"
 			}
 		},
@@ -271,7 +271,7 @@
 			"title": "Registrati",
 			"submitButton": "Registrati",
 			"toggleLink": {
-				"text": "Hai già un account?",
+				"textContent": "Hai già un account?",
 				"link": "Accedi ora"
 			}
 		},
@@ -704,7 +704,7 @@
 			"icon": {
 				"alt": "Icona di caricamento"
 			},
-			"text": "Trascina i file qui oppure fai clic per selezionare i file."
+			"textContent": "Trascina i file qui oppure fai clic per selezionare i file."
 		},
 		"textArea": {
 			"placeholder": "Inserisci il testo da importare..."
@@ -1026,10 +1026,12 @@
 		},
 		"buttons": {
 			"save": "Salva",
-			"delete": "Elimina"
-		},
-		"tooltips": {
-			"setDefault": "Imposta come predefinito"
+			"delete": "Elimina",
+			"setDefault": {
+				"dataset": {
+					"tip": "Imposta come predefinito"
+				}
+			}
 		},
 		"alerts": {
 			"fetchFileListFailed": "Impossibile ottenere l'elenco dei file: ${error}",
@@ -1295,6 +1297,59 @@
 		"verifying": "Verifica in corso...",
 		"solved": "Verifica riuscita",
 		"error": "Verifica non riuscita",
+		"errorMessage": "Verifica non riuscita: ${error}",
 		"wasm_disabled": "Abilita WASM per una verifica più rapida"
+	},
+	"zxcvbn": {
+		"warnings": {
+			"straightRow": "Le tasti continue sulla tastiera sono facilmente indovinate.",
+			"keyPattern": "Un breve motivo della tastiera è facile da indovinare.",
+			"simpleRepeat": "caratteri ripetuti come \"AAA\" sono facilmente indovinati.",
+			"extendedRepeat": "I modelli di personaggi ripetuti come \"Abcabcabc\" sono facilmente indovinati.",
+			"sequences": "Sequenze di carattere comuni come \"ABC\" sono facilmente indovinate.",
+			"recentYears": "Gli ultimi anni sono facili da indovinare.",
+			"dates": "La data è facilmente indovinata.",
+			"topTen": "Questa è una password abusata.",
+			"topHundred": "Questa è una password che viene spesso utilizzata.",
+			"common": "Questa è una password comunemente usata.",
+			"similarToCommon": "Questo è simile a una password comunemente usata.",
+			"wordByItself": "Una sola parola è facilmente indovinata.",
+			"namesByThemselves": "Un singolo nome o cognome è facilmente indovinato.",
+			"commonNames": "I nomi e i cognomi comuni sono facili da indovinare.",
+			"userInputs": "La password non deve contenere dati personali o relativi alla pagina.",
+			"pwned": "La tua password è stata esposta in una violazione dei dati su Internet."
+		},
+		"suggestions": {
+			"l33t": "Evita di usare sostituzioni di lettere prevedibili, come l'uso di \"@\" anziché \"A\".",
+			"reverseWords": "Evita di usare l'ortografia inversa di parole comuni.",
+			"allUppercase": "Capitalizzare alcune lettere piuttosto che tutte le lettere.",
+			"capitalization": "Usa le maiuscole per più di una lettera, non solo per la prima.",
+			"dates": "Evita di usare date e anni correlati a te.",
+			"recentYears": "Evita di usare gli anni più recenti.",
+			"associatedYears": "Evita di usare anni relativi a te.",
+			"sequences": "Evita sequenze di carattere comuni.",
+			"repeated": "Evita parole e personaggi ripetitivi.",
+			"longerKeyboardPattern": "Utilizzare la schemi di tastiera più lunga e modificare più volte le direzioni di input.",
+			"anotherWord": "Aggiungi più parole non comuni.",
+			"useWords": "Usa più parole, ma evita frasi comuni.",
+			"noNeed": "Non è necessario utilizzare simboli, numeri o lettere maiuscole per creare password forti.",
+			"pwned": "Se usi questa password altrove, si consiglia di apportare modifiche."
+		},
+		"timeEstimation": {
+			"ltSecond": "Meno di un secondo",
+			"second": "{base} secondo",
+			"seconds": "{base} secondi",
+			"minute": "{base} min",
+			"minutes": "{base} min",
+			"hour": "{base} ore",
+			"hours": "{base} ore",
+			"day": "{base} giorno",
+			"days": "{base} giorni",
+			"month": "{base} mese",
+			"months": "{base} mese",
+			"year": "{base} anno",
+			"years": "{base} anni",
+			"centuries": "Secoli"
+		}
 	}
 }

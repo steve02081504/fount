@@ -1,31 +1,18 @@
-import { initTranslations, geti18n, i18nElement, loadPreferredLangs, savePreferredLangs } from '/scripts/i18n.mjs'
+import { initTranslations, i18nElement, loadPreferredLangs, savePreferredLangs } from '/scripts/i18n.mjs'
 import { renderTemplate, usingTemplates } from '/scripts/template.mjs'
 import { applyTheme } from '/scripts/theme.mjs'
 import { createSearchableDropdown } from '/scripts/search.mjs'
+import { showToastI18n } from '/scripts/toast.mjs'
 
 // --- DOM Elements ---
 const availableLanguagesDropdown = document.getElementById('availableLanguagesDropdown')
 const preferredLanguagesList = document.getElementById('preferredLanguagesList')
 const saveButton = document.getElementById('saveButton')
 const resetButton = document.getElementById('resetButton')
-const toastNotification = document.getElementById('toastNotification')
-const toastMessage = document.getElementById('toastMessage')
 
 // --- State ---
 let availableLocales = [] // { id: 'en-UK', name: 'English (UK)' }
 let userPreferredLocales = [] // ['en-UK', 'zh-CN']
-
-// --- Helper Functions ---
-function showToast(messageKey) {
-	toastMessage.textContent = geti18n(messageKey)
-	toastNotification.classList.remove('invisible')
-	toastNotification.classList.add('visible')
-
-	setTimeout(() => {
-		toastNotification.classList.remove('visible')
-		toastNotification.classList.add('invisible')
-	}, 2000)
-}
 
 function getLocaleName(id) {
 	const locale = availableLocales.find(l => l.id === id)
@@ -97,7 +84,7 @@ async function fetchAvailableLocales() {
 	}
 	catch (error) {
 		console.error('Error fetching available locales:', error)
-		showToast('languageSettings.fetchLocalesFailed')
+		showToastI18n('info', 'languageSettings.fetchLocalesFailed')
 	}
 }
 
@@ -120,14 +107,14 @@ function deleteLocale(id) {
 
 function handleSave() {
 	savePreferredLangs(userPreferredLocales)
-	showToast('languageSettings.savedMessage')
+	showToastI18n('info', 'languageSettings.savedMessage')
 }
 
 function handleReset() {
 	userPreferredLocales = []
 	savePreferredLangs(userPreferredLocales)
 	renderPreferredLanguages()
-	showToast('languageSettings.resetMessage')
+	showToastI18n('info', 'languageSettings.resetMessage')
 }
 
 // --- Initialization ---

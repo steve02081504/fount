@@ -263,7 +263,7 @@
 			"title": "登入",
 			"submitButton": "登入",
 			"toggleLink": {
-				"text": "沒有帳號？",
+				"textContent": "沒有帳號？",
 				"link": "立即註冊"
 			}
 		},
@@ -271,7 +271,7 @@
 			"title": "註冊",
 			"submitButton": "註冊",
 			"toggleLink": {
-				"text": "已有帳號？",
+				"textContent": "已有帳號？",
 				"link": "立即登入"
 			}
 		},
@@ -704,7 +704,7 @@
 			"icon": {
 				"alt": "上傳圖示"
 			},
-			"text": "拖放檔案到此處或點擊選擇檔案"
+			"textContent": "拖放檔案到此處或點擊選擇檔案"
 		},
 		"textArea": {
 			"placeholder": "輸入要匯入的文字..."
@@ -1026,10 +1026,12 @@
 		},
 		"buttons": {
 			"save": "儲存",
-			"delete": "刪除"
-		},
-		"tooltips": {
-			"setDefault": "設為預設"
+			"delete": "刪除",
+			"setDefault": {
+				"dataset": {
+					"tip": "設為預設"
+				}
+			}
 		},
 		"alerts": {
 			"fetchFileListFailed": "獲取檔案列表失敗: ${error}",
@@ -1295,6 +1297,59 @@
 		"verifying": "正在驗證...",
 		"solved": "驗證成功",
 		"error": "驗證失敗",
+		"errorMessage": "驗證失敗：${error}",
 		"wasm_disabled": "啟用 WASM 可加快驗證速度"
+	},
+	"zxcvbn": {
+		"warnings": {
+			"straightRow": "鍵盤上的連續按鍵很容易被猜到。",
+			"keyPattern": "簡短的鍵盤序列很容易被猜到。",
+			"simpleRepeat": "像“aaa”這樣的重複字符很容易被猜到。",
+			"extendedRepeat": "像“abcabcabc”這樣的重複字符模式很容易被猜到。",
+			"sequences": "像“abc”這樣的常見字符序列很容易被猜到。",
+			"recentYears": "最近的年份很容易被猜到。",
+			"dates": "日期很容易被猜到。",
+			"topTen": "這是一個被過度使用的密碼。",
+			"topHundred": "這是一個經常被使用的密碼。",
+			"common": "這是一個常用的密碼。",
+			"similarToCommon": "這與一個常用的密碼相似。",
+			"wordByItself": "單個單詞很容易被猜到。",
+			"namesByThemselves": "單個名字或姓氏很容易被猜到。",
+			"commonNames": "常見的名字和姓氏很容易被猜到。",
+			"userInputs": "密碼中不應包含任何個人或與頁面相關的數據。",
+			"pwned": "您的密碼已在互聯網數據洩露事件中被曝光。"
+		},
+		"suggestions": {
+			"l33t": "避免使用可預測的字母替換，例如用“@”代替“a”。",
+			"reverseWords": "避免使用常見單詞的倒序拼寫。",
+			"allUppercase": "將部分而非全部字母大寫。",
+			"capitalization": "不僅僅將首字母大寫。",
+			"dates": "避免使用與您相關的日期和年份。",
+			"recentYears": "避免使用最近的年份。",
+			"associatedYears": "避免使用與您相關的年份。",
+			"sequences": "避免使用常見的字符序列。",
+			"repeated": "避免重複的單詞和字符。",
+			"longerKeyboardPattern": "使用更長的鍵盤序列並多次改變輸入方向。",
+			"anotherWord": "添加更多不常見的單詞。",
+			"useWords": "使用多個單詞，但避免使用常見的短語。",
+			"noNeed": "您無需使用符號、數字或大寫字母即可創建強密碼。",
+			"pwned": "如果您在其他地方使用此密碼，建議您進行更改。"
+		},
+		"timeEstimation": {
+			"ltSecond": "不到一秒",
+			"second": "{base}秒",
+			"seconds": "{base}秒",
+			"minute": "{base}分鐘",
+			"minutes": "{base}分鐘",
+			"hour": "{base}小時",
+			"hours": "{base}小時",
+			"day": "{base}天",
+			"days": "{base}天",
+			"month": "{base}月",
+			"months": "{base}月",
+			"year": "{base}年",
+			"years": "{base}年",
+			"centuries": "幾個世紀"
+		}
 	}
 }

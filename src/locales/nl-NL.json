@@ -263,7 +263,7 @@
 			"title": "Inloggen",
 			"submitButton": "Inloggen",
 			"toggleLink": {
-				"text": "Geen account?",
+				"textContent": "Geen account?",
 				"link": "Registreer nu"
 			}
 		},
@@ -271,7 +271,7 @@
 			"title": "Registreren",
 			"submitButton": "Registreren",
 			"toggleLink": {
-				"text": "Al een account?",
+				"textContent": "Al een account?",
 				"link": "Log nu in"
 			}
 		},
@@ -704,7 +704,7 @@
 			"icon": {
 				"alt": "Upload-pictogram"
 			},
-			"text": "Sleep bestanden hierheen of klik om bestanden te selecteren"
+			"textContent": "Sleep bestanden hierheen of klik om bestanden te selecteren"
 		},
 		"textArea": {
 			"placeholder": "Voer de te importeren tekst in..."
@@ -1026,10 +1026,12 @@
 		},
 		"buttons": {
 			"save": "Opslaan",
-			"delete": "Verwijderen"
-		},
-		"tooltips": {
-			"setDefault": "Instellen als standaard"
+			"delete": "Verwijderen",
+			"setDefault": {
+				"dataset": {
+					"tip": "Instellen als standaard"
+				}
+			}
 		},
 		"alerts": {
 			"fetchFileListFailed": "Ophalen van bestandslijst mislukt: ${error}",
@@ -1295,6 +1297,59 @@
 		"verifying": "Bezig met verifiëren...",
 		"solved": "Verificatie succesvol",
 		"error": "Verificatie mislukt",
+		"errorMessage": "Verificatie mislukt: ${error}",
 		"wasm_disabled": "Schakel WASM in voor snellere verificatie"
+	},
+	"zxcvbn": {
+		"warnings": {
+			"straightRow": "Continue toetsen op het toetsenbord zijn gemakkelijk geraden.",
+			"keyPattern": "Een kort toetsenbordpatroon is gemakkelijk te raden.",
+			"simpleRepeat": "Herhaalde karakters zoals \"AAA\" worden gemakkelijk geraden.",
+			"extendedRepeat": "Herhaalde karakterpatronen zoals \"Abcabcabc\" worden gemakkelijk geraden.",
+			"sequences": "Gemeenschappelijke tekenreeksen zoals \"ABC\" worden gemakkelijk geraden.",
+			"recentYears": "De afgelopen jaren zijn gemakkelijk te raden.",
+			"dates": "Datum is gemakkelijk geraden.",
+			"topTen": "Dit is een overgebruikt wachtwoord.",
+			"topHundred": "Dit is een wachtwoord dat vaak wordt gebruikt.",
+			"common": "Dit is een veelgebruikt wachtwoord.",
+			"similarToCommon": "Dit is vergelijkbaar met een veelgebruikt wachtwoord.",
+			"wordByItself": "Een enkel woord wordt gemakkelijk geraden.",
+			"namesByThemselves": "Een enkele eerste of achternaam is gemakkelijk geraden.",
+			"commonNames": "Veel voorkomende voornamen en achternamen zijn gemakkelijk te raden.",
+			"userInputs": "Het wachtwoord mag geen persoonlijke of pagina-gerelateerde gegevens bevatten.",
+			"pwned": "Uw wachtwoord is blootgesteld in een internet datalek."
+		},
+		"suggestions": {
+			"l33t": "Vermijd het gebruik van voorspelbare letters, zoals het gebruik van \"@\" in plaats van \"A\".",
+			"reverseWords": "Gebruik geen omgekeerde spelling van veel voorkomende woorden.",
+			"allUppercase": "Kapitaliseer sommige in plaats van alle letters.",
+			"capitalization": "Meer dan de eerste letter kapitaliseren.",
+			"dates": "Vermijd datums en jaren gerelateerd aan u.",
+			"recentYears": "Gebruik de meest recente jaren niet.",
+			"associatedYears": "Vermijd het gebruik van jaren met u gerelateerd.",
+			"sequences": "Vermijd gemeenschappelijke tekenreeksen.",
+			"repeated": "Vermijd repetitieve woorden en tekens.",
+			"longerKeyboardPattern": "Gebruik langere toetsenbordpatronen en verander meermaals van typrichting.",
+			"anotherWord": "Voeg meer ongewone woorden toe.",
+			"useWords": "Gebruik meerdere woorden, maar vermijd veel voorkomende zinnen.",
+			"noNeed": "U hoeft geen symbolen, cijfers of hoofdletters te gebruiken om sterke wachtwoorden te maken.",
+			"pwned": "Als u dit wachtwoord elders gebruikt, wordt u geadviseerd om wijzigingen aan te brengen."
+		},
+		"timeEstimation": {
+			"ltSecond": "Minder dan een seconde",
+			"second": "{base} seconde",
+			"seconds": "{base} seconden",
+			"minute": "{base} min",
+			"minutes": "{base} min",
+			"hour": "{base} uur",
+			"hours": "{base} uur",
+			"day": "{base} dag",
+			"days": "{base} dagen",
+			"month": "{base} maand",
+			"months": "{base} maand",
+			"year": "{base} jaar",
+			"years": "{base} jaar",
+			"centuries": "Eeuwen"
+		}
 	}
 }
