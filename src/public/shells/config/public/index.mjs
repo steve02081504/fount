@@ -2,11 +2,12 @@ import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
 import { initTranslations, i18nElement, geti18n, confirmI18n, console } from '../../scripts/i18n.mjs'
 import { createJsonEditor } from '../../scripts/jsonEditor.mjs'
+import { getPartTypes, getPartList, getPartDetails } from '../../scripts/parts.mjs'
 import { svgInliner } from '../../scripts/svgInliner.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 import { showToast } from '../../scripts/toast.mjs'
 
-import { getPartTypes, getParts, getPartDetails, saveConfigData, getConfigData, getPartDisplay } from './src/endpoints.mjs' // 导入 API 模块
+import { saveConfigData, getConfigData, getPartDisplay } from './src/endpoints.mjs' // 导入 API 模块
 
 const jsonEditorContainer = document.getElementById('jsonEditor')
 const partDisplayContainer = document.getElementById('partDisplay')
@@ -78,7 +79,7 @@ function renderPartTypeSelect() {
  */
 async function fetchParts(partType) {
 	try {
-		parts = await getParts(partType)
+		parts = await getPartList(partType)
 		renderPartSelect()
 	}
 	catch (err) {

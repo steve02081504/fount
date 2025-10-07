@@ -2,8 +2,9 @@ import { initTranslations, geti18n, i18nElement } from '/scripts/i18n.mjs'
 import { applyTheme } from '/scripts/theme.mjs'
 import { showToast, showToastI18n } from '/scripts/toast.mjs'
 import { createSearchableDropdown } from '/scripts/search.mjs'
+import { getPartTypes, getPartList } from '/scripts/parts.mjs'
 
-import { getPartTypes, getPartList, getFountJson, exportPart, createShareLink } from './src/endpoints.mjs'
+import { getFountJson, exportPart, createShareLink } from './src/endpoints.mjs'
 
 // DOM Elements
 const partTypeSelect = document.getElementById('partTypeSelect')
