@@ -507,3 +507,40 @@ export async function getPartDetails(username, parttype, partname, nocache = fal
 
 	return { ...details, info }
 }
+
+export async function getAllCachedPartDetails(username, parttype) {
+	// 1. Get the full list of part names
+	const allPartNames = getPartListBase(username, parttype)
+	const allPartNamesSet = new Set(allPartNames)
+
+	// 2. Get cached details
+	const detailsCache = loadData(username, 'parts_details_cache')?.[parttype] || {}
+	const user = getUserByUsername(username)
+	const cachedDetails = {}
+
+	// 3. Process cached parts (same logic as before)
+	const promises = Object.keys(detailsCache).map(async (partname) => {
+		// If a cached part is no longer in the file system, skip it
+		if (!allPartNamesSet.has(partname)) return
+
+		let details = detailsCache[partname]
+		if (isPartLoaded(username, parttype, partname))
+			await Promise.any([
+				nocacheGetPartBaseDetails(username, parttype, partname).then(result => details = result),
+				new Promise(resolve => setTimeout(resolve, 500)),
+			])
+
+		let info = getLocalizedInfo(details.info, user.locales)
+		if (user.sfw) info = getSfwInfo(info)
+
+		cachedDetails[partname] = { ...details, info }
+	})
+
+	await Promise.all(promises)
+
+	// 4. Determine uncached names
+	const uncachedNames = allPartNames.filter(name => !cachedDetails[name])
+
+	// 5. Return the new structure
+	return { cachedDetails, uncachedNames }
+}

@@ -4,3 +4,4 @@ export async function getHomeRegistry() {
 		else return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response }))
 	})
 }
+

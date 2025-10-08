@@ -46,6 +46,12 @@ export async function savePreferredLangs(langs) {
 	await initTranslations()
 }
 
+export async function getAvailableLocales() {
+	const response = await fetch('/api/getavailablelocales')
+	if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+	return response.json()
+}
+
 /**
  * 从服务器获取多语言数据并初始化翻译。
  * @param {string} [pageid]

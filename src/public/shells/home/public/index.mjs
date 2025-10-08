@@ -4,10 +4,8 @@ import { getUserSetting, setUserSetting } from '../../scripts/endpoints.mjs'
 import { initTranslations, geti18n, confirmI18n, console, onLanguageChange } from '../../scripts/i18n.mjs'
 import { renderMarkdown } from '../../scripts/markdown.mjs'
 import {
-	getCharDetails, noCacheGetCharDetails, getCharList,
-	getPersonaList, getPersonaDetails, noCacheGetPersonaDetails,
-	getWorldList, getWorldDetails, noCacheGetWorldDetails,
-	setDefaultPart, getDefaultParts
+	getCharDetails, noCacheGetCharDetails, getPersonaDetails, noCacheGetPersonaDetails, getWorldDetails, noCacheGetWorldDetails,
+	setDefaultPart, getDefaultParts, getAllCachedPartDetails
 } from '../../scripts/parts.mjs'
 import { getFiltersFromString, compileFilter } from '../../scripts/search.mjs'
 import { onServerEvent } from '../../scripts/server_events.mjs'
@@ -220,64 +218,66 @@ async function displayItemList(itemType) {
 	}
 
 	currentContainer.classList.remove('hidden')
-	let targetContainer = currentContainer
-	// Use temp container if current one has children to avoid multiple reflows
-	if (currentContainer.children.length > 0)
-		targetContainer = {
-			children: [],
-			appendChild: _ => targetContainer.children.push(_),
-			replaceChild: (thenew, theold) => targetContainer.children.splice(targetContainer.children.indexOf(theold), 1, thenew),
-			removeChild: _ => targetContainer.children.splice(targetContainer.children.indexOf(_), 1),
-		}
+	currentContainer.innerHTML = '' // Clear container
 
-	// Clear target container
-	targetContainer.innerHTML = ''
-
-	// Get all item names
-	const allItemNames = await getItemList(itemType)
-
-	// Get current filters
 	const filterFn = compileFilter(filterInput.value)
 
-	const skeletons = Array(allItemNames.length).fill(0).map(_ => {
-		const skeleton = document.createElement('div')
-		skeleton.classList.add('skeleton')
-		skeleton.classList.add('card-skeleton')
-		targetContainer.appendChild(skeleton)
-		return skeleton
+	// Fetch both cached details and uncached names in a single call
+	const { cachedDetails, uncachedNames } = await getAllCachedPartDetails(itemType).catch(e => {
+		console.error(`Failed to get all part details for ${itemType}`, e)
+		return { cachedDetails: {}, uncachedNames: [] } // return empty object on failure
 	})
-	await Promise.all(allItemNames
-		.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
-		.map(async (itemName, index) => {
-			const skeleton = skeletons[index]
-			// Fetch details (populates itemDetailsCache)
-			const itemDetails = await getItemDetails(itemType, itemName, true)
 
-			// Apply filters
+	// Populate global cache from the bulk fetch
+	for (const itemName in cachedDetails)
+		itemDetailsCache[`${itemType}-${itemName}`] = cachedDetails[itemName]
+
+	const allItemNames = [
+		...Object.keys(cachedDetails),
+		...uncachedNames,
+	].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
+
+	const fragment = document.createDocumentFragment()
+	const itemElements = {} // Use a map to hold skeletons for later replacement
+
+	// First pass: render all cached items and create placeholders for uncached ones
+	for (const itemName of allItemNames) {
+		const itemDetails = cachedDetails[itemName]
+		if (itemDetails) {
 			if (filterFn(itemDetails)) {
 				const itemElement = await renderItemView(itemType, itemDetails, itemName)
-				itemElement.classList.add(`${itemType}-card`)
-				targetContainer.replaceChild(itemElement, skeleton)
+				fragment.appendChild(itemElement)
 			}
-			else
-				targetContainer.removeChild(skeleton)
-		}))
-	// Replace children if a temp container was used
-	if (targetContainer !== currentContainer)
-		currentContainer.replaceChildren(...targetContainer.children)
-}
-
-async function getItemList(itemType) {
-	if (partListsCache[itemType]) return partListsCache[itemType]
-
-	let promise
-	switch (itemType) {
-		case 'chars': promise = getCharList(); break
-		case 'worlds': promise = getWorldList(); break
-		case 'personas': promise = getPersonaList(); break
-		default: promise = Promise.resolve([]); break
+		}
+		else { // This item must be in uncachedNames
+			const skeleton = document.createElement('div')
+			skeleton.classList.add('skeleton', 'card-skeleton')
+			itemElements[itemName] = skeleton // Store skeleton reference
+			fragment.appendChild(skeleton)
+		}
 	}
-	return partListsCache[itemType] = await promise
+
+	// Append all elements (cached items and skeletons) to the DOM at once
+	currentContainer.appendChild(fragment)
+
+	// Second pass: fetch and render uncached items, replacing their skeletons
+	uncachedNames.forEach(async itemName => {
+		// The skeleton should have been created in the previous loop
+		const skeleton = itemElements[itemName]
+
+		try {
+			const itemDetails = await getItemDetails(itemType, itemName, true)
+			if (filterFn(itemDetails)) {
+				const itemElement = await renderItemView(itemType, itemDetails, itemName)
+				skeleton.parentNode?.replaceChild(itemElement, skeleton)
+			}
+			else skeleton.remove()
+		}
+		catch (error) {
+			console.error(`Failed to fetch details for ${itemName}:`, error)
+			skeleton.remove()
+		}
+	})
 }
 
 // --- Function Buttons ---

@@ -1,57 +1,43 @@
+import { getApiKeys, createApiKey, revokeApiKey, logout } from '../../scripts/endpoints.mjs'
 import { initTranslations, geti18n, promptI18n, confirmI18n, console } from '../../scripts/i18n.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
+import { showToastI18n } from '../../scripts/toast.mjs'
 
-import * as api from './src/endpoints.mjs'
+import { getUserStats, changePassword, renameUser, deleteAccount, getDevices, revokeDevice } from './src/endpoints.mjs'
 
 const REFRESH_TOKEN_EXPIRY_DURATION_STRING = 30 * 24 * 60 * 60 * 1000 // '30d'
 
-const el = { // DOM 元素引用
-	userInfoUsername: document.getElementById('userInfoUsername'),
-	userInfoCreationDate: document.getElementById('userInfoCreationDate'),
-	userInfoFolderSize: document.getElementById('userInfoFolderSize'),
-	userInfoFolderPath: document.getElementById('userInfoFolderPath'),
-	copyFolderPathBtn: document.getElementById('copyFolderPathBtn'),
-	changePasswordForm: document.getElementById('changePasswordForm'),
-	renameUserForm: document.getElementById('renameUserForm'),
-	deviceListContainer: document.getElementById('deviceListContainer'),
-	deviceList: document.getElementById('deviceList'),
-	noDevicesText: document.getElementById('noDevicesText'),
-	refreshDevicesBtn: document.getElementById('refreshDevicesBtn'),
-	logoutBtn: document.getElementById('logoutBtn'),
-	deleteAccountBtn: document.getElementById('deleteAccountBtn'),
-	passwordConfirmationModal: document.getElementById('passwordConfirmationModal'),
-	confirmationPasswordInput: document.getElementById('confirmationPassword'),
-	confirmPasswordBtn: document.getElementById('confirmPasswordBtn'),
-	cancelPasswordBtn: document.getElementById('cancelPasswordBtn'),
-	alertContainer: document.getElementById('alertContainer'),
-	// API Key elements
-	createApiKeyForm: document.getElementById('createApiKeyForm'),
-	apiKeyListContainer: document.getElementById('apiKeyListContainer'),
-	apiKeyList: document.getElementById('apiKeyList'),
-	noApiKeysText: document.getElementById('noApiKeysText'),
-	refreshApiKeysBtn: document.getElementById('refreshApiKeysBtn'),
-	newApiKeyModal: document.getElementById('newApiKeyModal'),
-	newApiKeyInput: document.getElementById('newApiKeyInput'),
-	copyNewApiKeyBtn: document.getElementById('copyNewApiKeyBtn'),
-}
+// DOM 元素引用
+const userInfoUsername = document.getElementById('userInfoUsername')
+const userInfoCreationDate = document.getElementById('userInfoCreationDate')
+const userInfoFolderSize = document.getElementById('userInfoFolderSize')
+const userInfoFolderPath = document.getElementById('userInfoFolderPath')
+const copyFolderPathBtn = document.getElementById('copyFolderPathBtn')
+const changePasswordForm = document.getElementById('changePasswordForm')
+const renameUserForm = document.getElementById('renameUserForm')
+const deviceList = document.getElementById('deviceList')
+const noDevicesText = document.getElementById('noDevicesText')
+const refreshDevicesBtn = document.getElementById('refreshDevicesBtn')
+const logoutBtn = document.getElementById('logoutBtn')
+const deleteAccountBtn = document.getElementById('deleteAccountBtn')
+const passwordConfirmationModal = document.getElementById('passwordConfirmationModal')
+const confirmationPasswordInput = document.getElementById('confirmationPassword')
+const confirmPasswordBtn = document.getElementById('confirmPasswordBtn')
+const cancelPasswordBtn = document.getElementById('cancelPasswordBtn')
+// API Key elements
+const createApiKeyForm = document.getElementById('createApiKeyForm')
+const apiKeyList = document.getElementById('apiKeyList')
+const noApiKeysText = document.getElementById('noApiKeysText')
+const refreshApiKeysBtn = document.getElementById('refreshApiKeysBtn')
+const newApiKeyModal = document.getElementById('newApiKeyModal')
+const newApiKeyInput = document.getElementById('newApiKeyInput')
+const copyNewApiKeyBtn = document.getElementById('copyNewApiKeyBtn')
 
 let passwordConfirmationContext = { resolve: null, reject: null }
 let cachedPassword = null // 用于短期缓存密码
 let passwordCacheTimeoutId = null // 用于存储 setTimeout 的 ID
 
 const PASSWORD_CACHE_DURATION = 3 * 60 * 1000 // 3分钟
-
-// 辅助函数：显示提示消息
-function showAlert(messageKey, type = 'info', duration = 4000, interpolateParams = {}) {
-	const message = geti18n(messageKey, interpolateParams)
-	const alertId = `alert-${Date.now()}`
-	const alertDiv = document.createElement('div')
-	alertDiv.id = alertId
-	alertDiv.className = `alert alert-${type} shadow-lg`
-	alertDiv.innerHTML = `<div><span>${message}</span></div>`
-	el.alertContainer.appendChild(alertDiv)
-	setTimeout(() => document.getElementById(alertId)?.remove(), duration)
-}
 
 // 辅助函数：请求密码确认
 function requestPasswordConfirmation() {
@@ -64,14 +50,14 @@ function requestPasswordConfirmation() {
 		}
 
 		passwordConfirmationContext = { resolve, reject }
-		el.confirmationPasswordInput.value = ''
-		el.passwordConfirmationModal.showModal()
-		el.confirmationPasswordInput.focus()
+		confirmationPasswordInput.value = ''
+		passwordConfirmationModal.showModal()
+		confirmationPasswordInput.focus()
 	})
 }
 
-el.confirmPasswordBtn.addEventListener('click', () => {
-	const password = el.confirmationPasswordInput.value
+confirmPasswordBtn.addEventListener('click', () => {
+	const password = confirmationPasswordInput.value
 	passwordConfirmationContext.resolve?.(password)
 	// 缓存密码
 	cachedPassword = password
@@ -86,16 +72,16 @@ el.confirmPasswordBtn.addEventListener('click', () => {
 		passwordCacheTimeoutId = null
 	}, PASSWORD_CACHE_DURATION)
 
-	el.passwordConfirmationModal.close()
+	passwordConfirmationModal.close()
 })
 
-el.cancelPasswordBtn.addEventListener('click', () => {
+cancelPasswordBtn.addEventListener('click', () => {
 	passwordConfirmationContext.reject?.(new Error('Password confirmation cancelled by user.'))
-	el.passwordConfirmationModal.close()
+	passwordConfirmationModal.close()
 })
 
-el.passwordConfirmationModal.addEventListener('close', () => {
-	if (el.passwordConfirmationModal.returnValue !== 'confirmed_via_button_logic_which_is_not_set')
+passwordConfirmationModal.addEventListener('close', () => {
+	if (passwordConfirmationModal.returnValue !== 'confirmed_via_button_logic_which_is_not_set')
 		passwordConfirmationContext.reject?.(new Error('Password confirmation dialog closed.'))
 
 	passwordConfirmationContext = { resolve: null, reject: null }
@@ -103,31 +89,31 @@ el.passwordConfirmationModal.addEventListener('close', () => {
 
 async function loadUserInfo() {
 	try {
-		const stats = await api.getUserStats()
+		const stats = await getUserStats()
 		if (!stats.success) throw new Error(stats.message || geti18n('userSettings.apiError', { message: 'Failed to load user info' }))
 
-		el.userInfoUsername.textContent = stats.username
-		el.userInfoCreationDate.textContent = new Date(stats.creationDate).toLocaleDateString()
-		el.userInfoFolderSize.textContent = stats.folderSize
-		el.userInfoFolderPath.textContent = stats.folderPath
+		userInfoUsername.textContent = stats.username
+		userInfoCreationDate.textContent = new Date(stats.creationDate).toLocaleDateString()
+		userInfoFolderSize.textContent = stats.folderSize
+		userInfoFolderPath.textContent = stats.folderPath
 	}
 	catch (error) {
-		showAlert('userSettings.generalError', 'error', 5000, { message: error.message })
+		showToastI18n('error', 'userSettings.generalError', { message: error.message })
 	}
 }
 
-el.copyFolderPathBtn.addEventListener('click', async () => {
+copyFolderPathBtn.addEventListener('click', async () => {
 	try {
-		await navigator.clipboard.writeText(el.userInfoFolderPath.textContent)
-		showAlert('userSettings.userInfo.copiedAlert', 'success')
+		await navigator.clipboard.writeText(userInfoFolderPath.textContent)
+		showToastI18n('success', 'userSettings.userInfo.copiedAlert')
 	}
 	catch (err) {
 		console.error('Failed to copy path: ', err)
-		showAlert('userSettings.generalError', 'error', 5000, { message: 'Failed to copy path.' })
+		showToastI18n('error', 'userSettings.generalError', { message: 'Failed to copy path.' })
 	}
 })
 
-el.changePasswordForm.addEventListener('submit', async event => {
+changePasswordForm.addEventListener('submit', async event => {
 	event.preventDefault()
 	const form = event.target
 	const currentPassword = form.currentPassword.value
@@ -135,21 +121,21 @@ el.changePasswordForm.addEventListener('submit', async event => {
 	const confirmNewPassword = form.confirmNewPassword.value
 
 	if (newPassword !== confirmNewPassword)
-		return showAlert('userSettings.changePassword.errorMismatch', 'error')
+		return showToastI18n('error', 'userSettings.changePassword.errorMismatch')
 
 	try {
-		const result = await api.changePassword(currentPassword, newPassword)
+		const result = await changePassword(currentPassword, newPassword)
 		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Password change failed' }))
 
-		showAlert('userSettings.changePassword.success', 'success')
+		showToastI18n('success', 'userSettings.changePassword.success')
 		form.reset()
 	}
 	catch (error) {
-		showAlert('userSettings.generalError', 'error', 5000, { message: error.message })
+		showToastI18n('error', 'userSettings.generalError', { message: error.message })
 	}
 })
 
-el.renameUserForm.addEventListener('submit', async event => {
+renameUserForm.addEventListener('submit', async event => {
 	event.preventDefault()
 	const form = event.target
 	const newUsername = form.newUsernameRename.value.trim()
@@ -159,30 +145,30 @@ el.renameUserForm.addEventListener('submit', async event => {
 
 	try {
 		const password = await requestPasswordConfirmation()
-		const result = await api.renameUser(newUsername, password)
+		const result = await renameUser(newUsername, password)
 		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Rename user failed' }))
 
-		showAlert('userSettings.renameUser.success', 'success', 5000, { newUsername })
+		showToastI18n('success', 'userSettings.renameUser.success', { newUsername })
 		form.reset()
 		setTimeout(() => window.location.href = '/login', 2000)
 	}
 	catch (error) {
 		if (error.message.includes('cancelled') || error.message.includes('closed')) return
-		showAlert('userSettings.generalError', 'error', 5000, { message: error.message })
+		showToastI18n('error', 'userSettings.generalError', { message: error.message })
 	}
 })
 
 async function loadAndDisplayDevices() {
-	el.deviceList.innerHTML = '<div class="text-center py-4"><span class="loading loading-dots loading-md"></span></div>'
-	el.noDevicesText.classList.add('hidden')
+	deviceList.innerHTML = '<div class="text-center py-4"><span class="loading loading-dots loading-md"></span></div>'
+	noDevicesText.classList.add('hidden')
 
 	try {
-		const result = await api.getDevices()
+		const result = await getDevices()
 		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Failed to load devices' }))
 
-		el.deviceList.innerHTML = ''
+		deviceList.innerHTML = ''
 		if (!result.devices.length) {
-			el.noDevicesText.classList.remove('hidden')
+			noDevicesText.classList.remove('hidden')
 			return
 		}
 
@@ -225,85 +211,85 @@ async function loadAndDisplayDevices() {
 				revokeButton.onclick = async () => {
 					if (confirmI18n('userSettings.userDevices.revokeConfirm')) try {
 						const password = await requestPasswordConfirmation()
-						const revokeResult = await api.revokeDevice(device.jti, password)
+						const revokeResult = await revokeDevice(device.jti, password)
 						if (!revokeResult.success) throw new Error(revokeResult.message || geti18n('userSettings.apiError', { message: 'Revoke failed' }))
-						showAlert('userSettings.userDevices.revokeSuccess', 'success')
+						showToastI18n('success', 'userSettings.userDevices.revokeSuccess')
 						loadAndDisplayDevices()
 					} catch (error) {
 						if (error.message.includes('cancelled') || error.message.includes('closed')) return
-						showAlert('userSettings.generalError', 'error', 5000, { message: error.message })
+						showToastI18n('error', 'userSettings.generalError', { message: error.message })
 					}
 				}
 				li.appendChild(revokeButton)
 			}
-			el.deviceList.appendChild(li)
+			deviceList.appendChild(li)
 		})
 	}
 	catch (error) {
-		el.deviceList.innerHTML = ''
-		el.noDevicesText.classList.remove('hidden')
-		showAlert('userSettings.generalError', 'error', 5000, { message: error.message })
+		deviceList.innerHTML = ''
+		noDevicesText.classList.remove('hidden')
+		showToastI18n('error', 'userSettings.generalError', { message: error.message })
 	}
 }
 
-el.refreshDevicesBtn.addEventListener('click', loadAndDisplayDevices)
+refreshDevicesBtn.addEventListener('click', loadAndDisplayDevices)
 
 // 登出处理函数
-el.logoutBtn.addEventListener('click', async () => {
+logoutBtn.addEventListener('click', async () => {
 	if (!confirmI18n('userSettings.logout.confirmMessage')) return
 	try {
-		const result = await api.logoutUser() // 调用新的API端点
+		const result = await logout() // 调用新的API端点
 		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Logout failed' }))
 
 		// 登出成功，显示短暂消息并重定向
-		showAlert('userSettings.logout.successMessage', 'success', 2000)
+		showToastI18n('success', 'userSettings.logout.successMessage', {}, 2000)
 		setTimeout(() => {
 			window.location.href = '/login' // 重定向到登录页面
 		}, 1500) // 延迟一点以便用户看到消息
 	}
 	catch (error) {
-		showAlert('userSettings.generalError', 'error', 5000, { message: error.message })
+		showToastI18n('error', 'userSettings.generalError', { message: error.message })
 	}
 })
 
 
-el.deleteAccountBtn.addEventListener('click', async () => {
+deleteAccountBtn.addEventListener('click', async () => {
 	if (!confirmI18n('userSettings.deleteAccount.confirmMessage1')) return
 
-	const usernameToConfirm = el.userInfoUsername.textContent
+	const usernameToConfirm = userInfoUsername.textContent
 	const enteredUsername = promptI18n('userSettings.deleteAccount.confirmMessage2', { username: usernameToConfirm })
 
 	if (enteredUsername === null) return
 	if (enteredUsername !== usernameToConfirm)
-		return showAlert('userSettings.deleteAccount.usernameMismatch', 'error')
+		return showToastI18n('error', 'userSettings.deleteAccount.usernameMismatch')
 
 	try {
 		const password = await requestPasswordConfirmation()
-		const result = await api.deleteAccount(password)
+		const result = await deleteAccount(password)
 		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Delete account failed' }))
 
-		showAlert('userSettings.deleteAccount.success', 'success', 5000)
+		showToastI18n('success', 'userSettings.deleteAccount.success')
 		setTimeout(() => window.location.href = '/login', 3000)
 	}
 	catch (error) {
 		if (error.message.includes('cancelled') || error.message.includes('closed')) return
-		showAlert('userSettings.generalError', 'error', 5000, { message: error.message })
+		showToastI18n('error', 'userSettings.generalError', { message: error.message })
 	}
 })
 
 // --- API Key Management ---
 
 async function loadAndDisplayApiKeys() {
-	el.apiKeyList.innerHTML = '<div class="text-center py-4"><span class="loading loading-dots loading-md"></span></div>'
-	el.noApiKeysText.classList.add('hidden')
+	apiKeyList.innerHTML = '<div class="text-center py-4"><span class="loading loading-dots loading-md"></span></div>'
+	noApiKeysText.classList.add('hidden')
 
 	try {
-		const result = await api.getApiKeys()
+		const result = await getApiKeys()
 		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Get API keys failed' }))
 
-		el.apiKeyList.innerHTML = ''
+		apiKeyList.innerHTML = ''
 		if (!result.apiKeys.length) {
-			el.noApiKeysText.classList.remove('hidden')
+			noApiKeysText.classList.remove('hidden')
 			return
 		}
 
@@ -327,58 +313,60 @@ async function loadAndDisplayApiKeys() {
 			revokeButton.dataset.i18n = 'userSettings.apiKeys.revokeButton'
 			revokeButton.onclick = async () => {
 				if (confirmI18n('userSettings.apiKeys.revokeConfirm')) try {
-					const revokeResult = await api.revokeApiKey(key.jti)
+					const password = await requestPasswordConfirmation()
+					const revokeResult = await revokeApiKey(key.jti, password)
 					if (!revokeResult.success)
 						throw new Error(revokeResult.message || geti18n('userSettings.apiError', { message: 'revoke failed' }))
 
-					showAlert('userSettings.apiKeys.revokeSuccess', 'success')
+					showToastI18n('success', 'userSettings.apiKeys.revokeSuccess')
 					loadAndDisplayApiKeys()
 				} catch (error) {
-					showAlert('userSettings.generalError', 'error', 5000, { message: error.message })
+					if (error.message.includes('cancelled') || error.message.includes('closed')) return
+					showToastI18n('error', 'userSettings.generalError', { message: error.message })
 				}
 			}
 			li.appendChild(revokeButton)
-			el.apiKeyList.appendChild(li)
+			apiKeyList.appendChild(li)
 		})
 	}
 	catch (error) {
-		el.apiKeyList.innerHTML = ''
-		el.noApiKeysText.classList.remove('hidden')
-		showAlert('userSettings.generalError', 'error', 5000, { message: error.message })
+		apiKeyList.innerHTML = ''
+		noApiKeysText.classList.remove('hidden')
+		showToastI18n('error', 'userSettings.generalError', { message: error.message })
 	}
 }
 
-el.refreshApiKeysBtn.addEventListener('click', loadAndDisplayApiKeys)
+refreshApiKeysBtn.addEventListener('click', loadAndDisplayApiKeys)
 
-el.createApiKeyForm.addEventListener('submit', async (event) => {
+createApiKeyForm.addEventListener('submit', async (event) => {
 	event.preventDefault()
 	const form = event.target
 	const description = form.newApiKeyDescription.value.trim()
-	if (!description) return showAlert('userSettings.apiKeys.errorDescriptionRequired', 'error')
+	if (!description) return showToastI18n('error', 'userSettings.apiKeys.errorDescriptionRequired')
 
 	try {
-		const result = await api.createApiKey(description)
+		const result = await createApiKey(description)
 		if (!result.success) throw new Error(result.message || geti18n('userSettings.apiError', { message: 'Create API key failed' }))
 
-		el.newApiKeyInput.value = result.apiKey
-		el.newApiKeyModal.showModal()
-		showAlert('userSettings.apiKeys.createSuccess', 'success')
+		newApiKeyInput.value = result.apiKey
+		newApiKeyModal.showModal()
+		showToastI18n('success', 'userSettings.apiKeys.createSuccess')
 		form.reset()
 		loadAndDisplayApiKeys()
 	}
 	catch (error) {
-		showAlert('userSettings.generalError', 'error', 5000, { message: error.message })
+		showToastI18n('error', 'userSettings.generalError', { message: error.message })
 	}
 })
 
-el.copyNewApiKeyBtn.addEventListener('click', async () => {
+copyNewApiKeyBtn.addEventListener('click', async () => {
 	try {
-		await navigator.clipboard.writeText(el.newApiKeyInput.value)
-		showAlert('userSettings.newApiKey.copiedAlert', 'success')
+		await navigator.clipboard.writeText(newApiKeyInput.value)
+		showToastI18n('success', 'userSettings.newApiKey.copiedAlert')
 	}
 	catch (err) {
 		console.error('Failed to copy API key: ', err)
-		showAlert('userSettings.generalError', 'error', 5000, { message: 'Failed to copy API key.' })
+		showToastI18n('error', 'userSettings.generalError', { message: 'Failed to copy API key.' })
 	}
 })
 
@@ -394,5 +382,5 @@ async function initializeApp() {
 
 initializeApp().catch(error => {
 	console.error('Error initializing User Settings shell:', error)
-	showAlert('userSettings.generalError', 'error', 0, { message: 'Initialization failed: ' + error.message })
+	showToastI18n('error', 'userSettings.generalError', { message: 'Initialization failed: ' + error.message })
 })

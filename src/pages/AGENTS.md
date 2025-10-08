@@ -13,13 +13,21 @@
 - **Purpose**: Functions for core user authentication and system interaction.
 - `async whoami()`: Retrieves the current user's identity.
 - `async login(username, password, deviceid)`: Authenticates a user.
+- `async logout()`: Logs out the current user.
 - `async runPart(parttype, partname, args)`: Executes a "part" on the server.
+- `async getApiKeys()`: Retrieves the user's API keys.
+- `async createApiKey(description)`: Creates a new API key.
+- `async revokeApiKey(jti)`: Revokes an API key.
+- `async verifyApiKey(apiKey)`: Verifies an API key.
 
 ### 1.2. "Part" Interaction API (`parts.mjs`)
 
 - **Purpose**: Functions for fetching and managing fount "parts" (e.g., characters, worlds).
+- `async getPartTypes()`: Retrieves a list of all available part types.
 - `async getPartList(partType)`: Retrieves a list of all available parts of a specified type (e.g., 'chars').
+- `async getPartDetails(partType, partName)`: Fetches detailed information for a specific part.
 - `async getCharDetails(charname)`: Fetches detailed information for a specific character. (Similar functions exist for `worlds` and `personas`).
+- `async getAllCachedPartDetails(partType)`: Fetches all cached details for a given part type.
 - `async setDefaultPart(parttype, partname)`: Sets the user's default part for a given type.
 - `async getDefaultParts()`: Gets all of the user's default parts.
 

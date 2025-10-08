@@ -17,7 +17,9 @@ export async function generateVerificationCode() {
 }
 
 export async function whoami() {
-	const response = await fetch('/api/whoami')
+	const response = await fetch('/api/whoami', {
+		headers: { Accept: 'application/json' },
+	})
 	return response.json()
 }
 
@@ -71,5 +73,48 @@ export async function setUserSetting(key, value) {
 			'Content-Type': 'application/json',
 		},
 		body: JSON.stringify({ key, value }),
+	})
+}
+
+export async function logout() {
+	const response = await fetch('/api/logout', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+	})
+	if (!response.ok) return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response }))
+	return response.json()
+}
+
+export async function getApiKeys() {
+	const response = await fetch('/api/apikey/list')
+	if (!response.ok) return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response }))
+	return response.json()
+}
+
+export async function createApiKey(description) {
+	const response = await fetch('/api/apikey/create', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ description }),
+	})
+	if (!response.ok) return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response }))
+	return response.json()
+}
+
+export async function revokeApiKey(jti, password) {
+	const response = await fetch('/api/apikey/revoke', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ jti, password }),
+	})
+	if (!response.ok) return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response }))
+	return response.json()
+}
+
+export async function verifyApiKey(apiKey) {
+	return await fetch('/api/apikey/verify', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ apiKey }),
 	})
 }
