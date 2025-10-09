@@ -113,7 +113,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 			const cachedAIReply = aiReplyObjectCache[fullMessage.id]
 			/** @type {chatLogEntry_t_simple} */
 			const entry = {
-				...cachedAIReply || { extension: {} }, // 如果缓存命中，其extension会覆盖这里的空对象
+				...cachedAIReply, // 如果缓存命中，其extension会覆盖这里的空对象
 				time_stamp: fullMessage.createdTimestamp,
 				role: author.id === client.user.id ? 'char' : author.username === config.OwnerUserName ? 'user' : 'char',
 				name: author.id === client.user.id ? client.user.displayName || client.user.username : finalDisplayName,
