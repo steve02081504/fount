@@ -7,7 +7,7 @@ import { renderMessage, enableSwipe, disableSwipe } from './messageList.mjs'
 const chatMessagesContainer = document.getElementById('chat-messages')
 const BUFFER_SIZE = 20
 let startIndex = 0
-let queue = []
+export let queue = []
 let chatLogLength = 0
 
 let observer = null
