@@ -276,14 +276,14 @@ async function displayItemDescription(markdown) {
  * 显示右侧边栏
  */
 function showRightSidebar() {
-	rightSidebarContainer.classList.remove('hidden')
+	rightSidebarContainer.classList.remove('sidebar-hidden')
 }
 
 /**
  * 隐藏右侧边栏
  */
 function hideRightSidebar() {
-	rightSidebarContainer.classList.add('hidden')
+	rightSidebarContainer.classList.add('sidebar-hidden')
 }
 
 /**

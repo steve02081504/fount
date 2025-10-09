@@ -122,11 +122,17 @@ body {
 	position: absolute;
 	top: 5px;
 	right: 5px;
-	display: none;
+	display: block;
+	opacity: 0;
+	transform: scale(0.95);
+	transition: opacity 0.2s ease, transform 0.2s ease;
+	pointer-events: none;
 }
 
 .attachment:hover .attachment-button-group {
-	display: block;
+	opacity: 1;
+	transform: scale(1);
+	pointer-events: auto;
 }
 
 /* 发送区域附件预览容器 */
@@ -146,6 +152,7 @@ body {
 .attachment-edit-preview .preview-img {
 	width: 64px;
 	height: 64px;
+	object-fit: cover;
 }
 
 .attachment-preview .file-name {
@@ -192,7 +199,52 @@ body {
 	object-fit: contain;
 }
 
+/* 角色名平滑过渡 */
+.char-name {
+	transition: opacity 0.3s ease-in-out, max-height 0.3s ease-in-out, margin 0.3s ease-in-out, padding 0.3s ease-in-out, transform 0.3s ease-in-out;
+	transform-origin: top;
+	max-height: 5rem;
+	/* 确保这个值大于元素可能的最大高度 */
+	overflow: hidden;
+}
+
 /* 根据聊天中的角色数量隐藏角色名称 */
 body.hide-char-names .char-name {
-	display: none;
+	opacity: 0;
+	max-height: 0;
+	margin-top: 0 !important;
+	margin-bottom: 0 !important;
+	padding-top: 0 !important;
+	padding-bottom: 0 !important;
+	transform: scaleY(0);
+}
+
+/* 右侧边栏动画 */
+#right-sidebar-container {
+	transition: transform 0.3s ease-in-out;
+	transform: translateX(0);
+}
+
+#right-sidebar-container.sidebar-hidden {
+	transform: translateX(100%);
+	pointer-events: none;
+}
+
+/* 附件动画 */
+.attachment {
+	transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.attachment.attachment-entering,
+.attachment.attachment-removing {
+	transform: scale(0.9);
+	opacity: 0;
+}
+
+/* 当只有一个附件时，让附件预览图占据其容器的全部宽度 */
+.attachments.is-single-attachment .preview-img,
+.attachments.is-single-attachment .preview {
+	max-width: 100%;
+	max-height: 60vh; /* 限制一个最大高度，避免图片过高 */
+	object-fit: contain;
 }
