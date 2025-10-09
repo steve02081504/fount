@@ -7,7 +7,7 @@ import {
 	getCharDetails, noCacheGetCharDetails, getPersonaDetails, noCacheGetPersonaDetails, getWorldDetails, noCacheGetWorldDetails,
 	setDefaultPart, getDefaultParts, getAllCachedPartDetails
 } from '../../scripts/parts.mjs'
-import { getFiltersFromString, compileFilter } from '../../scripts/search.mjs'
+import { getFiltersFromString, compileFilter, makeSearchable } from '../../scripts/search.mjs'
 import { onServerEvent } from '../../scripts/server_events.mjs'
 import { svgInliner } from '../../scripts/svgInliner.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
@@ -127,7 +127,8 @@ async function attachCardEventListeners(itemElement, itemDetails, itemName, inte
 			filters.has(tagTerm) ? filters.delete(tagTerm) : filters.add(tagTerm)
 			filterInput.value = [...filters].join(' ')
 
-			filterItemList()
+			// Dispatch input event to trigger makeSearchable
+			filterInput.dispatchEvent(new Event('input'))
 		})
 	})
 
@@ -199,55 +200,25 @@ async function displayItemInfo(itemDetails) {
 		: geti18n('home.noDescription')
 }
 
-// --- Filtering ---
-async function filterItemList() {
-	// Trigger re-render based on filters
-	await displayItemList(currentItemType)
-}
-
-// --- Displaying Items ---
-async function displayItemList(itemType) {
-	// Hide all containers
-	[charContainer, worldContainer, personaContainer].forEach(container => container.classList.add('hidden'))
-
+async function renderFilteredItems(itemType, filteredNames) {
 	let currentContainer
 	switch (itemType) {
 		case 'chars': currentContainer = charContainer; break
 		case 'worlds': currentContainer = worldContainer; break
 		case 'personas': currentContainer = personaContainer; break
 	}
-
 	currentContainer.classList.remove('hidden')
 	currentContainer.innerHTML = '' // Clear container
-
-	const filterFn = compileFilter(filterInput.value)
-
-	// Fetch both cached details and uncached names in a single call
-	const { cachedDetails, uncachedNames } = await getAllCachedPartDetails(itemType).catch(e => {
-		console.error(`Failed to get all part details for ${itemType}`, e)
-		return { cachedDetails: {}, uncachedNames: [] } // return empty object on failure
-	})
-
-	// Populate global cache from the bulk fetch
-	for (const itemName in cachedDetails)
-		itemDetailsCache[`${itemType}-${itemName}`] = cachedDetails[itemName]
-
-	const allItemNames = [
-		...Object.keys(cachedDetails),
-		...uncachedNames,
-	].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
 
 	const fragment = document.createDocumentFragment()
 	const itemElements = {} // Use a map to hold skeletons for later replacement
 
 	// First pass: render all cached items and create placeholders for uncached ones
-	for (const itemName of allItemNames) {
-		const itemDetails = cachedDetails[itemName]
+	for (const itemName of filteredNames) {
+		const itemDetails = itemDetailsCache[`${itemType}-${itemName}`]
 		if (itemDetails) {
-			if (filterFn(itemDetails)) {
-				const itemElement = await renderItemView(itemType, itemDetails, itemName)
-				fragment.appendChild(itemElement)
-			}
+			const itemElement = await renderItemView(itemType, itemDetails, itemName)
+			fragment.appendChild(itemElement)
 		}
 		else { // This item must be in uncachedNames
 			const skeleton = document.createElement('div')
@@ -261,17 +232,15 @@ async function displayItemList(itemType) {
 	currentContainer.appendChild(fragment)
 
 	// Second pass: fetch and render uncached items, replacing their skeletons
+	const uncachedNames = filteredNames.filter(name => !itemDetailsCache[`${itemType}-${name}`])
 	uncachedNames.forEach(async itemName => {
 		// The skeleton should have been created in the previous loop
 		const skeleton = itemElements[itemName]
 
 		try {
 			const itemDetails = await getItemDetails(itemType, itemName, true)
-			if (filterFn(itemDetails)) {
-				const itemElement = await renderItemView(itemType, itemDetails, itemName)
-				skeleton.parentNode?.replaceChild(itemElement, skeleton)
-			}
-			else skeleton.remove()
+			const itemElement = await renderItemView(itemType, itemDetails, itemName)
+			skeleton.parentNode?.replaceChild(itemElement, skeleton)
 		}
 		catch (error) {
 			console.error(`Failed to fetch details for ${itemName}:`, error)
@@ -279,6 +248,23 @@ async function displayItemList(itemType) {
 		}
 	})
 }
+
+async function getAllItemNames(itemType) {
+	const { cachedDetails, uncachedNames } = await getAllCachedPartDetails(itemType).catch(e => {
+		console.error(`Failed to get all part details for ${itemType}`, e)
+		return { cachedDetails: {}, uncachedNames: [] } // return empty object on failure
+	})
+
+	// Populate global cache from the bulk fetch
+	for (const itemName in cachedDetails)
+		itemDetailsCache[`${itemType}-${itemName}`] = cachedDetails[itemName]
+
+	return [
+		...Object.keys(cachedDetails),
+		...uncachedNames,
+	].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
+}
+
 
 // --- Function Buttons ---
 async function displayFunctionButtons() {
@@ -397,8 +383,24 @@ async function updateTabContent(itemType) {
 	pageTitle.dataset.i18n = `home.${itemType}.title`
 	instruction.dataset.i18n = `home.${itemType}.subtitle`
 
-	// Display items for the new tab
-	await displayItemList(itemType)
+	// Hide all containers
+	;[charContainer, worldContainer, personaContainer].forEach(container => {
+		container.classList.add('hidden')
+	})
+
+	const allItemNames = await getAllItemNames(itemType)
+
+	makeSearchable({
+		searchInput: filterInput,
+		data: allItemNames,
+		dataAccessor: (name) => {
+			const details = itemDetailsCache[`${itemType}-${name}`]
+			return details || name
+		},
+		onUpdate: (filteredNames) => {
+			renderFilteredItems(itemType, filteredNames)
+		},
+	})
 
 	itemDescription.innerHTML = geti18n('home.itemDescription') // Reset sidebar
 
@@ -409,11 +411,11 @@ async function updateTabContent(itemType) {
 		{ tab: personasTab, tabDesktop: personasTabDesktop, itemType: 'personas' },
 	]
 	tabs.forEach(t => {
-		[t.tab, t.tabDesktop].filter(Boolean).forEach(el => el.classList.remove('tab-active'))
+		;[t.tab, t.tabDesktop].filter(Boolean).forEach(el => el.classList.remove('tab-active'))
 	})
 	const initialTab = tabs.find(t => t.itemType === itemType)
 	if (initialTab)
-		[initialTab.tab, initialTab.tabDesktop].filter(Boolean).forEach(el => el.classList.add('tab-active'))
+	;[initialTab.tab, initialTab.tabDesktop].filter(Boolean).forEach(el => el.classList.add('tab-active'))
 }
 
 async function fetchData() {
@@ -474,9 +476,6 @@ async function initializeApp() {
 		})
 	})
 
-	// Filter input event (consider debouncing)
-	filterInput.addEventListener('input', filterItemList)
-
 	// The focus listener is no longer needed as all updates are handled by websockets.
 
 	onServerEvent('default-part-updated', ({ parttype, partname }) => {
@@ -495,7 +494,7 @@ async function initializeApp() {
 			homeRegistry = data
 			await displayFunctionButtons()
 			// The registry also affects item cards, so we need to refresh them
-			await filterItemList()
+			await refreshCurrentTab()
 		}).catch(error => console.error('Failed to fetch home registry:', error))
 	})
 
@@ -503,7 +502,7 @@ async function initializeApp() {
 		partListsCache[parttype]?.push?.(partname)
 
 		if (parttype === currentItemType)
-			await displayItemList(currentItemType)
+			await updateTabContent(currentItemType)
 	})
 
 	onServerEvent('part-uninstalled', async ({ parttype, partname }) => {
@@ -515,7 +514,7 @@ async function initializeApp() {
 		delete ItemDOMCache[`${parttype}-${partname}`]
 
 		if (parttype === currentItemType)
-			await displayItemList(currentItemType)
+			await updateTabContent(currentItemType)
 	})
 
 	// esc按键
