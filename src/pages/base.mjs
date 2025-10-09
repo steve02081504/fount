@@ -65,7 +65,7 @@ onServerEvent('server-updated', handleVersionUpdate)
 onServerEvent('server-reconnected', handleVersionUpdate)
 
 window.addEventListener('load', async () => {
-	await fetch('https://cdn.jsdelivr.net/gh/steve02081504/fount/imgs/icon_ansi_ascii.txt').then(r => r.text()).then(console.log).catch(_ => 0)
+	console.log(...await fetch('https://cdn.jsdelivr.net/gh/steve02081504/fount/imgs/icon.js').then(r => r.text()).then(eval))
 	console.log('Curious? Join us and build future together: https://github.com/steve02081504/fount')
 
 	// Dispatch host info for browser integration script
