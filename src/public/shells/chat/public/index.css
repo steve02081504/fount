@@ -191,3 +191,8 @@ body {
 	max-height: 90%;
 	object-fit: contain;
 }
+
+/* 根据聊天中的角色数量隐藏角色名称 */
+body.hide-char-names .char-name {
+	display: none;
+}
