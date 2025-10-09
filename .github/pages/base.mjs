@@ -60,6 +60,7 @@ if ('serviceWorker' in navigator)
 		})
 
 window.addEventListener('load', async () => {
-	console.log(await fetch('https://cdn.jsdelivr.net/gh/steve02081504/fount/imgs/icon_ansi_ascii.txt').then(r => r.text()))
+	const supportsAnsi = (() => { const m = navigator.userAgent.match(/(?:Chrome|Edg)\/(\d+)/); return m && (m[0].includes('Chrome') ? +m[1] >= 71 : +m[1] >= 99) })()
+	console.log(await fetch(`https://cdn.jsdelivr.net/gh/steve02081504/fount/imgs/icon${supportsAnsi?'_ansi':''}_ascii.txt`).then(r => r.text()))
 	console.log('Curious? Join us and build future together: https://github.com/steve02081504/fount')
 })
