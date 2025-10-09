@@ -51,13 +51,15 @@
 				errorMessageElement.textContent = geti18n('login_info.modal.retrieve_error', { error: error.message })
 				throw error
 			}
-			else try {// load
+			else if (localStorage.getItem(`fount-login-${instanceId}`)) try {// load
 				await transferEncryptedCredentials(uuid, redirectUrl)
 			} catch (error) {
 				console.error('Failed to transfer credentials:', error)
 				errorMessageElement.textContent = geti18n('login_info.modal.transfer_error', { error: error.message })
 				throw error
 			}
+			else // No credentials found, just redirect
+				window.location.href = decodeURIComponent(redirectUrl)
 		}
 		catch (error) {
 			errorModal.showModal()

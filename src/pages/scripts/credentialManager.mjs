@@ -251,9 +251,6 @@ export async function transferEncryptedCredentials(uuid, redirectUrl) {
 	const storedEncryptedData = localStorage.getItem(`fount-login-${instanceId}`)
 	const targetUrl = new URL(decodeURIComponent(redirectUrl))
 
-	if (!storedEncryptedData)
-		throw new Error('No stored credentials found for this instance.')
-
 	try {
 		const targetHashParams = new URLSearchParams(targetUrl.hash.substring(1))
 		targetHashParams.set('uuid', uuid) // Pass full UUID for decryption
