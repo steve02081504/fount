@@ -60,6 +60,6 @@ if ('serviceWorker' in navigator)
 		})
 
 window.addEventListener('load', async () => {
-	console.log(await fetch('https://cdn.jsdelivr.net/gh/steve02081504/fount/imgs/icon_ansi_ascii.txt').then(r => r.text()))
+	console.log(...await fetch('https://cdn.jsdelivr.net/gh/steve02081504/fount/imgs/icon.js').then(r => r.text()).then(eval))
 	console.log('Curious? Join us and build future together: https://github.com/steve02081504/fount')
 })
