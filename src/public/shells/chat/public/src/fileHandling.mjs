@@ -19,14 +19,18 @@ export async function handleFilesSelect(event, selectedFiles, attachmentPreviewC
 				description: '',
 			}
 			selectedFiles.push(newFile)
-			attachmentPreviewContainer.appendChild(
-				await renderAttachmentPreview(
-					newFile,
-					selectedFiles.length - 1,
-					selectedFiles,
-					attachmentPreviewContainer
-				)
+			const attachmentElement = await renderAttachmentPreview(
+				newFile,
+				selectedFiles.length - 1,
+				selectedFiles
 			)
+			if (attachmentElement) {
+				attachmentElement.classList.add('attachment-entering')
+				attachmentPreviewContainer.appendChild(attachmentElement)
+				requestAnimationFrame(() => {
+					attachmentElement.classList.remove('attachment-entering')
+				})
+			}
 		}
 		reader.readAsArrayBuffer(file)
 	}
@@ -123,8 +127,18 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 	attachmentElement
 		.querySelector('.delete-button')
 		?.addEventListener('click', () => {
-			selectedFiles.splice(index, 1)
-			attachmentElement.remove()
+			const itemIndex = selectedFiles.indexOf(file)
+			if (itemIndex > -1)
+				selectedFiles.splice(itemIndex, 1)
+
+			attachmentElement.classList.add('attachment-removing')
+
+			const removeWithFallback = () => {
+				if (attachmentElement.parentNode)
+					attachmentElement.remove()
+			}
+
+			attachmentElement.addEventListener('transitionend', removeWithFallback, { once: true })
 		})
 
 	return attachmentElement

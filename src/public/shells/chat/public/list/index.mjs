@@ -1,6 +1,6 @@
 import { initTranslations, confirmI18n, console, onLanguageChange } from '../../../scripts/i18n.mjs'
 import { renderMarkdown, renderMarkdownAsString } from '../../../scripts/markdown.mjs'
-import { compileFilter } from '../../../scripts/search.mjs'
+import { makeSearchable } from '../../../scripts/search.mjs'
 import { renderTemplate, usingTemplates } from '../../../scripts/template.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
 import { showToast, showToastI18n } from '../../../scripts/toast.mjs'
@@ -18,41 +18,30 @@ const reverseSelectButton = document.getElementById('reverse-select-button')
 const deleteSelectedButton = document.getElementById('delete-selected-button')
 const exportSelectedButton = document.getElementById('export-selected-button')
 
-let chatList = []
+let fullChatList = []
+let currentFilteredList = []
 const selectedChats = new Set()
 
-/**
- * Filters the chat list based on user input.
- */
-function filterChatList() {
-	return chatList.filter(compileFilter(filterInput.value))
-}
+async function renderUI() {
+	const sortedList = [...currentFilteredList].sort((a, b) => {
+		const sortValue = sortSelect.value
+		const timeA = new Date(a.lastMessageTime).getTime()
+		const timeB = new Date(b.lastMessageTime).getTime()
+		return sortValue === 'time_asc' ? timeA - timeB : timeB - timeA
+	})
 
-async function renderChatList() {
-	const filteredAndSortedList = filterChatList()
-		.sort((a, b) => {
-			const sortValue = sortSelect.value
-			const timeA = new Date(a.lastMessageTime).getTime()
-			const timeB = new Date(b.lastMessageTime).getTime()
-			if (sortValue === 'time_asc')
-				return timeA - timeB
-			else
-				return timeB - timeA
-		})
-
-	const chats = await Promise.all(filteredAndSortedList.map(renderChatListItem))
+	const chats = await Promise.all(sortedList.map(renderChatListItem))
 	chatListContainer.innerHTML = ''
 	chatListContainer.append(...chats)
 
-	// 每次渲染列表后重置选择状态
+	// Reset selection state after rendering
 	selectedChats.clear()
 	selectAllCheckbox.checked = false
 }
 
 /**
- * 渲染 Markdown 字符串，并截取预览内容。
- * 预览内容定义为前 N+1 个非Trivial的节点之前的全部节点。
- * Trivial 节点包括 <br>, <script>, <link>, <style>, <meta>, 注释, 以及纯空白文本节点。
+ * Renders a preview of a Markdown string by truncating it to a certain number of significant nodes.
+ * Trivial nodes (like <br>, <script>, comments, whitespace) are ignored.
  * @param {string} markdown - The input markdown string.
  * @param {number} significantNodeLimit - The number of significant nodes to keep.
  * @returns {Promise<string>} A promise that resolves to the preview HTML string.
@@ -98,7 +87,7 @@ async function renderChatListItem(chat) {
 	const chatElement = await renderTemplate('list/chat_list_view', data)
 	chatElement.setAttribute('data-chatid', chat.chatid)
 
-	// 添加选择框
+	// Checkbox logic
 	const selectCheckbox = chatElement.querySelector('.select-checkbox')
 	selectCheckbox.checked = selectedChats.has(chat.chatid)
 	selectCheckbox.addEventListener('change', () => {
@@ -110,58 +99,52 @@ async function renderChatListItem(chat) {
 		}
 	})
 
-	// 继续聊天
+	// Button listeners
 	chatElement.querySelector('.continue-button').href = `/shells/chat#${chat.chatid}`
 
-	// 复制聊天
 	chatElement.querySelector('.copy-button').addEventListener('click', async () => {
 		try {
 			const datas = await copyChats([chat.chatid])
-			const data = datas[0]
-			if (data.success) {
-				chatList = await getChatList() // refresh chat list
-				renderChatList()
-			}
-			else showToast('error', data.message)
-		}
-		catch (error) {
+			if (datas[0]?.success) {
+				fullChatList = await getChatList()
+				filterInput.dispatchEvent(new Event('input')) // Trigger re-filter
+			} else
+				showToast('error', datas[0]?.message)
+
+		} catch (error) {
 			console.error('Error copying chat:', error)
 			showToastI18n('error', 'chat_history.alerts.copyError')
 		}
 	})
 
-	// 导出聊天
 	chatElement.querySelector('.export-button').addEventListener('click', async () => {
 		try {
 			const datas = await exportChats([chat.chatid])
-			for (const data of datas)
-				if (data.success) {
-					const blob = new Blob([JSON.stringify(data.data, null, '\t')], { type: 'application/json' })
-					const url = URL.createObjectURL(blob)
-					const a = document.createElement('a')
-					a.href = url
-					a.download = `chat-${chat.chatid}.json`
-					a.click()
-					URL.revokeObjectURL(url)
-				}
-				else showToast('error', data.message)
-		}
-		catch (error) {
+			for (const data of datas) if (data.success) {
+				const blob = new Blob([JSON.stringify(data.data, null, '\t')], { type: 'application/json' })
+				const url = URL.createObjectURL(blob)
+				const a = document.createElement('a')
+				a.href = url
+				a.download = `chat-${chat.chatid}.json`
+				a.click()
+				URL.revokeObjectURL(url)
+			}
+			else showToast('error', data.message)
+		} catch (error) {
 			console.error('Error exporting chat:', error)
 			showToastI18n('error', 'chat_history.alerts.exportError')
 		}
 	})
 
-	// 删除聊天
 	chatElement.querySelector('.delete-button').addEventListener('click', async () => {
 		if (confirmI18n('chat_history.confirmDeleteChat', { chars: chat.chars.join(', ') })) try {
 			const data = await deleteChats([chat.chatid])
 			if (data[0].success) {
 				chatItemDOMCache.delete(chat.chatid)
-				chatList = chatList.filter(c => c.chatid !== chat.chatid)
-				renderChatList()
-			}
-			else showToast('error', data[0].message)
+				fullChatList = fullChatList.filter(c => c.chatid !== chat.chatid)
+				filterInput.dispatchEvent(new Event('input')) // Trigger re-filter
+			} else showToast('error', data[0].message)
+
 		} catch (error) {
 			console.error('Error deleting chat:', error)
 			showToastI18n('error', 'chat_history.alerts.deleteError')
@@ -175,38 +158,30 @@ async function renderChatListItem(chat) {
 	return chatElement
 }
 
-sortSelect.addEventListener('change', renderChatList)
-filterInput.addEventListener('input', renderChatList)
+sortSelect.addEventListener('change', renderUI)
 
-// 全选
+// Bulk actions
 selectAllCheckbox.addEventListener('change', () => {
-	const chatItems = document.querySelectorAll('.chat-list-item')
-	chatItems.forEach(item => {
+	const isChecked = selectAllCheckbox.checked
+	document.querySelectorAll('.chat-list-item').forEach(item => {
 		const chatid = item.getAttribute('data-chatid')
 		const checkbox = item.querySelector('.select-checkbox')
-		checkbox.checked = selectAllCheckbox.checked
-		if (selectAllCheckbox.checked)
-			selectedChats.add(chatid)
-		else
-			selectedChats.delete(chatid)
+		checkbox.checked = isChecked
+		if (isChecked) selectedChats.add(chatid)
+		else selectedChats.delete(chatid)
 	})
 })
 
-// 反选
 reverseSelectButton.addEventListener('click', () => {
-	const chatItems = document.querySelectorAll('.chat-list-item')
-	chatItems.forEach(item => {
+	document.querySelectorAll('.chat-list-item').forEach(item => {
 		const chatid = item.getAttribute('data-chatid')
 		const checkbox = item.querySelector('.select-checkbox')
 		checkbox.checked = !checkbox.checked
-		if (checkbox.checked)
-			selectedChats.add(chatid)
-		else
-			selectedChats.delete(chatid)
+		if (checkbox.checked) selectedChats.add(chatid)
+		else selectedChats.delete(chatid)
 	})
 })
 
-// 删除选中
 deleteSelectedButton.addEventListener('click', async () => {
 	if (!selectedChats.size) {
 		showToastI18n('error', 'chat_history.alerts.noChatSelectedForDeletion')
@@ -216,21 +191,19 @@ deleteSelectedButton.addEventListener('click', async () => {
 		const results = await deleteChats(Array.from(selectedChats))
 		results.forEach(result => {
 			if (result.success) {
-				// Remove only successfully deleted chats from the UI
 				chatItemDOMCache.delete(result.chatid)
-				chatList = chatList.filter(c => c.chatid !== result.chatid)
-				selectedChats.delete(result.chatid) // Also remove from selectedChats
+				fullChatList = fullChatList.filter(c => c.chatid !== result.chatid)
+				selectedChats.delete(result.chatid)
 			}
 			else showToast('error', result.message)
 		})
-		renderChatList()
+		filterInput.dispatchEvent(new Event('input')) // Trigger re-filter
 	} catch (error) {
 		console.error('Error deleting selected chats:', error)
 		showToastI18n('error', 'chat_history.alerts.deleteError')
 	}
 })
 
-// 导出选中
 exportSelectedButton.addEventListener('click', async () => {
 	if (!selectedChats.size) {
 		showToastI18n('error', 'chat_history.alerts.noChatSelectedForExport')
@@ -238,19 +211,16 @@ exportSelectedButton.addEventListener('click', async () => {
 	}
 	try {
 		const results = await exportChats(Array.from(selectedChats))
-		for (const result of results)
-			if (result.success) {
-				const blob = new Blob([JSON.stringify(result.data, null, '\t')], { type: 'application/json' })
-				const url = URL.createObjectURL(blob)
-				const a = document.createElement('a')
-				a.href = url
-				a.download = `chat-${result.chatid}.json`
-				a.click()
-				URL.revokeObjectURL(url)
-			}
-			else showToast('error', result.message)
-	}
-	catch (error) {
+		for (const result of results) if (result.success) {
+			const blob = new Blob([JSON.stringify(result.data, null, '\t')], { type: 'application/json' })
+			const url = URL.createObjectURL(blob)
+			const a = document.createElement('a')
+			a.href = url
+			a.download = `chat-${result.chatid}.json`
+			a.click()
+			URL.revokeObjectURL(url)
+		} else showToast('error', result.message)
+	} catch (error) {
 		console.error('Error exporting selected chats:', error)
 		showToastI18n('error', 'chat_history.alerts.exportError')
 	}
@@ -258,9 +228,21 @@ exportSelectedButton.addEventListener('click', async () => {
 
 async function initializeApp() {
 	applyTheme()
-	await initTranslations('chat_history') // Initialize translations for 'chat_history'
-	chatList = await getChatList()
-	await onLanguageChange(renderChatList)
+	await initTranslations('chat_history')
+
+	fullChatList = await getChatList()
+	currentFilteredList = fullChatList
+
+	makeSearchable({
+		searchInput: filterInput,
+		data: fullChatList,
+		onUpdate: (filtered) => {
+			currentFilteredList = filtered
+			renderUI()
+		},
+	})
+
+	await onLanguageChange(renderUI)
 }
 
 initializeApp().catch(error => {

@@ -1,0 +1,1 @@
+let c=[''];' i@2:2,4,2; g:2@2:2,42,2; e@2:2@2:2,84,3; 9@3 2@2:2@2:2,336,8; g:2 2:2,42,1; 5@w,0,4'.split`;`.map(s=>{let[e,l,n]=s.split`,`,o=e.match(/.\w/g).map(c=>c[0].repeat(parseInt(c[1],36))),a=o.pop(),g=[...o,a,...o.reverse()],t=[...(2**g.length|l).toString(2).slice(2)].map(c=>'color:#0'+(+c?'ff':'00'));for(;n--;)c[0]+=g.join`%c`+'\n',c.push(...t)}),c

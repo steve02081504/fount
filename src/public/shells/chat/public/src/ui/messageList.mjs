@@ -8,7 +8,7 @@ import {
 	editMessage,
 } from '../endpoints.mjs'
 import { handleFilesSelect, renderAttachmentPreview } from '../fileHandling.mjs'
-import { processTimeStampForId, SWIPE_THRESHOLD, DEFAULT_AVATAR } from '../utils.mjs'
+import { processTimeStampForId, SWIPE_THRESHOLD, DEFAULT_AVATAR, TRANSITION_DURATION } from '../utils.mjs'
 
 import { addDragAndDropSupport } from './dragAndDrop.mjs'
 import {
@@ -185,6 +185,9 @@ export async function renderMessage(message) {
 	if (message.files?.length > 0) {
 		const attachmentsContainer = messageElement.querySelector('.attachments')
 		if (attachmentsContainer) {
+			if (message.files.length === 1)
+				attachmentsContainer.classList.add('is-single-attachment')
+
 			attachmentsContainer.innerHTML = ''
 			const attachmentPromises = message.files.map((file, index) =>
 				renderAttachmentPreview(file, index, null)
@@ -217,6 +220,11 @@ export async function editMessageStart(message, queueIndex, chatLogIndex) {
 
 	const messageElement = await getMessageElementByQueueIndex(queueIndex)
 	if (!messageElement) return
+
+	// 平滑过渡：淡出
+	messageElement.style.transition = `opacity ${TRANSITION_DURATION / 1000}s ease-in-out`
+	messageElement.style.opacity = '0'
+	await new Promise(resolve => setTimeout(resolve, TRANSITION_DURATION))
 
 	// 渲染编辑视图并替换
 	const editViewHtml = await renderTemplateAsHtmlString('message_edit_view', editRenderedMessage)
@@ -285,6 +293,9 @@ export async function editMessageStart(message, queueIndex, chatLogIndex) {
 			handleFilesSelect(event, selectedFiles, attachmentPreview) // 更新 selectedFiles 和预览
 		)
 
+
+	// 平滑过渡：淡入
+	messageElement.style.opacity = '1'
 
 	// 自动聚焦并移动光标到末尾
 	if (editInput) {
