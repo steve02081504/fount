@@ -1,2 +1,1 @@
-c=[''];for(s of`		!,2;"!,2;"!,3;	"!,8;"!,1;,4`.split`;`)for([e,n]=s.split`,`,g=[...o=[...e].map(x=>(' @:'[(k=x.charCodeAt())>>4].repeat(k&15))),...o.reverse()];n--;c.push(...g.map(x=>`color:#0${x<'@'?'ff':'00'}`)))c[0]+='%c'+g.join`%c`+`
-`
+c=[''];h=r='';for(k of`		!2"!2"!3	"!8"!14`)if(k<'0')h+=s=' @:'[(k=k.charCodeAt())>>4].repeat(k&15),r=s+r;else{for(k&=15;k--;)for(ch of h+r+'\n')c[0]+='%c'+ch,c.push('color:#0'+(ch>'?'?'00':'ff'));h=r=''}
