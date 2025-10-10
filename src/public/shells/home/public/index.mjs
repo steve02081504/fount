@@ -7,7 +7,7 @@ import {
 	getCharDetails, noCacheGetCharDetails, getPersonaDetails, noCacheGetPersonaDetails, getWorldDetails, noCacheGetWorldDetails,
 	setDefaultPart, getDefaultParts, getAllCachedPartDetails
 } from '../../scripts/parts.mjs'
-import { getFiltersFromString, makeSearchable } from '../../scripts/search.mjs'
+import { getFiltersFromString, compileFilter, makeSearchable } from '../../scripts/search.mjs'
 import { onServerEvent } from '../../scripts/server_events.mjs'
 import { svgInliner } from '../../scripts/svgInliner.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
@@ -387,7 +387,7 @@ async function updateTabContent(itemType) {
 	;[charContainer, worldContainer, personaContainer].forEach(container => {
 		container.classList.add('hidden')
 	})
-	
+
 	const allItemNames = await getAllItemNames(itemType)
 
 	makeSearchable({
