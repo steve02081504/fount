@@ -1,3 +1,4 @@
-c=[''];for(s of' 9 9@2:1,2; 8 8:2@2:1,2; 7 7@2:2@2:1,3; 9@3 2@2:2@2:1,8; 8 8:2 2:1,1; 5@8@8,4'.split`;`)for([e,n]=s.split`,`,g=[...o=e.match(/../g).map(x=>x[0].repeat(x[1])),...o.reverse()];n--;g.map(x=>c.push(`color:#0${x<'@'?'ff':11}`)),c[0]+=`%c${g.join`%c`}
-`)
+c=[h=r='']
+for(k of`\t\t\x12!2\b\b"\x12!2\x07\x07\x12"\x12!3\t\x13\x02\x12"\x12!8\b\b"\x02!1\x05\x18\x184`)for(p of+k?(h+r+`
+`).repeat(k):(h+=s=' @:'[(k=k.charCodeAt())>>4].repeat(k&15),r=s+r,''))c[0]+='%c'+p,c.push('color:#0'+(p>'?'?11:'ff')),h=r=''
 c
