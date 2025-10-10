@@ -1,1 +1,2 @@
-c=[''];` 9 9@2:1,2; 8 8:2@2:1,2; 7 7@2:2@2:1,3; 9@3 2@2:2@2:1,8; 8 8:2 2:1,1; 5@8@8,4`.split`;`.map(s=>{let[e,n]=s.split`,`,o=e.match(/.\w/g).map(c=>c[0].repeat(c[1])),g=[...o,...o.reverse()],t=g.map(c=>'color:#0'+(c[0]==':'?'ff':'00')).slice(1);for(;n--;)c[0]+=g.join`%c`+'\n',c.push(...t)}),c
+c=[''];` 9 9@2:1,2; 8 8:2@2:1,2; 7 7@2:2@2:1,3; 9@3 2@2:2@2:1,8; 8 8:2 2:1,1; 5@8@8,4`.split`;`.map(s=>{for([e,n]=s.split`,`,g=[...o=e.match(/../g).map(x=>x[0].repeat(x[1])),...o.reverse()];n--;c.push(...g.map(x=>`color:#0${x<'@'?'ff':11}`).slice(1)))c[0]+=g.join`%c`+`
+`}),c
