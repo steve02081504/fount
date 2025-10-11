@@ -1,4 +1,1 @@
-c=[h=r='']
-for(k of`		!2"!2"!3	"!8"!14`)for(p of+k?(h+r+`
-`).repeat(k):(h+=s=' @:'[(k=k.charCodeAt())>>4].repeat(k&15),r=s+r,''))c[0]+='%c'+p,c.push('color:#0'+(p>'?'?11:'ff')),h=r=''
-c
+c=[''];T=`     @@@@ @@@@:@@@@@:::::@@@  @    :::  `;G=`aaaaabbbbbbbbbbbccbbcaaaaaaaaadddaaddeeddeaaaaaaaaafffaaddeeddeaaaaaaaaaaaaaagghhdde`;for(y=20;y--;){for(x=42;x--;)h=x<21?x:41-x,i=G.charCodeAt((y/5|0)*21+h)-97,p=T[i*5+y%5],c[0]+='%c'+p,c.push('color:#0'+(p<'@'?'ff':11));c[0]+='\n'}c
