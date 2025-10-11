@@ -1,1 +1,4 @@
-c=[''];h=r='';for(k of`		!2"!2"!3	"!8"!14`)if(k<'0')h+=s=' @:'[(k=k.charCodeAt())>>4].repeat(k&15),r=s+r;else{for(k&=15;k--;)for(ch of h+r+'\n')c[0]+='%c'+ch,c.push('color:#0'+(ch>'?'?'00':'ff'));h=r=''}
+c=[h=r='']
+for(k of`		!2"!2"!3	"!8"!14`)for(p of+k?(h+r+`
+`).repeat(k):(h+=s=' @:'[(k=k.charCodeAt())>>4].repeat(k&15),r=s+r,''))c[0]+='%c'+p,c.push('color:#0'+(p>'?'?'00':'ff')),h=r=''
+c
