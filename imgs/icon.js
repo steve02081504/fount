@@ -1,2 +1,9 @@
-c=[``];for(s of`2		!,2"!,3"!,8	"!,1"!,4`.split`,`)for(n=s.at(0),g=[...o=[...s].map(x=>" @:­"[(k=x.charCodeAt())>>4].repeat(k&15)),...o.reverse()];n--;c.push(...g.map(x=>`color:#0${x<'@'?'ff':11}`)))c[0]+=`%c${g.join`%c`}
-`,c
+c=[h=r='']
+for(k of`HH
+2@@
+2p
+3H
+8@@
+1(AA4`)for(p of+k?(h+r+`
+`).repeat(k):(k=k.charCodeAt(),h+=s=' @:'[k&3].repeat(k/8),r=s+r,''))c[0]+='%c'+p,c.push('color:#0'+(p>'?'?11:'ff')),h=r=''
+c
