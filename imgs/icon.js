@@ -1,3 +1,3 @@
-c=[[]];for(s of` 18@2:1,2; 16:2@2:1,2; 14@2:2@2:1,3; 9@3 2@2:2@2:1,8; 16:2 2:1,1; 5@16,4`.split`;`)for([e,n]=s.split`,`,o=[...o=e.match(/.\d+/g).map(m=>m[0].repeat(m.slice(1))),...o.reverse()];n--;c.push(...o.map(x=>`color:#0${x<'@'?'ff':11}`)))c[0]+=`%c${o.join`%c`}
-`
-c
+c=[h=r='']
+for(k of`B2B2BB3	CBB81P4`)for(p of+k?(h+r+`
+`).repeat(k):(h+=s=' @:'[(k=k.charCodeAt())>>6].repeat(k&63),r=s+r,''))c[0]+='%c'+p,c.push('color:#0'+(p>'?'?11:'ff')),h=r=''
