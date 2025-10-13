@@ -107,6 +107,34 @@ export class CharAPI_t {
 				content: string
 				chat_scoped_char_memory: object
 			}>
+		},
+		deskpet?: {
+			GetPetConfig: () => Promise<{
+				/**
+				 * The URL to load in the webview.
+				 * This can be a remote URL (https://...), a local file path, or a data URI.
+				 * The URL will be resolved relative to the fount server address.
+				 */
+				url: string;
+
+				/**
+				 * Options for the webview window.
+				 */
+				windowOptions?: {
+					width?: number;
+					height?: number;
+					frameless?: boolean;
+					transparent?: boolean;
+					/**
+					 * Window resizing hint.
+					 * "none": No hint.
+					 * "fixed": Fixed window size.
+					 * "min": Minimum window size.
+					 * "max": Maximum window size.
+					 */
+					hint?: 'none' | 'fixed' | 'min' | 'max';
+				};
+			}>;
 		}
 	}
 }

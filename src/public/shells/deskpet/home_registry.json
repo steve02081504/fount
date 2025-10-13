@@ -1,0 +1,75 @@
+{
+	"home_function_buttons": [
+		{
+			"id": "in_dev",
+			"info": {
+				"zh-CN": {
+					"title": "正在开发"
+				},
+				"en-UK": {
+					"title": "under development"
+				},
+				"emoji": {
+					"title": "🚧"
+				}
+			},
+			"level": 9999,
+			"button": "<img src=\"https://api.iconify.design/fluent/window-dev-tools-24-regular.svg\" />",
+			"sub_items": [
+				{
+					"id": "deskpet_related",
+					"info": {
+						"zh-CN": {
+							"title": "桌面宠物"
+						},
+						"en-UK": {
+							"title": "Desktop Pets"
+						},
+						"emoji": {
+							"title": "🐾"
+						}
+					},
+					"level": 2,
+					"button": "<img src=\"https://api.iconify.design/streamline-ultimate/work-from-home-user-pet-cat.svg\" />",
+					"sub_items": [
+						{
+							"info": {
+								"zh-CN": {
+									"title": "管理桌面宠物"
+								},
+								"en-UK": {
+									"title": "Manage Desktop Pets"
+								},
+								"emoji": {
+									"title": "⚙️🐾"
+								}
+							},
+							"level": 1,
+							"url": "/shells/deskpet",
+							"button": "<img src=\"https://api.iconify.design/material-symbols/pets.svg\" class=\"text-icon\"/>"
+						}
+					]
+				}
+			]
+		}
+	],
+	"home_char_interfaces": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "作为桌面宠物启动"
+				},
+				"en-UK": {
+					"title": "Launch as Desktop Pet"
+				},
+				"emoji": {
+					"title": "🚀🐾"
+				}
+			},
+			"level": 1,
+			"interface": "deskpet",
+			"url": "/shells/deskpet/launch?char=${name}",
+			"button": "<img src=\"https://api.iconify.design/material-symbols/rocket-launch.svg\"/>"
+		}
+	]
+}
