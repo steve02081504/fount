@@ -1,0 +1,9 @@
+/.noupdate
+/.noautoinit
+/.nobackground
+/.nojobs
+/.notimers
+/.vm_data_*
+/node_modules
+/path/deno
+/path/deno.exe
