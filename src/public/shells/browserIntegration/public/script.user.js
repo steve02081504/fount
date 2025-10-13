@@ -75,7 +75,8 @@ Are you sure you want to allow this change?
 			},
 			update: {
 				prompt: 'A new version of the fount browser integration script is available. Do you want to open the update page now?'
-			}
+			},
+			csp_warning: 'fount Warning: The current page\'s Content Security Policy (CSP) may prevent fount scripts from running correctly. Some features might not work as expected.'
 		},
 		// This will be populated with fetched translations
 		loaded: {}
@@ -180,6 +181,8 @@ let currentRetryDelay = INITIAL_RETRY_DELAY
 let lastRefreshTimestamp = 0
 /** @const {number} Grace period in milliseconds to ignore stale 401 errors after a refresh. */
 const REFRESH_GRACE_PERIOD_MS = 5000
+
+let cspWarningShown = false
 
 
 // --- Host Management & State Caching ---
@@ -420,6 +423,22 @@ async function checkForUpdate() {
 	}
 }
 
+async function checkCspAndWarn() {
+	if (cspWarningShown) return
+
+	try {
+		const policy = window.trustedTypes?.createPolicy?.('fount-userscript-policy', { createScript: s => s }) ?? { createScript: s => s }
+		// eslint-disable-next-line no-eval
+		eval(policy.createScript('1'))
+	}
+	catch (e) {
+		if (e.message.includes('Content Security Policy')) {
+			cspWarningShown = true // Set flag immediately to prevent race conditions
+			alert(await geti18n('browser_integration_script.csp_warning'))
+		}
+	}
+}
+
 async function handleCommand(msg) {
 	let payload
 	try {
@@ -431,6 +450,7 @@ async function handleCommand(msg) {
 				payload = { html: getVisibleElementsHtml() }
 				break
 			case 'run_js': {
+				await checkCspAndWarn()
 				const { script, callbackInfo } = msg.payload
 				let callback = null
 				if (callbackInfo)
@@ -463,6 +483,9 @@ function sendResponse(requestId, payload, isError = false) {
 async function runMatchingScripts() {
 	const scripts = await GM.getValue(AUTORUN_SCRIPTS_KEY, [])
 	if (!scripts.length) return
+
+	await checkCspAndWarn()
+
 	const url = window.location.href
 	const { async_eval } = await import('https://esm.sh/@steve02081504/async-eval')
 	for (const script of scripts) try {
@@ -523,13 +546,3 @@ async function initialize() {
 initialize()
 window.addEventListener('focus', notifyFocus)
 window.addEventListener('blur', notifyFocus)
-
-setTimeout(async () => {
-	try {
-		const policy = window.trustedTypes?.createPolicy?.('fount-userscript-policy', { createScript: s => s }) ?? { createScript: s => s }
-		eval(policy.createScript('1'))
-	}
-	catch (e) {
-		if (e.message.includes('Content Security Policy')) alert(await geti18n('browser_integration_script.csp_warning'))
-	}
-}, 1000)
