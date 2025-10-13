@@ -7,7 +7,7 @@ import { ms } from '../../scripts/ms.mjs'
 import { pow } from '../../scripts/pow.mjs'
 import { get_hosturl_in_local_ip, is_local_ip, is_local_ip_from_req, rateLimit } from '../../scripts/ratelimit.mjs'
 import { generateVerificationCode, verifyVerificationCode } from '../../scripts/verifycode.mjs'
-import { login, register, logout, authenticate, getUserByReq, getUserDictionary, getUserByUsername, auth_request, generateApiKey, revokeApiKey, verifyApiKey, ACCESS_TOKEN_EXPIRY_DURATION, REFRESH_TOKEN_EXPIRY_DURATION } from '../auth.mjs'
+import { login, register, logout, authenticate, getUserByReq, getUserDictionary, getUserByUsername, auth_request, generateApiKey, revokeApiKey, verifyApiKey, setApiCookieResponse, ACCESS_TOKEN_EXPIRY_DURATION, REFRESH_TOKEN_EXPIRY_DURATION } from '../auth.mjs'
 import { __dirname } from '../base.mjs'
 import { processIPCCommand } from '../ipc_server/index.mjs'
 import { partsList } from '../managers/base.mjs'
@@ -181,6 +181,12 @@ export function registerEndpoints(router) {
 
 		const user = await verifyApiKey(apiKey)
 		res.status(200).json({ success: true, valid: !!user })
+	})
+
+	router.post('/api/get-api-cookie', async (req, res) => {
+		const { apiKey } = req.body
+		const result = await setApiCookieResponse(apiKey, req, res)
+		res.status(result.status).json(result)
 	})
 
 	router.get('/api/whoami', authenticate, async (req, res) => {
