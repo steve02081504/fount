@@ -1243,6 +1243,34 @@
 		"initialMessage": "fount 支持将你喜欢的角色部署到你的终端中辅助你编码！",
 		"initialMessageLink": "点击这里了解更多信息"
 	},
+    "deskpet": {
+        "title": "桌面宠物",
+        "launcherCard": {
+            "title": "宠物启动器",
+            "buttons": {
+                "start": "启动宠物"
+            }
+        },
+        "charSelectDropdown": {
+            "placeholder": "选择一个角色"
+        },
+        "charSearch": {
+            "placeholder": "搜索角色..."
+        },
+        "runningCard": {
+            "title": "正在运行的宠物",
+            "noPets": "当前没有宠物在运行。",
+            "buttons": {
+                "stop": "停止"
+            }
+        },
+        "toasts": {
+            "started": "宠物 '${charname}' 已启动。",
+            "start_failed": "启动宠物 '${charname}' 失败: ${message}",
+            "stopped": "宠物 '${charname}' 已停止。",
+            "stop_failed": "停止宠物 '${charname}' 失败: ${message}"
+        }
+    },
 	"access": {
 		"title": "在其他设备上访问 fount",
 		"heading": "想在其他设备上访问 fount 吗？",
