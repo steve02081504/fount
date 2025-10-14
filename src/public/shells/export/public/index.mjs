@@ -120,8 +120,6 @@ function renderPartTypeSelect() {
 }
 
 function renderPartDropdown() {
-	i18nElement(partNameDropdown.parentElement)
-
 	const disabled = !parts || parts.length === 0
 	const dataList = disabled ? [] : parts.map(name => ({ name, value: name }))
 

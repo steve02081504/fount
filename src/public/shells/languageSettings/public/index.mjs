@@ -20,8 +20,6 @@ function getLocaleName(id) {
 }
 
 function updateAvailableLanguagesDropdown() {
-	i18nElement(availableLanguagesDropdown) // Translate placeholders first
-
 	const currentPreferredSet = new Set(userPreferredLocales)
 	const filteredAvailableLocales = availableLocales.filter(locale => !currentPreferredSet.has(locale.id))
 

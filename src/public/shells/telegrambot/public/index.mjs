@@ -39,7 +39,6 @@ let isDirty = false // 标记是否有未保存的更改
 
 // UI 更新函数
 function renderBotDropdown() {
-	i18nElement(botListDropdown.parentElement)
 	const disabled = !botList || botList.length === 0
 	const dataList = disabled ? [] : botList.map(name => ({ name, value: name }))
 
