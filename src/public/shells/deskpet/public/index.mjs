@@ -20,7 +20,7 @@ let charList = []
 let selectedChar = null
 let runningPets = []
 
-function renderCharDropdown() {
+async function renderCharDropdown() {
 	i18nElement(charSelectDropdown.parentElement)
 	const disabled = !charList || charList.length === 0
 	const dataList = disabled ? [] : charList.map(name => ({ name, value: name }))
@@ -30,7 +30,7 @@ function renderCharDropdown() {
 	else
 		delete charSelectDropdown.dataset.value
 
-	createSearchableDropdown({
+	await createSearchableDropdown({
 		dropdownElement: charSelectDropdown,
 		dataList,
 		textKey: 'name',
@@ -114,7 +114,7 @@ async function init() {
 	usingTemplates('/shells/deskpet/templates')
 
 	charList = await getPartList('chars')
-	renderCharDropdown()
+	await renderCharDropdown()
 
 	await refreshRunningPets()
 	// Replace polling with event-driven updates

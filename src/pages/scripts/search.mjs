@@ -99,7 +99,7 @@ export function makeSearchable({ searchInput, data, dataAccessor = (item) => ite
  * @param {function(object): void} [options.onSelect=()=>{}] - Callback function when an item is selected. Receives the selected data object.
  * @param {function(object): (object|string)} [options.dataAccessor] - A function that takes a data object and returns the data (object or string) to be used for searching. Defaults to using `textKey`.
  */
-export function createSearchableDropdown({
+export async function createSearchableDropdown({
 	dropdownElement,
 	dataList,
 	textKey,
@@ -155,7 +155,7 @@ export function createSearchableDropdown({
 	 * Centralized function to set the dropdown's value and update its display.
 	 * @param {string | number} newValue The new value to set.
 	 */
-	const setValue = (newValue) => {
+	const setValue = async (newValue) => {
 		const selectedItem = dataList.find(item => getItemValue(item) == newValue)
 		if (selectedItem) {
 			triggerInput.value = getItemText(selectedItem)
@@ -167,8 +167,8 @@ export function createSearchableDropdown({
 			// If value is invalid, reset to placeholder.
 			triggerInput.value = ''
 			delete dropdownElement.dataset.value
-			onSelect(null)
 		}
+		await onSelect(selectedItem || null)
 	}
 
 	const focusinListener = () => triggerInput.setAttribute('aria-expanded', 'true')
@@ -195,7 +195,7 @@ export function createSearchableDropdown({
 				const selectedValue = button.dataset.value
 				const selectedItem = dataList.find(item => getItemValue(item) == selectedValue)
 				if (await onSelect(selectedItem)) return
-				setValue(selectedValue) // Use the new setter function
+				await setValue(selectedValue) // Use the new setter function
 				document.activeElement?.blur() // Close the dropdown
 			}
 			button.addEventListener('click', listener)
@@ -207,14 +207,14 @@ export function createSearchableDropdown({
 	makeSearchable({ searchInput, data: dataList, dataAccessor, onUpdate: renderOptions })
 
 	// Initialize with existing dataset.value if it exists.
-	setValue(dropdownElement.dataset.value || null)
+	await setValue(dropdownElement.dataset.value || null)
 
 	// Observe for external changes to `data-value` to provide setter functionality.
 	const observer = new MutationObserver(mutations => {
-		mutations.forEach(mutation => {
+		mutations.forEach(async mutation => {
 			if (mutation.type === 'attributes' && mutation.attributeName === 'data-value') {
 				const newValue = dropdownElement.dataset.value
-				setValue(newValue)
+				await setValue(newValue)
 			}
 		})
 	})
