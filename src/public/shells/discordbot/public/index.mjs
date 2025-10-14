@@ -38,8 +38,7 @@ let selectedBot = null
 let isDirty = false // 标记是否有未保存的更改
 
 // UI 更新函数
-function renderBotDropdown() {
-	i18nElement(botListDropdown.parentElement)
+async function renderBotDropdown() {
 	const disabled = !botList || botList.length === 0
 	const dataList = disabled ? [] : botList.map(name => ({ name, value: name }))
 
@@ -48,7 +47,7 @@ function renderBotDropdown() {
 	else
 		delete botListDropdown.dataset.value
 
-	createSearchableDropdown({
+	await createSearchableDropdown({
 		dropdownElement: botListDropdown,
 		dataList,
 		textKey: 'name',
@@ -64,7 +63,7 @@ function renderBotDropdown() {
 	})
 }
 
-function renderCharDropdown() {
+async function renderCharDropdown() {
 	i18nElement(charSelectDropdown.parentElement)
 	const disabled = !charList || charList.length === 0
 	const dataList = disabled ? [] : charList.map(name => ({ name, value: name }))
@@ -75,7 +74,7 @@ function renderCharDropdown() {
 	else
 		delete charSelectDropdown.dataset.value
 
-	createSearchableDropdown({
+	await createSearchableDropdown({
 		dropdownElement: charSelectDropdown,
 		dataList,
 		textKey: 'name',
@@ -145,7 +144,7 @@ async function handleNewBot() {
 	try {
 		await newBotConfig(botname)
 		botList = await getBotList()
-		renderBotDropdown()
+		await renderBotDropdown()
 		botListDropdown.dataset.value = botname
 		await loadBotConfig(botname)
 	}
@@ -173,18 +172,15 @@ async function handleDeleteBot() {
 		}
 
 		await loadBotConfig(nextBotToLoad)
-		renderBotDropdown()
+		await renderBotDropdown()
 	}
 	catch (error) { console.error(error) }
 }
 
 async function handleCharSelectChange(selectedChar) {
-	if (isDirty)
-		if (!confirmI18n('discord_bots.alerts.unsavedChanges')) {
-			charSelectDropdown.dataset.value = configEditor.get().json.char || ''
-			return
-		}
+	if (isDirty && !confirmI18n('discord_bots.alerts.unsavedChanges')) return
 
+	if (!selectedChar) return charSelectDropdown.dataset.value = ''
 	isDirty = true
 	const template = await getBotConfigTemplate(selectedChar)
 	if (template && configEditor)
@@ -308,8 +304,8 @@ async function initializeFromURLParams() {
 		charList = await getPartList('chars')
 
 		// 2. Render the dropdowns with the lists
-		renderBotDropdown()
-		renderCharDropdown()
+		await renderBotDropdown()
+		await renderCharDropdown()
 
 		// 3. Determine which bot to load
 		let botToLoad = null
