@@ -39,7 +39,6 @@ let isDirty = false // 标记是否有未保存的更改
 
 // UI 更新函数
 function renderBotDropdown() {
-	i18nElement(botListDropdown.parentElement)
 	const disabled = !botList || botList.length === 0
 	const dataList = disabled ? [] : botList.map(name => ({ name, value: name }))
 
@@ -179,12 +178,9 @@ async function handleDeleteBot() {
 }
 
 async function handleCharSelectChange(selectedChar) {
-	if (isDirty)
-		if (!confirmI18n('discord_bots.alerts.unsavedChanges')) {
-			charSelectDropdown.dataset.value = configEditor.get().json.char || ''
-			return
-		}
+	if (isDirty && !confirmI18n('discord_bots.alerts.unsavedChanges')) return
 
+	if (!selectedChar) return charSelectDropdown.dataset.value = ''
 	isDirty = true
 	const template = await getBotConfigTemplate(selectedChar)
 	if (template && configEditor)
