@@ -1,4 +1,4 @@
-<div class="chat-list-item rounded-md bg-base-100 shadow-md mb-2">
+<div class="chat-list-item rounded-md bg-base-100 shadow-md mb-2 p-0">
 	<details class="collapse w-full">
 		<summary class="collapse-title flex items-center justify-between text-sm text-base-content opacity-70 hover:opacity-100 cursor-pointer">
 			<div class="flex items-center min-w-0">
@@ -9,7 +9,7 @@
 				<div class="px-2 flex items-center">
 					<div class="avatar-group -space-x-6 rtl:space-x-reverse">
 						${avatars.map(avatar => `<div class="avatar">
-							<div class="w-8"><img src="${avatar.url || 'https://api.iconify.design/line-md/person.svg'}" alt="${avatar.name}" width="100%" height="100%" /></div>
+							<div class="w-8"><img src="${avatar.url || 'https://api.iconify.design/line-md/person.svg'}" alt="${avatar.name}" width="100%" height="100%" class="rounded-full mr-[5px]" /></div>
 						</div>`).join('')}
 					</div>
 					<p class="text-sm font-semibold text-base-content ml-2">${chars.join(', ')}</p>
@@ -43,7 +43,7 @@
 					<div class="text-sm font-bold text-primary-content flex items-center gap-2">
 						${lastMessageSender}
 					</div>
-					<div class="message-content markdown-body mt-1">
+					<div class="message-content markdown-body mt-1 w-full break-words">
 						${lastMessageContent}
 					</div>
 				</div>

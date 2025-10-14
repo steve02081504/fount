@@ -1,3 +1,5 @@
+import Sentry from 'https://esm.sh/@sentry/browser'
+
 /* global urlParams */
 const DEFAULT_FOUNT_PORT = 8931
 
@@ -190,10 +192,12 @@ export async function pingFount(hostUrl) {
 	if (!hostUrl) return
 	const controller = new AbortController()
 	const timeout = setTimeout(() => controller.abort(), 1000)
-	const res = await fetch(new URL('/api/ping', hostUrl), {
-		signal: controller.signal,
-		cache: 'no-cache'
-	}).catch(() => 0)
-	clearTimeout(timeout)
-	return res?.ok
+	try {
+		return (await fetch(new URL('/api/ping', hostUrl), {
+			signal: controller.signal,
+			cache: 'no-cache'
+		}).catch(() => 0))?.ok
+	}
+	catch(e) { Sentry.captureException(e, { extra: { hostUrl } }) }
+	finally { clearTimeout(timeout) }
 }
