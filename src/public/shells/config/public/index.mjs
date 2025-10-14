@@ -121,7 +121,7 @@ async function loadPartAddons(partType, partName) {
 		const { html, js: displayScript } = await getPartDisplay(partType, partName)
 		await initTranslations() // refresh translations for dynamic content maybe used in part i18n data
 		partDisplayContainer.innerHTML = html
-		await svgInliner(i18nElement(partDisplayContainer))
+		await svgInliner(i18nElement(partDisplayContainer, { skip_report: true }))
 		if (displayScript) {
 			const eval_result = await async_eval(displayScript, { geti18n, partType, partName, element: partDisplayContainer })
 			if (eval_result.error) throw eval_result.error

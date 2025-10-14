@@ -1,0 +1,255 @@
+{
+	"home_function_buttons": [
+		{
+			"id": "in_dev",
+			"info": {
+				"zh-CN": {
+					"title": "正在开发"
+				},
+				"en-UK": {
+					"title": "under development"
+				},
+				"ar-SA": {
+					"title": "قيد التطوير"
+				},
+				"de-DE": {
+					"title": "In Entwicklung"
+				},
+				"emoji": {
+					"title": "🚧"
+				},
+				"es-ES": {
+					"title": "En desarrollo"
+				},
+				"fr-FR": {
+					"title": "En développement"
+				},
+				"hi-IN": {
+					"title": "अल्प विकास"
+				},
+				"is-IS": {
+					"title": "Undir þróun"
+				},
+				"it-IT": {
+					"title": "In fase di sviluppo"
+				},
+				"ja-JP": {
+					"title": "開発中"
+				},
+				"ko-KR": {
+					"title": "개발중"
+				},
+				"nl-NL": {
+					"title": "In ontwikkeling"
+				},
+				"pt-PT": {
+					"title": "Em desenvolvimento"
+				},
+				"ru-RU": {
+					"title": "В разработке"
+				},
+				"uk-UA": {
+					"title": "Розробляти"
+				},
+				"vi-VN": {
+					"title": "Đang được phát triển"
+				},
+				"zh-TW": {
+					"title": "正在開發"
+				}
+			},
+			"level": 9999,
+			"button": "<img src=\"https://api.iconify.design/fluent/window-dev-tools-24-regular.svg\" />",
+			"sub_items": [
+				{
+					"id": "deskpet_related",
+					"info": {
+						"zh-CN": {
+							"title": "桌面宠物"
+						},
+						"en-UK": {
+							"title": "Desktop Pets"
+						},
+						"ar-SA": {
+							"title": "الحيوانات الأليفة سطح المكتب"
+						},
+						"de-DE": {
+							"title": "Desktop-Haustiere"
+						},
+						"emoji": {
+							"title": "🐾"
+						},
+						"es-ES": {
+							"title": "mascotas de escritorio"
+						},
+						"fr-FR": {
+							"title": "Animaux de bureau"
+						},
+						"hi-IN": {
+							"title": "डेस्कटॉप पालतू जानवर"
+						},
+						"is-IS": {
+							"title": "Gæludýr skrifborðs"
+						},
+						"it-IT": {
+							"title": "Animali domestici da scrivania"
+						},
+						"ja-JP": {
+							"title": "デスクトップペット"
+						},
+						"ko-KR": {
+							"title": "데스크톱 애완동물"
+						},
+						"nl-NL": {
+							"title": "Desktop huisdieren"
+						},
+						"pt-PT": {
+							"title": "Animais de estimação de mesa"
+						},
+						"ru-RU": {
+							"title": "Настольные питомцы"
+						},
+						"uk-UA": {
+							"title": "Настільні домашні тварини"
+						},
+						"vi-VN": {
+							"title": "Thú cưng để bàn"
+						},
+						"zh-TW": {
+							"title": "桌面寵物"
+						}
+					},
+					"level": 2,
+					"button": "<img src=\"https://api.iconify.design/streamline-ultimate/work-from-home-user-pet-cat.svg\" />",
+					"sub_items": [
+						{
+							"info": {
+								"zh-CN": {
+									"title": "管理桌面宠物"
+								},
+								"en-UK": {
+									"title": "Manage Desktop Pets"
+								},
+								"ar-SA": {
+									"title": "إدارة الحيوانات الأليفة على سطح المكتب"
+								},
+								"de-DE": {
+									"title": "Desktop-Haustiere verwalten"
+								},
+								"emoji": {
+									"title": "⚙️🐾"
+								},
+								"es-ES": {
+									"title": "Administrar mascotas de escritorio"
+								},
+								"fr-FR": {
+									"title": "Gérer les animaux de bureau"
+								},
+								"hi-IN": {
+									"title": "डेस्कटॉप पालतू जानवर प्रबंधित करें"
+								},
+								"is-IS": {
+									"title": "Stjórna skrifborðs gæludýrum"
+								},
+								"it-IT": {
+									"title": "Gestisci gli animali domestici sul desktop"
+								},
+								"ja-JP": {
+									"title": "デスクトップペットを管理する"
+								},
+								"ko-KR": {
+									"title": "데스크톱 애완동물 관리"
+								},
+								"nl-NL": {
+									"title": "Beheer bureaubladdieren"
+								},
+								"pt-PT": {
+									"title": "Gerenciar animais de estimação na área de trabalho"
+								},
+								"ru-RU": {
+									"title": "Управление домашними животными на рабочем столе"
+								},
+								"uk-UA": {
+									"title": "Керуйте настільними домашніми тваринами"
+								},
+								"vi-VN": {
+									"title": "Quản lý thú cưng trên máy tính để bàn"
+								},
+								"zh-TW": {
+									"title": "管理桌面寵物"
+								}
+							},
+							"level": 1,
+							"url": "/shells/deskpet",
+							"button": "<img src=\"https://api.iconify.design/material-symbols/pets.svg\" class=\"text-icon\"/>"
+						}
+					]
+				}
+			]
+		}
+	],
+	"home_char_interfaces": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "作为桌面宠物启动"
+				},
+				"en-UK": {
+					"title": "Launch as Desktop Pet"
+				},
+				"ar-SA": {
+					"title": "إطلاق كحيوان أليف على سطح المكتب"
+				},
+				"de-DE": {
+					"title": "Als Desktop-Haustier starten"
+				},
+				"emoji": {
+					"title": "🚀🐾"
+				},
+				"es-ES": {
+					"title": "Iniciar como mascota de escritorio"
+				},
+				"fr-FR": {
+					"title": "Lancer en tant qu'animal de bureau"
+				},
+				"hi-IN": {
+					"title": "डेस्कटॉप पेट के रूप में लॉन्च करें"
+				},
+				"is-IS": {
+					"title": "Ræstu sem Desktop Pet"
+				},
+				"it-IT": {
+					"title": "Avvia come animale domestico desktop"
+				},
+				"ja-JP": {
+					"title": "デスクトップペットとして起動"
+				},
+				"ko-KR": {
+					"title": "데스크톱 애완동물로 출시"
+				},
+				"nl-NL": {
+					"title": "Start als desktophuisdier"
+				},
+				"pt-PT": {
+					"title": "Lançar como animal de estimação na área de trabalho"
+				},
+				"ru-RU": {
+					"title": "Запустить как домашнее животное на рабочем столе"
+				},
+				"uk-UA": {
+					"title": "Запустіть як настільний домашній тварин"
+				},
+				"vi-VN": {
+					"title": "Khởi chạy dưới dạng thú cưng trên máy tính để bàn"
+				},
+				"zh-TW": {
+					"title": "作為桌面寵物啟動"
+				}
+			},
+			"level": 1,
+			"interface": "deskpet",
+			"url": "/shells/deskpet/launch?char=${name}",
+			"button": "<img src=\"https://api.iconify.design/material-symbols/rocket-launch.svg\"/>"
+		}
+	]
+}

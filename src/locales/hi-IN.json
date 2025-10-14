@@ -1243,6 +1243,34 @@
 		"initialMessage": "fount आपको कोडिंग में सहायता के लिए आपके पसंदीदा कैरेक्टर को आपके टर्मिनल में तैनात करने में मदद करता है!",
 		"initialMessageLink": "और जानने के लिए यहाँ क्लिक करें।"
 	},
+	"deskpet": {
+		"title": "डेस्कटॉप पालतू जानवर",
+		"launcherCard": {
+			"title": "पालतू स्टार्टर",
+			"buttons": {
+				"start": "पालतू शुरू करो"
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": "एक भूमिका चुनें"
+		},
+		"charSearch": {
+			"placeholder": "भूमिकाएँ खोजें..."
+		},
+		"runningCard": {
+			"title": "दौड़ता हुआ पालतू जानवर",
+			"noPets": "वर्तमान में कोई पालतू जानवर नहीं चल रहा है।",
+			"buttons": {
+				"stop": "रुकना"
+			}
+		},
+		"toasts": {
+			"started": "पेट '${charname}' शुरू हो गया है।",
+			"start_failed": "पालतू '${charname}' प्रारंभ करने में विफल: ${message}",
+			"stopped": "पालतू '${charname}' को रोक दिया गया है।",
+			"stop_failed": "पालतू जानवर को रोकें '${charname}' विफल: ${message}"
+		}
+	},
 	"access": {
 		"title": "अन्य डिवाइस पर fount एक्सेस करें",
 		"heading": "क्या आप अन्य डिवाइस पर fount एक्सेस करना चाहते हैं?",

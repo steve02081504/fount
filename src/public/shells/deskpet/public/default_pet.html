@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<style>
+		body {
+			margin: 0;
+			overflow: hidden;
+			background: transparent;
+			-webkit-user-select: none;
+			/* Prevent text selection */
+			user-select: none;
+		}
+
+		img {
+			width: 100%;
+			height: 100%;
+			-webkit-app-region: drag;
+			/* Allows dragging the window by grabbing the image */
+			cursor: grab;
+		}
+
+		img:active {
+			cursor: grabbing;
+		}
+	</style>
+</head>
+
+<body>
+	<!-- Using the main fount icon as a placeholder -->
+	<img src="/favicon.svg" alt="fount pet">
+</body>
+
+</html>

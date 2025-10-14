@@ -1243,6 +1243,34 @@
 		"initialMessage": "fount 可將君所喜之化身部署於終端，以輔編碼。",
 		"initialMessageLink": "點此詳閱"
 	},
+	"deskpet": {
+		"title": null,
+		"launcherCard": {
+			"title": null,
+			"buttons": {
+				"start": null
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": null
+		},
+		"charSearch": {
+			"placeholder": null
+		},
+		"runningCard": {
+			"title": null,
+			"noPets": null,
+			"buttons": {
+				"stop": null
+			}
+		},
+		"toasts": {
+			"started": null,
+			"start_failed": null,
+			"stopped": null,
+			"stop_failed": null
+		}
+	},
 	"access": {
 		"title": "從他器訪問 fount",
 		"heading": "欲從他器訪問 fount 乎？",

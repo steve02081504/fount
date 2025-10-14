@@ -1243,6 +1243,34 @@
 		"initialMessage": "fountは、お気に入りのキャラクターをターミナルに導入し、コーディング作業をサポートします！",
 		"initialMessageLink": "詳細はこちら"
 	},
+	"deskpet": {
+		"title": "デスクトップペット",
+		"launcherCard": {
+			"title": "ペットスターター",
+			"buttons": {
+				"start": "ペットを始める"
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": "役割を選択してください"
+		},
+		"charSearch": {
+			"placeholder": "役割を検索..."
+		},
+		"runningCard": {
+			"title": "走っているペット",
+			"noPets": "現在ペットは飼っていません。",
+			"buttons": {
+				"stop": "停止"
+			}
+		},
+		"toasts": {
+			"started": "ペット「${charname}」が開始されました。",
+			"start_failed": "ペット '${charname}' の開始に失敗しました: ${message}",
+			"stopped": "ペット「${charname}」は停止されました。",
+			"stop_failed": "ペット「${charname}」の停止に失敗しました: ${message}"
+		}
+	},
 	"access": {
 		"title": "他のデバイスからfountにアクセス",
 		"heading": "他のデバイスからfountにアクセスしますか？",

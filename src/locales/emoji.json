@@ -1243,6 +1243,34 @@
 		"initialMessage": "⛲➡️🤖➡️💻🦾❗️",
 		"initialMessageLink": "👆➡️ℹ️"
 	},
+	"deskpet": {
+		"title": null,
+		"launcherCard": {
+			"title": null,
+			"buttons": {
+				"start": null
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": null
+		},
+		"charSearch": {
+			"placeholder": null
+		},
+		"runningCard": {
+			"title": null,
+			"noPets": null,
+			"buttons": {
+				"stop": null
+			}
+		},
+		"toasts": {
+			"started": null,
+			"start_failed": null,
+			"stopped": null,
+			"stop_failed": null
+		}
+	},
 	"access": {
 		"title": "🌍 ⛲",
 		"heading": "🌍 ⛲❓",
