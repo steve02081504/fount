@@ -1243,6 +1243,34 @@
 		"initialMessage": "fount supporta l'integrazione dei tuoi personaggi preferiti nel terminale per assisterti nella programmazione!",
 		"initialMessageLink": "Clicca qui per saperne di più."
 	},
+	"deskpet": {
+		"title": "Animali domestici da scrivania",
+		"launcherCard": {
+			"title": "antipasto per animali domestici",
+			"buttons": {
+				"start": "inizia l'animale domestico"
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": "Scegli un ruolo"
+		},
+		"charSearch": {
+			"placeholder": "Cerca ruoli..."
+		},
+		"runningCard": {
+			"title": "animale domestico che corre",
+			"noPets": "Al momento non ci sono animali domestici in circolazione.",
+			"buttons": {
+				"stop": "fermare"
+			}
+		},
+		"toasts": {
+			"started": "L'animale domestico '${charname}' è avviato.",
+			"start_failed": "Impossibile avviare l'animale domestico '${charname}': ${message}",
+			"stopped": "L'animale domestico '${charname}' è stato fermato.",
+			"stop_failed": "Arresto dell'animale domestico '${charname}' non riuscito: ${message}"
+		}
+	},
 	"access": {
 		"title": "Accedi a fount su altri dispositivi",
 		"heading": "Vuoi accedere a fount da altri dispositivi?",

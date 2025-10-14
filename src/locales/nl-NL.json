@@ -1243,6 +1243,34 @@
 		"initialMessage": "fount ondersteunt het implementeren van je favoriete personage in je terminal om je te helpen met coderen!",
 		"initialMessageLink": "Klik hier voor meer informatie"
 	},
+	"deskpet": {
+		"title": "Desktop huisdieren",
+		"launcherCard": {
+			"title": "huisdier starter",
+			"buttons": {
+				"start": "huisdier beginnen"
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": "Kies een rol"
+		},
+		"charSearch": {
+			"placeholder": "Zoeken naar rollen..."
+		},
+		"runningCard": {
+			"title": "rennend huisdier",
+			"noPets": "Er lopen momenteel geen huisdieren.",
+			"buttons": {
+				"stop": "stop"
+			}
+		},
+		"toasts": {
+			"started": "Huisdier '${charname}' is gestart.",
+			"start_failed": "Kan huisdier '${charname}' niet starten: ${message}",
+			"stopped": "Huisdier '${charname}' is gestopt.",
+			"stop_failed": "Stop huisdier '${charname}' mislukt: ${message}"
+		}
+	},
 	"access": {
 		"title": "Toegang tot fount op andere apparaten",
 		"heading": "Wil je fount op andere apparaten gebruiken?",

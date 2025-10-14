@@ -1243,6 +1243,34 @@
 		"initialMessage": "fount unterstützt die Bereitstellung Ihrer Lieblingscharaktere in Ihrem Terminal, um Sie beim Programmieren zu unterstützen!",
 		"initialMessageLink": "Klicken Sie hier, um mehr zu erfahren"
 	},
+	"deskpet": {
+		"title": "Desktop-Haustiere",
+		"launcherCard": {
+			"title": "Starter für Haustiere",
+			"buttons": {
+				"start": "Haustier anfangen"
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": "Wählen Sie eine Rolle"
+		},
+		"charSearch": {
+			"placeholder": "Nach Rollen suchen..."
+		},
+		"runningCard": {
+			"title": "laufendes Haustier",
+			"noPets": "Derzeit sind keine Haustiere im Betrieb.",
+			"buttons": {
+				"stop": "stoppen"
+			}
+		},
+		"toasts": {
+			"started": "Haustier '${charname}' ist gestartet.",
+			"start_failed": "Haustier „${charname}“ konnte nicht gestartet werden: ${message}",
+			"stopped": "Haustier '${charname}' wurde gestoppt.",
+			"stop_failed": "Das Stoppen des Haustiers „${charname}“ ist fehlgeschlagen: ${message}"
+		}
+	},
 	"access": {
 		"title": "Auf fount von anderen Geräten zugreifen",
 		"heading": "Möchten Sie auf fount von anderen Geräten zugreifen?",

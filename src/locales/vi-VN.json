@@ -1243,6 +1243,34 @@
 		"initialMessage": "fount hỗ trợ triển khai các nhân vật yêu thích của bạn vào terminal để trợ giúp bạn trong quá trình lập trình!",
 		"initialMessageLink": "Nhấp vào đây để tìm hiểu thêm."
 	},
+	"deskpet": {
+		"title": "Thú cưng để bàn",
+		"launcherCard": {
+			"title": "món khai vị thú cưng",
+			"buttons": {
+				"start": "bắt đầu thú cưng"
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": "Chọn một vai trò"
+		},
+		"charSearch": {
+			"placeholder": "Tìm kiếm vai trò..."
+		},
+		"runningCard": {
+			"title": "thú cưng đang chạy",
+			"noPets": "Hiện tại không có thú cưng nào chạy.",
+			"buttons": {
+				"stop": "dừng lại"
+			}
+		},
+		"toasts": {
+			"started": "Thú cưng '${charname}' được bắt đầu.",
+			"start_failed": "Không khởi động được thú cưng '${charname}': ${message}",
+			"stopped": "Thú cưng '${charname}' đã bị dừng.",
+			"stop_failed": "Dừng thú cưng '${charname}' không thành công: ${message}"
+		}
+	},
 	"access": {
 		"title": "Truy cập fount trên các thiết bị khác",
 		"heading": "Bạn muốn truy cập fount trên các thiết bị khác?",

@@ -1243,6 +1243,34 @@
 		"initialMessage": "fount prend en charge le déploiement de vos personnages préférés dans votre terminal pour vous assister lors du codage !",
 		"initialMessageLink": "Cliquez ici pour en savoir plus"
 	},
+	"deskpet": {
+		"title": "Animaux de bureau",
+		"launcherCard": {
+			"title": "démarreur pour animaux de compagnie",
+			"buttons": {
+				"start": "commencer l'animal de compagnie"
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": "Choisissez un rôle"
+		},
+		"charSearch": {
+			"placeholder": "Rechercher des rôles..."
+		},
+		"runningCard": {
+			"title": "animal de compagnie qui court",
+			"noPets": "Il n'y a actuellement aucun animal en cours d'exécution.",
+			"buttons": {
+				"stop": "arrêt"
+			}
+		},
+		"toasts": {
+			"started": "L'animal '${charname}' est démarré.",
+			"start_failed": "Échec du démarrage de l'animal '${charname}' : ${message}",
+			"stopped": "L'animal '${charname}' a été arrêté.",
+			"stop_failed": "Échec de l'arrêt de l'animal '${charname}' : ${message}"
+		}
+	},
 	"access": {
 		"title": "Accéder à fount sur d'autres appareils",
 		"heading": "Vous voulez accéder à fount sur d'autres appareils ?",

@@ -1243,6 +1243,34 @@
 		"initialMessage": "O fount suporta a implementação das suas personagens favoritas no seu terminal para o ajudar na programação!",
 		"initialMessageLink": "Clique aqui para saber mais."
 	},
+	"deskpet": {
+		"title": "Animais de estimação de mesa",
+		"launcherCard": {
+			"title": "iniciante para animais de estimação",
+			"buttons": {
+				"start": "começar animal de estimação"
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": "Escolha uma função"
+		},
+		"charSearch": {
+			"placeholder": "Procure papéis..."
+		},
+		"runningCard": {
+			"title": "animal de estimação correndo",
+			"noPets": "Atualmente não há animais de estimação em execução.",
+			"buttons": {
+				"stop": "parar"
+			}
+		},
+		"toasts": {
+			"started": "O animal de estimação '${charname}' foi iniciado.",
+			"start_failed": "Falha ao iniciar o pet '${charname}': ${message}",
+			"stopped": "O animal de estimação '${charname}' foi interrompido.",
+			"stop_failed": "Falha ao parar animal de estimação '${charname}': ${message}"
+		}
+	},
 	"access": {
 		"title": "Aceder ao fount noutros dispositivos",
 		"heading": "Quer aceder ao fount noutros dispositivos?",

@@ -1243,6 +1243,34 @@
 		"initialMessage": "fount 支援將你喜歡的角色部署到你的終端機中輔助你寫程式！",
 		"initialMessageLink": "點擊這裡了解更多資訊"
 	},
+	"deskpet": {
+		"title": "桌面寵物",
+		"launcherCard": {
+			"title": "寵物啟動器",
+			"buttons": {
+				"start": "啟動寵物"
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": "選擇一個角色"
+		},
+		"charSearch": {
+			"placeholder": "搜索角色..."
+		},
+		"runningCard": {
+			"title": "正在運行的寵物",
+			"noPets": "當前沒有寵物在運行。",
+			"buttons": {
+				"stop": "停止"
+			}
+		},
+		"toasts": {
+			"started": "寵物 '${charname}' 已啟動。",
+			"start_failed": "啟動寵物 '${charname}' 失敗: ${message}",
+			"stopped": "寵物 '${charname}' 已停止。",
+			"stop_failed": "停止寵物 '${charname}' 失敗: ${message}"
+		}
+	},
 	"access": {
 		"title": "在其他裝置上存取 fount",
 		"heading": "想在其他裝置上存取 fount 嗎？",

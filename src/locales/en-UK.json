@@ -1243,6 +1243,34 @@
 		"initialMessage": "fount supports deploying your favourite characters to your terminal to assist you in coding!",
 		"initialMessageLink": "Click here to learn more"
 	},
+	"deskpet": {
+		"title": "Desktop pets",
+		"launcherCard": {
+			"title": "pet starter",
+			"buttons": {
+				"start": "start pet"
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": "Choose a role"
+		},
+		"charSearch": {
+			"placeholder": "Search for roles..."
+		},
+		"runningCard": {
+			"title": "running pet",
+			"noPets": "There are currently no pets running.",
+			"buttons": {
+				"stop": "stop"
+			}
+		},
+		"toasts": {
+			"started": "Pet '${charname}' is started.",
+			"start_failed": "Failed to start pet '${charname}': ${message}",
+			"stopped": "Pet '${charname}' has been stopped.",
+			"stop_failed": "Stop pet '${charname}' failed: ${message}"
+		}
+	},
 	"access": {
 		"title": "Access fount on other devices",
 		"heading": "Want to access fount on other devices?",

@@ -1243,6 +1243,34 @@
 		"initialMessage": "¡fount te permite usar tus personajes favoritos en la terminal para ayudarte a programar!",
 		"initialMessageLink": "Haz clic aquí para más información"
 	},
+	"deskpet": {
+		"title": "mascotas de escritorio",
+		"launcherCard": {
+			"title": "iniciador de mascotas",
+			"buttons": {
+				"start": "empezar mascota"
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": "Elige un rol"
+		},
+		"charSearch": {
+			"placeholder": "Buscar roles..."
+		},
+		"runningCard": {
+			"title": "mascota corriendo",
+			"noPets": "Actualmente no hay mascotas en funcionamiento.",
+			"buttons": {
+				"stop": "detener"
+			}
+		},
+		"toasts": {
+			"started": "Se inicia la mascota '${charname}'.",
+			"start_failed": "No se pudo iniciar la mascota '${charname}': ${message}",
+			"stopped": "La mascota '${charname}' ha sido detenida.",
+			"stop_failed": "Error al detener la mascota '${charname}': ${message}"
+		}
+	},
 	"access": {
 		"title": "Acceder a fount en otros dispositivos",
 		"heading": "¿Quieres acceder a fount desde otros dispositivos?",

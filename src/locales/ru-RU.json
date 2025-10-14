@@ -1243,6 +1243,34 @@
 		"initialMessage": "fount поддерживает развертывание ваших любимых персонажей в терминале для помощи в написании кода!",
 		"initialMessageLink": "Нажмите здесь, чтобы узнать больше."
 	},
+	"deskpet": {
+		"title": "Настольные питомцы",
+		"launcherCard": {
+			"title": "стартер для домашних животных",
+			"buttons": {
+				"start": "завести домашнее животное"
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": "Выберите роль"
+		},
+		"charSearch": {
+			"placeholder": "Поиск ролей..."
+		},
+		"runningCard": {
+			"title": "бегущий питомец",
+			"noPets": "На данный момент домашние животные не бегают.",
+			"buttons": {
+				"stop": "останавливаться"
+			}
+		},
+		"toasts": {
+			"started": "Pet '${charname}' запущен.",
+			"start_failed": "Не удалось запустить питомца «${charname}»: ${message}.",
+			"stopped": "Питомец '${charname}' остановлен.",
+			"stop_failed": "Остановить питомца '${charname}' не удалось: ${message}"
+		}
+	},
 	"access": {
 		"title": "Доступ к fount на других устройствах",
 		"heading": "Хотите получить доступ к fount на других устройствах?",

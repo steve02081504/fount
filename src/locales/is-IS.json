@@ -1243,6 +1243,34 @@
 		"initialMessage": "fount styður að setja uppáhalds persónuna þína í flugstöðina til að hjálpa þér við forritun!",
 		"initialMessageLink": "Smelltu hér til að fá frekari upplýsingar"
 	},
+	"deskpet": {
+		"title": "Gæludýr skrifborðs",
+		"launcherCard": {
+			"title": "Gæludýr ræsir",
+			"buttons": {
+				"start": "Byrjaðu gæludýr"
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": "Veldu hlutverk"
+		},
+		"charSearch": {
+			"placeholder": "Leitaðu að hlutverkum ..."
+		},
+		"runningCard": {
+			"title": "Running Pet",
+			"noPets": "Nú eru engin gæludýr í gangi.",
+			"buttons": {
+				"stop": "Hættu"
+			}
+		},
+		"toasts": {
+			"started": "Gæludýr '${charname}' er byrjað.",
+			"start_failed": "Ekki tókst að hefja gæludýr '${charname}': ${message}",
+			"stopped": "Pet '${charname}' hefur verið stöðvað.",
+			"stop_failed": "Stöðvaðu gæludýr '${charname}' mistókst: ${message}"
+		}
+	},
 	"access": {
 		"title": "Aðgangur að fount á öðrum tækjum",
 		"heading": "Viltu fá aðgang að fount á öðrum tækjum?",

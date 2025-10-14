@@ -1243,6 +1243,34 @@
 		"initialMessage": "fount підтримує розгортання вашого улюбленого персонажа у вашому терміналі для допомоги в кодуванні!",
 		"initialMessageLink": "Натисніть тут, щоб дізнатися більше"
 	},
+	"deskpet": {
+		"title": "Настільні домашні тварини",
+		"launcherCard": {
+			"title": "домашня тварина",
+			"buttons": {
+				"start": "Почати домашню тварину"
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": "Виберіть роль"
+		},
+		"charSearch": {
+			"placeholder": "Шукайте ролі ..."
+		},
+		"runningCard": {
+			"title": "Побуток",
+			"noPets": "Наразі домашніх тварин не працюють.",
+			"buttons": {
+				"stop": "СТІЙ"
+			}
+		},
+		"toasts": {
+			"started": "PET '${charname}' запускається.",
+			"start_failed": "Не вдалося запустити PET '${charname}': ${message}",
+			"stopped": "PET '${charname}' зупинився.",
+			"stop_failed": "Зупинити pet '${charname}' не вдалося: ${message}"
+		}
+	},
 	"access": {
 		"title": "Доступ до fount на інших пристроях",
 		"heading": "Хочете отримати доступ до fount на інших пристроях?",

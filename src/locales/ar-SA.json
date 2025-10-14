@@ -1243,6 +1243,34 @@
 		"initialMessage": "يدعم fount نشر شخصيتك المفضلة في الطرفية لمساعدتك في البرمجة!",
 		"initialMessageLink": "انقر هنا لمعرفة المزيد"
 	},
+	"deskpet": {
+		"title": "الحيوانات الأليفة سطح المكتب",
+		"launcherCard": {
+			"title": "بداية الحيوانات الأليفة",
+			"buttons": {
+				"start": "ابدأ بالحيوانات الأليفة"
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": "اختر دورًا"
+		},
+		"charSearch": {
+			"placeholder": "البحث عن الأدوار..."
+		},
+		"runningCard": {
+			"title": "تشغيل الحيوانات الأليفة",
+			"noPets": "لا يوجد حاليا أي حيوانات أليفة تعمل.",
+			"buttons": {
+				"stop": "قف"
+			}
+		},
+		"toasts": {
+			"started": "تم بدء تشغيل الحيوان الأليف '${charname}'.",
+			"start_failed": "فشل في بدء تشغيل الحيوان الأليف '${charname}': ${message}",
+			"stopped": "تم إيقاف الحيوان الأليف '${charname}'.",
+			"stop_failed": "فشل إيقاف الحيوان الأليف '${charname}': ${message}"
+		}
+	},
 	"access": {
 		"title": "الوصول إلى fount على أجهزة أخرى",
 		"heading": "هل تريد الوصول إلى fount على أجهزة أخرى؟",
