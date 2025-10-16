@@ -56,8 +56,8 @@ catch (e) {
 	url = await hosturl_in_local_ip().catch(() => e.message) // Fallback to a default URL
 }
 
-accessUrl.value = url
 if (url) {
+	accessUrl.value = url
 	generateQRCode(url, qrcodeContainer)
 	history.replaceState({}, document.title, window.location.pathname)
 }

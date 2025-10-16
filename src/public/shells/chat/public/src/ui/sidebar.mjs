@@ -23,14 +23,6 @@ const itemDescription = document.getElementById('item-description')
 const rightSidebarContainer = document.getElementById('right-sidebar-container')
 const leftDrawerCheckbox = document.getElementById('left-drawer')
 
-/**
- * 检查侧边栏更新是否允许
- * @returns {boolean}
- */
-function isSidebarUpdateAllowed() {
-	return leftDrawerCheckbox.checked || document.documentElement.clientWidth >= 1024
-}
-
 // 缓存DOM
 const cachedDom = {
 	world: {},
@@ -248,7 +240,7 @@ async function renderCharDetails(charName, frequency_num) {
  * @param {object} data 卡片数据
  */
 function addCardEventListeners(card, data) {
-	card.addEventListener('mouseover', () => {
+	card.addEventListener('mouseenter', () => {
 		displayItemDescription(data.info.description_markdown)
 		showRightSidebar()
 	})
@@ -304,7 +296,6 @@ export async function setupSidebar() {
 		const charName = charSelect.value
 		if (charName && !charList.includes(charName))
 			await addCharacter(charName)
-
 	})
 
 	// 点击非右侧边栏关闭右侧边栏
@@ -320,8 +311,6 @@ export async function setupSidebar() {
 }
 
 export async function updateSidebar(data) {
-	if (!isSidebarUpdateAllowed()) return
-
 	setCharList(data.charlist)
 	setWorldName(data.worldname)
 	setPersonaName(data.personaname)
@@ -333,21 +322,18 @@ export async function updateSidebar(data) {
 }
 
 export async function handleWorldSet(worldname) {
-	if (!isSidebarUpdateAllowed()) return
 	setWorldName(worldname)
 	worldSelect.value = worldname || ''
 	await renderWorldDetails(worldname)
 }
 
 export async function handlePersonaSet(personaname) {
-	if (!isSidebarUpdateAllowed()) return
 	setPersonaName(personaname)
 	personaSelect.value = personaname || ''
 	await renderPersonaDetails(personaname)
 }
 
 export async function handleCharAdded(charname) {
-	if (!isSidebarUpdateAllowed()) return
 	if (charList.includes(charname)) return // Already there
 
 	charList.push(charname)
@@ -362,7 +348,6 @@ export async function handleCharAdded(charname) {
 }
 
 export async function handleCharRemoved(charname) {
-	if (!isSidebarUpdateAllowed()) return
 	const index = charList.indexOf(charname)
 	if (index === -1) return // Not there
 
@@ -386,7 +371,6 @@ export async function handleCharRemoved(charname) {
 }
 
 export async function handleCharFrequencySet(charname, frequency) {
-	if (!isSidebarUpdateAllowed()) return
 	const charCard = charDetailsContainer.querySelector(`[data-char-name="${charname}"]`)
 	if (!charCard) return
 
