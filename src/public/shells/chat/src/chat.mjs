@@ -8,6 +8,7 @@ import fs from 'node:fs'
 
 import { loadJsonFile, saveJsonFile } from '../../../../scripts/json_loader.mjs'
 import { getPartInfo } from '../../../../scripts/locale.mjs'
+import { ms } from '../../../../scripts/ms.mjs'
 import { getUserByUsername, getUserDictionary, getAllUserNames } from '../../../../server/auth.mjs'
 import { events } from '../../../../server/events.mjs'
 import { LoadChar } from '../../../../server/managers/char_manager.mjs'
@@ -27,8 +28,15 @@ import { addfile, getfile } from './files.mjs'
  */
 const chatMetadatas = new Map()
 const chatUiSockets = new Map()
+const chatDeleteTimers = new Map()
+const CHAT_DELETE_TIMEOUT = ms('30m')
 
 export function registerChatUiSocket(chatid, ws) {
+	if (chatDeleteTimers.has(chatid)) {
+		clearTimeout(chatDeleteTimers.get(chatid))
+		chatDeleteTimers.delete(chatid)
+	}
+
 	if (!chatUiSockets.has(chatid))
 		chatUiSockets.set(chatid, new Set())
 
@@ -39,8 +47,19 @@ export function registerChatUiSocket(chatid, ws) {
 	ws.on('close', () => {
 		socketSet.delete(ws)
 		console.log(`Chat UI WebSocket disconnected for chat ${chatid}. Total: ${socketSet.size}`)
-		if (!socketSet.size)
-			chatUiSockets.delete(chatid)
+		const chatData = chatMetadatas.get(chatid)
+		if (!socketSet.size && chatUiSockets.delete(chatid) && !is_VividChat(chatData?.chatMetadata)) {
+			clearTimeout(chatDeleteTimers.get(chatid))
+			chatDeleteTimers.set(chatid, setTimeout(async () => {
+				try {
+					if (chatUiSockets.has(chatid) || is_VividChat(chatData.chatMetadata)) return
+					await deleteChat([chatid], chatData.username)
+				}
+				finally {
+					chatDeleteTimers.delete(chatid)
+				}
+			}, CHAT_DELETE_TIMEOUT))
+		}
 	})
 }
 
