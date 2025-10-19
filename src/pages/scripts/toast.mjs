@@ -26,26 +26,39 @@ function ensureToastContainer() {
 }
 
 function base_showToast(type, message, duration = 4000) {
-	if (!(Object(message) instanceof String)) {
-		Sentry.captureException(new Error(`showToast() called with non-string message: ${message}`))
+	if (!(message instanceof HTMLElement) && !(Object(message) instanceof String)) {
+		Sentry.captureException(new Error(`showToast() called with non-string/non-HTMLElement message: ${message}`))
 		message = String(message)
 	}
 	const container = ensureToastContainer()
 	const alertId = `alert-${Date.now()}`
 	const alertDiv = document.createElement('div')
-	alertDiv.id = alertId
-	alertDiv.className = `alert alert-${type} shadow-lg animate-fade-in-up`
+	if (type == 'custom') {
+		if (Object(message) instanceof HTMLElement)
+			alertDiv.appendChild(message)
+		else
+			alertDiv.innerHTML = message
+		alertDiv.id = alertId
+	}
+	else {
+		alertDiv.id = alertId
+		alertDiv.className = `alert alert-${type} shadow-lg`
 
-	const iconUrl = icons[type] || icons.info
-	const iconElement = document.createElement('img')
-	iconElement.src = iconUrl
-	iconElement.className = 'h-6 w-6 flex-shrink-0'
+		const iconUrl = icons[type] || icons.info
+		const iconElement = document.createElement('img')
+		iconElement.src = iconUrl
+		iconElement.className = 'h-6 w-6 flex-shrink-0'
 
-	const textElement = document.createElement('div')
-	textElement.innerHTML = `<span>${message.replace(/\n/g, '<br>')}</span>`
+		const textElement = document.createElement('div')
+		if (Object(message) instanceof HTMLElement)
+			alertDiv.appendChild(message)
+		else
+			alertDiv.innerHTML = message.replace(/\n/g, '<br>')
 
-	alertDiv.appendChild(iconElement)
-	alertDiv.appendChild(textElement)
+		alertDiv.appendChild(iconElement)
+		alertDiv.appendChild(textElement)
+	}
+	alertDiv.className += ' animate-fade-in-up'
 
 	let hideTimeout
 
@@ -76,7 +89,7 @@ export function showToast(type = 'info', message, duration = 4000) {
 export function showToastI18n(type = 'info', key, params = {}, duration = 4000) {
 	const div = base_showToast(type, '', duration)
 	setLocalizeLogic(div, () => {
-		div.querySelector('span').innerHTML = geti18n(key, params).replace(/\n/g, '<br>')
+		div.querySelector('div').innerHTML = geti18n(key, params).replace(/\n/g, '<br>')
 	})
 }
 

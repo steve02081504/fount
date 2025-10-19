@@ -4,6 +4,7 @@
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
 import { onServerEvent } from './scripts/server_events.mjs'
+import { showToast } from './scripts/toast.mjs'
 
 Sentry.init({
 	dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
@@ -63,6 +64,10 @@ function handleVersionUpdate({ commitId }) {
 }
 onServerEvent('server-updated', handleVersionUpdate)
 onServerEvent('server-reconnected', handleVersionUpdate)
+
+onServerEvent('show-toast', ({ type, message, duration }) => {
+	showToast(type, message, duration)
+})
 
 window.addEventListener('load', async () => {
 	console.log(...await fetch('https://cdn.jsdelivr.net/gh/steve02081504/fount/imgs/icon.js').then(r => r.text()).then(eval))
