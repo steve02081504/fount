@@ -118,3 +118,10 @@ export async function verifyApiKey(apiKey) {
 		body: JSON.stringify({ apiKey }),
 	})
 }
+
+export function unlockAchievement(parttype, partname, achievementId) {
+	return fetch(`/api/shells/achievements/unlock/${parttype}/${partname}/${achievementId}`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+	}).catch(() => { /* Fail silently */ })
+}

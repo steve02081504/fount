@@ -1301,6 +1301,17 @@
 		"queryStringWarning": "当您的应用程序不支持在请求头（Authorization header）中发送 API 密钥时，可以使用此备用方法。请注意：将 API 密钥直接放在 URL 中存在安全风险，因为它可能被记录在服务器日志或浏览器历史中。",
 		"copyQueryStringUrlButton": "包含 API 密钥的 URL (查询字符串)"
 	},
+	"achievements": {
+		"title": "成就",
+		"header": "成就殿堂",
+		"description": "在这里查看您已解锁的成就和里程碑。",
+		"unlocked_on": "解锁于 ${date}",
+		"locked": "未解锁",
+		"toast_title": "成就已解锁！",
+		"error": {
+			"load_failed": "加载成就失败：${message}"
+		}
+	},
 	"badges_maker": {
 		"title": "fount! 徽章转换器",
 		"card_title": "fount 徽章链接转换器",
