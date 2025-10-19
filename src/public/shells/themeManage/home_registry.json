@@ -62,7 +62,7 @@
 				}
 			},
 			"level": 90,
-			"button": "<img src=\"https://api.iconify.design/line-md/cog-filled.svg\" />",
+			"button": "<img src=\"https://api.iconify.design/line-md/cog-filled.svg\" class=\"text-icon\"/>",
 			"sub_items": [
 				{
 					"info": {

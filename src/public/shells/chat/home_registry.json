@@ -129,7 +129,7 @@
 			"level": 0,
 			"interface": "chat",
 			"url": "/shells/chat/new?char=${name}",
-			"button": "<img src=\"https://api.iconify.design/line-md/chat-round.svg\"/>"
+			"button": "<img src=\"https://api.iconify.design/line-md/chat-round.svg\" class=\"text-icon\"/>"
 		}
 	]
 }
