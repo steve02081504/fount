@@ -37,7 +37,7 @@ export function convertCCv3ToSTv2(ccv3Card, risuModule, userLanguage = 'en') {
 			// depth_prompt: {}, // ST depth_prompt
 			// regex_scripts: [], // ST regex_scripts
 			// --- Risu 特有或需要映射的 ---
-			source_url: cardData.source && cardData.source.length > 0 ? cardData.source[0] : '',
+			source_url: cardData.source?.length ? cardData.source[0] : '',
 			// 用于存放处理过的 risu assets 列表，供模板高级使用
 			risu_assets: cardData.assets ? JSON.parse(JSON.stringify(cardData.assets)) : [],
 			// CCv3 group_only_greetings
@@ -127,7 +127,7 @@ export function convertCCv3ToSTv2(ccv3Card, risuModule, userLanguage = 'en') {
 		}
 
 		// 处理 ccv3Entry.selective 和 ccv3Entry.secondary_keys
-		if (ccv3Entry.selective && ccv3Entry.secondary_keys && ccv3Entry.secondary_keys.length > 0) {
+		if (ccv3Entry.selective && ccv3Entry.secondary_keys?.length) {
 			stWiEntry.selective = true
 			stWiEntry.secondary_keys = ccv3Entry.secondary_keys
 			stWiEntry.extensions.selectiveLogic = world_info_logic.AND_ANY // CCv3 "SHOULD NOT considered as a match if the chat log do not contains one of the strings"
@@ -224,12 +224,10 @@ export function convertCCv3ToSTv2(ccv3Card, risuModule, userLanguage = 'en') {
 		for (const script of risuModule.regex)
 			stV2Data.extensions.regex_scripts.push({ ...script })
 
-
-
 	// 处理 Triggers (来自 Risu Module)
 	// ST 没有直接的 trigger script 系统。这些是高级脚本，难以直接转换。
 	// 可以考虑将它们的逻辑（如果简单）用 ST 宏在特定 WI 的 content 中实现，或者忽略。
-	if (risuModule && Array.isArray(risuModule.trigger) && risuModule.trigger.length > 0) {
+	if (risuModule && Array.isArray(risuModule.trigger) && risuModule.trigger.length) {
 		console.warn('Risu module \'trigger\' scripts are not directly supported and will be ignored.')
 		// 你可以在 stV2Data.extensions 中存一份原始 trigger 脚本供开发者参考
 		stV2Data.extensions.ccv3_triggers = risuModule.trigger

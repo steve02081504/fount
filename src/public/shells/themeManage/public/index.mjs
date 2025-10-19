@@ -1,8 +1,8 @@
+import { unlockAchievement } from '../../../pages/scripts/endpoints.mjs'
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
 import { makeSearchable } from '../../scripts/search.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
 import { applyTheme, builtin_themes, setTheme, getCurrentTheme } from '../../scripts/theme.mjs'
-import { unlockAchievement } from '../../../pages/scripts/endpoints.mjs'
 
 applyTheme()
 await initTranslations('themeManage')

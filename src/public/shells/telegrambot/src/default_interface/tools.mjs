@@ -354,5 +354,5 @@ export function splitTelegramReply(reply, split_length = 4096) {
 
 	if (currentMessage) messages.push(currentMessage)
 
-	return messages.filter(msg => msg.trim().length > 0)
+	return messages.filter(msg => msg.trim().length)
 }

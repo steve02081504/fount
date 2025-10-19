@@ -223,7 +223,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 						// Telegraf 的 ctx.reply 自动处理 reply_to_message_id 和 message_thread_id
 					}
 
-					if (filesToProcess.length > 0) {
+					if (filesToProcess.length) {
 						let mainTextSentAsCaption = false
 						for (let i = 0; i < filesToProcess.length; i++) {
 							const fileItem = filesToProcess[i]

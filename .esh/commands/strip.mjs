@@ -155,7 +155,7 @@ class AstParser {
 					const resolvedPath = await this.#pathResolver.resolve(source, currentFileDir)
 					if (!module.imports.has(resolvedPath)) module.imports.set(resolvedPath, new Set())
 
-					if (node.specifiers.length === 0)
+					if (!node.specifiers.length)
 						module.imports.get(resolvedPath).add('SIDE-EFFECT')
 					else
 						for (const spec of node.specifiers) {
@@ -175,10 +175,10 @@ class AstParser {
 						else if (node.declaration.id)  // export function a() {}
 							module.exports.add(node.declaration.id.name)
 
-					} 
+					}
 					else if (node.specifiers)  // export { a, b as c };
 						for (const spec of node.specifiers) module.exports.add(spec.exported.name)
-				} 
+				}
 				else if (node.type === 'ExportDefaultDeclaration')
 					if (node.declaration.id) module.exports.add(node.declaration.id.name)
 					else module.exports.add('default')
@@ -206,7 +206,7 @@ class AstParser {
 				const resolvedPath = await this.#pathResolver.resolve(src, currentFileDir)
 				if (!module.imports.has(resolvedPath)) module.imports.set(resolvedPath, new Set())
 				module.imports.get(resolvedPath).add('DYNAMIC')
-			} 
+			}
 			else if (script.textContent) {
 				const inlineModule = await this.#parseMjs(`${filepath}#inline`, script.textContent)
 				if (inlineModule)
@@ -229,7 +229,7 @@ class DependencyAnalyzer {
 	async analyze() {
 		const entryPoints = await this.#resolveEntryPoints()
 		const queue = [...entryPoints]; const visited = new Set()
-		while (queue.length > 0) {
+		while (queue.length) {
 			const filepath = queue.shift(); if (visited.has(filepath)) continue; visited.add(filepath)
 			const module = this.#allModules.get(filepath); if (!module) continue
 			if (!this.dependencyGraph.has(filepath)) this.dependencyGraph.set(filepath, new Set())
@@ -281,12 +281,12 @@ class ReportGenerator {
 
 		for (const filepath of sortedPaths) {
 			const module = this.#allModules.get(filepath)
-			if (module.type !== 'mjs' || module.exports.size === 0) continue
+			if (module.type !== 'mjs' || !module.exports.size) continue
 
 			const used = this.#usedExports.get(filepath) || new Set()
 			const unusedExports = [...module.exports].filter(exp => !used.has(exp))
 
-			if (unusedExports.length > 0) {
+			if (unusedExports.length) {
 				const relPath = relative(this.#config.FOUNT_DIR, filepath)
 				this.#reportIssue(
 					`File: ${chalk.yellow(relPath)}\n  - ${chalk.red('Unused exports:')} ${unusedExports.join(', ')}`

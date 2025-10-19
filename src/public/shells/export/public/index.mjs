@@ -45,7 +45,7 @@ function updateUIState() {
 	disabledIndicator.classList.toggle('hidden', isActionable)
 
 	// Step 3: Show/hide the "include data" toggle if data files exist
-	const hasDataFiles = fountJson?.data_files?.length > 0
+	const hasDataFiles = fountJson?.data_files?.length
 	dataToggleContainer.classList.toggle('hidden', !hasDataFiles)
 
 	// Step 4: Update the Share Button's text and behavior
@@ -139,7 +139,7 @@ async function renderPartDropdown() {
 		dataList,
 		textKey: 'name',
 		valueKey: 'value',
-		disabled: !parts || parts.length === 0,
+		disabled: !parts || !parts.length,
 		onSelect: async (selectedItem) => {
 			await onPartSelected(selectedItem ? selectedItem.value : null)
 			return false

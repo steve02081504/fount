@@ -78,8 +78,7 @@ async function GetSource(config) {
 					role: chatLogEntry.role === 'user' ? 'user' : chatLogEntry.role === 'system' ? 'system' : 'assistant',
 					content: chatLogEntry.content,
 				}
-				if (images.length > 0)
-					message.images = images
+				if (images.length) message.images = images
 
 				return message
 			})

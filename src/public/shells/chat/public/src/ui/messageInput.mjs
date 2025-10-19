@@ -43,7 +43,7 @@ function togglePhotoSection() {
 	input.accept = 'image/*'
 	input.addEventListener('change', event => {
 		const { files } = event.target
-		if (files.length > 0)
+		if (files.length)
 			handleFilesSelect({ target: { files } }, SelectedFiles, attachmentPreviewContainer)
 	})
 	input.click()

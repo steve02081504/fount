@@ -2,64 +2,88 @@ import fs from 'node:fs'
 import { join } from 'node:path'
 
 import { loadJsonFile } from '../../../../scripts/json_loader.mjs'
+import { partTypeList } from '../../../../server/managers/base.mjs'
 import { getPartListBase, GetPartPath } from '../../../../server/parts_loader.mjs'
 import { loadShellData, saveShellData, loadTempData } from '../../../../server/setting_loader.mjs'
 import { sendEventToUser } from '../../../../server/web_server/event_dispatcher.mjs'
 
 const watchedDirs = new Set()
-let registryLastChanged = Date.now()
 
-async function loadAchievementsRegistry(username) {
-	const registry = loadTempData(username, 'achievements_registry', {})
+// Helper to update a single part's achievements in the cached registry
+function updatePartInRegistry(username, partType, partName) {
+	const registry = loadTempData(username, 'achievements_registry')
+	const dirPath = GetPartPath(username, partType, partName)
+	const registryPath = join(dirPath, 'achievements_registry.json')
 
-	const partTypesToScan = ['shells', 'chars', 'worlds', 'personas', 'plugins']
+	const partExistsInRegistry = !!registry[partType]?.[partName]
+	if (fs.existsSync(registryPath)) {
+		const partRegistry = loadJsonFile(registryPath)
+		if (partRegistry.achievements)
+			(registry[partType] ??= {})[partName] = partRegistry.achievements
 
-	for (const partType of partTypesToScan) {
-		const part_list = await getPartListBase(username, partType)
-		for (const partName of part_list) try {
-			const dirPath = GetPartPath(username, partType, partName)
-			const registryPath = join(dirPath, 'achievements_registry.json')
-			if (!fs.existsSync(registryPath)) continue
-
-			if (!watchedDirs.has(dirPath)) try {
-				fs.watch(dirPath, (eventType, filename) => {
-					if (filename !== 'achievements_registry.json') return
-					console.log(`Achievements registry file changed in dir: ${dirPath}. Invalidating caches on next request.`)
-					registryLastChanged = Date.now()
-					sendEventToUser(username, 'achievements-registry-updated', null)
-				})
-				watchedDirs.add(dirPath)
-			} catch (e) {
-				console.error(`Failed to set up watch on ${dirPath}:`, e)
-			}
-
-			const partRegistry = loadJsonFile(registryPath)
-			if (partRegistry.achievements) {
-				if (!registry[partType])
-					registry[partType] = {}
-
-				if (!registry[partType][partName])
-					registry[partType][partName] = {}
-
-				Object.assign(registry[partType][partName], partRegistry.achievements)
-			}
-		} catch (e) {
-			console.error(`Error loading achievement registry from ${partType}/${partName}:`, e)
+		else if (partExistsInRegistry) {
+			delete registry[partType][partName]
+			if (!Object.keys(registry[partType]).length) delete registry[partType]
 		}
+		else return
+	}
+	else if (partExistsInRegistry) {
+		delete registry[partType][partName]
+		if (!Object.keys(registry[partType]).length) delete registry[partType]
+	}
+	else return
+
+	sendEventToUser(username, 'achievements-registry-updated', null)
+}
+
+// Helper to watch a registry file for changes
+function watchRegistryFile(username, partType, partName) {
+	const dirPath = GetPartPath(username, partType, partName)
+	if (!watchedDirs.has(dirPath)) try {
+		fs.watch(dirPath, (eventType, filename) => {
+			if (filename !== 'achievements_registry.json') return
+			console.log(`Achievements registry file changed in dir: ${dirPath}. Reloading.`)
+			updatePartInRegistry(username, partType, partName)
+		})
+		watchedDirs.add(dirPath)
+	} catch (e) {
+		console.error(`Failed to set up watch on ${dirPath}:`, e)
 	}
 }
 
-async function expandAchievementsRegistry(username) {
+// Builds the entire registry for a user for the first time.
+async function buildRegistry(username) {
 	const registry = loadTempData(username, 'achievements_registry')
-	if (!registry.lastLoaded || registry.lastLoaded < registryLastChanged) {
-		for (const key in registry)
-			delete registry[key]
+	// Clear existing registry to ensure it's fresh
+	for (const key in registry) delete registry[key]
 
-		await loadAchievementsRegistry(username)
-		registry.lastLoaded = Date.now()
+	for (const partType of partTypeList) {
+		const partList = await getPartListBase(username, partType)
+		for (const partName of partList)
+			try {
+				const dirPath = GetPartPath(username, partType, partName)
+				const registryPath = join(dirPath, 'achievements_registry.json')
+
+				if (fs.existsSync(registryPath)) {
+					const partRegistry = loadJsonFile(registryPath)
+					if (partRegistry.achievements)
+						(registry[partType] ??= {})[partName] = partRegistry.achievements
+
+				}
+				watchRegistryFile(username, partType, partName)
+			} catch (e) {
+				console.error(`Error loading achievement registry from ${partType}/${partName}:`, e)
+			}
+
 	}
+}
 
-	return registry
+// Main function to get the achievements registry for a user.
+// It will build the registry on the first call for a user.
+async function getAchievementsRegistry(username) {
+	const registry = loadTempData(username, 'achievements_registry')
+	if (!Object.keys(registry).length) await buildRegistry(username)
+	return registry || {}
 }
 
 function getUserAchievementData(username) {
@@ -69,9 +93,8 @@ function getUserAchievementData(username) {
 }
 
 export async function getAchievements(username) {
-	const defs = await expandAchievementsRegistry(username)
+	const defs = await getAchievementsRegistry(username)
 	const userData = getUserAchievementData(username)
-
 	const achievementsData = {}
 
 	for (const partType in defs)
@@ -90,7 +113,7 @@ export async function getAchievements(username) {
 }
 
 export async function unlockAchievement(username, parttype, partname, achievementId) {
-	const registry = await expandAchievementsRegistry(username)
+	const registry = await getAchievementsRegistry(username)
 	const achievement = registry[parttype]?.[partname]?.[achievementId]
 
 	if (!achievement)
@@ -100,14 +123,8 @@ export async function unlockAchievement(username, parttype, partname, achievemen
 	if (data.unlocked[parttype]?.[partname]?.[achievementId])
 		return { success: false, message: 'Achievement already unlocked.' }
 
-	const unlockedTime = new Date().toISOString()
-	if (!data.unlocked[parttype])
-		data.unlocked[parttype] = {}
-
-	if (!data.unlocked[parttype][partname])
-		data.unlocked[parttype][partname] = {}
-
-	data.unlocked[parttype][partname][achievementId] = unlockedTime
+	const unlockedTime = new Date().toISOString();
+	((data.unlocked[parttype] ??= {})[partname] ??= {})[achievementId] = unlockedTime
 	saveShellData(username, 'achievements', 'data')
 
 	const unlockedAchievement = {
@@ -146,7 +163,7 @@ export async function unlockAchievement(username, parttype, partname, achievemen
 }
 
 export async function lockAchievement(username, parttype, partname, achievementId) {
-	const registry = await expandAchievementsRegistry(username)
+	const registry = await getAchievementsRegistry(username)
 	const achievement = registry[parttype]?.[partname]?.[achievementId]
 
 	if (!achievement)
@@ -158,19 +175,28 @@ export async function lockAchievement(username, parttype, partname, achievementI
 
 	delete data.unlocked[parttype][partname][achievementId]
 
-	if (Object.keys(data.unlocked[parttype][partname]).length === 0)
+	if (!Object.keys(data.unlocked[parttype][partname]).length)
 		delete data.unlocked[parttype][partname]
 
-	if (Object.keys(data.unlocked[parttype]).length === 0)
+	if (!Object.keys(data.unlocked[parttype]).length)
 		delete data.unlocked[parttype]
-
 
 	saveShellData(username, 'achievements', 'data')
 
 	return { success: true }
 }
 
-export function onPartChanged({ username, parttype, partname }) {
-	registryLastChanged = Date.now()
+export async function onPartInstalled({ username, parttype, partname }) {
+	await getAchievementsRegistry(username)
+	updatePartInRegistry(username, parttype, partname)
+	watchRegistryFile(username, parttype, partname)
+}
+
+export function onPartUninstalled({ username, parttype, partname }) {
+	const registry = loadTempData(username, 'achievements_registry')
+	if (!registry || !registry[parttype]?.[partname]) return
+
+	delete registry[parttype][partname]
+	if (!Object.keys(registry[parttype]).length) delete registry[parttype]
 	sendEventToUser(username, 'achievements-registry-updated', null)
 }

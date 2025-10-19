@@ -47,7 +47,7 @@ async function renderPreferredLanguages() {
 	if (!userPreferredLocales.length) {
 		preferredLanguagesList.innerHTML = '<p class="text-center text-base-content-secondary" data-i18n="languageSettings.noPreferredLanguages"></p>'
 		i18nElement(preferredLanguagesList)
-		if (availableLocales.length > 0)
+		if (availableLocales.length)
 			await updateAvailableLanguagesDropdown()
 		return
 	}

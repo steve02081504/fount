@@ -10,7 +10,7 @@ import { generateVerificationCode, verifyVerificationCode } from '../../scripts/
 import { login, register, logout, authenticate, getUserByReq, getUserDictionary, getUserByUsername, auth_request, generateApiKey, revokeApiKey, verifyApiKey, setApiCookieResponse, ACCESS_TOKEN_EXPIRY_DURATION, REFRESH_TOKEN_EXPIRY_DURATION } from '../auth.mjs'
 import { __dirname } from '../base.mjs'
 import { processIPCCommand } from '../ipc_server/index.mjs'
-import { partsList } from '../managers/base.mjs'
+import { partTypeList } from '../managers/base.mjs'
 import { getLoadedPartList, getPartList } from '../managers/index.mjs'
 import { getDefaultParts, getPartDetails, setDefaultPart, getAllCachedPartDetails } from '../parts_loader.mjs'
 import { skip_report, currentGitCommit, config, save_config } from '../server.mjs'
@@ -199,7 +199,7 @@ export function registerEndpoints(router) {
 	})
 
 	router.get('/api/getparttypelist', authenticate, async (req, res) => {
-		res.status(200).json(partsList)
+		res.status(200).json(partTypeList)
 	})
 
 	router.post('/api/runpart', authenticate, async (req, res) => {
@@ -209,7 +209,7 @@ export function registerEndpoints(router) {
 		res.status(200).json({ message: 'Shell command sent successfully.' })
 	})
 
-	for (const part of partsList) {
+	for (const part of partTypeList) {
 		router.get('/api/getlist/' + part, authenticate, async (req, res) => {
 			const { username } = await getUserByReq(req)
 			res.status(200).json(getPartList(username, part))

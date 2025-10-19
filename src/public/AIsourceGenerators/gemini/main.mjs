@@ -438,7 +438,7 @@ ${is_ImageGeneration
 				const preTruncateLimit = tokenLimit * 1.1 // 预截断到上限的110%
 				let currentEstimatedTokens = totalEstimatedTokens
 
-				while (currentEstimatedTokens > preTruncateLimit && historyForProcessing.length > 0) {
+				while (currentEstimatedTokens > preTruncateLimit && historyForProcessing.length) {
 					const removedMessage = historyForProcessing.shift() // 移除最旧的消息
 					currentEstimatedTokens -= estimateTextTokens([removedMessage]) // 减去估算值
 				}

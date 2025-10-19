@@ -39,7 +39,7 @@ let isDirty = false // 标记是否有未保存的更改
 
 // UI 更新函数
 async function renderBotDropdown() {
-	const disabled = !botList || botList.length === 0
+	const disabled = !botList || !botList.length
 	const dataList = disabled ? [] : botList.map(name => ({ name, value: name }))
 
 	if (selectedBot)
@@ -65,7 +65,7 @@ async function renderBotDropdown() {
 
 async function renderCharDropdown() {
 	i18nElement(charSelectDropdown.parentElement)
-	const disabled = !charList || charList.length === 0
+	const disabled = !charList || !charList.length
 	const dataList = disabled ? [] : charList.map(name => ({ name, value: name }))
 
 	const currentConfig = configEditor?.get()?.json
@@ -166,7 +166,7 @@ async function handleDeleteBot() {
 		botList = await getBotList()
 
 		let nextBotToLoad = null
-		if (botList.length > 0) {
+		if (botList.length) {
 			const newIndex = Math.min(oldBotIndex, botList.length - 1)
 			nextBotToLoad = botList[newIndex]
 		}
@@ -321,7 +321,7 @@ async function initializeFromURLParams() {
 			} catch (error) {
 				console.error('Failed to create new bot from URL parameter:', error)
 			}
-		else if (botList.length > 0)
+		else if (botList.length)
 			botToLoad = botList[0]
 
 		// 4. Load the bot if one was determined
