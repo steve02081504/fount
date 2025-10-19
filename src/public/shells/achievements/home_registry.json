@@ -62,7 +62,7 @@
 			},
 			"level": 9999,
 			"url": "/shells/achievements",
-			"button": "<img src=\"https://api.iconify.design/material-symbols/trophy.svg\" class=\"text-icon\" />"
+			"button": "<img src=\"https://api.iconify.design/material-symbols/trophy.svg\" class=\"text-icon\"/>"
 		}
 	]
 }

@@ -62,7 +62,7 @@
 				}
 			},
 			"level": 10000,
-			"button": "<img src=\"https://api.iconify.design/fluent/window-dev-tools-24-regular.svg\" />",
+			"button": "<img src=\"https://api.iconify.design/fluent/window-dev-tools-24-regular.svg\" class=\"text-icon\"/>",
 			"sub_items": [
 				{
 					"id": "deskpet_related",
@@ -126,7 +126,7 @@
 						}
 					},
 					"level": 2,
-					"button": "<img src=\"https://api.iconify.design/streamline-ultimate/work-from-home-user-pet-cat.svg\" />",
+					"button": "<img src=\"https://api.iconify.design/streamline-ultimate/work-from-home-user-pet-cat.svg\" class=\"text-icon\"/>",
 					"sub_items": [
 						{
 							"info": {
@@ -261,7 +261,7 @@
 			"level": 1,
 			"interface": "deskpet",
 			"url": "/shells/deskpet/launch?char=${name}",
-			"button": "<img src=\"https://api.iconify.design/material-symbols/rocket-launch.svg\"/>"
+			"button": "<img src=\"https://api.iconify.design/material-symbols/rocket-launch.svg\" class=\"text-icon\"/>"
 		}
 	]
 }
