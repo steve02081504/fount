@@ -17,7 +17,7 @@ let registryLastChanged = Date.now()
 	"home_function_buttons": [ // 这将显示在主页的功能按钮中
 		{
 			info: {
-				zh-CN: {
+				"zh-CN": {
 					title: "浏览所有聊天记录",
 				}
 			},
@@ -30,7 +30,7 @@ let registryLastChanged = Date.now()
 	"home_char_interfaces": [ // 这将显示在主页的每个角色的界面中（假若该角色支持目标interface）
 		{
 			info: {
-				zh-CN: {
+				"zh-CN": {
 					title: "聊天",
 				}
 			},
@@ -115,10 +115,7 @@ export async function expandHomeRegistry(username) {
 						buttonsById.set(button.id, [])
 
 					buttonsById.get(button.id).push(button)
-				} else
-					otherButtons.push(button)
-
-
+				} else otherButtons.push(button)
 
 			const mergedList = []
 			for (const [id, buttonsToMerge] of buttonsById.entries()) {
@@ -168,4 +165,11 @@ export async function expandHomeRegistry(username) {
 		home_world_interfaces: interface_preprocess(user_home_registry.home_world_interfaces),
 		home_persona_interfaces: interface_preprocess(user_home_registry.home_persona_interfaces),
 	}
+}
+
+export function onPartChanged({ username, parttype, partname }) {
+	if (parttype !== 'shells') return
+
+	registryLastChanged = Date.now()
+	sendEventToUser(username, 'home-registry-updated', null)
 }

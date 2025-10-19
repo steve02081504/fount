@@ -12,6 +12,7 @@ import { doProfile } from '../scripts/profiler.mjs'
 
 import { getUserByUsername, getUserDictionary } from './auth.mjs'
 import { __dirname } from './base.mjs'
+import { events } from './events.mjs'
 import { loadPart } from './managers/index.mjs'
 import { save_config, setDefaultStuff } from './server.mjs'
 import { loadData, saveData } from './setting_loader.mjs'
@@ -33,6 +34,7 @@ export function getDefaultParts(user) {
 }
 export function notifyPartInstall(username, parttype, partname) {
 	console.log(`Notifying client of part installation: ${parttype}/${partname} for ${username}`)
+	events.emit('part-installed', { username, parttype, partname })
 	sendEventToUser(username, 'part-installed', { parttype, partname })
 }
 /**
@@ -245,6 +247,7 @@ export async function loadPartBase(username, parttype, partname, Initargs, {
 	Initer = async (path, Initargs) => {
 		const part = await baseMjsPartLoader(path)
 		await part.Init?.(Initargs)
+		notifyPartInstall(username, parttype, partname)
 		return part
 	},
 	afterInit = part => { },
@@ -409,6 +412,7 @@ export async function uninstallPartBase(username, parttype, partname, unLoadargs
 		part ??= await baseloadPart(username, parttype, partname, { Loader, pathGetter })
 	} catch (error) { console.error(error) }
 	await Uninstaller(part, pathGetter())
+	events.emit('part-uninstalled', { username, parttype, partname })
 	sendEventToUser(username, 'part-uninstalled', { parttype, partname })
 	delete parts_set[username][parttype][partname]
 	const parts_details_cache = loadData(username, 'parts_details_cache')
@@ -440,6 +444,7 @@ export function getPartListBase(username, parttype, {
 	ResultMapper = file => file.name
 } = {}) {
 	const part_dir = getUserDictionary(username) + '/' + parttype
+	if (!fs.existsSync(part_dir) || !fs.statSync(part_dir).isDirectory()) return []
 	let partlist = fs.readdirSync(part_dir, { withFileTypes: true }).filter(PathFilter)
 	try {
 		const publiclist = fs.readdirSync(__dirname + '/src/public/' + parttype, { withFileTypes: true }).filter(PathFilter)
