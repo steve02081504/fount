@@ -22,17 +22,20 @@ async function renderAchievements() {
 		achievementsContainer.innerHTML = ''
 
 		const achievementsData = result.achievements
+		const renderPromises = []
 
-		for (const partType in achievementsData)
-			for (const partName in achievementsData[partType]) {
-				const achievements = achievementsData[partType][partName]
-				const { info } = await getPartDetails(partType, partName)
-				const categorySection = await renderTemplate('category_section', {
-					category: info,
-					achievements
-				})
-				achievementsContainer.appendChild(categorySection)
-			}
+		for (const partType of Object.keys(achievementsData).sort())
+			for (const partName of Object.keys(achievementsData[partType]).sort())
+				renderPromises.push((async () => {
+						const { info } = await getPartDetails(partType, partName)
+						return renderTemplate('category_section', {
+							category: info,
+							achievements: achievementsData[partType][partName],
+						})
+				})())
+
+		const categorySections = await Promise.all(renderPromises)
+		categorySections.forEach(section => achievementsContainer.appendChild(section))
 	} catch (error) {
 		console.error('Failed to load achievements:', error)
 		achievementsContainer.innerHTML = `<p class="text-error">${geti18n('achievements.error.load_failed', { message: error.message })}</p>`
