@@ -7,6 +7,7 @@ import { StartJob, EndJob } from '../../../../server/jobs.mjs'
 import { LoadChar } from '../../../../server/managers/char_manager.mjs'
 import { hosturl } from '../../../../server/server.mjs'
 import { sendEventToAll } from '../../../../server/web_server/event_dispatcher.mjs'
+import { unlockAchievement } from '../../achievements/src/api.mjs' // Import unlockAchievement
 
 const runningPets = {} // { [username]: { [charname]: { webview, apiKeyJti } } }
 
@@ -66,6 +67,7 @@ export async function runPet(username, charname) {
 
 		runningPets[username][charname] = { webview, apiKeyJti: jti }
 		sendEventToAll('deskpet-list-updated')
+		unlockAchievement(username, 'shells', 'deskpet', 'start_deskpet') // Trigger achievement here
 
 	} catch (error) {
 		console.error(`[DeskPet] Failed to start pet for ${charname}:`, error)

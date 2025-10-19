@@ -1,0 +1,11 @@
+{
+	"achievements": {
+		"start_deskpet": {
+			"name": "deskpet.achievements.start_deskpet.name",
+			"description": "deskpet.achievements.start_deskpet.description",
+			"icon": "https://api.iconify.design/streamline-ultimate/work-from-home-user-pet-cat.svg",
+			"locked_description": "deskpet.achievements.start_deskpet.locked_description",
+			"locked_icon": "https://api.iconify.design/line-md/question-circle.svg"
+		}
+	}
+}

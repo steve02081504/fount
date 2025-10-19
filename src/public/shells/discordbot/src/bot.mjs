@@ -7,6 +7,7 @@ import { events } from '../../../../server/events.mjs'
 import { StartJob, EndJob } from '../../../../server/jobs.mjs'
 import { LoadChar } from '../../../../server/managers/char_manager.mjs'
 import { loadShellData, loadTempData, saveShellData } from '../../../../server/setting_loader.mjs'
+import { unlockAchievement } from '../../achievements/src/api.mjs'
 /** @typedef {import('../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
 
 /**
@@ -102,6 +103,7 @@ export async function runBot(username, botname) {
 	try {
 		botCache[botname] = await botCache[botname]
 		StartJob(username, 'shells', 'discordbot', botname)
+		unlockAchievement(username, 'shells', 'discordbot', 'start_bot')
 	}
 	catch (error) {
 		delete botCache[botname]

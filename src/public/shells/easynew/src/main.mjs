@@ -4,6 +4,7 @@ import { pathToFileURL } from 'node:url'
 import fs from 'npm:fs-extra'
 
 import { authenticate, getUserByReq, getUserDictionary } from '../../../../server/auth.mjs'
+import { unlockAchievement } from '../../achievements/src/api.mjs'
 
 function getUserTemplatesPath(username) {
 	return path.join(getUserDictionary(username), 'shells', 'easynew', 'parts')
@@ -88,6 +89,8 @@ export function setEndpoints(router) {
 				formData: req.body,
 				files: req.files,
 			})
+
+			unlockAchievement(username, 'shells', 'easynew', 'create_part')
 
 			res.status(201).json({ message: `Part '${partName}' created successfully!`, partName })
 		}

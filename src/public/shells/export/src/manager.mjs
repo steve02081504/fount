@@ -7,6 +7,7 @@ import { git } from '../../../../scripts/git.mjs'
 import { loadJsonFile } from '../../../../scripts/json_loader.mjs'
 import { GetPartPath } from '../../../../server/parts_loader.mjs'
 import { sevenZipDir, zipDir } from '../../../ImportHandlers/fount/zip.mjs'
+import { unlockAchievement } from '../../achievements/src/api.mjs'
 
 const LITTERBOX_API_URL = 'https://litterbox.catbox.moe/resources/internals/api.php'
 
@@ -108,5 +109,6 @@ export async function createShareLink(username, partType, partName, expiration, 
 		throw new Error(`Failed to upload to litterbox: ${response.statusText}`)
 
 	const link = await response.text()
+	unlockAchievement(username, 'shells', 'export', 'share_part')
 	return `https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;${link}`
 }

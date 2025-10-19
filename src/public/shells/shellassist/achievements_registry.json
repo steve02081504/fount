@@ -1,0 +1,11 @@
+{
+	"achievements": {
+		"invoke_shell_assist": {
+			"name": "terminal_assistant.achievements.invoke_shell_assist.name",
+			"description": "terminal_assistant.achievements.invoke_shell_assist.description",
+			"icon": "https://api.iconify.design/line-md/laptop.svg",
+			"locked_description": "terminal_assistant.achievements.invoke_shell_assist.locked_description",
+			"locked_icon": "https://api.iconify.design/line-md/question-circle.svg"
+		}
+	}
+}

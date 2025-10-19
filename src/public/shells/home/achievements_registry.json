@@ -1,0 +1,39 @@
+{
+	"achievements": {
+		"first_login": {
+			"name": "home.achievements.first_login.name",
+			"description": "home.achievements.first_login.description",
+			"icon": "https://api.iconify.design/line-md/login.svg",
+			"locked_description": "home.achievements.first_login.locked_description",
+			"locked_icon": "https://api.iconify.design/line-md/question-circle.svg"
+		},
+		"sfw_mode_on": {
+			"name": "home.achievements.sfw_mode_on.name",
+			"description": "home.achievements.sfw_mode_on.description",
+			"icon": "https://api.iconify.design/mdi/shield-check.svg",
+			"locked_description": "home.achievements.sfw_mode_on.locked_description",
+			"locked_icon": "https://api.iconify.design/line-md/question-circle.svg"
+		},
+		"sfw_mode_off": {
+			"name": "home.achievements.sfw_mode_off.name",
+			"description": "home.achievements.sfw_mode_off.description",
+			"icon": "https://api.iconify.design/mdi/shield-off.svg",
+			"locked_description": "home.achievements.sfw_mode_off.locked_description",
+			"locked_icon": "https://api.iconify.design/line-md/question-circle.svg"
+		},
+		"open_function_list": {
+			"name": "home.achievements.open_function_list.name",
+			"description": "home.achievements.open_function_list.description",
+			"icon": "https://api.iconify.design/line-md/list-3-filled.svg",
+			"locked_description": "home.achievements.open_function_list.locked_description",
+			"locked_icon": "https://api.iconify.design/line-md/question-circle.svg"
+		},
+		"set_default_persona": {
+			"name": "home.achievements.set_default_persona.name",
+			"description": "home.achievements.set_default_persona.description",
+			"icon": "https://api.iconify.design/line-md/account.svg",
+			"locked_description": "home.achievements.set_default_persona.locked_description",
+			"locked_icon": "https://api.iconify.design/line-md/question-circle.svg"
+		}
+	}
+}

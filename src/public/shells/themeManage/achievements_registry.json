@@ -1,0 +1,11 @@
+{
+	"achievements": {
+		"change_theme": {
+			"name": "themeManage.achievements.change_theme.name",
+			"description": "themeManage.achievements.change_theme.description",
+			"icon": "https://api.iconify.design/material-symbols/palette.svg",
+			"locked_description": "themeManage.achievements.change_theme.locked_description",
+			"locked_icon": "https://api.iconify.design/line-md/question-circle.svg"
+		}
+	}
+}

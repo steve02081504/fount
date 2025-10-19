@@ -7,6 +7,7 @@ import { events } from '../../../../server/events.mjs'
 import { StartJob, EndJob } from '../../../../server/jobs.mjs' // fount 的任务管理
 import { LoadChar } from '../../../../server/managers/char_manager.mjs' // 加载角色
 import { loadShellData, loadTempData, saveShellData } from '../../../../server/setting_loader.mjs' // fount 的数据加载/保存工具
+import { unlockAchievement } from '../../achievements/src/api.mjs'
 
 /** @typedef {import('../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
 
@@ -136,6 +137,7 @@ export async function runBot(username, botname) {
 		botCache[botname] = await botCache[botname]
 		// 在 fount 任务系统中注册此bot为一个正在运行的任务
 		StartJob(username, 'shells', 'telegrambot', botname)
+		unlockAchievement(username, 'shells', 'telegrambot', 'start_bot')
 	}
 	catch (error) {
 		// 如果启动失败，从缓存中移除，并向上抛出错误
