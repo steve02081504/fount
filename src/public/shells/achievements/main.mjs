@@ -1,6 +1,6 @@
 import { events } from '../../../server/events.mjs'
 
-import { onPartChanged } from './src/api.mjs'
+import { onPartInstalled, onPartUninstalled } from './src/api.mjs'
 import { setEndpoints } from './src/endpoints.mjs'
 
 export default {
@@ -18,11 +18,11 @@ export default {
 	},
 	Load: ({ router }) => {
 		setEndpoints(router)
-		events.on('part-installed', onPartChanged)
-		events.on('part-uninstalled', onPartChanged)
+		events.on('part-installed', onPartInstalled)
+		events.on('part-uninstalled', onPartUninstalled)
 	},
 	Unload: () => {
-		events.off('part-installed', onPartChanged)
-		events.off('part-uninstalled', onPartChanged)
+		events.off('part-installed', onPartInstalled)
+		events.off('part-uninstalled', onPartUninstalled)
 	},
 }

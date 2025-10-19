@@ -581,7 +581,7 @@ export async function setWorld(chatid, worldname) {
 	timeSlice.world_id = worldname
 	if (world.interfaces.chat.GetGreeting && !chatLog.length)
 		timeSlice.greeting_type = 'world_single'
-	else if (world.interfaces.chat.GetGroupGreeting && chatLog.length > 0)
+	else if (world.interfaces.chat.GetGroupGreeting && chatLog.length)
 		timeSlice.greeting_type = 'world_group'
 
 	broadcastChatEvent(chatid, { type: 'world_set', payload: { worldname } })
@@ -626,7 +626,7 @@ export async function addchar(chatid, charname) {
 
 	const { username, chatLog } = chatMetadata
 	const timeSlice = chatMetadata.LastTimeSlice.copy()
-	if (chatLog.length > 0)
+	if (chatLog.length)
 		timeSlice.greeting_type = 'group'
 	else
 		timeSlice.greeting_type = 'single'
@@ -1235,7 +1235,7 @@ export async function deleteMessage(chatid, index) {
 		chatMetadata.timeLineIndex = 0
 	}
 
-	if (chatMetadata.chatLog.length > 0)
+	if (chatMetadata.chatLog.length)
 		chatMetadata.LastTimeSlice = last.timeSlice
 	else
 		chatMetadata.LastTimeSlice = new timeSlice_t()

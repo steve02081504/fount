@@ -12,7 +12,7 @@ import { ms } from '../scripts/ms.mjs'
 
 import { __dirname } from './base.mjs'
 import { events } from './events.mjs'
-import { partsList } from './managers/base.mjs'
+import { partTypeList } from './managers/base.mjs'
 import { config, save_config, data_path } from './server.mjs'
 
 // --- 常量定义 ---
@@ -889,7 +889,7 @@ export async function login(username, password, deviceId = 'unknown', req) {
 		console.error(`Failed to copy default user template for ${username}`, e)
 	}
 
-	for (const subdir of ['settings', ...partsList]) try {
+	for (const subdir of ['settings', ...partTypeList]) try {
 		fs.mkdirSync(path.join(userdir, subdir), { recursive: true })
 	} catch (e) {
 		console.error(`Failed to create user subdirectory: ${subdir}`, e)

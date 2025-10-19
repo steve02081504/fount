@@ -108,7 +108,7 @@ function renderFileList() {
 	let fileToLoad = null
 	if (fileFromURL && fileList.includes(fileFromURL))
 		fileToLoad = fileFromURL
-	else if (fileList.length > 0)
+	else if (fileList.length)
 		fileToLoad = activeFile && fileList.includes(activeFile) ? activeFile : fileList[0]
 
 	if (fileToLoad)

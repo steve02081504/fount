@@ -7,9 +7,6 @@ import { getPartListBase, GetPartPath } from '../../../../server/parts_loader.mj
 import { loadTempData } from '../../../../server/setting_loader.mjs'
 import { sendEventToUser } from '../../../../server/web_server/event_dispatcher.mjs'
 
-const watchedDirs = new Set()
-let registryLastChanged = Date.now()
-
 // 遍历shell中的home_registry.json文件，获取home_function_buttons和home_char_interfaces
 /*
 例子：
@@ -43,6 +40,34 @@ let registryLastChanged = Date.now()
 	]
 }
 */
+function updateHomeRegistryForPart(username, parttype, partname) {
+	const user_home_registry = loadTempData(username, 'home_registry')
+	const dirPath = GetPartPath(username, parttype, partname)
+	const registryPath = dirPath + '/home_registry.json'
+
+	if (fs.existsSync(registryPath)) try {
+		const home_registry = loadJsonFile(registryPath)
+		user_home_registry.home_function_buttons[partname] = home_registry.home_function_buttons ?? []
+		user_home_registry.home_char_interfaces[partname] = home_registry.home_char_interfaces ?? []
+		user_home_registry.home_world_interfaces[partname] = home_registry.home_world_interfaces ?? []
+		user_home_registry.home_persona_interfaces[partname] = home_registry.home_persona_interfaces ?? []
+		user_home_registry.home_common_interfaces[partname] = home_registry.home_common_interfaces ?? []
+	} catch (e) {
+		console.error(`Error loading home registry from ${parttype}/${partname}:`, e)
+	}
+	else removeHomeRegistryForPart(username, parttype, partname)
+
+}
+
+function removeHomeRegistryForPart(username, parttype, partname) {
+	const user_home_registry = loadTempData(username, 'home_registry')
+	if (user_home_registry.home_function_buttons) delete user_home_registry.home_function_buttons[partname]
+	if (user_home_registry.home_char_interfaces) delete user_home_registry.home_char_interfaces[partname]
+	if (user_home_registry.home_world_interfaces) delete user_home_registry.home_world_interfaces[partname]
+	if (user_home_registry.home_persona_interfaces) delete user_home_registry.home_persona_interfaces[partname]
+	if (user_home_registry.home_common_interfaces) delete user_home_registry.home_common_interfaces[partname]
+}
+
 export async function loadHomeRegistry(username) {
 	const user_home_registry = loadTempData(username, 'home_registry')
 	user_home_registry.home_function_buttons ??= {}
@@ -51,28 +76,8 @@ export async function loadHomeRegistry(username) {
 	user_home_registry.home_persona_interfaces ??= {}
 	user_home_registry.home_common_interfaces ??= {}
 	const shell_list = await getPartListBase(username, 'shells')
-	for (const shell of shell_list) try {
-		const dirPath = GetPartPath(username, 'shells', shell)
-		const registryPath = dirPath + '/home_registry.json'
-		if (!watchedDirs.has(dirPath)) try {
-			fs.watch(dirPath, (eventType, filename) => {
-				if (filename !== 'home_registry.json') return
-				console.log(`Home registry file changed in dir: ${dirPath}. Invalidating caches on next request.`)
-				registryLastChanged = Date.now()
-				sendEventToUser(username, 'home-registry-updated', null)
-			})
-			watchedDirs.add(dirPath)
-		} catch (e) {
-			console.error(`Failed to set up watch on ${dirPath}:`, e)
-		}
-
-		const home_registry = loadJsonFile(registryPath)
-		user_home_registry.home_function_buttons[shell] = home_registry.home_function_buttons ?? []
-		user_home_registry.home_char_interfaces[shell] = home_registry.home_char_interfaces ?? []
-		user_home_registry.home_world_interfaces[shell] = home_registry.home_world_interfaces ?? []
-		user_home_registry.home_persona_interfaces[shell] = home_registry.home_persona_interfaces ?? []
-		user_home_registry.home_common_interfaces[shell] = home_registry.home_common_interfaces ?? []
-	} catch (e) { }
+	for (const shell of shell_list)
+		updateHomeRegistryForPart(username, 'shells', shell)
 }
 
 /**
@@ -82,14 +87,7 @@ export async function loadHomeRegistry(username) {
  */
 export async function expandHomeRegistry(username) {
 	const user_home_registry = loadTempData(username, 'home_registry')
-	if (!user_home_registry.lastLoaded || user_home_registry.lastLoaded < registryLastChanged) {
-		// Clear old data from the cache object
-		for (const key in user_home_registry)
-			delete user_home_registry[key]
-
-		await loadHomeRegistry(username)
-		user_home_registry.lastLoaded = Date.now()
-	}
+	if (!Object.keys(user_home_registry).length) await loadHomeRegistry(username)
 	const { locales } = getUserByUsername(username)
 
 	const localizeRecursively = (items) => {
@@ -139,7 +137,7 @@ export async function expandHomeRegistry(username) {
 
 				}
 
-				if (allSubItems.length > 0)
+				if (allSubItems.length)
 					baseButton.sub_items = mergeButtons(allSubItems)
 
 				mergedList.push(baseButton)
@@ -167,9 +165,16 @@ export async function expandHomeRegistry(username) {
 	}
 }
 
-export function onPartChanged({ username, parttype, partname }) {
+export function onPartInstalled({ username, parttype, partname }) {
 	if (parttype !== 'shells') return
 
-	registryLastChanged = Date.now()
+	updateHomeRegistryForPart(username, parttype, partname)
+	sendEventToUser(username, 'home-registry-updated', null)
+}
+
+export function onPartUninstalled({ username, parttype, partname }) {
+	if (parttype !== 'shells') return
+
+	removeHomeRegistryForPart(username, parttype, partname)
 	sendEventToUser(username, 'home-registry-updated', null)
 }

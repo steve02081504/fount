@@ -22,7 +22,7 @@ let runningPets = []
 
 async function renderCharDropdown() {
 	i18nElement(charSelectDropdown.parentElement)
-	const disabled = !charList || charList.length === 0
+	const disabled = !charList || !charList.length
 	const dataList = disabled ? [] : charList.map(name => ({ name, value: name }))
 
 	if (selectedChar)
@@ -51,7 +51,7 @@ async function renderRunningPets() {
 	}))
 
 	runningPetsList.innerHTML = ''
-	if (runningPetItems.length > 0)
+	if (runningPetItems.length)
 		runningPetItems.forEach(item => runningPetsList.appendChild(item))
 	else {
 		runningPetsList.innerHTML = '<p data-i18n="deskpet.runningCard.noPets">No pets are currently running.</p>'

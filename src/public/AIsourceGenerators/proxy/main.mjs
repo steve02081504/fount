@@ -148,7 +148,7 @@ ${chatLogEntry.content}
 					content: textContent,
 				}
 
-				if (chatLogEntry.files && chatLogEntry.files.length > 0) {
+				if (chatLogEntry.files?.length) {
 					const contentParts = [{ type: 'text', text: textContent }]
 
 					for (const file of chatLogEntry.files)

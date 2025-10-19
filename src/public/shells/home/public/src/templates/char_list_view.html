@@ -15,7 +15,7 @@
 	<div class="details-container z-[60] h-full p-4 bg-base-100 bg-opacity-50">
 		<input type="checkbox" class="checkbox checkbox-sm border border-primary default-checkbox" data-i18n="home.chars.card.defaultCheckbox" />
 		<div class="tags-container overflow-y-auto">
-			${(info.tags && info.tags.length > 0) ? info.tags.map(tag => `<span class="badge badge-primary cursor-pointer">${tag}</span>`).join(' ') : geti18n('home.chars.card.noTags')}
+			${info.tags?.length ? info.tags.map(tag => `<span class="badge badge-primary cursor-pointer">${tag}</span>`).join(' ') : geti18n('home.chars.card.noTags')}
 		</div>
 		<div class="char-details-container overflow-y-auto">
 			${info.version ? `<div class="char-info-item">${geti18n('home.chars.card.version')}：<code>${info.version}</code></div>` : ''}
