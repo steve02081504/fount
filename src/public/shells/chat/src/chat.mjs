@@ -17,6 +17,7 @@ import { loadWorld } from '../../../../server/managers/world_manager.mjs'
 import { getDefaultParts } from '../../../../server/parts_loader.mjs'
 import { skip_report } from '../../../../server/server.mjs'
 import { sendNotification } from '../../../../server/web_server/event_dispatcher.mjs'
+import { unlockAchievement } from '../../achievements/src/api.mjs'
 
 import { addfile, getfile } from './files.mjs'
 
@@ -773,6 +774,12 @@ async function addChatLogEntry(chatid, entry) {
 	else
 		chatMetadata.chatLog.push(entry)
 
+	// Achievements: multiplayer_chat
+	if (entry.role === 'char' && entry.timeSlice.charname) {
+		const spokenChars = new Set(chatMetadata.chatLog.filter(e => e.role === 'char' && e.timeSlice.charname).map(e => e.timeSlice.charname))
+		if (spokenChars.size >= 2) unlockAchievement(chatMetadata.username, 'shells', 'chat', 'multiplayer_chat')
+	}
+
 	// 更新最后一条消息的时间线分支
 	chatMetadata.timeLines = [entry]
 	chatMetadata.timeLineIndex = 0
@@ -1032,6 +1039,14 @@ export async function triggerCharReply(chatid, charname) {
 export async function addUserReply(chatid, object) {
 	const chatMetadata = await loadChat(chatid)
 	if (!chatMetadata) throw new Error('Chat not found')
+
+	// Achievements
+	// first_chat
+	unlockAchievement(chatMetadata.username, 'shells', 'chat', 'first_chat')
+
+	// photo_chat
+	if (object.files?.some(file => file.type.startsWith('image/')))
+		unlockAchievement(chatMetadata.username, 'shells', 'chat', 'photo_chat')
 
 	const timeSlice = chatMetadata.LastTimeSlice
 	const new_timeSlice = timeSlice.copy()

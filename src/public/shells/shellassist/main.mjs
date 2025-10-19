@@ -1,4 +1,5 @@
 import { LoadChar } from '../../../server/managers/char_manager.mjs'
+import { unlockAchievement } from '../../achievements/src/api.mjs'
 
 import { setEndpoints } from './src/endpoints.mjs'
 
@@ -21,6 +22,7 @@ export default {
 	interfaces: {
 		invokes: {
 			IPCInvokeHandler: async (username, data) => {
+				unlockAchievement(username, 'shells', 'shellassist', 'invoke_shell_assist')
 				const char = await LoadChar(username, data.charname)
 				if (!char.interfaces.shellassist) {
 					const { GetDefaultShellAssistInterface } = await import('./src/default_interface/main.mjs')
