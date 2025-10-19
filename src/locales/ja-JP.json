@@ -237,6 +237,18 @@
 			"keyboardPress": "キーボード${keyboardIcon}で何かキーを押してみてください。",
 			"mobileTouchMove": "あなたのスマートフォン${phoneIcon}を見つけてください。指を一本使って画面に触れ、そのまま画面上で指を滑らせてみましょう。",
 			"mobileClick": "指を使って、スマートフォン${phoneIcon}の画面を優しく一回叩いて、すぐに離してみてください。これが「タップ」です！"
+		},
+		"achievements": {
+			"complete_tutorial": {
+				"name": "完璧な算数教室",
+				"description": "ようやく初心者向けチュートリアルが終わりました。",
+				"locked_description": "入門チュートリアルを完了します。"
+			},
+			"skip_tutorial": {
+				"name": "スキップしました",
+				"description": "「チュートリアル？ あれは何？ 食べられるの？」",
+				"locked_description": "入門チュートリアルを一度スキップしてください。"
+			}
 		}
 	},
 	"auth": {
@@ -387,6 +399,33 @@
 				"defaultCheckbox": {
 					"title": "デフォルトペルソナとして設定"
 				}
+			}
+		},
+		"achievements": {
+			"first_login": {
+				"name": "こんにちは、泉さん！",
+				"description": "新しい世界へ初ログイン！",
+				"locked_description": "一度ファウンテンにログインしてください。"
+			},
+			"sfw_mode_on": {
+				"name": "後ろ！後ろ！",
+				"description": "すぐに全年齢モードに切り替えてください、私はとても賢い子供です。",
+				"locked_description": "セーフ コンテンツ モードを一度オンにします。"
+			},
+			"sfw_mode_off": {
+				"name": "リミッター解除",
+				"description": "「先生、時代は変わりましたね。」",
+				"locked_description": "安全なコンテンツ モードを一度オフにします。"
+			},
+			"open_function_list": {
+				"name": "ちょっと見せて！",
+				"description": "「どんな良いことがあるの？」",
+				"locked_description": "一度関数リストを開いてください。"
+			},
+			"set_default_persona": {
+				"name": "これが私の選んだ道だ",
+				"description": "この世界での行動にアイデンティティを設定します。",
+				"locked_description": "デフォルトのプロファイルを設定します。"
 			}
 		}
 	},
@@ -565,6 +604,23 @@
 					"alt": "強制返信アイコン"
 				}
 			}
+		},
+		"achievements": {
+			"first_chat": {
+				"name": "冒険の書がひらかれた！",
+				"description": "最初のメッセージが送信され、物語が始まります。",
+				"locked_description": "任意のキャラクターを使用して最初のメッセージを送信します。"
+			},
+			"multiplayer_chat": {
+				"name": "WHITE ALBUMの季節",
+				"description": "「どうしてこうなったんだろう…」",
+				"locked_description": "2 人以上のキャラクターが同じチャットで話します。"
+			},
+			"photo_chat": {
+				"name": "写真と真実があります",
+				"description": "絵を使って次元の壁を壊しましょう。",
+				"locked_description": "チャットで写真を送信します。"
+			}
 		}
 	},
 	"chat_history": {
@@ -692,6 +748,13 @@
 		},
 		"info": {
 			"description": "これらのテンプレートは、単純なコンポーネントを迅速に作成するためにのみ使用できます。複雑なコンポーネントは、依然として手動で作成する必要があります。"
+		},
+		"achievements": {
+			"create_part": {
+				"name": "錬金術工房がオープンしました",
+				"description": "ゼロから始めて、最初のコンポーネントを作成します。",
+				"locked_description": "クイック新規機能を使用してパーツを作成します。"
+			}
 		}
 	},
 	"import": {
@@ -800,6 +863,13 @@
 			"copyShareLink": "共有リンクをコピー",
 			"generateShareLink": "共有リンクを生成",
 			"generateShareLinkWithData": "共有リンク生成 (データ込)"
+		},
+		"achievements": {
+			"share_part": {
+				"name": "おすそわけ",
+				"description": "「それでは、この良いものをコピーしてあげましょう。」",
+				"locked_description": "ウィジェットを一度共有します。"
+			}
 		}
 	},
 	"uninstall": {
@@ -977,6 +1047,13 @@
 			"caramellatte": "キャラメルラテ",
 			"abyss": "アビス",
 			"silk": "シルク"
+		},
+		"achievements": {
+			"change_theme": {
+				"name": "新しいスキン、ゲットだぜ！",
+				"description": "噴水は新しい外観とまったく新しい雰囲気を持っていました。",
+				"locked_description": "テーマを一度切り替えます。"
+			}
 		}
 	},
 	"part_config": {
@@ -1067,6 +1144,13 @@
 			"copyModelIdTooltip": "クリックしてモデルIDをコピー",
 			"copied": "コピーしました！",
 			"loadModelsFailed": "モデルの読み込みに失敗しました： ${message}"
+		},
+		"achievements": {
+			"set_default_aisource": {
+				"name": "勝利の法則は決まった！",
+				"description": "マナ供給源としてデフォルトAIが指定されています。",
+				"locked_description": "デフォルトの AI ソースを一度設定します。"
+			}
 		}
 	},
 	"discord_bots": {
@@ -1117,6 +1201,13 @@
 			"configSaved": "設定を正常に保存しました。",
 			"httpError": "HTTPエラーが発生しました。",
 			"beforeUnload": "保存されていない変更があります。このページから移動しますか？"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Discordに来る",
+				"description": "あなたのキャラクターを Discord の世界に召喚します。",
+				"locked_description": "Discord Botを一度起動します。"
+			}
 		}
 	},
 	"telegram_bots": {
@@ -1167,6 +1258,13 @@
 			"configSaved": "設定を正常に保存しました！",
 			"httpError": "HTTPエラーが発生しました。",
 			"beforeUnload": "保存されていない変更があります。このページから移動しますか？"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "テレグラムに来る",
+				"description": "あなたのキャラクターを Telegram の世界に召喚します。",
+				"locked_description": "Telegram Bot を一度起動します。"
+			}
 		}
 	},
 	"browser_integration": {
@@ -1224,6 +1322,18 @@
 			"load_failed": "自動スクリプトのロードに失敗しました：${message}",
 			"add_failed": "スクリプトの追加に失敗しました：${message}",
 			"delete_failed": "削除スクリプトが失敗しました：${message}"
+		},
+		"achievements": {
+			"install_script": {
+				"name": "魔法、注入！",
+				"description": "ブラウザの「プラグイン」が正常にインストールされたので、さらに多くのことを行うことができます。",
+				"locked_description": "ブラウザ統合スクリプトを一度インストールします。"
+			},
+			"run_js": {
+				"name": "コードチャント",
+				"description": "「私の名において、ブラウザに命令してください...」",
+				"locked_description": "ブラウザで JavaScript コードを 1 回実行します。"
+			}
 		}
 	},
 	"browser_integration_script": {
@@ -1241,7 +1351,49 @@
 	"terminal_assistant": {
 		"title": "ターミナルアシスタント",
 		"initialMessage": "fountは、お気に入りのキャラクターをターミナルに導入し、コーディング作業をサポートします！",
-		"initialMessageLink": "詳細はこちら"
+		"initialMessageLink": "詳細はこちら",
+		"achievements": {
+			"invoke_shell_assist": {
+				"name": "「やあ、ファウント」",
+				"description": "暗いターミナルの中で、AIパートナーの名前が呼ばれた。",
+				"locked_description": "ターミナル アシスタンスに一度電話してください。"
+			}
+		}
+	},
+	"deskpet": {
+		"title": "デスクトップペット",
+		"launcherCard": {
+			"title": "ペットスターター",
+			"buttons": {
+				"start": "ペットを始める"
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": "役割を選択してください"
+		},
+		"charSearch": {
+			"placeholder": "役割を検索..."
+		},
+		"runningCard": {
+			"title": "走っているペット",
+			"noPets": "現在ペットは飼っていません。",
+			"buttons": {
+				"stop": "停止"
+			}
+		},
+		"toasts": {
+			"started": "ペット「${charname}」が開始されました。",
+			"start_failed": "ペット '${charname}' の開始に失敗しました: ${message}",
+			"stopped": "ペット「${charname}」は停止されました。",
+			"stop_failed": "ペット「${charname}」の停止に失敗しました: ${message}"
+		},
+		"achievements": {
+			"start_deskpet": {
+				"name": "デスクトップの新しい相棒",
+				"description": "野生のキャラクターが飛び出してきてデスクトップを占領します。",
+				"locked_description": "デスクトップペットを開始します。"
+			}
+		}
 	},
 	"access": {
 		"title": "他のデバイスからfountにアクセス",
@@ -1272,6 +1424,24 @@
 		"queryStringSectionTitle": "リクエストヘッダーにAPIKeyを設定できませんか？ (非推奨)",
 		"queryStringWarning": "アプリケーションがリクエストヘッダー（Authorizationヘッダー）でのAPIキー送信をサポートしていない場合、この代替方法を使用してください。注意：APIキーを直接URLに含めることは、サーバーのログやブラウザの履歴に記録される可能性があるため、セキュリティ上のリスクを伴います。",
 		"copyQueryStringUrlButton": "APIキーを含むURL（クエリ文字列）"
+	},
+	"achievements": {
+		"title": "成果",
+		"header": "功績の殿堂",
+		"description": "ロック解除された実績とマイルストーンをここで確認してください。",
+		"unlocked_on": "${date} にロック解除されました",
+		"locked": "ロックが解除されていません",
+		"toast_title": "実績のロックが解除されました！",
+		"error": {
+			"load_failed": "実績の読み込みに失敗しました: ${message}"
+		},
+		"achievements": {
+			"open_achievements_page": {
+				"name": "実績コンプを目指して",
+				"description": "実績リストを開き、スタンプ収集の旅を始める準備をしました。",
+				"locked_description": "実績ページを開きます。"
+			}
+		}
 	},
 	"badges_maker": {
 		"title": "fount! バッジコンバーター",

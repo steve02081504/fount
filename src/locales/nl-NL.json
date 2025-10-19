@@ -237,6 +237,18 @@
 			"keyboardPress": "Zoek alstublieft uw toetsenbord ${keyboardIcon}<br/>en probeer met uw vingers op het toetsenbord te drukken",
 			"mobileTouchMove": "Zoek alstublieft uw mobiele telefoon ${phoneIcon}<br/>probeer met een van uw vingers het scherm aan te raken en beweeg deze vervolgens",
 			"mobileClick": "Probeer alstublieft met een van uw vingers het scherm van de telefoon aan te raken ${phoneIcon}<br/>en laat daarna los"
+		},
+		"achievements": {
+			"complete_tutorial": {
+				"name": "Perfect rekenklaslokaal",
+				"description": "Eindelijk klaar met de beginnerstutorial.",
+				"locked_description": "Voltooi een inleidende tutorial."
+			},
+			"skip_tutorial": {
+				"name": "Ik heb overgeslagen",
+				"description": "\"Tutorial? Wat is dat? Kan het gegeten worden?\"",
+				"locked_description": "Sla de inleidende tutorial een keer over."
+			}
 		}
 	},
 	"auth": {
@@ -387,6 +399,33 @@
 				"defaultCheckbox": {
 					"title": "Instellen als standaardpersona"
 				}
+			}
+		},
+		"achievements": {
+			"first_login": {
+				"name": "Hallo, fontein!",
+				"description": "Op weg naar de nieuwe wereld, voor de eerste keer inloggen!",
+				"locked_description": "Log eenmalig in bij de fontein."
+			},
+			"sfw_mode_on": {
+				"name": "Er staat iemand achter je!",
+				"description": "Schakel snel over naar de modus voor alle leeftijden, ik ben zo'n slim klein kind.",
+				"locked_description": "Schakel de veilige inhoudsmodus één keer in."
+			},
+			"sfw_mode_off": {
+				"name": "deur naar nieuwe wereld",
+				"description": "\"Meneer, de tijden zijn veranderd.\"",
+				"locked_description": "Schakel de Veilige inhoudsmodus één keer uit."
+			},
+			"open_function_list": {
+				"name": "Laat mij gezond zijn!",
+				"description": "\"Welke goede dingen zijn er?\"",
+				"locked_description": "Open eenmalig de functielijst."
+			},
+			"set_default_persona": {
+				"name": "De beslissing is aan jou!",
+				"description": "Stel een identiteit in voor uw acties in deze wereld.",
+				"locked_description": "Stel een standaardprofiel in."
 			}
 		}
 	},
@@ -565,6 +604,23 @@
 					"alt": "Antwoord forceren pictogram"
 				}
 			}
+		},
+		"achievements": {
+			"first_chat": {
+				"name": "hallo vreemdeling",
+				"description": "Het eerste bericht is verzonden en het verhaal begint.",
+				"locked_description": "Stuur uw eerste bericht met een willekeurig karakter."
+			},
+			"multiplayer_chat": {
+				"name": "seizoen van wit fotoalbum",
+				"description": "\"Waarom is het zo geworden...\"",
+				"locked_description": "Laat twee of meer karakters in dezelfde chat spreken."
+			},
+			"photo_chat": {
+				"name": "Er zijn foto's en de waarheid",
+				"description": "Gebruik afbeeldingen om de dimensionale muur te doorbreken.",
+				"locked_description": "Stuur een foto in de chat."
+			}
 		}
 	},
 	"chat_history": {
@@ -692,6 +748,13 @@
 		},
 		"info": {
 			"description": "Deze sjablonen kunnen alleen worden gebruikt om snel eenvoudige componenten te bouwen, complexe componenten moeten nog steeds handmatig worden gemaakt."
+		},
+		"achievements": {
+			"create_part": {
+				"name": "De alchemiewerkplaats is geopend",
+				"description": "Begin helemaal opnieuw en maak uw eerste component.",
+				"locked_description": "Maak een onderdeel met behulp van de functie Snel nieuw."
+			}
 		}
 	},
 	"import": {
@@ -800,6 +863,13 @@
 			"copyShareLink": "Deellink kopiëren",
 			"generateShareLink": "Deellink genereren",
 			"generateShareLinkWithData": "Deellink genereren (incl. data)"
+		},
+		"achievements": {
+			"share_part": {
+				"name": "Goede mensen hebben een veilig leven",
+				"description": "'Nu zal ik je een kopie geven van dit goede ding.'",
+				"locked_description": "Deel de widget één keer."
+			}
 		}
 	},
 	"uninstall": {
@@ -977,6 +1047,13 @@
 			"caramellatte": "Caramel Latte",
 			"abyss": "Afgrond",
 			"silk": "Zijde"
+		},
+		"achievements": {
+			"change_theme": {
+				"name": "Schakel over op een pijnstiller!",
+				"description": "De fontein had een nieuwe look en een geheel nieuwe sfeer.",
+				"locked_description": "Wissel één keer van thema."
+			}
 		}
 	},
 	"part_config": {
@@ -1067,6 +1144,13 @@
 			"copyModelIdTooltip": "Klik om de model-ID te kopiëren",
 			"copied": "Gekopieerd!",
 			"loadModelsFailed": "Kon de modellen niet laden: ${message}"
+		},
+		"achievements": {
+			"set_default_aisource": {
+				"name": "bron van magie",
+				"description": "Een standaard AI wordt aangewezen als de mana-toevoerbron.",
+				"locked_description": "Stel één keer een standaard AI-bron in."
+			}
 		}
 	},
 	"discord_bots": {
@@ -1117,6 +1201,13 @@
 			"configSaved": "Configuratie succesvol opgeslagen",
 			"httpError": "HTTP-fout",
 			"beforeUnload": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je wilt vertrekken?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Op weg naar onenigheid",
+				"description": "Roep je personage op in de wereld van Discord.",
+				"locked_description": "Start de Discord Bot één keer."
+			}
 		}
 	},
 	"telegram_bots": {
@@ -1167,6 +1258,13 @@
 			"configSaved": "Configuratie succesvol opgeslagen!",
 			"httpError": "HTTP-fout",
 			"beforeUnload": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je deze pagina wilt verlaten?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Komt naar Telegram",
+				"description": "Roep je personage op in de wereld van Telegram.",
+				"locked_description": "Start Telegram Bot een keer."
+			}
 		}
 	},
 	"browser_integration": {
@@ -1224,6 +1322,18 @@
 			"load_failed": "Kan het automatische script niet laden: ${message}",
 			"add_failed": "Script niet toevoegen: ${message}",
 			"delete_failed": "Delete script mislukt: ${message}"
+		},
+		"achievements": {
+			"install_script": {
+				"name": "Magie, infuseer!",
+				"description": "U heeft de \"plug-in\" voor uw browser succesvol geïnstalleerd, nu kunt u meer doen.",
+				"locked_description": "Installeer het browserintegratiescript eenmalig."
+			},
+			"run_js": {
+				"name": "code zingen",
+				"description": "\"In mijn naam, geef opdracht aan de browser...\"",
+				"locked_description": "Voer de JavaScript-code één keer uit in de browser."
+			}
 		}
 	},
 	"browser_integration_script": {
@@ -1241,7 +1351,49 @@
 	"terminal_assistant": {
 		"title": "Terminal-assistent",
 		"initialMessage": "fount ondersteunt het implementeren van je favoriete personage in je terminal om je te helpen met coderen!",
-		"initialMessageLink": "Klik hier voor meer informatie"
+		"initialMessageLink": "Klik hier voor meer informatie",
+		"achievements": {
+			"invoke_shell_assist": {
+				"name": "\"Hé, Fontein.\"",
+				"description": "In de donkere terminal werd de naam van de AI-partner afgeroepen.",
+				"locked_description": "Bel eenmalig de terminalassistentie."
+			}
+		}
+	},
+	"deskpet": {
+		"title": "Desktop huisdieren",
+		"launcherCard": {
+			"title": "huisdier starter",
+			"buttons": {
+				"start": "huisdier beginnen"
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": "Kies een rol"
+		},
+		"charSearch": {
+			"placeholder": "Zoeken naar rollen..."
+		},
+		"runningCard": {
+			"title": "rennend huisdier",
+			"noPets": "Er lopen momenteel geen huisdieren.",
+			"buttons": {
+				"stop": "stop"
+			}
+		},
+		"toasts": {
+			"started": "Huisdier '${charname}' is gestart.",
+			"start_failed": "Kan huisdier '${charname}' niet starten: ${message}",
+			"stopped": "Huisdier '${charname}' is gestopt.",
+			"stop_failed": "Stop huisdier '${charname}' mislukt: ${message}"
+		},
+		"achievements": {
+			"start_deskpet": {
+				"name": "Een nieuwe aanvulling op uw bureaublad",
+				"description": "Een wild karakter springt eruit en neemt je bureaublad over.",
+				"locked_description": "Start een desktophuisdier."
+			}
+		}
 	},
 	"access": {
 		"title": "Toegang tot fount op andere apparaten",
@@ -1272,6 +1424,24 @@
 		"queryStringSectionTitle": "Kunt u de APIKey niet in de request header instellen? (Onveilig)",
 		"queryStringWarning": "Gebruik deze alternatieve methode wanneer uw applicatie het verzenden van de API-sleutel in de request header (Authorization header) niet ondersteunt. Let op: het rechtstreeks plaatsen van de API-sleutel in de URL brengt een veiligheidsrisico met zich mee, omdat deze kan worden vastgelegd in serverlogboeken of de browsergeschiedenis.",
 		"copyQueryStringUrlButton": "URL met API-sleutel (Query String)"
+	},
+	"achievements": {
+		"title": "Prestatie",
+		"header": "Hal van prestatie",
+		"description": "Bekijk hier je ontgrendelde prestaties en mijlpalen.",
+		"unlocked_on": "Ontgrendeld op ${date}",
+		"locked": "Niet ontgrendeld",
+		"toast_title": "Prestaties ontgrendeld!",
+		"error": {
+			"load_failed": "Kan prestaties niet laden: ${message}"
+		},
+		"achievements": {
+			"open_achievements_page": {
+				"name": "Trofee, hier kom ik!",
+				"description": "Opende de prestatielijst en bereidde zich voor op een postzegelverzamelreis.",
+				"locked_description": "Open de pagina Prestaties."
+			}
+		}
 	},
 	"badges_maker": {
 		"title": "fount! Badge-omzetter",

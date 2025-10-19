@@ -237,6 +237,18 @@
 			"keyboardPress": "請於指掌之間，尋此乾坤之器${keyboardIcon}，<br/>而後以雷霆之勢，輕按一二，以驗其靈。",
 			"mobileTouchMove": "請尋掌中乾坤${phoneIcon}，<br/>而後以任意手指觸之，復加以游移，以觀其變。",
 			"mobileClick": "請以任意手指輕觸掌中乾坤${phoneIcon}，<br/>而後釋之，如蜻蜓點水。"
+		},
+		"achievements": {
+			"complete_tutorial": {
+				"name": "初窥门径",
+				"description": "新手之训，业已毕也。",
+				"locked_description": "宜先成启蒙之训。"
+			},
+			"skip_tutorial": {
+				"name": "不循常道",
+				"description": "「训者何物？可为食乎？」",
+				"locked_description": "宜至少略启蒙之训一次。"
+			}
 		}
 	},
 	"auth": {
@@ -387,6 +399,33 @@
 				"defaultCheckbox": {
 					"title": "設為預設"
 				}
+			}
+		},
+		"achievements": {
+			"first_login": {
+				"name": "初临贵地",
+				"description": "初至新天地，幸甚至哉！",
+				"locked_description": "宜先登录一次。"
+			},
+			"sfw_mode_on": {
+				"name": "正襟危坐",
+				"description": "恐有视瞻，正此容仪。",
+				"locked_description": "宜启方正模式一次。"
+			},
+			"sfw_mode_off": {
+				"name": "别有洞天",
+				"description": "藩篱既撤，豁然开朗。",
+				"locked_description": "宜休方正模式一次。"
+			},
+			"open_function_list": {
+				"name": "开卷有益",
+				"description": "琳琅满目，尽收眼底。",
+				"locked_description": "宜启百宝录一次。"
+			},
+			"set_default_persona": {
+				"name": "名正言顺",
+				"description": "定此名分，以行天下。",
+				"locked_description": "宜定默认名号一次。"
 			}
 		}
 	},
@@ -565,6 +604,23 @@
 					"alt": "催覆"
 				}
 			}
+		},
+		"achievements": {
+			"first_chat": {
+				"name": "相逢之始",
+				"description": "初通一言，缘起于此。",
+				"locked_description": "宜先与任一角色发一言。"
+			},
+			"multiplayer_chat": {
+				"name": "煮酒论英雄",
+				"description": "众口纷纭，其乐无穷。",
+				"locked_description": "宜令众角共语。"
+			},
+			"photo_chat": {
+				"name": "图以传意",
+				"description": "一图胜千言，意境自现。",
+				"locked_description": "宜以图传情一次。"
+			}
 		}
 	},
 	"chat_history": {
@@ -692,6 +748,13 @@
 		},
 		"info": {
 			"description": "此等範本僅可用於速建簡易之器，繁複者仍需手動創建，所謂大道至簡也。"
+		},
+		"achievements": {
+			"create_part": {
+				"name": "从无到有",
+				"description": "混沌初开，万物自生。",
+				"locked_description": "宜以巧法创一部件。"
+			}
 		}
 	},
 	"import": {
@@ -800,6 +863,13 @@
 			"copyShareLink": "謄錄傳閱之鑰",
 			"generateShareLink": "生分享之鑰",
 			"generateShareLinkWithData": "生分享之鑰 (含載錄)"
+		},
+		"achievements": {
+			"share_part": {
+				"name": "征途凶险，请携此物",
+				"description": "奇货可居，亦可与人。",
+				"locked_description": "宜公诸同好一次。"
+			}
 		}
 	},
 	"uninstall": {
@@ -977,6 +1047,13 @@
 			"caramellatte": "焦糖乳飲",
 			"abyss": "深淵",
 			"silk": "絲絨"
+		},
+		"achievements": {
+			"change_theme": {
+				"name": "焕然一新",
+				"description": "改换门庭，气象万千。",
+				"locked_description": "宜更易面貌一次。"
+			}
 		}
 	},
 	"part_config": {
@@ -1067,6 +1144,13 @@
 			"copyModelIdTooltip": "點此錄模型ID",
 			"copied": "已謄。",
 			"loadModelsFailed": "載模型失利：${message}"
+		},
+		"achievements": {
+			"set_default_aisource": {
+				"name": "法力无边",
+				"description": "定此源泉，以驭万法。",
+				"locked_description": "宜定AI之源一次。"
+			}
 		}
 	},
 	"discord_bots": {
@@ -1117,6 +1201,13 @@
 			"configSaved": "規度已存。",
 			"httpError": "HTTP 錯誤",
 			"beforeUnload": "尚有未存之變，確欲離乎？"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "现身于群议之地",
+				"description": "召汝之化身于群议界。",
+				"locked_description": "宜启群议之仆一次。"
+			}
 		}
 	},
 	"telegram_bots": {
@@ -1167,6 +1258,13 @@
 			"configSaved": "規度已存。",
 			"httpError": "HTTP 錯誤",
 			"beforeUnload": "尚有未存之變，確欲離乎？"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "现身于群议之地",
+				"description": "召汝之化身于群议界。",
+				"locked_description": "宜启飞书之仆一次。"
+			}
 		}
 	},
 	"browser_integration": {
@@ -1224,6 +1322,18 @@
 			"load_failed": "載術不成：${message}",
 			"add_failed": "添術不成：${message}",
 			"delete_failed": "去術不成：${message}"
+		},
+		"achievements": {
+			"install_script": {
+				"name": "如虎添翼",
+				"description": "神通既得，更上层楼。",
+				"locked_description": "宜植入神器于浏览器一次。"
+			},
+			"run_js": {
+				"name": "念念有词",
+				"description": "奉吾之名，敕令天地。",
+				"locked_description": "宜以JS之术驱浏览器一次。"
+			}
 		}
 	},
 	"browser_integration_script": {
@@ -1241,7 +1351,49 @@
 	"terminal_assistant": {
 		"title": "終端輔佐",
 		"initialMessage": "fount 可將君所喜之化身部署於終端，以輔編碼。",
-		"initialMessageLink": "點此詳閱"
+		"initialMessageLink": "點此詳閱",
+		"achievements": {
+			"invoke_shell_assist": {
+				"name": "虚室生白",
+				"description": "幽暗之中，一念通神。",
+				"locked_description": "宜于终端召唤辅佐一次。"
+			}
+		}
+	},
+	"deskpet": {
+		"title": "案上宠",
+		"launcherCard": {
+			"title": "案上宠",
+			"buttons": {
+				"start": "启之"
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": "择一角色"
+		},
+		"charSearch": {
+			"placeholder": "寻角色..."
+		},
+		"runningCard": {
+			"title": "行宠",
+			"noPets": "尚无行宠",
+			"buttons": {
+				"stop": "止之"
+			}
+		},
+		"toasts": {
+			"started": "宠 '${charname}' 已启。",
+			"start_failed": "宠 '${charname}' 启之不成：${message}",
+			"stopped": "宠 '${charname}' 已止。",
+			"stop_failed": "宠 '${charname}' 止之不成：${message}"
+		},
+		"achievements": {
+			"start_deskpet": {
+				"name": "案上新宠",
+				"description": "野有角色，忽现君之几案。",
+				"locked_description": "宜先启动一次案上之宠。"
+			}
+		}
 	},
 	"access": {
 		"title": "從他器訪問 fount",
@@ -1272,6 +1424,24 @@
 		"queryStringSectionTitle": "無法在請求頭中設置APIKey？(此法不甚安穩)",
 		"queryStringWarning": "當爾之應用不支持在請求頭（Authorization header）中發送API密鑰時，可用此備用之法。切記：徑以密鑰置於網址，恐錄於日誌史載，徒增其險。",
 		"copyQueryStringUrlButton": "包含API密鑰之URL（查詢字符串）"
+	},
+	"achievements": {
+		"title": "成就",
+		"header": "功成名就之堂",
+		"description": "君之功绩，尽列于此。",
+		"unlocked_on": "成于 ${date}",
+		"locked": "尚未功成",
+		"toast_title": "功成！",
+		"error": {
+			"load_failed": "录功绩不成：${message}"
+		},
+		"achievements": {
+			"open_achievements_page": {
+				"name": "登堂入室",
+				"description": "功过是非，皆在此中。",
+				"locked_description": "宜启功绩之页。"
+			}
+		}
 	},
 	"badges_maker": {
 		"title": "fount 徽章轉換器",
