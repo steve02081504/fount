@@ -1,7 +1,7 @@
 import fs from 'node:fs'
-import path from 'node:path'
 import http from 'node:http'
 import https from 'node:https'
+import path from 'node:path'
 import process from 'node:process'
 
 import { on_shutdown } from 'npm:on-shutdown'
