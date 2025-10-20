@@ -27,11 +27,11 @@ async function renderAchievements() {
 		for (const partType of Object.keys(achievementsData).sort())
 			for (const partName of Object.keys(achievementsData[partType]).sort())
 				renderPromises.push((async () => {
-						const { info } = await getPartDetails(partType, partName)
-						return renderTemplate('category_section', {
-							category: info,
-							achievements: achievementsData[partType][partName],
-						})
+					const { info } = await getPartDetails(partType, partName)
+					return renderTemplate('category_section', {
+						category: info,
+						achievements: achievementsData[partType][partName],
+					})
 				})())
 
 		const categorySections = await Promise.all(renderPromises)
