@@ -1,6 +1,6 @@
 export function GetShellWorld(shelltype) {
 	/**
-	* @type {import('../../../../../../src/decl/WorldAPI.ts').WorldAPI_t}
+	* @type {import('../../../../../../src/decl/worldAPI.ts').WorldAPI_t}
 	*/
 	const world = {
 		info: {
