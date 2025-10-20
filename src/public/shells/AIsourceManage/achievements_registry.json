@@ -1,0 +1,11 @@
+{
+	"achievements": {
+		"set_default_aisource": {
+			"name": "aisource_editor.achievements.set_default_aisource.name",
+			"description": "aisource_editor.achievements.set_default_aisource.description",
+			"icon": "https://api.iconify.design/line-md/star-filled.svg",
+			"locked_description": "aisource_editor.achievements.set_default_aisource.locked_description",
+			"locked_icon": "https://api.iconify.design/line-md/question-circle.svg"
+		}
+	}
+}

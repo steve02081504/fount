@@ -237,6 +237,18 @@
 			"keyboardPress": "الرجاء العثور على لوحة المفاتيح الخاصة بك ${keyboardIcon}<br/>حاول استخدام أصابعك للضغط على لوحة المفاتيح",
 			"mobileTouchMove": "الرجاء العثور على هاتفك المحمول ${phoneIcon}<br/>حاول استخدام أي من أصابعك للمس الشاشة، ثم حركها",
 			"mobileClick": "الرجاء محاولة استخدام أي من أصابعك للمس شاشة الهاتف ${phoneIcon}<br/>ثم ارفع إصبعك"
+		},
+		"achievements": {
+			"complete_tutorial": {
+				"name": "الفصول الحسابية المثالية",
+				"description": "وأخيرا أنهيت البرنامج التعليمي للمبتدئين.",
+				"locked_description": "أكمل البرنامج التعليمي التمهيدي."
+			},
+			"skip_tutorial": {
+				"name": "لقد تخطيت",
+				"description": "\"البرنامج التعليمي؟ ما هذا؟ هل يمكن تناوله؟\"",
+				"locked_description": "تخطي البرنامج التعليمي التمهيدي مرة واحدة."
+			}
 		}
 	},
 	"auth": {
@@ -387,6 +399,33 @@
 				"defaultCheckbox": {
 					"title": "تعيين كهوية افتراضية"
 				}
+			}
+		},
+		"achievements": {
+			"first_login": {
+				"name": "مرحبا، فونت!",
+				"description": "التوجه نحو العالم الجديد، تسجيل الدخول لأول مرة!",
+				"locked_description": "قم بتسجيل الدخول إلى النافورة مرة واحدة."
+			},
+			"sfw_mode_on": {
+				"name": "هناك شخص خلفك!",
+				"description": "قم بالتبديل بسرعة إلى وضع جميع الأعمار، فأنا طفل صغير ذكي.",
+				"locked_description": "قم بتشغيل وضع المحتوى الآمن مرة واحدة."
+			},
+			"sfw_mode_off": {
+				"name": "الباب إلى العالم الجديد",
+				"description": "\"سيدي، الزمن تغير.\"",
+				"locked_description": "قم بإيقاف تشغيل وضع المحتوى الآمن مرة واحدة."
+			},
+			"open_function_list": {
+				"name": "دعني أكون بصحة جيدة!",
+				"description": "\"ما هي الأشياء الجيدة هناك؟\"",
+				"locked_description": "افتح قائمة الوظائف مرة واحدة."
+			},
+			"set_default_persona": {
+				"name": "القرار لك!",
+				"description": "حدد هوية لأفعالك في هذا العالم.",
+				"locked_description": "قم بتعيين ملف التعريف الافتراضي."
 			}
 		}
 	},
@@ -565,6 +604,23 @@
 					"alt": "أيقونة الإجبار على الرد"
 				}
 			}
+		},
+		"achievements": {
+			"first_chat": {
+				"name": "مرحبا أيها الغريب",
+				"description": "تم إرسال الرسالة الأولى وتبدأ القصة.",
+				"locked_description": "أرسل رسالتك الأولى بأي شخصية."
+			},
+			"multiplayer_chat": {
+				"name": "موسم ألبوم الصور الأبيض",
+				"description": "\"لماذا أصبح هكذا...\"",
+				"locked_description": "اجعل شخصيتين أو أكثر يتحدثون في نفس الدردشة."
+			},
+			"photo_chat": {
+				"name": "هناك صور والحقيقة",
+				"description": "استخدم الصور لكسر جدار الأبعاد.",
+				"locked_description": "إرسال صورة في الدردشة."
+			}
 		}
 	},
 	"chat_history": {
@@ -692,6 +748,13 @@
 		},
 		"info": {
 			"description": "يمكن استخدام هذه القوالب فقط لبناء مكونات بسيطة بسرعة، لا يزال إنشاء المكونات المعقدة يتطلب إنشاءًا يدويًا."
+		},
+		"achievements": {
+			"create_part": {
+				"name": "ورشة الكيمياء مفتوحة",
+				"description": "ابدأ من الصفر وقم بإنشاء المكون الأول الخاص بك.",
+				"locked_description": "قم بإنشاء جزء باستخدام ميزة Quick New."
+			}
 		}
 	},
 	"import": {
@@ -800,6 +863,13 @@
 			"copyShareLink": "نسخ رابط المشاركة",
 			"generateShareLink": "إنشاء رابط مشاركة",
 			"generateShareLinkWithData": "إنشاء رابط مشاركة (مع البيانات)"
+		},
+		"achievements": {
+			"share_part": {
+				"name": "من الخطر أن تذهب بمفردك! خذ هذا.",
+				"description": "\"الآن، سأعطيك نسخة من هذا الشيء الجيد.\"",
+				"locked_description": "مشاركة القطعة مرة واحدة."
+			}
 		}
 	},
 	"uninstall": {
@@ -912,7 +982,8 @@
 			"title": "تم إنشاء مفتاح API جديد",
 			"warning": "يرجى نسخ مفتاح API الجديد الخاص بك. لن تتمكن من رؤيته مرة أخرى!",
 			"copyButtonTitle": "نسخ مفتاح API جديد",
-			"closeButton": "لقد قمت بنسخ مفتاحي"
+			"closeButton": "لقد قمت بنسخ مفتاحي",
+			"copiedAlert": "تم نسخ مفتاح API إلى الحافظة!"
 		}
 	},
 	"languageSettings": {
@@ -977,6 +1048,13 @@
 			"caramellatte": "كراميل لاتيه",
 			"abyss": "هاوية",
 			"silk": "حرير"
+		},
+		"achievements": {
+			"change_theme": {
+				"name": "التغيير إلى مسكن للألم!",
+				"description": "كان للنافورة مظهر جديد ومزاج جديد تمامًا.",
+				"locked_description": "تبديل الموضوع مرة واحدة."
+			}
 		}
 	},
 	"part_config": {
@@ -1067,6 +1145,13 @@
 			"copyModelIdTooltip": "انقر لنسخ معرف النموذج",
 			"copied": "تم النسخ!",
 			"loadModelsFailed": "فشل تحميل النماذج: ${message}"
+		},
+		"achievements": {
+			"set_default_aisource": {
+				"name": "مصدر السحر",
+				"description": "يتم تعيين الذكاء الاصطناعي الافتراضي كمصدر إمداد المانا.",
+				"locked_description": "قم بتعيين مصدر AI افتراضي مرة واحدة."
+			}
 		}
 	},
 	"discord_bots": {
@@ -1117,6 +1202,13 @@
 			"configSaved": "تم حفظ التهيئة بنجاح",
 			"httpError": "خطأ HTTP",
 			"beforeUnload": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد المغادرة؟"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "القادمة إلى الخلاف",
+				"description": "قم باستدعاء شخصيتك إلى عالم Discord.",
+				"locked_description": "قم بتشغيل Discord Bot مرة واحدة."
+			}
 		}
 	},
 	"telegram_bots": {
@@ -1167,6 +1259,13 @@
 			"configSaved": "تم حفظ التهيئة بنجاح!",
 			"httpError": "خطأ HTTP",
 			"beforeUnload": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد مغادرة الصفحة الحالية؟"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "القادمة إلى برقية",
+				"description": "قم باستدعاء شخصيتك إلى عالم Telegram.",
+				"locked_description": "قم بتشغيل Telegram Bot مرة واحدة."
+			}
 		}
 	},
 	"browser_integration": {
@@ -1224,6 +1323,18 @@
 			"load_failed": "فشل تحميل البرنامج النصي التلقائي: ${message}",
 			"add_failed": "فشل في إضافة البرنامج النصي: ${message}",
 			"delete_failed": "فشل حذف البرنامج النصي: ${message}"
+		},
+		"achievements": {
+			"install_script": {
+				"name": "السحر، لبث!",
+				"description": "لقد قمت بتثبيت \"المكون الإضافي\" لمتصفحك بنجاح، ويمكنك الآن القيام بالمزيد.",
+				"locked_description": "قم بتثبيت البرنامج النصي لتكامل المتصفح مرة واحدة."
+			},
+			"run_js": {
+				"name": "ترنيمة الكود",
+				"description": "\"باسمي، قيادة المتصفح...\"",
+				"locked_description": "قم بتشغيل كود JavaScript مرة واحدة في المتصفح."
+			}
 		}
 	},
 	"browser_integration_script": {
@@ -1241,7 +1352,49 @@
 	"terminal_assistant": {
 		"title": "مساعد الطرفية",
 		"initialMessage": "يدعم fount نشر شخصيتك المفضلة في الطرفية لمساعدتك في البرمجة!",
-		"initialMessageLink": "انقر هنا لمعرفة المزيد"
+		"initialMessageLink": "انقر هنا لمعرفة المزيد",
+		"achievements": {
+			"invoke_shell_assist": {
+				"name": "\"مرحبا، فاونت.\"",
+				"description": "في المحطة المظلمة، تم استدعاء اسم شريك الذكاء الاصطناعي.",
+				"locked_description": "اتصل بالمساعدة الطرفية مرة واحدة."
+			}
+		}
+	},
+	"deskpet": {
+		"title": "الحيوانات الأليفة سطح المكتب",
+		"launcherCard": {
+			"title": "بداية الحيوانات الأليفة",
+			"buttons": {
+				"start": "ابدأ بالحيوانات الأليفة"
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": "اختر دورًا"
+		},
+		"charSearch": {
+			"placeholder": "البحث عن الأدوار..."
+		},
+		"runningCard": {
+			"title": "تشغيل الحيوانات الأليفة",
+			"noPets": "لا يوجد حاليا أي حيوانات أليفة تعمل.",
+			"buttons": {
+				"stop": "قف"
+			}
+		},
+		"toasts": {
+			"started": "تم بدء تشغيل الحيوان الأليف '${charname}'.",
+			"start_failed": "فشل في بدء تشغيل الحيوان الأليف '${charname}': ${message}",
+			"stopped": "تم إيقاف الحيوان الأليف '${charname}'.",
+			"stop_failed": "فشل إيقاف الحيوان الأليف '${charname}': ${message}"
+		},
+		"achievements": {
+			"start_deskpet": {
+				"name": "رفيق جديد لسطح المكتب الخاص بك",
+				"description": "تقفز شخصية برية وتسيطر على سطح المكتب.",
+				"locked_description": "ابدأ بحيوان أليف على سطح المكتب."
+			}
+		}
 	},
 	"access": {
 		"title": "الوصول إلى fount على أجهزة أخرى",
@@ -1272,6 +1425,24 @@
 		"queryStringSectionTitle": "لا يمكن تعيين مفتاح API في رأس الطلب؟ (غير آمن)",
 		"queryStringWarning": "استخدم هذه الطريقة البديلة عندما لا يدعم تطبيقك إرسال مفتاح API في رأس الطلب (Authorization header). يرجى ملاحظة: وضع مفتاح API مباشرة في عنوان URL يشكل خطرًا أمنيًا حيث يمكن تسجيله في سجلات الخادم أو سجل المتصفح.",
 		"copyQueryStringUrlButton": "عنوان URL مع مفتاح API (سلسلة استعلام)"
+	},
+	"achievements": {
+		"title": "إنجاز",
+		"header": "قاعة الإنجاز",
+		"description": "تحقق من إنجازاتك ومعالمك غير المقفلة هنا.",
+		"unlocked_on": "تم فتح القفل في ${date}",
+		"locked": "غير مقفلة",
+		"toast_title": "الإنجازات مقفلة!",
+		"error": {
+			"load_failed": "فشل تحميل الإنجازات: ${message}"
+		},
+		"achievements": {
+			"open_achievements_page": {
+				"name": "الكأس، أنا هنا!",
+				"description": "فتحت قائمة الإنجازات واستعدت لبدء رحلة جمع الطوابع.",
+				"locked_description": "افتح صفحة الإنجازات."
+			}
+		}
 	},
 	"badges_maker": {
 		"title": "fount! محول الشارات",
