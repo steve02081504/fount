@@ -367,7 +367,7 @@ ${fs.readFileSync(path.join(__dirname, 'src/decl/charAPI.ts'), 'utf-8')}
 fount用户人设以mjs文件语法所书写，其可以自由导入任何npm或jsr包以及网络上的js文件，或\`node:fs\`等运行时自带模块。
 这是一个简单的fount人物模板：
 \`\`\`generate-persona template
-/** @typedef {import('../../../../../src/decl/UserAPI.ts').UserAPI_t} UserAPI_t */
+/** @typedef {import('../../../../../src/decl/userAPI.ts').UserAPI_t} UserAPI_t */
 
 /** @type {UserAPI_t} */
 export default {
