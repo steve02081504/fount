@@ -43,7 +43,7 @@ return async ({ data, containers }) => {
 	div.innerHTML = '<div data-i18n="aisource_editor.common_config_interface.loadingModels"></div>'
 	try {
 		const response = await fetch(modelsUrl, {
-			headers: { 'Authorization': apikey ? 'Bearer ' + apikey : undefined }
+			headers: { Authorization: apikey ? 'Bearer ' + apikey : undefined }
 		})
 		if (!response.ok) {
 			const errorText = await response.text().catch(() => 'Could not read error body.')

@@ -65,11 +65,11 @@ export default {
 			name: 'Thế giới mặc định của fount',
 			description: 'Sử dụng để hướng dẫn các nhân vật về xuất hiện hỗ trợ cho việc render hoạt hình của fount',
 		},
-		'lzh': {
+		lzh: {
 			name: 'fount 預設之世',
 			description: 'fount 繪呈之援，以導化身之儀觀',
 		},
-		'emoji': {
+		emoji: {
 			name: '⛲🌐',
 			description: 'ℹ️👤🧑‍🎨🖼️➡️🧭',
 		},

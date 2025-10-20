@@ -982,7 +982,8 @@
 			"title": "新 API 密钥已创建",
 			"warning": "请复制您的新 API 密钥。您将无法再次看到它！",
 			"copyButtonTitle": "复制新 API 密钥",
-			"closeButton": "我已复制密钥"
+			"closeButton": "我已复制密钥",
+			"copiedAlert": "密钥已复制到剪贴板！"
 		}
 	},
 	"languageSettings": {

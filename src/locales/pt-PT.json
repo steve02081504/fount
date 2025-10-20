@@ -982,7 +982,8 @@
 			"title": "Nova chave de API foi criada",
 			"warning": "Copie sua nova chave de API. Você não poderá ver de novo!",
 			"copyButtonTitle": "Copie a nova chave da API",
-			"closeButton": "Eu copiei minha chave"
+			"closeButton": "Eu copiei minha chave",
+			"copiedAlert": "Chave da API copiada para a área de transferência!"
 		}
 	},
 	"languageSettings": {

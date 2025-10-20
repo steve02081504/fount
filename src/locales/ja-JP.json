@@ -982,7 +982,8 @@
 			"title": "新しいAPIキーが作成されました",
 			"warning": "新しいAPIキーをコピーしてください。二度と見ることができません！",
 			"copyButtonTitle": "新しいAPIキーをコピーします",
-			"closeButton": "キーをコピーしました"
+			"closeButton": "キーをコピーしました",
+			"copiedAlert": "APIキーがクリップボードにコピーされました！"
 		}
 	},
 	"languageSettings": {

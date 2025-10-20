@@ -1,4 +1,3 @@
-import { WebView } from 'https://deno.land/x/webview/mod.ts'
 import { on_shutdown } from 'npm:on-shutdown'
 
 import { console } from '../../../../scripts/i18n.mjs'
@@ -39,7 +38,7 @@ export async function runPet(username, charname) {
 
 		const finalUrl = `${intermediatePageUrl}?apikey=${encodedApiKey}&redirect=${encodedOriginalPetUrl}`
 
-
+		const { WebView } = await import('https://deno.land/x/webview/mod.ts')
 		const webview = new WebView({
 			title: charname,
 			url: finalUrl,
@@ -48,7 +47,7 @@ export async function runPet(username, charname) {
 			frameless: petConfig.windowOptions?.frameless ?? true,
 			transparent: petConfig.windowOptions?.transparent ?? true,
 		})
-			; (async () => {
+		;(async () => {
 			await webview.run()
 			if (runningPets[username]?.[charname]) {
 				delete runningPets[username][charname]

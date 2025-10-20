@@ -982,7 +982,8 @@
 			"title": "새로운 API 키가 만들어졌습니다",
 			"warning": "새 API 키를 복사하십시오. 당신은 그것을 다시 볼 수 없을 것입니다!",
 			"copyButtonTitle": "새 API 키를 복사하십시오",
-			"closeButton": "내 키를 복사했습니다"
+			"closeButton": "내 키를 복사했습니다",
+			"copiedAlert": "키가 클립보드에 복사되었습니다!"
 		}
 	},
 	"languageSettings": {

@@ -982,7 +982,8 @@
 			"title": "Khóa API mới đã được tạo",
 			"warning": "Vui lòng sao chép khóa API mới của bạn. Bạn sẽ không thể nhìn thấy nó một lần nữa!",
 			"copyButtonTitle": "Sao chép khóa API mới",
-			"closeButton": "Tôi đã sao chép khóa của mình"
+			"closeButton": "Tôi đã sao chép khóa của mình",
+			"copiedAlert": "Khóa API đã được sao chép vào bộ nhớ tạm!"
 		}
 	},
 	"languageSettings": {

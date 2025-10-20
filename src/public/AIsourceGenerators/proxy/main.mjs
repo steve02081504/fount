@@ -40,7 +40,7 @@ async function GetSource(config, { SaveConfig }) {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					'Authorization': config.apikey ? 'Bearer ' + config.apikey : undefined
+					Authorization: config.apikey ? 'Bearer ' + config.apikey : undefined
 				},
 				body: JSON.stringify({
 					model: config.model,

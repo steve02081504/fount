@@ -13,13 +13,13 @@ import { loadWorld, unloadWorld } from './world_manager.mjs'
 
 
 const loadMethods = {
-	'shells': loadShell,
-	'chars': LoadChar,
-	'personas': loadPersona,
-	'worlds': loadWorld,
-	'AIsources': loadAIsource,
-	'AIsourceGenerators': loadAIsourceGenerator,
-	'ImportHandlers': LoadImportHandler
+	shells: loadShell,
+	chars: LoadChar,
+	personas: loadPersona,
+	worlds: loadWorld,
+	AIsources: loadAIsource,
+	AIsourceGenerators: loadAIsourceGenerator,
+	ImportHandlers: LoadImportHandler
 }
 export function loadPart(username, parttype, partname) {
 	if (!loadMethods[parttype])
@@ -28,10 +28,10 @@ export function loadPart(username, parttype, partname) {
 }
 
 const pathFilters = {
-	'AIsources': file => file.isFile() && file.name.endsWith('.json')
+	AIsources: file => file.isFile() && file.name.endsWith('.json')
 }
 const ResultMappers = {
-	'AIsources': file => file.name.slice(0, -5)
+	AIsources: file => file.name.slice(0, -5)
 }
 export function getPartList(username, parttype) {
 	return getPartListBase(username, parttype, {
@@ -44,13 +44,13 @@ export function getLoadedPartList(username, parttype) {
 }
 
 const unLoadMethods = {
-	'shells': unloadShell,
-	'chars': UnloadChar,
-	'personas': unloadPersona,
-	'worlds': unloadWorld,
-	'AIsources': unloadAIsource,
-	'AIsourceGenerators': unloadAIsourceGenerator,
-	'ImportHandlers': UnloadImportHandler
+	shells: unloadShell,
+	chars: UnloadChar,
+	personas: unloadPersona,
+	worlds: unloadWorld,
+	AIsources: unloadAIsource,
+	AIsourceGenerators: unloadAIsourceGenerator,
+	ImportHandlers: UnloadImportHandler
 }
 export function unloadPart(username, parttype, partname) {
 	return unLoadMethods[parttype](username, partname)

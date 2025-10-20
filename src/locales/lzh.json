@@ -982,7 +982,8 @@
 			"title": "新符鑰已創",
 			"warning": "請錄新符鑰。機不可失，時不再來！",
 			"copyButtonTitle": "錄此新鑰",
-			"closeButton": "已錄之"
+			"closeButton": "已錄之",
+			"copiedAlert": "符鑰已錄！"
 		}
 	},
 	"languageSettings": {

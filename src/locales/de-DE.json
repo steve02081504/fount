@@ -982,7 +982,8 @@
 			"title": "Neuer API-Schlüssel wurde erstellt",
 			"warning": "Bitte kopieren Sie Ihren neuen API-Schlüssel. Sie werden es nicht wieder sehen können!",
 			"copyButtonTitle": "Kopieren Sie den neuen API-Schlüssel",
-			"closeButton": "Ich habe meinen Schlüssel kopiert"
+			"closeButton": "Ich habe meinen Schlüssel kopiert",
+			"copiedAlert": "Der API-Schlüssel wurde in die Zwischenablage kopiert!"
 		}
 	},
 	"languageSettings": {

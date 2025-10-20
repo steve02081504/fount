@@ -982,7 +982,8 @@
 			"title": "New API key has been created",
 			"warning": "Please copy your new API key. You won't be able to see it again!",
 			"copyButtonTitle": "Copy new API key",
-			"closeButton": "I've copied my key"
+			"closeButton": "I've copied my key",
+			"copiedAlert": "API key copied to clipboard!"
 		}
 	},
 	"languageSettings": {

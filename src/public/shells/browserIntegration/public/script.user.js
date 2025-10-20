@@ -410,7 +410,7 @@ async function checkForUpdate() {
 	try {
 		const response = await gmFetch(scriptUrl, {
 			headers: {
-				'Authorization': `Bearer ${await GM.getValue('fount_apikey', null)}`
+				Authorization: `Bearer ${await GM.getValue('fount_apikey', null)}`
 			}
 		})
 		if (response.status !== 200) return
