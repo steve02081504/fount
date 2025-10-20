@@ -37,16 +37,21 @@
 
 /* 消息按钮组 (编辑和删除) */
 .chat-message .button-group {
-	display: none;
 	position: sticky;
 	top: 5px;
 	right: 5px;
-	z-index: 10;
 	float: right;
+	z-index: 10;
+	height: 0;
+	overflow: visible;
+	opacity: 0;
+	transition: opacity 0.2s ease-in-out;
+	pointer-events: none;
 }
 
 .chat-message:hover .button-group {
-	display: inline-block;
+	opacity: 1;
+	pointer-events: auto;
 }
 
 /* 编辑区域 */
