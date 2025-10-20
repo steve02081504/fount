@@ -2,6 +2,7 @@
 import { randomUUID } from 'node:crypto'
 
 import { loadShellData, saveShellData } from '../../../../server/setting_loader.mjs'
+import { unlockAchievement } from '../../achievements/src/api.mjs'
 
 /**
  * @typedef {object} PageInfo
@@ -266,6 +267,7 @@ export function handleConnection(ws, username) {
 					const page = manager.addPage(ws, url, title)
 					currentPageId = page.id
 					ws.send(JSON.stringify({ type: 'init_success', payload: { pageId: currentPageId } }))
+					unlockAchievement(username, 'shells', 'browserIntegration', 'install_script')
 					break
 				}
 				case 'focus': {
@@ -329,6 +331,7 @@ export async function getVisibleHtml(username, pageId) {
 }
 
 export async function runJsOnPage(username, pageId, script, callbackInfo = null) {
+	unlockAchievement(username, 'shells', 'browserIntegration', 'run_js')
 	return await getUserManager(username).sendRequest(pageId, { type: 'run_js', payload: { script, callbackInfo } })
 }
 

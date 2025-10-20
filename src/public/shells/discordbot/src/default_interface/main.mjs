@@ -139,7 +139,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 				if (last && last.name === entry.name && last.role === entry.role &&
 					entry.time_stamp - last.time_stamp < 3 * 60000 && !last.files?.length) {
 					last.content += '\n' + entry.content
-					if (entry.files?.length > 0) last.files = [...last.files || [], ...entry.files]
+					if (entry.files?.length) last.files = [...last.files || [], ...entry.files]
 					last.time_stamp = entry.time_stamp
 					if (entry.extension?.discord_message_id)
 						last.extension = { ...last.extension, discord_message_id: entry.extension.discord_message_id }
@@ -164,7 +164,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 					ChannelChatLogs[channelId] = MargeChatLog(entries)
 				}
 
-				while (myQueue.length > 0) {
+				while (myQueue.length) {
 					const currentMessage = myQueue.shift()
 					if (!currentMessage) continue
 
@@ -236,9 +236,8 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 					const payload = { content: textChunks[i] }
 
 					// 核心：如果是最后一个文本块，并且有文件要发送，则附加第一个文件块
-					if (isLastTextMessage && fileChunks.length > 0)
+					if (isLastTextMessage && fileChunks.length)
 						payload.files = fileChunks.shift() // 附加并从待处理队列中移除
-
 
 					const isLastOverallMessage = isLastTextMessage && !fileChunks.length
 					await sendAndCache(payload, isLastOverallMessage ? fountReply : undefined)

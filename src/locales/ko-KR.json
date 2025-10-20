@@ -237,6 +237,18 @@
 			"keyboardPress": "키보드 ${keyboardIcon}에서 아무 키나 눌러보세요.",
 			"mobileTouchMove": "휴대폰 ${phoneIcon}을(를) 찾아보세요. 이제 손가락 중 하나를 사용하여 화면에 접촉한 후, 그대로 미끄러뜨리세요.",
 			"mobileClick": "손가락으로 휴대폰 ${phoneIcon} 화면을 한 번 가볍게 두드린 다음 바로 떼어보세요. 참 쉽죠?"
+		},
+		"achievements": {
+			"complete_tutorial": {
+				"name": "완벽한 산수교실",
+				"description": "드디어 초보자 튜토리얼을 마쳤습니다.",
+				"locked_description": "입문 튜토리얼을 완료하세요."
+			},
+			"skip_tutorial": {
+				"name": "나는 건너뛰었다",
+				"description": "\"튜토리얼? 그게 뭐야? 먹을 수 있는 거야?\"",
+				"locked_description": "소개 튜토리얼을 한 번 건너뛰세요."
+			}
 		}
 	},
 	"auth": {
@@ -387,6 +399,33 @@
 				"defaultCheckbox": {
 					"title": "기본 페르소나로 설정"
 				}
+			}
+		},
+		"achievements": {
+			"first_login": {
+				"name": "안녕하세요, 분수님!",
+				"description": "새로운 세계를 향해 첫 로그인!",
+				"locked_description": "분수에 한 번 로그인해 보세요."
+			},
+			"sfw_mode_on": {
+				"name": "엄마가 보고있다",
+				"description": "전연령 모드로 빠르게 전환하세요. 저는 정말 영리한 꼬마입니다.",
+				"locked_description": "안전 콘텐츠 모드를 한 번 켜보세요."
+			},
+			"sfw_mode_off": {
+				"name": "새로운 세계로 가는 문",
+				"description": "\"선생님, 시대가 변했어요.\"",
+				"locked_description": "안전 콘텐츠 모드를 한 번 끄세요."
+			},
+			"open_function_list": {
+				"name": "어디 한번 볼까!",
+				"description": "\"어떤 좋은 일이 있나요?\"",
+				"locked_description": "기능 목록을 한 번 열어보세요."
+			},
+			"set_default_persona": {
+				"name": "나의 길은 내가 정한다",
+				"description": "이 세상에서 당신의 행동에 대한 정체성을 설정하십시오.",
+				"locked_description": "기본 프로필을 설정합니다."
 			}
 		}
 	},
@@ -565,6 +604,23 @@
 					"alt": "강제 응답 아이콘"
 				}
 			}
+		},
+		"achievements": {
+			"first_chat": {
+				"name": "안녕 낯선 사람",
+				"description": "첫 번째 메시지가 전송되고 이야기가 시작됩니다.",
+				"locked_description": "어떤 문자로든 첫 번째 메시지를 보내세요."
+			},
+			"multiplayer_chat": {
+				"name": "화이트앨범의 계절",
+				"description": "\"왜 이렇게 됐지...\"",
+				"locked_description": "두 명 이상의 캐릭터가 동일한 채팅에서 말하게 하세요."
+			},
+			"photo_chat": {
+				"name": "사진도 있고 진실도 있다",
+				"description": "사진을 활용해 차원의 벽을 허무세요.",
+				"locked_description": "채팅으로 사진을 보내보세요."
+			}
 		}
 	},
 	"chat_history": {
@@ -692,6 +748,13 @@
 		},
 		"info": {
 			"description": "이 템플릿은 간단한 컴포넌트를 빠르게 만드는 데만 사용할 수 있으며, 복잡한 컴포넌트는 여전히 수동으로 만들어야 합니다."
+		},
+		"achievements": {
+			"create_part": {
+				"name": "연금술 작업장이 열려있습니다",
+				"description": "처음부터 시작하여 첫 번째 구성 요소를 만듭니다.",
+				"locked_description": "Quick New 기능을 사용하여 부품을 생성합니다."
+			}
 		}
 	},
 	"import": {
@@ -800,6 +863,13 @@
 			"copyShareLink": "공유 링크 복사",
 			"generateShareLink": "공유 링크 생성",
 			"generateShareLinkWithData": "공유 링크 생성 (데이터 포함)"
+		},
+		"achievements": {
+			"share_part": {
+				"name": "혼자 가는 것은 위험하단다! 이걸 가져가렴.",
+				"description": "\"이제 이 좋은 것의 사본을 당신에게 주겠습니다.\"",
+				"locked_description": "위젯을 한 번 공유해 보세요."
+			}
 		}
 	},
 	"uninstall": {
@@ -912,7 +982,8 @@
 			"title": "새로운 API 키가 만들어졌습니다",
 			"warning": "새 API 키를 복사하십시오. 당신은 그것을 다시 볼 수 없을 것입니다!",
 			"copyButtonTitle": "새 API 키를 복사하십시오",
-			"closeButton": "내 키를 복사했습니다"
+			"closeButton": "내 키를 복사했습니다",
+			"copiedAlert": "키가 클립보드에 복사되었습니다!"
 		}
 	},
 	"languageSettings": {
@@ -977,6 +1048,13 @@
 			"caramellatte": "카라멜 라떼",
 			"abyss": "어비스",
 			"silk": "실크"
+		},
+		"achievements": {
+			"change_theme": {
+				"name": "화려한 변신!",
+				"description": "분수는 새로운 모습과 완전히 새로운 분위기를 가졌습니다.",
+				"locked_description": "테마를 한 번 전환해 보세요."
+			}
 		}
 	},
 	"part_config": {
@@ -1067,6 +1145,13 @@
 			"copyModelIdTooltip": "클릭하여 모델 ID 복사",
 			"copied": "복사 완료!",
 			"loadModelsFailed": "모델을 불러오지 못했습니다: ${message}"
+		},
+		"achievements": {
+			"set_default_aisource": {
+				"name": "승리의 법칙은 정해졌다!",
+				"description": "기본 AI가 마나 공급원으로 지정됩니다.",
+				"locked_description": "기본 AI 소스를 한 번 설정합니다."
+			}
 		}
 	},
 	"discord_bots": {
@@ -1117,6 +1202,13 @@
 			"configSaved": "설정이 성공적으로 저장되었습니다.",
 			"httpError": "HTTP 오류가 발생했습니다.",
 			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 나가시겠습니까?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "디스코드에 오다",
+				"description": "당신의 캐릭터를 Discord의 세계로 소환하세요.",
+				"locked_description": "Discord Bot을 한 번 실행하세요."
+			}
 		}
 	},
 	"telegram_bots": {
@@ -1167,6 +1259,13 @@
 			"configSaved": "설정이 성공적으로 저장되었습니다!",
 			"httpError": "HTTP 오류가 발생했습니다.",
 			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 나가시겠습니까?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "텔레그램으로 오세요",
+				"description": "당신의 캐릭터를 텔레그램의 세계로 소환해보세요.",
+				"locked_description": "텔레그램 봇을 한 번 시작하세요."
+			}
 		}
 	},
 	"browser_integration": {
@@ -1224,6 +1323,18 @@
 			"load_failed": "자동 스크립트를로드하지 못했습니다 : ${message}",
 			"add_failed": "스크립트를 추가하지 못했습니다 : ${message}",
 			"delete_failed": "스크립트 삭제 실패 : ${message}"
+		},
+		"achievements": {
+			"install_script": {
+				"name": "마법을 불어넣어라!",
+				"description": "브라우저에 \"플러그인\"을 성공적으로 설치했습니다. 이제 더 많은 작업을 수행할 수 있습니다.",
+				"locked_description": "브라우저 통합 스크립트를 한 번 설치하십시오."
+			},
+			"run_js": {
+				"name": "코드 성가",
+				"description": "\"내 이름으로 브라우저에 명령을 내려라...\"",
+				"locked_description": "브라우저에서 JavaScript 코드를 한 번 실행하십시오."
+			}
 		}
 	},
 	"browser_integration_script": {
@@ -1241,7 +1352,49 @@
 	"terminal_assistant": {
 		"title": "터미널 어시스턴트",
 		"initialMessage": "fount는 코딩 작업을 돕기 위해 즐겨찾는 캐릭터를 터미널에 배포하는 기능을 지원합니다!",
-		"initialMessageLink": "자세한 내용은 여기를 클릭하세요."
+		"initialMessageLink": "자세한 내용은 여기를 클릭하세요.",
+		"achievements": {
+			"invoke_shell_assist": {
+				"name": "\"안녕하세요, 파운트.\"",
+				"description": "어두운 단말기에서는 AI 파트너의 이름이 호명됐다.",
+				"locked_description": "터미널 지원에 한 번 전화하십시오."
+			}
+		}
+	},
+	"deskpet": {
+		"title": "데스크톱 애완동물",
+		"launcherCard": {
+			"title": "애완동물 스타터",
+			"buttons": {
+				"start": "애완동물 시작"
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": "역할을 선택하세요"
+		},
+		"charSearch": {
+			"placeholder": "역할 검색..."
+		},
+		"runningCard": {
+			"title": "달리는 애완동물",
+			"noPets": "현재 운영중인 애완동물이 없습니다.",
+			"buttons": {
+				"stop": "멈추다"
+			}
+		},
+		"toasts": {
+			"started": "애완동물 '${charname}'이(가) 시작되었습니다.",
+			"start_failed": "애완동물 '${charname}' 시작 실패: ${message}",
+			"stopped": "애완동물 '${charname}'이(가) 중지되었습니다.",
+			"stop_failed": "애완동물 '${charname}' 중지 실패: ${message}"
+		},
+		"achievements": {
+			"start_deskpet": {
+				"name": "데스크탑의 새로운 동반자",
+				"description": "야생의 캐릭터가 튀어나와 데스크탑을 점령합니다.",
+				"locked_description": "데스크톱 애완동물을 시작하세요."
+			}
+		}
 	},
 	"access": {
 		"title": "다른 기기에서 fount에 접속",
@@ -1272,6 +1425,24 @@
 		"queryStringSectionTitle": "요청 헤더에 APIKey를 설정할 수 없나요? (안전하지 않음)",
 		"queryStringWarning": "애플리케이션이 요청 헤더(Authorization 헤더)에서 API 키 전송을 지원하지 않는 경우 이 대체 방법을 사용하세요. 참고: API 키를 URL에 직접 넣는 것은 서버 로그나 브라우저 기록에 기록될 수 있으므로 보안 위험이 있습니다.",
 		"copyQueryStringUrlButton": "API 키가 포함된 URL (쿼리 문자열)"
+	},
+	"achievements": {
+		"title": "성취",
+		"header": "성취의 전당",
+		"description": "여기에서 잠금 해제된 업적과 마일스톤을 확인하세요.",
+		"unlocked_on": "${date}에 잠금 해제됨",
+		"locked": "잠금 해제되지 않음",
+		"toast_title": "업적 잠금 해제!",
+		"error": {
+			"load_failed": "업적을 로드하지 못했습니다: ${message}"
+		},
+		"achievements": {
+			"open_achievements_page": {
+				"name": "도감 채우러 가자!",
+				"description": "성취 목록을 열고 우표 수집 여행을 시작할 준비를 했습니다.",
+				"locked_description": "업적 페이지를 엽니다."
+			}
+		}
 	},
 	"badges_maker": {
 		"title": "fount! 배지 변환기",

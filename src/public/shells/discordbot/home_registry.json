@@ -62,7 +62,7 @@
 				}
 			},
 			"level": 2,
-			"button": "<img src=\"https://api.iconify.design/lucide/bot.svg\" />",
+			"button": "<img src=\"https://api.iconify.design/lucide/bot.svg\" class=\"text-icon\"/>",
 			"sub_items": [
 				{
 					"info": {
@@ -195,7 +195,7 @@
 			"level": 1,
 			"interface": "discord",
 			"url": "/shells/discordbot?name=${name}&char=${name}",
-			"button": "<img src=\"https://api.iconify.design/line-md/discord.svg\"/>"
+			"button": "<img src=\"https://api.iconify.design/line-md/discord.svg\" class=\"text-icon\"/>"
 		}
 	]
 }

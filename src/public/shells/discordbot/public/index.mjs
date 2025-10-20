@@ -38,9 +38,8 @@ let selectedBot = null
 let isDirty = false // 标记是否有未保存的更改
 
 // UI 更新函数
-function renderBotDropdown() {
-	i18nElement(botListDropdown.parentElement)
-	const disabled = !botList || botList.length === 0
+async function renderBotDropdown() {
+	const disabled = !botList || !botList.length
 	const dataList = disabled ? [] : botList.map(name => ({ name, value: name }))
 
 	if (selectedBot)
@@ -48,7 +47,7 @@ function renderBotDropdown() {
 	else
 		delete botListDropdown.dataset.value
 
-	createSearchableDropdown({
+	await createSearchableDropdown({
 		dropdownElement: botListDropdown,
 		dataList,
 		textKey: 'name',
@@ -64,9 +63,9 @@ function renderBotDropdown() {
 	})
 }
 
-function renderCharDropdown() {
+async function renderCharDropdown() {
 	i18nElement(charSelectDropdown.parentElement)
-	const disabled = !charList || charList.length === 0
+	const disabled = !charList || !charList.length
 	const dataList = disabled ? [] : charList.map(name => ({ name, value: name }))
 
 	const currentConfig = configEditor?.get()?.json
@@ -75,7 +74,7 @@ function renderCharDropdown() {
 	else
 		delete charSelectDropdown.dataset.value
 
-	createSearchableDropdown({
+	await createSearchableDropdown({
 		dropdownElement: charSelectDropdown,
 		dataList,
 		textKey: 'name',
@@ -145,7 +144,7 @@ async function handleNewBot() {
 	try {
 		await newBotConfig(botname)
 		botList = await getBotList()
-		renderBotDropdown()
+		await renderBotDropdown()
 		botListDropdown.dataset.value = botname
 		await loadBotConfig(botname)
 	}
@@ -167,24 +166,21 @@ async function handleDeleteBot() {
 		botList = await getBotList()
 
 		let nextBotToLoad = null
-		if (botList.length > 0) {
+		if (botList.length) {
 			const newIndex = Math.min(oldBotIndex, botList.length - 1)
 			nextBotToLoad = botList[newIndex]
 		}
 
 		await loadBotConfig(nextBotToLoad)
-		renderBotDropdown()
+		await renderBotDropdown()
 	}
 	catch (error) { console.error(error) }
 }
 
 async function handleCharSelectChange(selectedChar) {
-	if (isDirty)
-		if (!confirmI18n('discord_bots.alerts.unsavedChanges')) {
-			charSelectDropdown.dataset.value = configEditor.get().json.char || ''
-			return
-		}
+	if (isDirty && !confirmI18n('discord_bots.alerts.unsavedChanges')) return
 
+	if (!selectedChar) return charSelectDropdown.dataset.value = ''
 	isDirty = true
 	const template = await getBotConfigTemplate(selectedChar)
 	if (template && configEditor)
@@ -308,8 +304,8 @@ async function initializeFromURLParams() {
 		charList = await getPartList('chars')
 
 		// 2. Render the dropdowns with the lists
-		renderBotDropdown()
-		renderCharDropdown()
+		await renderBotDropdown()
+		await renderCharDropdown()
 
 		// 3. Determine which bot to load
 		let botToLoad = null
@@ -325,7 +321,7 @@ async function initializeFromURLParams() {
 			} catch (error) {
 				console.error('Failed to create new bot from URL parameter:', error)
 			}
-		else if (botList.length > 0)
+		else if (botList.length)
 			botToLoad = botList[0]
 
 		// 4. Load the bot if one was determined

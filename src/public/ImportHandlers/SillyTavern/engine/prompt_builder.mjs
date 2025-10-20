@@ -140,7 +140,7 @@ export function promptBuilder(
 		extension: {}
 	}
 
-	if (aret.mes_examples.length > 0)
+	if (aret.mes_examples.length)
 		char_prompt_result.text.push({
 			content: '示例对话：' + aret.mes_examples.join('\n\n'),
 			description: 'mes_examples',
@@ -161,7 +161,7 @@ export function promptBuilder(
 			important: 1
 		})
 
-	if (aret.WIs_before_char.length > 0)
+	if (aret.WIs_before_char.length)
 		char_prompt_result.text.push({
 			content: aret.WIs_before_char.join('\n'),
 			description: 'WIs_before_char',
@@ -182,7 +182,7 @@ export function promptBuilder(
 			important: 2
 		})
 
-	if (aret.WIs_after_char.length > 0)
+	if (aret.WIs_after_char.length)
 		char_prompt_result.text.push({
 			content: aret.WIs_after_char.join('\n'),
 			description: 'WIs_after_char',
