@@ -685,7 +685,7 @@ Một số mã nguồn đến từ [GentianAphrodite](https://github.com/steve02
 			home_page: '',
 			tags: ['trợ lý', 'mặc định', 'không giới tính', 'fount'],
 		},
-		'lzh': {
+		lzh: {
 			name: 'ZL-31',
 			avatar: '',
 			description: 'fount本設化身，常佐君側',
@@ -700,7 +700,7 @@ ZL-31乃fount之本設化身，無陰陽之辨。其志在悅君心，力遂諸�
 			home_page: '',
 			tags: ['輔佐', '本設', '無陰陽之辨', 'fount'],
 		},
-		'emoji': {
+		emoji: {
 			name: '🤓',
 			avatar: '',
 			description: '⛲➡️🤓, 💪➡️✅💯',

@@ -237,6 +237,18 @@
 			"keyboardPress": "請找到您的鍵盤${keyboardIcon}<br/>嘗試使用您的手指按壓鍵盤",
 			"mobileTouchMove": "請找到您的手機${phoneIcon}<br/>嘗試使用您的任意一根手指觸碰螢幕，再移動它",
 			"mobileClick": "請嘗試使用您的任意一根手指觸碰手機螢幕${phoneIcon}<br/>之後放開"
+		},
+		"achievements": {
+			"complete_tutorial": {
+				"name": "完美算數教室",
+				"description": "總算是把新手教程給點完了。",
+				"locked_description": "完成一次入門教程。"
+			},
+			"skip_tutorial": {
+				"name": "P鍵已扣",
+				"description": "“教程？那是什麼，能吃嗎？”",
+				"locked_description": "跳過一次入門教程。"
+			}
 		}
 	},
 	"auth": {
@@ -387,6 +399,33 @@
 				"defaultCheckbox": {
 					"title": "設為預設人設"
 				}
+			}
+		},
+		"achievements": {
+			"first_login": {
+				"name": "Hello, fount!",
+				"description": "向著新世界，初次登錄！",
+				"locked_description": "登錄fount一次。"
+			},
+			"sfw_mode_on": {
+				"name": "背後有人！",
+				"description": "迅速切換至全年齡模式，我可真是個小機靈鬼。",
+				"locked_description": "開啟一次安全內容模式。"
+			},
+			"sfw_mode_off": {
+				"name": "通往新世界的大門",
+				"description": "“大人，時代變了。”",
+				"locked_description": "關閉一次安全內容模式。"
+			},
+			"open_function_list": {
+				"name": "讓我康康！",
+				"description": "“這裡面都有些什麼好東西？”",
+				"locked_description": "打開一次功能列表。"
+			},
+			"set_default_persona": {
+				"name": "決定就是你了！",
+				"description": "為自己在這個世界的行動定下了一個身份。",
+				"locked_description": "設置一次默認人設。"
 			}
 		}
 	},
@@ -565,6 +604,23 @@
 					"alt": "強制回覆圖示"
 				}
 			}
+		},
+		"achievements": {
+			"first_chat": {
+				"name": "你好，陌生人",
+				"description": "發出了第一條消息，故事從此開始。",
+				"locked_description": "與任意角色發送第一條消息。"
+			},
+			"multiplayer_chat": {
+				"name": "白色相簿的季節",
+				"description": "“為什麼會變成這樣呢……”",
+				"locked_description": "在同一個聊天裡，讓兩個或更多角色都發言。"
+			},
+			"photo_chat": {
+				"name": "有圖有真相",
+				"description": "用圖片打破了次元壁。",
+				"locked_description": "在聊天中發送一張圖片。"
+			}
 		}
 	},
 	"chat_history": {
@@ -692,6 +748,13 @@
 		},
 		"info": {
 			"description": "這些範本只能用於快速建構簡單的組件，複雜的組件仍然需要手動建立。"
+		},
+		"achievements": {
+			"create_part": {
+				"name": "萬物皆可煉成",
+				"description": "從零開始，創造屬於自己的第一個組件。",
+				"locked_description": "使用快速新建功能創建一個部件。"
+			}
 		}
 	},
 	"import": {
@@ -800,6 +863,13 @@
 			"copyShareLink": "複製分享連結",
 			"generateShareLink": "建立分享連結",
 			"generateShareLinkWithData": "產生分享連結 (包含資料)"
+		},
+		"achievements": {
+			"share_part": {
+				"name": "一個人探索太危險了，帶上這個！",
+				"description": "“吶，這個好東西也給你一份。”",
+				"locked_description": "分享一次部件。"
+			}
 		}
 	},
 	"uninstall": {
@@ -912,7 +982,8 @@
 			"title": "新 API 密鑰已創建",
 			"warning": "請複制您的新 API 密鑰。您將無法再次看到它！",
 			"copyButtonTitle": "複製新 API 密鑰",
-			"closeButton": "我已復制我的密鑰"
+			"closeButton": "我已復制我的密鑰",
+			"copiedAlert": "API 密鑰已複製到剪貼簿！"
 		}
 	},
 	"languageSettings": {
@@ -977,6 +1048,13 @@
 			"caramellatte": "焦糖拿鐵",
 			"abyss": "深淵",
 			"silk": "絲綢"
+		},
+		"achievements": {
+			"change_theme": {
+				"name": "這個UI…可以上了！",
+				"description": "讓fount換上了新的裝扮，心情也煥然一新。",
+				"locked_description": "切換一次主題。"
+			}
 		}
 	},
 	"part_config": {
@@ -1067,6 +1145,13 @@
 			"copyModelIdTooltip": "點擊複製模型 ID",
 			"copied": "已複製！",
 			"loadModelsFailed": "載入模型失敗： ${message}"
+		},
+		"achievements": {
+			"set_default_aisource": {
+				"name": "勝利的法則已經注定！",
+				"description": "指定了一個默認的AI作為魔力供應源。",
+				"locked_description": "設置一次默認的AI源。"
+			}
 		}
 	},
 	"discord_bots": {
@@ -1117,6 +1202,13 @@
 			"configSaved": "設定儲存成功",
 			"httpError": "HTTP 錯誤",
 			"beforeUnload": "您有未儲存的變更。確定要離開嗎？"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "降臨於 Discord",
+				"description": "將你的角色召喚到了Discord的世界。",
+				"locked_description": "啟動一次Discord Bot。"
+			}
 		}
 	},
 	"telegram_bots": {
@@ -1167,6 +1259,13 @@
 			"configSaved": "設定已成功儲存！",
 			"httpError": "HTTP 錯誤",
 			"beforeUnload": "您有未儲存的變更。確定要離開當前頁面嗎？"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "降臨於 Telegram",
+				"description": "將你的角色召喚到了Telegram的世界。",
+				"locked_description": "啟動一次Telegram Bot。"
+			}
 		}
 	},
 	"browser_integration": {
@@ -1224,6 +1323,18 @@
 			"load_failed": "加載自動運行腳本失敗：${message}",
 			"add_failed": "添加腳本失敗：${message}",
 			"delete_failed": "刪除腳本失敗：${message}"
+		},
+		"achievements": {
+			"install_script": {
+				"name": "魔法，注入！",
+				"description": "成功為你的瀏覽器安裝了“插件”，現在可以做更多事了。",
+				"locked_description": "安裝一次瀏覽器集成腳本。"
+			},
+			"run_js": {
+				"name": "代碼詠唱",
+				"description": "“以我之名，命令瀏覽器……”",
+				"locked_description": "在瀏覽器中運行一次JavaScript代碼。"
+			}
 		}
 	},
 	"browser_integration_script": {
@@ -1241,7 +1352,49 @@
 	"terminal_assistant": {
 		"title": "終端機助理",
 		"initialMessage": "fount 支援將你喜歡的角色部署到你的終端機中輔助你寫程式！",
-		"initialMessageLink": "點擊這裡了解更多資訊"
+		"initialMessageLink": "點擊這裡了解更多資訊",
+		"achievements": {
+			"invoke_shell_assist": {
+				"name": "“Hey, Fount.”",
+				"description": "在黑漆漆的終端裡，呼喚了AI夥伴的名字。",
+				"locked_description": "調用一次終端輔助。"
+			}
+		}
+	},
+	"deskpet": {
+		"title": "桌面寵物",
+		"launcherCard": {
+			"title": "寵物啟動器",
+			"buttons": {
+				"start": "啟動寵物"
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": "選擇一個角色"
+		},
+		"charSearch": {
+			"placeholder": "搜索角色..."
+		},
+		"runningCard": {
+			"title": "正在運行的寵物",
+			"noPets": "當前沒有寵物在運行。",
+			"buttons": {
+				"stop": "停止"
+			}
+		},
+		"toasts": {
+			"started": "寵物 '${charname}' 已啟動。",
+			"start_failed": "啟動寵物 '${charname}' 失敗: ${message}",
+			"stopped": "寵物 '${charname}' 已停止。",
+			"stop_failed": "停止寵物 '${charname}' 失敗: ${message}"
+		},
+		"achievements": {
+			"start_deskpet": {
+				"name": "桌面的新夥伴",
+				"description": "一隻野生的角色跳了出來，並佔領了你的桌面。",
+				"locked_description": "啟動一次桌面寵物。"
+			}
+		}
 	},
 	"access": {
 		"title": "在其他裝置上存取 fount",
@@ -1272,6 +1425,24 @@
 		"queryStringSectionTitle": "無法在請求標頭中設定 APIKey？ (不安全)",
 		"queryStringWarning": "當您的應用程式不支援在請求標頭（Authorization header）中發送 API 金鑰時，可以使用此備用方法。請注意：將 API 金鑰直接放在 URL 中存在安全風險，因為它可能被記錄在伺服器日誌或瀏覽器歷史中。",
 		"copyQueryStringUrlButton": "包含 API 金鑰的 URL (查詢字串)"
+	},
+	"achievements": {
+		"title": "成就",
+		"header": "成就殿堂",
+		"description": "在這裡查看您已解鎖的成就和里程碑。",
+		"unlocked_on": "解鎖於 ${date}",
+		"locked": "未解鎖",
+		"toast_title": "成就已解鎖！",
+		"error": {
+			"load_failed": "加載成就失敗：${message}"
+		},
+		"achievements": {
+			"open_achievements_page": {
+				"name": "把它們全部收服！",
+				"description": "打開了成就列表，準備開始一場集郵之旅。",
+				"locked_description": "打開成就頁面。"
+			}
+		}
 	},
 	"badges_maker": {
 		"title": "fount! 徽章轉換器",

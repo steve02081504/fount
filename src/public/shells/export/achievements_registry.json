@@ -1,0 +1,11 @@
+{
+	"achievements": {
+		"share_part": {
+			"name": "export.achievements.share_part.name",
+			"description": "export.achievements.share_part.description",
+			"icon": "https://api.iconify.design/line-md/uploading-loop.svg",
+			"locked_description": "export.achievements.share_part.locked_description",
+			"locked_icon": "https://api.iconify.design/line-md/question-circle.svg"
+		}
+	}
+}

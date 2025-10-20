@@ -237,6 +237,18 @@
 			"keyboardPress": "Finndu nú lyklaborðið þitt ${keyboardIcon}<br/>og reyndu að nota fingur þinn til að ýta á einhvern takkann.",
 			"mobileTouchMove": "Finndu nú farsímann þinn ${phoneIcon}<br/>Reyndu að nota hvaða fingur sem er til að snerta skjáinn og hreyfa hann svo.",
 			"mobileClick": "Reyndu nú að nota einhvern af fingrum þínum til að snerta skjá farsímans ${phoneIcon}<br/>og lyftu honum svo aftur."
+		},
+		"achievements": {
+			"complete_tutorial": {
+				"name": "Fullkomið talnakennslustofa",
+				"description": "Loksins búin með nýliðakennsluna.",
+				"locked_description": "Ljúktu við inngangsnámskeið."
+			},
+			"skip_tutorial": {
+				"name": "Ég sleppti",
+				"description": "\"Kennsla? Hvað er það? Er hægt að borða það?\"",
+				"locked_description": "Slepptu kynningarkennslunni einu sinni."
+			}
 		}
 	},
 	"auth": {
@@ -387,6 +399,33 @@
 				"defaultCheckbox": {
 					"title": "Sjálfgefin sjálfsmynd"
 				}
+			}
+		},
+		"achievements": {
+			"first_login": {
+				"name": "Halló, fontur!",
+				"description": "Stefnir í nýja heiminn, skráir þig inn í fyrsta skipti!",
+				"locked_description": "Skráðu þig einu sinni inn í gosbrunninn."
+			},
+			"sfw_mode_on": {
+				"name": "Það er einhver fyrir aftan þig!",
+				"description": "Skiptu fljótt yfir í allar aldursstillingar, ég er svo snjall lítill krakki.",
+				"locked_description": "Kveiktu einu sinni á öruggri efnisstillingu."
+			},
+			"sfw_mode_off": {
+				"name": "dyr að nýjum heimi",
+				"description": "\"Herra, tímarnir hafa breyst.\"",
+				"locked_description": "Slökktu einu sinni á Safe Content Mode."
+			},
+			"open_function_list": {
+				"name": "Leyfðu mér að vera heilbrigð!",
+				"description": "\"Hvaða góðir hlutir eru til?\"",
+				"locked_description": "Opnaðu aðgerðalistann einu sinni."
+			},
+			"set_default_persona": {
+				"name": "Ákvörðunin er þín!",
+				"description": "Settu sjálfsmynd fyrir gjörðir þínar í þessum heimi.",
+				"locked_description": "Stilltu sjálfgefið snið."
 			}
 		}
 	},
@@ -565,6 +604,23 @@
 					"alt": "Þvinga svar tákn"
 				}
 			}
+		},
+		"achievements": {
+			"first_chat": {
+				"name": "halló ókunnugur",
+				"description": "Fyrsta skilaboðin voru send og sagan hefst.",
+				"locked_description": "Sendu fyrstu skilaboðin þín með hvaða staf sem er."
+			},
+			"multiplayer_chat": {
+				"name": "árstíð af hvítu myndaalbúmi",
+				"description": "\"Af hverju varð þetta svona...\"",
+				"locked_description": "Láttu tvær eða fleiri persónur tala í sama spjallinu."
+			},
+			"photo_chat": {
+				"name": "Það eru myndir og sannleikurinn",
+				"description": "Notaðu myndir til að brjóta víddarvegginn.",
+				"locked_description": "Sendu mynd í spjallinu."
+			}
 		}
 	},
 	"chat_history": {
@@ -692,6 +748,13 @@
 		},
 		"info": {
 			"description": "Þessi sniðmát eru aðeins til að byggja einfalda íhluti hratt, flóknir íhlutir þurfa enn handvirka smíði."
+		},
+		"achievements": {
+			"create_part": {
+				"name": "Gullgerðarstofan er opin",
+				"description": "Byrjaðu frá grunni og búðu til fyrsta íhlutinn þinn.",
+				"locked_description": "Búðu til hluta með því að nota Quick New eiginleikann."
+			}
 		}
 	},
 	"import": {
@@ -800,6 +863,13 @@
 			"copyShareLink": "Afrita deilingarhlekk",
 			"generateShareLink": "Búa til deilingarhlekk",
 			"generateShareLinkWithData": "Búa til deilingarhlekk (með gögnum)"
+		},
+		"achievements": {
+			"share_part": {
+				"name": "Gott fólk á öruggt líf",
+				"description": "\"Nú skal ég gefa þér eintak af þessu góða.\"",
+				"locked_description": "Deildu græjunni einu sinni."
+			}
 		}
 	},
 	"uninstall": {
@@ -912,7 +982,8 @@
 			"title": "Nýr API lykill hefur verið búinn til",
 			"warning": "Vinsamlegast afritaðu nýja API lykilinn þinn. Þú munt ekki geta séð það aftur!",
 			"copyButtonTitle": "Afritaðu nýjan API lykil",
-			"closeButton": "Ég hef afritað lykilinn minn"
+			"closeButton": "Ég hef afritað lykilinn minn",
+			"copiedAlert": "API lykill afritaður á klippiborð!"
 		}
 	},
 	"languageSettings": {
@@ -977,6 +1048,13 @@
 			"caramellatte": "Karamellu Latte",
 			"abyss": "Hyldýpi",
 			"silk": "Silki"
+		},
+		"achievements": {
+			"change_theme": {
+				"name": "Skiptu yfir í verkjalyf!",
+				"description": "Gosbrunnurinn fékk nýtt útlit og alveg nýja stemningu.",
+				"locked_description": "Skiptu um þema einu sinni."
+			}
 		}
 	},
 	"part_config": {
@@ -1067,6 +1145,13 @@
 			"copyModelIdTooltip": "Smelltu til að afrita líkanauðkennið",
 			"copied": "Afritað!",
 			"loadModelsFailed": "Mistókst að hlaða líkönum: ${message}"
+		},
+		"achievements": {
+			"set_default_aisource": {
+				"name": "uppspretta töfra",
+				"description": "Sjálfgefin gervigreind er tilnefnd sem mana framboðsuppspretta.",
+				"locked_description": "Stilltu sjálfgefna gervigreindargjafa einu sinni."
+			}
 		}
 	},
 	"discord_bots": {
@@ -1117,6 +1202,13 @@
 			"configSaved": "Stillingar vistaðar",
 			"httpError": "HTTP villa",
 			"beforeUnload": "Þú hefur óvistaðar breytingar. Ertu viss um að þú viljir fara?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Að koma til Discord",
+				"description": "Kallaðu persónu þína inn í heim Discord.",
+				"locked_description": "Ræstu Discord Bot einu sinni."
+			}
 		}
 	},
 	"telegram_bots": {
@@ -1167,6 +1259,13 @@
 			"configSaved": "Stillingar vistaðar!",
 			"httpError": "HTTP villa",
 			"beforeUnload": "Þú hefur óvistaðar breytingar. Ertu viss um að þú viljir yfirgefa þessa síðu?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Kemur til Telegram",
+				"description": "Kallaðu persónu þína inn í heim Telegram.",
+				"locked_description": "Byrjaðu Telegram Bot einu sinni."
+			}
 		}
 	},
 	"browser_integration": {
@@ -1224,6 +1323,18 @@
 			"load_failed": "Ekki tókst að hlaða sjálfvirka handritið: ${message}",
 			"add_failed": "Ekki tókst að bæta við handriti: ${message}",
 			"delete_failed": "Eyða handrit mistókst: ${message}"
+		},
+		"achievements": {
+			"install_script": {
+				"name": "Galdur, innrennsli!",
+				"description": "Þú hefur sett upp „viðbótina“ fyrir vafrann þinn, nú geturðu gert meira.",
+				"locked_description": "Settu upp samþættingarforskrift vafra einu sinni."
+			},
+			"run_js": {
+				"name": "kóðasöngur",
+				"description": "\"Í mínu nafni, stjórnaðu vafranum...\"",
+				"locked_description": "Keyrðu JavaScript kóðann einu sinni í vafranum."
+			}
 		}
 	},
 	"browser_integration_script": {
@@ -1241,7 +1352,49 @@
 	"terminal_assistant": {
 		"title": "Flugstöðvar-aðstoðarmaður",
 		"initialMessage": "fount styður að setja uppáhalds persónuna þína í flugstöðina til að hjálpa þér við forritun!",
-		"initialMessageLink": "Smelltu hér til að fá frekari upplýsingar"
+		"initialMessageLink": "Smelltu hér til að fá frekari upplýsingar",
+		"achievements": {
+			"invoke_shell_assist": {
+				"name": "\"Hæ, Fount.\"",
+				"description": "Í myrkri flugstöðinni var nafn AI félagans kallað.",
+				"locked_description": "Hringdu einu sinni í flugstöðvaraðstoð."
+			}
+		}
+	},
+	"deskpet": {
+		"title": "Gæludýr skrifborðs",
+		"launcherCard": {
+			"title": "Gæludýr ræsir",
+			"buttons": {
+				"start": "Byrjaðu gæludýr"
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": "Veldu hlutverk"
+		},
+		"charSearch": {
+			"placeholder": "Leitaðu að hlutverkum ..."
+		},
+		"runningCard": {
+			"title": "Running Pet",
+			"noPets": "Nú eru engin gæludýr í gangi.",
+			"buttons": {
+				"stop": "Hættu"
+			}
+		},
+		"toasts": {
+			"started": "Gæludýr '${charname}' er byrjað.",
+			"start_failed": "Ekki tókst að hefja gæludýr '${charname}': ${message}",
+			"stopped": "Pet '${charname}' hefur verið stöðvað.",
+			"stop_failed": "Stöðvaðu gæludýr '${charname}' mistókst: ${message}"
+		},
+		"achievements": {
+			"start_deskpet": {
+				"name": "Nýr félagi á skjáborðið þitt",
+				"description": "Villtur karakter hoppar út og tekur yfir skjáborðið þitt.",
+				"locked_description": "Byrjaðu skrifborðsgæludýr."
+			}
+		}
 	},
 	"access": {
 		"title": "Aðgangur að fount á öðrum tækjum",
@@ -1272,6 +1425,24 @@
 		"queryStringSectionTitle": "Geturðu ekki stillt APIKey í haus beiðni? (Óöruggt)",
 		"queryStringWarning": "Notaðu þessa varaleið þegar forritið þitt styður ekki sendingu API lykilsins í haus beiðninnar (Authorization haus). Vinsamlegast athugið: Að setja API lykilinn beint í slóðina felur í sér öryggisáhættu þar sem hann gæti verið skráður í annálum netþjóna eða vafraferli.",
 		"copyQueryStringUrlButton": "Slóð með API lykli (Fyrirspurnarstrengur)"
+	},
+	"achievements": {
+		"title": "Afrek",
+		"header": "Afrekshöll",
+		"description": "Skoðaðu ólæstu afrekin þín og áfangastaði hér.",
+		"unlocked_on": "Opnað ${date}",
+		"locked": "Ekki ólæst",
+		"toast_title": "Afrek opnuð!",
+		"error": {
+			"load_failed": "Mistókst að hlaða afrekum: ${message}"
+		},
+		"achievements": {
+			"open_achievements_page": {
+				"name": "Bikar, hér kem ég!",
+				"description": "Opnaði afrekslistann og bjó sig undir að hefja frímerkjasöfnunarferð.",
+				"locked_description": "Opnaðu afrekssíðuna."
+			}
+		}
 	},
 	"badges_maker": {
 		"title": "fount! Merkja-breytir",

@@ -33,48 +33,48 @@ import { v4 as uuidv4 } from 'npm:uuid'
 // 模型信息
 const MODEL_INFO = {
 	'gpt-4-turbo-2024-04-09': {
-		'provider': 'openai',
-		'mapping': 'gpt-4-turbo-2024-04-09'
+		provider: 'openai',
+		mapping: 'gpt-4-turbo-2024-04-09'
 	},
 	'gemini-1.5-pro-exp-0801': {
-		'provider': 'google',
-		'mapping': 'models/gemini-1.5-pro-exp-0801'
+		provider: 'google',
+		mapping: 'models/gemini-1.5-pro-exp-0801'
 	},
 	'Meta-Llama-3.1-70B-Instruct-Turbo': {
-		'provider': 'togetherai',
-		'mapping': 'meta.llama3-1-70b-instruct-v1:0'
+		provider: 'togetherai',
+		mapping: 'meta.llama3-1-70b-instruct-v1:0'
 	},
 	'Meta-Llama-3.1-405B-Instruct-Turbo': {
-		'provider': 'togetherai',
-		'mapping': 'meta.llama3-1-405b-instruct-v1:0'
+		provider: 'togetherai',
+		mapping: 'meta.llama3-1-405b-instruct-v1:0'
 	},
 	'llama-3.1-sonar-large-128k-online': {
-		'provider': 'perplexity',
-		'mapping': 'llama-3.1-sonar-large-128k-online'
+		provider: 'perplexity',
+		mapping: 'llama-3.1-sonar-large-128k-online'
 	},
 	'gemini-1.5-pro-latest': {
-		'provider': 'google',
-		'mapping': 'models/gemini-1.5-pro-latest'
+		provider: 'google',
+		mapping: 'models/gemini-1.5-pro-latest'
 	},
 	'claude-3-5-sonnet-20240620': {
-		'provider': 'anthropic',
-		'mapping': 'anthropic.claude-3-5-sonnet-20240620-v1:0'
+		provider: 'anthropic',
+		mapping: 'anthropic.claude-3-5-sonnet-20240620-v1:0'
 	},
 	'claude-3-haiku-20240307': {
-		'provider': 'anthropic',
-		'mapping': 'anthropic.claude-3-haiku-20240307-v1:0'
+		provider: 'anthropic',
+		mapping: 'anthropic.claude-3-haiku-20240307-v1:0'
 	},
 	'gpt-4o-mini': {
-		'provider': 'openai',
-		'mapping': 'gpt-4o-mini'
+		provider: 'openai',
+		mapping: 'gpt-4o-mini'
 	},
 	'gpt-4o': {
-		'provider': 'openai',
-		'mapping': 'gpt-4o'
+		provider: 'openai',
+		mapping: 'gpt-4o'
 	},
 	'mistral-large-2407': {
-		'provider': 'mistral',
-		'mapping': 'mistral.mistral-large-2407-v1:0'
+		provider: 'mistral',
+		mapping: 'mistral.mistral-large-2407-v1:0'
 	}
 }
 
@@ -105,9 +105,9 @@ class AuthManager {
 		const url = `${_API_BASE_URL}/auth/v1/token?grant_type=password`
 		const headers = this._get_headers(true)
 		const data = {
-			'email': this._email,
-			'password': this._password,
-			'gotrue_meta_security': {}
+			email: this._email,
+			password: this._password,
+			gotrue_meta_security: {}
 		}
 
 		try {
@@ -127,7 +127,7 @@ class AuthManager {
 	async refresh_user_token() {
 		const url = `${_API_BASE_URL}/auth/v1/token?grant_type=refresh_token`
 		const headers = this._get_headers(true)
-		const data = { 'refresh_token': this._refresh_token }
+		const data = { refresh_token: this._refresh_token }
 
 		try {
 			const response = await this._make_request('POST', url, headers, data)
@@ -198,7 +198,7 @@ class AuthManager {
 	 */
 	_get_headers(with_content_type = false) {
 		const headers = {
-			'apikey': this._fetch_apikey(),
+			apikey: this._fetch_apikey(),
 			'user-agent': _USER_AGENT
 		}
 		if (with_content_type)
@@ -258,16 +258,16 @@ function generate_system_fingerprint() {
  */
 function create_openai_chunk(content, model, finish_reason = null, usage = null) {
 	const chunk = {
-		'id': `chatcmpl-${uuidv4()}`,
-		'object': CHAT_COMPLETION_CHUNK,
-		'created': Math.floor(Date.now() / 1000),
+		id: `chatcmpl-${uuidv4()}`,
+		object: CHAT_COMPLETION_CHUNK,
+		created: Math.floor(Date.now() / 1000),
 		model,
-		'system_fingerprint': generate_system_fingerprint(),
-		'choices': [
+		system_fingerprint: generate_system_fingerprint(),
+		choices: [
 			{
-				'index': 0,
-				'delta': content ? { content } : {},
-				'logprobs': null,
+				index: 0,
+				delta: content ? { content } : {},
+				logprobs: null,
 				finish_reason
 			}
 		]
@@ -343,22 +343,22 @@ async function handle_non_stream_response(response, model, prompt_tokens) {
 	const total_tokens = prompt_tokens + completion_tokens
 
 	return {
-		'id': `chatcmpl-${uuidv4()}`,
-		'object': 'chat.completion',
-		'created': Math.floor(Date.now() / 1000),
+		id: `chatcmpl-${uuidv4()}`,
+		object: 'chat.completion',
+		created: Math.floor(Date.now() / 1000),
 		model,
-		'system_fingerprint': generate_system_fingerprint(),
-		'choices': [
+		system_fingerprint: generate_system_fingerprint(),
+		choices: [
 			{
-				'index': 0,
-				'message': {
-					'role': 'assistant',
-					'content': full_content
+				index: 0,
+				message: {
+					role: 'assistant',
+					content: full_content
 				},
-				'finish_reason': 'stop'
+				finish_reason: 'stop'
 			}
 		],
-		'usage': {
+		usage: {
 			prompt_tokens,
 			completion_tokens,
 			total_tokens
@@ -383,11 +383,11 @@ async function get_notdiamond_headers(auth_manager) {
 	const jwt = auth_manager.get_jwt_value()
 
 	return {
-		'accept': CONTENT_TYPE_EVENT_STREAM,
+		accept: CONTENT_TYPE_EVENT_STREAM,
 		'accept-language': 'zh-CN,zh;q=0.9',
 		'content-type': 'application/json',
 		'user-agent': USER_AGENT,
-		'authorization': `Bearer ${jwt}`
+		authorization: `Bearer ${jwt}`
 	}
 }
 
@@ -402,8 +402,8 @@ async function build_payload(request_data, model_id) {
 
 	if (!messages.some(message => message.role === 'system')) {
 		const system_message = {
-			'role': 'system',
-			'content': SYSTEM_MESSAGE_CONTENT
+			role: 'system',
+			content: SYSTEM_MESSAGE_CONTENT
 		}
 		messages.unshift(system_message)
 	}
@@ -455,10 +455,10 @@ async function make_request(payload, auth_manager) {
  */
 async function call_model(model_id, messages, temperature, auth_manager) {
 	const request_data = {
-		'model': model_id,
+		model: model_id,
 		messages,
 		temperature,
-		'stream': false
+		stream: false
 	}
 	const payload = await build_payload(request_data, model_id)
 	const response = await make_request(payload, auth_manager)

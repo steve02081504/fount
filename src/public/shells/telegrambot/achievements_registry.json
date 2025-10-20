@@ -1,0 +1,11 @@
+{
+	"achievements": {
+		"start_bot": {
+			"name": "telegram_bots.achievements.start_bot.name",
+			"description": "telegram_bots.achievements.start_bot.description",
+			"icon": "https://api.iconify.design/line-md/telegram.svg",
+			"locked_description": "telegram_bots.achievements.start_bot.locked_description",
+			"locked_icon": "https://api.iconify.design/line-md/question-circle.svg"
+		}
+	}
+}

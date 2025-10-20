@@ -167,7 +167,7 @@ export class ClaudeAPI {
 
 		// 所有尝试都失败了
 		console.error('First login failed after multiple attempts.')
-		if (this.config.cookie_array.length > 0)
+		if (this.config.cookie_array.length)
 			this.cookieCleaner('Failed firstLogin after retry') // 清理当前 Cookie
 	}
 
@@ -239,7 +239,7 @@ export class ClaudeAPI {
 		// this.config.cookie_counter < 0 || (this.config.cookie_array.length <= 1 && (this.config.cookie_counter = 1)); //移除
 		this.SaveConfig()  // 保存更改
 
-		if (this.config.cookie_array.length > 0) // 如果还有剩余的cookie
+		if (this.config.cookie_array.length) // 如果还有剩余的cookie
 			this.cookieChanger() // 切换
 	}
 
