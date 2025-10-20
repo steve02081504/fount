@@ -982,7 +982,8 @@
 			"title": "تم إنشاء مفتاح API جديد",
 			"warning": "يرجى نسخ مفتاح API الجديد الخاص بك. لن تتمكن من رؤيته مرة أخرى!",
 			"copyButtonTitle": "نسخ مفتاح API جديد",
-			"closeButton": "لقد قمت بنسخ مفتاحي"
+			"closeButton": "لقد قمت بنسخ مفتاحي",
+			"copiedAlert": "تم نسخ مفتاح API إلى الحافظة!"
 		}
 	},
 	"languageSettings": {

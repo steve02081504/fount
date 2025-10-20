@@ -982,7 +982,8 @@
 			"title": "Une nouvelle clé API a été créée",
 			"warning": "Veuillez copier votre nouvelle clé API. Vous ne pourrez pas le revoir!",
 			"copyButtonTitle": "Copier la nouvelle clé API",
-			"closeButton": "J'ai copié ma clé"
+			"closeButton": "J'ai copié ma clé",
+			"copiedAlert": "Clé API copiée dans le presse-papiers !"
 		}
 	},
 	"languageSettings": {
