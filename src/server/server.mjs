@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import http from 'node:http'
 import https from 'node:https'
+import path from 'node:path'
 import process from 'node:process'
 
 import { on_shutdown } from 'npm:on-shutdown'
@@ -122,7 +123,7 @@ export async function init(start_config) {
 
 	if (starts.Web) {
 		const { port, https: httpsConfig, trust_proxy } = config // 获取 HTTPS 配置
-		hosturl = (httpsConfig && httpsConfig.enabled ? 'https' : 'http') + '://localhost:' + port
+		hosturl = (httpsConfig?.enabled ? 'https' : 'http') + '://localhost:' + port
 		let server
 
 		console.freshLineI18n('server start', 'fountConsole.server.starting')
@@ -160,19 +161,17 @@ export async function init(start_config) {
 
 			const ansi_hosturl = supportsAnsi ? `\x1b]8;;${hosturl}\x1b\\${hosturl}\x1b]8;;\x1b\\` : hosturl
 
-			if (httpsConfig && httpsConfig.enabled) {
-				// 启用 HTTPS
-				const options = {
-					key: fs.readFileSync(httpsConfig.keyFile),
-					cert: fs.readFileSync(httpsConfig.certFile),
-				}
-				server = https.createServer(options, requestListener).listen(port, async () => {
+			const listen = [port, config.listen].filter(Boolean)
+			if (httpsConfig?.enabled)
+				server = https.createServer({
+					key: fs.readFileSync(path.resolve(httpsConfig.keyFile, __dirname)),
+					cert: fs.readFileSync(path.resolve(httpsConfig.certFile, __dirname)),
+				}, requestListener).listen(...listen, async () => {
 					console.logI18n('fountConsole.server.showUrl.https', { url: ansi_hosturl })
 					resolve()
 				})
-			}
 			else
-				server = http.createServer(requestListener).listen(port, async () => {
+				server = http.createServer(requestListener).listen(...listen, async () => {
 					console.logI18n('fountConsole.server.showUrl.http', { url: ansi_hosturl })
 					resolve()
 				})

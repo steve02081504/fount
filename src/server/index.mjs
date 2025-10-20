@@ -50,9 +50,9 @@ if (args.length) {
 			data: { username, parttype, partname, args },
 		}
 	}
-	else if (command == 'shutdown') {
+	else if (command == 'shutdown' || command == 'reboot') {
 		command_obj = {
-			type: 'shutdown',
+			type: command,
 		}
 		fount_config.starts = {
 			Base: false,

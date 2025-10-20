@@ -47,6 +47,7 @@ PLACEHOLDER_SIMILARITY_THRESHOLD_FACTOR = 0.7  # 用于计算最大可接受距�
 PLACEHOLDER_ABSOLUTE_DISTANCE_THRESHOLD = 3  # 或者一个固定的最大编辑距离
 # ----------- 配置结束 -----------
 
+
 def load_gitignore_spec(fount_root_dir):
 	"""Loads .gitignore and returns a pathspec.PathSpec object."""
 	gitignore_path = os.path.join(fount_root_dir, ".gitignore")
@@ -58,6 +59,7 @@ def load_gitignore_spec(fount_root_dir):
 		spec = pathspec.PathSpec.from_lines("gitwildmatch", f)
 	print(f"已从 .gitignore 加载忽略规则。")
 	return spec
+
 
 # 获取Google支持的语言代码字典和代码集合
 try:

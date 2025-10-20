@@ -1,6 +1,6 @@
 /** @typedef {import('../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
-/** @typedef {import('../../../../decl/WorldAPI.ts').WorldAPI_t} WorldAPI_t */
-/** @typedef {import('../../../../decl/UserAPI.ts').UserAPI_t} UserAPI_t */
+/** @typedef {import('../../../../decl/worldAPI.ts').WorldAPI_t} WorldAPI_t */
+/** @typedef {import('../../../../decl/userAPI.ts').UserAPI_t} UserAPI_t */
 /** @typedef {import('../../../../decl/basedefs.ts').locale_t} locale_t */
 
 import { Buffer } from 'node:buffer'
@@ -30,7 +30,7 @@ import { addfile, getfile } from './files.mjs'
 const chatMetadatas = new Map()
 const chatUiSockets = new Map()
 const chatDeleteTimers = new Map()
-const CHAT_DELETE_TIMEOUT = ms('30m')
+const CHAT_UNLOAD_TIMEOUT = ms('30m')
 
 export function registerChatUiSocket(chatid, ws) {
 	if (chatDeleteTimers.has(chatid)) {
@@ -49,17 +49,21 @@ export function registerChatUiSocket(chatid, ws) {
 		socketSet.delete(ws)
 		console.log(`Chat UI WebSocket disconnected for chat ${chatid}. Total: ${socketSet.size}`)
 		const chatData = chatMetadatas.get(chatid)
-		if (!socketSet.size && chatUiSockets.delete(chatid) && !is_VividChat(chatData?.chatMetadata)) {
+		if (!socketSet.size && chatUiSockets.delete(chatid)) {
 			clearTimeout(chatDeleteTimers.get(chatid))
 			chatDeleteTimers.set(chatid, setTimeout(async () => {
 				try {
-					if (chatUiSockets.has(chatid) || is_VividChat(chatData.chatMetadata)) return
-					await deleteChat([chatid], chatData.username)
+					if (chatUiSockets.has(chatid)) return
+					if (is_VividChat(chatData?.chatMetadata)) {
+						await saveChat(chatid)
+						chatData.chatMetadata = null
+					}
+					else await deleteChat([chatid], chatData.username)
 				}
 				finally {
 					chatDeleteTimers.delete(chatid)
 				}
-			}, CHAT_DELETE_TIMEOUT))
+			}, CHAT_UNLOAD_TIMEOUT))
 		}
 	})
 }
