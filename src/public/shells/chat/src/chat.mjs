@@ -1049,7 +1049,7 @@ export async function addUserReply(chatid, object) {
 	unlockAchievement(chatMetadata.username, 'shells', 'chat', 'first_chat')
 
 	// photo_chat
-	if (object.files?.some(file => file.type.startsWith('image/')))
+	if (object.files?.some?.(file => file.mime_type.startsWith('image/')))
 		unlockAchievement(chatMetadata.username, 'shells', 'chat', 'photo_chat')
 
 	const timeSlice = chatMetadata.LastTimeSlice
