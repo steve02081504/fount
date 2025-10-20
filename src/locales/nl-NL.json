@@ -982,7 +982,8 @@
 			"title": "Er is een nieuwe API -sleutel gemaakt",
 			"warning": "Kopieer uw nieuwe API -sleutel. Je kunt het niet meer zien!",
 			"copyButtonTitle": "Kopieer een nieuwe API -sleutel",
-			"closeButton": "Ik heb mijn sleutel gekopieerd"
+			"closeButton": "Ik heb mijn sleutel gekopieerd",
+			"copiedAlert": "API -sleutel gekopieerd naar klembord!"
 		}
 	},
 	"languageSettings": {

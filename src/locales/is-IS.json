@@ -982,7 +982,8 @@
 			"title": "Nýr API lykill hefur verið búinn til",
 			"warning": "Vinsamlegast afritaðu nýja API lykilinn þinn. Þú munt ekki geta séð það aftur!",
 			"copyButtonTitle": "Afritaðu nýjan API lykil",
-			"closeButton": "Ég hef afritað lykilinn minn"
+			"closeButton": "Ég hef afritað lykilinn minn",
+			"copiedAlert": "API lykill afritaður á klippiborð!"
 		}
 	},
 	"languageSettings": {

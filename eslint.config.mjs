@@ -13,7 +13,7 @@ const commonPlugins = {
 	'unused-imports': UnusedImports,
 	'destructuring-merge': destructuringMerge,
 	'remove-duplicates': removeDuplicates,
-	'import': importPlugin,
+	import: importPlugin,
 }
 
 const commonRules = {
@@ -48,6 +48,7 @@ const commonRules = {
 		ignoredNodes: ['ConditionalExpression'],
 	}],
 	quotes: ['error', 'single'],
+	'quote-props': ['error', 'as-needed'],
 	'object-shorthand': ['error', 'always'],
 	'prefer-destructuring': ['warn', {
 		VariableDeclarator: { array: true, object: true },
@@ -73,7 +74,7 @@ const commonRules = {
 
 const globals = {
 	...decled_globals.browser,
-	'process': 'readonly',
+	process: 'readonly',
 }
 
 export default [

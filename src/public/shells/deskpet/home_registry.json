@@ -261,7 +261,7 @@
 			"level": 1,
 			"interface": "deskpet",
 			"url": "/shells/deskpet/launch?char=${name}",
-			"button": "<img src=\"https://api.iconify.design/material-symbols/rocket-launch.svg\" class=\"text-icon\"/>"
+			"button": "<img src=\"https://api.iconify.design/material-symbols/pets.svg\" class=\"text-icon\"/>"
 		}
 	]
 }

@@ -982,7 +982,8 @@
 			"title": "✨🔑",
 			"warning": "⚠️📋",
 			"copyButtonTitle": "📋🔑",
-			"closeButton": "✅📋"
+			"closeButton": "✅📋",
+			"copiedAlert": "📋✅❗️"
 		}
 	},
 	"languageSettings": {
