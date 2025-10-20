@@ -6,6 +6,7 @@ import { VirtualConsole } from 'npm:@steve02081504/virtual-console'
 import { console, geti18n } from '../../scripts/i18n.mjs'
 import { getLoadedPartList, getPartList, loadPart } from '../managers/index.mjs'
 import { getPartDetails } from '../parts_loader.mjs'
+import { restartor } from '../server.mjs'
 
 const IPC_PORT = 16698 // 选择一个不太可能冲突的端口
 
@@ -47,6 +48,9 @@ export async function processIPCCommand(command, data) {
 			}
 			case 'shutdown':
 				process.exit()
+				return { status: 'ok' }
+			case 'reboot':
+				restartor()
 				return { status: 'ok' }
 			case 'ping':
 				return { status: 'ok', data: 'pong' }
