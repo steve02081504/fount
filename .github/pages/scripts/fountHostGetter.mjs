@@ -198,6 +198,6 @@ export async function pingFount(hostUrl) {
 			cache: 'no-cache'
 		}).catch(() => 0))?.ok
 	}
-	catch(e) { Sentry.captureException(e, { extra: { hostUrl } }) }
+	catch (e) { Sentry.captureException(e, { extra: { hostUrl } }) }
 	finally { clearTimeout(timeout) }
 }

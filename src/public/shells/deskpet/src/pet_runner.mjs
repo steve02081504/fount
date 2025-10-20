@@ -47,27 +47,19 @@ export async function runPet(username, charname) {
 			frameless: petConfig.windowOptions?.frameless ?? true,
 			transparent: petConfig.windowOptions?.transparent ?? true,
 		})
-		;(async () => {
-			await webview.run()
-			if (runningPets[username]?.[charname]) {
-				delete runningPets[username][charname]
-				if (!Object.keys(runningPets[username]).length)
-					delete runningPets[username]
+		webview.run().then(async () => {
+			delete runningPets[username][charname]
+			if (!Object.keys(runningPets[username]).length) delete runningPets[username]
 
-				// Revoke the API key
-				await revokeApiKey(jti)
-				EndJob(username, 'shells', 'deskpet', charname)
-				sendEventToAll('deskpet-list-updated')
-			}
-		})()
+			await revokeApiKey(jti)
+			EndJob(username, 'shells', 'deskpet', charname)
+			sendEventToAll('deskpet-list-updated')
+		})
 
-		if (!runningPets[username])
-			runningPets[username] = {}
-
+		runningPets[username] ??= {}
 		runningPets[username][charname] = { webview, apiKeyJti: jti }
 		sendEventToAll('deskpet-list-updated')
 		unlockAchievement(username, 'shells', 'deskpet', 'start_deskpet') // Trigger achievement here
-
 	} catch (error) {
 		console.error(`[DeskPet] Failed to start pet for ${charname}:`, error)
 		EndJob(username, 'shells', 'deskpet', charname) // End job on failure

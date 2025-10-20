@@ -820,7 +820,7 @@ export function getUserDictionary(username) {
 let avgVerifyTime = 0
 {
 	const startTime = Date.now()
-	await argon2.verify('$argon2id$v=19$m=65536,t=3,p=4$ZHVtbXlkYXRh$ZHVtbXlkYXRhZGF0YQ', 'dummydata').catch(() => {})
+	await argon2.verify('$argon2id$v=19$m=65536,t=3,p=4$ZHVtbXlkYXRh$ZHVtbXlkYXRhZGF0YQ', 'dummydata').catch(() => { })
 	avgVerifyTime = Date.now() - startTime
 }
 
