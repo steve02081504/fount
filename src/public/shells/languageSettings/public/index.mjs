@@ -19,13 +19,11 @@ function getLocaleName(id) {
 	return locale ? locale.name : id // Fallback to ID if name not found
 }
 
-function updateAvailableLanguagesDropdown() {
-	i18nElement(availableLanguagesDropdown) // Translate placeholders first
-
+async function updateAvailableLanguagesDropdown() {
 	const currentPreferredSet = new Set(userPreferredLocales)
 	const filteredAvailableLocales = availableLocales.filter(locale => !currentPreferredSet.has(locale.id))
 
-	createSearchableDropdown({
+	await createSearchableDropdown({
 		dropdownElement: availableLanguagesDropdown,
 		dataList: filteredAvailableLocales,
 		textKey: 'name',
@@ -49,8 +47,8 @@ async function renderPreferredLanguages() {
 	if (!userPreferredLocales.length) {
 		preferredLanguagesList.innerHTML = '<p class="text-center text-base-content-secondary" data-i18n="languageSettings.noPreferredLanguages"></p>'
 		i18nElement(preferredLanguagesList)
-		if (availableLocales.length > 0)
-			updateAvailableLanguagesDropdown()
+		if (availableLocales.length)
+			await updateAvailableLanguagesDropdown()
 		return
 	}
 
@@ -71,7 +69,7 @@ async function renderPreferredLanguages() {
 		preferredLanguagesList.appendChild(listItem)
 	}
 
-	updateAvailableLanguagesDropdown()
+	await updateAvailableLanguagesDropdown()
 }
 
 // --- Event Handlers ---

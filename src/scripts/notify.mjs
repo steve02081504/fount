@@ -14,7 +14,7 @@ export async function notify(title, message, options = {}) {
 		exec(`\
 Add-Type -AssemblyName System.Windows.Forms
 [System.Windows.Forms.MessageBox]::Show('${message.replace(/(['‘’])/g, '$1$1')}', '${title.replace(/(['‘’])/g, '$1$1')}', 0, [System.Windows.Forms.MessageBoxIcon]::Information)
-`, { 'shell': 'powershell.exe' }).then(() => setDefaultStuff()).catch(console.error)
+`, { shell: 'powershell.exe' }).then(() => setDefaultStuff()).catch(console.error)
 		return
 	}
 	if (in_docker || in_termux) return

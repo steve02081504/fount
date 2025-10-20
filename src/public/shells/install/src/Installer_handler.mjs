@@ -18,9 +18,8 @@ export async function importPart(username, data) {
 	for (const importHandler of ImportHandlers) try {
 		const handler = await LoadImportHandler(username, importHandler)
 		const installedParts = await handler.interfaces.import.ImportAsData(username, data)
-		if (installedParts && installedParts.length > 0)
-			for (const part of installedParts)
-				notifyPartInstall(username, part.parttype, part.partname)
+		for (const part of installedParts)
+			notifyPartInstall(username, part.parttype, part.partname)
 
 		return
 	} catch (err) {
@@ -29,7 +28,7 @@ export async function importPart(username, data) {
 	}
 
 	// 如果所有模板都失败，抛出包含所有错误的异常
-	if (errors.length > 0)
+	if (errors.length)
 		throw skip_report(Object.assign(new Error('All handlers failed'), { errors }))
 }
 
@@ -40,7 +39,7 @@ export async function importPartByText(username, text) {
 	for (const importHandler of ImportHandlers) try {
 		const handler = await LoadImportHandler(username, importHandler)
 		const installedParts = await handler.interfaces.import.ImportByText(username, text)
-		if (installedParts && installedParts.length > 0)
+		if (installedParts && installedParts.length)
 			for (const part of installedParts)
 				notifyPartInstall(username, part.parttype, part.partname)
 
@@ -51,5 +50,5 @@ export async function importPartByText(username, text) {
 	}
 
 
-	if (errors.length > 0) throw Object.assign(new Error('All handlers failed'), { errors })
+	if (errors.length) throw Object.assign(new Error('All handlers failed'), { errors })
 }

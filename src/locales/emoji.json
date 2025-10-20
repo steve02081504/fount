@@ -237,6 +237,18 @@
 			"keyboardPress": "👆⌨️${keyboardIcon}<br/>👇",
 			"mobileTouchMove": "👆📱${phoneIcon}<br/>➡️",
 			"mobileClick": "👆📱${phoneIcon}<br/>👇"
+		},
+		"achievements": {
+			"complete_tutorial": {
+				"name": "🎓✅",
+				"description": "👨‍🏫➡️👨‍🎓",
+				"locked_description": "🔒"
+			},
+			"skip_tutorial": {
+				"name": "🤷‍♂️⏭️",
+				"description": "📖➡️🗑️",
+				"locked_description": "🔒"
+			}
 		}
 	},
 	"auth": {
@@ -387,6 +399,33 @@
 				"defaultCheckbox": {
 					"title": "❤️👤"
 				}
+			}
+		},
+		"achievements": {
+			"first_login": {
+				"name": "👋⛲",
+				"description": "➡️🌍✨",
+				"locked_description": "🔒"
+			},
+			"sfw_mode_on": {
+				"name": "🫣😇",
+				"description": "🤫👨‍👩‍👧‍👦",
+				"locked_description": "🔒"
+			},
+			"sfw_mode_off": {
+				"name": "🧐😎",
+				"description": "🚪➡️😈",
+				"locked_description": "🔒"
+			},
+			"open_function_list": {
+				"name": "📜👀",
+				"description": "🤔🎁❓",
+				"locked_description": "🔒"
+			},
+			"set_default_persona": {
+				"name": "👆🫵",
+				"description": "👤➡️👑",
+				"locked_description": "🔒"
 			}
 		}
 	},
@@ -565,6 +604,23 @@
 					"alt": "💪🗣️"
 				}
 			}
+		},
+		"achievements": {
+			"first_chat": {
+				"name": "👋👤",
+				"description": "💬➡️📖",
+				"locked_description": "🔒"
+			},
+			"multiplayer_chat": {
+				"name": "🧑‍🤝‍🧑💔",
+				"description": "💬👱‍♀️💬🧑💬👱‍♂️",
+				"locked_description": "🔒"
+			},
+			"photo_chat": {
+				"name": "🖼️➡️✨",
+				"description": "💬➡️🏞️",
+				"locked_description": "🔒"
+			}
 		}
 	},
 	"chat_history": {
@@ -692,6 +748,13 @@
 		},
 		"info": {
 			"description": "✨➡️👍🧩, 💪🧩➡️✍️"
+		},
+		"achievements": {
+			"create_part": {
+				"name": "🧪👨‍🔬",
+				"description": "⚪️➡️🧩",
+				"locked_description": "🔒"
+			}
 		}
 	},
 	"import": {
@@ -800,6 +863,13 @@
 			"copyShareLink": "📋🔗",
 			"generateShareLink": "✨🔗",
 			"generateShareLinkWithData": "✨🔗 (➕💾)"
+		},
+		"achievements": {
+			"share_part": {
+				"name": "🤝❤️",
+				"description": "🧩➡️🧑‍🤝‍🧑",
+				"locked_description": "🔒"
+			}
 		}
 	},
 	"uninstall": {
@@ -912,7 +982,8 @@
 			"title": "✨🔑",
 			"warning": "⚠️📋",
 			"copyButtonTitle": "📋🔑",
-			"closeButton": "✅📋"
+			"closeButton": "✅📋",
+			"copiedAlert": "📋✅❗️"
 		}
 	},
 	"languageSettings": {
@@ -977,6 +1048,13 @@
 			"caramellatte": "🍮☕",
 			"abyss": "🕳️",
 			"silk": "🧣"
+		},
+		"achievements": {
+			"change_theme": {
+				"name": "🎨🖌️",
+				"description": "😐➡️🤩",
+				"locked_description": "🔒"
+			}
 		}
 	},
 	"part_config": {
@@ -1067,6 +1145,13 @@
 			"copyModelIdTooltip": "👆➡️📋",
 			"copied": "📋✅",
 			"loadModelsFailed": "🤖📥❌: ${message}"
+		},
+		"achievements": {
+			"set_default_aisource": {
+				"name": "🪄💧",
+				"description": "🤖➡️🔮",
+				"locked_description": "🔒"
+			}
 		}
 	},
 	"discord_bots": {
@@ -1117,6 +1202,13 @@
 			"configSaved": "⚙️💾✅",
 			"httpError": "🌐❌",
 			"beforeUnload": "🤔💾➡️🚪❓"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "🤖🎮",
+				"description": "👤✨➡️🎮",
+				"locked_description": "🔒"
+			}
 		}
 	},
 	"telegram_bots": {
@@ -1167,6 +1259,13 @@
 			"configSaved": "⚙️💾✅",
 			"httpError": "🌐❌",
 			"beforeUnload": "🤔💾➡️🚪❓"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "🤖✈️",
+				"description": "👤✨➡️✈️",
+				"locked_description": "🔒"
+			}
 		}
 	},
 	"browser_integration": {
@@ -1224,6 +1323,18 @@
 			"load_failed": "⚠️📜 ${message}",
 			"add_failed": "⚠️➕ ${message}",
 			"delete_failed": "⚠️🗑️ ${message}"
+		},
+		"achievements": {
+			"install_script": {
+				"name": "🧩➡️🌐",
+				"description": "🖱️➡️🪄",
+				"locked_description": "🔒"
+			},
+			"run_js": {
+				"name": "🗣️📜",
+				"description": "⌨️➡️⚡️",
+				"locked_description": "🔒"
+			}
 		}
 	},
 	"browser_integration_script": {
@@ -1241,7 +1352,49 @@
 	"terminal_assistant": {
 		"title": "💻🦾",
 		"initialMessage": "⛲➡️🤖➡️💻🦾❗️",
-		"initialMessageLink": "👆➡️ℹ️"
+		"initialMessageLink": "👆➡️ℹ️",
+		"achievements": {
+			"invoke_shell_assist": {
+				"name": "👋💻",
+				"description": "⚫️➡️💡",
+				"locked_description": "🔒"
+			}
+		}
+	},
+	"deskpet": {
+		"title": "🖥️🐾",
+		"launcherCard": {
+			"title": "🖥️🐾",
+			"buttons": {
+				"start": "▶️🐾"
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": "👆👤"
+		},
+		"charSearch": {
+			"placeholder": "👆👤"
+		},
+		"runningCard": {
+			"title": "🖥️🐾",
+			"noPets": "🚫🐾",
+			"buttons": {
+				"stop": "⏹️🐾"
+			}
+		},
+		"toasts": {
+			"started": "🐾${charname}▶️",
+			"start_failed": "🐾${charname}❌${message}",
+			"stopped": "🐾${charname}⏹️",
+			"stop_failed": "🐾${charname}⏹️❌${message}"
+		},
+		"achievements": {
+			"start_deskpet": {
+				"name": "🐾🖥️",
+				"description": "💥➡️🐈",
+				"locked_description": "🔒"
+			}
+		}
 	},
 	"access": {
 		"title": "🌍 ⛲",
@@ -1272,6 +1425,24 @@
 		"queryStringSectionTitle": "🚫👤🔑❓ (🔓💥)",
 		"queryStringWarning": "⚠️🔑➡️🌐 ➡️ 📜🕵️‍♂️",
 		"copyQueryStringUrlButton": "🌐?🔑=..."
+	},
+	"achievements": {
+		"title": "🖥️🐾",
+		"header": "🏛️🏆",
+		"description": "👤✨➡️🎮",
+		"unlocked_on": "✅ ${date}",
+		"locked": "🔒",
+		"toast_title": "🎉🏆!",
+		"error": {
+			"load_failed": "🏆❌: ${message}"
+		},
+		"achievements": {
+			"open_achievements_page": {
+				"name": "🏆🏃‍♂️",
+				"description": "🚪➡️📜",
+				"locked_description": "🔒"
+			}
+		}
 	},
 	"badges_maker": {
 		"title": "⛲❗️ 🎖️✨",

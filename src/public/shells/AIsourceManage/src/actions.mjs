@@ -1,5 +1,6 @@
 import { getPartList } from '../../../../server/managers/index.mjs'
 import { setDefaultPart } from '../../../../server/parts_loader.mjs'
+import { unlockAchievement } from '../../achievements/src/api.mjs'
 
 import { addAISourceFile, deleteAISourceFile, getAISourceFile, saveAISourceFile } from './manager.mjs'
 
@@ -27,6 +28,7 @@ export const actions = {
 	'set-default': async ({ user, sourceName }) => {
 		if (!sourceName) throw new Error('AI source name is required for set-default action.')
 		await setDefaultPart(user, 'AIsources', sourceName)
+		unlockAchievement(user, 'shells', 'AIsourceManage', 'set_default_aisource')
 		return `AI source '${sourceName}' set as default.`
 	}
 }

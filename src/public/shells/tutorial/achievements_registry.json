@@ -1,0 +1,18 @@
+{
+	"achievements": {
+		"complete_tutorial": {
+			"name": "tutorial.achievements.complete_tutorial.name",
+			"description": "tutorial.achievements.complete_tutorial.description",
+			"icon": "https://api.iconify.design/line-md/confirm-square.svg",
+			"locked_description": "tutorial.achievements.complete_tutorial.locked_description",
+			"locked_icon": "https://api.iconify.design/line-md/question-circle.svg"
+		},
+		"skip_tutorial": {
+			"name": "tutorial.achievements.skip_tutorial.name",
+			"description": "tutorial.achievements.skip_tutorial.description",
+			"icon": "https://api.iconify.design/line-md/question.svg",
+			"locked_description": "tutorial.achievements.skip_tutorial.locked_description",
+			"locked_icon": "https://api.iconify.design/line-md/question-circle.svg"
+		}
+	}
+}

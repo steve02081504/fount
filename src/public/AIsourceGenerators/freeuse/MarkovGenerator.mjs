@@ -62,7 +62,7 @@ export class MarkovGenerator {
 		const normalizedText = text.toLowerCase()
 		const regex = new RegExp(`${this.specialTokens.map(escapeRegExp).join('|')}|\\s+|\\w+(['’]\\w+)*|[.,!?;:"！？。，《》…（）\\(\\)]|\\S`, 'g')
 		const rawTokens = normalizedText.match(regex) || []
-		return rawTokens.filter(token => token.length > 0)
+		return rawTokens.filter(token => token.length)
 	}
 
 	/**
