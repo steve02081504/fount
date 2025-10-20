@@ -1,5 +1,5 @@
-import { confirmI18n, main_locale } from '../../../../../scripts/i18n.mjs'
-import { renderMarkdownAsString } from '../../../../../scripts/markdown.mjs'
+import { confirmI18n, main_locale, geti18n } from '../../../../../scripts/i18n.mjs'
+import { renderMarkdownAsString, renderMarkdownAsStandAloneHtmlString } from '../../../../../scripts/markdown.mjs'
 import { renderTemplate, renderTemplateAsHtmlString } from '../../../../../scripts/template.mjs'
 import { showToast } from '../../../../../scripts/toast.mjs'
 import {
@@ -8,7 +8,8 @@ import {
 	editMessage,
 } from '../endpoints.mjs'
 import { handleFilesSelect, renderAttachmentPreview } from '../fileHandling.mjs'
-import { processTimeStampForId, SWIPE_THRESHOLD, DEFAULT_AVATAR, TRANSITION_DURATION } from '../utils.mjs'
+import { getfile } from '../files.mjs'
+import { processTimeStampForId, SWIPE_THRESHOLD, DEFAULT_AVATAR, TRANSITION_DURATION, arrayBufferToBase64 } from '../utils.mjs'
 
 import { addDragAndDropSupport } from './dragAndDrop.mjs'
 import {
@@ -23,19 +24,84 @@ import {
 const swipeListenersMap = new WeakMap()
 
 /**
- * Generates a full HTML document for a message, including stylesheets for proper rendering.
+ * Generates a full HTML document for a message, including stylesheets and attachments for proper rendering.
  * If the message content contains an H1 tag, its text is used as the document title.
- * @param {string} messageContentHtml - The inner HTML of the message content.
- * @returns {string} A complete HTML string.
+ * @param {object} message - The message object.
+ * @returns {Promise<string>} A complete HTML string.
  */
-function generateFullHtmlForMessage(messageContentHtml) {
-	// Create a temporary div to parse the HTML string without affecting the main DOM
-	const tempDiv = document.createElement('div')
-	tempDiv.innerHTML = messageContentHtml
+async function generateFullHtmlForMessage(message) {
+	const messageContentHtml = await renderMarkdownAsStandAloneHtmlString(message.content_for_show || message.content)
 
 	// Find the first h1 tag and get its text content for the title
+	const tempDiv = document.createElement('div')
+	tempDiv.innerHTML = messageContentHtml
 	const h1 = tempDiv.querySelector('h1')
 	const title = h1 ? h1.textContent.trim() : 'Chat Message'
+
+	// --- Attachment processing ---
+	let attachmentsHtml = ''
+	if (message.files?.length) {
+		const downloadText = geti18n('chat.attachment.buttons.download.title') || 'Download'
+		const attachmentItems = await Promise.all(message.files.map(async (file) => {
+			let fileBuffer = file.buffer
+			if (fileBuffer.startsWith('file:')) {
+				const fileArrayBuffer = await getfile(fileBuffer)
+				fileBuffer = arrayBufferToBase64(fileArrayBuffer)
+			}
+			const dataUrl = `data:${file.mime_type};base64,${fileBuffer}`
+
+			let previewHtml = ''
+			if (file.mime_type.startsWith('image/')) {
+				previewHtml = `<img src="${dataUrl}" alt="${file.name}" style="max-width: 100%; max-height: 100%; object-fit: contain; cursor: zoom-in;" onclick="openModal('${dataUrl}', 'image')">`
+			}
+			else if (file.mime_type.startsWith('video/')) {
+				previewHtml = `<video src="${dataUrl}" controls style="max-width: 100%; max-height: 100%;"></video>`
+			}
+			else if (file.mime_type.startsWith('audio/')) {
+				previewHtml = `<audio src="${dataUrl}" controls></audio>`
+			}
+			else {
+				previewHtml = '<div class="file-placeholder" style="font-size: 40px; text-align: center;">📄</div>'
+			}
+
+			return `\
+<div class="attachment" style="border: 1px solid #ccc; border-radius: 5px; padding: 10px; margin: 5px; display: inline-block; text-align: center; max-width: 200px;">
+	<div class="preview" style="min-height: 100px; display: flex; align-items: center; justify-content: center;">
+		${previewHtml}
+	</div>
+	<div class="file-name" style="font-size: 0.8em; margin-top: 5px; word-wrap: break-word;">${file.name}</div>
+	<a href="${dataUrl}" download="${file.name}" class="download-button" style="margin-top: 5px; display: inline-block; padding: 5px 10px; background-color: #007bff; color: white; text-decoration: none; border-radius: 3px;">${downloadText}</a>
+</div>
+`
+		}))
+		attachmentsHtml = `<div class="attachments" style="margin-top: 10px; display: flex; flex-wrap: wrap;">${attachmentItems.join('')}</div>`
+	}
+
+	const modalScript = `\
+function openModal(src, type) {
+	const modal = document.createElement('div')
+	modal.style.position = 'fixed'
+	modal.style.top = '0'
+	modal.style.left = '0'
+	modal.style.width = '100%'
+	modal.style.height = '100%'
+	modal.style.backgroundColor = 'rgba(0,0,0,0.8)'
+	modal.style.display = 'flex'
+	modal.style.justifyContent = 'center'
+	modal.style.alignItems = 'center'
+	modal.style.zIndex = '1000'
+	modal.onclick = () => modal.remove()
+
+	if (type === 'image') {
+		const img = document.createElement('img')
+		img.src = src
+		img.style.maxWidth = '90%'
+		img.style.maxHeight = '90%'
+		modal.appendChild(img)
+	}
+	document.body.appendChild(modal)
+}
+`
 
 	return `\
 <!DOCTYPE html>
@@ -44,12 +110,16 @@ function generateFullHtmlForMessage(messageContentHtml) {
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>${title}</title>
+	<script src="https://cdn.jsdelivr.net/npm/@unocss/runtime" crossorigin="anonymous"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css" crossorigin="anonymous">
 	<style>
-		body { margin: 0; }
-		.markdown-body { box-sizing: border-box; min-width: 200px; max-width: 980px; margin: 0 auto; padding: 45px; }
+		body { margin: 0; font-family: sans-serif; }
+		.markdown-body { box-sizing: border-box; padding: 45px; }
 		@media (max-width: 767px) { .markdown-body { padding: 15px; } }
 
+		[un-cloak], .hidden { display: none; }
+		.text-icon { color: var(--color-base-content); }
 		/* Styles for rehype-pretty-code (Shiki) */
 		pre[style*="--shiki-light-bg"] {
 			background-color: var(--shiki-light-bg);
@@ -73,17 +143,19 @@ function generateFullHtmlForMessage(messageContentHtml) {
 		styleLink.crossOrigin = 'anonymous'
 		if (isDarkMode) {
 			document.documentElement.setAttribute('color-scheme', 'dark')
+			document.documentElement.dataset.theme = 'dark'
 			styleLink.href = 'https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown-dark.min.css'
-			document.body.style.backgroundColor = '#0d1117'
 		}
 		else {
 			document.documentElement.setAttribute('color-scheme', 'light')
+			document.documentElement.dataset.theme = 'light'
 			styleLink.href = 'https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown-light.min.css'
-			document.body.style.backgroundColor = '#ffffff'
 		}
 		document.head.appendChild(styleLink)
+		${modalScript}
 	</script>
 	${messageContentHtml}
+	${attachmentsHtml}
 </body>
 </html>
 `
@@ -141,7 +213,7 @@ export async function renderMessage(message) {
 		})
 		dropdownMenu.querySelector('.copy-html-button').addEventListener('click', async () => {
 			try {
-				const fullHtml = generateFullHtmlForMessage(messageContentElement.innerHTML)
+				const fullHtml = await generateFullHtmlForMessage(message)
 				await navigator.clipboard.writeText(fullHtml)
 			} catch (error) { showToast('error', error.stack || error.message || error) }
 			dropdownMenu.hidePopover()
@@ -152,7 +224,7 @@ export async function renderMessage(message) {
 		if (downloadHtmlButton)
 			downloadHtmlButton.addEventListener('click', async () => {
 				try {
-					const fullHtml = generateFullHtmlForMessage(messageContentElement.innerHTML)
+					const fullHtml = await generateFullHtmlForMessage(message)
 					const blob = new Blob([fullHtml], { type: 'text/html' })
 					const url = URL.createObjectURL(blob)
 					const a = document.createElement('a')

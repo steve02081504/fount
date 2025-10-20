@@ -1,4 +1,4 @@
-import { unlockAchievement } from '../../../pages/scripts/endpoints.mjs'
+import { unlockAchievement } from '../../scripts/endpoints.mjs'
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
 import { makeSearchable } from '../../scripts/search.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
