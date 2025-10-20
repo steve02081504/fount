@@ -467,10 +467,12 @@ async function nocacheGetPartBaseDetails(username, parttype, partname) {
 	catch (error) {
 		return {
 			info: {
-				name: partname,
-				avatar: 'https://api.iconify.design/line-md/emoji-frown-open.svg',
-				description: 'error loading part',
-				description_markdown: `# error loading part\n\n\`\`\`\`\n${error.message}\n${error.stack}\n\`\`\`\``,
+				'': {
+					name: partname,
+					avatar: 'https://api.iconify.design/line-md/emoji-frown-open.svg',
+					description: 'error loading part',
+					description_markdown: `# error loading part\n\n\`\`\`\`\n${error.message}\n${error.stack}\n\`\`\`\``,
+				}
 			},
 			supportedInterfaces: [],
 		}

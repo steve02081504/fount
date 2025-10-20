@@ -1,5 +1,5 @@
 import { LoadChar } from '../../../server/managers/char_manager.mjs'
-import { unlockAchievement } from '../../achievements/src/api.mjs'
+import { unlockAchievement } from '../achievements/src/api.mjs'
 
 import { setEndpoints } from './src/endpoints.mjs'
 
