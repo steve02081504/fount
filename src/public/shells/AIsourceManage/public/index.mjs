@@ -108,7 +108,7 @@ function renderFileList() {
 	let fileToLoad = null
 	if (fileFromURL && fileList.includes(fileFromURL))
 		fileToLoad = fileFromURL
-	else if (fileList.length > 0)
+	else if (fileList.length)
 		fileToLoad = activeFile && fileList.includes(activeFile) ? activeFile : fileList[0]
 
 	if (fileToLoad)
@@ -150,7 +150,7 @@ async function loadGeneratorAddons(generatorName) {
 		const { html, js: displayScript } = await getConfigDisplay(generatorName)
 		await initTranslations() // refresh translations for dynamic content maybe used in part i18n data
 		generatorDisplayContainer.innerHTML = html
-		await svgInliner(i18nElement(generatorDisplayContainer))
+		await svgInliner(i18nElement(generatorDisplayContainer, { skip_report: true }))
 		if (displayScript) {
 			const eval_result = await async_eval(displayScript, { geti18n, partName: generatorName, element: generatorDisplayContainer })
 			if (eval_result.error) throw eval_result.error

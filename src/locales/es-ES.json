@@ -237,6 +237,18 @@
 			"keyboardPress": "Pulsa una tecla en tu teclado ${keyboardIcon}.",
 			"mobileTouchMove": "Este es su teléfono ${phoneIcon}. Ahora, utilizando uno de sus dedos, haga contacto con la superficie de la pantalla y luego deslícelo.",
 			"mobileClick": "Por favor, toque la pantalla de su teléfono ${phoneIcon} con un dedo y luego levántelo. ¡Felicidades!"
+		},
+		"achievements": {
+			"complete_tutorial": {
+				"name": "Aula de aritmética perfecta",
+				"description": "Finalmente terminé el tutorial para principiantes.",
+				"locked_description": "Completa un tutorial introductorio."
+			},
+			"skip_tutorial": {
+				"name": "me salté",
+				"description": "\"¿Tutorial? ¿Qué es eso? ¿Se puede comer?\"",
+				"locked_description": "Omita el tutorial introductorio una vez."
+			}
 		}
 	},
 	"auth": {
@@ -387,6 +399,33 @@
 				"defaultCheckbox": {
 					"title": "Establecer como persona predeterminada"
 				}
+			}
+		},
+		"achievements": {
+			"first_login": {
+				"name": "¡Hola fuente!",
+				"description": "¡Dirigiéndose al nuevo mundo, iniciando sesión por primera vez!",
+				"locked_description": "Inicie sesión en la fuente una vez."
+			},
+			"sfw_mode_on": {
+				"name": "¡Hay alguien detrás de ti!",
+				"description": "Cambie rápidamente al modo para todas las edades, soy un niño muy inteligente.",
+				"locked_description": "Active el modo de contenido seguro una vez."
+			},
+			"sfw_mode_off": {
+				"name": "puerta al nuevo mundo",
+				"description": "\"Señor, los tiempos han cambiado.\"",
+				"locked_description": "Desactive el modo de contenido seguro una vez."
+			},
+			"open_function_list": {
+				"name": "¡A ver qué hay!",
+				"description": "\"¿Qué cosas buenas hay?\"",
+				"locked_description": "Abra la lista de funciones una vez."
+			},
+			"set_default_persona": {
+				"name": "¡La decisión es tuya!",
+				"description": "Establece una identidad para tus acciones en este mundo.",
+				"locked_description": "Establece un perfil predeterminado."
 			}
 		}
 	},
@@ -565,6 +604,23 @@
 					"alt": "Icono de forzar respuesta"
 				}
 			}
+		},
+		"achievements": {
+			"first_chat": {
+				"name": "hola extraño",
+				"description": "Se envía el primer mensaje y comienza la historia.",
+				"locked_description": "Envía tu primer mensaje con cualquier carácter."
+			},
+			"multiplayer_chat": {
+				"name": "Temporada de White Album",
+				"description": "\"¿Por qué se volvió así ...\"",
+				"locked_description": "Haz que dos o más personajes hablen en el mismo chat."
+			},
+			"photo_chat": {
+				"name": "Hay fotos y la verdad.",
+				"description": "Utilice imágenes para romper la pared dimensional.",
+				"locked_description": "Envía una foto en el chat."
+			}
 		}
 	},
 	"chat_history": {
@@ -692,6 +748,13 @@
 		},
 		"info": {
 			"description": "Estas plantillas solo se pueden usar para crear rápidamente componentes simples; los componentes complejos aún deben crearse manualmente."
+		},
+		"achievements": {
+			"create_part": {
+				"name": "El taller de alquimia está abierto.",
+				"description": "Comienza desde cero y crea tu primer componente.",
+				"locked_description": "Cree una pieza utilizando la función Nuevo rápido."
+			}
 		}
 	},
 	"import": {
@@ -800,6 +863,13 @@
 			"copyShareLink": "Copiar enlace compartido",
 			"generateShareLink": "Generar enlace compartido",
 			"generateShareLinkWithData": "Generar un enlace compartido (con datos)"
+		},
+		"achievements": {
+			"share_part": {
+				"name": "¡Es peligroso ir solo! Toma esto.",
+				"description": "\"Ahora te daré una copia de esto\".",
+				"locked_description": "Comparte el widget una vez."
+			}
 		}
 	},
 	"uninstall": {
@@ -912,7 +982,8 @@
 			"title": "Se ha creado una nueva clave API",
 			"warning": "Copie su nueva clave API. ¡No podrás volver a verlo!",
 			"copyButtonTitle": "Copiar nueva clave API",
-			"closeButton": "He copiado mi clave"
+			"closeButton": "He copiado mi clave",
+			"copiedAlert": "¡Clave copiada al portapapeles!"
 		}
 	},
 	"languageSettings": {
@@ -977,6 +1048,13 @@
 			"caramellatte": "Caramel Latte",
 			"abyss": "Abismo",
 			"silk": "Seda"
+		},
+		"achievements": {
+			"change_theme": {
+				"name": "¡Un cambio de look!",
+				"description": "La fuente tenía un nuevo aspecto y un ambiente completamente nuevo.",
+				"locked_description": "Cambia el tema una vez."
+			}
 		}
 	},
 	"part_config": {
@@ -1067,6 +1145,13 @@
 			"copyModelIdTooltip": "Clic para copiar el ID del modelo",
 			"copied": "¡Copiado!",
 			"loadModelsFailed": "No se pudieron cargar los modelos: ${message}"
+		},
+		"achievements": {
+			"set_default_aisource": {
+				"name": "fuente de magia",
+				"description": "Se designa una IA predeterminada como fuente de suministro de maná.",
+				"locked_description": "Establece una fuente de IA predeterminada una vez."
+			}
 		}
 	},
 	"discord_bots": {
@@ -1117,6 +1202,13 @@
 			"configSaved": "Configuración guardada correctamente",
 			"httpError": "Error HTTP",
 			"beforeUnload": "Tienes cambios sin guardar. ¿Seguro que quieres salir?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Llegando a la discordia",
+				"description": "Invoca a tu personaje al mundo de Discord.",
+				"locked_description": "Inicie Discord Bot una vez."
+			}
 		}
 	},
 	"telegram_bots": {
@@ -1167,6 +1259,13 @@
 			"configSaved": "¡La configuración se ha guardado correctamente!",
 			"httpError": "Error HTTP",
 			"beforeUnload": "Tienes cambios sin guardar. ¿Seguro que quieres salir de la página actual?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Llegando a Telegram",
+				"description": "Invoca a tu personaje al mundo de Telegram.",
+				"locked_description": "Inicie Telegram Bot una vez."
+			}
 		}
 	},
 	"browser_integration": {
@@ -1224,6 +1323,18 @@
 			"load_failed": "No se pudo cargar el script automático: ${message}",
 			"add_failed": "Error al añadir el script: ${message}",
 			"delete_failed": "Error al eliminar el script: ${message}"
+		},
+		"achievements": {
+			"install_script": {
+				"name": "¡Magia, infunde!",
+				"description": "Ha instalado con éxito el \"complemento\" para su navegador, ahora puede hacer más.",
+				"locked_description": "Instale el script de integración del navegador una vez."
+			},
+			"run_js": {
+				"name": "canto de código",
+				"description": "\"En mi nombre, ordena el navegador...\"",
+				"locked_description": "Ejecute el código JavaScript una vez en el navegador."
+			}
 		}
 	},
 	"browser_integration_script": {
@@ -1241,7 +1352,49 @@
 	"terminal_assistant": {
 		"title": "Asistente de Terminal",
 		"initialMessage": "¡fount te permite usar tus personajes favoritos en la terminal para ayudarte a programar!",
-		"initialMessageLink": "Haz clic aquí para más información"
+		"initialMessageLink": "Haz clic aquí para más información",
+		"achievements": {
+			"invoke_shell_assist": {
+				"name": "\"Hola, Fuente\".",
+				"description": "En la terminal oscura, se llamó el nombre del socio de IA.",
+				"locked_description": "Llame a asistencia del terminal una vez."
+			}
+		}
+	},
+	"deskpet": {
+		"title": "mascotas de escritorio",
+		"launcherCard": {
+			"title": "iniciador de mascotas",
+			"buttons": {
+				"start": "empezar mascota"
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": "Elige un rol"
+		},
+		"charSearch": {
+			"placeholder": "Buscar roles..."
+		},
+		"runningCard": {
+			"title": "mascota corriendo",
+			"noPets": "Actualmente no hay mascotas en funcionamiento.",
+			"buttons": {
+				"stop": "detener"
+			}
+		},
+		"toasts": {
+			"started": "Se inicia la mascota '${charname}'.",
+			"start_failed": "No se pudo iniciar la mascota '${charname}': ${message}",
+			"stopped": "La mascota '${charname}' ha sido detenida.",
+			"stop_failed": "Error al detener la mascota '${charname}': ${message}"
+		},
+		"achievements": {
+			"start_deskpet": {
+				"name": "Un nuevo compañero para tu escritorio",
+				"description": "Un personaje salvaje salta y se apodera de tu escritorio.",
+				"locked_description": "Inicie una mascota de escritorio."
+			}
+		}
 	},
 	"access": {
 		"title": "Acceder a fount en otros dispositivos",
@@ -1272,6 +1425,24 @@
 		"queryStringSectionTitle": "¿No puede establecer la APIKey en la cabecera de la solicitud? (Inseguro)",
 		"queryStringWarning": "Utilice este método alternativo cuando su aplicación no admita el envío de la clave de API en la cabecera de la solicitud (Authorization header). Tenga en cuenta: Colocar la clave de API directamente en la URL presenta un riesgo de seguridad, ya que podría quedar registrada en los registros del servidor o en el historial del navegador.",
 		"copyQueryStringUrlButton": "URL con Clave de API (Query String)"
+	},
+	"achievements": {
+		"title": "Logro",
+		"header": "Salón de los logros",
+		"description": "Consulta aquí tus logros e hitos desbloqueados.",
+		"unlocked_on": "Desbloqueado el ${date}",
+		"locked": "No desbloqueado",
+		"toast_title": "¡Logros desbloqueados!",
+		"error": {
+			"load_failed": "No se pudieron cargar los logros: ${message}"
+		},
+		"achievements": {
+			"open_achievements_page": {
+				"name": "¡Hazte con todos!",
+				"description": "Abrió la lista de logros y se preparó para comenzar un viaje de recolección de sellos.",
+				"locked_description": "Abre la página de logros."
+			}
+		}
 	},
 	"badges_maker": {
 		"title": "¡fount! Convertidor de Insignias",

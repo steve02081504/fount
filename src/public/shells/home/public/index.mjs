@@ -1,6 +1,6 @@
 import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
-import { getUserSetting, setUserSetting } from '../../scripts/endpoints.mjs'
+import { getUserSetting, setUserSetting, unlockAchievement } from '../../scripts/endpoints.mjs'
 import { initTranslations, geti18n, confirmI18n, console, onLanguageChange } from '../../scripts/i18n.mjs'
 import { renderMarkdown } from '../../scripts/markdown.mjs'
 import {
@@ -18,6 +18,7 @@ import { getHomeRegistry } from './src/endpoints.mjs'
 
 usingTemplates('/shells/home/src/templates')
 
+const functionMenuButton = document.getElementById('function-menu-button')
 const charContainer = document.getElementById('char-container')
 const worldContainer = document.getElementById('world-container')
 const personaContainer = document.getElementById('persona-container')
@@ -94,7 +95,7 @@ async function renderItemView(itemType, itemDetails, itemName) {
 }
 
 async function attachCardEventListeners(itemElement, itemDetails, itemName, interfacesRegistry, itemType) {
-	const actionsContainer = itemElement.querySelector('.card-actions > div')
+	const actionsContainer = itemElement.querySelector('.actions-buttons-container')
 	actionsContainer.innerHTML = '' // Clear existing buttons
 	actionsContainer.addEventListener('wheel', handleMouseWheelScroll, { passive: false })
 
@@ -167,6 +168,8 @@ async function attachCardEventListeners(itemElement, itemDetails, itemName, inte
 				// Update local state and UI
 				defaultParts[currentItemType.slice(0, -1)] = isChecked ? itemName : null
 				updateDefaultPartDisplay()
+				if (itemType === 'personas' && isChecked)
+					unlockAchievement('shells', 'home', 'set_default_persona')
 			}
 			else
 				console.error('Failed to update default part:', await response.text())
@@ -444,12 +447,15 @@ async function initializeApp() {
 	applyTheme()
 	await initTranslations('home') // Initialize i18n first
 
+	unlockAchievement('shells', 'home', 'first_login')
+
 	// SFW Toggle Initialization
 	sfwToggle.checked = isSfw = await getUserSetting('sfw').catch(() => false)
 	sfwToggle.addEventListener('change', async () => {
 		if (sfwToggle.checked == isSfw) return // No change
 		try {
 			await setUserSetting('sfw', isSfw = sfwToggle.checked)
+			unlockAchievement('shells', 'home', isSfw ? 'sfw_mode_on' : 'sfw_mode_off')
 		}
 		catch (e) {
 			console.error('Failed to set SFW state', e)
@@ -475,6 +481,10 @@ async function initializeApp() {
 			})
 		})
 	})
+
+	functionMenuButton.addEventListener('click', () => {
+		unlockAchievement('shells', 'home', 'open_function_list')
+	}, { once: true })
 
 	// The focus listener is no longer needed as all updates are handled by websockets.
 

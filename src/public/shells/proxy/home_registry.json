@@ -62,7 +62,7 @@
 				}
 			},
 			"level": 100,
-			"button": "<img src=\"https://api.iconify.design/basil/other-1-outline.svg\" />",
+			"button": "<img src=\"https://api.iconify.design/basil/other-1-outline.svg\" class=\"text-icon\"/>",
 			"sub_items": [
 				{
 					"info": {
