@@ -1,0 +1,68 @@
+{
+	"home_function_buttons": [
+		{
+			"info": {
+				"zh-CN": {
+					"title": "成就"
+				},
+				"en-UK": {
+					"title": "Achievements"
+				},
+				"ar-SA": {
+					"title": "إنجاز"
+				},
+				"de-DE": {
+					"title": "Leistung"
+				},
+				"emoji": {
+					"title": "🏆"
+				},
+				"es-ES": {
+					"title": "Logro"
+				},
+				"fr-FR": {
+					"title": "Réalisation"
+				},
+				"hi-IN": {
+					"title": "उपलब्धि"
+				},
+				"is-IS": {
+					"title": "Afrek"
+				},
+				"it-IT": {
+					"title": "Risultato"
+				},
+				"ja-JP": {
+					"title": "成果"
+				},
+				"ko-KR": {
+					"title": "성취"
+				},
+				"lzh": {
+					"title": "功绩"
+				},
+				"nl-NL": {
+					"title": "Prestatie"
+				},
+				"pt-PT": {
+					"title": "Conquista"
+				},
+				"ru-RU": {
+					"title": "Достижение"
+				},
+				"uk-UA": {
+					"title": "досягнення"
+				},
+				"vi-VN": {
+					"title": "Thành tích"
+				},
+				"zh-TW": {
+					"title": "成就"
+				}
+			},
+			"level": 9999,
+			"url": "/shells/achievements",
+			"button": "<img src=\"https://api.iconify.design/material-symbols/trophy.svg\" class=\"text-icon\"/>"
+		}
+	]
+}

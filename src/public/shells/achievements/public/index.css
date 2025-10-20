@@ -1,0 +1,18 @@
+.achievement-card {
+	transition: all 0.3s ease;
+}
+
+.achievement-card.unlocked {
+	border-color: oklch(var(--su));
+	box-shadow: 0 0 15px oklch(var(--su) / 0.5);
+}
+
+.achievement-icon {
+	filter: grayscale(100%);
+	opacity: 0.5;
+}
+
+.unlocked .achievement-icon {
+	filter: none;
+	opacity: 1;
+}

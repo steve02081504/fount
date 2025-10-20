@@ -149,7 +149,7 @@ async function prependMessages() {
 
 	try {
 		const newMessages = await getChatLog(newStartIndex, startIndex)
-		if (newMessages && newMessages.length > 0) {
+		if (newMessages?.length) {
 			startIndex = newStartIndex
 			queue = newMessages.concat(queue)
 			queue = queue.slice(0, 3 * BUFFER_SIZE)
@@ -192,7 +192,7 @@ async function appendMessages() {
 
 	try {
 		const newMessages = await getChatLog(fetchStartIndex, fetchStartIndex + numItemsToFetch)
-		if (newMessages && newMessages.length > 0) {
+		if (newMessages?.length) {
 			queue = queue.concat(newMessages)
 			// 如果队列过长，裁剪头部
 			if (queue.length > 2 * BUFFER_SIZE) {
@@ -223,7 +223,7 @@ function updateLastCharMessageArrows() {
 	let potentialNewSwipableElement = null // 潜在的下一个可滑动元素
 
 	// 检查队列和最后一个消息
-	if (queue.length > 0) {
+	if (queue.length) {
 		const lastMessageIndexInQueue = queue.length - 1
 		const lastMessage = queue[lastMessageIndexInQueue]
 
@@ -379,7 +379,7 @@ export async function deleteMessageInQueue(queueIndex) {
 
 	await renderQueue() // 重绘
 
-	if (shouldScrollToBottom && queue.length > 0)
+	if (shouldScrollToBottom && queue.length)
 		chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight
 	observeSentinels() // 观察新哨兵
 }

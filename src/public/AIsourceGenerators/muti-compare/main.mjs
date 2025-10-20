@@ -85,7 +85,7 @@ ${err.stack || err}
 **${info.name} from ${info.provider}:**
 ${result.content}
 `
-						if (result.files.length > 0) {
+						if (result.files.length) {
 							res += `\nfiles ${files.length} - ${files.length + result.files.length}\n`
 							files.push(...result.files)
 						}

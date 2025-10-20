@@ -69,7 +69,7 @@ export async function isFountPart(buffer) {
 		}
 		catch (err7z) {
 			// Both failed
-			console.error('isFountPart check failed for both zip and 7z.', { 'zip_error': zipErr, '7z_error': err7z })
+			console.error('isFountPart check failed for both zip and 7z.', { zip_error: zipErr, '7z_error': err7z })
 			return false
 		}
 		finally {
