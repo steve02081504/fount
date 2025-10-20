@@ -8,6 +8,7 @@ import fs from 'node:fs'
 
 import { loadJsonFile, saveJsonFile } from '../../../../scripts/json_loader.mjs'
 import { getPartInfo } from '../../../../scripts/locale.mjs'
+import { ms } from '../../../../scripts/ms.mjs'
 import { getUserByUsername, getUserDictionary, getAllUserNames } from '../../../../server/auth.mjs'
 import { events } from '../../../../server/events.mjs'
 import { LoadChar } from '../../../../server/managers/char_manager.mjs'
@@ -16,6 +17,7 @@ import { loadWorld } from '../../../../server/managers/world_manager.mjs'
 import { getDefaultParts } from '../../../../server/parts_loader.mjs'
 import { skip_report } from '../../../../server/server.mjs'
 import { sendNotification } from '../../../../server/web_server/event_dispatcher.mjs'
+import { unlockAchievement } from '../../achievements/src/api.mjs'
 
 import { addfile, getfile } from './files.mjs'
 
@@ -27,8 +29,15 @@ import { addfile, getfile } from './files.mjs'
  */
 const chatMetadatas = new Map()
 const chatUiSockets = new Map()
+const chatDeleteTimers = new Map()
+const CHAT_DELETE_TIMEOUT = ms('30m')
 
 export function registerChatUiSocket(chatid, ws) {
+	if (chatDeleteTimers.has(chatid)) {
+		clearTimeout(chatDeleteTimers.get(chatid))
+		chatDeleteTimers.delete(chatid)
+	}
+
 	if (!chatUiSockets.has(chatid))
 		chatUiSockets.set(chatid, new Set())
 
@@ -39,8 +48,19 @@ export function registerChatUiSocket(chatid, ws) {
 	ws.on('close', () => {
 		socketSet.delete(ws)
 		console.log(`Chat UI WebSocket disconnected for chat ${chatid}. Total: ${socketSet.size}`)
-		if (!socketSet.size)
-			chatUiSockets.delete(chatid)
+		const chatData = chatMetadatas.get(chatid)
+		if (!socketSet.size && chatUiSockets.delete(chatid) && !is_VividChat(chatData?.chatMetadata)) {
+			clearTimeout(chatDeleteTimers.get(chatid))
+			chatDeleteTimers.set(chatid, setTimeout(async () => {
+				try {
+					if (chatUiSockets.has(chatid) || is_VividChat(chatData.chatMetadata)) return
+					await deleteChat([chatid], chatData.username)
+				}
+				finally {
+					chatDeleteTimers.delete(chatid)
+				}
+			}, CHAT_DELETE_TIMEOUT))
+		}
 	})
 }
 
@@ -561,7 +581,7 @@ export async function setWorld(chatid, worldname) {
 	timeSlice.world_id = worldname
 	if (world.interfaces.chat.GetGreeting && !chatLog.length)
 		timeSlice.greeting_type = 'world_single'
-	else if (world.interfaces.chat.GetGroupGreeting && chatLog.length > 0)
+	else if (world.interfaces.chat.GetGroupGreeting && chatLog.length)
 		timeSlice.greeting_type = 'world_group'
 
 	broadcastChatEvent(chatid, { type: 'world_set', payload: { worldname } })
@@ -606,7 +626,7 @@ export async function addchar(chatid, charname) {
 
 	const { username, chatLog } = chatMetadata
 	const timeSlice = chatMetadata.LastTimeSlice.copy()
-	if (chatLog.length > 0)
+	if (chatLog.length)
 		timeSlice.greeting_type = 'group'
 	else
 		timeSlice.greeting_type = 'single'
@@ -753,6 +773,12 @@ async function addChatLogEntry(chatid, entry) {
 		await entry.timeSlice.world.interfaces.chat.AddChatLogEntry(await getChatRequest(chatid, undefined), entry)
 	else
 		chatMetadata.chatLog.push(entry)
+
+	// Achievements: multiplayer_chat
+	if (entry.role === 'char' && entry.timeSlice.charname) {
+		const spokenChars = new Set(chatMetadata.chatLog.filter(e => e.role === 'char' && e.timeSlice.charname).map(e => e.timeSlice.charname))
+		if (spokenChars.size >= 2) unlockAchievement(chatMetadata.username, 'shells', 'chat', 'multiplayer_chat')
+	}
 
 	// 更新最后一条消息的时间线分支
 	chatMetadata.timeLines = [entry]
@@ -1014,6 +1040,14 @@ export async function addUserReply(chatid, object) {
 	const chatMetadata = await loadChat(chatid)
 	if (!chatMetadata) throw new Error('Chat not found')
 
+	// Achievements
+	// first_chat
+	unlockAchievement(chatMetadata.username, 'shells', 'chat', 'first_chat')
+
+	// photo_chat
+	if (object.files?.some(file => file.type.startsWith('image/')))
+		unlockAchievement(chatMetadata.username, 'shells', 'chat', 'photo_chat')
+
 	const timeSlice = chatMetadata.LastTimeSlice
 	const new_timeSlice = timeSlice.copy()
 	const user = timeSlice.player
@@ -1201,7 +1235,7 @@ export async function deleteMessage(chatid, index) {
 		chatMetadata.timeLineIndex = 0
 	}
 
-	if (chatMetadata.chatLog.length > 0)
+	if (chatMetadata.chatLog.length)
 		chatMetadata.LastTimeSlice = last.timeSlice
 	else
 		chatMetadata.LastTimeSlice = new timeSlice_t()

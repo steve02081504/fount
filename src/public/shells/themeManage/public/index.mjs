@@ -1,3 +1,4 @@
+import { unlockAchievement } from '../../../pages/scripts/endpoints.mjs'
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
 import { makeSearchable } from '../../scripts/search.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
@@ -58,6 +59,7 @@ function updateSelectedTheme(selectedElement) {
 
 // 处理主题点击事件
 async function handleThemeClick(previewElement, theme) {
+	unlockAchievement('shells', 'themeManage', 'change_theme')
 	const applyNewTheme = () => {
 		setTheme(theme)
 		updateSelectedTheme(previewElement) // 调用新函数

@@ -237,6 +237,18 @@
 			"keyboardPress": "Press a key on your keyboard ${keyboardIcon}.",
 			"mobileTouchMove": "Please locate your phone device ${phoneIcon}. Now, using one of your fingers, make contact with the screen and then proceed to slide it.",
 			"mobileClick": "With your phone ${phoneIcon} in hand, please use a finger to briefly touch the screen and then lift it. Excellent!"
+		},
+		"achievements": {
+			"complete_tutorial": {
+				"name": "Perfect Arithmetic Classroom",
+				"description": "Finally finished the novice tutorial.",
+				"locked_description": "Complete an introductory tutorial."
+			},
+			"skip_tutorial": {
+				"name": "Instructions unclear",
+				"description": "\"Tutorial? What is that? Can it be eaten?\"",
+				"locked_description": "Skip the introductory tutorial once."
+			}
 		}
 	},
 	"auth": {
@@ -387,6 +399,33 @@
 				"defaultCheckbox": {
 					"title": "Set as default persona"
 				}
+			}
+		},
+		"achievements": {
+			"first_login": {
+				"name": "Hello, World!",
+				"description": "Heading towards the new world, logging in for the first time!",
+				"locked_description": "Log in to the fountain once."
+			},
+			"sfw_mode_on": {
+				"name": "There's someone behind you!",
+				"description": "Quickly switch to all-ages mode, I am such a clever little kid.",
+				"locked_description": "Turn on safe content mode once."
+			},
+			"sfw_mode_off": {
+				"name": "door to new world",
+				"description": "\"Sir, times have changed.\"",
+				"locked_description": "Turn off Safe Content Mode once."
+			},
+			"open_function_list": {
+				"name": "Let Me See!",
+				"description": "\"What good things are there?\"",
+				"locked_description": "Open the function list once."
+			},
+			"set_default_persona": {
+				"name": "This Is The Way.",
+				"description": "Set an identity for your actions in this world.",
+				"locked_description": "Set a default profile."
 			}
 		}
 	},
@@ -565,6 +604,23 @@
 					"alt": "Force Reply Icon"
 				}
 			}
+		},
+		"achievements": {
+			"first_chat": {
+				"name": "A New Challenger Appears!",
+				"description": "The first message was sent and the story begins.",
+				"locked_description": "Send your first message with any character."
+			},
+			"multiplayer_chat": {
+				"name": "White Album Season",
+				"description": "\"Why did it become like this...\"",
+				"locked_description": "Have two or more characters speak in the same chat."
+			},
+			"photo_chat": {
+				"name": "There are pictures and the truth",
+				"description": "Use pictures to break the dimensional wall.",
+				"locked_description": "Send a picture in chat."
+			}
 		}
 	},
 	"chat_history": {
@@ -692,6 +748,13 @@
 		},
 		"info": {
 			"description": "These templates can only be used to quickly build simple components; complex components still need to be created manually."
+		},
+		"achievements": {
+			"create_part": {
+				"name": "The alchemy workshop is open",
+				"description": "Start from scratch and create your first component.",
+				"locked_description": "Create a part using the Quick New feature."
+			}
 		}
 	},
 	"import": {
@@ -800,6 +863,13 @@
 			"copyShareLink": "Copy Share Link",
 			"generateShareLink": "Generate a share link",
 			"generateShareLinkWithData": "Generate a share link (including data)"
+		},
+		"achievements": {
+			"share_part": {
+				"name": "It's dangerous to go alone! Take this.",
+				"description": "\"Now, I'll give you a copy of this good thing.\"",
+				"locked_description": "Share the widget once."
+			}
 		}
 	},
 	"uninstall": {
@@ -912,7 +982,8 @@
 			"title": "New API key has been created",
 			"warning": "Please copy your new API key. You won't be able to see it again!",
 			"copyButtonTitle": "Copy new API key",
-			"closeButton": "I've copied my key"
+			"closeButton": "I've copied my key",
+			"copiedAlert": "API key copied to clipboard!"
 		}
 	},
 	"languageSettings": {
@@ -977,6 +1048,13 @@
 			"caramellatte": "Caramel Latte",
 			"abyss": "Abyss",
 			"silk": "Silk"
+		},
+		"achievements": {
+			"change_theme": {
+				"name": "A Fresh Coat of Paint!",
+				"description": "The fountain had a new look and a completely new mood.",
+				"locked_description": "Switch the theme once."
+			}
 		}
 	},
 	"part_config": {
@@ -1067,6 +1145,13 @@
 			"copyModelIdTooltip": "Click to copy the model ID",
 			"copied": "Copied!",
 			"loadModelsFailed": "Failed to load models: ${message}"
+		},
+		"achievements": {
+			"set_default_aisource": {
+				"name": "The Laws of Victory are Set.",
+				"description": "A default AI is designated as the mana supply source.",
+				"locked_description": "Set a default AI source once."
+			}
 		}
 	},
 	"discord_bots": {
@@ -1117,6 +1202,13 @@
 			"configSaved": "Configuration saved successfully",
 			"httpError": "HTTP Error",
 			"beforeUnload": "You have unsaved changes. Are you sure you want to leave?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Coming to Discord",
+				"description": "Summon your character into the world of Discord.",
+				"locked_description": "Launch the Discord Bot once."
+			}
 		}
 	},
 	"telegram_bots": {
@@ -1167,6 +1259,13 @@
 			"configSaved": "Configuration has been saved successfully!",
 			"httpError": "HTTP Error",
 			"beforeUnload": "You have unsaved changes. Are you sure you want to leave the current page?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Coming to Telegram",
+				"description": "Summon your character into the world of Telegram.",
+				"locked_description": "Start Telegram Bot once."
+			}
 		}
 	},
 	"browser_integration": {
@@ -1224,6 +1323,18 @@
 			"load_failed": "Failed to load the automatic script: ${message}",
 			"add_failed": "Failed to add script: ${message}",
 			"delete_failed": "Delete script failed: ${message}"
+		},
+		"achievements": {
+			"install_script": {
+				"name": "Magic, infuse!",
+				"description": "You have successfully installed the \"plug-in\" for your browser, now you can do more.",
+				"locked_description": "Install the browser integration script once."
+			},
+			"run_js": {
+				"name": "code chant",
+				"description": "\"In my name, command the browser...\"",
+				"locked_description": "Run the JavaScript code once in the browser."
+			}
 		}
 	},
 	"browser_integration_script": {
@@ -1241,7 +1352,49 @@
 	"terminal_assistant": {
 		"title": "Terminal Assistant",
 		"initialMessage": "fount supports deploying your favourite characters to your terminal to assist you in coding!",
-		"initialMessageLink": "Click here to learn more"
+		"initialMessageLink": "Click here to learn more",
+		"achievements": {
+			"invoke_shell_assist": {
+				"name": "\"Hey, Fount.\"",
+				"description": "In the dark terminal, the name of the AI ​​partner was called.",
+				"locked_description": "Call terminal assistance once."
+			}
+		}
+	},
+	"deskpet": {
+		"title": "Desktop pets",
+		"launcherCard": {
+			"title": "pet starter",
+			"buttons": {
+				"start": "start pet"
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": "Choose a role"
+		},
+		"charSearch": {
+			"placeholder": "Search for roles..."
+		},
+		"runningCard": {
+			"title": "running pet",
+			"noPets": "There are currently no pets running.",
+			"buttons": {
+				"stop": "stop"
+			}
+		},
+		"toasts": {
+			"started": "Pet '${charname}' is started.",
+			"start_failed": "Failed to start pet '${charname}': ${message}",
+			"stopped": "Pet '${charname}' has been stopped.",
+			"stop_failed": "Stop pet '${charname}' failed: ${message}"
+		},
+		"achievements": {
+			"start_deskpet": {
+				"name": "A new companion to your desktop",
+				"description": "It's dangerous to go alone! Take this.",
+				"locked_description": "Start a desktop pet."
+			}
+		}
 	},
 	"access": {
 		"title": "Access fount on other devices",
@@ -1272,6 +1425,24 @@
 		"queryStringSectionTitle": "Can't set APIKey in request header? (Insecure)",
 		"queryStringWarning": "Use this alternative method when your application does not support sending the API key in the request header (Authorization header). Please note: Placing the API key directly in the URL poses a security risk as it may be logged in server logs or browser history.",
 		"copyQueryStringUrlButton": "URL with API Key (Query String)"
+	},
+	"achievements": {
+		"title": "Achievement",
+		"header": "Hall of achievement",
+		"description": "Check out your unlocked achievements and milestones here.",
+		"unlocked_on": "Unlocked on ${date}",
+		"locked": "Not unlocked",
+		"toast_title": "Achievements unlocked!",
+		"error": {
+			"load_failed": "Failed to load achievements: ${message}"
+		},
+		"achievements": {
+			"open_achievements_page": {
+				"name": "Gotta Catch 'Em All!",
+				"description": "Opened the achievement list and prepared to start a stamp collecting journey.",
+				"locked_description": "Open the achievements page."
+			}
+		}
 	},
 	"badges_maker": {
 		"title": "fount! Badge Converter",

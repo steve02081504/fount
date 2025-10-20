@@ -62,7 +62,7 @@
 				}
 			},
 			"level": 1,
-			"button": "<img src=\"https://api.iconify.design/mdi/puzzle-outline.svg\" />",
+			"button": "<img src=\"https://api.iconify.design/mdi/puzzle-outline.svg\" class=\"text-icon\"/>",
 			"sub_items": [
 				{
 					"info": {
@@ -126,7 +126,7 @@
 					},
 					"level": 2,
 					"url": "/shells/export",
-					"button": "<img src=\"https://api.iconify.design/line-md/folder-arrow-right.svg\" class=\"text-icon\" />"
+					"button": "<img src=\"https://api.iconify.design/line-md/folder-arrow-right.svg\" class=\"text-icon\"/>"
 				}
 			]
 		}
@@ -194,7 +194,7 @@
 			},
 			"level": 2,
 			"url": "/shells/export?type=${type}&name=${name}",
-			"button": "<img src=\"https://api.iconify.design/line-md/folder-arrow-right.svg\" />"
+			"button": "<img src=\"https://api.iconify.design/line-md/folder-arrow-right.svg\" class=\"text-icon\"/>"
 		}
 	]
 }
