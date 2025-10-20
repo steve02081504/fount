@@ -1463,6 +1463,19 @@
 		"pageNotFoundText": "糟糕！您似乎来到了一个不存在的页面。",
 		"homepageButton": "返回首页"
 	},
+	"copy_button": {
+		"copy": {
+			"dataset": {
+				"tip": "复制到剪贴板"
+			}
+		},
+		"copied": {
+			"dataset": {
+				"tip": "已复制到剪贴板！"
+			}
+		},
+		"copy_failed": "无法复制到剪贴板：${error}"
+	},
 	"pow_captcha": {
 		"initial": "我不是机器人",
 		"verifying": "正在验证...",

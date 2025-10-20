@@ -1415,7 +1415,7 @@
 		"usageExampleTitle": "用法示例",
 		"usageExampleInstruction": "此為如何用`curl`獲取可用模型列表之例。",
 		"copyButton": "謄",
-		"copied": "已謄至剪貼板",
+		"copied": "已謄至簿",
 		"apiKeySectionTitle": "爾之API密鑰",
 		"apiKey": "爾之API密鑰：",
 		"noApiKey": "爾尚未為此頁生成API密鑰。",
@@ -1462,6 +1462,19 @@
 		"title": "蹤跡難尋",
 		"pageNotFoundText": "嗚呼！君誤入無何有之鄉矣。",
 		"homepageButton": "歸去來兮"
+	},
+	"copy_button": {
+		"copy": {
+			"dataset": {
+				"tip": "謄錄至簿"
+			}
+		},
+		"copied": {
+			"dataset": {
+				"tip": "已謄錄"
+			}
+		},
+		"copy_failed": "謄錄失利: ${error}"
 	},
 	"pow_captcha": {
 		"initial": "我非傀儡",

@@ -1463,6 +1463,19 @@
 		"pageNotFoundText": "Ối! Có vẻ như bạn đã truy cập vào một trang không tồn tại.",
 		"homepageButton": "Quay lại trang chủ"
 	},
+	"copy_button": {
+		"copy": {
+			"dataset": {
+				"tip": "sao chép vào bảng nhớ tạm"
+			}
+		},
+		"copied": {
+			"dataset": {
+				"tip": "Đã sao chép vào bảng nhớ tạm!"
+			}
+		},
+		"copy_failed": "Không thể sao chép vào bảng nhớ tạm: ${error}"
+	},
 	"pow_captcha": {
 		"initial": "Tôi không phải là robot",
 		"verifying": "Đang xác minh...",

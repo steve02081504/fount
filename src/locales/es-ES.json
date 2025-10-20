@@ -1463,6 +1463,19 @@
 		"pageNotFoundText": "¡Vaya! Parece que has llegado a una página que no existe.",
 		"homepageButton": "Volver a la página de inicio"
 	},
+	"copy_button": {
+		"copy": {
+			"dataset": {
+				"tip": "Copiar al portapapeles"
+			}
+		},
+		"copied": {
+			"dataset": {
+				"tip": "¡Copiado al portapapeles!"
+			}
+		},
+		"copy_failed": "No se puede copiar al portapapeles: ${error}"
+	},
 	"pow_captcha": {
 		"initial": "No soy un robot",
 		"verifying": "Verificando...",

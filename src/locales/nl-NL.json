@@ -1463,6 +1463,19 @@
 		"pageNotFoundText": "Oeps! Het lijkt erop dat je op een pagina bent beland die niet bestaat.",
 		"homepageButton": "Terug naar startpagina"
 	},
+	"copy_button": {
+		"copy": {
+			"dataset": {
+				"tip": "kopiëren naar klembord"
+			}
+		},
+		"copied": {
+			"dataset": {
+				"tip": "Gekopieerd naar klembord!"
+			}
+		},
+		"copy_failed": "Kan niet naar klembord kopiëren: ${error}"
+	},
 	"pow_captcha": {
 		"initial": "Ik ben geen robot",
 		"verifying": "Bezig met verifiëren...",
