@@ -1,3 +1,4 @@
+import { unlockAchievement } from '../../../pages/scripts/endpoints.mjs'
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
 import { svgInliner } from '../../scripts/svgInliner.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
@@ -160,7 +161,13 @@ function closeTutorial() {
 	else
 		window.location.href = '/shells/home'
 }
-skipButton.addEventListener('click', closeTutorial)
-endButton.addEventListener('click', closeTutorial)
+skipButton.addEventListener('click', () => {
+	unlockAchievement('shells', 'tutorial', 'skip_tutorial')
+	closeTutorial()
+})
+endButton.addEventListener('click', () => {
+	unlockAchievement('shells', 'tutorial', 'complete_tutorial')
+	closeTutorial()
+})
 
 await initTranslations('tutorial')

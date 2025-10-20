@@ -2,13 +2,13 @@ import express from 'npm:express'
 
 import { WsAbleRouter } from '../../scripts/WsAbleRouter.mjs'
 import { auth_request, getUserByReq } from '../auth.mjs'
-import { partsList } from '../managers/base.mjs'
+import { partTypeList } from '../managers/base.mjs'
 import { loadPart } from '../managers/index.mjs'
 
 export const PartsRouter = express.Router()
 
 const PartsRouters = {}
-const partsAPIregex = new RegExp(`^/(api|ws)/(${partsList.join('|')})/`)
+const partsAPIregex = new RegExp(`^/(api|ws)/(${partTypeList.join('|')})/`)
 PartsRouter.use(async (req, res, next) => {
 	if (!partsAPIregex.test(req.path)) return next()
 	if (!await auth_request(req, res)) {
