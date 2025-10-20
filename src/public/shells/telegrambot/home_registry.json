@@ -62,7 +62,7 @@
 				}
 			},
 			"level": 2,
-			"button": "<img src=\"https://api.iconify.design/lucide/bot.svg\" />",
+			"button": "<img src=\"https://api.iconify.design/lucide/bot.svg\" class=\"text-icon\"/>",
 			"sub_items": [
 				{
 					"info": {
@@ -195,7 +195,7 @@
 			"level": 1,
 			"interface": "telegram",
 			"url": "/shells/telegrambot?name=${name}&char=${name}",
-			"button": "<img src=\"https://api.iconify.design/line-md/telegram.svg\"/>"
+			"button": "<img src=\"https://api.iconify.design/line-md/telegram.svg\" class=\"text-icon\"/>"
 		}
 	]
 }

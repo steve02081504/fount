@@ -1,0 +1,11 @@
+{
+	"achievements": {
+		"create_part": {
+			"name": "easynew.achievements.create_part.name",
+			"description": "easynew.achievements.create_part.description",
+			"icon": "https://api.iconify.design/line-md/plus-square.svg",
+			"locked_description": "easynew.achievements.create_part.locked_description",
+			"locked_icon": "https://api.iconify.design/line-md/question-circle.svg"
+		}
+	}
+}

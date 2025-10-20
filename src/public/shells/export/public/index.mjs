@@ -1,12 +1,11 @@
-import { initTranslations, geti18n, i18nElement } from '/scripts/i18n.mjs'
+import { initTranslations, geti18n } from '/scripts/i18n.mjs'
 import { applyTheme } from '/scripts/theme.mjs'
 import { showToast, showToastI18n } from '/scripts/toast.mjs'
 import { createSearchableDropdown } from '/scripts/search.mjs'
 import { getPartTypes, getPartList } from '/scripts/parts.mjs'
-
 import { getFountJson, exportPart, createShareLink } from './src/endpoints.mjs'
 
-// DOM Elements
+// --- DOM Elements ---
 const partTypeSelect = document.getElementById('partTypeSelect')
 const partNameDropdown = document.getElementById('partNameDropdown')
 const exportButton = document.getElementById('exportButton')
@@ -17,53 +16,110 @@ const disabledIndicator = document.getElementById('disabledIndicator')
 const includeDataCheckbox = document.getElementById('includeDataCheckbox')
 const dataToggleContainer = document.getElementById('dataToggleContainer')
 const shareButtonText = shareButton.querySelector('.text-lg')
-
 const stepPartType = document.getElementById('stepPartType')
 const stepPart = document.getElementById('stepPart')
 const stepAction = document.getElementById('stepAction')
 
-// State
+// --- State ---
 let partTypes = []
 let parts = []
 let activePartType = null
 let activePart = null
 let fountJson = null
 
-// --- UI Control ---
+// --- UI State Management ---
 
-function updateStep(currentStep) {
+/**
+ * Updates the entire UI based on the current application state.
+ * This function centralizes all UI logic.
+ */
+function updateUIState() {
+	// Step 1: Update the progress steps
+	const currentStep = activePartType ? activePart ? 3 : 2 : 1
 	stepPartType.classList.toggle('step-primary', currentStep >= 1)
 	stepPart.classList.toggle('step-primary', currentStep >= 2)
 	stepAction.classList.toggle('step-primary', currentStep >= 3)
+
+	// Step 2: Show/hide the main action area
+	const isActionable = !!(activePartType && activePart)
+	disabledIndicator.classList.toggle('hidden', isActionable)
+
+	// Step 3: Show/hide the "include data" toggle if data files exist
+	const hasDataFiles = fountJson?.data_files?.length
+	dataToggleContainer.classList.toggle('hidden', !hasDataFiles)
+
+	// Step 4: Update the Share Button's text and behavior
+	const hasExistingShareLink = !includeDataCheckbox.checked && fountJson?.share_link
+	shareButton.toggleAttribute('tabindex', hasExistingShareLink) // Correct use for boolean attributes
+	shareButtonText.dataset.i18n = hasExistingShareLink ? 'export.buttons.copyShareLink' : 'export.buttons.generateShareLink'
 }
 
-function showExportArea(show) {
-	disabledIndicator.classList.toggle('hidden', show)
-}
+// --- Data & State Changers ---
 
-function showDataToggle(show) {
-	dataToggleContainer.classList.toggle('hidden', !show)
-}
+/**
+ * Handles the logic when a part type is selected.
+ * @param {string | null} partType The selected part type name.
+ */
+async function onPartTypeSelected(partType) {
+	activePartType = partType
+	// Reset dependent state
+	activePart = null
+	parts = []
+	fountJson = null
 
-function updateShareButtonUI() {
-	const hasShareLink = !includeDataCheckbox.checked && fountJson?.share_link
+	updateURLParams(activePartType, null)
 
-	if (hasShareLink) {
-		shareButton.removeAttribute('tabindex')
-		shareButtonText.dataset.i18n = 'export.buttons.copyShareLink'
+	if (activePartType) try {
+		parts = await getPartList(activePartType)
+	} catch (err) {
+		console.error('Failed to fetch parts:', err)
+		showToast('error', `${geti18n('export.alerts.fetchPartsFailed')}: ${err.message}`)
 	}
-	else {
-		shareButton.setAttribute('tabindex', '0')
-		shareButtonText.dataset.i18n = 'export.buttons.generateShareLink'
-	}
+
+	await renderPartDropdown()
+	updateUIState()
 }
 
-// --- Data Fetching ---
+/**
+ * Handles the logic when a specific part is selected.
+ * @param {string | null} partName The selected part name.
+ */
+async function onPartSelected(partName) {
+	activePart = partName
+	fountJson = null // Reset before fetching
 
-async function fetchPartTypes() {
+	updateURLParams(activePartType, activePart)
+
+	if (activePartType && activePart) try {
+		fountJson = await getFountJson(activePartType, activePart)
+	} catch (err) {
+		console.error('Failed to load part details:', err)
+		showToast('error', `${geti18n('export.alerts.loadPartDetailsFailed')}: ${err.message}`)
+	}
+
+	updateUIState()
+}
+
+// --- Data Fetching & Rendering ---
+
+async function fetchAndRenderPartTypes() {
 	try {
 		partTypes = await getPartTypes()
-		renderPartTypeSelect()
+		const fragment = document.createDocumentFragment()
+		const defaultOption = document.createElement('option')
+		defaultOption.disabled = true
+		defaultOption.selected = true
+		defaultOption.dataset.i18n = 'export.placeholders.partTypeSelect'
+		fragment.appendChild(defaultOption)
+
+		partTypes.forEach(type => {
+			const option = document.createElement('option')
+			option.value = type
+			option.textContent = type
+			fragment.appendChild(option)
+		})
+		partTypeSelect.innerHTML = ''
+		partTypeSelect.appendChild(fragment)
 	}
 	catch (err) {
 		console.error('Failed to fetch part types:', err)
@@ -71,85 +127,21 @@ async function fetchPartTypes() {
 	}
 }
 
-async function fetchParts(partType) {
-	try {
-		parts = await getPartList(partType)
-		renderPartDropdown()
-	}
-	catch (err) {
-		console.error('Failed to fetch parts:', err)
-		showToast('error', geti18n('export.alerts.fetchPartsFailed') + ': ' + err.message)
-	}
-}
+async function renderPartDropdown() {
+	const dataList = parts.map(name => ({ name, value: name }))
 
-async function loadPartDetails(partType, partName) {
-	try {
-		fountJson = await getFountJson(partType, partName)
-		updateShareButtonUI()
-		const hasDataFiles = fountJson && fountJson.data_files && fountJson.data_files?.length > 0
-		showDataToggle(hasDataFiles)
-		showExportArea(true)
-		updateStep(3)
-	}
-	catch (err) {
-		showToast('error', geti18n('export.alerts.loadPartDetailsFailed') + ': ' + err.message)
-		console.error('Failed to load part details:', err)
-		showExportArea(false)
-	}
-}
+	// Set the initial value if activePart is already known (e.g., from URL)
+	if (activePart) partNameDropdown.dataset.value = activePart
+	else delete partNameDropdown.dataset.value
 
-// --- Rendering ---
-
-function renderPartTypeSelect() {
-	const fragment = document.createDocumentFragment()
-	const defaultOption = document.createElement('option')
-	defaultOption.disabled = true
-	defaultOption.selected = true
-	defaultOption.dataset.i18n = 'export.placeholders.partTypeSelect'
-	fragment.appendChild(defaultOption)
-
-	partTypes.forEach(partType => {
-		const option = document.createElement('option')
-		option.value = partType
-		option.textContent = partType
-		fragment.appendChild(option)
-	})
-
-	partTypeSelect.innerHTML = ''
-	partTypeSelect.appendChild(fragment)
-}
-
-function renderPartDropdown() {
-	i18nElement(partNameDropdown.parentElement)
-
-	const disabled = !parts || parts.length === 0
-	const dataList = disabled ? [] : parts.map(name => ({ name, value: name }))
-
-	if (activePart)
-		partNameDropdown.dataset.value = activePart
-	else
-		delete partNameDropdown.dataset.value
-
-	createSearchableDropdown({
+	await createSearchableDropdown({
 		dropdownElement: partNameDropdown,
 		dataList,
 		textKey: 'name',
 		valueKey: 'value',
-		disabled,
+		disabled: !parts || !parts.length,
 		onSelect: async (selectedItem) => {
-			activePart = selectedItem ? selectedItem.value : null
-			if (activePart) {
-				updateURLParams(activePartType, activePart)
-				await loadPartDetails(activePartType, activePart)
-			}
-			else {
-				fountJson = null
-				updateShareButtonUI()
-				showExportArea(false)
-				showDataToggle(false)
-				updateStep(2)
-				updateURLParams(activePartType, null)
-			}
+			await onPartSelected(selectedItem ? selectedItem.value : null)
 			return false
 		},
 	})
@@ -161,10 +153,7 @@ async function handleExport() {
 	if (!activePartType || !activePart) return
 
 	const withData = includeDataCheckbox.checked
-	const button = exportButton
-	const icon = exportStatusIcon
-
-	setButtonLoading(button, icon, true)
+	setButtonLoading(exportButton, exportStatusIcon, true)
 
 	try {
 		const { blob, format } = await exportPart(activePartType, activePart, withData)
@@ -176,63 +165,46 @@ async function handleExport() {
 		a.click()
 		document.body.removeChild(a)
 		URL.revokeObjectURL(url)
-		setButtonState(icon, 'success')
+		setButtonState(exportStatusIcon, 'success')
 	}
 	catch (err) {
 		showToast('error', geti18n('export.alerts.exportFailed') + ': ' + err.message)
 		console.error('Failed to export part:', err)
-		setButtonState(icon, 'error')
+		setButtonState(exportStatusIcon, 'error')
 	}
 
-	setTimeout(() => setButtonLoading(button, icon, false), 2000)
+	setTimeout(() => setButtonLoading(exportButton, exportStatusIcon, false), 2000)
 }
 
-async function handleDirectShare() {
-	if (!fountJson || !fountJson.share_link) return
-
-	const button = shareButton
-	const icon = shareStatusIcon
-	setButtonLoading(button, icon, true)
-
-	try {
-		const link = `https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;${fountJson.share_link}`
-		await navigator.clipboard.writeText(link)
-		showToastI18n('success', 'export.alerts.shareLinkCopied')
-		setButtonState(icon, 'success')
-	}
-	catch (err) {
-		showToast('error', geti18n('export.alerts.shareFailed') + ': ' + err.message)
-		console.error('Failed to copy share link:', err)
-		setButtonState(icon, 'error')
-	}
-	setTimeout(() => setButtonLoading(button, icon, false), 2000)
-}
-
-
-async function handleShareAction(expiration) {
-	if (!activePartType || !activePart || !expiration) return
-
-	if (document.activeElement) document.activeElement.blur()
+async function handleShareAction({ copyOnly = false, expiration = null }) {
+	if (!activePartType || !activePart) return
 
 	const withData = includeDataCheckbox.checked
-	const button = shareButton
-	const icon = shareStatusIcon
-
-	setButtonLoading(button, icon, true)
+	setButtonLoading(shareButton, shareStatusIcon, true)
 
 	try {
-		const link = await createShareLink(activePartType, activePart, expiration, withData)
+		let link
+		if (copyOnly && fountJson?.share_link)
+			// Case 1: Just copy the pre-existing share link
+			link = `https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;${fountJson.share_link}`
+		else if (expiration)
+			// Case 2: Generate a new share link
+			link = await createShareLink(activePartType, activePart, expiration, withData)
+		else
+			throw new Error('Invalid share action call')
+
 		await navigator.clipboard.writeText(link)
 		showToastI18n('success', 'export.alerts.shareLinkCopied')
-		setButtonState(icon, 'success')
+		setButtonState(shareStatusIcon, 'success')
 	}
 	catch (err) {
 		showToast('error', geti18n('export.alerts.shareFailed') + ': ' + err.message)
-		console.error('Failed to create share link:', err)
-		setButtonState(icon, 'error')
+		console.error('Failed to handle share action:', err)
+		setButtonState(shareStatusIcon, 'error')
 	}
-
-	setTimeout(() => setButtonLoading(button, icon, false), 2000)
+	finally {
+		setTimeout(() => setButtonLoading(shareButton, shareStatusIcon, false), 2000)
+	}
 }
 
 // --- UI Helpers ---
@@ -262,7 +234,6 @@ function updateURLParams(partType, partName) {
 	const urlParams = new URLSearchParams()
 	if (partType) urlParams.set('type', partType)
 	if (partName) urlParams.set('name', partName)
-
 	const newURL = `${window.location.pathname}?${urlParams.toString()}`
 	window.history.pushState({ path: newURL }, '', newURL)
 }
@@ -274,66 +245,44 @@ async function initializeFromURLParams() {
 	const partType = urlParams.get('type')
 	const partName = urlParams.get('name')
 
-	await fetchPartTypes()
+	await fetchAndRenderPartTypes()
 
-	if (partType) {
+	if (partType && partTypes.includes(partType)) {
 		partTypeSelect.value = partType
-		activePartType = partType
-		updateStep(2)
-		await fetchParts(partType)
+		await onPartTypeSelected(partType)
 
-		if (partName) {
-			partNameDropdown.dataset.value = partName // <-- Add this line
-			activePart = partName
-			await loadPartDetails(partType, partName)
-		}
-		else showExportArea(false)
+		if (partName && parts.includes(partName))
+			partNameDropdown.dataset.value = partName
 	}
-	else {
-		showExportArea(false)
-		updateStep(1)
-		renderPartDropdown()
-	}
+	else await onPartTypeSelected(null)
+
+	// Initial UI state sync after potential URL-based selections
+	updateUIState()
 }
 
 async function init() {
 	applyTheme()
 	await initTranslations('export')
-	initializeFromURLParams()
 
 	// Event Listeners
-	partTypeSelect.addEventListener('change', async () => {
-		activePartType = partTypeSelect.value
-		activePart = null
-		fountJson = null
-		updateShareButtonUI()
-
-		parts = []
-		renderPartDropdown()
-
-		showExportArea(false)
-		showDataToggle(false)
-		updateStep(2)
-		updateURLParams(activePartType, null)
-		await fetchParts(activePartType)
-	})
+	partTypeSelect.addEventListener('change', (e) => onPartTypeSelected(e.target.value))
 
 	exportButton.addEventListener('click', handleExport)
-	includeDataCheckbox.addEventListener('change', updateShareButtonUI)
+	includeDataCheckbox.addEventListener('change', updateUIState)
 
 	shareButton.addEventListener('click', event => {
-		if (fountJson?.share_link) {
-			event.preventDefault()
-			handleDirectShare()
-		}
+		if (!fountJson?.share_link || includeDataCheckbox.checked) return
+		event.preventDefault()
+		handleShareAction({ copyOnly: true })
 	})
 
 	document.getElementById('shareMenu').addEventListener('click', event => {
-		if (event.target.tagName === 'A')
-			handleShareAction(event.target.dataset.value)
+		document.activeElement?.blur?.()
+		if (event.target.tagName === 'A' && event.target.dataset.value)
+			handleShareAction({ expiration: event.target.dataset.value })
 	})
 
-	window.addEventListener('popstate', initializeFromURLParams)
+	await initializeFromURLParams()
 }
 
 init()

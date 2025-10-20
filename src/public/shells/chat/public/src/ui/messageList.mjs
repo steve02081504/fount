@@ -182,7 +182,7 @@ export async function renderMessage(message) {
 		})
 
 	// --- 渲染附件 ---
-	if (message.files?.length > 0) {
+	if (message.files?.length) {
 		const attachmentsContainer = messageElement.querySelector('.attachments')
 		if (attachmentsContainer) {
 			if (message.files.length === 1)

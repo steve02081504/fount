@@ -237,6 +237,18 @@
 			"keyboardPress": "Vui lòng tìm bàn phím ${keyboardIcon} của bạn<br/>và thử nhấn một phím bất kỳ.",
 			"mobileTouchMove": "Hãy tìm điện thoại của bạn ${phoneIcon}. Bây giờ, dùng một ngón tay, chạm vào màn hình và sau đó lướt nhẹ trên bề mặt.",
 			"mobileClick": "Hãy dùng một ngón tay chạm nhẹ vào màn hình điện thoại ${phoneIcon} rồi nhấc ra ngay. Bạn làm được rồi!"
+		},
+		"achievements": {
+			"complete_tutorial": {
+				"name": "Lớp học số học hoàn hảo",
+				"description": "Cuối cùng cũng hoàn thành phần hướng dẫn cho người mới.",
+				"locked_description": "Hoàn thành phần hướng dẫn giới thiệu."
+			},
+			"skip_tutorial": {
+				"name": "tôi đã bỏ qua",
+				"description": "\"Hướng dẫn? Đó là gì? Nó có thể ăn được không?\"",
+				"locked_description": "Bỏ qua phần hướng dẫn giới thiệu một lần."
+			}
 		}
 	},
 	"auth": {
@@ -387,6 +399,33 @@
 				"defaultCheckbox": {
 					"title": "Đặt làm Persona mặc định"
 				}
+			}
+		},
+		"achievements": {
+			"first_login": {
+				"name": "Xin chào, đài phun nước!",
+				"description": "Hướng tới thế giới mới, đăng nhập lần đầu tiên!",
+				"locked_description": "Đăng nhập vào đài phun nước một lần."
+			},
+			"sfw_mode_on": {
+				"name": "Có ai đó ở phía sau bạn!",
+				"description": "Nhanh chóng chuyển sang chế độ mọi lứa tuổi, tôi quả là một đứa trẻ thông minh.",
+				"locked_description": "Bật chế độ nội dung an toàn một lần."
+			},
+			"sfw_mode_off": {
+				"name": "cánh cửa đến thế giới mới",
+				"description": "\"Thưa ngài, thời thế đã thay đổi.\"",
+				"locked_description": "Tắt Chế độ nội dung an toàn một lần."
+			},
+			"open_function_list": {
+				"name": "Để tôi xem nào!",
+				"description": "\"Có cái gì tốt?\"",
+				"locked_description": "Mở danh sách chức năng một lần."
+			},
+			"set_default_persona": {
+				"name": "Quyết định là của bạn!",
+				"description": "Đặt danh tính cho hành động của bạn trong thế giới này.",
+				"locked_description": "Đặt hồ sơ mặc định."
 			}
 		}
 	},
@@ -565,6 +604,23 @@
 					"alt": "Biểu tượng buộc trả lời"
 				}
 			}
+		},
+		"achievements": {
+			"first_chat": {
+				"name": "xin chào người lạ",
+				"description": "Tin nhắn đầu tiên được gửi đi và câu chuyện bắt đầu.",
+				"locked_description": "Gửi tin nhắn đầu tiên của bạn với bất kỳ ký tự nào."
+			},
+			"multiplayer_chat": {
+				"name": "Mùa White Album",
+				"description": "\"Sao lại thành ra thế này...\"",
+				"locked_description": "Có hai hoặc nhiều nhân vật nói chuyện trong cùng một cuộc trò chuyện."
+			},
+			"photo_chat": {
+				"name": "Có hình ảnh và sự thật",
+				"description": "Sử dụng hình ảnh để phá vỡ bức tường chiều.",
+				"locked_description": "Gửi ảnh trong cuộc trò chuyện."
+			}
 		}
 	},
 	"chat_history": {
@@ -692,6 +748,13 @@
 		},
 		"info": {
 			"description": "Các mẫu này chỉ có thể được sử dụng để nhanh chóng xây dựng các thành phần đơn giản; các thành phần phức tạp vẫn cần được tạo thủ công."
+		},
+		"achievements": {
+			"create_part": {
+				"name": "Xưởng giả kim đã mở",
+				"description": "Bắt đầu lại từ đầu và tạo thành phần đầu tiên của bạn.",
+				"locked_description": "Tạo một phần bằng tính năng Quick New."
+			}
 		}
 	},
 	"import": {
@@ -800,6 +863,13 @@
 			"copyShareLink": "Sao chép liên kết chia sẻ",
 			"generateShareLink": "Tạo liên kết chia sẻ",
 			"generateShareLinkWithData": "Tạo liên kết chia sẻ (bao gồm dữ liệu)"
+		},
+		"achievements": {
+			"share_part": {
+				"name": "Chia sẻ là yêu thương",
+				"description": "\"Bây giờ tôi sẽ đưa cho bạn một bản sao của thứ tốt này.\"",
+				"locked_description": "Chia sẻ tiện ích một lần."
+			}
 		}
 	},
 	"uninstall": {
@@ -912,7 +982,8 @@
 			"title": "Khóa API mới đã được tạo",
 			"warning": "Vui lòng sao chép khóa API mới của bạn. Bạn sẽ không thể nhìn thấy nó một lần nữa!",
 			"copyButtonTitle": "Sao chép khóa API mới",
-			"closeButton": "Tôi đã sao chép khóa của mình"
+			"closeButton": "Tôi đã sao chép khóa của mình",
+			"copiedAlert": "Khóa API đã được sao chép vào bộ nhớ tạm!"
 		}
 	},
 	"languageSettings": {
@@ -977,6 +1048,13 @@
 			"caramellatte": "Caramel Latte",
 			"abyss": "Vực thẳm",
 			"silk": "Lụa"
+		},
+		"achievements": {
+			"change_theme": {
+				"name": "Thay áo mới!",
+				"description": "Đài phun nước đã có một diện mạo mới và một tâm trạng hoàn toàn mới.",
+				"locked_description": "Chuyển chủ đề một lần."
+			}
 		}
 	},
 	"part_config": {
@@ -1067,6 +1145,13 @@
 			"copyModelIdTooltip": "Bấm để sao chép ID mô hình",
 			"copied": "Đã sao chép!",
 			"loadModelsFailed": "Không thể tải các mô hình: ${message}"
+		},
+		"achievements": {
+			"set_default_aisource": {
+				"name": "nguồn ma thuật",
+				"description": "AI mặc định được chỉ định làm nguồn cung cấp năng lượng.",
+				"locked_description": "Đặt nguồn AI mặc định một lần."
+			}
 		}
 	},
 	"discord_bots": {
@@ -1117,6 +1202,13 @@
 			"configSaved": "Cấu hình đã được lưu thành công.",
 			"httpError": "Lỗi HTTP.",
 			"beforeUnload": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời đi không?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Đi đến sự bất hòa",
+				"description": "Triệu hồi nhân vật của bạn vào thế giới Discord.",
+				"locked_description": "Khởi chạy Discord Bot một lần."
+			}
 		}
 	},
 	"telegram_bots": {
@@ -1167,6 +1259,13 @@
 			"configSaved": "Cấu hình đã được lưu thành công!",
 			"httpError": "Lỗi HTTP.",
 			"beforeUnload": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời khỏi trang này không?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Đến với Telegram",
+				"description": "Triệu hồi nhân vật của bạn vào thế giới Telegram.",
+				"locked_description": "Bắt đầu Telegram Bot một lần."
+			}
 		}
 	},
 	"browser_integration": {
@@ -1224,6 +1323,18 @@
 			"load_failed": "Không tải tập lệnh tự động: ${message}",
 			"add_failed": "Không thể thêm tập lệnh: ${message}",
 			"delete_failed": "Xóa tập lệnh không thành công: ${message}"
+		},
+		"achievements": {
+			"install_script": {
+				"name": "Ma thuật, truyền vào!",
+				"description": "Bạn đã cài đặt thành công \"plug-in\" cho trình duyệt của mình, bây giờ bạn có thể làm được nhiều việc hơn.",
+				"locked_description": "Cài đặt tập lệnh tích hợp trình duyệt một lần."
+			},
+			"run_js": {
+				"name": "mật mã",
+				"description": "\"Nhân danh tôi, ra lệnh cho trình duyệt...\"",
+				"locked_description": "Chạy mã JavaScript một lần trong trình duyệt."
+			}
 		}
 	},
 	"browser_integration_script": {
@@ -1241,7 +1352,49 @@
 	"terminal_assistant": {
 		"title": "Trợ lý Terminal",
 		"initialMessage": "fount hỗ trợ triển khai các nhân vật yêu thích của bạn vào terminal để trợ giúp bạn trong quá trình lập trình!",
-		"initialMessageLink": "Nhấp vào đây để tìm hiểu thêm."
+		"initialMessageLink": "Nhấp vào đây để tìm hiểu thêm.",
+		"achievements": {
+			"invoke_shell_assist": {
+				"name": "\"Này, Fount.\"",
+				"description": "Trong thiết bị đầu cuối tối, tên của đối tác AI được gọi.",
+				"locked_description": "Gọi hỗ trợ thiết bị đầu cuối một lần."
+			}
+		}
+	},
+	"deskpet": {
+		"title": "Thú cưng để bàn",
+		"launcherCard": {
+			"title": "món khai vị thú cưng",
+			"buttons": {
+				"start": "bắt đầu thú cưng"
+			}
+		},
+		"charSelectDropdown": {
+			"placeholder": "Chọn một vai trò"
+		},
+		"charSearch": {
+			"placeholder": "Tìm kiếm vai trò..."
+		},
+		"runningCard": {
+			"title": "thú cưng đang chạy",
+			"noPets": "Hiện tại không có thú cưng nào chạy.",
+			"buttons": {
+				"stop": "dừng lại"
+			}
+		},
+		"toasts": {
+			"started": "Thú cưng '${charname}' được bắt đầu.",
+			"start_failed": "Không khởi động được thú cưng '${charname}': ${message}",
+			"stopped": "Thú cưng '${charname}' đã bị dừng.",
+			"stop_failed": "Dừng thú cưng '${charname}' không thành công: ${message}"
+		},
+		"achievements": {
+			"start_deskpet": {
+				"name": "Người bạn đồng hành mới cho máy tính để bàn của bạn",
+				"description": "Một nhân vật hoang dã nhảy ra và chiếm lấy màn hình của bạn.",
+				"locked_description": "Bắt đầu một con vật cưng trên máy tính để bàn."
+			}
+		}
 	},
 	"access": {
 		"title": "Truy cập fount trên các thiết bị khác",
@@ -1272,6 +1425,24 @@
 		"queryStringSectionTitle": "Không thể đặt APIKey trong tiêu đề yêu cầu? (Không an toàn)",
 		"queryStringWarning": "Sử dụng phương pháp thay thế này khi ứng dụng của bạn không hỗ trợ gửi khóa API trong tiêu đề yêu cầu (tiêu đề Authorization). Xin lưu ý: Đặt khóa API trực tiếp vào URL có rủi ro bảo mật vì nó có thể được ghi lại trong nhật ký máy chủ hoặc lịch sử trình duyệt.",
 		"copyQueryStringUrlButton": "URL có khóa API (Chuỗi truy vấn)"
+	},
+	"achievements": {
+		"title": "Thành tích",
+		"header": "Hội trường thành tựu",
+		"description": "Kiểm tra những thành tựu và cột mốc đã mở khóa của bạn tại đây.",
+		"unlocked_on": "Đã mở khóa vào ${date}",
+		"locked": "Chưa mở khóa",
+		"toast_title": "Thành tích đã được mở khóa!",
+		"error": {
+			"load_failed": "Không tải được thành tích: ${message}"
+		},
+		"achievements": {
+			"open_achievements_page": {
+				"name": "Cúp, tôi tới đây!",
+				"description": "Mở danh sách thành tích và chuẩn bị bắt đầu hành trình sưu tập tem.",
+				"locked_description": "Mở trang thành tích."
+			}
+		}
 	},
 	"badges_maker": {
 		"title": "fount! Bộ chuyển đổi huy hiệu",

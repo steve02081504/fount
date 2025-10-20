@@ -58,7 +58,7 @@ export function structPromptToSingleNoChatLog(/** @type {prompt_struct_t} */ pro
 
 	{
 		const sorted = prompt.char_prompt.text.sort((a, b) => a.important - b.important).map(text => text.content).filter(Boolean)
-		if (sorted.length > 0) {
+		if (sorted.length) {
 			result.push('你需要扮演的角色设定如下：')
 			result.push(...sorted)
 		}
@@ -66,7 +66,7 @@ export function structPromptToSingleNoChatLog(/** @type {prompt_struct_t} */ pro
 
 	{
 		const sorted = prompt.user_prompt.text.sort((a, b) => a.important - b.important).map(text => text.content).filter(Boolean)
-		if (sorted.length > 0) {
+		if (sorted.length) {
 			result.push('用户的设定如下：')
 			result.push(...sorted)
 		}
@@ -74,7 +74,7 @@ export function structPromptToSingleNoChatLog(/** @type {prompt_struct_t} */ pro
 
 	{
 		const sorted = prompt.world_prompt.text.sort((a, b) => a.important - b.important).map(text => text.content).filter(Boolean)
-		if (sorted.length > 0) {
+		if (sorted.length) {
 			result.push('当前环境的设定如下：')
 			result.push(...sorted)
 		}
@@ -84,7 +84,7 @@ export function structPromptToSingleNoChatLog(/** @type {prompt_struct_t} */ pro
 		const sorted = Object.values(prompt.other_chars_prompt).map(char => char.text).filter(Boolean).map(
 			char => char.sort((a, b) => a.important - b.important).map(text => text.content).filter(Boolean)
 		).flat().filter(Boolean)
-		if (sorted.length > 0) {
+		if (sorted.length) {
 			result.push('其他角色的设定如下：')
 			result.push(...sorted)
 		}
@@ -94,7 +94,7 @@ export function structPromptToSingleNoChatLog(/** @type {prompt_struct_t} */ pro
 		const sorted = Object.values(prompt.plugin_prompts).map(plugin => plugin?.text).filter(Boolean).map(
 			plugin => plugin.sort((a, b) => a.important - b.important).map(text => text.content).filter(Boolean)
 		).flat().filter(Boolean)
-		if (sorted.length > 0) {
+		if (sorted.length) {
 			result.push('你可以使用以下插件，方法如下：')
 			result.push(...sorted)
 		}
