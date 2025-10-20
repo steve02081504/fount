@@ -47,7 +47,7 @@ export async function runPet(username, charname) {
 			frameless: petConfig.windowOptions?.frameless ?? true,
 			transparent: petConfig.windowOptions?.transparent ?? true,
 		})
-			; (async () => {
+		;(async () => {
 			await webview.run()
 			if (runningPets[username]?.[charname]) {
 				delete runningPets[username][charname]

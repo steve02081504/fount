@@ -121,7 +121,7 @@ export async function unlockAchievement(username, parttype, partname, achievemen
 
 	const data = getUserAchievementData(username)
 	if (data.unlocked[parttype]?.[partname]?.[achievementId])
-		return { success: false, message: 'Achievement already unlocked.' }
+		return { success: true, message: 'Achievement already unlocked.' }
 
 	const unlockedTime = new Date().toISOString();
 	((data.unlocked[parttype] ??= {})[partname] ??= {})[achievementId] = unlockedTime
@@ -171,7 +171,7 @@ export async function lockAchievement(username, parttype, partname, achievementI
 
 	const data = getUserAchievementData(username)
 	if (!data.unlocked[parttype]?.[partname]?.[achievementId])
-		return { success: false, message: 'Achievement not unlocked.' }
+		return { success: true, message: 'Achievement not unlocked.' }
 
 	delete data.unlocked[parttype][partname][achievementId]
 
