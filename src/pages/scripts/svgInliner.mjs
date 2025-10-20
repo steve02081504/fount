@@ -20,3 +20,15 @@ export async function svgInliner(DOM) {
 	})).catch(console.error)
 	return DOM
 }
+export async function getSvgIcon(url, attributes = {}) {
+	IconCache[url] ??= fetch(url).then(response => response.text())
+	let data = IconCache[url] = await IconCache[url]
+	// 对于每个id="xx"的match，在id后追加uuid
+	const uuid = Math.random().toString(36).slice(2)
+	const matches = data.matchAll(/id="([^"]+)"/g)
+	for (const match of matches) data = data.replaceAll(match[1], `${match[1]}-${uuid}`)
+	const newSvg = createDocumentFragmentFromHtmlString(data)
+	for (const attr in attributes)
+		newSvg.querySelector('svg').setAttribute(attr, attributes[attr])
+	return newSvg.querySelector('svg')
+}

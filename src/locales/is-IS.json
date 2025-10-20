@@ -1463,6 +1463,19 @@
 		"pageNotFoundText": "Úps! Svo virðist sem þú hafir lent á síðu sem er ekki til.",
 		"homepageButton": "Aftur á forsíðu"
 	},
+	"copy_button": {
+		"copy": {
+			"dataset": {
+				"tip": "afrita á klippiborð"
+			}
+		},
+		"copied": {
+			"dataset": {
+				"tip": "Afritað á klippiborð!"
+			}
+		},
+		"copy_failed": "Ekki er hægt að afrita á klippiborð: ${error}"
+	},
 	"pow_captcha": {
 		"initial": "Ég er ekki vélmenni",
 		"verifying": "Staðfestir...",

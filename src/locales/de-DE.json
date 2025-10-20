@@ -1463,6 +1463,19 @@
 		"pageNotFoundText": "Hoppla! Sie scheinen auf einer Seite gelandet zu sein, die nicht existiert.",
 		"homepageButton": "Zur Startseite zurückkehren"
 	},
+	"copy_button": {
+		"copy": {
+			"dataset": {
+				"tip": "in die Zwischenablage kopieren"
+			}
+		},
+		"copied": {
+			"dataset": {
+				"tip": "In die Zwischenablage kopiert!"
+			}
+		},
+		"copy_failed": "Kopieren in die Zwischenablage fehlgeschlagen: ${error}"
+	},
 	"pow_captcha": {
 		"initial": "Ich bin kein Roboter",
 		"verifying": "Wird überprüft...",

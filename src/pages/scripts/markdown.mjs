@@ -1,4 +1,3 @@
-import { transformerCopyButton } from 'https://esm.sh/@rehype-pretty/transformers'
 import { h } from 'https://esm.sh/hastscript'
 import rehypeKatex from 'https://esm.sh/rehype-katex'
 import rehypeMermaid from 'https://esm.sh/rehype-mermaid'
@@ -36,6 +35,58 @@ function rehypeAddDaisyuiClass() {
 	}
 }
 
+const ShikiCopyButtonPlugin = {
+	name: 'copy-button',
+	root(hast) {
+		const rawCode = this.tokens.map(line => line.map(token => token.content).join('')).join('\n')
+
+		const copyIconSrc = 'https://api.iconify.design/line-md/clipboard.svg'
+		const successIconSrc = 'https://api.iconify.design/line-md/clipboard-check.svg'
+
+		const buttonNode = h('div', {
+			class: 'absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200'
+		}, [
+			h('div', {
+				class: 'tooltip tooltip-left',
+				'data-i18n': 'copy_button.copy',
+			}, [
+				h('button', {
+					class: 'btn btn-ghost btn-square btn-sm',
+					onclick: `(async () => {
+						const { getSvgIcon } = await import('/scripts/svgInliner.mjs')
+						const tooltip = this.parentElement
+						try {
+							await navigator.clipboard.writeText(${JSON.stringify(rawCode)})
+							const successIcon = await getSvgIcon('${successIconSrc}', { class: 'w-5 h-5' })
+							tooltip.setAttribute('data-i18n', 'copy_button.copied')
+							const img = this.querySelector('svg')
+							img.replaceWith(successIcon)
+						} catch (e) {
+							const { showToastI18n } = await import('/scripts/toast.mjs')
+							showToastI18n('error', 'copy_button.copy_failed', { error: e.message })
+						}
+						setTimeout(async () => {
+							tooltip.setAttribute('data-i18n', 'copy_button.copy')
+							const img = this.querySelector('svg')
+							img.replaceWith(await getSvgIcon('${copyIconSrc}', { class: 'w-5 h-5' }))
+						}, 2000)
+					})()`,
+				}, [
+					h('img', {
+						src: copyIconSrc,
+						class: 'w-5 h-5'
+					})
+				])
+			])
+		])
+
+		return h('div', { class: 'group', style: 'position: relative;' }, [
+			hast,
+			buttonNode
+		])
+	}
+}
+
 const convertor = unified()
 	.use(remarkParse)
 	.use(remarkDisable, { disable: ['codeIndented'] })
@@ -68,10 +119,7 @@ ${diagram}`
 			light: 'github-light',
 		},
 		transformers: [
-			transformerCopyButton({
-				visibility: 'always',
-				feedbackDuration: 3_000,
-			}),
+			ShikiCopyButtonPlugin,
 		],
 	})
 	.use(rehypeKatex)

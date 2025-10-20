@@ -1463,6 +1463,19 @@
 		"pageNotFoundText": "Oops! It seems you've stumbled upon a page that doesn't exist.",
 		"homepageButton": "Back to Homepage"
 	},
+	"copy_button": {
+		"copy": {
+			"dataset": {
+				"tip": "Copy to clipboard"
+			}
+		},
+		"copied": {
+			"dataset": {
+				"tip": "Copied to clipboard!"
+			}
+		},
+		"copy_failed": "Unable to copy to clipboard: ${error}"
+	},
 	"pow_captcha": {
 		"initial": "I'm not a robot",
 		"verifying": "Verifying...",

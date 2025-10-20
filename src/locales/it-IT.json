@@ -1463,6 +1463,19 @@
 		"pageNotFoundText": "Ops! Sembra che tu sia finito in una pagina inesistente.",
 		"homepageButton": "Torna alla Homepage"
 	},
+	"copy_button": {
+		"copy": {
+			"dataset": {
+				"tip": "copia negli appunti"
+			}
+		},
+		"copied": {
+			"dataset": {
+				"tip": "Copiato negli appunti!"
+			}
+		},
+		"copy_failed": "Impossibile copiare negli appunti: ${error}"
+	},
 	"pow_captcha": {
 		"initial": "Non sono un robot",
 		"verifying": "Verifica in corso...",

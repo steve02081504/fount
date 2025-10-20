@@ -1463,6 +1463,19 @@
 		"pageNotFoundText": "Oups ! Il semble que vous soyez arrivé sur une page qui n'existe pas.",
 		"homepageButton": "Retour à la page d'accueil"
 	},
+	"copy_button": {
+		"copy": {
+			"dataset": {
+				"tip": "Copier dans le presse-papier"
+			}
+		},
+		"copied": {
+			"dataset": {
+				"tip": "Copié dans le presse-papier !"
+			}
+		},
+		"copy_failed": "Impossible de copier dans le presse-papier : ${error}"
+	},
 	"pow_captcha": {
 		"initial": "Je ne suis pas un robot",
 		"verifying": "Vérification en cours...",

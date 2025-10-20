@@ -1463,6 +1463,19 @@
 		"pageNotFoundText": "Ups! Parece que acedeu a uma página que não existe.",
 		"homepageButton": "Voltar à Página Inicial"
 	},
+	"copy_button": {
+		"copy": {
+			"dataset": {
+				"tip": "copiar para a área de transferência"
+			}
+		},
+		"copied": {
+			"dataset": {
+				"tip": "Copiado para a área de transferência!"
+			}
+		},
+		"copy_failed": "Não foi possível copiar para a área de transferência: ${error}"
+	},
 	"pow_captcha": {
 		"initial": "Eu não sou um robô",
 		"verifying": "Verificando ...",

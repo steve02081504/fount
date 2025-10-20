@@ -1463,6 +1463,19 @@
 		"pageNotFoundText": "이런! 존재하지 않는 페이지에 접속한 것 같습니다.",
 		"homepageButton": "홈페이지로 돌아가기"
 	},
+	"copy_button": {
+		"copy": {
+			"dataset": {
+				"tip": "클립보드에 복사"
+			}
+		},
+		"copied": {
+			"dataset": {
+				"tip": "클립보드에 복사되었습니다!"
+			}
+		},
+		"copy_failed": "클립보드에 복사할 수 없습니다: ${error}"
+	},
 	"pow_captcha": {
 		"initial": "나는 로봇이 아닙니다",
 		"verifying": "확인 중...",

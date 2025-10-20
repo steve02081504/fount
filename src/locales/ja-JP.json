@@ -1463,6 +1463,19 @@
 		"pageNotFoundText": "おっと！存在しないページにアクセスしたようです。",
 		"homepageButton": "ホームページに戻る"
 	},
+	"copy_button": {
+		"copy": {
+			"dataset": {
+				"tip": "クリップボードにコピー"
+			}
+		},
+		"copied": {
+			"dataset": {
+				"tip": "クリップボードにコピーしました！"
+			}
+		},
+		"copy_failed": "クリップボードへのコピーに失敗しました: ${error}"
+	},
 	"pow_captcha": {
 		"initial": "私はロボットではありません",
 		"verifying": "検証中...",

@@ -1463,6 +1463,19 @@
 		"pageNotFoundText": "عفوًا! يبدو أنك وصلت إلى صفحة غير موجودة.",
 		"homepageButton": "العودة إلى الصفحة الرئيسية"
 	},
+	"copy_button": {
+		"copy": {
+			"dataset": {
+				"tip": "نسخ إلى الحافظة"
+			}
+		},
+		"copied": {
+			"dataset": {
+				"tip": "تم النسخ إلى الحافظة"
+			}
+		},
+		"copy_failed": "تعذّر النسخ إلى الحافظة: ${error}"
+	},
 	"pow_captcha": {
 		"initial": "أنا لست روبوت",
 		"verifying": "التحقق ...",
