@@ -1463,7 +1463,17 @@
 		"pageNotFoundText": "糟糕！您似乎来到了一个不存在的页面。",
 		"homepageButton": "返回首页"
 	},
-	"copy_button": {
+	"code_block": {
+		"download": {
+			"dataset": {
+				"tip": "下载代码"
+			}
+		},
+		"execute": {
+			"dataset": {
+				"tip": "执行代码"
+			}
+		},
 		"copy": {
 			"dataset": {
 				"tip": "复制到剪贴板"

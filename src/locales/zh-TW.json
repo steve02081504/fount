@@ -1463,7 +1463,17 @@
 		"pageNotFoundText": "糟糕！您似乎來到了一個不存在的頁面。",
 		"homepageButton": "返回首頁"
 	},
-	"copy_button": {
+	"code_block": {
+		"download": {
+			"dataset": {
+				"tip": "下載代碼"
+			}
+		},
+		"execute": {
+			"dataset": {
+				"tip": "執行代碼"
+			}
+		},
 		"copy": {
 			"dataset": {
 				"tip": "複製到剪貼簿"
