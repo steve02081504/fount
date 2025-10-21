@@ -1355,7 +1355,7 @@
 		"initialMessageLink": "点击这里了解更多信息",
 		"achievements": {
 			"invoke_shell_assist": {
-				"name": "“Hey, Fount.”",
+				"name": "“Hey, fount.”",
 				"description": "在黑漆漆的终端里，呼唤了AI伙伴的名字。",
 				"locked_description": "调用一次终端辅助。"
 			}

@@ -1355,7 +1355,7 @@
 		"initialMessageLink": "Click here to learn more",
 		"achievements": {
 			"invoke_shell_assist": {
-				"name": "\"Hey, Fount.\"",
+				"name": "\"Hey, fount.\"",
 				"description": "In the dark terminal, the name of the AI ​​partner was called.",
 				"locked_description": "Call terminal assistance once."
 			}

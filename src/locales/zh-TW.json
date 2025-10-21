@@ -1355,7 +1355,7 @@
 		"initialMessageLink": "點擊這裡了解更多資訊",
 		"achievements": {
 			"invoke_shell_assist": {
-				"name": "“Hey, Fount.”",
+				"name": "“Hey, fount.”",
 				"description": "在黑漆漆的終端裡，呼喚了AI夥伴的名字。",
 				"locked_description": "調用一次終端輔助。"
 			}
