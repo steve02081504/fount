@@ -1463,6 +1463,19 @@
 		"pageNotFoundText": "😢 ➡️ 🤷‍♂️📄",
 		"homepageButton": "➡️🏠"
 	},
+	"copy_button": {
+		"copy": {
+			"dataset": {
+				"tip": "📋"
+			}
+		},
+		"copied": {
+			"dataset": {
+				"tip": "📋✅"
+			}
+		},
+		"copy_failed": "📋❌: ${error}"
+	},
 	"pow_captcha": {
 		"initial": "🤖❓",
 		"verifying": "🤔⏳",
