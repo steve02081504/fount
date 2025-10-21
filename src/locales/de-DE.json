@@ -1463,7 +1463,17 @@
 		"pageNotFoundText": "Hoppla! Sie scheinen auf einer Seite gelandet zu sein, die nicht existiert.",
 		"homepageButton": "Zur Startseite zurückkehren"
 	},
-	"copy_button": {
+	"code_block": {
+		"download": {
+			"dataset": {
+				"tip": "Code herunterladen"
+			}
+		},
+		"execute": {
+			"dataset": {
+				"tip": "Code ausführen"
+			}
+		},
 		"copy": {
 			"dataset": {
 				"tip": "in die Zwischenablage kopieren"

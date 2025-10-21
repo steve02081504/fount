@@ -1463,7 +1463,17 @@
 		"pageNotFoundText": "ओह! ऐसा लगता है कि आप एक ऐसे पेज पर आ गए हैं जो मौजूद नहीं है।",
 		"homepageButton": "होमपेज पर वापस जाएँ"
 	},
-	"copy_button": {
+	"code_block": {
+		"download": {
+			"dataset": {
+				"tip": "कोड डाउनलोड करें"
+			}
+		},
+		"execute": {
+			"dataset": {
+				"tip": "कोड निष्पादित करें"
+			}
+		},
 		"copy": {
 			"dataset": {
 				"tip": "क्लिपबोर्ड पर कॉपी करें"

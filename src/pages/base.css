@@ -29,12 +29,6 @@
 	margin-right: 2px;
 }
 
-.markdown-body figure {
-	display: block;
-	overflow-x: auto;
-	white-space: pre;
-}
-
 .markdown-body .highlight pre,
 .markdown-body pre {
 	color: var(--color-base-content);

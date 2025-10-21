@@ -1463,7 +1463,17 @@
 		"pageNotFoundText": "عفوًا! يبدو أنك وصلت إلى صفحة غير موجودة.",
 		"homepageButton": "العودة إلى الصفحة الرئيسية"
 	},
-	"copy_button": {
+	"code_block": {
+		"download": {
+			"dataset": {
+				"tip": "تنزيل الكود"
+			}
+		},
+		"execute": {
+			"dataset": {
+				"tip": "تنفيذ الكود"
+			}
+		},
 		"copy": {
 			"dataset": {
 				"tip": "نسخ إلى الحافظة"

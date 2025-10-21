@@ -1463,7 +1463,17 @@
 		"pageNotFoundText": "おっと！存在しないページにアクセスしたようです。",
 		"homepageButton": "ホームページに戻る"
 	},
-	"copy_button": {
+	"code_block": {
+		"download": {
+			"dataset": {
+				"tip": "コードをダウンロード"
+			}
+		},
+		"execute": {
+			"dataset": {
+				"tip": "コードを実行"
+			}
+		},
 		"copy": {
 			"dataset": {
 				"tip": "クリップボードにコピー"

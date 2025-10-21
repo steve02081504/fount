@@ -1463,7 +1463,17 @@
 		"pageNotFoundText": "Ối! Có vẻ như bạn đã truy cập vào một trang không tồn tại.",
 		"homepageButton": "Quay lại trang chủ"
 	},
-	"copy_button": {
+	"code_block": {
+		"download": {
+			"dataset": {
+				"tip": "Tải mã xuống"
+			}
+		},
+		"execute": {
+			"dataset": {
+				"tip": "Thực thi mã"
+			}
+		},
 		"copy": {
 			"dataset": {
 				"tip": "sao chép vào bảng nhớ tạm"

@@ -1463,7 +1463,17 @@
 		"pageNotFoundText": "¡Vaya! Parece que has llegado a una página que no existe.",
 		"homepageButton": "Volver a la página de inicio"
 	},
-	"copy_button": {
+	"code_block": {
+		"download": {
+			"dataset": {
+				"tip": "Descargar código"
+			}
+		},
+		"execute": {
+			"dataset": {
+				"tip": "Ejecutar código"
+			}
+		},
 		"copy": {
 			"dataset": {
 				"tip": "Copiar al portapapeles"

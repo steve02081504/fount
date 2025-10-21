@@ -1463,7 +1463,17 @@
 		"pageNotFoundText": "Ops! Sembra che tu sia finito in una pagina inesistente.",
 		"homepageButton": "Torna alla Homepage"
 	},
-	"copy_button": {
+	"code_block": {
+		"download": {
+			"dataset": {
+				"tip": "Scarica il codice"
+			}
+		},
+		"execute": {
+			"dataset": {
+				"tip": "Esegui il codice"
+			}
+		},
 		"copy": {
 			"dataset": {
 				"tip": "copia negli appunti"

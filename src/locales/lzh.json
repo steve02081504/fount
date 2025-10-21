@@ -1463,7 +1463,17 @@
 		"pageNotFoundText": "嗚呼！君誤入無何有之鄉矣。",
 		"homepageButton": "歸去來兮"
 	},
-	"copy_button": {
+	"code_block": {
+		"download": {
+			"dataset": {
+				"tip": "取碼"
+			}
+		},
+		"execute": {
+			"dataset": {
+				"tip": "行碼"
+			}
+		},
 		"copy": {
 			"dataset": {
 				"tip": "謄錄至簿"

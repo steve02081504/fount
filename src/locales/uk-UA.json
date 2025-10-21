@@ -1463,7 +1463,17 @@
 		"pageNotFoundText": "Ой! Схоже, ви потрапили на сторінку, якої не існує.",
 		"homepageButton": "Повернутися на головну"
 	},
-	"copy_button": {
+	"code_block": {
+		"download": {
+			"dataset": {
+				"tip": "Завантажити код"
+			}
+		},
+		"execute": {
+			"dataset": {
+				"tip": "Виконати код"
+			}
+		},
 		"copy": {
 			"dataset": {
 				"tip": "копіювати в буфер обміну"
