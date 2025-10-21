@@ -15,7 +15,7 @@ export default {
 			name: 'Telegram Bot',
 			avatar: 'https://api.iconify.design/line-md/telegram.svg',
 			description: 'Run your character as a Telegram Bot.',
-			description_markdown: 'Integrate your Fount character with Telegram to interact with users on the platform.',
+			description_markdown: 'Integrate your fount character with Telegram to interact with users on the platform.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['telegram', 'bot', 'chat', 'integration']
@@ -24,7 +24,7 @@ export default {
 			name: 'Telegram Bot',
 			avatar: 'https://api.iconify.design/line-md/telegram.svg',
 			description: '将您的角色作为 Telegram Bot 运行。',
-			description_markdown: '将您的 Fount 角色与 Telegram 集成，以便在该平台上与用户互动。',
+			description_markdown: '将您的 fount 角色与 Telegram 集成，以便在该平台上与用户互动。',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['Telegram', 'bot', '聊天', '集成']
@@ -33,7 +33,7 @@ export default {
 			name: 'Telegram Bot',
 			avatar: 'https://api.iconify.design/line-md/telegram.svg',
 			description: 'قم بتشغيل شخصيتك كـ Telegram Bot.',
-			description_markdown: 'ادمج شخصية Fount الخاصة بك مع Telegram للتفاعل مع المستخدمين على المنصة.',
+			description_markdown: 'ادمج شخصية fount الخاصة بك مع Telegram للتفاعل مع المستخدمين على المنصة.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['Telegram', 'بوت', 'دردشة', 'تكامل']
@@ -42,7 +42,7 @@ export default {
 			name: 'Telegram Bot',
 			avatar: 'https://api.iconify.design/line-md/telegram.svg',
 			description: 'Führen Sie Ihren Charakter als Telegram Bot aus.',
-			description_markdown: 'Integrieren Sie Ihren Fount-Charakter in Telegram, um mit Benutzern auf der Plattform zu interagieren.',
+			description_markdown: 'Integrieren Sie Ihren fount-Charakter in Telegram, um mit Benutzern auf der Plattform zu interagieren.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['Telegram', 'Bot', 'Chat', 'Integration']
@@ -51,7 +51,7 @@ export default {
 			name: '🤖✈️',
 			avatar: 'https://api.iconify.design/line-md/telegram.svg',
 			description: 'Run your character as a Telegram Bot.',
-			description_markdown: 'Integrate your Fount character with Telegram to interact with users on the platform.',
+			description_markdown: 'Integrate your fount character with Telegram to interact with users on the platform.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['telegram', 'bot', 'chat', 'integration']
@@ -60,7 +60,7 @@ export default {
 			name: 'Bot de Telegram',
 			avatar: 'https://api.iconify.design/line-md/telegram.svg',
 			description: 'Ejecuta tu personaje como un Bot de Telegram.',
-			description_markdown: 'Integra tu personaje de Fount con Telegram para interactuar con los usuarios de la plataforma.',
+			description_markdown: 'Integra tu personaje de fount con Telegram para interactuar con los usuarios de la plataforma.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['Telegram', 'bot', 'chat', 'integración']
@@ -69,7 +69,7 @@ export default {
 			name: 'Bot Telegram',
 			avatar: 'https://api.iconify.design/line-md/telegram.svg',
 			description: 'Exécutez votre personnage en tant que bot Telegram.',
-			description_markdown: 'Intégrez votre personnage Fount à Telegram pour interagir avec les utilisateurs sur la plateforme.',
+			description_markdown: 'Intégrez votre personnage fount à Telegram pour interagir avec les utilisateurs sur la plateforme.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['Telegram', 'bot', 'chat', 'intégration']
@@ -87,7 +87,7 @@ export default {
 			name: 'Telegram Bot',
 			avatar: 'https://api.iconify.design/line-md/telegram.svg',
 			description: 'Keyrðu karakterinn þinn sem Telegram Bot.',
-			description_markdown: 'Samþættu Fount karakterinn þinn við Telegram til að eiga samskipti við notendur á pallinum.',
+			description_markdown: 'Samþættu fount karakterinn þinn við Telegram til að eiga samskipti við notendur á pallinum.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['Telegram', 'bot', 'spjall', 'samþætting']
@@ -96,7 +96,7 @@ export default {
 			name: 'Bot di Telegram',
 			avatar: 'https://api.iconify.design/line-md/telegram.svg',
 			description: 'Esegui il tuo personaggio come un bot di Telegram.',
-			description_markdown: 'Integra il tuo personaggio Fount con Telegram per interagire con gli utenti sulla piattaforma.',
+			description_markdown: 'Integra il tuo personaggio fount con Telegram per interagire con gli utenti sulla piattaforma.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['Telegram', 'bot', 'chat', 'integrazione']
@@ -114,7 +114,7 @@ export default {
 			name: '텔레그램 봇',
 			avatar: 'https://api.iconify.design/line-md/telegram.svg',
 			description: '캐릭터를 텔레그램 봇으로 실행하세요.',
-			description_markdown: 'Fount 캐릭터를 텔레그램과 통합하여 플랫폼에서 사용자와 상호 작용합니다.',
+			description_markdown: 'fount 캐릭터를 텔레그램과 통합하여 플랫폼에서 사용자와 상호 작용합니다.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['텔레그램', '봇', '채팅', '통합']
@@ -123,7 +123,7 @@ export default {
 			name: 'Telegram 靈偶',
 			avatar: 'https://api.iconify.design/line-md/telegram.svg',
 			description: '將您的角色作為 Telegram Bot 運行。',
-			description_markdown: '將您的 Fount 角色與 Telegram 集成，以便在該平台上與用戶互動。',
+			description_markdown: '將您的 fount 角色與 Telegram 集成，以便在該平台上與用戶互動。',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['Telegram', '靈偶', '聊天', '集成']
@@ -132,7 +132,7 @@ export default {
 			name: 'Telegram Bot',
 			avatar: 'https://api.iconify.design/line-md/telegram.svg',
 			description: 'Voer je personage uit als een Telegram Bot.',
-			description_markdown: 'Integreer je Fount-personage met Telegram om met gebruikers op het platform te communiceren.',
+			description_markdown: 'Integreer je fount-personage met Telegram om met gebruikers op het platform te communiceren.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['Telegram', 'bot', 'chat', 'integratie']
@@ -141,7 +141,7 @@ export default {
 			name: 'Bot do Telegram',
 			avatar: 'https://api.iconify.design/line-md/telegram.svg',
 			description: 'Execute seu personagem como um Bot do Telegram.',
-			description_markdown: 'Integre seu personagem Fount com o Telegram para interagir com os usuários na plataforma.',
+			description_markdown: 'Integre seu personagem fount com o Telegram para interagir com os usuários na plataforma.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['Telegram', 'bot', 'chat', 'integração']
@@ -150,7 +150,7 @@ export default {
 			name: 'Telegram-бот',
 			avatar: 'https://api.iconify.design/line-md/telegram.svg',
 			description: 'Запустите своего персонажа как Telegram-бота.',
-			description_markdown: 'Интегрируйте своего персонажа Fount с Telegram для взаимодействия с пользователями на платформе.',
+			description_markdown: 'Интегрируйте своего персонажа fount с Telegram для взаимодействия с пользователями на платформе.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['Telegram', 'бот', 'чат', 'интеграция']
@@ -159,7 +159,7 @@ export default {
 			name: 'Telegram-бот',
 			avatar: 'https://api.iconify.design/line-md/telegram.svg',
 			description: 'Запустіть свого персонажа як Telegram-бота.',
-			description_markdown: 'Інтегруйте свого персонажа Fount з Telegram для взаємодії з користувачами на платформі.',
+			description_markdown: 'Інтегруйте свого персонажа fount з Telegram для взаємодії з користувачами на платформі.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['Telegram', 'бот', 'чат', 'інтеграція']
@@ -168,7 +168,7 @@ export default {
 			name: 'Bot Telegram',
 			avatar: 'https://api.iconify.design/line-md/telegram.svg',
 			description: 'Chạy nhân vật của bạn như một Bot Telegram.',
-			description_markdown: 'Tích hợp nhân vật Fount của bạn với Telegram để tương tác với người dùng trên nền tảng.',
+			description_markdown: 'Tích hợp nhân vật fount của bạn với Telegram để tương tác với người dùng trên nền tảng.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['Telegram', 'bot', 'trò chuyện', 'tích hợp']
@@ -177,7 +177,7 @@ export default {
 			name: 'Telegram Bot',
 			avatar: 'https://api.iconify.design/line-md/telegram.svg',
 			description: '將您的角色作為 Telegram Bot 運行。',
-			description_markdown: '將您的 Fount 角色與 Telegram 集成，以便在該平台上與用戶互動。',
+			description_markdown: '將您的 fount 角色與 Telegram 集成，以便在該平台上與用戶互動。',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['Telegram', 'bot', '聊天', '集成']

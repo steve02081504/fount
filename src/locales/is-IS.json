@@ -1355,7 +1355,7 @@
 		"initialMessageLink": "Smelltu hér til að fá frekari upplýsingar",
 		"achievements": {
 			"invoke_shell_assist": {
-				"name": "\"Hæ, Fount.\"",
+				"name": "\"Hæ, fount.\"",
 				"description": "Í myrkri flugstöðinni var nafn AI félagans kallað.",
 				"locked_description": "Hringdu einu sinni í flugstöðvaraðstoð."
 			}
