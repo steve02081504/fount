@@ -4,7 +4,7 @@
 
 fount is a modular, multi-user, and extensible framework for building interactive chat experiences with AI characters. Its core is a robust backend server that manages users, AI connections, and various **"parts"** that define the application's behavior. The architecture is designed for high customizability, allowing developers to create unique characters, worlds, user interfaces (shells), and plugins.
 
-## 2. Fount Philosophy
+## 2. fount Philosophy
 
 fount is built on a set of core principles that guide its architecture and development. Understanding these is crucial for contributing effectively.
 

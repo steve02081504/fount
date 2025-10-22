@@ -38,16 +38,23 @@ export async function runPet(username, charname) {
 
 		const finalUrl = `${intermediatePageUrl}?apikey=${encodedApiKey}&redirect=${encodedOriginalPetUrl}`
 
-		const { WebView } = await import('https://deno.land/x/webview/mod.ts')
-		const webview = new WebView({
-			title: charname,
-			url: finalUrl,
-			width: petConfig.windowOptions?.width ?? 400,
-			height: petConfig.windowOptions?.height ?? 400,
-			frameless: petConfig.windowOptions?.frameless ?? true,
-			transparent: petConfig.windowOptions?.transparent ?? true,
+		const { WebUI } = await import('https://deno.land/x/webui/mod.ts')
+
+		const myWindow = new WebUI()
+
+		myWindow.bind('minimize', () => {
+			myWindow.minimize()
 		})
-		webview.run().then(async () => {
+		myWindow.bind('close_win', () => {
+			WebUI.exit()
+		})
+
+		myWindow.setSize(petConfig.windowOptions?.width ?? 400, petConfig.windowOptions?.height ?? 400)
+		myWindow.setFrameless(petConfig.windowOptions?.frameless ?? true)
+		myWindow.setTransparent(petConfig.windowOptions?.transparent ?? true)
+		myWindow.setResizable(false)
+
+		myWindow.show(finalUrl).then(async () => {
 			delete runningPets[username][charname]
 			if (!Object.keys(runningPets[username]).length) delete runningPets[username]
 

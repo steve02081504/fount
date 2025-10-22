@@ -1355,7 +1355,7 @@
 		"initialMessageLink": "点击这里了解更多信息",
 		"achievements": {
 			"invoke_shell_assist": {
-				"name": "“Hey, Fount.”",
+				"name": "“Hey, fount.”",
 				"description": "在黑漆漆的终端里，呼唤了AI伙伴的名字。",
 				"locked_description": "调用一次终端辅助。"
 			}
@@ -1463,7 +1463,17 @@
 		"pageNotFoundText": "糟糕！您似乎来到了一个不存在的页面。",
 		"homepageButton": "返回首页"
 	},
-	"copy_button": {
+	"code_block": {
+		"download": {
+			"dataset": {
+				"tip": "下载代码"
+			}
+		},
+		"execute": {
+			"dataset": {
+				"tip": "执行代码"
+			}
+		},
 		"copy": {
 			"dataset": {
 				"tip": "复制到剪贴板"

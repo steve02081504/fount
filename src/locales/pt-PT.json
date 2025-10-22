@@ -1463,7 +1463,17 @@
 		"pageNotFoundText": "Ups! Parece que acedeu a uma página que não existe.",
 		"homepageButton": "Voltar à Página Inicial"
 	},
-	"copy_button": {
+	"code_block": {
+		"download": {
+			"dataset": {
+				"tip": "Descarregar código"
+			}
+		},
+		"execute": {
+			"dataset": {
+				"tip": "Executar código"
+			}
+		},
 		"copy": {
 			"dataset": {
 				"tip": "copiar para a área de transferência"

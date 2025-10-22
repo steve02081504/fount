@@ -1463,7 +1463,17 @@
 		"pageNotFoundText": "Oeps! Het lijkt erop dat je op een pagina bent beland die niet bestaat.",
 		"homepageButton": "Terug naar startpagina"
 	},
-	"copy_button": {
+	"code_block": {
+		"download": {
+			"dataset": {
+				"tip": "Code downloaden"
+			}
+		},
+		"execute": {
+			"dataset": {
+				"tip": "Code uitvoeren"
+			}
+		},
 		"copy": {
 			"dataset": {
 				"tip": "kopiëren naar klembord"

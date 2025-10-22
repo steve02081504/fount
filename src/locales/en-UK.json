@@ -1355,7 +1355,7 @@
 		"initialMessageLink": "Click here to learn more",
 		"achievements": {
 			"invoke_shell_assist": {
-				"name": "\"Hey, Fount.\"",
+				"name": "\"Hey, fount.\"",
 				"description": "In the dark terminal, the name of the AI ​​partner was called.",
 				"locked_description": "Call terminal assistance once."
 			}
@@ -1463,7 +1463,17 @@
 		"pageNotFoundText": "Oops! It seems you've stumbled upon a page that doesn't exist.",
 		"homepageButton": "Back to Homepage"
 	},
-	"copy_button": {
+	"code_block": {
+		"download": {
+			"dataset": {
+				"tip": "Download code"
+			}
+		},
+		"execute": {
+			"dataset": {
+				"tip": "Execute code"
+			}
+		},
 		"copy": {
 			"dataset": {
 				"tip": "Copy to clipboard"

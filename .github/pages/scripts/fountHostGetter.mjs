@@ -1,4 +1,4 @@
-import Sentry from 'https://esm.sh/@sentry/browser'
+import * as Sentry from 'https://esm.sh/@sentry/browser'
 
 /* global urlParams */
 const DEFAULT_FOUNT_PORT = 8931

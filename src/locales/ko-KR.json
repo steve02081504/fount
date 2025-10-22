@@ -1463,7 +1463,17 @@
 		"pageNotFoundText": "이런! 존재하지 않는 페이지에 접속한 것 같습니다.",
 		"homepageButton": "홈페이지로 돌아가기"
 	},
-	"copy_button": {
+	"code_block": {
+		"download": {
+			"dataset": {
+				"tip": "코드 다운로드하기"
+			}
+		},
+		"execute": {
+			"dataset": {
+				"tip": "코드 실행하기"
+			}
+		},
 		"copy": {
 			"dataset": {
 				"tip": "클립보드에 복사"

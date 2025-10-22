@@ -1463,7 +1463,17 @@
 		"pageNotFoundText": "😢 ➡️ 🤷‍♂️📄",
 		"homepageButton": "➡️🏠"
 	},
-	"copy_button": {
+	"code_block": {
+		"download": {
+			"dataset": {
+				"tip": "⬇️"
+			}
+		},
+		"execute": {
+			"dataset": {
+				"tip": "▶️"
+			}
+		},
 		"copy": {
 			"dataset": {
 				"tip": "📋"
