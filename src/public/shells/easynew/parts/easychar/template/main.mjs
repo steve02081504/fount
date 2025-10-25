@@ -106,7 +106,7 @@ export default {
 			},
 			async GetReply(arg) {
 				if (!AIsource)
-					return { content: 'This character does not have an AI source, set the AI source first' }
+					return { content: 'This character does not have an AI source, [set the AI source](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage) first' }
 
 				const prompt_struct = await buildPromptStruct(arg)
 				// 创建回复容器

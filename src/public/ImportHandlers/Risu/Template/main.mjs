@@ -185,7 +185,7 @@ const charAPI_definition = { // 先定义结构主体
 				if (!AIsource)
 					return {
 						// 此处的提示可以考虑根据 args.locales 进行 i18n，但属于模板细节优化
-						content: 'This character does not have an AI source. Please set the AI source in the character config first.'
+						content: 'This character does not have an AI source. Please [set the AI source](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage) first.'
 					}
 
 
