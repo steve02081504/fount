@@ -109,7 +109,7 @@ export default {
 			// no GetPromptForOther, ST card does not support it
 			GetReply: async args => {
 				if (!AIsource) return {
-					content: 'this character does not have an AI source, set the AI source first',
+					content: 'this character does not have an AI source, [set the AI source](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage) first',
 				}
 				// 用fount提供的工具构建提示词结构
 				const prompt_struct = await buildPromptStruct(args)
