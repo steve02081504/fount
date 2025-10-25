@@ -28,9 +28,14 @@ async function renderAchievements() {
 			for (const partName of Object.keys(achievementsData[partType]).sort())
 				renderPromises.push((async () => {
 					const { info } = await getPartDetails(partType, partName)
+					const achievements = achievementsData[partType][partName]
+					const totalAchievements = Object.keys(achievements).length
+					const unlockedAchievements = Object.values(achievements).filter(a => a.unlocked_at).length
 					return renderTemplate('category_section', {
 						category: info,
-						achievements: achievementsData[partType][partName],
+						achievements,
+						totalAchievements,
+						unlockedAchievements,
 					})
 				})())
 

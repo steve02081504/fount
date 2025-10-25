@@ -2,6 +2,8 @@
 	<h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
 		<img src="${category.icon || category.avatar || 'https://api.iconify.design/material-symbols/trophy.svg'}" class="text-icon w-8 h-8">
 		<span>${category.name}</span>
+		<span class="text-lg opacity-70">(${unlockedAchievements}/${totalAchievements})</span>
+		<progress class="progress progress-primary w-56" value="${unlockedAchievements}" max="${totalAchievements}"></progress>
 	</h2>
 	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 		${Object.values(achievements).map(achievement => `
