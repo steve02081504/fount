@@ -4,6 +4,8 @@ import process from 'node:process'
 import { console as baseConsole } from 'npm:@steve02081504/virtual-console'
 
 import { __dirname } from '../server/base.mjs'
+import { events } from '../server/events.mjs'
+import { loadData, loadTempData, saveData } from '../server/setting_loader.mjs'
 import { sendEventToAll } from '../server/web_server/event_dispatcher.mjs'
 
 import { exec } from './exec.mjs'
@@ -39,27 +41,36 @@ export function getbestlocale(preferredlocaleList, localeList) {
 }
 
 const fountLocaleCache = {}
-/**
- * @type {Record<string, string[]>}
- */
-const partsLocaleLists = {}
-/**
- * @type {Record<string, (locale: string) => Promise<any>>}
- */
-const partsLocaleLoaders = {}
-const partsLocaleCache = {}
 
-export async function getLocaleData(preferredlocaleList) {
+export async function getLocaleData(username, preferredlocaleList) {
 	const resultLocale = getbestlocale(preferredlocaleList, fountLocaleList)
-	let result = fountLocaleCache[resultLocale] ??= loadJsonFile(__dirname + `/src/locales/${resultLocale}.json`)
-	for (const part in partsLocaleLists) {
-		const resultLocale = getbestlocale(preferredlocaleList, partsLocaleLists[part])
-		partsLocaleCache[part] ??= {}
-		const partdata = partsLocaleCache[part][resultLocale] ??= await partsLocaleLoaders[part](resultLocale)
-		result = { ...result, ...partdata }
+	const result = {
+		...fountLocaleCache[resultLocale] ??= loadJsonFile(__dirname + `/src/locales/${resultLocale}.json`)
 	}
+	if (!username) return result
+	const partsLocaleLists = loadData(username, 'parts_locale_lists')
+	const partsLocaleCache = loadData(username, 'parts_locale_caches')
+	const partsLocaleLoaders = loadTempData(username, 'parts_locale_loaders')
+	for (const parttype in partsLocaleLists) for (const partname in partsLocaleLists[parttype]) {
+		const resultLocale = getbestlocale(preferredlocaleList, partsLocaleLists[parttype][partname])
+		partsLocaleCache[parttype] ??= {}
+		partsLocaleCache[parttype][partname] ??= {}
+		const partdata = partsLocaleCache[parttype][partname][resultLocale] ??= await partsLocaleLoaders[parttype]?.[partname]?.(resultLocale)
+		Object.assign(result, partdata)
+	}
+	saveData(username, 'parts_locale_caches')
 	return result
 }
+events.on('part-loaded', ({ username, parttype, partname }) => {
+	delete loadData(username, 'parts_locale_caches')?.[parttype]?.[partname]
+})
+events.on('part-uninstalled', ({ username, parttype, partname }) => {
+	delete loadData(username, 'parts_locale_caches')[parttype][partname]
+	saveData(username, 'parts_locale_caches')
+	delete loadData(username, 'parts_locale_lists')[parttype][partname]
+	saveData(username, 'parts_locale_lists')
+	delete loadTempData(username, 'parts_locale_loaders')[parttype][partname]
+})
 
 export const localhostLocales = [...new Set([
 	...[
@@ -71,7 +82,7 @@ export const localhostLocales = [...new Set([
 	...navigator.languages || [navigator.language],
 	'en-UK',
 ].filter(Boolean))]
-export let localhostLocaleData = await getLocaleData(localhostLocales)
+export let localhostLocaleData = await getLocaleData(null, localhostLocales)
 
 fs.watch(`${__dirname}/src/locales`, (_event, filename) => {
 	if (!filename?.endsWith('.json')) return
@@ -81,7 +92,7 @@ fs.watch(`${__dirname}/src/locales`, (_event, filename) => {
 	// Clear cache for the changed file, if it exists
 	if (!fountLocaleCache[locale]) return
 	delete fountLocaleCache[locale]
-	getLocaleData(localhostLocales).then((data) => {
+	getLocaleData(null, localhostLocales).then((data) => {
 		localhostLocaleData = data
 		sendEventToAll('locale-updated', null)
 	})
@@ -94,10 +105,12 @@ if (localhostLocales[0] === 'zh-CN')
 			console.error('%cException Error Syntax Unexpected string: Crazy Thursday vivo 50', 'color: red')
 	}, 5 * 60 * 1000)
 
-export async function addPartLocaleData(partname, localeList, loader) {
-	partsLocaleLists[partname] = localeList
-	partsLocaleLoaders[partname] = loader
-	localhostLocaleData = await getLocaleData(localhostLocales)
+export function addPartLocaleData(username, parttype, partname, localeList, loader) {
+	const partsLocaleLists = loadData(username, 'parts_locale_lists')
+	const partsLocaleLoaders = loadTempData(username, 'parts_locale_loaders')
+	;(partsLocaleLists[parttype]??={})[partname] = localeList
+	;(partsLocaleLoaders[parttype]??={})[partname] = loader
+	saveData(username, 'parts_locale_lists')
 }
 
 function getNestedValue(obj, key) {

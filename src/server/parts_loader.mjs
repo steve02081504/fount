@@ -303,6 +303,7 @@ export async function loadPartBase(username, parttype, partname, Initargs, {
 				partname
 			})
 			console.log(profile)
+			events.emit('part-loaded', { username, parttype, partname })
 		}
 		if (parts_set[username][parttype][partname] instanceof Promise)
 			parts_set[username][parttype][partname] = await parts_set[username][parttype][partname]

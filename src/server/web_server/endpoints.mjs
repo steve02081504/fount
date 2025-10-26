@@ -88,16 +88,18 @@ export function registerEndpoints(router) {
 		// 合并语言列表，用户设置的优先，然后去重
 		const preferredLanguages = [...new Set([...userPreferredLanguages, ...browserLanguages])].filter(Boolean)
 
+		let username
 		if (req.cookies.accessToken) try {
 			await authenticate(req, res)
 			const user = await getUserByReq(req)
 			user.locales = preferredLanguages
-			console.logI18n('fountConsole.route.setLanguagePreference', { username: user.username, preferredLanguages: preferredLanguages.join(', ') })
+			username = user.username
+			console.logI18n('fountConsole.route.setLanguagePreference', { username, preferredLanguages: preferredLanguages.join(', ') })
 		} catch (error) {
 			console.error('Error setting language preference for user:', error)
 		}
 
-		return res.status(200).json(await getLocaleData(preferredLanguages))
+		return res.status(200).json(await getLocaleData(username, preferredLanguages))
 	})
 
 	router.get('/api/getavailablelocales', async (req, res) => {
