@@ -579,7 +579,7 @@ ensure_fount_path() {
 	if [[ ":$PATH:" != *":$FOUNT_DIR/path:"* ]]; then
 		local profile_files=("$HOME/.profile" "$HOME/.bashrc" "$HOME/.zshrc")
 		for profile_file in "${profile_files[@]}"; do
-			if [ -f "$profile_file" ] && ! grep -q "export PATH=.*$ESCAPED_FOUNT_DIR/path" "$profile_file"; then
+			if [ -f "$profile_file" ] && ! grep -q "export PATH=.*$FOUNT_DIR/path" "$profile_file"; then
 				if [ "$(tail -c 1 "$profile_file")" != $'\n' ]; then echo >>"$profile_file"; fi
 				echo "export PATH=\"\$PATH:$FOUNT_DIR/path\"" >>"$profile_file"
 			fi
