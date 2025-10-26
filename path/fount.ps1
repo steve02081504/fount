@@ -342,6 +342,7 @@ function fount_upgrade {
 	if (!(Test-Path -Path "$FOUNT_DIR/.git")) {
 		Write-Host "fount's git repository not found, initializing a new one..."
 		git -C "$FOUNT_DIR" init -b master
+		git -C "$FOUNT_DIR" config core.autocrlf false
 		git -C "$FOUNT_DIR" remote add origin https://github.com/steve02081504/fount.git
 		Write-Host "Fetching from remote and resetting to master..."
 		git -C "$FOUNT_DIR" fetch origin master --depth 1
@@ -364,6 +365,7 @@ function fount_upgrade {
 		Write-Host "Repository not found, skipping git pull"
 	}
 	else {
+		git -C "$FOUNT_DIR" config core.autocrlf false
 		git -C "$FOUNT_DIR" fetch origin
 		$currentBranch = git -C "$FOUNT_DIR" rev-parse --abbrev-ref HEAD
 		if ($currentBranch -eq 'HEAD') {
@@ -534,6 +536,7 @@ function run {
 if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $args[0] -eq 'init')) {
 	if (!(Test-Path -Path "$FOUNT_DIR/.noupdate")) {
 		if (Get-Command git -ErrorAction Ignore) {
+			git -C "$FOUNT_DIR" config core.autocrlf false
 			git -C "$FOUNT_DIR" clean -fd
 			git -C "$FOUNT_DIR" reset --hard "origin/master"
 			git -C "$FOUNT_DIR" gc --aggressive --prune=now --force

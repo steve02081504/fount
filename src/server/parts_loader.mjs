@@ -134,6 +134,7 @@ export async function baseloadPart(username, parttype, partname, {
 
 	if (fs.existsSync(path + '/.git')) try {
 		const git = run_git.withPath(path)
+		await git('config core.autocrlf false')
 		await git('fetch origin')
 		const currentBranch = await git('rev-parse --abbrev-ref HEAD')
 		const remoteBranch = await git('rev-parse --abbrev-ref --symbolic-full-name "@{u}"')

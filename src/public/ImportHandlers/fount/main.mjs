@@ -120,6 +120,7 @@ async function ImportByText(username, text) {
 					}
 					await moveWithMerge(tempDir, targetPath)
 					const git = run_git.withPath(targetPath)
+					await git('config core.autocrlf false')
 					const remoteBranch = await git('rev-parse --abbrev-ref --symbolic-full-name "@{u}"')
 					await git('fetch origin')
 					await git('reset --hard ' + remoteBranch)

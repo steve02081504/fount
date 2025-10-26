@@ -183,7 +183,7 @@ try {
 		}
 		Remove-Item $env:FOUNT_DIR -Confirm -ErrorAction Ignore -Recurse
 		if (Get-Command git -ErrorAction Ignore) {
-			git clone https://github.com/steve02081504/fount $env:FOUNT_DIR --depth 1 --single-branch --branch $env:FOUNT_BRANCH
+			git clone -c core.autocrlf=false https://github.com/steve02081504/fount $env:FOUNT_DIR --depth 1 --single-branch --branch $env:FOUNT_BRANCH
 			if ($LastExitCode) {
 				Remove-Item $env:FOUNT_DIR -Force -ErrorAction Ignore -Confirm:$false -Recurse
 			}
