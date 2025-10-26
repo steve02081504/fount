@@ -64,6 +64,7 @@ export let currentGitCommit = await git('rev-parse', 'HEAD').catch(() => null)
 
 async function checkUpstreamAndRestart() {
 	if (fs.existsSync(__dirname + '/.git')) try {
+		await git('config core.autocrlf false')
 		await git('fetch')
 
 		if (!await git('rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}').catch(() => null)) return
