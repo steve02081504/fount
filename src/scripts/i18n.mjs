@@ -79,9 +79,8 @@ fs.watch(`${__dirname}/src/locales`, (_event, filename) => {
 	console.log(`Detected change in ${filename}.`)
 
 	// Clear cache for the changed file, if it exists
-	if (fountLocaleCache[locale]) delete fountLocaleCache[locale]
-
-	// Always re-evaluate and reload the locale data for the current session
+	if (!fountLocaleCache[locale]) return
+	delete fountLocaleCache[locale]
 	getLocaleData(localhostLocales).then((data) => {
 		localhostLocaleData = data
 		sendEventToAll('locale-updated', null)

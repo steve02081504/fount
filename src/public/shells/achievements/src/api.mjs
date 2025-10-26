@@ -74,7 +74,6 @@ async function buildRegistry(username) {
 			} catch (e) {
 				console.error(`Error loading achievement registry from ${partType}/${partName}:`, e)
 			}
-
 	}
 }
 
@@ -105,9 +104,7 @@ export async function getAchievements(username) {
 					...achievements[id],
 					unlocked_at: userData.unlocked[partType]?.[partName]?.[id] || undefined,
 				}
-
 		}
-
 
 	return achievementsData
 }

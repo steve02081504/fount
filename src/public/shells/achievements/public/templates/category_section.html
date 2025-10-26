@@ -14,7 +14,7 @@
 						<img src="${(achievement.unlocked_at ? null : achievement.locked_icon) || achievement.icon}" class="w-12 h-12" />
 					</div>
 					<div>
-						<h3 class="card-title" data-i18n="${achievement.name}"></h3>
+						<h3 class="card-title" data-i18n="${(achievement.unlocked_at ? null : achievement.locked_name) || achievement.name}"></h3>
 						<p class="text-sm opacity-70" data-i18n="${(achievement.unlocked_at ? null : achievement.locked_description) || achievement.description}"></p>
 						${achievement.unlocked_at ? `
 						<div class="text-xs opacity-50 mt-2">

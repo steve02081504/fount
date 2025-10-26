@@ -64,7 +64,7 @@ export async function runPet(username, charname) {
 		})
 
 		runningPets[username] ??= {}
-		runningPets[username][charname] = { webview, apiKeyJti: jti }
+		runningPets[username][charname] = { webview: myWindow, apiKeyJti: jti }
 		sendEventToAll('deskpet-list-updated')
 		unlockAchievement(username, 'shells', 'deskpet', 'start_deskpet') // Trigger achievement here
 	} catch (error) {
