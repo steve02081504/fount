@@ -479,7 +479,7 @@ async function nocacheGetPartBaseDetails(username, parttype, partname) {
 	}
 }
 
-function getSfwInfo(info) {
+export function getSfwInfo(info) {
 	if (!info) return info
 	const sfwInfo = { ...info }
 	for (const key in info)
