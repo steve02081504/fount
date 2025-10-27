@@ -159,7 +159,7 @@ async function GetSource(config) {
 		HarmBlockThreshold,
 		createPartFromUri,
 		createPartFromBase64,
-	} = await import('npm:@google/genai@^1.12.0')
+	} = await import('npm:@google/genai@^1.27.0')
 
 	config.system_prompt_at_depth ??= configTemplate.system_prompt_at_depth
 	config.max_input_tokens ??= configTemplate.max_input_tokens
@@ -206,13 +206,16 @@ async function GetSource(config) {
 
 	const default_config = {
 		responseMimeType: 'text/plain',
-		safetySettings: Object.values(HarmCategory)
-			.filter(category => is_ImageGeneration ? true : !category.includes('IMAGE'))
-			.filter(category => category != HarmCategory.HARM_CATEGORY_UNSPECIFIED)
-			.map(category => ({
-				category,
-				threshold: HarmBlockThreshold.BLOCK_NONE
-			}))
+		safetySettings: [
+			HarmCategory.HARM_CATEGORY_HARASSMENT,
+			HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+			HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+			HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+			HarmCategory.HARM_CATEGORY_CIVIC_INTEGRITY
+		].map(category => ({
+			category,
+			threshold: HarmBlockThreshold.BLOCK_NONE
+		}))
 	}
 
 	/** @type {AIsource_t} */
