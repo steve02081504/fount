@@ -8,8 +8,8 @@ export default {
 		'en-UK': {
 			name: 'Home',
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
-			description: 'The home page of Project fount.',
-			description_markdown: 'The central hub for navigating Project fount, providing access to all shells and features.',
+			description: 'The home page of fount.',
+			description_markdown: 'The central hub for navigating fount, providing access to all shells and features.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['home', 'dashboard', 'main']
@@ -17,8 +17,8 @@ export default {
 		'zh-CN': {
 			name: '主页',
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
-			description: 'Project fount 的主页。',
-			description_markdown: '用于导航 Project fount 的中央枢纽，提供对所有shell和功能的访问。',
+			description: 'fount 的主页。',
+			description_markdown: '用于导航 fount 的中央枢纽，提供对所有shell和功能的访问。',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['主页', '仪表板', '主要']
@@ -35,8 +35,8 @@ export default {
 		'de-DE': {
 			name: 'Startseite',
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
-			description: 'Die Startseite von Project fount.',
-			description_markdown: 'Der zentrale Hub für die Navigation in Project fount, der Zugriff auf alle Shells und Funktionen bietet.',
+			description: 'Die Startseite von fount.',
+			description_markdown: 'Der zentrale Hub für die Navigation in fount, der Zugriff auf alle Shells und Funktionen bietet.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['Startseite', 'Dashboard', 'Haupt']
@@ -44,8 +44,8 @@ export default {
 		emoji: {
 			name: '🏠',
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
-			description: 'The home page of Project fount.',
-			description_markdown: 'The central hub for navigating Project fount, providing access to all shells and features.',
+			description: 'The home page of fount.',
+			description_markdown: 'The central hub for navigating fount, providing access to all shells and features.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['home', 'dashboard', 'main']
@@ -54,7 +54,7 @@ export default {
 			name: 'Página de inicio',
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
 			description: 'La página de inicio del Proyecto fount.',
-			description_markdown: 'El centro neurálgico para navegar por Project fount, que brinda acceso a todos los shells y funciones.',
+			description_markdown: 'El centro neurálgico para navegar por fount, que brinda acceso a todos los shells y funciones.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['página de inicio', 'tablero', 'principal']
@@ -63,7 +63,7 @@ export default {
 			name: 'Page d\'accueil',
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
 			description: 'La page d\'accueil du projet fount.',
-			description_markdown: 'Le hub central pour naviguer dans Project fount, donnant accès à tous les shells et fonctionnalités.',
+			description_markdown: 'Le hub central pour naviguer dans fount, donnant accès à tous les shells et fonctionnalités.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['page d\'accueil', 'tableau de bord', 'principal']
@@ -80,8 +80,8 @@ export default {
 		'is-IS': {
 			name: 'Heim',
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
-			description: 'Heimasíða Project fount.',
-			description_markdown: 'Miðstöðin til að fletta um Project fount, sem veitir aðgang að öllum skeljum og eiginleikum.',
+			description: 'Heimasíða fount.',
+			description_markdown: 'Miðstöðin til að fletta um fount, sem veitir aðgang að öllum skeljum og eiginleikum.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['heim', 'mælaborð', 'aðal']
@@ -89,8 +89,8 @@ export default {
 		'it-IT': {
 			name: 'Pagina iniziale',
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
-			description: 'La home page di Project fount.',
-			description_markdown: 'L\'hub centrale per la navigazione in Project fount, che fornisce l\'accesso a tutte le shell e le funzionalità.',
+			description: 'La home page di fount.',
+			description_markdown: 'L\'hub centrale per la navigazione in fount, che fornisce l\'accesso a tutte le shell e le funzionalità.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['pagina iniziale', 'dashboard', 'principale']
@@ -98,8 +98,8 @@ export default {
 		'ja-JP': {
 			name: 'ホームページ',
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
-			description: 'Project Fountのホームページ。',
-			description_markdown: 'Project Fountをナビゲートするための中央ハブで、すべてのシェルと機能にアクセスできます。',
+			description: 'fountのホームページ。',
+			description_markdown: 'fountをナビゲートするための中央ハブで、すべてのシェルと機能にアクセスできます。',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['ホームページ', 'ダッシュボード', 'メイン']
@@ -107,8 +107,8 @@ export default {
 		'ko-KR': {
 			name: '홈페이지',
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
-			description: 'Project Fount의 홈페이지입니다.',
-			description_markdown: 'Project Fount를 탐색하기 위한 중앙 허브로 모든 셸과 기능에 대한 액세스를 제공합니다.',
+			description: 'fount의 홈페이지입니다.',
+			description_markdown: 'fount를 탐색하기 위한 중앙 허브로 모든 셸과 기능에 대한 액세스를 제공합니다.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['홈페이지', '대시보드', '메인']
@@ -116,8 +116,8 @@ export default {
 		lzh: {
 			name: '主頁',
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
-			description: 'Project fount 的主頁。',
-			description_markdown: '用於導航 Project fount 的中央樞紐，提供對所有shell和功能的訪問。',
+			description: 'fount 的主頁。',
+			description_markdown: '用於導航 fount 的中央樞紐，提供對所有shell和功能的訪問。',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['主頁', '儀表板', '主要']
@@ -125,8 +125,8 @@ export default {
 		'nl-NL': {
 			name: 'Startpagina',
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
-			description: 'De startpagina van Project fount.',
-			description_markdown: 'De centrale hub voor het navigeren door Project fount, die toegang biedt tot alle shells en functies.',
+			description: 'De startpagina van fount.',
+			description_markdown: 'De centrale hub voor het navigeren door fount, die toegang biedt tot alle shells en functies.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['startpagina', 'dashboard', 'hoofd']
@@ -143,8 +143,8 @@ export default {
 		'ru-RU': {
 			name: 'Домашняя страница',
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
-			description: 'Домашняя страница Project fount.',
-			description_markdown: 'Центральный узел для навигации по Project fount, предоставляющий доступ ко всем оболочкам и функциям.',
+			description: 'Домашняя страница fount.',
+			description_markdown: 'Центральный узел для навигации по fount, предоставляющий доступ ко всем оболочкам и функциям.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['домашняя страница', 'панель управления', 'главная']
@@ -152,8 +152,8 @@ export default {
 		'uk-UA': {
 			name: 'Домашня сторінка',
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
-			description: 'Домашня сторінка Project fount.',
-			description_markdown: 'Центральний вузол для навігації по Project fount, що надає доступ до всіх оболонок і функцій.',
+			description: 'Домашня сторінка fount.',
+			description_markdown: 'Центральний вузол для навігації по fount, що надає доступ до всіх оболонок і функцій.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['домашня сторінка', 'панель управління', 'головна']
@@ -170,8 +170,8 @@ export default {
 		'zh-TW': {
 			name: '主頁',
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
-			description: 'Project fount 的主頁。',
-			description_markdown: '用於導航 Project fount 的中央樞紐，提供對所有shell和功能的訪問。',
+			description: 'fount 的主頁。',
+			description_markdown: '用於導航 fount 的中央樞紐，提供對所有shell和功能的訪問。',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['主頁', '儀表板', '主要']

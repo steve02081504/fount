@@ -98,8 +98,8 @@ export default {
 		'ja-JP': {
 			name: 'ターミナルアシスト',
 			avatar: 'https://api.iconify.design/line-md/laptop.svg',
-			description: 'Fount内の対話型ターミナルアクセス。',
-			description_markdown: 'Fountサーバー環境に接続された対話型ターミナルを提供し、直接のコマンドライン操作を可能にします。',
+			description: 'fount内の対話型ターミナルアクセス。',
+			description_markdown: 'fountサーバー環境に接続された対話型ターミナルを提供し、直接のコマンドライン操作を可能にします。',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['ターミナル', 'シェル', 'アシスト', '開発者']

@@ -185,7 +185,7 @@ export function aiMarkdownToTelegramHtml(aiMarkdownText) {
  * @param {TelegramBotInfo} botInfo - bot自身的信息。
  * @param {any} interfaceConfig - 接口配置 (例如 OwnerUserID)。
  * @param {CharAPI_t} charAPI - 当前角色的API对象。
- * @param {string} ownerUsername - Fount系统的用户名。
+ * @param {string} ownerUsername - fount系统的用户名。
  * @param {string} botCharname - 当前bot绑定的角色名。
  * @param {Record<number, ChatReply_t>} [aiReplyObjectCache] 用于恢复AI回复附加数据的缓存。
  * @returns {Promise<chatLogEntry_t_simple | null>} 转换后的聊天日志条目，或 null。

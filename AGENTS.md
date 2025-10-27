@@ -1,4 +1,4 @@
-# fount Project Architecture & AI Agent Prompting Guide
+# fount Architecture & AI Agent Prompting Guide
 
 ## 1. Project Overview
 

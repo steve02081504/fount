@@ -48,8 +48,8 @@ export async function getLocaleData(username, preferredlocaleList) {
 		...fountLocaleCache[resultLocale] ??= loadJsonFile(__dirname + `/src/locales/${resultLocale}.json`)
 	}
 	if (!username) return result
-	const partsLocaleLists = loadData(username, 'parts_locale_lists')
-	const partsLocaleCache = loadData(username, 'parts_locale_caches')
+	const partsLocaleLists = loadData(username, 'parts_locale_lists_cache')
+	const partsLocaleCache = loadData(username, 'parts_locales_cache')
 	const partsLocaleLoaders = loadTempData(username, 'parts_locale_loaders')
 	for (const parttype in partsLocaleLists) for (const partname in partsLocaleLists[parttype]) {
 		const resultLocale = getbestlocale(preferredlocaleList, partsLocaleLists[parttype][partname])
@@ -58,17 +58,17 @@ export async function getLocaleData(username, preferredlocaleList) {
 		const partdata = partsLocaleCache[parttype][partname][resultLocale] ??= await partsLocaleLoaders[parttype]?.[partname]?.(resultLocale)
 		Object.assign(result, partdata)
 	}
-	saveData(username, 'parts_locale_caches')
+	saveData(username, 'parts_locales_cache')
 	return result
 }
 events.on('part-loaded', ({ username, parttype, partname }) => {
-	delete loadData(username, 'parts_locale_caches')?.[parttype]?.[partname]
+	delete loadData(username, 'parts_locales_cache')?.[parttype]?.[partname]
 })
 events.on('part-uninstalled', ({ username, parttype, partname }) => {
-	delete loadData(username, 'parts_locale_caches')[parttype][partname]
-	saveData(username, 'parts_locale_caches')
-	delete loadData(username, 'parts_locale_lists')[parttype][partname]
-	saveData(username, 'parts_locale_lists')
+	delete loadData(username, 'parts_locales_cache')[parttype][partname]
+	saveData(username, 'parts_locales_cache')
+	delete loadData(username, 'parts_locale_lists_cache')[parttype][partname]
+	saveData(username, 'parts_locale_lists_cache')
 	delete loadTempData(username, 'parts_locale_loaders')[parttype][partname]
 })
 
@@ -106,11 +106,11 @@ if (localhostLocales[0] === 'zh-CN')
 	}, 5 * 60 * 1000)
 
 export function addPartLocaleData(username, parttype, partname, localeList, loader) {
-	const partsLocaleLists = loadData(username, 'parts_locale_lists')
+	const partsLocaleLists = loadData(username, 'parts_locale_lists_cache')
 	const partsLocaleLoaders = loadTempData(username, 'parts_locale_loaders')
 	;(partsLocaleLists[parttype]??={})[partname] = localeList
 	;(partsLocaleLoaders[parttype]??={})[partname] = loader
-	saveData(username, 'parts_locale_lists')
+	saveData(username, 'parts_locale_lists_cache')
 }
 
 function getNestedValue(obj, key) {

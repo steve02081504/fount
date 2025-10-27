@@ -3,33 +3,33 @@ import { join } from 'node:path'
 
 import { loadJsonFile } from '../../../../scripts/json_loader.mjs'
 import { partTypeList } from '../../../../server/managers/base.mjs'
-import { getPartListBase, GetPartPath } from '../../../../server/parts_loader.mjs'
+import { getPartDetails, getPartListBase, GetPartPath } from '../../../../server/parts_loader.mjs'
 import { loadShellData, saveShellData, loadTempData } from '../../../../server/setting_loader.mjs'
 import { sendEventToUser } from '../../../../server/web_server/event_dispatcher.mjs'
 
 const watchedDirs = new Set()
 
 // Helper to update a single part's achievements in the cached registry
-function updatePartInRegistry(username, partType, partName) {
+function updatePartInRegistry(username, parttype, partname) {
 	const registry = loadTempData(username, 'achievements_registry')
-	const dirPath = GetPartPath(username, partType, partName)
+	const dirPath = GetPartPath(username, parttype, partname)
 	const registryPath = join(dirPath, 'achievements_registry.json')
 
-	const partExistsInRegistry = !!registry[partType]?.[partName]
+	const partExistsInRegistry = !!registry[parttype]?.[partname]
 	if (fs.existsSync(registryPath)) {
 		const partRegistry = loadJsonFile(registryPath)
 		if (partRegistry.achievements)
-			(registry[partType] ??= {})[partName] = partRegistry.achievements
+			(registry[parttype] ??= {})[partname] = partRegistry.achievements
 
 		else if (partExistsInRegistry) {
-			delete registry[partType][partName]
-			if (!Object.keys(registry[partType]).length) delete registry[partType]
+			delete registry[parttype][partname]
+			if (!Object.keys(registry[parttype]).length) delete registry[parttype]
 		}
 		else return
 	}
 	else if (partExistsInRegistry) {
-		delete registry[partType][partName]
-		if (!Object.keys(registry[partType]).length) delete registry[partType]
+		delete registry[parttype][partname]
+		if (!Object.keys(registry[parttype]).length) delete registry[parttype]
 	}
 	else return
 
@@ -37,13 +37,13 @@ function updatePartInRegistry(username, partType, partName) {
 }
 
 // Helper to watch a registry file for changes
-function watchRegistryFile(username, partType, partName) {
-	const dirPath = GetPartPath(username, partType, partName)
+function watchRegistryFile(username, parttype, partname) {
+	const dirPath = GetPartPath(username, parttype, partname)
 	if (!watchedDirs.has(dirPath)) try {
 		fs.watch(dirPath, (eventType, filename) => {
 			if (filename !== 'achievements_registry.json') return
 			console.log(`Achievements registry file changed in dir: ${dirPath}. Reloading.`)
-			updatePartInRegistry(username, partType, partName)
+			updatePartInRegistry(username, parttype, partname)
 		})
 		watchedDirs.add(dirPath)
 	} catch (e) {
@@ -57,28 +57,25 @@ async function buildRegistry(username) {
 	// Clear existing registry to ensure it's fresh
 	for (const key in registry) delete registry[key]
 
-	for (const partType of partTypeList) {
-		const partList = await getPartListBase(username, partType)
-		for (const partName of partList)
+	for (const parttype of partTypeList) {
+		const partList = await getPartListBase(username, parttype)
+		for (const partname of partList)
 			try {
-				const dirPath = GetPartPath(username, partType, partName)
+				const dirPath = GetPartPath(username, parttype, partname)
 				const registryPath = join(dirPath, 'achievements_registry.json')
 
 				if (fs.existsSync(registryPath)) {
 					const partRegistry = loadJsonFile(registryPath)
 					if (partRegistry.achievements)
-						(registry[partType] ??= {})[partName] = partRegistry.achievements
-
+						(registry[parttype] ??= {})[partname] = partRegistry.achievements
 				}
-				watchRegistryFile(username, partType, partName)
+				watchRegistryFile(username, parttype, partname)
 			} catch (e) {
-				console.error(`Error loading achievement registry from ${partType}/${partName}:`, e)
+				console.error(`Error loading achievement registry from ${parttype}/${partname}:`, e)
 			}
 	}
 }
 
-// Main function to get the achievements registry for a user.
-// It will build the registry on the first call for a user.
 async function getAchievementsRegistry(username) {
 	const registry = loadTempData(username, 'achievements_registry')
 	if (!Object.keys(registry).length) await buildRegistry(username)
@@ -91,22 +88,38 @@ function getUserAchievementData(username) {
 	return data
 }
 
-export async function getAchievements(username) {
+export async function getAllAchievements(username) {
 	const defs = await getAchievementsRegistry(username)
-	const userData = getUserAchievementData(username)
-	const achievementsData = {}
+	const sources = []
+	for (const parttype in defs)
+		for (const partname in defs[parttype])
+			sources.push({ parttype, partname })
 
-	for (const partType in defs)
-		for (const partName in defs[partType]) {
-			const achievements = defs[partType][partName]
-			for (const id in achievements)
-				((achievementsData[partType] ??= {})[partName] ??= {})[id] = {
-					...achievements[id],
-					unlocked_at: userData.unlocked[partType]?.[partName]?.[id] || undefined,
-				}
+	sources.sort((a, b) => a.partname.localeCompare(b.partname))
+
+	const detailedSources = await Promise.all(sources.map(async (source) => {
+		const { parttype, partname } = source
+		const registry = await getAchievementsRegistry(username)
+		const achievementDefs = registry[parttype]?.[partname] || {}
+		const partDetails = await getPartDetails(username, parttype, partname)
+		const userData = getUserAchievementData(username)
+
+		const achievements = {}
+		for (const id in achievementDefs)
+			achievements[id] = {
+				...achievementDefs[id],
+				unlocked_at: userData.unlocked[parttype]?.[partname]?.[id] || undefined,
+			}
+
+		return {
+			parttype,
+			partname,
+			info: partDetails.info,
+			achievements,
 		}
+	}))
 
-	return achievementsData
+	return detailedSources
 }
 
 export async function unlockAchievement(username, parttype, partname, achievementId) {
