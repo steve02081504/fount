@@ -1,7 +1,7 @@
-<div class="category-section">
+<div class="source-section">
 	<h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
-		<img src="${category.icon || category.avatar || 'https://api.iconify.design/material-symbols/trophy.svg'}" class="text-icon w-8 h-8 object-cover">
-		<span>${category.name}</span>
+		<img src="${source.icon || source.avatar || 'https://api.iconify.design/material-symbols/trophy.svg'}" class="text-icon w-8 h-8 object-cover">
+		<span>${source.name}</span>
 		<span class="text-lg opacity-70">(${unlockedAchievements}/${totalAchievements})</span>
 		<progress class="progress progress-primary w-56" value="${unlockedAchievements}" max="${totalAchievements}"></progress>
 	</h2>

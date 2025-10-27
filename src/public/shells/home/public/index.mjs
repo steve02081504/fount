@@ -216,30 +216,27 @@ async function renderFilteredItems(itemType, filteredNames) {
 	const fragment = document.createDocumentFragment()
 	const itemElements = {} // Use a map to hold skeletons for later replacement
 
-	// First pass: render all cached items and create placeholders for uncached ones
-	for (const itemName of filteredNames) {
+	// Create promises for all elements (real items or skeletons)
+	const elementPromises = filteredNames.map(itemName => {
 		const itemDetails = itemDetailsCache[`${itemType}-${itemName}`]
-		if (itemDetails) {
-			const itemElement = await renderItemView(itemType, itemDetails, itemName)
-			fragment.appendChild(itemElement)
-		}
-		else { // This item must be in uncachedNames
-			const skeleton = document.createElement('div')
-			skeleton.classList.add('skeleton', 'card-skeleton')
-			itemElements[itemName] = skeleton // Store skeleton reference
-			fragment.appendChild(skeleton)
-		}
-	}
+		if (itemDetails)
+			return renderItemView(itemType, itemDetails, itemName)
+		else
+			return renderTemplate('item_list_view_skeleton').then(skeleton => {
+				itemElements[itemName] = skeleton
+				return skeleton
+			})
+	})
 
-	// Append all elements (cached items and skeletons) to the DOM at once
+	// Wait for all initial elements to be created
+	const elements = await Promise.all(elementPromises)
+	elements.forEach(el => fragment.appendChild(el))
 	currentContainer.appendChild(fragment)
 
-	// Second pass: fetch and render uncached items, replacing their skeletons
-	const uncachedNames = filteredNames.filter(name => !itemDetailsCache[`${itemType}-${name}`])
-	uncachedNames.forEach(async itemName => {
-		// The skeleton should have been created in the previous loop
+	// Now, asynchronously fetch data for the skeletons and replace them
+	const uncachedNames = Object.keys(itemElements)
+	uncachedNames.forEach(async (itemName) => {
 		const skeleton = itemElements[itemName]
-
 		try {
 			const itemDetails = await getItemDetails(itemType, itemName, true)
 			const itemElement = await renderItemView(itemType, itemDetails, itemName)
@@ -414,11 +411,11 @@ async function updateTabContent(itemType) {
 		{ tab: personasTab, tabDesktop: personasTabDesktop, itemType: 'personas' },
 	]
 	tabs.forEach(t => {
-		;[t.tab, t.tabDesktop].filter(Boolean).forEach(el => el.classList.remove('tab-active'))
+		[t.tab, t.tabDesktop].filter(Boolean).forEach(el => el.classList.remove('tab-active'))
 	})
 	const initialTab = tabs.find(t => t.itemType === itemType)
 	if (initialTab)
-	;[initialTab.tab, initialTab.tabDesktop].filter(Boolean).forEach(el => el.classList.add('tab-active'))
+		[initialTab.tab, initialTab.tabDesktop].filter(Boolean).forEach(el => el.classList.add('tab-active'))
 }
 
 async function fetchData() {

@@ -105,7 +105,7 @@ export default {
 			name: 'Telegramボット',
 			avatar: 'https://api.iconify.design/line-md/telegram.svg',
 			description: 'キャラクターをTelegramボットとして実行します。',
-			description_markdown: 'FountキャラクターをTelegramと統合して、プラットフォーム上のユーザーと対話します。',
+			description_markdown: 'fountキャラクターをTelegramと統合して、プラットフォーム上のユーザーと対話します。',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['Telegram', 'ボット', 'チャット', '統合']

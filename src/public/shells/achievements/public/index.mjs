@@ -1,6 +1,5 @@
-import { unlockAchievement } from '../../../scripts/endpoints.mjs'
-import { initTranslations, geti18n } from '../../../scripts/i18n.mjs'
-import { getPartDetails } from '../../../scripts/parts.mjs'
+import { unlockAchievement, loadPart } from '../../../scripts/endpoints.mjs'
+import { geti18n, geti18n_nowarn, initTranslations } from '../../../scripts/i18n.mjs'
 import { onServerEvent } from '../../../scripts/server_events.mjs'
 import { renderTemplate, usingTemplates } from '../../../scripts/template.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
@@ -15,32 +14,48 @@ async function renderAchievements() {
 	render_lock = true
 	try {
 		achievementsContainer.innerHTML = '<div class="text-center"><span class="loading loading-dots loading-md"></span></div>'
-		const result = await api.getAchievements()
-
-		if (!result.success) throw new Error(result.message)
-
+		const allSources = await api.getAllAchievements()
 		achievementsContainer.innerHTML = ''
 
-		const achievementsData = result.achievements
-		const renderPromises = []
+		for (const source of allSources) {
+			const keys = ['name', 'description', 'locked_name', 'locked_description']
+			const needsLoad = Object.values(source.achievements).some(a => keys.some(k => a[k] && !geti18n_nowarn(a[k])))
+			const sectionId = `achievements-section-${source.parttype}-${source.partname}`
+			if (needsLoad) {
+				const skeleton = await renderTemplate('source_section_skeleton')
+				skeleton.id = sectionId
+				achievementsContainer.appendChild(skeleton)
+				; (async () => {
+					await loadPart(source.parttype, source.partname)
+					await initTranslations()
 
-		for (const partType of Object.keys(achievementsData).sort())
-			for (const partName of Object.keys(achievementsData[partType]).sort())
-				renderPromises.push((async () => {
-					const { info } = await getPartDetails(partType, partName)
-					const achievements = achievementsData[partType][partName]
+					const { info, achievements } = source
 					const totalAchievements = Object.keys(achievements).length
 					const unlockedAchievements = Object.values(achievements).filter(a => a.unlocked_at).length
-					return renderTemplate('category_section', {
-						category: info,
+					const section = await renderTemplate('source_section', {
+						source: info,
 						achievements,
 						totalAchievements,
 						unlockedAchievements,
 					})
-				})())
-
-		const categorySections = await Promise.all(renderPromises)
-		categorySections.forEach(section => achievementsContainer.appendChild(section))
+					section.id = sectionId
+					document.getElementById(sectionId)?.replaceWith(section)
+				})()
+			}
+			else {
+				const { info, achievements } = source
+				const totalAchievements = Object.keys(achievements).length
+				const unlockedAchievements = Object.values(achievements).filter(a => a.unlocked_at).length
+				const section = await renderTemplate('source_section', {
+					source: info,
+					achievements,
+					totalAchievements,
+					unlockedAchievements,
+				})
+				section.id = sectionId
+				achievementsContainer.appendChild(section)
+			}
+		}
 	} catch (error) {
 		console.error('Failed to load achievements:', error)
 		achievementsContainer.innerHTML = `<p class="text-error">${geti18n('achievements.error.load_failed', { message: error.message })}</p>`
