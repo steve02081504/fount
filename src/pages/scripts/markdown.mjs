@@ -156,8 +156,8 @@ $stderr = StringIO.new
 			return {
 				result: result !== undefined && result !== null ? JSON.stringify(result, (key, value) => {
 					value = value?.__value__ ?? value
-					if(Object(value) instanceof BigInt)
-						if(Number(value) == value)
+					if (Object(value) instanceof BigInt)
+						if (Number(value) == value)
 							value = Number(value)
 						else value = value.toString()
 					return value
