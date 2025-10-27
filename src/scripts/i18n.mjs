@@ -108,8 +108,8 @@ if (localhostLocales[0] === 'zh-CN')
 export function addPartLocaleData(username, parttype, partname, localeList, loader) {
 	const partsLocaleLists = loadData(username, 'parts_locale_lists_cache')
 	const partsLocaleLoaders = loadTempData(username, 'parts_locale_loaders')
-	;(partsLocaleLists[parttype]??={})[partname] = localeList
-	;(partsLocaleLoaders[parttype]??={})[partname] = loader
+	; (partsLocaleLists[parttype] ??= {})[partname] = localeList
+	; (partsLocaleLoaders[parttype] ??= {})[partname] = loader
 	saveData(username, 'parts_locale_lists_cache')
 }
 
