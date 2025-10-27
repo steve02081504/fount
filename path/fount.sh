@@ -577,9 +577,9 @@ remove_desktop_shortcut() {
 # 函数: 将 fount 路径添加到 PATH
 ensure_fount_path() {
 	if [[ ":$PATH:" != *":$FOUNT_DIR/path:"* ]]; then
-		local profile_files=("$HOME/.profile" "$HOME/.bashrc" "$HOME/.zshrc")
+		local profile_files=("$HOME/.profile" "$HOME/.bashrc" "$HOME/.zshrc" "$HOME/.bash_profile")
 		for profile_file in "${profile_files[@]}"; do
-			if [ -f "$profile_file" ] && ! grep -q "export PATH=.*$ESCAPED_FOUNT_DIR/path" "$profile_file"; then
+			if [ -f "$profile_file" ] && ! grep -q "export PATH=.*$FOUNT_DIR/path" "$profile_file"; then
 				if [ "$(tail -c 1 "$profile_file")" != $'\n' ]; then echo >>"$profile_file"; fi
 				echo "export PATH=\"\$PATH:$FOUNT_DIR/path\"" >>"$profile_file"
 			fi
@@ -740,6 +740,7 @@ fount_upgrade() {
 	if [ ! -d "$FOUNT_DIR/.git" ]; then
 		echo "fount's git repository not found, initializing a new one..."
 		git -C "$FOUNT_DIR" init -b master
+		git -C "$FOUNT_DIR" config core.autocrlf false
 		git -C "$FOUNT_DIR" remote add origin https://github.com/steve02081504/fount.git
 		echo "Fetching from remote and resetting to master..."
 		if ! git -C "$FOUNT_DIR" fetch origin master --depth 1; then
@@ -761,6 +762,7 @@ fount_upgrade() {
 		git -C "$FOUNT_DIR" clean -fd
 		git -C "$FOUNT_DIR" reset --hard "origin/master"
 	else
+		git -C "$FOUNT_DIR" config core.autocrlf false
 		git -C "$FOUNT_DIR" fetch origin
 		local currentBranch
 		currentBranch=$(git -C "$FOUNT_DIR" rev-parse --abbrev-ref HEAD)
@@ -988,6 +990,7 @@ if [[ ! -d "$FOUNT_DIR/node_modules" || ($# -gt 0 && $1 = 'init') ]]; then
 	if [ ! -f "$FOUNT_DIR/.noupdate" ]; then
 		install_package "git" "git git-core" || true
 		if command -v git &>/dev/null; then
+			git -C "$FOUNT_DIR" config core.autocrlf false
 			git -C "$FOUNT_DIR" clean -fd
 			git -C "$FOUNT_DIR" reset --hard "origin/master"
 			git -C "$FOUNT_DIR" gc --aggressive --prune=now --force
@@ -1076,7 +1079,7 @@ remove)
 	echo "Removing fount..."
 
 	echo "Removing fount from PATH..."
-	profile_files=("$HOME/.profile" "$HOME/.bashrc" "$HOME/.zshrc")
+	profile_files=("$HOME/.profile" "$HOME/.bashrc" "$HOME/.zshrc" "$HOME/.bash_profile")
 	for profile_file in "${profile_files[@]}"; do
 		if [ -f "$profile_file" ]; then
 			# shellcheck disable=SC2016

@@ -214,7 +214,7 @@ else
 
 	if install_package "git" "git git-core"; then
 		echo "Cloning fount repository..."
-		if git clone https://github.com/steve02081504/fount.git "$FOUNT_DIR" --depth 1 --single-branch --branch "$FOUNT_BRANCH"; then
+		if git clone -c core.autocrlf=false https://github.com/steve02081504/fount.git "$FOUNT_DIR" --depth 1 --single-branch --branch "$FOUNT_BRANCH"; then
 			echo -e "${C_GREEN}Clone successful.${C_RESET}"
 		else
 			echo -e "${C_YELLOW}Git clone failed, falling back to zip download...${C_RESET}"

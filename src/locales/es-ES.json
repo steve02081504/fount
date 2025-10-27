@@ -108,7 +108,7 @@
 			}
 		},
 		"hero": {
-			"title": "Tu Compañero Inmersivo de Personajes con IA",
+			"title": "Donde la Imaginación Cobra Vida.",
 			"description": "fount es una plataforma de interacción de personajes impulsada por IA, diseñada para <i>empoderarte</i>. Es un puente que te conecta con los personajes que imaginas, permitiéndote hablar fácilmente con ellos, crear tus propios personajes y compartirlos con el mundo."
 		},
 		"feature1": {
@@ -612,7 +612,7 @@
 				"locked_description": "Envía tu primer mensaje con cualquier carácter."
 			},
 			"multiplayer_chat": {
-				"name": "Temporada de White Album",
+				"name": "La temporada de White Album",
 				"description": "\"¿Por qué se volvió así ...\"",
 				"locked_description": "Haz que dos o más personajes hablen en el mismo chat."
 			},

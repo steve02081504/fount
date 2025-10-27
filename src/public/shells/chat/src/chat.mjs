@@ -14,7 +14,7 @@ import { events } from '../../../../server/events.mjs'
 import { LoadChar } from '../../../../server/managers/char_manager.mjs'
 import { loadPersona } from '../../../../server/managers/persona_manager.mjs'
 import { loadWorld } from '../../../../server/managers/world_manager.mjs'
-import { getDefaultParts } from '../../../../server/parts_loader.mjs'
+import { getDefaultParts, getSfwInfo } from '../../../../server/parts_loader.mjs'
 import { skip_report } from '../../../../server/server.mjs'
 import { sendNotification } from '../../../../server/web_server/event_dispatcher.mjs'
 import { unlockAchievement } from '../../achievements/src/api.mjs'
@@ -900,9 +900,10 @@ export async function modifyTimeLine(chatid, delta) {
  * @returns {Promise<chatLogEntry_t>} 构建完成的聊天记录条目。
  */
 async function BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, username) {
-	const { locales } = getUserByUsername(username)
+	const { locales, sfw } = getUserByUsername(username)
 	new_timeSlice.charname = charname
-	const info = await getPartInfo(char, locales) || {}
+	let info = await getPartInfo(char, locales) || {}
+	if (sfw) info = getSfwInfo(info)
 
 	return Object.assign(new chatLogEntry_t(), {
 		name: result.name || info.name || charname || 'Unknown',
@@ -933,9 +934,10 @@ async function BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charn
  * @returns {Promise<chatLogEntry_t>} 构建完成的聊天记录条目。
  */
 async function BuildChatLogEntryFromUserMessage(result, new_timeSlice, user, username) {
-	const { locales } = getUserByUsername(username)
+	const { locales, sfw } = getUserByUsername(username)
 	new_timeSlice.playername = new_timeSlice.player_id
-	const info = await getPartInfo(user, locales) || {}
+	let info = await getPartInfo(user, locales) || {}
+	if (sfw) info = getSfwInfo(info)
 
 	return Object.assign(new chatLogEntry_t(), {
 		name: result.name || info.name || new_timeSlice.player_id || username,

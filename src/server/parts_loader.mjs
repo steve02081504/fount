@@ -134,6 +134,7 @@ export async function baseloadPart(username, parttype, partname, {
 
 	if (fs.existsSync(path + '/.git')) try {
 		const git = run_git.withPath(path)
+		await git('config core.autocrlf false')
 		await git('fetch origin')
 		const currentBranch = await git('rev-parse --abbrev-ref HEAD')
 		const remoteBranch = await git('rev-parse --abbrev-ref --symbolic-full-name "@{u}"')
@@ -302,6 +303,7 @@ export async function loadPartBase(username, parttype, partname, Initargs, {
 				partname
 			})
 			console.log(profile)
+			events.emit('part-loaded', { username, parttype, partname })
 		}
 		if (parts_set[username][parttype][partname] instanceof Promise)
 			parts_set[username][parttype][partname] = await parts_set[username][parttype][partname]
@@ -479,7 +481,7 @@ async function nocacheGetPartBaseDetails(username, parttype, partname) {
 	}
 }
 
-function getSfwInfo(info) {
+export function getSfwInfo(info) {
 	if (!info) return info
 	const sfwInfo = { ...info }
 	for (const key in info)

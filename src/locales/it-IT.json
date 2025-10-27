@@ -108,7 +108,7 @@
 			}
 		},
 		"hero": {
-			"title": "Il Tuo Compagno Immersivo di Personaggi AI",
+			"title": "Una Scintilla di Pensiero, un Compagno per l'Anima.",
 			"description": "fount è una piattaforma di interazione con personaggi basata sull'IA, progettata per dare più potere a <i>te</i>. È un ponte che ti connette con i personaggi della tua immaginazione, permettendoti di parlare facilmente con loro, creare i tuoi personaggi e condividerli con il mondo."
 		},
 		"feature1": {
@@ -612,7 +612,7 @@
 				"locked_description": "Invia il tuo primo messaggio con qualsiasi carattere."
 			},
 			"multiplayer_chat": {
-				"name": "Stagione White Album",
+				"name": "La stagione di White Album",
 				"description": "\"Perché è diventato così...\"",
 				"locked_description": "Fai parlare due o più personaggi nella stessa chat."
 			},

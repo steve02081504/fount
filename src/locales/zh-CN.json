@@ -108,7 +108,7 @@
 			}
 		},
 		"hero": {
-			"title": "您的沉浸式 AI 角色伴侣",
+			"title": "灵犀一点，应念而生",
 			"description": "fount 是一个由 AI 驱动的角色互动平台，旨在赋能<i>您</i>。它是一座桥梁，将您与您想象中的角色连接起来，让您轻松地与他们对话、创建自己的角色并与世界分享。"
 		},
 		"feature1": {
@@ -751,7 +751,7 @@
 		},
 		"achievements": {
 			"create_part": {
-				"name": "万物皆可炼成",
+				"name": "最初的造物",
 				"description": "从零开始，创造属于自己的第一个组件。",
 				"locked_description": "使用快速新建功能创建一个部件。"
 			}
@@ -1331,7 +1331,7 @@
 				"locked_description": "安装一次浏览器集成脚本。"
 			},
 			"run_js": {
-				"name": "代码咏唱",
+				"name": "言出法随",
 				"description": "“以我之名，命令浏览器……”",
 				"locked_description": "在浏览器中运行一次JavaScript代码。"
 			}
