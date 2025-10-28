@@ -194,6 +194,13 @@
 			"message": "¿Estás seguro de que quieres ejecutar ${parttype} de ${partname}?",
 			"confirm": "confirmar",
 			"cancel": "Cancelar"
+		},
+		"offline_dialog": {
+			"title": "Host sin conexión",
+			"message": "El host de fount ${hostUrl} parece estar desconectado. ¿Quieres intentarlo de nuevo?",
+			"buttons": {
+				"retry": "Reintentar"
+			}
 		}
 	},
 	"startPage": {

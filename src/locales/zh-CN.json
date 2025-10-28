@@ -194,6 +194,13 @@
 			"message": "您确定要运行 ${parttype} 的 ${partname} 吗？",
 			"confirm": "确认",
 			"cancel": "取消"
+		},
+		"offline_dialog": {
+			"title": "主机离线",
+			"message": "fount 主机 ${hostUrl} 似乎已离线。您想重试吗？",
+			"buttons": {
+				"retry": "重试"
+			}
 		}
 	},
 	"startPage": {

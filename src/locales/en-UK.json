@@ -194,6 +194,13 @@
 			"message": "Are you sure you want to run ${parttype} of ${partname}?",
 			"confirm": "confirm",
 			"cancel": "Cancel"
+		},
+		"offline_dialog": {
+			"title": "Host offline",
+			"message": "fount host ${hostUrl} appears to be offline. Do you want to retry?",
+			"buttons": {
+				"retry": "Try again"
+			}
 		}
 	},
 	"startPage": {

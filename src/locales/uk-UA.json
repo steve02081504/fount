@@ -194,6 +194,13 @@
 			"message": "Ви впевнені, що хочете запустити ${parttype} ${partname}?",
 			"confirm": "підтверджувати",
 			"cancel": "Скасувати"
+		},
+		"offline_dialog": {
+			"title": "Хост не в мережі",
+			"message": "Хост fount ${hostUrl}, здається, не в мережі. Ви хочете спробувати знову?",
+			"buttons": {
+				"retry": "Спробуйте знову"
+			}
 		}
 	},
 	"startPage": {

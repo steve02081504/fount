@@ -194,6 +194,13 @@
 			"message": "🤔▶️ ${parttype} ${partname}❓",
 			"confirm": "✅",
 			"cancel": "❌"
+		},
+		"offline_dialog": {
+			"title": "🖥️🚫🌐",
+			"message": "${hostUrl} 😴... 🔄❓",
+			"buttons": {
+				"retry": "🔄"
+			}
 		}
 	},
 	"startPage": {

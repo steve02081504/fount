@@ -194,6 +194,13 @@
 			"message": "${parttype}의 ${partname}을 실행 하시겠습니까?",
 			"confirm": "확인하다",
 			"cancel": "취소"
+		},
+		"offline_dialog": {
+			"title": "오프라인 호스트",
+			"message": "fount 호스트 ${hostUrl}이(가) 오프라인인 것 같습니다. 다시 시도하시겠습니까?",
+			"buttons": {
+				"retry": "다시 시도"
+			}
 		}
 	},
 	"startPage": {

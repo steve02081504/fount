@@ -194,6 +194,13 @@
 			"message": "هل أنت متأكد من أنك تريد تشغيل ${parttype} من ${partname}؟",
 			"confirm": "تأكيد",
 			"cancel": "إلغاء"
+		},
+		"offline_dialog": {
+			"title": "المضيف غير متصل",
+			"message": "يبدو أن مضيف المصدر ${hostUrl} غير متصل. هل تريد إعادة المحاولة؟",
+			"buttons": {
+				"retry": "حاول ثانية"
+			}
 		}
 	},
 	"startPage": {

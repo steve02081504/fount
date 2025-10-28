@@ -194,6 +194,13 @@
 			"message": "${parttype}の${partname}を実行しますか？",
 			"confirm": "確認する",
 			"cancel": "キャンセル"
+		},
+		"offline_dialog": {
+			"title": "ホストがオフラインです",
+			"message": "fount ホスト ${hostUrl} はオフラインのようです。再試行しますか？",
+			"buttons": {
+				"retry": "再試行"
+			}
 		}
 	},
 	"startPage": {

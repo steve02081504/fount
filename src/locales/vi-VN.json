@@ -194,6 +194,13 @@
 			"message": "Bạn có chắc bạn muốn chạy ${parttype} của ${partname}?",
 			"confirm": "xác nhận",
 			"cancel": "Hủy bỏ"
+		},
+		"offline_dialog": {
+			"title": "Máy chủ ngoại tuyến",
+			"message": "Máy chủ fount ${hostUrl} dường như đang ngoại tuyến. Bạn có muốn thử lại không?",
+			"buttons": {
+				"retry": "Thử lại"
+			}
 		}
 	},
 	"startPage": {
