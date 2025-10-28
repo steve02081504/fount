@@ -1015,6 +1015,19 @@ case "$1" in
 init)
 	exit 0
 	;;
+clean)
+	if [ -d "$FOUNT_DIR/node_modules" ]; then
+		run shutdown
+		echo "Removing caches..."
+		rm -rf "$FOUNT_DIR/node_modules"
+		find "$FOUNT_DIR" -name "*_cache.json" -type f -delete
+	fi
+	echo "Reinstalling dependencies..."
+	run shutdown
+	echo "Cleaning deno caches..."
+	run_deno clean
+	exit 0
+	;;
 keepalive)
 	runargs=("${@:2}")
 	if [[ "${runargs[0]}" == "debug" ]]; then
