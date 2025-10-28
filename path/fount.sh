@@ -1078,33 +1078,39 @@ keepalive)
 	restart_timestamps=()
 
 	run "${runargs[@]}"
+	exit_code=$?
 	# shellcheck disable=SC2181
-	while [ $? -ne 0 ]; do
-		current_time=$(date +%s)
-		elapsed_time=$((current_time - start_time))
-		if [ "$elapsed_time" -lt 180 ] && [ "$init_attempted" -eq 1 ]; then
-			echo -e "${C_RED}fount failed to start within a short time even after an automatic repair attempt. Please check the logs for errors.${C_RESET}" >&2
-			exit 1
-		fi
-
-		restart_timestamps=("${restart_timestamps[@]}" "$current_time")
-
-		three_minutes_ago=$((current_time - 180))
-		temp_timestamps=()
-		for ts in "${restart_timestamps[@]}"; do
-			if [ "$ts" -ge "$three_minutes_ago" ]; then
-				temp_timestamps+=("$ts")
+	while [ $exit_code -ne 0 ]; do
+		if [ $exit_code -ne 131 ]; then
+			current_time=$(date +%s)
+			elapsed_time=$((current_time - start_time))
+			if [ "$elapsed_time" -lt 180 ] && [ "$init_attempted" -eq 1 ]; then
+				echo -e "${C_RED}fount failed to start within a short time even after an automatic repair attempt. Please check the logs for errors.${C_RESET}" >&2
+				exit 1
+			else
+				init_attempted=0
 			fi
-		done
-		restart_timestamps=("${temp_timestamps[@]}")
 
-		if [ "${#restart_timestamps[@]}" -ge 7 ]; then
-			handle_auto_reinitialization
+			restart_timestamps=("${restart_timestamps[@]}" "$current_time")
+
+			three_minutes_ago=$((current_time - 180))
+			temp_timestamps=()
+			for ts in "${restart_timestamps[@]}"; do
+				if [ "$ts" -ge "$three_minutes_ago" ]; then
+					temp_timestamps+=("$ts")
+				fi
+			done
+			restart_timestamps=("${temp_timestamps[@]}")
+
+			if [ "${#restart_timestamps[@]}" -ge 7 ]; then
+				handle_auto_reinitialization
+			fi
 		fi
 
 		update_fount_if_not_noupdate
-		upgrade_deno_if_not_docker
+		ugrade_deno_if_not_docker
 		run
+		exit_code=$?
 	done
 	;;
 remove)

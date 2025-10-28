@@ -739,40 +739,42 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'keepalive') {
 
 	run @runargs
 	while ($LastExitCode) {
-		$elapsedTime = (Get-Date) - $startTime
-		if ($elapsedTime.TotalMinutes -lt 3 -and $initAttempted) {
-			Write-Error "fount failed to start within a short time even after an automatic repair attempt. Please check the logs for errors."
-			exit 1
-		}
-
-		$current_time = Get-Date
-		$restart_timestamps.Add($current_time)
-
-		$three_minutes_ago = $current_time.AddMinutes(-3)
-		for ($i = $restart_timestamps.Count - 1; $i -ge 0; $i--) {
-			if ($restart_timestamps[$i] -lt $three_minutes_ago) {
-				$restart_timestamps.RemoveAt($i)
-			}
-		}
-
-		if ($restart_timestamps.Count -ge 7) {
-			if (Test-Path -Path "$FOUNT_DIR/.noautoinit") {
-				Write-Warning "fount has restarted many times in the last short time, but auto-reinitialization is disabled by .noautoinit file. Exiting."
+		if ($LastExitCode -ne 131) {
+			$elapsedTime = (Get-Date) - $startTime
+			if ($elapsedTime.TotalMinutes -lt 3 -and $initAttempted) {
+				Write-Error "fount failed to start within a short time even after an automatic repair attempt. Please check the logs for errors."
 				exit 1
-			}
-			Write-Warning "fount has restarted many times in the last short time. Forcing re-initialization..."
-			$restart_timestamps.Clear()
+			} else { $initAttempted = $false }
 
-			& $PSScriptRoot/fount.ps1 init
-			if ($LastExitCode -ne 0) {
-				Write-Error "fount init failed. Exiting."
-				exit 1
+			$current_time = Get-Date
+			$restart_timestamps.Add($current_time)
+
+			$three_minutes_ago = $current_time.AddMinutes(-3)
+			for ($i = $restart_timestamps.Count - 1; $i -ge 0; $i--) {
+				if ($restart_timestamps[$i] -lt $three_minutes_ago) {
+					$restart_timestamps.RemoveAt($i)
+				}
 			}
-			$initAttempted = $true
-			Write-Host "Re-initialization complete. Attempting to restart fount..."
-			Update-FountAndDeno
-			run
+
+			if ($restart_timestamps.Count -ge 7) {
+				if (Test-Path -Path "$FOUNT_DIR/.noautoinit") {
+					Write-Warning "fount has restarted many times in the last short time, but auto-reinitialization is disabled by .noautoinit file. Exiting."
+					exit 1
+				}
+				Write-Warning "fount has restarted many times in the last short time. Forcing re-initialization..."
+				$restart_timestamps.Clear()
+
+				& $PSScriptRoot/fount.ps1 init
+				if ($LastExitCode -ne 0) {
+					Write-Error "fount init failed. Exiting."
+					exit 1
+				}
+				$initAttempted = $true
+				Write-Host "Re-initialization complete. Attempting to restart fount..."
+			}
 		}
+		Update-FountAndDeno
+		run
 	}
 }
 elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
