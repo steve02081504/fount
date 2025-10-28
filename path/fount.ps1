@@ -101,16 +101,138 @@ function Test-Browser {
 	} catch { <# ignore #> }
 }
 
+function New-InstallerDir {
+	New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
+}
+
+function Invoke-DockerPassthrough {
+	param (
+		[Parameter(Mandatory = $true)]
+		[string[]]$CurrentArgs
+	)
+	if ($IN_DOCKER) {
+		$nestedArgs = $CurrentArgs[1..$CurrentArgs.Count]
+		fount.ps1 @nestedArgs
+		exit $LastExitCode
+	}
+}
+
+function Set-FountFileAttributes {
+	Get-ChildItem $FOUNT_DIR -Recurse -Filter desktop.ini -Force | ForEach-Object {
+		$Dir = Get-Item $(Split-Path $_.FullName) -Force
+		$Dir.Attributes = $Dir.Attributes -bor [System.IO.FileAttributes]::ReadOnly -bor [System.IO.FileAttributes]::Directory
+		$_.Attributes = $_.Attributes -bor [System.IO.FileAttributes]::Hidden -bor [System.IO.FileAttributes]::System
+	}
+	Get-ChildItem $FOUNT_DIR -Recurse -Filter .* | ForEach-Object {
+		$_.Attributes = $_.Attributes -bor [System.IO.FileAttributes]::Hidden
+	}
+}
+
+function New-FountShortcut {
+	$shell = New-Object -ComObject WScript.Shell
+
+	$shortcutTargetPath = "powershell.exe"
+	$shortcutArguments = "-noprofile -nologo -ExecutionPolicy Bypass -File `"$FOUNT_DIR\path\fount.ps1`" open keepalive"
+	if (Test-Path "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe") {
+		$shortcutTargetPath = "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe"
+		$shortcutArguments = "-p fount powershell.exe $shortcutArguments" # Prepend -p fount to existing arguments
+	}
+	$shortcutIconLocation = "$FOUNT_DIR\src\pages\favicon.ico"
+
+	$desktopPath = [Environment]::GetFolderPath("Desktop")
+	Remove-Item -Force "$desktopPath\fount.lnk" -ErrorAction Ignore
+	$desktopShortcut = $shell.CreateShortcut("$desktopPath\fount.lnk")
+	$desktopShortcut.TargetPath = $shortcutTargetPath
+	$desktopShortcut.Arguments = $shortcutArguments
+	$desktopShortcut.IconLocation = $shortcutIconLocation
+	$desktopShortcut.Save()
+	Write-Host "Desktop shortcut created at $desktopPath\fount.lnk"
+
+	$startMenuPath = [Environment]::GetFolderPath("StartMenu")
+	Remove-Item -Force "$startMenuPath\fount.lnk" -ErrorAction Ignore
+	$startMenuShortcut = $shell.CreateShortcut("$startMenuPath\fount.lnk")
+	$startMenuShortcut.TargetPath = $shortcutTargetPath
+	$startMenuShortcut.Arguments = $shortcutArguments
+	$startMenuShortcut.IconLocation = $shortcutIconLocation
+	$startMenuShortcut.Save()
+	Write-Host "Start Menu shortcut created at $startMenuPath\fount.lnk"
+}
+
+function Register-FountProtocol {
+	$protocolName = "fount"
+	$protocolDescription = "URL:fount Protocol"
+	$command = "`"$FOUNT_DIR\path\fount.bat`" protocolhandle `"%1`""
+	try {
+		New-Item -Path "HKCU:\Software\Classes\$protocolName" -Force | Out-Null
+		Set-ItemProperty -Path "HKCU:\Software\Classes\$protocolName" -Name "(Default)" -Value $protocolDescription -ErrorAction Stop
+		Set-ItemProperty -Path "HKCU:\Software\Classes\$protocolName" -Name "URL Protocol" -Value "" -ErrorAction Stop
+		New-Item -Path "HKCU:\Software\Classes\$protocolName\shell\open\command" -Force | Out-Null
+		Set-ItemProperty -Path "HKCU:\Software\Classes\$protocolName\shell\open\command" -Name "(Default)" -Value $command -ErrorAction Stop
+	}
+	catch {
+		Write-Warning "Failed to register fount:// protocol handler: $($_.Exception.Message)"
+	}
+}
+
+function Register-FountTerminalProfile {
+	$WTjsonDirPath = "$env:LOCALAPPDATA/Microsoft/Windows Terminal/Fragments/fount"
+	if (!(Test-Path $WTjsonDirPath)) {
+		New-Item -ItemType Directory -Force -Path $WTjsonDirPath | Out-Null
+	}
+	$WTjsonPath = "$WTjsonDirPath/fount.json"
+	$jsonContent = [ordered]@{
+		'$help'   = "https://aka.ms/terminal-documentation"
+		'$schema' = "https://aka.ms/terminal-profiles-schema"
+		profiles  = @(
+			[ordered]@{
+				name              = "fount"
+				commandline       = "fount.bat keepalive"
+				startingDirectory = $FOUNT_DIR
+				icon              = "$FOUNT_DIR\src\pages\favicon.ico"
+			}
+		)
+	} | ConvertTo-Json -Depth 100 -Compress
+	if ($jsonContent -ne (Get-Content $WTjsonPath -ErrorAction Ignore)) {
+		Set-Content -Path $WTjsonPath -Value $jsonContent
+	}
+}
+
+function deno_upgrade() {
+	$deno_ver = deno -V
+	if (!$deno_ver) {
+		deno upgrade -q
+		$deno_ver = deno -V
+	}
+	if (!$deno_ver) {
+		Write-Error "For some reason deno doesn't work, you may need to join https://discord.gg/deno to get support" -ErrorAction Ignore
+		exit 1
+	}
+	$deno_update_channel = "stable"
+	if ($deno_ver.Contains("+")) {
+		$deno_update_channel = "canary"
+	}
+	elseif ($deno_ver.Contains("-rc")) {
+		$deno_update_channel = "rc"
+	}
+	deno upgrade -q $deno_update_channel
+}
+
+function Update-FountAndDeno {
+	if (Test-Path -Path "$FOUNT_DIR/.noupdate") {
+		Write-Host "Skipping fount update due to .noupdate file"
+	}
+	else {
+		deno_upgrade
+		fount_upgrade
+	}
+}
+
 if ($args.Count -gt 0 -and $args[0] -eq 'nop') {
 	exit 0
 }
 elseif ($args.Count -gt 0 -and $args[0] -eq 'open') {
 	if (Test-Path -Path "$FOUNT_DIR/data") {
-		if ($IN_DOCKER) {
-			$runargs = $args[1..$args.Count]
-			fount.ps1 @runargs
-			exit $LastExitCode
-		}
+		Invoke-DockerPassthrough -CurrentArgs $args
 		Test-Browser
 		Start-Process 'https://steve02081504.github.io/fount/wait'
 		$runargs = $args[1..$args.Count]
@@ -155,11 +277,9 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'open') {
 	}
 }
 elseif ($args.Count -gt 0 -and $args[0] -eq 'background') {
+	Invoke-DockerPassthrough -CurrentArgs $args
 	$runargs = $args[1..$args.Count]
-	if ($IN_DOCKER) {
-		fount.ps1 @runargs
-	}
-	elseif (Test-Path -Path "$FOUNT_DIR/.nobackground") {
+	if (Test-Path -Path "$FOUNT_DIR/.nobackground") {
 		$TargetPath = "powershell.exe"
 		$runargs = $runargs | ForEach-Object { ($_ -replace '\', '\\') -replace '"', '\"' }
 		$Arguments = "-noprofile -nologo -ExecutionPolicy Bypass -File `"$FOUNT_DIR\path\fount.ps1`" `"$($runargs -join '" "')`""
@@ -181,11 +301,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'background') {
 	exit 0
 }
 elseif ($args.Count -gt 0 -and $args[0] -eq 'protocolhandle') {
-	if ($IN_DOCKER) {
-		$runargs = $args[1..$args.Count]
-		fount.ps1 @runargs
-		exit $LastExitCode
-	}
+	Invoke-DockerPassthrough -CurrentArgs $args
 	$protocolUrl = $args[1]
 	if (-not $protocolUrl) {
 		Write-Error "Error: No URL provided for protocolhandle."
@@ -410,14 +526,6 @@ function fount_upgrade {
 	}
 }
 
-if ($args.Count -eq 0 -or $args[0] -ne 'shutdown') {
-	if (Test-Path -Path "$FOUNT_DIR/.noupdate") {
-		Write-Host "Skipping fount update due to .noupdate file"
-	}
-	else {
-		fount_upgrade
-	}
-}
 
 # Deno 安装
 if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
@@ -460,27 +568,9 @@ if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
 	}
 }
 
-# Deno 更新
-function deno_upgrade() {
-	$deno_ver = deno -V
-	if (!$deno_ver) {
-		deno upgrade -q
-		$deno_ver = deno -V
-	}
-	if (!$deno_ver) {
-		Write-Error "For some reason deno doesn't work, you may need to join https://discord.gg/deno to get support" -ErrorAction Ignore
-		exit 1
-	}
-	$deno_update_channel = "stable"
-	if ($deno_ver.Contains("+")) {
-		$deno_update_channel = "canary"
-	}
-	elseif ($deno_ver.Contains("-rc")) {
-		$deno_update_channel = "rc"
-	}
-	deno upgrade -q $deno_update_channel
+if ($args.Count -eq 0 -or $args[0] -ne 'shutdown') {
+	Update-FountAndDeno
 }
-
 if ($args.Count -eq 0 -or ($args[0] -ne 'shutdown' -and $args[0] -ne 'geneexe')) {
 	if ($IN_DOCKER) {
 		Write-Host "Skipping deno upgrade in Docker environment"
@@ -556,94 +646,23 @@ if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $ar
 	if ((Test-Path "$FOUNT_DIR/.git") -and (-not (Test-Path "$FOUNT_DIR/.git/desktop.ini"))) {
 		Copy-Item "$FOUNT_DIR/default/git_desktop.ini" "$FOUNT_DIR/.git/desktop.ini" -Force
 	}
-	New-Item -Path "$FOUNT_DIR/data" -ItemType Directory -Force | Out-Null
+	New-InstallerDir # For data/desktop.ini
 	if (-not (Test-Path "$FOUNT_DIR/data/desktop.ini")) {
 		Copy-Item "$FOUNT_DIR/default/default_desktop.ini" "$FOUNT_DIR/data/desktop.ini" -Force
 	}
 	if (-not (Test-Path "$FOUNT_DIR/node_modules/desktop.ini")) {
 		Copy-Item "$FOUNT_DIR/default/node_modules_desktop.ini" "$FOUNT_DIR/node_modules/desktop.ini" -Force
 	}
-	Get-ChildItem $FOUNT_DIR -Recurse -Filter desktop.ini -Force | ForEach-Object {
-		$Dir = Get-Item $(Split-Path $_.FullName) -Force
-		$Dir.Attributes = $Dir.Attributes -bor [System.IO.FileAttributes]::ReadOnly -bor [System.IO.FileAttributes]::Directory
-		$_.Attributes = $_.Attributes -bor [System.IO.FileAttributes]::Hidden -bor [System.IO.FileAttributes]::System
-	}
-	Get-ChildItem $FOUNT_DIR -Recurse -Filter .* | ForEach-Object {
-		$_.Attributes = $_.Attributes -bor [System.IO.FileAttributes]::Hidden
-	}
+	Set-FountFileAttributes
+
 	# 生成 桌面快捷方式 和 Start Menu 快捷方式
-	$shell = New-Object -ComObject WScript.Shell
-
-	$shortcutTargetPath = "powershell.exe"
-	$shortcutArguments = "-noprofile -nologo -ExecutionPolicy Bypass -File `"$FOUNT_DIR\path\fount.ps1`" open keepalive"
-	if (Test-Path "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe") {
-		$shortcutTargetPath = "$env:LOCALAPPDATA/Microsoft/WindowsApps/wt.exe"
-		$shortcutArguments = "-p fount powershell.exe $shortcutArguments" # Prepend -p fount to existing arguments
-	}
-	$shortcutIconLocation = "$FOUNT_DIR\src\pages\favicon.ico"
-
-	# 创建桌面快捷方式
-	$desktopPath = [Environment]::GetFolderPath("Desktop")
-	Remove-Item -Force "$desktopPath\fount.lnk" -ErrorAction Ignore
-	$desktopShortcut = $shell.CreateShortcut("$desktopPath\fount.lnk")
-	$desktopShortcut.TargetPath = $shortcutTargetPath
-	$desktopShortcut.Arguments = $shortcutArguments
-	$desktopShortcut.IconLocation = $shortcutIconLocation
-	$desktopShortcut.Save()
-	Write-Host "Desktop shortcut created at $desktopPath\fount.lnk"
-
-	# 创建开始菜单快捷方式
-	$startMenuPath = [Environment]::GetFolderPath("StartMenu")
-	Remove-Item -Force "$startMenuPath\fount.lnk" -ErrorAction Ignore
-	$startMenuShortcut = $shell.CreateShortcut("$startMenuPath\fount.lnk")
-	$startMenuShortcut.TargetPath = $shortcutTargetPath
-	$startMenuShortcut.Arguments = $shortcutArguments
-	$startMenuShortcut.IconLocation = $shortcutIconLocation
-	$startMenuShortcut.Save()
-	Write-Host "Start Menu shortcut created at $startMenuPath\fount.lnk"
+	New-FountShortcut
 
 	# fount 协议注册
-	$protocolName = "fount"
-	$protocolDescription = "URL:fount Protocol"
-	# 使用 fount.bat 作为协议处理程序，因为它是Windows上的主入口点
-	$command = "`"$FOUNT_DIR\path\fount.bat`" protocolhandle `"%1`""
-	try {
-		# 创建目录
-		New-Item -Path "HKCU:\Software\Classes\$protocolName" -Force | Out-Null
-		# 设置协议根键
-		Set-ItemProperty -Path "HKCU:\Software\Classes\$protocolName" -Name "(Default)" -Value $protocolDescription -ErrorAction Stop
-		Set-ItemProperty -Path "HKCU:\Software\Classes\$protocolName" -Name "URL Protocol" -Value "" -ErrorAction Stop
-		# 创建 shell\open\command 子键
-		New-Item -Path "HKCU:\Software\Classes\$protocolName\shell\open\command" -Force | Out-Null
-		# 设置协议处理命令
-		Set-ItemProperty -Path "HKCU:\Software\Classes\$protocolName\shell\open\command" -Name "(Default)" -Value $command -ErrorAction Stop
-	}
-	catch {
-		Write-Warning "Failed to register fount:// protocol handler: $($_.Exception.Message)"
-	}
+	Register-FountProtocol
 
 	# fount Terminal注册
-	$WTjsonDirPath = "$env:LOCALAPPDATA/Microsoft/Windows Terminal/Fragments/fount"
-	if (!(Test-Path $WTjsonDirPath)) {
-		New-Item -ItemType Directory -Force -Path $WTjsonDirPath | Out-Null
-	}
-	$WTjsonPath = "$WTjsonDirPath/fount.json"
-	$jsonContent = [ordered]@{
-		'$help'   = "https://aka.ms/terminal-documentation"
-		'$schema' = "https://aka.ms/terminal-profiles-schema"
-		profiles  = @(
-			[ordered]@{
-				name              = "fount"
-				commandline       = "fount.bat keepalive"
-				startingDirectory = $FOUNT_DIR
-				icon              = "$FOUNT_DIR/src/pages/favicon.ico"
-			}
-		)
-	} | ConvertTo-Json -Depth 100 -Compress
-	if ($jsonContent -ne (Get-Content $WTjsonPath -ErrorAction Ignore)) {
-		Set-Content -Path $WTjsonPath -Value $jsonContent
-	}
-
+	Register-FountTerminalProfile
 	Add-Type -TypeDefinition @'
 using System;
 using System.Runtime.InteropServices;
@@ -688,14 +707,7 @@ if ($args.Count -gt 0 -and $args[0] -eq 'clean') {
 	if (-not (Test-Path "$FOUNT_DIR/node_modules/desktop.ini")) {
 		Copy-Item "$FOUNT_DIR/default/node_modules_desktop.ini" "$FOUNT_DIR/node_modules/desktop.ini" -Force
 	}
-	Get-ChildItem $FOUNT_DIR -Recurse -Filter desktop.ini -Force | ForEach-Object {
-		$Dir = Get-Item $(Split-Path $_.FullName) -Force
-		$Dir.Attributes = $Dir.Attributes -bor [System.IO.FileAttributes]::ReadOnly -bor [System.IO.FileAttributes]::Directory
-		$_.Attributes = $_.Attributes -bor [System.IO.FileAttributes]::Hidden -bor [System.IO.FileAttributes]::System
-	}
-	Get-ChildItem $FOUNT_DIR -Recurse -Filter .* | ForEach-Object {
-		$_.Attributes = $_.Attributes -bor [System.IO.FileAttributes]::Hidden
-	}
+	Set-FountFileAttributes
 }
 elseif ($args.Count -gt 0 -and $args[0] -eq 'geneexe') {
 	$exepath = $args[1]
@@ -753,16 +765,9 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'keepalive') {
 			}
 			$initAttempted = $true
 			Write-Host "Re-initialization complete. Attempting to restart fount..."
+			Update-FountAndDeno
+			run
 		}
-
-		if (Test-Path -Path "$FOUNT_DIR/.noupdate") {
-			Write-Host "Skipping fount update due to .noupdate file"
-		}
-		else {
-			deno_upgrade
-			fount_upgrade
-		}
-		run
 	}
 }
 elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
@@ -930,13 +935,7 @@ else {
 	}
 	run @runargs
 	while ($LastExitCode -eq 131) {
-		if (Test-Path -Path "$FOUNT_DIR/.noupdate") {
-			Write-Host "Skipping fount update due to .noupdate file"
-		}
-		else {
-			deno_upgrade
-			fount_upgrade
-		}
+		Update-FountAndDeno
 		run
 	}
 }

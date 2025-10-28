@@ -389,6 +389,72 @@ urlencode() {
 	echo "${encoded}"
 }
 
+handle_docker_termux_passthrough() {
+	if [[ $IN_DOCKER -eq 1 || $IN_TERMUX -eq 1 ]]; then
+		shift # Remove the command itself (e.g., "open")
+		"$0" "$@"
+		exit $?
+	fi
+}
+
+update_fount_if_not_noupdate() {
+	if [ -f "$FOUNT_DIR/.noupdate" ]; then
+		echo "Skipping fount update due to .noupdate file"
+	else
+		fount_upgrade
+	fi
+}
+
+upgrade_deno_if_not_docker() {
+	if [ $IN_DOCKER -eq 1 ]; then
+		echo "Skipping deno upgrade in Docker environment"
+	else
+		deno_upgrade
+	fi
+}
+
+open_url_in_browser() {
+	local url="$1"
+	if [ "$OS_TYPE" = "Linux" ]; then
+		xdg-open "$url" >/dev/null 2>&1 &
+	elif [ "$OS_TYPE" = "Darwin" ]; then
+		open "$url" >/dev/null 2>&1 &
+	fi
+}
+
+install_ipc_tools() {
+	install_package "nc" "netcat gnu-netcat openbsd-netcat netcat-openbsd nmap-ncat" || install_package "socat" "socat"
+}
+
+git_reset_and_clean() {
+	if command -v git &>/dev/null; then
+		git -C "$FOUNT_DIR" config core.autocrlf false
+		git -C "$FOUNT_DIR" clean -fd
+		git -C "$FOUNT_DIR" reset --hard "origin/master"
+		git -C "$FOUNT_DIR" gc --aggressive --prune=now --force
+	fi
+}
+
+handle_auto_reinitialization() {
+	if [ -f "$FOUNT_DIR/.noautoinit" ]; then
+		echo -e "${C_YELLOW}fount has restarted many times in the last short time, but auto-reinitialization is disabled by .noautoinit file. Exiting.${C_RESET}" >&2
+		exit 1
+	fi
+	echo -e "${C_YELLOW}fount has restarted many times in the last short time. Forcing re-initialization...${C_RESET}" >&2
+	restart_timestamps=()
+
+	if ! ("$0" init); then
+		echo -e "${C_RED}fount init failed. Exiting.${C_RESET}" >&2
+		exit 1
+	fi
+	init_attempted=1
+	echo "Re-initialization complete. Attempting to restart fount..."
+}
+
+get_profile_files() {
+	printf "%s\\n" "$HOME/.profile" "$HOME/.bashrc" "$HOME/.zshrc" "$HOME/.bash_profile"
+}
+
 # 函数: 创建桌面快捷方式
 create_desktop_shortcut() {
 	local icon_path="$FOUNT_DIR/src/pages/favicon.ico"
@@ -577,8 +643,7 @@ remove_desktop_shortcut() {
 # 函数: 将 fount 路径添加到 PATH
 ensure_fount_path() {
 	if [[ ":$PATH:" != *":$FOUNT_DIR/path:"* ]]; then
-		local profile_files=("$HOME/.profile" "$HOME/.bashrc" "$HOME/.zshrc" "$HOME/.bash_profile")
-		for profile_file in "${profile_files[@]}"; do
+		for profile_file in $(get_profile_files); do
 			if [ -f "$profile_file" ] && ! grep -q "export PATH=.*$FOUNT_DIR/path" "$profile_file"; then
 				if [ "$(tail -c 1 "$profile_file")" != $'\n' ]; then echo >>"$profile_file"; fi
 				echo "export PATH=\"\$PATH:$FOUNT_DIR/path\"" >>"$profile_file"
@@ -646,26 +711,18 @@ EOF
 
 # 参数处理: open, background, protocolhandle
 if [[ $# -gt 0 ]]; then
-	if [[ "$1" == "open" || "$1" == "background" || "$1" == "protocolhandle" ]] && [[ $IN_DOCKER -eq 1 || $IN_TERMUX -eq 1 ]]; then
-		shift
-		"$0" "$@"
-		exit $?
-	fi
+	handle_docker_termux_passthrough "$@"
 	case "$1" in
 	open)
 		# 若 $FOUNT_DIR/data 是目录
 		if [ -d "$FOUNT_DIR/data" ]; then
 			ensure_dependencies "open" || exit 1
 			TARGET_URL='https://steve02081504.github.io/fount/wait'
-			if [ "$OS_TYPE" = "Linux" ]; then
-				xdg-open "$TARGET_URL" >/dev/null 2>&1
-			elif [ "$OS_TYPE" = "Darwin" ]; then
-				open "$TARGET_URL" >/dev/null 2>&1
-			fi
+			open_url_in_browser "$TARGET_URL"
 			"$0" "${@:2}"
 			exit $?
 		else
-			install_package "nc" "netcat gnu-netcat openbsd-netcat netcat-openbsd nmap-ncat" || install_package "socat" "socat"
+			install_ipc_tools
 			trap '[[ -n "$STATUS_SERVER_PID" ]] && kill "$STATUS_SERVER_PID" 2>/dev/null' EXIT
 			if command -v nc &>/dev/null; then
 				while true; do {
@@ -680,11 +737,7 @@ if [[ $# -gt 0 ]]; then
 
 			if [[ -n "$STATUS_SERVER_PID" ]]; then
 				URL='https://steve02081504.github.io/fount/wait/install'
-				if [[ "$(uname -s)" == "Linux" ]]; then
-					(xdg-open "$URL" &)
-				elif [[ "$(uname -s)" == "Darwin" ]]; then
-					(open "$URL" &)
-				fi
+				open_url_in_browser "$URL"
 			else
 				echo -e "${C_YELLOW}Warning: Could not start status server. Proceeding with standard installation.${C_RESET}"
 			fi
@@ -759,8 +812,7 @@ fount_upgrade() {
 			echo "$diff_output" >"$diff_file_path"
 			echo -e "${C_GREEN}A backup of your local changes has been saved to: ${C_CYAN}$diff_file_path${C_RESET}"
 		fi
-		git -C "$FOUNT_DIR" clean -fd
-		git -C "$FOUNT_DIR" reset --hard "origin/master"
+		git_reset_and_clean
 	else
 		git -C "$FOUNT_DIR" config core.autocrlf false
 		git -C "$FOUNT_DIR" fetch origin
@@ -768,8 +820,7 @@ fount_upgrade() {
 		currentBranch=$(git -C "$FOUNT_DIR" rev-parse --abbrev-ref HEAD)
 		if [ "$currentBranch" = "HEAD" ]; then
 			echo "Not on a branch, switching to 'master'..."
-			git -C "$FOUNT_DIR" clean -fd
-			git -C "$FOUNT_DIR" reset --hard "origin/master"
+			git_reset_and_clean
 			git -C "$FOUNT_DIR" checkout master
 			currentBranch=$(git -C "$FOUNT_DIR" rev-parse --abbrev-ref HEAD)
 		fi
@@ -807,11 +858,7 @@ fount_upgrade() {
 
 # 更新 fount
 if [[ $# -eq 0 || $1 != "shutdown" ]]; then
-	if [ -f "$FOUNT_DIR/.noupdate" ]; then
-		echo "Skipping fount update due to .noupdate file"
-	else
-		fount_upgrade
-	fi
+	update_fount_if_not_noupdate
 fi
 
 # 函数: 安装 Deno
@@ -919,11 +966,7 @@ deno_upgrade() {
 }
 
 if [[ $# -eq 0 || ($1 != "shutdown" && $1 != "geneexe") ]]; then
-	if [ $IN_DOCKER -eq 1 ]; then
-		echo "Skipping deno upgrade in Docker environment"
-	else
-		deno_upgrade
-	fi
+	upgrade_deno_if_not_docker
 	run_deno -V
 fi
 is_debug=0
@@ -989,12 +1032,7 @@ run() {
 if [[ ! -d "$FOUNT_DIR/node_modules" || ($# -gt 0 && $1 = 'init') ]]; then
 	if [ ! -f "$FOUNT_DIR/.noupdate" ]; then
 		install_package "git" "git git-core" || true
-		if command -v git &>/dev/null; then
-			git -C "$FOUNT_DIR" config core.autocrlf false
-			git -C "$FOUNT_DIR" clean -fd
-			git -C "$FOUNT_DIR" reset --hard "origin/master"
-			git -C "$FOUNT_DIR" gc --aggressive --prune=now --force
-		fi
+		git_reset_and_clean
 	fi
 	if [[ -d "$FOUNT_DIR/node_modules" ]]; then run "shutdown"; fi
 	echo "Installing dependencies..."
@@ -1049,7 +1087,7 @@ keepalive)
 			exit 1
 		fi
 
-		restart_timestamps+=("$current_time")
+		restart_timestamps=("${restart_timestamps[@]}" "$current_time")
 
 		three_minutes_ago=$((current_time - 180))
 		temp_timestamps=()
@@ -1061,28 +1099,11 @@ keepalive)
 		restart_timestamps=("${temp_timestamps[@]}")
 
 		if [ "${#restart_timestamps[@]}" -ge 7 ]; then
-			if [ -f "$FOUNT_DIR/.noautoinit" ]; then
-				echo -e "${C_YELLOW}fount has restarted many times in the last short time, but auto-reinitialization is disabled by .noautoinit file. Exiting.${C_RESET}" >&2
-				exit 1
-			fi
-			echo -e "${C_YELLOW}fount has restarted many times in the last short time. Forcing re-initialization...${C_RESET}" >&2
-			restart_timestamps=()
-
-			"$0" init
-			if [ $? -ne 0 ]; then
-				echo -e "${C_RED}fount init failed. Exiting.${C_RESET}" >&2
-				exit 1
-			fi
-			init_attempted=1
-			echo "Re-initialization complete. Attempting to restart fount..."
+			handle_auto_reinitialization
 		fi
 
-		if [ -f "$FOUNT_DIR/.noupdate" ]; then
-			echo "Skipping fount update due to .noupdate file"
-		else
-			deno_upgrade
-			fount_upgrade
-		fi
+		update_fount_if_not_noupdate
+		upgrade_deno_if_not_docker
 		run
 	done
 	;;
@@ -1092,13 +1113,12 @@ remove)
 	echo "Removing fount..."
 
 	echo "Removing fount from PATH..."
-	profile_files=("$HOME/.profile" "$HOME/.bashrc" "$HOME/.zshrc" "$HOME/.bash_profile")
-	for profile_file in "${profile_files[@]}"; do
+	while IFS= read -r profile_file; do
 		if [ -f "$profile_file" ]; then
 			# shellcheck disable=SC2016
 			run_sed_inplace '/export PATH="\$PATH:'"$ESCAPED_FOUNT_DIR"'\/path"/d' "$profile_file"
 		fi
-	done
+	done < <(get_profile_files)
 	PATH=$(echo "$PATH" | tr ':' '\n' | grep -v "$FOUNT_DIR/path" | tr '\n' ':' | sed 's/:*$//')
 	export PATH
 
@@ -1120,7 +1140,7 @@ remove)
 	if [ -f "$AUTO_INSTALLED_DENO_FLAG" ]; then
 		echo "Uninstalling Deno..."
 		rm -rf "$HOME/.deno"
-		for profile_file in "${profile_files[@]}"; do
+		for profile_file in $(get_profile_files); do
 			if [ -f "$profile_file" ]; then run_sed_inplace '/\.deno/d' "$profile_file"; fi
 		done
 		PATH=$(echo "$PATH" | tr ':' '\n' | grep -v "$HOME/.deno/bin" | tr '\n' ':' | sed 's/:*$//')
