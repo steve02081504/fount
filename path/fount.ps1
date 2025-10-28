@@ -704,6 +704,11 @@ if ($args.Count -gt 0 -and $args[0] -eq 'clean') {
 	run shutdown
 	Write-Host "Cleaning deno caches..."
 	deno clean
+	Write-Host "Cleaning old pwsh modules..."
+	$Latest = Get-InstalledModule -Name @('ps12exe', 'fount-pwsh') -ErrorAction Ignore
+  	foreach ($module in $Latest) {
+		Get-InstalledModule -Name $module.Name -AllVersions | Where-Object { $_.Version -ne $module.Version } | Uninstall-Module
+  	}
 	if (-not (Test-Path "$FOUNT_DIR/node_modules/desktop.ini")) {
 		Copy-Item "$FOUNT_DIR/default/node_modules_desktop.ini" "$FOUNT_DIR/node_modules/desktop.ini" -Force
 	}
