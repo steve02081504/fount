@@ -194,6 +194,13 @@
 			"message": "君確欲行此 ${parttype} 之 ${partname} 乎？",
 			"confirm": "然",
 			"cancel": "否"
+		},
+		"offline_dialog": {
+			"title": "主機未繫",
+			"message": "fount主機 ${hostUrl} 未繫。欲復試乎？",
+			"buttons": {
+				"retry": "復試"
+			}
 		}
 	},
 	"startPage": {

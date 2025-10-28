@@ -194,6 +194,13 @@
 			"message": "Tem certeza de que deseja executar ${parttype} de ${partname}?",
 			"confirm": "confirmar",
 			"cancel": "Cancelar"
+		},
+		"offline_dialog": {
+			"title": "Host offline",
+			"message": "O host fount ${hostUrl} parece estar offline. Quer tentar novamente?",
+			"buttons": {
+				"retry": "Tente novamente"
+			}
 		}
 	},
 	"startPage": {
