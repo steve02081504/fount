@@ -11,7 +11,7 @@ import { login, register, logout, authenticate, getUserByReq, getUserDictionary,
 import { __dirname } from '../base.mjs'
 import { processIPCCommand } from '../ipc_server/index.mjs'
 import { partTypeList } from '../managers/base.mjs'
-import { getLoadedPartList, getPartList } from '../managers/index.mjs'
+import { getLoadedPartList, getPartList, loadPart } from '../managers/index.mjs'
 import { getDefaultParts, getPartDetails, setDefaultPart, getAllCachedPartDetails } from '../parts_loader.mjs'
 import { skip_report, currentGitCommit, config, save_config } from '../server.mjs'
 
@@ -209,6 +209,14 @@ export function registerEndpoints(router) {
 		const { parttype, partname, args } = req.body
 		await processIPCCommand('runpart', { username, parttype, partname, args })
 		res.status(200).json({ message: 'Shell command sent successfully.' })
+	})
+
+	router.post('/api/loadpart', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const { parttype, partname } = req.body
+		if (!parttype || !partname) return res.status(400).json({ success: false, error: 'Part type and name are required.' })
+		await loadPart(username, parttype, partname)
+		res.status(200).json({ success: true, message: `Part ${parttype}/${partname} loaded successfully.` })
 	})
 
 	for (const part of partTypeList) {

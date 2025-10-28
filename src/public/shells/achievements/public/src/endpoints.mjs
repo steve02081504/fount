@@ -16,6 +16,6 @@ async function callApi(endpoint, method = 'GET', body) {
 	}
 }
 
-export function getAchievements() {
-	return callApi('list', 'GET')
+export function getAllAchievements() {
+	return callApi('sources', 'GET')
 }

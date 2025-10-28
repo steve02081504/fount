@@ -1,12 +1,11 @@
 import { authenticate, getUserByReq } from '../../../../server/auth.mjs'
 
-import { getAchievements, unlockAchievement, lockAchievement } from './api.mjs'
+import { getAllAchievements, lockAchievement, unlockAchievement } from './api.mjs'
 
 export function setEndpoints(router) {
-	router.get('/api/shells/achievements/list', authenticate, async (req, res) => {
+	router.get('/api/shells/achievements/sources', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
-		const achievements = await getAchievements(username)
-		res.json({ success: true, achievements })
+		res.json(await getAllAchievements(username))
 	})
 
 	router.post('/api/shells/achievements/unlock/:parttype/:partname/:id', authenticate, async (req, res) => {

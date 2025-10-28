@@ -22,21 +22,38 @@ let fullChatList = []
 let currentFilteredList = []
 const selectedChats = new Set()
 
+const CHUNK_SIZE = 7
+let fullSortedList = []
+let renderTimeout
+
 async function renderUI() {
-	const sortedList = [...currentFilteredList].sort((a, b) => {
+	fullSortedList = [...currentFilteredList].sort((a, b) => {
 		const sortValue = sortSelect.value
 		const timeA = new Date(a.lastMessageTime).getTime()
 		const timeB = new Date(b.lastMessageTime).getTime()
 		return sortValue === 'time_asc' ? timeA - timeB : timeB - timeA
 	})
 
-	const chats = await Promise.all(sortedList.map(renderChatListItem))
+	// Clear everything
 	chatListContainer.innerHTML = ''
-	chatListContainer.append(...chats)
+	if (renderTimeout) clearTimeout(renderTimeout)
 
-	// Reset selection state after rendering
+	// Reset selection state
 	selectedChats.clear()
 	selectAllCheckbox.checked = false
+
+	appendNextChunk()
+}
+
+function appendNextChunk() {
+	const itemsToRender = fullSortedList.slice(chatListContainer.childElementCount, chatListContainer.childElementCount + CHUNK_SIZE)
+
+	if (!itemsToRender.length)
+		return
+
+	Promise.all(itemsToRender.map(renderChatListItem)).then(chats => {
+		chatListContainer.append(...chats)
+	})
 }
 
 /**
@@ -142,7 +159,8 @@ async function renderChatListItem(chat) {
 			if (data[0].success) {
 				chatItemDOMCache.delete(chat.chatid)
 				fullChatList = fullChatList.filter(c => c.chatid !== chat.chatid)
-				filterInput.dispatchEvent(new Event('input')) // Trigger re-filter
+				chatElement.remove()
+				filterInput.dispatchEvent(new Event('input'))
 			} else showToast('error', data[0].message)
 
 		} catch (error) {
@@ -150,7 +168,6 @@ async function renderChatListItem(chat) {
 			showToastI18n('error', 'chat_history.alerts.deleteError')
 		}
 	})
-
 	chatItemDOMCache.set(chat.chatid, {
 		element: chatElement,
 		lastMessageTime: chat.lastMessageTime,
@@ -194,10 +211,10 @@ deleteSelectedButton.addEventListener('click', async () => {
 				chatItemDOMCache.delete(result.chatid)
 				fullChatList = fullChatList.filter(c => c.chatid !== result.chatid)
 				selectedChats.delete(result.chatid)
-			}
-			else showToast('error', result.message)
+				document.querySelector(`[data-chatid="${result.chatid}"]`).remove()
+			} else showToast('error', result.message)
 		})
-		filterInput.dispatchEvent(new Event('input')) // Trigger re-filter
+		filterInput.dispatchEvent(new Event('input'))
 	} catch (error) {
 		console.error('Error deleting selected chats:', error)
 		showToastI18n('error', 'chat_history.alerts.deleteError')
@@ -236,13 +253,31 @@ async function initializeApp() {
 	makeSearchable({
 		searchInput: filterInput,
 		data: fullChatList,
-		onUpdate: (filtered) => {
+		onUpdate: filtered => {
 			currentFilteredList = filtered
 			renderUI()
 		},
 	})
 
-	await onLanguageChange(renderUI)
+	// Setup infinite scroll
+	const observer = new IntersectionObserver(entries => {
+		if (entries[0].isIntersecting) {
+			// Use a timeout to debounce and avoid rapid firing
+			if (renderTimeout) clearTimeout(renderTimeout)
+			renderTimeout = setTimeout(appendNextChunk, 100)
+		}
+	}, { rootMargin: '500px' }) // Load next chunk when 500px away from bottom
+
+	const sentinel = document.createElement('div')
+	chatListContainer.after(sentinel)
+	observer.observe(sentinel)
+
+	await onLanguageChange(() => {
+		chatItemDOMCache.clear()
+		renderUI()
+	})
+
+	renderUI() // Initial render
 }
 
 initializeApp().catch(error => {

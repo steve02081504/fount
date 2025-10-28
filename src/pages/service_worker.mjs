@@ -503,8 +503,8 @@ self.addEventListener('notificationclick', event => {
  */
 self.addEventListener('fetch', event => {
 	const requestUrl = new URL(event.request.url)
-
-	// 遍历路由表，为请求寻找合适的处理器。
+	if (event.request.cache === 'no-cache') return handleNetworkFirst(event.request)
+	if (event.request.cache === 'no-store') return
 	for (const route of routes)
 		if (route.condition({ event, request: event.request, url: requestUrl })) {
 			const handlerResult = route.handler({ event, request: event.request, url: requestUrl })

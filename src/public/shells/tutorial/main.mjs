@@ -4,7 +4,7 @@ export default {
 			name: 'Tutorial',
 			avatar: 'https://api.iconify.design/line-md/backup-restore.svg',
 			description: 'A shell to guide users through the initial setup and basic features.',
-			description_markdown: 'Provides a step-by-step tutorial for new users to get acquainted with Project fount.',
+			description_markdown: 'Provides a step-by-step tutorial for new users to get acquainted with fount.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['tutorial', 'guide', 'help', 'new user']
@@ -13,7 +13,7 @@ export default {
 			name: '教程',
 			avatar: 'https://api.iconify.design/line-md/backup-restore.svg',
 			description: '一个引导用户完成初始设置和基本功能的shell。',
-			description_markdown: '为新用户提供分步教程，以熟悉 Project fount。',
+			description_markdown: '为新用户提供分步教程，以熟悉 fount。',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['教程', '指南', '帮助', '新用户']
@@ -22,7 +22,7 @@ export default {
 			name: 'برنامج تعليمي',
 			avatar: 'https://api.iconify.design/line-md/backup-restore.svg',
 			description: 'قذيفة لتوجيه المستخدمين خلال الإعداد الأولي والميزات الأساسية.',
-			description_markdown: 'يوفر برنامجًا تعليميًا خطوة بخطوة للمستخدمين الجدد للتعرف على Project fount.',
+			description_markdown: 'يوفر برنامجًا تعليميًا خطوة بخطوة للمستخدمين الجدد للتعرف على fount.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['برنامج تعليمي', 'دليل', 'مساعدة', 'مستخدم جديد']
@@ -31,7 +31,7 @@ export default {
 			name: 'Tutorial',
 			avatar: 'https://api.iconify.design/line-md/backup-restore.svg',
 			description: 'Eine Shell, die Benutzer durch die Ersteinrichtung und die grundlegenden Funktionen führt.',
-			description_markdown: 'Bietet ein schrittweises Tutorial für neue Benutzer, um sich mit Project fount vertraut zu machen.',
+			description_markdown: 'Bietet ein schrittweises Tutorial für neue Benutzer, um sich mit fount vertraut zu machen.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['Tutorial', 'Anleitung', 'Hilfe', 'neuer Benutzer']
@@ -40,7 +40,7 @@ export default {
 			name: '🎓❓',
 			avatar: 'https://api.iconify.design/line-md/backup-restore.svg',
 			description: 'A shell to guide users through the initial setup and basic features.',
-			description_markdown: 'Provides a step-by-step tutorial for new users to get acquainted with Project fount.',
+			description_markdown: 'Provides a step-by-step tutorial for new users to get acquainted with fount.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['tutorial', 'guide', 'help', 'new user']
@@ -49,7 +49,7 @@ export default {
 			name: 'Tutorial',
 			avatar: 'https://api.iconify.design/line-md/backup-restore.svg',
 			description: 'Un shell para guiar a los usuarios a través de la configuración inicial y las funciones básicas.',
-			description_markdown: 'Proporciona un tutorial paso a paso para que los nuevos usuarios se familiaricen con Project fount.',
+			description_markdown: 'Proporciona un tutorial paso a paso para que los nuevos usuarios se familiaricen con fount.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['tutorial', 'guía', 'ayuda', 'nuevo usuario']
@@ -58,7 +58,7 @@ export default {
 			name: 'Tutoriel',
 			avatar: 'https://api.iconify.design/line-md/backup-restore.svg',
 			description: 'Un shell pour guider les utilisateurs à travers la configuration initiale et les fonctionnalités de base.',
-			description_markdown: 'Fournit un tutoriel étape par étape pour que les nouveaux utilisateurs se familiarisent avec Project fount.',
+			description_markdown: 'Fournit un tutoriel étape par étape pour que les nouveaux utilisateurs se familiarisent avec fount.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['tutoriel', 'guide', 'aide', 'nouvel utilisateur']
@@ -76,7 +76,7 @@ export default {
 			name: 'Kennsla',
 			avatar: 'https://api.iconify.design/line-md/backup-restore.svg',
 			description: 'Skél til að leiðbeina notendum í gegnum upphaflega uppsetningu og grunneiginleika.',
-			description_markdown: 'Býður upp á skref-fyrir-skref kennslu fyrir nýja notendur til að kynnast Project fount.',
+			description_markdown: 'Býður upp á skref-fyrir-skref kennslu fyrir nýja notendur til að kynnast fount.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['kennsla', 'leiðbeiningar', 'hjálp', 'nýr notandi']
@@ -85,7 +85,7 @@ export default {
 			name: 'Tutorial',
 			avatar: 'https://api.iconify.design/line-md/backup-restore.svg',
 			description: 'Una shell per guidare gli utenti attraverso la configurazione iniziale e le funzionalità di base.',
-			description_markdown: 'Fornisce un tutorial passo-passo per i nuovi utenti per familiarizzare con Project fount.',
+			description_markdown: 'Fornisce un tutorial passo-passo per i nuovi utenti per familiarizzare con fount.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['tutorial', 'guida', 'aiuto', 'nuovo utente']
@@ -94,7 +94,7 @@ export default {
 			name: 'チュートリアル',
 			avatar: 'https://api.iconify.design/line-md/backup-restore.svg',
 			description: '初期設定と基本機能をユーザーに案内するためのシェル。',
-			description_markdown: '新規ユーザーがProject Fountに慣れるためのステップバイステップのチュートリアルを提供します。',
+			description_markdown: '新規ユーザーがfountに慣れるためのステップバイステップのチュートリアルを提供します。',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['チュートリアル', 'ガイド', 'ヘルプ', '新規ユーザー']
@@ -103,7 +103,7 @@ export default {
 			name: '튜토리얼',
 			avatar: 'https://api.iconify.design/line-md/backup-restore.svg',
 			description: '초기 설정 및 기본 기능을 통해 사용자를 안내하는 셸입니다.',
-			description_markdown: '신규 사용자가 Project Fount에 익숙해질 수 있도록 단계별 튜토리얼을 제공합니다.',
+			description_markdown: '신규 사용자가 fount에 익숙해질 수 있도록 단계별 튜토리얼을 제공합니다.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['튜토리얼', '가이드', '도움말', '신규 사용자']
@@ -112,7 +112,7 @@ export default {
 			name: '儀軌',
 			avatar: 'https://api.iconify.design/line-md/backup-restore.svg',
 			description: '一個引導用戶完成初始設置和基本功能的shell。',
-			description_markdown: '為新用戶提供分步儀軌，以熟悉 Project fount。',
+			description_markdown: '為新用戶提供分步儀軌，以熟悉 fount。',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['儀軌', '指南', '幫助', '新用戶']
@@ -121,7 +121,7 @@ export default {
 			name: 'Tutorial',
 			avatar: 'https://api.iconify.design/line-md/backup-restore.svg',
 			description: 'Een shell om gebruikers door de initiële installatie en basisfuncties te leiden.',
-			description_markdown: 'Biedt een stapsgewijze zelfstudie voor nieuwe gebruikers om vertrouwd te raken met Project fount.',
+			description_markdown: 'Biedt een stapsgewijze zelfstudie voor nieuwe gebruikers om vertrouwd te raken met fount.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['zelfstudie', 'gids', 'hulp', 'nieuwe gebruiker']
@@ -130,7 +130,7 @@ export default {
 			name: 'Tutorial',
 			avatar: 'https://api.iconify.design/line-md/backup-restore.svg',
 			description: 'Um shell para guiar os usuários através da configuração inicial e dos recursos básicos.',
-			description_markdown: 'Fornece um tutorial passo a passo para que os novos usuários se familiarizem com o Project fount.',
+			description_markdown: 'Fornece um tutorial passo a passo para que os novos usuários se familiarizem com o fount.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['tutorial', 'guia', 'ajuda', 'novo usuário']
@@ -139,7 +139,7 @@ export default {
 			name: 'Учебник',
 			avatar: 'https://api.iconify.design/line-md/backup-restore.svg',
 			description: 'Оболочка для руководства пользователями по начальной настройке и основным функциям.',
-			description_markdown: 'Предоставляет пошаговое руководство для новых пользователей по ознакомлению с Project fount.',
+			description_markdown: 'Предоставляет пошаговое руководство для новых пользователей по ознакомлению с fount.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['учебник', 'руководство', 'помощь', 'новый пользователь']
@@ -148,7 +148,7 @@ export default {
 			name: 'Підручник',
 			avatar: 'https://api.iconify.design/line-md/backup-restore.svg',
 			description: 'Оболонка для керівництва користувачами по початковій настройці та основним функціям.',
-			description_markdown: 'Надає покроковий посібник для нових користувачів по ознайомленню з Project fount.',
+			description_markdown: 'Надає покроковий посібник для нових користувачів по ознайомленню з fount.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['підручник', 'керівництво', 'допомога', 'новий користувач']
@@ -157,7 +157,7 @@ export default {
 			name: 'Hướng dẫn',
 			avatar: 'https://api.iconify.design/line-md/backup-restore.svg',
 			description: 'Một trình bao để hướng dẫn người dùng qua thiết lập ban đầu và các tính năng cơ bản.',
-			description_markdown: 'Cung cấp hướng dẫn từng bước cho người dùng mới để làm quen với Project fount.',
+			description_markdown: 'Cung cấp hướng dẫn từng bước cho người dùng mới để làm quen với fount.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['hướng dẫn', 'chỉ dẫn', 'trợ giúp', 'người dùng mới']
@@ -166,7 +166,7 @@ export default {
 			name: '教程',
 			avatar: 'https://api.iconify.design/line-md/backup-restore.svg',
 			description: '一個引導用戶完成初始設置和基本功能的shell。',
-			description_markdown: '為新用戶提供分步教程，以熟悉 Project fount。',
+			description_markdown: '為新用戶提供分步教程，以熟悉 fount。',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['教程', '指南', '幫助', '新用戶']

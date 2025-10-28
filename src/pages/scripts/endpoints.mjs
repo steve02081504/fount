@@ -59,6 +59,16 @@ export async function runPart(parttype, partname, args) {
 	})
 }
 
+export async function loadPart(parttype, partname) {
+	return await fetch('/api/loadpart', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({ parttype, partname }),
+	})
+}
+
 export async function getUserSetting(key) {
 	const response = await fetch(`/api/getusersetting?key=${encodeURIComponent(key)}`)
 	if (!response.ok) return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response }))

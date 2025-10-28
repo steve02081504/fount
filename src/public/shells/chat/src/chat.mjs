@@ -14,8 +14,9 @@ import { events } from '../../../../server/events.mjs'
 import { LoadChar } from '../../../../server/managers/char_manager.mjs'
 import { loadPersona } from '../../../../server/managers/persona_manager.mjs'
 import { loadWorld } from '../../../../server/managers/world_manager.mjs'
-import { getDefaultParts, getSfwInfo } from '../../../../server/parts_loader.mjs'
+import { getDefaultParts, getPartDetails } from '../../../../server/parts_loader.mjs'
 import { skip_report } from '../../../../server/server.mjs'
+import { loadShellData, saveShellData } from '../../../../server/setting_loader.mjs'
 import { sendNotification } from '../../../../server/web_server/event_dispatcher.mjs'
 import { unlockAchievement } from '../../achievements/src/api.mjs'
 
@@ -123,12 +124,12 @@ class timeSlice_t {
 	 */
 	world_id
 	/**
-	 * @description 代表玩家的“人格”API对象。
+	 * @description 代表玩家的人设API对象。
 	 * @type {UserAPI_t}
 	 */
 	player
 	/**
-	 * @description 当前玩家“人格”的文件名/ID。
+	 * @description 当前玩家人设的文件名/ID。
 	 * @type {string}
 	 */
 	player_id
@@ -439,6 +440,33 @@ export async function newChat(username) {
 	return chatid
 }
 
+function getSummaryFromMetadata(chatid, chatMetadata) {
+	if (!is_VividChat(chatMetadata)) return null
+	const lastEntry = chatMetadata.chatLog[chatMetadata.chatLog.length - 1]
+	if (!lastEntry) return null
+	return {
+		chatid,
+		chars: Object.keys(chatMetadata.LastTimeSlice.chars),
+		lastMessageSender: lastEntry.name,
+		lastMessageSenderAvatar: lastEntry.avatar || null,
+		lastMessageContent: lastEntry.content,
+		lastMessageTime: lastEntry.time_stamp,
+	}
+}
+
+async function updateChatSummary(chatid, chatMetadata) {
+	const { username } = chatMetadatas.get(chatid)
+
+	if (!chatMetadata) chatMetadata = await loadChat(chatid)
+
+	const summary = getSummaryFromMetadata(chatid, chatMetadata)
+	const summariesCache = loadShellData(username, 'chat', 'chat_summaries_cache')
+	if (summary) summariesCache[chatid] = summary
+	else delete summariesCache[chatid]
+
+	saveShellData(username, 'chat', 'chat_summaries_cache')
+}
+
 /**
  * @description 将指定聊天的元数据保存到磁盘。
  * @param {string} chatid - 要保存的聊天ID。
@@ -450,6 +478,7 @@ export async function saveChat(chatid) {
 	const { username, chatMetadata } = chatData
 	fs.mkdirSync(getUserDictionary(username) + '/shells/chat/chats', { recursive: true })
 	saveJsonFile(getUserDictionary(username) + '/shells/chat/chats/' + chatid + '.json', await chatMetadata.toData())
+	await updateChatSummary(chatid, chatMetadata)
 }
 
 /**
@@ -484,7 +513,7 @@ function is_VividChat(chatMetadata) {
  * @description 为特定角色构建一个用于请求回复的上下文对象。
  * @param {string} chatid - 聊天ID。
  * @param {string} charname - 将要接收请求的角色ID。
- * @returns {Promise<import('../../decl/chatLog.ts').chatReplyRequest_t>} 为角色准备的请求对象。
+ * @returns {Promise<import('../decl/chatLog.ts').chatReplyRequest_t>} 为角色准备的请求对象。
  * @throws {Error} 如果聊天未找到。
  */
 async function getChatRequest(chatid, charname) {
@@ -500,7 +529,7 @@ async function getChatRequest(chatid, charname) {
 	const other_chars = { ...timeSlice.chars }
 	delete other_chars[charname]
 
-	/** @type {import('../../decl/chatLog.ts').chatReplyRequest_t} */
+	/** @type {import('../decl/chatLog.ts').chatReplyRequest_t} */
 	const result = {
 		supported_functions: {
 			markdown: true,
@@ -544,9 +573,9 @@ async function getChatRequest(chatid, charname) {
 }
 
 /**
- * @description 在聊天中设置或更改玩家使用的人格。
+ * @description 在聊天中设置或更改玩家使用的人设。
  * @param {string} chatid - 聊天ID。
- * @param {string | null} personaname - 新的人格ID，或 null 表示移除人格。
+ * @param {string | null} personaname - 新的人设ID，或 null 表示移除人设。
  */
 export async function setPersona(chatid, personaname) {
 	const chatMetadata = await loadChat(chatid)
@@ -728,9 +757,9 @@ export async function GetChatLogLength(chatid) {
 }
 
 /**
- * @description 获取当前聊天中用户使用的人格名称。
+ * @description 获取当前聊天中用户使用的人设名称。
  * @param {string} chatid - 聊天ID。
- * @returns {Promise<string>} 人格ID。
+ * @returns {Promise<string>} 人设ID。
  */
 export async function GetUserPersonaName(chatid) {
 	const chatMetadata = await loadChat(chatid)
@@ -900,14 +929,12 @@ export async function modifyTimeLine(chatid, delta) {
  * @returns {Promise<chatLogEntry_t>} 构建完成的聊天记录条目。
  */
 async function BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, username) {
-	const { locales, sfw } = getUserByUsername(username)
 	new_timeSlice.charname = charname
-	let info = await getPartInfo(char, locales) || {}
-	if (sfw) info = getSfwInfo(info)
+	const { info } = await getPartDetails(username, 'chars', charname) || {}
 
 	return Object.assign(new chatLogEntry_t(), {
-		name: result.name || info.name || charname || 'Unknown',
-		avatar: result.avatar || info.avatar,
+		name: result.name || info?.name || charname || 'Unknown',
+		avatar: result.avatar || info?.avatar,
 		content: result.content,
 		content_for_show: result.content_for_show,
 		content_for_edit: result.content_for_edit,
@@ -929,19 +956,18 @@ async function BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charn
  * @param {string} result.content - 消息内容。
  * @param {any} result.extension - 扩展数据。
  * @param {timeSlice_t} new_timeSlice - 用于此消息的时间切片。
- * @param {UserAPI_t} user - 发言的用户人格对象。
+ * @param {UserAPI_t} user - 发言的用户人设对象。
+ * @param {string} personaname - 发言的用户人设ID。
  * @param {string} username - 聊天的所有者用户名。
  * @returns {Promise<chatLogEntry_t>} 构建完成的聊天记录条目。
  */
-async function BuildChatLogEntryFromUserMessage(result, new_timeSlice, user, username) {
-	const { locales, sfw } = getUserByUsername(username)
+async function BuildChatLogEntryFromUserMessage(result, new_timeSlice, user, personaname, username) {
 	new_timeSlice.playername = new_timeSlice.player_id
-	let info = await getPartInfo(user, locales) || {}
-	if (sfw) info = getSfwInfo(info)
+	const { info } = (personaname ? await getPartDetails(username, 'personas', personaname) : undefined) || {}
 
 	return Object.assign(new chatLogEntry_t(), {
-		name: result.name || info.name || new_timeSlice.player_id || username,
-		avatar: result.avatar || info.avatar,
+		name: result.name || info?.name || new_timeSlice.player_id || username,
+		avatar: result.avatar || info?.avatar,
 		content: result.content,
 		timeSlice: new_timeSlice,
 		role: 'user',
@@ -1058,12 +1084,12 @@ export async function addUserReply(chatid, object) {
 	const new_timeSlice = timeSlice.copy()
 	const user = timeSlice.player
 
-	return addChatLogEntry(chatid, await BuildChatLogEntryFromUserMessage(object, new_timeSlice, user, chatMetadata.username))
+	return addChatLogEntry(chatid, await BuildChatLogEntryFromUserMessage(object, new_timeSlice, user, new_timeSlice.player_id, chatMetadata.username))
 }
 
 /**
  * @description 从JSON文件轻量级加载聊天的摘要信息，不进行完整的对象水合。
- * 这种方式速度更快，因为它避免了加载完整的角色/世界/人格数据。
+ * 这种方式速度更快，因为它避免了加载完整的角色/世界/人设数据。
  * @param {string} username - 聊天的所有者用户名。
  * @param {string} chatid - 聊天ID。
  * @returns {Promise<{
@@ -1104,38 +1130,15 @@ async function loadChatSummary(username, chatid) {
  * @returns {Promise<Array>} 包含聊天摘要对象的数组，按最后消息时间降序排列。
  */
 export async function getChatList(username) {
-	const userDir = getUserDictionary(username) + '/shells/chat/chats/'
-	if (!fs.existsSync(userDir)) return []
+	const summariesCache = loadShellData(username, 'chat', 'chat_summaries_cache')
 
-	const chatFiles = fs.readdirSync(userDir).filter(file => file.endsWith('.json'))
-	const chatIdsOnDisk = new Set(chatFiles.map(file => file.replace('.json', '')))
+	await Promise.all(Array.from(chatMetadatas.entries()).map(async ([chatid, value]) => {
+		if (value.username === username)
+			summariesCache[chatid] ??= await loadChatSummary(username, chatid)
+	}))
 
-	for (const [chatid, data] of chatMetadatas.entries())
-		if (data.username === username)
-			chatIdsOnDisk.add(chatid)
-
-	const chatListPromises = Array.from(chatIdsOnDisk).map(async chatid => {
-		const cachedData = chatMetadatas.get(chatid)
-
-		if (cachedData?.chatMetadata) {
-			const { chatMetadata } = cachedData
-			if (!is_VividChat(chatMetadata)) return null
-
-			const lastEntry = chatMetadata.chatLog[chatMetadata.chatLog.length - 1]
-			return {
-				chatid,
-				chars: Object.keys(chatMetadata.LastTimeSlice.chars),
-				lastMessageSender: lastEntry.name,
-				lastMessageSenderAvatar: lastEntry.avatar || null,
-				lastMessageContent: lastEntry.content,
-				lastMessageTime: lastEntry.time_stamp,
-			}
-		}
-
-		return await loadChatSummary(username, chatid)
-	})
-	const chatList = (await Promise.all(chatListPromises)).filter(Boolean)
-	return chatList.sort((a, b) => b.lastMessageTime - a.lastMessageTime)
+	const chatList = Object.values(summariesCache).filter(Boolean)
+	return chatList.sort((a, b) => new Date(b.lastMessageTime) - new Date(a.lastMessageTime))
 }
 
 /**
@@ -1146,10 +1149,12 @@ export async function getChatList(username) {
  */
 export async function deleteChat(chatids, username) {
 	const basedir = getUserDictionary(username) + '/shells/chat/chats/'
+	const summariesCache = loadShellData(username, 'chat', 'chat_summaries_cache')
 	const deletePromises = chatids.map(async chatid => {
 		try {
 			if (fs.existsSync(basedir + chatid + '.json')) await fs.promises.unlink(basedir + chatid + '.json')
 			chatMetadatas.delete(chatid)
+			delete summariesCache[chatid]
 			return { chatid, success: true, message: 'Chat deleted successfully' }
 		}
 		catch (error) {
@@ -1158,7 +1163,9 @@ export async function deleteChat(chatids, username) {
 		}
 	})
 
-	return Promise.all(deletePromises)
+	const results = await Promise.all(deletePromises)
+	saveShellData(username, 'chat', 'chat_summaries_cache')
+	return results
 }
 
 /**
@@ -1304,7 +1311,7 @@ export async function editMessage(chatid, index, new_content) {
 		entry = await BuildChatLogEntryFromCharReply(editresult, timeSlice, char, timeSlice.charname, chatMetadata.username)
 	}
 	else
-		entry = await BuildChatLogEntryFromUserMessage(editresult, timeSlice, chatMetadata.LastTimeSlice, chatMetadata.username)
+		entry = await BuildChatLogEntryFromUserMessage(editresult, timeSlice, timeSlice.player, timeSlice.player_id, chatMetadata.username)
 
 	chatMetadata.chatLog[index] = entry
 	if (index == chatMetadata.chatLog.length - 1)

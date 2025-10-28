@@ -194,6 +194,13 @@
 			"message": "您確定要運行 ${parttype} 的 ${partname} 嗎？",
 			"confirm": "確認",
 			"cancel": "取消"
+		},
+		"offline_dialog": {
+			"title": "主機離線",
+			"message": "fount 主機 ${hostUrl} 似乎已離線。您想重試嗎？",
+			"buttons": {
+				"retry": "重試"
+			}
 		}
 	},
 	"startPage": {

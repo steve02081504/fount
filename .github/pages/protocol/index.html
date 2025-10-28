@@ -22,6 +22,16 @@
 
 <body class="flex justify-center items-center h-screen">
 	<span class="loading loading-ring loading-lg"></span>
+
+	<dialog id="offline_dialog" class="modal">
+		<div class="modal-box">
+			<h3 class="font-bold text-lg" data-i18n="protocolhandler.offline_dialog.title"></h3>
+			<p class="py-4" id="offline_dialog_message"></p>
+			<div class="modal-action">
+				<button class="btn btn-primary" id="retry_btn" data-i18n="protocolhandler.offline_dialog.buttons.retry"></button>
+			</div>
+		</div>
+	</dialog>
 </body>
 
 </html>
