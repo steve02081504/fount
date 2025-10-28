@@ -9,18 +9,7 @@ import { console, geti18n } from '../scripts/i18n.mjs'
 import { __dirname } from '../server/base.mjs'
 import { hosturl, restartor } from '../server/server.mjs'
 
-const SysTray = (await import('npm:systray').catch(_ => 0))?.default?.default //??????
-
-async function getBase64Icon(iconPath) {
-	try {
-		const iconData = fs.readFileSync(iconPath)
-		return iconData.toString('base64')
-	}
-	catch (err) {
-		console.errorI18n('fountConsole.tray.readIconFailed', { error: err })
-		return ''
-	}
-}
+const SysTray = (await import('npm:systray2').catch(_ => 0))?.default?.default //??????
 
 let systray
 
@@ -33,12 +22,12 @@ export async function createTray() {
 	try {
 		if (systray) systray.kill()
 		systray = null
+
 		const iconPath = __dirname + (os.platform() === 'win32' ? '/src/pages/favicon.ico' : '/src/pages/favicon.png')
-		const base64Icon = await getBase64Icon(iconPath)
 
 		systray = new SysTray({
 			menu: {
-				icon: base64Icon,
+				icon: iconPath,
 				title: geti18n('fountConsole.tray.title'),
 				tooltip: geti18n('fountConsole.tray.tooltip'),
 				items: [
@@ -46,31 +35,37 @@ export async function createTray() {
 						title: geti18n('fountConsole.tray.items.open.title'),
 						tooltip: geti18n('fountConsole.tray.items.open.tooltip'),
 						checked: false,
-						enabled: true
+						enabled: true,
+						click: () => open(hosturl)
 					},
 					{
 						title: geti18n('fountConsole.tray.items.github.title'),
 						tooltip: geti18n('fountConsole.tray.items.github.tooltip'),
 						checked: false,
-						enabled: true
+						enabled: true,
+						click: () => open('https://github.com/steve02081504/fount')
 					},
 					{
 						title: geti18n('fountConsole.tray.items.discord.title'),
 						tooltip: geti18n('fountConsole.tray.items.discord.tooltip'),
 						checked: false,
-						enabled: true
+						enabled: true,
+						click: () => open('https://discord.gg/GtR9Quzq2v')
 					},
+					SysTray.separator,
 					{
 						title: geti18n('fountConsole.tray.items.restart.title'),
 						tooltip: geti18n('fountConsole.tray.items.restart.tooltip'),
 						checked: false,
-						enabled: true
+						enabled: true,
+						click: () => restartor()
 					},
 					{
 						title: geti18n('fountConsole.tray.items.exit.title'),
 						tooltip: geti18n('fountConsole.tray.items.exit.tooltip'),
 						checked: false,
-						enabled: true
+						enabled: true,
+						click: () => process.exit(0)
 					}
 				]
 			},
@@ -79,24 +74,10 @@ export async function createTray() {
 		})
 
 		systray.onClick(action => {
-			switch (action.seq_id) {
-				case 0:
-					open(hosturl)
-					break
-				case 1:
-					open('https://github.com/steve02081504/fount')
-					break
-				case 2:
-					open('https://discord.gg/GtR9Quzq2v')
-					break
-				case 3:
-					restartor()
-					break
-				case 4:
-					process.exit(0)
-			}
+			action.item?.click?.()
 		})
 
+		await systray.ready()
 		return systray
 	}
 	catch (err) {
