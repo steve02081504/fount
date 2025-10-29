@@ -1,3 +1,10 @@
+/**
+ * @description 处理动作。
+ * @param {string} user - 用户。
+ * @param {string} action - 动作。
+ * @param {object} params - 参数。
+ * @returns {Promise<any>} - 动作结果。
+ */
 async function handleAction(user, action, params) {
 	const { actions } = await import('./src/actions.mjs')
 	if (!actions[action])
@@ -74,7 +81,7 @@ export default {
 		'hi-IN': {
 			name: 'प्रीलोड',
 			avatar: 'https://api.iconify.design/material-symbols/play-for-work.svg',
-			description: 'भागों को प्रीलोड کرنے کے لیے ایک شیل۔',
+			description: 'भागों को प्रीलोड करने के लिए एक शेल।',
 			description_markdown: 'प्रदर्शन में सुधार और लोडिंग समय को कम करने के लिए अक्सर उपयोग किए जाने वाले घटकों को प्रीलोड करता है।',
 			version: '0.0.1',
 			author: 'steve02081504',

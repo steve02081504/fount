@@ -1,6 +1,12 @@
 import { initPart, loadPartBase, uninstallPartBase, unloadPartBase } from '../parts_loader.mjs'
 import { loadData, saveData } from '../setting_loader.mjs'
 
+/**
+ * 为用户加载角色数据。
+ * @param {string} username - 用户的用户名。
+ * @param {string} charname - 角色的名称。
+ * @returns {object} 角色数据。
+ */
 function loadCharData(username, charname) {
 	const userCharDataSet = loadData(username, 'char_data')
 	return userCharDataSet[charname] ??= {
@@ -12,14 +18,20 @@ function loadCharData(username, charname) {
 		}
 	}
 }
+/**
+ * 为用户保存角色数据。
+ * @param {string} username - 用户的用户名。
+ * @returns {void}
+ */
 function saveCharData(username) {
 	saveData(username, 'char_data')
 }
 
 /**
- * @param {string} username
- * @param {string} charname
- * @returns {Promise<import('../../decl/charAPI.ts').CharAPI_t>}
+ * 为用户加载角色。
+ * @param {string} username - 用户的用户名。
+ * @param {string} charname - 角色的名称。
+ * @returns {Promise<import('../../decl/charAPI.ts').CharAPI_t>} 一个解析为已加载角色的承诺。
  */
 export async function LoadChar(username, charname) {
 	const data = loadCharData(username, charname)
@@ -37,11 +49,24 @@ export async function LoadChar(username, charname) {
 	return char
 }
 
+/**
+ * 为用户卸载角色。
+ * @param {string} username - 用户的用户名。
+ * @param {string} charname - 角色的名称。
+ * @param {any} reason - 卸载角色的原因。
+ * @returns {Promise<void>} 一个在角色卸载后解析的承诺。
+ */
 export async function UnloadChar(username, charname, reason) {
 	await unloadPartBase(username, 'chars', charname, reason)
 	saveCharData(username)
 }
 
+/**
+ * 为用户初始化角色。
+ * @param {string} username - 用户的用户名。
+ * @param {string} charname - 角色的名称。
+ * @returns {Promise<void>} 一个在角色初始化后解析的承诺。
+ */
 export async function initChar(username, charname) {
 	const { state } = loadCharData(username, charname)
 	await initPart(username, 'chars', charname, {
@@ -56,6 +81,14 @@ export async function initChar(username, charname) {
 	})
 }
 
+/**
+ * 为用户卸载角色。
+ * @param {string} username - 用户的用户名。
+ * @param {string} charname - 角色的名称。
+ * @param {any} reason - 卸载角色的原因。
+ * @param {any} from - 卸载请求的来源。
+ * @returns {Promise<void>} 一个在角色卸载后解析的承诺。
+ */
 export async function uninstallChar(username, charname, reason, from) {
 	await uninstallPartBase(username, 'chars', charname, { reason, from })
 }

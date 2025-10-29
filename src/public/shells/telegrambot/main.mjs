@@ -2,6 +2,13 @@ import { actions } from './src/actions.mjs'
 import { runBot } from './src/bot.mjs'
 import { setEndpoints } from './src/endpoints.mjs'
 
+/**
+ * @description 处理动作。
+ * @param {string} user - 用户。
+ * @param {string} action - 动作。
+ * @param {object} params - 参数。
+ * @returns {Promise<any>} - 动作结果。
+ */
 async function handleAction(user, action, params) {
 	if (!actions[action])
 		throw new Error(`Unknown action: ${action}. Available actions: ${Object.keys(actions).join(', ')}`)
@@ -183,10 +190,18 @@ export default {
 			tags: ['Telegram', 'bot', '聊天', '集成']
 		}
 	},
+	/**
+	 * @description 加载 shell。
+	 * @param {object} options - 选项。
+	 * @param {object} options.router - 路由。
+	 */
 	Load: async ({ router }) => {
 		// 设置此 shell 的 API 端点
 		setEndpoints(router)
 	},
+	/**
+	 * @description 卸载 shell。
+	 */
 	Unload: async () => {
 		// 在卸载 shell 时可以进行一些清理工作，如果需要的话
 		// 例如，确保所有bot实例都已停止（尽管 on_shutdown 应该处理这个）
@@ -194,6 +209,11 @@ export default {
 
 	interfaces: {
 		invokes: {
+			/**
+			 * @description 处理命令行参数。
+			 * @param {string} user - 用户。
+			 * @param {Array<string>} args - 参数。
+			 */
 			// 处理通过 fount 命令行/脚本调用的情况，例如 'run shells <user> telegrambot <botname> start'
 			ArgumentsHandler: async (user, args) => {
 				const [action, name, jsonData] = args
@@ -207,12 +227,23 @@ export default {
 					console.log(result)
 
 			},
+			/**
+			 * @description 处理 IPC 调用。
+			 * @param {string} user - 用户。
+			 * @param {object} data - 数据。
+			 * @returns {Promise<any>} - 调用结果。
+			 */
 			IPCInvokeHandler: async (user, data) => {
 				const { action, ...params } = data
 				return handleAction(user, action, params)
 			}
 		},
 		jobs: {
+			/**
+			 * @description 重启任务。
+			 * @param {string} user - 用户。
+			 * @param {string} botname - 机器人名称。
+			 */
 			// 当 fount 启动时，如果之前有正在运行的bot，则重新启动它们
 			ReStartJob: async (user, botname) => {
 				let sleep_time = 0

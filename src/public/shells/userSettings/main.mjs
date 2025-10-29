@@ -1,5 +1,12 @@
 import { setEndpoints } from './src/endpoints.mjs'
 
+/**
+ * @description 处理动作。
+ * @param {string} user - 用户。
+ * @param {string} action - 动作。
+ * @param {object} params - 参数。
+ * @returns {Promise<any>} - 动作结果。
+ */
 async function handleAction(user, action, params) {
 	const { actions } = await import('./src/actions.mjs')
 	if (!actions[action])
@@ -182,12 +189,25 @@ export default {
 			tags: ['用戶', '設置', '帳戶', '個人資料']
 		}
 	},
+	/**
+	 * @description 加载 shell。
+	 * @param {object} options - 选项。
+	 * @param {object} options.router - 路由。
+	 */
 	Load: async ({ router }) => {
 		setEndpoints(router)
 	},
+	/**
+	 * @description 卸载 shell。
+	 */
 	Unload: async () => { },
 	interfaces: {
 		invokes: {
+			/**
+			 * @description 处理命令行参数。
+			 * @param {string} user - 用户。
+			 * @param {Array<string>} args - 参数。
+			 */
 			ArgumentsHandler: async (user, args) => {
 				const action = args[0]
 				const params = {}
@@ -219,6 +239,12 @@ export default {
 					console.log(result)
 
 			},
+			/**
+			 * @description 处理 IPC 调用。
+			 * @param {string} user - 用户。
+			 * @param {object} data - 数据。
+			 * @returns {Promise<any>} - 调用结果。
+			 */
 			IPCInvokeHandler: async (user, data) => {
 				const { action, ...params } = data
 				return handleAction(user, action, params)

@@ -5,6 +5,10 @@ import { auth_request, getUserByReq } from '../auth.mjs'
 import { partTypeList } from '../managers/base.mjs'
 import { loadPart } from '../managers/index.mjs'
 
+/**
+ * 处理特定部件请求的主路由器。
+ * @type {import('express').Router}
+ */
 export const PartsRouter = express.Router()
 
 const PartsRouters = {}
@@ -26,12 +30,26 @@ PartsRouter.use(async (req, res, next) => {
 		return PartsRouters[username][parttype][partname](req, res, next)
 	return next()
 })
+/**
+ * 获取特定部件的路由器。
+ * @param {string} username - 用户的用户名。
+ * @param {string} parttype - 部件的类型。
+ * @param {string} partname - 部件的名称。
+ * @returns {import('../../scripts/WsAbleRouter.mjs').WsAbleRouter} 部件的路由器。
+ */
 export function getPartRouter(username, parttype, partname) {
 	PartsRouters[username] ??= {}
 	PartsRouters[username][parttype] ??= {}
 	return PartsRouters[username][parttype][partname] ??= new WsAbleRouter()
 }
 
+/**
+ * 删除特定部件的路由器。
+ * @param {string} username - 用户的用户名。
+ * @param {string} parttype - 部件的类型。
+ * @param {string} partname - 部件的名称。
+ * @returns {void}
+ */
 export function deletePartRouter(username, parttype, partname) {
 	delete PartsRouters[username][parttype][partname]
 	if (!Object.keys(PartsRouters[username][parttype]).length) delete PartsRouters[username][parttype]

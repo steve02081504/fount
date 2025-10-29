@@ -20,7 +20,15 @@ import { downloadRisuCard, downloadAsset } from './risu-api.mjs'
 
 
 
-// Helper to save assets and update URIs
+/**
+ * @description 保存资源并规范化 URI。
+ * @param {Buffer} assetBuffer - 资源缓冲区。
+ * @param {string} originalName - 原始文件名。
+ * @param {string} targetDir - 目标目录。
+ * @param {string} assetSubDir - 资源子目录。
+ * @param {string} [assetTypeForLog='asset'] - 用于日志的资源类型。
+ * @returns {Promise<string>} - 返回相对路径。
+ */
 async function saveAndNormalizeAsset(assetBuffer, originalName, targetDir, assetSubDir, assetTypeForLog = 'asset') {
 	const safeOriginalName = sanitizeFilename(originalName || `${assetTypeForLog}_${Date.now()}`)
 	const targetAssetPath = assetSubDir + '/' + safeOriginalName
@@ -32,6 +40,12 @@ async function saveAndNormalizeAsset(assetBuffer, originalName, targetDir, asset
 }
 
 
+/**
+ * @description 将数据作为 Risu 角色导入。
+ * @param {string} username - 用户名。
+ * @param {Buffer} dataBuffer - 数据缓冲区。
+ * @returns {Promise<Array<{ parttype: string; partname: string }>>} - 导入的部分信息数组。
+ */
 async function ImportAsData(username, dataBuffer) {
 	const tempExtractDir = path.join(tmpdir(), `fount_risu_import_${Date.now()}`)
 	await mkdir(tempExtractDir, { recursive: true })
@@ -70,17 +84,6 @@ async function ImportAsData(username, dataBuffer) {
 
 		if (!ccv3Card.data) throw new Error('Invalid or missing card data.')
 
-		// 如果是 SillyTavern V2 卡片，直接使用 ST 导入器逻辑（如果可以调用的话）
-		// 或者在这里实现一个简化的 STv2 到 fount Part 的转换。
-		// 目前这个 Risu 导入器专注于 CCv3 (和通过 PNG 导入的 CCv2)。
-		// 如果 sourceSpec 是 'ccv2' 或 'ccv2_generic'，ccv3Card 实际上是 STv2 格式。
-		// 我们可以直接用它，或者用一个适配器转成我们期望的 STv2 格式。
-		// convertCCv3ToSTv2 设计上是处理 CCv3 的，如果传入 STv2 卡片，行为可能不正确。
-		// 因此，如果检测到是 STv2，应该有不同的处理路径。
-		// 为简化，我们假设此导入器主要目标是 CCv3，对 PNG 中的 STv2 做最简转换或提示用户用 ST 导入器。
-		// 此处为了继续流程，如果 spec 是 ccv2，我们假设 ccv3Card 就是可以直接用的 STv2 结构。
-		// 更好的做法是分离逻辑。但根据题目，我们专注于 Risu CCv3。
-
 		if (sourceSpec !== 'ccv3')
 			throw new Error(`This Risu importer primarily handles CCv3. Detected ${sourceSpec}. Please use the SillyTavern importer if applicable.`)
 
@@ -88,8 +91,7 @@ async function ImportAsData(username, dataBuffer) {
 		const targetPath = await getAvailablePath(username, 'chars', charName)
 		await mkdir(targetPath, { recursive: true })
 
-		// 处理卡片定义的资源 (ccv3Card.data.assets)
-		const processedAssetsForST = [] // 用于放入 stV2Data.extensions.risu_assets
+		const processedAssetsForST = []
 		if (ccv3Card.data.assets && Array.isArray(ccv3Card.data.assets))
 			for (const assetDef of ccv3Card.data.assets) {
 				let assetBuffer
@@ -102,7 +104,7 @@ async function ImportAsData(username, dataBuffer) {
 						assetBuffer = charxAssets.get(internalPath)
 						if (!assetBuffer) throw new Error(`Embedded asset not found in CHARX: ${internalPath}`)
 					}
-					else if (assetDef.uri.startsWith('__asset:')) { // PNG 内嵌 (ccardlib 风格)
+					else if (assetDef.uri.startsWith('__asset:')) {
 						const assetId = assetDef.uri.substring('__asset:'.length)
 						assetBuffer = pngEmbeddedAssets.get(assetId)
 						if (!assetBuffer) throw new Error(`PNG embedded asset not found: ${assetId}`)
@@ -117,12 +119,11 @@ async function ImportAsData(username, dataBuffer) {
 						assetBuffer = await downloadAsset(assetDef.uri)
 					}
 					else if (assetDef.uri === 'ccdefault:')
-						if (mainImageBuffer) { // 仅当PNG导入时，ccdefault: 指向PNG本身
+						if (mainImageBuffer) {
 							assetBuffer = mainImageBuffer
-							assetFilename = `image_default.${assetDef.ext || 'png'}` // 主图片通常是png
+							assetFilename = `image_default.${assetDef.ext || 'png'}`
 						}
 						else {
-							// 对于非PNG导入，或无法确定ccdefault，跳过或用占位符
 							console.warn(`ccdefault: URI encountered for non-PNG or missing main image, asset "${assetDef.name}" skipped.`)
 							continue
 						}
@@ -132,16 +133,14 @@ async function ImportAsData(username, dataBuffer) {
 					}
 
 					const savedRelPath = await saveAndNormalizeAsset(assetBuffer, assetFilename, targetPath, 'risu_assets', assetDef.type)
-					// 更新 assetDef 中的 uri，供 converter 使用，或存入 stV2Data.extensions
 					processedAssetsForST.push({
 						type: assetDef.type,
 						name: assetDef.name,
 						ext: assetDef.ext,
-						original_uri: originalUri, // 保留原始 URI 供参考
-						fount_uri: savedRelPath // fount 内部的相对路径
+						original_uri: originalUri,
+						fount_uri: savedRelPath
 					})
 
-					// 如果这个资源是主头像，也单独处理一下
 					if (assetDef.type === 'icon' && assetDef.name === 'main' && !fsSync.existsSync(path.join(targetPath, 'public', `image.${assetDef.ext || 'png'}`))) {
 						const imagePath = path.join(targetPath, 'public', `image.${assetDef.ext || 'png'}`)
 						await mkdir(path.dirname(imagePath), { recursive: true })
@@ -154,15 +153,10 @@ async function ImportAsData(username, dataBuffer) {
 			}
 
 
-		// 如果循环完 card.data.assets 后主头像仍未写入，且 mainImageBuffer 存在 (来自PNG或CHARX提取)
-		// 则将其保存为 image.png
 		const avatarPath = path.join(targetPath, 'public', 'image.png')
 		if (!fsSync.existsSync(avatarPath) && mainImageBuffer)
 			try {
 				await mkdir(path.dirname(avatarPath), { recursive: true })
-				// 尝试确定原始扩展名，但为简单起见，这里统一保存为png
-				// 你可能需要一个图像转换库（如sharp）来确保它是PNG格式
-				// 或者保存为 image.<original_ext> 并让模板处理
 				await writeFile(avatarPath, mainImageBuffer)
 				console.log('Saved main image buffer as image.png')
 			}
@@ -173,18 +167,15 @@ async function ImportAsData(username, dataBuffer) {
 			console.warn('Main avatar image.png could not be created.')
 
 
-		// 将 CHARX 中 assets/ 目录下但未被 card.data.assets 引用的文件也保存下来
 		for (const [internalPath, buffer] of charxAssets.entries()) {
-			// 检查是否已被 card.data.assets 处理过 (通过 embeded:// URI)
 			const alreadyProcessed = processedAssetsForST.some(pa => pa.original_uri === `embeded://${internalPath}`)
-			if (!alreadyProcessed && internalPath.startsWith('assets/')) try { // 只保存 assets/ 目录下的
+			if (!alreadyProcessed && internalPath.startsWith('assets/')) try {
 				const filename = path.basename(internalPath)
-				// 将 CHARX 内部的 assets/ 目录结构映射到 risu_assets/charx_provided/
 				const relativeSavePath = ['risu_assets', 'charx_provided', internalPath.substring('assets/'.length)].join('/')
 				const fullSavePath = path.join(targetPath, 'public', relativeSavePath)
 				await mkdir(path.dirname(fullSavePath), { recursive: true })
 				await writeFile(fullSavePath, buffer)
-				processedAssetsForST.push({ // 记录这些额外保存的资源
+				processedAssetsForST.push({
 					type: 'charx_unreferenced_asset',
 					name: filename,
 					ext: path.extname(filename).substring(1),
@@ -196,26 +187,20 @@ async function ImportAsData(username, dataBuffer) {
 			}
 		}
 
-		// 转换数据到 STv2 格式
 		const stV2Data = convertCCv3ToSTv2(ccv3Card, risuModuleDef)
-		stV2Data.extensions.risu_assets = processedAssetsForST // 附加上处理过的资源信息
+		stV2Data.extensions.risu_assets = processedAssetsForST
 
-		// 保存 chardata.json
 		await saveJsonFile(path.join(targetPath, 'chardata.json'), stV2Data)
 
-		// 复制模板 main.mjs
 		const templateMainMjsPath = path.join(import.meta.dirname, 'Template', 'main.mjs')
 		const targetMainMjsPath = path.join(targetPath, 'main.mjs')
 		const templateContent = fsSync.readFileSync(templateMainMjsPath, 'utf-8')
-		// 你可以在这里对模板内容进行一些基于 ccv3Card 或 stV2Data 的动态替换，如果需要的话
 		await writeFile(targetMainMjsPath, templateContent)
 
-		// 加载或重载部件
 		const needsReload = isPartLoaded(username, 'chars', charName)
 		if (needsReload)
 			await loadPart(username, 'chars', charName)
 		else
-			// 尝试动态导入，如果 fount 支持的话。否则 loadPart 应该处理首次加载。
 			import(url.pathToFileURL(targetMainMjsPath)).catch(err => console.error(`Dynamic import of ${targetMainMjsPath} failed:`, err))
 
 		console.log(`Risu character "${charName}" imported successfully to ${targetPath}`)
@@ -223,14 +208,20 @@ async function ImportAsData(username, dataBuffer) {
 	}
 	catch (error) {
 		console.error('Error during Risu import:', error)
-		await rm(tempExtractDir, { recursive: true, force: true }).catch(() => { }) // 清理临时目录
-		throw error // 重新抛出错误，让上层处理
+		await rm(tempExtractDir, { recursive: true, force: true }).catch(() => { })
+		throw error
 	}
 	finally {
 		await rm(tempExtractDir, { recursive: true, force: true }).catch(() => { })
 	}
 }
 
+/**
+ * @description 通过文本导入 Risu 角色。
+ * @param {string} username - 用户名。
+ * @param {string} text - 包含 Risu 角色 URL 的文本。
+ * @returns {Promise<Array<{ parttype: string; partname: string }>>} - 导入的部分信息数组。
+ */
 async function ImportByText(username, text) {
 	const lines = text.trim().split('\n').map(line => line.trim()).filter(line => line)
 	const errors = []
@@ -238,7 +229,6 @@ async function ImportByText(username, text) {
 
 	for (const line of lines)
 		if (line.startsWith('http')) {
-			// 优先匹配 Risu Realm URL
 			const risuMatch = line.match(/realm\.risuai\.net\/character\/([\da-f-]+)/i)
 			if (risuMatch && risuMatch[1]) {
 				const uuid = risuMatch[1]
@@ -246,16 +236,13 @@ async function ImportByText(username, text) {
 					console.log(`Downloading Risu card with UUID: ${uuid}`)
 					const { buffer, filename: downloadedFilename } = await downloadRisuCard(uuid)
 					installedParts.push(...await ImportAsData(username, buffer, downloadedFilename))
-					continue // 处理完这个 URL，继续下一个
+					continue
 				}
 				catch (err) {
 					console.error(`Failed to import Risu card from URL ${line}:`, err)
 					errors.push(`Failed for ${line}: ${err.message}`)
-					// 不再尝试作为通用文件下载，因为这很可能是特定于Risu的链接
 				}
 			}
-			// 如果不是 Risu 特有链接，可以尝试作为通用文件下载 (如果你的fount/main.mjs有这个逻辑)
-			// 但这个 Risu 导入器主要处理 Risu 卡，其他 URL 可以忽略或交给通用导入器
 			else errors.push(`non-Risu URL: ${line}`)
 		}
 		else errors.push(`Invalid line (not a URL): ${line}`)
@@ -268,14 +255,14 @@ async function ImportByText(username, text) {
 
 export default {
 	info: {
-		'': { // 默认语言
+		'': {
 			name: 'RisuAI Importer',
-			avatar: '', // 可选：导入器本身的图标
+			avatar: '',
 			description: 'Imports Risu Character Cards (V3) in .png, .charx, or .json format, and from realm.risuai.net URLs.',
 			description_markdown: 'Imports Risu Character Cards (V3) in `.png`, `.charx`, or `.json` format, and from `realm.risuai.net` URLs.\nSupports CCv3 features including embedded assets and lorebooks.',
 			version: '0.0.1',
 			author: 'steve02081504',
-			home_page: '', // 可选：相关链接
+			home_page: '',
 			tags: ['risu', 'character card', 'ccv3', 'import'],
 		}
 	},

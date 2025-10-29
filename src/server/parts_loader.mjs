@@ -19,6 +19,13 @@ import { loadData, saveData } from './setting_loader.mjs'
 import { sendEventToUser } from './web_server/event_dispatcher.mjs'
 import { getPartRouter, deletePartRouter } from './web_server/parts_router.mjs'
 
+/**
+ * 为用户设置默认部件。
+ * @param {object | string} user - 用户对象或用户名。
+ * @param {string} parttype - 部件类型。
+ * @param {string} partname - 部件名称。
+ * @returns {void}
+ */
 export function setDefaultPart(user, parttype, partname) {
 	if (Object(user) instanceof String) user = getUserByUsername(user)
 	if (partname == user.defaultParts?.[parttype]) return
@@ -28,10 +35,22 @@ export function setDefaultPart(user, parttype, partname) {
 	save_config()
 	sendEventToUser(user.username, 'default-part-updated', { parttype, partname })
 }
+/**
+ * 获取用户的默认部件。
+ * @param {object | string} user - 用户对象或用户名。
+ * @returns {object} 用户的默认部件。
+ */
 export function getDefaultParts(user) {
 	if (Object(user) instanceof String) user = getUserByUsername(user)
 	return user?.defaultParts || {}
 }
+/**
+ * 通知客户端部件已安装。
+ * @param {string} username - 用户名。
+ * @param {string} parttype - 部件类型。
+ * @param {string} partname - 部件名称。
+ * @returns {void}
+ */
 export function notifyPartInstall(username, parttype, partname) {
 	console.log(`Notifying client of part installation: ${parttype}/${partname} for ${username}`)
 	events.emit('part-installed', { username, parttype, partname })
@@ -39,46 +58,46 @@ export function notifyPartInstall(username, parttype, partname) {
 }
 /**
  * @typedef {Object} PartInfo
- * @property {Record<string, string>} [name] - Localized name of the part.
- * @property {Record<string, string>} [avatar] - Localized avatar URL of the part.
- * @property {Record<string, string>} [description] - Localized short description of the part.
- * @property {Record<string, string>} [description_markdown] - Localized markdown description of the part.
- * // ... other potential info properties
+ * @property {Record<string, string>} [name] - 部件的本地化名称。
+ * @property {Record<string, string>} [avatar] - 部件的本地化头像URL。
+ * @property {Record<string, string>} [description] - 部件的本地化简短描述。
+ * @property {Record<string, string>} [description_markdown] - 部件的本地化 markdown 描述。
+ * // ... 其他潜在的信息属性
  */
 
 /**
  * @typedef {Object} PartInterfaces
- * @property {Object} [config] - Configuration interface.
- * @property {Function} [config.SetData] - Function to set configuration data.
- * // ... other potential interfaces
+ * @property {Object} [config] - 配置界面。
+ * @property {Function} [config.SetData] - 设置配置数据的函数。
+ * // ... 其他潜在的界面
  */
 
 /**
  * @typedef {Object} Part
- * @property {PartInfo} [info] - Information about the part.
- * @property {PartInterfaces} [interfaces] - Interfaces provided by the part.
- * @property {function(Initargs_t): Promise<void>} [Init] - Initialization function.
- * @property {function(Loadargs_t): Promise<void>} [Load] - Load function.
- * @property {function(UnloadArgs_t): Promise<void>} [Unload] - Unload function.
- * @property {function(UninstallArgs_t): Promise<void>} [Uninstall] - Uninstall function.
+ * @property {PartInfo} [info] - 关于部件的信息。
+ * @property {PartInterfaces} [interfaces] - 部件提供的界面。
+ * @property {function(Initargs_t): Promise<void>} [Init] - 初始化函数。
+ * @property {function(Loadargs_t): Promise<void>} [Load] - 加载函数。
+ * @property {function(UnloadArgs_t): Promise<void>} [Unload] - 卸载函数。
+ * @property {function(UninstallArgs_t): Promise<void>} [Uninstall] - 卸载函数。
  */
 
 /**
  * @typedef {Object} PartDetails
- * @property {PartInfo} info - Localized information about the part.
- * @property {string[]} supportedInterfaces - List of supported interfaces.
+ * @property {PartInfo} info - 关于部件的本地化信息。
+ * @property {string[]} supportedInterfaces - 支持的界面列表。
  */
 
 export const parts_set = {}
 
 /**
- * Gets the path to a part based on username, part type, and part name.
- * It checks for user-specific parts first, then falls back to public parts.
+ * 根据用户名、部件类型和部件名称获取部件的路径。
+ * 它首先检查用户特定的部件，然后回退到公共部件。
  *
- * @param {string} username - The username of the user.
- * @param {string} parttype - The type of the part (e.g., 'shells', 'worlds').
- * @param {string} partname - The name of the part.
- * @returns {string} The path to the part's directory.
+ * @param {string} username - 用户的用户名。
+ * @param {string} parttype - 部件的类型（例如，'shells'，'worlds'）。
+ * @param {string} partname - 部件的名称。
+ * @returns {string} 部件目录的路径。
  */
 export function GetPartPath(username, parttype, partname) {
 	const userPath = getUserDictionary(username) + '/' + parttype + '/' + partname
@@ -88,11 +107,11 @@ export function GetPartPath(username, parttype, partname) {
 }
 
 /**
- * Loads a part from a given path, handling git updates if the part is in a git repository.
+ * 从给定路径加载部件，如果部件位于git存储库中，则处理git更新。
  *
  * @async
- * @param {string} path - The path to the part's directory.
- * @returns {Promise<Part>} A promise that resolves to the loaded part object.
+ * @param {string} path - 部件目录的路径。
+ * @returns {Promise<Part>} 一个解析为加载的部件对象的承诺。
  */
 export async function baseMjsPartLoader(path) {
 	const part = (await import(url.pathToFileURL(path + '/main.mjs'))).default
@@ -100,30 +119,30 @@ export async function baseMjsPartLoader(path) {
 }
 
 /**
- * Checks if a part is currently loaded in memory.
+ * 检查部件当前是否已加载到内存中。
  *
- * @param {string} username - The username of the user.
- * @param {string} parttype - The type of the part.
- * @param {string} partname - The name of the part.
- * @returns {boolean} True if the part is loaded, false otherwise.
+ * @param {string} username - 用户的用户名。
+ * @param {string} parttype - 部件的类型。
+ * @param {string} partname - 部件的名称。
+ * @returns {boolean} 如果部件已加载则为 true，否则为 false。
  */
 export function isPartLoaded(username, parttype, partname) {
 	return !!parts_set?.[username]?.[parttype]?.[partname]
 }
 
 /**
- * Base function to load a part, using provided or default path getter and loader.
- * If the part is already loaded, it returns the existing instance.
+ * 加载部件的基本函数，使用提供的或默认的路径获取器和加载器。
+ * 如果部件已加载，则返回现有实例。
  *
  * @async
  * @template T
- * @param {string} username - The username of the user.
- * @param {string} parttype - The type of the part.
- * @param {string} partname - The name of the part.
- * @param {Object} [options] - Optional configuration for loading.
- * @param {() => string} [options.pathGetter=GetPartPath] - Function to get the part's path.
- * @param {(path: string) => Promise<T>} [options.Loader=baseMjsPartLoader] - Function to load the part from the path.
- * @returns {Promise<T>} A promise that resolves to the loaded part instance.
+ * @param {string} username - 用户的用户名。
+ * @param {string} parttype - 部件的类型。
+ * @param {string} partname - 部件的名称。
+ * @param {Object} [options] - 加载的可选配置。
+ * @param {() => string} [options.pathGetter=GetPartPath] - 获取部件路径的函数。
+ * @param {(path: string) => Promise<T>} [options.Loader=baseMjsPartLoader] - 从路径加载部件的函数。
+ * @returns {Promise<T>} 一个解析为加载的部件实例的承诺。
  */
 export async function baseloadPart(username, parttype, partname, {
 	pathGetter = () => GetPartPath(username, parttype, partname),
@@ -213,23 +232,23 @@ export async function baseMjsPartUnloader(path) {
 }
 
 /**
- * Base function to load and initialize a part. Handles initialization and loading lifecycle.
- * Uses template parameters for part type and initialization arguments for better type safety.
+ * 加载和初始化部件的基础函数。处理初始化和加载生命周期。
+ * 使用模板参数来指定部件类型和初始化参数，以获得更好的类型安全。
  *
  * @async
  * @template T
  * @template Initargs_t
- * @param {string} username - The username of the user.
- * @param {string} parttype - The type of the part.
- * @param {string} partname - The name of the part.
- * @param {Initargs_t} Initargs - Initialization arguments to be passed to the part's Init function.
- * @param {Object} [functions] - Optional functions to customize the loading and initialization process.
- * @param {() => string} [functions.pathGetter=GetPartPath] - Function to get the part's path.
- * @param {(path: string, Initargs: Initargs_t) => Promise<T>} [functions.Loader=defaultLoader] - Function to load the part from the path. Defaults to baseMjsPartLoader and calls part.Load.
- * @param {(part: T) => void} [functions.afterLoad=part => {}] - Function to be called after the part is loaded.
- * @param {(path: string, Initargs: Initargs_t) => Promise<T>} [functions.Initer=defaultIniter] - Function to initialize the part from the path. Defaults to baseMjsPartLoader and calls part.Init.
- * @param {(part: T) => void} [functions.afterInit=part => {}] - Function to be called after the part is initialized.
- * @returns {Promise<FullProxy<T>>} A promise that resolves to a FullProxy of the loaded and initialized part instance.
+ * @param {string} username - 用户的用户名。
+ * @param {string} parttype - 部件的类型。
+ * @param {string} partname - 部件的名称。
+ * @param {Initargs_t} Initargs - 传递给部件 Init 函数的初始化参数。
+ * @param {Object} [functions] - 用于自定义加载和初始化过程的可选函数。
+ * @param {() => string} [functions.pathGetter=GetPartPath] - 获取部件路径的函数。
+ * @param {(path: string, Initargs: Initargs_t) => Promise<T>} [functions.Loader=defaultLoader] - 从路径加载部件的函数。默认为 baseMjsPartLoader 并调用 part.Load。
+ * @param {(part: T) => void} [functions.afterLoad=part => {}] - 部件加载后调用的函数。
+ * @param {(path: string, Initargs: Initargs_t) => Promise<T>} [functions.Initer=defaultIniter] - 从路径初始化部件的函数。默认为 baseMjsPartLoader 并调用 part.Init。
+ * @param {(part: T) => void} [functions.afterInit=part => {}] - 部件初始化后调用的函数。
+ * @returns {Promise<FullProxy<T>>} 一个解析为加载和初始化的部件实例的 FullProxy 的承诺。
  */
 export async function loadPartBase(username, parttype, partname, Initargs, {
 	pathGetter = () => GetPartPath(username, parttype, partname),
@@ -315,19 +334,19 @@ export async function loadPartBase(username, parttype, partname, Initargs, {
 }
 
 /**
- * Initializes a part. This function is separated from `loadPartBase` to allow for re-initialization without reloading.
+ * 初始化一个部件。此函数与 `loadPartBase` 分离，以便在不重新加载的情况下重新初始化。
  *
  * @async
  * @template T
  * @template Initargs_t
- * @param {string} username - The username of the user.
- * @param {string} parttype - The type of the part.
- * @param {string} partname - The name of the part.
- * @param {Initargs_t} Initargs - Initialization arguments.
- * @param {Object} [options] - Optional functions to customize the initialization process.
- * @param {() => string} [options.pathGetter=GetPartPath] - Function to get the part's path.
- * @param {(path: string, Initargs: Initargs_t) => Promise<T>} [options.Initer=defaultIniter] - Function to initialize the part from the path. Defaults to baseMjsPartLoader and calls part.Init.
- * @param {(part: T) => void} [options.afterInit=part => {}] - Function to be called after the part is initialized.
+ * @param {string} username - 用户的用户名。
+ * @param {string} parttype - 部件的类型。
+ * @param {string} partname - 部件的名称。
+ * @param {Initargs_t} Initargs - 初始化参数。
+ * @param {Object} [options] - 用于自定义初始化过程的可选函数。
+ * @param {() => string} [options.pathGetter=GetPartPath] - 获取部件路径的函数。
+ * @param {(path: string, Initargs: Initargs_t) => Promise<T>} [options.Initer=defaultIniter] - 从路径初始化部件的函数。默认为 baseMjsPartLoader 并调用 part.Init。
+ * @param {(part: T) => void} [options.afterInit=part => {}] - 部件初始化后调用的函数。
  */
 export async function initPart(username, parttype, partname, Initargs, {
 	pathGetter = () => GetPartPath(username, parttype, partname),
@@ -343,18 +362,18 @@ export async function initPart(username, parttype, partname, Initargs, {
 }
 
 /**
- * Unloads a part from memory, calling its Unload function if it exists.
+ * 从内存中卸载一个部件，如果存在，则调用其 Unload 函数。
  *
  * @async
  * @template T
  * @template UnloadArgs_t
- * @param {string} username - The username of the user.
- * @param {string} parttype - The type of the part.
- * @param {string} partname - The name of the part.
- * @param {UnloadArgs_t} unLoadargs - Arguments to be passed to the part's Unload function.
- * @param {Object} [options] - Optional functions to customize the unLoading process.
- * @param {(part: T) => Promise<void>} [options.unLoader=part => part.Unload?.(unLoadargs)] - Function to unload the part. Defaults to calling part.Unload.
- * @returns {Promise<void>} A promise that resolves when the part is unloaded.
+ * @param {string} username - 用户的用户名。
+ * @param {string} parttype - 部件的类型。
+ * @param {string} partname - 部件的名称。
+ * @param {UnloadArgs_t} unLoadargs - 传递给部件 Unload 函数的参数。
+ * @param {Object} [options] - 用于自定义卸载过程的可选函数。
+ * @param {(part: T) => Promise<void>} [options.unLoader=part => part.Unload?.(unLoadargs)] - 卸载部件的函数。默认为调用 part.Unload。
+ * @returns {Promise<void>} 一个在部件卸载后解析的承诺。
  */
 export async function unloadPartBase(username, parttype, partname, unLoadargs, {
 	pathGetter = () => GetPartPath(username, parttype, partname),
@@ -376,23 +395,23 @@ export async function unloadPartBase(username, parttype, partname, unLoadargs, {
 }
 
 /**
- * Uninstalls a part, unloading it first, then calling its Uninstall function (if exists) and removing its directory.
+ * 卸载一个部件，首先卸载它，然后调用其 Uninstall 函数（如果存在）并删除其目录。
  *
  * @async
  * @template T
  * @template UnloadArgs_t
  * @template UninstallArgs_t
- * @param {string} username - The username of the user.
- * @param {string} parttype - The type of the part.
- * @param {string} partname - The name of the part.
- * @param {UnloadArgs_t} unLoadargs - Arguments to be passed to the part's Unload function.
- * @param {UninstallArgs_t} uninstallArgs - Arguments to be passed to the part's Uninstall function.
- * @param {Object} [options] - Optional functions to customize the uninstallation process.
- * @param {(path: string) => Promise<T>} [options.Loader=baseMjsPartLoader] - Function to load the part from the path (used if part is not already loaded for uninstall).
- * @param {(part: T) => Promise<void>} [options.unLoader=part => part.Unload?.(unLoadargs)] - Function to unload the part. Defaults to calling part.Unload.
- * @param {() => string} [options.pathGetter=GetPartPath] - Function to get the part's path.
- * @param {(part: T, path: string) => Promise<void>} [options.Uninstaller=defaultUninstaller] - Function to uninstall the part. Defaults to calling part.Uninstall and removing the directory.
- * @returns {Promise<void>} A promise that resolves when the part is uninstalled.
+ * @param {string} username - 用户的用户名。
+ * @param {string} parttype - 部件的类型。
+ * @param {string} partname - 部件的名称。
+ * @param {UnloadArgs_t} unLoadargs - 传递给部件 Unload 函数的参数。
+ * @param {UninstallArgs_t} uninstallArgs - 传递给部件 Uninstall 函数的参数。
+ * @param {Object} [options] - 用于自定义卸载过程的可选函数。
+ * @param {(path: string) => Promise<T>} [options.Loader=baseMjsPartLoader] - 从路径加载部件的函数（如果在卸载时部件尚未加载，则使用）。
+ * @param {(part: T) => Promise<void>} [options.unLoader=part => part.Unload?.(unLoadargs)] - 卸载部件的函数。默认为调用 part.Unload。
+ * @param {() => string} [options.pathGetter=GetPartPath] - 获取部件路径的函数。
+ * @param {(part: T, path: string) => Promise<void>} [options.Uninstaller=defaultUninstaller] - 卸载部件的函数。默认为调用 part.Uninstall 并删除目录。
+ * @returns {Promise<void>} 一个在部件卸载后解析的承诺。
  */
 export async function uninstallPartBase(username, parttype, partname, unLoadargs, uninstallArgs, {
 	Loader = baseMjsPartLoader,
@@ -432,14 +451,14 @@ export async function uninstallPartBase(username, parttype, partname, unLoadargs
 }
 
 /**
- * Gets a list of available parts for a given user and part type.
+ * 获取给定用户和部件类型的可用部件列表。
  *
- * @param {string} username - The username of the user.
- * @param {string} parttype - The type of the part.
- * @param {Object} [options] - Optional filters and mappers for the part list.
- * @param {(file: fs.Dirent) => boolean} [options.PathFilter=defaultPathFilter] - Function to filter directory entries. Defaults to checking for directories with 'main.mjs'.
- * @param {(file: fs.Dirent) => string} [options.ResultMapper=file => file.name] - Function to map directory entry to result. Defaults to returning file name.
- * @returns {string[]} An array of part names.
+ * @param {string} username - 用户的用户名。
+ * @param {string} parttype - 部件的类型。
+ * @param {Object} [options] - 部件列表的可选过滤器和映射器。
+ * @param {(file: fs.Dirent) => boolean} [options.PathFilter=defaultPathFilter] - 过滤目录条目的函数。默认为检查具有“main.mjs”的目录。
+ * @param {(file: fs.Dirent) => string} [options.ResultMapper=file => file.name] - 将目录条目映射到结果的函数。默认为返回文件名。
+ * @returns {string[]} 部件名称数组。
  */
 export function getPartListBase(username, parttype, {
 	PathFilter = file => fs.existsSync(file.parentPath + '/' + file.name + '/main.mjs'),
@@ -493,14 +512,14 @@ function getSfwInfo(info) {
 }
 
 /**
- * Retrieves detailed information about a part, either from cache or by loading the part.
+ * 检索关于部件的详细信息，可以从缓存中或通过加载部件来获取。
  *
  * @async
- * @param {string} username - The username of the user.
- * @param {string} parttype - The type of the part.
- * @param {string} partname - The name of the part.
- * @param {boolean} [nocache=false] - If true, bypasses the cache and forces loading the part.
- * @returns {Promise<PartDetails>} A promise that resolves to the detailed part information.
+ * @param {string} username - 用户的用户名。
+ * @param {string} parttype - 部件的类型。
+ * @param {string} partname - 部件的名称。
+ * @param {boolean} [nocache=false] - 如果为 true，则绕过缓存并强制加载部件。
+ * @returns {Promise<PartDetails>} 一个解析为详细部件信息的承诺。
  */
 export async function getPartDetails(username, parttype, partname, nocache = false) {
 	/** @type {PartDetails | undefined} */

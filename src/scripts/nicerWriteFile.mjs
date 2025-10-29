@@ -1,10 +1,10 @@
 import fs from 'node:fs'
 /**
- * Synchronously writes data to a file if the data is different from the existing data.
+ * 如果数据与现有数据不同步，则将数据写入文件。
  *
- * @param {string} filePath - The path of the file to write to.
- * @param {string|Buffer} data - The data to write to the file.
- * @param {string} [encoding='utf8'] - The encoding to use when writing the file.
+ * @param {string} filePath - 要写入的文件的路径。
+ * @param {string|Buffer} data - 要写入文件的数据。
+ * @param {string} [encoding='utf8'] - 写入文件时使用的编码。
  * @return {void}
  */
 export function nicerWriteFileSync(filePath, data, encoding) {

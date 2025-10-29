@@ -21,6 +21,13 @@ const loadMethods = {
 	AIsourceGenerators: loadAIsourceGenerator,
 	ImportHandlers: LoadImportHandler
 }
+/**
+ * 为用户加载一个部件。
+ * @param {string} username - 用户的用户名。
+ * @param {string} parttype - 部件的类型。
+ * @param {string} partname - 部件的名称。
+ * @returns {Promise<any>} 一个解析为已加载部件的承诺。
+ */
 export function loadPart(username, parttype, partname) {
 	if (!loadMethods[parttype])
 		throw new Error(`Part loader for type "${parttype}" is not registered.`)
@@ -33,12 +40,24 @@ const pathFilters = {
 const ResultMappers = {
 	AIsources: file => file.name.slice(0, -5)
 }
+/**
+ * 获取用户的可用部件列表。
+ * @param {string} username - 用户的用户名。
+ * @param {string} parttype - 部件的类型。
+ * @returns {string[]} 部件名称列表。
+ */
 export function getPartList(username, parttype) {
 	return getPartListBase(username, parttype, {
 		PathFilter: pathFilters[parttype],
 		ResultMapper: ResultMappers[parttype]
 	})
 }
+/**
+ * 获取用户的已加载部件列表。
+ * @param {string} username - 用户的用户名。
+ * @param {string} parttype - 部件的类型。
+ * @returns {string[]} 已加载部件的名称列表。
+ */
 export function getLoadedPartList(username, parttype) {
 	return Object.keys(parts_set[username]?.[parttype] ?? {})
 }
@@ -52,6 +71,13 @@ const unLoadMethods = {
 	AIsourceGenerators: unloadAIsourceGenerator,
 	ImportHandlers: UnloadImportHandler
 }
+/**
+ * 为用户卸载一个部件。
+ * @param {string} username - 用户的用户名。
+ * @param {string} parttype - 部件的类型。
+ * @param {string} partname - 部件的名称。
+ * @returns {Promise<void>} 一个在部件卸载后解析的承诺。
+ */
 export function unloadPart(username, parttype, partname) {
 	return unLoadMethods[parttype](username, partname)
 }
@@ -62,7 +88,7 @@ on_shutdown(async () => {
 				await unloadPart(username, parttype, partname)
 })
 
-// Event Handlers
+// 事件处理程序
 events.on('BeforeUserDeleted', async ({ username }) => {
 	for (const parttype in parts_set[username])
 		for (const partname in parts_set[username][parttype])
@@ -75,6 +101,13 @@ events.on('BeforeUserRenamed', async ({ oldUsername, newUsername }) => {
 			await unloadPart(oldUsername, parttype, partname)
 })
 
+/**
+ * 通过重新启动整个服务器来重新加载部件。
+ * @param {string} username - 用户的用户名。
+ * @param {string} parttype - 部件的类型。
+ * @param {string} partname - 部件的名称。
+ * @returns {Promise<void>}
+ */
 export async function reloadPart(username, parttype, partname) {
-	restartor() // we ll restart the entire server because fucking deno not support hot reload of signal js file
+	restartor() // 我们将重新启动整个服务器，因为 deno 不支持单个 js 文件的热重载
 }

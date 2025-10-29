@@ -177,11 +177,22 @@ export default {
 			tags: ['終端', '命令行', '輔助', '開發者']
 		}
 	},
+	/**
+	 * @description 加载 shell。
+	 * @param {object} options - 选项。
+	 * @param {object} options.router - 路由。
+	 */
 	Load: ({ router }) => {
 		setEndpoints(router)
 	},
 	interfaces: {
 		invokes: {
+			/**
+			 * @description 处理 IPC 调用。
+			 * @param {string} username - 用户名。
+			 * @param {object} data - 数据。
+			 * @returns {Promise<object>} - 调用结果。
+			 */
 			IPCInvokeHandler: async (username, data) => {
 				unlockAchievement(username, 'shells', 'shellassist', 'invoke_shell_assist')
 				const char = await LoadChar(username, data.charname)

@@ -1,6 +1,12 @@
 import express from 'npm:express'
 import { WebSocketServer } from 'npm:ws'
 
+/**
+ * 使用 WebSocket 功能增强 Express 路由器。
+ * @param {import('express').Router} [router=express.Router()] - 要增强的 Express 路由器。
+ * @param {import('http').Server} [httpServer=null] - 要绑定的 HTTP 服务器。
+ * @returns {import('express').Router} 增强后的路由器。
+ */
 export function WsAbleRouter(router = express.Router(), httpServer = null) {
 	router.ws_on_upgrade = async (req, socket, head) => {
 		let resolve, reject
@@ -71,6 +77,12 @@ export function WsAbleRouter(router = express.Router(), httpServer = null) {
 	if (httpServer) router.ws_bindServer(httpServer)
 	return router
 }
+/**
+ * 使用 WebSocket 功能增强 Express 应用程序。
+ * @param {import('express').Application} [app=express()] - 要增强的 Express 应用程序。
+ * @param {import('http').Server} [httpServer=null] - 要绑定的 HTTP 服务器。
+ * @returns {import('express').Application} 增强后的应用程序。
+ */
 export function WsAbleApp(app = express(), httpServer = null) {
 	return WsAbleRouter(app, httpServer)
 }

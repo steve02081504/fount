@@ -57,6 +57,11 @@ document.addEventListener('keydown', event => {
 })
 
 let currentCommitId
+/**
+ * @description 处理版本更新。
+ * @param {object} param0 - 参数对象。
+ * @param {string} param0.commitId - 提交 ID。
+ */
 function handleVersionUpdate({ commitId }) {
 	if (!commitId) return
 	currentCommitId ??= commitId

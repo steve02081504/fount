@@ -14,7 +14,7 @@ const IPC_PORT = 16698 // 选择一个不太可能冲突的端口
  * 处理 IPC 命令。
  * @param {string} command - 命令类型。
  * @param {object} data - 命令数据。
- * @returns {Promise<object>} - 处理结果。
+ * @returns {Promise<object>} 命令处理的结果。
  */
 export async function processIPCCommand(command, data) {
 	try {
@@ -64,12 +64,22 @@ export async function processIPCCommand(command, data) {
 	}
 }
 
+/**
+ * 管理 IPC 服务器和客户端通信。
+ */
 export class IPCManager {
+	/**
+	 * 创建 IPCManager 的实例。
+	 */
 	constructor() {
 		this.serverV6 = null
 		this.serverV4 = null
 	}
 
+	/**
+	 * 启动 IPC 服务器。
+	 * @returns {Promise<boolean>} 如果服务器成功启动，则解析为 true，否则为 false。
+	 */
 	async startServer() {
 		this.serverV6 = net.createServer(socket => {
 			this.handleConnection(socket)
@@ -83,14 +93,14 @@ export class IPCManager {
 			return new Promise((resolve, reject) => {
 				server.on('error', async err => {
 					if (err.code === 'EADDRINUSE') resolve(false)
-					else if (err.code === 'EAFNOSUPPORT') resolve(true) // 不支持该地址族，视作成功
+					else if (err.code === 'EAFNOSUPPORT') resolve(true) // 不支持的地址族，视为成功
 					else reject(err)
 				})
 
 				server.listen(IPC_PORT, address, _ => resolve(true))
 			})
 		}
-		// 使用 Promise.all 确保两个监听都成功后才返回 true
+		// 使用 Promise.all 确保两个侦听器都成功后才返回 true
 		return Promise.all([
 			startServer(this.serverV6, '::1'),
 			startServer(this.serverV4, '127.0.0.1'),
@@ -102,6 +112,11 @@ export class IPCManager {
 		})
 	}
 
+	/**
+	 * 处理到 IPC 服务器的新连接。
+	 * @param {net.Socket} socket - 连接的套接字。
+	 * @returns {void}
+	 */
 	handleConnection(socket) {
 		let data = ''
 
@@ -129,6 +144,12 @@ export class IPCManager {
 		})
 	}
 
+	/**
+	 * 向 IPC 服务器发送命令。
+	 * @param {string} type - 命令类型。
+	 * @param {object} data - 命令数据。
+	 * @returns {Promise<any>} 一个解析为服务器响应的承诺。
+	 */
 	static async sendCommand(type, data) {
 		return new Promise((resolve, reject) => {
 			const client = net.createConnection({ port: IPC_PORT })
@@ -141,7 +162,7 @@ export class IPCManager {
 				if (responseData.includes('\n')) try {
 					const parts = responseData.split('\n')
 					const message = parts[0] // 提取完整消息
-					responseData = parts.slice(1).join('\n') // 剩余数据保留
+					responseData = parts.slice(1).join('\n') // 保留剩余数据
 
 					const response = JSON.parse(message)
 					if (response.status === 'ok') resolve(response.data) // 返回结果
@@ -150,7 +171,7 @@ export class IPCManager {
 					console.errorI18n('fountConsole.ipc.parseResponseFailed', { error: err })
 					reject(new Error(geti18n('fountConsole.ipc.cannotParseResponse')))
 				} finally {
-					client.end() // 处理完成后关闭连接
+					client.end() // 处理后关闭连接
 				}
 			})
 

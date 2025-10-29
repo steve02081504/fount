@@ -5,8 +5,8 @@ import encode from 'npm:png-chunks-encode'
 import extract from 'npm:png-chunks-extract'
 
 /**
- * Removes 'tEXt' chunks with the keyword 'chara' from a chunks array.
- * @param {Array} chunks Array of PNG chunks
+ * @description 从块数组中删除关键字为 'chara' 的 'tEXt' 块。
+ * @param {Array} chunks - PNG 块数组。
  */
 function removeCharaChunks(chunks) {
 	for (let i = chunks.length - 1; i >= 0; i--)
@@ -18,10 +18,10 @@ function removeCharaChunks(chunks) {
 }
 
 /**
- * Writes Character metadata to a PNG image buffer.
- * @param {Buffer} image PNG image buffer
- * @param {string} data Character data to write
- * @returns {Buffer} PNG image buffer with metadata
+ * @description 将角色元数据写入 PNG 图像缓冲区。
+ * @param {Buffer} image - PNG 图像缓冲区。
+ * @param {string} data - 要写入的角色数据。
+ * @returns {Buffer} - 带有元数据的 PNG 图像缓冲区。
  */
 export function write(image, data) {
 	const chunks = extract(image)
@@ -38,9 +38,9 @@ export function write(image, data) {
 }
 
 /**
- * Reads Character metadata from a PNG image buffer.
- * @param {Buffer} image PNG image buffer
- * @returns {string} Character data
+ * @description 从 PNG 图像缓冲区读取角色元数据。
+ * @param {Buffer} image - PNG 图像缓冲区。
+ * @returns {string} - 角色数据。
  */
 export function read(image) {
 	const chunks = extract(image)
@@ -55,9 +55,9 @@ export function read(image) {
 }
 
 /**
- * Removes Character metadata from a PNG image buffer.
- * @param {Buffer} image PNG image buffer
- * @returns {Buffer} PNG image buffer without character metadata
+ * @description 从 PNG 图像缓冲区中删除角色元数据。
+ * @param {Buffer} image - PNG 图像缓冲区。
+ * @returns {Buffer} - 不带角色元数据的 PNG 图像缓冲区。
  */
 export function remove(image) {
 	const chunks = extract(image)

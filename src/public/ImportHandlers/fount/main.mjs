@@ -16,6 +16,12 @@ import { getAvailablePath } from './path.mjs'
 import { isFountPart, unzipDirectory } from './zip.mjs'
 
 
+/**
+ * @description 合并移动文件或目录。
+ * @param {string} src - 源路径。
+ * @param {string} dest - 目标路径。
+ * @returns {Promise<void>}
+ */
 async function moveWithMerge(src, dest) {
 	if (!existsSync(dest)) return await move(src, dest)
 
@@ -36,6 +42,12 @@ async function moveWithMerge(src, dest) {
 			throw new Error(`Cannot move directory to file: ${dest}`)
 }
 
+/**
+ * @description 合并目录。
+ * @param {string} srcDir - 源目录。
+ * @param {string} destDir - 目标目录。
+ * @returns {Promise<void>}
+ */
 async function mergeDirectories(srcDir, destDir) {
 	const items = await readdir(srcDir)
 	for (const item of items) {
@@ -54,6 +66,12 @@ async function mergeDirectories(srcDir, destDir) {
 	await remove(srcDir)
 }
 
+/**
+ * @description 将数据作为 Fount 部件导入。
+ * @param {string} username - 用户名。
+ * @param {Buffer} data - 数据缓冲区。
+ * @returns {Promise<Array<{ parttype: string; partname: string }>>} - 导入的部分信息数组。
+ */
 async function ImportAsData(username, data) {
 	if (!await isFountPart(data)) throw new Error('Invalid fount part: no fount.json found')
 	const tempDir = path.join(tmpdir(), 'fount_import_' + Date.now())
@@ -94,6 +112,12 @@ async function ImportAsData(username, data) {
 	}
 }
 
+/**
+ * @description 通过文本导入 Fount 部件。
+ * @param {string} username - 用户名。
+ * @param {string} text - 包含部件 URL 的文本。
+ * @returns {Promise<Array<{ parttype: string; partname: string }>>} - 导入的部分信息数组。
+ */
 async function ImportByText(username, text) {
 	const lines = text.trim().split('\n').map(line => line.trim()).filter(line => line)
 	const installedParts = []

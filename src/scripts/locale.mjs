@@ -1,10 +1,10 @@
 /**
- * Gets localized information from a part's info object based on the provided locales.
+ * 根据提供的区域设置从部件的信息对象中获取本地化信息。
  *
  * @template T
- * @param {Record<string, T>} [info] - The part's info object, potentially undefined.
- * @param {string[]} [locales] - The locale string array (e.g., 'en-US', 'zh-CN').
- * @returns {T | undefined} Localized information, or undefined if info is missing.
+ * @param {Record<string, T>} [info] - 部件的信息对象，可能未定义。
+ * @param {string[]} [locales] - 区域设置字符串数组 (例如, 'en-US', 'zh-CN')。
+ * @returns {T | undefined} 本地化信息，如果信息缺失则为 undefined。
  */
 export function getLocalizedInfo(info, locales) {
 	if (!info) return
@@ -17,12 +17,12 @@ export function getLocalizedInfo(info, locales) {
 }
 
 /**
- * Gets localized part information for a given part and locales.
+ * 获取给定部件和区域设置的本地化部件信息。
  *
  * @template T
- * @param {{ info: Record<string, T> }} part - The part object.
- * @param {string[]} [locales] - The locale string array (e.g., 'en-US', 'zh-CN').
- * @returns {T | undefined} Localized part information, or undefined if info is missing.
+ * @param {{ info: Record<string, T> }} part - 部件对象。
+ * @param {string[]} [locales] - 区域设置字符串数组 (例如, 'en-US', 'zh-CN')。
+ * @returns {T | undefined} 本地化部件信息，如果信息缺失则为 undefined。
  */
 export async function getPartInfo(part, locales) {
 	const info = await part?.interfaces?.info?.UpdateInfo?.() || part?.info
