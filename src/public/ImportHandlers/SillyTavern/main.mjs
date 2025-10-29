@@ -11,6 +11,11 @@ import data_reader from './data_reader.mjs'
 import { GetV2CharDataFromV1 } from './engine/charData.mjs'
 import { getAvailablePath } from './path.mjs'
 
+/**
+ * @description 将对象中的 `\r\n` 和 `\r` 替换为 `\n`。
+ * @param {any} obj - 要处理的对象。
+ * @returns {any} - 处理后的对象。
+ */
 function RN2N(obj) {
 	if (!obj) return obj
 	if (Object(obj) instanceof String)
@@ -23,6 +28,12 @@ function RN2N(obj) {
 		return Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, RN2N(v)]))
 }
 
+/**
+ * @description 将数据作为 SillyTavern 角色导入。
+ * @param {string} username - 用户名。
+ * @param {Buffer} data - 数据缓冲区。
+ * @returns {Promise<Array<{ parttype: string; partname: string }>>} - 导入的部分信息数组。
+ */
 async function ImportAsData(username, data) {
 	const chardata = GetV2CharDataFromV1(RN2N(JSON.parse(data_reader.read(data))))
 
@@ -44,6 +55,12 @@ async function ImportAsData(username, data) {
 	return [{ parttype: 'chars', partname: chardata.name }]
 }
 
+/**
+ * @description 通过文本导入 SillyTavern 角色。
+ * @param {string} username - 用户名。
+ * @param {string} text - 包含角色 URL 的文本。
+ * @returns {Promise<Array<{ parttype: string; partname: string }>>} - 导入的部分信息数组。
+ */
 async function ImportByText(username, text) {
 	const lines = text.split('\n').filter(line => line)
 	const importedParts = []

@@ -10,11 +10,8 @@ import { exec } from '../../../scripts/exec.mjs'
 
 let sevenZipPathCache
 /**
- * Detects the path to the 7z executable using Node.js core 'exec'.
- * It first checks for a system-wide '7z' command in the PATH.
- * If not found (ENOENT), it dynamically imports and uses 'npm:7zip-bin-full' as a fallback.
- * The result is cached to avoid repeated detections.
- * @returns {Promise<string>} A promise that resolves to the path of the 7z executable.
+ * @description 检测 7z 可执行文件的路径。
+ * @returns {Promise<string>} - 返回 7z 可执行文件的路径。
  */
 async function get7zPath() {
 	if (sevenZipPathCache) return sevenZipPathCache
@@ -28,6 +25,11 @@ async function get7zPath() {
 	}
 }
 
+/**
+ * @description 递归地将目录内容添加到 zip 对象。
+ * @param {string} dirPath - 目录路径。
+ * @param {jszip} zip - jszip 实例。
+ */
 async function zipDirectory(dirPath, zip) {
 	const items = await readdir(dirPath)
 	for (const item of items) {
@@ -42,6 +44,11 @@ async function zipDirectory(dirPath, zip) {
 	}
 }
 
+/**
+ * @description 检查缓冲区是否为有效的 Fount 部件。
+ * @param {Buffer} buffer - 缓冲区。
+ * @returns {Promise<boolean>} - 如果是有效的 Fount 部件则返回 true，否则返回 false。
+ */
 export async function isFountPart(buffer) {
 	// Try zip first - it works in memory and is likely more common.
 	try {
@@ -78,12 +85,22 @@ export async function isFountPart(buffer) {
 	}
 }
 
+/**
+ * @description 压缩目录。
+ * @param {string} dirPath - 目录路径。
+ * @returns {Promise<Buffer>} - 压缩后的缓冲区。
+ */
 export async function zipDir(dirPath) {
 	const zip = new jszip()
 	await zipDirectory(dirPath, zip)
 	return zip.generateAsync({ type: 'nodebuffer' })
 }
 
+/**
+ * @description 解压目录。
+ * @param {Buffer} buffer - 缓冲区。
+ * @param {string} targetPath - 目标路径。
+ */
 export async function unzipDirectory(buffer, targetPath) {
 	// Try zip first - it works in memory.
 	let tempFilePath7z
@@ -123,6 +140,12 @@ export async function unzipDirectory(buffer, targetPath) {
 	}
 }
 
+/**
+ * @description 读取 zip 文件中的文件。
+ * @param {Buffer} buffer - zip 文件缓冲区。
+ * @param {string} zipPath - zip 文件中的文件路径。
+ * @returns {Promise<Buffer>} - 文件内容缓冲区。
+ */
 export async function readZipfile(buffer, zipPath) {
 	const zip = new jszip()
 	await zip.loadAsync(buffer)
@@ -133,6 +156,12 @@ export async function readZipfile(buffer, zipPath) {
 	return await file.async('nodebuffer')
 }
 
+/**
+ * @description 以 JSON 格式读取 zip 文件中的文件。
+ * @param {Buffer} buffer - zip 文件缓冲区。
+ * @param {string} zipPath - zip 文件中的文件路径。
+ * @returns {Promise<any>} - 解析后的 JSON 对象。
+ */
 export async function readZipfileAsJSON(buffer, zipPath) {
 	try {
 		const filebuffer = await readZipfile(buffer, zipPath)
@@ -143,6 +172,11 @@ export async function readZipfileAsJSON(buffer, zipPath) {
 	}
 }
 
+/**
+ * @description 使用 7z 压缩目录。
+ * @param {string} dirPath - 目录路径。
+ * @returns {Promise<Buffer>} - 压缩后的缓冲区。
+ */
 export async function sevenZipDir(dirPath) {
 	const tempArchiveDir = os.tmpdir()
 	const tempArchiveName = `fount_export_${Date.now()}.7z`
