@@ -7,6 +7,10 @@ const data = {
 	tokens: {},
 }
 
+/**
+ * 工作量证明实例。
+ * @type {Cap}
+ */
 export const pow = new Cap({
 	storage: {
 		challenges: {

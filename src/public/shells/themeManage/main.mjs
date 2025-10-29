@@ -172,6 +172,14 @@ export default {
 			tags: ['主題', '樣式', '外觀', '設置']
 		}
 	},
+	/**
+	 * @description 加载 shell。
+	 * @param {object} options - 选项。
+	 * @param {object} options.router - 路由。
+	 */
 	Load: async ({ router }) => { },
+	/**
+	 * @description 卸载 shell。
+	 */
 	Unload: async () => { },
 }

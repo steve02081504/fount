@@ -1,8 +1,16 @@
+/**
+ * @typedef {object} IdleManagerConfig
+ * @property {number} timeout - 在考虑系统空闲之前等待的毫秒数。
+ * @property {number} checkInterval - 空闲检查之间的毫秒数。
+ */
 const defaultConfig = {
 	timeout: 30000, // 30 seconds
 	checkInterval: 5 * 60 * 1000 // 5 minutes
 }
 
+/**
+ * 管理和监视系统空闲状态，在系统不繁忙时执行任务。
+ */
 export class IdleManager {
 	#lastBusyTime
 	#runningActions = 0
@@ -10,22 +18,27 @@ export class IdleManager {
 	#idleRunOnces = []
 	#config
 
+	/**
+	 * 创建 IdleManager 的实例。
+	 * @param {Partial<IdleManagerConfig>} [config={}] - 配置选项。
+	 */
 	constructor(config = {}) {
 		this.#config = { ...defaultConfig, ...config }
 		this.#lastBusyTime = Date.now()
 	}
 
 	/**
-	 * Marks the system as busy.
+	 * 将系统标记为繁忙。
+	 * @returns {void}
 	 */
 	markBusy() {
 		this.#lastBusyTime = Date.now()
 	}
 
 	/**
-	 * Wraps and executes an action, tracking its running state.
-	 * @param {Function} action The async action to execute.
-	 * @returns {Promise<any>} The result of the action.
+	 * 包装并执行一个动作，跟踪其运行状态。
+	 * @param {Function} action 要执行的异步动作。
+	 * @returns {Promise<any>} 动作的结果。
 	 */
 	async runAction(action) {
 		this.#runningActions++
@@ -38,9 +51,9 @@ export class IdleManager {
 	}
 
 	/**
-	 * Marks the system as busy and then executes an action.
-	 * @param {Function} action The async action to execute.
-	 * @returns {Promise<any>} The result of the action.
+	 * 将系统标记为繁忙，然后执行一个动作。
+	 * @param {Function} action 要执行的异步动作。
+	 * @returns {Promise<any>} 动作的结果。
 	 */
 	async runBusyAction(action) {
 		this.markBusy()
@@ -48,32 +61,35 @@ export class IdleManager {
 	}
 
 	/**
-	 * Checks if the system is currently idle.
-	 * @returns {boolean} True if the system is idle, false otherwise.
+	 * 检查系统当前是否空闲。
+	 * @returns {boolean} 如果系统空闲则为 true，否则为 false。
 	 */
 	isIdle() {
 		return !this.#runningActions && (Date.now() - this.#lastBusyTime) > this.#config.timeout
 	}
 
 	/**
-	 * Registers an action to be executed every time the system becomes idle.
-	 * @param {Function} action The action to execute on idle.
+	 * 注册一个在系统每次变为空闲时执行的动作。
+	 * @param {Function} action 在空闲时执行的动作。
+	 * @returns {void}
 	 */
 	onIdle(action) {
 		this.#idleRuns.push(action)
 	}
 
 	/**
-	 * Registers an action to be executed only the next time the system becomes idle.
-	 * @param {Function} action The action to execute once on idle.
+	 * 注册一个仅在系统下一次变为空闲时执行的动作。
+	 * @param {Function} action 在空闲时执行一次的动作。
+	 * @returns {void}
 	 */
 	onIdleOnce(action) {
 		this.#idleRunOnces.push(action)
 	}
 
 	/**
-	 * Executes all registered idle actions.
+	 * 执行所有已注册的空闲动作。
 	 * @private
+	 * @returns {Promise<void>}
 	 */
 	async #runIdleTasks() {
 		for (const action of this.#idleRuns) try {
@@ -86,12 +102,13 @@ export class IdleManager {
 		} catch (e) {
 			console.error('Idle action failed:', e)
 		}
-		this.#idleRunOnces.length = 0 // Clear the run-once actions
+		this.#idleRunOnces.length = 0 // 清除一次性动作
 	}
 
 	/**
-	 * The main loop to check for idle state and run tasks.
+	 * 检查空闲状态并运行任务的主循环。
 	 * @private
+	 * @returns {Promise<void>}
 	 */
 	async #idleRunner() {
 		if (this.isIdle())
@@ -100,24 +117,26 @@ export class IdleManager {
 	}
 
 	/**
-	 * Starts the periodic check for the idle state.
+	 * 开始定期检查空闲状态。
+	 * @returns {void}
 	 */
 	start() {
 		setTimeout(async () => {
 			await this.#idleRunner()
-			this.start() // Reschedule the next check
+			this.start() // 重新安排下一次检查
 		}, this.#config.checkInterval)
 	}
 
 	/**
-	 * Updates the configuration.
-	 * @param {Partial<defaultConfig>} newConfig The new configuration options.
+	 * 更新配置。
+	 * @param {Partial<IdleManagerConfig>} newConfig 新的配置选项。
+	 * @returns {void}
 	 */
 	setConfig(newConfig) {
 		Object.assign(this.#config, newConfig)
 	}
 }
 
-// Create and export a single, global instance of the IdleManager.
+// 创建并导出一个单一的、全局的 IdleManager 实例。
 const idleManager = new IdleManager()
 export default idleManager

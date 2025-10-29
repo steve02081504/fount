@@ -33,7 +33,7 @@ function extractIpAndPortFromUrl(urlString) {
 export async function isFountServiceAvailable(host) {
 	try {
 		const url = new URL('/api/ping', host)
-		const response = await fetch(url, { method: 'GET', mode: 'cors', cache: 'no-cache', signal: AbortSignal.timeout(500) })
+		const response = await fetch(url, { method: 'GET', mode: 'cors', cache: 'no-cache', signal: AbortSignal.timeout(2000) })
 		const data = await response.json()
 		if (data?.client_name != 'fount') return false
 		console.debug(`[isFountServiceAvailable] fount service at ${host} is available.`)

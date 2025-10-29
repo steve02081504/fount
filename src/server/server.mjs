@@ -25,6 +25,10 @@ import { sendEventToAll } from './web_server/event_dispatcher.mjs'
 
 export let data_path
 
+/**
+ * 确保配置文件存在，如果不存在则从默认配置创建，然后加载它。
+ * @returns {object} 加载的配置对象。
+ */
 function get_config() {
 	if (!fs.existsSync(data_path + '/config.json')) {
 		try { fs.mkdirSync(data_path) } catch { }
@@ -33,35 +37,60 @@ function get_config() {
 
 	return loadJsonFile(data_path + '/config.json')
 }
+/**
+ * 将当前配置对象保存到其文件。
+ * @returns {void}
+ */
 export function save_config() {
 	saveJsonFile(data_path + '/config.json', config)
 }
 
-//读取confing文件
+/**
+ * @description 应用程序的配置，从 `config.json` 加载。
+ * @type {object}
+ */
 export let config
 
 /**
- * Set the title of the terminal window
- * @param {string} title Desired title for the window
+ * 设置终端窗口的标题。
+ * @param {string} title - 窗口的期望标题。
  */
 function setWindowTitle(title) {
 	if (supportsAnsi && process.stdout.writable) process.stdout.write(`\x1b]2;${title}\x1b\x5c`)
 }
 
+/**
+ * 设置应用程序的默认窗口标题。
+ * @returns {void}
+ */
 export function setDefaultStuff() {
 	setWindowTitle('fount')
 }
+/**
+ * 标记一个错误对象以便跳过报告。
+ * @param {Error} err - 错误对象。
+ * @returns {Error} 修改后的错误对象。
+ */
 export function skip_report(err) {
 	err.skip_report = true
 	return err
 }
 
+/**
+ * @property {string} hosturl - 正在运行的服务器的基本URL。
+ * @property {object} tray - 系统托盘对象。
+ * @property {Function} restartor - 重启应用程序的函数。
+ */
 export let hosturl
 export let tray
 export let restartor
 
 export let currentGitCommit = await git('rev-parse', 'HEAD').catch(() => null)
 
+/**
+ * 检查上游git存储库的更新，并在必要时重新启动应用程序。
+ * @returns {Promise<void>}
+ */
 async function checkUpstreamAndRestart() {
 	if (fs.existsSync(__dirname + '/.git')) try {
 		await git('config core.autocrlf false')
@@ -96,6 +125,11 @@ async function checkUpstreamAndRestart() {
 	}
 }
 
+/**
+ * 初始化并启动应用程序服务器及其组件。
+ * @param {object} start_config - 用于启动应用程序的配置对象。
+ * @returns {Promise<boolean>} 如果初始化成功，则解析为 true，否则为 false。
+ */
 export async function init(start_config) {
 	restartor = start_config.restartor
 	data_path = start_config.data_path

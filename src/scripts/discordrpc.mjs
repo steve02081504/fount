@@ -20,6 +20,12 @@ async function _setActivity() {
 let interval = null
 let client = null
 
+/**
+ * 启动 Discord RPC 客户端。
+ * @param {string} [clientId='1344722070323335259'] - Discord 客户端 ID。
+ * @param {object} [activity] - 要设置的初始活动。
+ * @returns {void}
+ */
 export function StartRPC(
 	clientId = '1344722070323335259',
 	activity = {
@@ -53,10 +59,19 @@ export function StartRPC(
 	client.login().catch(console.error)
 }
 
+/**
+ * 设置 Discord RPC 活动。
+ * @param {object} activity - 要设置的活动。
+ * @returns {void}
+ */
 export function SetActivity(activity) {
 	_activity = activity
 }
 
+/**
+ * 停止 Discord RPC 客户端。
+ * @returns {void}
+ */
 export function StopRPC() {
 	if (!client) return
 	client.destroy()
