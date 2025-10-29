@@ -56,6 +56,11 @@ function endProfile() {
 	}
 }
 
+/**
+ * 执行一个函数并对其进行性能分析。
+ * @param {Function} fn - 要进行性能分析的函数。
+ * @returns {Promise<any>} 一个解析为性能分析结果的承诺。
+ */
 export function doProfile(fn) {
 	return asyncLocalStorage.run([...getProfilerStack()], async () => {
 		startProfile()

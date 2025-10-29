@@ -12,6 +12,10 @@ import { exec } from './exec.mjs'
 import { loadJsonFile } from './json_loader.mjs'
 
 const console = baseConsole
+/**
+ * 所有可用区域设置的列表。
+ * @type {{id: string, name: string}[]}
+ */
 export const fountLocaleList = fs.readFileSync(__dirname + '/src/locales/list.csv', 'utf8')
 	.trim()
 	.split('\n')
@@ -22,26 +26,38 @@ export const fountLocaleList = fs.readFileSync(__dirname + '/src/locales/list.cs
 	})
 	.filter(locale => locale.id)
 
+/**
+ * 从首选区域设置列表中获取最佳匹配的区域设置。
+ * @param {string[]} preferredlocaleList - 首选区域设置的列表。
+ * @param {{id: string}[]} localeList - 可用区域设置的列表。
+ * @returns {string} 最佳匹配的区域设置。
+ */
 export function getbestlocale(preferredlocaleList, localeList) {
 	const available = new Set(localeList.map(l => l?.id ?? l).filter(Boolean))
 
 	for (const preferred of preferredlocaleList ?? []) {
-		// 1. Exact match
+		// 1. 完全匹配
 		if (available.has(preferred))
 			return preferred
 
-		// 2. Partial match (e.g., 'en' from 'en-US')
+		// 2. 部分匹配 (例如, 'en' 来自 'en-US')
 		const prefix = preferred.split('-')[0]
 		for (const locale of available)
 			if (locale.startsWith(prefix))
 				return locale
 	}
 
-	return 'en-UK' // Default
+	return 'en-UK' // 默认
 }
 
 const fountLocaleCache = {}
 
+/**
+ * 获取用户的区域设置数据。
+ * @param {string} username - 用户的用户名。
+ * @param {string[]} preferredlocaleList - 首选区域设置的列表。
+ * @returns {Promise<object>} 一个解析为区域设置数据的承诺。
+ */
 export async function getLocaleData(username, preferredlocaleList) {
 	const resultLocale = getbestlocale(preferredlocaleList, fountLocaleList)
 	const result = {
@@ -72,6 +88,10 @@ events.on('part-uninstalled', ({ username, parttype, partname }) => {
 	delete loadTempData(username, 'parts_locale_loaders')[parttype][partname]
 })
 
+/**
+ * 本地主机上所有可用区域设置的列表。
+ * @type {string[]}
+ */
 export const localhostLocales = [...new Set([
 	...[
 		process.env.LANG,
@@ -82,6 +102,10 @@ export const localhostLocales = [...new Set([
 	...navigator.languages || [navigator.language],
 	'en-UK',
 ].filter(Boolean))]
+/**
+ * 本地主机的区域设置数据。
+ * @type {object}
+ */
 export let localhostLocaleData = await getLocaleData(null, localhostLocales)
 
 fs.watch(`${__dirname}/src/locales`, (_event, filename) => {
@@ -89,7 +113,7 @@ fs.watch(`${__dirname}/src/locales`, (_event, filename) => {
 	const locale = filename.slice(0, -5)
 	console.log(`Detected change in ${filename}.`)
 
-	// Clear cache for the changed file, if it exists
+	// 清除已更改文件的缓存（如果存在）
 	if (!fountLocaleCache[locale]) return
 	delete fountLocaleCache[locale]
 	getLocaleData(null, localhostLocales).then((data) => {
@@ -98,13 +122,22 @@ fs.watch(`${__dirname}/src/locales`, (_event, filename) => {
 	})
 })
 
-// 中国大陆且今天周四
+// 疯狂星期四V我50
 if (localhostLocales[0] === 'zh-CN')
 	setInterval(() => {
 		if (new Date().getDay() === 4)
 			console.error('%cException Error Syntax Unexpected string: Crazy Thursday vivo 50', 'color: red')
 	}, 5 * 60 * 1000)
 
+/**
+ * 为部件添加区域设置数据。
+ * @param {string} username - 用户的用户名。
+ * @param {string} parttype - 部件的类型。
+ * @param {string} partname - 部件的名称。
+ * @param {string[]} localeList - 部件的可用区域设置列表。
+ * @param {Function} loader - 加载部件区域设置数据的函数。
+ * @returns {void}
+ */
 export function addPartLocaleData(username, parttype, partname, localeList, loader) {
 	const partsLocaleLists = loadData(username, 'parts_locale_lists_cache')
 	const partsLocaleLoaders = loadTempData(username, 'parts_locale_loaders')
@@ -113,6 +146,12 @@ export function addPartLocaleData(username, parttype, partname, localeList, load
 	saveData(username, 'parts_locale_lists_cache')
 }
 
+/**
+ * 从对象中获取嵌套值。
+ * @param {object} obj - 要从中获取值的对象。
+ * @param {string} key - 要获取的值的键。
+ * @returns {any} 键的值，如果键不存在则为 undefined。
+ */
 function getNestedValue(obj, key) {
 	const keys = key.split('.')
 	let value = obj
