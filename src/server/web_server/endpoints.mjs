@@ -18,7 +18,9 @@ import { skip_report, currentGitCommit, config, save_config } from '../server.mj
 import { register as registerNotifier } from './event_dispatcher.mjs'
 
 /**
- * @param {import('npm:express').Router} router
+ * 为应用程序注册所有 API 端点。
+ * @param {import('npm:express').Router} router - 要在其上注册端点的 Express 路由器。
+ * @returns {void}
  */
 export function registerEndpoints(router) {
 	router.ws('/ws/test/echo', (ws, req) => {

@@ -3,6 +3,12 @@ import qrcode from 'npm:qrcode-terminal'
 import { actions } from './src/actions.mjs'
 import { setEndpoints } from './src/endpoints.mjs'
 
+/**
+ * @description 处理动作。
+ * @param {string} user - 用户。
+ * @param {object} params - 参数。
+ * @returns {Promise<any>} - 动作结果。
+ */
 async function handleAction(user, params) {
 	return actions.default({ user, ...params })
 }
@@ -181,11 +187,21 @@ export default {
 			tags: ['代理', 'API', 'OpenAI', '集成']
 		}
 	},
+	/**
+	 * @description 加载 shell。
+	 * @param {object} options - 选项。
+	 * @param {object} options.router - 路由。
+	 */
 	Load: ({ router }) => {
 		setEndpoints(router)
 	},
 	interfaces: {
 		invokes: {
+			/**
+			 * @description 处理命令行参数。
+			 * @param {string} user - 用户。
+			 * @param {Array<string>} args - 参数。
+			 */
 			ArgumentsHandler: async (user, args) => {
 				const url = await handleAction(user, {})
 				const webUI = new URL('/shells/proxy', url).href
@@ -194,6 +210,12 @@ export default {
 				qrcode.generate(webUI, { small: true })
 				console.log(`You can use it with any OpenAI-compatible client, for example, to list models, run: curl ${url}/v1/models -H "Authorization: Bearer <your_fount_apikey>"`)
 			},
+			/**
+			 * @description 处理 IPC 调用。
+			 * @param {string} user - 用户。
+			 * @param {object} args - 参数。
+			 * @returns {Promise<any>} - 调用结果。
+			 */
 			IPCInvokeHandler: async (user, args) => {
 				return handleAction(user, args)
 			}

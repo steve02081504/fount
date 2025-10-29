@@ -5,6 +5,18 @@ import { getUserByUsername, getAllUserNames } from './auth.mjs'
 import { loadPart } from './managers/index.mjs'
 import { save_config } from './server.mjs'
 
+/**
+ * 为用户设置一个新计时器。
+ * @param {string} username - 用户的用户名。
+ * @param {string} parttype - 部件的类型。
+ * @param {string} partname - 部件的名称。
+ * @param {string} uid - 计时器的唯一标识符。
+ * @param {object} options - 计时器选项。
+ * @param {string} options.trigger - 计时器的触发条件。
+ * @param {any} options.callbackdata - 传递给回调函数的数据。
+ * @param {boolean} [options.repeat=false] - 计时器是否应重复。
+ * @returns {void}
+ */
 export function setTimer(username, parttype, partname, uid, { trigger, callbackdata, repeat }) {
 	const timers = getUserByUsername(username).timers ??= {}
 	timers[parttype] ??= {}
@@ -24,6 +36,14 @@ export function setTimer(username, parttype, partname, uid, { trigger, callbackd
 	}
 }
 
+/**
+ * 为用户移除一个计时器。
+ * @param {string} username - 用户的用户名。
+ * @param {string} parttype - 部件的类型。
+ * @param {string} partname - 部件的名称。
+ * @param {string} uid - 计时器的唯一标识符。
+ * @returns {void}
+ */
 export function removeTimer(username, parttype, partname, uid) {
 	const timers = getUserByUsername(username).timers ?? {}
 	if (timers[parttype]?.[partname]?.[uid]) {
@@ -41,11 +61,22 @@ export function removeTimer(username, parttype, partname, uid) {
 	}
 }
 
+/**
+ * 获取特定部件的所有计时器。
+ * @param {string} username - 用户的用户名。
+ * @param {string} parttype - 部件的类型。
+ * @param {string} partname - 部件的名称。
+ * @returns {object} 包含指定部件的计时器的对象。
+ */
 export function getTimers(username, parttype, partname) {
 	const timers = getUserByUsername(username).timers ?? {}
 	return timers[parttype]?.[partname] ?? {}
 }
 
+/**
+ * 检查并触发计时器的主心跳函数。
+ * @returns {Promise<void>}
+ */
 async function TimerHeartbeat() {
 	const users = getAllUserNames()
 	let need_save = false
@@ -70,6 +101,10 @@ async function TimerHeartbeat() {
 	if (need_save) save_config()
 }
 
+/**
+ * 启动计时器心跳。
+ * @returns {void}
+ */
 export function startTimerHeartbeat() {
 	setInterval(TimerHeartbeat, 500)
 }

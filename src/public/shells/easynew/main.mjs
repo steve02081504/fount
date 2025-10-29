@@ -1,5 +1,12 @@
 import { setEndpoints } from './src/main.mjs'
 
+/**
+ * @description 处理动作。
+ * @param {string} user - 用户。
+ * @param {string} action - 动作。
+ * @param {object} params - 参数。
+ * @returns {Promise<any>} - 动作结果。
+ */
 async function handleAction(user, action, params) {
 	const { actions } = await import('./src/actions.mjs')
 	if (!actions[action])
