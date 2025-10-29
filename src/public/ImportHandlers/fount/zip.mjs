@@ -10,7 +10,7 @@ import { exec } from '../../../scripts/exec.mjs'
 
 let sevenZipPathCache
 /**
- * @description 检测 7z 可执行文件的路径。
+ * @description 检测 7z 可执行文件的路径。它会首先在系统 PATH 中查找，如果找不到则回退使用 npm 上的 '7zip-bin-full' 模块。
  * @returns {Promise<string>} - 返回 7z 可执行文件的路径。
  */
 async function get7zPath() {

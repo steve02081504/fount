@@ -63,7 +63,7 @@ export class AIsource_t<InputType, OutputType> {
 	 */
 	is_paid: boolean
 	/**
- * @description 用于存储扩展功能的对象。
+	 * @description 用于存储扩展功能的对象。
 	 */
 	extension: object
 

@@ -13,12 +13,12 @@ export class WorldAPI_t {
 	 */
 	info: info_t
 	/**
- * @description 仅在安装时调用，如果失败，将删除此世界文件夹下的所有文件。
- * @param {object} stat - 状态对象。
- * @param {string} stat.username - 用户名。
- * @param {string} stat.worldname - 世界名称。
- * @returns {Promise<void>}
- */
+	 * @description 仅在安装时调用，如果失败，将删除此世界文件夹下的所有文件。
+	 * @param {object} stat - 状态对象。
+	 * @param {string} stat.username - 用户名。
+	 * @param {string} stat.worldname - 世界名称。
+	 * @returns {Promise<void>}
+	 */
 	Init?: (stat: {
 		username: string,
 		worldname: string,

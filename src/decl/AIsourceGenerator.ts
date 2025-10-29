@@ -69,7 +69,7 @@ export class AIsourceGenerator_t {
 		AIsource: {
 			/**
 			 * @description 获取用于配置界面的 HTML 和 JS 内容。
- * @returns {Promise<{ html?: string, js?: string }>} - 包含 HTML 和 JS 内容的对象。
+			 * @returns {Promise<{ html?: string, js?: string }>} - 包含 HTML 和 JS 内容的对象。
 			 */
 			GetConfigDisplayContent: () => Promise<{ html?: string, js?: string }>
 			/**
