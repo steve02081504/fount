@@ -98,6 +98,106 @@
 		},
 		"telegrambot": {
 			"botStarted": "Char ${charname} hat sich beim Telegram-Bot ${botusername} angemeldet."
+		},
+		"path": {
+			"update": {
+				"skippingFountUpdate": "Da die Datei .noupdate vorhanden ist, wird die Aktualisierung der fount übersprungen",
+				"skippingDenoUpgradeDocker": "Überspringen Sie das Deno-Upgrade in der Docker-Umgebung"
+			},
+			"shortcut": {
+				"desktopShortcutCreated": "Desktop-Verknüpfung erstellt unter ${path}",
+				"startMenuShortcutCreated": "Startmenü-Verknüpfung erstellt unter ${path}",
+				"protocolHandlerRegistered": "fount:// Protokollhandler registriert.",
+				"osacompileNotFound": "Fehler: „osacompile“ nicht gefunden. Die macOS-App kann nicht erstellt werden.",
+				"lsregisterFailed": "Warnung: Die Verwendung von lsregister zum Registrieren einer Anwendung bei LaunchServices ist fehlgeschlagen.",
+				"createDesktopAppFailed": "Fehler: Desktop-Anwendung konnte nicht erstellt werden.",
+				"shortcutNotSupported": "Warnung: Ihr Betriebssystem (${os}) unterstützt das Erstellen von Desktop-Verknüpfungen nicht."
+			},
+			"git": {
+				"repoNotFound": "Das Git-Repository von fount wurde nicht gefunden. Eine neue initialisieren...",
+				"fetchingAndResetting": "Vom Remote-Repository abrufen und auf Master zurücksetzen ...",
+				"fetchFailed": "Fehler beim Abrufen von „Ursprung“.",
+				"localChangesDetected": "Lokale Änderungen erkannt, Unterschiede werden vor dem Überschreiben gespeichert.",
+				"backupSavedTo": "Eine Sicherung Ihrer lokalen Änderungen wurde gespeichert unter: ${path}",
+				"notOnBranch": "Nicht auf dem Zweig, wechseln Sie zu „Master“ ...",
+				"noUpstreamBranch": "Warnung: Für den Zweig „${branch}“ ist kein Upstream-Zweig konfiguriert. Upstream auf „Origin/Master“ einstellen.",
+				"dirtyWorkingDirectory": "Warnung: Das Arbeitsverzeichnis enthält ungesicherte Änderungen. Bitte sichern (stash/commit) Sie Ihre Änderungen vor dem Update.",
+				"updatingFromRemote": "Aktualisierung vom Remote-Repository...",
+				"localBranchAhead": "Der lokale Zweig ist dem entfernten Zweig voraus. Keine Updates erforderlich.",
+				"branchesDiverged": "Die lokalen und Remote-Zweige wurden gegabelt. Erzwungenes Update läuft...",
+				"alreadyUpToDate": "Schon das Neueste.",
+				"notInstalled": "Git ist nicht installiert, versucht zu installieren ...",
+				"installFailedWinget": "Da die Winget-Installation fehlgeschlagen ist, kann Git nicht installiert werden. Bitte installieren Sie es manuell.",
+				"installFailedManual": "Git kann nicht installiert werden. Bitte installieren Sie es manuell.",
+				"notInstalledSkippingPull": "Git ist nicht installiert, Git Pull überspringen",
+				"repoNotFoundSkippingPull": "Repository nicht gefunden, Git Pull überspringen"
+			},
+			"deno": {
+				"installingTermux": "Deno für Termux installieren...",
+				"missing": "Deno nicht gefunden, wird automatisch installiert...",
+				"installFailedFallback": "Die Deno-Installation ist fehlgeschlagen. Es wurde versucht, automatisch im Pfadordner des Quellcodes zu installieren.",
+				"isRequired": "Deno nicht gefunden, fount kann nicht ohne Deno ausgeführt werden",
+				"notWorking": "Aus irgendeinem Grund funktioniert Deno nicht. Möglicherweise möchten Sie https://discord.gg/deno beitreten, um Unterstützung zu erhalten",
+				"upgradeFailedTermux": "Deno-Upgrade-Befehl fehlgeschlagen, Versuch, Deno für Termux neu zu installieren ...",
+				"upgradeFailed": "Warnung: Das Deno-Upgrade ist möglicherweise fehlgeschlagen. Bitte prüfen Sie, ob Fehler vorliegen."
+			},
+			"install": {
+				"rootWarning1": "Nicht empfohlen: Wenn Sie fount als Root ausführen, erhalten Sie vollständigen Systemzugriff auf alle Fount-Komponenten.",
+				"rootWarning2": "Sofern Sie nicht wissen, was Sie tun, wird empfohlen, fount als normaler Benutzer auszuführen.",
+				"installingDependencies": "Abhängigkeiten werden installiert...",
+				"untrustedPartsWarning": "Installieren Sie keine nicht vertrauenswürdigen Quellkomponenten auf Ihrem System, sie können alles bewirken."
+			},
+			"clean": {
+				"removingCaches": "Cache wird entfernt...",
+				"reinstallingDependencies": "Abhängigkeiten werden neu installiert...",
+				"cleaningDenoCaches": "Deno-Cache bereinigen...",
+				"cleaningOldPwshModules": "Bereinigen alter pwsh-Module ..."
+			},
+			"keepalive": {
+				"failedToStart": "Selbst nach automatischen Reparaturversuchen startet der Brunnen für kurze Zeit nicht. Bitte überprüfen Sie die Protokolle auf Fehler.",
+				"autoInitDisabled": "fount wurde in der letzten kurzen Zeit mehrmals neu gestartet, die automatische Neuinitialisierung wurde jedoch aufgrund des Vorhandenseins der Datei .noautoinit deaktiviert. Verlassen.",
+				"restartingTooFast": "Die fount wurde in kurzer Zeit mehrmals neu gestartet. Erzwungene Neuinitialisierung...",
+				"initFailed": "Die Initialisierung des Quellcodes ist fehlgeschlagen. Verlassen.",
+				"initComplete": "Neuinitialisierung abgeschlossen. Ich versuche, die fount neu zu starten..."
+			},
+			"remove": {
+				"removingFount": "fount wird entfernt...",
+				"removingFountFromPath": "fount wird aus PATH entfernt...",
+				"removingProtocolHandler": "fount://-Protokollhandler wird entfernt...",
+				"removingFountFromGitSafeDir": "fount wird aus dem Git-Safe-Verzeichnis entfernt...",
+				"removingInstalledSystemPackages": "Installierte Systempakete werden entfernt...",
+				"uninstallingDeno": "Deno deinstallieren...",
+				"removingFountInstallationDir": "Font-Installationsverzeichnis wird entfernt...",
+				"fountInstallationDirRemoved": "Das Font-Installationsverzeichnis wurde entfernt.",
+				"fountUninstallationComplete": "Font-Deinstallation abgeschlossen.",
+				"removingFountPwshFromProfile": "fount-pwsh aus PowerShell-Profil entfernen...",
+				"fountPwshRemovedFromProfile": "fount-pwsh wurde aus dem PowerShell-Profil entfernt.",
+				"pwshProfileNotFound": "PowerShell-Profil nicht gefunden, das Entfernen von fount-pwsh aus dem Profil wird übersprungen.",
+				"uninstallingFountPwsh": "fount-pwsh wird deinstalliert...",
+				"uninstallFountPwshFailed": "Die Deinstallation von fount-pwsh ist fehlgeschlagen: ${message}",
+				"protocolHandlerRemoved": "Der fount://-Protokollhandler wurde entfernt.",
+				"removeProtocolHandlerFailed": "Fount://-Protokollhandler konnte nicht entfernt werden: ${message}",
+				"removingTerminalProfile": "Windows-Terminalprofil wird entfernt...",
+				"terminalProfileRemoved": "Das Windows-Terminalprofilverzeichnis wurde entfernt.",
+				"terminalProfileNotFound": "Windows-Terminalprofilverzeichnis nicht gefunden.",
+				"desktopShortcutRemoved": "Desktop-Verknüpfung entfernt.",
+				"desktopShortcutNotFound": "Desktop-Verknüpfung nicht gefunden.",
+				"removingStartMenuShortcut": "Startmenü-Verknüpfungen werden entfernt...",
+				"startMenuShortcutRemoved": "Die Verknüpfung im Startmenü wurde entfernt.",
+				"startMenuShortcutNotFound": "Startmenüverknüpfung nicht gefunden.",
+				"removingInstalledPwshModules": "Installiertes pwsh-Modul wird entfernt...",
+				"moduleRemoved": "${module} wurde entfernt.",
+				"removeModuleFailed": "Das Entfernen von ${module} ist fehlgeschlagen: ${message}",
+				"uninstallingGit": "Git deinstallieren...",
+				"uninstallingChrome": "Chrome wird deinstalliert...",
+				"uninstallingWinget": "Winget wird deinstalliert...",
+				"removeDenoFailed": "Deno konnte nicht entfernt werden: ${message}",
+				"removingBackgroundRunner": "Hintergrundprogramme werden entfernt...",
+				"removeBackgroundRunnerFailed": "Das im Hintergrund laufende Programm konnte nicht entfernt werden: ${message}"
+			},
+			"protocol": {
+				"description": "URL:fount-Protokoll"
+			}
 		}
 	},
 	"installer_wait_screen": {
@@ -124,8 +224,8 @@
 			"description": "fount nutzt die volle Leistungsfähigkeit von HTML und ermöglicht es Charakteren, sich durch Rich Text, Bilder und sogar interaktive Elemente auszudrücken. Führen Sie dynamische und ansprechende Gruppenchats mit mehreren Charakteren gleichzeitig."
 		},
 		"feature4": {
-			"title": "Uneingeschränkte Integration von KI-Quellen",
-			"description": "fount bietet beispiellose Auswahl und Flexibilität. Verbinden Sie sich mit <i>jeder</i> KI-Quelle – OpenAI, Claude, OpenRouter, NovelAI usw. Die Kommunikationslogik wird nach <i>Ihrem</i> Willen durch die Macht des Codes geformt."
+			"title": "Uneingeschränkte Integration von KI-fount",
+			"description": "fount bietet beispiellose Auswahl und Flexibilität. Verbinden Sie sich mit <i>jeder</i> KI-fount – OpenAI, Claude, OpenRouter, NovelAI usw. Die Kommunikationslogik wird nach <i>Ihrem</i> Willen durch die Macht des Codes geformt."
 		},
 		"theme_selector": {
 			"title": "Wählen Sie Ihr Aussehen",
@@ -410,9 +510,9 @@
 		},
 		"achievements": {
 			"first_login": {
-				"name": "Hallo, Quelle!",
+				"name": "Hallo, fount!",
 				"description": "Auf dem Weg in die neue Welt, loggen Sie sich zum ersten Mal ein!",
-				"locked_description": "Melden Sie sich einmal am Brunnen an."
+				"locked_description": "Melden Sie sich einmal am fount an."
 			},
 			"sfw_mode_on": {
 				"name": "Da ist jemand hinter dir!",
@@ -1097,14 +1197,14 @@
 		}
 	},
 	"aisource_editor": {
-		"title": "KI-Quelleneditor",
+		"title": "KI-fountneditor",
 		"fileList": {
-			"title": "KI-Quellenliste",
+			"title": "KI-fountnliste",
 			"addButton": {
 				"title": "+"
 			}
 		},
-		"configTitle": "KI-Quellenkonfiguration",
+		"configTitle": "KI-fountnkonfiguration",
 		"generatorSelect": {
 			"label": "Generator auswählen",
 			"placeholder": "Bitte auswählen"
@@ -1125,7 +1225,7 @@
 			"fetchFileDataFailed": "Fehler beim Abrufen der Dateidaten: ${error}",
 			"noFileSelectedSave": "Keine Datei zum Speichern ausgewählt.",
 			"saveFileFailed": "Fehler beim Speichern der Datei: ${error}",
-			"setDefaultFailed": "Festlegen der Standard-AI-Quelle fehlgeschlagen: ${error}",
+			"setDefaultFailed": "Festlegen der Standard-AI-fount fehlgeschlagen: ${error}",
 			"noFileSelectedDelete": "Keine Datei zum Löschen ausgewählt.",
 			"deleteFileFailed": "Fehler beim Löschen der Datei: ${error}",
 			"invalidFileName": "Der Dateiname darf folgende Zeichen nicht enthalten: / \\ : * ? \" < > |",
@@ -1145,7 +1245,7 @@
 			"disabledIndicator": "Bitte wählen Sie zuerst einen Generator aus."
 		},
 		"common_config_interface": {
-			"empty_generator": "Der Generator für diese KI-Quelle konnte nicht geladen werden. Möglicherweise wurde er deinstalliert oder umbenannt.",
+			"empty_generator": "Der Generator für diese KI-fount konnte nicht geladen werden. Möglicherweise wurde er deinstalliert oder umbenannt.",
 			"apiKeyRequired": "Ein API-Schlüssel ist erforderlich, um die Modelle aufzulisten.",
 			"loadingModels": "Modelle werden geladen...",
 			"availableModels": "Verfügbare Modelle:",
@@ -1155,9 +1255,9 @@
 		},
 		"achievements": {
 			"set_default_aisource": {
-				"name": "Quelle der Magie",
+				"name": "fount der Magie",
 				"description": "Als Manaversorgungsquelle wird eine Standard-KI festgelegt.",
-				"locked_description": "Legen Sie einmalig eine Standard-KI-Quelle fest."
+				"locked_description": "Legen Sie einmalig eine Standard-KI-fount fest."
 			}
 		}
 	},
@@ -1362,7 +1462,7 @@
 		"initialMessageLink": "Klicken Sie hier, um mehr zu erfahren",
 		"achievements": {
 			"invoke_shell_assist": {
-				"name": "„Hey, Quelle.“",
+				"name": "„Hey, fount.“",
 				"description": "Im dunklen Terminal wurde der Name des KI-Partners aufgerufen.",
 				"locked_description": "Rufen Sie einmal die Terminalunterstützung an."
 			}

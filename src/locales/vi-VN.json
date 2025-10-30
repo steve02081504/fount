@@ -98,6 +98,106 @@
 		},
 		"telegrambot": {
 			"botStarted": "Nhân vật ${charname} đã đăng nhập vào bot Telegram ${botusername}."
+		},
+		"path": {
+			"update": {
+				"skippingFountUpdate": "Vì tệp .noupdate tồn tại nên bản cập nhật foun bị bỏ qua",
+				"skippingDenoUpgradeDocker": "Bỏ qua nâng cấp Deno trong môi trường Docker"
+			},
+			"shortcut": {
+				"desktopShortcutCreated": "Lối tắt trên màn hình được tạo tại ${path}",
+				"startMenuShortcutCreated": "Phím tắt menu bắt đầu được tạo tại ${path}",
+				"protocolHandlerRegistered": "fount:// trình xử lý giao thức đã đăng ký.",
+				"osacompileNotFound": "Lỗi: không tìm thấy 'osacompile'. Không thể tạo ứng dụng macOS.",
+				"lsregisterFailed": "Cảnh báo: Không thể sử dụng lsregister để đăng ký ứng dụng với LaunchServices.",
+				"createDesktopAppFailed": "Lỗi: Không tạo được ứng dụng dành cho máy tính để bàn.",
+				"shortcutNotSupported": "Cảnh báo: Hệ điều hành của bạn (${os}) không hỗ trợ tạo lối tắt trên màn hình."
+			},
+			"git": {
+				"repoNotFound": "Không tìm thấy kho git của đài phun nước. Đang khởi tạo một cái mới...",
+				"fetchingAndResetting": "Đang tìm nạp từ kho lưu trữ từ xa và đặt lại về kho chính...",
+				"fetchFailed": "Không thể lấy được từ 'nguồn gốc'.",
+				"localChangesDetected": "Những thay đổi cục bộ được phát hiện, những khác biệt sẽ được lưu trước khi ghi đè.",
+				"backupSavedTo": "Bản sao lưu các thay đổi cục bộ của bạn đã được lưu vào: ${path}",
+				"notOnBranch": "Không ở trên nhánh, chuyển sang 'master'...",
+				"noUpstreamBranch": "Cảnh báo: Không có nhánh ngược dòng nào được định cấu hình cho nhánh '${branch}'. Thiết lập ngược dòng thành 'origin/master'.",
+				"dirtyWorkingDirectory": "Cảnh báo: Thư mục làm việc không sạch sẽ. Vui lòng stage hoặc commit các thay đổi của bạn trước khi cập nhật.",
+				"updatingFromRemote": "Đang cập nhật từ kho lưu trữ từ xa...",
+				"localBranchAhead": "Chi nhánh địa phương đi trước chi nhánh từ xa. Không cần cập nhật.",
+				"branchesDiverged": "Các chi nhánh địa phương và từ xa đã được phân nhánh. Đang cập nhật bắt buộc...",
+				"alreadyUpToDate": "Đã là mới nhất.",
+				"notInstalled": "Git chưa được cài đặt, đang cố gắng cài đặt...",
+				"installFailedWinget": "Vì cài đặt Winget không thành công nên không thể cài đặt Git. Vui lòng cài đặt nó bằng tay.",
+				"installFailedManual": "Không thể cài đặt Git, vui lòng cài đặt thủ công.",
+				"notInstalledSkippingPull": "Git chưa được cài đặt, bỏ qua git pull",
+				"repoNotFoundSkippingPull": "Không tìm thấy kho lưu trữ, bỏ qua git pull"
+			},
+			"deno": {
+				"installingTermux": "Đang cài đặt Deno cho Termux...",
+				"missing": "Không tìm thấy Deno, cài đặt tự động...",
+				"installFailedFallback": "Cài đặt Deno không thành công, cố gắng tự động cài đặt vào thư mục đường dẫn của phông chữ...",
+				"isRequired": "Không tìm thấy Deno, không thể chạy được nếu không có Deno",
+				"notWorking": "Vì lý do nào đó Deno không hoạt động, bạn có thể tham gia https://discord.gg/deno để được hỗ trợ",
+				"upgradeFailedTermux": "Lệnh nâng cấp Deno không thành công, đang cố cài đặt lại Deno cho Termux...",
+				"upgradeFailed": "Cảnh báo: Nâng cấp Deno có thể không thành công. Vui lòng kiểm tra lỗi."
+			},
+			"install": {
+				"rootWarning1": "Không được khuyến nghị: chạy fount với quyền root cấp quyền truy cập toàn bộ hệ thống vào tất cả các thành phần của foun.",
+				"rootWarning2": "Trừ khi bạn biết mình đang làm gì, bạn nên chạy fount như một người dùng bình thường.",
+				"installingDependencies": "Đang cài đặt các phần phụ thuộc...",
+				"untrustedPartsWarning": "Không cài đặt bất kỳ thành phần nguồn không đáng tin cậy nào trên hệ thống của bạn, chúng có thể làm bất cứ điều gì."
+			},
+			"clean": {
+				"removingCaches": "Đang xóa bộ nhớ đệm...",
+				"reinstallingDependencies": "Đang cài đặt lại các phần phụ thuộc...",
+				"cleaningDenoCaches": "Đang dọn dẹp bộ đệm Deno...",
+				"cleaningOldPwshModules": "Dọn dẹp các mô-đun pwsh cũ..."
+			},
+			"keepalive": {
+				"failedToStart": "Ngay cả sau khi cố gắng sửa chữa tự động, đài phun nước vẫn không khởi động được trong một khoảng thời gian ngắn. Vui lòng kiểm tra nhật ký để tìm lỗi.",
+				"autoInitDisabled": "đài phun nước đã được khởi động lại nhiều lần trong khoảng thời gian ngắn vừa qua, nhưng quá trình khởi tạo lại tự động đã bị tắt do sự hiện diện của tệp .noautoinit. Đang thoát.",
+				"restartingTooFast": "đài phun nước đã được khởi động lại nhiều lần trong một khoảng thời gian ngắn. Buộc khởi động lại...",
+				"initFailed": "Khởi tạo phông chữ không thành công. Đang thoát.",
+				"initComplete": "Quá trình khởi tạo lại đã hoàn tất. Đang cố gắng khởi động lại đài phun nước..."
+			},
+			"remove": {
+				"removingFount": "Đang xóa đài phun nước...",
+				"removingFountFromPath": "Đang xóa đài phun nước khỏi PATH...",
+				"removingProtocolHandler": "Đang xóa trình xử lý giao thức fount://...",
+				"removingFountFromGitSafeDir": "Xóa đài phun nước khỏi git safe.directory...",
+				"removingInstalledSystemPackages": "Đang xóa các gói hệ thống đã cài đặt...",
+				"uninstallingDeno": "Đang gỡ cài đặt Deno...",
+				"removingFountInstallationDir": "Đang xóa thư mục cài đặt đài phun nước...",
+				"fountInstallationDirRemoved": "Thư mục cài đặt đài phun nước đã bị xóa.",
+				"fountUninstallationComplete": "quá trình gỡ cài đặt đài phun nước đã hoàn tất.",
+				"removingFountPwshFromProfile": "Đang xóa foun-pwsh khỏi Cấu hình PowerShell...",
+				"fountPwshRemovedFromProfile": "fount-pwsh đã bị xóa khỏi Hồ sơ PowerShell.",
+				"pwshProfileNotFound": "Không tìm thấy Hồ sơ PowerShell, bỏ qua việc xóa fount-pwsh khỏi hồ sơ.",
+				"uninstallingFountPwsh": "Đang gỡ cài đặt fount-pwsh...",
+				"uninstallFountPwshFailed": "Gỡ cài đặt fount-pwsh không thành công: ${message}",
+				"protocolHandlerRemoved": "Trình xử lý giao thức fount:// đã bị xóa.",
+				"removeProtocolHandlerFailed": "Không xóa được trình xử lý giao thức fount://: ${message}",
+				"removingTerminalProfile": "Đang xóa cấu hình thiết bị đầu cuối Windows...",
+				"terminalProfileRemoved": "Thư mục Windows Terminal Profile đã bị xóa.",
+				"terminalProfileNotFound": "Không tìm thấy thư mục Cấu hình thiết bị đầu cuối Windows.",
+				"desktopShortcutRemoved": "Đã xóa lối tắt trên màn hình.",
+				"desktopShortcutNotFound": "Không tìm thấy lối tắt trên màn hình.",
+				"removingStartMenuShortcut": "Đang xóa các phím tắt menu bắt đầu...",
+				"startMenuShortcutRemoved": "Phím tắt menu bắt đầu đã bị xóa.",
+				"startMenuShortcutNotFound": "Không tìm thấy lối tắt menu bắt đầu.",
+				"removingInstalledPwshModules": "Đang xóa mô-đun pwsh đã cài đặt...",
+				"moduleRemoved": "${module} đã bị xóa.",
+				"removeModuleFailed": "Xóa ${module} không thành công: ${message}",
+				"uninstallingGit": "Đang gỡ cài đặt Git...",
+				"uninstallingChrome": "Đang gỡ cài đặt Chrome...",
+				"uninstallingWinget": "Đang gỡ cài đặt Winget...",
+				"removeDenoFailed": "Không xóa được Deno: ${message}",
+				"removingBackgroundRunner": "Xóa các chương trình nền...",
+				"removeBackgroundRunnerFailed": "Không xóa được chương trình chạy nền: ${message}"
+			},
+			"protocol": {
+				"description": "URL: giao thức đài phun nước"
+			}
 		}
 	},
 	"installer_wait_screen": {

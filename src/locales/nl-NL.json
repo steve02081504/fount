@@ -98,6 +98,106 @@
 		},
 		"telegrambot": {
 			"botStarted": "Personage ${charname} is ingelogd op Telegram Bot ${botusername}"
+		},
+		"path": {
+			"update": {
+				"skippingFountUpdate": "Omdat het .noupdate-bestand bestaat, wordt de font-update overgeslagen",
+				"skippingDenoUpgradeDocker": "Sla de Deno-upgrade over in de Docker-omgeving"
+			},
+			"shortcut": {
+				"desktopShortcutCreated": "Snelkoppeling op het bureaublad gemaakt op ${path}",
+				"startMenuShortcutCreated": "Snelkoppeling naar startmenu gemaakt op ${path}",
+				"protocolHandlerRegistered": "font:// protocolhandler geregistreerd.",
+				"osacompileNotFound": "Fout: 'osacompile' niet gevonden. Kan macOS-app niet maken.",
+				"lsregisterFailed": "Waarschuwing: het gebruik van lsregister om een ​​applicatie te registreren bij LaunchServices is mislukt.",
+				"createDesktopAppFailed": "Fout: Kan bureaubladtoepassing niet maken.",
+				"shortcutNotSupported": "Waarschuwing: uw besturingssysteem (${os}) ondersteunt het maken van snelkoppelingen op het bureaublad niet."
+			},
+			"git": {
+				"repoNotFound": "De git-repository van font is niet gevonden. Een nieuwe initialiseren...",
+				"fetchingAndResetting": "Ophalen uit externe opslagplaats en opnieuw instellen op master...",
+				"fetchFailed": "Kan niet vanaf 'oorsprong' komen.",
+				"localChangesDetected": "Lokale wijzigingen gedetecteerd, verschillen worden opgeslagen voordat ze worden overschreven.",
+				"backupSavedTo": "Er is een back-up van uw lokale wijzigingen opgeslagen in: ${path}",
+				"notOnBranch": "Niet op het filiaal, schakel over naar 'master'...",
+				"noUpstreamBranch": "Waarschuwing: Er is geen upstream-vertakking geconfigureerd voor vertakking '${branch}'. Upstream instellen op 'origin/master'.",
+				"dirtyWorkingDirectory": "Waarschuwing: de werkmap is niet schoon. Stash of commit uw wijzigingen voordat u deze bijwerkt.",
+				"updatingFromRemote": "Updaten vanuit een externe opslagplaats...",
+				"localBranchAhead": "De lokale vestiging loopt voor op de externe vestiging. Geen updates vereist.",
+				"branchesDiverged": "De lokale en afgelegen vestigingen zijn gesplitst. Geforceerde update wordt uitgevoerd...",
+				"alreadyUpToDate": "Al het nieuwste.",
+				"notInstalled": "Git is niet geïnstalleerd, probeert te installeren...",
+				"installFailedWinget": "Omdat de Winget-installatie mislukte, kan Git niet worden geïnstalleerd. Installeer het handmatig.",
+				"installFailedManual": "Kan Git niet installeren. Installeer het handmatig.",
+				"notInstalledSkippingPull": "Git is niet geïnstalleerd, sla git pull over",
+				"repoNotFoundSkippingPull": "Repository niet gevonden, sla git pull over"
+			},
+			"deno": {
+				"installingTermux": "Deno voor Termux installeren...",
+				"missing": "Deno niet gevonden, automatisch geïnstalleerd...",
+				"installFailedFallback": "Deno-installatie is mislukt. Er wordt geprobeerd automatisch te installeren in de padmap van de font...",
+				"isRequired": "Deno niet gevonden, bron kan niet worden uitgevoerd zonder Deno",
+				"notWorking": "Om de een of andere reden werkt Deno niet. Misschien wil je lid worden van https://discord.gg/deno voor ondersteuning",
+				"upgradeFailedTermux": "Deno-upgradeopdracht is mislukt, poging om Deno voor Termux opnieuw te installeren...",
+				"upgradeFailed": "Waarschuwing: Deno-upgrade is mogelijk mislukt. Controleer op fouten."
+			},
+			"install": {
+				"rootWarning1": "Niet aanbevolen: het uitvoeren van font als root geeft volledige systeemtoegang tot alle fontcomponenten.",
+				"rootWarning2": "Tenzij u weet wat u doet, wordt aanbevolen om font als normale gebruiker uit te voeren.",
+				"installingDependencies": "Afhankelijkheden installeren...",
+				"untrustedPartsWarning": "Installeer geen onbetrouwbare fontcomponenten op uw systeem; deze kunnen alles doen."
+			},
+			"clean": {
+				"removingCaches": "Cache verwijderen...",
+				"reinstallingDependencies": "Afhankelijkheden opnieuw installeren...",
+				"cleaningDenoCaches": "Deno-cache opschonen...",
+				"cleaningOldPwshModules": "Oude pwsh-modules opruimen..."
+			},
+			"keepalive": {
+				"failedToStart": "Zelfs na automatische reparatiepogingen start de fontein korte tijd niet. Controleer de logboeken op fouten.",
+				"autoInitDisabled": "font is de afgelopen korte tijd meerdere keren opnieuw opgestart, maar automatische herinitialisatie is uitgeschakeld vanwege de aanwezigheid van het bestand .noautoinit. Afsluiten.",
+				"restartingTooFast": "font is in korte tijd meerdere keren opnieuw opgestart. Geforceerde herinitialisatie...",
+				"initFailed": "Initialisatie van fount is mislukt. Afsluiten.",
+				"initComplete": "Herinitialisatie voltooid. Ik probeer font opnieuw op te starten..."
+			},
+			"remove": {
+				"removingFount": "fount verwijderen...",
+				"removingFountFromPath": "Lettertype uit PATH verwijderen...",
+				"removingProtocolHandler": "Fot:// protocolhandler verwijderen...",
+				"removingFountFromGitSafeDir": "Font verwijderen uit git safe.directory...",
+				"removingInstalledSystemPackages": "Geïnstalleerde systeempakketten verwijderen...",
+				"uninstallingDeno": "Deno verwijderen...",
+				"removingFountInstallationDir": "Installatiemap voor fount verwijderen...",
+				"fountInstallationDirRemoved": "De font-installatiemap is verwijderd.",
+				"fountUninstallationComplete": "Het verwijderen van de font is voltooid.",
+				"removingFountPwshFromProfile": "font-pwsh verwijderen uit PowerShell-profiel...",
+				"fountPwshRemovedFromProfile": "font-pwsh is verwijderd uit het PowerShell-profiel.",
+				"pwshProfileNotFound": "PowerShell-profiel niet gevonden. Het verwijderen van font-pwsh uit het profiel wordt overgeslagen.",
+				"uninstallingFountPwsh": "Font-pwsh verwijderen...",
+				"uninstallFountPwshFailed": "Verwijderen van font-pwsh mislukt: ${message}",
+				"protocolHandlerRemoved": "De protocolhandler font:// is verwijderd.",
+				"removeProtocolHandlerFailed": "Kan fount:// protocolhandler niet verwijderen: ${message}",
+				"removingTerminalProfile": "Windows Terminal-profiel verwijderen...",
+				"terminalProfileRemoved": "De map Windows Terminal Profile is verwijderd.",
+				"terminalProfileNotFound": "Windows Terminal-profielmap niet gevonden.",
+				"desktopShortcutRemoved": "Snelkoppeling op het bureaublad verwijderd.",
+				"desktopShortcutNotFound": "Snelkoppeling op het bureaublad niet gevonden.",
+				"removingStartMenuShortcut": "Snelkoppelingen naar het startmenu verwijderen...",
+				"startMenuShortcutRemoved": "De snelkoppeling naar het startmenu is verwijderd.",
+				"startMenuShortcutNotFound": "Snelkoppeling naar startmenu niet gevonden.",
+				"removingInstalledPwshModules": "Geïnstalleerde pwsh-module verwijderen...",
+				"moduleRemoved": "${module} is verwijderd.",
+				"removeModuleFailed": "Verwijderen van ${module} mislukt: ${message}",
+				"uninstallingGit": "Git verwijderen...",
+				"uninstallingChrome": "Chrome verwijderen...",
+				"uninstallingWinget": "Winget verwijderen...",
+				"removeDenoFailed": "Kan Deno niet verwijderen: ${message}",
+				"removingBackgroundRunner": "Achtergrondprogramma's verwijderen...",
+				"removeBackgroundRunnerFailed": "Kan actief programma op de achtergrond niet verwijderen: ${message}"
+			},
+			"protocol": {
+				"description": "URL:fount protocol"
+			}
 		}
 	},
 	"installer_wait_screen": {
