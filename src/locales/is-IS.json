@@ -98,6 +98,106 @@
 		},
 		"telegrambot": {
 			"botStarted": "Persónan ${charname} hefur skráð sig inn á Telegram Bot ${botusername}"
+		},
+		"path": {
+			"update": {
+				"skippingFountUpdate": "Þar sem .noupdate skráin er til er leturuppfærslunni sleppt",
+				"skippingDenoUpgradeDocker": "Slepptu Deno uppfærslu í Docker umhverfi"
+			},
+			"shortcut": {
+				"desktopShortcutCreated": "Flýtileið á skjáborði búin til á ${path}",
+				"startMenuShortcutCreated": "Flýtileið fyrir upphafsvalmynd búin til á ${path}",
+				"protocolHandlerRegistered": "fount:// samskiptareglur skráður.",
+				"osacompileNotFound": "Villa: 'osacompile' fannst ekki. Ekki er hægt að búa til macOS app.",
+				"lsregisterFailed": "Viðvörun: Mistókst að nota lsregister til að skrá forrit hjá LaunchServices.",
+				"createDesktopAppFailed": "Villa: Mistókst að búa til skjáborðsforrit.",
+				"shortcutNotSupported": "Viðvörun: Stýrikerfið þitt (${os}) styður ekki að búa til flýtileiðir á skjáborðinu."
+			},
+			"git": {
+				"repoNotFound": "Git geymslan fyrir font fannst ekki. Byrjar nýjan...",
+				"fetchingAndResetting": "Sækir úr fjarlægri geymslu og endurstillir í master...",
+				"fetchFailed": "Mistókst að fá frá 'uppruna'.",
+				"localChangesDetected": "Staðbundnar breytingar fundnar, munur verður vistaður áður en skrifað er yfir.",
+				"backupSavedTo": "Afrit af staðbundnum breytingum þínum hefur verið vistað á: ${path}",
+				"notOnBranch": "Ekki á útibúinu, skiptu yfir í „meistara“...",
+				"noUpstreamBranch": "Viðvörun: Engin uppstreymisgrein er stillt fyrir útibú '${branch}'. Stilling andstreymis á 'uppruna/meistara'.",
+				"dirtyWorkingDirectory": "Viðvörun: Vinnuskráin er ekki hrein. Vinsamlegast vistaðu (commit) eða geymdu (stash) breytingar þínar áður en þú uppfærir.",
+				"updatingFromRemote": "Uppfærir úr ytri geymslu...",
+				"localBranchAhead": "Sveitarfélagið er á undan fjarútibúinu. Engar uppfærslur nauðsynlegar.",
+				"branchesDiverged": "Staðbundnum og afskekktum útibúum hefur verið flokkað. Þvinguð uppfærsla í gangi...",
+				"alreadyUpToDate": "Nú þegar það nýjasta.",
+				"notInstalled": "Git er ekki uppsett, er að reyna að setja upp...",
+				"installFailedWinget": "Þar sem Winget uppsetning mistókst er ekki hægt að setja Git upp. Vinsamlegast settu það upp handvirkt.",
+				"installFailedManual": "Get ekki sett upp Git, vinsamlegast settu það upp handvirkt.",
+				"notInstalledSkippingPull": "Git er ekki uppsett, slepptu git pull",
+				"repoNotFoundSkippingPull": "Geymsla fannst ekki, slepptu git pull"
+			},
+			"deno": {
+				"installingTermux": "Setur upp Deno fyrir Termux...",
+				"missing": "Deno fannst ekki, setur sjálfkrafa upp...",
+				"installFailedFallback": "Uppsetning Deno mistókst, reynir að setja sjálfkrafa upp í slóðamöppuna á uppsprettu...",
+				"isRequired": "Deno fannst ekki, fontur er ekki hægt að keyra án Deno",
+				"notWorking": "Af einhverjum ástæðum virkar Deno ekki, þú gætir viljað taka þátt https://discord.gg/deno til að fá stuðning",
+				"upgradeFailedTermux": "Deno uppfærsluskipun mistókst, reynt að setja upp Deno aftur fyrir Termux...",
+				"upgradeFailed": "Viðvörun: Deno uppfærsla gæti hafa mistekist. Vinsamlegast athugaðu hvort villur séu."
+			},
+			"install": {
+				"rootWarning1": "Ekki mælt með því: að keyra font þar sem rót veitir fullan kerfisaðgang að öllum fontahlutum.",
+				"rootWarning2": "Nema þú vitir hvað þú ert að gera er mælt með því að keyra fount sem venjulegur notandi.",
+				"installingDependencies": "Setur upp ósjálfstæði...",
+				"untrustedPartsWarning": "Ekki setja upp neina ótryggða leturíhluti á kerfið þitt, þeir geta gert hvað sem er."
+			},
+			"clean": {
+				"removingCaches": "Fjarlægir skyndiminni...",
+				"reinstallingDependencies": "Setur upp ósjálfstæði aftur...",
+				"cleaningDenoCaches": "Hreinsar Deno skyndiminni...",
+				"cleaningOldPwshModules": "Hreinsar upp gamlar pwsh einingar..."
+			},
+			"keepalive": {
+				"failedToStart": "Jafnvel eftir sjálfvirkar viðgerðartilraunir fer gosbrunnurinn ekki í gang í stuttan tíma. Vinsamlegast athugaðu skrárnar fyrir villur.",
+				"autoInitDisabled": "fontur hefur verið endurræstur margoft á síðasta stutta tímabili, en sjálfvirk endurræsing hefur verið gerð óvirk vegna þess að .noautoinit skráin er til staðar. Hætta.",
+				"restartingTooFast": "lind hefur verið endurræst oft á stuttum tíma. Þvinguð endurræsing...",
+				"initFailed": "Uppsetning leturs mistókst. Hætta.",
+				"initComplete": "Endurræsingu lokið. Er að reyna að endurræsa font..."
+			},
+			"remove": {
+				"removingFount": "Fjarlægir leturgerð...",
+				"removingFountFromPath": "Fjarlægir leturgerð úr PATH...",
+				"removingProtocolHandler": "Fjarlægir fount:// samskiptareglur...",
+				"removingFountFromGitSafeDir": "Fjarlægir leturgerð úr git safe.directory...",
+				"removingInstalledSystemPackages": "Fjarlægir uppsetta kerfispakka...",
+				"uninstallingDeno": "Fjarlægir Deno...",
+				"removingFountInstallationDir": "Fjarlægir uppsetningarskrá leturgerðar...",
+				"fountInstallationDirRemoved": "Uppsetningarskrá leturgerðarinnar hefur verið fjarlægð.",
+				"fountUninstallationComplete": "Fjarlægingu lindarinnar lokið.",
+				"removingFountPwshFromProfile": "Fjarlægir fount-pwsh úr PowerShell prófíl...",
+				"fountPwshRemovedFromProfile": "fount-pwsh hefur verið fjarlægt úr PowerShell prófílnum.",
+				"pwshProfileNotFound": "PowerShell prófíllinn fannst ekki, sleppir því að fjarlægja fount-pwsh úr prófílnum.",
+				"uninstallingFountPwsh": "Fjarlægir fount-pwsh...",
+				"uninstallFountPwshFailed": "Mistókst að fjarlægja fount-pwsh: ${message}",
+				"protocolHandlerRemoved": "The fount:// samskiptareglur hefur verið fjarlægður.",
+				"removeProtocolHandlerFailed": "Mistókst að fjarlægja fount:// samskiptareglur: ${message}",
+				"removingTerminalProfile": "Fjarlægir Windows Terminal Profile...",
+				"terminalProfileRemoved": "Windows Terminal Profile mappan hefur verið fjarlægð.",
+				"terminalProfileNotFound": "Windows Terminal Profile mappa fannst ekki.",
+				"desktopShortcutRemoved": "Flýtileið á skjáborði fjarlægð.",
+				"desktopShortcutNotFound": "Flýtileið á skjáborði fannst ekki.",
+				"removingStartMenuShortcut": "Fjarlægir flýtivísa fyrir upphafsvalmynd...",
+				"startMenuShortcutRemoved": "Flýtileið fyrir upphafsvalmynd hefur verið fjarlægð.",
+				"startMenuShortcutNotFound": "Flýtileið fyrir upphafsvalmynd fannst ekki.",
+				"removingInstalledPwshModules": "Fjarlægir uppsetta pwsh mát...",
+				"moduleRemoved": "${module} hefur verið fjarlægt.",
+				"removeModuleFailed": "Mistókst að fjarlægja ${module}: ${message}",
+				"uninstallingGit": "Fjarlægir Git...",
+				"uninstallingChrome": "Fjarlægir Chrome...",
+				"uninstallingWinget": "Fjarlægir Winget...",
+				"removeDenoFailed": "Mistókst að fjarlægja Deno: ${message}",
+				"removingBackgroundRunner": "Fjarlægir bakgrunnsforrit...",
+				"removeBackgroundRunnerFailed": "Mistókst að fjarlægja forrit sem keyrir í bakgrunni: ${message}"
+			},
+			"protocol": {
+				"description": "URL:fundasamskiptareglur"
+			}
 		}
 	},
 	"installer_wait_screen": {

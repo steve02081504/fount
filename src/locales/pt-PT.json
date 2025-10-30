@@ -98,6 +98,106 @@
 		},
 		"telegrambot": {
 			"botStarted": "O personagem ${charname} ligou-se ao bot Telegram ${botusername}."
+		},
+		"path": {
+			"update": {
+				"skippingFountUpdate": "Como o arquivo .noupdate existe, a atualização da fount é ignorada",
+				"skippingDenoUpgradeDocker": "Ignorar atualização do Deno no ambiente Docker"
+			},
+			"shortcut": {
+				"desktopShortcutCreated": "Atalho na área de trabalho criado em ${path}",
+				"startMenuShortcutCreated": "Atalho do menu Iniciar criado em ${path}",
+				"protocolHandlerRegistered": "font:// manipulador de protocolo registrado.",
+				"osacompileNotFound": "Erro: 'osacompile' não encontrado. Não foi possível criar o aplicativo macOS.",
+				"lsregisterFailed": "Aviso: falha ao usar lsregister para registrar um aplicativo com LaunchServices.",
+				"createDesktopAppFailed": "Erro: Falha ao criar aplicativo de desktop.",
+				"shortcutNotSupported": "Aviso: Seu sistema operacional (${os}) não suporta a criação de atalhos na área de trabalho."
+			},
+			"git": {
+				"repoNotFound": "O repositório git da fount não foi encontrado. Inicializando um novo...",
+				"fetchingAndResetting": "Buscando do repositório remoto e redefinindo para master...",
+				"fetchFailed": "Falha ao obter da 'origem'.",
+				"localChangesDetected": "Alterações locais detectadas, as diferenças serão salvas antes de serem substituídas.",
+				"backupSavedTo": "Um backup das suas alterações locais foi salvo em: ${path}",
+				"notOnBranch": "Fora do branch, mude para 'master'...",
+				"noUpstreamBranch": "Aviso: nenhuma ramificação upstream está configurada para a ramificação '${branch}'. Configurando o upstream para 'origin/master'.",
+				"dirtyWorkingDirectory": "Aviso: o diretório de trabalho não está limpo. Prepare ou confirme suas alterações antes de atualizar.",
+				"updatingFromRemote": "Atualizando do repositório remoto...",
+				"localBranchAhead": "A filial local está à frente da filial remota. Não são necessárias atualizações.",
+				"branchesDiverged": "As filiais locais e remotas foram bifurcadas. Atualização forçada em andamento...",
+				"alreadyUpToDate": "Já é o mais recente.",
+				"notInstalled": "Git não está instalado, tentando instalar...",
+				"installFailedWinget": "Como a instalação do Winget falhou, o Git não pode ser instalado. Instale-o manualmente.",
+				"installFailedManual": "Não é possível instalar o Git, instale-o manualmente.",
+				"notInstalledSkippingPull": "Git não está instalado, pule git pull",
+				"repoNotFoundSkippingPull": "Repositório não encontrado, pule git pull"
+			},
+			"deno": {
+				"installingTermux": "Instalando Deno para Termux...",
+				"missing": "Deno não encontrado, instalando automaticamente...",
+				"installFailedFallback": "A instalação do Deno falhou, tentando instalar automaticamente na pasta path da fount...",
+				"isRequired": "Deno não encontrado, a fount não pode ser executada sem Deno",
+				"notWorking": "Por algum motivo, o Deno não está funcionando, você pode entrar em https://discord.gg/deno para obter suporte",
+				"upgradeFailedTermux": "O comando de atualização do Deno falhou, tentando reinstalar o Deno para Termux...",
+				"upgradeFailed": "Aviso: a atualização do Deno pode ter falhado. Por favor, verifique se há erros."
+			},
+			"install": {
+				"rootWarning1": "Não recomendado: executar o fount como root concede acesso total do sistema a todos os componentes do fount.",
+				"rootWarning2": "A menos que você saiba o que está fazendo, é recomendável executar o font como um usuário normal.",
+				"installingDependencies": "Instalando dependências...",
+				"untrustedPartsWarning": "Não instale nenhum componente de fount não confiável em seu sistema, eles podem fazer qualquer coisa."
+			},
+			"clean": {
+				"removingCaches": "Removendo cache...",
+				"reinstallingDependencies": "Reinstalando dependências...",
+				"cleaningDenoCaches": "Limpando o cache do Deno...",
+				"cleaningOldPwshModules": "Limpando módulos pwsh antigos..."
+			},
+			"keepalive": {
+				"failedToStart": "Mesmo após tentativas de reparo automático, a fount não inicia por um curto período de tempo. Verifique se há erros nos logs.",
+				"autoInitDisabled": "A fount foi reiniciada várias vezes no último curto período de tempo, mas a reinicialização automática foi desativada devido à presença do arquivo .noautoinit. Saindo.",
+				"restartingTooFast": "A fount foi reiniciada várias vezes em um curto período de tempo. Reinicialização forçada...",
+				"initFailed": "Falha na inicialização da fount. Saindo.",
+				"initComplete": "Reinicialização concluída. Tentando reiniciar a fount..."
+			},
+			"remove": {
+				"removingFount": "Removendo fount...",
+				"removingFountFromPath": "Removendo fount do PATH...",
+				"removingProtocolHandler": "Removendo o manipulador de protocolo font://...",
+				"removingFountFromGitSafeDir": "Removendo fount do git safe.directory...",
+				"removingInstalledSystemPackages": "Removendo pacotes de sistema instalados...",
+				"uninstallingDeno": "Desinstalando o Deno...",
+				"removingFountInstallationDir": "Removendo o diretório de instalação da fount...",
+				"fountInstallationDirRemoved": "O diretório de instalação da fount foi removido.",
+				"fountUninstallationComplete": "desinstalação da fount concluída.",
+				"removingFountPwshFromProfile": "Removendo fount-pwsh do perfil do PowerShell...",
+				"fountPwshRemovedFromProfile": "fount-pwsh foi removido do perfil do PowerShell.",
+				"pwshProfileNotFound": "Perfil do PowerShell não encontrado, ignorando a remoção do fount-pwsh do perfil.",
+				"uninstallingFountPwsh": "Desinstalando fount-pwsh...",
+				"uninstallFountPwshFailed": "Falha na desinstalação do font-pwsh: ${message}",
+				"protocolHandlerRemoved": "O manipulador de protocolo fount:// foi removido.",
+				"removeProtocolHandlerFailed": "Falha ao remover o manipulador de protocolo fount://: ${message}",
+				"removingTerminalProfile": "Removendo o perfil do terminal do Windows...",
+				"terminalProfileRemoved": "O diretório Windows Terminal Profile foi removido.",
+				"terminalProfileNotFound": "Diretório de perfil do Terminal do Windows não encontrado.",
+				"desktopShortcutRemoved": "Atalho da área de trabalho removido.",
+				"desktopShortcutNotFound": "Atalho na área de trabalho não encontrado.",
+				"removingStartMenuShortcut": "Removendo atalhos do menu Iniciar...",
+				"startMenuShortcutRemoved": "O atalho do menu Iniciar foi removido.",
+				"startMenuShortcutNotFound": "Atalho do menu Iniciar não encontrado.",
+				"removingInstalledPwshModules": "Removendo o módulo pwsh instalado...",
+				"moduleRemoved": "${module} foi removido.",
+				"removeModuleFailed": "Falha ao remover ${module}: ${message}",
+				"uninstallingGit": "Desinstalando o Git...",
+				"uninstallingChrome": "Desinstalando o Chrome...",
+				"uninstallingWinget": "Desinstalando o Winget...",
+				"removeDenoFailed": "Falha ao remover Deno: ${message}",
+				"removingBackgroundRunner": "Removendo programas em segundo plano...",
+				"removeBackgroundRunnerFailed": "Falha ao remover programa em execução em segundo plano: ${message}"
+			},
+			"protocol": {
+				"description": "URL:protocolo de fount"
+			}
 		}
 	},
 	"installer_wait_screen": {
@@ -125,7 +225,7 @@
 		},
 		"feature4": {
 			"title": "Integração Livre com Fontes de IA",
-			"description": "fount oferece escolha e flexibilidade incomparáveis. Conecte-se a <i>qualquer</i> fonte de IA – OpenAI, Claude, OpenRouter, NovelAI, etc. A lógica de comunicação será moldada pelo poder do código, de acordo com os <i>seus</i> desejos."
+			"description": "fount oferece escolha e flexibilidade incomparáveis. Conecte-se a <i>qualquer</i> fount de IA – OpenAI, Claude, OpenRouter, NovelAI, etc. A lógica de comunicação será moldada pelo poder do código, de acordo com os <i>seus</i> desejos."
 		},
 		"theme_selector": {
 			"title": "Escolha a sua aparência",
@@ -410,9 +510,9 @@
 		},
 		"achievements": {
 			"first_login": {
-				"name": "Olá, fonte!",
+				"name": "Olá, fount!",
 				"description": "Rumo ao novo mundo, fazendo login pela primeira vez!",
-				"locked_description": "Faça login na fonte uma vez."
+				"locked_description": "Faça login na fount uma vez."
 			},
 			"sfw_mode_on": {
 				"name": "Tem alguém atrás de você!",
@@ -1059,7 +1159,7 @@
 		"achievements": {
 			"change_theme": {
 				"name": "Mude para um analgésico!",
-				"description": "A fonte tinha um novo visual e um clima completamente novo.",
+				"description": "A fount tinha um novo visual e um clima completamente novo.",
 				"locked_description": "Mude o tema uma vez."
 			}
 		}
@@ -1125,7 +1225,7 @@
 			"fetchFileDataFailed": "Falha ao obter os dados do ficheiro: ${error}",
 			"noFileSelectedSave": "Nenhum ficheiro selecionado para guardar.",
 			"saveFileFailed": "Falha ao guardar o ficheiro: ${error}",
-			"setDefaultFailed": "Definir a fonte de IA padrão falhada: ${error}",
+			"setDefaultFailed": "Definir a fount de IA padrão falhada: ${error}",
 			"noFileSelectedDelete": "Nenhum ficheiro selecionado para eliminar.",
 			"deleteFileFailed": "Falha ao eliminar o ficheiro: ${error}",
 			"invalidFileName": "O nome do ficheiro não pode conter os seguintes caracteres: / \\ : * ? \" < > |",
@@ -1139,13 +1239,13 @@
 			"unsavedChangesBeforeUnload": "Tem alterações não guardadas. Tem a certeza que quer sair desta página?"
 		},
 		"prompts": {
-			"newFileName": "Por favor, insira um novo nome de ficheiro de fonte de IA (sem extensão):"
+			"newFileName": "Por favor, insira um novo nome de ficheiro de fount de IA (sem extensão):"
 		},
 		"editor": {
 			"disabledIndicator": "Por favor, selecione primeiro um gerador."
 		},
 		"common_config_interface": {
-			"empty_generator": "O gerador herdado dessa fonte de IA tem um erro ao carregar e pode ter sido desinstalado ou renomeado.",
+			"empty_generator": "O gerador herdado dessa fount de IA tem um erro ao carregar e pode ter sido desinstalado ou renomeado.",
 			"apiKeyRequired": "É necessária uma chave de API para listar os modelos.",
 			"loadingModels": "A carregar modelos...",
 			"availableModels": "Modelos disponíveis:",
@@ -1155,9 +1255,9 @@
 		},
 		"achievements": {
 			"set_default_aisource": {
-				"name": "fonte de magia",
-				"description": "Uma IA padrão é designada como fonte de fornecimento de mana.",
-				"locked_description": "Defina uma fonte de IA padrão uma vez."
+				"name": "fount de magia",
+				"description": "Uma IA padrão é designada como fount de fornecimento de mana.",
+				"locked_description": "Defina uma fount de IA padrão uma vez."
 			}
 		}
 	},
@@ -1346,15 +1446,15 @@
 	},
 	"browser_integration_script": {
 		"hostChange": {
-			"securityWarningTitle": "--- Aviso de segurança da fonte ---",
+			"securityWarningTitle": "--- Aviso de segurança da fount ---",
 			"message": "A página atual (\"${origin}\") está tentando alterar seu endereço de host para:\n\n\"${newHost}\"\n\nAVISO: A aprovação desta ação permitirá que o novo host controla totalmente seus recursos de integração do navegador, o que pode levar a vazamentos sensíveis de informações ou roubo de contas.\nA aprovação só deve ser feita se você tiver certeza de que esta é sua própria operação (por exemplo, migrando um servidor fount).\n\nTem certeza de que deseja permitir essa alteração?",
-			"uuidMismatchError": "Erro de segurança da fonte: a identidade (UUID) do host ${newHost} não corresponde à sua existente. A operação foi cancelada.",
-			"verificationError": "Erro de segurança da fonte: Não é possível verificar o novo host \"${newHost}\". Verifique se o endereço está correto e se o serviço estiver em execução."
+			"uuidMismatchError": "Erro de segurança da fount: a identidade (UUID) do host ${newHost} não corresponde à sua existente. A operação foi cancelada.",
+			"verificationError": "Erro de segurança da fount: Não é possível verificar o novo host \"${newHost}\". Verifique se o endereço está correto e se o serviço estiver em execução."
 		},
 		"update": {
 			"prompt": "Uma nova versão do script de integração do navegador FOUNT está disponível. A página de atualização está agora aberta?"
 		},
-		"csp_warning": "O script de integração do navegador da fonte detecta que a política do CSP existe na página, o que pode fazer com que o script de integração não funcione corretamente. Por favor, considere instalar o plug -in para fechar o CSP."
+		"csp_warning": "O script de integração do navegador da fount detecta que a política do CSP existe na página, o que pode fazer com que o script de integração não funcione corretamente. Por favor, considere instalar o plug -in para fechar o CSP."
 	},
 	"terminal_assistant": {
 		"title": "Assistente de Terminal",

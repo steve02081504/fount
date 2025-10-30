@@ -98,6 +98,106 @@
 		},
 		"telegrambot": {
 			"botStarted": "Character ${charname} has logged in to the Telegram bot ${botusername}."
+		},
+		"path": {
+			"update": {
+				"skippingFountUpdate": "Because the .noupdate file exists, the fount update is skipped",
+				"skippingDenoUpgradeDocker": "Skip Deno upgrade in Docker environment"
+			},
+			"shortcut": {
+				"desktopShortcutCreated": "Desktop shortcut created at ${path}",
+				"startMenuShortcutCreated": "Start menu shortcut created at ${path}",
+				"protocolHandlerRegistered": "fount:// protocol handler registered.",
+				"osacompileNotFound": "Error: 'osacompile' not found. Unable to create macOS app.",
+				"lsregisterFailed": "Warning: Using lsregister to register an application with LaunchServices failed.",
+				"createDesktopAppFailed": "Error: Failed to create desktop application.",
+				"shortcutNotSupported": "Warning: Your operating system (${os}) does not support creating desktop shortcuts."
+			},
+			"git": {
+				"repoNotFound": "The git repository of fount was not found. Initializing a new one...",
+				"fetchingAndResetting": "Fetching from remote repository and resetting to master...",
+				"fetchFailed": "Failed to get from 'origin'.",
+				"localChangesDetected": "Local changes detected, differences will be saved before overwriting.",
+				"backupSavedTo": "A backup of your local changes has been saved to: ${path}",
+				"notOnBranch": "Not on the branch, switch to 'master'...",
+				"noUpstreamBranch": "Warning: No upstream branch is configured for branch '${branch}'. Setting upstream to 'origin/master'.",
+				"dirtyWorkingDirectory": "Warning: The working directory is not clean. Please stage or commit your changes before updating.",
+				"updatingFromRemote": "Updating from remote repository...",
+				"localBranchAhead": "The local branch is ahead of the remote branch. No updates required.",
+				"branchesDiverged": "The local and remote branches have been forked. Forced update in progress...",
+				"alreadyUpToDate": "Already the latest.",
+				"notInstalled": "Git is not installed, trying to install...",
+				"installFailedWinget": "Since Winget installation failed, Git cannot be installed. Please install it manually.",
+				"installFailedManual": "Unable to install Git, please install it manually.",
+				"notInstalledSkippingPull": "Git is not installed, skip git pull",
+				"repoNotFoundSkippingPull": "Repository not found, skip git pull"
+			},
+			"deno": {
+				"installingTermux": "Installing Deno for Termux...",
+				"missing": "Deno not found, installing automatically...",
+				"installFailedFallback": "Deno installation failed, trying to automatically install to the path folder of fount...",
+				"isRequired": "Deno not found, fount cannot be run without Deno",
+				"notWorking": "For some reason Deno isn't working, you may want to join https://discord.gg/deno for support",
+				"upgradeFailedTermux": "Deno upgrade command failed, trying to reinstall Deno for Termux...",
+				"upgradeFailed": "Warning: Deno upgrade may have failed. Please check for errors."
+			},
+			"install": {
+				"rootWarning1": "Not recommended: running fount as root grants full system access to all fount components.",
+				"rootWarning2": "Unless you know what you are doing, it is recommended to run fount as a normal user.",
+				"installingDependencies": "Installing dependencies...",
+				"untrustedPartsWarning": "Do not install any untrusted fount components on your system, they can do anything."
+			},
+			"clean": {
+				"removingCaches": "Removing cache...",
+				"reinstallingDependencies": "Reinstalling dependencies...",
+				"cleaningDenoCaches": "Cleaning Deno cache...",
+				"cleaningOldPwshModules": "Cleaning up old pwsh modules..."
+			},
+			"keepalive": {
+				"failedToStart": "Even after automatic repair attempts, the fountain fails to start for a short period of time. Please check the logs for errors.",
+				"autoInitDisabled": "fount has been restarted multiple times in the last short period of time, but automatic reinitialization has been disabled due to the presence of the .noautoinit file. Exiting.",
+				"restartingTooFast": "fount has been restarted multiple times in a short period of time. Forced reinitialization...",
+				"initFailed": "Fount initialization failed. Exiting.",
+				"initComplete": "Reinitialization completed. Trying to restart fount..."
+			},
+			"remove": {
+				"removingFount": "Removing fount...",
+				"removingFountFromPath": "Removing fount from PATH...",
+				"removingProtocolHandler": "Removing fount:// protocol handler...",
+				"removingFountFromGitSafeDir": "Removing fount from git safe.directory...",
+				"removingInstalledSystemPackages": "Removing installed system packages...",
+				"uninstallingDeno": "Uninstalling Deno...",
+				"removingFountInstallationDir": "Removing fount installation directory...",
+				"fountInstallationDirRemoved": "The fount installation directory has been removed.",
+				"fountUninstallationComplete": "fount uninstallation completed.",
+				"removingFountPwshFromProfile": "Removing fount-pwsh from PowerShell Profile...",
+				"fountPwshRemovedFromProfile": "fount-pwsh has been removed from PowerShell Profile.",
+				"pwshProfileNotFound": "PowerShell Profile not found, skipping removing fount-pwsh from profile.",
+				"uninstallingFountPwsh": "Uninstalling fount-pwsh...",
+				"uninstallFountPwshFailed": "Uninstalling fount-pwsh failed: ${message}",
+				"protocolHandlerRemoved": "The fount:// protocol handler has been removed.",
+				"removeProtocolHandlerFailed": "Failed to remove fount:// protocol handler: ${message}",
+				"removingTerminalProfile": "Removing Windows Terminal Profile...",
+				"terminalProfileRemoved": "The Windows Terminal Profile directory has been removed.",
+				"terminalProfileNotFound": "Windows Terminal Profile directory not found.",
+				"desktopShortcutRemoved": "Desktop shortcut removed.",
+				"desktopShortcutNotFound": "Desktop shortcut not found.",
+				"removingStartMenuShortcut": "Removing start menu shortcuts...",
+				"startMenuShortcutRemoved": "Start menu shortcut has been removed.",
+				"startMenuShortcutNotFound": "Start menu shortcut not found.",
+				"removingInstalledPwshModules": "Removing installed pwsh module...",
+				"moduleRemoved": "${module} has been removed.",
+				"removeModuleFailed": "Removing ${module} failed: ${message}",
+				"uninstallingGit": "Uninstalling Git...",
+				"uninstallingChrome": "Uninstalling Chrome...",
+				"uninstallingWinget": "Uninstalling Winget...",
+				"removeDenoFailed": "Failed to remove Deno: ${message}",
+				"removingBackgroundRunner": "Removing background programs...",
+				"removeBackgroundRunnerFailed": "Failed to remove background running program: ${message}"
+			},
+			"protocol": {
+				"description": "URL:fount protocol"
+			}
 		}
 	},
 	"installer_wait_screen": {

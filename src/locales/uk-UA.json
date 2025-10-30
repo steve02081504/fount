@@ -98,6 +98,106 @@
 		},
 		"telegrambot": {
 			"botStarted": "Персонаж ${charname} увійшов у систему на Telegram Bot ${botusername}"
+		},
+		"path": {
+			"update": {
+				"skippingFountUpdate": "Оскільки файл .noupdate існує, оновлення джерела пропускається",
+				"skippingDenoUpgradeDocker": "Пропустити оновлення Deno в середовищі Docker"
+			},
+			"shortcut": {
+				"desktopShortcutCreated": "Ярлик на робочому столі створено в ${path}",
+				"startMenuShortcutCreated": "Ярлик меню «Пуск» створено в ${path}",
+				"protocolHandlerRegistered": "обробник протоколу fount:// зареєстровано.",
+				"osacompileNotFound": "Помилка: 'osacompile' не знайдено. Не вдалося створити програму macOS.",
+				"lsregisterFailed": "Попередження: використання lsregister для реєстрації програми в LaunchServices не вдалося.",
+				"createDesktopAppFailed": "Помилка: не вдалося створити настільну програму.",
+				"shortcutNotSupported": "Попередження: ваша операційна система (${os}) не підтримує створення ярликів на робочому столі."
+			},
+			"git": {
+				"repoNotFound": "Git-репозиторій фонту не знайдено. Ініціалізація нового...",
+				"fetchingAndResetting": "Отримання з віддаленого сховища та скидання до основного...",
+				"fetchFailed": "Не вдалося отримати з «походження».",
+				"localChangesDetected": "Виявлено локальні зміни, відмінності буде збережено перед перезаписом.",
+				"backupSavedTo": "Резервну копію ваших локальних змін збережено в: ${path}",
+				"notOnBranch": "Не на гілці, переключіться на «master»...",
+				"noUpstreamBranch": "Попередження: для гілки '${branch}' не налаштовано вихідну гілку. Встановлення висхідного потоку на «вихідний/основний».",
+				"dirtyWorkingDirectory": "Попередження: робочий каталог не чистий. Внесіть або зафіксуйте свої зміни перед оновленням.",
+				"updatingFromRemote": "Оновлення з віддаленого сховища...",
+				"localBranchAhead": "Локальна гілка попереду віддаленої гілки. Оновлення не потрібні.",
+				"branchesDiverged": "Локальні та віддалені гілки були розгалужені. Виконується примусове оновлення...",
+				"alreadyUpToDate": "Вже останній.",
+				"notInstalled": "Git не встановлено, намагаюся встановити...",
+				"installFailedWinget": "Оскільки встановлення Winget не вдалося, Git неможливо встановити. Будь ласка, встановіть його вручну.",
+				"installFailedManual": "Не вдалося встановити Git, будь ласка, встановіть його вручну.",
+				"notInstalledSkippingPull": "Git не встановлено, пропустіть git pull",
+				"repoNotFoundSkippingPull": "Репозиторій не знайдено, пропустіть git pull"
+			},
+			"deno": {
+				"installingTermux": "Встановлення Deno для Termux...",
+				"missing": "Deno не знайдено, встановлення відбувається автоматично...",
+				"installFailedFallback": "Помилка встановлення Deno, спроба автоматичного встановлення до папки шляху до джерела...",
+				"isRequired": "Deno не знайдено, фонт неможливо запустити без Deno",
+				"notWorking": "З якоїсь причини Deno не працює, ви можете приєднатися до https://discord.gg/deno для підтримки",
+				"upgradeFailedTermux": "Не вдалося виконати команду оновлення Deno. Спроба повторно встановити Deno для Termux...",
+				"upgradeFailed": "Попередження: можливо, оновлення Deno не вдалося. Будь ласка, перевірте наявність помилок."
+			},
+			"install": {
+				"rootWarning1": "Не рекомендується: запуск fount від імені root надає повний системний доступ до всіх компонентів fount.",
+				"rootWarning2": "Якщо ви не знаєте, що робите, рекомендується запускати fount як звичайний користувач.",
+				"installingDependencies": "Встановлення залежностей...",
+				"untrustedPartsWarning": "Не встановлюйте ненадійні компоненти джерела у вашу систему, вони можуть зробити все, що завгодно."
+			},
+			"clean": {
+				"removingCaches": "Видалення кешу...",
+				"reinstallingDependencies": "Перевстановлення залежностей...",
+				"cleaningDenoCaches": "Очищення кешу Deno...",
+				"cleaningOldPwshModules": "Очищення старих модулів pwsh..."
+			},
+			"keepalive": {
+				"failedToStart": "Навіть після спроб автоматичного ремонту фонтан не запускається протягом короткого періоду часу. Перевірте журнали на наявність помилок.",
+				"autoInitDisabled": "fount було перезапущено кілька разів за останній короткий проміжок часу, але автоматичну повторну ініціалізацію було вимкнено через наявність файлу .noautoinit. Вихід.",
+				"restartingTooFast": "fount було перезапущено кілька разів за короткий проміжок часу. Примусова повторна ініціалізація...",
+				"initFailed": "Помилка ініціалізації фонту. Вихід.",
+				"initComplete": "Повторну ініціалізацію завершено. Спроба перезапустити Fount..."
+			},
+			"remove": {
+				"removingFount": "Видалення фонту...",
+				"removingFountFromPath": "Видалення шрифту зі ШЛЯХУ...",
+				"removingProtocolHandler": "Видалення обробника протоколу fount://...",
+				"removingFountFromGitSafeDir": "Видалення фонту з git safe.directory...",
+				"removingInstalledSystemPackages": "Видалення встановлених системних пакетів...",
+				"uninstallingDeno": "Видалення Deno...",
+				"removingFountInstallationDir": "Видалення каталогу встановлення шрифту...",
+				"fountInstallationDirRemoved": "Каталог встановлення фонту видалено.",
+				"fountUninstallationComplete": "видалення фонту завершено.",
+				"removingFountPwshFromProfile": "Видалення fount-pwsh із профілю PowerShell...",
+				"fountPwshRemovedFromProfile": "fount-pwsh видалено з профілю PowerShell.",
+				"pwshProfileNotFound": "Профіль PowerShell не знайдено, пропускаючи видалення fount-pwsh із профілю.",
+				"uninstallingFountPwsh": "Видалення fount-pwsh...",
+				"uninstallFountPwshFailed": "Не вдалося видалити fount-pwsh: ${message}",
+				"protocolHandlerRemoved": "Обробник протоколу fount:// видалено.",
+				"removeProtocolHandlerFailed": "Не вдалося видалити обробник протоколу fount://: ${message}",
+				"removingTerminalProfile": "Видалення профілю Windows Terminal...",
+				"terminalProfileRemoved": "Каталог Windows Terminal Profile видалено.",
+				"terminalProfileNotFound": "Каталог профілю Windows Terminal не знайдено.",
+				"desktopShortcutRemoved": "Ярлик на робочому столі видалено.",
+				"desktopShortcutNotFound": "Ярлик на робочому столі не знайдено.",
+				"removingStartMenuShortcut": "Видалення ярликів меню «Пуск»...",
+				"startMenuShortcutRemoved": "Ярлик меню «Пуск» видалено.",
+				"startMenuShortcutNotFound": "Ярлик меню «Пуск» не знайдено.",
+				"removingInstalledPwshModules": "Видалення встановленого модуля pwsh...",
+				"moduleRemoved": "${module} видалено.",
+				"removeModuleFailed": "Не вдалося видалити ${module}: ${message}",
+				"uninstallingGit": "Видалення Git...",
+				"uninstallingChrome": "Видалення Chrome...",
+				"uninstallingWinget": "Видалення Winget...",
+				"removeDenoFailed": "Не вдалося видалити Deno: ${message}",
+				"removingBackgroundRunner": "Видалення фонових програм...",
+				"removeBackgroundRunnerFailed": "Не вдалося видалити фонову програму: ${message}"
+			},
+			"protocol": {
+				"description": "URL:протокол джерела"
+			}
 		}
 	},
 	"installer_wait_screen": {

@@ -98,6 +98,106 @@
 		},
 		"telegrambot": {
 			"botStarted": "角色 ${charname} 已在 Telegram Bot ${botusername} 上登入"
+		},
+		"path": {
+			"update": {
+				"skippingFountUpdate": "因 .noupdate 文件存在，跳過 fount 更新",
+				"skippingDenoUpgradeDocker": "在 Docker 環境中跳過 Deno 升級"
+			},
+			"shortcut": {
+				"desktopShortcutCreated": "已在 ${path} 創建桌面捷徑",
+				"startMenuShortcutCreated": "已在 ${path} 創建開始菜單捷徑",
+				"protocolHandlerRegistered": "fount:// 協議處理器已註冊。",
+				"osacompileNotFound": "錯誤：找不到 'osacompile'。無法創建 macOS 應用。",
+				"lsregisterFailed": "警告：使用 lsregister 向 LaunchServices 註冊應用程式失敗。",
+				"createDesktopAppFailed": "錯誤：創建桌面應用程式失敗。",
+				"shortcutNotSupported": "警告：您的操作系統 (${os}) 不支持創建桌面捷徑。"
+			},
+			"git": {
+				"repoNotFound": "未找到 fount 的 git 倉庫，正在初始化一個新的...",
+				"fetchingAndResetting": "正在從遠程倉庫獲取並重置到 master...",
+				"fetchFailed": "從 'origin' 獲取失敗。",
+				"localChangesDetected": "檢測到本地更改，將在覆蓋前保存差異。",
+				"backupSavedTo": "您的本地更改備份已保存到：${path}",
+				"notOnBranch": "不在分支上，切換到 'master'...",
+				"noUpstreamBranch": "警告：沒有為分支 '${branch}' 配置上游分支。正在將上游設置為 'origin/master'。",
+				"dirtyWorkingDirectory": "警告：工作目錄有尚未提交的變更。請在更新前暫存或提交。",
+				"updatingFromRemote": "正在從遠程倉庫更新...",
+				"localBranchAhead": "本地分支領先於遠程分支。無需更新。",
+				"branchesDiverged": "本地和遠程分支已分叉。強制更新中...",
+				"alreadyUpToDate": "已是最新。",
+				"notInstalled": "未安裝 Git，正在嘗試安裝...",
+				"installFailedWinget": "由於 Winget 安裝失敗，無法安裝 Git，請手動安裝。",
+				"installFailedManual": "無法安裝 Git，請手動安裝。",
+				"notInstalledSkippingPull": "未安裝 Git，跳過 git pull",
+				"repoNotFoundSkippingPull": "未找到倉庫，跳過 git pull"
+			},
+			"deno": {
+				"installingTermux": "正在為 Termux 安裝 Deno...",
+				"missing": "未找到 Deno，正在自動安裝...",
+				"installFailedFallback": "Deno 安裝失敗，嘗試自動安裝到 fount 的 path 文件夾...",
+				"isRequired": "未找到 Deno，沒有 Deno 無法運行 fount",
+				"notWorking": "由於某種原因 Deno 無法工作，您可能需要加入 https://discord.gg/deno 以獲取支持",
+				"upgradeFailedTermux": "Deno 升級命令失敗，正在嘗試為 Termux 重新安裝 Deno...",
+				"upgradeFailed": "警告：Deno 升級可能已失敗。請檢查錯誤。"
+			},
+			"install": {
+				"rootWarning1": "不推薦：以 root 身份運行 fount 會授予所有 fount 元件完全的系統訪問權限。",
+				"rootWarning2": "除非您清楚自己在做什麼，否則建議以普通用戶身份運行 fount。",
+				"installingDependencies": "正在安裝依賴...",
+				"untrustedPartsWarning": "不要在您的系統上安裝任何不受信任的 fount 元件，它們可以做任何事情。"
+			},
+			"clean": {
+				"removingCaches": "正在移除緩存...",
+				"reinstallingDependencies": "正在重新安裝依賴...",
+				"cleaningDenoCaches": "正在清理 Deno 緩存...",
+				"cleaningOldPwshModules": "正在清理舊的 pwsh 模塊..."
+			},
+			"keepalive": {
+				"failedToStart": "即使在自動修復嘗試後，fount 仍在短時間內啟動失敗。請檢查日誌中的錯誤。",
+				"autoInitDisabled": "fount 在最近短時間內多次重啟，但由於 .noautoinit 文件存在，自動重新初始化已被禁用。正在退出。",
+				"restartingTooFast": "fount 在最近短時間內多次重啟。正在強制重新初始化...",
+				"initFailed": "fount 初始化失敗。正在退出。",
+				"initComplete": "重新初始化完成。正在嘗試重啟 fount..."
+			},
+			"remove": {
+				"removingFount": "正在移除 fount...",
+				"removingFountFromPath": "正在從 PATH 中移除 fount...",
+				"removingProtocolHandler": "正在移除 fount:// 協議處理器...",
+				"removingFountFromGitSafeDir": "正在從 git safe.directory 中移除 fount...",
+				"removingInstalledSystemPackages": "正在移除已安裝的系統包...",
+				"uninstallingDeno": "正在卸載 Deno...",
+				"removingFountInstallationDir": "正在移除 fount 安裝目錄...",
+				"fountInstallationDirRemoved": "fount 安裝目錄已移除。",
+				"fountUninstallationComplete": "fount 卸載完成。",
+				"removingFountPwshFromProfile": "正在從 PowerShell Profile 中移除 fount-pwsh...",
+				"fountPwshRemovedFromProfile": "已從 PowerShell Profile 中移除 fount-pwsh。",
+				"pwshProfileNotFound": "未找到 PowerShell Profile，跳過從 profile 中移除 fount-pwsh。",
+				"uninstallingFountPwsh": "正在卸載 fount-pwsh...",
+				"uninstallFountPwshFailed": "卸載 fount-pwsh 失敗：${message}",
+				"protocolHandlerRemoved": "fount:// 協議處理器已移除。",
+				"removeProtocolHandlerFailed": "移除 fount:// 協議處理器失敗：${message}",
+				"removingTerminalProfile": "正在移除 Windows Terminal Profile...",
+				"terminalProfileRemoved": "Windows Terminal Profile 目錄已移除。",
+				"terminalProfileNotFound": "未找到 Windows Terminal Profile 目錄。",
+				"desktopShortcutRemoved": "桌面捷徑已移除。",
+				"desktopShortcutNotFound": "未找到桌面捷徑。",
+				"removingStartMenuShortcut": "正在移除開始菜單捷徑...",
+				"startMenuShortcutRemoved": "開始菜單捷徑已移除。",
+				"startMenuShortcutNotFound": "未找到開始菜單捷徑。",
+				"removingInstalledPwshModules": "正在移除已安裝的 pwsh 模塊...",
+				"moduleRemoved": "${module} 已移除。",
+				"removeModuleFailed": "移除 ${module} 失敗：${message}",
+				"uninstallingGit": "正在卸載 Git...",
+				"uninstallingChrome": "正在卸載 Chrome...",
+				"uninstallingWinget": "正在卸載 Winget...",
+				"removeDenoFailed": "移除 Deno 失敗：${message}",
+				"removingBackgroundRunner": "正在移除後台運行程式...",
+				"removeBackgroundRunnerFailed": "移除後台運行程式失敗：${message}"
+			},
+			"protocol": {
+				"description": "URL:fount 協議"
+			}
 		}
 	},
 	"installer_wait_screen": {
