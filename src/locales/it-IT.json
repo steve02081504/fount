@@ -98,6 +98,106 @@
 		},
 		"telegrambot": {
 			"botStarted": "Il personaggio ${charname} ha effettuato l'accesso al bot Telegram ${botusername}."
+		},
+		"path": {
+			"update": {
+				"skippingFountUpdate": "Poiché il file .noupdate esiste, l'aggiornamento del fount viene ignorato",
+				"skippingDenoUpgradeDocker": "Salta l'aggiornamento di Deno nell'ambiente Docker"
+			},
+			"shortcut": {
+				"desktopShortcutCreated": "Collegamento sul desktop creato in ${path}",
+				"startMenuShortcutCreated": "Collegamento al menu Start creato in ${path}",
+				"protocolHandlerRegistered": "gestore del protocollo font:// registrato.",
+				"osacompileNotFound": "Errore: 'osacompile' non trovato. Impossibile creare l'app macOS.",
+				"lsregisterFailed": "Avviso: l'utilizzo di lsregister per registrare un'applicazione con LaunchServices non è riuscito.",
+				"createDesktopAppFailed": "Errore: impossibile creare l'applicazione desktop.",
+				"shortcutNotSupported": "Avviso: il tuo sistema operativo (${os}) non supporta la creazione di collegamenti sul desktop."
+			},
+			"git": {
+				"repoNotFound": "Impossibile trovare il repository git del font. Inizializzandone uno nuovo...",
+				"fetchingAndResetting": "Recupero dal repository remoto e ripristino del master...",
+				"fetchFailed": "Impossibile ottenere da \"origine\".",
+				"localChangesDetected": "Rilevate modifiche locali, le differenze verranno salvate prima della sovrascrittura.",
+				"backupSavedTo": "Un backup delle modifiche locali è stato salvato in: ${path}",
+				"notOnBranch": "Non sul ramo, passa a 'master'...",
+				"noUpstreamBranch": "Avviso: nessun ramo upstream è configurato per il ramo '${branch}'. Impostazione upstream su 'origine/master'.",
+				"dirtyWorkingDirectory": "Avvertenza: la directory di lavoro non è pulita. Si prega di fare lo stage o il commit di le modifiche prima dell'aggiornamento.",
+				"updatingFromRemote": "Aggiornamento dal repository remoto...",
+				"localBranchAhead": "La filiale locale è prima della filiale remota. Nessun aggiornamento richiesto.",
+				"branchesDiverged": "I rami locali e remoti sono stati biforcati. Aggiornamento forzato in corso...",
+				"alreadyUpToDate": "Già l'ultimo.",
+				"notInstalled": "Git non è installato, sto provando a installarlo...",
+				"installFailedWinget": "Poiché l'installazione di Winget non è riuscita, Git non può essere installato. Si prega di installarlo manualmente.",
+				"installFailedManual": "Impossibile installare Git, installalo manualmente.",
+				"notInstalledSkippingPull": "Git non è installato, salta git pull",
+				"repoNotFoundSkippingPull": "Repository non trovato, salta git pull"
+			},
+			"deno": {
+				"installingTermux": "Installazione di Deno per Termux...",
+				"missing": "Deno non trovato, installazione automatica...",
+				"installFailedFallback": "Installazione di Deno non riuscita, tentativo di installazione automatica nella cartella del percorso del font...",
+				"isRequired": "Deno non trovato, la fonte non può essere eseguita senza Deno",
+				"notWorking": "Per qualche motivo Deno non funziona, potresti voler iscriverti a https://discord.gg/deno per ricevere supporto",
+				"upgradeFailedTermux": "Comando di aggiornamento Deno non riuscito, tentativo di reinstallare Deno per Termux...",
+				"upgradeFailed": "Avvertenza: l'aggiornamento di Deno potrebbe non essere riuscito. Si prega di verificare la presenza di errori."
+			},
+			"install": {
+				"rootWarning1": "Non consigliato: l'esecuzione del font come root garantisce l'accesso completo al sistema a tutti i componenti del font.",
+				"rootWarning2": "A meno che tu non sappia cosa stai facendo, si consiglia di eseguire fount come utente normale.",
+				"installingDependencies": "Installazione delle dipendenze...",
+				"untrustedPartsWarning": "Non installare componenti di font non attendibili sul tuo sistema, possono fare qualsiasi cosa."
+			},
+			"clean": {
+				"removingCaches": "Rimozione cache...",
+				"reinstallingDependencies": "Reinstallazione delle dipendenze in corso...",
+				"cleaningDenoCaches": "Pulizia della cache di Deno...",
+				"cleaningOldPwshModules": "Ripulire i vecchi moduli pwsh..."
+			},
+			"keepalive": {
+				"failedToStart": "Anche dopo i tentativi di riparazione automatica, la fontana non si avvia per un breve periodo di tempo. Si prega di verificare la presenza di errori nei log.",
+				"autoInitDisabled": "fount è stato riavviato più volte nell'ultimo breve periodo di tempo, ma la reinizializzazione automatica è stata disabilitata a causa della presenza del file .noautoinit. In uscita.",
+				"restartingTooFast": "La fonte è stata riavviata più volte in un breve periodo di tempo. Reinizializzazione forzata...",
+				"initFailed": "Inizializzazione del font non riuscita. In uscita.",
+				"initComplete": "Reinizializzazione completata. Tentativo di riavviare il font..."
+			},
+			"remove": {
+				"removingFount": "Rimozione della fonte...",
+				"removingFountFromPath": "Rimozione del fount dal PERCORSO...",
+				"removingProtocolHandler": "Rimozione del gestore del protocollo font:// in corso...",
+				"removingFountFromGitSafeDir": "Rimozione di font da git safe.directory...",
+				"removingInstalledSystemPackages": "Rimozione dei pacchetti di sistema installati...",
+				"uninstallingDeno": "Disinstallazione di Deno...",
+				"removingFountInstallationDir": "Rimozione della directory di installazione dei font in corso...",
+				"fountInstallationDirRemoved": "La directory di installazione dei font è stata rimossa.",
+				"fountUninstallationComplete": "disinstallazione del font completata.",
+				"removingFountPwshFromProfile": "Rimozione di font-pwsh dal profilo PowerShell in corso...",
+				"fountPwshRemovedFromProfile": "font-pwsh è stato rimosso dal profilo PowerShell.",
+				"pwshProfileNotFound": "Profilo PowerShell non trovato, verrà ignorata la rimozione di font-pwsh dal profilo.",
+				"uninstallingFountPwsh": "Disinstallazione di font-pwsh in corso...",
+				"uninstallFountPwshFailed": "Disinstallazione di font-pwsh non riuscita: ${message}",
+				"protocolHandlerRemoved": "Il gestore del protocollo font:// è stato rimosso.",
+				"removeProtocolHandlerFailed": "Impossibile rimuovere il gestore del protocollo font://: ${message}",
+				"removingTerminalProfile": "Rimozione del profilo terminale di Windows...",
+				"terminalProfileRemoved": "La directory del profilo terminale di Windows è stata rimossa.",
+				"terminalProfileNotFound": "Directory del profilo terminale di Windows non trovata.",
+				"desktopShortcutRemoved": "Collegamento sul desktop rimosso.",
+				"desktopShortcutNotFound": "Collegamento sul desktop non trovato.",
+				"removingStartMenuShortcut": "Rimozione delle scorciatoie dal menu Start...",
+				"startMenuShortcutRemoved": "Il collegamento al menu Start è stato rimosso.",
+				"startMenuShortcutNotFound": "Collegamento al menu Start non trovato.",
+				"removingInstalledPwshModules": "Rimozione del modulo pwsh installato...",
+				"moduleRemoved": "${module} è stato rimosso.",
+				"removeModuleFailed": "Rimozione di ${module} non riuscita: ${message}",
+				"uninstallingGit": "Disinstallazione di Git in corso...",
+				"uninstallingChrome": "Disinstallazione di Chrome...",
+				"uninstallingWinget": "Disinstallazione di Winget...",
+				"removeDenoFailed": "Impossibile rimuovere Deno: ${message}",
+				"removingBackgroundRunner": "Rimozione dei programmi in background...",
+				"removeBackgroundRunnerFailed": "Impossibile rimuovere il programma in esecuzione in background: ${message}"
+			},
+			"protocol": {
+				"description": "URL: protocollo del fount"
+			}
 		}
 	},
 	"installer_wait_screen": {
@@ -616,7 +716,7 @@
 			"first_chat": {
 				"name": "ciao straniero",
 				"description": "Il primo messaggio è stato inviato e la storia ha inizio.",
-				"locked_description": "Invia il tuo primo messaggio con qualsiasi carattere."
+				"locked_description": "Invia il tuo primo messaggio con qualsiasi fount."
 			},
 			"multiplayer_chat": {
 				"name": "La stagione di White Album",
@@ -1507,7 +1607,7 @@
 			"keyPattern": "Un breve motivo della tastiera è facile da indovinare.",
 			"simpleRepeat": "caratteri ripetuti come \"AAA\" sono facilmente indovinati.",
 			"extendedRepeat": "I modelli di personaggi ripetuti come \"Abcabcabc\" sono facilmente indovinati.",
-			"sequences": "Sequenze di carattere comuni come \"ABC\" sono facilmente indovinate.",
+			"sequences": "Sequenze di caratteri comuni come \"ABC\" sono facilmente indovinate.",
 			"recentYears": "Gli ultimi anni sono facili da indovinare.",
 			"dates": "La data è facilmente indovinata.",
 			"topTen": "Questa è una password abusata.",
@@ -1528,7 +1628,7 @@
 			"dates": "Evita di usare date e anni correlati a te.",
 			"recentYears": "Evita di usare gli anni più recenti.",
 			"associatedYears": "Evita di usare anni relativi a te.",
-			"sequences": "Evita sequenze di carattere comuni.",
+			"sequences": "Evita sequenze di caratteri comuni.",
 			"repeated": "Evita parole e personaggi ripetitivi.",
 			"longerKeyboardPattern": "Utilizzare la schemi di tastiera più lunga e modificare più volte le direzioni di input.",
 			"anotherWord": "Aggiungi più parole non comuni.",

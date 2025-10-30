@@ -1,5 +1,114 @@
 ﻿$FOUNT_DIR = Split-Path -Parent $PSScriptRoot
 
+# --- i18n functions ---
+# Get system locales
+function Get-SystemLocales {
+	$locales = New-Object System.Collections.Generic.List[string]
+	$locales.Add((Get-Culture).Name)
+	if ($env:LANG) { $locales.Add($env:LANG.Split('.')[0].Replace('_', '-')) }
+	if ($env:LANGUAGE) { $locales.Add($env:LANGUAGE.Split('.')[0].Replace('_', '-')) }
+	if ($env:LC_ALL) { $locales.Add($env:LC_ALL.Split('.')[0].Replace('_', '-')) }
+	$locales.Add('en-UK') # Fallback
+	return $locales | Select-Object -Unique
+}
+
+# Get available locales from src/locales/list.csv
+function Get-AvailableLocales {
+	$localeListFile = Join-Path $FOUNT_DIR 'src/locales/list.csv'
+	if (Test-Path $localeListFile) {
+		try {
+			return Import-Csv $localeListFile | Select-Object -ExpandProperty lang
+		}
+		catch {
+			return @('en-UK') # Fallback
+		}
+	}
+ else {
+		return @('en-UK') # Fallback
+	}
+}
+
+# Find the best locale to use
+function Get-BestLocale {
+	param(
+		[string[]]$preferredLocales,
+		[string[]]$availableLocales
+	)
+
+	foreach ($preferred in $preferredLocales) {
+		if ($availableLocales -contains $preferred) {
+			return $preferred
+		}
+	}
+
+	foreach ($preferred in $preferredLocales) {
+		$prefix = $preferred.Split('-')[0]
+		foreach ($available in $availableLocales) {
+			if ($available.StartsWith($prefix)) {
+				return $available
+			}
+		}
+	}
+
+	return 'en-UK' # Default
+}
+
+# Load localization data
+function Import-LocaleData {
+	if (-not $env:FOUNT_LOCALE) {
+		$systemLocales = Get-SystemLocales
+		$availableLocales = Get-AvailableLocales
+		$env:FOUNT_LOCALE = Get-BestLocale -preferredLocales $systemLocales -availableLocales $availableLocales
+	}
+	$localeFile = Join-Path $FOUNT_DIR "src/locales/$($env:FOUNT_LOCALE).json"
+	if (-not (Test-Path $localeFile)) {
+		$env:FOUNT_LOCALE = 'en-UK'
+		$localeFile = Join-Path $FOUNT_DIR "src/locales/en-UK.json"
+	}
+
+	try {
+		Get-Content $localeFile -Raw | ConvertFrom-Json
+	} catch { $null }
+}
+
+# Get a translated string
+$Script:FountLocaleData = $null
+function Get-I18n {
+	param(
+		[string]$key,
+		[hashtable]$params = @{}
+	)
+
+	if ($null -eq $Script:FountLocaleData) {
+		$Script:FountLocaleData = Import-LocaleData
+	}
+
+	$keys = $key.Split('.')
+	$translation = $Script:FountLocaleData.fountConsole.path
+	foreach ($k in $keys) {
+		if ($null -ne $translation -and $translation.PSObject.Properties[$k]) {
+			$translation = $translation.$k
+		}
+		else {
+			$translation = $null
+			break
+		}
+	}
+
+	if ($null -eq $translation) {
+		$translation = $key # Fallback to the key itself
+	}
+
+	# Simple interpolation
+	foreach ($paramName in $params.Keys) {
+		$paramValue = $params[$paramName]
+		$translation = $translation.Replace("\${$paramName}", $paramValue)
+	}
+
+	return $translation
+}
+
+
 $ErrorCount = $Error.Count
 
 if ($PSEdition -eq "Desktop") {
@@ -146,7 +255,7 @@ function New-FountShortcut {
 	$desktopShortcut.Arguments = $shortcutArguments
 	$desktopShortcut.IconLocation = $shortcutIconLocation
 	$desktopShortcut.Save()
-	Write-Host "Desktop shortcut created at $desktopPath\fount.lnk"
+	Write-Host (Get-I18n -key 'shortcut.desktopShortcutCreated' -params @{path = "$desktopPath\fount.lnk" })
 
 	$startMenuPath = [Environment]::GetFolderPath("StartMenu")
 	Remove-Item -Force "$startMenuPath\fount.lnk" -ErrorAction Ignore
@@ -155,12 +264,12 @@ function New-FountShortcut {
 	$startMenuShortcut.Arguments = $shortcutArguments
 	$startMenuShortcut.IconLocation = $shortcutIconLocation
 	$startMenuShortcut.Save()
-	Write-Host "Start Menu shortcut created at $startMenuPath\fount.lnk"
+	Write-Host (Get-I18n -key 'shortcut.startMenuShortcutCreated' -params @{path = "$startMenuPath\fount.lnk" })
 }
 
 function Register-FountProtocol {
 	$protocolName = "fount"
-	$protocolDescription = "URL:fount Protocol"
+	$protocolDescription = (Get-I18n -key 'protocol.description')
 	$command = "`"$FOUNT_DIR\path\fount.bat`" protocolhandle `"%1`""
 	try {
 		New-Item -Path "HKCU:\Software\Classes\$protocolName" -Force | Out-Null
@@ -204,7 +313,7 @@ function deno_upgrade() {
 		$deno_ver = deno -V
 	}
 	if (!$deno_ver) {
-		Write-Error "For some reason deno doesn't work, you may need to join https://discord.gg/deno to get support" -ErrorAction Ignore
+		Write-Error (Get-I18n -key 'deno.notWorking') -ErrorAction Ignore
 		exit 1
 	}
 	$deno_update_channel = "stable"
@@ -219,7 +328,7 @@ function deno_upgrade() {
 
 function Update-FountAndDeno {
 	if (Test-Path -Path "$FOUNT_DIR/.noupdate") {
-		Write-Host "Skipping fount update due to .noupdate file"
+		Write-Host (Get-I18n -key 'update.skippingFountUpdate')
 	}
 	else {
 		deno_upgrade
@@ -431,7 +540,7 @@ if (!$IsWindows) {
 
 # Git 安装和更新
 if (!(Get-Command git -ErrorAction SilentlyContinue)) {
-	Write-Host "Git is not installed, attempting to install..."
+	Write-Host (Get-I18n -key 'git.notInstalled')
 	Test-Winget
 	if (Get-Command winget -ErrorAction SilentlyContinue) {
 		winget install --id Git.Git -e --source winget
@@ -439,38 +548,38 @@ if (!(Get-Command git -ErrorAction SilentlyContinue)) {
 		Set-Content "$FOUNT_DIR/data/installer/auto_installed_git" '1'
 	}
 	else {
-		Write-Host "Failed to install Git because Winget is failed to install, please install it manually."
+		Write-Host (Get-I18n -key 'git.installFailedWinget')
 	}
 	RefreshPath
 	if (!(Get-Command git -ErrorAction SilentlyContinue)) {
-		Write-Host "Failed to install Git, please install it manually."
+		Write-Host (Get-I18n -key 'git.installFailedManual')
 	}
 }
 
 function fount_upgrade {
 	if (!(Get-Command git -ErrorAction SilentlyContinue)) {
-		Write-Host "Git is not installed, skipping git pull"
+		Write-Host (Get-I18n -key 'git.notInstalledSkippingPull')
 		return
 	}
 	if ($FOUNT_DIR -in $(git config --global --get-all safe.directory)) {} else {
 		git config --global --add safe.directory "$FOUNT_DIR"
 	}
 	if (!(Test-Path -Path "$FOUNT_DIR/.git")) {
-		Write-Host "fount's git repository not found, initializing a new one..."
+		Write-Host (Get-I18n -key 'git.repoNotFound')
 		git -C "$FOUNT_DIR" init -b master
 		git -C "$FOUNT_DIR" config core.autocrlf false
 		git -C "$FOUNT_DIR" remote add origin https://github.com/steve02081504/fount.git
-		Write-Host "Fetching from remote and resetting to master..."
+		Write-Host (Get-I18n -key 'git.fetchingAndResetting')
 		git -C "$FOUNT_DIR" fetch origin master --depth 1
-		if ($LastExitCode) { Write-Error "Failed to fetch from 'origin'."; return }
+		if ($LastExitCode) { Write-Error (Get-I18n -key 'git.fetchFailed'); return }
 		$diffOutput = git -C "$FOUNT_DIR" diff "origin/master"
 		if ($diffOutput) {
-			Write-Host "Local changes diff will be saved before overwriting." -ForegroundColor Yellow
+			Write-Host (Get-I18n -key 'git.localChangesDetected') -ForegroundColor Yellow
 			$timestamp = (Get-Date -Format 'yyyyMMdd_HHmmss')
 			$diffFileName = "fount-local-changes-diff_$timestamp.diff"
 			$diffFilePath = Join-Path -Path $env:TEMP -ChildPath $diffFileName
 			$diffOutput | Out-File -FilePath $diffFilePath -Encoding utf8
-			Write-Host "A backup of your local changes has been saved to: " -ForegroundColor Green -NoNewline
+			Write-Host (Get-I18n -key 'git.backupSavedTo' -params @{path = '' }) -ForegroundColor Green -NoNewline
 			Write-Host $diffFilePath -ForegroundColor Cyan
 		}
 		git -C "$FOUNT_DIR" clean -fd
@@ -478,14 +587,14 @@ function fount_upgrade {
 	}
 
 	if (!(Test-Path -Path "$FOUNT_DIR/.git")) {
-		Write-Host "Repository not found, skipping git pull"
+		Write-Host (Get-I18n -key 'git.repoNotFoundSkippingPull')
 	}
 	else {
 		git -C "$FOUNT_DIR" config core.autocrlf false
 		git -C "$FOUNT_DIR" fetch origin
 		$currentBranch = git -C "$FOUNT_DIR" rev-parse --abbrev-ref HEAD
 		if ($currentBranch -eq 'HEAD') {
-			Write-Host "Not on a branch, switching to 'master'..."
+			Write-Host (Get-I18n -key 'git.notOnBranch')
 			git -C "$FOUNT_DIR" clean -fd
 			git -C "$FOUNT_DIR" reset --hard "origin/master"
 			git -C "$FOUNT_DIR" checkout master
@@ -493,7 +602,7 @@ function fount_upgrade {
 		}
 		$remoteBranch = git -C "$FOUNT_DIR" rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>$null
 		if (-not $remoteBranch) {
-			Write-Warning "No upstream branch configured for '$currentBranch'. Setting upstream to 'origin/master'."
+			Write-Warning (Get-I18n -key 'git.noUpstreamBranch' -params @{branch = $currentBranch })
 			git -C "$FOUNT_DIR" branch --set-upstream-to origin/master
 			$remoteBranch = "origin/master"
 		}
@@ -502,26 +611,26 @@ function fount_upgrade {
 		$remoteCommit = git -C "$FOUNT_DIR" rev-parse $remoteBranch
 		$status = git -C "$FOUNT_DIR" status --porcelain
 		if ($status) {
-			Write-Warning "Working directory is not clean.  Stash or commit your changes before updating."
+			Write-Warning (Get-I18n -key 'git.dirtyWorkingDirectory')
 		}
 
 		if ($localCommit -ne $remoteCommit) {
 			if ($mergeBase -eq $localCommit) {
-				Write-Host "Updating from remote repository..."
+				Write-Host (Get-I18n -key 'git.updatingFromRemote')
 				git -C "$FOUNT_DIR" fetch origin
 				git -C "$FOUNT_DIR" reset --hard $remoteBranch
 			}
 			elseif ($mergeBase -eq $remoteCommit) {
-				Write-Host "Local branch is ahead of remote. No update needed."
+				Write-Host (Get-I18n -key 'git.localBranchAhead')
 			}
 			else {
-				Write-Host "Local and remote branches have diverged. Force updating..."
+				Write-Host (Get-I18n -key 'git.branchesDiverged')
 				git -C "$FOUNT_DIR" fetch origin
 				git -C "$FOUNT_DIR" reset --hard $remoteBranch
 			}
 		}
 		else {
-			Write-Host "Already up to date."
+			Write-Host (Get-I18n -key 'git.alreadyUpToDate')
 		}
 	}
 }
@@ -535,13 +644,13 @@ if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
 	}
 }
 if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
-	Write-Host "Deno missing, auto installing..."
+	Write-Host (Get-I18n -key 'deno.missing')
 	Invoke-RestMethod https://deno.land/install.ps1 | Invoke-Expression
 	if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
 		RefreshPath
 	}
 	if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
-		Write-Host "Deno installation failed, attempting auto installing to fount's path folder..."
+		Write-Host (Get-I18n -key 'deno.installFailedFallback')
 		$url = "https://github.com/denoland/deno/releases/latest/download/deno-" + $(if ($IsWindows) {
 				"x86_64-pc-windows-msvc.zip"
 			}
@@ -563,7 +672,7 @@ if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
 	New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
 	Set-Content "$FOUNT_DIR/data/installer/auto_installed_deno" '1'
 	if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
-		Write-Host "Deno missing, you cant run fount without deno"
+		Write-Host (Get-I18n -key 'deno.isRequired')
 		exit 1
 	}
 }
@@ -636,10 +745,10 @@ if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or ($args.Count -gt 0 -and $ar
 		run shutdown
 	}
 	New-Item -Path "$FOUNT_DIR/node_modules" -ItemType Directory -ErrorAction Ignore -Force | Out-Null
-	Write-Host "Installing dependencies..."
+	Write-Host (Get-I18n -key 'install.installingDependencies')
 	deno install --reload --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --entrypoint "$FOUNT_DIR/src/server/index.mjs"
 	Write-Host "======================================================" -ForegroundColor Green
-	Write-Warning "DO NOT install any untrusted fount parts on your system, they can do ANYTHING."
+	Write-Warning (Get-I18n -key 'install.untrustedPartsWarning')
 	Write-Host "======================================================" -ForegroundColor Green
 
 	# 隐藏文件设置和desktop.ini生效
@@ -696,19 +805,19 @@ public class ExplorerRefresher {
 if ($args.Count -gt 0 -and $args[0] -eq 'clean') {
 	if (Test-Path -Path "$FOUNT_DIR/node_modules") {
 		run shutdown
-		Write-Host "Removing caches..."
+		Write-Host (Get-I18n -key 'clean.removingCaches')
 		Remove-Item -Force -Recurse -ErrorAction Ignore "$FOUNT_DIR/node_modules"
 		Get-ChildItem -Path "$FOUNT_DIR" -Filter "*_cache.json" -Recurse | Remove-Item -Force -ErrorAction Ignore
 	}
-	Write-Host "Reinstalling dependencies..."
+	Write-Host (Get-I18n -key 'clean.reinstallingDependencies')
 	run shutdown
-	Write-Host "Cleaning deno caches..."
+	Write-Host (Get-I18n -key 'clean.cleaningDenoCaches')
 	deno clean
-	Write-Host "Cleaning old pwsh modules..."
+	Write-Host (Get-I18n -key 'clean.cleaningOldPwshModules')
 	$Latest = Get-InstalledModule -Name @('ps12exe', 'fount-pwsh') -ErrorAction Ignore
-  	foreach ($module in $Latest) {
+	foreach ($module in $Latest) {
 		Get-InstalledModule -Name $module.Name -AllVersions | Where-Object { $_.Version -ne $module.Version } | Uninstall-Module
-  	}
+	}
 	if (-not (Test-Path "$FOUNT_DIR/node_modules/desktop.ini")) {
 		Copy-Item "$FOUNT_DIR/default/node_modules_desktop.ini" "$FOUNT_DIR/node_modules/desktop.ini" -Force
 	}
@@ -742,7 +851,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'keepalive') {
 		if ($LastExitCode -ne 131) {
 			$elapsedTime = (Get-Date) - $startTime
 			if ($elapsedTime.TotalMinutes -lt 3 -and $initAttempted) {
-				Write-Error "fount failed to start within a short time even after an automatic repair attempt. Please check the logs for errors."
+				Write-Error (Get-I18n -key 'keepalive.failedToStart')
 				exit 1
 			} else { $initAttempted = $false }
 
@@ -758,19 +867,19 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'keepalive') {
 
 			if ($restart_timestamps.Count -ge 7) {
 				if (Test-Path -Path "$FOUNT_DIR/.noautoinit") {
-					Write-Warning "fount has restarted many times in the last short time, but auto-reinitialization is disabled by .noautoinit file. Exiting."
+					Write-Warning (Get-I18n -key 'keepalive.autoInitDisabled')
 					exit 1
 				}
-				Write-Warning "fount has restarted many times in the last short time. Forcing re-initialization..."
+				Write-Warning (Get-I18n -key 'keepalive.restartingTooFast')
 				$restart_timestamps.Clear()
 
 				& $PSScriptRoot/fount.ps1 init
 				if ($LastExitCode -ne 0) {
-					Write-Error "fount init failed. Exiting."
+					Write-Error (Get-I18n -key 'keepalive.initFailed')
 					exit 1
 				}
 				$initAttempted = $true
-				Write-Host "Re-initialization complete. Attempting to restart fount..."
+				Write-Host (Get-I18n -key 'keepalive.initComplete')
 			}
 		}
 		Update-FountAndDeno
@@ -780,10 +889,10 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'keepalive') {
 elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 	run shutdown
 	deno clean
-	Write-Host "Removing fount..."
+	Write-Host (Get-I18n -key 'remove.removingFount')
 
 	# Remove fount from PATH
-	Write-Host "Removing fount from PATH..."
+	Write-Host (Get-I18n -key 'remove.removingFountFromPath')
 	$path = $env:PATH -split ';'
 	$path = $path | Where-Object { !$_.StartsWith("$FOUNT_DIR") }
 	$env:Path = $path -join ';'
@@ -794,13 +903,13 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 	[System.Environment]::SetEnvironmentVariable('PATH', $UserPath, [System.EnvironmentVariableTarget]::User)
 
 	# Remove fount from git safe.directory
-	Write-Host "Removing fount from git safe.directory..."
+	Write-Host (Get-I18n -key 'remove.removingFountFromGitSafeDir')
 	if ((Get-Command git -ErrorAction Ignore) -and ($FOUNT_DIR -in $(git config --global --get-all safe.directory))) {
 		git config --global --unset safe.directory "$FOUNT_DIR"
 	}
 
 	# Remove fount-pwsh from PowerShell Profile
-	Write-Host "Removing fount-pwsh from PowerShell Profile..."
+	Write-Host (Get-I18n -key 'remove.removingFountPwshFromProfile')
 	if (Test-Path $Profile) {
 		$ProfileContent = Get-Content $Profile -ErrorAction Ignore
 		$ProfileContent = $ProfileContent -split "`n"
@@ -809,98 +918,98 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 		if ($ProfileContent -ne ((Get-Content $Profile -ErrorAction Ignore) -split "`n" -join "`n")) {
 			Set-Content -Path $Profile -Value $ProfileContent
 		}
-		Write-Host "fount-pwsh removed from PowerShell Profile."
+		Write-Host (Get-I18n -key 'remove.fountPwshRemovedFromProfile')
 	}
 	else {
-		Write-Host "PowerShell Profile not found, skipping fount-pwsh removal from profile."
+		Write-Host (Get-I18n -key 'remove.pwshProfileNotFound')
 	}
 
 	# Uninstall fount-pwsh
-	Write-Host "Uninstalling fount-pwsh..."
+	Write-Host (Get-I18n -key 'remove.uninstallingFountPwsh')
 	try { Uninstall-Module -Name fount-pwsh -Scope CurrentUser -Force -ErrorAction Stop } catch {
-		Write-Warning "Failed to uninstall fount-pwsh: $($_.Exception.Message)"
+		Write-Warning (Get-I18n -key 'remove.uninstallFountPwshFailed' -params @{message = $_.Exception.Message })
 	}
 
 	# Remove fount protocol handler
 	if (-not $IN_DOCKER) {
-		Write-Host "Removing fount:// protocol handler..."
+		Write-Host (Get-I18n -key 'remove.removingProtocolHandler')
 		try {
 			# 静默删除注册表键及其所有子键
 			Remove-Item -Path "HKCU:\Software\Classes\fount" -Recurse -Force -ErrorAction SilentlyContinue
-			Write-Host "fount:// protocol handler removed."
+			Write-Host (Get-I18n -key 'remove.protocolHandlerRemoved')
 		}
 		catch {
-			Write-Warning "Failed to remove fount:// protocol handler: $($_.Exception.Message)"
+			Write-Warning (Get-I18n -key 'remove.removeProtocolHandlerFailed' -params @{message = $_.Exception.Message })
 		}
 	}
 
 	# Remove Windows Terminal Profile
-	Write-Host "Removing Windows Terminal Profile..."
+	Write-Host (Get-I18n -key 'remove.removingTerminalProfile')
 	$WTjsonDirPath = "$env:LOCALAPPDATA/Microsoft/Windows Terminal/Fragments/fount"
 	if (Test-Path $WTjsonDirPath -PathType Container) {
 		Remove-Item -Path $WTjsonDirPath -Force -Recurse
-		Write-Host "Windows Terminal Profile directory removed."
+		Write-Host (Get-I18n -key 'remove.terminalProfileRemoved')
 	}
 	else {
-		Write-Host "Windows Terminal Profile directory not found."
+		Write-Host (Get-I18n -key 'remove.terminalProfileNotFound')
 	}
 
 	# Remove Desktop Shortcut
-	Write-Host "Removing Desktop Shortcut..."
+	Write-Host (Get-I18n -key 'remove.removingDesktopShortcut')
 	$desktopShortcutPath = [Environment]::GetFolderPath("Desktop") + "\fount.lnk"
 	if (Test-Path $desktopShortcutPath) {
 		Remove-Item -Path $desktopShortcutPath -Force
-		Write-Host "Desktop Shortcut removed."
+		Write-Host (Get-I18n -key 'remove.desktopShortcutRemoved')
 	}
 	else {
-		Write-Host "Desktop Shortcut not found."
+		Write-Host (Get-I18n -key 'remove.desktopShortcutNotFound')
 	}
 
 	# Remove Start Menu Shortcut
-	Write-Host "Removing Start Menu Shortcut..."
+	Write-Host (Get-I18n -key 'remove.removingStartMenuShortcut')
 	$startMenuShortcutPath = [Environment]::GetFolderPath("StartMenu") + "\fount.lnk"
 	if (Test-Path $startMenuShortcutPath) {
 		Remove-Item -Path $startMenuShortcutPath -Force
-		Write-Host "Start Menu Shortcut removed."
+		Write-Host (Get-I18n -key 'remove.startMenuShortcutRemoved')
 	}
 	else {
-		Write-Host "Start Menu Shortcut not found."
+		Write-Host (Get-I18n -key 'remove.startMenuShortcutNotFound')
 	}
 
 	# Remove Installed pwsh modules
-	Write-Host "Removing Installed pwsh modules..."
+	Write-Host (Get-I18n -key 'remove.removingInstalledPwshModules')
 	$auto_installed_pwsh_modules | ForEach-Object {
 		try {
 			if (Get-Module $_ -ListAvailable) {
 				Uninstall-Module -Name $_ -Scope CurrentUser -AllVersions -Force -ErrorAction Stop
-				Write-Host "$_ removed."
+				Write-Host (Get-I18n -key 'remove.moduleRemoved' -params @{module = $_ })
 			}
 		}
 		catch {
-			Write-Warning "Failed to remove ${_}: $($_.Exception.Message)"
+			Write-Warning (Get-I18n -key 'remove.removeModuleFailed' -params @{module = $_; message = $_.Exception.Message })
 		}
 	}
 
 	if (Test-Path "$FOUNT_DIR/data/installer/auto_installed_git") {
-		Write-Host "Uninstalling Git..."
+		Write-Host (Get-I18n -key 'remove.uninstallingGit')
 		winget uninstall --id Git.Git -e --source winget
 	}
 
 	if (Test-Path "$FOUNT_DIR/data/installer/auto_installed_chrome") {
-		Write-Host "Uninstalling Chrome..."
+		Write-Host (Get-I18n -key 'remove.uninstallingChrome')
 		winget uninstall --id Google.Chrome -e --source winget
 	}
 
 	if (Test-Path "$FOUNT_DIR/data/installer/auto_installed_winget") {
-		Write-Host "Uninstalling Winget..."
+		Write-Host (Get-I18n -key 'remove.uninstallingWinget')
 		Import-Module Appx
 		Remove-AppxPackage -Package Microsoft.DesktopAppInstaller_8wekyb3d8bbwe
 	}
 
 	if (Test-Path "$FOUNT_DIR/data/installer/auto_installed_deno") {
-		Write-Host "Uninstalling Deno..."
+		Write-Host (Get-I18n -key 'remove.uninstallingDeno')
 		try { Remove-Item $(Get-Command deno).Source -Force } catch {
-			Write-Warning "Failed to remove Deno: $($_.Exception.Message)"
+			Write-Warning (Get-I18n -key 'remove.removeDenoFailed' -params @{message = $_.Exception.Message })
 		}
 		Remove-Item "~/.deno" -Force -Recurse -ErrorAction Ignore
 
@@ -915,23 +1024,23 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'remove') {
 	$TempDir = [System.IO.Path]::GetTempPath()
 	$exepath = Join-Path $TempDir "fount-background.exe"
 	if (Test-Path $exepath) {
-		Write-Host "Removing background runner..."
+		Write-Host (Get-I18n -key 'remove.removingBackgroundRunner')
 		try { Remove-Item $exepath -Force -ErrorAction Stop } catch {
-			Write-Warning "Failed to remove background runner: $($_.Exception.Message)"
+			Write-Warning (Get-I18n -key 'remove.removeBackgroundRunnerFailed' -params @{message = $_.Exception.Message })
 		}
 	}
 
 	# Remove fount installation directory
-	Write-Host "Removing fount installation directory..."
+	Write-Host (Get-I18n -key 'remove.removingFountInstallationDir')
 	Remove-Item -Path $FOUNT_DIR -Recurse -Force -ErrorAction SilentlyContinue
 	# 只要父目录为空，继续删他妈的
 	$parent = Split-Path -Parent $FOUNT_DIR
 	while ((Get-ChildItem $parent -ErrorAction Ignore | Measure-Object).Count -eq 0) {
 		Remove-Item -Path $parent -Recurse -Force -ErrorAction SilentlyContinue
 	}
-	Write-Host "fount installation directory removed."
+	Write-Host (Get-I18n -key 'remove.fountInstallationDirRemoved')
 
-	Write-Host "fount uninstallation complete."
+	Write-Host (Get-I18n -key 'remove.fountUninstallationComplete')
 	exit 0
 }
 else {

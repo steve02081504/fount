@@ -98,6 +98,106 @@
 		},
 		"telegrambot": {
 			"botStarted": "تم تسجيل دخول الشخصية ${charname} على بوت التليجرام ${botusername}"
+		},
+		"path": {
+			"update": {
+				"skippingFountUpdate": "نظرًا لوجود الملف ‎.noupdate، يتم تخطي التحديث الناشئ",
+				"skippingDenoUpgradeDocker": "تخطي ترقية Deno في بيئة Docker"
+			},
+			"shortcut": {
+				"desktopShortcutCreated": "تم إنشاء اختصار سطح المكتب في ${path}",
+				"startMenuShortcutCreated": "تم إنشاء اختصار قائمة ابدأ في ${path}",
+				"protocolHandlerRegistered": "Found:// تم تسجيل معالج البروتوكول.",
+				"osacompileNotFound": "خطأ: لم يتم العثور على 'osacompile'. غير قادر على إنشاء تطبيق macOS.",
+				"lsregisterFailed": "تحذير: فشل استخدام lsregister لتسجيل تطبيق في LaunchServices.",
+				"createDesktopAppFailed": "خطأ: فشل إنشاء تطبيق سطح المكتب.",
+				"shortcutNotSupported": "تحذير: نظام التشغيل لديك (${os}) لا يدعم إنشاء اختصارات لسطح المكتب."
+			},
+			"git": {
+				"repoNotFound": "لم يتم العثور على مستودع git الخاص بfount. تهيئة واحدة جديدة...",
+				"fetchingAndResetting": "جارٍ الجلب من المستودع البعيد وإعادة التعيين إلى الوضع الرئيسي...",
+				"fetchFailed": "فشل في الحصول على \"الأصل\".",
+				"localChangesDetected": "تم اكتشاف تغييرات محلية، وسيتم حفظ الاختلافات قبل الكتابة فوقها.",
+				"backupSavedTo": "تم حفظ نسخة احتياطية من تغييراتك المحلية في: ${path}",
+				"notOnBranch": "ليس على الفرع، قم بالتبديل إلى \"الرئيسي\"...",
+				"noUpstreamBranch": "تحذير: لم يتم تكوين أي فرع رئيسي للفرع '${branch}'. إعداد المنبع إلى \"الأصل/الرئيسي\".",
+				"dirtyWorkingDirectory": "تحذير: دليل العمل يحتوي على تغييرات لم يتم اعتمادها. يرجى تنظيم أو تنفيذ التغييرات الخاصة بك قبل التحديث.",
+				"updatingFromRemote": "جارٍ التحديث من المستودع البعيد...",
+				"localBranchAhead": "الفرع المحلي متقدم على الفرع البعيد. لا توجد تحديثات مطلوبة.",
+				"branchesDiverged": "وقد تم تشعب الفروع المحلية والبعيدة. التحديث الإجباري قيد التقدم...",
+				"alreadyUpToDate": "بالفعل الأحدث.",
+				"notInstalled": "لم يتم تثبيت Git، جارٍ محاولة التثبيت...",
+				"installFailedWinget": "منذ فشل تثبيت Winget، لا يمكن تثبيت Git. الرجاء تثبيته يدويا.",
+				"installFailedManual": "غير قادر على تثبيت Git، يرجى تثبيته يدويًا.",
+				"notInstalledSkippingPull": "لم يتم تثبيت Git، قم بتخطي سحب git",
+				"repoNotFoundSkippingPull": "لم يتم العثور على المستودع، قم بتخطي سحب git"
+			},
+			"deno": {
+				"installingTermux": "تثبيت Deno على Termux...",
+				"missing": "لم يتم العثور على Deno، جارٍ التثبيت تلقائيًا...",
+				"installFailedFallback": "فشل تثبيت Deno، وتتم محاولة التثبيت تلقائيًا في مجلد المسار الخاص بfount...",
+				"isRequired": "لم يتم العثور على Deno، لا يمكن تشغيل Fount بدون Deno",
+				"notWorking": "لسبب ما لا يعمل Deno، قد ترغب في الانضمام إلى https://discord.gg/deno للحصول على الدعم",
+				"upgradeFailedTermux": "فشل أمر ترقية Deno، محاولة إعادة تثبيت Deno لـ Termux...",
+				"upgradeFailed": "تحذير: ربما فشلت ترقية Deno. يرجى التحقق من وجود أخطاء."
+			},
+			"install": {
+				"rootWarning1": "غير مستحسن: تشغيل fount كجذر يمنح النظام وصولاً كاملاً إلى جميع مكونات Fount.",
+				"rootWarning2": "ما لم تكن تعرف ما تفعله، فمن المستحسن تشغيل Fount كمستخدم عادي.",
+				"installingDependencies": "تثبيت التبعيات...",
+				"untrustedPartsWarning": "لا تقم بتثبيت أي مكونات غير موثوقة على نظامك، يمكنها فعل أي شيء."
+			},
+			"clean": {
+				"removingCaches": "جارٍ إزالة ذاكرة التخزين المؤقت...",
+				"reinstallingDependencies": "إعادة تثبيت التبعيات...",
+				"cleaningDenoCaches": "تنظيف ذاكرة التخزين المؤقت دينو...",
+				"cleaningOldPwshModules": "تنظيف وحدات pwsh القديمة..."
+			},
+			"keepalive": {
+				"failedToStart": "حتى بعد محاولات الإصلاح التلقائي، تفشل fount في العمل لفترة قصيرة من الزمن. يرجى التحقق من السجلات بحثًا عن الأخطاء.",
+				"autoInitDisabled": "تمت إعادة تشغيل fount عدة مرات في الفترة القصيرة الأخيرة من الوقت، ولكن تم تعطيل إعادة التهيئة التلقائية بسبب وجود ملف .noautoinit. الخروج.",
+				"restartingTooFast": "تمت إعادة تشغيل fount عدة مرات في فترة زمنية قصيرة. إعادة التهيئة القسرية...",
+				"initFailed": "فشلت تهيئة الخط. الخروج.",
+				"initComplete": "اكتملت عملية إعادة التهيئة. جارٍ محاولة إعادة التشغيل..."
+			},
+			"remove": {
+				"removingFount": "جارٍ إزالة fount...",
+				"removingFountFromPath": "إزالة fount من PATH...",
+				"removingProtocolHandler": "جارٍ إزالة Found:// معالج البروتوكول...",
+				"removingFountFromGitSafeDir": "إزالة fount من git Safe.directory...",
+				"removingInstalledSystemPackages": "جارٍ إزالة حزم النظام المثبتة...",
+				"uninstallingDeno": "إلغاء تثبيت دينو...",
+				"removingFountInstallationDir": "جارٍ إزالة دليل تثبيت fount...",
+				"fountInstallationDirRemoved": "تمت إزالة دليل التثبيت fount.",
+				"fountUninstallationComplete": "اكتملت عملية إلغاء التثبيت.",
+				"removingFountPwshFromProfile": "إزالة Fount-pwsh من ملف تعريف PowerShell...",
+				"fountPwshRemovedFromProfile": "تمت إزالة Fount-pwsh من ملف تعريف PowerShell.",
+				"pwshProfileNotFound": "لم يتم العثور على ملف تعريف PowerShell، مع تخطي إزالة Fount-pwsh من الملف الشخصي.",
+				"uninstallingFountPwsh": "إلغاء تثبيت Fount-pwsh...",
+				"uninstallFountPwshFailed": "فشل إلغاء تثبيت Fount-pwsh: ${message}",
+				"protocolHandlerRemoved": "تمت إزالة معالج البروتوكول Found://.",
+				"removeProtocolHandlerFailed": "فشل في إزالة معالج البروتوكول Fount://: ${message}",
+				"removingTerminalProfile": "جارٍ إزالة ملف التعريف الطرفي لـ Windows...",
+				"terminalProfileRemoved": "تمت إزالة دليل ملف تعريف Windows Terminal.",
+				"terminalProfileNotFound": "لم يتم العثور على دليل ملف تعريف Windows Terminal.",
+				"desktopShortcutRemoved": "تمت إزالة اختصار سطح المكتب.",
+				"desktopShortcutNotFound": "لم يتم العثور على اختصار سطح المكتب.",
+				"removingStartMenuShortcut": "جارٍ إزالة اختصارات قائمة البدء...",
+				"startMenuShortcutRemoved": "تمت إزالة اختصار قائمة ابدأ.",
+				"startMenuShortcutNotFound": "لم يتم العثور على اختصار قائمة ابدأ.",
+				"removingInstalledPwshModules": "جارٍ إزالة وحدة pwsh المثبتة...",
+				"moduleRemoved": "تمت إزالة ${module}.",
+				"removeModuleFailed": "فشلت إزالة ${module}: ${message}",
+				"uninstallingGit": "إلغاء تثبيت جيت...",
+				"uninstallingChrome": "جارٍ إلغاء تثبيت Chrome...",
+				"uninstallingWinget": "إلغاء تثبيت وينجت...",
+				"removeDenoFailed": "فشلت إزالة Deno: ${message}",
+				"removingBackgroundRunner": "إزالة برامج الخلفية...",
+				"removeBackgroundRunnerFailed": "فشل في إزالة البرنامج الذي يعمل في الخلفية: ${message}"
+			},
+			"protocol": {
+				"description": "عنوان URL:البروتوكول الموجود"
+			}
 		}
 	},
 	"installer_wait_screen": {
@@ -412,7 +512,7 @@
 			"first_login": {
 				"name": "مرحبا، فونت!",
 				"description": "التوجه نحو العالم الجديد، تسجيل الدخول لأول مرة!",
-				"locked_description": "قم بتسجيل الدخول إلى النافورة مرة واحدة."
+				"locked_description": "قم بتسجيل الدخول إلى fount مرة واحدة."
 			},
 			"sfw_mode_on": {
 				"name": "هناك شخص خلفك!",
@@ -1278,13 +1378,13 @@
 	"browser_integration": {
 		"title": "تكامل المتصفح",
 		"header": "تكامل المتصفح",
-		"description": "لكي يتفاعل دور النافورة مع صفحة الويب ، تحتاج إلى تثبيت البرنامج النصي لتكامل المتصفح هذا. إنه بمثابة جسر بين الحرف والمتصفح ، مما يسمح لهم بعرض محتوى الصفحة وأداء الإجراءات.",
+		"description": "لكي يتفاعل دور fount مع صفحة الويب ، تحتاج إلى تثبيت البرنامج النصي لتكامل المتصفح هذا. إنه بمثابة جسر بين الحرف والمتصفح ، مما يسمح لهم بعرض محتوى الصفحة وأداء الإجراءات.",
 		"install_script_title": "البرنامج النصي للتثبيت",
 		"install_script_description": "انقر فوق الزر أدناه لتثبيت البرنامج النصي لتكامل المتصفح. يجب أولاً تثبيت مدير نصوص مستخدم مثل Tampermonkey.",
 		"install_button": "تثبيت",
 		"install_from_url_tip": "ألا يسمح لك متصفحك بتثبيته؟ انسخ عنوان URL هذا واستيراد البرنامج النصي من عنوان URL في المكون الإضافي Tampermonkey.",
 		"what_is_manager": "ما هو مدير نصوص المستخدم (Userscript Manager)؟",
-		"manager_explanation": "Monkey Script Manager هو امتداد متصفح يتيح لك تثبيت البرامج النصية وتشغيلها تعدل صفحات الويب. لاستخدام البرنامج النصي لتكامل النافورة ، تحتاج إلى واحدة من الامتدادات.",
+		"manager_explanation": "Monkey Script Manager هو امتداد متصفح يتيح لك تثبيت البرامج النصية وتشغيلها تعدل صفحات الويب. لاستخدام البرنامج النصي لتكامل fount ، تحتاج إلى واحدة من الامتدادات.",
 		"popular_managers": "الخيارات الشعبية:",
 		"csp_warning": "قد تحتاج إلى تثبيت المكون الإضافي لإيقاف تشغيل CSP لجعل وظيفة التكامل تعمل بشكل صحيح. بالنسبة لـ Chrome ، يمكنك استخدام <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener\" class=\"link\">هذا المكون</a>.",
 		"connected_pages_title": "صفحة متصلة",
@@ -1346,8 +1446,8 @@
 	},
 	"browser_integration_script": {
 		"hostChange": {
-			"securityWarningTitle": "--- تحذير سلامة النافورة ---",
-			"message": "تحاول الصفحة الحالية (\"${origin}\") تغيير عنوان مضيف النافورة إلى:\n\n\"${newHost}\"\n\nتحذير: سيسمح الموافقة على هذا الإجراء للمضيف الجديد بالتحكم بالكامل في ميزات تكامل المتصفح ، مما قد يؤدي إلى تسرب حساس للمعلومات أو سرقة الحساب.\nيجب أن يتم الموافقة فقط إذا كنت متأكدًا من أن هذه هي عمليتك الخاصة (على سبيل المثال ، ترحيل خادم نافورة).\n\nهل أنت متأكد من أنك تريد السماح لهذا التغيير؟",
+			"securityWarningTitle": "--- تحذير سلامة fount ---",
+			"message": "تحاول الصفحة الحالية (\"${origin}\") تغيير عنوان مضيف fount إلى:\n\n\"${newHost}\"\n\nتحذير: سيسمح الموافقة على هذا الإجراء للمضيف الجديد بالتحكم بالكامل في ميزات تكامل المتصفح ، مما قد يؤدي إلى تسرب حساس للمعلومات أو سرقة الحساب.\nيجب أن يتم الموافقة فقط إذا كنت متأكدًا من أن هذه هي عمليتك الخاصة (على سبيل المثال ، ترحيل خادم نافورة).\n\nهل أنت متأكد من أنك تريد السماح لهذا التغيير؟",
 			"uuidMismatchError": "خطأ أمان FOUNT: لا تتطابق هوية (UUID) للمضيف ${newHost}. تم إلغاء العملية.",
 			"verificationError": "خطأ أمان FOUNT: غير قادر على التحقق من مضيف جديد \"${newHost}\". يرجى التحقق مما إذا كان العنوان صحيحًا وما إذا كانت الخدمة قيد التشغيل."
 		},
