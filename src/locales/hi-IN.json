@@ -1286,7 +1286,7 @@
 		"what_is_manager": "एक उपयोगकर्ता स्क्रिप्ट प्रबंधक क्या है?",
 		"manager_explanation": "एक उपयोगकर्ता स्क्रिप्ट प्रबंधक एक ब्राउज़र एक्सटेंशन है जो आपको वेब पेजों को संशोधित करने वाली स्क्रिप्ट स्थापित करने और चलाने की अनुमति देता है। फाउंट इंटीग्रेशन स्क्रिप्ट का उपयोग करने के लिए, आपको एक्सटेंशन में से एक की आवश्यकता है।",
 		"popular_managers": "लोकप्रिय विकल्प:",
-		"csp_warning": "एकीकरण सुविधा को ठीक से काम करने के लिए आपको सीएसपी को बंद करने के लिए प्लगइन स्थापित करने की आवश्यकता हो सकती है। क्रोम के लिए आप <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"link\">इस प्लगइन</a> का उपयोग कर सकते हैं।",
+		"csp_warning": "एकीकरण सुविधा को ठीक से काम करने के लिए आपको सीएसपी को बंद करने के लिए प्लगइन स्थापित करने की आवश्यकता हो सकती है। क्रोम के लिए आप <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener\" class=\"link\">इस प्लगइन</a> का उपयोग कर सकते हैं।",
 		"connected_pages_title": "जुड़ा पृष्ठ",
 		"no_pages_connected": {
 			"title": "अभी तक कोई कनेक्शन नहीं",
