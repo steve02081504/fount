@@ -1286,7 +1286,7 @@
 		"what_is_manager": "Cos'è un gestore di userscript?",
 		"manager_explanation": "Un gestore di userscript è un'estensione del browser che consente di installare ed eseguire script che modificano le pagine Web. Per utilizzare lo script di integrazione fount, è necessario una delle estensioni.",
 		"popular_managers": "Scelte popolari:",
-		"csp_warning": "Potrebbe essere necessario installare il plug -in per disattivare CSP per far funzionare correttamente la funzione di integrazione. Per Chrome è possibile utilizzare <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"link\">questo plug-in</a>.",
+		"csp_warning": "Potrebbe essere necessario installare il plug -in per disattivare CSP per far funzionare correttamente la funzione di integrazione. Per Chrome è possibile utilizzare <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener\" class=\"link\">questo plug-in</a>.",
 		"connected_pages_title": "Pagina connessa",
 		"no_pages_connected": {
 			"title": "Nessuna connessione ancora",

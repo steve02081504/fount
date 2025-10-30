@@ -1286,7 +1286,7 @@
 		"what_is_manager": "Wat is een userscriptbeheerder?",
 		"manager_explanation": "Een userscriptbeheerder is een browserverlenging waarmee u scripts kunt installeren en uitvoeren die webpagina's wijzigen. Om het fount Integration Script te gebruiken, hebt u een van de extensies nodig.",
 		"popular_managers": "Populaire keuzes:",
-		"csp_warning": "Mogelijk moet u de plug -in installeren om CSP uit te schakelen om de integratiefunctie goed te laten werken. Voor Chrome kunt u <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"link\"> deze plugin </a>.",
+		"csp_warning": "Mogelijk moet u de plug -in installeren om CSP uit te schakelen om de integratiefunctie goed te laten werken. Voor Chrome kunt u <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener\" class=\"link\"> deze plugin </a>.",
 		"connected_pages_title": "Verbonden pagina",
 		"no_pages_connected": {
 			"title": "Nog geen verbinding",

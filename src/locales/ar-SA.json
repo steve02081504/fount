@@ -1286,7 +1286,7 @@
 		"what_is_manager": "ما هو مدير نصوص المستخدم (Userscript Manager)؟",
 		"manager_explanation": "Monkey Script Manager هو امتداد متصفح يتيح لك تثبيت البرامج النصية وتشغيلها تعدل صفحات الويب. لاستخدام البرنامج النصي لتكامل النافورة ، تحتاج إلى واحدة من الامتدادات.",
 		"popular_managers": "الخيارات الشعبية:",
-		"csp_warning": "قد تحتاج إلى تثبيت المكون الإضافي لإيقاف تشغيل CSP لجعل وظيفة التكامل تعمل بشكل صحيح. بالنسبة لـ Chrome ، يمكنك استخدام <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"link\">هذا المكون</a>.",
+		"csp_warning": "قد تحتاج إلى تثبيت المكون الإضافي لإيقاف تشغيل CSP لجعل وظيفة التكامل تعمل بشكل صحيح. بالنسبة لـ Chrome ، يمكنك استخدام <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener\" class=\"link\">هذا المكون</a>.",
 		"connected_pages_title": "صفحة متصلة",
 		"no_pages_connected": {
 			"title": "لا اتصال بعد",

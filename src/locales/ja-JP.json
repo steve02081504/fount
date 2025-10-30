@@ -1286,7 +1286,7 @@
 		"what_is_manager": "ユーザースクリプトマネージャーとは何ですか？",
 		"manager_explanation": "ユーザースクリプトマネージャーは、Webページを変更するスクリプトをインストールおよび実行できるブラウザ拡張機能です。 fount Integration Scriptを使用するには、拡張機能の1つが必要です。",
 		"popular_managers": "人気のある選択肢：",
-		"csp_warning": "統合機能を適切に動作させるために、CSPを無効にするプラグインのインストールが必要になる場合があります。Chromeの場合は<a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"link\">こちらのプラグイン</a>をご利用いただけます。",
+		"csp_warning": "統合機能を適切に動作させるために、CSPを無効にするプラグインのインストールが必要になる場合があります。Chromeの場合は<a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener\" class=\"link\">こちらのプラグイン</a>をご利用いただけます。",
 		"connected_pages_title": "接続されたページ",
 		"no_pages_connected": {
 			"title": "まだ接続がありません",

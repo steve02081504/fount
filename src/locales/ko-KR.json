@@ -1286,7 +1286,7 @@
 		"what_is_manager": "유저스크립트 관리자란 무엇입니까?",
 		"manager_explanation": "유저스크립트 관리자는 웹 페이지를 수정하는 스크립트를 설치하고 실행할 수있는 브라우저 확장자입니다. fount 통합 스크립트를 사용하려면 확장자 중 하나가 필요합니다.",
 		"popular_managers": "인기있는 선택 :",
-		"csp_warning": "통합 기능이 올바르게 작동하도록 CSP를 끄려면 플러그인을 설치해야 할 수도 있습니다. Chrome의 경우 <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"link\">CSP을 끄기</a>를 사용할 수 있습니다.",
+		"csp_warning": "통합 기능이 올바르게 작동하도록 CSP를 끄려면 플러그인을 설치해야 할 수도 있습니다. Chrome의 경우 <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener\" class=\"link\">CSP을 끄기</a>를 사용할 수 있습니다.",
 		"connected_pages_title": "연결된 페이지",
 		"no_pages_connected": {
 			"title": "아직 연결이 없습니다",
