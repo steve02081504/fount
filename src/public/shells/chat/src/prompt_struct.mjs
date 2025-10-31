@@ -38,16 +38,24 @@ export async function buildPromptStruct(
 		chat_log,
 	}
 
+	if (world?.interfaces?.chat) result.world_prompt = await world.interfaces.chat.GetPrompt(args)
+	if (user?.interfaces?.chat) result.user_prompt = await user.interfaces.chat.GetPrompt(args)
+	if (char?.interfaces?.chat) result.char_prompt = await char.interfaces.chat.GetPrompt(args)
+	for (const other_char of Object.keys(other_chars))
+		result.other_chars_prompt[other_char] = await other_chars[other_char].interfaces.chat?.GetPromptForOther?.(args)
+	for (const plugin of Object.keys(plugins)) {
+		const prompt = await plugins[plugin].interfaces.chat?.GetPrompt?.(args)
+		if (prompt) result.plugin_prompts[plugin] = prompt
+	}
+
 	while (detail_level--) {
-		if (world?.interfaces?.chat) result.world_prompt = await world.interfaces.chat.GetPrompt(args, result, detail_level)
-		if (user?.interfaces?.chat) result.user_prompt = await user.interfaces.chat.GetPrompt(args, result, detail_level)
-		if (char?.interfaces?.chat) result.char_prompt = await char.interfaces.chat.GetPrompt(args, result, detail_level)
+		await world?.interfaces?.chat?.TweakPrompt?.(args, result, result.world_prompt, detail_level)
+		await user?.interfaces?.chat?.TweakPrompt?.(args, result, result.user_prompt, detail_level)
+		await char?.interfaces?.chat?.TweakPrompt?.(args, result, result.char_prompt, detail_level)
 		for (const other_char of Object.keys(other_chars))
-			result.other_chars_prompt[other_char] = await other_chars[other_char].interfaces.chat?.GetPromptForOther?.(args, result, detail_level)
-		for (const plugin of Object.keys(plugins)) {
-			const prompt = await plugins[plugin].interfaces.chat?.GetPrompt?.(args, result, detail_level)
-			if (prompt) result.plugin_prompts[plugin] = prompt
-		}
+			await other_chars[other_char].interfaces.chat?.TweakPromptForOther?.(args, result, other_chars_prompt[other_char], detail_level)
+		for (const plugin of Object.keys(plugins))
+			await plugins[plugin].interfaces.chat?.TweakPrompt?.(args, result, result.plugin_prompts[plugin], detail_level)
 	}
 
 	return result

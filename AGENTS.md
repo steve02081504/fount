@@ -39,6 +39,9 @@ These TypeScript files define the interfaces that all "parts" must adhere to. **
 
 - **`CharAPI_t`**: The interface for a character.
   - `interfaces.chat.GetPrompt`: Crucial method to add the character's personality, memories, and context to the main prompt structure.
+  - `interfaces.chat.GetPromptForOther`: Defines how the character's prompt appears to other characters in a group chat.
+  - `interfaces.chat.TweakPrompt`: Allows for modifications of the prompt before it is sent to the AI.
+  - `interfaces.chat.TweakPromptForOther`: Allows for modifications of the prompt for other characters in a group chat.
   - `interfaces.chat.GetReply`: Generates a reply in a conversation.
   - `interfaces.chat.GetGreeting`: Provides the initial message when a character joins a chat.
 
