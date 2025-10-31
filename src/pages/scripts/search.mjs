@@ -120,15 +120,16 @@ export async function createSearchableDropdown({
 	dropdownElement.classList.add('dropdown', 'searchable-dropdown')
 	dropdownElement.setAttribute('role', 'combobox')
 	dropdownElement.setAttribute('aria-haspopup', 'listbox')
+	dropdownElement.setAttribute('aria-expanded', 'false')
 
 	if (disabled)
-		dropdownElement.innerHTML = `<input type="text" placeholder="${triggerPlaceholder}" class="input input-bordered w-full" tabindex="0" role="button" readonly aria-autocomplete="list" aria-expanded="false" disabled />`
+		dropdownElement.innerHTML = `<input type="text" placeholder="${triggerPlaceholder}" class="input input-bordered w-full" tabindex="0" role="button" readonly disabled />`
 	else {
 		const uniqueId = `dropdown-list-${Math.random().toString(36).substring(2, 9)}`
 
 		// Create the dropdown content HTML structure
 		dropdownElement.innerHTML = `\
-<input type="text" placeholder="${triggerPlaceholder}" class="input input-bordered w-full cursor-pointer" tabindex="0" role="button" readonly aria-autocomplete="list" aria-controls="${uniqueId}" aria-expanded="false" />
+<input type="text" placeholder="${triggerPlaceholder}" class="input input-bordered w-full cursor-pointer" tabindex="0" role="button" readonly aria-controls="${uniqueId}" />
 <div tabindex="0" id="${uniqueId}" class="dropdown-content z-50 p-4 shadow bg-base-100 rounded-box w-full flex flex-col gap-4 mt-2" role="listbox">
 	<input type="text" placeholder="${searchPlaceholder}" class="input input-bordered w-full" />
 	<ul class="flex flex-col w-full p-0 max-h-48 overflow-y-auto bg-base-100 rounded-box">
@@ -189,14 +190,14 @@ export async function createSearchableDropdown({
 	 * @description 聚焦事件侦听器。
 	 * @returns {void}
 	 */
-	const focusinListener = () => triggerInput.setAttribute('aria-expanded', 'true')
+	const focusinListener = () => dropdownElement.setAttribute('aria-expanded', 'true')
 	/**
 	 * @description 失焦事件侦听器。
 	 * @returns {void}
 	 */
 	const focusoutListener = () => {
 		if (!dropdownElement.contains(document.activeElement))
-			triggerInput.setAttribute('aria-expanded', 'false')
+			dropdownElement.setAttribute('aria-expanded', 'false')
 	}
 
 	dropdownElement.addEventListener('focusin', focusinListener)

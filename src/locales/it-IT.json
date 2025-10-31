@@ -440,12 +440,16 @@
 		"itemDescription": "Seleziona un elemento per visualizzarne i dettagli.",
 		"noDescription": "Nessuna descrizione disponibile.",
 		"filterInput": {
-			"placeholder": "Cerca..."
+			"placeholder": "Cerca...",
+			"aria-label": "Widget di ricerca"
 		},
 		"sfwToggle": "Contenuto sicuro",
 		"functionMenu": {
 			"search": {
 				"placeholder": "Cerca..."
+			},
+			"button": {
+				"title": "Menù funzioni"
 			},
 			"icon": {
 				"alt": "Menu funzioni"
@@ -750,6 +754,10 @@
 			"time_desc": "Data (più recenti)",
 			"time_asc": "Data (meno recenti)"
 		},
+		"sortBy": {
+			"aria-label": "ordinare per"
+		},
+		"select_chat_with_chars": "Seleziona chatta con ${chars}",
 		"selectAll": "Seleziona tutto",
 		"buttons": {
 			"reverseSelect": "Inverti selezione",
@@ -1218,6 +1226,9 @@
 		"editor": {
 			"title": "Configurazione Componente",
 			"disabledIndicator": "Questo componente non supporta la configurazione.",
+			"jsonEditor": {
+				"aria-label": "Editor di configurazione JSON"
+			},
 			"buttons": {
 				"save": "Salva"
 			}
@@ -1272,7 +1283,8 @@
 				"dataset": {
 					"tip": "Imposta come predefinito"
 				}
-			}
+			},
+			"setDefaultForFile": "Imposta \"${fileName}\" come origine AI predefinita"
 		},
 		"confirm": {
 			"unsavedChanges": "Hai modifiche non salvate. Vuoi scartarle?",
@@ -1328,6 +1340,9 @@
 			"charSelectPlaceholder": "Seleziona personaggio",
 			"apiKeyInput": {
 				"placeholder": "Inserisci chiave API"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "Attiva/disattiva la visualizzazione delle chiavi API"
 			},
 			"toggleApiKeyIcon": {
 				"alt": "Mostra/Nascondi chiave API"
@@ -1386,6 +1401,9 @@
 			"charSelectPlaceholder": "Seleziona personaggio",
 			"botTokenInput": {
 				"placeholder": "Inserisci token Bot Telegram"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "Attiva/disattiva la visualizzazione delle chiavi API"
 			},
 			"toggleBotTokenIcon": {
 				"alt": "Mostra/Nascondi token Bot"
@@ -1631,7 +1649,8 @@
 		"copy": {
 			"dataset": {
 				"tip": "copia negli appunti"
-			}
+			},
+			"aria-label": "copia negli appunti"
 		},
 		"copied": {
 			"dataset": {
@@ -1641,12 +1660,14 @@
 		"download": {
 			"dataset": {
 				"tip": "Scarica il codice"
-			}
+			},
+			"aria-label": "Scarica il codice"
 		},
 		"execute": {
 			"dataset": {
 				"tip": "Esegui il codice"
-			}
+			},
+			"aria-label": "Esegui il codice"
 		},
 		"copy_failed": "Impossibile copiare negli appunti: ${error}"
 	},

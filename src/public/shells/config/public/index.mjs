@@ -150,6 +150,7 @@ async function loadEditor(partType, partName) {
 
 		if (!jsonEditor)
 			jsonEditor = createJsonEditor(jsonEditorContainer, {
+				label: geti18n('part_config.editor.jsonEditor'),
 				readOnly: true,
 				onChange: () => {
 					isDirty = true

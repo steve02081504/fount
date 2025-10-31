@@ -1,6 +1,6 @@
 import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
-import { initTranslations, i18nElement, console, geti18n, confirmI18n, promptI18n } from '../../scripts/i18n.mjs'
+import { initTranslations, setLocalizeLogic, i18nElement, console, geti18n, confirmI18n, promptI18n } from '../../scripts/i18n.mjs'
 import { createJsonEditor } from '../../scripts/jsonEditor.mjs'
 import { getPartList, setDefaultPart, getDefaultParts } from '../../scripts/parts.mjs'
 import { svgInliner } from '../../scripts/svgInliner.mjs'
@@ -8,7 +8,7 @@ import { applyTheme } from '../../scripts/theme.mjs'
 import { showToast, showToastI18n } from '../../scripts/toast.mjs'
 
 import { getConfigTemplate, getAIFile, setAIFile, deleteAIFile, addAIFile, getConfigDisplay } from './src/endpoints.mjs'
-
+import { setLocalizeLogic } from "../../../../pages/scripts/i18n.mjs";
 
 const jsonEditorContainer = document.getElementById('jsonEditor')
 const generatorDisplayContainer = document.getElementById('generatorDisplay')
@@ -73,6 +73,9 @@ function renderFileList() {
 		const checkbox = document.createElement('input')
 		checkbox.type = 'checkbox'
 		checkbox.classList.add('default-checkbox', 'checkbox', 'checkbox-primary')
+		setLocalizeLogic(checkbox, ()=>{
+			checkbox.setAttribute('aria-label', geti18n('aisource_editor.buttons.setDefaultForFile', { fileName }))
+		})
 		checkboxContainer.appendChild(checkbox)
 		listItem.appendChild(checkboxContainer)
 
@@ -212,6 +215,7 @@ async function loadEditor(fileName) {
 
 	if (!jsonEditor)
 		jsonEditor = createJsonEditor(jsonEditorContainer, {
+			label: geti18n('aisource_editor.configTitle'),
 			onChange: () => {
 				isDirty = true
 				onJsonUpdate({

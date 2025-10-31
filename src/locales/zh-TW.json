@@ -440,12 +440,16 @@
 		"itemDescription": "在此處選擇一個項目以查看詳細資訊。",
 		"noDescription": "無描述資訊",
 		"filterInput": {
-			"placeholder": "搜尋..."
+			"placeholder": "搜尋...",
+			"aria-label": "搜索部件"
 		},
 		"sfwToggle": "安全內容",
 		"functionMenu": {
 			"search": {
 				"placeholder": "搜尋..."
+			},
+			"button": {
+				"title": "功能選單"
 			},
 			"icon": {
 				"alt": "功能選單"
@@ -750,6 +754,10 @@
 			"time_desc": "時間降序",
 			"time_asc": "時間升序"
 		},
+		"sortBy": {
+			"aria-label": "排序方式"
+		},
+		"select_chat_with_chars": "選擇與 ${chars} 的聊天",
 		"selectAll": "全選",
 		"buttons": {
 			"reverseSelect": "反選",
@@ -1218,6 +1226,9 @@
 		"editor": {
 			"title": "組件設定",
 			"disabledIndicator": "此組件不支援設定",
+			"jsonEditor": {
+				"aria-label": "JSON 配置編輯器"
+			},
 			"buttons": {
 				"save": "儲存"
 			}
@@ -1272,7 +1283,8 @@
 				"dataset": {
 					"tip": "設為預設"
 				}
-			}
+			},
+			"setDefaultForFile": "將「${fileName}」設為預設 AI 來源"
 		},
 		"confirm": {
 			"unsavedChanges": "您有未儲存的變更。是否要放棄變更？",
@@ -1328,6 +1340,9 @@
 			"charSelectPlaceholder": "選擇角色",
 			"apiKeyInput": {
 				"placeholder": "請輸入 API 金鑰"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "切換顯示 API 金鑰"
 			},
 			"toggleApiKeyIcon": {
 				"alt": "切換顯示 API 金鑰"
@@ -1386,6 +1401,9 @@
 			"charSelectPlaceholder": "選擇角色",
 			"botTokenInput": {
 				"placeholder": "請輸入 Telegram Bot Token"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "切換顯示 API 金鑰"
 			},
 			"toggleBotTokenIcon": {
 				"alt": "切換顯示 API 金鑰"
@@ -1631,7 +1649,8 @@
 		"copy": {
 			"dataset": {
 				"tip": "複製到剪貼簿"
-			}
+			},
+			"aria-label": "複製到剪貼板"
 		},
 		"copied": {
 			"dataset": {
@@ -1641,12 +1660,14 @@
 		"download": {
 			"dataset": {
 				"tip": "下載代碼"
-			}
+			},
+			"aria-label": "下載代碼"
 		},
 		"execute": {
 			"dataset": {
 				"tip": "執行代碼"
-			}
+			},
+			"aria-label": "執行代碼"
 		},
 		"copy_failed": "無法複製到剪貼簿：${error}"
 	},

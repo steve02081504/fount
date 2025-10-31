@@ -440,12 +440,16 @@
 		"itemDescription": "Wählen Sie ein Element aus, um Details anzuzeigen.",
 		"noDescription": "Keine Beschreibung verfügbar",
 		"filterInput": {
-			"placeholder": "Suchen..."
+			"placeholder": "Suchen...",
+			"aria-label": "Such-Widgets"
 		},
 		"sfwToggle": "Sichere Inhalte",
 		"functionMenu": {
 			"search": {
 				"placeholder": "Suchen..."
+			},
+			"button": {
+				"title": "Funktionsmenü"
 			},
 			"icon": {
 				"alt": "Funktionsmenü"
@@ -750,6 +754,10 @@
 			"time_desc": "Zeit absteigend",
 			"time_asc": "Zeit aufsteigend"
 		},
+		"sortBy": {
+			"aria-label": "sortieren nach"
+		},
+		"select_chat_with_chars": "Wählen Sie „Chat mit ${chars}“",
 		"selectAll": "Alle auswählen",
 		"buttons": {
 			"reverseSelect": "Auswahl umkehren",
@@ -1218,6 +1226,9 @@
 		"editor": {
 			"title": "Komponenten-Konfiguration",
 			"disabledIndicator": "Diese Komponente unterstützt keine Konfiguration.",
+			"jsonEditor": {
+				"aria-label": "JSON-Konfigurationseditor"
+			},
 			"buttons": {
 				"save": "Speichern"
 			}
@@ -1272,7 +1283,8 @@
 				"dataset": {
 					"tip": "Standardmäßig festgelegt"
 				}
-			}
+			},
+			"setDefaultForFile": "Legen Sie „${fileName}“ als Standard-KI-Quelle fest"
 		},
 		"confirm": {
 			"unsavedChanges": "Sie haben ungespeicherte Änderungen. Möchten Sie die Änderungen verwerfen?",
@@ -1328,6 +1340,9 @@
 			"charSelectPlaceholder": "Charakter auswählen",
 			"apiKeyInput": {
 				"placeholder": "API-Schlüssel eingeben"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "API-Schlüssel-Anzeige umschalten"
 			},
 			"toggleApiKeyIcon": {
 				"alt": "API-Schlüssel Sichtbarkeit umschalten"
@@ -1386,6 +1401,9 @@
 			"charSelectPlaceholder": "Charakter auswählen",
 			"botTokenInput": {
 				"placeholder": "Telegram Bot-Token eingeben"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "API-Schlüssel-Anzeige umschalten"
 			},
 			"toggleBotTokenIcon": {
 				"alt": "Bot-Token Sichtbarkeit umschalten"
@@ -1631,7 +1649,8 @@
 		"copy": {
 			"dataset": {
 				"tip": "in die Zwischenablage kopieren"
-			}
+			},
+			"aria-label": "in die Zwischenablage kopieren"
 		},
 		"copied": {
 			"dataset": {
@@ -1641,12 +1660,14 @@
 		"download": {
 			"dataset": {
 				"tip": "Code herunterladen"
-			}
+			},
+			"aria-label": "Code herunterladen"
 		},
 		"execute": {
 			"dataset": {
 				"tip": "Code ausführen"
-			}
+			},
+			"aria-label": "Code ausführen"
 		},
 		"copy_failed": "Kopieren in die Zwischenablage fehlgeschlagen: ${error}"
 	},

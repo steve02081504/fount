@@ -115,6 +115,7 @@ async function loadBotConfig(botname) {
 
 		if (!configEditor)
 			configEditor = createJsonEditor(configEditorContainer, {
+				label: geti18n('discord_bots.configCard.labels.config'),
 				onChange: (updatedContent, previousContent, { error, patchResult }) => {
 					if (!error) isDirty = true
 				},

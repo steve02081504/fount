@@ -43,14 +43,14 @@
 					<!-- Part Selection -->
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div class="form-control">
-							<label class="label"><span class="label-text" data-i18n="export.labels.partType"></span></label>
+							<label class="label" for="partTypeSelect"><span class="label-text" data-i18n="export.labels.partType"></span></label>
 							<select id="partTypeSelect" class="select select-bordered w-full">
 								<option disabled selected data-i18n="export.placeholders.partTypeSelect"></option>
 							</select>
 						</div>
 						<div class="form-control">
-							<label class="label"><span class="label-text" data-i18n="export.labels.part"></span></label>
-							<div id="partNameDropdown" class="w-full" data-i18n="export.partSelectDropdown">
+							<label class="label"><span id="partNameLabel" class="label-text" data-i18n="export.labels.part"></span></label>
+							<div id="partNameDropdown" class="w-full" data-i18n="export.partSelectDropdown" aria-labelledby="partNameLabel">
 								<input type="text" data-i18n="export.partSearch" />
 							</div>
 						</div>

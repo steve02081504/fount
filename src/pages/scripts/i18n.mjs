@@ -254,7 +254,7 @@ function translateSingularElement(element) {
 	const key = element.dataset.i18n
 	if (!key) return updated
 	if (getNestedValue(i18n, key) instanceof Object) {
-		const attributes = ['placeholder', 'title', 'label', 'textContent', 'value', 'alt']
+		const attributes = ['placeholder', 'title', 'label', 'textContent', 'value', 'alt', 'aria-label']
 		for (const attr of attributes) {
 			const specificKey = `${key}.${attr}`
 			const translation = geti18n_nowarn(specificKey)

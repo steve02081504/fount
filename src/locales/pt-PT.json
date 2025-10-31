@@ -440,12 +440,16 @@
 		"itemDescription": "Selecione um item aqui para ver os detalhes.",
 		"noDescription": "Sem descrição.",
 		"filterInput": {
-			"placeholder": "Pesquisar..."
+			"placeholder": "Pesquisar...",
+			"aria-label": "Widgets de pesquisa"
 		},
 		"sfwToggle": "Conteúdo Seguro",
 		"functionMenu": {
 			"search": {
 				"placeholder": "Pesquisar..."
+			},
+			"button": {
+				"title": "Menu de funções"
 			},
 			"icon": {
 				"alt": "Menu de funções"
@@ -750,6 +754,10 @@
 			"time_desc": "Data (mais recentes)",
 			"time_asc": "Data (mais antigas)"
 		},
+		"sortBy": {
+			"aria-label": "ordenar por"
+		},
+		"select_chat_with_chars": "Selecione conversar com ${chars}",
 		"selectAll": "Selecionar Tudo",
 		"buttons": {
 			"reverseSelect": "Inverter Seleção",
@@ -1218,6 +1226,9 @@
 		"editor": {
 			"title": "Configuração de Componente",
 			"disabledIndicator": "Este componente não suporta configuração.",
+			"jsonEditor": {
+				"aria-label": "Editor de configuração JSON"
+			},
 			"buttons": {
 				"save": "Guardar"
 			}
@@ -1272,7 +1283,8 @@
 				"dataset": {
 					"tip": "Definido como padrão"
 				}
-			}
+			},
+			"setDefaultForFile": "Defina “${fileName}” como fonte de IA padrão"
 		},
 		"confirm": {
 			"unsavedChanges": "Tem alterações não guardadas. Deseja descartar as alterações?",
@@ -1328,6 +1340,9 @@
 			"charSelectPlaceholder": "Selecionar Personagem",
 			"apiKeyInput": {
 				"placeholder": "Introduza a Chave da API"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "Alternar a exibição de chaves de API"
 			},
 			"toggleApiKeyIcon": {
 				"alt": "Alternar Visibilidade da Chave da API"
@@ -1386,6 +1401,9 @@
 			"charSelectPlaceholder": "Selecionar Personagem",
 			"botTokenInput": {
 				"placeholder": "Introduza o Token do Bot Telegram"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "Alternar a exibição de chaves de API"
 			},
 			"toggleBotTokenIcon": {
 				"alt": "Alternar visibilidade do token do bot"
@@ -1631,7 +1649,8 @@
 		"copy": {
 			"dataset": {
 				"tip": "copiar para a área de transferência"
-			}
+			},
+			"aria-label": "copiar para a área de transferência"
 		},
 		"copied": {
 			"dataset": {
@@ -1641,12 +1660,14 @@
 		"download": {
 			"dataset": {
 				"tip": "Descarregar código"
-			}
+			},
+			"aria-label": "Descarregar código"
 		},
 		"execute": {
 			"dataset": {
 				"tip": "Executar código"
-			}
+			},
+			"aria-label": "Executar código"
 		},
 		"copy_failed": "Não foi possível copiar para a área de transferência: ${error}"
 	},

@@ -440,12 +440,16 @@
 		"itemDescription": "विवरण देखने के लिए यहाँ एक आइटम चुनें।",
 		"noDescription": "कोई विवरण नहीं।",
 		"filterInput": {
-			"placeholder": "खोजें..."
+			"placeholder": "खोजें...",
+			"aria-label": "विजेट खोजें"
 		},
 		"sfwToggle": "सुरक्षित सामग्री",
 		"functionMenu": {
 			"search": {
 				"placeholder": "खोजें..."
+			},
+			"button": {
+				"title": "फ़ंक्शन मेनू"
 			},
 			"icon": {
 				"alt": "फ़ंक्शन मेनू"
@@ -750,6 +754,10 @@
 			"time_desc": "समय (नवीनतम पहले)",
 			"time_asc": "समय (सबसे पुराना पहले)"
 		},
+		"sortBy": {
+			"aria-label": "इसके अनुसार क्रमबद्ध करें"
+		},
+		"select_chat_with_chars": "${chars} के साथ चैट का चयन करें",
 		"selectAll": "सभी चुनें",
 		"buttons": {
 			"reverseSelect": "चयन पलटें",
@@ -1218,6 +1226,9 @@
 		"editor": {
 			"title": "घटक कॉन्फ़िगरेशन",
 			"disabledIndicator": "यह घटक कॉन्फ़िगरेशन का समर्थन नहीं करता है।",
+			"jsonEditor": {
+				"aria-label": "JSON कॉन्फ़िगरेशन संपादक"
+			},
 			"buttons": {
 				"save": "सहेजें"
 			}
@@ -1272,7 +1283,8 @@
 				"dataset": {
 					"tip": "डिफाल्ट के रूप में सेट"
 				}
-			}
+			},
+			"setDefaultForFile": "“${fileName}” को डिफ़ॉल्ट AI स्रोत के रूप में सेट करें"
 		},
 		"confirm": {
 			"unsavedChanges": "आपके पास बिना सहेजे बदलाव हैं। क्या आप बदलावों को छोड़ना चाहते हैं?",
@@ -1328,6 +1340,9 @@
 			"charSelectPlaceholder": "कैरेक्टर चुनें",
 			"apiKeyInput": {
 				"placeholder": "API कुंजी दर्ज करें"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "एपीआई कुंजियाँ दिखाना टॉगल करें"
 			},
 			"toggleApiKeyIcon": {
 				"alt": "API कुंजी दृश्यता टॉगल करें"
@@ -1386,6 +1401,9 @@
 			"charSelectPlaceholder": "कैरेक्टर चुनें",
 			"botTokenInput": {
 				"placeholder": "टेलीग्राम बॉट टोकन दर्ज करें"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "एपीआई कुंजियाँ दिखाना टॉगल करें"
 			},
 			"toggleBotTokenIcon": {
 				"alt": "बॉट टोकन दृश्यता टॉगल करें"
@@ -1631,7 +1649,8 @@
 		"copy": {
 			"dataset": {
 				"tip": "क्लिपबोर्ड पर कॉपी करें"
-			}
+			},
+			"aria-label": "क्लिपबोर्ड पर कॉपी करें"
 		},
 		"copied": {
 			"dataset": {
@@ -1641,12 +1660,14 @@
 		"download": {
 			"dataset": {
 				"tip": "कोड डाउनलोड करें"
-			}
+			},
+			"aria-label": "कोड डाउनलोड करें"
 		},
 		"execute": {
 			"dataset": {
 				"tip": "कोड निष्पादित करें"
-			}
+			},
+			"aria-label": "कोड निष्पादित करें"
 		},
 		"copy_failed": "क्लिपबोर्ड पर कॉपी नहीं हो सका: ${error}"
 	},

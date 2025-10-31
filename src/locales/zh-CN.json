@@ -440,12 +440,16 @@
 		"itemDescription": "在此处选择一个项目以查看详细信息。",
 		"noDescription": "无描述信息",
 		"filterInput": {
-			"placeholder": "搜索..."
+			"placeholder": "搜索...",
+			"aria-label": "搜索部件"
 		},
 		"sfwToggle": "安全内容",
 		"functionMenu": {
 			"search": {
 				"placeholder": "搜索..."
+			},
+			"button": {
+				"title": "功能菜单"
 			},
 			"icon": {
 				"alt": "功能菜单"
@@ -750,6 +754,10 @@
 			"time_desc": "时间降序",
 			"time_asc": "时间升序"
 		},
+		"sortBy": {
+			"aria-label": "排序方式"
+		},
+		"select_chat_with_chars": "选择与 ${chars} 的聊天",
 		"selectAll": "全选",
 		"buttons": {
 			"reverseSelect": "反选",
@@ -1218,6 +1226,9 @@
 		"editor": {
 			"title": "组件配置",
 			"disabledIndicator": "此组件不支持配置",
+			"jsonEditor": {
+				"aria-label": "JSON 配置编辑器"
+			},
 			"buttons": {
 				"save": "保存"
 			}
@@ -1272,7 +1283,8 @@
 				"dataset": {
 					"tip": "设为默认"
 				}
-			}
+			},
+			"setDefaultForFile": "将“${fileName}”设为默认 AI 源"
 		},
 		"confirm": {
 			"unsavedChanges": "您有未保存的更改。是否要放弃更改？",
@@ -1328,6 +1340,9 @@
 			"charSelectPlaceholder": "选择角色",
 			"apiKeyInput": {
 				"placeholder": "请输入 API 密钥"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "切换显示 API 密钥"
 			},
 			"toggleApiKeyIcon": {
 				"alt": "切换显示 API 密钥"
@@ -1386,6 +1401,9 @@
 			"charSelectPlaceholder": "选择角色",
 			"botTokenInput": {
 				"placeholder": "请输入 Telegram Bot Token"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "切换显示 API 密钥"
 			},
 			"toggleBotTokenIcon": {
 				"alt": "切换显示 API 密钥"
@@ -1631,7 +1649,8 @@
 		"copy": {
 			"dataset": {
 				"tip": "复制到剪贴板"
-			}
+			},
+			"aria-label": "复制到剪贴板"
 		},
 		"copied": {
 			"dataset": {
@@ -1641,12 +1660,14 @@
 		"download": {
 			"dataset": {
 				"tip": "下载代码"
-			}
+			},
+			"aria-label": "下载代码"
 		},
 		"execute": {
 			"dataset": {
 				"tip": "执行代码"
-			}
+			},
+			"aria-label": "执行代码"
 		},
 		"copy_failed": "无法复制到剪贴板：${error}"
 	},

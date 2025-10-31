@@ -440,12 +440,16 @@
 		"itemDescription": "Select an item to view details.",
 		"noDescription": "No description available.",
 		"filterInput": {
-			"placeholder": "Search..."
+			"placeholder": "Search...",
+			"aria-label": "Search widgets"
 		},
 		"sfwToggle": "Safe for Work",
 		"functionMenu": {
 			"search": {
 				"placeholder": "Search..."
+			},
+			"button": {
+				"title": "Function menu"
 			},
 			"icon": {
 				"alt": "Function Menu"
@@ -750,6 +754,10 @@
 			"time_desc": "Time Descending",
 			"time_asc": "Time Ascending"
 		},
+		"sortBy": {
+			"aria-label": "sort by"
+		},
+		"select_chat_with_chars": "Select chat with ${chars}",
 		"selectAll": "Select All",
 		"buttons": {
 			"reverseSelect": "Invert Selection",
@@ -1218,6 +1226,9 @@
 		"editor": {
 			"title": "Component Configuration",
 			"disabledIndicator": "This component does not support configuration",
+			"jsonEditor": {
+				"aria-label": "JSON configuration editor"
+			},
 			"buttons": {
 				"save": "Save"
 			}
@@ -1272,7 +1283,8 @@
 				"dataset": {
 					"tip": "Set as default"
 				}
-			}
+			},
+			"setDefaultForFile": "Set “${fileName}” as the default AI source"
 		},
 		"confirm": {
 			"unsavedChanges": "You have unsaved changes. Do you want to discard changes?",
@@ -1328,6 +1340,9 @@
 			"charSelectPlaceholder": "Select Character",
 			"apiKeyInput": {
 				"placeholder": "Enter API Key"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "Toggle showing API keys"
 			},
 			"toggleApiKeyIcon": {
 				"alt": "Toggle API Key Visibility"
@@ -1386,6 +1401,9 @@
 			"charSelectPlaceholder": "Select Character",
 			"botTokenInput": {
 				"placeholder": "Enter Telegram Bot Token"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "Toggle showing API keys"
 			},
 			"toggleBotTokenIcon": {
 				"alt": "Toggle Bot Token Visibility"
@@ -1631,7 +1649,8 @@
 		"copy": {
 			"dataset": {
 				"tip": "Copy to clipboard"
-			}
+			},
+			"aria-label": "copy to clipboard"
 		},
 		"copied": {
 			"dataset": {
@@ -1641,12 +1660,14 @@
 		"download": {
 			"dataset": {
 				"tip": "Download code"
-			}
+			},
+			"aria-label": "Download code"
 		},
 		"execute": {
 			"dataset": {
 				"tip": "Execute code"
-			}
+			},
+			"aria-label": "Execute code"
 		},
 		"copy_failed": "Unable to copy to clipboard: ${error}"
 	},

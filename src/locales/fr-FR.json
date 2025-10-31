@@ -440,12 +440,16 @@
 		"itemDescription": "Sélectionnez un élément pour en voir les détails.",
 		"noDescription": "Aucune description disponible.",
 		"filterInput": {
-			"placeholder": "Rechercher..."
+			"placeholder": "Rechercher...",
+			"aria-label": "Widgets de recherche"
 		},
 		"sfwToggle": "Contenu sûr",
 		"functionMenu": {
 			"search": {
 				"placeholder": "Rechercher..."
+			},
+			"button": {
+				"title": "Menu des fonctions"
 			},
 			"icon": {
 				"alt": "Menu des fonctions"
@@ -750,6 +754,10 @@
 			"time_desc": "Date décroissante",
 			"time_asc": "Date croissante"
 		},
+		"sortBy": {
+			"aria-label": "Trier par"
+		},
+		"select_chat_with_chars": "Sélectionnez discuter avec ${chars}",
 		"selectAll": "Tout sélectionner",
 		"buttons": {
 			"reverseSelect": "Inverser la sélection",
@@ -1218,6 +1226,9 @@
 		"editor": {
 			"title": "Configuration du Composant",
 			"disabledIndicator": "Ce composant ne prend pas en charge la configuration",
+			"jsonEditor": {
+				"aria-label": "Éditeur de configuration JSON"
+			},
 			"buttons": {
 				"save": "Enregistrer"
 			}
@@ -1272,7 +1283,8 @@
 				"dataset": {
 					"tip": "Par défaut"
 				}
-			}
+			},
+			"setDefaultForFile": "Définir « ${fileName} » comme source d'IA par défaut"
 		},
 		"confirm": {
 			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous annuler les modifications ?",
@@ -1328,6 +1340,9 @@
 			"charSelectPlaceholder": "Sélectionner un personnage",
 			"apiKeyInput": {
 				"placeholder": "Saisir la clé API"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "Activer/désactiver l'affichage des clés API"
 			},
 			"toggleApiKeyIcon": {
 				"alt": "Afficher/Masquer la clé API"
@@ -1386,6 +1401,9 @@
 			"charSelectPlaceholder": "Sélectionner un personnage",
 			"botTokenInput": {
 				"placeholder": "Saisissez le jeton du bot Telegram"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "Activer/désactiver l'affichage des clés API"
 			},
 			"toggleBotTokenIcon": {
 				"alt": "Afficher/Masquer le jeton du bot"
@@ -1631,7 +1649,8 @@
 		"copy": {
 			"dataset": {
 				"tip": "Copier dans le presse-papier"
-			}
+			},
+			"aria-label": "copier dans le presse-papier"
 		},
 		"copied": {
 			"dataset": {
@@ -1641,12 +1660,14 @@
 		"download": {
 			"dataset": {
 				"tip": "Télécharger le code"
-			}
+			},
+			"aria-label": "Télécharger le code"
 		},
 		"execute": {
 			"dataset": {
 				"tip": "Exécuter le code"
-			}
+			},
+			"aria-label": "Exécuter le code"
 		},
 		"copy_failed": "Impossible de copier dans le presse-papier : ${error}"
 	},

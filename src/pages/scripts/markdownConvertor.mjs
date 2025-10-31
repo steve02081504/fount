@@ -338,6 +338,7 @@ function createCodeBlockPlugin({ isStandalone = false } = {}) {
 			// 复制按钮
 			const copyButtonCore = h('button', {
 				class: 'btn btn-ghost btn-square btn-sm text-icon',
+				...isStandalone ? { 'aria-label': geti18n('code_block.copy.aria-label') } : { 'data-i18n': 'code_block.copy' },
 				onclick: `\
 event.stopPropagation()
 const button = this
@@ -370,6 +371,7 @@ const button = this
 			// 下载按钮
 			const downloadButtonCore = h('button', {
 				class: 'btn btn-ghost btn-square btn-sm text-icon',
+				...isStandalone ? { 'aria-label': geti18n('code_block.download.aria-label') } : { 'data-i18n': 'code_block.download' },
 				onclick: `\
 event.stopPropagation()
 const code = document.getElementById('${uniqueId}').innerText
@@ -387,6 +389,7 @@ document.body.removeChild(a)
 			if (executor)
 				executeButtonCore = h('button', {
 					class: 'btn btn-ghost btn-square btn-sm text-icon',
+					...isStandalone ? { 'aria-label': geti18n('code_block.execute.aria-label') } : { 'data-i18n': 'code_block.execute' },
 					onclick: `\
 event.stopPropagation()
 const codeBlockContainer = document.getElementById('${uniqueId}')
