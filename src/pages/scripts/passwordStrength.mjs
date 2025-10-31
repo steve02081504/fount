@@ -108,5 +108,6 @@ export function initPasswordStrengthMeter(passwordInput, passwordStrengthFeedbac
 		 * @description 评估密码强度。
 		 * @returns {{score: number, borderColorClass: string, fullFeedback: string}} - 密码强度评估结果。
 		 */
-		evaluate: () => evaluatePasswordStrength(passwordInput.value) }
+		evaluate: () => evaluatePasswordStrength(passwordInput.value)
+	}
 }

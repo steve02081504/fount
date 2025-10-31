@@ -274,7 +274,8 @@ $stderr = StringIO.new
 				 * @param {string} file - 文件名。
 				 * @returns {string} - 文件路径。
 				 */
-				locateFile: file => `https://cdn.jsdelivr.net/npm/sql.js/dist/${file}` })
+				locateFile: file => `https://cdn.jsdelivr.net/npm/sql.js/dist/${file}`
+			})
 			const db = new SQL.Database()
 			const results = db.exec(code)
 
