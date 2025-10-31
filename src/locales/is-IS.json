@@ -1017,7 +1017,12 @@
 			"creationDateLabel": "Aðgangur stofnaður:",
 			"folderSizeLabel": "Stærð notandagagna:",
 			"folderPathLabel": "Slóð notandagagna:",
-			"copyPathBtnTitle": "Afrita slóð",
+			"copyPathBtn": {
+				"title": "afrita slóð"
+			},
+			"copyPathBtnIcon": {
+				"alt": "afrita slóð"
+			},
 			"copiedAlert": "Slóð afrituð á klippiborð!"
 		},
 		"changePassword": {
@@ -1038,7 +1043,12 @@
 		},
 		"userDevices": {
 			"title": "Tæki/Setur notanda",
-			"refreshButtonTitle": "Endurhlaða lista",
+			"refreshButton": {
+				"title": "Endurnýjaðu lista"
+			},
+			"refreshButtonIcon": {
+				"alt": "endurnýja táknið"
+			},
 			"noDevicesFound": "Engin tæki eða setur fundust.",
 			"deviceInfo": "Tækisauðkenni: ${deviceId}",
 			"thisDevice": "Þetta tæki",
@@ -1073,10 +1083,17 @@
 		"apiKeys": {
 			"title": "API lykill",
 			"description": "Stjórna API lyklinum fyrir utanaðkomandi forrit.",
-			"descriptionPlaceholder": "Ný lykillýsing",
+			"input": {
+				"placeholder": "Ný lyklalýsing"
+			},
 			"createButton": "Búa til",
 			"noKeysFound": "Engir API lyklar fundust.",
-			"refreshButtonTitle": "Endurnærðu listann",
+			"refreshButton": {
+				"title": "Endurnýjaðu lista"
+			},
+			"refreshButtonIcon": {
+				"alt": "endurnýja táknið"
+			},
 			"keyDetails": "Lýsing: ${description} | Búin til í: ${createdAt} | Síðast notað: ${lastUsed}",
 			"neverUsed": "Aldrei notað",
 			"revokeButton": "Afturkalla",
@@ -1088,7 +1105,9 @@
 		"newApiKey": {
 			"title": "Nýr API lykill hefur verið búinn til",
 			"warning": "Vinsamlegast afritaðu nýja API lykilinn þinn. Þú munt ekki geta séð það aftur!",
-			"copyButtonTitle": "Afritaðu nýjan API lykil",
+			"copyButton": {
+				"title": "Afritaðu nýjan API lykil"
+			},
 			"closeButton": "Ég hef afritað lykilinn minn",
 			"copiedAlert": "API lykill afritaður á klippiborð!"
 		}
@@ -1555,12 +1574,18 @@
 		"title": "fount! Merkja-breytir",
 		"card_title": "fount merkja-hlekkjabreytir",
 		"original_url_label": "Límdu img.shields.io vefslóð",
-		"original_url_placeholder": "T.d.: https://img.shields.io/badge/Hello-World-blue",
+		"original_url": {
+			"placeholder": "T.d.: https://img.shields.io/badge/Hello-World-blue"
+		},
 		"new_url_label": "Nýstofnuð vefslóð",
-		"new_url_placeholder": "Umbreytt vefslóð birtist hér",
+		"new_url": {
+			"placeholder": "Umbreytt vefslóð birtist hér"
+		},
 		"copy_button": "Afrita",
 		"preview_label": "Forskoðun",
-		"preview_alt": "Merkjaforskoðun",
+		"preview": {
+			"alt": "Merkjaforskoðun"
+		},
 		"copied_text": "Afritað!",
 		"copy_error": "Gat ekki afritað texta: ${error}",
 		"copy_fail_alert": "Afritun mistókst!"

@@ -1017,7 +1017,12 @@
 			"creationDateLabel": "Data de criação da conta:",
 			"folderSizeLabel": "Tamanho dos dados do utilizador:",
 			"folderPathLabel": "Caminho dos dados do utilizador:",
-			"copyPathBtnTitle": "Copiar caminho",
+			"copyPathBtn": {
+				"title": "copiar caminho"
+			},
+			"copyPathBtnIcon": {
+				"alt": "Ícone de Cópia"
+			},
 			"copiedAlert": "Caminho copiado para a área de transferência!"
 		},
 		"changePassword": {
@@ -1038,7 +1043,12 @@
 		},
 		"userDevices": {
 			"title": "Dispositivos/Sessões do utilizador",
-			"refreshButtonTitle": "Atualizar lista",
+			"refreshButton": {
+				"title": "Atualizar lista"
+			},
+			"refreshButtonIcon": {
+				"alt": "ícone de atualização"
+			},
 			"noDevicesFound": "Nenhum dispositivo ou sessão encontrado.",
 			"deviceInfo": "ID do dispositivo: ${deviceId}",
 			"thisDevice": "Este dispositivo",
@@ -1073,10 +1083,17 @@
 		"apiKeys": {
 			"title": "Chave da API",
 			"description": "Gerencie a chave da API para aplicativos externos.",
-			"descriptionPlaceholder": "Nova descrição -chave",
+			"input": {
+				"placeholder": "Nova descrição da chave"
+			},
 			"createButton": "criar",
 			"noKeysFound": "Nenhuma chave de API foi encontrada.",
-			"refreshButtonTitle": "Atualize a lista",
+			"refreshButton": {
+				"title": "Atualizar lista"
+			},
+			"refreshButtonIcon": {
+				"alt": "ícone de atualização"
+			},
 			"keyDetails": "Descrição: ${description} | Criado em: ${createdAt} | Última usada: ${lastUsed}",
 			"neverUsed": "Nunca usado",
 			"revokeButton": "Revogar",
@@ -1088,7 +1105,9 @@
 		"newApiKey": {
 			"title": "Nova chave de API foi criada",
 			"warning": "Copie sua nova chave de API. Você não poderá ver de novo!",
-			"copyButtonTitle": "Copie a nova chave da API",
+			"copyButton": {
+				"title": "Copie a nova chave de API"
+			},
 			"closeButton": "Eu copiei minha chave",
 			"copiedAlert": "Chave da API copiada para a área de transferência!"
 		}
@@ -1555,12 +1574,18 @@
 		"title": "fount! Conversor de Crachás",
 		"card_title": "Conversor de Links para Emblemas fount",
 		"original_url_label": "Colar URL img.shields.io",
-		"original_url_placeholder": "Por exemplo: https://img.shields.io/badge/hello-world-blue",
+		"original_url": {
+			"placeholder": "Por exemplo: https://img.shields.io/badge/hello-world-blue"
+		},
 		"new_url_label": "O novo URL gerado",
-		"new_url_placeholder": "O URL convertido será exibido aqui",
+		"new_url": {
+			"placeholder": "O URL convertido será exibido aqui"
+		},
 		"copy_button": "Copiar",
 		"preview_label": "Antevisão",
-		"preview_alt": "Visualização de crachá",
+		"preview": {
+			"alt": "Visualização de crachá"
+		},
 		"copied_text": "Copiado!",
 		"copy_error": "Não foi possível copiar o texto: ${error}",
 		"copy_fail_alert": "A cópia falhou!"

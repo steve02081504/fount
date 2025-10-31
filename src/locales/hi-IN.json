@@ -1017,7 +1017,12 @@
 			"creationDateLabel": "खाता बनाने की तिथि:",
 			"folderSizeLabel": "उपयोगकर्ता डेटा आकार:",
 			"folderPathLabel": "उपयोगकर्ता डेटा पथ:",
-			"copyPathBtnTitle": "पथ कॉपी करें",
+			"copyPathBtn": {
+				"title": "प्रतिलिपि पथ"
+			},
+			"copyPathBtnIcon": {
+				"alt": "प्रतिलिपि पथ"
+			},
 			"copiedAlert": "पथ क्लिपबोर्ड पर कॉपी कर दिया गया है!"
 		},
 		"changePassword": {
@@ -1038,7 +1043,12 @@
 		},
 		"userDevices": {
 			"title": "उपयोगकर्ता डिवाइस/सत्र",
-			"refreshButtonTitle": "सूची ताज़ा करें",
+			"refreshButton": {
+				"title": "सूची रीफ़्रेश करें"
+			},
+			"refreshButtonIcon": {
+				"alt": "ताज़ा करें आइकन"
+			},
 			"noDevicesFound": "कोई डिवाइस या सत्र नहीं मिला।",
 			"deviceInfo": "डिवाइस ID: ${deviceId}",
 			"thisDevice": "यह डिवाइस",
@@ -1073,10 +1083,17 @@
 		"apiKeys": {
 			"title": "एपीआई कुंजी",
 			"description": "बाहरी अनुप्रयोगों के लिए एपीआई कुंजी प्रबंधित करें।",
-			"descriptionPlaceholder": "नई कुंजी विवरण",
+			"input": {
+				"placeholder": "नई कुंजी विवरण"
+			},
 			"createButton": "बनाएं",
 			"noKeysFound": "कोई एपीआई कीज़ नहीं मिली।",
-			"refreshButtonTitle": "सूची को ताज़ा करें",
+			"refreshButton": {
+				"title": "सूची रीफ़्रेश करें"
+			},
+			"refreshButtonIcon": {
+				"alt": "ताज़ा करें आइकन"
+			},
 			"keyDetails": "विवरण: ${description} | में बनाया गया: ${createdAt} | अंतिम उपयोग: ${lastUsed}",
 			"neverUsed": "कभी भी इस्तेमाल नहीं किया",
 			"revokeButton": "रद्द करना",
@@ -1088,7 +1105,9 @@
 		"newApiKey": {
 			"title": "नई एपीआई कुंजी बनाई गई है",
 			"warning": "कृपया अपनी नई एपीआई कुंजी कॉपी करें। आप इसे फिर से नहीं देख पाएंगे!",
-			"copyButtonTitle": "नई एपीआई कुंजी कॉपी करें",
+			"copyButton": {
+				"title": "नई एपीआई कुंजी कॉपी करें"
+			},
 			"closeButton": "मैंने अपनी चाबी की नकल की है",
 			"copiedAlert": "एपीआई कुंजी क्लिपबोर्ड पर कॉपी कर दी गई है!"
 		}
@@ -1555,12 +1574,18 @@
 		"title": "fount! बैज कन्वर्टर",
 		"card_title": "fount बैज लिंक कन्वर्टर",
 		"original_url_label": "img.shields.io URL पेस्ट करें",
-		"original_url_placeholder": "उदाहरण के लिए: https://img.shields.io/badge/hello-world-blue",
+		"original_url": {
+			"placeholder": "उदाहरण के लिए: https://img.shields.io/badge/hello-world-blue"
+		},
 		"new_url_label": "उत्पन्न नया URL",
-		"new_url_placeholder": "परिवर्तित URL यहां प्रदर्शित किया जाएगा",
+		"new_url": {
+			"placeholder": "परिवर्तित URL यहां प्रदर्शित किया जाएगा"
+		},
 		"copy_button": "कॉपी",
 		"preview_label": "पूर्वावलोकन",
-		"preview_alt": "बैज पूर्वावलोकन",
+		"preview": {
+			"alt": "बैज पूर्वावलोकन"
+		},
 		"copied_text": "कॉपीड!",
 		"copy_error": "पाठ को कॉपी करने में असमर्थ: ${error}",
 		"copy_fail_alert": "कॉपी विफल!"

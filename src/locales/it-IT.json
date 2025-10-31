@@ -1017,7 +1017,12 @@
 			"creationDateLabel": "Data creazione account:",
 			"folderSizeLabel": "Dimensioni dati utente:",
 			"folderPathLabel": "Percorso dati utente:",
-			"copyPathBtnTitle": "Copia percorso",
+			"copyPathBtn": {
+				"title": "Copia Percorso"
+			},
+			"copyPathBtnIcon": {
+				"alt": "Icona di Copia"
+			},
 			"copiedAlert": "Percorso copiato negli appunti!"
 		},
 		"changePassword": {
@@ -1038,7 +1043,12 @@
 		},
 		"userDevices": {
 			"title": "Dispositivi/Sessioni utente",
-			"refreshButtonTitle": "Aggiorna elenco",
+			"refreshButton": {
+				"title": "Aggiorna elenco"
+			},
+			"refreshButtonIcon": {
+				"alt": "icona di aggiornamento"
+			},
 			"noDevicesFound": "Nessun dispositivo o sessione trovata.",
 			"deviceInfo": "ID dispositivo: ${deviceId}",
 			"thisDevice": "Questo dispositivo",
@@ -1073,10 +1083,17 @@
 		"apiKeys": {
 			"title": "Chiave API",
 			"description": "Gestisci la chiave API per applicazioni esterne.",
-			"descriptionPlaceholder": "Nuova descrizione della chiave",
+			"input": {
+				"placeholder": "Nuova descrizione chiave"
+			},
 			"createButton": "creare",
 			"noKeysFound": "Non sono state trovate chiavi API.",
-			"refreshButtonTitle": "Aggiorna l'elenco",
+			"refreshButton": {
+				"title": "Aggiorna elenco"
+			},
+			"refreshButtonIcon": {
+				"alt": "icona di aggiornamento"
+			},
 			"keyDetails": "Descrizione: ${description} | Creato in: ${createdAt} | Ultimo usato: ${lastUsed}",
 			"neverUsed": "Mai usato",
 			"revokeButton": "Revocare",
@@ -1088,7 +1105,9 @@
 		"newApiKey": {
 			"title": "È stata creata una nuova chiave API",
 			"warning": "Si prega di copiare la tua nuova chiave API. Non sarai in grado di vederlo di nuovo!",
-			"copyButtonTitle": "Copia nuova chiave API",
+			"copyButton": {
+				"title": "Copia la nuova chiave API"
+			},
 			"closeButton": "Ho copiato la mia chiave",
 			"copiedAlert": "Chiave API copiata negli appunti!"
 		}
@@ -1555,12 +1574,18 @@
 		"title": "fount! Convertitore di Badge",
 		"card_title": "Convertitore di Link Badge fount",
 		"original_url_label": "Incolla URL img.shields.io",
-		"original_url_placeholder": "Ad esempio: https://img.shields.io/badge/hello-world-blue",
+		"original_url": {
+			"placeholder": "Ad esempio: https://img.shields.io/badge/hello-world-blue"
+		},
 		"new_url_label": "Nuovo URL generato",
-		"new_url_placeholder": "L'URL convertito verrà visualizzato qui",
+		"new_url": {
+			"placeholder": "L'URL convertito verrà visualizzato qui"
+		},
 		"copy_button": "Copia",
 		"preview_label": "Anteprima",
-		"preview_alt": "Anteprima del badge",
+		"preview": {
+			"alt": "Anteprima del badge"
+		},
 		"copied_text": "Copiato!",
 		"copy_error": "Impossibile copiare il testo: ${error}",
 		"copy_fail_alert": "Copia fallita!"

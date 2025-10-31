@@ -1017,7 +1017,12 @@
 			"creationDateLabel": "Дата створення акаунта:",
 			"folderSizeLabel": "Розмір даних користувача:",
 			"folderPathLabel": "Шлях до даних користувача:",
-			"copyPathBtnTitle": "Копіювати шлях",
+			"copyPathBtn": {
+				"title": "копіювати шлях"
+			},
+			"copyPathBtnIcon": {
+				"alt": "Іконка копіювання"
+			},
 			"copiedAlert": "Шлях скопійовано в буфер обміну!"
 		},
 		"changePassword": {
@@ -1038,7 +1043,12 @@
 		},
 		"userDevices": {
 			"title": "Пристрої/сесії користувача",
-			"refreshButtonTitle": "Оновити список",
+			"refreshButton": {
+				"title": "Оновити список"
+			},
+			"refreshButtonIcon": {
+				"alt": "Іконка оновлення списку"
+			},
 			"noDevicesFound": "Не знайдено жодних пристроїв або сесій.",
 			"deviceInfo": "ID пристрою: ${deviceId}",
 			"thisDevice": "Цей пристрій",
@@ -1073,10 +1083,17 @@
 		"apiKeys": {
 			"title": "Ключ API",
 			"description": "Керуйте ключем API для зовнішніх програм.",
-			"descriptionPlaceholder": "Новий ключовий опис",
+			"input": {
+				"placeholder": "Опис нового ключа"
+			},
 			"createButton": "створити",
 			"noKeysFound": "Клавіш API не знайдено.",
-			"refreshButtonTitle": "Оновіть список",
+			"refreshButton": {
+				"title": "Оновити список"
+			},
+			"refreshButtonIcon": {
+				"alt": "Іконка оновлення списку"
+			},
 			"keyDetails": "Опис: ${description} | Створено в: ${createdAt} | Востаннє використаний: ${lastUsed}",
 			"neverUsed": "Ніколи не використовувався",
 			"revokeButton": "Відкликати",
@@ -1088,7 +1105,9 @@
 		"newApiKey": {
 			"title": "Створено новий ключ API",
 			"warning": "Будь ласка, скопіюйте свій новий ключ API. Ви більше не зможете це побачити!",
-			"copyButtonTitle": "Скопіюйте новий ключ API",
+			"copyButton": {
+				"title": "Скопіюйте новий ключ API"
+			},
 			"closeButton": "Я скопіював свій ключ",
 			"copiedAlert": "Ключ API скопійовано в буфер обміну!"
 		}
@@ -1555,12 +1574,18 @@
 		"title": "fount! Конвертер значків",
 		"card_title": "Конвертер посилань для значків fount",
 		"original_url_label": "Вставте URL-адресу img.shields.io",
-		"original_url_placeholder": "Наприклад: https://img.shields.io/badge/Hello-World-blue",
+		"original_url": {
+			"placeholder": "Наприклад: https://img.shields.io/badge/Hello-World-blue"
+		},
 		"new_url_label": "Згенерована нова URL-адреса",
-		"new_url_placeholder": "Тут відобразиться перетворена URL-адреса",
+		"new_url": {
+			"placeholder": "Тут відобразиться перетворена URL-адреса"
+		},
 		"copy_button": "Копіювати",
 		"preview_label": "Попередній перегляд",
-		"preview_alt": "Попередній перегляд значка",
+		"preview": {
+			"alt": "Попередній перегляд значка"
+		},
 		"copied_text": "Скопійовано!",
 		"copy_error": "Не вдалося скопіювати текст: ${error}",
 		"copy_fail_alert": "Не вдалося скопіювати!"

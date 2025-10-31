@@ -1017,7 +1017,12 @@
 			"creationDateLabel": "Account Creation Date:",
 			"folderSizeLabel": "User Data Size:",
 			"folderPathLabel": "User Data Path:",
-			"copyPathBtnTitle": "Copy Path",
+			"copyPathBtn": {
+				"title": "Copy Path"
+			},
+			"copyPathBtnIcon": {
+				"alt": "Copy Icon"
+			},
 			"copiedAlert": "Path copied to clipboard!"
 		},
 		"changePassword": {
@@ -1038,7 +1043,12 @@
 		},
 		"userDevices": {
 			"title": "User Devices/Sessions",
-			"refreshButtonTitle": "Refresh List",
+			"refreshButton": {
+				"title": "Refresh List"
+			},
+			"refreshButtonIcon": {
+				"alt": "Refresh Icon"
+			},
 			"noDevicesFound": "No devices or sessions found.",
 			"deviceInfo": "Device ID: ${deviceId}",
 			"thisDevice": "This Device",
@@ -1073,10 +1083,17 @@
 		"apiKeys": {
 			"title": "API Key",
 			"description": "Manage the API key for external applications.",
-			"descriptionPlaceholder": "New key description",
+			"input": {
+				"placeholder": "New key description"
+			},
 			"createButton": "create",
 			"noKeysFound": "No API keys were found.",
-			"refreshButtonTitle": "Refresh the list",
+			"refreshButton": {
+				"title": "Refresh List"
+			},
+			"refreshButtonIcon": {
+				"alt": "Refresh Icon"
+			},
 			"keyDetails": "Description: ${description} | Created in: ${createdAt} | Last used: ${lastUsed}",
 			"neverUsed": "Never used",
 			"revokeButton": "Revoke",
@@ -1088,7 +1105,9 @@
 		"newApiKey": {
 			"title": "New API key has been created",
 			"warning": "Please copy your new API key. You won't be able to see it again!",
-			"copyButtonTitle": "Copy new API key",
+			"copyButton": {
+				"title": "Copy new API key"
+			},
 			"closeButton": "I've copied my key",
 			"copiedAlert": "API key copied to clipboard!"
 		}
@@ -1555,12 +1574,18 @@
 		"title": "fount! Badge Converter",
 		"card_title": "fount Badge Link Converter",
 		"original_url_label": "Paste img.shields.io URL",
-		"original_url_placeholder": "For example: https://img.shields.io/badge/Hello-World-blue",
+		"original_url": {
+			"placeholder": "For example: https://img.shields.io/badge/Hello-World-blue"
+		},
 		"new_url_label": "The generated new URL",
-		"new_url_placeholder": "The converted URL will be displayed here",
+		"new_url": {
+			"placeholder": "The converted URL will be displayed here"
+		},
 		"copy_button": "Copy",
 		"preview_label": "Preview",
-		"preview_alt": "Badge Preview",
+		"preview": {
+			"alt": "Badge Preview"
+		},
 		"copied_text": "Copied!",
 		"copy_error": "Unable to copy text: ${error}",
 		"copy_fail_alert": "Copy failed!"

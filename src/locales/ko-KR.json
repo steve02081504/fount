@@ -1017,7 +1017,12 @@
 			"creationDateLabel": "계정 생성일:",
 			"folderSizeLabel": "사용자 데이터 크기:",
 			"folderPathLabel": "사용자 데이터 경로:",
-			"copyPathBtnTitle": "경로 복사",
+			"copyPathBtn": {
+				"title": "경로 복사"
+			},
+			"copyPathBtnIcon": {
+				"alt": "복사 아이콘"
+			},
 			"copiedAlert": "경로가 클립보드에 복사되었습니다!"
 		},
 		"changePassword": {
@@ -1038,7 +1043,12 @@
 		},
 		"userDevices": {
 			"title": "사용자 기기/세션",
-			"refreshButtonTitle": "목록 새로고침",
+			"refreshButton": {
+				"title": "목록 새로 고침"
+			},
+			"refreshButtonIcon": {
+				"alt": "새로 고침 아이콘"
+			},
 			"noDevicesFound": "기기 또는 세션이 없습니다.",
 			"deviceInfo": "기기 ID: ${deviceId}",
 			"thisDevice": "이 기기",
@@ -1073,10 +1083,17 @@
 		"apiKeys": {
 			"title": "API 키",
 			"description": "외부 응용 프로그램의 API 키를 관리하십시오.",
-			"descriptionPlaceholder": "새로운 키 설명",
+			"input": {
+				"placeholder": "새로운 키 설명"
+			},
 			"createButton": "생성",
 			"noKeysFound": "API 키가 발견되지 않았습니다.",
-			"refreshButtonTitle": "목록을 새로 고치십시오",
+			"refreshButton": {
+				"title": "목록 새로 고침"
+			},
+			"refreshButtonIcon": {
+				"alt": "새로 고침 아이콘"
+			},
 			"keyDetails": "설명 : ${description} | 생성 : ${createdAt} | 마지막 사용 : ${lastUsed}",
 			"neverUsed": "사용하지 않았습니다",
 			"revokeButton": "해지",
@@ -1088,7 +1105,9 @@
 		"newApiKey": {
 			"title": "새로운 API 키가 만들어졌습니다",
 			"warning": "새 API 키를 복사하십시오. 당신은 그것을 다시 볼 수 없을 것입니다!",
-			"copyButtonTitle": "새 API 키를 복사하십시오",
+			"copyButton": {
+				"title": "새 API 키 복사"
+			},
 			"closeButton": "내 키를 복사했습니다",
 			"copiedAlert": "키가 클립보드에 복사되었습니다!"
 		}
@@ -1555,12 +1574,18 @@
 		"title": "fount! 배지 변환기",
 		"card_title": "fount 배지 링크 컨버터",
 		"original_url_label": "img.shields.io URL을 붙여넣으세요",
-		"original_url_placeholder": "예: https://img.shields.io/badge/hello-world-blue",
+		"original_url": {
+			"placeholder": "예: https://img.shields.io/badge/hello-world-blue"
+		},
 		"new_url_label": "생성된 새 URL",
-		"new_url_placeholder": "변환된 URL이 여기에 표시됩니다",
+		"new_url": {
+			"placeholder": "변환된 URL이 여기에 표시됩니다"
+		},
 		"copy_button": "복사",
 		"preview_label": "배지 미리보기",
-		"preview_alt": "배지 미리보기",
+		"preview": {
+			"alt": "배지 미리보기"
+		},
 		"copied_text": "복사됨!",
 		"copy_error": "텍스트를 복사할 수 없습니다: ${error}",
 		"copy_fail_alert": "복사 실패!"

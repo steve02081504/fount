@@ -1017,7 +1017,12 @@
 			"creationDateLabel": "تاريخ إنشاء الحساب:",
 			"folderSizeLabel": "حجم بيانات المستخدم:",
 			"folderPathLabel": "مسار بيانات المستخدم:",
-			"copyPathBtnTitle": "نسخ المسار",
+			"copyPathBtn": {
+				"title": "مسار النسخ"
+			},
+			"copyPathBtnIcon": {
+				"alt": "أيقونة النسخ"
+			},
 			"copiedAlert": "تم نسخ المسار إلى الحافظة!"
 		},
 		"changePassword": {
@@ -1038,7 +1043,12 @@
 		},
 		"userDevices": {
 			"title": "أجهزة/جلسات المستخدم",
-			"refreshButtonTitle": "تحديث القائمة",
+			"refreshButton": {
+				"title": "تحديث القائمة"
+			},
+			"refreshButtonIcon": {
+				"alt": "أيقونة التحديث"
+			},
 			"noDevicesFound": "لم يتم العثور على أجهزة أو جلسات.",
 			"deviceInfo": "معرف الجهاز: ${deviceId}",
 			"thisDevice": "هذا الجهاز",
@@ -1073,10 +1083,17 @@
 		"apiKeys": {
 			"title": "مفتاح API",
 			"description": "إدارة مفتاح API للتطبيقات الخارجية.",
-			"descriptionPlaceholder": "وصف رئيسي جديد",
+			"input": {
+				"placeholder": "وصف المفتاح الجديد"
+			},
 			"createButton": "إنشاء",
 			"noKeysFound": "لم يتم العثور على مفاتيح API.",
-			"refreshButtonTitle": "تحديث القائمة",
+			"refreshButton": {
+				"title": "تحديث القائمة"
+			},
+			"refreshButtonIcon": {
+				"alt": "أيقونة التحديث"
+			},
 			"keyDetails": "الوصف: ${description} | تم إنشاؤها في: ${createdAt} | آخر استخدام: ${lastUsed}",
 			"neverUsed": "لم تستخدم",
 			"revokeButton": "إلغاء",
@@ -1088,7 +1105,9 @@
 		"newApiKey": {
 			"title": "تم إنشاء مفتاح API جديد",
 			"warning": "يرجى نسخ مفتاح API الجديد الخاص بك. لن تتمكن من رؤيته مرة أخرى!",
-			"copyButtonTitle": "نسخ مفتاح API جديد",
+			"copyButton": {
+				"title": "انسخ مفتاح API الجديد"
+			},
 			"closeButton": "لقد قمت بنسخ مفتاحي",
 			"copiedAlert": "تم نسخ مفتاح API إلى الحافظة!"
 		}
@@ -1555,12 +1574,18 @@
 		"title": "fount! محول الشارات",
 		"card_title": "محول روابط شارات fount",
 		"original_url_label": "الصق رابط img.shields.io",
-		"original_url_placeholder": "مثال: https://img.shields.io/badge/Hello-World-blue",
+		"original_url": {
+			"placeholder": "مثال: https://img.shields.io/badge/Hello-World-blue"
+		},
 		"new_url_label": "الرابط الجديد الذي تم إنشاؤه",
-		"new_url_placeholder": "سيظهر الرابط المحول هنا",
+		"new_url": {
+			"placeholder": "سيظهر الرابط المحول هنا"
+		},
 		"copy_button": "نسخ",
 		"preview_label": "معاينة التأثير",
-		"preview_alt": "معاينة الشارة",
+		"preview": {
+			"alt": "معاينة الشارة"
+		},
 		"copied_text": "تم النسخ!",
 		"copy_error": "لا يمكن نسخ النص: ${error}",
 		"copy_fail_alert": "فشل النسخ!"

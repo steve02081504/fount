@@ -1017,7 +1017,12 @@
 			"creationDateLabel": "账户创建日期:",
 			"folderSizeLabel": "用户数据大小:",
 			"folderPathLabel": "用户数据路径:",
-			"copyPathBtnTitle": "复制路径",
+			"copyPathBtn": {
+				"title": "复制路径"
+			},
+			"copyPathBtnIcon": {
+				"alt": "复制图标"
+			},
 			"copiedAlert": "路径已复制到剪贴板！"
 		},
 		"changePassword": {
@@ -1038,7 +1043,12 @@
 		},
 		"userDevices": {
 			"title": "用户设备/会话",
-			"refreshButtonTitle": "刷新列表",
+			"refreshButton": {
+				"title": "刷新列表"
+			},
+			"refreshButtonIcon": {
+				"alt": "刷新图标"
+			},
 			"noDevicesFound": "未找到任何设备或会话。",
 			"deviceInfo": "设备ID: ${deviceId}",
 			"thisDevice": "当前设备",
@@ -1073,10 +1083,17 @@
 		"apiKeys": {
 			"title": "API 密钥",
 			"description": "管理外部应用程序的 API 密钥。",
-			"descriptionPlaceholder": "新密钥描述",
+			"input": {
+				"placeholder": "新密钥描述"
+			},
 			"createButton": "创建",
 			"noKeysFound": "未找到任何 API 密钥。",
-			"refreshButtonTitle": "刷新列表",
+			"refreshButton": {
+				"title": "刷新列表"
+			},
+			"refreshButtonIcon": {
+				"alt": "刷新图标"
+			},
 			"keyDetails": "描述: ${description} | 创建于: ${createdAt} | 最后使用: ${lastUsed}",
 			"neverUsed": "从未使用",
 			"revokeButton": "撤销",
@@ -1088,7 +1105,9 @@
 		"newApiKey": {
 			"title": "新 API 密钥已创建",
 			"warning": "请复制您的新 API 密钥。您将无法再次看到它！",
-			"copyButtonTitle": "复制新 API 密钥",
+			"copyButton": {
+				"title": "复制新 API 密钥"
+			},
 			"closeButton": "我已复制密钥",
 			"copiedAlert": "密钥已复制到剪贴板！"
 		}
@@ -1555,12 +1574,18 @@
 		"title": "fount! 徽章转换器",
 		"card_title": "fount 徽章链接转换器",
 		"original_url_label": "粘贴 img.shields.io 网址",
-		"original_url_placeholder": "例如: https://img.shields.io/badge/Hello-World-blue",
+		"original_url": {
+			"placeholder": "例如: https://img.shields.io/badge/Hello-World-blue"
+		},
 		"new_url_label": "生成的新网址",
-		"new_url_placeholder": "这里会显示转换后的网址",
+		"new_url": {
+			"placeholder": "这里会显示转换后的网址"
+		},
 		"copy_button": "复制",
 		"preview_label": "效果预览",
-		"preview_alt": "徽章预览",
+		"preview": {
+			"alt": "徽章预览"
+		},
 		"copied_text": "已复制!",
 		"copy_error": "无法复制文本: ${error}",
 		"copy_fail_alert": "复制失败！"
