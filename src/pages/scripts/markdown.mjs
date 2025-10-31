@@ -20,20 +20,40 @@ import { onThemeChange } from './theme.mjs'
 
 // --- 辅助函数 ---
 
+/**
+ * @description 向 SVG 字符串添加一个类名。
+ * @param {string} svg - SVG 字符串。
+ * @param {string} className - 要添加的类名。
+ * @returns {string} - 添加了类名的 SVG 字符串。
+ */
 const addClassToSvg = (svg, className) => svg.replace('<svg', `<svg class="${className}"`)
 
+/**
+ * @description 获取语言的扩展名。
+ * @param {string} lang - 语言。
+ * @returns {string} - 语言的扩展名。
+ */
 function getLanguageExtension(lang) {
 	return languageMap.extensions(lang)?.[0]?.replace(/^\./, '') || lang
 }
 
 // --- Unified.js 插件 ---
 
+/**
+ * @description 禁用某些 micromark 扩展。
+ * @param {object} [options={}] - 选项。
+ * @returns {void}
+ */
 function remarkDisable(options = {}) {
 	const data = this.data()
 	const list = data.micromarkExtensions || (data.micromarkExtensions = [])
 	list.push({ disable: { null: options.disable || [] } })
 }
 
+/**
+ * @description 为元素添加 DaisyUI 类。
+ * @returns {Function} - Unified.js 插件。
+ */
 function rehypeAddDaisyuiClass() {
 	return tree => {
 		visit(tree, 'element', node => {
@@ -75,16 +95,26 @@ const downloadIconSized = addClassToSvg(downloadIconCode, iconClass)
 const playIconSized = addClassToSvg(playIconCode, iconClass)
 
 /**
- * 代码执行器集合
+ * @description 代码执行器集合
  * @type {Object.<string, (code: string) => Promise<{result?: string, output?: string, error?: string, exitcode?: number}>>}
  */
 const languageExecutors = {
+	/**
+	 * @description 执行 JavaScript 代码。
+	 * @param {string} code - 要执行的代码。
+	 * @returns {Promise<{result?: string, output?: string, error?: string, exitcode?: number}>} - 执行结果。
+	 */
 	js: async (code) => {
 		try {
 			const { async_eval } = await import('https://esm.sh/@steve02081504/async-eval')
 			return await async_eval(code)
 		} catch (error) { return { error } }
 	},
+	/**
+	 * @description 执行 Python 代码。
+	 * @param {string} code - 要执行的代码。
+	 * @returns {Promise<{result?: string, output?: string, error?: string, exitcode?: number}>} - 执行结果。
+	 */
 	py: async (code) => {
 		try {
 			const { loadPyodide } = await import('https://cdn.jsdelivr.net/pyodide/v0.29.0/full/pyodide.mjs')
@@ -117,6 +147,11 @@ sys.stderr = io.StringIO()
 			}
 		} catch (error) { return { error } }
 	},
+	/**
+	 * @description 执行 Ruby 代码。
+	 * @param {string} code - 要执行的代码。
+	 * @returns {Promise<{result?: string, output?: string, error?: string, exitcode?: number}>} - 执行结果。
+	 */
 	rb: async (code) => {
 		try {
 			const { DefaultRubyVM } = await import('https://cdn.jsdelivr.net/npm/@ruby/wasm-wasi/dist/browser/+esm')
@@ -143,6 +178,11 @@ $stderr = StringIO.new
 			}
 		} catch (error) { return { error } }
 	},
+	/**
+	 * @description 执行 Lisp 代码。
+	 * @param {string} code - 要执行的代码。
+	 * @returns {Promise<{result?: string, output?: string, error?: string, exitcode?: number}>} - 执行结果。
+	 */
 	lisp: async (code) => {
 		try {
 			const { exec } = await import('https://esm.sh/lips')
@@ -166,6 +206,11 @@ $stderr = StringIO.new
 			}
 		} catch (error) { return { error } }
 	},
+	/**
+	 * @description 执行 PHP 代码。
+	 * @param {string} code - 要执行的代码。
+	 * @returns {Promise<{result?: string, output?: string, error?: string, exitcode?: number}>} - 执行结果。
+	 */
 	php: async (code) => {
 		try {
 			const { PhpWeb } = await import('https://cdn.jsdelivr.net/npm/php-wasm/PhpWeb.mjs')
@@ -193,6 +238,11 @@ $stderr = StringIO.new
 			}
 		} catch (error) { return { error } }
 	},
+	/**
+	 * @description 执行 Lua 代码。
+	 * @param {string} code - 要执行的代码。
+	 * @returns {Promise<{result?: string, output?: string, error?: string, exitcode?: number}>} - 执行结果。
+	 */
 	lua: async (code) => {
 		try {
 			const { LuaFactory } = await import('https://esm.sh/wasmoon')
@@ -211,10 +261,21 @@ $stderr = StringIO.new
 			}
 		} catch (error) { return { error } }
 	},
+	/**
+	 * @description 执行 SQL 代码。
+	 * @param {string} code - 要执行的代码。
+	 * @returns {Promise<{result?: string, output?: string, error?: string, exitcode?: number}>} - 执行结果。
+	 */
 	sql: async (code) => {
 		try {
 			const { default: initSqlJs } = await import('https://esm.sh/sql.js')
-			const SQL = await initSqlJs({ locateFile: file => `https://cdn.jsdelivr.net/npm/sql.js/dist/${file}` })
+			const SQL = await initSqlJs({
+				/**
+				 * @description 定位 SQL.js 文件。
+				 * @param {string} file - 文件名。
+				 * @returns {string} - 文件路径。
+				 */
+				locateFile: file => `https://cdn.jsdelivr.net/npm/sql.js/dist/${file}` })
 			const db = new SQL.Database()
 			const results = db.exec(code)
 
@@ -235,9 +296,20 @@ $stderr = StringIO.new
 	}
 }
 
+/**
+ * @description 创建代码块插件。
+ * @param {object} [options={}] - 选项。
+ * @param {boolean} [options.isStandalone=false] - 是否为独立模式。
+ * @returns {object} - 代码块插件。
+ */
 function createCodeBlockPlugin({ isStandalone = false } = {}) {
 	return {
 		name: 'code-block-enhancements',
+		/**
+		 * @description 处理 hast 树。
+		 * @param {object} hast - hast 树。
+		 * @returns {object} - 处理后的 hast 树。
+		 */
 		root(hast) {
 			const rawCode = this.tokens.map(line => line.map(token => token.content).join('')).join('\n')
 			const lineCount = this.tokens.length
@@ -249,6 +321,13 @@ function createCodeBlockPlugin({ isStandalone = false } = {}) {
 			while (document.getElementById(uniqueId))
 			const executor = languageExecutors[ext]
 
+			/**
+			 * @description 创建工具提示。
+			 * @param {string} textKey - 文本键。
+			 * @param {any} children - 子元素。
+			 * @param {string} [position='left'] - 位置。
+			 * @returns {object} - 工具提示元素。
+			 */
 			const createTooltip = (textKey, children, position = 'left') => {
 				const props = isStandalone
 					? { 'data-tip': geti18n(textKey + '.dataset.tip') }
@@ -382,6 +461,11 @@ codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 `,
 				}, [fromHtml(playIconSized, { fragment: true })])
 
+			/**
+			 * @description 获取按钮组。
+			 * @param {string} tooltipPosition - 工具提示位置。
+			 * @returns {object} - 按钮组元素。
+			 */
 			const getButtonGroup = (tooltipPosition) => {
 				const buttons = []
 				if (executeButtonCore)
@@ -416,6 +500,12 @@ codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 
 // --- Markdown 转换器 ---
 
+/**
+ * @description 获取 Markdown 转换器。
+ * @param {object} [options={}] - 选项。
+ * @param {boolean} [options.isStandalone=false] - 是否为独立模式。
+ * @returns {Promise<import('unified').Processor>} - Markdown 转换器。
+ */
 async function GetConvertor({ isStandalone = false } = {}) {
 	return unified()
 		.use(remarkParse)
@@ -426,6 +516,13 @@ async function GetConvertor({ isStandalone = false } = {}) {
 		.use(remarkGfm, { singleTilde: false })
 		.use(rehypeMermaid, {
 			dark: true,
+			/**
+			 * @description Mermaid 错误回退。
+			 * @param {object} element - 元素。
+			 * @param {string} diagram - 图表。
+			 * @param {Error} error - 错误。
+			 * @returns {object} - 回退元素。
+			 */
 			errorFallback: (element, diagram, error) => {
 				// https://github.com/remcohaszing/rehype-mermaid/issues/31
 				document.getElementById('dmermaid-0')?.remove()
@@ -447,9 +544,19 @@ ${diagram}`
 			transformers: [
 				await createCodeBlockPlugin({ isStandalone })
 			],
+			/**
+			 * @description 访问标题。
+			 * @param {object} caption - 标题。
+			 * @returns {void}
+			 */
 			onVisitCaption(caption) {
 				caption.properties.className = 'alert alert-secondary shadow-lg join-item'
 			},
+			/**
+			 * @description 访问标题。
+			 * @param {object} title - 标题。
+			 * @returns {void}
+			 */
 			onVisitTitle(title) {
 				title.properties.className = 'alert alert-info shadow-lg join-item'
 			}
@@ -473,16 +580,31 @@ ${diagram}`
 
 let convertor, standaloneConvertor
 
+/**
+ * @description 将 Markdown 渲染为字符串。
+ * @param {string} markdown - Markdown 文本。
+ * @returns {Promise<string>} - 渲染后的 HTML 字符串。
+ */
 export async function renderMarkdownAsString(markdown) {
 	convertor ??= await GetConvertor()
 	const file = await convertor.process(markdown)
 	return String(file)
 }
 
+/**
+ * @description 将 Markdown 渲染为 DOM 元素。
+ * @param {string} markdown - Markdown 文本。
+ * @returns {Promise<DocumentFragment>} - 渲染后的 DOM 片段。
+ */
 export async function renderMarkdown(markdown) {
 	return createDOMFromHtmlString(await renderMarkdownAsString(markdown))
 }
 
+/**
+ * @description 将 Markdown 渲染为独立的 HTML 字符串。
+ * @param {string} markdown - Markdown 文本。
+ * @returns {Promise<string>} - 渲染后的 HTML 字符串。
+ */
 export async function renderMarkdownAsStandAloneHtmlString(markdown) {
 	standaloneConvertor ??= await GetConvertor({ isStandalone: true })
 	const file = await standaloneConvertor.process(markdown)

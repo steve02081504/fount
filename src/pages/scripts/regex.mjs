@@ -1,11 +1,11 @@
 /**
- * Gets a real regex object from a slash-delimited regex string
+ * @description 从斜杠分隔的正则表达式字符串中获取一个真正的正则表达式对象。
  *
- * This function works with `/` as delimiter, and each occurance of it inside the regex has to be escaped.
- * Flags are optional, but can only be valid flags supported by JavaScript's `RegExp` (`g`, `i`, `m`, `s`, `u`, `y`).
+ * 此函数使用 `/` 作为分隔符，正则表达式内部的每个 `/` 都必须转义。
+ * 标志是可选的，但只能是 JavaScript 的 `RegExp` 支持的有效标志（`g`、`i`、`m`、`s`、`u`、`y`）。
  *
- * @param {string} input - A delimited regex string
- * @returns {RegExp} The regex object
+ * @param {string} input - 一个带分隔符的正则表达式字符串。
+ * @returns {RegExp} 正则表达式对象。
  */
 export function parseRegexFromString(input) {
 	// Extracting the regex pattern and flags
@@ -27,20 +27,20 @@ export function parseRegexFromString(input) {
 }
 
 /**
- * Escapes special characters in a string to be used in a regular expression.
+ * @description 转义字符串中的特殊字符，以便在正则表达式中使用。
  *
- * @param {string} string - The string to escape.
- * @return {string} The escaped string.
+ * @param {string} string - 要转义的字符串。
+ * @returns {string} 转义后的字符串。
  */
 export function escapeRegExp(string) {
 	return string.replace(/[$()*+./?[\\-^{|}]/g, '\\$&')
 }
 
 /**
- * Replaces Unicode escape sequences in a string with their corresponding characters.
+ * @description 将字符串中的转义序列替换为它们对应的字符。
  *
- * @param {string} str - The input string possibly containing Unicode escape sequences.
- * @return {string} The string with Unicode escape sequences replaced by actual characters.
+ * @param {string} string - 可能包含转义序列的输入字符串。
+ * @returns {string} - 转义序列被替换为实际字符的字符串。
  */
 export function unescapeRegExp(string) {
 	return string.replace(/\\(.)/g, '$1')

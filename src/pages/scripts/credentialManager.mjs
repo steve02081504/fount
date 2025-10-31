@@ -1,11 +1,16 @@
 /**
- * Derives a 32-byte key from a secret using PBKDF2.
- * This is for AES-GCM and can be used for both encryption and decryption.
- * @param {string} secret The secret to derive the key from (e.g., fount UUID).
- * @returns {Promise<CryptoKey>} The derived CryptoKey.
+ * @description 使用 PBKDF2 从密钥派生一个 32 字节的密钥。
+ * 这适用于 AES-GCM，可用于加密和解密。
+ * @param {string} secret 用于派生密钥的密钥（例如，fount UUID）。
+ * @returns {Promise<CryptoKey>} 派生的 CryptoKey。
  */
 import CryptoJS from 'https://esm.sh/crypto-js'
 
+/**
+ * @description 获取用于加密/解密的密钥。
+ * @param {string} secret - 密钥。
+ * @returns {Promise<CryptoKey>} - 加密/解密密钥。
+ */
 async function getKey(secret) {
 	const salt = CryptoJS.enc.Utf8.parse('fount-credential-salt')
 	const keySize = 256 / 32 // 256-bit key, 32-bit words
@@ -20,10 +25,10 @@ async function getKey(secret) {
 }
 
 /**
- * Encrypts a plaintext string using AES-256-CBC.
- * @param {string} plaintext The string to encrypt.
- * @param {string} secret The secret (UUID) to use for key derivation.
- * @returns {Promise<string>} A JSON string containing the iv and content.
+ * @description 使用 AES-256-CBC 加密纯文本字符串。
+ * @param {string} plaintext 要加密的字符串。
+ * @param {string} secret 用于密钥派生的密钥（UUID）。
+ * @returns {Promise<string>} 包含 iv 和内容的 JSON 字符串。
  */
 async function encrypt(plaintext, secret) {
 	const key = await getKey(secret)
@@ -44,10 +49,10 @@ async function encrypt(plaintext, secret) {
 }
 
 /**
- * Decrypts an AES-256-CBC encrypted payload.
- * @param {string} encryptedJson A JSON string containing iv and content.
- * @param {string} secret The secret (UUID) used for encryption.
- * @returns {Promise<string>} The decrypted plaintext.
+ * @description 解密 AES-256-CBC 加密的有效负载。
+ * @param {string} encryptedJson 包含 iv 和内容的 JSON 字符串。
+ * @param {string} secret 用于加密的密钥（UUID）。
+ * @returns {Promise<string>} 解密的纯文本。
  */
 async function decrypt(encryptedJson, secret) {
 	try {
@@ -78,10 +83,10 @@ async function decrypt(encryptedJson, secret) {
 const CATBOX_API_URL = 'https://litterbox.catbox.moe/resources/internals/api.php'
 
 /**
- * Uploads text to Catbox/Litterbox and returns the file ID.
- * @param {string} content The text content to upload.
- * @param {string} expiration The expiration time for the file (e.g., '1h', '24h').
- * @returns {Promise<string>} The file ID (which is the filename on catbox).
+ * @description 将文本上传到 Catbox/Litterbox 并返回文件 ID。
+ * @param {string} content 要上传的文本内容。
+ * @param {string} expiration 文件的过期时间（例如，“1h”、“24h”）。
+ * @returns {Promise<string>} 文件 ID（即 catbox 上的文件名）。
  */
 async function uploadToCatbox(content, expiration = '1h') {
 	const formData = new FormData()
@@ -105,13 +110,12 @@ async function uploadToCatbox(content, expiration = '1h') {
 }
 
 /**
- * Retrieves encrypted credential data from a source, validates it by attempting decryption,
- * and returns the raw encrypted data if valid.
- * @param {string | null} fileId
- * @param {string | null} from
- * @param {URLSearchParams} hashParams
- * @param {string} uuid
- * @returns {Promise<string|null>} The raw encrypted data as a string if valid, otherwise null.
+ * @description 从源检索加密的凭据数据，通过尝试解密来验证它，如果有效则返回原始加密数据。
+ * @param {string | null} fileId - 文件 ID。
+ * @param {string | null} from - 来源。
+ * @param {URLSearchParams} hashParams - 哈希参数。
+ * @param {string} uuid - UUID。
+ * @returns {Promise<string|null>} 如果有效，则为原始加密数据字符串；否则为 null。
  */
 export async function receiveAndValidateEncryptedCredentials(fileId, from, hashParams, uuid) {
 	try {
@@ -160,12 +164,12 @@ export async function receiveAndValidateEncryptedCredentials(fileId, from, hashP
 }
 
 /**
- * Retrieves encrypted credential data from a source and decrypts it.
- * @param {string | null} fileId
- * @param {string | null} from
- * @param {URLSearchParams} hashParams
- * @param {string} uuid
- * @returns {Promise<string|null>} The decrypted plaintext credentials as a JSON string, or null.
+ * @description 从源检索加密的凭据数据并解密。
+ * @param {string | null} fileId - 文件 ID。
+ * @param {string | null} from - 来源。
+ * @param {URLSearchParams} hashParams - 哈希参数。
+ * @param {string} uuid - UUID。
+ * @returns {Promise<string|null>} 解密的纯文本凭据（JSON 字符串）或 null。
  */
 export async function retrieveAndDecryptCredentials(fileId, from, hashParams, uuid) {
 	let encryptedData = null
@@ -199,14 +203,13 @@ export async function retrieveAndDecryptCredentials(fileId, from, hashParams, uu
 	return null
 }
 /**
- * Executes a transfer strategy for encrypted data and initiates a redirect.
- * It tries Clipboard, then Catbox. If both fail, it prepares URL hash parameters
- * but does not redirect.
- * @param {string} encryptedData The encrypted data to transfer.
- * @param {URL} targetUrl The target URL object, which will be modified.
- * @param {URLSearchParams} hashParams The hash parameters object, which will be modified.
- * @param {string} [clipboardFromValue='clipboard'] The value for the 'from' search param on clipboard success.
- * @returns {Promise<boolean>} Returns `true` if a redirect was initiated (Clipboard/Catbox), `false` otherwise (Hash fallback).
+ * @description 为加密数据执行传输策略并发起重定向。
+ * 它会尝试剪贴板，然后是 Catbox。如果两者都失败，它会准备 URL 哈希参数，但不会重定向。
+ * @param {string} encryptedData 要传输的加密数据。
+ * @param {URL} targetUrl 目标 URL 对象，将被修改。
+ * @param {URLSearchParams} hashParams 哈希参数对象，将被修改。
+ * @param {string} [clipboardFromValue='clipboard'] 剪贴板成功时“from”搜索参数的值。
+ * @returns {Promise<boolean>} 如果发起了重定向（剪贴板/Catbox），则返回 `true`；否则返回 `false`（哈希回退）。
  */
 async function executeTransferStrategy(encryptedData, targetUrl, hashParams, clipboardFromValue = 'clipboard') {
 	// 1. Try to use clipboard
@@ -240,11 +243,11 @@ async function executeTransferStrategy(encryptedData, targetUrl, hashParams, cli
 }
 
 /**
- * Loads plaintext credentials from localStorage, encrypts them, and transfers them
- * by redirecting the user to a target URL with the encrypted data.
- * The transfer happens via clipboard, Catbox, or URL hash parameter as fallbacks.
- * @param {string} uuid - The user's unique identifier.
- * @param {string} redirectUrl - The URL to redirect to after preparing the transfer.
+ * @description 从 localStorage 加载纯文本凭据，对其进行加密，并通过将用户重定向到带有加密数据的目标 URL 来传输它们。
+ * 传输通过剪贴板、Catbox 或 URL 哈希参数作为回退。
+ * @param {string} uuid - 用户的唯一标识符。
+ * @param {string} redirectUrl - 准备传输后要重定向到的 URL。
+ * @returns {Promise<void>}
  */
 export async function transferEncryptedCredentials(uuid, redirectUrl) {
 	const instanceId = uuid.split('-')[0]
@@ -275,6 +278,13 @@ export async function transferEncryptedCredentials(uuid, redirectUrl) {
 }
 
 
+/**
+ * @description 重定向到登录信息页面。
+ * @param {string} [redirectUrl='/login'] - 重定向 URL。
+ * @param {string|null} [username=null] - 用户名。
+ * @param {string|null} [password=null] - 密码。
+ * @returns {Promise<void>}
+ */
 export async function redirectToLoginInfo(redirectUrl = '/login', username = null, password = null) {
 	if (redirectUrl.startsWith('/')) redirectUrl = window.location.origin + redirectUrl
 
@@ -309,6 +319,13 @@ export async function redirectToLoginInfo(redirectUrl = '/login', username = nul
 	}
 }
 
+/**
+ * @description 生成登录信息 URL。
+ * @param {object} credentials - 凭据。
+ * @param {string} uuid - UUID。
+ * @param {string} baseUrl - 基本 URL。
+ * @returns {Promise<string>} - 登录信息 URL。
+ */
 export async function generateLoginInfoUrl(credentials, uuid, baseUrl) {
 	const redirectUrl = new URL(`${baseUrl}/login`)
 	redirectUrl.searchParams.set('autologin', 'true')
