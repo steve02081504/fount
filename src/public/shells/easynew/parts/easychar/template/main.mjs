@@ -65,13 +65,11 @@ export default {
 			},
 		},
 		chat: {
-			async GetPrompt(args, prompt_struct, detail_level) {
+			async GetPrompt(args) {
 				const context = {
 					char: { name: args.Charname },
 					user: { name: args.UserCharname },
 					args,
-					prompt_struct,
-					detail_level,
 				}
 
 				const prompt_texts = []
