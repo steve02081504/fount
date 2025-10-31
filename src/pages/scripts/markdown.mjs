@@ -1,7 +1,7 @@
 import { createDOMFromHtmlString } from './template.mjs'
 
 const { GetMarkdownConvertor } = await import('./markdownConvertor.mjs').catch(error => {
-	debugger
+	
 	return {
 		GetMarkdownConvertor: () => {
 			return {
