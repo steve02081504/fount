@@ -16,6 +16,7 @@ REQUIRED_TAGS = [
 	("meta", {"property": "og:image"}),
 	("link", {"rel": "icon", "type": "image/svg+xml"}),
 	("title", {}),  # 对于 title 标签，我们只检查标签本身是否存在
+	("meta", {"name": "description"}),
 ]
 
 # 要排除的路径片段。使用正斜杠，因为后面会用 as_posix() 来标准化路径。
@@ -68,8 +69,18 @@ def check_html_file(file_path: Path) -> list[str]:
 				# 查找所有同名标签
 				tags = head.find_all(tag_name)
 				for tag in tags:
-					# 检查此标签是否包含所有必需的属性
-					if all(tag.has_attr(key) for key in attrs.keys()):
+					# 检查此标签是否匹配所有必需的属性和值
+					all_attrs_match = True
+					for key, value in attrs.items():
+						if not tag.has_attr(key):
+							all_attrs_match = False
+							break
+						# 如果要求的值不是 None，则检查值是否匹配
+						if value is not None and tag.get(key) != value:
+							all_attrs_match = False
+							break
+					
+					if all_attrs_match:
 						found = True
 						break
 
