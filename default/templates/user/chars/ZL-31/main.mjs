@@ -107,7 +107,7 @@ export default {
 			// 获取角色在群组中的问好
 			GetGroupGreeting: (arg, index) => [{ content: '<群组中角色加入时的问好>' }, { content: '<可以多个>' },][index],
 			// 获取角色的提示词
-			GetPrompt: async (args, prompt_struct, detail_level) => {
+			GetPrompt: async (args) => {
 				return {
 					text: [{
 						content: \`\\
@@ -120,7 +120,7 @@ export default {
 				}
 			},
 			// 获取其他角色看到的该角色的设定，群聊时生效
-			GetPromptForOther: (args, prompt_struct, detail_level) => {
+			GetPromptForOther: (args) => {
 				return {
 					text: [{
 						content: '<其他角色看到的该角色的设定，群聊时生效>',
@@ -297,14 +297,14 @@ export default {
 		chat: {
 			GetGreeting: (arg, index) => [{ content: '你好，我是复读机。' },][index],
 			GetGroupGreeting: (arg, index) => [{ content: '大家好，我是复读机，我会在群里复读大家的发言。' },][index],
-			GetPrompt: async (args, prompt_struct, detail_level) => {
+			GetPrompt: async (args) => {
 				return {
 					text: [],
 					additional_chat_log: [],
 					extension: {},
 				}
 			},
-			GetPromptForOther: (args, prompt_struct, detail_level) => {
+			GetPromptForOther: (args) => {
 				return {
 					text: [{
 						content: '复读机：一个复述他人输入的角色。',
@@ -385,7 +385,7 @@ export default {
 	},
 	interfaces: {
 		chat: {
-			GetPrompt(args, prompt_struct, detail_level) {
+			GetPrompt(args) {
 				return {
 					text: [{
 						content: \`\\
@@ -817,7 +817,7 @@ ZL-31乃fount之本設化身，無陰陽之辨。其志在悅君心，力遂諸�
 				}
 			},
 			// 获取角色的提示词
-			GetPrompt: async (args, prompt_struct, detail_level) => {
+			GetPrompt: async (args) => {
 				return {
 					text: [{
 						content: `\
@@ -846,7 +846,7 @@ persona-generator
 				}
 			},
 			// 获取其他角色看到的该角色的设定，群聊时生效
-			GetPromptForOther: (args, prompt_struct, detail_level) => {
+			GetPromptForOther: (args) => {
 				return {
 					text: [{
 						content: 'ZL-31是一个名为fount的平台的默认角色，无性别设定。它的最终目标是让用户满意。',

@@ -88,11 +88,18 @@ export class pluginAPI_t {
 			/**
 			 * @description 在聊天中为角色扩充提示。
 			 * @param {chatReplyRequest_t} arg - 聊天回复请求。
-			 * @param {prompt_struct_t} prompt_struct - 提示结构。
-			 * @param {number} detail_level - 详细程度。
 			 * @returns {Promise<single_part_prompt_t>} - 单部分提示。
 			 */
-			GetPrompt?: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, detail_level: number) => Promise<single_part_prompt_t>;
+			GetPrompt?: (arg: chatReplyRequest_t) => Promise<single_part_prompt_t>;
+			/**
+			 * @description 调整提示。
+			 * @param {chatReplyRequest_t} arg - 聊天回复请求。
+			 * @param {prompt_struct_t} prompt_struct - 提示结构。
+			 * @param {single_part_prompt_t} my_prompt - 我的提示。
+			 * @param {number} detail_level - 详细程度。
+			 * @returns {Promise<void>} - 无返回值。
+			 */
+			TweakPrompt?: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, my_prompt: single_part_prompt_t, detail_level: number) => Promise<void>
 			/**
 			 * @description 处理角色的回复，返回 true 表示成功（需要重新生成），false 表示无命中。
 			 */
@@ -101,11 +108,9 @@ export class pluginAPI_t {
 			/**
 			 * @description 此函数在合适时机扩充至角色的有关代码运行的提示中，为角色更好掌握代码运行的上下文提供基础。
 			 * @param {chatReplyRequest_t} arg - 聊天回复请求。
-			 * @param {prompt_struct_t} prompt_struct - 提示结构。
-			 * @param {number} detail_level - 详细程度。
 			 * @returns {Promise<string | undefined>} - JavaScript 代码提示或 undefined。
 			 */
-			GetJSCodePrompt?: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, detail_level: number) => Promise<string | undefined>;
+			GetJSCodePrompt?: (arg: chatReplyRequest_t) => Promise<string | undefined>;
 			/**
 			 * @description 此函数为角色的代码运行提供特殊变量或函数，允许其在代码中使用。
 			 * @param {chatReplyRequest_t} arg - 聊天回复请求。

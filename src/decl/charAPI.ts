@@ -132,19 +132,33 @@ export class CharAPI_t {
 			/**
 			 * @description 获取提示。
 			 * @param {chatReplyRequest_t} arg - 聊天回复请求。
-			 * @param {prompt_struct_t} prompt_struct - 提示结构。
-			 * @param {number} detail_level - 详细程度。
 			 * @returns {Promise<single_part_prompt_t>} - 单部分提示。
 			 */
-			GetPrompt: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, detail_level: number) => Promise<single_part_prompt_t>;
+			GetPrompt: (arg: chatReplyRequest_t) => Promise<single_part_prompt_t>;
+			/**
+			 * @description 调整提示。
+			 * @param {chatReplyRequest_t} arg - 聊天回复请求。
+			 * @param {prompt_struct_t} prompt_struct - 提示结构。
+			 * @param {single_part_prompt_t} my_prompt - 我的提示。
+			 * @param {number} detail_level - 详细程度。
+			 * @returns {Promise<void>} - 无返回值。
+			 */
+			TweakPrompt?: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, my_prompt: single_part_prompt_t, detail_level: number) => Promise<void>
 			/**
 			 * @description 为其他人获取提示。
 			 * @param {chatReplyRequest_t} arg - 聊天回复请求。
-			 * @param {prompt_struct_t} prompt_struct - 提示结构。
-			 * @param {number} detail_level - 详细程度。
 			 * @returns {Promise<single_part_prompt_t>} - 单部分提示。
 			 */
-			GetPromptForOther: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, detail_level: number) => Promise<single_part_prompt_t>;
+			GetPromptForOther: (arg: chatReplyRequest_t) => Promise<single_part_prompt_t>;
+			/**
+			 * @description 为其他人调整提示。
+			 * @param {chatReplyRequest_t} arg - 聊天回复请求。
+			 * @param {prompt_struct_t} prompt_struct - 提示结构。
+			 * @param {single_part_prompt_t} my_prompt - 我的提示。
+			 * @param {number} detail_level - 详细程度。
+			 * @returns {Promise<void>} - 无返回值。
+			 */
+			TweakPromptForOther?: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, my_prompt: single_part_prompt_t, detail_level: number) => Promise<void>
 			/**
 			 * @description 获取回复。
 			 * @param {chatReplyRequest_t} arg - 聊天回复请求。

@@ -16,7 +16,7 @@ export const recommend_command_plugin = {
 	},
 	interfaces: {
 		chat: {
-			GetPrompt: async (args, result, detail_level) => {
+			GetPrompt: async (args) => {
 				return {
 					additional_chat_log: [
 						{

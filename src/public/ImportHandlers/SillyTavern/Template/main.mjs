@@ -103,7 +103,7 @@ export default {
 					content_for_show: runRegex(chardata, result, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.promptOnly)
 				}
 			},
-			GetPrompt: (args, prompt_struct, detail_level) => {
+			GetPrompt: (args) => {
 				return promptBuilder(args, chardata, AIsource?.filename)
 			},
 			// no GetPromptForOther, ST card does not support it
