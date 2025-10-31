@@ -98,6 +98,106 @@
 		},
 		"telegrambot": {
 			"botStarted": "캐릭터 ${charname}님이 Telegram 봇 ${botusername}에 로그인했습니다."
+		},
+		"path": {
+			"update": {
+				"skippingFountUpdate": ".noupdate 파일이 존재하므로 폰트 업데이트를 건너뜁니다.",
+				"skippingDenoUpgradeDocker": "Docker 환경에서 Deno 업그레이드 건너뛰기"
+			},
+			"shortcut": {
+				"desktopShortcutCreated": "${path}에 바탕화면 바로가기가 생성되었습니다.",
+				"startMenuShortcutCreated": "${path}에 시작 메뉴 바로가기가 생성되었습니다.",
+				"protocolHandlerRegistered": "fount:// 프로토콜 핸들러가 등록되었습니다.",
+				"osacompileNotFound": "오류: 'osacompile'을 찾을 수 없습니다. macOS 앱을 생성할 수 없습니다.",
+				"lsregisterFailed": "경고: lsregister를 사용하여 LaunchServices에 애플리케이션을 등록하는 데 실패했습니다.",
+				"createDesktopAppFailed": "오류: 데스크톱 애플리케이션을 생성하지 못했습니다.",
+				"shortcutNotSupported": "경고: 귀하의 운영 체제(${os})는 바탕화면 바로가기 생성을 지원하지 않습니다."
+			},
+			"git": {
+				"repoNotFound": "fount의 git 저장소를 찾을 수 없습니다. 새로 초기화하는 중...",
+				"fetchingAndResetting": "원격 저장소에서 가져오고 마스터로 재설정하는 중...",
+				"fetchFailed": "'원본'에서 가져오지 못했습니다.",
+				"localChangesDetected": "로컬 변경 사항이 감지되었습니다. 덮어쓰기 전에 차이점이 저장됩니다.",
+				"backupSavedTo": "로컬 변경 사항의 백업이 ${path}에 저장되었습니다.",
+				"notOnBranch": "브랜치에 없으면 '마스터'로 전환하세요..",
+				"noUpstreamBranch": "경고: '${branch}' 분기에 대해 구성된 업스트림 분기가 없습니다. 업스트림을 '원본/마스터'로 설정합니다.",
+				"dirtyWorkingDirectory": "경고: 작업 디렉터리에 커밋되지 않은 변경 사항이 있습니다. 업데이트하기 전에 변경 사항을 스테이징하거나 커밋하세요.",
+				"updatingFromRemote": "원격 저장소에서 업데이트 중...",
+				"localBranchAhead": "로컬 지점이 원격 지점보다 앞서 있습니다. 업데이트가 필요하지 않습니다.",
+				"branchesDiverged": "로컬 및 원격 분기가 분기되었습니다. 강제 업데이트 진행 중...",
+				"alreadyUpToDate": "이미 최신입니다.",
+				"notInstalled": "Git이 설치되지 않았습니다. 설치하려고 합니다...",
+				"installFailedWinget": "Winget 설치에 실패하여 Git을 설치할 수 없습니다. 수동으로 설치해주세요.",
+				"installFailedManual": "Git을 설치할 수 없습니다. 수동으로 설치하세요.",
+				"notInstalledSkippingPull": "Git이 설치되지 않았습니다. git pull을 건너뛰세요.",
+				"repoNotFoundSkippingPull": "저장소를 찾을 수 없습니다. git pull을 건너뛰세요."
+			},
+			"deno": {
+				"installingTermux": "Termux용 Deno 설치 중...",
+				"missing": "Deno를 찾을 수 없습니다. 자동으로 설치 중입니다...",
+				"installFailedFallback": "Deno 설치에 실패했습니다. Fount의 경로 폴더에 자동으로 설치하려고 합니다...",
+				"isRequired": "Deno를 찾을 수 없습니다. Deno 없이는 샘을 실행할 수 없습니다.",
+				"notWorking": "어떤 이유로 Deno가 작동하지 않는 경우 https://discord.gg/deno에 가입하여 지원을 받을 수 있습니다.",
+				"upgradeFailedTermux": "Deno 업그레이드 명령이 실패했습니다. Termux용 Deno를 다시 설치하는 중입니다...",
+				"upgradeFailed": "경고: Deno 업그레이드가 실패했을 수 있습니다. 오류가 있는지 확인해주세요."
+			},
+			"install": {
+				"rootWarning1": "권장되지 않음: 루트로 fount를 실행하면 모든 fount 구성 요소에 대한 전체 시스템 액세스 권한이 부여됩니다.",
+				"rootWarning2": "무엇을 하고 있는지 모르는 경우에는 일반 사용자로 fount를 실행하는 것이 좋습니다.",
+				"installingDependencies": "종속성 설치 중...",
+				"untrustedPartsWarning": "시스템에 신뢰할 수 없는 요소 구성 요소를 설치하지 마십시오. 그들은 무엇이든 할 수 있습니다."
+			},
+			"clean": {
+				"removingCaches": "캐시 삭제 중...",
+				"reinstallingDependencies": "종속성을 다시 설치하는 중...",
+				"cleaningDenoCaches": "Deno 캐시를 청소하는 중...",
+				"cleaningOldPwshModules": "오래된 pwsh 모듈을 정리 중..."
+			},
+			"keepalive": {
+				"failedToStart": "자동 수리를 시도한 후에도 잠시 동안 fount가 작동하지 않는 현상이 발생합니다. 로그에서 오류를 확인하세요.",
+				"autoInitDisabled": "지난 짧은 기간 동안 fount가 여러 번 다시 시작되었지만 .noautoinit 파일로 인해 자동 재초기화가 비활성화되었습니다. 종료합니다.",
+				"restartingTooFast": "짧은 시간 동안 fount가 여러 번 다시 시작되었습니다. 강제 재초기화...",
+				"initFailed": "글꼴 초기화에 실패했습니다. 종료합니다.",
+				"initComplete": "재초기화 완료. fount를 다시 시작하는 중입니다..."
+			},
+			"remove": {
+				"removingFount": "fount 제거 중...",
+				"removingFountFromPath": "PATH에서 fount를 제거하는 중...",
+				"removingProtocolHandler": "fount:// 프로토콜 핸들러 삭제 중...",
+				"removingFountFromGitSafeDir": "git safe.directory에서 글꼴을 제거하는 중...",
+				"removingInstalledSystemPackages": "설치된 시스템 패키지 제거 중...",
+				"uninstallingDeno": "데노 제거 중...",
+				"removingFountInstallationDir": "글꼴 설치 디렉터리를 제거하는 중...",
+				"fountInstallationDirRemoved": "Fount 설치 디렉터리가 제거되었습니다.",
+				"fountUninstallationComplete": "fount 제거가 완료되었습니다.",
+				"removingFountPwshFromProfile": "PowerShell 프로필에서 fount-pwsh 제거 중...",
+				"fountPwshRemovedFromProfile": "fount-pwsh가 PowerShell 프로필에서 제거되었습니다.",
+				"pwshProfileNotFound": "PowerShell 프로필을 찾을 수 없습니다. 프로필에서 fount-pwsh 제거를 건너뜁니다.",
+				"uninstallingFountPwsh": "fount-pwsh 제거 중...",
+				"uninstallFountPwshFailed": "fount-pwsh 제거 실패: ${message}",
+				"protocolHandlerRemoved": "fount:// 프로토콜 핸들러가 제거되었습니다.",
+				"removeProtocolHandlerFailed": "fount:// 프로토콜 핸들러를 제거하지 못했습니다: ${message}",
+				"removingTerminalProfile": "Windows 터미널 프로필을 제거하는 중...",
+				"terminalProfileRemoved": "Windows 터미널 프로필 디렉터리가 제거되었습니다.",
+				"terminalProfileNotFound": "Windows 터미널 프로필 디렉터리를 찾을 수 없습니다.",
+				"desktopShortcutRemoved": "바탕화면 바로가기가 제거되었습니다.",
+				"desktopShortcutNotFound": "바탕화면 바로가기를 찾을 수 없습니다.",
+				"removingStartMenuShortcut": "시작 메뉴 바로가기 삭제 중...",
+				"startMenuShortcutRemoved": "시작 메뉴 바로가기가 제거되었습니다.",
+				"startMenuShortcutNotFound": "시작 메뉴 바로가기를 찾을 수 없습니다.",
+				"removingInstalledPwshModules": "설치된 pwsh 모듈 제거 중...",
+				"moduleRemoved": "${module}이(가) 제거되었습니다.",
+				"removeModuleFailed": "${module} 제거 실패: ${message}",
+				"uninstallingGit": "Git 제거 중...",
+				"uninstallingChrome": "Chrome 제거 중...",
+				"uninstallingWinget": "Winget 제거 중...",
+				"removeDenoFailed": "Deno 제거 실패: ${message}",
+				"removingBackgroundRunner": "백그라운드 프로그램 제거 중...",
+				"removeBackgroundRunnerFailed": "백그라운드 실행 프로그램 제거 실패: ${message}"
+			},
+			"protocol": {
+				"description": "URL:폰트 프로토콜"
+			}
 		}
 	},
 	"installer_wait_screen": {
@@ -410,9 +510,9 @@
 		},
 		"achievements": {
 			"first_login": {
-				"name": "안녕하세요, 분수님!",
+				"name": "안녕하세요, fount님!",
 				"description": "새로운 세계를 향해 첫 로그인!",
-				"locked_description": "분수에 한 번 로그인해 보세요."
+				"locked_description": "fount에 한 번 로그인해 보세요."
 			},
 			"sfw_mode_on": {
 				"name": "엄마가 보고있다",
@@ -917,7 +1017,12 @@
 			"creationDateLabel": "계정 생성일:",
 			"folderSizeLabel": "사용자 데이터 크기:",
 			"folderPathLabel": "사용자 데이터 경로:",
-			"copyPathBtnTitle": "경로 복사",
+			"copyPathBtn": {
+				"title": "경로 복사"
+			},
+			"copyPathBtnIcon": {
+				"alt": "복사 아이콘"
+			},
 			"copiedAlert": "경로가 클립보드에 복사되었습니다!"
 		},
 		"changePassword": {
@@ -938,7 +1043,12 @@
 		},
 		"userDevices": {
 			"title": "사용자 기기/세션",
-			"refreshButtonTitle": "목록 새로고침",
+			"refreshButton": {
+				"title": "목록 새로 고침"
+			},
+			"refreshButtonIcon": {
+				"alt": "새로 고침 아이콘"
+			},
 			"noDevicesFound": "기기 또는 세션이 없습니다.",
 			"deviceInfo": "기기 ID: ${deviceId}",
 			"thisDevice": "이 기기",
@@ -973,10 +1083,17 @@
 		"apiKeys": {
 			"title": "API 키",
 			"description": "외부 응용 프로그램의 API 키를 관리하십시오.",
-			"descriptionPlaceholder": "새로운 키 설명",
+			"input": {
+				"placeholder": "새로운 키 설명"
+			},
 			"createButton": "생성",
 			"noKeysFound": "API 키가 발견되지 않았습니다.",
-			"refreshButtonTitle": "목록을 새로 고치십시오",
+			"refreshButton": {
+				"title": "목록 새로 고침"
+			},
+			"refreshButtonIcon": {
+				"alt": "새로 고침 아이콘"
+			},
 			"keyDetails": "설명 : ${description} | 생성 : ${createdAt} | 마지막 사용 : ${lastUsed}",
 			"neverUsed": "사용하지 않았습니다",
 			"revokeButton": "해지",
@@ -988,7 +1105,9 @@
 		"newApiKey": {
 			"title": "새로운 API 키가 만들어졌습니다",
 			"warning": "새 API 키를 복사하십시오. 당신은 그것을 다시 볼 수 없을 것입니다!",
-			"copyButtonTitle": "새 API 키를 복사하십시오",
+			"copyButton": {
+				"title": "새 API 키 복사"
+			},
 			"closeButton": "내 키를 복사했습니다",
 			"copiedAlert": "키가 클립보드에 복사되었습니다!"
 		}
@@ -1059,7 +1178,7 @@
 		"achievements": {
 			"change_theme": {
 				"name": "화려한 변신!",
-				"description": "분수는 새로운 모습과 완전히 새로운 분위기를 가졌습니다.",
+				"description": "fount는 새로운 모습과 완전히 새로운 분위기를 가졌습니다.",
 				"locked_description": "테마를 한 번 전환해 보세요."
 			}
 		}
@@ -1455,12 +1574,18 @@
 		"title": "fount! 배지 변환기",
 		"card_title": "fount 배지 링크 컨버터",
 		"original_url_label": "img.shields.io URL을 붙여넣으세요",
-		"original_url_placeholder": "예: https://img.shields.io/badge/hello-world-blue",
+		"original_url": {
+			"placeholder": "예: https://img.shields.io/badge/hello-world-blue"
+		},
 		"new_url_label": "생성된 새 URL",
-		"new_url_placeholder": "변환된 URL이 여기에 표시됩니다",
+		"new_url": {
+			"placeholder": "변환된 URL이 여기에 표시됩니다"
+		},
 		"copy_button": "복사",
 		"preview_label": "배지 미리보기",
-		"preview_alt": "배지 미리보기",
+		"preview": {
+			"alt": "배지 미리보기"
+		},
 		"copied_text": "복사됨!",
 		"copy_error": "텍스트를 복사할 수 없습니다: ${error}",
 		"copy_fail_alert": "복사 실패!"

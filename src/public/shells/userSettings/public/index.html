@@ -39,8 +39,8 @@
 						<div class="flex items-center flex-wrap">
 							<strong data-i18n="userSettings.userInfo.folderPathLabel" class="mr-2"></strong>
 							<code id="userInfoFolderPath" class="p-1 bg-base-300 rounded text-sm break-all flex-grow min-w-[200px]"></code>
-							<button id="copyFolderPathBtn" class="btn btn-sm btn-ghost ml-2" data-i18n-title="userSettings.userInfo.copyPathBtnTitle">
-								<img src="https://api.iconify.design/material-symbols/content-copy-outline.svg" class="w-4 h-4" data-i18n-alt="userSettings.userInfo.copyPathBtnTitle" />
+							<button id="copyFolderPathBtn" class="btn btn-sm btn-ghost ml-2" data-i18n="userSettings.userInfo.copyPathBtn">
+								<img src="https://api.iconify.design/material-symbols/content-copy-outline.svg" class="w-4 h-4" data-i18n="userSettings.userInfo.copyPathBtnIcon" />
 							</button>
 						</div>
 					</div>
@@ -94,8 +94,8 @@
 				<div class="card-body">
 					<div class="flex justify-between items-center mb-4">
 						<h2 class="card-title" data-i18n="userSettings.userDevices.title"></h2>
-						<button id="refreshDevicesBtn" class="btn btn-sm btn-ghost" data-i18n-title="userSettings.userDevices.refreshButtonTitle">
-							<img src="https://api.iconify.design/line-md/rotate-270.svg" class="w-5 h-5" data-i18n-alt="userSettings.userDevices.refreshButtonTitle" />
+						<button id="refreshDevicesBtn" class="btn btn-sm btn-ghost" data-i18n="userSettings.userDevices.refreshButton">
+							<img src="https://api.iconify.design/line-md/rotate-270.svg" class="w-5 h-5" data-i18n="userSettings.userDevices.refreshButtonIcon" />
 						</button>
 					</div>
 					<div id="deviceListContainer" class="max-h-96 overflow-y-auto">
@@ -110,14 +110,14 @@
 				<div class="card-body">
 					<div class="flex justify-between items-center mb-4">
 						<h2 class="card-title" data-i18n="userSettings.apiKeys.title"></h2>
-						<button id="refreshApiKeysBtn" class="btn btn-sm btn-ghost" data-i18n-title="userSettings.apiKeys.refreshButtonTitle">
-							<img src="https://api.iconify.design/line-md/rotate-270.svg" class="w-5 h-5" data-i18n-alt="userSettings.apiKeys.refreshButtonTitle" />
+						<button id="refreshApiKeysBtn" class="btn btn-sm btn-ghost" data-i18n="userSettings.apiKeys.refreshButton">
+							<img src="https://api.iconify.design/line-md/rotate-270.svg" class="w-5 h-5" data-i18n="userSettings.apiKeys.refreshButtonIcon" />
 						</button>
 					</div>
 					<p class="text-sm opacity-80" data-i18n="userSettings.apiKeys.description"></p>
 
 					<form id="createApiKeyForm" class="flex items-center gap-2 pt-4">
-						<input type="text" id="newApiKeyDescription" name="newApiKeyDescription" class="input input-bordered input-sm flex-grow" data-i18n-placeholder="userSettings.apiKeys.descriptionPlaceholder" required />
+						<input type="text" id="newApiKeyDescription" name="newApiKeyDescription" class="input input-bordered input-sm flex-grow" data-i18n="userSettings.apiKeys.input" required />
 						<button type="submit" class="btn btn-sm btn-primary" data-i18n="userSettings.apiKeys.createButton"></button>
 					</form>
 
@@ -179,7 +179,7 @@
 			<div class="form-control">
 				<div class="relative">
 					<input type="text" id="newApiKeyInput" class="input input-bordered w-full pr-10" readonly />
-					<button id="copyNewApiKeyBtn" class="btn btn-sm btn-ghost absolute top-1/2 right-1 transform -translate-y-1/2" data-i18n-title="userSettings.newApiKey.copyButtonTitle">
+					<button id="copyNewApiKeyBtn" class="btn btn-sm btn-ghost absolute top-1/2 right-1 transform -translate-y-1/2" data-i18n="userSettings.newApiKey.copyButton">
 						<img src="https://api.iconify.design/material-symbols/content-copy-outline.svg" class="w-4 h-4" />
 					</button>
 				</div>

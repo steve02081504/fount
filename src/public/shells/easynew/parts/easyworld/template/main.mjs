@@ -52,7 +52,7 @@ export default {
 			},
 		},
 		chat: {
-			async GetPrompt(args, prompt_struct, detail_level) {
+			async GetPrompt(args) {
 				if (!partData.prompt) return {
 					text: [],
 					additional_chat_log: [],
@@ -62,8 +62,6 @@ export default {
 					char: { name: args.Charname },
 					user: { name: args.UserCharname },
 					args,
-					prompt_struct,
-					detail_level,
 				}
 				return {
 					text: [{

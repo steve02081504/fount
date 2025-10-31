@@ -98,6 +98,106 @@
 		},
 		"telegrambot": {
 			"botStarted": "Le personnage ${charname} s'est connecté au bot Telegram ${botusername}."
+		},
+		"path": {
+			"update": {
+				"skippingFountUpdate": "Étant donné que le fichier .noupdate existe, la mise à jour des founts est ignorée",
+				"skippingDenoUpgradeDocker": "Ignorer la mise à niveau de Deno dans l'environnement Docker"
+			},
+			"shortcut": {
+				"desktopShortcutCreated": "Raccourci sur le bureau créé à ${path}",
+				"startMenuShortcutCreated": "Raccourci du menu Démarrer créé à ${path}",
+				"protocolHandlerRegistered": "gestionnaire de protocole font:// enregistré.",
+				"osacompileNotFound": "Erreur : « osacompile » introuvable. Impossible de créer l'application macOS.",
+				"lsregisterFailed": "Avertissement : L'utilisation de lsregister pour enregistrer une application auprès de LaunchServices a échoué.",
+				"createDesktopAppFailed": "Erreur : échec de la création de l'application de bureau.",
+				"shortcutNotSupported": "Avertissement : Votre système d'exploitation (${os}) ne prend pas en charge la création de raccourcis sur le bureau."
+			},
+			"git": {
+				"repoNotFound": "Le dépôt git de la fount est introuvable. Initialisation d'un nouveau...",
+				"fetchingAndResetting": "Récupération à partir du référentiel distant et réinitialisation vers le maître...",
+				"fetchFailed": "Échec de l'obtention de « l'origine ».",
+				"localChangesDetected": "Modifications locales détectées, les différences seront enregistrées avant écrasement.",
+				"backupSavedTo": "Une sauvegarde de vos modifications locales a été enregistrée dans : ${path}",
+				"notOnBranch": "Pas sur la branche, passez en 'master'...",
+				"noUpstreamBranch": "Attention : Aucune branche amont n'est configurée pour la branche '${branch}'. Réglage en amont sur « origine/maître ».",
+				"dirtyWorkingDirectory": "Attention : le répertoire de travail n'est pas propre. Veuillez stager ou commiter vos modifications avant la mise à jour.",
+				"updatingFromRemote": "Mise à jour à partir du référentiel distant...",
+				"localBranchAhead": "La branche locale est en avance sur la branche distante. Aucune mise à jour requise.",
+				"branchesDiverged": "Les succursales locales et distantes ont été bifurquées. Mise à jour forcée en cours...",
+				"alreadyUpToDate": "Déjà le dernier.",
+				"notInstalled": "Git n'est pas installé, j'essaye de l'installer...",
+				"installFailedWinget": "L'installation de Winget ayant échoué, Git ne peut pas être installé. Veuillez l'installer manuellement.",
+				"installFailedManual": "Impossible d'installer Git, veuillez l'installer manuellement.",
+				"notInstalledSkippingPull": "Git n'est pas installé, ignorez git pull",
+				"repoNotFoundSkippingPull": "Dépôt introuvable, ignorez git pull"
+			},
+			"deno": {
+				"installingTermux": "Installation de Deno pour Termux...",
+				"missing": "Deno introuvable, installation automatique...",
+				"installFailedFallback": "L'installation de Deno a échoué, tentative d'installation automatique dans le dossier de chemin de la fount...",
+				"isRequired": "Deno introuvable, la fount ne peut pas être exécutée sans Deno",
+				"notWorking": "Pour une raison quelconque, Deno ne fonctionne pas, vous souhaiterez peut-être rejoindre https://discord.gg/deno pour obtenir de l'aide.",
+				"upgradeFailedTermux": "La commande de mise à niveau Deno a échoué, tentative de réinstallation de Deno pour Termux...",
+				"upgradeFailed": "Avertissement : la mise à niveau de Deno a peut-être échoué. Veuillez vérifier les erreurs."
+			},
+			"install": {
+				"rootWarning1": "Non recommandé : exécuter fount en tant qu'utilisateur root accorde un accès complet au système à tous les composants de fount.",
+				"rootWarning2": "À moins que vous ne sachiez ce que vous faites, il est recommandé d'exécuter font en tant qu'utilisateur normal.",
+				"installingDependencies": "Installation des dépendances...",
+				"untrustedPartsWarning": "N'installez aucun composant de fount non fiable sur votre système, ils peuvent tout faire."
+			},
+			"clean": {
+				"removingCaches": "Suppression du cache...",
+				"reinstallingDependencies": "Réinstallation des dépendances...",
+				"cleaningDenoCaches": "Nettoyage du cache Deno...",
+				"cleaningOldPwshModules": "Nettoyage des anciens modules pwsh..."
+			},
+			"keepalive": {
+				"failedToStart": "Même après des tentatives de réparation automatiques, la fontaine ne démarre pas pendant une courte période. Veuillez vérifier les journaux pour détecter les erreurs.",
+				"autoInitDisabled": "font a été redémarré plusieurs fois au cours de la dernière courte période, mais la réinitialisation automatique a été désactivée en raison de la présence du fichier .noautoinit. Sortir.",
+				"restartingTooFast": "la fount a été redémarrée plusieurs fois en peu de temps. Réinitialisation forcée...",
+				"initFailed": "L'initialisation de la fount a échoué. Sortir.",
+				"initComplete": "Réinitialisation terminée. J'essaie de redémarrer la fount..."
+			},
+			"remove": {
+				"removingFount": "Suppression de la fount...",
+				"removingFountFromPath": "Suppression de la fount de PATH...",
+				"removingProtocolHandler": "Suppression du gestionnaire de protocole font://...",
+				"removingFountFromGitSafeDir": "Suppression de la fount de git safe.directory...",
+				"removingInstalledSystemPackages": "Suppression des packages système installés...",
+				"uninstallingDeno": "Désinstallation de Deno...",
+				"removingFountInstallationDir": "Suppression du répertoire d'installation des founts...",
+				"fountInstallationDirRemoved": "Le répertoire d'installation des founts a été supprimé.",
+				"fountUninstallationComplete": "désinstallation des founts terminée.",
+				"removingFountPwshFromProfile": "Suppression de font-pwsh du profil PowerShell...",
+				"fountPwshRemovedFromProfile": "font-pwsh a été supprimé du profil PowerShell.",
+				"pwshProfileNotFound": "Profil PowerShell introuvable, ignorer la suppression de fount-pwsh du profil.",
+				"uninstallingFountPwsh": "Désinstallation de font-pwsh...",
+				"uninstallFountPwshFailed": "Échec de la désinstallation de font-pwsh : ${message}",
+				"protocolHandlerRemoved": "Le gestionnaire de protocole font:// a été supprimé.",
+				"removeProtocolHandlerFailed": "Échec de la suppression du gestionnaire de protocole font:// : ${message}",
+				"removingTerminalProfile": "Suppression du profil de terminal Windows...",
+				"terminalProfileRemoved": "Le répertoire du profil du terminal Windows a été supprimé.",
+				"terminalProfileNotFound": "Répertoire du profil du terminal Windows introuvable.",
+				"desktopShortcutRemoved": "Raccourci sur le bureau supprimé.",
+				"desktopShortcutNotFound": "Raccourci sur le bureau introuvable.",
+				"removingStartMenuShortcut": "Suppression des raccourcis du menu Démarrer...",
+				"startMenuShortcutRemoved": "Le raccourci du menu Démarrer a été supprimé.",
+				"startMenuShortcutNotFound": "Raccourci du menu Démarrer introuvable.",
+				"removingInstalledPwshModules": "Suppression du module pwsh installé...",
+				"moduleRemoved": "${module} a été supprimé.",
+				"removeModuleFailed": "Échec de la suppression de ${module} : ${message}",
+				"uninstallingGit": "Désinstallation de Git...",
+				"uninstallingChrome": "Désinstallation de Chrome...",
+				"uninstallingWinget": "Désinstallation de Winget...",
+				"removeDenoFailed": "Échec de la suppression de Deno : ${message}",
+				"removingBackgroundRunner": "Suppression des programmes d'arrière-plan...",
+				"removeBackgroundRunnerFailed": "Échec de la suppression du programme exécuté en arrière-plan : ${message}"
+			},
+			"protocol": {
+				"description": "URL : protocole de fount"
+			}
 		}
 	},
 	"installer_wait_screen": {
@@ -917,7 +1017,12 @@
 			"creationDateLabel": "Date de création du compte :",
 			"folderSizeLabel": "Taille des données utilisateur :",
 			"folderPathLabel": "Chemin des données utilisateur :",
-			"copyPathBtnTitle": "Copier le chemin",
+			"copyPathBtn": {
+				"title": "Copier le Chemin"
+			},
+			"copyPathBtnIcon": {
+				"alt": "Icône de Copie"
+			},
 			"copiedAlert": "Chemin copié dans le presse-papiers !"
 		},
 		"changePassword": {
@@ -938,7 +1043,12 @@
 		},
 		"userDevices": {
 			"title": "Appareils et sessions utilisateur",
-			"refreshButtonTitle": "Actualiser la liste",
+			"refreshButton": {
+				"title": "Actualiser la liste"
+			},
+			"refreshButtonIcon": {
+				"alt": "icône d'actualisation"
+			},
 			"noDevicesFound": "Aucun appareil ou session trouvé.",
 			"deviceInfo": "ID de l'appareil : ${deviceId}",
 			"thisDevice": "Cet appareil",
@@ -973,10 +1083,17 @@
 		"apiKeys": {
 			"title": "Clé API",
 			"description": "Gérez la clé API pour les applications externes.",
-			"descriptionPlaceholder": "Nouvelle description clé",
+			"input": {
+				"placeholder": "Nouvelle description de clé"
+			},
 			"createButton": "créer",
 			"noKeysFound": "Aucune clé API n'a été trouvée.",
-			"refreshButtonTitle": "Actualiser la liste",
+			"refreshButton": {
+				"title": "Actualiser la liste"
+			},
+			"refreshButtonIcon": {
+				"alt": "icône d'actualisation"
+			},
 			"keyDetails": "Description: ${description} | Créé dans: ${createdAt} | Dernière utilisée: ${lastUsed}",
 			"neverUsed": "Jamais utilisé",
 			"revokeButton": "Révoquer",
@@ -988,7 +1105,9 @@
 		"newApiKey": {
 			"title": "Une nouvelle clé API a été créée",
 			"warning": "Veuillez copier votre nouvelle clé API. Vous ne pourrez pas le revoir!",
-			"copyButtonTitle": "Copier la nouvelle clé API",
+			"copyButton": {
+				"title": "Copier la nouvelle clé API"
+			},
 			"closeButton": "J'ai copié ma clé",
 			"copiedAlert": "Clé API copiée dans le presse-papiers !"
 		}
@@ -1455,12 +1574,18 @@
 		"title": "fount ! Convertisseur de Badges",
 		"card_title": "Convertisseur de Liens de Badges fount",
 		"original_url_label": "Collez l'URL img.shields.io",
-		"original_url_placeholder": "Par exemple : https ://img.shields.io/badge/Hello-World-blue",
+		"original_url": {
+			"placeholder": "Par exemple : https ://img.shields.io/badge/Hello-World-blue"
+		},
 		"new_url_label": "Nouvelle URL générée",
-		"new_url_placeholder": "L'URL convertie sera affichée ici",
+		"new_url": {
+			"placeholder": "L'URL convertie sera affichée ici"
+		},
 		"copy_button": "Copier",
 		"preview_label": "Aperçu",
-		"preview_alt": "Aperçu du badge",
+		"preview": {
+			"alt": "Aperçu du badge"
+		},
 		"copied_text": "Copié !",
 		"copy_error": "Impossible de copier le texte : ${error}",
 		"copy_fail_alert": "La copie a échoué !"

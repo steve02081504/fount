@@ -98,6 +98,106 @@
 		},
 		"telegrambot": {
 			"botStarted": "El personaje ${charname} ha iniciado sesión en el bot de Telegram ${botusername}."
+		},
+		"path": {
+			"update": {
+				"skippingFountUpdate": "Debido a que el archivo .noupdate existe, se omite la actualización de la fount",
+				"skippingDenoUpgradeDocker": "Omitir la actualización de Deno en el entorno Docker"
+			},
+			"shortcut": {
+				"desktopShortcutCreated": "Acceso directo de escritorio creado en ${path}",
+				"startMenuShortcutCreated": "Acceso directo al menú Inicio creado en ${path}",
+				"protocolHandlerRegistered": "font:// controlador de protocolo registrado.",
+				"osacompileNotFound": "Error: 'osacompile' no encontrado. No se puede crear la aplicación macOS.",
+				"lsregisterFailed": "Advertencia: Error al utilizar lsregister para registrar una aplicación con LaunchServices.",
+				"createDesktopAppFailed": "Error: no se pudo crear la aplicación de escritorio.",
+				"shortcutNotSupported": "Advertencia: Su sistema operativo (${os}) no admite la creación de accesos directos en el escritorio."
+			},
+			"git": {
+				"repoNotFound": "No se encontró el repositorio git de fount. Inicializando uno nuevo...",
+				"fetchingAndResetting": "Obteniendo desde el repositorio remoto y restableciendo al maestro...",
+				"fetchFailed": "No se pudo obtener del \"origen\".",
+				"localChangesDetected": "Se detectaron cambios locales, las diferencias se guardarán antes de sobrescribir.",
+				"backupSavedTo": "Se ha guardado una copia de seguridad de sus cambios locales en: ${path}",
+				"notOnBranch": "No en la rama, cambia a 'maestro'...",
+				"noUpstreamBranch": "Advertencia: No hay ninguna rama ascendente configurada para la rama '${branch}'. Configuración ascendente en 'origen/maestro'.",
+				"dirtyWorkingDirectory": "Advertencia: el directorio de trabajo tiene cambios sin confirmar. Por favor, prepare o confirme sus cambios antes de actualizar.",
+				"updatingFromRemote": "Actualizando desde el repositorio remoto...",
+				"localBranchAhead": "La sucursal local está por delante de la sucursal remota. No se requieren actualizaciones.",
+				"branchesDiverged": "Se han bifurcado las sucursales locales y remotas. Actualización forzada en curso...",
+				"alreadyUpToDate": "Ya lo último.",
+				"notInstalled": "Git no está instalado, intentando instalar...",
+				"installFailedWinget": "Dado que la instalación de Winget falló, no se puede instalar Git. Instálelo manualmente.",
+				"installFailedManual": "No se puede instalar Git, instálelo manualmente.",
+				"notInstalledSkippingPull": "Git no está instalado, omita git pull",
+				"repoNotFoundSkippingPull": "Repositorio no encontrado, omita git pull"
+			},
+			"deno": {
+				"installingTermux": "Instalando Deno para Termux...",
+				"missing": "Deno no encontrado, instalándose automáticamente...",
+				"installFailedFallback": "La instalación de Deno falló, al intentar instalar automáticamente en la carpeta de ruta de la fount...",
+				"isRequired": "Deno no encontrado, la fount no se puede ejecutar sin Deno",
+				"notWorking": "Por alguna razón, Deno no funciona, es posible que desees unirte a https://discord.gg/deno para obtener ayuda.",
+				"upgradeFailedTermux": "El comando de actualización de Deno falló al intentar reinstalar Deno para Termux...",
+				"upgradeFailed": "Advertencia: Es posible que la actualización de Deno haya fallado. Por favor verifique si hay errores."
+			},
+			"install": {
+				"rootWarning1": "No recomendado: ejecutar font como root otorga acceso completo al sistema a todos los componentes de font.",
+				"rootWarning2": "A menos que sepa lo que está haciendo, se recomienda ejecutar font como usuario normal.",
+				"installingDependencies": "Instalando dependencias...",
+				"untrustedPartsWarning": "No instale ningún componente fount que no sea de confianza en su sistema, pueden hacer cualquier cosa."
+			},
+			"clean": {
+				"removingCaches": "Eliminando caché...",
+				"reinstallingDependencies": "Reinstalando dependencias...",
+				"cleaningDenoCaches": "Limpiando el caché de Deno...",
+				"cleaningOldPwshModules": "Limpiando módulos pwsh antiguos..."
+			},
+			"keepalive": {
+				"failedToStart": "Incluso después de intentos de reparación automática, la fount no arranca durante un breve período de tiempo. Por favor revise los registros para ver si hay errores.",
+				"autoInitDisabled": "fount se ha reiniciado varias veces en el último breve período de tiempo, pero la reinicialización automática se ha deshabilitado debido a la presencia del archivo .noautoinit. Saliendo.",
+				"restartingTooFast": "La fount se ha reiniciado varias veces en un corto período de tiempo. Reinicialización forzada...",
+				"initFailed": "Error al inicializar la fount. Saliendo.",
+				"initComplete": "Reinicialización completada. Intentando reiniciar la fount..."
+			},
+			"remove": {
+				"removingFount": "Eliminando fount...",
+				"removingFountFromPath": "Eliminando fount de PATH...",
+				"removingProtocolHandler": "Eliminando el controlador de protocolo font://...",
+				"removingFountFromGitSafeDir": "Eliminando la fount de git safe.directory...",
+				"removingInstalledSystemPackages": "Eliminando paquetes del sistema instalados...",
+				"uninstallingDeno": "Desinstalando Deno...",
+				"removingFountInstallationDir": "Eliminando el directorio de instalación de founts...",
+				"fountInstallationDirRemoved": "Se ha eliminado el directorio de instalación de la fount.",
+				"fountUninstallationComplete": "Se completó la desinstalación de la fount.",
+				"removingFountPwshFromProfile": "Eliminando font-pwsh del perfil de PowerShell...",
+				"fountPwshRemovedFromProfile": "fount-pwsh se eliminó del perfil de PowerShell.",
+				"pwshProfileNotFound": "Perfil de PowerShell no encontrado, omitiendo la eliminación de fount-pwsh del perfil.",
+				"uninstallingFountPwsh": "Desinstalando fount-pwsh...",
+				"uninstallFountPwshFailed": "Error al desinstalar font-pwsh: ${message}",
+				"protocolHandlerRemoved": "Se ha eliminado el controlador de protocolo font://.",
+				"removeProtocolHandlerFailed": "No se pudo eliminar el controlador de protocolo font://: ${message}",
+				"removingTerminalProfile": "Eliminando el perfil de terminal de Windows...",
+				"terminalProfileRemoved": "Se ha eliminado el directorio de perfil de terminal de Windows.",
+				"terminalProfileNotFound": "No se encontró el directorio del perfil de terminal de Windows.",
+				"desktopShortcutRemoved": "Se eliminó el acceso directo del escritorio.",
+				"desktopShortcutNotFound": "No se encontró el acceso directo en el escritorio.",
+				"removingStartMenuShortcut": "Eliminando accesos directos del menú Inicio...",
+				"startMenuShortcutRemoved": "Se ha eliminado el acceso directo al menú Inicio.",
+				"startMenuShortcutNotFound": "No se encontró el acceso directo al menú Inicio.",
+				"removingInstalledPwshModules": "Eliminando el módulo pwsh instalado...",
+				"moduleRemoved": "${module} ha sido eliminado.",
+				"removeModuleFailed": "Error al eliminar ${module}: ${message}",
+				"uninstallingGit": "Desinstalando Git...",
+				"uninstallingChrome": "Desinstalando Chrome...",
+				"uninstallingWinget": "Desinstalando Winget...",
+				"removeDenoFailed": "No se pudo eliminar Deno: ${message}",
+				"removingBackgroundRunner": "Eliminando programas en segundo plano...",
+				"removeBackgroundRunnerFailed": "No se pudo eliminar el programa en ejecución en segundo plano: ${message}"
+			},
+			"protocol": {
+				"description": "URL: protocolo de fount"
+			}
 		}
 	},
 	"installer_wait_screen": {
@@ -410,9 +510,9 @@
 		},
 		"achievements": {
 			"first_login": {
-				"name": "¡Hola fuente!",
+				"name": "¡Hola fount!",
 				"description": "¡Dirigiéndose al nuevo mundo, iniciando sesión por primera vez!",
-				"locked_description": "Inicie sesión en la fuente una vez."
+				"locked_description": "Inicie sesión en la fount una vez."
 			},
 			"sfw_mode_on": {
 				"name": "¡Hay alguien detrás de ti!",
@@ -917,7 +1017,12 @@
 			"creationDateLabel": "Fecha de creación de la cuenta:",
 			"folderSizeLabel": "Tamaño de datos de usuario:",
 			"folderPathLabel": "Ruta de datos de usuario:",
-			"copyPathBtnTitle": "Copiar ruta",
+			"copyPathBtn": {
+				"title": "Copiar Ruta"
+			},
+			"copyPathBtnIcon": {
+				"alt": "Icono de Copiar"
+			},
 			"copiedAlert": "¡Ruta copiada al portapapeles!"
 		},
 		"changePassword": {
@@ -938,7 +1043,12 @@
 		},
 		"userDevices": {
 			"title": "Dispositivos/Sesiones de usuario",
-			"refreshButtonTitle": "Actualizar lista",
+			"refreshButton": {
+				"title": "Actualizar Lista"
+			},
+			"refreshButtonIcon": {
+				"alt": "Icono de Actualización"
+			},
 			"noDevicesFound": "No se han encontrado dispositivos ni sesiones.",
 			"deviceInfo": "ID del dispositivo: ${deviceId}",
 			"thisDevice": "Este dispositivo",
@@ -973,10 +1083,17 @@
 		"apiKeys": {
 			"title": "Clave de API",
 			"description": "Administre la clave API para aplicaciones externas.",
-			"descriptionPlaceholder": "Nueva descripción clave",
+			"input": {
+				"placeholder": "Nueva descripción clave"
+			},
 			"createButton": "crear",
 			"noKeysFound": "No se encontraron claves API.",
-			"refreshButtonTitle": "Actualiza la lista",
+			"refreshButton": {
+				"title": "Actualizar Lista"
+			},
+			"refreshButtonIcon": {
+				"alt": "Icono de Actualización"
+			},
 			"keyDetails": "Descripción: ${description} | Creado en: ${createdAt} | Último usado: ${lastUsed}",
 			"neverUsed": "Nunca usado",
 			"revokeButton": "Revocar",
@@ -988,7 +1105,9 @@
 		"newApiKey": {
 			"title": "Se ha creado una nueva clave API",
 			"warning": "Copie su nueva clave API. ¡No podrás volver a verlo!",
-			"copyButtonTitle": "Copiar nueva clave API",
+			"copyButton": {
+				"title": "Copiar nueva clave API"
+			},
 			"closeButton": "He copiado mi clave",
 			"copiedAlert": "¡Clave copiada al portapapeles!"
 		}
@@ -1059,7 +1178,7 @@
 		"achievements": {
 			"change_theme": {
 				"name": "¡Un cambio de look!",
-				"description": "La fuente tenía un nuevo aspecto y un ambiente completamente nuevo.",
+				"description": "La fount tenía un nuevo aspecto y un ambiente completamente nuevo.",
 				"locked_description": "Cambia el tema una vez."
 			}
 		}
@@ -1125,7 +1244,7 @@
 			"fetchFileDataFailed": "Error al obtener los datos del archivo: ${error}",
 			"noFileSelectedSave": "No se ha seleccionado ningún archivo para guardar.",
 			"saveFileFailed": "Error al guardar el archivo: ${error}",
-			"setDefaultFailed": "No se pudo establecer como fuente de IA predeterminada: ${error}",
+			"setDefaultFailed": "No se pudo establecer como fount de IA predeterminada: ${error}",
 			"noFileSelectedDelete": "No se ha seleccionado ningún archivo para eliminar.",
 			"deleteFileFailed": "Error al eliminar el archivo: ${error}",
 			"invalidFileName": "El nombre del archivo no puede contener los siguientes caracteres: / \\ : * ? \" < > |",
@@ -1145,7 +1264,7 @@
 			"disabledIndicator": "Por favor, selecciona primero un generador"
 		},
 		"common_config_interface": {
-			"empty_generator": "El generador heredado de esta fuente de IA tiene un error al cargar y puede haber sido desinstalado o renombrado.",
+			"empty_generator": "El generador heredado de esta fount de IA tiene un error al cargar y puede haber sido desinstalado o renombrado.",
 			"apiKeyRequired": "Se necesita una clave de API para listar los modelos.",
 			"loadingModels": "Cargando modelos...",
 			"availableModels": "Modelos disponibles:",
@@ -1155,9 +1274,9 @@
 		},
 		"achievements": {
 			"set_default_aisource": {
-				"name": "fuente de magia",
-				"description": "Se designa una IA predeterminada como fuente de suministro de maná.",
-				"locked_description": "Establece una fuente de IA predeterminada una vez."
+				"name": "fount de magia",
+				"description": "Se designa una IA predeterminada como fount de suministro de maná.",
+				"locked_description": "Establece una fount de IA predeterminada una vez."
 			}
 		}
 	},
@@ -1455,12 +1574,18 @@
 		"title": "¡fount! Convertidor de Insignias",
 		"card_title": "Convertidor de Enlaces de Insignias fount",
 		"original_url_label": "Pegar URL de img.shields.io",
-		"original_url_placeholder": "Por ejemplo: https://img.shields.io/badge/Hello-World-blue",
+		"original_url": {
+			"placeholder": "Por ejemplo: https://img.shields.io/badge/Hello-World-blue"
+		},
 		"new_url_label": "Nueva URL generada",
-		"new_url_placeholder": "La URL convertida se mostrará aquí",
+		"new_url": {
+			"placeholder": "La URL convertida se mostrará aquí"
+		},
 		"copy_button": "Copiar",
 		"preview_label": "Vista previa",
-		"preview_alt": "Vista previa de la insignia",
+		"preview": {
+			"alt": "Vista previa de la insignia"
+		},
 		"copied_text": "¡Copiado!",
 		"copy_error": "Error al copiar el texto: ${error}",
 		"copy_fail_alert": "¡Error al copiar!"

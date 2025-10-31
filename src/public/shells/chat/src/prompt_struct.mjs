@@ -38,17 +38,29 @@ export async function buildPromptStruct(
 		chat_log,
 	}
 
-	while (detail_level--) {
-		if (world?.interfaces?.chat) result.world_prompt = await world.interfaces.chat.GetPrompt(args, result, detail_level)
-		if (user?.interfaces?.chat) result.user_prompt = await user.interfaces.chat.GetPrompt(args, result, detail_level)
-		if (char?.interfaces?.chat) result.char_prompt = await char.interfaces.chat.GetPrompt(args, result, detail_level)
-		for (const other_char of Object.keys(other_chars))
-			result.other_chars_prompt[other_char] = await other_chars[other_char].interfaces.chat?.GetPromptForOther?.(args, result, detail_level)
-		for (const plugin of Object.keys(plugins)) {
-			const prompt = await plugins[plugin].interfaces.chat?.GetPrompt?.(args, result, detail_level)
-			if (prompt) result.plugin_prompts[plugin] = prompt
-		}
-	}
+	if (world?.interfaces?.chat) result.world_prompt = world.interfaces.chat.GetPrompt(args)
+	if (user?.interfaces?.chat) result.user_prompt = user.interfaces.chat.GetPrompt(args)
+	if (char?.interfaces?.chat) result.char_prompt = char.interfaces.chat.GetPrompt(args)
+	for (const other_char of Object.keys(other_chars))
+		result.other_chars_prompt[other_char] = other_chars[other_char].interfaces.chat?.GetPromptForOther?.(args)
+	for (const plugin of Object.keys(plugins))
+		result.plugin_prompts[plugin] = plugins[plugin].interfaces.chat?.GetPrompt?.(args)
+
+	result.world_prompt = await result.world_prompt
+	result.user_prompt = await result.user_prompt
+	result.char_prompt = await result.char_prompt
+	for (const other_char of Object.keys(result.other_chars_prompt))
+		result.other_chars_prompt[other_char] = await result.other_chars_prompt[other_char]
+	for (const plugin of Object.keys(result.plugin_prompts))
+		result.plugin_prompts[plugin] = await result.plugin_prompts[plugin]
+
+	while (detail_level--) await Promise.all([
+		world?.interfaces?.chat?.TweakPrompt?.(args, result, result.world_prompt, detail_level),
+		user?.interfaces?.chat?.TweakPrompt?.(args, result, result.user_prompt, detail_level),
+		char?.interfaces?.chat?.TweakPrompt?.(args, result, result.char_prompt, detail_level),
+		...Object.keys(other_chars).map(other_char => other_chars[other_char].interfaces.chat?.TweakPromptForOther?.(args, result, other_chars_prompt[other_char], detail_level)),
+		...Object.keys(plugins).map(plugin => plugins[plugin].interfaces.chat?.TweakPrompt?.(args, result, result.plugin_prompts[plugin], detail_level))
+	])
 
 	return result
 }
@@ -112,8 +124,8 @@ export function margeStructPromptChatLog(/** @type {prompt_struct_t} */ prompt) 
 		...prompt.chat_log,
 		...prompt.user_prompt?.additional_chat_log || [],
 		...prompt.world_prompt?.additional_chat_log || [],
-		...Object.values(prompt.other_chars_prompt).map(char => char.additional_chat_log || []).flat(),
-		...Object.values(prompt.plugin_prompts).map(plugin => plugin.additional_chat_log || []).flat(),
+		...Object.values(prompt.other_chars_prompt).map(char => char?.additional_chat_log || []).flat(),
+		...Object.values(prompt.plugin_prompts).map(plugin => plugin?.additional_chat_log || []).flat(),
 		...prompt.char_prompt?.additional_chat_log || [],
 	]
 	/** @type {chatLogEntry_t[]} */

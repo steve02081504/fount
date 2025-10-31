@@ -98,6 +98,106 @@
 		},
 		"telegrambot": {
 			"botStarted": "कैरेक्टर ${charname} ने टेलीग्राम बॉट ${botusername} पर लॉगिन किया है।"
+		},
+		"path": {
+			"update": {
+				"skippingFountUpdate": "चूँकि .noupdate फ़ाइल मौजूद है, इसलिए फाउंटेन अपडेट छोड़ दिया गया है",
+				"skippingDenoUpgradeDocker": "डॉकर परिवेश में डेनो अपग्रेड को छोड़ें"
+			},
+			"shortcut": {
+				"desktopShortcutCreated": "${path} पर डेस्कटॉप शॉर्टकट बनाया गया",
+				"startMenuShortcutCreated": "${path} पर प्रारंभ मेनू शॉर्टकट बनाया गया",
+				"protocolHandlerRegistered": "फाउंटेन: // प्रोटोकॉल हैंडलर पंजीकृत।",
+				"osacompileNotFound": "त्रुटि: 'ओसाकंपाइल' नहीं मिला। MacOS ऐप बनाने में असमर्थ.",
+				"lsregisterFailed": "चेतावनी: किसी एप्लिकेशन को लॉन्चसर्विसेज के साथ पंजीकृत करने के लिए lsregister का उपयोग करना विफल रहा।",
+				"createDesktopAppFailed": "त्रुटि: डेस्कटॉप एप्लिकेशन बनाने में विफल।",
+				"shortcutNotSupported": "चेतावनी: आपका ऑपरेटिंग सिस्टम (${os}) डेस्कटॉप शॉर्टकट बनाने का समर्थन नहीं करता है।"
+			},
+			"git": {
+				"repoNotFound": "फाउंटेन का गिट भंडार नहीं मिला। एक नया प्रारंभ किया जा रहा है...",
+				"fetchingAndResetting": "दूरस्थ रिपॉजिटरी से प्राप्त किया जा रहा है और मास्टर पर रीसेट किया जा रहा है...",
+				"fetchFailed": "'उत्पत्ति' से प्राप्त करने में विफल.",
+				"localChangesDetected": "स्थानीय परिवर्तनों का पता चला, अंतरों को ओवरराइटिंग से पहले सहेजा जाएगा।",
+				"backupSavedTo": "आपके स्थानीय परिवर्तनों का बैकअप यहां सहेजा गया है: ${path}",
+				"notOnBranch": "शाखा पर नहीं, 'मास्टर' पर स्विच करें...",
+				"noUpstreamBranch": "चेतावनी: शाखा '${branch}' के लिए कोई अपस्ट्रीम शाखा कॉन्फ़िगर नहीं की गई है। अपस्ट्रीम को 'ओरिजिन/मास्टर' पर सेट करना।",
+				"dirtyWorkingDirectory": "चेतावनी: कार्यशील निर्देशिका साफ़ नहीं है. कृपया अद्यतन करने से पहले अपने परिवर्तन stage या commit करें।",
+				"updatingFromRemote": "रिमोट रिपॉजिटरी से अपडेट किया जा रहा है...",
+				"localBranchAhead": "स्थानीय शाखा दूरस्थ शाखा से आगे है. किसी अद्यतन की आवश्यकता नहीं है.",
+				"branchesDiverged": "स्थानीय और दूरस्थ शाखाओं को विभाजित कर दिया गया है। जबरन अद्यतन प्रगति पर है...",
+				"alreadyUpToDate": "पहले से ही नवीनतम.",
+				"notInstalled": "Git स्थापित नहीं है, स्थापित करने का प्रयास कर रहा हूँ...",
+				"installFailedWinget": "चूँकि विंगेट इंस्टॉलेशन विफल हो गया, Git इंस्टॉल नहीं किया जा सकता। कृपया इसे मैन्युअल रूप से इंस्टॉल करें.",
+				"installFailedManual": "Git इंस्टॉल करने में असमर्थ, कृपया इसे मैन्युअल रूप से इंस्टॉल करें।",
+				"notInstalledSkippingPull": "Git स्थापित नहीं है, git पुल छोड़ें",
+				"repoNotFoundSkippingPull": "रिपॉजिटरी नहीं मिली, गिट पुल छोड़ें"
+			},
+			"deno": {
+				"installingTermux": "टर्मक्स के लिए डेनो स्थापित किया जा रहा है...",
+				"missing": "डेनो नहीं मिला, स्वचालित रूप से इंस्टॉल हो रहा है...",
+				"installFailedFallback": "डेनो इंस्टॉलेशन विफल रहा, फाउंटेन के पथ फ़ोल्डर में स्वचालित रूप से इंस्टॉल करने का प्रयास किया जा रहा है...",
+				"isRequired": "डेनो नहीं मिला, डेनो के बिना फाउंटेन नहीं चलाया जा सकता",
+				"notWorking": "किसी कारण से डेनो काम नहीं कर रहा है, आप समर्थन के लिए https://discord.gg/deno से जुड़ना चाह सकते हैं",
+				"upgradeFailedTermux": "डेनो अपग्रेड कमांड विफल, टर्मक्स के लिए डेनो को पुनः स्थापित करने का प्रयास किया जा रहा है...",
+				"upgradeFailed": "चेतावनी: डेनो अपग्रेड विफल हो सकता है। कृपया त्रुटियों की जाँच करें."
+			},
+			"install": {
+				"rootWarning1": "अनुशंसित नहीं: रूट के रूप में फाउंटेन चलाने से सभी फाउंटेन घटकों तक पूर्ण सिस्टम पहुंच मिलती है।",
+				"rootWarning2": "जब तक आप नहीं जानते कि आप क्या कर रहे हैं, सामान्य उपयोगकर्ता के रूप में फाउंटेन चलाने की अनुशंसा की जाती है।",
+				"installingDependencies": "निर्भरताएँ स्थापित की जा रही हैं...",
+				"untrustedPartsWarning": "अपने सिस्टम पर कोई भी अविश्वसनीय फाउंटेन घटक स्थापित न करें, वे कुछ भी कर सकते हैं।"
+			},
+			"clean": {
+				"removingCaches": "कैश हटाया जा रहा है...",
+				"reinstallingDependencies": "निर्भरताएँ पुनः स्थापित की जा रही हैं...",
+				"cleaningDenoCaches": "डेनो कैश साफ़ किया जा रहा है...",
+				"cleaningOldPwshModules": "पुराने pwsh मॉड्यूल की सफ़ाई..."
+			},
+			"keepalive": {
+				"failedToStart": "स्वचालित मरम्मत के प्रयासों के बाद भी, फव्वारा थोड़े समय के लिए चालू नहीं हो पाता है। कृपया त्रुटियों के लिए लॉग की जाँच करें।",
+				"autoInitDisabled": "पिछले थोड़े समय में फाउंटेन को कई बार पुनः आरंभ किया गया है, लेकिन .noautoinit फ़ाइल की उपस्थिति के कारण स्वचालित पुनः आरंभीकरण अक्षम कर दिया गया है। बाहर निकलना.",
+				"restartingTooFast": "थोड़े समय में फाउंटेन को कई बार पुनः प्रारंभ किया गया है। जबरन पुनर्प्रारंभीकरण...",
+				"initFailed": "फव्वारा आरंभीकरण विफल रहा. बाहर निकलना.",
+				"initComplete": "पुनः आरंभीकरण पूरा हुआ. फव्वारा पुनः आरंभ करने का प्रयास किया जा रहा है..."
+			},
+			"remove": {
+				"removingFount": "फव्वारा हटाया जा रहा है...",
+				"removingFountFromPath": "पथ से फव्वारा हटाया जा रहा है...",
+				"removingProtocolHandler": "फ़ॉन्ट://प्रोटोकॉल हैंडलर हटाया जा रहा है...",
+				"removingFountFromGitSafeDir": "Git सुरक्षित.निर्देशिका से फव्वारा हटाया जा रहा है...",
+				"removingInstalledSystemPackages": "स्थापित सिस्टम पैकेजों को हटाया जा रहा है...",
+				"uninstallingDeno": "डेनो को अनइंस्टॉल किया जा रहा है...",
+				"removingFountInstallationDir": "फव्वारा स्थापना निर्देशिका हटाई जा रही है...",
+				"fountInstallationDirRemoved": "फव्वारा स्थापना निर्देशिका हटा दी गई है।",
+				"fountUninstallationComplete": "फाउंटेन अनइंस्टॉलेशन पूरा हो गया।",
+				"removingFountPwshFromProfile": "PowerShell प्रोफाइल से फाउंटेन-pwsh हटाया जा रहा है...",
+				"fountPwshRemovedFromProfile": "फाउंटेन-pwsh को पॉवरशेल प्रोफाइल से हटा दिया गया है।",
+				"pwshProfileNotFound": "PowerShell प्रोफ़ाइल नहीं मिली, प्रोफ़ाइल से फाउंटेन-pwsh को हटाया नहीं जा रहा है।",
+				"uninstallingFountPwsh": "फाउंटेन-pwsh को अनइंस्टॉल किया जा रहा है...",
+				"uninstallFountPwshFailed": "फाउंटेन-pwsh को अनइंस्टॉल करना विफल: ${message}",
+				"protocolHandlerRemoved": "फाउंटेन:// प्रोटोकॉल हैंडलर हटा दिया गया है।",
+				"removeProtocolHandlerFailed": "फाउंटेन:// प्रोटोकॉल हैंडलर को हटाने में विफल: ${message}",
+				"removingTerminalProfile": "Windows टर्मिनल प्रोफ़ाइल हटाई जा रही है...",
+				"terminalProfileRemoved": "विंडोज़ टर्मिनल प्रोफ़ाइल निर्देशिका हटा दी गई है।",
+				"terminalProfileNotFound": "Windows टर्मिनल प्रोफ़ाइल निर्देशिका नहीं मिली.",
+				"desktopShortcutRemoved": "डेस्कटॉप शॉर्टकट हटा दिया गया.",
+				"desktopShortcutNotFound": "डेस्कटॉप शॉर्टकट नहीं मिला.",
+				"removingStartMenuShortcut": "प्रारंभ मेनू शॉर्टकट हटा रहा है...",
+				"startMenuShortcutRemoved": "प्रारंभ मेनू शॉर्टकट हटा दिया गया है.",
+				"startMenuShortcutNotFound": "प्रारंभ मेनू शॉर्टकट नहीं मिला.",
+				"removingInstalledPwshModules": "स्थापित pwsh मॉड्यूल को हटाया जा रहा है...",
+				"moduleRemoved": "${module} हटा दिया गया है.",
+				"removeModuleFailed": "${module} को हटाना विफल: ${message}",
+				"uninstallingGit": "Git को अनइंस्टॉल किया जा रहा है...",
+				"uninstallingChrome": "Chrome अनइंस्टॉल किया जा रहा है...",
+				"uninstallingWinget": "विंगेट को अनइंस्टॉल किया जा रहा है...",
+				"removeDenoFailed": "डेनो को हटाने में विफल: ${message}",
+				"removingBackgroundRunner": "पृष्ठभूमि प्रोग्राम हटा रहा है...",
+				"removeBackgroundRunnerFailed": "पृष्ठभूमि में चल रहे प्रोग्राम को हटाने में विफल: ${message}"
+			},
+			"protocol": {
+				"description": "यूआरएल:फाउंड प्रोटोकॉल"
+			}
 		}
 	},
 	"installer_wait_screen": {
@@ -917,7 +1017,12 @@
 			"creationDateLabel": "खाता बनाने की तिथि:",
 			"folderSizeLabel": "उपयोगकर्ता डेटा आकार:",
 			"folderPathLabel": "उपयोगकर्ता डेटा पथ:",
-			"copyPathBtnTitle": "पथ कॉपी करें",
+			"copyPathBtn": {
+				"title": "प्रतिलिपि पथ"
+			},
+			"copyPathBtnIcon": {
+				"alt": "प्रतिलिपि पथ"
+			},
 			"copiedAlert": "पथ क्लिपबोर्ड पर कॉपी कर दिया गया है!"
 		},
 		"changePassword": {
@@ -938,7 +1043,12 @@
 		},
 		"userDevices": {
 			"title": "उपयोगकर्ता डिवाइस/सत्र",
-			"refreshButtonTitle": "सूची ताज़ा करें",
+			"refreshButton": {
+				"title": "सूची रीफ़्रेश करें"
+			},
+			"refreshButtonIcon": {
+				"alt": "ताज़ा करें आइकन"
+			},
 			"noDevicesFound": "कोई डिवाइस या सत्र नहीं मिला।",
 			"deviceInfo": "डिवाइस ID: ${deviceId}",
 			"thisDevice": "यह डिवाइस",
@@ -973,10 +1083,17 @@
 		"apiKeys": {
 			"title": "एपीआई कुंजी",
 			"description": "बाहरी अनुप्रयोगों के लिए एपीआई कुंजी प्रबंधित करें।",
-			"descriptionPlaceholder": "नई कुंजी विवरण",
+			"input": {
+				"placeholder": "नई कुंजी विवरण"
+			},
 			"createButton": "बनाएं",
 			"noKeysFound": "कोई एपीआई कीज़ नहीं मिली।",
-			"refreshButtonTitle": "सूची को ताज़ा करें",
+			"refreshButton": {
+				"title": "सूची रीफ़्रेश करें"
+			},
+			"refreshButtonIcon": {
+				"alt": "ताज़ा करें आइकन"
+			},
 			"keyDetails": "विवरण: ${description} | में बनाया गया: ${createdAt} | अंतिम उपयोग: ${lastUsed}",
 			"neverUsed": "कभी भी इस्तेमाल नहीं किया",
 			"revokeButton": "रद्द करना",
@@ -988,7 +1105,9 @@
 		"newApiKey": {
 			"title": "नई एपीआई कुंजी बनाई गई है",
 			"warning": "कृपया अपनी नई एपीआई कुंजी कॉपी करें। आप इसे फिर से नहीं देख पाएंगे!",
-			"copyButtonTitle": "नई एपीआई कुंजी कॉपी करें",
+			"copyButton": {
+				"title": "नई एपीआई कुंजी कॉपी करें"
+			},
 			"closeButton": "मैंने अपनी चाबी की नकल की है",
 			"copiedAlert": "एपीआई कुंजी क्लिपबोर्ड पर कॉपी कर दी गई है!"
 		}
@@ -1455,12 +1574,18 @@
 		"title": "fount! बैज कन्वर्टर",
 		"card_title": "fount बैज लिंक कन्वर्टर",
 		"original_url_label": "img.shields.io URL पेस्ट करें",
-		"original_url_placeholder": "उदाहरण के लिए: https://img.shields.io/badge/hello-world-blue",
+		"original_url": {
+			"placeholder": "उदाहरण के लिए: https://img.shields.io/badge/hello-world-blue"
+		},
 		"new_url_label": "उत्पन्न नया URL",
-		"new_url_placeholder": "परिवर्तित URL यहां प्रदर्शित किया जाएगा",
+		"new_url": {
+			"placeholder": "परिवर्तित URL यहां प्रदर्शित किया जाएगा"
+		},
 		"copy_button": "कॉपी",
 		"preview_label": "पूर्वावलोकन",
-		"preview_alt": "बैज पूर्वावलोकन",
+		"preview": {
+			"alt": "बैज पूर्वावलोकन"
+		},
 		"copied_text": "कॉपीड!",
 		"copy_error": "पाठ को कॉपी करने में असमर्थ: ${error}",
 		"copy_fail_alert": "कॉपी विफल!"

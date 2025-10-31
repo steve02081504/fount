@@ -8,6 +8,10 @@ import { init } from '../../src/server/server.mjs'
 set_start()
 
 const fount_config = {
+	/**
+	 * @description 重新启动服务器。
+	 * @returns {void}
+	 */
 	restartor: () => process.exit(1),
 	data_path: __dirname + '/.github/workflows/default_data',
 	starts: {

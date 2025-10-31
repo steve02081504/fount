@@ -98,6 +98,106 @@
 		},
 		"telegrambot": {
 			"botStarted": "Персонаж ${charname} вошел в Telegram бот ${botusername}."
+		},
+		"path": {
+			"update": {
+				"skippingFountUpdate": "Поскольку файл .noupdate существует, обновление шрифта пропускается.",
+				"skippingDenoUpgradeDocker": "Пропустить обновление Deno в среде Docker"
+			},
+			"shortcut": {
+				"desktopShortcutCreated": "Ярлык на рабочем столе создан по адресу ${path}.",
+				"startMenuShortcutCreated": "Ярлык меню «Пуск», созданный по адресу ${path}",
+				"protocolHandlerRegistered": "fount:// зарегистрирован обработчик протокола.",
+				"osacompileNotFound": "Ошибка: «osacompile» не найден. Невозможно создать приложение для MacOS.",
+				"lsregisterFailed": "Предупреждение. Не удалось использовать lsregister для регистрации приложения в LaunchServices.",
+				"createDesktopAppFailed": "Ошибка: не удалось создать настольное приложение.",
+				"shortcutNotSupported": "Внимание: ваша операционная система (${os}) не поддерживает создание ярлыков на рабочем столе."
+			},
+			"git": {
+				"repoNotFound": "Git-репозиторий Fount не найден. Инициализируем новый...",
+				"fetchingAndResetting": "Извлечение из удаленного репозитория и сброс на главный...",
+				"fetchFailed": "Не удалось получить информацию из «источника».",
+				"localChangesDetected": "Обнаружены локальные изменения, различия будут сохранены перед перезаписью.",
+				"backupSavedTo": "Резервная копия ваших локальных изменений сохранена по адресу: ${path}.",
+				"notOnBranch": "Не на ветке, переключись на \"мастер\"...",
+				"noUpstreamBranch": "Предупреждение. Для ветки «${branch}» не настроена ни одна восходящая ветвь. Установка исходного потока на «источник/мастер».",
+				"dirtyWorkingDirectory": "Предупреждение: рабочий каталог не чист. Пожалуйста, добавьте в индекс (stage) или зафиксируйте (commit) изменения перед обновлением.",
+				"updatingFromRemote": "Обновление из удаленного репозитория...",
+				"localBranchAhead": "Локальная ветвь опережает удаленную ветвь. Никаких обновлений не требуется.",
+				"branchesDiverged": "Локальные и удаленные ветки были разделены. Выполняется принудительное обновление...",
+				"alreadyUpToDate": "Уже самый последний.",
+				"notInstalled": "Git не установлен, пытаюсь установить...",
+				"installFailedWinget": "Поскольку установка Winget не удалась, Git установить невозможно. Пожалуйста, установите его вручную.",
+				"installFailedManual": "Невозможно установить Git, установите его вручную.",
+				"notInstalledSkippingPull": "Git не установлен, пропустите git pull",
+				"repoNotFoundSkippingPull": "Репозиторий не найден, пропустите git pull"
+			},
+			"deno": {
+				"installingTermux": "Установка Deno для Termux...",
+				"missing": "Deno не найден, устанавливается автоматически...",
+				"installFailedFallback": "Установка Deno не удалась, попытка автоматической установки в путь к папке с fountом...",
+				"isRequired": "Deno не найден, Fount не может быть запущен без Deno",
+				"notWorking": "По какой-то причине Deno не работает. Возможно, вы захотите присоединиться к https://discord.gg/deno для получения поддержки.",
+				"upgradeFailedTermux": "Команда обновления Deno не удалась, попытка переустановить Deno для Termux...",
+				"upgradeFailed": "Предупреждение: возможно, обновление Deno не удалось. Пожалуйста, проверьте наличие ошибок."
+			},
+			"install": {
+				"rootWarning1": "Не рекомендуется: запуск Fount от имени пользователя root предоставляет полный доступ к системе ко всем компонентам Fount.",
+				"rootWarning2": "Если вы не знаете, что делаете, рекомендуется запускать Fount как обычный пользователь.",
+				"installingDependencies": "Установка зависимостей...",
+				"untrustedPartsWarning": "Не устанавливайте в своей системе ненадежные компоненты-фононы, они могут сделать что угодно."
+			},
+			"clean": {
+				"removingCaches": "Удаление кэша...",
+				"reinstallingDependencies": "Переустановка зависимостей...",
+				"cleaningDenoCaches": "Очистка кэша Deno...",
+				"cleaningOldPwshModules": "Очистка старых модулей pwsh..."
+			},
+			"keepalive": {
+				"failedToStart": "Даже после попыток автоматического ремонта фонтан не запускается в течение короткого периода времени. Пожалуйста, проверьте журналы на наличие ошибок.",
+				"autoInitDisabled": "За последний короткий промежуток времени fount перезапускался несколько раз, но автоматическая повторная инициализация была отключена из-за наличия файла .noautoinit. Выход.",
+				"restartingTooFast": "Фонтан был перезапущен несколько раз за короткий период времени. Принудительная повторная инициализация...",
+				"initFailed": "Инициализация фонтана не удалась. Выход.",
+				"initComplete": "Повторная инициализация завершена. Пытаюсь перезапустить fount..."
+			},
+			"remove": {
+				"removingFount": "Удаление fount...",
+				"removingFountFromPath": "Удаление fount из PATH...",
+				"removingProtocolHandler": "Удаление обработчика протокола Fount://...",
+				"removingFountFromGitSafeDir": "Удаление fount из gitsafe.directory...",
+				"removingInstalledSystemPackages": "Удаление установленных системных пакетов...",
+				"uninstallingDeno": "Удаление Дено...",
+				"removingFountInstallationDir": "Удаление каталога установки fount...",
+				"fountInstallationDirRemoved": "Каталог установки шрифта был удален.",
+				"fountUninstallationComplete": "Удаление фонта завершено.",
+				"removingFountPwshFromProfile": "Удаление Fount-pwsh из профиля PowerShell...",
+				"fountPwshRemovedFromProfile": "Fount-pwsh был удален из профиля PowerShell.",
+				"pwshProfileNotFound": "Профиль PowerShell не найден, удаление Fount-pwsh из профиля пропущено.",
+				"uninstallingFountPwsh": "Удаление Fount-PWSH...",
+				"uninstallFountPwshFailed": "Не удалось удалить Fount-Pwsh: ${message}",
+				"protocolHandlerRemoved": "Обработчик протокола fount:// был удален.",
+				"removeProtocolHandlerFailed": "Не удалось удалить обработчик протокола fount://: ${message}.",
+				"removingTerminalProfile": "Удаление профиля терминала Windows...",
+				"terminalProfileRemoved": "Каталог профиля терминала Windows был удален.",
+				"terminalProfileNotFound": "Каталог профиля терминала Windows не найден.",
+				"desktopShortcutRemoved": "Ярлык на рабочем столе удален.",
+				"desktopShortcutNotFound": "Ярлык на рабочем столе не найден.",
+				"removingStartMenuShortcut": "Удаление ярлыков меню Пуск...",
+				"startMenuShortcutRemoved": "Ярлык меню «Пуск» удален.",
+				"startMenuShortcutNotFound": "Ярлык меню «Пуск» не найден.",
+				"removingInstalledPwshModules": "Удаление установленного модуля pwsh...",
+				"moduleRemoved": "${module} удален.",
+				"removeModuleFailed": "Не удалось удалить ${module}: ${message}",
+				"uninstallingGit": "Удаление Git...",
+				"uninstallingChrome": "Удаление Chrome...",
+				"uninstallingWinget": "Удаление Winget...",
+				"removeDenoFailed": "Не удалось удалить Deno: ${message}",
+				"removingBackgroundRunner": "Удаление фоновых программ...",
+				"removeBackgroundRunnerFailed": "Не удалось удалить фоновую программу: ${message}."
+			},
+			"protocol": {
+				"description": "URL: протокол fount"
+			}
 		}
 	},
 	"installer_wait_screen": {
@@ -410,7 +510,7 @@
 		},
 		"achievements": {
 			"first_login": {
-				"name": "Привет, фонд!",
+				"name": "Привет, fount!",
 				"description": "Направляемся в новый мир, впервые заходим в систему!",
 				"locked_description": "Войдите в фонтан один раз."
 			},
@@ -917,7 +1017,12 @@
 			"creationDateLabel": "Дата создания учетной записи:",
 			"folderSizeLabel": "Размер данных пользователя:",
 			"folderPathLabel": "Путь к данным пользователя:",
-			"copyPathBtnTitle": "Копировать путь",
+			"copyPathBtn": {
+				"title": "копировать путь"
+			},
+			"copyPathBtnIcon": {
+				"alt": "Иконка копирования"
+			},
 			"copiedAlert": "Путь скопирован в буфер обмена!"
 		},
 		"changePassword": {
@@ -938,7 +1043,12 @@
 		},
 		"userDevices": {
 			"title": "Устройства и сеансы пользователя",
-			"refreshButtonTitle": "Обновить список",
+			"refreshButton": {
+				"title": "Обновить список"
+			},
+			"refreshButtonIcon": {
+				"alt": "значок обновления"
+			},
 			"noDevicesFound": "Устройства или сеансы не найдены.",
 			"deviceInfo": "ID устройства: ${deviceId}",
 			"thisDevice": "Это устройство",
@@ -973,10 +1083,17 @@
 		"apiKeys": {
 			"title": "API -ключ",
 			"description": "Управляйте ключом API для внешних приложений.",
-			"descriptionPlaceholder": "Новое описание ключа",
+			"input": {
+				"placeholder": "Новое описание ключа"
+			},
 			"createButton": "создавать",
 			"noKeysFound": "Ключей API не найдено.",
-			"refreshButtonTitle": "Обновить список",
+			"refreshButton": {
+				"title": "Обновить список"
+			},
+			"refreshButtonIcon": {
+				"alt": "значок обновления"
+			},
 			"keyDetails": "Описание: ${description} | Создано в: ${createdAt} | Последнее использование: ${lastUsed}",
 			"neverUsed": "Никогда не использовался",
 			"revokeButton": "Отозвать",
@@ -988,7 +1105,9 @@
 		"newApiKey": {
 			"title": "Новый ключ API был создан",
 			"warning": "Пожалуйста, скопируйте свой новый ключ API. Вы не сможете увидеть это снова!",
-			"copyButtonTitle": "Скопируйте новый ключ API",
+			"copyButton": {
+				"title": "Скопируйте новый ключ API"
+			},
 			"closeButton": "Я скопировал свой ключ",
 			"copiedAlert": "Ключ API скопирован в буфер обмена!"
 		}
@@ -1455,12 +1574,18 @@
 		"title": "fount! Конвертер значков",
 		"card_title": "Конвертер ссылок на значки fount",
 		"original_url_label": "Вставьте URL img.shields.io",
-		"original_url_placeholder": "Например: https://img.shields.io/badge/hello-world-blue",
+		"original_url": {
+			"placeholder": "Например: https://img.shields.io/badge/hello-world-blue"
+		},
 		"new_url_label": "Сгенерированный новый URL",
-		"new_url_placeholder": "Конвертированный URL будет отображаться здесь",
+		"new_url": {
+			"placeholder": "Конвертированный URL будет отображаться здесь"
+		},
 		"copy_button": "Копировать",
 		"preview_label": "Предпросмотр",
-		"preview_alt": "Предпросмотр значка",
+		"preview": {
+			"alt": "Предпросмотр значка"
+		},
 		"copied_text": "Скопировано!",
 		"copy_error": "Невозможно скопировать текст: ${error}",
 		"copy_fail_alert": "Копирование не удалось!"
