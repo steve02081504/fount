@@ -1017,7 +1017,12 @@
 			"creationDateLabel": "Fecha de creación de la cuenta:",
 			"folderSizeLabel": "Tamaño de datos de usuario:",
 			"folderPathLabel": "Ruta de datos de usuario:",
-			"copyPathBtnTitle": "Copiar ruta",
+			"copyPathBtn": {
+				"title": "Copiar Ruta"
+			},
+			"copyPathBtnIcon": {
+				"alt": "Icono de Copiar"
+			},
 			"copiedAlert": "¡Ruta copiada al portapapeles!"
 		},
 		"changePassword": {
@@ -1038,7 +1043,12 @@
 		},
 		"userDevices": {
 			"title": "Dispositivos/Sesiones de usuario",
-			"refreshButtonTitle": "Actualizar lista",
+			"refreshButton": {
+				"title": "Actualizar Lista"
+			},
+			"refreshButtonIcon": {
+				"alt": "Icono de Actualización"
+			},
 			"noDevicesFound": "No se han encontrado dispositivos ni sesiones.",
 			"deviceInfo": "ID del dispositivo: ${deviceId}",
 			"thisDevice": "Este dispositivo",
@@ -1073,10 +1083,17 @@
 		"apiKeys": {
 			"title": "Clave de API",
 			"description": "Administre la clave API para aplicaciones externas.",
-			"descriptionPlaceholder": "Nueva descripción clave",
+			"input": {
+				"placeholder": "Nueva descripción clave"
+			},
 			"createButton": "crear",
 			"noKeysFound": "No se encontraron claves API.",
-			"refreshButtonTitle": "Actualiza la lista",
+			"refreshButton": {
+				"title": "Actualizar Lista"
+			},
+			"refreshButtonIcon": {
+				"alt": "Icono de Actualización"
+			},
 			"keyDetails": "Descripción: ${description} | Creado en: ${createdAt} | Último usado: ${lastUsed}",
 			"neverUsed": "Nunca usado",
 			"revokeButton": "Revocar",
@@ -1088,7 +1105,9 @@
 		"newApiKey": {
 			"title": "Se ha creado una nueva clave API",
 			"warning": "Copie su nueva clave API. ¡No podrás volver a verlo!",
-			"copyButtonTitle": "Copiar nueva clave API",
+			"copyButton": {
+				"title": "Copiar nueva clave API"
+			},
 			"closeButton": "He copiado mi clave",
 			"copiedAlert": "¡Clave copiada al portapapeles!"
 		}
@@ -1555,12 +1574,18 @@
 		"title": "¡fount! Convertidor de Insignias",
 		"card_title": "Convertidor de Enlaces de Insignias fount",
 		"original_url_label": "Pegar URL de img.shields.io",
-		"original_url_placeholder": "Por ejemplo: https://img.shields.io/badge/Hello-World-blue",
+		"original_url": {
+			"placeholder": "Por ejemplo: https://img.shields.io/badge/Hello-World-blue"
+		},
 		"new_url_label": "Nueva URL generada",
-		"new_url_placeholder": "La URL convertida se mostrará aquí",
+		"new_url": {
+			"placeholder": "La URL convertida se mostrará aquí"
+		},
 		"copy_button": "Copiar",
 		"preview_label": "Vista previa",
-		"preview_alt": "Vista previa de la insignia",
+		"preview": {
+			"alt": "Vista previa de la insignia"
+		},
 		"copied_text": "¡Copiado!",
 		"copy_error": "Error al copiar el texto: ${error}",
 		"copy_fail_alert": "¡Error al copiar!"

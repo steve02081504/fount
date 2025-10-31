@@ -1017,7 +1017,12 @@
 			"creationDateLabel": "アカウント作成日:",
 			"folderSizeLabel": "ユーザーデータサイズ:",
 			"folderPathLabel": "ユーザーデータパス:",
-			"copyPathBtnTitle": "パスをコピー",
+			"copyPathBtn": {
+				"title": "パスをコピーする"
+			},
+			"copyPathBtnIcon": {
+				"alt": "コピーアイコン"
+			},
 			"copiedAlert": "パスをクリップボードにコピーしました！"
 		},
 		"changePassword": {
@@ -1038,7 +1043,12 @@
 		},
 		"userDevices": {
 			"title": "ユーザーデバイス・セッション",
-			"refreshButtonTitle": "リストを更新",
+			"refreshButton": {
+				"title": "リストを更新する"
+			},
+			"refreshButtonIcon": {
+				"alt": "更新アイコン"
+			},
 			"noDevicesFound": "デバイスまたはセッションが見つかりませんでした。",
 			"deviceInfo": "デバイスID：${deviceId}",
 			"thisDevice": "このデバイス",
@@ -1073,10 +1083,17 @@
 		"apiKeys": {
 			"title": "APIキー",
 			"description": "外部アプリケーションのAPIキーを管理します。",
-			"descriptionPlaceholder": "新しいキー説明",
+			"input": {
+				"placeholder": "新しいキーの説明"
+			},
 			"createButton": "作成",
 			"noKeysFound": "APIキーは見つかりませんでした。",
-			"refreshButtonTitle": "リストを更新します",
+			"refreshButton": {
+				"title": "リストを更新する"
+			},
+			"refreshButtonIcon": {
+				"alt": "更新アイコン"
+			},
 			"keyDetails": "説明：${description} |作成：${createdAt} |最終使用：${lastUsed}",
 			"neverUsed": "未使用",
 			"revokeButton": "取り消す",
@@ -1088,7 +1105,9 @@
 		"newApiKey": {
 			"title": "新しいAPIキーが作成されました",
 			"warning": "新しいAPIキーをコピーしてください。二度と見ることができません！",
-			"copyButtonTitle": "新しいAPIキーをコピーします",
+			"copyButton": {
+				"title": "新しい API キーをコピーする"
+			},
 			"closeButton": "キーをコピーしました",
 			"copiedAlert": "APIキーがクリップボードにコピーされました！"
 		}
@@ -1555,12 +1574,18 @@
 		"title": "fount! バッジコンバーター",
 		"card_title": "fountバッジリンクコンバーター",
 		"original_url_label": "img.shields.io URLを貼り付けます",
-		"original_url_placeholder": "例：https://img.shields.io/badge/hello-world-blue",
+		"original_url": {
+			"placeholder": "例：https://img.shields.io/badge/hello-world-blue"
+		},
 		"new_url_label": "生成された新しいURL",
-		"new_url_placeholder": "変換されたURLはここに表示されます",
+		"new_url": {
+			"placeholder": "変換されたURLはここに表示されます"
+		},
 		"copy_button": "コピー",
 		"preview_label": "プレビュー",
-		"preview_alt": "バッジプレビュー",
+		"preview": {
+			"alt": "バッジプレビュー"
+		},
 		"copied_text": "コピーしました！",
 		"copy_error": "テキストをコピーできません：${error}",
 		"copy_fail_alert": "コピーが失敗しました！"

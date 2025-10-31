@@ -1017,7 +1017,12 @@
 			"creationDateLabel": "Kontoerstellungsdatum:",
 			"folderSizeLabel": "Größe der Benutzerdaten:",
 			"folderPathLabel": "Pfad der Benutzerdaten:",
-			"copyPathBtnTitle": "Pfad kopieren",
+			"copyPathBtn": {
+				"title": "Pfad kopieren"
+			},
+			"copyPathBtnIcon": {
+				"alt": "Kopieren-Symbol"
+			},
 			"copiedAlert": "Der Pfad wurde in die Zwischenablage kopiert!"
 		},
 		"changePassword": {
@@ -1038,7 +1043,12 @@
 		},
 		"userDevices": {
 			"title": "Benutzergeräte/-sitzungen",
-			"refreshButtonTitle": "Liste aktualisieren",
+			"refreshButton": {
+				"title": "Liste aktualisieren"
+			},
+			"refreshButtonIcon": {
+				"alt": "Aktualisieren-Symbol"
+			},
 			"noDevicesFound": "Es wurden keine Geräte oder Sitzungen gefunden.",
 			"deviceInfo": "Geräte-ID: ${deviceId}",
 			"thisDevice": "Dieses Gerät",
@@ -1073,10 +1083,17 @@
 		"apiKeys": {
 			"title": "API-Schlüssel",
 			"description": "Verwalten Sie den API-Schlüssel für externe Anwendungen.",
-			"descriptionPlaceholder": "Neue Schlüsselbeschreibung",
+			"input": {
+				"placeholder": "Neue Schlüsselbeschreibung"
+			},
 			"createButton": "erstellen",
 			"noKeysFound": "Es wurden keine API-Schlüssel gefunden.",
-			"refreshButtonTitle": "Aktualisieren Sie die Liste",
+			"refreshButton": {
+				"title": "Aktualisieren Sie die Liste"
+			},
+			"refreshButtonIcon": {
+				"alt": "Aktualisieren-Symbol"
+			},
 			"keyDetails": "Beschreibung: ${description} | Erstellt in: ${createdAt} | Zuletzt gebraucht: ${lastUsed}",
 			"neverUsed": "Nie benutzt",
 			"revokeButton": "Widerrufen",
@@ -1088,7 +1105,9 @@
 		"newApiKey": {
 			"title": "Neuer API-Schlüssel wurde erstellt",
 			"warning": "Bitte kopieren Sie Ihren neuen API-Schlüssel. Sie werden es nicht wieder sehen können!",
-			"copyButtonTitle": "Kopieren Sie den neuen API-Schlüssel",
+			"copyButton": {
+				"title": "Kopieren Sie den neuen API-Schlüssel"
+			},
 			"closeButton": "Ich habe meinen Schlüssel kopiert",
 			"copiedAlert": "Der API-Schlüssel wurde in die Zwischenablage kopiert!"
 		}
@@ -1555,12 +1574,18 @@
 		"title": "fount! Abzeichenwandler",
 		"card_title": "fount Abzeichen Link Konverter",
 		"original_url_label": "img.shields.io URL einfügen",
-		"original_url_placeholder": "Zum Beispiel: https://img.shields.io/badge/Hello-World-blue",
+		"original_url": {
+			"placeholder": "Zum Beispiel: https://img.shields.io/badge/Hello-World-blue"
+		},
 		"new_url_label": "Generierte neue URL",
-		"new_url_placeholder": "Die konvertierte URL wird hier angezeigt",
+		"new_url": {
+			"placeholder": "Die konvertierte URL wird hier angezeigt"
+		},
 		"copy_button": "Kopieren",
 		"preview_label": "Vorschau",
-		"preview_alt": "Abzeichen-Vorschau",
+		"preview": {
+			"alt": "Abzeichen-Vorschau"
+		},
 		"copied_text": "Kopiert!",
 		"copy_error": "Text konnte nicht kopiert werden: ${error}",
 		"copy_fail_alert": "Kopieren fehlgeschlagen!"

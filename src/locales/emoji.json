@@ -1017,7 +1017,12 @@
 			"creationDateLabel": "🎂:",
 			"folderSizeLabel": "💾:",
 			"folderPathLabel": "📍:",
-			"copyPathBtnTitle": "📋📍",
+			"copyPathBtn": {
+				"title": "📋📍"
+			},
+			"copyPathBtnIcon": {
+				"alt": "📋📍"
+			},
 			"copiedAlert": "📋✅❗️"
 		},
 		"changePassword": {
@@ -1038,7 +1043,12 @@
 		},
 		"userDevices": {
 			"title": "👤💻",
-			"refreshButtonTitle": "🔄",
+			"refreshButton": {
+				"title": "🔄"
+			},
+			"refreshButtonIcon": {
+				"alt": "🔄"
+			},
 			"noDevicesFound": "🤷‍♂️💻",
 			"deviceInfo": "💻🆔: ${deviceId}",
 			"thisDevice": "👉💻",
@@ -1073,10 +1083,17 @@
 		"apiKeys": {
 			"title": "🔑",
 			"description": "⚙️🔑",
-			"descriptionPlaceholder": "✍️",
+			"input": {
+				"placeholder": "✍️"
+			},
 			"createButton": "✨",
 			"noKeysFound": "🤷‍♀️",
-			"refreshButtonTitle": "🔄",
+			"refreshButton": {
+				"title": "🔄"
+			},
+			"refreshButtonIcon": {
+				"alt": "🔄"
+			},
 			"keyDetails": "📝 ${description} 🗓️ ${createdAt} ⏳ ${lastUsed}",
 			"neverUsed": "⏳",
 			"revokeButton": "🗑️",
@@ -1088,7 +1105,9 @@
 		"newApiKey": {
 			"title": "✨🔑",
 			"warning": "⚠️📋",
-			"copyButtonTitle": "📋🔑",
+			"copyButton": {
+				"title": "📋🔑"
+			},
 			"closeButton": "✅📋",
 			"copiedAlert": "📋✅❗️"
 		}
@@ -1555,12 +1574,18 @@
 		"title": "⛲❗️ 🎖️✨",
 		"card_title": "⛲ 🎖️🔗✨",
 		"original_url_label": "📋 img.shields.io 🌐",
-		"original_url_placeholder": "https://img.shields.io/badge/👋-🌍-🔵",
+		"original_url": {
+			"placeholder": "https://img.shields.io/badge/👋-🌍-🔵"
+		},
 		"new_url_label": "🆕🌐",
-		"new_url_placeholder": "🆕🌐✨",
+		"new_url": {
+			"placeholder": "🆕🌐✨"
+		},
 		"copy_button": "📋",
 		"preview_label": "👀",
-		"preview_alt": "🎖️👀",
+		"preview": {
+			"alt": "🎖️👀"
+		},
 		"copied_text": "📋✅❗️",
 		"copy_error": "📋❌: ${error}",
 		"copy_fail_alert": "📋❌❗️"

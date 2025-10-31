@@ -1017,7 +1017,12 @@
 			"creationDateLabel": "Дата создания учетной записи:",
 			"folderSizeLabel": "Размер данных пользователя:",
 			"folderPathLabel": "Путь к данным пользователя:",
-			"copyPathBtnTitle": "Копировать путь",
+			"copyPathBtn": {
+				"title": "копировать путь"
+			},
+			"copyPathBtnIcon": {
+				"alt": "Иконка копирования"
+			},
 			"copiedAlert": "Путь скопирован в буфер обмена!"
 		},
 		"changePassword": {
@@ -1038,7 +1043,12 @@
 		},
 		"userDevices": {
 			"title": "Устройства и сеансы пользователя",
-			"refreshButtonTitle": "Обновить список",
+			"refreshButton": {
+				"title": "Обновить список"
+			},
+			"refreshButtonIcon": {
+				"alt": "значок обновления"
+			},
 			"noDevicesFound": "Устройства или сеансы не найдены.",
 			"deviceInfo": "ID устройства: ${deviceId}",
 			"thisDevice": "Это устройство",
@@ -1073,10 +1083,17 @@
 		"apiKeys": {
 			"title": "API -ключ",
 			"description": "Управляйте ключом API для внешних приложений.",
-			"descriptionPlaceholder": "Новое описание ключа",
+			"input": {
+				"placeholder": "Новое описание ключа"
+			},
 			"createButton": "создавать",
 			"noKeysFound": "Ключей API не найдено.",
-			"refreshButtonTitle": "Обновить список",
+			"refreshButton": {
+				"title": "Обновить список"
+			},
+			"refreshButtonIcon": {
+				"alt": "значок обновления"
+			},
 			"keyDetails": "Описание: ${description} | Создано в: ${createdAt} | Последнее использование: ${lastUsed}",
 			"neverUsed": "Никогда не использовался",
 			"revokeButton": "Отозвать",
@@ -1088,7 +1105,9 @@
 		"newApiKey": {
 			"title": "Новый ключ API был создан",
 			"warning": "Пожалуйста, скопируйте свой новый ключ API. Вы не сможете увидеть это снова!",
-			"copyButtonTitle": "Скопируйте новый ключ API",
+			"copyButton": {
+				"title": "Скопируйте новый ключ API"
+			},
 			"closeButton": "Я скопировал свой ключ",
 			"copiedAlert": "Ключ API скопирован в буфер обмена!"
 		}
@@ -1555,12 +1574,18 @@
 		"title": "fount! Конвертер значков",
 		"card_title": "Конвертер ссылок на значки fount",
 		"original_url_label": "Вставьте URL img.shields.io",
-		"original_url_placeholder": "Например: https://img.shields.io/badge/hello-world-blue",
+		"original_url": {
+			"placeholder": "Например: https://img.shields.io/badge/hello-world-blue"
+		},
 		"new_url_label": "Сгенерированный новый URL",
-		"new_url_placeholder": "Конвертированный URL будет отображаться здесь",
+		"new_url": {
+			"placeholder": "Конвертированный URL будет отображаться здесь"
+		},
 		"copy_button": "Копировать",
 		"preview_label": "Предпросмотр",
-		"preview_alt": "Предпросмотр значка",
+		"preview": {
+			"alt": "Предпросмотр значка"
+		},
 		"copied_text": "Скопировано!",
 		"copy_error": "Невозможно скопировать текст: ${error}",
 		"copy_fail_alert": "Копирование не удалось!"

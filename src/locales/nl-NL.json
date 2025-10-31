@@ -1017,7 +1017,12 @@
 			"creationDateLabel": "Account aangemaakt op:",
 			"folderSizeLabel": "Grootte gebruikersgegevens:",
 			"folderPathLabel": "Pad naar gebruikersgegevens:",
-			"copyPathBtnTitle": "Pad kopiëren",
+			"copyPathBtn": {
+				"title": "kopieer pad"
+			},
+			"copyPathBtnIcon": {
+				"alt": "kopieer pad"
+			},
 			"copiedAlert": "Pad gekopieerd naar klembord!"
 		},
 		"changePassword": {
@@ -1038,7 +1043,12 @@
 		},
 		"userDevices": {
 			"title": "Gebruikersapparaten/sessies",
-			"refreshButtonTitle": "Lijst vernieuwen",
+			"refreshButton": {
+				"title": "Lijst vernieuwen"
+			},
+			"refreshButtonIcon": {
+				"alt": "pictogram vernieuwen"
+			},
 			"noDevicesFound": "Geen apparaten of sessies gevonden.",
 			"deviceInfo": "Apparaat-ID: ${deviceId}",
 			"thisDevice": "Dit apparaat",
@@ -1073,10 +1083,17 @@
 		"apiKeys": {
 			"title": "API -sleutel",
 			"description": "Beheer de API -sleutel voor externe toepassingen.",
-			"descriptionPlaceholder": "Nieuwe sleutelbeschrijving",
+			"input": {
+				"placeholder": "Nieuwe sleutelbeschrijving"
+			},
 			"createButton": "creëren",
 			"noKeysFound": "Er werden geen API-sleutels gevonden.",
-			"refreshButtonTitle": "Vernieuw de lijst",
+			"refreshButton": {
+				"title": "Lijst vernieuwen"
+			},
+			"refreshButtonIcon": {
+				"alt": "pictogram vernieuwen"
+			},
 			"keyDetails": "Beschrijving: ${description} | Gemaakt in: ${createdAt} | Laatst gebruikt: ${lastUsed}",
 			"neverUsed": "Nooit gebruikt",
 			"revokeButton": "Herroepen",
@@ -1088,7 +1105,9 @@
 		"newApiKey": {
 			"title": "Er is een nieuwe API -sleutel gemaakt",
 			"warning": "Kopieer uw nieuwe API -sleutel. Je kunt het niet meer zien!",
-			"copyButtonTitle": "Kopieer een nieuwe API -sleutel",
+			"copyButton": {
+				"title": "Kopieer nieuwe API-sleutel"
+			},
 			"closeButton": "Ik heb mijn sleutel gekopieerd",
 			"copiedAlert": "API -sleutel gekopieerd naar klembord!"
 		}
@@ -1555,12 +1574,18 @@
 		"title": "fount! Badge-omzetter",
 		"card_title": "fount Badge Link-omzetter",
 		"original_url_label": "Plak img.shields.io-URL",
-		"original_url_placeholder": "Bijv: https://img.shields.io/badge/Hello-World-blue",
+		"original_url": {
+			"placeholder": "Bijv: https://img.shields.io/badge/Hello-World-blue"
+		},
 		"new_url_label": "Nieuwe gegenereerde URL",
-		"new_url_placeholder": "De omgezette URL verschijnt hier",
+		"new_url": {
+			"placeholder": "De omgezette URL verschijnt hier"
+		},
 		"copy_button": "Kopiëren",
 		"preview_label": "Voorbeeld",
-		"preview_alt": "Badge-voorbeeld",
+		"preview": {
+			"alt": "Badge-voorbeeld"
+		},
 		"copied_text": "Gekopieerd!",
 		"copy_error": "Kan tekst niet kopiëren: ${error}",
 		"copy_fail_alert": "Kopiëren mislukt!"

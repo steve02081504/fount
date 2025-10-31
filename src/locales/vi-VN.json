@@ -1017,7 +1017,12 @@
 			"creationDateLabel": "Ngày tạo tài khoản:",
 			"folderSizeLabel": "Kích thước dữ liệu người dùng:",
 			"folderPathLabel": "Đường dẫn dữ liệu người dùng:",
-			"copyPathBtnTitle": "Sao chép đường dẫn",
+			"copyPathBtn": {
+				"title": "sao chép đường dẫn"
+			},
+			"copyPathBtnIcon": {
+				"alt": "sao chép đường dẫn"
+			},
 			"copiedAlert": "Đường dẫn đã được sao chép vào bộ nhớ tạm!"
 		},
 		"changePassword": {
@@ -1038,7 +1043,12 @@
 		},
 		"userDevices": {
 			"title": "Thiết bị/Phiên hoạt động",
-			"refreshButtonTitle": "Làm mới danh sách",
+			"refreshButton": {
+				"title": "Làm mới danh sách"
+			},
+			"refreshButtonIcon": {
+				"alt": "Làm mới danh sách"
+			},
 			"noDevicesFound": "Không tìm thấy thiết bị hoặc phiên hoạt động nào.",
 			"deviceInfo": "ID thiết bị: ${deviceId}",
 			"thisDevice": "Thiết bị này",
@@ -1073,10 +1083,17 @@
 		"apiKeys": {
 			"title": "Khóa API",
 			"description": "Quản lý khóa API cho các ứng dụng bên ngoài.",
-			"descriptionPlaceholder": "Mô tả khóa mới",
+			"input": {
+				"placeholder": "Mô tả khóa mới"
+			},
 			"createButton": "tạo",
 			"noKeysFound": "Không có khóa API được tìm thấy.",
-			"refreshButtonTitle": "Làm mới danh sách",
+			"refreshButton": {
+				"title": "Làm mới danh sách"
+			},
+			"refreshButtonIcon": {
+				"alt": "Làm mới danh sách"
+			},
 			"keyDetails": "Mô tả: ${description} | Được tạo trong: ${createdAt} | Được sử dụng lần cuối: ${lastUsed}",
 			"neverUsed": "Không bao giờ được sử dụng",
 			"revokeButton": "Thu hồi",
@@ -1088,7 +1105,9 @@
 		"newApiKey": {
 			"title": "Khóa API mới đã được tạo",
 			"warning": "Vui lòng sao chép khóa API mới của bạn. Bạn sẽ không thể nhìn thấy nó một lần nữa!",
-			"copyButtonTitle": "Sao chép khóa API mới",
+			"copyButton": {
+				"title": "Sao chép khóa API mới"
+			},
 			"closeButton": "Tôi đã sao chép khóa của mình",
 			"copiedAlert": "Khóa API đã được sao chép vào bộ nhớ tạm!"
 		}
@@ -1555,12 +1574,18 @@
 		"title": "fount! Bộ chuyển đổi huy hiệu",
 		"card_title": "Bộ chuyển đổi liên kết huy hiệu fount",
 		"original_url_label": "Dán URL img.shields.io",
-		"original_url_placeholder": "Ví dụ: https://img.shields.io/badge/hello-world-blue",
+		"original_url": {
+			"placeholder": "Ví dụ: https://img.shields.io/badge/hello-world-blue"
+		},
 		"new_url_label": "URL mới được tạo",
-		"new_url_placeholder": "URL được chuyển đổi sẽ được hiển thị tại đây",
+		"new_url": {
+			"placeholder": "URL được chuyển đổi sẽ được hiển thị tại đây"
+		},
 		"copy_button": "Sao chép",
 		"preview_label": "Xem trước",
-		"preview_alt": "Xem trước huy hiệu",
+		"preview": {
+			"alt": "Xem trước huy hiệu"
+		},
 		"copied_text": "Đã sao chép!",
 		"copy_error": "Không thể sao chép văn bản: ${error}",
 		"copy_fail_alert": "Sao chép không thành công!"
