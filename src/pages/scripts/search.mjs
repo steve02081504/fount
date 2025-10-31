@@ -2,10 +2,10 @@ import { onElementRemoved } from './onElementRemoved.mjs'
 import { parseRegexFromString, escapeRegExp } from './regex.mjs'
 
 /**
- * Helper function for parsing a single filter term into a RegExp.
- * It creates a case-insensitive regex.
- * @param {string} filter The filter term.
- * @returns {RegExp}
+ * @description 将单个筛选词解析为 RegExp 的辅助函数。
+ * 它会创建一个不区分大小写的正则表达式。
+ * @param {string} filter - 筛选词。
+ * @returns {RegExp} - 解析后的正则表达式。
  */
 function parseRegexFilter(filter) {
 	try { return parseRegexFromString(filter) }
@@ -13,24 +13,22 @@ function parseRegexFilter(filter) {
 }
 
 /**
- * Splits a string into an array of filter terms.
- * Supports common filters, forced inclusion filters (prefixed with '+'),
- * and exclusion filters (prefixed with '-'). Also handles quoted terms.
- * @param {string} str The string to split into filter terms.
- * @returns {string[]} An array of filter terms.
+ * @description 将字符串拆分为筛选词数组。
+ * 支持普通筛选、强制包含筛选（以“+”为前缀）和排除筛选（以“-”为前缀）。还支持带引号的词。
+ * @param {string} str - 要拆分为筛选词的字符串。
+ * @returns {string[]} - 筛选词数组。
  */
 export function getFiltersFromString(str) {
 	return str.match(/[+-]?(?:"(?:[^"\\]|\\.)*"|\S+)(\s|$)/g) || []
 }
 
 /**
- * Parses a filter string and returns a filter function.
- * The returned function takes an object and returns true if it matches the filters.
- * Supports common filters, forced inclusion filters (prefixed with '+'),
- * and exclusion filters (prefixed with '-'). Also handles quoted terms.
- * e.g., 'common term' +forced -"excluded term"
- * @param {string} filterString The raw filter string from user input.
- * @returns {(item: object) => boolean} A function that filters an object.
+ * @description 解析筛选字符串并返回一个筛选函数。
+ * 返回的函数接受一个对象，如果该对象与筛选条件匹配，则返回 true。
+ * 支持普通筛选、强制包含筛选（以“+”为前缀）和排除筛选（以“-”为前缀）。还支持带引号的词。
+ * 例如，'common term' +forced -"excluded term"
+ * @param {string} filterString - 用户输入的原始筛选字符串。
+ * @returns {(item: object) => boolean} - 一个筛选对象的函数。
  */
 export function compileFilter(filterString) {
 	const [commonFilters, forceFilters, excludeFilters] = [[], [], []]
@@ -59,17 +57,21 @@ export function compileFilter(filterString) {
 }
 
 /**
- * Binds a search input to a list of items for automatic, live filtering.
+ * @description 将搜索输入框绑定到项目列表以进行自动实时筛选。
  *
- * This function attaches an event listener to the search input. As the user types,
- * it filters the provided list of items based on the search query.
+ * 此函数会为搜索输入框附加一个事件侦听器。当用户键入时，它会根据搜索查询筛选提供的项目列表。
  *
- * @param {object} options - The configuration for the search functionality.
- * @param {HTMLInputElement} options.searchInput - The `<input>` element used for search queries.
- * @param {Array<HTMLElement|object>} options.items - An array of items to be filtered. These can be HTML elements or data objects.
- * @param {function(HTMLElement|object): (object|string)} options.dataAccessor - A function that takes an item and returns the data (object or string) to be used for searching.
+ * @param {object} options - 搜索功能的配置。
+ * @param {HTMLInputElement} options.searchInput - 用于搜索查询的 `<input>` 元素。
+ * @param {Array<HTMLElement|object>} options.data - 要筛选的项目数组。这些可以是 HTML 元素或数据对象。
+ * @param {function(HTMLElement|object): (object|string)} [options.dataAccessor=(item) => item] - 一个函数，它接受一个项目并返回用于搜索的数据（对象或字符串）。
+ * @param {function(Array<HTMLElement|object>): void} options.onUpdate - 当筛选后的列表更新时调用的回调函数。
+ * @returns {HTMLInputElement} - 搜索输入框。
  */
 export function makeSearchable({ searchInput, data, dataAccessor = (item) => item, onUpdate }) {
+	/**
+	 *
+	 */
 	const filterItems = () => {
 		const filterFn = compileFilter(searchInput.value)
 		const filteredData = data.filter(item => filterFn(dataAccessor(item)))
@@ -87,17 +89,18 @@ export function makeSearchable({ searchInput, data, dataAccessor = (item) => ite
 }
 
 /**
- * Creates and manages a searchable dropdown menu, using an existing input element as the trigger.
- * It dynamically generates the dropdown content, binds search functionality,
- * and handles item selection.
+ * @description 创建和管理一个可搜索的下拉菜单，使用现有的输入元素作为触发器。
+ * 它会动态生成下拉菜单内容，绑定搜索功能，并处理项目选择。
  *
- * @param {object} options - The configuration for the searchable dropdown.
- * @param {HTMLElement} options.dropdownElement - The container element that will act as the dropdown. An input element will be automatically created or found within it to serve as the trigger.
- * @param {Array<object>} options.dataList - The array of data objects to populate the dropdown.
- * @param {string} options.textKey - The key in each data object to display as text in the dropdown.
- * @param {string} options.valueKey - The key in each data object to use as the value for selection.
- * @param {function(object): void} [options.onSelect=()=>{}] - Callback function when an item is selected. Receives the selected data object.
- * @param {function(object): (object|string)} [options.dataAccessor] - A function that takes a data object and returns the data (object or string) to be used for searching. Defaults to using `textKey`.
+ * @param {object} options - 可搜索下拉菜单的配置。
+ * @param {HTMLElement} options.dropdownElement - 将充当下拉菜单的容器元素。将自动创建或在其内部查找一个输入元素作为触发器。
+ * @param {Array<object>} options.dataList - 用于填充下拉菜单的数据对象数组。
+ * @param {string} options.textKey - 每个数据对象中用作下拉菜单中文本显示的键。
+ * @param {string} options.valueKey - 每个数据对象中用作选择值的键。
+ * @param {function(object): void} [options.onSelect=()=>{}] - 选择项目时的回调函数。接收所选的数据对象。
+ * @param {function(object): (object|string)} [options.dataAccessor] - 一个函数，它接受一个数据对象并返回用于搜索的数据（对象或字符串）。默认为使用 `textKey`。
+ * @param {boolean} [options.disabled=false] - 是否禁用下拉菜单。
+ * @returns {Promise<HTMLElement>} - 下拉菜单元素。
  */
 export async function createSearchableDropdown({
 	dropdownElement,
@@ -147,13 +150,24 @@ export async function createSearchableDropdown({
 	const triggerInput = dropdownElement.querySelector('input:not(.dropdown-content input)')
 	const optionsList = dropdownContent.querySelector('ul')
 
+	/**
+	 * @description 获取项目文本。
+	 * @param {object} itemData - 项目数据。
+	 * @returns {string} - 项目文本。
+	 */
 	const getItemText = itemData => itemData[textKey] || itemData
+	/**
+	 * @description 获取项目值。
+	 * @param {object} itemData - 项目数据。
+	 * @returns {any} - 项目值。
+	 */
 	const getItemValue = itemData => itemData[valueKey] || itemData
 	const buttonListeners = []
 
 	/**
-	 * Centralized function to set the dropdown's value and update its display.
-	 * @param {string | number} newValue The new value to set.
+	 * @description 设置下拉菜单的值并更新其显示的集中式函数。
+	 * @param {string | number} newValue - 要设置的新值。
+	 * @returns {Promise<void>}
 	 */
 	const setValue = async (newValue) => {
 		const selectedItem = dataList.find(item => getItemValue(item) == newValue)
@@ -171,7 +185,15 @@ export async function createSearchableDropdown({
 		await onSelect(selectedItem || null)
 	}
 
+	/**
+	 * @description 聚焦事件侦听器。
+	 * @returns {void}
+	 */
 	const focusinListener = () => triggerInput.setAttribute('aria-expanded', 'true')
+	/**
+	 * @description 失焦事件侦听器。
+	 * @returns {void}
+	 */
 	const focusoutListener = () => {
 		if (!dropdownElement.contains(document.activeElement))
 			triggerInput.setAttribute('aria-expanded', 'false')
@@ -181,6 +203,11 @@ export async function createSearchableDropdown({
 	dropdownElement.addEventListener('focusout', focusoutListener)
 
 	// Function to render options
+	/**
+	 * @description 渲染选项。
+	 * @param {Array<object>} filteredData - 筛选后的数据。
+	 * @returns {void}
+	 */
 	const renderOptions = (filteredData) => {
 		buttonListeners.forEach(({ button, listener }) => button.removeEventListener('click', listener))
 		buttonListeners.length = 0 // Clear the array
@@ -191,6 +218,10 @@ export async function createSearchableDropdown({
 		`).join('')
 
 		optionsList.querySelectorAll('button').forEach(button => {
+			/**
+			 * @description 按钮点击事件侦听器。
+			 * @returns {Promise<void>}
+			 */
 			const listener = async () => {
 				const selectedValue = button.dataset.value
 				const selectedItem = dataList.find(item => getItemValue(item) == selectedValue)

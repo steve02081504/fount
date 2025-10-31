@@ -1,8 +1,10 @@
 const handlers = new Map()
 
 /**
- * @param {string} type
- * @param {(data: any) => void} callback
+ * @description 注册一个服务器事件回调。
+ * @param {string} type - 事件类型。
+ * @param {(data: any) => void} callback - 回调函数。
+ * @returns {void}
  */
 export function onServerEvent(type, callback) {
 	if (!handlers.has(type))
@@ -12,8 +14,10 @@ export function onServerEvent(type, callback) {
 }
 
 /**
- * @param {string} type
- * @param {(data: any) => void} callback
+ * @description 注销一个服务器事件回调。
+ * @param {string} type - 事件类型。
+ * @param {(data: any) => void} callback - 回调函数。
+ * @returns {void}
  */
 export function offServerEvent(type, callback) {
 	if (handlers.has(type)) {
@@ -25,8 +29,9 @@ export function offServerEvent(type, callback) {
 }
 
 /**
- * To be called by base.mjs when a message from SW is received.
- * @param {{type: string, data: any}} message
+ * @description 由 base.mjs 在收到来自 SW 的消息时调用。
+ * @param {{type: string, data: any}} message - 消息。
+ * @returns {void}
  */
 function dispatchMessage(message) {
 	const { type, data } = message

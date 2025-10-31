@@ -5,6 +5,10 @@ import { applyTheme } from '../scripts/theme.mjs'
 const urlParams = new URL(window.location.href)
 const from = urlParams.searchParams.get('from')
 
+/**
+ * @description 处理协议。
+ * @returns {Promise<void>}
+ */
 async function handleProtocol() {
 	const protocol = urlParams.searchParams.get('url')
 
@@ -30,6 +34,11 @@ async function handleProtocol() {
 		document.getElementById('message').dataset.i18n = 'protocolhandler.unknownCommand'
 }
 
+/**
+ * @description 处理运行部件。
+ * @param {string[]} parts - 部件。
+ * @returns {Promise<void>}
+ */
 async function handleRunPart(parts) {
 	if (parts.length < 3) {
 		document.getElementById('message').dataset.i18n = 'protocolhandler.insufficientParams'
@@ -54,16 +63,28 @@ async function handleRunPart(parts) {
 		confirmation_message.textContent = geti18n('protocolhandler.runPartConfirm.message', { parttype, partname })
 		confirmation_modal.showModal()
 
+		/**
+		 * @description 确认按钮点击事件。
+		 * @returns {void}
+		 */
 		confirm_btn.onclick = () => {
 			confirmation_modal.close()
 			resolve(true)
 		}
+		/**
+		 * @description 取消按钮点击事件。
+		 * @returns {void}
+		 */
 		cancel_btn.onclick = () => {
 			confirmation_modal.close()
 			resolve(false)
 		}
 	})
 
+	/**
+	 * @description 返回上一页。
+	 * @returns {void}
+	 */
 	const goBack = () => {
 		try {
 			if (from == 'jumppage')
@@ -100,6 +121,11 @@ async function handleRunPart(parts) {
 	setTimeout(goBack, 1000)
 }
 
+/**
+ * @description 处理页面。
+ * @param {string[]} parts - 页面部分。
+ * @returns {void}
+ */
 function handlePage(parts) {
 	if (parts.length < 2) {
 		document.getElementById('message').dataset.i18n = 'protocolhandler.insufficientParams'

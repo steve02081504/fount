@@ -10,10 +10,19 @@ zxcvbnOptions.setOptions({
 	}
 })
 
+/**
+ * @description 更新 zxcvbn 的翻译。
+ * @returns {void}
+ */
 function updateZxcvbnTranslations() {
 	zxcvbnOptions.setOptions({ translations: geti18n('zxcvbn') })
 }
 
+/**
+ * @description 评估密码强度。
+ * @param {string} password - 要评估的密码。
+ * @returns {{score: number, borderColorClass: string, fullFeedback: string}} - 密码强度评估结果。
+ */
 function evaluatePasswordStrength(password) {
 	const result = zxcvbn(password)
 	let feedbackText = ''
@@ -48,6 +57,13 @@ function evaluatePasswordStrength(password) {
 	return { score: result.score, borderColorClass, fullFeedback }
 }
 
+/**
+ * @description 更新密码强度 UI。
+ * @param {string} password - 密码。
+ * @param {HTMLInputElement} passwordInput - 密码输入框。
+ * @param {HTMLElement} passwordStrengthFeedback - 密码强度反馈元素。
+ * @returns {void}
+ */
 function updatePasswordStrengthUI(password, passwordInput, passwordStrengthFeedback) {
 	if (!password) {
 		passwordStrengthFeedback.innerHTML = ''
@@ -69,12 +85,16 @@ function updatePasswordStrengthUI(password, passwordInput, passwordStrengthFeedb
 }
 
 /**
- * Initializes a password strength meter on a password input field.
- * @param {HTMLInputElement} passwordInput The password input element.
- * @param {HTMLElement} passwordStrengthFeedback The element to display feedback in.
- * @returns {{ evaluate: () => { score: number, borderColorClass: string, fullFeedback: string } }} An object to interact with the meter.
+ * @description 在密码输入字段上初始化密码强度计。
+ * @param {HTMLInputElement} passwordInput - 密码输入元素。
+ * @param {HTMLElement} passwordStrengthFeedback - 用于显示反馈的元素。
+ * @returns {{ evaluate: () => { score: number, borderColorClass: string, fullFeedback: string } }} - 用于与强度计交互的对象。
  */
 export function initPasswordStrengthMeter(passwordInput, passwordStrengthFeedback) {
+	/**
+	 * @description 刷新 UI。
+	 * @returns {void}
+	 */
 	const refreshUI = () => updatePasswordStrengthUI(passwordInput.value, passwordInput, passwordStrengthFeedback)
 	passwordInput.addEventListener('input', refreshUI)
 
@@ -83,5 +103,10 @@ export function initPasswordStrengthMeter(passwordInput, passwordStrengthFeedbac
 		refreshUI()
 	})
 
-	return { evaluate: () => evaluatePasswordStrength(passwordInput.value) }
+	return {
+		/**
+		 * @description 评估密码强度。
+		 * @returns {{score: number, borderColorClass: string, fullFeedback: string}} - 密码强度评估结果。
+		 */
+		evaluate: () => evaluatePasswordStrength(passwordInput.value) }
 }

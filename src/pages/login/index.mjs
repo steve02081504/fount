@@ -27,26 +27,45 @@ let passwordStrengthMeter = null
 
 const hasLoggedIn = localStorage.getItem('hasLoggedIn') == 'true'
 
-// 初始化表单状态
+/**
+ * @description 初始化表单状态。
+ * @returns {void}
+ */
 function initializeForm() {
 	isLoginForm = hasLoggedIn
 }
 
+/**
+ * @description 切换表单。
+ * @returns {void}
+ */
 function toggleForm() {
 	isLoginForm = !isLoginForm
 	updateFormDisplay()
 }
 
-// Toggle form type (login/register)
+/**
+ * @description 处理切换链接点击事件。
+ * @param {MouseEvent} event - 鼠标事件。
+ * @returns {void}
+ */
 function handleToggleClick(event) {
 	event.preventDefault()
 	toggleForm()
 }
 
+/**
+ * @description 刷新 UI 字符串。
+ * @returns {void}
+ */
 function refreshUIStrings() {
 	updateFormDisplay()
 }
 
+/**
+ * @description 更新表单显示。
+ * @returns {void}
+ */
 function updateFormDisplay() {
 	const formType = isLoginForm ? 'login' : 'register'
 
@@ -67,7 +86,10 @@ function updateFormDisplay() {
 	}
 }
 
-// 生成唯一的设备 ID
+/**
+ * @description 生成唯一的设备 ID。
+ * @returns {string} - 设备 ID。
+ */
 function generateDeviceId() {
 	let deviceId = localStorage.getItem('deviceId')
 	if (!deviceId) {
@@ -77,7 +99,10 @@ function generateDeviceId() {
 	return deviceId
 }
 
-// 处理发送验证码
+/**
+ * @description 处理发送验证码。
+ * @returns {Promise<void>}
+ */
 async function handleSendVerificationCode() {
 	if (sendCodeCooldown) return
 
@@ -113,7 +138,11 @@ async function handleSendVerificationCode() {
 	}
 }
 
-// 处理表单提交
+/**
+ * @description 处理表单提交。
+ * @param {SubmitEvent} event - 提交事件。
+ * @returns {Promise<void>}
+ */
 async function handleFormSubmit(event) {
 	event.preventDefault()
 
@@ -194,14 +223,20 @@ async function handleFormSubmit(event) {
 	}
 }
 
-// Set up event listeners
+/**
+ * @description 设置事件侦听器。
+ * @returns {void}
+ */
 function setupEventListeners() {
 	toggleLink.addEventListener('click', handleToggleClick)
 	submitBtn.addEventListener('click', handleFormSubmit)
 	sendVerificationCodeBtn.addEventListener('click', handleSendVerificationCode)
 }
 
-// 页面加载完成后的初始化工作
+/**
+ * @description 初始化应用程序。
+ * @returns {Promise<void>}
+ */
 async function initializeApp() {
 	localStorage.setItem('theme', localStorage.getItem('theme') || 'dark')
 	const urlParams = new URLSearchParams(window.location.search)

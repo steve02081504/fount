@@ -1,6 +1,11 @@
 import { initLinesBackground, updateColors as updateLinesBackgroundColors } from './linesBackground.mjs'
 import { svgInliner } from './svgInliner.mjs'
 
+/**
+ * @description 解析 oklch 颜色字符串。
+ * @param {string} colorString - 颜色字符串。
+ * @returns {number|null} - 亮度值或 null。
+ */
 function parseOklch(colorString) {
 	const oklchRegex = /oklch\(\s*([\d.]+%?)\s+([\d.]+%?)\s+([\d.]+%?)\s*\)/
 	if (oklchRegex.test(colorString)) {
@@ -14,6 +19,11 @@ function parseOklch(colorString) {
 	return null
 }
 
+/**
+ * @description 解析 rgb 颜色字符串。
+ * @param {string} colorString - 颜色字符串。
+ * @returns {number|null} - 亮度值或 null。
+ */
 function parseRgb(colorString) {
 	const rgbRegex = /rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/
 	const rgbaRegex = /rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d.]+)\s*\)/
@@ -31,6 +41,11 @@ function parseRgb(colorString) {
 	return null
 }
 
+/**
+ * @description 解析 hsl 颜色字符串。
+ * @param {string} colorString - 颜色字符串。
+ * @returns {number|null} - 亮度值或 null。
+ */
 function parseHsl(colorString) {
 	const hslRegex = /hsl\(\s*([\d.]+)\s*,\s*([\d.]+%)\s*,\s*([\d.]+%)\s*\)/
 	const hslaRegex = /hsla\(\s*([\d.]+)\s*,\s*([\d.]+%)\s*,\s*([\d.]+%)\s*,\s*([\d.]+)\s*\)/
@@ -46,9 +61,17 @@ function parseHsl(colorString) {
 }
 
 let theme_now
+/**
+ * @description 是否为暗黑模式。
+ * @type {boolean}
+ */
 export let is_dark = Boolean(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
 
 let oldBcColor
+/**
+ * @description 检查颜色变化。
+ * @returns {void}
+ */
 function check_color_change() {
 	const computedStyle = getComputedStyle(document.documentElement)
 	const bcColor = computedStyle.getPropertyValue('background-color').trim()
@@ -57,6 +80,10 @@ function check_color_change() {
 		oldBcColor = bcColor
 	}
 }
+/**
+ * @description 自动调整框架大小。
+ * @returns {void}
+ */
 function autoresize_frames() {
 	const frames = document.querySelectorAll('iframe')
 	for (const frame of frames) try {
@@ -68,12 +95,20 @@ function autoresize_frames() {
 		}
 	} catch (e) { }
 }
+/**
+ * @description 主题心跳。
+ * @returns {void}
+ */
 function themeHeartbeat() {
 	setTheme(localStorage.getItem('theme'))
 	autoresize_frames()
 	check_color_change()
 }
 
+/**
+ * @description 应用主题。
+ * @returns {void}
+ */
 export const applyTheme = () => {
 	setTheme(localStorage.getItem('theme'))
 	svgInliner(document)
@@ -83,6 +118,11 @@ export const applyTheme = () => {
 
 const functions = []
 
+/**
+ * @description 注册主题更改回调。
+ * @param {Function} callback - 回调函数。
+ * @returns {void}
+ */
 export function onThemeChange(callback) {
 	try {
 		callback(theme_now, is_dark)
@@ -93,10 +133,19 @@ export function onThemeChange(callback) {
 	functions.push(callback)
 }
 
+/**
+ * @description 获取当前主题。
+ * @returns {string} - 当前主题。
+ */
 export function getCurrentTheme() {
 	return theme_now
 }
 
+/**
+ * @description 设置主题。
+ * @param {string} theme - 主题。
+ * @returns {void}
+ */
 export function setTheme(theme) {
 	if (theme === theme_now) return
 	theme_now = theme
@@ -105,6 +154,10 @@ export function setTheme(theme) {
 	theme ||= window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 	if (document.documentElement.dataset.theme !== theme) document.documentElement.setAttribute('data-theme', theme)
 }
+/**
+ * @description 更新颜色。
+ * @returns {void}
+ */
 function updateColors() {
 	// Use getComputedStyle to get the *computed* value of background-color, which resolves var(--bc)
 	const computedStyle = getComputedStyle(document.documentElement)
@@ -162,4 +215,8 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e =
 	daisyui_theme_style.crossorigin = 'anonymous'
 	document.head.prepend(daisyui_theme_style)
 }
+/**
+ * @description 内置主题。
+ * @type {Promise<string[]>}
+ */
 export const builtin_themes = await import('https://cdn.jsdelivr.net/npm/daisyui/functions/themeOrder.js').then(m => m.default)

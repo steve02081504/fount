@@ -10,7 +10,8 @@ const isMobile = window.matchMedia('(pointer: coarse)').matches
 let canvas, ctx, canvasWidth, canvasHeight, config, dots, pointers // 改为 pointers
 
 /**
- * 更新画布大小。
+ * @description 更新画布大小。
+ * @returns {void}
  */
 function resizeCanvas() {
 	canvasWidth = canvas.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth
@@ -25,7 +26,8 @@ function resizeCanvas() {
 }
 
 /**
- * 根据当前配置调整点的数量
+ * @description 根据当前配置调整点的数量。
+ * @returns {void}
  */
 function adjustDotCount() {
 	const targetCount = Math.max(10, Math.floor(canvasWidth * canvasHeight * config.density)) // 最小数量限制
@@ -46,12 +48,13 @@ function adjustDotCount() {
 }
 
 /**
- * 绘制连接线
- * @param {CanvasRenderingContext2D} ctx - Canvas 渲染上下文
- * @param {string} configColor - 配置颜色
- * @param {object} dot1 - 第一个点对象
- * @param {object} dot2 - 第二个点对象
- * @param {boolean} isPointer - 是否是鼠标或触摸点
+ * @description 绘制连接线。
+ * @param {CanvasRenderingContext2D} ctx - Canvas 渲染上下文。
+ * @param {string} configColor - 配置颜色。
+ * @param {object} dot1 - 第一个点对象。
+ * @param {object} dot2 - 第二个点对象。
+ * @param {boolean} isPointer - 是否是鼠标或触摸点。
+ * @returns {void}
  */
 function drawConnection(ctx, configColor, dot1, dot2, isPointer) {
 	const dx = dot1.x - dot2.x
@@ -80,7 +83,8 @@ function drawConnection(ctx, configColor, dot1, dot2, isPointer) {
 
 
 /**
- * 绘制动画帧。
+ * @description 绘制动画帧。
+ * @returns {void}
  */
 function draw() {
 	if (!config) return
@@ -145,7 +149,9 @@ function draw() {
 }
 
 /**
- * 初始化线条背景。
+ * @description 初始化线条背景。
+ * @param {object} initconfig - 初始化配置。
+ * @returns {void}
  */
 export function initLinesBackground(initconfig) {
 	dots = []
@@ -187,8 +193,9 @@ export function initLinesBackground(initconfig) {
 
 
 /**
- * 处理 pointerdown 事件
- * @param {PointerEvent} event
+ * @description 处理 pointerdown 事件。
+ * @param {PointerEvent} event - 指针事件。
+ * @returns {void}
  */
 function handlePointerDown(event) {
 	if (event.pointerType === 'mouse') return // 鼠标事件由 mousemove/mouseout 单独处理
@@ -208,8 +215,9 @@ function handlePointerDown(event) {
 }
 
 /**
- * 处理 pointermove 事件 (统一处理鼠标和触摸移动)
- * @param {PointerEvent} event
+ * @description 处理 pointermove 事件 (统一处理鼠标和触摸移动)。
+ * @param {PointerEvent} event - 指针事件。
+ * @returns {void}
  */
 function handlePointerMove(event) {
 	if (event.pointerType === 'mouse') {
@@ -229,7 +237,8 @@ function handlePointerMove(event) {
 
 
 /**
- * 处理 pointerout 事件 (鼠标移出)
+ * @description 处理 pointerout 事件 (鼠标移出)。
+ * @returns {void}
  */
 function handlePointerOut() {
 	if (!pointers) return
@@ -239,8 +248,9 @@ function handlePointerOut() {
 
 
 /**
- * 处理 pointerup 和 pointercancel 事件 (统一处理触摸结束)
- * @param {PointerEvent} event
+ * @description 处理 pointerup 和 pointercancel 事件 (统一处理触摸结束)。
+ * @param {PointerEvent} event - 指针事件。
+ * @returns {void}
  */
 function handlePointerEnd(event) {
 	if (event.pointerType === 'mouse') return // 鼠标事件不需要移除 pointer
@@ -252,8 +262,9 @@ function handlePointerEnd(event) {
 }
 
 /**
- * 实时修改配置。
+ * @description 实时修改配置。
  * @param {object} newConfig - 新的配置对象。
+ * @returns {void}
  */
 export function updateConfig(newConfig) {
 	config = { ...config, ...newConfig } // 合并新的配置
@@ -266,7 +277,8 @@ export function updateConfig(newConfig) {
 
 let updateColorsErrorInterval
 /**
- *  更新颜色配置
+ * @description  更新颜色配置。
+ * @returns {void}
  */
 export function updateColors() {
 	if (!config) return

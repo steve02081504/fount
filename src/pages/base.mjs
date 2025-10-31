@@ -49,7 +49,11 @@ if (HTMLScriptElement.supports?.('speculationrules')) {
 	document.head.prepend(specScript)
 }
 
-// esc按键
+/**
+ * @description 当按下 "Escape" 键时，如果历史记录大于 1，则后退，否则关闭窗口。
+ * @param {KeyboardEvent} event - 键盘事件。
+ * @returns {void}
+ */
 document.addEventListener('keydown', event => {
 	if (event.key === 'Escape')
 		if (history.length > 1) history.back()
@@ -70,6 +74,14 @@ function handleVersionUpdate({ commitId }) {
 onServerEvent('server-updated', handleVersionUpdate)
 onServerEvent('server-reconnected', handleVersionUpdate)
 
+/**
+ * @description 显示一个 toast 通知。
+ * @param {object} param0 - 参数对象。
+ * @param {string} param0.type - toast 的类型。
+ * @param {string} param0.message - toast 的消息。
+ * @param {number} param0.duration - toast 的持续时间。
+ * @returns {void}
+ */
 onServerEvent('show-toast', ({ type, message, duration }) => {
 	showToast(type, message, duration)
 })
@@ -88,4 +100,8 @@ window.addEventListener('load', async () => {
 	window.dispatchEvent(event)
 })
 
+/**
+ * @description 基础目录。
+ * @type {string}
+ */
 export const base_dir = '/'

@@ -2,6 +2,12 @@ import { createJSONEditor as base } from 'https://cdn.jsdelivr.net/npm/vanilla-j
 
 import { onThemeChange } from './theme.mjs'
 
+/**
+ * @description 创建一个 JSON 编辑器。
+ * @param {HTMLElement} jsonEditorContainer - JSON 编辑器的容器元素。
+ * @param {object} options - 选项。
+ * @returns {import('vanilla-jsoneditor').JSONEditor} JSON 编辑器实例。
+ */
 export function createJsonEditor(jsonEditorContainer, options) {
 	const result = base({
 		target: jsonEditorContainer,

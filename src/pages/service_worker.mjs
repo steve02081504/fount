@@ -66,6 +66,11 @@ function openMetadataDB() {
 	dbPromise = new Promise((resolve, reject) => {
 		const request = indexedDB.open(DB_NAME, 1)
 
+		/**
+		 * @description 当数据库需要升级时调用。
+		 * @param {IDBVersionChangeEvent} event - 事件对象。
+		 * @returns {void}
+		 */
 		request.onupgradeneeded = event => {
 			console.log('[SW DB] Database upgrade needed.')
 			const db = event.target.result
@@ -76,12 +81,26 @@ function openMetadataDB() {
 			}
 		}
 
+		/**
+		 * @description 当数据库成功打开时调用。
+		 * @param {Event} event - 事件对象。
+		 * @returns {void}
+		 */
 		request.onsuccess = event => {
 			const db = event.target.result
+			/**
+			 * @description 当数据库连接意外关闭时调用。
+			 * @returns {void}
+			 */
 			db.onclose = () => {
 				console.warn('[SW DB] Database connection closed unexpectedly.')
 				dbPromise = null
 			}
+			/**
+			 * @description 当数据库发生错误时调用。
+			 * @param {Event} event - 事件对象。
+			 * @returns {void}
+			 */
 			db.onerror = event => {
 				console.error('[SW DB] Database error:', event.target.error)
 				dbPromise = null
@@ -89,12 +108,21 @@ function openMetadataDB() {
 			resolve(db)
 		}
 
+		/**
+		 * @description 当数据库打开失败时调用。
+		 * @param {Event} event - 事件对象。
+		 * @returns {void}
+		 */
 		request.onerror = event => {
 			console.error('[SW DB] Database open error:', event.target.error)
 			dbPromise = null
 			reject(event.target.error)
 		}
 
+		/**
+		 * @description 当数据库被阻塞时调用。
+		 * @returns {void}
+		 */
 		request.onblocked = () => {
 			console.warn('[SW DB] Database open blocked. Please close other tabs using the database.')
 		}
@@ -118,8 +146,20 @@ async function performTransaction(mode, callback) {
 		callback(store)
 
 		return new Promise((resolve, reject) => {
+			/**
+			 * @description 当事务成功完成时调用。
+			 * @returns {void}
+			 */
 			transaction.oncomplete = () => resolve()
+			/**
+			 * @description 当事务发生错误时调用。
+			 * @returns {void}
+			 */
 			transaction.onerror = () => reject(transaction.error)
+			/**
+			 * @description 当事务被中止时调用。
+			 * @returns {void}
+			 */
 			transaction.onabort = () => reject(new Error('Transaction aborted'))
 		})
 	}
@@ -157,6 +197,10 @@ async function getTimestamp(url) {
 	try {
 		await performTransaction('readonly', store => {
 			const request = store.get(url)
+			/**
+			 * @description 当获取操作成功时调用。
+			 * @returns {void}
+			 */
 			request.onsuccess = () => {
 				if (request.result)
 					timestamp = request.result.timestamp
@@ -192,7 +236,17 @@ async function cleanupExpiredCache() {
 		// 步骤 1: 在单个事务中原子化地识别并删除过期的元数据。
 		await new Promise((resolve, reject) => {
 			const cursorRequest = index.openCursor(range)
+			/**
+			 * @description 当游标操作发生错误时调用。
+			 * @param {Event} event - 事件对象。
+			 * @returns {void}
+			 */
 			cursorRequest.onerror = event => reject(event.target.error)
+			/**
+			 * @description 当游标操作成功时调用。
+			 * @param {Event} event - 事件对象。
+			 * @returns {void}
+			 */
 			cursorRequest.onsuccess = event => {
 				const cursor = event.target.result
 				if (cursor) {
@@ -208,6 +262,10 @@ async function cleanupExpiredCache() {
 		await new Promise((resolve, reject) => {
 			transaction.oncomplete = resolve
 			transaction.onerror = reject
+			/**
+			 * @description 当事务被中止时调用。
+			 * @returns {void}
+			 */
 			transaction.onabort = () => reject(new Error('Cleanup transaction aborted'))
 		})
 
@@ -290,6 +348,10 @@ async function handleCacheFirst(request) {
 	const storedTimestamp = await getTimestamp(request.url)
 	const isThrottled = storedTimestamp && (now - storedTimestamp < BACKGROUND_FETCH_THROTTLE_MS)
 
+	/**
+	 * @description 在后台更新缓存。
+	 * @returns {Promise<void>}
+	 */
 	const backgroundUpdateTask = async () => {
 		if (!isThrottled) try {
 			await fetchAndCache(request.clone())
@@ -342,22 +404,64 @@ async function handleNetworkFirst(request) {
 const routes = [
 	// 忽略所有非 GET 请求。
 	{
+		/**
+		 * @description 检查请求方法是否为 GET。
+		 * @param {object} context - 上下文对象。
+		 * @param {Request} context.request - 请求对象。
+		 * @returns {boolean} 如果请求方法不是 GET，则返回 true。
+		 */
 		condition: ({ request }) => request.method !== 'GET',
+		/**
+		 * @description 处理非 GET 请求。
+		 * @returns {null} 返回 null 以跳过处理。
+		 */
 		handler: () => null, // 返回 null 表示跳过，让浏览器自行处理。
 	},
 	// 忽略非 http/https 协议的请求（例如 chrome-extension://）。
 	{
+		/**
+		 * @description 检查 URL 协议是否为 http 或 https。
+		 * @param {object} context - 上下文对象。
+		 * @param {URL} context.url - URL 对象。
+		 * @returns {boolean} 如果协议不是 http 或 https，则返回 true。
+		 */
 		condition: ({ url }) => !url.protocol.startsWith('http'),
+		/**
+		 * @description 处理非 http/https 请求。
+		 * @returns {null} 返回 null 以跳过处理。
+		 */
 		handler: () => null,
 	},
 	// 对所有跨域资源（通常是 CDN 上的静态文件）使用缓存优先策略。
 	{
+		/**
+		 * @description 检查请求是否为跨域请求。
+		 * @param {object} context - 上下文对象。
+		 * @param {URL} context.url - URL 对象。
+		 * @returns {boolean} 如果请求是跨域的，则返回 true。
+		 */
 		condition: ({ url }) => url.origin !== self.location.origin,
+		/**
+		 * @description 处理跨域请求。
+		 * @param {object} context - 上下文对象。
+		 * @param {FetchEvent} context.event - Fetch 事件。
+		 * @returns {Promise<Response>} 返回一个解析为 Response 对象的 Promise。
+		 */
 		handler: ({ event }) => handleCacheFirst(event.request),
 	},
 	// 默认规则：对所有同源资源使用网络优先策略。
 	{
+		/**
+		 * @description 默认条件。
+		 * @returns {boolean} 总是返回 true。
+		 */
 		condition: () => true, // 作为最后的 fallback 规则。
+		/**
+		 * @description 处理同源请求。
+		 * @param {object} context - 上下文对象。
+		 * @param {FetchEvent} context.event - Fetch 事件。
+		 * @returns {Promise<Response>} 返回一个解析为 Response 对象的 Promise。
+		 */
 		handler: ({ event }) => handleNetworkFirst(event.request),
 	},
 ]
@@ -370,6 +474,11 @@ let reconnectTimeout = null
 const RECONNECT_DELAY = 5000 // 5 seconds
 
 const wsMessageHandlers = {
+	/**
+	 * @description 处理通知消息。
+	 * @param {object} data - 消息数据。
+	 * @returns {void}
+	 */
 	notification: data => {
 		const { title, options, targetUrl } = data
 		if (!title) return
@@ -389,6 +498,11 @@ const wsMessageHandlers = {
 				self.registration.showNotification(title, options)
 		})
 	},
+	/**
+	 * @description 默认消息处理程序。
+	 * @param {object} message - 消息对象。
+	 * @returns {void}
+	 */
 	default: message => {
 		self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
 			for (const client of windowClients) client.postMessage(message)
@@ -397,6 +511,10 @@ const wsMessageHandlers = {
 }
 
 
+/**
+ * @description 连接到 WebSocket 服务器。
+ * @returns {void}
+ */
 function connectWebSocket() {
 	// Use a relative URL that will be resolved correctly by the browser
 	// against the service worker's origin.
@@ -405,6 +523,10 @@ function connectWebSocket() {
 
 	ws = new WebSocket(wsUrl)
 
+	/**
+	 * @description 当 WebSocket 连接打开时调用。
+	 * @returns {void}
+	 */
 	ws.onopen = () => {
 		// Reset reconnect timeout on successful connection
 		if (!reconnectTimeout) return
@@ -412,6 +534,11 @@ function connectWebSocket() {
 		reconnectTimeout = null
 	}
 
+	/**
+	 * @description 当收到 WebSocket 消息时调用。
+	 * @param {MessageEvent} event - 消息事件。
+	 * @returns {void}
+	 */
 	ws.onmessage = event => {
 		try {
 			const message = JSON.parse(event.data)
@@ -426,12 +553,22 @@ function connectWebSocket() {
 		}
 	}
 
+	/**
+	 * @description 当 WebSocket 连接关闭时调用。
+	 * @param {CloseEvent} event - 关闭事件。
+	 * @returns {void}
+	 */
 	ws.onclose = event => {
 		console.warn(`[SW WS] Connection closed. Code: ${event.code}, Reason: ${event.reason}. Reconnecting in ${RECONNECT_DELAY / 1000}s.`)
 		ws = null
 		if (!reconnectTimeout) reconnectTimeout = setTimeout(connectWebSocket, RECONNECT_DELAY)
 	}
 
+	/**
+	 * @description 当 WebSocket 发生错误时调用。
+	 * @param {Event} error - 错误事件。
+	 * @returns {void}
+	 */
 	ws.onerror = error => {
 		console.error('[SW WS] WebSocket error:', error)
 	}
