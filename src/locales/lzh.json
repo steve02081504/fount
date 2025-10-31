@@ -447,6 +447,9 @@
 			"search": {
 				"placeholder": "索功用..."
 			},
+			"button": {
+				"title": "功用單"
+			},
 			"icon": {
 				"alt": "功用"
 			}
@@ -749,6 +752,9 @@
 		"sortOptions": {
 			"time_desc": "依時而逆",
 			"time_asc": "依時而順"
+		},
+		"sortBy": {
+			"aria-label": "排序"
 		},
 		"selectAll": "全選",
 		"buttons": {
@@ -1218,6 +1224,9 @@
 		"editor": {
 			"title": "規度",
 			"disabledIndicator": "此器無規度可設",
+			"jsonEditor": {
+				"aria-label": "JSON規度"
+			},
 			"buttons": {
 				"save": "存"
 			}
@@ -1329,6 +1338,9 @@
 			"apiKeyInput": {
 				"placeholder": "請入符鑰"
 			},
+			"toggleApiKeyButton": {
+				"aria-label": "顯隱符鑰"
+			},
 			"toggleApiKeyIcon": {
 				"alt": "顯隱密鑰"
 			},
@@ -1386,6 +1398,9 @@
 			"charSelectPlaceholder": "擇化身",
 			"botTokenInput": {
 				"placeholder": "請入 Telegram 靈偶信物"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "顯隱信物"
 			},
 			"toggleBotTokenIcon": {
 				"alt": "顯隱信物"

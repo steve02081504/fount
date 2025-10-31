@@ -117,7 +117,8 @@ async function loadBotConfig(botname) {
 				if (!error)
 					isDirty = true
 			},
-			onSave: handleSaveConfig
+			onSave: handleSaveConfig,
+			label: geti18n('telegram_bots.configCard.labels.config')
 		})
 
 	configEditor.set({ json: config.config || {} })

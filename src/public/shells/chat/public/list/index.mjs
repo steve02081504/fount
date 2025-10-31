@@ -1,4 +1,4 @@
-import { initTranslations, confirmI18n, console, onLanguageChange } from '../../../scripts/i18n.mjs'
+import { initTranslations, confirmI18n, console, setLocalizeLogic, onLanguageChange } from '../../../scripts/i18n.mjs'
 import { renderMarkdown, renderMarkdownAsString } from '../../../scripts/markdown.mjs'
 import { makeSearchable } from '../../../scripts/search.mjs'
 import { renderTemplate, usingTemplates } from '../../../scripts/template.mjs'
@@ -106,6 +106,9 @@ async function renderChatListItem(chat) {
 
 	// Checkbox logic
 	const selectCheckbox = chatElement.querySelector('.select-checkbox')
+	setLocalizeLogic(selectCheckbox, ()=>{
+		selectCheckbox.setAttribute('aria-label', geti18n('chat_history.select_chat_with_chars', { chars: chat.chars.join(', ') }))
+	})
 	selectCheckbox.checked = selectedChats.has(chat.chatid)
 	selectCheckbox.addEventListener('change', () => {
 		if (selectCheckbox.checked)

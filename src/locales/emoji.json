@@ -447,6 +447,9 @@
 			"search": {
 				"placeholder": "🔎..."
 			},
+			"button": {
+				"title": "⚙️"
+			},
 			"icon": {
 				"alt": "⚙️"
 			}
@@ -749,6 +752,9 @@
 		"sortOptions": {
 			"time_desc": "⏳🔽",
 			"time_asc": "⏳🔼"
+		},
+		"sortBy": {
+			"aria-label": "↕️"
 		},
 		"selectAll": "✅💯",
 		"buttons": {
@@ -1218,6 +1224,9 @@
 		"editor": {
 			"title": "🧩⚙️",
 			"disabledIndicator": "🚫⚙️",
+			"jsonEditor": {
+				"aria-label": "📝"
+			},
 			"buttons": {
 				"save": "💾"
 			}
@@ -1329,6 +1338,9 @@
 			"apiKeyInput": {
 				"placeholder": "✍️🔑"
 			},
+			"toggleApiKeyButton": {
+				"aria-label": "👁️"
+			},
 			"toggleApiKeyIcon": {
 				"alt": "👁️"
 			},
@@ -1386,6 +1398,9 @@
 			"charSelectPlaceholder": "🤔🤖",
 			"botTokenInput": {
 				"placeholder": "✍️🔑"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "👁️"
 			},
 			"toggleBotTokenIcon": {
 				"alt": "👁️"

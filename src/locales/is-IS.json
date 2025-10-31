@@ -440,12 +440,16 @@
 		"itemDescription": "Veldu atriði hér til að sjá nánari upplýsingar.",
 		"noDescription": "Engin lýsing",
 		"filterInput": {
-			"placeholder": "Leita..."
+			"placeholder": "Leita...",
+			"aria-label": "Leitaðu að græjum"
 		},
 		"sfwToggle": "Vinnustaðavænt",
 		"functionMenu": {
 			"search": {
 				"placeholder": "Leita..."
+			},
+			"button": {
+				"title": "Aðgerðarvalmynd"
 			},
 			"icon": {
 				"alt": "Aðgerðavalmynd"
@@ -750,6 +754,10 @@
 			"time_desc": "Tími, nýjast fyrst",
 			"time_asc": "Tími, elst fyrst"
 		},
+		"sortBy": {
+			"aria-label": "flokka eftir"
+		},
+		"select_chat_with_chars": "Veldu spjall við ${chars}",
 		"selectAll": "Velja allt",
 		"buttons": {
 			"reverseSelect": "Víxla vali",
@@ -1218,6 +1226,9 @@
 		"editor": {
 			"title": "Stillingar íhlutar",
 			"disabledIndicator": "Þessi íhlutur styður ekki stillingar",
+			"jsonEditor": {
+				"aria-label": "JSON stillingaritill"
+			},
 			"buttons": {
 				"save": "Vista"
 			}
@@ -1272,7 +1283,8 @@
 				"dataset": {
 					"tip": "Sjálfgefið"
 				}
-			}
+			},
+			"setDefaultForFile": "Stilltu „${fileName}“ sem sjálfgefna gervigreindargjafa"
 		},
 		"confirm": {
 			"unsavedChanges": "Þú hefur óvistaðar breytingar. Viltu henda þeim?",
@@ -1328,6 +1340,9 @@
 			"charSelectPlaceholder": "Veldu persónu",
 			"apiKeyInput": {
 				"placeholder": "Sláðu inn API lykil"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "Skipta um að sýna API lykla"
 			},
 			"toggleApiKeyIcon": {
 				"alt": "Sýna/fela API lykil"
@@ -1386,6 +1401,9 @@
 			"charSelectPlaceholder": "Veldu persónu",
 			"botTokenInput": {
 				"placeholder": "Sláðu inn Telegram Bot Token"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "Skipta um að sýna API lykla"
 			},
 			"toggleBotTokenIcon": {
 				"alt": "Sýna/fela API lykil"
@@ -1631,7 +1649,8 @@
 		"copy": {
 			"dataset": {
 				"tip": "afrita á klippiborð"
-			}
+			},
+			"aria-label": "afrita á klippiborð"
 		},
 		"copied": {
 			"dataset": {
@@ -1641,12 +1660,14 @@
 		"download": {
 			"dataset": {
 				"tip": "Sækja kóða"
-			}
+			},
+			"aria-label": "Sækja kóða"
 		},
 		"execute": {
 			"dataset": {
 				"tip": "Keyra kóða"
-			}
+			},
+			"aria-label": "Keyra kóða"
 		},
 		"copy_failed": "Ekki er hægt að afrita á klippiborð: ${error}"
 	},

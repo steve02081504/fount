@@ -440,12 +440,16 @@
 		"itemDescription": "Selecciona un elemento para ver los detalles.",
 		"noDescription": "Sin descripción.",
 		"filterInput": {
-			"placeholder": "Buscar..."
+			"placeholder": "Buscar...",
+			"aria-label": "Widgets de búsqueda"
 		},
 		"sfwToggle": "Contenido seguro",
 		"functionMenu": {
 			"search": {
 				"placeholder": "Buscar..."
+			},
+			"button": {
+				"title": "Menú de funciones"
 			},
 			"icon": {
 				"alt": "Menú de funciones"
@@ -750,6 +754,10 @@
 			"time_desc": "Fecha descendente",
 			"time_asc": "Fecha ascendente"
 		},
+		"sortBy": {
+			"aria-label": "Ordenar por"
+		},
+		"select_chat_with_chars": "Seleccione chatear con ${chars}",
 		"selectAll": "Seleccionar todo",
 		"buttons": {
 			"reverseSelect": "Invertir selección",
@@ -1218,6 +1226,9 @@
 		"editor": {
 			"title": "Configuración de Componente",
 			"disabledIndicator": "Este componente no admite configuración",
+			"jsonEditor": {
+				"aria-label": "editor de configuración JSON"
+			},
 			"buttons": {
 				"save": "Guardar"
 			}
@@ -1272,7 +1283,8 @@
 				"dataset": {
 					"tip": "Establecer como predeterminado"
 				}
-			}
+			},
+			"setDefaultForFile": "Establezca “${fileName}” como fuente de IA predeterminada"
 		},
 		"confirm": {
 			"unsavedChanges": "Tienes cambios sin guardar. ¿Quieres descartar estos cambios?",
@@ -1328,6 +1340,9 @@
 			"charSelectPlaceholder": "Seleccionar personaje",
 			"apiKeyInput": {
 				"placeholder": "Introduce la clave de API de Discord"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "Alternar la visibilidad de las claves API"
 			},
 			"toggleApiKeyIcon": {
 				"alt": "Alternar visibilidad de la clave de API"
@@ -1386,6 +1401,9 @@
 			"charSelectPlaceholder": "Seleccionar personaje",
 			"botTokenInput": {
 				"placeholder": "Introduce el Token de Bot de Telegram"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "Alternar la visibilidad de las claves API"
 			},
 			"toggleBotTokenIcon": {
 				"alt": "Alternar visibilidad del token del bot"
@@ -1631,7 +1649,8 @@
 		"copy": {
 			"dataset": {
 				"tip": "Copiar al portapapeles"
-			}
+			},
+			"aria-label": "copiar al portapapeles"
 		},
 		"copied": {
 			"dataset": {
@@ -1641,12 +1660,14 @@
 		"download": {
 			"dataset": {
 				"tip": "Descargar código"
-			}
+			},
+			"aria-label": "Descargar código"
 		},
 		"execute": {
 			"dataset": {
 				"tip": "Ejecutar código"
-			}
+			},
+			"aria-label": "Ejecutar código"
 		},
 		"copy_failed": "No se puede copiar al portapapeles: ${error}"
 	},

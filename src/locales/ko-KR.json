@@ -440,12 +440,16 @@
 		"itemDescription": "자세한 내용을 보려면 여기에서 항목을 선택하세요.",
 		"noDescription": "설명이 없습니다.",
 		"filterInput": {
-			"placeholder": "검색..."
+			"placeholder": "검색...",
+			"aria-label": "위젯 검색"
 		},
 		"sfwToggle": "일반 콘텐츠",
 		"functionMenu": {
 			"search": {
 				"placeholder": "검색..."
+			},
+			"button": {
+				"title": "기능 메뉴"
 			},
 			"icon": {
 				"alt": "기능 메뉴"
@@ -750,6 +754,10 @@
 			"time_desc": "시간 (최신순)",
 			"time_asc": "시간 (오래된순)"
 		},
+		"sortBy": {
+			"aria-label": "정렬"
+		},
+		"select_chat_with_chars": "${chars}님과의 채팅 선택",
 		"selectAll": "모두 선택",
 		"buttons": {
 			"reverseSelect": "선택 반전",
@@ -1218,6 +1226,9 @@
 		"editor": {
 			"title": "컴포넌트 설정",
 			"disabledIndicator": "이 컴포넌트는 설정을 지원하지 않습니다.",
+			"jsonEditor": {
+				"aria-label": "JSON 구성 편집기"
+			},
 			"buttons": {
 				"save": "저장"
 			}
@@ -1272,7 +1283,8 @@
 				"dataset": {
 					"tip": "기본값으로 설정"
 				}
-			}
+			},
+			"setDefaultForFile": "“${fileName}”을 기본 AI 소스로 설정"
 		},
 		"confirm": {
 			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까?",
@@ -1328,6 +1340,9 @@
 			"charSelectPlaceholder": "캐릭터 선택",
 			"apiKeyInput": {
 				"placeholder": "API 키를 입력하세요"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "API 키 표시 전환"
 			},
 			"toggleApiKeyIcon": {
 				"alt": "API 키 표시/숨기기"
@@ -1386,6 +1401,9 @@
 			"charSelectPlaceholder": "캐릭터 선택",
 			"botTokenInput": {
 				"placeholder": "텔레그램 봇 토큰을 입력하세요"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "API 키 표시 전환"
 			},
 			"toggleBotTokenIcon": {
 				"alt": "봇 토큰 표시/숨기기"
@@ -1631,7 +1649,8 @@
 		"copy": {
 			"dataset": {
 				"tip": "클립보드에 복사"
-			}
+			},
+			"aria-label": "클립보드에 복사"
 		},
 		"copied": {
 			"dataset": {
@@ -1641,12 +1660,14 @@
 		"download": {
 			"dataset": {
 				"tip": "코드 다운로드하기"
-			}
+			},
+			"aria-label": "코드 다운로드"
 		},
 		"execute": {
 			"dataset": {
 				"tip": "코드 실행하기"
-			}
+			},
+			"aria-label": "코드 실행"
 		},
 		"copy_failed": "클립보드에 복사할 수 없습니다: ${error}"
 	},

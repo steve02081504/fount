@@ -440,12 +440,16 @@
 		"itemDescription": "اختر عنصرًا هنا لعرض التفاصيل.",
 		"noDescription": "لا يوجد وصف",
 		"filterInput": {
-			"placeholder": "بحث..."
+			"placeholder": "بحث...",
+			"aria-label": "بحث الحاجيات"
 		},
 		"sfwToggle": "محتوى آمن",
 		"functionMenu": {
 			"search": {
 				"placeholder": "بحث..."
+			},
+			"button": {
+				"title": "قائمة الوظائف"
 			},
 			"icon": {
 				"alt": "قائمة الوظائف"
@@ -750,6 +754,10 @@
 			"time_desc": "الوقت تنازليًا",
 			"time_asc": "الوقت تصاعديًا"
 		},
+		"sortBy": {
+			"aria-label": "فرز حسب"
+		},
+		"select_chat_with_chars": "حدد الدردشة مع ${chars}",
 		"selectAll": "تحديد الكل",
 		"buttons": {
 			"reverseSelect": "عكس التحديد",
@@ -1218,6 +1226,9 @@
 		"editor": {
 			"title": "تهيئة المكون",
 			"disabledIndicator": "هذا المكون لا يدعم التهيئة",
+			"jsonEditor": {
+				"aria-label": "محرر تكوين JSON"
+			},
 			"buttons": {
 				"save": "حفظ"
 			}
@@ -1272,7 +1283,8 @@
 				"dataset": {
 					"tip": "تعيين كافتراضي"
 				}
-			}
+			},
+			"setDefaultForFile": "قم بتعيين \"${fileName}\" كمصدر الذكاء الاصطناعي الافتراضي"
 		},
 		"confirm": {
 			"unsavedChanges": "لديك تغييرات غير محفوظة. هل تريد التخلص منها؟",
@@ -1328,6 +1340,9 @@
 			"charSelectPlaceholder": "اختر شخصية",
 			"apiKeyInput": {
 				"placeholder": "الرجاء إدخال مفتاح API"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "تبديل إظهار مفاتيح API"
 			},
 			"toggleApiKeyIcon": {
 				"alt": "تبديل عرض مفتاح API"
@@ -1386,6 +1401,9 @@
 			"charSelectPlaceholder": "اختر شخصية",
 			"botTokenInput": {
 				"placeholder": "الرجاء إدخال رمز بوت Telegram"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "تبديل إظهار مفاتيح API"
 			},
 			"toggleBotTokenIcon": {
 				"alt": "تبديل عرض مفتاح API"
@@ -1631,7 +1649,8 @@
 		"copy": {
 			"dataset": {
 				"tip": "نسخ إلى الحافظة"
-			}
+			},
+			"aria-label": "نسخ إلى الحافظة"
 		},
 		"copied": {
 			"dataset": {
@@ -1641,12 +1660,14 @@
 		"download": {
 			"dataset": {
 				"tip": "تنزيل الكود"
-			}
+			},
+			"aria-label": "تنزيل الكود"
 		},
 		"execute": {
 			"dataset": {
 				"tip": "تنفيذ الكود"
-			}
+			},
+			"aria-label": "تنفيذ التعليمات البرمجية"
 		},
 		"copy_failed": "تعذّر النسخ إلى الحافظة: ${error}"
 	},

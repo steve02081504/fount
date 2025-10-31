@@ -440,12 +440,16 @@
 		"itemDescription": "項目を選択すると、ここに詳細が表示されます。",
 		"noDescription": "説明はありません。",
 		"filterInput": {
-			"placeholder": "検索..."
+			"placeholder": "検索...",
+			"aria-label": "検索ウィジェット"
 		},
 		"sfwToggle": "一般コンテンツ",
 		"functionMenu": {
 			"search": {
 				"placeholder": "検索..."
+			},
+			"button": {
+				"title": "機能メニュー"
 			},
 			"icon": {
 				"alt": "機能メニュー"
@@ -750,6 +754,10 @@
 			"time_desc": "日時（新しい順）",
 			"time_asc": "日時（古い順）"
 		},
+		"sortBy": {
+			"aria-label": "並べ替え"
+		},
+		"select_chat_with_chars": "${chars} とのチャットを選択",
 		"selectAll": "すべて選択",
 		"buttons": {
 			"reverseSelect": "選択を反転",
@@ -1218,6 +1226,9 @@
 		"editor": {
 			"title": "コンポーネント設定",
 			"disabledIndicator": "このコンポーネントは設定に対応していません。",
+			"jsonEditor": {
+				"aria-label": "JSON構成エディター"
+			},
 			"buttons": {
 				"save": "保存"
 			}
@@ -1272,7 +1283,8 @@
 				"dataset": {
 					"tip": "デフォルトに設定"
 				}
-			}
+			},
+			"setDefaultForFile": "「${fileName}」をデフォルトの AI ソースとして設定します"
 		},
 		"confirm": {
 			"unsavedChanges": "保存されていない変更があります。変更を破棄しますか？",
@@ -1328,6 +1340,9 @@
 			"charSelectPlaceholder": "キャラクターを選択",
 			"apiKeyInput": {
 				"placeholder": "APIキーを入力"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "API キーの表示を切り替えます"
 			},
 			"toggleApiKeyIcon": {
 				"alt": "APIキーの表示切り替え"
@@ -1386,6 +1401,9 @@
 			"charSelectPlaceholder": "キャラクターを選択",
 			"botTokenInput": {
 				"placeholder": "Telegramボットトークンを入力"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "API キーの表示を切り替えます"
 			},
 			"toggleBotTokenIcon": {
 				"alt": "ボットトークンの表示切り替え"
@@ -1631,7 +1649,8 @@
 		"copy": {
 			"dataset": {
 				"tip": "クリップボードにコピー"
-			}
+			},
+			"aria-label": "クリップボードにコピー"
 		},
 		"copied": {
 			"dataset": {
@@ -1641,12 +1660,14 @@
 		"download": {
 			"dataset": {
 				"tip": "コードをダウンロード"
-			}
+			},
+			"aria-label": "コードをダウンロード"
 		},
 		"execute": {
 			"dataset": {
 				"tip": "コードを実行"
-			}
+			},
+			"aria-label": "コードを実行"
 		},
 		"copy_failed": "クリップボードへのコピーに失敗しました: ${error}"
 	},

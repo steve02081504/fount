@@ -440,12 +440,16 @@
 		"itemDescription": "Выберите элемент для просмотра подробностей.",
 		"noDescription": "Описание отсутствует.",
 		"filterInput": {
-			"placeholder": "Поиск..."
+			"placeholder": "Поиск...",
+			"aria-label": "Виджеты поиска"
 		},
 		"sfwToggle": "Безопасный контент",
 		"functionMenu": {
 			"search": {
 				"placeholder": "Поиск..."
+			},
+			"button": {
+				"title": "Меню функций"
 			},
 			"icon": {
 				"alt": "Меню функций"
@@ -750,6 +754,10 @@
 			"time_desc": "По времени (сначала новые)",
 			"time_asc": "По времени (сначала старые)"
 		},
+		"sortBy": {
+			"aria-label": "Сортировать по"
+		},
+		"select_chat_with_chars": "Выберите чат с ${chars}",
 		"selectAll": "Выбрать все",
 		"buttons": {
 			"reverseSelect": "Обратить выбор",
@@ -1218,6 +1226,9 @@
 		"editor": {
 			"title": "Настройка компонента",
 			"disabledIndicator": "Этот компонент не поддерживает настройку.",
+			"jsonEditor": {
+				"aria-label": "Редактор конфигурации JSON"
+			},
 			"buttons": {
 				"save": "Сохранить"
 			}
@@ -1272,7 +1283,8 @@
 				"dataset": {
 					"tip": "Установить по умолчанию"
 				}
-			}
+			},
+			"setDefaultForFile": "Установите «${fileName}» в качестве источника AI по умолчанию."
 		},
 		"confirm": {
 			"unsavedChanges": "У вас есть несохраненные изменения. Хотите их отменить?",
@@ -1328,6 +1340,9 @@
 			"charSelectPlaceholder": "Выберите персонажа",
 			"apiKeyInput": {
 				"placeholder": "Введите API-ключ"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "Переключить отображение ключей API"
 			},
 			"toggleApiKeyIcon": {
 				"alt": "Показать/скрыть API-ключ"
@@ -1386,6 +1401,9 @@
 			"charSelectPlaceholder": "Выберите персонажа",
 			"botTokenInput": {
 				"placeholder": "Введите токен Telegram бота"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "Переключить отображение ключей API"
 			},
 			"toggleBotTokenIcon": {
 				"alt": "Показать/скрыть токен бота"
@@ -1631,7 +1649,8 @@
 		"copy": {
 			"dataset": {
 				"tip": "скопировать в буфер обмена"
-			}
+			},
+			"aria-label": "скопировать в буфер обмена"
 		},
 		"copied": {
 			"dataset": {
@@ -1641,12 +1660,14 @@
 		"download": {
 			"dataset": {
 				"tip": "Скачать код"
-			}
+			},
+			"aria-label": "Скачать код"
 		},
 		"execute": {
 			"dataset": {
 				"tip": "Выполнить код"
-			}
+			},
+			"aria-label": "Выполнить код"
 		},
 		"copy_failed": "Не удалось скопировать в буфер обмена: ${error}"
 	},

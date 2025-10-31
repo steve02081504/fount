@@ -440,12 +440,16 @@
 		"itemDescription": "Оберіть елемент, щоб переглянути деталі.",
 		"noDescription": "Немає опису",
 		"filterInput": {
-			"placeholder": "Пошук..."
+			"placeholder": "Пошук...",
+			"aria-label": "Віджети пошуку"
 		},
 		"sfwToggle": "Безпечний контент",
 		"functionMenu": {
 			"search": {
 				"placeholder": "Пошук..."
+			},
+			"button": {
+				"title": "Меню функцій"
 			},
 			"icon": {
 				"alt": "Меню функцій"
@@ -750,6 +754,10 @@
 			"time_desc": "За часом (новіші)",
 			"time_asc": "За часом (старіші)"
 		},
+		"sortBy": {
+			"aria-label": "сортувати за"
+		},
+		"select_chat_with_chars": "Виберіть чат із ${chars}",
 		"selectAll": "Вибрати все",
 		"buttons": {
 			"reverseSelect": "Інвертувати вибір",
@@ -1218,6 +1226,9 @@
 		"editor": {
 			"title": "Налаштування компонента",
 			"disabledIndicator": "Цей компонент не підтримує налаштування",
+			"jsonEditor": {
+				"aria-label": "Редактор конфігурації JSON"
+			},
 			"buttons": {
 				"save": "Зберегти"
 			}
@@ -1272,7 +1283,8 @@
 				"dataset": {
 					"tip": "Встановити за замовчуванням"
 				}
-			}
+			},
+			"setDefaultForFile": "Установіть «${fileName}» як джерело ШІ за умовчанням"
 		},
 		"confirm": {
 			"unsavedChanges": "У вас є незбережені зміни. Ви хочете їх скасувати?",
@@ -1328,6 +1340,9 @@
 			"charSelectPlaceholder": "Оберіть персонажа",
 			"apiKeyInput": {
 				"placeholder": "Введіть API ключ"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "Перемкнути показ ключів API"
 			},
 			"toggleApiKeyIcon": {
 				"alt": "Перемкнути видимість API ключа"
@@ -1386,6 +1401,9 @@
 			"charSelectPlaceholder": "Оберіть персонажа",
 			"botTokenInput": {
 				"placeholder": "Введіть Telegram Bot Token"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "Перемкнути показ ключів API"
 			},
 			"toggleBotTokenIcon": {
 				"alt": "Перемкнути видимість API ключа"
@@ -1631,7 +1649,8 @@
 		"copy": {
 			"dataset": {
 				"tip": "копіювати в буфер обміну"
-			}
+			},
+			"aria-label": "копіювати в буфер обміну"
 		},
 		"copied": {
 			"dataset": {
@@ -1641,12 +1660,14 @@
 		"download": {
 			"dataset": {
 				"tip": "Завантажити код"
-			}
+			},
+			"aria-label": "Завантажити код"
 		},
 		"execute": {
 			"dataset": {
 				"tip": "Виконати код"
-			}
+			},
+			"aria-label": "Виконати код"
 		},
 		"copy_failed": "Не вдалося скопіювати в буфер обміну: ${error}"
 	},

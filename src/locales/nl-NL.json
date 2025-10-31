@@ -440,12 +440,16 @@
 		"itemDescription": "Selecteer hier een item om de details te bekijken.",
 		"noDescription": "Geen beschrijving",
 		"filterInput": {
-			"placeholder": "Zoeken..."
+			"placeholder": "Zoeken...",
+			"aria-label": "Zoekwidgets"
 		},
 		"sfwToggle": "Veilige inhoud",
 		"functionMenu": {
 			"search": {
 				"placeholder": "Zoeken..."
+			},
+			"button": {
+				"title": "Functiemenu"
 			},
 			"icon": {
 				"alt": "Functiemenu"
@@ -750,6 +754,10 @@
 			"time_desc": "Tijd aflopend",
 			"time_asc": "Tijd oplopend"
 		},
+		"sortBy": {
+			"aria-label": "sorteren op"
+		},
+		"select_chat_with_chars": "Selecteer chatten met ${chars}",
 		"selectAll": "Alles selecteren",
 		"buttons": {
 			"reverseSelect": "Selectie omkeren",
@@ -1218,6 +1226,9 @@
 		"editor": {
 			"title": "Componentconfiguratie",
 			"disabledIndicator": "Dit component ondersteunt geen configuratie",
+			"jsonEditor": {
+				"aria-label": "JSON-configuratie-editor"
+			},
 			"buttons": {
 				"save": "Opslaan"
 			}
@@ -1272,7 +1283,8 @@
 				"dataset": {
 					"tip": "Instellen als standaard"
 				}
-			}
+			},
+			"setDefaultForFile": "Stel “${fileName}” in als de standaard AI-bron"
 		},
 		"confirm": {
 			"unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je de wijzigingen negeren?",
@@ -1328,6 +1340,9 @@
 			"charSelectPlaceholder": "Kies personage",
 			"apiKeyInput": {
 				"placeholder": "Voer API-sleutel in"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "Schakel tussen het tonen van API-sleutels"
 			},
 			"toggleApiKeyIcon": {
 				"alt": "API-sleutel tonen/verbergen"
@@ -1386,6 +1401,9 @@
 			"charSelectPlaceholder": "Kies personage",
 			"botTokenInput": {
 				"placeholder": "Voer Telegram Bot Token in"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "Schakel tussen het tonen van API-sleutels"
 			},
 			"toggleBotTokenIcon": {
 				"alt": "API-sleutel tonen/verbergen"
@@ -1631,7 +1649,8 @@
 		"copy": {
 			"dataset": {
 				"tip": "kopiëren naar klembord"
-			}
+			},
+			"aria-label": "kopiëren naar klembord"
 		},
 		"copied": {
 			"dataset": {
@@ -1641,12 +1660,14 @@
 		"download": {
 			"dataset": {
 				"tip": "Code downloaden"
-			}
+			},
+			"aria-label": "Code downloaden"
 		},
 		"execute": {
 			"dataset": {
 				"tip": "Code uitvoeren"
-			}
+			},
+			"aria-label": "Code uitvoeren"
 		},
 		"copy_failed": "Kan niet naar klembord kopiëren: ${error}"
 	},

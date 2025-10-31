@@ -440,12 +440,16 @@
 		"itemDescription": "Chọn một mục ở đây để xem chi tiết.",
 		"noDescription": "Không có mô tả.",
 		"filterInput": {
-			"placeholder": "Tìm kiếm..."
+			"placeholder": "Tìm kiếm...",
+			"aria-label": "Tìm kiếm tiện ích"
 		},
 		"sfwToggle": "Nội dung an toàn",
 		"functionMenu": {
 			"search": {
 				"placeholder": "Tìm kiếm..."
+			},
+			"button": {
+				"title": "Thực đơn chức năng"
 			},
 			"icon": {
 				"alt": "Menu chức năng"
@@ -750,6 +754,10 @@
 			"time_desc": "Thời gian (mới nhất trước)",
 			"time_asc": "Thời gian (cũ nhất trước)"
 		},
+		"sortBy": {
+			"aria-label": "sắp xếp theo"
+		},
+		"select_chat_with_chars": "Chọn trò chuyện với ${chars}",
 		"selectAll": "Chọn tất cả",
 		"buttons": {
 			"reverseSelect": "Đảo ngược lựa chọn",
@@ -1218,6 +1226,9 @@
 		"editor": {
 			"title": "Cấu hình thành phần",
 			"disabledIndicator": "Thành phần này không hỗ trợ cấu hình.",
+			"jsonEditor": {
+				"aria-label": "Trình soạn thảo cấu hình JSON"
+			},
 			"buttons": {
 				"save": "Lưu"
 			}
@@ -1272,7 +1283,8 @@
 				"dataset": {
 					"tip": "Đặt làm mặc định"
 				}
-			}
+			},
+			"setDefaultForFile": "Đặt “${fileName}” làm nguồn AI mặc định"
 		},
 		"confirm": {
 			"unsavedChanges": "Bạn có những thay đổi chưa được lưu. Bạn có muốn hủy bỏ những thay đổi này không?",
@@ -1328,6 +1340,9 @@
 			"charSelectPlaceholder": "Chọn nhân vật",
 			"apiKeyInput": {
 				"placeholder": "Nhập Khóa API"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "Chuyển đổi hiển thị khóa API"
 			},
 			"toggleApiKeyIcon": {
 				"alt": "Hiện/ẩn Khóa API"
@@ -1386,6 +1401,9 @@
 			"charSelectPlaceholder": "Chọn nhân vật",
 			"botTokenInput": {
 				"placeholder": "Nhập Token Bot Telegram"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "Chuyển đổi hiển thị khóa API"
 			},
 			"toggleBotTokenIcon": {
 				"alt": "Hiện/ẩn token bot"
@@ -1631,7 +1649,8 @@
 		"copy": {
 			"dataset": {
 				"tip": "sao chép vào bảng nhớ tạm"
-			}
+			},
+			"aria-label": "sao chép vào clipboard"
 		},
 		"copied": {
 			"dataset": {
@@ -1641,12 +1660,14 @@
 		"download": {
 			"dataset": {
 				"tip": "Tải mã xuống"
-			}
+			},
+			"aria-label": "Tải mã xuống"
 		},
 		"execute": {
 			"dataset": {
 				"tip": "Thực thi mã"
-			}
+			},
+			"aria-label": "Thực thi mã"
 		},
 		"copy_failed": "Không thể sao chép vào bảng nhớ tạm: ${error}"
 	},
