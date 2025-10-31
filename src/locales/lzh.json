@@ -6,12 +6,12 @@
 			"start": "服務初啟",
 			"starting": "服務啟中...",
 			"ready": "萬事俱備",
+			"standingBy": "Standing by...",
 			"showUrl": {
 				"https": "密網通衢於 ${url}",
 				"http": "常道通衢於 ${url}"
 			},
 			"localUrl": "欲攜他器同游，可循此徑：${url}",
-			"standingBy": "Standing by...",
 			"update": {
 				"restarting": "新令已至，當革故鼎新..."
 			}
@@ -20,32 +20,32 @@
 			"restartingJob": "為 ${username} 重啟 ${parttype} 之 ${partname} 職：${uid}"
 		},
 		"ipc": {
-			"sendCommandFailed": "傳令失機：${error}",
-			"invalidCommand": "令式有誤，當循此法：\"fount run <類> <名> <件> <參...>\"",
+			"serverStarted": "內令司已立",
+			"instanceRunning": "已有他體運行，請勿再擾",
 			"runPartLog": "為 ${username} 運 ${parttype} 之 ${partname}，其參列如左：${args}",
 			"invokePartLog": "為 ${username} 召 ${parttype} 之 ${partname}，其參列如左：${invokedata}",
+			"invalidCommand": "令式有誤，當循此法：\"fount run <類> <名> <件> <參...>\"",
+			"invalidCommandFormat": "令式不合",
 			"unsupportedCommand": "此令未識，難以從命",
 			"processMessageError": "處內令有失：${error}",
-			"invalidCommandFormat": "令式不合",
+			"sendCommandFailed": "傳令失機：${error}",
 			"socketError": "節點有誤：${error}",
-			"instanceRunning": "已有他體運行，請勿再擾",
-			"serverStarted": "內令司已立",
 			"parseResponseFailed": "解復令失利：${error}",
 			"cannotParseResponse": "復令難解，如窺天書",
 			"unknownError": "天有不測之禍"
 		},
 		"partManager": {
+			"partInited": "${parttype}之器【${partname}】已然啓動",
+			"partLoaded": "${parttype}之器【${partname}】已然備妥",
 			"git": {
+				"updating": "正從遠方擷英採華...",
+				"upToDate": "已是最新，無需再動。",
+				"localAhead": "本地已先，無需更新。",
 				"noUpstream": "支 '${currentBranch}' 未溯其源，遂袖手旁觀。",
 				"dirtyWorkingDirectory": "案牘未清，請先藏納或呈獻。",
-				"updating": "正從遠方擷英採華...",
-				"localAhead": "本地已先，無需更新。",
 				"diverged": "兵分兩路，強渡陳倉...",
-				"upToDate": "已是最新，無需再動。",
 				"updateFailed": "自遠方更新機件失利：${error}"
-			},
-			"partInited": "${parttype}之器【${partname}】已然啓動",
-			"partLoaded": "${parttype}之器【${partname}】已然備妥"
+			}
 		},
 		"web": {
 			"requestReceived": "承奉來使：${method} ${url}"
@@ -54,11 +54,11 @@
 			"setLanguagePreference": "用者 ${username} 定其雅言為: ${preferredLanguages}"
 		},
 		"auth": {
+			"accountLockedLog": "用者 ${username} 屢登臺不成，已閉門思過。",
 			"tokenVerifyError": "令牌勘驗有誤: ${error}",
 			"refreshTokenError": "令牌重煥有誤: ${error}",
 			"logoutRefreshTokenProcessError": "告退之時，重煥令牌有誤: ${error}",
-			"revokeTokenNoJTI": "無 jti 之令牌，如無根之木，不可撤也。",
-			"accountLockedLog": "用者 ${username} 屢登臺不成，已閉門思過。"
+			"revokeTokenNoJTI": "無 jti 之令牌，如無根之木，不可撤也。"
 		},
 		"verification": {
 			"codeGeneratedLog": "驗碼已生: ${code} (稍縱即逝)",
@@ -66,10 +66,10 @@
 			"codeNotifyBody": "此乃驗碼: ${code} (稍縱即逝，務必把握)"
 		},
 		"tray": {
-			"readIconFailed": "讀像有失: ${error}",
-			"createTrayFailed": "造盤有失: ${error}",
 			"title": "fount",
 			"tooltip": "fount",
+			"readIconFailed": "讀像有失: ${error}",
+			"createTrayFailed": "造盤有失: ${error}",
 			"items": {
 				"open": {
 					"title": "開門揖客",
@@ -100,6 +100,9 @@
 			"botStarted": "化身 ${charname} 已託 Telegram 靈偶 ${botusername} 而現"
 		},
 		"path": {
+			"protocol": {
+				"description": "URL:fount 協議"
+			},
 			"update": {
 				"skippingFountUpdate": "因有 .noupdate 檔，fount 之更新暫略",
 				"skippingDenoUpgradeDocker": "Docker 中 Deno 之晉級暫略"
@@ -108,44 +111,44 @@
 				"desktopShortcutCreated": "桌面快捷已建於 ${path}",
 				"startMenuShortcutCreated": "開始菜單快捷已建於 ${path}",
 				"protocolHandlerRegistered": "fount:// 之協議已註冊",
+				"shortcutNotSupported": "警：汝之系統 (${os}) 未支援創建桌面快捷",
 				"osacompileNotFound": "誤：'osacompile' 未尋得，macOS 應用未能創建",
 				"lsregisterFailed": "警：以 lsregister 註冊應用於 LaunchServices 未果",
-				"createDesktopAppFailed": "誤：桌面應用創建未果",
-				"shortcutNotSupported": "警：汝之系統 (${os}) 未支援創建桌面快捷"
+				"createDesktopAppFailed": "誤：桌面應用創建未果"
 			},
 			"git": {
 				"repoNotFound": "fount 之 git 倉庫未尋得，今新創之...",
 				"fetchingAndResetting": "正自遠端獲取，並重置於主...",
-				"fetchFailed": "自 'origin' 獲取未果",
 				"localChangesDetected": "察本地有變，將存其異再覆之",
 				"backupSavedTo": "閣下本地之變更，其備份已存於: ${path}",
+				"updatingFromRemote": "正自遠端更新...",
+				"alreadyUpToDate": "已為最新",
+				"localBranchAhead": "本地分支已先於遠端，無需更新",
+				"branchesDiverged": "本地與遠端分支已分歧，強行更新之...",
 				"notOnBranch": "非在支上，今切至 'master'...",
 				"noUpstreamBranch": "警：'${branch}' 支未設上游，今設其上游為 'origin/master'",
 				"dirtyWorkingDirectory": "警：工作目錄不潔，敬請修訂後再更新",
-				"updatingFromRemote": "正自遠端更新...",
-				"localBranchAhead": "本地分支已先於遠端，無需更新",
-				"branchesDiverged": "本地與遠端分支已分歧，強行更新之...",
-				"alreadyUpToDate": "已為最新",
 				"notInstalled": "Git 未裝，嘗試安裝之...",
-				"installFailedWinget": "Winget 安裝未果，故 Git 未能安裝，請手動安裝之",
-				"installFailedManual": "Git 未能安裝，請手動安裝之",
 				"notInstalledSkippingPull": "Git 未裝，git pull 暫略",
-				"repoNotFoundSkippingPull": "倉庫未尋得，git pull 暫略"
+				"repoNotFoundSkippingPull": "倉庫未尋得，git pull 暫略",
+				"fetchFailed": "自 'origin' 獲取未果",
+				"installFailedWinget": "Winget 安裝未果，故 Git 未能安裝，請手動安裝之",
+				"installFailedManual": "Git 未能安裝，請手動安裝之"
 			},
 			"deno": {
-				"installingTermux": "正為 Termux 安裝 Deno...",
 				"missing": "Deno 未尋得，自動安裝之...",
-				"installFailedFallback": "Deno 安裝未果，嘗試安裝至 fount 之 path 目錄...",
 				"isRequired": "Deno 未尋得，無之則 fount 不可運行",
+				"installingTermux": "正為 Termux 安裝 Deno...",
+				"installFailedFallback": "Deno 安裝未果，嘗試安裝至 fount 之 path 目錄...",
 				"notWorking": "未知何故 Deno 不動，可往 https://discord.gg/deno 求助",
-				"upgradeFailedTermux": "Deno 晉級之命失利，嘗試為 Termux 重裝...",
-				"upgradeFailed": "警：Deno 之晉級或已失利，請察其誤"
+				"upgradeFailed": "警：Deno 之晉級或已失利，請察其誤",
+				"upgradeFailedTermux": "Deno 晉級之命失利，嘗試為 Termux 重裝..."
 			},
 			"install": {
-				"rootWarning1": "不宜：以 root 身份運行 fount，將授予其所有部件完全之系統權限",
-				"rootWarning2": "非明其所以者，宜以普通用戶身份運行 fount",
 				"installingDependencies": "正安裝其依賴...",
-				"untrustedPartsWarning": "勿在系統安裝任何不受信之 fount 部件，其能行萬事"
+				"untrustedPartsWarning": "勿在系統安裝任何不受信之 fount 部件，其能行萬事",
+				"rootWarning1": "不宜：以 root 身份運行 fount，將授予其所有部件完全之系統權限",
+				"rootWarning2": "非明其所以者，宜以普通用戶身份運行 fount"
 			},
 			"clean": {
 				"removingCaches": "正清除緩存...",
@@ -154,29 +157,30 @@
 				"cleaningOldPwshModules": "正清理舊 pwsh 模塊..."
 			},
 			"keepalive": {
-				"failedToStart": "縱自動修復，fount 仍短時內啟動未果，請察日誌之誤",
+				"initComplete": "重新初始化已畢，嘗試重啟 fount...",
 				"autoInitDisabled": "fount 近時已重啟數次，然因有 .noautoinit 檔，自動重啟已禁用。退出",
 				"restartingTooFast": "fount 短時內重啟過頻，強行重新初始化...",
-				"initFailed": "fount 初始化未果，退出",
-				"initComplete": "重新初始化已畢，嘗試重啟 fount..."
+				"failedToStart": "縱自動修復，fount 仍短時內啟動未果，請察日誌之誤",
+				"initFailed": "fount 初始化未果，退出"
 			},
 			"remove": {
 				"removingFount": "正移除 fount...",
+				"fountUninstallationComplete": "fount 卸載已畢",
+				"removingFountInstallationDir": "正移除 fount 安裝目錄...",
+				"fountInstallationDirRemoved": "fount 安裝目錄已移除",
 				"removingFountFromPath": "正自 PATH 移除 fount...",
 				"removingProtocolHandler": "正移除 fount:// 協議...",
+				"protocolHandlerRemoved": "fount:// 協議已移除",
+				"removeProtocolHandlerFailed": "移除 fount:// 協議未果: ${message}",
 				"removingFountFromGitSafeDir": "正自 git safe.directory 移除 fount...",
 				"removingInstalledSystemPackages": "正移除已裝之系統包...",
 				"uninstallingDeno": "正卸載 Deno...",
-				"removingFountInstallationDir": "正移除 fount 安裝目錄...",
-				"fountInstallationDirRemoved": "fount 安裝目錄已移除",
-				"fountUninstallationComplete": "fount 卸載已畢",
+				"removeDenoFailed": "移除 Deno 未果: ${message}",
 				"removingFountPwshFromProfile": "正自 PowerShell Profile 移除 fount-pwsh...",
 				"fountPwshRemovedFromProfile": "已自 PowerShell Profile 移除 fount-pwsh",
 				"pwshProfileNotFound": "PowerShell Profile 未尋得，移除 fount-pwsh 暫略",
 				"uninstallingFountPwsh": "正卸載 fount-pwsh...",
 				"uninstallFountPwshFailed": "卸載 fount-pwsh 未果: ${message}",
-				"protocolHandlerRemoved": "fount:// 協議已移除",
-				"removeProtocolHandlerFailed": "移除 fount:// 協議未果: ${message}",
 				"removingTerminalProfile": "正移除 Windows Terminal Profile...",
 				"terminalProfileRemoved": "Windows Terminal Profile 目錄已移除",
 				"terminalProfileNotFound": "Windows Terminal Profile 目錄未尋得",
@@ -191,22 +195,14 @@
 				"uninstallingGit": "正卸載 Git...",
 				"uninstallingChrome": "正卸載 Chrome...",
 				"uninstallingWinget": "正卸載 Winget...",
-				"removeDenoFailed": "移除 Deno 未果: ${message}",
 				"removingBackgroundRunner": "正移除後台程序...",
 				"removeBackgroundRunnerFailed": "移除後台程序未果: ${message}"
-			},
-			"protocol": {
-				"description": "URL:fount 協議"
 			}
 		}
 	},
 	"installer_wait_screen": {
 		"title": "幸會fount！",
-		"language_selector": {
-			"search": {
-				"placeholder": "寻雅言…"
-			}
-		},
+		"description": "觀其進度，覽其內秀。頃刻之間，活泉待發。",
 		"hero": {
 			"title": "靈犀一點，應念而生",
 			"description": "fount者，神思所驅，幻身之臺也。意在予<i>君</i>神便。其為津梁，繫君於遐思之靈，與之清談，創塑己身，公諸天下，皆易如反掌。"
@@ -227,6 +223,11 @@
 			"title": "海納百川，有容乃大",
 			"description": "fount 供無雙之選，無窮之變。可接<i>任意</i>智源——OpenAI、Claude、OpenRouter、NovelAI 等。通靈之法，皆由君之符碼之力隨心塑造。"
 		},
+		"language_selector": {
+			"search": {
+				"placeholder": "寻雅言…"
+			}
+		},
 		"theme_selector": {
 			"title": "擇君風貌",
 			"description": "擇一風貌以合君心。",
@@ -241,6 +242,9 @@
 		},
 		"data_showcase": {
 			"title_prefix": "fount 乃",
+			"title_of": "之",
+			"active_users": "在席高朋",
+			"stars": "源庫星輝",
 			"adjectives": [
 				"海納百川",
 				"前途無量",
@@ -248,7 +252,6 @@
 				"兼容並蓄",
 				"精悍絕倫"
 			],
-			"title_of": "之",
 			"nouns": [
 				"神思之靈",
 				"機巧之士",
@@ -259,9 +262,7 @@
 				"基臺",
 				"談陣",
 				"行器"
-			],
-			"active_users": "在席高朋",
-			"stars": "源庫星輝"
+			]
 		},
 		"footer": {
 			"ready_text": "啟程乎？",
@@ -280,15 +281,9 @@
 	},
 	"protocolhandler": {
 		"title": "處 fount 規儀",
+		"description": "潛移默化，無縫自達。此乃幕後之妙法玄通也。",
 		"processing": "處規儀中...",
-		"invalidProtocol": "規儀無效",
-		"insufficientParams": "參數不足，難為無米之炊",
-		"unknownCommand": "未知之令",
 		"shellCommandSent": "外令已發",
-		"shellCommandFailed": "發外令失利",
-		"shellCommandError": "發外令有誤",
-		"fountNotFound": "嗚呼哀哉 :(\n\n未尋獲 fount，莫非需先安設之？",
-		"unknownError": "嗚呼哀哉 :(\n\n天有不測風雲：\n${error}",
 		"runPartConfirm": {
 			"title": "請君三思",
 			"message": "君確欲行此 ${parttype} 之 ${partname} 乎？",
@@ -301,10 +296,18 @@
 			"buttons": {
 				"retry": "復試"
 			}
-		}
+		},
+		"fountNotFound": "嗚呼哀哉 :(\n\n未尋獲 fount，莫非需先安設之？",
+		"invalidProtocol": "規儀無效",
+		"insufficientParams": "參數不足，難為無米之炊",
+		"unknownCommand": "未知之令",
+		"shellCommandFailed": "發外令失利",
+		"shellCommandError": "發外令有誤",
+		"unknownError": "嗚呼哀哉 :(\n\n天有不測風雲：\n${error}"
 	},
 	"startPage": {
 		"title": "fount!",
+		"description": "客至泉源門，一步入玄境。清談妙語，待君啟卷。",
 		"newTabFailed": {
 			"title": "新頁開啟失利",
 			"instruction": "fount 啟時，若無彈窗之權，每次皆緩一二息，誠為憾事。",
@@ -326,6 +329,7 @@
 	},
 	"tutorial": {
 		"title": "欲習之乎？",
+		"description": "願為君引，同遊泉境。此中玄妙，一覽無遺。奇旅始於開悟。",
 		"modal": {
 			"title": "幸會 fount！",
 			"instruction": "欲循新手之儀軌，初窺門徑乎？",
@@ -361,6 +365,7 @@
 	"auth": {
 		"title": "勘驗",
 		"subtitle": "用者之資訊皆藏於本地，穩如泰山",
+		"description": "君之所在，於此立身。或歸舊邸，或闢新齋，泉源之旅，由此啟程。",
 		"usernameLabel": "名號:",
 		"usernameInput": {
 			"placeholder": "請入君之名號"
@@ -394,6 +399,13 @@
 				"link": "即刻登臺"
 			}
 		},
+		"passwordStrength": {
+			"veryWeak": "不堪一擊",
+			"weak": "脆弱",
+			"normal": "尚可",
+			"strong": "堅固",
+			"veryStrong": "牢不可破"
+		},
 		"error": {
 			"passwordMismatch": "信物不合。",
 			"loginError": "登臺有失。",
@@ -406,17 +418,11 @@
 			"accountAlreadyExists": "此名號已為捷足者所得。",
 			"powNotSolved": "請先竟功證之驗",
 			"powError": "功證之驗有誤"
-		},
-		"passwordStrength": {
-			"veryWeak": "不堪一擊",
-			"weak": "脆弱",
-			"normal": "尚可",
-			"strong": "堅固",
-			"veryStrong": "牢不可破"
 		}
 	},
 	"login_info": {
 		"title": "登錄資訊",
+		"description": "此乃藏鑰之密所，掌君秘聞之符節。",
 		"modal": {
 			"title": "憑證傳送之誤",
 			"retrieve_error": "錄存登錄憑證時有誤：\n${error}\n可續行，然憑證不得存，如鏡花水月。",
@@ -429,17 +435,14 @@
 	},
 	"home": {
 		"title": "門戶",
-		"escapeConfirm": "君真欲掛冠而去乎？",
+		"description": "此乃泉源之中樞，君之奇思妙想，化為人物、世界、身份，皆由此生發。",
+		"sidebarTitle": "詳覽",
+		"itemDescription": "請擇一物以觀其詳。",
+		"noDescription": "無述",
 		"filterInput": {
 			"placeholder": "尋覓..."
 		},
 		"sfwToggle": "淨域",
-		"sidebarTitle": "詳覽",
-		"itemDescription": "請擇一物以觀其詳。",
-		"noDescription": "無述",
-		"alerts": {
-			"fetchHomeRegistryFailed": "取門戶名錄失利"
-		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "索功用..."
@@ -454,15 +457,15 @@
 			"subtitle": "擇一化身，以啟玄談。",
 			"none": "空空如也",
 			"card": {
-				"refreshButton": {
-					"alt": "復新",
-					"title": "復新"
-				},
 				"noTags": "無籤",
 				"version": "版",
 				"author": "作者",
 				"home_page": "門戶",
 				"issue_page": "諫言",
+				"refreshButton": {
+					"alt": "復新",
+					"title": "復新"
+				},
 				"defaultCheckbox": {
 					"title": "設為預設"
 				}
@@ -474,15 +477,15 @@
 			"subtitle": "擇一世界，沉浸其中。",
 			"none": "空空如也",
 			"card": {
-				"refreshButton": {
-					"alt": "復新",
-					"title": "復新"
-				},
 				"noTags": "無籤",
 				"version": "版",
 				"author": "作者",
 				"home_page": "門戶",
 				"issue_page": "諫言",
+				"refreshButton": {
+					"alt": "復新",
+					"title": "復新"
+				},
 				"defaultCheckbox": {
 					"title": "設為預設"
 				}
@@ -494,19 +497,23 @@
 			"subtitle": "擇一身分，體驗人生。",
 			"none": "空空如也",
 			"card": {
-				"refreshButton": {
-					"alt": "復新",
-					"title": "復新"
-				},
 				"noTags": "無籤",
 				"version": "版",
 				"author": "作者",
 				"home_page": "門戶",
 				"issue_page": "諫言",
+				"refreshButton": {
+					"alt": "復新",
+					"title": "復新"
+				},
 				"defaultCheckbox": {
 					"title": "設為預設"
 				}
 			}
+		},
+		"escapeConfirm": "君真欲掛冠而去乎？",
+		"alerts": {
+			"fetchHomeRegistryFailed": "取門戶名錄失利"
 		},
 		"achievements": {
 			"first_login": {
@@ -537,11 +544,15 @@
 		}
 	},
 	"chat": {
-		"new": {
-			"title": "新啟清談"
-		},
 		"title": "清談",
+		"description": "言出如飛，奇談悉展。與智靈為伴，塑言成事，神遊於數海之間。泉源之心，躍然於此。",
+		"new": {
+			"title": "新啟清談",
+			"description": "靜待未書之篇，新言將啟。與君所擇之友，共譜新章。"
+		},
 		"sidebar": {
+			"noSelection": "未選",
+			"noDescription": "無述",
 			"world": {
 				"icon": {
 					"alt": "世界"
@@ -567,20 +578,21 @@
 						"alt": "添"
 					}
 				}
-			},
-			"noSelection": "未選",
-			"noDescription": "無述"
+			}
+		},
+		"rightSidebar": {
+			"title": "詳述"
 		},
 		"chatArea": {
 			"title": "清談",
+			"input": {
+				"placeholder": "請暢所欲言...\n合 Ctrl 與 Enter 可傳書。"
+			},
 			"menuButton": {
 				"title": "菜單"
 			},
 			"menuButtonIcon": {
 				"alt": "菜單"
-			},
-			"input": {
-				"placeholder": "請暢所欲言...\n合 Ctrl 與 Enter 可傳書。"
 			},
 			"sendButton": {
 				"title": "發"
@@ -606,9 +618,6 @@
 			"photoButtonIcon": {
 				"alt": "照片"
 			}
-		},
-		"rightSidebar": {
-			"title": "詳述"
 		},
 		"messageList": {
 			"confirmDeleteMessage": "覆水難收，真欲刪此一言乎？"
@@ -733,18 +742,25 @@
 	"chat_history": {
 		"title": "清談之跡",
 		"pageTitle": "清談之跡",
+		"description": "溯往昔之清談，憶言猶在。君與智靈所織之篇，可篩可鑑。此乃數字之靜齋，迴響之書海。",
+		"filterInput": {
+			"placeholder": "尋覓..."
+		},
 		"sortOptions": {
 			"time_desc": "依時而逆",
 			"time_asc": "依時而順"
-		},
-		"filterInput": {
-			"placeholder": "尋覓..."
 		},
 		"selectAll": "全選",
 		"buttons": {
 			"reverseSelect": "反選",
 			"deleteSelected": "刪所擇",
 			"exportSelected": "出所擇"
+		},
+		"chatItemButtons": {
+			"continue": "續",
+			"copy": "謄錄",
+			"export": "出",
+			"delete": "刪"
 		},
 		"confirmDeleteChat": "確欲刪與 ${chars} 之清談之跡乎？此舉不可復也。",
 		"confirmDeleteMultiChats": "確欲刪所擇之 ${count} 條談跡乎？此舉不可復也。",
@@ -754,107 +770,104 @@
 			"copyError": "謄錄失利",
 			"deleteError": "刪除失利",
 			"exportError": "導出失利"
-		},
-		"chatItemButtons": {
-			"continue": "續",
-			"copy": "謄錄",
-			"export": "出",
-			"delete": "刪"
 		}
 	},
 	"easynew": {
 		"title": "速建",
+		"description": "以既定之規，或隨心之法，速成人物、世界、機巧。佳作將成，彈指之間。",
+		"info": {
+			"description": "此等範本僅可用於速建簡易之器，繁複者仍需手動創建，所謂大道至簡也。"
+		},
 		"cardTitle": "從範本創建新器",
 		"templateSelect": {
 			"label": "擇一範本"
 		},
-		"partName": {
-			"label": "器名",
-			"placeholder": "為新器命名"
-		},
-		"description": {
-			"label": "述",
-			"placeholder": "簡述此器。"
-		},
-		"descriptionMarkdown": {
-			"label": "述 (墨記)",
-			"placeholder": "支持墨記以詳述。"
-		},
-		"imageUpload": {
-			"label": "頭像"
-		},
-		"charDef": {
-			"heading": "化身綱要"
-		},
-		"personality": {
-			"label": "性情",
-			"placeholder": "述化身性情。"
-		},
-		"scenario": {
-			"label": "情境",
-			"placeholder": "化身之背景或設定。"
-		},
-		"mesExample": {
-			"label": "言談示例",
-			"placeholder": "化身可能之言。"
-		},
-		"firstMessage": {
-			"label": "先聲",
-			"placeholder": "化身之開場白。"
-		},
-		"personaDef": {
-			"heading": "身分之定"
-		},
-		"personaUserName": {
-			"label": "君於清談中之名",
-			"placeholder": "例：船長、探險家"
-		},
-		"personaAppearance": {
-			"label": "外貌",
-			"placeholder": "述君外貌。"
-		},
-		"personaPersonality": {
-			"label": "性情",
-			"placeholder": "述君性情。"
-		},
-		"worldDef": {
-			"heading": "世界之定"
-		},
-		"worldPrompt": {
-			"label": "世界提示",
-			"placeholder": "述世界之規、環境及扮演之背景。"
-		},
-		"worldGreeting": {
-			"label": "世界問候",
-			"placeholder": "世界予君之開場白。"
-		},
-		"author": {
-			"label": "作者",
-			"placeholder": "此器之作者為誰？"
-		},
-		"version": {
-			"label": "版",
-			"placeholder": "例：1.0.0"
-		},
-		"tags": {
-			"label": "籤",
-			"placeholder": "以逗號分隔之籤"
-		},
-		"homePage": {
-			"label": "門戶",
-			"placeholder": "器之門戶URL"
-		},
-		"issuePage": {
-			"label": "諫言頁面",
-			"placeholder": "器之諫言頁面URL"
-		},
-		"createButton": "創建",
-		"alerts": {
-			"success": "器 '${partName}' 創建功成，可喜可賀。",
-			"error": "有誤: ${message}"
-		},
-		"info": {
-			"description": "此等範本僅可用於速建簡易之器，繁複者仍需手動創建，所謂大道至簡也。"
+		"form": {
+			"partName": {
+				"label": "器名",
+				"placeholder": "為新器命名"
+			},
+			"description": {
+				"label": "述",
+				"placeholder": "簡述此器。"
+			},
+			"descriptionMarkdown": {
+				"label": "述 (墨記)",
+				"placeholder": "支持墨記以詳述。"
+			},
+			"imageUpload": {
+				"label": "頭像"
+			},
+			"charDef": {
+				"heading": "化身綱要"
+			},
+			"personality": {
+				"label": "性情",
+				"placeholder": "述化身性情。"
+			},
+			"scenario": {
+				"label": "情境",
+				"placeholder": "化身之背景或設定。"
+			},
+			"mesExample": {
+				"label": "言談示例",
+				"placeholder": "化身可能之言。"
+			},
+			"firstMessage": {
+				"label": "先聲",
+				"placeholder": "化身之開場白。"
+			},
+			"personaDef": {
+				"heading": "身分之定"
+			},
+			"personaUserName": {
+				"label": "君於清談中之名",
+				"placeholder": "例：船長、探險家"
+			},
+			"personaAppearance": {
+				"label": "外貌",
+				"placeholder": "述君外貌。"
+			},
+			"personaPersonality": {
+				"label": "性情",
+				"placeholder": "述君性情。"
+			},
+			"worldDef": {
+				"heading": "世界之定"
+			},
+			"worldPrompt": {
+				"label": "世界提示",
+				"placeholder": "述世界之規、環境及扮演之背景。"
+			},
+			"worldGreeting": {
+				"label": "世界問候",
+				"placeholder": "世界予君之開場白。"
+			},
+			"author": {
+				"label": "作者",
+				"placeholder": "此器之作者為誰？"
+			},
+			"version": {
+				"label": "版",
+				"placeholder": "例：1.0.0"
+			},
+			"tags": {
+				"label": "籤",
+				"placeholder": "以逗號分隔之籤"
+			},
+			"homePage": {
+				"label": "門戶",
+				"placeholder": "器之門戶URL"
+			},
+			"issuePage": {
+				"label": "諫言頁面",
+				"placeholder": "器之諫言頁面URL"
+			},
+			"createButton": "創建",
+			"alerts": {
+				"success": "器 '${partName}' 創建功成，可喜可賀。",
+				"error": "有誤: ${message}"
+			}
 		},
 		"achievements": {
 			"create_part": {
@@ -866,6 +879,7 @@
 	},
 	"import": {
 		"title": "引入",
+		"description": "迎君珍藏之人物、世界、配置入泉源。或取之文檔，或貼之文本，新物入此，融為一體。",
 		"tabs": {
 			"fileImport": "納卷",
 			"textImport": "納文"
@@ -882,6 +896,14 @@
 		"buttons": {
 			"import": "引入"
 		},
+		"fileItem": {
+			"removeButton": {
+				"title": "刪"
+			},
+			"removeButtonIcon": {
+				"alt": "刪"
+			}
+		},
 		"alerts": {
 			"importSuccess": "引入功成",
 			"importFailed": "引入失利: ${error}",
@@ -892,31 +914,20 @@
 			"fileImportFailed": "納卷失利: ${message}",
 			"noTextContent": "請入文",
 			"textImportFailed": "納文失利: ${message}",
-			"unknownError": "未知之禍",
 			"handler": "處者",
-			"error": "有誤"
-		},
-		"fileItem": {
-			"removeButton": {
-				"title": "刪"
-			},
-			"removeButtonIcon": {
-				"alt": "刪"
-			}
+			"error": "有誤",
+			"unknownError": "未知之禍"
 		}
 	},
 	"export": {
 		"title": "導出器",
 		"pageTitle": "導出器",
 		"pageSubtitle": "出君所喜之物",
+		"description": "出君泉源之妙造。此器可集君所選之物，裝於一囊，以便珍藏或分享。",
 		"steps": {
 			"partType": "擇類",
 			"part": "擇器",
 			"action": "出"
-		},
-		"options": {
-			"withData": "含載錄",
-			"withDataDescription": "含標為「數據」之卷，如化身記憶。"
 		},
 		"labels": {
 			"partType": "擇器類",
@@ -932,12 +943,35 @@
 		"partSearch": {
 			"placeholder": "尋..."
 		},
+		"options": {
+			"withData": "含載錄",
+			"withDataDescription": "含標為「數據」之卷，如化身記憶。"
+		},
 		"export": {
 			"title": "導出選項"
 		},
 		"editor": {
 			"disabledIndicator": "請先擇一器",
 			"disabledIndicatorHint": "請擇欲出之器類與器"
+		},
+		"buttons": {
+			"export": "導出",
+			"exportWithData": "導出 (含載錄)",
+			"copyShareLink": "謄錄傳閱之鑰",
+			"generateShareLink": "生分享之鑰",
+			"generateShareLinkWithData": "生分享之鑰 (含載錄)"
+		},
+		"shareMenu": {
+			"title": "擇傳閱之期",
+			"1h": "半時辰",
+			"12h": "半日",
+			"24h": "一日",
+			"72h": "三日",
+			"cancel": "否"
+		},
+		"litterbox": {
+			"poweredBy": "分享之術，litterbox.moe所供。",
+			"sponsorLink": "資助之"
 		},
 		"errorMessage": {
 			"icon": {
@@ -952,25 +986,6 @@
 			"shareLinkCopied": "分享之鑰已錄！",
 			"shareFailed": "造分享之鑰失利。"
 		},
-		"shareMenu": {
-			"title": "擇傳閱之期",
-			"1h": "半時辰",
-			"12h": "半日",
-			"24h": "一日",
-			"72h": "三日",
-			"cancel": "否"
-		},
-		"litterbox": {
-			"poweredBy": "分享之術，litterbox.moe所供。",
-			"sponsorLink": "資助之"
-		},
-		"buttons": {
-			"export": "導出",
-			"exportWithData": "導出 (含載錄)",
-			"copyShareLink": "謄錄傳閱之鑰",
-			"generateShareLink": "生分享之鑰",
-			"generateShareLinkWithData": "生分享之鑰 (含載錄)"
-		},
 		"achievements": {
 			"share_part": {
 				"name": "征途凶险，请携此物",
@@ -981,17 +996,13 @@
 	},
 	"uninstall": {
 		"title": "卸",
+		"description": "若君意欲相別，此處可作揖而退。或移除器物，或告別泉源。道雖不同，憶或可追。",
 		"titleWithName": "卸 ${type}/${name}",
 		"confirmMessage": "君確欲卸此 ${type}: ${name} 乎？",
 		"invalidParamsTitle": "參數無效",
 		"infoMessage": {
 			"icon": {
 				"alt": "信"
-			}
-		},
-		"errorMessage": {
-			"icon": {
-				"alt": "誤"
 			}
 		},
 		"buttons": {
@@ -1004,13 +1015,17 @@
 			"failed": "卸之失利: ${error}",
 			"invalidParams": "無效之請求。",
 			"httpError": "HTTP 錯誤！狀態碼：${status}"
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "誤"
+			}
 		}
 	},
 	"userSettings": {
 		"title": "用者規度",
 		"PageTitle": "用者規度",
-		"apiError": "API 請求失利: ${message}",
-		"generalError": "有誤: ${message}",
+		"description": "此乃君之靜室，可理身份之細，護行蹤之秘，觀所连之器。",
 		"userInfo": {
 			"title": "用者信符",
 			"usernameLabel": "名號:",
@@ -1043,19 +1058,50 @@
 		},
 		"userDevices": {
 			"title": "用者之器/當席",
-			"refreshButton": {
-				"title": "復新"
-			},
-			"refreshButtonIcon": {
-				"alt": "復新"
-			},
 			"noDevicesFound": "未尋獲任何器或會話。",
 			"deviceInfo": "器ID: ${deviceId}",
 			"thisDevice": "此器",
 			"deviceDetails": "末次現蹤: ${lastSeen} | IP: ${ipAddress} | 用戶代庖: ${userAgent}",
 			"revokeButton": "撤銷",
 			"revokeConfirm": "確欲從此器/會話告退乎？",
-			"revokeSuccess": "器/會話已撤銷。"
+			"revokeSuccess": "器/會話已撤銷。",
+			"refreshButton": {
+				"title": "復新"
+			},
+			"refreshButtonIcon": {
+				"alt": "復新"
+			}
+		},
+		"apiKeys": {
+			"title": "符鑰",
+			"description": "司外用之符鑰。",
+			"input": {
+				"placeholder": "新符鑰之述"
+			},
+			"createButton": "創",
+			"noKeysFound": "未見符鑰。",
+			"keyDetails": "述: ${description} | 製於: ${createdAt} | 末用: ${lastUsed}",
+			"neverUsed": "未嘗用",
+			"revokeButton": "廢止",
+			"revokeConfirm": "確欲廢此符鑰乎？",
+			"revokeSuccess": "符鑰已廢。",
+			"errorDescriptionRequired": "述不可缺。",
+			"createSuccess": "符鑰創成。",
+			"refreshButton": {
+				"title": "新其覽"
+			},
+			"refreshButtonIcon": {
+				"alt": "新其覽"
+			}
+		},
+		"newApiKey": {
+			"title": "新符鑰已創",
+			"warning": "請錄新符鑰。機不可失，時不再來！",
+			"closeButton": "已錄之",
+			"copyButton": {
+				"title": "錄此新鑰"
+			},
+			"copiedAlert": "符鑰已錄！"
 		},
 		"logout": {
 			"title": "告退",
@@ -1080,58 +1126,32 @@
 			"confirmButton": "可",
 			"cancelButton": "否"
 		},
-		"apiKeys": {
-			"title": "符鑰",
-			"description": "司外用之符鑰。",
-			"input": {
-				"placeholder": "新符鑰之述"
-			},
-			"createButton": "創",
-			"noKeysFound": "未見符鑰。",
-			"refreshButton": {
-				"title": "新其覽"
-			},
-			"refreshButtonIcon": {
-				"alt": "新其覽"
-			},
-			"keyDetails": "述: ${description} | 製於: ${createdAt} | 末用: ${lastUsed}",
-			"neverUsed": "未嘗用",
-			"revokeButton": "廢止",
-			"revokeConfirm": "確欲廢此符鑰乎？",
-			"revokeSuccess": "符鑰已廢。",
-			"errorDescriptionRequired": "述不可缺。",
-			"createSuccess": "符鑰創成。"
-		},
-		"newApiKey": {
-			"title": "新符鑰已創",
-			"warning": "請錄新符鑰。機不可失，時不再來！",
-			"copyButton": {
-				"title": "錄此新鑰"
-			},
-			"closeButton": "已錄之",
-			"copiedAlert": "符鑰已錄！"
-		}
+		"apiError": "API 請求失利: ${message}",
+		"generalError": "有誤: ${message}"
 	},
 	"languageSettings": {
 		"title": "雅言規度",
-		"description": "此處可定君之雅言好尚。凡所列之言，將先於觀器之常設而用。",
+		"pageTitle": "雅言規度",
+		"description": "泉源雅言，隨心而設。諸語備選，以彰君風。",
+		"pageDescription": "雅言之好，在此調度。所列之言，優先于覽器之常規。",
 		"availableLanguages": "諸雅言備選",
 		"preferredLanguages": "所尚雅言之列",
 		"resetButton": "復初",
 		"saveButton": "存",
-		"noPreferredLanguages": "尚無所尚雅言。將循觀器之常設。",
-		"savedMessage": "雅言之序已存！",
-		"resetMessage": "雅言之序已復初！",
-		"fetchLocalesFailed": "取諸雅言備選失利！",
 		"select": {
 			"placeholder": "择一雅言…"
 		},
 		"search": {
 			"placeholder": "寻雅言…"
-		}
+		},
+		"noPreferredLanguages": "尚無所尚雅言。將循觀器之常設。",
+		"savedMessage": "雅言之序已存！",
+		"resetMessage": "雅言之序已復初！",
+		"fetchLocalesFailed": "取諸雅言備選失利！"
 	},
 	"themeManage": {
 		"title": "風貌",
+		"description": "擇一畫風，以映君心。預覽諸般景緻，各具意境，君之世界，由君塑造。",
 		"instruction": "擇一風貌。",
 		"search": {
 			"placeholder": "觅风貌…",
@@ -1186,6 +1206,7 @@
 	"part_config": {
 		"title": "器之規度",
 		"pageTitle": "器之規度",
+		"description": "窺泉源之心，調眾器之機。此乃驅動體驗之引擎，可隨心而定。",
 		"labels": {
 			"partType": "擇器之類",
 			"part": "擇器"
@@ -1217,6 +1238,7 @@
 	},
 	"aisource_editor": {
 		"title": "智源編輯",
+		"description": "君在此處，指揮智源之 symphony。增減、雕琢、或靜默賦予夥伴生命之源泉——此乃符碼與想象之精妙舞步。",
 		"fileList": {
 			"title": "智源名錄",
 			"addButton": {
@@ -1228,6 +1250,21 @@
 			"label": "擇化生之器",
 			"placeholder": "請擇"
 		},
+		"editor": {
+			"disabledIndicator": "請先擇化生之器"
+		},
+		"common_config_interface": {
+			"loadingModels": "正載模型...",
+			"availableModels": "可用模型：",
+			"copied": "已謄。",
+			"empty_generator": "此源之舊生成器載入有誤，或已卸載、更名。",
+			"apiKeyRequired": "需憑符鑰方可列出模型。",
+			"copyModelIdTooltip": "點此錄模型ID",
+			"loadModelsFailed": "載模型失利：${message}"
+		},
+		"prompts": {
+			"newFileName": "請為新智源命名（勿含後綴）:"
+		},
 		"buttons": {
 			"save": "存",
 			"delete": "刪",
@@ -1237,40 +1274,25 @@
 				}
 			}
 		},
-		"alerts": {
-			"fetchFileListFailed": "取名錄失利: ${error}",
-			"fetchGeneratorListFailed": "取生成器失利: ${error}",
-			"fetchDefaultsFailed": "取預設失利: ${error}",
-			"fetchFileDataFailed": "取數據失利: ${error}",
-			"noFileSelectedSave": "未擇欲存之卷。",
-			"saveFileFailed": "存卷失利: ${error}",
-			"setDefaultFailed": "設預設智源失利: ${error}",
-			"noFileSelectedDelete": "未擇欲刪之卷。",
-			"deleteFileFailed": "刪卷失利: ${error}",
-			"invalidFileName": "卷名不得含 / \\ : * ? \" < > |",
-			"addFileFailed": "添卷失利: ${error}",
-			"fetchConfigTemplateFailed": "取規度範本失利",
-			"noGeneratorSelectedSave": "請先擇化生之器而後存"
-		},
 		"confirm": {
 			"unsavedChanges": "尚有未存之變，欲棄之乎？",
 			"deleteFile": "確欲刪此卷乎？",
 			"unsavedChangesBeforeUnload": "尚有未存之變，確欲離此頁乎？"
 		},
-		"prompts": {
-			"newFileName": "請為新智源命名（勿含後綴）:"
-		},
-		"editor": {
-			"disabledIndicator": "請先擇化生之器"
-		},
-		"common_config_interface": {
-			"empty_generator": "此源之舊生成器載入有誤，或已卸載、更名。",
-			"apiKeyRequired": "需憑符鑰方可列出模型。",
-			"loadingModels": "正載模型...",
-			"availableModels": "可用模型：",
-			"copyModelIdTooltip": "點此錄模型ID",
-			"copied": "已謄。",
-			"loadModelsFailed": "載模型失利：${message}"
+		"alerts": {
+			"fetchFileListFailed": "取名錄失利: ${error}",
+			"fetchGeneratorListFailed": "取生成器失利: ${error}",
+			"fetchDefaultsFailed": "取預設失利: ${error}",
+			"fetchFileDataFailed": "取數據失利: ${error}",
+			"fetchConfigTemplateFailed": "取規度範本失利",
+			"saveFileFailed": "存卷失利: ${error}",
+			"deleteFileFailed": "刪卷失利: ${error}",
+			"addFileFailed": "添卷失利: ${error}",
+			"setDefaultFailed": "設預設智源失利: ${error}",
+			"noFileSelectedSave": "未擇欲存之卷。",
+			"noFileSelectedDelete": "未擇欲刪之卷。",
+			"noGeneratorSelectedSave": "請先擇化生之器而後存",
+			"invalidFileName": "卷名不得含 / \\ : * ? \" < > |"
 		},
 		"achievements": {
 			"set_default_aisource": {
@@ -1282,11 +1304,8 @@
 	},
 	"discord_bots": {
 		"title": "Discord 靈偶",
+		"description": "令君之泉源夥伴，聲聞於Discord之殿堂。立其形，掌其行，跨界而通，無遠弗屆。",
 		"cardTitle": "Discord 靈偶",
-		"buttons": {
-			"newBot": "新建",
-			"deleteBot": "刪除"
-		},
 		"botSelectDropdown": {
 			"placeholder": "择一灵偶"
 		},
@@ -1322,10 +1341,14 @@
 		"prompts": {
 			"newBotName": "請為新靈偶命名："
 		},
+		"buttons": {
+			"newBot": "新建",
+			"deleteBot": "刪除"
+		},
 		"alerts": {
+			"configSaved": "規度已存。",
 			"botExists": "靈偶 \"${botname}\" 已存，請更名。",
 			"unsavedChanges": "尚有未存之變，欲棄之乎？",
-			"configSaved": "規度已存。",
 			"httpError": "HTTP 錯誤",
 			"beforeUnload": "尚有未存之變，確欲離乎？"
 		},
@@ -1339,6 +1362,7 @@
 	},
 	"telegram_bots": {
 		"title": "Telegram 靈偶",
+		"description": "允君之泉源人物，神行於Telegram之波瀾。塑其數字之身，理其清談之事，名揚於此信使之界。",
 		"cardTitle": "Telegram 靈偶",
 		"botSelectDropdown": {
 			"placeholder": "择一灵偶"
@@ -1351,10 +1375,6 @@
 		},
 		"charSearch": {
 			"placeholder": "寻角色…"
-		},
-		"buttons": {
-			"newBot": "新建",
-			"deleteBot": "刪除"
 		},
 		"configCard": {
 			"title": "靈偶規度",
@@ -1379,10 +1399,14 @@
 		"prompts": {
 			"newBotName": "請為新靈偶命名："
 		},
+		"buttons": {
+			"newBot": "新建",
+			"deleteBot": "刪除"
+		},
 		"alerts": {
+			"configSaved": "規度已存。",
 			"botExists": "靈偶 “${botname}” 已存，請更名。",
 			"unsavedChanges": "尚有未存之變，確欲棄之乎？",
-			"configSaved": "規度已存。",
 			"httpError": "HTTP 錯誤",
 			"beforeUnload": "尚有未存之變，確欲離乎？"
 		},
@@ -1396,8 +1420,9 @@
 	},
 	"browser_integration": {
 		"title": "融於覽器",
-		"header": "覽器統合",
-		"description": "欲使 fount 之役交於網頁，須置此統合之策。其為役與覽器之橋，以窺頁中之文，行其所事。",
+		"description": "跨泉源與網絡之界。此頁供君用戶腳本，以實現無縫集成，攜君之智靈夥伴，同遊網絡之海。",
+		"pageHeader": "覽器統合",
+		"pageDescription": "欲使汝之化身通達網頁，須置此統合之策。其為化身與覽器之橋，以窺頁內之文，行其所能之事。",
 		"install_script_title": "置策",
 		"install_script_description": "點此置覽器統合之策。然須先置油猴策管。",
 		"install_button": "置",
@@ -1407,10 +1432,6 @@
 		"popular_managers": "常用者：",
 		"csp_warning": "或需置輔具以停 CSP，方能使統合之功順行。Chrome 可用<a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener\" class=\"link\">此輔具</a>。",
 		"connected_pages_title": "已連之頁",
-		"no_pages_connected": {
-			"title": "尚無連接",
-			"description": "請先置策，而後巡覽他頁，此處將自行呈現。"
-		},
 		"fetch_pages_error": "取已連之頁不成。",
 		"page_title": "頁名",
 		"page_url": "網址",
@@ -1419,6 +1440,10 @@
 		"status_unfocused": "在後",
 		"copy_button": "錄",
 		"copied_message": "已錄",
+		"no_pages_connected": {
+			"title": "尚無連接",
+			"description": "請先置策，而後巡覽他頁，此處將自行呈現。"
+		},
 		"autorun": {
 			"title": "術自運",
 			"description": "掌瓊琚之術，遇特定之網而自行。或由智巧、或由插件，以利遊覽。",
@@ -1464,19 +1489,20 @@
 		}
 	},
 	"browser_integration_script": {
+		"update": {
+			"prompt": "fount 覽器統合之策有新版。今啟新頁乎？"
+		},
+		"csp_warning": "fount 覽器統合之策察覺頁中有 CSP 策略，或致其功不行。請思置輔具以停之。",
 		"hostChange": {
 			"securityWarningTitle": "--- fount 安危之警 ---",
 			"message": "當前之頁（「${origin}」）欲易君之 fount 主址為：\n\n「${newHost}」\n\n警曰：許此操作，則新主將盡制君覽器統合之能，或致密聞外泄、帳戶見竊。\n確為己行（如遷 fount 之服），方可應允。\n\n確許此易乎？",
 			"uuidMismatchError": "fount 安危之誤：主址 ${newHost} 之標識（UUID）與舊不符。操作已止。",
 			"verificationError": "fount 安危之誤：未能驗證新主址「${newHost}」。請查其址是否無誤，其役是否在行。"
-		},
-		"update": {
-			"prompt": "fount 覽器統合之策有新版。今啟新頁乎？"
-		},
-		"csp_warning": "fount 覽器統合之策察覺頁中有 CSP 策略，或致其功不行。請思置輔具以停之。"
+		}
 	},
 	"terminal_assistant": {
 		"title": "終端輔佐",
+		"description": "圖形之外，別有洞天，可直接號令。通過終端助手，與泉源之心互動，文本亦可編織其強大之魔力。",
 		"initialMessage": "fount 可將君所喜之化身部署於終端，以輔編碼。",
 		"initialMessageLink": "點此詳閱",
 		"achievements": {
@@ -1489,6 +1515,7 @@
 	},
 	"deskpet": {
 		"title": "案上宠",
+		"description": "化君之泉源人物為桌面靈寵，與君互動，生趣盎然。",
 		"launcherCard": {
 			"title": "案上宠",
 			"buttons": {
@@ -1510,8 +1537,8 @@
 		},
 		"toasts": {
 			"started": "宠 '${charname}' 已启。",
-			"start_failed": "宠 '${charname}' 启之不成：${message}",
 			"stopped": "宠 '${charname}' 已止。",
+			"start_failed": "宠 '${charname}' 启之不成：${message}",
 			"stop_failed": "宠 '${charname}' 止之不成：${message}"
 		},
 		"achievements": {
@@ -1524,6 +1551,7 @@
 	},
 	"access": {
 		"title": "從他器訪問 fount",
+		"description": "擴泉源之境，越單一之屏。此乃門戶，一址一碼，可從他器連接君之夥伴，猶如跨越虛空之橋。",
 		"heading": "欲從他器訪問 fount 乎？",
 		"instruction": {
 			"sameLAN": "請確保諸器與 fount 主機同處一網",
@@ -1534,6 +1562,7 @@
 	},
 	"proxy": {
 		"title": "API中介",
+		"description": "此頁為開發者與集成者揭示泉源之API代理——乃君之連接，可將泉源之力，織入他用。",
 		"heading": "API中介關隘",
 		"instruction": "於此頁生成並掌管爾之API密鑰，以便將fount與他用整合。",
 		"endpointSectionTitle": "API端點",
@@ -1554,8 +1583,9 @@
 	},
 	"achievements": {
 		"title": "成就",
-		"header": "功成名就之堂",
-		"description": "君之功绩，尽列于此。",
+		"description": "探君泉源之旅之里程與成就。每一功績，皆是君獨特敘事中之一步。",
+		"pageHeader": "功成名就之堂",
+		"pageDescription": "君之功績與里程，盡列於此，以供閱覽。",
 		"unlocked_on": "成于 ${date}",
 		"locked": "尚未功成",
 		"toast_title": "功成！",
@@ -1572,6 +1602,7 @@
 	},
 	"badges_maker": {
 		"title": "fount 徽章轉換器",
+		"description": "若君之項目需泉源之風采，可轉換Shields.io之徽章，賦予其全新之共鳴身份。",
 		"card_title": "fount 徽章鏈接轉換器",
 		"original_url_label": "貼入 img.shields.io 網址",
 		"original_url": {
@@ -1581,31 +1612,22 @@
 		"new_url": {
 			"placeholder": "此處將示轉換後之網址"
 		},
-		"copy_button": "謄錄",
 		"preview_label": "預覽",
+		"copy_button": "謄錄",
+		"copied_text": "已錄！",
 		"preview": {
 			"alt": "徽章預覽"
 		},
-		"copied_text": "已錄！",
 		"copy_error": "謄錄有失: ${error}",
 		"copy_fail_alert": "謄錄失利！"
 	},
 	"404": {
 		"title": "蹤跡難尋",
+		"description": "君所尋之路，已沒於迷霧。或為一步之差，或為一念之忘？容吾引君歸岸，或於此靜寂虛空之中，小戲片刻。",
 		"pageNotFoundText": "嗚呼！君誤入無何有之鄉矣。",
 		"homepageButton": "歸去來兮"
 	},
 	"code_block": {
-		"download": {
-			"dataset": {
-				"tip": "取碼"
-			}
-		},
-		"execute": {
-			"dataset": {
-				"tip": "行碼"
-			}
-		},
 		"copy": {
 			"dataset": {
 				"tip": "謄錄至簿"
@@ -1616,15 +1638,25 @@
 				"tip": "已謄錄"
 			}
 		},
+		"download": {
+			"dataset": {
+				"tip": "取碼"
+			}
+		},
+		"execute": {
+			"dataset": {
+				"tip": "行碼"
+			}
+		},
 		"copy_failed": "謄錄失利: ${error}"
 	},
 	"pow_captcha": {
 		"initial": "我非傀儡",
 		"verifying": "考驗中",
 		"solved": "驗訖",
+		"wasm_disabled": "欲速，啟WASM",
 		"error": "謬",
-		"errorMessage": "謬：${error}",
-		"wasm_disabled": "欲速，啟WASM"
+		"errorMessage": "謬：${error}"
 	},
 	"zxcvbn": {
 		"warnings": {

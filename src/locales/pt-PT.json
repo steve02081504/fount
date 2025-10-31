@@ -6,12 +6,12 @@
 			"start": "A iniciar o servidor",
 			"starting": "A iniciar o servidor...",
 			"ready": "Servidor pronto.",
+			"standingBy": "Standing by...",
 			"showUrl": {
 				"https": "Servidor HTTPS a correr em ${url}",
 				"http": "Servidor HTTP a correr em ${url}"
 			},
 			"localUrl": "Acesso ao fount a partir de outros dispositivos na mesma rede: ${url}",
-			"standingBy": "Standing by...",
 			"update": {
 				"restarting": "Uma nova versão foi descoberta e a atualização está a ser reiniciada..."
 			}
@@ -20,32 +20,32 @@
 			"restartingJob": "A reiniciar a tarefa ${partname} (${parttype}) do utilizador ${username}: ${uid}"
 		},
 		"ipc": {
-			"sendCommandFailed": "Falha ao enviar o comando: ${error}",
-			"invalidCommand": "Comando inválido. Utilize \"fount run <Tipo de Componente> <Nome de utilizador> <Nome do Componente> <parâmetros...>\".",
+			"serverStarted": "Servidor IPC iniciado.",
+			"instanceRunning": "Outra instância já está em execução.",
 			"runPartLog": "A executar ${parttype} ${partname} como ${username}, parâmetros: ${args}.",
 			"invokePartLog": "A invocar ${parttype} ${partname} como ${username}, parâmetros: ${invokedata}.",
+			"invalidCommand": "Comando inválido. Utilize \"fount run <Tipo de Componente> <Nome de utilizador> <Nome do Componente> <parâmetros...>\".",
+			"invalidCommandFormat": "Formato de comando inválido.",
 			"unsupportedCommand": "Tipo de comando não suportado.",
 			"processMessageError": "Erro ao processar a mensagem IPC: ${error}",
-			"invalidCommandFormat": "Formato de comando inválido.",
+			"sendCommandFailed": "Falha ao enviar o comando: ${error}",
 			"socketError": "Erro de socket: ${error}",
-			"instanceRunning": "Outra instância já está em execução.",
-			"serverStarted": "Servidor IPC iniciado.",
 			"parseResponseFailed": "Falha ao analisar a resposta do servidor: ${error}",
 			"cannotParseResponse": "Não é possível analisar a resposta do servidor.",
 			"unknownError": "Erro desconhecido."
 		},
 		"partManager": {
+			"partInited": "${parttype} componente ${partname} foi inicializado",
+			"partLoaded": "${parttype} componente ${partname} está carregado",
 			"git": {
+				"updating": "A atualizar do repositório remoto...",
+				"upToDate": "Já está atualizado.",
+				"localAhead": "O ramo local está à frente do ramo remoto. Não é necessária qualquer atualização.",
 				"noUpstream": "Nenhum ramo upstream configurado para o ramo '${currentBranch}', ignorando a verificação de atualizações.",
 				"dirtyWorkingDirectory": "O diretório de trabalho não está limpo. Por favor, faça 'stash' ou 'commit' das suas alterações antes de atualizar.",
-				"updating": "A atualizar do repositório remoto...",
-				"localAhead": "O ramo local está à frente do ramo remoto. Não é necessária qualquer atualização.",
 				"diverged": "Os ramos local e remoto divergiram. A forçar a atualização...",
-				"upToDate": "Já está atualizado.",
 				"updateFailed": "Falha ao atualizar os componentes do repositório remoto: ${error}"
-			},
-			"partInited": "${parttype} componente ${partname} foi inicializado",
-			"partLoaded": "${parttype} componente ${partname} está carregado"
+			}
 		},
 		"web": {
 			"requestReceived": "Pedido recebido: ${method} ${url}"
@@ -54,11 +54,11 @@
 			"setLanguagePreference": "O utilizador ${username} definiu o idioma preferencial: ${preferredLanguages}"
 		},
 		"auth": {
+			"accountLockedLog": "A conta do utilizador ${username} foi bloqueada devido a múltiplas tentativas de login falhadas.",
 			"tokenVerifyError": "Erro na verificação do token: ${error}",
 			"refreshTokenError": "Erro no token de atualização: ${error}",
 			"logoutRefreshTokenProcessError": "Erro ao processar o token de atualização de logout: ${error}",
-			"revokeTokenNoJTI": "Não é possível revogar um token sem JTI.",
-			"accountLockedLog": "A conta do utilizador ${username} foi bloqueada devido a múltiplas tentativas de login falhadas."
+			"revokeTokenNoJTI": "Não é possível revogar um token sem JTI."
 		},
 		"verification": {
 			"codeGeneratedLog": "Código de verificação: ${code} (expira em 60 segundos)",
@@ -66,10 +66,10 @@
 			"codeNotifyBody": "Código de verificação: ${code} (expira em 60 segundos)"
 		},
 		"tray": {
-			"readIconFailed": "Falha ao ler o ficheiro do ícone: ${error}",
-			"createTrayFailed": "Falha ao criar o ícone na área de notificação: ${error}",
 			"title": "fount",
 			"tooltip": "fount",
+			"readIconFailed": "Falha ao ler o ficheiro do ícone: ${error}",
+			"createTrayFailed": "Falha ao criar o ícone na área de notificação: ${error}",
 			"items": {
 				"open": {
 					"title": "Abrir",
@@ -100,6 +100,9 @@
 			"botStarted": "O personagem ${charname} ligou-se ao bot Telegram ${botusername}."
 		},
 		"path": {
+			"protocol": {
+				"description": "URL:protocolo de fount"
+			},
 			"update": {
 				"skippingFountUpdate": "Como o arquivo .noupdate existe, a atualização da fount é ignorada",
 				"skippingDenoUpgradeDocker": "Ignorar atualização do Deno no ambiente Docker"
@@ -108,44 +111,44 @@
 				"desktopShortcutCreated": "Atalho na área de trabalho criado em ${path}",
 				"startMenuShortcutCreated": "Atalho do menu Iniciar criado em ${path}",
 				"protocolHandlerRegistered": "font:// manipulador de protocolo registrado.",
+				"shortcutNotSupported": "Aviso: Seu sistema operacional (${os}) não suporta a criação de atalhos na área de trabalho.",
 				"osacompileNotFound": "Erro: 'osacompile' não encontrado. Não foi possível criar o aplicativo macOS.",
 				"lsregisterFailed": "Aviso: falha ao usar lsregister para registrar um aplicativo com LaunchServices.",
-				"createDesktopAppFailed": "Erro: Falha ao criar aplicativo de desktop.",
-				"shortcutNotSupported": "Aviso: Seu sistema operacional (${os}) não suporta a criação de atalhos na área de trabalho."
+				"createDesktopAppFailed": "Erro: Falha ao criar aplicativo de desktop."
 			},
 			"git": {
 				"repoNotFound": "O repositório git da fount não foi encontrado. Inicializando um novo...",
 				"fetchingAndResetting": "Buscando do repositório remoto e redefinindo para master...",
-				"fetchFailed": "Falha ao obter da 'origem'.",
 				"localChangesDetected": "Alterações locais detectadas, as diferenças serão salvas antes de serem substituídas.",
 				"backupSavedTo": "Um backup das suas alterações locais foi salvo em: ${path}",
+				"updatingFromRemote": "Atualizando do repositório remoto...",
+				"alreadyUpToDate": "Já é o mais recente.",
+				"localBranchAhead": "A filial local está à frente da filial remota. Não são necessárias atualizações.",
+				"branchesDiverged": "As filiais locais e remotas foram bifurcadas. Atualização forçada em andamento...",
 				"notOnBranch": "Fora do branch, mude para 'master'...",
 				"noUpstreamBranch": "Aviso: nenhuma ramificação upstream está configurada para a ramificação '${branch}'. Configurando o upstream para 'origin/master'.",
 				"dirtyWorkingDirectory": "Aviso: o diretório de trabalho não está limpo. Prepare ou confirme suas alterações antes de atualizar.",
-				"updatingFromRemote": "Atualizando do repositório remoto...",
-				"localBranchAhead": "A filial local está à frente da filial remota. Não são necessárias atualizações.",
-				"branchesDiverged": "As filiais locais e remotas foram bifurcadas. Atualização forçada em andamento...",
-				"alreadyUpToDate": "Já é o mais recente.",
 				"notInstalled": "Git não está instalado, tentando instalar...",
-				"installFailedWinget": "Como a instalação do Winget falhou, o Git não pode ser instalado. Instale-o manualmente.",
-				"installFailedManual": "Não é possível instalar o Git, instale-o manualmente.",
 				"notInstalledSkippingPull": "Git não está instalado, pule git pull",
-				"repoNotFoundSkippingPull": "Repositório não encontrado, pule git pull"
+				"repoNotFoundSkippingPull": "Repositório não encontrado, pule git pull",
+				"fetchFailed": "Falha ao obter da 'origem'.",
+				"installFailedWinget": "Como a instalação do Winget falhou, o Git não pode ser instalado. Instale-o manualmente.",
+				"installFailedManual": "Não é possível instalar o Git, instale-o manualmente."
 			},
 			"deno": {
-				"installingTermux": "Instalando Deno para Termux...",
 				"missing": "Deno não encontrado, instalando automaticamente...",
-				"installFailedFallback": "A instalação do Deno falhou, tentando instalar automaticamente na pasta path da fount...",
 				"isRequired": "Deno não encontrado, a fount não pode ser executada sem Deno",
+				"installingTermux": "Instalando Deno para Termux...",
+				"installFailedFallback": "A instalação do Deno falhou, tentando instalar automaticamente na pasta path da fount...",
 				"notWorking": "Por algum motivo, o Deno não está funcionando, você pode entrar em https://discord.gg/deno para obter suporte",
-				"upgradeFailedTermux": "O comando de atualização do Deno falhou, tentando reinstalar o Deno para Termux...",
-				"upgradeFailed": "Aviso: a atualização do Deno pode ter falhado. Por favor, verifique se há erros."
+				"upgradeFailed": "Aviso: a atualização do Deno pode ter falhado. Por favor, verifique se há erros.",
+				"upgradeFailedTermux": "O comando de atualização do Deno falhou, tentando reinstalar o Deno para Termux..."
 			},
 			"install": {
-				"rootWarning1": "Não recomendado: executar o fount como root concede acesso total do sistema a todos os componentes do fount.",
-				"rootWarning2": "A menos que você saiba o que está fazendo, é recomendável executar o font como um usuário normal.",
 				"installingDependencies": "Instalando dependências...",
-				"untrustedPartsWarning": "Não instale nenhum componente de fount não confiável em seu sistema, eles podem fazer qualquer coisa."
+				"untrustedPartsWarning": "Não instale nenhum componente de fount não confiável em seu sistema, eles podem fazer qualquer coisa.",
+				"rootWarning1": "Não recomendado: executar o fount como root concede acesso total do sistema a todos os componentes do fount.",
+				"rootWarning2": "A menos que você saiba o que está fazendo, é recomendável executar o font como um usuário normal."
 			},
 			"clean": {
 				"removingCaches": "Removendo cache...",
@@ -154,29 +157,30 @@
 				"cleaningOldPwshModules": "Limpando módulos pwsh antigos..."
 			},
 			"keepalive": {
-				"failedToStart": "Mesmo após tentativas de reparo automático, a fount não inicia por um curto período de tempo. Verifique se há erros nos logs.",
+				"initComplete": "Reinicialização concluída. Tentando reiniciar a fount...",
 				"autoInitDisabled": "A fount foi reiniciada várias vezes no último curto período de tempo, mas a reinicialização automática foi desativada devido à presença do arquivo .noautoinit. Saindo.",
 				"restartingTooFast": "A fount foi reiniciada várias vezes em um curto período de tempo. Reinicialização forçada...",
-				"initFailed": "Falha na inicialização da fount. Saindo.",
-				"initComplete": "Reinicialização concluída. Tentando reiniciar a fount..."
+				"failedToStart": "Mesmo após tentativas de reparo automático, a fount não inicia por um curto período de tempo. Verifique se há erros nos logs.",
+				"initFailed": "Falha na inicialização da fount. Saindo."
 			},
 			"remove": {
 				"removingFount": "Removendo fount...",
+				"fountUninstallationComplete": "desinstalação da fount concluída.",
+				"removingFountInstallationDir": "Removendo o diretório de instalação da fount...",
+				"fountInstallationDirRemoved": "O diretório de instalação da fount foi removido.",
 				"removingFountFromPath": "Removendo fount do PATH...",
 				"removingProtocolHandler": "Removendo o manipulador de protocolo font://...",
+				"protocolHandlerRemoved": "O manipulador de protocolo fount:// foi removido.",
+				"removeProtocolHandlerFailed": "Falha ao remover o manipulador de protocolo fount://: ${message}",
 				"removingFountFromGitSafeDir": "Removendo fount do git safe.directory...",
 				"removingInstalledSystemPackages": "Removendo pacotes de sistema instalados...",
 				"uninstallingDeno": "Desinstalando o Deno...",
-				"removingFountInstallationDir": "Removendo o diretório de instalação da fount...",
-				"fountInstallationDirRemoved": "O diretório de instalação da fount foi removido.",
-				"fountUninstallationComplete": "desinstalação da fount concluída.",
+				"removeDenoFailed": "Falha ao remover Deno: ${message}",
 				"removingFountPwshFromProfile": "Removendo fount-pwsh do perfil do PowerShell...",
 				"fountPwshRemovedFromProfile": "fount-pwsh foi removido do perfil do PowerShell.",
 				"pwshProfileNotFound": "Perfil do PowerShell não encontrado, ignorando a remoção do fount-pwsh do perfil.",
 				"uninstallingFountPwsh": "Desinstalando fount-pwsh...",
 				"uninstallFountPwshFailed": "Falha na desinstalação do font-pwsh: ${message}",
-				"protocolHandlerRemoved": "O manipulador de protocolo fount:// foi removido.",
-				"removeProtocolHandlerFailed": "Falha ao remover o manipulador de protocolo fount://: ${message}",
 				"removingTerminalProfile": "Removendo o perfil do terminal do Windows...",
 				"terminalProfileRemoved": "O diretório Windows Terminal Profile foi removido.",
 				"terminalProfileNotFound": "Diretório de perfil do Terminal do Windows não encontrado.",
@@ -191,22 +195,14 @@
 				"uninstallingGit": "Desinstalando o Git...",
 				"uninstallingChrome": "Desinstalando o Chrome...",
 				"uninstallingWinget": "Desinstalando o Winget...",
-				"removeDenoFailed": "Falha ao remover Deno: ${message}",
 				"removingBackgroundRunner": "Removendo programas em segundo plano...",
 				"removeBackgroundRunnerFailed": "Falha ao remover programa em execução em segundo plano: ${message}"
-			},
-			"protocol": {
-				"description": "URL:protocolo de fount"
 			}
 		}
 	},
 	"installer_wait_screen": {
 		"title": "Bem-vindo ao fount!",
-		"language_selector": {
-			"search": {
-				"placeholder": "Pesquisar idioma..."
-			}
-		},
+		"description": "Acompanhe o progresso da instalação e veja os recursos contidos nela. A fonte estará pronta para ser lançada em um momento.",
 		"hero": {
 			"title": "Onde a Imaginação Ganha Vida",
 			"description": "fount é uma plataforma de interação com personagens alimentada por IA, desenhada para <i>lhe</i> dar poder. É uma ponte que o conecta com as suas personagens imaginadas, permitindo-lhe conversar facilmente com elas, criar as suas próprias personagens e partilhá-las com o mundo."
@@ -227,6 +223,11 @@
 			"title": "Integração Livre com Fontes de IA",
 			"description": "fount oferece escolha e flexibilidade incomparáveis. Conecte-se a <i>qualquer</i> fount de IA – OpenAI, Claude, OpenRouter, NovelAI, etc. A lógica de comunicação será moldada pelo poder do código, de acordo com os <i>seus</i> desejos."
 		},
+		"language_selector": {
+			"search": {
+				"placeholder": "Pesquisar idioma..."
+			}
+		},
 		"theme_selector": {
 			"title": "Escolha a sua aparência",
 			"description": "Escolha um tema para personalizar a sua experiência.",
@@ -241,6 +242,9 @@
 		},
 		"data_showcase": {
 			"title_prefix": "fount é a mais ",
+			"title_of": " ",
+			"active_users": "Utilizadores Ativos",
+			"stars": "Estrelas do GitHub",
 			"adjectives": [
 				"extensível",
 				"potente",
@@ -248,7 +252,6 @@
 				"compatível",
 				"compacta e poderosa"
 			],
-			"title_of": " ",
 			"nouns": [
 				"personagem de IA ",
 				"Agente ",
@@ -259,9 +262,7 @@
 				"plataforma base",
 				"frontend de chat",
 				"runtime"
-			],
-			"active_users": "Utilizadores Ativos",
-			"stars": "Estrelas do GitHub"
+			]
 		},
 		"footer": {
 			"ready_text": "Pronto para começar a sua jornada?",
@@ -280,15 +281,9 @@
 	},
 	"protocolhandler": {
 		"title": "A Processar o Protocolo fount",
+		"description": "Silenciosamente e de forma eficiente, esta página traduz sua intenção em uma transição perfeita dentro da fonte. Considere isso a magia silenciosa por trás da cortina.",
 		"processing": "A processar o protocolo...",
-		"invalidProtocol": "Protocolo inválido.",
-		"insufficientParams": "Parâmetros insuficientes.",
-		"unknownCommand": "Comando desconhecido.",
 		"shellCommandSent": "Comando shell enviado.",
-		"shellCommandFailed": "Falha ao enviar o comando shell.",
-		"shellCommandError": "Erro ao enviar o comando shell.",
-		"fountNotFound": "Puxa vida :(\n\nfount não encontrado. Talvez precise de o instalar primeiro?",
-		"unknownError": "Oh não :(\n\nOcorreu um erro:\n${error}",
 		"runPartConfirm": {
 			"title": "Confirmar execução",
 			"message": "Tem certeza de que deseja executar ${parttype} de ${partname}?",
@@ -301,10 +296,18 @@
 			"buttons": {
 				"retry": "Tente novamente"
 			}
-		}
+		},
+		"fountNotFound": "Puxa vida :(\n\nfount não encontrado. Talvez precise de o instalar primeiro?",
+		"invalidProtocol": "Protocolo inválido.",
+		"insufficientParams": "Parâmetros insuficientes.",
+		"unknownCommand": "Comando desconhecido.",
+		"shellCommandFailed": "Falha ao enviar o comando shell.",
+		"shellCommandError": "Erro ao enviar o comando shell.",
+		"unknownError": "Oh não :(\n\nOcorreu um erro:\n${error}"
 	},
 	"startPage": {
 		"title": "fount!",
+		"description": "Bem-vindo ao limiar da fonte. Um breve momento de preparação, antes de entrar no centro das conversas e histórias que aguardam para se desenrolar.",
 		"newTabFailed": {
 			"title": "Falha ao abrir novo separador",
 			"instruction": "O arranque do fount é 1-2s mais lento sempre que não há permissão para janelas de pop-up.",
@@ -326,6 +329,7 @@
 	},
 	"tutorial": {
 		"title": "Que tal um tutorial?",
+		"description": "Deixe-nos caminhar com você pelo mundo das fontes. Este tutorial interativo iluminará o caminho, ajudando você a descobrir a magia que está em sua essência. Sua aventura começa com a compreensão.",
 		"modal": {
 			"title": "Bem-vindo ao fount!",
 			"instruction": "Gostaria de seguir o tutorial para principiantes?",
@@ -361,6 +365,7 @@
 	"auth": {
 		"title": "Autenticação",
 		"subtitle": "Os dados do utilizador são armazenados localmente.",
+		"description": "Aqui você define sua presença. Seja retornando a um refúgio familiar ou criando um novo espaço para suas histórias, é aqui que começa sua jornada com a fonte.",
 		"usernameLabel": "Nome de utilizador:",
 		"usernameInput": {
 			"placeholder": "Introduza o nome de utilizador"
@@ -394,6 +399,13 @@
 				"link": "Iniciar sessão agora"
 			}
 		},
+		"passwordStrength": {
+			"veryWeak": "Muito fraca",
+			"weak": "Fraca",
+			"normal": "Normal",
+			"strong": "Forte",
+			"veryStrong": "Muito forte"
+		},
 		"error": {
 			"passwordMismatch": "As palavras-passe não correspondem.",
 			"loginError": "Erro ao iniciar sessão.",
@@ -406,17 +418,11 @@
 			"accountAlreadyExists": "A conta já existe.",
 			"powNotSolved": "Por favor, conclua a verificação PoW primeiro",
 			"powError": "Erro de verificação PoW"
-		},
-		"passwordStrength": {
-			"veryWeak": "Muito fraca",
-			"weak": "Fraca",
-			"normal": "Normal",
-			"strong": "Forte",
-			"veryStrong": "Muito forte"
 		}
 	},
 	"login_info": {
 		"title": "Informação de início de sessão",
+		"description": "Um espaço seguro para gerenciar suas credenciais de login de fontes – as chaves para o seu mundo de histórias não contadas.",
 		"modal": {
 			"title": "Erro de transferência de certificado",
 			"retrieve_error": "Ocorreu um erro ao tentar guardar as suas credenciais de início de sessão:\n${error}\nPode continuar, mas não pode guardar as informações de início de sessão.",
@@ -429,17 +435,14 @@
 	},
 	"home": {
 		"title": "Início",
-		"escapeConfirm": "Tem a certeza que quer sair do fount?",
+		"description": "O coração da sua experiência com fontes. Aqui, gerencie os habitantes de sua imaginação – personagens, mundos e personas. Suas histórias começam e se ramificam a partir desse nexo central.",
+		"sidebarTitle": "Detalhes",
+		"itemDescription": "Selecione um item aqui para ver os detalhes.",
+		"noDescription": "Sem descrição.",
 		"filterInput": {
 			"placeholder": "Pesquisar..."
 		},
 		"sfwToggle": "Conteúdo Seguro",
-		"sidebarTitle": "Detalhes",
-		"itemDescription": "Selecione um item aqui para ver os detalhes.",
-		"noDescription": "Sem descrição.",
-		"alerts": {
-			"fetchHomeRegistryFailed": "Falha ao obter as informações do registo da página inicial."
-		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "Pesquisar..."
@@ -454,15 +457,15 @@
 			"subtitle": "Selecione um personagem e comece a conversar!",
 			"none": "Nada para mostrar",
 			"card": {
-				"refreshButton": {
-					"alt": "Atualizar",
-					"title": "Atualizar"
-				},
 				"noTags": "Sem etiquetas",
 				"version": "Versão",
 				"author": "Autor",
 				"home_page": "Página inicial",
 				"issue_page": "Comunicar problemas",
+				"refreshButton": {
+					"alt": "Atualizar",
+					"title": "Atualizar"
+				},
 				"defaultCheckbox": {
 					"title": "Definir como personagem padrão"
 				}
@@ -474,15 +477,15 @@
 			"subtitle": "Escolha um mundo e mergulhe nele!",
 			"none": "Nada para mostrar",
 			"card": {
-				"refreshButton": {
-					"alt": "Atualizar",
-					"title": "Atualizar"
-				},
 				"noTags": "Sem etiquetas",
 				"version": "Versão",
 				"author": "Autor",
 				"home_page": "Página inicial",
 				"issue_page": "Comunicar problemas",
+				"refreshButton": {
+					"alt": "Atualizar",
+					"title": "Atualizar"
+				},
 				"defaultCheckbox": {
 					"title": "Definir como mundo padrão"
 				}
@@ -494,19 +497,23 @@
 			"subtitle": "Selecione uma persona e experimente uma nova vida.",
 			"none": "Nada para mostrar",
 			"card": {
-				"refreshButton": {
-					"alt": "Atualizar",
-					"title": "Atualizar"
-				},
 				"noTags": "Sem etiquetas",
 				"version": "Versão",
 				"author": "Autor",
 				"home_page": "Página inicial",
 				"issue_page": "Comunicar problemas",
+				"refreshButton": {
+					"alt": "Atualizar",
+					"title": "Atualizar"
+				},
 				"defaultCheckbox": {
 					"title": "Definir como persona padrão"
 				}
 			}
+		},
+		"escapeConfirm": "Tem a certeza que quer sair do fount?",
+		"alerts": {
+			"fetchHomeRegistryFailed": "Falha ao obter as informações do registo da página inicial."
 		},
 		"achievements": {
 			"first_login": {
@@ -537,11 +544,15 @@
 		}
 	},
 	"chat": {
-		"new": {
-			"title": "Nova conversa"
-		},
 		"title": "Chat",
+		"description": "Onde as palavras voam e as histórias se desenrolam. Envolva-se com seus companheiros de IA, molde a narrativa e perca-se no fluxo e refluxo do diálogo digital. O coração da fonte bate aqui.",
+		"new": {
+			"title": "Nova conversa",
+			"description": "A silenciosa antecipação de uma história ainda não escrita. Um novo bate-papo começa, uma lousa em branco para novas interações e desdobramento de narrativas com os companheiros escolhidos."
+		},
 		"sidebar": {
+			"noSelection": "Não selecionado",
+			"noDescription": "Sem descrição.",
 			"world": {
 				"icon": {
 					"alt": "Ícone de Mundo"
@@ -567,20 +578,21 @@
 						"alt": "Ícone de Adicionar Personagem"
 					}
 				}
-			},
-			"noSelection": "Não selecionado",
-			"noDescription": "Sem descrição."
+			}
+		},
+		"rightSidebar": {
+			"title": "Detalhes"
 		},
 		"chatArea": {
 			"title": "Chat",
+			"input": {
+				"placeholder": "Escreva uma mensagem...\nCtrl+Enter para enviar"
+			},
 			"menuButton": {
 				"title": "Menu"
 			},
 			"menuButtonIcon": {
 				"alt": "Ícone de Menu"
-			},
-			"input": {
-				"placeholder": "Escreva uma mensagem...\nCtrl+Enter para enviar"
 			},
 			"sendButton": {
 				"title": "Enviar"
@@ -606,9 +618,6 @@
 			"photoButtonIcon": {
 				"alt": "Ícone de Foto"
 			}
-		},
-		"rightSidebar": {
-			"title": "Detalhes"
 		},
 		"messageList": {
 			"confirmDeleteMessage": "Confirmar a eliminação desta mensagem?"
@@ -733,18 +742,25 @@
 	"chat_history": {
 		"title": "Histórico de Conversas",
 		"pageTitle": "Histórico de Conversas",
+		"description": "Viaje pelos diálogos passados. Aqui, as memórias das conversas permanecem: classifique, filtre e revisite as histórias que você criou com seus companheiros de IA. Uma biblioteca silenciosa de ecos digitais.",
+		"filterInput": {
+			"placeholder": "Pesquisar..."
+		},
 		"sortOptions": {
 			"time_desc": "Data (mais recentes)",
 			"time_asc": "Data (mais antigas)"
-		},
-		"filterInput": {
-			"placeholder": "Pesquisar..."
 		},
 		"selectAll": "Selecionar Tudo",
 		"buttons": {
 			"reverseSelect": "Inverter Seleção",
 			"deleteSelected": "Eliminar Selecionados",
 			"exportSelected": "Exportar Selecionados"
+		},
+		"chatItemButtons": {
+			"continue": "Continuar",
+			"copy": "Copiar",
+			"export": "Exportar",
+			"delete": "Eliminar"
 		},
 		"confirmDeleteChat": "Tem a certeza que quer eliminar o histórico de conversas com ${chars}?",
 		"confirmDeleteMultiChats": "Tem a certeza que quer eliminar os ${count} históricos de conversas selecionados?",
@@ -754,107 +770,104 @@
 			"copyError": "Falha ao copiar.",
 			"deleteError": "Falha ao eliminar.",
 			"exportError": "Falha ao exportar."
-		},
-		"chatItemButtons": {
-			"continue": "Continuar",
-			"copy": "Copiar",
-			"export": "Exportar",
-			"delete": "Eliminar"
 		}
 	},
 	"easynew": {
 		"title": "Criação Rápida",
+		"description": "Crie rapidamente novas partes de fontes, como personagens, mundos e plug-ins, usando modelos predefinidos ou personalizados. Sua próxima criação está a apenas alguns cliques de distância.",
+		"info": {
+			"description": "Estes modelos só podem ser usados para criar rapidamente componentes simples; componentes complexos ainda precisam de ser criadas manualmente."
+		},
 		"cardTitle": "Criar um novo componente a partir de um modelo",
 		"templateSelect": {
 			"label": "Selecione um modelo"
 		},
-		"partName": {
-			"label": "Nome do Componente",
-			"placeholder": "Dê um nome à sua nova peça"
-		},
-		"description": {
-			"label": "Descrição",
-			"placeholder": "Descreva brevemente do que se trata esta peça."
-		},
-		"descriptionMarkdown": {
-			"label": "Descrição (Markdown)",
-			"placeholder": "Suporta Markdown para uma formatação mais detalhada."
-		},
-		"imageUpload": {
-			"label": "Imagem do Avatar"
-		},
-		"charDef": {
-			"heading": "Definição da Personagem"
-		},
-		"personality": {
-			"label": "Personalidade",
-			"placeholder": "Descreva os traços de personalidade centrais da personagem."
-		},
-		"scenario": {
-			"label": "Cenário",
-			"placeholder": "O plano de fundo ou o ambiente da personagem."
-		},
-		"mesExample": {
-			"label": "Exemplo de Mensagem",
-			"placeholder": "Exemplos do que uma personagem poderia dizer."
-		},
-		"firstMessage": {
-			"label": "Primeira Mensagem",
-			"placeholder": "A primeira mensagem que a personagem diz."
-		},
-		"personaDef": {
-			"heading": "Definição da Persona"
-		},
-		"personaUserName": {
-			"label": "O seu Nome no Chat",
-			"placeholder": "Ex: Capitão, Explorador"
-		},
-		"personaAppearance": {
-			"label": "Aparência",
-			"placeholder": "Descreva a sua aparência."
-		},
-		"personaPersonality": {
-			"label": "Personalidade",
-			"placeholder": "Descreva os seus traços de personalidade."
-		},
-		"worldDef": {
-			"heading": "Definição do Mundo"
-		},
-		"worldPrompt": {
-			"label": "Instruções do Mundo",
-			"placeholder": "Descreve as regras do mundo, o ambiente e qualquer contexto global para o role-play."
-		},
-		"worldGreeting": {
-			"label": "Saudação do Mundo",
-			"placeholder": "A primeira mensagem que o mundo envia aos utilizadores."
-		},
-		"author": {
-			"label": "Autor",
-			"placeholder": "Quem é o autor desta peça?"
-		},
-		"version": {
-			"label": "Versão",
-			"placeholder": "Ex: 0.0.1"
-		},
-		"tags": {
-			"label": "Etiquetas",
-			"placeholder": "Etiquetas separadas por vírgulas"
-		},
-		"homePage": {
-			"label": "Página Inicial",
-			"placeholder": "O URL da página inicial da peça"
-		},
-		"issuePage": {
-			"label": "Página de Problemas",
-			"placeholder": "URL da página de problemas da peça"
-		},
-		"createButton": "Criar Componente",
-		"alerts": {
-			"success": "O componente '${partName}' foi criado com sucesso!",
-			"error": "Erro: ${message}"
-		},
-		"info": {
-			"description": "Estes modelos só podem ser usados para criar rapidamente componentes simples; componentes complexos ainda precisam de ser criadas manualmente."
+		"form": {
+			"partName": {
+				"label": "Nome do Componente",
+				"placeholder": "Dê um nome à sua nova peça"
+			},
+			"description": {
+				"label": "Descrição",
+				"placeholder": "Descreva brevemente do que se trata esta peça."
+			},
+			"descriptionMarkdown": {
+				"label": "Descrição (Markdown)",
+				"placeholder": "Suporta Markdown para uma formatação mais detalhada."
+			},
+			"imageUpload": {
+				"label": "Imagem do Avatar"
+			},
+			"charDef": {
+				"heading": "Definição da Personagem"
+			},
+			"personality": {
+				"label": "Personalidade",
+				"placeholder": "Descreva os traços de personalidade centrais da personagem."
+			},
+			"scenario": {
+				"label": "Cenário",
+				"placeholder": "O plano de fundo ou o ambiente da personagem."
+			},
+			"mesExample": {
+				"label": "Exemplo de Mensagem",
+				"placeholder": "Exemplos do que uma personagem poderia dizer."
+			},
+			"firstMessage": {
+				"label": "Primeira Mensagem",
+				"placeholder": "A primeira mensagem que a personagem diz."
+			},
+			"personaDef": {
+				"heading": "Definição da Persona"
+			},
+			"personaUserName": {
+				"label": "O seu Nome no Chat",
+				"placeholder": "Ex: Capitão, Explorador"
+			},
+			"personaAppearance": {
+				"label": "Aparência",
+				"placeholder": "Descreva a sua aparência."
+			},
+			"personaPersonality": {
+				"label": "Personalidade",
+				"placeholder": "Descreva os seus traços de personalidade."
+			},
+			"worldDef": {
+				"heading": "Definição do Mundo"
+			},
+			"worldPrompt": {
+				"label": "Instruções do Mundo",
+				"placeholder": "Descreve as regras do mundo, o ambiente e qualquer contexto global para o role-play."
+			},
+			"worldGreeting": {
+				"label": "Saudação do Mundo",
+				"placeholder": "A primeira mensagem que o mundo envia aos utilizadores."
+			},
+			"author": {
+				"label": "Autor",
+				"placeholder": "Quem é o autor desta peça?"
+			},
+			"version": {
+				"label": "Versão",
+				"placeholder": "Ex: 0.0.1"
+			},
+			"tags": {
+				"label": "Etiquetas",
+				"placeholder": "Etiquetas separadas por vírgulas"
+			},
+			"homePage": {
+				"label": "Página Inicial",
+				"placeholder": "O URL da página inicial da peça"
+			},
+			"issuePage": {
+				"label": "Página de Problemas",
+				"placeholder": "URL da página de problemas da peça"
+			},
+			"createButton": "Criar Componente",
+			"alerts": {
+				"success": "O componente '${partName}' foi criado com sucesso!",
+				"error": "Erro: ${message}"
+			}
 		},
 		"achievements": {
 			"create_part": {
@@ -866,6 +879,7 @@
 	},
 	"import": {
 		"title": "Importar",
+		"description": "Traga seus personagens, mundos e configurações queridos para o abraço da fonte. Seja a partir de um arquivo ou de texto colado, é aqui que novos elementos são integrados à sua tapeçaria pessoal.",
 		"tabs": {
 			"fileImport": "Importar Ficheiro",
 			"textImport": "Importar Texto"
@@ -882,6 +896,14 @@
 		"buttons": {
 			"import": "Importar"
 		},
+		"fileItem": {
+			"removeButton": {
+				"title": "Remover"
+			},
+			"removeButtonIcon": {
+				"alt": "Remover"
+			}
+		},
 		"alerts": {
 			"importSuccess": "Importação bem-sucedida.",
 			"importFailed": "Falha na importação: ${error}",
@@ -892,31 +914,20 @@
 			"fileImportFailed": "Falha na importação do ficheiro: ${message}",
 			"noTextContent": "Por favor, introduza o conteúdo do texto.",
 			"textImportFailed": "Falha na importação do texto: ${message}",
-			"unknownError": "Erro desconhecido.",
 			"handler": "Manipulador",
-			"error": "Erro"
-		},
-		"fileItem": {
-			"removeButton": {
-				"title": "Remover"
-			},
-			"removeButtonIcon": {
-				"alt": "Remover"
-			}
+			"error": "Erro",
+			"unknownError": "Erro desconhecido."
 		}
 	},
 	"export": {
 		"title": "Exportador de Componentes",
 		"pageTitle": "Exportador de Componentes",
 		"pageSubtitle": "Exporte o seu conteúdo favorito",
+		"description": "Exporte suas criações de fontes. Esta ferramenta reúne as peças selecionadas em um arquivo zip simples para guarda ou compartilhamento.",
 		"steps": {
 			"partType": "Selecione um tipo",
 			"part": "Selecione componentes",
 			"action": "Exportar"
-		},
-		"options": {
-			"withData": "Contém ficheiros de dados",
-			"withDataDescription": "Contém ficheiros marcados como dados, como as memórias da personagem."
 		},
 		"labels": {
 			"partType": "Selecione um tipo de componente",
@@ -932,12 +943,35 @@
 		"partSearch": {
 			"placeholder": "Procurar..."
 		},
+		"options": {
+			"withData": "Contém ficheiros de dados",
+			"withDataDescription": "Contém ficheiros marcados como dados, como as memórias da personagem."
+		},
 		"export": {
 			"title": "Opções de Exportação"
 		},
 		"editor": {
 			"disabledIndicator": "Selecione primeiro um componente",
 			"disabledIndicatorHint": "Selecione o tipo de componente e o componente que deseja exportar"
+		},
+		"buttons": {
+			"export": "Exportar",
+			"exportWithData": "Exportar (com dados)",
+			"copyShareLink": "Copiar link de partilha",
+			"generateShareLink": "Gerar link de partilha",
+			"generateShareLinkWithData": "Gerar um link de compartilhamento (incluindo dados)"
+		},
+		"shareMenu": {
+			"title": "Escolha o tempo de compartilhamento",
+			"1h": "1 hora",
+			"12h": "12 horas",
+			"24h": "24 horas",
+			"72h": "72 horas",
+			"cancel": "Cancelar"
+		},
+		"litterbox": {
+			"poweredBy": "O recurso de compartilhamento é suportado pelo LitterBox.moe",
+			"sponsorLink": "Patrocine-os"
 		},
 		"errorMessage": {
 			"icon": {
@@ -952,25 +986,6 @@
 			"shareLinkCopied": "O link de compartilhamento foi copiado para a área de transferência!",
 			"shareFailed": "Falha ao criar um link de compartilhamento."
 		},
-		"shareMenu": {
-			"title": "Escolha o tempo de compartilhamento",
-			"1h": "1 hora",
-			"12h": "12 horas",
-			"24h": "24 horas",
-			"72h": "72 horas",
-			"cancel": "Cancelar"
-		},
-		"litterbox": {
-			"poweredBy": "O recurso de compartilhamento é suportado pelo LitterBox.moe",
-			"sponsorLink": "Patrocine-os"
-		},
-		"buttons": {
-			"export": "Exportar",
-			"exportWithData": "Exportar (com dados)",
-			"copyShareLink": "Copiar link de partilha",
-			"generateShareLink": "Gerar link de partilha",
-			"generateShareLinkWithData": "Gerar um link de compartilhamento (incluindo dados)"
-		},
 		"achievements": {
 			"share_part": {
 				"name": "Boas pessoas têm uma vida segura",
@@ -981,17 +996,13 @@
 	},
 	"uninstall": {
 		"title": "Desinstalar",
+		"description": "Caso você decida se separar, este espaço permite uma despedida graciosa. Confirme a remoção dos componentes ou a própria fonte. Os caminhos divergem, mas as memórias podem permanecer.",
 		"titleWithName": "Desinstalar ${type}/${name}",
 		"confirmMessage": "Tem a certeza que pretende desinstalar ${type}: ${name}?",
 		"invalidParamsTitle": "Parâmetros Inválidos",
 		"infoMessage": {
 			"icon": {
 				"alt": "Ícone de Informação"
-			}
-		},
-		"errorMessage": {
-			"icon": {
-				"alt": "Ícone de Erro"
 			}
 		},
 		"buttons": {
@@ -1004,13 +1015,17 @@
 			"failed": "Falha ao desinstalar: ${error}",
 			"invalidParams": "Parâmetros de pedido inválidos.",
 			"httpError": "Erro HTTP! Código de estado: ${status}"
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Ícone de Erro"
+			}
 		}
 	},
 	"userSettings": {
 		"title": "Definições do Utilizador",
 		"PageTitle": "Definições do Utilizador",
-		"apiError": "Falha no pedido à API: ${message}",
-		"generalError": "Ocorreu um erro: ${message}",
+		"description": "Cuide dos detalhes da identidade da sua fonte. Gerencie seu perfil, proteja seu acesso e visualize os dispositivos conectados. Um santuário tranquilo para sua conta.",
 		"userInfo": {
 			"title": "Informações do Utilizador",
 			"usernameLabel": "Nome de utilizador:",
@@ -1043,19 +1058,50 @@
 		},
 		"userDevices": {
 			"title": "Dispositivos/Sessões do utilizador",
-			"refreshButton": {
-				"title": "Atualizar lista"
-			},
-			"refreshButtonIcon": {
-				"alt": "ícone de atualização"
-			},
 			"noDevicesFound": "Nenhum dispositivo ou sessão encontrado.",
 			"deviceInfo": "ID do dispositivo: ${deviceId}",
 			"thisDevice": "Este dispositivo",
 			"deviceDetails": "Última vez online: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
 			"revokeButton": "Revogar",
 			"revokeConfirm": "Tem a certeza que quer revogar o acesso para este dispositivo/sessão?",
-			"revokeSuccess": "Dispositivo/Sessão revogado com sucesso."
+			"revokeSuccess": "Dispositivo/Sessão revogado com sucesso.",
+			"refreshButton": {
+				"title": "Atualizar lista"
+			},
+			"refreshButtonIcon": {
+				"alt": "ícone de atualização"
+			}
+		},
+		"apiKeys": {
+			"title": "Chave da API",
+			"description": "Gerencie a chave da API para aplicativos externos.",
+			"input": {
+				"placeholder": "Nova descrição da chave"
+			},
+			"createButton": "criar",
+			"noKeysFound": "Nenhuma chave de API foi encontrada.",
+			"keyDetails": "Descrição: ${description} | Criado em: ${createdAt} | Última usada: ${lastUsed}",
+			"neverUsed": "Nunca usado",
+			"revokeButton": "Revogar",
+			"revokeConfirm": "Tem certeza de que deseja revogar esta chave da API?",
+			"revokeSuccess": "A chave da API foi revogada com sucesso.",
+			"errorDescriptionRequired": "Uma descrição é necessária.",
+			"createSuccess": "A chave da API foi criada com sucesso.",
+			"refreshButton": {
+				"title": "Atualizar lista"
+			},
+			"refreshButtonIcon": {
+				"alt": "ícone de atualização"
+			}
+		},
+		"newApiKey": {
+			"title": "Nova chave de API foi criada",
+			"warning": "Copie sua nova chave de API. Você não poderá ver de novo!",
+			"closeButton": "Eu copiei minha chave",
+			"copyButton": {
+				"title": "Copie a nova chave de API"
+			},
+			"copiedAlert": "Chave da API copiada para a área de transferência!"
 		},
 		"logout": {
 			"title": "Terminar sessão",
@@ -1080,58 +1126,32 @@
 			"confirmButton": "Confirmar",
 			"cancelButton": "Cancelar"
 		},
-		"apiKeys": {
-			"title": "Chave da API",
-			"description": "Gerencie a chave da API para aplicativos externos.",
-			"input": {
-				"placeholder": "Nova descrição da chave"
-			},
-			"createButton": "criar",
-			"noKeysFound": "Nenhuma chave de API foi encontrada.",
-			"refreshButton": {
-				"title": "Atualizar lista"
-			},
-			"refreshButtonIcon": {
-				"alt": "ícone de atualização"
-			},
-			"keyDetails": "Descrição: ${description} | Criado em: ${createdAt} | Última usada: ${lastUsed}",
-			"neverUsed": "Nunca usado",
-			"revokeButton": "Revogar",
-			"revokeConfirm": "Tem certeza de que deseja revogar esta chave da API?",
-			"revokeSuccess": "A chave da API foi revogada com sucesso.",
-			"errorDescriptionRequired": "Uma descrição é necessária.",
-			"createSuccess": "A chave da API foi criada com sucesso."
-		},
-		"newApiKey": {
-			"title": "Nova chave de API foi criada",
-			"warning": "Copie sua nova chave de API. Você não poderá ver de novo!",
-			"copyButton": {
-				"title": "Copie a nova chave de API"
-			},
-			"closeButton": "Eu copiei minha chave",
-			"copiedAlert": "Chave da API copiada para a área de transferência!"
-		}
+		"apiError": "Falha no pedido à API: ${message}",
+		"generalError": "Ocorreu um erro: ${message}"
 	},
 	"languageSettings": {
 		"title": "Configurações de idiomas",
-		"description": "Gerencie suas preferências de idioma aqui. Os idiomas da lista terão precedência sobre as configurações do navegador em ordem.",
+		"pageTitle": "Configurações de idioma",
+		"description": "Gerencie suas preferências de idioma para o aplicativo de fontes. Personalize sua experiência com as opções de idioma disponíveis.",
+		"pageDescription": "Gerencie suas preferências de idioma aqui. Os idiomas da lista terão precedência sobre as configurações do navegador em ordem.",
 		"availableLanguages": "Idiomas disponíveis",
 		"preferredLanguages": "Lista de idiomas prioritária",
 		"resetButton": "Reiniciar",
 		"saveButton": "Guardar",
-		"noPreferredLanguages": "Ainda não há idioma anterior. As configurações padrão do navegador serão usadas.",
-		"savedMessage": "As configurações de idioma são salvas!",
-		"resetMessage": "As configurações de idioma foram redefinidas!",
-		"fetchLocalesFailed": "Falha ao obter os idiomas disponíveis!",
 		"select": {
 			"placeholder": "Escolha um idioma..."
 		},
 		"search": {
 			"placeholder": "Pesquisar idioma..."
-		}
+		},
+		"noPreferredLanguages": "Ainda não há idioma anterior. As configurações padrão do navegador serão usadas.",
+		"savedMessage": "As configurações de idioma são salvas!",
+		"resetMessage": "As configurações de idioma foram redefinidas!",
+		"fetchLocalesFailed": "Falha ao obter os idiomas disponíveis!"
 	},
 	"themeManage": {
 		"title": "Gestão de Temas",
+		"description": "Escolha a estética que reflete seu humor ou história. Visualize e selecione uma paleta de temas, cada um oferecendo um ambiente diferente para suas interações com fontes. Seu mundo, seu estilo.",
 		"instruction": "Escolha um tema!",
 		"search": {
 			"placeholder": "Pesquisar temas...",
@@ -1186,6 +1206,7 @@
 	"part_config": {
 		"title": "Configuração de Componente",
 		"pageTitle": "Configuração de Componente",
+		"description": "Olhe para o coração da fonte. Aqui você pode ajustar as configurações de seus diversos componentes, ajustando o motor que impulsiona sua experiência.",
 		"labels": {
 			"partType": "Selecionar Tipo de Componente",
 			"part": "Selecionar Componente"
@@ -1217,6 +1238,7 @@
 	},
 	"aisource_editor": {
 		"title": "Editor de Fontes de IA",
+		"description": "Aqui, você conduz a sinfonia de vozes de IA. Adicione, esculpa ou silencie as fontes que dão vida às suas companheiras de fontes – uma dança delicada de código e imaginação.",
 		"fileList": {
 			"title": "Lista de Fontes de IA",
 			"addButton": {
@@ -1228,6 +1250,21 @@
 			"label": "Selecionar Gerador",
 			"placeholder": "Por favor, selecione"
 		},
+		"editor": {
+			"disabledIndicator": "Por favor, selecione primeiro um gerador."
+		},
+		"common_config_interface": {
+			"loadingModels": "A carregar modelos...",
+			"availableModels": "Modelos disponíveis:",
+			"copied": "Copiado!",
+			"empty_generator": "O gerador herdado dessa fount de IA tem um erro ao carregar e pode ter sido desinstalado ou renomeado.",
+			"apiKeyRequired": "É necessária uma chave de API para listar os modelos.",
+			"copyModelIdTooltip": "Clique para copiar o ID do modelo",
+			"loadModelsFailed": "Falha ao carregar os modelos: ${message}"
+		},
+		"prompts": {
+			"newFileName": "Por favor, insira um novo nome de ficheiro de fount de IA (sem extensão):"
+		},
 		"buttons": {
 			"save": "Guardar",
 			"delete": "Eliminar",
@@ -1237,40 +1274,25 @@
 				}
 			}
 		},
-		"alerts": {
-			"fetchFileListFailed": "Falha ao obter a lista de ficheiros: ${error}",
-			"fetchGeneratorListFailed": "Falha ao obter a lista de geradores: ${error}",
-			"fetchDefaultsFailed": "Falha ao obter o componente padrão: ${error}",
-			"fetchFileDataFailed": "Falha ao obter os dados do ficheiro: ${error}",
-			"noFileSelectedSave": "Nenhum ficheiro selecionado para guardar.",
-			"saveFileFailed": "Falha ao guardar o ficheiro: ${error}",
-			"setDefaultFailed": "Definir a fount de IA padrão falhada: ${error}",
-			"noFileSelectedDelete": "Nenhum ficheiro selecionado para eliminar.",
-			"deleteFileFailed": "Falha ao eliminar o ficheiro: ${error}",
-			"invalidFileName": "O nome do ficheiro não pode conter os seguintes caracteres: / \\ : * ? \" < > |",
-			"addFileFailed": "Falha ao adicionar o ficheiro: ${error}",
-			"fetchConfigTemplateFailed": "Falha ao obter o modelo de configuração.",
-			"noGeneratorSelectedSave": "Por favor, selecione um gerador antes de guardar."
-		},
 		"confirm": {
 			"unsavedChanges": "Tem alterações não guardadas. Deseja descartar as alterações?",
 			"deleteFile": "Tem a certeza que quer eliminar o ficheiro?",
 			"unsavedChangesBeforeUnload": "Tem alterações não guardadas. Tem a certeza que quer sair desta página?"
 		},
-		"prompts": {
-			"newFileName": "Por favor, insira um novo nome de ficheiro de fount de IA (sem extensão):"
-		},
-		"editor": {
-			"disabledIndicator": "Por favor, selecione primeiro um gerador."
-		},
-		"common_config_interface": {
-			"empty_generator": "O gerador herdado dessa fount de IA tem um erro ao carregar e pode ter sido desinstalado ou renomeado.",
-			"apiKeyRequired": "É necessária uma chave de API para listar os modelos.",
-			"loadingModels": "A carregar modelos...",
-			"availableModels": "Modelos disponíveis:",
-			"copyModelIdTooltip": "Clique para copiar o ID do modelo",
-			"copied": "Copiado!",
-			"loadModelsFailed": "Falha ao carregar os modelos: ${message}"
+		"alerts": {
+			"fetchFileListFailed": "Falha ao obter a lista de ficheiros: ${error}",
+			"fetchGeneratorListFailed": "Falha ao obter a lista de geradores: ${error}",
+			"fetchDefaultsFailed": "Falha ao obter o componente padrão: ${error}",
+			"fetchFileDataFailed": "Falha ao obter os dados do ficheiro: ${error}",
+			"fetchConfigTemplateFailed": "Falha ao obter o modelo de configuração.",
+			"saveFileFailed": "Falha ao guardar o ficheiro: ${error}",
+			"deleteFileFailed": "Falha ao eliminar o ficheiro: ${error}",
+			"addFileFailed": "Falha ao adicionar o ficheiro: ${error}",
+			"setDefaultFailed": "Definir a fount de IA padrão falhada: ${error}",
+			"noFileSelectedSave": "Nenhum ficheiro selecionado para guardar.",
+			"noFileSelectedDelete": "Nenhum ficheiro selecionado para eliminar.",
+			"noGeneratorSelectedSave": "Por favor, selecione um gerador antes de guardar.",
+			"invalidFileName": "O nome do ficheiro não pode conter os seguintes caracteres: / \\ : * ? \" < > |"
 		},
 		"achievements": {
 			"set_default_aisource": {
@@ -1282,11 +1304,8 @@
 	},
 	"discord_bots": {
 		"title": "Bots do Discord",
+		"description": "Dê voz aos seus companheiros de fonte nos movimentados corredores do Discord. Configure sua presença, gerencie suas operações e permita que eles conectem mundos, um servidor por vez.",
 		"cardTitle": "Bots do Discord",
-		"buttons": {
-			"newBot": "Novo",
-			"deleteBot": "Eliminar"
-		},
 		"botSelectDropdown": {
 			"placeholder": "Escolha um bot"
 		},
@@ -1322,10 +1341,14 @@
 		"prompts": {
 			"newBotName": "Por favor, insira um novo nome para o Bot:"
 		},
+		"buttons": {
+			"newBot": "Novo",
+			"deleteBot": "Eliminar"
+		},
 		"alerts": {
+			"configSaved": "Configuração guardada com sucesso.",
 			"botExists": "Um bot com o nome \"${botname}\" já existe. Por favor, use outro nome.",
 			"unsavedChanges": "Tem alterações não guardadas. Deseja descartar as alterações?",
-			"configSaved": "Configuração guardada com sucesso.",
 			"httpError": "Erro HTTP.",
 			"beforeUnload": "Tem alterações não guardadas. Tem a certeza que quer sair?"
 		},
@@ -1339,6 +1362,7 @@
 	},
 	"telegram_bots": {
 		"title": "Bots do Telegram",
+		"description": "Deixe seus personagens originais atravessarem as ondas instantâneas do Telegram. Configure sua presença digital, gerencie suas conversas e estenda seu alcance a este vibrante mundo de mensagens.",
 		"cardTitle": "Gestão de Bots do Telegram",
 		"botSelectDropdown": {
 			"placeholder": "Escolha um bot"
@@ -1351,10 +1375,6 @@
 		},
 		"charSearch": {
 			"placeholder": "Pesquisar personagens..."
-		},
-		"buttons": {
-			"newBot": "Novo",
-			"deleteBot": "Eliminar"
 		},
 		"configCard": {
 			"title": "Configuração do Bot",
@@ -1379,10 +1399,14 @@
 		"prompts": {
 			"newBotName": "Por favor, insira um novo nome para o Bot:"
 		},
+		"buttons": {
+			"newBot": "Novo",
+			"deleteBot": "Eliminar"
+		},
 		"alerts": {
+			"configSaved": "A configuração foi guardada com sucesso!",
 			"botExists": "Um bot com o nome \"${botname}\" já existe. Por favor, use outro nome.",
 			"unsavedChanges": "Tem alterações não guardadas. Quer mesmo descartá-las?",
-			"configSaved": "A configuração foi guardada com sucesso!",
 			"httpError": "Erro HTTP.",
 			"beforeUnload": "Tem alterações não guardadas. Tem a certeza que quer sair desta página?"
 		},
@@ -1396,8 +1420,9 @@
 	},
 	"browser_integration": {
 		"title": "Integração do navegador",
-		"header": "Integração do navegador",
-		"description": "Para que sua função de fount interaja com a página da web, você precisa instalar este script de integração do navegador. Ele atua como uma ponte entre o personagem e o navegador, permitindo que eles visualizem o conteúdo da página e executem ações.",
+		"description": "Preencha a lacuna entre a fonte e a web. Esta página fornece o script do usuário para permitir uma integração perfeita, trazendo seus companheiros de IA para sua experiência de navegação.",
+		"pageHeader": "Integração do navegador",
+		"pageDescription": "Para que sua função de fount interaja com a página da web, você precisa instalar este script de integração do navegador. Ele atua como uma ponte entre o personagem e o navegador, permitindo que eles visualizem o conteúdo da página e executem ações.",
 		"install_script_title": "Script de instalação",
 		"install_script_description": "Clique no botão abaixo para instalar o script de integração do navegador. Você deve primeiro instalar um gestor de scripts de utilizador como o Tampermonkey.",
 		"install_button": "Instalar",
@@ -1407,10 +1432,6 @@
 		"popular_managers": "Escolhas populares:",
 		"csp_warning": "Pode ser necessário instalar o plug -in para desativar o CSP para fazer com que a função de integração funcione corretamente. Para o Chrome, você pode usar <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener\" class=\"link\">Permitir CSP</a>.",
 		"connected_pages_title": "Página conectada",
-		"no_pages_connected": {
-			"title": "Sem conexão ainda",
-			"description": "Instale o script primeiro e visite qualquer site em outras guias do navegador, que serão exibidas automaticamente aqui."
-		},
 		"fetch_pages_error": "Falha ao carregar a lista de página vinculada.",
 		"page_title": "Título da página",
 		"page_url": "Url",
@@ -1419,6 +1440,10 @@
 		"status_unfocused": "Nos bastidores",
 		"copy_button": "cópia",
 		"copied_message": "Copiado para a área de transferência",
+		"no_pages_connected": {
+			"title": "Sem conexão ainda",
+			"description": "Instale o script primeiro e visite qualquer site em outras guias do navegador, que serão exibidas automaticamente aqui."
+		},
 		"autorun": {
 			"title": "Execute automaticamente scripts",
 			"description": "Gerencie trechos JavaScript que são executados automaticamente ao corresponder a um site específico. Esses scripts podem ser fornecidos por sua função ou plug-in de IA para aprimorar ou automatizar sua experiência de navegação.",
@@ -1464,19 +1489,20 @@
 		}
 	},
 	"browser_integration_script": {
+		"update": {
+			"prompt": "Uma nova versão do script de integração do navegador FOUNT está disponível. A página de atualização está agora aberta?"
+		},
+		"csp_warning": "O script de integração do navegador da fount detecta que a política do CSP existe na página, o que pode fazer com que o script de integração não funcione corretamente. Por favor, considere instalar o plug -in para fechar o CSP.",
 		"hostChange": {
 			"securityWarningTitle": "--- Aviso de segurança da fount ---",
 			"message": "A página atual (\"${origin}\") está tentando alterar seu endereço de host para:\n\n\"${newHost}\"\n\nAVISO: A aprovação desta ação permitirá que o novo host controla totalmente seus recursos de integração do navegador, o que pode levar a vazamentos sensíveis de informações ou roubo de contas.\nA aprovação só deve ser feita se você tiver certeza de que esta é sua própria operação (por exemplo, migrando um servidor fount).\n\nTem certeza de que deseja permitir essa alteração?",
 			"uuidMismatchError": "Erro de segurança da fount: a identidade (UUID) do host ${newHost} não corresponde à sua existente. A operação foi cancelada.",
 			"verificationError": "Erro de segurança da fount: Não é possível verificar o novo host \"${newHost}\". Verifique se o endereço está correto e se o serviço estiver em execução."
-		},
-		"update": {
-			"prompt": "Uma nova versão do script de integração do navegador FOUNT está disponível. A página de atualização está agora aberta?"
-		},
-		"csp_warning": "O script de integração do navegador da fount detecta que a política do CSP existe na página, o que pode fazer com que o script de integração não funcione corretamente. Por favor, considere instalar o plug -in para fechar o CSP."
+		}
 	},
 	"terminal_assistant": {
 		"title": "Assistente de Terminal",
+		"description": "Além da interface gráfica, um espaço para comando direto. Interaja com o núcleo da fonte através do assistente de terminal, onde o texto tece sua própria magia poderosa.",
 		"initialMessage": "O fount suporta a implementação das suas personagens favoritas no seu terminal para o ajudar na programação!",
 		"initialMessageLink": "Clique aqui para saber mais.",
 		"achievements": {
@@ -1489,6 +1515,7 @@
 	},
 	"deskpet": {
 		"title": "Animais de estimação de mesa",
+		"description": "Lance seus personagens originais como animais de estimação interativos que vivem em sua área de trabalho.",
 		"launcherCard": {
 			"title": "iniciante para animais de estimação",
 			"buttons": {
@@ -1510,8 +1537,8 @@
 		},
 		"toasts": {
 			"started": "O animal de estimação '${charname}' foi iniciado.",
-			"start_failed": "Falha ao iniciar o pet '${charname}': ${message}",
 			"stopped": "O animal de estimação '${charname}' foi interrompido.",
+			"start_failed": "Falha ao iniciar o pet '${charname}': ${message}",
 			"stop_failed": "Falha ao parar animal de estimação '${charname}': ${message}"
 		},
 		"achievements": {
@@ -1524,6 +1551,7 @@
 	},
 	"access": {
 		"title": "Aceder ao fount noutros dispositivos",
+		"description": "Estenda o alcance da fonte além de uma única tela. Aqui está o gateway – um URL, um código QR – para se conectar com seus companheiros de outros dispositivos, uma ponte simples através do éter local.",
 		"heading": "Quer aceder ao fount noutros dispositivos?",
 		"instruction": {
 			"sameLAN": "Certifique-se de que o dispositivo e o anfitrião do fount estão na mesma rede local.",
@@ -1534,6 +1562,7 @@
 	},
 	"proxy": {
 		"title": "Proxy de API",
+		"description": "Para desenvolvedores e integradores, esta página revela o proxy API da fonte — sua conexão para integrar os recursos da fonte em outros aplicativos.",
 		"heading": "Gateway de Proxy de API",
 		"instruction": "Gere e gira as suas chaves de API nesta página para integrar o fount com outras aplicações.",
 		"endpointSectionTitle": "Endpoint da API",
@@ -1554,8 +1583,9 @@
 	},
 	"achievements": {
 		"title": "Conquista",
-		"header": "Salão das conquistas",
-		"description": "Confira suas conquistas e marcos desbloqueados aqui.",
+		"description": "Explore os marcos e realizações de sua jornada com fonte. Cada conquista marca um passo em sua narrativa única.",
+		"pageHeader": "Salão das conquistas",
+		"pageDescription": "Confira suas conquistas e marcos desbloqueados aqui.",
 		"unlocked_on": "Desbloqueado em ${date}",
 		"locked": "Não desbloqueado",
 		"toast_title": "Conquistas desbloqueadas!",
@@ -1572,6 +1602,7 @@
 	},
 	"badges_maker": {
 		"title": "fount! Conversor de Crachás",
+		"description": "Para quando o seu projeto pede um toque de caráter da fonte. Converta emblemas do Shields.io, emprestando-lhes uma identidade nova e ressonante.",
 		"card_title": "Conversor de Links para Emblemas fount",
 		"original_url_label": "Colar URL img.shields.io",
 		"original_url": {
@@ -1581,31 +1612,22 @@
 		"new_url": {
 			"placeholder": "O URL convertido será exibido aqui"
 		},
-		"copy_button": "Copiar",
 		"preview_label": "Antevisão",
+		"copy_button": "Copiar",
+		"copied_text": "Copiado!",
 		"preview": {
 			"alt": "Visualização de crachá"
 		},
-		"copied_text": "Copiado!",
 		"copy_error": "Não foi possível copiar o texto: ${error}",
 		"copy_fail_alert": "A cópia falhou!"
 	},
 	"404": {
 		"title": "Página não encontrada",
+		"description": "O caminho que você procurava se dissolveu em névoa. Foi um passo em falso, uma mudança esquecida? Permita-nos guiá-lo de volta à costa ou talvez fazer uma pausa para um jogo em meio ao vazio silencioso.",
 		"pageNotFoundText": "Ups! Parece que acedeu a uma página que não existe.",
 		"homepageButton": "Voltar à Página Inicial"
 	},
 	"code_block": {
-		"download": {
-			"dataset": {
-				"tip": "Descarregar código"
-			}
-		},
-		"execute": {
-			"dataset": {
-				"tip": "Executar código"
-			}
-		},
 		"copy": {
 			"dataset": {
 				"tip": "copiar para a área de transferência"
@@ -1616,15 +1638,25 @@
 				"tip": "Copiado para a área de transferência!"
 			}
 		},
+		"download": {
+			"dataset": {
+				"tip": "Descarregar código"
+			}
+		},
+		"execute": {
+			"dataset": {
+				"tip": "Executar código"
+			}
+		},
 		"copy_failed": "Não foi possível copiar para a área de transferência: ${error}"
 	},
 	"pow_captcha": {
 		"initial": "Eu não sou um robô",
 		"verifying": "Verificando ...",
 		"solved": "Verificação bem-sucedida",
+		"wasm_disabled": "Ative o WASM para uma verificação mais rápida",
 		"error": "Verificação falhou",
-		"errorMessage": "Verificação falhou: ${error}",
-		"wasm_disabled": "Ative o WASM para uma verificação mais rápida"
+		"errorMessage": "Verificação falhou: ${error}"
 	},
 	"zxcvbn": {
 		"warnings": {

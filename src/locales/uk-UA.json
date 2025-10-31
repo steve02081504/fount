@@ -6,12 +6,12 @@
 			"start": "Запуск сервера",
 			"starting": "Сервер запускається...",
 			"ready": "Сервер запущено",
+			"standingBy": "Standing by...",
 			"showUrl": {
 				"https": "HTTPS сервер працює на ${url}",
 				"http": "HTTP сервер працює на ${url}"
 			},
 			"localUrl": "Доступ до fount з інших пристроїв у тій самій мережі: ${url}",
-			"standingBy": "Standing by...",
 			"update": {
 				"restarting": "Була виявлена ​​нова версія та оновлення перезапускається..."
 			}
@@ -20,32 +20,32 @@
 			"restartingJob": "Перезапуск завдання ${parttype} ${partname} для користувача ${username}: ${uid}"
 		},
 		"ipc": {
-			"sendCommandFailed": "Не вдалося надіслати команду: ${error}",
-			"invalidCommand": "Невірна команда, будь ласка, використовуйте \"fount run <тип компонента> <ім'я користувача> <назва компонента> <параметри...>\"",
+			"serverStarted": "IPC-сервер запущено",
+			"instanceRunning": "Інший екземпляр вже запущено",
 			"runPartLog": "Виконання ${parttype} ${partname} від імені ${username}, параметри: ${args}",
 			"invokePartLog": "Виклик ${parttype} ${partname} від імені ${username}, параметри: ${invokedata}",
+			"invalidCommand": "Невірна команда, будь ласка, використовуйте \"fount run <тип компонента> <ім'я користувача> <назва компонента> <параметри...>\"",
+			"invalidCommandFormat": "Невірний формат команди",
 			"unsupportedCommand": "Тип команди не підтримується",
 			"processMessageError": "Помилка при обробці IPC-повідомлення: ${error}",
-			"invalidCommandFormat": "Невірний формат команди",
+			"sendCommandFailed": "Не вдалося надіслати команду: ${error}",
 			"socketError": "Помилка сокета: ${error}",
-			"instanceRunning": "Інший екземпляр вже запущено",
-			"serverStarted": "IPC-сервер запущено",
 			"parseResponseFailed": "Не вдалося розібрати відповідь сервера: ${error}",
 			"cannotParseResponse": "Неможливо розібрати відповідь сервера",
 			"unknownError": "Невідома помилка"
 		},
 		"partManager": {
+			"partInited": "${parttype} компонент ${partname} був ініціалізований",
+			"partLoaded": "${parttype} компонент ${partname} завантажено",
 			"git": {
+				"updating": "Оновлення з віддаленого репозиторію...",
+				"upToDate": "У вас остання версія.",
+				"localAhead": "Локальна гілка випереджає віддалену. Оновлення не потрібне.",
 				"noUpstream": "Для гілки '${currentBranch}' не налаштовано віддалену гілку, перевірку оновлень пропущено.",
 				"dirtyWorkingDirectory": "Робочий каталог нечистий. Будь ласка, збережіть або закомітьте зміни перед оновленням.",
-				"updating": "Оновлення з віддаленого репозиторію...",
-				"localAhead": "Локальна гілка випереджає віддалену. Оновлення не потрібне.",
 				"diverged": "Локальна та віддалена гілки розійшлися. Примусове оновлення...",
-				"upToDate": "У вас остання версія.",
 				"updateFailed": "Не вдалося оновити компонент з віддаленого репозиторію: ${error}"
-			},
-			"partInited": "${parttype} компонент ${partname} був ініціалізований",
-			"partLoaded": "${parttype} компонент ${partname} завантажено"
+			}
 		},
 		"web": {
 			"requestReceived": "Отримано запит: ${method} ${url}"
@@ -54,11 +54,11 @@
 			"setLanguagePreference": "Користувач ${username} встановив бажану мову: ${preferredLanguages}"
 		},
 		"auth": {
+			"accountLockedLog": "Обліковий запис користувача ${username} заблоковано через численні невдалі спроби входу",
 			"tokenVerifyError": "Помилка перевірки токена: ${error}",
 			"refreshTokenError": "Помилка оновлення токена: ${error}",
 			"logoutRefreshTokenProcessError": "Помилка обробки оновлення токена при виході: ${error}",
-			"revokeTokenNoJTI": "Неможливо відкликати токен без jti",
-			"accountLockedLog": "Обліковий запис користувача ${username} заблоковано через численні невдалі спроби входу"
+			"revokeTokenNoJTI": "Неможливо відкликати токен без jti"
 		},
 		"verification": {
 			"codeGeneratedLog": "Код підтвердження: ${code} (дійсний 60 секунд)",
@@ -66,10 +66,10 @@
 			"codeNotifyBody": "Ваш код підтвердження: ${code} (дійсний 60 секунд)"
 		},
 		"tray": {
-			"readIconFailed": "Не вдалося прочитати файл іконки: ${error}",
-			"createTrayFailed": "Не вдалося створити іконку в треї: ${error}",
 			"title": "fount",
 			"tooltip": "fount",
+			"readIconFailed": "Не вдалося прочитати файл іконки: ${error}",
+			"createTrayFailed": "Не вдалося створити іконку в треї: ${error}",
 			"items": {
 				"open": {
 					"title": "Відкрити",
@@ -100,52 +100,55 @@
 			"botStarted": "Персонаж ${charname} увійшов у систему на Telegram Bot ${botusername}"
 		},
 		"path": {
+			"protocol": {
+				"description": "URL:протокол fount"
+			},
 			"update": {
-				"skippingFountUpdate": "Оскільки файл .noupdate існує, оновлення джерела пропускається",
+				"skippingFountUpdate": "Оскільки файл .noupdate існує, оновлення fount пропускається",
 				"skippingDenoUpgradeDocker": "Пропустити оновлення Deno в середовищі Docker"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Ярлик на робочому столі створено в ${path}",
 				"startMenuShortcutCreated": "Ярлик меню «Пуск» створено в ${path}",
 				"protocolHandlerRegistered": "обробник протоколу fount:// зареєстровано.",
+				"shortcutNotSupported": "Попередження: ваша операційна система (${os}) не підтримує створення ярликів на робочому столі.",
 				"osacompileNotFound": "Помилка: 'osacompile' не знайдено. Не вдалося створити програму macOS.",
 				"lsregisterFailed": "Попередження: використання lsregister для реєстрації програми в LaunchServices не вдалося.",
-				"createDesktopAppFailed": "Помилка: не вдалося створити настільну програму.",
-				"shortcutNotSupported": "Попередження: ваша операційна система (${os}) не підтримує створення ярликів на робочому столі."
+				"createDesktopAppFailed": "Помилка: не вдалося створити настільну програму."
 			},
 			"git": {
-				"repoNotFound": "Git-репозиторій фонту не знайдено. Ініціалізація нового...",
+				"repoNotFound": "Git-репозиторій fountу не знайдено. Ініціалізація нового...",
 				"fetchingAndResetting": "Отримання з віддаленого сховища та скидання до основного...",
-				"fetchFailed": "Не вдалося отримати з «походження».",
 				"localChangesDetected": "Виявлено локальні зміни, відмінності буде збережено перед перезаписом.",
 				"backupSavedTo": "Резервну копію ваших локальних змін збережено в: ${path}",
+				"updatingFromRemote": "Оновлення з віддаленого сховища...",
+				"alreadyUpToDate": "Вже останній.",
+				"localBranchAhead": "Локальна гілка попереду віддаленої гілки. Оновлення не потрібні.",
+				"branchesDiverged": "Локальні та віддалені гілки були розгалужені. Виконується примусове оновлення...",
 				"notOnBranch": "Не на гілці, переключіться на «master»...",
 				"noUpstreamBranch": "Попередження: для гілки '${branch}' не налаштовано вихідну гілку. Встановлення висхідного потоку на «вихідний/основний».",
 				"dirtyWorkingDirectory": "Попередження: робочий каталог не чистий. Внесіть або зафіксуйте свої зміни перед оновленням.",
-				"updatingFromRemote": "Оновлення з віддаленого сховища...",
-				"localBranchAhead": "Локальна гілка попереду віддаленої гілки. Оновлення не потрібні.",
-				"branchesDiverged": "Локальні та віддалені гілки були розгалужені. Виконується примусове оновлення...",
-				"alreadyUpToDate": "Вже останній.",
 				"notInstalled": "Git не встановлено, намагаюся встановити...",
-				"installFailedWinget": "Оскільки встановлення Winget не вдалося, Git неможливо встановити. Будь ласка, встановіть його вручну.",
-				"installFailedManual": "Не вдалося встановити Git, будь ласка, встановіть його вручну.",
 				"notInstalledSkippingPull": "Git не встановлено, пропустіть git pull",
-				"repoNotFoundSkippingPull": "Репозиторій не знайдено, пропустіть git pull"
+				"repoNotFoundSkippingPull": "Репозиторій не знайдено, пропустіть git pull",
+				"fetchFailed": "Не вдалося отримати з «походження».",
+				"installFailedWinget": "Оскільки встановлення Winget не вдалося, Git неможливо встановити. Будь ласка, встановіть його вручну.",
+				"installFailedManual": "Не вдалося встановити Git, будь ласка, встановіть його вручну."
 			},
 			"deno": {
-				"installingTermux": "Встановлення Deno для Termux...",
 				"missing": "Deno не знайдено, встановлення відбувається автоматично...",
-				"installFailedFallback": "Помилка встановлення Deno, спроба автоматичного встановлення до папки шляху до джерела...",
-				"isRequired": "Deno не знайдено, фонт неможливо запустити без Deno",
+				"isRequired": "Deno не знайдено, fount неможливо запустити без Deno",
+				"installingTermux": "Встановлення Deno для Termux...",
+				"installFailedFallback": "Помилка встановлення Deno, спроба автоматичного встановлення до папки шляху до fount...",
 				"notWorking": "З якоїсь причини Deno не працює, ви можете приєднатися до https://discord.gg/deno для підтримки",
-				"upgradeFailedTermux": "Не вдалося виконати команду оновлення Deno. Спроба повторно встановити Deno для Termux...",
-				"upgradeFailed": "Попередження: можливо, оновлення Deno не вдалося. Будь ласка, перевірте наявність помилок."
+				"upgradeFailed": "Попередження: можливо, оновлення Deno не вдалося. Будь ласка, перевірте наявність помилок.",
+				"upgradeFailedTermux": "Не вдалося виконати команду оновлення Deno. Спроба повторно встановити Deno для Termux..."
 			},
 			"install": {
-				"rootWarning1": "Не рекомендується: запуск fount від імені root надає повний системний доступ до всіх компонентів fount.",
-				"rootWarning2": "Якщо ви не знаєте, що робите, рекомендується запускати fount як звичайний користувач.",
 				"installingDependencies": "Встановлення залежностей...",
-				"untrustedPartsWarning": "Не встановлюйте ненадійні компоненти джерела у вашу систему, вони можуть зробити все, що завгодно."
+				"untrustedPartsWarning": "Не встановлюйте ненадійні компоненти fount у вашу систему, вони можуть зробити все, що завгодно.",
+				"rootWarning1": "Не рекомендується: запуск fount від імені root надає повний системний доступ до всіх компонентів fount.",
+				"rootWarning2": "Якщо ви не знаєте, що робите, рекомендується запускати fount як звичайний користувач."
 			},
 			"clean": {
 				"removingCaches": "Видалення кешу...",
@@ -154,29 +157,30 @@
 				"cleaningOldPwshModules": "Очищення старих модулів pwsh..."
 			},
 			"keepalive": {
-				"failedToStart": "Навіть після спроб автоматичного ремонту фонтан не запускається протягом короткого періоду часу. Перевірте журнали на наявність помилок.",
+				"initComplete": "Повторну ініціалізацію завершено. Спроба перезапустити Fount...",
 				"autoInitDisabled": "fount було перезапущено кілька разів за останній короткий проміжок часу, але автоматичну повторну ініціалізацію було вимкнено через наявність файлу .noautoinit. Вихід.",
 				"restartingTooFast": "fount було перезапущено кілька разів за короткий проміжок часу. Примусова повторна ініціалізація...",
-				"initFailed": "Помилка ініціалізації фонту. Вихід.",
-				"initComplete": "Повторну ініціалізацію завершено. Спроба перезапустити Fount..."
+				"failedToStart": "Навіть після спроб автоматичного ремонту fountан не запускається протягом короткого періоду часу. Перевірте журнали на наявність помилок.",
+				"initFailed": "Помилка ініціалізації fountу. Вихід."
 			},
 			"remove": {
-				"removingFount": "Видалення фонту...",
+				"removingFount": "Видалення fountу...",
+				"fountUninstallationComplete": "видалення fountу завершено.",
+				"removingFountInstallationDir": "Видалення каталогу встановлення шрифту...",
+				"fountInstallationDirRemoved": "Каталог встановлення fountу видалено.",
 				"removingFountFromPath": "Видалення шрифту зі ШЛЯХУ...",
 				"removingProtocolHandler": "Видалення обробника протоколу fount://...",
-				"removingFountFromGitSafeDir": "Видалення фонту з git safe.directory...",
+				"protocolHandlerRemoved": "Обробник протоколу fount:// видалено.",
+				"removeProtocolHandlerFailed": "Не вдалося видалити обробник протоколу fount://: ${message}",
+				"removingFountFromGitSafeDir": "Видалення fountу з git safe.directory...",
 				"removingInstalledSystemPackages": "Видалення встановлених системних пакетів...",
 				"uninstallingDeno": "Видалення Deno...",
-				"removingFountInstallationDir": "Видалення каталогу встановлення шрифту...",
-				"fountInstallationDirRemoved": "Каталог встановлення фонту видалено.",
-				"fountUninstallationComplete": "видалення фонту завершено.",
+				"removeDenoFailed": "Не вдалося видалити Deno: ${message}",
 				"removingFountPwshFromProfile": "Видалення fount-pwsh із профілю PowerShell...",
 				"fountPwshRemovedFromProfile": "fount-pwsh видалено з профілю PowerShell.",
 				"pwshProfileNotFound": "Профіль PowerShell не знайдено, пропускаючи видалення fount-pwsh із профілю.",
 				"uninstallingFountPwsh": "Видалення fount-pwsh...",
 				"uninstallFountPwshFailed": "Не вдалося видалити fount-pwsh: ${message}",
-				"protocolHandlerRemoved": "Обробник протоколу fount:// видалено.",
-				"removeProtocolHandlerFailed": "Не вдалося видалити обробник протоколу fount://: ${message}",
 				"removingTerminalProfile": "Видалення профілю Windows Terminal...",
 				"terminalProfileRemoved": "Каталог Windows Terminal Profile видалено.",
 				"terminalProfileNotFound": "Каталог профілю Windows Terminal не знайдено.",
@@ -191,22 +195,14 @@
 				"uninstallingGit": "Видалення Git...",
 				"uninstallingChrome": "Видалення Chrome...",
 				"uninstallingWinget": "Видалення Winget...",
-				"removeDenoFailed": "Не вдалося видалити Deno: ${message}",
 				"removingBackgroundRunner": "Видалення фонових програм...",
 				"removeBackgroundRunnerFailed": "Не вдалося видалити фонову програму: ${message}"
-			},
-			"protocol": {
-				"description": "URL:протокол джерела"
 			}
 		}
 	},
 	"installer_wait_screen": {
 		"title": "Ласкаво просимо до fount!",
-		"language_selector": {
-			"search": {
-				"placeholder": "Пошук мови..."
-			}
-		},
+		"description": "Слідкуйте за процесом інсталяції та ознайомтеся з функціями в ньому. fount буде готовий до запуску за мить.",
 		"hero": {
 			"title": "Іскра думки, живий співрозмовник",
 			"description": "fount — це платформа для взаємодії з персонажами, керована AI, створена, щоб надати можливості саме <i>вам</i>. Це міст, що з'єднує вас із вигаданими персонажами, дозволяючи вам легко спілкуватися з ними, створювати власних персонажів та ділитися ними зі світом."
@@ -224,8 +220,13 @@
 			"description": "fount повною мірою використовує можливості HTML, дозволяючи персонажам виражати себе за допомогою форматованого тексту, зображень і навіть інтерактивних елементів. Ведіть динамічні та захоплюючі групові чати з кількома персонажами одночасно."
 		},
 		"feature4": {
-			"title": "Необмежена інтеграція з AI-джерелами",
-			"description": "fount пропонує неперевершений вибір та гнучкість. Підключайтеся до <i>будь-якого</i> AI-джерела — OpenAI, Claude, OpenRouter, NovelAI та інших. Логіка комунікації буде формуватися за <i>вашим</i> бажанням, силою коду."
+			"title": "Необмежена інтеграція з AI-fountми",
+			"description": "fount пропонує неперевершений вибір та гнучкість. Підключайтеся до <i>будь-якого</i> AI-fount — OpenAI, Claude, OpenRouter, NovelAI та інших. Логіка комунікації буде формуватися за <i>вашим</i> бажанням, силою коду."
+		},
+		"language_selector": {
+			"search": {
+				"placeholder": "Пошук мови..."
+			}
 		},
 		"theme_selector": {
 			"title": "Оберіть свій вигляд",
@@ -241,6 +242,9 @@
 		},
 		"data_showcase": {
 			"title_prefix": "fount - це ",
+			"title_of": " ",
+			"active_users": "Кількість активних користувачів",
+			"stars": "Зірок на GitHub",
 			"adjectives": [
 				"найрозширюваніший",
 				"найперспективніший",
@@ -248,7 +252,6 @@
 				"найсумісніший",
 				"найкомпактніший і найпотужніший"
 			],
-			"title_of": " ",
 			"nouns": [
 				"AI-віртуальний персонаж ",
 				"Агент ",
@@ -259,9 +262,7 @@
 				"базова платформа",
 				"чатовий фронтенд",
 				"виконувач"
-			],
-			"active_users": "Кількість активних користувачів",
-			"stars": "Зірок на GitHub"
+			]
 		},
 		"footer": {
 			"ready_text": "Готові розпочати свою подорож?",
@@ -280,15 +281,9 @@
 	},
 	"protocolhandler": {
 		"title": "Обробка протоколу fount",
+		"description": "Безшумно та ефективно ця сторінка перетворює ваші наміри на плавний перехід у fount. Вважайте це тихою магією за завісою.",
 		"processing": "Обробка протоколу...",
-		"invalidProtocol": "Невірний протокол",
-		"insufficientParams": "Недостатньо параметрів",
-		"unknownCommand": "Невідома команда",
 		"shellCommandSent": "Команду оболонки надіслано",
-		"shellCommandFailed": "Не вдалося надіслати команду оболонки",
-		"shellCommandError": "Помилка при надсиланні команди оболонки",
-		"fountNotFound": "От халепа :(\n\nНе знайдено fount, можливо, вам потрібно спочатку його встановити?",
-		"unknownError": "От халепа :(\n\nСталася помилка:\n${error}",
 		"runPartConfirm": {
 			"title": "Підтвердити запуск",
 			"message": "Ви впевнені, що хочете запустити ${parttype} ${partname}?",
@@ -301,10 +296,18 @@
 			"buttons": {
 				"retry": "Спробуйте знову"
 			}
-		}
+		},
+		"fountNotFound": "От халепа :(\n\nНе знайдено fount, можливо, вам потрібно спочатку його встановити?",
+		"invalidProtocol": "Невірний протокол",
+		"insufficientParams": "Недостатньо параметрів",
+		"unknownCommand": "Невідома команда",
+		"shellCommandFailed": "Не вдалося надіслати команду оболонки",
+		"shellCommandError": "Помилка при надсиланні команди оболонки",
+		"unknownError": "От халепа :(\n\nСталася помилка:\n${error}"
 	},
 	"startPage": {
 		"title": "fount!",
+		"description": "Ласкаво просимо на поріг fount. Короткий момент підготовки, перш ніж увійти в серце розмов та історій, які чекають на розкриття.",
 		"newTabFailed": {
 			"title": "Не вдалося відкрити нову вкладку",
 			"instruction": "Запуск fount без дозволу на спливаючі вікна щоразу буде на 1-2 секунди повільнішим",
@@ -326,6 +329,7 @@
 	},
 	"tutorial": {
 		"title": "Пройдемо навчання?",
+		"description": "Давайте разом з вами прогуляємося світом fountу. Цей інтерактивний підручник висвітлить шлях і допоможе вам відкрити магію, вплетену в його суть. Ваша пригода починається з розуміння.",
 		"modal": {
 			"title": "Ласкаво просимо до fount!",
 			"instruction": "Бажаєте пройти навчальний курс для початківців?",
@@ -361,6 +365,7 @@
 	"auth": {
 		"title": "Автентифікація",
 		"subtitle": "Дані користувача зберігаються локально",
+		"description": "Тут ви визначаєте свою присутність. Незалежно від того, повертаєтеся до знайомої гавані чи створюєте новий простір для своїх історій, саме тут починається ваша подорож із джерелом.",
 		"usernameLabel": "Ім'я користувача:",
 		"usernameInput": {
 			"placeholder": "Введіть ім'я користувача"
@@ -394,6 +399,13 @@
 				"link": "Увійти"
 			}
 		},
+		"passwordStrength": {
+			"veryWeak": "Дуже слабкий",
+			"weak": "Слабкий",
+			"normal": "Середній",
+			"strong": "Сильний",
+			"veryStrong": "Дуже сильний"
+		},
 		"error": {
 			"passwordMismatch": "Паролі не збігаються.",
 			"loginError": "Помилка входу.",
@@ -406,17 +418,11 @@
 			"accountAlreadyExists": "Такий акаунт вже існує",
 			"powNotSolved": "Будь ласка, спочатку пройдіть перевірку PoW.",
 			"powError": "Помилка перевірки POW"
-		},
-		"passwordStrength": {
-			"veryWeak": "Дуже слабкий",
-			"weak": "Слабкий",
-			"normal": "Середній",
-			"strong": "Сильний",
-			"veryStrong": "Дуже сильний"
 		}
 	},
 	"login_info": {
 		"title": "Інформація для входу",
+		"description": "Безпечний простір для керування вашими обліковими даними для входу в систему Fount — ключ до вашого світу невимовних історій.",
 		"modal": {
 			"title": "Помилка передачі сертифіката",
 			"retrieve_error": "Помилка сталася під час спроби зберегти ваші облікові дані:\n${error}\nВи можете продовжувати, але не можете зберегти інформацію про вхід.",
@@ -429,17 +435,14 @@
 	},
 	"home": {
 		"title": "Головна",
-		"escapeConfirm": "Ви впевнені, що хочете вийти з fount?",
+		"description": "Серце вашого досвіду fount. Тут керуйте мешканцями своєї уяви — персонажами, світами та персонажами. Ваші історії починаються і розгалужуються з цього центрального зв’язку.",
+		"sidebarTitle": "Деталі",
+		"itemDescription": "Оберіть елемент, щоб переглянути деталі.",
+		"noDescription": "Немає опису",
 		"filterInput": {
 			"placeholder": "Пошук..."
 		},
 		"sfwToggle": "Безпечний контент",
-		"sidebarTitle": "Деталі",
-		"itemDescription": "Оберіть елемент, щоб переглянути деталі.",
-		"noDescription": "Немає опису",
-		"alerts": {
-			"fetchHomeRegistryFailed": "Не вдалося отримати реєстр головної сторінки"
-		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "Пошук..."
@@ -454,15 +457,15 @@
 			"subtitle": "Оберіть персонажа та почніть спілкуватися!",
 			"none": "Пусто",
 			"card": {
-				"refreshButton": {
-					"alt": "Оновити",
-					"title": "Оновити"
-				},
 				"noTags": "Без тегів",
 				"version": "Версія",
 				"author": "Автор",
 				"home_page": "Домашня сторінка",
 				"issue_page": "Повідомити про проблему",
+				"refreshButton": {
+					"alt": "Оновити",
+					"title": "Оновити"
+				},
 				"defaultCheckbox": {
 					"title": "Встановити як персонажа за замовчуванням"
 				}
@@ -474,15 +477,15 @@
 			"subtitle": "Оберіть світ і пориньте в нього!",
 			"none": "Пусто",
 			"card": {
-				"refreshButton": {
-					"alt": "Оновити",
-					"title": "Оновити"
-				},
 				"noTags": "Без тегів",
 				"version": "Версія",
 				"author": "Автор",
 				"home_page": "Домашня сторінка",
 				"issue_page": "Повідомити про проблему",
+				"refreshButton": {
+					"alt": "Оновити",
+					"title": "Оновити"
+				},
 				"defaultCheckbox": {
 					"title": "Встановити як світ за замовчуванням"
 				}
@@ -494,25 +497,29 @@
 			"subtitle": "Оберіть персону, проживіть життя.",
 			"none": "Пусто",
 			"card": {
-				"refreshButton": {
-					"alt": "Оновити",
-					"title": "Оновити"
-				},
 				"noTags": "Без тегів",
 				"version": "Версія",
 				"author": "Автор",
 				"home_page": "Домашня сторінка",
 				"issue_page": "Повідомити про проблему",
+				"refreshButton": {
+					"alt": "Оновити",
+					"title": "Оновити"
+				},
 				"defaultCheckbox": {
 					"title": "Встановити як персону за замовчуванням"
 				}
 			}
 		},
+		"escapeConfirm": "Ви впевнені, що хочете вийти з fount?",
+		"alerts": {
+			"fetchHomeRegistryFailed": "Не вдалося отримати реєстр головної сторінки"
+		},
 		"achievements": {
 			"first_login": {
-				"name": "Привіт, джерело!",
+				"name": "Привіт, fount!",
 				"description": "Назустріч новому світу, увійшовши вперше!",
-				"locked_description": "Увійдіть у фонтан один раз."
+				"locked_description": "Увійдіть у fountан один раз."
 			},
 			"sfw_mode_on": {
 				"name": "За тобою хтось стоїть!",
@@ -537,11 +544,15 @@
 		}
 	},
 	"chat": {
-		"new": {
-			"title": "Новий чат"
-		},
 		"title": "Чат",
+		"description": "Де слова летять і розгортаються історії. Спілкуйтеся зі своїми супутниками зі штучним інтелектом, формуйте розповідь і занурюйтеся в припливи та відпливи цифрового діалогу. Тут б'ється серце fount.",
+		"new": {
+			"title": "Новий чат",
+			"description": "Тихе передчуття ще ненаписаної історії. Починається новий чат, чистий лист для нових взаємодій і розгортання оповідей із обраними вами супутниками."
+		},
 		"sidebar": {
+			"noSelection": "Нічого",
+			"noDescription": "Немає опису",
 			"world": {
 				"icon": {
 					"alt": "Іконка світу"
@@ -567,20 +578,21 @@
 						"alt": "Іконка додавання персонажа"
 					}
 				}
-			},
-			"noSelection": "Нічого",
-			"noDescription": "Немає опису"
+			}
+		},
+		"rightSidebar": {
+			"title": "Опис"
 		},
 		"chatArea": {
 			"title": "Чат",
+			"input": {
+				"placeholder": "Введіть повідомлення...\nCtrl+Enter для відправки"
+			},
 			"menuButton": {
 				"title": "Меню"
 			},
 			"menuButtonIcon": {
 				"alt": "Іконка меню"
-			},
-			"input": {
-				"placeholder": "Введіть повідомлення...\nCtrl+Enter для відправки"
 			},
 			"sendButton": {
 				"title": "Надіслати"
@@ -606,9 +618,6 @@
 			"photoButtonIcon": {
 				"alt": "Іконка фото"
 			}
-		},
-		"rightSidebar": {
-			"title": "Опис"
 		},
 		"messageList": {
 			"confirmDeleteMessage": "Ви впевнені, що хочете видалити це повідомлення?"
@@ -733,18 +742,25 @@
 	"chat_history": {
 		"title": "Історія чатів",
 		"pageTitle": "Історія чатів",
+		"description": "Подорож діалогами в минуле. Тут зберігаються спогади про розмови — сортуйте, фільтруйте та переглядайте історії, які ви сплели зі своїми компаньйонами зі штучним інтелектом. Тиха бібліотека цифрових відлунь.",
+		"filterInput": {
+			"placeholder": "Пошук..."
+		},
 		"sortOptions": {
 			"time_desc": "За часом (новіші)",
 			"time_asc": "За часом (старіші)"
-		},
-		"filterInput": {
-			"placeholder": "Пошук..."
 		},
 		"selectAll": "Вибрати все",
 		"buttons": {
 			"reverseSelect": "Інвертувати вибір",
 			"deleteSelected": "Видалити вибране",
 			"exportSelected": "Експортувати вибране"
+		},
+		"chatItemButtons": {
+			"continue": "Продовжити",
+			"copy": "Копіювати",
+			"export": "Експортувати",
+			"delete": "Видалити"
 		},
 		"confirmDeleteChat": "Ви впевнені, що хочете видалити історію чату з ${chars}?",
 		"confirmDeleteMultiChats": "Ви впевнені, що хочете видалити вибрані ${count} історії чатів?",
@@ -754,107 +770,104 @@
 			"copyError": "Помилка копіювання",
 			"deleteError": "Помилка видалення",
 			"exportError": "Помилка експорту"
-		},
-		"chatItemButtons": {
-			"continue": "Продовжити",
-			"copy": "Копіювати",
-			"export": "Експортувати",
-			"delete": "Видалити"
 		}
 	},
 	"easynew": {
 		"title": "Швидке створення",
+		"description": "Швидко створюйте нові частини шрифту, такі як персонажі, світи та плагіни, використовуючи попередньо визначені або власні шаблони. До вашого наступного твору всього кілька кліків.",
+		"info": {
+			"description": "Ці шаблони можна використовувати лише для швидкого створення простих компонентів, складні компоненти все ще потребують ручного створення."
+		},
 		"cardTitle": "Створити новий компонент з шаблону",
 		"templateSelect": {
 			"label": "Оберіть шаблон"
 		},
-		"partName": {
-			"label": "Назва компонента",
-			"placeholder": "Дайте назву вашому новому компоненту"
-		},
-		"description": {
-			"label": "Опис",
-			"placeholder": "Коротко опишіть, про що цей компонент."
-		},
-		"descriptionMarkdown": {
-			"label": "Опис (Markdown)",
-			"placeholder": "Підтримує Markdown для більш детального форматування."
-		},
-		"imageUpload": {
-			"label": "Зображення профілю"
-		},
-		"charDef": {
-			"heading": "Визначення персонажа"
-		},
-		"personality": {
-			"label": "Характер",
-			"placeholder": "Опишіть основні риси характеру персонажа."
-		},
-		"scenario": {
-			"label": "Сценарій",
-			"placeholder": "Передісторія або оточення персонажа."
-		},
-		"mesExample": {
-			"label": "Приклад повідомлення",
-			"placeholder": "Приклади того, що може сказати персонаж."
-		},
-		"firstMessage": {
-			"label": "Перше повідомлення",
-			"placeholder": "Перша фраза, яку каже персонаж."
-		},
-		"personaDef": {
-			"heading": "Визначення персони"
-		},
-		"personaUserName": {
-			"label": "Ваше ім'я в чаті",
-			"placeholder": "Наприклад: Капітан, Дослідник"
-		},
-		"personaAppearance": {
-			"label": "Зовнішність",
-			"placeholder": "Опишіть свою зовнішність."
-		},
-		"personaPersonality": {
-			"label": "Характер",
-			"placeholder": "Опишіть риси свого характеру."
-		},
-		"worldDef": {
-			"heading": "Визначення світу"
-		},
-		"worldPrompt": {
-			"label": "Промпт світу",
-			"placeholder": "Опишіть правила світу, оточення та будь-який глобальний контекст для рольової гри."
-		},
-		"worldGreeting": {
-			"label": "Привітання світу",
-			"placeholder": "Перше повідомлення, яке світ надсилає користувачеві."
-		},
-		"author": {
-			"label": "Автор",
-			"placeholder": "Хто автор цього компонента?"
-		},
-		"version": {
-			"label": "Версія",
-			"placeholder": "Наприклад: 0.0.1"
-		},
-		"tags": {
-			"label": "Теги",
-			"placeholder": "Теги, розділені комами"
-		},
-		"homePage": {
-			"label": "Домашня сторінка",
-			"placeholder": "URL домашньої сторінки компонента"
-		},
-		"issuePage": {
-			"label": "Сторінка проблем",
-			"placeholder": "URL сторінки проблем компонента"
-		},
-		"createButton": "Створити компонент",
-		"alerts": {
-			"success": "Компонент '${partName}' створено успішно!",
-			"error": "Помилка: ${message}"
-		},
-		"info": {
-			"description": "Ці шаблони можна використовувати лише для швидкого створення простих компонентів, складні компоненти все ще потребують ручного створення."
+		"form": {
+			"partName": {
+				"label": "Назва компонента",
+				"placeholder": "Дайте назву вашому новому компоненту"
+			},
+			"description": {
+				"label": "Опис",
+				"placeholder": "Коротко опишіть, про що цей компонент."
+			},
+			"descriptionMarkdown": {
+				"label": "Опис (Markdown)",
+				"placeholder": "Підтримує Markdown для більш детального форматування."
+			},
+			"imageUpload": {
+				"label": "Зображення профілю"
+			},
+			"charDef": {
+				"heading": "Визначення персонажа"
+			},
+			"personality": {
+				"label": "Характер",
+				"placeholder": "Опишіть основні риси характеру персонажа."
+			},
+			"scenario": {
+				"label": "Сценарій",
+				"placeholder": "Передісторія або оточення персонажа."
+			},
+			"mesExample": {
+				"label": "Приклад повідомлення",
+				"placeholder": "Приклади того, що може сказати персонаж."
+			},
+			"firstMessage": {
+				"label": "Перше повідомлення",
+				"placeholder": "Перша фраза, яку каже персонаж."
+			},
+			"personaDef": {
+				"heading": "Визначення персони"
+			},
+			"personaUserName": {
+				"label": "Ваше ім'я в чаті",
+				"placeholder": "Наприклад: Капітан, Дослідник"
+			},
+			"personaAppearance": {
+				"label": "Зовнішність",
+				"placeholder": "Опишіть свою зовнішність."
+			},
+			"personaPersonality": {
+				"label": "Характер",
+				"placeholder": "Опишіть риси свого характеру."
+			},
+			"worldDef": {
+				"heading": "Визначення світу"
+			},
+			"worldPrompt": {
+				"label": "Промпт світу",
+				"placeholder": "Опишіть правила світу, оточення та будь-який глобальний контекст для рольової гри."
+			},
+			"worldGreeting": {
+				"label": "Привітання світу",
+				"placeholder": "Перше повідомлення, яке світ надсилає користувачеві."
+			},
+			"author": {
+				"label": "Автор",
+				"placeholder": "Хто автор цього компонента?"
+			},
+			"version": {
+				"label": "Версія",
+				"placeholder": "Наприклад: 0.0.1"
+			},
+			"tags": {
+				"label": "Теги",
+				"placeholder": "Теги, розділені комами"
+			},
+			"homePage": {
+				"label": "Домашня сторінка",
+				"placeholder": "URL домашньої сторінки компонента"
+			},
+			"issuePage": {
+				"label": "Сторінка проблем",
+				"placeholder": "URL сторінки проблем компонента"
+			},
+			"createButton": "Створити компонент",
+			"alerts": {
+				"success": "Компонент '${partName}' створено успішно!",
+				"error": "Помилка: ${message}"
+			}
 		},
 		"achievements": {
 			"create_part": {
@@ -866,6 +879,7 @@
 	},
 	"import": {
 		"title": "Імпорт",
+		"description": "Принесіть своїх улюблених персонажів, світи та конфігурації в обійми Fount. З файлу чи вставленого тексту, тут у ваш особистий гобелен вплітаються нові елементи.",
 		"tabs": {
 			"fileImport": "Імпорт з файлу",
 			"textImport": "Імпорт тексту"
@@ -882,6 +896,14 @@
 		"buttons": {
 			"import": "Імпортувати"
 		},
+		"fileItem": {
+			"removeButton": {
+				"title": "Видалити"
+			},
+			"removeButtonIcon": {
+				"alt": "Видалити"
+			}
+		},
 		"alerts": {
 			"importSuccess": "Імпортовано успішно",
 			"importFailed": "Помилка імпорту: ${error}",
@@ -892,31 +914,20 @@
 			"fileImportFailed": "Помилка імпорту файлу: ${message}",
 			"noTextContent": "Будь ласка, введіть текстовий вміст",
 			"textImportFailed": "Помилка імпорту тексту: ${message}",
-			"unknownError": "Невідома помилка",
 			"handler": "Обробник",
-			"error": "Помилка"
-		},
-		"fileItem": {
-			"removeButton": {
-				"title": "Видалити"
-			},
-			"removeButtonIcon": {
-				"alt": "Видалити"
-			}
+			"error": "Помилка",
+			"unknownError": "Невідома помилка"
 		}
 	},
 	"export": {
 		"title": "Експортер компонентів",
 		"pageTitle": "Експортер компонентів",
 		"pageSubtitle": "Експортуйте ваш улюблений вміст",
+		"description": "Експортуйте ваші твори шрифту. Цей інструмент збирає ваші вибрані частини в простий zip-файл для безпечного зберігання або спільного використання.",
 		"steps": {
 			"partType": "Виберіть тип",
 			"part": "Виберіть компоненти",
 			"action": "Експорт"
-		},
-		"options": {
-			"withData": "Містить файли даних",
-			"withDataDescription": "Містить файли, позначені як дані, такі як спогади персонажа."
 		},
 		"labels": {
 			"partType": "Оберіть тип компонента",
@@ -932,12 +943,35 @@
 		"partSearch": {
 			"placeholder": "Шукати..."
 		},
+		"options": {
+			"withData": "Містить файли даних",
+			"withDataDescription": "Містить файли, позначені як дані, такі як спогади персонажа."
+		},
 		"export": {
 			"title": "Опції експорту"
 		},
 		"editor": {
 			"disabledIndicator": "Будь ласка, спочатку оберіть компонент",
 			"disabledIndicatorHint": "Виберіть тип компонента та компонент, який ви хочете експортувати"
+		},
+		"buttons": {
+			"export": "Експортувати",
+			"exportWithData": "Експортувати (з даними)",
+			"copyShareLink": "Копіювати посилання для поширення",
+			"generateShareLink": "Створити посилання для поширення",
+			"generateShareLinkWithData": "Згенерувати посилання (з даними)"
+		},
+		"shareMenu": {
+			"title": "Оберіть тривалість поширення",
+			"1h": "1 година",
+			"12h": "12 годин",
+			"24h": "24 години",
+			"72h": "72 години",
+			"cancel": "Скасувати"
+		},
+		"litterbox": {
+			"poweredBy": "Функція поширення працює на базі litterbox.moe",
+			"sponsorLink": "Підтримайте їх"
 		},
 		"errorMessage": {
 			"icon": {
@@ -952,25 +986,6 @@
 			"shareLinkCopied": "Посилання для поширення скопійовано в буфер обміну!",
 			"shareFailed": "Не вдалося створити посилання для поширення."
 		},
-		"shareMenu": {
-			"title": "Оберіть тривалість поширення",
-			"1h": "1 година",
-			"12h": "12 годин",
-			"24h": "24 години",
-			"72h": "72 години",
-			"cancel": "Скасувати"
-		},
-		"litterbox": {
-			"poweredBy": "Функція поширення працює на базі litterbox.moe",
-			"sponsorLink": "Підтримайте їх"
-		},
-		"buttons": {
-			"export": "Експортувати",
-			"exportWithData": "Експортувати (з даними)",
-			"copyShareLink": "Копіювати посилання для поширення",
-			"generateShareLink": "Створити посилання для поширення",
-			"generateShareLinkWithData": "Згенерувати посилання (з даними)"
-		},
 		"achievements": {
 			"share_part": {
 				"name": "Ділитися - значить піклуватися",
@@ -981,17 +996,13 @@
 	},
 	"uninstall": {
 		"title": "Видалення",
+		"description": "Якщо ви вирішите розлучитися, це місце дозволить витончено попрощатися. Підтвердьте видалення компонентів або самого фону. Шляхи розходяться, але спогади можуть залишитися.",
 		"titleWithName": "Видалити ${type}/${name}",
 		"confirmMessage": "Ви впевнені, що хочете видалити ${type}: ${name}?",
 		"invalidParamsTitle": "Невірні параметри",
 		"infoMessage": {
 			"icon": {
 				"alt": "Іконка інформації"
-			}
-		},
-		"errorMessage": {
-			"icon": {
-				"alt": "Іконка помилки"
 			}
 		},
 		"buttons": {
@@ -1004,13 +1015,17 @@
 			"failed": "Помилка видалення: ${error}",
 			"invalidParams": "Невірні параметри запиту.",
 			"httpError": "HTTP-помилка! Статус: ${status}"
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Іконка помилки"
+			}
 		}
 	},
 	"userSettings": {
 		"title": "Налаштування користувача",
 		"PageTitle": "Налаштування користувача",
-		"apiError": "Помилка API запиту: ${message}",
-		"generalError": "Сталася помилка: ${message}",
+		"description": "Звертайте увагу на деталі вашої особистості. Керуйте своїм профілем, захищайте свій доступ і переглядайте підключені пристрої. Тиха святиня для вашого рахунку.",
 		"userInfo": {
 			"title": "Інформація про користувача",
 			"usernameLabel": "Ім'я користувача:",
@@ -1043,19 +1058,50 @@
 		},
 		"userDevices": {
 			"title": "Пристрої/сесії користувача",
-			"refreshButton": {
-				"title": "Оновити список"
-			},
-			"refreshButtonIcon": {
-				"alt": "Іконка оновлення списку"
-			},
 			"noDevicesFound": "Не знайдено жодних пристроїв або сесій.",
 			"deviceInfo": "ID пристрою: ${deviceId}",
 			"thisDevice": "Цей пристрій",
 			"deviceDetails": "Останній раз онлайн: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
 			"revokeButton": "Відкликати",
 			"revokeConfirm": "Ви впевнені, що хочете вийти з цього пристрою/сесії?",
-			"revokeSuccess": "Пристрій/сесію успішно відкликано."
+			"revokeSuccess": "Пристрій/сесію успішно відкликано.",
+			"refreshButton": {
+				"title": "Оновити список"
+			},
+			"refreshButtonIcon": {
+				"alt": "Іконка оновлення списку"
+			}
+		},
+		"apiKeys": {
+			"title": "Ключ API",
+			"description": "Керуйте ключем API для зовнішніх програм.",
+			"input": {
+				"placeholder": "Опис нового ключа"
+			},
+			"createButton": "створити",
+			"noKeysFound": "Клавіш API не знайдено.",
+			"keyDetails": "Опис: ${description} | Створено в: ${createdAt} | Востаннє використаний: ${lastUsed}",
+			"neverUsed": "Ніколи не використовувався",
+			"revokeButton": "Відкликати",
+			"revokeConfirm": "Ви впевнені, що хочете відкликати цей ключ API?",
+			"revokeSuccess": "Ключ API успішно відкликаний.",
+			"errorDescriptionRequired": "Необхідний опис.",
+			"createSuccess": "Ключ API був створений успішно.",
+			"refreshButton": {
+				"title": "Оновити список"
+			},
+			"refreshButtonIcon": {
+				"alt": "Іконка оновлення списку"
+			}
+		},
+		"newApiKey": {
+			"title": "Створено новий ключ API",
+			"warning": "Будь ласка, скопіюйте свій новий ключ API. Ви більше не зможете це побачити!",
+			"closeButton": "Я скопіював свій ключ",
+			"copyButton": {
+				"title": "Скопіюйте новий ключ API"
+			},
+			"copiedAlert": "Ключ API скопійовано в буфер обміну!"
 		},
 		"logout": {
 			"title": "Вихід",
@@ -1080,58 +1126,32 @@
 			"confirmButton": "Підтвердити",
 			"cancelButton": "Скасувати"
 		},
-		"apiKeys": {
-			"title": "Ключ API",
-			"description": "Керуйте ключем API для зовнішніх програм.",
-			"input": {
-				"placeholder": "Опис нового ключа"
-			},
-			"createButton": "створити",
-			"noKeysFound": "Клавіш API не знайдено.",
-			"refreshButton": {
-				"title": "Оновити список"
-			},
-			"refreshButtonIcon": {
-				"alt": "Іконка оновлення списку"
-			},
-			"keyDetails": "Опис: ${description} | Створено в: ${createdAt} | Востаннє використаний: ${lastUsed}",
-			"neverUsed": "Ніколи не використовувався",
-			"revokeButton": "Відкликати",
-			"revokeConfirm": "Ви впевнені, що хочете відкликати цей ключ API?",
-			"revokeSuccess": "Ключ API успішно відкликаний.",
-			"errorDescriptionRequired": "Необхідний опис.",
-			"createSuccess": "Ключ API був створений успішно."
-		},
-		"newApiKey": {
-			"title": "Створено новий ключ API",
-			"warning": "Будь ласка, скопіюйте свій новий ключ API. Ви більше не зможете це побачити!",
-			"copyButton": {
-				"title": "Скопіюйте новий ключ API"
-			},
-			"closeButton": "Я скопіював свій ключ",
-			"copiedAlert": "Ключ API скопійовано в буфер обміну!"
-		}
+		"apiError": "Помилка API запиту: ${message}",
+		"generalError": "Сталася помилка: ${message}"
 	},
 	"languageSettings": {
 		"title": "Налаштування мови",
-		"description": "Керуйте своїми мовними уподобаннями тут. Мови в списку будуть мати перевагу над налаштуваннями браузера в порядку.",
+		"pageTitle": "Налаштування мови",
+		"description": "Керуйте налаштуваннями мови для програми шрифту. Налаштуйте свій досвід за допомогою доступних мовних параметрів.",
+		"pageDescription": "Керуйте своїми мовними уподобаннями тут. Мови в списку будуть мати перевагу над налаштуваннями браузера в порядку.",
 		"availableLanguages": "Наявні мови",
 		"preferredLanguages": "Список мовних пріоритетів",
 		"resetButton": "Скинути",
 		"saveButton": "Зберегти",
-		"noPreferredLanguages": "Бажану мову не вибрано. Буде використано налаштування браузера за замовчуванням.",
-		"savedMessage": "Налаштування мови зберігаються!",
-		"resetMessage": "Налаштування мови були скинуті!",
-		"fetchLocalesFailed": "Не вдалося отримати доступні мови!",
 		"select": {
 			"placeholder": "Виберіть мову..."
 		},
 		"search": {
 			"placeholder": "Пошук мови..."
-		}
+		},
+		"noPreferredLanguages": "Бажану мову не вибрано. Буде використано налаштування браузера за замовчуванням.",
+		"savedMessage": "Налаштування мови зберігаються!",
+		"resetMessage": "Налаштування мови були скинуті!",
+		"fetchLocalesFailed": "Не вдалося отримати доступні мови!"
 	},
 	"themeManage": {
 		"title": "Керування темами",
+		"description": "Виберіть естетику, яка відображає ваш настрій або історію. Попередньо переглядайте та вибирайте з палітри тем, кожна з яких пропонує різну атмосферу для вашої взаємодії з шрифтом. Твій світ, твій стиль.",
 		"instruction": "Оберіть тему!",
 		"search": {
 			"placeholder": "Пошук тем...",
@@ -1186,6 +1206,7 @@
 	"part_config": {
 		"title": "Налаштування компонента",
 		"pageTitle": "Налаштування компонента",
+		"description": "Зазирни в серце fount. Тут ви можете налаштувати параметри його різноманітних компонентів, налаштувавши механізм, який керує вашими враженнями.",
 		"labels": {
 			"partType": "Оберіть тип компонента",
 			"part": "Оберіть компонент"
@@ -1217,16 +1238,32 @@
 	},
 	"aisource_editor": {
 		"title": "Редактор AI-джерел",
+		"description": "Тут ви диригуєте симфонією голосів ШІ. Додайте, виліпіть або заглушіть fount, які дають життя вашим компаньйонам-витокам — тонкий танець коду та уяви.",
 		"fileList": {
 			"title": "Список AI-джерел",
 			"addButton": {
 				"title": "+"
 			}
 		},
-		"configTitle": "Налаштування AI-джерела",
+		"configTitle": "Налаштування AI-fount",
 		"generatorSelect": {
 			"label": "Оберіть генератор",
 			"placeholder": "Будь ласка, оберіть"
+		},
+		"editor": {
+			"disabledIndicator": "Будь ласка, спочатку оберіть генератор"
+		},
+		"common_config_interface": {
+			"loadingModels": "Завантаження моделей...",
+			"availableModels": "Доступні моделі:",
+			"copied": "Скопійовано!",
+			"empty_generator": "Спадковий генератор з цього fount AI має помилку під час завантаження і, можливо, був видалений або перейменований.",
+			"apiKeyRequired": "Для отримання списку моделей потрібен ключ API.",
+			"copyModelIdTooltip": "Натисніть, щоб скопіювати ID моделі",
+			"loadModelsFailed": "Не вдалося завантажити моделі: ${message}"
+		},
+		"prompts": {
+			"newFileName": "Будь ласка, введіть назву нового файлу AI-fount (без розширення):"
 		},
 		"buttons": {
 			"save": "Зберегти",
@@ -1237,56 +1274,38 @@
 				}
 			}
 		},
-		"alerts": {
-			"fetchFileListFailed": "Не вдалося отримати список файлів: ${error}",
-			"fetchGeneratorListFailed": "Не вдалося отримати список генераторів: ${error}",
-			"fetchDefaultsFailed": "Не вдалося отримати компоненти за замовчуванням: ${error}",
-			"fetchFileDataFailed": "Не вдалося отримати дані файлу: ${error}",
-			"noFileSelectedSave": "Не вибрано файл для збереження.",
-			"saveFileFailed": "Не вдалося зберегти файл: ${error}",
-			"setDefaultFailed": "Не вдалося встановити AI-джерело за замовчуванням: ${error}",
-			"noFileSelectedDelete": "Не вибрано файл для видалення.",
-			"deleteFileFailed": "Не вдалося видалити файл: ${error}",
-			"invalidFileName": "Назва файлу не може містити наступні символи: / \\ : * ? \" < > |",
-			"addFileFailed": "Не вдалося додати файл: ${error}",
-			"fetchConfigTemplateFailed": "Не вдалося отримати шаблон конфігурації",
-			"noGeneratorSelectedSave": "Будь ласка, оберіть генератор перед збереженням"
-		},
 		"confirm": {
 			"unsavedChanges": "У вас є незбережені зміни. Ви хочете їх скасувати?",
 			"deleteFile": "Ви впевнені, що хочете видалити файл?",
 			"unsavedChangesBeforeUnload": "У вас є незбережені зміни. Ви впевнені, що хочете покинути цю сторінку?"
 		},
-		"prompts": {
-			"newFileName": "Будь ласка, введіть назву нового файлу AI-джерела (без розширення):"
-		},
-		"editor": {
-			"disabledIndicator": "Будь ласка, спочатку оберіть генератор"
-		},
-		"common_config_interface": {
-			"empty_generator": "Спадковий генератор з цього джерела AI має помилку під час завантаження і, можливо, був видалений або перейменований.",
-			"apiKeyRequired": "Для отримання списку моделей потрібен ключ API.",
-			"loadingModels": "Завантаження моделей...",
-			"availableModels": "Доступні моделі:",
-			"copyModelIdTooltip": "Натисніть, щоб скопіювати ID моделі",
-			"copied": "Скопійовано!",
-			"loadModelsFailed": "Не вдалося завантажити моделі: ${message}"
+		"alerts": {
+			"fetchFileListFailed": "Не вдалося отримати список файлів: ${error}",
+			"fetchGeneratorListFailed": "Не вдалося отримати список генераторів: ${error}",
+			"fetchDefaultsFailed": "Не вдалося отримати компоненти за замовчуванням: ${error}",
+			"fetchFileDataFailed": "Не вдалося отримати дані файлу: ${error}",
+			"fetchConfigTemplateFailed": "Не вдалося отримати шаблон конфігурації",
+			"saveFileFailed": "Не вдалося зберегти файл: ${error}",
+			"deleteFileFailed": "Не вдалося видалити файл: ${error}",
+			"addFileFailed": "Не вдалося додати файл: ${error}",
+			"setDefaultFailed": "Не вдалося встановити AI-джерело за замовчуванням: ${error}",
+			"noFileSelectedSave": "Не вибрано файл для збереження.",
+			"noFileSelectedDelete": "Не вибрано файл для видалення.",
+			"noGeneratorSelectedSave": "Будь ласка, оберіть генератор перед збереженням",
+			"invalidFileName": "Назва файлу не може містити наступні символи: / \\ : * ? \" < > |"
 		},
 		"achievements": {
 			"set_default_aisource": {
 				"name": "джерело магії",
-				"description": "ШІ за замовчуванням призначено джерелом постачання мани.",
-				"locked_description": "Один раз установіть джерело ШІ за замовчуванням."
+				"description": "ШІ за замовчуванням призначено fount постачання мани.",
+				"locked_description": "Один раз установіть fount ШІ за замовчуванням."
 			}
 		}
 	},
 	"discord_bots": {
 		"title": "Discord Bot",
+		"description": "Подаруйте своїм супутникам голос у гамірних залах Discord. Налаштуйте їх присутність, керуйте їхніми операціями та дозвольте їм об’єднувати світи, по одному серверу за раз.",
 		"cardTitle": "Discord Bot",
-		"buttons": {
-			"newBot": "Створити",
-			"deleteBot": "Видалити"
-		},
 		"botSelectDropdown": {
 			"placeholder": "Виберіть бота"
 		},
@@ -1322,10 +1341,14 @@
 		"prompts": {
 			"newBotName": "Будь ласка, введіть назву нового бота:"
 		},
+		"buttons": {
+			"newBot": "Створити",
+			"deleteBot": "Видалити"
+		},
 		"alerts": {
+			"configSaved": "Конфігурацію успішно збережено",
 			"botExists": "Бот з назвою \"${botname}\" вже існує, будь ласка, використайте іншу назву.",
 			"unsavedChanges": "У вас є незбережені зміни. Ви хочете їх скасувати?",
-			"configSaved": "Конфігурацію успішно збережено",
 			"httpError": "HTTP-помилка",
 			"beforeUnload": "У вас є незбережені зміни. Ви впевнені, що хочете піти?"
 		},
@@ -1339,6 +1362,7 @@
 	},
 	"telegram_bots": {
 		"title": "Telegram Bot",
+		"description": "Дозвольте своїм персонажам миттєво перетинати хвилі Telegram. Налаштуйте їх цифрову присутність, керуйте їхніми розмовами та розширюйте їх охоплення в цьому яскравому світі обміну повідомленнями.",
 		"cardTitle": "Керування Telegram ботами",
 		"botSelectDropdown": {
 			"placeholder": "Виберіть бота"
@@ -1351,10 +1375,6 @@
 		},
 		"charSearch": {
 			"placeholder": "Шукати персонажів..."
-		},
-		"buttons": {
-			"newBot": "Створити",
-			"deleteBot": "Видалити"
 		},
 		"configCard": {
 			"title": "Налаштування бота",
@@ -1379,10 +1399,14 @@
 		"prompts": {
 			"newBotName": "Будь ласка, введіть назву нового бота:"
 		},
+		"buttons": {
+			"newBot": "Створити",
+			"deleteBot": "Видалити"
+		},
 		"alerts": {
+			"configSaved": "Конфігурацію успішно збережено!",
 			"botExists": "Бот з назвою \"${botname}\" вже існує, будь ласка, використайте іншу назву.",
 			"unsavedChanges": "У вас є незбережені зміни. Ви впевнені, що хочете їх скасувати?",
-			"configSaved": "Конфігурацію успішно збережено!",
 			"httpError": "HTTP-помилка",
 			"beforeUnload": "У вас є незбережені зміни. Ви впевнені, що хочете покинути поточну сторінку?"
 		},
@@ -1396,8 +1420,9 @@
 	},
 	"browser_integration": {
 		"title": "Інтеграція браузера",
-		"header": "Інтеграція браузера",
-		"description": "Для того, щоб ваша роль fount взаємоділа з веб -сторінкою, вам потрібно встановити цей сценарій інтеграції браузера. Він діє як міст між персонажем та браузером, що дозволяє їм переглядати вміст сторінки та виконувати дії.",
+		"description": "Подолайте розрив між fountом і мережею. Ця сторінка надає сценарій користувача, щоб увімкнути безперебійну інтеграцію, залучаючи ваших компаньйонів AI до вашого досвіду перегляду.",
+		"pageHeader": "Інтеграція браузера",
+		"pageDescription": "Для того, щоб ваша роль fount взаємоділа з веб -сторінкою, вам потрібно встановити цей сценарій інтеграції браузера. Він діє як міст між персонажем та браузером, що дозволяє їм переглядати вміст сторінки та виконувати дії.",
 		"install_script_title": "Сценарій встановлення",
 		"install_script_description": "Натисніть кнопку нижче, щоб встановити сценарій інтеграції браузера. Спочатку потрібно встановити менеджер користувацьких скриптів, наприклад Tampermonkey.",
 		"install_button": "Встановити",
@@ -1407,10 +1432,6 @@
 		"popular_managers": "Популярний вибір:",
 		"csp_warning": "Можливо, вам доведеться встановити плагін, щоб вимкнути CSP, щоб функція інтеграції працювала належним чином. Для Chrome ви можете використовувати <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener\" class=\"link\"> this plagin </a>.",
 		"connected_pages_title": "Підключена сторінка",
-		"no_pages_connected": {
-			"title": "Ще немає зв’язку",
-			"description": "Спочатку встановіть сценарій, а потім відвідайте будь -який веб -сайт на інших вкладках браузера, який буде автоматично відображатися тут."
-		},
 		"fetch_pages_error": "Не вдалося завантажити список пов’язаних сторінок.",
 		"page_title": "Назва сторінки",
 		"page_url": "URL",
@@ -1419,6 +1440,10 @@
 		"status_unfocused": "За лаштунками",
 		"copy_button": "копіювати",
 		"copied_message": "Копіюється в буфер обміну",
+		"no_pages_connected": {
+			"title": "Ще немає зв’язку",
+			"description": "Спочатку встановіть сценарій, а потім відвідайте будь -який веб -сайт на інших вкладках браузера, який буде автоматично відображатися тут."
+		},
 		"autorun": {
 			"title": "Автоматично запустіть сценарії",
 			"description": "Керуйте фрагментами JavaScript, які автоматично виконуються під час відповідності певному веб -сайту. Ці сценарії можуть бути надані вашою роллю AI або плагіном для покращення або автоматизації вашого досвіду перегляду.",
@@ -1464,19 +1489,20 @@
 		}
 	},
 	"browser_integration_script": {
-		"hostChange": {
-			"securityWarningTitle": "--- Попередження про безпеку фонту ---",
-			"message": "Поточна сторінка (\"${origin}\") намагається змінити адресу хоста fount на:\n\n\"${newHost}\"\n\nПопередження: затвердження цієї дії дозволить новому хосту повністю керувати функціями інтеграції вашого браузера, що може призвести до конфіденційного витоку інформації або крадіжки облікових записів.\nСхвалення повинно бути зроблено лише в тому випадку, якщо ви впевнені, що це ваша власна операція (наприклад, переміщення сервера fount).\n\nВи впевнені, що хочете дозволити цю зміну?",
-			"uuidMismatchError": "Помилка безпеки fount: Ідентичність (UUID) хоста ${newHost} не відповідає вашому наявному. Операція скасована.",
-			"verificationError": "Помилка безпеки fount: Неможливо перевірити новий хост \"${newHost}\". Будь ласка, перевірте, чи є адреса правильна і чи працює служба."
-		},
 		"update": {
 			"prompt": "Доступна нова версія сценарію інтеграції браузера fount. Чи відкрита сторінка оновлення?"
 		},
-		"csp_warning": "Сценарій інтеграції браузера fount виявляє, що політика CSP існує на сторінці, що може призвести до того, що сценарій інтеграції не працює належним чином. Будь ласка, подумайте про встановлення плагіна щоб вимкнути CSP."
+		"csp_warning": "Сценарій інтеграції браузера fount виявляє, що політика CSP існує на сторінці, що може призвести до того, що сценарій інтеграції не працює належним чином. Будь ласка, подумайте про встановлення плагіна щоб вимкнути CSP.",
+		"hostChange": {
+			"securityWarningTitle": "--- Попередження про безпеку fountу ---",
+			"message": "Поточна сторінка (\"${origin}\") намагається змінити адресу хоста fount на:\n\n\"${newHost}\"\n\nПопередження: затвердження цієї дії дозволить новому хосту повністю керувати функціями інтеграції вашого браузера, що може призвести до конфіденційного витоку інформації або крадіжки облікових записів.\nСхвалення повинно бути зроблено лише в тому випадку, якщо ви впевнені, що це ваша власна операція (наприклад, переміщення сервера fount).\n\nВи впевнені, що хочете дозволити цю зміну?",
+			"uuidMismatchError": "Помилка безпеки fount: Ідентичність (UUID) хоста ${newHost} не відповідає вашому наявному. Операція скасована.",
+			"verificationError": "Помилка безпеки fount: Неможливо перевірити новий хост \"${newHost}\". Будь ласка, перевірте, чи є адреса правильна і чи працює служба."
+		}
 	},
 	"terminal_assistant": {
 		"title": "Помічник у терміналі",
+		"description": "Крім графічного інтерфейсу, простір для прямих команд. Взаємодійте з ядром Fount через термінальний помічник, де текст плете власну потужну магію.",
 		"initialMessage": "fount підтримує розгортання вашого улюбленого персонажа у вашому терміналі для допомоги в кодуванні!",
 		"initialMessageLink": "Натисніть тут, щоб дізнатися більше",
 		"achievements": {
@@ -1489,6 +1515,7 @@
 	},
 	"deskpet": {
 		"title": "Настільні домашні тварини",
+		"description": "Запустіть своїх персонажів як інтерактивних домашніх тварин, які живуть на вашому робочому столі.",
 		"launcherCard": {
 			"title": "домашня тварина",
 			"buttons": {
@@ -1510,8 +1537,8 @@
 		},
 		"toasts": {
 			"started": "PET '${charname}' запускається.",
-			"start_failed": "Не вдалося запустити PET '${charname}': ${message}",
 			"stopped": "PET '${charname}' зупинився.",
+			"start_failed": "Не вдалося запустити PET '${charname}': ${message}",
 			"stop_failed": "Зупинити pet '${charname}' не вдалося: ${message}"
 		},
 		"achievements": {
@@ -1524,6 +1551,7 @@
 	},
 	"access": {
 		"title": "Доступ до fount на інших пристроях",
+		"description": "Розширте охоплення Founte за межі одного екрана. Тут лежить шлюз — URL-адреса, QR-код — для зв’язку з вашими супутниками з інших пристроїв, простий міст через локальний ефір.",
 		"heading": "Хочете отримати доступ до fount на інших пристроях?",
 		"instruction": {
 			"sameLAN": "Переконайтеся, що пристрій та хост fount знаходяться в одній локальній мережі",
@@ -1534,6 +1562,7 @@
 	},
 	"proxy": {
 		"title": "API проксі",
+		"description": "Для розробників та інтеграторів ця сторінка розкриває проксі-сервер Fount API — ваше підключення для вплетення можливостей Fount в інші програми.",
 		"heading": "Шлюз API-проксі",
 		"instruction": "Створюйте та керуйте своїми API-ключами на цій сторінці для інтеграції fount з іншими додатками.",
 		"endpointSectionTitle": "Кінцева точка API",
@@ -1554,8 +1583,9 @@
 	},
 	"achievements": {
 		"title": "досягнення",
-		"header": "Зал досягнень",
-		"description": "Перегляньте свої незаблоковані досягнення та віхи тут.",
+		"description": "Досліджуйте віхи та досягнення свого шляху за допомогою Fount. Кожне досягнення означає крок у вашій унікальній розповіді.",
+		"pageHeader": "Зал досягнень",
+		"pageDescription": "Перегляньте свої незаблоковані досягнення та віхи тут.",
 		"unlocked_on": "Розблоковано ${date}",
 		"locked": "Не розблоковано",
 		"toast_title": "Досягнення розблоковано!",
@@ -1572,6 +1602,7 @@
 	},
 	"badges_maker": {
 		"title": "fount! Конвертер значків",
+		"description": "Коли ваш проект вимагає дотику характеру fountу. Перетворюйте значки shields.io, надаючи їм нову резонансну ідентичність.",
 		"card_title": "Конвертер посилань для значків fount",
 		"original_url_label": "Вставте URL-адресу img.shields.io",
 		"original_url": {
@@ -1581,31 +1612,22 @@
 		"new_url": {
 			"placeholder": "Тут відобразиться перетворена URL-адреса"
 		},
-		"copy_button": "Копіювати",
 		"preview_label": "Попередній перегляд",
+		"copy_button": "Копіювати",
+		"copied_text": "Скопійовано!",
 		"preview": {
 			"alt": "Попередній перегляд значка"
 		},
-		"copied_text": "Скопійовано!",
 		"copy_error": "Не вдалося скопіювати текст: ${error}",
 		"copy_fail_alert": "Не вдалося скопіювати!"
 	},
 	"404": {
 		"title": "Сторінку не знайдено",
+		"description": "Шлях, який ти шукав, розплився в тумані. Чи це був помилковий крок, забутий поворот? Дозвольте нам провести вас назад до берега або, можливо, зупиніться для гри серед тихої порожнечі.",
 		"pageNotFoundText": "Ой! Схоже, ви потрапили на сторінку, якої не існує.",
 		"homepageButton": "Повернутися на головну"
 	},
 	"code_block": {
-		"download": {
-			"dataset": {
-				"tip": "Завантажити код"
-			}
-		},
-		"execute": {
-			"dataset": {
-				"tip": "Виконати код"
-			}
-		},
 		"copy": {
 			"dataset": {
 				"tip": "копіювати в буфер обміну"
@@ -1616,15 +1638,25 @@
 				"tip": "Скопійовано в буфер обміну!"
 			}
 		},
+		"download": {
+			"dataset": {
+				"tip": "Завантажити код"
+			}
+		},
+		"execute": {
+			"dataset": {
+				"tip": "Виконати код"
+			}
+		},
 		"copy_failed": "Не вдалося скопіювати в буфер обміну: ${error}"
 	},
 	"pow_captcha": {
 		"initial": "Я не робот",
 		"verifying": "Перевірка ...",
 		"solved": "Перевірка успішна",
+		"wasm_disabled": "Увімкніть WASM для швидшої перевірки",
 		"error": "Перевірка не вдалася",
-		"errorMessage": "Перевірка не вдалася: ${error}",
-		"wasm_disabled": "Увімкніть WASM для швидшої перевірки"
+		"errorMessage": "Перевірка не вдалася: ${error}"
 	},
 	"zxcvbn": {
 		"warnings": {

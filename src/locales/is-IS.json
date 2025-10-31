@@ -6,12 +6,12 @@
 			"start": "Ræsi netþjón",
 			"starting": "Netþjónn er að ræsa...",
 			"ready": "Netþjónn er ræstur",
+			"standingBy": "Standing by...",
 			"showUrl": {
 				"https": "HTTPS netþjónn keyrir á ${url}",
 				"http": "HTTP netþjónn keyrir á ${url}"
 			},
 			"localUrl": "Opnaðu fount á öðrum tækjum á sama neti: ${url}",
-			"standingBy": "Standing by...",
 			"update": {
 				"restarting": "Ný útgáfa uppgötvaðist og verið er að endurræsa uppfærsluna..."
 			}
@@ -20,32 +20,32 @@
 			"restartingJob": "Endurræsi ${parttype} ${partname} verkefni fyrir notanda ${username}: ${uid}"
 		},
 		"ipc": {
-			"sendCommandFailed": "Mistókst að senda skipun: ${error}",
-			"invalidCommand": "Ógild skipun, vinsamlegast notaðu \"fount run <íhlutagerð> <notandanafn> <íhlutarheiti> <færibreytur...>\"",
+			"serverStarted": "IPC netþjónn er ræstur",
+			"instanceRunning": "Annað tilvik er þegar í gangi",
 			"runPartLog": "Keyri ${parttype} ${partname} sem ${username}, með færibreytum: ${args}",
 			"invokePartLog": "Kalla á ${parttype} ${partname} sem ${username}, með gögnum: ${invokedata}",
+			"invalidCommand": "Ógild skipun, vinsamlegast notaðu \"fount run <íhlutagerð> <notandanafn> <íhlutarheiti> <færibreytur...>\"",
+			"invalidCommandFormat": "Ógilt skipanasnið",
 			"unsupportedCommand": "Óstudd tegund skipunar",
 			"processMessageError": "Villa við vinnslu IPC skilaboða: ${error}",
-			"invalidCommandFormat": "Ógilt skipanasnið",
+			"sendCommandFailed": "Mistókst að senda skipun: ${error}",
 			"socketError": "Socket villa: ${error}",
-			"instanceRunning": "Annað tilvik er þegar í gangi",
-			"serverStarted": "IPC netþjónn er ræstur",
 			"parseResponseFailed": "Mistókst að þátta svar netþjóns: ${error}",
 			"cannotParseResponse": "Gat ekki þáttað svar netþjóns",
 			"unknownError": "Óþekkt villa"
 		},
 		"partManager": {
+			"partInited": "${parttype} hluti ${partname} hefur verið frumstilltur",
+			"partLoaded": "${parttype} hluti ${partname} er hlaðinn",
 			"git": {
+				"updating": "Uppfæri frá fjarlægu kóðasafni...",
+				"upToDate": "Þegar uppfært.",
+				"localAhead": "Staðbundin grein er á undan fjarlægri grein. Engin þörf á uppfærslu.",
 				"noUpstream": "Engin uppstreymisgrein er skilgreind fyrir greinina '${currentBranch}', sleppi uppfærsluskoðun.",
 				"dirtyWorkingDirectory": "Vinnusvæðið er ekki hreint. Vinsamlegast geymdu eða festu breytingarnar þínar áður en þú uppfærir.",
-				"updating": "Uppfæri frá fjarlægu kóðasafni...",
-				"localAhead": "Staðbundin grein er á undan fjarlægri grein. Engin þörf á uppfærslu.",
 				"diverged": "Staðbundnar og fjarlægar greinar hafa skilist að. Þvinga uppfærslu...",
-				"upToDate": "Þegar uppfært.",
 				"updateFailed": "Mistókst að uppfæra íhlut frá fjarlægu kóðasafni: ${error}"
-			},
-			"partInited": "${parttype} hluti ${partname} hefur verið frumstilltur",
-			"partLoaded": "${parttype} hluti ${partname} er hlaðinn"
+			}
 		},
 		"web": {
 			"requestReceived": "Tók á móti beiðni: ${method} ${url}"
@@ -54,11 +54,11 @@
 			"setLanguagePreference": "Notandi ${username} stillti valinn tungumál: ${preferredLanguages}"
 		},
 		"auth": {
+			"accountLockedLog": "Aðgangur notanda ${username} hefur verið læstur vegna margra misheppnaðra innskráningartilrauna",
 			"tokenVerifyError": "Villa við staðfestingu auðkennis: ${error}",
 			"refreshTokenError": "Villa við endurnýjun auðkennis: ${error}",
 			"logoutRefreshTokenProcessError": "Villa við vinnslu endurnýjunar auðkennis við útskráningu: ${error}",
-			"revokeTokenNoJTI": "Get ekki afturkallað auðkenni án jti",
-			"accountLockedLog": "Aðgangur notanda ${username} hefur verið læstur vegna margra misheppnaðra innskráningartilrauna"
+			"revokeTokenNoJTI": "Get ekki afturkallað auðkenni án jti"
 		},
 		"verification": {
 			"codeGeneratedLog": "Staðfestingarkóði: ${code} (rennur út eftir 60 sekúndur)",
@@ -66,10 +66,10 @@
 			"codeNotifyBody": "Staðfestingarkóðinn þinn er: ${code} (rennur út eftir 60 sekúndur)"
 		},
 		"tray": {
-			"readIconFailed": "Mistókst að lesa táknmyndaskrá: ${error}",
-			"createTrayFailed": "Mistókst að búa til táknmynd á verkefnaslá: ${error}",
 			"title": "fount",
 			"tooltip": "fount",
+			"readIconFailed": "Mistókst að lesa táknmyndaskrá: ${error}",
+			"createTrayFailed": "Mistókst að búa til táknmynd á verkefnaslá: ${error}",
 			"items": {
 				"open": {
 					"title": "Opna",
@@ -100,6 +100,9 @@
 			"botStarted": "Persónan ${charname} hefur skráð sig inn á Telegram Bot ${botusername}"
 		},
 		"path": {
+			"protocol": {
+				"description": "URL:fundasamskiptareglur"
+			},
 			"update": {
 				"skippingFountUpdate": "Þar sem .noupdate skráin er til er leturuppfærslunni sleppt",
 				"skippingDenoUpgradeDocker": "Slepptu Deno uppfærslu í Docker umhverfi"
@@ -108,44 +111,44 @@
 				"desktopShortcutCreated": "Flýtileið á skjáborði búin til á ${path}",
 				"startMenuShortcutCreated": "Flýtileið fyrir upphafsvalmynd búin til á ${path}",
 				"protocolHandlerRegistered": "fount:// samskiptareglur skráður.",
+				"shortcutNotSupported": "Viðvörun: Stýrikerfið þitt (${os}) styður ekki að búa til flýtileiðir á skjáborðinu.",
 				"osacompileNotFound": "Villa: 'osacompile' fannst ekki. Ekki er hægt að búa til macOS app.",
 				"lsregisterFailed": "Viðvörun: Mistókst að nota lsregister til að skrá forrit hjá LaunchServices.",
-				"createDesktopAppFailed": "Villa: Mistókst að búa til skjáborðsforrit.",
-				"shortcutNotSupported": "Viðvörun: Stýrikerfið þitt (${os}) styður ekki að búa til flýtileiðir á skjáborðinu."
+				"createDesktopAppFailed": "Villa: Mistókst að búa til skjáborðsforrit."
 			},
 			"git": {
 				"repoNotFound": "Git geymslan fyrir font fannst ekki. Byrjar nýjan...",
 				"fetchingAndResetting": "Sækir úr fjarlægri geymslu og endurstillir í master...",
-				"fetchFailed": "Mistókst að fá frá 'uppruna'.",
 				"localChangesDetected": "Staðbundnar breytingar fundnar, munur verður vistaður áður en skrifað er yfir.",
 				"backupSavedTo": "Afrit af staðbundnum breytingum þínum hefur verið vistað á: ${path}",
+				"updatingFromRemote": "Uppfærir úr ytri geymslu...",
+				"alreadyUpToDate": "Nú þegar það nýjasta.",
+				"localBranchAhead": "Sveitarfélagið er á undan fjarútibúinu. Engar uppfærslur nauðsynlegar.",
+				"branchesDiverged": "Staðbundnum og afskekktum útibúum hefur verið flokkað. Þvinguð uppfærsla í gangi...",
 				"notOnBranch": "Ekki á útibúinu, skiptu yfir í „meistara“...",
 				"noUpstreamBranch": "Viðvörun: Engin uppstreymisgrein er stillt fyrir útibú '${branch}'. Stilling andstreymis á 'uppruna/meistara'.",
 				"dirtyWorkingDirectory": "Viðvörun: Vinnuskráin er ekki hrein. Vinsamlegast vistaðu (commit) eða geymdu (stash) breytingar þínar áður en þú uppfærir.",
-				"updatingFromRemote": "Uppfærir úr ytri geymslu...",
-				"localBranchAhead": "Sveitarfélagið er á undan fjarútibúinu. Engar uppfærslur nauðsynlegar.",
-				"branchesDiverged": "Staðbundnum og afskekktum útibúum hefur verið flokkað. Þvinguð uppfærsla í gangi...",
-				"alreadyUpToDate": "Nú þegar það nýjasta.",
 				"notInstalled": "Git er ekki uppsett, er að reyna að setja upp...",
-				"installFailedWinget": "Þar sem Winget uppsetning mistókst er ekki hægt að setja Git upp. Vinsamlegast settu það upp handvirkt.",
-				"installFailedManual": "Get ekki sett upp Git, vinsamlegast settu það upp handvirkt.",
 				"notInstalledSkippingPull": "Git er ekki uppsett, slepptu git pull",
-				"repoNotFoundSkippingPull": "Geymsla fannst ekki, slepptu git pull"
+				"repoNotFoundSkippingPull": "Geymsla fannst ekki, slepptu git pull",
+				"fetchFailed": "Mistókst að fá frá 'uppruna'.",
+				"installFailedWinget": "Þar sem Winget uppsetning mistókst er ekki hægt að setja Git upp. Vinsamlegast settu það upp handvirkt.",
+				"installFailedManual": "Get ekki sett upp Git, vinsamlegast settu það upp handvirkt."
 			},
 			"deno": {
-				"installingTermux": "Setur upp Deno fyrir Termux...",
 				"missing": "Deno fannst ekki, setur sjálfkrafa upp...",
-				"installFailedFallback": "Uppsetning Deno mistókst, reynir að setja sjálfkrafa upp í slóðamöppuna á uppsprettu...",
 				"isRequired": "Deno fannst ekki, fontur er ekki hægt að keyra án Deno",
+				"installingTermux": "Setur upp Deno fyrir Termux...",
+				"installFailedFallback": "Uppsetning Deno mistókst, reynir að setja sjálfkrafa upp í slóðamöppuna á uppsprettu...",
 				"notWorking": "Af einhverjum ástæðum virkar Deno ekki, þú gætir viljað taka þátt https://discord.gg/deno til að fá stuðning",
-				"upgradeFailedTermux": "Deno uppfærsluskipun mistókst, reynt að setja upp Deno aftur fyrir Termux...",
-				"upgradeFailed": "Viðvörun: Deno uppfærsla gæti hafa mistekist. Vinsamlegast athugaðu hvort villur séu."
+				"upgradeFailed": "Viðvörun: Deno uppfærsla gæti hafa mistekist. Vinsamlegast athugaðu hvort villur séu.",
+				"upgradeFailedTermux": "Deno uppfærsluskipun mistókst, reynt að setja upp Deno aftur fyrir Termux..."
 			},
 			"install": {
-				"rootWarning1": "Ekki mælt með því: að keyra font þar sem rót veitir fullan kerfisaðgang að öllum fontahlutum.",
-				"rootWarning2": "Nema þú vitir hvað þú ert að gera er mælt með því að keyra fount sem venjulegur notandi.",
 				"installingDependencies": "Setur upp ósjálfstæði...",
-				"untrustedPartsWarning": "Ekki setja upp neina ótryggða leturíhluti á kerfið þitt, þeir geta gert hvað sem er."
+				"untrustedPartsWarning": "Ekki setja upp neina ótryggða leturíhluti á kerfið þitt, þeir geta gert hvað sem er.",
+				"rootWarning1": "Ekki mælt með því: að keyra font þar sem rót veitir fullan kerfisaðgang að öllum fontahlutum.",
+				"rootWarning2": "Nema þú vitir hvað þú ert að gera er mælt með því að keyra fount sem venjulegur notandi."
 			},
 			"clean": {
 				"removingCaches": "Fjarlægir skyndiminni...",
@@ -154,29 +157,30 @@
 				"cleaningOldPwshModules": "Hreinsar upp gamlar pwsh einingar..."
 			},
 			"keepalive": {
-				"failedToStart": "Jafnvel eftir sjálfvirkar viðgerðartilraunir fer gosbrunnurinn ekki í gang í stuttan tíma. Vinsamlegast athugaðu skrárnar fyrir villur.",
+				"initComplete": "Endurræsingu lokið. Er að reyna að endurræsa font...",
 				"autoInitDisabled": "fontur hefur verið endurræstur margoft á síðasta stutta tímabili, en sjálfvirk endurræsing hefur verið gerð óvirk vegna þess að .noautoinit skráin er til staðar. Hætta.",
 				"restartingTooFast": "lind hefur verið endurræst oft á stuttum tíma. Þvinguð endurræsing...",
-				"initFailed": "Uppsetning leturs mistókst. Hætta.",
-				"initComplete": "Endurræsingu lokið. Er að reyna að endurræsa font..."
+				"failedToStart": "Jafnvel eftir sjálfvirkar viðgerðartilraunir fer gosbrunnurinn ekki í gang í stuttan tíma. Vinsamlegast athugaðu skrárnar fyrir villur.",
+				"initFailed": "Uppsetning leturs mistókst. Hætta."
 			},
 			"remove": {
 				"removingFount": "Fjarlægir leturgerð...",
+				"fountUninstallationComplete": "Fjarlægingu lindarinnar lokið.",
+				"removingFountInstallationDir": "Fjarlægir uppsetningarskrá leturgerðar...",
+				"fountInstallationDirRemoved": "Uppsetningarskrá leturgerðarinnar hefur verið fjarlægð.",
 				"removingFountFromPath": "Fjarlægir leturgerð úr PATH...",
 				"removingProtocolHandler": "Fjarlægir fount:// samskiptareglur...",
+				"protocolHandlerRemoved": "The fount:// samskiptareglur hefur verið fjarlægður.",
+				"removeProtocolHandlerFailed": "Mistókst að fjarlægja fount:// samskiptareglur: ${message}",
 				"removingFountFromGitSafeDir": "Fjarlægir leturgerð úr git safe.directory...",
 				"removingInstalledSystemPackages": "Fjarlægir uppsetta kerfispakka...",
 				"uninstallingDeno": "Fjarlægir Deno...",
-				"removingFountInstallationDir": "Fjarlægir uppsetningarskrá leturgerðar...",
-				"fountInstallationDirRemoved": "Uppsetningarskrá leturgerðarinnar hefur verið fjarlægð.",
-				"fountUninstallationComplete": "Fjarlægingu lindarinnar lokið.",
+				"removeDenoFailed": "Mistókst að fjarlægja Deno: ${message}",
 				"removingFountPwshFromProfile": "Fjarlægir fount-pwsh úr PowerShell prófíl...",
 				"fountPwshRemovedFromProfile": "fount-pwsh hefur verið fjarlægt úr PowerShell prófílnum.",
 				"pwshProfileNotFound": "PowerShell prófíllinn fannst ekki, sleppir því að fjarlægja fount-pwsh úr prófílnum.",
 				"uninstallingFountPwsh": "Fjarlægir fount-pwsh...",
 				"uninstallFountPwshFailed": "Mistókst að fjarlægja fount-pwsh: ${message}",
-				"protocolHandlerRemoved": "The fount:// samskiptareglur hefur verið fjarlægður.",
-				"removeProtocolHandlerFailed": "Mistókst að fjarlægja fount:// samskiptareglur: ${message}",
 				"removingTerminalProfile": "Fjarlægir Windows Terminal Profile...",
 				"terminalProfileRemoved": "Windows Terminal Profile mappan hefur verið fjarlægð.",
 				"terminalProfileNotFound": "Windows Terminal Profile mappa fannst ekki.",
@@ -191,22 +195,14 @@
 				"uninstallingGit": "Fjarlægir Git...",
 				"uninstallingChrome": "Fjarlægir Chrome...",
 				"uninstallingWinget": "Fjarlægir Winget...",
-				"removeDenoFailed": "Mistókst að fjarlægja Deno: ${message}",
 				"removingBackgroundRunner": "Fjarlægir bakgrunnsforrit...",
 				"removeBackgroundRunnerFailed": "Mistókst að fjarlægja forrit sem keyrir í bakgrunni: ${message}"
-			},
-			"protocol": {
-				"description": "URL:fundasamskiptareglur"
 			}
 		}
 	},
 	"installer_wait_screen": {
 		"title": "Velkomin í fount!",
-		"language_selector": {
-			"search": {
-				"placeholder": "Leita að tungumáli..."
-			}
-		},
+		"description": "Fylgstu með framvindu uppsetningar og skoðaðu eiginleikana innan. uppsprettur verður tilbúinn til ræsingar eftir augnablik.",
 		"hero": {
 			"title": "Neisti Hugans, Lifandi Félagi",
 			"description": "fount er gervigreindarknúinn samskiptavettvangur fyrir persónur, hannaður til að styrkja <i>þig</i>. Það er brú sem tengir þig við persónur úr ímyndunaraflinu, sem gerir þér kleift að spjalla við þær áreynslulaust, búa til þínar eigin persónur og deila þeim með heiminum."
@@ -227,6 +223,11 @@
 			"title": "Óheft samþætting gervigreindarheimilda",
 			"description": "fount býður upp á óviðjafnanlegt val og sveigjanleika. Tengstu við <i>hvaða</i> gervigreindarheimild sem er - OpenAI, Claude, OpenRouter, NovelAI og fleiri. Samskiptarökfræðin mun mótast af <i>þínum</i> vilja, með krafti kóðans."
 		},
+		"language_selector": {
+			"search": {
+				"placeholder": "Leita að tungumáli..."
+			}
+		},
 		"theme_selector": {
 			"title": "Veldu þitt útlit",
 			"description": "Veldu þema til að sérsníða upplifun þína.",
@@ -241,6 +242,9 @@
 		},
 		"data_showcase": {
 			"title_prefix": "fount er ",
+			"title_of": " ",
+			"active_users": "Fjöldi virkra notenda",
+			"stars": "GitHub stjörnur",
 			"adjectives": [
 				"sveigjanlegasta",
 				"möguleikaríkasta",
@@ -248,7 +252,6 @@
 				"samhæfanlegasta",
 				"minnsta og öflugasta"
 			],
-			"title_of": " ",
 			"nouns": [
 				"gervigreindar-sýndarpersóna ",
 				"Agent ",
@@ -259,9 +262,7 @@
 				"grunnvettvangur",
 				"spjall-framendi",
 				"keyrsluforrit"
-			],
-			"active_users": "Fjöldi virkra notenda",
-			"stars": "GitHub stjörnur"
+			]
 		},
 		"footer": {
 			"ready_text": "Tilbúin(n) að hefja ferðalagið?",
@@ -280,15 +281,9 @@
 	},
 	"protocolhandler": {
 		"title": "Meðhöndla fount samskiptareglu",
+		"description": "Á hljóðlátan og skilvirkan hátt þýðir þessi síða fyrirætlanir þínar í óaðfinnanlega umskipti innan fonts. Líttu á það sem rólega töfrana á bak við fortjaldið.",
 		"processing": "Vinn úr samskiptareglu...",
-		"invalidProtocol": "Ógild samskiptaregla",
-		"insufficientParams": "Ófullnægjandi færibreytur",
-		"unknownCommand": "Óþekkt skipun",
 		"shellCommandSent": "Skeljarskipun send",
-		"shellCommandFailed": "Mistókst að senda skeljarskipun",
-		"shellCommandError": "Villa við sendingu skeljarskipunar",
-		"fountNotFound": "Æji :(\n\nFann ekki fount, þarftu kannski að setja það upp fyrst?",
-		"unknownError": "Æji :(\n\nVilla kom upp:\n${error}",
 		"runPartConfirm": {
 			"title": "Staðfesta keyrslu",
 			"message": "Ertu viss um að þú viljir keyra ${parttype} af ${partname}?",
@@ -301,10 +296,18 @@
 			"buttons": {
 				"retry": "Reyndu aftur"
 			}
-		}
+		},
+		"fountNotFound": "Æji :(\n\nFann ekki fount, þarftu kannski að setja það upp fyrst?",
+		"invalidProtocol": "Ógild samskiptaregla",
+		"insufficientParams": "Ófullnægjandi færibreytur",
+		"unknownCommand": "Óþekkt skipun",
+		"shellCommandFailed": "Mistókst að senda skeljarskipun",
+		"shellCommandError": "Villa við sendingu skeljarskipunar",
+		"unknownError": "Æji :(\n\nVilla kom upp:\n${error}"
 	},
 	"startPage": {
 		"title": "fount!",
+		"description": "Velkomin á þröskuld fontsins. Stutt stund til undirbúnings, áður en þú stígur inn í hjarta samræðna og sagna sem bíða eftir að þróast.",
 		"newTabFailed": {
 			"title": "Mistókst að opna nýjan flipa",
 			"instruction": "Ræsing fount er alltaf 1-2 sekúndum hægari án leyfis fyrir sprettiglugga",
@@ -326,6 +329,7 @@
 	},
 	"tutorial": {
 		"title": "Viltu smá kennslu?",
+		"description": "Leyfðu okkur að ganga með þér í gegnum heim gossins. Þessi gagnvirka kennsla mun lýsa upp slóðina og hjálpa þér að uppgötva töfrana sem fléttast inn í kjarna hans. Ævintýrið þitt byrjar með skilningi.",
 		"modal": {
 			"title": "Velkomin í fount!",
 			"instruction": "Viltu fara í gegnum byrjendakennsluna?",
@@ -361,6 +365,7 @@
 	"auth": {
 		"title": "Auðkenning",
 		"subtitle": "Notandagögn eru geymd staðbundið",
+		"description": "Hér skilgreinir þú nærveru þína. Hvort sem þú ferð aftur til kunnuglegs athvarfs eða mótar nýtt rými fyrir sögurnar þínar, þetta er þar sem ferð þín með lindinni hefst.",
 		"usernameLabel": "Notandanafn:",
 		"usernameInput": {
 			"placeholder": "Sláðu inn notandanafn"
@@ -394,6 +399,13 @@
 				"link": "Skrá inn"
 			}
 		},
+		"passwordStrength": {
+			"veryWeak": "Mjög veikt",
+			"weak": "Veikt",
+			"normal": "Meðalsterkt",
+			"strong": "Sterkt",
+			"veryStrong": "Mjög sterkt"
+		},
 		"error": {
 			"passwordMismatch": "Lykilorðin stemma ekki.",
 			"loginError": "Villa við innskráningu.",
@@ -406,17 +418,11 @@
 			"accountAlreadyExists": "Aðgangur er þegar til",
 			"powNotSolved": "Vinsamlegast kláraðu PoW staðfestingu fyrst",
 			"powError": "PoW sannprófunarvilla"
-		},
-		"passwordStrength": {
-			"veryWeak": "Mjög veikt",
-			"weak": "Veikt",
-			"normal": "Meðalsterkt",
-			"strong": "Sterkt",
-			"veryStrong": "Mjög sterkt"
 		}
 	},
 	"login_info": {
 		"title": "Innskráningarupplýsingar",
+		"description": "Öruggt rými til að hafa umsjón með innskráningarskilríkjum þínum - lyklarnir að heimi ósagðra sagna.",
 		"modal": {
 			"title": "Villa við flutning vottorðs",
 			"retrieve_error": "Villa kom upp þegar reynt var að vista innskráningarskilríki þitt:\n${error}\nÞú getur haldið áfram en getur ekki vistað innskráningarupplýsingar.",
@@ -429,17 +435,14 @@
 	},
 	"home": {
 		"title": "Forsíða",
-		"escapeConfirm": "Ertu viss um að þú viljir yfirgefa fount?",
+		"description": "Hjarta upplifunar þinnar. Hér skaltu stjórna þegnum ímyndunarafls þíns – persónur, heima og persónur. Sögur þínar byrja og greinast frá þessu miðlæga samhengi.",
+		"sidebarTitle": "Nánar",
+		"itemDescription": "Veldu atriði hér til að sjá nánari upplýsingar.",
+		"noDescription": "Engin lýsing",
 		"filterInput": {
 			"placeholder": "Leita..."
 		},
 		"sfwToggle": "Vinnustaðavænt",
-		"sidebarTitle": "Nánar",
-		"itemDescription": "Veldu atriði hér til að sjá nánari upplýsingar.",
-		"noDescription": "Engin lýsing",
-		"alerts": {
-			"fetchHomeRegistryFailed": "Mistókst að sækja skráningu forsíðu"
-		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "Leita..."
@@ -454,15 +457,15 @@
 			"subtitle": "Veldu persónu og byrjaðu að spjalla!",
 			"none": "Tómatóm",
 			"card": {
-				"refreshButton": {
-					"alt": "Endurhlaða",
-					"title": "Endurhlaða"
-				},
 				"noTags": "Engin merki",
 				"version": "Útgáfa",
 				"author": "Höfundur",
 				"home_page": "Heimasíða",
 				"issue_page": "Tilkynna villu",
+				"refreshButton": {
+					"alt": "Endurhlaða",
+					"title": "Endurhlaða"
+				},
 				"defaultCheckbox": {
 					"title": "Sjálfgefin persóna"
 				}
@@ -474,15 +477,15 @@
 			"subtitle": "Veldu heim og sökktu þér niður!",
 			"none": "Tómatóm",
 			"card": {
-				"refreshButton": {
-					"alt": "Endurhlaða",
-					"title": "Endurhlaða"
-				},
 				"noTags": "Engin merki",
 				"version": "Útgáfa",
 				"author": "Höfundur",
 				"home_page": "Heimasíða",
 				"issue_page": "Tilkynna villu",
+				"refreshButton": {
+					"alt": "Endurhlaða",
+					"title": "Endurhlaða"
+				},
 				"defaultCheckbox": {
 					"title": "Sjálfgefinn heimur"
 				}
@@ -494,19 +497,23 @@
 			"subtitle": "Veldu sjálfsmynd, upplifðu lífið.",
 			"none": "Tómatóm",
 			"card": {
-				"refreshButton": {
-					"alt": "Endurhlaða",
-					"title": "Endurhlaða"
-				},
 				"noTags": "Engin merki",
 				"version": "Útgáfa",
 				"author": "Höfundur",
 				"home_page": "Heimasíða",
 				"issue_page": "Tilkynna villu",
+				"refreshButton": {
+					"alt": "Endurhlaða",
+					"title": "Endurhlaða"
+				},
 				"defaultCheckbox": {
 					"title": "Sjálfgefin sjálfsmynd"
 				}
 			}
+		},
+		"escapeConfirm": "Ertu viss um að þú viljir yfirgefa fount?",
+		"alerts": {
+			"fetchHomeRegistryFailed": "Mistókst að sækja skráningu forsíðu"
 		},
 		"achievements": {
 			"first_login": {
@@ -537,11 +544,15 @@
 		}
 	},
 	"chat": {
-		"new": {
-			"title": "Nýtt spjall"
-		},
 		"title": "Spjall",
+		"description": "Þar sem orðin fara á flug og sögur þróast. Taktu þátt í gervigreindarfélögum þínum, mótaðu frásögnina og týndu þér í ebb og flæði stafrænna samræðna. Hjarta lindarinnar slær hér.",
+		"new": {
+			"title": "Nýtt spjall",
+			"description": "Hljóðlát eftirvænting eftir sögu sem enn er óskrifuð. Nýtt spjall hefst, hreint borð fyrir ný samskipti og frásagnir sem þróast með þeim félögum sem þú hefur valið."
+		},
 		"sidebar": {
+			"noSelection": "Ekkert",
+			"noDescription": "Engin lýsing",
 			"world": {
 				"icon": {
 					"alt": "Heimstákn"
@@ -567,20 +578,21 @@
 						"alt": "Bæta við persónu tákn"
 					}
 				}
-			},
-			"noSelection": "Ekkert",
-			"noDescription": "Engin lýsing"
+			}
+		},
+		"rightSidebar": {
+			"title": "Lýsing"
 		},
 		"chatArea": {
 			"title": "Spjall",
+			"input": {
+				"placeholder": "Skrifaðu skilaboð...\nCtrl+Enter til að senda"
+			},
 			"menuButton": {
 				"title": "Valmynd"
 			},
 			"menuButtonIcon": {
 				"alt": "Valmyndartákn"
-			},
-			"input": {
-				"placeholder": "Skrifaðu skilaboð...\nCtrl+Enter til að senda"
 			},
 			"sendButton": {
 				"title": "Senda"
@@ -606,9 +618,6 @@
 			"photoButtonIcon": {
 				"alt": "Myndatákn"
 			}
-		},
-		"rightSidebar": {
-			"title": "Lýsing"
 		},
 		"messageList": {
 			"confirmDeleteMessage": "Ertu viss um að þú viljir eyða þessum skilaboðum?"
@@ -733,18 +742,25 @@
 	"chat_history": {
 		"title": "Spjallferill",
 		"pageTitle": "Spjallferill",
+		"description": "Ferð í gegnum samræður fortíðar. Hér sitja minningar um samtöl eftir – flokkaðu, síaðu og skoðaðu sögurnar sem þú hefur ofið með gervigreindarfélögunum þínum. Hljóðlátt bókasafn af stafrænum bergmáli.",
+		"filterInput": {
+			"placeholder": "Leita..."
+		},
 		"sortOptions": {
 			"time_desc": "Tími, nýjast fyrst",
 			"time_asc": "Tími, elst fyrst"
-		},
-		"filterInput": {
-			"placeholder": "Leita..."
 		},
 		"selectAll": "Velja allt",
 		"buttons": {
 			"reverseSelect": "Víxla vali",
 			"deleteSelected": "Eyða völdu",
 			"exportSelected": "Flytja út valið"
+		},
+		"chatItemButtons": {
+			"continue": "Halda áfram",
+			"copy": "Afrita",
+			"export": "Flytja út",
+			"delete": "Eyða"
 		},
 		"confirmDeleteChat": "Ertu viss um að þú viljir eyða spjallferlinum við ${chars}?",
 		"confirmDeleteMultiChats": "Ertu viss um að þú viljir eyða völdum ${count} spjallferlum?",
@@ -754,107 +770,104 @@
 			"copyError": "Afritun mistókst",
 			"deleteError": "Eyðing mistókst",
 			"exportError": "Útflutningur mistókst"
-		},
-		"chatItemButtons": {
-			"continue": "Halda áfram",
-			"copy": "Afrita",
-			"export": "Flytja út",
-			"delete": "Eyða"
 		}
 	},
 	"easynew": {
 		"title": "Flýtileið",
+		"description": "Settu fljótt upp nýja leturhluta eins og persónur, heima og viðbætur með því að nota fyrirfram skilgreind eða sérsniðin sniðmát. Næsta sköpun þín er aðeins nokkrum smellum í burtu.",
+		"info": {
+			"description": "Þessi sniðmát eru aðeins til að byggja einfalda íhluti hratt, flóknir íhlutir þurfa enn handvirka smíði."
+		},
 		"cardTitle": "Búa til nýjan íhlut úr sniðmáti",
 		"templateSelect": {
 			"label": "Veldu sniðmát"
 		},
-		"partName": {
-			"label": "Nafn íhlutar",
-			"placeholder": "Gefðu nýja íhlutnum þínum nafn"
-		},
-		"description": {
-			"label": "Lýsing",
-			"placeholder": "Lýstu í stuttu máli um hvað þessi íhlutur snýst."
-		},
-		"descriptionMarkdown": {
-			"label": "Lýsing (Markdown)",
-			"placeholder": "Styður Markdown fyrir ítarlegri snið."
-		},
-		"imageUpload": {
-			"label": "Prófílmynd"
-		},
-		"charDef": {
-			"heading": "Skilgreining persónu"
-		},
-		"personality": {
-			"label": "Persónuleiki",
-			"placeholder": "Lýstu kjarnaeinkennum persónunnar."
-		},
-		"scenario": {
-			"label": "Sviðsmynd",
-			"placeholder": "Bakgrunnur eða umgjörð persónunnar."
-		},
-		"mesExample": {
-			"label": "Dæmi um skilaboð",
-			"placeholder": "Dæmi um hvað persónan gæti sagt."
-		},
-		"firstMessage": {
-			"label": "Fyrstu skilaboð",
-			"placeholder": "Það fyrsta sem persónan segir."
-		},
-		"personaDef": {
-			"heading": "Skilgreining sjálfsmyndar"
-		},
-		"personaUserName": {
-			"label": "Nafnið þitt í spjallinu",
-			"placeholder": "T.d.: Kapteinn, Landkönnuður"
-		},
-		"personaAppearance": {
-			"label": "Útlit",
-			"placeholder": "Lýstu útliti þínu."
-		},
-		"personaPersonality": {
-			"label": "Persónuleiki",
-			"placeholder": "Lýstu persónueinkennum þínum."
-		},
-		"worldDef": {
-			"heading": "Skilgreining heims"
-		},
-		"worldPrompt": {
-			"label": "Leiðbeiningar heims",
-			"placeholder": "Lýstu reglum heimsins, umhverfi og öllum almennum bakgrunni fyrir hlutverkaleikinn."
-		},
-		"worldGreeting": {
-			"label": "Kveðja heimsins",
-			"placeholder": "Fyrstu skilaboðin sem heimurinn sendir notandanum."
-		},
-		"author": {
-			"label": "Höfundur",
-			"placeholder": "Hver er höfundur þessa íhlutar?"
-		},
-		"version": {
-			"label": "Útgáfa",
-			"placeholder": "T.d.: 0.0.1"
-		},
-		"tags": {
-			"label": "Merki",
-			"placeholder": "Merki aðskilin með kommu"
-		},
-		"homePage": {
-			"label": "Heimasíða",
-			"placeholder": "URL á heimasíðu íhlutarins"
-		},
-		"issuePage": {
-			"label": "Villuskýrslusíða",
-			"placeholder": "URL á villuskýrslusíðu íhlutarins"
-		},
-		"createButton": "Búa til íhlut",
-		"alerts": {
-			"success": "Íhlutur '${partName}' búinn til!",
-			"error": "Villa: ${message}"
-		},
-		"info": {
-			"description": "Þessi sniðmát eru aðeins til að byggja einfalda íhluti hratt, flóknir íhlutir þurfa enn handvirka smíði."
+		"form": {
+			"partName": {
+				"label": "Nafn íhlutar",
+				"placeholder": "Gefðu nýja íhlutnum þínum nafn"
+			},
+			"description": {
+				"label": "Lýsing",
+				"placeholder": "Lýstu í stuttu máli um hvað þessi íhlutur snýst."
+			},
+			"descriptionMarkdown": {
+				"label": "Lýsing (Markdown)",
+				"placeholder": "Styður Markdown fyrir ítarlegri snið."
+			},
+			"imageUpload": {
+				"label": "Prófílmynd"
+			},
+			"charDef": {
+				"heading": "Skilgreining persónu"
+			},
+			"personality": {
+				"label": "Persónuleiki",
+				"placeholder": "Lýstu kjarnaeinkennum persónunnar."
+			},
+			"scenario": {
+				"label": "Sviðsmynd",
+				"placeholder": "Bakgrunnur eða umgjörð persónunnar."
+			},
+			"mesExample": {
+				"label": "Dæmi um skilaboð",
+				"placeholder": "Dæmi um hvað persónan gæti sagt."
+			},
+			"firstMessage": {
+				"label": "Fyrstu skilaboð",
+				"placeholder": "Það fyrsta sem persónan segir."
+			},
+			"personaDef": {
+				"heading": "Skilgreining sjálfsmyndar"
+			},
+			"personaUserName": {
+				"label": "Nafnið þitt í spjallinu",
+				"placeholder": "T.d.: Kapteinn, Landkönnuður"
+			},
+			"personaAppearance": {
+				"label": "Útlit",
+				"placeholder": "Lýstu útliti þínu."
+			},
+			"personaPersonality": {
+				"label": "Persónuleiki",
+				"placeholder": "Lýstu persónueinkennum þínum."
+			},
+			"worldDef": {
+				"heading": "Skilgreining heims"
+			},
+			"worldPrompt": {
+				"label": "Leiðbeiningar heims",
+				"placeholder": "Lýstu reglum heimsins, umhverfi og öllum almennum bakgrunni fyrir hlutverkaleikinn."
+			},
+			"worldGreeting": {
+				"label": "Kveðja heimsins",
+				"placeholder": "Fyrstu skilaboðin sem heimurinn sendir notandanum."
+			},
+			"author": {
+				"label": "Höfundur",
+				"placeholder": "Hver er höfundur þessa íhlutar?"
+			},
+			"version": {
+				"label": "Útgáfa",
+				"placeholder": "T.d.: 0.0.1"
+			},
+			"tags": {
+				"label": "Merki",
+				"placeholder": "Merki aðskilin með kommu"
+			},
+			"homePage": {
+				"label": "Heimasíða",
+				"placeholder": "URL á heimasíðu íhlutarins"
+			},
+			"issuePage": {
+				"label": "Villuskýrslusíða",
+				"placeholder": "URL á villuskýrslusíðu íhlutarins"
+			},
+			"createButton": "Búa til íhlut",
+			"alerts": {
+				"success": "Íhlutur '${partName}' búinn til!",
+				"error": "Villa: ${message}"
+			}
 		},
 		"achievements": {
 			"create_part": {
@@ -866,6 +879,7 @@
 	},
 	"import": {
 		"title": "Innflutningur",
+		"description": "Komdu með þykja vænt um persónurnar þínar, heima og stillingar í faðmi lindarinnar. Hvort sem það er úr skrá eða límdum texta, þetta er þar sem nýir þættir fléttast inn í persónulega veggteppið þitt.",
 		"tabs": {
 			"fileImport": "Flytja inn skrá",
 			"textImport": "Flytja inn texta"
@@ -882,6 +896,14 @@
 		"buttons": {
 			"import": "Flytja inn"
 		},
+		"fileItem": {
+			"removeButton": {
+				"title": "Fjarlægja"
+			},
+			"removeButtonIcon": {
+				"alt": "Fjarlægja"
+			}
+		},
 		"alerts": {
 			"importSuccess": "Innflutningur tókst",
 			"importFailed": "Innflutningur mistókst: ${error}",
@@ -892,31 +914,20 @@
 			"fileImportFailed": "Innflutningur á skrá mistókst: ${message}",
 			"noTextContent": "Vinsamlegast sláðu inn texta",
 			"textImportFailed": "Innflutningur á texta mistókst: ${message}",
-			"unknownError": "Óþekkt villa",
 			"handler": "Meðhöndlari",
-			"error": "Villa"
-		},
-		"fileItem": {
-			"removeButton": {
-				"title": "Fjarlægja"
-			},
-			"removeButtonIcon": {
-				"alt": "Fjarlægja"
-			}
+			"error": "Villa",
+			"unknownError": "Óþekkt villa"
 		}
 	},
 	"export": {
 		"title": "Íhluta-útflytjandi",
 		"pageTitle": "Íhluta-útflytjandi",
 		"pageSubtitle": "Flytja út uppáhalds efnið þitt",
+		"description": "Flyttu út leturverkin þín. Þetta tól safnar völdum hlutum þínum í einfalda zip-skrá til varðveislu eða samnýtingar.",
 		"steps": {
 			"partType": "Veldu gerð",
 			"part": "Veldu íhluti",
 			"action": "Útflutningur"
-		},
-		"options": {
-			"withData": "Inniheldur gagnaskrár",
-			"withDataDescription": "Inniheldur skrár merktar sem gögn, svo sem persónuminningar."
 		},
 		"labels": {
 			"partType": "Veldu tegund íhlutar",
@@ -932,12 +943,35 @@
 		"partSearch": {
 			"placeholder": "Leita..."
 		},
+		"options": {
+			"withData": "Inniheldur gagnaskrár",
+			"withDataDescription": "Inniheldur skrár merktar sem gögn, svo sem persónuminningar."
+		},
 		"export": {
 			"title": "Útflutningsvalkostir"
 		},
 		"editor": {
 			"disabledIndicator": "Vinsamlegast veldu íhlut fyrst",
 			"disabledIndicatorHint": "Vinsamlegast veldu gerð íhluta og íhlutinn sem þú vilt flytja út"
+		},
+		"buttons": {
+			"export": "Flytja út",
+			"exportWithData": "Flytja út (með gögnum)",
+			"copyShareLink": "Afrita deilingarhlekk",
+			"generateShareLink": "Búa til deilingarhlekk",
+			"generateShareLinkWithData": "Búa til deilingarhlekk (með gögnum)"
+		},
+		"shareMenu": {
+			"title": "Veldu lengd deilingar",
+			"1h": "1 klukkustund",
+			"12h": "12 klukkustundir",
+			"24h": "24 klukkustundir",
+			"72h": "72 klukkustundir",
+			"cancel": "Hætta við"
+		},
+		"litterbox": {
+			"poweredBy": "Deilingarþjónusta knúin af litterbox.moe",
+			"sponsorLink": "Styrktu þau"
 		},
 		"errorMessage": {
 			"icon": {
@@ -952,25 +986,6 @@
 			"shareLinkCopied": "Deilingarhlekkur afritaður á klippiborð!",
 			"shareFailed": "Mistókst að búa til deilingarhlekk."
 		},
-		"shareMenu": {
-			"title": "Veldu lengd deilingar",
-			"1h": "1 klukkustund",
-			"12h": "12 klukkustundir",
-			"24h": "24 klukkustundir",
-			"72h": "72 klukkustundir",
-			"cancel": "Hætta við"
-		},
-		"litterbox": {
-			"poweredBy": "Deilingarþjónusta knúin af litterbox.moe",
-			"sponsorLink": "Styrktu þau"
-		},
-		"buttons": {
-			"export": "Flytja út",
-			"exportWithData": "Flytja út (með gögnum)",
-			"copyShareLink": "Afrita deilingarhlekk",
-			"generateShareLink": "Búa til deilingarhlekk",
-			"generateShareLinkWithData": "Búa til deilingarhlekk (með gögnum)"
-		},
 		"achievements": {
 			"share_part": {
 				"name": "Gott fólk á öruggt líf",
@@ -981,17 +996,13 @@
 	},
 	"uninstall": {
 		"title": "Fjarlægja",
+		"description": "Ef þú velur að skilja leiðir gerir þetta rými fyrir þokkafulla kveðjustund. Staðfestu að íhlutir séu fjarlægðir, eða fonturinn sjálft. Leiðir skiljast en samt geta minningar eftir.",
 		"titleWithName": "Fjarlægja ${type}/${name}",
 		"confirmMessage": "Ertu viss um að þú viljir fjarlægja ${type}: ${name}?",
 		"invalidParamsTitle": "Ógildar færibreytur",
 		"infoMessage": {
 			"icon": {
 				"alt": "Upplýsingatákn"
-			}
-		},
-		"errorMessage": {
-			"icon": {
-				"alt": "Villutákn"
 			}
 		},
 		"buttons": {
@@ -1004,13 +1015,17 @@
 			"failed": "Fjarlæging mistókst: ${error}",
 			"invalidParams": "Ógildar beiðnisfæribreytur.",
 			"httpError": "HTTP villa! Stöðukóði: ${status}"
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Villutákn"
+			}
 		}
 	},
 	"userSettings": {
 		"title": "Notandastillingar",
 		"PageTitle": "Notandastillingar",
-		"apiError": "API beiðni mistókst: ${message}",
-		"generalError": "Villa kom upp: ${message}",
+		"description": "Gættu að smáatriðum um auðkenni þitt. Hafðu umsjón með prófílnum þínum, tryggðu aðgang þinn og skoðaðu tengd tæki. Rólegur helgidómur fyrir reikninginn þinn.",
 		"userInfo": {
 			"title": "Notandaupplýsingar",
 			"usernameLabel": "Notandanafn:",
@@ -1043,19 +1058,50 @@
 		},
 		"userDevices": {
 			"title": "Tæki/Setur notanda",
-			"refreshButton": {
-				"title": "Endurnýjaðu lista"
-			},
-			"refreshButtonIcon": {
-				"alt": "endurnýja táknið"
-			},
 			"noDevicesFound": "Engin tæki eða setur fundust.",
 			"deviceInfo": "Tækisauðkenni: ${deviceId}",
 			"thisDevice": "Þetta tæki",
 			"deviceDetails": "Síðast séð: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
 			"revokeButton": "Afturkalla",
 			"revokeConfirm": "Ertu viss um að þú viljir skrá þig út úr þessu tæki/setu?",
-			"revokeSuccess": "Tæki/seta hefur verið afturkölluð."
+			"revokeSuccess": "Tæki/seta hefur verið afturkölluð.",
+			"refreshButton": {
+				"title": "Endurnýjaðu lista"
+			},
+			"refreshButtonIcon": {
+				"alt": "endurnýja táknið"
+			}
+		},
+		"apiKeys": {
+			"title": "API lykill",
+			"description": "Stjórna API lyklinum fyrir utanaðkomandi forrit.",
+			"input": {
+				"placeholder": "Ný lyklalýsing"
+			},
+			"createButton": "Búa til",
+			"noKeysFound": "Engir API lyklar fundust.",
+			"keyDetails": "Lýsing: ${description} | Búin til í: ${createdAt} | Síðast notað: ${lastUsed}",
+			"neverUsed": "Aldrei notað",
+			"revokeButton": "Afturkalla",
+			"revokeConfirm": "Ertu viss um að þú viljir afturkalla þennan API lykil?",
+			"revokeSuccess": "API lykillinn hefur verið afturkallaður.",
+			"errorDescriptionRequired": "Lýsing er krafist.",
+			"createSuccess": "API lykillinn var búinn til með góðum árangri.",
+			"refreshButton": {
+				"title": "Endurnýjaðu lista"
+			},
+			"refreshButtonIcon": {
+				"alt": "endurnýja táknið"
+			}
+		},
+		"newApiKey": {
+			"title": "Nýr API lykill hefur verið búinn til",
+			"warning": "Vinsamlegast afritaðu nýja API lykilinn þinn. Þú munt ekki geta séð það aftur!",
+			"closeButton": "Ég hef afritað lykilinn minn",
+			"copyButton": {
+				"title": "Afritaðu nýjan API lykil"
+			},
+			"copiedAlert": "API lykill afritaður á klippiborð!"
 		},
 		"logout": {
 			"title": "Útskráning",
@@ -1080,58 +1126,32 @@
 			"confirmButton": "Staðfesta",
 			"cancelButton": "Hætta við"
 		},
-		"apiKeys": {
-			"title": "API lykill",
-			"description": "Stjórna API lyklinum fyrir utanaðkomandi forrit.",
-			"input": {
-				"placeholder": "Ný lyklalýsing"
-			},
-			"createButton": "Búa til",
-			"noKeysFound": "Engir API lyklar fundust.",
-			"refreshButton": {
-				"title": "Endurnýjaðu lista"
-			},
-			"refreshButtonIcon": {
-				"alt": "endurnýja táknið"
-			},
-			"keyDetails": "Lýsing: ${description} | Búin til í: ${createdAt} | Síðast notað: ${lastUsed}",
-			"neverUsed": "Aldrei notað",
-			"revokeButton": "Afturkalla",
-			"revokeConfirm": "Ertu viss um að þú viljir afturkalla þennan API lykil?",
-			"revokeSuccess": "API lykillinn hefur verið afturkallaður.",
-			"errorDescriptionRequired": "Lýsing er krafist.",
-			"createSuccess": "API lykillinn var búinn til með góðum árangri."
-		},
-		"newApiKey": {
-			"title": "Nýr API lykill hefur verið búinn til",
-			"warning": "Vinsamlegast afritaðu nýja API lykilinn þinn. Þú munt ekki geta séð það aftur!",
-			"copyButton": {
-				"title": "Afritaðu nýjan API lykil"
-			},
-			"closeButton": "Ég hef afritað lykilinn minn",
-			"copiedAlert": "API lykill afritaður á klippiborð!"
-		}
+		"apiError": "API beiðni mistókst: ${message}",
+		"generalError": "Villa kom upp: ${message}"
 	},
 	"languageSettings": {
 		"title": "Tungumálastillingar",
-		"description": "Stjórna tungumálakjörum þínum hér. Tungumálin á listanum munu hafa forgang fram yfir vafrastillingarnar í röð.",
+		"pageTitle": "Tungumálastillingar",
+		"description": "Hafðu umsjón með tungumálastillingum þínum fyrir leturforritið. Sérsníddu upplifun þína með tiltækum tungumálamöguleikum.",
+		"pageDescription": "Stjórna tungumálakjörum þínum hér. Tungumálin á listanum munu hafa forgang fram yfir vafrastillingarnar í röð.",
 		"availableLanguages": "Tiltæk tungumál",
 		"preferredLanguages": "Forgangslista",
 		"resetButton": "Endurstilla",
 		"saveButton": "Vista",
-		"noPreferredLanguages": "Ekkert fyrri tungumál ennþá. Sjálfgefnar stillingar vafrans verða notaðar.",
-		"savedMessage": "Tungumálastillingar eru vistaðar!",
-		"resetMessage": "Tungumálastillingar hafa verið endurstilltar!",
-		"fetchLocalesFailed": "Ekki tókst að fá tiltæk tungumál!",
 		"select": {
 			"placeholder": "Veldu tungumál..."
 		},
 		"search": {
 			"placeholder": "Leita að tungumáli..."
-		}
+		},
+		"noPreferredLanguages": "Ekkert fyrri tungumál ennþá. Sjálfgefnar stillingar vafrans verða notaðar.",
+		"savedMessage": "Tungumálastillingar eru vistaðar!",
+		"resetMessage": "Tungumálastillingar hafa verið endurstilltar!",
+		"fetchLocalesFailed": "Ekki tókst að fá tiltæk tungumál!"
 	},
 	"themeManage": {
 		"title": "Þemastjórnun",
+		"description": "Veldu fagurfræðina sem endurspeglar skap þitt eða sögu. Forskoðaðu og veldu úr úrvali af þemum, sem hvert um sig býður upp á mismunandi andrúmsloft fyrir samskipti þín við fontinn. Þinn heimur, þinn stíll.",
 		"instruction": "Veldu þema!",
 		"search": {
 			"placeholder": "Leita að þema...",
@@ -1186,6 +1206,7 @@
 	"part_config": {
 		"title": "Stillingar íhlutar",
 		"pageTitle": "Stillingar íhlutar",
+		"description": "Horfðu inn í hjarta brunnsins. Hér geturðu stillt stillingar fjölbreyttra íhluta þess, stillt vélina sem knýr upplifun þína.",
 		"labels": {
 			"partType": "Veldu tegund íhlutar",
 			"part": "Veldu íhlut"
@@ -1217,6 +1238,7 @@
 	},
 	"aisource_editor": {
 		"title": "Ritill fyrir gervigreindarheimildir",
+		"description": "Hér stjórnar þú sinfóníu gervigreindarradda. Bættu við, myndhöggva eða þagga niður heimildirnar sem hleypa lífi til félaga þinna – viðkvæman dans kóða og ímyndunarafls.",
 		"fileList": {
 			"title": "Listi yfir gervigreindarheimildir",
 			"addButton": {
@@ -1228,6 +1250,21 @@
 			"label": "Veldu rafal",
 			"placeholder": "Vinsamlegast veldu"
 		},
+		"editor": {
+			"disabledIndicator": "Vinsamlegast veldu rafal fyrst"
+		},
+		"common_config_interface": {
+			"loadingModels": "Hleður líkönum...",
+			"availableModels": "Líkön í boði:",
+			"copied": "Afritað!",
+			"empty_generator": "Legacy rafallinn frá þessum AI uppsprettu hefur villu við hleðslu og kann að hafa verið fjarlægður eða endurnefnt.",
+			"apiKeyRequired": "API lykill er nauðsynlegur til að lista upp líkönin.",
+			"copyModelIdTooltip": "Smelltu til að afrita líkanauðkennið",
+			"loadModelsFailed": "Mistókst að hlaða líkönum: ${message}"
+		},
+		"prompts": {
+			"newFileName": "Vinsamlegast sláðu inn nýtt skráarheiti fyrir gervigreindarheimild (án skráarendingar):"
+		},
 		"buttons": {
 			"save": "Vista",
 			"delete": "Eyða",
@@ -1237,40 +1274,25 @@
 				}
 			}
 		},
-		"alerts": {
-			"fetchFileListFailed": "Mistókst að sækja skráalista: ${error}",
-			"fetchGeneratorListFailed": "Mistókst að sækja rafalalista: ${error}",
-			"fetchDefaultsFailed": "Mistókst að sækja sjálfgefna íhluti: ${error}",
-			"fetchFileDataFailed": "Mistókst að sækja skráargögn: ${error}",
-			"noFileSelectedSave": "Engin skrá valin til að vista.",
-			"saveFileFailed": "Mistókst að vista skrá: ${error}",
-			"setDefaultFailed": "Mistókst að stilla sjálfgefna gervigreindarheimild: ${error}",
-			"noFileSelectedDelete": "Engin skrá valin til að eyða.",
-			"deleteFileFailed": "Mistókst að eyða skrá: ${error}",
-			"invalidFileName": "Skráarheiti má ekki innihalda eftirfarandi stafi: / \\ : * ? \" < > |",
-			"addFileFailed": "Mistókst að bæta við skrá: ${error}",
-			"fetchConfigTemplateFailed": "Mistókst að sækja stillingasniðmát",
-			"noGeneratorSelectedSave": "Vinsamlegast veldu rafal áður en þú vistar"
-		},
 		"confirm": {
 			"unsavedChanges": "Þú hefur óvistaðar breytingar. Viltu henda þeim?",
 			"deleteFile": "Ertu viss um að þú viljir eyða skránni?",
 			"unsavedChangesBeforeUnload": "Þú hefur óvistaðar breytingar. Ertu viss um að þú viljir yfirgefa þessa síðu?"
 		},
-		"prompts": {
-			"newFileName": "Vinsamlegast sláðu inn nýtt skráarheiti fyrir gervigreindarheimild (án skráarendingar):"
-		},
-		"editor": {
-			"disabledIndicator": "Vinsamlegast veldu rafal fyrst"
-		},
-		"common_config_interface": {
-			"empty_generator": "Legacy rafallinn frá þessum AI uppsprettu hefur villu við hleðslu og kann að hafa verið fjarlægður eða endurnefnt.",
-			"apiKeyRequired": "API lykill er nauðsynlegur til að lista upp líkönin.",
-			"loadingModels": "Hleður líkönum...",
-			"availableModels": "Líkön í boði:",
-			"copyModelIdTooltip": "Smelltu til að afrita líkanauðkennið",
-			"copied": "Afritað!",
-			"loadModelsFailed": "Mistókst að hlaða líkönum: ${message}"
+		"alerts": {
+			"fetchFileListFailed": "Mistókst að sækja skráalista: ${error}",
+			"fetchGeneratorListFailed": "Mistókst að sækja rafalalista: ${error}",
+			"fetchDefaultsFailed": "Mistókst að sækja sjálfgefna íhluti: ${error}",
+			"fetchFileDataFailed": "Mistókst að sækja skráargögn: ${error}",
+			"fetchConfigTemplateFailed": "Mistókst að sækja stillingasniðmát",
+			"saveFileFailed": "Mistókst að vista skrá: ${error}",
+			"deleteFileFailed": "Mistókst að eyða skrá: ${error}",
+			"addFileFailed": "Mistókst að bæta við skrá: ${error}",
+			"setDefaultFailed": "Mistókst að stilla sjálfgefna gervigreindarheimild: ${error}",
+			"noFileSelectedSave": "Engin skrá valin til að vista.",
+			"noFileSelectedDelete": "Engin skrá valin til að eyða.",
+			"noGeneratorSelectedSave": "Vinsamlegast veldu rafal áður en þú vistar",
+			"invalidFileName": "Skráarheiti má ekki innihalda eftirfarandi stafi: / \\ : * ? \" < > |"
 		},
 		"achievements": {
 			"set_default_aisource": {
@@ -1282,11 +1304,8 @@
 	},
 	"discord_bots": {
 		"title": "Discord Bot",
+		"description": "Gefðu félögum þínum rödd í iðandi sölum Discord. Stilltu viðveru þeirra, stjórnaðu rekstri þeirra og láttu þá brúa heima, einn netþjón í einu.",
 		"cardTitle": "Discord Bot",
-		"buttons": {
-			"newBot": "Nýr Bot",
-			"deleteBot": "Eyða Bot"
-		},
 		"botSelectDropdown": {
 			"placeholder": "Veldu vélmenni"
 		},
@@ -1322,10 +1341,14 @@
 		"prompts": {
 			"newBotName": "Sláðu inn nafn á nýja Bot-inn:"
 		},
+		"buttons": {
+			"newBot": "Nýr Bot",
+			"deleteBot": "Eyða Bot"
+		},
 		"alerts": {
+			"configSaved": "Stillingar vistaðar",
 			"botExists": "Bot með nafnið \"${botname}\" er þegar til, vinsamlegast notaðu annað nafn.",
 			"unsavedChanges": "Þú hefur óvistaðar breytingar. Viltu henda þeim?",
-			"configSaved": "Stillingar vistaðar",
 			"httpError": "HTTP villa",
 			"beforeUnload": "Þú hefur óvistaðar breytingar. Ertu viss um að þú viljir fara?"
 		},
@@ -1339,6 +1362,7 @@
 	},
 	"telegram_bots": {
 		"title": "Telegram Bot",
+		"description": "Leyfðu upprunapersónunum þínum að fara yfir augnabliksbylgjur Telegram. Stilltu stafræna viðveru sína, stjórnaðu samtölum þeirra og stækkuðu umfang þeirra til þessa líflega skilaboðaheims.",
 		"cardTitle": "Stjórnun Telegram Bot",
 		"botSelectDropdown": {
 			"placeholder": "Veldu vélmenni"
@@ -1351,10 +1375,6 @@
 		},
 		"charSearch": {
 			"placeholder": "Leitaðu að hlutverkum..."
-		},
-		"buttons": {
-			"newBot": "Nýr Bot",
-			"deleteBot": "Eyða Bot"
 		},
 		"configCard": {
 			"title": "Bot stillingar",
@@ -1379,10 +1399,14 @@
 		"prompts": {
 			"newBotName": "Sláðu inn nafn á nýja Bot-inn:"
 		},
+		"buttons": {
+			"newBot": "Nýr Bot",
+			"deleteBot": "Eyða Bot"
+		},
 		"alerts": {
+			"configSaved": "Stillingar vistaðar!",
 			"botExists": "Bot með nafnið \"${botname}\" er þegar til, vinsamlegast notaðu annað nafn.",
 			"unsavedChanges": "Þú hefur óvistaðar breytingar. Viltu henda þeim?",
-			"configSaved": "Stillingar vistaðar!",
 			"httpError": "HTTP villa",
 			"beforeUnload": "Þú hefur óvistaðar breytingar. Ertu viss um að þú viljir yfirgefa þessa síðu?"
 		},
@@ -1396,8 +1420,9 @@
 	},
 	"browser_integration": {
 		"title": "Sameining vafra",
-		"header": "Sameining vafra",
-		"description": "Til þess að fount hlutverk þitt geti haft samskipti við vefsíðuna þarftu að setja upp þetta samþættingarhandrit vafra. Það virkar sem brú milli persónunnar og vafrans, sem gerir þeim kleift að skoða innihald síðunnar og framkvæma aðgerðir.",
+		"description": "Brúaðu bilið á milli uppsprettunnar og vefsins. Þessi síða veitir notandahandritið til að virkja óaðfinnanlega samþættingu, sem færir gervigreindarfélaga þína inn í vafraupplifun þína.",
+		"pageHeader": "Sameining vafra",
+		"pageDescription": "Til þess að fount hlutverk þitt geti haft samskipti við vefsíðuna þarftu að setja upp þetta samþættingarhandrit vafra. Það virkar sem brú milli persónunnar og vafrans, sem gerir þeim kleift að skoða innihald síðunnar og framkvæma aðgerðir.",
 		"install_script_title": "Uppsetningarhandrit",
 		"install_script_description": "Smelltu á hnappinn hér að neðan til að setja upp samþættingarhandrit vafrans. Þú verður fyrst að setja upp notandaforskriftarstjóra eins og Tampermonkey.",
 		"install_button": "Settu upp",
@@ -1407,10 +1432,6 @@
 		"popular_managers": "Vinsælir kostir:",
 		"csp_warning": "Þú gætir þurft að setja upp viðbótina til að slökkva á CSP til að gera samþættingaraðgerðina rétt. Fyrir Chrome er hægt að nota <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener\" class=\"link\"> this plugin </a>.",
 		"connected_pages_title": "Tengd blaðsíða",
-		"no_pages_connected": {
-			"title": "Engin tenging ennþá",
-			"description": "Vinsamlegast settu upp handritið fyrst og heimsóttu síðan hvaða vefsíðu sem er í öðrum flipum vafra, sem verður sjálfkrafa birt hér."
-		},
 		"fetch_pages_error": "Ekki tókst að hlaða tengda síðulistann.",
 		"page_title": "Blaðsíðuheiti",
 		"page_url": "Url",
@@ -1419,6 +1440,10 @@
 		"status_unfocused": "Í bakgrunni",
 		"copy_button": "Afritaðu",
 		"copied_message": "Afritað á klemmuspjald",
+		"no_pages_connected": {
+			"title": "Engin tenging ennþá",
+			"description": "Vinsamlegast settu upp handritið fyrst og heimsóttu síðan hvaða vefsíðu sem er í öðrum flipum vafra, sem verður sjálfkrafa birt hér."
+		},
 		"autorun": {
 			"title": "Keyra sjálfkrafa forskriftir",
 			"description": "Stjórnaðu JavaScript búningum sem eru sjálfkrafa keyrðir þegar þú passar við ákveðna vefsíðu. Þessar forskriftir geta verið veittar með AI hlutverki þínu eða viðbót til að auka eða gera sjálfvirkan vafraupplifun þína.",
@@ -1464,19 +1489,20 @@
 		}
 	},
 	"browser_integration_script": {
+		"update": {
+			"prompt": "Ný útgáfa af samþættingarhandriti fount vafra er fáanleg. Er uppfærslusíðan núna opin?"
+		},
+		"csp_warning": "Sameiningarhandrit fount vafra skynjar að CSP stefnan er til á síðunni, sem getur valdið því að samþættingarhandritið virkar ekki sem skyldi. Vinsamlegast íhugaðu að setja viðbótina til að loka CSP.",
 		"hostChange": {
 			"securityWarningTitle": "--- fount Safety Warning ---",
 			"message": "Núverandi síða (\"${origin}\") er að reyna að breyta heimilisfangi þínu í fount í:\n\n\"${newHost}\"\n\nViðvörun: Að samþykkja þessa aðgerð gerir nýja gestgjafanum kleift að stjórna að fullu samþættingaraðgerðum vafrans, sem getur leitt til viðkvæmra upplýsinga leka eða þjófnaðar reikninga.\nSamþykki ætti aðeins að vera gert ef þú ert viss um að þetta er þín eigin aðgerð (til dæmis að flytja fount netþjón).\n\nErtu viss um að þú viljir leyfa þessa breytingu?",
 			"uuidMismatchError": "fount öryggisvilla: sjálfsmynd (UUID) hýsingaraðila ${newHost} passar ekki við núverandi. Aðgerðinni hefur verið aflýst.",
 			"verificationError": "fount öryggisvilla: Ekki er hægt að sannreyna nýjan gestgjafa „${newHost}“. Vinsamlegast athugaðu hvort heimilisfangið er rétt og hvort þjónustan er í gangi."
-		},
-		"update": {
-			"prompt": "Ný útgáfa af samþættingarhandriti fount vafra er fáanleg. Er uppfærslusíðan núna opin?"
-		},
-		"csp_warning": "Sameiningarhandrit fount vafra skynjar að CSP stefnan er til á síðunni, sem getur valdið því að samþættingarhandritið virkar ekki sem skyldi. Vinsamlegast íhugaðu að setja viðbótina til að loka CSP."
+		}
 	},
 	"terminal_assistant": {
 		"title": "Flugstöðvar-aðstoðarmaður",
+		"description": "Fyrir utan grafíska viðmótið, pláss fyrir beina stjórn. Samskipti við kjarna gosbrunnar í gegnum flugstöðvaraðstoðarmanninn, þar sem texti vefur sinn eigin kraftmikla töfra.",
 		"initialMessage": "fount styður að setja uppáhalds persónuna þína í flugstöðina til að hjálpa þér við forritun!",
 		"initialMessageLink": "Smelltu hér til að fá frekari upplýsingar",
 		"achievements": {
@@ -1489,6 +1515,7 @@
 	},
 	"deskpet": {
 		"title": "Gæludýr skrifborðs",
+		"description": "Ræstu leturpersónurnar þínar sem gagnvirk gæludýr sem búa á skjáborðinu þínu.",
 		"launcherCard": {
 			"title": "Gæludýr ræsir",
 			"buttons": {
@@ -1510,8 +1537,8 @@
 		},
 		"toasts": {
 			"started": "Gæludýr '${charname}' er byrjað.",
-			"start_failed": "Ekki tókst að hefja gæludýr '${charname}': ${message}",
 			"stopped": "Pet '${charname}' hefur verið stöðvað.",
+			"start_failed": "Ekki tókst að hefja gæludýr '${charname}': ${message}",
 			"stop_failed": "Stöðvaðu gæludýr '${charname}' mistókst: ${message}"
 		},
 		"achievements": {
@@ -1524,6 +1551,7 @@
 	},
 	"access": {
 		"title": "Aðgangur að fount á öðrum tækjum",
+		"description": "Lengdu útbreiðslu gosbrunnar út fyrir einn skjá. Hér liggur gáttin — slóð, QR kóða — til að tengjast félögum þínum úr öðrum tækjum, einföld brú yfir staðbundið eter.",
 		"heading": "Viltu fá aðgang að fount á öðrum tækjum?",
 		"instruction": {
 			"sameLAN": "Gakktu úr skugga um að tækið og fount-vélin séu á sama staðarneti",
@@ -1534,6 +1562,7 @@
 	},
 	"proxy": {
 		"title": "API milliliður",
+		"description": "Fyrir hönnuði og samþættingaraðila afhjúpar þessi síða uppspretta API umboðsins - tengingin þín til að vefja getu gossins í önnur forrit.",
 		"heading": "API milliliðagátt",
 		"instruction": "Búðu til og stjórnaðu API lyklunum þínum á þessari síðu til að samþætta fount við önnur forrit.",
 		"endpointSectionTitle": "API endapunktur",
@@ -1554,8 +1583,9 @@
 	},
 	"achievements": {
 		"title": "Afrek",
-		"header": "Afrekshöll",
-		"description": "Skoðaðu ólæstu afrekin þín og áfangastaði hér.",
+		"description": "Kannaðu tímamótin og afrek ferðarinnar þinnar með font. Hvert afrek markar skref í þinni einstöku frásögn.",
+		"pageHeader": "Afrekshöll",
+		"pageDescription": "Skoðaðu ólæstu afrekin þín og áfangastaði hér.",
 		"unlocked_on": "Opnað ${date}",
 		"locked": "Ekki ólæst",
 		"toast_title": "Afrek opnuð!",
@@ -1572,6 +1602,7 @@
 	},
 	"badges_maker": {
 		"title": "fount! Merkja-breytir",
+		"description": "Fyrir þegar verkefnið þitt kallar á snert af karakter fontsins. Umbreyttu shields.io merkjum og ljáðu þeim nýja, hljómandi sjálfsmynd.",
 		"card_title": "fount merkja-hlekkjabreytir",
 		"original_url_label": "Límdu img.shields.io vefslóð",
 		"original_url": {
@@ -1581,31 +1612,22 @@
 		"new_url": {
 			"placeholder": "Umbreytt vefslóð birtist hér"
 		},
-		"copy_button": "Afrita",
 		"preview_label": "Forskoðun",
+		"copy_button": "Afrita",
+		"copied_text": "Afritað!",
 		"preview": {
 			"alt": "Merkjaforskoðun"
 		},
-		"copied_text": "Afritað!",
 		"copy_error": "Gat ekki afritað texta: ${error}",
 		"copy_fail_alert": "Afritun mistókst!"
 	},
 	"404": {
 		"title": "Síða fannst ekki",
+		"description": "Leiðin sem þú leitaðir hefur leyst upp í þoku. Var það mistök, gleymd beygja? Leyfðu okkur að leiðbeina þér aftur að landi, eða kannski staldra við í leik í rólegu tóminu.",
 		"pageNotFoundText": "Úps! Svo virðist sem þú hafir lent á síðu sem er ekki til.",
 		"homepageButton": "Aftur á forsíðu"
 	},
 	"code_block": {
-		"download": {
-			"dataset": {
-				"tip": "Sækja kóða"
-			}
-		},
-		"execute": {
-			"dataset": {
-				"tip": "Keyra kóða"
-			}
-		},
 		"copy": {
 			"dataset": {
 				"tip": "afrita á klippiborð"
@@ -1616,15 +1638,25 @@
 				"tip": "Afritað á klippiborð!"
 			}
 		},
+		"download": {
+			"dataset": {
+				"tip": "Sækja kóða"
+			}
+		},
+		"execute": {
+			"dataset": {
+				"tip": "Keyra kóða"
+			}
+		},
 		"copy_failed": "Ekki er hægt að afrita á klippiborð: ${error}"
 	},
 	"pow_captcha": {
 		"initial": "Ég er ekki vélmenni",
 		"verifying": "Staðfestir...",
 		"solved": "Staðfesting tókst",
+		"wasm_disabled": "Virkja WASM fyrir hraðari sannprófun",
 		"error": "Staðfesting mistókst",
-		"errorMessage": "Staðfesting mistókst: ${error}",
-		"wasm_disabled": "Virkja WASM fyrir hraðari sannprófun"
+		"errorMessage": "Staðfesting mistókst: ${error}"
 	},
 	"zxcvbn": {
 		"warnings": {
