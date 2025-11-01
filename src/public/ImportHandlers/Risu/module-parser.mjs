@@ -18,7 +18,7 @@ catch (err) {
 
 /**
  * 解析 .risum 文件 Buffer
- * @param {Buffer} moduleBuffer
+ * @param {Buffer} moduleBuffer 模块缓冲区
  * @returns {Promise<{moduleDef: object, assetsData: Buffer[]}|null>}
  *          moduleDef: 解析后的模块定义JSON对象 (RisuModule 结构)
  *          assetsData: 模块内嵌的资源Buffer数组
@@ -32,12 +32,25 @@ export async function parseRisuModule(moduleBuffer) {
 
 	try {
 		let pos = 0
+		/**
+		 * 读取字节
+		 * @returns {number}
+		 */
 		const readByte = () => moduleBuffer.readUInt8(pos++)
+		/**
+		 * 读取长度
+		 * @returns {number}
+		 */
 		const readLength = () => {
 			const len = moduleBuffer.readUInt32LE(pos)
 			pos += 4
 			return len
 		}
+		/**
+		 * 读取数据
+		 * @param {any} len 长度
+		 * @returns {Buffer}
+		 */
 		const readData = len => {
 			const data = moduleBuffer.subarray(pos, pos + len)
 			pos += len

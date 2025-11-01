@@ -2,6 +2,11 @@
 
 let last_url = ''
 let last_apikey = ''
+/**
+ * 规范化 URL。
+ * @param {string} url - URL。
+ * @returns {string|null} 规范化的 URL。
+ */
 const normalizeUrl = url => {
 	let urlObj
 	try {

@@ -2,7 +2,7 @@
 // @name         fount Browser Integration
 // @namespace    http://tampermonkey.net/
 // @version      0.0.0.0
-// @description  Allows fount characters to interact with the web page.
+//  Allows fount characters to interact with the web page.
 // @author       steve02081504
 // @icon         https://steve02081504.github.io/fount/imgs/icon.svg
 // @match        *://*/*
@@ -17,15 +17,19 @@
 // @grant        GM_info
 // ==/UserScript==
 
+/**
+ * fount 浏览器集成用户脚本。允许 fount 角色与网页交互。
+ */
+
 /* global GM, GM_info */
 
 // --- Helpers ---
 
 /**
- * A wrapper around GM.xmlHttpRequest that mimics the fetch() API.
- * @param {string} url The URL to request.
- * @param {object} options Options for the request (method, headers, data, timeout).
- * @returns {Promise<object>} A promise that resolves with the GM.xmlHttpRequest response object.
+ * GM.xmlHttpRequest 的一个包装器，模仿 fetch() API。
+ * @param {string} url - 要请求的 URL。
+ * @param {object} [options={}] - 请求的选项（方法、头部、数据、超时）。
+ * @returns {Promise<object>} - 一个解析为 GM.xmlHttpRequest 响应对象的 Promise。
  */
 function gmFetch(url, options = {}) {
 	return new Promise((resolve, reject) => {
@@ -36,12 +40,22 @@ function gmFetch(url, options = {}) {
 			data: options.data,
 			timeout: options.timeout,
 			onload: resolve,
+			/**
+			 * onerror 回调
+			 */
 			onerror: () => reject(new Error(`Request error for ${url}`)),
+			/**
+			 * ontimeout 回调
+			 */
 			ontimeout: () => reject(new Error(`Request to ${url} timed out`))
 		})
 	})
 }
 
+/**
+ * 获取一个用于 JSON.stringify 的 replacer 函数，以处理循环引用。
+ * @returns {function(string, any): any} - replacer 函数。
+ */
 const getCircularReplacer = () => {
 	const seen = new WeakSet()
 	return (key, value) => {
@@ -84,10 +98,10 @@ Are you sure you want to allow this change?
 }
 
 /**
- * Retrieves a nested value from an object using a dot-separated key.
- * @param {object} obj The object to query.
- * @param {string} key The dot-separated key (e.g., 'a.b.c').
- * @returns {*} The value if found, otherwise undefined.
+ * 使用点分隔的键从对象中检索嵌套值。
+ * @param {object} obj - 要查询的对象。
+ * @param {string} key - 点分隔的键（例如 'a.b.c'）。
+ * @returns {any} - 如果找到则为值，否则为 undefined。
  */
 function getNestedValue(obj, key) {
 	const keys = key.split('.')
@@ -101,6 +115,12 @@ function getNestedValue(obj, key) {
 }
 
 let translationsInitialized = false
+/**
+ * 获取翻译字符串。
+ * @param {string} key - 翻译键。
+ * @param {object} [params={}] - 用于替换的参数。
+ * @returns {Promise<string>} - 翻译后的字符串。
+ */
 async function geti18n(key, params = {}) {
 	if (!translationsInitialized) {
 		await initTranslations()
@@ -116,6 +136,10 @@ async function geti18n(key, params = {}) {
 	return translation
 }
 
+/**
+ * 初始化翻译。
+ * @returns {Promise<void>}
+ */
 async function initTranslations() {
 	const base_dir = 'https://steve02081504.github.io/fount'
 	const availableLocales = []
@@ -179,7 +203,7 @@ let currentRetryDelay = INITIAL_RETRY_DELAY
 
 /** @type {number} Timestamp of the last successful API key refresh. */
 let lastRefreshTimestamp = 0
-/** @const {number} Grace period in milliseconds to ignore stale 401 errors after a refresh. */
+/** @constant {number} Grace period in milliseconds to ignore stale 401 errors after a refresh. */
 const REFRESH_GRACE_PERIOD_MS = 5000
 
 let cspWarningShown = false
@@ -187,6 +211,10 @@ let cspWarningShown = false
 
 // --- Host Management & State Caching ---
 let fountDataCache = null
+/**
+ * 获取存储的数据。
+ * @returns {Promise<object>} - 存储的数据。
+ */
 async function getStoredData() {
 	if (fountDataCache) return fountDataCache
 	const host = await GM.getValue('fount_host', null)
@@ -196,6 +224,14 @@ async function getStoredData() {
 	return fountDataCache = { host, uuid, protocol, apikey }
 }
 
+/**
+ * 设置存储的数据。
+ * @param {string} host - 主机。
+ * @param {string} uuid - UUID。
+ * @param {string} protocol - 协议。
+ * @param {string} apikey - API 密钥。
+ * @returns {Promise<void>}
+ */
 async function setStoredData(host, uuid, protocol, apikey) {
 	fountDataCache = { host, uuid, protocol, apikey }
 	await GM.setValue('fount_host', host)
@@ -210,6 +246,14 @@ async function setStoredData(host, uuid, protocol, apikey) {
 
 // --- API Communication ---
 
+/**
+ * 发出 API 请求。
+ * @param {string} host - 主机。
+ * @param {string} protocol - 协议。
+ * @param {string} endpoint - 端点。
+ * @param {object} [options={}] - 选项。
+ * @returns {Promise<any>} - API 响应。
+ */
 async function makeApiRequest(host, protocol, endpoint, options = {}) {
 	const { method = 'GET', timeout = 3000, data: requestData, isRetry = false, authType = 'bearer' } = options
 	const url = `${protocol}//${host}${endpoint}`
@@ -256,10 +300,10 @@ async function makeApiRequest(host, protocol, endpoint, options = {}) {
 }
 
 /**
- * Requests a new API key from the fount host.
- * @param {string} host The fount host.
- * @param {string} protocol The protocol (http: or https:).
- * @returns {Promise<string>} A promise that resolves with the new API key.
+ * 从 fount 主机请求新的 API 密钥。
+ * @param {string} host - fount 主机。
+ * @param {string} protocol - 协议（http: 或 https:）。
+ * @returns {Promise<string>} - 解析为新 API 密钥的 Promise。
  */
 async function requestNewApiKey(host, protocol) {
 	const { apiKey } = await makeApiRequest(host, protocol, '/api/apikey/create', {
@@ -271,6 +315,12 @@ async function requestNewApiKey(host, protocol) {
 	return apiKey
 }
 
+/**
+ * 刷新 API 密钥。
+ * @param {string} host - 主机。
+ * @param {string} protocol - 协议。
+ * @returns {Promise<string>} - 新的 API 密钥。
+ */
 function refreshApiKey(host, protocol) {
 	apiKeyRefreshPromise ??= (async () => {
 		try {
@@ -288,12 +338,24 @@ function refreshApiKey(host, protocol) {
 	return apiKeyRefreshPromise
 }
 
+/**
+ * Ping fount 主机。
+ * @param {string} host - 主机。
+ * @param {string} protocol - 协议。
+ * @returns {Promise<any>} - Ping 响应。
+ */
 async function pingHost(host, protocol) {
 	const data = await makeApiRequest(host, protocol, '/api/ping', { authType: 'session' })
 	if (data.client_name === 'fount') return data
 	throw new Error('Not a fount host')
 }
 
+/**
+ * 获取当前用户。
+ * @param {string} host - 主机。
+ * @param {string} protocol - 协议。
+ * @returns {Promise<any>} - 用户信息。
+ */
 function whoami(host, protocol) {
 	return makeApiRequest(host, protocol, '/api/whoami')
 }
@@ -353,6 +415,10 @@ window.addEventListener('fount-host-info', async (e) => {
 
 
 // --- WebSocket & Core Logic ---
+/**
+ * 查找并连接到 fount 主机。
+ * @returns {Promise<void>}
+ */
 async function findAndConnect() {
 	if (ws) return
 	const { host: storedHost, protocol: storedProtocol } = await getStoredData()
@@ -379,30 +445,55 @@ async function findAndConnect() {
 	currentRetryDelay = Math.min(currentRetryDelay + RETRY_INCREMENT, MAX_RETRY_DELAY)
 }
 
+/**
+ * 连接到 WebSocket。
+ * @param {string} host - 主机。
+ * @param {string} protocol - 协议。
+ * @param {string} username - 用户名。
+ * @param {string} apikey - API 密钥。
+ */
 function connect(host, protocol, username, apikey) {
 	if (ws) return
 	currentHost = host
 	const wsProtocol = protocol === 'https:' ? 'wss:' : 'ws:'
 	ws = new WebSocket(`${wsProtocol}//${host}/ws/shells/browserIntegration/page`, apikey)
+	/**
+	 * WebSocket 'open' 事件处理程序。
+	 */
 	ws.onopen = () => {
 		currentRetryDelay = INITIAL_RETRY_DELAY
 		ws.send(JSON.stringify({ type: 'init', payload: { url: window.location.href, title: document.title, username } }))
 		checkForUpdate()
 	}
+	/**
+	 * WebSocket 'message' 事件处理程序。
+	 * @param {MessageEvent} event - WebSocket 消息事件。
+	 */
 	ws.onmessage = (event) => {
 		const msg = JSON.parse(event.data)
 		if (msg.type === 'init_success') { pageId = msg.payload.pageId; return }
 		if (msg.requestId) handleCommand(msg)
 	}
+	/**
+	 * WebSocket 'close' 事件处理程序。
+	 */
 	ws.onclose = () => {
 		ws = null
 		pageId = null
 		connectionTimeoutId = setTimeout(findAndConnect, currentRetryDelay)
 		currentRetryDelay = Math.min(currentRetryDelay + RETRY_INCREMENT, MAX_RETRY_DELAY)
 	}
+	/**
+	 * WebSocket 'error' 事件处理程序。
+	 * @param {Event} err - WebSocket 错误事件。
+	 */
 	ws.onerror = (err) => { console.error('fount userscript: WebSocket error.', err) }
 }
 
+/**
+ * 检查脚本更新。
+ * @returns {Promise<void>}
+ */
 async function checkForUpdate() {
 	if (!currentHost) return
 	const { protocol } = await getStoredData()
@@ -423,11 +514,21 @@ async function checkForUpdate() {
 	}
 }
 
+/**
+ * 检查 CSP 并发出警告。
+ * @returns {Promise<void>}
+ */
 async function checkCspAndWarn() {
 	if (cspWarningShown) return
 
 	try {
-		const policy = window.trustedTypes?.createPolicy?.('fount-userscript-policy', { createScript: s => s }) ?? { createScript: s => s }
+		const policy = window.trustedTypes?.createPolicy?.('fount-userscript-policy', { /**
+		 * @param {string} s
+		 */
+			createScript: s => s }) ?? { /**
+		 * @param {string} s
+		 */
+			createScript: s => s }
 		// eslint-disable-next-line no-eval
 		eval(policy.createScript('1'))
 	}
@@ -439,6 +540,11 @@ async function checkCspAndWarn() {
 	}
 }
 
+/**
+ * 处理来自 WebSocket 的命令。
+ * @param {object} msg - WebSocket 消息。
+ * @returns {Promise<void>}
+ */
 async function handleCommand(msg) {
 	let payload
 	try {
@@ -454,6 +560,9 @@ async function handleCommand(msg) {
 				const { script, callbackInfo } = msg.payload
 				let callback = null
 				if (callbackInfo)
+					/**
+					 * @param {any} data
+					 */
 					callback = async (data) => {
 						const { host, protocol } = await getStoredData()
 						if (!host) return
@@ -475,11 +584,21 @@ async function handleCommand(msg) {
 	}
 }
 
+/**
+ * 向 WebSocket 发送响应。
+ * @param {string} requestId - 请求 ID。
+ * @param {any} payload - 响应负载。
+ * @param {boolean} [isError=false] - 是否为错误。
+ */
 function sendResponse(requestId, payload, isError = false) {
 	if (!ws || ws.readyState !== WebSocket.OPEN || pageId === -1) return
 	ws.send(JSON.stringify({ type: 'response', requestId, pageId, payload, isError }))
 }
 
+/**
+ * 运行匹配的脚本。
+ * @returns {Promise<void>}
+ */
 async function runMatchingScripts() {
 	const scripts = await GM.getValue(AUTORUN_SCRIPTS_KEY, [])
 	if (!scripts.length) return
@@ -493,12 +612,22 @@ async function runMatchingScripts() {
 	} catch (e) { console.error(`fount userscript: Error executing auto-run script ${script.id}:`, e) }
 }
 
+/**
+ * 获取可见元素的 HTML。
+ * @returns {string} - 可见元素的 HTML。
+ */
 function getVisibleElementsHtml() {
 	const visibleElements = new Set()
 	const allElements = document.querySelectorAll('body, body *')
 	const viewportHeight = document.documentElement.clientHeight
 	const viewportWidth = document.documentElement.clientWidth
+	/**
+	 * @param {Element} el
+	 */
 	const isElementInViewport = (el) => { const rect = el.getBoundingClientRect(); return rect.top < viewportHeight && rect.bottom > 0 && rect.left < viewportWidth && rect.right > 0 }
+	/**
+	 * @param {Element} el
+	 */
 	const isElementVisible = (el) => getComputedStyle(el).visibility !== 'hidden' && getComputedStyle(el).display !== 'none'
 	for (const el of allElements)
 		if (isElementInViewport(el) && isElementVisible(el)) {
@@ -510,11 +639,18 @@ function getVisibleElementsHtml() {
 	return Array.from(visibleElements).map(el => el.outerHTML).join('\n')
 }
 
+/**
+ * 通知焦点。
+ */
 function notifyFocus() {
 	if (!ws || ws.readyState !== WebSocket.OPEN || pageId === -1) return
 	ws.send(JSON.stringify({ type: 'focus', payload: { pageId, hasFocus: document.hasFocus() } }))
 }
 
+/**
+ * 从服务器同步脚本。
+ * @returns {Promise<void>}
+ */
 async function syncScriptsFromServer() {
 	const { host, protocol } = await getStoredData()
 	if (host) try {
@@ -526,6 +662,10 @@ async function syncScriptsFromServer() {
 	}
 }
 
+/**
+ * 从 fount 加载用户区域设置。
+ * @returns {Promise<void>}
+ */
 async function loadUserLocalesFromFount() {
 	const { host, protocol } = await getStoredData()
 	if (host) try {
@@ -537,6 +677,10 @@ async function loadUserLocalesFromFount() {
 }
 
 // --- Initialization ---
+/**
+ * 初始化脚本。
+ * @returns {Promise<void>}
+ */
 async function initialize() {
 	await loadUserLocalesFromFount()
 	await syncScriptsFromServer()

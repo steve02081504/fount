@@ -1,5 +1,6 @@
 /**
  * @param {string} reply
+ * @param split_lenth
  * @returns {string[]}
  */
 export function splitDiscordReply(reply, split_lenth = 2000) {
@@ -7,6 +8,9 @@ export function splitDiscordReply(reply, split_lenth = 2000) {
 	let new_content_slices = []
 	let last = ''
 
+	/**
+	 *
+	 */
 	function mapend() {
 		if (last) new_content_slices.push(last)
 		content_slices = new_content_slices
@@ -135,6 +139,10 @@ export function splitDiscordReply(reply, split_lenth = 2000) {
 	return content_slices.map(e => e.trim()).filter(e => e)
 }
 
+/**
+ *
+ * @param embed
+ */
 function formatEmbed(embed) {
 	let embedContent = ''
 	if (embed.data)
@@ -150,6 +158,10 @@ function formatEmbed(embed) {
 	return embedContent ? '```\n' + embedContent + '```\n' : ''
 }
 
+/**
+ *
+ * @param message
+ */
 function formatMessageContent(message) {
 	let content = message.content || ''
 
@@ -184,6 +196,11 @@ function formatMessageContent(message) {
 	return content
 }
 
+/**
+ *
+ * @param message
+ * @param client
+ */
 export async function getMessageFullContent(message, client) {
 	let fullContent = formatMessageContent(message)
 

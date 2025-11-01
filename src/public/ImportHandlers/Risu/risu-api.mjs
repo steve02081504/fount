@@ -48,7 +48,7 @@ export async function downloadRisuCard(uuid) {
 // 例如，直接下载资源文件的函数
 /**
  * 从给定的 URL 下载资源
- * @param {string} url
+ * @param {string} url 网址
  * @returns {Promise<Buffer>}
  */
 export async function downloadAsset(url) {

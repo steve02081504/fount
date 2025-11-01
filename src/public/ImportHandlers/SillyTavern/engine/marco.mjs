@@ -3,8 +3,21 @@ import droll from 'npm:droll'
 import moment from 'npm:moment/moment.js'
 import seedrandom from 'npm:seedrandom'
 
+/**
+ * 字符串哈希
+ * @returns {string}
+ * @param {string} str 字符串
+ */
 const STRING_HASH = str => sha256(str).toString()
 
+/**
+ * 获取变量
+ * @returns {any}
+ * @param {any} memory 内存
+ * @param {any} name 名称
+ * @param {any} args 参数
+ * @param {any} isGlobal 是否全局
+ */
 function getVariable(memory, name, args = {}, isGlobal = false) {
 	const storage = isGlobal ? memory?.globalVariables : memory?.variables
 	if (!storage) return ''
@@ -18,6 +31,15 @@ function getVariable(memory, name, args = {}, isGlobal = false) {
 	return variable === '' || isNaN(Number(variable)) ? variable || '' : Number(variable)
 }
 
+/**
+ * 设置变量
+ * @returns {any}
+ * @param {any} memory 内存
+ * @param {any} name 名称
+ * @param {any} value 值
+ * @param {any} args 参数
+ * @param {any} isGlobal 是否全局
+ */
 function setVariable(memory, name, value, args = {}, isGlobal = false) {
 	const storage = isGlobal ? memory.globalVariables ??= {} : memory.variables ??= {}
 	if (args.index !== undefined) try {
@@ -31,6 +53,15 @@ function setVariable(memory, name, value, args = {}, isGlobal = false) {
 	return storage[name] = value
 }
 
+/**
+ * 修改变量
+ * @returns {any}
+ * @param {any} memory 内存
+ * @param {any} name 名称
+ * @param {any} value 值
+ * @param {boolean} isGlobal 是否全局
+ * @param {string} operation 操作
+ */
 function modifyVariable(memory, name, value, isGlobal = false, operation = 'add') {
 	const currentValue = getVariable(memory, name, {}, isGlobal) || 0
 	let newValue
@@ -56,6 +87,12 @@ function modifyVariable(memory, name, value, isGlobal = false, operation = 'add'
 }
 
 
+/**
+ * 替换变量宏
+ * @returns {any}
+ * @param {any} input 输入
+ * @param {any} memory 内存
+ */
 function replaceVariableMacros(input, memory) {
 	if (!input || !input.includes('{{')) return input
 
@@ -95,6 +132,11 @@ function replaceVariableMacros(input, memory) {
 
 
 
+/**
+ * 获取自上次消息以来的时间
+ * @returns {string}
+ * @param {any} chatLog 聊天记录
+ */
 function getTimeSinceLastMessage(chatLog) {
 	if (!chatLog?.length) return 'just now'
 	const lastMessage = chatLog
@@ -107,6 +149,12 @@ function getTimeSinceLastMessage(chatLog) {
 	return 'just now'
 }
 
+/**
+ * 随机替换
+ * @returns {any}
+ * @param {any} input 输入
+ * @param {any} emptyListPlaceholder 空列表占位符
+ */
 function randomReplace(input, emptyListPlaceholder = '') {
 	return input.replace(/{{random\s?::?([^]*?)}}/gi, (_, listString) => {
 		const list = listString.split(/(?<!\\),/g).map(item => item.replace(/\\,/g, ',').trim())
@@ -116,6 +164,13 @@ function randomReplace(input, emptyListPlaceholder = '') {
 	})
 }
 
+/**
+ * 挑选替换
+ * @returns {any}
+ * @param {any} input 输入
+ * @param {any} rawContent 原始内容
+ * @param {any} emptyListPlaceholder 空列表占位符
+ */
 function pickReplace(input, rawContent, emptyListPlaceholder = '') {
 	return input.replace(/{{pick\s?::?([^]*?)}}/gi, (_, listString, offset) => {
 		const list = listString.split(/(?<!\\),/g).map(item => item.replace(/\\,/g, ',').trim())
@@ -125,6 +180,12 @@ function pickReplace(input, rawContent, emptyListPlaceholder = '') {
 	})
 }
 
+/**
+ * 掷骰子替换
+ * @returns {any}
+ * @param {any} input 输入
+ * @param {any} invalidRollPlaceholder 无效掷骰占位符
+ */
 function diceRollReplace(input, invalidRollPlaceholder = '') {
 	return input.replace(/{{roll[ :]([^}]+)}}/gi, (_, formula) => {
 		formula = formula.trim()
@@ -133,16 +194,34 @@ function diceRollReplace(input, invalidRollPlaceholder = '') {
 	})
 }
 
+/**
+ * 时间差替换
+ * @returns {any}
+ * @param {any} input 输入
+ */
 function timeDiffReplace(input) {
 	return input.replace(/{{timediff::(.*?)::(.*?)}}/gi, (_, time1, time2) =>
 		moment.duration(moment(time1).diff(moment(time2))).humanize()
 	)
 }
 
+/**
+ * 违禁词替换
+ * @returns {any}
+ * @param {any} inText 输入文本
+ */
 function bannedWordsReplace(inText) {
 	return inText ? inText.replaceAll(/{{banned "(.*)"}}/gi, '') : ''
 }
 
+/**
+ * 评估宏
+ * @returns {string}
+ * @param {string} content 内容
+ * @param {any} env 环境
+ * @param {any} memory 内存
+ * @param {any} chatLog 聊天记录
+ */
 export function evaluateMacros(content, env, memory = {}, chatLog = []) {
 	if (!content) return ''
 	const rawContent = content

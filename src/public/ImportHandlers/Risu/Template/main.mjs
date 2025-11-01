@@ -28,6 +28,11 @@ const charjson = path.join(chardir, 'chardata.json')
 let chardata = JSON.parse(fs.readFileSync(charjson, 'utf-8'))
 
 // Helper for macro evaluation environment
+/**
+ * 获取宏环境
+ * @param {any} userCharName 用户角色名
+ * @returns {{ char: any; user: any; model: any; charVersion: string; char_version: string; }}
+ */
 function getMacroEnv(userCharName) {
 	return {
 		char: chardata.extensions?.ccv3_nickname || chardata.name, // 使用 CCv3 nickname (如果存在)
@@ -39,6 +44,11 @@ function getMacroEnv(userCharName) {
 }
 
 // 函数：构建国际化的 info 对象
+/**
+ * 构建角色信息
+ * @param {any} charData 角色数据
+ * @returns {{}}
+ */
 function buildCharInfo(charData) {
 	const info = {}
 	// fount 的默认语言键通常是 '' 或特定语言如 'en'。CCv3 使用 ISO 639-1 ('en', 'zh').
@@ -46,6 +56,11 @@ function buildCharInfo(charData) {
 	const defaultLocaleKey = '' // fount 使用的默认/后备 locale key
 
 	// --- 辅助函数：为特定语言创建 info 对象 ---
+	/**
+	 * 为语言创建信息
+	 * @param {any} note 注释
+	 * @returns {{ name: any; avatar: string; description: any; description_markdown: any; version: any; author: any; home_page: any; tags: any; }}
+	 */
 	const createInfoForLang = note => {
 		// 注意：chardata.creator_notes 已经是经过 evaluateMacros 的（如果ST的宏在其中）
 		// 但CCv3的creator_notes通常是纯文本，宏处理应在显示时。
@@ -111,16 +126,28 @@ function formatRisuOutput(text) {
 const charAPI_definition = { // 先定义结构主体
 	info: {}, // 将由 buildCharInfo 动态填充
 
+	/**
+	 * 加载
+	 * @param {any} stat 状态
+	 */
 	Load: stat => {
 		username = stat.username
 	},
 
 	interfaces: {
 		config: {
+			/**
+			 * 获取数据
+			 * @returns {{ AIsource: any; chardata: chardata_t; }}
+			 */
 			GetData: () => ({
 				AIsource: AIsource?.filename || '',
 				chardata, // STv2 格式
 			}),
+			/**
+			 * 设置数据
+			 * @param {{ chardata: chardata_t; AIsource: string; }} data 数据
+			 */
 			SetData: async data => {
 				if (data.chardata) {
 					chardata = data.chardata
@@ -132,6 +159,12 @@ const charAPI_definition = { // 先定义结构主体
 			}
 		},
 		chat: {
+			/**
+			 * 获取问候语
+			 * @param {any} args 参数
+			 * @param {any} index 索引
+			 * @returns {{ content: any; content_for_show: any; }}
+			 */
 			GetGreeting: (args, index) => {
 				// CCv3 的 first_mes 和 alternate_greetings 不是多语言结构，直接使用 chardata 中的版本
 				const greetings = [
@@ -151,6 +184,12 @@ const charAPI_definition = { // 先定义结构主体
 					content_for_show: formatRisuOutput(runRegex(chardata, result, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.promptOnly))
 				}
 			},
+			/**
+			 * 获取群组问候语
+			 * @param {any} args 参数
+			 * @param {any} index 索引
+			 * @returns {{ content: any; content_for_show: any; }}
+			 */
 			GetGroupGreeting: (args, index) => {
 				// CCv3 的 group_only_greetings 被放到了 chardata.extensions.group_greetings
 				// 这同样不是一个多语言结构
@@ -172,6 +211,11 @@ const charAPI_definition = { // 先定义结构主体
 					content_for_show: formatRisuOutput(runRegex(chardata, result, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.promptOnly))
 				}
 			},
+			/**
+			 * 获取提示
+			 * @param {any} promptArgs 提示参数
+			 * @returns {import("../../../../../src/public/ImportHandlers/SillyTavern/engine/prompt_builder").import('../../../../decl/prompt_struct.ts').single_part_prompt_t}
+			 */
 			GetPrompt: (promptArgs /* fount prompt_struct_args_t */) => {
 				// 确保传递给 promptBuilder 的 Charname 是我们期望的（考虑 nickname）
 				const effectiveCharName = chardata.extensions?.ccv3_nickname || chardata.name
@@ -181,6 +225,11 @@ const charAPI_definition = { // 先定义结构主体
 				}
 				return promptBuilder(builderArgs, chardata, AIsource?.filename || 'default_model')
 			},
+			/**
+			 * 获取回复
+			 * @param {any} args 参数
+			 * @returns {Promise<{ content: any; content_for_show: any; files: any; extension: any; }>}
+			 */
 			GetReply: async args => {
 				if (!AIsource)
 					return {
@@ -201,6 +250,10 @@ const charAPI_definition = { // 先定义结构主体
 					extension: {},
 				}
 
+				/**
+				 * 添加长时间日志
+				 * @param {any} entry 条目
+				 */
 				function AddLongTimeLog(entry) {
 					entry.charVisibility = [args.char_id] // char_id 来自 fount 的参数
 					result?.logContextBefore?.push?.(entry)
@@ -234,12 +287,22 @@ const charAPI_definition = { // 先定义结构主体
 					extension: result.extension,
 				}
 			},
+			/**
+			 * 获取回复频率
+			 * @param {any} args 参数
+			 * @returns {Promise<number>}
+			 */
 			GetReplyFrequency: async args => {
 				if (Object(chardata.extensions?.talkativeness) instanceof Number)
 					return Math.max(0.1, Number(chardata.extensions.talkativeness) * 2) // ST 逻辑
 
 				return 1 // 默认频率
 			},
+			/**
+			 * 消息编辑
+			 * @param {any} args 参数
+			 * @returns {{ content: any; content_for_show: any; }}
+			 */
 			MessageEdit: args => {
 				const env = getMacroEnv(args.UserCharname) // UserCharname可能需要从args的上下文中获取
 				const editedContent = evaluateMacros(args.edited.content, env, args.chat_scoped_char_memory, args.chat_log)
@@ -256,4 +319,7 @@ const charAPI_definition = { // 先定义结构主体
 // 在模块加载时填充 info 对象
 charAPI_definition.info = buildCharInfo(chardata)
 
+/**
+ *
+ */
 export default charAPI_definition // 导出定义好的对象

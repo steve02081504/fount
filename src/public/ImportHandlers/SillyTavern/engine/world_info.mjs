@@ -4,6 +4,9 @@ import { world_info_logic, world_info_position, extension_prompt_roles } from '.
 import { evaluateMacros } from './marco.mjs' // 假设宏引擎已修改并接受 chat_scoped_char_memory
 import { escapeRegExp, parseRegexFromString } from './tools.mjs' // 假设 tools.mjs 包含这些工具函数
 
+/**
+ *
+ */
 export const WISettings = { // WI 设置，可以保持默认值或根据 fount 环境调整
 	depth: 4, // 扫描深度，表示在多少轮对话中查找关键词
 	isSensitive: false, // 是否区分大小写
@@ -86,6 +89,13 @@ function preBuiltWIEntries(WIentries) {
 		entrie.keys = buildKeyList(entrie.keys, isSensitive, isFullWordMatch) // 构建关键词正则表达式列表
 		entrie.secondary_keys = buildKeyList(entrie.secondary_keys, isSensitive, isFullWordMatch) // 构建辅助关键词正则表达式列表
 
+		/**
+		 * @returns {boolean}
+		 * @param {any} chatLog 聊天记录
+		 * @param {any} recursion_WIs 递归世界信息
+		 * @param {any} memory 内存
+		 * @param {any} entryIndex 条目索引
+		 */
 		entrie.isActived = (chatLog, recursion_WIs, memory, entryIndex) => { // 传递 memory 和 entryIndex
 			const last_enabled_chat_length = memory?.enabled_WI_entries?.[entryIndex] ?? 0 // 使用 entryIndex 访问激活状态
 

@@ -3,6 +3,11 @@
 let last_host = ''
 
 // Ollama's model list endpoint is /api/tags
+/**
+ * 获取模型 URL。
+ * @param {string} host - 主机。
+ * @returns {string|null} 模型 URL。
+ */
 const getModelsUrl = host => {
 	let urlObj
 	try {

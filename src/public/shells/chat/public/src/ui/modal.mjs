@@ -1,3 +1,8 @@
+/**
+ *
+ * @param contentSrc
+ * @param contentType
+ */
 export function openModal(contentSrc, contentType) {
 	const modal = document.createElement('div')
 	modal.classList.add('modal', 'modal-open')

@@ -21,13 +21,13 @@ import { downloadRisuCard, downloadAsset } from './risu-api.mjs'
 
 
 /**
- * @description 保存资源并规范化 URI。
+ * 保存资源并规范化 URI。
  * @param {Buffer} assetBuffer - 资源缓冲区。
  * @param {string} originalName - 原始文件名。
  * @param {string} targetDir - 目标目录。
  * @param {string} assetSubDir - 资源子目录。
- * @param {string} [assetTypeForLog='asset'] - 用于日志的资源类型。
- * @returns {Promise<string>} - 返回相对路径。
+ * @param {string} [assetTypeForLog='asset'] - 用于日志记录的资源类型。
+ * @returns {Promise<string>} 返回一个包含已保存资源相对路径的 Promise。
  */
 async function saveAndNormalizeAsset(assetBuffer, originalName, targetDir, assetSubDir, assetTypeForLog = 'asset') {
 	const safeOriginalName = sanitizeFilename(originalName || `${assetTypeForLog}_${Date.now()}`)
@@ -41,10 +41,10 @@ async function saveAndNormalizeAsset(assetBuffer, originalName, targetDir, asset
 
 
 /**
- * @description 将数据作为 Risu 角色导入。
+ * 将数据作为 Risu 角色导入。
  * @param {string} username - 用户名。
  * @param {Buffer} dataBuffer - 数据缓冲区。
- * @returns {Promise<Array<{ parttype: string; partname: string }>>} - 导入的部分信息数组。
+ * @returns {Promise<Array<{ parttype: string; partname: string }>>} 一个 Promise，解析为一个包含已导入部分信息的对象数组。
  */
 async function ImportAsData(username, dataBuffer) {
 	const tempExtractDir = path.join(tmpdir(), `fount_risu_import_${Date.now()}`)
@@ -217,10 +217,10 @@ async function ImportAsData(username, dataBuffer) {
 }
 
 /**
- * @description 通过文本导入 Risu 角色。
+ * 通过文本导入 Risu 角色。
  * @param {string} username - 用户名。
  * @param {string} text - 包含 Risu 角色 URL 的文本。
- * @returns {Promise<Array<{ parttype: string; partname: string }>>} - 导入的部分信息数组。
+ * @returns {Promise<Array<{ parttype: string; partname: string }>>} 一个 Promise，解析为一个包含已导入部分信息的对象数组。
  */
 async function ImportByText(username, text) {
 	const lines = text.trim().split('\n').map(line => line.trim()).filter(line => line)
@@ -253,6 +253,9 @@ async function ImportByText(username, text) {
 }
 
 
+/**
+ *
+ */
 export default {
 	info: {
 		'': {

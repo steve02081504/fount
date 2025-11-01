@@ -5,6 +5,13 @@ import { getUserDictionary } from '../../../server/auth.mjs' // 假设的 auth �
 import { uninstallPartBase } from '../../../server/parts_loader.mjs'
 
 // 解析部件的绝对路径
+/**
+ * 解析路径
+ * @param {any} username 用户名
+ * @param {any} type 类型
+ * @param {any} name 名称
+ * @returns {string}
+ */
 export function resolvePath(username, type, name) {
 	const userPath = getUserDictionary(username)
 	const partPath = path.join(userPath, type, name)
@@ -12,6 +19,13 @@ export function resolvePath(username, type, name) {
 }
 
 // 获取一个可用的部件路径，如果已存在则先卸载
+/**
+ * 获取可用路径
+ * @param {any} username 用户名
+ * @param {any} type 类型
+ * @param {any} name 名称
+ * @returns {Promise<string>}
+ */
 export async function getAvailablePath(username, type, name) {
 	const targetPath = resolvePath(username, type, name)
 	if (fs.existsSync(targetPath))

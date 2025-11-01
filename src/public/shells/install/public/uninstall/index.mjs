@@ -1,15 +1,27 @@
+/**
+ * 卸载 shell 的客户端逻辑。
+ */
 import { initTranslations, geti18n } from '../../../scripts/i18n.mjs'
 import { onServerEvent } from '../../../scripts/server_events.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
 import { uninstallPart as uninstallPartEndpoint } from '../src/endpoints.mjs'
 
 applyTheme()
-// 获取 URL 参数
+
+/**
+ * 获取 URL 参数。
+ * @returns {URLSearchParams} - URL 参数。
+ */
 function getURLParams() {
 	return new URLSearchParams(window.location.search)
 }
 
-// API 请求函数
+/**
+ * 卸载部件。
+ * @param {string} type - 部件类型。
+ * @param {string} name - 部件名称。
+ * @returns {Promise<any>} - 响应数据。
+ */
 async function uninstallPart(type, name) {
 	// Renamed imported function to avoid conflict with this local function
 	const response = await uninstallPartEndpoint(type, name)
@@ -22,7 +34,11 @@ async function uninstallPart(type, name) {
 	return await response.json()
 }
 
-// 显示信息
+/**
+ * 显示消息。
+ * @param {'info' | 'error'} type - 消息类型。
+ * @param {string} message - 消息内容。
+ */
 function showMessage(type, message) {
 	const messageElement = document.getElementById('message-content')
 	const infoMessage = document.getElementById('info-message')
@@ -39,7 +55,9 @@ function showMessage(type, message) {
 		infoMessage.style.display = 'none'
 	}
 }
-// 隐藏信息
+/**
+ * 隐藏消息。
+ */
 function hideMessage() {
 	document.getElementById('info-message').style.display = 'none'
 	document.getElementById('error-message').style.display = 'none'
