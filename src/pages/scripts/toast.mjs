@@ -13,7 +13,7 @@ const icons = {
 }
 
 /**
- * @description 确保 toast 容器存在。
+ * 确保 toast 容器存在。
  * @returns {HTMLElement} - toast 容器。
  */
 function ensureToastContainer() {
@@ -30,7 +30,7 @@ function ensureToastContainer() {
 }
 
 /**
- * @description 显示一个基本的 toast。
+ * 显示一个基本的 toast。
  * @param {string} type - toast 类型。
  * @param {string|HTMLElement} message - toast 消息。
  * @param {number} [duration=4000] - toast 持续时间。
@@ -74,7 +74,7 @@ function base_showToast(type, message, duration = 4000) {
 	let hideTimeout
 
 	/**
-	 * @description 启动计时器。
+	 * 启动计时器。
 	 * @returns {void}
 	 */
 	const startTimer = () => {
@@ -87,7 +87,7 @@ function base_showToast(type, message, duration = 4000) {
 	}
 
 	/**
-	 * @description 重置计时器。
+	 * 重置计时器。
 	 * @returns {void}
 	 */
 	const resetTimer = () => {
@@ -103,7 +103,7 @@ function base_showToast(type, message, duration = 4000) {
 	return alertDiv
 }
 /**
- * @description 显示一个 toast。
+ * 显示一个 toast。
  * @param {string} [type='info'] - toast 类型。
  * @param {string|HTMLElement} message - toast 消息。
  * @param {number} [duration=4000] - toast 持续时间。
@@ -113,7 +113,7 @@ export function showToast(type = 'info', message, duration = 4000) {
 	base_showToast(type, message, duration)
 }
 /**
- * @description 显示一个 i18n toast。
+ * 显示一个 i18n toast。
  * @param {string} [type='info'] - toast 类型。
  * @param {string} key - i18n 键。
  * @param {object} [params={}] - i18n 参数。

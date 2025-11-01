@@ -1,7 +1,7 @@
 import { write } from './data_reader.mjs'
 
 /**
- * @description 从给定 URL 下载角色卡并返回其缓冲区。
+ * 从给定 URL 下载角色卡并返回其缓冲区。
  * @param {string} url - 角色卡的 URL。
  * @returns {Promise<Uint8Array>} - 角色卡的缓冲区。
  * @throws {Error} - 如果 URL 无效或无法下载角色卡。
@@ -31,7 +31,7 @@ export async function downloadCharacter(url) {
 }
 
 /**
- * @description 从 Chub.ai 下载角色。
+ * 从 Chub.ai 下载角色。
  * @param {string} id - 角色 ID。
  * @returns {Promise<ArrayBuffer>} - 角色数据的 ArrayBuffer。
  */
@@ -56,7 +56,7 @@ async function downloadChubCharacter(id) {
 }
 
 /**
- * @description 从 Pygmalion.chat 下载角色。
+ * 从 Pygmalion.chat 下载角色。
  * @param {string} id - 角色 ID。
  * @returns {Promise<Uint8Array>} - 角色数据的 Uint8Array。
  */
@@ -91,7 +91,7 @@ async function downloadPygmalionCharacter(id) {
 }
 
 /**
- * @description 解析 Chub.ai URL。
+ * 解析 Chub.ai URL。
  * @param {string} str - URL 字符串。
  * @returns {{type: 'character' | 'lorebook', id: string} | null} - 解析结果或 null。
  */
@@ -106,7 +106,7 @@ function parseChubUrl(str) {
 }
 
 /**
- * @description 从 JanitorAI 下载角色。
+ * 从 JanitorAI 下载角色。
  * @param {string} uuid - 角色的 UUID。
  * @returns {Promise<ArrayBuffer>} - 角色数据的 ArrayBuffer。
  */
@@ -131,7 +131,7 @@ async function downloadJannyCharacter(uuid) {
 }
 
 /**
- * @description 从 AICharacterCards.com 下载角色。
+ * 从 AICharacterCards.com 下载角色。
  * @param {string} id - 角色 ID。
  * @returns {Promise<ArrayBuffer>} - 角色数据的 ArrayBuffer。
  */
@@ -145,7 +145,7 @@ async function downloadAICCCharacter(id) {
 }
 
 /**
- * @description 解析 AICharacterCards.com URL。
+ * 解析 AICharacterCards.com URL。
  * @param {string} url - URL 字符串。
  * @returns {string | null} - 解析后的 ID 或 null。
  */
@@ -155,7 +155,7 @@ function parseAICC(url) {
 }
 
 /**
- * @description 下载通用的 PNG 文件。
+ * 下载通用的 PNG 文件。
  * @param {string} url - URL 字符串。
  * @returns {Promise<ArrayBuffer>} - PNG 数据的 ArrayBuffer。
  */
@@ -168,7 +168,7 @@ async function downloadGenericPng(url) {
 }
 
 /**
- * @description 解析 RisuAI URL。
+ * 解析 RisuAI URL。
  * @param {string} url - URL 字符串。
  * @returns {string | null} - 解析后的 UUID 或 null。
  */
@@ -178,7 +178,7 @@ function parseRisuUrl(url) {
 }
 
 /**
- * @description 从 RisuAI 下载角色。
+ * 从 RisuAI 下载角色。
  * @param {string} uuid - 角色的 UUID。
  * @returns {Promise<ArrayBuffer>} - 角色数据的 ArrayBuffer。
  */
@@ -193,7 +193,7 @@ async function downloadRisuCharacter(uuid) {
 }
 
 /**
- * @description 从 URL 中提取 UUID。
+ * 从 URL 中提取 UUID。
  * @param {string} url - URL 字符串。
  * @returns {string | null} - 提取的 UUID 或 null。
  */
@@ -203,7 +203,7 @@ function getUuidFromUrl(url) {
 }
 
 /**
- * @description 从 URL 中提取主机名。
+ * 从 URL 中提取主机名。
  * @param {string} url - URL 字符串。
  * @returns {string} - 主机名。
  */
@@ -217,7 +217,7 @@ function getHostFromUrl(url) {
 }
 
 /**
- * @description 从 GitHub 下载角色。
+ * 从 GitHub 下载角色。
  * @param {string} id - 仓库 ID (例如 'owner/repo')。
  * @returns {Promise<ArrayBuffer>} - 角色数据的 ArrayBuffer。
  */
@@ -242,7 +242,7 @@ async function downloadGithubCharacter(id) {
 }
 
 /**
- * @description 解析 GitHub URL。
+ * 解析 GitHub URL。
  * @param {string} url - URL 字符串。
  * @returns {string | null} - 解析后的仓库 ID 或 null。
  */

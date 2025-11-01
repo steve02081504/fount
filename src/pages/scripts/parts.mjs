@@ -1,5 +1,5 @@
 /**
- * @description 获取部件列表。
+ * 获取部件列表。
  * @param {string} partType - 部件类型。
  * @returns {Promise<any>} - 部件列表。
  */
@@ -8,7 +8,7 @@ export async function getPartList(partType) {
 	return response.json()
 }
 /**
- * @description 获取部件类型列表。
+ * 获取部件类型列表。
  * @returns {Promise<any>} - 部件类型列表。
  */
 export async function getPartTypes() {
@@ -16,7 +16,7 @@ export async function getPartTypes() {
 	return response.json()
 }
 /**
- * @description 获取角色列表。
+ * 获取角色列表。
  * @returns {Promise<any>} - 角色列表。
  */
 export async function getCharList() {
@@ -24,7 +24,7 @@ export async function getCharList() {
 	return response.json()
 }
 /**
- * @description 获取部件详细信息。
+ * 获取部件详细信息。
  * @param {string} partType - 部件类型。
  * @param {string} partName - 部件名称。
  * @returns {Promise<any>} - 部件详细信息。
@@ -34,7 +34,7 @@ export async function getPartDetails(partType, partName) {
 	return response.json()
 }
 /**
- * @description 获取角色详细信息。
+ * 获取角色详细信息。
  * @param {string} charname - 角色名称。
  * @returns {Promise<any>} - 角色详细信息。
  */
@@ -43,7 +43,7 @@ export async function getCharDetails(charname) {
 	return response.json()
 }
 /**
- * @description 无缓存获取角色详细信息。
+ * 无缓存获取角色详细信息。
  * @param {string} charname - 角色名称。
  * @returns {Promise<any>} - 角色详细信息。
  */
@@ -52,7 +52,7 @@ export async function noCacheGetCharDetails(charname) {
 	return response.json()
 }
 /**
- * @description 获取世界列表。
+ * 获取世界列表。
  * @returns {Promise<any>} - 世界列表。
  */
 export async function getWorldList() {
@@ -60,7 +60,7 @@ export async function getWorldList() {
 	return response.json()
 }
 /**
- * @description 获取世界详细信息。
+ * 获取世界详细信息。
  * @param {string} worldname - 世界名称。
  * @returns {Promise<any>} - 世界详细信息。
  */
@@ -69,7 +69,7 @@ export async function getWorldDetails(worldname) {
 	return response.json()
 }
 /**
- * @description 无缓存获取世界详细信息。
+ * 无缓存获取世界详细信息。
  * @param {string} worldname - 世界名称。
  * @returns {Promise<any>} - 世界详细信息。
  */
@@ -78,7 +78,7 @@ export async function noCacheGetWorldDetails(worldname) {
 	return response.json()
 }
 /**
- * @description 获取角色卡列表。
+ * 获取角色卡列表。
  * @returns {Promise<any>} - 角色卡列表。
  */
 export async function getPersonaList() {
@@ -86,7 +86,7 @@ export async function getPersonaList() {
 	return response.json()
 }
 /**
- * @description 获取角色卡详细信息。
+ * 获取角色卡详细信息。
  * @param {string} personaname - 角色卡名称。
  * @returns {Promise<any>} - 角色卡详细信息。
  */
@@ -95,7 +95,7 @@ export async function getPersonaDetails(personaname) {
 	return response.json()
 }
 /**
- * @description 无缓存获取角色卡详细信息。
+ * 无缓存获取角色卡详细信息。
  * @param {string} personaname - 角色卡名称。
  * @returns {Promise<any>} - 角色卡详细信息。
  */
@@ -104,7 +104,7 @@ export async function noCacheGetPersonaDetails(personaname) {
 	return response.json()
 }
 /**
- * @description 设置默认部件。
+ * 设置默认部件。
  * @param {string} parttype - 部件类型。
  * @param {string} partname - 部件名称。
  * @returns {Promise<Response>} - 响应。
@@ -117,7 +117,7 @@ export async function setDefaultPart(parttype, partname) {
 	})
 }
 /**
- * @description 获取默认部件。
+ * 获取默认部件。
  * @returns {Promise<any>} - 默认部件。
  */
 export async function getDefaultParts() {
@@ -128,7 +128,7 @@ export async function getDefaultParts() {
 }
 
 /**
- * @description 获取所有缓存的部件详细信息。
+ * 获取所有缓存的部件详细信息。
  * @param {string} partType - 部件类型。
  * @returns {Promise<any>} - 所有缓存的部件详细信息。
  */

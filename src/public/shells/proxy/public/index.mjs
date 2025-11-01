@@ -1,3 +1,6 @@
+/**
+ * 代理 shell 的客户端逻辑。
+ */
 import { initTranslations, console } from '/scripts/i18n.mjs'
 import { applyTheme } from '/scripts/theme.mjs'
 import { renderTemplate, usingTemplates } from '/scripts/template.mjs'
@@ -19,6 +22,10 @@ const exampleUrl = document.getElementById('exampleUrl')
 
 let apiKey = localStorage.getItem('proxy-apikey')
 
+/**
+ * 检查 API 密钥。
+ * @returns {Promise<void>}
+ */
 async function checkApiKey() {
 	if (!apiKey) return renderApiKey()
 
@@ -39,6 +46,10 @@ async function checkApiKey() {
 	renderApiKey()
 }
 
+/**
+ * 生成 API 密钥。
+ * @returns {Promise<void>}
+ */
 async function generateApiKey() {
 	try {
 		const response = await fetch('/api/apikey/create', {
@@ -62,6 +73,10 @@ async function generateApiKey() {
 	}
 }
 
+/**
+ * 渲染 API 密钥。
+ * @returns {Promise<void>}
+ */
 async function renderApiKey() {
 	apiKeySection.innerHTML = '' // Clear section
 	if (apiKey) {
@@ -78,7 +93,7 @@ async function renderApiKey() {
 		if (toggleApiKeyButton)
 			toggleApiKeyButton.addEventListener('click', () => {
 				apiKeyInput.type = apiKeyInput.type === 'password' ? 'text' : 'password'
-				toggleApiKeyButton.innerHTML = `<img src="https://api.iconify.design/line-md/watch${apiKeyInput.type === 'password' ? '-off' : ''}.svg" class="text-icon h-6 w-6" />`
+				toggleApiKeyButton.innerHTML = /* html */ `<img src="https://api.iconify.design/line-md/watch${apiKeyInput.type === 'password' ? '-off' : ''}.svg" class="text-icon h-6 w-6" />`
 			})
 
 		proxyApiUrlQueryInput.value = `${apiUrl}?fount-apikey=${apiKey}`

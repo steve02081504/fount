@@ -9,10 +9,10 @@ set_start()
 
 const fount_config = {
 	/**
-	 * @description 重新启动服务器。
+	 * 重新启动服务器。
 	 * @returns {void}
 	 */
-	restartor: () => process.exit(1),
+	restartor: () => process.exit(131),
 	data_path: __dirname + '/.github/workflows/default_data',
 	starts: {
 		Web: false,

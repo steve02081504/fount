@@ -1,3 +1,6 @@
+/**
+ * 教程 shell 的客户端逻辑。
+ */
 import { unlockAchievement } from '../../scripts/endpoints.mjs'
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
 import { svgInliner } from '../../scripts/svgInliner.mjs'
@@ -19,6 +22,9 @@ const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/
 let progressValue = 0
 let clickCount = 0
 
+/**
+ * 启动五彩纸屑。
+ */
 function launchConfetti() {
 	confetti({
 		particleCount: 100,
@@ -27,6 +33,9 @@ function launchConfetti() {
 	})
 }
 
+/**
+ * 重置进度。
+ */
 function resetProgress() {
 	progressValue = 0
 	clickCount = 0
@@ -34,34 +43,53 @@ function resetProgress() {
 	progressText.innerText = ''
 }
 
+/**
+ * 显示进度条。
+ * @param {string} message - 消息。
+ */
 function showProgressBar(message) {
 	progressBar.classList.remove('hidden')
 	progressText.innerHTML = message
 	svgInliner(progressBar)
 }
 
+/**
+ * 隐藏进度条。
+ */
 function hideProgressBar() {
 	progressBar.classList.add('hidden')
 }
 
+/**
+ * 显示教程结束。
+ */
 function showTutorialEnd() {
 	tutorialEnd.classList.remove('hidden')
 }
 
+/**
+ * 隐藏教程结束。
+ */
 function hideTutorialEnd() {
 	tutorialEnd.classList.add('hidden')
 }
 
+/**
+ * 开始鼠标教程。
+ */
 function startMouseTutorial() {
 	resetProgress()
 	const message = geti18n('tutorial.progressMessages.mouseMove', {
-		mouseIcon: '<img src="https://api.iconify.design/ph/mouse.svg" class="text-icon inline">',
+		mouseIcon: /* html */ '<img src="https://api.iconify.design/ph/mouse.svg" class="text-icon inline">',
 	})
 	showProgressBar(message)
 
 	document.addEventListener('mousemove', handleMouseMove)
 }
 
+/**
+ * 处理鼠标移动。
+ */
 function handleMouseMove() {
 	progressValue += 10
 	progress.value = progressValue
@@ -73,16 +101,22 @@ function handleMouseMove() {
 	}
 }
 
+/**
+ * 开始键盘教程。
+ */
 function startKeyboardTutorial() {
 	resetProgress()
 	const message = geti18n('tutorial.progressMessages.keyboardPress', {
-		keyboardIcon: '<img src="https://api.iconify.design/ph/keyboard.svg" class="text-icon inline">',
+		keyboardIcon: /* html */ '<img src="https://api.iconify.design/ph/keyboard.svg" class="text-icon inline">',
 	})
 	showProgressBar(message)
 
 	document.addEventListener('keydown', handleKeyDown)
 }
 
+/**
+ * 处理按键。
+ */
 function handleKeyDown() {
 	clickCount++
 	progressValue += 5
@@ -96,16 +130,22 @@ function handleKeyDown() {
 	}
 }
 
+/**
+ * 开始移动教程。
+ */
 function startMobileTutorial() {
 	resetProgress()
 	const message = geti18n('tutorial.progressMessages.mobileTouchMove', {
-		phoneIcon: '<img src="https://api.iconify.design/proicons/phone.svg" class="text-icon inline">',
+		phoneIcon: /* html */ '<img src="https://api.iconify.design/proicons/phone.svg" class="text-icon inline">',
 	})
 	showProgressBar(message)
 
 	document.addEventListener('touchmove', handleTouchMove)
 }
 
+/**
+ * 处理触摸移动。
+ */
 function handleTouchMove() {
 	progressValue += 10
 	progress.value = progressValue
@@ -117,16 +157,22 @@ function handleTouchMove() {
 	}
 }
 
+/**
+ * 开始移动点击教程。
+ */
 function startMobileClickTutorial() {
 	resetProgress()
 	const message = geti18n('tutorial.progressMessages.mobileClick', {
-		phoneIcon: '<img src="https://api.iconify.design/proicons/phone.svg" class="text-icon inline">',
+		phoneIcon: /* html */ '<img src="https://api.iconify.design/proicons/phone.svg" class="text-icon inline">',
 	})
 	showProgressBar(message)
 
 	document.addEventListener('click', handleMobileClick)
 }
 
+/**
+ * 处理移动点击。
+ */
 function handleMobileClick() {
 	clickCount++
 	progressValue += 5
@@ -155,6 +201,9 @@ startTutorialBtn.addEventListener('click', () => {
 const urlParams = new URLSearchParams(window.location.search)
 const redirect = urlParams.get('redirect')
 
+/**
+ * 关闭教程。
+ */
 function closeTutorial() {
 	if (redirect)
 		window.location.href = decodeURIComponent(redirect) + window.location.hash

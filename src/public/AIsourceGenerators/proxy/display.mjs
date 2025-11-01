@@ -2,6 +2,11 @@
 
 let last_url = ''
 let last_apikey = ''
+/**
+ * 规范化 URL。
+ * @param {string} url - URL。
+ * @returns {string|null} 规范化的 URL。
+ */
 const normalizeUrl = url => {
 	let urlObj
 	try {
@@ -40,7 +45,7 @@ return async ({ data, containers }) => {
 	if (modelsUrl === last_url && apikey === last_apikey) return
 	last_url = modelsUrl
 	last_apikey = apikey
-	div.innerHTML = '<div data-i18n="aisource_editor.common_config_interface.loadingModels"></div>'
+	div.innerHTML = /* html */ '<div data-i18n="aisource_editor.common_config_interface.loadingModels"></div>'
 	try {
 		const response = await fetch(modelsUrl, {
 			headers: { Authorization: apikey ? 'Bearer ' + apikey : undefined }
@@ -56,11 +61,11 @@ return async ({ data, containers }) => {
 
 		const model_ids = models.map(m => m.id).sort()
 		const copied_text = geti18n('aisource_editor.common_config_interface.copied')
-		div.innerHTML = `
+		div.innerHTML = /* html */ `\
 <h3 class="text-lg font-semibold" data-i18n="aisource_editor.common_config_interface.availableModels"></h3>
 <p class="text-sm opacity-70" data-i18n="aisource_editor.common_config_interface.copyModelIdTooltip"></p>
 <div class="flex flex-wrap gap-2 mt-2">
-${model_ids.map(id => `
+${model_ids.map(id => /* html */ `\
 <code class="p-1 bg-base-300 rounded cursor-pointer hover:bg-primary hover:text-primary-content" title="${geti18n('aisource_editor.common_config_interface.copyModelIdTooltip')}" onclick="navigator.clipboard.writeText('${id}'); this.innerText='${copied_text}'; setTimeout(()=>this.innerText='${id}', 1000)">${id}</code>
 `
 	).join('')
@@ -70,7 +75,7 @@ ${model_ids.map(id => `
 	}
 	catch (error) {
 		console.error('Failed to fetch models:', error)
-		div.innerHTML = `
+		div.innerHTML = /* html */ `
 <div class="text-error" style="overflow-wrap: break-word;">${geti18n('aisource_editor.common_config_interface.loadModelsFailed', { message: error.message })}</div>
 `
 	}

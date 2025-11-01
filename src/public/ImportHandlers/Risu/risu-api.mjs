@@ -8,7 +8,7 @@ const RISU_API_DYNAMIC_DOWNLOAD_URL = 'https://realm.risuai.net/api/v1/download/
 /**
  * 从 Risu Realm 下载角色卡片 (优先尝试 dynamic 获取 charx，失败则尝试 png-v3)
  * @param {string} uuid 角色 UUID
- * @returns {Promise<{buffer: Buffer, filename: string, contentType: string}>}
+ * @returns {Promise<{buffer: Buffer, filename: string, contentType: string}>} 包含角色卡片数据的对象
  */
 export async function downloadRisuCard(uuid) {
 	let response
@@ -48,8 +48,8 @@ export async function downloadRisuCard(uuid) {
 // 例如，直接下载资源文件的函数
 /**
  * 从给定的 URL 下载资源
- * @param {string} url
- * @returns {Promise<Buffer>}
+ * @param {string} url 网址
+ * @returns {Promise<Buffer>} 包含资源数据的 Buffer
  */
 export async function downloadAsset(url) {
 	if (!url.startsWith('http'))

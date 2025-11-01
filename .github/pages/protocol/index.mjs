@@ -12,6 +12,11 @@ const offlineDialog = document.getElementById('offline_dialog')
 const offlineMessageElement = document.getElementById('offline_dialog_message')
 const retryBtn = document.getElementById('retry_btn')
 
+/**
+ * 使用 URL 协议处理重定向。
+ * @param {string} hostUrl - Fount 主机 URL。
+ * @returns {void}
+ */
 function useUrlProtocol(hostUrl) {
 	if (fountProtocolUrl) {
 		const redirectUrl = new URL('/protocolhandler', hostUrl)
@@ -23,6 +28,10 @@ function useUrlProtocol(hostUrl) {
 		window.location.href = new URL('/shells/home', hostUrl).href
 }
 
+/**
+ * 尝试连接到 Fount 主机。
+ * @returns {Promise<void>}
+ */
 async function attemptConnection() {
 	const hostUrl = urlParams.get('hostUrl') ?? localStorage.getItem('fountHostUrl')
 	if (hostUrl) {
@@ -32,6 +41,10 @@ async function attemptConnection() {
 		offlineMessageElement.textContent = geti18n('protocolhandler.offline_dialog.message', { hostUrl })
 		offlineDialog.showModal()
 
+		/**
+		 * 点击重试按钮时的处理函数。
+		 * @returns {void}
+		 */
 		retryBtn.onclick = () => {
 			offlineDialog.close()
 			attemptConnection()
@@ -45,6 +58,10 @@ async function attemptConnection() {
 	setTimeout(() => window.location.href = 'https://github.com/steve02081504/fount', 5000)
 }
 
+/**
+ * 主函数，初始化翻译并尝试连接。
+ * @returns {Promise<void>}
+ */
 async function main() {
 	await initTranslations('protocolhandler')
 	await attemptConnection()

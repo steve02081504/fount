@@ -1,3 +1,8 @@
+/**
+ * 打开模态框。
+ * @param {string} contentSrc - 模态框内容的来源URL。
+ * @param {string} contentType - 模态框内容的类型（例如，'image', 'video'）。
+ */
 export function openModal(contentSrc, contentType) {
 	const modal = document.createElement('div')
 	modal.classList.add('modal', 'modal-open')

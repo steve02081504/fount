@@ -1,3 +1,6 @@
+/**
+ * 用户设置 shell 的客户端逻辑。
+ */
 import { getApiKeys, createApiKey, revokeApiKey, logout } from '../../scripts/endpoints.mjs'
 import { initTranslations, geti18n, promptI18n, confirmI18n, console } from '../../scripts/i18n.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
@@ -39,7 +42,10 @@ let passwordCacheTimeoutId = null // 用于存储 setTimeout 的 ID
 
 const PASSWORD_CACHE_DURATION = 3 * 60 * 1000 // 3分钟
 
-// 辅助函数：请求密码确认
+/**
+ * 请求密码确认。
+ * @returns {Promise<string>} - 确认的密码。
+ */
 function requestPasswordConfirmation() {
 	return new Promise((resolve, reject) => {
 		// 检查是否有缓存的密码
@@ -87,6 +93,10 @@ passwordConfirmationModal.addEventListener('close', () => {
 	passwordConfirmationContext = { resolve: null, reject: null }
 })
 
+/**
+ * 加载用户信息。
+ * @returns {Promise<void>}
+ */
 async function loadUserInfo() {
 	try {
 		const stats = await getUserStats()
@@ -158,8 +168,12 @@ renameUserForm.addEventListener('submit', async event => {
 	}
 })
 
+/**
+ * 加载并显示设备。
+ * @returns {Promise<void>}
+ */
 async function loadAndDisplayDevices() {
-	deviceList.innerHTML = '<div class="text-center py-4"><span class="loading loading-dots loading-md"></span></div>'
+	deviceList.innerHTML = /* html */ '<div class="text-center py-4"><span class="loading loading-dots loading-md"></span></div>'
 	noDevicesText.classList.add('hidden')
 
 	try {
@@ -191,9 +205,9 @@ async function loadAndDisplayDevices() {
 
 			let mainText = `${deviceIdText}`
 			if (device.jti === currentRefreshTokenJtiClient)
-				mainText += ` <span class="badge badge-xs badge-success badge-outline">${geti18n('userSettings.userDevices.thisDevice')}</span>`
+				mainText += /* html */ ` <span class="badge badge-xs badge-success badge-outline">${geti18n('userSettings.userDevices.thisDevice')}</span>`
 
-			deviceInfoDiv.innerHTML = `<strong class="block text-sm">${mainText}</strong>`
+			deviceInfoDiv.innerHTML = /* html */ `<strong class="block text-sm">${mainText}</strong>`
 
 			const lastSeenDate = new Date(device.lastSeen || (device.expiry - REFRESH_TOKEN_EXPIRY_DURATION_STRING))
 			const detailsText = geti18n('userSettings.userDevices.deviceDetails', {
@@ -201,13 +215,16 @@ async function loadAndDisplayDevices() {
 				ipAddress: device.ipAddress || 'N/A',
 				userAgent: device.userAgent ? device.userAgent.length > 50 ? device.userAgent.substring(0, 47) + '...' : device.userAgent : 'N/A'
 			})
-			deviceInfoDiv.innerHTML += `<small class="block text-xs opacity-70">${detailsText}</small>`
+			deviceInfoDiv.innerHTML += /* html */ `<small class="block text-xs opacity-70">${detailsText}</small>`
 			li.appendChild(deviceInfoDiv)
 
 			if (device.jti !== currentRefreshTokenJtiClient) {
 				const revokeButton = document.createElement('button')
 				revokeButton.className = 'btn btn-xs btn-error btn-outline self-start sm:self-center'
 				revokeButton.dataset.i18n = 'userSettings.userDevices.revokeButton'
+				/**
+				 * 撤销按钮点击事件处理程序。
+				 */
 				revokeButton.onclick = async () => {
 					if (confirmI18n('userSettings.userDevices.revokeConfirm')) try {
 						const password = await requestPasswordConfirmation()
@@ -277,10 +294,12 @@ deleteAccountBtn.addEventListener('click', async () => {
 	}
 })
 
-// --- API Key Management ---
-
+/**
+ * 加载并显示 API 密钥。
+ * @returns {Promise<void>}
+ */
 async function loadAndDisplayApiKeys() {
-	apiKeyList.innerHTML = '<div class="text-center py-4"><span class="loading loading-dots loading-md"></span></div>'
+	apiKeyList.innerHTML = /* html */ '<div class="text-center py-4"><span class="loading loading-dots loading-md"></span></div>'
 	noApiKeysText.classList.add('hidden')
 
 	try {
@@ -298,19 +317,22 @@ async function loadAndDisplayApiKeys() {
 			li.className = 'p-3 bg-base-100 rounded-lg shadow flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2'
 
 			const keyInfoDiv = document.createElement('div')
-			keyInfoDiv.innerHTML = `<strong class="block text-sm font-mono">${key.prefix}...</strong>`
+			keyInfoDiv.innerHTML = /* html */ `<strong class="block text-sm font-mono">${key.prefix}...</strong>`
 
 			const detailsText = geti18n('userSettings.apiKeys.keyDetails', {
 				description: key.description || 'N/A',
 				createdAt: new Date(key.createdAt).toLocaleString(),
 				lastUsed: key.lastUsed ? new Date(key.lastUsed).toLocaleString() : geti18n('userSettings.apiKeys.neverUsed'),
 			})
-			keyInfoDiv.innerHTML += `<small class="block text-xs opacity-70">${detailsText.replaceAll('<', '&lt;').replaceAll('>', '&gt;')}</small>`
+			keyInfoDiv.innerHTML += /* html */ `<small class="block text-xs opacity-70">${detailsText.replaceAll('<', '&lt;').replaceAll('>', '&gt;')}</small>`
 			li.appendChild(keyInfoDiv)
 
 			const revokeButton = document.createElement('button')
 			revokeButton.className = 'btn btn-xs btn-error btn-outline self-start sm:self-center'
 			revokeButton.dataset.i18n = 'userSettings.apiKeys.revokeButton'
+			/**
+			 * 撤销按钮点击事件处理程序。
+			 */
 			revokeButton.onclick = async () => {
 				if (confirmI18n('userSettings.apiKeys.revokeConfirm')) try {
 					const password = await requestPasswordConfirmation()
@@ -371,6 +393,10 @@ copyNewApiKeyBtn.addEventListener('click', async () => {
 })
 
 
+/**
+ * 初始化应用程序。
+ * @returns {Promise<void>}
+ */
 async function initializeApp() {
 	await initTranslations('userSettings')
 	applyTheme()

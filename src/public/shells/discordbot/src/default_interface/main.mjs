@@ -17,6 +17,14 @@ import { getMessageFullContent, splitDiscordReply } from './tools.mjs'
  */
 /** @typedef {import('../../../chat/decl/chatLog.ts').chatReply_t} ChatReply_t */
 
+/**
+ * 尝试执行一个函数几次，如果失败则等待一段时间后重试。
+ * @param {Function} func - 要执行的异步函数。
+ * @param {object} [options] - 选项对象。
+ * @param {number} [options.times=3] - 重试次数。
+ * @param {number} [options.WhenFailsWaitFor=2000] - 失败后等待的毫秒数。
+ * @returns {Promise<any>} 函数执行结果的 Promise。
+ */
 async function tryFewTimes(func, { times = 3, WhenFailsWaitFor = 2000 } = {}) {
 	let lastError
 	for (let i = 0; i < times; i++) try {
@@ -29,10 +37,20 @@ async function tryFewTimes(func, { times = 3, WhenFailsWaitFor = 2000 } = {}) {
 	throw lastError
 }
 
+/**
+ * 创建一个简单的 Discord 接口。
+ * @param {import('../../../../../decl/charAPI.ts').CharAPI_t} charAPI - 角色 API 对象。
+ * @param {string} ownerUsername - 所有者的用户名。
+ * @param {string} botCharname - 机器人角色的名称。
+ * @returns {Promise<object>} 返回一个包含 Discord 接口方法的 Promise。
+ */
 export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCharname) {
 	if (!charAPI?.interfaces?.chat?.GetReply)
 		throw new Error('charAPI.interfaces.chat.GetReply is required for SimpleDiscordInterface.')
 
+	/**
+	 * @returns {{OwnerUserName: string, MaxMessageDepth: number, MaxFetchCount: number, ReplyToAllMessages: boolean}} 返回一个包含简单机器人配置模板的对象。
+	 */
 	function GetSimpleBotConfigTemplate() {
 		return {
 			OwnerUserName: 'your_discord_username', // Discord 用户名, 不是Fount用户名
@@ -42,6 +60,12 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 		}
 	}
 
+	/**
+	 * Discord 机器人的主函数。
+	 * @param {import('npm:discord.js').Client} client - Discord 客户端实例。
+	 * @param {object} config - 机器人配置。
+	 * @returns {Promise<void>}
+	 */
 	async function SimpleDiscordBotMain(client, config) {
 		const MAX_MESSAGE_DEPTH = config.MaxMessageDepth || 20
 		const MAX_FETCH_COUNT = config.MaxFetchCount || Math.max(MAX_MESSAGE_DEPTH, Math.floor(MAX_MESSAGE_DEPTH * 1.5))
@@ -60,6 +84,11 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 		 */
 		const aiReplyObjectCache = {}
 
+		/**
+		 * 将 Discord 消息转换为 Fount 聊天日志条目。
+		 * @param {Message} discordMessage - Discord 消息对象。
+		 * @returns {Promise<chatLogEntry_t_simple>} 转换后的 Fount 聊天日志条目。
+		 */
 		async function DiscordMessageToFountChatLogEntry(discordMessage) {
 			let fullMessage = discordMessage
 			if (fullMessage.partial) try {
@@ -127,6 +156,11 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 			return entry
 		}
 
+		/**
+		 * 合并聊天日志。
+		 * @param {chatLogEntry_t_simple[]} log - 聊天日志条目数组。
+		 * @returns {chatLogEntry_t_simple[]} 合并后的聊天日志条目数组。
+		 */
 		function MargeChatLog(log) {
 			if (!log?.length) return []
 			const newlog = []
@@ -153,6 +187,11 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 			return newlog
 		}
 
+		/**
+		 * 处理消息队列。
+		 * @param {string} channelId - 频道 ID。
+		 * @returns {Promise<void>}
+		 */
 		async function HandleMessageQueue(channelId) {
 			const myQueue = ChannelMessageQueues[channelId]
 			try {
@@ -199,10 +238,21 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 			}
 		}
 
+		/**
+		 * 处理消息回复。
+		 * @param {Message} triggerMessage - 触发回复的 Discord 消息对象。
+		 * @param {string} channelId - 频道 ID。
+		 * @returns {Promise<void>}
+		 */
 		async function DoMessageReply(triggerMessage, channelId) {
 			let typingInterval = setInterval(() => { triggerMessage.channel.sendTyping().catch(e => { }) }, 7000)
 
-			/** 发送消息并缓存AI原始回复对象 (如果提供了) */
+			/**
+			 * 发送消息并缓存AI原始回复对象 (如果提供了)
+			 * @param {import('npm:discord.js').MessagePayload | string} payload - 消息负载或字符串。
+			 * @param {ChatReply_t} originalAIReply - 原始 AI 回复对象。
+			 * @returns {Promise<Message>} 发送的 Discord 消息。
+			 */
 			async function sendAndCache(payload, originalAIReply) {
 				try {
 					const sentDiscordMessage = await tryFewTimes(() => triggerMessage.channel.send(payload))
@@ -218,6 +268,11 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 				}
 			}
 
+			/**
+			 * 发送分割回复。
+			 * @param {ChatReply_t} fountReply - Fount 聊天回复对象。
+			 * @returns {Promise<void>}
+			 */
 			async function sendSplitReply(fountReply) {
 				const MAX_FILES_PER_MESSAGE = 10
 				const filesToSend = (fountReply.files || []).map(f => ({ attachment: f.buffer, name: f.name, description: f.description }))
@@ -255,6 +310,11 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 			}
 
 			try {
+				/**
+				 * 添加聊天日志条目。
+				 * @param {ChatReply_t} replyFromChar - 角色回复对象。
+				 * @returns {Promise<null>} 一个不返回任何值的 Promise。
+				 */
 				const AddChatLogEntry = async replyFromChar => { // AI调用的中间消息发送函数
 					if (replyFromChar && (replyFromChar.content || replyFromChar.files?.length))
 						await sendSplitReply(replyFromChar)
@@ -262,6 +322,10 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 					return null
 				}
 
+				/**
+				 * 生成聊天回复请求。
+				 * @returns {{supported_functions: {markdown: boolean, files: boolean, add_message: boolean}, username: string, chat_name: string, char_id: string, Charname: string, UserCharname: string, ReplyToCharname: string, locales: string[], time: Date, world: null, user: object, char: import('../../../../../decl/charAPI.ts').CharAPI_t, other_chars: [], plugins: {}, chat_scoped_char_memory: {}, chat_log: chatLogEntry_t_simple[], AddChatLogEntry: (replyFromChar: ChatReply_t) => Promise<null>, Update: () => Promise<any>, extension: {platform: string, trigger_message_id: string, channel_id: string, guild_id: string}}} 返回一个聊天回复请求对象。
+				 */
 				const generateChatReplyRequest = () => ({
 					supported_functions: { markdown: true, files: true, add_message: true },
 					username: ownerUsername,
@@ -272,7 +336,10 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 					ReplyToCharname: userInfoCache[triggerMessage.author.id] || triggerMessage.author.username,
 					locales: localhostLocales, time: new Date(), world: null, user: loadDefaultPersona(ownerUsername), char: charAPI, other_chars: [], plugins: {},
 					chat_scoped_char_memory, chat_log: ChannelChatLogs[channelId].map(e => ({ ...e })), // 传递副本
-					AddChatLogEntry, Update: async () => generateChatReplyRequest(),
+					AddChatLogEntry, /**
+					 * @returns {Promise<object>} 返回一个更新后的聊天回复请求对象。
+					 */
+					Update: async () => generateChatReplyRequest(),
 					extension: { platform: 'discord', trigger_message_id: triggerMessage.id, channel_id: channelId, guild_id: triggerMessage.guild?.id }
 				})
 

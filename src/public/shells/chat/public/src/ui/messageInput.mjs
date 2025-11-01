@@ -19,6 +19,9 @@ let isRecording = false
 let mediaRecorder
 let audioChunks = []
 
+/**
+ * 初始化消息输入框
+ */
 export function initializeMessageInput() {
 	uploadButtonElement.addEventListener('click', () => fileInputElement.click())
 	fileInputElement.addEventListener('change', event => handleFilesSelect(event, SelectedFiles, attachmentPreviewContainer))
@@ -30,6 +33,10 @@ export function initializeMessageInput() {
 	messageInputElement.focus()
 }
 
+/**
+ * 处理键盘按键事件。
+ * @param {KeyboardEvent} event - 键盘事件对象。
+ */
 function handleKeyPress(event) {
 	if (event.key === 'Enter' && event.ctrlKey) {
 		event.preventDefault()
@@ -37,6 +44,9 @@ function handleKeyPress(event) {
 	}
 }
 
+/**
+ * 触发照片选择
+ */
 function togglePhotoSection() {
 	const input = document.createElement('input')
 	input.type = 'file'
@@ -49,6 +59,9 @@ function togglePhotoSection() {
 	input.click()
 }
 
+/**
+ * 切换语音录制
+ */
 async function toggleVoiceRecording() {
 	if (isRecording) {
 		mediaRecorder.stop()
@@ -63,10 +76,17 @@ async function toggleVoiceRecording() {
 		mediaRecorder = new MediaRecorder(stream)
 		audioChunks = []
 
+		/**
+		 * 处理可用数据事件。
+		 * @param {BlobEvent} event - 包含音频数据的 BlobEvent 对象。
+		 */
 		mediaRecorder.ondataavailable = event => {
 			audioChunks.push(event.data)
 		}
 
+		/**
+		 * 处理停止事件。
+		 */
 		mediaRecorder.onstop = async () => {
 			const audioBlob = new Blob(audioChunks, { type: 'audio/wav' })
 			const audioFile = new File([audioBlob], `voice_message_${Date.now()}.wav`, { type: 'audio/wav' })
@@ -90,6 +110,9 @@ async function toggleVoiceRecording() {
 	}
 }
 
+/**
+ * 发送消息
+ */
 async function sendMessage() {
 	const messageText = messageInputElement.value.trim()
 	if (!messageText && !SelectedFiles.length) return

@@ -1,7 +1,7 @@
 import { setEndpoints } from './src/endpoints.mjs'
 
 /**
- * @description 处理动作。
+ * 处理动作。
  * @param {string} user - 用户。
  * @param {string} action - 动作。
  * @param {object} params - 参数。
@@ -15,6 +15,9 @@ async function handleAction(user, action, params) {
 	return actions[action]({ user, ...params })
 }
 
+/**
+ * @type {import('../../../decl/shell.ts').shell_t}
+ */
 export default {
 	info: {
 		'en-UK': {
@@ -208,11 +211,22 @@ export default {
 			tags: ['AI', '管理', '系統']
 		}
 	},
+	/**
+	 * 加载Shell，设置路由端点。
+	 * @param {object} root0 - 参数。
+	 * @param {object} root0.router - Express的路由实例。
+	 */
 	Load: ({ router }) => {
 		setEndpoints(router)
 	},
 	interfaces: {
 		invokes: {
+			/**
+			 * 处理命令行参数。
+			 * @param {string} user - 用户名。
+			 * @param {Array<string>} args - 命令行参数数组，期望包含动作、源名称和可选的JSON数据。
+			 * @returns {Promise<void>}
+			 */
 			ArgumentsHandler: async (user, args) => {
 				const [action, sourceName, jsonData] = args
 				const params = {
@@ -224,6 +238,12 @@ export default {
 					console.log(result)
 
 			},
+			/**
+			 * 处理IPC调用。
+			 * @param {string} user - 用户名。
+			 * @param {object} data - 从IPC接收的数据对象，包含要执行的动作及其参数。
+			 * @returns {Promise<any>} - 动作执行结果。
+			 */
 			IPCInvokeHandler: async (user, data) => {
 				const { action, ...params } = data
 				return handleAction(user, action, params)

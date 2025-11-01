@@ -1,6 +1,13 @@
 import { loadPart } from '../../../../server/managers/index.mjs'
 import { loadData, saveData } from '../../../../server/setting_loader.mjs'
 
+/**
+ * 获取部件数据。
+ * @param {string} username - 用户名。
+ * @param {string} parttype - 部件类型。
+ * @param {string} partname - 部件名称。
+ * @returns {Promise<any>} - 部件数据。
+ */
 export async function getPartData(username, parttype, partname) {
 	try {
 		const part = await loadPart(username, parttype, partname)
@@ -11,6 +18,14 @@ export async function getPartData(username, parttype, partname) {
 	}
 }
 
+/**
+ * 设置部件数据。
+ * @param {string} username - 用户名。
+ * @param {string} parttype - 部件类型。
+ * @param {string} partname - 部件名称。
+ * @param {any} data - 数据。
+ * @returns {Promise<void>}
+ */
 export async function setPartData(username, parttype, partname, data) {
 	const parts_config = loadData(username, 'parts_config')
 	try {
@@ -25,6 +40,13 @@ export async function setPartData(username, parttype, partname, data) {
 	}
 }
 
+/**
+ * 获取部件显示内容。
+ * @param {string} username - 用户名。
+ * @param {string} parttype - 部件类型。
+ * @param {string} partname - 部件名称。
+ * @returns {Promise<object>} - 显示内容。
+ */
 export async function getPartDisplayContent(username, parttype, partname) {
 	const part = await loadPart(username, parttype, partname)
 	return await part.interfaces.config?.GetConfigDisplayContent?.() || { html: '', js: '' }

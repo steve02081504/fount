@@ -5,7 +5,7 @@ import fs from 'node:fs'
  * @param {string} filePath - 要写入的文件的路径。
  * @param {string|Buffer} data - 要写入文件的数据。
  * @param {string} [encoding='utf8'] - 写入文件时使用的编码。
- * @return {void}
+ * @returns {void}
  */
 export function nicerWriteFileSync(filePath, data, encoding) {
 	if (Object(data) instanceof String) encoding ??= 'utf8'

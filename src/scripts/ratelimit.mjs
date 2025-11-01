@@ -10,15 +10,29 @@ const localIPs = [
 	in_docker ? await dns.promises.lookup('host.docker.internal').then(r => r.address) : null
 ].filter(Boolean)
 
+/**
+ * 检查给定的 IP 地址是否为本地 IP。
+ * @param {string} ip - 要检查的 IP 地址。
+ * @returns {boolean} 如果 IP 地址是本地 IP，则返回 true，否则返回 false。
+ */
 export function is_local_ip(ip) {
 	return localIPs.includes(ip)
 }
 
+/**
+ * 检查请求是否来自本地 IP。
+ * @param {import('npm:express').Request} req - Express 请求对象。
+ * @returns {boolean} 如果请求来自本地 IP，则返回 true，否则返回 false。
+ */
 export function is_local_ip_from_req(req) {
 	return is_local_ip(req.ip)
 }
 
 /* global Deno */
+/**
+ * 获取本地 IP 地址。
+ * @returns {string|undefined} 本地 IP 地址，如果找不到则返回 undefined。
+ */
 export function get_local_ip() {
 	const interfaces = Deno.networkInterfaces()
 	return (
@@ -28,6 +42,10 @@ export function get_local_ip() {
 		0)?.address
 }
 
+/**
+ * 获取本地 IP 的主机 URL。
+ * @returns {string} 本地 IP 的主机 URL。
+ */
 export function get_hosturl_in_local_ip() {
 	const is_https = config.https?.enabled
 	return `http${is_https ? 's' : ''}://${get_local_ip()}:${config.port}`

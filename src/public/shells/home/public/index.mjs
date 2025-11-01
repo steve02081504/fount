@@ -1,3 +1,6 @@
+/**
+ * 主页 shell 的客户端逻辑。
+ */
 import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
 import { getUserSetting, setUserSetting, unlockAchievement } from '../../scripts/endpoints.mjs'
@@ -44,14 +47,23 @@ let homeRegistry
 let defaultParts = {} // Store default parts
 let isSfw = false
 
-// Utility for mouse wheel scrolling
+/**
+ * 处理鼠标滚轮滚动事件。
+ * @param {WheelEvent} event - 滚轮事件。
+ */
 const handleMouseWheelScroll = event => {
 	const scrollContainer = event.currentTarget
 	scrollContainer.scrollLeft += Math.sign(event.deltaY) * 40
 	event.preventDefault()
 }
 
-// --- Item Details Fetching ---
+/**
+ * 获取项目详细信息。
+ * @param {string} itemType - 项目类型。
+ * @param {string} itemName - 项目名称。
+ * @param {boolean} [useCache=true] - 是否使用缓存。
+ * @returns {Promise<any>} - 项目详细信息。
+ */
 async function getItemDetails(itemType, itemName, useCache = true) {
 	const cacheKey = `${itemType}-${itemName}`
 	if (useCache && itemDetailsCache[cacheKey] && !itemDetailsCache[cacheKey].supportedInterfaces.includes('info'))
@@ -79,6 +91,13 @@ async function getItemDetails(itemType, itemName, useCache = true) {
 // --- Rendering ---
 let ItemDOMCache = {}
 
+/**
+ * 渲染项目视图。
+ * @param {string} itemType - 项目类型。
+ * @param {any} itemDetails - 项目详细信息。
+ * @param {string} itemName - 项目名称。
+ * @returns {Promise<HTMLElement>} - 项目元素。
+ */
 async function renderItemView(itemType, itemDetails, itemName) {
 	const cacheKey = `${itemType}-${itemName}`
 
@@ -94,6 +113,15 @@ async function renderItemView(itemType, itemDetails, itemName) {
 	return itemElement
 }
 
+/**
+ * 附加卡片事件监听器。
+ * @param {HTMLElement} itemElement - 项目元素。
+ * @param {any} itemDetails - 项目详细信息。
+ * @param {string} itemName - 项目名称。
+ * @param {any[]} interfacesRegistry - 接口注册表。
+ * @param {string} itemType - 项目类型。
+ * @returns {Promise<void>}
+ */
 async function attachCardEventListeners(itemElement, itemDetails, itemName, interfacesRegistry, itemType) {
 	const actionsContainer = itemElement.querySelector('.actions-buttons-container')
 	actionsContainer.innerHTML = '' // Clear existing buttons
@@ -107,7 +135,7 @@ async function attachCardEventListeners(itemElement, itemDetails, itemName, inte
 			button.classList.add(...classes)
 			if (interfaceItem.style) button.style.cssText = interfaceItem.style
 
-			button.innerHTML = interfaceItem.button ?? '<img src="https://api.iconify.design/line-md/question-circle.svg" />'
+			button.innerHTML = interfaceItem.button ?? /* html */ '<img src="https://api.iconify.design/line-md/question-circle.svg" />'
 			button.title = interfaceItem.info.title
 			svgInliner(button)
 
@@ -133,7 +161,10 @@ async function attachCardEventListeners(itemElement, itemDetails, itemName, inte
 		})
 	})
 
-	// Click/Hover to display info
+	/**
+	 * 单击处理程序
+	 * @returns {void}
+	 */
 	const clickHandler = () => {
 		displayItemInfo(itemDetails)
 		if (window.innerWidth < 1024) drawerToggle.checked = true
@@ -177,6 +208,9 @@ async function attachCardEventListeners(itemElement, itemDetails, itemName, inte
 	}
 }
 
+/**
+ * 更新默认部件显示。
+ */
 function updateDefaultPartDisplay() {
 	for (const itemType of ['chars', 'worlds', 'personas']) {
 		const defaultPartName = defaultParts[itemType.slice(0, -1)]
@@ -197,12 +231,23 @@ function updateDefaultPartDisplay() {
 	}
 }
 
+/**
+ * 显示项目信息。
+ * @param {any} itemDetails - 项目详细信息。
+ * @returns {Promise<void>}
+ */
 async function displayItemInfo(itemDetails) {
 	itemDescription.innerHTML = itemDetails.info.description_markdown
 		? (await renderMarkdown(itemDetails.info.description_markdown)).outerHTML
 		: geti18n('home.noDescription')
 }
 
+/**
+ * 渲染已过滤的项目。
+ * @param {string} itemType - 项目类型。
+ * @param {string[]} filteredNames - 已过滤的名称。
+ * @returns {Promise<void>}
+ */
 async function renderFilteredItems(itemType, filteredNames) {
 	let currentContainer
 	switch (itemType) {
@@ -249,6 +294,11 @@ async function renderFilteredItems(itemType, filteredNames) {
 	})
 }
 
+/**
+ * 获取所有项目名称。
+ * @param {string} itemType - 项目类型。
+ * @returns {Promise<string[]>} - 项目名称。
+ */
 async function getAllItemNames(itemType) {
 	const { cachedDetails, uncachedNames } = await getAllCachedPartDetails(itemType).catch(e => {
 		console.error(`Failed to get all part details for ${itemType}`, e)
@@ -266,11 +316,18 @@ async function getAllItemNames(itemType) {
 }
 
 
-// --- Function Buttons ---
+/**
+ * 显示功能按钮。
+ * @returns {Promise<void>}
+ */
 async function displayFunctionButtons() {
 	functionButtonsContainer.innerHTML = '' // Clear existing buttons
 	if (!homeRegistry?.home_function_buttons) return // Avoid error if registry is not loaded
 
+	/**
+	 * @param {any} buttonItem - 按钮项目。
+	 * @returns {HTMLElement} - 菜单项。
+	 */
 	const createMenuItem = (buttonItem) => {
 		const li = document.createElement('li')
 
@@ -281,7 +338,7 @@ async function displayFunctionButtons() {
 
 			const iconSpan = document.createElement('span')
 			iconSpan.classList.add('mr-2')
-			iconSpan.innerHTML = buttonItem.button ?? '<img src="https://api.iconify.design/line-md/folder-filled.svg" class="text-icon" />'
+			iconSpan.innerHTML = buttonItem.button ?? /* html */ '<img src="https://api.iconify.design/line-md/folder-filled.svg" class="text-icon" />'
 			svgInliner(iconSpan)
 
 			const titleSpan = document.createElement('span')
@@ -311,7 +368,7 @@ async function displayFunctionButtons() {
 
 			const iconSpan = document.createElement('span')
 			iconSpan.classList.add('mr-2')
-			iconSpan.innerHTML = buttonItem.button ?? '<img src="https://api.iconify.design/line-md/question-circle.svg" class="text-icon" />'
+			iconSpan.innerHTML = buttonItem.button ?? /* html */ '<img src="https://api.iconify.design/line-md/question-circle.svg" class="text-icon" />'
 			svgInliner(iconSpan)
 
 			const titleSpan = document.createElement('span')
@@ -341,6 +398,9 @@ async function displayFunctionButtons() {
 	menuItemsContainer.classList.add('menu', 'p-0', 'w-full')
 	functionButtonsContainer.appendChild(menuItemsContainer)
 
+	/**
+	 * @param {any[]} items - 项目。
+	 */
 	const renderMenu = (items) => {
 		menuItemsContainer.innerHTML = ''
 		items.forEach(buttonItem => {
@@ -351,6 +411,11 @@ async function displayFunctionButtons() {
 	const originalItems = homeRegistry.home_function_buttons
 
 	const allButtons = []
+	/**
+	 * 扁平化项目。
+	 * @param {any[]} items - 项目。
+	 * @returns {void}
+	 */
 	function flatten(items) {
 		items.forEach(item => {
 			allButtons.push(item)
@@ -361,6 +426,10 @@ async function displayFunctionButtons() {
 	flatten(originalItems)
 	const leafButtons = allButtons.filter(item => !item.sub_items?.length)
 
+	/**
+	 * 过滤并渲染
+	 * @returns {void}
+	 */
 	const filterAndRender = () => {
 		const filterValue = searchInput.value
 		if (!filterValue) return renderMenu(originalItems)
@@ -375,7 +444,11 @@ async function displayFunctionButtons() {
 	renderMenu(originalItems) // Initial render
 }
 
-// --- Tab Management ---
+/**
+ * 更新选项卡内容。
+ * @param {string} itemType - 项目类型。
+ * @returns {Promise<void>}
+ */
 async function updateTabContent(itemType) {
 	currentItemType = itemType
 	sessionStorage.setItem('fount.home.lastTab', itemType) // Persist tab in sessionStorage
@@ -393,10 +466,17 @@ async function updateTabContent(itemType) {
 	makeSearchable({
 		searchInput: filterInput,
 		data: allItemNames,
+		/**
+		 * @param {string} name - 名称。
+		 * @returns {any} - 数据。
+		 */
 		dataAccessor: (name) => {
 			const details = itemDetailsCache[`${itemType}-${name}`]
 			return details || name
 		},
+		/**
+		 * @param {string[]} filteredNames - 已过滤的名称。
+		 */
 		onUpdate: (filteredNames) => {
 			renderFilteredItems(itemType, filteredNames)
 		},
@@ -418,6 +498,10 @@ async function updateTabContent(itemType) {
 		[initialTab.tab, initialTab.tabDesktop].filter(Boolean).forEach(el => el.classList.add('tab-active'))
 }
 
+/**
+ * 获取数据。
+ * @returns {Promise<void>}
+ */
 async function fetchData() {
 	await Promise.all([
 		getHomeRegistry().then(async data => {
@@ -431,6 +515,10 @@ async function fetchData() {
 	])
 }
 
+/**
+ * 刷新当前选项卡。
+ * @returns {Promise<void>}
+ */
 async function refreshCurrentTab() {
 	itemDetailsCache = {}
 	ItemDOMCache = {}
@@ -439,7 +527,10 @@ async function refreshCurrentTab() {
 	await updateTabContent(currentItemType)
 }
 
-// --- Initialization ---
+/**
+ * 初始化应用程序。
+ * @returns {Promise<void>}
+ */
 async function initializeApp() {
 	applyTheme()
 	await initTranslations('home') // Initialize i18n first

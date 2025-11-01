@@ -4,6 +4,11 @@ import * as Sentry from 'https://esm.sh/@sentry/browser'
 const DEFAULT_FOUNT_PORT = 8931
 
 // 验证 IPv4 地址
+/**
+ * 检查给定的字符串是否是有效的 IPv4 地址。
+ * @param {string} ip - 要验证的 IP 地址字符串。
+ * @returns {boolean} - 如果是有效的 IPv4 地址，则返回 true；否则返回 false。
+ */
 const isValidIPv4Address = ip => {
 	console.debug(`[isValidIPv4Address] Validating IP: ${ip}`)
 	const isValid = /^(\d{1,3}\.){3}\d{1,3}$/.test(ip) && ip.split('.').every(part => +part >= 0 && +part <= 255)
@@ -12,6 +17,11 @@ const isValidIPv4Address = ip => {
 }
 
 // 从 URL 字符串中提取 IP 地址和端口号
+/**
+ * 从 URL 字符串中提取 IP 地址和端口号。
+ * @param {string} urlString - 包含 IP 地址和端口号的 URL 字符串。
+ * @returns {{ip: string, port: number}|null} - 包含 IP 地址和端口号的对象，如果提取失败则返回 null。
+ */
 function extractIpAndPortFromUrl(urlString) {
 	console.debug(`[extractIpAndPortFromUrl] Extracting IP and port from URL: ${urlString}`)
 	try {
@@ -30,6 +40,11 @@ function extractIpAndPortFromUrl(urlString) {
 }
 
 // 测试 fount 服务是否可用
+/**
+ * 检查 Fount 服务是否可用。
+ * @param {string} host - Fount 服务的主机 URL。
+ * @returns {Promise<boolean>} - 如果服务可用则返回 true；否则返回 false。
+ */
 export async function isFountServiceAvailable(host) {
 	try {
 		const url = new URL('/api/ping', host)
@@ -45,6 +60,12 @@ export async function isFountServiceAvailable(host) {
 }
 
 // 扫描本地网络以查找 fount 服务
+/**
+ * 扫描本地网络以查找 Fount 服务。
+ * @param {string} baseIP - 基础 IP 地址（例如 '192.168.1.0'）。
+ * @param {number} port - 要扫描的端口号。
+ * @returns {Promise<string|null>} - 找到的 Fount 服务主机 URL，如果未找到则返回 null。
+ */
 async function scanLocalNetworkForFount(baseIP, port) {
 	console.debug(`[scanLocalNetworkForFount] Scanning with base IP: ${baseIP}, Port: ${port}`)
 	const batchSize = 8
@@ -67,6 +88,11 @@ async function scanLocalNetworkForFount(baseIP, port) {
 }
 
 // 在 IPv4 网络上映射 fount 主机
+/**
+ * 在 IPv4 网络上映射 Fount 主机。
+ * @param {string} hostUrl - 包含 IP 地址和端口号的 URL 字符串。
+ * @returns {Promise<string|null>} - 找到的 Fount 服务主机 URL，如果未找到则返回 null。
+ */
 async function mapFountHostOnIPv4(hostUrl) {
 	console.debug(`[mapFountHostOnIPv4] Mapping fount host on IPv4 for URL: ${hostUrl}`)
 	const { ip, port } = extractIpAndPortFromUrl(hostUrl)
@@ -84,12 +110,20 @@ async function mapFountHostOnIPv4(hostUrl) {
 }
 
 // 从 WebRTC 获取本地 IP
+/**
+ * 通过 WebRTC 获取本地 IP 地址。
+ * @returns {Promise<string|null>} - 本地 IP 地址字符串，如果获取失败则返回 null。
+ */
 function getLocalIPFromWebRTC() {
 	return new Promise(resolve => {
 		const pc = new RTCPeerConnection({
 			iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
 		})
 		pc.createDataChannel('')
+		/**
+		 * 处理 ICE 候选事件。
+		 * @param {RTCPeerConnectionIceEvent} event - ICE 候选事件对象。
+		 */
 		pc.onicecandidate = event => {
 			const match = event?.candidate?.candidate?.match?.(/((?:\d+\.){3}\d+)/)
 			if (match && !match[1].startsWith('127.')) {
@@ -103,6 +137,11 @@ function getLocalIPFromWebRTC() {
 }
 
 // 获取 fount 主机 URL
+/**
+ * 映射 Fount 主机 URL。
+ * @param {string} hostUrl - 初始主机 URL。
+ * @returns {Promise<string>} - 映射到的 Fount 主机 URL。
+ */
 async function mappingFountHostUrl(hostUrl) {
 	console.debug(`[getFountHostUrl] Attempting to get fount host URL. Initial hostUrl: ${hostUrl}`)
 
@@ -163,6 +202,11 @@ async function mappingFountHostUrl(hostUrl) {
 	return hostUrl // 即使找不到也返回原始值
 }
 
+/**
+ * 保存 Fount 主机 URL。
+ * @param {string} hostUrl - 要保存的主机 URL。
+ * @returns {void}
+ */
 export function saveFountHostUrl(hostUrl) {
 	localStorage.setItem('fountHostUrl', hostUrl ?? '')
 	if (!hostUrl) return
@@ -181,6 +225,11 @@ export function saveFountHostUrl(hostUrl) {
 	])].slice(0, 13)))
 }
 
+/**
+ * 获取 Fount 主机 URL。
+ * @param {string} [hostUrl] - 初始主机 URL。
+ * @returns {Promise<string>} - 获取到的 Fount 主机 URL。
+ */
 export async function getFountHostUrl(hostUrl = urlParams.get('hostUrl') ?? localStorage.getItem('fountHostUrl')) {
 	if (!String(hostUrl).startsWith('http')) hostUrl = null
 	const result = await mappingFountHostUrl(hostUrl)
@@ -188,6 +237,11 @@ export async function getFountHostUrl(hostUrl = urlParams.get('hostUrl') ?? loca
 	return result
 }
 
+/**
+ * Ping Fount 服务以检查其可用性。
+ * @param {string} hostUrl - Fount 服务的主机 URL。
+ * @returns {Promise<boolean|undefined>} - 如果服务可达则返回 true，否则返回 false 或 undefined。
+ */
 export async function pingFount(hostUrl) {
 	if (!hostUrl) return
 	const controller = new AbortController()

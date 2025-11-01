@@ -11,7 +11,7 @@ zxcvbnOptions.setOptions({
 })
 
 /**
- * @description 更新 zxcvbn 的翻译。
+ * 更新 zxcvbn 的翻译。
  * @returns {void}
  */
 function updateZxcvbnTranslations() {
@@ -19,7 +19,7 @@ function updateZxcvbnTranslations() {
 }
 
 /**
- * @description 评估密码强度。
+ * 评估密码强度。
  * @param {string} password - 要评估的密码。
  * @returns {{score: number, borderColorClass: string, fullFeedback: string}} - 密码强度评估结果。
  */
@@ -50,7 +50,7 @@ function evaluatePasswordStrength(password) {
 			feedbackText = 'auth.passwordStrength.veryStrong'
 			break
 	}
-	let fullFeedback = `<strong data-i18n="${feedbackText}"></strong><br/>`
+	let fullFeedback = /* html */ `<strong data-i18n="${feedbackText}"></strong><br/>`
 	if (result.feedback.warning) fullFeedback += result.feedback.warning + '<br/>'
 	if (result.feedback.suggestions) fullFeedback += result.feedback.suggestions.join('<br/>')
 
@@ -58,7 +58,7 @@ function evaluatePasswordStrength(password) {
 }
 
 /**
- * @description 更新密码强度 UI。
+ * 更新密码强度 UI。
  * @param {string} password - 密码。
  * @param {HTMLInputElement} passwordInput - 密码输入框。
  * @param {HTMLElement} passwordStrengthFeedback - 密码强度反馈元素。
@@ -85,14 +85,14 @@ function updatePasswordStrengthUI(password, passwordInput, passwordStrengthFeedb
 }
 
 /**
- * @description 在密码输入字段上初始化密码强度计。
+ * 在密码输入字段上初始化密码强度计。
  * @param {HTMLInputElement} passwordInput - 密码输入元素。
  * @param {HTMLElement} passwordStrengthFeedback - 用于显示反馈的元素。
  * @returns {{ evaluate: () => { score: number, borderColorClass: string, fullFeedback: string } }} - 用于与强度计交互的对象。
  */
 export function initPasswordStrengthMeter(passwordInput, passwordStrengthFeedback) {
 	/**
-	 * @description 刷新 UI。
+	 * 刷新 UI。
 	 * @returns {void}
 	 */
 	const refreshUI = () => updatePasswordStrengthUI(passwordInput.value, passwordInput, passwordStrengthFeedback)
@@ -105,7 +105,7 @@ export function initPasswordStrengthMeter(passwordInput, passwordStrengthFeedbac
 
 	return {
 		/**
-		 * @description 评估密码强度。
+		 * 评估密码强度。
 		 * @returns {{score: number, borderColorClass: string, fullFeedback: string}} - 密码强度评估结果。
 		 */
 		evaluate: () => evaluatePasswordStrength(passwordInput.value)
