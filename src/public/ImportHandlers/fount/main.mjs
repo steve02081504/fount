@@ -183,6 +183,9 @@ async function ImportByText(username, text) {
 	return installedParts
 }
 
+/**
+ *
+ */
 export default {
 	info: {
 		'': {

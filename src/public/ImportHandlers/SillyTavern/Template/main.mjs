@@ -53,16 +53,27 @@ export default {
 		}
 	},
 
+	/**
+	 * @param {any} stat 状态
+	 */
 	Load: stat => {
 		username = stat.username
 	},
 
 	interfaces: {
 		config: {
+			/**
+			 * 获取数据
+			 * @returns {{ AIsource: any; chardata: chardata_t; }}
+			 */
 			GetData: () => ({
 				AIsource: AIsource?.filename || '',
 				chardata,
 			}),
+			/**
+			 * 设置数据
+			 * @param {{ chardata: chardata_t; AIsource: string; }} data 数据
+			 */
 			SetData: async data => {
 				if (data.chardata) {
 					chardata = data.chardata
@@ -73,6 +84,12 @@ export default {
 			}
 		},
 		chat: {
+			/**
+			 * 获取问候语
+			 * @returns {{ content: any; content_for_show: any; }}
+			 * @param {any} args 参数
+			 * @param {any} index 索引
+			 */
 			GetGreeting: (args, index) => {
 				const greetings = [chardata?.first_mes, ...chardata?.alternate_greetings ?? []].filter(x => x)
 				if (index >= greetings.length) throw new Error('Invalid index')
@@ -88,6 +105,12 @@ export default {
 					content_for_show: runRegex(chardata, result, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.promptOnly)
 				}
 			},
+			/**
+			 * 获取群组问候语
+			 * @returns {{ content: any; content_for_show: any; }}
+			 * @param {any} args 参数
+			 * @param {any} index 索引
+			 */
 			GetGroupGreeting: (args, index) => {
 				const greetings = [...new Set([...chardata?.extensions?.group_greetings ?? [], ...chardata?.group_only_greetings ?? []].filter(x => x))]
 				if (index >= greetings.length) throw new Error('Invalid index')
@@ -103,10 +126,20 @@ export default {
 					content_for_show: runRegex(chardata, result, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.promptOnly)
 				}
 			},
+			/**
+			 * 获取提示
+			 * @returns {import("../../../../../src/public/ImportHandlers/SillyTavern/engine/prompt_builder").import('../../../../decl/prompt_struct.ts').single_part_prompt_t}
+			 * @param {any} args 参数
+			 */
 			GetPrompt: (args) => {
 				return promptBuilder(args, chardata, AIsource?.filename)
 			},
 			// no GetPromptForOther, ST card does not support it
+			/**
+			 * 获取回复
+			 * @returns {Promise<import("../../../../../src/public/shells/chat/decl/chatLog").chatReply_t>}
+			 * @param {any} args 参数
+			 */
 			GetReply: async args => {
 				if (!AIsource) return {
 					content: 'this character does not have an AI source, [set the AI source](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage) first',
@@ -123,6 +156,10 @@ export default {
 					extension: {},
 				}
 				// 构建插件可能需要的追加上下文函数
+				/**
+				 * 添加长时间日志
+				 * @param {import("../../../../../src/public/shells/chat/decl/chatLog").chatEntry_t} entry 条目
+				 */
 				function AddLongTimeLog(entry) {
 					entry.charVisibility = [args.char_id]
 					result?.logContextBefore?.push?.(entry)
@@ -148,10 +185,20 @@ export default {
 					files: result.files
 				}
 			},
+			/**
+			 * 获取回复频率
+			 * @returns {Promise<number>}
+			 * @param {any} args 参数
+			 */
 			GetReplyFrequency: async args => {
 				if (chardata.extensions.talkativeness) return Number(chardata.extensions.talkativeness) * 2
 				return 1
 			},
+			/**
+			 * 消息编辑
+			 * @returns {any}
+			 * @param {any} args 参数
+			 */
 			MessageEdit: args => {
 				return {
 					...args.edited,

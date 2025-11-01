@@ -3,6 +3,10 @@ let wasm
 
 let cachedUint8ArrayMemory0 = null
 
+/**
+ * 获取 Uint8 数组内存
+ * @returns {Uint8Array}
+ */
 function getUint8ArrayMemory0() {
 	if (!cachedUint8ArrayMemory0?.byteLength)
 		cachedUint8ArrayMemory0 = new Uint8Array(wasm.memory.buffer)
@@ -10,6 +14,10 @@ function getUint8ArrayMemory0() {
 	return cachedUint8ArrayMemory0
 }
 
+/**
+ * 初始化 Wasm
+ * @returns {Promise<null>}
+ */
 async function initWasm() {
 	if (wasm) return null
 
@@ -20,6 +28,12 @@ async function initWasm() {
 
 let WASM_VECTOR_LEN = 0
 
+/**
+ * 将 8 位数组传递给 Wasm
+ * @param {any} arg 参数
+ * @param {any} malloc 分配器
+ * @returns {number}
+ */
 function passArray8ToWasm0(arg, malloc) {
 	const ptr = malloc(arg.length * 1, 1) >>> 0
 	getUint8ArrayMemory0().set(arg, ptr / 1)
@@ -29,6 +43,10 @@ function passArray8ToWasm0(arg, malloc) {
 
 let cachedDataViewMemory0 = null
 
+/**
+ * 获取数据视图内存
+ * @returns {DataView}
+ */
 function getDataViewMemory0() {
 	if (cachedDataViewMemory0 === null || cachedDataViewMemory0.buffer.detached === true || (cachedDataViewMemory0.buffer.detached === undefined && cachedDataViewMemory0.buffer !== wasm.memory.buffer))
 		cachedDataViewMemory0 = new DataView(wasm.memory.buffer)
@@ -36,6 +54,12 @@ function getDataViewMemory0() {
 	return cachedDataViewMemory0
 }
 
+/**
+ * 从 Wasm 获取 U8 数组
+ * @param {any} ptr 指针
+ * @param {any} len 长度
+ * @returns {Uint8Array}
+ */
 function getArrayU8FromWasm0(ptr, len) {
 	ptr = ptr >>> 0
 	return getUint8ArrayMemory0().subarray(ptr / 1, ptr / 1 + len)

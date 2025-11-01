@@ -68,4 +68,7 @@ export function remove(image) {
 	return Buffer.from(encode(chunks))
 }
 
+/**
+ *
+ */
 export default { read, write, remove }
