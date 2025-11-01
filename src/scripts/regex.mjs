@@ -10,14 +10,14 @@
 export function parseRegexFromString(input) {
 	// 提取正则表达式模式和标志
 	const match = input.match(/^\/([\W\w]+?)\/([gimsuy]*)$/)
-	if (!match) throw new Error(`无效的正则表达式字符串: ${input}`)
+	if (!match) throw new Error(`Invalid regex string: ${input}`)
 
 	let [, pattern, flags] = match
 
 	// 如果我们发现任何未转义的斜线分隔符，我们也会退出。
 	// JS 不关心正则表达式模式内部的分隔符，但为了使其在我们的实现之外成为一个有效的正则表达式，
 	// 我们必须确保我们的分隔符被正确转义。否则其他所有引擎都会失败。
-	if (pattern.match(/(^|[^\\])\//)) throw new Error(`正则表达式中存在未转义的斜线: ${input}`)
+	if (pattern.match(/(^|[^\\])\//)) throw new Error(`There is an unescaped slash in the regex: ${input}`)
 
 	// 现在我们需要实际地反转义斜线分隔符，因为 JS 不关心分隔符
 	pattern = pattern.replace('\\/', '/')
