@@ -128,7 +128,7 @@ export default {
 			},
 			/**
 			 * 获取提示
-			 * @returns {import("../../../../../src/public/ImportHandlers/SillyTavern/engine/prompt_builder").import('../../../../decl/prompt_struct.ts').single_part_prompt_t}
+			 * @returns {import('../../../../../src/decl/prompt_struct.ts').single_part_prompt_t}
 			 * @param {any} args 参数
 			 */
 			GetPrompt: (args) => {

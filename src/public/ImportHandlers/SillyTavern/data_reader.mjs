@@ -69,6 +69,6 @@ export function remove(image) {
 }
 
 /**
- *
+ * PNG 块读写器
  */
 export default { read, write, remove }
