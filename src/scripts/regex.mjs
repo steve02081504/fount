@@ -27,10 +27,10 @@ export function parseRegexFromString(input) {
 }
 
 /**
- * Escapes special characters in a string to be used in a regular expression.
+ * 在字符串中转义特殊字符以在正则表达式中使用。
  *
- * @param {string} string - The string to escape.
- * @returns {string} The escaped string.
+ * @param {string} string - 要转义的字符串。
+ * @returns {string} 转义后的字符串。
  */
 export function escapeRegExp(string) {
 	return string.replace(/[$()*+./?[\\-^{|}]/g, '\\$&')
