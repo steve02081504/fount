@@ -9,6 +9,7 @@ import { GetShellWorld } from './world.mjs'
 /**
  *
  * @param {import('../../../../../decl/charAPI.ts').CharAPI_t} char_API
+ * @param username
  * @param {string} char_name
  */
 export function GetDefaultShellAssistInterface(char_API, username, char_name) {

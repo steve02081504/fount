@@ -1,7 +1,7 @@
 const handlers = new Map()
 
 /**
- * @description 注册一个服务器事件回调。
+ * 注册一个服务器事件回调。
  * @param {string} type - 事件类型。
  * @param {(data: any) => void} callback - 回调函数。
  * @returns {void}
@@ -14,7 +14,7 @@ export function onServerEvent(type, callback) {
 }
 
 /**
- * @description 注销一个服务器事件回调。
+ * 注销一个服务器事件回调。
  * @param {string} type - 事件类型。
  * @param {(data: any) => void} callback - 回调函数。
  * @returns {void}
@@ -29,7 +29,7 @@ export function offServerEvent(type, callback) {
 }
 
 /**
- * @description 由 base.mjs 在收到来自 SW 的消息时调用。
+ * 由 base.mjs 在收到来自 SW 的消息时调用。
  * @param {{type: string, data: any}} message - 消息。
  * @returns {void}
  */

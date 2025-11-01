@@ -26,7 +26,7 @@ ${content}
 let convertor, standaloneConvertor
 
 /**
- * @description 将 Markdown 渲染为字符串。
+ * 将 Markdown 渲染为字符串。
  * @param {string} markdown - Markdown 文本。
  * @returns {Promise<string>} - 渲染后的 HTML 字符串。
  */
@@ -37,7 +37,7 @@ export async function renderMarkdownAsString(markdown) {
 }
 
 /**
- * @description 将 Markdown 渲染为 DOM 元素。
+ * 将 Markdown 渲染为 DOM 元素。
  * @param {string} markdown - Markdown 文本。
  * @returns {Promise<DocumentFragment>} - 渲染后的 DOM 片段。
  */
@@ -46,7 +46,7 @@ export async function renderMarkdown(markdown) {
 }
 
 /**
- * @description 将 Markdown 渲染为独立的 HTML 字符串。
+ * 将 Markdown 渲染为独立的 HTML 字符串。
  * @param {string} markdown - Markdown 文本。
  * @returns {Promise<string>} - 渲染后的 HTML 字符串。
  */

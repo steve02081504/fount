@@ -7,7 +7,7 @@ import { Terminal } from 'https://esm.sh/xterm'
 import { onThemeChange } from './theme.mjs'
 
 /**
- * @description 设置终端。
+ * 设置终端。
  * @param {HTMLElement} element - 终端元素。
  * @returns {Terminal} - 终端实例。
  */
@@ -15,7 +15,7 @@ export function setTerminal(element) {
 	const terminal = new Terminal({
 		linkHandler: {
 			/**
-			 * @description 激活链接。
+			 * 激活链接。
 			 * @param {MouseEvent} event - 鼠标事件。
 			 * @param {string} text - 链接文本。
 			 * @param {object} range - 范围。

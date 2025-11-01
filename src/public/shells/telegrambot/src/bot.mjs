@@ -12,14 +12,12 @@ import { unlockAchievement } from '../../achievements/src/api.mjs'
 /** @typedef {import('../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
 
 /**
+ * Telegram Bot 的核心逻辑。
+ */
+
+/**
  * 启动 Telegram Bot。
- * @param {string} username - 用户名。
- * @param {string} botname - bot名称。
- * @param {{
- *  token: string,
- *  char: string,
- *  config: any
- * }} botConfig - 从 bot_configs.json 加载的bot配置。
+ * @param {{ token: string, char: string, config: any }} botConfig - 从 bot_configs.json 加载的bot配置。
  * @param {CharAPI_t} char - 加载后的角色 API 对象。
  * @returns {Promise<import('npm:telegraf').Telegraf>} Telegraf 实例。
  */

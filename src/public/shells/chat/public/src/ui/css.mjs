@@ -2,6 +2,9 @@ import { registerCssUpdater, setCssVariable } from '../../../../../scripts/cssVa
 
 import { queue } from './virtualQueue.mjs'
 
+/**
+ *
+ */
 export function setupCss() {
 	registerCssUpdater(() => {
 		// 记录div chat-header的宽

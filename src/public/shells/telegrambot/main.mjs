@@ -2,8 +2,14 @@ import { actions } from './src/actions.mjs'
 import { runBot } from './src/bot.mjs'
 import { setEndpoints } from './src/endpoints.mjs'
 
+/** @typedef {import('../../../decl/basedefs.ts').info_t} info_t */
+
 /**
- * @description 处理动作。
+ * telegrambot 的入口点。
+ */
+
+/**
+ * 处理动作。
  * @param {string} user - 用户。
  * @param {string} action - 动作。
  * @param {object} params - 参数。
@@ -16,7 +22,14 @@ async function handleAction(user, action, params) {
 	return actions[action]({ user, ...params })
 }
 
+/**
+ *
+ */
 export default {
+	/**
+	 * Shell 的信息。
+	 * @type {info_t}
+	 */
 	info: {
 		'en-UK': {
 			name: 'Telegram Bot',
@@ -191,7 +204,7 @@ export default {
 		}
 	},
 	/**
-	 * @description 加载 shell。
+			 * 加载 shell。
 	 * @param {object} options - 选项。
 	 * @param {object} options.router - 路由。
 	 */
@@ -200,17 +213,22 @@ export default {
 		setEndpoints(router)
 	},
 	/**
-	 * @description 卸载 shell。
+			 * 卸载 shell。
 	 */
 	Unload: async () => {
 		// 在卸载 shell 时可以进行一些清理工作，如果需要的话
 		// 例如，确保所有bot实例都已停止（尽管 on_shutdown 应该处理这个）
 	},
-
+	/**
+			 * Shell 的接口。
+	 */
 	interfaces: {
+		/**
+						 * 调用接口。
+		 */
 		invokes: {
 			/**
-			 * @description 处理命令行参数。
+									 * 处理命令行参数。
 			 * @param {string} user - 用户。
 			 * @param {Array<string>} args - 参数。
 			 */
@@ -228,7 +246,7 @@ export default {
 
 			},
 			/**
-			 * @description 处理 IPC 调用。
+									 * 处理 IPC 调用。
 			 * @param {string} user - 用户。
 			 * @param {object} data - 数据。
 			 * @returns {Promise<any>} - 调用结果。
@@ -238,9 +256,12 @@ export default {
 				return handleAction(user, action, params)
 			}
 		},
+		/**
+						 * 任务接口。
+		 */
 		jobs: {
 			/**
-			 * @description 重启任务。
+									 * 重启任务。
 			 * @param {string} user - 用户。
 			 * @param {string} botname - 机器人名称。
 			 */

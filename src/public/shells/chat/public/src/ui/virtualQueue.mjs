@@ -7,6 +7,9 @@ import { renderMessage, enableSwipe, disableSwipe } from './messageList.mjs'
 const chatMessagesContainer = document.getElementById('chat-messages')
 const BUFFER_SIZE = 20
 let startIndex = 0
+/**
+ *
+ */
 export let queue = []
 let chatLogLength = 0
 
@@ -16,6 +19,10 @@ let sentinelBottom = null
 let isLoading = false
 let currentSwipableElement = null
 
+/**
+ *
+ * @param id
+ */
 function createSentinel(id) {
 	const sentinel = document.createElement('div')
 	sentinel.id = id
@@ -25,6 +32,10 @@ function createSentinel(id) {
 	return sentinel
 }
 
+/**
+ *
+ * @param entries
+ */
 async function handleIntersection(entries) {
 	if (isLoading) return
 
@@ -65,6 +76,9 @@ async function handleIntersection(entries) {
 	}
 }
 
+/**
+ *
+ */
 function initializeObserver() {
 	if (observer) observer.disconnect()
 	const options = {
@@ -75,6 +89,9 @@ function initializeObserver() {
 	observer = new IntersectionObserver(handleIntersection, options)
 }
 
+/**
+ *
+ */
 function observeSentinels() {
 	sentinelTop = document.getElementById('sentinel-top')
 	sentinelBottom = document.getElementById('sentinel-bottom')
@@ -92,6 +109,10 @@ function observeSentinels() {
 	isLoading = false // 准备好处理新的交叉事件
 }
 
+/**
+ *
+ * @param initialData
+ */
 export async function initializeVirtualQueue(initialData) {
 	try {
 		isLoading = true
@@ -109,6 +130,9 @@ export async function initializeVirtualQueue(initialData) {
 	}
 }
 
+/**
+ *
+ */
 async function renderQueue() {
 	const fragment = document.createDocumentFragment()
 
@@ -133,6 +157,9 @@ async function renderQueue() {
 	// 调用者负责调用 observeSentinels()
 }
 
+/**
+ *
+ */
 async function prependMessages() {
 	const firstMessageElement = chatMessagesContainer.querySelector('.chat-message:not([id^="sentinel"])')
 	const oldScrollTop = chatMessagesContainer.scrollTop
@@ -179,6 +206,9 @@ async function prependMessages() {
 	}
 }
 
+/**
+ *
+ */
 async function appendMessages() {
 	const currentCount = startIndex + queue.length
 	if (currentCount >= chatLogLength) {
@@ -247,6 +277,9 @@ function updateLastCharMessageArrows() {
 					rightArrow.textContent = '❯'
 					leftArrow.after(rightArrow)
 
+					/**
+					 *
+					 */
 					function removeArrows() { leftArrow.remove(); rightArrow.remove() }
 
 					// --- 箭头点击事件 (修改时间线) ---
@@ -277,6 +310,10 @@ function updateLastCharMessageArrows() {
 	// --- 滑动管理结束 ---
 }
 
+/**
+ *
+ * @param message
+ */
 export async function appendMessageToQueue(message) {
 	if (!message || !observer) return
 
@@ -304,6 +341,12 @@ export async function appendMessageToQueue(message) {
 }
 
 
+/**
+ *
+ * @param queueIndex
+ * @param message
+ * @param element
+ */
 export async function replaceMessageInQueue(queueIndex, message, element = null) {
 	if (queueIndex < 0 || queueIndex >= queue.length || !message) return
 
@@ -343,6 +386,10 @@ export async function replaceMessageInQueue(queueIndex, message, element = null)
 		updateLastCharMessageArrows()
 }
 
+/**
+ *
+ * @param element
+ */
 export function getQueueIndex(element) {
 	const elementIndexInDom = Array.from(chatMessagesContainer.children).indexOf(element)
 	if (elementIndexInDom <= 0 || elementIndexInDom >= chatMessagesContainer.children.length - 1) return -1 // 不是有效消息元素 (是哨兵或未找到)
@@ -350,11 +397,19 @@ export function getQueueIndex(element) {
 	return queueIndex >= 0 && queueIndex < queue.length ? queueIndex : -1 // 检查队列边界
 }
 
+/**
+ *
+ * @param queueIndex
+ */
 export function getChatLogIndexByQueueIndex(queueIndex) {
 	if (queueIndex < 0 || queueIndex >= queue.length) return -1
 	return startIndex + queueIndex
 }
 
+/**
+ *
+ * @param queueIndex
+ */
 export async function getMessageElementByQueueIndex(queueIndex) {
 	if (queueIndex < 0 || queueIndex >= queue.length) return null
 	const elementIndexInDom = queueIndex + 1
@@ -362,12 +417,20 @@ export async function getMessageElementByQueueIndex(queueIndex) {
 	return element && !element.id.startsWith('sentinel') ? element : null // 确保不是哨兵
 }
 
+/**
+ *
+ * @param chatLogIndex
+ */
 export async function getMessageElementByChatLogIndex(chatLogIndex) {
 	const queueIndex = chatLogIndex - startIndex
 	if (queueIndex < 0 || queueIndex >= queue.length) return null // 不在当前渲染范围内
 	return getMessageElementByQueueIndex(queueIndex)
 }
 
+/**
+ *
+ * @param queueIndex
+ */
 export async function deleteMessageInQueue(queueIndex) {
 	if (queueIndex < 0 || queueIndex >= queue.length || !observer) return
 
@@ -384,6 +447,9 @@ export async function deleteMessageInQueue(queueIndex) {
 	observeSentinels() // 观察新哨兵
 }
 
+/**
+ *
+ */
 export function cleanupVirtualQueueObserver() {
 	if (observer) {
 		observer.disconnect()
@@ -402,6 +468,9 @@ export function cleanupVirtualQueueObserver() {
 }
 
 // --- Handlers for websocket events ---
+/**
+ *
+ */
 async function triggerFullRefresh() {
 	try {
 		isLoading = true
@@ -418,10 +487,19 @@ async function triggerFullRefresh() {
 	}
 }
 
+/**
+ *
+ * @param message
+ */
 export async function handleMessageAdded(message) {
 	await appendMessageToQueue(message)
 }
 
+/**
+ *
+ * @param index
+ * @param message
+ */
 export async function handleMessageReplaced(index, message) {
 	const queueIndex = index - startIndex
 	if (queueIndex >= 0 && queueIndex < queue.length)
@@ -432,6 +510,10 @@ export async function handleMessageReplaced(index, message) {
 	}
 }
 
+/**
+ *
+ * @param index
+ */
 export async function handleMessageDeleted(index) {
 	const queueIndex = index - startIndex
 	if (queueIndex >= 0 && queueIndex < queue.length)

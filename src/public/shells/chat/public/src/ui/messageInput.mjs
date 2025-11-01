@@ -19,6 +19,9 @@ let isRecording = false
 let mediaRecorder
 let audioChunks = []
 
+/**
+ *
+ */
 export function initializeMessageInput() {
 	uploadButtonElement.addEventListener('click', () => fileInputElement.click())
 	fileInputElement.addEventListener('change', event => handleFilesSelect(event, SelectedFiles, attachmentPreviewContainer))
@@ -30,6 +33,10 @@ export function initializeMessageInput() {
 	messageInputElement.focus()
 }
 
+/**
+ *
+ * @param event
+ */
 function handleKeyPress(event) {
 	if (event.key === 'Enter' && event.ctrlKey) {
 		event.preventDefault()
@@ -37,6 +44,9 @@ function handleKeyPress(event) {
 	}
 }
 
+/**
+ *
+ */
 function togglePhotoSection() {
 	const input = document.createElement('input')
 	input.type = 'file'
@@ -49,6 +59,9 @@ function togglePhotoSection() {
 	input.click()
 }
 
+/**
+ *
+ */
 async function toggleVoiceRecording() {
 	if (isRecording) {
 		mediaRecorder.stop()
@@ -63,10 +76,17 @@ async function toggleVoiceRecording() {
 		mediaRecorder = new MediaRecorder(stream)
 		audioChunks = []
 
+		/**
+		 *
+		 * @param event
+		 */
 		mediaRecorder.ondataavailable = event => {
 			audioChunks.push(event.data)
 		}
 
+		/**
+		 *
+		 */
 		mediaRecorder.onstop = async () => {
 			const audioBlob = new Blob(audioChunks, { type: 'audio/wav' })
 			const audioFile = new File([audioBlob], `voice_message_${Date.now()}.wav`, { type: 'audio/wav' })
@@ -90,6 +110,9 @@ async function toggleVoiceRecording() {
 	}
 }
 
+/**
+ *
+ */
 async function sendMessage() {
 	const messageText = messageInputElement.value.trim()
 	if (!messageText && !SelectedFiles.length) return

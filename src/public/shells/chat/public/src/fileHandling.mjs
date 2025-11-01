@@ -5,12 +5,22 @@ import { getfile } from './files.mjs'
 import { openModal } from './ui/modal.mjs'
 import { processTimeStampForId, arrayBufferToBase64 } from './utils.mjs'
 
+/**
+ *
+ * @param event
+ * @param selectedFiles
+ * @param attachmentPreviewContainer
+ */
 export async function handleFilesSelect(event, selectedFiles, attachmentPreviewContainer) {
 	const files = event.target.files || event.dataTransfer.files
 	if (!files) return
 
 	for (const file of files) {
 		const reader = new FileReader()
+		/**
+		 *
+		 * @param e
+		 */
 		reader.onload = async e => {
 			const newFile = {
 				name: file.name,
@@ -67,6 +77,12 @@ export async function handlePaste(event, selectedFiles, attachmentPreviewContain
 		}
 }
 
+/**
+ *
+ * @param file
+ * @param index
+ * @param selectedFiles
+ */
 export async function renderAttachmentPreview(file, index, selectedFiles) {
 	let attachmentElement = await renderTemplate('attachment_preview', {
 		file,
@@ -133,6 +149,9 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 
 			attachmentElement.classList.add('attachment-removing')
 
+			/**
+			 *
+			 */
 			const removeWithFallback = () => {
 				if (attachmentElement.parentNode)
 					attachmentElement.remove()
@@ -144,6 +163,10 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 	return attachmentElement
 }
 
+/**
+ *
+ * @param file
+ */
 export function downloadFile(file) {
 	const link = document.createElement('a')
 	link.href = `data:${file.mime_type};base64,${file.buffer}`

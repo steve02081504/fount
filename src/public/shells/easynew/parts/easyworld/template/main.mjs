@@ -13,6 +13,9 @@ let partData = await loadJsonFile(partJsonPath)
 
 const info = {}
 
+/**
+ *
+ */
 function updateInfo() {
 	const worldUrl = `/worlds/${encodeURIComponent(partData.name)}`
 	info[''] = {
@@ -33,16 +36,40 @@ updateInfo()
 export default {
 	info,
 
+	/**
+	 *
+	 * @param stat
+	 */
 	async Init(stat) { },
+	/**
+	 *
+	 * @param stat
+	 */
 	async Load(stat) { },
+	/**
+	 *
+	 * @param reason
+	 */
 	async Unload(reason) { },
+	/**
+	 *
+	 * @param reason
+	 * @param from
+	 */
 	async Uninstall(reason, from) { },
 
 	interfaces: {
 		config: {
+			/**
+			 *
+			 */
 			async GetData() {
 				return { partData }
 			},
+			/**
+			 *
+			 * @param data
+			 */
 			async SetData(data) {
 				if (data.partData) {
 					partData = data.partData
@@ -52,6 +79,10 @@ export default {
 			},
 		},
 		chat: {
+			/**
+			 *
+			 * @param args
+			 */
 			async GetPrompt(args) {
 				if (!partData.prompt) return {
 					text: [],
@@ -73,6 +104,11 @@ export default {
 					extension: {},
 				}
 			},
+			/**
+			 *
+			 * @param args
+			 * @param index
+			 */
 			async GetGreeting(args, index) {
 				if (!partData.greeting) return null
 				const context = {

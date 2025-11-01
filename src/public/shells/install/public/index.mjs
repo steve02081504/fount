@@ -1,3 +1,6 @@
+/**
+ * 安装 shell 的客户端逻辑。
+ */
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
@@ -61,7 +64,11 @@ dropArea.addEventListener('click', () => {
 	input.click()
 })
 
-// 递归处理拖放的文件和文件夹
+/**
+ * 处理拖放的项目。
+ * @param {DataTransferItemList} items - 拖放的项目。
+ * @returns {Promise<void>}
+ */
 async function handleDroppedItems(items) {
 	const filesToProcess = []
 	for (const item of items) {
@@ -74,7 +81,11 @@ async function handleDroppedItems(items) {
 	await handleFiles(filesToProcess)
 }
 
-// 遍历文件树（处理文件夹）
+/**
+ * 遍历文件树。
+ * @param {FileSystemEntry} entry - 文件系统条目。
+ * @returns {Promise<File[]>} - 文件数组。
+ */
 async function traverseFileTree(entry) {
 	return new Promise(resolve => {
 		if (entry.isFile)
@@ -92,14 +103,21 @@ async function traverseFileTree(entry) {
 	})
 }
 
-// 文件处理函数
+/**
+ * 处理文件。
+ * @param {FileList} files - 文件列表。
+ * @returns {Promise<void>}
+ */
 async function handleFiles(files) {
 	for (const file of files)
 		selectedFiles.push(file)
 	await renderFileList()
 }
 
-// 渲染文件列表
+/**
+ * 渲染文件列表。
+ * @returns {Promise<void>}
+ */
 async function renderFileList() {
 	fileList.innerHTML = ''
 	for (const file of selectedFiles) {
@@ -134,6 +152,10 @@ importButton.addEventListener('click', async () => {
 })
 
 
+/**
+ * 处理文件导入。
+ * @returns {Promise<void>}
+ */
 async function handleFileImport() {
 	if (!selectedFiles.length)
 		throw new Error(geti18n('import.errors.noFileSelected'))
@@ -151,6 +173,10 @@ async function handleFileImport() {
 		throw error
 	}
 }
+/**
+ * 处理文本导入。
+ * @returns {Promise<void>}
+ */
 async function handleTextImport() {
 	const text = textInput.value
 	if (!text)
@@ -166,6 +192,11 @@ async function handleTextImport() {
 	}
 }
 
+/**
+ * 格式化错误。
+ * @param {any[]} errors - 错误。
+ * @returns {string} - 格式化的错误。
+ */
 function formatErrors(errors) {
 	return errors.map(err => `${geti18n('import.errors.handler')}: ${err.handler}, ${geti18n('import.errors.error')}: ${err.error}`).join(';\n')
 }

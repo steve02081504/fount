@@ -4,7 +4,14 @@ import { authenticate, getUserByReq } from '../../../../server/auth.mjs'
 import { loadAIsource } from '../../../../server/managers/AIsource_manager.mjs'
 import { getPartList } from '../../../../server/managers/index.mjs'
 
-// --- Helper Function for Completions Logic ---
+/**
+ * 处理补全请求。
+ * @param {import('express').Request} req - 请求对象。
+ * @param {import('express').Response} res - 响应对象。
+ * @param {string} username - 用户名。
+ * @param {string} model - 模型。
+ * @returns {Promise<void>}
+ */
 async function handleCompletionsRequest(req, res, username, model) {
 	const { prompt, max_tokens = 1024, temperature = 0.7, top_p = 1, n = 1, stream = false, stop, presence_penalty = 0, frequency_penalty = 0, logit_bias } = req.body
 
@@ -80,7 +87,14 @@ async function handleCompletionsRequest(req, res, username, model) {
 	})
 }
 
-// --- Helper Function for Chat Completions Logic ---
+/**
+ * 处理聊天补全请求。
+ * @param {import('express').Request} req - 请求对象。
+ * @param {import('express').Response} res - 响应对象。
+ * @param {string} username - 用户名。
+ * @param {string} model - 模型。
+ * @returns {Promise<void>}
+ */
 async function handleChatCompletionsRequest(req, res, username, model) {
 	const { messages, max_tokens = 1024, temperature = 0.7, top_p = 1, n = 1, stream = false, stop, presence_penalty = 0, frequency_penalty = 0, logit_bias } = req.body
 
@@ -174,6 +188,10 @@ async function handleChatCompletionsRequest(req, res, username, model) {
 }
 
 
+/**
+ * 设置OpenAI API端点。
+ * @param {import('express').Router} router - 路由。
+ */
 export function setOpenAIAPIEndpoints(router) {
 	const basePath = '/api/shells/proxy/calling/openai'
 
@@ -203,7 +221,11 @@ export function setOpenAIAPIEndpoints(router) {
 		}
 	})
 
-	// --- Wrapper Route Handler for Completions ---
+	/**
+	 * 处理补全。
+	 * @param {import('express').Request} req - 请求对象。
+	 * @param {import('express').Response} res - 响应对象。
+	 */
 	const processCompletions = async (req, res) => {
 		try {
 			const { username } = await getUserByReq(req)
@@ -226,7 +248,11 @@ export function setOpenAIAPIEndpoints(router) {
 		}
 	}
 
-	// --- Wrapper Route Handler for Chat Completions ---
+	/**
+	 * 处理聊天补全。
+	 * @param {import('express').Request} req - 请求对象。
+	 * @param {import('express').Response} res - 响应对象。
+	 */
 	const processChatCompletions = async (req, res) => {
 		try {
 			const { username } = await getUserByReq(req)

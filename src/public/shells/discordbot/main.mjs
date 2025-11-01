@@ -2,7 +2,7 @@ import { runBot } from './src/bot.mjs'
 import { setEndpoints } from './src/endpoints.mjs'
 
 /**
- * @description 处理动作。
+ * 处理动作。
  * @param {string} user - 用户。
  * @param {string} action - 动作。
  * @param {object} params - 参数。
@@ -16,6 +16,9 @@ async function handleAction(user, action, params) {
 	return actions[action]({ user, ...params })
 }
 
+/**
+ * Discord Bot Shell
+ */
 export default {
 	info: {
 		'en-UK': {
@@ -209,13 +212,29 @@ export default {
 			tags: ['Discord', '機器人', '集成']
 		}
 	},
+	/**
+	 * 加载Shell。
+	 * @param {object} root0 - 参数。
+	 * @param {object} root0.router - 路由。
+	 * @returns {Promise<void>}
+	 */
 	Load: async ({ router }) => {
 		setEndpoints(router)
 	},
+	/**
+	 * 卸载Shell。
+	 * @returns {Promise<void>}
+	 */
 	Unload: async () => { },
 
 	interfaces: {
 		invokes: {
+			/**
+			 * 参数处理器。
+			 * @param {string} user - 用户。
+			 * @param {Array<string>} args - 参数。
+			 * @returns {Promise<void>}
+			 */
 			ArgumentsHandler: async (user, args) => {
 				const [action, name, jsonData] = args
 				const params = {
@@ -228,12 +247,24 @@ export default {
 					console.log(result)
 
 			},
+			/**
+			 * IPC调用处理器。
+			 * @param {string} user - 用户。
+			 * @param {object} data - 数据。
+			 * @returns {Promise<any>} - 动作结果。
+			 */
 			IPCInvokeHandler: async (user, data) => {
 				const { action, ...params } = data
 				return handleAction(user, action, params)
 			}
 		},
 		jobs: {
+			/**
+			 * 重启任务。
+			 * @param {string} user - 用户。
+			 * @param {string} botname - 机器人名称。
+			 * @returns {Promise<void>}
+			 */
 			ReStartJob: async (user, botname) => {
 				let sleep_time = 0
 				while (true) try {

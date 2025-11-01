@@ -3,7 +3,16 @@ import { unlockAchievement } from '../achievements/src/api.mjs'
 
 import { setEndpoints } from './src/endpoints.mjs'
 
+/** @typedef {import('../../../decl/basedefs.ts').info_t} info_t */
+
+/**
+ * Shell aassist 的入口点。
+ */
 export default {
+	/**
+	 * Shell 的信息。
+	 * @type {info_t}
+	 */
 	info: {
 		'en-UK': {
 			name: 'Terminal Assist',
@@ -178,17 +187,23 @@ export default {
 		}
 	},
 	/**
-	 * @description 加载 shell。
+			 * 加载 shell。
 	 * @param {object} options - 选项。
 	 * @param {object} options.router - 路由。
 	 */
 	Load: ({ router }) => {
 		setEndpoints(router)
 	},
+	/**
+		 * Shell 的接口。
+	 */
 	interfaces: {
+		/**
+				 * 调用接口。
+		 */
 		invokes: {
 			/**
-			 * @description 处理 IPC 调用。
+			 * 处理 IPC 调用。
 			 * @param {string} username - 用户名。
 			 * @param {object} data - 数据。
 			 * @returns {Promise<object>} - 调用结果。

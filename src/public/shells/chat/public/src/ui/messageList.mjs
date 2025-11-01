@@ -397,6 +397,10 @@ export function enableSwipe(messageElement) {
 	let touchStartX = 0, touchStartY = 0, isDragging = false, swipeHandled = false
 
 	// --- 定义命名的监听器函数 ---
+	/**
+	 *
+	 * @param event
+	 */
 	const handleTouchStart = event => {
 		if (event.touches.length !== 1) return
 		touchStartX = event.touches[0].clientX
@@ -404,12 +408,20 @@ export function enableSwipe(messageElement) {
 		isDragging = true
 		swipeHandled = false
 	}
+	/**
+	 *
+	 * @param event
+	 */
 	const handleTouchMove = event => {
 		if (!isDragging || event.touches.length !== 1) return
 		const deltaX = event.touches[0].clientX - touchStartX
 		const deltaY = event.touches[0].clientY - touchStartY
 		if (Math.abs(deltaY) > Math.abs(deltaX)) isDragging = false // 垂直滚动优先
 	}
+	/**
+	 *
+	 * @param event
+	 */
 	const handleTouchEnd = async event => {
 		if (!isDragging || swipeHandled || event.changedTouches.length !== 1) { isDragging = false; return }
 		const deltaX = event.changedTouches[0].clientX - touchStartX
@@ -425,7 +437,14 @@ export function enableSwipe(messageElement) {
 			await modifyTimeLine(direction)
 		}
 	}
+	/**
+	 *
+	 */
 	const handleTouchCancel = () => { isDragging = false }
+	/**
+	 *
+	 * @param element
+	 */
 	function checkForHorizontalScrollbar(element) {
 		if (!element || !element.scrollWidth || !element.clientWidth) return false
 		if (element.scrollWidth > element.clientWidth) return true

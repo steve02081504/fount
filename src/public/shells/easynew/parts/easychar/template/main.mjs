@@ -19,6 +19,9 @@ let partData = await loadJsonFile(partJsonPath)
 
 const info = {}
 
+/**
+ *
+ */
 function updateInfo() {
 	const charUrl = `/chars/${encodeURIComponent(partData.name)}`
 	info[''] = {
@@ -39,21 +42,45 @@ updateInfo()
 export default {
 	info,
 
+	/**
+	 *
+	 * @param stat
+	 */
 	async Init(stat) { },
+	/**
+	 *
+	 * @param stat
+	 */
 	async Load(stat) {
 		username = stat.username
 	},
+	/**
+	 *
+	 * @param reason
+	 */
 	async Unload(reason) { },
+	/**
+	 *
+	 * @param reason
+	 * @param from
+	 */
 	async Uninstall(reason, from) { },
 
 	interfaces: {
 		config: {
+			/**
+			 *
+			 */
 			async GetData() {
 				return {
 					partData,
 					AIsource: AIsource?.filename || '',
 				}
 			},
+			/**
+			 *
+			 * @param data
+			 */
 			async SetData(data) {
 				if (data.AIsource) AIsource = await loadAIsource(username, data.AIsource)
 				else AIsource = await loadDefaultAIsource(username)
@@ -65,6 +92,10 @@ export default {
 			},
 		},
 		chat: {
+			/**
+			 *
+			 * @param args
+			 */
 			async GetPrompt(args) {
 				const context = {
 					char: { name: args.Charname },
@@ -92,6 +123,11 @@ export default {
 					extension: {},
 				}
 			},
+			/**
+			 *
+			 * @param args
+			 * @param index
+			 */
 			async GetGreeting(args, index) {
 				if (!partData.first_mes) return null
 				const context = {
@@ -102,6 +138,10 @@ export default {
 				}
 				return { content: await formatStr(partData.first_mes, context) }
 			},
+			/**
+			 *
+			 * @param arg
+			 */
 			async GetReply(arg) {
 				if (!AIsource)
 					return { content: 'This character does not have an AI source, [set the AI source](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage) first' }
@@ -117,6 +157,10 @@ export default {
 					extension: {},
 				}
 				// 构建插件可能需要的追加上下文函数
+				/**
+				 *
+				 * @param entry
+				 */
 				function AddLongTimeLog(entry) {
 					entry.charVisibility = [arg.char_id]
 					result?.logContextBefore?.push?.(entry)

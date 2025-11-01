@@ -1,3 +1,6 @@
+/**
+ * 部件配置页面的主要逻辑。
+ */
 import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
 import { initTranslations, i18nElement, geti18n, confirmI18n, console } from '../../scripts/i18n.mjs'
@@ -24,10 +27,13 @@ let parts = []
 let activePartType = null
 let activePart = null
 let isDirty = false
+/**
+ * JSON 更新时的回调函数
+ */
 let onJsonUpdate = () => 0
 
 /**
- * 禁用编辑器和保存按钮
+ * 禁用编辑器和保存按钮。
  */
 function disableEditorAndSaveButton() {
 	if (jsonEditor)
@@ -38,7 +44,8 @@ function disableEditorAndSaveButton() {
 }
 
 /**
- * 获取部分类型列表
+ * 获取部件类型列表。
+ * @returns {Promise<void>}
  */
 async function fetchPartTypes() {
 	try {
@@ -52,7 +59,7 @@ async function fetchPartTypes() {
 }
 
 /**
- * 渲染部分类型选择器
+ * 渲染部件类型选择器。
  */
 function renderPartTypeSelect() {
 	const fragment = document.createDocumentFragment()
@@ -74,8 +81,9 @@ function renderPartTypeSelect() {
 }
 
 /**
- * 根据部分类型获取部分列表
- * @param {string} partType 部分类型
+ * 根据部件类型获取部件列表。
+ * @param {string} partType - 部件类型。
+ * @returns {Promise<void>}
  */
 async function fetchParts(partType) {
 	try {
@@ -89,7 +97,7 @@ async function fetchParts(partType) {
 }
 
 /**
- * 渲染部分选择器
+ * 渲染部件选择器。
  */
 function renderPartSelect() {
 	const fragment = document.createDocumentFragment()
@@ -111,8 +119,17 @@ function renderPartSelect() {
 	partSelect.appendChild(fragment)
 }
 
+/**
+ * 加载部件插件。
+ * @param {string} partType - 部件类型。
+ * @param {string} partName - 部件名称。
+ * @returns {Promise<void>}
+ */
 async function loadPartAddons(partType, partName) {
 	partDisplayContainer.innerHTML = ''
+	/**
+	 * JSON 更新时的回调函数
+	 */
 	onJsonUpdate = () => 0
 
 	if (!partType || !partName) return
@@ -135,9 +152,10 @@ async function loadPartAddons(partType, partName) {
 }
 
 /**
- * 加载编辑器
- * @param {string} partType 部分类型
- * @param {string} partName 部分名称
+ * 加载编辑器。
+ * @param {string} partType - 部件类型。
+ * @param {string} partName - 部件名称。
+ * @returns {Promise<void>}
  */
 async function loadEditor(partType, partName) {
 	if (isDirty)
@@ -152,6 +170,9 @@ async function loadEditor(partType, partName) {
 			jsonEditor = createJsonEditor(jsonEditorContainer, {
 				label: geti18n('part_config.editor.jsonEditor'),
 				readOnly: true,
+				/**
+				 * 当 JSON 编辑器内容改变时的回调函数。
+				 */
 				onChange: () => {
 					isDirty = true
 					onJsonUpdate({
@@ -211,7 +232,8 @@ async function loadEditor(partType, partName) {
 }
 
 /**
- * 保存配置
+ * 保存配置。
+ * @returns {Promise<void>}
  */
 async function saveConfig() {
 	if (!activePartType || !activePart) {
@@ -245,17 +267,17 @@ async function saveConfig() {
 }
 
 /**
- * 解析 URL 参数
- * @returns {URLSearchParams} URL 参数对象
+ * 解析 URL 参数。
+ * @returns {URLSearchParams} - URL 参数对象。
  */
 function getURLParams() {
 	return new URLSearchParams(window.location.search)
 }
 
 /**
- * 更新 URL 参数
- * @param {string} partType 部分类型
- * @param {string} partName 部分名称
+ * 更新 URL 参数。
+ * @param {string} partType - 部件类型。
+ * @param {string} partName - 部件名称。
  */
 function updateURLParams(partType, partName) {
 	const urlParams = new URLSearchParams()
@@ -270,7 +292,8 @@ function updateURLParams(partType, partName) {
 }
 
 /**
- * 根据 URL 参数预设选择器和加载编辑器
+ * 根据 URL 参数预设选择器和加载编辑器。
+ * @returns {Promise<void>}
  */
 async function initializeFromURLParams() {
 	const urlParams = getURLParams()

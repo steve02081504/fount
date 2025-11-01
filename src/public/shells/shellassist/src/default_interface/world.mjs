@@ -1,3 +1,7 @@
+/**
+ *
+ * @param shelltype
+ */
 export function GetShellWorld(shelltype) {
 	/**
 	* @type {import('../../../../../../src/decl/worldAPI.ts').WorldAPI_t}
@@ -15,6 +19,10 @@ export function GetShellWorld(shelltype) {
 		},
 		interfaces: {
 			chat: {
+				/**
+				 *
+				 * @param args
+				 */
 				GetPrompt: args => {
 					return {
 						text: [

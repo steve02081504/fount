@@ -1,3 +1,8 @@
+/**
+ * 将 Sentry 事件隧道传输到 Sentry 服务器。
+ * @param {import('npm:express').Request} req - Express 请求对象。
+ * @param {import('npm:express').Response} res - Express 响应对象。
+ */
 export async function sentrytunnel(req, res) {
 	try {
 		const envelopeBytes = req.body

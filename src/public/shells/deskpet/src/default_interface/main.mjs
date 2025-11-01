@@ -1,5 +1,14 @@
+/**
+ *
+ * @param charAPI
+ * @param ownerUsername
+ * @param charname
+ */
 export function createDefaultDeskpetInterface(charAPI, ownerUsername, charname) {
 	return {
+		/**
+		 *
+		 */
 		GetPetConfig: async () => ({
 			// The shell's public directory is automatically served at /shells/<shellname>/
 			url: '/shells/deskpet/default_pet.html',

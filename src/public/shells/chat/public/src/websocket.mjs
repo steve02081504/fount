@@ -14,6 +14,9 @@ import { handleMessageAdded, handleMessageDeleted, handleMessageReplaced } from 
 
 let ws = null
 
+/**
+ *
+ */
 function connect() {
 	if (!currentChatId) return
 
@@ -21,10 +24,17 @@ function connect() {
 	const wsUrl = `${wsProtocol}//${window.location.host}/ws/shells/chat/ui/${currentChatId}`
 	ws = new WebSocket(wsUrl)
 
+	/**
+	 *
+	 */
 	ws.onopen = async () => {
 		console.log(`Chat UI WebSocket connected for chat ${currentChatId}.`)
 	}
 
+	/**
+	 *
+	 * @param event
+	 */
 	ws.onmessage = (event) => {
 		try {
 			const msg = JSON.parse(event.data)
@@ -37,6 +47,9 @@ function connect() {
 		}
 	}
 
+	/**
+	 *
+	 */
 	ws.onclose = () => {
 		const RECONNECT_DELAY = 3000
 		console.log(`Chat UI WebSocket disconnected. Reconnecting in ${RECONNECT_DELAY / 1000} seconds...`)
@@ -44,11 +57,19 @@ function connect() {
 		setTimeout(connect, RECONNECT_DELAY)
 	}
 
+	/**
+	 *
+	 * @param err
+	 */
 	ws.onerror = (err) => {
 		console.error('Chat UI WebSocket error:', err)
 	}
 }
 
+/**
+ *
+ * @param event
+ */
 async function handleBroadcastEvent(event) {
 	const { type, payload } = event
 	switch (type) {
@@ -84,6 +105,9 @@ async function handleBroadcastEvent(event) {
 	}
 }
 
+/**
+ *
+ */
 export function initializeWebSocket() {
 	if (ws) return
 	connect()

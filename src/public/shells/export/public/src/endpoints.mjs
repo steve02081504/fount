@@ -1,9 +1,12 @@
+/**
+ * 导出 shell 的客户端 API 端点。
+ */
 
 /**
- * 获取部件的 fount.json 内容
- * @param {string} partType 部件类型
- * @param {string} partName 部件名称
- * @returns {Promise<object>}
+ * 获取部件的 fount.json 内容。
+ * @param {string} partType - 部件类型。
+ * @param {string} partName - 部件名称。
+ * @returns {Promise<object>} - fount.json 的内容。
  */
 export async function getFountJson(partType, partName) {
 	const response = await fetch(`/api/shells/export/fountjson?partType=${partType}&partName=${partName}`)
@@ -15,11 +18,11 @@ export async function getFountJson(partType, partName) {
 }
 
 /**
- * 导出部件
- * @param {string} partType 部件类型
- * @param {string} partName 部件名称
- * @param {boolean} withData 是否包含数据
- * @returns {Promise<Blob>}
+ * 导出部件。
+ * @param {string} partType - 部件类型。
+ * @param {string} partName - 部件名称。
+ * @param {boolean} withData - 是否包含数据。
+ * @returns {Promise<{blob: Blob, format: string}>} - 包含 blob 和格式的对象。
  */
 export async function exportPart(partType, partName, withData) {
 	const response = await fetch(`/api/shells/export/export?partType=${partType}&partName=${partName}&withData=${withData}`)
@@ -40,12 +43,12 @@ export async function exportPart(partType, partName, withData) {
 }
 
 /**
- * 创建分享链接
- * @param {string} partType 部件类型
- * @param {string} partName 部件名称
- * @param {string} expiration 过期时间
- * @param {boolean} withData 是否包含数据
- * @returns {Promise<string>}
+ * 创建分享链接。
+ * @param {string} partType - 部件类型。
+ * @param {string} partName - 部件名称。
+ * @param {string} expiration - 过期时间。
+ * @param {boolean} withData - 是否包含数据。
+ * @returns {Promise<string>} - 分享链接。
  */
 export async function createShareLink(partType, partName, expiration, withData) {
 	const response = await fetch('/api/shells/export/share', {

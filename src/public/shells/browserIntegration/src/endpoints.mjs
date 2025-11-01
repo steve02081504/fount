@@ -10,6 +10,10 @@ import {
 	getUserManager
 } from './api.mjs'
 
+/**
+ * 设置API端点。
+ * @param {object} router - 路由。
+ */
 export function setEndpoints(router) {
 	router.ws('/ws/shells/browserIntegration/page', authenticate, async (ws, req) => {
 		const { username } = await getUserByReq(req)
