@@ -5,9 +5,16 @@ import { FullProxy } from 'npm:full-proxy'
 
 import { loadAIsourceFromNameOrConfigData } from '../../../server/managers/AIsource_manager.mjs'
 
+/**
+ * @type {import('../../../decl/AIsource.ts').AIsource_interfaces_and_AIsource_t_getter}
+ */
 export default {
 	interfaces: {
 		AIsource: {
+			/**
+			 * 获取此 AI 源的配置模板。
+			 * @returns {Promise<object>} 配置模板。
+			 */
 			GetConfigTemplate: async () => configTemplate,
 			GetSource,
 		}
@@ -39,6 +46,14 @@ const configTemplate = {
 	],
 }
 
+/**
+ * 获取 AI 源。
+ * @param {object} config - 配置对象。
+ * @param {object} root0 - 根对象。
+ * @param {string} root0.username - 用户名。
+ * @param {Function} root0.SaveConfig - 保存配置的函数。
+ * @returns {Promise<AIsource_t>} AI 源。
+ */
 async function GetSource(config, { username, SaveConfig }) {
 	const unnamedSources = []
 	const weightedSources = await Promise.all(config.sources.map(async item => {
@@ -56,6 +71,10 @@ async function GetSource(config, { username, SaveConfig }) {
 	if (!weightedSources.length)
 		throw new Error('no source configured')
 
+	/**
+	 * 按权重选择源。
+	 * @returns {AIsource_t} 选择的源。
+	 */
 	const selectSourceByWeight = () => {
 		const totalWeight = weightedSources.reduce((sum, s) => sum + s.weight, 0)
 		let randomValue = Math.random() * totalWeight
@@ -86,11 +105,25 @@ async function GetSource(config, { username, SaveConfig }) {
 		},
 		is_paid: weightedSources.some(s => s.source.is_paid),
 
+		/**
+		 * 卸载 AI 源。
+		 * @returns {Promise<void[]>}
+		 */
 		Unload: () => Promise.all(unnamedSources.map(source => source.Unload())),
+		/**
+		 * 调用 AI 源。
+		 * @param {string} prompt - 要发送给 AI 的提示。
+		 * @returns {Promise<any>} 来自 AI 的结果。
+		 */
 		Call: async prompt => {
 			const selectedSource = selectSourceByWeight()
 			return await selectedSource.Call(prompt)
 		},
+		/**
+		 * 使用结构化提示调用 AI 源。
+		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+		 * @returns {Promise<any>} 来自 AI 的结果。
+		 */
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
 			const selectedSource = selectSourceByWeight()
 			return await selectedSource.StructCall(prompt_struct)

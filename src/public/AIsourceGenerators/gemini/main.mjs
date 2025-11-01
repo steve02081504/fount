@@ -283,7 +283,6 @@ async function GetSource(config) {
 			/**
 			 * 处理部分。
 			 * @param {Array<object>} parts - 部分数组。
-			 * @returns {void}
 			 */
 			function handle_parts(parts) {
 				if (!parts) return
@@ -541,7 +540,6 @@ ${is_ImageGeneration
 			/**
 			 * 处理部分。
 			 * @param {Array<object>} parts - 部分数组。
-			 * @returns {void}
 			 */
 			function handle_parts(parts) {
 				if (!parts) return
@@ -594,7 +592,6 @@ ${is_ImageGeneration
 		tokenizer: {
 			/**
 			 * 释放分词器。
-			 * @returns {void}
 			 */
 			free: () => { /* no-op */ },
 			/**

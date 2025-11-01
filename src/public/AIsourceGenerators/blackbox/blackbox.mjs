@@ -6,7 +6,7 @@ import axios from 'npm:axios'
 export class BlackboxAI {
 	/**
 	 * 创建 BlackboxAI 的实例。
-	 * @param {object} config - The configuration object.
+	 * @param {object} config - 配置对象。
 	 */
 	constructor(config) {
 		this.apiUrl = 'https://api.blackbox.ai/api/chat'
@@ -20,9 +20,9 @@ export class BlackboxAI {
 
 	/**
 	 * 向 Blackbox.ai API 发送请求。
-	 * @param {Array<object>} messages - The array of message objects.
-	 * @param {string} model - The model to use for the request.
-	 * @returns {Promise<string>} The response from the API.
+	 * @param {Array<object>} messages - 消息对象数组。
+	 * @param {string} model - 用于请求的模型。
+	 * @returns {Promise<string>} API 的响应。
 	 */
 	async call(messages, model) {
 		const payload = {
@@ -61,8 +61,8 @@ export class BlackboxAI {
 
 	/**
 	 * 计算给定文本中的令牌数。
-	 * @param {string} text - The text to count tokens for.
-	 * @returns {Promise<number>} The number of tokens.
+	 * @param {string} text - 要计算令牌数的文本。
+	 * @returns {Promise<number>} 令牌数。
 	 */
 	async countTokens(text) {
 		const payload = {

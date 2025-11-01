@@ -1,5 +1,5 @@
 import { escapeRegExp } from '../../../scripts/regex.mjs'
-import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/srcsrc/prompt_struct.mjs'
+import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/prompt_struct.mjs'
 
 import { DuckDuckGoAPI } from './duckduckgo.mjs'
 
@@ -63,7 +63,6 @@ async function GetSource(config) {
 
 		/**
 		 * 卸载 AI 源。
-		 * @returns {void}
 		 */
 		Unload: () => {
 			// 在这里执行清理操作，如果有必要的话
@@ -175,7 +174,7 @@ ${chatLogEntry.content}
 			/**
 			 * 获取令牌计数。
 			 * @param {string} prompt - 要计算令牌的提示。
-			 * @returns {number} 令牌数。
+			 * @returns {Promise<number>} 令牌数。
 			 */
 			get_token_count: prompt => duckduckgo.countTokens(prompt)
 		}

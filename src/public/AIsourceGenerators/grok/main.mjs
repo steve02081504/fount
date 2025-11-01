@@ -67,7 +67,6 @@ async function GetSource(config) {
 
 		/**
 		 * 卸载 AI 源。
-		 * @returns {void}
 		 */
 		Unload: () => {
 			// 清理操作（如果有的话）
@@ -181,7 +180,7 @@ ${chatLogEntry.content}
 			/**
 			 * 获取令牌计数。
 			 * @param {string} prompt - 要计算令牌的提示。
-			 * @returns {number} 令牌数。
+			 * @returns {Promise<number>} 令牌数。
 			 */
 			get_token_count: prompt => grok.countTokens(prompt),
 		},

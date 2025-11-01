@@ -7,7 +7,7 @@ import { loadAIsourceFromNameOrConfigData } from '../../../server/managers/AIsou
 
 /**
  * 获取单一部分的提示对象。
- * @returns {{text: any[], additional_chat_log: any[], extension: {}}} A single part prompt object.
+ * @returns {{text: any[], additional_chat_log: any[], extension: {}}} 单一部分的提示对象。
  */
 function getSinglePartPrompt() {
 	return {
@@ -25,7 +25,7 @@ export default {
 		AIsource: {
 			/**
 			 * 获取此 AI 源的配置模板。
-			 * @returns {Promise<object>} The configuration template.
+			 * @returns {Promise<object>} 配置模板。
 			 */
 			GetConfigTemplate: async () => configTemplate,
 			GetSource,
@@ -71,11 +71,11 @@ const configTemplate = {
 
 /**
  * 获取 AI 源。
- * @param {object} config - The configuration object.
- * @param {object} root0 - The root object.
- * @param {string} root0.username - The username.
- * @param {Function} root0.SaveConfig - The function to save the configuration.
- * @returns {Promise<AIsource_t>} The AI source.
+ * @param {object} config - 配置对象。
+ * @param {object} root0 - 根对象。
+ * @param {string} root0.username - 用户名。
+ * @param {Function} root0.SaveConfig - 保存配置的函数。
+ * @returns {Promise<AIsource_t>} AI 源。
  */
 async function GetSource(config, { username, SaveConfig }) {
 	const unnamedSources = []
@@ -108,14 +108,14 @@ async function GetSource(config, { username, SaveConfig }) {
 		Unload: () => Promise.all(unnamedSources.map(source => source.Unload())),
 		/**
 		 * 调用 AI 源。
-		 * @param {string} prompt - The prompt to send to the AI.
-		 * @returns {Promise<{content: string}>} The result from the AI.
+		 * @param {string} prompt - 要发送给 AI 的提示。
+		 * @returns {Promise<{content: string}>} AI 的返回结果。
 		 */
 		Call: async prompt => base_source.Call(prompt),
 		/**
 		 * 使用结构化提示调用 AI 源。
-		 * @param {prompt_struct_t} prompt_struct - The structured prompt to send to the AI.
-		 * @returns {Promise<{content: string}>} The result from the AI.
+		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+		 * @returns {Promise<{content: string}>} AI 的返回结果。
 		 */
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
 			const new_prompt_struct = {
@@ -216,26 +216,26 @@ async function GetSource(config, { username, SaveConfig }) {
 			free: () => 0,
 			/**
 			 * 编码提示。
-			 * @param {string} prompt - The prompt to encode.
-			 * @returns {any} The encoded prompt.
+			 * @param {string} prompt - 要编码的提示。
+			 * @returns {any} 编码后的提示。
 			 */
 			encode: prompt => base_source.tokenizer.encode(prompt),
 			/**
 			 * 解码令牌。
-			 * @param {any} tokens - The tokens to decode.
-			 * @returns {string} The decoded tokens.
+			 * @param {any} tokens - 要解码的令牌。
+			 * @returns {string} 解码后的令牌。
 			 */
 			decode: tokens => base_source.tokenizer.decode(tokens),
 			/**
 			 * 解码单个令牌。
-			 * @param {any} token - The token to decode.
-			 * @returns {string} The decoded token.
+			 * @param {any} token - 要解码的令牌。
+			 * @returns {string} 解码后的令牌。
 			 */
 			decode_single: token => base_source.tokenizer.decode_single(token),
 			/**
 			 * 获取令牌计数。
-			 * @param {string} prompt - The prompt to count tokens for.
-			 * @returns {Promise<number>} The number of tokens.
+			 * @param {string} prompt - 要计算令牌数的提示。
+			 * @returns {Promise<number>} 令牌数。
 			 */
 			get_token_count: prompt => base_source.tokenizer.get_token_count(prompt),
 		}
