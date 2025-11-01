@@ -6,6 +6,12 @@ import sanitizeFilename from 'npm:sanitize-filename'
 import { saveJsonFile } from '../../../../../scripts/json_loader.mjs'
 import { getUserDictionary } from '../../../../../server/auth.mjs'
 
+/**
+ *
+ * @param username
+ * @param type
+ * @param name
+ */
 async function getAvailablePath(username, type, name) {
 	const userPath = getUserDictionary(username)
 	const partPath = path.join(userPath, type, name)
@@ -14,6 +20,10 @@ async function getAvailablePath(username, type, name) {
 	return partPath
 }
 
+/**
+ *
+ * @param context
+ */
 export async function New(context) {
 	const { username, templateDir, formData, files } = context
 	const partType = 'worlds'

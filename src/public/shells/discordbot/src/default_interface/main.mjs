@@ -17,6 +17,13 @@ import { getMessageFullContent, splitDiscordReply } from './tools.mjs'
  */
 /** @typedef {import('../../../chat/decl/chatLog.ts').chatReply_t} ChatReply_t */
 
+/**
+ *
+ * @param func
+ * @param root0
+ * @param root0.times
+ * @param root0.WhenFailsWaitFor
+ */
 async function tryFewTimes(func, { times = 3, WhenFailsWaitFor = 2000 } = {}) {
 	let lastError
 	for (let i = 0; i < times; i++) try {
@@ -29,10 +36,19 @@ async function tryFewTimes(func, { times = 3, WhenFailsWaitFor = 2000 } = {}) {
 	throw lastError
 }
 
+/**
+ *
+ * @param charAPI
+ * @param ownerUsername
+ * @param botCharname
+ */
 export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCharname) {
 	if (!charAPI?.interfaces?.chat?.GetReply)
 		throw new Error('charAPI.interfaces.chat.GetReply is required for SimpleDiscordInterface.')
 
+	/**
+	 *
+	 */
 	function GetSimpleBotConfigTemplate() {
 		return {
 			OwnerUserName: 'your_discord_username', // Discord 用户名, 不是Fount用户名
@@ -42,6 +58,11 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 		}
 	}
 
+	/**
+	 *
+	 * @param client
+	 * @param config
+	 */
 	async function SimpleDiscordBotMain(client, config) {
 		const MAX_MESSAGE_DEPTH = config.MaxMessageDepth || 20
 		const MAX_FETCH_COUNT = config.MaxFetchCount || Math.max(MAX_MESSAGE_DEPTH, Math.floor(MAX_MESSAGE_DEPTH * 1.5))
@@ -60,6 +81,10 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 		 */
 		const aiReplyObjectCache = {}
 
+		/**
+		 *
+		 * @param discordMessage
+		 */
 		async function DiscordMessageToFountChatLogEntry(discordMessage) {
 			let fullMessage = discordMessage
 			if (fullMessage.partial) try {
@@ -127,6 +152,10 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 			return entry
 		}
 
+		/**
+		 *
+		 * @param log
+		 */
 		function MargeChatLog(log) {
 			if (!log?.length) return []
 			const newlog = []
@@ -153,6 +182,10 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 			return newlog
 		}
 
+		/**
+		 *
+		 * @param channelId
+		 */
 		async function HandleMessageQueue(channelId) {
 			const myQueue = ChannelMessageQueues[channelId]
 			try {
@@ -199,10 +232,19 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 			}
 		}
 
+		/**
+		 *
+		 * @param triggerMessage
+		 * @param channelId
+		 */
 		async function DoMessageReply(triggerMessage, channelId) {
 			let typingInterval = setInterval(() => { triggerMessage.channel.sendTyping().catch(e => { }) }, 7000)
 
-			/** 发送消息并缓存AI原始回复对象 (如果提供了) */
+			/**
+			 * 发送消息并缓存AI原始回复对象 (如果提供了)
+			 * @param payload
+			 * @param originalAIReply
+			 */
 			async function sendAndCache(payload, originalAIReply) {
 				try {
 					const sentDiscordMessage = await tryFewTimes(() => triggerMessage.channel.send(payload))
@@ -218,6 +260,10 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 				}
 			}
 
+			/**
+			 *
+			 * @param fountReply
+			 */
 			async function sendSplitReply(fountReply) {
 				const MAX_FILES_PER_MESSAGE = 10
 				const filesToSend = (fountReply.files || []).map(f => ({ attachment: f.buffer, name: f.name, description: f.description }))
@@ -255,6 +301,10 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 			}
 
 			try {
+				/**
+				 *
+				 * @param replyFromChar
+				 */
 				const AddChatLogEntry = async replyFromChar => { // AI调用的中间消息发送函数
 					if (replyFromChar && (replyFromChar.content || replyFromChar.files?.length))
 						await sendSplitReply(replyFromChar)
@@ -262,6 +312,9 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 					return null
 				}
 
+				/**
+				 *
+				 */
 				const generateChatReplyRequest = () => ({
 					supported_functions: { markdown: true, files: true, add_message: true },
 					username: ownerUsername,
@@ -272,7 +325,10 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 					ReplyToCharname: userInfoCache[triggerMessage.author.id] || triggerMessage.author.username,
 					locales: localhostLocales, time: new Date(), world: null, user: loadDefaultPersona(ownerUsername), char: charAPI, other_chars: [], plugins: {},
 					chat_scoped_char_memory, chat_log: ChannelChatLogs[channelId].map(e => ({ ...e })), // 传递副本
-					AddChatLogEntry, Update: async () => generateChatReplyRequest(),
+					AddChatLogEntry, /**
+					 *
+					 */
+					Update: async () => generateChatReplyRequest(),
 					extension: { platform: 'discord', trigger_message_id: triggerMessage.id, channel_id: channelId, guild_id: triggerMessage.guild?.id }
 				})
 

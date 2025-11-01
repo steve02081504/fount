@@ -1,5 +1,5 @@
 /**
- * @description 当元素从 DOM 中移除时调用回调函数。
+ * 当元素从 DOM 中移除时调用回调函数。
  * @param {HTMLElement} element - 要观察的元素。
  * @param {Function} callback - 元素被移除时调用的回调函数。
  * @returns {void}

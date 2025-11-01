@@ -16,18 +16,17 @@ import { partTypeList } from './managers/base.mjs'
 import { config, save_config, data_path } from './server.mjs'
 
 /**
- * @file 此文件处理应用程序的所有认证相关逻辑，
+ * 此文件处理应用程序的所有认证相关逻辑，
  * 包括用户注册、登录、JWT管理、API密钥验证和密码处理。
- * @module server/auth
  */
 
 // --- 常量定义 ---
 const ACCESS_TOKEN_EXPIRY = '1d'
-/** @const {number} 访问令牌的持续时间（毫秒）。 */
+/** @constant {number} 访问令牌的持续时间（毫秒）。 */
 export const ACCESS_TOKEN_EXPIRY_DURATION = ms(ACCESS_TOKEN_EXPIRY)
-/** @const {string} 刷新令牌的过期时间。 */
+/** @constant {string} 刷新令牌的过期时间。 */
 export const REFRESH_TOKEN_EXPIRY = '30d'
-/** @const {number} 刷新令牌的持续时间（毫秒）。 */
+/** @constant {number} 刷新令牌的持续时间（毫秒）。 */
 export const REFRESH_TOKEN_EXPIRY_DURATION = ms(REFRESH_TOKEN_EXPIRY)
 const ACCOUNT_LOCK_TIME = '10m'
 const MAX_LOGIN_ATTEMPTS = 5
@@ -305,10 +304,33 @@ async function refresh(refreshTokenValue, req) {
 		tokenName: 'standard',
 		expectedType: undefined,
 		userTokenArrayKey: 'refreshTokens',
+		/**
+		 * 验证令牌条目。
+		 * @param {object} entry - 用户的令牌条目。
+		 * @param {object} decoded - 解码后的刷新令牌。
+		 * @returns {boolean} 如果条目有效，则返回 true。
+		 */
 		validateEntry: (entry, decoded) => entry.deviceId === decoded.deviceId,
 		mismatchRevokeReason: 'refresh-device-mismatch',
+		/**
+		 * 生成新的访问令牌。
+		 * @param {object} payload - 访问令牌的有效载荷。
+		 * @returns {Promise<string>} 新的访问令牌。
+		 */
 		generateAccessToken: (payload) => generateAccessToken(payload),
+		/**
+		 * 生成新的刷新令牌。
+		 * @param {object} payload - 刷新令牌的有效载荷。
+		 * @param {object} entry - 旧的令牌条目。
+		 * @returns {Promise<string>} 新的刷新令牌。
+		 */
 		generateRefreshToken: (payload, entry) => generateRefreshToken(payload, entry.deviceId),
+		/**
+		 * 获取新的令牌条目。
+		 * @param {object} decoded - 解码后的新刷新令牌。
+		 * @param {object} oldEntry - 旧的令牌条目。
+		 * @returns {object} 新的令牌条目。
+		 */
 		getNewTokenEntry: (decoded, oldEntry) => ({
 			jti: decoded.jti,
 			deviceId: oldEntry.deviceId,
@@ -331,10 +353,33 @@ async function refreshApiToken(apiRefreshTokenValue, req) {
 		tokenName: 'API',
 		expectedType: 'apiRefresh',
 		userTokenArrayKey: 'apiRefreshTokens',
+		/**
+		 * 验证 API 令牌条目。
+		 * @param {object} entry - 用户的 API 令牌条目。
+		 * @param {object} decoded - 解码后的 API 刷新令牌。
+		 * @returns {boolean} 如果条目有效，则返回 true。
+		 */
 		validateEntry: (entry, decoded) => entry.apiKeyJti === decoded.apiKeyJti,
 		mismatchRevokeReason: 'api-refresh-key-mismatch',
+		/**
+		 * 生成新的 API 访问令牌。
+		 * @param {object} payload - API 访问令牌的有效载荷。
+		 * @returns {Promise<string>} 新的 API 访问令牌。
+		 */
 		generateAccessToken: (payload) => generateApiAccessToken(payload),
+		/**
+		 * 生成新的 API 刷新令牌。
+		 * @param {object} payload - API 刷新令牌的有效载荷。
+		 * @param {object} entry - 旧的令牌条目。
+		 * @returns {Promise<string>} 新的 API 刷新令牌。
+		 */
 		generateRefreshToken: (payload, entry) => generateApiRefreshToken(payload, entry.apiKeyJti),
+		/**
+		 * 获取新的 API 令牌条目。
+		 * @param {object} decoded - 解码后的新 API 刷新令牌。
+		 * @param {object} oldEntry - 旧的令牌条目。
+		 * @returns {object} 新的 API 令牌条目。
+		 */
 		getNewTokenEntry: (decoded, oldEntry) => ({
 			jti: decoded.jti,
 			apiKeyJti: oldEntry.apiKeyJti,
@@ -416,6 +461,11 @@ export async function verifyApiKey(apiKey) {
 export async function try_auth_request(req, res) {
 	if (req.user) return
 
+	/**
+	 * 抛出未授权错误。
+	 * @param {string} [message='Unauthorized'] - 错误消息。
+	 * @throws {Error}
+	 */
 	const Unauthorized = (message = 'Unauthorized') => {
 		console.error(message)
 		throw new Error(message)
@@ -498,6 +548,10 @@ export function auth_request(req, res) {
  * @returns {Promise<void>}
  */
 export async function authenticate(req, res, next) {
+	/**
+	 * 处理未授权的请求。
+	 * @param {string} [message='Unauthorized'] - 错误消息。
+	 */
 	const Unauthorized = (message = 'Unauthorized') => {
 		const path = encodeURIComponent(req.originalUrl)
 		if (req.accepts('html') && req.method === 'GET')
@@ -855,6 +909,11 @@ export async function login(username, password, deviceId = 'unknown', req) {
 	const ip = req.ip
 	const user = getUserByUsername(username)
 
+	/**
+	 * 处理失败的登录尝试。
+	 * @param {object} [response={}] - 要包含在响应中的附加数据。
+	 * @returns {Promise<object>} 包含状态码和消息的响应对象。
+	 */
 	async function handleFailedLogin(response = {}) {
 		loginFailures[ip] = (loginFailures[ip] || 0) + 1
 

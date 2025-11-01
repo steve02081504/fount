@@ -3,6 +3,9 @@ import { events } from '../../../server/events.mjs'
 import { onPartInstalled, onPartUninstalled } from './src/api.mjs'
 import { setEndpoints } from './src/endpoints.mjs'
 
+/**
+ * 成就Shell
+ */
 export default {
 	info: {
 		'en-UK': {
@@ -196,11 +199,19 @@ export default {
 			tags: ['成就', '遊戲化', '個人資料']
 		}
 	},
+	/**
+	 * 加载Shell。
+	 * @param {object} root0 - 参数。
+	 * @param {object} root0.router - 路由。
+	 */
 	Load: ({ router }) => {
 		setEndpoints(router)
 		events.on('part-installed', onPartInstalled)
 		events.on('part-uninstalled', onPartUninstalled)
 	},
+	/**
+	 * 卸载Shell。
+	 */
 	Unload: () => {
 		events.off('part-installed', onPartInstalled)
 		events.off('part-uninstalled', onPartUninstalled)

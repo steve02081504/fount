@@ -1,3 +1,6 @@
+/**
+ * 成就页面的主要客户端逻辑。
+ */
 import { unlockAchievement, loadPart } from '../../../scripts/endpoints.mjs'
 import { geti18n, geti18n_nowarn, initTranslations } from '../../../scripts/i18n.mjs'
 import { onServerEvent } from '../../../scripts/server_events.mjs'
@@ -9,6 +12,11 @@ import * as api from './src/endpoints.mjs'
 const achievementsContainer = document.getElementById('achievements-container')
 
 let render_lock
+/**
+ * 从服务器获取所有成就数据并将其渲染到页面上。
+ * 它会处理加载状态、错误，并根据需要异步加载 i18n 数据。
+ * @returns {Promise<void>}
+ */
 async function renderAchievements() {
 	if (render_lock) return
 	render_lock = true
@@ -64,6 +72,10 @@ async function renderAchievements() {
 	}
 }
 
+/**
+ * 应用程序的入口点。初始化主题、翻译、渲染成就并设置服务器事件监听器。
+ * @returns {Promise<void>}
+ */
 async function main() {
 	applyTheme()
 	usingTemplates('/shells/achievements/templates')

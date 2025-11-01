@@ -41,7 +41,7 @@ function getArrayU8FromWasm0(ptr, len) {
 	return getUint8ArrayMemory0().subarray(ptr / 1, ptr / 1 + len)
 }
 /**
-* @description 编码 RPack 数据。
+* 编码 RPack 数据。
 * @param {Uint8Array} datas - 要编码的数据。
 * @returns {Promise<Uint8Array>} - 编码后的数据。
 */
@@ -64,7 +64,7 @@ export async function encodeRPack(datas) {
 }
 
 /**
-* @description 解码 RPack 数据。
+* 解码 RPack 数据。
 * @param {Uint8Array} datas - 要解码的数据。
 * @returns {Promise<Uint8Array>} - 解码后的数据。
 */

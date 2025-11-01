@@ -12,11 +12,11 @@ import { unlockAchievement } from '../../achievements/src/api.mjs'
 const LITTERBOX_API_URL = 'https://litterbox.catbox.moe/resources/internals/api.php'
 
 /**
- * Gets the fount.json for a part.
- * @param {string} username
- * @param {string} partType
- * @param {string} partName
- * @returns {Promise<object>}
+ * 获取部件的fount.json。
+ * @param {string} username - 用户名。
+ * @param {string} partType - 部件类型。
+ * @param {string} partName - 部件名称。
+ * @returns {Promise<object>} - fount.json内容。
  */
 export async function getFountJson(username, partType, partName) {
 	const partPath = GetPartPath(username, partType, partName)
@@ -50,6 +50,14 @@ export async function getFountJson(username, partType, partName) {
 	return json
 }
 
+/**
+ * 导出部件。
+ * @param {string} username - 用户名。
+ * @param {string} partType - 部件类型。
+ * @param {string} partName - 部件名称。
+ * @param {boolean} withData - 是否包含数据。
+ * @returns {Promise<{buffer: Buffer, format: string}>} - 导出的文件buffer和格式。
+ */
 export async function exportPart(username, partType, partName, withData) {
 	const partPath = GetPartPath(username, partType, partName)
 	const fountJsonPath = path.join(partPath, 'fount.json')
@@ -92,6 +100,15 @@ export async function exportPart(username, partType, partName, withData) {
 	}
 }
 
+/**
+ * 创建分享链接。
+ * @param {string} username - 用户名。
+ * @param {string} partType - 部件类型。
+ * @param {string} partName - 部件名称。
+ * @param {string} expiration - 过期时间。
+ * @param {boolean} withData - 是否包含数据。
+ * @returns {Promise<string>} - 分享链接。
+ */
 export async function createShareLink(username, partType, partName, expiration, withData) {
 	const { buffer, format } = await exportPart(username, partType, partName, withData)
 

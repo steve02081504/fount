@@ -4,7 +4,7 @@ import { actions } from './src/actions.mjs'
 import { setEndpoints } from './src/endpoints.mjs'
 
 /**
- * @description 处理动作。
+ * 处理动作。
  * @param {string} user - 用户。
  * @param {object} params - 参数。
  * @returns {Promise<any>} - 动作结果。
@@ -13,6 +13,9 @@ async function handleAction(user, params) {
 	return actions.default({ user, ...params })
 }
 
+/**
+ * 代理Shell
+ */
 export default {
 	info: {
 		'en-UK': {
@@ -188,7 +191,7 @@ export default {
 		}
 	},
 	/**
-	 * @description 加载 shell。
+	 * 加载 shell。
 	 * @param {object} options - 选项。
 	 * @param {object} options.router - 路由。
 	 */
@@ -198,7 +201,7 @@ export default {
 	interfaces: {
 		invokes: {
 			/**
-			 * @description 处理命令行参数。
+			 * 处理命令行参数。
 			 * @param {string} user - 用户。
 			 * @param {Array<string>} args - 参数。
 			 */
@@ -211,7 +214,7 @@ export default {
 				console.log(`You can use it with any OpenAI-compatible client, for example, to list models, run: curl ${url}/v1/models -H "Authorization: Bearer <your_fount_apikey>"`)
 			},
 			/**
-			 * @description 处理 IPC 调用。
+			 * 处理 IPC 调用。
 			 * @param {string} user - 用户。
 			 * @param {object} args - 参数。
 			 * @returns {Promise<any>} - 调用结果。

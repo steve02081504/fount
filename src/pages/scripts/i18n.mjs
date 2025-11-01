@@ -6,7 +6,7 @@ import { onServerEvent } from './server_events.mjs'
 
 const languageChangeCallbacks = []
 /**
- * @description 注册一个语言更改回调。
+ * 注册一个语言更改回调。
  * @param {Function} callback - 回调函数。
  * @returns {any} 回调函数的返回值。
  */
@@ -15,7 +15,7 @@ export function onLanguageChange(callback) {
 	return callback()
 }
 /**
- * @description 注销一个语言更改回调。
+ * 注销一个语言更改回调。
  * @param {Function} callback - 回调函数。
  * @returns {void}
  */
@@ -24,7 +24,7 @@ export function offLanguageChange(callback) {
 	if (index > -1) languageChangeCallbacks.splice(index, 1)
 }
 /**
- * @description 运行语言更改回调。
+ * 运行语言更改回调。
  * @returns {Promise<void>}
  */
 async function runLanguageChange() {
@@ -37,7 +37,7 @@ async function runLanguageChange() {
 
 const LocalizeLogics = new Map()
 /**
- * @description 设置元素的本地化逻辑。
+ * 设置元素的本地化逻辑。
  * @param {HTMLElement} element - 元素。
  * @param {Function} logic - 本地化逻辑。
  * @returns {any} 语言更改回调的返回值。
@@ -54,13 +54,13 @@ let saved_pageid
 let lastKnownLangs
 
 /**
- * @description 主要区域设置。
+ * 主要区域设置。
  * @type {string}
  */
 export let main_locale = 'en-UK'
 
 /**
- * @description 加载首选语言。
+ * 加载首选语言。
  * @returns {string[]} 首选语言列表。
  */
 export function loadPreferredLangs() {
@@ -68,7 +68,7 @@ export function loadPreferredLangs() {
 }
 
 /**
- * @description 保存首选语言。
+ * 保存首选语言。
  * @param {string[]} langs - 首选语言列表。
  * @returns {Promise<void>}
  */
@@ -80,7 +80,7 @@ export async function savePreferredLangs(langs) {
 }
 
 /**
- * @description 获取可用的区域设置。
+ * 获取可用的区域设置。
  * @returns {Promise<object>} 可用的区域设置。
  */
 export async function getAvailableLocales() {
@@ -90,7 +90,7 @@ export async function getAvailableLocales() {
 }
 
 /**
- * @description 从服务器获取多语言数据并初始化翻译。
+ * 从服务器获取多语言数据并初始化翻译。
  * @param {string} [pageid] - 页面 ID。
  * @param {string[]} [preferredLangs] - 用户手动设置的优先语言列表
  * @returns {Promise<void>}
@@ -116,7 +116,7 @@ export async function initTranslations(pageid = saved_pageid, preferredLangs = l
 }
 
 /**
- * @description 获取嵌套对象的值。
+ * 获取嵌套对象的值。
  * @param {object} obj - 对象。
  * @param {string} key - 键。
  * @returns {any} 嵌套对象的值。
@@ -132,7 +132,7 @@ function getNestedValue(obj, key) {
 	return value
 }
 /**
- * @description 根据提供的键（key）获取翻译后的文本。
+ * 根据提供的键（key）获取翻译后的文本。
  * @param {string} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值（例如 {name: "John"}）。
  * @returns {string} - 翻译后的文本，如果未找到则返回键本身。
@@ -150,7 +150,7 @@ export function geti18n_nowarn(key, params = {}) {
 }
 
 /**
- * @description 根据提供的键（key）获取翻译后的文本。
+ * 根据提供的键（key）获取翻译后的文本。
  * @param {string} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值（例如 {name: "John"}）。
  * @returns {string} - 翻译后的文本，如果未找到则返回键本身。
@@ -165,35 +165,35 @@ export function geti18n(key, params = {}) {
 }
 const console = globalThis.console
 /**
- * @description 使用 i18n 打印 info 消息。
+ * 使用 i18n 打印 info 消息。
  * @param {string} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
 console.infoI18n = (key, params = {}) => console.info(geti18n(key, params))
 /**
- * @description 使用 i18n 打印 log 消息。
+ * 使用 i18n 打印 log 消息。
  * @param {string} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
 console.logI18n = (key, params = {}) => console.log(geti18n(key, params))
 /**
- * @description 使用 i18n 打印 warn 消息。
+ * 使用 i18n 打印 warn 消息。
  * @param {string} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
 console.warnI18n = (key, params = {}) => console.warn(geti18n(key, params))
 /**
- * @description 使用 i18n 打印 error 消息。
+ * 使用 i18n 打印 error 消息。
  * @param {string} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
 console.errorI18n = (key, params = {}) => console.error(geti18n(key, params))
 /**
- * @description 使用 i18n 打印新行消息。
+ * 使用 i18n 打印新行消息。
  * @param {string} id - 消息 ID。
  * @param {string} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值。
@@ -201,7 +201,7 @@ console.errorI18n = (key, params = {}) => console.error(geti18n(key, params))
  */
 console.freshLineI18n = (id, key, params = {}) => console.freshLine(id, geti18n(key, params))
 /**
- * @description 使用 i18n 显示 alert。
+ * 使用 i18n 显示 alert。
  * @param {string} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
@@ -210,7 +210,7 @@ export function alertI18n(key, params = {}) {
 	return alert(geti18n(key, params))
 }
 /**
- * @description 使用 i18n 显示 prompt。
+ * 使用 i18n 显示 prompt。
  * @param {string} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {string|null} 用户输入的文本或 null。
@@ -219,7 +219,7 @@ export function promptI18n(key, params = {}) {
 	return prompt(geti18n(key, params))
 }
 /**
- * @description 使用 i18n 显示 confirm。
+ * 使用 i18n 显示 confirm。
  * @param {string} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {boolean} 如果用户点击“确定”则返回 true，否则返回 false。
@@ -228,20 +228,20 @@ export function confirmI18n(key, params = {}) {
 	return confirm(geti18n(key, params))
 }
 /**
- * @description 导出的控制台对象。
+ * 导出的控制台对象。
  * @type {Console}
  */
 export { console }
 
 /**
- * @description 翻译单个元素。
+ * 翻译单个元素。
  * @param {HTMLElement} element - 要翻译的元素。
  * @returns {boolean} 如果元素已更新，则返回 true。
  */
 function translateSingularElement(element) {
 	let updated = false
 	/**
-	 * @description 更新元素的属性。
+	 * 更新元素的属性。
 	 * @param {string} attr - 属性名。
 	 * @param {string} value - 属性值。
 	 * @returns {void}
@@ -275,7 +275,7 @@ function translateSingularElement(element) {
 }
 
 /**
- * @description 将翻译应用到 DOM 元素。
+ * 将翻译应用到 DOM 元素。
  * @private
  * @returns {void}
  */
@@ -293,7 +293,7 @@ function applyTranslations() {
 }
 
 /**
- * @description 翻译元素及其子元素。
+ * 翻译元素及其子元素。
  * @param {HTMLElement} element - 要翻译的元素。
  * @param {object} options - 选项。
  * @param {boolean} [options.skip_report=false] - 是否跳过报告。
@@ -346,7 +346,7 @@ const i18nObserver = new MutationObserver((mutationsList) => {
 
 // Start observing the document body for configured mutations
 /**
- * @description 观察 body 元素的变化。
+ * 观察 body 元素的变化。
  * @returns {void}
  */
 function observeBody() {
