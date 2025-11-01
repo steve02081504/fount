@@ -12,6 +12,8 @@ import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/man
 
 /** @typedef {import('../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t */
 /** @typedef {import('../../../../../src/decl/AIsource.ts').AIsource_t} AIsource_t */
+/** @typedef {import("../../../../../src/decl/prompt_struct.ts').single_part_prompt_t} single_part_prompt_t */
+/** @typedef {import("../../../../../src/public/shells/chat/decl/prompt_struct.ts').chatReplyRequest_t} chatReplyRequest_t */
 /** @typedef {import('../../../../../src/public/ImportHandlers/SillyTavern/engine/charData.mjs').v2CharData} chardata_t */
 
 /** @type {AIsource_t} */
@@ -123,7 +125,8 @@ function formatRisuOutput(text) {
 
 
 /** @type {CharAPI_t} */
-const charAPI_definition = { // 先定义结构主体
+const charAPI_definition = {
+	// 先定义结构主体
 	info: {}, // 将由 buildCharInfo 动态填充
 
 	/**
@@ -161,9 +164,9 @@ const charAPI_definition = { // 先定义结构主体
 		chat: {
 			/**
 			 * 获取问候语
-			 * @param {any} args 参数
-			 * @param {any} index 索引
-			 * @returns {{ content: any; content_for_show: any; }} 包含问候语内容的对象
+			 * @param {chatReplyRequest_t} args 参数
+			 * @param {number} index 索引
+			 * @returns {{ content: string; content_for_show?: string; }} 包含问候语内容的对象
 			 */
 			GetGreeting: (args, index) => {
 				// CCv3 的 first_mes 和 alternate_greetings 不是多语言结构，直接使用 chardata 中的版本
@@ -213,10 +216,10 @@ const charAPI_definition = { // 先定义结构主体
 			},
 			/**
 			 * 获取提示
-			 * @param {any} promptArgs 提示参数
-			 * @returns {import("../../../../../src/public/ImportHandlers/SillyTavern/engine/prompt_builder").import('../../../../decl/prompt_struct.ts').single_part_prompt_t} 提示对象
+			 * @param {chatReplyRequest_t} promptArgs 提示参数
+			 * @returns {single_part_prompt_t} 提示对象
 			 */
-			GetPrompt: (promptArgs /* fount prompt_struct_args_t */) => {
+			GetPrompt: (promptArgs) => {
 				// 确保传递给 promptBuilder 的 Charname 是我们期望的（考虑 nickname）
 				const effectiveCharName = chardata.extensions?.ccv3_nickname || chardata.name
 				const builderArgs = {
@@ -227,7 +230,7 @@ const charAPI_definition = { // 先定义结构主体
 			},
 			/**
 			 * 获取回复
-			 * @param {any} args 参数
+			 * @param {chatReplyRequest_t} args 参数
 			 * @returns {Promise<{ content: any; content_for_show: any; files: any; extension: any; }>} 包含回复内容的对象
 			 */
 			GetReply: async args => {

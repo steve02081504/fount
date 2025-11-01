@@ -9,7 +9,7 @@ import { nicerWriteFileSync } from '../scripts/nicerWriteFile.mjs'
 import { setMain, __dirname } from './base.mjs'
 setMain(main)
 /**
- *
+ * 生成图标
  */
 async function main() {
 	const svg = fs.readFileSync(__dirname + '/imgs/icon.svg', 'utf-8')

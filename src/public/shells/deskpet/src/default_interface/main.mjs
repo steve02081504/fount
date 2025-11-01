@@ -1,5 +1,5 @@
 /**
- *
+ * 创建默认的宠物界面接口。
  * @param {import('../../../../../decl/charAPI.ts').CharAPI_t} charAPI - 角色 API 对象。
  * @param {string} ownerUsername - 所有者的用户名。
  * @param {string} charname - 角色的名称。

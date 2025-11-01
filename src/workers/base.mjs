@@ -1,5 +1,5 @@
 /**
- *
+ * 工作线程的主目录。
  */
 export let __dirname
 let main
