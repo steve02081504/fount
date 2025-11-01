@@ -184,7 +184,7 @@ async function ImportByText(username, text) {
 }
 
 /**
- *
+ * Fount 导入器模块定义。
  */
 export default {
 	info: {
