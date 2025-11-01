@@ -17,8 +17,9 @@ export const recommend_command_plugin = {
 	interfaces: {
 		chat: {
 			/**
-			 *
-			 * @param args
+			 * 获取提示。
+			 * @param {any} args - 参数。
+			 * @returns {Promise<any>} - 提示。
 			 */
 			GetPrompt: async (args) => {
 				return {
@@ -38,8 +39,9 @@ command_body
 				}
 			},
 			/**
-			 *
-			 * @param result
+			 * 回复处理器。
+			 * @param {any} result - 结果。
+			 * @returns {Promise<boolean>} - 是否处理。
 			 */
 			ReplyHandler: async result => {
 				const match = result.content.match(/<recommend_command>(?<command>[\S\s]*?)<\/recommend_command>/)

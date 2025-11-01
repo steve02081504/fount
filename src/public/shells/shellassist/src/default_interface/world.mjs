@@ -1,6 +1,7 @@
 /**
- *
- * @param shelltype
+ * 获取 Shell 世界。
+ * @param {string} shelltype - Shell 类型。
+ * @returns {import('../../../../../../src/decl/worldAPI.ts').WorldAPI_t} - Shell 世界。
  */
 export function GetShellWorld(shelltype) {
 	/**
@@ -20,8 +21,9 @@ export function GetShellWorld(shelltype) {
 		interfaces: {
 			chat: {
 				/**
-				 *
-				 * @param args
+				 * 获取提示。
+				 * @param {any} args - 参数。
+				 * @returns {any} - 提示。
 				 */
 				GetPrompt: args => {
 					return {

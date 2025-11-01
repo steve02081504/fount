@@ -411,6 +411,7 @@ async function displayFunctionButtons() {
 
 	const allButtons = []
 	/**
+	 * 扁平化项目。
 	 * @param {any[]} items - 项目。
 	 */
 	function flatten(items) {
