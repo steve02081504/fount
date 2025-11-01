@@ -5,9 +5,15 @@ import { NotDiamond } from './notdiamond.mjs'
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
+/**
+ *
+ */
 export default {
 	interfaces: {
 		AIsource: {
+			/**
+			 *
+			 */
 			GetConfigTemplate: async () => configTemplate,
 			GetSource,
 		}
@@ -24,11 +30,19 @@ const configTemplate = {
 	}
 }
 
+/**
+ *
+ * @param config
+ */
 async function GetSource(config) {
 	const notDiamond = new NotDiamond({
 		email: config.email,
 		password: config.password,
 	})
+	/**
+	 *
+	 * @param messages
+	 */
 	async function callBase(messages) {
 		const result = await notDiamond.create({
 			messages,
@@ -56,6 +70,10 @@ async function GetSource(config) {
 		is_paid: false,
 		extension: {},
 
+		/**
+		 *
+		 * @param prompt
+		 */
 		Call: async prompt => {
 			const result = await callBase([
 				{
@@ -67,6 +85,10 @@ async function GetSource(config) {
 				content: result,
 			}
 		},
+		/**
+		 *
+		 * @param prompt_struct
+		 */
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
 			const messages = []
 			margeStructPromptChatLog(prompt_struct).forEach(chatLogEntry => {
@@ -119,10 +141,29 @@ ${chatLogEntry.content}
 			}
 		},
 		tokenizer: {
+			/**
+			 *
+			 */
 			free: () => 0,
+			/**
+			 *
+			 * @param prompt
+			 */
 			encode: prompt => prompt,
+			/**
+			 *
+			 * @param tokens
+			 */
 			decode: tokens => tokens,
+			/**
+			 *
+			 * @param token
+			 */
 			decode_single: token => token,
+			/**
+			 *
+			 * @param prompt
+			 */
 			get_token_count: prompt => notDiamond.countTokens(prompt)
 		}
 	}

@@ -6,9 +6,16 @@ import { BlackboxAI } from './blackbox.mjs'
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
+/**
+ * @type {import('../../../decl/AIsource.ts').AIsource_interfaces_and_AIsource_t_getter}
+ */
 export default {
 	interfaces: {
 		AIsource: {
+			/**
+			 * 获取此 AI 源的配置模板。
+			 * @returns {Promise<object>} The configuration template.
+			 */
 			GetConfigTemplate: async () => configTemplate,
 			GetSource,
 		}
@@ -23,6 +30,11 @@ const configTemplate = {
 		roleReminding: true
 	}
 }
+/**
+ * 获取 AI 源。
+ * @param {object} config - The configuration object.
+ * @returns {Promise<AIsource_t>} The AI source.
+ */
 async function GetSource(config) {
 	const blackbox = new BlackboxAI(config)
 	/** @type {AIsource_t} */
@@ -43,12 +55,22 @@ async function GetSource(config) {
 		},
 		is_paid: false,
 		extension: {},
+		/**
+		 * 调用 AI 源。
+		 * @param {string} prompt - The prompt to send to the AI.
+		 * @returns {Promise<{content: string}>} The result from the AI.
+		 */
 		Call: async prompt => {
 			const result = await with_timeout(config.timeout || 10000, blackbox.call(prompt, config.model))
 			return {
 				content: result,
 			}
 		},
+		/**
+		 * 使用结构化提示调用 AI 源。
+		 * @param {prompt_struct_t} prompt_struct - The structured prompt to send to the AI.
+		 * @returns {Promise<{content: string}>} The result from the AI.
+		 */
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
 			const messages = []
 			margeStructPromptChatLog(prompt_struct).forEach(chatLogEntry => {
@@ -107,10 +129,34 @@ ${chatLogEntry.content}
 			}
 		},
 		tokenizer: {
+			/**
+			 * 释放分词器。
+			 * @returns {number} 0
+			 */
 			free: () => 0,
+			/**
+			 * 编码提示。
+			 * @param {string} prompt - The prompt to encode.
+			 * @returns {string} The encoded prompt.
+			 */
 			encode: prompt => prompt,
+			/**
+			 * 解码令牌。
+			 * @param {string} tokens - The tokens to decode.
+			 * @returns {string} The decoded tokens.
+			 */
 			decode: tokens => tokens,
+			/**
+			 * 解码单个令牌。
+			 * @param {string} token - The token to decode.
+			 * @returns {string} The decoded token.
+			 */
 			decode_single: token => token,
+			/**
+			 * 获取令牌计数。
+			 * @param {string} prompt - The prompt to count tokens for.
+			 * @returns {Promise<number>} The number of tokens.
+			 */
 			get_token_count: prompt => blackbox.countTokens(prompt)
 		}
 	}

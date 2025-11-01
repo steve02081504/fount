@@ -5,6 +5,10 @@ import { formatStr } from '../../../scripts/format.mjs'
 import { parseRegexFromString } from '../../../scripts/regex.mjs'
 import { loadAIsourceFromNameOrConfigData } from '../../../server/managers/AIsource_manager.mjs'
 
+/**
+ * 获取单一部分的提示对象。
+ * @returns {{text: any[], additional_chat_log: any[], extension: {}}} A single part prompt object.
+ */
 function getSinglePartPrompt() {
 	return {
 		text: [],
@@ -13,9 +17,16 @@ function getSinglePartPrompt() {
 	}
 }
 
+/**
+ * @type {import('../../../decl/AIsource.ts').AIsource_interfaces_and_AIsource_t_getter}
+ */
 export default {
 	interfaces: {
 		AIsource: {
+			/**
+			 * 获取此 AI 源的配置模板。
+			 * @returns {Promise<object>} The configuration template.
+			 */
 			GetConfigTemplate: async () => configTemplate,
 			GetSource,
 		}
@@ -58,6 +69,14 @@ const configTemplate = {
 	]
 }
 
+/**
+ * 获取 AI 源。
+ * @param {object} config - The configuration object.
+ * @param {object} root0 - The root object.
+ * @param {string} root0.username - The username.
+ * @param {Function} root0.SaveConfig - The function to save the configuration.
+ * @returns {Promise<AIsource_t>} The AI source.
+ */
 async function GetSource(config, { username, SaveConfig }) {
 	const unnamedSources = []
 	const base_source = await loadAIsourceFromNameOrConfigData(username, config.base_source, unnamedSources, {
@@ -82,8 +101,22 @@ async function GetSource(config, { username, SaveConfig }) {
 		is_paid: false,
 		extension: {},
 
+		/**
+		 * 卸载 AI 源。
+		 * @returns {Promise<void>}
+		 */
 		Unload: () => Promise.all(unnamedSources.map(source => source.Unload())),
+		/**
+		 * 调用 AI 源。
+		 * @param {string} prompt - The prompt to send to the AI.
+		 * @returns {Promise<{content: string}>} The result from the AI.
+		 */
 		Call: async prompt => base_source.Call(prompt),
+		/**
+		 * 使用结构化提示调用 AI 源。
+		 * @param {prompt_struct_t} prompt_struct - The structured prompt to send to the AI.
+		 * @returns {Promise<{content: string}>} The result from the AI.
+		 */
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
 			const new_prompt_struct = {
 				char_id: prompt_struct.char_id,
@@ -176,10 +209,34 @@ async function GetSource(config, { username, SaveConfig }) {
 			return result
 		},
 		tokenizer: {
+			/**
+			 * 释放分词器。
+			 * @returns {number} 0
+			 */
 			free: () => 0,
+			/**
+			 * 编码提示。
+			 * @param {string} prompt - The prompt to encode.
+			 * @returns {any} The encoded prompt.
+			 */
 			encode: prompt => base_source.tokenizer.encode(prompt),
+			/**
+			 * 解码令牌。
+			 * @param {any} tokens - The tokens to decode.
+			 * @returns {string} The decoded tokens.
+			 */
 			decode: tokens => base_source.tokenizer.decode(tokens),
+			/**
+			 * 解码单个令牌。
+			 * @param {any} token - The token to decode.
+			 * @returns {string} The decoded token.
+			 */
 			decode_single: token => base_source.tokenizer.decode_single(token),
+			/**
+			 * 获取令牌计数。
+			 * @param {string} prompt - The prompt to count tokens for.
+			 * @returns {Promise<number>} The number of tokens.
+			 */
 			get_token_count: prompt => base_source.tokenizer.get_token_count(prompt),
 		}
 	}

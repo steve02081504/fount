@@ -83,6 +83,9 @@ const _BASE_URL = 'https://chat.notdiamond.ai'
 const _API_BASE_URL = 'https://spuckhogycrxcbomznwo.supabase.co'
 const _USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36'
 
+/**
+ *
+ */
 class AuthManager {
 	/**
 	 * AuthManager类用于管理身份验证过程,包括获取API密钥、用户信息和处理刷新令牌等操作。
@@ -323,6 +326,12 @@ async function stream_notdiamond_response(response, model) {
 	return create_openai_chunk('', model, 'stop')
 }
 
+/**
+ *
+ * @param response
+ * @param model
+ * @param prompt_tokens
+ */
 async function handle_non_stream_response(response, model, prompt_tokens) {
 	/**
 	 * 处理非流式 API 响应并构建最终 JSON。
@@ -377,6 +386,7 @@ async function get_notdiamond_url() {
 
 /**
  * 返回用于 notdiamond API 请求的头信息。
+ * @param auth_manager
  * @returns {object} 请求头
  */
 async function get_notdiamond_headers(auth_manager) {
@@ -422,6 +432,7 @@ async function build_payload(request_data, model_id) {
 /**
  * 发送请求并处理可能的认证刷新。
  * @param {object} payload 请求有效负载
+ * @param auth_manager
  * @returns {object} API响应对象
  */
 async function make_request(payload, auth_manager) {
@@ -451,6 +462,7 @@ async function make_request(payload, auth_manager) {
  * @param {string} model_id 模型ID
  * @param {array} messages 消息列表
  * @param {number} temperature 温度参数
+ * @param auth_manager
  * @returns {string} 模型的字符串回答
  */
 async function call_model(model_id, messages, temperature, auth_manager) {
@@ -467,12 +479,23 @@ async function call_model(model_id, messages, temperature, auth_manager) {
 }
 
 
+/**
+ *
+ */
 export class NotDiamond {
+	/**
+	 *
+	 * @param options
+	 */
 	constructor(options = {}) {
 		this.AuthManager = new AuthManager(options.email, options.password)
 		this._model = options.model
 	}
 
+	/**
+	 *
+	 * @param options
+	 */
 	async create(options = {}) {
 		const model = options.model || this._model
 		if (!model) throw new Error('Please provide a model ID.')
@@ -482,6 +505,10 @@ export class NotDiamond {
 		return await call_model(model, messages, temperature, this.AuthManager)
 	}
 
+	/**
+	 *
+	 * @param text
+	 */
 	countTokens(text) {
 		return count_tokens(text, this._model)
 	}

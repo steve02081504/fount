@@ -46,12 +46,23 @@ const supportedFileTypes = [
 	'audio/flac'
 ]
 
+/**
+ * @type {import('../../../decl/AIsource.ts').AIsource_interfaces_and_AIsource_t_getter}
+ */
 export default {
 	interfaces: {
 		AIsource: {
+			/**
+			 * 获取此 AI 源的配置显示内容。
+			 * @returns {Promise<object>} 配置显示内容。
+			 */
 			GetConfigDisplayContent: async () => ({
 				js: fs.readFileSync(path.join(import.meta.dirname, 'display.mjs'), 'utf-8')
 			}),
+			/**
+			 * 获取此 AI 源的配置模板。
+			 * @returns {Promise<object>} 配置模板。
+			 */
 			GetConfigTemplate: async () => configTemplate,
 			GetSource,
 		}
@@ -94,7 +105,7 @@ function estimateTextTokens(contents) {
 
 /**
  * 使用二分搜索找到在 token 限制内可以保留的最大历史记录数量
- * @param {GoogleGenAI} ai - GenAI 实例
+ * @param {import('npm:@google/genai').GoogleGenAI} ai - GenAI 实例
  * @param {string} model - 模型名称
  * @param {number} limit - Token 数量上限
  * @param {Array<object>} history - 完整的聊天历史记录
@@ -103,6 +114,11 @@ function estimateTextTokens(contents) {
  * @returns {Promise<Array<object>>} - 截断后的聊天历史记录
  */
 async function findOptimalHistorySlice(ai, model, limit, history, prefixMessages = [], suffixMessages = []) {
+	/**
+	 *
+	 * @param {Array<object>} contents - 要计算令牌的内容。
+	 * @returns {Promise<number>} 令牌数。
+	 */
 	const getTokens = async contents => {
 		try {
 			const res = await ai.models.countTokens({ model, contents })
@@ -152,6 +168,11 @@ async function findOptimalHistorySlice(ai, model, limit, history, prefixMessages
 	return history.slice(-bestK)
 }
 
+/**
+ * 获取 AI 源。
+ * @param {object} config - 配置对象。
+ * @returns {Promise<AIsource_t>} AI 源。
+ */
 async function GetSource(config) {
 	const {
 		GoogleGenAI,
@@ -172,16 +193,21 @@ async function GetSource(config) {
 	})
 
 	const fileUploadMap = new Map()
+	/**
+	 * 检查缓冲区是否已缓存。
+	 * @param {Buffer} buffer - 缓冲区。
+	 * @returns {boolean} 是否已缓存。
+	 */
 	function is_cached(buffer) {
 		const hashkey = calculateHash('sha256', buffer)
 		return fileUploadMap.has(hashkey)
 	}
 	/**
-	 * 使用新版SDK上传文件到 Gemini (Uploads the given file buffer to Gemini using the new SDK)
-	 * @param {string} displayName 文件显示名称 (File display name)
-	 * @param {Buffer} buffer 文件Buffer (File buffer)
-	 * @param {string} mimeType 文件MIME类型 (File MIME type)
-	 * @returns {Promise<object>} 已上传文件的信息，包含uri (Information about the uploaded file, including uri)
+	 * 使用新版SDK上传文件到 Gemini
+	 * @param {string} displayName 文件显示名称
+	 * @param {Buffer} buffer 文件Buffer
+	 * @param {string} mimeType 文件MIME类型
+	 * @returns {Promise<object>} 已上传文件的信息，包含uri
 	 */
 	async function uploadToGemini(displayName, buffer, mimeType) {
 		const hashkey = calculateHash('sha256', buffer)
@@ -237,6 +263,11 @@ async function GetSource(config) {
 		is_paid: false,
 		extension: {},
 
+		/**
+		 * 调用 AI 源。
+		 * @param {string} prompt - 要发送给 AI 的提示。
+		 * @returns {Promise<{content: string}>} 来自 AI 的结果。
+		 */
 		Call: async prompt => {
 			const model_params = {
 				model: config.model,
@@ -249,6 +280,11 @@ async function GetSource(config) {
 
 			let text = ''
 
+			/**
+			 * 处理部分。
+			 * @param {Array<object>} parts - 部分数组。
+			 * @returns {void}
+			 */
 			function handle_parts(parts) {
 				if (!parts) return
 				for (const part of parts)
@@ -269,6 +305,11 @@ async function GetSource(config) {
 			}
 		},
 
+		/**
+		 * 使用结构化提示调用 AI 源。
+		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+		 * @returns {Promise<{content: string, files: any[]}>} 来自 AI 的结果。
+		 */
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
 			const baseMessages = [
 				{
@@ -497,6 +538,11 @@ ${is_ImageGeneration
 
 			let text = ''
 			const files = []
+			/**
+			 * 处理部分。
+			 * @param {Array<object>} parts - 部分数组。
+			 * @returns {void}
+			 */
 			function handle_parts(parts) {
 				if (!parts) return
 				for (const part of parts)
@@ -546,17 +592,41 @@ ${is_ImageGeneration
 			}
 		},
 		tokenizer: {
+			/**
+			 * 释放分词器。
+			 * @returns {void}
+			 */
 			free: () => { /* no-op */ },
+			/**
+			 * 编码提示。
+			 * @param {string} prompt - 要编码的提示。
+			 * @returns {string} 编码后的提示。
+			 */
 			encode: prompt => {
 				console.warn('Gemini tokenizer.encode is a no-op, returning prompt as-is.')
 				return prompt
 			},
+			/**
+			 * 解码令牌。
+			 * @param {any} tokens - 要解码的令牌。
+			 * @returns {any} 解码后的令牌。
+			 */
 			decode: tokens => {
 				console.warn('Gemini tokenizer.decode is a no-op, returning tokens as-is.')
 				return tokens
 			},
+			/**
+			 * 解码单个令牌。
+			 * @param {any} token - 要解码的令牌。
+			 * @returns {any} 解码后的令牌。
+			 */
 			decode_single: token => token,
 			// 更新 tokenizer 以使用真实 API 进行计算
+			/**
+			 * 获取令牌计数。
+			 * @param {string} prompt - 要计算令牌的提示。
+			 * @returns {Promise<number>} 令牌数。
+			 */
 			get_token_count: async prompt => {
 				if (!prompt) return 0
 				try {
