@@ -88,6 +88,10 @@ export function notifyPartInstall(username, parttype, partname) {
  * @property {string[]} supportedInterfaces - 支持的界面列表。
  */
 
+/**
+ * 一个存储已加载部件实例的对象。
+ * @type {object}
+ */
 export const parts_set = {}
 
 /**
@@ -192,6 +196,10 @@ export async function baseloadPart(username, parttype, partname, {
 		const userPath = path
 		const { type, dirname } = loadJsonFile(userPath + '/fount.json')
 		const templatePath = __dirname + '/default/templates/user/' + type + '/' + dirname
+		/**
+		 * 递归地将文件从模板目录映射到用户目录。
+		 * @param {string} fileOrDir - 要映射的文件或目录。
+		 */
 		function mapper(fileOrDir) {
 			if (fs.statSync(templatePath + '/' + fileOrDir).isDirectory()) {
 				if (!fs.existsSync(userPath + '/' + fileOrDir))
@@ -211,8 +219,16 @@ export async function baseloadPart(username, parttype, partname, {
 	})
 }
 
+/**
+ * 卸载一个基础的 mjs 部件。
+ * @param {string} path - 部件的路径。
+ */
 export async function baseMjsPartUnloader(path) {
 	if (!fs.existsSync(path)) return
+	/**
+	 * 卸载代码。
+	 * @param {string} path - 要卸载的代码的路径。
+	 */
 	async function codeunloader(path) {
 		/*
 		todo: implement codeunloader after moveing fount from deno to bun/done
@@ -307,7 +323,12 @@ export async function loadPartBase(username, parttype, partname, Initargs, {
 		if (!parts_set[username][parttype][partname]) {
 			const profile = await doProfile(async () => {
 				/** @type {T} */
-				parts_set[username][parttype][partname] = baseloadPart(username, parttype, partname, { pathGetter, Loader: async path => await Loader(path, Initargs) })
+				parts_set[username][parttype][partname] = baseloadPart(username, parttype, partname, { pathGetter, /**
+				 * 异步加载器函数。
+				 * @param {string} path - 部件的路径。
+				 * @returns {Promise<T>} 解析为加载的部件的承诺。
+				 */
+					Loader: async path => await Loader(path, Initargs) })
 				const part = parts_set[username][parttype][partname] = await parts_set[username][parttype][partname]
 				try {
 					await part.interfaces?.config?.SetData?.(parts_config[parttype]?.[partname] ?? {})
@@ -372,7 +393,9 @@ export async function initPart(username, parttype, partname, Initargs, {
  * @param {string} partname - 部件的名称。
  * @param {UnloadArgs_t} unLoadargs - 传递给部件 Unload 函数的参数。
  * @param {Object} [options] - 用于自定义卸载过程的可选函数。
+ * @param {() => string} [options.pathGetter] - 获取部件路径的函数。
  * @param {(part: T) => Promise<void>} [options.unLoader=part => part.Unload?.(unLoadargs)] - 卸载部件的函数。默认为调用 part.Unload。
+ * @param {(path: string, unLoadargs: UnloadArgs_t) => Promise<void>} [options.afterUnload] - 卸载后调用的函数。
  * @returns {Promise<void>} 一个在部件卸载后解析的承诺。
  */
 export async function unloadPartBase(username, parttype, partname, unLoadargs, {
@@ -474,6 +497,12 @@ export function getPartListBase(username, parttype, {
 	return partlist.map(ResultMapper)
 }
 
+/**
+ *
+ * @param username
+ * @param parttype
+ * @param partname
+ */
 async function nocacheGetPartBaseDetails(username, parttype, partname) {
 	const parts_details_cache = loadData(username, 'parts_details_cache')
 	try {
@@ -500,6 +529,10 @@ async function nocacheGetPartBaseDetails(username, parttype, partname) {
 	}
 }
 
+/**
+ *
+ * @param info
+ */
 function getSfwInfo(info) {
 	if (!info) return info
 	const sfwInfo = { ...info }
@@ -536,6 +569,11 @@ export async function getPartDetails(username, parttype, partname, nocache = fal
 	return { ...details, info }
 }
 
+/**
+ *
+ * @param username
+ * @param parttype
+ */
 export async function getAllCachedPartDetails(username, parttype) {
 	// 1. Get the full list of part names
 	const allPartNames = getPartListBase(username, parttype)

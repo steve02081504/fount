@@ -1,46 +1,27 @@
 /**
- * Gets a real regex object from a slash-delimited regex string
+ * 从斜线分隔的正则表达式字符串中获取一个真实的正则表达式对象。
  *
- * This function works with `/` as delimiter, and each occurance of it inside the regex has to be escaped.
- * Flags are optional, but can only be valid flags supported by JavaScript's `RegExp` (`g`, `i`, `m`, `s`, `u`, `y`).
+ * 此函数使用 `/` 作为分隔符，正则表达式内部出现的每个 `/` 都必须进行转义。
+ * 标志是可选的，但只能是 JavaScript 的 `RegExp` 支持的有效标志（`g`、`i`、`m`、`s`、`u`、`y`）。
  *
- * @param {string} input - A delimited regex string
- * @returns {RegExp} The regex object
+ * @param {string} input - 一个带分隔符的正则表达式字符串。
+ * @returns {RegExp} 正则表达式对象。
  */
 export function parseRegexFromString(input) {
-	// Extracting the regex pattern and flags
+	// 提取正则表达式模式和标志
 	const match = input.match(/^\/([\W\w]+?)\/([gimsuy]*)$/)
-	if (!match) throw new Error(`Invalid regex string: ${input}`)
+	if (!match) throw new Error(`无效的正则表达式字符串: ${input}`)
 
 	let [, pattern, flags] = match
 
-	// If we find any unescaped slash delimiter, we also exit out.
-	// JS doesn't care about delimiters inside regex patterns, but for this to be a valid regex outside of our implementation,
-	// we have to make sure that our delimiter is correctly escaped. Or every other engine would fail.
-	if (pattern.match(/(^|[^\\])\//)) throw new Error(`there is an unescaped slash in the regex: ${input}`)
+	// 如果我们发现任何未转义的斜线分隔符，我们也会退出。
+	// JS 不关心正则表达式模式内部的分隔符，但为了使其在我们的实现之外成为一个有效的正则表达式，
+	// 我们必须确保我们的分隔符被正确转义。否则其他所有引擎都会失败。
+	if (pattern.match(/(^|[^\\])\//)) throw new Error(`正则表达式中存在未转义的斜线: ${input}`)
 
-	// Now we need to actually unescape the slash delimiters, because JS doesn't care about delimiters
+	// 现在我们需要实际地反转义斜线分隔符，因为 JS 不关心分隔符
 	pattern = pattern.replace('\\/', '/')
 
-	// Then we return the regex. If it fails, it was invalid syntax.
+	// 然后我们返回正则表达式。如果失败，则表示语法无效。
 	return new RegExp(pattern, flags)
-}
-
-/**
- * Escapes special characters in a string to be used in a regular expression.
- *
- * @param {string} string - The string to escape.
- * @return {string} The escaped string.
- */
-export function escapeRegExp(string) {
-	return string.replace(/[$()*+./?[\\-^{|}]/g, '\\$&')
-}
-/**
- * Replaces Unicode escape sequences in a string with their corresponding characters.
- *
- * @param {string} str - The input string possibly containing Unicode escape sequences.
- * @return {string} The string with Unicode escape sequences replaced by actual characters.
- */
-export function unescapeRegExp(string) {
-	return string.replace(/\\(.)/g, '$1')
 }

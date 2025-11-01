@@ -30,6 +30,9 @@ let args = process.argv.slice(2)
  * @type {object}
  */
 const fount_config = {
+	/**
+	 * 重新启动应用程序的函数。
+	 */
 	restartor: () => process.exit(131),
 	data_path: __dirname + '/data',
 	needs_output: process.stdout.writable && process.stdout.isTTY,
