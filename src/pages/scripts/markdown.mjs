@@ -2,8 +2,17 @@ import { createDOMFromHtmlString } from './template.mjs'
 
 const { GetMarkdownConvertor } = await import('./markdownConvertor.mjs').catch(error => {
 	return {
+		/**
+		 * 获取一个 Markdown 转换器。
+		 * @returns {{process: (function(string): string)}} 返回一个包含 process 方法的对象。
+		 */
 		GetMarkdownConvertor: () => {
 			return {
+				/**
+				 * 处理 Markdown 内容。
+				 * @param {string} content 要处理的 Markdown 字符串。
+				 * @returns {string} 返回处理后的 HTML 字符串。
+				 */
 				process: content => {
 					return `\
 <h1>Markdown Load Error: ${error.name}</h1>
