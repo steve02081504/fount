@@ -74,15 +74,25 @@ async function ImportByText(username, text) {
 }
 
 /**
- *
+ * @type {import('../../../decl/import.ts').import_handler_t}
  */
 export default {
 	info: {
+		'zh-CN': {
+			name: 'SillyTavern',
+			avatar: '',
+			description: '导入 SillyTavern 角色',
+			description_markdown: '导入 SillyTavern 角色',
+			version: '0.0.1',
+			author: 'steve02081504',
+			home_page: '',
+			tags: []
+		},
 		'': {
 			name: 'SillyTavern',
 			avatar: '',
-			description: 'default description',
-			description_markdown: 'default description',
+			description: 'Import SillyTavern character',
+			description_markdown: 'Import SillyTavern character',
 			version: '0.0.1',
 			author: 'steve02081504',
 			home_page: '',

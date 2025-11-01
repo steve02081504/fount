@@ -1,6 +1,6 @@
 /**
  * @param {string} reply
- * @param split_lenth
+ * @param {number} split_lenth
  * @returns {string[]}
  */
 export function splitDiscordReply(reply, split_lenth = 2000) {
@@ -9,7 +9,7 @@ export function splitDiscordReply(reply, split_lenth = 2000) {
 	let last = ''
 
 	/**
-	 *
+	 * @returns {void}
 	 */
 	function mapend() {
 		if (last) new_content_slices.push(last)
@@ -20,6 +20,7 @@ export function splitDiscordReply(reply, split_lenth = 2000) {
 
 	/**
 	 * @param {string} code_block
+	 * @returns {string[]}
 	 */
 	function splitCodeBlock(code_block) {
 		const content_slices = code_block.trim().split('\n')
@@ -141,7 +142,8 @@ export function splitDiscordReply(reply, split_lenth = 2000) {
 
 /**
  *
- * @param embed
+ * @param {import('npm:discord.js').Embed} embed
+ * @returns {string}
  */
 function formatEmbed(embed) {
 	let embedContent = ''
@@ -160,7 +162,8 @@ function formatEmbed(embed) {
 
 /**
  *
- * @param message
+ * @param {import('npm:discord.js').Message} message
+ * @returns {string}
  */
 function formatMessageContent(message) {
 	let content = message.content || ''
@@ -198,8 +201,9 @@ function formatMessageContent(message) {
 
 /**
  *
- * @param message
- * @param client
+ * @param {import('npm:discord.js').Message} message
+ * @param {import('npm:discord.js').Client} client
+ * @returns {Promise<string>}
  */
 export async function getMessageFullContent(message, client) {
 	let fullContent = formatMessageContent(message)

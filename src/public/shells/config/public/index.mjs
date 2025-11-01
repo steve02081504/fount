@@ -29,6 +29,7 @@ let activePart = null
 let isDirty = false
 /**
  * JSON 更新时的回调函数
+ * @returns {number}
  */
 let onJsonUpdate = () => 0
 

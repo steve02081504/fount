@@ -496,7 +496,7 @@ ${is_ImageGeneration
 				}
 
 				const fullContents = [...baseMessages, ...tempHistoryForSystemPrompt, ...pauseDeclareMessages]
-				const totalTokens = (await ai.models.countTokens({ model: config.model, contents: fullContents })).totalTokens
+				const {totalTokens} = await ai.models.countTokens({ model: config.model, contents: fullContents })
 
 				if (totalTokens > tokenLimit) {
 					const truncatedHistory = await findOptimalHistorySlice(

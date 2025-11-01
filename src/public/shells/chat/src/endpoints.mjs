@@ -50,9 +50,8 @@ export function setEndpoints(router) {
 	})
 
 	router.get('/api/shells/chat/:chatid/log', authenticate, async (req, res) => {
-		const { chatid } = req.params
-		const { start, end } = req.query
-		const username = (await getUserByReq(req)).username
+		const { params: { chatid }, query: { start, end } } = req
+		const {username} = await getUserByReq(req)
 		const log = await GetChatLog(chatid, parseInt(start, 10), parseInt(end, 10))
 		res.status(200).json(await Promise.all(log.map(entry => entry.toData(username))))
 	})
@@ -73,8 +72,7 @@ export function setEndpoints(router) {
 	})
 
 	router.put('/api/shells/chat/:chatid/timeline', authenticate, async (req, res) => {
-		const { chatid } = req.params
-		const { delta } = req.body
+		const { params: { chatid }, body: { delta } } = req
 		const entry = await modifyTimeLine(chatid, delta)
 		res.status(200).json({ success: true, entry: await entry.toData((await getUserByReq(req)).username) })
 	})
@@ -86,8 +84,7 @@ export function setEndpoints(router) {
 	})
 
 	router.put('/api/shells/chat/:chatid/message/:index', authenticate, async (req, res) => {
-		const { chatid, index } = req.params
-		const { content } = req.body
+		const { params: { chatid, index }, body: { content } } = req
 		content.files = content?.files?.map(file => ({
 			...file,
 			buffer: Buffer.from(file.buffer, 'base64')
@@ -97,8 +94,7 @@ export function setEndpoints(router) {
 	})
 
 	router.post('/api/shells/chat/:chatid/message', authenticate, async (req, res) => {
-		const { chatid } = req.params
-		const { reply } = req.body
+		const { params: { chatid }, body: { reply } } = req
 		reply.files = reply?.files?.map(file => ({
 			...file,
 			buffer: Buffer.from(file.buffer, 'base64')
@@ -108,36 +104,31 @@ export function setEndpoints(router) {
 	})
 
 	router.post('/api/shells/chat/:chatid/trigger-reply', authenticate, async (req, res) => {
-		const { chatid } = req.params
-		const { charname } = req.body
+		const { params: { chatid }, body: { charname } } = req
 		await triggerCharReply(chatid, charname)
 		res.status(200).json({ success: true })
 	})
 
 	router.put('/api/shells/chat/:chatid/char/:charname/frequency', authenticate, async (req, res) => {
-		const { chatid, charname } = req.params
-		const { frequency } = req.body
+		const { params: { chatid, charname }, body: { frequency } } = req
 		await setCharSpeakingFrequency(chatid, charname, frequency)
 		res.status(200).json({ success: true })
 	})
 
 	router.put('/api/shells/chat/:chatid/world', authenticate, async (req, res) => {
-		const { chatid } = req.params
-		const { worldname } = req.body
+		const { params: { chatid }, body: { worldname } } = req
 		await setWorld(chatid, worldname)
 		res.status(200).json({ success: true })
 	})
 
 	router.put('/api/shells/chat/:chatid/persona', authenticate, async (req, res) => {
-		const { chatid } = req.params
-		const { personaname } = req.body
+		const { params: { chatid }, body: { personaname } } = req
 		await setPersona(chatid, personaname)
 		res.status(200).json({ success: true })
 	})
 
 	router.post('/api/shells/chat/:chatid/char', authenticate, async (req, res) => {
-		const { chatid } = req.params
-		const { charname } = req.body
+		const { params: { chatid }, body: { charname } } = req
 		await addchar(chatid, charname)
 		res.status(200).json({ success: true })
 	})

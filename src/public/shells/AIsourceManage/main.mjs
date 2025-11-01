@@ -16,7 +16,7 @@ async function handleAction(user, action, params) {
 }
 
 /**
- * AI源管理Shell
+ * @type {import('../../../decl/shell.ts').shell_t}
  */
 export default {
 	info: {

@@ -61,6 +61,7 @@ async function renderBotDropdown() {
 		disabled,
 		/**
 		 * @param {object} selectedItem - 选定的项目。
+		 * @returns {Promise<boolean|undefined>} - 返回一个 Promise，解析为布尔值或 undefined。
 		 */
 		onSelect: async (selectedItem) => {
 			const botName = selectedItem ? selectedItem.value : null

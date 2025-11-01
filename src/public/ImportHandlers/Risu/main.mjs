@@ -234,8 +234,8 @@ async function ImportByText(username, text) {
 				const uuid = risuMatch[1]
 				try {
 					console.log(`Downloading Risu card with UUID: ${uuid}`)
-					const { buffer, filename: downloadedFilename } = await downloadRisuCard(uuid)
-					installedParts.push(...await ImportAsData(username, buffer, downloadedFilename))
+					const { buffer } = await downloadRisuCard(uuid)
+					installedParts.push(...await ImportAsData(username, buffer))
 					continue
 				}
 				catch (err) {
@@ -254,10 +254,20 @@ async function ImportByText(username, text) {
 
 
 /**
- *
+ * @type {import('../../../decl/import.ts').import_handler_t}
  */
 export default {
 	info: {
+		'zh-CN': {
+			name: 'RisuAI 导入器',
+			avatar: '',
+			description: '导入 Risu 角色卡 (V3) 的 .png, .charx, 或 .json 格式文件，以及 realm.risuai.net 的网址。',
+			description_markdown: '导入 Risu 角色卡 (V3) 的 `.png`, `.charx`, 或 `.json` 格式文件，以及 `realm.risuai.net` 的网址。\n支持 CCv3 功能，包括内嵌资源和 lorebooks。',
+			version: '0.0.1',
+			author: 'steve02081504',
+			home_page: '',
+			tags: ['risu', '角色卡', 'ccv3', '导入'],
+		},
 		'': {
 			name: 'RisuAI Importer',
 			avatar: '',

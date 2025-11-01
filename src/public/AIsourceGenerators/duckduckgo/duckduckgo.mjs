@@ -120,6 +120,7 @@ export class DuckDuckGoAPI {
 			/**
 			 * 启动流。
 			 * @param {ReadableStreamDefaultController} controller - 控制器。
+			 * @returns {Promise<void>}
 			 */
 			async start(controller) {
 				while (true) {

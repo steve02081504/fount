@@ -1,13 +1,14 @@
 /**
  *
- * @param charAPI
- * @param ownerUsername
- * @param charname
+ * @param {import('../../../../../decl/charAPI.ts').CharAPI_t} charAPI
+ * @param {string} ownerUsername
+ * @param {string} charname
+ * @returns {{GetPetConfig: () => Promise<{url: string, windowOptions: {width: number, height: number}}>}}
  */
 export function createDefaultDeskpetInterface(charAPI, ownerUsername, charname) {
 	return {
 		/**
-		 *
+		 * @returns {Promise<{url: string, windowOptions: {width: number, height: number}}>}
 		 */
 		GetPetConfig: async () => ({
 			// The shell's public directory is automatically served at /shells/<shellname>/

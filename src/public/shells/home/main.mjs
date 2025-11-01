@@ -4,7 +4,7 @@ import { setEndpoints } from './src/endpoints.mjs'
 import { onPartInstalled, onPartUninstalled } from './src/home.mjs'
 
 /**
- * 主页Shell
+ * @type {import('../../../decl/shell.ts').shell_t}
  */
 export default {
 	info: {

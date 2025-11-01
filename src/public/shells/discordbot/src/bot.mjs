@@ -15,9 +15,9 @@ import { unlockAchievement } from '../../achievements/src/api.mjs'
  * @param {{
  * 	token: string,
  * 	config: any
- * }} config
- * @param {CharAPI_t} char
- * @returns {Promise<import('npm:discord.js').Client>}
+ * }} config - 机器人配置
+ * @param {CharAPI_t} char - 角色 API
+ * @returns {Promise<import('npm:discord.js').Client>} - Discord 客户端实例
  */
 async function startBot(config, char) {
 	const client = new Client({
@@ -95,6 +95,7 @@ export async function getBotConfigTemplate(username, charname) {
  * @param {string} username - 用户名。
  * @param {string} botname - 机器人名称。
  * @param {object} config - 配置。
+ * @returns {void}
  */
 export function setBotConfig(username, botname, config) {
 	const botsData = getBotsData(username)
@@ -106,6 +107,7 @@ export function setBotConfig(username, botname, config) {
  * 删除机器人配置。
  * @param {string} username - 用户名。
  * @param {string} botname - 机器人名称。
+ * @returns {void}
  */
 export function deleteBotConfig(username, botname) {
 	const botsData = getBotsData(username)

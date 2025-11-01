@@ -20,7 +20,7 @@ let partData = await loadJsonFile(partJsonPath)
 const info = {}
 
 /**
- *
+ * @returns {void}
  */
 function updateInfo() {
 	const charUrl = `/chars/${encodeURIComponent(partData.name)}`
@@ -44,32 +44,36 @@ export default {
 
 	/**
 	 *
-	 * @param stat
+	 * @param {import('../../../../../src/decl/part.ts').part_stat_t} stat
+	 * @returns {Promise<void>}
 	 */
 	async Init(stat) { },
 	/**
 	 *
-	 * @param stat
+	 * @param {import('../../../../../src/decl/part.ts').part_stat_t} stat
+	 * @returns {Promise<void>}
 	 */
 	async Load(stat) {
 		username = stat.username
 	},
 	/**
 	 *
-	 * @param reason
+	 * @param {string} reason
+	 * @returns {Promise<void>}
 	 */
 	async Unload(reason) { },
 	/**
 	 *
-	 * @param reason
-	 * @param from
+	 * @param {string} reason
+	 * @param {string} from
+	 * @returns {Promise<void>}
 	 */
 	async Uninstall(reason, from) { },
 
 	interfaces: {
 		config: {
 			/**
-			 *
+			 * @returns {Promise<{partData: any, AIsource: string}>}
 			 */
 			async GetData() {
 				return {
@@ -79,7 +83,8 @@ export default {
 			},
 			/**
 			 *
-			 * @param data
+			 * @param {{partData: any, AIsource: string}} data
+			 * @returns {Promise<void>}
 			 */
 			async SetData(data) {
 				if (data.AIsource) AIsource = await loadAIsource(username, data.AIsource)
@@ -94,7 +99,8 @@ export default {
 		chat: {
 			/**
 			 *
-			 * @param args
+			 * @param {import('../../../../../src/public/shells/chat/decl/chat.ts').ChatRequest_t} args
+			 * @returns {Promise<{text: {content: string, description: string, important: number}[], additional_chat_log: [], extension: {}}>}
 			 */
 			async GetPrompt(args) {
 				const context = {
@@ -125,8 +131,9 @@ export default {
 			},
 			/**
 			 *
-			 * @param args
-			 * @param index
+			 * @param {import('../../../../../src/public/shells/chat/decl/chat.ts').ChatRequest_t} args
+			 * @param {number} index
+			 * @returns {Promise<{content: string}>}
 			 */
 			async GetGreeting(args, index) {
 				if (!partData.first_mes) return null
@@ -140,7 +147,8 @@ export default {
 			},
 			/**
 			 *
-			 * @param arg
+			 * @param {import('../../../../../src/public/shells/chat/decl/chat.ts').ChatRequest_t} arg
+			 * @returns {Promise<import("../../../../../src/public/shells/chat/decl/chatLog.ts").chatReply_t>}
 			 */
 			async GetReply(arg) {
 				if (!AIsource)
@@ -159,7 +167,8 @@ export default {
 				// 构建插件可能需要的追加上下文函数
 				/**
 				 *
-				 * @param entry
+				 * @param {import('../../../../../src/public/shells/chat/decl/chatLog.ts').chatLogEntry_t} entry
+				 * @returns {void}
 				 */
 				function AddLongTimeLog(entry) {
 					entry.charVisibility = [arg.char_id]

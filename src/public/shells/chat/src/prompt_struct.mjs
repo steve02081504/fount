@@ -62,7 +62,7 @@ export async function buildPromptStruct(
 		world?.interfaces?.chat?.TweakPrompt?.(args, result, result.world_prompt, detail_level),
 		user?.interfaces?.chat?.TweakPrompt?.(args, result, result.user_prompt, detail_level),
 		char?.interfaces?.chat?.TweakPrompt?.(args, result, result.char_prompt, detail_level),
-		...Object.keys(other_chars).map(other_char => other_chars[other_char].interfaces.chat?.TweakPromptForOther?.(args, result, other_chars_prompt[other_char], detail_level)),
+		...Object.keys(other_chars).map(other_char => other_chars[other_char].interfaces.chat?.TweakPromptForOther?.(args, result, result.other_chars_prompt[other_char], detail_level)),
 		...Object.keys(plugins).map(plugin => plugins[plugin].interfaces.chat?.TweakPrompt?.(args, result, result.plugin_prompts[plugin], detail_level))
 	])
 

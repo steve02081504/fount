@@ -1260,7 +1260,7 @@ export async function deleteMessage(chatid, index) {
 
 	/**
 	 * 生成请求。
-	 * @returns {object} - 请求对象。
+	 * @returns {{index: number, chat_log: chatLogEntry_t[], chat_entry: chatLogEntry_t}} - 请求对象。
 	 */
 	function geneRequest() {
 		return {

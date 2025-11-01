@@ -10,7 +10,7 @@ import { uninstallPartBase } from '../../../server/parts_loader.mjs'
  * @param {any} username 用户名
  * @param {any} type 类型
  * @param {any} name 名称
- * @returns {string}
+ * @returns {string} 解析后的路径
  */
 export function resolvePath(username, type, name) {
 	const userPath = getUserDictionary(username)
@@ -24,7 +24,7 @@ export function resolvePath(username, type, name) {
  * @param {any} username 用户名
  * @param {any} type 类型
  * @param {any} name 名称
- * @returns {Promise<string>}
+ * @returns {Promise<string>} 可用路径
  */
 export async function getAvailablePath(username, type, name) {
 	const targetPath = resolvePath(username, type, name)

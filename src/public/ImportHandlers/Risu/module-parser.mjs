@@ -34,12 +34,12 @@ export async function parseRisuModule(moduleBuffer) {
 		let pos = 0
 		/**
 		 * 读取字节
-		 * @returns {number}
+		 * @returns {number} 读取的字节
 		 */
 		const readByte = () => moduleBuffer.readUInt8(pos++)
 		/**
 		 * 读取长度
-		 * @returns {number}
+		 * @returns {number} 读取的长度
 		 */
 		const readLength = () => {
 			const len = moduleBuffer.readUInt32LE(pos)
@@ -49,7 +49,7 @@ export async function parseRisuModule(moduleBuffer) {
 		/**
 		 * 读取数据
 		 * @param {any} len 长度
-		 * @returns {Buffer}
+		 * @returns {Buffer} 读取的数据
 		 */
 		const readData = len => {
 			const data = moduleBuffer.subarray(pos, pos + len)

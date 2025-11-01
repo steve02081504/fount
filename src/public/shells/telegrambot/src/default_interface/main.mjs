@@ -153,7 +153,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 				/**
 				 * 通过 CharAPI 添加聊天记录条目。
 				 * @param {ChatReply_t} replyFromChar - 来自角色的回复。
-				 * @returns {Promise<null>}
+				 * @returns {Promise<null>} - 返回一个解析为 null 的 Promise。
 				 */
 				const AddChatLogEntryViaCharAPI = async replyFromChar => {
 					if (replyFromChar && (replyFromChar.content || replyFromChar.files?.length)) {

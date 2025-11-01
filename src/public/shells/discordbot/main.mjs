@@ -17,7 +17,7 @@ async function handleAction(user, action, params) {
 }
 
 /**
- * Discord Bot Shell
+ * @type {import('../../../decl/shell.ts').shell_t}
  */
 export default {
 	info: {

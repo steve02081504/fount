@@ -10,6 +10,7 @@ import { applyTheme } from '../../scripts/theme.mjs'
 import { showToast, showToastI18n } from '../../scripts/toast.mjs'
 
 import { getConfigTemplate, getAIFile, setAIFile, deleteAIFile, addAIFile, getConfigDisplay } from './src/endpoints.mjs'
+import { createJsonEditor } from '../../scripts/jsonEditor.mjs'
 
 const jsonEditorContainer = document.getElementById('jsonEditor')
 const generatorDisplayContainer = document.getElementById('generatorDisplay')
@@ -30,6 +31,7 @@ let isDirty = false // 标记是否有未保存的更改
 let defaultParts = {} // Store default parts
 /**
  * 当JSON更新时调用的回调函数。
+ * @returns {number}
  */
 let onJsonUpdate = () => 0
 

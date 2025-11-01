@@ -107,7 +107,7 @@ async function GetSource(config, { username, SaveConfig }) {
 
 		/**
 		 * 卸载 AI 源。
-		 * @returns {Promise<void[]>}
+		 * @returns {Promise<void[]>} 一个 Promise，在所有未命名源卸载后解析。
 		 */
 		Unload: () => Promise.all(unnamedSources.map(source => source.Unload())),
 		/**

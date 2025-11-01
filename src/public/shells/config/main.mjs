@@ -16,7 +16,7 @@ async function handleAction(user, action, params) {
 }
 
 /**
- * 组件配置Shell
+ * @type {import('../../../decl/shell.ts').shell_t}
  */
 export default {
 	info: {

@@ -505,7 +505,7 @@ async function checkForUpdate() {
 			}
 		})
 		if (response.status !== 200) return
-		const remoteVersion = response.responseText.match(/@version\s+([^\s]+)/)?.[1]
+		const remoteVersion = response.responseText.match(/@version\s+(\S+)/)?.[1]
 		if (remoteVersion && remoteVersion !== GM_info.script.version)
 			if (window.confirm(await geti18n('browser_integration_script.update.prompt')))
 				window.open(scriptUrl, '_blank')
@@ -529,7 +529,7 @@ async function checkCspAndWarn() {
 		 * @param {string} s
 		 */
 			createScript: s => s }
-		// eslint-disable-next-line no-eval
+
 		eval(policy.createScript('1'))
 	}
 	catch (e) {

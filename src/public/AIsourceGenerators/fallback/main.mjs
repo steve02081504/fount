@@ -41,7 +41,7 @@ const configTemplate = {
  * @param {object} root0 - 根对象。
  * @param {string} root0.username - 用户名。
  * @param {Function} root0.SaveConfig - 保存配置的函数。
- * @returns {Promise<AIsource_t>} AI 源。
+ * @returns {Promise<AIsource_t>} 一个 Promise，解析为 AI 源。
  */
 async function GetSource(config, { username, SaveConfig }) {
 	const unnamedSources = []
@@ -69,7 +69,7 @@ async function GetSource(config, { username, SaveConfig }) {
 
 		/**
 		 * 卸载 AI 源。
-		 * @returns {Promise<void[]>}
+		 * @returns {Promise<void[]>} 一个 Promise，在所有未命名源卸载后解析。
 		 */
 		Unload: () => Promise.all(unnamedSources.map(source => source.Unload())),
 		/**

@@ -163,6 +163,7 @@ async function attachCardEventListeners(itemElement, itemDetails, itemName, inte
 
 	/**
 	 * 单击处理程序
+	 * @returns {void}
 	 */
 	const clickHandler = () => {
 		displayItemInfo(itemDetails)
@@ -413,6 +414,7 @@ async function displayFunctionButtons() {
 	/**
 	 * 扁平化项目。
 	 * @param {any[]} items - 项目。
+	 * @returns {void}
 	 */
 	function flatten(items) {
 		items.forEach(item => {
