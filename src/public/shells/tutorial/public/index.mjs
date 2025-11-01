@@ -80,7 +80,7 @@ function hideTutorialEnd() {
 function startMouseTutorial() {
 	resetProgress()
 	const message = geti18n('tutorial.progressMessages.mouseMove', {
-		mouseIcon: '<img src="https://api.iconify.design/ph/mouse.svg" class="text-icon inline">',
+		mouseIcon: /* html */ '<img src="https://api.iconify.design/ph/mouse.svg" class="text-icon inline">',
 	})
 	showProgressBar(message)
 
@@ -107,7 +107,7 @@ function handleMouseMove() {
 function startKeyboardTutorial() {
 	resetProgress()
 	const message = geti18n('tutorial.progressMessages.keyboardPress', {
-		keyboardIcon: '<img src="https://api.iconify.design/ph/keyboard.svg" class="text-icon inline">',
+		keyboardIcon: /* html */ '<img src="https://api.iconify.design/ph/keyboard.svg" class="text-icon inline">',
 	})
 	showProgressBar(message)
 
@@ -136,7 +136,7 @@ function handleKeyDown() {
 function startMobileTutorial() {
 	resetProgress()
 	const message = geti18n('tutorial.progressMessages.mobileTouchMove', {
-		phoneIcon: '<img src="https://api.iconify.design/proicons/phone.svg" class="text-icon inline">',
+		phoneIcon: /* html */ '<img src="https://api.iconify.design/proicons/phone.svg" class="text-icon inline">',
 	})
 	showProgressBar(message)
 
@@ -163,7 +163,7 @@ function handleTouchMove() {
 function startMobileClickTutorial() {
 	resetProgress()
 	const message = geti18n('tutorial.progressMessages.mobileClick', {
-		phoneIcon: '<img src="https://api.iconify.design/proicons/phone.svg" class="text-icon inline">',
+		phoneIcon: /* html */ '<img src="https://api.iconify.design/proicons/phone.svg" class="text-icon inline">',
 	})
 	showProgressBar(message)
 

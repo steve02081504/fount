@@ -180,7 +180,7 @@ export async function unlockAchievement(username, parttype, partname, achievemen
 		unlocked_at: unlockedTime,
 	}
 
-	const toastHtml = `\
+	const toastHtml = /* html */ `\
 <a href="/shells/achievements/" class="alert alert-success shadow-lg flex items-end opacity-80">
 	<div class="flex-none w-12 h-12 mr-2">
 		<img src="${unlockedAchievement.icon}" class="h-full w-full aspect-square" />

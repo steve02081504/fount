@@ -117,7 +117,7 @@ function formatRisuOutput(text) {
 	const risu_assets = chardata.extensions?.risu_assets || []
 	return text.replace(/<img="(?<src>[^"]+)">/g, (match, src) => {
 		const asset = risu_assets.find(a => a.name == src) || risu_assets.find(a => a.name == `${src}.${a.ext}`)
-		return `<img src="${charurl}/${asset.fount_uri}" class="modal-img">`
+		return /* html */ `<img src="${charurl}/${asset.fount_uri}" class="modal-img">`
 	})
 }
 

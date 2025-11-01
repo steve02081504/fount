@@ -140,7 +140,7 @@ async function handleDeleteScript(scriptId) {
  */
 async function loadAndRenderAutoRunScripts() {
 	try {
-		autorunScriptList.innerHTML = '<div class="text-center"><span class="loading loading-dots loading-md"></span></div>'
+		autorunScriptList.innerHTML = /* html */ '<div class="text-center"><span class="loading loading-dots loading-md"></span></div>'
 		const result = await api.getAutoRunScripts()
 		if (!result.success) throw new Error(result.message)
 
@@ -156,7 +156,7 @@ async function loadAndRenderAutoRunScripts() {
 		}
 	} catch (error) {
 		console.error('Failed to load auto-run scripts:', error)
-		autorunScriptList.innerHTML = `<p class="text-error">${geti18n('browser_integration.error.load_failed', { message: error.message })}</p>`
+		autorunScriptList.innerHTML = /* html */ `<p class="text-error">${geti18n('browser_integration.error.load_failed', { message: error.message })}</p>`
 	}
 }
 

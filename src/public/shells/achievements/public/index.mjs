@@ -21,7 +21,7 @@ async function renderAchievements() {
 	if (render_lock) return
 	render_lock = true
 	try {
-		achievementsContainer.innerHTML = '<div class="text-center"><span class="loading loading-dots loading-md"></span></div>'
+		achievementsContainer.innerHTML = /* html */ '<div class="text-center"><span class="loading loading-dots loading-md"></span></div>'
 		const allSources = await api.getAllAchievements()
 		achievementsContainer.innerHTML = ''
 

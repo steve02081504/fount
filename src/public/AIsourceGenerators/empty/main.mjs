@@ -11,7 +11,7 @@ export default {
 			 * @returns {Promise<object>} 配置显示内容。
 			 */
 			GetConfigDisplayContent: async () => ({
-				html: '<div class="text-warning" data-i18n="aisource_editor.common_config_interface.empty_generator"></div>'
+				html: /* html */ '<div class="text-warning" data-i18n="aisource_editor.common_config_interface.empty_generator"></div>'
 			}),
 			/**
 			 * 获取此 AI 源的配置模板。

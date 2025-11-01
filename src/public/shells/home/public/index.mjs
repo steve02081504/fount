@@ -135,7 +135,7 @@ async function attachCardEventListeners(itemElement, itemDetails, itemName, inte
 			button.classList.add(...classes)
 			if (interfaceItem.style) button.style.cssText = interfaceItem.style
 
-			button.innerHTML = interfaceItem.button ?? '<img src="https://api.iconify.design/line-md/question-circle.svg" />'
+			button.innerHTML = interfaceItem.button ?? /* html */ '<img src="https://api.iconify.design/line-md/question-circle.svg" />'
 			button.title = interfaceItem.info.title
 			svgInliner(button)
 
@@ -338,7 +338,7 @@ async function displayFunctionButtons() {
 
 			const iconSpan = document.createElement('span')
 			iconSpan.classList.add('mr-2')
-			iconSpan.innerHTML = buttonItem.button ?? '<img src="https://api.iconify.design/line-md/folder-filled.svg" class="text-icon" />'
+			iconSpan.innerHTML = buttonItem.button ?? /* html */ '<img src="https://api.iconify.design/line-md/folder-filled.svg" class="text-icon" />'
 			svgInliner(iconSpan)
 
 			const titleSpan = document.createElement('span')
@@ -368,7 +368,7 @@ async function displayFunctionButtons() {
 
 			const iconSpan = document.createElement('span')
 			iconSpan.classList.add('mr-2')
-			iconSpan.innerHTML = buttonItem.button ?? '<img src="https://api.iconify.design/line-md/question-circle.svg" class="text-icon" />'
+			iconSpan.innerHTML = buttonItem.button ?? /* html */ '<img src="https://api.iconify.design/line-md/question-circle.svg" class="text-icon" />'
 			svgInliner(iconSpan)
 
 			const titleSpan = document.createElement('span')

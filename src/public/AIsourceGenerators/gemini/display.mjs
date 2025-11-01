@@ -7,7 +7,7 @@ return async ({ data, containers }) => {
 	const div = containers.generatorDisplay
 	const { apikey, proxy_url } = data
 	if (!apikey) {
-		div.innerHTML = '<div class="text-warning" data-i18n="aisource_editor.common_config_interface.apiKeyRequired"></div>'
+		div.innerHTML = /* html */ '<div class="text-warning" data-i18n="aisource_editor.common_config_interface.apiKeyRequired"></div>'
 		return
 	}
 
@@ -15,7 +15,7 @@ return async ({ data, containers }) => {
 	last_apikey = apikey
 	last_proxy_url = proxy_url || ''
 
-	div.innerHTML = '<div data-i18n="aisource_editor.common_config_interface.loadingModels"></div>'
+	div.innerHTML = /* html */ '<div data-i18n="aisource_editor.common_config_interface.loadingModels"></div>'
 
 	try {
 		const { GoogleGenAI } = await import('https://esm.sh/@google/genai')
@@ -35,7 +35,7 @@ return async ({ data, containers }) => {
 
 		const model_ids = models.map(m => m.replace(/^models\//, '')).sort()
 		const copied_text = geti18n('aisource_editor.common_config_interface.copied')
-		div.innerHTML = `
+		div.innerHTML = /* html */ `
 <h3 class="text-lg font-semibold" data-i18n="aisource_editor.common_config_interface.availableModels"></h3>
 <p class="text-sm opacity-70" data-i18n="aisource_editor.common_config_interface.copyModelIdTooltip"></p>
 <div class="flex flex-wrap gap-2 mt-2">
@@ -49,7 +49,7 @@ ${model_ids.map(id => `
 	}
 	catch (error) {
 		console.error('Failed to fetch models:', error)
-		div.innerHTML = `
+		div.innerHTML = /* html */ `
 <div class="text-error" style="overflow-wrap: break-word;">${geti18n('aisource_editor.common_config_interface.loadModelsFailed', { message: error.message })}</div>
 `
 	}

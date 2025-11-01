@@ -149,7 +149,7 @@ async function loadPartAddons(partType, partName) {
 	}
 	catch (e) {
 		console.error('Error loading or evaluating part addons:', e)
-		partDisplayContainer.innerHTML = `<div class="text-error">Error loading part display: ${e.message}</div>`
+		partDisplayContainer.innerHTML = /* html */ `<div class="text-error">Error loading part display: ${e.message}</div>`
 	}
 }
 

@@ -207,7 +207,7 @@ async function loadGeneratorAddons(generatorName) {
 	}
 	catch (e) {
 		console.error('Error loading or evaluating generator addons:', e)
-		generatorDisplayContainer.innerHTML = `<div class="text-error">Error loading generator display: ${e.message}</div>`
+		generatorDisplayContainer.innerHTML = /* html */ `<div class="text-error">Error loading generator display: ${e.message}</div>`
 	}
 }
 

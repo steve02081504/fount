@@ -52,15 +52,15 @@ async function generateFullHtmlForMessage(message) {
 
 			let previewHtml = ''
 			if (file.mime_type.startsWith('image/'))
-				previewHtml = `<img src="${dataUrl}" alt="${file.name}" style="max-width: 100%; max-height: 100%; object-fit: contain; cursor: zoom-in;" onclick="openModal('${dataUrl}', 'image')">`
+				previewHtml = /* html */ `<img src="${dataUrl}" alt="${file.name}" style="max-width: 100%; max-height: 100%; object-fit: contain; cursor: zoom-in;" onclick="openModal('${dataUrl}', 'image')">`
 			else if (file.mime_type.startsWith('video/'))
-				previewHtml = `<video src="${dataUrl}" controls style="max-width: 100%; max-height: 100%;"></video>`
+				previewHtml = /* html */ `<video src="${dataUrl}" controls style="max-width: 100%; max-height: 100%;"></video>`
 			else if (file.mime_type.startsWith('audio/'))
-				previewHtml = `<audio src="${dataUrl}" controls></audio>`
+				previewHtml = /* html */ `<audio src="${dataUrl}" controls></audio>`
 			else
-				previewHtml = '<div class="file-placeholder" style="font-size: 40px; text-align: center;">📄</div>'
+				previewHtml = /* html */ '<div class="file-placeholder" style="font-size: 40px; text-align: center;">📄</div>'
 
-			return `\
+			return /* html */ `\
 <div class="attachment" style="border: 1px solid #ccc; border-radius: 5px; padding: 10px; margin: 5px; display: inline-block; text-align: center; max-width: 200px;">
 	<div class="preview" style="min-height: 100px; display: flex; align-items: center; justify-content: center;">
 		${previewHtml}
@@ -70,7 +70,7 @@ async function generateFullHtmlForMessage(message) {
 </div>
 `
 		}))
-		attachmentsHtml = `<div class="attachments" style="margin-top: 10px; display: flex; flex-wrap: wrap;">${attachmentItems.join('')}</div>`
+		attachmentsHtml = /* html */ `<div class="attachments" style="margin-top: 10px; display: flex; flex-wrap: wrap;">${attachmentItems.join('')}</div>`
 	}
 
 	const modalScript = `\
@@ -99,7 +99,7 @@ function openModal(src, type) {
 }
 `
 
-	return `\
+	return /* html */ `\
 <!DOCTYPE html>
 <html lang="${main_locale}">
 <head>

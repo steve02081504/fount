@@ -397,7 +397,7 @@ const preExistingOutput = document.querySelectorAll('.${uniqueId}-execution-outp
 for (const output of preExistingOutput) output.remove()
 
 const outputContainer = document.createElement('div')
-outputContainer.innerHTML = \`\\
+outputContainer.innerHTML = /* html */ \`\\
 <div class="join-item alert">
 	${playIconSized}
 	<div class="loading loading-spinner"></div>
@@ -409,7 +409,7 @@ codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 	let alerts = []
 
 	if (result.error)
-		alerts.push(\`\\
+		alerts.push(/* html */ \`\\
 <div class="join-item alert alert-error bg-error/50 border-error/50">
 	<div>
 		<div class="font-bold">Error</div>
@@ -418,7 +418,7 @@ codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 </div>
 \`)
 	if (result.output)
-		alerts.push(\`\\
+		alerts.push(/* html */ \`\\
 <div class="join-item alert alert-info bg-info/40 border-info/40">
 	<div>
 		<div class="font-bold">Output</div>
@@ -427,7 +427,7 @@ codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 </div>
 \`)
 	if (result.result)
-		alerts.push(\`\\
+		alerts.push(/* html */ \`\\
 <div class="join-item alert alert-success bg-success/40 border-success/40">
 	<div>
 		<div class="font-bold">Result</div>
@@ -436,7 +436,7 @@ codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 </div>
 \`)
 	if (result.exitcode !== undefined)
-		alerts.push(\`\\
+		alerts.push(/* html */ \`\\
 <div class="join-item alert alert-secondary bg-secondary/40 border-secondary/40">
 	<div>
 		<div class="text-xs">Exit Code: \${result.exitcode}</div>
@@ -446,7 +446,7 @@ codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 
 	outputContainer.innerHTML = alerts.join('')
 }).catch(e => {
-	outputContainer.innerHTML = \`\\
+	outputContainer.innerHTML = /* html */ \`\\
 <div class="join-item alert alert-error bg-error/70 border-error/70">
 	<div>
 		<div class="font-bold">Execution Error</div>

@@ -52,7 +52,7 @@ async function loadTemplateUI() {
 	}
 	catch (error) {
 		console.error(`Failed to load UI for template ${selectedTemplate}:`, error)
-		templateFormContainer.innerHTML = '<p class="text-error">Failed to load template UI.</p>'
+		templateFormContainer.innerHTML = /* html */ '<p class="text-error">Failed to load template UI.</p>'
 	}
 }
 
