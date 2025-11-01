@@ -18,8 +18,33 @@ export function GetDefaultShellAssistInterface(char_API, username, char_name) {
 		throw new Error('charAPI.interfaces.chat.GetReply is required for ShellAssistInterface.')
 	/**
 	 * ShellAssist 主函数。
-	 * @param {object} args - 参数。
-	 * @returns {Promise<object>} - 结果。
+	 * @type {(data: {
+	 * 	username: string
+	 * 	UserCharname: string
+	 * 	shelltype: string
+	 * 	shellhistory: ({
+	 * 		command: string
+	 * 		output: string
+	 * 		error: string
+	 * 		time: timeStamp_t
+	 * 	} | {
+	 * 		role: role_t
+	 * 		content: string
+	 * 	})[]
+	 *  pwd: string
+	 *  screen: string
+	 * 	command_now: string
+	 * 	command_output: string
+	 * 	command_error: string
+	 * 	rejected_commands: string[]
+	 * 	chat_scoped_char_memory: object
+	 * }) => Promise<{
+	 * 	name: string
+	 * 	avatar: string
+	 * 	recommend_command: string
+	 * 	content: string
+	 * 	chat_scoped_char_memory: object
+	 * }>}
 	 */
 	async function shellAssistMain(args) {
 		/** @type {chatLogEntry_t[]} */
