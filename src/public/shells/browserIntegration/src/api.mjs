@@ -6,13 +6,13 @@ import { unlockAchievement } from '../../achievements/src/api.mjs'
 
 /**
  * @typedef {object} PageInfo
- * @property {number} id
- * @property {import('npm:ws').WebSocket | null} ws
- * @property {string} url
- * @property {string} title
- * @property {boolean} hasFocus
- * @property {Date} connectedAt
- * @property {Date|null} disconnectedAt
+ * @property {number} id - 页面 ID
+ * @property {import('npm:ws').WebSocket | null} ws - WebSocket 连接
+ * @property {string} url - 页面 URL
+ * @property {string} title - 页面标题
+ * @property {boolean} hasFocus - 页面是否获得焦点
+ * @property {Date} connectedAt - 连接时间
+ * @property {Date|null} disconnectedAt - 断开连接时间
  */
 
 const pendingRequests = new Map()
@@ -274,7 +274,7 @@ class UserPageManager {
 const userManagers = new Map()
 
 /**
- *
+ * @description 获取用户页面管理器。
  * @param {string} username - 用户名。
  * @returns {UserPageManager} - 用户页面管理器。
  */
@@ -296,7 +296,7 @@ setInterval(() => {
 
 // --- Userscript WebSocket ---
 /**
- *
+ * @description 处理 WebSocket 连接。
  * @param {import('npm:ws').WebSocket} ws - WebSocket连接。
  * @param {string} username - 用户名。
  */
@@ -358,7 +358,7 @@ export function handleConnection(ws, username) {
 // --- Exported API Functions ---
 
 /**
- *
+ * @description 获取浏览历史。
  * @param {string} username - 用户名。
  * @returns {Array<object>} - 浏览历史列表。
  */
@@ -367,7 +367,7 @@ export function getBrowseHistory(username) {
 }
 
 /**
- *
+ * @description 获取连接的页面。
  * @param {string} username - 用户名。
  * @returns {Array<object>} - 连接的页面列表。
  */
@@ -376,7 +376,7 @@ export function getConnectedPages(username) {
 }
 
 /**
- *
+ * @description 获取有焦点的页面信息。
  * @param {string} username - 用户名。
  * @returns {object | undefined} - 有焦点的页面信息。
  */
@@ -385,7 +385,7 @@ export function getFocusedPageInfo(username) {
 }
 
 /**
- *
+ * @description 获取页面 HTML。
  * @param {string} username - 用户名。
  * @param {number} pageId - 页面ID。
  * @returns {Promise<any>} - 页面HTML。
@@ -395,7 +395,7 @@ export async function getPageHtml(username, pageId) {
 }
 
 /**
- *
+ * @description 获取可见部分的 HTML。
  * @param {string} username - 用户名。
  * @param {number} pageId - 页面ID。
  * @returns {Promise<any>} - 可见部分的HTML。
@@ -405,7 +405,7 @@ export async function getVisibleHtml(username, pageId) {
 }
 
 /**
- *
+ * @description 在页面上运行 JS。
  * @param {string} username - 用户名。
  * @param {number} pageId - 页面ID。
  * @param {string} script - 脚本。
@@ -422,7 +422,7 @@ export async function runJsOnPage(username, pageId, script, callbackInfo = null)
 const DATA_NAME = 'autorun_scripts'
 
 /**
- *
+ * @description 获取脚本数据。
  * @param {string} username - 用户名。
  * @returns {object} - 脚本数据。
  */
@@ -435,7 +435,7 @@ function getScriptsData(username) {
 }
 
 /**
- *
+ * @description 列出自动运行脚本。
  * @param {string} username - 用户名。
  * @returns {Array<object>} - 自动运行脚本列表。
  */
@@ -445,7 +445,7 @@ export function listAutoRunScripts(username) {
 }
 
 /**
- *
+ * @description 添加自动运行脚本。
  * @param {string} username - 用户名。
  * @param {object} root0 - 参数。
  * @param {string} root0.urlRegex - URL正则表达式。
@@ -471,7 +471,7 @@ export function addAutoRunScript(username, { urlRegex, script, comment }) {
 }
 
 /**
- *
+ * @description 删除自动运行脚本。
  * @param {string} username - 用户名。
  * @param {string} id - 脚本ID。
  * @returns {object} - 删除结果。
@@ -488,7 +488,7 @@ export function removeAutoRunScript(username, id) {
 }
 
 /**
- *
+ * @description 更新自动运行脚本。
  * @param {string} username - 用户名。
  * @param {string} id - 脚本ID。
  * @param {object} fields - 字段。
