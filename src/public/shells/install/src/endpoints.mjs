@@ -4,8 +4,8 @@ import { uninstallPartBase } from '../../../../server/parts_loader.mjs'
 import { importPart, importPartByText } from './Installer_handler.mjs'
 
 /**
- *
- * @param router
+ * 为安装功能设置API端点。
+ * @param {object} router - Express的路由实例。
  */
 export function setEndpoints(router) {
 	// 文件上传接口

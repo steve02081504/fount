@@ -61,12 +61,12 @@ async function renderBotDropdown() {
 		disabled,
 		/**
 		 * @param {object} selectedItem - 选定的项目。
+		 * @returns {Promise<void>}
 		 */
 		onSelect: async (selectedItem) => {
 			const botName = selectedItem ? selectedItem.value : null
 			if (botName == selectedBot) return
-			if (!isDirty) return
-			if (!confirmI18n('telegram_bots.alerts.unsavedChanges')) return true
+			if (isDirty && !confirmI18n('telegram_bots.alerts.unsavedChanges')) return true
 			await loadBotConfig(botName)
 		}
 	})

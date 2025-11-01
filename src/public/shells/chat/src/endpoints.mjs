@@ -29,9 +29,9 @@ import {
 import { addfile, getfile } from './files.mjs'
 
 /**
- * 设置应用程序中聊天操作的API端点。
+ * 为聊天功能设置API端点。
  *
- * @param {import('npm:websocket-express').Router} router - 将附加端点的express路由器。
+ * @param {import('npm:websocket-express').Router} router - Express路由实例，用于附加端点。
  */
 export function setEndpoints(router) {
 	router.ws('/ws/shells/chat/ui/:chatid', authenticate, async (ws, req) => {

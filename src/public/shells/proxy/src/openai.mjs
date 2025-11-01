@@ -225,6 +225,7 @@ export function setOpenAIAPIEndpoints(router) {
 	 * 处理补全。
 	 * @param {import('express').Request} req - 请求对象。
 	 * @param {import('express').Response} res - 响应对象。
+	 * @returns {Promise<void>}
 	 */
 	const processCompletions = async (req, res) => {
 		try {
@@ -252,6 +253,7 @@ export function setOpenAIAPIEndpoints(router) {
 	 * 处理聊天补全。
 	 * @param {import('express').Request} req - 请求对象。
 	 * @param {import('express').Response} res - 响应对象。
+	 * @returns {Promise<void>}
 	 */
 	const processChatCompletions = async (req, res) => {
 		try {

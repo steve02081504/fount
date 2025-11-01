@@ -197,9 +197,9 @@ export default {
 		}
 	},
 	/**
-	 * 加载Shell。
-	 * @param {object} root0 - 参数。
-	 * @param {object} root0.router - 路由。
+	 * 加载浏览器集成Shell并设置API端点。
+	 * @param {object} root0 - 参数对象。
+	 * @param {object} root0.router - Express的路由实例。
 	 */
 	Load: ({ router }) => {
 		setEndpoints(router)

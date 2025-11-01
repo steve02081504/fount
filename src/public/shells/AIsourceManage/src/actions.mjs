@@ -5,22 +5,22 @@ import { unlockAchievement } from '../../achievements/src/api.mjs'
 import { addAISourceFile, deleteAISourceFile, getAISourceFile, saveAISourceFile } from './manager.mjs'
 
 /**
- * AI源管理操作
+ * 定义了AI源管理的可用操作。
  */
 export const actions = {
 	/**
-	 * 列出AI源。
-	 * @param {object} root0 - 参数。
-	 * @param {string} root0.user - 用户。
-	 * @returns {Promise<Array<string>>} - AI源列表。
+	 * 列出指定用户的AI源。
+	 * @param {object} root0 - 参数对象。
+	 * @param {string} root0.user - 用户名。
+	 * @returns {Promise<Array<string>>} - 返回一个包含AI源名称的数组。
 	 */
 	list: ({ user }) => getPartList(user, 'AIsources'),
 	/**
-	 * 创建AI源。
-	 * @param {object} root0 - 参数。
-	 * @param {string} root0.user - 用户。
-	 * @param {string} root0.sourceName - AI源名称。
-	 * @returns {Promise<string>} - 创建成功消息。
+	 * 为指定用户创建一个新的AI源。
+	 * @param {object} root0 - 参数对象。
+	 * @param {string} root0.user - 用户名。
+	 * @param {string} root0.sourceName - 要创建的AI源的名称。
+	 * @returns {Promise<string>} - 返回一个确认消息。
 	 */
 	create: async ({ user, sourceName }) => {
 		if (!sourceName) throw new Error('AI source name is required for create action.')
@@ -28,11 +28,11 @@ export const actions = {
 		return `AI source '${sourceName}' created.`
 	},
 	/**
-	 * 删除AI源。
-	 * @param {object} root0 - 参数。
-	 * @param {string} root0.user - 用户。
-	 * @param {string} root0.sourceName - AI源名称。
-	 * @returns {Promise<string>} - 删除成功消息。
+	 * 删除指定用户的AI源。
+	 * @param {object} root0 - 参数对象。
+	 * @param {string} root0.user - 用户名。
+	 * @param {string} root0.sourceName - 要删除的AI源的名称。
+	 * @returns {Promise<string>} - 返回一个确认消息。
 	 */
 	delete: async ({ user, sourceName }) => {
 		if (!sourceName) throw new Error('AI source name is required for delete action.')
@@ -40,23 +40,23 @@ export const actions = {
 		return `AI source '${sourceName}' deleted.`
 	},
 	/**
-	 * 获取AI源。
-	 * @param {object} root0 - 参数。
-	 * @param {string} root0.user - 用户。
-	 * @param {string} root0.sourceName - AI源名称。
-	 * @returns {Promise<object>} - AI源配置。
+	 * 获取指定用户的AI源配置。
+	 * @param {object} root0 - 参数对象。
+	 * @param {string} root0.user - 用户名。
+	 * @param {string} root0.sourceName - 要获取的AI源的名称。
+	 * @returns {Promise<object>} - 返回AI源的配置对象。
 	 */
 	get: ({ user, sourceName }) => {
 		if (!sourceName) throw new Error('AI source name is required for get action.')
 		return getAISourceFile(user, sourceName)
 	},
 	/**
-	 * 设置AI源。
-	 * @param {object} root0 - 参数。
-	 * @param {string} root0.user - 用户。
-	 * @param {string} root0.sourceName - AI源名称。
-	 * @param {object} root0.config - 配置。
-	 * @returns {Promise<string>} - 设置成功消息。
+	 * 设置或更新指定用户的AI源配置。
+	 * @param {object} root0 - 参数对象。
+	 * @param {string} root0.user - 用户名。
+	 * @param {string} root0.sourceName - 要设置的AI源的名称。
+	 * @param {object} root0.config - 新的配置对象。
+	 * @returns {Promise<string>} - 返回一个确认消息。
 	 */
 	set: async ({ user, sourceName, config }) => {
 		if (!sourceName) throw new Error('AI source name is required for set action.')
@@ -64,11 +64,11 @@ export const actions = {
 		return `AI source '${sourceName}' updated.`
 	},
 	/**
-	 * 设置默认AI源。
-	 * @param {object} root0 - 参数。
-	 * @param {string} root0.user - 用户。
-	 * @param {string} root0.sourceName - AI源名称。
-	 * @returns {Promise<string>} - 设置成功消息。
+	 * 将指定的AI源设置为用户的默认源。
+	 * @param {object} root0 - 参数对象。
+	 * @param {string} root0.user - 用户名。
+	 * @param {string} root0.sourceName - 要设置为默认的AI源的名称。
+	 * @returns {Promise<string>} - 返回一个确认消息。
 	 */
 	'set-default': async ({ user, sourceName }) => {
 		if (!sourceName) throw new Error('AI source name is required for set-default action.')

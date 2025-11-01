@@ -172,8 +172,10 @@ async function loadEditor(partType, partName) {
 				readOnly: true,
 				/**
 				 * 当 JSON 编辑器内容改变时的回调函数。
+				 * @param {object} json - JSON 对象。
+				 * @param {string} text - 纯文本。
 				 */
-				onChange: () => {
+				onChange: (json, text) => {
 					isDirty = true
 					onJsonUpdate({
 						info: {

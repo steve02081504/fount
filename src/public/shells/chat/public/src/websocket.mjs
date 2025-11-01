@@ -15,7 +15,7 @@ import { handleMessageAdded, handleMessageDeleted, handleMessageReplaced } from 
 let ws = null
 
 /**
- *
+ * 连接到WebSocket。
  */
 function connect() {
 	if (!currentChatId) return
@@ -25,15 +25,15 @@ function connect() {
 	ws = new WebSocket(wsUrl)
 
 	/**
-	 *
+	 * WebSocket打开时的回调。
 	 */
 	ws.onopen = async () => {
 		console.log(`Chat UI WebSocket connected for chat ${currentChatId}.`)
 	}
 
 	/**
-	 *
-	 * @param event
+	 * WebSocket收到消息时的回调。
+	 * @param {MessageEvent} event - 消息事件。
 	 */
 	ws.onmessage = (event) => {
 		try {
@@ -48,7 +48,7 @@ function connect() {
 	}
 
 	/**
-	 *
+	 * WebSocket关闭时的回调。
 	 */
 	ws.onclose = () => {
 		const RECONNECT_DELAY = 3000
@@ -58,8 +58,8 @@ function connect() {
 	}
 
 	/**
-	 *
-	 * @param err
+	 * WebSocket出错时的回调。
+	 * @param {Event} err - 错误事件。
 	 */
 	ws.onerror = (err) => {
 		console.error('Chat UI WebSocket error:', err)
@@ -67,8 +67,9 @@ function connect() {
 }
 
 /**
- *
- * @param event
+ * 处理广播事件。
+ * @param {object} event - 事件。
+ * @returns {Promise<void>}
  */
 async function handleBroadcastEvent(event) {
 	const { type, payload } = event
@@ -106,7 +107,7 @@ async function handleBroadcastEvent(event) {
 }
 
 /**
- *
+ * 初始化WebSocket。
  */
 export function initializeWebSocket() {
 	if (ws) return

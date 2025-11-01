@@ -1,9 +1,9 @@
 /**
- * 处理动作。
- * @param {string} user - 用户。
- * @param {string} action - 动作。
- * @param {object} params - 参数。
- * @returns {Promise<any>} - 动作结果。
+ * 处理传入的动作请求。
+ * @param {string} user - 用户名。
+ * @param {string} action - 要执行的动作名称。
+ * @param {object} params - 动作所需的参数。
+ * @returns {Promise<any>} - 返回动作执行的结果。
  */
 async function handleAction(user, action, params) {
 	const { actions } = await import('./src/actions.mjs')
@@ -224,9 +224,9 @@ export default {
 	interfaces: {
 		invokes: {
 			/**
-			 * 参数处理器。
-			 * @param {string} user - 用户。
-			 * @param {Array<string>} args - 参数。
+			 * 处理命令行参数，显示用于在其他设备上访问的URL和二维码。
+			 * @param {string} user - 用户名。
+			 * @param {Array<string>} args - 命令行参数（未使用）。
 			 * @returns {Promise<void>}
 			 */
 			ArgumentsHandler: async (user, args) => {
@@ -236,10 +236,10 @@ export default {
 				qrcode.generate(url, { small: true })
 			},
 			/**
-			 * IPC调用处理器。
-			 * @param {string} user - 用户。
-			 * @param {object} args - 参数。
-			 * @returns {Promise<any>} - 动作结果。
+			 * 处理IPC调用，返回用于在其他设备上访问的URL。
+			 * @param {string} user - 用户名。
+			 * @param {object} args - IPC调用参数（未使用）。
+			 * @returns {Promise<any>} - 动作结果，即访问URL。
 			 */
 			IPCInvokeHandler: async (user, args) => {
 				return handleAction(user, 'default', args)
