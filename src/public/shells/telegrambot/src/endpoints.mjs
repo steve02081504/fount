@@ -11,6 +11,14 @@ import {
 	getBotConfigTemplate
 } from './bot.mjs' // 确保从 telegrambot 的 bot.mjs 导入
 
+/**
+ * telegrambot 的 API 端点。
+ */
+
+/**
+ * 设置 telegrambot 的 API 端点。
+ * @param {object} router - Express 路由实例。
+ */
 export function setEndpoints(router) {
 	// 启动 Telegram Bot
 	router.post('/api/shells/telegrambot/start', authenticate, async (req, res) => {

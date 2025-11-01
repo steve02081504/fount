@@ -22,6 +22,10 @@
 		setBaseDir('../../..')
 		await initTranslations('installer_wait_screen.error')
 
+		/**
+		 * 填充语言选择器。
+		 * @returns {Promise<void>}
+		 */
 		async function populateLanguageSelector() {
 			const languageSelector = document.getElementById('language-selector')
 			const languageSearch = document.getElementById('language-search')
@@ -52,7 +56,16 @@
 			makeSearchable({
 				searchInput: languageSearch,
 				data: items,
+				/**
+				 * 数据访问器，用于从项目获取名称和语言环境。
+				 * @param {object} item - 列表中的项目。
+				 * @returns {{name: string, locale: string}} - 包含名称和语言环境的对象。
+				 */
 				dataAccessor: item => ({ name: item.name, locale: item.locale }),
+				/**
+				 * 更新回调函数，用于根据过滤后的项目更新显示。
+				 * @param {Array<object>} filteredItems - 过滤后的项目列表。
+				 */
 				onUpdate: (filteredItems) => {
 					const visibleElements = new Set(filteredItems)
 					items.forEach(item => {

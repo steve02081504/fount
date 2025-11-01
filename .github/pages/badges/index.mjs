@@ -60,6 +60,10 @@ copyButton.addEventListener('click', () => {
 	})
 })
 
+/**
+ * 主函数
+ * @returns {Promise<void>}
+ */
 async function main() {
 	await initTranslations('badges_maker')
 }

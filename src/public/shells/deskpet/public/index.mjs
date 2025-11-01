@@ -1,3 +1,6 @@
+/**
+ * 桌面宠物 shell 的客户端逻辑。
+ */
 import { initTranslations, i18nElement } from '/scripts/i18n.mjs'
 import { applyTheme } from '/scripts/theme.mjs'
 import { showToastI18n } from '/scripts/toast.mjs'
@@ -20,6 +23,10 @@ let charList = []
 let selectedChar = null
 let runningPets = []
 
+/**
+ * 渲染角色下拉列表。
+ * @returns {Promise<void>}
+ */
 async function renderCharDropdown() {
 	i18nElement(charSelectDropdown.parentElement)
 	const disabled = !charList || !charList.length
@@ -36,6 +43,9 @@ async function renderCharDropdown() {
 		textKey: 'name',
 		valueKey: 'value',
 		disabled,
+		/**
+		 * @param {object} selectedItem - 选定的项目。
+		 */
 		onSelect: (selectedItem) => {
 			selectedChar = selectedItem ? selectedItem.value : null
 			startPetButton.disabled = !selectedChar
@@ -43,6 +53,10 @@ async function renderCharDropdown() {
 	})
 }
 
+/**
+ * 渲染正在运行的宠物列表。
+ * @returns {Promise<void>}
+ */
 async function renderRunningPets() {
 	const runningPetItems = await Promise.all(runningPets.map(async (petName) => {
 		const element = await renderTemplate('running_pet_item', { name: petName })
@@ -54,11 +68,15 @@ async function renderRunningPets() {
 	if (runningPetItems.length)
 		runningPetItems.forEach(item => runningPetsList.appendChild(item))
 	else {
-		runningPetsList.innerHTML = '<p data-i18n="deskpet.runningCard.noPets">No pets are currently running.</p>'
+		runningPetsList.innerHTML = /* html */ '<p data-i18n="deskpet.runningCard.noPets">No pets are currently running.</p>'
 		i18nElement(runningPetsList)
 	}
 }
 
+/**
+ * 处理启动宠物的逻辑。
+ * @returns {Promise<void>}
+ */
 async function handleStartPet() {
 	if (!selectedChar) return
 
@@ -78,6 +96,11 @@ async function handleStartPet() {
 	startPetButton.disabled = !selectedChar
 }
 
+/**
+ * 处理停止宠物的逻辑。
+ * @param {string} charname - 角色名称。
+ * @returns {Promise<void>}
+ */
 async function handleStopPet(charname) {
 	try {
 		await stopPet(charname)
@@ -89,15 +112,27 @@ async function handleStopPet(charname) {
 	}
 }
 
+/**
+ * 刷新正在运行的宠物列表。
+ * @returns {Promise<void>}
+ */
 async function refreshRunningPets() {
 	runningPets = await getRunningPetList()
 	await renderRunningPets()
 }
 
+/**
+ * 获取 URL 参数。
+ * @returns {URLSearchParams} - URL 参数。
+ */
 function getURLParams() {
 	return new URLSearchParams(window.location.search)
 }
 
+/**
+ * 从 URL 参数初始化。
+ * @returns {Promise<void>}
+ */
 async function initializeFromURLParams() {
 	const urlParams = getURLParams()
 	const charName = urlParams.get('char')
@@ -108,6 +143,10 @@ async function initializeFromURLParams() {
 	}
 }
 
+/**
+ * 初始化应用程序。
+ * @returns {Promise<void>}
+ */
 async function init() {
 	await applyTheme()
 	await initTranslations('deskpet')

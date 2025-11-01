@@ -2,7 +2,7 @@ import { initLinesBackground, updateColors as updateLinesBackgroundColors } from
 import { svgInliner } from './svgInliner.mjs'
 
 /**
- * @description 解析 oklch 颜色字符串。
+ * 解析 oklch 颜色字符串。
  * @param {string} colorString - 颜色字符串。
  * @returns {number|null} - 亮度值或 null。
  */
@@ -20,7 +20,7 @@ function parseOklch(colorString) {
 }
 
 /**
- * @description 解析 rgb 颜色字符串。
+ * 解析 rgb 颜色字符串。
  * @param {string} colorString - 颜色字符串。
  * @returns {number|null} - 亮度值或 null。
  */
@@ -42,7 +42,7 @@ function parseRgb(colorString) {
 }
 
 /**
- * @description 解析 hsl 颜色字符串。
+ * 解析 hsl 颜色字符串。
  * @param {string} colorString - 颜色字符串。
  * @returns {number|null} - 亮度值或 null。
  */
@@ -62,14 +62,14 @@ function parseHsl(colorString) {
 
 let theme_now
 /**
- * @description 是否为暗黑模式。
+ * 是否为暗黑模式。
  * @type {boolean}
  */
 export let is_dark = Boolean(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
 
 let oldBcColor
 /**
- * @description 检查颜色变化。
+ * 检查颜色变化。
  * @returns {void}
  */
 function check_color_change() {
@@ -81,7 +81,7 @@ function check_color_change() {
 	}
 }
 /**
- * @description 自动调整框架大小。
+ * 自动调整框架大小。
  * @returns {void}
  */
 function autoresize_frames() {
@@ -96,7 +96,7 @@ function autoresize_frames() {
 	} catch (e) { }
 }
 /**
- * @description 主题心跳。
+ * 主题心跳。
  * @returns {void}
  */
 function themeHeartbeat() {
@@ -106,7 +106,7 @@ function themeHeartbeat() {
 }
 
 /**
- * @description 应用主题。
+ * 应用主题。
  * @returns {void}
  */
 export const applyTheme = () => {
@@ -119,7 +119,7 @@ export const applyTheme = () => {
 const functions = []
 
 /**
- * @description 注册主题更改回调。
+ * 注册主题更改回调。
  * @param {Function} callback - 回调函数。
  * @returns {void}
  */
@@ -134,7 +134,7 @@ export function onThemeChange(callback) {
 }
 
 /**
- * @description 获取当前主题。
+ * 获取当前主题。
  * @returns {string} - 当前主题。
  */
 export function getCurrentTheme() {
@@ -142,7 +142,7 @@ export function getCurrentTheme() {
 }
 
 /**
- * @description 设置主题。
+ * 设置主题。
  * @param {string} theme - 主题。
  * @returns {void}
  */
@@ -155,7 +155,7 @@ export function setTheme(theme) {
 	if (document.documentElement.dataset.theme !== theme) document.documentElement.setAttribute('data-theme', theme)
 }
 /**
- * @description 更新颜色。
+ * 更新颜色。
  * @returns {void}
  */
 function updateColors() {
@@ -216,7 +216,7 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e =
 	document.head.prepend(daisyui_theme_style)
 }
 /**
- * @description 内置主题。
+ * 内置主题。
  * @type {Promise<string[]>}
  */
 export const builtin_themes = await import('https://cdn.jsdelivr.net/npm/daisyui/functions/themeOrder.js').then(m => m.default)

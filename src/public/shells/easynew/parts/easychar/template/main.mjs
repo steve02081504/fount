@@ -19,6 +19,9 @@ let partData = await loadJsonFile(partJsonPath)
 
 const info = {}
 
+/**
+ * @returns {void}
+ */
 function updateInfo() {
 	const charUrl = `/chars/${encodeURIComponent(partData.name)}`
 	info[''] = {
@@ -39,21 +42,51 @@ updateInfo()
 export default {
 	info,
 
+	/**
+	 * 初始化函数。
+	 * @param {import('../../../../../src/decl/part.ts').part_stat_t} stat - 部件状态对象。
+	 * @returns {Promise<void>}
+	 */
 	async Init(stat) { },
+	/**
+	 * 加载函数。
+	 * @param {import('../../../../../src/decl/part.ts').part_stat_t} stat - 部件状态对象。
+	 * @returns {Promise<void>}
+	 */
 	async Load(stat) {
 		username = stat.username
 	},
+	/**
+	 * 卸载函数。
+	 * @param {string} reason - 卸载原因。
+	 * @returns {Promise<void>}
+	 */
 	async Unload(reason) { },
+	/**
+	 * 卸载函数。
+	 * @param {string} reason - 卸载原因。
+	 * @param {string} from - 来源。
+	 * @returns {Promise<void>}
+	 */
 	async Uninstall(reason, from) { },
 
 	interfaces: {
 		config: {
+			/**
+			 * 获取数据。
+			 * @returns {Promise<{partData: any, AIsource: string}>} 返回包含部件数据和 AI 源的 Promise。
+			 */
 			async GetData() {
 				return {
 					partData,
 					AIsource: AIsource?.filename || '',
 				}
 			},
+			/**
+			 * 设置数据。
+			 * @param {{partData: any, AIsource: string}} data - 包含部件数据和 AI 源的对象。
+			 * @returns {Promise<void>}
+			 */
 			async SetData(data) {
 				if (data.AIsource) AIsource = await loadAIsource(username, data.AIsource)
 				else AIsource = await loadDefaultAIsource(username)
@@ -65,6 +98,11 @@ export default {
 			},
 		},
 		chat: {
+			/**
+			 * 获取提示。
+			 * @param {import('../../../../../src/public/shells/chat/decl/chat.ts').ChatRequest_t} args - 聊天请求参数。
+			 * @returns {Promise<{text: {content: string, description: string, important: number}[], additional_chat_log: [], extension: {}}>} 返回一个包含提示信息的 Promise。
+			 */
 			async GetPrompt(args) {
 				const context = {
 					char: { name: args.Charname },
@@ -92,6 +130,12 @@ export default {
 					extension: {},
 				}
 			},
+			/**
+			 * 获取问候语。
+			 * @param {import('../../../../../src/public/shells/chat/decl/chat.ts').ChatRequest_t} args - 聊天请求参数。
+			 * @param {number} index - 索引。
+			 * @returns {Promise<{content: string}>} 返回一个包含问候语内容的 Promise。
+			 */
 			async GetGreeting(args, index) {
 				if (!partData.first_mes) return null
 				const context = {
@@ -102,6 +146,11 @@ export default {
 				}
 				return { content: await formatStr(partData.first_mes, context) }
 			},
+			/**
+			 * 获取回复。
+			 * @param {import('../../../../../src/public/shells/chat/decl/chat.ts').ChatRequest_t} arg - 聊天请求参数。
+			 * @returns {Promise<import("../../../../../src/public/shells/chat/decl/chatLog.ts").chatReply_t>} 返回一个包含聊天回复的 Promise。
+			 */
 			async GetReply(arg) {
 				if (!AIsource)
 					return { content: 'This character does not have an AI source, [set the AI source](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage) first' }
@@ -117,6 +166,11 @@ export default {
 					extension: {},
 				}
 				// 构建插件可能需要的追加上下文函数
+				/**
+				 * 添加长时间日志。
+				 * @param {import('../../../../../src/public/shells/chat/decl/chatLog.ts').chatLogEntry_t} entry - 聊天日志条目。
+				 * @returns {void}
+				 */
 				function AddLongTimeLog(entry) {
 					entry.charVisibility = [arg.char_id]
 					result?.logContextBefore?.push?.(entry)

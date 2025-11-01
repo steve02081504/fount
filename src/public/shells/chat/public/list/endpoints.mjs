@@ -1,10 +1,10 @@
 /**
- * @fileoverview Endpoints for chat list operations.
+ * 聊天列表操作的端点。
  */
 
 /**
- * Gets the list of chats.
- * @return {!Promise<!Array<string>>} A promise that resolves to an array of chat IDs.
+ * 获取聊天列表。
+ * @returns {Promise<Array<string>>} 一个解析为聊天 ID 数组的 Promise。
  */
 export async function getChatList() {
 	const response = await fetch('/api/shells/chat/getchatlist')
@@ -21,9 +21,9 @@ import { getCharDetails as getCharDetails_real } from '../../../../scripts/parts
 const char_details_cache = {}
 
 /**
- * Gets character details.
- * @param {string} charname The name of the character.
- * @return {!Promise<!Object>} A promise that resolves to the character details.
+ * 获取角色详细信息。
+ * @param {string} charname 角色的名称。
+ * @returns {Promise<Object>} 一个解析为角色详细信息的 Promise。
  */
 export async function getCharDetails(charname) {
 	if (char_details_cache[charname])
@@ -42,10 +42,10 @@ export async function getCharDetails(charname) {
 }
 
 /**
- * Copies chats.
- * @param {!Array<string>} chatids An array of chat IDs to copy.
- * @return {!Promise<!Object>} A promise that resolves to the server response.
- * @throws {Error} If the API request fails.
+ * 复制聊天。
+ * @param {Array<string>} chatids 要复制的聊天 ID 数组。
+ * @returns {Promise<Object>} 一个解析为服务器响应的 Promise。
+ * @throws {Error} 如果 API 请求失败。
  */
 export async function copyChats(chatids) {
 	const response = await fetch('/api/shells/chat/copy', {
@@ -63,10 +63,10 @@ export async function copyChats(chatids) {
 }
 
 /**
- * Deletes chats.
- * @param {!Array<string>} chatids An array of chat IDs to delete.
- * @return {!Promise<!Object>} A promise that resolves to the server response.
- * @throws {Error} If the API request fails.
+ * 删除聊天。
+ * @param {Array<string>} chatids 要删除的聊天 ID 数组。
+ * @returns {Promise<Object>} 一个解析为服务器响应的 Promise。
+ * @throws {Error} 如果 API 请求失败。
  */
 export async function deleteChats(chatids) {
 	const response = await fetch('/api/shells/chat/delete', {
@@ -84,10 +84,10 @@ export async function deleteChats(chatids) {
 }
 
 /**
- * Exports chats.
- * @param {!Array<string>} chatids An array of chat IDs to export.
- * @return {!Promise<!Object>} A promise that resolves to the server response.
- * @throws {Error} If the API request fails.
+ * 导出聊天。
+ * @param {Array<string>} chatids 要导出的聊天 ID 数组。
+ * @returns {Promise<Object>} 一个解析为服务器响应的 Promise。
+ * @throws {Error} 如果 API 请求失败。
  */
 export async function exportChats(chatids) {
 	const response = await fetch('/api/shells/chat/export', {

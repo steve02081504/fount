@@ -1,10 +1,11 @@
 import { parseRegexFromString } from './tools.mjs'
 
 /**
- * runRegex
- * @param {import('./charData.mjs').v2CharData} charData
- * @param {string} text
- * @param {(e: import('./charData.mjs').regex_script_info) => boolean} filter
+ * 运行正则表达式
+ * @param {import('./charData.mjs').v2CharData} charData 角色数据
+ * @param {string} text 文本
+ * @param {(e: import('./charData.mjs').regex_script_info) => boolean} filter 过滤器
+ * @returns {string} 处理后的文本。
  */
 export function runRegex(charData, text, filter = e => true) {
 	if (charData?.extensions?.regex_scripts) {

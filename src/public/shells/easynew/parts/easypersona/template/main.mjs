@@ -13,6 +13,9 @@ let partData = await loadJsonFile(partJsonPath)
 
 const info = {}
 
+/**
+ * 更新部件信息。
+ */
 function updateInfo() {
 	const personaUrl = `/personas/${encodeURIComponent(partData.name)}`
 	info[''] = {
@@ -33,16 +36,41 @@ updateInfo()
 export default {
 	info,
 
+	/**
+	 * 初始化。
+	 * @param {any} stat - 状态。
+	 */
 	async Init(stat) { },
+	/**
+	 * 加载。
+	 * @param {any} stat - 状态。
+	 */
 	async Load(stat) { },
+	/**
+	 * 卸载。
+	 * @param {any} reason - 原因。
+	 */
 	async Unload(reason) { },
+	/**
+	 * 卸载。
+	 * @param {any} reason - 原因。
+	 * @param {any} from - 来源。
+	 */
 	async Uninstall(reason, from) { },
 
 	interfaces: {
 		config: {
+			/**
+			 * 获取数据。
+			 * @returns {Promise<any>} - 数据。
+			 */
 			async GetData() {
 				return { partData }
 			},
+			/**
+			 * 设置数据。
+			 * @param {any} data - 数据。
+			 */
 			async SetData(data) {
 				if (data.partData) {
 					partData = data.partData
@@ -52,6 +80,11 @@ export default {
 			},
 		},
 		chat: {
+			/**
+			 * 获取提示。
+			 * @param {any} args - 参数。
+			 * @returns {Promise<any>} - 提示。
+			 */
 			async GetPrompt(args) {
 				const context = {
 					char: { name: args.Charname },

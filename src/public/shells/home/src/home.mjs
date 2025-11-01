@@ -40,6 +40,12 @@ import { sendEventToUser } from '../../../../server/web_server/event_dispatcher.
 	]
 }
 */
+/**
+ * 更新主页注册表中的部件。
+ * @param {string} username - 用户名。
+ * @param {string} parttype - 部件类型。
+ * @param {string} partname - 部件名称。
+ */
 function updateHomeRegistryForPart(username, parttype, partname) {
 	const user_home_registry = loadTempData(username, 'home_registry')
 	const dirPath = GetPartPath(username, parttype, partname)
@@ -59,6 +65,12 @@ function updateHomeRegistryForPart(username, parttype, partname) {
 
 }
 
+/**
+ * 从主页注册表中删除部件。
+ * @param {string} username - 用户名。
+ * @param {string} parttype - 部件类型。
+ * @param {string} partname - 部件名称。
+ */
 function removeHomeRegistryForPart(username, parttype, partname) {
 	const user_home_registry = loadTempData(username, 'home_registry')
 	if (user_home_registry.home_function_buttons) delete user_home_registry.home_function_buttons[partname]
@@ -68,6 +80,11 @@ function removeHomeRegistryForPart(username, parttype, partname) {
 	if (user_home_registry.home_common_interfaces) delete user_home_registry.home_common_interfaces[partname]
 }
 
+/**
+ * 加载主页注册表。
+ * @param {string} username - 用户名。
+ * @returns {Promise<void>}
+ */
 export async function loadHomeRegistry(username) {
 	const user_home_registry = loadTempData(username, 'home_registry')
 	user_home_registry.home_function_buttons ??= {}
@@ -90,6 +107,11 @@ export async function expandHomeRegistry(username) {
 	if (!Object.keys(user_home_registry).length) await loadHomeRegistry(username)
 	const { locales } = getUserByUsername(username)
 
+	/**
+	 * 递归本地化项目。
+	 * @param {Array<object>} items - 项目。
+	 * @returns {Array<object>} - 本地化后的项目。
+	 */
 	const localizeRecursively = (items) => {
 		if (!items) return []
 		return items.map(item => ({
@@ -99,9 +121,19 @@ export async function expandHomeRegistry(username) {
 		}))
 	}
 
+	/**
+	 * 预处理列表。
+	 * @param {Array<object>} list - 列表。
+	 * @returns {Array<object>} - 预处理后的列表。
+	 */
 	const preprocess = list => {
 		const allButtons = localizeRecursively(Object.values(list).flat())
 
+		/**
+		 * 合并按钮。
+		 * @param {Array<object>} buttonList - 按钮列表。
+		 * @returns {Array<object>} - 合并后的按钮列表。
+		 */
 		const mergeButtons = (buttonList) => {
 			if (!buttonList) return []
 			const buttonsById = new Map()
@@ -151,10 +183,20 @@ export async function expandHomeRegistry(username) {
 		return finalButtons
 	}
 
+	/**
+	 * 基本预处理。
+	 * @param {Array<object>} list - 列表。
+	 * @returns {Array<object>} - 预处理后的列表。
+	 */
 	const base_preprocess = list => list.flat().sort((a, b) => a.level - b.level).map(button => ({
 		...button,
 		info: getLocalizedInfo(button.info, locales)
 	}))
+	/**
+	 * 接口预处理。
+	 * @param {Array<object>} list - 列表。
+	 * @returns {Array<object>} - 预处理后的列表。
+	 */
 	const interface_preprocess = list => base_preprocess(Object.values(list).concat(Object.values(user_home_registry.home_common_interfaces)))
 
 	return {
@@ -165,6 +207,13 @@ export async function expandHomeRegistry(username) {
 	}
 }
 
+/**
+ * 部件安装时。
+ * @param {object} root0 - 参数。
+ * @param {string} root0.username - 用户名。
+ * @param {string} root0.parttype - 部件类型。
+ * @param {string} root0.partname - 部件名称。
+ */
 export function onPartInstalled({ username, parttype, partname }) {
 	if (parttype !== 'shells') return
 
@@ -172,6 +221,13 @@ export function onPartInstalled({ username, parttype, partname }) {
 	sendEventToUser(username, 'home-registry-updated', null)
 }
 
+/**
+ * 部件卸载时。
+ * @param {object} root0 - 参数。
+ * @param {string} root0.username - 用户名。
+ * @param {string} root0.parttype - 部件类型。
+ * @param {string} root0.partname - 部件名称。
+ */
 export function onPartUninstalled({ username, parttype, partname }) {
 	if (parttype !== 'shells') return
 

@@ -139,4 +139,7 @@ export class IdleManager {
 
 // 创建并导出一个单一的、全局的 IdleManager 实例。
 const idleManager = new IdleManager()
+/**
+ * 一个单一的、全局的 IdleManager 实例。
+ */
 export default idleManager

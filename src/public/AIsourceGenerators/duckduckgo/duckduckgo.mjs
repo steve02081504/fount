@@ -1,4 +1,11 @@
+/**
+ * DuckDuckGoAPI 类，用于与 DuckDuckGo AI 聊天 API 进行交互。
+ */
 export class DuckDuckGoAPI {
+	/**
+	 * 创建 DuckDuckGoAPI 的实例。
+	 * @param {object} config - 配置对象。
+	 */
 	constructor(config) {
 		this.config = config
 		this.fake_headers = config.fake_headers || {
@@ -20,6 +27,10 @@ export class DuckDuckGoAPI {
 		}
 	}
 
+	/**
+	 * 请求令牌。
+	 * @returns {Promise<string>} 令牌。
+	 */
 	async requestToken() {
 		try {
 			const response = await fetch('https://duckduckgo.com/duckchat/v1/status', {
@@ -37,6 +48,13 @@ export class DuckDuckGoAPI {
 		}
 	}
 
+	/**
+	 * 创建补全。
+	 * @param {string} model - 模型名称。
+	 * @param {string} content - 内容。
+	 * @param {boolean} returnStream - 是否返回流。
+	 * @returns {Promise<Response>} 响应。
+	 */
 	async createCompletion(model, content, returnStream) {
 		const token = await this.requestToken()
 		const response = await fetch('https://duckduckgo.com/duckchat/v1/chat', {
@@ -64,9 +82,21 @@ export class DuckDuckGoAPI {
 		return this.handlerStream(model, response.body, returnStream)
 	}
 
+	/**
+	 * 处理流。
+	 * @param {string} model - 模型名称。
+	 * @param {ReadableStream} rb - 可读流。
+	 * @param {boolean} returnStream - 是否返回流。
+	 * @returns {Promise<Response>} 响应。
+	 */
 	async handlerStream(model, rb, returnStream) {
 		let bwzChunk = ''
 		let previousText = ''
+		/**
+		 * 处理块数据。
+		 * @param {string} chunk - 块数据。
+		 * @returns {string} 处理后的块数据。
+		 */
 		const handChunkData = chunk => {
 			chunk = chunk.trim()
 			if (bwzChunk !== '') {
@@ -87,6 +117,11 @@ export class DuckDuckGoAPI {
 		const decoder = new TextDecoder()
 		const encoder = new TextEncoder()
 		const stream = new ReadableStream({
+			/**
+			 * 启动流。
+			 * @param {ReadableStreamDefaultController} controller - 控制器。
+			 * @returns {Promise<void>}
+			 */
 			async start(controller) {
 				while (true) {
 					const { done, value } = await reader.read()
@@ -139,6 +174,11 @@ export class DuckDuckGoAPI {
 		})
 	}
 
+	/**
+	 * 准备消息。
+	 * @param {Array<object>} messages - 消息数组。
+	 * @returns {string} 准备好的内容。
+	 */
 	messagesPrepare(messages) {
 		let content = ''
 		for (const message of messages) {
@@ -157,6 +197,13 @@ export class DuckDuckGoAPI {
 		return content
 	}
 
+	/**
+	 * 调用 API。
+	 * @param {Array<object>} messages - 消息数组。
+	 * @param {string} model - 模型名称。
+	 * @param {boolean} returnStream - 是否返回流。
+	 * @returns {Promise<Response|string>} 响应或响应文本。
+	 */
 	async call(messages, model = 'gpt-4o-mini', returnStream = false) {
 		const content = this.messagesPrepare(messages)
 		const response = await this.createCompletion(model, content, returnStream)
@@ -166,11 +213,22 @@ export class DuckDuckGoAPI {
 			return await response.text() // 返回完整文本
 	}
 
+	/**
+	 * 计算令牌数。
+	 * @param {string} text - 文本。
+	 * @returns {number} 令牌数。
+	 */
 	countTokens(text) {
 		// 简单实现，可以根据需要改进
 		return text.length
 	}
 
+	/**
+	 * 创建带有模型的新聊天补全块。
+	 * @param {string} text - 文本。
+	 * @param {string} model - 模型名称。
+	 * @returns {object} 聊天补全块。
+	 */
 	newChatCompletionChunkWithModel(text, model) {
 		return {
 			id: 'chatcmpl-QXlha2FBbmROaXhpZUFyZUF3ZXNvbWUK',
@@ -189,6 +247,12 @@ export class DuckDuckGoAPI {
 		}
 	}
 
+	/**
+	 * 创建带有模型的新的停止块。
+	 * @param {string} reason - 停止原因。
+	 * @param {string} model - 模型名称。
+	 * @returns {object} 停止块。
+	 */
 	newStopChunkWithModel(reason, model) {
 		return {
 			id: 'chatcmpl-QXlha2FBbmROaXhpZUFyZUF3ZXNvbWUK',
@@ -204,6 +268,12 @@ export class DuckDuckGoAPI {
 		}
 	}
 
+	/**
+	 * 创建带有模型的新的聊天补全。
+	 * @param {string} text - 文本。
+	 * @param {string} model - 模型名称。
+	 * @returns {object} 聊天补全。
+	 */
 	newChatCompletionWithModel(text, model) {
 		return {
 			id: 'chatcmpl-QXlha2FBbmROaXhpZUFyZUF3ZXNvbWUK',

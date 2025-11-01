@@ -20,7 +20,7 @@ import { onThemeChange } from './theme.mjs'
 // --- 辅助函数 ---
 
 /**
- * @description 向 SVG 字符串添加一个类名。
+ * 向 SVG 字符串添加一个类名。
  * @param {string} svg - SVG 字符串。
  * @param {string} className - 要添加的类名。
  * @returns {string} - 添加了类名的 SVG 字符串。
@@ -28,7 +28,7 @@ import { onThemeChange } from './theme.mjs'
 const addClassToSvg = (svg, className) => svg.replace('<svg', `<svg class="${className}"`)
 
 /**
- * @description 获取语言的扩展名。
+ * 获取语言的扩展名。
  * @param {string} lang - 语言。
  * @returns {string} - 语言的扩展名。
  */
@@ -39,7 +39,7 @@ function getLanguageExtension(lang) {
 // --- Unified.js 插件 ---
 
 /**
- * @description 禁用某些 micromark 扩展。
+ * 禁用某些 micromark 扩展。
  * @param {object} [options={}] - 选项。
  * @returns {void}
  */
@@ -50,7 +50,7 @@ function remarkDisable(options = {}) {
 }
 
 /**
- * @description 为元素添加 DaisyUI 类。
+ * 为元素添加 DaisyUI 类。
  * @returns {Function} - Unified.js 插件。
  */
 function rehypeAddDaisyuiClass() {
@@ -94,12 +94,12 @@ const downloadIconSized = addClassToSvg(downloadIconCode, iconClass)
 const playIconSized = addClassToSvg(playIconCode, iconClass)
 
 /**
- * @description 代码执行器集合
+ * 代码执行器集合
  * @type {Object.<string, (code: string) => Promise<{result?: string, output?: string, error?: string, exitcode?: number}>>}
  */
 const languageExecutors = {
 	/**
-	 * @description 执行 JavaScript 代码。
+	 * 执行 JavaScript 代码。
 	 * @param {string} code - 要执行的代码。
 	 * @returns {Promise<{result?: string, output?: string, error?: string, exitcode?: number}>} - 执行结果。
 	 */
@@ -110,7 +110,7 @@ const languageExecutors = {
 		} catch (error) { return { error } }
 	},
 	/**
-	 * @description 执行 Python 代码。
+	 * 执行 Python 代码。
 	 * @param {string} code - 要执行的代码。
 	 * @returns {Promise<{result?: string, output?: string, error?: string, exitcode?: number}>} - 执行结果。
 	 */
@@ -147,7 +147,7 @@ sys.stderr = io.StringIO()
 		} catch (error) { return { error } }
 	},
 	/**
-	 * @description 执行 Ruby 代码。
+	 * 执行 Ruby 代码。
 	 * @param {string} code - 要执行的代码。
 	 * @returns {Promise<{result?: string, output?: string, error?: string, exitcode?: number}>} - 执行结果。
 	 */
@@ -178,7 +178,7 @@ $stderr = StringIO.new
 		} catch (error) { return { error } }
 	},
 	/**
-	 * @description 执行 Lisp 代码。
+	 * 执行 Lisp 代码。
 	 * @param {string} code - 要执行的代码。
 	 * @returns {Promise<{result?: string, output?: string, error?: string, exitcode?: number}>} - 执行结果。
 	 */
@@ -206,7 +206,7 @@ $stderr = StringIO.new
 		} catch (error) { return { error } }
 	},
 	/**
-	 * @description 执行 PHP 代码。
+	 * 执行 PHP 代码。
 	 * @param {string} code - 要执行的代码。
 	 * @returns {Promise<{result?: string, output?: string, error?: string, exitcode?: number}>} - 执行结果。
 	 */
@@ -238,7 +238,7 @@ $stderr = StringIO.new
 		} catch (error) { return { error } }
 	},
 	/**
-	 * @description 执行 Lua 代码。
+	 * 执行 Lua 代码。
 	 * @param {string} code - 要执行的代码。
 	 * @returns {Promise<{result?: string, output?: string, error?: string, exitcode?: number}>} - 执行结果。
 	 */
@@ -261,7 +261,7 @@ $stderr = StringIO.new
 		} catch (error) { return { error } }
 	},
 	/**
-	 * @description 执行 SQL 代码。
+	 * 执行 SQL 代码。
 	 * @param {string} code - 要执行的代码。
 	 * @returns {Promise<{result?: string, output?: string, error?: string, exitcode?: number}>} - 执行结果。
 	 */
@@ -270,7 +270,7 @@ $stderr = StringIO.new
 			const { default: initSqlJs } = await import('https://esm.sh/sql.js')
 			const SQL = await initSqlJs({
 				/**
-				 * @description 定位 SQL.js 文件。
+				 * 定位 SQL.js 文件。
 				 * @param {string} file - 文件名。
 				 * @returns {string} - 文件路径。
 				 */
@@ -297,7 +297,7 @@ $stderr = StringIO.new
 }
 
 /**
- * @description 创建代码块插件。
+ * 创建代码块插件。
  * @param {object} [options={}] - 选项。
  * @param {boolean} [options.isStandalone=false] - 是否为独立模式。
  * @returns {object} - 代码块插件。
@@ -306,7 +306,7 @@ function createCodeBlockPlugin({ isStandalone = false } = {}) {
 	return {
 		name: 'code-block-enhancements',
 		/**
-		 * @description 处理 hast 树。
+		 * 处理 hast 树。
 		 * @param {object} hast - hast 树。
 		 * @returns {object} - 处理后的 hast 树。
 		 */
@@ -322,7 +322,7 @@ function createCodeBlockPlugin({ isStandalone = false } = {}) {
 			const executor = languageExecutors[ext]
 
 			/**
-			 * @description 创建工具提示。
+			 * 创建工具提示。
 			 * @param {string} textKey - 文本键。
 			 * @param {any} children - 子元素。
 			 * @param {string} [position='left'] - 位置。
@@ -397,7 +397,7 @@ const preExistingOutput = document.querySelectorAll('.${uniqueId}-execution-outp
 for (const output of preExistingOutput) output.remove()
 
 const outputContainer = document.createElement('div')
-outputContainer.innerHTML = \`\\
+outputContainer.innerHTML = /* html */ \`\\
 <div class="join-item alert">
 	${playIconSized}
 	<div class="loading loading-spinner"></div>
@@ -409,7 +409,7 @@ codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 	let alerts = []
 
 	if (result.error)
-		alerts.push(\`\\
+		alerts.push(/* html */ \`\\
 <div class="join-item alert alert-error bg-error/50 border-error/50">
 	<div>
 		<div class="font-bold">Error</div>
@@ -418,7 +418,7 @@ codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 </div>
 \`)
 	if (result.output)
-		alerts.push(\`\\
+		alerts.push(/* html */ \`\\
 <div class="join-item alert alert-info bg-info/40 border-info/40">
 	<div>
 		<div class="font-bold">Output</div>
@@ -427,7 +427,7 @@ codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 </div>
 \`)
 	if (result.result)
-		alerts.push(\`\\
+		alerts.push(/* html */ \`\\
 <div class="join-item alert alert-success bg-success/40 border-success/40">
 	<div>
 		<div class="font-bold">Result</div>
@@ -436,7 +436,7 @@ codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 </div>
 \`)
 	if (result.exitcode !== undefined)
-		alerts.push(\`\\
+		alerts.push(/* html */ \`\\
 <div class="join-item alert alert-secondary bg-secondary/40 border-secondary/40">
 	<div>
 		<div class="text-xs">Exit Code: \${result.exitcode}</div>
@@ -446,7 +446,7 @@ codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 
 	outputContainer.innerHTML = alerts.join('')
 }).catch(e => {
-	outputContainer.innerHTML = \`\\
+	outputContainer.innerHTML = /* html */ \`\\
 <div class="join-item alert alert-error bg-error/70 border-error/70">
 	<div>
 		<div class="font-bold">Execution Error</div>
@@ -465,7 +465,7 @@ codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 				}, [fromHtml(playIconSized, { fragment: true })])
 
 			/**
-			 * @description 获取按钮组。
+			 * 获取按钮组。
 			 * @param {string} tooltipPosition - 工具提示位置。
 			 * @returns {object} - 按钮组元素。
 			 */
@@ -504,7 +504,7 @@ codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 // --- Markdown 转换器 ---
 
 /**
- * @description 获取 Markdown 转换器。
+ * 获取 Markdown 转换器。
  * @param {object} [options={}] - 选项。
  * @param {boolean} [options.isStandalone=false] - 是否为独立模式。
  * @returns {Promise<import('unified').Processor>} - Markdown 转换器。
@@ -520,7 +520,7 @@ export async function GetMarkdownConvertor({ isStandalone = false } = {}) {
 		.use(rehypeMermaid, {
 			dark: true,
 			/**
-			 * @description Mermaid 错误回退。
+			 * Mermaid 错误回退。
 			 * @param {object} element - 元素。
 			 * @param {string} diagram - 图表。
 			 * @param {Error} error - 错误。
@@ -548,7 +548,7 @@ ${diagram}`
 				await createCodeBlockPlugin({ isStandalone })
 			],
 			/**
-			 * @description 访问标题。
+			 * 访问标题。
 			 * @param {object} caption - 标题。
 			 * @returns {void}
 			 */
@@ -556,7 +556,7 @@ ${diagram}`
 				caption.properties.className = 'alert alert-secondary shadow-lg join-item'
 			},
 			/**
-			 * @description 访问标题。
+			 * 访问标题。
 			 * @param {object} title - 标题。
 			 * @returns {void}
 			 */

@@ -3,6 +3,9 @@
  * @type {object}
  */
 const data = {}
+/**
+ * 一个简单的事件发射器。
+ */
 export const events = {
 	/**
 	 * 为给定的事件名称注册一个事件监听器。

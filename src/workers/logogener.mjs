@@ -7,6 +7,10 @@ import { setMain } from './base.mjs'
 
 
 setMain(main)
+/**
+ * 生成并返回fount的ASCII艺术logo。
+ * @returns {Promise<string>} 带有颜色的logo字符串。
+ */
 async function main() {
 	let logo = Array(Math.floor(Math.random() * 7)).fill('fo-').join('') + 'fount!'
 	try {

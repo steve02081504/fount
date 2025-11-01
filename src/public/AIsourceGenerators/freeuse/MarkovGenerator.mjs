@@ -5,6 +5,13 @@ import { escapeRegExp } from '../../../scripts/regex.mjs'
  * @classdesc 使用马尔可夫链生成文本的类。支持多次追加训练。
  */
 export class MarkovGenerator {
+	/**
+	 * 构造函数。
+	 * @param {object} root0 - 构造函数选项。
+	 * @param {number} [root0.order=null] - 马尔可夫链的阶数。
+	 * @param {string[]} [root0.specialTokens=[]] - 特殊令牌。
+	 * @param {string} [root0.endToken=null] - 结束令牌。
+	 */
 	constructor({
 		order = null,
 		specialTokens = [],

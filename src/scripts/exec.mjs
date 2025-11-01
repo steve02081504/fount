@@ -8,7 +8,13 @@ import { promisify } from 'node:util'
  */
 const PromiseExec = promisify(exec)
 
+/**
+ * `child_process.exec` 的 promisified 版本的默认导出。
+ */
 export default PromiseExec
+/**
+ * `child_process.exec` 的 promisified 版本。
+ */
 export {
 	PromiseExec as exec
 }

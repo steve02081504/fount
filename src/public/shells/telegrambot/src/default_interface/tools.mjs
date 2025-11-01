@@ -139,16 +139,16 @@ export function aiMarkdownToTelegramHtml(aiMarkdownText) {
 	if (!aiMarkdownText) return ''
 	let html = escapeHTML(aiMarkdownText)
 	html = html.replace(/```(\w*)\n([\S\s]*?)\n```/g, (match, lang, code) => {
-		const langClass = lang ? ` class="language-${escapeHTML(lang)}"` : ''
-		return `<pre><code${langClass}>${code}</code></pre>`
+		const langClass = lang ? `class="language-${escapeHTML(lang)}"` : ''
+		return /* html */ `<pre><code ${langClass}>${code}</code></pre>`
 	})
-	html = html.replace(/(?<!\\)`([^\n`]+?)(?<!\\)`/g, (match, code) => `<code>${code}</code>`)
-	html = html.replace(/\[(.*?)]\((.*?)\)/g, (match, text, url) => `<a href="${url}">${text}</a>`)
-	html = html.replace(/\|\|(.*?)\|\|/g, (match, content) => `<tg-spoiler>${content}</tg-spoiler>`)
-	html = html.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
-	html = html.replace(/(?<!\*)\*([^*]+?)\*(?!\*)/g, '<i>$1</i>')
-	html = html.replace(/__(.+?)__/g, '<u>$1</u>')
-	html = html.replace(/~~(.+?)~~/g, '<s>$1</s>')
+	html = html.replace(/(?<!\\)`([^\n`]+?)(?<!\\)`/g, (match, code) => /* html */ `<code>${code}</code>`)
+	html = html.replace(/\[(.*?)]\((.*?)\)/g, (match, text, url) => /* html */ `<a href="${url}">${text}</a>`)
+	html = html.replace(/\|\|(.*?)\|\|/g, (match, content) => /* html */ `<tg-spoiler>${content}</tg-spoiler>`)
+	html = html.replace(/\*\*(.+?)\*\*/g, /* html */ '<b>$1</b>')
+	html = html.replace(/(?<!\*)\*([^*]+?)\*(?!\*)/g, /* html */ '<i>$1</i>')
+	html = html.replace(/__(.+?)__/g, /* html */ '<u>$1</u>')
+	html = html.replace(/~~(.+?)~~/g, /* html */ '<s>$1</s>')
 	const lines = html.split('\n')
 	let inBlockquote = false
 	const processedLines = []

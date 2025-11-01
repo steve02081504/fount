@@ -24,6 +24,9 @@ export async function git(...args) {
  * @returns {(...args: string[]): Promise<string>} - 在指定目录中执行 git 命令的函数。
  */
 git.withPath = (targetPath) => (...args) => basegit(targetPath, ...args)
+/**
+ * `git` 的别名。
+ */
 export {
 	git as run_git
 }

@@ -52,15 +52,15 @@ async function generateFullHtmlForMessage(message) {
 
 			let previewHtml = ''
 			if (file.mime_type.startsWith('image/'))
-				previewHtml = `<img src="${dataUrl}" alt="${file.name}" style="max-width: 100%; max-height: 100%; object-fit: contain; cursor: zoom-in;" onclick="openModal('${dataUrl}', 'image')">`
+				previewHtml = /* html */ `<img src="${dataUrl}" alt="${file.name}" style="max-width: 100%; max-height: 100%; object-fit: contain; cursor: zoom-in;" onclick="openModal('${dataUrl}', 'image')">`
 			else if (file.mime_type.startsWith('video/'))
-				previewHtml = `<video src="${dataUrl}" controls style="max-width: 100%; max-height: 100%;"></video>`
+				previewHtml = /* html */ `<video src="${dataUrl}" controls style="max-width: 100%; max-height: 100%;"></video>`
 			else if (file.mime_type.startsWith('audio/'))
-				previewHtml = `<audio src="${dataUrl}" controls></audio>`
+				previewHtml = /* html */ `<audio src="${dataUrl}" controls></audio>`
 			else
-				previewHtml = '<div class="file-placeholder" style="font-size: 40px; text-align: center;">📄</div>'
+				previewHtml = /* html */ '<div class="file-placeholder" style="font-size: 40px; text-align: center;">📄</div>'
 
-			return `\
+			return /* html */ `\
 <div class="attachment" style="border: 1px solid #ccc; border-radius: 5px; padding: 10px; margin: 5px; display: inline-block; text-align: center; max-width: 200px;">
 	<div class="preview" style="min-height: 100px; display: flex; align-items: center; justify-content: center;">
 		${previewHtml}
@@ -70,7 +70,7 @@ async function generateFullHtmlForMessage(message) {
 </div>
 `
 		}))
-		attachmentsHtml = `<div class="attachments" style="margin-top: 10px; display: flex; flex-wrap: wrap;">${attachmentItems.join('')}</div>`
+		attachmentsHtml = /* html */ `<div class="attachments" style="margin-top: 10px; display: flex; flex-wrap: wrap;">${attachmentItems.join('')}</div>`
 	}
 
 	const modalScript = `\
@@ -99,7 +99,7 @@ function openModal(src, type) {
 }
 `
 
-	return `\
+	return /* html */ `\
 <!DOCTYPE html>
 <html lang="${main_locale}">
 <head>
@@ -397,6 +397,10 @@ export function enableSwipe(messageElement) {
 	let touchStartX = 0, touchStartY = 0, isDragging = false, swipeHandled = false
 
 	// --- 定义命名的监听器函数 ---
+	/**
+	 * 处理触摸开始事件。
+	 * @param {TouchEvent} event - 触摸事件对象。
+	 */
 	const handleTouchStart = event => {
 		if (event.touches.length !== 1) return
 		touchStartX = event.touches[0].clientX
@@ -404,12 +408,20 @@ export function enableSwipe(messageElement) {
 		isDragging = true
 		swipeHandled = false
 	}
+	/**
+	 * 处理触摸移动事件。
+	 * @param {TouchEvent} event - 触摸事件对象。
+	 */
 	const handleTouchMove = event => {
 		if (!isDragging || event.touches.length !== 1) return
 		const deltaX = event.touches[0].clientX - touchStartX
 		const deltaY = event.touches[0].clientY - touchStartY
 		if (Math.abs(deltaY) > Math.abs(deltaX)) isDragging = false // 垂直滚动优先
 	}
+	/**
+	 * 处理触摸结束事件。
+	 * @param {TouchEvent} event - 触摸事件对象。
+	 */
 	const handleTouchEnd = async event => {
 		if (!isDragging || swipeHandled || event.changedTouches.length !== 1) { isDragging = false; return }
 		const deltaX = event.changedTouches[0].clientX - touchStartX
@@ -425,7 +437,15 @@ export function enableSwipe(messageElement) {
 			await modifyTimeLine(direction)
 		}
 	}
+	/**
+		 * 处理触摸取消事件。
+		 */
 	const handleTouchCancel = () => { isDragging = false }
+	/**
+		 * 检查元素是否包含水平滚动条。
+		 * @param {HTMLElement} element - 要检查的 DOM 元素。
+		 * @returns {boolean} 如果元素包含水平滚动条则为 true，否则为 false。
+		 */
 	function checkForHorizontalScrollbar(element) {
 		if (!element || !element.scrollWidth || !element.clientWidth) return false
 		if (element.scrollWidth > element.clientWidth) return true

@@ -28,7 +28,7 @@ let passwordStrengthMeter = null
 const hasLoggedIn = localStorage.getItem('hasLoggedIn') == 'true'
 
 /**
- * @description 初始化表单状态。
+ * 初始化表单状态。
  * @returns {void}
  */
 function initializeForm() {
@@ -36,7 +36,7 @@ function initializeForm() {
 }
 
 /**
- * @description 切换表单。
+ * 切换表单。
  * @returns {void}
  */
 function toggleForm() {
@@ -45,7 +45,7 @@ function toggleForm() {
 }
 
 /**
- * @description 处理切换链接点击事件。
+ * 处理切换链接点击事件。
  * @param {MouseEvent} event - 鼠标事件。
  * @returns {void}
  */
@@ -55,7 +55,7 @@ function handleToggleClick(event) {
 }
 
 /**
- * @description 刷新 UI 字符串。
+ * 刷新 UI 字符串。
  * @returns {void}
  */
 function refreshUIStrings() {
@@ -63,7 +63,7 @@ function refreshUIStrings() {
 }
 
 /**
- * @description 更新表单显示。
+ * 更新表单显示。
  * @returns {void}
  */
 function updateFormDisplay() {
@@ -87,7 +87,7 @@ function updateFormDisplay() {
 }
 
 /**
- * @description 生成唯一的设备 ID。
+ * 生成唯一的设备 ID。
  * @returns {string} - 设备 ID。
  */
 function generateDeviceId() {
@@ -100,7 +100,7 @@ function generateDeviceId() {
 }
 
 /**
- * @description 处理发送验证码。
+ * 处理发送验证码。
  * @returns {Promise<void>}
  */
 async function handleSendVerificationCode() {
@@ -139,7 +139,7 @@ async function handleSendVerificationCode() {
 }
 
 /**
- * @description 处理表单提交。
+ * 处理表单提交。
  * @param {SubmitEvent} event - 提交事件。
  * @returns {Promise<void>}
  */
@@ -224,7 +224,7 @@ async function handleFormSubmit(event) {
 }
 
 /**
- * @description 设置事件侦听器。
+ * 设置事件侦听器。
  * @returns {void}
  */
 function setupEventListeners() {
@@ -234,7 +234,7 @@ function setupEventListeners() {
 }
 
 /**
- * @description 初始化应用程序。
+ * 初始化应用程序。
  * @returns {Promise<void>}
  */
 async function initializeApp() {

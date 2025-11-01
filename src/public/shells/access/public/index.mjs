@@ -1,3 +1,6 @@
+/**
+ * “访问”页面的客户端逻辑，用于生成和显示用于凭证传输的 URL 和二维码。
+ */
 import qrcode from 'https://esm.sh/qrcode-generator'
 
 import {
@@ -19,6 +22,15 @@ const qrcodeContainer = document.getElementById('qrcode')
 
 let url
 
+/**
+ * IIFE（立即调用函数表达式）处理页面加载时的核心逻辑：
+ * 1. 检查 URL 参数以获取登录状态或凭证传输信息。
+ * 2. 如果存在，则尝试从服务器检索和解密凭证。
+ * 3. 使用解密的凭证生成一个一次性的登录 URL。
+ * 4. 如果没有传输信息，则重定向以开始凭证共享过程。
+ * 5. 处理过程中发生的任何错误并向用户显示通知。
+ * 6. 最终，使用生成的 URL 更新页面上的输入字段和二维码。
+ */
 try {
 	const searchParams = new URLSearchParams(window.location.search)
 	const hashParams = new URLSearchParams(window.location.hash.substring(1))
@@ -62,6 +74,11 @@ if (url) {
 	history.replaceState({}, document.title, window.location.pathname)
 }
 
+/**
+ * 使用给定的 URL 在指定的容器元素中生成并显示一个二维码。
+ * @param {string} url - 要编码到二维码中的 URL。
+ * @param {HTMLElement} container - 用于显示生成二维码图像的 DOM 元素。
+ */
 function generateQRCode(url, container) {
 	container.innerHTML = ''
 	const qr = qrcode(0, 'Q')

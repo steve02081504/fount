@@ -7,6 +7,10 @@ import { renderMessage, enableSwipe, disableSwipe } from './messageList.mjs'
 const chatMessagesContainer = document.getElementById('chat-messages')
 const BUFFER_SIZE = 20
 let startIndex = 0
+/**
+ * 消息队列。
+ * @type {Array<object>}
+ */
 export let queue = []
 let chatLogLength = 0
 
@@ -16,6 +20,11 @@ let sentinelBottom = null
 let isLoading = false
 let currentSwipableElement = null
 
+/**
+ * 创建一个哨兵元素。
+ * @param {string} id - 哨兵元素的 ID。
+ * @returns {HTMLDivElement} 创建的哨兵div元素。
+ */
 function createSentinel(id) {
 	const sentinel = document.createElement('div')
 	sentinel.id = id
@@ -25,6 +34,10 @@ function createSentinel(id) {
 	return sentinel
 }
 
+/**
+ * 处理交叉观察器事件。
+ * @param {IntersectionObserverEntry[]} entries - 交叉观察器条目数组。
+ */
 async function handleIntersection(entries) {
 	if (isLoading) return
 
@@ -65,6 +78,9 @@ async function handleIntersection(entries) {
 	}
 }
 
+/**
+ * 初始化交叉观察器。
+ */
 function initializeObserver() {
 	if (observer) observer.disconnect()
 	const options = {
@@ -75,6 +91,9 @@ function initializeObserver() {
 	observer = new IntersectionObserver(handleIntersection, options)
 }
 
+/**
+ * 观察哨兵元素的交叉事件。
+ */
 function observeSentinels() {
 	sentinelTop = document.getElementById('sentinel-top')
 	sentinelBottom = document.getElementById('sentinel-bottom')
@@ -92,6 +111,10 @@ function observeSentinels() {
 	isLoading = false // 准备好处理新的交叉事件
 }
 
+/**
+ * 初始化虚拟队列。
+ * @param {object} initialData - 初始数据，包含日志长度和初始日志。
+ */
 export async function initializeVirtualQueue(initialData) {
 	try {
 		isLoading = true
@@ -109,6 +132,9 @@ export async function initializeVirtualQueue(initialData) {
 	}
 }
 
+/**
+ * 渲染消息队列。
+ */
 async function renderQueue() {
 	const fragment = document.createDocumentFragment()
 
@@ -133,6 +159,9 @@ async function renderQueue() {
 	// 调用者负责调用 observeSentinels()
 }
 
+/**
+ * 从服务器加载更多消息。
+ */
 async function prependMessages() {
 	const firstMessageElement = chatMessagesContainer.querySelector('.chat-message:not([id^="sentinel"])')
 	const oldScrollTop = chatMessagesContainer.scrollTop
@@ -179,6 +208,9 @@ async function prependMessages() {
 	}
 }
 
+/**
+ * 从服务器加载更多消息。
+ */
 async function appendMessages() {
 	const currentCount = startIndex + queue.length
 	if (currentCount >= chatLogLength) {
@@ -247,6 +279,9 @@ function updateLastCharMessageArrows() {
 					rightArrow.textContent = '❯'
 					leftArrow.after(rightArrow)
 
+					/**
+					 * 移除箭头
+					 */
 					function removeArrows() { leftArrow.remove(); rightArrow.remove() }
 
 					// --- 箭头点击事件 (修改时间线) ---
@@ -277,7 +312,12 @@ function updateLastCharMessageArrows() {
 	// --- 滑动管理结束 ---
 }
 
-export async function appendMessageToQueue(message) {
+/**
+ * 将消息插入队列。
+ * @param {object} message - 要插入的消息对象。
+ * @returns {Promise<void>}
+ */
+export async function insertMessageIntoQueue(message) {
 	if (!message || !observer) return
 
 	const shouldScrollToBottom = chatMessagesContainer.scrollTop >= chatMessagesContainer.scrollHeight - chatMessagesContainer.clientHeight - 5 // Use a small tolerance
@@ -304,6 +344,12 @@ export async function appendMessageToQueue(message) {
 }
 
 
+/**
+ * 替换队列中的消息。
+ * @param {number} queueIndex - 队列中要替换的消息的索引。
+ * @param {object} message - 新的消息对象。
+ * @param {HTMLElement} [element=null] - 可选的，对应的 DOM 元素。
+ */
 export async function replaceMessageInQueue(queueIndex, message, element = null) {
 	if (queueIndex < 0 || queueIndex >= queue.length || !message) return
 
@@ -343,6 +389,11 @@ export async function replaceMessageInQueue(queueIndex, message, element = null)
 		updateLastCharMessageArrows()
 }
 
+/**
+ * 获取给定元素的队列索引。
+ * @param {HTMLElement} element - 要获取索引的 DOM 元素。
+ * @returns {number} 元素的队列索引，如果不是有效消息元素则返回 -1。
+ */
 export function getQueueIndex(element) {
 	const elementIndexInDom = Array.from(chatMessagesContainer.children).indexOf(element)
 	if (elementIndexInDom <= 0 || elementIndexInDom >= chatMessagesContainer.children.length - 1) return -1 // 不是有效消息元素 (是哨兵或未找到)
@@ -350,11 +401,21 @@ export function getQueueIndex(element) {
 	return queueIndex >= 0 && queueIndex < queue.length ? queueIndex : -1 // 检查队列边界
 }
 
+/**
+ * 根据队列索引获取聊天日志索引。
+ * @param {number} queueIndex - 队列中的索引。
+ * @returns {number} 聊天日志中的索引，如果索引无效则返回 -1。
+ */
 export function getChatLogIndexByQueueIndex(queueIndex) {
 	if (queueIndex < 0 || queueIndex >= queue.length) return -1
 	return startIndex + queueIndex
 }
 
+/**
+ * 根据队列索引获取消息元素。
+ * @param {number} queueIndex - 队列中的索引。
+ * @returns {Promise<HTMLElement|null>} 对应的消息 DOM 元素，如果不存在则为 null。
+ */
 export async function getMessageElementByQueueIndex(queueIndex) {
 	if (queueIndex < 0 || queueIndex >= queue.length) return null
 	const elementIndexInDom = queueIndex + 1
@@ -362,12 +423,22 @@ export async function getMessageElementByQueueIndex(queueIndex) {
 	return element && !element.id.startsWith('sentinel') ? element : null // 确保不是哨兵
 }
 
+/**
+ * 根据聊天日志索引获取消息元素。
+ * @param {number} chatLogIndex - 聊天日志中的索引。
+ * @returns {Promise<HTMLElement|null>} 对应的消息 DOM 元素，如果不在当前渲染范围内则为 null。
+ */
 export async function getMessageElementByChatLogIndex(chatLogIndex) {
 	const queueIndex = chatLogIndex - startIndex
 	if (queueIndex < 0 || queueIndex >= queue.length) return null // 不在当前渲染范围内
 	return getMessageElementByQueueIndex(queueIndex)
 }
 
+/**
+ * 删除队列中的消息。
+ * @param {number} queueIndex - 队列中要删除的消息的索引。
+ * @returns {Promise<void>}
+ */
 export async function deleteMessageInQueue(queueIndex) {
 	if (queueIndex < 0 || queueIndex >= queue.length || !observer) return
 
@@ -384,6 +455,9 @@ export async function deleteMessageInQueue(queueIndex) {
 	observeSentinels() // 观察新哨兵
 }
 
+/**
+ * 清理虚拟队列的观察者。
+ */
 export function cleanupVirtualQueueObserver() {
 	if (observer) {
 		observer.disconnect()
@@ -402,6 +476,9 @@ export function cleanupVirtualQueueObserver() {
 }
 
 // --- Handlers for websocket events ---
+/**
+ * 触发完全刷新。
+ */
 async function triggerFullRefresh() {
 	try {
 		isLoading = true
@@ -418,10 +495,20 @@ async function triggerFullRefresh() {
 	}
 }
 
+/**
+ * 处理消息添加事件。
+ * @param {object} message - 要添加的消息对象。
+ */
 export async function handleMessageAdded(message) {
-	await appendMessageToQueue(message)
+	await insertMessageIntoQueue(message)
 }
 
+/**
+ * 处理消息替换事件。
+ * @param {number} index - 被替换消息的索引。
+ * @param {object} message - 新的消息对象。
+ * @returns {Promise<void>}
+ */
 export async function handleMessageReplaced(index, message) {
 	const queueIndex = index - startIndex
 	if (queueIndex >= 0 && queueIndex < queue.length)
@@ -432,7 +519,12 @@ export async function handleMessageReplaced(index, message) {
 	}
 }
 
-export async function handleMessageDeleted(index) {
+/**
+ * 处理消息移除事件。
+ * @param {number} index - 被移除消息的索引。
+ * @returns {Promise<void>}
+ */
+export async function handleMessageRemoved(index) {
 	const queueIndex = index - startIndex
 	if (queueIndex >= 0 && queueIndex < queue.length)
 		await deleteMessageInQueue(queueIndex)

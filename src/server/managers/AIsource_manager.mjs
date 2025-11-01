@@ -57,12 +57,25 @@ export async function loadAIsourceFromConfigData(username, data, { SaveConfig })
  */
 export async function loadAIsource(username, AIsourcename) {
 	return loadPartBase(username, 'AIsources', AIsourcename, null, {
+		/**
+		 * 获取部件路径。
+		 * @returns {string} 部件的路径。
+		 */
 		pathGetter: () => GetPath(username, AIsourcename),
+		/**
+		 * 异步加载器函数。
+		 * @param {string} path - 部件的路径。
+		 * @returns {Promise<any>} 解析为加载的部件的承诺。
+		 */
 		Loader: async path => {
 			let data
 			try { data = loadJsonFile(path + '.json') }
 			catch (e) { throw skip_report(e) }
 			const AIsource = await loadAIsourceFromConfigData(username, data, {
+				/**
+				 * 保存配置数据。
+				 * @param {object} [newdata=data] - 要保存的新数据。
+				 */
 				SaveConfig: (newdata = data) => {
 					saveJsonFile(path + '.json', newdata)
 				}
@@ -70,6 +83,11 @@ export async function loadAIsource(username, AIsourcename) {
 			AIsource.filename = AIsourcename
 			return AIsource
 		},
+		/**
+		 * 初始化器函数。
+		 * @param {any} _ - 未使用的参数。
+		 * @returns {number} 始终返回 0。
+		 */
 		Initer: _ => 0
 	})
 }
@@ -98,7 +116,16 @@ export async function loadAIsourceFromNameOrConfigData(username, nameOrData, unn
  */
 export async function unloadAIsource(username, AIsourcename) {
 	await unloadPartBase(username, 'AIsources', AIsourcename, {}, {
+		/**
+		 * 获取部件路径。
+		 * @returns {string} 部件的路径。
+		 */
 		pathGetter: () => GetPath(username, AIsourcename),
+		/**
+		 * 卸载后调用的函数。
+		 * @param {any} _ - 未使用的参数。
+		 * @returns {number} 始终返回 0。
+		 */
 		afterUnload: _ => 0
 	})
 }

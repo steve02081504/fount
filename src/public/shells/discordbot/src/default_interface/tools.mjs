@@ -1,12 +1,17 @@
 /**
- * @param {string} reply
- * @returns {string[]}
+ * 分割 Discord 回复。
+ * @param {string} reply - 要分割的回复字符串。
+ * @param {number} split_lenth - 分割长度。
+ * @returns {string[]} 分割后的字符串数组。
  */
 export function splitDiscordReply(reply, split_lenth = 2000) {
 	let content_slices = reply.split('\n')
 	let new_content_slices = []
 	let last = ''
 
+	/**
+	 * @returns {void}
+	 */
 	function mapend() {
 		if (last) new_content_slices.push(last)
 		content_slices = new_content_slices
@@ -15,7 +20,9 @@ export function splitDiscordReply(reply, split_lenth = 2000) {
 	}
 
 	/**
-	 * @param {string} code_block
+	 * 分割代码块。
+	 * @param {string} code_block - 要分割的代码块字符串。
+	 * @returns {string[]} 分割后的字符串数组。
 	 */
 	function splitCodeBlock(code_block) {
 		const content_slices = code_block.trim().split('\n')
@@ -135,6 +142,11 @@ export function splitDiscordReply(reply, split_lenth = 2000) {
 	return content_slices.map(e => e.trim()).filter(e => e)
 }
 
+/**
+ * 格式化嵌入内容。
+ * @param {import('npm:discord.js').Embed} embed - 嵌入对象。
+ * @returns {string} 格式化后的字符串。
+ */
 function formatEmbed(embed) {
 	let embedContent = ''
 	if (embed.data)
@@ -150,6 +162,11 @@ function formatEmbed(embed) {
 	return embedContent ? '```\n' + embedContent + '```\n' : ''
 }
 
+/**
+ * 格式化消息内容。
+ * @param {import('npm:discord.js').Message} message - Discord 消息对象。
+ * @returns {string} 格式化后的消息内容字符串。
+ */
 function formatMessageContent(message) {
 	let content = message.content || ''
 
@@ -184,6 +201,12 @@ function formatMessageContent(message) {
 	return content
 }
 
+/**
+ * 获取完整的消息内容，包括附件和嵌入。
+ * @param {import('npm:discord.js').Message} message - Discord 消息对象。
+ * @param {import('npm:discord.js').Client} client - Discord 客户端实例。
+ * @returns {Promise<string>} 完整的消息内容字符串。
+ */
 export async function getMessageFullContent(message, client) {
 	let fullContent = formatMessageContent(message)
 

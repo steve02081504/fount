@@ -1,3 +1,8 @@
+/**
+ * 获取角色来源
+ * @param {any} charData 角色数据
+ * @returns {string} 角色的来源 URL。
+ */
 export function getCharacterSource(charData) {
 	if (!charData) return ''
 	const chubId = charData?.data?.extensions?.chub?.full_path

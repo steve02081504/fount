@@ -89,6 +89,12 @@ export class IPCManager {
 			this.handleConnection(socket)
 		})
 
+		/**
+		 * 启动一个服务器实例。
+		 * @param {net.Server} server - 要启动的服务器。
+		 * @param {string} address - 要监听的地址。
+		 * @returns {Promise<boolean>} 如果服务器成功启动，则解析为 true，否则为 false。
+		 */
 		const startServer = (server, address) => {
 			return new Promise((resolve, reject) => {
 				server.on('error', async err => {

@@ -13,6 +13,7 @@ const CODE_EXPIRATION_TIME = ms('60s')
 
 /**
  * 生成验证码的函数
+ * @param {string} id - 与验证码关联的用户或会话的唯一标识符。
  */
 export async function generateVerificationCode(id) {
 	// 清除过期的验证码

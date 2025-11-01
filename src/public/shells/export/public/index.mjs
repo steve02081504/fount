@@ -1,3 +1,6 @@
+/**
+ * 导出 shell 的客户端逻辑。
+ */
 import { initTranslations, geti18n } from '/scripts/i18n.mjs'
 import { applyTheme } from '/scripts/theme.mjs'
 import { showToast, showToastI18n } from '/scripts/toast.mjs'
@@ -30,8 +33,8 @@ let fountJson = null
 // --- UI State Management ---
 
 /**
- * Updates the entire UI based on the current application state.
- * This function centralizes all UI logic.
+ * 根据当前应用程序状态更新整个 UI。
+ * 此函数集中了所有 UI 逻辑。
  */
 function updateUIState() {
 	// Step 1: Update the progress steps
@@ -57,8 +60,8 @@ function updateUIState() {
 // --- Data & State Changers ---
 
 /**
- * Handles the logic when a part type is selected.
- * @param {string | null} partType The selected part type name.
+ * 处理选择部件类型时的逻辑。
+ * @param {string | null} partType - 选定的部件类型名称。
  */
 async function onPartTypeSelected(partType) {
 	activePartType = partType
@@ -81,8 +84,8 @@ async function onPartTypeSelected(partType) {
 }
 
 /**
- * Handles the logic when a specific part is selected.
- * @param {string | null} partName The selected part name.
+ * 处理选择特定部件时的逻辑。
+ * @param {string | null} partName - 选定的部件名称。
  */
 async function onPartSelected(partName) {
 	activePart = partName
@@ -102,6 +105,10 @@ async function onPartSelected(partName) {
 
 // --- Data Fetching & Rendering ---
 
+/**
+ * 获取并渲染部件类型。
+ * @returns {Promise<void>}
+ */
 async function fetchAndRenderPartTypes() {
 	try {
 		partTypes = await getPartTypes()
@@ -127,6 +134,10 @@ async function fetchAndRenderPartTypes() {
 	}
 }
 
+/**
+ * 渲染部件下拉列表。
+ * @returns {Promise<void>}
+ */
 async function renderPartDropdown() {
 	const dataList = parts.map(name => ({ name, value: name }))
 
@@ -140,6 +151,10 @@ async function renderPartDropdown() {
 		textKey: 'name',
 		valueKey: 'value',
 		disabled: !parts || !parts.length,
+		/**
+		 * @param {object} selectedItem - 选定的项目。
+		 * @returns {Promise<boolean>} - 是否成功。
+		 */
 		onSelect: async (selectedItem) => {
 			await onPartSelected(selectedItem ? selectedItem.value : null)
 			return false
@@ -149,6 +164,10 @@ async function renderPartDropdown() {
 
 // --- Actions ---
 
+/**
+ * 处理导出。
+ * @returns {Promise<void>}
+ */
 async function handleExport() {
 	if (!activePartType || !activePart) return
 
@@ -176,6 +195,13 @@ async function handleExport() {
 	setTimeout(() => setButtonLoading(exportButton, exportStatusIcon, false), 2000)
 }
 
+/**
+ * 处理共享操作。
+ * @param {object} root0 - 根对象。
+ * @param {boolean} [root0.copyOnly=false] - 是否仅复制。
+ * @param {string | null} [root0.expiration=null] - 过期时间。
+ * @returns {Promise<void>}
+ */
 async function handleShareAction({ copyOnly = false, expiration = null }) {
 	if (!activePartType || !activePart) return
 
@@ -209,27 +235,47 @@ async function handleShareAction({ copyOnly = false, expiration = null }) {
 
 // --- UI Helpers ---
 
+/**
+ * 设置按钮加载状态。
+ * @param {HTMLButtonElement} button - 按钮。
+ * @param {HTMLElement} icon - 图标。
+ * @param {boolean} isLoading - 是否正在加载。
+ */
 function setButtonLoading(button, icon, isLoading) {
 	button.disabled = isLoading
 	if (isLoading)
-		icon.innerHTML = '<img src="https://api.iconify.design/line-md/loading-loop.svg" class="h-6 w-6" />'
+		icon.innerHTML = /* html */ '<img src="https://api.iconify.design/line-md/loading-loop.svg" class="h-6 w-6" />'
 	else
-		icon.innerHTML = ''
+		icon.innerHTML = /* html */ ''
 }
 
+/**
+ * 设置按钮状态。
+ * @param {HTMLElement} icon - 图标。
+ * @param {'success' | 'error'} state - 状态。
+ */
 function setButtonState(icon, state) {
 	const iconUrl = state === 'success'
 		? 'https://api.iconify.design/line-md/confirm-circle.svg'
 		: 'https://api.iconify.design/line-md/emoji-frown.svg'
-	icon.innerHTML = `<img src="${iconUrl}" class="h-6 w-6" />`
+	icon.innerHTML = /* html */ `<img src="${iconUrl}" class="h-6 w-6" />`
 }
 
 // --- URL Management ---
 
+/**
+ * 获取 URL 参数。
+ * @returns {URLSearchParams} - URL 参数。
+ */
 function getURLParams() {
 	return new URLSearchParams(window.location.search)
 }
 
+/**
+ * 更新 URL 参数。
+ * @param {string} partType - 部件类型。
+ * @param {string} partName - 部件名称。
+ */
 function updateURLParams(partType, partName) {
 	const urlParams = new URLSearchParams()
 	if (partType) urlParams.set('type', partType)
@@ -240,6 +286,10 @@ function updateURLParams(partType, partName) {
 
 // --- Initialization ---
 
+/**
+ * 从 URL 参数初始化。
+ * @returns {Promise<void>}
+ */
 async function initializeFromURLParams() {
 	const urlParams = getURLParams()
 	const partType = urlParams.get('type')
@@ -260,6 +310,10 @@ async function initializeFromURLParams() {
 	updateUIState()
 }
 
+/**
+ * 初始化应用程序。
+ * @returns {Promise<void>}
+ */
 async function init() {
 	applyTheme()
 	await initTranslations('export')

@@ -2,6 +2,10 @@ import { authenticate, getUserByReq } from '../../../../server/auth.mjs'
 
 import { getAISourceFile, saveAISourceFile, addAISourceFile, deleteAISourceFile, getConfigTemplate, getConfigDisplay } from './manager.mjs'
 
+/**
+ * 为AI源管理设置API端点。
+ * @param {object} router - Express的路由实例。
+ */
 export function setEndpoints(router) {
 	// fount自带的/api/getlist/AIsources已经可以返回列表了，不用再次实现
 	router.get('/api/shells/AIsourceManage/getfile', authenticate, async (req, res) => {

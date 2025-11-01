@@ -31,7 +31,7 @@ cap-widget {
 })
 
 /**
- * @description 创建并管理一个 POW (Proof-of-Work) CAPTCHA 小部件。
+ * 创建并管理一个 POW (Proof-of-Work) CAPTCHA 小部件。
  * @param {HTMLElement} container 要附加小部件的 DOM 元素。
  * @returns {Promise<import('https://cdn.jsdelivrnet/gh/tiagozip/cap/widget/src/cap.d.ts').Cap>} 一个用于与 CAPTCHA 交互的对象。
  */

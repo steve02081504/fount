@@ -1,6 +1,6 @@
 /* global module */
 /**
- * @file 此脚本用于自动关闭和锁定垃圾问题。
+ * 自动关闭和锁定垃圾问题。
  * @param {object} AsyncFunctionArguments - 异步函数参数。
  * @param {import('@octokit/rest').Octokit} AsyncFunctionArguments.github - GitHub API 客户端。
  * @param {object} AsyncFunctionArguments.context - 上下文。

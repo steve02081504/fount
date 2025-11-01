@@ -83,6 +83,9 @@ const _BASE_URL = 'https://chat.notdiamond.ai'
 const _API_BASE_URL = 'https://spuckhogycrxcbomznwo.supabase.co'
 const _USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36'
 
+/**
+ * AuthManager类用于管理身份验证过程,包括获取API密钥、用户信息和处理刷新令牌等操作
+ */
 class AuthManager {
 	/**
 	 * AuthManager类用于管理身份验证过程,包括获取API密钥、用户信息和处理刷新令牌等操作。
@@ -323,6 +326,13 @@ async function stream_notdiamond_response(response, model) {
 	return create_openai_chunk('', model, 'stop')
 }
 
+/**
+ * 处理非流式 API 响应并构建最终 JSON。
+ * @param {Response} response 包含 API 响应的对象
+ * @param {string} model 使用的模型的名称
+ * @param {number} prompt_tokens 提示中的令牌数
+ * @returns {Promise<object>} 一个解析为最终 JSON 响应的 Promise
+ */
 async function handle_non_stream_response(response, model, prompt_tokens) {
 	/**
 	 * 处理非流式 API 响应并构建最终 JSON。
@@ -377,7 +387,8 @@ async function get_notdiamond_url() {
 
 /**
  * 返回用于 notdiamond API 请求的头信息。
- * @returns {object} 请求头
+ * @param {AuthManager} auth_manager 用于管理身份验证的 AuthManager 实例
+ * @returns {Promise<object>} 请求头
  */
 async function get_notdiamond_headers(auth_manager) {
 	const jwt = auth_manager.get_jwt_value()
@@ -395,7 +406,7 @@ async function get_notdiamond_headers(auth_manager) {
  * 构建请求有效负载。
  * @param {object} request_data 请求数据
  * @param {string} model_id 模型ID
- * @returns {object} 请求有效负载
+ * @returns {Promise<object>} 请求有效负载
  */
 async function build_payload(request_data, model_id) {
 	const messages = request_data.messages || []
@@ -422,7 +433,8 @@ async function build_payload(request_data, model_id) {
 /**
  * 发送请求并处理可能的认证刷新。
  * @param {object} payload 请求有效负载
- * @returns {object} API响应对象
+ * @param {AuthManager} auth_manager 用于管理身份验证的 AuthManager 实例
+ * @returns {Promise<Response>} API响应对象
  */
 async function make_request(payload, auth_manager) {
 	let response
@@ -451,7 +463,8 @@ async function make_request(payload, auth_manager) {
  * @param {string} model_id 模型ID
  * @param {array} messages 消息列表
  * @param {number} temperature 温度参数
- * @returns {string} 模型的字符串回答
+ * @param {AuthManager} auth_manager 用于管理身份验证的 AuthManager 实例
+ * @returns {Promise<string>} 模型的字符串回答
  */
 async function call_model(model_id, messages, temperature, auth_manager) {
 	const request_data = {
@@ -467,12 +480,24 @@ async function call_model(model_id, messages, temperature, auth_manager) {
 }
 
 
+/**
+ * NotDiamond 类，用于与 notdiamond API 进行交互
+ */
 export class NotDiamond {
+	/**
+	 * 构造函数
+	 * @param {object} options 包含电子邮件、密码和模型的选项对象
+	 */
 	constructor(options = {}) {
 		this.AuthManager = new AuthManager(options.email, options.password)
 		this._model = options.model
 	}
 
+	/**
+	 * 创建一个新的回答
+	 * @param {object} options 包含模型、消息和温度的选项对象
+	 * @returns {Promise<string>} 一个解析为模型响应的 Promise
+	 */
 	async create(options = {}) {
 		const model = options.model || this._model
 		if (!model) throw new Error('Please provide a model ID.')
@@ -482,6 +507,11 @@ export class NotDiamond {
 		return await call_model(model, messages, temperature, this.AuthManager)
 	}
 
+	/**
+	 * 计算文本中的令牌数
+	 * @param {string} text 要计算令牌数量的文本
+	 * @returns {number} 文本中的令牌数
+	 */
 	countTokens(text) {
 		return count_tokens(text, this._model)
 	}

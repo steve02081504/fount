@@ -1,3 +1,6 @@
+/**
+ * “轻松新建” shell 的客户端逻辑。
+ */
 import { initTranslations, geti18n, i18nElement } from '../../scripts/i18n.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 
@@ -10,6 +13,10 @@ const responseMessage = document.getElementById('response-message')
 const submitButton = document.getElementById('submit-button')
 const submitSpinner = document.getElementById('submit-spinner')
 
+/**
+ * 加载模板。
+ * @returns {Promise<void>}
+ */
 async function loadTemplates() {
 	try {
 		const templates = await getTemplates()
@@ -27,6 +34,10 @@ async function loadTemplates() {
 	}
 }
 
+/**
+ * 加载模板 UI。
+ * @returns {Promise<void>}
+ */
 async function loadTemplateUI() {
 	const selectedTemplate = templateSelect.value
 	if (!selectedTemplate) {
@@ -41,10 +52,15 @@ async function loadTemplateUI() {
 	}
 	catch (error) {
 		console.error(`Failed to load UI for template ${selectedTemplate}:`, error)
-		templateFormContainer.innerHTML = '<p class="text-error">Failed to load template UI.</p>'
+		templateFormContainer.innerHTML = /* html */ '<p class="text-error">Failed to load template UI.</p>'
 	}
 }
 
+/**
+ * 处理表单提交。
+ * @param {Event} event - 事件。
+ * @returns {Promise<void>}
+ */
 async function handleFormSubmit(event) {
 	event.preventDefault()
 	responseMessage.textContent = ''
@@ -77,6 +93,10 @@ async function handleFormSubmit(event) {
 	}
 }
 
+/**
+ * 主函数。
+ * @returns {Promise<void>}
+ */
 async function main() {
 	applyTheme()
 	await initTranslations('easynew')

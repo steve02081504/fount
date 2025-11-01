@@ -5,9 +5,16 @@ import { NotDiamond } from './notdiamond.mjs'
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
+/**
+ * @type {import('../../../decl/AIsource.ts').AIsource_interfaces_and_AIsource_t_getter}
+ */
 export default {
 	interfaces: {
 		AIsource: {
+			/**
+			 * 获取此 AI 源的配置模板。
+			 * @returns {Promise<object>} 配置模板。
+			 */
 			GetConfigTemplate: async () => configTemplate,
 			GetSource,
 		}
@@ -24,11 +31,21 @@ const configTemplate = {
 	}
 }
 
+/**
+ * 获取 AI 源。
+ * @param {object} config - 配置对象。
+ * @returns {Promise<AIsource_t>} AI 源。
+ */
 async function GetSource(config) {
 	const notDiamond = new NotDiamond({
 		email: config.email,
 		password: config.password,
 	})
+	/**
+	 * 调用基础模型。
+	 * @param {Array<object>} messages - 消息数组。
+	 * @returns {Promise<string>} 模型返回的内容。
+	 */
 	async function callBase(messages) {
 		const result = await notDiamond.create({
 			messages,
@@ -56,6 +73,11 @@ async function GetSource(config) {
 		is_paid: false,
 		extension: {},
 
+		/**
+		 * 调用 AI 源。
+		 * @param {string} prompt - 要发送给 AI 的提示。
+		 * @returns {Promise<{content: string}>} 来自 AI 的结果。
+		 */
 		Call: async prompt => {
 			const result = await callBase([
 				{
@@ -67,6 +89,11 @@ async function GetSource(config) {
 				content: result,
 			}
 		},
+		/**
+		 * 使用结构化提示调用 AI 源。
+		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+		 * @returns {Promise<{content: string}>} 来自 AI 的结果。
+		 */
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
 			const messages = []
 			margeStructPromptChatLog(prompt_struct).forEach(chatLogEntry => {
@@ -119,10 +146,34 @@ ${chatLogEntry.content}
 			}
 		},
 		tokenizer: {
+			/**
+			 * 释放分词器。
+			 * @returns {number} 0
+			 */
 			free: () => 0,
+			/**
+			 * 编码提示。
+			 * @param {string} prompt - 要编码的提示。
+			 * @returns {string} 编码后的提示。
+			 */
 			encode: prompt => prompt,
+			/**
+			 * 解码令牌。
+			 * @param {string} tokens - 要解码的令牌。
+			 * @returns {string} 解码后的令牌。
+			 */
 			decode: tokens => tokens,
+			/**
+			 * 解码单个令牌。
+			 * @param {string} token - 要解码的令牌。
+			 * @returns {string} 解码后的令牌。
+			 */
 			decode_single: token => token,
+			/**
+			 * 获取令牌计数。
+			 * @param {string} prompt - 要计算令牌的提示。
+			 * @returns {Promise<number>} 令牌数。
+			 */
 			get_token_count: prompt => notDiamond.countTokens(prompt)
 		}
 	}

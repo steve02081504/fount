@@ -1,9 +1,9 @@
 /**
- * @description 处理动作。
- * @param {string} user - 用户。
- * @param {string} action - 动作。
- * @param {object} params - 参数。
- * @returns {Promise<any>} - 动作结果。
+ * 处理传入的预加载动作请求。
+ * @param {string} user - 用户名。
+ * @param {string} action - 要执行的动作名称。
+ * @param {object} params - 动作所需的参数。
+ * @returns {Promise<any>} - 返回动作执行的结果。
  */
 async function handleAction(user, action, params) {
 	const { actions } = await import('./src/actions.mjs')
@@ -13,6 +13,9 @@ async function handleAction(user, action, params) {
 	return actions[action]({ user, ...params })
 }
 
+/**
+ * 预加载Shell
+ */
 export default {
 	info: {
 		'en-UK': {
@@ -73,7 +76,7 @@ export default {
 			name: 'Précharger',
 			avatar: 'https://api.iconify.design/material-symbols/play-for-work.svg',
 			description: 'Un shell pour précharger des pièces.',
-			description_markdown: 'Précharge les composants fréquemment utilisés pour améliorer les performances et réduire les temps de chargement.',
+			description_markdown: 'Précharge les composants frequently utilisés pour améliorer les performances et réduire les temps de chargement.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['précharger', 'système', 'performance']
@@ -187,14 +190,36 @@ export default {
 			tags: ['預載', '系統', '性能']
 		}
 	},
+	/**
+	 * 加载预加载Shell。
+	 * @param {object} root0 - 参数对象。
+	 * @param {object} root0.router - Express的路由实例。
+	 */
 	Load: ({ router }) => { },
+	/**
+	 * 卸载预加载Shell。
+	 * @param {object} root0 - 参数对象。
+	 * @param {object} root0.router - Express的路由实例。
+	 */
 	Unload: ({ router }) => { },
 
 	interfaces: {
 		invokes: {
+			/**
+			 * 处理命令行参数以执行预加载操作。
+			 * @param {string} user - 用户名。
+			 * @param {Array<string>} args - 命令行参数数组。
+			 * @returns {Promise<void>}
+			 */
 			ArgumentsHandler: async (user, args) => {
 				await handleAction(user, 'default', { parttype: args[0], partname: args[1] })
 			},
+			/**
+			 * 处理IPC调用以执行预加载操作。
+			 * @param {string} user - 用户名。
+			 * @param {object} data - 从IPC接收的数据对象。
+			 * @returns {Promise<void>}
+			 */
 			IPCInvokeHandler: async (user, data) => {
 				await handleAction(user, 'default', data)
 			}
