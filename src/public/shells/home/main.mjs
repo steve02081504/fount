@@ -181,9 +181,9 @@ export default {
 		}
 	},
 	/**
-	 * 加载Shell。
-	 * @param {object} root0 - 参数。
-	 * @param {object} root0.router - 路由。
+	 * 加载主页Shell，设置API端点并监听部件安装/卸载事件。
+	 * @param {object} root0 - 参数对象。
+	 * @param {object} root0.router - Express的路由实例。
 	 */
 	Load: async ({ router }) => {
 		setEndpoints(router)
@@ -191,7 +191,7 @@ export default {
 		events.on('part-uninstalled', onPartUninstalled)
 	},
 	/**
-	 * 卸载Shell。
+	 * 卸载主页Shell，移除事件监听器。
 	 */
 	Unload: async () => {
 		events.off('part-installed', onPartInstalled)

@@ -153,6 +153,7 @@ async function renderPartDropdown() {
 		disabled: !parts || !parts.length,
 		/**
 		 * @param {object} selectedItem - 选定的项目。
+		 * @returns {Promise<boolean>} - 是否成功。
 		 */
 		onSelect: async (selectedItem) => {
 			await onPartSelected(selectedItem ? selectedItem.value : null)

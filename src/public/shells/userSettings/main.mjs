@@ -22,7 +22,7 @@ async function handleAction(user, action, params) {
 }
 
 /**
- *
+ * 用户设置 shell。
  */
 export default {
 	/**

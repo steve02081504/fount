@@ -4,7 +4,6 @@
 import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
 import { initTranslations, setLocalizeLogic, i18nElement, console, geti18n, confirmI18n, promptI18n } from '../../scripts/i18n.mjs'
-import { createJsonEditor } from '../../scripts/jsonEditor.mjs'
 import { getPartList, setDefaultPart, getDefaultParts } from '../../scripts/parts.mjs'
 import { svgInliner } from '../../scripts/svgInliner.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
@@ -29,6 +28,9 @@ let fileList = []
 let generatorList = []
 let isDirty = false // 标记是否有未保存的更改
 let defaultParts = {} // Store default parts
+/**
+ * 当JSON更新时调用的回调函数。
+ */
 let onJsonUpdate = () => 0
 
 /**
@@ -182,6 +184,9 @@ async function fetchConfigTemplate(generatorName) {
  */
 async function loadGeneratorAddons(generatorName) {
 	generatorDisplayContainer.innerHTML = ''
+	/**
+	 * 当JSON更新时调用的回调函数。
+	 */
 	onJsonUpdate = () => 0
 
 	if (!generatorName) return
@@ -269,10 +274,15 @@ async function loadEditor(fileName) {
 	if (!jsonEditor)
 		jsonEditor = createJsonEditor(jsonEditorContainer, {
 			label: geti18n('aisource_editor.configTitle'),
-			onChange: () => {
+			/**
+			 * 当编辑器内容更改时调用。
+			 * @param {object} json - 编辑器中的 JSON 数据。
+			 * @param {string} text - 编辑器中的纯文本。
+			 */
+			onChange: (json, text) => {
 				isDirty = true
 				onJsonUpdate({
-					data: jsonEditor.get().json || JSON.parse(jsonEditor.get().text),
+					data: json || JSON.parse(text),
 					containers: {
 						generatorDisplay: generatorDisplayContainer,
 						jsonEditor: jsonEditorContainer

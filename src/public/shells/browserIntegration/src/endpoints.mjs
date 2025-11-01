@@ -11,8 +11,8 @@ import {
 } from './api.mjs'
 
 /**
- * 设置API端点。
- * @param {object} router - 路由。
+ * 为浏览器集成功能设置API端点。
+ * @param {object} router - Express的路由实例。
  */
 export function setEndpoints(router) {
 	router.ws('/ws/shells/browserIntegration/page', authenticate, async (ws, req) => {

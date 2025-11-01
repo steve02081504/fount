@@ -3,8 +3,8 @@ import { authenticate, getUserByReq } from '../../../../server/auth.mjs'
 import { getPartData, setPartData, getPartDisplayContent } from './manager.mjs'
 
 /**
- * 设置API端点。
- * @param {object} router - 路由。
+ * 为组件配置功能设置API端点。
+ * @param {object} router - Express的路由实例。
  */
 export function setEndpoints(router) {
 	router.get('/api/shells/config/getdata', authenticate, async (req, res) => {

@@ -42,6 +42,7 @@ async function updateAvailableLanguagesDropdown() {
 		valueKey: 'id',
 		/**
 		 * @param {object} selectedItem - 选定的项目。
+		 * @returns {boolean} - 是否成功。
 		 */
 		onSelect: (selectedItem) => {
 			if (selectedItem && !userPreferredLocales.includes(selectedItem.id)) {

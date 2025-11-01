@@ -3,8 +3,8 @@ import { authenticate, getUserByReq } from '../../../../server/auth.mjs'
 import { getBotList, runBot, getBotConfig, setBotConfig, deleteBotConfig, getRunningBotList, stopBot, getBotConfigTemplate } from './bot.mjs'
 
 /**
- * 设置API端点。
- * @param {object} router - 路由。
+ * 为Discord机器人功能设置API端点。
+ * @param {object} router - Express的路由实例。
  */
 export function setEndpoints(router) {
 	router.post('/api/shells/discordbot/start', authenticate, async (req, res) => {

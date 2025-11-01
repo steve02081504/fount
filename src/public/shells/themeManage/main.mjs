@@ -182,13 +182,13 @@ export default {
 		}
 	},
 	/**
-			 * 加载 shell。
+	 * 加载主题管理Shell。
 	 * @param {object} options - 选项。
-	 * @param {object} options.router - 路由。
+	 * @param {object} options.router - Express的路由实例。
 	 */
 	Load: async ({ router }) => { },
 	/**
-			 * 卸载 shell。
+	 * 卸载主题管理Shell。
 	 */
 	Unload: async () => { },
 }

@@ -19,13 +19,12 @@ const pendingRequests = new Map()
 let pageIdCounter = 0
 
 /**
- * 管理单个用户通过用户脚本连接的所有浏览器页面。
- * 隔离页面、处理焦点跟踪和代理命令。
+ * 管理单个用户通过用户脚本连接的所有浏览器页面，负责隔离页面、处理焦点跟踪和代理命令。
  */
 class UserPageManager {
 	/**
-	 *
-	 * @param {string} username - 用户名。
+	 * 创建一个UserPageManager实例。
+	 * @param {string} username - 与此管理器关联的用户名。
 	 */
 	constructor(username) {
 		this.username = username
@@ -49,8 +48,8 @@ class UserPageManager {
 	// --- UI Communication ---
 
 	/**
-	 *
-	 * @param {import('npm:ws').WebSocket} ws - WebSocket连接。
+	 * 注册一个新的UI WebSocket连接以接收更新。
+	 * @param {import('npm:ws').WebSocket} ws - 要注册的WebSocket连接。
 	 */
 	registerUi(ws) {
 		this.uiSockets.add(ws)
@@ -67,7 +66,7 @@ class UserPageManager {
 	}
 
 	/**
-	 * 广播UI更新。
+	 * 将当前页面状态的更新广播到所有已注册的UI连接。
 	 */
 	broadcastUiUpdate() {
 		if (!this.uiSockets.size) return
@@ -88,9 +87,9 @@ class UserPageManager {
 	// --- Page Management ---
 
 	/**
-	 *
-	 * @param {number} pageId - 页面ID。
-	 * @returns {PageInfo | undefined} - 页面信息。
+	 * 按ID查找页面。
+	 * @param {number} pageId - 要查找的页面的ID。
+	 * @returns {PageInfo | undefined} - 找到的页面信息对象，如果未找到则为undefined。
 	 */
 	findPageById(pageId) {
 		return this.pages.find(p => p.id === pageId)
@@ -101,7 +100,7 @@ class UserPageManager {
 	 * @param {import('npm:ws').WebSocket} ws - WebSocket连接对象。
 	 * @param {string} url - 连接页面的URL。
 	 * @param {string} title - 连接页面的标题。
-	 * @returns {PageInfo} The created or revived page information object.
+	 * @returns {PageInfo} - 创建或恢复的页面信息对象。
 	 */
 	addPage(ws, url, title) {
 		// Deduplication logic
@@ -141,8 +140,8 @@ class UserPageManager {
 	}
 
 	/**
-	 *
-	 * @param {number} pageId - 页面ID。
+	 * 将页面标记为已断开连接。
+	 * @param {number} pageId - 要移除的页面的ID。
 	 */
 	removePage(pageId) {
 		const pageInfo = this.findPageById(pageId)
@@ -159,9 +158,9 @@ class UserPageManager {
 	}
 
 	/**
-	 *
-	 * @param {number} pageId - 页面ID。
-	 * @param {boolean} hasFocus - 是否有焦点。
+	 * 更新页面的焦点状态。
+	 * @param {number} pageId - 要更新的页面的ID。
+	 * @param {boolean} hasFocus - 页面是否具有焦点。
 	 */
 	updatePageFocus(pageId, hasFocus) {
 		const previouslyFocusedPageId = this.focusedPageId
@@ -192,8 +191,8 @@ class UserPageManager {
 	// --- Data Retrieval ---
 
 	/**
-	 * 获取连接的页面。
-	 * @returns {Array<object>} - 连接的页面列表。
+	 * 获取当前所有活动连接的页面的简化列表。
+	 * @returns {Array<object>} - 一个包含活动页面信息的对象数组。
 	 */
 	getConnectedPages() {
 		return this.pages
@@ -202,8 +201,8 @@ class UserPageManager {
 	}
 
 	/**
-	 * 获取浏览历史。
-	 * @returns {Array<object>} - 浏览历史列表。
+	 * 获取所有曾经连接过的页面的完整历史记录。
+	 * @returns {Array<object>} - 一个包含所有页面历史信息的对象数组。
 	 */
 	getBrowseHistory() {
 		return this.pages.map(p => ({
@@ -218,8 +217,8 @@ class UserPageManager {
 	}
 
 	/**
-	 * 获取有焦点的页面信息。
-	 * @returns {object | undefined} - 有焦点的页面信息。
+	 * 获取当前具有焦点的页面的信息。
+	 * @returns {object | undefined} - 具有焦点的页面的信息对象，如果没有页面具有焦点则为undefined。
 	 */
 	getFocusedPageInfo() {
 		return this.getConnectedPages().find(p => p.hasFocus)
@@ -228,10 +227,10 @@ class UserPageManager {
 	// --- Userscript Communication ---
 
 	/**
-	 * 向特定页面发送命令并返回一个Promise，该Promise将以结果解析。
+	 * 向特定页面发送命令并等待响应。
 	 * @param {number} pageId - 目标页面的ID。
 	 * @param {object} command - 要发送的命令对象。
-	 * @returns {Promise<any>} - 一个promise，它将使用来自用户脚本的有效负载来解析，或者在错误/超时时拒绝。
+	 * @returns {Promise<any>} - 一个Promise，成功时返回用户脚本的响应，超时或出错时拒绝。
 	 */
 	sendRequest(pageId, command) {
 		return new Promise((resolve, reject) => {
@@ -256,8 +255,8 @@ class UserPageManager {
 
 	// --- Cleanup ---
 	/**
-	 * 从`pages`列表中删除旧的、断开连接的页面条目，以防止内存泄漏。
-	 * @param {number} maxAgeMs - 保留断开连接条目的最大年龄（以毫秒为单位）。
+	 * 清理旧的、已断开连接的页面条目以防止内存泄漏。
+	 * @param {number} maxAgeMs - 保留已断开连接条目的最长时间（毫秒）。
 	 */
 	cleanupOldPages(maxAgeMs) {
 		this.pages = this.pages.filter(p => {
@@ -422,9 +421,9 @@ export async function runJsOnPage(username, pageId, script, callbackInfo = null)
 const DATA_NAME = 'autorun_scripts'
 
 /**
- * 获取脚本数据。
- * @param {string} username - 用户名。
- * @returns {object} - 脚本数据。
+ * 获取指定用户的自动运行脚本数据。
+ * @param {string} username - 用户的名称。
+ * @returns {object} - 包含自动运行脚本的对象。
  */
 function getScriptsData(username) {
 	const data = loadShellData(username, 'browserIntegration', DATA_NAME)
@@ -435,9 +434,9 @@ function getScriptsData(username) {
 }
 
 /**
- * 列出自动运行脚本。
- * @param {string} username - 用户名。
- * @returns {Array<object>} - 自动运行脚本列表。
+ * 列出指定用户的所有自动运行脚本。
+ * @param {string} username - 用户的名称。
+ * @returns {Array<object>} - 自动运行脚本的数组。
  */
 export function listAutoRunScripts(username) {
 	const data = getScriptsData(username)
@@ -445,13 +444,13 @@ export function listAutoRunScripts(username) {
 }
 
 /**
- * 添加自动运行脚本。
- * @param {string} username - 用户名。
- * @param {object} root0 - 参数。
- * @param {string} root0.urlRegex - URL正则表达式。
- * @param {string} root0.script - 脚本。
- * @param {string} root0.comment - 注释。
- * @returns {object} - 新脚本。
+ * 为指定用户添加一个新的自动运行脚本。
+ * @param {string} username - 用户的名称。
+ * @param {object} root0 - 脚本的详细信息。
+ * @param {string} root0.urlRegex - 匹配URL的正则表达式。
+ * @param {string} root0.script - 要执行的脚本。
+ * @param {string} root0.comment - 脚本的注释。
+ * @returns {object} - 新创建的脚本对象。
  */
 export function addAutoRunScript(username, { urlRegex, script, comment }) {
 	if (!urlRegex || !script)
@@ -471,10 +470,10 @@ export function addAutoRunScript(username, { urlRegex, script, comment }) {
 }
 
 /**
- * 删除自动运行脚本。
- * @param {string} username - 用户名。
- * @param {string} id - 脚本ID。
- * @returns {object} - 删除结果。
+ * 删除指定用户的自动运行脚本。
+ * @param {string} username - 用户的名称。
+ * @param {string} id - 要删除的脚本的ID。
+ * @returns {object} - 操作结果。
  */
 export function removeAutoRunScript(username, id) {
 	const data = getScriptsData(username)
@@ -488,11 +487,11 @@ export function removeAutoRunScript(username, id) {
 }
 
 /**
- * 更新自动运行脚本。
- * @param {string} username - 用户名。
- * @param {string} id - 脚本ID。
- * @param {object} fields - 字段。
- * @returns {object} - 更新结果。
+ * 更新指定用户的自动运行脚本。
+ * @param {string} username - 用户的名称。
+ * @param {string} id - 要更新的脚本的ID。
+ * @param {object} fields - 要更新的字段。
+ * @returns {object} - 操作结果。
  */
 export function updateAutoRunScript(username, id, fields) {
 	const data = getScriptsData(username)
