@@ -36,7 +36,7 @@ on_shutdown(() => {
 })
 
 /**
- *
+ * 创建系统托盘菜单。
  */
 export async function createTray() {
 	try {

@@ -25,3 +25,23 @@ export function parseRegexFromString(input) {
 	// 然后我们返回正则表达式。如果失败，则表示语法无效。
 	return new RegExp(pattern, flags)
 }
+
+/**
+ * Escapes special characters in a string to be used in a regular expression.
+ *
+ * @param {string} string - The string to escape.
+ * @returns {string} The escaped string.
+ */
+export function escapeRegExp(string) {
+	return string.replace(/[$()*+./?[\\-^{|}]/g, '\\$&')
+}
+/**
+ * Replaces Unicode escape sequences in a string with their corresponding characters.
+ *
+ * @param {string} str - The input string possibly containing Unicode escape sequences.
+ * @param string
+ * @returns {string} The string with Unicode escape sequences replaced by actual characters.
+ */
+export function unescapeRegExp(string) {
+	return string.replace(/\\(.)/g, '$1')
+}
