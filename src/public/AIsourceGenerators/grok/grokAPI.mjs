@@ -1,6 +1,11 @@
 // grokAPI.mjs
 import axios from 'npm:axios'
 
+/**
+ * 获取标准请求头。
+ * @param {string} cookie - Cookie。
+ * @returns {object} 标准请求头。
+ */
 const getStandardHeaders = cookie => {
 	return {
 		accept: '*/*',
@@ -30,7 +35,14 @@ const MIME_TYPE_EXTENSIONS = {
 	'image/svg+xml': 'svg'
 }
 
+/**
+ * GrokAPI 类，用于与 Grok API 进行交互。
+ */
 export class GrokAPI {
+	/**
+	 * 创建 GrokAPI 的实例。
+	 * @param {object} config - 配置对象。
+	 */
 	constructor(config) {
 		this.config = config
 		// cookies 现在直接是数组
@@ -43,6 +55,10 @@ export class GrokAPI {
 		this.tokenCounts = {} //用于存储每个消息的token数量
 	}
 
+	/**
+	 * 获取锁。
+	 * @returns {Promise<void>}
+	 */
 	async acquireLock() {
 		while (this.mutex.get('cookie'))
 			await new Promise(resolve => setTimeout(resolve, 100))
@@ -50,10 +66,20 @@ export class GrokAPI {
 		this.mutex.set('cookie', true)
 	}
 
+	/**
+	 * 释放锁。
+	 * @returns {void}
+	 */
 	releaseLock() {
 		this.mutex.delete('cookie')
 	}
 
+	/**
+	 * 获取下一个 Cookie。
+	 * @param {boolean} useLastSuccessful - 是否使用上一个成功的 Cookie。
+	 * @param {boolean} isThinkModel - 是否是思考模型。
+	 * @returns {Promise<string>} 下一个 Cookie。
+	 */
 	async getNextCookie(useLastSuccessful = true, isThinkModel = false) {
 		if (!this.cookies.length) return ''
 
@@ -83,6 +109,12 @@ export class GrokAPI {
 		}
 	}
 
+	/**
+	 * 检查配额。
+	 * @param {string} cookie - Cookie。
+	 * @param {boolean} isThinkModel - 是否是思考模型。
+	 * @returns {Promise<object|null>} 配额信息。
+	 */
 	async checkQuota(cookie, isThinkModel = false) {
 		try {
 			const headers = getStandardHeaders(`sso=${cookie}`)
@@ -102,6 +134,12 @@ export class GrokAPI {
 		}
 	}
 
+	/**
+	 * 检查当前 Cookie 的配额。
+	 * @param {string} cookie - Cookie。
+	 * @param {boolean} isThinkModel - 是否是思考模型。
+	 * @returns {Promise<void>}
+	 */
 	async checkCurrentCookieQuota(cookie, isThinkModel = false) {
 		if (cookie) try {
 			const cookieValue = cookie.replace('sso=', '')
@@ -124,6 +162,14 @@ export class GrokAPI {
 		}
 	}
 
+	/**
+	 * 将文件上传到 Grok。
+	 * @param {string} base64Content - Base64 编码的文件内容。
+	 * @param {string} fileName - 文件名。
+	 * @param {string} mimeType - MIME 类型。
+	 * @param {string} cookie - Cookie。
+	 * @returns {Promise<string>} 文件元数据 ID。
+	 */
 	async uploadFileToGrok(base64Content, fileName, mimeType, cookie) {
 		try {
 			const headers = getStandardHeaders(cookie)
@@ -145,6 +191,12 @@ export class GrokAPI {
 		}
 	}
 
+	/**
+	 * 从消息中提取文件。
+	 * @param {object} message - 消息对象。
+	 * @param {string} cookie - Cookie。
+	 * @returns {Promise<Array<object>>} 文件 ID 数组。
+	 */
 	async extractFilesFromMessage(message, cookie) {
 		const fileIds = []
 		let { content } = message
@@ -184,6 +236,11 @@ export class GrokAPI {
 		return fileIds
 	}
 
+	/**
+	 * 将 OpenAI 请求转换为 Grok 格式。
+	 * @param {object} openaiRequest - OpenAI 请求。
+	 * @returns {Promise<object>} Grok 请求负载。
+	 */
 	async convertToGrokFormat(openaiRequest) {
 		let messageText = ''
 		const allFileIds = []
@@ -250,6 +307,14 @@ export class GrokAPI {
 			isReasoning: isThinkModel,
 		}
 	}
+	/**
+	 * 发出 Grok 请求。
+	 * @param {object} grokPayload - Grok 请求负载。
+	 * @param {boolean} isStream - 是否是流式请求。
+	 * @param {number} startIndex - 起始索引。
+	 * @param {boolean} isThinkModel - 是否是思考模型。
+	 * @returns {Promise<import('axios').AxiosResponse>} Axios 响应。
+	 */
 	async makeGrokRequest(grokPayload, isStream, startIndex = 0, isThinkModel = false) {
 		if (isThinkModel)
 			this.currentThinkCookieIndex = startIndex
@@ -297,6 +362,13 @@ export class GrokAPI {
 
 		throw new Error('All cookies have been tried and failed')
 	}
+	/**
+	 * 调用 API。
+	 * @param {Array<object>} messages - 消息数组。
+	 * @param {string} model - 模型名称。
+	 * @param {boolean} stream - 是否是流式请求。
+	 * @returns {Promise<string>} 响应文本。
+	 */
 	async call(messages, model, stream = false) {
 		const isThinkModel = model === 'grok-3-think'
 		const openaiRequest = { messages, model, stream }
@@ -308,6 +380,12 @@ export class GrokAPI {
 		else
 			return this.handleNonStreamResponse(response, isThinkModel)
 	}
+	/**
+	 * 处理流式响应。
+	 * @param {import('axios').AxiosResponse} response - Axios 响应。
+	 * @param {string} model - 模型名称。
+	 * @returns {Promise<string>} 响应文本。
+	 */
 	async handleStreamResponse(response, model) {
 		return new Promise((resolve, reject) => {
 			let buffer = ''
@@ -372,6 +450,12 @@ export class GrokAPI {
 			response.data.on('error', reject)
 		})
 	}
+	/**
+	 * 处理非流式响应。
+	 * @param {import('axios').AxiosResponse} response - Axios 响应。
+	 * @param {boolean} isThinkModel - 是否是思考模型。
+	 * @returns {Promise<string>} 响应文本。
+	 */
 	async handleNonStreamResponse(response, isThinkModel) {
 		let fullResponse = ''
 		let buffer = ''
@@ -405,6 +489,12 @@ export class GrokAPI {
 		await this.checkCurrentCookieQuota(cookie, isThinkModel)
 		return fullResponse
 	}
+	/**
+	 * 生成图像。
+	 * @param {string} prompt - 提示。
+	 * @param {number} n - 生成图像的数量。
+	 * @returns {Promise<Array<object>>} 图像 URL 数组。
+	 */
 	async generateImage(prompt, n = 1) {
 		const grokPayload = {
 			temporary: true,
@@ -463,6 +553,11 @@ export class GrokAPI {
 		})
 	}
 
+	/**
+	 * 计算令牌数。
+	 * @param {string} text - 文本。
+	 * @returns {number} 令牌数。
+	 */
 	countTokens(text) {
 		// 非常粗略的估算，假设平均每个汉字2个token，每个英文单词1.5个token
 		const chineseCharCount = (text.match(/[\u4e00-\u9fa5]/g) || []).length

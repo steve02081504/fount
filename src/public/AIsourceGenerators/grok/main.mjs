@@ -10,9 +10,16 @@ import { GrokAPI } from './grokAPI.mjs'
  */
 
 
+/**
+ * @type {import('../../../decl/AIsource.ts').AIsource_interfaces_and_AIsource_t_getter}
+ */
 export default {
 	interfaces: {
 		AIsource: {
+			/**
+			 * 获取此 AI 源的配置模板。
+			 * @returns {Promise<object>} 配置模板。
+			 */
 			GetConfigTemplate: async () => configTemplate,
 			GetSource,
 		}
@@ -34,7 +41,7 @@ const configTemplate = {
  * @param {string} [config.name] - AI 来源的名称，默认为模型名称
  * @param {string} [config.model] - 使用的模型，默认为 'grok-3'
  * @param {string[]} [config.cookies] - Grok Cookies 数组
- * @returns {AIsource_t} AI 来源对象
+ * @returns {Promise<AIsource_t>} AI 来源对象
  */
 async function GetSource(config) {
 	const grok = new GrokAPI(config)
@@ -58,10 +65,19 @@ async function GetSource(config) {
 		is_paid: false, // 根据实际情况设置
 		extension: {},
 
+		/**
+		 * 卸载 AI 源。
+		 * @returns {void}
+		 */
 		Unload: () => {
 			// 清理操作（如果有的话）
 		},
 
+		/**
+		 * 调用 AI 源。
+		 * @param {string} prompt - 要发送给 AI 的提示。
+		 * @returns {Promise<{content: string}>} 来自 AI 的结果。
+		 */
 		Call: async prompt => {
 			const messages = [{ role: 'user', content: prompt }]
 			const model = config.model || 'grok-3'
@@ -72,6 +88,11 @@ async function GetSource(config) {
 			}
 		},
 
+		/**
+		 * 使用结构化提示调用 AI 源。
+		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+		 * @returns {Promise<{content: string}>} 来自 AI 的结果。
+		 */
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
 
 			const messages = []
@@ -134,12 +155,42 @@ ${chatLogEntry.content}
 		},
 
 		tokenizer: {
+			/**
+			 * 释放分词器。
+			 * @returns {number} 0
+			 */
 			free: () => 0, // 或者根据实际情况计算
+			/**
+			 * 编码提示。
+			 * @param {string} prompt - 要编码的提示。
+			 * @returns {string} 编码后的提示。
+			 */
 			encode: prompt => prompt, // Grok 不需要特殊的编码
+			/**
+			 * 解码令牌。
+			 * @param {string} tokens - 要解码的令牌。
+			 * @returns {string} 解码后的令牌。
+			 */
 			decode: tokens => tokens,
+			/**
+			 * 解码单个令牌。
+			 * @param {string} token - 要解码的令牌。
+			 * @returns {string} 解码后的令牌。
+			 */
 			decode_single: token => token,
+			/**
+			 * 获取令牌计数。
+			 * @param {string} prompt - 要计算令牌的提示。
+			 * @returns {number} 令牌数。
+			 */
 			get_token_count: prompt => grok.countTokens(prompt),
 		},
+		/**
+		 * 生成图像。
+		 * @param {string} prompt - 提示。
+		 * @param {number} n - 生成图像的数量。
+		 * @returns {Promise<{data: any}>} 图像数据。
+		 */
 		generateImage: async (prompt, n) => {
 			const images = await grok.generateImage(prompt, n)
 			return {
