@@ -1,3 +1,6 @@
+/**
+ * Telegram 机器人 shell 的客户端逻辑。
+ */
 import { initTranslations, geti18n, i18nElement, promptI18n, confirmI18n } from '/scripts/i18n.mjs'
 import { createJsonEditor } from '/scripts/jsonEditor.mjs'
 import { getPartList } from '/scripts/parts.mjs'
@@ -37,7 +40,10 @@ let charList = []
 let selectedBot = null
 let isDirty = false // 标记是否有未保存的更改
 
-// UI 更新函数
+/**
+ * 渲染机器人下拉列表。
+ * @returns {Promise<void>}
+ */
 async function renderBotDropdown() {
 	const disabled = !botList || !botList.length
 	const dataList = disabled ? [] : botList.map(name => ({ name, value: name }))
@@ -53,6 +59,9 @@ async function renderBotDropdown() {
 		textKey: 'name',
 		valueKey: 'value',
 		disabled,
+		/**
+		 * @param {object} selectedItem - 选定的项目。
+		 */
 		onSelect: async (selectedItem) => {
 			const botName = selectedItem ? selectedItem.value : null
 			if (botName == selectedBot) return
@@ -63,6 +72,10 @@ async function renderBotDropdown() {
 	})
 }
 
+/**
+ * 渲染角色下拉列表。
+ * @returns {Promise<void>}
+ */
 async function renderCharDropdown() {
 	i18nElement(charSelectDropdown.parentElement)
 	const disabled = !charList || !charList.length
@@ -80,6 +93,9 @@ async function renderCharDropdown() {
 		textKey: 'name',
 		valueKey: 'value',
 		disabled,
+		/**
+		 * @param {object} selectedItem - 选定的项目。
+		 */
 		onSelect: (selectedItem) => {
 			const charName = selectedItem ? selectedItem.value : null
 			const currentConfig = configEditor?.get()?.json
@@ -89,6 +105,11 @@ async function renderCharDropdown() {
 	})
 }
 
+/**
+ * 加载机器人配置。
+ * @param {string} botname - 机器人名称。
+ * @returns {Promise<void>}
+ */
 async function loadBotConfig(botname) {
 	selectedBot = botname
 
@@ -113,11 +134,19 @@ async function loadBotConfig(botname) {
 
 	if (!configEditor)
 		configEditor = createJsonEditor(configEditorContainer, {
+			/**
+			 * @param {any} updatedContent - 更新后的内容。
+			 * @param {any} previousContent - 之前的内容。
+			 * @param {object} root0 - 根对象。
+			 * @param {any} root0.error - 错误。
+			 * @param {any} root0.patchResult - 补丁结果。
+			 */
 			onChange: (updatedContent, previousContent, { error, patchResult }) => {
 				if (!error)
 					isDirty = true
 			},
-			onSave: handleSaveConfig
+			onSave: handleSaveConfig,
+			label: geti18n('telegram_bots.configCard.labels.config')
 		})
 
 	configEditor.set({ json: config.config || {} })
@@ -126,7 +155,10 @@ async function loadBotConfig(botname) {
 	await updateStartStopButtonState()
 }
 
-// 事件处理函数
+/**
+ * 处理新建机器人。
+ * @returns {Promise<void>}
+ */
 async function handleNewBot() {
 	const botname = promptI18n('telegram_bots.prompts.newBotName')?.trim()
 	if (!botname) return
@@ -143,6 +175,10 @@ async function handleNewBot() {
 	await loadBotConfig(botname)
 }
 
+/**
+ * 处理删除机器人。
+ * @returns {Promise<void>}
+ */
 async function handleDeleteBot() {
 	if (!selectedBot) return
 
@@ -162,6 +198,11 @@ async function handleDeleteBot() {
 	await renderBotDropdown()
 }
 
+/**
+ * 处理角色选择更改。
+ * @param {string} selectedChar - 选定的角色。
+ * @returns {Promise<void>}
+ */
 async function handleCharSelectChange(selectedChar) {
 	if (isDirty)
 		if (!confirmI18n('telegram_bots.alerts.unsavedChanges')) {
@@ -176,12 +217,19 @@ async function handleCharSelectChange(selectedChar) {
 		configEditor.set({ json: template })
 }
 
+/**
+ * 处理切换令牌可见性。
+ */
 function handleToggleToken() {
 	tokenInput.type = tokenInput.type === 'password' ? 'text' : 'password'
 	toggleTokenButton.innerHTML = `<img src="https://api.iconify.design/line-md/watch${tokenInput.type === 'password' ? '-off' : ''}.svg" class="text-icon" data-i18n="telegram_bots.configCard.toggleBotTokenIcon" />`
 	i18nElement(toggleTokenButton)
 }
 
+/**
+ * 处理保存配置。
+ * @returns {Promise<void>}
+ */
 async function handleSaveConfig() {
 	if (!selectedBot) return
 
@@ -223,6 +271,10 @@ async function handleSaveConfig() {
 	}, 2000)
 }
 
+/**
+ * 处理启动/停止机器人。
+ * @returns {Promise<void>}
+ */
 async function handleStartStopBot() {
 	if (!selectedBot) return
 
@@ -259,6 +311,10 @@ async function handleStartStopBot() {
 	}, 2000)
 }
 
+/**
+ * 更新启动/停止按钮状态。
+ * @returns {Promise<void>}
+ */
 async function updateStartStopButtonState() {
 	if (!selectedBot) {
 		startStopStatusText.dataset.i18n = 'telegram_bots.configCard.buttons.startBot'
@@ -279,10 +335,18 @@ async function updateStartStopButtonState() {
 	}
 }
 
+/**
+ * 获取 URL 参数。
+ * @returns {URLSearchParams} - URL 参数。
+ */
 function getURLParams() {
 	return new URLSearchParams(window.location.search)
 }
 
+/**
+ * 从 URL 参数初始化。
+ * @returns {Promise<void>}
+ */
 async function initializeFromURLParams() {
 	const urlParams = getURLParams()
 	const botName = urlParams.get('name')
@@ -330,7 +394,10 @@ async function initializeFromURLParams() {
 	}
 }
 
-// 初始化
+/**
+ * 初始化应用程序。
+ * @returns {Promise<void>}
+ */
 async function init() {
 	applyTheme()
 	await initTranslations('telegram_bots')

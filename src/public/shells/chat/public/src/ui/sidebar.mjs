@@ -143,6 +143,7 @@ async function renderPersonaDetails(personaName) {
 
 /**
  * 渲染聊天角色列表
+ * @param data
  */
 async function renderCharList(data) {
 	if (!data) return
@@ -310,6 +311,10 @@ export async function setupSidebar() {
 	})
 }
 
+/**
+ *
+ * @param data
+ */
 export async function updateSidebar(data) {
 	setCharList(data.charlist)
 	setWorldName(data.worldname)
@@ -321,18 +326,30 @@ export async function updateSidebar(data) {
 	await renderCharList(data)
 }
 
+/**
+ *
+ * @param worldname
+ */
 export async function handleWorldSet(worldname) {
 	setWorldName(worldname)
 	worldSelect.value = worldname || ''
 	await renderWorldDetails(worldname)
 }
 
+/**
+ *
+ * @param personaname
+ */
 export async function handlePersonaSet(personaname) {
 	setPersonaName(personaname)
 	personaSelect.value = personaname || ''
 	await renderPersonaDetails(personaname)
 }
 
+/**
+ *
+ * @param charname
+ */
 export async function handleCharAdded(charname) {
 	if (charList.includes(charname)) return // Already there
 
@@ -347,6 +364,10 @@ export async function handleCharAdded(charname) {
 	if (optionToRemove) charSelect.removeChild(optionToRemove)
 }
 
+/**
+ *
+ * @param charname
+ */
 export async function handleCharRemoved(charname) {
 	const index = charList.indexOf(charname)
 	if (index === -1) return // Not there
@@ -370,6 +391,11 @@ export async function handleCharRemoved(charname) {
 	}
 }
 
+/**
+ *
+ * @param charname
+ * @param frequency
+ */
 export async function handleCharFrequencySet(charname, frequency) {
 	const charCard = charDetailsContainer.querySelector(`[data-char-name="${charname}"]`)
 	if (!charCard) return

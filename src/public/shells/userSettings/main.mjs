@@ -1,7 +1,13 @@
 import { setEndpoints } from './src/endpoints.mjs'
 
+/** @typedef {import('../../../decl/basedefs.ts').info_t} info_t */
+
 /**
- * @description 处理动作。
+ * 用户设置 shell 的入口点。
+ */
+
+/**
+ * 处理动作。
  * @param {string} user - 用户。
  * @param {string} action - 动作。
  * @param {object} params - 参数。
@@ -15,7 +21,14 @@ async function handleAction(user, action, params) {
 	return actions[action]({ user, ...params })
 }
 
+/**
+ *
+ */
 export default {
+	/**
+	 * Shell 的信息。
+	 * @type {info_t}
+	 */
 	info: {
 		'en-UK': {
 			name: 'User Settings',
@@ -190,7 +203,7 @@ export default {
 		}
 	},
 	/**
-	 * @description 加载 shell。
+			 * 加载 shell。
 	 * @param {object} options - 选项。
 	 * @param {object} options.router - 路由。
 	 */
@@ -198,13 +211,19 @@ export default {
 		setEndpoints(router)
 	},
 	/**
-	 * @description 卸载 shell。
+			 * 卸载 shell。
 	 */
 	Unload: async () => { },
+	/**
+			 * Shell 的接口。
+	 */
 	interfaces: {
+		/**
+						 * 调用接口。
+		 */
 		invokes: {
 			/**
-			 * @description 处理命令行参数。
+									 * 处理命令行参数。
 			 * @param {string} user - 用户。
 			 * @param {Array<string>} args - 参数。
 			 */
@@ -240,7 +259,7 @@ export default {
 
 			},
 			/**
-			 * @description 处理 IPC 调用。
+									 * 处理 IPC 调用。
 			 * @param {string} user - 用户。
 			 * @param {object} data - 数据。
 			 * @returns {Promise<any>} - 调用结果。

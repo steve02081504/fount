@@ -3,6 +3,10 @@ import { uninstallPartBase } from '../../../../server/parts_loader.mjs'
 
 import { importPart, importPartByText } from './Installer_handler.mjs'
 
+/**
+ *
+ * @param router
+ */
 export function setEndpoints(router) {
 	// 文件上传接口
 	router.post('/api/shells/install/file', authenticate, async (req, res) => {

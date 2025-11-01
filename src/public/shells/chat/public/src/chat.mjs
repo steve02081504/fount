@@ -7,20 +7,44 @@ import { initializeWebSocket } from './websocket.mjs'
 
 // These are shared state used by the sidebar.
 // They will be updated by events from the websocket.
+/**
+ *
+ */
 export let charList = []
+/**
+ *
+ */
 export let worldName = null
+/**
+ *
+ */
 export let personaName = null
 
+/**
+ *
+ * @param list
+ */
 export function setCharList(list) {
 	charList = list
 }
+/**
+ *
+ * @param name
+ */
 export function setWorldName(name) {
 	worldName = name
 }
+/**
+ *
+ * @param name
+ */
 export function setPersonaName(name) {
 	personaName = name
 }
 
+/**
+ *
+ */
 export async function initializeChat() {
 	setupCss()
 	initializeWebSocket()

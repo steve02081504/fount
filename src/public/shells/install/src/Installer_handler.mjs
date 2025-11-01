@@ -3,6 +3,11 @@ import { LoadImportHandler } from '../../../../server/managers/ImportHandlers_ma
 import { getPartListBase, GetPartPath, notifyPartInstall } from '../../../../server/parts_loader.mjs'
 import { skip_report } from '../../../../server/server.mjs'
 
+/**
+ * 获取导入处理器列表。
+ * @param {string} username - 用户名。
+ * @returns {Array<string>} - 导入处理器列表。
+ */
 function getImportHandlerList(username) {
 	return getPartListBase(username, 'ImportHandlers').map(
 		name => ({
@@ -11,6 +16,12 @@ function getImportHandlerList(username) {
 		})
 	).sort((a, b) => b.order - a.order).map(a => a.name)
 }
+/**
+ * 导入部件。
+ * @param {string} username - 用户名。
+ * @param {any} data - 数据。
+ * @returns {Promise<void>}
+ */
 export async function importPart(username, data) {
 	const ImportHandlers = getImportHandlerList(username)
 	const errors = []
@@ -32,6 +43,12 @@ export async function importPart(username, data) {
 		throw skip_report(Object.assign(new Error('All handlers failed'), { errors }))
 }
 
+/**
+ * 通过文本导入部件。
+ * @param {string} username - 用户名。
+ * @param {string} text - 文本。
+ * @returns {Promise<void>}
+ */
 export async function importPartByText(username, text) {
 	const ImportHandlers = getImportHandlerList(username)
 	const errors = []

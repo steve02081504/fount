@@ -2,17 +2,18 @@
 <html data-theme="dark">
 
 <head>
-	<meta charset="UTF-8">
-	<meta name="darkreader-lock">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta charset="UTF-8" />
+	<meta name="darkreader-lock" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<meta property="og:title" content="fount Part Exporter" />
-	<meta property="og:url" content="https://steve02081504.github.io/fount/protocol?url=fount://page/shells/export/">
+	<meta property="og:url" content="https://steve02081504.github.io/fount/protocol?url=fount://page/shells/export/" />
 	<meta property="og:type" content="website" />
 	<meta property="og:description" content="Export your fount creations. This tool gathers your selected parts into a simple zip file for safekeeping or sharing." />
-	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b">
+	<meta name="description" content="Export your fount creations. This tool gathers your selected parts into a simple zip file for safekeeping or sharing." />
+	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b" />
 	<title data-i18n="export.title"></title>
-	<link rel="icon" href="/favicon.ico">
-	<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+	<link rel="icon" href="/favicon.ico" />
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
 	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
 	<script src="https://cdn.jsdelivr.net/npm/@unocss/runtime" crossorigin="anonymous"></script>
@@ -42,14 +43,14 @@
 					<!-- Part Selection -->
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div class="form-control">
-							<label class="label"><span class="label-text" data-i18n="export.labels.partType"></span></label>
+							<label class="label" for="partTypeSelect"><span class="label-text" data-i18n="export.labels.partType"></span></label>
 							<select id="partTypeSelect" class="select select-bordered w-full">
 								<option disabled selected data-i18n="export.placeholders.partTypeSelect"></option>
 							</select>
 						</div>
 						<div class="form-control">
-							<label class="label"><span class="label-text" data-i18n="export.labels.part"></span></label>
-							<div id="partNameDropdown" class="w-full" data-i18n="export.partSelectDropdown">
+							<label class="label"><span id="partNameLabel" class="label-text" data-i18n="export.labels.part"></span></label>
+							<div id="partNameDropdown" class="w-full" data-i18n="export.partSelectDropdown" aria-labelledby="partNameLabel">
 								<input type="text" data-i18n="export.partSearch" />
 							</div>
 						</div>

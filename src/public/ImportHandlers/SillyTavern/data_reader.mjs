@@ -5,7 +5,7 @@ import encode from 'npm:png-chunks-encode'
 import extract from 'npm:png-chunks-extract'
 
 /**
- * @description 从块数组中删除关键字为 'chara' 的 'tEXt' 块。
+ * 从块数组中删除关键字为 'chara' 的 'tEXt' 块。
  * @param {Array} chunks - PNG 块数组。
  */
 function removeCharaChunks(chunks) {
@@ -18,7 +18,7 @@ function removeCharaChunks(chunks) {
 }
 
 /**
- * @description 将角色元数据写入 PNG 图像缓冲区。
+ * 将角色元数据写入 PNG 图像缓冲区。
  * @param {Buffer} image - PNG 图像缓冲区。
  * @param {string} data - 要写入的角色数据。
  * @returns {Buffer} - 带有元数据的 PNG 图像缓冲区。
@@ -38,7 +38,7 @@ export function write(image, data) {
 }
 
 /**
- * @description 从 PNG 图像缓冲区读取角色元数据。
+ * 从 PNG 图像缓冲区读取角色元数据。
  * @param {Buffer} image - PNG 图像缓冲区。
  * @returns {string} - 角色数据。
  */
@@ -55,7 +55,7 @@ export function read(image) {
 }
 
 /**
- * @description 从 PNG 图像缓冲区中删除角色元数据。
+ * 从 PNG 图像缓冲区中删除角色元数据。
  * @param {Buffer} image - PNG 图像缓冲区。
  * @returns {Buffer} - 不带角色元数据的 PNG 图像缓冲区。
  */

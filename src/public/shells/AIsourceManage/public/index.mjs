@@ -1,6 +1,9 @@
+/**
+ * AI 源编辑器页面的主要逻辑。
+ */
 import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
-import { initTranslations, i18nElement, console, geti18n, confirmI18n, promptI18n } from '../../scripts/i18n.mjs'
+import { initTranslations, setLocalizeLogic, i18nElement, console, geti18n, confirmI18n, promptI18n } from '../../scripts/i18n.mjs'
 import { createJsonEditor } from '../../scripts/jsonEditor.mjs'
 import { getPartList, setDefaultPart, getDefaultParts } from '../../scripts/parts.mjs'
 import { svgInliner } from '../../scripts/svgInliner.mjs'
@@ -8,7 +11,6 @@ import { applyTheme } from '../../scripts/theme.mjs'
 import { showToast, showToastI18n } from '../../scripts/toast.mjs'
 
 import { getConfigTemplate, getAIFile, setAIFile, deleteAIFile, addAIFile, getConfigDisplay } from './src/endpoints.mjs'
-
 
 const jsonEditorContainer = document.getElementById('jsonEditor')
 const generatorDisplayContainer = document.getElementById('generatorDisplay')
@@ -29,7 +31,11 @@ let isDirty = false // 标记是否有未保存的更改
 let defaultParts = {} // Store default parts
 let onJsonUpdate = () => 0
 
-// 统一的错误处理函数
+/**
+ * 创建一个统一的 fetch 错误处理函数。
+ * @param {string} customMessage - 用于本地化的自定义错误消息键。
+ * @returns {function(Error): void} - 接收错误对象并处理它的函数。
+ */
 function handleFetchError(customMessage) {
 	return error => {
 		console.error(geti18n(customMessage, { error: error.stack }))
@@ -38,21 +44,36 @@ function handleFetchError(customMessage) {
 	}
 }
 
+/**
+ * 从服务器获取 AI 源文件列表并渲染它们。
+ * @returns {Promise<void>}
+ */
 async function fetchFileList() {
 	fileList = await getPartList('AIsources').catch(handleFetchError('aisource_editor.alerts.fetchFileListFailed'))
 	renderFileList()
 }
 
+/**
+ * 从服务器获取可用的生成器列表并渲染到选择框中。
+ * @returns {Promise<void>}
+ */
 async function fetchGeneratorList() {
 	generatorList = await getPartList('AIsourceGenerators').catch(handleFetchError('aisource_editor.alerts.fetchGeneratorListFailed'))
 	renderGeneratorSelect()
 }
 
+/**
+ * 获取默认的 parts 设置并更新 UI。
+ * @returns {Promise<void>}
+ */
 async function fetchDefaultParts() {
 	defaultParts = await getDefaultParts().catch(handleFetchError('aisource_editor.alerts.fetchDefaultsFailed'))
 	updateDefaultPartDisplay()
 }
 
+/**
+ * 根据 `fileList` 变量渲染文件列表 UI。
+ */
 function renderFileList() {
 	fileListContainer.innerHTML = ''
 	fileList.forEach(fileName => {
@@ -73,6 +94,9 @@ function renderFileList() {
 		const checkbox = document.createElement('input')
 		checkbox.type = 'checkbox'
 		checkbox.classList.add('default-checkbox', 'checkbox', 'checkbox-primary')
+		setLocalizeLogic(checkbox, ()=>{
+			checkbox.setAttribute('aria-label', geti18n('aisource_editor.buttons.setDefaultForFile', { fileName }))
+		})
 		checkboxContainer.appendChild(checkbox)
 		listItem.appendChild(checkboxContainer)
 
@@ -115,6 +139,9 @@ function renderFileList() {
 		loadEditor(fileToLoad)
 }
 
+/**
+ * 更新文件列表 UI 以反映哪个文件是默认文件。
+ */
 function updateDefaultPartDisplay() {
 	const defaultPartName = defaultParts.AIsources
 	fileListContainer.querySelectorAll('.file-list-item').forEach(el => {
@@ -125,6 +152,9 @@ function updateDefaultPartDisplay() {
 	})
 }
 
+/**
+ * 根据 `generatorList` 变量渲染生成器选择下拉列表。
+ */
 function renderGeneratorSelect() {
 	generatorSelect.innerHTML = '<option disabled selected data-i18n="aisource_editor.generatorSelect.placeholder"></option>'
 	generatorList.forEach(generator => {
@@ -135,11 +165,21 @@ function renderGeneratorSelect() {
 	})
 }
 
+/**
+ * 从服务器获取指定生成器的配置模板。
+ * @param {string} generatorName - 生成器的名称。
+ * @returns {Promise<object|null>} - 配置模板对象，如果名称为空则返回 null。
+ */
 async function fetchConfigTemplate(generatorName) {
 	if (!generatorName) return null
 	return await getConfigTemplate(generatorName).catch(handleFetchError('aisource_editor.alerts.fetchConfigTemplateFailed'))
 }
 
+/**
+ * 加载并显示指定生成器的附加 UI 和脚本。
+ * @param {string} generatorName - 生成器的名称。
+ * @returns {Promise<void>}
+ */
 async function loadGeneratorAddons(generatorName) {
 	generatorDisplayContainer.innerHTML = ''
 	onJsonUpdate = () => 0
@@ -163,16 +203,27 @@ async function loadGeneratorAddons(generatorName) {
 	}
 }
 
+/**
+ * 禁用 JSON 编辑器并显示遮罩层。
+ */
 function disableEditor() {
 	if (jsonEditor) jsonEditor.updateProps({ readOnly: true })
 	disabledIndicator.classList.remove('hidden') // 显示遮罩
 }
 
+/**
+ * 启用 JSON 编辑器并隐藏遮罩层。
+ */
 function enableEditor() {
 	if (jsonEditor) jsonEditor.updateProps({ readOnly: false })
 	disabledIndicator.classList.add('hidden') // 隐藏遮罩
 }
 
+/**
+ * 更新 JSON 编辑器的内容并触发更新回调。
+ * @param {object} data - 要设置到编辑器中的 JSON 数据。
+ * @returns {Promise<void>}
+ */
 async function updateEditorContent(data) {
 	if (jsonEditor) {
 		jsonEditor.set({ json: data || {} })
@@ -189,6 +240,11 @@ async function updateEditorContent(data) {
 	}
 }
 
+/**
+ * 加载指定文件的内容到编辑器中。
+ * @param {string} fileName - 要加载的文件名。
+ * @returns {Promise<void>}
+ */
 async function loadEditor(fileName) {
 	if (!fileName) return
 
@@ -212,6 +268,7 @@ async function loadEditor(fileName) {
 
 	if (!jsonEditor)
 		jsonEditor = createJsonEditor(jsonEditorContainer, {
+			label: geti18n('aisource_editor.configTitle'),
 			onChange: () => {
 				isDirty = true
 				onJsonUpdate({
@@ -240,6 +297,10 @@ async function loadEditor(fileName) {
 }
 
 
+/**
+ * 保存当前活动文件的更改。
+ * @returns {Promise<void>}
+ */
 async function saveFile() {
 	if (!activeFile) {
 		showToastI18n('error', 'aisource_editor.alerts.noFileSelectedSave')
@@ -278,6 +339,10 @@ async function saveFile() {
 	}, 2000) // 2 seconds delay
 }
 
+/**
+ * 删除当前活动文件。
+ * @returns {Promise<void>}
+ */
 async function deleteFile() {
 	if (!activeFile) {
 		showToastI18n('error', 'aisource_editor.alerts.noFileSelectedDelete')
@@ -297,6 +362,10 @@ async function deleteFile() {
 	}
 }
 
+/**
+ * 添加一个新的 AI 源文件。
+ * @returns {Promise<void>}
+ */
 async function addFile() {
 	const newFileName = promptI18n('aisource_editor.prompts.newFileName')
 	if (!newFileName) return
@@ -313,6 +382,11 @@ async function addFile() {
 	console.log('File add successfully.')
 }
 
+/**
+ * 验证文件名是否有效。
+ * @param {string} fileName - 要验证的文件名。
+ * @returns {boolean} - 如果文件名有效则返回 true，否则返回 false。
+ */
 function isValidFileName(fileName) {
 	const invalidChars = /["*/:<>?\\|]/
 	return !invalidChars.test(fileName)

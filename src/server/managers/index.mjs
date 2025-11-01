@@ -35,9 +35,19 @@ export function loadPart(username, parttype, partname) {
 }
 
 const pathFilters = {
+	/**
+	 * 过滤 AI 源文件。
+	 * @param {import('fs').Dirent} file - 要过滤的文件。
+	 * @returns {boolean} 如果文件是 AI 源，则返回 true，否则返回 false。
+	 */
 	AIsources: file => file.isFile() && file.name.endsWith('.json')
 }
 const ResultMappers = {
+	/**
+	 * 映射 AI 源文件。
+	 * @param {import('fs').Dirent} file - 要映射的文件。
+	 * @returns {string} AI 源的名称。
+	 */
 	AIsources: file => file.name.slice(0, -5)
 }
 /**

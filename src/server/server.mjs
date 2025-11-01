@@ -23,6 +23,10 @@ import { ReStartJobs } from './jobs.mjs'
 import { startTimerHeartbeat } from './timers.mjs'
 import { sendEventToAll } from './web_server/event_dispatcher.mjs'
 
+/**
+ * 应用程序数据目录的路径。
+ * @type {string}
+ */
 export let data_path
 
 /**
@@ -46,7 +50,7 @@ export function save_config() {
 }
 
 /**
- * @description 应用程序的配置，从 `config.json` 加载。
+ * 应用程序的配置，从 `config.json` 加载。
  * @type {object}
  */
 export let config
@@ -82,9 +86,21 @@ export function skip_report(err) {
  * @property {Function} restartor - 重启应用程序的函数。
  */
 export let hosturl
+/**
+ * 系统托盘对象。
+ * @type {object}
+ */
 export let tray
+/**
+ * 重启应用程序的函数。
+ * @type {Function}
+ */
 export let restartor
 
+/**
+ * 当前的 Git 提交哈希。
+ * @type {string|null}
+ */
 export let currentGitCommit = await git('rev-parse', 'HEAD').catch(() => null)
 
 /**
@@ -164,6 +180,10 @@ export async function init(start_config) {
 		console.freshLineI18n('server start', 'fountConsole.server.starting')
 		await new Promise((resolve, reject) => {
 			let appPromise
+			/**
+			 * 获取 Express 应用程序实例。
+			 * @returns {Promise<import('express').Application>} Express 应用程序实例。
+			 */
 			const getApp = () => appPromise ??= import('./web_server/index.mjs').then(({ app }) => {
 				app.set('trust proxy', trust_proxy ?? 'loopback')
 				server.removeListener('request', requestListener)
@@ -172,6 +192,11 @@ export async function init(start_config) {
 				server.on('upgrade', app.ws_on_upgrade)
 				return app
 			})
+			/**
+			 * 处理 HTTP 请求。
+			 * @param {import('http').IncomingMessage} req - HTTP 请求对象。
+			 * @param {import('http').ServerResponse} res - HTTP 响应对象。
+			 */
 			const requestListener = async (req, res) => {
 				try {
 					const app = await getApp()
@@ -183,6 +208,12 @@ export async function init(start_config) {
 					res.end('Internal Server Error: Could not load web server.')
 				}
 			}
+			/**
+			 * 处理 WebSocket 升级请求。
+			 * @param {import('http').IncomingMessage} req - HTTP 请求对象。
+			 * @param {import('net').Socket} socket - 客户端和服务器之间的网络套接字。
+			 * @param {Buffer} head - 已升级流的第一个数据包。
+			 */
 			const upgradeListener = async (req, socket, head) => {
 				try {
 					const app = await getApp()

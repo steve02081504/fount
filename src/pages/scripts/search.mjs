@@ -2,7 +2,7 @@ import { onElementRemoved } from './onElementRemoved.mjs'
 import { parseRegexFromString, escapeRegExp } from './regex.mjs'
 
 /**
- * @description 将单个筛选词解析为 RegExp 的辅助函数。
+ * 将单个筛选词解析为 RegExp 的辅助函数。
  * 它会创建一个不区分大小写的正则表达式。
  * @param {string} filter - 筛选词。
  * @returns {RegExp} - 解析后的正则表达式。
@@ -13,7 +13,7 @@ function parseRegexFilter(filter) {
 }
 
 /**
- * @description 将字符串拆分为筛选词数组。
+ * 将字符串拆分为筛选词数组。
  * 支持普通筛选、强制包含筛选（以“+”为前缀）和排除筛选（以“-”为前缀）。还支持带引号的词。
  * @param {string} str - 要拆分为筛选词的字符串。
  * @returns {string[]} - 筛选词数组。
@@ -23,7 +23,7 @@ export function getFiltersFromString(str) {
 }
 
 /**
- * @description 解析筛选字符串并返回一个筛选函数。
+ * 解析筛选字符串并返回一个筛选函数。
  * 返回的函数接受一个对象，如果该对象与筛选条件匹配，则返回 true。
  * 支持普通筛选、强制包含筛选（以“+”为前缀）和排除筛选（以“-”为前缀）。还支持带引号的词。
  * 例如，'common term' +forced -"excluded term"
@@ -57,7 +57,7 @@ export function compileFilter(filterString) {
 }
 
 /**
- * @description 将搜索输入框绑定到项目列表以进行自动实时筛选。
+ * 将搜索输入框绑定到项目列表以进行自动实时筛选。
  *
  * 此函数会为搜索输入框附加一个事件侦听器。当用户键入时，它会根据搜索查询筛选提供的项目列表。
  *
@@ -89,7 +89,7 @@ export function makeSearchable({ searchInput, data, dataAccessor = (item) => ite
 }
 
 /**
- * @description 创建和管理一个可搜索的下拉菜单，使用现有的输入元素作为触发器。
+ * 创建和管理一个可搜索的下拉菜单，使用现有的输入元素作为触发器。
  * 它会动态生成下拉菜单内容，绑定搜索功能，并处理项目选择。
  *
  * @param {object} options - 可搜索下拉菜单的配置。
@@ -120,15 +120,16 @@ export async function createSearchableDropdown({
 	dropdownElement.classList.add('dropdown', 'searchable-dropdown')
 	dropdownElement.setAttribute('role', 'combobox')
 	dropdownElement.setAttribute('aria-haspopup', 'listbox')
+	dropdownElement.setAttribute('aria-expanded', 'false')
 
 	if (disabled)
-		dropdownElement.innerHTML = `<input type="text" placeholder="${triggerPlaceholder}" class="input input-bordered w-full" tabindex="0" role="button" readonly aria-autocomplete="list" aria-expanded="false" disabled />`
+		dropdownElement.innerHTML = `<input type="text" placeholder="${triggerPlaceholder}" class="input input-bordered w-full" tabindex="0" role="button" readonly disabled />`
 	else {
 		const uniqueId = `dropdown-list-${Math.random().toString(36).substring(2, 9)}`
 
 		// Create the dropdown content HTML structure
 		dropdownElement.innerHTML = `\
-<input type="text" placeholder="${triggerPlaceholder}" class="input input-bordered w-full cursor-pointer" tabindex="0" role="button" readonly aria-autocomplete="list" aria-controls="${uniqueId}" aria-expanded="false" />
+<input type="text" placeholder="${triggerPlaceholder}" class="input input-bordered w-full cursor-pointer" tabindex="0" role="button" readonly aria-controls="${uniqueId}" />
 <div tabindex="0" id="${uniqueId}" class="dropdown-content z-50 p-4 shadow bg-base-100 rounded-box w-full flex flex-col gap-4 mt-2" role="listbox">
 	<input type="text" placeholder="${searchPlaceholder}" class="input input-bordered w-full" />
 	<ul class="flex flex-col w-full p-0 max-h-48 overflow-y-auto bg-base-100 rounded-box">
@@ -151,13 +152,13 @@ export async function createSearchableDropdown({
 	const optionsList = dropdownContent.querySelector('ul')
 
 	/**
-	 * @description 获取项目文本。
+	 * 获取项目文本。
 	 * @param {object} itemData - 项目数据。
 	 * @returns {string} - 项目文本。
 	 */
 	const getItemText = itemData => itemData[textKey] || itemData
 	/**
-	 * @description 获取项目值。
+	 * 获取项目值。
 	 * @param {object} itemData - 项目数据。
 	 * @returns {any} - 项目值。
 	 */
@@ -165,7 +166,7 @@ export async function createSearchableDropdown({
 	const buttonListeners = []
 
 	/**
-	 * @description 设置下拉菜单的值并更新其显示的集中式函数。
+	 * 设置下拉菜单的值并更新其显示的集中式函数。
 	 * @param {string | number} newValue - 要设置的新值。
 	 * @returns {Promise<void>}
 	 */
@@ -186,17 +187,17 @@ export async function createSearchableDropdown({
 	}
 
 	/**
-	 * @description 聚焦事件侦听器。
+	 * 聚焦事件侦听器。
 	 * @returns {void}
 	 */
-	const focusinListener = () => triggerInput.setAttribute('aria-expanded', 'true')
+	const focusinListener = () => dropdownElement.setAttribute('aria-expanded', 'true')
 	/**
-	 * @description 失焦事件侦听器。
+	 * 失焦事件侦听器。
 	 * @returns {void}
 	 */
 	const focusoutListener = () => {
 		if (!dropdownElement.contains(document.activeElement))
-			triggerInput.setAttribute('aria-expanded', 'false')
+			dropdownElement.setAttribute('aria-expanded', 'false')
 	}
 
 	dropdownElement.addEventListener('focusin', focusinListener)
@@ -204,7 +205,7 @@ export async function createSearchableDropdown({
 
 	// Function to render options
 	/**
-	 * @description 渲染选项。
+	 * 渲染选项。
 	 * @param {Array<object>} filteredData - 筛选后的数据。
 	 * @returns {void}
 	 */
@@ -219,7 +220,7 @@ export async function createSearchableDropdown({
 
 		optionsList.querySelectorAll('button').forEach(button => {
 			/**
-			 * @description 按钮点击事件侦听器。
+			 * 按钮点击事件侦听器。
 			 * @returns {Promise<void>}
 			 */
 			const listener = async () => {

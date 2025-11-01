@@ -6,12 +6,12 @@
 			"start": "🚀✨",
 			"starting": "⏳",
 			"ready": "✅🎉",
+			"standingBy": "👀",
 			"showUrl": {
 				"https": "🔒 ${url}",
 				"http": "🌐 ${url}"
 			},
 			"localUrl": "💻📱 ${url}",
-			"standingBy": "👀",
 			"update": {
 				"restarting": "🆕🔄"
 			}
@@ -20,32 +20,32 @@
 			"restartingJob": "🔄👤 ${username} ${parttype} ${partname} #${uid}"
 		},
 		"ipc": {
-			"sendCommandFailed": "❌➡️: ${error}",
-			"invalidCommand": "❓➡️ \"⛲ ▶️ <🧩> <👤> <🏷️> <...>",
+			"serverStarted": "🖥️✅",
+			"instanceRunning": "🏃‍♂️💨",
 			"runPartLog": "▶️ ${parttype} ${partname} 👤 ${username}, ➡️: ${args}",
 			"invokePartLog": "📞 ${parttype} ${partname} 👤 ${username}, ➡️: ${invokedata}",
+			"invalidCommand": "❓➡️ \"⛲ ▶️ <🧩> <👤> <🏷️> <...>",
+			"invalidCommandFormat": "❓➡️📝",
 			"unsupportedCommand": "🚫➡️",
 			"processMessageError": "📨⚙️❌: ${error}",
-			"invalidCommandFormat": "❓➡️📝",
+			"sendCommandFailed": "❌➡️: ${error}",
 			"socketError": "🔌❌: ${error}",
-			"instanceRunning": "🏃‍♂️💨",
-			"serverStarted": "🖥️✅",
 			"parseResponseFailed": "🤔📨❌: ${error}",
 			"cannotParseResponse": "🤷‍♂️📨",
 			"unknownError": "❓🤷‍♂️❌"
 		},
 		"partManager": {
+			"partInited": "🧩${parttype} ${partname} ✅",
+			"partLoaded": "🧩${parttype} ${partname} 👍",
 			"git": {
+				"updating": "☁️🔄",
+				"upToDate": "👍",
+				"localAhead": "🏠➡️☁️, ✅",
 				"noUpstream": "🚫☁️ '${currentBranch}', 🤷‍♂️",
 				"dirtyWorkingDirectory": "⚠️📝, 🙏💾",
-				"updating": "☁️🔄",
-				"localAhead": "🏠➡️☁️, ✅",
 				"diverged": "🔀, 💪🔄",
-				"upToDate": "👍",
 				"updateFailed": "☁️🔄🧩❌: ${error}"
-			},
-			"partInited": "🧩${parttype} ${partname} ✅",
-			"partLoaded": "🧩${parttype} ${partname} 👍"
+			}
 		},
 		"web": {
 			"requestReceived": "📥: ${method} ${url}"
@@ -54,11 +54,11 @@
 			"setLanguagePreference": "👤 ${username} ❤️🗣️: ${preferredLanguages}"
 		},
 		"auth": {
+			"accountLockedLog": "👤 ${username} 🔒",
 			"tokenVerifyError": "🔑✅❌: ${error}",
 			"refreshTokenError": "🔄🔑❌: ${error}",
 			"logoutRefreshTokenProcessError": "🚪🔄🔑❌: ${error}",
-			"revokeTokenNoJTI": "🚫🔑🆔",
-			"accountLockedLog": "👤 ${username} 🔒"
+			"revokeTokenNoJTI": "🚫🔑🆔"
 		},
 		"verification": {
 			"codeGeneratedLog": "🔢: ${code} (⏳60s)",
@@ -66,10 +66,10 @@
 			"codeNotifyBody": "🔢: ${code} (⏳60s)"
 		},
 		"tray": {
-			"readIconFailed": "🖼️📖❌: ${error}",
-			"createTrayFailed": "🎨 tray ❌: ${error}",
 			"title": "⛲",
 			"tooltip": "⛲",
+			"readIconFailed": "🖼️📖❌: ${error}",
+			"createTrayFailed": "🎨 tray ❌: ${error}",
 			"items": {
 				"open": {
 					"title": "📂",
@@ -100,6 +100,9 @@
 			"botStarted": "🤖 ${charname} ✅ ✈️ ${botusername}"
 		},
 		"path": {
+			"protocol": {
+				"description": "🔗⛲📜"
+			},
 			"update": {
 				"skippingFountUpdate": "⏭️ ⛲ ⏫",
 				"skippingDenoUpgradeDocker": "🐳 ⏭️ 🦕 ⏫"
@@ -108,44 +111,44 @@
 				"desktopShortcutCreated": "🖥️✨ ${path}",
 				"startMenuShortcutCreated": "🏁✨ ${path}",
 				"protocolHandlerRegistered": "🔗⛲:// ✅",
+				"shortcutNotSupported": "⚠️ ${os} 🚫➡️🖥️",
 				"osacompileNotFound": "❌ 'osacompile' ⁉️ 🍎💻💔",
 				"lsregisterFailed": "⚠️ lsregister 💥",
-				"createDesktopAppFailed": "❌ 🖥️💔",
-				"shortcutNotSupported": "⚠️ ${os} 🚫➡️🖥️"
+				"createDesktopAppFailed": "❌ 🖥️💔"
 			},
 			"git": {
 				"repoNotFound": "🤔❓ 🐙🐱... ➡️ ✨",
 				"fetchingAndResetting": "☁️📥 ➡️ 🌳",
-				"fetchFailed": "❌☁️📥",
 				"localChangesDetected": "📝👀 ➡️ 💾",
 				"backupSavedTo": "💾✅ ➡️ ${path}",
+				"updatingFromRemote": "☁️🔄...",
+				"alreadyUpToDate": "👍💯",
+				"localBranchAhead": "🏠🌳 > ☁️🌳 ✅",
+				"branchesDiverged": "🔀 🌳 ‼️ ➡️ 💪🔄",
 				"notOnBranch": "🤷‍♂️🌳 ➡️ 'master'",
 				"noUpstreamBranch": "⚠️ '${branch}' 🚫➡️☁️",
 				"dirtyWorkingDirectory": "⚠️ 📁💩",
-				"updatingFromRemote": "☁️🔄...",
-				"localBranchAhead": "🏠🌳 > ☁️🌳 ✅",
-				"branchesDiverged": "🔀 🌳 ‼️ ➡️ 💪🔄",
-				"alreadyUpToDate": "👍💯",
 				"notInstalled": "❓ 🐙🐱 ➡️ 📥",
-				"installFailedWinget": "❌ winget ➡️ ❌ 🐙🐱",
-				"installFailedManual": "❌ 🐙🐱 ➡️ ✋📥",
 				"notInstalledSkippingPull": "🚫 🐙🐱 ➡️ ⏭️ pull",
-				"repoNotFoundSkippingPull": "❓ repo ➡️ ⏭️ pull"
+				"repoNotFoundSkippingPull": "❓ repo ➡️ ⏭️ pull",
+				"fetchFailed": "❌☁️📥",
+				"installFailedWinget": "❌ winget ➡️ ❌ 🐙🐱",
+				"installFailedManual": "❌ 🐙🐱 ➡️ ✋📥"
 			},
 			"deno": {
-				"installingTermux": "📱🦕📥...",
 				"missing": "❓🦕 ➡️ 📥",
-				"installFailedFallback": "❌🦕📥 ➡️ 📁📥",
 				"isRequired": "🚫🦕 ➡️ 🚫⛲",
+				"installingTermux": "📱🦕📥...",
+				"installFailedFallback": "❌🦕📥 ➡️ 📁📥",
 				"notWorking": "🦕❓➡️ discord.gg/deno",
-				"upgradeFailedTermux": "❌🦕⏫ ➡️ 📱📥",
-				"upgradeFailed": "⚠️ 🦕⏫❓"
+				"upgradeFailed": "⚠️ 🦕⏫❓",
+				"upgradeFailedTermux": "❌🦕⏫ ➡️ 📱📥"
 			},
 			"install": {
-				"rootWarning1": "⚠️👑 ⛲ ➡️ 💥",
-				"rootWarning2": "🙂👍 ⛲ ✅",
 				"installingDependencies": "📥🧩...",
-				"untrustedPartsWarning": "🚫❓ ⛲🧩 ➡️ ☣️"
+				"untrustedPartsWarning": "🚫❓ ⛲🧩 ➡️ ☣️",
+				"rootWarning1": "⚠️👑 ⛲ ➡️ 💥",
+				"rootWarning2": "🙂👍 ⛲ ✅"
 			},
 			"clean": {
 				"removingCaches": "🧹🗑️...",
@@ -154,29 +157,30 @@
 				"cleaningOldPwshModules": "🧹 📜 💪🐚"
 			},
 			"keepalive": {
-				"failedToStart": "❌⏱️ ⛲ ➡️ 📜👀",
+				"initComplete": "✅✨ ➡️ 🔄⛲...",
 				"autoInitDisabled": "⛲ 🔄🔄🔄 & .noautoinit ➡️ 🛑",
 				"restartingTooFast": "⛲ 🔄🔄🔄 ➡️ 💥",
-				"initFailed": "❌✨ ⛲ ➡️ 🛑",
-				"initComplete": "✅✨ ➡️ 🔄⛲..."
+				"failedToStart": "❌⏱️ ⛲ ➡️ 📜👀",
+				"initFailed": "❌✨ ⛲ ➡️ 🛑"
 			},
 			"remove": {
 				"removingFount": "👋 ⛲...",
+				"fountUninstallationComplete": "✅ ⛲ 👋💯",
+				"removingFountInstallationDir": "👋 ⛲ 📁...",
+				"fountInstallationDirRemoved": "✅ ⛲ 📁 👋",
 				"removingFountFromPath": "👋 ⛲ @ 🛣️",
 				"removingProtocolHandler": "👋 🔗⛲://",
+				"protocolHandlerRemoved": "✅ 👋 🔗⛲://",
+				"removeProtocolHandlerFailed": "❌ 👋 🔗⛲://: ${message}",
 				"removingFountFromGitSafeDir": "👋 ⛲ @ 🐙🐱🔒",
 				"removingInstalledSystemPackages": "👋 📦...",
 				"uninstallingDeno": "👋 🦕...",
-				"removingFountInstallationDir": "👋 ⛲ 📁...",
-				"fountInstallationDirRemoved": "✅ ⛲ 📁 👋",
-				"fountUninstallationComplete": "✅ ⛲ 👋💯",
+				"removeDenoFailed": "❌ 👋 🦕: ${message}",
 				"removingFountPwshFromProfile": "👋 ⛲ @ 💪🐚",
 				"fountPwshRemovedFromProfile": "✅ 👋 ⛲ @ 💪🐚",
 				"pwshProfileNotFound": "❓ 💪🐚 Profile",
 				"uninstallingFountPwsh": "👋 ⛲-💪🐚",
 				"uninstallFountPwshFailed": "❌ 👋 ⛲-💪🐚: ${message}",
-				"protocolHandlerRemoved": "✅ 👋 🔗⛲://",
-				"removeProtocolHandlerFailed": "❌ 👋 🔗⛲://: ${message}",
 				"removingTerminalProfile": "👋 🪟🖥️",
 				"terminalProfileRemoved": "✅ 👋 🪟🖥️",
 				"terminalProfileNotFound": "❓ 🪟🖥️",
@@ -191,22 +195,14 @@
 				"uninstallingGit": "👋 🐙🐱...",
 				"uninstallingChrome": "👋 🌐...",
 				"uninstallingWinget": "👋 winget...",
-				"removeDenoFailed": "❌ 👋 🦕: ${message}",
 				"removingBackgroundRunner": "👋 🏃‍♂️💨...",
 				"removeBackgroundRunnerFailed": "❌ 👋 🏃‍♂️💨: ${message}"
-			},
-			"protocol": {
-				"description": "🔗⛲📜"
 			}
 		}
 	},
 	"installer_wait_screen": {
 		"title": "👋 ⛲❗️",
-		"language_selector": {
-			"search": {
-				"placeholder": "🔍🗣️"
-			}
-		},
+		"description": "⏳📥📈 ✨🚀",
 		"hero": {
 			"title": "✨🤖🤝",
 			"description": "⛲: 🗣️🤖, ✍️👤, 🤝🌍"
@@ -227,6 +223,11 @@
 			"title": "🔗🤖🌐",
 			"description": "🔗 OpenAI, Claude,..."
 		},
+		"language_selector": {
+			"search": {
+				"placeholder": "🔍🗣️"
+			}
+		},
 		"theme_selector": {
 			"title": "🎨💅",
 			"description": "🖌️✨",
@@ -241,6 +242,9 @@
 		},
 		"data_showcase": {
 			"title_prefix": "⛲➡️",
+			"title_of": "",
+			"active_users": "👥",
+			"stars": "⭐",
 			"adjectives": [
 				"🧩",
 				"💡",
@@ -248,7 +252,6 @@
 				"🤝",
 				"🐜💪"
 			],
-			"title_of": "",
 			"nouns": [
 				"🤖",
 				"🕵️",
@@ -259,9 +262,7 @@
 				"🖥️",
 				"💬",
 				"🏃‍♂️"
-			],
-			"active_users": "👥",
-			"stars": "⭐"
+			]
 		},
 		"footer": {
 			"ready_text": "🚀❓",
@@ -280,15 +281,9 @@
 	},
 	"protocolhandler": {
 		"title": "⚙️ ⛲",
+		"description": "🤫🪄🔗➡️🏛️",
 		"processing": "⚙️⏳",
-		"invalidProtocol": "🚫🔗",
-		"insufficientParams": "❓🔢",
-		"unknownCommand": "🤷‍♂️➡️",
 		"shellCommandSent": "💻➡️✅",
-		"shellCommandFailed": "💻➡️❌",
-		"shellCommandError": "💻➡️⁉️",
-		"fountNotFound": "😢\n\n🤷‍♂️⛲, 📥❓",
-		"unknownError": "😢\n\n❌:\n${error}",
 		"runPartConfirm": {
 			"title": "🤔❓",
 			"message": "🤔▶️ ${parttype} ${partname}❓",
@@ -301,10 +296,18 @@
 			"buttons": {
 				"retry": "🔄"
 			}
-		}
+		},
+		"fountNotFound": "😢\n\n🤷‍♂️⛲, 📥❓",
+		"invalidProtocol": "🚫🔗",
+		"insufficientParams": "❓🔢",
+		"unknownCommand": "🤷‍♂️➡️",
+		"shellCommandFailed": "💻➡️❌",
+		"shellCommandError": "💻➡️⁉️",
+		"unknownError": "😢\n\n❌:\n${error}"
 	},
 	"startPage": {
 		"title": "⛲❗️",
+		"description": "🚪🌌⏳... ✨🗣️📚",
 		"newTabFailed": {
 			"title": "🆕📄❌",
 			"instruction": "⚠️➡️⏳",
@@ -326,6 +329,7 @@
 	},
 	"tutorial": {
 		"title": "🎓❓",
+		"description": "🤝🚶‍♂️🗺️✨💡",
 		"modal": {
 			"title": "👋 ⛲❗️",
 			"instruction": "🎓❓",
@@ -361,6 +365,7 @@
 	"auth": {
 		"title": "🔐",
 		"subtitle": "👤💾➡️💻",
+		"description": "🖋️🎭🔑... 🚀",
 		"usernameLabel": "👤:",
 		"usernameInput": {
 			"placeholder": "✍️👤"
@@ -394,6 +399,13 @@
 				"link": "🚪➡️"
 			}
 		},
+		"passwordStrength": {
+			"veryWeak": "😫",
+			"weak": "😞",
+			"normal": "😐",
+			"strong": "🙂",
+			"veryStrong": "😎"
+		},
 		"error": {
 			"passwordMismatch": "🔑 ≠ 🔑🔑",
 			"loginError": "🚪➡️❌",
@@ -406,17 +418,11 @@
 			"accountAlreadyExists": "👤🙅",
 			"powNotSolved": "1️⃣🧩",
 			"powError": "⚙️💥"
-		},
-		"passwordStrength": {
-			"veryWeak": "😫",
-			"weak": "😞",
-			"normal": "😐",
-			"strong": "🙂",
-			"veryStrong": "😎"
 		}
 	},
 	"login_info": {
 		"title": "🔐",
+		"description": "🔐🔑",
 		"modal": {
 			"title": "🔐❌",
 			"retrieve_error": "🔐💾❌:\n${error}\n➡️🤷‍♂️💾",
@@ -429,20 +435,20 @@
 	},
 	"home": {
 		"title": "🏠",
-		"escapeConfirm": "🤔🚪 ⛲❓",
+		"description": "❤️🏛️🎭🌍🧑‍🎨",
+		"sidebarTitle": "ℹ️",
+		"itemDescription": "👆➡️ℹ️",
+		"noDescription": "🤷‍♂️",
 		"filterInput": {
 			"placeholder": "🔎..."
 		},
 		"sfwToggle": "😇",
-		"sidebarTitle": "ℹ️",
-		"itemDescription": "👆➡️ℹ️",
-		"noDescription": "🤷‍♂️",
-		"alerts": {
-			"fetchHomeRegistryFailed": "🏠📥❌"
-		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "🔎..."
+			},
+			"button": {
+				"title": "⚙️"
 			},
 			"icon": {
 				"alt": "⚙️"
@@ -454,15 +460,15 @@
 			"subtitle": "👆🤖, ▶️💬❗️",
 			"none": "💨",
 			"card": {
-				"refreshButton": {
-					"alt": "🔄",
-					"title": "🔄"
-				},
 				"noTags": "🤷‍♂️🏷️",
 				"version": "📦",
 				"author": "✍️",
 				"home_page": "🏠",
 				"issue_page": "❓",
+				"refreshButton": {
+					"alt": "🔄",
+					"title": "🔄"
+				},
 				"defaultCheckbox": {
 					"title": "❤️🤖"
 				}
@@ -474,15 +480,15 @@
 			"subtitle": "👆🌍, ✨❗️",
 			"none": "💨",
 			"card": {
-				"refreshButton": {
-					"alt": "🔄",
-					"title": "🔄"
-				},
 				"noTags": "🤷‍♂️🏷️",
 				"version": "📦",
 				"author": "✍️",
 				"home_page": "🏠",
 				"issue_page": "❓",
+				"refreshButton": {
+					"alt": "🔄",
+					"title": "🔄"
+				},
 				"defaultCheckbox": {
 					"title": "❤️🌍"
 				}
@@ -494,19 +500,23 @@
 			"subtitle": "👆👤, ▶️✨",
 			"none": "💨",
 			"card": {
-				"refreshButton": {
-					"alt": "🔄",
-					"title": "🔄"
-				},
 				"noTags": "🤷‍♂️🏷️",
 				"version": "📦",
 				"author": "✍️",
 				"home_page": "🏠",
 				"issue_page": "❓",
+				"refreshButton": {
+					"alt": "🔄",
+					"title": "🔄"
+				},
 				"defaultCheckbox": {
 					"title": "❤️👤"
 				}
 			}
+		},
+		"escapeConfirm": "🤔🚪 ⛲❓",
+		"alerts": {
+			"fetchHomeRegistryFailed": "🏠📥❌"
 		},
 		"achievements": {
 			"first_login": {
@@ -537,11 +547,15 @@
 		}
 	},
 	"chat": {
-		"new": {
-			"title": "🆕💬"
-		},
 		"title": "💬",
+		"description": "🗣️✈️📖💫",
+		"new": {
+			"title": "🆕💬",
+			"description": "🤫⏳📖✍️..."
+		},
 		"sidebar": {
+			"noSelection": "🤷‍♂️",
+			"noDescription": "🤷‍♂️ℹ️",
 			"world": {
 				"icon": {
 					"alt": "🌍"
@@ -567,20 +581,21 @@
 						"alt": "➕🤖"
 					}
 				}
-			},
-			"noSelection": "🤷‍♂️",
-			"noDescription": "🤷‍♂️ℹ️"
+			}
+		},
+		"rightSidebar": {
+			"title": "ℹ️"
 		},
 		"chatArea": {
 			"title": "💬",
+			"input": {
+				"placeholder": "✍️...\nCtrl+Enter ➡️"
+			},
 			"menuButton": {
 				"title": "⚙️"
 			},
 			"menuButtonIcon": {
 				"alt": "⚙️"
-			},
-			"input": {
-				"placeholder": "✍️...\nCtrl+Enter ➡️"
 			},
 			"sendButton": {
 				"title": "➡️"
@@ -606,9 +621,6 @@
 			"photoButtonIcon": {
 				"alt": "📷"
 			}
-		},
-		"rightSidebar": {
-			"title": "ℹ️"
 		},
 		"messageList": {
 			"confirmDeleteMessage": "🤔🗑️📨❓"
@@ -733,18 +745,28 @@
 	"chat_history": {
 		"title": "📜",
 		"pageTitle": "📜",
+		"description": "📜🕰️🔍📚",
+		"filterInput": {
+			"placeholder": "🔎..."
+		},
 		"sortOptions": {
 			"time_desc": "⏳🔽",
 			"time_asc": "⏳🔼"
 		},
-		"filterInput": {
-			"placeholder": "🔎..."
+		"sortBy": {
+			"aria-label": "↕️"
 		},
 		"selectAll": "✅💯",
 		"buttons": {
 			"reverseSelect": "🔄",
 			"deleteSelected": "🗑️✅",
 			"exportSelected": "📤✅"
+		},
+		"chatItemButtons": {
+			"continue": "▶️",
+			"copy": "📋",
+			"export": "📤",
+			"delete": "🗑️"
 		},
 		"confirmDeleteChat": "🤔🗑️💬 ${chars} ❓",
 		"confirmDeleteMultiChats": "🤔🗑️ ${count} 💬❓",
@@ -754,107 +776,104 @@
 			"copyError": "📋❌",
 			"deleteError": "🗑️❌",
 			"exportError": "📤❌"
-		},
-		"chatItemButtons": {
-			"continue": "▶️",
-			"copy": "📋",
-			"export": "📤",
-			"delete": "🗑️"
 		}
 	},
 	"easynew": {
 		"title": "✨🆕",
+		"description": "✨🆕📄 ➡️ 🎭🌍🧩",
+		"info": {
+			"description": "✨➡️👍🧩, 💪🧩➡️✍️"
+		},
 		"cardTitle": "✨🆕🧩",
 		"templateSelect": {
 			"label": "🤔✨"
 		},
-		"partName": {
-			"label": "🧩🏷️",
-			"placeholder": "✍️🆕🧩🏷️"
-		},
-		"description": {
-			"label": "ℹ️",
-			"placeholder": "✍️ℹ️"
-		},
-		"descriptionMarkdown": {
-			"label": "ℹ️ (M↓)",
-			"placeholder": "✍️ℹ️ M↓"
-		},
-		"imageUpload": {
-			"label": "🖼️"
-		},
-		"charDef": {
-			"heading": "🤖"
-		},
-		"personality": {
-			"label": "🧠",
-			"placeholder": "✍️🤖🧠"
-		},
-		"scenario": {
-			"label": "🌍",
-			"placeholder": "✍️🤖🌍"
-		},
-		"mesExample": {
-			"label": "💬",
-			"placeholder": "🤖💬..."
-		},
-		"firstMessage": {
-			"label": "1️⃣💬",
-			"placeholder": "🤖1️⃣💬"
-		},
-		"personaDef": {
-			"heading": "👤"
-		},
-		"personaUserName": {
-			"label": "➡️💬🏷️",
-			"placeholder": "🧑‍✈️, 🧭"
-		},
-		"personaAppearance": {
-			"label": "💅",
-			"placeholder": "✍️💅"
-		},
-		"personaPersonality": {
-			"label": "🧠",
-			"placeholder": "✍️🧠"
-		},
-		"worldDef": {
-			"heading": "🌍"
-		},
-		"worldPrompt": {
-			"label": "🌍✍️",
-			"placeholder": "✍️🌍"
-		},
-		"worldGreeting": {
-			"label": "🌍👋",
-			"placeholder": "🌍➡️👋"
-		},
-		"author": {
-			"label": "✍️",
-			"placeholder": "✍️❓"
-		},
-		"version": {
-			"label": "📦",
-			"placeholder": "0.0.1"
-		},
-		"tags": {
-			"label": "🏷️",
-			"placeholder": "🏷️, 🏷️"
-		},
-		"homePage": {
-			"label": "🏠",
-			"placeholder": "🧩🏠🌐"
-		},
-		"issuePage": {
-			"label": "❓",
-			"placeholder": "🧩❓🌐"
-		},
-		"createButton": "✨🧩",
-		"alerts": {
-			"success": "🧩 '${partName}' ✨✅❗️",
-			"error": "❌: ${message}"
-		},
-		"info": {
-			"description": "✨➡️👍🧩, 💪🧩➡️✍️"
+		"form": {
+			"partName": {
+				"label": "🧩🏷️",
+				"placeholder": "✍️🆕🧩🏷️"
+			},
+			"description": {
+				"label": "ℹ️",
+				"placeholder": "✍️ℹ️"
+			},
+			"descriptionMarkdown": {
+				"label": "ℹ️ (M↓)",
+				"placeholder": "✍️ℹ️ M↓"
+			},
+			"imageUpload": {
+				"label": "🖼️"
+			},
+			"charDef": {
+				"heading": "🤖"
+			},
+			"personality": {
+				"label": "🧠",
+				"placeholder": "✍️🤖🧠"
+			},
+			"scenario": {
+				"label": "🌍",
+				"placeholder": "✍️🤖🌍"
+			},
+			"mesExample": {
+				"label": "💬",
+				"placeholder": "🤖💬..."
+			},
+			"firstMessage": {
+				"label": "1️⃣💬",
+				"placeholder": "🤖1️⃣💬"
+			},
+			"personaDef": {
+				"heading": "👤"
+			},
+			"personaUserName": {
+				"label": "➡️💬🏷️",
+				"placeholder": "🧑‍✈️, 🧭"
+			},
+			"personaAppearance": {
+				"label": "💅",
+				"placeholder": "✍️💅"
+			},
+			"personaPersonality": {
+				"label": "🧠",
+				"placeholder": "✍️🧠"
+			},
+			"worldDef": {
+				"heading": "🌍"
+			},
+			"worldPrompt": {
+				"label": "🌍✍️",
+				"placeholder": "✍️🌍"
+			},
+			"worldGreeting": {
+				"label": "🌍👋",
+				"placeholder": "🌍➡️👋"
+			},
+			"author": {
+				"label": "✍️",
+				"placeholder": "✍️❓"
+			},
+			"version": {
+				"label": "📦",
+				"placeholder": "0.0.1"
+			},
+			"tags": {
+				"label": "🏷️",
+				"placeholder": "🏷️, 🏷️"
+			},
+			"homePage": {
+				"label": "🏠",
+				"placeholder": "🧩🏠🌐"
+			},
+			"issuePage": {
+				"label": "❓",
+				"placeholder": "🧩❓🌐"
+			},
+			"createButton": "✨🧩",
+			"alerts": {
+				"success": "🧩 '${partName}' ✨✅❗️",
+				"error": "❌: ${message}"
+			}
 		},
 		"achievements": {
 			"create_part": {
@@ -866,6 +885,7 @@
 	},
 	"import": {
 		"title": "📥",
+		"description": "📥🎭🌍⚙️ ➡️ 🏛️",
 		"tabs": {
 			"fileImport": "📄",
 			"textImport": "📝"
@@ -882,6 +902,14 @@
 		"buttons": {
 			"import": "📥"
 		},
+		"fileItem": {
+			"removeButton": {
+				"title": "🗑️"
+			},
+			"removeButtonIcon": {
+				"alt": "🗑️"
+			}
+		},
 		"alerts": {
 			"importSuccess": "📥✅",
 			"importFailed": "📥❌: ${error}",
@@ -892,31 +920,20 @@
 			"fileImportFailed": "📄📥❌: ${message}",
 			"noTextContent": "✍️📝",
 			"textImportFailed": "📝📥❌: ${message}",
-			"unknownError": "❓🤷‍♂️❌",
 			"handler": "⚙️",
-			"error": "❌"
-		},
-		"fileItem": {
-			"removeButton": {
-				"title": "🗑️"
-			},
-			"removeButtonIcon": {
-				"alt": "🗑️"
-			}
+			"error": "❌",
+			"unknownError": "❓🤷‍♂️❌"
 		}
 	},
 	"export": {
 		"title": "🧩📤",
 		"pageTitle": "🧩📤",
 		"pageSubtitle": "📤❤️",
+		"description": "🏛️✨ ➡️ 📦📤",
 		"steps": {
 			"partType": "🤔",
 			"part": "🤔🧩",
 			"action": "📤"
-		},
-		"options": {
-			"withData": "➕💾",
-			"withDataDescription": "➕💾, ❤️🤖"
 		},
 		"labels": {
 			"partType": "🤔🧩",
@@ -932,12 +949,35 @@
 		"partSearch": {
 			"placeholder": "🔍"
 		},
+		"options": {
+			"withData": "➕💾",
+			"withDataDescription": "➕💾, ❤️🤖"
+		},
 		"export": {
 			"title": "📤"
 		},
 		"editor": {
 			"disabledIndicator": "🤔🧩",
 			"disabledIndicatorHint": "🤔📤🧩"
+		},
+		"buttons": {
+			"export": "📤",
+			"exportWithData": "📤 (➕💾)",
+			"copyShareLink": "📋🔗",
+			"generateShareLink": "✨🔗",
+			"generateShareLinkWithData": "✨🔗 (➕💾)"
+		},
+		"shareMenu": {
+			"title": "🤔⏳",
+			"1h": "1 ⏳",
+			"12h": "12 ⏳",
+			"24h": "24 ⏳",
+			"72h": "72 ⏳",
+			"cancel": "❌"
+		},
+		"litterbox": {
+			"poweredBy": "🔗➡️litterbox.moe",
+			"sponsorLink": "❤️"
 		},
 		"errorMessage": {
 			"icon": {
@@ -952,25 +992,6 @@
 			"shareLinkCopied": "🔗📋✅❗️",
 			"shareFailed": "🔗✨❌"
 		},
-		"shareMenu": {
-			"title": "🤔⏳",
-			"1h": "1 ⏳",
-			"12h": "12 ⏳",
-			"24h": "24 ⏳",
-			"72h": "72 ⏳",
-			"cancel": "❌"
-		},
-		"litterbox": {
-			"poweredBy": "🔗➡️litterbox.moe",
-			"sponsorLink": "❤️"
-		},
-		"buttons": {
-			"export": "📤",
-			"exportWithData": "📤 (➕💾)",
-			"copyShareLink": "📋🔗",
-			"generateShareLink": "✨🔗",
-			"generateShareLinkWithData": "✨🔗 (➕💾)"
-		},
 		"achievements": {
 			"share_part": {
 				"name": "🤝❤️",
@@ -981,17 +1002,13 @@
 	},
 	"uninstall": {
 		"title": "🗑️",
+		"description": "💔👋🏛️",
 		"titleWithName": "🗑️ ${type}/${name}",
 		"confirmMessage": "🤔🗑️ ${type}: ${name} ❓",
 		"invalidParamsTitle": "❓",
 		"infoMessage": {
 			"icon": {
 				"alt": "ℹ️"
-			}
-		},
-		"errorMessage": {
-			"icon": {
-				"alt": "❌"
 			}
 		},
 		"buttons": {
@@ -1004,13 +1021,17 @@
 			"failed": "🗑️❌: ${error}",
 			"invalidParams": "❓",
 			"httpError": "🌐❌❗️ #${status}"
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "❌"
+			}
 		}
 	},
 	"userSettings": {
 		"title": "👤⚙️",
 		"PageTitle": "👤⚙️",
-		"apiError": "🌐❌: ${message}",
-		"generalError": "❌: ${message}",
+		"description": "👤🔧🛡️💻",
 		"userInfo": {
 			"title": "👤ℹ️",
 			"usernameLabel": "👤:",
@@ -1043,19 +1064,50 @@
 		},
 		"userDevices": {
 			"title": "👤💻",
-			"refreshButton": {
-				"title": "🔄"
-			},
-			"refreshButtonIcon": {
-				"alt": "🔄"
-			},
 			"noDevicesFound": "🤷‍♂️💻",
 			"deviceInfo": "💻🆔: ${deviceId}",
 			"thisDevice": "👉💻",
 			"deviceDetails": "⏳: ${lastSeen} | 🌐: ${ipAddress} | 💻: ${userAgent}",
 			"revokeButton": "➖",
 			"revokeConfirm": "🤔➖💻❓",
-			"revokeSuccess": "💻➖✅"
+			"revokeSuccess": "💻➖✅",
+			"refreshButton": {
+				"title": "🔄"
+			},
+			"refreshButtonIcon": {
+				"alt": "🔄"
+			}
+		},
+		"apiKeys": {
+			"title": "🔑",
+			"description": "⚙️🔑",
+			"input": {
+				"placeholder": "✍️"
+			},
+			"createButton": "✨",
+			"noKeysFound": "🤷‍♀️",
+			"keyDetails": "📝 ${description} 🗓️ ${createdAt} ⏳ ${lastUsed}",
+			"neverUsed": "⏳",
+			"revokeButton": "🗑️",
+			"revokeConfirm": "🤔🗑️❓",
+			"revokeSuccess": "✅🗑️",
+			"errorDescriptionRequired": "❗️✍️",
+			"createSuccess": "✅✨",
+			"refreshButton": {
+				"title": "🔄"
+			},
+			"refreshButtonIcon": {
+				"alt": "🔄"
+			}
+		},
+		"newApiKey": {
+			"title": "✨🔑",
+			"warning": "⚠️📋",
+			"closeButton": "✅📋",
+			"copyButton": {
+				"title": "📋🔑"
+			},
+			"copiedAlert": "📋✅❗️"
 		},
 		"logout": {
 			"title": "🚪",
@@ -1080,58 +1132,32 @@
 			"confirmButton": "✅",
 			"cancelButton": "❌"
 		},
-		"apiKeys": {
-			"title": "🔑",
-			"description": "⚙️🔑",
-			"input": {
-				"placeholder": "✍️"
-			},
-			"createButton": "✨",
-			"noKeysFound": "🤷‍♀️",
-			"refreshButton": {
-				"title": "🔄"
-			},
-			"refreshButtonIcon": {
-				"alt": "🔄"
-			},
-			"keyDetails": "📝 ${description} 🗓️ ${createdAt} ⏳ ${lastUsed}",
-			"neverUsed": "⏳",
-			"revokeButton": "🗑️",
-			"revokeConfirm": "🤔🗑️❓",
-			"revokeSuccess": "✅🗑️",
-			"errorDescriptionRequired": "❗️✍️",
-			"createSuccess": "✅✨"
-		},
-		"newApiKey": {
-			"title": "✨🔑",
-			"warning": "⚠️📋",
-			"copyButton": {
-				"title": "📋🔑"
-			},
-			"closeButton": "✅📋",
-			"copiedAlert": "📋✅❗️"
-		}
+		"apiError": "🌐❌: ${message}",
+		"generalError": "❌: ${message}"
 	},
 	"languageSettings": {
 		"title": "🗣️⚙️",
+		"pageTitle": "🌐🗣️⚙️",
 		"description": "⚙️🗣️, ❤️➡️🌐",
+		"pageDescription": "✍️🌐🗣️",
 		"availableLanguages": "✅🗣️",
 		"preferredLanguages": "❤️🗣️",
 		"resetButton": "🔄",
 		"saveButton": "💾",
-		"noPreferredLanguages": "🤷‍♂️❤️🗣️, ➡️🌐",
-		"savedMessage": "🗣️⚙️💾✅❗️",
-		"resetMessage": "🗣️⚙️🔄✅❗️",
-		"fetchLocalesFailed": "🗣️📥❌❗️",
 		"select": {
 			"placeholder": "👉🗣️"
 		},
 		"search": {
 			"placeholder": "🔍🗣️"
-		}
+		},
+		"noPreferredLanguages": "🤷‍♂️❤️🗣️, ➡️🌐",
+		"savedMessage": "🗣️⚙️💾✅❗️",
+		"resetMessage": "🗣️⚙️🔄✅❗️",
+		"fetchLocalesFailed": "🗣️📥❌❗️"
 	},
 	"themeManage": {
 		"title": "🎨",
+		"description": "🎨🖌️🖼️✨",
 		"instruction": "🤔🎨❗️",
 		"search": {
 			"placeholder": "🔍🎨",
@@ -1186,6 +1212,7 @@
 	"part_config": {
 		"title": "🧩⚙️",
 		"pageTitle": "🧩⚙️",
+		"description": "🔍❤️⚙️🔧",
 		"labels": {
 			"partType": "🤔🧩",
 			"part": "🤔🧩"
@@ -1197,6 +1224,9 @@
 		"editor": {
 			"title": "🧩⚙️",
 			"disabledIndicator": "🚫⚙️",
+			"jsonEditor": {
+				"aria-label": "📝"
+			},
 			"buttons": {
 				"save": "💾"
 			}
@@ -1217,6 +1247,7 @@
 	},
 	"aisource_editor": {
 		"title": "🤖✍️",
+		"description": "🎼🤖🗣️🔧",
 		"fileList": {
 			"title": "🤖📄",
 			"addButton": {
@@ -1228,6 +1259,21 @@
 			"label": "🤔⚙️",
 			"placeholder": "🤔"
 		},
+		"editor": {
+			"disabledIndicator": "🤔⚙️"
+		},
+		"common_config_interface": {
+			"loadingModels": "⏳🤖...",
+			"availableModels": "✅🤖:",
+			"copied": "📋✅",
+			"empty_generator": "🤖⚙️🤷‍♂️",
+			"apiKeyRequired": "🔑❓➡️🤖",
+			"copyModelIdTooltip": "👆➡️📋",
+			"loadModelsFailed": "🤖📥❌: ${message}"
+		},
+		"prompts": {
+			"newFileName": "✍️🆕🤖📄 (🚫.ext):"
+		},
 		"buttons": {
 			"save": "💾",
 			"delete": "🗑️",
@@ -1237,40 +1283,25 @@
 				}
 			}
 		},
-		"alerts": {
-			"fetchFileListFailed": "📄📥❌: ${error}",
-			"fetchGeneratorListFailed": "⚙️📥❌: ${error}",
-			"fetchDefaultsFailed": "❤️📥❌: ${error}",
-			"fetchFileDataFailed": "📄💾📥❌: ${error}",
-			"noFileSelectedSave": "🤷‍♂️💾",
-			"saveFileFailed": "💾❌: ${error}",
-			"setDefaultFailed": "❤️❌: ${error}",
-			"noFileSelectedDelete": "🤷‍♂️🗑️",
-			"deleteFileFailed": "🗑️❌: ${error}",
-			"invalidFileName": "🚫 / \\ : * ? \" < > |",
-			"addFileFailed": "➕📄❌: ${error}",
-			"fetchConfigTemplateFailed": "⚙️📥❌",
-			"noGeneratorSelectedSave": "🤔⚙️➡️💾"
-		},
 		"confirm": {
 			"unsavedChanges": "🤔💾❓",
 			"deleteFile": "🤔🗑️📄❓",
 			"unsavedChangesBeforeUnload": "🤔💾➡️🚪❓"
 		},
-		"prompts": {
-			"newFileName": "✍️🆕🤖📄 (🚫.ext):"
-		},
-		"editor": {
-			"disabledIndicator": "🤔⚙️"
-		},
-		"common_config_interface": {
-			"empty_generator": "🤖⚙️🤷‍♂️",
-			"apiKeyRequired": "🔑❓➡️🤖",
-			"loadingModels": "⏳🤖...",
-			"availableModels": "✅🤖:",
-			"copyModelIdTooltip": "👆➡️📋",
-			"copied": "📋✅",
-			"loadModelsFailed": "🤖📥❌: ${message}"
+		"alerts": {
+			"fetchFileListFailed": "📄📥❌: ${error}",
+			"fetchGeneratorListFailed": "⚙️📥❌: ${error}",
+			"fetchDefaultsFailed": "❤️📥❌: ${error}",
+			"fetchFileDataFailed": "📄💾📥❌: ${error}",
+			"fetchConfigTemplateFailed": "⚙️📥❌",
+			"saveFileFailed": "💾❌: ${error}",
+			"deleteFileFailed": "🗑️❌: ${error}",
+			"addFileFailed": "➕📄❌: ${error}",
+			"setDefaultFailed": "❤️❌: ${error}",
+			"noFileSelectedSave": "🤷‍♂️💾",
+			"noFileSelectedDelete": "🤷‍♂️🗑️",
+			"noGeneratorSelectedSave": "🤔⚙️➡️💾",
+			"invalidFileName": "🚫 / \\ : * ? \" < > |"
 		},
 		"achievements": {
 			"set_default_aisource": {
@@ -1282,11 +1313,8 @@
 	},
 	"discord_bots": {
 		"title": "🤖💬",
+		"description": "🎭🗣️ ➡️ 🤖💬",
 		"cardTitle": "🤖💬",
-		"buttons": {
-			"newBot": "🆕",
-			"deleteBot": "🗑️"
-		},
 		"botSelectDropdown": {
 			"placeholder": "👉🤖"
 		},
@@ -1310,6 +1338,9 @@
 			"apiKeyInput": {
 				"placeholder": "✍️🔑"
 			},
+			"toggleApiKeyButton": {
+				"aria-label": "👁️"
+			},
 			"toggleApiKeyIcon": {
 				"alt": "👁️"
 			},
@@ -1322,10 +1353,14 @@
 		"prompts": {
 			"newBotName": "✍️🆕🤖🏷️:"
 		},
+		"buttons": {
+			"newBot": "🆕",
+			"deleteBot": "🗑️"
+		},
 		"alerts": {
+			"configSaved": "⚙️💾✅",
 			"botExists": "🤖 \"${botname}\" ✅",
 			"unsavedChanges": "🤔💾❓",
-			"configSaved": "⚙️💾✅",
 			"httpError": "🌐❌",
 			"beforeUnload": "🤔💾➡️🚪❓"
 		},
@@ -1339,6 +1374,7 @@
 	},
 	"telegram_bots": {
 		"title": "🤖✈️",
+		"description": "🎭➡️✈️💬",
 		"cardTitle": "🤖✈️",
 		"botSelectDropdown": {
 			"placeholder": "👉🤖"
@@ -1352,10 +1388,6 @@
 		"charSearch": {
 			"placeholder": "🔍👤"
 		},
-		"buttons": {
-			"newBot": "🆕",
-			"deleteBot": "🗑️"
-		},
 		"configCard": {
 			"title": "🤖⚙️",
 			"labels": {
@@ -1366,6 +1398,9 @@
 			"charSelectPlaceholder": "🤔🤖",
 			"botTokenInput": {
 				"placeholder": "✍️🔑"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "👁️"
 			},
 			"toggleBotTokenIcon": {
 				"alt": "👁️"
@@ -1379,10 +1414,14 @@
 		"prompts": {
 			"newBotName": "✍️🆕🤖🏷️:"
 		},
+		"buttons": {
+			"newBot": "🆕",
+			"deleteBot": "🗑️"
+		},
 		"alerts": {
+			"configSaved": "⚙️💾✅",
 			"botExists": "🤖 \"${botname}\" ✅",
 			"unsavedChanges": "🤔💾❓",
-			"configSaved": "⚙️💾✅",
 			"httpError": "🌐❌",
 			"beforeUnload": "🤔💾➡️🚪❓"
 		},
@@ -1396,8 +1435,9 @@
 	},
 	"browser_integration": {
 		"title": "🌐🔗",
-		"header": "🌐🔗",
-		"description": "📝🌐🔗",
+		"description": "🌉🏛️🌐🤝",
+		"pageHeader": "🌐🔗",
+		"pageDescription": "🌉🏛️🌐🤝",
 		"install_script_title": "📜➕",
 		"install_script_description": "📝📜➕",
 		"install_button": "📥",
@@ -1407,10 +1447,6 @@
 		"popular_managers": "⭐",
 		"csp_warning": "⚠️🛡️",
 		"connected_pages_title": "🔗📄",
-		"no_pages_connected": {
-			"title": "🚫🔗",
-			"description": "📝🚫🔗"
-		},
 		"fetch_pages_error": "❗️🔄",
 		"page_title": "📄🏷️",
 		"page_url": "🔗",
@@ -1419,6 +1455,10 @@
 		"status_unfocused": "💤",
 		"copy_button": "📋",
 		"copied_message": "✅📋",
+		"no_pages_connected": {
+			"title": "🚫🔗",
+			"description": "📝🚫🔗"
+		},
 		"autorun": {
 			"title": "📜▶️✨",
 			"description": "🔧📜 ➡️ 🌐✨",
@@ -1464,19 +1504,20 @@
 		}
 	},
 	"browser_integration_script": {
+		"update": {
+			"prompt": "🔄⬆️❓"
+		},
+		"csp_warning": "⚠️🛡️📜",
 		"hostChange": {
 			"securityWarningTitle": "⚠️🛡️",
 			"message": "⚠️ \"${origin}\" ➡️ \"${newHost}\" ❓",
 			"uuidMismatchError": "❗️🆔 ${newHost}",
 			"verificationError": "❗️❓ ${newHost}"
-		},
-		"update": {
-			"prompt": "🔄⬆️❓"
-		},
-		"csp_warning": "⚠️🛡️📜"
+		}
 	},
 	"terminal_assistant": {
 		"title": "💻🦾",
+		"description": "👨‍💻⌨️⚡️🪄",
 		"initialMessage": "⛲➡️🤖➡️💻🦾❗️",
 		"initialMessageLink": "👆➡️ℹ️",
 		"achievements": {
@@ -1489,6 +1530,7 @@
 	},
 	"deskpet": {
 		"title": "🖥️🐾",
+		"description": "🎭🐾🖥️",
 		"launcherCard": {
 			"title": "🖥️🐾",
 			"buttons": {
@@ -1510,8 +1552,8 @@
 		},
 		"toasts": {
 			"started": "🐾${charname}▶️",
-			"start_failed": "🐾${charname}❌${message}",
 			"stopped": "🐾${charname}⏹️",
+			"start_failed": "🐾${charname}❌${message}",
 			"stop_failed": "🐾${charname}⏹️❌${message}"
 		},
 		"achievements": {
@@ -1524,6 +1566,7 @@
 	},
 	"access": {
 		"title": "🌍 ⛲",
+		"description": "📲💻🔗🏛️",
 		"heading": "🌍 ⛲❓",
 		"instruction": {
 			"sameLAN": "✅💻➡️🌐",
@@ -1534,6 +1577,7 @@
 	},
 	"proxy": {
 		"title": "🤖🔌",
+		"description": "👨‍💻🔌🏛️🔗🧩",
 		"heading": "🤖🔌🚪",
 		"instruction": "🔑➡️⛲🤝💻",
 		"endpointSectionTitle": "🌐📍",
@@ -1554,8 +1598,9 @@
 	},
 	"achievements": {
 		"title": "🖥️🐾",
-		"header": "🏛️🏆",
-		"description": "👤✨➡️🎮",
+		"description": "🏆🚀📈",
+		"pageHeader": "🏛️🏆",
+		"pageDescription": "🏆🚀📈",
 		"unlocked_on": "✅ ${date}",
 		"locked": "🔒",
 		"toast_title": "🎉🏆!",
@@ -1572,6 +1617,7 @@
 	},
 	"badges_maker": {
 		"title": "⛲❗️ 🎖️✨",
+		"description": "🛡️🎭✨",
 		"card_title": "⛲ 🎖️🔗✨",
 		"original_url_label": "📋 img.shields.io 🌐",
 		"original_url": {
@@ -1581,31 +1627,22 @@
 		"new_url": {
 			"placeholder": "🆕🌐✨"
 		},
-		"copy_button": "📋",
 		"preview_label": "👀",
+		"copy_button": "📋",
+		"copied_text": "📋✅❗️",
 		"preview": {
 			"alt": "🎖️👀"
 		},
-		"copied_text": "📋✅❗️",
 		"copy_error": "📋❌: ${error}",
 		"copy_fail_alert": "📋❌❗️"
 	},
 	"404": {
 		"title": "🤷‍♂️📄",
+		"description": "🌫️❓🤷‍♂️🎮",
 		"pageNotFoundText": "😢 ➡️ 🤷‍♂️📄",
 		"homepageButton": "➡️🏠"
 	},
 	"code_block": {
-		"download": {
-			"dataset": {
-				"tip": "⬇️"
-			}
-		},
-		"execute": {
-			"dataset": {
-				"tip": "▶️"
-			}
-		},
 		"copy": {
 			"dataset": {
 				"tip": "📋"
@@ -1616,15 +1653,25 @@
 				"tip": "📋✅"
 			}
 		},
+		"download": {
+			"dataset": {
+				"tip": "⬇️"
+			}
+		},
+		"execute": {
+			"dataset": {
+				"tip": "▶️"
+			}
+		},
 		"copy_failed": "📋❌: ${error}"
 	},
 	"pow_captcha": {
 		"initial": "🤖❓",
 		"verifying": "🤔⏳",
 		"solved": "✅✨",
+		"wasm_disabled": "⚙️➡️🚀",
 		"error": "❌👎",
-		"errorMessage": "❌👎: ${error}",
-		"wasm_disabled": "⚙️➡️🚀"
+		"errorMessage": "❌👎: ${error}"
 	},
 	"zxcvbn": {
 		"warnings": {

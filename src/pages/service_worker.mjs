@@ -1,50 +1,50 @@
 // --- 全局常量与配置 ---
 
 /**
- * @description 缓存存储的名称。更改此值将触发 Service Worker 的更新流程。
+ * 缓存存储的名称。更改此值将触发 Service Worker 的更新流程。
  * @type {string}
  */
 const CACHE_NAME = 'fount'
 
 /**
- * @description 用于存储缓存元数据（如时间戳）的 IndexedDB 数据库名称。
+ * 用于存储缓存元数据（如时间戳）的 IndexedDB 数据库名称。
  * @type {string}
  */
 const DB_NAME = 'service-worker-cache-metadata'
 
 /**
- * @description IndexedDB 中用于存储时间戳记录的对象存储空间（Object Store）名称。
+ * IndexedDB 中用于存储时间戳记录的对象存储空间（Object Store）名称。
  * @type {string}
  */
 const STORE_NAME = 'timestamps'
 
 /**
- * @description 缓存资源的过期天数。
+ * 缓存资源的过期天数。
  * @type {number}
  */
 const EXPIRY_DAYS = 13
 
 /**
- * @description 缓存过期天数对应的毫秒数。
+ * 缓存过期天数对应的毫秒数。
  * @type {number}
  */
 const EXPIRY_MS = EXPIRY_DAYS * 24 * 60 * 60 * 1000
 
 /**
- * @description 后台网络请求的节流时间（毫秒）。
+ * 后台网络请求的节流时间（毫秒）。
  * 在此时间内，对于同一个资源，即使缓存存在，也只会在后台发起一次网络请求进行更新，以节省带宽和电量。
  * @type {number}
  */
 const BACKGROUND_FETCH_THROTTLE_MS = 24 * 60 * 60 * 1000 // 24 hours
 
 /**
- * @description 用于注册定期后台同步任务的唯一标签，专用于缓存清理。
+ * 用于注册定期后台同步任务的唯一标签，专用于缓存清理。
  * @type {string}
  */
 const PERIODIC_SYNC_TAG = `${CACHE_NAME}-cleanup`
 
 /**
- * @description 用于缓存 IndexedDB 数据库连接的 Promise。
+ * 用于缓存 IndexedDB 数据库连接的 Promise。
  * 避免重复打开数据库，提高性能。当连接关闭或发生错误时，此变量将被重置为 null。
  * @type {Promise<IDBDatabase> | null}
  */
@@ -54,7 +54,7 @@ let dbPromise = null
 // --- IndexedDB 辅助函数 ---
 
 /**
- * @description 打开或创建 IndexedDB 数据库。
+ * 打开或创建 IndexedDB 数据库。
  * 此函数会缓存数据库连接的 Promise，以避免不必要的重复连接。
  * 包含了完整的事件处理（onupgradeneeded, onsuccess, onerror, onclose, onblocked）。
  * @returns {Promise<IDBDatabase>} 返回一个解析为 IndexedDB 数据库实例的 Promise。
@@ -67,7 +67,7 @@ function openMetadataDB() {
 		const request = indexedDB.open(DB_NAME, 1)
 
 		/**
-		 * @description 当数据库需要升级时调用。
+		 * 当数据库需要升级时调用。
 		 * @param {IDBVersionChangeEvent} event - 事件对象。
 		 * @returns {void}
 		 */
@@ -82,14 +82,14 @@ function openMetadataDB() {
 		}
 
 		/**
-		 * @description 当数据库成功打开时调用。
+		 * 当数据库成功打开时调用。
 		 * @param {Event} event - 事件对象。
 		 * @returns {void}
 		 */
 		request.onsuccess = event => {
 			const db = event.target.result
 			/**
-			 * @description 当数据库连接意外关闭时调用。
+			 * 当数据库连接意外关闭时调用。
 			 * @returns {void}
 			 */
 			db.onclose = () => {
@@ -97,7 +97,7 @@ function openMetadataDB() {
 				dbPromise = null
 			}
 			/**
-			 * @description 当数据库发生错误时调用。
+			 * 当数据库发生错误时调用。
 			 * @param {Event} event - 事件对象。
 			 * @returns {void}
 			 */
@@ -109,7 +109,7 @@ function openMetadataDB() {
 		}
 
 		/**
-		 * @description 当数据库打开失败时调用。
+		 * 当数据库打开失败时调用。
 		 * @param {Event} event - 事件对象。
 		 * @returns {void}
 		 */
@@ -120,7 +120,7 @@ function openMetadataDB() {
 		}
 
 		/**
-		 * @description 当数据库被阻塞时调用。
+		 * 当数据库被阻塞时调用。
 		 * @returns {void}
 		 */
 		request.onblocked = () => {
@@ -131,7 +131,7 @@ function openMetadataDB() {
 }
 
 /**
- * @description 封装一个通用的 IndexedDB 事务执行函数。
+ * 封装一个通用的 IndexedDB 事务执行函数。
  * 抽象了事务的创建、对象存储的获取以及完成/错误处理，使业务逻辑更清晰。
  * @param {IDBTransactionMode} mode - 事务模式，'readonly' 或 'readwrite'。
  * @param {(store: IDBObjectStore) => void} callback - 一个在事务上下文中执行的回调函数，接收对象存储作为参数。
@@ -147,17 +147,17 @@ async function performTransaction(mode, callback) {
 
 		return new Promise((resolve, reject) => {
 			/**
-			 * @description 当事务成功完成时调用。
+			 * 当事务成功完成时调用。
 			 * @returns {void}
 			 */
 			transaction.oncomplete = () => resolve()
 			/**
-			 * @description 当事务发生错误时调用。
+			 * 当事务发生错误时调用。
 			 * @returns {void}
 			 */
 			transaction.onerror = () => reject(transaction.error)
 			/**
-			 * @description 当事务被中止时调用。
+			 * 当事务被中止时调用。
 			 * @returns {void}
 			 */
 			transaction.onabort = () => reject(new Error('Transaction aborted'))
@@ -170,7 +170,7 @@ async function performTransaction(mode, callback) {
 }
 
 /**
- * @description 向 IndexedDB 中更新或插入指定 URL 的时间戳。
+ * 向 IndexedDB 中更新或插入指定 URL 的时间戳。
  * @param {string} url - 资源的 URL，作为主键。
  * @param {number} timestamp - 当前的时间戳 (Date.now())。
  * @returns {Promise<void>}
@@ -187,7 +187,7 @@ async function updateTimestamp(url, timestamp) {
 }
 
 /**
- * @description 从 IndexedDB 中获取指定 URL 的时间戳。
+ * 从 IndexedDB 中获取指定 URL 的时间戳。
  * 此函数通过复用 `performTransaction` 来简化事务管理，并利用闭包从异步回调中捕获结果。
  * @param {string} url - 资源的 URL。
  * @returns {Promise<number | null>} 返回找到的时间戳，如果未找到或发生错误则返回 null。
@@ -198,7 +198,7 @@ async function getTimestamp(url) {
 		await performTransaction('readonly', store => {
 			const request = store.get(url)
 			/**
-			 * @description 当获取操作成功时调用。
+			 * 当获取操作成功时调用。
 			 * @returns {void}
 			 */
 			request.onsuccess = () => {
@@ -215,7 +215,7 @@ async function getTimestamp(url) {
 }
 
 /**
- * @description 清理过期的缓存和 IndexedDB 中的元数据。
+ * 清理过期的缓存和 IndexedDB 中的元数据。
  * 这是一个安全的两步操作：
  * 1. 在一个原子性的 IndexedDB 事务中，查找并删除所有过期的元数据记录。
  * 2. 数据库事务成功后，并行地从 Cache Storage 中删除对应的缓存资源以提高效率。
@@ -237,13 +237,13 @@ async function cleanupExpiredCache() {
 		await new Promise((resolve, reject) => {
 			const cursorRequest = index.openCursor(range)
 			/**
-			 * @description 当游标操作发生错误时调用。
+			 * 当游标操作发生错误时调用。
 			 * @param {Event} event - 事件对象。
 			 * @returns {void}
 			 */
 			cursorRequest.onerror = event => reject(event.target.error)
 			/**
-			 * @description 当游标操作成功时调用。
+			 * 当游标操作成功时调用。
 			 * @param {Event} event - 事件对象。
 			 * @returns {void}
 			 */
@@ -263,7 +263,7 @@ async function cleanupExpiredCache() {
 			transaction.oncomplete = resolve
 			transaction.onerror = reject
 			/**
-			 * @description 当事务被中止时调用。
+			 * 当事务被中止时调用。
 			 * @returns {void}
 			 */
 			transaction.onabort = () => reject(new Error('Cleanup transaction aborted'))
@@ -283,7 +283,7 @@ async function cleanupExpiredCache() {
 }
 
 /**
- * @description 获取资源并智能地处理缓存和重定向。
+ * 获取资源并智能地处理缓存和重定向。
  * 这是解决重定向问题的核心。它会正确地缓存重定向响应和最终内容。
  * @param {Request} request - 要获取和缓存的请求。
  * @returns {Promise<Response>} 返回一个适合直接响应给浏览器的 Response 对象。
@@ -335,7 +335,7 @@ async function fetchAndCache(request) {
 // --- 缓存策略 ---
 
 /**
- * @description 缓存优先策略（Cache-First），结合了后台更新和节流。
+ * 缓存优先策略（Cache-First），结合了后台更新和节流。
  * 这是一个 Stale-While-Revalidate 策略的变体，能立即从缓存响应，同时在后台更新资源。
  * @param {Request} request - fetch 事件中的请求对象。
  * @returns {Promise<Response>} 返回一个解析为 Response 对象的 Promise。
@@ -349,7 +349,7 @@ async function handleCacheFirst(request) {
 	const isThrottled = storedTimestamp && (now - storedTimestamp < BACKGROUND_FETCH_THROTTLE_MS)
 
 	/**
-	 * @description 在后台更新缓存。
+	 * 在后台更新缓存。
 	 * @returns {Promise<void>}
 	 */
 	const backgroundUpdateTask = async () => {
@@ -375,7 +375,7 @@ async function handleCacheFirst(request) {
 }
 
 /**
- * @description 网络优先策略（Network-First）。
+ * 网络优先策略（Network-First）。
  * 优先从网络获取最新资源，如果网络失败，则回退到缓存。
  * @param {Request} request - fetch 事件中的请求对象。
  * @returns {Promise<Response>} 返回一个解析为 Response 对象的 Promise。
@@ -397,7 +397,7 @@ async function handleNetworkFirst(request) {
 
 // --- 路由表 ---
 /**
- * @description 使用路由表来管理请求处理逻辑。
+ * 使用路由表来管理请求处理逻辑。
  * `fetch` 事件处理器会遍历此数组，并执行第一个匹配规则的处理器。
  * @type {Array<{condition: (context: {event: FetchEvent, request: Request, url: URL}) => boolean, handler: (context: {event: FetchEvent, request: Request, url: URL}) => Promise<Response> | null}>}
  */
@@ -405,14 +405,14 @@ const routes = [
 	// 忽略所有非 GET 请求。
 	{
 		/**
-		 * @description 检查请求方法是否为 GET。
+		 * 检查请求方法是否为 GET。
 		 * @param {object} context - 上下文对象。
 		 * @param {Request} context.request - 请求对象。
 		 * @returns {boolean} 如果请求方法不是 GET，则返回 true。
 		 */
 		condition: ({ request }) => request.method !== 'GET',
 		/**
-		 * @description 处理非 GET 请求。
+		 * 处理非 GET 请求。
 		 * @returns {null} 返回 null 以跳过处理。
 		 */
 		handler: () => null, // 返回 null 表示跳过，让浏览器自行处理。
@@ -420,14 +420,14 @@ const routes = [
 	// 忽略非 http/https 协议的请求（例如 chrome-extension://）。
 	{
 		/**
-		 * @description 检查 URL 协议是否为 http 或 https。
+		 * 检查 URL 协议是否为 http 或 https。
 		 * @param {object} context - 上下文对象。
 		 * @param {URL} context.url - URL 对象。
 		 * @returns {boolean} 如果协议不是 http 或 https，则返回 true。
 		 */
 		condition: ({ url }) => !url.protocol.startsWith('http'),
 		/**
-		 * @description 处理非 http/https 请求。
+		 * 处理非 http/https 请求。
 		 * @returns {null} 返回 null 以跳过处理。
 		 */
 		handler: () => null,
@@ -435,14 +435,14 @@ const routes = [
 	// 对所有跨域资源（通常是 CDN 上的静态文件）使用缓存优先策略。
 	{
 		/**
-		 * @description 检查请求是否为跨域请求。
+		 * 检查请求是否为跨域请求。
 		 * @param {object} context - 上下文对象。
 		 * @param {URL} context.url - URL 对象。
 		 * @returns {boolean} 如果请求是跨域的，则返回 true。
 		 */
 		condition: ({ url }) => url.origin !== self.location.origin,
 		/**
-		 * @description 处理跨域请求。
+		 * 处理跨域请求。
 		 * @param {object} context - 上下文对象。
 		 * @param {FetchEvent} context.event - Fetch 事件。
 		 * @returns {Promise<Response>} 返回一个解析为 Response 对象的 Promise。
@@ -452,12 +452,12 @@ const routes = [
 	// 默认规则：对所有同源资源使用网络优先策略。
 	{
 		/**
-		 * @description 默认条件。
+		 * 默认条件。
 		 * @returns {boolean} 总是返回 true。
 		 */
 		condition: () => true, // 作为最后的 fallback 规则。
 		/**
-		 * @description 处理同源请求。
+		 * 处理同源请求。
 		 * @param {object} context - 上下文对象。
 		 * @param {FetchEvent} context.event - Fetch 事件。
 		 * @returns {Promise<Response>} 返回一个解析为 Response 对象的 Promise。
@@ -475,7 +475,7 @@ const RECONNECT_DELAY = 5000 // 5 seconds
 
 const wsMessageHandlers = {
 	/**
-	 * @description 处理通知消息。
+	 * 处理通知消息。
 	 * @param {object} data - 消息数据。
 	 * @returns {void}
 	 */
@@ -499,7 +499,7 @@ const wsMessageHandlers = {
 		})
 	},
 	/**
-	 * @description 默认消息处理程序。
+	 * 默认消息处理程序。
 	 * @param {object} message - 消息对象。
 	 * @returns {void}
 	 */
@@ -512,7 +512,7 @@ const wsMessageHandlers = {
 
 
 /**
- * @description 连接到 WebSocket 服务器。
+ * 连接到 WebSocket 服务器。
  * @returns {void}
  */
 function connectWebSocket() {
@@ -524,7 +524,7 @@ function connectWebSocket() {
 	ws = new WebSocket(wsUrl)
 
 	/**
-	 * @description 当 WebSocket 连接打开时调用。
+	 * 当 WebSocket 连接打开时调用。
 	 * @returns {void}
 	 */
 	ws.onopen = () => {
@@ -535,7 +535,7 @@ function connectWebSocket() {
 	}
 
 	/**
-	 * @description 当收到 WebSocket 消息时调用。
+	 * 当收到 WebSocket 消息时调用。
 	 * @param {MessageEvent} event - 消息事件。
 	 * @returns {void}
 	 */
@@ -554,7 +554,7 @@ function connectWebSocket() {
 	}
 
 	/**
-	 * @description 当 WebSocket 连接关闭时调用。
+	 * 当 WebSocket 连接关闭时调用。
 	 * @param {CloseEvent} event - 关闭事件。
 	 * @returns {void}
 	 */
@@ -565,7 +565,7 @@ function connectWebSocket() {
 	}
 
 	/**
-	 * @description 当 WebSocket 发生错误时调用。
+	 * 当 WebSocket 发生错误时调用。
 	 * @param {Event} error - 错误事件。
 	 * @returns {void}
 	 */
@@ -606,7 +606,7 @@ self.addEventListener('activate', event => {
 })
 
 /**
- * @description 监听定期后台同步事件，用于执行缓存清理。
+ * 监听定期后台同步事件，用于执行缓存清理。
  */
 self.addEventListener('periodicsync', event => {
 	// 确保只响应该 Service Worker 注册的清理任务。
@@ -636,7 +636,7 @@ self.addEventListener('notificationclick', event => {
 })
 
 /**
- * @description 拦截所有网络请求，并根据路由表进行处理。
+ * 拦截所有网络请求，并根据路由表进行处理。
  */
 self.addEventListener('fetch', event => {
 	const requestUrl = new URL(event.request.url)

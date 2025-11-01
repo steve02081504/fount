@@ -1,5 +1,5 @@
 /**
- * @description 处理动作。
+ * 处理动作。
  * @param {string} user - 用户。
  * @param {string} action - 动作。
  * @param {object} params - 参数。
@@ -13,6 +13,9 @@ async function handleAction(user, action, params) {
 	return actions[action]({ user, ...params })
 }
 
+/**
+ * 在其他设备访问Shell
+ */
 export default {
 	info: {
 		'en-UK': {
@@ -206,16 +209,38 @@ export default {
 			tags: ['網路', '遠端', '訪問']
 		}
 	},
+	/**
+	 * 加载Shell。
+	 * @param {object} root0 - 参数。
+	 * @param {object} root0.router - 路由。
+	 * @returns {Promise<void>}
+	 */
 	Load: async ({ router }) => { },
+	/**
+	 * 卸载Shell。
+	 * @returns {Promise<void>}
+	 */
 	Unload: async () => { },
 	interfaces: {
 		invokes: {
+			/**
+			 * 参数处理器。
+			 * @param {string} user - 用户。
+			 * @param {Array<string>} args - 参数。
+			 * @returns {Promise<void>}
+			 */
 			ArgumentsHandler: async (user, args) => {
 				const url = await handleAction(user, 'default', {})
 				console.log(`Access fount on other devices in the same network via: ${url}`)
 				const qrcode = await import('npm:qrcode-terminal')
 				qrcode.generate(url, { small: true })
 			},
+			/**
+			 * IPC调用处理器。
+			 * @param {string} user - 用户。
+			 * @param {object} args - 参数。
+			 * @returns {Promise<any>} - 动作结果。
+			 */
 			IPCInvokeHandler: async (user, args) => {
 				return handleAction(user, 'default', args)
 			}

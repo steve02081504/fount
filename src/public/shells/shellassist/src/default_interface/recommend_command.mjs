@@ -16,6 +16,10 @@ export const recommend_command_plugin = {
 	},
 	interfaces: {
 		chat: {
+			/**
+			 *
+			 * @param args
+			 */
 			GetPrompt: async (args) => {
 				return {
 					additional_chat_log: [
@@ -33,6 +37,10 @@ command_body
 					]
 				}
 			},
+			/**
+			 *
+			 * @param result
+			 */
 			ReplyHandler: async result => {
 				const match = result.content.match(/<recommend_command>(?<command>[\S\s]*?)<\/recommend_command>/)
 				const command = match?.groups?.command?.trim() // Extract and trim the command

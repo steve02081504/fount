@@ -6,12 +6,12 @@
 			"start": "Server starten",
 			"starting": "Server wordt gestart...",
 			"ready": "Server is gestart",
+			"standingBy": "Standing by...",
 			"showUrl": {
 				"https": "HTTPS-server draait op ${url}",
 				"http": "HTTP-server draait op ${url}"
 			},
 			"localUrl": "Toegang tot fount vanaf andere apparaten op hetzelfde netwerk: ${url}",
-			"standingBy": "Standing by...",
 			"update": {
 				"restarting": "Er is een nieuwe versie gevonden. De update wordt opnieuw gestart..."
 			}
@@ -20,32 +20,32 @@
 			"restartingJob": "Herstart taak ${parttype} ${partname} voor gebruiker ${username}: ${uid}"
 		},
 		"ipc": {
-			"sendCommandFailed": "Verzenden van commando mislukt: ${error}",
-			"invalidCommand": "Ongeldig commando, gebruik \"fount run <componenttype> <gebruikersnaam> <componentnaam> <parameters...>\"",
+			"serverStarted": "IPC-server is gestart",
+			"instanceRunning": "Een andere instantie draait al",
 			"runPartLog": "Uitvoeren van ${parttype} ${partname} als ${username}, met parameters: ${args}",
 			"invokePartLog": "Aanroepen van ${parttype} ${partname} als ${username}, met data: ${invokedata}",
+			"invalidCommand": "Ongeldig commando, gebruik \"fount run <componenttype> <gebruikersnaam> <componentnaam> <parameters...>\"",
+			"invalidCommandFormat": "Ongeldig commandoformaat",
 			"unsupportedCommand": "Niet-ondersteund commandotype",
 			"processMessageError": "Fout bij het verwerken van IPC-bericht: ${error}",
-			"invalidCommandFormat": "Ongeldig commandoformaat",
+			"sendCommandFailed": "Verzenden van commando mislukt: ${error}",
 			"socketError": "Socketfout: ${error}",
-			"instanceRunning": "Een andere instantie draait al",
-			"serverStarted": "IPC-server is gestart",
 			"parseResponseFailed": "Parseren van serverrespons mislukt: ${error}",
 			"cannotParseResponse": "Kan serverrespons niet parseren",
 			"unknownError": "Onbekende fout"
 		},
 		"partManager": {
+			"partInited": "${parttype} component ${partname} is geïnitialiseerd",
+			"partLoaded": "${parttype} component ${partname} is geladen",
 			"git": {
+				"updating": "Bezig met bijwerken vanuit de externe repository...",
+				"upToDate": "Al up-to-date.",
+				"localAhead": "Lokale branch loopt voor op externe branch. Bijwerken niet nodig.",
 				"noUpstream": "Geen upstream branch geconfigureerd voor branch '${currentBranch}', updatecontrole overgeslagen.",
 				"dirtyWorkingDirectory": "De werkdirectory is niet schoon. Commit of stash je wijzigingen voordat je bijwerkt.",
-				"updating": "Bezig met bijwerken vanuit de externe repository...",
-				"localAhead": "Lokale branch loopt voor op externe branch. Bijwerken niet nodig.",
 				"diverged": "Lokale en externe branches zijn afgeweken. Geforceerd bijwerken...",
-				"upToDate": "Al up-to-date.",
 				"updateFailed": "Bijwerken van component vanuit externe repository mislukt: ${error}"
-			},
-			"partInited": "${parttype} component ${partname} is geïnitialiseerd",
-			"partLoaded": "${parttype} component ${partname} is geladen"
+			}
 		},
 		"web": {
 			"requestReceived": "Verzoek ontvangen: ${method} ${url}"
@@ -54,11 +54,11 @@
 			"setLanguagePreference": "Gebruiker ${username} stelt voorkeurstaal in: ${preferredLanguages}"
 		},
 		"auth": {
+			"accountLockedLog": "Account van gebruiker ${username} vergrendeld na meerdere mislukte inlogpogingen",
 			"tokenVerifyError": "Tokenverificatiefout: ${error}",
 			"refreshTokenError": "Tokenverversingsfout: ${error}",
 			"logoutRefreshTokenProcessError": "Fout bij verwerken van tokenverversing bij uitloggen: ${error}",
-			"revokeTokenNoJTI": "Kan token zonder jti niet intrekken",
-			"accountLockedLog": "Account van gebruiker ${username} vergrendeld na meerdere mislukte inlogpogingen"
+			"revokeTokenNoJTI": "Kan token zonder jti niet intrekken"
 		},
 		"verification": {
 			"codeGeneratedLog": "Verificatiecode: ${code} (verloopt na 60 seconden)",
@@ -66,10 +66,10 @@
 			"codeNotifyBody": "Je verificatiecode is: ${code} (verloopt na 60 seconden)"
 		},
 		"tray": {
-			"readIconFailed": "Lezen van pictogrambestand mislukt: ${error}",
-			"createTrayFailed": "Aanmaken van systeempictogram mislukt: ${error}",
 			"title": "fount",
 			"tooltip": "fount",
+			"readIconFailed": "Lezen van pictogrambestand mislukt: ${error}",
+			"createTrayFailed": "Aanmaken van systeempictogram mislukt: ${error}",
 			"items": {
 				"open": {
 					"title": "Openen",
@@ -100,6 +100,9 @@
 			"botStarted": "Personage ${charname} is ingelogd op Telegram Bot ${botusername}"
 		},
 		"path": {
+			"protocol": {
+				"description": "URL:fount protocol"
+			},
 			"update": {
 				"skippingFountUpdate": "Omdat het .noupdate-bestand bestaat, wordt de font-update overgeslagen",
 				"skippingDenoUpgradeDocker": "Sla de Deno-upgrade over in de Docker-omgeving"
@@ -108,44 +111,44 @@
 				"desktopShortcutCreated": "Snelkoppeling op het bureaublad gemaakt op ${path}",
 				"startMenuShortcutCreated": "Snelkoppeling naar startmenu gemaakt op ${path}",
 				"protocolHandlerRegistered": "font:// protocolhandler geregistreerd.",
+				"shortcutNotSupported": "Waarschuwing: uw besturingssysteem (${os}) ondersteunt het maken van snelkoppelingen op het bureaublad niet.",
 				"osacompileNotFound": "Fout: 'osacompile' niet gevonden. Kan macOS-app niet maken.",
 				"lsregisterFailed": "Waarschuwing: het gebruik van lsregister om een ​​applicatie te registreren bij LaunchServices is mislukt.",
-				"createDesktopAppFailed": "Fout: Kan bureaubladtoepassing niet maken.",
-				"shortcutNotSupported": "Waarschuwing: uw besturingssysteem (${os}) ondersteunt het maken van snelkoppelingen op het bureaublad niet."
+				"createDesktopAppFailed": "Fout: Kan bureaubladtoepassing niet maken."
 			},
 			"git": {
 				"repoNotFound": "De git-repository van font is niet gevonden. Een nieuwe initialiseren...",
 				"fetchingAndResetting": "Ophalen uit externe opslagplaats en opnieuw instellen op master...",
-				"fetchFailed": "Kan niet vanaf 'oorsprong' komen.",
 				"localChangesDetected": "Lokale wijzigingen gedetecteerd, verschillen worden opgeslagen voordat ze worden overschreven.",
 				"backupSavedTo": "Er is een back-up van uw lokale wijzigingen opgeslagen in: ${path}",
+				"updatingFromRemote": "Updaten vanuit een externe opslagplaats...",
+				"alreadyUpToDate": "Al het nieuwste.",
+				"localBranchAhead": "De lokale vestiging loopt voor op de externe vestiging. Geen updates vereist.",
+				"branchesDiverged": "De lokale en afgelegen vestigingen zijn gesplitst. Geforceerde update wordt uitgevoerd...",
 				"notOnBranch": "Niet op het filiaal, schakel over naar 'master'...",
 				"noUpstreamBranch": "Waarschuwing: Er is geen upstream-vertakking geconfigureerd voor vertakking '${branch}'. Upstream instellen op 'origin/master'.",
 				"dirtyWorkingDirectory": "Waarschuwing: de werkmap is niet schoon. Stash of commit uw wijzigingen voordat u deze bijwerkt.",
-				"updatingFromRemote": "Updaten vanuit een externe opslagplaats...",
-				"localBranchAhead": "De lokale vestiging loopt voor op de externe vestiging. Geen updates vereist.",
-				"branchesDiverged": "De lokale en afgelegen vestigingen zijn gesplitst. Geforceerde update wordt uitgevoerd...",
-				"alreadyUpToDate": "Al het nieuwste.",
 				"notInstalled": "Git is niet geïnstalleerd, probeert te installeren...",
-				"installFailedWinget": "Omdat de Winget-installatie mislukte, kan Git niet worden geïnstalleerd. Installeer het handmatig.",
-				"installFailedManual": "Kan Git niet installeren. Installeer het handmatig.",
 				"notInstalledSkippingPull": "Git is niet geïnstalleerd, sla git pull over",
-				"repoNotFoundSkippingPull": "Repository niet gevonden, sla git pull over"
+				"repoNotFoundSkippingPull": "Repository niet gevonden, sla git pull over",
+				"fetchFailed": "Kan niet vanaf 'oorsprong' komen.",
+				"installFailedWinget": "Omdat de Winget-installatie mislukte, kan Git niet worden geïnstalleerd. Installeer het handmatig.",
+				"installFailedManual": "Kan Git niet installeren. Installeer het handmatig."
 			},
 			"deno": {
-				"installingTermux": "Deno voor Termux installeren...",
 				"missing": "Deno niet gevonden, automatisch geïnstalleerd...",
-				"installFailedFallback": "Deno-installatie is mislukt. Er wordt geprobeerd automatisch te installeren in de padmap van de font...",
 				"isRequired": "Deno niet gevonden, bron kan niet worden uitgevoerd zonder Deno",
+				"installingTermux": "Deno voor Termux installeren...",
+				"installFailedFallback": "Deno-installatie is mislukt. Er wordt geprobeerd automatisch te installeren in de padmap van de font...",
 				"notWorking": "Om de een of andere reden werkt Deno niet. Misschien wil je lid worden van https://discord.gg/deno voor ondersteuning",
-				"upgradeFailedTermux": "Deno-upgradeopdracht is mislukt, poging om Deno voor Termux opnieuw te installeren...",
-				"upgradeFailed": "Waarschuwing: Deno-upgrade is mogelijk mislukt. Controleer op fouten."
+				"upgradeFailed": "Waarschuwing: Deno-upgrade is mogelijk mislukt. Controleer op fouten.",
+				"upgradeFailedTermux": "Deno-upgradeopdracht is mislukt, poging om Deno voor Termux opnieuw te installeren..."
 			},
 			"install": {
-				"rootWarning1": "Niet aanbevolen: het uitvoeren van font als root geeft volledige systeemtoegang tot alle fontcomponenten.",
-				"rootWarning2": "Tenzij u weet wat u doet, wordt aanbevolen om font als normale gebruiker uit te voeren.",
 				"installingDependencies": "Afhankelijkheden installeren...",
-				"untrustedPartsWarning": "Installeer geen onbetrouwbare fontcomponenten op uw systeem; deze kunnen alles doen."
+				"untrustedPartsWarning": "Installeer geen onbetrouwbare fontcomponenten op uw systeem; deze kunnen alles doen.",
+				"rootWarning1": "Niet aanbevolen: het uitvoeren van font als root geeft volledige systeemtoegang tot alle fontcomponenten.",
+				"rootWarning2": "Tenzij u weet wat u doet, wordt aanbevolen om font als normale gebruiker uit te voeren."
 			},
 			"clean": {
 				"removingCaches": "Cache verwijderen...",
@@ -154,29 +157,30 @@
 				"cleaningOldPwshModules": "Oude pwsh-modules opruimen..."
 			},
 			"keepalive": {
-				"failedToStart": "Zelfs na automatische reparatiepogingen start de fontein korte tijd niet. Controleer de logboeken op fouten.",
+				"initComplete": "Herinitialisatie voltooid. Ik probeer font opnieuw op te starten...",
 				"autoInitDisabled": "font is de afgelopen korte tijd meerdere keren opnieuw opgestart, maar automatische herinitialisatie is uitgeschakeld vanwege de aanwezigheid van het bestand .noautoinit. Afsluiten.",
 				"restartingTooFast": "font is in korte tijd meerdere keren opnieuw opgestart. Geforceerde herinitialisatie...",
-				"initFailed": "Initialisatie van fount is mislukt. Afsluiten.",
-				"initComplete": "Herinitialisatie voltooid. Ik probeer font opnieuw op te starten..."
+				"failedToStart": "Zelfs na automatische reparatiepogingen start de fontein korte tijd niet. Controleer de logboeken op fouten.",
+				"initFailed": "Initialisatie van fount is mislukt. Afsluiten."
 			},
 			"remove": {
 				"removingFount": "fount verwijderen...",
+				"fountUninstallationComplete": "Het verwijderen van de font is voltooid.",
+				"removingFountInstallationDir": "Installatiemap voor fount verwijderen...",
+				"fountInstallationDirRemoved": "De font-installatiemap is verwijderd.",
 				"removingFountFromPath": "Lettertype uit PATH verwijderen...",
 				"removingProtocolHandler": "Fot:// protocolhandler verwijderen...",
+				"protocolHandlerRemoved": "De protocolhandler font:// is verwijderd.",
+				"removeProtocolHandlerFailed": "Kan fount:// protocolhandler niet verwijderen: ${message}",
 				"removingFountFromGitSafeDir": "Font verwijderen uit git safe.directory...",
 				"removingInstalledSystemPackages": "Geïnstalleerde systeempakketten verwijderen...",
 				"uninstallingDeno": "Deno verwijderen...",
-				"removingFountInstallationDir": "Installatiemap voor fount verwijderen...",
-				"fountInstallationDirRemoved": "De font-installatiemap is verwijderd.",
-				"fountUninstallationComplete": "Het verwijderen van de font is voltooid.",
+				"removeDenoFailed": "Kan Deno niet verwijderen: ${message}",
 				"removingFountPwshFromProfile": "font-pwsh verwijderen uit PowerShell-profiel...",
 				"fountPwshRemovedFromProfile": "font-pwsh is verwijderd uit het PowerShell-profiel.",
 				"pwshProfileNotFound": "PowerShell-profiel niet gevonden. Het verwijderen van font-pwsh uit het profiel wordt overgeslagen.",
 				"uninstallingFountPwsh": "Font-pwsh verwijderen...",
 				"uninstallFountPwshFailed": "Verwijderen van font-pwsh mislukt: ${message}",
-				"protocolHandlerRemoved": "De protocolhandler font:// is verwijderd.",
-				"removeProtocolHandlerFailed": "Kan fount:// protocolhandler niet verwijderen: ${message}",
 				"removingTerminalProfile": "Windows Terminal-profiel verwijderen...",
 				"terminalProfileRemoved": "De map Windows Terminal Profile is verwijderd.",
 				"terminalProfileNotFound": "Windows Terminal-profielmap niet gevonden.",
@@ -191,22 +195,14 @@
 				"uninstallingGit": "Git verwijderen...",
 				"uninstallingChrome": "Chrome verwijderen...",
 				"uninstallingWinget": "Winget verwijderen...",
-				"removeDenoFailed": "Kan Deno niet verwijderen: ${message}",
 				"removingBackgroundRunner": "Achtergrondprogramma's verwijderen...",
 				"removeBackgroundRunnerFailed": "Kan actief programma op de achtergrond niet verwijderen: ${message}"
-			},
-			"protocol": {
-				"description": "URL:fount protocol"
 			}
 		}
 	},
 	"installer_wait_screen": {
 		"title": "Welkom bij fount!",
-		"language_selector": {
-			"search": {
-				"placeholder": "Taal zoeken..."
-			}
-		},
+		"description": "Volg de voortgang van de installatie en bekijk de functies ervan. font zal binnen enkele ogenblikken klaar zijn voor lancering.",
 		"hero": {
 			"title": "Een Vonk van de Geest, een Vriend voor het Leven",
 			"description": "fount is een AI-aangedreven platform voor personage-interactie, ontworpen om <i>jou</i> de controle te geven. Het is een brug die je verbindt met de personages uit je verbeelding, waardoor je moeiteloos met hen kunt praten, je eigen personages kunt creëren en ze met de wereld kunt delen."
@@ -227,6 +223,11 @@
 			"title": "Onbeperkte AI-bronintegratie",
 			"description": "fount biedt een ongeëvenaarde keuze en flexibiliteit. Maak verbinding met <i>elke</i> AI-bron – OpenAI, Claude, OpenRouter, NovelAI en meer. De communicatielogica wordt gevormd naar <i>jouw</i> wil, door de kracht van code."
 		},
+		"language_selector": {
+			"search": {
+				"placeholder": "Taal zoeken..."
+			}
+		},
 		"theme_selector": {
 			"title": "Kies je uiterlijk",
 			"description": "Kies een thema om je ervaring te personaliseren.",
@@ -241,6 +242,9 @@
 		},
 		"data_showcase": {
 			"title_prefix": "fount is het meest ",
+			"title_of": " e ",
+			"active_users": "Aantal actieve gebruikers",
+			"stars": "GitHub Stars",
 			"adjectives": [
 				"uitbreidbaar",
 				"potentieelrijk",
@@ -248,7 +252,6 @@
 				"compatibel",
 				"compact en krachtig"
 			],
-			"title_of": " e ",
 			"nouns": [
 				"AI virtueel personage ",
 				"Agent ",
@@ -259,9 +262,7 @@
 				"basisplatform",
 				"chat-frontend",
 				"runner"
-			],
-			"active_users": "Aantal actieve gebruikers",
-			"stars": "GitHub Stars"
+			]
 		},
 		"footer": {
 			"ready_text": "Klaar om je reis te beginnen?",
@@ -280,15 +281,9 @@
 	},
 	"protocolhandler": {
 		"title": "fount-protocol verwerken",
+		"description": "Geruisloos en efficiënt vertaalt deze pagina uw intentie naar een naadloze overgang binnen font. Beschouw het als de stille magie achter het gordijn.",
 		"processing": "Protocol wordt verwerkt...",
-		"invalidProtocol": "Ongeldig protocol",
-		"insufficientParams": "Onvoldoende parameters",
-		"unknownCommand": "Onbekend commando",
 		"shellCommandSent": "Shell-commando verzonden",
-		"shellCommandFailed": "Verzenden van Shell-commando mislukt",
-		"shellCommandError": "Fout bij verzenden van Shell-commando",
-		"fountNotFound": "Oeps :(\n\nKan fount niet vinden, misschien moet je het eerst installeren?",
-		"unknownError": "Oeps :(\n\nEr is een fout opgetreden:\n${error}",
 		"runPartConfirm": {
 			"title": "Uitvoering bevestigen",
 			"message": "Weet u zeker dat u ${parttype} van ${partname} wilt uitvoeren?",
@@ -301,10 +296,18 @@
 			"buttons": {
 				"retry": "Probeer het opnieuw"
 			}
-		}
+		},
+		"fountNotFound": "Oeps :(\n\nKan fount niet vinden, misschien moet je het eerst installeren?",
+		"invalidProtocol": "Ongeldig protocol",
+		"insufficientParams": "Onvoldoende parameters",
+		"unknownCommand": "Onbekend commando",
+		"shellCommandFailed": "Verzenden van Shell-commando mislukt",
+		"shellCommandError": "Fout bij verzenden van Shell-commando",
+		"unknownError": "Oeps :(\n\nEr is een fout opgetreden:\n${error}"
 	},
 	"startPage": {
 		"title": "fount!",
+		"description": "Welkom op de drempel van de bron. Een kort moment van voorbereiding, voordat je midden in de gesprekken en verhalen stapt die wachten om zich te ontvouwen.",
 		"newTabFailed": {
 			"title": "Nieuw tabblad openen mislukt",
 			"instruction": "Het opstarten van fount is elke keer 1-2s langzamer zonder toestemming voor pop-ups",
@@ -326,6 +329,7 @@
 	},
 	"tutorial": {
 		"title": "Een tutorial nodig?",
+		"description": "Laat ons met u meelopen door de wereld van font. Deze interactieve tutorial zal het pad belichten en je helpen de magie te ontdekken die in de kern ervan verweven is. Je avontuur begint met begrip.",
 		"modal": {
 			"title": "Welkom bij fount!",
 			"instruction": "Wil je de tutorial voor beginners doorlopen?",
@@ -361,6 +365,7 @@
 	"auth": {
 		"title": "Authenticatie",
 		"subtitle": "Gebruikersgegevens worden lokaal opgeslagen",
+		"description": "Hier definieert u uw aanwezigheid. Of u nu terugkeert naar een vertrouwde haven of een nieuwe ruimte voor uw verhalen vormgeeft, dit is waar uw reis met de bron begint.",
 		"usernameLabel": "Gebruikersnaam:",
 		"usernameInput": {
 			"placeholder": "Voer gebruikersnaam in"
@@ -394,6 +399,13 @@
 				"link": "Log nu in"
 			}
 		},
+		"passwordStrength": {
+			"veryWeak": "Zeer zwak",
+			"weak": "Zwak",
+			"normal": "Normaal",
+			"strong": "Sterk",
+			"veryStrong": "Zeer sterk"
+		},
 		"error": {
 			"passwordMismatch": "De wachtwoorden komen niet overeen.",
 			"loginError": "Fout bij inloggen.",
@@ -406,17 +418,11 @@
 			"accountAlreadyExists": "Account bestaat al",
 			"powNotSolved": "Voltooi eerst de PoW-verificatie.",
 			"powError": "PoW-verificatiefout"
-		},
-		"passwordStrength": {
-			"veryWeak": "Zeer zwak",
-			"weak": "Zwak",
-			"normal": "Normaal",
-			"strong": "Sterk",
-			"veryStrong": "Zeer sterk"
 		}
 	},
 	"login_info": {
 		"title": "Inloggegevens",
+		"description": "Een veilige ruimte voor het beheren van uw inloggegevens: de sleutels tot uw wereld vol onvertelde verhalen.",
 		"modal": {
 			"title": "Certificaatoverdrachtsfout",
 			"retrieve_error": "Er is een fout opgetreden bij het proberen uw inloggegevens op te slaan:\n${error}\nU kunt doorgaan, maar kunt de inloggegevens niet opslaan.",
@@ -429,20 +435,21 @@
 	},
 	"home": {
 		"title": "Startpagina",
-		"escapeConfirm": "Weet je zeker dat je fount wilt verlaten?",
-		"filterInput": {
-			"placeholder": "Zoeken..."
-		},
-		"sfwToggle": "Veilige inhoud",
+		"description": "Het hart van uw font-ervaring. Beheer hier de bewoners van je verbeelding: personages, werelden en persona's. Jouw verhalen beginnen en vertakken zich vanuit dit centrale knooppunt.",
 		"sidebarTitle": "Details",
 		"itemDescription": "Selecteer hier een item om de details te bekijken.",
 		"noDescription": "Geen beschrijving",
-		"alerts": {
-			"fetchHomeRegistryFailed": "Ophalen van startpaginagegevens mislukt"
+		"filterInput": {
+			"placeholder": "Zoeken...",
+			"aria-label": "Zoekwidgets"
 		},
+		"sfwToggle": "Veilige inhoud",
 		"functionMenu": {
 			"search": {
 				"placeholder": "Zoeken..."
+			},
+			"button": {
+				"title": "Functiemenu"
 			},
 			"icon": {
 				"alt": "Functiemenu"
@@ -454,15 +461,15 @@
 			"subtitle": "Kies een personage en begin met chatten!",
 			"none": "Helemaal leeg",
 			"card": {
-				"refreshButton": {
-					"alt": "Vernieuwen",
-					"title": "Vernieuwen"
-				},
 				"noTags": "Geen tags",
 				"version": "Versie",
 				"author": "Auteur",
 				"home_page": "Homepage",
 				"issue_page": "Probleem melden",
+				"refreshButton": {
+					"alt": "Vernieuwen",
+					"title": "Vernieuwen"
+				},
 				"defaultCheckbox": {
 					"title": "Instellen als standaardpersonage"
 				}
@@ -474,15 +481,15 @@
 			"subtitle": "Kies een wereld en duik erin!",
 			"none": "Helemaal leeg",
 			"card": {
-				"refreshButton": {
-					"alt": "Vernieuwen",
-					"title": "Vernieuwen"
-				},
 				"noTags": "Geen tags",
 				"version": "Versie",
 				"author": "Auteur",
 				"home_page": "Homepage",
 				"issue_page": "Probleem melden",
+				"refreshButton": {
+					"alt": "Vernieuwen",
+					"title": "Vernieuwen"
+				},
 				"defaultCheckbox": {
 					"title": "Instellen als standaardwereld"
 				}
@@ -494,19 +501,23 @@
 			"subtitle": "Kies een persona, beleef een leven.",
 			"none": "Helemaal leeg",
 			"card": {
-				"refreshButton": {
-					"alt": "Vernieuwen",
-					"title": "Vernieuwen"
-				},
 				"noTags": "Geen tags",
 				"version": "Versie",
 				"author": "Auteur",
 				"home_page": "Homepage",
 				"issue_page": "Probleem melden",
+				"refreshButton": {
+					"alt": "Vernieuwen",
+					"title": "Vernieuwen"
+				},
 				"defaultCheckbox": {
 					"title": "Instellen als standaardpersona"
 				}
 			}
+		},
+		"escapeConfirm": "Weet je zeker dat je fount wilt verlaten?",
+		"alerts": {
+			"fetchHomeRegistryFailed": "Ophalen van startpaginagegevens mislukt"
 		},
 		"achievements": {
 			"first_login": {
@@ -537,11 +548,15 @@
 		}
 	},
 	"chat": {
-		"new": {
-			"title": "Nieuwe chat"
-		},
 		"title": "Chat",
+		"description": "Waar woorden de vlucht nemen en verhalen zich ontvouwen. Ga in gesprek met uw AI-metgezellen, geef vorm aan het verhaal en verlies uzelf in de eb en vloed van de digitale dialoog. Het hart van Fount klopt hier.",
+		"new": {
+			"title": "Nieuwe chat",
+			"description": "De stille verwachting van een nog ongeschreven verhaal. Er begint een nieuwe chat, een schone lei voor nieuwe interacties en zich ontvouwende verhalen met de door u gekozen metgezellen."
+		},
 		"sidebar": {
+			"noSelection": "Geen",
+			"noDescription": "Geen beschrijving",
 			"world": {
 				"icon": {
 					"alt": "Wereldpictogram"
@@ -567,20 +582,21 @@
 						"alt": "Personage toevoegen pictogram"
 					}
 				}
-			},
-			"noSelection": "Geen",
-			"noDescription": "Geen beschrijving"
+			}
+		},
+		"rightSidebar": {
+			"title": "Beschrijving"
 		},
 		"chatArea": {
 			"title": "Chat",
+			"input": {
+				"placeholder": "Typ een bericht...\nCtrl+Enter om te verzenden"
+			},
 			"menuButton": {
 				"title": "Menu"
 			},
 			"menuButtonIcon": {
 				"alt": "Menupictogram"
-			},
-			"input": {
-				"placeholder": "Typ een bericht...\nCtrl+Enter om te verzenden"
 			},
 			"sendButton": {
 				"title": "Verzenden"
@@ -606,9 +622,6 @@
 			"photoButtonIcon": {
 				"alt": "Fotopictogram"
 			}
-		},
-		"rightSidebar": {
-			"title": "Beschrijving"
 		},
 		"messageList": {
 			"confirmDeleteMessage": "Dit bericht verwijderen?"
@@ -733,18 +746,29 @@
 	"chat_history": {
 		"title": "Chatgeschiedenis",
 		"pageTitle": "Chatgeschiedenis",
+		"description": "Reis door dialogen uit het verleden. Hier blijven herinneringen aan gesprekken hangen: sorteer, filter en bekijk de verhalen die u met uw AI-metgezellen hebt geweven. Een stille bibliotheek met digitale echo's.",
+		"filterInput": {
+			"placeholder": "Zoeken..."
+		},
 		"sortOptions": {
 			"time_desc": "Tijd aflopend",
 			"time_asc": "Tijd oplopend"
 		},
-		"filterInput": {
-			"placeholder": "Zoeken..."
+		"sortBy": {
+			"aria-label": "sorteren op"
 		},
+		"select_chat_with_chars": "Selecteer chatten met ${chars}",
 		"selectAll": "Alles selecteren",
 		"buttons": {
 			"reverseSelect": "Selectie omkeren",
 			"deleteSelected": "Selectie verwijderen",
 			"exportSelected": "Selectie exporteren"
+		},
+		"chatItemButtons": {
+			"continue": "Doorgaan",
+			"copy": "Kopiëren",
+			"export": "Exporteren",
+			"delete": "Verwijderen"
 		},
 		"confirmDeleteChat": "Weet je zeker dat je de chat met ${chars} wilt verwijderen?",
 		"confirmDeleteMultiChats": "Weet je zeker dat je de geselecteerde ${count} chats wilt verwijderen?",
@@ -754,107 +778,104 @@
 			"copyError": "Kopiëren mislukt",
 			"deleteError": "Verwijderen mislukt",
 			"exportError": "Exporteren mislukt"
-		},
-		"chatItemButtons": {
-			"continue": "Doorgaan",
-			"copy": "Kopiëren",
-			"export": "Exporteren",
-			"delete": "Verwijderen"
 		}
 	},
 	"easynew": {
 		"title": "Snel nieuw",
+		"description": "Creëer snel nieuwe fontonderdelen zoals personages, werelden en plug-ins met behulp van vooraf gedefinieerde of aangepaste sjablonen. Uw volgende creatie is slechts een paar klikken verwijderd.",
+		"info": {
+			"description": "Deze sjablonen kunnen alleen worden gebruikt om snel eenvoudige componenten te bouwen, complexe componenten moeten nog steeds handmatig worden gemaakt."
+		},
 		"cardTitle": "Maak een nieuw component van een sjabloon",
 		"templateSelect": {
 			"label": "Kies een sjabloon"
 		},
-		"partName": {
-			"label": "Componentnaam",
-			"placeholder": "Geef je nieuwe component een naam"
-		},
-		"description": {
-			"label": "Beschrijving",
-			"placeholder": "Beschrijf kort waar dit component over gaat."
-		},
-		"descriptionMarkdown": {
-			"label": "Beschrijving (Markdown)",
-			"placeholder": "Ondersteunt Markdown voor rijkere opmaak."
-		},
-		"imageUpload": {
-			"label": "Profielfoto"
-		},
-		"charDef": {
-			"heading": "Personagedefinitie"
-		},
-		"personality": {
-			"label": "Persoonlijkheid",
-			"placeholder": "Beschrijf de kernpersoonlijkheidskenmerken van het personage."
-		},
-		"scenario": {
-			"label": "Scenario",
-			"placeholder": "De achtergrond of setting van het personage."
-		},
-		"mesExample": {
-			"label": "Berichtvoorbeeld",
-			"placeholder": "Voorbeelden van wat het personage zou kunnen zeggen."
-		},
-		"firstMessage": {
-			"label": "Eerste bericht",
-			"placeholder": "Het eerste wat het personage zegt."
-		},
-		"personaDef": {
-			"heading": "Personadefinitie"
-		},
-		"personaUserName": {
-			"label": "Jouw naam in de chat",
-			"placeholder": "Bijv: Kapitein, Ontdekkingsreiziger"
-		},
-		"personaAppearance": {
-			"label": "Uiterlijk",
-			"placeholder": "Beschrijf je uiterlijk."
-		},
-		"personaPersonality": {
-			"label": "Persoonlijkheid",
-			"placeholder": "Beschrijf je persoonlijkheidskenmerken."
-		},
-		"worldDef": {
-			"heading": "Werelddefinitie"
-		},
-		"worldPrompt": {
-			"label": "Wereldprompt",
-			"placeholder": "Beschrijf de regels, omgeving en eventuele globale achtergrond van de wereld voor het rollenspel."
-		},
-		"worldGreeting": {
-			"label": "Wereldgroet",
-			"placeholder": "Het eerste bericht dat de wereld naar de gebruiker stuurt."
-		},
-		"author": {
-			"label": "Auteur",
-			"placeholder": "Wie is de auteur van dit component?"
-		},
-		"version": {
-			"label": "Versie",
-			"placeholder": "Bijv: 0.0.1"
-		},
-		"tags": {
-			"label": "Tags",
-			"placeholder": "Tags, gescheiden door komma's"
-		},
-		"homePage": {
-			"label": "Homepage",
-			"placeholder": "URL van de homepage van het component"
-		},
-		"issuePage": {
-			"label": "Problemenpagina",
-			"placeholder": "URL van de problemenpagina van het component"
-		},
-		"createButton": "Component aanmaken",
-		"alerts": {
-			"success": "Component '${partName}' succesvol aangemaakt!",
-			"error": "Fout: ${message}"
-		},
-		"info": {
-			"description": "Deze sjablonen kunnen alleen worden gebruikt om snel eenvoudige componenten te bouwen, complexe componenten moeten nog steeds handmatig worden gemaakt."
+		"form": {
+			"partName": {
+				"label": "Componentnaam",
+				"placeholder": "Geef je nieuwe component een naam"
+			},
+			"description": {
+				"label": "Beschrijving",
+				"placeholder": "Beschrijf kort waar dit component over gaat."
+			},
+			"descriptionMarkdown": {
+				"label": "Beschrijving (Markdown)",
+				"placeholder": "Ondersteunt Markdown voor rijkere opmaak."
+			},
+			"imageUpload": {
+				"label": "Profielfoto"
+			},
+			"charDef": {
+				"heading": "Personagedefinitie"
+			},
+			"personality": {
+				"label": "Persoonlijkheid",
+				"placeholder": "Beschrijf de kernpersoonlijkheidskenmerken van het personage."
+			},
+			"scenario": {
+				"label": "Scenario",
+				"placeholder": "De achtergrond of setting van het personage."
+			},
+			"mesExample": {
+				"label": "Berichtvoorbeeld",
+				"placeholder": "Voorbeelden van wat het personage zou kunnen zeggen."
+			},
+			"firstMessage": {
+				"label": "Eerste bericht",
+				"placeholder": "Het eerste wat het personage zegt."
+			},
+			"personaDef": {
+				"heading": "Personadefinitie"
+			},
+			"personaUserName": {
+				"label": "Jouw naam in de chat",
+				"placeholder": "Bijv: Kapitein, Ontdekkingsreiziger"
+			},
+			"personaAppearance": {
+				"label": "Uiterlijk",
+				"placeholder": "Beschrijf je uiterlijk."
+			},
+			"personaPersonality": {
+				"label": "Persoonlijkheid",
+				"placeholder": "Beschrijf je persoonlijkheidskenmerken."
+			},
+			"worldDef": {
+				"heading": "Werelddefinitie"
+			},
+			"worldPrompt": {
+				"label": "Wereldprompt",
+				"placeholder": "Beschrijf de regels, omgeving en eventuele globale achtergrond van de wereld voor het rollenspel."
+			},
+			"worldGreeting": {
+				"label": "Wereldgroet",
+				"placeholder": "Het eerste bericht dat de wereld naar de gebruiker stuurt."
+			},
+			"author": {
+				"label": "Auteur",
+				"placeholder": "Wie is de auteur van dit component?"
+			},
+			"version": {
+				"label": "Versie",
+				"placeholder": "Bijv: 0.0.1"
+			},
+			"tags": {
+				"label": "Tags",
+				"placeholder": "Tags, gescheiden door komma's"
+			},
+			"homePage": {
+				"label": "Homepage",
+				"placeholder": "URL van de homepage van het component"
+			},
+			"issuePage": {
+				"label": "Problemenpagina",
+				"placeholder": "URL van de problemenpagina van het component"
+			},
+			"createButton": "Component aanmaken",
+			"alerts": {
+				"success": "Component '${partName}' succesvol aangemaakt!",
+				"error": "Fout: ${message}"
+			}
 		},
 		"achievements": {
 			"create_part": {
@@ -866,6 +887,7 @@
 	},
 	"import": {
 		"title": "Importeren",
+		"description": "Breng je geliefde personages, werelden en configuraties in de omhelzing van Font. Of het nu gaat om een ​​bestand of om geplakte tekst, hier worden nieuwe elementen in uw persoonlijke tapijt verweven.",
 		"tabs": {
 			"fileImport": "Bestand importeren",
 			"textImport": "Tekst importeren"
@@ -882,6 +904,14 @@
 		"buttons": {
 			"import": "Importeren"
 		},
+		"fileItem": {
+			"removeButton": {
+				"title": "Verwijderen"
+			},
+			"removeButtonIcon": {
+				"alt": "Verwijderen"
+			}
+		},
 		"alerts": {
 			"importSuccess": "Succesvol geïmporteerd",
 			"importFailed": "Importeren mislukt: ${error}",
@@ -892,31 +922,20 @@
 			"fileImportFailed": "Bestandsimport mislukt: ${message}",
 			"noTextContent": "Voer tekstinhoud in",
 			"textImportFailed": "Tekstimport mislukt: ${message}",
-			"unknownError": "Onbekende fout",
 			"handler": "Handler",
-			"error": "Fout"
-		},
-		"fileItem": {
-			"removeButton": {
-				"title": "Verwijderen"
-			},
-			"removeButtonIcon": {
-				"alt": "Verwijderen"
-			}
+			"error": "Fout",
+			"unknownError": "Onbekende fout"
 		}
 	},
 	"export": {
 		"title": "Component-exporteerder",
 		"pageTitle": "Component-exporteerder",
 		"pageSubtitle": "Exporteer je favoriete inhoud",
+		"description": "Exporteer uw lettertypecreaties. Deze tool verzamelt uw geselecteerde onderdelen in een eenvoudig zip-bestand om te bewaren of te delen.",
 		"steps": {
 			"partType": "Selecteer een type",
 			"part": "Selecteer componenten",
 			"action": "Exporteren"
-		},
-		"options": {
-			"withData": "Bevat gegevensbestanden",
-			"withDataDescription": "Bevat bestanden gemarkeerd als gegevens, zoals personageherinneringen."
 		},
 		"labels": {
 			"partType": "Kies componenttype",
@@ -932,12 +951,35 @@
 		"partSearch": {
 			"placeholder": "Zoeken..."
 		},
+		"options": {
+			"withData": "Bevat gegevensbestanden",
+			"withDataDescription": "Bevat bestanden gemarkeerd als gegevens, zoals personageherinneringen."
+		},
 		"export": {
 			"title": "Exportopties"
 		},
 		"editor": {
 			"disabledIndicator": "Kies eerst een component",
 			"disabledIndicatorHint": "Selecteer het componenttype en het component dat u wilt exporteren"
+		},
+		"buttons": {
+			"export": "Exporteren",
+			"exportWithData": "Exporteren (incl. data)",
+			"copyShareLink": "Deellink kopiëren",
+			"generateShareLink": "Deellink genereren",
+			"generateShareLinkWithData": "Deellink genereren (incl. data)"
+		},
+		"shareMenu": {
+			"title": "Kies deelduur",
+			"1h": "1 uur",
+			"12h": "12 uur",
+			"24h": "24 uur",
+			"72h": "72 uur",
+			"cancel": "Annuleren"
+		},
+		"litterbox": {
+			"poweredBy": "Deelfunctie mogelijk gemaakt door litterbox.moe",
+			"sponsorLink": "Sponsor hen"
 		},
 		"errorMessage": {
 			"icon": {
@@ -952,25 +994,6 @@
 			"shareLinkCopied": "Deellink gekopieerd naar klembord!",
 			"shareFailed": "Aanmaken van deellink mislukt."
 		},
-		"shareMenu": {
-			"title": "Kies deelduur",
-			"1h": "1 uur",
-			"12h": "12 uur",
-			"24h": "24 uur",
-			"72h": "72 uur",
-			"cancel": "Annuleren"
-		},
-		"litterbox": {
-			"poweredBy": "Deelfunctie mogelijk gemaakt door litterbox.moe",
-			"sponsorLink": "Sponsor hen"
-		},
-		"buttons": {
-			"export": "Exporteren",
-			"exportWithData": "Exporteren (incl. data)",
-			"copyShareLink": "Deellink kopiëren",
-			"generateShareLink": "Deellink genereren",
-			"generateShareLinkWithData": "Deellink genereren (incl. data)"
-		},
 		"achievements": {
 			"share_part": {
 				"name": "Goede mensen hebben een veilig leven",
@@ -981,17 +1004,13 @@
 	},
 	"uninstall": {
 		"title": "De-installeren",
+		"description": "Mocht u ervoor kiezen om uit elkaar te gaan, dan zorgt deze ruimte voor een sierlijk afscheid. Bevestig de verwijdering van componenten, of vind zichzelf. Paden lopen uiteen, maar herinneringen kunnen blijven bestaan.",
 		"titleWithName": "De-installeer ${type}/${name}",
 		"confirmMessage": "Weet je zeker dat je ${type}: ${name} wilt de-installeren?",
 		"invalidParamsTitle": "Ongeldige parameters",
 		"infoMessage": {
 			"icon": {
 				"alt": "Informatiepictogram"
-			}
-		},
-		"errorMessage": {
-			"icon": {
-				"alt": "Foutpictogram"
 			}
 		},
 		"buttons": {
@@ -1004,13 +1023,17 @@
 			"failed": "De-installatie mislukt: ${error}",
 			"invalidParams": "Ongeldige verzoekparameters.",
 			"httpError": "HTTP-fout! Statuscode: ${status}"
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "Foutpictogram"
+			}
 		}
 	},
 	"userSettings": {
 		"title": "Gebruikersinstellingen",
 		"PageTitle": "Gebruikersinstellingen",
-		"apiError": "API-verzoek mislukt: ${message}",
-		"generalError": "Er is een fout opgetreden: ${message}",
+		"description": "Let op de details van uw bronidentiteit. Beheer uw profiel, beveilig uw toegang en bekijk aangesloten apparaten. Een rustig toevluchtsoord voor uw rekening.",
 		"userInfo": {
 			"title": "Gebruikersinformatie",
 			"usernameLabel": "Gebruikersnaam:",
@@ -1043,19 +1066,50 @@
 		},
 		"userDevices": {
 			"title": "Gebruikersapparaten/sessies",
-			"refreshButton": {
-				"title": "Lijst vernieuwen"
-			},
-			"refreshButtonIcon": {
-				"alt": "pictogram vernieuwen"
-			},
 			"noDevicesFound": "Geen apparaten of sessies gevonden.",
 			"deviceInfo": "Apparaat-ID: ${deviceId}",
 			"thisDevice": "Dit apparaat",
 			"deviceDetails": "Laatst gezien: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
 			"revokeButton": "Intrekken",
 			"revokeConfirm": "Weet je zeker dat je wilt uitloggen van dit apparaat/deze sessie?",
-			"revokeSuccess": "Apparaat/sessie succesvol ingetrokken."
+			"revokeSuccess": "Apparaat/sessie succesvol ingetrokken.",
+			"refreshButton": {
+				"title": "Lijst vernieuwen"
+			},
+			"refreshButtonIcon": {
+				"alt": "pictogram vernieuwen"
+			}
+		},
+		"apiKeys": {
+			"title": "API -sleutel",
+			"description": "Beheer de API -sleutel voor externe toepassingen.",
+			"input": {
+				"placeholder": "Nieuwe sleutelbeschrijving"
+			},
+			"createButton": "creëren",
+			"noKeysFound": "Er werden geen API-sleutels gevonden.",
+			"keyDetails": "Beschrijving: ${description} | Gemaakt in: ${createdAt} | Laatst gebruikt: ${lastUsed}",
+			"neverUsed": "Nooit gebruikt",
+			"revokeButton": "Herroepen",
+			"revokeConfirm": "Weet u zeker dat u deze API -sleutel wilt intrekken?",
+			"revokeSuccess": "De API -sleutel is succesvol ingetrokken.",
+			"errorDescriptionRequired": "Een beschrijving is vereist.",
+			"createSuccess": "De API -sleutel is met succes gemaakt.",
+			"refreshButton": {
+				"title": "Lijst vernieuwen"
+			},
+			"refreshButtonIcon": {
+				"alt": "pictogram vernieuwen"
+			}
+		},
+		"newApiKey": {
+			"title": "Er is een nieuwe API -sleutel gemaakt",
+			"warning": "Kopieer uw nieuwe API -sleutel. Je kunt het niet meer zien!",
+			"closeButton": "Ik heb mijn sleutel gekopieerd",
+			"copyButton": {
+				"title": "Kopieer nieuwe API-sleutel"
+			},
+			"copiedAlert": "API -sleutel gekopieerd naar klembord!"
 		},
 		"logout": {
 			"title": "Uitloggen",
@@ -1080,58 +1134,32 @@
 			"confirmButton": "Bevestigen",
 			"cancelButton": "Annuleren"
 		},
-		"apiKeys": {
-			"title": "API -sleutel",
-			"description": "Beheer de API -sleutel voor externe toepassingen.",
-			"input": {
-				"placeholder": "Nieuwe sleutelbeschrijving"
-			},
-			"createButton": "creëren",
-			"noKeysFound": "Er werden geen API-sleutels gevonden.",
-			"refreshButton": {
-				"title": "Lijst vernieuwen"
-			},
-			"refreshButtonIcon": {
-				"alt": "pictogram vernieuwen"
-			},
-			"keyDetails": "Beschrijving: ${description} | Gemaakt in: ${createdAt} | Laatst gebruikt: ${lastUsed}",
-			"neverUsed": "Nooit gebruikt",
-			"revokeButton": "Herroepen",
-			"revokeConfirm": "Weet u zeker dat u deze API -sleutel wilt intrekken?",
-			"revokeSuccess": "De API -sleutel is succesvol ingetrokken.",
-			"errorDescriptionRequired": "Een beschrijving is vereist.",
-			"createSuccess": "De API -sleutel is met succes gemaakt."
-		},
-		"newApiKey": {
-			"title": "Er is een nieuwe API -sleutel gemaakt",
-			"warning": "Kopieer uw nieuwe API -sleutel. Je kunt het niet meer zien!",
-			"copyButton": {
-				"title": "Kopieer nieuwe API-sleutel"
-			},
-			"closeButton": "Ik heb mijn sleutel gekopieerd",
-			"copiedAlert": "API -sleutel gekopieerd naar klembord!"
-		}
+		"apiError": "API-verzoek mislukt: ${message}",
+		"generalError": "Er is een fout opgetreden: ${message}"
 	},
 	"languageSettings": {
 		"title": "Taalinstellingen",
-		"description": "Beheer hier uw taalvoorkeuren. De talen in de lijst hebben voorrang op de browserinstellingen in volgorde.",
+		"pageTitle": "Taalinstellingen",
+		"description": "Beheer uw taalvoorkeuren voor de lettertypetoepassing. Pas uw ervaring aan met de beschikbare taalopties.",
+		"pageDescription": "Beheer hier uw taalvoorkeuren. De talen in de lijst hebben voorrang op de browserinstellingen in volgorde.",
 		"availableLanguages": "Beschikbare talen",
 		"preferredLanguages": "Prioriteitstaallijst",
 		"resetButton": "Resetten",
 		"saveButton": "Opslaan",
-		"noPreferredLanguages": "Nog geen voorkeurstaal ingesteld. De standaardinstellingen van de browser worden gebruikt.",
-		"savedMessage": "Taalinstellingen worden opgeslagen!",
-		"resetMessage": "Taalinstellingen zijn gereset!",
-		"fetchLocalesFailed": "Kan niet beschikbare talen krijgen!",
 		"select": {
 			"placeholder": "Kies een taal..."
 		},
 		"search": {
 			"placeholder": "Taal zoeken..."
-		}
+		},
+		"noPreferredLanguages": "Nog geen voorkeurstaal ingesteld. De standaardinstellingen van de browser worden gebruikt.",
+		"savedMessage": "Taalinstellingen worden opgeslagen!",
+		"resetMessage": "Taalinstellingen zijn gereset!",
+		"fetchLocalesFailed": "Kan niet beschikbare talen krijgen!"
 	},
 	"themeManage": {
 		"title": "Themabeheer",
+		"description": "Kies de esthetiek die uw stemming of verhaal weerspiegelt. Bekijk een voorbeeld en kies uit een palet van thema's, die elk een andere sfeer bieden voor uw broninteracties. Jouw wereld, jouw stijl.",
 		"instruction": "Kies een thema!",
 		"search": {
 			"placeholder": "Thema's zoeken...",
@@ -1186,6 +1214,7 @@
 	"part_config": {
 		"title": "Componentconfiguratie",
 		"pageTitle": "Componentconfiguratie",
+		"description": "Kijk in het hart van Font. Hier kunt u de instellingen van de diverse componenten aanpassen en zo de motor afstemmen die uw ervaring aandrijft.",
 		"labels": {
 			"partType": "Kies componenttype",
 			"part": "Kies component"
@@ -1197,6 +1226,9 @@
 		"editor": {
 			"title": "Componentconfiguratie",
 			"disabledIndicator": "Dit component ondersteunt geen configuratie",
+			"jsonEditor": {
+				"aria-label": "JSON-configuratie-editor"
+			},
 			"buttons": {
 				"save": "Opslaan"
 			}
@@ -1217,6 +1249,7 @@
 	},
 	"aisource_editor": {
 		"title": "AI-bron editor",
+		"description": "Hier dirigeer je de symfonie van AI-stemmen. Voeg de bronnen toe, beeldhouw ze of leg ze stil, die leven geven aan je metgezellen – een delicate dans van code en verbeelding.",
 		"fileList": {
 			"title": "AI-bronnenlijst",
 			"addButton": {
@@ -1228,6 +1261,21 @@
 			"label": "Kies een generator",
 			"placeholder": "Maak een keuze"
 		},
+		"editor": {
+			"disabledIndicator": "Kies eerst een generator"
+		},
+		"common_config_interface": {
+			"loadingModels": "Modellen laden...",
+			"availableModels": "Beschikbare modellen:",
+			"copied": "Gekopieerd!",
+			"empty_generator": "De verouderde generator van deze AI-bron kon niet worden geladen en is mogelijk verwijderd of van naam veranderd.",
+			"apiKeyRequired": "Een API-sleutel is vereist om de modellen op te halen.",
+			"copyModelIdTooltip": "Klik om de model-ID te kopiëren",
+			"loadModelsFailed": "Kon de modellen niet laden: ${message}"
+		},
+		"prompts": {
+			"newFileName": "Voer een nieuwe bestandsnaam voor de AI-bron in (zonder extensie):"
+		},
 		"buttons": {
 			"save": "Opslaan",
 			"delete": "Verwijderen",
@@ -1235,42 +1283,28 @@
 				"dataset": {
 					"tip": "Instellen als standaard"
 				}
-			}
-		},
-		"alerts": {
-			"fetchFileListFailed": "Ophalen van bestandslijst mislukt: ${error}",
-			"fetchGeneratorListFailed": "Ophalen van generatorlijst mislukt: ${error}",
-			"fetchDefaultsFailed": "Ophalen van standaardcomponenten mislukt: ${error}",
-			"fetchFileDataFailed": "Ophalen van bestandsgegevens mislukt: ${error}",
-			"noFileSelectedSave": "Geen bestand geselecteerd om op te slaan.",
-			"saveFileFailed": "Opslaan van bestand mislukt: ${error}",
-			"setDefaultFailed": "Instellen van standaard AI-bron mislukt: ${error}",
-			"noFileSelectedDelete": "Geen bestand geselecteerd om te verwijderen.",
-			"deleteFileFailed": "Verwijderen van bestand mislukt: ${error}",
-			"invalidFileName": "Bestandsnaam mag de volgende tekens niet bevatten: / \\ : * ? \" < > |",
-			"addFileFailed": "Toevoegen van bestand mislukt: ${error}",
-			"fetchConfigTemplateFailed": "Ophalen van configuratiesjabloon mislukt",
-			"noGeneratorSelectedSave": "Kies een generator voordat je opslaat"
+			},
+			"setDefaultForFile": "Stel “${fileName}” in als de standaard AI-bron"
 		},
 		"confirm": {
 			"unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je de wijzigingen negeren?",
 			"deleteFile": "Weet je zeker dat je het bestand wilt verwijderen?",
 			"unsavedChangesBeforeUnload": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je deze pagina wilt verlaten?"
 		},
-		"prompts": {
-			"newFileName": "Voer een nieuwe bestandsnaam voor de AI-bron in (zonder extensie):"
-		},
-		"editor": {
-			"disabledIndicator": "Kies eerst een generator"
-		},
-		"common_config_interface": {
-			"empty_generator": "De verouderde generator van deze AI-bron kon niet worden geladen en is mogelijk verwijderd of van naam veranderd.",
-			"apiKeyRequired": "Een API-sleutel is vereist om de modellen op te halen.",
-			"loadingModels": "Modellen laden...",
-			"availableModels": "Beschikbare modellen:",
-			"copyModelIdTooltip": "Klik om de model-ID te kopiëren",
-			"copied": "Gekopieerd!",
-			"loadModelsFailed": "Kon de modellen niet laden: ${message}"
+		"alerts": {
+			"fetchFileListFailed": "Ophalen van bestandslijst mislukt: ${error}",
+			"fetchGeneratorListFailed": "Ophalen van generatorlijst mislukt: ${error}",
+			"fetchDefaultsFailed": "Ophalen van standaardcomponenten mislukt: ${error}",
+			"fetchFileDataFailed": "Ophalen van bestandsgegevens mislukt: ${error}",
+			"fetchConfigTemplateFailed": "Ophalen van configuratiesjabloon mislukt",
+			"saveFileFailed": "Opslaan van bestand mislukt: ${error}",
+			"deleteFileFailed": "Verwijderen van bestand mislukt: ${error}",
+			"addFileFailed": "Toevoegen van bestand mislukt: ${error}",
+			"setDefaultFailed": "Instellen van standaard AI-bron mislukt: ${error}",
+			"noFileSelectedSave": "Geen bestand geselecteerd om op te slaan.",
+			"noFileSelectedDelete": "Geen bestand geselecteerd om te verwijderen.",
+			"noGeneratorSelectedSave": "Kies een generator voordat je opslaat",
+			"invalidFileName": "Bestandsnaam mag de volgende tekens niet bevatten: / \\ : * ? \" < > |"
 		},
 		"achievements": {
 			"set_default_aisource": {
@@ -1282,11 +1316,8 @@
 	},
 	"discord_bots": {
 		"title": "Discord Bot",
+		"description": "Geef je favoriete metgezellen een stem in de bruisende hallen van Discord. Configureer hun aanwezigheid, beheer hun activiteiten en laat ze werelden overbruggen, server voor server.",
 		"cardTitle": "Discord Bot",
-		"buttons": {
-			"newBot": "Nieuwe Bot",
-			"deleteBot": "Bot verwijderen"
-		},
 		"botSelectDropdown": {
 			"placeholder": "Kies een bot"
 		},
@@ -1310,6 +1341,9 @@
 			"apiKeyInput": {
 				"placeholder": "Voer API-sleutel in"
 			},
+			"toggleApiKeyButton": {
+				"aria-label": "Schakel tussen het tonen van API-sleutels"
+			},
 			"toggleApiKeyIcon": {
 				"alt": "API-sleutel tonen/verbergen"
 			},
@@ -1322,10 +1356,14 @@
 		"prompts": {
 			"newBotName": "Voer een naam in voor de nieuwe Bot:"
 		},
+		"buttons": {
+			"newBot": "Nieuwe Bot",
+			"deleteBot": "Bot verwijderen"
+		},
 		"alerts": {
+			"configSaved": "Configuratie succesvol opgeslagen",
 			"botExists": "Een Bot met de naam \"${botname}\" bestaat al, gebruik een andere naam.",
 			"unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je deze negeren?",
-			"configSaved": "Configuratie succesvol opgeslagen",
 			"httpError": "HTTP-fout",
 			"beforeUnload": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je wilt vertrekken?"
 		},
@@ -1339,6 +1377,7 @@
 	},
 	"telegram_bots": {
 		"title": "Telegram Bot",
+		"description": "Laat je favoriete karakters de directe golven van Telegram doorkruisen. Configureer hun digitale aanwezigheid, beheer hun gesprekken en breid hun bereik uit naar deze levendige berichtenwereld.",
 		"cardTitle": "Telegram Bot Beheer",
 		"botSelectDropdown": {
 			"placeholder": "Kies een bot"
@@ -1352,10 +1391,6 @@
 		"charSearch": {
 			"placeholder": "Personages zoeken..."
 		},
-		"buttons": {
-			"newBot": "Nieuwe Bot",
-			"deleteBot": "Bot verwijderen"
-		},
 		"configCard": {
 			"title": "Botconfiguratie",
 			"labels": {
@@ -1366,6 +1401,9 @@
 			"charSelectPlaceholder": "Kies personage",
 			"botTokenInput": {
 				"placeholder": "Voer Telegram Bot Token in"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "Schakel tussen het tonen van API-sleutels"
 			},
 			"toggleBotTokenIcon": {
 				"alt": "API-sleutel tonen/verbergen"
@@ -1379,10 +1417,14 @@
 		"prompts": {
 			"newBotName": "Voer een naam in voor de nieuwe Bot:"
 		},
+		"buttons": {
+			"newBot": "Nieuwe Bot",
+			"deleteBot": "Bot verwijderen"
+		},
 		"alerts": {
+			"configSaved": "Configuratie succesvol opgeslagen!",
 			"botExists": "Een Bot met de naam \"${botname}\" bestaat al, gebruik een andere naam.",
 			"unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je deze negeren?",
-			"configSaved": "Configuratie succesvol opgeslagen!",
 			"httpError": "HTTP-fout",
 			"beforeUnload": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je deze pagina wilt verlaten?"
 		},
@@ -1396,8 +1438,9 @@
 	},
 	"browser_integration": {
 		"title": "Browserintegratie",
-		"header": "Browserintegratie",
-		"description": "Om uw fount -rol te laten communiceren met de webpagina, moet u dit browser -integratiescript installeren. Het fungeert als een brug tussen het personage en de browser, waardoor ze de pagina -inhoud kunnen bekijken en acties kunnen uitvoeren.",
+		"description": "Overbrug de kloof tussen de font en het web. Deze pagina biedt het gebruikersscript om een ​​naadloze integratie mogelijk te maken, waardoor uw AI-metgezellen in uw browse-ervaring terechtkomen.",
+		"pageHeader": "Browserintegratie",
+		"pageDescription": "Om uw fount -rol te laten communiceren met de webpagina, moet u dit browser -integratiescript installeren. Het fungeert als een brug tussen het personage en de browser, waardoor ze de pagina -inhoud kunnen bekijken en acties kunnen uitvoeren.",
 		"install_script_title": "Installatiescript",
 		"install_script_description": "Klik op de onderstaande knop om het script van de browserintegratie te installeren. U moet eerst een userscriptmanager zoals Tampermonkey installeren.",
 		"install_button": "Installeren",
@@ -1407,10 +1450,6 @@
 		"popular_managers": "Populaire keuzes:",
 		"csp_warning": "Mogelijk moet u de plug -in installeren om CSP uit te schakelen om de integratiefunctie goed te laten werken. Voor Chrome kunt u <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener\" class=\"link\"> deze plugin </a>.",
 		"connected_pages_title": "Verbonden pagina",
-		"no_pages_connected": {
-			"title": "Nog geen verbinding",
-			"description": "Installeer het script eerst en bezoek vervolgens een website in andere browsertabs, die hier automatisch worden weergegeven."
-		},
 		"fetch_pages_error": "Kan de gekoppelde pagina -lijst niet laden.",
 		"page_title": "Paginietitel",
 		"page_url": "Url",
@@ -1419,6 +1458,10 @@
 		"status_unfocused": "Op de achtergrond",
 		"copy_button": "kopiëren",
 		"copied_message": "Gekopieerd naar klembord",
+		"no_pages_connected": {
+			"title": "Nog geen verbinding",
+			"description": "Installeer het script eerst en bezoek vervolgens een website in andere browsertabs, die hier automatisch worden weergegeven."
+		},
 		"autorun": {
 			"title": "Voer automatisch scripts uit",
 			"description": "Beheer JavaScript -fragmenten die automatisch worden uitgevoerd bij het matchen van een specifieke website. Deze scripts kunnen worden verstrekt door uw AI-rol of plug-in om uw browse-ervaring te verbeteren of te automatiseren.",
@@ -1464,19 +1507,20 @@
 		}
 	},
 	"browser_integration_script": {
+		"update": {
+			"prompt": "Een nieuwe versie van het fount Browser Integration Script is beschikbaar. Is de updatepagina nu geopend?"
+		},
+		"csp_warning": "Het fount Browser Integration Script detecteert dat het CSP -beleid op de pagina bestaat, waardoor het integratiescript niet goed werkt. Overweeg de plug -in te installeren om CSP uit te schakelen.",
 		"hostChange": {
 			"securityWarningTitle": "--- fount Veiligheidswaarschuwing ---",
 			"message": "De huidige pagina (\"${origin}\") probeert uw fount-hostadres te wijzigen in:\n\n\"${newHost}\"\n\nWaarschuwing: door deze actie goed te keuren, kan de nieuwe host uw browserintegratiefuncties volledig beheersen, wat kan leiden tot gevoelige informatielekkage of accountdiefstal.\nEr mag alleen goedkeuring worden gemaakt als u er zeker van bent dat dit uw eigen bewerking is (bijvoorbeeld een fount-server migreren).\n\nWeet u zeker dat u deze wijziging wilt toestaan?",
 			"uuidMismatchError": "fount-beveiligingsfout: de identiteit (UUID) van host ${newHost} komt niet overeen met uw bestaande. De bewerking is geannuleerd.",
 			"verificationError": "fount-beveiligingsfout: niet in staat om nieuwe host \"${newHost}\" te verifiëren. Controleer of het adres correct is en of de service wordt uitgevoerd."
-		},
-		"update": {
-			"prompt": "Een nieuwe versie van het fount Browser Integration Script is beschikbaar. Is de updatepagina nu geopend?"
-		},
-		"csp_warning": "Het fount Browser Integration Script detecteert dat het CSP -beleid op de pagina bestaat, waardoor het integratiescript niet goed werkt. Overweeg de plug -in te installeren om CSP uit te schakelen."
+		}
 	},
 	"terminal_assistant": {
 		"title": "Terminal-assistent",
+		"description": "Naast de grafische interface is er ruimte voor directe bediening. Communiceer met de kern van Font via de terminalassistent, waar tekst zijn eigen krachtige magie weeft.",
 		"initialMessage": "fount ondersteunt het implementeren van je favoriete personage in je terminal om je te helpen met coderen!",
 		"initialMessageLink": "Klik hier voor meer informatie",
 		"achievements": {
@@ -1489,6 +1533,7 @@
 	},
 	"deskpet": {
 		"title": "Desktop huisdieren",
+		"description": "Lanceer je lettertypekarakters als interactieve huisdieren die op je bureaublad leven.",
 		"launcherCard": {
 			"title": "huisdier starter",
 			"buttons": {
@@ -1510,8 +1555,8 @@
 		},
 		"toasts": {
 			"started": "Huisdier '${charname}' is gestart.",
-			"start_failed": "Kan huisdier '${charname}' niet starten: ${message}",
 			"stopped": "Huisdier '${charname}' is gestopt.",
+			"start_failed": "Kan huisdier '${charname}' niet starten: ${message}",
 			"stop_failed": "Stop huisdier '${charname}' mislukt: ${message}"
 		},
 		"achievements": {
@@ -1524,6 +1569,7 @@
 	},
 	"access": {
 		"title": "Toegang tot fount op andere apparaten",
+		"description": "Vergroot het bereik van de font tot voorbij een enkel scherm. Hier ligt de toegangspoort (een URL, een QR-code) om vanaf andere apparaten verbinding te maken met uw metgezellen, een eenvoudige brug over de lokale ether.",
 		"heading": "Wil je fount op andere apparaten gebruiken?",
 		"instruction": {
 			"sameLAN": "Zorg ervoor dat het apparaat en de fount-host zich op hetzelfde lokale netwerk bevinden",
@@ -1534,6 +1580,7 @@
 	},
 	"proxy": {
 		"title": "API Proxy",
+		"description": "Voor ontwikkelaars en integrators onthult deze pagina de Fount API-proxy: uw verbinding om de mogelijkheden van Fount in andere applicaties te verweven.",
 		"heading": "API Proxy Gateway",
 		"instruction": "Genereer en beheer uw API-sleutels op deze pagina om fount te integreren met andere applicaties.",
 		"endpointSectionTitle": "API-eindpunt",
@@ -1554,8 +1601,9 @@
 	},
 	"achievements": {
 		"title": "Prestatie",
-		"header": "Hal van prestatie",
-		"description": "Bekijk hier je ontgrendelde prestaties en mijlpalen.",
+		"description": "Ontdek de mijlpalen en prestaties van uw reis met font. Elke prestatie markeert een stap in jouw unieke verhaal.",
+		"pageHeader": "Hal van prestatie",
+		"pageDescription": "Bekijk hier je ontgrendelde prestaties en mijlpalen.",
 		"unlocked_on": "Ontgrendeld op ${date}",
 		"locked": "Niet ontgrendeld",
 		"toast_title": "Prestaties ontgrendeld!",
@@ -1572,6 +1620,7 @@
 	},
 	"badges_maker": {
 		"title": "fount! Badge-omzetter",
+		"description": "Voor als uw project om een ​​vleugje karakter vraagt. Converteer schilden.io-badges en geef ze een nieuwe, resonerende identiteit.",
 		"card_title": "fount Badge Link-omzetter",
 		"original_url_label": "Plak img.shields.io-URL",
 		"original_url": {
@@ -1581,40 +1630,44 @@
 		"new_url": {
 			"placeholder": "De omgezette URL verschijnt hier"
 		},
-		"copy_button": "Kopiëren",
 		"preview_label": "Voorbeeld",
+		"copy_button": "Kopiëren",
+		"copied_text": "Gekopieerd!",
 		"preview": {
 			"alt": "Badge-voorbeeld"
 		},
-		"copied_text": "Gekopieerd!",
 		"copy_error": "Kan tekst niet kopiëren: ${error}",
 		"copy_fail_alert": "Kopiëren mislukt!"
 	},
 	"404": {
 		"title": "Pagina niet gevonden",
+		"description": "Het pad dat je zocht is opgelost in mist. Was het een misstap, een vergeten afslag? Sta ons toe u terug naar de kust te begeleiden, of misschien even te pauzeren voor een spelletje te midden van de stille leegte.",
 		"pageNotFoundText": "Oeps! Het lijkt erop dat je op een pagina bent beland die niet bestaat.",
 		"homepageButton": "Terug naar startpagina"
 	},
 	"code_block": {
-		"download": {
-			"dataset": {
-				"tip": "Code downloaden"
-			}
-		},
-		"execute": {
-			"dataset": {
-				"tip": "Code uitvoeren"
-			}
-		},
 		"copy": {
 			"dataset": {
 				"tip": "kopiëren naar klembord"
-			}
+			},
+			"aria-label": "kopiëren naar klembord"
 		},
 		"copied": {
 			"dataset": {
 				"tip": "Gekopieerd naar klembord!"
 			}
+		},
+		"download": {
+			"dataset": {
+				"tip": "Code downloaden"
+			},
+			"aria-label": "Code downloaden"
+		},
+		"execute": {
+			"dataset": {
+				"tip": "Code uitvoeren"
+			},
+			"aria-label": "Code uitvoeren"
 		},
 		"copy_failed": "Kan niet naar klembord kopiëren: ${error}"
 	},
@@ -1622,9 +1675,9 @@
 		"initial": "Ik ben geen robot",
 		"verifying": "Bezig met verifiëren...",
 		"solved": "Verificatie succesvol",
+		"wasm_disabled": "Schakel WASM in voor snellere verificatie",
 		"error": "Verificatie mislukt",
-		"errorMessage": "Verificatie mislukt: ${error}",
-		"wasm_disabled": "Schakel WASM in voor snellere verificatie"
+		"errorMessage": "Verificatie mislukt: ${error}"
 	},
 	"zxcvbn": {
 		"warnings": {

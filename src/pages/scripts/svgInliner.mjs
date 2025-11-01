@@ -3,7 +3,7 @@ import { createDocumentFragmentFromHtmlString } from './template.mjs'
 const IconCache = {}
 
 /**
- * @description currentColor在img的从url导入的svg中不起作用，此函数旨在解决这个问题。
+ * currentColor在img的从url导入的svg中不起作用，此函数旨在解决这个问题。
  * @param {DocumentFragmentOrElement} DOM - 要处理的 DOM。
  * @returns {Promise<DocumentFragmentOrElement>} - 处理后的 DOM。
  */
@@ -25,7 +25,7 @@ export async function svgInliner(DOM) {
 	return DOM
 }
 /**
- * @description 获取 SVG 图标。
+ * 获取 SVG 图标。
  * @param {string} url - 图标的 URL。
  * @param {object} [attributes={}] - 要添加到 SVG 元素的属性。
  * @returns {Promise<SVGElement>} - SVG 元素。

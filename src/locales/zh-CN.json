@@ -6,12 +6,12 @@
 			"start": "正在启动服务器",
 			"starting": "服务器启动中...",
 			"ready": "服务器已启动",
+			"standingBy": "Standing by...",
 			"showUrl": {
 				"https": "HTTPS 服务器运行在 ${url}",
 				"http": "HTTP 服务器运行在 ${url}"
 			},
 			"localUrl": "通过同一网络下的其他设备访问fount：${url}",
-			"standingBy": "Standing by...",
 			"update": {
 				"restarting": "发现新版本，正在重启更新..."
 			}
@@ -20,32 +20,32 @@
 			"restartingJob": "正在重启用户 ${username} 的 ${parttype} ${partname} 任务：${uid}"
 		},
 		"ipc": {
-			"sendCommandFailed": "发送命令失败：${error}",
-			"invalidCommand": "无效的命令，请使用\"fount run <组件类型> <用户名> <组件名> <参数...>\"",
+			"serverStarted": "IPC 服务器已启动",
+			"instanceRunning": "另一个实例正在运行",
 			"runPartLog": "运行 ${parttype} ${partname} 作为 ${username}，参数：${args}",
 			"invokePartLog": "调用 ${parttype} ${partname} 作为 ${username}，参数：${invokedata}",
+			"invalidCommand": "无效的命令，请使用\"fount run <组件类型> <用户名> <组件名> <参数...>\"",
+			"invalidCommandFormat": "无效的命令格式",
 			"unsupportedCommand": "不支持的命令类型",
 			"processMessageError": "处理 IPC 消息时出错：${error}",
-			"invalidCommandFormat": "无效的命令格式",
+			"sendCommandFailed": "发送命令失败：${error}",
 			"socketError": "Socket 错误: ${error}",
-			"instanceRunning": "另一个实例正在运行",
-			"serverStarted": "IPC 服务器已启动",
 			"parseResponseFailed": "解析服务器响应失败: ${error}",
 			"cannotParseResponse": "无法解析服务器响应",
 			"unknownError": "未知错误"
 		},
 		"partManager": {
+			"partInited": "${parttype}组件${partname}已初始化",
+			"partLoaded": "${parttype}组件${partname}已加载",
 			"git": {
+				"updating": "从远程仓库更新中...",
+				"upToDate": "已是最新。",
+				"localAhead": "本地分支领先于远程分支。无需更新。",
 				"noUpstream": "没有为分支 '${currentBranch}' 配置上游分支，跳过更新检查。",
 				"dirtyWorkingDirectory": "工作目录不干净。请暂存或提交你的更改后再更新。",
-				"updating": "从远程仓库更新中...",
-				"localAhead": "本地分支领先于远程分支。无需更新。",
 				"diverged": "本地和远程分支已分叉。强制更新中...",
-				"upToDate": "已是最新。",
 				"updateFailed": "从远程仓库更新组件失败：${error}"
-			},
-			"partInited": "${parttype}组件${partname}已初始化",
-			"partLoaded": "${parttype}组件${partname}已加载"
+			}
 		},
 		"web": {
 			"requestReceived": "接受到请求：${method} ${url}"
@@ -54,11 +54,11 @@
 			"setLanguagePreference": "用户 ${username} 设置首选语言: ${preferredLanguages}"
 		},
 		"auth": {
+			"accountLockedLog": "用户 ${username} 账户因多次登录失败被锁定",
 			"tokenVerifyError": "令牌验证错误: ${error}",
 			"refreshTokenError": "刷新令牌错误: ${error}",
 			"logoutRefreshTokenProcessError": "登出刷新令牌处理错误: ${error}",
-			"revokeTokenNoJTI": "无法撤销没有 jti 的令牌",
-			"accountLockedLog": "用户 ${username} 账户因多次登录失败被锁定"
+			"revokeTokenNoJTI": "无法撤销没有 jti 的令牌"
 		},
 		"verification": {
 			"codeGeneratedLog": "验证码: ${code} (60秒后过期)",
@@ -66,10 +66,10 @@
 			"codeNotifyBody": "验证码: ${code} (60秒后过期)"
 		},
 		"tray": {
-			"readIconFailed": "读取图标文件失败: ${error}",
-			"createTrayFailed": "创建托盘失败: ${error}",
 			"title": "fount",
 			"tooltip": "fount",
+			"readIconFailed": "读取图标文件失败: ${error}",
+			"createTrayFailed": "创建托盘失败: ${error}",
 			"items": {
 				"open": {
 					"title": "打开",
@@ -100,6 +100,9 @@
 			"botStarted": "角色 ${charname} 已在 Telegram Bot ${botusername} 上登录"
 		},
 		"path": {
+			"protocol": {
+				"description": "URL:fount 协议"
+			},
 			"update": {
 				"skippingFountUpdate": "因 .noupdate 文件存在，跳过 fount 更新",
 				"skippingDenoUpgradeDocker": "在 Docker 环境中跳过 Deno 升级"
@@ -108,44 +111,44 @@
 				"desktopShortcutCreated": "已在 ${path} 创建桌面快捷方式",
 				"startMenuShortcutCreated": "已在 ${path} 创建开始菜单快捷方式",
 				"protocolHandlerRegistered": "fount:// 协议处理器已注册。",
+				"shortcutNotSupported": "警告：您的操作系统 (${os}) 不支持创建桌面快捷方式。",
 				"osacompileNotFound": "错误：找不到 'osacompile'。无法创建 macOS 应用。",
 				"lsregisterFailed": "警告：使用 lsregister 向 LaunchServices 注册应用程序失败。",
-				"createDesktopAppFailed": "错误：创建桌面应用程序失败。",
-				"shortcutNotSupported": "警告：您的操作系统 (${os}) 不支持创建桌面快捷方式。"
+				"createDesktopAppFailed": "错误：创建桌面应用程序失败。"
 			},
 			"git": {
 				"repoNotFound": "未找到 fount 的 git 仓库，正在初始化一个新的...",
 				"fetchingAndResetting": "正在从远程仓库获取并重置到 master...",
-				"fetchFailed": "从 'origin' 获取失败。",
 				"localChangesDetected": "检测到本地更改，将在覆盖前保存差异。",
 				"backupSavedTo": "您的本地更改备份已保存到：${path}",
+				"updatingFromRemote": "正在从远程仓库更新...",
+				"alreadyUpToDate": "已是最新。",
+				"localBranchAhead": "本地分支领先于远程分支。无需更新。",
+				"branchesDiverged": "本地和远程分支已分叉。强制更新中...",
 				"notOnBranch": "不在分支上，切换到 'master'...",
 				"noUpstreamBranch": "警告：没有为分支 '${branch}' 配置上游分支。正在将上游设置为 'origin/master'。",
 				"dirtyWorkingDirectory": "警告：工作目录存在未提交的更改。请在更新前暂存或提交。",
-				"updatingFromRemote": "正在从远程仓库更新...",
-				"localBranchAhead": "本地分支领先于远程分支。无需更新。",
-				"branchesDiverged": "本地和远程分支已分叉。强制更新中...",
-				"alreadyUpToDate": "已是最新。",
 				"notInstalled": "未安装 Git，正在尝试安装...",
-				"installFailedWinget": "由于 Winget 安装失败，无法安装 Git，请手动安装。",
-				"installFailedManual": "无法安装 Git，请手动安装。",
 				"notInstalledSkippingPull": "未安装 Git，跳过 git pull",
-				"repoNotFoundSkippingPull": "未找到仓库，跳过 git pull"
+				"repoNotFoundSkippingPull": "未找到仓库，跳过 git pull",
+				"fetchFailed": "从 'origin' 获取失败。",
+				"installFailedWinget": "由于 Winget 安装失败，无法安装 Git，请手动安装。",
+				"installFailedManual": "无法安装 Git，请手动安装。"
 			},
 			"deno": {
-				"installingTermux": "正在为 Termux 安装 Deno...",
 				"missing": "未找到 Deno，正在自动安装...",
-				"installFailedFallback": "Deno 安装失败，尝试自动安装到 fount 的 path 文件夹...",
 				"isRequired": "未找到 Deno，没有 Deno 无法运行 fount",
+				"installingTermux": "正在为 Termux 安装 Deno...",
+				"installFailedFallback": "Deno 安装失败，尝试自动安装到 fount 的 path 文件夹...",
 				"notWorking": "由于某种原因 Deno 无法工作，您可能需要加入 https://discord.gg/deno 以获取支持",
-				"upgradeFailedTermux": "Deno 升级命令失败，正在尝试为 Termux 重新安装 Deno...",
-				"upgradeFailed": "警告：Deno 升级可能已失败。请检查错误。"
+				"upgradeFailed": "警告：Deno 升级可能已失败。请检查错误。",
+				"upgradeFailedTermux": "Deno 升级命令失败，正在尝试为 Termux 重新安装 Deno..."
 			},
 			"install": {
-				"rootWarning1": "不推荐：以 root 身份运行 fount 会授予所有 fount 组件完全的系统访问权限。",
-				"rootWarning2": "除非您清楚自己在做什么，否则建议以普通用户身份运行 fount。",
 				"installingDependencies": "正在安装依赖...",
-				"untrustedPartsWarning": "不要在您的系统上安装任何不受信任的 fount 组件，它们可以做任何事情。"
+				"untrustedPartsWarning": "不要在您的系统上安装任何不受信任的 fount 组件，它们可以做任何事情。",
+				"rootWarning1": "不推荐：以 root 身份运行 fount 会授予所有 fount 组件完全的系统访问权限。",
+				"rootWarning2": "除非您清楚自己在做什么，否则建议以普通用户身份运行 fount。"
 			},
 			"clean": {
 				"removingCaches": "正在移除缓存...",
@@ -154,29 +157,30 @@
 				"cleaningOldPwshModules": "正在清理旧的 pwsh 模块..."
 			},
 			"keepalive": {
-				"failedToStart": "即使在自动修复尝试后，fount 仍在短时间内启动失败。请检查日志中的错误。",
+				"initComplete": "重新初始化完成。正在尝试重启 fount...",
 				"autoInitDisabled": "fount 在最近短时间内多次重启，但由于 .noautoinit 文件存在，自动重新初始化已被禁用。正在退出。",
 				"restartingTooFast": "fount 在最近短时间内多次重启。正在强制重新初始化...",
-				"initFailed": "fount 初始化失败。正在退出。",
-				"initComplete": "重新初始化完成。正在尝试重启 fount..."
+				"failedToStart": "即使在自动修复尝试后，fount 仍在短时间内启动失败。请检查日志中的错误。",
+				"initFailed": "fount 初始化失败。正在退出。"
 			},
 			"remove": {
 				"removingFount": "正在移除 fount...",
+				"fountUninstallationComplete": "fount 卸载完成。",
+				"removingFountInstallationDir": "正在移除 fount 安装目录...",
+				"fountInstallationDirRemoved": "fount 安装目录已移除。",
 				"removingFountFromPath": "正在从 PATH 中移除 fount...",
 				"removingProtocolHandler": "正在移除 fount:// 协议处理器...",
+				"protocolHandlerRemoved": "fount:// 协议处理器已移除。",
+				"removeProtocolHandlerFailed": "移除 fount:// 协议处理器失败：${message}",
 				"removingFountFromGitSafeDir": "正在从 git safe.directory 中移除 fount...",
 				"removingInstalledSystemPackages": "正在移除已安装的系统包...",
 				"uninstallingDeno": "正在卸载 Deno...",
-				"removingFountInstallationDir": "正在移除 fount 安装目录...",
-				"fountInstallationDirRemoved": "fount 安装目录已移除。",
-				"fountUninstallationComplete": "fount 卸载完成。",
+				"removeDenoFailed": "移除 Deno 失败：${message}",
 				"removingFountPwshFromProfile": "正在从 PowerShell Profile 中移除 fount-pwsh...",
 				"fountPwshRemovedFromProfile": "已从 PowerShell Profile 中移除 fount-pwsh。",
 				"pwshProfileNotFound": "未找到 PowerShell Profile，跳过从 profile 中移除 fount-pwsh。",
 				"uninstallingFountPwsh": "正在卸载 fount-pwsh...",
 				"uninstallFountPwshFailed": "卸载 fount-pwsh 失败：${message}",
-				"protocolHandlerRemoved": "fount:// 协议处理器已移除。",
-				"removeProtocolHandlerFailed": "移除 fount:// 协议处理器失败：${message}",
 				"removingTerminalProfile": "正在移除 Windows Terminal Profile...",
 				"terminalProfileRemoved": "Windows Terminal Profile 目录已移除。",
 				"terminalProfileNotFound": "未找到 Windows Terminal Profile 目录。",
@@ -191,22 +195,14 @@
 				"uninstallingGit": "正在卸载 Git...",
 				"uninstallingChrome": "正在卸载 Chrome...",
 				"uninstallingWinget": "正在卸载 Winget...",
-				"removeDenoFailed": "移除 Deno 失败：${message}",
 				"removingBackgroundRunner": "正在移除后台运行程序...",
 				"removeBackgroundRunnerFailed": "移除后台运行程序失败：${message}"
-			},
-			"protocol": {
-				"description": "URL:fount 协议"
 			}
 		}
 	},
 	"installer_wait_screen": {
 		"title": "欢迎使用 fount！",
-		"language_selector": {
-			"search": {
-				"placeholder": "搜索语言..."
-			}
-		},
+		"description": "跟踪安装进度并了解其中的功能。fount很快就可以启动了。",
 		"hero": {
 			"title": "灵犀一点，应念而生",
 			"description": "fount 是一个由 AI 驱动的角色互动平台，旨在赋能<i>您</i>。它是一座桥梁，将您与您想象中的角色连接起来，让您轻松地与他们对话、创建自己的角色并与世界分享。"
@@ -227,6 +223,11 @@
 			"title": "不受束缚的 AI 源集成",
 			"description": "fount 提供无与伦比的选择和灵活性。连接到<i>任何</i> AI 源——OpenAI、Claude、OpenRouter、NovelAI 等。通信逻辑将根据<i>您的</i>意愿，通过代码的力量来塑造。"
 		},
+		"language_selector": {
+			"search": {
+				"placeholder": "搜索语言..."
+			}
+		},
 		"theme_selector": {
 			"title": "选择您的外观",
 			"description": "选择一个主题来个性化您的体验。",
@@ -241,6 +242,9 @@
 		},
 		"data_showcase": {
 			"title_prefix": "fount是最",
+			"title_of": "的",
+			"active_users": "活跃用户数",
+			"stars": "GitHub Stars",
 			"adjectives": [
 				"具有扩展性",
 				"拥有潜力",
@@ -248,7 +252,6 @@
 				"具有兼容性",
 				"小巧且强大"
 			],
-			"title_of": "的",
 			"nouns": [
 				"AI虚拟角色",
 				"Agent",
@@ -259,9 +262,7 @@
 				"基础平台",
 				"聊天前端",
 				"运行器"
-			],
-			"active_users": "活跃用户数",
-			"stars": "GitHub Stars"
+			]
 		},
 		"footer": {
 			"ready_text": "准备好开始您的旅程了吗？",
@@ -280,15 +281,9 @@
 	},
 	"protocolhandler": {
 		"title": "处理 fount 协议",
+		"description": "该页面安静而高效地将您的意图转化为fount内的无缝过渡。认为这是幕后的安静魔法。",
 		"processing": "正在处理协议...",
-		"invalidProtocol": "无效的协议",
-		"insufficientParams": "参数不足",
-		"unknownCommand": "未知的命令",
 		"shellCommandSent": "Shell 命令已发送",
-		"shellCommandFailed": "发送 Shell 命令失败",
-		"shellCommandError": "发送 Shell 命令时出错",
-		"fountNotFound": "哎呀 :(\n\n没有找到 fount，或许你需要先安装一个？",
-		"unknownError": "哎呀 :(\n\n发生错误：\n${error}",
 		"runPartConfirm": {
 			"title": "确认运行",
 			"message": "您确定要运行 ${parttype} 的 ${partname} 吗？",
@@ -301,10 +296,18 @@
 			"buttons": {
 				"retry": "重试"
 			}
-		}
+		},
+		"fountNotFound": "哎呀 :(\n\n没有找到 fount，或许你需要先安装一个？",
+		"invalidProtocol": "无效的协议",
+		"insufficientParams": "参数不足",
+		"unknownCommand": "未知的命令",
+		"shellCommandFailed": "发送 Shell 命令失败",
+		"shellCommandError": "发送 Shell 命令时出错",
+		"unknownError": "哎呀 :(\n\n发生错误：\n${error}"
 	},
 	"startPage": {
 		"title": "fount!",
+		"description": "欢迎来到fount的门槛。在进入等待展开的对话和故事的核心之前，先进行短暂的准备。",
 		"newTabFailed": {
 			"title": "新标签页打开失败",
 			"instruction": "fount的启动在没有窗口弹出权限时每次都会慢1-2s",
@@ -326,6 +329,7 @@
 	},
 	"tutorial": {
 		"title": "来点教程？",
+		"description": "让我们与您一起走进泉水的世界。这个交互式教程将阐明道路，帮助您发现其核心的魔力。你的冒险始于理解。",
 		"modal": {
 			"title": "欢迎使用fount！",
 			"instruction": "走一遍新手教程吗？",
@@ -361,6 +365,7 @@
 	"auth": {
 		"title": "认证",
 		"subtitle": "用户数据存储在本地",
+		"description": "在这里，您定义自己的存在。无论是回到熟悉的港湾，还是为你的故事塑造一个新的空间，这里都是你的源泉之旅开始的地方。",
 		"usernameLabel": "用户名:",
 		"usernameInput": {
 			"placeholder": "请输入用户名"
@@ -394,6 +399,13 @@
 				"link": "立即登录"
 			}
 		},
+		"passwordStrength": {
+			"veryWeak": "非常弱",
+			"weak": "弱",
+			"normal": "一般",
+			"strong": "强",
+			"veryStrong": "非常强"
+		},
 		"error": {
 			"passwordMismatch": "两次密码不一致。",
 			"loginError": "登录出错。",
@@ -406,17 +418,11 @@
 			"accountAlreadyExists": "账户已存在",
 			"powNotSolved": "请先完成 PoW 验证",
 			"powError": "PoW 验证出错"
-		},
-		"passwordStrength": {
-			"veryWeak": "非常弱",
-			"weak": "弱",
-			"normal": "一般",
-			"strong": "强",
-			"veryStrong": "非常强"
 		}
 	},
 	"login_info": {
 		"title": "登录信息",
+		"description": "一个用于管理您的 font 登录凭据的安全空间——打开您不为人知的故事世界的钥匙。",
 		"modal": {
 			"title": "凭证转移错误",
 			"retrieve_error": "尝试保存您的登录凭证时发生错误：\n${error}\n您可以继续但无法保存登录信息。",
@@ -429,20 +435,21 @@
 	},
 	"home": {
 		"title": "主页",
-		"escapeConfirm": "确定要离开fount吗？",
-		"filterInput": {
-			"placeholder": "搜索..."
-		},
-		"sfwToggle": "安全内容",
+		"description": "这里是您 fount 体验的核心。管理您想象国度中的一切——无论是鲜活的角色、宏大的世界，还是独特的身份。您的所有故事，都将以此为原点，衍生出无限可能。",
 		"sidebarTitle": "详情",
 		"itemDescription": "在此处选择一个项目以查看详细信息。",
 		"noDescription": "无描述信息",
-		"alerts": {
-			"fetchHomeRegistryFailed": "获取主页注册信息失败"
+		"filterInput": {
+			"placeholder": "搜索...",
+			"aria-label": "搜索部件"
 		},
+		"sfwToggle": "安全内容",
 		"functionMenu": {
 			"search": {
 				"placeholder": "搜索..."
+			},
+			"button": {
+				"title": "功能菜单"
 			},
 			"icon": {
 				"alt": "功能菜单"
@@ -454,15 +461,15 @@
 			"subtitle": "选择一个角色，开始聊天吧！",
 			"none": "空空如也",
 			"card": {
-				"refreshButton": {
-					"alt": "刷新",
-					"title": "刷新"
-				},
 				"noTags": "无标签",
 				"version": "版本",
 				"author": "作者",
 				"home_page": "主页",
 				"issue_page": "问题反馈",
+				"refreshButton": {
+					"alt": "刷新",
+					"title": "刷新"
+				},
 				"defaultCheckbox": {
 					"title": "设为默认角色"
 				}
@@ -474,15 +481,15 @@
 			"subtitle": "选择世界，沉浸其中！",
 			"none": "空空如也",
 			"card": {
-				"refreshButton": {
-					"alt": "刷新",
-					"title": "刷新"
-				},
 				"noTags": "无标签",
 				"version": "版本",
 				"author": "作者",
 				"home_page": "主页",
 				"issue_page": "问题反馈",
+				"refreshButton": {
+					"alt": "刷新",
+					"title": "刷新"
+				},
 				"defaultCheckbox": {
 					"title": "设为默认世界"
 				}
@@ -494,19 +501,23 @@
 			"subtitle": "选择人设，体验人生。",
 			"none": "空空如也",
 			"card": {
-				"refreshButton": {
-					"alt": "刷新",
-					"title": "刷新"
-				},
 				"noTags": "无标签",
 				"version": "版本",
 				"author": "作者",
 				"home_page": "主页",
 				"issue_page": "问题反馈",
+				"refreshButton": {
+					"alt": "刷新",
+					"title": "刷新"
+				},
 				"defaultCheckbox": {
 					"title": "设为默认人设"
 				}
 			}
+		},
+		"escapeConfirm": "确定要离开fount吗？",
+		"alerts": {
+			"fetchHomeRegistryFailed": "获取主页注册信息失败"
 		},
 		"achievements": {
 			"first_login": {
@@ -537,11 +548,15 @@
 		}
 	},
 	"chat": {
-		"new": {
-			"title": "新聊天"
-		},
 		"title": "聊天",
+		"description": "言语飞扬，故事展开。与您的人工智能伙伴互动，塑造叙事，并在数字对话的潮起潮落中迷失自我。fount的心脏在这里跳动。",
+		"new": {
+			"title": "新聊天",
+			"description": "静待一篇尚未写就的篇章。开启新的对话，与您选定的伙伴在一片空白之上，描绘全新的互动与叙事。"
+		},
 		"sidebar": {
+			"noSelection": "无",
+			"noDescription": "无描述信息",
 			"world": {
 				"icon": {
 					"alt": "世界图标"
@@ -567,20 +582,21 @@
 						"alt": "添加角色图标"
 					}
 				}
-			},
-			"noSelection": "无",
-			"noDescription": "无描述信息"
+			}
+		},
+		"rightSidebar": {
+			"title": "描述信息"
 		},
 		"chatArea": {
 			"title": "聊天",
+			"input": {
+				"placeholder": "输入信息...\nCtrl+Enter 发送"
+			},
 			"menuButton": {
 				"title": "菜单"
 			},
 			"menuButtonIcon": {
 				"alt": "菜单图标"
-			},
-			"input": {
-				"placeholder": "输入信息...\nCtrl+Enter 发送"
 			},
 			"sendButton": {
 				"title": "发送"
@@ -606,9 +622,6 @@
 			"photoButtonIcon": {
 				"alt": "照片图标"
 			}
-		},
-		"rightSidebar": {
-			"title": "描述信息"
 		},
 		"messageList": {
 			"confirmDeleteMessage": "确认删除此消息？"
@@ -733,18 +746,29 @@
 	"chat_history": {
 		"title": "聊天记录",
 		"pageTitle": "聊天记录",
+		"description": "穿越过去的对话之旅。在这里，对话的记忆挥之不去——排序、过滤并重新审视你与人工智能伙伴编织的故事。一个安静的数字回声图书馆。",
+		"filterInput": {
+			"placeholder": "搜索..."
+		},
 		"sortOptions": {
 			"time_desc": "时间降序",
 			"time_asc": "时间升序"
 		},
-		"filterInput": {
-			"placeholder": "搜索..."
+		"sortBy": {
+			"aria-label": "排序方式"
 		},
+		"select_chat_with_chars": "选择与 ${chars} 的聊天",
 		"selectAll": "全选",
 		"buttons": {
 			"reverseSelect": "反选",
 			"deleteSelected": "删除选中",
 			"exportSelected": "导出选中"
+		},
+		"chatItemButtons": {
+			"continue": "继续",
+			"copy": "复制",
+			"export": "导出",
+			"delete": "删除"
 		},
 		"confirmDeleteChat": "确定要删除与 ${chars} 的聊天记录吗？",
 		"confirmDeleteMultiChats": "确定要删除选中的 ${count} 条聊天记录吗？",
@@ -754,107 +778,104 @@
 			"copyError": "复制失败",
 			"deleteError": "删除失败",
 			"exportError": "导出失败"
-		},
-		"chatItemButtons": {
-			"continue": "继续",
-			"copy": "复制",
-			"export": "导出",
-			"delete": "删除"
 		}
 	},
 	"easynew": {
 		"title": "快速新建",
+		"description": "使用预定义或自定义模板快速构建新的fount部分，例如角色、世界和插件。只需点击几下即可完成您的下一个创作。",
+		"info": {
+			"description": "模板适用于快速创建基础组件。对于更复杂的创作，仍需您亲手雕琢。"
+		},
 		"cardTitle": "从模板创建一个新组件",
 		"templateSelect": {
 			"label": "选择一个模板"
 		},
-		"partName": {
-			"label": "组件名称",
-			"placeholder": "为你的新组件起个名字"
-		},
-		"description": {
-			"label": "描述",
-			"placeholder": "简要描述这个组件是关于什么的。"
-		},
-		"descriptionMarkdown": {
-			"label": "描述 (Markdown)",
-			"placeholder": "支持 Markdown 以获得更详细的格式。"
-		},
-		"imageUpload": {
-			"label": "头像图片"
-		},
-		"charDef": {
-			"heading": "角色定义"
-		},
-		"personality": {
-			"label": "性格",
-			"placeholder": "描述角色的核心性格特征。"
-		},
-		"scenario": {
-			"label": "场景",
-			"placeholder": "角色的背景或设定。"
-		},
-		"mesExample": {
-			"label": "消息示例",
-			"placeholder": "角色可能会说的话的例子。"
-		},
-		"firstMessage": {
-			"label": "第一条消息",
-			"placeholder": "角色说的第一句话。"
-		},
-		"personaDef": {
-			"heading": "人设定义"
-		},
-		"personaUserName": {
-			"label": "你在聊天中的名字",
-			"placeholder": "例如：船长、探险家"
-		},
-		"personaAppearance": {
-			"label": "外貌",
-			"placeholder": "描述你的外貌。"
-		},
-		"personaPersonality": {
-			"label": "性格",
-			"placeholder": "描述你的性格特征。"
-		},
-		"worldDef": {
-			"heading": "世界定义"
-		},
-		"worldPrompt": {
-			"label": "世界提示",
-			"placeholder": "描述世界的规则、环境以及角色扮演的任何全局背景。"
-		},
-		"worldGreeting": {
-			"label": "世界问候语",
-			"placeholder": "世界向用户发送的第一条消息。"
-		},
-		"author": {
-			"label": "作者",
-			"placeholder": "这个组件的作者是谁？"
-		},
-		"version": {
-			"label": "版本",
-			"placeholder": "例如：0.0.1"
-		},
-		"tags": {
-			"label": "标签",
-			"placeholder": "用逗号分隔的标签"
-		},
-		"homePage": {
-			"label": "主页",
-			"placeholder": "组件主页的URL"
-		},
-		"issuePage": {
-			"label": "问题页面",
-			"placeholder": "组件问题页面的URL"
-		},
-		"createButton": "创建组件",
-		"alerts": {
-			"success": "组件 '${partName}' 创建成功！",
-			"error": "错误: ${message}"
-		},
-		"info": {
-			"description": "这些模板只能用于快速构建简单的组件，复杂的组件仍然需要手动创建。"
+		"form": {
+			"partName": {
+				"label": "组件名称",
+				"placeholder": "为你的新组件起个名字"
+			},
+			"description": {
+				"label": "描述",
+				"placeholder": "简要描述这个组件是关于什么的。"
+			},
+			"descriptionMarkdown": {
+				"label": "描述 (Markdown)",
+				"placeholder": "支持 Markdown 以获得更详细的格式。"
+			},
+			"imageUpload": {
+				"label": "头像图片"
+			},
+			"charDef": {
+				"heading": "角色定义"
+			},
+			"personality": {
+				"label": "性格",
+				"placeholder": "描述角色的核心性格特征。"
+			},
+			"scenario": {
+				"label": "场景",
+				"placeholder": "角色的背景或设定。"
+			},
+			"mesExample": {
+				"label": "消息示例",
+				"placeholder": "角色可能会说的话的例子。"
+			},
+			"firstMessage": {
+				"label": "第一条消息",
+				"placeholder": "角色说的第一句话。"
+			},
+			"personaDef": {
+				"heading": "人设定义"
+			},
+			"personaUserName": {
+				"label": "你在聊天中的名字",
+				"placeholder": "例如：船长、探险家"
+			},
+			"personaAppearance": {
+				"label": "外貌",
+				"placeholder": "描述你的外貌。"
+			},
+			"personaPersonality": {
+				"label": "性格",
+				"placeholder": "描述你的性格特征。"
+			},
+			"worldDef": {
+				"heading": "世界定义"
+			},
+			"worldPrompt": {
+				"label": "世界提示",
+				"placeholder": "描述世界的规则、环境以及角色扮演的任何全局背景。"
+			},
+			"worldGreeting": {
+				"label": "世界问候语",
+				"placeholder": "世界向用户发送的第一条消息。"
+			},
+			"author": {
+				"label": "作者",
+				"placeholder": "这个组件的作者是谁？"
+			},
+			"version": {
+				"label": "版本",
+				"placeholder": "例如：0.0.1"
+			},
+			"tags": {
+				"label": "标签",
+				"placeholder": "用逗号分隔的标签"
+			},
+			"homePage": {
+				"label": "主页",
+				"placeholder": "组件主页的URL"
+			},
+			"issuePage": {
+				"label": "问题页面",
+				"placeholder": "组件问题页面的URL"
+			},
+			"createButton": "创建组件",
+			"alerts": {
+				"success": "组件 '${partName}' 创建成功！",
+				"error": "错误: ${message}"
+			}
 		},
 		"achievements": {
 			"create_part": {
@@ -866,6 +887,7 @@
 	},
 	"import": {
 		"title": "导入",
+		"description": "将您喜爱的角色、世界和配置带入源泉的怀抱。无论是来自文件还是粘贴的文本，新元素都将融入您的个人挂毯中。",
 		"tabs": {
 			"fileImport": "文件导入",
 			"textImport": "文本导入"
@@ -882,6 +904,14 @@
 		"buttons": {
 			"import": "导入"
 		},
+		"fileItem": {
+			"removeButton": {
+				"title": "删除"
+			},
+			"removeButtonIcon": {
+				"alt": "删除"
+			}
+		},
 		"alerts": {
 			"importSuccess": "导入成功",
 			"importFailed": "导入失败: ${error}",
@@ -892,31 +922,20 @@
 			"fileImportFailed": "文件导入失败: ${message}",
 			"noTextContent": "请输入文本内容",
 			"textImportFailed": "文本导入失败: ${message}",
-			"unknownError": "未知错误",
 			"handler": "处理器",
-			"error": "错误"
-		},
-		"fileItem": {
-			"removeButton": {
-				"title": "删除"
-			},
-			"removeButtonIcon": {
-				"alt": "删除"
-			}
+			"error": "错误",
+			"unknownError": "未知错误"
 		}
 	},
 	"export": {
 		"title": "组件导出器",
 		"pageTitle": "组件导出器",
 		"pageSubtitle": "导出你喜欢的内容",
+		"description": "导出您的fount创作。该工具将您选择的部件收集到一个简单的 zip 文件中，以便妥善保存或共享。",
 		"steps": {
 			"partType": "选择类型",
 			"part": "选择组件",
 			"action": "导出"
-		},
-		"options": {
-			"withData": "包含数据文件",
-			"withDataDescription": "包含标记为数据的文件，例如角色记忆。"
 		},
 		"labels": {
 			"partType": "选择组件类型",
@@ -932,12 +951,35 @@
 		"partSearch": {
 			"placeholder": "搜索..."
 		},
+		"options": {
+			"withData": "包含数据文件",
+			"withDataDescription": "包含标记为数据的文件，例如角色记忆。"
+		},
 		"export": {
 			"title": "导出选项"
 		},
 		"editor": {
 			"disabledIndicator": "请先选择一个组件",
 			"disabledIndicatorHint": "请选择要导出的组件类型和组件"
+		},
+		"buttons": {
+			"export": "导出",
+			"exportWithData": "导出 (包含数据)",
+			"copyShareLink": "复制分享链接",
+			"generateShareLink": "生成分享链接",
+			"generateShareLinkWithData": "生成分享链接 (包含数据)"
+		},
+		"shareMenu": {
+			"title": "选择分享时长",
+			"1h": "1 小时",
+			"12h": "12 小时",
+			"24h": "24 小时",
+			"72h": "72 小时",
+			"cancel": "取消"
+		},
+		"litterbox": {
+			"poweredBy": "分享功能由 litterbox.moe 支持",
+			"sponsorLink": "赞助他们"
 		},
 		"errorMessage": {
 			"icon": {
@@ -952,25 +994,6 @@
 			"shareLinkCopied": "分享链接已复制到剪贴板！",
 			"shareFailed": "创建分享链接失败。"
 		},
-		"shareMenu": {
-			"title": "选择分享时长",
-			"1h": "1 小时",
-			"12h": "12 小时",
-			"24h": "24 小时",
-			"72h": "72 小时",
-			"cancel": "取消"
-		},
-		"litterbox": {
-			"poweredBy": "分享功能由 litterbox.moe 支持",
-			"sponsorLink": "赞助他们"
-		},
-		"buttons": {
-			"export": "导出",
-			"exportWithData": "导出 (包含数据)",
-			"copyShareLink": "复制分享链接",
-			"generateShareLink": "生成分享链接",
-			"generateShareLinkWithData": "生成分享链接 (包含数据)"
-		},
 		"achievements": {
 			"share_part": {
 				"name": "一个人探索太危险了，带上这个！",
@@ -981,17 +1004,13 @@
 	},
 	"uninstall": {
 		"title": "卸载",
+		"description": "如果您选择分道扬镳，这个空间可以让您优雅地告别。确认移除组件，或自行发现。道路有所不同，但记忆可能依然存在。",
 		"titleWithName": "卸载 ${type}/${name}",
 		"confirmMessage": "您确定要卸载 ${type}: ${name} 吗？",
 		"invalidParamsTitle": "参数无效",
 		"infoMessage": {
 			"icon": {
 				"alt": "信息图标"
-			}
-		},
-		"errorMessage": {
-			"icon": {
-				"alt": "错误图标"
 			}
 		},
 		"buttons": {
@@ -1004,13 +1023,17 @@
 			"failed": "卸载失败: ${error}",
 			"invalidParams": "无效的请求参数。",
 			"httpError": "HTTP 错误！状态码：${status}"
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "错误图标"
+			}
 		}
 	},
 	"userSettings": {
 		"title": "用户设置",
 		"PageTitle": "用户设置",
-		"apiError": "API 请求失败: ${message}",
-		"generalError": "发生错误: ${message}",
+		"description": "关注您的fount标识的详细信息。管理您的个人资料、保护您的访问权限并查看连接的设备。为您提供一个安静的圣所。",
 		"userInfo": {
 			"title": "用户信息",
 			"usernameLabel": "用户名:",
@@ -1043,19 +1066,50 @@
 		},
 		"userDevices": {
 			"title": "用户设备/会话",
-			"refreshButton": {
-				"title": "刷新列表"
-			},
-			"refreshButtonIcon": {
-				"alt": "刷新图标"
-			},
 			"noDevicesFound": "未找到任何设备或会话。",
 			"deviceInfo": "设备ID: ${deviceId}",
 			"thisDevice": "当前设备",
 			"deviceDetails": "最后上线: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
 			"revokeButton": "撤销",
 			"revokeConfirm": "您确定要从此设备/会话注销吗？",
-			"revokeSuccess": "设备/会话已成功撤销。"
+			"revokeSuccess": "设备/会话已成功撤销。",
+			"refreshButton": {
+				"title": "刷新列表"
+			},
+			"refreshButtonIcon": {
+				"alt": "刷新图标"
+			}
+		},
+		"apiKeys": {
+			"title": "API 密钥",
+			"description": "管理外部应用程序的 API 密钥。",
+			"input": {
+				"placeholder": "新密钥描述"
+			},
+			"createButton": "创建",
+			"noKeysFound": "未找到任何 API 密钥。",
+			"keyDetails": "描述: ${description} | 创建于: ${createdAt} | 最后使用: ${lastUsed}",
+			"neverUsed": "从未使用",
+			"revokeButton": "撤销",
+			"revokeConfirm": "您确定要撤销此 API 密钥吗？",
+			"revokeSuccess": "API 密钥已成功撤销。",
+			"errorDescriptionRequired": "需要提供描述。",
+			"createSuccess": "API 密钥创建成功。",
+			"refreshButton": {
+				"title": "刷新列表"
+			},
+			"refreshButtonIcon": {
+				"alt": "刷新图标"
+			}
+		},
+		"newApiKey": {
+			"title": "新 API 密钥已创建",
+			"warning": "请复制您的新 API 密钥。您将无法再次看到它！",
+			"closeButton": "我已复制密钥",
+			"copyButton": {
+				"title": "复制新 API 密钥"
+			},
+			"copiedAlert": "密钥已复制到剪贴板！"
 		},
 		"logout": {
 			"title": "登出",
@@ -1080,58 +1134,32 @@
 			"confirmButton": "确认",
 			"cancelButton": "取消"
 		},
-		"apiKeys": {
-			"title": "API 密钥",
-			"description": "管理外部应用程序的 API 密钥。",
-			"input": {
-				"placeholder": "新密钥描述"
-			},
-			"createButton": "创建",
-			"noKeysFound": "未找到任何 API 密钥。",
-			"refreshButton": {
-				"title": "刷新列表"
-			},
-			"refreshButtonIcon": {
-				"alt": "刷新图标"
-			},
-			"keyDetails": "描述: ${description} | 创建于: ${createdAt} | 最后使用: ${lastUsed}",
-			"neverUsed": "从未使用",
-			"revokeButton": "撤销",
-			"revokeConfirm": "您确定要撤销此 API 密钥吗？",
-			"revokeSuccess": "API 密钥已成功撤销。",
-			"errorDescriptionRequired": "需要提供描述。",
-			"createSuccess": "API 密钥创建成功。"
-		},
-		"newApiKey": {
-			"title": "新 API 密钥已创建",
-			"warning": "请复制您的新 API 密钥。您将无法再次看到它！",
-			"copyButton": {
-				"title": "复制新 API 密钥"
-			},
-			"closeButton": "我已复制密钥",
-			"copiedAlert": "密钥已复制到剪贴板！"
-		}
+		"apiError": "API 请求失败: ${message}",
+		"generalError": "发生错误: ${message}"
 	},
 	"languageSettings": {
 		"title": "语言设置",
-		"description": "在此处管理您的语言偏好。列表中的语言将按顺序优先于浏览器设置。",
+		"pageTitle": "语言设置",
+		"description": "管理您的fount应用程序的语言首选项。使用可用的语言选项定制您的体验。",
+		"pageDescription": "在此处管理您的语言偏好。列表中的语言将按顺序优先于浏览器设置。",
 		"availableLanguages": "可用语言",
 		"preferredLanguages": "优先语言列表",
 		"resetButton": "重置",
 		"saveButton": "保存",
-		"noPreferredLanguages": "暂无优先语言。将使用浏览器默认设置。",
-		"savedMessage": "语言设置已保存！",
-		"resetMessage": "语言设置已重置！",
-		"fetchLocalesFailed": "获取可用语言失败！",
 		"select": {
 			"placeholder": "选择一种语言..."
 		},
 		"search": {
 			"placeholder": "搜索语言..."
-		}
+		},
+		"noPreferredLanguages": "暂无优先语言。将使用浏览器默认设置。",
+		"savedMessage": "语言设置已保存！",
+		"resetMessage": "语言设置已重置！",
+		"fetchLocalesFailed": "获取可用语言失败！"
 	},
 	"themeManage": {
 		"title": "主题管理",
+		"description": "选择反映您的心情或故事的美学。预览并从主题调色板中进行选择，每个主题都为您的fount交互提供不同的氛围。你的世界，你的风格。",
 		"instruction": "选择一个主题！",
 		"search": {
 			"placeholder": "搜索主题...",
@@ -1186,6 +1214,7 @@
 	"part_config": {
 		"title": "组件配置",
 		"pageTitle": "组件配置",
+		"description": "凝视fount的心脏。在这里，您可以调整其不同组件的设置，调整驱动您体验的引擎。",
 		"labels": {
 			"partType": "选择组件类型",
 			"part": "选择组件"
@@ -1197,6 +1226,9 @@
 		"editor": {
 			"title": "组件配置",
 			"disabledIndicator": "此组件不支持配置",
+			"jsonEditor": {
+				"aria-label": "JSON 配置编辑器"
+			},
 			"buttons": {
 				"save": "保存"
 			}
@@ -1217,6 +1249,7 @@
 	},
 	"aisource_editor": {
 		"title": "AI 来源编辑器",
+		"description": "在这里，你将指挥人工智能声音的交响乐。添加、雕刻或沉默源泉，为您的源泉伙伴赋予生命——代码和想象力的微妙舞蹈。",
 		"fileList": {
 			"title": "AI 来源列表",
 			"addButton": {
@@ -1228,6 +1261,21 @@
 			"label": "选择生成器",
 			"placeholder": "请选择"
 		},
+		"editor": {
+			"disabledIndicator": "请先选择生成器"
+		},
+		"common_config_interface": {
+			"loadingModels": "正在加载模型...",
+			"availableModels": "可用模型：",
+			"copied": "已复制！",
+			"empty_generator": "此AI来源的旧有生成器在加载时出错，可能已被卸载或重命名。",
+			"apiKeyRequired": "需要 API 密钥才能列出模型。",
+			"copyModelIdTooltip": "点击以复制模型 ID",
+			"loadModelsFailed": "加载模型失败：${message}"
+		},
+		"prompts": {
+			"newFileName": "请输入新的 AI 来源文件名 (请勿包含后缀名):"
+		},
 		"buttons": {
 			"save": "保存",
 			"delete": "删除",
@@ -1235,42 +1283,28 @@
 				"dataset": {
 					"tip": "设为默认"
 				}
-			}
-		},
-		"alerts": {
-			"fetchFileListFailed": "获取文件列表失败: ${error}",
-			"fetchGeneratorListFailed": "获取生成器列表失败: ${error}",
-			"fetchDefaultsFailed": "获取默认组件失败: ${error}",
-			"fetchFileDataFailed": "获取文件数据失败: ${error}",
-			"noFileSelectedSave": "没有选择要保存的文件。",
-			"saveFileFailed": "保存文件失败: ${error}",
-			"setDefaultFailed": "设置默认 AI 源失败: ${error}",
-			"noFileSelectedDelete": "没有选择要删除的文件。",
-			"deleteFileFailed": "删除文件失败: ${error}",
-			"invalidFileName": "文件名不能包含以下字符： / \\ : * ? \" < > |",
-			"addFileFailed": "添加文件失败: ${error}",
-			"fetchConfigTemplateFailed": "获取配置模板失败",
-			"noGeneratorSelectedSave": "请选择生成器后再保存"
+			},
+			"setDefaultForFile": "将“${fileName}”设为默认 AI 源"
 		},
 		"confirm": {
 			"unsavedChanges": "您有未保存的更改。是否要放弃更改？",
 			"deleteFile": "确定要删除文件吗?",
 			"unsavedChangesBeforeUnload": "您有未保存的更改。确定要离开此页面吗？"
 		},
-		"prompts": {
-			"newFileName": "请输入新的 AI 来源文件名 (请勿包含后缀名):"
-		},
-		"editor": {
-			"disabledIndicator": "请先选择生成器"
-		},
-		"common_config_interface": {
-			"empty_generator": "此AI来源的旧有生成器在加载时出错，可能已被卸载或重命名。",
-			"apiKeyRequired": "需要 API 密钥才能列出模型。",
-			"loadingModels": "正在加载模型...",
-			"availableModels": "可用模型：",
-			"copyModelIdTooltip": "点击以复制模型 ID",
-			"copied": "已复制！",
-			"loadModelsFailed": "加载模型失败：${message}"
+		"alerts": {
+			"fetchFileListFailed": "获取文件列表失败: ${error}",
+			"fetchGeneratorListFailed": "获取生成器列表失败: ${error}",
+			"fetchDefaultsFailed": "获取默认组件失败: ${error}",
+			"fetchFileDataFailed": "获取文件数据失败: ${error}",
+			"fetchConfigTemplateFailed": "获取配置模板失败",
+			"saveFileFailed": "保存文件失败: ${error}",
+			"deleteFileFailed": "删除文件失败: ${error}",
+			"addFileFailed": "添加文件失败: ${error}",
+			"setDefaultFailed": "设置默认 AI 源失败: ${error}",
+			"noFileSelectedSave": "没有选择要保存的文件。",
+			"noFileSelectedDelete": "没有选择要删除的文件。",
+			"noGeneratorSelectedSave": "请选择生成器后再保存",
+			"invalidFileName": "文件名不能包含以下字符： / \\ : * ? \" < > |"
 		},
 		"achievements": {
 			"set_default_aisource": {
@@ -1282,11 +1316,8 @@
 	},
 	"discord_bots": {
 		"title": "Discord Bot",
+		"description": "让你的源泉同伴在喧闹的无序大厅中发出声音。配置他们的存在，管理他们的运营，并让他们连接世界，一次一台服务器。",
 		"cardTitle": "Discord Bot",
-		"buttons": {
-			"newBot": "新建",
-			"deleteBot": "删除"
-		},
 		"botSelectDropdown": {
 			"placeholder": "选择一个 Bot"
 		},
@@ -1310,6 +1341,9 @@
 			"apiKeyInput": {
 				"placeholder": "请输入 API 密钥"
 			},
+			"toggleApiKeyButton": {
+				"aria-label": "切换显示 API 密钥"
+			},
 			"toggleApiKeyIcon": {
 				"alt": "切换显示 API 密钥"
 			},
@@ -1322,10 +1356,14 @@
 		"prompts": {
 			"newBotName": "请输入新的 Bot 名称："
 		},
+		"buttons": {
+			"newBot": "新建",
+			"deleteBot": "删除"
+		},
 		"alerts": {
+			"configSaved": "配置保存成功",
 			"botExists": "名为 \"${botname}\" 的 Bot 已存在，请使用其他名称。",
 			"unsavedChanges": "您有未保存的更改。是否要放弃更改？",
-			"configSaved": "配置保存成功",
 			"httpError": "HTTP 错误",
 			"beforeUnload": "您有未保存的更改。确定要离开吗？"
 		},
@@ -1339,6 +1377,7 @@
 	},
 	"telegram_bots": {
 		"title": "Telegram Bot",
+		"description": "让你的角色穿越 Telegram 的即时浪潮。配置他们的数字形象，管理他们的对话，并将他们的影响力扩展到这个充满活力的消息世界。",
 		"cardTitle": "Telegram Bot管理",
 		"botSelectDropdown": {
 			"placeholder": "选择一个 Bot"
@@ -1352,10 +1391,6 @@
 		"charSearch": {
 			"placeholder": "搜索角色..."
 		},
-		"buttons": {
-			"newBot": "新建",
-			"deleteBot": "删除"
-		},
 		"configCard": {
 			"title": "Bot配置",
 			"labels": {
@@ -1366,6 +1401,9 @@
 			"charSelectPlaceholder": "选择角色",
 			"botTokenInput": {
 				"placeholder": "请输入 Telegram Bot Token"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "切换显示 API 密钥"
 			},
 			"toggleBotTokenIcon": {
 				"alt": "切换显示 API 密钥"
@@ -1379,10 +1417,14 @@
 		"prompts": {
 			"newBotName": "请输入新的 Bot 名称："
 		},
+		"buttons": {
+			"newBot": "新建",
+			"deleteBot": "删除"
+		},
 		"alerts": {
+			"configSaved": "配置已成功保存！",
 			"botExists": "名为 “${botname}” 的bot已存在，请使用其他名称。",
 			"unsavedChanges": "您有未保存的更改。确定要放弃这些更改吗？",
-			"configSaved": "配置已成功保存！",
 			"httpError": "HTTP 错误",
 			"beforeUnload": "您有未保存的更改。确定要离开当前页面吗？"
 		},
@@ -1396,8 +1438,9 @@
 	},
 	"browser_integration": {
 		"title": "浏览器集成",
-		"header": "浏览器集成",
-		"description": "为了让您的 fount 角色能够与网页互动，需要安装此浏览器集成脚本。它充当角色与浏览器之间的桥梁，使他们能够查看页面内容并执行操作。",
+		"description": "弥合fount和网络之间的差距。此页面提供用户脚本以实现无缝集成，将您的 AI 伴侣带入您的浏览体验中。",
+		"pageHeader": "浏览器集成",
+		"pageDescription": "为了让您的 fount 角色能够与网页互动，需要安装此浏览器集成脚本。它充当角色与浏览器之间的桥梁，使他们能够查看页面内容并执行操作。",
 		"install_script_title": "安装脚本",
 		"install_script_description": "点击下面的按钮来安装浏览器集成脚本。您必须先安装一个像油猴 (Tampermonkey) 一样的用户脚本管理器。",
 		"install_button": "安装",
@@ -1407,10 +1450,6 @@
 		"popular_managers": "热门选择：",
 		"csp_warning": "您可能需要安装插件以停用 CSP，来确保集成功能正常运行，对于chrome可以使用<a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener\" class=\"link\">这个插件</a>。",
 		"connected_pages_title": "已连接的页面",
-		"no_pages_connected": {
-			"title": "暂无连接",
-			"description": "请先安装脚本，然后在其他浏览器标签页中访问任意网站，这里将自动显示。"
-		},
 		"fetch_pages_error": "加载已连接页面列表失败。",
 		"page_title": "页面标题",
 		"page_url": "URL",
@@ -1419,6 +1458,10 @@
 		"status_unfocused": "后台",
 		"copy_button": "复制",
 		"copied_message": "已复制到剪贴板",
+		"no_pages_connected": {
+			"title": "暂无连接",
+			"description": "请先安装脚本，然后在其他浏览器标签页中访问任意网站，这里将自动显示。"
+		},
 		"autorun": {
 			"title": "自动运行脚本",
 			"description": "管理在匹配特定网站时自动执行的JavaScript片段。这些脚本可以由您的AI角色或插件提供，以增强或自动化您的浏览体验。",
@@ -1464,19 +1507,20 @@
 		}
 	},
 	"browser_integration_script": {
+		"update": {
+			"prompt": "fount 浏览器集成脚本的新版本可用。是否现在打开更新页面？"
+		},
+		"csp_warning": "fount 浏览器集成脚本检测到页面存在CSP策略，这可能导致集成脚本无法正常运行。请考虑安装插件以停用 CSP。",
 		"hostChange": {
 			"securityWarningTitle": "--- fount 安全警告 ---",
 			"message": "当前页面 (\"${origin}\") 正试图将您的 fount 主机地址更改为:\n\n\"${newHost}\"\n\n警告：批准此操作将允许新主机完全控制您的浏览器集成功能，可能导致敏感信息泄露或账户被盗用。\n只有在您确信这是您本人操作（例如，迁移 fount 服务器）时才应批准。\n\n您确定要允许这次更改吗？",
 			"uuidMismatchError": "fount 安全错误：主机 ${newHost} 的标识 (UUID) 与您当前的标识不匹配。操作已取消。",
 			"verificationError": "fount 安全错误：无法验证新的主机 \"${newHost}\"。请检查地址是否正确以及服务是否正在运行。"
-		},
-		"update": {
-			"prompt": "fount 浏览器集成脚本的新版本可用。是否现在打开更新页面？"
-		},
-		"csp_warning": "fount 浏览器集成脚本检测到页面存在CSP策略，这可能导致集成脚本无法正常运行。请考虑安装插件以停用 CSP。"
+		}
 	},
 	"terminal_assistant": {
 		"title": "终端辅助",
+		"description": "除了图形界面之外，还有直接命令的空间。通过终端助手与fount的核心进行交互，其中文本编织了自己强大的魔力。",
 		"initialMessage": "fount 支持将你喜欢的角色部署到你的终端中辅助你编码！",
 		"initialMessageLink": "点击这里了解更多信息",
 		"achievements": {
@@ -1489,6 +1533,7 @@
 	},
 	"deskpet": {
 		"title": "桌面宠物",
+		"description": "将您的fount角色作为桌面上的互动宠物启动。",
 		"launcherCard": {
 			"title": "宠物启动器",
 			"buttons": {
@@ -1510,8 +1555,8 @@
 		},
 		"toasts": {
 			"started": "宠物 '${charname}' 已启动。",
-			"start_failed": "启动宠物 '${charname}' 失败: ${message}",
 			"stopped": "宠物 '${charname}' 已停止。",
+			"start_failed": "启动宠物 '${charname}' 失败: ${message}",
 			"stop_failed": "停止宠物 '${charname}' 失败: ${message}"
 		},
 		"achievements": {
@@ -1524,6 +1569,7 @@
 	},
 	"access": {
 		"title": "在其他设备上访问 fount",
+		"description": "将fount的覆盖范围扩展到单个屏幕之外。这里有网关（一个 URL、一个 QR 码），用于通过其他设备与您的同伴进行连接，这是一个跨本地以太网的简单桥梁。",
 		"heading": "想在其他设备上访问 fount 吗？",
 		"instruction": {
 			"sameLAN": "确保设备和 fount 主机在同一个局域网下",
@@ -1534,6 +1580,7 @@
 	},
 	"proxy": {
 		"title": "API 代理",
+		"description": "对于开发人员和集成商，此页面推出了 fount API 代理，您可以将 fount 的功能编织到其他应用程序中。",
 		"heading": "API 代理网关",
 		"instruction": "在此页面生成并管理您的 API 密钥，以将 fount 与其他应用程序集成。",
 		"endpointSectionTitle": "API 端点",
@@ -1554,8 +1601,9 @@
 	},
 	"achievements": {
 		"title": "成就",
-		"header": "成就殿堂",
-		"description": "在这里查看您已解锁的成就和里程碑。",
+		"description": "探索您与 fount 旅程的里程碑和成就。每项成就都标志着您独特叙事的一步。",
+		"pageHeader": "成就殿堂",
+		"pageDescription": "在这里查看您已解锁的成就和里程碑。",
 		"unlocked_on": "解锁于 ${date}",
 		"locked": "未解锁",
 		"toast_title": "成就已解锁！",
@@ -1572,6 +1620,7 @@
 	},
 	"badges_maker": {
 		"title": "fount! 徽章转换器",
+		"description": "当您的项目需要一点fount的特色时。转换shields.io徽章，赋予它们新的、引起共鸣的身份。",
 		"card_title": "fount 徽章链接转换器",
 		"original_url_label": "粘贴 img.shields.io 网址",
 		"original_url": {
@@ -1581,40 +1630,44 @@
 		"new_url": {
 			"placeholder": "这里会显示转换后的网址"
 		},
-		"copy_button": "复制",
 		"preview_label": "效果预览",
+		"copy_button": "复制",
+		"copied_text": "已复制!",
 		"preview": {
 			"alt": "徽章预览"
 		},
-		"copied_text": "已复制!",
 		"copy_error": "无法复制文本: ${error}",
 		"copy_fail_alert": "复制失败！"
 	},
 	"404": {
 		"title": "页面未找到",
+		"description": "你所寻找的道路已消散在迷雾之中。这是一个失误，一个被遗忘的转弯吗？让我们带您回到岸边，或者在安静的虚空中停下来玩一场游戏。",
 		"pageNotFoundText": "糟糕！您似乎来到了一个不存在的页面。",
 		"homepageButton": "返回首页"
 	},
 	"code_block": {
-		"download": {
-			"dataset": {
-				"tip": "下载代码"
-			}
-		},
-		"execute": {
-			"dataset": {
-				"tip": "执行代码"
-			}
-		},
 		"copy": {
 			"dataset": {
 				"tip": "复制到剪贴板"
-			}
+			},
+			"aria-label": "复制到剪贴板"
 		},
 		"copied": {
 			"dataset": {
 				"tip": "已复制到剪贴板！"
 			}
+		},
+		"download": {
+			"dataset": {
+				"tip": "下载代码"
+			},
+			"aria-label": "下载代码"
+		},
+		"execute": {
+			"dataset": {
+				"tip": "执行代码"
+			},
+			"aria-label": "执行代码"
 		},
 		"copy_failed": "无法复制到剪贴板：${error}"
 	},
@@ -1622,9 +1675,9 @@
 		"initial": "我不是机器人",
 		"verifying": "正在验证...",
 		"solved": "验证成功",
+		"wasm_disabled": "启用 WASM 可加快验证速度",
 		"error": "验证失败",
-		"errorMessage": "验证失败：${error}",
-		"wasm_disabled": "启用 WASM 可加快验证速度"
+		"errorMessage": "验证失败：${error}"
 	},
 	"zxcvbn": {
 		"warnings": {

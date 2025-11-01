@@ -6,12 +6,12 @@
 			"start": "جاري بدء الخادم",
 			"starting": "الخادم قيد البدء...",
 			"ready": "الخادم جاهز",
+			"standingBy": "Standing by...",
 			"showUrl": {
 				"https": "خادم HTTPS يعمل على ${url}",
 				"http": "خادم HTTP يعمل على ${url}"
 			},
 			"localUrl": "للوصول إلى fount من أجهزة أخرى على نفس الشبكة: ${url}",
-			"standingBy": "Standing by...",
 			"update": {
 				"restarting": "تم اكتشاف نسخة جديدة ويتم إعادة تشغيل التحديث..."
 			}
@@ -20,32 +20,32 @@
 			"restartingJob": "جاري إعادة تشغيل مهمة ${parttype} ${partname} للمستخدم ${username}: ‏${uid}"
 		},
 		"ipc": {
-			"sendCommandFailed": "فشل إرسال الأمر: ${error}",
-			"invalidCommand": "أمر غير صالح، الرجاء استخدام \"fount run <نوع المكون> <اسم المستخدم> <اسم المكون> <الوسائط...>\"",
+			"serverStarted": "بدأ خادم IPC",
+			"instanceRunning": "هناك نسخة أخرى قيد التشغيل بالفعل",
 			"runPartLog": "تشغيل ${parttype} ${partname} كـ ${username}، بالوسائط: ${args}",
 			"invokePartLog": "استدعاء ${parttype} ${partname} كـ ${username}، بالبيانات: ${invokedata}",
+			"invalidCommand": "أمر غير صالح، الرجاء استخدام \"fount run <نوع المكون> <اسم المستخدم> <اسم المكون> <الوسائط...>\"",
+			"invalidCommandFormat": "تنسيق أمر غير صالح",
 			"unsupportedCommand": "نوع أمر غير مدعوم",
 			"processMessageError": "حدث خطأ أثناء معالجة رسالة IPC: ‏${error}",
-			"invalidCommandFormat": "تنسيق أمر غير صالح",
+			"sendCommandFailed": "فشل إرسال الأمر: ${error}",
 			"socketError": "خطأ في المقبس: ${error}",
-			"instanceRunning": "هناك نسخة أخرى قيد التشغيل بالفعل",
-			"serverStarted": "بدأ خادم IPC",
 			"parseResponseFailed": "فشل تحليل استجابة الخادم: ${error}",
 			"cannotParseResponse": "لا يمكن تحليل استجابة الخادم",
 			"unknownError": "خطأ غير معروف"
 		},
 		"partManager": {
+			"partInited": "تم تهيئة ${parttype} ${partname}",
+			"partLoaded": "${parttype} مكون ${partname} تم تحميله",
 			"git": {
+				"updating": "جاري التحديث من المستودع البعيد...",
+				"upToDate": "أنت على أحدث إصدار.",
+				"localAhead": "الفرع المحلي متقدم على الفرع البعيد. لا حاجة للتحديث.",
 				"noUpstream": "لا يوجد فرع تتبع مهيأ للفرع '${currentBranch}'، تم تخطي التحقق من التحديثات.",
 				"dirtyWorkingDirectory": "دليل العمل غير نظيف. يرجى تخزين تغييراتك أو تثبيتها قبل التحديث.",
-				"updating": "جاري التحديث من المستودع البعيد...",
-				"localAhead": "الفرع المحلي متقدم على الفرع البعيد. لا حاجة للتحديث.",
 				"diverged": "لقد تباعد الفرعان المحلي والبعيد. جاري التحديث بالقوة...",
-				"upToDate": "أنت على أحدث إصدار.",
 				"updateFailed": "فشل تحديث المكون من المستودع البعيد: ${error}"
-			},
-			"partInited": "تم تهيئة ${parttype} ${partname}",
-			"partLoaded": "${parttype} مكون ${partname} تم تحميله"
+			}
 		},
 		"web": {
 			"requestReceived": "تم استلام طلب: ${method} ${url}"
@@ -54,11 +54,11 @@
 			"setLanguagePreference": "قام المستخدم ${username} بتعيين اللغة المفضلة: ${preferredLanguages}"
 		},
 		"auth": {
+			"accountLockedLog": "تم قفل حساب المستخدم ${username} بسبب محاولات تسجيل دخول فاشلة متعددة",
 			"tokenVerifyError": "خطأ في التحقق من الرمز: ${error}",
 			"refreshTokenError": "خطأ في تحديث الرمز: ${error}",
 			"logoutRefreshTokenProcessError": "خطأ في معالجة تحديث الرمز عند تسجيل الخروج: ${error}",
-			"revokeTokenNoJTI": "لا يمكن إبطال رمز بدون jti",
-			"accountLockedLog": "تم قفل حساب المستخدم ${username} بسبب محاولات تسجيل دخول فاشلة متعددة"
+			"revokeTokenNoJTI": "لا يمكن إبطال رمز بدون jti"
 		},
 		"verification": {
 			"codeGeneratedLog": "رمز التحقق: ${code} (ينتهي بعد 60 ثانية)",
@@ -66,10 +66,10 @@
 			"codeNotifyBody": "رمز التحقق الخاص بك هو: ${code} (ينتهي بعد 60 ثانية)"
 		},
 		"tray": {
-			"readIconFailed": "فشل في قراءة ملف الأيقونة: ${error}",
-			"createTrayFailed": "فشل في إنشاء أيقونة شريط المهام: ${error}",
 			"title": "fount",
 			"tooltip": "fount",
+			"readIconFailed": "فشل في قراءة ملف الأيقونة: ${error}",
+			"createTrayFailed": "فشل في إنشاء أيقونة شريط المهام: ${error}",
 			"items": {
 				"open": {
 					"title": "فتح",
@@ -100,6 +100,9 @@
 			"botStarted": "تم تسجيل دخول الشخصية ${charname} على بوت التليجرام ${botusername}"
 		},
 		"path": {
+			"protocol": {
+				"description": "عنوان URL:البروتوكول الموجود"
+			},
 			"update": {
 				"skippingFountUpdate": "نظرًا لوجود الملف ‎.noupdate، يتم تخطي التحديث الناشئ",
 				"skippingDenoUpgradeDocker": "تخطي ترقية Deno في بيئة Docker"
@@ -108,44 +111,44 @@
 				"desktopShortcutCreated": "تم إنشاء اختصار سطح المكتب في ${path}",
 				"startMenuShortcutCreated": "تم إنشاء اختصار قائمة ابدأ في ${path}",
 				"protocolHandlerRegistered": "Found:// تم تسجيل معالج البروتوكول.",
+				"shortcutNotSupported": "تحذير: نظام التشغيل لديك (${os}) لا يدعم إنشاء اختصارات لسطح المكتب.",
 				"osacompileNotFound": "خطأ: لم يتم العثور على 'osacompile'. غير قادر على إنشاء تطبيق macOS.",
 				"lsregisterFailed": "تحذير: فشل استخدام lsregister لتسجيل تطبيق في LaunchServices.",
-				"createDesktopAppFailed": "خطأ: فشل إنشاء تطبيق سطح المكتب.",
-				"shortcutNotSupported": "تحذير: نظام التشغيل لديك (${os}) لا يدعم إنشاء اختصارات لسطح المكتب."
+				"createDesktopAppFailed": "خطأ: فشل إنشاء تطبيق سطح المكتب."
 			},
 			"git": {
 				"repoNotFound": "لم يتم العثور على مستودع git الخاص بfount. تهيئة واحدة جديدة...",
 				"fetchingAndResetting": "جارٍ الجلب من المستودع البعيد وإعادة التعيين إلى الوضع الرئيسي...",
-				"fetchFailed": "فشل في الحصول على \"الأصل\".",
 				"localChangesDetected": "تم اكتشاف تغييرات محلية، وسيتم حفظ الاختلافات قبل الكتابة فوقها.",
 				"backupSavedTo": "تم حفظ نسخة احتياطية من تغييراتك المحلية في: ${path}",
+				"updatingFromRemote": "جارٍ التحديث من المستودع البعيد...",
+				"alreadyUpToDate": "بالفعل الأحدث.",
+				"localBranchAhead": "الفرع المحلي متقدم على الفرع البعيد. لا توجد تحديثات مطلوبة.",
+				"branchesDiverged": "وقد تم تشعب الفروع المحلية والبعيدة. التحديث الإجباري قيد التقدم...",
 				"notOnBranch": "ليس على الفرع، قم بالتبديل إلى \"الرئيسي\"...",
 				"noUpstreamBranch": "تحذير: لم يتم تكوين أي فرع رئيسي للفرع '${branch}'. إعداد المنبع إلى \"الأصل/الرئيسي\".",
 				"dirtyWorkingDirectory": "تحذير: دليل العمل يحتوي على تغييرات لم يتم اعتمادها. يرجى تنظيم أو تنفيذ التغييرات الخاصة بك قبل التحديث.",
-				"updatingFromRemote": "جارٍ التحديث من المستودع البعيد...",
-				"localBranchAhead": "الفرع المحلي متقدم على الفرع البعيد. لا توجد تحديثات مطلوبة.",
-				"branchesDiverged": "وقد تم تشعب الفروع المحلية والبعيدة. التحديث الإجباري قيد التقدم...",
-				"alreadyUpToDate": "بالفعل الأحدث.",
 				"notInstalled": "لم يتم تثبيت Git، جارٍ محاولة التثبيت...",
-				"installFailedWinget": "منذ فشل تثبيت Winget، لا يمكن تثبيت Git. الرجاء تثبيته يدويا.",
-				"installFailedManual": "غير قادر على تثبيت Git، يرجى تثبيته يدويًا.",
 				"notInstalledSkippingPull": "لم يتم تثبيت Git، قم بتخطي سحب git",
-				"repoNotFoundSkippingPull": "لم يتم العثور على المستودع، قم بتخطي سحب git"
+				"repoNotFoundSkippingPull": "لم يتم العثور على المستودع، قم بتخطي سحب git",
+				"fetchFailed": "فشل في الحصول على \"الأصل\".",
+				"installFailedWinget": "منذ فشل تثبيت Winget، لا يمكن تثبيت Git. الرجاء تثبيته يدويا.",
+				"installFailedManual": "غير قادر على تثبيت Git، يرجى تثبيته يدويًا."
 			},
 			"deno": {
-				"installingTermux": "تثبيت Deno على Termux...",
 				"missing": "لم يتم العثور على Deno، جارٍ التثبيت تلقائيًا...",
-				"installFailedFallback": "فشل تثبيت Deno، وتتم محاولة التثبيت تلقائيًا في مجلد المسار الخاص بfount...",
 				"isRequired": "لم يتم العثور على Deno، لا يمكن تشغيل Fount بدون Deno",
+				"installingTermux": "تثبيت Deno على Termux...",
+				"installFailedFallback": "فشل تثبيت Deno، وتتم محاولة التثبيت تلقائيًا في مجلد المسار الخاص بfount...",
 				"notWorking": "لسبب ما لا يعمل Deno، قد ترغب في الانضمام إلى https://discord.gg/deno للحصول على الدعم",
-				"upgradeFailedTermux": "فشل أمر ترقية Deno، محاولة إعادة تثبيت Deno لـ Termux...",
-				"upgradeFailed": "تحذير: ربما فشلت ترقية Deno. يرجى التحقق من وجود أخطاء."
+				"upgradeFailed": "تحذير: ربما فشلت ترقية Deno. يرجى التحقق من وجود أخطاء.",
+				"upgradeFailedTermux": "فشل أمر ترقية Deno، محاولة إعادة تثبيت Deno لـ Termux..."
 			},
 			"install": {
-				"rootWarning1": "غير مستحسن: تشغيل fount كجذر يمنح النظام وصولاً كاملاً إلى جميع مكونات Fount.",
-				"rootWarning2": "ما لم تكن تعرف ما تفعله، فمن المستحسن تشغيل Fount كمستخدم عادي.",
 				"installingDependencies": "تثبيت التبعيات...",
-				"untrustedPartsWarning": "لا تقم بتثبيت أي مكونات غير موثوقة على نظامك، يمكنها فعل أي شيء."
+				"untrustedPartsWarning": "لا تقم بتثبيت أي مكونات غير موثوقة على نظامك، يمكنها فعل أي شيء.",
+				"rootWarning1": "غير مستحسن: تشغيل fount كجذر يمنح النظام وصولاً كاملاً إلى جميع مكونات Fount.",
+				"rootWarning2": "ما لم تكن تعرف ما تفعله، فمن المستحسن تشغيل Fount كمستخدم عادي."
 			},
 			"clean": {
 				"removingCaches": "جارٍ إزالة ذاكرة التخزين المؤقت...",
@@ -154,29 +157,30 @@
 				"cleaningOldPwshModules": "تنظيف وحدات pwsh القديمة..."
 			},
 			"keepalive": {
-				"failedToStart": "حتى بعد محاولات الإصلاح التلقائي، تفشل fount في العمل لفترة قصيرة من الزمن. يرجى التحقق من السجلات بحثًا عن الأخطاء.",
+				"initComplete": "اكتملت عملية إعادة التهيئة. جارٍ محاولة إعادة التشغيل...",
 				"autoInitDisabled": "تمت إعادة تشغيل fount عدة مرات في الفترة القصيرة الأخيرة من الوقت، ولكن تم تعطيل إعادة التهيئة التلقائية بسبب وجود ملف .noautoinit. الخروج.",
 				"restartingTooFast": "تمت إعادة تشغيل fount عدة مرات في فترة زمنية قصيرة. إعادة التهيئة القسرية...",
-				"initFailed": "فشلت تهيئة الخط. الخروج.",
-				"initComplete": "اكتملت عملية إعادة التهيئة. جارٍ محاولة إعادة التشغيل..."
+				"failedToStart": "حتى بعد محاولات الإصلاح التلقائي، تفشل fount في العمل لفترة قصيرة من الزمن. يرجى التحقق من السجلات بحثًا عن الأخطاء.",
+				"initFailed": "فشلت تهيئة الخط. الخروج."
 			},
 			"remove": {
 				"removingFount": "جارٍ إزالة fount...",
+				"fountUninstallationComplete": "اكتملت عملية إلغاء التثبيت.",
+				"removingFountInstallationDir": "جارٍ إزالة دليل تثبيت fount...",
+				"fountInstallationDirRemoved": "تمت إزالة دليل التثبيت fount.",
 				"removingFountFromPath": "إزالة fount من PATH...",
 				"removingProtocolHandler": "جارٍ إزالة Found:// معالج البروتوكول...",
+				"protocolHandlerRemoved": "تمت إزالة معالج البروتوكول Found://.",
+				"removeProtocolHandlerFailed": "فشل في إزالة معالج البروتوكول Fount://: ${message}",
 				"removingFountFromGitSafeDir": "إزالة fount من git Safe.directory...",
 				"removingInstalledSystemPackages": "جارٍ إزالة حزم النظام المثبتة...",
 				"uninstallingDeno": "إلغاء تثبيت دينو...",
-				"removingFountInstallationDir": "جارٍ إزالة دليل تثبيت fount...",
-				"fountInstallationDirRemoved": "تمت إزالة دليل التثبيت fount.",
-				"fountUninstallationComplete": "اكتملت عملية إلغاء التثبيت.",
+				"removeDenoFailed": "فشلت إزالة Deno: ${message}",
 				"removingFountPwshFromProfile": "إزالة Fount-pwsh من ملف تعريف PowerShell...",
 				"fountPwshRemovedFromProfile": "تمت إزالة Fount-pwsh من ملف تعريف PowerShell.",
 				"pwshProfileNotFound": "لم يتم العثور على ملف تعريف PowerShell، مع تخطي إزالة Fount-pwsh من الملف الشخصي.",
 				"uninstallingFountPwsh": "إلغاء تثبيت Fount-pwsh...",
 				"uninstallFountPwshFailed": "فشل إلغاء تثبيت Fount-pwsh: ${message}",
-				"protocolHandlerRemoved": "تمت إزالة معالج البروتوكول Found://.",
-				"removeProtocolHandlerFailed": "فشل في إزالة معالج البروتوكول Fount://: ${message}",
 				"removingTerminalProfile": "جارٍ إزالة ملف التعريف الطرفي لـ Windows...",
 				"terminalProfileRemoved": "تمت إزالة دليل ملف تعريف Windows Terminal.",
 				"terminalProfileNotFound": "لم يتم العثور على دليل ملف تعريف Windows Terminal.",
@@ -191,22 +195,14 @@
 				"uninstallingGit": "إلغاء تثبيت جيت...",
 				"uninstallingChrome": "جارٍ إلغاء تثبيت Chrome...",
 				"uninstallingWinget": "إلغاء تثبيت وينجت...",
-				"removeDenoFailed": "فشلت إزالة Deno: ${message}",
 				"removingBackgroundRunner": "إزالة برامج الخلفية...",
 				"removeBackgroundRunnerFailed": "فشل في إزالة البرنامج الذي يعمل في الخلفية: ${message}"
-			},
-			"protocol": {
-				"description": "عنوان URL:البروتوكول الموجود"
 			}
 		}
 	},
 	"installer_wait_screen": {
 		"title": "مرحبًا بك في fount!",
-		"language_selector": {
-			"search": {
-				"placeholder": "ابحث عن لغة..."
-			}
-		},
+		"description": "اتبع تقدم التثبيت وألق نظرة على الميزات الموجودة بداخله. سيكون Fount جاهزًا للإطلاق خلال لحظة.",
 		"hero": {
 			"title": "رفيقٌ من نسيج الخيال",
 			"description": "fount هي منصة تفاعل مع شخصيات مدعومة بالذكاء الاصطناعي، مصممة لتمكين<i>ك</i>. إنها جسر يربطك بالشخصيات التي تتخيلها، مما يتيح لك التحدث معهم بسهولة، وإنشاء شخصياتك الخاصة ومشاركتها مع العالم."
@@ -227,6 +223,11 @@
 			"title": "تكامل غير مقيد لمصادر الذكاء الاصطناعي",
 			"description": "يوفر fount اختيارًا ومرونة لا مثيل لهما. اتصل بـ<i>أي</i> مصدر ذكاء اصطناعي - OpenAI، Claude، OpenRouter، NovelAI، وغيرها الكثير. سيتشكل منطق الاتصال وفقًا لإرادتك <i>أنت</i>، بقوة الكود."
 		},
+		"language_selector": {
+			"search": {
+				"placeholder": "ابحث عن لغة..."
+			}
+		},
 		"theme_selector": {
 			"title": "اختر مظهرك",
 			"description": "اختر سمة لتخصيص تجربتك.",
@@ -241,6 +242,9 @@
 		},
 		"data_showcase": {
 			"title_prefix": "fount هو ",
+			"title_of": " ",
+			"active_users": "عدد المستخدمين النشطين",
+			"stars": "نجوم GitHub",
 			"adjectives": [
 				"الأكثر قابلية للتوسعة",
 				"الأكثر إمكانات",
@@ -248,7 +252,6 @@
 				"الأكثر توافقية",
 				"الأصغر والأقوى"
 			],
-			"title_of": " ",
 			"nouns": [
 				"شخصية افتراضية بالذكاء الاصطناعي ",
 				"وكيل ذكي ",
@@ -259,9 +262,7 @@
 				"منصة أساسية",
 				"واجهة محادثة",
 				"مشغّل"
-			],
-			"active_users": "عدد المستخدمين النشطين",
-			"stars": "نجوم GitHub"
+			]
 		},
 		"footer": {
 			"ready_text": "هل أنت مستعد لبدء رحلتك؟",
@@ -280,15 +281,9 @@
 	},
 	"protocolhandler": {
 		"title": "معالجة بروتوكول fount",
+		"description": "بصمت وكفاءة، تترجم هذه الصفحة نيتك إلى انتقال سلس داخل fount. اعتبره السحر الهادئ خلف الستار.",
 		"processing": "جاري معالجة البروتوكول...",
-		"invalidProtocol": "بروتوكول غير صالح",
-		"insufficientParams": "معلمات غير كافية",
-		"unknownCommand": "أمر غير معروف",
 		"shellCommandSent": "تم إرسال أمر الواجهة",
-		"shellCommandFailed": "فشل إرسال أمر الواجهة",
-		"shellCommandError": "حدث خطأ أثناء إرسال أمر الواجهة",
-		"fountNotFound": "يا للأسف :(\n\nلم يتم العثور على fount، ربما تحتاج إلى تثبيته أولاً؟",
-		"unknownError": "يا للأسف :(\n\nحدث خطأ:\n${error}",
 		"runPartConfirm": {
 			"title": "تأكيد التشغيل",
 			"message": "هل أنت متأكد من أنك تريد تشغيل ${parttype} من ${partname}؟",
@@ -301,10 +296,18 @@
 			"buttons": {
 				"retry": "حاول ثانية"
 			}
-		}
+		},
+		"fountNotFound": "يا للأسف :(\n\nلم يتم العثور على fount، ربما تحتاج إلى تثبيته أولاً؟",
+		"invalidProtocol": "بروتوكول غير صالح",
+		"insufficientParams": "معلمات غير كافية",
+		"unknownCommand": "أمر غير معروف",
+		"shellCommandFailed": "فشل إرسال أمر الواجهة",
+		"shellCommandError": "حدث خطأ أثناء إرسال أمر الواجهة",
+		"unknownError": "يا للأسف :(\n\nحدث خطأ:\n${error}"
 	},
 	"startPage": {
 		"title": "fount!",
+		"description": "مرحبا بكم في عتبة ينبوع. لحظة تحضير قصيرة، قبل الدخول إلى قلب الأحاديث والقصص التي تنتظر أن تتكشف.",
 		"newTabFailed": {
 			"title": "فشل فتح علامة تبويب جديدة",
 			"instruction": "بدء تشغيل fount يكون أبطأ بمقدار 1-2 ثانية في كل مرة بدون إذن النوافذ المنبثقة",
@@ -326,6 +329,7 @@
 	},
 	"tutorial": {
 		"title": "هل ترغب في بعض الإرشادات؟",
+		"description": "دعونا نسير معك عبر عالم fount. سيضيء هذا البرنامج التعليمي التفاعلي المسار، مما يساعدك على اكتشاف السحر الموجود في جوهره. تبدأ مغامرتك بالفهم.",
 		"modal": {
 			"title": "مرحبًا بك في fount!",
 			"instruction": "هل تود المرور بالبرنامج التعليمي للمبتدئين؟",
@@ -361,6 +365,7 @@
 	"auth": {
 		"title": "المصادقة",
 		"subtitle": "بيانات المستخدم مخزنة محليًا",
+		"description": "هنا تحدد حضورك. سواء كنت تعود إلى ملاذ مألوف أو تشكل مساحة جديدة لقصصك، فهذا هو المكان الذي تبدأ فيه رحلتك مع fount.",
 		"usernameLabel": "اسم المستخدم:",
 		"usernameInput": {
 			"placeholder": "أدخل اسم المستخدم"
@@ -394,6 +399,13 @@
 				"link": "سجل الدخول الآن"
 			}
 		},
+		"passwordStrength": {
+			"veryWeak": "ضعيفة جدًا",
+			"weak": "ضعيفة",
+			"normal": "متوسطة",
+			"strong": "قوية",
+			"veryStrong": "قوية جدًا"
+		},
 		"error": {
 			"passwordMismatch": "كلمتا المرور غير متطابقتين.",
 			"loginError": "حدث خطأ أثناء تسجيل الدخول.",
@@ -406,17 +418,11 @@
 			"accountAlreadyExists": "الحساب موجود بالفعل",
 			"powNotSolved": "يرجى إكمال التحقق من إثبات العمل (PoW) أولاً",
 			"powError": "خطأ في التحقق من إثبات العمل (PoW)"
-		},
-		"passwordStrength": {
-			"veryWeak": "ضعيفة جدًا",
-			"weak": "ضعيفة",
-			"normal": "متوسطة",
-			"strong": "قوية",
-			"veryStrong": "قوية جدًا"
 		}
 	},
 	"login_info": {
 		"title": "بيانات تسجيل الدخول",
+		"description": "مساحة آمنة لإدارة بيانات اعتماد تسجيل الدخول الخاصة بك - وهي مفاتيح عالم القصص التي لا توصف.",
 		"modal": {
 			"title": "خطأ في نقل الشهادة",
 			"retrieve_error": "حدث خطأ أثناء محاولة حفظ بيانات اعتماد تسجيل الدخول الخاصة بك:\n${error}\nيمكنك المتابعة ولكن لا يمكنك حفظ معلومات تسجيل الدخول.",
@@ -429,20 +435,21 @@
 	},
 	"home": {
 		"title": "الصفحة الرئيسية",
-		"escapeConfirm": "هل أنت متأكد من أنك تريد مغادرة fount؟",
-		"filterInput": {
-			"placeholder": "بحث..."
-		},
-		"sfwToggle": "محتوى آمن",
+		"description": "قلب تجربتك النابضة. هنا، قم بإدارة سكان خيالك - الشخصيات والعوالم والشخصيات. تبدأ قصصك وتتفرع من هذه الرابطة المركزية.",
 		"sidebarTitle": "التفاصيل",
 		"itemDescription": "اختر عنصرًا هنا لعرض التفاصيل.",
 		"noDescription": "لا يوجد وصف",
-		"alerts": {
-			"fetchHomeRegistryFailed": "فشل في جلب سجل الصفحة الرئيسية"
+		"filterInput": {
+			"placeholder": "بحث...",
+			"aria-label": "بحث الحاجيات"
 		},
+		"sfwToggle": "محتوى آمن",
 		"functionMenu": {
 			"search": {
 				"placeholder": "بحث..."
+			},
+			"button": {
+				"title": "قائمة الوظائف"
 			},
 			"icon": {
 				"alt": "قائمة الوظائف"
@@ -454,15 +461,15 @@
 			"subtitle": "اختر شخصية وابدأ الدردشة!",
 			"none": "فارغ تمامًا",
 			"card": {
-				"refreshButton": {
-					"alt": "تحديث",
-					"title": "تحديث"
-				},
 				"noTags": "لا توجد وسوم",
 				"version": "الإصدار",
 				"author": "المؤلف",
 				"home_page": "الصفحة الرئيسية",
 				"issue_page": "الإبلاغ عن خطأ",
+				"refreshButton": {
+					"alt": "تحديث",
+					"title": "تحديث"
+				},
 				"defaultCheckbox": {
 					"title": "تعيين كشخصية افتراضية"
 				}
@@ -474,15 +481,15 @@
 			"subtitle": "اختر عالمًا وانغمس فيه!",
 			"none": "فارغ تمامًا",
 			"card": {
-				"refreshButton": {
-					"alt": "تحديث",
-					"title": "تحديث"
-				},
 				"noTags": "لا توجد وسوم",
 				"version": "الإصدار",
 				"author": "المؤلف",
 				"home_page": "الصفحة الرئيسية",
 				"issue_page": "الإبلاغ عن مشكلة",
+				"refreshButton": {
+					"alt": "تحديث",
+					"title": "تحديث"
+				},
 				"defaultCheckbox": {
 					"title": "تعيين كعالم افتراضي"
 				}
@@ -494,19 +501,23 @@
 			"subtitle": "اختر هوية وجرب الحياة.",
 			"none": "فارغ تمامًا",
 			"card": {
-				"refreshButton": {
-					"alt": "تحديث",
-					"title": "تحديث"
-				},
 				"noTags": "لا توجد وسوم",
 				"version": "الإصدار",
 				"author": "المؤلف",
 				"home_page": "الصفحة الرئيسية",
 				"issue_page": "الإبلاغ عن مشكلة",
+				"refreshButton": {
+					"alt": "تحديث",
+					"title": "تحديث"
+				},
 				"defaultCheckbox": {
 					"title": "تعيين كهوية افتراضية"
 				}
 			}
+		},
+		"escapeConfirm": "هل أنت متأكد من أنك تريد مغادرة fount؟",
+		"alerts": {
+			"fetchHomeRegistryFailed": "فشل في جلب سجل الصفحة الرئيسية"
 		},
 		"achievements": {
 			"first_login": {
@@ -537,11 +548,15 @@
 		}
 	},
 	"chat": {
-		"new": {
-			"title": "محادثة جديدة"
-		},
 		"title": "محادثة",
+		"description": "حيث تحلق الكلمات وتتكشف القصص. تفاعل مع رفاقك من الذكاء الاصطناعي، وشكل السرد، وانغمس في مد وجزر الحوار الرقمي. قلب fount ينبض هنا.",
+		"new": {
+			"title": "محادثة جديدة",
+			"description": "الترقب الهادئ لقصة لم تُكتب بعد. تبدأ محادثة جديدة، وصفحة نظيفة للتفاعلات الجديدة والروايات المتكشفة مع رفاقك الذين اخترتهم."
+		},
 		"sidebar": {
+			"noSelection": "لا شيء",
+			"noDescription": "لا يوجد وصف",
 			"world": {
 				"icon": {
 					"alt": "أيقونة العالم"
@@ -567,20 +582,21 @@
 						"alt": "أيقونة إضافة شخصية"
 					}
 				}
-			},
-			"noSelection": "لا شيء",
-			"noDescription": "لا يوجد وصف"
+			}
+		},
+		"rightSidebar": {
+			"title": "معلومات الوصف"
 		},
 		"chatArea": {
 			"title": "محادثة",
+			"input": {
+				"placeholder": "أدخل رسالة...\nCtrl+Enter للإرسال"
+			},
 			"menuButton": {
 				"title": "قائمة"
 			},
 			"menuButtonIcon": {
 				"alt": "أيقونة القائمة"
-			},
-			"input": {
-				"placeholder": "أدخل رسالة...\nCtrl+Enter للإرسال"
 			},
 			"sendButton": {
 				"title": "إرسال"
@@ -606,9 +622,6 @@
 			"photoButtonIcon": {
 				"alt": "أيقونة الصورة"
 			}
-		},
-		"rightSidebar": {
-			"title": "معلومات الوصف"
 		},
 		"messageList": {
 			"confirmDeleteMessage": "هل أنت متأكد من حذف هذه الرسالة؟"
@@ -733,18 +746,29 @@
 	"chat_history": {
 		"title": "سجل المحادثات",
 		"pageTitle": "سجل المحادثات",
+		"description": "رحلة عبر حوارات الماضي. هنا، تظل ذكريات المحادثات باقية — قم بفرز القصص التي نسجتها مع رفاقك من الذكاء الاصطناعي وتصفيتها وإعادة النظر فيها. مكتبة هادئة من الأصداء الرقمية.",
+		"filterInput": {
+			"placeholder": "بحث..."
+		},
 		"sortOptions": {
 			"time_desc": "الوقت تنازليًا",
 			"time_asc": "الوقت تصاعديًا"
 		},
-		"filterInput": {
-			"placeholder": "بحث..."
+		"sortBy": {
+			"aria-label": "فرز حسب"
 		},
+		"select_chat_with_chars": "حدد الدردشة مع ${chars}",
 		"selectAll": "تحديد الكل",
 		"buttons": {
 			"reverseSelect": "عكس التحديد",
 			"deleteSelected": "حذف المحدد",
 			"exportSelected": "تصدير المحدد"
+		},
+		"chatItemButtons": {
+			"continue": "متابعة",
+			"copy": "نسخ",
+			"export": "تصدير",
+			"delete": "حذف"
 		},
 		"confirmDeleteChat": "هل أنت متأكد من حذف سجل المحادثة مع ${chars}؟",
 		"confirmDeleteMultiChats": "هل أنت متأكد من حذف ${count} من سجلات المحادثات المحددة؟",
@@ -754,107 +778,104 @@
 			"copyError": "فشل النسخ",
 			"deleteError": "فشل الحذف",
 			"exportError": "فشل التصدير"
-		},
-		"chatItemButtons": {
-			"continue": "متابعة",
-			"copy": "نسخ",
-			"export": "تصدير",
-			"delete": "حذف"
 		}
 	},
 	"easynew": {
 		"title": "إنشاء سريع",
+		"description": "قم ببناء أجزاء جديدة بسرعة مثل الشخصيات والعوالم والمكونات الإضافية باستخدام قوالب محددة مسبقًا أو مخصصة. إن إبداعك التالي على بعد بضع نقرات فقط.",
+		"info": {
+			"description": "يمكن استخدام هذه القوالب فقط لبناء مكونات بسيطة بسرعة، لا يزال إنشاء المكونات المعقدة يتطلب إنشاءًا يدويًا."
+		},
 		"cardTitle": "إنشاء مكون جديد من قالب",
 		"templateSelect": {
 			"label": "اختر قالبًا"
 		},
-		"partName": {
-			"label": "اسم المكون",
-			"placeholder": "اختر اسمًا لمكونك الجديد"
-		},
-		"description": {
-			"label": "الوصف",
-			"placeholder": "صف بإيجاز ما يدور حوله هذا المكون."
-		},
-		"descriptionMarkdown": {
-			"label": "الوصف (Markdown)",
-			"placeholder": "يدعم Markdown لتنسيق أكثر تفصيلاً."
-		},
-		"imageUpload": {
-			"label": "صورة الملف الشخصي"
-		},
-		"charDef": {
-			"heading": "تعريف الشخصية"
-		},
-		"personality": {
-			"label": "الشخصية",
-			"placeholder": "صف السمات الشخصية الأساسية للشخصية."
-		},
-		"scenario": {
-			"label": "السيناريو",
-			"placeholder": "خلفية الشخصية أو الإعداد."
-		},
-		"mesExample": {
-			"label": "مثال على الرسالة",
-			"placeholder": "أمثلة على ما قد تقوله الشخصية."
-		},
-		"firstMessage": {
-			"label": "الرسالة الأولى",
-			"placeholder": "الشيء الأول الذي تقوله الشخصية."
-		},
-		"personaDef": {
-			"heading": "تعريف الهوية"
-		},
-		"personaUserName": {
-			"label": "اسمك في المحادثة",
-			"placeholder": "مثال: الكابتن، المستكشف"
-		},
-		"personaAppearance": {
-			"label": "المظهر",
-			"placeholder": "صف مظهرك."
-		},
-		"personaPersonality": {
-			"label": "الشخصية",
-			"placeholder": "صف سمات شخصيتك."
-		},
-		"worldDef": {
-			"heading": "تعريف العالم"
-		},
-		"worldPrompt": {
-			"label": "تلقين العالم",
-			"placeholder": "صف قواعد العالم، وبيئته، وأي سياق عالمي للعب الأدوار."
-		},
-		"worldGreeting": {
-			"label": "تحية العالم",
-			"placeholder": "الرسالة الأولى التي يرسلها العالم إلى المستخدم."
-		},
-		"author": {
-			"label": "المؤلف",
-			"placeholder": "من هو مؤلف هذا المكون؟"
-		},
-		"version": {
-			"label": "الإصدار",
-			"placeholder": "مثال: 0.0.1"
-		},
-		"tags": {
-			"label": "الوسوم",
-			"placeholder": "وسوم مفصولة بفواصل"
-		},
-		"homePage": {
-			"label": "الصفحة الرئيسية",
-			"placeholder": "رابط الصفحة الرئيسية للمكون"
-		},
-		"issuePage": {
-			"label": "صفحة المشاكل",
-			"placeholder": "رابط صفحة مشاكل المكون"
-		},
-		"createButton": "إنشاء مكون",
-		"alerts": {
-			"success": "تم إنشاء المكون '${partName}' بنجاح!",
-			"error": "خطأ: ${message}"
-		},
-		"info": {
-			"description": "يمكن استخدام هذه القوالب فقط لبناء مكونات بسيطة بسرعة، لا يزال إنشاء المكونات المعقدة يتطلب إنشاءًا يدويًا."
+		"form": {
+			"partName": {
+				"label": "اسم المكون",
+				"placeholder": "اختر اسمًا لمكونك الجديد"
+			},
+			"description": {
+				"label": "الوصف",
+				"placeholder": "صف بإيجاز ما يدور حوله هذا المكون."
+			},
+			"descriptionMarkdown": {
+				"label": "الوصف (Markdown)",
+				"placeholder": "يدعم Markdown لتنسيق أكثر تفصيلاً."
+			},
+			"imageUpload": {
+				"label": "صورة الملف الشخصي"
+			},
+			"charDef": {
+				"heading": "تعريف الشخصية"
+			},
+			"personality": {
+				"label": "الشخصية",
+				"placeholder": "صف السمات الشخصية الأساسية للشخصية."
+			},
+			"scenario": {
+				"label": "السيناريو",
+				"placeholder": "خلفية الشخصية أو الإعداد."
+			},
+			"mesExample": {
+				"label": "مثال على الرسالة",
+				"placeholder": "أمثلة على ما قد تقوله الشخصية."
+			},
+			"firstMessage": {
+				"label": "الرسالة الأولى",
+				"placeholder": "الشيء الأول الذي تقوله الشخصية."
+			},
+			"personaDef": {
+				"heading": "تعريف الهوية"
+			},
+			"personaUserName": {
+				"label": "اسمك في المحادثة",
+				"placeholder": "مثال: الكابتن، المستكشف"
+			},
+			"personaAppearance": {
+				"label": "المظهر",
+				"placeholder": "صف مظهرك."
+			},
+			"personaPersonality": {
+				"label": "الشخصية",
+				"placeholder": "صف سمات شخصيتك."
+			},
+			"worldDef": {
+				"heading": "تعريف العالم"
+			},
+			"worldPrompt": {
+				"label": "تلقين العالم",
+				"placeholder": "صف قواعد العالم، وبيئته، وأي سياق عالمي للعب الأدوار."
+			},
+			"worldGreeting": {
+				"label": "تحية العالم",
+				"placeholder": "الرسالة الأولى التي يرسلها العالم إلى المستخدم."
+			},
+			"author": {
+				"label": "المؤلف",
+				"placeholder": "من هو مؤلف هذا المكون؟"
+			},
+			"version": {
+				"label": "الإصدار",
+				"placeholder": "مثال: 0.0.1"
+			},
+			"tags": {
+				"label": "الوسوم",
+				"placeholder": "وسوم مفصولة بفواصل"
+			},
+			"homePage": {
+				"label": "الصفحة الرئيسية",
+				"placeholder": "رابط الصفحة الرئيسية للمكون"
+			},
+			"issuePage": {
+				"label": "صفحة المشاكل",
+				"placeholder": "رابط صفحة مشاكل المكون"
+			},
+			"createButton": "إنشاء مكون",
+			"alerts": {
+				"success": "تم إنشاء المكون '${partName}' بنجاح!",
+				"error": "خطأ: ${message}"
+			}
 		},
 		"achievements": {
 			"create_part": {
@@ -866,6 +887,7 @@
 	},
 	"import": {
 		"title": "استيراد",
+		"description": "اجلب شخصياتك وعوالمك وتكويناتك العزيزة إلى أحضان fount. سواء كان ذلك من ملف أو نص تم لصقه، فهذا هو المكان الذي يتم فيه نسج عناصر جديدة في نسيجك الشخصي.",
 		"tabs": {
 			"fileImport": "استيراد ملف",
 			"textImport": "استيراد نص"
@@ -882,6 +904,14 @@
 		"buttons": {
 			"import": "استيراد"
 		},
+		"fileItem": {
+			"removeButton": {
+				"title": "حذف"
+			},
+			"removeButtonIcon": {
+				"alt": "حذف"
+			}
+		},
 		"alerts": {
 			"importSuccess": "تم الاستيراد بنجاح",
 			"importFailed": "فشل الاستيراد: ${error}",
@@ -892,31 +922,20 @@
 			"fileImportFailed": "فشل استيراد الملف: ${message}",
 			"noTextContent": "الرجاء إدخال محتوى نصي",
 			"textImportFailed": "فشل استيراد النص: ${message}",
-			"unknownError": "خطأ غير معروف",
 			"handler": "المعالج",
-			"error": "خطأ"
-		},
-		"fileItem": {
-			"removeButton": {
-				"title": "حذف"
-			},
-			"removeButtonIcon": {
-				"alt": "حذف"
-			}
+			"error": "خطأ",
+			"unknownError": "خطأ غير معروف"
 		}
 	},
 	"export": {
 		"title": "مصدر المكونات",
 		"pageTitle": "مصدر المكونات",
 		"pageSubtitle": "قم بتصدير المحتوى المفضل لديك",
+		"description": "قم بتصدير إبداعاتك الرائعة. تجمع هذه الأداة الأجزاء المحددة في ملف مضغوط بسيط لحفظها أو مشاركتها.",
 		"steps": {
 			"partType": "حدد نوعًا",
 			"part": "حدد المكونات",
 			"action": "تصدير"
-		},
-		"options": {
-			"withData": "يحتوي على ملفات البيانات",
-			"withDataDescription": "يحتوي على ملفات محددة كبيانات، مثل ذكريات الشخصية."
 		},
 		"labels": {
 			"partType": "اختر نوع المكون",
@@ -932,12 +951,35 @@
 		"partSearch": {
 			"placeholder": "بحث..."
 		},
+		"options": {
+			"withData": "يحتوي على ملفات البيانات",
+			"withDataDescription": "يحتوي على ملفات محددة كبيانات، مثل ذكريات الشخصية."
+		},
 		"export": {
 			"title": "خيارات التصدير"
 		},
 		"editor": {
 			"disabledIndicator": "الرجاء اختيار مكون أولاً",
 			"disabledIndicatorHint": "يرجى تحديد نوع المكون والمكون الذي تريد تصديره"
+		},
+		"buttons": {
+			"export": "تصدير",
+			"exportWithData": "تصدير (مع البيانات)",
+			"copyShareLink": "نسخ رابط المشاركة",
+			"generateShareLink": "إنشاء رابط مشاركة",
+			"generateShareLinkWithData": "إنشاء رابط مشاركة (مع البيانات)"
+		},
+		"shareMenu": {
+			"title": "اختر مدة المشاركة",
+			"1h": "ساعة واحدة",
+			"12h": "12 ساعة",
+			"24h": "24 ساعة",
+			"72h": "72 ساعة",
+			"cancel": "إلغاء"
+		},
+		"litterbox": {
+			"poweredBy": "خدمة المشاركة مدعومة من litterbox.moe",
+			"sponsorLink": "ادعمهم"
 		},
 		"errorMessage": {
 			"icon": {
@@ -952,25 +994,6 @@
 			"shareLinkCopied": "تم نسخ رابط المشاركة إلى الحافظة!",
 			"shareFailed": "فشل إنشاء رابط المشاركة."
 		},
-		"shareMenu": {
-			"title": "اختر مدة المشاركة",
-			"1h": "ساعة واحدة",
-			"12h": "12 ساعة",
-			"24h": "24 ساعة",
-			"72h": "72 ساعة",
-			"cancel": "إلغاء"
-		},
-		"litterbox": {
-			"poweredBy": "خدمة المشاركة مدعومة من litterbox.moe",
-			"sponsorLink": "ادعمهم"
-		},
-		"buttons": {
-			"export": "تصدير",
-			"exportWithData": "تصدير (مع البيانات)",
-			"copyShareLink": "نسخ رابط المشاركة",
-			"generateShareLink": "إنشاء رابط مشاركة",
-			"generateShareLinkWithData": "إنشاء رابط مشاركة (مع البيانات)"
-		},
 		"achievements": {
 			"share_part": {
 				"name": "من الخطر أن تذهب بمفردك! خذ هذا.",
@@ -981,17 +1004,13 @@
 	},
 	"uninstall": {
 		"title": "إلغاء التثبيت",
+		"description": "إذا اخترت الانفصال، فإن هذه المساحة تسمح لك بتوديع جميل. تأكيد إزالة المكونات، أو المصدر نفسه. تختلف المسارات وتبقى الذكريات.",
 		"titleWithName": "إلغاء تثبيت ${type}/${name}",
 		"confirmMessage": "هل أنت متأكد من أنك تريد إلغاء تثبيت ${type}: ‏${name}؟",
 		"invalidParamsTitle": "معلمات غير صالحة",
 		"infoMessage": {
 			"icon": {
 				"alt": "أيقونة المعلومات"
-			}
-		},
-		"errorMessage": {
-			"icon": {
-				"alt": "أيقونة الخطأ"
 			}
 		},
 		"buttons": {
@@ -1004,13 +1023,17 @@
 			"failed": "فشل إلغاء التثبيت: ${error}",
 			"invalidParams": "معلمات طلب غير صالحة.",
 			"httpError": "خطأ HTTP! رمز الحالة: ${status}"
+		},
+		"errorMessage": {
+			"icon": {
+				"alt": "أيقونة الخطأ"
+			}
 		}
 	},
 	"userSettings": {
 		"title": "إعدادات المستخدم",
 		"PageTitle": "إعدادات المستخدم",
-		"apiError": "فشل طلب API: ‏${message}",
-		"generalError": "حدث خطأ: ${message}",
+		"description": "اهتم بتفاصيل هويتك. إدارة ملف التعريف الخاص بك، وحماية وصولك، وعرض الأجهزة المتصلة. حرم هادئ لحسابك.",
 		"userInfo": {
 			"title": "معلومات المستخدم",
 			"usernameLabel": "اسم المستخدم:",
@@ -1043,19 +1066,50 @@
 		},
 		"userDevices": {
 			"title": "أجهزة/جلسات المستخدم",
-			"refreshButton": {
-				"title": "تحديث القائمة"
-			},
-			"refreshButtonIcon": {
-				"alt": "أيقونة التحديث"
-			},
 			"noDevicesFound": "لم يتم العثور على أجهزة أو جلسات.",
 			"deviceInfo": "معرف الجهاز: ${deviceId}",
 			"thisDevice": "هذا الجهاز",
 			"deviceDetails": "آخر ظهور: ${lastSeen} | IP: ‏${ipAddress} | UA: ‏${userAgent}",
 			"revokeButton": "إبطال",
 			"revokeConfirm": "هل أنت متأكد من أنك تريد تسجيل الخروج من هذا الجهاز/الجلسة؟",
-			"revokeSuccess": "تم إبطال الجهاز/الجلسة بنجاح."
+			"revokeSuccess": "تم إبطال الجهاز/الجلسة بنجاح.",
+			"refreshButton": {
+				"title": "تحديث القائمة"
+			},
+			"refreshButtonIcon": {
+				"alt": "أيقونة التحديث"
+			}
+		},
+		"apiKeys": {
+			"title": "مفتاح API",
+			"description": "إدارة مفتاح API للتطبيقات الخارجية.",
+			"input": {
+				"placeholder": "وصف المفتاح الجديد"
+			},
+			"createButton": "إنشاء",
+			"noKeysFound": "لم يتم العثور على مفاتيح API.",
+			"keyDetails": "الوصف: ${description} | تم إنشاؤها في: ${createdAt} | آخر استخدام: ${lastUsed}",
+			"neverUsed": "لم تستخدم",
+			"revokeButton": "إلغاء",
+			"revokeConfirm": "هل أنت متأكد من أنك تريد إلغاء مفتاح API هذا؟",
+			"revokeSuccess": "تم إلغاء مفتاح API بنجاح.",
+			"errorDescriptionRequired": "وصف مطلوب.",
+			"createSuccess": "تم إنشاء مفتاح API بنجاح.",
+			"refreshButton": {
+				"title": "تحديث القائمة"
+			},
+			"refreshButtonIcon": {
+				"alt": "أيقونة التحديث"
+			}
+		},
+		"newApiKey": {
+			"title": "تم إنشاء مفتاح API جديد",
+			"warning": "يرجى نسخ مفتاح API الجديد الخاص بك. لن تتمكن من رؤيته مرة أخرى!",
+			"closeButton": "لقد قمت بنسخ مفتاحي",
+			"copyButton": {
+				"title": "انسخ مفتاح API الجديد"
+			},
+			"copiedAlert": "تم نسخ مفتاح API إلى الحافظة!"
 		},
 		"logout": {
 			"title": "تسجيل الخروج",
@@ -1080,58 +1134,32 @@
 			"confirmButton": "تأكيد",
 			"cancelButton": "إلغاء"
 		},
-		"apiKeys": {
-			"title": "مفتاح API",
-			"description": "إدارة مفتاح API للتطبيقات الخارجية.",
-			"input": {
-				"placeholder": "وصف المفتاح الجديد"
-			},
-			"createButton": "إنشاء",
-			"noKeysFound": "لم يتم العثور على مفاتيح API.",
-			"refreshButton": {
-				"title": "تحديث القائمة"
-			},
-			"refreshButtonIcon": {
-				"alt": "أيقونة التحديث"
-			},
-			"keyDetails": "الوصف: ${description} | تم إنشاؤها في: ${createdAt} | آخر استخدام: ${lastUsed}",
-			"neverUsed": "لم تستخدم",
-			"revokeButton": "إلغاء",
-			"revokeConfirm": "هل أنت متأكد من أنك تريد إلغاء مفتاح API هذا؟",
-			"revokeSuccess": "تم إلغاء مفتاح API بنجاح.",
-			"errorDescriptionRequired": "وصف مطلوب.",
-			"createSuccess": "تم إنشاء مفتاح API بنجاح."
-		},
-		"newApiKey": {
-			"title": "تم إنشاء مفتاح API جديد",
-			"warning": "يرجى نسخ مفتاح API الجديد الخاص بك. لن تتمكن من رؤيته مرة أخرى!",
-			"copyButton": {
-				"title": "انسخ مفتاح API الجديد"
-			},
-			"closeButton": "لقد قمت بنسخ مفتاحي",
-			"copiedAlert": "تم نسخ مفتاح API إلى الحافظة!"
-		}
+		"apiError": "فشل طلب API: ‏${message}",
+		"generalError": "حدث خطأ: ${message}"
 	},
 	"languageSettings": {
 		"title": "إعدادات اللغة",
-		"description": "إدارة تفضيلات لغتك هنا. ستؤدي اللغات في القائمة إلى الأسبقية على إعدادات المتصفح بالترتيب.",
+		"pageTitle": "إعدادات اللغة",
+		"description": "إدارة تفضيلات اللغة الخاصة بك لتطبيق Fount. قم بتخصيص تجربتك مع خيارات اللغة المتاحة.",
+		"pageDescription": "إدارة تفضيلات لغتك هنا. ستؤدي اللغات في القائمة إلى الأسبقية على إعدادات المتصفح بالترتيب.",
 		"availableLanguages": "اللغات المتاحة",
 		"preferredLanguages": "قائمة لغة الأولوية",
 		"resetButton": "إعادة ضبط",
 		"saveButton": "حفظ",
-		"noPreferredLanguages": "لم يتم تعيين لغة مفضلة بعد. سيتم استخدام الإعدادات الافتراضية للمتصفح.",
-		"savedMessage": "يتم حفظ إعدادات اللغة!",
-		"resetMessage": "تم إعادة تعيين إعدادات اللغة!",
-		"fetchLocalesFailed": "فشل في الحصول على اللغات المتاحة!",
 		"select": {
 			"placeholder": "اختر لغة..."
 		},
 		"search": {
 			"placeholder": "ابحث عن لغة..."
-		}
+		},
+		"noPreferredLanguages": "لم يتم تعيين لغة مفضلة بعد. سيتم استخدام الإعدادات الافتراضية للمتصفح.",
+		"savedMessage": "يتم حفظ إعدادات اللغة!",
+		"resetMessage": "تم إعادة تعيين إعدادات اللغة!",
+		"fetchLocalesFailed": "فشل في الحصول على اللغات المتاحة!"
 	},
 	"themeManage": {
 		"title": "إدارة السمات",
+		"description": "اختر الجمالية التي تعكس حالتك المزاجية أو قصتك. قم بمعاينة مجموعة من السمات والاختيار من بينها، حيث يقدم كل منها أجواءً مختلفة لتفاعلاتك الرائعة. عالمك، أسلوبك.",
 		"instruction": "اختر سمة!",
 		"search": {
 			"placeholder": "ابحث عن سمة...",
@@ -1186,6 +1214,7 @@
 	"part_config": {
 		"title": "تهيئة المكون",
 		"pageTitle": "تهيئة المكون",
+		"description": "نظير في قلب ينبوع. هنا، يمكنك ضبط إعدادات مكوناته المتنوعة، وضبط المحرك الذي يقود تجربتك.",
 		"labels": {
 			"partType": "اختر نوع المكون",
 			"part": "اختر المكون"
@@ -1197,6 +1226,9 @@
 		"editor": {
 			"title": "تهيئة المكون",
 			"disabledIndicator": "هذا المكون لا يدعم التهيئة",
+			"jsonEditor": {
+				"aria-label": "محرر تكوين JSON"
+			},
 			"buttons": {
 				"save": "حفظ"
 			}
@@ -1217,6 +1249,7 @@
 	},
 	"aisource_editor": {
 		"title": "محرر مصدر الذكاء الاصطناعي",
+		"description": "هنا، تقوم بعزف سيمفونية أصوات الذكاء الاصطناعي. قم بإضافة أو نحت أو إسكات المصادر التي تمنح الحياة لرفاقك في الينبوع - رقصة دقيقة من الكود والخيال.",
 		"fileList": {
 			"title": "قائمة مصادر الذكاء الاصطناعي",
 			"addButton": {
@@ -1228,6 +1261,21 @@
 			"label": "اختر مولدًا",
 			"placeholder": "الرجاء الاختيار"
 		},
+		"editor": {
+			"disabledIndicator": "الرجاء اختيار مولد أولاً"
+		},
+		"common_config_interface": {
+			"loadingModels": "جاري تحميل النماذج...",
+			"availableModels": "النماذج المتاحة:",
+			"copied": "تم النسخ!",
+			"empty_generator": "يحتوي المولد القديم من مصدر AI هذا على خطأ أثناء التحميل وقد يتم إلغاء تثبيته أو إعادة تسميته.",
+			"apiKeyRequired": "مفتاح API مطلوب لعرض النماذج.",
+			"copyModelIdTooltip": "انقر لنسخ معرف النموذج",
+			"loadModelsFailed": "فشل تحميل النماذج: ${message}"
+		},
+		"prompts": {
+			"newFileName": "الرجاء إدخال اسم ملف مصدر الذكاء الاصطناعي الجديد (بدون لاحقة):"
+		},
 		"buttons": {
 			"save": "حفظ",
 			"delete": "حذف",
@@ -1235,42 +1283,28 @@
 				"dataset": {
 					"tip": "تعيين كافتراضي"
 				}
-			}
-		},
-		"alerts": {
-			"fetchFileListFailed": "فشل في جلب قائمة الملفات: ${error}",
-			"fetchGeneratorListFailed": "فشل في جلب قائمة المولدات: ${error}",
-			"fetchDefaultsFailed": "فشل في جلب المكونات الافتراضية: ${error}",
-			"fetchFileDataFailed": "فشل في جلب بيانات الملف: ${error}",
-			"noFileSelectedSave": "لم يتم تحديد أي ملف للحفظ.",
-			"saveFileFailed": "فشل حفظ الملف: ${error}",
-			"setDefaultFailed": "فشل تعيين مصدر الذكاء الاصطناعي الافتراضي: ${error}",
-			"noFileSelectedDelete": "لم يتم تحديد أي ملف للحذف.",
-			"deleteFileFailed": "فشل حذف الملف: ${error}",
-			"invalidFileName": "لا يمكن أن يحتوي اسم الملف على الأحرف التالية: / \\ : * ? \" < > |",
-			"addFileFailed": "فشل إضافة الملف: ${error}",
-			"fetchConfigTemplateFailed": "فشل في جلب قالب التهيئة",
-			"noGeneratorSelectedSave": "الرجاء اختيار مولد قبل الحفظ"
+			},
+			"setDefaultForFile": "قم بتعيين \"${fileName}\" كمصدر الذكاء الاصطناعي الافتراضي"
 		},
 		"confirm": {
 			"unsavedChanges": "لديك تغييرات غير محفوظة. هل تريد التخلص منها؟",
 			"deleteFile": "هل أنت متأكد من أنك تريد حذف الملف؟",
 			"unsavedChangesBeforeUnload": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد مغادرة هذه الصفحة؟"
 		},
-		"prompts": {
-			"newFileName": "الرجاء إدخال اسم ملف مصدر الذكاء الاصطناعي الجديد (بدون لاحقة):"
-		},
-		"editor": {
-			"disabledIndicator": "الرجاء اختيار مولد أولاً"
-		},
-		"common_config_interface": {
-			"empty_generator": "يحتوي المولد القديم من مصدر AI هذا على خطأ أثناء التحميل وقد يتم إلغاء تثبيته أو إعادة تسميته.",
-			"apiKeyRequired": "مفتاح API مطلوب لعرض النماذج.",
-			"loadingModels": "جاري تحميل النماذج...",
-			"availableModels": "النماذج المتاحة:",
-			"copyModelIdTooltip": "انقر لنسخ معرف النموذج",
-			"copied": "تم النسخ!",
-			"loadModelsFailed": "فشل تحميل النماذج: ${message}"
+		"alerts": {
+			"fetchFileListFailed": "فشل في جلب قائمة الملفات: ${error}",
+			"fetchGeneratorListFailed": "فشل في جلب قائمة المولدات: ${error}",
+			"fetchDefaultsFailed": "فشل في جلب المكونات الافتراضية: ${error}",
+			"fetchFileDataFailed": "فشل في جلب بيانات الملف: ${error}",
+			"fetchConfigTemplateFailed": "فشل في جلب قالب التهيئة",
+			"saveFileFailed": "فشل حفظ الملف: ${error}",
+			"deleteFileFailed": "فشل حذف الملف: ${error}",
+			"addFileFailed": "فشل إضافة الملف: ${error}",
+			"setDefaultFailed": "فشل تعيين مصدر الذكاء الاصطناعي الافتراضي: ${error}",
+			"noFileSelectedSave": "لم يتم تحديد أي ملف للحفظ.",
+			"noFileSelectedDelete": "لم يتم تحديد أي ملف للحذف.",
+			"noGeneratorSelectedSave": "الرجاء اختيار مولد قبل الحفظ",
+			"invalidFileName": "لا يمكن أن يحتوي اسم الملف على الأحرف التالية: / \\ : * ? \" < > |"
 		},
 		"achievements": {
 			"set_default_aisource": {
@@ -1282,11 +1316,8 @@
 	},
 	"discord_bots": {
 		"title": "بوتات Discord",
+		"description": "امنح رفاقك في الينبوع صوتًا في قاعات Discord الصاخبة. قم بتكوين تواجدهم وإدارة عملياتهم والسماح لهم بتوصيل العوالم، خادمًا واحدًا في كل مرة.",
 		"cardTitle": "بوت Discord",
-		"buttons": {
-			"newBot": "بوت جديد",
-			"deleteBot": "حذف البوت"
-		},
 		"botSelectDropdown": {
 			"placeholder": "اختر روبوت"
 		},
@@ -1310,6 +1341,9 @@
 			"apiKeyInput": {
 				"placeholder": "الرجاء إدخال مفتاح API"
 			},
+			"toggleApiKeyButton": {
+				"aria-label": "تبديل إظهار مفاتيح API"
+			},
 			"toggleApiKeyIcon": {
 				"alt": "تبديل عرض مفتاح API"
 			},
@@ -1322,10 +1356,14 @@
 		"prompts": {
 			"newBotName": "الرجاء إدخال اسم البوت الجديد:"
 		},
+		"buttons": {
+			"newBot": "بوت جديد",
+			"deleteBot": "حذف البوت"
+		},
 		"alerts": {
+			"configSaved": "تم حفظ التهيئة بنجاح",
 			"botExists": "البوت بالاسم \"${botname}\" موجود بالفعل، يرجى استخدام اسم آخر.",
 			"unsavedChanges": "لديك تغييرات غير محفوظة. هل تريد التخلص منها؟",
-			"configSaved": "تم حفظ التهيئة بنجاح",
 			"httpError": "خطأ HTTP",
 			"beforeUnload": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد المغادرة؟"
 		},
@@ -1339,6 +1377,7 @@
 	},
 	"telegram_bots": {
 		"title": "بوتات Telegram",
+		"description": "اسمح لشخصيات الينبوع الخاصة بك باجتياز موجات Telegram الفورية. قم بتكوين تواجدهم الرقمي وإدارة محادثاتهم وتوسيع نطاق وصولهم إلى عالم المراسلة النابض بالحياة.",
 		"cardTitle": "إدارة بوتات Telegram",
 		"botSelectDropdown": {
 			"placeholder": "اختر روبوت"
@@ -1352,10 +1391,6 @@
 		"charSearch": {
 			"placeholder": "ابحث عن شخصية..."
 		},
-		"buttons": {
-			"newBot": "بوت جديد",
-			"deleteBot": "حذف البوت"
-		},
 		"configCard": {
 			"title": "تهيئة البوت",
 			"labels": {
@@ -1366,6 +1401,9 @@
 			"charSelectPlaceholder": "اختر شخصية",
 			"botTokenInput": {
 				"placeholder": "الرجاء إدخال رمز بوت Telegram"
+			},
+			"toggleBotTokenButton": {
+				"aria-label": "تبديل إظهار مفاتيح API"
 			},
 			"toggleBotTokenIcon": {
 				"alt": "تبديل عرض مفتاح API"
@@ -1379,10 +1417,14 @@
 		"prompts": {
 			"newBotName": "الرجاء إدخال اسم البوت الجديد:"
 		},
+		"buttons": {
+			"newBot": "بوت جديد",
+			"deleteBot": "حذف البوت"
+		},
 		"alerts": {
+			"configSaved": "تم حفظ التهيئة بنجاح!",
 			"botExists": "البوت بالاسم \"${botname}\" موجود بالفعل، يرجى استخدام اسم آخر.",
 			"unsavedChanges": "لديك تغييرات غير محفوظة. هل تريد التخلص منها؟",
-			"configSaved": "تم حفظ التهيئة بنجاح!",
 			"httpError": "خطأ HTTP",
 			"beforeUnload": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد مغادرة الصفحة الحالية؟"
 		},
@@ -1396,8 +1438,9 @@
 	},
 	"browser_integration": {
 		"title": "تكامل المتصفح",
-		"header": "تكامل المتصفح",
-		"description": "لكي يتفاعل دور fount مع صفحة الويب ، تحتاج إلى تثبيت البرنامج النصي لتكامل المتصفح هذا. إنه بمثابة جسر بين الحرف والمتصفح ، مما يسمح لهم بعرض محتوى الصفحة وأداء الإجراءات.",
+		"description": "سد الفجوة بين fount والويب. توفر هذه الصفحة نص المستخدم لتمكين التكامل السلس، مما يجعل رفاقك من الذكاء الاصطناعي في تجربة التصفح الخاصة بك.",
+		"pageHeader": "تكامل المتصفح",
+		"pageDescription": "لكي يتفاعل دور fount مع صفحة الويب ، تحتاج إلى تثبيت البرنامج النصي لتكامل المتصفح هذا. إنه بمثابة جسر بين الحرف والمتصفح ، مما يسمح لهم بعرض محتوى الصفحة وأداء الإجراءات.",
 		"install_script_title": "البرنامج النصي للتثبيت",
 		"install_script_description": "انقر فوق الزر أدناه لتثبيت البرنامج النصي لتكامل المتصفح. يجب أولاً تثبيت مدير نصوص مستخدم مثل Tampermonkey.",
 		"install_button": "تثبيت",
@@ -1407,10 +1450,6 @@
 		"popular_managers": "الخيارات الشعبية:",
 		"csp_warning": "قد تحتاج إلى تثبيت المكون الإضافي لإيقاف تشغيل CSP لجعل وظيفة التكامل تعمل بشكل صحيح. بالنسبة لـ Chrome ، يمكنك استخدام <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener\" class=\"link\">هذا المكون</a>.",
 		"connected_pages_title": "صفحة متصلة",
-		"no_pages_connected": {
-			"title": "لا اتصال بعد",
-			"description": "يرجى تثبيت البرنامج النصي أولاً ، ثم زيارة أي موقع ويب في علامات تبويب المتصفح الأخرى ، والتي سيتم عرضها تلقائيًا هنا."
-		},
 		"fetch_pages_error": "فشل في تحميل قائمة الصفحة المرتبطة.",
 		"page_title": "عنوان الصفحة",
 		"page_url": "عنوان URL",
@@ -1419,6 +1458,10 @@
 		"status_unfocused": "في الخلفية",
 		"copy_button": "نسخ",
 		"copied_message": "نسخ إلى الحافظة",
+		"no_pages_connected": {
+			"title": "لا اتصال بعد",
+			"description": "يرجى تثبيت البرنامج النصي أولاً ، ثم زيارة أي موقع ويب في علامات تبويب المتصفح الأخرى ، والتي سيتم عرضها تلقائيًا هنا."
+		},
 		"autorun": {
 			"title": "تشغيل البرامج النصية تلقائيا",
 			"description": "إدارة مقتطفات JavaScript التي يتم تنفيذها تلقائيًا عند مطابقة موقع ويب معين. يمكن توفير هذه البرامج النصية من خلال دور AI الخاص بك أو المكون الإضافي لتعزيز أو أتمتة تجربة التصفح الخاصة بك.",
@@ -1464,19 +1507,20 @@
 		}
 	},
 	"browser_integration_script": {
+		"update": {
+			"prompt": "يتوفر إصدار جديد من البرنامج النصي للتكامل مع متصفح fount. هل صفحة التحديث مفتوحة الآن؟"
+		},
+		"csp_warning": "يكتشف البرنامج النصي لتكامل متصفح fount أن سياسة CSP موجودة على الصفحة ، مما قد يتسبب في عدم عمل البرنامج النصي للتكامل بشكل صحيح. يرجى النظر في تثبيت البرنامج المساعد لإغلاق CSP.",
 		"hostChange": {
 			"securityWarningTitle": "--- تحذير سلامة fount ---",
 			"message": "تحاول الصفحة الحالية (\"${origin}\") تغيير عنوان مضيف fount إلى:\n\n\"${newHost}\"\n\nتحذير: سيسمح الموافقة على هذا الإجراء للمضيف الجديد بالتحكم بالكامل في ميزات تكامل المتصفح ، مما قد يؤدي إلى تسرب حساس للمعلومات أو سرقة الحساب.\nيجب أن يتم الموافقة فقط إذا كنت متأكدًا من أن هذه هي عمليتك الخاصة (على سبيل المثال ، ترحيل خادم نافورة).\n\nهل أنت متأكد من أنك تريد السماح لهذا التغيير؟",
 			"uuidMismatchError": "خطأ أمان FOUNT: لا تتطابق هوية (UUID) للمضيف ${newHost}. تم إلغاء العملية.",
 			"verificationError": "خطأ أمان FOUNT: غير قادر على التحقق من مضيف جديد \"${newHost}\". يرجى التحقق مما إذا كان العنوان صحيحًا وما إذا كانت الخدمة قيد التشغيل."
-		},
-		"update": {
-			"prompt": "يتوفر إصدار جديد من البرنامج النصي للتكامل مع متصفح fount. هل صفحة التحديث مفتوحة الآن؟"
-		},
-		"csp_warning": "يكتشف البرنامج النصي لتكامل متصفح fount أن سياسة CSP موجودة على الصفحة ، مما قد يتسبب في عدم عمل البرنامج النصي للتكامل بشكل صحيح. يرجى النظر في تثبيت البرنامج المساعد لإغلاق CSP."
+		}
 	},
 	"terminal_assistant": {
 		"title": "مساعد الطرفية",
+		"description": "ما وراء الواجهة الرسومية، هناك مساحة للأوامر المباشرة. تفاعل مع قلب الينبوع من خلال المساعد الطرفي، حيث ينسج النص سحره القوي الخاص.",
 		"initialMessage": "يدعم fount نشر شخصيتك المفضلة في الطرفية لمساعدتك في البرمجة!",
 		"initialMessageLink": "انقر هنا لمعرفة المزيد",
 		"achievements": {
@@ -1489,6 +1533,7 @@
 	},
 	"deskpet": {
 		"title": "الحيوانات الأليفة سطح المكتب",
+		"description": "قم بإطلاق شخصياتك كحيوانات أليفة تفاعلية تعيش على سطح مكتبك.",
 		"launcherCard": {
 			"title": "بداية الحيوانات الأليفة",
 			"buttons": {
@@ -1510,8 +1555,8 @@
 		},
 		"toasts": {
 			"started": "تم بدء تشغيل الحيوان الأليف '${charname}'.",
-			"start_failed": "فشل في بدء تشغيل الحيوان الأليف '${charname}': ${message}",
 			"stopped": "تم إيقاف الحيوان الأليف '${charname}'.",
+			"start_failed": "فشل في بدء تشغيل الحيوان الأليف '${charname}': ${message}",
 			"stop_failed": "فشل إيقاف الحيوان الأليف '${charname}': ${message}"
 		},
 		"achievements": {
@@ -1524,6 +1569,7 @@
 	},
 	"access": {
 		"title": "الوصول إلى fount على أجهزة أخرى",
+		"description": "قم بتوسيع نطاق fount إلى ما هو أبعد من شاشة واحدة. هنا تكمن البوابة — عنوان URL، ورمز الاستجابة السريعة — للتواصل مع رفاقك من الأجهزة الأخرى، وهي عبارة عن جسر بسيط عبر الأثير المحلي.",
 		"heading": "هل تريد الوصول إلى fount على أجهزة أخرى؟",
 		"instruction": {
 			"sameLAN": "تأكد من أن الجهاز ومضيف fount على نفس الشبكة المحلية",
@@ -1534,6 +1580,7 @@
 	},
 	"proxy": {
 		"title": "وكيل API",
+		"description": "بالنسبة للمطورين والمتكاملين، تكشف هذه الصفحة عن وكيل واجهة برمجة التطبيقات (API) - اتصالك لنسج إمكانات Fount في تطبيقات أخرى.",
 		"heading": "بوابة وكيل API",
 		"instruction": "قم بإنشاء وإدارة مفاتيح API الخاصة بك في هذه الصفحة لدمج fount مع التطبيقات الأخرى.",
 		"endpointSectionTitle": "نقطة نهاية API",
@@ -1554,8 +1601,9 @@
 	},
 	"achievements": {
 		"title": "إنجاز",
-		"header": "قاعة الإنجاز",
-		"description": "تحقق من إنجازاتك ومعالمك غير المقفلة هنا.",
+		"description": "استكشف المعالم والإنجازات في رحلتك مع Fount. يمثل كل إنجاز خطوة في سردك الفريد.",
+		"pageHeader": "قاعة الإنجاز",
+		"pageDescription": "تحقق من إنجازاتك ومعالمك غير المقفلة هنا.",
 		"unlocked_on": "تم فتح القفل في ${date}",
 		"locked": "غير مقفلة",
 		"toast_title": "الإنجازات مقفلة!",
@@ -1572,6 +1620,7 @@
 	},
 	"badges_maker": {
 		"title": "fount! محول الشارات",
+		"description": "عندما يتطلب مشروعك لمسة من شخصية fount. قم بتحويل شارات Shields.io، ومنحها هوية جديدة مدوية.",
 		"card_title": "محول روابط شارات fount",
 		"original_url_label": "الصق رابط img.shields.io",
 		"original_url": {
@@ -1581,40 +1630,44 @@
 		"new_url": {
 			"placeholder": "سيظهر الرابط المحول هنا"
 		},
-		"copy_button": "نسخ",
 		"preview_label": "معاينة التأثير",
+		"copy_button": "نسخ",
+		"copied_text": "تم النسخ!",
 		"preview": {
 			"alt": "معاينة الشارة"
 		},
-		"copied_text": "تم النسخ!",
 		"copy_error": "لا يمكن نسخ النص: ${error}",
 		"copy_fail_alert": "فشل النسخ!"
 	},
 	"404": {
 		"title": "الصفحة غير موجودة",
+		"description": "الطريق الذي سعيت إليه قد ذاب في الضباب. هل كانت خطوة خاطئة، أو منعطفًا منسيًا؟ اسمح لنا بإرشادك إلى الشاطئ، أو ربما التوقف للعب لعبة وسط الفراغ الهادئ.",
 		"pageNotFoundText": "عفوًا! يبدو أنك وصلت إلى صفحة غير موجودة.",
 		"homepageButton": "العودة إلى الصفحة الرئيسية"
 	},
 	"code_block": {
-		"download": {
-			"dataset": {
-				"tip": "تنزيل الكود"
-			}
-		},
-		"execute": {
-			"dataset": {
-				"tip": "تنفيذ الكود"
-			}
-		},
 		"copy": {
 			"dataset": {
 				"tip": "نسخ إلى الحافظة"
-			}
+			},
+			"aria-label": "نسخ إلى الحافظة"
 		},
 		"copied": {
 			"dataset": {
 				"tip": "تم النسخ إلى الحافظة"
 			}
+		},
+		"download": {
+			"dataset": {
+				"tip": "تنزيل الكود"
+			},
+			"aria-label": "تنزيل الكود"
+		},
+		"execute": {
+			"dataset": {
+				"tip": "تنفيذ الكود"
+			},
+			"aria-label": "تنفيذ التعليمات البرمجية"
 		},
 		"copy_failed": "تعذّر النسخ إلى الحافظة: ${error}"
 	},
@@ -1622,9 +1675,9 @@
 		"initial": "أنا لست روبوت",
 		"verifying": "التحقق ...",
 		"solved": "تم التحقق بنجاح",
+		"wasm_disabled": "تمكين WASM للتحقق بشكل أسرع",
 		"error": "فشل التحقق",
-		"errorMessage": "فشل التحقق: ${error}",
-		"wasm_disabled": "تمكين WASM للتحقق بشكل أسرع"
+		"errorMessage": "فشل التحقق: ${error}"
 	},
 	"zxcvbn": {
 		"warnings": {

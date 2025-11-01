@@ -21,7 +21,7 @@ import { downloadRisuCard, downloadAsset } from './risu-api.mjs'
 
 
 /**
- * @description 保存资源并规范化 URI。
+ * 保存资源并规范化 URI。
  * @param {Buffer} assetBuffer - 资源缓冲区。
  * @param {string} originalName - 原始文件名。
  * @param {string} targetDir - 目标目录。
@@ -41,7 +41,7 @@ async function saveAndNormalizeAsset(assetBuffer, originalName, targetDir, asset
 
 
 /**
- * @description 将数据作为 Risu 角色导入。
+ * 将数据作为 Risu 角色导入。
  * @param {string} username - 用户名。
  * @param {Buffer} dataBuffer - 数据缓冲区。
  * @returns {Promise<Array<{ parttype: string; partname: string }>>} - 导入的部分信息数组。
@@ -217,7 +217,7 @@ async function ImportAsData(username, dataBuffer) {
 }
 
 /**
- * @description 通过文本导入 Risu 角色。
+ * 通过文本导入 Risu 角色。
  * @param {string} username - 用户名。
  * @param {string} text - 包含 Risu 角色 URL 的文本。
  * @returns {Promise<Array<{ parttype: string; partname: string }>>} - 导入的部分信息数组。
