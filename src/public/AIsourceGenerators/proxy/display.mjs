@@ -60,7 +60,7 @@ return async ({ data, containers }) => {
 			throw new Error('Response is not an array of models.')
 
 		const model_ids = models.map(m => m.id).sort()
-		const copied_text = geti1-n('aisource_editor.common_config_interface.copied')
+		const copied_text = geti18n('aisource_editor.common_config_interface.copied')
 		div.innerHTML = `
 <h3 class="text-lg font-semibold" data-i18n="aisource_editor.common_config_interface.availableModels"></h3>
 <p class="text-sm opacity-70" data-i18n="aisource_editor.common_config_interface.copyModelIdTooltip"></p>
