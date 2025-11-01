@@ -20,6 +20,9 @@ async function handleAction(user, action, params) {
 	return actions[action]({ user, ...params })
 }
 
+/**
+ * @description 聊天Shell
+ */
 export default {
 	info: {
 		'en-UK': {
@@ -213,10 +216,18 @@ export default {
 			tags: ['聊天', 'AI', '角色扮演']
 		}
 	},
+	/**
+	 * @description 加载Shell。
+	 * @param {object} root0 - 参数。
+	 * @param {object} root0.router - 路由。
+	 */
 	Load: ({ router }) => {
 		loading_count++
 		setEndpoints(router)
 	},
+	/**
+	 * @description 卸载Shell。
+	 */
 	Unload: () => {
 		loading_count--
 		if (!loading_count)
@@ -225,6 +236,12 @@ export default {
 
 	interfaces: {
 		invokes: {
+			/**
+			 * @description 参数处理器。
+			 * @param {string} user - 用户。
+			 * @param {Array<string>} args - 参数。
+			 * @returns {Promise<void>}
+			 */
 			ArgumentsHandler: async (user, args) => {
 				const command = args[0]
 				let params = {}
@@ -281,6 +298,12 @@ export default {
 					}
 				}
 			},
+			/**
+			 * @description IPC调用处理器。
+			 * @param {string} user - 用户。
+			 * @param {object} data - 数据。
+			 * @returns {Promise<any>} - 动作结果。
+			 */
 			IPCInvokeHandler: async (user, data) => {
 				const { command, ...params } = data
 				return handleAction(user, command, params)

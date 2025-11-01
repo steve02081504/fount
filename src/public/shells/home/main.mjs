@@ -3,6 +3,9 @@ import { events } from '../../../server/events.mjs'
 import { setEndpoints } from './src/endpoints.mjs'
 import { onPartInstalled, onPartUninstalled } from './src/home.mjs'
 
+/**
+ * @description 主页Shell
+ */
 export default {
 	info: {
 		'en-UK': {
@@ -177,11 +180,19 @@ export default {
 			tags: ['主頁', '儀表板', '主要']
 		}
 	},
+	/**
+	 * @description 加载Shell。
+	 * @param {object} root0 - 参数。
+	 * @param {object} root0.router - 路由。
+	 */
 	Load: async ({ router }) => {
 		setEndpoints(router)
 		events.on('part-installed', onPartInstalled)
 		events.on('part-uninstalled', onPartUninstalled)
 	},
+	/**
+	 * @description 卸载Shell。
+	 */
 	Unload: async () => {
 		events.off('part-installed', onPartInstalled)
 		events.off('part-uninstalled', onPartUninstalled)

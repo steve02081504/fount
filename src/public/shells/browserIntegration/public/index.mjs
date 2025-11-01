@@ -1,3 +1,8 @@
+/**
+ * @file browserIntegration/public/index.mjs
+ * @description 浏览器集成页面的主要客户端逻辑。
+ * @namespace browserIntegration.public
+ */
 import { initTranslations, geti18n } from '../../../scripts/i18n.mjs'
 import { renderTemplate, usingTemplates } from '../../../scripts/template.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
@@ -20,6 +25,13 @@ const pagesListDiv = document.getElementById('connected-pages-list'),
 let lastPages = ''
 const autoRunScriptsCache = new Map()
 
+/**
+ * @function renderPages
+ * @memberof browserIntegration.public
+ * @description 渲染已连接页面的列表。
+ * @param {Array<object>} pages - 要渲染的页面对象数组。
+ * @returns {Promise<void>}
+ */
 async function renderPages(pages) {
 	pagesListDiv.innerHTML = ''
 	if (!pages.length) pagesListDiv.appendChild(await renderTemplate('empty_state'))
@@ -27,15 +39,27 @@ async function renderPages(pages) {
 }
 
 const RECONNECT_DELAY = 5000
+/**
+ * @function connectWebSocket
+ * @memberof browserIntegration.public
+ * @description 连接到 WebSocket 服务器以接收 UI 更新。
+ */
 function connectWebSocket() {
 	const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
 	const wsUrl = `${wsProtocol}//${window.location.host}/ws/shells/browserIntegration/ui`
 	const ws = new WebSocket(wsUrl)
 
+	/**
+	 * @description WebSocket 'open' 事件处理程序。
+	 */
 	ws.onopen = () => {
 		console.log('Connected to UI WebSocket.')
 	}
 
+	/**
+	 * @description WebSocket 'message' 事件处理程序。
+	 * @param {MessageEvent} event - WebSocket 消息事件。
+	 */
 	ws.onmessage = async (event) => {
 		try {
 			const msg = JSON.parse(event.data)
@@ -54,6 +78,9 @@ function connectWebSocket() {
 		}
 	}
 
+	/**
+	 * @description WebSocket 'close' 事件处理程序。
+	 */
 	ws.onclose = async () => {
 		console.log(`UI WebSocket disconnected. Reconnecting in ${RECONNECT_DELAY / 1000} seconds...`)
 		// Clear the list to show a disconnected/error state
@@ -62,6 +89,10 @@ function connectWebSocket() {
 		setTimeout(connectWebSocket, RECONNECT_DELAY)
 	}
 
+	/**
+	 * @description WebSocket 'error' 事件处理程序。
+	 * @param {Event} err - WebSocket 错误事件。
+	 */
 	ws.onerror = (err) => {
 		console.error('UI WebSocket error:', err)
 		// Don't call ws.close() here, as onclose will be called automatically.
@@ -69,6 +100,12 @@ function connectWebSocket() {
 }
 
 
+/**
+ * @function showViewScriptModal
+ * @memberof browserIntegration.public
+ * @description 显示用于查看自动运行脚本的模态框。
+ * @param {string} scriptId - 要查看的脚本的 ID。
+ */
 function showViewScriptModal(scriptId) {
 	const script = autoRunScriptsCache.get(scriptId)
 	if (!script) return
@@ -79,6 +116,13 @@ function showViewScriptModal(scriptId) {
 	viewScriptModal.showModal()
 }
 
+/**
+ * @function handleDeleteScript
+ * @memberof browserIntegration.public
+ * @description 处理删除自动运行脚本的逻辑。
+ * @param {string} scriptId - 要删除的脚本的 ID。
+ * @returns {Promise<void>}
+ */
 async function handleDeleteScript(scriptId) {
 	if (confirm(geti18n('browser_integration.autorun.confirm_delete'))) try {
 		// 1. Delete metadata from server
@@ -100,6 +144,12 @@ async function handleDeleteScript(scriptId) {
 	}
 }
 
+/**
+ * @function loadAndRenderAutoRunScripts
+ * @memberof browserIntegration.public
+ * @description 从服务器加载自动运行脚本并渲染它们。
+ * @returns {Promise<void>}
+ */
 async function loadAndRenderAutoRunScripts() {
 	try {
 		autorunScriptList.innerHTML = '<div class="text-center"><span class="loading loading-dots loading-md"></span></div>'
@@ -122,6 +172,13 @@ async function loadAndRenderAutoRunScripts() {
 	}
 }
 
+/**
+ * @function handleAddScript
+ * @memberof browserIntegration.public
+ * @description 处理添加新自动运行脚本的表单提交。
+ * @param {Event} e - 表单提交事件。
+ * @returns {Promise<void>}
+ */
 async function handleAddScript(e) {
 	e.preventDefault()
 
@@ -180,6 +237,12 @@ autorunScriptList.addEventListener('click', e => {
 })
 
 
+/**
+ * @function main
+ * @memberof browserIntegration.public
+ * @description 应用程序的入口点。
+ * @returns {Promise<void>}
+ */
 async function main() {
 	applyTheme()
 	usingTemplates('/shells/browserIntegration/templates')

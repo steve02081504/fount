@@ -17,6 +17,9 @@ async function handleAction(user, action, params) {
 	return actions[action]({ user, ...params })
 }
 
+/**
+ * @description 导出组件Shell
+ */
 export default {
 	info: {
 		'en-UK': {
@@ -191,11 +194,22 @@ export default {
 			tags: ['導出', '備份', '共享']
 		}
 	},
+	/**
+	 * @description 加载Shell。
+	 * @param {object} root0 - 参数。
+	 * @param {object} root0.router - 路由。
+	 */
 	Load: ({ router }) => {
 		setEndpoints(router)
 	},
 	interfaces: {
 		invokes: {
+			/**
+			 * @description 参数处理器。
+			 * @param {string} user - 用户。
+			 * @param {Array<string>} args - 参数。
+			 * @returns {Promise<void>}
+			 */
 			ArgumentsHandler: async (user, args) => {
 				const [partType, partName, withDataStr, outputPath] = args
 				const withData = withDataStr === 'true'
@@ -206,6 +220,12 @@ export default {
 				await fs.writeFile(finalOutputPath, buffer)
 				console.log(`Part '${partName}' exported to ${finalOutputPath}`)
 			},
+			/**
+			 * @description IPC调用处理器。
+			 * @param {string} user - 用户。
+			 * @param {object} data - 数据。
+			 * @returns {Promise<any>} - 动作结果。
+			 */
 			IPCInvokeHandler: async (user, data) => {
 				return handleAction(user, 'default', data)
 			}

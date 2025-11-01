@@ -3,6 +3,19 @@ import path from 'node:path'
 
 import { changeUserPassword, revokeUserDeviceByJti, getUserDictionary, getUserByUsername as getUserConfig, renameUser, deleteUserAccount, generateApiKey, revokeApiKey } from '../../../server/auth.mjs'
 
+/**
+ * @file userSettings/src/actions.mjs
+ * @description 用户设置相关的动作。
+ * @namespace userSettings.actions
+ */
+
+/**
+ * @function getDirectorySize
+ * @memberof userSettings.actions
+ * @description 计算目录的大小。
+ * @param {string} directoryPath - 目录路径。
+ * @returns {Promise<number>} - 目录大小（字节）。
+ */
 async function getDirectorySize(directoryPath) {
 	let totalSize = 0
 	try {
@@ -20,6 +33,14 @@ async function getDirectorySize(directoryPath) {
 	return totalSize
 }
 
+/**
+ * @function formatBytes
+ * @memberof userSettings.actions
+ * @description 格式化字节大小。
+ * @param {number} bytes - 字节数。
+ * @param {number} [decimals=2] - 小数位数。
+ * @returns {string} - 格式化后的大小字符串。
+ */
 function formatBytes(bytes, decimals = 2) {
 	if (!bytes) return '0 Bytes'
 	const k = 1024
@@ -29,7 +50,29 @@ function formatBytes(bytes, decimals = 2) {
 	return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
 }
 
+/**
+ * @name actions
+ * @memberof userSettings.actions
+ * @description 可用的动作。
+ * @property {function} get-stats - 获取用户统计信息。
+ * @property {function} change-password - 更改用户密码。
+ * @property {function} list-devices - 列出用户设备。
+ * @property {function} revoke-device - 撤销用户设备。
+ * @property {function} rename-user - 重命名用户。
+ * @property {function} delete-account - 删除用户帐户。
+ * @property {function} list-apikeys - 列出 API 密钥。
+ * @property {function} create-apikey - 创建 API 密钥。
+ * @property {function} revoke-apikey - 撤销 API 密钥。
+ */
 export const actions = {
+	/**
+	 * @function get-stats
+	 * @memberof userSettings.actions
+	 * @description 获取用户统计信息。
+	 * @param {object} params - 参数。
+	 * @param {string} params.user - 用户。
+	 * @returns {Promise<object>} - 统计信息。
+	 */
 	'get-stats': async ({ user }) => {
 		const userConfig = getUserConfig(user)
 		const userDirectory = getUserDictionary(user)
@@ -41,35 +84,108 @@ export const actions = {
 			folderPath: userDirectory
 		}
 	},
+	/**
+	 * @function change-password
+	 * @memberof userSettings.actions
+	 * @description 更改用户密码。
+	 * @param {object} params - 参数。
+	 * @param {string} params.user - 用户。
+	 * @param {string} params.currentPassword - 当前密码。
+	 * @param {string} params.newPassword - 新密码。
+	 * @returns {Promise<object>} - 更改结果。
+	 */
 	'change-password': async ({ user, currentPassword, newPassword }) => {
 		if (!currentPassword || !newPassword) throw new Error('Current and new passwords are required.')
 		return await changeUserPassword(user, currentPassword, newPassword)
 	},
+	/**
+	 * @function list-devices
+	 * @memberof userSettings.actions
+	 * @description 列出用户设备。
+	 * @param {object} params - 参数。
+	 * @param {string} params.user - 用户。
+	 * @returns {object[]} - 设备列表。
+	 */
 	'list-devices': ({ user }) => {
 		const userConfig = getUserConfig(user)
 		return userConfig.auth.refreshTokens
 	},
+	/**
+	 * @function revoke-device
+	 * @memberof userSettings.actions
+	 * @description 撤销用户设备。
+	 * @param {object} params - 参数。
+	 * @param {string} params.user - 用户。
+	 * @param {string} params.tokenJti - 令牌 JTI。
+	 * @param {string} params.password - 密码。
+	 * @returns {Promise<object>} - 撤销结果。
+	 */
 	'revoke-device': async ({ user, tokenJti, password }) => {
 		if (!tokenJti || !password) throw new Error('Token JTI and password are required.')
 		return await revokeUserDeviceByJti(user, tokenJti, password)
 	},
+	/**
+	 * @function rename-user
+	 * @memberof userSettings.actions
+	 * @description 重命名用户。
+	 * @param {object} params - 参数。
+	 * @param {string} params.user - 用户。
+	 * @param {string} params.newUsername - 新用户名。
+	 * @param {string} params.password - 密码。
+	 * @returns {Promise<object>} - 重命名结果。
+	 */
 	'rename-user': async ({ user, newUsername, password }) => {
 		if (!newUsername || !password) throw new Error('New username and password are required.')
 		return await renameUser(user, newUsername, password)
 	},
+	/**
+	 * @function delete-account
+	 * @memberof userSettings.actions
+	 * @description 删除用户帐户。
+	 * @param {object} params - 参数。
+	 * @param {string} params.user - 用户。
+	 * @param {string} params.password - 密码。
+	 * @returns {Promise<object>} - 删除结果。
+	 */
 	'delete-account': async ({ user, password }) => {
 		if (!password) throw new Error('Password is required.')
 		return await deleteUserAccount(user, password)
 	},
+	/**
+	 * @function list-apikeys
+	 * @memberof userSettings.actions
+	 * @description 列出 API 密钥。
+	 * @param {object} params - 参数。
+	 * @param {string} params.user - 用户。
+	 * @returns {object[]} - API 密钥列表。
+	 */
 	'list-apikeys': ({ user }) => {
 		const userConfig = getUserConfig(user)
 		return userConfig.auth.apiKeys || []
 	},
+	/**
+	 * @function create-apikey
+	 * @memberof userSettings.actions
+	 * @description 创建 API 密钥。
+	 * @param {object} params - 参数。
+	 * @param {string} params.user - 用户。
+	 * @param {string} params.description - 描述。
+	 * @returns {Promise<object>} - 创建结果。
+	 */
 	'create-apikey': async ({ user, description }) => {
 		if (!description) throw new Error('Description is required.')
 		const { apiKey } = await generateApiKey(user, description)
 		return { apiKey, message: 'Store it securely, it will not be shown again.' }
 	},
+	/**
+	 * @function revoke-apikey
+	 * @memberof userSettings.actions
+	 * @description 撤销 API 密钥。
+	 * @param {object} params - 参数。
+	 * @param {string} params.user - 用户。
+	 * @param {string} params.jti - JTI。
+	 * @returns {Promise<object>} - 撤销结果。
+	 */
 	'revoke-apikey': async ({ user, jti }) => {
 		if (!jti) throw new Error('JTI of the key to revoke is required.')
 		return await revokeApiKey(user, jti)

@@ -1,3 +1,8 @@
+/**
+ * @file deskpet/public/index.mjs
+ * @description 桌面宠物 shell 的客户端逻辑。
+ * @namespace deskpet.public
+ */
 import { initTranslations, i18nElement } from '/scripts/i18n.mjs'
 import { applyTheme } from '/scripts/theme.mjs'
 import { showToastI18n } from '/scripts/toast.mjs'
@@ -20,6 +25,12 @@ let charList = []
 let selectedChar = null
 let runningPets = []
 
+/**
+ * @function renderCharDropdown
+ * @memberof deskpet.public
+ * @description 渲染角色下拉列表。
+ * @returns {Promise<void>}
+ */
 async function renderCharDropdown() {
 	i18nElement(charSelectDropdown.parentElement)
 	const disabled = !charList || !charList.length
@@ -36,6 +47,9 @@ async function renderCharDropdown() {
 		textKey: 'name',
 		valueKey: 'value',
 		disabled,
+		/**
+		 * @param {object} selectedItem - 选定的项目。
+		 */
 		onSelect: (selectedItem) => {
 			selectedChar = selectedItem ? selectedItem.value : null
 			startPetButton.disabled = !selectedChar
@@ -43,6 +57,12 @@ async function renderCharDropdown() {
 	})
 }
 
+/**
+ * @function renderRunningPets
+ * @memberof deskpet.public
+ * @description 渲染正在运行的宠物列表。
+ * @returns {Promise<void>}
+ */
 async function renderRunningPets() {
 	const runningPetItems = await Promise.all(runningPets.map(async (petName) => {
 		const element = await renderTemplate('running_pet_item', { name: petName })
@@ -59,6 +79,12 @@ async function renderRunningPets() {
 	}
 }
 
+/**
+ * @function handleStartPet
+ * @memberof deskpet.public
+ * @description 处理启动宠物的逻辑。
+ * @returns {Promise<void>}
+ */
 async function handleStartPet() {
 	if (!selectedChar) return
 
@@ -78,6 +104,13 @@ async function handleStartPet() {
 	startPetButton.disabled = !selectedChar
 }
 
+/**
+ * @function handleStopPet
+ * @memberof deskpet.public
+ * @description 处理停止宠物的逻辑。
+ * @param {string} charname - 角色名称。
+ * @returns {Promise<void>}
+ */
 async function handleStopPet(charname) {
 	try {
 		await stopPet(charname)
@@ -89,15 +122,33 @@ async function handleStopPet(charname) {
 	}
 }
 
+/**
+ * @function refreshRunningPets
+ * @memberof deskpet.public
+ * @description 刷新正在运行的宠物列表。
+ * @returns {Promise<void>}
+ */
 async function refreshRunningPets() {
 	runningPets = await getRunningPetList()
 	await renderRunningPets()
 }
 
+/**
+ * @function getURLParams
+ * @memberof deskpet.public
+ * @description 获取 URL 参数。
+ * @returns {URLSearchParams} - URL 参数。
+ */
 function getURLParams() {
 	return new URLSearchParams(window.location.search)
 }
 
+/**
+ * @function initializeFromURLParams
+ * @memberof deskpet.public
+ * @description 从 URL 参数初始化。
+ * @returns {Promise<void>}
+ */
 async function initializeFromURLParams() {
 	const urlParams = getURLParams()
 	const charName = urlParams.get('char')
@@ -108,6 +159,12 @@ async function initializeFromURLParams() {
 	}
 }
 
+/**
+ * @function init
+ * @memberof deskpet.public
+ * @description 初始化应用程序。
+ * @returns {Promise<void>}
+ */
 async function init() {
 	await applyTheme()
 	await initTranslations('deskpet')

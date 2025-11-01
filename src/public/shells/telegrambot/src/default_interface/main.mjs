@@ -62,6 +62,9 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 	if (!charAPI?.interfaces?.chat?.GetReply)
 		throw new Error('charAPI.interfaces.chat.GetReply is required for SimpleTelegramInterface.')
 
+	/**
+	 *
+	 */
 	function GetSimpleBotConfigTemplate() {
 		return {
 			OwnerUserID: 'YOUR_TELEGRAM_USER_ID', // 用户需填写的 Telegram 数字 ID
@@ -74,6 +77,11 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 	const CAPTION_LENGTH_LIMIT = 1024
 	const errorMessageText = '抱歉，处理您的消息时发生了错误。'
 
+	/**
+	 *
+	 * @param bot
+	 * @param interfaceConfig
+	 */
 	async function SimpleTelegramBotSetup(bot, interfaceConfig) {
 		const botInfo = bot.botInfo || await tryFewTimes(() => bot.telegram.getMe())
 		const botDisplayName = (await getPartInfo(charAPI, localhostLocales[0]))?.name || botCharname
@@ -140,6 +148,10 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 					...ctx.message.message_thread_id && { message_thread_id: ctx.message.message_thread_id }
 				}))
 
+				/**
+				 *
+				 * @param replyFromChar
+				 */
 				const AddChatLogEntryViaCharAPI = async replyFromChar => {
 					if (replyFromChar && (replyFromChar.content || replyFromChar.files?.length)) {
 						const aiMarkdownContent = replyFromChar.content || ''
@@ -175,6 +187,9 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 				}
 
 				ChannelCharScopedMemory[logicalChannelId] ??= {}
+				/**
+				 *
+				 */
 				const generateChatReplyRequest = () => ({
 					supported_functions: { markdown: true, files: true, add_message: true, html: false, unsafe_html: false },
 					username: ownerUsername,
@@ -191,6 +206,9 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 					chat_scoped_char_memory: ChannelCharScopedMemory[logicalChannelId],
 					chat_log: ChannelChatLogs[logicalChannelId].map(e => ({ ...e })),
 					AddChatLogEntry: AddChatLogEntryViaCharAPI,
+					/**
+					 *
+					 */
 					Update: async () => generateChatReplyRequest(),
 					extension: {
 						platform: 'telegram',

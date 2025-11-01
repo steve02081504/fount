@@ -2,6 +2,10 @@ import { authenticate, getUserByReq } from '../../../../server/auth.mjs'
 
 import { getAllAchievements, lockAchievement, unlockAchievement } from './api.mjs'
 
+/**
+ * @description 设置API端点
+ * @param {object} router - 路由
+ */
 export function setEndpoints(router) {
 	router.get('/api/shells/achievements/sources', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)

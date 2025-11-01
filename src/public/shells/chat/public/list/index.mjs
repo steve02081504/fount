@@ -1,3 +1,8 @@
+/**
+ * @file chat/public/list/index.mjs
+ * @description 聊天历史列表页面的客户端逻辑。
+ * @namespace chat.public.list
+ */
 import { initTranslations, confirmI18n, console, setLocalizeLogic, onLanguageChange } from '../../../scripts/i18n.mjs'
 import { renderMarkdown, renderMarkdownAsString } from '../../../scripts/markdown.mjs'
 import { makeSearchable } from '../../../scripts/search.mjs'
@@ -26,6 +31,13 @@ const CHUNK_SIZE = 7
 let fullSortedList = []
 let renderTimeout
 
+/**
+ * @function renderUI
+ * @memberof chat.public.list
+ * @description 根据当前的过滤和排序设置对聊天列表进行排序和渲染。
+ * 它会重置 UI 并开始以块的形式渲染列表项。
+ * @returns {Promise<void>}
+ */
 async function renderUI() {
 	fullSortedList = [...currentFilteredList].sort((a, b) => {
 		const sortValue = sortSelect.value
@@ -45,6 +57,11 @@ async function renderUI() {
 	appendNextChunk()
 }
 
+/**
+ * @function appendNextChunk
+ * @memberof chat.public.list
+ * @description 从排序列表中渲染并追加下一块聊天项目到容器中，以实现无限滚动。
+ */
 function appendNextChunk() {
 	const itemsToRender = fullSortedList.slice(chatListContainer.childElementCount, chatListContainer.childElementCount + CHUNK_SIZE)
 
@@ -57,11 +74,13 @@ function appendNextChunk() {
 }
 
 /**
- * Renders a preview of a Markdown string by truncating it to a certain number of significant nodes.
- * Trivial nodes (like <br>, <script>, comments, whitespace) are ignored.
- * @param {string} markdown - The input markdown string.
- * @param {number} significantNodeLimit - The number of significant nodes to keep.
- * @returns {Promise<string>} A promise that resolves to the preview HTML string.
+ * @function renderMarkdownPreview
+ * @memberof chat.public.list
+ * @description 通过将 Markdown 字符串截断为一定数量的重要节点来渲染预览。
+ * 琐碎的节点（如 <br>、<script>、注释、空白）将被忽略。
+ * @param {string} markdown - 输入的 Markdown 字符串。
+ * @param {number} significantNodeLimit - 要保留的重要节点数量。
+ * @returns {Promise<string>} - 解析为预览 HTML 字符串的 Promise。
  */
 export async function renderMarkdownPreview(markdown, significantNodeLimit) {
 	const trivialTags = ['BR', 'SCRIPT', 'LINK', 'STYLE', 'META']
@@ -79,6 +98,14 @@ export async function renderMarkdownPreview(markdown, significantNodeLimit) {
 	return previewContainer.innerHTML
 }
 
+/**
+ * @function renderChatListItem
+ * @memberof chat.public.list
+ * @description 为单个聊天会话渲染 HTML 元素。
+ * 它使用缓存来避免重新渲染未更改的项目。
+ * @param {object} chat - 包含聊天详细信息的聊天对象。
+ * @returns {Promise<HTMLElement>} - 渲染后的聊天列表项元素。
+ */
 async function renderChatListItem(chat) {
 	if (chatItemDOMCache.has(chat.chatid)) {
 		const cachedData = chatItemDOMCache.get(chat.chatid)
@@ -246,6 +273,12 @@ exportSelectedButton.addEventListener('click', async () => {
 	}
 })
 
+/**
+ * @function initializeApp
+ * @memberof chat.public.list
+ * @description 初始化应用程序，设置主题、翻译、获取聊天列表、设置搜索功能和无限滚动。
+ * @returns {Promise<void>}
+ */
 async function initializeApp() {
 	applyTheme()
 	await initTranslations('chat_history')
@@ -256,6 +289,9 @@ async function initializeApp() {
 	makeSearchable({
 		searchInput: filterInput,
 		data: fullChatList,
+		/**
+		 * @param {Array<object>} filtered - 过滤后的数据。
+		 */
 		onUpdate: filtered => {
 			currentFilteredList = filtered
 			renderUI()

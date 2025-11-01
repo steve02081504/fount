@@ -1,5 +1,8 @@
 import { setEndpoints } from './src/endpoints.mjs'
 
+/**
+ * @description 浏览器集成Shell
+ */
 export default {
 	info: {
 		'en-UK': {
@@ -193,6 +196,11 @@ export default {
 			tags: ['使用者腳本', '瀏覽器', '整合']
 		}
 	},
+	/**
+	 * @description 加载Shell。
+	 * @param {object} root0 - 参数。
+	 * @param {object} root0.router - 路由。
+	 */
 	Load: ({ router }) => {
 		setEndpoints(router)
 	}

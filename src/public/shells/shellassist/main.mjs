@@ -3,7 +3,18 @@ import { unlockAchievement } from '../achievements/src/api.mjs'
 
 import { setEndpoints } from './src/endpoints.mjs'
 
+/**
+ * @file shellassist/main.mjs
+ * @description Shell aassist 的入口点。
+ * @namespace shellassist
+ */
 export default {
+	/**
+	 * @name info
+	 * @memberof shellassist
+	 * @description Shell 的信息。
+	 * @property {'en-UK': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'zh-CN': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'ar-SA': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'de-DE': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, emoji: {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'es-ES': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'fr-FR': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'hi-IN': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'is-IS': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'it-IT': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'ja-JP': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'ko-KR': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, lzh: {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'nl-NL': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'pt-PT': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'ru-RU': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'uk-UA': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'vi-VN': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'zh-TW': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}}
+	 */
 	info: {
 		'en-UK': {
 			name: 'Terminal Assist',
@@ -178,6 +189,8 @@ export default {
 		}
 	},
 	/**
+	 * @function Load
+	 * @memberof shellassist
 	 * @description 加载 shell。
 	 * @param {object} options - 选项。
 	 * @param {object} options.router - 路由。
@@ -185,9 +198,21 @@ export default {
 	Load: ({ router }) => {
 		setEndpoints(router)
 	},
+	/**
+	 * @namespace interfaces
+	 * @memberof shellassist
+	 * @description Shell 的接口。
+	 */
 	interfaces: {
+		/**
+		 * @namespace invokes
+		 * @memberof shellassist.interfaces
+		 * @description 调用接口。
+		 */
 		invokes: {
 			/**
+			 * @function IPCInvokeHandler
+			 * @memberof shellassist.interfaces.invokes
 			 * @description 处理 IPC 调用。
 			 * @param {string} username - 用户名。
 			 * @param {object} data - 数据。

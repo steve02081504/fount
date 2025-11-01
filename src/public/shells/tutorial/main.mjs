@@ -1,4 +1,15 @@
+/**
+ * @file tutorial/main.mjs
+ * @description 教程 shell 的入口点。
+ * @namespace tutorial
+ */
 export default {
+	/**
+	 * @name info
+	 * @memberof tutorial
+	 * @description Shell 的信息。
+	 * @property {'en-UK': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'zh-CN': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'ar-SA': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'de-DE': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, emoji: {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'es-ES': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'fr-FR': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'hi-IN': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'is-IS': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'it-IT': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'ja-JP': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'ko-KR': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, lzh: {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'nl-NL': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'pt-PT': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'ru-RU': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'uk-UA': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'vi-VN': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'zh-TW': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}}
+	 */
 	info: {
 		'en-UK': {
 			name: 'Tutorial',
@@ -173,12 +184,16 @@ export default {
 		}
 	},
 	/**
+	 * @function Load
+	 * @memberof tutorial
 	 * @description 加载 shell。
 	 * @param {object} options - 选项。
 	 * @param {object} options.router - 路由。
 	 */
 	Load: async ({ router }) => { },
 	/**
+	 * @function Unload
+	 * @memberof tutorial
 	 * @description 卸载 shell。
 	 */
 	Unload: async () => { },

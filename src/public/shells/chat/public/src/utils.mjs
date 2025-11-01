@@ -1,7 +1,15 @@
+/**
+ *
+ * @param time_stamp
+ */
 export function processTimeStampForId(time_stamp) {
 	return time_stamp?.replaceAll?.(/[\s./:]/g, '_')
 }
 
+/**
+ *
+ * @param buffer
+ */
 export function arrayBufferToBase64(buffer) {
 	let binary = ''
 	const bytes = new Uint8Array(buffer)
@@ -10,6 +18,15 @@ export function arrayBufferToBase64(buffer) {
 	return window.btoa(binary)
 }
 
+/**
+ *
+ */
 export const SWIPE_THRESHOLD = 50
+/**
+ *
+ */
 export const TRANSITION_DURATION = 500
+/**
+ *
+ */
 export const DEFAULT_AVATAR = 'https://api.iconify.design/line-md/person.svg'

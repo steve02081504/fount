@@ -1,3 +1,8 @@
+/**
+ * @file easynew/public/index.mjs
+ * @description “轻松新建” shell 的客户端逻辑。
+ * @namespace easynew.public
+ */
 import { initTranslations, geti18n, i18nElement } from '../../scripts/i18n.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 
@@ -10,6 +15,12 @@ const responseMessage = document.getElementById('response-message')
 const submitButton = document.getElementById('submit-button')
 const submitSpinner = document.getElementById('submit-spinner')
 
+/**
+ * @function loadTemplates
+ * @memberof easynew.public
+ * @description 加载模板。
+ * @returns {Promise<void>}
+ */
 async function loadTemplates() {
 	try {
 		const templates = await getTemplates()
@@ -27,6 +38,12 @@ async function loadTemplates() {
 	}
 }
 
+/**
+ * @function loadTemplateUI
+ * @memberof easynew.public
+ * @description 加载模板 UI。
+ * @returns {Promise<void>}
+ */
 async function loadTemplateUI() {
 	const selectedTemplate = templateSelect.value
 	if (!selectedTemplate) {
@@ -45,6 +62,13 @@ async function loadTemplateUI() {
 	}
 }
 
+/**
+ * @function handleFormSubmit
+ * @memberof easynew.public
+ * @description 处理表单提交。
+ * @param {Event} event - 事件。
+ * @returns {Promise<void>}
+ */
 async function handleFormSubmit(event) {
 	event.preventDefault()
 	responseMessage.textContent = ''
@@ -77,6 +101,12 @@ async function handleFormSubmit(event) {
 	}
 }
 
+/**
+ * @function main
+ * @memberof easynew.public
+ * @description 主函数。
+ * @returns {Promise<void>}
+ */
 async function main() {
 	applyTheme()
 	await initTranslations('easynew')

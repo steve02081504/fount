@@ -4,6 +4,18 @@ import process from 'node:process'
 
 const shell = os.platform() === 'win32' ? 'powershell.exe' : 'bash'
 
+/**
+ * @file shellassist/src/terminal_ws.mjs
+ * @description WebSocket 终端处理。
+ * @namespace shellassist.terminal_ws
+ */
+
+/**
+ * @function spawnShell
+ * @memberof shellassist.terminal_ws
+ * @description 生成一个 shell 进程。
+ * @returns {Promise<object>} - pty 进程。
+ */
 async function spawnShell() {
 	const pty = await import('npm:@homebridge/node-pty-prebuilt-multiarch')
 	return pty.spawn(shell, [], {
@@ -15,6 +27,12 @@ async function spawnShell() {
 	})
 }
 
+/**
+ * @function handleTerminalConnection
+ * @memberof shellassist.terminal_ws
+ * @description 处理终端 WebSocket 连接。
+ * @param {object} ws - WebSocket 实例。
+ */
 export async function handleTerminalConnection(ws) {
 	const ptyProcess = await spawnShell()
 	ws.on('message', message => {

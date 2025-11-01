@@ -10,7 +10,19 @@ import {
 	REFRESH_TOKEN_EXPIRY_DURATION
 } from '../../../../server/auth.mjs'
 
-// Helper to calculate directory size
+/**
+ * @file userSettings/src/endpoints.mjs
+ * @description 用户设置 shell 的 API 端点。
+ * @namespace userSettings.endpoints
+ */
+
+/**
+ * @function getDirectorySize
+ * @memberof userSettings.endpoints
+ * @description 计算目录的大小。
+ * @param {string} directoryPath - 目录路径。
+ * @returns {Promise<number>} - 目录大小（字节）。
+ */
 async function getDirectorySize(directoryPath) {
 	let totalSize = 0
 	try {
@@ -32,6 +44,14 @@ async function getDirectorySize(directoryPath) {
 	return totalSize
 }
 
+/**
+ * @function formatBytes
+ * @memberof userSettings.endpoints
+ * @description 格式化字节大小。
+ * @param {number} bytes - 字节数。
+ * @param {number} [decimals=2] - 小数位数。
+ * @returns {string} - 格式化后的大小字符串。
+ */
 function formatBytes(bytes, decimals = 2) {
 	if (!bytes) return '0 Bytes'
 	const k = 1024
@@ -42,6 +62,12 @@ function formatBytes(bytes, decimals = 2) {
 }
 
 
+/**
+ * @function setEndpoints
+ * @memberof userSettings.endpoints
+ * @description 设置 userSettings shell 的 API 端点。
+ * @param {object} router - Express 路由实例。
+ */
 export function setEndpoints(router) {
 	router.get('/api/shells/userSettings/stats', authenticate, async (req, res) => {
 		const userReqData = await getUserByReq(req)

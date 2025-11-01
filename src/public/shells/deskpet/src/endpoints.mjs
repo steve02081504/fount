@@ -3,6 +3,10 @@ import { authenticate, getUserByReq } from '../../../../server/auth.mjs'
 
 import { runPet, stopPet, getRunningPets } from './pet_runner.mjs'
 
+/**
+ * @description 设置API端点。
+ * @param {object} router - 路由。
+ */
 export function setEndpoints(router) {
 	router.post('/api/shells/deskpet/start', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)

@@ -13,6 +13,9 @@ async function handleAction(user, params) {
 	return actions.default({ user, ...params })
 }
 
+/**
+ * @description 代理Shell
+ */
 export default {
 	info: {
 		'en-UK': {

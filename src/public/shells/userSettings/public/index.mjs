@@ -1,3 +1,8 @@
+/**
+ * @file userSettings/public/index.mjs
+ * @description 用户设置 shell 的客户端逻辑。
+ * @namespace userSettings.public
+ */
 import { getApiKeys, createApiKey, revokeApiKey, logout } from '../../scripts/endpoints.mjs'
 import { initTranslations, geti18n, promptI18n, confirmI18n, console } from '../../scripts/i18n.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
@@ -39,7 +44,12 @@ let passwordCacheTimeoutId = null // 用于存储 setTimeout 的 ID
 
 const PASSWORD_CACHE_DURATION = 3 * 60 * 1000 // 3分钟
 
-// 辅助函数：请求密码确认
+/**
+ * @function requestPasswordConfirmation
+ * @memberof userSettings.public
+ * @description 请求密码确认。
+ * @returns {Promise<string>} - 确认的密码。
+ */
 function requestPasswordConfirmation() {
 	return new Promise((resolve, reject) => {
 		// 检查是否有缓存的密码
@@ -87,6 +97,12 @@ passwordConfirmationModal.addEventListener('close', () => {
 	passwordConfirmationContext = { resolve: null, reject: null }
 })
 
+/**
+ * @function loadUserInfo
+ * @memberof userSettings.public
+ * @description 加载用户信息。
+ * @returns {Promise<void>}
+ */
 async function loadUserInfo() {
 	try {
 		const stats = await getUserStats()
@@ -158,6 +174,12 @@ renameUserForm.addEventListener('submit', async event => {
 	}
 })
 
+/**
+ * @function loadAndDisplayDevices
+ * @memberof userSettings.public
+ * @description 加载并显示设备。
+ * @returns {Promise<void>}
+ */
 async function loadAndDisplayDevices() {
 	deviceList.innerHTML = '<div class="text-center py-4"><span class="loading loading-dots loading-md"></span></div>'
 	noDevicesText.classList.add('hidden')
@@ -208,6 +230,9 @@ async function loadAndDisplayDevices() {
 				const revokeButton = document.createElement('button')
 				revokeButton.className = 'btn btn-xs btn-error btn-outline self-start sm:self-center'
 				revokeButton.dataset.i18n = 'userSettings.userDevices.revokeButton'
+				/**
+				 * @description 撤销按钮点击事件处理程序。
+				 */
 				revokeButton.onclick = async () => {
 					if (confirmI18n('userSettings.userDevices.revokeConfirm')) try {
 						const password = await requestPasswordConfirmation()
@@ -277,8 +302,12 @@ deleteAccountBtn.addEventListener('click', async () => {
 	}
 })
 
-// --- API Key Management ---
-
+/**
+ * @function loadAndDisplayApiKeys
+ * @memberof userSettings.public
+ * @description 加载并显示 API 密钥。
+ * @returns {Promise<void>}
+ */
 async function loadAndDisplayApiKeys() {
 	apiKeyList.innerHTML = '<div class="text-center py-4"><span class="loading loading-dots loading-md"></span></div>'
 	noApiKeysText.classList.add('hidden')
@@ -311,6 +340,9 @@ async function loadAndDisplayApiKeys() {
 			const revokeButton = document.createElement('button')
 			revokeButton.className = 'btn btn-xs btn-error btn-outline self-start sm:self-center'
 			revokeButton.dataset.i18n = 'userSettings.apiKeys.revokeButton'
+			/**
+			 * @description 撤销按钮点击事件处理程序。
+			 */
 			revokeButton.onclick = async () => {
 				if (confirmI18n('userSettings.apiKeys.revokeConfirm')) try {
 					const password = await requestPasswordConfirmation()
@@ -371,6 +403,12 @@ copyNewApiKeyBtn.addEventListener('click', async () => {
 })
 
 
+/**
+ * @function initializeApp
+ * @memberof userSettings.public
+ * @description 初始化应用程序。
+ * @returns {Promise<void>}
+ */
 async function initializeApp() {
 	await initTranslations('userSettings')
 	applyTheme()

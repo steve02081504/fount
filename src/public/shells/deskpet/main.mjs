@@ -15,6 +15,9 @@ async function handleAction(user, action, params) {
 	return actions[action]({ user, ...params })
 }
 
+/**
+ * @description 桌面宠物Shell
+ */
 export default {
 	info: {
 		'en-UK': {
@@ -208,13 +211,29 @@ export default {
 			tags: ['桌面', '寵物', '網頁視圖']
 		}
 	},
+	/**
+	 * @description 加载Shell。
+	 * @param {object} root0 - 参数。
+	 * @param {object} root0.router - 路由。
+	 * @returns {Promise<void>}
+	 */
 	Load: async ({ router }) => {
 		setEndpoints(router)
 	},
+	/**
+	 * @description 卸载Shell。
+	 * @returns {Promise<void>}
+	 */
 	Unload: async () => { },
 
 	interfaces: {
 		invokes: {
+			/**
+			 * @description 参数处理器。
+			 * @param {string} user - 用户。
+			 * @param {Array<string>} args - 参数。
+			 * @returns {Promise<void>}
+			 */
 			ArgumentsHandler: async (user, args) => {
 				const [action, charname] = args
 				const params = {
@@ -225,12 +244,24 @@ export default {
 					console.log(result)
 
 			},
+			/**
+			 * @description IPC调用处理器。
+			 * @param {string} user - 用户。
+			 * @param {object} data - 数据。
+			 * @returns {Promise<any>} - 动作结果。
+			 */
 			IPCInvokeHandler: async (user, data) => {
 				const { action, ...params } = data
 				return handleAction(user, action, params)
 			}
 		},
 		jobs: {
+			/**
+			 * @description 重启任务。
+			 * @param {string} user - 用户。
+			 * @param {string} charname - 角色名称。
+			 * @returns {Promise<void>}
+			 */
 			ReStartJob: async (user, charname) => {
 				const { runPet } = await import('./src/pet_runner.mjs')
 				await runPet(user, charname)

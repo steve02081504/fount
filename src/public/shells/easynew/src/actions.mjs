@@ -4,12 +4,22 @@ import { pathToFileURL } from 'node:url'
 
 import { getUserDictionary } from '../../../../server/auth.mjs'
 
+/**
+ * @description 获取模板。
+ * @param {string} username - 用户名。
+ * @returns {Promise<Array<string>>} - 模板列表。
+ */
 async function getTemplates(username) {
 	const userTemplatesPath = path.join(getUserDictionary(username), 'shells', 'easynew', 'parts')
 	const defaultTemplatesPath = path.resolve(import.meta.dirname, '..', 'parts')
 
 	const allTemplates = {}
 
+	/**
+	 * @description 查找模板。
+	 * @param {string} basePath - 基本路径。
+	 * @returns {Promise<void>}
+	 */
 	const findTemplates = async basePath => {
 		try {
 			const templateNames = await fs.readdir(basePath)
@@ -33,8 +43,27 @@ async function getTemplates(username) {
 	return Object.keys(allTemplates)
 }
 
+/**
+ * @description 快速新建操作
+ */
 export const actions = {
+	/**
+	 * @description 列出模板。
+	 * @param {object} root0 - 参数。
+	 * @param {string} root0.user - 用户。
+	 * @returns {Promise<Array<string>>} - 模板列表。
+	 */
 	'list-templates': ({ user }) => getTemplates(user),
+	/**
+	 * @description 创建。
+	 * @param {object} root0 - 参数。
+	 * @param {string} root0.user - 用户。
+	 * @param {string} root0.templateName - 模板名称。
+	 * @param {string} root0.partName - 部件名称。
+	 * @param {object} root0.jsonData - JSON数据。
+	 * @param {object} root0.files - 文件。
+	 * @returns {Promise<string>} - 成功消息。
+	 */
 	create: async ({ user, templateName, partName, jsonData, files }) => {
 		if (!templateName || !partName) throw new Error('Template name and part name are required.')
 

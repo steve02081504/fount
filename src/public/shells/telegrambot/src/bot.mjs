@@ -12,14 +12,16 @@ import { unlockAchievement } from '../../achievements/src/api.mjs'
 /** @typedef {import('../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
 
 /**
- * 启动 Telegram Bot。
- * @param {string} username - 用户名。
- * @param {string} botname - bot名称。
- * @param {{
- *  token: string,
- *  char: string,
- *  config: any
- * }} botConfig - 从 bot_configs.json 加载的bot配置。
+ * @file telegrambot/src/bot.mjs
+ * @description Telegram Bot 的核心逻辑。
+ * @namespace telegrambot.bot
+ */
+
+/**
+ * @function startTelegrafBot
+ * @memberof telegrambot.bot
+ * @description 启动 Telegram Bot。
+ * @param {{ token: string, char: string, config: any }} botConfig - 从 bot_configs.json 加载的bot配置。
  * @param {CharAPI_t} char - 加载后的角色 API 对象。
  * @returns {Promise<import('npm:telegraf').Telegraf>} Telegraf 实例。
  */
@@ -44,7 +46,9 @@ async function startTelegrafBot(botConfig, char) {
 }
 
 /**
- * 获取指定用户的所有 Telegram Bot 配置数据。
+ * @function getBotsData
+ * @memberof telegrambot.bot
+ * @description 获取指定用户的所有 Telegram Bot 配置数据。
  * @param {string} username - 用户名。
  * @returns {Object<string, any>} 包含所有bot配置的哈希表。
  */
@@ -54,7 +58,9 @@ function getBotsData(username) {
 }
 
 /**
- * 获取指定用户的特定 Telegram Bot 的配置。
+ * @function getBotConfig
+ * @memberof telegrambot.bot
+ * @description 获取指定用户的特定 Telegram Bot 的配置。
  * @param {string} username - 用户名。
  * @param {string} botname - bot名称。
  * @returns {Object | undefined} bot的配置对象，如果不存在则为 undefined。
@@ -65,7 +71,9 @@ export function getBotConfig(username, botname) {
 }
 
 /**
- * 获取指定角色用于 Telegram Bot 的默认配置模板。
+ * @function getBotConfigTemplate
+ * @memberof telegrambot.bot
+ * @description 获取指定角色用于 Telegram Bot 的默认配置模板。
  * @param {string} username - 用户名。
  * @param {string} charname - 角色名称。
  * @returns {Promise<Object>} 配置模板对象。
@@ -82,7 +90,9 @@ export async function getBotConfigTemplate(username, charname) {
 }
 
 /**
- * 保存/更新指定用户的特定 Telegram Bot 的配置。
+ * @function setBotConfig
+ * @memberof telegrambot.bot
+ * @description 保存/更新指定用户的特定 Telegram Bot 的配置。
  * @param {string} username - 用户名。
  * @param {string} botname - bot名称。
  * @param {Object} config - 要保存的配置对象。
@@ -95,7 +105,9 @@ export function setBotConfig(username, botname, config) {
 }
 
 /**
- * 删除指定用户的特定 Telegram Bot 的配置。
+ * @function deleteBotConfig
+ * @memberof telegrambot.bot
+ * @description 删除指定用户的特定 Telegram Bot 的配置。
  * @param {string} username - 用户名。
  * @param {string} botname - bot名称。
  */
@@ -106,7 +118,9 @@ export function deleteBotConfig(username, botname) {
 }
 
 /**
- * 运行一个 Telegram Bot。
+ * @function runBot
+ * @memberof telegrambot.bot
+ * @description 运行一个 Telegram Bot。
  * @param {string} username - 用户名。
  * @param {string} botname - bot名称。
  * @throws {Error} 如果bot配置不存在或 Token 无效等。
@@ -148,7 +162,9 @@ export async function runBot(username, botname) {
 }
 
 /**
- * 停止一个 Telegram Bot。
+ * @function stopBot
+ * @memberof telegrambot.bot
+ * @description 停止一个 Telegram Bot。
  * @param {string} username - 用户名。
  * @param {string} botname - bot名称。
  */
@@ -168,7 +184,9 @@ export async function stopBot(username, botname) {
 }
 
 /**
- * 获取指定用户正在运行的 Telegram Bot 列表。
+ * @function getRunningBotList
+ * @memberof telegrambot.bot
+ * @description 获取指定用户正在运行的 Telegram Bot 列表。
  * @param {string} username - 用户名。
  * @returns {string[]} 正在运行的bot名称列表。
  */
@@ -192,7 +210,9 @@ on_shutdown(async () => {
 })
 
 /**
- * 获取指定用户的所有已配置的 Telegram Bot 名称列表。
+ * @function getBotList
+ * @memberof telegrambot.bot
+ * @description 获取指定用户的所有已配置的 Telegram Bot 名称列表。
  * @param {string} username - 用户名。
  * @returns {string[]} Bot 名称列表。
  */

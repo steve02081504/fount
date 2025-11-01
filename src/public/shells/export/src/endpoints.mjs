@@ -2,6 +2,10 @@ import { authenticate, getUserByReq } from '../../../../server/auth.mjs'
 
 import { exportPart, getFountJson, createShareLink } from './manager.mjs'
 
+/**
+ * @description 设置API端点。
+ * @param {object} router - 路由。
+ */
 export function setEndpoints(router) {
 	router.get('/api/shells/export/export', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)

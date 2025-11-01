@@ -1,6 +1,14 @@
 import { setEndpoints } from './src/endpoints.mjs'
 
 /**
+ * @file userSettings/main.mjs
+ * @description 用户设置 shell 的入口点。
+ * @namespace userSettings
+ */
+
+/**
+ * @function handleAction
+ * @memberof userSettings
  * @description 处理动作。
  * @param {string} user - 用户。
  * @param {string} action - 动作。
@@ -16,6 +24,12 @@ async function handleAction(user, action, params) {
 }
 
 export default {
+	/**
+	 * @name info
+	 * @memberof userSettings
+	 * @description Shell 的信息。
+	 * @property {'en-UK': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'zh-CN': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'ar-SA': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'de-DE': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, emoji: {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'es-ES': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'fr-FR': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'hi-IN': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'is-IS': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'it-IT': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'ja-JP': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'ko-KR': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, lzh: {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'nl-NL': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'pt-PT': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'ru-RU': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'uk-UA': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'vi-VN': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'zh-TW': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}}
+	 */
 	info: {
 		'en-UK': {
 			name: 'User Settings',
@@ -190,6 +204,8 @@ export default {
 		}
 	},
 	/**
+	 * @function Load
+	 * @memberof userSettings
 	 * @description 加载 shell。
 	 * @param {object} options - 选项。
 	 * @param {object} options.router - 路由。
@@ -198,12 +214,26 @@ export default {
 		setEndpoints(router)
 	},
 	/**
+	 * @function Unload
+	 * @memberof userSettings
 	 * @description 卸载 shell。
 	 */
 	Unload: async () => { },
+	/**
+	 * @namespace interfaces
+	 * @memberof userSettings
+	 * @description Shell 的接口。
+	 */
 	interfaces: {
+		/**
+		 * @namespace invokes
+		 * @memberof userSettings.interfaces
+		 * @description 调用接口。
+		 */
 		invokes: {
 			/**
+			 * @function ArgumentsHandler
+			 * @memberof userSettings.interfaces.invokes
 			 * @description 处理命令行参数。
 			 * @param {string} user - 用户。
 			 * @param {Array<string>} args - 参数。
@@ -240,6 +270,8 @@ export default {
 
 			},
 			/**
+			 * @function IPCInvokeHandler
+			 * @memberof userSettings.interfaces.invokes
 			 * @description 处理 IPC 调用。
 			 * @param {string} user - 用户。
 			 * @param {object} data - 数据。

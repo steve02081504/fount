@@ -33,6 +33,11 @@ const chatUiSockets = new Map()
 const chatDeleteTimers = new Map()
 const CHAT_UNLOAD_TIMEOUT = ms('30m')
 
+/**
+ * @description 注册聊天UI WebSocket。
+ * @param {string} chatid - 聊天ID。
+ * @param {import('npm:ws').WebSocket} ws - WebSocket实例。
+ */
 export function registerChatUiSocket(chatid, ws) {
 	if (chatDeleteTimers.has(chatid)) {
 		clearTimeout(chatDeleteTimers.get(chatid))
@@ -69,6 +74,11 @@ export function registerChatUiSocket(chatid, ws) {
 	})
 }
 
+/**
+ * @description 广播聊天事件。
+ * @param {string} chatid - 聊天ID。
+ * @param {object} event - 要广播的事件。
+ */
 function broadcastChatEvent(chatid, event) {
 	const sockets = chatUiSockets.get(chatid)
 	if (!sockets?.size) return
@@ -440,6 +450,12 @@ export async function newChat(username) {
 	return chatid
 }
 
+/**
+ * @description 从元数据获取聊天摘要。
+ * @param {string} chatid - 聊天ID。
+ * @param {chatMetadata_t} chatMetadata - 聊天元数据。
+ * @returns {object | null} - 聊天摘要。
+ */
 function getSummaryFromMetadata(chatid, chatMetadata) {
 	if (!is_VividChat(chatMetadata)) return null
 	const lastEntry = chatMetadata.chatLog[chatMetadata.chatLog.length - 1]
@@ -454,6 +470,11 @@ function getSummaryFromMetadata(chatid, chatMetadata) {
 	}
 }
 
+/**
+ * @description 更新聊天摘要。
+ * @param {string} chatid - 聊天ID。
+ * @param {chatMetadata_t} chatMetadata - 聊天元数据。
+ */
 async function updateChatSummary(chatid, chatMetadata) {
 	const { username } = chatMetadatas.get(chatid)
 
@@ -546,7 +567,16 @@ async function getChatRequest(chatid, charname) {
 		Charname: charinfo.name || charname,
 		locales,
 		chat_log: chatMetadata.chatLog,
+		/**
+		 * @description 更新聊天请求。
+		 * @returns {Promise<import('../decl/chatLog.ts').chatReplyRequest_t>} - 更新后的聊天请求。
+		 */
 		Update: () => getChatRequest(chatid, charname),
+		/**
+		 * @description 添加聊天记录条目。
+		 * @param {chatLogEntry_t} entry - 聊天记录条目。
+		 * @returns {Promise<void>}
+		 */
 		AddChatLogEntry: async entry => {
 			if (!chatMetadata.LastTimeSlice.chars[charname]) throw new Error('Char not in this chat')
 			return addChatLogEntry(chatid, await BuildChatLogEntryFromCharReply(
@@ -779,7 +809,8 @@ export async function GetWorldName(chatid) {
 /**
  * @description 向聊天中添加一条新的消息条目，并处理后续逻辑（如自动回复）。
  * @param {string} chatid - 聊天ID。
- * @param {chatLogEntry_t} entry - 要添加的聊天记录条目。
+ * @param {Array<object>} freq_data - 频率数据。
+ * @param {string} initial_char - 初始角色。
  * @returns {Promise<chatLogEntry_t>} 已添加的聊天记录条目。
  */
 async function handleAutoReply(chatid, freq_data, initial_char) {
@@ -800,6 +831,11 @@ async function handleAutoReply(chatid, freq_data, initial_char) {
 	}
 }
 
+/**
+ * @description 添加聊天记录条目。
+ * @param {string} chatid - 聊天ID。
+ * @param {chatLogEntry_t} entry - 聊天记录条目。
+ */
 async function addChatLogEntry(chatid, entry) {
 	const chatMetadata = await loadChat(chatid)
 	if (entry.timeSlice.world?.interfaces?.chat?.AddChatLogEntry)
@@ -1222,6 +1258,10 @@ export async function deleteMessage(chatid, index) {
 	if (!chatMetadata) throw new Error('Chat not found')
 	if (index < 0 || index >= chatMetadata.chatLog.length) throw new Error('Invalid index')
 
+	/**
+	 * @description 生成请求。
+	 * @returns {object} - 请求对象。
+	 */
 	function geneRequest() {
 		return {
 			index,
@@ -1270,6 +1310,10 @@ export async function editMessage(chatid, index, new_content) {
 	if (!chatMetadata) throw new Error('Chat not found')
 	if (index < 0 || index >= chatMetadata.chatLog.length) throw new Error('Invalid index')
 
+	/**
+	 * @description 生成请求。
+	 * @returns {object} - 请求对象。
+	 */
 	function geneRequest() {
 		return {
 			index,

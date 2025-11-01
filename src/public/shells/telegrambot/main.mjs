@@ -3,6 +3,14 @@ import { runBot } from './src/bot.mjs'
 import { setEndpoints } from './src/endpoints.mjs'
 
 /**
+ * @file telegrambot/main.mjs
+ * @description telegrambot 的入口点。
+ * @namespace telegrambot
+ */
+
+/**
+ * @function handleAction
+ * @memberof telegrambot
  * @description 处理动作。
  * @param {string} user - 用户。
  * @param {string} action - 动作。
@@ -17,6 +25,12 @@ async function handleAction(user, action, params) {
 }
 
 export default {
+	/**
+	 * @name info
+	 * @memberof telegrambot
+	 * @description Shell 的信息。
+	 * @property {'en-UK': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'zh-CN': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'ar-SA': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'de-DE': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, emoji: {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'es-ES': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'fr-FR': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'hi-IN': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'is-IS': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'it-IT': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'ja-JP': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'ko-KR': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, lzh: {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'nl-NL': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'pt-PT': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'ru-RU': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'uk-UA': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'vi-VN': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}, 'zh-TW': {name: string, avatar: string, description: string, description_markdown: string, version: string, author: string, tags: string[]}}
+	 */
 	info: {
 		'en-UK': {
 			name: 'Telegram Bot',
@@ -191,6 +205,8 @@ export default {
 		}
 	},
 	/**
+	 * @function Load
+	 * @memberof telegrambot
 	 * @description 加载 shell。
 	 * @param {object} options - 选项。
 	 * @param {object} options.router - 路由。
@@ -200,16 +216,29 @@ export default {
 		setEndpoints(router)
 	},
 	/**
+	 * @function Unload
+	 * @memberof telegrambot
 	 * @description 卸载 shell。
 	 */
 	Unload: async () => {
 		// 在卸载 shell 时可以进行一些清理工作，如果需要的话
 		// 例如，确保所有bot实例都已停止（尽管 on_shutdown 应该处理这个）
 	},
-
+	/**
+	 * @namespace interfaces
+	 * @memberof telegrambot
+	 * @description Shell 的接口。
+	 */
 	interfaces: {
+		/**
+		 * @namespace invokes
+		 * @memberof telegrambot.interfaces
+		 * @description 调用接口。
+		 */
 		invokes: {
 			/**
+			 * @function ArgumentsHandler
+			 * @memberof telegrambot.interfaces.invokes
 			 * @description 处理命令行参数。
 			 * @param {string} user - 用户。
 			 * @param {Array<string>} args - 参数。
@@ -228,6 +257,8 @@ export default {
 
 			},
 			/**
+			 * @function IPCInvokeHandler
+			 * @memberof telegrambot.interfaces.invokes
 			 * @description 处理 IPC 调用。
 			 * @param {string} user - 用户。
 			 * @param {object} data - 数据。
@@ -238,8 +269,15 @@ export default {
 				return handleAction(user, action, params)
 			}
 		},
+		/**
+		 * @namespace jobs
+		 * @memberof telegrambot.interfaces
+		 * @description 任务接口。
+		 */
 		jobs: {
 			/**
+			 * @function ReStartJob
+			 * @memberof telegrambot.interfaces.jobs
 			 * @description 重启任务。
 			 * @param {string} user - 用户。
 			 * @param {string} botname - 机器人名称。

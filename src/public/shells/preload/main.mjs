@@ -13,6 +13,9 @@ async function handleAction(user, action, params) {
 	return actions[action]({ user, ...params })
 }
 
+/**
+ * @description 预加载Shell
+ */
 export default {
 	info: {
 		'en-UK': {
@@ -73,7 +76,7 @@ export default {
 			name: 'Précharger',
 			avatar: 'https://api.iconify.design/material-symbols/play-for-work.svg',
 			description: 'Un shell pour précharger des pièces.',
-			description_markdown: 'Précharge les composants fréquemment utilisés pour améliorer les performances et réduire les temps de chargement.',
+			description_markdown: 'Précharge les composants frequently utilisés pour améliorer les performances et réduire les temps de chargement.',
 			version: '0.0.1',
 			author: 'steve02081504',
 			tags: ['précharger', 'système', 'performance']
@@ -187,14 +190,36 @@ export default {
 			tags: ['預載', '系統', '性能']
 		}
 	},
+	/**
+	 * @description 加载Shell。
+	 * @param {object} root0 - 参数。
+	 * @param {object} root0.router - 路由。
+	 */
 	Load: ({ router }) => { },
+	/**
+	 * @description 卸载Shell。
+	 * @param {object} root0 - 参数。
+	 * @param {object} root0.router - 路由。
+	 */
 	Unload: ({ router }) => { },
 
 	interfaces: {
 		invokes: {
+			/**
+			 * @description 参数处理器。
+			 * @param {string} user - 用户。
+			 * @param {Array<string>} args - 参数。
+			 * @returns {Promise<void>}
+			 */
 			ArgumentsHandler: async (user, args) => {
 				await handleAction(user, 'default', { parttype: args[0], partname: args[1] })
 			},
+			/**
+			 * @description IPC调用处理器。
+			 * @param {string} user - 用户。
+			 * @param {object} data - 数据。
+			 * @returns {Promise<void>}
+			 */
 			IPCInvokeHandler: async (user, data) => {
 				await handleAction(user, 'default', data)
 			}

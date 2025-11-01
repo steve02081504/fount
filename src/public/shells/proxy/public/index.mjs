@@ -1,3 +1,8 @@
+/**
+ * @file proxy/public/index.mjs
+ * @description 代理 shell 的客户端逻辑。
+ * @namespace proxy.public
+ */
 import { initTranslations, console } from '/scripts/i18n.mjs'
 import { applyTheme } from '/scripts/theme.mjs'
 import { renderTemplate, usingTemplates } from '/scripts/template.mjs'
@@ -19,6 +24,12 @@ const exampleUrl = document.getElementById('exampleUrl')
 
 let apiKey = localStorage.getItem('proxy-apikey')
 
+/**
+ * @function checkApiKey
+ * @memberof proxy.public
+ * @description 检查 API 密钥。
+ * @returns {Promise<void>}
+ */
 async function checkApiKey() {
 	if (!apiKey) return renderApiKey()
 
@@ -39,6 +50,12 @@ async function checkApiKey() {
 	renderApiKey()
 }
 
+/**
+ * @function generateApiKey
+ * @memberof proxy.public
+ * @description 生成 API 密钥。
+ * @returns {Promise<void>}
+ */
 async function generateApiKey() {
 	try {
 		const response = await fetch('/api/apikey/create', {
@@ -62,6 +79,12 @@ async function generateApiKey() {
 	}
 }
 
+/**
+ * @function renderApiKey
+ * @memberof proxy.public
+ * @description 渲染 API 密钥。
+ * @returns {Promise<void>}
+ */
 async function renderApiKey() {
 	apiKeySection.innerHTML = '' // Clear section
 	if (apiKey) {
