@@ -36,11 +36,10 @@ export function escapeRegExp(string) {
 	return string.replace(/[$()*+./?[\\-^{|}]/g, '\\$&')
 }
 /**
- * Replaces Unicode escape sequences in a string with their corresponding characters.
+ * 将字符串中的 Unicode 转义序列替换为其对应的字符。
  *
- * @param {string} str - The input string possibly containing Unicode escape sequences.
- * @param string
- * @returns {string} The string with Unicode escape sequences replaced by actual characters.
+ * @param {string} string - 可能包含 Unicode 转义序列的输入字符串。
+ * @returns {string} Unicode 转义序列被替换为实际字符的字符串。
  */
 export function unescapeRegExp(string) {
 	return string.replace(/\\(.)/g, '$1')

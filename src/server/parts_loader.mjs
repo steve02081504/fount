@@ -498,10 +498,11 @@ export function getPartListBase(username, parttype, {
 }
 
 /**
- *
- * @param username
- * @param parttype
- * @param partname
+ * 获取部件的基本详细信息，而不使用缓存。
+ * @param {string} username - 用户的用户名。
+ * @param {string} parttype - 部件的类型。
+ * @param {string} partname - 部件的名称。
+ * @returns {Promise<object>} 一个解析为部件详细信息的承诺。
  */
 async function nocacheGetPartBaseDetails(username, parttype, partname) {
 	const parts_details_cache = loadData(username, 'parts_details_cache')
@@ -530,8 +531,9 @@ async function nocacheGetPartBaseDetails(username, parttype, partname) {
 }
 
 /**
- *
- * @param info
+ * 获取“对工作安全”的信息。
+ * @param {object} info - 要处理的信息对象。
+ * @returns {object} 处理后的信息对象。
  */
 function getSfwInfo(info) {
 	if (!info) return info
@@ -570,9 +572,10 @@ export async function getPartDetails(username, parttype, partname, nocache = fal
 }
 
 /**
- *
- * @param username
- * @param parttype
+ * 获取给定用户和部件类型的所有缓存部件详细信息。
+ * @param {string} username - 用户的用户名。
+ * @param {string} parttype - 部件的类型。
+ * @returns {Promise<{cachedDetails: object, uncachedNames: string[]}>} 一个解析为包含缓存的详细信息和未缓存的名称的对象的承诺。
  */
 export async function getAllCachedPartDetails(username, parttype) {
 	// 1. Get the full list of part names
