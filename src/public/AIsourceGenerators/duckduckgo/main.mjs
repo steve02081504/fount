@@ -8,9 +8,16 @@ import { DuckDuckGoAPI } from './duckduckgo.mjs'
  * @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t
  */
 
+/**
+ * @type {import('../../../decl/AIsource.ts').AIsource_interfaces_and_AIsource_t_getter}
+ */
 export default {
 	interfaces: {
 		AIsource: {
+			/**
+			 * 获取此 AI 源的配置模板。
+			 * @returns {Promise<object>} 配置模板。
+			 */
 			GetConfigTemplate: async () => configTemplate,
 			GetSource,
 		}
@@ -30,7 +37,7 @@ const configTemplate = {
  * @param {string} [config.name] - AI 来源的名称，默认为模型名称
  * @param {string} [config.model] - 使用的模型，默认为 'gpt-4o-mini'
  * @param {object} [config.fake_headers] - 自定义的请求头
- * @returns {AIsource_t} AI 来源对象
+ * @returns {Promise<AIsource_t>} AI 来源对象
  */
 async function GetSource(config) {
 	const duckduckgo = new DuckDuckGoAPI(config)
@@ -54,10 +61,18 @@ async function GetSource(config) {
 		is_paid: false,
 		extension: {},
 
+		/**
+		 * 卸载 AI 源。
+		 */
 		Unload: () => {
 			// 在这里执行清理操作，如果有必要的话
 		},
 
+		/**
+		 * 调用 AI 源。
+		 * @param {string} prompt - 要发送给 AI 的提示。
+		 * @returns {Promise<{content: string}>} 来自 AI 的结果。
+		 */
 		Call: async prompt => {
 			const messages = [{ role: 'user', content: prompt }] // 将字符串 prompt 包装成一个消息对象
 			const model = config.model || 'gpt-4o-mini'
@@ -68,6 +83,11 @@ async function GetSource(config) {
 			}
 		},
 
+		/**
+		 * 使用结构化提示调用 AI 源。
+		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+		 * @returns {Promise<{content: string}>} 来自 AI 的结果。
+		 */
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
 			const messages = []
 			margeStructPromptChatLog(prompt_struct).forEach(chatLogEntry => {
@@ -128,10 +148,34 @@ ${chatLogEntry.content}
 		},
 
 		tokenizer: {
+			/**
+			 * 释放分词器。
+			 * @returns {number} 0
+			 */
 			free: () => 0,
+			/**
+			 * 编码提示。
+			 * @param {string} prompt - 要编码的提示。
+			 * @returns {string} 编码后的提示。
+			 */
 			encode: prompt => prompt,
+			/**
+			 * 解码令牌。
+			 * @param {string} tokens - 要解码的令牌。
+			 * @returns {string} 解码后的令牌。
+			 */
 			decode: tokens => tokens,
+			/**
+			 * 解码单个令牌。
+			 * @param {string} token - 要解码的令牌。
+			 * @returns {string} 解码后的令牌。
+			 */
 			decode_single: token => token,
+			/**
+			 * 获取令牌计数。
+			 * @param {string} prompt - 要计算令牌的提示。
+			 * @returns {Promise<number>} 令牌数。
+			 */
 			get_token_count: prompt => duckduckgo.countTokens(prompt)
 		}
 	}

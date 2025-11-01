@@ -3,7 +3,16 @@ import { unlockAchievement } from '../achievements/src/api.mjs'
 
 import { setEndpoints } from './src/endpoints.mjs'
 
+/** @typedef {import('../../../decl/basedefs.ts').info_t} info_t */
+
+/**
+ * Shell aassist 的入口点。
+ */
 export default {
+	/**
+	 * Shell 的信息。
+	 * @type {info_t}
+	 */
 	info: {
 		'en-UK': {
 			name: 'Terminal Assist',
@@ -178,20 +187,26 @@ export default {
 		}
 	},
 	/**
-	 * @description 加载 shell。
+	 * 加载终端辅助Shell并设置API端点。
 	 * @param {object} options - 选项。
-	 * @param {object} options.router - 路由。
+	 * @param {object} options.router - Express的路由实例。
 	 */
 	Load: ({ router }) => {
 		setEndpoints(router)
 	},
+	/**
+	 * Shell的接口定义。
+	 */
 	interfaces: {
+		/**
+		 * 调用接口的定义。
+		 */
 		invokes: {
 			/**
-			 * @description 处理 IPC 调用。
-			 * @param {string} username - 用户名。
-			 * @param {object} data - 数据。
-			 * @returns {Promise<object>} - 调用结果。
+			 * 处理来自IPC的调用请求，以获取终端辅助。
+			 * @param {string} username - 用户的名称。
+			 * @param {object} data - 从IPC接收的数据。
+			 * @returns {Promise<object>} - 辅助结果。
 			 */
 			IPCInvokeHandler: async (username, data) => {
 				unlockAchievement(username, 'shells', 'shellassist', 'invoke_shell_assist')

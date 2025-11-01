@@ -397,6 +397,10 @@ export function enableSwipe(messageElement) {
 	let touchStartX = 0, touchStartY = 0, isDragging = false, swipeHandled = false
 
 	// --- 定义命名的监听器函数 ---
+	/**
+	 * 处理触摸开始事件。
+	 * @param {TouchEvent} event - 触摸事件对象。
+	 */
 	const handleTouchStart = event => {
 		if (event.touches.length !== 1) return
 		touchStartX = event.touches[0].clientX
@@ -404,12 +408,20 @@ export function enableSwipe(messageElement) {
 		isDragging = true
 		swipeHandled = false
 	}
+	/**
+	 * 处理触摸移动事件。
+	 * @param {TouchEvent} event - 触摸事件对象。
+	 */
 	const handleTouchMove = event => {
 		if (!isDragging || event.touches.length !== 1) return
 		const deltaX = event.touches[0].clientX - touchStartX
 		const deltaY = event.touches[0].clientY - touchStartY
 		if (Math.abs(deltaY) > Math.abs(deltaX)) isDragging = false // 垂直滚动优先
 	}
+	/**
+	 * 处理触摸结束事件。
+	 * @param {TouchEvent} event - 触摸事件对象。
+	 */
 	const handleTouchEnd = async event => {
 		if (!isDragging || swipeHandled || event.changedTouches.length !== 1) { isDragging = false; return }
 		const deltaX = event.changedTouches[0].clientX - touchStartX
@@ -425,7 +437,15 @@ export function enableSwipe(messageElement) {
 			await modifyTimeLine(direction)
 		}
 	}
+	/**
+		 * 处理触摸取消事件。
+		 */
 	const handleTouchCancel = () => { isDragging = false }
+	/**
+		 * 检查元素是否包含水平滚动条。
+		 * @param {HTMLElement} element - 要检查的 DOM 元素。
+		 * @returns {boolean} 如果元素包含水平滚动条则为 true，否则为 false。
+		 */
 	function checkForHorizontalScrollbar(element) {
 		if (!element || !element.scrollWidth || !element.clientWidth) return false
 		if (element.scrollWidth > element.clientWidth) return true

@@ -41,6 +41,9 @@ export async function LoadChar(username, charname) {
 		charname,
 		state: char_state,
 	}, {
+		/**
+		 * 加载后调用的函数。
+		 */
 		afterLoad: () => {
 			char_state.last_start_time_stamp = Date.now()
 			char_state.start_count++
@@ -74,6 +77,10 @@ export async function initChar(username, charname) {
 		charname,
 		state,
 	}, {
+		/**
+		 * 初始化后调用的函数。
+		 * @param {import('../../decl/charAPI.ts').CharAPI_t} char - 初始化的角色。
+		 */
 		afterInit: async char => {
 			state.init_count++
 			saveCharData(username)

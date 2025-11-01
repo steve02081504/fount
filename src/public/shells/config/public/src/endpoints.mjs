@@ -18,6 +18,7 @@
  * 获取配置数据
  * @param {string} partType 部分类型
  * @param {string} partName 部分名称
+ * @returns {Promise<any>} 包含配置数据的 Promise。
  */
 export async function getConfigData(partType, partName) {
 	const response = await fetch(`/api/shells/config/getdata?${new URLSearchParams({
@@ -38,6 +39,7 @@ export async function getConfigData(partType, partName) {
  * @param {string} partType 部分类型
  * @param {string} partName 部分名称
  * @param {object} data 配置数据
+ * @returns {Promise<any>} 包含保存结果的 Promise。
  */
 export async function saveConfigData(partType, partName, data) {
 	const response = await fetch('/api/shells/config/setdata', {
@@ -63,6 +65,7 @@ export async function saveConfigData(partType, partName, data) {
  * 获取部件的自定义显示内容
  * @param {string} partType 部件类型
  * @param {string} partName 部件名称
+ * @returns {Promise<{html: string, js: string}>} 包含 HTML 和 JS 内容的 Promise。
  */
 export async function getPartDisplay(partType, partName) {
 	if (!partType || !partName) return { html: '', js: '' }

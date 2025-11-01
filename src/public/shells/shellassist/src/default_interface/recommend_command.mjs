@@ -16,6 +16,11 @@ export const recommend_command_plugin = {
 	},
 	interfaces: {
 		chat: {
+			/**
+			 * 获取提示。
+			 * @param {any} args - 参数。
+			 * @returns {Promise<any>} - 提示。
+			 */
 			GetPrompt: async (args) => {
 				return {
 					additional_chat_log: [
@@ -33,6 +38,11 @@ command_body
 					]
 				}
 			},
+			/**
+			 * 回复处理器。
+			 * @param {any} result - 结果。
+			 * @returns {Promise<boolean>} - 是否处理。
+			 */
 			ReplyHandler: async result => {
 				const match = result.content.match(/<recommend_command>(?<command>[\S\s]*?)<\/recommend_command>/)
 				const command = match?.groups?.command?.trim() // Extract and trim the command

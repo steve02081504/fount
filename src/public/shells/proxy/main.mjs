@@ -4,15 +4,18 @@ import { actions } from './src/actions.mjs'
 import { setEndpoints } from './src/endpoints.mjs'
 
 /**
- * @description 处理动作。
- * @param {string} user - 用户。
- * @param {object} params - 参数。
- * @returns {Promise<any>} - 动作结果。
+ * 处理传入的代理动作请求。
+ * @param {string} user - 用户名。
+ * @param {object} params - 动作所需的参数。
+ * @returns {Promise<any>} - 返回动作执行的结果。
  */
 async function handleAction(user, params) {
 	return actions.default({ user, ...params })
 }
 
+/**
+ * 代理Shell
+ */
 export default {
 	info: {
 		'en-UK': {
@@ -188,9 +191,9 @@ export default {
 		}
 	},
 	/**
-	 * @description 加载 shell。
+	 * 加载代理Shell并设置API端点。
 	 * @param {object} options - 选项。
-	 * @param {object} options.router - 路由。
+	 * @param {object} options.router - Express的路由实例。
 	 */
 	Load: ({ router }) => {
 		setEndpoints(router)
@@ -198,9 +201,9 @@ export default {
 	interfaces: {
 		invokes: {
 			/**
-			 * @description 处理命令行参数。
-			 * @param {string} user - 用户。
-			 * @param {Array<string>} args - 参数。
+			 * 处理命令行参数以显示API端点和二维码。
+			 * @param {string} user - 用户名。
+			 * @param {Array<string>} args - 命令行参数（未使用）。
 			 */
 			ArgumentsHandler: async (user, args) => {
 				const url = await handleAction(user, {})
@@ -211,10 +214,10 @@ export default {
 				console.log(`You can use it with any OpenAI-compatible client, for example, to list models, run: curl ${url}/v1/models -H "Authorization: Bearer <your_fount_apikey>"`)
 			},
 			/**
-			 * @description 处理 IPC 调用。
-			 * @param {string} user - 用户。
-			 * @param {object} args - 参数。
-			 * @returns {Promise<any>} - 调用结果。
+			 * 处理IPC调用以获取API端点URL。
+			 * @param {string} user - 用户名。
+			 * @param {object} args - IPC调用参数（未使用）。
+			 * @returns {Promise<any>} - API端点URL。
 			 */
 			IPCInvokeHandler: async (user, args) => {
 				return handleAction(user, args)

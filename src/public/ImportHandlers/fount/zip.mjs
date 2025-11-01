@@ -10,7 +10,7 @@ import { exec } from '../../../scripts/exec.mjs'
 
 let sevenZipPathCache
 /**
- * @description 检测 7z 可执行文件的路径。它会首先在系统 PATH 中查找，如果找不到则回退使用 npm 上的 '7zip-bin-full' 模块。
+ * 检测 7z 可执行文件的路径。它会首先在系统 PATH 中查找，如果找不到则回退使用 npm 上的 '7zip-bin-full' 模块。
  * @returns {Promise<string>} - 返回 7z 可执行文件的路径。
  */
 async function get7zPath() {
@@ -26,7 +26,7 @@ async function get7zPath() {
 }
 
 /**
- * @description 递归地将目录内容添加到 zip 对象。
+ * 递归地将目录内容添加到 zip 对象。
  * @param {string} dirPath - 目录路径。
  * @param {jszip} zip - jszip 实例。
  */
@@ -45,7 +45,7 @@ async function zipDirectory(dirPath, zip) {
 }
 
 /**
- * @description 检查缓冲区是否为有效的 Fount 部件。
+ * 检查缓冲区是否为有效的 Fount 部件。
  * @param {Buffer} buffer - 缓冲区。
  * @returns {Promise<boolean>} - 如果是有效的 Fount 部件则返回 true，否则返回 false。
  */
@@ -86,7 +86,7 @@ export async function isFountPart(buffer) {
 }
 
 /**
- * @description 压缩目录。
+ * 压缩目录。
  * @param {string} dirPath - 目录路径。
  * @returns {Promise<Buffer>} - 压缩后的缓冲区。
  */
@@ -97,7 +97,7 @@ export async function zipDir(dirPath) {
 }
 
 /**
- * @description 解压目录。
+ * 解压目录。
  * @param {Buffer} buffer - 缓冲区。
  * @param {string} targetPath - 目标路径。
  */
@@ -141,7 +141,7 @@ export async function unzipDirectory(buffer, targetPath) {
 }
 
 /**
- * @description 读取 zip 文件中的文件。
+ * 读取 zip 文件中的文件。
  * @param {Buffer} buffer - zip 文件缓冲区。
  * @param {string} zipPath - zip 文件中的文件路径。
  * @returns {Promise<Buffer>} - 文件内容缓冲区。
@@ -157,7 +157,7 @@ export async function readZipfile(buffer, zipPath) {
 }
 
 /**
- * @description 以 JSON 格式读取 zip 文件中的文件。
+ * 以 JSON 格式读取 zip 文件中的文件。
  * @param {Buffer} buffer - zip 文件缓冲区。
  * @param {string} zipPath - zip 文件中的文件路径。
  * @returns {Promise<any>} - 解析后的 JSON 对象。
@@ -173,7 +173,7 @@ export async function readZipfileAsJSON(buffer, zipPath) {
 }
 
 /**
- * @description 使用 7z 压缩目录。
+ * 使用 7z 压缩目录。
  * @param {string} dirPath - 目录路径。
  * @returns {Promise<Buffer>} - 压缩后的缓冲区。
  */

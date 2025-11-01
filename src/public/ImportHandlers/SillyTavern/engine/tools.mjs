@@ -2,7 +2,7 @@
  * Reverses a string.
  *
  * @param {string} str - The string to reverse.
- * @return {string} The reversed string.
+ * @returns {string} The reversed string.
  */
 export function reverseStr(/** @type {string} */str) {
 	return Array.from(str).reverse().join('')
@@ -45,7 +45,7 @@ export function parseRegexFromString(input) {
  * Escapes special characters in a string to be used in a regular expression.
  *
  * @param {string} string - The string to escape.
- * @return {string} The escaped string.
+ * @returns {string} The escaped string.
  */
 export function escapeRegExp(string) {
 	return string.replace(/[$()*+./?[\\-^{|}]/g, '\\$&')

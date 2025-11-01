@@ -6,7 +6,7 @@ const urlParams = new URL(window.location.href)
 const from = urlParams.searchParams.get('from')
 
 /**
- * @description 处理协议。
+ * 处理协议。
  * @returns {Promise<void>}
  */
 async function handleProtocol() {
@@ -35,7 +35,7 @@ async function handleProtocol() {
 }
 
 /**
- * @description 处理运行部件。
+ * 处理运行部件。
  * @param {string[]} parts - 部件。
  * @returns {Promise<void>}
  */
@@ -64,7 +64,7 @@ async function handleRunPart(parts) {
 		confirmation_modal.showModal()
 
 		/**
-		 * @description 确认按钮点击事件。
+		 * 确认按钮点击事件。
 		 * @returns {void}
 		 */
 		confirm_btn.onclick = () => {
@@ -72,7 +72,7 @@ async function handleRunPart(parts) {
 			resolve(true)
 		}
 		/**
-		 * @description 取消按钮点击事件。
+		 * 取消按钮点击事件。
 		 * @returns {void}
 		 */
 		cancel_btn.onclick = () => {
@@ -82,7 +82,7 @@ async function handleRunPart(parts) {
 	})
 
 	/**
-	 * @description 返回上一页。
+	 * 返回上一页。
 	 * @returns {void}
 	 */
 	const goBack = () => {
@@ -122,7 +122,7 @@ async function handleRunPart(parts) {
 }
 
 /**
- * @description 处理页面。
+ * 处理页面。
  * @param {string[]} parts - 页面部分。
  * @returns {void}
  */

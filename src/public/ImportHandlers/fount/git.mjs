@@ -3,7 +3,7 @@ import { mkdir, rm } from 'node:fs/promises'
 import { exec } from '../../../scripts/exec.mjs'
 
 /**
- * @description 克隆 Git 仓库。
+ * 克隆 Git 仓库。
  * @param {string} repoUrl - 仓库 URL。
  * @param {string} targetDir - 目标目录。
  * @returns {Promise<void>}

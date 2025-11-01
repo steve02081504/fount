@@ -5,12 +5,23 @@ import { getfile } from './files.mjs'
 import { openModal } from './ui/modal.mjs'
 import { processTimeStampForId, arrayBufferToBase64 } from './utils.mjs'
 
+/**
+ * 处理文件选择。
+ * @param {Event} event - 事件。
+ * @param {Array<object>} selectedFiles - 已选择的文件。
+ * @param {HTMLElement} attachmentPreviewContainer - 附件预览容器。
+ * @returns {Promise<void>}
+ */
 export async function handleFilesSelect(event, selectedFiles, attachmentPreviewContainer) {
 	const files = event.target.files || event.dataTransfer.files
 	if (!files) return
 
 	for (const file of files) {
 		const reader = new FileReader()
+		/**
+		 * 文件读取完成后的回调。
+		 * @param {ProgressEvent<FileReader>} e - 事件。
+		 */
 		reader.onload = async e => {
 			const newFile = {
 				name: file.name,
@@ -67,6 +78,13 @@ export async function handlePaste(event, selectedFiles, attachmentPreviewContain
 		}
 }
 
+/**
+ * 渲染附件预览。
+ * @param {object} file - 文件。
+ * @param {number} index - 索引。
+ * @param {Array<object>} selectedFiles - 已选择的文件。
+ * @returns {Promise<HTMLElement>} - 附件元素。
+ */
 export async function renderAttachmentPreview(file, index, selectedFiles) {
 	let attachmentElement = await renderTemplate('attachment_preview', {
 		file,
@@ -133,6 +151,9 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 
 			attachmentElement.classList.add('attachment-removing')
 
+			/**
+			 * 移除元素的回退函数。
+			 */
 			const removeWithFallback = () => {
 				if (attachmentElement.parentNode)
 					attachmentElement.remove()
@@ -144,6 +165,10 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 	return attachmentElement
 }
 
+/**
+ * 下载文件。
+ * @param {object} file - 文件。
+ */
 export function downloadFile(file) {
 	const link = document.createElement('a')
 	link.href = `data:${file.mime_type};base64,${file.buffer}`

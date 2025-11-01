@@ -5,6 +5,10 @@
 /** @typedef {import('../decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t */
 /** @typedef {import('../decl/chatLog.ts').chatReplyRequest_t} chatReplyRequest_t */
 
+/**
+ * 获取单部分提示。
+ * @returns {{text: Array, additional_chat_log: Array, extension: object}} - 单部分提示对象。
+ */
 function getSinglePartPrompt() {
 	return {
 		text: [],
@@ -14,10 +18,10 @@ function getSinglePartPrompt() {
 }
 
 /**
- *
- * @param {chatReplyRequest_t} args
- * @param {number} detail_level
- * @returns
+ * 构建提示结构。
+ * @param {chatReplyRequest_t} args - 参数。
+ * @param {number} detail_level - 细节级别。
+ * @returns {Promise<prompt_struct_t>} - 提示结构。
  */
 export async function buildPromptStruct(
 	args,
@@ -58,13 +62,18 @@ export async function buildPromptStruct(
 		world?.interfaces?.chat?.TweakPrompt?.(args, result, result.world_prompt, detail_level),
 		user?.interfaces?.chat?.TweakPrompt?.(args, result, result.user_prompt, detail_level),
 		char?.interfaces?.chat?.TweakPrompt?.(args, result, result.char_prompt, detail_level),
-		...Object.keys(other_chars).map(other_char => other_chars[other_char].interfaces.chat?.TweakPromptForOther?.(args, result, other_chars_prompt[other_char], detail_level)),
+		...Object.keys(other_chars).map(other_char => other_chars[other_char].interfaces.chat?.TweakPromptForOther?.(args, result, result.other_chars_prompt[other_char], detail_level)),
 		...Object.keys(plugins).map(plugin => plugins[plugin].interfaces.chat?.TweakPrompt?.(args, result, result.plugin_prompts[plugin], detail_level))
 	])
 
 	return result
 }
 
+/**
+ * 将结构化提示转换为单个无聊天记录的字符串。
+ * @param {prompt_struct_t} prompt - 提示结构。
+ * @returns {string} - 单个字符串。
+ */
 export function structPromptToSingleNoChatLog(/** @type {prompt_struct_t} */ prompt) {
 	const result = []
 
@@ -116,8 +125,9 @@ export function structPromptToSingleNoChatLog(/** @type {prompt_struct_t} */ pro
 }
 
 /**
- * @param {prompt_struct_t} prompt
- * @return {chatLogEntry_t[]}
+ * 合并结构化提示聊天记录。
+ * @param {prompt_struct_t} prompt - 提示结构。
+ * @returns {chatLogEntry_t[]} - 聊天记录条目数组。
  */
 export function margeStructPromptChatLog(/** @type {prompt_struct_t} */ prompt) {
 	const result = [
@@ -138,6 +148,11 @@ export function margeStructPromptChatLog(/** @type {prompt_struct_t} */ prompt) 
 	return flat_result.filter(entry => !entry.charVisibility || entry.charVisibility.includes(prompt.char_id))
 }
 
+/**
+ * 将结构化提示转换为单个字符串。
+ * @param {prompt_struct_t} prompt - 提示结构。
+ * @returns {string} - 单个字符串。
+ */
 export function structPromptToSingle(/** @type {prompt_struct_t} */ prompt) {
 	const result = [structPromptToSingleNoChatLog(prompt)]
 

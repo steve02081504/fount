@@ -8,7 +8,7 @@ import { svgInliner } from './svgInliner.mjs'
 const template_cache = {}
 
 /**
- * @description 从 HTML 字符串安全地创建 DOM 元素（包括执行 <script> 标签和使得 <link> 标签生效），返回 DocumentFragment。
+ * 从 HTML 字符串安全地创建 DOM 元素（包括执行 <script> 标签和使得 <link> 标签生效），返回 DocumentFragment。
  *
  * @param {string} htmlString - 包含 HTML 代码的字符串。
  * @returns {DocumentFragment} - 渲染好的 DocumentFragment。
@@ -41,7 +41,7 @@ export function createDocumentFragmentFromHtmlString(htmlString) {
 }
 
 /**
- * @description 从 HTML 字符串创建 DOM 元素。
+ * 从 HTML 字符串创建 DOM 元素。
  * @param {string} htmlString - 包含 HTML 代码的字符串。
  * @returns {Element|DocumentFragment} - 创建的 DOM 元素。
  */
@@ -54,7 +54,7 @@ export function createDOMFromHtmlString(htmlString) {
 let templatePath
 
 /**
- * @description 设置模板路径。
+ * 设置模板路径。
  * @param {string} path - 模板路径。
  * @returns {void}
  */
@@ -63,7 +63,7 @@ export function usingTemplates(path) {
 }
 
 /**
- * @description 渲染模板。
+ * 渲染模板。
  * @param {string} template - 模板名称。
  * @param {object} [data={}] - 模板数据。
  * @returns {Promise<Element|DocumentFragment>} - 渲染后的 DOM 元素。
@@ -97,7 +97,7 @@ export async function renderTemplate(template, data = {}) {
 }
 
 /**
- * @description 将模板渲染为 HTML 字符串。
+ * 将模板渲染为 HTML 字符串。
  * @param {string} template - 模板名称。
  * @param {object} [data={}] - 模板数据。
  * @returns {Promise<string>} - 渲染后的 HTML 字符串。

@@ -6,6 +6,13 @@ import sanitizeFilename from 'npm:sanitize-filename'
 import { saveJsonFile } from '../../../../../scripts/json_loader.mjs'
 import { getUserDictionary } from '../../../../../server/auth.mjs'
 
+/**
+ * 获取一个可用的部件路径。
+ * @param {string} username - 用户名。
+ * @param {string} type - 部件类型。
+ * @param {string} name - 部件名称。
+ * @returns {Promise<string>} - 可用的部件路径。
+ */
 async function getAvailablePath(username, type, name) {
 	const userPath = getUserDictionary(username)
 	const partPath = path.join(userPath, type, name)
@@ -14,6 +21,15 @@ async function getAvailablePath(username, type, name) {
 	return partPath
 }
 
+/**
+ * 创建一个新的人设部件。
+ * @param {object} context - 上下文对象。
+ * @param {string} context.username - 用户名。
+ * @param {string} context.templateDir - 模板目录。
+ * @param {object} context.formData - 表单数据。
+ * @param {object} context.files - 上传的文件。
+ * @returns {Promise<string>} - 新部件的名称。
+ */
 export async function New(context) {
 	const { username, templateDir, formData, files } = context
 	const partType = 'personas'

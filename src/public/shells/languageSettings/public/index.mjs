@@ -1,3 +1,6 @@
+/**
+ * 语言设置 shell 的客户端逻辑。
+ */
 import { initTranslations, i18nElement, loadPreferredLangs, savePreferredLangs, getAvailableLocales } from '/scripts/i18n.mjs'
 import { renderTemplate, usingTemplates } from '/scripts/template.mjs'
 import { applyTheme } from '/scripts/theme.mjs'
@@ -14,11 +17,20 @@ const resetButton = document.getElementById('resetButton')
 let availableLocales = [] // { id: 'en-UK', name: 'English (UK)' }
 let userPreferredLocales = [] // ['en-UK', 'zh-CN']
 
+/**
+ * 获取区域设置名称。
+ * @param {string} id - 区域设置 ID。
+ * @returns {string} - 区域设置名称。
+ */
 function getLocaleName(id) {
 	const locale = availableLocales.find(l => l.id === id)
 	return locale ? locale.name : id // Fallback to ID if name not found
 }
 
+/**
+ * 更新可用语言下拉列表。
+ * @returns {Promise<void>}
+ */
 async function updateAvailableLanguagesDropdown() {
 	const currentPreferredSet = new Set(userPreferredLocales)
 	const filteredAvailableLocales = availableLocales.filter(locale => !currentPreferredSet.has(locale.id))
@@ -28,6 +40,10 @@ async function updateAvailableLanguagesDropdown() {
 		dataList: filteredAvailableLocales,
 		textKey: 'name',
 		valueKey: 'id',
+		/**
+		 * @param {object} selectedItem - 选定的项目。
+		 * @returns {boolean} - 是否成功。
+		 */
 		onSelect: (selectedItem) => {
 			if (selectedItem && !userPreferredLocales.includes(selectedItem.id)) {
 				userPreferredLocales.push(selectedItem.id)
@@ -36,11 +52,18 @@ async function updateAvailableLanguagesDropdown() {
 			// Return false to allow the dropdown to close automatically
 			return false
 		},
+		/**
+		 * @param {object} item - 项目。
+		 * @returns {string} - 数据访问器。
+		 */
 		dataAccessor: item => `${item.name} ${item.id}`,
 	})
 }
 
-// --- Core UI Rendering ---
+/**
+ * 渲染首选语言。
+ * @returns {Promise<void>}
+ */
 async function renderPreferredLanguages() {
 	preferredLanguagesList.innerHTML = '' // Clear current list
 
@@ -72,7 +95,10 @@ async function renderPreferredLanguages() {
 	await updateAvailableLanguagesDropdown()
 }
 
-// --- Event Handlers ---
+/**
+ * 获取可用区域设置。
+ * @returns {Promise<void>}
+ */
 async function fetchAvailableLocales() {
 	try {
 		const data = await getAvailableLocales()
@@ -84,6 +110,11 @@ async function fetchAvailableLocales() {
 	}
 }
 
+/**
+ * 移动区域设置。
+ * @param {string} id - 区域设置 ID。
+ * @param {number} direction - 方向。
+ */
 function moveLocale(id, direction) {
 	const index = userPreferredLocales.indexOf(id)
 	if (index === -1) return
@@ -96,16 +127,26 @@ function moveLocale(id, direction) {
 	}
 }
 
+/**
+ * 删除区域设置。
+ * @param {string} id - 区域设置 ID。
+ */
 function deleteLocale(id) {
 	userPreferredLocales = userPreferredLocales.filter(locale => locale !== id)
 	renderPreferredLanguages()
 }
 
+/**
+ * 处理保存。
+ */
 function handleSave() {
 	savePreferredLangs(userPreferredLocales)
 	showToastI18n('info', 'languageSettings.savedMessage')
 }
 
+/**
+ * 处理重置。
+ */
 function handleReset() {
 	userPreferredLocales = []
 	savePreferredLangs(userPreferredLocales)
@@ -113,7 +154,10 @@ function handleReset() {
 	showToastI18n('info', 'languageSettings.resetMessage')
 }
 
-// --- Initialization ---
+/**
+ * 初始化。
+ * @returns {Promise<void>}
+ */
 async function init() {
 	applyTheme()
 	usingTemplates('/shells/languageSettings/templates')

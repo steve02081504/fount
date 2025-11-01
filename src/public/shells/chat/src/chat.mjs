@@ -23,7 +23,7 @@ import { unlockAchievement } from '../../achievements/src/api.mjs'
 import { addfile, getfile } from './files.mjs'
 
 /**
- * @description 聊天元数据映射表的结构。这是一个在内存中缓存聊天信息的Map。
+ * 聊天元数据映射表的结构。这是一个在内存中缓存聊天信息的Map。
  * 键是聊天ID (chatId)，值是一个对象，包含用户名和聊天元数据。
  * `chatMetadata` 属性可能为 `null`，表示该聊天的元数据存在于磁盘上，但尚未被完整加载到内存中。
  * @type {Map<string, { username: string, chatMetadata: chatMetadata_t | null }>}
@@ -33,6 +33,11 @@ const chatUiSockets = new Map()
 const chatDeleteTimers = new Map()
 const CHAT_UNLOAD_TIMEOUT = ms('30m')
 
+/**
+ * 注册聊天UI WebSocket。
+ * @param {string} chatid - 聊天ID。
+ * @param {import('npm:ws').WebSocket} ws - WebSocket实例。
+ */
 export function registerChatUiSocket(chatid, ws) {
 	if (chatDeleteTimers.has(chatid)) {
 		clearTimeout(chatDeleteTimers.get(chatid))
@@ -69,6 +74,11 @@ export function registerChatUiSocket(chatid, ws) {
 	})
 }
 
+/**
+ * 广播聊天事件。
+ * @param {string} chatid - 聊天ID。
+ * @param {object} event - 要广播的事件。
+ */
 function broadcastChatEvent(chatid, event) {
 	const sockets = chatUiSockets.get(chatid)
 	if (!sockets?.size) return
@@ -80,7 +90,7 @@ function broadcastChatEvent(chatid, event) {
 }
 
 /**
- * @description 初始化 chatMetadatas 映射表。
+ * 初始化 chatMetadatas 映射表。
  * 此函数会遍历所有用户的聊天文件目录，为每个已存在的聊天ID在内存中创建一个占位符。
  * 这样做可以避免在需要时重新扫描文件系统，并能快速确定一个聊天ID属于哪个用户。
  * 初始时，`chatMetadata` 值为 `null`，表示完整的聊天数据尚未加载。
@@ -103,65 +113,65 @@ function initializeChatMetadatas() {
 initializeChatMetadatas()
 
 /**
- * @description 代表聊天中特定时间点的“时间切片”，包含了该时刻的所有上下文状态。
+ * 代表聊天中特定时间点的“时间切片”，包含了该时刻的所有上下文状态。
  * 这包括参与的角色、世界、玩家信息以及他们的记忆。
  * 每次消息发送时，都会创建一个新的时间切片或复制前一个，以捕捉状态的变化。
  */
 class timeSlice_t {
 	/**
-	 * @description 当前参与聊天的角色对象映射表。键为角色ID，值为角色API对象。
+	 * 当前参与聊天的角色对象映射表。键为角色ID，值为角色API对象。
 	 * @type {Record<string, CharAPI_t>}
 	 */
 	chars = {}
 	/**
-	 * @description 当前聊天所在的世界API对象。
+	 * 当前聊天所在的世界API对象。
 	 * @type {WorldAPI_t}
 	 */
 	world
 	/**
-	 * @description 当前世界的文件名/ID。
+	 * 当前世界的文件名/ID。
 	 * @type {string}
 	 */
 	world_id
 	/**
-	 * @description 代表玩家的人设API对象。
+	 * 代表玩家的人设API对象。
 	 * @type {UserAPI_t}
 	 */
 	player
 	/**
-	 * @description 当前玩家人设的文件名/ID。
+	 * 当前玩家人设的文件名/ID。
 	 * @type {string}
 	 */
 	player_id
 	/**
-	 * @description 存储每个角色在当前聊天中的特定记忆。键为角色ID，值为该角色的记忆对象。
+	 * 存储每个角色在当前聊天中的特定记忆。键为角色ID，值为该角色的记忆对象。
 	 * @type {Record<string, any>}
 	 */
 	chars_memories = {}
 	/**
-	 * @description 存储用户为每个角色设置的发言频率。键为角色ID，值为频率乘数。
+	 * 存储用户为每个角色设置的发言频率。键为角色ID，值为频率乘数。
 	 * @type {Record<string, number>}
 	 */
 	chars_speaking_frequency = {}
 
 	/**
-	 * @description 当前发言角色的ID。仅在角色发言时设置。
+	 * 当前发言角色的ID。仅在角色发言时设置。
 	 * @type {string}
 	 */
 	charname
 	/**
-	 * @description 当前发言玩家的ID。仅在玩家发言时设置。
+	 * 当前发言玩家的ID。仅在玩家发言时设置。
 	 * @type {string}
 	 */
 	playername
 	/**
-	 * @description 标记问候语的类型（如 'single', 'group', 'world_single'）。用于区分不同场景下的首次消息。
+	 * 标记问候语的类型（如 'single', 'group', 'world_single'）。用于区分不同场景下的首次消息。
 	 * @type {string}
 	 */
 	greeting_type
 
 	/**
-	 * @description 创建当前时间切片的深拷贝副本。
+	 * 创建当前时间切片的深拷贝副本。
 	 * 用于在状态变更时（如发送新消息）创建一个新的、独立的上下文。
 	 * `charname`, `playername`, `greeting_type` 等临时状态不会被复制。
 	 * @returns {timeSlice_t} 一个新的 timeSlice_t 实例。
@@ -176,7 +186,7 @@ class timeSlice_t {
 	}
 
 	/**
-	 * @description 将时间切片转换为可被JSON序列化的对象。
+	 * 将时间切片转换为可被JSON序列化的对象。
 	 * 此方法主要用于数据持久化之前的中间步骤，它将复杂的API对象简化为其ID。
 	 * @returns {{chars: string[], world: string, player: string, chars_memories: Record<string, any>, charname: string}} 序列化后的对象。
 	 */
@@ -191,7 +201,7 @@ class timeSlice_t {
 	}
 
 	/**
-	 * @description 将时间切片转换为用于存储到文件的数据格式。
+	 * 将时间切片转换为用于存储到文件的数据格式。
 	 * 这是 `saveChat` 流程的一部分，与 `toJSON` 类似，但为异步操作以支持未来可能的异步转换。
 	 * @returns {Promise<{chars: string[], world: string, player: string, chars_memories: Record<string, any>, charname: string}>} 一个包含可序列化数据的 Promise。
 	 */
@@ -206,7 +216,7 @@ class timeSlice_t {
 	}
 
 	/**
-	 * @description 从JSON反序列化对象中恢复 timeSlice_t 实例。
+	 * 从JSON反序列化对象中恢复 timeSlice_t 实例。
 	 * 此方法会根据ID异步加载完整的角色、世界和玩家API对象。
 	 * @param {any} json - 从文件中读取的JSON对象。
 	 * @param {string} username - 该聊天所属的用户名，用于加载相关文件。
@@ -229,32 +239,32 @@ class timeSlice_t {
 }
 
 /**
- * @description 代表聊天记录中的单条消息条目。
+ * 代表聊天记录中的单条消息条目。
  */
 class chatLogEntry_t {
-	/** @description 发言者显示的名称。 */
+	/** 发言者显示的名称。 */
 	name
-	/** @description 发言者显示的头像URL或路径。 */
+	/** 发言者显示的头像URL或路径。 */
 	avatar
-	/** @description 消息的时间戳。 */
+	/** 消息的时间戳。 */
 	time_stamp
-	/** @description 消息发送者的角色（'user' 或 'char'）。 */
+	/** 消息发送者的角色（'user' 或 'char'）。 */
 	role
-	/** @description 消息的主要内容。 */
+	/** 消息的主要内容。 */
 	content
-	/** @description 用于前端展示的特殊格式化内容。 */
+	/** 用于前端展示的特殊格式化内容。 */
 	content_for_show
-	/** @description 用于前端编辑的原始内容。 */
+	/** 用于前端编辑的原始内容。 */
 	content_for_edit
-	/** @description 此消息发出时的时间切片，包含了当时的完整上下文。 */
+	/** 此消息发出时的时间切片，包含了当时的完整上下文。 */
 	timeSlice = new timeSlice_t()
-	/** @description 附带的文件列表。 */
+	/** 附带的文件列表。 */
 	files = []
-	/** @description 扩展字段，用于存储插件或其他模块的附加信息。 */
+	/** 扩展字段，用于存储插件或其他模块的附加信息。 */
 	extension = {}
 
 	/**
-	 * @description 将聊天记录条目转换为可被JSON序列化的对象。
+	 * 将聊天记录条目转换为可被JSON序列化的对象。
 	 * @returns {object} 序列化后的对象。
 	 */
 	toJSON() {
@@ -269,7 +279,7 @@ class chatLogEntry_t {
 	}
 
 	/**
-	 * @description 将聊天记录条目转换为用于存储到文件的数据格式。
+	 * 将聊天记录条目转换为用于存储到文件的数据格式。
 	 * 此方法会处理文件，将文件Buffer存入文件系统并用文件ID替换。
 	 * @param {string} username - 当前操作的用户名，用于`addfile`。
 	 * @returns {Promise<object>} 一个包含可序列化数据的 Promise。
@@ -286,7 +296,7 @@ class chatLogEntry_t {
 	}
 
 	/**
-	 * @description 从JSON反序列化对象中恢复 chatLogEntry_t 实例。
+	 * 从JSON反序列化对象中恢复 chatLogEntry_t 实例。
 	 * 此方法会处理文件，根据文件ID从文件系统中加载文件Buffer。
 	 * @param {object} json - 从文件中读取的JSON对象。
 	 * @param {string} username - 该聊天所属的用户名，用于加载相关文件。
@@ -305,27 +315,27 @@ class chatLogEntry_t {
 }
 
 /**
- * @description 描述一个完整聊天的元数据。
+ * 描述一个完整聊天的元数据。
  */
 class chatMetadata_t {
-	/** @description 此聊天所属的用户名。 */
+	/** 此聊天所属的用户名。 */
 	username
-	/** @description 主聊天记录，按时间顺序排列。 */
+	/** 主聊天记录，按时间顺序排列。 */
 	/** @type {chatLogEntry_t[]} */
 	chatLog = []
 	/**
-	 * @description 时间线分支数组。用于支持消息的“重新生成”功能。
+	 * 时间线分支数组。用于支持消息的“重新生成”功能。
 	 * `chatLog`中最后一条消息，会对应`timeLines`中的多个可能版本。
 	 */
 	/** @type {chatLogEntry_t[]} */
 	timeLines = []
 	/**
-	 * @description 当前在`timeLines`数组中选择的分支索引。
+	 * 当前在`timeLines`数组中选择的分支索引。
 	 * @type {number}
 	 */
 	timeLineIndex = 0
 	/**
-	 * @description 聊天中最新的一个时间切片。代表了当前聊天的“实时”状态。
+	 * 聊天中最新的一个时间切片。代表了当前聊天的“实时”状态。
 	 * @type {timeSlice_t}
 	 */
 	LastTimeSlice = new timeSlice_t()
@@ -338,7 +348,7 @@ class chatMetadata_t {
 	}
 
 	/**
-	 * @description 创建一个新的聊天元数据实例。
+	 * 创建一个新的聊天元数据实例。
 	 * @param {string} username - 新聊天的所有者用户名。
 	 * @returns {Promise<chatMetadata_t>} 一个新的 chatMetadata_t 实例。
 	 */
@@ -357,7 +367,7 @@ class chatMetadata_t {
 	}
 
 	/**
-	 * @description 将聊天元数据转换为可被JSON序列化的对象。
+	 * 将聊天元数据转换为可被JSON序列化的对象。
 	 * @returns {object} 序列化后的对象。
 	 */
 	toJSON() {
@@ -370,7 +380,7 @@ class chatMetadata_t {
 	}
 
 	/**
-	 * @description 将聊天元数据转换为用于存储到文件的数据格式。
+	 * 将聊天元数据转换为用于存储到文件的数据格式。
 	 * @returns {Promise<object>} 一个包含可序列化数据的 Promise。
 	 */
 	async toData() {
@@ -383,7 +393,7 @@ class chatMetadata_t {
 	}
 
 	/**
-	 * @description 从JSON反序列化对象中恢复 chatMetadata_t 实例。
+	 * 从JSON反序列化对象中恢复 chatMetadata_t 实例。
 	 * @param {object} json - 从文件中读取的JSON对象。
 	 * @returns {Promise<chatMetadata_t>} 一个填充了完整数据的 chatMetadata_t 实例。
 	 */
@@ -401,7 +411,7 @@ class chatMetadata_t {
 	}
 
 	/**
-	 * @description 创建当前聊天元数据的深拷贝副本。
+	 * 创建当前聊天元数据的深拷贝副本。
 	 * @returns {Promise<chatMetadata_t>} 一个新的、独立的 chatMetadata_t 实例。
 	 */
 	copy() {
@@ -410,7 +420,7 @@ class chatMetadata_t {
 }
 
 /**
- * @description 为指定的聊天ID创建一个新的、空的元数据实例。
+ * 为指定的聊天ID创建一个新的、空的元数据实例。
  * @param {string} chatid - 聊天ID。
  * @param {string} username - 聊天的所有者用户名。
  */
@@ -419,7 +429,7 @@ export async function newMetadata(chatid, username) {
 }
 
 /**
- * @description 生成一个唯一的、当前未被使用的聊天ID。
+ * 生成一个唯一的、当前未被使用的聊天ID。
  * @returns {string} 新的唯一聊天ID。
  */
 export function findEmptyChatid() {
@@ -430,7 +440,7 @@ export function findEmptyChatid() {
 }
 
 /**
- * @description 创建一个全新的聊天。
+ * 创建一个全新的聊天。
  * @param {string} username - 新聊天的所有者用户名。
  * @returns {Promise<string>} 新创建的聊天的ID。
  */
@@ -440,6 +450,12 @@ export async function newChat(username) {
 	return chatid
 }
 
+/**
+ * 从元数据获取聊天摘要。
+ * @param {string} chatid - 聊天ID。
+ * @param {chatMetadata_t} chatMetadata - 聊天元数据。
+ * @returns {object | null} - 聊天摘要。
+ */
 function getSummaryFromMetadata(chatid, chatMetadata) {
 	if (!is_VividChat(chatMetadata)) return null
 	const lastEntry = chatMetadata.chatLog[chatMetadata.chatLog.length - 1]
@@ -454,6 +470,11 @@ function getSummaryFromMetadata(chatid, chatMetadata) {
 	}
 }
 
+/**
+ * 更新聊天摘要。
+ * @param {string} chatid - 聊天ID。
+ * @param {chatMetadata_t} chatMetadata - 聊天元数据。
+ */
 async function updateChatSummary(chatid, chatMetadata) {
 	const { username } = chatMetadatas.get(chatid)
 
@@ -468,7 +489,7 @@ async function updateChatSummary(chatid, chatMetadata) {
 }
 
 /**
- * @description 将指定聊天的元数据保存到磁盘。
+ * 将指定聊天的元数据保存到磁盘。
  * @param {string} chatid - 要保存的聊天ID。
  */
 export async function saveChat(chatid) {
@@ -482,7 +503,7 @@ export async function saveChat(chatid) {
 }
 
 /**
- * @description 从内存缓存或磁盘加载指定聊天的元数据。
+ * 从内存缓存或磁盘加载指定聊天的元数据。
  * @param {string} chatid - 要加载的聊天ID。
  * @returns {Promise<chatMetadata_t | undefined>} 聊天的元数据对象，如果找不到则返回 undefined。
  */
@@ -501,7 +522,7 @@ export async function loadChat(chatid) {
 }
 
 /**
- * @description 检查一个聊天是否是“活跃”的（即包含非问候语的消息）。
+ * 检查一个聊天是否是“活跃”的（即包含非问候语的消息）。
  * @param {chatMetadata_t} chatMetadata - 聊天的元数据。
  * @returns {boolean} 如果聊天是活跃的，则返回 true。
  */
@@ -510,7 +531,7 @@ function is_VividChat(chatMetadata) {
 }
 
 /**
- * @description 为特定角色构建一个用于请求回复的上下文对象。
+ * 为特定角色构建一个用于请求回复的上下文对象。
  * @param {string} chatid - 聊天ID。
  * @param {string} charname - 将要接收请求的角色ID。
  * @returns {Promise<import('../decl/chatLog.ts').chatReplyRequest_t>} 为角色准备的请求对象。
@@ -546,7 +567,16 @@ async function getChatRequest(chatid, charname) {
 		Charname: charinfo.name || charname,
 		locales,
 		chat_log: chatMetadata.chatLog,
+		/**
+		 * 更新聊天请求。
+		 * @returns {Promise<import('../decl/chatLog.ts').chatReplyRequest_t>} - 更新后的聊天请求。
+		 */
 		Update: () => getChatRequest(chatid, charname),
+		/**
+		 * 添加聊天记录条目。
+		 * @param {chatLogEntry_t} entry - 聊天记录条目。
+		 * @returns {Promise<void>}
+		 */
 		AddChatLogEntry: async entry => {
 			if (!chatMetadata.LastTimeSlice.chars[charname]) throw new Error('Char not in this chat')
 			return addChatLogEntry(chatid, await BuildChatLogEntryFromCharReply(
@@ -573,7 +603,7 @@ async function getChatRequest(chatid, charname) {
 }
 
 /**
- * @description 在聊天中设置或更改玩家使用的人设。
+ * 在聊天中设置或更改玩家使用的人设。
  * @param {string} chatid - 聊天ID。
  * @param {string | null} personaname - 新的人设ID，或 null 表示移除人设。
  */
@@ -594,7 +624,7 @@ export async function setPersona(chatid, personaname) {
 }
 
 /**
- * @description 在聊天中设置或更改世界。
+ * 在聊天中设置或更改世界。
  * @param {string} chatid - 聊天ID。
  * @param {string | null} worldname - 新的世界ID，或 null 表示移除世界。
  * @returns {Promise<chatLogEntry_t | null>} 如果世界有问候语，则返回该问候语消息条目。
@@ -647,7 +677,7 @@ export async function setWorld(chatid, worldname) {
 }
 
 /**
- * @description 向聊天中添加一个新角色。
+ * 向聊天中添加一个新角色。
  * @param {string} chatid - 聊天ID。
  * @param {string} charname - 要添加的角色ID。
  * @returns {Promise<chatLogEntry_t | null>} 如果角色有问候语，则返回该问候语消息条目。
@@ -700,7 +730,7 @@ export async function addchar(chatid, charname) {
 }
 
 /**
- * @description 从聊天中移除一个角色。
+ * 从聊天中移除一个角色。
  * @param {string} chatid - 聊天ID。
  * @param {string} charname - 要移除的角色ID。
  */
@@ -712,7 +742,7 @@ export async function removechar(chatid, charname) {
 }
 
 /**
- * @description 设置聊天中特定角色的发言频率。
+ * 设置聊天中特定角色的发言频率。
  * @param {string} chatid - 聊天ID。
  * @param {string} charname - 角色ID。
  * @param {number} frequency - 新的发言频率乘数。
@@ -725,7 +755,7 @@ export async function setCharSpeakingFrequency(chatid, charname, frequency) {
 }
 
 /**
- * @description 获取聊天中的所有角色ID列表。
+ * 获取聊天中的所有角色ID列表。
  * @param {string} chatid - 聊天ID。
  * @returns {Promise<string[]>} 角色ID的数组。
  */
@@ -735,7 +765,7 @@ export async function getCharListOfChat(chatid) {
 }
 
 /**
- * @description 获取指定范围的聊天记录。
+ * 获取指定范围的聊天记录。
  * @param {string} chatid - 聊天ID。
  * @param {number} start - 起始索引。
  * @param {number} end - 结束索引。
@@ -747,7 +777,7 @@ export async function GetChatLog(chatid, start, end) {
 }
 
 /**
- * @description 获取聊天记录的总长度。
+ * 获取聊天记录的总长度。
  * @param {string} chatid - 聊天ID。
  * @returns {Promise<number>} 聊天记录的长度。
  */
@@ -757,7 +787,7 @@ export async function GetChatLogLength(chatid) {
 }
 
 /**
- * @description 获取当前聊天中用户使用的人设名称。
+ * 获取当前聊天中用户使用的人设名称。
  * @param {string} chatid - 聊天ID。
  * @returns {Promise<string>} 人设ID。
  */
@@ -767,7 +797,7 @@ export async function GetUserPersonaName(chatid) {
 }
 
 /**
- * @description 获取当前聊天中使用的世界名称。
+ * 获取当前聊天中使用的世界名称。
  * @param {string} chatid - 聊天ID。
  * @returns {Promise<string>} 世界ID。
  */
@@ -777,9 +807,10 @@ export async function GetWorldName(chatid) {
 }
 
 /**
- * @description 向聊天中添加一条新的消息条目，并处理后续逻辑（如自动回复）。
+ * 向聊天中添加一条新的消息条目，并处理后续逻辑（如自动回复）。
  * @param {string} chatid - 聊天ID。
- * @param {chatLogEntry_t} entry - 要添加的聊天记录条目。
+ * @param {Array<object>} freq_data - 频率数据。
+ * @param {string} initial_char - 初始角色。
  * @returns {Promise<chatLogEntry_t>} 已添加的聊天记录条目。
  */
 async function handleAutoReply(chatid, freq_data, initial_char) {
@@ -800,6 +831,12 @@ async function handleAutoReply(chatid, freq_data, initial_char) {
 	}
 }
 
+/**
+ * 添加聊天记录条目。
+ * @param {string} chatid - 聊天ID。
+ * @param {chatLogEntry_t} entry - 聊天记录条目。
+ * @returns {Promise<void>}
+ */
 async function addChatLogEntry(chatid, entry) {
 	const chatMetadata = await loadChat(chatid)
 	if (entry.timeSlice.world?.interfaces?.chat?.AddChatLogEntry)
@@ -840,7 +877,7 @@ async function addChatLogEntry(chatid, entry) {
 	return entry
 }
 /**
- * @description 修改当前消息的时间线（“重新生成”功能）。
+ * 修改当前消息的时间线（“重新生成”功能）。
  * @param {string} chatid - 聊天ID。
  * @param {number} delta - 切换时间线的偏移量（例如，1 表示下一个，-1 表示上一个）。
  * @returns {Promise<chatLogEntry_t>} 新的当前消息条目。
@@ -916,7 +953,7 @@ export async function modifyTimeLine(chatid, delta) {
 }
 
 /**
- * @description 根据角色的回复数据构建一个标准的聊天记录条目。
+ * 根据角色的回复数据构建一个标准的聊天记录条目。
  * @param {object} result - 角色接口返回的回复对象。
  * @param {string} result.name - 发言者名称。
  * @param {string} result.avatar - 发言者头像。
@@ -949,7 +986,7 @@ async function BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charn
 }
 
 /**
- * @description 根据用户的输入数据构建一个标准的聊天记录条目。
+ * 根据用户的输入数据构建一个标准的聊天记录条目。
  * @param {object} result - 用户发送的消息对象。
  * @param {string} result.name - 发言者名称。
  * @param {string} result.avatar - 发言者头像。
@@ -978,7 +1015,7 @@ async function BuildChatLogEntryFromUserMessage(result, new_timeSlice, user, per
 }
 
 /**
- * @description 计算并获取当前聊天中所有参与者的发言频率数据。
+ * 计算并获取当前聊天中所有参与者的发言频率数据。
  * @param {string} chatid - 聊天ID。
  * @returns {Promise<{charname: string | null, frequency: number}[]>} 包含每个参与者（null代表用户）及其发言频率的数组。
  * @throws {Error} 如果聊天未找到。
@@ -1007,7 +1044,7 @@ async function getCharReplyFrequency(chatid) {
 }
 
 /**
- * @description 根据频率数据随机选择下一个发言的角色。
+ * 根据频率数据随机选择下一个发言的角色。
  * @param {{charname: string, frequency: number}[]} frequency_data - 频率数据数组。
  * @returns {Promise<string | undefined>} 下一个发言的角色ID，如果没有可选角色则返回 undefined。
  */
@@ -1021,7 +1058,7 @@ async function getNextCharForReply(frequency_data) {
 }
 
 /**
- * @description 触发一个角色进行回复。
+ * 触发一个角色进行回复。
  * @param {string} chatid - 聊天ID。
  * @param {string | null} charname - 要触发回复的角色ID。如果为 null，则会根据频率随机选择一个角色。
  * @returns {Promise<chatLogEntry_t | undefined>} 如果成功生成回复，则返回新的消息条目。
@@ -1062,7 +1099,7 @@ export async function triggerCharReply(chatid, charname) {
 }
 
 /**
- * @description 添加一条用户的回复到聊天记录中。
+ * 添加一条用户的回复到聊天记录中。
  * @param {string} chatid - 聊天ID。
  * @param {object} object - 包含用户消息内容的对象。
  * @returns {Promise<chatLogEntry_t>} 新增的用户消息条目。
@@ -1088,7 +1125,7 @@ export async function addUserReply(chatid, object) {
 }
 
 /**
- * @description 从JSON文件轻量级加载聊天的摘要信息，不进行完整的对象水合。
+ * 从JSON文件轻量级加载聊天的摘要信息，不进行完整的对象水合。
  * 这种方式速度更快，因为它避免了加载完整的角色/世界/人设数据。
  * @param {string} username - 聊天的所有者用户名。
  * @param {string} chatid - 聊天ID。
@@ -1125,7 +1162,7 @@ async function loadChatSummary(username, chatid) {
 }
 
 /**
- * @description 获取指定用户的所有聊天列表，包含摘要信息。
+ * 获取指定用户的所有聊天列表，包含摘要信息。
  * @param {string} username - 用户名。
  * @returns {Promise<Array>} 包含聊天摘要对象的数组，按最后消息时间降序排列。
  */
@@ -1142,7 +1179,7 @@ export async function getChatList(username) {
 }
 
 /**
- * @description 删除一个或多个聊天。
+ * 删除一个或多个聊天。
  * @param {string[]} chatids - 要删除的聊天ID数组。
  * @param {string} username - 操作的用户名。
  * @returns {Promise<{chatid: string, success: boolean, message: string, error?: string}[]>} 每个聊天删除操作的结果数组。
@@ -1169,7 +1206,7 @@ export async function deleteChat(chatids, username) {
 }
 
 /**
- * @description 复制一个或多个聊天。
+ * 复制一个或多个聊天。
  * @param {string[]} chatids - 要复制的聊天ID数组。
  * @param {string} username - 操作的用户名。
  * @returns {Promise<{chatid: string, success: boolean, newChatId?: string, message: string}[]>} 每个聊天复制操作的结果数组。
@@ -1191,7 +1228,7 @@ export async function copyChat(chatids, username) {
 }
 
 /**
- * @description 导出指定的聊天数据。
+ * 导出指定的聊天数据。
  * @param {string[]} chatids - 要导出的聊天ID数组。
  * @returns {Promise<{chatid: string, success: boolean, data?: chatMetadata_t, message: string, error?: string}[]>} 每个聊天导出操作的结果数组。
  */
@@ -1212,7 +1249,7 @@ export async function exportChat(chatids) {
 }
 
 /**
- * @description 从聊天中删除一条指定索引的消息。
+ * 从聊天中删除一条指定索引的消息。
  * @param {string} chatid - 聊天ID。
  * @param {number} index - 要删除的消息在 `chatLog` 中的索引。
  * @throws {Error} 如果聊天未找到或索引无效。
@@ -1222,6 +1259,10 @@ export async function deleteMessage(chatid, index) {
 	if (!chatMetadata) throw new Error('Chat not found')
 	if (index < 0 || index >= chatMetadata.chatLog.length) throw new Error('Invalid index')
 
+	/**
+	 * 生成请求。
+	 * @returns {{index: number, chat_log: chatLogEntry_t[], chat_entry: chatLogEntry_t}} - 请求对象。
+	 */
 	function geneRequest() {
 		return {
 			index,
@@ -1258,7 +1299,7 @@ export async function deleteMessage(chatid, index) {
 }
 
 /**
- * @description 编辑聊天中的一条指定消息。
+ * 编辑聊天中的一条指定消息。
  * @param {string} chatid - 聊天ID。
  * @param {number} index - 要编辑的消息在 `chatLog` 中的索引。
  * @param {string} new_content - 新的消息内容。
@@ -1270,6 +1311,10 @@ export async function editMessage(chatid, index, new_content) {
 	if (!chatMetadata) throw new Error('Chat not found')
 	if (index < 0 || index >= chatMetadata.chatLog.length) throw new Error('Invalid index')
 
+	/**
+	 * 生成请求。
+	 * @returns {object} - 请求对象。
+	 */
 	function geneRequest() {
 		return {
 			index,
@@ -1324,7 +1369,7 @@ export async function editMessage(chatid, index, new_content) {
 }
 
 /**
- * @description 获取用于客户端初始化的数据。
+ * 获取用于客户端初始化的数据。
  * @param {string} chatid - 聊天ID。
  * @returns {Promise<object>} 包含聊天状态和消息的心跳数据。
  */

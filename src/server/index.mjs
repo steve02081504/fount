@@ -1,8 +1,7 @@
 /**
- * @file 这是应用程序服务器的主入口点。它初始化 Sentry 进行错误报告，
+ * 这是应用程序服务器的主入口点。它初始化 Sentry 进行错误报告，
  * 解析命令行参数，配置服务器，并启动初始化过程。
  * 它还通过 IPC 处理向正在运行的服务器实例发送命令。
- * @module server/index
  */
 import { existsSync } from 'node:fs'
 import process from 'node:process'
@@ -30,6 +29,10 @@ let args = process.argv.slice(2)
  * @type {object}
  */
 const fount_config = {
+	/**
+	 * 重新启动应用程序的函数。
+	 * @returns {never} 不会返回，因为进程会退出。
+	 */
 	restartor: () => process.exit(131),
 	data_path: __dirname + '/data',
 	needs_output: process.stdout.writable && process.stdout.isTTY,

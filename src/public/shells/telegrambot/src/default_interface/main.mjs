@@ -18,10 +18,11 @@ import {
 
 /**
  * 重试函数
- * @async
  * @param {Function} func - 要执行的异步函数。
- * @param {{times?: number, WhenFailsWaitFor?: number}} [options] - 重试选项。
- * @returns {Promise<any>}
+ * @param {object} [options] - 重试选项。
+ * @param {number} [options.times=3] - 重试次数。
+ * @param {number} [options.WhenFailsWaitFor=2000] - 失败时等待时间。
+ * @returns {Promise<any>} - 函数执行结果。
  */
 async function tryFewTimes(func, { times = 3, WhenFailsWaitFor = 2000 } = {}) {
 	let lastError
@@ -62,6 +63,10 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 	if (!charAPI?.interfaces?.chat?.GetReply)
 		throw new Error('charAPI.interfaces.chat.GetReply is required for SimpleTelegramInterface.')
 
+	/**
+	 * 获取简单的机器人配置模板。
+	 * @returns {object} - 配置模板。
+	 */
 	function GetSimpleBotConfigTemplate() {
 		return {
 			OwnerUserID: 'YOUR_TELEGRAM_USER_ID', // 用户需填写的 Telegram 数字 ID
@@ -74,6 +79,11 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 	const CAPTION_LENGTH_LIMIT = 1024
 	const errorMessageText = '抱歉，处理您的消息时发生了错误。'
 
+	/**
+	 * 简单的 Telegram 机器人设置。
+	 * @param {TelegrafInstance} bot - Telegraf 实例。
+	 * @param {object} interfaceConfig - 接口配置。
+	 */
 	async function SimpleTelegramBotSetup(bot, interfaceConfig) {
 		const botInfo = bot.botInfo || await tryFewTimes(() => bot.telegram.getMe())
 		const botDisplayName = (await getPartInfo(charAPI, localhostLocales[0]))?.name || botCharname
@@ -140,6 +150,11 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 					...ctx.message.message_thread_id && { message_thread_id: ctx.message.message_thread_id }
 				}))
 
+				/**
+				 * 通过 CharAPI 添加聊天记录条目。
+				 * @param {ChatReply_t} replyFromChar - 来自角色的回复。
+				 * @returns {Promise<null>} - 返回一个解析为 null 的 Promise。
+				 */
 				const AddChatLogEntryViaCharAPI = async replyFromChar => {
 					if (replyFromChar && (replyFromChar.content || replyFromChar.files?.length)) {
 						const aiMarkdownContent = replyFromChar.content || ''
@@ -175,6 +190,10 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 				}
 
 				ChannelCharScopedMemory[logicalChannelId] ??= {}
+				/**
+				 * 生成聊天回复请求。
+				 * @returns {object} - 聊天回复请求。
+				 */
 				const generateChatReplyRequest = () => ({
 					supported_functions: { markdown: true, files: true, add_message: true, html: false, unsafe_html: false },
 					username: ownerUsername,
@@ -191,6 +210,10 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 					chat_scoped_char_memory: ChannelCharScopedMemory[logicalChannelId],
 					chat_log: ChannelChatLogs[logicalChannelId].map(e => ({ ...e })),
 					AddChatLogEntry: AddChatLogEntryViaCharAPI,
+					/**
+					 * 更新。
+					 * @returns {Promise<object>} - 聊天回复请求。
+					 */
 					Update: async () => generateChatReplyRequest(),
 					extension: {
 						platform: 'telegram',

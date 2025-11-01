@@ -5,7 +5,7 @@ import { getUserDictionary } from '../../../server/auth.mjs'
 import { unloadPart } from '../../../server/managers/index.mjs'
 
 /**
- * @description 解析部件的绝对路径。
+ * 解析部件的绝对路径。
  * @param {string} username - 用户名。
  * @param {string} type - 部件类型。
  * @param {string} name - 部件名称。
@@ -18,7 +18,7 @@ export function resolvePath(username, type, name) {
 }
 
 /**
- * @description 获取一个可用的部件路径，如果已存在则先卸载。
+ * 获取一个可用的部件路径，如果已存在则先卸载。
  * @param {string} username - 用户名。
  * @param {string} type - 部件类型。
  * @param {string} name - 部件名称。

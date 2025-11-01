@@ -143,6 +143,7 @@ async function renderPersonaDetails(personaName) {
 
 /**
  * 渲染聊天角色列表
+ * @param {object} data - 包含角色列表和频率数据的对象。
  */
 async function renderCharList(data) {
 	if (!data) return
@@ -196,7 +197,7 @@ async function renderCharList(data) {
 /**
  * 渲染聊天角色详情
  * @param {string} charName 角色名称
- * @param {number} frequency_num
+ * @param {number} frequency_num - 角色回复频率的数值。
  */
 async function renderCharDetails(charName, frequency_num) {
 	let charData
@@ -310,6 +311,10 @@ export async function setupSidebar() {
 	})
 }
 
+/**
+ * 更新侧边栏显示。
+ * @param {object} data - 包含世界名称、角色名称和角色列表的数据对象。
+ */
 export async function updateSidebar(data) {
 	setCharList(data.charlist)
 	setWorldName(data.worldname)
@@ -321,18 +326,30 @@ export async function updateSidebar(data) {
 	await renderCharList(data)
 }
 
+/**
+ * 处理世界设置。
+ * @param {string} worldname - 世界的名称。
+ */
 export async function handleWorldSet(worldname) {
 	setWorldName(worldname)
 	worldSelect.value = worldname || ''
 	await renderWorldDetails(worldname)
 }
 
+/**
+ * 处理角色设置。
+ * @param {string} personaname - 角色的名称。
+ */
 export async function handlePersonaSet(personaname) {
 	setPersonaName(personaname)
 	personaSelect.value = personaname || ''
 	await renderPersonaDetails(personaname)
 }
 
+/**
+ * 处理角色添加。
+ * @param {string} charname - 要添加的角色的名称。
+ */
 export async function handleCharAdded(charname) {
 	if (charList.includes(charname)) return // Already there
 
@@ -347,6 +364,10 @@ export async function handleCharAdded(charname) {
 	if (optionToRemove) charSelect.removeChild(optionToRemove)
 }
 
+/**
+ * 处理角色移除。
+ * @param {string} charname - 要移除的角色的名称。
+ */
 export async function handleCharRemoved(charname) {
 	const index = charList.indexOf(charname)
 	if (index === -1) return // Not there
@@ -370,6 +391,11 @@ export async function handleCharRemoved(charname) {
 	}
 }
 
+/**
+ * 处理角色频率设置。
+ * @param {string} charname - 角色的名称。
+ * @param {number} frequency - 角色的回复频率。
+ */
 export async function handleCharFrequencySet(charname, frequency) {
 	const charCard = charDetailsContainer.querySelector(`[data-char-name="${charname}"]`)
 	if (!charCard) return

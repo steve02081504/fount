@@ -10,7 +10,7 @@ const isMobile = window.matchMedia('(pointer: coarse)').matches
 let canvas, ctx, canvasWidth, canvasHeight, config, dots, pointers // 改为 pointers
 
 /**
- * @description 更新画布大小。
+ * 更新画布大小。
  * @returns {void}
  */
 function resizeCanvas() {
@@ -26,7 +26,7 @@ function resizeCanvas() {
 }
 
 /**
- * @description 根据当前配置调整点的数量。
+ * 根据当前配置调整点的数量。
  * @returns {void}
  */
 function adjustDotCount() {
@@ -48,7 +48,7 @@ function adjustDotCount() {
 }
 
 /**
- * @description 绘制连接线。
+ * 绘制连接线。
  * @param {CanvasRenderingContext2D} ctx - Canvas 渲染上下文。
  * @param {string} configColor - 配置颜色。
  * @param {object} dot1 - 第一个点对象。
@@ -83,7 +83,7 @@ function drawConnection(ctx, configColor, dot1, dot2, isPointer) {
 
 
 /**
- * @description 绘制动画帧。
+ * 绘制动画帧。
  * @returns {void}
  */
 function draw() {
@@ -149,7 +149,7 @@ function draw() {
 }
 
 /**
- * @description 初始化线条背景。
+ * 初始化线条背景。
  * @param {object} initconfig - 初始化配置。
  * @returns {void}
  */
@@ -193,7 +193,7 @@ export function initLinesBackground(initconfig) {
 
 
 /**
- * @description 处理 pointerdown 事件。
+ * 处理 pointerdown 事件。
  * @param {PointerEvent} event - 指针事件。
  * @returns {void}
  */
@@ -215,7 +215,7 @@ function handlePointerDown(event) {
 }
 
 /**
- * @description 处理 pointermove 事件 (统一处理鼠标和触摸移动)。
+ * 处理 pointermove 事件 (统一处理鼠标和触摸移动)。
  * @param {PointerEvent} event - 指针事件。
  * @returns {void}
  */
@@ -237,7 +237,7 @@ function handlePointerMove(event) {
 
 
 /**
- * @description 处理 pointerout 事件 (鼠标移出)。
+ * 处理 pointerout 事件 (鼠标移出)。
  * @returns {void}
  */
 function handlePointerOut() {
@@ -248,7 +248,7 @@ function handlePointerOut() {
 
 
 /**
- * @description 处理 pointerup 和 pointercancel 事件 (统一处理触摸结束)。
+ * 处理 pointerup 和 pointercancel 事件 (统一处理触摸结束)。
  * @param {PointerEvent} event - 指针事件。
  * @returns {void}
  */
@@ -262,7 +262,7 @@ function handlePointerEnd(event) {
 }
 
 /**
- * @description 实时修改配置。
+ * 实时修改配置。
  * @param {object} newConfig - 新的配置对象。
  * @returns {void}
  */
@@ -277,7 +277,7 @@ export function updateConfig(newConfig) {
 
 let updateColorsErrorInterval
 /**
- * @description  更新颜色配置。
+ *  更新颜色配置。
  * @returns {void}
  */
 export function updateColors() {

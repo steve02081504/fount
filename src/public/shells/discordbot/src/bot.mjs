@@ -15,9 +15,9 @@ import { unlockAchievement } from '../../achievements/src/api.mjs'
  * @param {{
  * 	token: string,
  * 	config: any
- * }} config
- * @param {CharAPI_t} char
- * @returns {Promise<import('npm:discord.js').Client>}
+ * }} config - 机器人配置
+ * @param {CharAPI_t} char - 角色 API
+ * @returns {Promise<import('npm:discord.js').Client>} - Discord 客户端实例
  */
 async function startBot(config, char) {
 	const client = new Client({
@@ -55,15 +55,32 @@ async function startBot(config, char) {
 	return client
 }
 
+/**
+ * 获取机器人数据。
+ * @param {string} username - 用户名。
+ * @returns {object} - 机器人数据。
+ */
 function getBotsData(username) {
 	return loadShellData(username, 'discordbot', 'bot_configs')
 }
 
+/**
+ * 获取机器人配置。
+ * @param {string} username - 用户名。
+ * @param {string} botname - 机器人名称。
+ * @returns {object} - 机器人配置。
+ */
 export function getBotConfig(username, botname) {
 	const botsData = getBotsData(username)
 	return botsData[botname] || {}
 }
 
+/**
+ * 获取机器人配置模板。
+ * @param {string} username - 用户名。
+ * @param {string} charname - 角色名称。
+ * @returns {Promise<object>} - 机器人配置模板。
+ */
 export async function getBotConfigTemplate(username, charname) {
 	const char = await LoadChar(username, charname)
 	if (!char.interfaces.discord) {
@@ -73,18 +90,37 @@ export async function getBotConfigTemplate(username, charname) {
 	return await char.interfaces.discord?.GetBotConfigTemplate?.() || {}
 }
 
+/**
+ * 设置机器人配置。
+ * @param {string} username - 用户名。
+ * @param {string} botname - 机器人名称。
+ * @param {object} config - 配置。
+ * @returns {void}
+ */
 export function setBotConfig(username, botname, config) {
 	const botsData = getBotsData(username)
 	botsData[botname] = config
 	saveShellData(username, 'discordbot', 'bot_configs')
 }
 
+/**
+ * 删除机器人配置。
+ * @param {string} username - 用户名。
+ * @param {string} botname - 机器人名称。
+ * @returns {void}
+ */
 export function deleteBotConfig(username, botname) {
 	const botsData = getBotsData(username)
 	delete botsData[botname]
 	saveShellData(username, 'discordbot', 'bot_configs')
 }
 
+/**
+ * 运行机器人。
+ * @param {string} username - 用户名。
+ * @param {string} botname - 机器人名称。
+ * @returns {Promise<void>}
+ */
 export async function runBot(username, botname) {
 	const botCache = loadTempData(username, 'discordbot_cache')
 	if (botCache[botname]) return
@@ -111,6 +147,12 @@ export async function runBot(username, botname) {
 	}
 }
 
+/**
+ * 停止机器人。
+ * @param {string} username - 用户名。
+ * @param {string} botname - 机器人名称。
+ * @returns {Promise<void>}
+ */
 export async function stopBot(username, botname) {
 	const botCache = loadTempData(username, 'discordbot_cache')
 
@@ -124,6 +166,11 @@ export async function stopBot(username, botname) {
 	EndJob(username, 'shells', 'discordbot', botname)
 }
 
+/**
+ * 获取正在运行的机器人列表。
+ * @param {string} username - 用户名。
+ * @returns {Array<string>} - 正在运行的机器人列表。
+ */
 export function getRunningBotList(username) {
 	return Object.keys(loadTempData(username, 'discordbot_cache'))
 }
@@ -141,6 +188,11 @@ on_shutdown(async () => {
 	}
 })
 
+/**
+ * 获取机器人列表。
+ * @param {string} username - 用户名。
+ * @returns {Array<string>} - 机器人列表。
+ */
 export function getBotList(username) {
 	return Object.keys(getBotsData(username))
 }

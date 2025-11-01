@@ -10,6 +10,12 @@ import { unlockAchievement } from '../../achievements/src/api.mjs' // Import unl
 
 const runningPets = {} // { [username]: { [charname]: { webview, apiKeyJti } } }
 
+/**
+ * 运行宠物。
+ * @param {string} username - 用户名。
+ * @param {string} charname - 角色名称。
+ * @returns {Promise<void>}
+ */
 export async function runPet(username, charname) {
 	if (runningPets[username]?.[charname]) return
 
@@ -73,6 +79,12 @@ export async function runPet(username, charname) {
 	}
 }
 
+/**
+ * 停止宠物。
+ * @param {string} username - 用户名。
+ * @param {string} charname - 角色名称。
+ * @returns {Promise<void>}
+ */
 export async function stopPet(username, charname) {
 	const petInfo = runningPets[username]?.[charname]
 	if (petInfo) {
@@ -93,6 +105,11 @@ export async function stopPet(username, charname) {
 		console.log(`[DeskPet] No running pet found for ${charname} by user ${username} to stop.`)
 }
 
+/**
+ * 获取正在运行的宠物。
+ * @param {string} username - 用户名。
+ * @returns {Array<string>} - 正在运行的宠物列表。
+ */
 export function getRunningPets(username) {
 	if (!runningPets[username]) return []
 	return Object.keys(runningPets[username])

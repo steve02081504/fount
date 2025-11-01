@@ -7,7 +7,7 @@ import pngChunksExtract from 'npm:png-chunks-extract'
 
 /**
  * 从 PNG Buffer 中提取 CCv3 数据和内嵌资源
- * @param {Buffer} pngBuffer
+ * @param {Buffer} pngBuffer png 缓冲区
  * @returns {Promise<{card: object, assets: Map<string, Buffer>, image: Buffer, spec: 'ccv3' | 'ccv2' | null}>}
  *          card: 解析后的卡片JSON对象
  *          assets: Map<asset_path, asset_buffer>

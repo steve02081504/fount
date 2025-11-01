@@ -1,6 +1,13 @@
 import axios from 'npm:axios'
 
+/**
+ * 用于与 Blackbox.ai API 交互的 BlackboxAI 类。
+ */
 export class BlackboxAI {
+	/**
+	 * 创建 BlackboxAI 的实例。
+	 * @param {object} config - 配置对象。
+	 */
 	constructor(config) {
 		this.apiUrl = 'https://api.blackbox.ai/api/chat'
 		this.headers = {
@@ -11,12 +18,19 @@ export class BlackboxAI {
 		this.defaultModel = 'blackboxai'
 	}
 
+	/**
+	 * 向 Blackbox.ai API 发送请求。
+	 * @param {Array<object>} messages - 消息对象数组。
+	 * @param {string} model - 用于请求的模型。
+	 * @returns {Promise<string>} API 的响应。
+	 */
 	async call(messages, model) {
 		const payload = {
 			messages,
 			id: Date.now().toString(),
 			previewToken: null,
 			userId: null,
+
 			codeModelMode: true,
 			agentMode: {},
 			trendingAgentMode: {},
@@ -45,6 +59,11 @@ export class BlackboxAI {
 		}
 	}
 
+	/**
+	 * 计算给定文本中的令牌数。
+	 * @param {string} text - 要计算令牌数的文本。
+	 * @returns {Promise<number>} 令牌数。
+	 */
 	async countTokens(text) {
 		const payload = {
 			text

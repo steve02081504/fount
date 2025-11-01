@@ -1,5 +1,5 @@
 /**
- * @description 使用 PBKDF2 从密钥派生一个 32 字节的密钥。
+ * 使用 PBKDF2 从密钥派生一个 32 字节的密钥。
  * 这适用于 AES-GCM，可用于加密和解密。
  * @param {string} secret 用于派生密钥的密钥（例如，fount UUID）。
  * @returns {Promise<CryptoKey>} 派生的 CryptoKey。
@@ -7,7 +7,7 @@
 import CryptoJS from 'https://esm.sh/crypto-js'
 
 /**
- * @description 获取用于加密/解密的密钥。
+ * 获取用于加密/解密的密钥。
  * @param {string} secret - 密钥。
  * @returns {Promise<CryptoKey>} - 加密/解密密钥。
  */
@@ -25,7 +25,7 @@ async function getKey(secret) {
 }
 
 /**
- * @description 使用 AES-256-CBC 加密纯文本字符串。
+ * 使用 AES-256-CBC 加密纯文本字符串。
  * @param {string} plaintext 要加密的字符串。
  * @param {string} secret 用于密钥派生的密钥（UUID）。
  * @returns {Promise<string>} 包含 iv 和内容的 JSON 字符串。
@@ -49,7 +49,7 @@ async function encrypt(plaintext, secret) {
 }
 
 /**
- * @description 解密 AES-256-CBC 加密的有效负载。
+ * 解密 AES-256-CBC 加密的有效负载。
  * @param {string} encryptedJson 包含 iv 和内容的 JSON 字符串。
  * @param {string} secret 用于加密的密钥（UUID）。
  * @returns {Promise<string>} 解密的纯文本。
@@ -83,7 +83,7 @@ async function decrypt(encryptedJson, secret) {
 const CATBOX_API_URL = 'https://litterbox.catbox.moe/resources/internals/api.php'
 
 /**
- * @description 将文本上传到 Catbox/Litterbox 并返回文件 ID。
+ * 将文本上传到 Catbox/Litterbox 并返回文件 ID。
  * @param {string} content 要上传的文本内容。
  * @param {string} expiration 文件的过期时间（例如，“1h”、“24h”）。
  * @returns {Promise<string>} 文件 ID（即 catbox 上的文件名）。
@@ -110,7 +110,7 @@ async function uploadToCatbox(content, expiration = '1h') {
 }
 
 /**
- * @description 从源检索加密的凭据数据，通过尝试解密来验证它，如果有效则返回原始加密数据。
+ * 从源检索加密的凭据数据，通过尝试解密来验证它，如果有效则返回原始加密数据。
  * @param {string | null} fileId - 文件 ID。
  * @param {string | null} from - 来源。
  * @param {URLSearchParams} hashParams - 哈希参数。
@@ -164,7 +164,7 @@ export async function receiveAndValidateEncryptedCredentials(fileId, from, hashP
 }
 
 /**
- * @description 从源检索加密的凭据数据并解密。
+ * 从源检索加密的凭据数据并解密。
  * @param {string | null} fileId - 文件 ID。
  * @param {string | null} from - 来源。
  * @param {URLSearchParams} hashParams - 哈希参数。
@@ -203,7 +203,7 @@ export async function retrieveAndDecryptCredentials(fileId, from, hashParams, uu
 	return null
 }
 /**
- * @description 为加密数据执行传输策略并发起重定向。
+ * 为加密数据执行传输策略并发起重定向。
  * 它会尝试剪贴板，然后是 Catbox。如果两者都失败，它会准备 URL 哈希参数，但不会重定向。
  * @param {string} encryptedData 要传输的加密数据。
  * @param {URL} targetUrl 目标 URL 对象，将被修改。
@@ -243,7 +243,7 @@ async function executeTransferStrategy(encryptedData, targetUrl, hashParams, cli
 }
 
 /**
- * @description 从 localStorage 加载纯文本凭据，对其进行加密，并通过将用户重定向到带有加密数据的目标 URL 来传输它们。
+ * 从 localStorage 加载纯文本凭据，对其进行加密，并通过将用户重定向到带有加密数据的目标 URL 来传输它们。
  * 传输通过剪贴板、Catbox 或 URL 哈希参数作为回退。
  * @param {string} uuid - 用户的唯一标识符。
  * @param {string} redirectUrl - 准备传输后要重定向到的 URL。
@@ -279,7 +279,7 @@ export async function transferEncryptedCredentials(uuid, redirectUrl) {
 
 
 /**
- * @description 重定向到登录信息页面。
+ * 重定向到登录信息页面。
  * @param {string} [redirectUrl='/login'] - 重定向 URL。
  * @param {string|null} [username=null] - 用户名。
  * @param {string|null} [password=null] - 密码。
@@ -320,7 +320,7 @@ export async function redirectToLoginInfo(redirectUrl = '/login', username = nul
 }
 
 /**
- * @description 生成登录信息 URL。
+ * 生成登录信息 URL。
  * @param {object} credentials - 凭据。
  * @param {string} uuid - UUID。
  * @param {string} baseUrl - 基本 URL。

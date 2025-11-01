@@ -4,7 +4,7 @@ import { parseRisuModule } from './module-parser.mjs'
 
 /**
  * 解压并解析 CHARX (.zip) 文件 Buffer
- * @param {Buffer} zipBuffer
+ * @param {Buffer} zipBuffer zip 缓冲区
  * @returns {Promise<{card: object, assets: Map<string, Buffer>, moduleData?: object, mainImage?: Buffer}>}
  *          card: card.json 解析后的对象
  *          assets: Map<relative_path_in_zip, asset_buffer> (来自 zip 内的 assets/ 目录)

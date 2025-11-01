@@ -1,3 +1,6 @@
+/**
+ * 语言设置Shell
+ */
 export default {
 	info: {
 		'en-UK': {

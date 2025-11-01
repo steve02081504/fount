@@ -3,6 +3,11 @@
 let last_host = ''
 
 // Ollama's model list endpoint is /api/tags
+/**
+ * 获取模型 URL。
+ * @param {string} host - 主机。
+ * @returns {string|null} 模型 URL。
+ */
 const getModelsUrl = host => {
 	let urlObj
 	try {
@@ -49,7 +54,7 @@ return async ({ data, containers }) => {
 			throw new Error(`${response.status} ${response.statusText}: ${errorText}`)
 		}
 		const result = await response.json()
-		const models = result.models
+		const {models} = result
 		if (!Array.isArray(models))
 			throw new Error('Response is not an array of models.')
 

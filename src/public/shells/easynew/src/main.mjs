@@ -6,14 +6,29 @@ import fs from 'npm:fs-extra'
 import { authenticate, getUserByReq, getUserDictionary } from '../../../../server/auth.mjs'
 import { unlockAchievement } from '../../achievements/src/api.mjs'
 
+/**
+ * 获取指定用户的模板路径。
+ * @param {string} username - 用户的名称。
+ * @returns {string} - 用户模板的路径。
+ */
 function getUserTemplatesPath(username) {
 	return path.join(getUserDictionary(username), 'shells', 'easynew', 'parts')
 }
 
+/**
+ * 获取默认模板的路径。
+ * @returns {string} - 默认模板的路径。
+ */
 function getDefaultTemplatesPath() {
 	return path.resolve(import.meta.dirname, '..', 'parts')
 }
 
+/**
+ * 获取指定模板的目录。
+ * @param {string} username - 用户的名称。
+ * @param {string} templateName - 模板的名称。
+ * @returns {Promise<string|null>} - 模板的目录路径，如果找不到则返回null。
+ */
 async function getTemplateDir(username, templateName) {
 	const userTemplateDir = path.join(getUserTemplatesPath(username), templateName)
 	if (fs.existsSync(userTemplateDir))
@@ -26,6 +41,10 @@ async function getTemplateDir(username, templateName) {
 	return null
 }
 
+/**
+ * 为快速新建功能设置API端点。
+ * @param {object} router - Express的路由实例。
+ */
 export function setEndpoints(router) {
 	router.get('/api/shells/easynew/templates', authenticate, async (req, res) => {
 		try {
@@ -35,6 +54,10 @@ export function setEndpoints(router) {
 
 			const allTemplates = {}
 
+			/**
+			 * 在指定的基本路径中查找模板。
+			 * @param {string} basePath - 要搜索模板的基本路径。
+			 */
 			const findTemplates = async basePath => {
 				if (!fs.existsSync(basePath)) return
 				const templateNames = await fs.readdir(basePath)

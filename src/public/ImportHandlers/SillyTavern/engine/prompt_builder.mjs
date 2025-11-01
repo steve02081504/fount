@@ -6,11 +6,11 @@ import { GetActivedWorldInfoEntries } from './world_info.mjs'
 const DEFAULT_DEPTH = 0
 
 /**
- *
- * @param {import('../../../../decl/prompt_struct.ts').prompt_struct_t} arg
- * @param {v2CharData} charData
- * @param {string} modelName
- * @returns {import('../../../../decl/prompt_struct.ts').single_part_prompt_t}
+ * 提示词构建器
+ * @param {import('../../../../decl/prompt_struct.ts').prompt_struct_t} arg 参数
+ * @param {v2CharData} charData 角色数据
+ * @param {string} modelName 模型名称
+ * @returns {import('../../../../decl/prompt_struct.ts').single_part_prompt_t} 构建好的提示结构部分。
  */
 export function promptBuilder(
 	arg,
@@ -62,6 +62,10 @@ export function promptBuilder(
 	let ANTopEntries = []
 	let ANBottomEntries = []
 	const WIDepthEntries = []
+	/**
+	 * 添加世界信息
+	 * @param {WorldInfoEntry} entry 世界信息条目
+	 */
 	function add_WI(
 		/** @type {WorldInfoEntry} */
 		entry
