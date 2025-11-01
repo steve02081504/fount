@@ -4,10 +4,17 @@ import { getMemoryUsage } from './gc.mjs'
 
 const defaultProfilerStack = []
 const asyncLocalStorage = new AsyncLocalStorage()
+/**
+ * 获取当前的性能分析器堆栈。
+ * @returns {object[]} 性能分析器堆栈。
+ */
 function getProfilerStack() {
 	return asyncLocalStorage.getStore() ?? defaultProfilerStack
 }
 
+/**
+ * 开始一个新的性能分析帧。
+ */
 function startProfile() {
 	getProfilerStack().push({
 		startTime: new Date(),

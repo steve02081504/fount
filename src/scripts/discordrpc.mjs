@@ -8,6 +8,9 @@ const FountStartTimestamp = new Date()
 let _activity = {
 
 }
+/**
+ * 设置 Discord RPC 活动。
+ */
 async function _setActivity() {
 	if (!client) return
 	for (const key in _activity) if (_activity[key] === undefined) delete _activity[key]
