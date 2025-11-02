@@ -94,6 +94,59 @@ const downloadIconSized = addClassToSvg(downloadIconCode, iconClass)
 const playIconSized = addClassToSvg(playIconCode, iconClass)
 
 /**
+ * 工厂函数，用于创建调用 Godbolt API 的执行器函数。
+ * @param {string} compilerId - Godbolt 编译器 ID。
+ * @param {string} lang - 语言标识符。
+ * @returns {(code: string) => Promise<object>} - 一个自包含的异步执行器函数。
+ */
+const createGodboltExecutor = (compilerId, lang) => {
+	const functionBody = `\
+const response = await fetch('https://godbolt.org/api/compiler/${compilerId}/compile', {
+	method: 'POST',
+	headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+	body: JSON.stringify({
+		source: code,
+		compiler: '${compilerId}',
+		lang: '${lang}',
+		options: { filters: { execute: true } },
+	}),
+})
+
+if (!response.ok) {
+	return { error: \`Godbolt API request failed: \${response.status} \${response.statusText}\` }
+}
+
+const data = await response.json()
+
+if (data.code) {
+	const errorText = data.stderr.map(e => e.text).join('\\n')
+	return { error: \`Compilation failed:\\n\${errorText}\`, exitcode: data.code }
+}
+
+const { execResult } = data
+const asm = data.asm?.map(a => a.text).join('\\n') || undefined
+
+if (!execResult || !execResult.didExecute) {
+	const buildError = execResult?.buildResult?.stderr?.map(e => e.text).join('\\n') || 'Execution did not run. Check for a missing main function or linking error.'
+	return { error: \`Build failed:\\n\${buildError}\`, asm }
+}
+
+const result = {
+	output: execResult.stdout?.map(o => o.text).join('') || undefined,
+	error: execResult.stderr?.map(e => e.text).join('') || undefined,
+	asm,
+	execTime: execResult.execTime,
+	exitcode: execResult.code,
+}
+
+Object.keys(result).forEach(key => !result[key] && delete result[key])
+return result
+`
+	return new (Object.getPrototypeOf(async function(){}).constructor)('code', functionBody)
+}
+
+
+/**
  * 代码执行器集合
  * @type {Object.<string, (code: string) => Promise<{result?: string, output?: string, error?: string, exitcode?: number}>>}
  */
@@ -293,7 +346,12 @@ $stderr = StringIO.new
 				output: output.trim(),
 			}
 		} catch (error) { return { error } }
-	}
+	},
+	cpp: createGodboltExecutor('gsnapshot', 'c++'),
+	c: createGodboltExecutor('cgsnapshot', 'c'),
+	csharp: createGodboltExecutor('dotnettrunkcsharpcoreclr', 'csharp'),
+	go: createGodboltExecutor('gltip', 'go'),
+	rs: createGodboltExecutor('nightly', 'rust'),
 }
 
 /**
@@ -405,7 +463,9 @@ outputContainer.innerHTML = /* html */ \`\\
 \`
 codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 
-;(${executor})(codeBlockContainer.innerText).then(result => {
+;(${executor.toString()})(codeBlockContainer.innerText).then(result => {
+	result = result || {}
+	const escapeHtml = (unsafe) => String(unsafe).replace(/[&<>"']/g, (m) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'}[m]))
 	let alerts = []
 
 	if (result.error)
@@ -413,7 +473,7 @@ codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 <div class="join-item alert alert-error bg-error/50 border-error/50">
 	<div>
 		<div class="font-bold">Error</div>
-		<pre class="font-mono text-sm overflow-x-auto"><code>\${result.error?.stack || result.error}</code></pre>
+		<pre class="font-mono text-sm overflow-x-auto whitespace-pre-wrap"><code>\${escapeHtml(result.error)}</code></pre>
 	</div>
 </div>
 \`)
@@ -422,25 +482,46 @@ codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 <div class="join-item alert alert-info bg-info/40 border-info/40">
 	<div>
 		<div class="font-bold">Output</div>
-		<pre class="font-mono text-sm overflow-x-auto"><code>\${result.output}</code></pre>
+		<pre class="font-mono text-sm overflow-x-auto whitespace-pre-wrap"><code>\${escapeHtml(result.output)}</code></pre>
 	</div>
 </div>
+\`)
+    if (result.asm)
+		alerts.push(/* html */ \`\\
+<details class="join-item collapse alert alert-warning bg-warning/40 border-warning/40">
+	<summary class="collapse-title font-bold text-sm">Assembly</summary>
+	<div class="collapse-content">
+		<pre class="font-mono text-xs overflow-x-auto"><code>\${escapeHtml(result.asm)}</code></pre>
+	</div>
+</details>
 \`)
 	if (result.result)
 		alerts.push(/* html */ \`\\
 <div class="join-item alert alert-success bg-success/40 border-success/40">
 	<div>
 		<div class="font-bold">Result</div>
-		<pre class="font-mono text-sm font-bold overflow-x-auto"><code>\${result.result}</code></pre>
+		<pre class="font-mono text-sm font-bold overflow-x-auto whitespace-pre-wrap"><code>\${escapeHtml(result.result)}</code></pre>
 	</div>
 </div>
 \`)
-	if (result.exitcode !== undefined)
+
+	const footerItems = []
+	if (result.execTime)
+		footerItems.push(\`<div><div class="text-xs">Execution Time: \${result.execTime} ms</div></div>\`)
+	if (result.exitcode)
+		footerItems.push(\`<div><div class="text-xs">Exit Code: \${result.exitcode}</div></div>\`)
+
+	if (footerItems.length)
 		alerts.push(/* html */ \`\\
-<div class="join-item alert alert-secondary bg-secondary/40 border-secondary/40">
-	<div>
-		<div class="text-xs">Exit Code: \${result.exitcode}</div>
-	</div>
+<div class="join-item alert alert-secondary bg-secondary/40 border-secondary/40 flex justify-between w-full">
+	\${footerItems.join('')}
+</div>
+\`)
+
+	if (!alerts.length)
+		alerts.push(/* html */ \`\\
+<div class="join-item alert alert-success bg-success/40 border-success/40">
+	<div><div class="text-xs">Execution finished with no output.</div></div>
 </div>
 \`)
 
@@ -450,7 +531,7 @@ codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 <div class="join-item alert alert-error bg-error/70 border-error/70">
 	<div>
 		<div class="font-bold">Execution Error</div>
-		<pre class="text-xs overflow-x-auto"><code>\${e.stack}</code></pre>
+		<pre class="text-xs overflow-x-auto whitespace-pre-wrap"><code>\${e.stack}</code></pre>
 	</div>
 </div>
 \`
@@ -507,7 +588,7 @@ codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
  * 获取 Markdown 转换器。
  * @param {object} [options={}] - 选项。
  * @param {boolean} [options.isStandalone=false] - 是否为独立模式。
- * @returns {Promise<import('unified').Processor>} - Markdown 转换器。
+ * @returns {Promise<import('npm:unified').Processor>} - Markdown 转换器。
  */
 export async function GetMarkdownConvertor({ isStandalone = false } = {}) {
 	return unified()
@@ -568,7 +649,7 @@ ${diagram}`
 			return tree => {
 				visit(tree, 'element', node => {
 					if (!node.properties.className && node.tagName === 'figure' && node.children.some(child => child.properties.className?.includes?.('markdown-code-block')))
-						node.properties.className = 'join join-vertical pb-6'
+						node.properties.className = 'join join-vertical [&:not(:last-child)]:pb-6'
 				}, true)
 			}
 		})

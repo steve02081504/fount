@@ -24,7 +24,7 @@
 	background-color: #11451400;
 }
 
-.markdown-body figure, .markdown-body figure .markdown-code-block, .markdown-code-block pre {
+.markdown-body .join-item, .markdown-body figure, .markdown-code-block, .markdown-code-block pre {
 	margin: 0;
 }
 

@@ -112,7 +112,7 @@ function openModal(src, type) {
 	<style>
 		body { margin: 0; font-family: sans-serif; }
 		.markdown-body { box-sizing: border-box; padding: 45px; }
-		.markdown-body figure, .markdown-body figure .markdown-code-block, .markdown-code-block pre {
+		.markdown-body .join-item, .markdown-body figure, .markdown-code-block, .markdown-code-block pre {
 			margin: 0;
 		}
 		@media (max-width: 767px) { .markdown-body { padding: 15px; } }
