@@ -7,6 +7,7 @@ import { makeSearchable } from '../../../scripts/search.mjs'
 import { renderTemplate, usingTemplates } from '../../../scripts/template.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
 import { showToast, showToastI18n } from '../../../scripts/toast.mjs'
+import * as Sentry from 'https://esm.sh/@sentry/browser'
 
 import { getChatList, getCharDetails, copyChats, exportChats, deleteChats } from './endpoints.mjs'
 
@@ -28,6 +29,7 @@ const selectedChats = new Set()
 const CHUNK_SIZE = 7
 let fullSortedList = []
 let renderTimeout
+let renderCount = 0
 
 /**
  * 根据当前的过滤和排序设置对聊天列表进行排序和渲染。
@@ -35,6 +37,9 @@ let renderTimeout
  * @returns {Promise<void>}
  */
 async function renderUI() {
+	renderCount++
+	const currentRenderCount = renderCount
+
 	fullSortedList = [...currentFilteredList].sort((a, b) => {
 		const sortValue = sortSelect.value
 		const timeA = new Date(a.lastMessageTime).getTime()
@@ -50,19 +55,23 @@ async function renderUI() {
 	selectedChats.clear()
 	selectAllCheckbox.checked = false
 
-	appendNextChunk()
+	appendNextChunk(currentRenderCount)
 }
 
 /**
  * 从排序列表中渲染并追加下一块聊天项目到容器中，以实现无限滚动。
+ * @param {number} currentRenderCount - The current render count to avoid race conditions.
  */
-function appendNextChunk() {
+function appendNextChunk(currentRenderCount) {
+	if (currentRenderCount !== renderCount) return
+
 	const itemsToRender = fullSortedList.slice(chatListContainer.childElementCount, chatListContainer.childElementCount + CHUNK_SIZE)
 
 	if (!itemsToRender.length)
 		return
 
 	Promise.all(itemsToRender.map(renderChatListItem)).then(chats => {
+		if (currentRenderCount !== renderCount) return
 		chatListContainer.append(...chats)
 	})
 }
@@ -177,10 +186,16 @@ async function renderChatListItem(chat) {
 		if (confirmI18n('chat_history.confirmDeleteChat', { chars: chat.chars.join(', ') })) try {
 			const data = await deleteChats([chat.chatid])
 			if (data[0].success) {
-				chatItemDOMCache.delete(chat.chatid)
-				fullChatList = fullChatList.filter(c => c.chatid !== chat.chatid)
 				chatElement.remove()
-				filterInput.dispatchEvent(new Event('input'))
+				chatItemDOMCache.delete(chat.chatid)
+
+				const removeChatFromList = list => {
+					const index = list.findIndex(c => c.chatid === chat.chatid)
+					if (index > -1) list.splice(index, 1)
+				}
+				removeChatFromList(fullChatList)
+				removeChatFromList(currentFilteredList)
+				removeChatFromList(fullSortedList)
 			} else showToast('error', data[0].message)
 
 		} catch (error) {
@@ -226,15 +241,32 @@ deleteSelectedButton.addEventListener('click', async () => {
 	}
 	if (confirmI18n('chat_history.confirmDeleteMultiChats', { count: selectedChats.size })) try {
 		const results = await deleteChats(Array.from(selectedChats))
+		const successfullyDeleted = new Set()
 		results.forEach(result => {
-			if (result.success) {
-				chatItemDOMCache.delete(result.chatid)
-				fullChatList = fullChatList.filter(c => c.chatid !== result.chatid)
-				selectedChats.delete(result.chatid)
-				document.querySelector(`[data-chatid="${result.chatid}"]`).remove()
-			} else showToast('error', result.message)
+			if (result.success)
+				successfullyDeleted.add(result.chatid)
+			else
+				showToast('error', result.message)
 		})
-		filterInput.dispatchEvent(new Event('input'))
+
+		if (successfullyDeleted.size > 0) {
+			successfullyDeleted.forEach(id => {
+				chatListContainer.querySelector(`[data-chatid="${id}"]`)?.remove()
+				chatItemDOMCache.delete(id)
+				selectedChats.delete(id)
+			})
+			const removeDeleted = list => {
+				for (let i = list.length - 1; i >= 0; i--) {
+					if (successfullyDeleted.has(list[i].chatid)) {
+						list.splice(i, 1)
+					}
+				}
+			}
+			removeDeleted(fullChatList)
+			removeDeleted(currentFilteredList)
+			removeDeleted(fullSortedList)
+			selectAllCheckbox.checked = false
+		}
 	} catch (error) {
 		console.error('Error deleting selected chats:', error)
 		showToastI18n('error', 'chat_history.alerts.deleteError')
@@ -291,7 +323,7 @@ async function initializeApp() {
 		if (entries[0].isIntersecting) {
 			// Use a timeout to debounce and avoid rapid firing
 			if (renderTimeout) clearTimeout(renderTimeout)
-			renderTimeout = setTimeout(appendNextChunk, 100)
+			renderTimeout = setTimeout(() => appendNextChunk(renderCount), 100)
 		}
 	}, { rootMargin: '500px' }) // Load next chunk when 500px away from bottom
 
@@ -308,6 +340,8 @@ async function initializeApp() {
 }
 
 initializeApp().catch(error => {
+	Sentry.captureException(error)
 	showToast('error', error.message)
-	window.location.href = '/login'
+	console.error('Initialization failed:', error);
+	SetTimeout(() => window.location.href = '/shells/home', 5000)
 })
