@@ -51,7 +51,7 @@ export function unregister(username, ws) {
  * @returns {boolean} 如果消息已发送则为 true，否则为 false。
  */
 function sendMessageToConnections(connections, type, data) {
-	if (connections && connections.size > 0) {
+	if (connections?.size) {
 		const payload = JSON.stringify({ type, data })
 		for (const ws of connections)
 			if (ws.readyState === ws.OPEN) try {

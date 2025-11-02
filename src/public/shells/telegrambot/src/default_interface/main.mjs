@@ -70,7 +70,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 	function GetSimpleBotConfigTemplate() {
 		return {
 			OwnerUserID: 'YOUR_TELEGRAM_USER_ID', // 用户需填写的 Telegram 数字 ID
-			MaxMessageDepth: 20,                   // 默认聊天记录深度
+			MaxMessageDepth: 20,                  // 默认聊天记录深度
 			ReplyToAllMessages: false, // 若开启则对所有消息做出回复
 		}
 	}

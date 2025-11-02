@@ -96,7 +96,7 @@ export function WsAbleRouter(router = express.Router(), httpServer = null) {
 			 * @returns {string|boolean} 选择的协议或 false。
 			 */
 			handleProtocols: (protocols) => {
-				if (protocols.size > 0) return protocols.values().next().value
+				if (protocols.size) return protocols.values().next().value
 				return false
 			}
 		})
