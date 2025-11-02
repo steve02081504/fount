@@ -429,14 +429,14 @@ export function enableSwipe(messageElement) {
 		}
 	}
 	/**
-		 * 处理触摸取消事件。
-		 */
+	 * 处理触摸取消事件。
+	 */
 	const handleTouchCancel = () => { isDragging = false }
 	/**
-		 * 检查元素是否包含水平滚动条。
-		 * @param {HTMLElement} element - 要检查的 DOM 元素。
-		 * @returns {boolean} 如果元素包含水平滚动条则为 true，否则为 false。
-		 */
+	 * 检查元素是否包含水平滚动条。
+	 * @param {HTMLElement} element - 要检查的 DOM 元素。
+	 * @returns {boolean} 如果元素包含水平滚动条则为 true，否则为 false。
+	 */
 	function checkForHorizontalScrollbar(element) {
 		if (!element || !element.scrollWidth || !element.clientWidth) return false
 		if (element.scrollWidth > element.clientWidth) return true
