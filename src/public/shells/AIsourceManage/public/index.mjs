@@ -98,7 +98,7 @@ function renderFileList() {
 		const checkbox = document.createElement('input')
 		checkbox.type = 'checkbox'
 		checkbox.classList.add('default-checkbox', 'checkbox', 'checkbox-primary')
-		setLocalizeLogic(checkbox, ()=>{
+		setLocalizeLogic(checkbox, () => {
 			checkbox.setAttribute('aria-label', geti18n('aisource_editor.buttons.setDefaultForFile', { fileName }))
 		})
 		checkboxContainer.appendChild(checkbox)

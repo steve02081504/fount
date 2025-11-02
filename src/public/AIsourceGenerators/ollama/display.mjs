@@ -54,7 +54,7 @@ return async ({ data, containers }) => {
 			throw new Error(`${response.status} ${response.statusText}: ${errorText}`)
 		}
 		const result = await response.json()
-		const {models} = result
+		const { models } = result
 		if (!Array.isArray(models))
 			throw new Error('Response is not an array of models.')
 

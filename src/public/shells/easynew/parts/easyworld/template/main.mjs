@@ -116,7 +116,7 @@ export default {
 				if (!partData.greeting) return null
 				const context = {
 					char: { name: args.Charname },
-					user: { name:args.UserCharname },
+					user: { name: args.UserCharname },
 					args,
 					index,
 				}
