@@ -51,7 +51,7 @@ export function setEndpoints(router) {
 
 	router.get('/api/shells/chat/:chatid/log', authenticate, async (req, res) => {
 		const { params: { chatid }, query: { start, end } } = req
-		const {username} = await getUserByReq(req)
+		const { username } = await getUserByReq(req)
 		const log = await GetChatLog(chatid, parseInt(start, 10), parseInt(end, 10))
 		res.status(200).json(await Promise.all(log.map(entry => entry.toData(username))))
 	})

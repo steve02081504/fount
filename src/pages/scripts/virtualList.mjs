@@ -41,7 +41,7 @@ export function createVirtualList({
 	fetchData,
 	renderItem,
 	initialIndex = 0, // Default to 0 for standard lists
-	onRenderComplete = () => {},
+	onRenderComplete = () => { },
 	replaceItemRenderer = (oldElement, newElement) => oldElement.replaceWith(newElement),
 }) {
 	const state = {
@@ -401,4 +401,5 @@ export function createVirtualList({
 			if (queueIndex < 0 || queueIndex >= state.queue.length) return -1
 			return state.startIndex + queueIndex
 		},
-	}}
+	}
+}
