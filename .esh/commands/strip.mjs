@@ -228,7 +228,7 @@ class AstParser {
 						module.imports.get(resolvedPath).add('SIDE-EFFECT')
 					else
 						for (const spec of node.specifiers) {
-							const name = spec.local.name
+							const { name } = spec.local
 							if (spec.type === 'ImportNamespaceSpecifier')
 								module.imports.get(resolvedPath).add(`*${name}`)
 							else

@@ -288,7 +288,7 @@ export async function transferEncryptedCredentials(uuid, redirectUrl) {
 export async function redirectToLoginInfo(redirectUrl = '/login', username = null, password = null) {
 	if (redirectUrl.startsWith('/')) redirectUrl = window.location.origin + redirectUrl
 
-	const { uuid } = await fetch('/api/ping').then(res => res.json())
+	const { uuid } = await fetch('/api/ping', { credentials: 'omit' }).then(res => res.json())
 	if (!uuid) throw new Error('Could not fetch instance UUID.')
 
 	const loginInfoUrl = new URL('https://steve02081504.github.io/fount/login_info/')

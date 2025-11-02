@@ -16,8 +16,7 @@ module.exports = async ({ github, context }) => {
 	]
 
 	const issueNumber = context.payload.issue.number
-	const owner = context.repo.owner
-	const repo = context.repo.repo
+	const { owner, repo } = context.repo
 
 	// 1. 计算匹配到的关键词数量
 	const matchCount = keywords.filter(keyword => issueBody.includes(keyword)).length

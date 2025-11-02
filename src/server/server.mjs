@@ -124,7 +124,7 @@ async function checkUpstreamAndRestart() {
 		const needsRestart = changedFiles.some(file =>
 			file.endsWith('.mjs') && file.startsWith('src/') &&
 			!file.startsWith('src/pages/') &&
-			!/^src\/public\/[^/]+\/[^/]+\/public\//.test(file)
+			!/^src\/public(?:\/[^/]+){2}\/public\//.test(file)
 		)
 
 		if (needsRestart) {
