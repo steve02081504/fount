@@ -180,10 +180,10 @@ sys.stdout = io.StringIO()
 sys.stderr = io.StringIO()
 `)
 
-			const importRegex = /pyodide\.loadPackage\(\s*\[([^\]]*)\]\s*\)/g
+			const importRegex = /pyodide\.loadPackage\(\s*\[([^\]]*)]\s*\)/g
 			let match
 			while ((match = importRegex.exec(code)) !== null) {
-				const packages = match[1].split(',').map(p => p.trim().replace(/['"]/g, ''))
+				const packages = match[1].split(',').map(p => p.trim().replace(/["']/g, ''))
 				await pyodide.loadPackage(packages)
 			}
 

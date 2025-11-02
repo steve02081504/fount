@@ -907,7 +907,7 @@ let avgVerifyTime = 0
  * @returns {Promise<object>} 包含状态码、消息和令牌的对象。
  */
 export async function login(username, password, deviceId = 'unknown', req) {
-	const ip = req.ip
+	const { ip } = req
 	const user = getUserByUsername(username)
 
 	/**

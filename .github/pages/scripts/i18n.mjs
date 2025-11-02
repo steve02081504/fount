@@ -194,7 +194,7 @@ export function geti18n(key, params = {}) {
 	console.warn(`Translation key "${key}" not found.`)
 	Sentry.captureException(new Error(`Translation key "${key}" not found.`))
 }
-const console = globalThis.console
+const { console } = globalThis
 /**
  * 使用国际化键和参数记录信息。
  * @param {string} key - 翻译键。

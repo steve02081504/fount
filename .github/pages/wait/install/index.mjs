@@ -2,7 +2,7 @@ import { animateSVG } from 'https://cdn.jsdelivr.net/gh/steve02081504/animate-SV
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
 import { setPreRender, setTheme, theme_now } from '../../base.mjs'
-import { isFountServiceAvailable, saveFountHostUrl, getFountHostUrl, pingFount } from '../../scripts/fountHostGetter.mjs'
+import { waitForFountService, saveFountHostUrl, getFountHostUrl, pingFount } from '../../scripts/fountHostGetter.mjs'
 import { initTranslations, geti18n, console, getAvailableLocales, getLocaleNames, setLocales, onLanguageChange } from '../../scripts/i18n.mjs'
 import { makeSearchable } from '../../scripts/search.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
@@ -472,6 +472,20 @@ const checkFountInstallerAlive = async () => {
 }
 
 /**
+ * 等待 fount 安装程序失败。
+ * @returns {Promise<void>}
+ */
+const whenFountInstallerFails = () => {
+	return new Promise(resolve => {
+		const timer = setInterval(() => {
+			if (checkFountInstallerAlive()) return
+			clearInterval(timer)
+			resolve()
+		}, 1000)
+	})
+}
+
+/**
  * 处理 fount 安装程序流程。
  */
 async function handleInstallerFlow() {
@@ -479,35 +493,30 @@ async function handleInstallerFlow() {
 	document.getElementById('mini-game-section').style.display = 'block'
 	footerReadyText.dataset.i18n = 'installer_wait_screen.footer.wait_text'
 
-	const timer = setInterval(async () => {
-		if (!await checkFountInstallerAlive()) {
-			clearInterval(timer)
-			window.location.href = './error'
-			return
+	whenFountInstallerFails().then(() => {
+		window.location.href = './error'
+	})
+
+	waitForFountService(hostUrl).then(() => {
+		saveFountHostUrl(hostUrl)
+		setPreRender(hostUrl)
+
+		footerReadyText.dataset.i18n = 'installer_wait_screen.footer.ready_text'
+		launchButtonText.dataset.i18n = 'installer_wait_screen.footer.open_fount'
+		launchButtonSpinner.style.display = 'none'
+
+		/**
+		 * @type {() => void}
+		 */
+		launchButton.onclick = () => {
+			const params = new URLSearchParams({
+				theme: theme_now,
+				userPreferredLanguages: localStorage.getItem('fountUserPreferredLanguages') || '[]'
+			})
+			window.location.href = `${hostUrl}?${params}`
 		}
-
-		if (await isFountServiceAvailable(hostUrl)) {
-			clearInterval(timer)
-			saveFountHostUrl(hostUrl)
-			setPreRender(hostUrl)
-
-			footerReadyText.dataset.i18n = 'installer_wait_screen.footer.ready_text'
-			launchButtonText.dataset.i18n = 'installer_wait_screen.footer.open_fount'
-			launchButtonSpinner.style.display = 'none'
-
-			/**
-			 * @type {() => void}
-			 */
-			launchButton.onclick = () => {
-				const params = new URLSearchParams({
-					theme: theme_now,
-					userPreferredLanguages: localStorage.getItem('fountUserPreferredLanguages') || '[]'
-				})
-				window.location.href = `${hostUrl}?${params}`
-			}
-			footer?.classList.replace('fixed', 'sticky')
-		}
-	}, 1000)
+		footer?.classList.replace('fixed', 'sticky')
+	})
 }
 
 /**

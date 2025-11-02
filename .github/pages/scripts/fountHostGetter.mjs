@@ -48,7 +48,7 @@ function extractIpAndPortFromUrl(urlString) {
 export async function isFountServiceAvailable(host) {
 	try {
 		const url = new URL('/api/ping', host)
-		const response = await fetch(url, { method: 'GET', mode: 'cors', cache: 'no-cache', signal: AbortSignal.timeout(2000) })
+		const response = await fetch(url, { method: 'GET', mode: 'cors', credentials: 'omit', cache: 'no-cache', signal: AbortSignal.timeout(2000) })
 		const data = await response.json()
 		if (data?.client_name != 'fount') return false
 		console.debug(`[isFountServiceAvailable] fount service at ${host} is available.`)
@@ -57,6 +57,21 @@ export async function isFountServiceAvailable(host) {
 	catch {
 		return false // 任何错误都表示不可用
 	}
+}
+/**
+ * 等待 Fount 服务可用
+ * @param {string} host - Fount 服务的主机 URL
+ * @returns {Promise<void>}
+ */
+export async function waitForFountService(host) {
+	while (true) try {
+		const url = new URL('/api/ping', host)
+		const response = await fetch(url, { method: 'GET', mode: 'cors', credentials: 'omit', cache: 'no-cache' })
+		const data = await response.json()
+		if (data?.client_name != 'fount') continue
+		return
+	}
+	catch { }
 }
 
 // 扫描本地网络以查找 fount 服务
@@ -249,6 +264,7 @@ export async function pingFount(hostUrl) {
 	try {
 		return (await fetch(new URL('/api/ping', hostUrl), {
 			signal: controller.signal,
+			credentials: 'omit',
 			cache: 'no-cache'
 		}).catch(() => 0))?.ok
 	}

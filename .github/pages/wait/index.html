@@ -20,17 +20,14 @@
 	<link rel="stylesheet" href="../base.css" type="text/css" />
 	<script type="module">
 		import { setPreRender } from '../base.mjs'
-		import { isFountServiceAvailable, saveFountHostUrl } from '../scripts/fountHostGetter.mjs'
+		import { waitForFountService, saveFountHostUrl } from '../scripts/fountHostGetter.mjs'
 
 		const hostUrl = 'http://localhost:8931'
 		setPreRender(hostUrl)
-		const timer = setInterval(async () => {
-			if (await isFountServiceAvailable(hostUrl)) {
-				saveFountHostUrl(hostUrl)
-				window.location.href = hostUrl + '/shells/home'
-				clearInterval(timer)
-			}
-		})
+		await waitForFountService(hostUrl)
+		saveFountHostUrl(hostUrl)
+		window.location.href = hostUrl + '/shells/home'
+		clearInterval(timer)
 	</script>
 </head>
 
