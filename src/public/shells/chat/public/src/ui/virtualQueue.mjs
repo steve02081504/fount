@@ -317,7 +317,7 @@ function updateLastCharMessageArrows() {
  * @param {object} message - 要插入的消息对象。
  * @returns {Promise<void>}
  */
-export async function insertMessageIntoQueue(message) {
+export async function appendMessageToQueue(message) {
 	if (!message || !observer) return
 
 	const shouldScrollToBottom = chatMessagesContainer.scrollTop >= chatMessagesContainer.scrollHeight - chatMessagesContainer.clientHeight - 5 // Use a small tolerance
@@ -500,7 +500,7 @@ async function triggerFullRefresh() {
  * @param {object} message - 要添加的消息对象。
  */
 export async function handleMessageAdded(message) {
-	await insertMessageIntoQueue(message)
+	await appendMessageToQueue(message)
 }
 
 /**
@@ -524,7 +524,7 @@ export async function handleMessageReplaced(index, message) {
  * @param {number} index - 被移除消息的索引。
  * @returns {Promise<void>}
  */
-export async function handleMessageRemoved(index) {
+export async function handleMessageDeleted(index) {
 	const queueIndex = index - startIndex
 	if (queueIndex >= 0 && queueIndex < queue.length)
 		await deleteMessageInQueue(queueIndex)
