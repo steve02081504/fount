@@ -333,7 +333,7 @@ $stderr = StringIO.new
 			const results = db.exec(code)
 
 			let output = ''
-			if (results.length > 0)
+			if (results.length)
 				output = results.map(res => {
 					const header = `| ${res.columns.join(' | ')} |`
 					const separator = `|${'-'.repeat(header.length - 2)}|`
@@ -486,7 +486,7 @@ codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 	</div>
 </div>
 \`)
-    if (result.asm)
+	if (result.asm)
 		alerts.push(/* html */ \`\\
 <details class="join-item collapse alert alert-warning bg-warning/40 border-warning/40">
 	<summary class="collapse-title font-bold text-sm">Assembly</summary>

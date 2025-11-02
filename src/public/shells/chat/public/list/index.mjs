@@ -1,13 +1,15 @@
 /**
  * 聊天历史列表页面的客户端逻辑。
  */
+import * as Sentry from 'https://esm.sh/@sentry/browser'
+
 import { initTranslations, confirmI18n, console, setLocalizeLogic, onLanguageChange, geti18n } from '../../../scripts/i18n.mjs'
 import { renderMarkdown, renderMarkdownAsString } from '../../../scripts/markdown.mjs'
 import { makeSearchable } from '../../../scripts/search.mjs'
 import { renderTemplate, usingTemplates } from '../../../scripts/template.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
 import { showToast, showToastI18n } from '../../../scripts/toast.mjs'
-import * as Sentry from 'https://esm.sh/@sentry/browser'
+import { createVirtualList } from '../../../scripts/virtualList.mjs'
 
 import { getChatList, getCharDetails, copyChats, exportChats, deleteChats } from './endpoints.mjs'
 
@@ -26,53 +28,42 @@ let fullChatList = []
 let currentFilteredList = []
 const selectedChats = new Set()
 
-const CHUNK_SIZE = 7
-let fullSortedList = []
-let renderTimeout
-let renderCount = 0
+let virtualList = null
 
 /**
  * 根据当前的过滤和排序设置对聊天列表进行排序和渲染。
- * 它会重置 UI 并开始以块的形式渲染列表项。
+ * 它会重置 UI 并使用虚拟列表进行渲染。
  * @returns {Promise<void>}
  */
 async function renderUI() {
-	renderCount++
-	const currentRenderCount = renderCount
-
-	fullSortedList = [...currentFilteredList].sort((a, b) => {
+	const fullSortedList = [...currentFilteredList].sort((a, b) => {
 		const sortValue = sortSelect.value
 		const timeA = new Date(a.lastMessageTime).getTime()
 		const timeB = new Date(b.lastMessageTime).getTime()
 		return sortValue === 'time_asc' ? timeA - timeB : timeB - timeA
 	})
 
-	// Clear everything
-	chatListContainer.innerHTML = ''
-	if (renderTimeout) clearTimeout(renderTimeout)
-
-	// Reset selection state
+	// Clear selection state
 	selectedChats.clear()
 	selectAllCheckbox.checked = false
 
-	appendNextChunk(currentRenderCount)
-}
+	if (virtualList)
+		virtualList.destroy()
 
-/**
- * 从排序列表中渲染并追加下一块聊天项目到容器中，以实现无限滚动。
- * @param {number} currentRenderCount - The current render count to avoid race conditions.
- */
-function appendNextChunk(currentRenderCount) {
-	if (currentRenderCount !== renderCount) return
 
-	const itemsToRender = fullSortedList.slice(chatListContainer.childElementCount, chatListContainer.childElementCount + CHUNK_SIZE)
-
-	if (!itemsToRender.length)
-		return
-
-	Promise.all(itemsToRender.map(renderChatListItem)).then(chats => {
-		if (currentRenderCount !== renderCount) return
-		chatListContainer.append(...chats)
+	virtualList = createVirtualList({
+		container: chatListContainer,
+		/**
+		 * 从已排序/筛选的列表中提取数据块。
+		 * @param {number} offset - 数据块的起始索引。
+		 * @param {number} limit - 数据块的大小。
+		 * @returns {Promise<{items: Array<object>, total: number}>} 包含项目和总数的对象。
+		 */
+		fetchData: async (offset, limit) => {
+			const items = fullSortedList.slice(offset, offset + limit)
+			return { items, total: fullSortedList.length }
+		},
+		renderItem: renderChatListItem
 	})
 }
 
@@ -132,7 +123,7 @@ async function renderChatListItem(chat) {
 
 	// Checkbox logic
 	const selectCheckbox = chatElement.querySelector('.select-checkbox')
-	setLocalizeLogic(selectCheckbox, ()=>{
+	setLocalizeLogic(selectCheckbox, () => {
 		selectCheckbox.setAttribute('aria-label', geti18n('chat_history.select_chat_with_chars', { chars: chat.chars.join(', ') }))
 	})
 	selectCheckbox.checked = selectedChats.has(chat.chatid)
@@ -153,10 +144,8 @@ async function renderChatListItem(chat) {
 			const datas = await copyChats([chat.chatid])
 			if (datas[0]?.success) {
 				fullChatList = await getChatList()
-				filterInput.dispatchEvent(new Event('input')) // Trigger re-filter
-			} else
-				showToast('error', datas[0]?.message)
-
+				renderUI() // 触发重绘
+			} else showToast('error', datas[0]?.message)
 		} catch (error) {
 			console.error('Error copying chat:', error)
 			showToastI18n('error', 'chat_history.alerts.copyError')
@@ -186,16 +175,9 @@ async function renderChatListItem(chat) {
 		if (confirmI18n('chat_history.confirmDeleteChat', { chars: chat.chars.join(', ') })) try {
 			const data = await deleteChats([chat.chatid])
 			if (data[0].success) {
-				chatElement.remove()
-				chatItemDOMCache.delete(chat.chatid)
-
-				const removeChatFromList = list => {
-					const index = list.findIndex(c => c.chatid === chat.chatid)
-					if (index > -1) list.splice(index, 1)
-				}
-				removeChatFromList(fullChatList)
-				removeChatFromList(currentFilteredList)
-				removeChatFromList(fullSortedList)
+				const index = fullChatList.findIndex(c => c.chatid === chat.chatid)
+				if (index > -1) fullChatList.splice(index, 1)
+				filterInput.dispatchEvent(new Event('input'))
 			} else showToast('error', data[0].message)
 
 		} catch (error) {
@@ -215,57 +197,45 @@ sortSelect.addEventListener('change', renderUI)
 // Bulk actions
 selectAllCheckbox.addEventListener('change', () => {
 	const isChecked = selectAllCheckbox.checked
-	document.querySelectorAll('.chat-list-item').forEach(item => {
-		const chatid = item.getAttribute('data-chatid')
-		const checkbox = item.querySelector('.select-checkbox')
-		checkbox.checked = isChecked
-		if (isChecked) selectedChats.add(chatid)
-		else selectedChats.delete(chatid)
-	})
+	for (const chat of currentFilteredList)
+		if (isChecked)
+			selectedChats.add(chat.chatid)
+		else
+			selectedChats.delete(chat.chatid)
+	renderUI() // 触发重绘
 })
 
 reverseSelectButton.addEventListener('click', () => {
-	document.querySelectorAll('.chat-list-item').forEach(item => {
-		const chatid = item.getAttribute('data-chatid')
-		const checkbox = item.querySelector('.select-checkbox')
-		checkbox.checked = !checkbox.checked
-		if (checkbox.checked) selectedChats.add(chatid)
-		else selectedChats.delete(chatid)
-	})
+	for (const chat of currentFilteredList)
+		if (selectedChats.has(chat.chatid))
+			selectedChats.delete(chat.chatid)
+		else
+			selectedChats.add(chat.chatid)
+	renderUI() // 触发重绘
 })
-
 deleteSelectedButton.addEventListener('click', async () => {
 	if (!selectedChats.size) {
 		showToastI18n('error', 'chat_history.alerts.noChatSelectedForDeletion')
 		return
 	}
 	if (confirmI18n('chat_history.confirmDeleteMultiChats', { count: selectedChats.size })) try {
-		const results = await deleteChats(Array.from(selectedChats))
-		const successfullyDeleted = new Set()
+		const chatsToDelete = Array.from(selectedChats)
+		const results = await deleteChats(chatsToDelete)
+
+		const successfullyDeletedIds = new Set()
 		results.forEach(result => {
-			if (result.success)
-				successfullyDeleted.add(result.chatid)
-			else
-				showToast('error', result.message)
+			if (result.success) {
+				successfullyDeletedIds.add(result.chatid)
+				selectedChats.delete(result.chatid)
+			} else showToast('error', result.message)
 		})
 
-		if (successfullyDeleted.size > 0) {
-			successfullyDeleted.forEach(id => {
-				chatListContainer.querySelector(`[data-chatid="${id}"]`)?.remove()
-				chatItemDOMCache.delete(id)
-				selectedChats.delete(id)
-			})
-			const removeDeleted = list => {
-				for (let i = list.length - 1; i >= 0; i--) {
-					if (successfullyDeleted.has(list[i].chatid)) {
-						list.splice(i, 1)
-					}
-				}
-			}
-			removeDeleted(fullChatList)
-			removeDeleted(currentFilteredList)
-			removeDeleted(fullSortedList)
-			selectAllCheckbox.checked = false
+		if (successfullyDeletedIds.size) {
+			let i = fullChatList.length
+			while (i--)
+				if (successfullyDeletedIds.has(fullChatList[i].chatid))
+					fullChatList.splice(i, 1)
+			filterInput.dispatchEvent(new Event('input'))
 		}
 	} catch (error) {
 		console.error('Error deleting selected chats:', error)
@@ -296,7 +266,7 @@ exportSelectedButton.addEventListener('click', async () => {
 })
 
 /**
- * 初始化应用程序，设置主题、翻译、获取聊天列表、设置搜索功能和无限滚动。
+ * 初始化应用程序，设置主题、翻译、获取聊天列表、设置搜索功能和虚拟滚动。
  * @returns {Promise<void>}
  */
 async function initializeApp() {
@@ -318,30 +288,17 @@ async function initializeApp() {
 		},
 	})
 
-	// Setup infinite scroll
-	const observer = new IntersectionObserver(entries => {
-		if (entries[0].isIntersecting) {
-			// Use a timeout to debounce and avoid rapid firing
-			if (renderTimeout) clearTimeout(renderTimeout)
-			renderTimeout = setTimeout(() => appendNextChunk(renderCount), 100)
-		}
-	}, { rootMargin: '500px' }) // Load next chunk when 500px away from bottom
-
-	const sentinel = document.createElement('div')
-	chatListContainer.after(sentinel)
-	observer.observe(sentinel)
+	await renderUI()
 
 	await onLanguageChange(() => {
 		chatItemDOMCache.clear()
 		renderUI()
 	})
-
-	renderUI() // Initial render
 }
 
 initializeApp().catch(error => {
 	Sentry.captureException(error)
 	showToast('error', error.message)
-	console.error('Initialization failed:', error);
-	SetTimeout(() => window.location.href = '/shells/home', 5000)
+	console.error('Initialization failed:', error)
+	setTimeout(() => globalThis.location.href = '/shells/home', 5000)
 })

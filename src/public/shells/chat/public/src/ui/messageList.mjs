@@ -13,7 +13,6 @@ import { processTimeStampForId, SWIPE_THRESHOLD, DEFAULT_AVATAR, TRANSITION_DURA
 
 import { addDragAndDropSupport } from './dragAndDrop.mjs'
 import {
-	appendMessageToQueue,
 	getQueueIndex,
 	replaceMessageInQueue,
 	getChatLogIndexByQueueIndex,
@@ -368,14 +367,6 @@ export async function editMessageStart(message, queueIndex, chatLogIndex) {
 		editInput.focus()
 		editInput.setSelectionRange(editInput.value.length, editInput.value.length)
 	}
-}
-
-/**
- * 公开接口：添加消息到末尾。
- * @param {object} message - 消息对象。
- */
-export async function appendMessage(message) {
-	await appendMessageToQueue(message)
 }
 
 /**
