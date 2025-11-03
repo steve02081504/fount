@@ -326,7 +326,6 @@ async function requestNewApiKey(host, protocol) {
 function refreshApiKey(host, protocol) {
 	apiKeyRefreshPromise ??= (async () => {
 		try {
-			console.log(`fount userscript: Requesting a new API key from ${host}...`)
 			const newApiKey = await requestNewApiKey(host, protocol)
 			const { uuid } = await getStoredData()
 			await setStoredData(host, uuid, protocol, newApiKey)

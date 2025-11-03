@@ -71,9 +71,7 @@ function sendMessageToConnections(connections, type, data) {
  */
 export function sendEventToUser(username, type, data) {
 	const connections = userConnections.get(username)
-	const success = sendMessageToConnections(connections, type, data)
-	if (!success) console.log(`[Notify] No active connections found for user: ${username}`)
-	return success
+	return sendMessageToConnections(connections, type, data)
 }
 
 /**
@@ -83,14 +81,8 @@ export function sendEventToUser(username, type, data) {
  * @returns {void}
  */
 export function sendEventToAll(type, data) {
-	console.log(`[Notify] Broadcasting message of type '${type}' to all users.`)
-	let anySent = false
 	for (const connections of userConnections.values())
-		if (sendMessageToConnections(connections, type, data))
-			anySent = true
-
-	if (!anySent)
-		console.log('[Notify] No active connections found to broadcast to.')
+		sendMessageToConnections(connections, type, data)
 }
 
 

@@ -96,17 +96,13 @@ function openMetadataDB() {
 		 * @returns {void}
 		 */
 		request.onupgradeneeded = event => {
-			console.log('[SW DB] Database upgrade needed.')
 			const db = event.target.result
 			if (!db.objectStoreNames.contains(STORE_NAME)) {
 				const store = db.createObjectStore(STORE_NAME, { keyPath: 'url' })
 				store.createIndex('timestamp', 'timestamp', { unique: false })
-				console.log('[SW DB] Object store and index created.')
 			}
-			if (!db.objectStoreNames.contains(CONFIG_STORE_NAME)) {
+			if (!db.objectStoreNames.contains(CONFIG_STORE_NAME))
 				db.createObjectStore(CONFIG_STORE_NAME, { keyPath: 'key' })
-				console.log('[SW DB] Config object store created.')
-			}
 		}
 
 		/**
@@ -558,7 +554,6 @@ async function pingServerAndVerifyUUID() {
 
 		if (localUUID)
 			if (localUUID === serverUUID) {
-				console.log('[SW] UUID verified.')
 				uuidVerified = true
 				if (!ws) connectWebSocket() // Connect if verified and not already connected
 			}
@@ -568,7 +563,6 @@ async function pingServerAndVerifyUUID() {
 				pingRetryTimeout = setTimeout(pingServerAndVerifyUUID, PING_RETRY_DELAY)
 			}
 		else {
-			console.log('[SW] No local UUID found. Storing new UUID from server.')
 			await setConfig('uuid', serverUUID)
 			uuidVerified = true
 			if (!ws) connectWebSocket() // Connect after storing

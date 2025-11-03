@@ -44,13 +44,6 @@ function connectWebSocket() {
 	const ws = new WebSocket(wsUrl)
 
 	/**
-	 * WebSocket 'open' 事件处理程序。
-	 */
-	ws.onopen = () => {
-		console.log('Connected to UI WebSocket.')
-	}
-
-	/**
 	 * WebSocket 'message' 事件处理程序。
 	 * @param {MessageEvent} event - WebSocket 消息事件。
 	 */

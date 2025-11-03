@@ -254,7 +254,6 @@ async function startDataShowcaseAnimation() {
 
 
 	await Promise.all(initialAnimations)
-	console.log('Initial number animation complete. Starting periodic updates.')
 
 	setInterval(async () => {
 		const [userData, repoData] = await Promise.all([
@@ -274,10 +273,8 @@ async function startDataShowcaseAnimation() {
 		 */
 		const updateStat = (element, newValue, shortDuration) => {
 			const currentDisplayed = parseInt(element.textContent.replace(/,/g, ''), 10)
-			if (!isNaN(newValue) && newValue !== currentDisplayed) {
-				console.log(`Updating stat from ${currentDisplayed} to ${newValue}`)
+			if (!isNaN(newValue) && newValue !== currentDisplayed)
 				animateCounter(element, isNaN(currentDisplayed) ? 0 : currentDisplayed, newValue, shortDuration, 3)
-			}
 		}
 
 		updateStat(activeUsersCountEl, newActiveUserNum, SHORT_ANIMATION_DURATION)

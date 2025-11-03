@@ -397,9 +397,8 @@ export class ClaudeAPI {
 			headers.Cookie = `sessionKey=${this.getCookies()}`
 			const rProxy = this.config.r_proxy || AI.end()
 
-			// 构建 prompt 字符串 (简单拼接)
+			// 构建 prompt 字符串
 			const prompt = messages.map(msg => `${msg.role}: ${msg.content}`).join('\n\n') + '\n\nAssistant:'
-			//console.log(prompt);
 
 			const payload = {
 				completion: {

@@ -52,7 +52,6 @@ export function getDefaultParts(user) {
  * @returns {void}
  */
 export function notifyPartInstall(username, parttype, partname) {
-	console.log(`Notifying client of part installation: ${parttype}/${partname} for ${username}`)
 	events.emit('part-installed', { username, parttype, partname })
 	sendEventToUser(username, 'part-installed', { parttype, partname })
 }

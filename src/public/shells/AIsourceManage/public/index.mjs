@@ -333,7 +333,6 @@ async function saveFile() {
 
 	try {
 		await setAIFile(activeFile, { generator, config }).catch(handleFetchError('aisource_editor.alerts.saveFileFailed'))
-		console.log('File saved successfully.')
 		isDirty = false
 
 		saveStatusIcon.src = 'https://api.iconify.design/line-md/confirm-circle.svg'
@@ -364,7 +363,6 @@ async function deleteFile() {
 	if (!confirmI18n('aisource_editor.confirm.deleteFile')) return
 
 	await deleteAIFile(activeFile).catch(handleFetchError('aisource_editor.alerts.deleteFileFailed'))
-	console.log('File delete successfully.')
 	activeFile = null
 	await fetchFileList()
 
@@ -392,7 +390,6 @@ async function addFile() {
 	await fetchFileList()
 
 	await loadEditor(newFileName)
-	console.log('File add successfully.')
 }
 
 /**

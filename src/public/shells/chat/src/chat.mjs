@@ -49,11 +49,9 @@ export function registerChatUiSocket(chatid, ws) {
 
 	const socketSet = chatUiSockets.get(chatid)
 	socketSet.add(ws)
-	console.log(`Chat UI WebSocket registered for chat ${chatid}. Total: ${socketSet.size}`)
 
 	ws.on('close', () => {
 		socketSet.delete(ws)
-		console.log(`Chat UI WebSocket disconnected for chat ${chatid}. Total: ${socketSet.size}`)
 		const chatData = chatMetadatas.get(chatid)
 		if (!socketSet.size && chatUiSockets.delete(chatid)) {
 			clearTimeout(chatDeleteTimers.get(chatid))

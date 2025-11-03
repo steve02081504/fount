@@ -198,7 +198,7 @@ $$
 
 字符高亮：
 \`\`\`js /console/3-5#console /log/#log /\\./
-console.log('Hello');
+console.log('Hello')
 \`\`\`
 这将高亮第3到第5个\`console\`、全部的\`log\`和\`.\`
 对应词的span会有\`data-highlighted-chars\`属性，有id的词会有\`data-chars-id="<id>"\`属性
