@@ -11,6 +11,10 @@
 				"https": "Servidor HTTPS a correr em ${url}",
 				"http": "Servidor HTTP a correr em ${url}"
 			},
+			"mdns": {
+				"description": "Onde a Imaginação Ganha Vida",
+				"failed": "Falha no registo do mDNS: ${error}"
+			},
 			"localUrl": "Acesso ao fount a partir de outros dispositivos na mesma rede: ${url}",
 			"update": {
 				"restarting": "Uma nova versão foi descoberta e a atualização está a ser reiniciada..."

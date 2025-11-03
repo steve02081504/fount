@@ -11,6 +11,10 @@
 				"https": "HTTPS-server draait op ${url}",
 				"http": "HTTP-server draait op ${url}"
 			},
+			"mdns": {
+				"description": "Een Vonk van de Geest, een Vriend voor het Leven",
+				"failed": "mDNS-registratie mislukt: ${error}"
+			},
 			"localUrl": "Toegang tot fount vanaf andere apparaten op hetzelfde netwerk: ${url}",
 			"update": {
 				"restarting": "Er is een nieuwe versie gevonden. De update wordt opnieuw gestart..."

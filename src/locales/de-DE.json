@@ -11,6 +11,10 @@
 				"https": "HTTPS-Server läuft auf ${url}",
 				"http": "HTTP-Server läuft auf ${url}"
 			},
+			"mdns": {
+				"description": "Ein Funke der Fantasie, zum Leben erweckt",
+				"failed": "mDNS-Registrierung fehlgeschlagen: ${error}"
+			},
 			"localUrl": "Zugriff auf fount von anderen Geräten im selben Netzwerk: ${url}",
 			"update": {
 				"restarting": "Eine neue Version wurde entdeckt und das Update wird neu gestartet..."

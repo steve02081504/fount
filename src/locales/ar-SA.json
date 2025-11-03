@@ -11,6 +11,10 @@
 				"https": "خادم HTTPS يعمل على ${url}",
 				"http": "خادم HTTP يعمل على ${url}"
 			},
+			"mdns": {
+				"description": "رفيقٌ من نسيج الخيال",
+				"failed": "فشل تسجيل mDNS: ${error}"
+			},
 			"localUrl": "للوصول إلى fount من أجهزة أخرى على نفس الشبكة: ${url}",
 			"update": {
 				"restarting": "تم اكتشاف نسخة جديدة ويتم إعادة تشغيل التحديث..."

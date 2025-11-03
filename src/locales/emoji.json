@@ -11,6 +11,10 @@
 				"https": "🔒 ${url}",
 				"http": "🌐 ${url}"
 			},
+			"mdns": {
+				"description": "✨🤖🤝",
+				"failed": "❌📶 ${error}"
+			},
 			"localUrl": "💻📱 ${url}",
 			"update": {
 				"restarting": "🆕🔄"

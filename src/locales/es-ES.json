@@ -11,6 +11,10 @@
 				"https": "Servidor HTTPS en ejecución en ${url}",
 				"http": "Servidor HTTP en ejecución en ${url}"
 			},
+			"mdns": {
+				"description": "Donde la Imaginación Cobra Vida.",
+				"failed": "Error en el registro de mDNS: ${error}"
+			},
 			"localUrl": "Acceso a fount desde otros dispositivos en la misma red: ${url}",
 			"update": {
 				"restarting": "Se descubrió una nueva versión y la actualización se está reiniciando..."
