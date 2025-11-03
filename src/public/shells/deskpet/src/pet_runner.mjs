@@ -98,7 +98,6 @@ export async function stopPet(username, charname) {
 		await revokeApiKey(petInfo.apiKeyJti)
 
 		EndJob(username, 'shells', 'deskpet', charname)
-		console.log(`[DeskPet] Pet for ${charname} stopped.`)
 		sendEventToAll('deskpet-list-updated')
 	}
 	else

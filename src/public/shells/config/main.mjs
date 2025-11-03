@@ -237,7 +237,6 @@ export default {
 				const result = await handleAction(user, action, params)
 				if (result !== undefined)
 					console.log(result)
-
 			},
 			/**
 			 * 处理IPC调用以执行配置操作。

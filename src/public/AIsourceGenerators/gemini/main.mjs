@@ -158,12 +158,10 @@ async function findOptimalHistorySlice(ai, model, limit, history, prefixMessages
 			low = mid + 1
 		}
 		else high = mid - 1 // 超限了，需要减少记录数量
-
 	}
 
 	if (bestK < history.length)
 		console.log(`History truncated: Kept last ${bestK} of ${history.length} messages to fit token limit.`)
-
 
 	return history.slice(-bestK)
 }

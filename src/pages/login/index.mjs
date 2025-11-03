@@ -193,7 +193,6 @@ async function handleFormSubmit(event) {
 
 		if (response.ok)
 			if (isLoginForm) {
-				console.log('Login successful!')
 				const urlParams = new URLSearchParams(window.location.search)
 				const redirect = urlParams.get('redirect')
 				localStorage.setItem('hasLoggedIn', 'true')
@@ -208,10 +207,7 @@ async function handleFormSubmit(event) {
 
 				redirectToLoginInfo(finalRedirectUrl + window.location.hash, username, password)
 			}
-			else {
-				console.log('Registration successful!')
-				toggleForm() // 注册成功后自动切换到登录表单
-			}
+			else toggleForm() // 注册成功后自动切换到登录表单
 		else
 			errorMessage.textContent = data.message
 	}

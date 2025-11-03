@@ -577,21 +577,16 @@ async function initializeApp() {
 	// The focus listener is no longer needed as all updates are handled by websockets.
 
 	onServerEvent('default-part-updated', ({ parttype, partname }) => {
-		console.log(`Received default-part-update: ${parttype}=${partname}`)
-		if (partname)
-			defaultParts[parttype] = partname
-		else
-			delete defaultParts[parttype]
+		if (partname) defaultParts[parttype] = partname
+		else delete defaultParts[parttype]
 
 		updateDefaultPartDisplay()
 	})
 
 	onServerEvent('home-registry-updated', async () => {
-		console.log('Received home-registry-update, refreshing...')
 		await getHomeRegistry().then(async data => {
 			homeRegistry = data
 			await displayFunctionButtons()
-			// The registry also affects item cards, so we need to refresh them
 			await refreshCurrentTab()
 		}).catch(error => console.error('Failed to fetch home registry:', error))
 	})

@@ -203,7 +203,7 @@ export default {
 		}
 	},
 	/**
-			 * 加载 shell。
+	 * 加载 shell。
 	 * @param {object} options - 选项。
 	 * @param {object} options.router - 路由。
 	 */
@@ -211,19 +211,19 @@ export default {
 		setEndpoints(router)
 	},
 	/**
-			 * 卸载 shell。
+	 * 卸载 shell。
 	 */
 	Unload: async () => { },
 	/**
-			 * Shell 的接口。
+	 * Shell 的接口。
 	 */
 	interfaces: {
 		/**
-						 * 调用接口。
+		 * 调用接口。
 		 */
 		invokes: {
 			/**
-									 * 处理命令行参数。
+			 * 处理命令行参数。
 			 * @param {string} user - 用户。
 			 * @param {Array<string>} args - 参数。
 			 */
@@ -256,10 +256,9 @@ export default {
 				const result = await handleAction(user, action, params)
 				if (result !== undefined)
 					console.log(result)
-
 			},
 			/**
-									 * 处理 IPC 调用。
+			 * 处理 IPC 调用。
 			 * @param {string} user - 用户。
 			 * @param {object} data - 数据。
 			 * @returns {Promise<any>} - 调用结果。

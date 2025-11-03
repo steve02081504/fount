@@ -25,13 +25,6 @@ function connect() {
 	ws = new WebSocket(wsUrl)
 
 	/**
-	 * WebSocket打开时的回调。
-	 */
-	ws.onopen = async () => {
-		console.log(`Chat UI WebSocket connected for chat ${currentChatId}.`)
-	}
-
-	/**
 	 * WebSocket收到消息时的回调。
 	 * @param {MessageEvent} event - 消息事件。
 	 */
@@ -114,12 +107,10 @@ export function initializeWebSocket() {
 	connect()
 
 	onServerEvent('part-installed', ({ parttype, partname }) => {
-		console.log(`[Chat WS] Received part-install: ${parttype}/${partname}`)
 		addPartToSelect(parttype, partname)
 	})
 
 	onServerEvent('part-uninstalled', ({ parttype, partname }) => {
-		console.log(`[Chat WS] Received part-uninstall: ${parttype}/${partname}`)
 		removePartFromSelect(parttype, partname)
 	})
 }
