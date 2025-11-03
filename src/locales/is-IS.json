@@ -11,6 +11,10 @@
 				"https": "HTTPS netþjónn keyrir á ${url}",
 				"http": "HTTP netþjónn keyrir á ${url}"
 			},
+			"mdns": {
+				"description": "Neisti Hugans, Lifandi Félagi",
+				"failed": "mDNS skráning mistókst: ${error}"
+			},
 			"localUrl": "Opnaðu fount á öðrum tækjum á sama neti: ${url}",
 			"update": {
 				"restarting": "Ný útgáfa uppgötvaðist og verið er að endurræsa uppfærsluna..."

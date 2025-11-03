@@ -173,16 +173,17 @@ export async function init(start_config) {
 		iconPromise = runSimpleWorker('icongener').catch(console.error)
 
 	if (starts.Web) {
-		const { port, https: httpsConfig, trust_proxy } = config // 获取 HTTPS 配置
+		const { port, https: httpsConfig, trust_proxy, mdns: mdnsConfig } = config // 获取 HTTPS 配置
 		hosturl = (httpsConfig?.enabled ? 'https' : 'http') + '://localhost:' + port
 		let server
 
 		console.freshLineI18n('server start', 'fountConsole.server.starting')
+		const { initMdns } = starts.Web?.mDNS ? await import('./web_server/mdns.mjs') : {}
 		await new Promise((resolve, reject) => {
 			let appPromise
 			/**
 			 * 获取 Express 应用程序实例。
-			 * @returns {Promise<import('express').Application>} Express 应用程序实例。
+			 * @returns {Promise<import('npm:express').Application>} Express 应用程序实例。
 			 */
 			const getApp = () => appPromise ??= import('./web_server/index.mjs').then(({ app }) => {
 				app.set('trust proxy', trust_proxy ?? 'loopback')
@@ -236,11 +237,13 @@ export async function init(start_config) {
 					cert: fs.readFileSync(path.resolve(httpsConfig.certFile, __dirname)),
 				}, requestListener).listen(...listen, async () => {
 					console.logI18n('fountConsole.server.showUrl.https', { url: ansi_hosturl })
+					if (starts.Web?.mDNS) initMdns(port, 'https')
 					resolve()
 				})
 			else
 				server = http.createServer(requestListener).listen(...listen, async () => {
 					console.logI18n('fountConsole.server.showUrl.http', { url: ansi_hosturl })
+					if (starts.Web?.mDNS) initMdns(port, 'http')
 					resolve()
 				})
 

@@ -556,7 +556,7 @@ async function pingServerAndVerifyUUID() {
 
 		if (!serverUUID) throw new Error('UUID not found in ping response')
 
-		if (localUUID) {
+		if (localUUID)
 			if (localUUID === serverUUID) {
 				console.log('[SW] UUID verified.')
 				uuidVerified = true
@@ -567,7 +567,6 @@ async function pingServerAndVerifyUUID() {
 				uuidVerified = false
 				pingRetryTimeout = setTimeout(pingServerAndVerifyUUID, PING_RETRY_DELAY)
 			}
-		}
 		else {
 			console.log('[SW] No local UUID found. Storing new UUID from server.')
 			await setConfig('uuid', serverUUID)

@@ -11,6 +11,10 @@
 				"https": "Serveur HTTPS en cours d'exécution sur ${url}",
 				"http": "Serveur HTTP en cours d'exécution sur ${url}"
 			},
+			"mdns": {
+				"description": "L'étincelle d'une Pensée, la Présence d'un Ami.",
+				"failed": "Échec de l'enregistrement mDNS : ${error}"
+			},
 			"localUrl": "Accès à fount depuis d'autres appareils sur le même réseau : ${url}",
 			"update": {
 				"restarting": "Une nouvelle version a été découverte et la mise à jour est redémarrée..."

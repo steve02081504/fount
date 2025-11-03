@@ -11,6 +11,10 @@
 				"https": "密網通衢於 ${url}",
 				"http": "常道通衢於 ${url}"
 			},
+			"mdns": {
+				"description": "靈犀一點，應念而生",
+				"failed": "域名宣告不成：${error}"
+			},
 			"localUrl": "欲攜他器同游，可循此徑：${url}",
 			"update": {
 				"restarting": "新令已至，當革故鼎新..."

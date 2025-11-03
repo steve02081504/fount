@@ -11,6 +11,10 @@
 				"https": "HTTPS 服务器运行在 ${url}",
 				"http": "HTTP 服务器运行在 ${url}"
 			},
+			"mdns": {
+				"description": "灵犀一点，应念而生",
+				"failed": "mDNS 注册失败：${error}"
+			},
 			"localUrl": "通过同一网络下的其他设备访问fount：${url}",
 			"update": {
 				"restarting": "发现新版本，正在重启更新..."

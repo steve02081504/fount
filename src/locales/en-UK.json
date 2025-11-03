@@ -11,6 +11,10 @@
 				"https": "HTTPS server running on ${url}",
 				"http": "HTTP server running on ${url}"
 			},
+			"mdns": {
+				"description": "Imagination, Given Voice.",
+				"failed": "mDNS registration failed: ${error}"
+			},
 			"localUrl": "Accessing fount from other devices on the same network: ${url}",
 			"update": {
 				"restarting": "A new version was discovered and the update is being restarted..."

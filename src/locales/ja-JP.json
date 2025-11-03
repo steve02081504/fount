@@ -11,6 +11,10 @@
 				"https": "HTTPSサーバーが ${url} で実行されています。",
 				"http": "HTTPサーバーが ${url} で実行されています。"
 			},
+			"mdns": {
+				"description": "想いを形に、心を繋ぐ",
+				"failed": "mDNS 登録に失敗しました: ${error}"
+			},
 			"localUrl": "同じネットワーク上の他のデバイスからのfountへのアクセス：${url}",
 			"update": {
 				"restarting": "新しいバージョンが発見され、更新が再起動されています..."

@@ -11,6 +11,10 @@
 				"https": "Máy chủ HTTPS đang chạy tại ${url}",
 				"http": "Máy chủ HTTP đang chạy tại ${url}"
 			},
+			"mdns": {
+				"description": "Từ Ý Niệm, đến Tri Kỷ",
+				"failed": "Đăng ký mDNS không thành công: ${error}"
+			},
 			"localUrl": "Truy cập fount từ các thiết bị khác trên cùng mạng: ${url}",
 			"update": {
 				"restarting": "Một phiên bản mới đã được phát hiện và bản cập nhật đang được khởi động lại..."

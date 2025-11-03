@@ -11,6 +11,10 @@
 				"https": "HTTPS 서버가 ${url}에서 실행 중입니다.",
 				"http": "HTTP 서버가 ${url}에서 실행 중입니다."
 			},
+			"mdns": {
+				"description": "상상이 생명을 얻는 순간",
+				"failed": "mDNS 등록 실패: ${error}"
+			},
 			"localUrl": "동일한 네트워크의 다른 장치에서 fount에 액세스: ${url}",
 			"update": {
 				"restarting": "새 버전이 발견되었고 업데이트가 다시 시작됩니다..."
