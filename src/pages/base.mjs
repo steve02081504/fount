@@ -86,7 +86,7 @@ onServerEvent('show-toast', ({ type, message, duration }) => {
 	showToast(type, message, duration)
 })
 
-window.addEventListener('load', async () => {
+; (f => document.readyState === 'complete' ? f() : window.addEventListener('load', f))(async () => {
 	console.log(...await fetch('https://cdn.jsdelivr.net/gh/steve02081504/fount/imgs/icon.js').then(r => r.text()).then(eval))
 	console.log('Curious? Join us and build future together: https://github.com/steve02081504/fount')
 
