@@ -63,12 +63,6 @@ const CONFIG_STORE_NAME = 'config'
 const PING_RETRY_DELAY = 5000
 
 /**
- * 服务器 UUID 是否已验证。
- * @type {boolean}
- */
-let uuidVerified = false
-
-/**
  * 用于 ping 重试的 Timeout ID。
  * @type {number | null}
  */
@@ -535,47 +529,6 @@ const routes = [
 	},
 ]
 
-/**
- * 尝试连接 WebSocket 服务器并验证 UUID。
- * 若成功连接，则设置 `uuidVerified` 为 `true` 并连接 WebSocket。
- * @returns {void}
- */
-async function pingServerAndVerifyUUID() {
-	clearTimeout(pingRetryTimeout)
-	try {
-		const localUUID = await getConfig('uuid')
-		const response = await fetch('/api/ping', { credentials: 'omit' })
-		if (!response.ok) throw new Error(`Ping request failed with status ${response.status}`)
-
-		const data = await response.json()
-		const serverUUID = data.uuid
-
-		if (!serverUUID) throw new Error('UUID not found in ping response')
-
-		if (localUUID)
-			if (localUUID === serverUUID) {
-				uuidVerified = true
-				if (!ws) connectWebSocket() // Connect if verified and not already connected
-			}
-			else {
-				console.error(`[SW] UUID mismatch! Stored: ${localUUID}, Server: ${serverUUID}. All fetches will be blocked. Retrying...`)
-				uuidVerified = false
-				pingRetryTimeout = setTimeout(pingServerAndVerifyUUID, PING_RETRY_DELAY)
-			}
-		else {
-			await setConfig('uuid', serverUUID)
-			uuidVerified = true
-			if (!ws) connectWebSocket() // Connect after storing
-		}
-	}
-	catch (error) {
-		console.error('[SW] Ping and UUID verification failed. All fetches will be blocked. Retrying...', error)
-		uuidVerified = false
-		pingRetryTimeout = setTimeout(pingServerAndVerifyUUID, PING_RETRY_DELAY)
-	}
-}
-
-
 // --- WebSocket Notification Client ---
 
 let ws = null
@@ -670,8 +623,7 @@ function connectWebSocket() {
 	ws.onclose = event => {
 		console.warn(`[SW WS] Connection closed. Code: ${event.code}, Reason: ${event.reason}. Re-verifying and reconnecting in ${RECONNECT_DELAY / 1000}s.`)
 		ws = null
-		uuidVerified = false // Immediately set the state to unverified.
-		if (!reconnectTimeout) reconnectTimeout = setTimeout(pingServerAndVerifyUUID, RECONNECT_DELAY) // Re-trigger the entire verification process.
+		if (!reconnectTimeout) reconnectTimeout = setTimeout(connectWebSocket, RECONNECT_DELAY)
 	}
 
 	/**
@@ -684,8 +636,8 @@ function connectWebSocket() {
 	}
 }
 
-// Start the verification process and WebSocket connection
-pingServerAndVerifyUUID()
+// Start WebSocket connection
+connectWebSocket()
 
 // --- Service Worker 事件监听器 ---
 
@@ -750,19 +702,6 @@ self.addEventListener('notificationclick', event => {
  */
 self.addEventListener('fetch', event => {
 	const requestUrl = new URL(event.request.url)
-
-	// The ping request should not be blocked, otherwise we can never recover.
-	if (!uuidVerified && requestUrl.pathname !== '/api/ping') {
-		console.warn(`[SW] Blocking request to ${event.request.url} because UUID is not verified.`)
-		event.respondWith(
-			new Response(JSON.stringify({ error: 'UUID not verified' }), {
-				status: 503,
-				statusText: 'Service Unavailable',
-				headers: { 'Content-Type': 'application/json' },
-			})
-		)
-		return
-	}
 
 	if (event.request.cache === 'no-cache') return handleNetworkFirst(event.request)
 	if (event.request.cache === 'no-store') return
