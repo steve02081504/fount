@@ -81,12 +81,6 @@ async function renderCharDropdown() {
 	const disabled = !charList || !charList.length
 	const dataList = disabled ? [] : charList.map(name => ({ name, value: name }))
 
-	const currentConfig = configEditor?.get()?.json
-	if (currentConfig?.char)
-		charSelectDropdown.dataset.value = currentConfig.char
-	else
-		delete charSelectDropdown.dataset.value
-
 	await createSearchableDropdown({
 		dropdownElement: charSelectDropdown,
 		dataList,
@@ -98,9 +92,7 @@ async function renderCharDropdown() {
 		 */
 		onSelect: (selectedItem) => {
 			const charName = selectedItem ? selectedItem.value : null
-			const currentConfig = configEditor?.get()?.json
-			if (charName !== currentConfig?.char)
-				handleCharSelectChange(charName)
+			if (charName) handleCharSelectChange(charName)
 		}
 	})
 }

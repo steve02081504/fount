@@ -183,7 +183,6 @@ export async function createSearchableDropdown({
 			triggerInput.value = ''
 			delete dropdownElement.dataset.value
 		}
-		await onSelect(selectedItem || null)
 	}
 
 	/**
@@ -227,7 +226,7 @@ export async function createSearchableDropdown({
 				const selectedValue = button.dataset.value
 				const selectedItem = dataList.find(item => getItemValue(item) == selectedValue)
 				if (await onSelect(selectedItem)) return
-				await setValue(selectedValue) // Use the new setter function
+				await setValue(selectedValue)
 				document.activeElement?.blur() // Close the dropdown
 			}
 			button.addEventListener('click', listener)
