@@ -228,6 +228,9 @@
 			"description": "fount biedt een ongeëvenaarde keuze en flexibiliteit. Maak verbinding met <i>elke</i> AI-bron – OpenAI, Claude, OpenRouter, NovelAI en meer. De communicatielogica wordt gevormd naar <i>jouw</i> wil, door de kracht van code."
 		},
 		"language_selector": {
+			"button": {
+				"aria-label": "Selecteer taal"
+			},
 			"search": {
 				"placeholder": "Taal zoeken..."
 			}
@@ -1579,6 +1582,12 @@
 			"sameLAN": "Zorg ervoor dat het apparaat en de fount-host zich op hetzelfde lokale netwerk bevinden",
 			"accessthis": "Bezoek het volgende adres:"
 		},
+		"QRcode": {
+			"alt": "Scan deze QR-code om toegang te krijgen tot fount"
+		},
+		"urlInput": {
+			"aria-label": "URL"
+		},
 		"copyButton": "Adres kopiëren",
 		"copied": "Adres gekopieerd naar klembord!"
 	},
@@ -1589,6 +1598,9 @@
 		"instruction": "Genereer en beheer uw API-sleutels op deze pagina om fount te integreren met andere applicaties.",
 		"endpointSectionTitle": "API-eindpunt",
 		"endpointInstruction": "Dit is de basis-URL voor integratie met andere services.",
+		"apiUrlInput": {
+			"aria-label": "API-eindpunt"
+		},
 		"usageExampleTitle": "Gebruiksvoorbeeld",
 		"usageExampleInstruction": "Hier is een voorbeeld van hoe u de lijst met beschikbare modellen kunt ophalen met `curl`.",
 		"copyButton": "Kopiëren",

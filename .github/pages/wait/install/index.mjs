@@ -412,7 +412,7 @@ function populateLanguageSelector() {
 
 	const items = locales.map(locale => {
 		const li = document.createElement('li')
-		const a = document.createElement('a')
+		const a = document.createElement('div')
 		a.textContent = localeNames.get(locale) || locale
 		/**
 		 * 处理语言选择点击事件。

@@ -228,6 +228,9 @@
 			"description": "fount 提供无与伦比的选择和灵活性。连接到<i>任何</i> AI 源——OpenAI、Claude、OpenRouter、NovelAI 等。通信逻辑将根据<i>您的</i>意愿，通过代码的力量来塑造。"
 		},
 		"language_selector": {
+			"button": {
+				"aria-label": "选择语言"
+			},
 			"search": {
 				"placeholder": "搜索语言..."
 			}
@@ -1579,6 +1582,12 @@
 			"sameLAN": "确保设备和 fount 主机在同一个局域网下",
 			"accessthis": "访问以下网址："
 		},
+		"QRcode": {
+			"alt": "扫描此二维码访问 fount"
+		},
+		"urlInput": {
+			"aria-label": "网址"
+		},
 		"copyButton": "复制网址",
 		"copied": "网址已复制到剪贴板！"
 	},
@@ -1589,6 +1598,9 @@
 		"instruction": "在此页面生成并管理您的 API 密钥，以将 fount 与其他应用程序集成。",
 		"endpointSectionTitle": "API 端点",
 		"endpointInstruction": "这是与其他服务集成的基本 URL。",
+		"apiUrlInput": {
+			"aria-label": "API 端点"
+		},
 		"usageExampleTitle": "用法示例",
 		"usageExampleInstruction": "以下是如何使用 `curl` 获取可用模型列表的示例。",
 		"copyButton": "复制",

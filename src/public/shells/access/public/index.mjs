@@ -23,7 +23,6 @@ const qrcodeContainer = document.getElementById('qrcode')
 let url
 
 /**
- * IIFE（立即调用函数表达式）处理页面加载时的核心逻辑：
  * 1. 检查 URL 参数以获取登录状态或凭证传输信息。
  * 2. 如果存在，则尝试从服务器检索和解密凭证。
  * 3. 使用解密的凭证生成一个一次性的登录 URL。
@@ -87,6 +86,7 @@ function generateQRCode(url, container) {
 
 	const imgTag = qr.createImgTag(6)
 	container.innerHTML = imgTag
+	container.children[0].dataset.i18n = 'access.QRcode'
 }
 
 copyButton.addEventListener('click', () => {

@@ -55,15 +55,15 @@
 						<h2 class="card-title" data-i18n="userSettings.changePassword.title"></h2>
 						<form id="changePasswordForm" class="space-y-4">
 							<div class="form-control">
-								<label class="label"><span class="label-text" data-i18n="userSettings.changePassword.currentPasswordLabel"></span></label>
+								<label class="label" for="currentPassword"><span class="label-text" data-i18n="userSettings.changePassword.currentPasswordLabel"></span></label>
 								<input type="password" id="currentPassword" name="currentPassword" class="input input-bordered" required autocomplete="current-password" />
 							</div>
 							<div class="form-control">
-								<label class="label"><span class="label-text" data-i18n="userSettings.changePassword.newPasswordLabel"></span></label>
+								<label class="label" for="newPassword"><span class="label-text" data-i18n="userSettings.changePassword.newPasswordLabel"></span></label>
 								<input type="password" id="newPassword" name="newPassword" class="input input-bordered" required autocomplete="new-password" />
 							</div>
 							<div class="form-control">
-								<label class="label"><span class="label-text" data-i18n="userSettings.changePassword.confirmNewPasswordLabel"></span></label>
+								<label class="label" for="confirmNewPassword"><span class="label-text" data-i18n="userSettings.changePassword.confirmNewPasswordLabel"></span></label>
 								<input type="password" id="confirmNewPassword" name="confirmNewPassword" class="input input-bordered" required autocomplete="new-password" />
 							</div>
 							<div class="card-actions justify-end">
@@ -79,7 +79,7 @@
 						<h2 class="card-title" data-i18n="userSettings.renameUser.title"></h2>
 						<form id="renameUserForm" class="space-y-4">
 							<div class="form-control">
-								<label class="label"><span class="label-text" data-i18n="userSettings.renameUser.newUsernameLabel"></span></label>
+								<label class="label" for="newUsernameRename"><span class="label-text" data-i18n="userSettings.renameUser.newUsernameLabel"></span></label>
 								<input type="text" id="newUsernameRename" name="newUsernameRename" class="input input-bordered" required />
 							</div>
 							<div class="card-actions justify-end">
@@ -101,7 +101,7 @@
 					</div>
 					<div id="deviceListContainer" class="max-h-96 overflow-y-auto">
 						<p id="noDevicesText" class="text-center hidden py-4" data-i18n="userSettings.userDevices.noDevicesFound"></p>
-						<div id="deviceList" class="space-y-3"></div>
+						<ul id="deviceList" class="space-y-3"></ul>
 					</div>
 				</div>
 			</section>
@@ -124,7 +124,7 @@
 
 					<div id="apiKeyListContainer" class="max-h-96 overflow-y-auto pt-4">
 						<p id="noApiKeysText" class="text-center hidden py-4" data-i18n="userSettings.apiKeys.noKeysFound"></p>
-						<div id="apiKeyList" class="space-y-3"></div>
+						<ul id="apiKeyList" class="space-y-3"></ul>
 					</div>
 				</div>
 			</section>
@@ -160,7 +160,7 @@
 			<h3 class="font-bold text-lg" data-i18n="userSettings.passwordConfirm.title"></h3>
 			<p class="py-4" data-i18n="userSettings.passwordConfirm.message"></p>
 			<div class="form-control">
-				<label class="label"><span class="label-text" data-i18n="userSettings.passwordConfirm.passwordLabel"></span></label>
+				<label class="label" for="confirmationPassword"><span class="label-text" data-i18n="userSettings.passwordConfirm.passwordLabel"></span></label>
 				<input type="password" id="confirmationPassword" class="input input-bordered w-full" autocomplete="current-password" />
 			</div>
 			<div class="modal-action">

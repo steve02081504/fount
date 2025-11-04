@@ -228,6 +228,9 @@
 			"description": "fountは、比類のない選択肢と柔軟性を提供します。OpenAI、Claude、OpenRouter、NovelAIなど、<i>あらゆる</i>AIソースに接続可能です。コミュニケーションのロジックは、あなたの意のままに、コードの力によって形作られます。"
 		},
 		"language_selector": {
+			"button": {
+				"aria-label": "言語を選択"
+			},
 			"search": {
 				"placeholder": "言語を検索..."
 			}
@@ -1579,6 +1582,12 @@
 			"sameLAN": "デバイスとfountホストが同じローカルネットワーク上にあることを確認してください。",
 			"accessthis": "次のURLにアクセスしてください："
 		},
+		"QRcode": {
+			"alt": "この QR コードをスキャンして fount にアクセス"
+		},
+		"urlInput": {
+			"aria-label": "URL"
+		},
 		"copyButton": "URLをコピー",
 		"copied": "URLをクリップボードにコピーしました！"
 	},
@@ -1589,6 +1598,9 @@
 		"instruction": "このページでAPIキーを生成・管理し、fountを他のアプリケーションと統合します。",
 		"endpointSectionTitle": "APIエンドポイント",
 		"endpointInstruction": "これは他のサービスと統合するためのベースURLです。",
+		"apiUrlInput": {
+			"aria-label": "APIエンドポイント"
+		},
 		"usageExampleTitle": "使用例",
 		"usageExampleInstruction": "`curl`を使用して利用可能なモデルのリストを取得する方法の例です。",
 		"copyButton": "コピー",

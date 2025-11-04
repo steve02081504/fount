@@ -228,6 +228,9 @@
 			"description": "يوفر fount اختيارًا ومرونة لا مثيل لهما. اتصل بـ<i>أي</i> مصدر ذكاء اصطناعي - OpenAI، Claude، OpenRouter، NovelAI، وغيرها الكثير. سيتشكل منطق الاتصال وفقًا لإرادتك <i>أنت</i>، بقوة الكود."
 		},
 		"language_selector": {
+			"button": {
+				"aria-label": "اختر اللغة"
+			},
 			"search": {
 				"placeholder": "ابحث عن لغة..."
 			}
@@ -1579,6 +1582,12 @@
 			"sameLAN": "تأكد من أن الجهاز ومضيف fount على نفس الشبكة المحلية",
 			"accessthis": "قم بزيارة العنوان التالي:"
 		},
+		"QRcode": {
+			"alt": "قم بمسح رمز QR هذا للوصول إلى fount"
+		},
+		"urlInput": {
+			"aria-label": "عنوان URL"
+		},
 		"copyButton": "نسخ الرابط",
 		"copied": "تم نسخ الرابط إلى الحافظة!"
 	},
@@ -1589,6 +1598,9 @@
 		"instruction": "قم بإنشاء وإدارة مفاتيح API الخاصة بك في هذه الصفحة لدمج fount مع التطبيقات الأخرى.",
 		"endpointSectionTitle": "نقطة نهاية API",
 		"endpointInstruction": "هذا هو عنوان URL الأساسي للتكامل مع الخدمات الأخرى.",
+		"apiUrlInput": {
+			"aria-label": "نقطة نهاية API"
+		},
 		"usageExampleTitle": "مثال على الاستخدام",
 		"usageExampleInstruction": "إليك مثال على كيفية الحصول على قائمة النماذج المتاحة باستخدام `curl`.",
 		"copyButton": "نسخ",

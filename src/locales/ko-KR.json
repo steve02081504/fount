@@ -228,6 +228,9 @@
 			"description": "fount는 비교할 수 없는 선택의 폭과 유연성을 제공합니다. OpenAI, Claude, OpenRouter, NovelAI 등 <i>모든</i> AI 소스에 연결하세요. 커뮤니케이션 로직은 당신의 의지에 따라 코드의 힘으로 만들어집니다."
 		},
 		"language_selector": {
+			"button": {
+				"aria-label": "언어 선택"
+			},
 			"search": {
 				"placeholder": "언어 검색..."
 			}
@@ -1579,6 +1582,12 @@
 			"sameLAN": "기기와 fount 호스트가 동일한 로컬 네트워크에 있는지 확인하세요.",
 			"accessthis": "다음 URL로 접속하세요:"
 		},
+		"QRcode": {
+			"alt": "이 QR 코드를 스캔하여 fount에 액세스하세요."
+		},
+		"urlInput": {
+			"aria-label": "URL"
+		},
 		"copyButton": "URL 복사",
 		"copied": "URL이 클립보드에 복사되었습니다!"
 	},
@@ -1589,6 +1598,9 @@
 		"instruction": "이 페이지에서 API 키를 생성하고 관리하여 fount를 다른 애플리케이션과 통합하세요.",
 		"endpointSectionTitle": "API 엔드포인트",
 		"endpointInstruction": "다른 서비스와 통합하기 위한 기본 URL입니다.",
+		"apiUrlInput": {
+			"aria-label": "API 엔드포인트"
+		},
 		"usageExampleTitle": "사용 예제",
 		"usageExampleInstruction": "`curl`을 사용하여 사용 가능한 모델 목록을 가져오는 방법의 예입니다.",
 		"copyButton": "복사",

@@ -228,6 +228,9 @@
 			"description": "fount 供無雙之選，無窮之變。可接<i>任意</i>智源——OpenAI、Claude、OpenRouter、NovelAI 等。通靈之法，皆由君之符碼之力隨心塑造。"
 		},
 		"language_selector": {
+			"button": {
+				"aria-label": "择雅言"
+			},
 			"search": {
 				"placeholder": "寻雅言…"
 			}
@@ -1576,6 +1579,12 @@
 			"sameLAN": "請確保諸器與 fount 主機同處一網",
 			"accessthis": "請訪此址："
 		},
+		"QRcode": {
+			"alt": "掃碼以訪"
+		},
+		"urlInput": {
+			"aria-label": "位址"
+		},
 		"copyButton": "謄錄此址",
 		"copied": "此址已錄！"
 	},
@@ -1586,6 +1595,9 @@
 		"instruction": "於此頁生成並掌管爾之API密鑰，以便將fount與他用整合。",
 		"endpointSectionTitle": "API端點",
 		"endpointInstruction": "此乃與他服務整合之基址。",
+		"apiUrlInput": {
+			"aria-label": "API端點"
+		},
 		"usageExampleTitle": "用法示例",
 		"usageExampleInstruction": "此為如何用`curl`獲取可用模型列表之例。",
 		"copyButton": "謄",

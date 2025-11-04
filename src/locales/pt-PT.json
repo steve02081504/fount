@@ -228,6 +228,9 @@
 			"description": "fount oferece escolha e flexibilidade incomparáveis. Conecte-se a <i>qualquer</i> fount de IA – OpenAI, Claude, OpenRouter, NovelAI, etc. A lógica de comunicação será moldada pelo poder do código, de acordo com os <i>seus</i> desejos."
 		},
 		"language_selector": {
+			"button": {
+				"aria-label": "Selecione o idioma"
+			},
 			"search": {
 				"placeholder": "Pesquisar idioma..."
 			}
@@ -1579,6 +1582,12 @@
 			"sameLAN": "Certifique-se de que o dispositivo e o anfitrião do fount estão na mesma rede local.",
 			"accessthis": "Visite este URL:"
 		},
+		"QRcode": {
+			"alt": "Digitalize este código QR para acessar fount"
+		},
+		"urlInput": {
+			"aria-label": "URL"
+		},
 		"copyButton": "Copiar URL",
 		"copied": "URL copiado para a área de transferência!"
 	},
@@ -1589,6 +1598,9 @@
 		"instruction": "Gere e gira as suas chaves de API nesta página para integrar o fount com outras aplicações.",
 		"endpointSectionTitle": "Endpoint da API",
 		"endpointInstruction": "Este é o URL base para integração com outros serviços.",
+		"apiUrlInput": {
+			"aria-label": "Endpoint da API"
+		},
 		"usageExampleTitle": "Exemplo de Utilização",
 		"usageExampleInstruction": "Aqui está um exemplo de como obter a lista de modelos disponíveis usando `curl`.",
 		"copyButton": "Copiar",

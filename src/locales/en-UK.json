@@ -228,6 +228,9 @@
 			"description": "fount offers unparalleled choice and flexibility. Connect to <i>any</i> AI sources—OpenAI, Claude, OpenRouter, NovelAI, etc. Communication logic will be shaped by the power of code according to your wishes."
 		},
 		"language_selector": {
+			"button": {
+				"aria-label": "Select language"
+			},
 			"search": {
 				"placeholder": "Search language..."
 			}
@@ -1579,6 +1582,12 @@
 			"sameLAN": "Ensure the device and fount host are on the same local area network.",
 			"accessthis": "Visit this URL:"
 		},
+		"QRcode": {
+			"alt": "Scan this QR code to access fount"
+		},
+		"urlInput": {
+			"aria-label": "URL"
+		},
 		"copyButton": "Copy URL",
 		"copied": "URL copied to clipboard!"
 	},
@@ -1589,6 +1598,9 @@
 		"instruction": "Generate and manage your API keys on this page to integrate fount with other applications.",
 		"endpointSectionTitle": "API Endpoint",
 		"endpointInstruction": "This is the base URL for integration with other services.",
+		"apiUrlInput": {
+			"aria-label": "API endpoint"
+		},
 		"usageExampleTitle": "Usage Example",
 		"usageExampleInstruction": "Here is an example of how to get the list of available models using `curl`.",
 		"copyButton": "Copy",

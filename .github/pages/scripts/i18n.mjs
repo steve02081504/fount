@@ -271,24 +271,41 @@ export { console }
 function translateSingularElement(element) {
 	let updated = false
 	/**
-	 * 更新元素的属性。
-	 * @param {string} attr - 属性名称。
+	 * 更新元素的值。
+	 * @param {string} attr - 属性名。
 	 * @param {string} value - 属性值。
 	 * @returns {void}
 	 */
-	function update(attr, value) {
+	function updateValue(attr, value) {
 		if (element[attr] == value) return
 		element[attr] = value
+		updated = true
+	}
+	/**
+	 * 更新元素的属性。
+	 * @param {string} attr - 属性名。
+	 * @param {string} value - 属性值。
+	 * @returns {void}
+	 */
+	function updateAttribute(attr, value) {
+		if (element.getAttribute(attr) == value) return
+		element.setAttribute(attr, value)
 		updated = true
 	}
 	const key = element.dataset.i18n
 	if (!key) return updated
 	if (getNestedValue(i18n, key) instanceof Object) {
-		const attributes = ['placeholder', 'title', 'label', 'textContent', 'value', 'alt', 'aria-label']
+		const attributes = ['placeholder', 'title', 'label', 'value', 'alt', 'aria-label']
 		for (const attr of attributes) {
 			const specificKey = `${key}.${attr}`
 			const translation = geti18n_nowarn(specificKey)
-			if (translation) update(attr, translation)
+			if (translation) updateAttribute(attr, translation)
+		}
+		const values = ['textContent', 'innerHTML']
+		for (const attr of values) {
+			const specificKey = `${key}.${attr}`
+			const translation = geti18n_nowarn(specificKey)
+			if (translation) updateValue(attr, translation)
 		}
 		const dataset = geti18n_nowarn(`${key}.dataset`)
 		if (dataset) Object.assign(element.dataset, dataset)
