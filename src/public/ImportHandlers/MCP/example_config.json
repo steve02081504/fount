@@ -1,0 +1,29 @@
+{
+  "mcpServers": {
+    "example_mcp_server": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/path/to/allowed/directory"
+      ],
+      "env": {
+        "NODE_ENV": "production"
+      }
+    },
+    "omniparser_autogui_mcp": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "D:\\CLONED_PATH\\omniparser-autogui-mcp",
+        "run",
+        "omniparser-autogui-mcp"
+      ],
+      "env": {
+        "PYTHONIOENCODING": "utf-8",
+        "OCR_LANG": "en"
+      }
+    }
+  }
+}
+
