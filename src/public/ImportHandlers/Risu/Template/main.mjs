@@ -1,15 +1,16 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { regex_placement } from '../../../../../src/public/ImportHandlers/SillyTavern/engine/charData.mjs' // 复用ST引擎
-import { evaluateMacros } from '../../../../../src/public/ImportHandlers/SillyTavern/engine/marco.mjs' // 复用ST引擎
-import { promptBuilder } from '../../../../../src/public/ImportHandlers/SillyTavern/engine/prompt_builder.mjs' // 复用ST引擎
-import { runRegex } from '../../../../../src/public/ImportHandlers/SillyTavern/engine/regex.mjs' // 复用ST引擎
-import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/prompt_struct.mjs' // 调整路径
-import { saveJsonFile } from '../../../../../src/scripts/json_loader.mjs' // 调整路径
-import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs' // 调整路径
-// 复用ST引擎 (getCharacterSource可能需要调整或我们直接用转换时存的source_url)
+import { regex_placement } from '../../../../../src/public/ImportHandlers/SillyTavern/engine/charData.mjs'
+import { evaluateMacros } from '../../../../../src/public/ImportHandlers/SillyTavern/engine/marco.mjs'
+import { promptBuilder } from '../../../../../src/public/ImportHandlers/SillyTavern/engine/prompt_builder.mjs'
+import { runRegex } from '../../../../../src/public/ImportHandlers/SillyTavern/engine/regex.mjs'
+import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/prompt_struct.mjs'
+import { saveJsonFile } from '../../../../../src/scripts/json_loader.mjs'
+import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
+import { loadPlugin } from '../../../../../src/server/managers/plugin_manager.mjs'
 
+/** @typedef {import('../../../../../src/decl/pluginAPI.ts').pluginAPI_t} pluginAPI_t */
 /** @typedef {import('../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t */
 /** @typedef {import('../../../../../src/decl/AIsource.ts').AIsource_t} AIsource_t */
 /** @typedef {import("../../../../../src/decl/prompt_struct.ts').single_part_prompt_t} single_part_prompt_t */
@@ -18,6 +19,9 @@ import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/man
 
 /** @type {AIsource_t} */
 let AIsource = null
+/** @type {Record<string, pluginAPI_t>} */
+let plugins = {}
+
 let username = ''
 
 const chardir = import.meta.dirname
@@ -145,6 +149,7 @@ const charAPI_definition = {
 			 */
 			GetData: () => ({
 				AIsource: AIsource?.filename || '',
+				plugins: Object.keys(plugins),
 				chardata, // STv2 格式
 			}),
 			/**
@@ -157,6 +162,7 @@ const charAPI_definition = {
 					charAPI_definition.info = buildCharInfo(chardata)
 					saveJsonFile(charjson, chardata) // 保存 STv2 格式
 				}
+				if (data.plugins) plugins = Object.fromEntries(await Promise.all(data.plugins.map(async x => [x, await loadPlugin(username, x)])))
 				if (data.AIsource) AIsource = await loadAIsource(username, data.AIsource)
 				else AIsource = await loadDefaultAIsource(username)
 			}
@@ -240,6 +246,8 @@ const charAPI_definition = {
 						content: 'This character does not have an AI source. Please [set the AI source](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage) first.'
 					}
 
+				// 注入角色插件
+				args.plugins = Object.assign({}, plugins, args.plugins)
 
 				const effectiveCharName = chardata.extensions?.ccv3_nickname || chardata.name
 				const promptStructArgs = { ...args, char_name: effectiveCharName } // 确保 buildPromptStruct 使用正确的角色名
