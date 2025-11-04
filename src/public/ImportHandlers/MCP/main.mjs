@@ -7,7 +7,7 @@ import { move } from 'npm:fs-extra'
 import { saveJsonFile } from '../../../scripts/json_loader.mjs'
 import { loadPart } from '../../../server/managers/index.mjs'
 import { isPartLoaded } from '../../../server/parts_loader.mjs'
-import { getUserByUsername } from '../../../server/auth.mjs'
+import { getUserDictionary } from '../../../server/auth.mjs'
 
 const templateDir = path.join(import.meta.dirname, 'Template')
 
@@ -59,7 +59,7 @@ async function ImportByText(username, text) {
 			throw new Error('Invalid MCP config: missing mcpServers')
 
 		const installedParts = []
-		const user = getUserByUsername(username)
+		const userPath = getUserDictionary(username)
 		const pluginsDir = path.join(user.path, 'plugins')
 		
 		// 确保 plugins 目录存在
@@ -130,3 +130,4 @@ export default {
 		}
 	}
 }
+
