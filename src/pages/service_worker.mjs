@@ -56,18 +56,6 @@ let dbPromise = null
  */
 const CONFIG_STORE_NAME = 'config'
 
-/**
- * ping 服务的重试间隔时间（毫秒）。
- * @type {number}
- */
-const PING_RETRY_DELAY = 5000
-
-/**
- * 用于 ping 重试的 Timeout ID。
- * @type {number | null}
- */
-let pingRetryTimeout = null
-
 
 // --- IndexedDB 辅助函数 ---
 

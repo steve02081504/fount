@@ -30,7 +30,7 @@ const autoRunScriptsCache = new Map()
  * @returns {Promise<void>}
  */
 async function renderPages(pages) {
-	pagesListDiv.innerHTML = ''
+	while (pagesListDiv.firstChild) pagesListDiv.removeChild(pagesListDiv.firstChild)
 	if (!pages.length) pagesListDiv.appendChild(await renderTemplate('empty_state'))
 	else pagesListDiv.appendChild(await renderTemplate('page_table', { pages }))
 }
