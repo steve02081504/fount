@@ -165,7 +165,7 @@
 				"autoInitDisabled": "fount has been restarted multiple times in the last short period of time, but automatic reinitialization has been disabled due to the presence of the .noautoinit file. Exiting.",
 				"restartingTooFast": "fount has been restarted multiple times in a short period of time. Forced reinitialization...",
 				"failedToStart": "Even after automatic repair attempts, the fount fails to start for a short period of time. Please check the logs for errors.",
-				"initFailed": "Fount initialization failed. Exiting."
+				"initFailed": "fount initialization failed. Exiting."
 			},
 			"remove": {
 				"removingFount": "Removing fount...",

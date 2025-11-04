@@ -61,8 +61,8 @@ async function GetSource(config, { username, SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['polling', 'utility', 'meta'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'zh-CN': {
 				name: config.name,
@@ -72,8 +72,8 @@ async function GetSource(config, { username, SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['轮询', '实用工具', '元'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'ar-SA': {
 				name: config.name,
@@ -83,8 +83,8 @@ async function GetSource(config, { username, SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['الاقتراع', 'أداة', 'ميتا'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'de-DE': {
 				name: config.name,
@@ -94,8 +94,8 @@ async function GetSource(config, { username, SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['Polling', 'Dienstprogramm', 'Meta'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			emoji: {
 				name: '🔄',
@@ -105,8 +105,8 @@ async function GetSource(config, { username, SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['polling', 'utility', 'meta'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'es-ES': {
 				name: config.name,
@@ -116,8 +116,8 @@ async function GetSource(config, { username, SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['sondeo', 'utilidad', 'meta'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'fr-FR': {
 				name: config.name,
@@ -127,8 +127,8 @@ async function GetSource(config, { username, SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['sondage', 'utilitaire', 'méta'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'hi-IN': {
 				name: config.name,
@@ -138,8 +138,8 @@ async function GetSource(config, { username, SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['पोलिंग', 'उपयोगिता', 'मेटा'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'is-IS': {
 				name: config.name,
@@ -149,8 +149,8 @@ async function GetSource(config, { username, SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['könnun', 'gagnsemi', 'meta'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'it-IT': {
 				name: config.name,
@@ -160,8 +160,8 @@ async function GetSource(config, { username, SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['polling', 'utilità', 'meta'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'ja-JP': {
 				name: config.name,
@@ -171,8 +171,8 @@ async function GetSource(config, { username, SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['ポーリング', 'ユーティリティ', 'メタ'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'ko-KR': {
 				name: config.name,
@@ -182,8 +182,8 @@ async function GetSource(config, { username, SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['폴링', '유틸리티', '메타'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			lzh: {
 				name: config.name,
@@ -193,8 +193,8 @@ async function GetSource(config, { username, SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['輪詢', '用', '元'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'nl-NL': {
 				name: config.name,
@@ -204,8 +204,8 @@ async function GetSource(config, { username, SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['polling', 'hulpprogramma', 'meta'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'pt-PT': {
 				name: config.name,
@@ -215,8 +215,8 @@ async function GetSource(config, { username, SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['polling', 'utilitário', 'meta'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'ru-RU': {
 				name: config.name,
@@ -226,8 +226,8 @@ async function GetSource(config, { username, SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['опрос', 'утилита', 'мета'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'uk-UA': {
 				name: config.name,
@@ -237,8 +237,8 @@ async function GetSource(config, { username, SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['опитування', 'утиліта', 'мета'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'vi-VN': {
 				name: config.name,
@@ -248,8 +248,8 @@ async function GetSource(config, { username, SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['thăm dò ý kiến', 'tiện ích', 'meta'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'zh-TW': {
 				name: config.name,
@@ -259,8 +259,8 @@ async function GetSource(config, { username, SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['輪詢', '實用程式', '元'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			}
 		},
 		is_paid: false,

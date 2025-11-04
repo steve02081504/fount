@@ -11,9 +11,9 @@ export type locale_t = string;
  */
 export type role_t = 'user' | 'char' | 'system' | 'world' | 'tool';
 /**
- * 定义了包含详细信息的对象的类型。
+ * 定义了包含单个语言详细信息的对象的类型。
  */
-export type info_t = Record<locale_t, {
+export type single_lang_info_t = {
 	/**
 	 * 名称。
 	 */
@@ -50,8 +50,8 @@ export type info_t = Record<locale_t, {
 	 * 标签数组。
 	 */
 	tags: string[];
-	/**
-	 * 提供者。
-	 */
-	provider: string;
-}>
+}
+/**
+ * 定义了包含详细信息的对象的类型。
+ */
+export type info_t<T=Record<locale_t, never>> = Record<locale_t, single_lang_info_t & T>

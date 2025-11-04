@@ -145,8 +145,8 @@ async function GetSource(config, { SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['proxy', 'openai', 'api', 'utility'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'zh-CN': {
 				name: config.name || config.model,
@@ -156,8 +156,8 @@ async function GetSource(config, { SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['代理', 'openai', 'api', '实用工具'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'ar-SA': {
 				name: config.name || config.model,
@@ -167,8 +167,8 @@ async function GetSource(config, { SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['بروكسي', 'openai', 'api', 'أداة'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'de-DE': {
 				name: config.name || config.model,
@@ -178,8 +178,8 @@ async function GetSource(config, { SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['proxy', 'openai', 'api', 'dienstprogramm'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			emoji: {
 				name: '🔌',
@@ -189,8 +189,8 @@ async function GetSource(config, { SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['proxy', 'openai', 'api', 'utility'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'es-ES': {
 				name: config.name || config.model,
@@ -200,8 +200,8 @@ async function GetSource(config, { SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['proxy', 'openai', 'api', 'utilidad'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'fr-FR': {
 				name: config.name || config.model,
@@ -211,8 +211,8 @@ async function GetSource(config, { SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['proxy', 'openai', 'api', 'utilitaire'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'hi-IN': {
 				name: config.name || config.model,
@@ -222,8 +222,8 @@ async function GetSource(config, { SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['प्रॉक्सी', 'ओपनएआई', 'एपीआई', 'उपयोगिता'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'is-IS': {
 				name: config.name || config.model,
@@ -233,8 +233,8 @@ async function GetSource(config, { SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['umboð', 'openai', 'api', 'gagnsemi'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'it-IT': {
 				name: config.name || config.model,
@@ -244,8 +244,8 @@ async function GetSource(config, { SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['proxy', 'openai', 'api', 'utilità'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'ja-JP': {
 				name: config.name || config.model,
@@ -255,8 +255,8 @@ async function GetSource(config, { SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['プロキシ', 'openai', 'api', 'ユーティリティ'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'ko-KR': {
 				name: config.name || config.model,
@@ -266,8 +266,8 @@ async function GetSource(config, { SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['프록시', 'openai', 'api', '유틸리티'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			lzh: {
 				name: config.name || config.model,
@@ -277,8 +277,8 @@ async function GetSource(config, { SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['代理', 'openai', '接口', '用'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'nl-NL': {
 				name: config.name || config.model,
@@ -288,8 +288,8 @@ async function GetSource(config, { SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['proxy', 'openai', 'api', 'hulpprogramma'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'pt-PT': {
 				name: config.name || config.model,
@@ -299,8 +299,8 @@ async function GetSource(config, { SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['proxy', 'openai', 'api', 'utilitário'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'ru-RU': {
 				name: config.name || config.model,
@@ -310,8 +310,8 @@ async function GetSource(config, { SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['прокси', 'openai', 'api', 'утилита'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'uk-UA': {
 				name: config.name || config.model,
@@ -321,8 +321,8 @@ async function GetSource(config, { SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['проксі', 'openai', 'api', 'утиліта'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'vi-VN': {
 				name: config.name || config.model,
@@ -332,8 +332,8 @@ async function GetSource(config, { SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['proxy', 'openai', 'api', 'tiện ích'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			},
 			'zh-TW': {
 				name: config.name || config.model,
@@ -343,8 +343,8 @@ async function GetSource(config, { SaveConfig }) {
 				version: '0.0.1',
 				author: 'steve02081504',
 				tags: ['代理', 'openai', 'api', '實用程式'],
-				home_page: 'https://github.com/Fount-Project/Fount',
-				provider: 'Fount'
+				home_page: 'https://github.com/steve02081504/fount',
+				provider: 'fount'
 			}
 		},
 		is_paid: false,
