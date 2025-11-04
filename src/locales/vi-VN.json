@@ -462,13 +462,21 @@
 				"alt": "Menu chức năng"
 			}
 		},
-		"chars": {
-			"tab": "Nhân vật",
-			"title": "Chọn nhân vật",
-			"subtitle": "Chọn một nhân vật và bắt đầu trò chuyện!",
-			"none": "Không có gì để hiển thị",
+		"part_types": {
+			"chars": "Vai trò",
+			"worlds": "Thế giới",
+			"personas": "Nhân cách",
+			"plugins": "trình cắm thêm",
+			"AIsources": "nguồn AI",
+			"AIsourceGenerators": "Trình tạo nguồn AI",
+			"ImportHandlers": "Nhập khẩu bộ xử lý",
+			"shells": "Giao diện tương tác"
+		},
+		"default": {
+			"title": "Lựa chọn thành phần",
+			"subtitle": "Chọn một thành phần để tiếp tục.",
 			"card": {
-				"noTags": "Không có thẻ",
+				"noTags": "Không có nhãn",
 				"version": "Phiên bản",
 				"author": "Tác giả",
 				"home_page": "Trang chủ",
@@ -477,46 +485,33 @@
 					"alt": "Làm mới",
 					"title": "Làm mới"
 				},
+				"defaultCheckbox": {
+					"title": "Đặt làm mặc định"
+				}
+			}
+		},
+		"chars": {
+			"title": "Chọn nhân vật",
+			"subtitle": "Chọn một nhân vật và bắt đầu trò chuyện!",
+			"card": {
 				"defaultCheckbox": {
 					"title": "Đặt làm nhân vật mặc định"
 				}
 			}
 		},
 		"worlds": {
-			"tab": "Thế giới",
 			"title": "Chọn thế giới",
 			"subtitle": "Chọn một thế giới và đắm chìm trong đó!",
-			"none": "Không có gì để hiển thị",
 			"card": {
-				"noTags": "Không có thẻ",
-				"version": "Phiên bản",
-				"author": "Tác giả",
-				"home_page": "Trang chủ",
-				"issue_page": "Báo cáo sự cố",
-				"refreshButton": {
-					"alt": "Làm mới",
-					"title": "Làm mới"
-				},
 				"defaultCheckbox": {
 					"title": "Đặt làm thế giới mặc định"
 				}
 			}
 		},
 		"personas": {
-			"tab": "Persona",
 			"title": "Chọn Persona",
 			"subtitle": "Chọn một Persona và trải nghiệm cuộc sống.",
-			"none": "Không có gì để hiển thị",
 			"card": {
-				"noTags": "Không có thẻ",
-				"version": "Phiên bản",
-				"author": "Tác giả",
-				"home_page": "Trang chủ",
-				"issue_page": "Báo cáo sự cố",
-				"refreshButton": {
-					"alt": "Làm mới",
-					"title": "Làm mới"
-				},
 				"defaultCheckbox": {
 					"title": "Đặt làm Persona mặc định"
 				}

@@ -462,11 +462,19 @@
 				"alt": "Funktionsmenü"
 			}
 		},
-		"chars": {
-			"tab": "Charaktere",
-			"title": "Charakterauswahl",
-			"subtitle": "Wählen Sie einen Charakter und starten Sie den Chat!",
-			"none": "Nichts vorhanden",
+		"part_types": {
+			"chars": "Rolle",
+			"worlds": "Welt",
+			"personas": "Persönlichkeit",
+			"plugins": "Plug-in",
+			"AIsources": "KI-Quelle",
+			"AIsourceGenerators": "KI-Quellengenerator",
+			"ImportHandlers": "Import-Handler",
+			"shells": "Shell"
+		},
+		"default": {
+			"title": "Komponentenauswahl",
+			"subtitle": "Wählen Sie eine Komponente aus, um fortzufahren.",
 			"card": {
 				"noTags": "Keine Tags",
 				"version": "Version",
@@ -474,49 +482,36 @@
 				"home_page": "Startseite",
 				"issue_page": "Problem melden",
 				"refreshButton": {
-					"alt": "Aktualisieren",
-					"title": "Aktualisieren"
+					"alt": "auffrischen",
+					"title": "auffrischen"
 				},
+				"defaultCheckbox": {
+					"title": "Als Standard festlegen"
+				}
+			}
+		},
+		"chars": {
+			"title": "Charakterauswahl",
+			"subtitle": "Wählen Sie einen Charakter und starten Sie den Chat!",
+			"card": {
 				"defaultCheckbox": {
 					"title": "Als Standardcharakter festlegen"
 				}
 			}
 		},
 		"worlds": {
-			"tab": "Welten",
 			"title": "Weltenauswahl",
 			"subtitle": "Wähle eine Welt und tauche ein!",
-			"none": "Nichts vorhanden",
 			"card": {
-				"noTags": "Keine Tags",
-				"version": "Version",
-				"author": "Autor",
-				"home_page": "Startseite",
-				"issue_page": "Problem melden",
-				"refreshButton": {
-					"alt": "Aktualisieren",
-					"title": "Aktualisieren"
-				},
 				"defaultCheckbox": {
 					"title": "Als Standardwelt festlegen"
 				}
 			}
 		},
 		"personas": {
-			"tab": "Personas",
 			"title": "Personenauswahl",
 			"subtitle": "Wählen Sie eine Persona und erleben Sie das Leben.",
-			"none": "Nichts vorhanden",
 			"card": {
-				"noTags": "Keine Tags",
-				"version": "Version",
-				"author": "Autor",
-				"home_page": "Startseite",
-				"issue_page": "Problem melden",
-				"refreshButton": {
-					"alt": "Aktualisieren",
-					"title": "Aktualisieren"
-				},
 				"defaultCheckbox": {
 					"title": "Als Standardpersona festlegen"
 				}

@@ -262,31 +262,40 @@ function translateSingularElement(element) {
 		element.setAttribute(attr, value)
 		updated = true
 	}
-	const key = element.dataset.i18n
-	if (!key) return updated
-	if (getNestedValue(i18n, key) instanceof Object) {
-		const attributes = ['placeholder', 'title', 'label', 'value', 'alt', 'aria-label']
-		for (const attr of attributes) {
-			const specificKey = `${key}.${attr}`
-			const translation = geti18n_nowarn(specificKey)
-			if (translation) updateAttribute(attr, translation)
+	for (const key of element.dataset.i18n.split(';').map(k => k.trim())) {
+		if (key.startsWith("'") && key.endsWith("'")) {
+			const literal_value = key.slice(1, -1)
+			if (element.textContent !== literal_value) {
+				element.textContent = literal_value
+				updated = true
+			}
 		}
-		const values = ['textContent', 'innerHTML']
-		for (const attr of values) {
-			const specificKey = `${key}.${attr}`
-			const translation = geti18n_nowarn(specificKey)
-			if (translation) updateValue(attr, translation)
-		}
-		const dataset = geti18n_nowarn(`${key}.dataset`)
-		if (dataset) Object.assign(element.dataset, dataset)
-	}
-	else {
-		const translation = geti18n(key)
-		if (!translation) return
-		if (element.innerHTML !== translation) {
-			element.innerHTML = translation
+		else if (getNestedValue(i18n, key) instanceof Object) {
+			if (!Object.keys(getNestedValue(i18n, key)).length) break
+			const attributes = ['placeholder', 'title', 'label', 'value', 'alt', 'aria-label']
+			for (const attr of attributes) {
+				const specificKey = `${key}.${attr}`
+				const translation = geti18n_nowarn(specificKey)
+				if (translation) updateAttribute(attr, translation)
+			}
+			const values = ['textContent', 'innerHTML']
+			for (const attr of values) {
+				const specificKey = `${key}.${attr}`
+				const translation = geti18n_nowarn(specificKey)
+				if (translation) updateValue(attr, translation)
+			}
+			const dataset = geti18n_nowarn(`${key}.dataset`)
+			if (dataset) Object.assign(element.dataset, dataset)
 			updated = true
 		}
+		else if (geti18n_nowarn(key)) {
+			const translation = geti18n_nowarn(key)
+			if (element.innerHTML !== translation) {
+				element.innerHTML = translation
+				updated = true
+			}
+		}
+		if (updated) break
 	}
 	return updated
 }

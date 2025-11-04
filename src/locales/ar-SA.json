@@ -462,61 +462,56 @@
 				"alt": "قائمة الوظائف"
 			}
 		},
-		"chars": {
-			"tab": "الشخصيات",
-			"title": "اختيار الشخصية",
-			"subtitle": "اختر شخصية وابدأ الدردشة!",
-			"none": "فارغ تمامًا",
+		"part_types": {
+			"chars": "دور",
+			"worlds": "عالم",
+			"personas": "شخصية",
+			"plugins": "إضافة",
+			"AIsources": "مصدر الذكاء الاصطناعي",
+			"AIsourceGenerators": "مولد مصدر الذكاء الاصطناعي",
+			"ImportHandlers": "معالج الاستيراد",
+			"shells": "واجهة تفاعلية"
+		},
+		"default": {
+			"title": "اختيار المكون",
+			"subtitle": "حدد مكونًا للمتابعة.",
 			"card": {
-				"noTags": "لا توجد وسوم",
-				"version": "الإصدار",
-				"author": "المؤلف",
+				"noTags": "لا تسمية",
+				"version": "إصدار",
+				"author": "مؤلف",
 				"home_page": "الصفحة الرئيسية",
-				"issue_page": "الإبلاغ عن خطأ",
+				"issue_page": "الإبلاغ عن مشكلة",
 				"refreshButton": {
 					"alt": "تحديث",
 					"title": "تحديث"
 				},
+				"defaultCheckbox": {
+					"title": "تعيين كافتراضي"
+				}
+			}
+		},
+		"chars": {
+			"title": "اختيار الشخصية",
+			"subtitle": "اختر شخصية وابدأ الدردشة!",
+			"card": {
 				"defaultCheckbox": {
 					"title": "تعيين كشخصية افتراضية"
 				}
 			}
 		},
 		"worlds": {
-			"tab": "العوالم",
 			"title": "اختيار العالم",
 			"subtitle": "اختر عالمًا وانغمس فيه!",
-			"none": "فارغ تمامًا",
 			"card": {
-				"noTags": "لا توجد وسوم",
-				"version": "الإصدار",
-				"author": "المؤلف",
-				"home_page": "الصفحة الرئيسية",
-				"issue_page": "الإبلاغ عن مشكلة",
-				"refreshButton": {
-					"alt": "تحديث",
-					"title": "تحديث"
-				},
 				"defaultCheckbox": {
 					"title": "تعيين كعالم افتراضي"
 				}
 			}
 		},
 		"personas": {
-			"tab": "الهويات",
 			"title": "اختيار الهوية",
 			"subtitle": "اختر هوية وجرب الحياة.",
-			"none": "فارغ تمامًا",
 			"card": {
-				"noTags": "لا توجد وسوم",
-				"version": "الإصدار",
-				"author": "المؤلف",
-				"home_page": "الصفحة الرئيسية",
-				"issue_page": "الإبلاغ عن مشكلة",
-				"refreshButton": {
-					"alt": "تحديث",
-					"title": "تحديث"
-				},
 				"defaultCheckbox": {
 					"title": "تعيين كهوية افتراضية"
 				}

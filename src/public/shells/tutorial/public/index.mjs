@@ -3,6 +3,7 @@
  */
 import { unlockAchievement } from '../../scripts/endpoints.mjs'
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
+import { setDefaultPart } from '../../scripts/parts.mjs'
 import { svgInliner } from '../../scripts/svgInliner.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 /* global confetti */
@@ -204,7 +205,8 @@ const redirect = urlParams.get('redirect')
 /**
  * 关闭教程。
  */
-function closeTutorial() {
+async function closeTutorial() {
+	await setDefaultPart('shell', 'home')
 	if (redirect)
 		window.location.href = decodeURIComponent(redirect) + window.location.hash
 	else

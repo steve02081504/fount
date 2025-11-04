@@ -461,61 +461,56 @@
 				"alt": "⚙️"
 			}
 		},
-		"chars": {
-			"tab": "🤖",
-			"title": "🤔🤖",
-			"subtitle": "👆🤖, ▶️💬❗️",
-			"none": "💨",
+		"part_types": {
+			"chars": "🤖",
+			"worlds": "🌍",
+			"personas": "👤",
+			"plugins": "🔌",
+			"AIsources": "🧠",
+			"AIsourceGenerators": "✨🧠",
+			"ImportHandlers": "📥",
+			"shells": "⌨️"
+		},
+		"default": {
+			"title": "🤔🧩",
+			"subtitle": "👇🧩, ▶️",
 			"card": {
-				"noTags": "🤷‍♂️🏷️",
+				"noTags": "🏷️❌",
 				"version": "📦",
 				"author": "✍️",
 				"home_page": "🏠",
-				"issue_page": "❓",
+				"issue_page": "🐞",
 				"refreshButton": {
 					"alt": "🔄",
 					"title": "🔄"
 				},
+				"defaultCheckbox": {
+					"title": "⭐"
+				}
+			}
+		},
+		"chars": {
+			"title": "🤔🤖",
+			"subtitle": "👆🤖, ▶️💬❗️",
+			"card": {
 				"defaultCheckbox": {
 					"title": "❤️🤖"
 				}
 			}
 		},
 		"worlds": {
-			"tab": "🌍",
 			"title": "🤔🌍",
 			"subtitle": "👆🌍, ✨❗️",
-			"none": "💨",
 			"card": {
-				"noTags": "🤷‍♂️🏷️",
-				"version": "📦",
-				"author": "✍️",
-				"home_page": "🏠",
-				"issue_page": "❓",
-				"refreshButton": {
-					"alt": "🔄",
-					"title": "🔄"
-				},
 				"defaultCheckbox": {
 					"title": "❤️🌍"
 				}
 			}
 		},
 		"personas": {
-			"tab": "👤",
 			"title": "🤔👤",
 			"subtitle": "👆👤, ▶️✨",
-			"none": "💨",
 			"card": {
-				"noTags": "🤷‍♂️🏷️",
-				"version": "📦",
-				"author": "✍️",
-				"home_page": "🏠",
-				"issue_page": "❓",
-				"refreshButton": {
-					"alt": "🔄",
-					"title": "🔄"
-				},
 				"defaultCheckbox": {
 					"title": "❤️👤"
 				}

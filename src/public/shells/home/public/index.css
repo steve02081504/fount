@@ -1,9 +1,21 @@
+.tabs-viewport {
+	scrollbar-width: none;
+}
+
+#part-types-tabs .tab {
+	flex-shrink: 0;
+}
+
 body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	min-height: 100vh;
 	margin: 0;
+}
+
+.part-items-grid {
+	grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
 }
 
 /* Card Styles */

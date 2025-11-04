@@ -462,61 +462,56 @@
 				"alt": "Menu de funções"
 			}
 		},
-		"chars": {
-			"tab": "Personagens",
-			"title": "Seleção de Personagem",
-			"subtitle": "Selecione um personagem e comece a conversar!",
-			"none": "Nada para mostrar",
+		"part_types": {
+			"chars": "Papel",
+			"worlds": "Mundo",
+			"personas": "Personalidade",
+			"plugins": "plug-in",
+			"AIsources": "Fonte de IA",
+			"AIsourceGenerators": "Gerador de fonte de IA",
+			"ImportHandlers": "Processador de importação",
+			"shells": "Interface interativa"
+		},
+		"default": {
+			"title": "Seleção de componentes",
+			"subtitle": "Selecione um componente para continuar.",
 			"card": {
-				"noTags": "Sem etiquetas",
+				"noTags": "Sem rótulo",
 				"version": "Versão",
 				"author": "Autor",
 				"home_page": "Página inicial",
-				"issue_page": "Comunicar problemas",
+				"issue_page": "Reportar um problema",
 				"refreshButton": {
 					"alt": "Atualizar",
 					"title": "Atualizar"
 				},
+				"defaultCheckbox": {
+					"title": "Definir como padrão"
+				}
+			}
+		},
+		"chars": {
+			"title": "Seleção de Personagem",
+			"subtitle": "Selecione um personagem e comece a conversar!",
+			"card": {
 				"defaultCheckbox": {
 					"title": "Definir como personagem padrão"
 				}
 			}
 		},
 		"worlds": {
-			"tab": "Mundos",
 			"title": "Seleção de Mundo",
 			"subtitle": "Escolha um mundo e mergulhe nele!",
-			"none": "Nada para mostrar",
 			"card": {
-				"noTags": "Sem etiquetas",
-				"version": "Versão",
-				"author": "Autor",
-				"home_page": "Página inicial",
-				"issue_page": "Comunicar problemas",
-				"refreshButton": {
-					"alt": "Atualizar",
-					"title": "Atualizar"
-				},
 				"defaultCheckbox": {
 					"title": "Definir como mundo padrão"
 				}
 			}
 		},
 		"personas": {
-			"tab": "Personas",
 			"title": "Seleção de Persona",
 			"subtitle": "Selecione uma persona e experimente uma nova vida.",
-			"none": "Nada para mostrar",
 			"card": {
-				"noTags": "Sem etiquetas",
-				"version": "Versão",
-				"author": "Autor",
-				"home_page": "Página inicial",
-				"issue_page": "Comunicar problemas",
-				"refreshButton": {
-					"alt": "Atualizar",
-					"title": "Atualizar"
-				},
 				"defaultCheckbox": {
 					"title": "Definir como persona padrão"
 				}

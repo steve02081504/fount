@@ -462,13 +462,21 @@
 				"alt": "Menu des fonctions"
 			}
 		},
-		"chars": {
-			"tab": "Personnages",
-			"title": "Sélection de personnage",
-			"subtitle": "Sélectionnez un personnage, puis commencez à discuter !",
-			"none": "Rien à afficher",
+		"part_types": {
+			"chars": "Rôle",
+			"worlds": "Monde",
+			"personas": "Personnalité",
+			"plugins": "plug-in",
+			"AIsources": "Source IA",
+			"AIsourceGenerators": "Générateur de sources IA",
+			"ImportHandlers": "Processeur d'importation",
+			"shells": "Shell"
+		},
+		"default": {
+			"title": "Sélection des composants",
+			"subtitle": "Sélectionnez un composant pour continuer.",
 			"card": {
-				"noTags": "Aucune étiquette",
+				"noTags": "pas d'étiquette",
 				"version": "Version",
 				"author": "Auteur",
 				"home_page": "Page d'accueil",
@@ -477,46 +485,33 @@
 					"alt": "Rafraîchir",
 					"title": "Rafraîchir"
 				},
+				"defaultCheckbox": {
+					"title": "Définir par défaut"
+				}
+			}
+		},
+		"chars": {
+			"title": "Sélection de personnage",
+			"subtitle": "Sélectionnez un personnage, puis commencez à discuter !",
+			"card": {
 				"defaultCheckbox": {
 					"title": "Définir comme personnage par défaut"
 				}
 			}
 		},
 		"worlds": {
-			"tab": "Mondes",
 			"title": "Sélection de monde",
 			"subtitle": "Choisissez un monde et plongez au cœur de l'action !",
-			"none": "Rien à afficher",
 			"card": {
-				"noTags": "Aucune étiquette",
-				"version": "Version",
-				"author": "Auteur",
-				"home_page": "Page d'accueil",
-				"issue_page": "Signaler un problème",
-				"refreshButton": {
-					"alt": "Rafraîchir",
-					"title": "Rafraîchir"
-				},
 				"defaultCheckbox": {
 					"title": "Définir comme monde par défaut"
 				}
 			}
 		},
 		"personas": {
-			"tab": "Personas",
 			"title": "Sélection de persona",
 			"subtitle": "Sélectionnez une persona et vivez une nouvelle expérience.",
-			"none": "Rien à afficher",
 			"card": {
-				"noTags": "Aucune étiquette",
-				"version": "Version",
-				"author": "Auteur",
-				"home_page": "Page d'accueil",
-				"issue_page": "Signaler un problème",
-				"refreshButton": {
-					"alt": "Rafraîchir",
-					"title": "Rafraîchir"
-				},
 				"defaultCheckbox": {
 					"title": "Définir comme persona par défaut"
 				}

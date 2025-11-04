@@ -462,61 +462,56 @@
 				"alt": "機能メニュー"
 			}
 		},
+		"part_types": {
+			"chars": "役割",
+			"worlds": "世界",
+			"personas": "人格",
+			"plugins": "プラグイン",
+			"AIsources": "AIソース",
+			"AIsourceGenerators": "AIソースジェネレーター",
+			"ImportHandlers": "インポートハンドラ",
+			"shells": "シェル"
+		},
+		"default": {
+			"title": "コンポーネントの選択",
+			"subtitle": "続行するにはコンポーネントを選択してください。",
+			"card": {
+				"noTags": "ラベルなし",
+				"version": "バージョン",
+				"author": "著者",
+				"home_page": "ホームページ",
+				"issue_page": "問題を報告",
+				"refreshButton": {
+					"alt": "リフレッシュ",
+					"title": "リフレッシュ"
+				},
+				"defaultCheckbox": {
+					"title": "デフォルトとして設定"
+				}
+			}
+		},
 		"chars": {
-			"tab": "キャラクター",
 			"title": "キャラクター選択",
 			"subtitle": "キャラクターを選択して、チャットを始めましょう！",
-			"none": "該当する項目がありません",
 			"card": {
-				"noTags": "タグなし",
-				"version": "バージョン",
-				"author": "作成者",
-				"home_page": "ホームページ",
-				"issue_page": "問題報告",
-				"refreshButton": {
-					"alt": "更新",
-					"title": "更新"
-				},
 				"defaultCheckbox": {
 					"title": "デフォルトキャラクターとして設定"
 				}
 			}
 		},
 		"worlds": {
-			"tab": "ワールド",
 			"title": "ワールド選択",
 			"subtitle": "ワールドを選んで、没入体験を！",
-			"none": "該当する項目がありません",
 			"card": {
-				"noTags": "タグなし",
-				"version": "バージョン",
-				"author": "作成者",
-				"home_page": "ホームページ",
-				"issue_page": "問題報告",
-				"refreshButton": {
-					"alt": "更新",
-					"title": "更新"
-				},
 				"defaultCheckbox": {
 					"title": "デフォルトワールドとして設定"
 				}
 			}
 		},
 		"personas": {
-			"tab": "ペルソナ",
 			"title": "ペルソナ選択",
 			"subtitle": "ペルソナを選択して、様々な役割を体験しましょう。",
-			"none": "該当する項目がありません",
 			"card": {
-				"noTags": "タグなし",
-				"version": "バージョン",
-				"author": "作成者",
-				"home_page": "ホームページ",
-				"issue_page": "問題報告",
-				"refreshButton": {
-					"alt": "更新",
-					"title": "更新"
-				},
 				"defaultCheckbox": {
 					"title": "デフォルトペルソナとして設定"
 				}

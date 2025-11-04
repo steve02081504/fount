@@ -461,61 +461,56 @@
 				"alt": "功用"
 			}
 		},
+		"part_types": {
+			"chars": "化身",
+			"worlds": "世界",
+			"personas": "身分",
+			"plugins": "插件",
+			"AIsources": "智源",
+			"AIsourceGenerators": "智源生成器",
+			"ImportHandlers": "導入處理器",
+			"shells": "交互界面"
+		},
+		"default": {
+			"title": "擇選組件",
+			"subtitle": "擇一組件以續。",
+			"card": {
+				"noTags": "無標籤",
+				"version": "版本",
+				"author": "作者",
+				"home_page": "主頁",
+				"issue_page": "問題反饋",
+				"refreshButton": {
+					"alt": "刷新",
+					"title": "刷新"
+				},
+				"defaultCheckbox": {
+					"title": "設為默認"
+				}
+			}
+		},
 		"chars": {
-			"tab": "化身",
 			"title": "點將遣行",
 			"subtitle": "擇一化身，以啟玄談。",
-			"none": "空空如也",
 			"card": {
-				"noTags": "無籤",
-				"version": "版",
-				"author": "作者",
-				"home_page": "門戶",
-				"issue_page": "諫言",
-				"refreshButton": {
-					"alt": "復新",
-					"title": "復新"
-				},
 				"defaultCheckbox": {
 					"title": "設為預設"
 				}
 			}
 		},
 		"worlds": {
-			"tab": "世界",
 			"title": "擇世界",
 			"subtitle": "擇一世界，沉浸其中。",
-			"none": "空空如也",
 			"card": {
-				"noTags": "無籤",
-				"version": "版",
-				"author": "作者",
-				"home_page": "門戶",
-				"issue_page": "諫言",
-				"refreshButton": {
-					"alt": "復新",
-					"title": "復新"
-				},
 				"defaultCheckbox": {
 					"title": "設為預設"
 				}
 			}
 		},
 		"personas": {
-			"tab": "身分",
 			"title": "擇身分",
 			"subtitle": "擇一身分，體驗人生。",
-			"none": "空空如也",
 			"card": {
-				"noTags": "無籤",
-				"version": "版",
-				"author": "作者",
-				"home_page": "門戶",
-				"issue_page": "諫言",
-				"refreshButton": {
-					"alt": "復新",
-					"title": "復新"
-				},
 				"defaultCheckbox": {
 					"title": "設為預設"
 				}

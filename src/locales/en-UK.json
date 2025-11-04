@@ -462,61 +462,56 @@
 				"alt": "Function Menu"
 			}
 		},
-		"chars": {
-			"tab": "Characters",
-			"title": "Character Selection",
-			"subtitle": "Select a character—then start chatting!",
-			"none": "Nothing to show",
+		"part_types": {
+			"chars": "Role",
+			"worlds": "World",
+			"personas": "Personality",
+			"plugins": "plug-in",
+			"AIsources": "AI source",
+			"AIsourceGenerators": "AI source generator",
+			"ImportHandlers": "Import Handler",
+			"shells": "Shell"
+		},
+		"default": {
+			"title": "Component selection",
+			"subtitle": "Select a component to continue.",
 			"card": {
-				"noTags": "No tags",
+				"noTags": "No label",
 				"version": "Version",
 				"author": "Author",
-				"home_page": "Homepage",
-				"issue_page": "Report Issue",
+				"home_page": "Home page",
+				"issue_page": "Report an Issue",
 				"refreshButton": {
 					"alt": "Refresh",
 					"title": "Refresh"
 				},
+				"defaultCheckbox": {
+					"title": "Set as default"
+				}
+			}
+		},
+		"chars": {
+			"title": "Character Selection",
+			"subtitle": "Select a character—then start chatting!",
+			"card": {
 				"defaultCheckbox": {
 					"title": "Set as default character"
 				}
 			}
 		},
 		"worlds": {
-			"tab": "Worlds",
 			"title": "World Selection",
 			"subtitle": "Choose a world, and immerse yourself!",
-			"none": "Nothing to show",
 			"card": {
-				"noTags": "No tags",
-				"version": "Version",
-				"author": "Author",
-				"home_page": "Homepage",
-				"issue_page": "Report Issue",
-				"refreshButton": {
-					"alt": "Refresh",
-					"title": "Refresh"
-				},
 				"defaultCheckbox": {
 					"title": "Set as default world"
 				}
 			}
 		},
 		"personas": {
-			"tab": "Personas",
 			"title": "Persona Selection",
 			"subtitle": "Select a persona, experience life.",
-			"none": "Nothing to show",
 			"card": {
-				"noTags": "No tags",
-				"version": "Version",
-				"author": "Author",
-				"home_page": "Homepage",
-				"issue_page": "Report Issue",
-				"refreshButton": {
-					"alt": "Refresh",
-					"title": "Refresh"
-				},
 				"defaultCheckbox": {
 					"title": "Set as default persona"
 				}

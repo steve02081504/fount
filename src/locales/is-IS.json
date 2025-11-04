@@ -462,61 +462,56 @@
 				"alt": "Aðgerðavalmynd"
 			}
 		},
-		"chars": {
-			"tab": "Persónur",
-			"title": "Persónuval",
-			"subtitle": "Veldu persónu og byrjaðu að spjalla!",
-			"none": "Tómatóm",
+		"part_types": {
+			"chars": "Hlutverk",
+			"worlds": "Heimur",
+			"personas": "Persónuleiki",
+			"plugins": "viðbót",
+			"AIsources": "AI uppspretta",
+			"AIsourceGenerators": "AI uppspretta rafall",
+			"ImportHandlers": "Innflutningsmeðhöndlari",
+			"shells": "Skel"
+		},
+		"default": {
+			"title": "Íhlutaval",
+			"subtitle": "Veldu íhlut til að halda áfram.",
 			"card": {
-				"noTags": "Engin merki",
+				"noTags": "ekkert merki",
 				"version": "Útgáfa",
 				"author": "Höfundur",
 				"home_page": "Heimasíða",
-				"issue_page": "Tilkynna villu",
+				"issue_page": "Tilkynna vandamál",
 				"refreshButton": {
 					"alt": "Endurhlaða",
 					"title": "Endurhlaða"
 				},
+				"defaultCheckbox": {
+					"title": "Stillt sem sjálfgefið"
+				}
+			}
+		},
+		"chars": {
+			"title": "Persónuval",
+			"subtitle": "Veldu persónu og byrjaðu að spjalla!",
+			"card": {
 				"defaultCheckbox": {
 					"title": "Sjálfgefin persóna"
 				}
 			}
 		},
 		"worlds": {
-			"tab": "Heimar",
 			"title": "Heimavals",
 			"subtitle": "Veldu heim og sökktu þér niður!",
-			"none": "Tómatóm",
 			"card": {
-				"noTags": "Engin merki",
-				"version": "Útgáfa",
-				"author": "Höfundur",
-				"home_page": "Heimasíða",
-				"issue_page": "Tilkynna villu",
-				"refreshButton": {
-					"alt": "Endurhlaða",
-					"title": "Endurhlaða"
-				},
 				"defaultCheckbox": {
 					"title": "Sjálfgefinn heimur"
 				}
 			}
 		},
 		"personas": {
-			"tab": "Sjálfsmyndir",
 			"title": "Sjálfsmyndarval",
 			"subtitle": "Veldu sjálfsmynd, upplifðu lífið.",
-			"none": "Tómatóm",
 			"card": {
-				"noTags": "Engin merki",
-				"version": "Útgáfa",
-				"author": "Höfundur",
-				"home_page": "Heimasíða",
-				"issue_page": "Tilkynna villu",
-				"refreshButton": {
-					"alt": "Endurhlaða",
-					"title": "Endurhlaða"
-				},
 				"defaultCheckbox": {
 					"title": "Sjálfgefin sjálfsmynd"
 				}

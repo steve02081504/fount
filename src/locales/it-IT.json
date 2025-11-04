@@ -462,61 +462,56 @@
 				"alt": "Menu funzioni"
 			}
 		},
-		"chars": {
-			"tab": "Personaggi",
-			"title": "Selezione personaggio",
-			"subtitle": "Seleziona un personaggio e inizia a chattare!",
-			"none": "Niente da mostrare",
+		"part_types": {
+			"chars": "Ruolo",
+			"worlds": "Mondo",
+			"personas": "Personalità",
+			"plugins": "Plugin",
+			"AIsources": "Fonte dell'intelligenza artificiale",
+			"AIsourceGenerators": "Generatore di sorgenti AI",
+			"ImportHandlers": "Processore di importazione",
+			"shells": "Interfaccia interattiva"
+		},
+		"default": {
+			"title": "Selezione dei componenti",
+			"subtitle": "Seleziona un componente per continuare.",
 			"card": {
-				"noTags": "Nessun tag",
+				"noTags": "Nessuna etichetta",
 				"version": "Versione",
 				"author": "Autore",
-				"home_page": "Homepage",
+				"home_page": "Pagina iniziale",
 				"issue_page": "Segnala un problema",
 				"refreshButton": {
 					"alt": "Aggiorna",
 					"title": "Aggiorna"
 				},
+				"defaultCheckbox": {
+					"title": "Imposta come predefinito"
+				}
+			}
+		},
+		"chars": {
+			"title": "Selezione personaggio",
+			"subtitle": "Seleziona un personaggio e inizia a chattare!",
+			"card": {
 				"defaultCheckbox": {
 					"title": "Imposta come personaggio predefinito"
 				}
 			}
 		},
 		"worlds": {
-			"tab": "Mondi",
 			"title": "Selezione mondo",
 			"subtitle": "Scegli un mondo e immergiti!",
-			"none": "Niente da mostrare",
 			"card": {
-				"noTags": "Nessun tag",
-				"version": "Versione",
-				"author": "Autore",
-				"home_page": "Homepage",
-				"issue_page": "Segnala un problema",
-				"refreshButton": {
-					"alt": "Aggiorna",
-					"title": "Aggiorna"
-				},
 				"defaultCheckbox": {
 					"title": "Imposta come mondo predefinito"
 				}
 			}
 		},
 		"personas": {
-			"tab": "Persone",
 			"title": "Selezione persona",
 			"subtitle": "Seleziona una persona e vivi una nuova esperienza.",
-			"none": "Niente da mostrare",
 			"card": {
-				"noTags": "Nessun tag",
-				"version": "Versione",
-				"author": "Autore",
-				"home_page": "Homepage",
-				"issue_page": "Segnala un problema",
-				"refreshButton": {
-					"alt": "Aggiorna",
-					"title": "Aggiorna"
-				},
 				"defaultCheckbox": {
 					"title": "Imposta come persona predefinita"
 				}
