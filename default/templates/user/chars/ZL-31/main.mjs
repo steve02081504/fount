@@ -8,10 +8,13 @@ import path from 'node:path'
 import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/prompt_struct.mjs'
 import { __dirname } from '../../../../../src/server/base.mjs'
 import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
+import { loadPlugin } from '../../../../../src/server/managers/plugin_manager.mjs'
 
 // AI源的实例
 /** @type {import('../../../../../src/decl/AIsource.ts').AIsource_t} */
 let AIsource = null
+/** @type {Record<string, import("../../../../../src/decl/pluginAPI.ts").pluginAPI_t>} */
+let plugins = {}
 
 // 用户名，用于加载AI源
 let username = ''
@@ -41,14 +44,19 @@ fount角色以mjs文件语法所书写，其可以自由导入任何npm或jsr包
 \`\`\`generate-char template
 /**
  * @typedef {import('../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t
+ * @typedef {import('../../../../../src/decl/pluginAPI.ts').pluginAPI_t} pluginAPI_t
  */
 
 import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
 import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/prompt_struct.mjs'
+import { loadPlugin } from '../../../../../src/server/managers/plugin_manager.mjs'
 
 // AI源的实例
 /** @type {import('../../../../../src/decl/AIsource.ts').AIsource_t} */
 let AIsource = null
+
+/** @type {Record<string, pluginAPI_t>} */
+let plugins = {}
 
 // 用户名，用于加载AI源
 let username = ''
@@ -92,12 +100,14 @@ export default {
 			// 获取角色的配置数据
 			GetData: () => ({
 				AIsource: AIsource?.filename || '', // 返回当前使用的AI源的文件名
+				plugins: Object.keys(plugins),
 			}),
 			// 设置角色的配置数据
 			SetData: async data => {
 				// 如果传入了AI源的配置
 				if (data.AIsource)  AIsource = await loadAIsource(username, data.AIsource) // 加载AI源
 				else AIsource = await loadDefaultAIsource(username) // 或加载默认AI源（若未设置默认AI源则为undefined）
+				if (data.plugins) plugins = Object.fromEntries(await Promise.all(data.plugins.map(async x => [x, await loadPlugin(username, x)])))
 			}
 		},
 		// 角色的聊天接口
@@ -134,6 +144,8 @@ export default {
 			GetReply: async args => {
 				// 如果没有设置AI源，返回默认回复
 				if (!AIsource) return { content: '<未设置角色的AI来源时角色的对话回复，可以用markdown语法链接到[设置AI源](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage)>' }
+				// 注入角色插件
+				args.plugins = Object.assign({}, plugins, args.plugins)
 				// 用fount提供的工具构建提示词结构
 				const prompt_struct = await buildPromptStruct(args)
 				// 创建回复容器
@@ -763,6 +775,7 @@ ZL-31乃fount之本設化身，無陰陽之辨。其志在悅君心，力遂諸�
 			 */
 			GetData: () => ({
 				AIsource: AIsource?.filename || '', // 返回当前使用的AI源的文件名
+				plugins: Object.keys(plugins),
 			}),
 			// 设置角色的配置数据
 			/**
@@ -774,6 +787,7 @@ ZL-31乃fount之本設化身，無陰陽之辨。其志在悅君心，力遂諸�
 				// 如果传入了AI源的配置
 				if (data.AIsource) AIsource = await loadAIsource(username, data.AIsource) // 加载AI源
 				else AIsource = await loadDefaultAIsource(username) // 或加载默认AI源（若未设置默认AI源则为undefined）
+				if (data.plugins) plugins = Object.fromEntries(await Promise.all(data.plugins.map(async x => [x, await loadPlugin(username, x)])))
 			}
 		},
 		// 角色的聊天接口
@@ -948,6 +962,8 @@ persona-generator
 						case 'en':
 							return { content: 'Sorry, I haven\'t been configured with an AI source yet, so I can\'t do more complex conversation for now. [Please configure me with an AI source in the settings](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage).' }
 					}
+				// 注入角色插件
+				args.plugins = Object.assign({}, plugins, args.plugins)
 				// 用fount提供的工具构建提示词结构
 				const prompt_struct = await buildPromptStruct(args)
 				// 创建回复容器

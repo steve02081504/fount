@@ -8,9 +8,9 @@ import url from 'node:url'
 import sanitizeFilename from 'npm:sanitize-filename'
 
 
-import { saveJsonFile } from '../../../scripts/json_loader.mjs' // 调整路径
-import { loadPart } from '../../../server/managers/index.mjs' // 调整路径
-import { isPartLoaded } from '../../../server/parts_loader.mjs' // 调整路径
+import { saveJsonFile } from '../../../scripts/json_loader.mjs'
+import { loadPart } from '../../../server/managers/index.mjs'
+import { isPartLoaded } from '../../../server/parts_loader.mjs'
 
 import { convertCCv3ToSTv2 } from './ccv3-converter.mjs'
 import { unzipCharx } from './charx-parser.mjs'

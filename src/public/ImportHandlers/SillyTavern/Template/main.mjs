@@ -9,13 +9,18 @@ import { runRegex } from '../../../../../src/public/ImportHandlers/SillyTavern/e
 import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/prompt_struct.mjs'
 import { saveJsonFile } from '../../../../../src/scripts/json_loader.mjs'
 import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
+import { loadPlugin } from '../../../../../src/server/managers/plugin_manager.mjs'
 
+/** @typedef {import('../../../../../src/decl/pluginAPI.ts').pluginAPI_t} pluginAPI_t */
 /** @typedef {import('../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t */
 /** @typedef {import('../../../../../src/decl/AIsource.ts').AIsource_t} AIsource_t */
+/** @typedef {import('../../../../../src/public/shells/chat/decl/chatLog.ts').chatReplyRequest_t} chatReplyRequest_t */
 /** @typedef {import('../../../../../src/public/ImportHandlers/SillyTavern/engine/charData.mjs').v2CharData} chardata_t */
 
 /** @type {AIsource_t} */
 let AIsource = null
+/** @type {Record<string, pluginAPI_t>} */
+let plugins = {}
 
 let username = ''
 
@@ -68,6 +73,7 @@ export default {
 			 */
 			GetData: () => ({
 				AIsource: AIsource?.filename || '',
+				plugins: Object.keys(plugins),
 				chardata,
 			}),
 			/**
@@ -79,6 +85,7 @@ export default {
 					chardata = data.chardata
 					saveJsonFile(charjson, chardata)
 				}
+				if (data.plugins) plugins = Object.fromEntries(await Promise.all(data.plugins.map(async x => [x, await loadPlugin(username, x)])))
 				if (data.AIsource) AIsource = await loadAIsource(username, data.AIsource)
 				else AIsource = await loadDefaultAIsource(username)
 			}
@@ -137,13 +144,15 @@ export default {
 			// no GetPromptForOther, ST card does not support it
 			/**
 			 * 获取回复
-			 * @returns {Promise<import("../../../../../src/public/shells/chat/decl/chatLog").chatReply_t>} 一个解析为包含回复内容、文件和扩展信息的对象的 Promise。
-			 * @param {any} args 参数
+			 * @returns {Promise<import("../../../../../src/public/shells/chat/decl/chatLog.ts").chatReply_t>} 一个解析为包含回复内容、文件和扩展信息的对象的 Promise。
+			 * @param {chatReplyRequest_t} args 参数
 			 */
 			GetReply: async args => {
 				if (!AIsource) return {
 					content: 'this character does not have an AI source, [set the AI source](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage) first',
 				}
+				// 注入角色插件
+				args.plugins = Object.assign({}, plugins, args.plugins)
 				// 用fount提供的工具构建提示词结构
 				const prompt_struct = await buildPromptStruct(args)
 				// 创建回复容器
@@ -158,7 +167,7 @@ export default {
 				// 构建插件可能需要的追加上下文函数
 				/**
 				 * 添加长时间日志
-				 * @param {import("../../../../../src/public/shells/chat/decl/chatLog").chatEntry_t} entry 条目
+				 * @param {import("../../../../../src/public/shells/chat/decl/chatLog.ts").chatEntry_t} entry 条目
 				 */
 				function AddLongTimeLog(entry) {
 					entry.charVisibility = [args.char_id]
