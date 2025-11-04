@@ -462,8 +462,35 @@
 				"alt": "Aðgerðavalmynd"
 			}
 		},
+		"part_types": {
+			"chars": "Hlutverk",
+			"worlds": "heiminum",
+			"personas": "Persónuleiki",
+			"plugins": "viðbót",
+			"AIsources": "AI uppspretta",
+			"AIsourceGenerators": "AI uppspretta rafall",
+			"ImportHandlers": "Flytja inn örgjörva",
+			"shells": "Gagnvirkt viðmót"
+		},
+		"default": {
+			"title": "Íhlutaval",
+			"subtitle": "Veldu íhlut til að halda áfram.",
+			"card": {
+				"noTags": "ekkert merki",
+				"version": "Útgáfa",
+				"author": "höfundur",
+				"home_page": "Heimasíða",
+				"issue_page": "Viðbrögð við vandamálum",
+				"refreshButton": {
+					"alt": "hressa",
+					"title": "hressa"
+				},
+				"defaultCheckbox": {
+					"title": "Stillt sem sjálfgefið"
+				}
+			}
+		},
 		"chars": {
-			"tab": "Persónur",
 			"title": "Persónuval",
 			"subtitle": "Veldu persónu og byrjaðu að spjalla!",
 			"none": "Tómatóm",
@@ -483,7 +510,6 @@
 			}
 		},
 		"worlds": {
-			"tab": "Heimar",
 			"title": "Heimavals",
 			"subtitle": "Veldu heim og sökktu þér niður!",
 			"none": "Tómatóm",
@@ -503,7 +529,6 @@
 			}
 		},
 		"personas": {
-			"tab": "Sjálfsmyndir",
 			"title": "Sjálfsmyndarval",
 			"subtitle": "Veldu sjálfsmynd, upplifðu lífið.",
 			"none": "Tómatóm",

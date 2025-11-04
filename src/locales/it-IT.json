@@ -462,8 +462,35 @@
 				"alt": "Menu funzioni"
 			}
 		},
+		"part_types": {
+			"chars": "Ruolo",
+			"worlds": "mondo",
+			"personas": "Personalità",
+			"plugins": "collegare",
+			"AIsources": "Fonte dell'intelligenza artificiale",
+			"AIsourceGenerators": "Generatore di sorgenti AI",
+			"ImportHandlers": "Importa processore",
+			"shells": "Interfaccia interattiva"
+		},
+		"default": {
+			"title": "Selezione dei componenti",
+			"subtitle": "Seleziona un componente per continuare.",
+			"card": {
+				"noTags": "nessuna etichetta",
+				"version": "Versione",
+				"author": "autore",
+				"home_page": "Pagina iniziale",
+				"issue_page": "Feedback sul problema",
+				"refreshButton": {
+					"alt": "aggiornare",
+					"title": "aggiornare"
+				},
+				"defaultCheckbox": {
+					"title": "Imposta come predefinito"
+				}
+			}
+		},
 		"chars": {
-			"tab": "Personaggi",
 			"title": "Selezione personaggio",
 			"subtitle": "Seleziona un personaggio e inizia a chattare!",
 			"none": "Niente da mostrare",
@@ -483,7 +510,6 @@
 			}
 		},
 		"worlds": {
-			"tab": "Mondi",
 			"title": "Selezione mondo",
 			"subtitle": "Scegli un mondo e immergiti!",
 			"none": "Niente da mostrare",
@@ -503,7 +529,6 @@
 			}
 		},
 		"personas": {
-			"tab": "Persone",
 			"title": "Selezione persona",
 			"subtitle": "Seleziona una persona e vivi una nuova esperienza.",
 			"none": "Niente da mostrare",

@@ -462,8 +462,35 @@
 				"alt": "Function Menu"
 			}
 		},
+		"part_types": {
+			"chars": "Role",
+			"worlds": "world",
+			"personas": "Personality",
+			"plugins": "plug-in",
+			"AIsources": "AI source",
+			"AIsourceGenerators": "AI source generator",
+			"ImportHandlers": "Import processor",
+			"shells": "Interactive interface"
+		},
+		"default": {
+			"title": "Component selection",
+			"subtitle": "Select a component to continue.",
+			"card": {
+				"noTags": "no label",
+				"version": "Version",
+				"author": "author",
+				"home_page": "Home page",
+				"issue_page": "Problem feedback",
+				"refreshButton": {
+					"alt": "refresh",
+					"title": "refresh"
+				},
+				"defaultCheckbox": {
+					"title": "Set as default"
+				}
+			}
+		},
 		"chars": {
-			"tab": "Characters",
 			"title": "Character Selection",
 			"subtitle": "Select a character—then start chatting!",
 			"none": "Nothing to show",
@@ -483,7 +510,6 @@
 			}
 		},
 		"worlds": {
-			"tab": "Worlds",
 			"title": "World Selection",
 			"subtitle": "Choose a world, and immerse yourself!",
 			"none": "Nothing to show",
@@ -503,7 +529,6 @@
 			}
 		},
 		"personas": {
-			"tab": "Personas",
 			"title": "Persona Selection",
 			"subtitle": "Select a persona, experience life.",
 			"none": "Nothing to show",

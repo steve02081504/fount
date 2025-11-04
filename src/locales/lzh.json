@@ -461,8 +461,35 @@
 				"alt": "功用"
 			}
 		},
+		"part_types": {
+			"chars": null,
+			"worlds": null,
+			"personas": null,
+			"plugins": null,
+			"AIsources": null,
+			"AIsourceGenerators": null,
+			"ImportHandlers": null,
+			"shells": null
+		},
+		"default": {
+			"title": null,
+			"subtitle": null,
+			"card": {
+				"noTags": null,
+				"version": null,
+				"author": null,
+				"home_page": null,
+				"issue_page": null,
+				"refreshButton": {
+					"alt": null,
+					"title": null
+				},
+				"defaultCheckbox": {
+					"title": null
+				}
+			}
+		},
 		"chars": {
-			"tab": "化身",
 			"title": "點將遣行",
 			"subtitle": "擇一化身，以啟玄談。",
 			"none": "空空如也",
@@ -482,7 +509,6 @@
 			}
 		},
 		"worlds": {
-			"tab": "世界",
 			"title": "擇世界",
 			"subtitle": "擇一世界，沉浸其中。",
 			"none": "空空如也",
@@ -502,7 +528,6 @@
 			}
 		},
 		"personas": {
-			"tab": "身分",
 			"title": "擇身分",
 			"subtitle": "擇一身分，體驗人生。",
 			"none": "空空如也",

@@ -461,8 +461,35 @@
 				"alt": "⚙️"
 			}
 		},
+		"part_types": {
+			"chars": null,
+			"worlds": null,
+			"personas": null,
+			"plugins": null,
+			"AIsources": null,
+			"AIsourceGenerators": null,
+			"ImportHandlers": null,
+			"shells": null
+		},
+		"default": {
+			"title": null,
+			"subtitle": null,
+			"card": {
+				"noTags": null,
+				"version": null,
+				"author": null,
+				"home_page": null,
+				"issue_page": null,
+				"refreshButton": {
+					"alt": null,
+					"title": null
+				},
+				"defaultCheckbox": {
+					"title": null
+				}
+			}
+		},
 		"chars": {
-			"tab": "🤖",
 			"title": "🤔🤖",
 			"subtitle": "👆🤖, ▶️💬❗️",
 			"none": "💨",
@@ -482,7 +509,6 @@
 			}
 		},
 		"worlds": {
-			"tab": "🌍",
 			"title": "🤔🌍",
 			"subtitle": "👆🌍, ✨❗️",
 			"none": "💨",
@@ -502,7 +528,6 @@
 			}
 		},
 		"personas": {
-			"tab": "👤",
 			"title": "🤔👤",
 			"subtitle": "👆👤, ▶️✨",
 			"none": "💨",

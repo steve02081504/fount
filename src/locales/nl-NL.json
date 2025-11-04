@@ -462,8 +462,35 @@
 				"alt": "Functiemenu"
 			}
 		},
+		"part_types": {
+			"chars": "Rol",
+			"worlds": "wereld",
+			"personas": "Persoonlijkheid",
+			"plugins": "plug-in",
+			"AIsources": "AI-bron",
+			"AIsourceGenerators": "AI-brongenerator",
+			"ImportHandlers": "Importverwerker",
+			"shells": "Interactieve interface"
+		},
+		"default": {
+			"title": "Componentselectie",
+			"subtitle": "Selecteer een onderdeel om door te gaan.",
+			"card": {
+				"noTags": "geen etiket",
+				"version": "Versie",
+				"author": "auteur",
+				"home_page": "Startpagina",
+				"issue_page": "Probleemfeedback",
+				"refreshButton": {
+					"alt": "vernieuwen",
+					"title": "vernieuwen"
+				},
+				"defaultCheckbox": {
+					"title": "Als standaard instellen"
+				}
+			}
+		},
 		"chars": {
-			"tab": "Personages",
 			"title": "Personagekeuze",
 			"subtitle": "Kies een personage en begin met chatten!",
 			"none": "Helemaal leeg",
@@ -483,7 +510,6 @@
 			}
 		},
 		"worlds": {
-			"tab": "Werelden",
 			"title": "Wereldkeuze",
 			"subtitle": "Kies een wereld en duik erin!",
 			"none": "Helemaal leeg",
@@ -503,7 +529,6 @@
 			}
 		},
 		"personas": {
-			"tab": "Persona's",
 			"title": "Personakeuze",
 			"subtitle": "Kies een persona, beleef een leven.",
 			"none": "Helemaal leeg",

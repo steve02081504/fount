@@ -462,8 +462,35 @@
 				"alt": "功能選單"
 			}
 		},
+		"part_types": {
+			"chars": "角色",
+			"worlds": "世界",
+			"personas": "人設",
+			"plugins": "插件",
+			"AIsources": "AI源",
+			"AIsourceGenerators": "AI源生成器",
+			"ImportHandlers": "導入處理器",
+			"shells": "交互界面"
+		},
+		"default": {
+			"title": "組件選擇",
+			"subtitle": "選擇一個組件以繼續。",
+			"card": {
+				"noTags": "無標籤",
+				"version": "版本",
+				"author": "作者",
+				"home_page": "主頁",
+				"issue_page": "問題反饋",
+				"refreshButton": {
+					"alt": "重新整理",
+					"title": "重新整理"
+				},
+				"defaultCheckbox": {
+					"title": "設為默認"
+				}
+			}
+		},
 		"chars": {
-			"tab": "角色",
 			"title": "角色選擇",
 			"subtitle": "選擇一個角色，然後開啟聊天！",
 			"none": "空空如也",
@@ -483,7 +510,6 @@
 			}
 		},
 		"worlds": {
-			"tab": "世界",
 			"title": "世界選擇",
 			"subtitle": "選擇世界，沉浸其中！",
 			"none": "空空如也",
@@ -503,7 +529,6 @@
 			}
 		},
 		"personas": {
-			"tab": "人設",
 			"title": "人設選擇",
 			"subtitle": "選擇人設，體驗人生。",
 			"none": "空空如也",

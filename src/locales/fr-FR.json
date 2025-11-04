@@ -462,8 +462,35 @@
 				"alt": "Menu des fonctions"
 			}
 		},
+		"part_types": {
+			"chars": "Rôle",
+			"worlds": "monde",
+			"personas": "Personnalité",
+			"plugins": "plug-in",
+			"AIsources": "Source IA",
+			"AIsourceGenerators": "Générateur de sources IA",
+			"ImportHandlers": "Processeur d'importation",
+			"shells": "Interface interactive"
+		},
+		"default": {
+			"title": "Sélection des composants",
+			"subtitle": "Sélectionnez un composant pour continuer.",
+			"card": {
+				"noTags": "pas d'étiquette",
+				"version": "Version",
+				"author": "auteur",
+				"home_page": "Page d'accueil",
+				"issue_page": "Commentaires sur les problèmes",
+				"refreshButton": {
+					"alt": "rafraîchir",
+					"title": "rafraîchir"
+				},
+				"defaultCheckbox": {
+					"title": "Définir par défaut"
+				}
+			}
+		},
 		"chars": {
-			"tab": "Personnages",
 			"title": "Sélection de personnage",
 			"subtitle": "Sélectionnez un personnage, puis commencez à discuter !",
 			"none": "Rien à afficher",
@@ -483,7 +510,6 @@
 			}
 		},
 		"worlds": {
-			"tab": "Mondes",
 			"title": "Sélection de monde",
 			"subtitle": "Choisissez un monde et plongez au cœur de l'action !",
 			"none": "Rien à afficher",
@@ -503,7 +529,6 @@
 			}
 		},
 		"personas": {
-			"tab": "Personas",
 			"title": "Sélection de persona",
 			"subtitle": "Sélectionnez une persona et vivez une nouvelle expérience.",
 			"none": "Rien à afficher",

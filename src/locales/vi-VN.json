@@ -462,8 +462,35 @@
 				"alt": "Menu chức năng"
 			}
 		},
+		"part_types": {
+			"chars": "Vai trò",
+			"worlds": "thế giới",
+			"personas": "Nhân cách",
+			"plugins": "trình cắm thêm",
+			"AIsources": "nguồn AI",
+			"AIsourceGenerators": "Trình tạo nguồn AI",
+			"ImportHandlers": "Nhập khẩu bộ xử lý",
+			"shells": "Giao diện tương tác"
+		},
+		"default": {
+			"title": "Lựa chọn thành phần",
+			"subtitle": "Chọn một thành phần để tiếp tục.",
+			"card": {
+				"noTags": "không có nhãn",
+				"version": "Phiên bản",
+				"author": "tác giả",
+				"home_page": "Trang chủ",
+				"issue_page": "Phản hồi vấn đề",
+				"refreshButton": {
+					"alt": "làm cho khỏe lại",
+					"title": "làm cho khỏe lại"
+				},
+				"defaultCheckbox": {
+					"title": "Đặt làm mặc định"
+				}
+			}
+		},
 		"chars": {
-			"tab": "Nhân vật",
 			"title": "Chọn nhân vật",
 			"subtitle": "Chọn một nhân vật và bắt đầu trò chuyện!",
 			"none": "Không có gì để hiển thị",
@@ -483,7 +510,6 @@
 			}
 		},
 		"worlds": {
-			"tab": "Thế giới",
 			"title": "Chọn thế giới",
 			"subtitle": "Chọn một thế giới và đắm chìm trong đó!",
 			"none": "Không có gì để hiển thị",
@@ -503,7 +529,6 @@
 			}
 		},
 		"personas": {
-			"tab": "Persona",
 			"title": "Chọn Persona",
 			"subtitle": "Chọn một Persona và trải nghiệm cuộc sống.",
 			"none": "Không có gì để hiển thị",

@@ -462,8 +462,35 @@
 				"alt": "기능 메뉴"
 			}
 		},
+		"part_types": {
+			"chars": "역할",
+			"worlds": "세계",
+			"personas": "성격",
+			"plugins": "플러그인",
+			"AIsources": "AI 소스",
+			"AIsourceGenerators": "AI 소스 생성기",
+			"ImportHandlers": "수입 가공업자",
+			"shells": "대화형 인터페이스"
+		},
+		"default": {
+			"title": "구성 요소 선택",
+			"subtitle": "계속하려면 구성요소를 선택하세요.",
+			"card": {
+				"noTags": "라벨 없음",
+				"version": "버전",
+				"author": "작가",
+				"home_page": "홈페이지",
+				"issue_page": "문제 피드백",
+				"refreshButton": {
+					"alt": "새로 고치다",
+					"title": "새로 고치다"
+				},
+				"defaultCheckbox": {
+					"title": "기본값으로 설정"
+				}
+			}
+		},
 		"chars": {
-			"tab": "캐릭터",
 			"title": "캐릭터 선택",
 			"subtitle": "캐릭터를 선택해서 채팅을 시작해 보세요!",
 			"none": "표시할 내용이 없습니다",
@@ -483,7 +510,6 @@
 			}
 		},
 		"worlds": {
-			"tab": "월드",
 			"title": "월드 선택",
 			"subtitle": "월드를 선택하고 몰입해보세요!",
 			"none": "표시할 내용이 없습니다",
@@ -503,7 +529,6 @@
 			}
 		},
 		"personas": {
-			"tab": "페르소나",
 			"title": "페르소나 선택",
 			"subtitle": "페르소나를 선택하고 다양한 역할을 경험해보세요.",
 			"none": "표시할 내용이 없습니다",
