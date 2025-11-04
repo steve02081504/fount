@@ -1,5 +1,6 @@
 /** @typedef {import('../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t */
 /** @typedef {import('../../../../../src/decl/AIsource.ts').AIsource_t} AIsource_t */
+/** @typedef {import('../../../../../src/decl/pluginAPI.ts').pluginAPI_t} pluginAPI_t */
 
 import path from 'node:path'
 
@@ -7,9 +8,12 @@ import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/pro
 import { formatStr } from '../../../../../src/scripts/format.mjs'
 import { loadJsonFile, saveJsonFile } from '../../../../../src/scripts/json_loader.mjs'
 import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
+import { loadPlugin } from '../../../../../src/server/managers/plugin_manager.mjs'
 
 /** @type {AIsource_t} */
 let AIsource
+/** @type {Record<string, pluginAPI_t>} */
+let plugins = {}
 let username
 const partRoot = import.meta.dirname
 const partJsonPath = path.join(partRoot, 'partdata.json')
@@ -80,6 +84,7 @@ export default {
 				return {
 					partData,
 					AIsource: AIsource?.filename || '',
+					plugins: Object.keys(plugins),
 				}
 			},
 			/**
@@ -90,6 +95,7 @@ export default {
 			async SetData(data) {
 				if (data.AIsource) AIsource = await loadAIsource(username, data.AIsource)
 				else AIsource = await loadDefaultAIsource(username)
+				if (data.plugins) plugins = Object.fromEntries(await Promise.all(data.plugins.map(async x => [x, await loadPlugin(username, x)])))
 				if (data.partData) {
 					partData = data.partData
 					await saveJsonFile(partJsonPath, partData)
@@ -155,6 +161,7 @@ export default {
 				if (!AIsource)
 					return { content: 'This character does not have an AI source, [set the AI source](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage) first' }
 
+				arg.plugins = Object.assign({}, plugins, arg.plugins)
 				const prompt_struct = await buildPromptStruct(arg)
 				// 创建回复容器
 				/** @type {import("../../../../../src/public/shells/chat/decl/chatLog.ts").chatReply_t} */

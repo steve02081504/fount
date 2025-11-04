@@ -221,7 +221,7 @@ autorunScriptList.addEventListener('click', e => {
  * @returns {String} 浏览器名称
  */
 function getBrowserName() {
-	const ua = navigator.userAgent.toLowerCase();
+	const ua = navigator.userAgent.toLowerCase()
 	if (ua.includes('edg/')) return 'Edge'
 	if (ua.includes('chrome')) return 'Chrome'
 	if (ua.includes('firefox')) return 'Firefox'
@@ -241,9 +241,9 @@ async function main() {
 
 	{
 		const pluginMap = {
-			'Chrome': 'https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh',
-			'Edge': 'https://microsoftedge.microsoft.com/addons/detail/allow-csp-contentsecuri/blbbcdoaelobkaloeplifnigplpbkmap',
-			'Firefox': 'https://addons.mozilla.org/en-US/firefox/addon/disable-csp-and-cors/',
+			Chrome: 'https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh',
+			Edge: 'https://microsoftedge.microsoft.com/addons/detail/allow-csp-contentsecuri/blbbcdoaelobkaloeplifnigplpbkmap',
+			Firefox: 'https://addons.mozilla.org/en-US/firefox/addon/disable-csp-and-cors/',
 		}
 		let browserName = getBrowserName()
 		if (!pluginMap[browserName]) browserName = 'Chrome'
