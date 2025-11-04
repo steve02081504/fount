@@ -34,6 +34,16 @@ export async function getPartDetails(partType, partName) {
 	return response.json()
 }
 /**
+ * 无缓存获取部件详细信息。
+ * @param {string} partType - 部件类型。
+ * @param {string} partName - 部件名称。
+ * @returns {Promise<any>} - 部件详细信息。
+ */
+export async function noCacheGetPartDetails(partType, partName) {
+	const response = await fetch(`/api/getdetails/${partType}?name=${partName}&nocache=true`)
+	return response.json()
+}
+/**
  * 获取角色详细信息。
  * @param {string} charname - 角色名称。
  * @returns {Promise<any>} - 角色详细信息。

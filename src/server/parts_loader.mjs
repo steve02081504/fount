@@ -13,7 +13,7 @@ import { doProfile } from '../scripts/profiler.mjs'
 import { getUserByUsername, getUserDictionary } from './auth.mjs'
 import { __dirname } from './base.mjs'
 import { events } from './events.mjs'
-import { loadPart } from './managers/index.mjs'
+import { getPartList, loadPart } from './managers/index.mjs'
 import { save_config, setDefaultStuff } from './server.mjs'
 import { loadData, saveData } from './setting_loader.mjs'
 import { sendEventToUser } from './web_server/event_dispatcher.mjs'
@@ -581,7 +581,7 @@ export async function getPartDetails(username, parttype, partname, nocache = fal
  */
 export async function getAllCachedPartDetails(username, parttype) {
 	// 1. Get the full list of part names
-	const allPartNames = getPartListBase(username, parttype)
+	const allPartNames = getPartList(username, parttype)
 	const allPartNamesSet = new Set(allPartNames)
 
 	// 2. Get cached details

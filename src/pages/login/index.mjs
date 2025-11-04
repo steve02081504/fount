@@ -3,6 +3,7 @@ import { ping, generateVerificationCode, login, register } from '../scripts/endp
 import { initTranslations, console, savePreferredLangs, onLanguageChange } from '../scripts/i18n.mjs'
 import { initPasswordStrengthMeter } from '../scripts/passwordStrength.mjs'
 import { createPOWCaptcha } from '../scripts/POWcaptcha.mjs'
+import { getDefaultParts } from '../scripts/parts.mjs'
 import { applyTheme, setTheme } from '../scripts/theme.mjs'
 import { showToast } from '../scripts/toast.mjs'
 
@@ -25,14 +26,12 @@ let sendCodeCooldown = false
 let powCaptcha = null
 let passwordStrengthMeter = null
 
-const hasLoggedIn = localStorage.getItem('hasLoggedIn') == 'true'
-
 /**
  * 初始化表单状态。
  * @returns {void}
  */
 function initializeForm() {
-	isLoginForm = hasLoggedIn
+	isLoginForm = true
 }
 
 /**
@@ -196,14 +195,14 @@ async function handleFormSubmit(event) {
 				const urlParams = new URLSearchParams(window.location.search)
 				const redirect = urlParams.get('redirect')
 				localStorage.setItem('hasLoggedIn', 'true')
+				const defaultParts = await getDefaultParts()
+				const defaultShell = defaultParts.shell || 'home' // Fallback to 'home' if no default shell is set
+
 				let finalRedirectUrl
 				if (redirect)
-					if (hasLoggedIn)
-						finalRedirectUrl = decodeURIComponent(redirect)
-					else
-						finalRedirectUrl = `/shells/tutorial?redirect=${redirect}`
+					finalRedirectUrl = decodeURIComponent(redirect)
 				else
-					finalRedirectUrl = `/shells/${hasLoggedIn ? 'home' : 'tutorial'}`
+					finalRedirectUrl = `/shells/${defaultShell}`
 
 				redirectToLoginInfo(finalRedirectUrl + window.location.hash, username, password)
 			}

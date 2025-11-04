@@ -22,6 +22,7 @@
 	<script type="module">
 		import { redirectToLoginInfo } from './scripts/credentialManager.mjs'
 		import { initTranslations } from './scripts/i18n.mjs'
+		import { getDefaultParts } from './scripts/parts.mjs'
 		import { setTheme } from './scripts/theme.mjs'
 		initTranslations('startPage')
 		const hostUrl = window.location.origin
@@ -50,21 +51,25 @@
 		let retry = 1
 		const hasLoggedIn = localStorage.getItem('hasLoggedIn') === 'true'
 		if (!hasLoggedIn) redirectToLoginInfo('/login')
-		else setInterval(() => {
-			if (!retry) return
-			retry = 0
-			const newTab = window.open('https://steve02081504.github.io/fount/values_update?' + getCommonUrlParams(), '_blank')
+		else {
+			const defaultParts = await getDefaultParts()
+			const defaultShell = defaultParts.shell || 'home'
+			setInterval(() => {
+				if (!retry) return
+				retry = 0
+				const newTab = window.open('https://steve02081504.github.io/fount/values_update?' + getCommonUrlParams(), '_blank')
 
-			if (newTab) {
-				newTab.blur()
-				window.focus()
-				window.location.href = '/shells/home'
-			}
-			else if (localStorage.getItem('startPage.NewTabWarning.ignore'))
-				document.getElementById('skipButton').click()
-			else
-				document.getElementById('newTabFailedModal').classList.add('modal-open')
-		}, 500)
+				if (newTab) {
+					newTab.blur()
+					window.focus()
+					window.location.href = `/shells/${defaultShell}`
+				}
+				else if (localStorage.getItem('startPage.NewTabWarning.ignore'))
+					document.getElementById('skipButton').click()
+				else
+					document.getElementById('newTabFailedModal').classList.add('modal-open')
+			}, 500)
+		}
 
 		document.getElementById('retryButton').addEventListener('click', () => {
 			document.getElementById('newTabFailedModal').classList.remove('modal-open')

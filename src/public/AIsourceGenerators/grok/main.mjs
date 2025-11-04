@@ -56,8 +56,8 @@ async function GetSource(config) {
 				provider: 'Grok',
 				description: 'Grok AI Chat',
 				description_markdown: 'Grok AI Chat',
-				version: '0.1.0',
-				author: 'Your Name',
+				version: '0.0.0',
+				author: 'steve02081504',
 				home_page: 'https://grok.com/',
 				tags: ['Grok'],
 			}

@@ -3,6 +3,5 @@
  * @type {string[]}
  */
 export const partTypeList = [
-	'shells', 'chars', 'personas', 'worlds', 'AIsources', 'AIsourceGenerators',
-	'ImportHandlers'
+	'chars', 'worlds', 'personas', 'plugins', 'AIsources', 'AIsourceGenerators', 'ImportHandlers', 'shells'
 ]

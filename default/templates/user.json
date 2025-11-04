@@ -1,5 +1,6 @@
 {
 	"defaultParts": {
-		"world": "fount"
+		"world": "fount",
+		"shell": "tutorial"
 	}
 }
