@@ -67,7 +67,7 @@ async function mergeDirectories(srcDir, destDir) {
 }
 
 /**
- * 将数据作为 Fount 部件导入。
+ * 将数据作为 fount 部件导入。
  * @param {string} username - 用户名。
  * @param {Buffer} data - 数据缓冲区。
  * @returns {Promise<Array<{ parttype: string; partname: string }>>} - 导入的部分信息数组。
@@ -113,7 +113,7 @@ async function ImportAsData(username, data) {
 }
 
 /**
- * 通过文本导入 Fount 部件。
+ * 通过文本导入 fount 部件。
  * @param {string} username - 用户名。
  * @param {string} text - 包含部件 URL 的文本。
  * @returns {Promise<Array<{ parttype: string; partname: string }>>} - 导入的部分信息数组。
@@ -184,7 +184,7 @@ async function ImportByText(username, text) {
 }
 
 /**
- * Fount 导入器模块定义。
+ * fount 导入器模块定义。
  */
 export default {
 	info: {

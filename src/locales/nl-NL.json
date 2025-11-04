@@ -556,7 +556,7 @@
 	},
 	"chat": {
 		"title": "Chat",
-		"description": "Waar woorden de vlucht nemen en verhalen zich ontvouwen. Ga in gesprek met uw AI-metgezellen, geef vorm aan het verhaal en verlies uzelf in de eb en vloed van de digitale dialoog. Het hart van Fount klopt hier.",
+		"description": "Waar woorden de vlucht nemen en verhalen zich ontvouwen. Ga in gesprek met uw AI-metgezellen, geef vorm aan het verhaal en verlies uzelf in de eb en vloed van de digitale dialoog. Het hart van fount klopt hier.",
 		"new": {
 			"title": "Nieuwe chat",
 			"description": "De stille verwachting van een nog ongeschreven verhaal. Er begint een nieuwe chat, een schone lei voor nieuwe interacties en zich ontvouwende verhalen met de door u gekozen metgezellen."
@@ -1593,7 +1593,7 @@
 	},
 	"proxy": {
 		"title": "API Proxy",
-		"description": "Voor ontwikkelaars en integrators onthult deze pagina de Fount API-proxy: uw verbinding om de mogelijkheden van Fount in andere applicaties te verweven.",
+		"description": "Voor ontwikkelaars en integrators onthult deze pagina de fount API-proxy: uw verbinding om de mogelijkheden van fount in andere applicaties te verweven.",
 		"heading": "API Proxy Gateway",
 		"instruction": "Genereer en beheer uw API-sleutels op deze pagina om fount te integreren met andere applicaties.",
 		"endpointSectionTitle": "API-eindpunt",

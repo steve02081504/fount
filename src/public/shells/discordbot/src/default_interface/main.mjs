@@ -85,9 +85,9 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 		const aiReplyObjectCache = {}
 
 		/**
-		 * 将 Discord 消息转换为 Fount 聊天日志条目。
+		 * 将 Discord 消息转换为 fount 聊天日志条目。
 		 * @param {Message} discordMessage - Discord 消息对象。
-		 * @returns {Promise<chatLogEntry_t_simple>} 转换后的 Fount 聊天日志条目。
+		 * @returns {Promise<chatLogEntry_t_simple>} 转换后的 fount 聊天日志条目。
 		 */
 		async function DiscordMessageToFountChatLogEntry(discordMessage) {
 			let fullMessage = discordMessage
@@ -270,7 +270,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 
 			/**
 			 * 发送分割回复。
-			 * @param {ChatReply_t} fountReply - Fount 聊天回复对象。
+			 * @param {ChatReply_t} fountReply - fount 聊天回复对象。
 			 * @returns {Promise<void>}
 			 */
 			async function sendSplitReply(fountReply) {

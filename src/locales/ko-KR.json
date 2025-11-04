@@ -171,7 +171,7 @@
 				"removingFount": "fount 제거 중...",
 				"fountUninstallationComplete": "fount 제거가 완료되었습니다.",
 				"removingFountInstallationDir": "글꼴 설치 디렉터리를 제거하는 중...",
-				"fountInstallationDirRemoved": "Fount 설치 디렉터리가 제거되었습니다.",
+				"fountInstallationDirRemoved": "fount 설치 디렉터리가 제거되었습니다.",
 				"removingFountFromPath": "PATH에서 fount를 제거하는 중...",
 				"removingProtocolHandler": "fount:// 프로토콜 핸들러 삭제 중...",
 				"protocolHandlerRemoved": "fount:// 프로토콜 핸들러가 제거되었습니다.",

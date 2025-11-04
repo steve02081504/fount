@@ -121,7 +121,7 @@
 				"createDesktopAppFailed": "Ошибка: не удалось создать настольное приложение."
 			},
 			"git": {
-				"repoNotFound": "Git-репозиторий Fount не найден. Инициализируем новый...",
+				"repoNotFound": "Git-репозиторий fount не найден. Инициализируем новый...",
 				"fetchingAndResetting": "Извлечение из удаленного репозитория и сброс на главный...",
 				"localChangesDetected": "Обнаружены локальные изменения, различия будут сохранены перед перезаписью.",
 				"backupSavedTo": "Резервная копия ваших локальных изменений сохранена по адресу: ${path}.",
@@ -141,7 +141,7 @@
 			},
 			"deno": {
 				"missing": "Deno не найден, устанавливается автоматически...",
-				"isRequired": "Deno не найден, Fount не может быть запущен без Deno",
+				"isRequired": "Deno не найден, fount не может быть запущен без Deno",
 				"installingTermux": "Установка Deno для Termux...",
 				"installFailedFallback": "Установка Deno не удалась, попытка автоматической установки в путь к папке с fountом...",
 				"notWorking": "По какой-то причине Deno не работает. Возможно, вы захотите присоединиться к https://discord.gg/deno для получения поддержки.",
@@ -151,8 +151,8 @@
 			"install": {
 				"installingDependencies": "Установка зависимостей...",
 				"untrustedPartsWarning": "Не устанавливайте в своей системе ненадежные компоненты-фононы, они могут сделать что угодно.",
-				"rootWarning1": "Не рекомендуется: запуск Fount от имени пользователя root предоставляет полный доступ к системе ко всем компонентам Fount.",
-				"rootWarning2": "Если вы не знаете, что делаете, рекомендуется запускать Fount как обычный пользователь."
+				"rootWarning1": "Не рекомендуется: запуск fount от имени пользователя root предоставляет полный доступ к системе ко всем компонентам fount.",
+				"rootWarning2": "Если вы не знаете, что делаете, рекомендуется запускать fount как обычный пользователь."
 			},
 			"clean": {
 				"removingCaches": "Удаление кэша...",
@@ -173,18 +173,18 @@
 				"removingFountInstallationDir": "Удаление каталога установки fount...",
 				"fountInstallationDirRemoved": "Каталог установки fount был удален.",
 				"removingFountFromPath": "Удаление fount из PATH...",
-				"removingProtocolHandler": "Удаление обработчика протокола Fount://...",
+				"removingProtocolHandler": "Удаление обработчика протокола fount://...",
 				"protocolHandlerRemoved": "Обработчик протокола fount:// был удален.",
 				"removeProtocolHandlerFailed": "Не удалось удалить обработчик протокола fount://: ${message}.",
 				"removingFountFromGitSafeDir": "Удаление fount из gitsafe.directory...",
 				"removingInstalledSystemPackages": "Удаление установленных системных пакетов...",
 				"uninstallingDeno": "Удаление Дено...",
 				"removeDenoFailed": "Не удалось удалить Deno: ${message}",
-				"removingFountPwshFromProfile": "Удаление Fount-pwsh из профиля PowerShell...",
-				"fountPwshRemovedFromProfile": "Fount-pwsh был удален из профиля PowerShell.",
-				"pwshProfileNotFound": "Профиль PowerShell не найден, удаление Fount-pwsh из профиля пропущено.",
-				"uninstallingFountPwsh": "Удаление Fount-PWSH...",
-				"uninstallFountPwshFailed": "Не удалось удалить Fount-Pwsh: ${message}",
+				"removingFountPwshFromProfile": "Удаление fount-pwsh из профиля PowerShell...",
+				"fountPwshRemovedFromProfile": "fount-pwsh был удален из профиля PowerShell.",
+				"pwshProfileNotFound": "Профиль PowerShell не найден, удаление fount-pwsh из профиля пропущено.",
+				"uninstallingFountPwsh": "Удаление fount-PWSH...",
+				"uninstallFountPwshFailed": "Не удалось удалить fount-Pwsh: ${message}",
 				"removingTerminalProfile": "Удаление профиля терминала Windows...",
 				"terminalProfileRemoved": "Каталог профиля терминала Windows был удален.",
 				"terminalProfileNotFound": "Каталог профиля терминала Windows не найден.",
@@ -1147,7 +1147,7 @@
 	"languageSettings": {
 		"title": "Языковые настройки",
 		"pageTitle": "Языковые настройки",
-		"description": "Управляйте языковыми настройками Fount. Персонализируйте свой опыт с помощью доступных языковых вариантов.",
+		"description": "Управляйте языковыми настройками fount. Персонализируйте свой опыт с помощью доступных языковых вариантов.",
 		"pageDescription": "Управляйте своими языковыми предпочтениями здесь. Языки в списке будут иметь приоритет над настройками браузера по порядку.",
 		"availableLanguages": "Доступные языки",
 		"preferredLanguages": "Список приоритетных языков",
@@ -1527,7 +1527,7 @@
 	},
 	"terminal_assistant": {
 		"title": "Терминальный помощник",
-		"description": "Помимо графического интерфейса, есть пространство для прямого управления. Взаимодействуйте с ядром Fount через помощника терминала, где текст создает свою собственную мощную магию.",
+		"description": "Помимо графического интерфейса, есть пространство для прямого управления. Взаимодействуйте с ядром fount через помощника терминала, где текст создает свою собственную мощную магию.",
 		"initialMessage": "fount поддерживает развертывание ваших любимых персонажей в терминале для помощи в написании кода!",
 		"initialMessageLink": "Нажмите здесь, чтобы узнать больше.",
 		"achievements": {
@@ -1593,7 +1593,7 @@
 	},
 	"proxy": {
 		"title": "API прокси",
-		"description": "Для разработчиков и интеграторов на этой странице представлен прокси-сервер Fount API — ваше соединение для объединения возможностей Fount с другими приложениями.",
+		"description": "Для разработчиков и интеграторов на этой странице представлен прокси-сервер fount API — ваше соединение для объединения возможностей fount с другими приложениями.",
 		"heading": "Шлюз API-прокси",
 		"instruction": "Создавайте и управляйте своими API-ключами на этой странице для интеграции fount с другими приложениями.",
 		"endpointSectionTitle": "Конечная точка API",
@@ -1617,7 +1617,7 @@
 	},
 	"achievements": {
 		"title": "Достижение",
-		"description": "Изучите вехи и достижения вашего путешествия с помощью Fount. Каждое достижение знаменует собой шаг в вашем уникальном повествовании.",
+		"description": "Изучите вехи и достижения вашего путешествия с помощью fount. Каждое достижение знаменует собой шаг в вашем уникальном повествовании.",
 		"pageHeader": "Зал достижений",
 		"pageDescription": "Здесь вы можете просмотреть свои разблокированные достижения и вехи.",
 		"unlocked_on": "Разблокировано ${date}",
