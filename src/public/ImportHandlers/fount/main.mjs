@@ -188,15 +188,195 @@ async function ImportByText(username, text) {
  */
 export default {
 	info: {
-		'': {
-			name: 'fount',
-			avatar: '',
-			description: 'default description',
-			description_markdown: 'default description',
+		'en-UK': {
+			name: 'fount Importer',
+			avatar: '/favicon.svg',
+			description: 'Imports fount parts from archive files or git repositories.',
+			description_markdown: 'Imports fount parts from archive files (e.g., `.zip`, `.7z`) or git repositories.',
 			version: '0.0.1',
 			author: 'steve02081504',
-			home_page: '',
-			tags: []
+			home_page: 'https://steve02081504.github.io/fount/',
+			tags: ['fount', 'part', 'import']
+		},
+		'zh-CN': {
+			name: 'fount 导入器',
+			avatar: '/favicon.svg',
+			description: '从压缩文件或 git 仓库导入 fount 部件。',
+			description_markdown: '从压缩文件 (例如 `.zip`, `.7z`) 或 git 仓库导入 fount 部件。',
+			version: '0.0.1',
+			author: 'steve02081504',
+			home_page: 'https://steve02081504.github.io/fount/',
+			tags: ['fount', '部件', '导入']
+		},
+		'ar-SA': {
+			name: 'مستورد fount',
+			avatar: '/favicon.svg',
+			description: 'يستورد أجزاء fount من ملفات الأرشيف أو مستودعات git.',
+			description_markdown: 'يستورد أجزاء fount من ملفات الأرشيف (مثل `.zip`، `.7z`) أو مستودعات git.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			home_page: 'https://steve02081504.github.io/fount/',
+			tags: ['fount', 'جزء', 'استيراد']
+		},
+		'de-DE': {
+			name: 'fount-Importer',
+			avatar: '/favicon.svg',
+			description: 'Importiert fount-Teile aus Archivdateien oder Git-Repositorys.',
+			description_markdown: 'Importiert fount-Teile aus Archivdateien (z. B. `.zip`, `.7z`) oder Git-Repositorys.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			home_page: 'https://steve02081504.github.io/fount/',
+			tags: ['fount', 'Teil', 'Import']
+		},
+		emoji: {
+			name: '⛲ fount Importer',
+			avatar: '/favicon.svg',
+			description: 'Imports fount parts from archive files or git repositories.',
+			description_markdown: 'Imports fount parts from archive files (e.g., `.zip`, `.7z`) or git repositories.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			home_page: 'https://steve02081504.github.io/fount/',
+			tags: ['fount', 'part', 'import']
+		},
+		'es-ES': {
+			name: 'Importador de fount',
+			avatar: '/favicon.svg',
+			description: 'Importa partes de fount desde archivos de almacenamiento o repositorios de git.',
+			description_markdown: 'Importa partes de fount desde archivos de almacenamiento (por ejemplo, `.zip`, `.7z`) o repositorios de git.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			home_page: 'https://steve02081504.github.io/fount/',
+			tags: ['fount', 'parte', 'importar']
+		},
+		'fr-FR': {
+			name: 'Importateur de fount',
+			avatar: '/favicon.svg',
+			description: 'Importe des pièces de fount à partir de fichiers d\'archive ou de référentiels git.',
+			description_markdown: 'Importe des pièces de fount à partir de fichiers d\'archive (par exemple, `.zip`, `.7z`) ou de référentiels git.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			home_page: 'https://steve02081504.github.io/fount/',
+			tags: ['fount', 'pièce', 'importer']
+		},
+		'hi-IN': {
+			name: 'fount आयातक',
+			avatar: '/favicon.svg',
+			description: 'संग्रह फ़ाइलों या git रिपॉजिटरी से fount भागों का आयात करता है।',
+			description_markdown: 'संग्रह फ़ाइलों (उदाहरण के लिए, `.zip`, `.7z`) या git रिपॉजिटरी से fount भागों का आयात करता है।',
+			version: '0.0.1',
+			author: 'steve02081504',
+			home_page: 'https://steve02081504.github.io/fount/',
+			tags: ['fount', 'भाग', 'आयात']
+		},
+		'is-IS': {
+			name: 'fount innflytjandi',
+			avatar: '/favicon.svg',
+			description: 'Flytur inn fount hluta úr skjalasafnsskrám eða git geymslum.',
+			description_markdown: 'Flytur inn fount hluta úr skjalasafnsskrám (t.d. `.zip`, `.7z`) eða git geymslum.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			home_page: 'https://steve02081504.github.io/fount/',
+			tags: ['fount', 'hluti', 'innflutningur']
+		},
+		'it-IT': {
+			name: 'Importatore di fount',
+			avatar: '/favicon.svg',
+			description: 'Importa parti di fount da file di archivio o repository git.',
+			description_markdown: 'Importa parti di fount da file di archivio (ad es. `.zip`, `.7z`) o repository git.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			home_page: 'https://steve02081504.github.io/fount/',
+			tags: ['fount', 'parte', 'importa']
+		},
+		'ja-JP': {
+			name: 'fount インポーター',
+			avatar: '/favicon.svg',
+			description: 'アーカイブファイルまたはgitリポジトリからfountパーツをインポートします。',
+			description_markdown: 'アーカイブファイル（`.zip`、`.7z`など）またはgitリポジトリからfountパーツをインポートします。',
+			version: '0.0.1',
+			author: 'steve02081504',
+			home_page: 'https://steve02081504.github.io/fount/',
+			tags: ['fount', 'パーツ', 'インポート']
+		},
+		'ko-KR': {
+			name: 'fount 가져오기',
+			avatar: '/favicon.svg',
+			description: '아카이브 파일 또는 git 리포지토리에서 fount 파트를 가져옵니다.',
+			description_markdown: '아카이브 파일(예: `.zip`, `.7z`) 또는 git 리포지토리에서 fount 파트를 가져옵니다.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			home_page: 'https://steve02081504.github.io/fount/',
+			tags: ['fount', '파트', '가져오기']
+		},
+		lzh: {
+			name: 'fount導入器',
+			avatar: '/favicon.svg',
+			description: '從封存檔案或git倉庫導入fount部件。',
+			description_markdown: '從封存檔案（如`.zip`、`.7z`）或git倉庫導入fount部件。',
+			version: '0.0.1',
+			author: 'steve02081504',
+			home_page: 'https://steve02081504.github.io/fount/',
+			tags: ['fount', '部件', '導入']
+		},
+		'nl-NL': {
+			name: 'fount-importeur',
+			avatar: '/favicon.svg',
+			description: 'Importeert fount-onderdelen uit archiefbestanden of git-repository\'s.',
+			description_markdown: 'Importeert fount-onderdelen uit archiefbestanden (bijv. `.zip`, `.7z`) of git-repository\'s.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			home_page: 'https://steve02081504.github.io/fount/',
+			tags: ['fount', 'onderdeel', 'importeren']
+		},
+		'pt-PT': {
+			name: 'Importador de fount',
+			avatar: '/favicon.svg',
+			description: 'Importa peças de fount de arquivos de pacote ou repositórios git.',
+			description_markdown: 'Importa peças de fount de arquivos de pacote (por exemplo, `.zip`, `.7z`) ou repositórios git.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			home_page: 'https://steve02081504.github.io/fount/',
+			tags: ['fount', 'peça', 'importar']
+		},
+		'ru-RU': {
+			name: 'Импортер fount',
+			avatar: '/favicon.svg',
+			description: 'Импортирует детали fount из архивных файлов или репозиториев git.',
+			description_markdown: 'Импортирует детали fount из архивных файлов (например, `.zip`, `.7z`) или репозиториев git.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			home_page: 'https://steve02081504.github.io/fount/',
+			tags: ['fount', 'деталь', 'импорт']
+		},
+		'uk-UA': {
+			name: 'Імпортер fount',
+			avatar: '/favicon.svg',
+			description: 'Імпортує деталі fount з архівних файлів або репозиторіїв git.',
+			description_markdown: 'Імпортує деталі fount з архівних файлів (наприклад, `.zip`, `.7z`) або репозиторіїв git.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			home_page: 'https://steve02081504.github.io/fount/',
+			tags: ['fount', 'деталь', 'імпорт']
+		},
+		'vi-VN': {
+			name: 'Trình nhập fount',
+			avatar: '/favicon.svg',
+			description: 'Nhập các bộ phận fount từ tệp lưu trữ hoặc kho git.',
+			description_markdown: 'Nhập các bộ phận fount từ tệp lưu trữ (ví dụ: `.zip`, `.7z`) hoặc kho git.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			home_page: 'https://steve02081504.github.io/fount/',
+			tags: ['fount', 'bộ phận', 'nhập']
+		},
+		'zh-TW': {
+			name: 'fount 匯入器',
+			avatar: '/favicon.svg',
+			description: '從壓縮檔案或 git 倉庫匯入 fount 部件。',
+			description_markdown: '從壓縮檔案 (例如 `.zip`, `.7z`) 或 git 倉庫匯入 fount 部件。',
+			version: '0.0.1',
+			author: 'steve02081504',
+			home_page: 'https://steve02081504.github.io/fount/',
+			tags: ['fount', '部件', '匯入']
 		}
 	},
 
