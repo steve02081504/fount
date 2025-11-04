@@ -1,17 +1,25 @@
 {
   "mcpServers": {
-    "example_mcp_server": {
+    "filesystem": {
       "command": "npx",
       "args": [
         "-y",
         "@modelcontextprotocol/server-filesystem",
-        "/path/to/allowed/directory"
+        "C:\\Users\\YourName\\Documents"
       ],
       "env": {
         "NODE_ENV": "production"
       }
     },
-    "omniparser_autogui_mcp": {
+    "sqlite": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sqlite",
+        "C:\\path\\to\\database.db"
+      ]
+    },
+    "omniparser_autogui": {
       "command": "uv",
       "args": [
         "--directory",
@@ -26,4 +34,3 @@
     }
   }
 }
-

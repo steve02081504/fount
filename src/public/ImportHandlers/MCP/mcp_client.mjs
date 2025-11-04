@@ -1,5 +1,6 @@
 /**
- * MCP 客户端 - 通过 stdio 与 MCP 服务器通信
+ * MCP 客户端 - 参考 mcp.el 实现
+ * 支持 stdio 连接方式，通过 JSON-RPC 2.0 与 MCP 服务器通信
  */
 
 /**
@@ -14,8 +15,15 @@ export function createMCPClient(config) {
 	let process = null
 	let messageId = 0
 	const pendingRequests = new Map()
+	
+	// MCP 状态
+	let status = 'init'
+	let capabilities = null
+	let serverInfo = null
 	let tools = []
-	let isInitialized = false
+	let prompts = []
+	let resources = []
+	let resourceTemplates = []
 
 	/**
 	 * 启动 MCP 服务器进程
@@ -91,15 +99,39 @@ export function createMCPClient(config) {
 	 * @param {object} message - JSON-RPC 消息
 	 */
 	function handleMessage(message) {
+		// 处理响应
 		if (message.id && pendingRequests.has(message.id)) {
 			const { resolve, reject } = pendingRequests.get(message.id)
 			pendingRequests.delete(message.id)
 
 			if (message.error) {
-				reject(new Error(message.error.message || 'MCP request failed'))
+				reject(new Error(`[${message.error.code}] ${message.error.message || 'MCP request failed'}`))
 			} else {
 				resolve(message.result)
 			}
+		}
+		
+		// 处理通知
+		if (message.method && !message.id) {
+			handleNotification(message.method, message.params)
+		}
+	}
+
+	/**
+	 * 处理服务器通知
+	 * @param {string} method - 通知方法名
+	 * @param {object} params - 通知参数
+	 */
+	function handleNotification(method, params) {
+		switch (method) {
+			case 'notifications/message':
+				if (params?.level && params?.data) {
+					const logger = params.logger ? `[${params.logger}]` : ''
+					console.log(`[MCP][${params.level}]${logger}: ${params.data}`)
+				}
+				break
+			default:
+				console.log(`MCP notification: ${method}`, params)
 		}
 	}
 
@@ -129,7 +161,7 @@ export function createMCPClient(config) {
 					pendingRequests.delete(id)
 					reject(new Error(`MCP request timeout: ${method}`))
 				}
-			}, 30000) // 30 秒超时
+			}, 60000) // 60 秒超时
 		})
 
 		const requestText = JSON.stringify(request) + '\n'
@@ -142,10 +174,32 @@ export function createMCPClient(config) {
 	}
 
 	/**
+	 * 发送通知（不需要响应）
+	 * @param {string} method - 方法名
+	 * @param {object} [params] - 参数
+	 */
+	async function sendNotification(method, params = {}) {
+		if (!process) return
+
+		const notification = {
+			jsonrpc: '2.0',
+			method,
+			params,
+		}
+
+		const notificationText = JSON.stringify(notification) + '\n'
+		const encoder = new TextEncoder()
+		const writer = process.stdin.getWriter()
+		await writer.write(encoder.encode(notificationText))
+		writer.releaseLock()
+	}
+
+	/**
 	 * 初始化 MCP 连接
 	 */
 	async function initialize() {
 		try {
+			// 发送 initialize 请求
 			const result = await sendRequest('initialize', {
 				protocolVersion: '2024-11-05',
 				capabilities: {
@@ -158,14 +212,42 @@ export function createMCPClient(config) {
 				},
 			})
 
-			if (result.capabilities?.tools) {
+			capabilities = result.capabilities
+			serverInfo = result.serverInfo
+
+			// 发送 initialized 通知
+			await sendNotification('notifications/initialized')
+
+			// 等待服务器完全初始化
+			await new Promise(resolve => setTimeout(resolve, 2000))
+
+			// 获取各种资源
+			if (capabilities?.tools) {
 				const toolsResult = await sendRequest('tools/list')
 				tools = toolsResult.tools || []
 			}
 
-			await sendRequest('initialized')
-			isInitialized = true
+			if (capabilities?.prompts) {
+				const promptsResult = await sendRequest('prompts/list')
+				prompts = promptsResult.prompts || []
+			}
+
+			if (capabilities?.resources) {
+				const resourcesResult = await sendRequest('resources/list')
+				resources = resourcesResult.resources || []
+				
+				try {
+					const templatesResult = await sendRequest('resources/templates/list')
+					resourceTemplates = templatesResult.resourceTemplates || []
+				} catch (err) {
+					// 某些服务器可能不支持 templates
+					console.warn('Resource templates not supported:', err.message)
+				}
+			}
+
+			status = 'connected'
 		} catch (err) {
+			status = 'error'
 			console.error('MCP initialization failed:', err)
 			throw err
 		}
@@ -176,7 +258,7 @@ export function createMCPClient(config) {
 	 * @returns {Promise<Array>} 工具列表
 	 */
 	async function listTools() {
-		if (!isInitialized) await initialize()
+		if (status !== 'connected') await initialize()
 		return tools
 	}
 
@@ -187,11 +269,61 @@ export function createMCPClient(config) {
 	 * @returns {Promise<any>} 工具执行结果
 	 */
 	async function callTool(toolName, args) {
-		if (!isInitialized) await initialize()
+		if (status !== 'connected') await initialize()
 		
 		const result = await sendRequest('tools/call', {
 			name: toolName,
-			arguments: args,
+			arguments: args || {},
+		})
+		
+		return result
+	}
+
+	/**
+	 * 获取可用的 prompt 列表
+	 * @returns {Promise<Array>} prompt 列表
+	 */
+	async function listPrompts() {
+		if (status !== 'connected') await initialize()
+		return prompts
+	}
+
+	/**
+	 * 获取 prompt
+	 * @param {string} promptName - prompt 名称
+	 * @param {object} args - prompt 参数
+	 * @returns {Promise<any>} prompt 内容
+	 */
+	async function getPrompt(promptName, args) {
+		if (status !== 'connected') await initialize()
+		
+		const result = await sendRequest('prompts/get', {
+			name: promptName,
+			arguments: args || {},
+		})
+		
+		return result
+	}
+
+	/**
+	 * 获取可用的资源列表
+	 * @returns {Promise<Array>} 资源列表
+	 */
+	async function listResources() {
+		if (status !== 'connected') await initialize()
+		return resources
+	}
+
+	/**
+	 * 读取资源
+	 * @param {string} uri - 资源 URI
+	 * @returns {Promise<any>} 资源内容
+	 */
+	async function readResource(uri) {
+		if (status !== 'connected') await initialize()
+		
+		const result = await sendRequest('resources/read', {
+			uri,
 		})
 		
 		return result
@@ -209,7 +341,22 @@ export function createMCPClient(config) {
 				console.error('Error stopping MCP process:', err)
 			}
 			process = null
-			isInitialized = false
+			status = 'stopped'
+		}
+	}
+
+	/**
+	 * 获取服务器信息
+	 */
+	function getServerInfo() {
+		return {
+			status,
+			capabilities,
+			serverInfo,
+			tools,
+			prompts,
+			resources,
+			resourceTemplates,
 		}
 	}
 
@@ -218,6 +365,10 @@ export function createMCPClient(config) {
 		stop,
 		listTools,
 		callTool,
+		listPrompts,
+		getPrompt,
+		listResources,
+		readResource,
+		getServerInfo,
 	}
 }
-

@@ -2,12 +2,38 @@ import fs from 'node:fs'
 import path from 'node:path'
 import url from 'node:url'
 
-import { loadJsonFile, saveJsonFile } from '../../../scripts/json_loader.mjs'
+import { move } from 'npm:fs-extra'
+
+import { saveJsonFile } from '../../../scripts/json_loader.mjs'
 import { loadPart } from '../../../server/managers/index.mjs'
 import { isPartLoaded } from '../../../server/parts_loader.mjs'
 import { getUserByUsername } from '../../../server/auth.mjs'
 
-import { generatePluginTemplate } from './plugin_template.mjs'
+const templateDir = path.join(import.meta.dirname, 'Template')
+
+/**
+ * 复制模板文件夹到目标位置
+ * @param {string} sourcePath - 源模板路径
+ * @param {string} targetPath - 目标插件路径
+ */
+async function copyTemplate(sourcePath, targetPath) {
+	// 确保目标目录存在
+	await fs.promises.mkdir(targetPath, { recursive: true })
+	
+	// 复制所有文件
+	const files = await fs.promises.readdir(sourcePath)
+	for (const file of files) {
+		const srcFile = path.join(sourcePath, file)
+		const destFile = path.join(targetPath, file)
+		const stat = await fs.promises.stat(srcFile)
+		
+		if (stat.isDirectory()) {
+			await copyTemplate(srcFile, destFile)
+		} else {
+			await fs.promises.copyFile(srcFile, destFile)
+		}
+	}
+}
 
 /**
  * 将 MCP 配置文件作为数据导入。
@@ -44,21 +70,22 @@ async function ImportByText(username, text) {
 			const pluginName = `mcp_${serverName}`
 			const pluginPath = path.join(pluginsDir, pluginName)
 			
-			// 创建插件目录
-			await fs.promises.mkdir(pluginPath, { recursive: true })
+			// 复制模板文件夹
+			await copyTemplate(templateDir, pluginPath)
 			
-			// 生成插件的 main.mjs 文件
-			const pluginCode = generatePluginTemplate(serverName, serverConfig)
-			await fs.promises.writeFile(
-				path.join(pluginPath, 'main.mjs'),
-				pluginCode,
-				'utf-8'
-			)
+			// 创建插件数据
+			const pluginData = {
+				name: pluginName,
+				description: `MCP plugin for ${serverName}`,
+				description_markdown: `MCP (Model Context Protocol) plugin for **${serverName}**`,
+				tags: [serverName, 'mcp'],
+				config: serverConfig
+			}
 			
-			// 保存 MCP 服务器配置
+			// 保存 data.json
 			await saveJsonFile(
-				path.join(pluginPath, 'mcp_config.json'),
-				serverConfig
+				path.join(pluginPath, 'data.json'),
+				pluginData
 			)
 			
 			// 如果插件已加载，重新加载它
@@ -89,7 +116,7 @@ export default {
 			avatar: '',
 			description: 'Import MCP (Model Context Protocol) server configurations as plugins',
 			description_markdown: 'Import MCP (Model Context Protocol) server configurations as individual plugins. Each MCP server becomes a separate plugin that can be enabled/disabled independently.',
-			version: '0.0.1',
+			version: '0.0.2',
 			author: 'fount',
 			home_page: '',
 			tags: ['mcp', 'tools', 'plugin-generator']
@@ -103,4 +130,3 @@ export default {
 		}
 	}
 }
-
