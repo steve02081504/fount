@@ -1455,7 +1455,7 @@
 		"what_is_manager": "¿Qué es un gestor de scripts de usuario?",
 		"manager_explanation": "Un gestor de scripts de usuario es una extensión del navegador que le permite instalar y ejecutar scripts que modifican las páginas web. Para usar el script de integración de fount, necesita una de las extensiones.",
 		"popular_managers": "Opciones populares:",
-		"csp_warning": "Es posible que deba instalar el complemento para desactivar CSP para que la función de integración funcione correctamente. Para Chrome, puede usar <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener\" class=\"link\">este complemento</a>.",
+		"csp_warning": "Es posible que deba instalar el complemento para desactivar CSP para que la función de integración funcione correctamente. Para ${browser}, puede usar <a href=\"${link}\" target=\"_blank\" rel=\"noopener\" class=\"link\">este complemento</a>.",
 		"connected_pages_title": "Página conectada",
 		"fetch_pages_error": "No se pudo cargar la lista de páginas vinculada.",
 		"page_title": "Título de página",

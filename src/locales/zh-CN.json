@@ -1455,7 +1455,7 @@
 		"what_is_manager": "什么是油猴脚本管理器？",
 		"manager_explanation": "油猴脚本管理器是一个浏览器扩展，允许您安装和运行修改网页的脚本。要使用 fount 集成脚本，您需要其中一个扩展。",
 		"popular_managers": "热门选择：",
-		"csp_warning": "您可能需要安装插件以停用 CSP，来确保集成功能正常运行，对于chrome可以使用<a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener\" class=\"link\">这个插件</a>。",
+		"csp_warning": "您可能需要安装插件以停用 CSP，来确保集成功能正常运行，对于${browser}可以使用<a href=\"${link}\" target=\"_blank\" rel=\"noopener\" class=\"link\">这个插件</a>。",
 		"connected_pages_title": "已连接的页面",
 		"fetch_pages_error": "加载已连接页面列表失败。",
 		"page_title": "页面标题",

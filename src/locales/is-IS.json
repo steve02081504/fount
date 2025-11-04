@@ -1455,7 +1455,7 @@
 		"what_is_manager": "Hvað er notandaforskriftarstjóri?",
 		"manager_explanation": "Notandaforskriftarstjóri er vafralenging sem gerir þér kleift að setja upp og keyra forskriftir sem breyta vefsíðum. Til að nota fount Integration handritið þarftu eina af viðbætunum.",
 		"popular_managers": "Vinsælir kostir:",
-		"csp_warning": "Þú gætir þurft að setja upp viðbótina til að slökkva á CSP til að gera samþættingaraðgerðina rétt. Fyrir Chrome er hægt að nota <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener\" class=\"link\"> this plugin </a>.",
+		"csp_warning": "Þú gætir þurft að setja upp viðbótina til að slökkva á CSP til að gera samþættingaraðgerðina rétt. Fyrir ${browser} er hægt að nota <a href=\"${link}\" target=\"_blank\" rel=\"noopener\" class=\"link\">þessa viðbót</a>.",
 		"connected_pages_title": "Tengd blaðsíða",
 		"fetch_pages_error": "Ekki tókst að hlaða tengda síðulistann.",
 		"page_title": "Blaðsíðuheiti",
