@@ -60,7 +60,7 @@ async function ImportByText(username, text) {
 
 		const installedParts = []
 		const userPath = getUserDictionary(username)
-		const pluginsDir = path.join(user.path, 'plugins')
+		const pluginsDir = path.join(userPath, 'plugins')
 		
 		// 确保 plugins 目录存在
 		await fs.promises.mkdir(pluginsDir, { recursive: true })
@@ -130,4 +130,5 @@ export default {
 		}
 	}
 }
+
 
