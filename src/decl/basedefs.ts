@@ -50,4 +50,8 @@ export type info_t = Record<locale_t, {
 	 * 标签数组。
 	 */
 	tags: string[];
+	/**
+	 * 提供者。
+	 */
+	provider: string;
 }>
