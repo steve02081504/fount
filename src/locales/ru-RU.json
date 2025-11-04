@@ -228,6 +228,9 @@
 			"description": "fount предлагает непревзойденный выбор и гибкость. Подключайтесь к <i>любым</i> AI-fountм — OpenAI, Claude, OpenRouter, NovelAI и т.д. Логика общения будет формироваться силой кода в соответствии с <i>вашими</i> пожеланиями."
 		},
 		"language_selector": {
+			"button": {
+				"aria-label": "Выберите язык"
+			},
 			"search": {
 				"placeholder": "Поиск языка..."
 			}
@@ -1579,6 +1582,12 @@
 			"sameLAN": "Убедитесь, что устройство и хост fount находятся в одной локальной сети.",
 			"accessthis": "Перейдите по этому URL:"
 		},
+		"QRcode": {
+			"alt": "Отсканируйте этот QR-код, чтобы получить доступ к fount"
+		},
+		"urlInput": {
+			"aria-label": "URL-адрес"
+		},
 		"copyButton": "Копировать URL",
 		"copied": "URL скопирован в буфер обмена!"
 	},
@@ -1589,6 +1598,9 @@
 		"instruction": "Создавайте и управляйте своими API-ключами на этой странице для интеграции fount с другими приложениями.",
 		"endpointSectionTitle": "Конечная точка API",
 		"endpointInstruction": "Это базовый URL для интеграции с другими сервисами.",
+		"apiUrlInput": {
+			"aria-label": "конечная точка API"
+		},
 		"usageExampleTitle": "Пример использования",
 		"usageExampleInstruction": "Вот пример того, как получить список доступных моделей с помощью `curl`.",
 		"copyButton": "Копировать",

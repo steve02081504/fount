@@ -228,6 +228,9 @@
 			"description": "fount अद्वितीय विकल्प और लचीलापन प्रदान करता है। <i>किसी भी</i> AI सोर्स से कनेक्ट करें - OpenAI, Claude, OpenRouter, NovelAI, आदि। संचार तर्क आपकी इच्छाओं के अनुसार कोड की शक्ति द्वारा आकार दिया जाएगा।"
 		},
 		"language_selector": {
+			"button": {
+				"aria-label": "भाषा चुने"
+			},
 			"search": {
 				"placeholder": "भाषा खोजें..."
 			}
@@ -1579,6 +1582,12 @@
 			"sameLAN": "सुनिश्चित करें कि डिवाइस और fount होस्ट एक ही स्थानीय नेटवर्क पर हैं।",
 			"accessthis": "इस URL पर जाएँ:"
 		},
+		"QRcode": {
+			"alt": "fount तक पहुंचने के लिए इस क्यूआर कोड को स्कैन करें"
+		},
+		"urlInput": {
+			"aria-label": "यूआरएल"
+		},
 		"copyButton": "URL कॉपी करें",
 		"copied": "URL क्लिपबोर्ड पर कॉपी कर दिया गया है!"
 	},
@@ -1589,6 +1598,9 @@
 		"instruction": "fount को अन्य एप्लिकेशनों के साथ एकीकृत करने के लिए इस पेज पर अपनी API कुंजियाँ उत्पन्न और प्रबंधित करें।",
 		"endpointSectionTitle": "API एंडपॉइंट",
 		"endpointInstruction": "यह अन्य सेवाओं के साथ एकीकरण के लिए आधार URL है।",
+		"apiUrlInput": {
+			"aria-label": "एपीआई समापन बिंदु"
+		},
 		"usageExampleTitle": "उपयोग का उदाहरण",
 		"usageExampleInstruction": "`curl` का उपयोग करके उपलब्ध मॉडलों की सूची कैसे प्राप्त करें, इसका एक उदाहरण यहाँ दिया गया है।",
 		"copyButton": "कॉपी करें",

@@ -228,6 +228,9 @@
 			"description": "fount býður upp á óviðjafnanlegt val og sveigjanleika. Tengstu við <i>hvaða</i> gervigreindarheimild sem er - OpenAI, Claude, OpenRouter, NovelAI og fleiri. Samskiptarökfræðin mun mótast af <i>þínum</i> vilja, með krafti kóðans."
 		},
 		"language_selector": {
+			"button": {
+				"aria-label": "Veldu tungumál"
+			},
 			"search": {
 				"placeholder": "Leita að tungumáli..."
 			}
@@ -1579,6 +1582,12 @@
 			"sameLAN": "Gakktu úr skugga um að tækið og fount-vélin séu á sama staðarneti",
 			"accessthis": "Farðu á eftirfarandi vefslóð:"
 		},
+		"QRcode": {
+			"alt": "Skannaðu þennan QR kóða til að fá aðgang að fount"
+		},
+		"urlInput": {
+			"aria-label": "URL"
+		},
 		"copyButton": "Afrita slóð",
 		"copied": "Slóð afrituð á klippiborð!"
 	},
@@ -1589,6 +1598,9 @@
 		"instruction": "Búðu til og stjórnaðu API lyklunum þínum á þessari síðu til að samþætta fount við önnur forrit.",
 		"endpointSectionTitle": "API endapunktur",
 		"endpointInstruction": "Þetta er grunnslóðin fyrir samþættingu við aðrar þjónustur.",
+		"apiUrlInput": {
+			"aria-label": "API endapunktur"
+		},
 		"usageExampleTitle": "Notkunardæmi",
 		"usageExampleInstruction": "Hér er dæmi um hvernig á að fá lista yfir tiltæk módel með `curl`.",
 		"copyButton": "Afrita",

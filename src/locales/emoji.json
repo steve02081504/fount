@@ -228,6 +228,9 @@
 			"description": "🔗 OpenAI, Claude,..."
 		},
 		"language_selector": {
+			"button": {
+				"aria-label": "🗣️🌐"
+			},
 			"search": {
 				"placeholder": "🔍🗣️"
 			}
@@ -1576,6 +1579,12 @@
 			"sameLAN": "✅💻➡️🌐",
 			"accessthis": "➡️🌐:"
 		},
+		"QRcode": {
+			"alt": "📷🔗"
+		},
+		"urlInput": {
+			"aria-label": "🌐"
+		},
 		"copyButton": "📋🌐",
 		"copied": "📋✅❗️"
 	},
@@ -1586,6 +1595,9 @@
 		"instruction": "🔑➡️⛲🤝💻",
 		"endpointSectionTitle": "🌐📍",
 		"endpointInstruction": "🔗➡️🌍",
+		"apiUrlInput": {
+			"aria-label": "🤖🔗"
+		},
 		"usageExampleTitle": "🧑‍💻💡",
 		"usageExampleInstruction": "`curl` ➡️❓➡️🤖",
 		"copyButton": "📋",

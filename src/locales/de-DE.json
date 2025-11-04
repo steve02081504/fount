@@ -228,6 +228,9 @@
 			"description": "fount bietet beispiellose Auswahl und Flexibilität. Verbinden Sie sich mit <i>jeder</i> KI-fount – OpenAI, Claude, OpenRouter, NovelAI usw. Die Kommunikationslogik wird nach <i>Ihrem</i> Willen durch die Macht des Codes geformt."
 		},
 		"language_selector": {
+			"button": {
+				"aria-label": "Sprache auswählen"
+			},
 			"search": {
 				"placeholder": "Sprache suchen..."
 			}
@@ -1579,6 +1582,12 @@
 			"sameLAN": "Stellen Sie sicher, dass sich das Gerät und der fount-Host im selben lokalen Netzwerk befinden.",
 			"accessthis": "Rufen Sie folgende URL auf:"
 		},
+		"QRcode": {
+			"alt": "Scannen Sie diesen QR-Code, um auf fount zuzugreifen"
+		},
+		"urlInput": {
+			"aria-label": "URL"
+		},
 		"copyButton": "URL kopieren",
 		"copied": "URL in die Zwischenablage kopiert!"
 	},
@@ -1589,6 +1598,9 @@
 		"instruction": "Erstellen und verwalten Sie auf dieser Seite Ihre API-Schlüssel, um fount in andere Anwendungen zu integrieren.",
 		"endpointSectionTitle": "API-Endpunkt",
 		"endpointInstruction": "Dies ist die Basis-URL für die Integration mit anderen Diensten.",
+		"apiUrlInput": {
+			"aria-label": "API-Endpunkt"
+		},
 		"usageExampleTitle": "Anwendungsbeispiel",
 		"usageExampleInstruction": "Hier ist ein Beispiel, wie Sie mit `curl` die Liste der verfügbaren Modelle abrufen können.",
 		"copyButton": "Kopieren",
