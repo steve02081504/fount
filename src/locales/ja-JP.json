@@ -141,7 +141,7 @@
 			},
 			"deno": {
 				"missing": "Deno が見つかりません。自動的にインストールされます...",
-				"isRequired": "Deno が見つかりません。Deno なしでは Fount を実行できません",
+				"isRequired": "Deno が見つかりません。Deno なしでは fount を実行できません",
 				"installingTermux": "Termux 用の Deno をインストールしています...",
 				"installFailedFallback": "Deno のインストールが失敗しました。見つかったパス フォルダーに自動的にインストールしようとしています...",
 				"notWorking": "何らかの理由で Deno が動作しない場合は、https://discord.gg/deno に参加してサポートを受けることをお勧めします。",
@@ -1552,7 +1552,7 @@
 	},
 	"terminal_assistant": {
 		"title": "ターミナルアシスタント",
-		"description": "グラフィカル インターフェイスの向こうには、直接コマンドを実行できるスペースがあります。ターミナル アシスタントを通じて Fount のコアと対話し、テキストが独自の強力な魔法を織り交ぜます。",
+		"description": "グラフィカル インターフェイスの向こうには、直接コマンドを実行できるスペースがあります。ターミナル アシスタントを通じて fount のコアと対話し、テキストが独自の強力な魔法を織り交ぜます。",
 		"initialMessage": "fountは、お気に入りのキャラクターをターミナルに導入し、コーディング作業をサポートします！",
 		"initialMessageLink": "詳細はこちら",
 		"achievements": {

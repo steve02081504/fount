@@ -151,7 +151,7 @@
 			"install": {
 				"installingDependencies": "Abhängigkeiten werden installiert...",
 				"untrustedPartsWarning": "Installieren Sie keine nicht vertrauenswürdigen Quellkomponenten auf Ihrem System, sie können alles bewirken.",
-				"rootWarning1": "Nicht empfohlen: Wenn Sie fount als Root ausführen, erhalten Sie vollständigen Systemzugriff auf alle Fount-Komponenten.",
+				"rootWarning1": "Nicht empfohlen: Wenn Sie fount als Root ausführen, erhalten Sie vollständigen Systemzugriff auf alle fount-Komponenten.",
 				"rootWarning2": "Sofern Sie nicht wissen, was Sie tun, wird empfohlen, fount als normaler Benutzer auszuführen."
 			},
 			"clean": {
@@ -175,7 +175,7 @@
 				"removingFountFromPath": "fount wird aus PATH entfernt...",
 				"removingProtocolHandler": "fount://-Protokollhandler wird entfernt...",
 				"protocolHandlerRemoved": "Der fount://-Protokollhandler wurde entfernt.",
-				"removeProtocolHandlerFailed": "Fount://-Protokollhandler konnte nicht entfernt werden: ${message}",
+				"removeProtocolHandlerFailed": "fount://-Protokollhandler konnte nicht entfernt werden: ${message}",
 				"removingFountFromGitSafeDir": "fount wird aus dem Git-Safe-Verzeichnis entfernt...",
 				"removingInstalledSystemPackages": "Installierte Systempakete werden entfernt...",
 				"uninstallingDeno": "Deno deinstallieren...",
@@ -429,7 +429,7 @@
 	},
 	"login_info": {
 		"title": "Anmeldeinformationen",
-		"description": "Ein sicherer Bereich zum Verwalten Ihrer Fount-Anmeldedaten – die Schlüssel zu Ihrer Welt voller unerzählter Geschichten.",
+		"description": "Ein sicherer Bereich zum Verwalten Ihrer fount-Anmeldedaten – die Schlüssel zu Ihrer Welt voller unerzählter Geschichten.",
 		"modal": {
 			"title": "Zertifikatübertragungsfehler",
 			"retrieve_error": "Beim Versuch, Ihre Anmeldeinformationen zu speichern, ist ein Fehler aufgetreten:\n${error}\nSie können fortfahren, die Anmeldeinformationen jedoch nicht speichern.",

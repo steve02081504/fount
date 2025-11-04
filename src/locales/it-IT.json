@@ -919,7 +919,7 @@
 	},
 	"import": {
 		"title": "Importa",
-		"description": "Porta i tuoi amati personaggi, mondi e configurazioni nell'abbraccio di Fount. Che si tratti di un file o di un testo incollato, è qui che i nuovi elementi si intrecciano nel tuo arazzo personale.",
+		"description": "Porta i tuoi amati personaggi, mondi e configurazioni nell'abbraccio di fount. Che si tratti di un file o di un testo incollato, è qui che i nuovi elementi si intrecciano nel tuo arazzo personale.",
 		"tabs": {
 			"fileImport": "Importa file",
 			"textImport": "Importa testo"
