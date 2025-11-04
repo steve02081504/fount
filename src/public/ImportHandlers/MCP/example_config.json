@@ -23,7 +23,7 @@
       "command": "uv",
       "args": [
         "--directory",
-        "D:\\CLONED_PATH\\omniparser-autogui-mcp",
+        "/path/to/your/omniparser-autogui-mcp",
         "run",
         "omniparser-autogui-mcp"
       ],
