@@ -10,6 +10,198 @@ import { BlackboxAI } from './blackbox.mjs'
  * @type {import('../../../decl/AIsource.ts').AIsource_interfaces_and_AIsource_t_getter}
  */
 export default {
+	info: {
+		'en-UK': {
+			name: 'Blackbox',
+			avatar: 'https://www.blackbox.ai/favicon.svg',
+			description: 'Blackbox AI',
+			description_markdown: 'An AI that can answer questions and write code.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['blackbox', 'ai', 'code'],
+			home_page: 'https://www.blackbox.ai/'
+		},
+		'zh-CN': {
+			name: 'Blackbox',
+			avatar: 'https://www.blackbox.ai/favicon.svg',
+			description: 'Blackbox AI',
+			description_markdown: '一个可以回答问题和编写代码的人工智能。',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['blackbox', 'ai', '代码'],
+			home_page: 'https://www.blackbox.ai/'
+		},
+		'ar-SA': {
+			name: 'Blackbox',
+			avatar: 'https://www.blackbox.ai/favicon.svg',
+			description: 'Blackbox AI',
+			description_markdown: 'ذكاء اصطناعي يمكنه الإجابة على الأسئلة وكتابة التعليمات البرمجية.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['blackbox', 'ai', 'كود'],
+			home_page: 'https://www.blackbox.ai/'
+		},
+		'de-DE': {
+			name: 'Blackbox',
+			avatar: 'https://www.blackbox.ai/favicon.svg',
+			description: 'Blackbox AI',
+			description_markdown: 'Eine KI, die Fragen beantworten und Code schreiben kann.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['blackbox', 'ki', 'code'],
+			home_page: 'https://www.blackbox.ai/'
+		},
+		emoji: {
+			name: '⬛️',
+			avatar: 'https://www.blackbox.ai/favicon.svg',
+			description: 'Blackbox AI',
+			description_markdown: 'An AI that can answer questions and write code.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['blackbox', 'ai', 'code'],
+			home_page: 'https://www.blackbox.ai/'
+		},
+		'es-ES': {
+			name: 'Blackbox',
+			avatar: 'https://www.blackbox.ai/favicon.svg',
+			description: 'Blackbox AI',
+			description_markdown: 'Una IA que puede responder preguntas y escribir código.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['blackbox', 'ia', 'código'],
+			home_page: 'https://www.blackbox.ai/'
+		},
+		'fr-FR': {
+			name: 'Blackbox',
+			avatar: 'https://www.blackbox.ai/favicon.svg',
+			description: 'Blackbox AI',
+			description_markdown: 'Une IA capable de répondre à des questions et d\'écrire du code.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['blackbox', 'ia', 'code'],
+			home_page: 'https://www.blackbox.ai/'
+		},
+		'hi-IN': {
+			name: 'Blackbox',
+			avatar: 'https://www.blackbox.ai/favicon.svg',
+			description: 'ब्लैकबॉक्स एआई',
+			description_markdown: 'एक एआई जो सवालों के जवाब दे सकता है और कोड लिख सकता है।',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['ब्लैकबॉक्स', 'एआई', 'कोड'],
+			home_page: 'https://www.blackbox.ai/'
+		},
+		'is-IS': {
+			name: 'Blackbox',
+			avatar: 'https://www.blackbox.ai/favicon.svg',
+			description: 'Blackbox gervigreind',
+			description_markdown: 'Gervigreind sem getur svarað spurningum og skrifað kóða.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['blackbox', 'gervigreind', 'kóði'],
+			home_page: 'https://www.blackbox.ai/'
+		},
+		'it-IT': {
+			name: 'Blackbox',
+			avatar: 'https://www.blackbox.ai/favicon.svg',
+			description: 'Blackbox AI',
+			description_markdown: 'Un\'intelligenza artificiale in grado di rispondere a domande e scrivere codice.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['blackbox', 'ia', 'codice'],
+			home_page: 'https://www.blackbox.ai/'
+		},
+		'ja-JP': {
+			name: 'Blackbox',
+			avatar: 'https://www.blackbox.ai/favicon.svg',
+			description: 'Blackbox AI',
+			description_markdown: '質問に答えたり、コードを書いたりできる AI。',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['blackbox', 'ai', 'コード'],
+			home_page: 'https://www.blackbox.ai/'
+		},
+		'ko-KR': {
+			name: 'Blackbox',
+			avatar: 'https://www.blackbox.ai/favicon.svg',
+			description: '블랙박스 AI',
+			description_markdown: '질문에 답하고 코드를 작성할 수 있는 AI입니다.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['블랙박스', 'ai', '코드'],
+			home_page: 'https://www.blackbox.ai/'
+		},
+		lzh: {
+			name: 'Blackbox',
+			avatar: 'https://www.blackbox.ai/favicon.svg',
+			description: '黑箱智械',
+			description_markdown: '能應問、作碼之智械。',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['黑箱', '智械', '碼'],
+			home_page: 'https://www.blackbox.ai/'
+		},
+		'nl-NL': {
+			name: 'Blackbox',
+			avatar: 'https://www.blackbox.ai/favicon.svg',
+			description: 'Blackbox AI',
+			description_markdown: 'Een AI die vragen kan beantwoorden en code kan schrijven.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['blackbox', 'ai', 'code'],
+			home_page: 'https://www.blackbox.ai/'
+		},
+		'pt-PT': {
+			name: 'Blackbox',
+			avatar: 'https://www.blackbox.ai/favicon.svg',
+			description: 'IA Blackbox',
+			description_markdown: 'Uma IA que pode responder a perguntas e escrever código.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['blackbox', 'ia', 'código'],
+			home_page: 'https://www.blackbox.ai/'
+		},
+		'ru-RU': {
+			name: 'Blackbox',
+			avatar: 'https://www.blackbox.ai/favicon.svg',
+			description: 'ИИ Blackbox',
+			description_markdown: 'ИИ, который может отвечать на вопросы и писать код.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['blackbox', 'ии', 'код'],
+			home_page: 'https://www.blackbox.ai/'
+		},
+		'uk-UA': {
+			name: 'Blackbox',
+			avatar: 'https://www.blackbox.ai/favicon.svg',
+			description: 'ШІ Blackbox',
+			description_markdown: 'ШІ, який може відповідати на запитання та писати код.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['blackbox', 'ші', 'код'],
+			home_page: 'https://www.blackbox.ai/'
+		},
+		'vi-VN': {
+			name: 'Blackbox',
+			avatar: 'https://www.blackbox.ai/favicon.svg',
+			description: 'AI hộp đen',
+			description_markdown: 'Một AI có thể trả lời câu hỏi và viết mã.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['hộp đen', 'ai', 'mã'],
+			home_page: 'https://www.blackbox.ai/'
+		},
+		'zh-TW': {
+			name: 'Blackbox',
+			avatar: 'https://www.blackbox.ai/favicon.svg',
+			description: '黑盒子 AI',
+			description_markdown: '一個可以回答問題和編寫程式碼的人工智慧。',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['黑盒子', 'ai', '程式碼'],
+			home_page: 'https://www.blackbox.ai/'
+		}
+	},
 	interfaces: {
 		AIsource: {
 			/**
@@ -43,7 +235,7 @@ async function GetSource(config) {
 		info: {
 			'en-UK': {
 				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/logos/blackbox-icon.svg',
+				avatar: 'https://www.blackbox.ai/favicon.svg',
 				description: 'Blackbox AI',
 				description_markdown: 'An AI that can answer questions and write code.',
 				version: '0.0.1',
@@ -54,7 +246,7 @@ async function GetSource(config) {
 			},
 			'zh-CN': {
 				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/logos/blackbox-icon.svg',
+				avatar: 'https://www.blackbox.ai/favicon.svg',
 				description: 'Blackbox AI',
 				description_markdown: '一个可以回答问题和编写代码的人工智能。',
 				version: '0.0.1',
@@ -65,7 +257,7 @@ async function GetSource(config) {
 			},
 			'ar-SA': {
 				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/logos/blackbox-icon.svg',
+				avatar: 'https://www.blackbox.ai/favicon.svg',
 				description: 'Blackbox AI',
 				description_markdown: 'ذكاء اصطناعي يمكنه الإجابة على الأسئلة وكتابة التعليمات البرمجية.',
 				version: '0.0.1',
@@ -76,7 +268,7 @@ async function GetSource(config) {
 			},
 			'de-DE': {
 				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/logos/blackbox-icon.svg',
+				avatar: 'https://www.blackbox.ai/favicon.svg',
 				description: 'Blackbox AI',
 				description_markdown: 'Eine KI, die Fragen beantworten und Code schreiben kann.',
 				version: '0.0.1',
@@ -87,7 +279,7 @@ async function GetSource(config) {
 			},
 			emoji: {
 				name: '⬛️',
-				avatar: 'https://api.iconify.design/logos/blackbox-icon.svg',
+				avatar: 'https://www.blackbox.ai/favicon.svg',
 				description: 'Blackbox AI',
 				description_markdown: 'An AI that can answer questions and write code.',
 				version: '0.0.1',
@@ -98,7 +290,7 @@ async function GetSource(config) {
 			},
 			'es-ES': {
 				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/logos/blackbox-icon.svg',
+				avatar: 'https://www.blackbox.ai/favicon.svg',
 				description: 'Blackbox AI',
 				description_markdown: 'Una IA que puede responder preguntas y escribir código.',
 				version: '0.0.1',
@@ -109,7 +301,7 @@ async function GetSource(config) {
 			},
 			'fr-FR': {
 				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/logos/blackbox-icon.svg',
+				avatar: 'https://www.blackbox.ai/favicon.svg',
 				description: 'Blackbox AI',
 				description_markdown: 'Une IA capable de répondre à des questions et d\'écrire du code.',
 				version: '0.0.1',
@@ -120,7 +312,7 @@ async function GetSource(config) {
 			},
 			'hi-IN': {
 				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/logos/blackbox-icon.svg',
+				avatar: 'https://www.blackbox.ai/favicon.svg',
 				description: 'ब्लैकबॉक्स एआई',
 				description_markdown: 'एक एआई जो सवालों के जवाब दे सकता है और कोड लिख सकता है।',
 				version: '0.0.1',
@@ -131,7 +323,7 @@ async function GetSource(config) {
 			},
 			'is-IS': {
 				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/logos/blackbox-icon.svg',
+				avatar: 'https://www.blackbox.ai/favicon.svg',
 				description: 'Blackbox gervigreind',
 				description_markdown: 'Gervigreind sem getur svarað spurningum og skrifað kóða.',
 				version: '0.0.1',
@@ -142,7 +334,7 @@ async function GetSource(config) {
 			},
 			'it-IT': {
 				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/logos/blackbox-icon.svg',
+				avatar: 'https://www.blackbox.ai/favicon.svg',
 				description: 'Blackbox AI',
 				description_markdown: 'Un\'intelligenza artificiale in grado di rispondere a domande e scrivere codice.',
 				version: '0.0.1',
@@ -153,7 +345,7 @@ async function GetSource(config) {
 			},
 			'ja-JP': {
 				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/logos/blackbox-icon.svg',
+				avatar: 'https://www.blackbox.ai/favicon.svg',
 				description: 'Blackbox AI',
 				description_markdown: '質問に答えたり、コードを書いたりできる AI。',
 				version: '0.0.1',
@@ -164,7 +356,7 @@ async function GetSource(config) {
 			},
 			'ko-KR': {
 				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/logos/blackbox-icon.svg',
+				avatar: 'https://www.blackbox.ai/favicon.svg',
 				description: '블랙박스 AI',
 				description_markdown: '질문에 답하고 코드를 작성할 수 있는 AI입니다.',
 				version: '0.0.1',
@@ -175,7 +367,7 @@ async function GetSource(config) {
 			},
 			lzh: {
 				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/logos/blackbox-icon.svg',
+				avatar: 'https://www.blackbox.ai/favicon.svg',
 				description: '黑箱智械',
 				description_markdown: '能應問、作碼之智械。',
 				version: '0.0.1',
@@ -186,7 +378,7 @@ async function GetSource(config) {
 			},
 			'nl-NL': {
 				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/logos/blackbox-icon.svg',
+				avatar: 'https://www.blackbox.ai/favicon.svg',
 				description: 'Blackbox AI',
 				description_markdown: 'Een AI die vragen kan beantwoorden en code kan schrijven.',
 				version: '0.0.1',
@@ -197,7 +389,7 @@ async function GetSource(config) {
 			},
 			'pt-PT': {
 				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/logos/blackbox-icon.svg',
+				avatar: 'https://www.blackbox.ai/favicon.svg',
 				description: 'IA Blackbox',
 				description_markdown: 'Uma IA que pode responder a perguntas e escrever código.',
 				version: '0.0.1',
@@ -208,7 +400,7 @@ async function GetSource(config) {
 			},
 			'ru-RU': {
 				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/logos/blackbox-icon.svg',
+				avatar: 'https://www.blackbox.ai/favicon.svg',
 				description: 'ИИ Blackbox',
 				description_markdown: 'ИИ, который может отвечать на вопросы и писать код.',
 				version: '0.0.1',
@@ -219,7 +411,7 @@ async function GetSource(config) {
 			},
 			'uk-UA': {
 				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/logos/blackbox-icon.svg',
+				avatar: 'https://www.blackbox.ai/favicon.svg',
 				description: 'ШІ Blackbox',
 				description_markdown: 'ШІ, який може відповідати на запитання та писати код.',
 				version: '0.0.1',
@@ -230,7 +422,7 @@ async function GetSource(config) {
 			},
 			'vi-VN': {
 				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/logos/blackbox-icon.svg',
+				avatar: 'https://www.blackbox.ai/favicon.svg',
 				description: 'AI hộp đen',
 				description_markdown: 'Một AI có thể trả lời câu hỏi và viết mã.',
 				version: '0.0.1',
@@ -241,7 +433,7 @@ async function GetSource(config) {
 			},
 			'zh-TW': {
 				name: config.name || config.model,
-				avatar: 'https://api.iconify.design/logos/blackbox-icon.svg',
+				avatar: 'https://www.blackbox.ai/favicon.svg',
 				description: '黑盒子 AI',
 				description_markdown: '一個可以回答問題和編寫程式碼的人工智慧。',
 				version: '0.0.1',

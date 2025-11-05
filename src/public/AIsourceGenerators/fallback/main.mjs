@@ -7,6 +7,198 @@ import { loadAIsourceFromNameOrConfigData } from '../../../server/managers/AIsou
  * @type {import('../../../decl/AIsource.ts').AIsource_interfaces_and_AIsource_t_getter}
  */
 export default {
+	info: {
+		'en-UK': {
+			name: 'Fallback',
+			avatar: 'https://api.iconify.design/mdi/backup-restore.svg',
+			description: 'Fallback',
+			description_markdown: 'A source that tries a list of sources in order until one succeeds.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['fallback', 'utility', 'meta'],
+			home_page: ''
+		},
+		'zh-CN': {
+			name: '备用',
+			avatar: 'https://api.iconify.design/mdi/backup-restore.svg',
+			description: '备用',
+			description_markdown: '一个按顺序尝试源列表，直到有一个成功为止的源。',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['备用', '实用工具', '元'],
+			home_page: ''
+		},
+		'ar-SA': {
+			name: 'الاحتياطي',
+			avatar: 'https://api.iconify.design/mdi/backup-restore.svg',
+			description: 'الاحتياطي',
+			description_markdown: 'مصدر يحاول قائمة من المصادر بالترتيب حتى ينجح أحدها.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['احتياطي', 'أداة', 'ميتا'],
+			home_page: ''
+		},
+		'de-DE': {
+			name: 'Fallback',
+			avatar: 'https://api.iconify.design/mdi/backup-restore.svg',
+			description: 'Fallback',
+			description_markdown: 'Eine Quelle, die eine Liste von Quellen der Reihe nach ausprobiert, bis eine erfolgreich ist.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['Fallback', 'Dienstprogramm', 'Meta'],
+			home_page: ''
+		},
+		emoji: {
+			name: '🔄',
+			avatar: 'https://api.iconify.design/mdi/backup-restore.svg',
+			description: 'Fallback',
+			description_markdown: 'A source that tries a list of sources in order until one succeeds.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['fallback', 'utility', 'meta'],
+			home_page: ''
+		},
+		'es-ES': {
+			name: 'Respaldo',
+			avatar: 'https://api.iconify.design/mdi/backup-restore.svg',
+			description: 'Respaldo',
+			description_markdown: 'Una fuente que prueba una lista de fuentes en orden hasta que una tiene éxito.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['respaldo', 'utilidad', 'meta'],
+			home_page: ''
+		},
+		'fr-FR': {
+			name: 'Fallback',
+			avatar: 'https://api.iconify.design/mdi/backup-restore.svg',
+			description: 'Fallback',
+			description_markdown: 'Une source qui essaie une liste de sources dans l\'ordre jusqu\'à ce que l\'une d\'entre elles réussisse.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['fallback', 'utilitaire', 'méta'],
+			home_page: ''
+		},
+		'hi-IN': {
+			name: 'फ़ॉलबैक',
+			avatar: 'https://api.iconify.design/mdi/backup-restore.svg',
+			description: 'फ़ॉलबैक',
+			description_markdown: 'एक स्रोत जो स्रोतों की एक सूची को क्रम में तब तक आज़माता है जब तक कि कोई एक सफल न हो जाए।',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['फ़ॉलबैक', 'उपयोगिता', 'मेटा'],
+			home_page: ''
+		},
+		'is-IS': {
+			name: 'Varaskeifa',
+			avatar: 'https://api.iconify.design/mdi/backup-restore.svg',
+			description: 'Varaskeifa',
+			description_markdown: 'Heimild sem reynir lista yfir heimildir í röð þar til ein tekst.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['varaskeifa', 'gagnsemi', 'meta'],
+			home_page: ''
+		},
+		'it-IT': {
+			name: 'Fallback',
+			avatar: 'https://api.iconify.design/mdi/backup-restore.svg',
+			description: 'Fallback',
+			description_markdown: 'Una fonte che prova un elenco di fonti in ordine finché una non ha successo.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['fallback', 'utilità', 'meta'],
+			home_page: ''
+		},
+		'ja-JP': {
+			name: 'フォールバック',
+			avatar: 'https://api.iconify.design/mdi/backup-restore.svg',
+			description: 'フォールバック',
+			description_markdown: '成功するまでソースのリストを順番に試行するソース。',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['フォールバック', 'ユーティリティ', 'メタ'],
+			home_page: ''
+		},
+		'ko-KR': {
+			name: '폴백',
+			avatar: 'https://api.iconify.design/mdi/backup-restore.svg',
+			description: '폴백',
+			description_markdown: '성공할 때까지 소스 목록을 순서대로 시도하는 소스입니다.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['폴백', '유틸리티', '메타'],
+			home_page: ''
+		},
+		lzh: {
+			name: '後備',
+			avatar: 'https://api.iconify.design/mdi/backup-restore.svg',
+			description: '後備',
+			description_markdown: '一源，循序試源列，至一得，乃止。',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['後備', '用', '元'],
+			home_page: ''
+		},
+		'nl-NL': {
+			name: 'Fallback',
+			avatar: 'https://api.iconify.design/mdi/backup-restore.svg',
+			description: 'Fallback',
+			description_markdown: 'Een bron die een lijst met bronnen op volgorde probeert totdat er een slaagt.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['fallback', 'hulpprogramma', 'meta'],
+			home_page: ''
+		},
+		'pt-PT': {
+			name: 'Fallback',
+			avatar: 'https://api.iconify.design/mdi/backup-restore.svg',
+			description: 'Fallback',
+			description_markdown: 'Uma fonte que tenta uma lista de fontes em ordem até que uma tenha sucesso.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['fallback', 'utilitário', 'meta'],
+			home_page: ''
+		},
+		'ru-RU': {
+			name: 'Резервный',
+			avatar: 'https://api.iconify.design/mdi/backup-restore.svg',
+			description: 'Резервный',
+			description_markdown: 'Источник, который пробует список источников по порядку, пока один из них не сработает.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['резервный', 'утилита', 'мета'],
+			home_page: ''
+		},
+		'uk-UA': {
+			name: 'Резервний',
+			avatar: 'https://api.iconify.design/mdi/backup-restore.svg',
+			description: 'Резервний',
+			description_markdown: 'Джерело, яке пробує список джерел по порядку, доки одне з них не спрацює.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['резервний', 'утиліта', 'мета'],
+			home_page: ''
+		},
+		'vi-VN': {
+			name: 'Dự phòng',
+			avatar: 'https://api.iconify.design/mdi/backup-restore.svg',
+			description: 'Dự phòng',
+			description_markdown: 'Một nguồn thử một danh sách các nguồn theo thứ tự cho đến khi một nguồn thành công.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['dự phòng', 'tiện ích', 'meta'],
+			home_page: ''
+		},
+		'zh-TW': {
+			name: '備用',
+			avatar: 'https://api.iconify.design/mdi/backup-restore.svg',
+			description: '備用',
+			description_markdown: '一個按順序嘗試來源列表，直到有一個成功為止的來源。',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['備用', '實用程式', '元'],
+			home_page: ''
+		}
+	},
 	interfaces: {
 		AIsource: {
 			/**
@@ -281,11 +473,11 @@ async function GetSource(config, { username, SaveConfig }) {
 			while (true) try {
 				return await sources[index].Call(prompt)
 			}
-			catch (e) {
-				index++
-				if (index >= config.sources.length) throw new Error('all sources failed')
-				console.error(e)
-			}
+				catch (e) {
+					index++
+					if (index >= config.sources.length) throw new Error('all sources failed')
+					console.error(e)
+				}
 		},
 		/**
 		 * 使用结构化提示调用 AI 源。
@@ -298,11 +490,11 @@ async function GetSource(config, { username, SaveConfig }) {
 			while (true) try {
 				return await sources[index].StructCall(prompt_struct)
 			}
-			catch (e) {
-				index++
-				if (index >= config.sources.length) throw new Error('all sources failed')
-				console.error(e)
-			}
+				catch (e) {
+					index++
+					if (index >= config.sources.length) throw new Error('all sources failed')
+					console.error(e)
+				}
 		},
 		tokenizer: {
 			/**

@@ -4,6 +4,198 @@
  * @type {import('../../../decl/AIsource.ts').AIsource_interfaces_and_AIsource_t_getter}
  */
 export default {
+	info: {
+		'en-UK': {
+			name: 'Empty',
+			avatar: 'https://api.iconify.design/mdi/file-remove.svg',
+			description: 'Empty AI Source',
+			description_markdown: 'A placeholder for a missing AI source generator.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['empty', 'placeholder', 'utility'],
+			home_page: ''
+		},
+		'zh-CN': {
+			name: '空',
+			avatar: 'https://api.iconify.design/mdi/file-remove.svg',
+			description: '空 AI 源',
+			description_markdown: '一个用于占位的 AI 源生成器，表示缺少某个生成器。',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['空', '占位符', '实用工具'],
+			home_page: ''
+		},
+		'ar-SA': {
+			name: 'فارغ',
+			avatar: 'https://api.iconify.design/mdi/file-remove.svg',
+			description: 'مصدر الذكاء الاصطناعي الفارغ',
+			description_markdown: 'عنصر نائب لمولد مصدر ذكاء اصطناعي مفقود.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['فارغ', 'عنصر نائب', 'أداة'],
+			home_page: ''
+		},
+		'de-DE': {
+			name: 'Leer',
+			avatar: 'https://api.iconify.design/mdi/file-remove.svg',
+			description: 'Leere KI-Quelle',
+			description_markdown: 'Ein Platzhalter für einen fehlenden KI-Quellengenerator.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['leer', 'platzhalter', 'dienstprogramm'],
+			home_page: ''
+		},
+		emoji: {
+			name: '🚫',
+			avatar: 'https://api.iconify.design/mdi/file-remove.svg',
+			description: 'Empty AI Source',
+			description_markdown: 'A placeholder for a missing AI source generator.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['empty', 'placeholder', 'utility'],
+			home_page: ''
+		},
+		'es-ES': {
+			name: 'Vacío',
+			avatar: 'https://api.iconify.design/mdi/file-remove.svg',
+			description: 'Fuente de IA vacía',
+			description_markdown: 'Un marcador de posición para un generador de fuente de IA faltante.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['vacío', 'marcador de posición', 'utilidad'],
+			home_page: ''
+		},
+		'fr-FR': {
+			name: 'Vide',
+			avatar: 'https://api.iconify.design/mdi/file-remove.svg',
+			description: 'Source d\'IA vide',
+			description_markdown: 'Un espace réservé pour un générateur de source d\'IA manquant.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['vide', 'espace réservé', 'utilitaire'],
+			home_page: ''
+		},
+		'hi-IN': {
+			name: 'खाली',
+			avatar: 'https://api.iconify.design/mdi/file-remove.svg',
+			description: 'खाली एआई स्रोत',
+			description_markdown: 'एक लापता एआई स्रोत जनरेटर के लिए एक प्लेसहोल्डर।',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['खाली', 'प्लेसहोल्डर', 'उपयोगिता'],
+			home_page: ''
+		},
+		'is-IS': {
+			name: 'Tómt',
+			avatar: 'https://api.iconify.design/mdi/file-remove.svg',
+			description: 'Tóm gervigreindarheimild',
+			description_markdown: 'Staðgengill fyrir vantar gervigreindarheimildargenerator.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['tómt', 'staðgengill', 'gagnsemi'],
+			home_page: ''
+		},
+		'it-IT': {
+			name: 'Vuoto',
+			avatar: 'https://api.iconify.design/mdi/file-remove.svg',
+			description: 'Sorgente AI vuota',
+			description_markdown: 'Un segnaposto per un generatore di sorgenti AI mancante.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['vuoto', 'segnaposto', 'utilità'],
+			home_page: ''
+		},
+		'ja-JP': {
+			name: '空',
+			avatar: 'https://api.iconify.design/mdi/file-remove.svg',
+			description: '空の AI ソース',
+			description_markdown: '不足している AI ソース ジェネレーターのプレースホルダー。',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['空', 'プレースホルダー', 'ユーティリティ'],
+			home_page: ''
+		},
+		'ko-KR': {
+			name: '비어 있음',
+			avatar: 'https://api.iconify.design/mdi/file-remove.svg',
+			description: '빈 AI 소스',
+			description_markdown: '누락된 AI 소스 생성기를 위한 자리 표시자입니다.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['비어 있음', '자리 표시자', '유틸리티'],
+			home_page: ''
+		},
+		lzh: {
+			name: '空',
+			avatar: 'https://api.iconify.design/mdi/file-remove.svg',
+			description: '空智械源',
+			description_markdown: '一缺智械源生成器之位之所。',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['空', '位之所', '用'],
+			home_page: ''
+		},
+		'nl-NL': {
+			name: 'Leeg',
+			avatar: 'https://api.iconify.design/mdi/file-remove.svg',
+			description: 'Lege AI-bron',
+			description_markdown: 'Een tijdelijke aanduiding voor een ontbrekende AI-brongenerator.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['leeg', 'tijdelijke aanduiding', 'hulpprogramma'],
+			home_page: ''
+		},
+		'pt-PT': {
+			name: 'Vazio',
+			avatar: 'https://api.iconify.design/mdi/file-remove.svg',
+			description: 'Fonte de IA vazia',
+			description_markdown: 'Um espaço reservado para um gerador de fonte de IA ausente.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['vazio', 'espaço reservado', 'utilitário'],
+			home_page: ''
+		},
+		'ru-RU': {
+			name: 'Пустой',
+			avatar: 'https://api.iconify.design/mdi/file-remove.svg',
+			description: 'Пустой источник ИИ',
+			description_markdown: 'Заполнитель для отсутствующего генератора источника ИИ.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['пустой', 'заполнитель', 'утилита'],
+			home_page: ''
+		},
+		'uk-UA': {
+			name: 'Порожній',
+			avatar: 'https://api.iconify.design/mdi/file-remove.svg',
+			description: 'Порожнє джерело ШІ',
+			description_markdown: 'Заповнювач для відсутнього генератора джерела ШІ.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['порожній', 'заповнювач', 'утиліта'],
+			home_page: ''
+		},
+		'vi-VN': {
+			name: 'Trống',
+			avatar: 'https://api.iconify.design/mdi/file-remove.svg',
+			description: 'Nguồn AI trống',
+			description_markdown: 'Một trình giữ chỗ cho một trình tạo nguồn AI bị thiếu.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['trống', 'trình giữ chỗ', 'tiện ích'],
+			home_page: ''
+		},
+		'zh-TW': {
+			name: '空',
+			avatar: 'https://api.iconify.design/mdi/file-remove.svg',
+			description: '空 AI 來源',
+			description_markdown: '一個用於佔位的 AI 來源產生器，表示缺少某個產生器。',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['空', '佔位符', '實用程式'],
+			home_page: ''
+		}
+	},
 	interfaces: {
 		AIsource: {
 			/**
