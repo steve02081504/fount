@@ -64,6 +64,24 @@ export function removeCharacter(charname) {
 }
 
 /**
+ * 添加插件。
+ * @param {string} pluginname - 插件名称。
+ * @returns {Promise<any>} - 响应数据。
+ */
+export function addPlugin(pluginname) {
+	return callApi('plugin', 'POST', { pluginname })
+}
+
+/**
+ * 移除插件。
+ * @param {string} pluginname - 插件名称。
+ * @returns {Promise<any>} - 响应数据。
+ */
+export function removePlugin(pluginname) {
+	return callApi(`plugin/${pluginname}`, 'DELETE')
+}
+
+/**
  * 设置世界。
  * @param {string} worldname - 世界名称。
  * @returns {Promise<any>} - 响应数据。
@@ -134,6 +152,14 @@ export function editMessage(index, content) {
  */
 export function getCharList() {
 	return callApi('chars', 'GET')
+}
+
+/**
+ * 获取插件列表。
+ * @returns {Promise<any>} - 插件列表。
+ */
+export function getPluginList() {
+	return callApi('plugins', 'GET')
 }
 
 /**

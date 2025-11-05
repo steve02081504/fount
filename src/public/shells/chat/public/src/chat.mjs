@@ -13,6 +13,10 @@ import { initializeWebSocket } from './websocket.mjs'
  */
 export let charList = []
 /**
+ * @type {Array<string>}
+ */
+export let pluginList = []
+/**
  * 当前世界名称。
  * @type {string|null}
  */
@@ -29,6 +33,14 @@ export let personaName = null
  */
 export function setCharList(list) {
 	charList = list
+}
+
+/**
+ * 设置插件列表。
+ * @param {Array<string>} list - 插件列表。
+ */
+export function setPluginList(list) {
+	pluginList = list
 }
 /**
  * 设置当前世界名称。

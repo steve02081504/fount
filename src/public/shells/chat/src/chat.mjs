@@ -757,6 +757,41 @@ export async function removechar(chatid, charname) {
 }
 
 /**
+ *向聊天中添加一个新插件。
+ * @param {string} chatid - 聊天ID。
+ * @param {string} pluginname - 要添加的插件ID。
+ * @returns {Promise<void>}
+ * @throws {Error} 如果聊天未找到。
+ */
+export async function addplugin(chatid, pluginname) {
+	const chatMetadata = await loadChat(chatid)
+	if (!chatMetadata) throw new Error('Chat not found')
+
+	const { username } = chatMetadata
+	const timeSlice = chatMetadata.LastTimeSlice.copy()
+
+	if (timeSlice.plugins[pluginname])
+		return
+
+	timeSlice.plugins[pluginname] = await loadPlugin(username, pluginname)
+	broadcastChatEvent(chatid, { type: 'plugin_added', payload: { pluginname } })
+
+	if (is_VividChat(chatMetadata)) saveChat(chatid)
+}
+
+/**
+ * 从聊天中移除一个插件。
+ * @param {string} chatid - 聊天ID。
+ * @param {string} pluginname - 要移除的插件ID。
+ */
+export async function removeplugin(chatid, pluginname) {
+	const chatMetadata = await loadChat(chatid)
+	delete chatMetadata.LastTimeSlice.plugins[pluginname]
+	if (is_VividChat(chatMetadata)) saveChat(chatid)
+	broadcastChatEvent(chatid, { type: 'plugin_removed', payload: { pluginname } })
+}
+
+/**
  * 设置聊天中特定角色的发言频率。
  * @param {string} chatid - 聊天ID。
  * @param {string} charname - 角色ID。
@@ -777,6 +812,16 @@ export async function setCharSpeakingFrequency(chatid, charname, frequency) {
 export async function getCharListOfChat(chatid) {
 	const chatMetadata = await loadChat(chatid)
 	return Object.keys(chatMetadata.LastTimeSlice.chars)
+}
+
+/**
+ * 获取聊天中的所有插件ID列表。
+ * @param {string} chatid - 聊天ID。
+ * @returns {Promise<string[]>} 插件ID的数组。
+ */
+export async function getPluginListOfChat(chatid) {
+	const chatMetadata = await loadChat(chatid)
+	return Object.keys(chatMetadata.LastTimeSlice.plugins)
 }
 
 /**
@@ -1391,6 +1436,7 @@ export async function getInitialData(chatid) {
 	const timeSlice = chatMetadata.LastTimeSlice
 	return {
 		charlist: Object.keys(timeSlice.chars),
+		pluginlist: Object.keys(timeSlice.plugins),
 		worldname: timeSlice.world_id,
 		personaname: timeSlice.player_id,
 		frequency_data: timeSlice.chars_speaking_frequency,
