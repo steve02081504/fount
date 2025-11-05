@@ -584,6 +584,20 @@
 						"alt": "Іконка додавання персонажа"
 					}
 				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "Значок списку плагінів"
+				},
+				"title": "Список плагінів",
+				"buttons": {
+					"addPlugin": {
+						"title": "Додати плагін"
+					},
+					"addPluginIcon": {
+						"alt": "Значок додавання плагіна"
+					}
+				}
 			}
 		},
 		"rightSidebar": {
@@ -724,6 +738,16 @@
 				},
 				"forceReplyIcon": {
 					"alt": "Іконка примусової відповіді"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "Видалити плагін"
+				},
+				"removePluginIcon": {
+					"alt": "Значок видалення плагіна"
 				}
 			}
 		},

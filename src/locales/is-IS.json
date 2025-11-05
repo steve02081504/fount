@@ -584,6 +584,20 @@
 						"alt": "Bæta við persónu tákn"
 					}
 				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "Tákn fyrir viðbætur lista"
+				},
+				"title": "Viðbótalisti",
+				"buttons": {
+					"addPlugin": {
+						"title": "Bæta við viðbót"
+					},
+					"addPluginIcon": {
+						"alt": "Bæta við viðbót tákn"
+					}
+				}
 			}
 		},
 		"rightSidebar": {
@@ -724,6 +738,16 @@
 				},
 				"forceReplyIcon": {
 					"alt": "Þvinga svar tákn"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "Fjarlægja viðbót"
+				},
+				"removePluginIcon": {
+					"alt": "Fjarlægja viðbót tákn"
 				}
 			}
 		},

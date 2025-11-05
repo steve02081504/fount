@@ -584,6 +584,20 @@
 						"alt": "कैरेक्टर जोड़ें आइकन"
 					}
 				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "प्लगइन सूची आइकन"
+				},
+				"title": "प्लगइन सूची",
+				"buttons": {
+					"addPlugin": {
+						"title": "प्लगइन जोड़ें"
+					},
+					"addPluginIcon": {
+						"alt": "प्लगइन जोड़ें आइकन"
+					}
+				}
 			}
 		},
 		"rightSidebar": {
@@ -724,6 +738,16 @@
 				},
 				"forceReplyIcon": {
 					"alt": "ज़बरदस्ती जवाब दें आइकन"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "प्लगइन हटाएँ"
+				},
+				"removePluginIcon": {
+					"alt": "प्लगइन हटाएँ आइकन"
 				}
 			}
 		},

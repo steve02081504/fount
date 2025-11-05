@@ -233,10 +233,10 @@ class timeSlice_t {
 		return Object.assign(new timeSlice_t(), {
 			...json,
 			chars: Object.fromEntries(await Promise.all(
-				json.chars.map(async charname => [charname, await LoadChar(username, charname).catch(() => { })])
+				(json.chars || []).map(async charname => [charname, await LoadChar(username, charname).catch(() => { })])
 			)),
 			plugins: Object.fromEntries(await Promise.all(
-				json.plugins.map(async plugin => [plugin, await loadPlugin(username, plugin).catch(() => { })])
+				(json.plugins || []).map(async plugin => [plugin, await loadPlugin(username, plugin).catch(() => { })])
 			)),
 			world_id: json.world,
 			world: json.world ? await loadWorld(username, json.world).catch(() => { }) : undefined,
@@ -607,7 +607,7 @@ async function getChatRequest(chatid, charname) {
 		user: timeSlice.player,
 		other_chars,
 		chat_scoped_char_memory: timeSlice.chars_memories[charname] ??= {},
-		plugins: {},
+		plugins: timeSlice.plugins,
 		extension: {}
 	}
 
@@ -675,8 +675,7 @@ export async function setWorld(chatid, worldname) {
 				result = await world.interfaces.chat.GetGroupGreeting(request, 0)
 				break
 		}
-		if (!result)
-			return
+		if (!result) return
 
 		const greeting_entrie = await BuildChatLogEntryFromCharReply(result, timeSlice, null, undefined, username)
 		await addChatLogEntry(chatid, greeting_entrie) // 此处已广播
@@ -702,16 +701,14 @@ export async function addchar(chatid, charname) {
 	const chatMetadata = await loadChat(chatid)
 	if (!chatMetadata) throw new Error('Chat not found')
 
-	const { username, chatLog } = chatMetadata
+	const { username } = chatMetadata
 	const timeSlice = chatMetadata.LastTimeSlice.copy()
-	if (chatLog.length)
+	if (Object.keys(timeSlice.chars).length)
 		timeSlice.greeting_type = 'group'
 	else
 		timeSlice.greeting_type = 'single'
 
-	if (timeSlice.chars[charname])
-		return null
-
+	if (timeSlice.chars[charname]) return null
 
 	const char = timeSlice.chars[charname] = await LoadChar(username, charname)
 	broadcastChatEvent(chatid, { type: 'char_added', payload: { charname } })
@@ -729,8 +726,7 @@ export async function addchar(chatid, charname) {
 				result = await char.interfaces.chat.GetGroupGreeting(request, 0)
 				break
 		}
-		if (!result)
-			return null
+		if (!result) return null
 
 		const greeting_entrie = await BuildChatLogEntryFromCharReply(result, timeSlice, char, charname, username)
 		await addChatLogEntry(chatid, greeting_entrie) // 此处已广播
@@ -770,8 +766,7 @@ export async function addplugin(chatid, pluginname) {
 	const { username } = chatMetadata
 	const timeSlice = chatMetadata.LastTimeSlice.copy()
 
-	if (timeSlice.plugins[pluginname])
-		return
+	if (timeSlice.plugins[pluginname]) return
 
 	timeSlice.plugins[pluginname] = await loadPlugin(username, pluginname)
 	broadcastChatEvent(chatid, { type: 'plugin_added', payload: { pluginname } })

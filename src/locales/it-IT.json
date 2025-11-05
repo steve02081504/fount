@@ -584,6 +584,20 @@
 						"alt": "Icona Aggiungi personaggio"
 					}
 				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "Icona dell'elenco dei plugin"
+				},
+				"title": "Elenco dei plugin",
+				"buttons": {
+					"addPlugin": {
+						"title": "Aggiungi plugin"
+					},
+					"addPluginIcon": {
+						"alt": "Icona di aggiunta plugin"
+					}
+				}
 			}
 		},
 		"rightSidebar": {
@@ -724,6 +738,16 @@
 				},
 				"forceReplyIcon": {
 					"alt": "Icona Forza risposta"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "Rimuovi plugin"
+				},
+				"removePluginIcon": {
+					"alt": "Icona di rimozione plugin"
 				}
 			}
 		},

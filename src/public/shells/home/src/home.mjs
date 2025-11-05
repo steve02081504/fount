@@ -41,6 +41,20 @@ import { sendEventToUser } from '../../../../server/web_server/event_dispatcher.
 	]
 }
 */
+
+/**
+ * 可用的接口类型
+ */
+const interfaceTypes = [
+	'common', ...partTypeList.map(type => type.slice(0, -1)),
+]
+/**
+ * 可用的按钮类型
+ */
+const buttonTypes = [
+	'home_function_buttons', ...interfaceTypes.map(type => `home_${type}_interfaces`),
+]
+
 /**
  * 为指定部件更新主页注册表。
  * 如果部件目录中存在 home_registry.json，则加载其内容并更新用户的临时主页注册表。
@@ -56,11 +70,8 @@ function updateHomeRegistryForPart(username, parttype, partname) {
 
 	if (fs.existsSync(registryPath)) try {
 		const home_registry = loadJsonFile(registryPath)
-		user_home_registry.home_function_buttons[partname] = home_registry.home_function_buttons ?? []
-		user_home_registry.home_char_interfaces[partname] = home_registry.home_char_interfaces ?? []
-		user_home_registry.home_world_interfaces[partname] = home_registry.home_world_interfaces ?? []
-		user_home_registry.home_persona_interfaces[partname] = home_registry.home_persona_interfaces ?? []
-		user_home_registry.home_common_interfaces[partname] = home_registry.home_common_interfaces ?? []
+		for (const type of buttonTypes)
+			user_home_registry[type][partname] = home_registry[type] ?? []
 	} catch (e) {
 		console.error(`Error loading home registry from ${parttype}/${partname}:`, e)
 	}
@@ -75,11 +86,8 @@ function updateHomeRegistryForPart(username, parttype, partname) {
  */
 function removeHomeRegistryForPart(username, parttype, partname) {
 	const user_home_registry = loadTempData(username, 'home_registry')
-	if (user_home_registry.home_function_buttons) delete user_home_registry.home_function_buttons[partname]
-	if (user_home_registry.home_char_interfaces) delete user_home_registry.home_char_interfaces[partname]
-	if (user_home_registry.home_world_interfaces) delete user_home_registry.home_world_interfaces[partname]
-	if (user_home_registry.home_persona_interfaces) delete user_home_registry.home_persona_interfaces[partname]
-	if (user_home_registry.home_common_interfaces) delete user_home_registry.home_common_interfaces[partname]
+	for (const type of buttonTypes)
+		delete user_home_registry[type]?.[partname]
 }
 
 /**
@@ -90,11 +98,8 @@ function removeHomeRegistryForPart(username, parttype, partname) {
  */
 export async function loadHomeRegistry(username) {
 	const user_home_registry = loadTempData(username, 'home_registry')
-	user_home_registry.home_function_buttons ??= {}
-	user_home_registry.home_char_interfaces ??= {}
-	user_home_registry.home_world_interfaces ??= {}
-	user_home_registry.home_persona_interfaces ??= {}
-	user_home_registry.home_common_interfaces ??= {}
+	for (const type of buttonTypes)
+		user_home_registry[type] ??= {}
 	const shell_list = await getPartListBase(username, 'shells')
 	for (const shell of shell_list)
 		updateHomeRegistryForPart(username, 'shells', shell)
@@ -170,7 +175,6 @@ export async function expandHomeRegistry(username) {
 					})
 					if (nextButton.sub_items)
 						allSubItems = allSubItems.concat(nextButton.sub_items)
-
 				}
 
 				if (allSubItems.length)
@@ -205,9 +209,9 @@ export async function expandHomeRegistry(username) {
 
 	return {
 		home_function_buttons: preprocess(user_home_registry.home_function_buttons),
-		part_types: partTypeList.map(partName => ({
-			name: partName,
-			interfaces: interface_preprocess(user_home_registry[`home_${partName.slice(0, -1)}_interfaces`] ?? {}),
+		part_types: partTypeList.map(parttame => ({
+			name: parttame,
+			interfaces: interface_preprocess(user_home_registry[`home_${parttame.slice(0, -1)}_interfaces`] ?? {}),
 		})),
 	}
 }
@@ -223,7 +227,6 @@ export async function expandHomeRegistry(username) {
  */
 export function onPartInstalled({ username, parttype, partname }) {
 	if (parttype !== 'shells') return
-
 	updateHomeRegistryForPart(username, parttype, partname)
 	sendEventToUser(username, 'home-registry-updated', null)
 }
@@ -239,7 +242,6 @@ export function onPartInstalled({ username, parttype, partname }) {
  */
 export function onPartUninstalled({ username, parttype, partname }) {
 	if (parttype !== 'shells') return
-
 	removeHomeRegistryForPart(username, parttype, partname)
 	sendEventToUser(username, 'home-registry-updated', null)
 }

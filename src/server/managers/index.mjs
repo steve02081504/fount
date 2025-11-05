@@ -10,6 +10,7 @@ import { LoadImportHandler, UnloadImportHandler } from './ImportHandler_manager.
 import { loadPersona, unloadPersona } from './persona_manager.mjs'
 import { loadShell, unloadShell } from './shell_manager.mjs'
 import { loadWorld, unloadWorld } from './world_manager.mjs'
+import { loadPlugin, unloadPlugin } from "./plugin_manager.mjs";
 
 
 const loadMethods = {
@@ -19,6 +20,7 @@ const loadMethods = {
 	worlds: loadWorld,
 	AIsources: loadAIsource,
 	AIsourceGenerators: loadAIsourceGenerator,
+	plugins: loadPlugin,
 	ImportHandlers: LoadImportHandler
 }
 /**
@@ -79,6 +81,7 @@ const unLoadMethods = {
 	worlds: unloadWorld,
 	AIsources: unloadAIsource,
 	AIsourceGenerators: unloadAIsourceGenerator,
+	plugins: unloadPlugin,
 	ImportHandlers: UnloadImportHandler
 }
 /**

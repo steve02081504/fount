@@ -584,6 +584,20 @@
 						"alt": "新增角色圖示"
 					}
 				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "外掛列表圖示"
+				},
+				"title": "外掛列表",
+				"buttons": {
+					"addPlugin": {
+						"title": "新增外掛"
+					},
+					"addPluginIcon": {
+						"alt": "新增外掛圖示"
+					}
+				}
 			}
 		},
 		"rightSidebar": {
@@ -724,6 +738,16 @@
 				},
 				"forceReplyIcon": {
 					"alt": "強制回覆圖示"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "移除外掛"
+				},
+				"removePluginIcon": {
+					"alt": "移除外掛圖示"
 				}
 			}
 		},

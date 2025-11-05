@@ -584,6 +584,20 @@
 						"alt": "添加角色图标"
 					}
 				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "插件列表图标"
+				},
+				"title": "插件列表",
+				"buttons": {
+					"addPlugin": {
+						"title": "添加插件"
+					},
+					"addPluginIcon": {
+						"alt": "添加插件图标"
+					}
+				}
 			}
 		},
 		"rightSidebar": {
@@ -724,6 +738,16 @@
 				},
 				"forceReplyIcon": {
 					"alt": "强制回复图标"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "删除插件"
+				},
+				"removePluginIcon": {
+					"alt": "移除插件图标"
 				}
 			}
 		},

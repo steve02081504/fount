@@ -584,6 +584,20 @@
 						"alt": "キャラクター追加アイコン"
 					}
 				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "プラグインリストアイコン"
+				},
+				"title": "プラグイン一覧",
+				"buttons": {
+					"addPlugin": {
+						"title": "プラグインを追加"
+					},
+					"addPluginIcon": {
+						"alt": "プラグイン追加アイコン"
+					}
+				}
 			}
 		},
 		"rightSidebar": {
@@ -724,6 +738,16 @@
 				},
 				"forceReplyIcon": {
 					"alt": "強制返信アイコン"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "プラグインを削除"
+				},
+				"removePluginIcon": {
+					"alt": "プラグイン削除アイコン"
 				}
 			}
 		},

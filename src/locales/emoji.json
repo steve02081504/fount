@@ -583,6 +583,20 @@
 						"alt": "➕🤖"
 					}
 				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "🧩"
+				},
+				"title": "🧩📑",
+				"buttons": {
+					"addPlugin": {
+						"title": "➕🧩"
+					},
+					"addPluginIcon": {
+						"alt": "➕"
+					}
+				}
 			}
 		},
 		"rightSidebar": {
@@ -723,6 +737,16 @@
 				},
 				"forceReplyIcon": {
 					"alt": "💪🗣️"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "➖🧩"
+				},
+				"removePluginIcon": {
+					"alt": "➖"
 				}
 			}
 		},

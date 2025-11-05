@@ -584,6 +584,20 @@
 						"alt": "Значок добавления персонажа"
 					}
 				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "Значок списка плагинов"
+				},
+				"title": "Список плагинов",
+				"buttons": {
+					"addPlugin": {
+						"title": "Добавить плагин"
+					},
+					"addPluginIcon": {
+						"alt": "Значок добавления плагина"
+					}
+				}
 			}
 		},
 		"rightSidebar": {
@@ -724,6 +738,16 @@
 				},
 				"forceReplyIcon": {
 					"alt": "Значок принудительного ответа"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "Удалить плагин"
+				},
+				"removePluginIcon": {
+					"alt": "Значок удаления плагина"
 				}
 			}
 		},

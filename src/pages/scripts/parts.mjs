@@ -113,6 +113,42 @@ export async function noCacheGetPersonaDetails(personaname) {
 	const response = await fetch('/api/getdetails/personas?name=' + personaname + '&nocache=true')
 	return response.json()
 }
+
+/**
+ * 获取插件列表。
+ * @returns {Promise<any>} - 插件列表。
+ */
+export async function getPluginList() {
+	return fetch('/api/getlist/plugins').then(async response => {
+		if (response.ok) return response.json()
+		else return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response }))
+	})
+}
+
+/**
+ * 获取插件详细信息。
+ * @param {string} pluginname - 插件名称。
+ * @returns {Promise<any>} - 插件详细信息。
+ */
+export async function getPluginDetails(pluginname) {
+	return fetch('/api/getdetails/plugins?name=' + pluginname).then(async response => {
+		if (response.ok) return response.json()
+		else return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response }))
+	})
+}
+
+/**
+ * 无缓存获取插件详细信息。
+ * @param {string} pluginname - 插件名称。
+ * @returns {Promise<any>} - 插件详细信息。
+ */
+export async function noCacheGetPluginDetails(pluginname) {
+	return fetch('/api/getdetails/plugins?name=' + pluginname + '&nocache=true').then(async response => {
+		if (response.ok) return response.json()
+		else return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response }))
+	})
+}
+
 /**
  * 将部件添加到用户的默认部件列表。
  * @param {string} parttype - 部件类型。

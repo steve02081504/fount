@@ -584,6 +584,20 @@
 						"alt": "أيقونة إضافة شخصية"
 					}
 				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "أيقونة قائمة الملحقات"
+				},
+				"title": "قائمة الملحقات",
+				"buttons": {
+					"addPlugin": {
+						"title": "إضافة ملحق"
+					},
+					"addPluginIcon": {
+						"alt": "أيقونة إضافة ملحق"
+					}
+				}
 			}
 		},
 		"rightSidebar": {
@@ -724,6 +738,16 @@
 				},
 				"forceReplyIcon": {
 					"alt": "أيقونة الإجبار على الرد"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "إزالة ملحق"
+				},
+				"removePluginIcon": {
+					"alt": "أيقونة إزالة الملحق"
 				}
 			}
 		},

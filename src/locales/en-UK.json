@@ -584,6 +584,20 @@
 						"alt": "Add Character Icon"
 					}
 				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "Plugin list icon"
+				},
+				"title": "Plugin list",
+				"buttons": {
+					"addPlugin": {
+						"title": "Add plugin"
+					},
+					"addPluginIcon": {
+						"alt": "Add plugin icon"
+					}
+				}
 			}
 		},
 		"rightSidebar": {
@@ -724,6 +738,16 @@
 				},
 				"forceReplyIcon": {
 					"alt": "Force Reply Icon"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "Remove plugin"
+				},
+				"removePluginIcon": {
+					"alt": "Remove plugin icon"
 				}
 			}
 		},

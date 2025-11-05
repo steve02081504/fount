@@ -20,7 +20,7 @@ export default {
 	info: {
 		'en-UK': {
 			name: 'Access on other devices',
-			avatar: 'https://api.iconify.design/line-md/cloud-alt-twotone.svg',
+			avatar: 'https://api.iconify.design/line-md/cloud.svg',
 			description: 'Access fount from other devices on the same network.',
 			description_markdown: 'This shell provides a URL and QR code to access fount from other devices on the same local network.',
 			version: '0.0.1',
@@ -30,7 +30,7 @@ export default {
 		},
 		'zh-CN': {
 			name: '在其他设备访问',
-			avatar: 'https://api.iconify.design/line-md/cloud-alt-twotone.svg',
+			avatar: 'https://api.iconify.design/line-md/cloud.svg',
 			description: '在同一网络下的其他设备上访问fount。',
 			description_markdown: '此shell提供一个URL和二维码，以便在同一本地网络上的其他设备上访问fount。',
 			version: '0.0.1',
@@ -40,7 +40,7 @@ export default {
 		},
 		'ar-SA': {
 			name: 'الوصول من أجهزة أخرى',
-			avatar: 'https://api.iconify.design/line-md/cloud-alt-twotone.svg',
+			avatar: 'https://api.iconify.design/line-md/cloud.svg',
 			description: 'الوصول إلى fount من الأجهزة الأخرى على نفس الشبكة.',
 			description_markdown: 'يوفر هذا shell عنوان URL ورمز QR للوصول إلى fount من الأجهزة الأخرى على نفس الشبكة المحلية.',
 			version: '0.0.1',
@@ -50,7 +50,7 @@ export default {
 		},
 		'de-DE': {
 			name: 'Zugriff auf anderen Geräten',
-			avatar: 'https://api.iconify.design/line-md/cloud-alt-twotone.svg',
+			avatar: 'https://api.iconify.design/line-md/cloud.svg',
 			description: 'Greifen Sie von anderen Geräten im selben Netzwerk auf fount zu.',
 			description_markdown: 'Diese Shell bietet eine URL und einen QR-Code für den Zugriff auf fount von anderen Geräten im selben lokalen Netzwerk.',
 			version: '0.0.1',
@@ -60,7 +60,7 @@ export default {
 		},
 		emoji: {
 			name: '💻📱➡️⛲',
-			avatar: 'https://api.iconify.design/line-md/cloud-alt-twotone.svg',
+			avatar: 'https://api.iconify.design/line-md/cloud.svg',
 			description: 'Access fount from other devices on the same network.',
 			description_markdown: 'This shell provides a URL and QR code to access fount from other devices on the same local network.',
 			version: '0.0.1',
@@ -70,7 +70,7 @@ export default {
 		},
 		'es-ES': {
 			name: 'Acceso en otros dispositivos',
-			avatar: 'https://api.iconify.design/line-md/cloud-alt-twotone.svg',
+			avatar: 'https://api.iconify.design/line-md/cloud.svg',
 			description: 'Acceda a fount desde otros dispositivos en la misma red.',
 			description_markdown: 'Este shell proporciona una URL y un código QR para acceder a fount desde otros dispositivos en la misma red local.',
 			version: '0.0.1',
@@ -80,7 +80,7 @@ export default {
 		},
 		'fr-FR': {
 			name: 'Accès sur d\'autres appareils',
-			avatar: 'https://api.iconify.design/line-md/cloud-alt-twotone.svg',
+			avatar: 'https://api.iconify.design/line-md/cloud.svg',
 			description: 'Accédez à fount depuis d\'autres appareils sur le même réseau.',
 			description_markdown: 'Ce shell fournit une URL et un code QR pour accéder à fount depuis d\'autres appareils sur le même réseau local.',
 			version: '0.0.1',
@@ -90,7 +90,7 @@ export default {
 		},
 		'hi-IN': {
 			name: 'अन्य डिवाइस पर पहुँचें',
-			avatar: 'https://api.iconify.design/line-md/cloud-alt-twotone.svg',
+			avatar: 'https://api.iconify.design/line-md/cloud.svg',
 			description: 'एक ही नेटवर्क पर अन्य उपकरणों से फाउंट तक पहुंचें।',
 			description_markdown: 'यह शेल एक ही स्थानीय नेटवर्क पर अन्य उपकरणों से फाउंट तक पहुंचने के लिए एक यूआरएल और क्यूआर कोड प्रदान करता है।',
 			version: '0.0.1',
@@ -100,7 +100,7 @@ export default {
 		},
 		'is-IS': {
 			name: 'Aðgangur að öðrum tækjum',
-			avatar: 'https://api.iconify.design/line-md/cloud-alt-twotone.svg',
+			avatar: 'https://api.iconify.design/line-md/cloud.svg',
 			description: 'Aðgangur að fount frá öðrum tækjum á sama neti.',
 			description_markdown: 'Þessi skel veitir vefslóð og QR kóða til að fá aðgang að fount frá öðrum tækjum á sama staðarneti.',
 			version: '0.0.1',
@@ -110,7 +110,7 @@ export default {
 		},
 		'it-IT': {
 			name: 'Accesso su altri dispositivi',
-			avatar: 'https://api.iconify.design/line-md/cloud-alt-twotone.svg',
+			avatar: 'https://api.iconify.design/line-md/cloud.svg',
 			description: 'Accedi a fount da altri dispositivi sulla stessa rete.',
 			description_markdown: 'Questa shell fornisce un URL e un codice QR per accedere a fount da altri dispositivi sulla stessa rete locale.',
 			version: '0.0.1',
@@ -120,7 +120,7 @@ export default {
 		},
 		'ja-JP': {
 			name: '他のデバイスへのアクセス',
-			avatar: 'https://api.iconify.design/line-md/cloud-alt-twotone.svg',
+			avatar: 'https://api.iconify.design/line-md/cloud.svg',
 			description: '同じネットワーク上の他のデバイスからfountにアクセスします。',
 			description_markdown: 'このシェルは、同じローカルネットワーク上の他のデバイスからfountにアクセスするためのURLとQRコードを提供します。',
 			version: '0.0.1',
@@ -130,7 +130,7 @@ export default {
 		},
 		'ko-KR': {
 			name: '다른 디바이스에서 접속',
-			avatar: 'https://api.iconify.design/line-md/cloud-alt-twotone.svg',
+			avatar: 'https://api.iconify.design/line-md/cloud.svg',
 			description: '동일한 네트워크의 다른 장치에서 fount에 액세스하십시오.',
 			description_markdown: '이 셸은 동일한 로컬 네트워크의 다른 장치에서 fount에 액세스하기 위한 URL 및 QR 코드를 제공합니다.',
 			version: '0.0.1',
@@ -140,7 +140,7 @@ export default {
 		},
 		lzh: {
 			name: '從他器訪問',
-			avatar: 'https://api.iconify.design/line-md/cloud-alt-twotone.svg',
+			avatar: 'https://api.iconify.design/line-md/cloud.svg',
 			description: '從同一網絡上的其他設備訪問fount。',
 			description_markdown: '此shell提供一個URL和二維碼，以便在同一本地網絡上的其他設備上訪問fount。',
 			version: '0.0.1',
@@ -150,7 +150,7 @@ export default {
 		},
 		'nl-NL': {
 			name: 'Toegang op andere apparaten',
-			avatar: 'https://api.iconify.design/line-md/cloud-alt-twotone.svg',
+			avatar: 'https://api.iconify.design/line-md/cloud.svg',
 			description: 'Toegang tot fount vanaf andere apparaten op hetzelfde netwerk.',
 			description_markdown: 'Deze shell biedt een URL en QR-code om toegang te krijgen tot fount vanaf andere apparaten op hetzelfde lokale netwerk.',
 			version: '0.0.1',
@@ -160,7 +160,7 @@ export default {
 		},
 		'pt-PT': {
 			name: 'Acesso em outros dispositivos',
-			avatar: 'https://api.iconify.design/line-md/cloud-alt-twotone.svg',
+			avatar: 'https://api.iconify.design/line-md/cloud.svg',
 			description: 'Aceda à fount a partir de outros dispositivos na mesma rede.',
 			description_markdown: 'Este shell fornece um URL e um código QR para aceder à fount a partir de outros dispositivos na mesma rede local.',
 			version: '0.0.1',
@@ -170,7 +170,7 @@ export default {
 		},
 		'ru-RU': {
 			name: 'Доступ на других устройствах',
-			avatar: 'https://api.iconify.design/line-md/cloud-alt-twotone.svg',
+			avatar: 'https://api.iconify.design/line-md/cloud.svg',
 			description: 'Доступ к fount с других устройств в той же сети.',
 			description_markdown: 'Эта оболочка предоставляет URL-адрес и QR-код для доступа к fount с других устройств в той же локальной сети.',
 			version: '0.0.1',
@@ -180,7 +180,7 @@ export default {
 		},
 		'uk-UA': {
 			name: 'Доступ на інші пристрої',
-			avatar: 'https://api.iconify.design/line-md/cloud-alt-twotone.svg',
+			avatar: 'https://api.iconify.design/line-md/cloud.svg',
 			description: 'Доступ до fount з інших пристроїв у тій самій мережі.',
 			description_markdown: 'Ця оболонка надає URL-адресу та QR-код для доступу до fount з інших пристроїв у тій самій локальній мережі.',
 			version: '0.0.1',
@@ -190,7 +190,7 @@ export default {
 		},
 		'vi-VN': {
 			name: 'Truy cập trên thiết bị khác',
-			avatar: 'https://api.iconify.design/line-md/cloud-alt-twotone.svg',
+			avatar: 'https://api.iconify.design/line-md/cloud.svg',
 			description: 'Truy cập fount từ các thiết bị khác trên cùng một mạng.',
 			description_markdown: 'Shell này cung cấp một URL và mã QR để truy cập fount từ các thiết bị khác trên cùng một mạng cục bộ.',
 			version: '0.0.1',
@@ -200,7 +200,7 @@ export default {
 		},
 		'zh-TW': {
 			name: '在其他設備訪問',
-			avatar: 'https://api.iconify.design/line-md/cloud-alt-twotone.svg',
+			avatar: 'https://api.iconify.design/line-md/cloud.svg',
 			description: '在同一網路下的其他設備上訪問fount。',
 			description_markdown: '此shell提供一個URL和二維碼，以便在同一本地網絡上的其他設備上訪問fount。',
 			version: '0.0.1',

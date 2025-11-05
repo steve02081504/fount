@@ -69,6 +69,7 @@ export async function initializeChat() {
 	initializeVirtualQueue(initialData)
 	updateSidebar({
 		charlist: initialData.charlist,
+		pluginlist: initialData.pluginlist,
 		worldname: initialData.worldname,
 		personaname: initialData.personaname,
 		frequency_data: initialData.frequency_data,

@@ -584,6 +584,20 @@
 						"alt": "캐릭터 추가 아이콘"
 					}
 				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "플러그인 목록 아이콘"
+				},
+				"title": "플러그인 목록",
+				"buttons": {
+					"addPlugin": {
+						"title": "플러그인 추가"
+					},
+					"addPluginIcon": {
+						"alt": "플러그인 추가 아이콘"
+					}
+				}
 			}
 		},
 		"rightSidebar": {
@@ -724,6 +738,16 @@
 				},
 				"forceReplyIcon": {
 					"alt": "강제 응답 아이콘"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "플러그인 제거"
+				},
+				"removePluginIcon": {
+					"alt": "플러그인 제거 아이콘"
 				}
 			}
 		},

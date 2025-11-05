@@ -243,7 +243,7 @@ async function renderCharDetails(charName, frequency_num) {
 
 /**
  * 渲染插件列表
- * @param {object} data - 包含插件列表和频率数据的对象。
+ * @param {object} data - 包含插件列表的对象。
  */
 async function renderPluginList(data) {
 	if (!data) return

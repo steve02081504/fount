@@ -584,6 +584,20 @@
 						"alt": "Biểu tượng thêm nhân vật"
 					}
 				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "Biểu tượng danh sách plugin"
+				},
+				"title": "Danh sách plugin",
+				"buttons": {
+					"addPlugin": {
+						"title": "Thêm plugin"
+					},
+					"addPluginIcon": {
+						"alt": "Biểu tượng thêm plugin"
+					}
+				}
 			}
 		},
 		"rightSidebar": {
@@ -724,6 +738,16 @@
 				},
 				"forceReplyIcon": {
 					"alt": "Biểu tượng buộc trả lời"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "Xóa plugin"
+				},
+				"removePluginIcon": {
+					"alt": "Biểu tượng xóa plugin"
 				}
 			}
 		},

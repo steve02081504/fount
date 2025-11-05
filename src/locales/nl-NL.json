@@ -584,6 +584,20 @@
 						"alt": "Personage toevoegen pictogram"
 					}
 				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "Pictogram voor plug-inlijst"
+				},
+				"title": "Plug-inlijst",
+				"buttons": {
+					"addPlugin": {
+						"title": "Plug-in toevoegen"
+					},
+					"addPluginIcon": {
+						"alt": "Plug-in toevoegen pictogram"
+					}
+				}
 			}
 		},
 		"rightSidebar": {
@@ -724,6 +738,16 @@
 				},
 				"forceReplyIcon": {
 					"alt": "Antwoord forceren pictogram"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "Plug-in verwijderen"
+				},
+				"removePluginIcon": {
+					"alt": "Plug-in verwijderen pictogram"
 				}
 			}
 		},

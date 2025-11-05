@@ -584,6 +584,20 @@
 						"alt": "Charakter hinzufügen Symbol"
 					}
 				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "Plugin-Listensymbol"
+				},
+				"title": "Plugin-Liste",
+				"buttons": {
+					"addPlugin": {
+						"title": "Plugin hinzufügen"
+					},
+					"addPluginIcon": {
+						"alt": "Plugin hinzufügen Symbol"
+					}
+				}
 			}
 		},
 		"rightSidebar": {
@@ -724,6 +738,16 @@
 				},
 				"forceReplyIcon": {
 					"alt": "Antwort erzwingen Symbol"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "Plugin entfernen"
+				},
+				"removePluginIcon": {
+					"alt": "Plugin entfernen Symbol"
 				}
 			}
 		},
