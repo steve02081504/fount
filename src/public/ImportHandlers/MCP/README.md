@@ -6,6 +6,7 @@
 
 - ✅ **完整的 MCP 协议支持**：基于 mcp.el 实现，支持 MCP 2024-11-05 协议
 - ✅ **双向通信**：支持客户端请求和服务器请求（如 `roots/list`）
+- ✅ **Sampling 支持**：支持 MCP 服务器的 `sampling/createMessage` 请求
 - ✅ **多种资源类型**：支持 Tools、Prompts 和 Resources
 - ✅ **XML 调用语法**：使用简洁的 XML 格式调用 MCP 功能
 - ✅ **模板化架构**：使用 Template 文件夹，配置与代码分离
@@ -151,6 +152,42 @@ await mcpClient.removeRoot("/path/to/remove")
 
 修改 roots 后会自动发送 `notifications/roots/list_changed` 通知给服务器。
 
+### 6. 配置 Sampling（可选）
+
+MCP 协议支持 `sampling/createMessage`，允许服务器请求客户端（AI）生成内容。要启用此功能，在插件的 `data.json` 中添加：
+
+```json
+{
+  "name": "mcp_plugin_name",
+  "config": {
+    "command": "...",
+    "args": ["..."]
+  },
+  "samplingAIsource": "your_ai_source_name"
+}
+```
+
+**配置说明：**
+- `samplingAIsource`: 指定用于 sampling 的 AI 源名称（在角色的 AI 源配置中）
+- 如果不配置，MCP 服务器的 sampling 请求会返回错误
+- Sampling 通常用于某些工具需要 AI 能力的场景（如智能分析、代码生成等）
+
+**示例：**
+
+```json
+{
+  "name": "mcp_advanced_tools",
+  "description": "Advanced MCP tools with AI sampling",
+  "config": {
+    "command": "npx",
+    "args": ["-y", "@modelcontextprotocol/server-advanced"]
+  },
+  "samplingAIsource": "claude"
+}
+```
+
+当 MCP 服务器发送 sampling 请求时，插件会自动调用指定的 AI 源来生成响应。
+
 ## 工作原理
 
 ### 架构设计
@@ -170,6 +207,7 @@ src/public/ImportHandlers/MCP/
 本实现参考了优秀的 [mcp.el](https://github.com/lizqwerscott/mcp.el) 项目设计：
 - ✅ 完整的双向 JSON-RPC 2.0 通信
 - ✅ Roots 动态管理（类似 mcp.el 的 roots API）
+- ✅ Sampling 支持（`sampling/createMessage`）
 - ✅ 完善的错误处理和状态管理
 - ✅ 缓存机制（Tools/Prompts/Resources）
 
@@ -182,10 +220,11 @@ src/public/ImportHandlers/MCP/
 
 ### 插件生命周期
 
-1. **Load**: 启动 MCP 客户端，初始化连接
+1. **Load**: 启动 MCP 客户端，初始化连接，加载 sampling AI 源（如果配置）
 2. **GetPrompt**: 向 AI 提供 Tools/Prompts/Resources 描述
 3. **ReplyHandler**: 解析 XML 调用并执行
-4. **Unload**: 停止 MCP 客户端
+4. **Sampling Handler**: 处理服务器的 sampling 请求（如果配置）
+5. **Unload**: 停止 MCP 客户端
 
 ## MCP 客户端实现
 
@@ -197,7 +236,10 @@ src/public/ImportHandlers/MCP/
   - initialize → initialized
   - 获取 capabilities
   - 列举 tools/prompts/resources
-- ✅ 通知处理（notifications/message）
+- ✅ 双向通信
+  - 客户端请求（callTool, getPrompt, readResource）
+  - 服务器请求（roots/list, sampling/createMessage）
+- ✅ 通知处理（notifications/message, notifications/roots/list_changed）
 - ✅ 错误处理和超时机制
 
 ## AI 使用示例

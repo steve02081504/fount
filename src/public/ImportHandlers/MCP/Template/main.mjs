@@ -1,6 +1,7 @@
 import path from 'node:path'
 import { loadJsonFile } from '../../../../../src/scripts/json_loader.mjs'
 import { createMCPClient } from '../../../../../src/public/ImportHandlers/MCP/mcp_client.mjs'
+import { loadAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
 
 /** @typedef {import('../../../../../src/decl/pluginAPI.ts').pluginAPI_t} pluginAPI_t */
 
@@ -10,6 +11,47 @@ const dataPath = path.join(pluginDir, 'data.json')
 let mcpClient = null
 let serverInfo = null
 let data = null
+let samplingAIsource = null
+let username = null
+
+/**
+ * Sampling handler - 处理 MCP 服务器的 sampling 请求
+ * @param {object} params - Sampling 参数
+ * @returns {Promise<string>} 生成的文本
+ */
+async function handleSampling(params) {
+	if (!samplingAIsource) {
+		throw new Error('Sampling AI source not configured')
+	}
+
+	const { messages, maxTokens = 1000, temperature, systemPrompt } = params
+
+	// 构建聊天历史
+	const chatLog = messages.map(msg => ({
+		name: msg.role === 'user' ? 'User' : 'Assistant',
+		role: msg.role,
+		content: msg.content?.text || msg.content || '',
+		timestamp: Date.now()
+	}))
+
+	// 构建系统提示
+	let systemPromptText = systemPrompt || 'You are a helpful assistant.'
+	
+	// 调用 AI 源生成响应
+	try {
+		const response = await samplingAIsource.Chat({
+			system_prompt: systemPromptText,
+			chat_log: chatLog,
+			maxTokens: maxTokens,
+			temperature: temperature
+		})
+
+		return response.content || response.text || String(response)
+	} catch (err) {
+		console.error('[MCP Sampling] AI call failed:', err)
+		throw new Error(`Sampling failed: ${err.message}`)
+	}
+}
 
 /**
  * 加载 MCP 配置并启动客户端
@@ -17,10 +59,22 @@ let data = null
 async function initializeMCP() {
 	try {
 		data = await loadJsonFile(dataPath)
+		
+		// 如果配置了 sampling AI 源，加载它
+		if (data.samplingAIsource && username) {
+			try {
+				samplingAIsource = await loadAIsource(username, data.samplingAIsource)
+				console.log(`[MCP][${data.name}] Sampling enabled with AI source: ${data.samplingAIsource}`)
+			} catch (err) {
+				console.warn(`[MCP][${data.name}] Failed to load sampling AI source:`, err)
+			}
+		}
+		
 		// 合并配置和 roots
 		const clientConfig = {
 			...data.config,
-			roots: data.roots || []
+			roots: data.roots || [],
+			samplingHandler: samplingAIsource ? handleSampling : null
 		}
 		mcpClient = createMCPClient(clientConfig)
 		await mcpClient.start()
@@ -144,6 +198,49 @@ ${resourceDescriptions}
 }
 
 /**
+ * 根据 schema 转换参数类型
+ * @param {string} value - 字符串值
+ * @param {object} schema - 参数的 schema 定义
+ * @returns {any} 转换后的值
+ */
+function convertParamType(value, schema) {
+	if (!schema || !schema.type) return value
+	
+	const trimmedValue = value.trim()
+	
+	switch (schema.type) {
+		case 'number':
+		case 'integer':
+			const num = Number(trimmedValue)
+			return isNaN(num) ? trimmedValue : num
+			
+		case 'boolean':
+			if (trimmedValue === 'true') return true
+			if (trimmedValue === 'false') return false
+			return trimmedValue
+			
+		case 'array':
+			try {
+				const parsed = JSON.parse(trimmedValue)
+				return Array.isArray(parsed) ? parsed : trimmedValue
+			} catch {
+				return trimmedValue
+			}
+			
+		case 'object':
+			try {
+				const parsed = JSON.parse(trimmedValue)
+				return typeof parsed === 'object' ? parsed : trimmedValue
+			} catch {
+				return trimmedValue
+			}
+			
+		default:
+			return trimmedValue
+	}
+}
+
+/**
  * 解析 XML 工具调用
  * @param {string} content - 消息内容
  * @returns {Array} 解析出的调用
@@ -156,12 +253,26 @@ function parseXMLCalls(content) {
 	let match
 	while ((match = toolRegex.exec(content)) !== null) {
 		const [, name, body] = match
-		const args = {}
+		const rawArgs = {}
 		const paramRegex = /<(\w+)>([\s\S]*?)<\/\1>/g
 		let paramMatch
 		while ((paramMatch = paramRegex.exec(body)) !== null) {
-			args[paramMatch[1]] = paramMatch[2].trim()
+			rawArgs[paramMatch[1]] = paramMatch[2].trim()
 		}
+		
+		// 根据工具的 schema 转换参数类型
+		const args = {}
+		const tool = serverInfo?.tools?.find(t => t.name === name)
+		if (tool?.inputSchema?.properties) {
+			for (const [key, value] of Object.entries(rawArgs)) {
+				const schema = tool.inputSchema.properties[key]
+				args[key] = convertParamType(value, schema)
+			}
+		} else {
+			// 没有 schema，保持原样
+			Object.assign(args, rawArgs)
+		}
+		
 		calls.push({ type: 'tool', name, args, fullMatch: match[0] })
 	}
 	
@@ -169,12 +280,26 @@ function parseXMLCalls(content) {
 	const promptRegex = /<mcp-prompt\s+name="([^"]+)">([\s\S]*?)<\/mcp-prompt>/g
 	while ((match = promptRegex.exec(content)) !== null) {
 		const [, name, body] = match
-		const args = {}
+		const rawArgs = {}
 		const paramRegex = /<(\w+)>([\s\S]*?)<\/\1>/g
 		let paramMatch
 		while ((paramMatch = paramRegex.exec(body)) !== null) {
-			args[paramMatch[1]] = paramMatch[2].trim()
+			rawArgs[paramMatch[1]] = paramMatch[2].trim()
 		}
+		
+		// 根据 prompt 的 schema 转换参数类型
+		const args = {}
+		const prompt = serverInfo?.prompts?.find(p => p.name === name)
+		if (prompt?.arguments) {
+			for (const [key, value] of Object.entries(rawArgs)) {
+				const argDef = prompt.arguments.find(a => a.name === key)
+				// Prompt arguments 可能没有详细的 type schema，暂时保持字符串
+				args[key] = value
+			}
+		} else {
+			Object.assign(args, rawArgs)
+		}
+		
 		calls.push({ type: 'prompt', name, args, fullMatch: match[0] })
 	}
 	
@@ -224,7 +349,8 @@ export default {
 		}
 	},
 
-	Load: async () => {
+	Load: async (stat) => {
+		username = stat?.username
 		await initializeMCP()
 	},
 

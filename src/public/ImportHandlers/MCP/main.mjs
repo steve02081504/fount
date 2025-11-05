@@ -73,13 +73,26 @@ async function ImportByText(username, text) {
 			// 复制模板文件夹
 			await copyTemplate(templateDir, pluginPath)
 			
+			// 提取特殊配置项
+			const { roots, samplingAIsource, ...mcpConfig } = serverConfig
+			
 			// 创建插件数据
 			const pluginData = {
 				name: pluginName,
 				description: `MCP plugin for ${serverName}`,
 				description_markdown: `MCP (Model Context Protocol) plugin for **${serverName}**`,
 				tags: [serverName, 'mcp'],
-				config: serverConfig
+				config: mcpConfig
+			}
+			
+			// 如果有 roots 配置，添加到 pluginData
+			if (roots) {
+				pluginData.roots = roots
+			}
+			
+			// 如果有 samplingAIsource 配置，添加到 pluginData
+			if (samplingAIsource) {
+				pluginData.samplingAIsource = samplingAIsource
 			}
 			
 			// 保存 data.json

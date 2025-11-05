@@ -10,6 +10,7 @@
  * @param {string[]} config.args - 命令参数
  * @param {Record<string, string>} [config.env] - 环境变量
  * @param {Array<string|object>} [config.roots] - 根目录列表
+ * @param {Function} [config.samplingHandler] - 采样处理器，接受 params 并返回生成的消息
  * @returns {object} MCP 客户端实例
  */
 export function createMCPClient(config) {
@@ -26,6 +27,7 @@ export function createMCPClient(config) {
 	let resources = []
 	let resourceTemplates = []
 	let roots = config.roots || []
+	let samplingHandler = config.samplingHandler || null
 
 	/**
 	 * 启动 MCP 服务器进程
@@ -147,10 +149,10 @@ export function createMCPClient(config) {
 	/**
 	 * 处理服务器发来的请求
 	 * @param {string} method - 请求方法名
-	 * @param {object} _params - 请求参数
+	 * @param {object} params - 请求参数
 	 * @param {number} id - 请求 ID
 	 */
-	async function handleServerRequest(method, _params, id) {
+	async function handleServerRequest(method, params, id) {
 		try {
 			let result = null
 
@@ -175,8 +177,23 @@ export function createMCPClient(config) {
 					break
 
 				case 'sampling/createMessage':
-					// 采样请求 - 目前不支持
-					throw new Error('Sampling not supported')
+					// 采样请求 - 调用配置的 sampling handler
+					if (!samplingHandler) {
+						throw new Error('Sampling not supported - no handler configured')
+					}
+					
+					// 调用 sampling handler 并获取结果
+					const samplingResult = await samplingHandler(params)
+					
+					// 格式化为 MCP 协议要求的格式
+					result = {
+						role: 'assistant',
+						content: {
+							type: 'text',
+							text: samplingResult
+						}
+					}
+					break
 
 				default:
 					throw new Error(`Unknown method: ${method}`)
@@ -186,7 +203,7 @@ export function createMCPClient(config) {
 			await sendResponse(id, result)
 		} catch (err) {
 			// 发送错误响应
-			await sendErrorResponse(id, -32601, err.message || 'Method not found')
+			await sendErrorResponse(id, -32603, err.message || 'Internal error')
 		}
 	}
 
@@ -507,6 +524,22 @@ export function createMCPClient(config) {
 		return roots
 	}
 
+	/**
+	 * 设置 sampling handler
+	 * @param {Function} handler - 新的 sampling handler
+	 */
+	function setSamplingHandler(handler) {
+		samplingHandler = handler
+	}
+
+	/**
+	 * 获取当前的 sampling handler
+	 * @returns {Function|null} 当前的 sampling handler
+	 */
+	function getSamplingHandler() {
+		return samplingHandler
+	}
+
 	return {
 		start,
 		stop,
@@ -521,5 +554,7 @@ export function createMCPClient(config) {
 		addRoot,
 		removeRoot,
 		getRoots,
+		setSamplingHandler,
+		getSamplingHandler,
 	}
 }

@@ -29,7 +29,8 @@
         "-y",
         "@modelcontextprotocol/server-everything",
         "stdio"
-      ]
+      ],
+      "samplingAIsource": "claude"
     },
     "omniparser_autogui": {
       "command": "uv",
