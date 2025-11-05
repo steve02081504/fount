@@ -14,7 +14,7 @@ const retryBtn = document.getElementById('retry_btn')
 
 /**
  * 使用 URL 协议处理重定向。
- * @param {string} hostUrl - Fount 主机 URL。
+ * @param {string} hostUrl - fount 主机 URL。
  * @returns {void}
  */
 function useUrlProtocol(hostUrl) {
@@ -29,7 +29,7 @@ function useUrlProtocol(hostUrl) {
 }
 
 /**
- * 尝试连接到 Fount 主机。
+ * 尝试连接到 fount 主机。
  * @returns {Promise<void>}
  */
 async function attemptConnection() {

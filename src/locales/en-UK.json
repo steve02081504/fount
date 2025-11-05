@@ -165,7 +165,7 @@
 				"autoInitDisabled": "fount has been restarted multiple times in the last short period of time, but automatic reinitialization has been disabled due to the presence of the .noautoinit file. Exiting.",
 				"restartingTooFast": "fount has been restarted multiple times in a short period of time. Forced reinitialization...",
 				"failedToStart": "Even after automatic repair attempts, the fount fails to start for a short period of time. Please check the logs for errors.",
-				"initFailed": "Fount initialization failed. Exiting."
+				"initFailed": "fount initialization failed. Exiting."
 			},
 			"remove": {
 				"removingFount": "Removing fount...",
@@ -462,61 +462,56 @@
 				"alt": "Function Menu"
 			}
 		},
-		"chars": {
-			"tab": "Characters",
-			"title": "Character Selection",
-			"subtitle": "Select a character—then start chatting!",
-			"none": "Nothing to show",
+		"part_types": {
+			"chars": "Role",
+			"worlds": "World",
+			"personas": "Personality",
+			"plugins": "plug-in",
+			"AIsources": "AI source",
+			"AIsourceGenerators": "AI source generator",
+			"ImportHandlers": "Import Handler",
+			"shells": "Shell"
+		},
+		"default": {
+			"title": "Component selection",
+			"subtitle": "Select a component to continue.",
 			"card": {
-				"noTags": "No tags",
+				"noTags": "No label",
 				"version": "Version",
 				"author": "Author",
-				"home_page": "Homepage",
-				"issue_page": "Report Issue",
+				"home_page": "Home page",
+				"issue_page": "Report an Issue",
 				"refreshButton": {
 					"alt": "Refresh",
 					"title": "Refresh"
 				},
+				"defaultCheckbox": {
+					"title": "Set as default"
+				}
+			}
+		},
+		"chars": {
+			"title": "Character Selection",
+			"subtitle": "Select a character—then start chatting!",
+			"card": {
 				"defaultCheckbox": {
 					"title": "Set as default character"
 				}
 			}
 		},
 		"worlds": {
-			"tab": "Worlds",
 			"title": "World Selection",
 			"subtitle": "Choose a world, and immerse yourself!",
-			"none": "Nothing to show",
 			"card": {
-				"noTags": "No tags",
-				"version": "Version",
-				"author": "Author",
-				"home_page": "Homepage",
-				"issue_page": "Report Issue",
-				"refreshButton": {
-					"alt": "Refresh",
-					"title": "Refresh"
-				},
 				"defaultCheckbox": {
 					"title": "Set as default world"
 				}
 			}
 		},
 		"personas": {
-			"tab": "Personas",
 			"title": "Persona Selection",
 			"subtitle": "Select a persona, experience life.",
-			"none": "Nothing to show",
 			"card": {
-				"noTags": "No tags",
-				"version": "Version",
-				"author": "Author",
-				"home_page": "Homepage",
-				"issue_page": "Report Issue",
-				"refreshButton": {
-					"alt": "Refresh",
-					"title": "Refresh"
-				},
 				"defaultCheckbox": {
 					"title": "Set as default persona"
 				}
@@ -587,6 +582,20 @@
 					},
 					"addCharIcon": {
 						"alt": "Add Character Icon"
+					}
+				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "Plugin list icon"
+				},
+				"title": "Plugin list",
+				"buttons": {
+					"addPlugin": {
+						"title": "Add plugin"
+					},
+					"addPluginIcon": {
+						"alt": "Add plugin icon"
 					}
 				}
 			}
@@ -729,6 +738,16 @@
 				},
 				"forceReplyIcon": {
 					"alt": "Force Reply Icon"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "Remove plugin"
+				},
+				"removePluginIcon": {
+					"alt": "Remove plugin icon"
 				}
 			}
 		},

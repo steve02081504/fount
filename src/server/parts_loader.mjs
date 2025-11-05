@@ -13,7 +13,7 @@ import { doProfile } from '../scripts/profiler.mjs'
 import { getUserByUsername, getUserDictionary } from './auth.mjs'
 import { __dirname } from './base.mjs'
 import { events } from './events.mjs'
-import { loadPart } from './managers/index.mjs'
+import { getPartList, loadPart } from './managers/index.mjs'
 import { save_config, setDefaultStuff } from './server.mjs'
 import { loadData, saveData } from './setting_loader.mjs'
 import { sendEventToUser } from './web_server/event_dispatcher.mjs'
@@ -28,22 +28,79 @@ import { getPartRouter, deletePartRouter } from './web_server/parts_router.mjs'
  */
 export function setDefaultPart(user, parttype, partname) {
 	if (Object(user) instanceof String) user = getUserByUsername(user)
-	if (partname == user.defaultParts?.[parttype]) return
-	const defaultParts = user.defaultParts ??= {}
-	if (!partname) delete defaultParts[parttype]
-	else defaultParts[parttype] = partname
+	const defaultParts = (user.defaultParts ??= {})[parttype] ??= []
+	if (defaultParts.includes(partname)) return
+	defaultParts.push(partname)
 	save_config()
-	sendEventToUser(user.username, 'default-part-updated', { parttype, partname })
+	sendEventToUser(user.username, 'default-part-setted', { parttype, partname })
+}
+
+/**
+ * 从用户的默认部件列表中移除一个部件。
+ * @param {object | string} user - 用户对象或用户名。
+ * @param {string} parttype - 部件类型。
+ * @param {string} partname - 要移除的部件名称。
+ * @returns {void}
+ */
+export function unsetDefaultPart(user, parttype, partname) {
+	if (Object(user) instanceof String) user = getUserByUsername(user)
+	const defaultParts = (user.defaultParts ?? {})[parttype] ?? []
+	const index = defaultParts.indexOf(partname)
+	if (index == -1) return
+	defaultParts.splice(index, 1)
+	if (!defaultParts.length) delete user.defaultParts?.[parttype]
+	save_config()
+	sendEventToUser(user.username, 'default-part-unsetted', { parttype, partname: null })
 }
 /**
  * 获取用户的默认部件。
  * @param {object | string} user - 用户对象或用户名。
- * @returns {object} 用户的默认部件。
+ * @returns {Record<string, string[]>} 用户的默认部件。
  */
 export function getDefaultParts(user) {
 	if (Object(user) instanceof String) user = getUserByUsername(user)
 	return user?.defaultParts || {}
 }
+
+/**
+ * 获取用户指定类型的一个随机默认部件名称。
+ * @param {object | string} user - 用户对象或用户名。
+ * @param {string} parttype - 部件类型。
+ * @returns {string | undefined} 一个随机的部件名称，如果列表为空则为 undefined。
+ */
+export function getAnyDefaultPart(user, parttype) {
+	if (Object(user) instanceof String) user = getUserByUsername(user)
+	const defaultParts = user?.defaultParts?.[parttype] || []
+	return defaultParts[Math.floor(Math.random() * defaultParts.length)]
+}
+
+/**
+ * 获取用户指定类型的所有默认部件名称。
+ * @param {object | string} user - 用户对象或用户名。
+ * @param {string} parttype - 部件类型。
+ * @returns {string[]} 指定类型的所有默认部件名称。
+ */
+export function getAllDefaultParts(user, parttype) {
+	if (Object(user) instanceof String) user = getUserByUsername(user)
+	return user?.defaultParts?.[parttype] || []
+}
+
+/**
+ * 获取用户指定类型的一个随机首选默认部件名称。
+ * 如果默认列表为空，则从所有可用部件中随机选择一个。
+ * @param {object | string} user - 用户对象或用户名。
+ * @param {string} parttype - 部件类型。
+ * @returns {string | undefined} 一个随机的部件名称，如果没有任何可用部件则为 undefined。
+ */
+export function getAnyPreferredDefaultPart(user, parttype) {
+	if (Object(user) instanceof String) user = getUserByUsername(user)
+	const defaultPartNames = getAllDefaultParts(user, parttype)
+	if (defaultPartNames.length)
+		return defaultPartNames[Math.floor(Math.random() * defaultPartNames.length)]
+	const allPartNames = getPartList(user.username, parttype)
+	return allPartNames[Math.floor(Math.random() * allPartNames.length)]
+}
+
 /**
  * 通知客户端部件已安装。
  * @param {string} username - 用户名。
@@ -449,8 +506,8 @@ export async function uninstallPartBase(username, parttype, partname, unLoadargs
 } = {}) {
 	/** @type {T | undefined} */
 	let part = parts_set[username][parttype][partname]
-	if (getDefaultParts(username)[parttype] == partname)
-		setDefaultPart(username, parttype, null)
+	if (getAllDefaultParts(username, parttype).includes(partname))
+		unsetDefaultPart(username, parttype, partname)
 	try {
 		await unloadPartBase(username, parttype, partname, unLoadargs, { unLoader })
 	} catch (error) { console.error(error) }
@@ -581,7 +638,7 @@ export async function getPartDetails(username, parttype, partname, nocache = fal
  */
 export async function getAllCachedPartDetails(username, parttype) {
 	// 1. Get the full list of part names
-	const allPartNames = getPartListBase(username, parttype)
+	const allPartNames = getPartList(username, parttype)
 	const allPartNamesSet = new Set(allPartNames)
 
 	// 2. Get cached details
