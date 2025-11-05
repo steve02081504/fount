@@ -5,6 +5,7 @@
 ## 特性
 
 - ✅ **完整的 MCP 协议支持**：基于 mcp.el 实现，支持 MCP 2024-11-05 协议
+- ✅ **双向通信**：支持客户端请求和服务器请求（如 `roots/list`）
 - ✅ **多种资源类型**：支持 Tools、Prompts 和 Resources
 - ✅ **XML 调用语法**：使用简洁的 XML 格式调用 MCP 功能
 - ✅ **模板化架构**：使用 Template 文件夹，配置与代码分离
@@ -28,7 +29,19 @@
       ],
       "env": {
         "NODE_ENV": "production"
-      }
+      },
+      "roots": [
+        "C:\\Users\\YourName\\Documents",
+        "C:\\Users\\YourName\\Projects"
+      ]
+    },
+    "everything": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-everything",
+        "stdio"
+      ]
     },
     "omniparser_autogui": {
       "command": "uv",
@@ -46,6 +59,14 @@
   }
 }
 ```
+
+**配置说明：**
+- `command`: 启动命令（如 `npx`、`uv`、`python` 等）
+- `args`: 命令参数列表
+- `env`: 环境变量（可选）
+- `roots`: 根目录列表（可选，用于限制文件访问权限）
+  - 可以是字符串路径数组
+  - 也可以是对象数组：`[{ "uri": "file:///path", "name": "Name" }]`
 
 ### 2. 导入配置
 
@@ -91,6 +112,45 @@
 <mcp-resource uri="file:///path/to/document.txt"/>
 ```
 
+## Roots 管理（文件访问控制）
+
+MCP 的 **Roots** 机制用于限制服务器可以访问的文件系统路径，类似于沙箱权限。
+
+### 配置 Roots
+
+在 `data.json` 中配置（导入后自动生成）：
+
+```json
+{
+  "name": "mcp_filesystem",
+  "config": { ... },
+  "roots": [
+    "C:\\Users\\YourName\\Documents",
+    "C:\\Users\\YourName\\Projects"
+  ]
+}
+```
+
+### Roots API（高级）
+
+插件提供了 roots 管理 API（仅限程序调用）：
+
+```javascript
+// 获取当前 roots
+const roots = mcpClient.getRoots()
+
+// 设置 roots（替换全部）
+await mcpClient.setRoots(["/new/path"])
+
+// 添加 root
+await mcpClient.addRoot("/additional/path")
+
+// 删除 root
+await mcpClient.removeRoot("/path/to/remove")
+```
+
+修改 roots 后会自动发送 `notifications/roots/list_changed` 通知给服务器。
+
 ## 工作原理
 
 ### 架构设计
@@ -98,12 +158,20 @@
 ```text
 src/public/ImportHandlers/MCP/
 ├── main.mjs              # 导入处理器
-├── mcp_client.mjs        # MCP 客户端（参考 mcp.el）
+├── mcp_client.mjs        # MCP 客户端（参考 mcp.el 实现）
 ├── Template/             # 插件模板文件夹
 │   ├── main.mjs          # 插件主文件（加载 data.json）
-│   └── data.json         # 插件配置数据（会被替换）
-└── README.md
+│   └── data.json         # 插件数据（包含 MCP 配置和 roots）
+└── example_config.json   # 配置示例
 ```
+
+### 参考实现
+
+本实现参考了优秀的 [mcp.el](https://github.com/lizqwerscott/mcp.el) 项目设计：
+- ✅ 完整的双向 JSON-RPC 2.0 通信
+- ✅ Roots 动态管理（类似 mcp.el 的 roots API）
+- ✅ 完善的错误处理和状态管理
+- ✅ 缓存机制（Tools/Prompts/Resources）
 
 ### 导入流程
 

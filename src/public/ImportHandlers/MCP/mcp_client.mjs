@@ -9,6 +9,7 @@
  * @param {string} config.command - 启动命令
  * @param {string[]} config.args - 命令参数
  * @param {Record<string, string>} [config.env] - 环境变量
+ * @param {Array<string|object>} [config.roots] - 根目录列表
  * @returns {object} MCP 客户端实例
  */
 export function createMCPClient(config) {
@@ -24,6 +25,7 @@ export function createMCPClient(config) {
 	let prompts = []
 	let resources = []
 	let resourceTemplates = []
+	let roots = config.roots || []
 
 	/**
 	 * 启动 MCP 服务器进程
@@ -100,7 +102,7 @@ export function createMCPClient(config) {
 	 */
 	function handleMessage(message) {
 		// 处理响应
-		if (message.id && pendingRequests.has(message.id)) {
+		if (message.id !== undefined && pendingRequests.has(message.id)) {
 			const { resolve, reject } = pendingRequests.get(message.id)
 			pendingRequests.delete(message.id)
 
@@ -109,10 +111,17 @@ export function createMCPClient(config) {
 			} else {
 				resolve(message.result)
 			}
+			return
+		}
+		
+		// 处理服务器发来的请求
+		if (message.method && message.id !== undefined) {
+			handleServerRequest(message.method, message.params, message.id)
+			return
 		}
 		
 		// 处理通知
-		if (message.method && !message.id) {
+		if (message.method && message.id === undefined) {
 			handleNotification(message.method, message.params)
 		}
 	}
@@ -133,6 +142,98 @@ export function createMCPClient(config) {
 			default:
 				console.log(`MCP notification: ${method}`, params)
 		}
+	}
+
+	/**
+	 * 处理服务器发来的请求
+	 * @param {string} method - 请求方法名
+	 * @param {object} _params - 请求参数
+	 * @param {number} id - 请求 ID
+	 */
+	async function handleServerRequest(method, _params, id) {
+		try {
+			let result = null
+
+			switch (method) {
+				case 'roots/list':
+					// 返回客户端的根目录列表
+					result = { 
+						roots: roots.map(root => {
+							if (typeof root === 'string') {
+								// 字符串路径转换为标准格式
+								const uri = root.startsWith('file://') 
+									? root 
+									: `file://${root.replace(/\\/g, '/')}`
+								return {
+									uri,
+									name: root.split(/[/\\]/).pop() || root
+								}
+							}
+							return root
+						})
+					}
+					break
+
+				case 'sampling/createMessage':
+					// 采样请求 - 目前不支持
+					throw new Error('Sampling not supported')
+
+				default:
+					throw new Error(`Unknown method: ${method}`)
+			}
+
+			// 发送响应
+			await sendResponse(id, result)
+		} catch (err) {
+			// 发送错误响应
+			await sendErrorResponse(id, -32601, err.message || 'Method not found')
+		}
+	}
+
+	/**
+	 * 发送成功响应
+	 * @param {number} id - 请求 ID
+	 * @param {any} result - 响应结果
+	 */
+	async function sendResponse(id, result) {
+		if (!process) return
+
+		const response = {
+			jsonrpc: '2.0',
+			id,
+			result,
+		}
+
+		const responseText = JSON.stringify(response) + '\n'
+		const encoder = new TextEncoder()
+		const writer = process.stdin.getWriter()
+		await writer.write(encoder.encode(responseText))
+		writer.releaseLock()
+	}
+
+	/**
+	 * 发送错误响应
+	 * @param {number} id - 请求 ID
+	 * @param {number} code - 错误代码
+	 * @param {string} message - 错误消息
+	 */
+	async function sendErrorResponse(id, code, message) {
+		if (!process) return
+
+		const response = {
+			jsonrpc: '2.0',
+			id,
+			error: {
+				code,
+				message,
+			},
+		}
+
+		const responseText = JSON.stringify(response) + '\n'
+		const encoder = new TextEncoder()
+		const writer = process.stdin.getWriter()
+		await writer.write(encoder.encode(responseText))
+		writer.releaseLock()
 	}
 
 	/**
@@ -218,8 +319,8 @@ export function createMCPClient(config) {
 			// 发送 initialized 通知
 			await sendNotification('notifications/initialized')
 
-			// 等待服务器完全初始化
-			await new Promise(resolve => setTimeout(resolve, 2000))
+			// 等待服务器完全初始化（縮短等待時間）
+			await new Promise(resolve => setTimeout(resolve, 500))
 
 			// 获取各种资源
 			if (capabilities?.tools) {
@@ -357,7 +458,53 @@ export function createMCPClient(config) {
 			prompts,
 			resources,
 			resourceTemplates,
+			roots,
 		}
+	}
+
+	/**
+	 * 设置根目录列表
+	 * @param {Array<string|object>} newRoots - 新的根目录列表
+	 */
+	async function setRoots(newRoots) {
+		roots = newRoots || []
+		// 通知服务器根目录已更改
+		if (process && status === 'connected') {
+			await sendNotification('notifications/roots/list_changed')
+		}
+	}
+
+	/**
+	 * 添加根目录
+	 * @param {string|object} root - 要添加的根目录
+	 */
+	async function addRoot(root) {
+		if (!roots.find(r => (typeof r === 'string' ? r : r.uri) === (typeof root === 'string' ? root : root.uri))) {
+			roots.push(root)
+			if (process && status === 'connected') {
+				await sendNotification('notifications/roots/list_changed')
+			}
+		}
+	}
+
+	/**
+	 * 删除根目录
+	 * @param {string|object} root - 要删除的根目录
+	 */
+	async function removeRoot(root) {
+		const rootId = typeof root === 'string' ? root : root.uri
+		roots = roots.filter(r => (typeof r === 'string' ? r : r.uri) !== rootId)
+		if (process && status === 'connected') {
+			await sendNotification('notifications/roots/list_changed')
+		}
+	}
+
+	/**
+	 * 获取当前根目录列表
+	 * @returns {Array} 根目录列表
+	 */
+	function getRoots() {
+		return roots
 	}
 
 	return {
@@ -370,5 +517,9 @@ export function createMCPClient(config) {
 		listResources,
 		readResource,
 		getServerInfo,
+		setRoots,
+		addRoot,
+		removeRoot,
+		getRoots,
 	}
 }

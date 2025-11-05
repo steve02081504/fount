@@ -1,8 +1,8 @@
 import path from 'node:path'
-import { loadJsonFile } from '../../../../../scripts/json_loader.mjs'
-import { createMCPClient } from '../../../../../public/ImportHandlers/MCP/mcp_client.mjs'
+import { loadJsonFile } from '../../../../../src/scripts/json_loader.mjs'
+import { createMCPClient } from '../../../../../src/public/ImportHandlers/MCP/mcp_client.mjs'
 
-/** @typedef {import('../../../../../decl/pluginAPI.ts').pluginAPI_t} pluginAPI_t */
+/** @typedef {import('../../../../../src/decl/pluginAPI.ts').pluginAPI_t} pluginAPI_t */
 
 const pluginDir = import.meta.dirname
 const dataPath = path.join(pluginDir, 'data.json')
@@ -17,7 +17,12 @@ let data = null
 async function initializeMCP() {
 	try {
 		data = await loadJsonFile(dataPath)
-		mcpClient = createMCPClient(data.config)
+		// 合并配置和 roots
+		const clientConfig = {
+			...data.config,
+			roots: data.roots || []
+		}
+		mcpClient = createMCPClient(clientConfig)
 		await mcpClient.start()
 		serverInfo = mcpClient.getServerInfo()
 	} catch (err) {
@@ -49,15 +54,22 @@ ${tool.description || 'No description'}
 ${params}`
 	}).join('\n\n')
 
-	return `## Available Tools
+	return `## Available MCP Tools (Execute Actions)
 
 ${toolDescriptions}
 
-**Usage:** To call a tool, use XML format:
+**Usage:** To call a tool, use this XML format:
 \`\`\`xml
 <mcp-tool name="tool_name">
   <param1>value1</param1>
   <param2>value2</param2>
+</mcp-tool>
+\`\`\`
+
+**Example:**
+\`\`\`xml
+<mcp-tool name="echo">
+  <message>Hello World</message>
 </mcp-tool>
 \`\`\``
 }
@@ -83,16 +95,23 @@ ${prompt.description || 'No description'}
 ${args}`
 	}).join('\n\n')
 
-	return `## Available Prompts
+	return `## Available MCP Prompts (Get Templates)
+
+⚠️ **Important:** Prompts are NOT tools! They are templates that return pre-defined content.
 
 ${promptDescriptions}
 
-**Usage:** To use a prompt, use XML format:
+**Usage:** To get a prompt template, use this XML format (different from tools):
 \`\`\`xml
 <mcp-prompt name="prompt_name">
   <arg1>value1</arg1>
   <arg2>value2</arg2>
 </mcp-prompt>
+\`\`\`
+
+**Example:**
+\`\`\`xml
+<mcp-prompt name="simple_prompt"/>
 \`\`\``
 }
 
@@ -109,13 +128,18 @@ ${resource.description || 'No description'}
 MIME Type: ${resource.mimeType || 'unknown'}`
 	}).join('\n\n')
 
-	return `## Available Resources
+	return `## Available MCP Resources (Read Data)
 
 ${resourceDescriptions}
 
-**Usage:** To read a resource, use XML format:
+**Usage:** To read a resource, use this XML format (different from tools and prompts):
 \`\`\`xml
 <mcp-resource uri="resource_uri"/>
+\`\`\`
+
+**Example:**
+\`\`\`xml
+<mcp-resource uri="test://static/resource/1"/>
 \`\`\``
 }
 
@@ -215,11 +239,17 @@ export default {
 		chat: {
 			/**
 			 * 为角色提供 MCP 工具的上下文
-			 * @param {any} arg - 聊天回复请求
-			 * @returns {Promise<import('../../../../../decl/prompt_struct.ts').single_part_prompt_t>}
+			 * @param {any} _arg - 聊天回复请求
+			 * @returns {import('../../../../../src/decl/prompt_struct.ts').single_part_prompt_t}
 			 */
-			GetPrompt: async (arg) => {
-				if (!serverInfo) return { content: '' }
+			GetPrompt: (_arg) => {
+				if (!serverInfo) {
+					return {
+						text: [],
+						additional_chat_log: [],
+						extension: {}
+					}
+				}
 
 				const sections = [
 					`# MCP Server: ${data.name}`,
@@ -236,13 +266,18 @@ export default {
 				if (resourcesDesc) sections.push(resourcesDesc)
 
 				return {
-					content: sections.filter(s => s).join('\n\n')
+					text: [{
+						content: sections.filter(s => s).join('\n\n'),
+						important: 100  // 高优先级，确保 AI 看到工具
+					}],
+					additional_chat_log: [],
+					extension: {}
 				}
 			},
 
 			/**
 			 * 处理角色的回复，检查是否有 MCP 调用
-			 * @param {import('../../../../../decl/prompt_struct.ts').chatLogEntry_t} reply - 聊天回复
+			 * @param {import('../../../../../src/decl/prompt_struct.ts').chatLogEntry_t} reply - 聊天回复
 			 * @param {any} args - 参数
 			 * @returns {Promise<boolean>} true 表示需要重新生成回复
 			 */

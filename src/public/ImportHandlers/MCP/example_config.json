@@ -9,7 +9,11 @@
       ],
       "env": {
         "NODE_ENV": "production"
-      }
+      },
+      "roots": [
+        "C:\\Users\\YourName\\Documents",
+        "C:\\Users\\YourName\\Projects"
+      ]
     },
     "sqlite": {
       "command": "npx",
@@ -17,6 +21,14 @@
         "-y",
         "@modelcontextprotocol/server-sqlite",
         "C:\\path\\to\\database.db"
+      ]
+    },
+    "everything": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-everything",
+        "stdio"
       ]
     },
     "omniparser_autogui": {
