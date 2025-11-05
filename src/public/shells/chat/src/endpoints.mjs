@@ -9,6 +9,7 @@ import {
 	deleteChat,
 	exportChat,
 	getCharListOfChat,
+	getPluginListOfChat,
 	GetChatLog,
 	getChatList,
 	GetUserPersonaName,
@@ -16,6 +17,8 @@ import {
 	newChat,
 	modifyTimeLine,
 	removechar,
+	addplugin,
+	removeplugin,
 	setPersona,
 	setWorld,
 	triggerCharReply,
@@ -47,6 +50,11 @@ export function setEndpoints(router) {
 	router.get('/api/shells/chat/:chatid/chars', authenticate, async (req, res) => {
 		const { chatid } = req.params
 		res.status(200).json(await getCharListOfChat(chatid))
+	})
+
+	router.get('/api/shells/chat/:chatid/plugins', authenticate, async (req, res) => {
+		const { chatid } = req.params
+		res.status(200).json(await getPluginListOfChat(chatid))
 	})
 
 	router.get('/api/shells/chat/:chatid/log', authenticate, async (req, res) => {
@@ -136,6 +144,18 @@ export function setEndpoints(router) {
 	router.delete('/api/shells/chat/:chatid/char/:charname', authenticate, async (req, res) => {
 		const { chatid, charname } = req.params
 		await removechar(chatid, charname)
+		res.status(200).json({ success: true })
+	})
+
+	router.post('/api/shells/chat/:chatid/plugin', authenticate, async (req, res) => {
+		const { params: { chatid }, body: { pluginname } } = req
+		await addplugin(chatid, pluginname)
+		res.status(200).json({ success: true })
+	})
+
+	router.delete('/api/shells/chat/:chatid/plugin/:pluginname', authenticate, async (req, res) => {
+		const { chatid, pluginname } = req.params
+		await removeplugin(chatid, pluginname)
 		res.status(200).json({ success: true })
 	})
 
