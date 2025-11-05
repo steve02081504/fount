@@ -298,7 +298,7 @@ export default {
 			home_page: 'https://risuai.net/',
 			tags: ['risu', 'Charakterkarte', 'ccv3', 'Import']
 		},
-		'emoji': {
+		emoji: {
 			name: '🐿️ RisuAI Importer',
 			avatar: 'https://risuai.net/favicon.png',
 			description: 'Imports Risu Character Cards (V3) in .png, .charx, or .json format, and from realm.risuai.net URLs.',

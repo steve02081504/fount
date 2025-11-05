@@ -1,6 +1,7 @@
 /** @typedef {import('../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
 /** @typedef {import('../../../../decl/worldAPI.ts').WorldAPI_t} WorldAPI_t */
 /** @typedef {import('../../../../decl/userAPI.ts').UserAPI_t} UserAPI_t */
+/** @typedef {import('../../../../decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t */
 /** @typedef {import('../../../../decl/basedefs.ts').locale_t} locale_t */
 
 import { Buffer } from 'node:buffer'
@@ -14,13 +15,14 @@ import { events } from '../../../../server/events.mjs'
 import { LoadChar } from '../../../../server/managers/char_manager.mjs'
 import { loadPersona } from '../../../../server/managers/persona_manager.mjs'
 import { loadWorld } from '../../../../server/managers/world_manager.mjs'
-import { getDefaultParts, getPartDetails } from '../../../../server/parts_loader.mjs'
+import { getAllDefaultParts, getAnyDefaultPart, getPartDetails } from '../../../../server/parts_loader.mjs'
 import { skip_report } from '../../../../server/server.mjs'
 import { loadShellData, saveShellData } from '../../../../server/setting_loader.mjs'
 import { sendNotification } from '../../../../server/web_server/event_dispatcher.mjs'
 import { unlockAchievement } from '../../achievements/src/api.mjs'
 
 import { addfile, getfile } from './files.mjs'
+import { loadPlugin } from "../../../../server/managers/plugin_manager.mjs";
 
 /**
  * 聊天元数据映射表的结构。这是一个在内存中缓存聊天信息的Map。
@@ -122,6 +124,11 @@ class timeSlice_t {
 	 */
 	chars = {}
 	/**
+	 * 当前聊天中全局激活的插件对象映射表。键为插件ID，值为插件API对象。
+	 * @type {Record<string, PluginAPI_t>}
+	 */
+	plugins = {}
+	/**
 	 * 当前聊天所在的世界API对象。
 	 * @type {WorldAPI_t}
 	 */
@@ -191,6 +198,7 @@ class timeSlice_t {
 	toJSON() {
 		return {
 			chars: Object.keys(this.chars),
+			plugins: Object.keys(this.plugins),
 			world: this.world_id,
 			player: this.player_id,
 			chars_memories: this.chars_memories,
@@ -206,6 +214,7 @@ class timeSlice_t {
 	async toData() {
 		return {
 			chars: Object.keys(this.chars),
+			plugins: Object.keys(this.plugins),
 			world: this.world_id,
 			player: this.player_id,
 			chars_memories: this.chars_memories,
@@ -221,13 +230,14 @@ class timeSlice_t {
 	 * @returns {Promise<timeSlice_t>} 一个填充了完整数据的 timeSlice_t 实例。
 	 */
 	static async fromJSON(json, username) {
-		const chars = {}
-		for (const charname of json.chars)
-			chars[charname] = await LoadChar(username, charname).catch(() => { })
-
 		return Object.assign(new timeSlice_t(), {
 			...json,
-			chars,
+			chars: Object.fromEntries(await Promise.all(
+				json.chars.map(async charname => [charname, await LoadChar(username, charname).catch(() => { })])
+			)),
+			plugins: Object.fromEntries(await Promise.all(
+				json.plugins.map(async plugin => [plugin, await loadPlugin(username, plugin).catch(() => { })])
+			)),
 			world_id: json.world,
 			world: json.world ? await loadWorld(username, json.world).catch(() => { }) : undefined,
 			player_id: json.player,
@@ -353,13 +363,20 @@ class chatMetadata_t {
 	static async StartNewAs(username) {
 		const metadata = new chatMetadata_t(username)
 
-		metadata.LastTimeSlice.player_id = getDefaultParts(username).persona
+		metadata.LastTimeSlice.player_id = getAnyDefaultPart(username, 'personas')
 		if (metadata.LastTimeSlice.player_id)
 			metadata.LastTimeSlice.player = await loadPersona(username, metadata.LastTimeSlice.player_id)
 
-		metadata.LastTimeSlice.world_id = getDefaultParts(username).world
+		metadata.LastTimeSlice.world_id = getAnyDefaultPart(username, 'worlds')
 		if (metadata.LastTimeSlice.world_id)
 			metadata.LastTimeSlice.world = await loadWorld(username, metadata.LastTimeSlice.world_id)
+
+		metadata.LastTimeSlice.plugins = Object.fromEntries(await Promise.all(
+			getAllDefaultParts(username, 'plugins').map(async plugin => [
+				plugin,
+				await loadPlugin(username, plugin)
+			])
+		))
 
 		return metadata
 	}
@@ -819,13 +836,10 @@ async function handleAutoReply(chatid, freq_data, initial_char) {
 		if (nextreply) try {
 			await triggerCharReply(chatid, nextreply)
 			return
-		}
-		catch (error) {
+		} catch (error) {
 			console.error(error)
 			char = nextreply
-		}
-		else
-			return
+		} else return
 	}
 }
 

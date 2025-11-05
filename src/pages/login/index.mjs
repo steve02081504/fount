@@ -1,9 +1,9 @@
 import { retrieveAndDecryptCredentials, redirectToLoginInfo } from '../scripts/credentialManager.mjs'
 import { ping, generateVerificationCode, login, register } from '../scripts/endpoints.mjs'
 import { initTranslations, console, savePreferredLangs, onLanguageChange } from '../scripts/i18n.mjs'
+import { getAnyDefaultPart } from '../scripts/parts.mjs'
 import { initPasswordStrengthMeter } from '../scripts/passwordStrength.mjs'
 import { createPOWCaptcha } from '../scripts/POWcaptcha.mjs'
-import { getDefaultParts } from '../scripts/parts.mjs'
 import { applyTheme, setTheme } from '../scripts/theme.mjs'
 import { showToast } from '../scripts/toast.mjs'
 
@@ -195,8 +195,7 @@ async function handleFormSubmit(event) {
 				const urlParams = new URLSearchParams(window.location.search)
 				const redirect = urlParams.get('redirect')
 				localStorage.setItem('hasLoggedIn', 'true')
-				const defaultParts = await getDefaultParts()
-				const defaultShell = defaultParts.shell || 'home' // Fallback to 'home' if no default shell is set
+				const defaultShell = getAnyDefaultPart('shells') || 'home' // Fallback to 'home' if no default shell is set
 
 				let finalRedirectUrl
 				if (redirect)

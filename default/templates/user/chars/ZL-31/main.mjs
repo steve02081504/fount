@@ -13,7 +13,7 @@ import { loadPlugin } from '../../../../../src/server/managers/plugin_manager.mj
 // AI源的实例
 /** @type {import('../../../../../src/decl/AIsource.ts').AIsource_t} */
 let AIsource = null
-/** @type {Record<string, import("../../../../../src/decl/pluginAPI.ts").pluginAPI_t>} */
+/** @type {Record<string, import("../../../../../src/decl/pluginAPI.ts").PluginAPI_t>} */
 let plugins = {}
 
 // 用户名，用于加载AI源
@@ -44,7 +44,7 @@ fount角色以mjs文件语法所书写，其可以自由导入任何npm或jsr包
 \`\`\`generate-char template
 /**
  * @typedef {import('../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t
- * @typedef {import('../../../../../src/decl/pluginAPI.ts').pluginAPI_t} pluginAPI_t
+ * @typedef {import('../../../../../src/decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t
  */
 
 import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
@@ -55,7 +55,7 @@ import { loadPlugin } from '../../../../../src/server/managers/plugin_manager.mj
 /** @type {import('../../../../../src/decl/AIsource.ts').AIsource_t} */
 let AIsource = null
 
-/** @type {Record<string, pluginAPI_t>} */
+/** @type {Record<string, PluginAPI_t>} */
 let plugins = {}
 
 // 用户名，用于加载AI源

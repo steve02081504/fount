@@ -1,5 +1,5 @@
 /**
- * @type {import('../../../../../../src/decl/pluginAPI.ts').pluginAPI_t}
+ * @type {import('../../../../../../src/decl/pluginAPI.ts').PluginAPI_t}
  */
 export const recommend_command_plugin = {
 	info: {

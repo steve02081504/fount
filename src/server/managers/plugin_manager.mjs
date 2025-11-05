@@ -4,7 +4,7 @@ import { initPart, loadPartBase, uninstallPartBase, unloadPartBase } from '../pa
  * 为用户加载一个 plugin。
  * @param {string} username - 用户的用户名。
  * @param {string} pluginname - plugin 的名称。
- * @returns {Promise<import('../../decl/pluginAPI.ts').pluginAPI_t>} 一个解析为已加载 plugin 的承诺。
+ * @returns {Promise<import('../../decl/pluginAPI.ts').PluginAPI_t>} 一个解析为已加载 plugin 的承诺。
  */
 export async function loadPlugin(username, pluginname) {
 	return loadPartBase(username, 'plugins', pluginname)

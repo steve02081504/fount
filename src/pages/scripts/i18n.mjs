@@ -263,7 +263,7 @@ function translateSingularElement(element) {
 		updated = true
 	}
 	for (const key of element.dataset.i18n.split(';').map(k => k.trim())) {
-		if (key.startsWith("'") && key.endsWith("'")) {
+		if (key.startsWith('\'') && key.endsWith('\'')) {
 			const literal_value = key.slice(1, -1)
 			if (element.textContent !== literal_value) {
 				element.textContent = literal_value

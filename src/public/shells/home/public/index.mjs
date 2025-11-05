@@ -6,7 +6,7 @@ import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 import { getUserSetting, setUserSetting, unlockAchievement } from '../../scripts/endpoints.mjs'
 import { initTranslations, geti18n, confirmI18n, console, onLanguageChange } from '../../scripts/i18n.mjs'
 import { renderMarkdown } from '../../scripts/markdown.mjs'
-import { setDefaultPart, getDefaultParts, getAllCachedPartDetails, getPartDetails, noCacheGetPartDetails } from '../../scripts/parts.mjs'
+import { addDefaultPart, unsetDefaultPart, getDefaultParts, getAllCachedPartDetails, getPartDetails, noCacheGetPartDetails } from '../../scripts/parts.mjs'
 import { getFiltersFromString, compileFilter, makeSearchable } from '../../scripts/search.mjs'
 import { onServerEvent } from '../../scripts/server_events.mjs'
 import { svgInliner } from '../../scripts/svgInliner.mjs'
@@ -208,7 +208,6 @@ const handleMouseWheelScroll = event => {
  */
 async function attachCardEventListeners(itemElement, itemDetails, itemName, partType) {
 	const itemType = partType.name
-	const partTypeSingular = itemType.slice(0, -1)
 	const interfacesRegistry = partType.interfaces
 	const actionsContainer = itemElement.querySelector('.actions-buttons-container')
 	actionsContainer.innerHTML = '' // 清空现有按钮
@@ -264,22 +263,22 @@ async function attachCardEventListeners(itemElement, itemDetails, itemName, part
 	// 默认项目复选框
 	const defaultCheckbox = itemElement.querySelector('.default-checkbox')
 	if (defaultCheckbox) {
-		defaultCheckbox.checked = defaultParts[partTypeSingular] === itemName
-		if (defaultCheckbox.checked) itemElement.classList.add('selected-item')
+		const isDefault = (defaultParts[itemType] || []).includes(itemName)
+		defaultCheckbox.checked = isDefault
+		if (isDefault) itemElement.classList.add('selected-item')
 
 		defaultCheckbox.addEventListener('change', async event => {
 			const isChecked = event.target.checked
-			const response = await setDefaultPart(partTypeSingular, isChecked ? itemName : null)
+			const response = await (isChecked ? addDefaultPart : unsetDefaultPart)(itemType, itemName)
 
 			if (response.ok) {
-				defaultParts[partTypeSingular] = isChecked ? itemName : null
-				updateDefaultPartDisplay()
 				if (itemType === 'personas' && isChecked)
 					unlockAchievement('shells', 'home', 'set_default_persona')
 			}
-			else
+			else {
 				console.error('Failed to update default part:', await response.text())
-
+				event.target.checked = !isChecked
+			}
 		})
 	}
 }
@@ -291,8 +290,7 @@ function updateDefaultPartDisplay() {
 	if (!homeRegistry?.part_types) return
 	homeRegistry.part_types.forEach(pt => {
 		const itemType = pt.name
-		const partTypeSingular = itemType.slice(0, -1)
-		const defaultPartName = defaultParts[partTypeSingular]
+		const defaultPartNames = defaultParts[itemType] || []
 		const container = partTypesContainers.querySelector(`#${itemType}-container`)
 		if (!container) return
 
@@ -302,14 +300,14 @@ function updateDefaultPartDisplay() {
 			if (checkbox) checkbox.checked = false
 		})
 
-		if (defaultPartName) {
-			const itemElement = container.querySelector(`.card-container[data-name="${defaultPartName}"]`)
+		defaultPartNames.forEach(defaultName => {
+			const itemElement = container.querySelector(`.card-container[data-name="${defaultName}"]`)
 			if (itemElement) {
 				itemElement.classList.add('selected-item')
 				const checkbox = itemElement.querySelector('.default-checkbox')
 				if (checkbox) checkbox.checked = true
 			}
-		}
+		})
 	})
 }
 
@@ -347,6 +345,7 @@ async function updateTabContent(partType) {
 		/**
 		 * 过滤后处理更新的回调函数。
 		 * @param {string[]} filteredNames - 过滤后的项目名称数组。
+		 * @returns {void}
 		 */
 		onUpdate: (filteredNames) => renderFilteredItems(partType, filteredNames),
 	})
@@ -504,6 +503,7 @@ async function displayFunctionButtons() {
 
 	/**
 	 * 根据搜索输入过滤并重新渲染菜单。
+	 * @returns {void}
 	 */
 	const filterAndRender = () => {
 		const filterValue = searchInput.value
@@ -589,14 +589,29 @@ const handlePartUninstalled = async ({ parttype, partname }) => {
 }
 
 /**
- * 处理 'default-part-updated' 服务端事件。
+ * 处理 'default-part-setted' 服务端事件。
  * @param {object} payload - 事件负载。
- * @param {string} payload.parttype - 已更新默认部件的类型。
+ * @param {string} payload.parttype - 已设置默认部件的类型。
  * @param {string} payload.partname - 新的默认部件的名称。
  */
-const handleDefaultPartUpdate = ({ parttype, partname }) => {
-	if (partname) defaultParts[parttype] = partname
-	else delete defaultParts[parttype]
+const handleDefaultPartSetted = ({ parttype, partname }) => {
+	defaultParts[parttype] ??= []
+	defaultParts[parttype].push(partname)
+
+	updateDefaultPartDisplay()
+}
+
+/**
+ * 处理 'default-part-unsetted' 服务端事件。
+ * @param {object} payload - 事件负载。
+ * @param {string} payload.parttype - 已取消设置默认部件的类型。
+ * @param {string} payload.partname - 已取消设置的默认部件的名称。
+ */
+const handleDefaultPartUnsetted = ({ parttype, partname }) => {
+	const index = defaultParts[parttype].indexOf(partname)
+	if (index > -1) defaultParts[parttype].splice(index, 1)
+	if (!defaultParts[parttype].length) delete defaultParts[parttype]
+
 	updateDefaultPartDisplay()
 }
 
@@ -650,7 +665,8 @@ async function initializeApp() {
 		unlockAchievement('shells', 'home', 'open_function_list')
 	}, { once: true })
 
-	onServerEvent('default-part-updated', handleDefaultPartUpdate)
+	onServerEvent('default-part-setted', handleDefaultPartSetted)
+	onServerEvent('default-part-unsetted', handleDefaultPartUnsetted)
 	onServerEvent('home-registry-updated', handleHomeRegistryUpdate)
 	onServerEvent('part-installed', handlePartInstalled)
 	onServerEvent('part-uninstalled', handlePartUninstalled)

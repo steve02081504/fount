@@ -472,12 +472,11 @@ async function GetSource(config, { username, SaveConfig }) {
 			let index = 0
 			while (true) try {
 				return await sources[index].Call(prompt)
+			} catch (e) {
+				index++
+				if (index >= config.sources.length) throw new Error('all sources failed')
+				console.error(e)
 			}
-				catch (e) {
-					index++
-					if (index >= config.sources.length) throw new Error('all sources failed')
-					console.error(e)
-				}
 		},
 		/**
 		 * 使用结构化提示调用 AI 源。
@@ -489,12 +488,11 @@ async function GetSource(config, { username, SaveConfig }) {
 			let index = 0
 			while (true) try {
 				return await sources[index].StructCall(prompt_struct)
+			} catch (e) {
+				index++
+				if (index >= config.sources.length) throw new Error('all sources failed')
+				console.error(e)
 			}
-				catch (e) {
-					index++
-					if (index >= config.sources.length) throw new Error('all sources failed')
-					console.error(e)
-				}
 		},
 		tokenizer: {
 			/**

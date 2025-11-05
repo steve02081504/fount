@@ -22,7 +22,7 @@
 	<script type="module">
 		import { redirectToLoginInfo } from './scripts/credentialManager.mjs'
 		import { initTranslations } from './scripts/i18n.mjs'
-		import { getDefaultParts } from './scripts/parts.mjs'
+		import { getAnyDefaultPart } from './scripts/parts.mjs'
 		import { setTheme } from './scripts/theme.mjs'
 		initTranslations('startPage')
 		const hostUrl = window.location.origin
@@ -52,8 +52,7 @@
 		const hasLoggedIn = localStorage.getItem('hasLoggedIn') === 'true'
 		if (!hasLoggedIn) redirectToLoginInfo('/login')
 		else {
-			const defaultParts = await getDefaultParts()
-			const defaultShell = defaultParts.shell || 'home'
+			const defaultShell = getAnyDefaultPart('shells') || 'home'
 			setInterval(() => {
 				if (!retry) return
 				retry = 0

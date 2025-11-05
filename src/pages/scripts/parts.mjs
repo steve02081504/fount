@@ -114,13 +114,27 @@ export async function noCacheGetPersonaDetails(personaname) {
 	return response.json()
 }
 /**
- * 设置默认部件。
+ * 将部件添加到用户的默认部件列表。
  * @param {string} parttype - 部件类型。
  * @param {string} partname - 部件名称。
  * @returns {Promise<Response>} - 响应。
  */
-export async function setDefaultPart(parttype, partname) {
-	return fetch('/api/setdefaultpart', {
+export async function addDefaultPart(parttype, partname) {
+	return fetch('/api/defaultpart/add', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ parttype, partname }),
+	})
+}
+
+/**
+ * 从用户的默认部件列表中移除一个部件。
+ * @param {string} parttype - 部件类型。
+ * @param {string} partname - 要移除的部件名称。
+ * @returns {Promise<Response>} - 响应。
+ */
+export async function unsetDefaultPart(parttype, partname) {
+	return fetch('/api/defaultpart/unset', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ parttype, partname }),
@@ -128,13 +142,44 @@ export async function setDefaultPart(parttype, partname) {
 }
 /**
  * 获取默认部件。
- * @returns {Promise<any>} - 默认部件。
+ * @returns {Promise<Record<string, string[]>>} - 默认部件。
  */
 export async function getDefaultParts() {
-	return fetch('/api/getdefaultparts').then(async response => {
+	return fetch('/api/defaultpart/getall').then(async response => {
 		if (response.ok) return response.json()
 		else return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response }))
 	})
+}
+
+/**
+ * 获取用户指定类型的一个随机默认部件名称。
+ * @param {string} parttype - 部件类型。
+ * @returns {Promise<string | undefined>} - 一个随机的部件名称，如果列表为空则为 undefined。
+ */
+export async function getAnyDefaultPart(parttype) {
+	const response = await fetch(`/api/defaultpart/getany/${parttype}`)
+	return response.json()
+}
+
+/**
+ * 获取用户指定类型的所有默认部件名称。
+ * @param {string} parttype - 部件类型。
+ * @returns {Promise<string[]>} - 指定类型的所有默认部件名称。
+ */
+export async function getAllDefaultParts(parttype) {
+	const response = await fetch(`/api/defaultpart/getallbytype/${parttype}`)
+	return response.json()
+}
+
+/**
+ * 获取用户指定类型的一个随机首选默认部件名称。
+ * 如果默认列表为空，则从所有可用部件中随机选择一个。
+ * @param {string} parttype - 部件类型。
+ * @returns {Promise<string | undefined>} - 一个随机的部件名称，如果没有任何可用部件则为 undefined。
+ */
+export async function getAnyPreferredDefaultPart(parttype) {
+	const response = await fetch(`/api/defaultpart/getanypreferred/${parttype}`)
+	return response.json()
 }
 
 /**

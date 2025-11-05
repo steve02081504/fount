@@ -1,4 +1,4 @@
-import { getDefaultParts, loadPartBase, uninstallPartBase, unloadPartBase } from '../parts_loader.mjs'
+import { getAnyDefaultPart, loadPartBase, uninstallPartBase, unloadPartBase } from '../parts_loader.mjs'
 
 /**
  * 为用户加载一个角色。
@@ -36,7 +36,7 @@ export async function uninstallPersona(username, personaname) {
  * @returns {Promise<any>} 一个解析为已加载角色的承诺。
  */
 export async function loadDefaultPersona(username) {
-	const defaultPersonaName = getDefaultParts(username).persona
+	const defaultPersonaName = getAnyDefaultPart(username, 'personas')
 	if (!defaultPersonaName) return
 	return loadPersona(username, defaultPersonaName)
 }

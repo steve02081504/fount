@@ -3,7 +3,7 @@
  */
 import { unlockAchievement } from '../../scripts/endpoints.mjs'
 import { initTranslations, geti18n } from '../../scripts/i18n.mjs'
-import { setDefaultPart } from '../../scripts/parts.mjs'
+import { addDefaultPart, unsetDefaultPart } from '../../scripts/parts.mjs'
 import { svgInliner } from '../../scripts/svgInliner.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 /* global confetti */
@@ -206,11 +206,10 @@ const redirect = urlParams.get('redirect')
  * 关闭教程。
  */
 async function closeTutorial() {
-	await setDefaultPart('shell', 'home')
-	if (redirect)
-		window.location.href = decodeURIComponent(redirect) + window.location.hash
-	else
-		window.location.href = '/shells/home'
+	await addDefaultPart('shells', 'home')
+	await unsetDefaultPart('shells', 'tutorial')
+	if (redirect) window.location.href = decodeURIComponent(redirect) + window.location.hash
+	else window.location.href = '/shells/home'
 }
 skipButton.addEventListener('click', () => {
 	unlockAchievement('shells', 'tutorial', 'skip_tutorial')
