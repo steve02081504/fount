@@ -52,7 +52,7 @@
 		const hasLoggedIn = localStorage.getItem('hasLoggedIn') === 'true'
 		if (!hasLoggedIn) redirectToLoginInfo('/login')
 		else {
-			const defaultShell = getAnyDefaultPart('shells') || 'home'
+			const defaultShell = await getAnyDefaultPart('shells') || 'home'
 			setInterval(() => {
 				if (!retry) return
 				retry = 0
