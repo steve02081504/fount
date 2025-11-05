@@ -62,7 +62,7 @@
 			},
 			"level": 99,
 			"url": "/shells/access",
-			"button": "<img src=\"https://api.iconify.design/line-md/cloud-alt-twotone.svg\" class=\"text-icon\"/>"
+			"button": "<img src=\"https://api.iconify.design/line-md/cloud.svg\" class=\"text-icon\"/>"
 		}
 	]
 }

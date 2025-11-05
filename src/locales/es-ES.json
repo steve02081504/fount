@@ -462,61 +462,56 @@
 				"alt": "Menú de funciones"
 			}
 		},
-		"chars": {
-			"tab": "Personajes",
-			"title": "Selección de personaje",
-			"subtitle": "¡Selecciona un personaje y empieza a chatear!",
-			"none": "Nada que mostrar",
+		"part_types": {
+			"chars": "Rol",
+			"worlds": "Mundo",
+			"personas": "Personalidad",
+			"plugins": "complemento",
+			"AIsources": "fuente de IA",
+			"AIsourceGenerators": "Generador de fuentes de IA",
+			"ImportHandlers": "Procesador de importación",
+			"shells": "Shell"
+		},
+		"default": {
+			"title": "Selección de componentes",
+			"subtitle": "Seleccione un componente para continuar.",
 			"card": {
-				"noTags": "Sin etiquetas",
+				"noTags": "sin etiqueta",
 				"version": "Versión",
 				"author": "Autor",
 				"home_page": "Página de inicio",
-				"issue_page": "Reportar incidencia",
+				"issue_page": "Informar de un problema",
 				"refreshButton": {
 					"alt": "Actualizar",
 					"title": "Actualizar"
 				},
+				"defaultCheckbox": {
+					"title": "Establecer como predeterminado"
+				}
+			}
+		},
+		"chars": {
+			"title": "Selección de personaje",
+			"subtitle": "¡Selecciona un personaje y empieza a chatear!",
+			"card": {
 				"defaultCheckbox": {
 					"title": "Establecer como personaje predeterminado"
 				}
 			}
 		},
 		"worlds": {
-			"tab": "Mundos",
 			"title": "Selección de mundo",
 			"subtitle": "¡Elige un mundo y sumérgete!",
-			"none": "Nada que mostrar",
 			"card": {
-				"noTags": "Sin etiquetas",
-				"version": "Versión",
-				"author": "Autor",
-				"home_page": "Página de inicio",
-				"issue_page": "Reportar un problema",
-				"refreshButton": {
-					"alt": "Actualizar",
-					"title": "Actualizar"
-				},
 				"defaultCheckbox": {
 					"title": "Establecer como mundo predeterminado"
 				}
 			}
 		},
 		"personas": {
-			"tab": "Personas",
 			"title": "Selección de persona",
 			"subtitle": "Elige una persona y vive otra vida.",
-			"none": "Nada que mostrar",
 			"card": {
-				"noTags": "Sin etiquetas",
-				"version": "Versión",
-				"author": "Autor",
-				"home_page": "Página de inicio",
-				"issue_page": "Reportar incidencia",
-				"refreshButton": {
-					"alt": "Actualizar",
-					"title": "Actualizar"
-				},
 				"defaultCheckbox": {
 					"title": "Establecer como persona predeterminada"
 				}
@@ -587,6 +582,20 @@
 					},
 					"addCharIcon": {
 						"alt": "Icono de añadir personaje"
+					}
+				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "Icono de lista de complementos"
+				},
+				"title": "Lista de complementos",
+				"buttons": {
+					"addPlugin": {
+						"title": "Agregar complemento"
+					},
+					"addPluginIcon": {
+						"alt": "Icono de agregar complemento"
 					}
 				}
 			}
@@ -729,6 +738,16 @@
 				},
 				"forceReplyIcon": {
 					"alt": "Icono de forzar respuesta"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "Eliminar complemento"
+				},
+				"removePluginIcon": {
+					"alt": "Icono de eliminar complemento"
 				}
 			}
 		},
