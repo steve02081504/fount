@@ -12,6 +12,217 @@ import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../s
  * @type {import('../../../decl/AIsource.ts').AIsource_interfaces_and_AIsource_t_getter}
  */
 export default {
+	info: {
+		'en-UK': {
+			name: 'Ollama',
+			avatar: 'https://api.iconify.design/simple-icons/ollama.svg',
+			description: 'Ollama',
+			description_markdown: 'Run large language models locally.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['ollama', 'local', 'llm'],
+			home_page: 'https://ollama.com/',
+			provider: 'Ollama'
+		},
+		'zh-CN': {
+			name: 'Ollama',
+			avatar: 'https://api.iconify.design/simple-icons/ollama.svg',
+			description: 'Ollama',
+			description_markdown: '在本地运行大型语言模型。',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['ollama', '本地', 'llm'],
+			home_page: 'https://ollama.com/',
+			provider: 'Ollama'
+		},
+		'ar-SA': {
+			name: 'Ollama',
+			avatar: 'https://api.iconify.design/simple-icons/ollama.svg',
+			description: 'Ollama',
+			description_markdown: 'قم بتشغيل نماذج لغوية كبيرة محليًا.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['ollama', 'محلي', 'llm'],
+			home_page: 'https://ollama.com/',
+			provider: 'Ollama'
+		},
+		'de-DE': {
+			name: 'Ollama',
+			avatar: 'https://api.iconify.design/simple-icons/ollama.svg',
+			description: 'Ollama',
+			description_markdown: 'Führen Sie große Sprachmodelle lokal aus.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['ollama', 'lokal', 'llm'],
+			home_page: 'https://ollama.com/',
+			provider: 'Ollama'
+		},
+		emoji: {
+			name: '🦙',
+			avatar: 'https://api.iconify.design/simple-icons/ollama.svg',
+			description: 'Ollama',
+			description_markdown: 'Run large language models locally.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['ollama', 'local', 'llm'],
+			home_page: 'https://ollama.com/',
+			provider: 'Ollama'
+		},
+		'es-ES': {
+			name: 'Ollama',
+			avatar: 'https://api.iconify.design/simple-icons/ollama.svg',
+			description: 'Ollama',
+			description_markdown: 'Ejecute grandes modelos de lenguaje localmente.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['ollama', 'local', 'llm'],
+			home_page: 'https://ollama.com/',
+			provider: 'Ollama'
+		},
+		'fr-FR': {
+			name: 'Ollama',
+			avatar: 'https://api.iconify.design/simple-icons/ollama.svg',
+			description: 'Ollama',
+			description_markdown: 'Exécutez de grands modèles de langage localement.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['ollama', 'local', 'llm'],
+			home_page: 'https://ollama.com/',
+			provider: 'Ollama'
+		},
+		'hi-IN': {
+			name: 'Ollama',
+			avatar: 'https://api.iconify.design/simple-icons/ollama.svg',
+			description: 'ओलामा',
+			description_markdown: 'बड़े भाषा मॉडल को स्थानीय रूप से चलाएं।',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['ओलामा', 'स्थानीय', 'एलएलएम'],
+			home_page: 'https://ollama.com/',
+			provider: 'Ollama'
+		},
+		'is-IS': {
+			name: 'Ollama',
+			avatar: 'https://api.iconify.design/simple-icons/ollama.svg',
+			description: 'Ollama',
+			description_markdown: 'Keyra stór tungumálalíkön á staðnum.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['ollama', 'staðbundið', 'llm'],
+			home_page: 'https://ollama.com/',
+			provider: 'Ollama'
+		},
+		'it-IT': {
+			name: 'Ollama',
+			avatar: 'https://api.iconify.design/simple-icons/ollama.svg',
+			description: 'Ollama',
+			description_markdown: 'Esegui grandi modelli linguistici in locale.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['ollama', 'locale', 'llm'],
+			home_page: 'https://ollama.com/',
+			provider: 'Ollama'
+		},
+		'ja-JP': {
+			name: 'Ollama',
+			avatar: 'https://api.iconify.design/simple-icons/ollama.svg',
+			description: 'Ollama',
+			description_markdown: '大規模な言語モデルをローカルで実行します。',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['ollama', 'ローカル', 'llm'],
+			home_page: 'https://ollama.com/',
+			provider: 'Ollama'
+		},
+		'ko-KR': {
+			name: 'Ollama',
+			avatar: 'https://api.iconify.design/simple-icons/ollama.svg',
+			description: '올라마',
+			description_markdown: '로컬에서 대규모 언어 모델을 실행합니다.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['올라마', '로컬', 'llm'],
+			home_page: 'https://ollama.com/',
+			provider: 'Ollama'
+		},
+		lzh: {
+			name: 'Ollama',
+			avatar: 'https://api.iconify.design/simple-icons/ollama.svg',
+			description: 'Ollama',
+			description_markdown: '於本地運行大型語言模型。',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['ollama', '本地', 'llm'],
+			home_page: 'https://ollama.com/',
+			provider: 'Ollama'
+		},
+		'nl-NL': {
+			name: 'Ollama',
+			avatar: 'https://api.iconify.design/simple-icons/ollama.svg',
+			description: 'Ollama',
+			description_markdown: 'Voer grote taalmodellen lokaal uit.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['ollama', 'lokaal', 'llm'],
+			home_page: 'https://ollama.com/',
+			provider: 'Ollama'
+		},
+		'pt-PT': {
+			name: 'Ollama',
+			avatar: 'https://api.iconify.design/simple-icons/ollama.svg',
+			description: 'Ollama',
+			description_markdown: 'Execute grandes modelos de linguagem localmente.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['ollama', 'local', 'llm'],
+			home_page: 'https://ollama.com/',
+			provider: 'Ollama'
+		},
+		'ru-RU': {
+			name: 'Ollama',
+			avatar: 'https://api.iconify.design/simple-icons/ollama.svg',
+			description: 'Ollama',
+			description_markdown: 'Запускайте большие языковые модели локально.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['ollama', 'локальный', 'llm'],
+			home_page: 'https://ollama.com/',
+			provider: 'Ollama'
+		},
+		'uk-UA': {
+			name: 'Ollama',
+			avatar: 'https://api.iconify.design/simple-icons/ollama.svg',
+			description: 'Ollama',
+			description_markdown: 'Запускайте великі мовні моделі локально.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['ollama', 'локальний', 'llm'],
+			home_page: 'https://ollama.com/',
+			provider: 'Ollama'
+		},
+		'vi-VN': {
+			name: 'Ollama',
+			avatar: 'https://api.iconify.design/simple-icons/ollama.svg',
+			description: 'Ollama',
+			description_markdown: 'Chạy các mô hình ngôn ngữ lớn cục bộ.',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['ollama', 'cục bộ', 'llm'],
+			home_page: 'https://ollama.com/',
+			provider: 'Ollama'
+		},
+		'zh-TW': {
+			name: 'Ollama',
+			avatar: 'https://api.iconify.design/simple-icons/ollama.svg',
+			description: 'Ollama',
+			description_markdown: '在本地運行大型語言模型。',
+			version: '0.0.1',
+			author: 'steve02081504',
+			tags: ['ollama', '本地', 'llm'],
+			home_page: 'https://ollama.com/',
+			provider: 'Ollama'
+		}
+	},
 	interfaces: {
 		AIsource: {
 			/**
