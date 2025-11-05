@@ -45,9 +45,9 @@ async function zipDirectory(dirPath, zip) {
 }
 
 /**
- * 检查缓冲区是否为有效的 Fount 部件。
+ * 检查缓冲区是否为有效的 fount 部件。
  * @param {Buffer} buffer - 缓冲区。
- * @returns {Promise<boolean>} - 如果是有效的 Fount 部件则返回 true，否则返回 false。
+ * @returns {Promise<boolean>} - 如果是有效的 fount 部件则返回 true，否则返回 false。
  */
 export async function isFountPart(buffer) {
 	// Try zip first - it works in memory and is likely more common.

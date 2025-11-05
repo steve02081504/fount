@@ -462,61 +462,56 @@
 				"alt": "功能菜单"
 			}
 		},
-		"chars": {
-			"tab": "角色",
-			"title": "角色选择",
-			"subtitle": "选择一个角色，开始聊天吧！",
-			"none": "空空如也",
+		"part_types": {
+			"chars": "角色",
+			"worlds": "世界",
+			"personas": "人设",
+			"plugins": "插件",
+			"AIsources": "AI源",
+			"AIsourceGenerators": "AI源生成器",
+			"ImportHandlers": "导入处理器",
+			"shells": "交互界面"
+		},
+		"default": {
+			"title": "组件选择",
+			"subtitle": "选择一个组件以继续。",
 			"card": {
 				"noTags": "无标签",
 				"version": "版本",
 				"author": "作者",
 				"home_page": "主页",
-				"issue_page": "问题反馈",
+				"issue_page": "报告问题",
 				"refreshButton": {
 					"alt": "刷新",
 					"title": "刷新"
 				},
+				"defaultCheckbox": {
+					"title": "设为默认"
+				}
+			}
+		},
+		"chars": {
+			"title": "角色选择",
+			"subtitle": "选择一个角色，开始聊天吧！",
+			"card": {
 				"defaultCheckbox": {
 					"title": "设为默认角色"
 				}
 			}
 		},
 		"worlds": {
-			"tab": "世界",
 			"title": "世界选择",
 			"subtitle": "选择世界，沉浸其中！",
-			"none": "空空如也",
 			"card": {
-				"noTags": "无标签",
-				"version": "版本",
-				"author": "作者",
-				"home_page": "主页",
-				"issue_page": "问题反馈",
-				"refreshButton": {
-					"alt": "刷新",
-					"title": "刷新"
-				},
 				"defaultCheckbox": {
 					"title": "设为默认世界"
 				}
 			}
 		},
 		"personas": {
-			"tab": "人设",
 			"title": "人设选择",
 			"subtitle": "选择人设，体验人生。",
-			"none": "空空如也",
 			"card": {
-				"noTags": "无标签",
-				"version": "版本",
-				"author": "作者",
-				"home_page": "主页",
-				"issue_page": "问题反馈",
-				"refreshButton": {
-					"alt": "刷新",
-					"title": "刷新"
-				},
 				"defaultCheckbox": {
 					"title": "设为默认人设"
 				}
@@ -587,6 +582,20 @@
 					},
 					"addCharIcon": {
 						"alt": "添加角色图标"
+					}
+				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "插件列表图标"
+				},
+				"title": "插件列表",
+				"buttons": {
+					"addPlugin": {
+						"title": "添加插件"
+					},
+					"addPluginIcon": {
+						"alt": "添加插件图标"
 					}
 				}
 			}
@@ -729,6 +738,16 @@
 				},
 				"forceReplyIcon": {
 					"alt": "强制回复图标"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "删除插件"
+				},
+				"removePluginIcon": {
+					"alt": "移除插件图标"
 				}
 			}
 		},

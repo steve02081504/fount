@@ -10,7 +10,7 @@ import { saveJsonFile } from '../../../../../src/scripts/json_loader.mjs'
 import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
 import { loadPlugin } from '../../../../../src/server/managers/plugin_manager.mjs'
 
-/** @typedef {import('../../../../../src/decl/pluginAPI.ts').pluginAPI_t} pluginAPI_t */
+/** @typedef {import('../../../../../src/decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t */
 /** @typedef {import('../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t */
 /** @typedef {import('../../../../../src/decl/AIsource.ts').AIsource_t} AIsource_t */
 /** @typedef {import("../../../../../src/decl/prompt_struct.ts').single_part_prompt_t} single_part_prompt_t */
@@ -19,7 +19,7 @@ import { loadPlugin } from '../../../../../src/server/managers/plugin_manager.mj
 
 /** @type {AIsource_t} */
 let AIsource = null
-/** @type {Record<string, pluginAPI_t>} */
+/** @type {Record<string, PluginAPI_t>} */
 let plugins = {}
 
 let username = ''

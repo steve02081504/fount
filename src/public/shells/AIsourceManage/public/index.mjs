@@ -5,7 +5,7 @@ import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
 import { initTranslations, setLocalizeLogic, i18nElement, console, geti18n, confirmI18n, promptI18n } from '../../scripts/i18n.mjs'
 import { createJsonEditor } from '../../scripts/jsonEditor.mjs'
-import { getPartList, setDefaultPart, getDefaultParts } from '../../scripts/parts.mjs'
+import { getPartList, getDefaultParts, addDefaultPart, unsetDefaultPart } from '../../scripts/parts.mjs'
 import { svgInliner } from '../../scripts/svgInliner.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 import { showToast, showToastI18n } from '../../scripts/toast.mjs'
@@ -72,6 +72,7 @@ async function fetchGeneratorList() {
  */
 async function fetchDefaultParts() {
 	defaultParts = await getDefaultParts().catch(handleFetchError('aisource_editor.alerts.fetchDefaultsFailed'))
+	defaultParts.AIsources ??= [] // Ensure it's an array
 	updateDefaultPartDisplay()
 }
 
@@ -107,17 +108,19 @@ function renderFileList() {
 		checkbox.addEventListener('change', async event => {
 			event.stopPropagation() // Prevent click from triggering loadEditor
 			const isChecked = event.target.checked
-			const newDefault = isChecked ? fileName : null
 
 			try {
-				await setDefaultPart('AIsources', newDefault)
-				// Update local state and UI on success
-				defaultParts.AIsources = newDefault
+				const response = await (isChecked ? addDefaultPart : unsetDefaultPart)('AIsources', fileName)
+				if (!response.ok) throw new Error(await response.text())
+				if (isChecked) defaultParts.AIsources.push(fileName)
+				else {
+					const index = defaultParts.AIsources.indexOf(fileName)
+					if (index > -1) defaultParts.AIsources.splice(index, 1)
+				}
 				updateDefaultPartDisplay()
 			}
 			catch (error) {
 				handleFetchError('aisource_editor.alerts.setDefaultFailed')(error)
-				// Revert checkbox on failure
 				event.target.checked = !isChecked
 			}
 		})
@@ -147,9 +150,9 @@ function renderFileList() {
  * 更新文件列表 UI 以反映哪个文件是默认文件。
  */
 function updateDefaultPartDisplay() {
-	const defaultPartName = defaultParts.AIsources
+	const defaultPartNames = defaultParts.AIsources || []
 	fileListContainer.querySelectorAll('.file-list-item').forEach(el => {
-		const isDefault = el.dataset.name === defaultPartName
+		const isDefault = defaultPartNames.includes(el.dataset.name)
 		el.classList.toggle('selected-item', isDefault)
 		const checkbox = el.querySelector('.default-checkbox')
 		if (checkbox) checkbox.checked = isDefault

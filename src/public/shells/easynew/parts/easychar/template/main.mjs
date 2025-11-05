@@ -1,6 +1,6 @@
 /** @typedef {import('../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t */
 /** @typedef {import('../../../../../src/decl/AIsource.ts').AIsource_t} AIsource_t */
-/** @typedef {import('../../../../../src/decl/pluginAPI.ts').pluginAPI_t} pluginAPI_t */
+/** @typedef {import('../../../../../src/decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t */
 
 import path from 'node:path'
 
@@ -12,7 +12,7 @@ import { loadPlugin } from '../../../../../src/server/managers/plugin_manager.mj
 
 /** @type {AIsource_t} */
 let AIsource
-/** @type {Record<string, pluginAPI_t>} */
+/** @type {Record<string, PluginAPI_t>} */
 let plugins = {}
 let username
 const partRoot = import.meta.dirname

@@ -9,6 +9,8 @@ import {
 	handleCharFrequencySet,
 	addPartToSelect,
 	removePartFromSelect,
+	handlePluginAdded,
+	handlePluginRemoved,
 } from './ui/sidebar.mjs'
 import { handleMessageAdded, handleMessageDeleted, handleMessageReplaced } from './ui/virtualQueue.mjs'
 
@@ -93,6 +95,12 @@ async function handleBroadcastEvent(event) {
 			break
 		case 'char_frequency_set':
 			await handleCharFrequencySet(payload.charname, payload.frequency)
+			break
+		case 'plugin_added':
+			await handlePluginAdded(payload.pluginname)
+			break
+		case 'plugin_removed':
+			await handlePluginRemoved(payload.pluginname)
 			break
 		default:
 			console.warn(`Unknown broadcast event type: ${type}`)

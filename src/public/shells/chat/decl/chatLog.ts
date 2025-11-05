@@ -2,7 +2,7 @@ import { Buffer } from 'node:buffer'
 
 import { locale_t, role_t, timeStamp_t } from '../../../../decl/basedefs.ts'
 import { CharAPI_t } from '../../../../decl/charAPI.ts'
-import { pluginAPI_t } from '../../../../decl/pluginAPI.ts'
+import { PluginAPI_t } from '../../../../decl/pluginAPI.ts'
 import { UserAPI_t } from '../../../../decl/userAPI.ts'
 import { WorldAPI_t } from '../../../../decl/worldAPI.ts'
 
@@ -67,7 +67,7 @@ export class chatReply_t {
  * @property {UserAPI_t} user - 用户 API。
  * @property {CharAPI_t} char - 角色 API。
  * @property {Record<string, CharAPI_t>} other_chars - 其他角色 API。
- * @property {Record<string, pluginAPI_t>} plugins - 插件 API。
+ * @property {Record<string, PluginAPI_t>} plugins - 插件 API。
  * @property {string} chat_summary - 聊天摘要。
  * @property {object} chat_scoped_char_memory - 聊天范围的角色内存。
  * @property {object} extension - 扩展数据。
@@ -97,7 +97,7 @@ export class chatReplyRequest_t {
 	user: UserAPI_t
 	char: CharAPI_t
 	other_chars: Record<string, CharAPI_t>
-	plugins: Record<string, pluginAPI_t>
+	plugins: Record<string, PluginAPI_t>
 	chat_summary: string
 	chat_scoped_char_memory: object
 	extension: object

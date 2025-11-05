@@ -171,7 +171,7 @@
 				"removingFount": "fount 제거 중...",
 				"fountUninstallationComplete": "fount 제거가 완료되었습니다.",
 				"removingFountInstallationDir": "글꼴 설치 디렉터리를 제거하는 중...",
-				"fountInstallationDirRemoved": "Fount 설치 디렉터리가 제거되었습니다.",
+				"fountInstallationDirRemoved": "fount 설치 디렉터리가 제거되었습니다.",
 				"removingFountFromPath": "PATH에서 fount를 제거하는 중...",
 				"removingProtocolHandler": "fount:// 프로토콜 핸들러 삭제 중...",
 				"protocolHandlerRemoved": "fount:// 프로토콜 핸들러가 제거되었습니다.",
@@ -462,61 +462,56 @@
 				"alt": "기능 메뉴"
 			}
 		},
-		"chars": {
-			"tab": "캐릭터",
-			"title": "캐릭터 선택",
-			"subtitle": "캐릭터를 선택해서 채팅을 시작해 보세요!",
-			"none": "표시할 내용이 없습니다",
+		"part_types": {
+			"chars": "역할",
+			"worlds": "세계",
+			"personas": "성격",
+			"plugins": "플러그인",
+			"AIsources": "AI 소스",
+			"AIsourceGenerators": "AI 소스 생성기",
+			"ImportHandlers": "가져오기 처리기",
+			"shells": "셸"
+		},
+		"default": {
+			"title": "구성 요소 선택",
+			"subtitle": "계속하려면 구성요소를 선택하세요.",
 			"card": {
-				"noTags": "태그 없음",
+				"noTags": "라벨 없음",
 				"version": "버전",
-				"author": "제작자",
+				"author": "작가",
 				"home_page": "홈페이지",
-				"issue_page": "문제 신고",
+				"issue_page": "문제 보고",
 				"refreshButton": {
 					"alt": "새로고침",
 					"title": "새로고침"
 				},
+				"defaultCheckbox": {
+					"title": "기본값으로 설정"
+				}
+			}
+		},
+		"chars": {
+			"title": "캐릭터 선택",
+			"subtitle": "캐릭터를 선택해서 채팅을 시작해 보세요!",
+			"card": {
 				"defaultCheckbox": {
 					"title": "기본 캐릭터로 설정"
 				}
 			}
 		},
 		"worlds": {
-			"tab": "월드",
 			"title": "월드 선택",
 			"subtitle": "월드를 선택하고 몰입해보세요!",
-			"none": "표시할 내용이 없습니다",
 			"card": {
-				"noTags": "태그 없음",
-				"version": "버전",
-				"author": "제작자",
-				"home_page": "홈페이지",
-				"issue_page": "문제 신고",
-				"refreshButton": {
-					"alt": "새로고침",
-					"title": "새로고침"
-				},
 				"defaultCheckbox": {
 					"title": "기본 월드로 설정"
 				}
 			}
 		},
 		"personas": {
-			"tab": "페르소나",
 			"title": "페르소나 선택",
 			"subtitle": "페르소나를 선택하고 다양한 역할을 경험해보세요.",
-			"none": "표시할 내용이 없습니다",
 			"card": {
-				"noTags": "태그 없음",
-				"version": "버전",
-				"author": "제작자",
-				"home_page": "홈페이지",
-				"issue_page": "문제 신고",
-				"refreshButton": {
-					"alt": "새로고침",
-					"title": "새로고침"
-				},
 				"defaultCheckbox": {
 					"title": "기본 페르소나로 설정"
 				}
@@ -587,6 +582,20 @@
 					},
 					"addCharIcon": {
 						"alt": "캐릭터 추가 아이콘"
+					}
+				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "플러그인 목록 아이콘"
+				},
+				"title": "플러그인 목록",
+				"buttons": {
+					"addPlugin": {
+						"title": "플러그인 추가"
+					},
+					"addPluginIcon": {
+						"alt": "플러그인 추가 아이콘"
 					}
 				}
 			}
@@ -729,6 +738,16 @@
 				},
 				"forceReplyIcon": {
 					"alt": "강제 응답 아이콘"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "플러그인 제거"
+				},
+				"removePluginIcon": {
+					"alt": "플러그인 제거 아이콘"
 				}
 			}
 		},

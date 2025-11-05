@@ -141,7 +141,7 @@
 			},
 			"deno": {
 				"missing": "لم يتم العثور على Deno، جارٍ التثبيت تلقائيًا...",
-				"isRequired": "لم يتم العثور على Deno، لا يمكن تشغيل Fount بدون Deno",
+				"isRequired": "لم يتم العثور على Deno، لا يمكن تشغيل fount بدون Deno",
 				"installingTermux": "تثبيت Deno على Termux...",
 				"installFailedFallback": "فشل تثبيت Deno، وتتم محاولة التثبيت تلقائيًا في مجلد المسار الخاص بfount...",
 				"notWorking": "لسبب ما لا يعمل Deno، قد ترغب في الانضمام إلى https://discord.gg/deno للحصول على الدعم",
@@ -151,8 +151,8 @@
 			"install": {
 				"installingDependencies": "تثبيت التبعيات...",
 				"untrustedPartsWarning": "لا تقم بتثبيت أي مكونات غير موثوقة على نظامك، يمكنها فعل أي شيء.",
-				"rootWarning1": "غير مستحسن: تشغيل fount كجذر يمنح النظام وصولاً كاملاً إلى جميع مكونات Fount.",
-				"rootWarning2": "ما لم تكن تعرف ما تفعله، فمن المستحسن تشغيل Fount كمستخدم عادي."
+				"rootWarning1": "غير مستحسن: تشغيل fount كجذر يمنح النظام وصولاً كاملاً إلى جميع مكونات fount.",
+				"rootWarning2": "ما لم تكن تعرف ما تفعله، فمن المستحسن تشغيل fount كمستخدم عادي."
 			},
 			"clean": {
 				"removingCaches": "جارٍ إزالة ذاكرة التخزين المؤقت...",
@@ -175,16 +175,16 @@
 				"removingFountFromPath": "إزالة fount من PATH...",
 				"removingProtocolHandler": "جارٍ إزالة Found:// معالج البروتوكول...",
 				"protocolHandlerRemoved": "تمت إزالة معالج البروتوكول Found://.",
-				"removeProtocolHandlerFailed": "فشل في إزالة معالج البروتوكول Fount://: ${message}",
+				"removeProtocolHandlerFailed": "فشل في إزالة معالج البروتوكول fount://: ${message}",
 				"removingFountFromGitSafeDir": "إزالة fount من git Safe.directory...",
 				"removingInstalledSystemPackages": "جارٍ إزالة حزم النظام المثبتة...",
 				"uninstallingDeno": "إلغاء تثبيت دينو...",
 				"removeDenoFailed": "فشلت إزالة Deno: ${message}",
-				"removingFountPwshFromProfile": "إزالة Fount-pwsh من ملف تعريف PowerShell...",
-				"fountPwshRemovedFromProfile": "تمت إزالة Fount-pwsh من ملف تعريف PowerShell.",
-				"pwshProfileNotFound": "لم يتم العثور على ملف تعريف PowerShell، مع تخطي إزالة Fount-pwsh من الملف الشخصي.",
-				"uninstallingFountPwsh": "إلغاء تثبيت Fount-pwsh...",
-				"uninstallFountPwshFailed": "فشل إلغاء تثبيت Fount-pwsh: ${message}",
+				"removingFountPwshFromProfile": "إزالة fount-pwsh من ملف تعريف PowerShell...",
+				"fountPwshRemovedFromProfile": "تمت إزالة fount-pwsh من ملف تعريف PowerShell.",
+				"pwshProfileNotFound": "لم يتم العثور على ملف تعريف PowerShell، مع تخطي إزالة fount-pwsh من الملف الشخصي.",
+				"uninstallingFountPwsh": "إلغاء تثبيت fount-pwsh...",
+				"uninstallFountPwshFailed": "فشل إلغاء تثبيت fount-pwsh: ${message}",
 				"removingTerminalProfile": "جارٍ إزالة ملف التعريف الطرفي لـ Windows...",
 				"terminalProfileRemoved": "تمت إزالة دليل ملف تعريف Windows Terminal.",
 				"terminalProfileNotFound": "لم يتم العثور على دليل ملف تعريف Windows Terminal.",
@@ -206,7 +206,7 @@
 	},
 	"installer_wait_screen": {
 		"title": "مرحبًا بك في fount!",
-		"description": "اتبع تقدم التثبيت وألق نظرة على الميزات الموجودة بداخله. سيكون Fount جاهزًا للإطلاق خلال لحظة.",
+		"description": "اتبع تقدم التثبيت وألق نظرة على الميزات الموجودة بداخله. سيكون fount جاهزًا للإطلاق خلال لحظة.",
 		"hero": {
 			"title": "رفيقٌ من نسيج الخيال",
 			"description": "fount هي منصة تفاعل مع شخصيات مدعومة بالذكاء الاصطناعي، مصممة لتمكين<i>ك</i>. إنها جسر يربطك بالشخصيات التي تتخيلها، مما يتيح لك التحدث معهم بسهولة، وإنشاء شخصياتك الخاصة ومشاركتها مع العالم."
@@ -462,61 +462,56 @@
 				"alt": "قائمة الوظائف"
 			}
 		},
-		"chars": {
-			"tab": "الشخصيات",
-			"title": "اختيار الشخصية",
-			"subtitle": "اختر شخصية وابدأ الدردشة!",
-			"none": "فارغ تمامًا",
+		"part_types": {
+			"chars": "دور",
+			"worlds": "عالم",
+			"personas": "شخصية",
+			"plugins": "إضافة",
+			"AIsources": "مصدر الذكاء الاصطناعي",
+			"AIsourceGenerators": "مولد مصدر الذكاء الاصطناعي",
+			"ImportHandlers": "معالج الاستيراد",
+			"shells": "واجهة تفاعلية"
+		},
+		"default": {
+			"title": "اختيار المكون",
+			"subtitle": "حدد مكونًا للمتابعة.",
 			"card": {
-				"noTags": "لا توجد وسوم",
-				"version": "الإصدار",
-				"author": "المؤلف",
+				"noTags": "لا تسمية",
+				"version": "إصدار",
+				"author": "مؤلف",
 				"home_page": "الصفحة الرئيسية",
-				"issue_page": "الإبلاغ عن خطأ",
+				"issue_page": "الإبلاغ عن مشكلة",
 				"refreshButton": {
 					"alt": "تحديث",
 					"title": "تحديث"
 				},
+				"defaultCheckbox": {
+					"title": "تعيين كافتراضي"
+				}
+			}
+		},
+		"chars": {
+			"title": "اختيار الشخصية",
+			"subtitle": "اختر شخصية وابدأ الدردشة!",
+			"card": {
 				"defaultCheckbox": {
 					"title": "تعيين كشخصية افتراضية"
 				}
 			}
 		},
 		"worlds": {
-			"tab": "العوالم",
 			"title": "اختيار العالم",
 			"subtitle": "اختر عالمًا وانغمس فيه!",
-			"none": "فارغ تمامًا",
 			"card": {
-				"noTags": "لا توجد وسوم",
-				"version": "الإصدار",
-				"author": "المؤلف",
-				"home_page": "الصفحة الرئيسية",
-				"issue_page": "الإبلاغ عن مشكلة",
-				"refreshButton": {
-					"alt": "تحديث",
-					"title": "تحديث"
-				},
 				"defaultCheckbox": {
 					"title": "تعيين كعالم افتراضي"
 				}
 			}
 		},
 		"personas": {
-			"tab": "الهويات",
 			"title": "اختيار الهوية",
 			"subtitle": "اختر هوية وجرب الحياة.",
-			"none": "فارغ تمامًا",
 			"card": {
-				"noTags": "لا توجد وسوم",
-				"version": "الإصدار",
-				"author": "المؤلف",
-				"home_page": "الصفحة الرئيسية",
-				"issue_page": "الإبلاغ عن مشكلة",
-				"refreshButton": {
-					"alt": "تحديث",
-					"title": "تحديث"
-				},
 				"defaultCheckbox": {
 					"title": "تعيين كهوية افتراضية"
 				}
@@ -587,6 +582,20 @@
 					},
 					"addCharIcon": {
 						"alt": "أيقونة إضافة شخصية"
+					}
+				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "أيقونة قائمة الملحقات"
+				},
+				"title": "قائمة الملحقات",
+				"buttons": {
+					"addPlugin": {
+						"title": "إضافة ملحق"
+					},
+					"addPluginIcon": {
+						"alt": "أيقونة إضافة ملحق"
 					}
 				}
 			}
@@ -729,6 +738,16 @@
 				},
 				"forceReplyIcon": {
 					"alt": "أيقونة الإجبار على الرد"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "إزالة ملحق"
+				},
+				"removePluginIcon": {
+					"alt": "أيقونة إزالة الملحق"
 				}
 			}
 		},
@@ -1147,7 +1166,7 @@
 	"languageSettings": {
 		"title": "إعدادات اللغة",
 		"pageTitle": "إعدادات اللغة",
-		"description": "إدارة تفضيلات اللغة الخاصة بك لتطبيق Fount. قم بتخصيص تجربتك مع خيارات اللغة المتاحة.",
+		"description": "إدارة تفضيلات اللغة الخاصة بك لتطبيق fount. قم بتخصيص تجربتك مع خيارات اللغة المتاحة.",
 		"pageDescription": "إدارة تفضيلات لغتك هنا. ستؤدي اللغات في القائمة إلى الأسبقية على إعدادات المتصفح بالترتيب.",
 		"availableLanguages": "اللغات المتاحة",
 		"preferredLanguages": "قائمة لغة الأولوية",
@@ -1593,7 +1612,7 @@
 	},
 	"proxy": {
 		"title": "وكيل API",
-		"description": "بالنسبة للمطورين والمتكاملين، تكشف هذه الصفحة عن وكيل واجهة برمجة التطبيقات (API) - اتصالك لنسج إمكانات Fount في تطبيقات أخرى.",
+		"description": "بالنسبة للمطورين والمتكاملين، تكشف هذه الصفحة عن وكيل واجهة برمجة التطبيقات (API) - اتصالك لنسج إمكانات fount في تطبيقات أخرى.",
 		"heading": "بوابة وكيل API",
 		"instruction": "قم بإنشاء وإدارة مفاتيح API الخاصة بك في هذه الصفحة لدمج fount مع التطبيقات الأخرى.",
 		"endpointSectionTitle": "نقطة نهاية API",
@@ -1617,7 +1636,7 @@
 	},
 	"achievements": {
 		"title": "إنجاز",
-		"description": "استكشف المعالم والإنجازات في رحلتك مع Fount. يمثل كل إنجاز خطوة في سردك الفريد.",
+		"description": "استكشف المعالم والإنجازات في رحلتك مع fount. يمثل كل إنجاز خطوة في سردك الفريد.",
 		"pageHeader": "قاعة الإنجاز",
 		"pageDescription": "تحقق من إنجازاتك ومعالمك غير المقفلة هنا.",
 		"unlocked_on": "تم فتح القفل في ${date}",

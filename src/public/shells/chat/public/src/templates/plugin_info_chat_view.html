@@ -1,0 +1,14 @@
+<div class="card bg-base-100 shadow-sm mt-2 w-full" data-template-type="plugin">
+	<div class="card-body">
+		<img src="${avatar || 'https://api.iconify.design/mdi/puzzle-outline.svg'}" class="w-12 h-12 rounded-full mr-4" style="object-fit: cover;" />
+		<div>
+			<h2 class="card-title">${name}</h2>
+			<p>${description}</p>
+		</div>
+	</div>
+	<div class="card-actions justify-end p-2 px-4">
+		<button class="btn btn-xs btn-error remove-plugin-button" data-i18n="chat.pluginCard.buttons.removePlugin">
+			<img src="https://api.iconify.design/line-md/close-circle.svg" data-i18n="chat.pluginCard.buttons.removePluginIcon" />
+		</button>
+	</div>
+</div>

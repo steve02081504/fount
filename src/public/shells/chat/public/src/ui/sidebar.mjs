@@ -7,10 +7,12 @@ import {
 	getWorldDetails,
 	getPersonaList,
 	getPersonaDetails,
+	getPluginList as getAllPluginsList,
+	getPluginDetails,
 } from '../../../../../scripts/parts.mjs'
 import { renderTemplate } from '../../../../../scripts/template.mjs'
-import { charList, worldName, personaName, setCharList, setWorldName, setPersonaName } from '../chat.mjs'
-import { addCharacter, setPersona, setWorld, removeCharacter, triggerCharacterReply, setCharReplyFrequency } from '../endpoints.mjs'
+import { charList, worldName, personaName, setCharList, setWorldName, setPersonaName, pluginList, setPluginList } from '../chat.mjs'
+import { addCharacter, setPersona, setWorld, removeCharacter, triggerCharacterReply, setCharReplyFrequency, addPlugin, removePlugin } from '../endpoints.mjs'
 
 const worldSelect = document.getElementById('world-select')
 const worldDetailsContainer = document.getElementById('world-details')
@@ -19,6 +21,9 @@ const personaDetailsContainer = document.getElementById('persona-details')
 const charSelect = document.getElementById('char-select')
 const charDetailsContainer = document.getElementById('char-details')
 const addCharButton = document.getElementById('add-char-button')
+const pluginSelect = document.getElementById('plugin-select')
+const pluginDetailsContainer = document.getElementById('plugin-details')
+const addPluginButton = document.getElementById('add-plugin-button')
 const itemDescription = document.getElementById('item-description')
 const rightSidebarContainer = document.getElementById('right-sidebar-container')
 const leftDrawerCheckbox = document.getElementById('left-drawer')
@@ -28,6 +33,7 @@ const cachedDom = {
 	world: {},
 	persona: {},
 	character: {},
+	plugin: {},
 }
 
 /**
@@ -236,6 +242,73 @@ async function renderCharDetails(charName, frequency_num) {
 }
 
 /**
+ * 渲染插件列表
+ * @param {object} data - 包含插件列表的对象。
+ */
+async function renderPluginList(data) {
+	if (!data) return
+	const allPlugins = await getAllPluginsList()
+	const currentPluginsRendered = Array.from(pluginDetailsContainer.children).map(child => child.getAttribute('data-plugin-name'))
+	const { added, removed, unchanged } = compareLists(currentPluginsRendered, pluginList)
+
+	// 删除已经移除的插件
+	removed.forEach(plugin => {
+		const pluginCardToRemove = pluginDetailsContainer.querySelector(`[data-plugin-name="${plugin}"]`)
+		if (pluginCardToRemove) {
+			pluginDetailsContainer.removeChild(pluginCardToRemove)
+			delete cachedDom.plugin[plugin] // 清理缓存
+		}
+	})
+
+	// 添加新的插件
+	for (const plugin of added)
+		await renderPluginDetails(plugin)
+
+	// 更新可用插件列表
+	const availablePlugins = allPlugins.filter(plugin => !pluginList.includes(plugin))
+	const pluginSelectOldList = Array.from(pluginSelect.options).map(option => option.value)
+	const { added: pluginSelectAdded, removed: pluginSelectRemoved } = compareLists(pluginSelectOldList, availablePlugins)
+
+	pluginSelectRemoved.forEach(name => {
+		const optionToRemove = pluginSelect.querySelector(`option[value="${name}"]`)
+		if (optionToRemove) pluginSelect.removeChild(optionToRemove)
+	})
+
+	pluginSelectAdded.forEach(name => {
+		const option = document.createElement('option')
+		option.value = name
+		option.text = name
+		pluginSelect.add(option)
+	})
+}
+
+/**
+ * 渲染插件详情
+ * @param {string} pluginName 插件名称
+ */
+async function renderPluginDetails(pluginName) {
+	let pluginData
+	if (!cachedDom.plugin[pluginName]) {
+		pluginData = await getPluginDetails(pluginName)
+		if (!pluginData) return
+		const pluginCard = cachedDom.plugin[pluginName] = await renderTemplate('plugin_info_chat_view', {
+			...pluginData.info
+		})
+		pluginCard.setAttribute('data-plugin-name', pluginName)
+		addCardEventListeners(pluginCard, pluginData)
+
+		// 添加移除按钮的事件监听
+		const removePluginButton = pluginCard.querySelector('.remove-plugin-button')
+		removePluginButton.addEventListener('click', async () => {
+			await removePlugin(pluginName)
+		})
+	}
+
+	if (cachedDom.plugin[pluginName] && !pluginDetailsContainer.querySelector(`[data-plugin-name="${pluginName}"]`))
+		pluginDetailsContainer.appendChild(cachedDom.plugin[pluginName])
+}
+
+/**
  * 为卡片添加事件监听器
  * @param {HTMLElement} card 卡片元素
  * @param {object} data 卡片数据
@@ -299,6 +372,12 @@ export async function setupSidebar() {
 			await addCharacter(charName)
 	})
 
+	addPluginButton.addEventListener('click', async () => {
+		const pluginName = pluginSelect.value
+		if (pluginName && !pluginList.includes(pluginName))
+			await addPlugin(pluginName)
+	})
+
 	// 点击非右侧边栏关闭右侧边栏
 	document.addEventListener('click', event => {
 		if (!rightSidebarContainer.contains(event.target))
@@ -317,6 +396,7 @@ export async function setupSidebar() {
  */
 export async function updateSidebar(data) {
 	setCharList(data.charlist)
+	setPluginList(data.pluginlist)
 	setWorldName(data.worldname)
 	setPersonaName(data.personaname)
 
@@ -324,6 +404,7 @@ export async function updateSidebar(data) {
 	await renderWorldList()
 	await renderPersonaList()
 	await renderCharList(data)
+	await renderPluginList(data)
 }
 
 /**
@@ -407,6 +488,51 @@ export async function handleCharFrequencySet(charname, frequency) {
 }
 
 /**
+ * 处理插件添加。
+ * @param {string} pluginname - 要添加的插件的名称。
+ */
+export async function handlePluginAdded(pluginname) {
+	if (pluginList.includes(pluginname)) return // Already there
+
+	pluginList.push(pluginname)
+	setPluginList(pluginList)
+
+	// Add to UI
+	await renderPluginDetails(pluginname)
+
+	// Remove from select dropdown
+	const optionToRemove = pluginSelect.querySelector(`option[value="${pluginname}"]`)
+	if (optionToRemove) pluginSelect.removeChild(optionToRemove)
+}
+
+/**
+ * 处理插件移除。
+ * @param {string} pluginname - 要移除的插件的名称。
+ */
+export async function handlePluginRemoved(pluginname) {
+	const index = pluginList.indexOf(pluginname)
+	if (index === -1) return // Not there
+
+	pluginList.splice(index, 1)
+	setPluginList(pluginList)
+
+	// Remove from UI
+	const pluginCardToRemove = pluginDetailsContainer.querySelector(`[data-plugin-name="${pluginname}"]`)
+	if (pluginCardToRemove) {
+		pluginDetailsContainer.removeChild(pluginCardToRemove)
+		delete cachedDom.plugin[pluginname]
+	}
+
+	// Add back to select dropdown
+	if (!pluginSelect.querySelector(`option[value="${pluginname}"]`)) {
+		const option = document.createElement('option')
+		option.value = pluginname
+		option.text = pluginname
+		pluginSelect.add(option)
+	}
+}
+
+/**
  * Adds a part to the relevant select list in the sidebar.
  * @param {string} parttype - The type of the part (e.g., 'worlds', 'personas', 'chars').
  * @param {string} partname - The name of the part.
@@ -422,6 +548,9 @@ export function addPartToSelect(parttype, partname) {
 			break
 		case 'chars':
 			selectElement = charSelect
+			break
+		case 'plugins':
+			selectElement = pluginSelect
 			break
 		default:
 			return
@@ -455,6 +584,10 @@ export function removePartFromSelect(parttype, partname) {
 		case 'chars':
 			selectElement = charSelect
 			cacheType = 'character'
+			break
+		case 'plugins':
+			selectElement = pluginSelect
+			cacheType = 'plugin'
 			break
 		default:
 			return

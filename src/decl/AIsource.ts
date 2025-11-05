@@ -57,7 +57,12 @@ export class AIsource_t<InputType, OutputType> {
 	/**
 	 * AI 数据源的详细信息。
 	 */
-	info: info_t
+	info: info_t<{
+		/**
+		 * 提供者。
+		 */
+		provider: string;
+	}>
 	/**
 	 * 指示该 AI 数据源是否为付费服务。
 	 */

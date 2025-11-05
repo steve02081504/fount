@@ -70,7 +70,10 @@ export function usingTemplates(path) {
  */
 export async function renderTemplate(template, data = {}) {
 	data.geti18n ??= geti18n
-	template_cache[template] ??= fetch(templatePath + '/' + template + '.html').then(response => response.text())
+	template_cache[template] ??= fetch(templatePath + '/' + template + '.html').then(response => {
+		if (!response.ok) throw new Error(`HTTP error, status: ${response.status}`)
+		return response.text()
+	})
 	let html = template_cache[template] = await template_cache[template]
 
 	// 使用循环匹配所有 ${...} 表达式

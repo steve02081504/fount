@@ -1,6 +1,6 @@
 import { loadJsonFile, saveJsonFile } from '../../scripts/json_loader.mjs'
 import { getUserDictionary } from '../auth.mjs'
-import { getDefaultParts, isPartLoaded, loadPartBase, unloadPartBase } from '../parts_loader.mjs'
+import { getAnyDefaultPart, isPartLoaded, loadPartBase, unloadPartBase } from '../parts_loader.mjs'
 import { skip_report } from '../server.mjs'
 
 /**
@@ -157,7 +157,7 @@ export async function reloadAIsource(username, AIsourcename) {
  * @returns {Promise<any>} 一个解析为已加载 AI 源的承诺。
  */
 export async function loadDefaultAIsource(username) {
-	const defaultAIsourceName = getDefaultParts(username).AIsources
+	const defaultAIsourceName = getAnyDefaultPart(username, 'AIsources')
 	if (!defaultAIsourceName) return
 	return loadAIsource(username, defaultAIsourceName)
 }

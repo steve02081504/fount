@@ -181,9 +181,10 @@ export default {
 		}
 	},
 	/**
-	 * 加载主页Shell，设置API端点并监听部件安装/卸载事件。
-	 * @param {object} root0 - 参数对象。
-	 * @param {object} root0.router - Express的路由实例。
+	 * 加载主页Shell。
+	 * 此函数设置API端点，并订阅`part-installed`和`part-uninstalled`事件，以在部件状态变更时更新主页注册表。
+	 * @param {object} params - 参数对象。
+	 * @param {import('npm:websocket-express').Router} params.router - Express的路由实例，用于注册API端点。
 	 */
 	Load: async ({ router }) => {
 		setEndpoints(router)
@@ -191,7 +192,8 @@ export default {
 		events.on('part-uninstalled', onPartUninstalled)
 	},
 	/**
-	 * 卸载主页Shell，移除事件监听器。
+	 * 卸载主页Shell。
+	 * 此函数会移除在加载时设置的事件监听器，以进行清理。
 	 */
 	Unload: async () => {
 		events.off('part-installed', onPartInstalled)
