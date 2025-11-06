@@ -4,7 +4,10 @@
  * @returns {Promise<object>} - 服务器响应。
  */
 export async function ping(with_cache = false) {
-	const response = await fetch('/api/ping', { cache: with_cache ? 'default' : 'no-cache' })
+	const response = await fetch('/api/ping', {
+		credentials: 'omit',
+		cache: with_cache ? 'default' : 'no-cache'
+	})
 	return response.json()
 }
 

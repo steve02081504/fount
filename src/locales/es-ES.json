@@ -11,6 +11,10 @@
 				"https": "Servidor HTTPS en ejecución en ${url}",
 				"http": "Servidor HTTP en ejecución en ${url}"
 			},
+			"mdns": {
+				"description": "Donde la Imaginación Cobra Vida.",
+				"failed": "Error en el registro de mDNS: ${error}"
+			},
 			"localUrl": "Acceso a fount desde otros dispositivos en la misma red: ${url}",
 			"update": {
 				"restarting": "Se descubrió una nueva versión y la actualización se está reiniciando..."
@@ -224,6 +228,9 @@
 			"description": "fount ofrece una variedad y flexibilidad incomparables. Conéctate a <i>cualquier</i> origen de IA: OpenAI, Claude, OpenRouter, NovelAI, etc. La lógica de comunicación se moldeará con el poder del código según <i>tus</i> deseos."
 		},
 		"language_selector": {
+			"button": {
+				"aria-label": "Seleccionar idioma"
+			},
 			"search": {
 				"placeholder": "Buscar idioma..."
 			}
@@ -455,61 +462,56 @@
 				"alt": "Menú de funciones"
 			}
 		},
-		"chars": {
-			"tab": "Personajes",
-			"title": "Selección de personaje",
-			"subtitle": "¡Selecciona un personaje y empieza a chatear!",
-			"none": "Nada que mostrar",
+		"part_types": {
+			"chars": "Rol",
+			"worlds": "Mundo",
+			"personas": "Personalidad",
+			"plugins": "complemento",
+			"AIsources": "fuente de IA",
+			"AIsourceGenerators": "Generador de fuentes de IA",
+			"ImportHandlers": "Procesador de importación",
+			"shells": "Shell"
+		},
+		"default": {
+			"title": "Selección de componentes",
+			"subtitle": "Seleccione un componente para continuar.",
 			"card": {
-				"noTags": "Sin etiquetas",
+				"noTags": "sin etiqueta",
 				"version": "Versión",
 				"author": "Autor",
 				"home_page": "Página de inicio",
-				"issue_page": "Reportar incidencia",
+				"issue_page": "Informar de un problema",
 				"refreshButton": {
 					"alt": "Actualizar",
 					"title": "Actualizar"
 				},
+				"defaultCheckbox": {
+					"title": "Establecer como predeterminado"
+				}
+			}
+		},
+		"chars": {
+			"title": "Selección de personaje",
+			"subtitle": "¡Selecciona un personaje y empieza a chatear!",
+			"card": {
 				"defaultCheckbox": {
 					"title": "Establecer como personaje predeterminado"
 				}
 			}
 		},
 		"worlds": {
-			"tab": "Mundos",
 			"title": "Selección de mundo",
 			"subtitle": "¡Elige un mundo y sumérgete!",
-			"none": "Nada que mostrar",
 			"card": {
-				"noTags": "Sin etiquetas",
-				"version": "Versión",
-				"author": "Autor",
-				"home_page": "Página de inicio",
-				"issue_page": "Reportar un problema",
-				"refreshButton": {
-					"alt": "Actualizar",
-					"title": "Actualizar"
-				},
 				"defaultCheckbox": {
 					"title": "Establecer como mundo predeterminado"
 				}
 			}
 		},
 		"personas": {
-			"tab": "Personas",
 			"title": "Selección de persona",
 			"subtitle": "Elige una persona y vive otra vida.",
-			"none": "Nada que mostrar",
 			"card": {
-				"noTags": "Sin etiquetas",
-				"version": "Versión",
-				"author": "Autor",
-				"home_page": "Página de inicio",
-				"issue_page": "Reportar incidencia",
-				"refreshButton": {
-					"alt": "Actualizar",
-					"title": "Actualizar"
-				},
 				"defaultCheckbox": {
 					"title": "Establecer como persona predeterminada"
 				}
@@ -580,6 +582,20 @@
 					},
 					"addCharIcon": {
 						"alt": "Icono de añadir personaje"
+					}
+				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "Icono de lista de complementos"
+				},
+				"title": "Lista de complementos",
+				"buttons": {
+					"addPlugin": {
+						"title": "Agregar complemento"
+					},
+					"addPluginIcon": {
+						"alt": "Icono de agregar complemento"
 					}
 				}
 			}
@@ -722,6 +738,16 @@
 				},
 				"forceReplyIcon": {
 					"alt": "Icono de forzar respuesta"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "Eliminar complemento"
+				},
+				"removePluginIcon": {
+					"alt": "Icono de eliminar complemento"
 				}
 			}
 		},
@@ -1448,7 +1474,7 @@
 		"what_is_manager": "¿Qué es un gestor de scripts de usuario?",
 		"manager_explanation": "Un gestor de scripts de usuario es una extensión del navegador que le permite instalar y ejecutar scripts que modifican las páginas web. Para usar el script de integración de fount, necesita una de las extensiones.",
 		"popular_managers": "Opciones populares:",
-		"csp_warning": "Es posible que deba instalar el complemento para desactivar CSP para que la función de integración funcione correctamente. Para Chrome, puede usar <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener\" class=\"link\">este complemento</a>.",
+		"csp_warning": "Es posible que deba instalar el complemento para desactivar CSP para que la función de integración funcione correctamente. Para ${browser}, puede usar <a href=\"${link}\" target=\"_blank\" rel=\"noopener\" class=\"link\">este complemento</a>.",
 		"connected_pages_title": "Página conectada",
 		"fetch_pages_error": "No se pudo cargar la lista de páginas vinculada.",
 		"page_title": "Título de página",
@@ -1575,6 +1601,12 @@
 			"sameLAN": "Asegúrate de que el dispositivo y el host de fount están en la misma red local.",
 			"accessthis": "Visita esta URL:"
 		},
+		"QRcode": {
+			"alt": "Escanee este código QR para acceder a fount"
+		},
+		"urlInput": {
+			"aria-label": "URL"
+		},
 		"copyButton": "Copiar URL",
 		"copied": "¡URL copiada al portapapeles!"
 	},
@@ -1585,6 +1617,9 @@
 		"instruction": "Genere y gestione sus claves de API en esta página para integrar fount con otras aplicaciones.",
 		"endpointSectionTitle": "Punto Final de la API",
 		"endpointInstruction": "Esta es la URL base para la integración con otros servicios.",
+		"apiUrlInput": {
+			"aria-label": "Punto final API"
+		},
 		"usageExampleTitle": "Ejemplo de Uso",
 		"usageExampleInstruction": "Aquí hay un ejemplo de cómo obtener la lista de modelos disponibles usando `curl`.",
 		"copyButton": "Copiar",

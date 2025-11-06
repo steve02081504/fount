@@ -11,6 +11,10 @@
 				"https": "HTTPS-server draait op ${url}",
 				"http": "HTTP-server draait op ${url}"
 			},
+			"mdns": {
+				"description": "Een Vonk van de Geest, een Vriend voor het Leven",
+				"failed": "mDNS-registratie mislukt: ${error}"
+			},
 			"localUrl": "Toegang tot fount vanaf andere apparaten op hetzelfde netwerk: ${url}",
 			"update": {
 				"restarting": "Er is een nieuwe versie gevonden. De update wordt opnieuw gestart..."
@@ -224,6 +228,9 @@
 			"description": "fount biedt een ongeëvenaarde keuze en flexibiliteit. Maak verbinding met <i>elke</i> AI-bron – OpenAI, Claude, OpenRouter, NovelAI en meer. De communicatielogica wordt gevormd naar <i>jouw</i> wil, door de kracht van code."
 		},
 		"language_selector": {
+			"button": {
+				"aria-label": "Selecteer taal"
+			},
 			"search": {
 				"placeholder": "Taal zoeken..."
 			}
@@ -455,61 +462,56 @@
 				"alt": "Functiemenu"
 			}
 		},
-		"chars": {
-			"tab": "Personages",
-			"title": "Personagekeuze",
-			"subtitle": "Kies een personage en begin met chatten!",
-			"none": "Helemaal leeg",
+		"part_types": {
+			"chars": "Rol",
+			"worlds": "Wereld",
+			"personas": "Persoonlijkheid",
+			"plugins": "plug-in",
+			"AIsources": "AI-bron",
+			"AIsourceGenerators": "AI-brongenerator",
+			"ImportHandlers": "Importverwerker",
+			"shells": "Interactieve interface"
+		},
+		"default": {
+			"title": "Componentselectie",
+			"subtitle": "Selecteer een onderdeel om door te gaan.",
 			"card": {
-				"noTags": "Geen tags",
+				"noTags": "Geen etiket",
 				"version": "Versie",
 				"author": "Auteur",
-				"home_page": "Homepage",
+				"home_page": "Startpagina",
 				"issue_page": "Probleem melden",
 				"refreshButton": {
 					"alt": "Vernieuwen",
 					"title": "Vernieuwen"
 				},
+				"defaultCheckbox": {
+					"title": "Als standaard instellen"
+				}
+			}
+		},
+		"chars": {
+			"title": "Personagekeuze",
+			"subtitle": "Kies een personage en begin met chatten!",
+			"card": {
 				"defaultCheckbox": {
 					"title": "Instellen als standaardpersonage"
 				}
 			}
 		},
 		"worlds": {
-			"tab": "Werelden",
 			"title": "Wereldkeuze",
 			"subtitle": "Kies een wereld en duik erin!",
-			"none": "Helemaal leeg",
 			"card": {
-				"noTags": "Geen tags",
-				"version": "Versie",
-				"author": "Auteur",
-				"home_page": "Homepage",
-				"issue_page": "Probleem melden",
-				"refreshButton": {
-					"alt": "Vernieuwen",
-					"title": "Vernieuwen"
-				},
 				"defaultCheckbox": {
 					"title": "Instellen als standaardwereld"
 				}
 			}
 		},
 		"personas": {
-			"tab": "Persona's",
 			"title": "Personakeuze",
 			"subtitle": "Kies een persona, beleef een leven.",
-			"none": "Helemaal leeg",
 			"card": {
-				"noTags": "Geen tags",
-				"version": "Versie",
-				"author": "Auteur",
-				"home_page": "Homepage",
-				"issue_page": "Probleem melden",
-				"refreshButton": {
-					"alt": "Vernieuwen",
-					"title": "Vernieuwen"
-				},
 				"defaultCheckbox": {
 					"title": "Instellen als standaardpersona"
 				}
@@ -549,7 +551,7 @@
 	},
 	"chat": {
 		"title": "Chat",
-		"description": "Waar woorden de vlucht nemen en verhalen zich ontvouwen. Ga in gesprek met uw AI-metgezellen, geef vorm aan het verhaal en verlies uzelf in de eb en vloed van de digitale dialoog. Het hart van Fount klopt hier.",
+		"description": "Waar woorden de vlucht nemen en verhalen zich ontvouwen. Ga in gesprek met uw AI-metgezellen, geef vorm aan het verhaal en verlies uzelf in de eb en vloed van de digitale dialoog. Het hart van fount klopt hier.",
 		"new": {
 			"title": "Nieuwe chat",
 			"description": "De stille verwachting van een nog ongeschreven verhaal. Er begint een nieuwe chat, een schone lei voor nieuwe interacties en zich ontvouwende verhalen met de door u gekozen metgezellen."
@@ -580,6 +582,20 @@
 					},
 					"addCharIcon": {
 						"alt": "Personage toevoegen pictogram"
+					}
+				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "Pictogram voor plug-inlijst"
+				},
+				"title": "Plug-inlijst",
+				"buttons": {
+					"addPlugin": {
+						"title": "Plug-in toevoegen"
+					},
+					"addPluginIcon": {
+						"alt": "Plug-in toevoegen pictogram"
 					}
 				}
 			}
@@ -722,6 +738,16 @@
 				},
 				"forceReplyIcon": {
 					"alt": "Antwoord forceren pictogram"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "Plug-in verwijderen"
+				},
+				"removePluginIcon": {
+					"alt": "Plug-in verwijderen pictogram"
 				}
 			}
 		},
@@ -1448,7 +1474,7 @@
 		"what_is_manager": "Wat is een userscriptbeheerder?",
 		"manager_explanation": "Een userscriptbeheerder is een browserverlenging waarmee u scripts kunt installeren en uitvoeren die webpagina's wijzigen. Om het fount Integration Script te gebruiken, hebt u een van de extensies nodig.",
 		"popular_managers": "Populaire keuzes:",
-		"csp_warning": "Mogelijk moet u de plug -in installeren om CSP uit te schakelen om de integratiefunctie goed te laten werken. Voor Chrome kunt u <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener\" class=\"link\"> deze plugin </a>.",
+		"csp_warning": "Mogelijk moet u de plug -in installeren om CSP uit te schakelen om de integratiefunctie goed te laten werken. Voor ${browser} kunt u <a href=\"${link}\" target=\"_blank\" rel=\"noopener\" class=\"link\">deze plugin</a>.",
 		"connected_pages_title": "Verbonden pagina",
 		"fetch_pages_error": "Kan de gekoppelde pagina -lijst niet laden.",
 		"page_title": "Paginietitel",
@@ -1575,16 +1601,25 @@
 			"sameLAN": "Zorg ervoor dat het apparaat en de fount-host zich op hetzelfde lokale netwerk bevinden",
 			"accessthis": "Bezoek het volgende adres:"
 		},
+		"QRcode": {
+			"alt": "Scan deze QR-code om toegang te krijgen tot fount"
+		},
+		"urlInput": {
+			"aria-label": "URL"
+		},
 		"copyButton": "Adres kopiëren",
 		"copied": "Adres gekopieerd naar klembord!"
 	},
 	"proxy": {
 		"title": "API Proxy",
-		"description": "Voor ontwikkelaars en integrators onthult deze pagina de Fount API-proxy: uw verbinding om de mogelijkheden van Fount in andere applicaties te verweven.",
+		"description": "Voor ontwikkelaars en integrators onthult deze pagina de fount API-proxy: uw verbinding om de mogelijkheden van fount in andere applicaties te verweven.",
 		"heading": "API Proxy Gateway",
 		"instruction": "Genereer en beheer uw API-sleutels op deze pagina om fount te integreren met andere applicaties.",
 		"endpointSectionTitle": "API-eindpunt",
 		"endpointInstruction": "Dit is de basis-URL voor integratie met andere services.",
+		"apiUrlInput": {
+			"aria-label": "API-eindpunt"
+		},
 		"usageExampleTitle": "Gebruiksvoorbeeld",
 		"usageExampleInstruction": "Hier is een voorbeeld van hoe u de lijst met beschikbare modellen kunt ophalen met `curl`.",
 		"copyButton": "Kopiëren",

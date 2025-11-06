@@ -1,6 +1,7 @@
 /** @typedef {import('../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
 /** @typedef {import('../../../../decl/worldAPI.ts').WorldAPI_t} WorldAPI_t */
 /** @typedef {import('../../../../decl/userAPI.ts').UserAPI_t} UserAPI_t */
+/** @typedef {import('../../../../decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t */
 /** @typedef {import('../../../../decl/basedefs.ts').locale_t} locale_t */
 
 import { Buffer } from 'node:buffer'
@@ -13,8 +14,9 @@ import { getUserByUsername, getUserDictionary, getAllUserNames } from '../../../
 import { events } from '../../../../server/events.mjs'
 import { LoadChar } from '../../../../server/managers/char_manager.mjs'
 import { loadPersona } from '../../../../server/managers/persona_manager.mjs'
+import { loadPlugin } from '../../../../server/managers/plugin_manager.mjs'
 import { loadWorld } from '../../../../server/managers/world_manager.mjs'
-import { getDefaultParts, getPartDetails } from '../../../../server/parts_loader.mjs'
+import { getAllDefaultParts, getAnyDefaultPart, getPartDetails } from '../../../../server/parts_loader.mjs'
 import { skip_report } from '../../../../server/server.mjs'
 import { loadShellData, saveShellData } from '../../../../server/setting_loader.mjs'
 import { sendNotification } from '../../../../server/web_server/event_dispatcher.mjs'
@@ -49,11 +51,9 @@ export function registerChatUiSocket(chatid, ws) {
 
 	const socketSet = chatUiSockets.get(chatid)
 	socketSet.add(ws)
-	console.log(`Chat UI WebSocket registered for chat ${chatid}. Total: ${socketSet.size}`)
 
 	ws.on('close', () => {
 		socketSet.delete(ws)
-		console.log(`Chat UI WebSocket disconnected for chat ${chatid}. Total: ${socketSet.size}`)
 		const chatData = chatMetadatas.get(chatid)
 		if (!socketSet.size && chatUiSockets.delete(chatid)) {
 			clearTimeout(chatDeleteTimers.get(chatid))
@@ -124,6 +124,11 @@ class timeSlice_t {
 	 */
 	chars = {}
 	/**
+	 * 当前聊天中全局激活的插件对象映射表。键为插件ID，值为插件API对象。
+	 * @type {Record<string, PluginAPI_t>}
+	 */
+	plugins = {}
+	/**
 	 * 当前聊天所在的世界API对象。
 	 * @type {WorldAPI_t}
 	 */
@@ -193,6 +198,7 @@ class timeSlice_t {
 	toJSON() {
 		return {
 			chars: Object.keys(this.chars),
+			plugins: Object.keys(this.plugins),
 			world: this.world_id,
 			player: this.player_id,
 			chars_memories: this.chars_memories,
@@ -208,6 +214,7 @@ class timeSlice_t {
 	async toData() {
 		return {
 			chars: Object.keys(this.chars),
+			plugins: Object.keys(this.plugins),
 			world: this.world_id,
 			player: this.player_id,
 			chars_memories: this.chars_memories,
@@ -223,13 +230,14 @@ class timeSlice_t {
 	 * @returns {Promise<timeSlice_t>} 一个填充了完整数据的 timeSlice_t 实例。
 	 */
 	static async fromJSON(json, username) {
-		const chars = {}
-		for (const charname of json.chars)
-			chars[charname] = await LoadChar(username, charname).catch(() => { })
-
 		return Object.assign(new timeSlice_t(), {
 			...json,
-			chars,
+			chars: Object.fromEntries(await Promise.all(
+				(json.chars || []).map(async charname => [charname, await LoadChar(username, charname).catch(() => { })])
+			)),
+			plugins: Object.fromEntries(await Promise.all(
+				(json.plugins || []).map(async plugin => [plugin, await loadPlugin(username, plugin).catch(() => { })])
+			)),
 			world_id: json.world,
 			world: json.world ? await loadWorld(username, json.world).catch(() => { }) : undefined,
 			player_id: json.player,
@@ -355,13 +363,20 @@ class chatMetadata_t {
 	static async StartNewAs(username) {
 		const metadata = new chatMetadata_t(username)
 
-		metadata.LastTimeSlice.player_id = getDefaultParts(username).persona
+		metadata.LastTimeSlice.player_id = getAnyDefaultPart(username, 'personas')
 		if (metadata.LastTimeSlice.player_id)
 			metadata.LastTimeSlice.player = await loadPersona(username, metadata.LastTimeSlice.player_id)
 
-		metadata.LastTimeSlice.world_id = getDefaultParts(username).world
+		metadata.LastTimeSlice.world_id = getAnyDefaultPart(username, 'worlds')
 		if (metadata.LastTimeSlice.world_id)
 			metadata.LastTimeSlice.world = await loadWorld(username, metadata.LastTimeSlice.world_id)
+
+		metadata.LastTimeSlice.plugins = Object.fromEntries(await Promise.all(
+			getAllDefaultParts(username, 'plugins').map(async plugin => [
+				plugin,
+				await loadPlugin(username, plugin)
+			])
+		))
 
 		return metadata
 	}
@@ -592,7 +607,7 @@ async function getChatRequest(chatid, charname) {
 		user: timeSlice.player,
 		other_chars,
 		chat_scoped_char_memory: timeSlice.chars_memories[charname] ??= {},
-		plugins: {},
+		plugins: timeSlice.plugins,
 		extension: {}
 	}
 
@@ -660,8 +675,7 @@ export async function setWorld(chatid, worldname) {
 				result = await world.interfaces.chat.GetGroupGreeting(request, 0)
 				break
 		}
-		if (!result)
-			return
+		if (!result) return
 
 		const greeting_entrie = await BuildChatLogEntryFromCharReply(result, timeSlice, null, undefined, username)
 		await addChatLogEntry(chatid, greeting_entrie) // 此处已广播
@@ -687,16 +701,14 @@ export async function addchar(chatid, charname) {
 	const chatMetadata = await loadChat(chatid)
 	if (!chatMetadata) throw new Error('Chat not found')
 
-	const { username, chatLog } = chatMetadata
+	const { username } = chatMetadata
 	const timeSlice = chatMetadata.LastTimeSlice.copy()
-	if (chatLog.length)
+	if (Object.keys(timeSlice.chars).length)
 		timeSlice.greeting_type = 'group'
 	else
 		timeSlice.greeting_type = 'single'
 
-	if (timeSlice.chars[charname])
-		return null
-
+	if (timeSlice.chars[charname]) return null
 
 	const char = timeSlice.chars[charname] = await LoadChar(username, charname)
 	broadcastChatEvent(chatid, { type: 'char_added', payload: { charname } })
@@ -714,8 +726,7 @@ export async function addchar(chatid, charname) {
 				result = await char.interfaces.chat.GetGroupGreeting(request, 0)
 				break
 		}
-		if (!result)
-			return null
+		if (!result) return null
 
 		const greeting_entrie = await BuildChatLogEntryFromCharReply(result, timeSlice, char, charname, username)
 		await addChatLogEntry(chatid, greeting_entrie) // 此处已广播
@@ -742,6 +753,40 @@ export async function removechar(chatid, charname) {
 }
 
 /**
+ *向聊天中添加一个新插件。
+ * @param {string} chatid - 聊天ID。
+ * @param {string} pluginname - 要添加的插件ID。
+ * @returns {Promise<void>}
+ * @throws {Error} 如果聊天未找到。
+ */
+export async function addplugin(chatid, pluginname) {
+	const chatMetadata = await loadChat(chatid)
+	if (!chatMetadata) throw new Error('Chat not found')
+
+	const { username } = chatMetadata
+	const timeSlice = chatMetadata.LastTimeSlice.copy()
+
+	if (timeSlice.plugins[pluginname]) return
+
+	timeSlice.plugins[pluginname] = await loadPlugin(username, pluginname)
+	broadcastChatEvent(chatid, { type: 'plugin_added', payload: { pluginname } })
+
+	if (is_VividChat(chatMetadata)) saveChat(chatid)
+}
+
+/**
+ * 从聊天中移除一个插件。
+ * @param {string} chatid - 聊天ID。
+ * @param {string} pluginname - 要移除的插件ID。
+ */
+export async function removeplugin(chatid, pluginname) {
+	const chatMetadata = await loadChat(chatid)
+	delete chatMetadata.LastTimeSlice.plugins[pluginname]
+	if (is_VividChat(chatMetadata)) saveChat(chatid)
+	broadcastChatEvent(chatid, { type: 'plugin_removed', payload: { pluginname } })
+}
+
+/**
  * 设置聊天中特定角色的发言频率。
  * @param {string} chatid - 聊天ID。
  * @param {string} charname - 角色ID。
@@ -762,6 +807,16 @@ export async function setCharSpeakingFrequency(chatid, charname, frequency) {
 export async function getCharListOfChat(chatid) {
 	const chatMetadata = await loadChat(chatid)
 	return Object.keys(chatMetadata.LastTimeSlice.chars)
+}
+
+/**
+ * 获取聊天中的所有插件ID列表。
+ * @param {string} chatid - 聊天ID。
+ * @returns {Promise<string[]>} 插件ID的数组。
+ */
+export async function getPluginListOfChat(chatid) {
+	const chatMetadata = await loadChat(chatid)
+	return Object.keys(chatMetadata.LastTimeSlice.plugins)
 }
 
 /**
@@ -821,13 +876,10 @@ async function handleAutoReply(chatid, freq_data, initial_char) {
 		if (nextreply) try {
 			await triggerCharReply(chatid, nextreply)
 			return
-		}
-		catch (error) {
+		} catch (error) {
 			console.error(error)
 			char = nextreply
-		}
-		else
-			return
+		} else return
 	}
 }
 
@@ -835,6 +887,7 @@ async function handleAutoReply(chatid, freq_data, initial_char) {
  * 添加聊天记录条目。
  * @param {string} chatid - 聊天ID。
  * @param {chatLogEntry_t} entry - 聊天记录条目。
+ * @returns {Promise<void>}
  */
 async function addChatLogEntry(chatid, entry) {
 	const chatMetadata = await loadChat(chatid)
@@ -925,7 +978,7 @@ export async function modifyTimeLine(chatid, delta) {
 			else
 				entry = await BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, chatMetadata.username)
 
-			if (entry.timeSlice.world.interfaces?.chat?.AddChatLogEntry)
+			if (entry.timeSlice.world?.interfaces?.chat?.AddChatLogEntry)
 				entry.timeSlice.world.interfaces.chat.AddChatLogEntry(await getChatRequest(chatid, undefined), entry)
 			else
 				chatMetadata.chatLog.push(entry)
@@ -1260,7 +1313,7 @@ export async function deleteMessage(chatid, index) {
 
 	/**
 	 * 生成请求。
-	 * @returns {object} - 请求对象。
+	 * @returns {{index: number, chat_log: chatLogEntry_t[], chat_entry: chatLogEntry_t}} - 请求对象。
 	 */
 	function geneRequest() {
 		return {
@@ -1378,6 +1431,7 @@ export async function getInitialData(chatid) {
 	const timeSlice = chatMetadata.LastTimeSlice
 	return {
 		charlist: Object.keys(timeSlice.chars),
+		pluginlist: Object.keys(timeSlice.plugins),
 		worldname: timeSlice.world_id,
 		personaname: timeSlice.player_id,
 		frequency_data: timeSlice.chars_speaking_frequency,

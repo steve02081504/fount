@@ -10,10 +10,10 @@ import { sendEventToUser } from '../../../../server/web_server/event_dispatcher.
 const watchedDirs = new Set()
 
 /**
- * 更新缓存注册表中的单个部件成就。
- * @param {string} username - 用户名。
- * @param {string} parttype - 部件类型。
- * @param {string} partname - 部件名称。
+ * 更新指定用户缓存的成就注册表中的单个部件。
+ * @param {string} username - 用户的名称。
+ * @param {string} parttype - 部件的类型。
+ * @param {string} partname - 部件的名称。
  */
 function updatePartInRegistry(username, parttype, partname) {
 	const registry = loadTempData(username, 'achievements_registry')
@@ -42,10 +42,10 @@ function updatePartInRegistry(username, parttype, partname) {
 }
 
 /**
- * 监视注册表文件的更改。
- * @param {string} username - 用户名。
- * @param {string} parttype - 部件类型。
- * @param {string} partname - 部件名称。
+ * 监视指定部件的成就注册表文件的更改。
+ * @param {string} username - 用户的名称。
+ * @param {string} parttype - 部件的类型。
+ * @param {string} partname - 部件的名称。
  */
 function watchRegistryFile(username, parttype, partname) {
 	const dirPath = GetPartPath(username, parttype, partname)
@@ -62,8 +62,8 @@ function watchRegistryFile(username, parttype, partname) {
 }
 
 /**
- * 首次为用户构建整个注册表。
- * @param {string} username - 用户名。
+ * 为指定用户首次构建完整的成就注册表。
+ * @param {string} username - 用户的名称。
  * @returns {Promise<void>}
  */
 async function buildRegistry(username) {
@@ -91,9 +91,9 @@ async function buildRegistry(username) {
 }
 
 /**
- * 获取成就注册表。
- * @param {string} username - 用户名。
- * @returns {Promise<object>} - 成就注册表。
+ * 获取指定用户的成就注册表，如果不存在则构建它。
+ * @param {string} username - 用户的名称。
+ * @returns {Promise<object>} - 返回成就注册表对象。
  */
 async function getAchievementsRegistry(username) {
 	const registry = loadTempData(username, 'achievements_registry')
@@ -102,9 +102,9 @@ async function getAchievementsRegistry(username) {
 }
 
 /**
- * 获取用户成就数据。
- * @param {string} username - 用户名。
- * @returns {object} - 用户成就数据。
+ * 获取指定用户的成就数据。
+ * @param {string} username - 用户的名称。
+ * @returns {object} - 返回包含用户已解锁成就的对象。
  */
 function getUserAchievementData(username) {
 	const data = loadShellData(username, 'achievements', 'data')
@@ -113,9 +113,9 @@ function getUserAchievementData(username) {
 }
 
 /**
- * 获取所有成就。
- * @param {string} username - 用户名。
- * @returns {Promise<Array<object>>} - 所有成就的详细信息。
+ * 获取指定用户的所有成就的详细信息。
+ * @param {string} username - 用户的名称。
+ * @returns {Promise<Array<object>>} - 返回一个包含所有成就详细信息的对象数组。
  */
 export async function getAllAchievements(username) {
 	const defs = await getAchievementsRegistry(username)
@@ -152,12 +152,12 @@ export async function getAllAchievements(username) {
 }
 
 /**
- * 解锁成就。
- * @param {string} username - 用户名。
- * @param {string} parttype - 部件类型。
- * @param {string} partname - 部件名称。
- * @param {string} achievementId - 成就ID。
- * @returns {Promise<object>} - 解锁结果。
+ * 为指定用户解锁一个成就。
+ * @param {string} username - 用户的名称。
+ * @param {string} parttype - 成就所属部件的类型。
+ * @param {string} partname - 成就所属部件的名称。
+ * @param {string} achievementId - 要解锁的成就的ID。
+ * @returns {Promise<object>} - 返回一个包含操作结果的对象。
  */
 export async function unlockAchievement(username, parttype, partname, achievementId) {
 	const registry = await getAchievementsRegistry(username)
@@ -180,8 +180,8 @@ export async function unlockAchievement(username, parttype, partname, achievemen
 		unlocked_at: unlockedTime,
 	}
 
-	const toastHtml = `\
-<a href="/shells/achievements/" class="alert alert-success shadow-lg flex items-end opacity-80">
+	const toastHtml = /* html */ `\
+<a href="/shells/achievements/" rel="noopener" class="alert alert-success shadow-lg flex items-end opacity-80">
 	<div class="flex-none w-12 h-12 mr-2">
 		<img src="${unlockedAchievement.icon}" class="h-full w-full aspect-square" />
 	</div>
@@ -210,12 +210,12 @@ export async function unlockAchievement(username, parttype, partname, achievemen
 }
 
 /**
- * 锁定成就。
- * @param {string} username - 用户名。
- * @param {string} parttype - 部件类型。
- * @param {string} partname - 部件名称。
- * @param {string} achievementId - 成就ID。
- * @returns {Promise<object>} - 锁定结果。
+ * 为指定用户锁定一个成就。
+ * @param {string} username - 用户的名称。
+ * @param {string} parttype - 成就所属部件的类型。
+ * @param {string} partname - 成就所属部件的名称。
+ * @param {string} achievementId - 要锁定的成就的ID。
+ * @returns {Promise<object>} - 返回一个包含操作结果的对象。
  */
 export async function lockAchievement(username, parttype, partname, achievementId) {
 	const registry = await getAchievementsRegistry(username)
@@ -242,11 +242,11 @@ export async function lockAchievement(username, parttype, partname, achievementI
 }
 
 /**
- * 部件安装时调用。
- * @param {object} root0 - 参数。
- * @param {string} root0.username - 用户名。
- * @param {string} root0.parttype - 部件类型。
- * @param {string} root0.partname - 部件名称。
+ * 当一个部件被安装时调用，用于更新成就注册表。
+ * @param {object} root0 - 参数对象。
+ * @param {string} root0.username - 用户的名称。
+ * @param {string} root0.parttype - 已安装部件的类型。
+ * @param {string} root0.partname - 已安装部件的名称。
  * @returns {Promise<void>}
  */
 export async function onPartInstalled({ username, parttype, partname }) {
@@ -256,11 +256,11 @@ export async function onPartInstalled({ username, parttype, partname }) {
 }
 
 /**
- * 部件卸载时调用。
- * @param {object} root0 - 参数。
- * @param {string} root0.username - 用户名。
- * @param {string} root0.parttype - 部件类型。
- * @param {string} root0.partname - 部件名称。
+ * 当一个部件被卸载时调用，用于更新成就注册表。
+ * @param {object} root0 - 参数对象。
+ * @param {string} root0.username - 用户的名称。
+ * @param {string} root0.parttype - 已卸载部件的类型。
+ * @param {string} root0.partname - 已卸载部件的名称。
  */
 export function onPartUninstalled({ username, parttype, partname }) {
 	const registry = loadTempData(username, 'achievements_registry')

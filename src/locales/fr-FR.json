@@ -11,6 +11,10 @@
 				"https": "Serveur HTTPS en cours d'exécution sur ${url}",
 				"http": "Serveur HTTP en cours d'exécution sur ${url}"
 			},
+			"mdns": {
+				"description": "L'étincelle d'une Pensée, la Présence d'un Ami.",
+				"failed": "Échec de l'enregistrement mDNS : ${error}"
+			},
 			"localUrl": "Accès à fount depuis d'autres appareils sur le même réseau : ${url}",
 			"update": {
 				"restarting": "Une nouvelle version a été découverte et la mise à jour est redémarrée..."
@@ -224,6 +228,9 @@
 			"description": "fount offre un choix et une flexibilité inégalés. Connectez-vous à <i>n'importe quelle</i> source d'IA – OpenAI, Claude, OpenRouter, NovelAI, etc. La logique de communication sera façonnée par la puissance du code, selon <i>vos</i> désirs."
 		},
 		"language_selector": {
+			"button": {
+				"aria-label": "Sélectionner la langue"
+			},
 			"search": {
 				"placeholder": "Rechercher une langue..."
 			}
@@ -455,13 +462,21 @@
 				"alt": "Menu des fonctions"
 			}
 		},
-		"chars": {
-			"tab": "Personnages",
-			"title": "Sélection de personnage",
-			"subtitle": "Sélectionnez un personnage, puis commencez à discuter !",
-			"none": "Rien à afficher",
+		"part_types": {
+			"chars": "Rôle",
+			"worlds": "Monde",
+			"personas": "Personnalité",
+			"plugins": "plug-in",
+			"AIsources": "Source IA",
+			"AIsourceGenerators": "Générateur de sources IA",
+			"ImportHandlers": "Processeur d'importation",
+			"shells": "Shell"
+		},
+		"default": {
+			"title": "Sélection des composants",
+			"subtitle": "Sélectionnez un composant pour continuer.",
 			"card": {
-				"noTags": "Aucune étiquette",
+				"noTags": "pas d'étiquette",
 				"version": "Version",
 				"author": "Auteur",
 				"home_page": "Page d'accueil",
@@ -470,46 +485,33 @@
 					"alt": "Rafraîchir",
 					"title": "Rafraîchir"
 				},
+				"defaultCheckbox": {
+					"title": "Définir par défaut"
+				}
+			}
+		},
+		"chars": {
+			"title": "Sélection de personnage",
+			"subtitle": "Sélectionnez un personnage, puis commencez à discuter !",
+			"card": {
 				"defaultCheckbox": {
 					"title": "Définir comme personnage par défaut"
 				}
 			}
 		},
 		"worlds": {
-			"tab": "Mondes",
 			"title": "Sélection de monde",
 			"subtitle": "Choisissez un monde et plongez au cœur de l'action !",
-			"none": "Rien à afficher",
 			"card": {
-				"noTags": "Aucune étiquette",
-				"version": "Version",
-				"author": "Auteur",
-				"home_page": "Page d'accueil",
-				"issue_page": "Signaler un problème",
-				"refreshButton": {
-					"alt": "Rafraîchir",
-					"title": "Rafraîchir"
-				},
 				"defaultCheckbox": {
 					"title": "Définir comme monde par défaut"
 				}
 			}
 		},
 		"personas": {
-			"tab": "Personas",
 			"title": "Sélection de persona",
 			"subtitle": "Sélectionnez une persona et vivez une nouvelle expérience.",
-			"none": "Rien à afficher",
 			"card": {
-				"noTags": "Aucune étiquette",
-				"version": "Version",
-				"author": "Auteur",
-				"home_page": "Page d'accueil",
-				"issue_page": "Signaler un problème",
-				"refreshButton": {
-					"alt": "Rafraîchir",
-					"title": "Rafraîchir"
-				},
 				"defaultCheckbox": {
 					"title": "Définir comme persona par défaut"
 				}
@@ -580,6 +582,20 @@
 					},
 					"addCharIcon": {
 						"alt": "Icône Ajouter un personnage"
+					}
+				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "Icône de la liste des plugins"
+				},
+				"title": "Liste des plugins",
+				"buttons": {
+					"addPlugin": {
+						"title": "Ajouter un plugin"
+					},
+					"addPluginIcon": {
+						"alt": "Icône d'ajout de plugin"
 					}
 				}
 			}
@@ -722,6 +738,16 @@
 				},
 				"forceReplyIcon": {
 					"alt": "Icône Forcer la réponse"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "Supprimer le plugin"
+				},
+				"removePluginIcon": {
+					"alt": "Icône de suppression de plugin"
 				}
 			}
 		},
@@ -1448,7 +1474,7 @@
 		"what_is_manager": "Qu'est-ce qu'un gestionnaire de scripts utilisateur ?",
 		"manager_explanation": "Un gestionnaire de scripts utilisateur est une extension de navigateur qui vous permet d'installer et d'exécuter des scripts qui modifient les pages Web. Pour utiliser le script d'intégration fount, vous avez besoin d'une des extensions.",
 		"popular_managers": "Choix populaires:",
-		"csp_warning": "Vous devrez peut-être installer le plugin pour désactiver CSP pour que la fonction d'intégration fonctionne correctement. Pour Chrome, vous pouvez utiliser <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener\" class=\"link\">ce plugin</a>.",
+		"csp_warning": "Vous devrez peut-être installer le plugin pour désactiver CSP pour que la fonction d'intégration fonctionne correctement. Pour ${browser}, vous pouvez utiliser <a href=\"${link}\" target=\"_blank\" rel=\"noopener\" class=\"link\">ce plugin</a>.",
 		"connected_pages_title": "Page connectée",
 		"fetch_pages_error": "Impossible de charger la liste des pages liées.",
 		"page_title": "Titre de la page",
@@ -1575,6 +1601,12 @@
 			"sameLAN": "Assurez-vous que l'appareil et l'hôte fount sont sur le même réseau local.",
 			"accessthis": "Visitez cette URL :"
 		},
+		"QRcode": {
+			"alt": "Scannez ce code QR pour accéder à fount"
+		},
+		"urlInput": {
+			"aria-label": "URL"
+		},
 		"copyButton": "Copier l'URL",
 		"copied": "URL copiée dans le presse-papiers !"
 	},
@@ -1585,6 +1617,9 @@
 		"instruction": "Générez et gérez vos clés API sur cette page pour intégrer fount avec d'autres applications.",
 		"endpointSectionTitle": "Point de Terminaison de l'API",
 		"endpointInstruction": "Ceci est l'URL de base pour l'intégration avec d'autres services.",
+		"apiUrlInput": {
+			"aria-label": "Point de terminaison de l'API"
+		},
 		"usageExampleTitle": "Exemple d'Utilisation",
 		"usageExampleInstruction": "Voici un exemple de la manière d'obtenir la liste des modèles disponibles en utilisant `curl`.",
 		"copyButton": "Copier",

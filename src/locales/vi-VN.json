@@ -11,6 +11,10 @@
 				"https": "Máy chủ HTTPS đang chạy tại ${url}",
 				"http": "Máy chủ HTTP đang chạy tại ${url}"
 			},
+			"mdns": {
+				"description": "Từ Ý Niệm, đến Tri Kỷ",
+				"failed": "Đăng ký mDNS không thành công: ${error}"
+			},
 			"localUrl": "Truy cập fount từ các thiết bị khác trên cùng mạng: ${url}",
 			"update": {
 				"restarting": "Một phiên bản mới đã được phát hiện và bản cập nhật đang được khởi động lại..."
@@ -224,6 +228,9 @@
 			"description": "fount mang đến sự lựa chọn và linh hoạt vô song. Kết nối với <i>bất kỳ</i> nguồn AI nào – OpenAI, Claude, OpenRouter, NovelAI, v.v. Logic giao tiếp sẽ được định hình bởi sức mạnh của mã nguồn, theo ý muốn của <i>bạn</i>."
 		},
 		"language_selector": {
+			"button": {
+				"aria-label": "Chọn ngôn ngữ"
+			},
 			"search": {
 				"placeholder": "Tìm kiếm ngôn ngữ..."
 			}
@@ -455,13 +462,21 @@
 				"alt": "Menu chức năng"
 			}
 		},
-		"chars": {
-			"tab": "Nhân vật",
-			"title": "Chọn nhân vật",
-			"subtitle": "Chọn một nhân vật và bắt đầu trò chuyện!",
-			"none": "Không có gì để hiển thị",
+		"part_types": {
+			"chars": "Vai trò",
+			"worlds": "Thế giới",
+			"personas": "Nhân cách",
+			"plugins": "trình cắm thêm",
+			"AIsources": "nguồn AI",
+			"AIsourceGenerators": "Trình tạo nguồn AI",
+			"ImportHandlers": "Nhập khẩu bộ xử lý",
+			"shells": "Giao diện tương tác"
+		},
+		"default": {
+			"title": "Lựa chọn thành phần",
+			"subtitle": "Chọn một thành phần để tiếp tục.",
 			"card": {
-				"noTags": "Không có thẻ",
+				"noTags": "Không có nhãn",
 				"version": "Phiên bản",
 				"author": "Tác giả",
 				"home_page": "Trang chủ",
@@ -470,46 +485,33 @@
 					"alt": "Làm mới",
 					"title": "Làm mới"
 				},
+				"defaultCheckbox": {
+					"title": "Đặt làm mặc định"
+				}
+			}
+		},
+		"chars": {
+			"title": "Chọn nhân vật",
+			"subtitle": "Chọn một nhân vật và bắt đầu trò chuyện!",
+			"card": {
 				"defaultCheckbox": {
 					"title": "Đặt làm nhân vật mặc định"
 				}
 			}
 		},
 		"worlds": {
-			"tab": "Thế giới",
 			"title": "Chọn thế giới",
 			"subtitle": "Chọn một thế giới và đắm chìm trong đó!",
-			"none": "Không có gì để hiển thị",
 			"card": {
-				"noTags": "Không có thẻ",
-				"version": "Phiên bản",
-				"author": "Tác giả",
-				"home_page": "Trang chủ",
-				"issue_page": "Báo cáo sự cố",
-				"refreshButton": {
-					"alt": "Làm mới",
-					"title": "Làm mới"
-				},
 				"defaultCheckbox": {
 					"title": "Đặt làm thế giới mặc định"
 				}
 			}
 		},
 		"personas": {
-			"tab": "Persona",
 			"title": "Chọn Persona",
 			"subtitle": "Chọn một Persona và trải nghiệm cuộc sống.",
-			"none": "Không có gì để hiển thị",
 			"card": {
-				"noTags": "Không có thẻ",
-				"version": "Phiên bản",
-				"author": "Tác giả",
-				"home_page": "Trang chủ",
-				"issue_page": "Báo cáo sự cố",
-				"refreshButton": {
-					"alt": "Làm mới",
-					"title": "Làm mới"
-				},
 				"defaultCheckbox": {
 					"title": "Đặt làm Persona mặc định"
 				}
@@ -580,6 +582,20 @@
 					},
 					"addCharIcon": {
 						"alt": "Biểu tượng thêm nhân vật"
+					}
+				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "Biểu tượng danh sách plugin"
+				},
+				"title": "Danh sách plugin",
+				"buttons": {
+					"addPlugin": {
+						"title": "Thêm plugin"
+					},
+					"addPluginIcon": {
+						"alt": "Biểu tượng thêm plugin"
 					}
 				}
 			}
@@ -722,6 +738,16 @@
 				},
 				"forceReplyIcon": {
 					"alt": "Biểu tượng buộc trả lời"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "Xóa plugin"
+				},
+				"removePluginIcon": {
+					"alt": "Biểu tượng xóa plugin"
 				}
 			}
 		},
@@ -1448,7 +1474,7 @@
 		"what_is_manager": "Trình quản lý userscript là gì?",
 		"manager_explanation": "Một trình quản lý userscript là một tiện ích mở rộng trình duyệt cho phép bạn cài đặt và chạy các tập lệnh sửa đổi các trang web. Để sử dụng tập lệnh tích hợp fount, bạn cần một trong các tiện ích mở rộng.",
 		"popular_managers": "Lựa chọn phổ biến:",
-		"csp_warning": "Bạn có thể cần cài đặt plugin để tắt CSP để làm cho chức năng tích hợp hoạt động đúng. Đối với Chrome, bạn có thể sử dụng <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener\" class=\"link\">Allow CSP Content Security Policy</a>.",
+		"csp_warning": "Bạn có thể cần cài đặt plugin để tắt CSP nhằm giúp chức năng tích hợp hoạt động bình thường. Đối với ${browser}, bạn có thể sử dụng <a href=\"${link}\" target=\"_blank\" rel=\"noopener\" class=\"link\">plugin này</a>.",
 		"connected_pages_title": "Trang được kết nối",
 		"fetch_pages_error": "Không tải danh sách trang được liên kết.",
 		"page_title": "Tiêu đề trang",
@@ -1575,6 +1601,12 @@
 			"sameLAN": "Đảm bảo thiết bị và máy chủ fount đang ở trên cùng một mạng LAN.",
 			"accessthis": "Truy cập địa chỉ sau:"
 		},
+		"QRcode": {
+			"alt": "Quét mã QR này để truy cập fount"
+		},
+		"urlInput": {
+			"aria-label": "URL"
+		},
 		"copyButton": "Sao chép địa chỉ",
 		"copied": "Địa chỉ đã được sao chép vào bộ nhớ tạm!"
 	},
@@ -1585,6 +1617,9 @@
 		"instruction": "Tạo và quản lý các khóa API của bạn trên trang này để tích hợp fount với các ứng dụng khác.",
 		"endpointSectionTitle": "Điểm cuối API",
 		"endpointInstruction": "Đây là URL cơ sở để tích hợp với các dịch vụ khác.",
+		"apiUrlInput": {
+			"aria-label": "điểm cuối API"
+		},
 		"usageExampleTitle": "Ví dụ sử dụng",
 		"usageExampleInstruction": "Đây là ví dụ về cách lấy danh sách các mô hình có sẵn bằng `curl`.",
 		"copyButton": "Sao chép",

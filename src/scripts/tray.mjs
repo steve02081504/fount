@@ -37,6 +37,7 @@ on_shutdown(() => {
 
 /**
  * 创建系统托盘菜单。
+ * @returns {Promise<object|undefined>} 创建的托盘对象或在出错时返回undefined。
  */
 export async function createTray() {
 	try {

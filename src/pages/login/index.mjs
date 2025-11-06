@@ -1,6 +1,7 @@
 import { retrieveAndDecryptCredentials, redirectToLoginInfo } from '../scripts/credentialManager.mjs'
 import { ping, generateVerificationCode, login, register } from '../scripts/endpoints.mjs'
 import { initTranslations, console, savePreferredLangs, onLanguageChange } from '../scripts/i18n.mjs'
+import { getAnyDefaultPart } from '../scripts/parts.mjs'
 import { initPasswordStrengthMeter } from '../scripts/passwordStrength.mjs'
 import { createPOWCaptcha } from '../scripts/POWcaptcha.mjs'
 import { applyTheme, setTheme } from '../scripts/theme.mjs'
@@ -25,14 +26,12 @@ let sendCodeCooldown = false
 let powCaptcha = null
 let passwordStrengthMeter = null
 
-const hasLoggedIn = localStorage.getItem('hasLoggedIn') == 'true'
-
 /**
  * 初始化表单状态。
  * @returns {void}
  */
 function initializeForm() {
-	isLoginForm = hasLoggedIn
+	isLoginForm = true
 }
 
 /**
@@ -193,25 +192,20 @@ async function handleFormSubmit(event) {
 
 		if (response.ok)
 			if (isLoginForm) {
-				console.log('Login successful!')
 				const urlParams = new URLSearchParams(window.location.search)
 				const redirect = urlParams.get('redirect')
 				localStorage.setItem('hasLoggedIn', 'true')
+				const defaultShell = await getAnyDefaultPart('shells') || 'home' // Fallback to 'home' if no default shell is set
+
 				let finalRedirectUrl
 				if (redirect)
-					if (hasLoggedIn)
-						finalRedirectUrl = decodeURIComponent(redirect)
-					else
-						finalRedirectUrl = `/shells/tutorial?redirect=${redirect}`
+					finalRedirectUrl = decodeURIComponent(redirect)
 				else
-					finalRedirectUrl = `/shells/${hasLoggedIn ? 'home' : 'tutorial'}`
+					finalRedirectUrl = `/shells/${defaultShell}`
 
 				redirectToLoginInfo(finalRedirectUrl + window.location.hash, username, password)
 			}
-			else {
-				console.log('Registration successful!')
-				toggleForm() // 注册成功后自动切换到登录表单
-			}
+			else toggleForm() // 注册成功后自动切换到登录表单
 		else
 			errorMessage.textContent = data.message
 	}

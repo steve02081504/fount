@@ -11,6 +11,10 @@
 				"https": "HTTPS 서버가 ${url}에서 실행 중입니다.",
 				"http": "HTTP 서버가 ${url}에서 실행 중입니다."
 			},
+			"mdns": {
+				"description": "상상이 생명을 얻는 순간",
+				"failed": "mDNS 등록 실패: ${error}"
+			},
 			"localUrl": "동일한 네트워크의 다른 장치에서 fount에 액세스: ${url}",
 			"update": {
 				"restarting": "새 버전이 발견되었고 업데이트가 다시 시작됩니다..."
@@ -167,7 +171,7 @@
 				"removingFount": "fount 제거 중...",
 				"fountUninstallationComplete": "fount 제거가 완료되었습니다.",
 				"removingFountInstallationDir": "글꼴 설치 디렉터리를 제거하는 중...",
-				"fountInstallationDirRemoved": "Fount 설치 디렉터리가 제거되었습니다.",
+				"fountInstallationDirRemoved": "fount 설치 디렉터리가 제거되었습니다.",
 				"removingFountFromPath": "PATH에서 fount를 제거하는 중...",
 				"removingProtocolHandler": "fount:// 프로토콜 핸들러 삭제 중...",
 				"protocolHandlerRemoved": "fount:// 프로토콜 핸들러가 제거되었습니다.",
@@ -224,6 +228,9 @@
 			"description": "fount는 비교할 수 없는 선택의 폭과 유연성을 제공합니다. OpenAI, Claude, OpenRouter, NovelAI 등 <i>모든</i> AI 소스에 연결하세요. 커뮤니케이션 로직은 당신의 의지에 따라 코드의 힘으로 만들어집니다."
 		},
 		"language_selector": {
+			"button": {
+				"aria-label": "언어 선택"
+			},
 			"search": {
 				"placeholder": "언어 검색..."
 			}
@@ -455,61 +462,56 @@
 				"alt": "기능 메뉴"
 			}
 		},
-		"chars": {
-			"tab": "캐릭터",
-			"title": "캐릭터 선택",
-			"subtitle": "캐릭터를 선택해서 채팅을 시작해 보세요!",
-			"none": "표시할 내용이 없습니다",
+		"part_types": {
+			"chars": "역할",
+			"worlds": "세계",
+			"personas": "성격",
+			"plugins": "플러그인",
+			"AIsources": "AI 소스",
+			"AIsourceGenerators": "AI 소스 생성기",
+			"ImportHandlers": "가져오기 처리기",
+			"shells": "셸"
+		},
+		"default": {
+			"title": "구성 요소 선택",
+			"subtitle": "계속하려면 구성요소를 선택하세요.",
 			"card": {
-				"noTags": "태그 없음",
+				"noTags": "라벨 없음",
 				"version": "버전",
-				"author": "제작자",
+				"author": "작가",
 				"home_page": "홈페이지",
-				"issue_page": "문제 신고",
+				"issue_page": "문제 보고",
 				"refreshButton": {
 					"alt": "새로고침",
 					"title": "새로고침"
 				},
+				"defaultCheckbox": {
+					"title": "기본값으로 설정"
+				}
+			}
+		},
+		"chars": {
+			"title": "캐릭터 선택",
+			"subtitle": "캐릭터를 선택해서 채팅을 시작해 보세요!",
+			"card": {
 				"defaultCheckbox": {
 					"title": "기본 캐릭터로 설정"
 				}
 			}
 		},
 		"worlds": {
-			"tab": "월드",
 			"title": "월드 선택",
 			"subtitle": "월드를 선택하고 몰입해보세요!",
-			"none": "표시할 내용이 없습니다",
 			"card": {
-				"noTags": "태그 없음",
-				"version": "버전",
-				"author": "제작자",
-				"home_page": "홈페이지",
-				"issue_page": "문제 신고",
-				"refreshButton": {
-					"alt": "새로고침",
-					"title": "새로고침"
-				},
 				"defaultCheckbox": {
 					"title": "기본 월드로 설정"
 				}
 			}
 		},
 		"personas": {
-			"tab": "페르소나",
 			"title": "페르소나 선택",
 			"subtitle": "페르소나를 선택하고 다양한 역할을 경험해보세요.",
-			"none": "표시할 내용이 없습니다",
 			"card": {
-				"noTags": "태그 없음",
-				"version": "버전",
-				"author": "제작자",
-				"home_page": "홈페이지",
-				"issue_page": "문제 신고",
-				"refreshButton": {
-					"alt": "새로고침",
-					"title": "새로고침"
-				},
 				"defaultCheckbox": {
 					"title": "기본 페르소나로 설정"
 				}
@@ -580,6 +582,20 @@
 					},
 					"addCharIcon": {
 						"alt": "캐릭터 추가 아이콘"
+					}
+				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "플러그인 목록 아이콘"
+				},
+				"title": "플러그인 목록",
+				"buttons": {
+					"addPlugin": {
+						"title": "플러그인 추가"
+					},
+					"addPluginIcon": {
+						"alt": "플러그인 추가 아이콘"
 					}
 				}
 			}
@@ -722,6 +738,16 @@
 				},
 				"forceReplyIcon": {
 					"alt": "강제 응답 아이콘"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "플러그인 제거"
+				},
+				"removePluginIcon": {
+					"alt": "플러그인 제거 아이콘"
 				}
 			}
 		},
@@ -1448,7 +1474,7 @@
 		"what_is_manager": "유저스크립트 관리자란 무엇입니까?",
 		"manager_explanation": "유저스크립트 관리자는 웹 페이지를 수정하는 스크립트를 설치하고 실행할 수있는 브라우저 확장자입니다. fount 통합 스크립트를 사용하려면 확장자 중 하나가 필요합니다.",
 		"popular_managers": "인기있는 선택 :",
-		"csp_warning": "통합 기능이 올바르게 작동하도록 CSP를 끄려면 플러그인을 설치해야 할 수도 있습니다. Chrome의 경우 <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener\" class=\"link\">CSP을 끄기</a>를 사용할 수 있습니다.",
+		"csp_warning": "통합 기능이 올바르게 작동하도록 CSP를 끄려면 플러그인을 설치해야 할 수도 있습니다. ${browser}의 경우 <a href=\"${link}\" target=\"_blank\" rel=\"noopener\" class=\"link\">이 플러그인</a>을 사용할 수 있습니다.",
 		"connected_pages_title": "연결된 페이지",
 		"fetch_pages_error": "링크 된 페이지 목록을로드하지 못했습니다.",
 		"page_title": "페이지 제목",
@@ -1575,6 +1601,12 @@
 			"sameLAN": "기기와 fount 호스트가 동일한 로컬 네트워크에 있는지 확인하세요.",
 			"accessthis": "다음 URL로 접속하세요:"
 		},
+		"QRcode": {
+			"alt": "이 QR 코드를 스캔하여 fount에 액세스하세요."
+		},
+		"urlInput": {
+			"aria-label": "URL"
+		},
 		"copyButton": "URL 복사",
 		"copied": "URL이 클립보드에 복사되었습니다!"
 	},
@@ -1585,6 +1617,9 @@
 		"instruction": "이 페이지에서 API 키를 생성하고 관리하여 fount를 다른 애플리케이션과 통합하세요.",
 		"endpointSectionTitle": "API 엔드포인트",
 		"endpointInstruction": "다른 서비스와 통합하기 위한 기본 URL입니다.",
+		"apiUrlInput": {
+			"aria-label": "API 엔드포인트"
+		},
 		"usageExampleTitle": "사용 예제",
 		"usageExampleInstruction": "`curl`을 사용하여 사용 가능한 모델 목록을 가져오는 방법의 예입니다.",
 		"copyButton": "복사",

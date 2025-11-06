@@ -57,7 +57,12 @@ export class AIsource_t<InputType, OutputType> {
 	/**
 	 * AI 数据源的详细信息。
 	 */
-	info: info_t
+	info: info_t<{
+		/**
+		 * 提供者。
+		 */
+		provider: string;
+	}>
 	/**
 	 * 指示该 AI 数据源是否为付费服务。
 	 */
@@ -102,7 +107,7 @@ export class AIsource_t<InputType, OutputType> {
 
 /**
  * @class textAISource_t
- * @extends AIsource_t<string, Promise<string>>
+ * @augments AIsource_t<string, Promise<string>>
  * 专用于处理文本输入的 AI 数据源。
  */
 export class textAISource_t extends AIsource_t<string, Promise<string>> {

@@ -70,7 +70,7 @@ export function compileFilter(filterString) {
  */
 export function makeSearchable({ searchInput, data, dataAccessor = (item) => item, onUpdate }) {
 	/**
-	 *
+	 * 根据搜索查询筛选提供的项目列表。
 	 */
 	const filterItems = () => {
 		const filterFn = compileFilter(searchInput.value)
@@ -123,12 +123,12 @@ export async function createSearchableDropdown({
 	dropdownElement.setAttribute('aria-expanded', 'false')
 
 	if (disabled)
-		dropdownElement.innerHTML = `<input type="text" placeholder="${triggerPlaceholder}" class="input input-bordered w-full" tabindex="0" role="button" readonly disabled />`
+		dropdownElement.innerHTML = /* html */ `<input type="text" placeholder="${triggerPlaceholder}" class="input input-bordered w-full" tabindex="0" role="button" readonly disabled />`
 	else {
 		const uniqueId = `dropdown-list-${Math.random().toString(36).substring(2, 9)}`
 
 		// Create the dropdown content HTML structure
-		dropdownElement.innerHTML = `\
+		dropdownElement.innerHTML = /* html */ `\
 <input type="text" placeholder="${triggerPlaceholder}" class="input input-bordered w-full cursor-pointer" tabindex="0" role="button" readonly aria-controls="${uniqueId}" />
 <div tabindex="0" id="${uniqueId}" class="dropdown-content z-50 p-4 shadow bg-base-100 rounded-box w-full flex flex-col gap-4 mt-2" role="listbox">
 	<input type="text" placeholder="${searchPlaceholder}" class="input input-bordered w-full" />
@@ -183,7 +183,6 @@ export async function createSearchableDropdown({
 			triggerInput.value = ''
 			delete dropdownElement.dataset.value
 		}
-		await onSelect(selectedItem || null)
 	}
 
 	/**
@@ -212,7 +211,7 @@ export async function createSearchableDropdown({
 	const renderOptions = (filteredData) => {
 		buttonListeners.forEach(({ button, listener }) => button.removeEventListener('click', listener))
 		buttonListeners.length = 0 // Clear the array
-		optionsList.innerHTML = filteredData.map(itemData => `\
+		optionsList.innerHTML = filteredData.map(itemData => /* html */ `\
 			<li class="w-full block">
 				<button class="btn btn-ghost justify-start w-full" data-value="${getItemValue(itemData)}" role="option">${getItemText(itemData)}</button>
 			</li>
@@ -227,7 +226,7 @@ export async function createSearchableDropdown({
 				const selectedValue = button.dataset.value
 				const selectedItem = dataList.find(item => getItemValue(item) == selectedValue)
 				if (await onSelect(selectedItem)) return
-				await setValue(selectedValue) // Use the new setter function
+				await setValue(selectedValue)
 				document.activeElement?.blur() // Close the dropdown
 			}
 			button.addEventListener('click', listener)
@@ -264,7 +263,7 @@ export async function createSearchableDropdown({
 // fix overlay issue
 {
 	const style = document.createElement('style')
-	style.textContent = `\
+	style.textContent = /* html */ `\
 .searchable-dropdown:not(:focus-within) .dropdown-content {
 	display: none;
 }

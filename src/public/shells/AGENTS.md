@@ -88,7 +88,7 @@ export default {
     '': {
       name: 'my-new-shell',
       description: 'A description for my new interactive shell.',
-      version: '0.0.1',
+      version: '0.0.0',
       author: 'UserName',
     },
   },

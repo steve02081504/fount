@@ -11,6 +11,10 @@
 				"https": "HTTPS-Server läuft auf ${url}",
 				"http": "HTTP-Server läuft auf ${url}"
 			},
+			"mdns": {
+				"description": "Ein Funke der Fantasie, zum Leben erweckt",
+				"failed": "mDNS-Registrierung fehlgeschlagen: ${error}"
+			},
 			"localUrl": "Zugriff auf fount von anderen Geräten im selben Netzwerk: ${url}",
 			"update": {
 				"restarting": "Eine neue Version wurde entdeckt und das Update wird neu gestartet..."
@@ -147,7 +151,7 @@
 			"install": {
 				"installingDependencies": "Abhängigkeiten werden installiert...",
 				"untrustedPartsWarning": "Installieren Sie keine nicht vertrauenswürdigen Quellkomponenten auf Ihrem System, sie können alles bewirken.",
-				"rootWarning1": "Nicht empfohlen: Wenn Sie fount als Root ausführen, erhalten Sie vollständigen Systemzugriff auf alle Fount-Komponenten.",
+				"rootWarning1": "Nicht empfohlen: Wenn Sie fount als Root ausführen, erhalten Sie vollständigen Systemzugriff auf alle fount-Komponenten.",
 				"rootWarning2": "Sofern Sie nicht wissen, was Sie tun, wird empfohlen, fount als normaler Benutzer auszuführen."
 			},
 			"clean": {
@@ -171,7 +175,7 @@
 				"removingFountFromPath": "fount wird aus PATH entfernt...",
 				"removingProtocolHandler": "fount://-Protokollhandler wird entfernt...",
 				"protocolHandlerRemoved": "Der fount://-Protokollhandler wurde entfernt.",
-				"removeProtocolHandlerFailed": "Fount://-Protokollhandler konnte nicht entfernt werden: ${message}",
+				"removeProtocolHandlerFailed": "fount://-Protokollhandler konnte nicht entfernt werden: ${message}",
 				"removingFountFromGitSafeDir": "fount wird aus dem Git-Safe-Verzeichnis entfernt...",
 				"removingInstalledSystemPackages": "Installierte Systempakete werden entfernt...",
 				"uninstallingDeno": "Deno deinstallieren...",
@@ -224,6 +228,9 @@
 			"description": "fount bietet beispiellose Auswahl und Flexibilität. Verbinden Sie sich mit <i>jeder</i> KI-fount – OpenAI, Claude, OpenRouter, NovelAI usw. Die Kommunikationslogik wird nach <i>Ihrem</i> Willen durch die Macht des Codes geformt."
 		},
 		"language_selector": {
+			"button": {
+				"aria-label": "Sprache auswählen"
+			},
 			"search": {
 				"placeholder": "Sprache suchen..."
 			}
@@ -422,7 +429,7 @@
 	},
 	"login_info": {
 		"title": "Anmeldeinformationen",
-		"description": "Ein sicherer Bereich zum Verwalten Ihrer Fount-Anmeldedaten – die Schlüssel zu Ihrer Welt voller unerzählter Geschichten.",
+		"description": "Ein sicherer Bereich zum Verwalten Ihrer fount-Anmeldedaten – die Schlüssel zu Ihrer Welt voller unerzählter Geschichten.",
 		"modal": {
 			"title": "Zertifikatübertragungsfehler",
 			"retrieve_error": "Beim Versuch, Ihre Anmeldeinformationen zu speichern, ist ein Fehler aufgetreten:\n${error}\nSie können fortfahren, die Anmeldeinformationen jedoch nicht speichern.",
@@ -455,11 +462,19 @@
 				"alt": "Funktionsmenü"
 			}
 		},
-		"chars": {
-			"tab": "Charaktere",
-			"title": "Charakterauswahl",
-			"subtitle": "Wählen Sie einen Charakter und starten Sie den Chat!",
-			"none": "Nichts vorhanden",
+		"part_types": {
+			"chars": "Rolle",
+			"worlds": "Welt",
+			"personas": "Persönlichkeit",
+			"plugins": "Plug-in",
+			"AIsources": "KI-Quelle",
+			"AIsourceGenerators": "KI-Quellengenerator",
+			"ImportHandlers": "Import-Handler",
+			"shells": "Shell"
+		},
+		"default": {
+			"title": "Komponentenauswahl",
+			"subtitle": "Wählen Sie eine Komponente aus, um fortzufahren.",
 			"card": {
 				"noTags": "Keine Tags",
 				"version": "Version",
@@ -467,49 +482,36 @@
 				"home_page": "Startseite",
 				"issue_page": "Problem melden",
 				"refreshButton": {
-					"alt": "Aktualisieren",
-					"title": "Aktualisieren"
+					"alt": "auffrischen",
+					"title": "auffrischen"
 				},
+				"defaultCheckbox": {
+					"title": "Als Standard festlegen"
+				}
+			}
+		},
+		"chars": {
+			"title": "Charakterauswahl",
+			"subtitle": "Wählen Sie einen Charakter und starten Sie den Chat!",
+			"card": {
 				"defaultCheckbox": {
 					"title": "Als Standardcharakter festlegen"
 				}
 			}
 		},
 		"worlds": {
-			"tab": "Welten",
 			"title": "Weltenauswahl",
 			"subtitle": "Wähle eine Welt und tauche ein!",
-			"none": "Nichts vorhanden",
 			"card": {
-				"noTags": "Keine Tags",
-				"version": "Version",
-				"author": "Autor",
-				"home_page": "Startseite",
-				"issue_page": "Problem melden",
-				"refreshButton": {
-					"alt": "Aktualisieren",
-					"title": "Aktualisieren"
-				},
 				"defaultCheckbox": {
 					"title": "Als Standardwelt festlegen"
 				}
 			}
 		},
 		"personas": {
-			"tab": "Personas",
 			"title": "Personenauswahl",
 			"subtitle": "Wählen Sie eine Persona und erleben Sie das Leben.",
-			"none": "Nichts vorhanden",
 			"card": {
-				"noTags": "Keine Tags",
-				"version": "Version",
-				"author": "Autor",
-				"home_page": "Startseite",
-				"issue_page": "Problem melden",
-				"refreshButton": {
-					"alt": "Aktualisieren",
-					"title": "Aktualisieren"
-				},
 				"defaultCheckbox": {
 					"title": "Als Standardpersona festlegen"
 				}
@@ -580,6 +582,20 @@
 					},
 					"addCharIcon": {
 						"alt": "Charakter hinzufügen Symbol"
+					}
+				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "Plugin-Listensymbol"
+				},
+				"title": "Plugin-Liste",
+				"buttons": {
+					"addPlugin": {
+						"title": "Plugin hinzufügen"
+					},
+					"addPluginIcon": {
+						"alt": "Plugin hinzufügen Symbol"
 					}
 				}
 			}
@@ -722,6 +738,16 @@
 				},
 				"forceReplyIcon": {
 					"alt": "Antwort erzwingen Symbol"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "Plugin entfernen"
+				},
+				"removePluginIcon": {
+					"alt": "Plugin entfernen Symbol"
 				}
 			}
 		},
@@ -1448,7 +1474,7 @@
 		"what_is_manager": "Was ist ein Userscript-Manager?",
 		"manager_explanation": "Ein Userscript-Manager ist eine Browser-Erweiterung, mit der Sie Skripte installieren und ausführen können, die Webseiten ändern. Um das fount -Integrationsskript zu verwenden, benötigen Sie eine der Erweiterungen.",
 		"popular_managers": "Beliebte Entscheidungen:",
-		"csp_warning": "Möglicherweise müssen Sie das Plugin installieren, um CSP auszuschalten, damit die Integrationsfunktion ordnungsgemäß funktioniert. Für Chrome können Sie <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener\" class=\"link\">dieses Plugin</a> verwenden.",
+		"csp_warning": "Möglicherweise müssen Sie das Plugin installieren, um CSP auszuschalten, damit die Integrationsfunktion ordnungsgemäß funktioniert. Für ${browser} können Sie <a href=\"${link}\" target=\"_blank\" rel=\"noopener\" class=\"link\">dieses Plugin</a> verwenden.",
 		"connected_pages_title": "Verbundene Seite",
 		"fetch_pages_error": "Das Laden der Liste der verknüpften Seiten ist fehlgeschlagen.",
 		"page_title": "Seitentitel",
@@ -1575,6 +1601,12 @@
 			"sameLAN": "Stellen Sie sicher, dass sich das Gerät und der fount-Host im selben lokalen Netzwerk befinden.",
 			"accessthis": "Rufen Sie folgende URL auf:"
 		},
+		"QRcode": {
+			"alt": "Scannen Sie diesen QR-Code, um auf fount zuzugreifen"
+		},
+		"urlInput": {
+			"aria-label": "URL"
+		},
 		"copyButton": "URL kopieren",
 		"copied": "URL in die Zwischenablage kopiert!"
 	},
@@ -1585,6 +1617,9 @@
 		"instruction": "Erstellen und verwalten Sie auf dieser Seite Ihre API-Schlüssel, um fount in andere Anwendungen zu integrieren.",
 		"endpointSectionTitle": "API-Endpunkt",
 		"endpointInstruction": "Dies ist die Basis-URL für die Integration mit anderen Diensten.",
+		"apiUrlInput": {
+			"aria-label": "API-Endpunkt"
+		},
 		"usageExampleTitle": "Anwendungsbeispiel",
 		"usageExampleInstruction": "Hier ist ein Beispiel, wie Sie mit `curl` die Liste der verfügbaren Modelle abrufen können.",
 		"copyButton": "Kopieren",

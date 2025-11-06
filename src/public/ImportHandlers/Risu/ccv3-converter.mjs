@@ -205,11 +205,9 @@ export function convertCCv3ToSTv2(ccv3Card, risuModule, userLanguage = 'en') {
 						stWiEntry.extensions.selectiveLogic = world_info_logic.NOT_ANY
 					}
 					else console.warn(`WI entry already has selective keys, cannot easily apply @@exclude_keys: ${value}`)
-
 					break
 				// 其他 decorators 如 activate_only_every, instruct_depth 等，映射复杂或ST无直接对应，暂时忽略
 				default:
-					// console.log(`Unsupported decorator: ${name}`);
 					break
 			}
 		}

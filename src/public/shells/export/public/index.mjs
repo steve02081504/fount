@@ -153,6 +153,7 @@ async function renderPartDropdown() {
 		disabled: !parts || !parts.length,
 		/**
 		 * @param {object} selectedItem - 选定的项目。
+		 * @returns {Promise<boolean>} - 是否成功。
 		 */
 		onSelect: async (selectedItem) => {
 			await onPartSelected(selectedItem ? selectedItem.value : null)
@@ -243,9 +244,9 @@ async function handleShareAction({ copyOnly = false, expiration = null }) {
 function setButtonLoading(button, icon, isLoading) {
 	button.disabled = isLoading
 	if (isLoading)
-		icon.innerHTML = '<img src="https://api.iconify.design/line-md/loading-loop.svg" class="h-6 w-6" />'
+		icon.innerHTML = /* html */ '<img src="https://api.iconify.design/line-md/loading-loop.svg" class="h-6 w-6" />'
 	else
-		icon.innerHTML = ''
+		icon.innerHTML = /* html */ ''
 }
 
 /**
@@ -257,7 +258,7 @@ function setButtonState(icon, state) {
 	const iconUrl = state === 'success'
 		? 'https://api.iconify.design/line-md/confirm-circle.svg'
 		: 'https://api.iconify.design/line-md/emoji-frown.svg'
-	icon.innerHTML = `<img src="${iconUrl}" class="h-6 w-6" />`
+	icon.innerHTML = /* html */ `<img src="${iconUrl}" class="h-6 w-6" />`
 }
 
 // --- URL Management ---

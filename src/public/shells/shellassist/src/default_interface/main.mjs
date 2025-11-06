@@ -7,15 +7,17 @@ import { GetShellWorld } from './world.mjs'
 /** @typedef {import('../../../../../../src/public/shells/chat/decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t */
 
 /**
- *
- * @param {import('../../../../../decl/charAPI.ts').CharAPI_t} char_API
- * @param username
- * @param {string} char_name
+ * 获取默认的 ShellAssist 接口。
+ * @param {import('../../../../../decl/charAPI.ts').CharAPI_t} char_API - 角色 API。
+ * @param {string} username - 用户名。
+ * @param {string} char_name - 角色名称。
+ * @returns {object} - ShellAssist 接口。
  */
 export function GetDefaultShellAssistInterface(char_API, username, char_name) {
 	if (!char_API?.interfaces?.chat?.GetReply)
 		throw new Error('charAPI.interfaces.chat.GetReply is required for ShellAssistInterface.')
 	/**
+	 * ShellAssist 主函数。
 	 * @type {(data: {
 	 * 	username: string
 	 * 	UserCharname: string

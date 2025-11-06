@@ -1,21 +1,27 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { regex_placement } from '../../../../../src/public/ImportHandlers/SillyTavern/engine/charData.mjs' // 复用ST引擎
-import { evaluateMacros } from '../../../../../src/public/ImportHandlers/SillyTavern/engine/marco.mjs' // 复用ST引擎
-import { promptBuilder } from '../../../../../src/public/ImportHandlers/SillyTavern/engine/prompt_builder.mjs' // 复用ST引擎
-import { runRegex } from '../../../../../src/public/ImportHandlers/SillyTavern/engine/regex.mjs' // 复用ST引擎
-import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/prompt_struct.mjs' // 调整路径
-import { saveJsonFile } from '../../../../../src/scripts/json_loader.mjs' // 调整路径
-import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs' // 调整路径
-// 复用ST引擎 (getCharacterSource可能需要调整或我们直接用转换时存的source_url)
+import { regex_placement } from '../../../../../src/public/ImportHandlers/SillyTavern/engine/charData.mjs'
+import { evaluateMacros } from '../../../../../src/public/ImportHandlers/SillyTavern/engine/marco.mjs'
+import { promptBuilder } from '../../../../../src/public/ImportHandlers/SillyTavern/engine/prompt_builder.mjs'
+import { runRegex } from '../../../../../src/public/ImportHandlers/SillyTavern/engine/regex.mjs'
+import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/prompt_struct.mjs'
+import { saveJsonFile } from '../../../../../src/scripts/json_loader.mjs'
+import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
+import { loadPlugin } from '../../../../../src/server/managers/plugin_manager.mjs'
 
+/** @typedef {import('../../../../../src/decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t */
 /** @typedef {import('../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t */
 /** @typedef {import('../../../../../src/decl/AIsource.ts').AIsource_t} AIsource_t */
+/** @typedef {import("../../../../../src/decl/prompt_struct.ts').single_part_prompt_t} single_part_prompt_t */
+/** @typedef {import("../../../../../src/public/shells/chat/decl/prompt_struct.ts').chatReplyRequest_t} chatReplyRequest_t */
 /** @typedef {import('../../../../../src/public/ImportHandlers/SillyTavern/engine/charData.mjs').v2CharData} chardata_t */
 
 /** @type {AIsource_t} */
 let AIsource = null
+/** @type {Record<string, PluginAPI_t>} */
+let plugins = {}
+
 let username = ''
 
 const chardir = import.meta.dirname
@@ -28,6 +34,11 @@ const charjson = path.join(chardir, 'chardata.json')
 let chardata = JSON.parse(fs.readFileSync(charjson, 'utf-8'))
 
 // Helper for macro evaluation environment
+/**
+ * 获取宏环境
+ * @param {any} userCharName 用户角色名
+ * @returns {{ char: any; user: any; model: any; charVersion: string; char_version: string; }} 包含宏评估所需变量的对象
+ */
 function getMacroEnv(userCharName) {
 	return {
 		char: chardata.extensions?.ccv3_nickname || chardata.name, // 使用 CCv3 nickname (如果存在)
@@ -39,6 +50,11 @@ function getMacroEnv(userCharName) {
 }
 
 // 函数：构建国际化的 info 对象
+/**
+ * 构建角色信息
+ * @param {any} charData 角色数据
+ * @returns {{}} 包含角色信息的对象
+ */
 function buildCharInfo(charData) {
 	const info = {}
 	// fount 的默认语言键通常是 '' 或特定语言如 'en'。CCv3 使用 ISO 639-1 ('en', 'zh').
@@ -46,6 +62,11 @@ function buildCharInfo(charData) {
 	const defaultLocaleKey = '' // fount 使用的默认/后备 locale key
 
 	// --- 辅助函数：为特定语言创建 info 对象 ---
+	/**
+	 * 为语言创建信息
+	 * @param {any} note 注释
+	 * @returns {{ name: any; avatar: string; description: any; description_markdown: any; version: any; author: any; home_page: any; tags: any; }} 包含角色信息的对象
+	 */
 	const createInfoForLang = note => {
 		// 注意：chardata.creator_notes 已经是经过 evaluateMacros 的（如果ST的宏在其中）
 		// 但CCv3的creator_notes通常是纯文本，宏处理应在显示时。
@@ -58,7 +79,7 @@ function buildCharInfo(charData) {
 			avatar: `${charurl}/image.png`, // 头像路径固定
 			description: evaluatedNote.split('\n')[0] || 'No description.', // 取第一行作为简短描述
 			description_markdown: evaluatedNote || 'No description.', // 完整描述
-			version: charData.character_version || '0.0.1',
+			version: charData.character_version || '0.0.0',
 			author: charData.creator || 'Unknown',
 			home_page: charData.extensions?.source_url || '',
 			tags: charData.tags || [],
@@ -95,43 +116,64 @@ function buildCharInfo(charData) {
 }
 
 /**
- * @param {string} text
- * @returns {string}
+ * @param {string} text 要格式化的文本
+ * @returns {string} 格式化后的文本
  */
 function formatRisuOutput(text) {
 	const risu_assets = chardata.extensions?.risu_assets || []
 	return text.replace(/<img="(?<src>[^"]+)">/g, (match, src) => {
 		const asset = risu_assets.find(a => a.name == src) || risu_assets.find(a => a.name == `${src}.${a.ext}`)
-		return `<img src="${charurl}/${asset.fount_uri}" class="modal-img">`
+		return /* html */ `<img src="${charurl}/${asset.fount_uri}" class="modal-img">`
 	})
 }
 
 
 /** @type {CharAPI_t} */
-const charAPI_definition = { // 先定义结构主体
+const charAPI_definition = {
+	// 先定义结构主体
 	info: {}, // 将由 buildCharInfo 动态填充
 
+	/**
+	 * 加载
+	 * @param {any} stat 状态
+	 */
 	Load: stat => {
 		username = stat.username
 	},
 
 	interfaces: {
 		config: {
+			/**
+			 * 获取数据
+			 * @returns {{ AIsource: any; chardata: chardata_t; }} 包含 AI 源和角色数据的对象
+			 */
 			GetData: () => ({
 				AIsource: AIsource?.filename || '',
+				plugins: Object.keys(plugins),
 				chardata, // STv2 格式
 			}),
+			/**
+			 * 设置数据
+			 * @param {{ chardata: chardata_t; AIsource: string; }} data 数据
+			 */
 			SetData: async data => {
 				if (data.chardata) {
 					chardata = data.chardata
 					charAPI_definition.info = buildCharInfo(chardata)
 					saveJsonFile(charjson, chardata) // 保存 STv2 格式
 				}
+				if (data.plugins) plugins = Object.fromEntries(await Promise.all(data.plugins.map(async x => [x, await loadPlugin(username, x)])))
 				if (data.AIsource) AIsource = await loadAIsource(username, data.AIsource)
 				else AIsource = await loadDefaultAIsource(username)
 			}
 		},
 		chat: {
+			/**
+			 * 获取问候语
+			 * @param {chatReplyRequest_t} args 参数
+			 * @param {number} index 索引
+			 * @returns {{ content: string; content_for_show?: string; }} 包含问候语内容的对象
+			 */
 			GetGreeting: (args, index) => {
 				// CCv3 的 first_mes 和 alternate_greetings 不是多语言结构，直接使用 chardata 中的版本
 				const greetings = [
@@ -151,6 +193,12 @@ const charAPI_definition = { // 先定义结构主体
 					content_for_show: formatRisuOutput(runRegex(chardata, result, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.promptOnly))
 				}
 			},
+			/**
+			 * 获取群组问候语
+			 * @param {any} args 参数
+			 * @param {any} index 索引
+			 * @returns {{ content: any; content_for_show: any; }} 包含群组问候语内容的对象
+			 */
 			GetGroupGreeting: (args, index) => {
 				// CCv3 的 group_only_greetings 被放到了 chardata.extensions.group_greetings
 				// 这同样不是一个多语言结构
@@ -172,7 +220,12 @@ const charAPI_definition = { // 先定义结构主体
 					content_for_show: formatRisuOutput(runRegex(chardata, result, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.promptOnly))
 				}
 			},
-			GetPrompt: (promptArgs /* fount prompt_struct_args_t */) => {
+			/**
+			 * 获取提示
+			 * @param {chatReplyRequest_t} promptArgs 提示参数
+			 * @returns {single_part_prompt_t} 提示对象
+			 */
+			GetPrompt: (promptArgs) => {
 				// 确保传递给 promptBuilder 的 Charname 是我们期望的（考虑 nickname）
 				const effectiveCharName = chardata.extensions?.ccv3_nickname || chardata.name
 				const builderArgs = {
@@ -181,6 +234,11 @@ const charAPI_definition = { // 先定义结构主体
 				}
 				return promptBuilder(builderArgs, chardata, AIsource?.filename || 'default_model')
 			},
+			/**
+			 * 获取回复
+			 * @param {chatReplyRequest_t} args 参数
+			 * @returns {Promise<{ content: any; content_for_show: any; files: any; extension: any; }>} 包含回复内容的对象
+			 */
 			GetReply: async args => {
 				if (!AIsource)
 					return {
@@ -188,6 +246,8 @@ const charAPI_definition = { // 先定义结构主体
 						content: 'This character does not have an AI source. Please [set the AI source](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage) first.'
 					}
 
+				// 注入角色插件
+				args.plugins = Object.assign({}, plugins, args.plugins)
 
 				const effectiveCharName = chardata.extensions?.ccv3_nickname || chardata.name
 				const promptStructArgs = { ...args, char_name: effectiveCharName } // 确保 buildPromptStruct 使用正确的角色名
@@ -201,6 +261,10 @@ const charAPI_definition = { // 先定义结构主体
 					extension: {},
 				}
 
+				/**
+				 * 添加长时间日志
+				 * @param {any} entry 条目
+				 */
 				function AddLongTimeLog(entry) {
 					entry.charVisibility = [args.char_id] // char_id 来自 fount 的参数
 					result?.logContextBefore?.push?.(entry)
@@ -234,12 +298,22 @@ const charAPI_definition = { // 先定义结构主体
 					extension: result.extension,
 				}
 			},
+			/**
+			 * 获取回复频率
+			 * @param {any} args 参数
+			 * @returns {Promise<number>} 回复频率
+			 */
 			GetReplyFrequency: async args => {
 				if (Object(chardata.extensions?.talkativeness) instanceof Number)
 					return Math.max(0.1, Number(chardata.extensions.talkativeness) * 2) // ST 逻辑
 
 				return 1 // 默认频率
 			},
+			/**
+			 * 消息编辑
+			 * @param {any} args 参数
+			 * @returns {{ content: any; content_for_show: any; }} 编辑后的消息对象
+			 */
 			MessageEdit: args => {
 				const env = getMacroEnv(args.UserCharname) // UserCharname可能需要从args的上下文中获取
 				const editedContent = evaluateMacros(args.edited.content, env, args.chat_scoped_char_memory, args.chat_log)
@@ -256,4 +330,7 @@ const charAPI_definition = { // 先定义结构主体
 // 在模块加载时填充 info 对象
 charAPI_definition.info = buildCharInfo(chardata)
 
+/**
+ * 导出定义好的对象
+ */
 export default charAPI_definition // 导出定义好的对象

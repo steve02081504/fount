@@ -551,6 +551,7 @@ export async function authenticate(req, res, next) {
 	/**
 	 * 处理未授权的请求。
 	 * @param {string} [message='Unauthorized'] - 错误消息。
+	 * @returns {void}
 	 */
 	const Unauthorized = (message = 'Unauthorized') => {
 		const path = encodeURIComponent(req.originalUrl)
@@ -906,7 +907,7 @@ let avgVerifyTime = 0
  * @returns {Promise<object>} 包含状态码、消息和令牌的对象。
  */
 export async function login(username, password, deviceId = 'unknown', req) {
-	const ip = req.ip
+	const { ip } = req
 	const user = getUserByUsername(username)
 
 	/**

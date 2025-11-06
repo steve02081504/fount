@@ -61,12 +61,12 @@ async function renderBotDropdown() {
 		disabled,
 		/**
 		 * @param {object} selectedItem - 选定的项目。
+		 * @returns {Promise<void>}
 		 */
 		onSelect: async (selectedItem) => {
 			const botName = selectedItem ? selectedItem.value : null
 			if (botName == selectedBot) return
-			if (!isDirty) return
-			if (!confirmI18n('telegram_bots.alerts.unsavedChanges')) return true
+			if (isDirty && !confirmI18n('telegram_bots.alerts.unsavedChanges')) return true
 			await loadBotConfig(botName)
 		}
 	})
@@ -81,12 +81,6 @@ async function renderCharDropdown() {
 	const disabled = !charList || !charList.length
 	const dataList = disabled ? [] : charList.map(name => ({ name, value: name }))
 
-	const currentConfig = configEditor?.get()?.json
-	if (currentConfig?.char)
-		charSelectDropdown.dataset.value = currentConfig.char
-	else
-		delete charSelectDropdown.dataset.value
-
 	await createSearchableDropdown({
 		dropdownElement: charSelectDropdown,
 		dataList,
@@ -98,9 +92,7 @@ async function renderCharDropdown() {
 		 */
 		onSelect: (selectedItem) => {
 			const charName = selectedItem ? selectedItem.value : null
-			const currentConfig = configEditor?.get()?.json
-			if (charName !== currentConfig?.char)
-				handleCharSelectChange(charName)
+			if (charName) handleCharSelectChange(charName)
 		}
 	})
 }
@@ -142,8 +134,7 @@ async function loadBotConfig(botname) {
 			 * @param {any} root0.patchResult - 补丁结果。
 			 */
 			onChange: (updatedContent, previousContent, { error, patchResult }) => {
-				if (!error)
-					isDirty = true
+				if (!error) isDirty = true
 			},
 			onSave: handleSaveConfig,
 			label: geti18n('telegram_bots.configCard.labels.config')
@@ -222,7 +213,7 @@ async function handleCharSelectChange(selectedChar) {
  */
 function handleToggleToken() {
 	tokenInput.type = tokenInput.type === 'password' ? 'text' : 'password'
-	toggleTokenButton.innerHTML = `<img src="https://api.iconify.design/line-md/watch${tokenInput.type === 'password' ? '-off' : ''}.svg" class="text-icon" data-i18n="telegram_bots.configCard.toggleBotTokenIcon" />`
+	toggleTokenButton.innerHTML = /* html */ `<img src="https://api.iconify.design/line-md/watch${tokenInput.type === 'password' ? '-off' : ''}.svg" class="text-icon" data-i18n="telegram_bots.configCard.toggleBotTokenIcon" />`
 	i18nElement(toggleTokenButton)
 }
 

@@ -3,9 +3,26 @@ import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
 
 const AI = {
+	/**
+	 * 获取 API 端点。
+	 * @returns {string} API 端点。
+	 */
 	end: () => Buffer.from([104, 116, 116, 112, 115, 58, 47, 47, 97, 112, 105, 46, 99, 108, 97, 117, 100, 101, 46, 97, 105]).toString(),
+	/**
+	 * 获取用户代理。
+	 * @returns {string} 用户代理。
+	 */
 	agent: () => Buffer.from([77, 111, 122, 105, 108, 108, 97, 47, 53, 46, 48, 32, 40, 87, 105, 110, 100, 111, 119, 115, 32, 78, 84, 32, 49, 48, 46, 48, 59, 32, 87, 105, 110, 54, 52, 59, 32, 120, 54, 52, 41, 32, 65, 112, 112, 108, 101, 87, 101, 98, 75, 105, 116, 47, 53, 51, 55, 46, 51, 54, 32, 40, 75, 72, 84, 77, 76, 44, 32, 108, 105, 107, 101, 32, 71, 101, 99, 107, 111, 41, 32, 67, 104, 114, 111, 109, 101, 47, 49, 49, 54, 46, 48, 46, 48, 46, 48, 32, 83, 97, 102, 97, 114, 105, 47, 53, 51, 55, 46, 51, 54]).toString(),
-	extra: () => JSON.parse(Buffer.from([123, 34, 115, 101, 99, 45, 99, 104, 45, 117, 97, 34, 58, 34, 92, 34, 67, 104, 114, 111, 109, 105, 117, 109, 92, 34, 59, 118, 61, 92, 34, 49, 49, 54, 92, 34, 44, 32, 92, 34, 78, 111, 116, 59, 65, 61, 66, 114, 97, 110, 100, 92, 34, 59, 118, 61, 92, 34, 50, 52, 92, 34, 44, 32, 92, 34, 77, 105, 99, 114, 111, 115, 111, 102, 116, 32, 69, 100, 103, 101, 92, 34, 59, 118, 61, 92, 34, 49, 49, 54, 92, 34, 34, 44, 34, 115, 101, 99, 45, 99, 104, 45, 117, 97, 45, 109, 111, 98, 105, 108, 101, 34, 58, 34, 63, 48, 34, 44, 34, 115, 101, 99, 45, 99, 104, 45, 117, 97, 45, 112, 108, 97, 116, 102, 111, 114, 109, 34, 58, 34, 92, 34, 87, 105, 110, 100, 111, 119, 115, 92, 34, 34, 44, 34, 115, 101, 99, 45, 102, 101, 116, 99, 104, 45, 100, 101, 115, 116, 34, 58, 34, 101, 109, 112, 116, 121, 34, 44, 34, 115, 101, 99, 45, 102, 101, 116, 99, 104, 45, 109, 111, 100, 101, 34, 58, 34, 110, 97, 118, 105, 103, 97, 116, 101, 34, 44, 34, 115, 101, 99, 45, 102, 101, 116, 99, 104, 45, 115, 105, 116, 101, 34, 58, 34, 110, 111, 110, 101, 34, 44, 34, 115, 101, 99, 45, 102, 101, 116, 99, 104, 45, 117, 115, 101, 114, 34, 58, 34, 63, 49, 34, 44, 34, 117, 112, 103, 114, 97, 100, 101, 45, 105, 110, 115, 101, 99, 117, 114, 101, 45, 114, 101, 113, 117, 101, 115, 116, 115, 34, 58, 49, 125]).toString()),
+	/**
+	 * 获取额外的请求头。
+	 * @returns {object} 额外的请求头。
+	 */
+	extra: () => JSON.parse(Buffer.from([123, 34, 115, 101, 99, 45, 99, 104, 45, 117, 97, 34, 58, 34, 92, 34, 67, 104, 114, 111, 109, 105, 117, 109, 92, 34, 59, 118, 61, 92, 34, 49, 49, 54, 92, 34, 44, 32, 92, 34, 78, 111, 116, 59, 65, 61, 66, 114, 97, 110, 100, 92, 34, 59, 118, 61, 92, 34, 50, 52, 92, 34, 44, 32, 92, 34, 77, 105, 99, 114, 111, 115, 111, 112, 104, 116, 32, 69, 100, 103, 101, 92, 34, 59, 118, 61, 92, 34, 49, 49, 54, 92, 34, 34, 44, 34, 115, 101, 99, 45, 99, 104, 45, 117, 97, 45, 109, 111, 98, 105, 108, 101, 34, 58, 34, 63, 48, 34, 44, 34, 115, 101, 99, 45, 99, 104, 45, 117, 97, 45, 112, 108, 97, 116, 102, 111, 114, 109, 34, 58, 34, 92, 34, 87, 105, 110, 100, 111, 119, 115, 92, 34, 34, 44, 34, 115, 101, 99, 45, 102, 101, 116, 99, 104, 45, 100, 101, 115, 116, 34, 58, 34, 101, 109, 112, 116, 121, 34, 44, 34, 115, 101, 99, 45, 102, 101, 116, 99, 104, 45, 109, 111, 100, 101, 34, 58, 34, 110, 97, 118, 105, 103, 97, 116, 101, 34, 44, 34, 115, 101, 99, 45, 102, 101, 116, 99, 104, 45, 115, 105, 116, 101, 34, 58, 34, 110, 111, 110, 101, 34, 44, 34, 115, 101, 99, 45, 102, 101, 116, 99, 104, 45, 117, 115, 101, 114, 34, 58, 34, 63, 49, 34, 44, 34, 117, 112, 103, 114, 97, 100, 101, 45, 105, 110, 115, 101, 99, 117, 114, 101, 45, 114, 101, 113, 117, 101, 115, 116, 115, 34, 58, 49, 125]).toString()),
+	/**
+	 * 获取请求头。
+	 * @param {string} refPath - 引用路径。
+	 * @returns {object} 请求头。
+	 */
 	hdr: refPath => ({
 		...AI.extra(),
 		'Content-Type': 'application/json',
@@ -13,10 +30,19 @@ const AI = {
 		Referer: `${AI.end()}/${refPath ? 'chat/' + refPath : ''}`,
 		Origin: '' + AI.end()
 	}),
+	/**
+	 * 获取时区。
+	 * @returns {string} 时区。
+	 */
 	zone: () => Buffer.from([65, 109, 101, 114, 105, 99, 97, 47, 78, 101, 119, 95, 89, 111, 114, 107]).toString(),
 }
 
-// 错误检查函数，改进了 JSON 解析和错误消息处理
+/**
+ * 检查响应中是否有错误。
+ * @param {Response} res - 响应对象。
+ * @param {boolean} throwIt - 如果发现错误，是否抛出。
+ * @returns {Promise<Error|undefined>} 错误（如果发现）。
+ */
 async function checkResErr(res, throwIt = true) {
 	let err, json, errAPI
 	if (res.status < 200 || res.status >= 300) {
@@ -55,15 +81,26 @@ async function checkResErr(res, throwIt = true) {
 	return err
 }
 
-// 模拟 ClewdStream，但仅用于非流式响应
+/**
+ * ClewdStream 类的模拟，用于非流式响应。
+ */
 class ClewdSimulation {
+	/**
+	 * 创建 ClewdSimulation 的实例。
+	 * @param {object} config - 配置对象。
+	 * @param {string} model - 要使用的模型。
+	 */
 	constructor(config, model) {
 		this.config = config
 		this.model = model
 		this.impersonated = false // 简单模拟
 	}
 
-	// 模拟 clewd.js 中的 impersonationCheck
+	/**
+	 * 检查回复中是否有个性化。
+	 * @param {string} reply - 要检查的回复。
+	 * @returns {boolean} 是否检测到个性化。
+	 */
 	impersonationCheck(reply) {
 		// 简单实现：检查是否包含 "Human:" 或 "Assistant:"
 		if (reply.includes('Human:') || reply.includes('Assistant:')) {
@@ -74,7 +111,11 @@ class ClewdSimulation {
 		return false
 	}
 
-	// 添加一个 processResponse 方法来处理响应
+	/**
+	 * 处理响应。
+	 * @param {object} response - 要处理的响应。
+	 * @returns {object} 处理后的响应。
+	 */
 	processResponse(response) {
 		if (response.completion)
 			// 非流式响应，直接检查 impersonation
@@ -89,7 +130,15 @@ class ClewdSimulation {
 }
 
 
+/**
+ * 用于与 Claude API 交互的 ClaudeAPI 类。
+ */
 export class ClaudeAPI {
+	/**
+	 * 创建 ClaudeAPI 的实例。
+	 * @param {object} config - 配置对象。
+	 * @param {Function} SaveConfig - 保存配置的函数。
+	 */
 	constructor(config, SaveConfig) {
 		this.config = config
 		this.SaveConfig = SaveConfig
@@ -103,7 +152,10 @@ export class ClaudeAPI {
 		this.prevImpersonated = false    // 上一次是否发生了角色扮演
 	}
 
-	// 获取 Cookie
+	/**
+	 * 获取 Cookie。
+	 * @returns {string} Cookie。
+	 */
 	getCookies() {
 		if (!this.config.cookie_array?.length) return ''
 
@@ -112,7 +164,10 @@ export class ClaudeAPI {
 		return match ? match[2] : ''
 	}
 
-	// 首次登录，获取 uuidOrg
+	/**
+	 * 首次登录并获取组织 UUID。
+	 * @returns {Promise<void>}
+	 */
 	async firstLogin() {
 		if (!this.config.cookie_array?.length || this.uuidOrg)
 			return
@@ -171,7 +226,11 @@ export class ClaudeAPI {
 			this.cookieCleaner('Failed firstLogin after retry') // 清理当前 Cookie
 	}
 
-	// 判断是否应该轮换 Cookie (更完整的逻辑)
+	/**
+	 * 决定是否轮换 Cookie。
+	 * @param {Error} error - 错误对象。
+	 * @returns {boolean} 是否轮换 Cookie。
+	 */
 	shouldRotateCookie(error) {
 		return (
 			error.status &&  // 使用 error.status
@@ -180,7 +239,11 @@ export class ClaudeAPI {
 		) || (error.message && error.message.includes('Overloaded'))
 	}
 
-	// 判断是否应该清理 Cookie
+	/**
+	 * 决定是否清理 Cookie。
+	 * @param {Error} error - 错误对象。
+	 * @returns {boolean} 是否清理 Cookie。
+	 */
 	shouldCleanCookie(error) {
 		return error.status && (  // 使用 error.status
 			error.status === 400 || // Bad Request
@@ -188,7 +251,10 @@ export class ClaudeAPI {
 		)
 	}
 
-	// Cookie 轮换
+	/**
+	 * 更换 Cookie。
+	 * @returns {Promise<void>}
+	 */
 	async cookieChanger() {
 		if (!this.config.cookie_array || this.config.cookie_array.length <= 1) {
 			if (!this.config.cookie_array.length) return
@@ -222,7 +288,11 @@ export class ClaudeAPI {
 		}
 	}
 
-	// Cookie 清理
+	/**
+	 * 清理 Cookie。
+	 * @param {string} flag - 清理 Cookie 的原因。
+	 * @returns {void}
+	 */
 	cookieCleaner(flag) {
 		if (!this.config.cookie_array?.length) return
 
@@ -243,7 +313,10 @@ export class ClaudeAPI {
 			this.cookieChanger() // 切换
 	}
 
-	// 等待 Cookie 切换完成
+	/**
+	 * 等待 Cookie 更换完成。
+	 * @returns {Promise<void>}
+	 */
 	async waitForChange() {
 		return new Promise(resolve => {
 			const interval = setInterval(() => {
@@ -255,7 +328,11 @@ export class ClaudeAPI {
 		})
 	}
 
-	// 判断是否应该创建新对话
+	/**
+	 * 决定是否续订聊天。
+	 * @param {Array<object>} messages - 消息对象数组。
+	 * @returns {boolean} 是否续订聊天。
+	 */
 	shouldRenewChat(messages) {
 		const currentPrompt = {
 			firstUser: messages.find(m => m.role === 'user'),
@@ -277,7 +354,12 @@ export class ClaudeAPI {
 		)
 	}
 
-	// 主 API 调用函数
+	/**
+	 * 调用 Claude API。
+	 * @param {Array<object>} messages - 消息对象数组。
+	 * @param {string} model - 要使用的模型。
+	 * @returns {Promise<string>} API 的响应。
+	 */
 	async callClaudeAPI(messages, model) {
 		if (!this.config.cookie_array?.length)
 			throw new Error('No cookies configured. Please add at least one Claude API cookie to the configuration.')
@@ -315,9 +397,8 @@ export class ClaudeAPI {
 			headers.Cookie = `sessionKey=${this.getCookies()}`
 			const rProxy = this.config.r_proxy || AI.end()
 
-			// 构建 prompt 字符串 (简单拼接)
+			// 构建 prompt 字符串
 			const prompt = messages.map(msg => `${msg.role}: ${msg.content}`).join('\n\n') + '\n\nAssistant:'
-			//console.log(prompt);
 
 			const payload = {
 				completion: {

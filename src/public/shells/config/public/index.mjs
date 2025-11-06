@@ -29,6 +29,7 @@ let activePart = null
 let isDirty = false
 /**
  * JSON 更新时的回调函数
+ * @returns {number} 返回一个数字。
  */
 let onJsonUpdate = () => 0
 
@@ -129,6 +130,7 @@ async function loadPartAddons(partType, partName) {
 	partDisplayContainer.innerHTML = ''
 	/**
 	 * JSON 更新时的回调函数
+	 * @returns {number} 返回一个数字。
 	 */
 	onJsonUpdate = () => 0
 
@@ -147,7 +149,7 @@ async function loadPartAddons(partType, partName) {
 	}
 	catch (e) {
 		console.error('Error loading or evaluating part addons:', e)
-		partDisplayContainer.innerHTML = `<div class="text-error">Error loading part display: ${e.message}</div>`
+		partDisplayContainer.innerHTML = /* html */ `<div class="text-error">Error loading part display: ${e.message}</div>`
 	}
 }
 

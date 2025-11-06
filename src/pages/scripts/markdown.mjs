@@ -14,7 +14,7 @@ const { GetMarkdownConvertor } = await import('./markdownConvertor.mjs').catch(e
 				 * @returns {string} 返回处理后的 HTML 字符串。
 				 */
 				process: content => {
-					return `\
+					return /* html */ `\
 <h1>Markdown Load Error: ${error.name}</h1>
 <pre><code>
 ${error.stack || error.message || error}

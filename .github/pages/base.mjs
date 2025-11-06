@@ -17,7 +17,14 @@ Sentry.init({
 await import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill/index.mjs')
 
 /* global urlParams */
+/**
+ * 当前应用程序的主题
+ */
 export let theme_now
+/**
+ * 设置应用程序的主题。
+ * @param {string} theme - 要设置的主题（例如 'dark', 'light', 'auto'）。
+ */
 export function setTheme(theme) {
 	if (theme === theme_now) return
 	theme_now = theme
@@ -32,6 +39,10 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e =
 	setTheme(localStorage.getItem('theme'))
 })
 
+/**
+ * 设置预渲染。
+ * @param {string} [hostUrl] - 主机 URL。
+ */
 export function setPreRender(hostUrl = urlParams.get('hostUrl') ?? localStorage.getItem('fountHostUrl') ?? 'http://localhost:8931') {
 	if (HTMLScriptElement.supports?.('speculationrules')) {
 		const specScript = document.createElement('script')
@@ -51,6 +62,9 @@ export function setPreRender(hostUrl = urlParams.get('hostUrl') ?? localStorage.
 	}
 }
 
+/**
+ * 应用程序的基础目录
+ */
 export const base_dir = '../'.repeat(window.location.pathname.split('/').length - 3).slice(0, -1)
 
 if ('serviceWorker' in navigator)
@@ -59,7 +73,7 @@ if ('serviceWorker' in navigator)
 			console.error('Service Worker registration failed: ', error)
 		})
 
-window.addEventListener('load', async () => {
+; (f => document.readyState === 'complete' ? f() : window.addEventListener('load', f))(async () => {
 	console.log(...await fetch('https://cdn.jsdelivr.net/gh/steve02081504/fount/imgs/icon.js').then(r => r.text()).then(eval))
 	console.log('Curious? Join us and build future together: https://github.com/steve02081504/fount')
 })

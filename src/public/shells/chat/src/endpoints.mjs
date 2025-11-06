@@ -9,6 +9,7 @@ import {
 	deleteChat,
 	exportChat,
 	getCharListOfChat,
+	getPluginListOfChat,
 	GetChatLog,
 	getChatList,
 	GetUserPersonaName,
@@ -16,6 +17,8 @@ import {
 	newChat,
 	modifyTimeLine,
 	removechar,
+	addplugin,
+	removeplugin,
 	setPersona,
 	setWorld,
 	triggerCharReply,
@@ -29,9 +32,9 @@ import {
 import { addfile, getfile } from './files.mjs'
 
 /**
- * 设置应用程序中聊天操作的API端点。
+ * 为聊天功能设置API端点。
  *
- * @param {import('npm:websocket-express').Router} router - 将附加端点的express路由器。
+ * @param {import('npm:websocket-express').Router} router - Express路由实例，用于附加端点。
  */
 export function setEndpoints(router) {
 	router.ws('/ws/shells/chat/ui/:chatid', authenticate, async (ws, req) => {
@@ -49,10 +52,14 @@ export function setEndpoints(router) {
 		res.status(200).json(await getCharListOfChat(chatid))
 	})
 
-	router.get('/api/shells/chat/:chatid/log', authenticate, async (req, res) => {
+	router.get('/api/shells/chat/:chatid/plugins', authenticate, async (req, res) => {
 		const { chatid } = req.params
-		const { start, end } = req.query
-		const username = (await getUserByReq(req)).username
+		res.status(200).json(await getPluginListOfChat(chatid))
+	})
+
+	router.get('/api/shells/chat/:chatid/log', authenticate, async (req, res) => {
+		const { params: { chatid }, query: { start, end } } = req
+		const { username } = await getUserByReq(req)
 		const log = await GetChatLog(chatid, parseInt(start, 10), parseInt(end, 10))
 		res.status(200).json(await Promise.all(log.map(entry => entry.toData(username))))
 	})
@@ -73,8 +80,7 @@ export function setEndpoints(router) {
 	})
 
 	router.put('/api/shells/chat/:chatid/timeline', authenticate, async (req, res) => {
-		const { chatid } = req.params
-		const { delta } = req.body
+		const { params: { chatid }, body: { delta } } = req
 		const entry = await modifyTimeLine(chatid, delta)
 		res.status(200).json({ success: true, entry: await entry.toData((await getUserByReq(req)).username) })
 	})
@@ -86,8 +92,7 @@ export function setEndpoints(router) {
 	})
 
 	router.put('/api/shells/chat/:chatid/message/:index', authenticate, async (req, res) => {
-		const { chatid, index } = req.params
-		const { content } = req.body
+		const { params: { chatid, index }, body: { content } } = req
 		content.files = content?.files?.map(file => ({
 			...file,
 			buffer: Buffer.from(file.buffer, 'base64')
@@ -97,8 +102,7 @@ export function setEndpoints(router) {
 	})
 
 	router.post('/api/shells/chat/:chatid/message', authenticate, async (req, res) => {
-		const { chatid } = req.params
-		const { reply } = req.body
+		const { params: { chatid }, body: { reply } } = req
 		reply.files = reply?.files?.map(file => ({
 			...file,
 			buffer: Buffer.from(file.buffer, 'base64')
@@ -108,36 +112,31 @@ export function setEndpoints(router) {
 	})
 
 	router.post('/api/shells/chat/:chatid/trigger-reply', authenticate, async (req, res) => {
-		const { chatid } = req.params
-		const { charname } = req.body
+		const { params: { chatid }, body: { charname } } = req
 		await triggerCharReply(chatid, charname)
 		res.status(200).json({ success: true })
 	})
 
 	router.put('/api/shells/chat/:chatid/char/:charname/frequency', authenticate, async (req, res) => {
-		const { chatid, charname } = req.params
-		const { frequency } = req.body
+		const { params: { chatid, charname }, body: { frequency } } = req
 		await setCharSpeakingFrequency(chatid, charname, frequency)
 		res.status(200).json({ success: true })
 	})
 
 	router.put('/api/shells/chat/:chatid/world', authenticate, async (req, res) => {
-		const { chatid } = req.params
-		const { worldname } = req.body
+		const { params: { chatid }, body: { worldname } } = req
 		await setWorld(chatid, worldname)
 		res.status(200).json({ success: true })
 	})
 
 	router.put('/api/shells/chat/:chatid/persona', authenticate, async (req, res) => {
-		const { chatid } = req.params
-		const { personaname } = req.body
+		const { params: { chatid }, body: { personaname } } = req
 		await setPersona(chatid, personaname)
 		res.status(200).json({ success: true })
 	})
 
 	router.post('/api/shells/chat/:chatid/char', authenticate, async (req, res) => {
-		const { chatid } = req.params
-		const { charname } = req.body
+		const { params: { chatid }, body: { charname } } = req
 		await addchar(chatid, charname)
 		res.status(200).json({ success: true })
 	})
@@ -145,6 +144,18 @@ export function setEndpoints(router) {
 	router.delete('/api/shells/chat/:chatid/char/:charname', authenticate, async (req, res) => {
 		const { chatid, charname } = req.params
 		await removechar(chatid, charname)
+		res.status(200).json({ success: true })
+	})
+
+	router.post('/api/shells/chat/:chatid/plugin', authenticate, async (req, res) => {
+		const { params: { chatid }, body: { pluginname } } = req
+		await addplugin(chatid, pluginname)
+		res.status(200).json({ success: true })
+	})
+
+	router.delete('/api/shells/chat/:chatid/plugin/:pluginname', authenticate, async (req, res) => {
+		const { chatid, pluginname } = req.params
+		await removeplugin(chatid, pluginname)
 		res.status(200).json({ success: true })
 	})
 

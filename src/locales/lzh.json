@@ -11,6 +11,10 @@
 				"https": "密網通衢於 ${url}",
 				"http": "常道通衢於 ${url}"
 			},
+			"mdns": {
+				"description": "靈犀一點，應念而生",
+				"failed": "域名宣告不成：${error}"
+			},
 			"localUrl": "欲攜他器同游，可循此徑：${url}",
 			"update": {
 				"restarting": "新令已至，當革故鼎新..."
@@ -224,6 +228,9 @@
 			"description": "fount 供無雙之選，無窮之變。可接<i>任意</i>智源——OpenAI、Claude、OpenRouter、NovelAI 等。通靈之法，皆由君之符碼之力隨心塑造。"
 		},
 		"language_selector": {
+			"button": {
+				"aria-label": "择雅言"
+			},
 			"search": {
 				"placeholder": "寻雅言…"
 			}
@@ -454,61 +461,56 @@
 				"alt": "功用"
 			}
 		},
+		"part_types": {
+			"chars": "化身",
+			"worlds": "世界",
+			"personas": "身分",
+			"plugins": "插件",
+			"AIsources": "智源",
+			"AIsourceGenerators": "智源生成器",
+			"ImportHandlers": "導入處理器",
+			"shells": "交互界面"
+		},
+		"default": {
+			"title": "擇選組件",
+			"subtitle": "擇一組件以續。",
+			"card": {
+				"noTags": "無標籤",
+				"version": "版本",
+				"author": "作者",
+				"home_page": "主頁",
+				"issue_page": "問題反饋",
+				"refreshButton": {
+					"alt": "刷新",
+					"title": "刷新"
+				},
+				"defaultCheckbox": {
+					"title": "設為默認"
+				}
+			}
+		},
 		"chars": {
-			"tab": "化身",
 			"title": "點將遣行",
 			"subtitle": "擇一化身，以啟玄談。",
-			"none": "空空如也",
 			"card": {
-				"noTags": "無籤",
-				"version": "版",
-				"author": "作者",
-				"home_page": "門戶",
-				"issue_page": "諫言",
-				"refreshButton": {
-					"alt": "復新",
-					"title": "復新"
-				},
 				"defaultCheckbox": {
 					"title": "設為預設"
 				}
 			}
 		},
 		"worlds": {
-			"tab": "世界",
 			"title": "擇世界",
 			"subtitle": "擇一世界，沉浸其中。",
-			"none": "空空如也",
 			"card": {
-				"noTags": "無籤",
-				"version": "版",
-				"author": "作者",
-				"home_page": "門戶",
-				"issue_page": "諫言",
-				"refreshButton": {
-					"alt": "復新",
-					"title": "復新"
-				},
 				"defaultCheckbox": {
 					"title": "設為預設"
 				}
 			}
 		},
 		"personas": {
-			"tab": "身分",
 			"title": "擇身分",
 			"subtitle": "擇一身分，體驗人生。",
-			"none": "空空如也",
 			"card": {
-				"noTags": "無籤",
-				"version": "版",
-				"author": "作者",
-				"home_page": "門戶",
-				"issue_page": "諫言",
-				"refreshButton": {
-					"alt": "復新",
-					"title": "復新"
-				},
 				"defaultCheckbox": {
 					"title": "設為預設"
 				}
@@ -579,6 +581,20 @@
 					},
 					"addCharIcon": {
 						"alt": "添"
+					}
+				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "附益名錄符"
+				},
+				"title": "附益名錄",
+				"buttons": {
+					"addPlugin": {
+						"title": "增附益"
+					},
+					"addPluginIcon": {
+						"alt": "增附益符"
 					}
 				}
 			}
@@ -721,6 +737,16 @@
 				},
 				"forceReplyIcon": {
 					"alt": "催覆"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "除附益"
+				},
+				"removePluginIcon": {
+					"alt": "除附益符"
 				}
 			}
 		},
@@ -1445,7 +1471,7 @@
 		"what_is_manager": "油猴策管何物也？",
 		"manager_explanation": "油猴策管，覽器之輔具，所以置策易頁也。欲用 fount 統合之策，必先有此物。",
 		"popular_managers": "常用者：",
-		"csp_warning": "或需置輔具以停 CSP，方能使統合之功順行。Chrome 可用<a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener\" class=\"link\">此輔具</a>。",
+		"csp_warning": "或需置輔具以停 CSP，方能使統合之功順行。${browser} 可用<a href=\"${link}\" target=\"_blank\" rel=\"noopener\" class=\"link\">此輔具</a>。",
 		"connected_pages_title": "已連之頁",
 		"fetch_pages_error": "取已連之頁不成。",
 		"page_title": "頁名",
@@ -1572,6 +1598,12 @@
 			"sameLAN": "請確保諸器與 fount 主機同處一網",
 			"accessthis": "請訪此址："
 		},
+		"QRcode": {
+			"alt": "掃碼以訪"
+		},
+		"urlInput": {
+			"aria-label": "位址"
+		},
 		"copyButton": "謄錄此址",
 		"copied": "此址已錄！"
 	},
@@ -1582,6 +1614,9 @@
 		"instruction": "於此頁生成並掌管爾之API密鑰，以便將fount與他用整合。",
 		"endpointSectionTitle": "API端點",
 		"endpointInstruction": "此乃與他服務整合之基址。",
+		"apiUrlInput": {
+			"aria-label": "API端點"
+		},
 		"usageExampleTitle": "用法示例",
 		"usageExampleInstruction": "此為如何用`curl`獲取可用模型列表之例。",
 		"copyButton": "謄",

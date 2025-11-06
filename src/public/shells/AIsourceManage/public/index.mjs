@@ -5,7 +5,7 @@ import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
 import { initTranslations, setLocalizeLogic, i18nElement, console, geti18n, confirmI18n, promptI18n } from '../../scripts/i18n.mjs'
 import { createJsonEditor } from '../../scripts/jsonEditor.mjs'
-import { getPartList, setDefaultPart, getDefaultParts } from '../../scripts/parts.mjs'
+import { getPartList, getDefaultParts, addDefaultPart, unsetDefaultPart } from '../../scripts/parts.mjs'
 import { svgInliner } from '../../scripts/svgInliner.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 import { showToast, showToastI18n } from '../../scripts/toast.mjs'
@@ -29,6 +29,10 @@ let fileList = []
 let generatorList = []
 let isDirty = false // 标记是否有未保存的更改
 let defaultParts = {} // Store default parts
+/**
+ * 当JSON更新时调用的回调函数。
+ * @returns {number} 返回一个数字。
+ */
 let onJsonUpdate = () => 0
 
 /**
@@ -68,6 +72,7 @@ async function fetchGeneratorList() {
  */
 async function fetchDefaultParts() {
 	defaultParts = await getDefaultParts().catch(handleFetchError('aisource_editor.alerts.fetchDefaultsFailed'))
+	defaultParts.AIsources ??= [] // Ensure it's an array
 	updateDefaultPartDisplay()
 }
 
@@ -94,7 +99,7 @@ function renderFileList() {
 		const checkbox = document.createElement('input')
 		checkbox.type = 'checkbox'
 		checkbox.classList.add('default-checkbox', 'checkbox', 'checkbox-primary')
-		setLocalizeLogic(checkbox, ()=>{
+		setLocalizeLogic(checkbox, () => {
 			checkbox.setAttribute('aria-label', geti18n('aisource_editor.buttons.setDefaultForFile', { fileName }))
 		})
 		checkboxContainer.appendChild(checkbox)
@@ -103,17 +108,19 @@ function renderFileList() {
 		checkbox.addEventListener('change', async event => {
 			event.stopPropagation() // Prevent click from triggering loadEditor
 			const isChecked = event.target.checked
-			const newDefault = isChecked ? fileName : null
 
 			try {
-				await setDefaultPart('AIsources', newDefault)
-				// Update local state and UI on success
-				defaultParts.AIsources = newDefault
+				const response = await (isChecked ? addDefaultPart : unsetDefaultPart)('AIsources', fileName)
+				if (!response.ok) throw new Error(await response.text())
+				if (isChecked) defaultParts.AIsources.push(fileName)
+				else {
+					const index = defaultParts.AIsources.indexOf(fileName)
+					if (index > -1) defaultParts.AIsources.splice(index, 1)
+				}
 				updateDefaultPartDisplay()
 			}
 			catch (error) {
 				handleFetchError('aisource_editor.alerts.setDefaultFailed')(error)
-				// Revert checkbox on failure
 				event.target.checked = !isChecked
 			}
 		})
@@ -143,9 +150,9 @@ function renderFileList() {
  * 更新文件列表 UI 以反映哪个文件是默认文件。
  */
 function updateDefaultPartDisplay() {
-	const defaultPartName = defaultParts.AIsources
+	const defaultPartNames = defaultParts.AIsources || []
 	fileListContainer.querySelectorAll('.file-list-item').forEach(el => {
-		const isDefault = el.dataset.name === defaultPartName
+		const isDefault = defaultPartNames.includes(el.dataset.name)
 		el.classList.toggle('selected-item', isDefault)
 		const checkbox = el.querySelector('.default-checkbox')
 		if (checkbox) checkbox.checked = isDefault
@@ -182,6 +189,10 @@ async function fetchConfigTemplate(generatorName) {
  */
 async function loadGeneratorAddons(generatorName) {
 	generatorDisplayContainer.innerHTML = ''
+	/**
+	 * 当JSON更新时调用的回调函数。
+	 * @returns {number} 返回一个数字。
+	 */
 	onJsonUpdate = () => 0
 
 	if (!generatorName) return
@@ -199,7 +210,7 @@ async function loadGeneratorAddons(generatorName) {
 	}
 	catch (e) {
 		console.error('Error loading or evaluating generator addons:', e)
-		generatorDisplayContainer.innerHTML = `<div class="text-error">Error loading generator display: ${e.message}</div>`
+		generatorDisplayContainer.innerHTML = /* html */ `<div class="text-error">Error loading generator display: ${e.message}</div>`
 	}
 }
 
@@ -269,10 +280,15 @@ async function loadEditor(fileName) {
 	if (!jsonEditor)
 		jsonEditor = createJsonEditor(jsonEditorContainer, {
 			label: geti18n('aisource_editor.configTitle'),
-			onChange: () => {
+			/**
+			 * 当编辑器内容更改时调用。
+			 * @param {object} json - 编辑器中的 JSON 数据。
+			 * @param {string} text - 编辑器中的纯文本。
+			 */
+			onChange: (json, text) => {
 				isDirty = true
 				onJsonUpdate({
-					data: jsonEditor.get().json || JSON.parse(jsonEditor.get().text),
+					data: json || JSON.parse(text),
 					containers: {
 						generatorDisplay: generatorDisplayContainer,
 						jsonEditor: jsonEditorContainer
@@ -320,7 +336,6 @@ async function saveFile() {
 
 	try {
 		await setAIFile(activeFile, { generator, config }).catch(handleFetchError('aisource_editor.alerts.saveFileFailed'))
-		console.log('File saved successfully.')
 		isDirty = false
 
 		saveStatusIcon.src = 'https://api.iconify.design/line-md/confirm-circle.svg'
@@ -351,7 +366,6 @@ async function deleteFile() {
 	if (!confirmI18n('aisource_editor.confirm.deleteFile')) return
 
 	await deleteAIFile(activeFile).catch(handleFetchError('aisource_editor.alerts.deleteFileFailed'))
-	console.log('File delete successfully.')
 	activeFile = null
 	await fetchFileList()
 
@@ -379,7 +393,6 @@ async function addFile() {
 	await fetchFileList()
 
 	await loadEditor(newFileName)
-	console.log('File add successfully.')
 }
 
 /**

@@ -15,9 +15,208 @@ const supportedImageTypes = [
 	'image/webp',
 ]
 
+/**
+ * @type {import('../../../decl/AIsource.ts').AIsource_interfaces_and_AIsource_t_getter}
+ */
 export default {
+	info: {
+		'en-UK': {
+			name: 'Claude API',
+			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+			description: 'Claude API by Anthropic',
+			description_markdown: 'Direct access to Anthropic\'s powerful Claude models via their official API.',
+			version: '0.0.0',
+			author: 'steve02081504',
+			tags: ['claude', 'anthropic', 'ai', 'api'],
+			home_page: 'https://www.anthropic.com/api'
+		},
+		'zh-CN': {
+			name: 'Claude API',
+			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+			description: 'Anthropic 的 Claude API',
+			description_markdown: '通过官方 API 直接访问 Anthropic 强大的 Claude 模型。',
+			version: '0.0.0',
+			author: 'steve02081504',
+			tags: ['claude', 'anthropic', 'ai', 'api'],
+			home_page: 'https://www.anthropic.com/api'
+		},
+		'ar-SA': {
+			name: 'Claude API',
+			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+			description: 'واجهة برمجة تطبيقات كلود بواسطة الأنثروبيك',
+			description_markdown: 'الوصول المباشر إلى نماذج كلود القوية من Anthropic عبر واجهة برمجة التطبيقات الرسمية الخاصة بهم.',
+			version: '0.0.0',
+			author: 'steve02081504',
+			tags: ['كلود', 'أنثروبيك', 'ذكاء اصطناعي', 'api'],
+			home_page: 'https://www.anthropic.com/api'
+		},
+		'de-DE': {
+			name: 'Claude API',
+			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+			description: 'Claude-API von Anthropic',
+			description_markdown: 'Direkter Zugriff auf die leistungsstarken Claude-Modelle von Anthropic über deren offizielle API.',
+			version: '0.0.0',
+			author: 'steve02081504',
+			tags: ['claude', 'anthropic', 'ki', 'api'],
+			home_page: 'https://www.anthropic.com/api'
+		},
+		emoji: {
+			name: '🤖🔌',
+			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+			description: 'Claude API by Anthropic',
+			description_markdown: 'Direct access to Anthropic\'s powerful Claude models via their official API.',
+			version: '0.0.0',
+			author: 'steve02081504',
+			tags: ['claude', 'anthropic', 'ai', 'api'],
+			home_page: 'https://www.anthropic.com/api'
+		},
+		'es-ES': {
+			name: 'Claude API',
+			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+			description: 'API de Claude de Anthropic',
+			description_markdown: 'Acceso directo a los potentes modelos Claude de Anthropic a través de su API oficial.',
+			version: '0.0.0',
+			author: 'steve02081504',
+			tags: ['claude', 'anthropic', 'ia', 'api'],
+			home_page: 'https://www.anthropic.com/api'
+		},
+		'fr-FR': {
+			name: 'Claude API',
+			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+			description: 'API Claude d\'Anthropic',
+			description_markdown: 'Accès direct aux puissants modèles Claude d\'Anthropic via leur API officielle.',
+			version: '0.0.0',
+			author: 'steve02081504',
+			tags: ['claude', 'anthropic', 'ia', 'api'],
+			home_page: 'https://www.anthropic.com/api'
+		},
+		'hi-IN': {
+			name: 'Claude API',
+			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+			description: 'एंथ्रोपिक द्वारा क्लाउड एपीआई',
+			description_markdown: 'एंथ्रोपिक के शक्तिशाली क्लाउड मॉडल तक उनकी आधिकारिक एपीआई के माध्यम से सीधी पहुंच।',
+			version: '0.0.0',
+			author: 'steve02081504',
+			tags: ['क्लाउड', 'एंथ्रोपिक', 'एआई', 'एपीआई'],
+			home_page: 'https://www.anthropic.com/api'
+		},
+		'is-IS': {
+			name: 'Claude API',
+			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+			description: 'Claude API frá Anthropic',
+			description_markdown: 'Beinn aðgangur að öflugum Claude-líkönum Anthropic í gegnum opinbert API þeirra.',
+			version: '0.0.0',
+			author: 'steve02081504',
+			tags: ['claude', 'anthropic', 'gervigreind', 'api'],
+			home_page: 'https://www.anthropic.com/api'
+		},
+		'it-IT': {
+			name: 'Claude API',
+			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+			description: 'API Claude di Anthropic',
+			description_markdown: 'Accesso diretto ai potenti modelli Claude di Anthropic tramite la loro API ufficiale.',
+			version: '0.0.0',
+			author: 'steve02081504',
+			tags: ['claude', 'anthropic', 'ia', 'api'],
+			home_page: 'https://www.anthropic.com/api'
+		},
+		'ja-JP': {
+			name: 'Claude API',
+			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+			description: 'アンソロピックの Claude API',
+			description_markdown: '公式 API を介したアンソロピックの強力な Claude モデルへの直接アクセス。',
+			version: '0.0.0',
+			author: 'steve02081504',
+			tags: ['クロード', 'アンソロピック', 'ai', 'api'],
+			home_page: 'https://www.anthropic.com/api'
+		},
+		'ko-KR': {
+			name: 'Claude API',
+			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+			description: '앤트로픽의 클로드 API',
+			description_markdown: '공식 API를 통해 앤트로픽의 강력한 클로드 모델에 직접 액세스할 수 있습니다.',
+			version: '0.0.0',
+			author: 'steve02081504',
+			tags: ['클로드', '앤트로픽', 'ai', 'api'],
+			home_page: 'https://www.anthropic.com/api'
+		},
+		lzh: {
+			name: 'Claude API',
+			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+			description: '人擇之克勞德接口',
+			description_markdown: '由官接口直取人擇之強克勞德模。',
+			version: '0.0.0',
+			author: 'steve02081504',
+			tags: ['克勞德', '人擇', '智械', '接口'],
+			home_page: 'https://www.anthropic.com/api'
+		},
+		'nl-NL': {
+			name: 'Claude API',
+			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+			description: 'Claude API van Anthropic',
+			description_markdown: 'Directe toegang tot de krachtige Claude-modellen van Anthropic via hun officiële API.',
+			version: '0.0.0',
+			author: 'steve02081504',
+			tags: ['claude', 'anthropic', 'ai', 'api'],
+			home_page: 'https://www.anthropic.com/api'
+		},
+		'pt-PT': {
+			name: 'Claude API',
+			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+			description: 'API Claude da Anthropic',
+			description_markdown: 'Acesso direto aos poderosos modelos Claude da Anthropic através de sua API oficial.',
+			version: '0.0.0',
+			author: 'steve02081504',
+			tags: ['claude', 'anthropic', 'ia', 'api'],
+			home_page: 'https://www.anthropic.com/api'
+		},
+		'ru-RU': {
+			name: 'Claude API',
+			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+			description: 'API Клода от Anthropic',
+			description_markdown: 'Прямой доступ к мощным моделям Клода от Anthropic через их официальный API.',
+			version: '0.0.0',
+			author: 'steve02081504',
+			tags: ['клод', 'anthropic', 'ии', 'api'],
+			home_page: 'https://www.anthropic.com/api'
+		},
+		'uk-UA': {
+			name: 'Claude API',
+			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+			description: 'API Клода від Anthropic',
+			description_markdown: 'Прямий доступ до потужних моделей Клода від Anthropic через їхній офіційний API.',
+			version: '0.0.0',
+			author: 'steve02081504',
+			tags: ['клод', 'anthropic', 'ші', 'api'],
+			home_page: 'https://www.anthropic.com/api'
+		},
+		'vi-VN': {
+			name: 'Claude API',
+			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+			description: 'API Claude của Anthropic',
+			description_markdown: 'Truy cập trực tiếp vào các mô hình Claude mạnh mẽ của Anthropic thông qua API chính thức của họ.',
+			version: '0.0.0',
+			author: 'steve02081504',
+			tags: ['claude', 'anthropic', 'ai', 'api'],
+			home_page: 'https://www.anthropic.com/api'
+		},
+		'zh-TW': {
+			name: 'Claude API',
+			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+			description: 'Anthropic 的 Claude API',
+			description_markdown: '透過官方 API 直接存取 Anthropic 強大的 Claude 模型。',
+			version: '0.0.0',
+			author: 'steve02081504',
+			tags: ['claude', 'anthropic', 'ai', 'api'],
+			home_page: 'https://www.anthropic.com/api'
+		}
+	},
 	interfaces: {
 		AIsource: {
+			/**
+			 * 获取此 AI 源的配置模板。
+			 * @returns {Promise<object>} 配置模板。
+			 */
 			GetConfigTemplate: async () => configTemplate,
 			GetSource,
 		}
@@ -35,6 +234,11 @@ const configTemplate = {
 	use_stream: true,
 }
 
+/**
+ * 获取 AI 源。
+ * @param {object} config - 配置对象。
+ * @returns {Promise<AIsource_t>} AI 源。
+ */
 async function GetSource(config) {
 	const Anthropic = await import('npm:@anthropic-ai/sdk')
 	// 初始化 Anthropic 客户端
@@ -56,22 +260,225 @@ async function GetSource(config) {
 	const result = {
 		type: 'text-chat',
 		info: {
-			'': {
-				avatar: '', // 可在此处放置头像 URL
+			'en-UK': {
 				name: config.name || config.model,
-				provider: 'Anthropic',
-				description: 'Anthropic Claude',
-				description_markdown: '由 Anthropic 公司开发的 Claude 模型。',
-				version: '0.0.1',
-				author: 'Generated by AI',
-				home_page: 'https://www.anthropic.com/',
-				tags: ['Anthropic', 'Claude'],
+				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+				description: 'Claude API by Anthropic',
+				description_markdown: 'Direct access to Anthropic\'s powerful Claude models via their official API.',
+				version: '0.0.0',
+				author: 'steve02081504',
+				tags: ['claude', 'anthropic', 'ai', 'api'],
+				provider: 'anthropic',
+				home_page: 'https://www.anthropic.com/api'
+			},
+			'zh-CN': {
+				name: config.name || config.model,
+				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+				description: 'Anthropic 的 Claude API',
+				description_markdown: '通过官方 API 直接访问 Anthropic 强大的 Claude 模型。',
+				version: '0.0.0',
+				author: 'steve02081504',
+				tags: ['claude', 'anthropic', 'ai', 'api'],
+				provider: 'anthropic',
+				home_page: 'https://www.anthropic.com/api'
+			},
+			'ar-SA': {
+				name: config.name || config.model,
+				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+				description: 'واجهة برمجة تطبيقات كلود بواسطة الأنثروبيك',
+				description_markdown: 'الوصول المباشر إلى نماذج كلود القوية من Anthropic عبر واجهة برمجة التطبيقات الرسمية الخاصة بهم.',
+				version: '0.0.0',
+				author: 'steve02081504',
+				tags: ['كلود', 'أنثروبيك', 'ذكاء اصطناعي', 'api'],
+				provider: 'anthropic',
+				home_page: 'https://www.anthropic.com/api'
+			},
+			'de-DE': {
+				name: config.name || config.model,
+				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+				description: 'Claude-API von Anthropic',
+				description_markdown: 'Direkter Zugriff auf die leistungsstarken Claude-Modelle von Anthropic über deren offizielle API.',
+				version: '0.0.0',
+				author: 'steve02081504',
+				tags: ['claude', 'anthropic', 'ki', 'api'],
+				provider: 'anthropic',
+				home_page: 'https://www.anthropic.com/api'
+			},
+			emoji: {
+				name: '🤖🔌',
+				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+				description: 'Claude API by Anthropic',
+				description_markdown: 'Direct access to Anthropic\'s powerful Claude models via their official API.',
+				version: '0.0.0',
+				author: 'steve02081504',
+				tags: ['claude', 'anthropic', 'ai', 'api'],
+				provider: 'anthropic',
+				home_page: 'https://www.anthropic.com/api'
+			},
+			'es-ES': {
+				name: config.name || config.model,
+				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+				description: 'API de Claude de Anthropic',
+				description_markdown: 'Acceso directo a los potentes modelos Claude de Anthropic a través de su API oficial.',
+				version: '0.0.0',
+				author: 'steve02081504',
+				tags: ['claude', 'anthropic', 'ia', 'api'],
+				provider: 'anthropic',
+				home_page: 'https://www.anthropic.com/api'
+			},
+			'fr-FR': {
+				name: config.name || config.model,
+				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+				description: 'API Claude d\'Anthropic',
+				description_markdown: 'Accès direct aux puissants modèles Claude d\'Anthropic via leur API officielle.',
+				version: '0.0.0',
+				author: 'steve02081504',
+				tags: ['claude', 'anthropic', 'ia', 'api'],
+				provider: 'anthropic',
+				home_page: 'https://www.anthropic.com/api'
+			},
+			'hi-IN': {
+				name: config.name || config.model,
+				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+				description: 'एंथ्रोपिक द्वारा क्लाउड एपीआई',
+				description_markdown: 'एंथ्रोपिक के शक्तिशाली क्लाउड मॉडल तक उनकी आधिकारिक एपीआई के माध्यम से सीधी पहुंच।',
+				version: '0.0.0',
+				author: 'steve02081504',
+				tags: ['क्लाउड', 'एंथ्रोपिक', 'एआई', 'एपीआई'],
+				provider: 'anthropic',
+				home_page: 'https://www.anthropic.com/api'
+			},
+			'is-IS': {
+				name: config.name || config.model,
+				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+				description: 'Claude API frá Anthropic',
+				description_markdown: 'Beinn aðgangur að öflugum Claude-líkönum Anthropic í gegnum opinbert API þeirra.',
+				version: '0.0.0',
+				author: 'steve02081504',
+				tags: ['claude', 'anthropic', 'gervigreind', 'api'],
+				provider: 'anthropic',
+				home_page: 'https://www.anthropic.com/api'
+			},
+			'it-IT': {
+				name: config.name || config.model,
+				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+				description: 'API Claude di Anthropic',
+				description_markdown: 'Accesso diretto ai potenti modelli Claude di Anthropic tramite la loro API ufficiale.',
+				version: '0.0.0',
+				author: 'steve02081504',
+				tags: ['claude', 'anthropic', 'ia', 'api'],
+				provider: 'anthropic',
+				home_page: 'https://www.anthropic.com/api'
+			},
+			'ja-JP': {
+				name: config.name || config.model,
+				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+				description: 'アンソロピックの Claude API',
+				description_markdown: '公式 API を介したアンソロピックの強力な Claude モデルへの直接アクセス。',
+				version: '0.0.0',
+				author: 'steve02081504',
+				tags: ['クロード', 'アンソロピック', 'ai', 'api'],
+				provider: 'anthropic',
+				home_page: 'https://www.anthropic.com/api'
+			},
+			'ko-KR': {
+				name: config.name || config.model,
+				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+				description: '앤트로픽의 클로드 API',
+				description_markdown: '공식 API를 통해 앤트로픽의 강력한 클로드 모델에 직접 액세스할 수 있습니다.',
+				version: '0.0.0',
+				author: 'steve02081504',
+				tags: ['클로드', '앤트로픽', 'ai', 'api'],
+				provider: 'anthropic',
+				home_page: 'https://www.anthropic.com/api'
+			},
+			lzh: {
+				name: config.name || config.model,
+				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+				description: '人擇之克勞德接口',
+				description_markdown: '由官接口直取人擇之強克勞德模。',
+				version: '0.0.0',
+				author: 'steve02081504',
+				tags: ['克勞德', '人擇', '智械', '接口'],
+				provider: 'anthropic',
+				home_page: 'https://www.anthropic.com/api'
+			},
+			'nl-NL': {
+				name: config.name || config.model,
+				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+				description: 'Claude API van Anthropic',
+				description_markdown: 'Directe toegang tot de krachtige Claude-modellen van Anthropic via hun officiële API.',
+				version: '0.0.0',
+				author: 'steve02081504',
+				tags: ['claude', 'anthropic', 'ai', 'api'],
+				provider: 'anthropic',
+				home_page: 'https://www.anthropic.com/api'
+			},
+			'pt-PT': {
+				name: config.name || config.model,
+				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+				description: 'API Claude da Anthropic',
+				description_markdown: 'Acesso direto aos poderosos modelos Claude da Anthropic através de sua API oficial.',
+				version: '0.0.0',
+				author: 'steve02081504',
+				tags: ['claude', 'anthropic', 'ia', 'api'],
+				provider: 'anthropic',
+				home_page: 'https://www.anthropic.com/api'
+			},
+			'ru-RU': {
+				name: config.name || config.model,
+				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+				description: 'API Клода от Anthropic',
+				description_markdown: 'Прямой доступ к мощным моделям Клода от Anthropic через их официальный API.',
+				version: '0.0.0',
+				author: 'steve02081504',
+				tags: ['клод', 'anthropic', 'ии', 'api'],
+				provider: 'anthropic',
+				home_page: 'https://www.anthropic.com/api'
+			},
+			'uk-UA': {
+				name: config.name || config.model,
+				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+				description: 'API Клода від Anthropic',
+				description_markdown: 'Прямий доступ до потужних моделей Клода від Anthropic через їхній офіційний API.',
+				version: '0.0.0',
+				author: 'steve02081504',
+				tags: ['клод', 'anthropic', 'ші', 'api'],
+				provider: 'anthropic',
+				home_page: 'https://www.anthropic.com/api'
+			},
+			'vi-VN': {
+				name: config.name || config.model,
+				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+				description: 'API Claude của Anthropic',
+				description_markdown: 'Truy cập trực tiếp vào các mô hình Claude mạnh mẽ của Anthropic thông qua API chính thức của họ.',
+				version: '0.0.0',
+				author: 'steve02081504',
+				tags: ['claude', 'anthropic', 'ai', 'api'],
+				provider: 'anthropic',
+				home_page: 'https://www.anthropic.com/api'
+			},
+			'zh-TW': {
+				name: config.name || config.model,
+				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
+				description: 'Anthropic 的 Claude API',
+				description_markdown: '透過官方 API 直接存取 Anthropic 強大的 Claude 模型。',
+				version: '0.0.0',
+				author: 'steve02081504',
+				tags: ['claude', 'anthropic', 'ai', 'api'],
+				provider: 'anthropic',
+				home_page: 'https://www.anthropic.com/api'
 			}
 		},
 		is_paid: true,
 		extension: {},
 
 		// 简单的文本调用
+		/**
+		 * 调用 AI 源。
+		 * @param {string} prompt - 要发送给 AI 的提示。
+		 * @returns {Promise<{content: string}>} 来自 AI 的结果。
+		 */
 		Call: async prompt => {
 			const params = {
 				model: config.model,
@@ -97,6 +504,11 @@ async function GetSource(config) {
 		},
 
 		// 结构化的多模态调用
+		/**
+		 * 使用结构化提示调用 AI 源。
+		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+		 * @returns {Promise<{content: string, files: any[]}>} 来自 AI 的结果。
+		 */
 		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
 			// 使用 fount 工具函数获取独立的系统提示
 			const system_prompt = structPromptToSingleNoChatLog(prompt_struct)
@@ -200,10 +612,34 @@ ${chatLogEntry.content}
 			}
 		},
 		tokenizer: {
+			/**
+			 * 释放分词器。
+			 * @returns {number} 0
+			 */
 			free: () => 0,
+			/**
+			 * 编码提示。
+			 * @param {string} prompt - 要编码的提示。
+			 * @returns {string} 编码后的提示。
+			 */
 			encode: prompt => prompt,
+			/**
+			 * 解码令牌。
+			 * @param {string} tokens - 要解码的令牌。
+			 * @returns {string} 解码后的令牌。
+			 */
 			decode: tokens => tokens,
+			/**
+			 * 解码单个令牌。
+			 * @param {string} token - 要解码的令牌。
+			 * @returns {string} 解码后的令牌。
+			 */
 			decode_single: token => token,
+			/**
+			 * 获取令牌计数。
+			 * @param {string} prompt - 要计算令牌的提示。
+			 * @returns {number} 令牌数。
+			 */
 			get_token_count: prompt => prompt?.length ?? 0,
 		}
 	}

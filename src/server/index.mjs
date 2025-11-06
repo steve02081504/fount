@@ -31,6 +31,7 @@ let args = process.argv.slice(2)
 const fount_config = {
 	/**
 	 * 重新启动应用程序的函数。
+	 * @returns {never} 不会返回，因为进程会退出。
 	 */
 	restartor: () => process.exit(131),
 	data_path: __dirname + '/data',

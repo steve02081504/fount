@@ -2,7 +2,7 @@ import { animateSVG } from 'https://cdn.jsdelivr.net/gh/steve02081504/animate-SV
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
 import { setPreRender, setTheme, theme_now } from '../../base.mjs'
-import { isFountServiceAvailable, saveFountHostUrl, getFountHostUrl, pingFount } from '../../scripts/fountHostGetter.mjs'
+import { waitForFountService, saveFountHostUrl, getFountHostUrl, pingFount } from '../../scripts/fountHostGetter.mjs'
 import { initTranslations, geti18n, console, getAvailableLocales, getLocaleNames, setLocales, onLanguageChange } from '../../scripts/i18n.mjs'
 import { makeSearchable } from '../../scripts/search.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
@@ -23,6 +23,12 @@ const activeUsersCountEl = document.getElementById('active-users-count')
 const starsCountEl = document.getElementById('stars-count')
 
 // --- Helper Functions ---
+/**
+ * 从指定 URL 获取 JSON 数据。
+ * @param {string} url - 目标 URL。
+ * @param {any} [fallback=null] - 获取失败时的回退值。
+ * @returns {Promise<any>} - 获取到的 JSON 数据或回退值。
+ */
 const fetchJson = async (url, fallback = null) => {
 	try {
 		const response = await fetch(url)
@@ -44,12 +50,19 @@ const activeUserNum = initialUserData?.hits?.total ?? NaN
 const starNum = initialRepoData?.stargazers_count ?? NaN
 
 // --- Hero Intro Animation ---
+/**
+ * 播放英雄动画。
+ */
 async function playHeroAnimation() {
 	const heroElement = document.querySelector('.hero')
 	const animationContainer = document.getElementById('hero-animation-bg')
 	const heroOverlay = document.querySelector('.hero-overlay')
 	const heroContent = document.querySelector('.hero-content')
 
+	/**
+	 * 显示英雄动画的最终状态。
+	 * @returns {void}
+	 */
 	const showFinalState = () => {
 		heroOverlay.classList.add('visible-after-intro')
 		heroContent.classList.add('visible-after-intro')
@@ -85,6 +98,10 @@ async function playHeroAnimation() {
 }
 
 // --- Theme Selection ---
+/**
+ * 创建自动主题预览元素。
+ * @returns {Promise<HTMLElement>} - 自动主题预览的 DOM 元素。
+ */
 async function createAutoPreview() {
 	const container = document.createElement('div')
 	container.className = 'theme-preview-card cursor-pointer auto-theme-container'
@@ -101,6 +118,9 @@ async function createAutoPreview() {
 	return container
 }
 
+/**
+ * 渲染主题预览。
+ */
 async function renderThemePreviews() {
 	themeList.innerHTML = ''
 	const themes = await import('https://cdn.jsdelivr.net/npm/daisyui/functions/themeOrder.js').then(m => m.default)
@@ -130,7 +150,17 @@ async function renderThemePreviews() {
 	makeSearchable({
 		searchInput: themeSearch,
 		data: allPreviews,
+		/**
+		 * 数据访问器，用于从主题预览项获取名称。
+		 * @param {object} item - 主题预览项。
+		 * @returns {string} - 主题名称。
+		 */
 		dataAccessor: item => item.name,
+		/**
+		 * 更新回调函数，用于根据过滤后的项目更新显示。
+		 * @param {Array<object>} filteredItems - 过滤后的项目列表。
+		 * @returns {void}
+		 */
 		onUpdate: (filteredItems) => {
 			const visibleElements = new Set(filteredItems)
 			allPreviews.forEach(item => {
@@ -140,7 +170,16 @@ async function renderThemePreviews() {
 	})
 }
 
+/**
+ * 处理主题点击事件。
+ * @param {HTMLElement} previewElement - 被点击的预览元素。
+ * @param {string} theme - 选中的主题名称。
+ * @returns {void}
+ */
 function handleThemeClick(previewElement, theme) {
+	/**
+	 * 应用新主题
+	 */
 	const applyNewTheme = () => {
 		setTheme(theme)
 		document.querySelectorAll('.theme-preview-card.selected-theme').forEach(el => el.classList.remove('selected-theme'))
@@ -155,6 +194,15 @@ function handleThemeClick(previewElement, theme) {
 }
 
 // --- Data Showcase Animation ---
+/**
+ * 动画计数器。
+ * @param {HTMLElement} element - 要动画的 DOM 元素。
+ * @param {number} start - 起始值。
+ * @param {number} end - 结束值。
+ * @param {number} duration - 动画持续时间（毫秒）。
+ * @param {number} [easingPower=5] - 缓动强度。
+ * @returns {Promise<void>}
+ */
 function animateCounter(element, start, end, duration, easingPower = 5) {
 	return new Promise(resolve => {
 		if (start === end) {
@@ -162,6 +210,11 @@ function animateCounter(element, start, end, duration, easingPower = 5) {
 			return resolve()
 		}
 		let startTime = null
+		/**
+		 * 动画的步进函数。
+		 * @param {DOMHighResTimeStamp} timestamp - 当前时间戳。
+		 * @returns {void}
+		 */
 		const step = timestamp => {
 			if (!startTime) startTime = timestamp
 			const progress = Math.min((timestamp - startTime) / duration, 1)
@@ -180,6 +233,9 @@ function animateCounter(element, start, end, duration, easingPower = 5) {
 	})
 }
 
+/**
+ * 启动数据展示动画。
+ */
 async function startDataShowcaseAnimation() {
 	const LONG_ANIMATION_DURATION = 5 * 60 * 1000 // 5 minutes
 	const SHORT_ANIMATION_DURATION = 3000 // 3 seconds
@@ -198,7 +254,6 @@ async function startDataShowcaseAnimation() {
 
 
 	await Promise.all(initialAnimations)
-	console.log('Initial number animation complete. Starting periodic updates.')
 
 	setInterval(async () => {
 		const [userData, repoData] = await Promise.all([
@@ -209,12 +264,17 @@ async function startDataShowcaseAnimation() {
 		const newActiveUserNum = userData?.hits?.total ?? NaN
 		const newStarNum = repoData?.stargazers_count ?? NaN
 
+		/**
+		 * 更新统计数据。
+		 * @param {HTMLElement} element - 显示统计数据的 DOM 元素。
+		 * @param {number} newValue - 新的统计值。
+		 * @param {number} shortDuration - 短动画持续时间。
+		 * @returns {void}
+		 */
 		const updateStat = (element, newValue, shortDuration) => {
 			const currentDisplayed = parseInt(element.textContent.replace(/,/g, ''), 10)
-			if (!isNaN(newValue) && newValue !== currentDisplayed) {
-				console.log(`Updating stat from ${currentDisplayed} to ${newValue}`)
+			if (!isNaN(newValue) && newValue !== currentDisplayed)
 				animateCounter(element, isNaN(currentDisplayed) ? 0 : currentDisplayed, newValue, shortDuration, 3)
-			}
 		}
 
 		updateStat(activeUsersCountEl, newActiveUserNum, SHORT_ANIMATION_DURATION)
@@ -222,12 +282,23 @@ async function startDataShowcaseAnimation() {
 	}, 60 * 1000)
 }
 
+/**
+ * 创建一个旋转文本组件。
+ * @param {HTMLElement} container - 包含旋转文本的 DOM 元素。
+ * @param {string[]} initialWords - 初始单词数组。
+ * @param {number} interval - 旋转间隔时间（毫秒）。
+ * @returns {{updateWords: Function, stop: Function, start: Function}} - 包含更新单词、停止和启动方法的对象。
+ */
 function createRotatingText(container, initialWords, interval) {
 	let words = initialWords
 	let currentIndex = 0
 	let intervalId = null
 	let spans = []
 
+	/**
+	 * 设置旋转文本组件。
+	 * @returns {void}
+	 */
 	const setup = () => {
 		container.innerHTML = ''
 		spans = words.map(word => {
@@ -238,6 +309,10 @@ function createRotatingText(container, initialWords, interval) {
 		})
 	}
 
+	/**
+	 * 更新旋转文本的显示。
+	 * @returns {void}
+	 */
 	const updateDisplay = () => {
 		spans.forEach(span => span.classList.remove('active', 'exiting'))
 		const currentSpan = spans[currentIndex]
@@ -249,6 +324,10 @@ function createRotatingText(container, initialWords, interval) {
 			container.style.width = '0px'
 	}
 
+	/**
+	 * 旋转文本。
+	 * @returns {void}
+	 */
 	const rotate = () => {
 		if (words.length < 2) return
 		const nextIndex = Math.floor(Math.random() * words.length)
@@ -268,9 +347,17 @@ function createRotatingText(container, initialWords, interval) {
 		currentIndex = nextIndex
 	}
 
+	/**
+	 * 启动旋转文本。
+	 * @returns {void}
+	 */
 	const start = () => {
 		if (!intervalId && words.length >= 2) intervalId = setInterval(rotate, interval)
 	}
+	/**
+	 * 停止旋转文本。
+	 * @returns {void}
+	 */
 	const stop = () => {
 		if (intervalId) clearInterval(intervalId)
 		intervalId = null
@@ -281,6 +368,11 @@ function createRotatingText(container, initialWords, interval) {
 	start()
 
 	return {
+		/**
+		 * 更新旋转文本的单词。
+		 * @param {string[]} newWords - 新的单词数组。
+		 * @returns {void}
+		 */
 		updateWords: newWords => {
 			words = newWords
 			setup()
@@ -296,6 +388,9 @@ function createRotatingText(container, initialWords, interval) {
 
 let adjectiveRotator, nounRotator, platformRotator
 
+/**
+ * 更新旋转文本的子标题。
+ */
 function updateRotatingSubtitles() {
 	adjectiveRotator?.updateWords(geti18n('installer_wait_screen.data_showcase.adjectives') || [])
 	nounRotator?.updateWords(geti18n('installer_wait_screen.data_showcase.nouns') || [])
@@ -303,6 +398,9 @@ function updateRotatingSubtitles() {
 }
 
 // --- Language Selector ---
+/**
+ * 填充语言选择器。
+ */
 function populateLanguageSelector() {
 	const languageSelector = document.getElementById('language-selector')
 	const languageSearch = document.getElementById('language-search')
@@ -314,8 +412,13 @@ function populateLanguageSelector() {
 
 	const items = locales.map(locale => {
 		const li = document.createElement('li')
-		const a = document.createElement('a')
+		const a = document.createElement('div')
 		a.textContent = localeNames.get(locale) || locale
+		/**
+		 * 处理语言选择点击事件。
+		 * @param {Event} e - 点击事件对象。
+		 * @returns {Promise<void>}
+		 */
 		a.onclick = async e => {
 			e.preventDefault()
 			await setLocales([locale])
@@ -330,7 +433,18 @@ function populateLanguageSelector() {
 	makeSearchable({
 		searchInput: languageSearch,
 		data: items,
+		/**
+		 * 数据访问器，用于从项目获取名称和语言环境。
+		 * @param {object} item - 列表中的项目。
+		 * @returns {{name: string, locale: string}} - 包含名称和语言环境的对象。
+		 */
 		dataAccessor: item => ({ name: item.name, locale: item.locale }),
+		/**
+		 * 更新回调函数，用于根据过滤后的项目更新显示。
+
+		 * @param {Array<object>} filteredItems - 过滤后的项目列表。
+		 * @returns {void}
+		 */
 		onUpdate: (filteredItems) => {
 			const visibleElements = new Set(filteredItems)
 			items.forEach(item => {
@@ -341,6 +455,10 @@ function populateLanguageSelector() {
 }
 
 // --- fount Service Connection Logic ---
+/**
+ * 检查 fount 安装程序是否存活。
+ * @returns {Promise<boolean>} - 如果安装程序存活则返回 true，否则返回 false。
+ */
 const checkFountInstallerAlive = async () => {
 	try {
 		return (await fetch('http://localhost:8930', { cache: 'no-cache' })).ok
@@ -350,45 +468,66 @@ const checkFountInstallerAlive = async () => {
 	}
 }
 
+/**
+ * 等待 fount 安装程序失败。
+ * @returns {Promise<void>}
+ */
+const whenFountInstallerFails = () => {
+	return new Promise(resolve => {
+		const timer = setInterval(() => {
+			if (checkFountInstallerAlive()) return
+			clearInterval(timer)
+			resolve()
+		}, 1000)
+	})
+}
+
+/**
+ * 处理 fount 安装程序流程。
+ */
 async function handleInstallerFlow() {
 	document.getElementById('theme-selection-section').style.display = 'block'
 	document.getElementById('mini-game-section').style.display = 'block'
 	footerReadyText.dataset.i18n = 'installer_wait_screen.footer.wait_text'
 
-	const timer = setInterval(async () => {
-		if (!await checkFountInstallerAlive()) {
-			clearInterval(timer)
-			window.location.href = './error'
-			return
+	whenFountInstallerFails().then(() => {
+		window.location.href = './error'
+	})
+
+	waitForFountService(hostUrl).then(() => {
+		saveFountHostUrl(hostUrl)
+		setPreRender(hostUrl)
+
+		footerReadyText.dataset.i18n = 'installer_wait_screen.footer.ready_text'
+		launchButtonText.dataset.i18n = 'installer_wait_screen.footer.open_fount'
+		launchButtonSpinner.style.display = 'none'
+
+		/**
+		 * @type {() => void}
+		 */
+		launchButton.onclick = () => {
+			const params = new URLSearchParams({
+				theme: theme_now,
+				userPreferredLanguages: localStorage.getItem('fountUserPreferredLanguages') || '[]'
+			})
+			window.location.href = `${hostUrl}?${params}`
 		}
-
-		if (await isFountServiceAvailable(hostUrl)) {
-			clearInterval(timer)
-			saveFountHostUrl(hostUrl)
-			setPreRender(hostUrl)
-
-			footerReadyText.dataset.i18n = 'installer_wait_screen.footer.ready_text'
-			launchButtonText.dataset.i18n = 'installer_wait_screen.footer.open_fount'
-			launchButtonSpinner.style.display = 'none'
-
-			launchButton.onclick = () => {
-				const params = new URLSearchParams({
-					theme: theme_now,
-					userPreferredLanguages: localStorage.getItem('fountUserPreferredLanguages') || '[]'
-				})
-				window.location.href = `${hostUrl}?${params}`
-			}
-			footer?.classList.replace('fixed', 'sticky')
-		}
-	}, 1000)
+		footer?.classList.replace('fixed', 'sticky')
+	})
 }
 
+/**
+ * 处理独立模式流程。
+ */
 async function handleStandaloneFlow() {
 	launchButtonSpinner.style.display = 'none'
 	const savedHostUrl = await getFountHostUrl()
 
 	if (savedHostUrl) {
 		launchButtonText.dataset.i18n = 'installer_wait_screen.footer.open_fount'
+		/**
+		 * 在 fount 服务可用时打开主页。
+		 */
 		launchButton.onclick = async () => {
 			const isOnline = await pingFount(savedHostUrl)
 			window.location.href = isOnline ? new URL('/shells/home', savedHostUrl).href : 'fount://page/shells/home'
@@ -396,6 +535,9 @@ async function handleStandaloneFlow() {
 	}
 	else {
 		launchButtonText.dataset.i18n = 'installer_wait_screen.footer.open_or_install_fount'
+		/**
+		 * 在 fount 服务不可用时打开主页。
+		 */
 		launchButton.onclick = () => {
 			window.location.href = 'fount://page/shells/home'
 			setTimeout(() => { window.location.href = 'https://github.com/steve02081504/fount' }, 1000)
@@ -404,6 +546,9 @@ async function handleStandaloneFlow() {
 }
 
 // --- Main Execution ---
+/**
+ * 主函数，初始化翻译并启动流程。
+ */
 async function main() {
 	await Promise.all([
 		initTranslations('installer_wait_screen'),

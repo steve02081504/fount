@@ -50,7 +50,7 @@ function evaluatePasswordStrength(password) {
 			feedbackText = 'auth.passwordStrength.veryStrong'
 			break
 	}
-	let fullFeedback = `<strong data-i18n="${feedbackText}"></strong><br/>`
+	let fullFeedback = /* html */ `<strong data-i18n="${feedbackText}"></strong><br/>`
 	if (result.feedback.warning) fullFeedback += result.feedback.warning + '<br/>'
 	if (result.feedback.suggestions) fullFeedback += result.feedback.suggestions.join('<br/>')
 

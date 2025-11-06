@@ -13,7 +13,6 @@ import { processTimeStampForId, SWIPE_THRESHOLD, DEFAULT_AVATAR, TRANSITION_DURA
 
 import { addDragAndDropSupport } from './dragAndDrop.mjs'
 import {
-	appendMessageToQueue,
 	getQueueIndex,
 	replaceMessageInQueue,
 	getChatLogIndexByQueueIndex,
@@ -52,15 +51,15 @@ async function generateFullHtmlForMessage(message) {
 
 			let previewHtml = ''
 			if (file.mime_type.startsWith('image/'))
-				previewHtml = `<img src="${dataUrl}" alt="${file.name}" style="max-width: 100%; max-height: 100%; object-fit: contain; cursor: zoom-in;" onclick="openModal('${dataUrl}', 'image')">`
+				previewHtml = /* html */ `<img src="${dataUrl}" alt="${file.name}" style="max-width: 100%; max-height: 100%; object-fit: contain; cursor: zoom-in;" onclick="openModal('${dataUrl}', 'image')">`
 			else if (file.mime_type.startsWith('video/'))
-				previewHtml = `<video src="${dataUrl}" controls style="max-width: 100%; max-height: 100%;"></video>`
+				previewHtml = /* html */ `<video src="${dataUrl}" controls style="max-width: 100%; max-height: 100%;"></video>`
 			else if (file.mime_type.startsWith('audio/'))
-				previewHtml = `<audio src="${dataUrl}" controls></audio>`
+				previewHtml = /* html */ `<audio src="${dataUrl}" controls></audio>`
 			else
-				previewHtml = '<div class="file-placeholder" style="font-size: 40px; text-align: center;">📄</div>'
+				previewHtml = /* html */ '<div class="file-placeholder" style="font-size: 40px; text-align: center;">📄</div>'
 
-			return `\
+			return /* html */ `\
 <div class="attachment" style="border: 1px solid #ccc; border-radius: 5px; padding: 10px; margin: 5px; display: inline-block; text-align: center; max-width: 200px;">
 	<div class="preview" style="min-height: 100px; display: flex; align-items: center; justify-content: center;">
 		${previewHtml}
@@ -70,7 +69,7 @@ async function generateFullHtmlForMessage(message) {
 </div>
 `
 		}))
-		attachmentsHtml = `<div class="attachments" style="margin-top: 10px; display: flex; flex-wrap: wrap;">${attachmentItems.join('')}</div>`
+		attachmentsHtml = /* html */ `<div class="attachments" style="margin-top: 10px; display: flex; flex-wrap: wrap;">${attachmentItems.join('')}</div>`
 	}
 
 	const modalScript = `\
@@ -99,7 +98,7 @@ function openModal(src, type) {
 }
 `
 
-	return `\
+	return /* html */ `\
 <!DOCTYPE html>
 <html lang="${main_locale}">
 <head>
@@ -112,7 +111,7 @@ function openModal(src, type) {
 	<style>
 		body { margin: 0; font-family: sans-serif; }
 		.markdown-body { box-sizing: border-box; padding: 45px; }
-		.markdown-body figure, .markdown-body figure .markdown-code-block, .markdown-code-block pre {
+		.markdown-body .join-item, .markdown-body figure, .markdown-code-block, .markdown-code-block pre {
 			margin: 0;
 		}
 		@media (max-width: 767px) { .markdown-body { padding: 15px; } }
@@ -371,14 +370,6 @@ export async function editMessageStart(message, queueIndex, chatLogIndex) {
 }
 
 /**
- * 公开接口：添加消息到末尾。
- * @param {object} message - 消息对象。
- */
-export async function appendMessage(message) {
-	await appendMessageToQueue(message)
-}
-
-/**
  * 公开接口：替换指定索引的消息。
  * @param {number} index - 队列索引 (queueIndex)。
  * @param {object} message - 新消息对象。
@@ -398,8 +389,8 @@ export function enableSwipe(messageElement) {
 
 	// --- 定义命名的监听器函数 ---
 	/**
-	 *
-	 * @param event
+	 * 处理触摸开始事件。
+	 * @param {TouchEvent} event - 触摸事件对象。
 	 */
 	const handleTouchStart = event => {
 		if (event.touches.length !== 1) return
@@ -409,8 +400,8 @@ export function enableSwipe(messageElement) {
 		swipeHandled = false
 	}
 	/**
-	 *
-	 * @param event
+	 * 处理触摸移动事件。
+	 * @param {TouchEvent} event - 触摸事件对象。
 	 */
 	const handleTouchMove = event => {
 		if (!isDragging || event.touches.length !== 1) return
@@ -419,8 +410,8 @@ export function enableSwipe(messageElement) {
 		if (Math.abs(deltaY) > Math.abs(deltaX)) isDragging = false // 垂直滚动优先
 	}
 	/**
-	 *
-	 * @param event
+	 * 处理触摸结束事件。
+	 * @param {TouchEvent} event - 触摸事件对象。
 	 */
 	const handleTouchEnd = async event => {
 		if (!isDragging || swipeHandled || event.changedTouches.length !== 1) { isDragging = false; return }
@@ -438,12 +429,13 @@ export function enableSwipe(messageElement) {
 		}
 	}
 	/**
-	 *
+	 * 处理触摸取消事件。
 	 */
 	const handleTouchCancel = () => { isDragging = false }
 	/**
-	 *
-	 * @param element
+	 * 检查元素是否包含水平滚动条。
+	 * @param {HTMLElement} element - 要检查的 DOM 元素。
+	 * @returns {boolean} 如果元素包含水平滚动条则为 true，否则为 false。
 	 */
 	function checkForHorizontalScrollbar(element) {
 		if (!element || !element.scrollWidth || !element.clientWidth) return false

@@ -9,13 +9,15 @@ import {
 	handleCharFrequencySet,
 	addPartToSelect,
 	removePartFromSelect,
+	handlePluginAdded,
+	handlePluginRemoved,
 } from './ui/sidebar.mjs'
 import { handleMessageAdded, handleMessageDeleted, handleMessageReplaced } from './ui/virtualQueue.mjs'
 
 let ws = null
 
 /**
- *
+ * 连接到WebSocket。
  */
 function connect() {
 	if (!currentChatId) return
@@ -25,15 +27,8 @@ function connect() {
 	ws = new WebSocket(wsUrl)
 
 	/**
-	 *
-	 */
-	ws.onopen = async () => {
-		console.log(`Chat UI WebSocket connected for chat ${currentChatId}.`)
-	}
-
-	/**
-	 *
-	 * @param event
+	 * WebSocket收到消息时的回调。
+	 * @param {MessageEvent} event - 消息事件。
 	 */
 	ws.onmessage = (event) => {
 		try {
@@ -48,7 +43,7 @@ function connect() {
 	}
 
 	/**
-	 *
+	 * WebSocket关闭时的回调。
 	 */
 	ws.onclose = () => {
 		const RECONNECT_DELAY = 3000
@@ -58,8 +53,8 @@ function connect() {
 	}
 
 	/**
-	 *
-	 * @param err
+	 * WebSocket出错时的回调。
+	 * @param {Event} err - 错误事件。
 	 */
 	ws.onerror = (err) => {
 		console.error('Chat UI WebSocket error:', err)
@@ -67,8 +62,9 @@ function connect() {
 }
 
 /**
- *
- * @param event
+ * 处理广播事件。
+ * @param {object} event - 事件。
+ * @returns {Promise<void>}
  */
 async function handleBroadcastEvent(event) {
 	const { type, payload } = event
@@ -100,25 +96,29 @@ async function handleBroadcastEvent(event) {
 		case 'char_frequency_set':
 			await handleCharFrequencySet(payload.charname, payload.frequency)
 			break
+		case 'plugin_added':
+			await handlePluginAdded(payload.pluginname)
+			break
+		case 'plugin_removed':
+			await handlePluginRemoved(payload.pluginname)
+			break
 		default:
 			console.warn(`Unknown broadcast event type: ${type}`)
 	}
 }
 
 /**
- *
+ * 初始化WebSocket。
  */
 export function initializeWebSocket() {
 	if (ws) return
 	connect()
 
 	onServerEvent('part-installed', ({ parttype, partname }) => {
-		console.log(`[Chat WS] Received part-install: ${parttype}/${partname}`)
 		addPartToSelect(parttype, partname)
 	})
 
 	onServerEvent('part-uninstalled', ({ parttype, partname }) => {
-		console.log(`[Chat WS] Received part-uninstall: ${parttype}/${partname}`)
 		removePartFromSelect(parttype, partname)
 	})
 }

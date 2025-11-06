@@ -12,7 +12,7 @@ import { __dirname } from '../base.mjs'
 import { processIPCCommand } from '../ipc_server/index.mjs'
 import { partTypeList } from '../managers/base.mjs'
 import { getLoadedPartList, getPartList, loadPart } from '../managers/index.mjs'
-import { getDefaultParts, getPartDetails, setDefaultPart, getAllCachedPartDetails } from '../parts_loader.mjs'
+import { getDefaultParts, getPartDetails, setDefaultPart, unsetDefaultPart, getAnyDefaultPart, getAllDefaultParts as getAllDefaultPartsFromLoader, getAnyPreferredDefaultPart, getAllCachedPartDetails } from '../parts_loader.mjs'
 import { skip_report, currentGitCommit, config, save_config } from '../server.mjs'
 
 import { register as registerNotifier } from './event_dispatcher.mjs'
@@ -260,16 +260,41 @@ export function registerEndpoints(router) {
 		})
 	}
 
-	router.get('/api/getdefaultparts', authenticate, async (req, res) => {
+	router.get('/api/defaultpart/getall', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
 		res.status(200).json(getDefaultParts(user))
 	})
 
-	router.post('/api/setdefaultpart', authenticate, async (req, res) => {
+	router.post('/api/defaultpart/add', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
 		const { parttype, partname } = req.body
 		setDefaultPart(user, parttype, partname)
 		res.status(200).json({ message: 'success' })
+	})
+
+	router.post('/api/defaultpart/unset', authenticate, async (req, res) => {
+		const user = await getUserByReq(req)
+		const { parttype, partname } = req.body
+		unsetDefaultPart(user, parttype, partname)
+		res.status(200).json({ message: 'success' })
+	})
+
+	router.get('/api/defaultpart/getany/:parttype', authenticate, async (req, res) => {
+		const user = await getUserByReq(req)
+		const { parttype } = req.params
+		res.status(200).json(getAnyDefaultPart(user, parttype))
+	})
+
+	router.get('/api/defaultpart/getallbytype/:parttype', authenticate, async (req, res) => {
+		const user = await getUserByReq(req)
+		const { parttype } = req.params
+		res.status(200).json(getAllDefaultPartsFromLoader(user, parttype))
+	})
+
+	router.get('/api/defaultpart/getanypreferred/:parttype', authenticate, async (req, res) => {
+		const user = await getUserByReq(req)
+		const { parttype } = req.params
+		res.status(200).json(getAnyPreferredDefaultPart(user, parttype))
 	})
 
 	router.get('/api/getusersetting', authenticate, async (req, res) => {

@@ -1,7 +1,7 @@
 /**
  * 浏览器集成页面的主要客户端逻辑。
  */
-import { initTranslations, geti18n } from '../../../scripts/i18n.mjs'
+import { initTranslations, geti18n, setLocalizeLogic } from '../../../scripts/i18n.mjs'
 import { renderTemplate, usingTemplates } from '../../../scripts/template.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
 import { showToast, showToastI18n } from '../../../scripts/toast.mjs'
@@ -9,6 +9,7 @@ import { showToast, showToastI18n } from '../../../scripts/toast.mjs'
 import * as api from './src/endpoints.mjs'
 
 const pagesListDiv = document.getElementById('connected-pages-list'),
+	CSPwarning = document.getElementById('csp-warning'),
 	scriptUrlInput = document.getElementById('script-url-input'),
 	copyScriptUrlButton = document.getElementById('copy-script-url-button'),
 	autorunScriptForm = document.getElementById('autorun-script-form'),
@@ -29,7 +30,7 @@ const autoRunScriptsCache = new Map()
  * @returns {Promise<void>}
  */
 async function renderPages(pages) {
-	pagesListDiv.innerHTML = ''
+	while (pagesListDiv.firstChild) pagesListDiv.removeChild(pagesListDiv.firstChild)
 	if (!pages.length) pagesListDiv.appendChild(await renderTemplate('empty_state'))
 	else pagesListDiv.appendChild(await renderTemplate('page_table', { pages }))
 }
@@ -42,13 +43,6 @@ function connectWebSocket() {
 	const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
 	const wsUrl = `${wsProtocol}//${window.location.host}/ws/shells/browserIntegration/ui`
 	const ws = new WebSocket(wsUrl)
-
-	/**
-	 * WebSocket 'open' 事件处理程序。
-	 */
-	ws.onopen = () => {
-		console.log('Connected to UI WebSocket.')
-	}
 
 	/**
 	 * WebSocket 'message' 事件处理程序。
@@ -140,7 +134,7 @@ async function handleDeleteScript(scriptId) {
  */
 async function loadAndRenderAutoRunScripts() {
 	try {
-		autorunScriptList.innerHTML = '<div class="text-center"><span class="loading loading-dots loading-md"></span></div>'
+		autorunScriptList.innerHTML = /* html */ '<div class="text-center"><span class="loading loading-dots loading-md"></span></div>'
 		const result = await api.getAutoRunScripts()
 		if (!result.success) throw new Error(result.message)
 
@@ -156,7 +150,7 @@ async function loadAndRenderAutoRunScripts() {
 		}
 	} catch (error) {
 		console.error('Failed to load auto-run scripts:', error)
-		autorunScriptList.innerHTML = `<p class="text-error">${geti18n('browser_integration.error.load_failed', { message: error.message })}</p>`
+		autorunScriptList.innerHTML = /* html */ `<p class="text-error">${geti18n('browser_integration.error.load_failed', { message: error.message })}</p>`
 	}
 }
 
@@ -222,7 +216,20 @@ autorunScriptList.addEventListener('click', e => {
 	}
 })
 
-
+/**
+ * 获取浏览器名称
+ * @returns {String} 浏览器名称
+ */
+function getBrowserName() {
+	const ua = navigator.userAgent.toLowerCase()
+	if (ua.includes('edg/')) return 'Edge'
+	if (ua.includes('chrome')) return 'Chrome'
+	if (ua.includes('firefox')) return 'Firefox'
+	if (ua.includes('safari') && !ua.includes('chrome')) return 'Safari'
+	if (ua.includes('opr/')) return 'Opera'
+	if (ua.includes('trident') || ua.includes('msie')) return 'IE'
+	return 'Unknown'
+}
 /**
  * 应用程序的入口点。
  * @returns {Promise<void>}
@@ -232,6 +239,21 @@ async function main() {
 	usingTemplates('/shells/browserIntegration/templates')
 	await initTranslations('browser_integration')
 
+	{
+		const pluginMap = {
+			Chrome: 'https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh',
+			Edge: 'https://microsoftedge.microsoft.com/addons/detail/allow-csp-contentsecuri/blbbcdoaelobkaloeplifnigplpbkmap',
+			Firefox: 'https://addons.mozilla.org/en-US/firefox/addon/disable-csp-and-cors/',
+		}
+		let browserName = getBrowserName()
+		if (!pluginMap[browserName]) browserName = 'Chrome'
+
+		setLocalizeLogic(CSPwarning, () => {
+			CSPwarning.innerHTML = geti18n('browser_integration.csp_warning', {
+				browser: browserName, link: pluginMap[browserName]
+			})
+		})
+	}
 	scriptUrlInput.value = `${window.location.origin}/shells/browserIntegration/script.user.js`
 
 	copyScriptUrlButton.addEventListener('click', () => {

@@ -1,11 +1,11 @@
 import { setEndpoints } from './src/endpoints.mjs'
 
 /**
- * 处理动作。
- * @param {string} user - 用户。
- * @param {string} action - 动作。
- * @param {object} params - 参数。
- * @returns {Promise<any>} - 动作结果。
+ * 处理传入的安装动作请求。
+ * @param {string} user - 用户名。
+ * @param {string} action - 要执行的动作名称。
+ * @param {object} params - 动作所需的参数。
+ * @returns {Promise<any>} - 返回动作执行的结果。
  */
 async function handleAction(user, action, params) {
 	const { actions } = await import('./src/actions.mjs')
@@ -16,7 +16,7 @@ async function handleAction(user, action, params) {
 }
 
 /**
- * 安装Shell
+ * @type {import('../../../decl/shell.ts').shell_t}
  */
 export default {
 	info: {
@@ -25,7 +25,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/install-desktop.svg',
 			description: 'A shell to install parts.',
 			description_markdown: 'Install new characters, personas, worlds, and other components from files or URLs.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['install', 'add', 'import', 'component']
 		},
@@ -34,7 +34,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/install-desktop.svg',
 			description: '一个用于安装部件的shell。',
 			description_markdown: '从文件或 URL 安装新角色、角色、世界和其他组件。',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['安装', '添加', '导入', '组件']
 		},
@@ -43,7 +43,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/install-desktop.svg',
 			description: 'قذيفة لتثبيت أجزاء.',
 			description_markdown: 'قم بتثبيت شخصيات وشخصيات وعوالم ومكونات أخرى جديدة من الملفات أو عناوين URL.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['تثبيت', 'إضافة', 'استيراد', 'مكون']
 		},
@@ -52,7 +52,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/install-desktop.svg',
 			description: 'Eine Shell zum Installieren von Teilen.',
 			description_markdown: 'Installieren Sie neue Charaktere, Personas, Welten und andere Komponenten aus Dateien oder URLs.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['installieren', 'hinzufügen', 'importieren', 'Komponente']
 		},
@@ -61,7 +61,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/install-desktop.svg',
 			description: 'A shell to install parts.',
 			description_markdown: 'Install new characters, personas, worlds, and other components from files or URLs.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['install', 'add', 'import', 'component']
 		},
@@ -70,7 +70,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/install-desktop.svg',
 			description: 'Un shell para instalar piezas.',
 			description_markdown: 'Instale nuevos personajes, personas, mundos y otros componentes desde archivos o URL.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['instalar', 'agregar', 'importar', 'componente']
 		},
@@ -79,7 +79,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/install-desktop.svg',
 			description: 'Un shell pour installer des pièces.',
 			description_markdown: 'Installez de nouveaux personnages, personas, mondes et autres composants à partir de fichiers ou d\'URL.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['installer', 'ajouter', 'importer', 'composant']
 		},
@@ -88,7 +88,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/install-desktop.svg',
 			description: 'भागों को स्थापित करने के लिए एक खोल।',
 			description_markdown: 'फ़ाइलों या URL से नए वर्ण, व्यक्ति, दुनिया और अन्य घटक स्थापित करें।',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['इंस्टॉल करें', 'जोड़ें', 'आयात करें', 'घटक']
 		},
@@ -97,7 +97,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/install-desktop.svg',
 			description: 'Skél til að setja upp hluta.',
 			description_markdown: 'Settu upp nýjar persónur, persónur, heima og aðra íhluti úr skrám eða vefslóðum.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['setja upp', 'bæta við', 'flytja inn', 'íhlutur']
 		},
@@ -106,7 +106,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/install-desktop.svg',
 			description: 'Una shell per installare le parti.',
 			description_markdown: 'Installa nuovi personaggi, personaggi, mondi e altri componenti da file o URL.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['installa', 'aggiungi', 'importa', 'componente']
 		},
@@ -115,7 +115,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/install-desktop.svg',
 			description: 'パーツをインストールするためのシェル。',
 			description_markdown: 'ファイルまたはURLから新しいキャラクター、ペルソナ、ワールド、その他のコンポーネントをインストールします。',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['インストール', '追加', 'インポート', 'コンポーネント']
 		},
@@ -124,7 +124,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/install-desktop.svg',
 			description: '부품을 설치하기 위한 셸입니다.',
 			description_markdown: '파일이나 URL에서 새로운 캐릭터, 페르소나, 세계 및 기타 구성 요소를 설치합니다.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['설치', '추가', '가져오기', '구성 요소']
 		},
@@ -133,7 +133,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/install-desktop.svg',
 			description: '一個用於安裝部件的shell。',
 			description_markdown: '從文件或 URL 安裝新角色、角色、世界和其他組件。',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['安裝', '添加', '導入', '組件']
 		},
@@ -142,7 +142,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/install-desktop.svg',
 			description: 'Een shell om onderdelen te installeren.',
 			description_markdown: 'Installeer nieuwe personages, persona\'s, werelden en andere componenten vanuit bestanden of URL\'s.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['installeren', 'toevoegen', 'importeren', 'component']
 		},
@@ -151,7 +151,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/install-desktop.svg',
 			description: 'Um shell para instalar peças.',
 			description_markdown: 'Instale novos personagens, personas, mundos e outros componentes de arquivos ou URLs.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['instalar', 'adicionar', 'importar', 'componente']
 		},
@@ -160,7 +160,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/install-desktop.svg',
 			description: 'Оболочка для установки деталей.',
 			description_markdown: 'Устанавливайте новых персонажей, персонажей, миры и другие компоненты из файлов или URL-адресов.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['установить', 'добавить', 'импортировать', 'компонент']
 		},
@@ -169,7 +169,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/install-desktop.svg',
 			description: 'Оболонка для встановлення деталей.',
 			description_markdown: 'Встановлюйте нових персонажів, персон, світів та інших компонентів з файлів або URL-адрес.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['встановити', 'додати', 'імпортувати', 'компонент']
 		},
@@ -178,7 +178,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/install-desktop.svg',
 			description: 'Một trình bao để cài đặt các bộ phận.',
 			description_markdown: 'Cài đặt các nhân vật, nhân vật, thế giới và các thành phần khác mới từ tệp hoặc URL.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['cài đặt', 'thêm', 'nhập', 'thành phần']
 		},
@@ -187,15 +187,15 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/install-desktop.svg',
 			description: '一個用於安裝部件的shell。',
 			description_markdown: '從文件或 URL 安裝新角色、角色、世界和其他組件。',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['安裝', '添加', '導入', '組件']
 		}
 	},
 	/**
-	 * 加载Shell。
-	 * @param {object} root0 - 参数。
-	 * @param {object} root0.router - 路由。
+	 * 加载安装Shell并设置API端点。
+	 * @param {object} root0 - 参数对象。
+	 * @param {object} root0.router - Express的路由实例。
 	 */
 	Load: ({ router }) => {
 		setEndpoints(router)
@@ -204,9 +204,9 @@ export default {
 	interfaces: {
 		invokes: {
 			/**
-			 * 参数处理器。
-			 * @param {string} user - 用户。
-			 * @param {Array<string>} args - 参数。
+			 * 处理命令行参数以执行安装或卸载操作。
+			 * @param {string} user - 用户名。
+			 * @param {Array<string>} args - 命令行参数数组。
 			 * @returns {Promise<void>}
 			 */
 			ArgumentsHandler: async (user, args) => {
@@ -221,10 +221,10 @@ export default {
 				console.log(result)
 			},
 			/**
-			 * IPC调用处理器。
-			 * @param {string} user - 用户。
-			 * @param {object} data - 数据。
-			 * @returns {Promise<any>} - 动作结果。
+			 * 处理IPC调用以执行安装或卸载操作。
+			 * @param {string} user - 用户名。
+			 * @param {object} data - 从IPC接收的数据对象。
+			 * @returns {Promise<any>} - 动作执行结果。
 			 */
 			IPCInvokeHandler: async (user, data) => {
 				const { action, ...params } = data

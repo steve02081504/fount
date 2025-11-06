@@ -1,7 +1,7 @@
 <div class="chat-list-item rounded-md bg-base-100/40 shadow-md mb-2 p-0">
 	<details class="collapse w-full">
-		<summary class="collapse-title flex items-center justify-between text-sm text-base-content opacity-70 hover:opacity-100 cursor-pointer">
-			<div class="flex items-center min-w-0">
+		<summary class="collapse-title flex flex-col sm:flex-row items-start sm:items-center justify-between text-sm text-base-content opacity-70 hover:opacity-100 cursor-pointer">
+			<div class="flex items-center min-w-0 w-full">
 				<div class="px-2">
 					<input type="checkbox" class="checkbox select-checkbox" />
 				</div>
@@ -21,7 +21,7 @@
 				</div>
 			</div>
 
-			<div class="px-2 flex flex-col items-end flex-shrink-0">
+			<div class="px-2 flex flex-col items-end flex-shrink-0 w-full sm:w-auto mt-2 sm:mt-0">
 				<p class="text-xs text-base-content opacity-50 mb-1 text-right">${lastMessageTime}</p>
 				<div class="join join-horizontal">
 					<a class="btn btn-xs join-item continue-button" data-i18n="chat_history.chatItemButtons.continue"></a>

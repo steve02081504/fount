@@ -74,11 +74,20 @@ export default {
 			description: 'ℹ️👤🧑‍🎨🖼️➡️🧭',
 		},
 	},
+	/**
+	 * 加载函数，在世界被加载时调用。
+	 * @param {object} stat - 统计信息。
+	 * @returns {void}
+	 */
 	Load: stat => {
 		username = stat.username // 获取用户名
 	},
 	interfaces: {
 		config: {
+			/**
+			 * 获取配置数据。
+			 * @returns {Promise<object>} - 包含总结 AI 源、起始长度和大小的对象。
+			 */
 			GetData: async () => {
 				return {
 					summaryAIsource: summary.AIsource?.filename || '',
@@ -86,6 +95,11 @@ export default {
 					summarySize: 20, // 每次总结多少消息
 				}
 			},
+			/**
+			 * 设置配置数据。
+			 * @param {object} data - 包含总结 AI 源、起始长度和大小的数据。
+			 * @returns {Promise<void>}
+			 */
 			SetData: async data => {
 				if (data.summaryAIsource)
 					summary.AIsource = await loadAIsource(username, data.summaryAIsource)
@@ -96,6 +110,11 @@ export default {
 			}
 		},
 		chat: {
+			/**
+			 * 获取指定角色的聊天记录。
+			 * @param {object} args - 参数对象，包含 chat_log。
+			 * @returns {Promise<Array<object>>} - 处理后的聊天记录数组。
+			 */
 			GetChatLogForCharname: async args => {
 				let chatLog = args.chat_log.map(x => x)
 				if (!chatLog.length) return chatLog
@@ -140,6 +159,10 @@ ${chatLog[0].extension.summary = newSummary}
 				}
 				return chatLog
 			},
+			/**
+			 * 获取提示词。
+			 * @returns {object} - 包含提示词结构的对象。
+			 */
 			GetPrompt: () => {
 				return {
 					text: [
@@ -175,7 +198,7 @@ $$
 
 字符高亮：
 \`\`\`js /console/3-5#console /log/#log /\\./
-console.log('Hello');
+console.log('Hello')
 \`\`\`
 这将高亮第3到第5个\`console\`、全部的\`log\`和\`.\`
 对应词的span会有\`data-highlighted-chars\`属性，有id的词会有\`data-chars-id="<id>"\`属性

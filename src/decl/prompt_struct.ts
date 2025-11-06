@@ -35,7 +35,7 @@ export class single_part_prompt_t {
 }
 /**
  * @class other_chars_prompt_t
- * @extends single_part_prompt_t
+ * @augments single_part_prompt_t
  * 定义了其他角色提示的结构。
  */
 export class other_chars_prompt_t extends single_part_prompt_t {

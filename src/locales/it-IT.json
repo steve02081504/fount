@@ -11,6 +11,10 @@
 				"https": "Server HTTPS in esecuzione su ${url}",
 				"http": "Server HTTP in esecuzione su ${url}"
 			},
+			"mdns": {
+				"description": "Una Scintilla di Pensiero, un Compagno per l'Anima.",
+				"failed": "Registrazione mDNS non riuscita: ${error}"
+			},
 			"localUrl": "Accesso a fount da altri dispositivi sulla stessa rete: ${url}",
 			"update": {
 				"restarting": "È stata scoperta una nuova versione e l'aggiornamento viene riavviato..."
@@ -224,6 +228,9 @@
 			"description": "fount offre scelta e flessibilità senza pari. Connettiti a <i>qualsiasi</i> sorgente IA: OpenAI, Claude, OpenRouter, NovelAI, ecc. La logica di comunicazione sarà modellata dalla potenza del codice, secondo i <i>tuoi</i> desideri."
 		},
 		"language_selector": {
+			"button": {
+				"aria-label": "Seleziona la lingua"
+			},
 			"search": {
 				"placeholder": "Cerca lingua..."
 			}
@@ -455,61 +462,56 @@
 				"alt": "Menu funzioni"
 			}
 		},
-		"chars": {
-			"tab": "Personaggi",
-			"title": "Selezione personaggio",
-			"subtitle": "Seleziona un personaggio e inizia a chattare!",
-			"none": "Niente da mostrare",
+		"part_types": {
+			"chars": "Ruolo",
+			"worlds": "Mondo",
+			"personas": "Personalità",
+			"plugins": "Plugin",
+			"AIsources": "Fonte dell'intelligenza artificiale",
+			"AIsourceGenerators": "Generatore di sorgenti AI",
+			"ImportHandlers": "Processore di importazione",
+			"shells": "Interfaccia interattiva"
+		},
+		"default": {
+			"title": "Selezione dei componenti",
+			"subtitle": "Seleziona un componente per continuare.",
 			"card": {
-				"noTags": "Nessun tag",
+				"noTags": "Nessuna etichetta",
 				"version": "Versione",
 				"author": "Autore",
-				"home_page": "Homepage",
+				"home_page": "Pagina iniziale",
 				"issue_page": "Segnala un problema",
 				"refreshButton": {
 					"alt": "Aggiorna",
 					"title": "Aggiorna"
 				},
+				"defaultCheckbox": {
+					"title": "Imposta come predefinito"
+				}
+			}
+		},
+		"chars": {
+			"title": "Selezione personaggio",
+			"subtitle": "Seleziona un personaggio e inizia a chattare!",
+			"card": {
 				"defaultCheckbox": {
 					"title": "Imposta come personaggio predefinito"
 				}
 			}
 		},
 		"worlds": {
-			"tab": "Mondi",
 			"title": "Selezione mondo",
 			"subtitle": "Scegli un mondo e immergiti!",
-			"none": "Niente da mostrare",
 			"card": {
-				"noTags": "Nessun tag",
-				"version": "Versione",
-				"author": "Autore",
-				"home_page": "Homepage",
-				"issue_page": "Segnala un problema",
-				"refreshButton": {
-					"alt": "Aggiorna",
-					"title": "Aggiorna"
-				},
 				"defaultCheckbox": {
 					"title": "Imposta come mondo predefinito"
 				}
 			}
 		},
 		"personas": {
-			"tab": "Persone",
 			"title": "Selezione persona",
 			"subtitle": "Seleziona una persona e vivi una nuova esperienza.",
-			"none": "Niente da mostrare",
 			"card": {
-				"noTags": "Nessun tag",
-				"version": "Versione",
-				"author": "Autore",
-				"home_page": "Homepage",
-				"issue_page": "Segnala un problema",
-				"refreshButton": {
-					"alt": "Aggiorna",
-					"title": "Aggiorna"
-				},
 				"defaultCheckbox": {
 					"title": "Imposta come persona predefinita"
 				}
@@ -580,6 +582,20 @@
 					},
 					"addCharIcon": {
 						"alt": "Icona Aggiungi personaggio"
+					}
+				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "Icona dell'elenco dei plugin"
+				},
+				"title": "Elenco dei plugin",
+				"buttons": {
+					"addPlugin": {
+						"title": "Aggiungi plugin"
+					},
+					"addPluginIcon": {
+						"alt": "Icona di aggiunta plugin"
 					}
 				}
 			}
@@ -722,6 +738,16 @@
 				},
 				"forceReplyIcon": {
 					"alt": "Icona Forza risposta"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "Rimuovi plugin"
+				},
+				"removePluginIcon": {
+					"alt": "Icona di rimozione plugin"
 				}
 			}
 		},
@@ -887,7 +913,7 @@
 	},
 	"import": {
 		"title": "Importa",
-		"description": "Porta i tuoi amati personaggi, mondi e configurazioni nell'abbraccio di Fount. Che si tratti di un file o di un testo incollato, è qui che i nuovi elementi si intrecciano nel tuo arazzo personale.",
+		"description": "Porta i tuoi amati personaggi, mondi e configurazioni nell'abbraccio di fount. Che si tratti di un file o di un testo incollato, è qui che i nuovi elementi si intrecciano nel tuo arazzo personale.",
 		"tabs": {
 			"fileImport": "Importa file",
 			"textImport": "Importa testo"
@@ -1448,7 +1474,7 @@
 		"what_is_manager": "Cos'è un gestore di userscript?",
 		"manager_explanation": "Un gestore di userscript è un'estensione del browser che consente di installare ed eseguire script che modificano le pagine Web. Per utilizzare lo script di integrazione fount, è necessario una delle estensioni.",
 		"popular_managers": "Scelte popolari:",
-		"csp_warning": "Potrebbe essere necessario installare il plug -in per disattivare CSP per far funzionare correttamente la funzione di integrazione. Per Chrome è possibile utilizzare <a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener\" class=\"link\">questo plug-in</a>.",
+		"csp_warning": "Potrebbe essere necessario installare il plug -in per disattivare CSP per far funzionare correttamente la funzione di integrazione. Per ${browser} è possibile utilizzare <a href=\"${link}\" target=\"_blank\" rel=\"noopener\" class=\"link\">questo plug-in</a>.",
 		"connected_pages_title": "Pagina connessa",
 		"fetch_pages_error": "Impossibile caricare l'elenco delle pagine collegate.",
 		"page_title": "Titolo della pagina",
@@ -1575,6 +1601,12 @@
 			"sameLAN": "Assicurati che il dispositivo e l'host fount siano sulla stessa rete locale.",
 			"accessthis": "Visita questo URL:"
 		},
+		"QRcode": {
+			"alt": "Scansiona questo codice QR per accedere a fount"
+		},
+		"urlInput": {
+			"aria-label": "URL"
+		},
 		"copyButton": "Copia URL",
 		"copied": "URL copiato negli appunti!"
 	},
@@ -1585,6 +1617,9 @@
 		"instruction": "Genera e gestisci le tue chiavi API in questa pagina per integrare fount con altre applicazioni.",
 		"endpointSectionTitle": "Endpoint API",
 		"endpointInstruction": "Questo è l'URL di base per l'integrazione con altri servizi.",
+		"apiUrlInput": {
+			"aria-label": "Endpoint API"
+		},
 		"usageExampleTitle": "Esempio di Utilizzo",
 		"usageExampleInstruction": "Ecco un esempio di come ottenere l'elenco dei modelli disponibili utilizzando `curl`.",
 		"copyButton": "Copia",

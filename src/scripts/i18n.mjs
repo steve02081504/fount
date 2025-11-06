@@ -185,24 +185,28 @@ export function geti18n(key, params = {}) {
  * 使用 i18n 打印参考消息。
  * @param {string} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值。
+ * @returns {void}
  */
 console.infoI18n = (key, params = {}) => console.info(geti18n(key, params))
 /**
  * 使用 i18n 打印日志消息。
  * @param {string} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值。
+ * @returns {void}
  */
 console.logI18n = (key, params = {}) => console.log(geti18n(key, params))
 /**
  * 使用 i18n 打印警告消息。
  * @param {string} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值。
+ * @returns {void}
  */
 console.warnI18n = (key, params = {}) => console.warn(geti18n(key, params))
 /**
  * 使用 i18n 打印错误消息。
  * @param {string} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值。
+ * @returns {void}
  */
 console.errorI18n = (key, params = {}) => console.error(geti18n(key, params))
 /**
@@ -210,12 +214,14 @@ console.errorI18n = (key, params = {}) => console.error(geti18n(key, params))
  * @param {string} id - 新行的唯一标识符。
  * @param {string} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值。
+ * @returns {void}
  */
 console.freshLineI18n = (id, key, params = {}) => console.freshLine(id, geti18n(key, params))
 /**
  * 使用 i18n 显示警报。
  * @param {string} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值。
+ * @returns {void}
  */
 export function alertI18n(key, params = {}) {
 	return alert(geti18n(key, params))
@@ -224,6 +230,7 @@ export function alertI18n(key, params = {}) {
  * 使用 i18n 显示提示。
  * @param {string} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值。
+ * @returns {string | null} 用户输入或null。
  */
 export function promptI18n(key, params = {}) {
 	return prompt(geti18n(key, params))
@@ -232,6 +239,7 @@ export function promptI18n(key, params = {}) {
  * 使用 i18n 显示确认。
  * @param {string} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值。
+ * @returns {boolean} 如果用户点击确定则返回true，否则返回false。
  */
 export function confirmI18n(key, params = {}) {
 	return confirm(geti18n(key, params))

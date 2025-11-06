@@ -42,10 +42,12 @@ function gmFetch(url, options = {}) {
 			onload: resolve,
 			/**
 			 * onerror 回调
+			 * @returns {void}
 			 */
 			onerror: () => reject(new Error(`Request error for ${url}`)),
 			/**
 			 * ontimeout 回调
+			 * @returns {void}
 			 */
 			ontimeout: () => reject(new Error(`Request to ${url} timed out`))
 		})
@@ -324,7 +326,6 @@ async function requestNewApiKey(host, protocol) {
 function refreshApiKey(host, protocol) {
 	apiKeyRefreshPromise ??= (async () => {
 		try {
-			console.log(`fount userscript: Requesting a new API key from ${host}...`)
 			const newApiKey = await requestNewApiKey(host, protocol)
 			const { uuid } = await getStoredData()
 			await setStoredData(host, uuid, protocol, newApiKey)
@@ -505,7 +506,7 @@ async function checkForUpdate() {
 			}
 		})
 		if (response.status !== 200) return
-		const remoteVersion = response.responseText.match(/@version\s+([^\s]+)/)?.[1]
+		const remoteVersion = response.responseText.match(/@version\s+(\S+)/)?.[1]
 		if (remoteVersion && remoteVersion !== GM_info.script.version)
 			if (window.confirm(await geti18n('browser_integration_script.update.prompt')))
 				window.open(scriptUrl, '_blank')
@@ -516,20 +517,26 @@ async function checkForUpdate() {
 
 /**
  * 检查 CSP 并发出警告。
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 一个不返回任何值的 Promise。
  */
 async function checkCspAndWarn() {
 	if (cspWarningShown) return
 
 	try {
-		const policy = window.trustedTypes?.createPolicy?.('fount-userscript-policy', { /**
-		 * @param {string} s
-		 */
-			createScript: s => s }) ?? { /**
-		 * @param {string} s
-		 */
-			createScript: s => s }
-		// eslint-disable-next-line no-eval
+		const policy = window.trustedTypes?.createPolicy?.('fount-userscript-policy', {
+			/**
+				* @param {string} s - 要创建脚本的字符串。
+				* @returns {string} 创建的脚本字符串。
+				*/
+			createScript: s => s
+		}) ?? {
+			/**
+				* @param {string} s - 要创建脚本的字符串。
+				* @returns {string} 创建的脚本字符串。
+				*/
+			createScript: s => s
+		}
+
 		eval(policy.createScript('1'))
 	}
 	catch (e) {
@@ -561,7 +568,7 @@ async function handleCommand(msg) {
 				let callback = null
 				if (callbackInfo)
 					/**
-					 * @param {any} data
+					 * @param {any} data - 回调数据。
 					 */
 					callback = async (data) => {
 						const { host, protocol } = await getStoredData()
@@ -622,11 +629,13 @@ function getVisibleElementsHtml() {
 	const viewportHeight = document.documentElement.clientHeight
 	const viewportWidth = document.documentElement.clientWidth
 	/**
-	 * @param {Element} el
+	 * @param {Element} el - 要检查的元素。
+	 * @returns {boolean} 如果元素在视口中则为 true，否则为 false。
 	 */
 	const isElementInViewport = (el) => { const rect = el.getBoundingClientRect(); return rect.top < viewportHeight && rect.bottom > 0 && rect.left < viewportWidth && rect.right > 0 }
 	/**
-	 * @param {Element} el
+	 * @param {Element} el - 要检查的元素。
+	 * @returns {boolean} 如果元素可见则为 true，否则为 false。
 	 */
 	const isElementVisible = (el) => getComputedStyle(el).visibility !== 'hidden' && getComputedStyle(el).display !== 'none'
 	for (const el of allElements)

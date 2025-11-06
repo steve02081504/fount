@@ -11,6 +11,10 @@
 				"https": "HTTPS 服务器运行在 ${url}",
 				"http": "HTTP 服务器运行在 ${url}"
 			},
+			"mdns": {
+				"description": "灵犀一点，应念而生",
+				"failed": "mDNS 注册失败：${error}"
+			},
 			"localUrl": "通过同一网络下的其他设备访问fount：${url}",
 			"update": {
 				"restarting": "发现新版本，正在重启更新..."
@@ -224,6 +228,9 @@
 			"description": "fount 提供无与伦比的选择和灵活性。连接到<i>任何</i> AI 源——OpenAI、Claude、OpenRouter、NovelAI 等。通信逻辑将根据<i>您的</i>意愿，通过代码的力量来塑造。"
 		},
 		"language_selector": {
+			"button": {
+				"aria-label": "选择语言"
+			},
 			"search": {
 				"placeholder": "搜索语言..."
 			}
@@ -455,61 +462,56 @@
 				"alt": "功能菜单"
 			}
 		},
-		"chars": {
-			"tab": "角色",
-			"title": "角色选择",
-			"subtitle": "选择一个角色，开始聊天吧！",
-			"none": "空空如也",
+		"part_types": {
+			"chars": "角色",
+			"worlds": "世界",
+			"personas": "人设",
+			"plugins": "插件",
+			"AIsources": "AI源",
+			"AIsourceGenerators": "AI源生成器",
+			"ImportHandlers": "导入处理器",
+			"shells": "交互界面"
+		},
+		"default": {
+			"title": "组件选择",
+			"subtitle": "选择一个组件以继续。",
 			"card": {
 				"noTags": "无标签",
 				"version": "版本",
 				"author": "作者",
 				"home_page": "主页",
-				"issue_page": "问题反馈",
+				"issue_page": "报告问题",
 				"refreshButton": {
 					"alt": "刷新",
 					"title": "刷新"
 				},
+				"defaultCheckbox": {
+					"title": "设为默认"
+				}
+			}
+		},
+		"chars": {
+			"title": "角色选择",
+			"subtitle": "选择一个角色，开始聊天吧！",
+			"card": {
 				"defaultCheckbox": {
 					"title": "设为默认角色"
 				}
 			}
 		},
 		"worlds": {
-			"tab": "世界",
 			"title": "世界选择",
 			"subtitle": "选择世界，沉浸其中！",
-			"none": "空空如也",
 			"card": {
-				"noTags": "无标签",
-				"version": "版本",
-				"author": "作者",
-				"home_page": "主页",
-				"issue_page": "问题反馈",
-				"refreshButton": {
-					"alt": "刷新",
-					"title": "刷新"
-				},
 				"defaultCheckbox": {
 					"title": "设为默认世界"
 				}
 			}
 		},
 		"personas": {
-			"tab": "人设",
 			"title": "人设选择",
 			"subtitle": "选择人设，体验人生。",
-			"none": "空空如也",
 			"card": {
-				"noTags": "无标签",
-				"version": "版本",
-				"author": "作者",
-				"home_page": "主页",
-				"issue_page": "问题反馈",
-				"refreshButton": {
-					"alt": "刷新",
-					"title": "刷新"
-				},
 				"defaultCheckbox": {
 					"title": "设为默认人设"
 				}
@@ -580,6 +582,20 @@
 					},
 					"addCharIcon": {
 						"alt": "添加角色图标"
+					}
+				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "插件列表图标"
+				},
+				"title": "插件列表",
+				"buttons": {
+					"addPlugin": {
+						"title": "添加插件"
+					},
+					"addPluginIcon": {
+						"alt": "添加插件图标"
 					}
 				}
 			}
@@ -722,6 +738,16 @@
 				},
 				"forceReplyIcon": {
 					"alt": "强制回复图标"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "删除插件"
+				},
+				"removePluginIcon": {
+					"alt": "移除插件图标"
 				}
 			}
 		},
@@ -1448,7 +1474,7 @@
 		"what_is_manager": "什么是油猴脚本管理器？",
 		"manager_explanation": "油猴脚本管理器是一个浏览器扩展，允许您安装和运行修改网页的脚本。要使用 fount 集成脚本，您需要其中一个扩展。",
 		"popular_managers": "热门选择：",
-		"csp_warning": "您可能需要安装插件以停用 CSP，来确保集成功能正常运行，对于chrome可以使用<a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener\" class=\"link\">这个插件</a>。",
+		"csp_warning": "您可能需要安装插件以停用 CSP，来确保集成功能正常运行，对于${browser}可以使用<a href=\"${link}\" target=\"_blank\" rel=\"noopener\" class=\"link\">这个插件</a>。",
 		"connected_pages_title": "已连接的页面",
 		"fetch_pages_error": "加载已连接页面列表失败。",
 		"page_title": "页面标题",
@@ -1575,6 +1601,12 @@
 			"sameLAN": "确保设备和 fount 主机在同一个局域网下",
 			"accessthis": "访问以下网址："
 		},
+		"QRcode": {
+			"alt": "扫描此二维码访问 fount"
+		},
+		"urlInput": {
+			"aria-label": "网址"
+		},
 		"copyButton": "复制网址",
 		"copied": "网址已复制到剪贴板！"
 	},
@@ -1585,6 +1617,9 @@
 		"instruction": "在此页面生成并管理您的 API 密钥，以将 fount 与其他应用程序集成。",
 		"endpointSectionTitle": "API 端点",
 		"endpointInstruction": "这是与其他服务集成的基本 URL。",
+		"apiUrlInput": {
+			"aria-label": "API 端点"
+		},
 		"usageExampleTitle": "用法示例",
 		"usageExampleInstruction": "以下是如何使用 `curl` 获取可用模型列表的示例。",
 		"copyButton": "复制",

@@ -11,6 +11,10 @@
 				"https": "HTTPS 伺服器運行在 ${url}",
 				"http": "HTTP 伺服器運行在 ${url}"
 			},
+			"mdns": {
+				"description": "靈犀一點，應念而生",
+				"failed": "mDNS 註冊失敗：${error}"
+			},
 			"localUrl": "透過同一網路下的其他裝置存取fount：${url}",
 			"update": {
 				"restarting": "發現新版本，正在重啟更新..."
@@ -224,6 +228,9 @@
 			"description": "fount 提供無與倫比的選擇和彈性。連接到<i>任何</i> AI 來源——OpenAI、Claude、OpenRouter、NovelAI 等。通訊邏輯將根據<i>您的</i>意願，透過程式碼的力量來塑造。"
 		},
 		"language_selector": {
+			"button": {
+				"aria-label": "選擇語言"
+			},
 			"search": {
 				"placeholder": "搜尋語言..."
 			}
@@ -455,61 +462,56 @@
 				"alt": "功能選單"
 			}
 		},
-		"chars": {
-			"tab": "角色",
-			"title": "角色選擇",
-			"subtitle": "選擇一個角色，然後開啟聊天！",
-			"none": "空空如也",
+		"part_types": {
+			"chars": "角色",
+			"worlds": "世界",
+			"personas": "人設",
+			"plugins": "插件",
+			"AIsources": "AI源",
+			"AIsourceGenerators": "AI源生成器",
+			"ImportHandlers": "導入處理器",
+			"shells": "交互界面"
+		},
+		"default": {
+			"title": "組件選擇",
+			"subtitle": "選擇一個組件以繼續。",
 			"card": {
 				"noTags": "無標籤",
 				"version": "版本",
 				"author": "作者",
-				"home_page": "首頁",
-				"issue_page": "問題回報",
+				"home_page": "主頁",
+				"issue_page": "回報問題",
 				"refreshButton": {
 					"alt": "重新整理",
 					"title": "重新整理"
 				},
+				"defaultCheckbox": {
+					"title": "設為默認"
+				}
+			}
+		},
+		"chars": {
+			"title": "角色選擇",
+			"subtitle": "選擇一個角色，然後開啟聊天！",
+			"card": {
 				"defaultCheckbox": {
 					"title": "設為預設角色"
 				}
 			}
 		},
 		"worlds": {
-			"tab": "世界",
 			"title": "世界選擇",
 			"subtitle": "選擇世界，沉浸其中！",
-			"none": "空空如也",
 			"card": {
-				"noTags": "無標籤",
-				"version": "版本",
-				"author": "作者",
-				"home_page": "首頁",
-				"issue_page": "問題回報",
-				"refreshButton": {
-					"alt": "重新整理",
-					"title": "重新整理"
-				},
 				"defaultCheckbox": {
 					"title": "設為預設世界"
 				}
 			}
 		},
 		"personas": {
-			"tab": "人設",
 			"title": "人設選擇",
 			"subtitle": "選擇人設，體驗人生。",
-			"none": "空空如也",
 			"card": {
-				"noTags": "無標籤",
-				"version": "版本",
-				"author": "作者",
-				"home_page": "首頁",
-				"issue_page": "問題回報",
-				"refreshButton": {
-					"alt": "重新整理",
-					"title": "重新整理"
-				},
 				"defaultCheckbox": {
 					"title": "設為預設人設"
 				}
@@ -580,6 +582,20 @@
 					},
 					"addCharIcon": {
 						"alt": "新增角色圖示"
+					}
+				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "外掛列表圖示"
+				},
+				"title": "外掛列表",
+				"buttons": {
+					"addPlugin": {
+						"title": "新增外掛"
+					},
+					"addPluginIcon": {
+						"alt": "新增外掛圖示"
 					}
 				}
 			}
@@ -722,6 +738,16 @@
 				},
 				"forceReplyIcon": {
 					"alt": "強制回覆圖示"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "移除外掛"
+				},
+				"removePluginIcon": {
+					"alt": "移除外掛圖示"
 				}
 			}
 		},
@@ -1448,7 +1474,7 @@
 		"what_is_manager": "什麼是油猴腳本管理器？",
 		"manager_explanation": "油猴腳本管理器是一個瀏覽器擴展，允許您安裝和運行修改網頁的腳本。要使用 fount 集成腳本，您需要其中一個擴展。",
 		"popular_managers": "熱門選擇：",
-		"csp_warning": "你可能需要安裝擴充功能停用CSP來使得集成功能正常運行，對於chrome可以使用<a href=\"https://chromewebstore.google.com/detail/allow-csp-content-securit/hnojoemndpdjofcdaonbefcfecpjfflh\" target=\"_blank\" rel=\"noopener\" class=\"link\">這個擴充功能</a>。",
+		"csp_warning": "你可能需要安裝擴充功能停用CSP來使得集成功能正常運行，對於${browser}可以使用<a href=\"${link}\" target=\"_blank\" rel=\"noopener\" class=\"link\">這個擴充功能</a>。",
 		"connected_pages_title": "已連接的頁面",
 		"fetch_pages_error": "加載已連接頁面列表失敗。",
 		"page_title": "頁面標題",
@@ -1575,6 +1601,12 @@
 			"sameLAN": "確保裝置和 fount 主機在同一個區域網路下",
 			"accessthis": "存取以下網址："
 		},
+		"QRcode": {
+			"alt": "掃描此二維碼訪問 fount"
+		},
+		"urlInput": {
+			"aria-label": "網址"
+		},
 		"copyButton": "複製網址",
 		"copied": "網址已複製到剪貼簿！"
 	},
@@ -1585,6 +1617,9 @@
 		"instruction": "在此頁面生成並管理您的 API 金鑰，以將 fount 與其他應用程式整合。",
 		"endpointSectionTitle": "API 端點",
 		"endpointInstruction": "這是與其他服務整合的基本 URL。",
+		"apiUrlInput": {
+			"aria-label": "API 端點"
+		},
 		"usageExampleTitle": "用法範例",
 		"usageExampleInstruction": "以下是如何使用 `curl` 獲取可用模型列表的範例。",
 		"copyButton": "複製",

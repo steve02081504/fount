@@ -18,7 +18,7 @@ catch (err) {
 
 /**
  * 解析 .risum 文件 Buffer
- * @param {Buffer} moduleBuffer
+ * @param {Buffer} moduleBuffer 模块缓冲区
  * @returns {Promise<{moduleDef: object, assetsData: Buffer[]}|null>}
  *          moduleDef: 解析后的模块定义JSON对象 (RisuModule 结构)
  *          assetsData: 模块内嵌的资源Buffer数组
@@ -32,12 +32,25 @@ export async function parseRisuModule(moduleBuffer) {
 
 	try {
 		let pos = 0
+		/**
+		 * 读取字节
+		 * @returns {number} 读取的字节
+		 */
 		const readByte = () => moduleBuffer.readUInt8(pos++)
+		/**
+		 * 读取长度
+		 * @returns {number} 读取的长度
+		 */
 		const readLength = () => {
 			const len = moduleBuffer.readUInt32LE(pos)
 			pos += 4
 			return len
 		}
+		/**
+		 * 读取数据
+		 * @param {any} len 长度
+		 * @returns {Buffer} 读取的数据
+		 */
 		const readData = len => {
 			const data = moduleBuffer.subarray(pos, pos + len)
 			pos += len
@@ -87,7 +100,6 @@ export async function parseRisuModule(moduleBuffer) {
 		// 检查文件末尾是否有多余数据或正确的结束标记
 		if (pos < moduleBuffer.length && readByte() !== 0)
 			console.warn('Module file has trailing data after expected assets and EOF mark.')
-
 
 		return { moduleDef, assetsData }
 	}

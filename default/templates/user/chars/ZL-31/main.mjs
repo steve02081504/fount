@@ -8,10 +8,13 @@ import path from 'node:path'
 import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/prompt_struct.mjs'
 import { __dirname } from '../../../../../src/server/base.mjs'
 import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
+import { loadPlugin } from '../../../../../src/server/managers/plugin_manager.mjs'
 
 // AI源的实例
 /** @type {import('../../../../../src/decl/AIsource.ts').AIsource_t} */
 let AIsource = null
+/** @type {Record<string, import("../../../../../src/decl/pluginAPI.ts").PluginAPI_t>} */
+let plugins = {}
 
 // 用户名，用于加载AI源
 let username = ''
@@ -41,14 +44,19 @@ fount角色以mjs文件语法所书写，其可以自由导入任何npm或jsr包
 \`\`\`generate-char template
 /**
  * @typedef {import('../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t
+ * @typedef {import('../../../../../src/decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t
  */
 
 import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
 import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/prompt_struct.mjs'
+import { loadPlugin } from '../../../../../src/server/managers/plugin_manager.mjs'
 
 // AI源的实例
 /** @type {import('../../../../../src/decl/AIsource.ts').AIsource_t} */
 let AIsource = null
+
+/** @type {Record<string, PluginAPI_t>} */
+let plugins = {}
 
 // 用户名，用于加载AI源
 let username = ''
@@ -92,12 +100,14 @@ export default {
 			// 获取角色的配置数据
 			GetData: () => ({
 				AIsource: AIsource?.filename || '', // 返回当前使用的AI源的文件名
+				plugins: Object.keys(plugins),
 			}),
 			// 设置角色的配置数据
 			SetData: async data => {
 				// 如果传入了AI源的配置
 				if (data.AIsource)  AIsource = await loadAIsource(username, data.AIsource) // 加载AI源
 				else AIsource = await loadDefaultAIsource(username) // 或加载默认AI源（若未设置默认AI源则为undefined）
+				if (data.plugins) plugins = Object.fromEntries(await Promise.all(data.plugins.map(async x => [x, await loadPlugin(username, x)])))
 			}
 		},
 		// 角色的聊天接口
@@ -134,6 +144,8 @@ export default {
 			GetReply: async args => {
 				// 如果没有设置AI源，返回默认回复
 				if (!AIsource) return { content: '<未设置角色的AI来源时角色的对话回复，可以用markdown语法链接到[设置AI源](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage)>' }
+				// 注入角色插件
+				args.plugins = Object.assign({}, plugins, args.plugins)
 				// 用fount提供的工具构建提示词结构
 				const prompt_struct = await buildPromptStruct(args)
 				// 创建回复容器
@@ -281,7 +293,7 @@ export default {
 			avatar: '',
 			description: '一个简单的复读机',
 			description_markdown: '这是一个复读机角色，它会复读用户的上一条消息。',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: '${args.UserCharname} & ZL-31',
 			home_page: '',
 			tags: ['复读', '工具'],
@@ -515,7 +527,7 @@ It can chat, answer questions, provide suggestions, and help you create simple f
 
 Some code comes from [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
 `,
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['assistant', 'default', 'no gender', 'fount'],
@@ -530,7 +542,7 @@ ZL-31是fount的默认角色，无性别设定。它的最终目标是让用户�
 
 部分代码来自[龙胆](https://github.com/steve02081504/GentianAphrodite)。
 `, // 角色的详细介绍，支持Markdown语法
-			version: '0.0.1', // 角色的版本号
+			version: '0.0.0', // 角色的版本号
 			author: 'steve02081504', // 角色的作者
 			home_page: '', // 角色的主页
 			tags: ['助手', '默认', '无性别', 'fount'], // 角色的标签
@@ -545,7 +557,7 @@ Er kann chatten, Fragen beantworten, Vorschläge machen und Ihnen helfen, einfac
 
 Ein Teil des Codes stammt von [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
 `,
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['Assistent', 'Standard', 'kein Geschlecht', 'fount'],
@@ -560,7 +572,7 @@ Puede chatear, responder preguntas, dar sugerencias y ayudarte a crear personaje
 
 Parte del código proviene de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
 `,
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['asistente', 'predeterminado', 'sin género', 'fount'],
@@ -575,7 +587,7 @@ Il peut discuter, répondre à des questions, faire des suggestions et vous aide
 
 Une partie du code provient de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
 `,
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['assistant', 'par défaut', 'non genré', 'fount'],
@@ -590,7 +602,7 @@ ZL-31 फाउंट का डिफ़ॉल्ट चरित्र है,
 
 कुछ कोड [जेंटियनएफ़्रोडाइट](https://github.com/steve02081504/GentianAphrodite) से आया है।
 `,
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['सहायक', 'डिफ़ॉल्ट', 'कोई लिंग नहीं', 'fount'],
@@ -605,7 +617,7 @@ ZL-31はfountのデフォルトキャラクターであり、性別設定はあ�
 
 一部のコードは[GentianAphrodite](https://github.com/steve02081504/GentianAphrodite)から来ています。
 `,
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['アシスタント', 'デフォルト', '性別なし', 'fount'],
@@ -620,7 +632,7 @@ ZL-31은 fount의 기본 캐릭터이며 성별 설정이 없습니다. 최종 �
 
 일부 코드는 [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite)에서 가져왔습니다。
 `,
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['도우미', '기본', '성별 없음', 'fount'],
@@ -635,7 +647,7 @@ Pode conversar, responder a perguntas, dar sugestões e ajudá-lo a criar person
 
 Algum código é proveniente de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
 `,
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['assistente', 'padrão', 'sem género', 'fount'],
@@ -650,7 +662,7 @@ ZL-31 — персонаж fount по умолчанию, без гендерн�
 
 Часть кода взята из [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
 `,
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['помощник', 'по умолчанию', 'без пола', 'fount'],
@@ -665,7 +677,7 @@ Può chattare, rispondere a domande, fornire suggerimenti e aiutarti a creare se
 
 Parte del codice proviene da [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
 `,
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['assistente', 'predefinito', 'senza genere', 'fount'],
@@ -680,7 +692,7 @@ Nó có thể trò chuyện, trả lời câu hỏi, đưa ra gợi ý và giúp
 
 Một số mã nguồn đến từ [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).
 `,
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['trợ lý', 'mặc định', 'không giới tính', 'fount'],
@@ -695,7 +707,7 @@ ZL-31乃fount之本設化身，無陰陽之辨。其志在悅君心，力遂諸�
 
 其術蓋取於[龍膽](https://github.com/steve02081504/GentianAphrodite)。
 `,
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['輔佐', '本設', '無陰陽之辨', 'fount'],
@@ -710,7 +722,7 @@ ZL-31乃fount之本設化身，無陰陽之辨。其志在悅君心，力遂諸�
 
 💻⬅️ [🪻](https://github.com/steve02081504/GentianAphrodite).
 `,
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['🤖', '⭐', '⚪', '⛲'],
@@ -718,17 +730,38 @@ ZL-31乃fount之本設化身，無陰陽之辨。其志在悅君心，力遂諸�
 	},
 
 	// 初始化函数，在角色被启用时调用，可留空
+	/**
+	 * 初始化函数，在角色被启用时调用。
+	 * @param {object} stat - 统计信息。
+	 * @returns {void}
+	 */
 	Init: stat => { },
 
 	// 安装卸载函数，在角色被安装/卸载时调用，可留空
+	/**
+	 * 安装卸载函数，在角色被安装/卸载时调用。
+	 * @param {string} reason - 卸载原因。
+	 * @param {string} from - 卸载来源。
+	 * @returns {void}
+	 */
 	Uninstall: (reason, from) => { },
 
 	// 加载函数，在角色被加载时调用，在这里获取用户名
+	/**
+	 * 加载函数，在角色被加载时调用。
+	 * @param {object} stat - 统计信息。
+	 * @returns {void}
+	 */
 	Load: stat => {
 		username = stat.username // 获取用户名
 	},
 
 	// 卸载函数，在角色被卸载时调用，可留空
+	/**
+	 * 卸载函数，在角色被卸载时调用。
+	 * @param {string} reason - 卸载原因。
+	 * @returns {void}
+	 */
 	Unload: reason => { },
 
 	// 角色的接口
@@ -736,19 +769,36 @@ ZL-31乃fount之本設化身，無陰陽之辨。其志在悅君心，力遂諸�
 		// 角色的配置接口
 		config: {
 			// 获取角色的配置数据
+			/**
+			 * 获取角色的配置数据。
+			 * @returns {object} - 包含 AI 源文件名的对象。
+			 */
 			GetData: () => ({
 				AIsource: AIsource?.filename || '', // 返回当前使用的AI源的文件名
+				plugins: Object.keys(plugins),
 			}),
 			// 设置角色的配置数据
+			/**
+			 * 设置角色的配置数据。
+			 * @param {object} data - 包含 AI 源配置的数据。
+			 * @returns {Promise<void>}
+			 */
 			SetData: async data => {
 				// 如果传入了AI源的配置
 				if (data.AIsource) AIsource = await loadAIsource(username, data.AIsource) // 加载AI源
 				else AIsource = await loadDefaultAIsource(username) // 或加载默认AI源（若未设置默认AI源则为undefined）
+				if (data.plugins) plugins = Object.fromEntries(await Promise.all(data.plugins.map(async x => [x, await loadPlugin(username, x)])))
 			}
 		},
 		// 角色的聊天接口
 		chat: {
 			// 获取角色的开场白
+			/**
+			 * 获取角色的开场白。
+			 * @param {object} arg - 参数对象，包含 locales。
+			 * @param {number} index - 索引。
+			 * @returns {Array<object>} - 包含开场白内容的对象数组。
+			 */
 			GetGreeting: (arg, index) => {
 				switch (arg.locales[0].split('-')[0]) {
 					case 'zh':
@@ -783,6 +833,12 @@ ZL-31乃fount之本設化身，無陰陽之辨。其志在悅君心，力遂諸�
 				}
 			},
 			// 获取角色在群组中的问好
+			/**
+			 * 获取角色在群组中的问好。
+			 * @param {object} arg - 参数对象，包含 locales。
+			 * @param {number} index - 索引。
+			 * @returns {Array<object>} - 包含问好内容的对象数组。
+			 */
 			GetGroupGreeting: (arg, index) => {
 				switch (arg.locales[0].split('-')[0]) {
 					case 'zh':
@@ -817,6 +873,11 @@ ZL-31乃fount之本設化身，無陰陽之辨。其志在悅君心，力遂諸�
 				}
 			},
 			// 获取角色的提示词
+			/**
+			 * 获取角色的提示词。
+			 * @param {object} args - 参数对象。
+			 * @returns {Promise<object>} - 包含提示词结构的对象。
+			 */
 			GetPrompt: async (args) => {
 				return {
 					text: [{
@@ -846,6 +907,11 @@ persona-generator
 				}
 			},
 			// 获取其他角色看到的该角色的设定，群聊时生效
+			/**
+			 * 获取其他角色看到的该角色的设定，群聊时生效。
+			 * @param {object} args - 参数对象。
+			 * @returns {object} - 包含提示词结构的对象。
+			 */
 			GetPromptForOther: (args) => {
 				return {
 					text: [{
@@ -857,6 +923,11 @@ persona-generator
 				}
 			},
 			// 获取角色的回复
+			/**
+			 * 获取角色的回复。
+			 * @param {object} args - 参数对象。
+			 * @returns {Promise<object>} - 包含回复内容的对象。
+			 */
 			GetReply: async args => {
 				// 如果没有设置AI源，返回默认回复
 				if (!AIsource)
@@ -891,6 +962,8 @@ persona-generator
 						case 'en':
 							return { content: 'Sorry, I haven\'t been configured with an AI source yet, so I can\'t do more complex conversation for now. [Please configure me with an AI source in the settings](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage).' }
 					}
+				// 注入角色插件
+				args.plugins = Object.assign({}, plugins, args.plugins)
 				// 用fount提供的工具构建提示词结构
 				const prompt_struct = await buildPromptStruct(args)
 				// 创建回复容器
@@ -903,6 +976,11 @@ persona-generator
 					extension: {},
 				}
 				// 构建插件可能需要的追加上下文函数
+				/**
+				 * 添加长时间日志。
+				 * @param {object} entry - 日志条目。
+				 * @returns {void}
+				 */
 				function AddLongTimeLog(entry) {
 					entry.charVisibility = [args.char_id]
 					result?.logContextBefore?.push?.(entry)

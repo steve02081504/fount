@@ -2,11 +2,11 @@ import { runBot } from './src/bot.mjs'
 import { setEndpoints } from './src/endpoints.mjs'
 
 /**
- * 处理动作。
- * @param {string} user - 用户。
- * @param {string} action - 动作。
- * @param {object} params - 参数。
- * @returns {Promise<any>} - 动作结果。
+ * 处理传入的Discord机器人动作请求。
+ * @param {string} user - 用户名。
+ * @param {string} action - 要执行的动作名称。
+ * @param {object} params - 动作所需的参数。
+ * @returns {Promise<any>} - 返回动作执行的结果。
  */
 async function handleAction(user, action, params) {
 	const { actions } = await import('./src/actions.mjs')
@@ -17,7 +17,7 @@ async function handleAction(user, action, params) {
 }
 
 /**
- * Discord Bot Shell
+ * @type {import('../../../decl/shell.ts').shell_t}
  */
 export default {
 	info: {
@@ -26,7 +26,7 @@ export default {
 			avatar: 'https://api.iconify.design/line-md/discord.svg',
 			description: 'Run your character as a Discord bot.',
 			description_markdown: 'Allows you to connect your character to Discord and interact with them as a bot.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['discord', 'bot', 'integration']
@@ -36,7 +36,7 @@ export default {
 			avatar: 'https://api.iconify.design/line-md/discord.svg',
 			description: '将您的角色作为Discord机器人运行。',
 			description_markdown: '允许您将角色连接到Discord并作为机器人与他们互动。',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['Discord', '机器人', '集成']
@@ -46,7 +46,7 @@ export default {
 			avatar: 'https://api.iconify.design/line-md/discord.svg',
 			description: 'قم بتشغيل شخصيتك كروبوت Discord.',
 			description_markdown: 'يسمح لك بربط شخصيتك بـ Discord والتفاعل معها كروبوت.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['ديسكورد', 'بوت', 'تكامل']
@@ -56,7 +56,7 @@ export default {
 			avatar: 'https://api.iconify.design/line-md/discord.svg',
 			description: 'Führe deinen Charakter als Discord-Bot aus.',
 			description_markdown: 'Ermöglicht es Ihnen, Ihren Charakter mit Discord zu verbinden und mit ihm als Bot zu interagieren.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['Discord', 'Bot', 'Integration']
@@ -66,7 +66,7 @@ export default {
 			avatar: 'https://api.iconify.design/line-md/discord.svg',
 			description: 'Run your character as a Discord bot.',
 			description_markdown: 'Allows you to connect your character to Discord and interact with them as a bot.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['discord', 'bot', 'integration']
@@ -76,7 +76,7 @@ export default {
 			avatar: 'https://api.iconify.design/line-md/discord.svg',
 			description: 'Ejecuta tu personaje como un bot de Discord.',
 			description_markdown: 'Te permite conectar tu personaje a Discord e interactuar con él como un bot.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['Discord', 'bot', 'integración']
@@ -86,7 +86,7 @@ export default {
 			avatar: 'https://api.iconify.design/line-md/discord.svg',
 			description: 'Exécutez votre personnage en tant que bot Discord.',
 			description_markdown: 'Vous permet de connecter votre personnage à Discord et d\'interagir avec lui en tant que bot.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['Discord', 'bot', 'intégration']
@@ -96,7 +96,7 @@ export default {
 			avatar: 'https://api.iconify.design/line-md/discord.svg',
 			description: 'अपने चरित्र को डिस्कॉर्ड बॉट के रूप में चलाएं।',
 			description_markdown: 'आपको अपने चरित्र को डिस्कॉर्ड से जोड़ने और बॉट के रूप में उनके साथ बातचीत करने की अनुमति देता है।',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['डिस्कॉर्ड', 'बॉट', 'एकीकरण']
@@ -106,7 +106,7 @@ export default {
 			avatar: 'https://api.iconify.design/line-md/discord.svg',
 			description: 'Keyrðu karakterinn þinn sem Discord bot.',
 			description_markdown: 'Gerir þér kleift að tengja karakterinn þinn við Discord og eiga samskipti við hann sem bot.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['Discord', 'bot', 'samþætting']
@@ -116,7 +116,7 @@ export default {
 			avatar: 'https://api.iconify.design/line-md/discord.svg',
 			description: 'Esegui il tuo personaggio come un bot Discord.',
 			description_markdown: 'Ti permette di collegare il tuo personaggio a Discord e interagire con esso come un bot.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['Discord', 'bot', 'integrazione']
@@ -126,7 +126,7 @@ export default {
 			avatar: 'https://api.iconify.design/line-md/discord.svg',
 			description: 'キャラクターをDiscordボットとして実行します。',
 			description_markdown: 'キャラクターをDiscordに接続し、ボットとして対話することができます。',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['Discord', 'ボット', '統合']
@@ -136,7 +136,7 @@ export default {
 			avatar: 'https://api.iconify.design/line-md/discord.svg',
 			description: '캐릭터를 디스코드 봇으로 실행하세요.',
 			description_markdown: '캐릭터를 디스코드에 연결하고 봇으로 상호 작용할 수 있습니다.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['디스코드', '봇', '통합']
@@ -146,7 +146,7 @@ export default {
 			avatar: 'https://api.iconify.design/line-md/discord.svg',
 			description: '以Discord靈偶身份運行您的角色。',
 			description_markdown: '允許您將角色連接到Discord並作為靈偶與之互動。',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['Discord', '靈偶', '集成']
@@ -156,7 +156,7 @@ export default {
 			avatar: 'https://api.iconify.design/line-md/discord.svg',
 			description: 'Voer je personage uit als een Discord-bot.',
 			description_markdown: 'Hiermee kun je je personage verbinden met Discord en ermee communiceren als een bot.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['Discord', 'bot', 'integratie']
@@ -166,7 +166,7 @@ export default {
 			avatar: 'https://api.iconify.design/line-md/discord.svg',
 			description: 'Execute seu personagem como um bot do Discord.',
 			description_markdown: 'Permite que você conecte seu personagem ao Discord e interaja com ele como um bot.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['Discord', 'bot', 'integração']
@@ -176,7 +176,7 @@ export default {
 			avatar: 'https://api.iconify.design/line-md/discord.svg',
 			description: 'Запустите своего персонажа в качестве бота Discord.',
 			description_markdown: 'Позволяет подключить вашего персонажа к Discord и взаимодействовать с ним как с ботом.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['Discord', 'бот', 'интеграция']
@@ -186,7 +186,7 @@ export default {
 			avatar: 'https://api.iconify.design/line-md/discord.svg',
 			description: 'Запустіть свого персонажа як бота Discord.',
 			description_markdown: 'Дозволяє підключити вашого персонажа до Discord і взаємодіяти з ним як з ботом.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['Discord', 'бот', 'інтеграція']
@@ -196,7 +196,7 @@ export default {
 			avatar: 'https://api.iconify.design/line-md/discord.svg',
 			description: 'Chạy nhân vật của bạn dưới dạng bot Discord.',
 			description_markdown: 'Cho phép bạn kết nối nhân vật của mình với Discord và tương tác với chúng dưới dạng bot.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['Discord', 'bot', 'tích hợp']
@@ -206,23 +206,23 @@ export default {
 			avatar: 'https://api.iconify.design/line-md/discord.svg',
 			description: '將您的角色作為Discord機器人運行。',
 			description_markdown: '允許您將角色連接到Discord並作為機器人與他們互動。',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['Discord', '機器人', '集成']
 		}
 	},
 	/**
-	 * 加载Shell。
-	 * @param {object} root0 - 参数。
-	 * @param {object} root0.router - 路由。
+	 * 加载Discord机器人Shell并设置API端点。
+	 * @param {object} root0 - 参数对象。
+	 * @param {object} root0.router - Express的路由实例。
 	 * @returns {Promise<void>}
 	 */
 	Load: async ({ router }) => {
 		setEndpoints(router)
 	},
 	/**
-	 * 卸载Shell。
+	 * 卸载Discord机器人Shell。
 	 * @returns {Promise<void>}
 	 */
 	Unload: async () => { },
@@ -230,9 +230,9 @@ export default {
 	interfaces: {
 		invokes: {
 			/**
-			 * 参数处理器。
-			 * @param {string} user - 用户。
-			 * @param {Array<string>} args - 参数。
+			 * 处理命令行参数以执行Discord机器人操作。
+			 * @param {string} user - 用户名。
+			 * @param {Array<string>} args - 命令行参数数组。
 			 * @returns {Promise<void>}
 			 */
 			ArgumentsHandler: async (user, args) => {
@@ -245,13 +245,12 @@ export default {
 				const result = await handleAction(user, action, params)
 				if (result !== undefined)
 					console.log(result)
-
 			},
 			/**
-			 * IPC调用处理器。
-			 * @param {string} user - 用户。
-			 * @param {object} data - 数据。
-			 * @returns {Promise<any>} - 动作结果。
+			 * 处理IPC调用以执行Discord机器人操作。
+			 * @param {string} user - 用户名。
+			 * @param {object} data - 从IPC接收的数据对象。
+			 * @returns {Promise<any>} - 动作执行结果。
 			 */
 			IPCInvokeHandler: async (user, data) => {
 				const { action, ...params } = data
@@ -260,8 +259,8 @@ export default {
 		},
 		jobs: {
 			/**
-			 * 重启任务。
-			 * @param {string} user - 用户。
+			 * 重新启动Discord机器人任务。
+			 * @param {string} user - 用户名。
 			 * @param {string} botname - 机器人名称。
 			 * @returns {Promise<void>}
 			 */

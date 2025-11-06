@@ -40,6 +40,9 @@ const extension_prompt_roles = {
 	USER: 1,
 	ASSISTANT: 2,
 }
+/**
+ * world info entry
+ */
 class WorldInfoEntry {
 	/**
 	 * the id of the entry
@@ -211,6 +214,9 @@ class WorldInfoEntry {
 		cooldown: 0,
 	}
 }
+/**
+ * 世界信息手册
+ */
 class WorldInfoBook {
 	/**
 	 * the name of the book
@@ -223,6 +229,9 @@ class WorldInfoBook {
 	 */
 	entries
 }
+/**
+ * 正则表达式脚本信息
+ */
 class regex_script_info {
 	/**
 	 * the name of the script
@@ -285,6 +294,9 @@ class regex_script_info {
 	 */
 	maxDepth
 }
+/**
+ * v2 角色数据
+ */
 class v2CharData {
 	/**
 	 * the name of the character
@@ -407,6 +419,9 @@ class v2CharData {
 	 */
 	character_book
 }
+/**
+ * v1 角色数据
+ */
 class v1CharData {
 	/**
 	 * the name of the character
@@ -475,7 +490,7 @@ const extension_pepos = ['talkativeness', 'fav']
  * Retrieves V1 character data from V2 data.
  *
  * @param {v2CharData} data - The V2 data object containing character information.
- * @return {v1CharData} The V1 character data extracted from the V2 data.
+ * @returns {v1CharData} The V1 character data extracted from the V2 data.
  */
 function GetV1CharDataFromV2(data) {
 	/** @type {v1CharData} */
@@ -511,6 +526,9 @@ function GetV2CharDataFromV1(data) {
 	data.data = aret
 	return aret
 }
+/**
+ * Exported modules
+ */
 export {
 	v2CharData, v1CharData, GetV1CharDataFromV2, GetV2CharDataFromV1, WorldInfoBook, WorldInfoEntry,
 	regex_placement, world_info_logic, world_info_position, wi_anchor_position, extension_prompt_roles, regex_script_info

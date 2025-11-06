@@ -68,4 +68,7 @@ export function remove(image) {
 	return Buffer.from(encode(chunks))
 }
 
+/**
+ * PNG 块读写器
+ */
 export default { read, write, remove }

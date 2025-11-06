@@ -22,6 +22,7 @@ export function WsAbleRouter(router = express.Router(), httpServer = null) {
 				head,
 				/**
 				 * 拒绝 WebSocket 连接。
+				 * @returns {void}
 				 */
 				fail: () => {
 					if (!socket.destroyed) {
@@ -32,6 +33,7 @@ export function WsAbleRouter(router = express.Router(), httpServer = null) {
 				},
 				/**
 				 * 标记 WebSocket 连接已成功建立。
+				 * @returns {void}
 				 */
 				done: () => resolve(),
 			},
@@ -47,6 +49,7 @@ export function WsAbleRouter(router = express.Router(), httpServer = null) {
 		const res = {
 			/**
 			 * 模拟 Express 的 `setHeader` 方法。
+			 * @returns {void}
 			 */
 			setHeader: () => { },
 			/**
@@ -56,10 +59,12 @@ export function WsAbleRouter(router = express.Router(), httpServer = null) {
 			getHeader: () => undefined,
 			/**
 			 * 模拟 Express 的 `removeHeader` 方法。
+			 * @returns {void}
 			 */
 			removeHeader: () => { },
 			/**
 			 * 模拟 Express 的 `end` 方法，用于拒绝连接。
+			 * @returns {void}
 			 */
 			end: () => req.ws.fail(),
 		}
@@ -79,6 +84,7 @@ export function WsAbleRouter(router = express.Router(), httpServer = null) {
 	 * 为给定的路径注册一个 WebSocket 处理器。
 	 * @param {string} path - 路由路径。
 	 * @param {...any} handlers - 中间件和 WebSocket 连接处理器。
+	 * @returns {import('express').Router} 增强后的路由器。
 	 */
 	router.ws = (path, ...handlers) => {
 		const wss = new WebSocketServer({
@@ -90,7 +96,7 @@ export function WsAbleRouter(router = express.Router(), httpServer = null) {
 			 * @returns {string|boolean} 选择的协议或 false。
 			 */
 			handleProtocols: (protocols) => {
-				if (protocols.size > 0) return protocols.values().next().value
+				if (protocols.size) return protocols.values().next().value
 				return false
 			}
 		})
@@ -113,6 +119,7 @@ export function WsAbleRouter(router = express.Router(), httpServer = null) {
 	/**
 	 * 将 WebSocket 升级处理器绑定到一个 HTTP 服务器。
 	 * @param {import('http').Server} server - 要绑定的 HTTP 服务器。
+	 * @returns {import('express').Router} 增强后的路由器。
 	 */
 	router.ws_bindServer = server => {
 		server.on('upgrade', router.ws_on_upgrade)

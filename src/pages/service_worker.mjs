@@ -50,6 +50,12 @@ const PERIODIC_SYNC_TAG = `${CACHE_NAME}-cleanup`
  */
 let dbPromise = null
 
+/**
+ * IndexedDB 中用于存储配置信息的对象存储空间名称。
+ * @type {string}
+ */
+const CONFIG_STORE_NAME = 'config'
+
 
 // --- IndexedDB 辅助函数 ---
 
@@ -64,7 +70,7 @@ function openMetadataDB() {
 		return dbPromise
 
 	dbPromise = new Promise((resolve, reject) => {
-		const request = indexedDB.open(DB_NAME, 1)
+		const request = indexedDB.open(DB_NAME, 2)
 
 		/**
 		 * 当数据库需要升级时调用。
@@ -72,13 +78,13 @@ function openMetadataDB() {
 		 * @returns {void}
 		 */
 		request.onupgradeneeded = event => {
-			console.log('[SW DB] Database upgrade needed.')
 			const db = event.target.result
 			if (!db.objectStoreNames.contains(STORE_NAME)) {
 				const store = db.createObjectStore(STORE_NAME, { keyPath: 'url' })
 				store.createIndex('timestamp', 'timestamp', { unique: false })
-				console.log('[SW DB] Object store and index created.')
 			}
+			if (!db.objectStoreNames.contains(CONFIG_STORE_NAME))
+				db.createObjectStore(CONFIG_STORE_NAME, { keyPath: 'key' })
 		}
 
 		/**
@@ -135,13 +141,14 @@ function openMetadataDB() {
  * 抽象了事务的创建、对象存储的获取以及完成/错误处理，使业务逻辑更清晰。
  * @param {IDBTransactionMode} mode - 事务模式，'readonly' 或 'readwrite'。
  * @param {(store: IDBObjectStore) => void} callback - 一个在事务上下文中执行的回调函数，接收对象存储作为参数。
+ * @param {string} [storeName=STORE_NAME] - 对象存储名称，默认为 'timestamps'。
  * @returns {Promise<void>} 在事务成功完成时解析，在失败时拒绝。
  */
-async function performTransaction(mode, callback) {
+async function performTransaction(mode, callback, storeName = STORE_NAME) {
 	try {
 		const db = await openMetadataDB()
-		const transaction = db.transaction(STORE_NAME, mode)
-		const store = transaction.objectStore(STORE_NAME)
+		const transaction = db.transaction(storeName, mode)
+		const store = transaction.objectStore(storeName)
 
 		callback(store)
 
@@ -211,6 +218,50 @@ async function getTimestamp(url) {
 	catch (error) {
 		console.error(`[SW DB] Failed to get timestamp for ${url}:`, error)
 		return null // 保持错误处理行为不变
+	}
+}
+
+/**
+ * 向 IndexedDB 中更新或插入配置项。
+ * @param {string} key - 配置项的键。
+ * @param {any} value - 配置项的值。
+ * @returns {Promise<void>}
+ */
+async function setConfig(key, value) {
+	try {
+		await performTransaction('readwrite', store => {
+			store.put({ key, value })
+		}, CONFIG_STORE_NAME)
+	}
+	catch (error) {
+		console.error(`[SW DB] Failed to set config for ${key}:`, error)
+	}
+}
+
+/**
+ * 从 IndexedDB 中获取配置项。
+ * @param {string} key - 配置项的键。
+ * @returns {Promise<any | null>} 返回找到的配置值，如果未找到或发生错误则返回 null。
+ */
+async function getConfig(key) {
+	let configValue = null
+	try {
+		await performTransaction('readonly', store => {
+			const request = store.get(key)
+			/**
+			 * 当获取操作成功时调用。
+			 * @returns {void}
+			 */
+			request.onsuccess = () => {
+				if (request.result)
+					configValue = request.result.value
+			}
+		}, CONFIG_STORE_NAME)
+		return configValue
+	}
+	catch (error) {
+		console.error(`[SW DB] Failed to get config for ${key}:`, error)
+		return null
 	}
 }
 
@@ -466,7 +517,6 @@ const routes = [
 	},
 ]
 
-
 // --- WebSocket Notification Client ---
 
 let ws = null
@@ -559,7 +609,7 @@ function connectWebSocket() {
 	 * @returns {void}
 	 */
 	ws.onclose = event => {
-		console.warn(`[SW WS] Connection closed. Code: ${event.code}, Reason: ${event.reason}. Reconnecting in ${RECONNECT_DELAY / 1000}s.`)
+		console.warn(`[SW WS] Connection closed. Code: ${event.code}, Reason: ${event.reason}. Re-verifying and reconnecting in ${RECONNECT_DELAY / 1000}s.`)
 		ws = null
 		if (!reconnectTimeout) reconnectTimeout = setTimeout(connectWebSocket, RECONNECT_DELAY)
 	}
@@ -640,6 +690,7 @@ self.addEventListener('notificationclick', event => {
  */
 self.addEventListener('fetch', event => {
 	const requestUrl = new URL(event.request.url)
+
 	if (event.request.cache === 'no-cache') return handleNetworkFirst(event.request)
 	if (event.request.cache === 'no-store') return
 	for (const route of routes)

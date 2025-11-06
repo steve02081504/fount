@@ -32,7 +32,7 @@ function startProfile() {
  *   exclusiveTimeInMs: number,
  *   totalMemoryChangeInMB: number,
  *   exclusiveMemoryChangeInMB: number
- * }}
+ * }} 性能分析结果。
  */
 function endProfile() {
 	const profilerStack = getProfilerStack()
