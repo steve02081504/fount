@@ -6,7 +6,7 @@ import { copy } from 'npm:fs-extra'
 
 import { saveJsonFile } from '../../../scripts/json_loader.mjs'
 import { getUserDictionary } from '../../../server/auth.mjs'
-import { loadPart } from '../../../server/managers/index.mjs'
+import { reloadPart } from '../../../server/managers/index.mjs'
 import { isPartLoaded } from '../../../server/parts_loader.mjs'
 
 const templateDir = path.join(import.meta.dirname, 'Template')
@@ -74,11 +74,9 @@ async function ImportByText(username, text) {
 			)
 
 			// 如果插件已加载，重新加载它
-			const needsReload = isPartLoaded(username, 'plugins', pluginName)
-			if (needsReload)
-				await loadPart(username, 'plugins', pluginName)
-			else
-				// 预加载插件代码
+			if (isPartLoaded(username, 'plugins', pluginName))
+				await reloadPart(username, 'plugins', pluginName)
+			else // 预加载插件代码
 				import(url.pathToFileURL(path.join(pluginPath, 'main.mjs'))).catch(x => x)
 
 			installedParts.push({ parttype: 'plugins', partname: pluginName })

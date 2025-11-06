@@ -160,7 +160,6 @@ export function createMCPClient(config) {
 					if (!samplingHandler)
 						throw new Error('Sampling not supported - no handler configured')
 
-
 					// 调用 sampling handler 并获取结果
 					const samplingResult = await samplingHandler(params)
 

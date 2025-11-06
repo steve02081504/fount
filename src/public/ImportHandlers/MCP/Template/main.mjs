@@ -90,21 +90,19 @@ ${tool.description || 'No description'}
 **Parameters:**
 ${params}`
 	}).join('\n\n')
-	return `## Available MCP Tools (Execute Actions)
+	return `\
+## Available MCP Tools
 ${toolDescriptions}
 **Usage:** To call a tool, use this XML format:
-\`\`\`xml
 <mcp-tool name="tool_name">
   <param1>value1</param1>
   <param2>value2</param2>
 </mcp-tool>
-\`\`\`
 **Example:**
-\`\`\`xml
 <mcp-tool name="echo">
   <message>Hello World</message>
 </mcp-tool>
-\`\`\``
+`
 }
 /**
  * 格式化 prompt 描述
@@ -124,20 +122,17 @@ ${prompt.description || 'No description'}
 **Arguments:**
 ${args}`
 	}).join('\n\n')
-	return `## Available MCP Prompts (Get Templates)
+	return `## Available MCP Prompts
 ⚠️ **Important:** Prompts are NOT tools! They are templates that return pre-defined content.
 ${promptDescriptions}
-**Usage:** To get a prompt template, use this XML format (different from tools):
-\`\`\`xml
+**Usage:** To get a prompt template, use this XML format:
 <mcp-prompt name="prompt_name">
   <arg1>value1</arg1>
   <arg2>value2</arg2>
 </mcp-prompt>
-\`\`\`
 **Example:**
-\`\`\`xml
 <mcp-prompt name="simple_prompt"/>
-\`\`\``
+`
 }
 /**
  * 格式化资源描述
@@ -151,16 +146,13 @@ URI: \`${resource.uri}\`
 ${resource.description || 'No description'}
 MIME Type: ${resource.mimeType || 'unknown'}`
 	}).join('\n\n')
-	return `## Available MCP Resources (Read Data)
+	return `## Available MCP Resources
 ${resourceDescriptions}
-**Usage:** To read a resource, use this XML format (different from tools and prompts):
-\`\`\`xml
+**Usage:** To read a resource, use this XML format:
 <mcp-resource uri="resource_uri"/>
-\`\`\`
 **Example:**
-\`\`\`xml
 <mcp-resource uri="test://static/resource/1"/>
-\`\`\``
+`
 }
 /**
  * 根据 schema 转换参数类型
@@ -357,13 +349,27 @@ export default {
 						let resultText = ''
 						if (call.type === 'tool') {
 							result = await mcpClient.callTool(call.name, call.args)
-							resultText = `Tool call result for \`${call.name}\`:\n\`\`\`\n${formatResult(result)}\n\`\`\``
+							resultText = `/
+Tool call result for \`${call.name}\`:
+\`\`\`
+${formatResult(result)}\`\`\`
+`
 						} else if (call.type === 'prompt') {
 							result = await mcpClient.getPrompt(call.name, call.args)
-							resultText = `Prompt result for \`${call.name}\`:\n\`\`\`\n${formatResult(result)}\n\`\`\``
+							resultText = `\
+Prompt result for \`${call.name}\`:
+\`\`\`
+${formatResult(result)}
+\`\`\`
+`
 						} else if (call.type === 'resource') {
 							result = await mcpClient.readResource(call.uri)
-							resultText = `Resource content from \`${call.uri}\`:\n\`\`\`\n${formatResult(result)}\n\`\`\``
+							resultText = `
+Resource content from \`${call.uri}\`:
+\`\`\`
+${formatResult(result)}
+\`\`\`
+`
 						}
 						const resultEntry = {
 							charname: 'system',
