@@ -1,4 +1,5 @@
 import { spawn } from 'node:child_process'
+import process from 'node:process'
 
 /**
  * MCP 客户端 - 参考 mcp.el 实现
@@ -16,7 +17,7 @@ import { spawn } from 'node:child_process'
  * @returns {object} MCP 客户端实例
  */
 export function createMCPClient(config) {
-	let process = null
+	let mcp_process = null
 	let messageId = 0
 	const pendingRequests = new Map()
 
@@ -35,16 +36,16 @@ export function createMCPClient(config) {
 	 * 启动 MCP 服务器进程
 	 */
 	async function start() {
-		if (process) return
+		if (mcp_process) return
 
-		process = spawn(config.command, config.args || [], {
+		mcp_process = spawn(config.command, config.args || [], {
 			env: { ...process.env, ...config.env },
 			stdio: ['pipe', 'pipe', 'pipe'],
 		})
 
 		const decoder = new TextDecoder()
 		let buffer = ''
-		process.stdout.on('data', (data) => {
+		mcp_process.stdout.on('data', (data) => {
 			buffer += decoder.decode(data, { stream: true })
 			const lines = buffer.split('\n')
 			buffer = lines.pop() || ''
@@ -60,17 +61,17 @@ export function createMCPClient(config) {
 			}
 		})
 
-		process.stdout.on('error', (err) => {
+		mcp_process.stdout.on('error', (err) => {
 			console.error('MCP client read error:', err)
 		})
 
 		const stderrDecoder = new TextDecoder()
-		process.stderr.on('data', (data) => {
+		mcp_process.stderr.on('data', (data) => {
 			const text = stderrDecoder.decode(data, { stream: true })
 			if (text.trim())
 				console.error('MCP server stderr:', text)
 		})
-		process.stderr.on('error', (err) => {
+		mcp_process.stderr.on('error', (err) => {
 			console.error('MCP stderr read error:', err)
 		})
 
@@ -191,7 +192,7 @@ export function createMCPClient(config) {
 	 * @param {any} result - 响应结果
 	 */
 	async function sendResponse(id, result) {
-		if (!process) return
+		if (!mcp_process) return
 
 		const response = {
 			jsonrpc: '2.0',
@@ -200,7 +201,7 @@ export function createMCPClient(config) {
 		}
 
 		const responseText = JSON.stringify(response) + '\n'
-		process.stdin.write(responseText)
+		mcp_process.stdin.write(responseText)
 	}
 
 	/**
@@ -210,7 +211,7 @@ export function createMCPClient(config) {
 	 * @param {string} message - 错误消息
 	 */
 	async function sendErrorResponse(id, code, message) {
-		if (!process) return
+		if (!mcp_process) return
 
 		const response = {
 			jsonrpc: '2.0',
@@ -222,7 +223,7 @@ export function createMCPClient(config) {
 		}
 
 		const responseText = JSON.stringify(response) + '\n'
-		process.stdin.write(responseText)
+		mcp_process.stdin.write(responseText)
 	}
 
 	/**
@@ -232,7 +233,7 @@ export function createMCPClient(config) {
 	 * @returns {Promise<any>} 响应结果
 	 */
 	async function sendRequest(method, params = {}) {
-		if (!process) await start()
+		if (!mcp_process) await start()
 
 		const id = ++messageId
 		const request = {
@@ -255,7 +256,7 @@ export function createMCPClient(config) {
 		})
 
 		const requestText = JSON.stringify(request) + '\n'
-		process.stdin.write(requestText)
+		mcp_process.stdin.write(requestText)
 
 		return promise
 	}
@@ -266,7 +267,7 @@ export function createMCPClient(config) {
 	 * @param {object} [params] - 参数
 	 */
 	async function sendNotification(method, params = {}) {
-		if (!process) return
+		if (!mcp_process) return
 
 		const notification = {
 			jsonrpc: '2.0',
@@ -275,7 +276,7 @@ export function createMCPClient(config) {
 		}
 
 		const notificationText = JSON.stringify(notification) + '\n'
-		process.stdin.write(notificationText)
+		mcp_process.stdin.write(notificationText)
 	}
 
 	/**
@@ -414,13 +415,13 @@ export function createMCPClient(config) {
 	 * 停止 MCP 客户端
 	 */
 	async function stop() {
-		if (process) {
+		if (mcp_process) {
 			try {
-				process.kill('SIGTERM')
+				mcp_process.kill('SIGTERM')
 			} catch (err) {
 				console.error('Error stopping MCP process:', err)
 			}
-			process = null
+			mcp_process = null
 			status = 'stopped'
 		}
 	}
@@ -449,7 +450,7 @@ export function createMCPClient(config) {
 	async function setRoots(newRoots) {
 		roots = newRoots || []
 		// 通知服务器根目录已更改
-		if (process && status === 'connected')
+		if (mcp_process && status === 'connected')
 			await sendNotification('notifications/roots/list_changed')
 
 	}
@@ -461,7 +462,7 @@ export function createMCPClient(config) {
 	async function addRoot(root) {
 		if (!roots.find(r => (typeof r === 'string' ? r : r.uri) === (typeof root === 'string' ? root : root.uri))) {
 			roots.push(root)
-			if (process && status === 'connected')
+			if (mcp_process && status === 'connected')
 				await sendNotification('notifications/roots/list_changed')
 		}
 	}
@@ -473,7 +474,7 @@ export function createMCPClient(config) {
 	async function removeRoot(root) {
 		const rootId = typeof root === 'string' ? root : root.uri
 		roots = roots.filter(r => (typeof r === 'string' ? r : r.uri) !== rootId)
-		if (process && status === 'connected')
+		if (mcp_process && status === 'connected')
 			await sendNotification('notifications/roots/list_changed')
 
 	}
