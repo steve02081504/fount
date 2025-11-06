@@ -8,9 +8,9 @@ import { loadAIsource, loadAIsourceGenerator, unloadAIsource, unloadAIsourceGene
 import { LoadChar, UnloadChar } from './char_manager.mjs'
 import { LoadImportHandler, UnloadImportHandler } from './ImportHandler_manager.mjs'
 import { loadPersona, unloadPersona } from './persona_manager.mjs'
+import { loadPlugin, unloadPlugin } from './plugin_manager.mjs'
 import { loadShell, unloadShell } from './shell_manager.mjs'
 import { loadWorld, unloadWorld } from './world_manager.mjs'
-import { loadPlugin, unloadPlugin } from "./plugin_manager.mjs";
 
 
 const loadMethods = {
