@@ -1,0 +1,35 @@
+name: E2E Tests
+
+on:
+  push:
+    paths:
+      - 'src/pages/**'
+      - 'src/public/shells/**'
+    tags-ignore:
+      - '*'
+    branches:
+      - '*'
+  workflow_dispatch:
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        id: deno
+        with:
+          deno-version: v1.x
+          cache: true
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v41
+        with:
+          files: |
+            src/pages/**
+            src/public/shells/**
+      - name: Run E2E tests
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          deno run --allow-all ./.esh/commands/run-e2e-tests.mjs -- ${{ steps.changed-files.outputs.all_changed_files }}

@@ -7,6 +7,8 @@
 		"npm:cookie-parser": "npm:cookie-parser@^1.4.0",
 		"npm:@steve02081504/virtual-console": "npm:@steve02081504/virtual-console@^0.0.6",
 		"npm:on-shutdown": "npm:on-shutdown@^0.0.1",
-		"npm:fs-extra": "npm:fs-extra@^11.3.2"
+		"npm:fs-extra": "npm:fs-extra@^11.3.2",
+		"npm:playwright": "npm:playwright@^1.40.0",
+		"npm:@playwright/test": "npm:@playwright/test@^1.40.0"
 	}
 }
