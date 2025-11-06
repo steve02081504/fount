@@ -292,7 +292,7 @@ export function createMCPClient(config) {
 				},
 				clientInfo: {
 					name: 'fount',
-					version: '0.0.1',
+					version: '0.0.0',
 				},
 			})
 
@@ -301,9 +301,6 @@ export function createMCPClient(config) {
 
 			// 发送 initialized 通知
 			await sendNotification('notifications/initialized')
-
-			// 等待服务器完全初始化（縮短等待時間）
-			await new Promise(resolve => setTimeout(resolve, 500))
 
 			// 获取各种资源
 			if (capabilities?.tools) {
@@ -466,7 +463,6 @@ export function createMCPClient(config) {
 			roots.push(root)
 			if (process && status === 'connected')
 				await sendNotification('notifications/roots/list_changed')
-
 		}
 	}
 

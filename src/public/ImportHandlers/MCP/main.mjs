@@ -99,7 +99,7 @@ export default {
 			description: 'Import MCP (Model Context Protocol) server configurations as plugins.',
 			description_markdown: 'Import MCP (Model Context Protocol) server configurations as individual plugins. Each MCP server becomes a separate plugin that can be enabled/disabled independently.',
 			version: '0.0.2',
-			author: 'fount',
+			author: 'steve02081504 & ZINWIN10',
 			home_page: '',
 			tags: ['mcp', 'tools', 'plugin-generator']
 		},
@@ -109,7 +109,7 @@ export default {
 			description: '导入 MCP (模型上下文协议) 服务器配置作为插件。',
 			description_markdown: '将 MCP (模型上下文协议) 服务器配置作为独立的插件导入。每个 MCP 服务器都会成为一个可以独立启用/禁用的独立插件。',
 			version: '0.0.2',
-			author: 'fount',
+			author: 'steve02081504 & ZINWIN10',
 			home_page: '',
 			tags: ['mcp', '工具', '插件生成器']
 		},
@@ -119,7 +119,7 @@ export default {
 			description: '匯入 MCP (模型上下文協定) 伺服器設定為外掛程式。',
 			description_markdown: '將 MCP (模型上下文協定) 伺服器設定作為獨立的外掛程式匯入。每個 MCP 伺服器都會成為一個可以獨立啟用/停用的獨立外掛程式。',
 			version: '0.0.2',
-			author: 'fount',
+			author: 'steve02081504 & ZINWIN10',
 			home_page: '',
 			tags: ['mcp', '工具', '外掛產生器']
 		}

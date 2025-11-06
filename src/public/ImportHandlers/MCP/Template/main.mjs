@@ -1,11 +1,13 @@
 import fs from 'node:fs'
 import path from 'node:path'
+
 import { createMCPClient } from '../../../../../src/public/ImportHandlers/MCP/engine/mcp_client.mjs'
+import { saveJsonFile } from '../../../../../src/scripts/json_loader.mjs'
 import { loadAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
 /** @typedef {import('../../../../../src/decl/pluginAPI.ts').pluginAPI_t} pluginAPI_t */
 const pluginDir = import.meta.dirname
 const dataPath = path.join(pluginDir, 'data.json')
-const data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'))
+let data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'))
 
 let mcpClient = null
 let serverInfo = null
@@ -300,6 +302,27 @@ export default {
 		}
 	},
 	interfaces: {
+		config: {
+			/**
+			 * 返回当前配置数据
+			 * @returns {object} 当前配置数据
+			 */
+			GetData: () => {
+				return data
+			},
+			/**
+			 * 设置配置数据
+			 * @param {object} newData - 要设置的新配置数据
+			 * @returns {Promise<void>} 设置完成的承诺
+			 */
+			SetData: async (newData) => {
+				data = newData
+				await saveJsonFile(dataPath, data)
+				await mcpClient?.stop()
+				mcpClient = null
+				await initializeMCP()
+			}
+		},
 		chat: {
 			/**
 			 * 为角色提供 MCP 工具的上下文
@@ -349,7 +372,7 @@ export default {
 						let resultText = ''
 						if (call.type === 'tool') {
 							result = await mcpClient.callTool(call.name, call.args)
-							resultText = `/
+							resultText = `\
 Tool call result for \`${call.name}\`:
 \`\`\`
 ${formatResult(result)}\`\`\`
