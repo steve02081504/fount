@@ -1704,6 +1704,12 @@
 			},
 			"aria-label": "Code ausführen"
 		},
+		"preview": {
+			"dataset": {
+				"tip": "Vorschau"
+			},
+			"aria-label": "Vorschau"
+		},
 		"copy_failed": "Kopieren in die Zwischenablage fehlgeschlagen: ${error}"
 	},
 	"pow_captcha": {

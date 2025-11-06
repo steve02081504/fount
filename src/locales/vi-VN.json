@@ -1704,6 +1704,12 @@
 			},
 			"aria-label": "Thực thi mã"
 		},
+		"preview": {
+			"dataset": {
+				"tip": "Xem trước"
+			},
+			"aria-label": "Xem trước"
+		},
 		"copy_failed": "Không thể sao chép vào bảng nhớ tạm: ${error}"
 	},
 	"pow_captcha": {

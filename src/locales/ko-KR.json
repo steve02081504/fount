@@ -1704,6 +1704,12 @@
 			},
 			"aria-label": "코드 실행"
 		},
+		"preview": {
+			"dataset": {
+				"tip": "미리보기"
+			},
+			"aria-label": "미리보기"
+		},
 		"copy_failed": "클립보드에 복사할 수 없습니다: ${error}"
 	},
 	"pow_captcha": {
