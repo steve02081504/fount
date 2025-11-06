@@ -21,25 +21,34 @@ let username = null
 async function handleSampling(params) {
 	if (!samplingAIsource)
 		throw new Error('Sampling AI source not configured')
-	const { messages, maxTokens = 1000, temperature, systemPrompt } = params
-	// 构建聊天历史
-	const chatLog = messages.map(msg => ({
-		name: msg.role === 'user' ? 'User' : 'Assistant',
-		role: msg.role,
+	// 温度和最大令牌数是由 AI 源自己配置，不被fount架构支持
+	const { messages, systemPrompt } = params
+
+	// fount 的 chat log 格式
+	const chat_log = messages.map(msg => ({
+		role: msg.role === 'user' ? 'user' : (msg.role === 'assistant' ? 'char' : 'system'),
 		content: msg.content?.text || msg.content || '',
-		timestamp: Date.now()
 	}))
-	// 构建系统提示
-	const systemPromptText = systemPrompt || 'You are a helpful assistant.'
-	// 调用 AI 源生成响应
-	try {
-		const response = await samplingAIsource.Chat({
-			system_prompt: systemPromptText,
-			chat_log: chatLog,
-			maxTokens,
-			temperature
+
+	// fount 的 system prompt
+	if (systemPrompt) {
+		chat_log.unshift({
+			role: 'system',
+			content: systemPrompt,
 		})
-		return response.content || response.text || String(response)
+	}
+
+	// 调用 AI 源
+	try {
+		const response = await samplingAIsource.StructCall({
+			chat_log,
+			user_prompt: { text: [] },
+			char_prompt: { text: [] },
+			world_prompt: { text: [] },
+			other_chars_prompt: {},
+			plugin_prompts: {},
+		})
+		return response.content
 	} catch (err) {
 		console.error('[MCP Sampling] AI call failed:', err)
 		throw new Error(`Sampling failed: ${err.message}`)
