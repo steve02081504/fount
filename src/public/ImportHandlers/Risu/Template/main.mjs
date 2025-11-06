@@ -79,7 +79,7 @@ function buildCharInfo(charData) {
 			avatar: `${charurl}/image.png`, // 头像路径固定
 			description: evaluatedNote.split('\n')[0] || 'No description.', // 取第一行作为简短描述
 			description_markdown: evaluatedNote || 'No description.', // 完整描述
-			version: charData.character_version || '0.0.1',
+			version: charData.character_version || '0.0.0',
 			author: charData.creator || 'Unknown',
 			home_page: charData.extensions?.source_url || '',
 			tags: charData.tags || [],

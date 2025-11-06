@@ -287,7 +287,7 @@ export default {
 			avatar: data?.avatar || 'https://modelcontextprotocol.io/favicon.svg',
 			description: data?.description || 'MCP plugin',
 			description_markdown: data?.description_markdown || 'MCP (Model Context Protocol) plugin',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'MCP Import Handler',
 			home_page: '',
 			tags: [...new Set(['mcp', 'tools', ...data?.tags || []])]

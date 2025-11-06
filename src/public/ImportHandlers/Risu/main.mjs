@@ -263,7 +263,7 @@ export default {
 			avatar: 'https://risuai.net/favicon.png',
 			description: 'Imports Risu Character Cards (V3) in .png, .charx, or .json format, and from realm.risuai.net URLs.',
 			description_markdown: 'Imports Risu Character Cards (V3) in `.png`, `.charx`, or `.json` format, and from `realm.risuai.net` URLs.\nSupports CCv3 features including embedded assets and lorebooks.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://risuai.net/',
 			tags: ['risu', 'character card', 'ccv3', 'import']
@@ -273,7 +273,7 @@ export default {
 			avatar: 'https://risuai.net/favicon.png',
 			description: '导入 Risu 角色卡 (V3) 的 .png, .charx, 或 .json 格式文件，以及 realm.risuai.net 的网址。',
 			description_markdown: '导入 Risu 角色卡 (V3) 的 `.png`, `.charx`, 或 `.json` 格式文件，以及 `realm.risuai.net` 的网址。\n支持 CCv3 功能，包括内嵌资源和 lorebooks。',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://risuai.net/',
 			tags: ['risu', '角色卡', 'ccv3', '导入']
@@ -283,7 +283,7 @@ export default {
 			avatar: 'https://risuai.net/favicon.png',
 			description: 'يستورد بطاقات شخصيات Risu (V3) بتنسيق .png أو .charx أو .json، ومن عناوين URL الخاصة بـ realm.risuai.net.',
 			description_markdown: 'يستورد بطاقات شخصيات Risu (V3) بتنسيق .png أو .charx أو .json، ومن عناوين URL الخاصة بـ `realm.risuai.net`.\nيدعم ميزات CCv3 بما في ذلك الأصول المضمنة وكتب التقاليد.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://risuai.net/',
 			tags: ['risu', 'بطاقة شخصية', 'ccv3', 'استيراد']
@@ -293,7 +293,7 @@ export default {
 			avatar: 'https://risuai.net/favicon.png',
 			description: 'Importiert Risu-Charakterkarten (V3) im .png-, .charx- oder .json-Format und von realm.risuai.net-URLs.',
 			description_markdown: 'Importiert Risu-Charakterkarten (V3) im `.png`-, `.charx`- oder `.json`-Format und von `realm.risuai.net`-URLs.\nUnterstützt CCv3-Funktionen einschließlich eingebetteter Assets und Lorebooks.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://risuai.net/',
 			tags: ['risu', 'Charakterkarte', 'ccv3', 'Import']
@@ -303,7 +303,7 @@ export default {
 			avatar: 'https://risuai.net/favicon.png',
 			description: 'Imports Risu Character Cards (V3) in .png, .charx, or .json format, and from realm.risuai.net URLs.',
 			description_markdown: 'Imports Risu Character Cards (V3) in `.png`, `.charx`, or `.json` format, and from `realm.risuai.net` URLs.\nSupports CCv3 features including embedded assets and lorebooks.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://risuai.net/',
 			tags: ['risu', 'character card', 'ccv3', 'import']
@@ -313,7 +313,7 @@ export default {
 			avatar: 'https://risuai.net/favicon.png',
 			description: 'Importa tarjetas de personaje de Risu (V3) en formato .png, .charx o .json, y desde URLs de realm.risuai.net.',
 			description_markdown: 'Importa tarjetas de personaje de Risu (V3) en formato `.png`, `.charx` o `.json`, y desde URLs de `realm.risuai.net`.\nAdmite funciones de CCv3, incluidos los activos incrustados y los libros de lore.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://risuai.net/',
 			tags: ['risu', 'tarjeta de personaje', 'ccv3', 'importar']
@@ -323,7 +323,7 @@ export default {
 			avatar: 'https://risuai.net/favicon.png',
 			description: 'Importe les cartes de personnage Risu (V3) au format .png, .charx ou .json, et à partir des URL de realm.risuai.net.',
 			description_markdown: 'Importe les cartes de personnage Risu (V3) au format `.png`, `.charx` ou `.json`, et à partir des URL de `realm.risuai.net`.\nPrend en charge les fonctionnalités de CCv3, y compris les actifs intégrés et les lorebooks.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://risuai.net/',
 			tags: ['risu', 'carte de personnage', 'ccv3', 'importer']
@@ -333,7 +333,7 @@ export default {
 			avatar: 'https://risuai.net/favicon.png',
 			description: 'Risu कैरेक्टर कार्ड (V3) को .png, .charx, या .json प्रारूप में, और realm.risuai.net URL से आयात करता है।',
 			description_markdown: 'Risu कैरेक्टर कार्ड (V3) को `.png`, `.charx`, या `.json` प्रारूप में, और `realm.risuai.net` URL से आयात करता है।\nएम्बेडेड संपत्ति और लोरबुक सहित CCv3 सुविधाओं का समर्थन करता है।',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://risuai.net/',
 			tags: ['risu', 'कैरेक्टर कार्ड', 'ccv3', 'आयात']
@@ -343,7 +343,7 @@ export default {
 			avatar: 'https://risuai.net/favicon.png',
 			description: 'Flytur inn Risu persónukort (V3) á .png, .charx eða .json sniði og frá realm.risuai.net vefslóðum.',
 			description_markdown: 'Flytur inn Risu persónukort (V3) á `.png`, `.charx` eða `.json` sniði og frá `realm.risuai.net` vefslóðum.\nStyður CCv3 eiginleika, þar á meðal innfelldar eignir og lorebooks.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://risuai.net/',
 			tags: ['risu', 'persónukort', 'ccv3', 'innflutningur']
@@ -353,7 +353,7 @@ export default {
 			avatar: 'https://risuai.net/favicon.png',
 			description: 'Importa le carte personaggio Risu (V3) in formato .png, .charx o .json e dagli URL di realm.risuai.net.',
 			description_markdown: 'Importa le carte personaggio Risu (V3) in formato `.png`, `.charx` o `.json` e dagli URL di `realm.risuai.net`.\nSupporta le funzionalità di CCv3, inclusi asset incorporati e lorebook.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://risuai.net/',
 			tags: ['risu', 'carta personaggio', 'ccv3', 'importa']
@@ -363,7 +363,7 @@ export default {
 			avatar: 'https://risuai.net/favicon.png',
 			description: 'Risuキャラクターカード（V3）を.png、.charx、または.json形式で、およびrealm.risuai.netのURLからインポートします。',
 			description_markdown: 'Risuキャラクターカード（V3）を`.png`、`.charx`、または`.json`形式で、および`realm.risuai.net`のURLからインポートします。\n埋め込みアセットや伝承本などのCCv3機能をサポートします。',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://risuai.net/',
 			tags: ['risu', 'キャラクターカード', 'ccv3', 'インポート']
@@ -373,7 +373,7 @@ export default {
 			avatar: 'https://risuai.net/favicon.png',
 			description: 'Risu 캐릭터 카드(V3)를 .png, .charx 또는 .json 형식으로, 그리고 realm.risuai.net URL에서 가져옵니다.',
 			description_markdown: 'Risu 캐릭터 카드(V3)를 `.png`, `.charx` 또는 `.json` 형식으로, 그리고 `realm.risuai.net` URL에서 가져옵니다.\n임베디드 자산 및 lorebook을 포함한 CCv3 기능을 지원합니다.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://risuai.net/',
 			tags: ['risu', '캐릭터 카드', 'ccv3', '가져오기']
@@ -383,7 +383,7 @@ export default {
 			avatar: 'https://risuai.net/favicon.png',
 			description: '導入Risu角色卡（V3），格式為.png、.charx或.json，亦可從realm.risuai.net網址導入。',
 			description_markdown: '導入Risu角色卡（V3），格式為`.png`、`.charx`或`.json`，亦可從`realm.risuai.net`網址導入。\n支援CCv3功能，包括內嵌資源與傳承錄。',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://risuai.net/',
 			tags: ['risu', '角色卡', 'ccv3', '導入']
@@ -393,7 +393,7 @@ export default {
 			avatar: 'https://risuai.net/favicon.png',
 			description: 'Importeert Risu-personagekaarten (V3) in .png-, .charx- of .json-indeling en van realm.risuai.net-URL\'s.',
 			description_markdown: 'Importeert Risu-personagekaarten (V3) in `.png`-, `.charx`- of `.json`-indeling en van `realm.risuai.net`-URL\'s.\nOndersteunt CCv3-functies, waaronder ingesloten middelen en lorebooks.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://risuai.net/',
 			tags: ['risu', 'personagekaart', 'ccv3', 'importeren']
@@ -403,7 +403,7 @@ export default {
 			avatar: 'https://risuai.net/favicon.png',
 			description: 'Importa cartões de personagem Risu (V3) no formato .png, .charx ou .json e de URLs realm.risuai.net.',
 			description_markdown: 'Importa cartões de personagem Risu (V3) no formato `.png`, `.charx` ou `.json` e de URLs `realm.risuai.net`.\nSuporta recursos CCv3, incluindo ativos incorporados e lorebooks.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://risuai.net/',
 			tags: ['risu', 'cartão de personagem', 'ccv3', 'importar']
@@ -413,7 +413,7 @@ export default {
 			avatar: 'https://risuai.net/favicon.png',
 			description: 'Импортирует карточки персонажей Risu (V3) в формате .png, .charx или .json, а также с URL-адресов realm.risuai.net.',
 			description_markdown: 'Импортирует карточки персонажей Risu (V3) в формате `.png`, `.charx` или `.json`, а также с URL-адресов `realm.risuai.net`.\nПоддерживает функции CCv3, включая встроенные ресурсы и книги знаний.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://risuai.net/',
 			tags: ['risu', 'карточка персонажа', 'ccv3', 'импорт']
@@ -423,7 +423,7 @@ export default {
 			avatar: 'https://risuai.net/favicon.png',
 			description: 'Імпортує картки персонажів Risu (V3) у форматі .png, .charx або .json, а також з URL-адрес realm.risuai.net.',
 			description_markdown: 'Імпортує картки персонажів Risu (V3) у форматі `.png`, `.charx` або `.json`, а також з URL-адрес `realm.risuai.net`.\nПідтримує функції CCv3, включаючи вбудовані ресурси та книги знань.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://risuai.net/',
 			tags: ['risu', 'картка персонажа', 'ccv3', 'імпорт']
@@ -433,7 +433,7 @@ export default {
 			avatar: 'https://risuai.net/favicon.png',
 			description: 'Nhập thẻ nhân vật Risu (V3) ở định dạng .png, .charx hoặc .json và từ các URL realm.risuai.net.',
 			description_markdown: 'Nhập thẻ nhân vật Risu (V3) ở định dạng `.png`, `.charx` hoặc `.json` và từ các URL `realm.risuai.net`.\nHỗ trợ các tính năng CCv3 bao gồm tài sản nhúng và sách truyền thuyết.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://risuai.net/',
 			tags: ['risu', 'thẻ nhân vật', 'ccv3', 'nhập']
@@ -443,7 +443,7 @@ export default {
 			avatar: 'https://risuai.net/favicon.png',
 			description: '匯入 Risu 角色卡 (V3) 的 .png, .charx, 或 .json 格式檔案，以及 realm.risuai.net 的網址。',
 			description_markdown: '匯入 Risu 角色卡 (V3) 的 `.png`, `.charx`, 或 `.json` 格式檔案，以及 `realm.risuai.net` 的網址。\n支援 CCv3 功能，包括內嵌資源和 lorebooks。',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://risuai.net/',
 			tags: ['risu', '角色卡', 'ccv3', '匯入']
