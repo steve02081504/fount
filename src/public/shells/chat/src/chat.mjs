@@ -14,6 +14,7 @@ import { getUserByUsername, getUserDictionary, getAllUserNames } from '../../../
 import { events } from '../../../../server/events.mjs'
 import { LoadChar } from '../../../../server/managers/char_manager.mjs'
 import { loadPersona } from '../../../../server/managers/persona_manager.mjs'
+import { loadPlugin } from '../../../../server/managers/plugin_manager.mjs'
 import { loadWorld } from '../../../../server/managers/world_manager.mjs'
 import { getAllDefaultParts, getAnyDefaultPart, getPartDetails } from '../../../../server/parts_loader.mjs'
 import { skip_report } from '../../../../server/server.mjs'
@@ -22,7 +23,6 @@ import { sendNotification } from '../../../../server/web_server/event_dispatcher
 import { unlockAchievement } from '../../achievements/src/api.mjs'
 
 import { addfile, getfile } from './files.mjs'
-import { loadPlugin } from "../../../../server/managers/plugin_manager.mjs";
 
 /**
  * 聊天元数据映射表的结构。这是一个在内存中缓存聊天信息的Map。
