@@ -43,7 +43,7 @@ export async function New(context) {
 		description: formData.description || '',
 		description_markdown: formData.description_markdown || '',
 		author: formData.author || username,
-		version: formData.version || '0.0.1',
+		version: formData.version || '0.0.0',
 		tags: formData.tags ? formData.tags.split(',').map(tag => tag.trim()) : [],
 		home_page: formData.home_page || '',
 		issue_page: formData.issue_page || '',

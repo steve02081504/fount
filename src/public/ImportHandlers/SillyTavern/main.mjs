@@ -83,7 +83,7 @@ export default {
 			avatar: 'https://sillytavern.app/img/logo.png',
 			description: 'Imports SillyTavern characters from .png files or URLs.',
 			description_markdown: 'Imports SillyTavern characters from `.png` files or URLs from character sharing sites.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://sillytavern.app/',
 			tags: ['sillytavern', 'character card', 'import']
@@ -93,7 +93,7 @@ export default {
 			avatar: 'https://sillytavern.app/img/logo.png',
 			description: '从 .png 文件或网址导入 SillyTavern 角色。',
 			description_markdown: '从 `.png` 文件或角色分享网站的网址导入 SillyTavern 角色。',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://sillytavern.app/',
 			tags: ['sillytavern', '角色卡', '导入']
@@ -103,7 +103,7 @@ export default {
 			avatar: 'https://sillytavern.app/img/logo.png',
 			description: 'يستورد شخصيات SillyTavern من ملفات .png أو عناوين URL.',
 			description_markdown: 'يستورد شخصيات SillyTavern من ملفات `.png` أو عناوين URL من مواقع مشاركة الشخصيات.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://sillytavern.app/',
 			tags: ['sillytavern', 'بطاقة شخصية', 'استيراد']
@@ -113,7 +113,7 @@ export default {
 			avatar: 'https://sillytavern.app/img/logo.png',
 			description: 'Importiert SillyTavern-Charaktere aus .png-Dateien oder URLs.',
 			description_markdown: 'Importiert SillyTavern-Charaktere aus `.png`-Dateien oder URLs von Charakter-Sharing-Websites.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://sillytavern.app/',
 			tags: ['sillytavern', 'Charakterkarte', 'Import']
@@ -123,7 +123,7 @@ export default {
 			avatar: 'https://sillytavern.app/img/logo.png',
 			description: 'Imports SillyTavern characters from .png files or URLs.',
 			description_markdown: 'Imports SillyTavern characters from `.png` files or URLs from character sharing sites.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://sillytavern.app/',
 			tags: ['sillytavern', 'character card', 'import']
@@ -133,7 +133,7 @@ export default {
 			avatar: 'https://sillytavern.app/img/logo.png',
 			description: 'Importa personajes de SillyTavern desde archivos .png o URLs.',
 			description_markdown: 'Importa personajes de SillyTavern desde archivos `.png` o URLs de sitios para compartir personajes.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://sillytavern.app/',
 			tags: ['sillytavern', 'tarjeta de personaje', 'importar']
@@ -143,7 +143,7 @@ export default {
 			avatar: 'https://sillytavern.app/img/logo.png',
 			description: 'Importe des personnages SillyTavern à partir de fichiers .png ou d\'URL.',
 			description_markdown: 'Importe des personnages SillyTavern à partir de fichiers `.png` ou d\'URL de sites de partage de personnages.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://sillytavern.app/',
 			tags: ['sillytavern', 'carte de personnage', 'importer']
@@ -153,7 +153,7 @@ export default {
 			avatar: 'https://sillytavern.app/img/logo.png',
 			description: '.png फ़ाइलों या URL से SillyTavern वर्ण आयात करता है।',
 			description_markdown: 'चरित्र साझा करने वाली साइटों से `.png` फ़ाइलों या URL से SillyTavern वर्ण आयात करता है।',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://sillytavern.app/',
 			tags: ['sillytavern', 'कैरेक्टर कार्ड', 'आयात']
@@ -163,7 +163,7 @@ export default {
 			avatar: 'https://sillytavern.app/img/logo.png',
 			description: 'Flytur inn SillyTavern stafi úr .png skrám eða vefslóðum.',
 			description_markdown: 'Flytur inn SillyTavern stafi úr `.png` skrám eða vefslóðum frá persónudeilingarsíðum.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://sillytavern.app/',
 			tags: ['sillytavern', 'persónukort', 'innflutningur']
@@ -173,7 +173,7 @@ export default {
 			avatar: 'https://sillytavern.app/img/logo.png',
 			description: 'Importa personaggi di SillyTavern da file .png o URL.',
 			description_markdown: 'Importa personaggi di SillyTavern da file `.png` o URL da siti di condivisione di personaggi.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://sillytavern.app/',
 			tags: ['sillytavern', 'scheda personaggio', 'importa']
@@ -183,7 +183,7 @@ export default {
 			avatar: 'https://sillytavern.app/img/logo.png',
 			description: '.pngファイルまたはURLからSillyTavernのキャラクターをインポートします。',
 			description_markdown: 'キャラクター共有サイトから`.png`ファイルまたはURLを使用してSillyTavernのキャラクターをインポートします。',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://sillytavern.app/',
 			tags: ['sillytavern', 'キャラクターカード', 'インポート']
@@ -193,7 +193,7 @@ export default {
 			avatar: 'https://sillytavern.app/img/logo.png',
 			description: '.png 파일 또는 URL에서 SillyTavern 캐릭터를 가져옵니다.',
 			description_markdown: '캐릭터 공유 사이트의 `.png` 파일 또는 URL에서 SillyTavern 캐릭터를 가져옵니다.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://sillytavern.app/',
 			tags: ['sillytavern', '캐릭터 카드', '가져오기']
@@ -203,7 +203,7 @@ export default {
 			avatar: 'https://sillytavern.app/img/logo.png',
 			description: '從.png檔案或網址導入SillyTavern角色。',
 			description_markdown: '從`.png`檔案或角色分享網站之網址導入SillyTavern角色。',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://sillytavern.app/',
 			tags: ['sillytavern', '角色卡', '導入']
@@ -213,7 +213,7 @@ export default {
 			avatar: 'https://sillytavern.app/img/logo.png',
 			description: 'Importeert SillyTavern-personages uit .png-bestanden of URL\'s.',
 			description_markdown: 'Importeert SillyTavern-personages uit `.png`-bestanden of URL\'s van websites voor het delen van personages.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://sillytavern.app/',
 			tags: ['sillytavern', 'personagekaart', 'importeren']
@@ -223,7 +223,7 @@ export default {
 			avatar: 'https://sillytavern.app/img/logo.png',
 			description: 'Importa personagens SillyTavern de arquivos .png ou URLs.',
 			description_markdown: 'Importa personagens SillyTavern de arquivos `.png` ou URLs de sites de compartilhamento de personagens.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://sillytavern.app/',
 			tags: ['sillytavern', 'cartão de personagem', 'importar']
@@ -233,7 +233,7 @@ export default {
 			avatar: 'https://sillytavern.app/img/logo.png',
 			description: 'Импортирует персонажей SillyTavern из файлов .png или URL-адресов.',
 			description_markdown: 'Импортирует персонажей SillyTavern из файлов `.png` или URL-адресов с сайтов обмена персонажами.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://sillytavern.app/',
 			tags: ['sillytavern', 'карточка персонажа', 'импорт']
@@ -243,7 +243,7 @@ export default {
 			avatar: 'https://sillytavern.app/img/logo.png',
 			description: 'Імпортує персонажів SillyTavern з файлів .png або URL-адрес.',
 			description_markdown: 'Імпортує персонажів SillyTavern з файлів `.png` або URL-адрес із сайтів обміну персонажами.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://sillytavern.app/',
 			tags: ['sillytavern', 'картка персонажа', 'імпорт']
@@ -253,7 +253,7 @@ export default {
 			avatar: 'https://sillytavern.app/img/logo.png',
 			description: 'Nhập các ký tự SillyTavern từ tệp .png hoặc URL.',
 			description_markdown: 'Nhập các ký tự SillyTavern từ tệp `.png` hoặc URL từ các trang web chia sẻ ký tự.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://sillytavern.app/',
 			tags: ['sillytavern', 'thẻ nhân vật', 'nhập']
@@ -263,7 +263,7 @@ export default {
 			avatar: 'https://sillytavern.app/img/logo.png',
 			description: '從 .png 檔案或網址匯入 SillyTavern 角色。',
 			description_markdown: '從 `.png` 檔案或角色分享網站的網址匯入 SillyTavern 角色。',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://sillytavern.app/',
 			tags: ['sillytavern', '角色卡', '匯入']

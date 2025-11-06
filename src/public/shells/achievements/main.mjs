@@ -13,7 +13,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/trophy.svg',
 			description: 'View and manage your achievements.',
 			description_markdown: 'A shell to track your progress and milestones within fount.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['achievements', 'gamification', 'profile']
@@ -23,7 +23,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/trophy.svg',
 			description: '查看和管理您的成就。',
 			description_markdown: '一个用于跟踪您在fount中的进度和里程碑的shell。',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['成就', '游戏化', '个人资料']
@@ -33,7 +33,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/trophy.svg',
 			description: 'عرض وإدارة إنجازاتك.',
 			description_markdown: 'قذيفة لتتبع تقدمك ومعالمك داخل fount.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['الإنجازات', 'التلعيب', 'الملف الشخصي']
@@ -43,7 +43,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/trophy.svg',
 			description: 'Anzeigen und Verwalten Ihrer Erfolge.',
 			description_markdown: 'Eine Shell, um Ihren Fortschritt und Ihre Meilensteine in fount zu verfolgen.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['Erfolge', 'Gamification', 'Profil']
@@ -53,7 +53,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/trophy.svg',
 			description: 'View and manage your achievements.',
 			description_markdown: 'A shell to track your progress and milestones within fount.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['achievements', 'gamification', 'profile']
@@ -63,7 +63,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/trophy.svg',
 			description: 'Ver y gestionar tus logros.',
 			description_markdown: 'Un shell para seguir tu progreso e hitos dentro de fount.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['logros', 'gamificación', 'perfil']
@@ -73,7 +73,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/trophy.svg',
 			description: 'Visualisez et gérez vos réalisations.',
 			description_markdown: 'Un shell pour suivre votre progression et vos jalons dans fount.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['réalisations', 'gamification', 'profil']
@@ -83,7 +83,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/trophy.svg',
 			description: 'अपनी उपलब्धियों को देखें और प्रबंधित करें।',
 			description_markdown: 'फाउंट के भीतर अपनी प्रगति और मील के पत्थर को ट्रैक करने के लिए एक शेल।',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['उपलब्धियां', 'गेमिफिकेशन', 'प्रोफ़ाइल']
@@ -93,7 +93,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/trophy.svg',
 			description: 'Skoðaðu og stjórnaðu afrekum þínum.',
 			description_markdown: 'Skél til að fylgjast með framförum þínum og áföngum innan fount.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['afrek', 'leikjavæðing', 'prófíll']
@@ -103,7 +103,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/trophy.svg',
 			description: 'Visualizza e gestisci i tuoi risultati.',
 			description_markdown: 'Una shell per tenere traccia dei tuoi progressi e delle tue pietre miliari all\'interno di fount.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['risultati', 'gamification', 'profilo']
@@ -113,7 +113,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/trophy.svg',
 			description: '実績を表示および管理します。',
 			description_markdown: 'fount内での進捗とマイルストーンを追跡するためのシェル。',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['実績', 'ゲーミフィケーション', 'プロフィール']
@@ -123,7 +123,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/trophy.svg',
 			description: '업적을 보고 관리합니다.',
 			description_markdown: 'fount 내에서 진행 상황과 이정표를 추적하는 셸입니다。',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['업적', '게임화', '프로필']
@@ -133,7 +133,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/trophy.svg',
 			description: '查看和管理您的功绩。',
 			description_markdown: '一个用于跟踪您在fount中的进度和里程碑的shell。',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['功绩', '游戏化', '个人资料']
@@ -143,7 +143,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/trophy.svg',
 			description: 'Bekijk en beheer uw prestaties.',
 			description_markdown: 'Een shell om uw voortgang en mijlpalen binnen fount te volgen.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['prestaties', 'gamificatie', 'profiel']
@@ -153,7 +153,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/trophy.svg',
 			description: 'Veja e gerencie suas conquistas.',
 			description_markdown: 'Um shell para acompanhar seu progresso e marcos dentro do fount.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['conquistas', 'gamificação', 'perfil']
@@ -163,7 +163,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/trophy.svg',
 			description: 'Просмотр и управление вашими достижениями.',
 			description_markdown: 'Оболочка для отслеживания вашего прогресса и вех в fount.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['достижения', 'геймификация', 'профиль']
@@ -173,7 +173,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/trophy.svg',
 			description: 'Переглядайте та керуйте своїми досягненнями.',
 			description_markdown: 'Оболонка для відстеження вашого прогресу та етапів у fount.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['досягнення', 'гейміфікація', 'профіль']
@@ -183,7 +183,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/trophy.svg',
 			description: 'Xem và quản lý thành tích của bạn.',
 			description_markdown: 'Một trình bao để theo dõi tiến trình và các mốc quan trọng của bạn trong fount.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['thành tích', 'trò chơi hóa', 'hồ sơ']
@@ -193,7 +193,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/trophy.svg',
 			description: '查看和管理您的成就。',
 			description_markdown: '一個用於跟蹤您在fount中的進度和里程碑的shell。',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
 			tags: ['成就', '遊戲化', '個人資料']

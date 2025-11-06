@@ -13,7 +13,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
 			description: 'The home page of fount.',
 			description_markdown: 'The central hub for navigating fount, providing access to all shells and features.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['home', 'dashboard', 'main']
 		},
@@ -22,7 +22,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
 			description: 'fount 的主页。',
 			description_markdown: '用于导航 fount 的中央枢纽，提供对所有shell和功能的访问。',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['主页', '仪表板', '主要']
 		},
@@ -31,7 +31,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
 			description: 'الصفحة الرئيسية لمشروع fount.',
 			description_markdown: 'المركز المركزي للتنقل في مشروع fount، مما يوفر الوصول إلى جميع الأصداف والميزات.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['الصفحة الرئيسية', 'لوحة القيادة', 'الرئيسية']
 		},
@@ -40,7 +40,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
 			description: 'Die Startseite von fount.',
 			description_markdown: 'Der zentrale Hub für die Navigation in fount, der Zugriff auf alle Shells und Funktionen bietet.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['Startseite', 'Dashboard', 'Haupt']
 		},
@@ -49,7 +49,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
 			description: 'The home page of fount.',
 			description_markdown: 'The central hub for navigating fount, providing access to all shells and features.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['home', 'dashboard', 'main']
 		},
@@ -58,7 +58,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
 			description: 'La página de inicio del Proyecto fount.',
 			description_markdown: 'El centro neurálgico para navegar por fount, que brinda acceso a todos los shells y funciones.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['página de inicio', 'tablero', 'principal']
 		},
@@ -67,7 +67,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
 			description: 'La page d\'accueil du projet fount.',
 			description_markdown: 'Le hub central pour naviguer dans fount, donnant accès à tous les shells et fonctionnalités.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['page d\'accueil', 'tableau de bord', 'principal']
 		},
@@ -76,7 +76,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
 			description: 'प्रोजेक्ट फाउंट का होम पेज।',
 			description_markdown: 'प्रोजेक्ट फाउंट को नेविगेट करने का केंद्रीय केंद्र, सभी शेल और सुविधाओं तक पहुंच प्रदान करता है।',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['होम पेज', 'डैशबोर्ड', 'मुख्य']
 		},
@@ -85,7 +85,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
 			description: 'Heimasíða fount.',
 			description_markdown: 'Miðstöðin til að fletta um fount, sem veitir aðgang að öllum skeljum og eiginleikum.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['heim', 'mælaborð', 'aðal']
 		},
@@ -94,7 +94,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
 			description: 'La home page di fount.',
 			description_markdown: 'L\'hub centrale per la navigazione in fount, che fornisce l\'accesso a tutte le shell e le funzionalità.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['pagina iniziale', 'dashboard', 'principale']
 		},
@@ -103,7 +103,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
 			description: 'fountのホームページ。',
 			description_markdown: 'fountをナビゲートするための中央ハブで、すべてのシェルと機能にアクセスできます。',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['ホームページ', 'ダッシュボード', 'メイン']
 		},
@@ -112,7 +112,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
 			description: 'fount의 홈페이지입니다.',
 			description_markdown: 'fount를 탐색하기 위한 중앙 허브로 모든 셸과 기능에 대한 액세스를 제공합니다.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['홈페이지', '대시보드', '메인']
 		},
@@ -121,7 +121,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
 			description: 'fount 的主頁。',
 			description_markdown: '用於導航 fount 的中央樞紐，提供對所有shell和功能的訪問。',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['主頁', '儀表板', '主要']
 		},
@@ -130,7 +130,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
 			description: 'De startpagina van fount.',
 			description_markdown: 'De centrale hub voor het navigeren door fount, die toegang biedt tot alle shells en functies.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['startpagina', 'dashboard', 'hoofd']
 		},
@@ -139,7 +139,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
 			description: 'A página inicial do Projeto fount.',
 			description_markdown: 'O hub central para navegar no Projeto fount, fornecendo acesso a todos os shells e recursos.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['página inicial', 'painel', 'principal']
 		},
@@ -148,7 +148,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
 			description: 'Домашняя страница fount.',
 			description_markdown: 'Центральный узел для навигации по fount, предоставляющий доступ ко всем оболочкам и функциям.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['домашняя страница', 'панель управления', 'главная']
 		},
@@ -157,7 +157,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
 			description: 'Домашня сторінка fount.',
 			description_markdown: 'Центральний вузол для навігації по fount, що надає доступ до всіх оболонок і функцій.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['домашня сторінка', 'панель управління', 'головна']
 		},
@@ -166,7 +166,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
 			description: 'Trang chủ của Dự án fount.',
 			description_markdown: 'Trung tâm điều hướng Dự án fount, cung cấp quyền truy cập vào tất cả các shell và tính năng.',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['trang chủ', 'bảng điều khiển', 'chính']
 		},
@@ -175,7 +175,7 @@ export default {
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
 			description: 'fount 的主頁。',
 			description_markdown: '用於導航 fount 的中央樞紐，提供對所有shell和功能的訪問。',
-			version: '0.0.1',
+			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['主頁', '儀表板', '主要']
 		}
