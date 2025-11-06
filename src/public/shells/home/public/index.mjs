@@ -608,9 +608,10 @@ const handleDefaultPartSetted = ({ parttype, partname }) => {
  * @param {string} payload.partname - 已取消设置的默认部件的名称。
  */
 const handleDefaultPartUnsetted = ({ parttype, partname }) => {
-	const index = defaultParts[parttype].indexOf(partname)
-	if (index > -1) defaultParts[parttype].splice(index, 1)
-	if (!defaultParts[parttype].length) delete defaultParts[parttype]
+	const parts = defaultParts[parttype] ?? []
+	const index = parts.indexOf(partname)
+	if (index > -1) parts.splice(index, 1)
+	if (!parts.length) delete defaultParts[parttype]
 
 	updateDefaultPartDisplay()
 }

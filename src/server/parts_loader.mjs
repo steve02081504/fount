@@ -50,7 +50,7 @@ export function unsetDefaultPart(user, parttype, partname) {
 	defaultParts.splice(index, 1)
 	if (!defaultParts.length) delete user.defaultParts?.[parttype]
 	save_config()
-	sendEventToUser(user.username, 'default-part-unsetted', { parttype, partname: null })
+	sendEventToUser(user.username, 'default-part-unsetted', { parttype, partname })
 }
 /**
  * 获取用户的默认部件。

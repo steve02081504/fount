@@ -282,7 +282,7 @@ $stderr = StringIO.new
 
 			const exitcode = await php.run(`<?php ${code} ?>`)
 
-			if (error || exitcode !== 0)
+			if (error || exitcode)
 				return { error: (error || `Exited with code ${exitcode}`).trim(), exitcode }
 
 			return {
