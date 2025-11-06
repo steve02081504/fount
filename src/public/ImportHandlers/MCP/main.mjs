@@ -55,6 +55,7 @@ async function ImportByText(username, text) {
 			// 创建插件数据
 			const pluginData = {
 				name: pluginName,
+				avatar: 'https://modelcontextprotocol.io/favicon.svg',
 				description: `MCP plugin for ${serverName}`,
 				description_markdown: `MCP (Model Context Protocol) plugin for **${serverName}**`,
 				tags: [serverName, 'mcp'],
@@ -95,32 +96,192 @@ export default {
 	info: {
 		'en-UK': {
 			name: 'MCP Importer',
-			avatar: '',
+			avatar: 'https://modelcontextprotocol.io/favicon.svg',
 			description: 'Import MCP (Model Context Protocol) server configurations as plugins.',
 			description_markdown: 'Import MCP (Model Context Protocol) server configurations as individual plugins. Each MCP server becomes a separate plugin that can be enabled/disabled independently.',
 			version: '0.0.2',
 			author: 'steve02081504 & ZINWIN10',
-			home_page: '',
+			home_page: 'https://modelcontextprotocol.io/',
 			tags: ['mcp', 'tools', 'plugin-generator']
 		},
 		'zh-CN': {
 			name: 'MCP 导入器',
-			avatar: '',
+			avatar: 'https://modelcontextprotocol.io/favicon.svg',
 			description: '导入 MCP (模型上下文协议) 服务器配置作为插件。',
 			description_markdown: '将 MCP (模型上下文协议) 服务器配置作为独立的插件导入。每个 MCP 服务器都会成为一个可以独立启用/禁用的独立插件。',
 			version: '0.0.2',
 			author: 'steve02081504 & ZINWIN10',
-			home_page: '',
+			home_page: 'https://modelcontextprotocol.io/',
 			tags: ['mcp', '工具', '插件生成器']
+		},
+		'ar-SA': {
+			name: 'مستورد MCP',
+			avatar: 'https://modelcontextprotocol.io/favicon.svg',
+			description: 'استيراد تكوينات خادم MCP (بروتوكول سياق النموذج) كملحقات.',
+			description_markdown: 'استيراد تكوينات خادم MCP (بروتوكول سياق النموذج) كملحقات فردية. يصبح كل خادم MCP ملحقًا منفصلاً يمكن تمكينه/تعطيله بشكل مستقل.',
+			version: '0.0.2',
+			author: 'steve02081504 & ZINWIN10',
+			home_page: 'https://modelcontextprotocol.io/',
+			tags: ['mcp', 'أدوات', 'مولد المكونات الإضافية']
+		},
+		'de-DE': {
+			name: 'MCP-Importer',
+			avatar: 'https://modelcontextprotocol.io/favicon.svg',
+			description: 'Importiert MCP (Model Context Protocol) Serverkonfigurationen als Plugins.',
+			description_markdown: 'Importiert MCP (Model Context Protocol) Serverkonfigurationen als einzelne Plugins. Jeder MCP-Server wird zu einem separaten Plugin, das unabhängig aktiviert/deaktiviert werden kann.',
+			version: '0.0.2',
+			author: 'steve02081504 & ZINWIN10',
+			home_page: 'https://modelcontextprotocol.io/',
+			tags: ['mcp', 'Werkzeuge', 'Plugin-Generator']
+		},
+		emoji: {
+			name: '✨ MCP Importer',
+			avatar: 'https://modelcontextprotocol.io/favicon.svg',
+			description: 'Import MCP (Model Context Protocol) server configurations as plugins.',
+			description_markdown: 'Import MCP (Model Context Protocol) server configurations as individual plugins. Each MCP server becomes a separate plugin that can be enabled/disabled independently.',
+			version: '0.0.2',
+			author: 'steve02081504 & ZINWIN10',
+			home_page: 'https://modelcontextprotocol.io/',
+			tags: ['mcp', 'tools', 'plugin-generator']
+		},
+		'es-ES': {
+			name: 'Importador de MCP',
+			avatar: 'https://modelcontextprotocol.io/favicon.svg',
+			description: 'Importa configuraciones de servidor MCP (Protocolo de Contexto de Modelo) como complementos.',
+			description_markdown: 'Importa configuraciones de servidor MCP (Protocolo de Contexto de Modelo) como complementos individuales. Cada servidor MCP se convierte en un complemento separado que se puede habilitar/deshabilitar de forma independiente.',
+			version: '0.0.2',
+			author: 'steve02081504 & ZINWIN10',
+			home_page: 'https://modelcontextprotocol.io/',
+			tags: ['mcp', 'herramientas', 'generador de complementos']
+		},
+		'fr-FR': {
+			name: 'Importateur MCP',
+			avatar: 'https://modelcontextprotocol.io/favicon.svg',
+			description: 'Importe les configurations de serveur MCP (Model Context Protocol) en tant que plugins.',
+			description_markdown: 'Importe les configurations de serveur MCP (Model Context Protocol) en tant que plugins individuels. Chaque serveur MCP devient un plugin distinct qui peut être activé/désactivé indépendamment.',
+			version: '0.0.2',
+			author: 'steve02081504 & ZINWIN10',
+			home_page: 'https://modelcontextprotocol.io/',
+			tags: ['mcp', 'outils', 'générateur-de-plugin']
+		},
+		'hi-IN': {
+			name: 'MCP आयातक',
+			avatar: 'https://modelcontextprotocol.io/favicon.svg',
+			description: 'MCP (मॉडल संदर्भ प्रोटोकॉल) सर्वर कॉन्फ़िगरेशन को प्लगइन्स के रूप में आयात करें।',
+			description_markdown: 'MCP (मॉडल संदर्भ प्रोटोकॉल) सर्वर कॉन्फ़िगरेशन को व्यक्तिगत प्लगइन्स के रूप में आयात करें। प्रत्येक MCP सर्वर एक अलग प्लगइन बन जाता है जिसे स्वतंत्र रूप से सक्षम/अक्षम किया जा सकता है।',
+			version: '0.0.2',
+			author: 'steve02081504 & ZINWIN10',
+			home_page: 'https://modelcontextprotocol.io/',
+			tags: ['mcp', 'उपकरण', 'प्लगइन-जनरेटर']
+		},
+		'is-IS': {
+			name: 'MCP innflytjandi',
+			avatar: 'https://modelcontextprotocol.io/favicon.svg',
+			description: 'Flytja inn MCP (Model Context Protocol) netþjónastillingar sem viðbætur.',
+			description_markdown: 'Flytja inn MCP (Model Context Protocol) netþjónastillingar sem stakar viðbætur. Hver MCP netþjónn verður að sérstakri viðbót sem hægt er að virkja/afvirkja sjálfstætt.',
+			version: '0.0.2',
+			author: 'steve02081504 & ZINWIN10',
+			home_page: 'https://modelcontextprotocol.io/',
+			tags: ['mcp', 'verkfæri', 'viðbótargenerator']
+		},
+		'it-IT': {
+			name: 'Importatore MCP',
+			avatar: 'https://modelcontextprotocol.io/favicon.svg',
+			description: 'Importa le configurazioni del server MCP (Model Context Protocol) come plugin.',
+			description_markdown: 'Importa le configurazioni del server MCP (Model Context Protocol) come plugin individuali. Ogni server MCP diventa un plugin separato che può essere abilitato/disabilitato in modo indipendente.',
+			version: '0.0.2',
+			author: 'steve02081504 & ZINWIN10',
+			home_page: 'https://modelcontextprotocol.io/',
+			tags: ['mcp', 'strumenti', 'generatore-di-plugin']
+		},
+		'ja-JP': {
+			name: 'MCP インポーター',
+			avatar: 'https://modelcontextprotocol.io/favicon.svg',
+			description: 'MCP (モデルコンテキストプロトコル) サーバー構成をプラグインとしてインポートします。',
+			description_markdown: 'MCP (モデルコンテキストプロトコル) サーバー構成を個別のプラグインとしてインポートします。各 MCP サーバーは、個別に有効/無効にできる個別のプラグインになります。',
+			version: '0.0.2',
+			author: 'steve02081504 & ZINWIN10',
+			home_page: 'https://modelcontextprotocol.io/',
+			tags: ['mcp', 'ツール', 'プラグインジェネレーター']
+		},
+		'ko-KR': {
+			name: 'MCP 가져오기',
+			avatar: 'https://modelcontextprotocol.io/favicon.svg',
+			description: 'MCP (모델 컨텍스트 프로토콜) 서버 구성을 플러그인으로 가져옵니다.',
+			description_markdown: 'MCP (모델 컨텍스트 프로토콜) 서버 구성을 개별 플러그인으로 가져옵니다. 각 MCP 서버는 독립적으로 활성화/비활성화할 수 있는 별도의 플러그인이 됩니다.',
+			version: '0.0.2',
+			author: 'steve02081504 & ZINWIN10',
+			home_page: 'https://modelcontextprotocol.io/',
+			tags: ['mcp', '도구', '플러그인 생성기']
+		},
+		lzh: {
+			name: 'MCP導入器',
+			avatar: 'https://modelcontextprotocol.io/favicon.svg',
+			description: '導入MCP（模型上下文協議）伺服器配置為插件。',
+			description_markdown: '導入MCP（模型上下文協議）伺服器配置為獨立插件。各MCP伺服器皆成一獨立插件，可獨立啟用或禁用。',
+			version: '0.0.2',
+			author: 'steve02081504 & ZINWIN10',
+			home_page: 'https://modelcontextprotocol.io/',
+			tags: ['mcp', '工具', '插件生成器']
+		},
+		'nl-NL': {
+			name: 'MCP-importeur',
+			avatar: 'https://modelcontextprotocol.io/favicon.svg',
+			description: 'Importeer MCP (Model Context Protocol) serverconfiguraties als plug-ins.',
+			description_markdown: 'Importeer MCP (Model Context Protocol) serverconfiguraties als afzonderlijke plug-ins. Elke MCP-server wordt een afzonderlijke plug-in die onafhankelijk kan worden in- of uitgeschakeld.',
+			version: '0.0.2',
+			author: 'steve02081504 & ZINWIN10',
+			home_page: 'https://modelcontextprotocol.io/',
+			tags: ['mcp', 'hulpmiddelen', 'plug-in-generator']
+		},
+		'pt-PT': {
+			name: 'Importador de MCP',
+			avatar: 'https://modelcontextprotocol.io/favicon.svg',
+			description: 'Importa configurações do servidor MCP (Protocolo de Contexto do Modelo) como plugins.',
+			description_markdown: 'Importa configurações do servidor MCP (Protocolo de Contexto do Modelo) como plugins individuais. Cada servidor MCP torna-se um plugin separado que pode ser ativado/desativado independentemente.',
+			version: '0.0.2',
+			author: 'steve02081504 & ZINWIN10',
+			home_page: 'https://modelcontextprotocol.io/',
+			tags: ['mcp', 'ferramentas', 'gerador-de-plugins']
+		},
+		'ru-RU': {
+			name: 'Импортер MCP',
+			avatar: 'https://modelcontextprotocol.io/favicon.svg',
+			description: 'Импортирует конфигурации сервера MCP (протокол контекста модели) в качестве плагинов.',
+			description_markdown: 'Импортирует конфигурации сервера MCP (протокол контекста модели) в качестве отдельных плагинов. Каждый сервер MCP становится отдельным плагином, который можно включать/отключать независимо.',
+			version: '0.0.2',
+			author: 'steve02081504 & ZINWIN10',
+			home_page: 'https://modelcontextprotocol.io/',
+			tags: ['mcp', 'инструменты', 'генератор-плагинов']
+		},
+		'uk-UA': {
+			name: 'Імпортер MCP',
+			avatar: 'https://modelcontextprotocol.io/favicon.svg',
+			description: 'Імпортує конфігурації сервера MCP (протокол контексту моделі) як плагіни.',
+			description_markdown: 'Імпортує конфігурації сервера MCP (протокол контексту моделі) як окремі плагіни. Кожен сервер MCP стає окремим плагіном, який можна вмикати/вимикати незалежно.',
+			version: '0.0.2',
+			author: 'steve02081504 & ZINWIN10',
+			home_page: 'https://modelcontextprotocol.io/',
+			tags: ['mcp', 'інструменти', 'генератор-плагінів']
+		},
+		'vi-VN': {
+			name: 'Trình nhập MCP',
+			avatar: 'https://modelcontextprotocol.io/favicon.svg',
+			description: 'Nhập cấu hình máy chủ MCP (Giao thức ngữ cảnh mô hình) làm plugin.',
+			description_markdown: 'Nhập cấu hình máy chủ MCP (Giao thức ngữ cảnh mô hình) làm các plugin riêng lẻ. Mỗi máy chủ MCP trở thành một plugin riêng biệt có thể được bật/tắt độc lập.',
+			version: '0.0.2',
+			author: 'steve02081504 & ZINWIN10',
+			home_page: 'https://modelcontextprotocol.io/',
+			tags: ['mcp', 'công cụ', 'trình-tạo-plugin']
 		},
 		'zh-TW': {
 			name: 'MCP 匯入器',
-			avatar: '',
+			avatar: 'https://modelcontextprotocol.io/favicon.svg',
 			description: '匯入 MCP (模型上下文協定) 伺服器設定為外掛程式。',
 			description_markdown: '將 MCP (模型上下文協定) 伺服器設定作為獨立的外掛程式匯入。每個 MCP 伺服器都會成為一個可以獨立啟用/停用的獨立外掛程式。',
 			version: '0.0.2',
 			author: 'steve02081504 & ZINWIN10',
-			home_page: '',
+			home_page: 'https://modelcontextprotocol.io/',
 			tags: ['mcp', '工具', '外掛產生器']
 		}
 	},
