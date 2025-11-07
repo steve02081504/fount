@@ -1704,6 +1704,12 @@
 			},
 			"aria-label": "执行代码"
 		},
+		"preview": {
+			"dataset": {
+				"tip": "预览"
+			},
+			"aria-label": "预览"
+		},
 		"copy_failed": "无法复制到剪贴板：${error}"
 	},
 	"pow_captcha": {

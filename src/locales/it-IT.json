@@ -1704,6 +1704,12 @@
 			},
 			"aria-label": "Esegui il codice"
 		},
+		"preview": {
+			"dataset": {
+				"tip": "Anteprima"
+			},
+			"aria-label": "Anteprima"
+		},
 		"copy_failed": "Impossibile copiare negli appunti: ${error}"
 	},
 	"pow_captcha": {
