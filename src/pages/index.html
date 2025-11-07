@@ -49,9 +49,7 @@
 		})
 
 		let retry = 1
-		const hasLoggedIn = localStorage.getItem('hasLoggedIn') === 'true'
-		if (!hasLoggedIn) redirectToLoginInfo('/login')
-		else {
+		try {
 			const defaultShell = await getAnyDefaultPart('shells') || 'home'
 			setInterval(() => {
 				if (!retry) return
@@ -68,6 +66,9 @@
 				else
 					document.getElementById('newTabFailedModal').classList.add('modal-open')
 			}, 500)
+		}
+		catch (e) {
+			redirectToLoginInfo('/login')
 		}
 
 		document.getElementById('retryButton').addEventListener('click', () => {

@@ -231,7 +231,7 @@ export function createVirtualList({
 		try {
 			const { total } = await fetchData(0, 0) // Get total count
 			state.totalCount = total
-			if (total === 0) {
+			if (!total) {
 				state.queue = []
 				state.startIndex = 0
 				await renderQueue()

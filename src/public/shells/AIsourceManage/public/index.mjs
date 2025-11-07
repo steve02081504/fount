@@ -281,14 +281,17 @@ async function loadEditor(fileName) {
 		jsonEditor = createJsonEditor(jsonEditorContainer, {
 			label: geti18n('aisource_editor.configTitle'),
 			/**
-			 * 当编辑器内容更改时调用。
-			 * @param {object} json - 编辑器中的 JSON 数据。
-			 * @param {string} text - 编辑器中的纯文本。
+			 * @param {any} updatedContent - 更新后的内容。
+			 * @param {any} previousContent - 之前的内容。
+			 * @param {object} root0 - 根对象。
+			 * @param {any} root0.error - 错误。
+			 * @param {any} root0.patchResult - 补丁结果。
 			 */
-			onChange: (json, text) => {
+			onChange: (updatedContent, previousContent, { error, patchResult }) => {
+				if (error) return
 				isDirty = true
 				onJsonUpdate({
-					data: json || JSON.parse(text),
+					data: jsonEditor.get().json || JSON.parse(jsonEditor.get().text),
 					containers: {
 						generatorDisplay: generatorDisplayContainer,
 						jsonEditor: jsonEditorContainer

@@ -173,9 +173,14 @@ async function loadEditor(partType, partName) {
 				label: geti18n('part_config.editor.jsonEditor'),
 				readOnly: true,
 				/**
-				 * 当 JSON 编辑器内容改变时的回调函数。
+				 * @param {any} updatedContent - 更新后的内容。
+				 * @param {any} previousContent - 之前的内容。
+				 * @param {object} root0 - 根对象。
+				 * @param {any} root0.error - 错误。
+				 * @param {any} root0.patchResult - 补丁结果。
 				 */
-				onChange: () => {
+				onChange: (updatedContent, previousContent, { error, patchResult }) => {
+					if (error) return
 					isDirty = true
 					onJsonUpdate({
 						info: {

@@ -49,5 +49,5 @@ export async function setPartData(username, parttype, partname, data) {
  */
 export async function getPartDisplayContent(username, parttype, partname) {
 	const part = await loadPart(username, parttype, partname)
-	return await part.interfaces.config?.GetConfigDisplayContent?.() || { html: '', js: '' }
+	return await part.interfaces?.config?.GetConfigDisplayContent?.() || { html: '', js: '' }
 }

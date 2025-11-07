@@ -348,7 +348,7 @@ window.addEventListener('visibilitychange', async () => {
 	if (document.visibilityState != 'visible') return
 
 	const preferredLangs = loadPreferredLangs()
-	if (JSON.stringify(lastKnownLangs) != JSON.stringify(preferredLangs))
+	if (saved_pageid && JSON.stringify(lastKnownLangs) != JSON.stringify(preferredLangs))
 		await initTranslations()
 })
 

@@ -194,7 +194,6 @@ async function handleFormSubmit(event) {
 			if (isLoginForm) {
 				const urlParams = new URLSearchParams(window.location.search)
 				const redirect = urlParams.get('redirect')
-				localStorage.setItem('hasLoggedIn', 'true')
 				const defaultShell = await getAnyDefaultPart('shells') || 'home' // Fallback to 'home' if no default shell is set
 
 				let finalRedirectUrl

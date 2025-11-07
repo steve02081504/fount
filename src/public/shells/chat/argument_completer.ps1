@@ -55,13 +55,12 @@ function Get-CharListFromChat([string]$Username, [string]$ChatId) {
 	if (Test-Path $chatFilePath -PathType Leaf) {
 		try {
 			$chatData = Get-Content $chatFilePath | ConvertFrom-Json
-			# 角色列表位于 chatLog 最后一个条目的 timeSlice 对象的 chars 属性中。
-			# 如果 chatLog 为空，则无法从中读取 timeSlice。
-			if ($chatData.chatLog.Count -gt 0) {
-				$lastEntry = $chatData.chatLog[-1]
-				if ($lastEntry.timeSlice -and $lastEntry.timeSlice.chars) {
-					# timeSlice.chars 是一个对象，其键是角色名。
-					return @($lastEntry.timeSlice.chars.psobject.properties.name)
+			# 从后往前遍历聊天记录，找到第一个包含角色信息的条目。
+			for ($i = $chatData.chatLog.Count - 1; $i -ge 0; $i--) {
+				$entry = $chatData.chatLog[$i]
+				if ($entry.timeSlice -and $entry.timeSlice.chars) {
+					# 找到后，返回角色列表并退出函数。
+					return @($entry.timeSlice.chars.psobject.properties.name)
 				}
 			}
 		}

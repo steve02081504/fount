@@ -282,7 +282,7 @@ export function registerEndpoints(router) {
 	router.get('/api/defaultpart/getany/:parttype', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
 		const { parttype } = req.params
-		res.status(200).json(getAnyDefaultPart(user, parttype))
+		res.status(200).json(getAnyDefaultPart(user, parttype) || '')
 	})
 
 	router.get('/api/defaultpart/getallbytype/:parttype', authenticate, async (req, res) => {
@@ -294,7 +294,7 @@ export function registerEndpoints(router) {
 	router.get('/api/defaultpart/getanypreferred/:parttype', authenticate, async (req, res) => {
 		const user = await getUserByReq(req)
 		const { parttype } = req.params
-		res.status(200).json(getAnyPreferredDefaultPart(user, parttype))
+		res.status(200).json(getAnyPreferredDefaultPart(user, parttype) || '')
 	})
 
 	router.get('/api/getusersetting', authenticate, async (req, res) => {
