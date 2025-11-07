@@ -139,6 +139,9 @@ async function renderFilteredItems(partType, filteredNames) {
 
 	currentContainer.innerHTML = '' // 清空容器
 
+	if (!filteredNames.length)
+		return currentContainer.appendChild(await renderTemplate('empty_list_view'))
+
 	const fragment = document.createDocumentFragment()
 	const itemElements = {} // 使用一个映射来存放骨架屏，以便稍后替换
 

@@ -462,6 +462,9 @@
 				"alt": "機能メニュー"
 			}
 		},
+		"emptyList": {
+			"message": "空です...<br/>[新しいパーツを作成](${newpartLink}) するか、[fount の Discord サーバー](${discordLink}) に行って楽しんでみてはいかがでしょうか?"
+		},
 		"part_types": {
 			"chars": "役割",
 			"worlds": "世界",

@@ -462,6 +462,9 @@
 				"alt": "Functiemenu"
 			}
 		},
+		"emptyList": {
+			"message": "Leeg...<br/>Misschien kun je [een nieuw onderdeel maken](${newpartLink}) of naar [fount's Discord-server](${discordLink}) gaan om wat plezier te hebben?"
+		},
 		"part_types": {
 			"chars": "Rol",
 			"worlds": "Wereld",

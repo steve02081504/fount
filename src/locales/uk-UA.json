@@ -462,6 +462,9 @@
 				"alt": "Меню функцій"
 			}
 		},
+		"emptyList": {
+			"message": "Порожньо...<br/>Можливо, ви можете [створити нову частину](${newpartLink}) або перейти на [Discord-сервер fount](${discordLink}), щоб розважитися?"
+		},
 		"part_types": {
 			"chars": "Роль",
 			"worlds": "Світ",

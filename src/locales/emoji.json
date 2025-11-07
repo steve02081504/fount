@@ -461,6 +461,9 @@
 				"alt": "⚙️"
 			}
 		},
+		"emptyList": {
+			"message": "💨...<br/>[✨📝](${newpartLink}) / [👨‍👩‍👧‍👦👋](${discordLink})"
+		},
 		"part_types": {
 			"chars": "🤖",
 			"worlds": "🌍",

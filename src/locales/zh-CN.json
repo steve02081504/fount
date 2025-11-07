@@ -462,6 +462,9 @@
 				"alt": "功能菜单"
 			}
 		},
+		"emptyList": {
+			"message": "空空如也...<br/>或许你可以[新建一个部件](${newpartLink})或到[fount的Discord服务器](${discordLink})找点乐子？"
+		},
 		"part_types": {
 			"chars": "角色",
 			"worlds": "世界",

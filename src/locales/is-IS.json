@@ -462,6 +462,9 @@
 				"alt": "Aðgerðavalmynd"
 			}
 		},
+		"emptyList": {
+			"message": "Tómt...<br/>Geturðu kannski [búið til nýjan hluta](${newpartLink}) eða farið á Discord miðlara [fount](${discordLink}) til að skemmta þér?"
+		},
 		"part_types": {
 			"chars": "Hlutverk",
 			"worlds": "Heimur",

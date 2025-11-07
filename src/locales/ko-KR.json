@@ -462,6 +462,9 @@
 				"alt": "기능 메뉴"
 			}
 		},
+		"emptyList": {
+			"message": "비어 있습니다...<br/>[새 파트를 생성](${newpartLink})하거나 [fount의 Discord 서버](${discordLink})로 가서 재미있게 놀 수 있을까요?"
+		},
 		"part_types": {
 			"chars": "역할",
 			"worlds": "세계",

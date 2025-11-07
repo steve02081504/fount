@@ -461,6 +461,9 @@
 				"alt": "功用"
 			}
 		},
+		"emptyList": {
+			"message": "此間空虛。<br/>可[新添一物](${newpartLink})，亦可往[fount議壇](${discordLink})一敘？"
+		},
 		"part_types": {
 			"chars": "化身",
 			"worlds": "世界",

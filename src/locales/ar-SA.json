@@ -462,6 +462,9 @@
 				"alt": "قائمة الوظائف"
 			}
 		},
+		"emptyList": {
+			"message": "فارغ...<br/>ربما يمكنك [إنشاء جزء جديد](${newpartLink}) أو الانتقال إلى [خادم Fount's Discord](${discordLink}) للحصول على بعض المتعة؟"
+		},
 		"part_types": {
 			"chars": "دور",
 			"worlds": "عالم",
