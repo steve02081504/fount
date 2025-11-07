@@ -462,6 +462,9 @@
 				"alt": "Menú de funciones"
 			}
 		},
+		"emptyList": {
+			"message": "Vacío...<br/>¿Quizás puedas [crear una nueva parte](${newpartLink}) o ir al [servidor de Discord de fount](${discordLink}) para divertirte un poco?"
+		},
 		"part_types": {
 			"chars": "Rol",
 			"worlds": "Mundo",

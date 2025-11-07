@@ -462,6 +462,9 @@
 				"alt": "Funktionsmenü"
 			}
 		},
+		"emptyList": {
+			"message": "Leer...<br/>Vielleicht können Sie [einen neuen Teil erstellen](${newpartLink}) oder zum [Discord-Server von fount](${discordLink}) gehen, um etwas Spaß zu haben?"
+		},
 		"part_types": {
 			"chars": "Rolle",
 			"worlds": "Welt",

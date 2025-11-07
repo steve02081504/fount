@@ -462,6 +462,9 @@
 				"alt": "Function Menu"
 			}
 		},
+		"emptyList": {
+			"message": "Empty...<br/>Maybe you can [create a new part](${newpartLink}) or go to [fount's Discord server](${discordLink}) to have some fun?"
+		},
 		"part_types": {
 			"chars": "Role",
 			"worlds": "World",

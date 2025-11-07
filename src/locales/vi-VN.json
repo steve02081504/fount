@@ -462,6 +462,9 @@
 				"alt": "Menu chức năng"
 			}
 		},
+		"emptyList": {
+			"message": "Trống...<br/>Có lẽ bạn có thể [tạo một phần mới](${newpartLink}) hoặc truy cập [máy chủ Discord của fount](${discordLink}) để giải trí?"
+		},
 		"part_types": {
 			"chars": "Vai trò",
 			"worlds": "Thế giới",
