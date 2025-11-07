@@ -4,24 +4,30 @@
  * @returns {Promise<any>} - 部件列表。
  */
 export async function getPartList(partType) {
-	const response = await fetch('/api/getlist/' + partType)
-	return response.json()
+	return await fetch('/api/getlist/' + partType).then(async response => {
+		if (response.ok) return response.json()
+		else return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response }))
+	})
 }
 /**
  * 获取部件类型列表。
  * @returns {Promise<any>} - 部件类型列表。
  */
 export async function getPartTypes() {
-	const response = await fetch('/api/getparttypelist')
-	return response.json()
+	return await fetch('/api/getparttypelist').then(async response => {
+		if (response.ok) return response.json()
+		else return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response }))
+	})
 }
 /**
  * 获取角色列表。
  * @returns {Promise<any>} - 角色列表。
  */
 export async function getCharList() {
-	const response = await fetch('/api/getlist/chars')
-	return response.json()
+	return await fetch('/api/getlist/chars').then(async response => {
+		if (response.ok) return response.json()
+		else return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response }))
+	})
 }
 /**
  * 获取部件详细信息。
@@ -30,8 +36,10 @@ export async function getCharList() {
  * @returns {Promise<any>} - 部件详细信息。
  */
 export async function getPartDetails(partType, partName) {
-	const response = await fetch(`/api/getdetails/${partType}?name=${partName}`)
-	return response.json()
+	return await fetch(`/api/getdetails/${partType}?name=${partName}`).then(async response => {
+		if (response.ok) return response.json()
+		else return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response }))
+	})
 }
 /**
  * 无缓存获取部件详细信息。
@@ -40,8 +48,10 @@ export async function getPartDetails(partType, partName) {
  * @returns {Promise<any>} - 部件详细信息。
  */
 export async function noCacheGetPartDetails(partType, partName) {
-	const response = await fetch(`/api/getdetails/${partType}?name=${partName}&nocache=true`)
-	return response.json()
+	return await fetch(`/api/getdetails/${partType}?name=${partName}&nocache=true`).then(async response => {
+		if (response.ok) return response.json()
+		else return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response }))
+	})
 }
 /**
  * 获取角色详细信息。
@@ -49,8 +59,10 @@ export async function noCacheGetPartDetails(partType, partName) {
  * @returns {Promise<any>} - 角色详细信息。
  */
 export async function getCharDetails(charname) {
-	const response = await fetch('/api/getdetails/chars?name=' + charname)
-	return response.json()
+	return await fetch('/api/getdetails/chars?name=' + charname).then(async response => {
+		if (response.ok) return response.json()
+		else return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response }))
+	})
 }
 /**
  * 无缓存获取角色详细信息。
@@ -58,16 +70,20 @@ export async function getCharDetails(charname) {
  * @returns {Promise<any>} - 角色详细信息。
  */
 export async function noCacheGetCharDetails(charname) {
-	const response = await fetch('/api/getdetails/chars?name=' + charname + '&nocache=true')
-	return response.json()
+	return await fetch('/api/getdetails/chars?name=' + charname + '&nocache=true').then(async response => {
+		if (response.ok) return response.json()
+		else return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response }))
+	})
 }
 /**
  * 获取世界列表。
  * @returns {Promise<any>} - 世界列表。
  */
 export async function getWorldList() {
-	const response = await fetch('/api/getlist/worlds')
-	return response.json()
+	return await fetch('/api/getlist/worlds').then(async response => {
+		if (response.ok) return response.json()
+		else return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response }))
+	})
 }
 /**
  * 获取世界详细信息。
@@ -75,8 +91,10 @@ export async function getWorldList() {
  * @returns {Promise<any>} - 世界详细信息。
  */
 export async function getWorldDetails(worldname) {
-	const response = await fetch('/api/getdetails/worlds?name=' + worldname)
-	return response.json()
+	return await fetch('/api/getdetails/worlds?name=' + worldname).then(async response => {
+		if (response.ok) return response.json()
+		else return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response }))
+	})
 }
 /**
  * 无缓存获取世界详细信息。
@@ -84,16 +102,20 @@ export async function getWorldDetails(worldname) {
  * @returns {Promise<any>} - 世界详细信息。
  */
 export async function noCacheGetWorldDetails(worldname) {
-	const response = await fetch('/api/getdetails/worlds?name=' + worldname + '&nocache=true')
-	return response.json()
+	return await fetch('/api/getdetails/worlds?name=' + worldname + '&nocache=true').then(async response => {
+		if (response.ok) return response.json()
+		else return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response }))
+	})
 }
 /**
  * 获取角色卡列表。
  * @returns {Promise<any>} - 角色卡列表。
  */
 export async function getPersonaList() {
-	const response = await fetch('/api/getlist/personas')
-	return response.json()
+	return await fetch('/api/getlist/personas').then(async response => {
+		if (response.ok) return response.json()
+		else return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response }))
+	})
 }
 /**
  * 获取角色卡详细信息。
@@ -101,8 +123,10 @@ export async function getPersonaList() {
  * @returns {Promise<any>} - 角色卡详细信息。
  */
 export async function getPersonaDetails(personaname) {
-	const response = await fetch('/api/getdetails/personas?name=' + personaname)
-	return response.json()
+	return await fetch('/api/getdetails/personas?name=' + personaname).then(async response => {
+		if (response.ok) return response.json()
+		else return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response }))
+	})
 }
 /**
  * 无缓存获取角色卡详细信息。
@@ -110,8 +134,10 @@ export async function getPersonaDetails(personaname) {
  * @returns {Promise<any>} - 角色卡详细信息。
  */
 export async function noCacheGetPersonaDetails(personaname) {
-	const response = await fetch('/api/getdetails/personas?name=' + personaname + '&nocache=true')
-	return response.json()
+	return await fetch('/api/getdetails/personas?name=' + personaname + '&nocache=true').then(async response => {
+		if (response.ok) return response.json()
+		else return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response }))
+	})
 }
 
 /**
@@ -193,8 +219,10 @@ export async function getDefaultParts() {
  * @returns {Promise<string | undefined>} - 一个随机的部件名称，如果列表为空则为 undefined。
  */
 export async function getAnyDefaultPart(parttype) {
-	const response = await fetch(`/api/defaultpart/getany/${parttype}`)
-	return response.json()
+	return await fetch(`/api/defaultpart/getany/${parttype}`).then(async response => {
+		if (response.ok) return response.json()
+		else return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response }))
+	})
 }
 
 /**
@@ -203,8 +231,10 @@ export async function getAnyDefaultPart(parttype) {
  * @returns {Promise<string[]>} - 指定类型的所有默认部件名称。
  */
 export async function getAllDefaultParts(parttype) {
-	const response = await fetch(`/api/defaultpart/getallbytype/${parttype}`)
-	return response.json()
+	return await fetch(`/api/defaultpart/getallbytype/${parttype}`).then(async response => {
+		if (response.ok) return response.json()
+		else return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response }))
+	})
 }
 
 /**
@@ -214,8 +244,10 @@ export async function getAllDefaultParts(parttype) {
  * @returns {Promise<string | undefined>} - 一个随机的部件名称，如果没有任何可用部件则为 undefined。
  */
 export async function getAnyPreferredDefaultPart(parttype) {
-	const response = await fetch(`/api/defaultpart/getanypreferred/${parttype}`)
-	return response.json()
+	return await fetch(`/api/defaultpart/getanypreferred/${parttype}`).then(async response => {
+		if (response.ok) return response.json()
+		else return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response }))
+	})
 }
 
 /**

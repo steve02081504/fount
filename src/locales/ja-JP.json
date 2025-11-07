@@ -1704,6 +1704,12 @@
 			},
 			"aria-label": "コードを実行"
 		},
+		"preview": {
+			"dataset": {
+				"tip": "プレビュー"
+			},
+			"aria-label": "プレビュー"
+		},
 		"copy_failed": "クリップボードへのコピーに失敗しました: ${error}"
 	},
 	"pow_captcha": {

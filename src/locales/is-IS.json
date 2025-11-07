@@ -1704,6 +1704,12 @@
 			},
 			"aria-label": "Keyra kóða"
 		},
+		"preview": {
+			"dataset": {
+				"tip": "Forskoðun"
+			},
+			"aria-label": "Forskoðun"
+		},
 		"copy_failed": "Ekki er hægt að afrita á klippiborð: ${error}"
 	},
 	"pow_captcha": {

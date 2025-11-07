@@ -1704,6 +1704,12 @@
 			},
 			"aria-label": "Ejecutar código"
 		},
+		"preview": {
+			"dataset": {
+				"tip": "Vista previa"
+			},
+			"aria-label": "Vista previa"
+		},
 		"copy_failed": "No se puede copiar al portapapeles: ${error}"
 	},
 	"pow_captcha": {

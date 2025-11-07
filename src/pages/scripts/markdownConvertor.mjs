@@ -87,11 +87,13 @@ const copyIconCode = await fetch('https://api.iconify.design/line-md/clipboard.s
 const successIconCode = await fetch('https://api.iconify.design/line-md/clipboard-check.svg').then(res => res.text())
 const downloadIconCode = await fetch('https://api.iconify.design/line-md/download-outline.svg').then(res => res.text())
 const playIconCode = await fetch('https://api.iconify.design/line-md/play.svg').then(res => res.text())
+const previewIconCode = await fetch('https://api.iconify.design/line-md/watch.svg').then(res => res.text())
 
 const copyIconSized = addClassToSvg(copyIconCode, iconClass)
 const successIconSized = addClassToSvg(successIconCode, iconClass)
 const downloadIconSized = addClassToSvg(downloadIconCode, iconClass)
 const playIconSized = addClassToSvg(playIconCode, iconClass)
+const previewIconSized = addClassToSvg(previewIconCode, iconClass)
 
 /**
  * 工厂函数，用于创建调用 Godbolt API 的执行器函数。
@@ -404,7 +406,7 @@ const button = this
 ;(async () => {
 	const tooltip = button.parentElement
 	try {
-		await navigator.clipboard.writeText(document.getElementById('${uniqueId}').innerText)
+		await navigator.clipboard.writeText(document.querySelector('#${uniqueId} pre').innerText)
 		${isStandalone
 			? `tooltip.setAttribute('data-tip', '${geti18n('code_block.copied.dataset.tip')}')`
 			: 'tooltip.setAttribute(\'data-i18n\', \'code_block.copied\')'
@@ -433,7 +435,7 @@ const button = this
 				...isStandalone ? { 'aria-label': geti18n('code_block.download.aria-label') } : { 'data-i18n': 'code_block.download' },
 				onclick: `\
 event.stopPropagation()
-const code = document.getElementById('${uniqueId}').innerText
+const code = document.querySelector('#${uniqueId} pre').innerText
 const a = document.createElement('a')
 a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(code)
 a.download = \`code.${ext}\`
@@ -442,6 +444,21 @@ a.click()
 document.body.removeChild(a)
 `,
 			}, [fromHtml(downloadIconSized, { fragment: true })])
+
+			// 预览按钮
+			let previewButtonCore = null
+			if (ext === 'html')
+				previewButtonCore = h('button', {
+					class: 'btn btn-ghost btn-square btn-sm text-icon',
+					...isStandalone ? { 'aria-label': geti18n('code_block.preview.aria-label') } : { 'data-i18n': 'code_block.preview' },
+					onclick: `\
+event.stopPropagation()
+const code = document.querySelector('#${uniqueId} pre').innerText
+const previewWindow = window.open('', '_blank')
+previewWindow.document.write(code)
+previewWindow.document.close()
+`,
+				}, [fromHtml(previewIconSized, { fragment: true })])
 
 			// 执行按钮
 			let executeButtonCore = null
@@ -464,7 +481,7 @@ outputContainer.innerHTML = /* html */ \`\\
 \`
 codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 
-;(${executor.toString()})(codeBlockContainer.innerText).then(result => {
+;(${executor.toString()})(document.querySelector('#${uniqueId} pre').innerText).then(result => {
 	result = result || {}
 	const escapeHtml = (unsafe) => String(unsafe).replace(/[&<>"']/g, (m) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'}[m]))
 	let alerts = []
@@ -553,6 +570,8 @@ codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 			 */
 			const getButtonGroup = (tooltipPosition) => {
 				const buttons = []
+				if (previewButtonCore)
+					buttons.push(createTooltip('code_block.preview', [previewButtonCore], tooltipPosition))
 				if (executeButtonCore)
 					buttons.push(createTooltip('code_block.execute', [executeButtonCore], tooltipPosition))
 

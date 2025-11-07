@@ -1698,6 +1698,12 @@
 				"tip": "行碼"
 			}
 		},
+		"preview": {
+			"dataset": {
+				"tip": "預覽"
+			},
+			"aria-label": "預覽"
+		},
 		"copy_failed": "謄錄失利: ${error}"
 	},
 	"pow_captcha": {
