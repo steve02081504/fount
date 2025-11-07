@@ -1704,6 +1704,12 @@
 			},
 			"aria-label": "Execute code"
 		},
+		"preview": {
+			"dataset": {
+				"tip": "Preview"
+			},
+			"aria-label": "Preview"
+		},
 		"copy_failed": "Unable to copy to clipboard: ${error}"
 	},
 	"pow_captcha": {

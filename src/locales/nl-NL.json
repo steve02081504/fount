@@ -1704,6 +1704,12 @@
 			},
 			"aria-label": "Code uitvoeren"
 		},
+		"preview": {
+			"dataset": {
+				"tip": "Voorvertoning"
+			},
+			"aria-label": "Voorvertoning"
+		},
 		"copy_failed": "Kan niet naar klembord kopiëren: ${error}"
 	},
 	"pow_captcha": {

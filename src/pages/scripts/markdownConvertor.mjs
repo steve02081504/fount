@@ -87,11 +87,13 @@ const copyIconCode = await fetch('https://api.iconify.design/line-md/clipboard.s
 const successIconCode = await fetch('https://api.iconify.design/line-md/clipboard-check.svg').then(res => res.text())
 const downloadIconCode = await fetch('https://api.iconify.design/line-md/download-outline.svg').then(res => res.text())
 const playIconCode = await fetch('https://api.iconify.design/line-md/play.svg').then(res => res.text())
+const previewIconCode = await fetch('https://api.iconify.design/line-md/watch.svg').then(res => res.text())
 
 const copyIconSized = addClassToSvg(copyIconCode, iconClass)
 const successIconSized = addClassToSvg(successIconCode, iconClass)
 const downloadIconSized = addClassToSvg(downloadIconCode, iconClass)
 const playIconSized = addClassToSvg(playIconCode, iconClass)
+const previewIconSized = addClassToSvg(previewIconCode, iconClass)
 
 /**
  * 工厂函数，用于创建调用 Godbolt API 的执行器函数。
@@ -443,6 +445,21 @@ document.body.removeChild(a)
 `,
 			}, [fromHtml(downloadIconSized, { fragment: true })])
 
+			// 预览按钮
+			let previewButtonCore = null
+			if (ext === 'html')
+				previewButtonCore = h('button', {
+					class: 'btn btn-ghost btn-square btn-sm text-icon',
+					...isStandalone ? { 'aria-label': geti18n('code_block.preview.aria-label') } : { 'data-i18n': 'code_block.preview' },
+					onclick: `\
+event.stopPropagation()
+const code = document.querySelector('#${uniqueId} pre').innerText
+const previewWindow = window.open('', '_blank')
+previewWindow.document.write(code)
+previewWindow.document.close()
+`,
+				}, [fromHtml(previewIconSized, { fragment: true })])
+
 			// 执行按钮
 			let executeButtonCore = null
 			if (executor)
@@ -553,6 +570,8 @@ codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 			 */
 			const getButtonGroup = (tooltipPosition) => {
 				const buttons = []
+				if (previewButtonCore)
+					buttons.push(createTooltip('code_block.preview', [previewButtonCore], tooltipPosition))
 				if (executeButtonCore)
 					buttons.push(createTooltip('code_block.execute', [executeButtonCore], tooltipPosition))
 

@@ -1704,6 +1704,12 @@
 			},
 			"aria-label": "تنفيذ التعليمات البرمجية"
 		},
+		"preview": {
+			"dataset": {
+				"tip": "معاينة"
+			},
+			"aria-label": "معاينة"
+		},
 		"copy_failed": "تعذّر النسخ إلى الحافظة: ${error}"
 	},
 	"pow_captcha": {

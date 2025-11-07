@@ -1704,6 +1704,12 @@
 			},
 			"aria-label": "कोड निष्पादित करें"
 		},
+		"preview": {
+			"dataset": {
+				"tip": "पूर्व दर्शन"
+			},
+			"aria-label": "पूर्व दर्शन"
+		},
 		"copy_failed": "क्लिपबोर्ड पर कॉपी नहीं हो सका: ${error}"
 	},
 	"pow_captcha": {

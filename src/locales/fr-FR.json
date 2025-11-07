@@ -1704,6 +1704,12 @@
 			},
 			"aria-label": "Exécuter le code"
 		},
+		"preview": {
+			"dataset": {
+				"tip": "Aperçu"
+			},
+			"aria-label": "Aperçu"
+		},
 		"copy_failed": "Impossible de copier dans le presse-papier : ${error}"
 	},
 	"pow_captcha": {

@@ -1704,6 +1704,12 @@
 			},
 			"aria-label": "Executar código"
 		},
+		"preview": {
+			"dataset": {
+				"tip": "Pré-visualização"
+			},
+			"aria-label": "Pré-visualização"
+		},
 		"copy_failed": "Não foi possível copiar para a área de transferência: ${error}"
 	},
 	"pow_captcha": {

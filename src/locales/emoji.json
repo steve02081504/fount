@@ -1698,6 +1698,12 @@
 				"tip": "▶️"
 			}
 		},
+		"preview": {
+			"dataset": {
+				"tip": "👀"
+			},
+			"aria-label": "👀"
+		},
 		"copy_failed": "📋❌: ${error}"
 	},
 	"pow_captcha": {

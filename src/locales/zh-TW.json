@@ -1704,6 +1704,12 @@
 			},
 			"aria-label": "執行代碼"
 		},
+		"preview": {
+			"dataset": {
+				"tip": "預覽"
+			},
+			"aria-label": "預覽"
+		},
 		"copy_failed": "無法複製到剪貼簿：${error}"
 	},
 	"pow_captcha": {
