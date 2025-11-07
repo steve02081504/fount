@@ -783,7 +783,6 @@
 		"sortBy": {
 			"aria-label": "ordinare per"
 		},
-		"select_chat_with_chars": "Seleziona chatta con ${chars}",
 		"selectAll": "Seleziona tutto",
 		"buttons": {
 			"reverseSelect": "Inverti selezione",
@@ -804,6 +803,9 @@
 			"copyError": "Copia non riuscita.",
 			"deleteError": "Eliminazione non riuscita.",
 			"exportError": "Esportazione non riuscita."
+		},
+		"select_checkbox": {
+			"aria-label": "Seleziona chatta con ${chars}"
 		}
 	},
 	"easynew": {
@@ -1308,9 +1310,9 @@
 			"setDefault": {
 				"dataset": {
 					"tip": "Imposta come predefinito"
-				}
-			},
-			"setDefaultForFile": "Imposta \"${fileName}\" come origine AI predefinita"
+				},
+				"aria-label": "Imposta \"${fileName}\" come origine AI predefinita"
+			}
 		},
 		"confirm": {
 			"unsavedChanges": "Hai modifiche non salvate. Vuoi scartarle?",
@@ -1474,7 +1476,7 @@
 		"what_is_manager": "Cos'è un gestore di userscript?",
 		"manager_explanation": "Un gestore di userscript è un'estensione del browser che consente di installare ed eseguire script che modificano le pagine Web. Per utilizzare lo script di integrazione fount, è necessario una delle estensioni.",
 		"popular_managers": "Scelte popolari:",
-		"csp_warning": "Potrebbe essere necessario installare il plug -in per disattivare CSP per far funzionare correttamente la funzione di integrazione. Per ${browser} è possibile utilizzare <a href=\"${link}\" target=\"_blank\" rel=\"noopener\" class=\"link\">questo plug-in</a>.",
+		"csp_warning": "Potrebbe essere necessario installare il plug -in per disattivare CSP per far funzionare correttamente la funzione di integrazione. Per ${browser} è possibile utilizzare [questo plug-in](${link}).",
 		"connected_pages_title": "Pagina connessa",
 		"fetch_pages_error": "Impossibile caricare l'elenco delle pagine collegate.",
 		"page_title": "Titolo della pagina",

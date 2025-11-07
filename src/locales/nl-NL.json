@@ -783,7 +783,6 @@
 		"sortBy": {
 			"aria-label": "sorteren op"
 		},
-		"select_chat_with_chars": "Selecteer chatten met ${chars}",
 		"selectAll": "Alles selecteren",
 		"buttons": {
 			"reverseSelect": "Selectie omkeren",
@@ -804,6 +803,9 @@
 			"copyError": "Kopiëren mislukt",
 			"deleteError": "Verwijderen mislukt",
 			"exportError": "Exporteren mislukt"
+		},
+		"select_checkbox": {
+			"aria-label": "Selecteer chatten met ${chars}"
 		}
 	},
 	"easynew": {
@@ -1308,9 +1310,9 @@
 			"setDefault": {
 				"dataset": {
 					"tip": "Instellen als standaard"
-				}
-			},
-			"setDefaultForFile": "Stel “${fileName}” in als de standaard AI-bron"
+				},
+				"aria-label": "Stel “${fileName}” in als de standaard AI-bron"
+			}
 		},
 		"confirm": {
 			"unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je de wijzigingen negeren?",
@@ -1474,7 +1476,7 @@
 		"what_is_manager": "Wat is een userscriptbeheerder?",
 		"manager_explanation": "Een userscriptbeheerder is een browserverlenging waarmee u scripts kunt installeren en uitvoeren die webpagina's wijzigen. Om het fount Integration Script te gebruiken, hebt u een van de extensies nodig.",
 		"popular_managers": "Populaire keuzes:",
-		"csp_warning": "Mogelijk moet u de plug -in installeren om CSP uit te schakelen om de integratiefunctie goed te laten werken. Voor ${browser} kunt u <a href=\"${link}\" target=\"_blank\" rel=\"noopener\" class=\"link\">deze plugin</a>.",
+		"csp_warning": "Mogelijk moet u de plug -in installeren om CSP uit te schakelen om de integratiefunctie goed te laten werken. Voor ${browser} kunt u [deze plugin](${link}).",
 		"connected_pages_title": "Verbonden pagina",
 		"fetch_pages_error": "Kan de gekoppelde pagina -lijst niet laden.",
 		"page_title": "Paginietitel",

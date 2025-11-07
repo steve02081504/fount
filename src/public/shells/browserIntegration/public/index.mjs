@@ -1,7 +1,7 @@
 /**
  * 浏览器集成页面的主要客户端逻辑。
  */
-import { initTranslations, geti18n, setLocalizeLogic } from '../../../scripts/i18n.mjs'
+import { initTranslations, geti18n, i18nElement } from '../../../scripts/i18n.mjs'
 import { renderTemplate, usingTemplates } from '../../../scripts/template.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
 import { showToast, showToastI18n } from '../../../scripts/toast.mjs'
@@ -248,11 +248,11 @@ async function main() {
 		let browserName = getBrowserName()
 		if (!pluginMap[browserName]) browserName = 'Chrome'
 
-		setLocalizeLogic(CSPwarning, () => {
-			CSPwarning.innerHTML = geti18n('browser_integration.csp_warning', {
-				browser: browserName, link: pluginMap[browserName]
-			})
+		// for i18n
+		Object.assign(CSPwarning.dataset, {
+			browser: browserName, link: pluginMap[browserName]
 		})
+		i18nElement(CSPwarning)
 	}
 	scriptUrlInput.value = `${window.location.origin}/shells/browserIntegration/script.user.js`
 

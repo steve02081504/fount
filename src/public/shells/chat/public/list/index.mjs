@@ -3,7 +3,7 @@
  */
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
-import { initTranslations, confirmI18n, console, setLocalizeLogic, onLanguageChange, geti18n } from '../../../scripts/i18n.mjs'
+import { initTranslations, confirmI18n, console, i18nElement, onLanguageChange } from '../../../scripts/i18n.mjs'
 import { renderMarkdown, renderMarkdownAsString } from '../../../scripts/markdown.mjs'
 import { makeSearchable } from '../../../scripts/search.mjs'
 import { renderTemplate, usingTemplates } from '../../../scripts/template.mjs'
@@ -123,9 +123,9 @@ async function renderChatListItem(chat) {
 
 	// Checkbox logic
 	const selectCheckbox = chatElement.querySelector('.select-checkbox')
-	setLocalizeLogic(selectCheckbox, () => {
-		selectCheckbox.setAttribute('aria-label', geti18n('chat_history.select_chat_with_chars', { chars: chat.chars.join(', ') }))
-	})
+	// for i18n
+	Object.assign(selectCheckbox.dataset, { chars: chat.chars.join(', ') })
+	i18nElement(selectCheckbox)
 	selectCheckbox.checked = selectedChats.has(chat.chatid)
 	selectCheckbox.addEventListener('change', () => {
 		if (selectCheckbox.checked)
