@@ -783,7 +783,6 @@
 		"sortBy": {
 			"aria-label": "flokka eftir"
 		},
-		"select_chat_with_chars": "Veldu spjall við ${chars}",
 		"selectAll": "Velja allt",
 		"buttons": {
 			"reverseSelect": "Víxla vali",
@@ -804,6 +803,9 @@
 			"copyError": "Afritun mistókst",
 			"deleteError": "Eyðing mistókst",
 			"exportError": "Útflutningur mistókst"
+		},
+		"select_checkbox": {
+			"aria-label": "Veldu spjall við ${chars}"
 		}
 	},
 	"easynew": {
@@ -1308,9 +1310,9 @@
 			"setDefault": {
 				"dataset": {
 					"tip": "Sjálfgefið"
-				}
-			},
-			"setDefaultForFile": "Stilltu „${fileName}“ sem sjálfgefna gervigreindargjafa"
+				},
+				"aria-label": "Stilltu „${fileName}“ sem sjálfgefna gervigreindargjafa"
+			}
 		},
 		"confirm": {
 			"unsavedChanges": "Þú hefur óvistaðar breytingar. Viltu henda þeim?",
@@ -1474,7 +1476,7 @@
 		"what_is_manager": "Hvað er notandaforskriftarstjóri?",
 		"manager_explanation": "Notandaforskriftarstjóri er vafralenging sem gerir þér kleift að setja upp og keyra forskriftir sem breyta vefsíðum. Til að nota fount Integration handritið þarftu eina af viðbætunum.",
 		"popular_managers": "Vinsælir kostir:",
-		"csp_warning": "Þú gætir þurft að setja upp viðbótina til að slökkva á CSP til að gera samþættingaraðgerðina rétt. Fyrir ${browser} er hægt að nota <a href=\"${link}\" target=\"_blank\" rel=\"noopener\" class=\"link\">þessa viðbót</a>.",
+		"csp_warning": "Þú gætir þurft að setja upp viðbótina til að slökkva á CSP til að gera samþættingaraðgerðina rétt. Fyrir ${browser} er hægt að nota [þessa viðbót](${link}).",
 		"connected_pages_title": "Tengd blaðsíða",
 		"fetch_pages_error": "Ekki tókst að hlaða tengda síðulistann.",
 		"page_title": "Blaðsíðuheiti",

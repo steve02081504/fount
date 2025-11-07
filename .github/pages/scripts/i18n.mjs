@@ -175,7 +175,10 @@ export function geti18n_nowarn(key, params = {}) {
 
 	// 简单的插值处理
 	for (const param in params)
-		translation = translation?.replaceAll?.(`\${${param}}`, params[param])
+		translation = translation?.replace?.(
+			new RegExp(`\\[(?<text>.+)\\]\\(\\$\\{${param}\\}\\)`, 'g'),
+			(m, text) => /* html */ `<a href="${params[param]}" target="_blank" rel="noopener" class="link">${text}</a>`
+		)?.replaceAll?.(`\${${param}}`, params[param])
 
 	return translation
 }
@@ -305,13 +308,13 @@ function translateSingularElement(element) {
 			const attributes = ['placeholder', 'title', 'label', 'value', 'alt', 'aria-label']
 			for (const attr of attributes) {
 				const specificKey = `${key}.${attr}`
-				const translation = geti18n_nowarn(specificKey)
+				const translation = geti18n_nowarn(specificKey, element.dataset)
 				if (translation) updateAttribute(attr, translation)
 			}
 			const values = ['textContent', 'innerHTML']
 			for (const attr of values) {
 				const specificKey = `${key}.${attr}`
-				const translation = geti18n_nowarn(specificKey)
+				const translation = geti18n_nowarn(specificKey, element.dataset)
 				if (translation) updateValue(attr, translation)
 			}
 			const dataset = geti18n_nowarn(`${key}.dataset`)
@@ -319,7 +322,7 @@ function translateSingularElement(element) {
 			updated = true
 		}
 		else if (geti18n_nowarn(key)) {
-			const translation = geti18n_nowarn(key)
+			const translation = geti18n_nowarn(key, element.dataset)
 			if (element.innerHTML !== translation) {
 				element.innerHTML = translation
 				updated = true

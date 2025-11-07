@@ -783,7 +783,6 @@
 		"sortBy": {
 			"aria-label": "排序方式"
 		},
-		"select_chat_with_chars": "選擇與 ${chars} 的聊天",
 		"selectAll": "全選",
 		"buttons": {
 			"reverseSelect": "反選",
@@ -804,6 +803,9 @@
 			"copyError": "複製失敗",
 			"deleteError": "刪除失敗",
 			"exportError": "匯出失敗"
+		},
+		"select_checkbox": {
+			"aria-label": "選擇與 ${chars} 的聊天"
 		}
 	},
 	"easynew": {
@@ -1308,9 +1310,9 @@
 			"setDefault": {
 				"dataset": {
 					"tip": "設為預設"
-				}
-			},
-			"setDefaultForFile": "將「${fileName}」設為預設 AI 來源"
+				},
+				"aria-label": "將「${fileName}」設為預設 AI 來源"
+			}
 		},
 		"confirm": {
 			"unsavedChanges": "您有未儲存的變更。是否要放棄變更？",
@@ -1474,7 +1476,7 @@
 		"what_is_manager": "什麼是油猴腳本管理器？",
 		"manager_explanation": "油猴腳本管理器是一個瀏覽器擴展，允許您安裝和運行修改網頁的腳本。要使用 fount 集成腳本，您需要其中一個擴展。",
 		"popular_managers": "熱門選擇：",
-		"csp_warning": "你可能需要安裝擴充功能停用CSP來使得集成功能正常運行，對於${browser}可以使用<a href=\"${link}\" target=\"_blank\" rel=\"noopener\" class=\"link\">這個擴充功能</a>。",
+		"csp_warning": "你可能需要安裝擴充功能停用CSP來使得集成功能正常運行，對於${browser}可以使用[這個擴充功能](${link})。",
 		"connected_pages_title": "已連接的頁面",
 		"fetch_pages_error": "加載已連接頁面列表失敗。",
 		"page_title": "頁面標題",

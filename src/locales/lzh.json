@@ -802,6 +802,9 @@
 			"copyError": "謄錄失利",
 			"deleteError": "刪除失利",
 			"exportError": "導出失利"
+		},
+		"select_checkbox": {
+			"aria-label": "擇 ${chars} 之談跡"
 		}
 	},
 	"easynew": {
@@ -1471,7 +1474,7 @@
 		"what_is_manager": "油猴策管何物也？",
 		"manager_explanation": "油猴策管，覽器之輔具，所以置策易頁也。欲用 fount 統合之策，必先有此物。",
 		"popular_managers": "常用者：",
-		"csp_warning": "或需置輔具以停 CSP，方能使統合之功順行。${browser} 可用<a href=\"${link}\" target=\"_blank\" rel=\"noopener\" class=\"link\">此輔具</a>。",
+		"csp_warning": "或需置輔具以停 CSP，方能使統合之功順行。${browser} 可用[此輔具](${link})。",
 		"connected_pages_title": "已連之頁",
 		"fetch_pages_error": "取已連之頁不成。",
 		"page_title": "頁名",

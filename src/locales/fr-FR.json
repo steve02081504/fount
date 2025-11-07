@@ -783,7 +783,6 @@
 		"sortBy": {
 			"aria-label": "Trier par"
 		},
-		"select_chat_with_chars": "Sélectionnez discuter avec ${chars}",
 		"selectAll": "Tout sélectionner",
 		"buttons": {
 			"reverseSelect": "Inverser la sélection",
@@ -804,6 +803,9 @@
 			"copyError": "Échec de la copie",
 			"deleteError": "Échec de la suppression",
 			"exportError": "Échec de l'exportation"
+		},
+		"select_checkbox": {
+			"aria-label": "Sélectionnez discuter avec ${chars}"
 		}
 	},
 	"easynew": {
@@ -1308,9 +1310,9 @@
 			"setDefault": {
 				"dataset": {
 					"tip": "Par défaut"
-				}
-			},
-			"setDefaultForFile": "Définir « ${fileName} » comme source d'IA par défaut"
+				},
+				"aria-label": "Définir « ${fileName} » comme source d'IA par défaut"
+			}
 		},
 		"confirm": {
 			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous annuler les modifications ?",
@@ -1474,7 +1476,7 @@
 		"what_is_manager": "Qu'est-ce qu'un gestionnaire de scripts utilisateur ?",
 		"manager_explanation": "Un gestionnaire de scripts utilisateur est une extension de navigateur qui vous permet d'installer et d'exécuter des scripts qui modifient les pages Web. Pour utiliser le script d'intégration fount, vous avez besoin d'une des extensions.",
 		"popular_managers": "Choix populaires:",
-		"csp_warning": "Vous devrez peut-être installer le plugin pour désactiver CSP pour que la fonction d'intégration fonctionne correctement. Pour ${browser}, vous pouvez utiliser <a href=\"${link}\" target=\"_blank\" rel=\"noopener\" class=\"link\">ce plugin</a>.",
+		"csp_warning": "Vous devrez peut-être installer le plugin pour désactiver CSP pour que la fonction d'intégration fonctionne correctement. Pour ${browser}, vous pouvez utiliser [ce plugin](${link}).",
 		"connected_pages_title": "Page connectée",
 		"fetch_pages_error": "Impossible de charger la liste des pages liées.",
 		"page_title": "Titre de la page",

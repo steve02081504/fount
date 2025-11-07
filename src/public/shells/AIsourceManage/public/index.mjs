@@ -3,7 +3,7 @@
  */
 import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
-import { initTranslations, setLocalizeLogic, i18nElement, console, geti18n, confirmI18n, promptI18n } from '../../scripts/i18n.mjs'
+import { initTranslations, i18nElement, console, geti18n, confirmI18n, promptI18n } from '../../scripts/i18n.mjs'
 import { createJsonEditor } from '../../scripts/jsonEditor.mjs'
 import { getPartList, getDefaultParts, addDefaultPart, unsetDefaultPart } from '../../scripts/parts.mjs'
 import { svgInliner } from '../../scripts/svgInliner.mjs'
@@ -99,9 +99,8 @@ function renderFileList() {
 		const checkbox = document.createElement('input')
 		checkbox.type = 'checkbox'
 		checkbox.classList.add('default-checkbox', 'checkbox', 'checkbox-primary')
-		setLocalizeLogic(checkbox, () => {
-			checkbox.setAttribute('aria-label', geti18n('aisource_editor.buttons.setDefaultForFile', { fileName }))
-		})
+		Object.assign(checkbox.dataset, { fileName }) // for i18n
+		i18nElement(checkbox)
 		checkboxContainer.appendChild(checkbox)
 		listItem.appendChild(checkboxContainer)
 

@@ -783,7 +783,6 @@
 		"sortBy": {
 			"aria-label": "ordenar por"
 		},
-		"select_chat_with_chars": "Selecione conversar com ${chars}",
 		"selectAll": "Selecionar Tudo",
 		"buttons": {
 			"reverseSelect": "Inverter Seleção",
@@ -804,6 +803,9 @@
 			"copyError": "Falha ao copiar.",
 			"deleteError": "Falha ao eliminar.",
 			"exportError": "Falha ao exportar."
+		},
+		"select_checkbox": {
+			"aria-label": "Selecione conversar com ${chars}"
 		}
 	},
 	"easynew": {
@@ -1308,9 +1310,9 @@
 			"setDefault": {
 				"dataset": {
 					"tip": "Definido como padrão"
-				}
-			},
-			"setDefaultForFile": "Defina “${fileName}” como fonte de IA padrão"
+				},
+				"aria-label": "Defina “${fileName}” como fonte de IA padrão"
+			}
 		},
 		"confirm": {
 			"unsavedChanges": "Tem alterações não guardadas. Deseja descartar as alterações?",
@@ -1474,7 +1476,7 @@
 		"what_is_manager": "O que é um gestor de scripts de utilizador?",
 		"manager_explanation": "Um gestor de scripts de utilizador é uma extensão do navegador que permite instalar e executar scripts que modificam as páginas da Web. Para usar o script de integração fount, você precisa de uma das extensões.",
 		"popular_managers": "Escolhas populares:",
-		"csp_warning": "Pode ser necessário instalar o plugin para desativar o CSP para que a função de integração funcione corretamente. Para o ${browser}, pode utilizar <a href=\"${link}\" target=\"_blank\" rel=\"noopener\" class=\"link\">este plugin</a>.",
+		"csp_warning": "Pode ser necessário instalar o plugin para desativar o CSP para que a função de integração funcione corretamente. Para o ${browser}, pode utilizar [este plugin](${link}).",
 		"connected_pages_title": "Página conectada",
 		"fetch_pages_error": "Falha ao carregar a lista de página vinculada.",
 		"page_title": "Título da página",

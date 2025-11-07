@@ -783,7 +783,6 @@
 		"sortBy": {
 			"aria-label": "sắp xếp theo"
 		},
-		"select_chat_with_chars": "Chọn trò chuyện với ${chars}",
 		"selectAll": "Chọn tất cả",
 		"buttons": {
 			"reverseSelect": "Đảo ngược lựa chọn",
@@ -804,6 +803,9 @@
 			"copyError": "Sao chép không thành công.",
 			"deleteError": "Xóa không thành công.",
 			"exportError": "Xuất không thành công."
+		},
+		"select_checkbox": {
+			"aria-label": "Chọn trò chuyện với ${chars}"
 		}
 	},
 	"easynew": {
@@ -1308,9 +1310,9 @@
 			"setDefault": {
 				"dataset": {
 					"tip": "Đặt làm mặc định"
-				}
-			},
-			"setDefaultForFile": "Đặt “${fileName}” làm nguồn AI mặc định"
+				},
+				"aria-label": "Đặt “${fileName}” làm nguồn AI mặc định"
+			}
 		},
 		"confirm": {
 			"unsavedChanges": "Bạn có những thay đổi chưa được lưu. Bạn có muốn hủy bỏ những thay đổi này không?",
@@ -1474,7 +1476,7 @@
 		"what_is_manager": "Trình quản lý userscript là gì?",
 		"manager_explanation": "Một trình quản lý userscript là một tiện ích mở rộng trình duyệt cho phép bạn cài đặt và chạy các tập lệnh sửa đổi các trang web. Để sử dụng tập lệnh tích hợp fount, bạn cần một trong các tiện ích mở rộng.",
 		"popular_managers": "Lựa chọn phổ biến:",
-		"csp_warning": "Bạn có thể cần cài đặt plugin để tắt CSP nhằm giúp chức năng tích hợp hoạt động bình thường. Đối với ${browser}, bạn có thể sử dụng <a href=\"${link}\" target=\"_blank\" rel=\"noopener\" class=\"link\">plugin này</a>.",
+		"csp_warning": "Bạn có thể cần cài đặt plugin để tắt CSP nhằm giúp chức năng tích hợp hoạt động bình thường. Đối với ${browser}, bạn có thể sử dụng [plugin này](${link}).",
 		"connected_pages_title": "Trang được kết nối",
 		"fetch_pages_error": "Không tải danh sách trang được liên kết.",
 		"page_title": "Tiêu đề trang",

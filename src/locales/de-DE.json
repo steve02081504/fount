@@ -783,7 +783,6 @@
 		"sortBy": {
 			"aria-label": "sortieren nach"
 		},
-		"select_chat_with_chars": "Wählen Sie „Chat mit ${chars}“",
 		"selectAll": "Alle auswählen",
 		"buttons": {
 			"reverseSelect": "Auswahl umkehren",
@@ -804,6 +803,9 @@
 			"copyError": "Kopieren fehlgeschlagen",
 			"deleteError": "Löschen fehlgeschlagen",
 			"exportError": "Export fehlgeschlagen"
+		},
+		"select_checkbox": {
+			"aria-label": "Wählen Sie „Chat mit ${chars}“"
 		}
 	},
 	"easynew": {
@@ -1308,9 +1310,9 @@
 			"setDefault": {
 				"dataset": {
 					"tip": "Standardmäßig festgelegt"
-				}
-			},
-			"setDefaultForFile": "Legen Sie „${fileName}“ als Standard-KI-Quelle fest"
+				},
+				"aria-label": "Legen Sie „${fileName}“ als Standard-KI-Quelle fest"
+			}
 		},
 		"confirm": {
 			"unsavedChanges": "Sie haben ungespeicherte Änderungen. Möchten Sie die Änderungen verwerfen?",
@@ -1474,7 +1476,7 @@
 		"what_is_manager": "Was ist ein Userscript-Manager?",
 		"manager_explanation": "Ein Userscript-Manager ist eine Browser-Erweiterung, mit der Sie Skripte installieren und ausführen können, die Webseiten ändern. Um das fount -Integrationsskript zu verwenden, benötigen Sie eine der Erweiterungen.",
 		"popular_managers": "Beliebte Entscheidungen:",
-		"csp_warning": "Möglicherweise müssen Sie das Plugin installieren, um CSP auszuschalten, damit die Integrationsfunktion ordnungsgemäß funktioniert. Für ${browser} können Sie <a href=\"${link}\" target=\"_blank\" rel=\"noopener\" class=\"link\">dieses Plugin</a> verwenden.",
+		"csp_warning": "Möglicherweise müssen Sie das Plugin installieren, um CSP auszuschalten, damit die Integrationsfunktion ordnungsgemäß funktioniert. Für ${browser} können Sie [dieses Plugin](${link}) verwenden.",
 		"connected_pages_title": "Verbundene Seite",
 		"fetch_pages_error": "Das Laden der Liste der verknüpften Seiten ist fehlgeschlagen.",
 		"page_title": "Seitentitel",
