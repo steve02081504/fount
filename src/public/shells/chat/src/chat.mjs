@@ -59,8 +59,8 @@ export function registerChatUiSocket(chatid, ws) {
 			clearTimeout(chatDeleteTimers.get(chatid))
 			chatDeleteTimers.set(chatid, setTimeout(async () => {
 				try {
-					if (chatUiSockets.has(chatid)) return
-					if (is_VividChat(chatData?.chatMetadata)) {
+					if (!chatData || chatUiSockets.has(chatid)) return
+					if (is_VividChat(chatData.chatMetadata)) {
 						await saveChat(chatid)
 						chatData.chatMetadata = null
 					}
@@ -978,7 +978,7 @@ export async function modifyTimeLine(chatid, delta) {
 			else
 				entry = await BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, chatMetadata.username)
 
-			if (entry.timeSlice.world.interfaces?.chat?.AddChatLogEntry)
+			if (entry.timeSlice.world?.interfaces?.chat?.AddChatLogEntry)
 				entry.timeSlice.world.interfaces.chat.AddChatLogEntry(await getChatRequest(chatid, undefined), entry)
 			else
 				chatMetadata.chatLog.push(entry)

@@ -282,7 +282,7 @@ $stderr = StringIO.new
 
 			const exitcode = await php.run(`<?php ${code} ?>`)
 
-			if (error || exitcode !== 0)
+			if (error || exitcode)
 				return { error: (error || `Exited with code ${exitcode}`).trim(), exitcode }
 
 			return {
@@ -404,7 +404,7 @@ const button = this
 ;(async () => {
 	const tooltip = button.parentElement
 	try {
-		await navigator.clipboard.writeText(document.getElementById('${uniqueId}').innerText)
+		await navigator.clipboard.writeText(document.querySelector('#${uniqueId} pre').innerText)
 		${isStandalone
 			? `tooltip.setAttribute('data-tip', '${geti18n('code_block.copied.dataset.tip')}')`
 			: 'tooltip.setAttribute(\'data-i18n\', \'code_block.copied\')'
@@ -433,7 +433,7 @@ const button = this
 				...isStandalone ? { 'aria-label': geti18n('code_block.download.aria-label') } : { 'data-i18n': 'code_block.download' },
 				onclick: `\
 event.stopPropagation()
-const code = document.getElementById('${uniqueId}').innerText
+const code = document.querySelector('#${uniqueId} pre').innerText
 const a = document.createElement('a')
 a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(code)
 a.download = \`code.${ext}\`
@@ -464,7 +464,7 @@ outputContainer.innerHTML = /* html */ \`\\
 \`
 codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 
-;(${executor.toString()})(codeBlockContainer.innerText).then(result => {
+;(${executor.toString()})(document.querySelector('#${uniqueId} pre').innerText).then(result => {
 	result = result || {}
 	const escapeHtml = (unsafe) => String(unsafe).replace(/[&<>"']/g, (m) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'}[m]))
 	let alerts = []

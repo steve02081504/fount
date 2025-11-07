@@ -50,7 +50,7 @@ export function unsetDefaultPart(user, parttype, partname) {
 	defaultParts.splice(index, 1)
 	if (!defaultParts.length) delete user.defaultParts?.[parttype]
 	save_config()
-	sendEventToUser(user.username, 'default-part-unsetted', { parttype, partname: null })
+	sendEventToUser(user.username, 'default-part-unsetted', { parttype, partname })
 }
 /**
  * 获取用户的默认部件。
@@ -504,6 +504,7 @@ export async function uninstallPartBase(username, parttype, partname, unLoadargs
 		fs.rmSync(path, { recursive: true, force: true })
 	}
 } = {}) {
+	parts_set[username][parttype] ??= {}
 	/** @type {T | undefined} */
 	let part = parts_set[username][parttype][partname]
 	if (getAllDefaultParts(username, parttype).includes(partname))

@@ -26,17 +26,16 @@ async function handleSampling(params) {
 
 	// fount 的 chat log 格式
 	const chat_log = messages.map(msg => ({
-		role: msg.role === 'user' ? 'user' : (msg.role === 'assistant' ? 'char' : 'system'),
+		role: msg.role === 'user' ? 'user' : msg.role === 'assistant' ? 'char' : 'system',
 		content: msg.content?.text || msg.content || '',
 	}))
 
 	// fount 的 system prompt
-	if (systemPrompt) {
+	if (systemPrompt)
 		chat_log.unshift({
 			role: 'system',
 			content: systemPrompt,
 		})
-	}
 
 	// 调用 AI 源
 	try {
@@ -325,6 +324,7 @@ export default {
 			 * @returns {Promise<void>} 设置完成的承诺
 			 */
 			SetData: async (newData) => {
+				if (!Object.keys(newData).length) return
 				data = newData
 				await saveJsonFile(dataPath, data)
 				await mcpClient?.stop()
@@ -373,7 +373,7 @@ export default {
 			ReplyHandler: async (reply, args) => {
 				if (!reply.content) return false
 				const calls = parseXMLCalls(reply.content)
-				if (calls.length === 0) return false
+				if (!calls.length) return false
 				let hasChanges = false
 				for (const call of calls)
 					try {

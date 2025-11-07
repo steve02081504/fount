@@ -101,7 +101,6 @@ export async function parseRisuModule(moduleBuffer) {
 		if (pos < moduleBuffer.length && readByte() !== 0)
 			console.warn('Module file has trailing data after expected assets and EOF mark.')
 
-
 		return { moduleDef, assetsData }
 	}
 	catch (error) {
