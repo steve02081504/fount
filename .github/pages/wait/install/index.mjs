@@ -123,7 +123,7 @@ async function createAutoPreview() {
  */
 async function renderThemePreviews() {
 	themeList.innerHTML = ''
-	const themes = await import('https://cdn.jsdelivr.net/npm/daisyui/functions/themeOrder.js').then(m => m.default)
+	const themes = await import('https://cdn.jsdelivr.net/npm/daisyui/functions/themeOrder.js').then(m => m.default).catch(() => ['dark', 'light'])
 
 	const allPreviews = []
 
@@ -521,6 +521,16 @@ async function handleInstallerFlow() {
  */
 async function handleStandaloneFlow() {
 	launchButtonSpinner.style.display = 'none'
+
+	launchButtonText.dataset.i18n = 'installer_wait_screen.footer.open_or_install_fount'
+	/**
+	 * 在 fount 服务不可用时打开主页。
+	 */
+	launchButton.onclick = () => {
+		window.location.href = 'fount://page/'
+		setTimeout(() => { window.location.href = 'https://github.com/steve02081504/fount' }, 5000)
+	}
+
 	const savedHostUrl = await getFountHostUrl()
 
 	if (savedHostUrl) {
@@ -530,17 +540,7 @@ async function handleStandaloneFlow() {
 		 */
 		launchButton.onclick = async () => {
 			const isOnline = await pingFount(savedHostUrl)
-			window.location.href = isOnline ? new URL('/shells/home', savedHostUrl).href : 'fount://page/shells/home'
-		}
-	}
-	else {
-		launchButtonText.dataset.i18n = 'installer_wait_screen.footer.open_or_install_fount'
-		/**
-		 * 在 fount 服务不可用时打开主页。
-		 */
-		launchButton.onclick = () => {
-			window.location.href = 'fount://page/shells/home'
-			setTimeout(() => { window.location.href = 'https://github.com/steve02081504/fount' }, 1000)
+			window.location.href = isOnline ? savedHostUrl : 'fount://page/'
 		}
 	}
 }

@@ -64,6 +64,8 @@ export let main_locale = 'en-UK'
  * @returns {string[]} 首选语言列表。
  */
 export function loadPreferredLangs() {
+	// TODO: remove this
+	if (localStorage.getItem('userPreferredLanguages') == 'undefined') localStorage.removeItem('userPreferredLanguages')
 	return JSON.parse(localStorage.getItem('userPreferredLanguages') || '[]').filter(Boolean)
 }
 
@@ -75,7 +77,7 @@ export function loadPreferredLangs() {
 export async function savePreferredLangs(langs) {
 	const oldLangs = loadPreferredLangs()
 	if (JSON.stringify(langs) == JSON.stringify(oldLangs)) return
-	localStorage.setItem('userPreferredLanguages', JSON.stringify(langs))
+	localStorage.setItem('userPreferredLanguages', JSON.stringify(langs || []))
 	await initTranslations()
 }
 

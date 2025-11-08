@@ -17,16 +17,52 @@ import {
 	replaceMessageInQueue,
 	getChatLogIndexByQueueIndex,
 	getMessageElementByQueueIndex,
+	addDeletionListener,
 } from './virtualQueue.mjs'
 
 // 用于存储滑动事件监听器的 Map
 const swipeListenersMap = new WeakMap()
+const deletionQueue = []
 
 /**
- * Generates a full HTML document for a message, including stylesheets and attachments for proper rendering.
- * If the message content contains an H1 tag, its text is used as the document title.
- * @param {object} message - The message object.
- * @returns {Promise<string>} A complete HTML string.
+ * 按顺序处理删除队列。
+ */
+async function processDeletionQueue() {
+	const messageElement = deletionQueue.shift()
+	if (!messageElement) return
+	try {
+		const queueIndex = getQueueIndex(messageElement)
+		if (queueIndex === -1) return
+		const chatLogIndex = getChatLogIndexByQueueIndex(queueIndex)
+		const uiUpdated = new Promise(resolve => addDeletionListener(resolve))
+		await deleteMessage(chatLogIndex)
+		await uiUpdated
+	}
+	catch (error) {
+		console.error('Error processing deletion:', error)
+		showToast('error', error.stack || error.message || error)
+	}
+}
+setTimeout(async () => {
+	while (true) {
+		await processDeletionQueue()
+		await new Promise(resolve => setTimeout(resolve, 1000))
+	}
+})
+
+/**
+ * 将消息元素添加到删除队列。
+ * @param {HTMLElement} messageElement - 要删除的消息元素。
+ */
+function enqueueDeletion(messageElement) {
+	deletionQueue.push(messageElement)
+}
+
+/**
+ * 为消息生成完整的 HTML 文档，包括样式表和附件以正确呈现。
+ * 如果消息内容包含 H1 标签，其文本将用作文档标题。
+ * @param {object} message - 消息对象。
+ * @returns {Promise<string>} 完整的 HTML 字符串。
  */
 async function generateFullHtmlForMessage(message) {
 	const messageContentHtml = await renderMarkdownAsStandAloneHtmlString(message.content_for_show || message.content)
@@ -172,79 +208,71 @@ export async function renderMessage(message) {
 
 	// --- 删除按钮 ---
 	const deleteButton = messageElement.querySelector('.delete-button')
-	if (deleteButton)
-		deleteButton.addEventListener('click', async () => {
-			if (confirmI18n('chat.messageList.confirmDeleteMessage')) {
-				const queueIndex = getQueueIndex(messageElement)
-				if (queueIndex === -1) return
-				const chatLogIndex = getChatLogIndexByQueueIndex(queueIndex)
-				if (chatLogIndex === -1) return
-				await deleteMessage(chatLogIndex)
-			}
-		})
+	deleteButton.addEventListener('click', () => {
+		if (confirmI18n('chat.messageList.confirmDeleteMessage')) {
+			deleteButton.disabled = true
+			enqueueDeletion(messageElement)
+		}
+	})
 
 	// 获取 dropdown 菜单元素
 	const dropdownMenu = messageElement.querySelector('.dropdown')
-	if (dropdownMenu) {
-		messageElement.addEventListener('mouseleave', () => dropdownMenu.hidePopover())
-		// 获取消息内容
-		const messageContentElement = messageElement.querySelector('.message-content')
-		const messageMarkdownContent = message.content_for_show || message.content
+	messageElement.addEventListener('mouseleave', () => dropdownMenu.hidePopover())
+	// 获取消息内容
+	const messageContentElement = messageElement.querySelector('.message-content')
+	const messageMarkdownContent = message.content_for_show || message.content
 
-		// 获取 dropdown items
-		dropdownMenu.querySelector('.copy-markdown-button').addEventListener('click', async () => {
-			try {
-				await navigator.clipboard.writeText(messageMarkdownContent)
-			} catch (error) { showToast('error', error.stack || error.message || error) }
-			dropdownMenu.hidePopover()
-		})
-		dropdownMenu.querySelector('.copy-text-button').addEventListener('click', async () => {
-			try {
-				await navigator.clipboard.writeText(messageContentElement.textContent.trim())
-			} catch (error) { showToast('error', error.stack || error.message || error) }
-			dropdownMenu.hidePopover()
-		})
-		dropdownMenu.querySelector('.copy-html-button').addEventListener('click', async () => {
-			try {
-				const fullHtml = await generateFullHtmlForMessage(message)
-				await navigator.clipboard.writeText(fullHtml)
-			} catch (error) { showToast('error', error.stack || error.message || error) }
-			dropdownMenu.hidePopover()
-		})
+	// 获取 dropdown items
+	dropdownMenu.querySelector('.copy-markdown-button').addEventListener('click', async () => {
+		try {
+			await navigator.clipboard.writeText(messageMarkdownContent)
+		} catch (error) { showToast('error', error.stack || error.message || error) }
+		dropdownMenu.hidePopover()
+	})
+	dropdownMenu.querySelector('.copy-text-button').addEventListener('click', async () => {
+		try {
+			await navigator.clipboard.writeText(messageContentElement.textContent.trim())
+		} catch (error) { showToast('error', error.stack || error.message || error) }
+		dropdownMenu.hidePopover()
+	})
+	dropdownMenu.querySelector('.copy-html-button').addEventListener('click', async () => {
+		try {
+			const fullHtml = await generateFullHtmlForMessage(message)
+			await navigator.clipboard.writeText(fullHtml)
+		} catch (error) { showToast('error', error.stack || error.message || error) }
+		dropdownMenu.hidePopover()
+	})
 
-		// --- Download as HTML button ---
-		const downloadHtmlButton = dropdownMenu.querySelector('.download-html-button')
-		if (downloadHtmlButton)
-			downloadHtmlButton.addEventListener('click', async () => {
-				try {
-					const fullHtml = await generateFullHtmlForMessage(message)
-					const blob = new Blob([fullHtml], { type: 'text/html' })
-					const url = URL.createObjectURL(blob)
-					const a = document.createElement('a')
-					a.href = url
-					a.download = `message-${preprocessedMessage.safeTimeStamp}.html`
-					document.body.appendChild(a)
-					a.click()
-					document.body.removeChild(a)
-					URL.revokeObjectURL(url)
-				}
-				catch (error) {
-					showToast('error', error.stack || error.message || error)
-				}
-				dropdownMenu.hidePopover()
-			})
-	}
+	// --- Download as HTML button ---
+	const downloadHtmlButton = dropdownMenu.querySelector('.download-html-button')
+	downloadHtmlButton.addEventListener('click', async () => {
+		try {
+			const fullHtml = await generateFullHtmlForMessage(message)
+			const blob = new Blob([fullHtml], { type: 'text/html' })
+			const url = URL.createObjectURL(blob)
+			const a = document.createElement('a')
+			a.href = url
+			a.download = `message-${preprocessedMessage.safeTimeStamp}.html`
+			document.body.appendChild(a)
+			a.click()
+			document.body.removeChild(a)
+			URL.revokeObjectURL(url)
+		}
+		catch (error) {
+			showToast('error', error.stack || error.message || error)
+		}
+		dropdownMenu.hidePopover()
+	})
 
 	// --- 编辑按钮 ---
 	const editButton = messageElement.querySelector('.edit-button')
-	if (editButton)
-		editButton.addEventListener('click', async () => {
-			const queueIndex = getQueueIndex(messageElement)
-			if (queueIndex === -1) return
-			const chatLogIndex = getChatLogIndexByQueueIndex(queueIndex)
-			if (chatLogIndex === -1) return
-			await editMessageStart(message, queueIndex, chatLogIndex) // 显示编辑界面
-		})
+	editButton.addEventListener('click', async () => {
+		const queueIndex = getQueueIndex(messageElement)
+		if (queueIndex === -1) return
+		const chatLogIndex = getChatLogIndexByQueueIndex(queueIndex)
+		if (chatLogIndex === -1) return
+		await editMessageStart(message, queueIndex, chatLogIndex) // 显示编辑界面
+	})
 
 	// --- 渲染附件 ---
 	if (message.files?.length) {
@@ -304,69 +332,55 @@ export async function editMessageStart(message, queueIndex, chatLogIndex) {
 	const uploadButton = messageElement.querySelector(`#upload-edit-button-${editRenderedMessage.safeTimeStamp}`)
 
 	// 添加拖拽上传支持
-	if (editInput && attachmentPreview)
-		addDragAndDropSupport(editInput, selectedFiles, attachmentPreview)
+	addDragAndDropSupport(editInput, selectedFiles, attachmentPreview)
 
 	// keyboard shortcuts for editing
-	if (editInput)
-		editInput.addEventListener('keydown', event => {
-			if (event.key === 'Enter' && event.ctrlKey) {
-				event.preventDefault() // Prevent newline
-				event.stopPropagation() // Prevent bubbling
-				confirmButton.click()
-			}
-			else if (event.key === 'Escape') {
-				event.preventDefault() // Prevent default action
-				event.stopPropagation() // Prevent bubbling
-				cancelButton.click()
-			}
-		})
+	editInput.addEventListener('keydown', event => {
+		if (event.key === 'Enter' && event.ctrlKey) {
+			event.preventDefault() // Prevent newline
+			event.stopPropagation() // Prevent bubbling
+			confirmButton.click()
+		}
+		else if (event.key === 'Escape') {
+			event.preventDefault() // Prevent default action
+			event.stopPropagation() // Prevent bubbling
+			cancelButton.click()
+		}
+	})
 
 	// --- 确认编辑 ---
-	if (confirmButton && editInput)
-		confirmButton.addEventListener('click', async () => {
-			const newMessage = { ...message, content: editInput.value, files: selectedFiles }
-			await editMessage(chatLogIndex, newMessage) // 后端编辑
-		})
-
+	confirmButton.addEventListener('click', async () => {
+		const newMessage = { ...message, content: editInput.value, files: selectedFiles }
+		await editMessage(chatLogIndex, newMessage) // 后端编辑
+	})
 
 	// --- 取消编辑 ---
-	if (cancelButton)
-		cancelButton.addEventListener('click', async () => {
-			await replaceMessageInQueue(queueIndex, message) // 恢复原始消息视图
-		})
-
+	cancelButton.addEventListener('click', async () => {
+		await replaceMessageInQueue(queueIndex, message) // 恢复原始消息视图
+	})
 
 	// --- 渲染编辑状态的附件 ---
-	if (attachmentPreview) {
-		attachmentPreview.innerHTML = ''
-		const attachmentPromises = selectedFiles.map((file, i) =>
-			renderAttachmentPreview(file, i, selectedFiles) // 传入 selectedFiles 以支持删除
-		)
-		const renderedAttachments = await Promise.all(attachmentPromises)
-		renderedAttachments.forEach(el => { if (el) attachmentPreview.appendChild(el) })
-	}
+	attachmentPreview.innerHTML = ''
+	const attachmentPromises = selectedFiles.map((file, i) =>
+		renderAttachmentPreview(file, i, selectedFiles) // 传入 selectedFiles 以支持删除
+	)
+	const renderedAttachments = await Promise.all(attachmentPromises)
+	renderedAttachments.forEach(el => { if (el) attachmentPreview.appendChild(el) })
 
 	// --- 编辑状态上传按钮 ---
-	if (uploadButton && fileEditInput)
-		uploadButton.addEventListener('click', () => fileEditInput.click())
-
+	uploadButton.addEventListener('click', () => fileEditInput.click())
 
 	// --- 文件选择处理 ---
-	if (fileEditInput && attachmentPreview)
-		fileEditInput.addEventListener('change', event =>
-			handleFilesSelect(event, selectedFiles, attachmentPreview) // 更新 selectedFiles 和预览
-		)
-
+	fileEditInput.addEventListener('change', event =>
+		handleFilesSelect(event, selectedFiles, attachmentPreview) // 更新 selectedFiles 和预览
+	)
 
 	// 平滑过渡：淡入
 	messageElement.style.opacity = '1'
 
 	// 自动聚焦并移动光标到末尾
-	if (editInput) {
-		editInput.focus()
-		editInput.setSelectionRange(editInput.value.length, editInput.value.length)
-	}
+	editInput.focus()
+	editInput.setSelectionRange(editInput.value.length, editInput.value.length)
 }
 
 /**
@@ -463,12 +477,11 @@ export function enableSwipe(messageElement) {
  */
 export function disableSwipe(messageElement) {
 	const listeners = swipeListenersMap.get(messageElement)
-	if (listeners) {
-		// 移除事件监听
-		messageElement.removeEventListener('touchstart', listeners.touchstart)
-		messageElement.removeEventListener('touchmove', listeners.touchmove)
-		messageElement.removeEventListener('touchend', listeners.touchend)
-		messageElement.removeEventListener('touchcancel', listeners.touchcancel)
-		swipeListenersMap.delete(messageElement) // 清除引用
-	}
+	if (!listeners) return
+	// 移除事件监听
+	messageElement.removeEventListener('touchstart', listeners.touchstart)
+	messageElement.removeEventListener('touchmove', listeners.touchmove)
+	messageElement.removeEventListener('touchend', listeners.touchend)
+	messageElement.removeEventListener('touchcancel', listeners.touchcancel)
+	swipeListenersMap.delete(messageElement) // 清除引用
 }

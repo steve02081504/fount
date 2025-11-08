@@ -101,7 +101,7 @@ export class IPCManager {
 			return new Promise((resolve, reject) => {
 				server.on('error', async err => {
 					if (err.code === 'EADDRINUSE') resolve(false)
-					else if (err.code === 'EAFNOSUPPORT') resolve(true) // 不支持的地址族，视为成功
+					else if (['EAFNOSUPPORT', 'EADDRNOTAVAIL'].includes(err.code)) resolve(true) // 不支持的地址族/地址，视为成功
 					else reject(err)
 				})
 

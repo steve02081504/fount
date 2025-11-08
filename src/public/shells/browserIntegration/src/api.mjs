@@ -522,6 +522,11 @@ export function updateAutoRunScript(username, id, fields) {
  * @param {string} username - 用户名。
  * @param {number} pageId - 页面ID。
  * @param {object} danmakuOptions - 弹幕选项。
+ * @param {string} danmakuOptions.content - 弹幕内容。
+ * @param {number} [danmakuOptions.speed=10] - 弹幕速度（像素/秒）。
+ * @param {string} [danmakuOptions.color='white'] - 弹幕颜色。
+ * @param {number} [danmakuOptions.fontSize=24] - 弹幕字体大小。
+ * @param {number} [danmakuOptions.yPos] - 弹幕垂直位置（0-1），表示相对于视口高度的比例。
  * @returns {Promise<any>} - 弹幕发送结果。
  */
 export async function sendDanmakuToPage(username, pageId, danmakuOptions) {
@@ -540,7 +545,6 @@ export async function sendDanmakuToPage(username, pageId, danmakuOptions) {
 }
 
 events.on('send-event-to-user', ({ username, type, data }) => {
-	console.log('send-event-to-user', username, type, data)
 	const manager = userManagers.get(username)
 	if (manager) manager.broadcastToAllPages({ type: `page-event-${type}`, data })
 })

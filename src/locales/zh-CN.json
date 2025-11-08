@@ -301,6 +301,7 @@
 			"title": "主机离线",
 			"message": "fount 主机 ${hostUrl} 似乎已离线。您想重试吗？",
 			"buttons": {
+				"start": "启动",
 				"retry": "重试"
 			}
 		},
@@ -825,6 +826,10 @@
 		"templateSelect": {
 			"label": "选择一个模板"
 		},
+		"alerts": {
+			"success": "组件 '${partName}' 创建成功！",
+			"error": "错误: ${message}"
+		},
 		"form": {
 			"partName": {
 				"label": "组件名称",
@@ -906,11 +911,7 @@
 				"label": "问题页面",
 				"placeholder": "组件问题页面的URL"
 			},
-			"createButton": "创建组件",
-			"alerts": {
-				"success": "组件 '${partName}' 创建成功！",
-				"error": "错误: ${message}"
-			}
+			"createButton": "创建组件"
 		},
 		"achievements": {
 			"create_part": {

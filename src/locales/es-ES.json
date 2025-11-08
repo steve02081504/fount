@@ -301,6 +301,7 @@
 			"title": "Host sin conexión",
 			"message": "El host de fount ${hostUrl} parece estar desconectado. ¿Quieres intentarlo de nuevo?",
 			"buttons": {
+				"start": "Iniciar",
 				"retry": "Reintentar"
 			}
 		},
@@ -825,6 +826,10 @@
 		"templateSelect": {
 			"label": "Seleccionar una plantilla"
 		},
+		"alerts": {
+			"success": "¡El componente '${partName}' se ha creado correctamente!",
+			"error": "Error: ${message}"
+		},
 		"form": {
 			"partName": {
 				"label": "Nombre del componente",
@@ -906,11 +911,7 @@
 				"label": "Página de incidencias",
 				"placeholder": "URL de la página de incidencias del componente"
 			},
-			"createButton": "Crear componente",
-			"alerts": {
-				"success": "¡El componente '${partName}' se ha creado correctamente!",
-				"error": "Error: ${message}"
-			}
+			"createButton": "Crear componente"
 		},
 		"achievements": {
 			"create_part": {

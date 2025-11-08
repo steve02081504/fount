@@ -301,6 +301,7 @@
 			"title": "होस्ट ऑफ़लाइन",
 			"message": "fount होस्ट ${hostUrl} ऑफ़लाइन प्रतीत होता है। क्या आप पुनः प्रयास करना चाहते हैं?",
 			"buttons": {
+				"start": "शुरू करें",
 				"retry": "पुनः प्रयास करें"
 			}
 		},
@@ -825,6 +826,10 @@
 		"templateSelect": {
 			"label": "एक टेम्पलेट चुनें"
 		},
+		"alerts": {
+			"success": "घटक '${partName}' सफलतापूर्वक बनाया गया!",
+			"error": "त्रुटि: ${message}"
+		},
 		"form": {
 			"partName": {
 				"label": "घटक का नाम",
@@ -906,11 +911,7 @@
 				"label": "समस्या पृष्ठ",
 				"placeholder": "भाग के समस्या पृष्ठ का URL"
 			},
-			"createButton": "घटक बनाएँ",
-			"alerts": {
-				"success": "घटक '${partName}' सफलतापूर्वक बनाया गया!",
-				"error": "त्रुटि: ${message}"
-			}
+			"createButton": "घटक बनाएँ"
 		},
 		"achievements": {
 			"create_part": {

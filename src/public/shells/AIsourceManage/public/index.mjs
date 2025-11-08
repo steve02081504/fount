@@ -3,6 +3,7 @@
  */
 import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
+import { unlockAchievement } from '../../scripts/endpoints.mjs'
 import { initTranslations, i18nElement, console, geti18n, confirmI18n, promptI18n } from '../../scripts/i18n.mjs'
 import { createJsonEditor } from '../../scripts/jsonEditor.mjs'
 import { getPartList, getDefaultParts, addDefaultPart, unsetDefaultPart } from '../../scripts/parts.mjs'
@@ -111,7 +112,11 @@ function renderFileList() {
 			try {
 				const response = await (isChecked ? addDefaultPart : unsetDefaultPart)('AIsources', fileName)
 				if (!response.ok) throw new Error(await response.text())
-				if (isChecked) defaultParts.AIsources.push(fileName)
+
+				if (isChecked) {
+					defaultParts.AIsources.push(fileName)
+					unlockAchievement('shells', 'AIsourceManage', 'set_default_aisource')
+				}
 				else {
 					const index = defaultParts.AIsources.indexOf(fileName)
 					if (index > -1) defaultParts.AIsources.splice(index, 1)
@@ -289,8 +294,10 @@ async function loadEditor(fileName) {
 			onChange: (updatedContent, previousContent, { error, patchResult }) => {
 				if (error) return
 				isDirty = true
+				let data
+				try { data = jsonEditor.get() || JSON.parse(jsonEditor.get().text) } catch (e) { return }
 				onJsonUpdate({
-					data: jsonEditor.get().json || JSON.parse(jsonEditor.get().text),
+					data,
 					containers: {
 						generatorDisplay: generatorDisplayContainer,
 						jsonEditor: jsonEditorContainer
@@ -328,15 +335,15 @@ async function saveFile() {
 		showToastI18n('error', 'aisource_editor.alerts.noGeneratorSelectedSave')
 		return
 	}
-	const config = jsonEditor.get().json || JSON.parse(jsonEditor.get().text)
-	const generator = generatorSelect.value
-
 	// Show loading icon and disable button
 	saveStatusIcon.src = 'https://api.iconify.design/line-md/loading-loop.svg'
 	saveStatusIcon.classList.remove('hidden')
 	saveButton.disabled = true
 
 	try {
+		const config = jsonEditor.get().json || JSON.parse(jsonEditor.get().text)
+		const generator = generatorSelect.value
+
 		await setAIFile(activeFile, { generator, config }).catch(handleFetchError('aisource_editor.alerts.saveFileFailed'))
 		isDirty = false
 

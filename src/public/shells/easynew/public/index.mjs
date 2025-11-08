@@ -100,7 +100,6 @@ async function handleFormSubmit(event) {
 async function main() {
 	applyTheme()
 	await initTranslations('easynew')
-	i18nElement(document.body)
 
 	templateSelect.addEventListener('change', loadTemplateUI)
 	form.addEventListener('submit', handleFormSubmit)

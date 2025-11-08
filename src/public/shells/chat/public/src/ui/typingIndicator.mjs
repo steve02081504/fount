@@ -1,5 +1,4 @@
-import { setLocalizeLogic } from "../../../../../scripts/i18n.mjs";
-import { geti18n } from '../../../../../scripts/i18n.mjs'
+import { geti18n, setLocalizeLogic } from '../../../../../scripts/i18n.mjs'
 import { getCharDetails } from '../../../../scripts/parts.mjs'
 
 const typingIndicatorElement = document.getElementById('typing-indicator')
@@ -36,7 +35,7 @@ async function updateTypingIndicator() {
 			text = geti18n('chat.typingIndicator.isTyping', { names })
 		}
 
-		typingIndicatorElement.innerHTML = `
+		typingIndicatorElement.innerHTML = `\
 <span class="loading loading-dots loading-xs"></span>
 <span>${text}</span>
 `

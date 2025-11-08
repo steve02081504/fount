@@ -27,7 +27,7 @@ let clickCount = 0
  * 启动五彩纸屑。
  */
 function launchConfetti() {
-	confetti({
+	confetti?.({
 		particleCount: 100,
 		spread: 70,
 		origin: { y: 0.6 }

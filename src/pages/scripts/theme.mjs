@@ -219,4 +219,4 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e =
  * 内置主题。
  * @type {Promise<string[]>}
  */
-export const builtin_themes = await import('https://cdn.jsdelivr.net/npm/daisyui/functions/themeOrder.js').then(m => m.default)
+export const builtin_themes = await import('https://cdn.jsdelivr.net/npm/daisyui/functions/themeOrder.js').then(m => m.default).catch(() => ['dark', 'light'])

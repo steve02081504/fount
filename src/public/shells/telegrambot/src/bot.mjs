@@ -32,7 +32,6 @@ async function startTelegrafBot(botConfig, char) {
 	const me = await bot.telegram.getMe()
 
 	// 启动bot
-	// 使用 try-catch 包装 bot.launch() 以便捕获启动时可能发生的错误 (例如无效token)
 	bot.launch() // Telegraf v4 的启动方式
 	console.infoI18n('fountConsole.telegrambot.botStarted', {
 		botusername: me.username,
@@ -160,9 +159,9 @@ export async function stopBot(username, botname) {
 	finally {
 		// 无论停止是否成功，都从缓存中移除
 		delete botCache[botname]
+		// 在 fount 任务系统中标记此bot任务已结束
+		EndJob(username, 'shells', 'telegrambot', botname)
 	}
-	// 在 fount 任务系统中标记此bot任务已结束
-	EndJob(username, 'shells', 'telegrambot', botname)
 }
 
 /**

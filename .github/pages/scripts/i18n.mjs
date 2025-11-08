@@ -64,7 +64,7 @@ const localeNames = new Map()
  * @param {string[]} langs - The language codes (e.g., 'en-UK', 'zh-CN').
  */
 export async function setLocales(langs) {
-	localStorage.setItem('fountUserPreferredLanguages', JSON.stringify(langs))
+	localStorage.setItem('fountUserPreferredLanguages', JSON.stringify(langs || []))
 	await initTranslations()
 }
 
@@ -89,7 +89,7 @@ export function getLocaleNames() {
  * @param {string} [pageid] - 当前页面的 ID。
  * @param {string[]} preferredlocales - 优先的语言环境列表。
  */
-export async function initTranslations(pageid = saved_pageid, preferredlocales = eval(localStorage.getItem('fountUserPreferredLanguages')) || []) {
+export async function initTranslations(pageid = saved_pageid, preferredlocales = /* TODO: remove this */ eval(localStorage.getItem('fountUserPreferredLanguages')) || []) {
 	saved_pageid = pageid
 
 	try {

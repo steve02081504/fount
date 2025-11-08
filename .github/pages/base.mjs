@@ -14,7 +14,7 @@ Sentry.init({
 	tracePropagationTargets: [window.location.origin || 'https://steve02081504.github.io'],
 })
 
-await import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill/index.mjs')
+await import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill/index.mjs').catch(console.error)
 
 /* global urlParams */
 /**
@@ -74,6 +74,8 @@ if ('serviceWorker' in navigator)
 		})
 
 ; (f => document.readyState === 'complete' ? f() : window.addEventListener('load', f))(async () => {
-	console.log(...await fetch('https://cdn.jsdelivr.net/gh/steve02081504/fount/imgs/icon.js').then(r => r.text()).then(eval))
+	try {
+		console.log(...await fetch('https://cdn.jsdelivr.net/gh/steve02081504/fount/imgs/icon.js').then(r => r.text()).then(eval))
+	} catch (error) { console.error(error) }
 	console.log('Curious? Join us and build future together: https://github.com/steve02081504/fount')
 })

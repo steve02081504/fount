@@ -182,12 +182,14 @@ async function loadEditor(partType, partName) {
 				onChange: (updatedContent, previousContent, { error, patchResult }) => {
 					if (error) return
 					isDirty = true
+					let data
+					try { data = jsonEditor.get() || JSON.parse(jsonEditor.get().text) } catch (e) { return }
 					onJsonUpdate({
 						info: {
 							partType,
 							partName
 						},
-						data: jsonEditor.get().json || JSON.parse(jsonEditor.get().text),
+						data,
 						containers: {
 							partDisplay: partDisplayContainer,
 							jsonEditor: jsonEditorContainer
@@ -247,7 +249,6 @@ async function saveConfig() {
 		console.warn('No part selected to save.')
 		return
 	}
-	const data = jsonEditor.get().json || JSON.parse(jsonEditor.get().text)
 
 	// Show loading icon and disable button
 	saveStatusIcon.src = 'https://api.iconify.design/line-md/loading-loop.svg'
@@ -255,6 +256,7 @@ async function saveConfig() {
 	saveButton.disabled = true
 
 	try {
+		const data = jsonEditor.get().json || JSON.parse(jsonEditor.get().text)
 		await saveConfigData(activePartType, activePart, data)
 		isDirty = false
 

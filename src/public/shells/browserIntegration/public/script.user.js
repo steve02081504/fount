@@ -792,7 +792,7 @@ async function base_showToast(type, message, duration = 4000) {
 	}
 	alertDiv.className += ' fade-in-up'
 	const { host, protocol } = await getStoredData()
-	alertDiv.innerHTML = alertDiv.innerHTML.replaceAll('href="/', `href="${protocol}://${host}/`)
+	alertDiv.innerHTML = alertDiv.innerHTML.replaceAll('href="/', `href="${protocol}//${host}/`)
 
 	// 遍历 alertDiv 中的所有元素及其子元素的class，若在 supportedClasses 中，添加 fount-browserIntegration- 前缀
 	for (const element of [alertDiv, ...alertDiv.querySelectorAll('*')])

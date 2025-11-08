@@ -66,6 +66,5 @@ export async function importPartByText(username, text) {
 		console.log(`handler ${importHandler} failed:`, err)
 	}
 
-
-	if (errors.length) throw Object.assign(new Error('All handlers failed'), { errors })
+	if (errors.length) throw skip_report(Object.assign(new Error('All handlers failed'), { errors }))
 }

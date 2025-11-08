@@ -258,7 +258,7 @@ export async function getFountHostUrl(hostUrl = urlParams.get('hostUrl') ?? loca
  * @returns {Promise<boolean|undefined>} - 如果服务可达则返回 true，否则返回 false 或 undefined。
  */
 export async function pingFount(hostUrl) {
-	if (!hostUrl) return
+	if (!String(hostUrl).startsWith('http')) return
 	const controller = new AbortController()
 	const timeout = setTimeout(() => controller.abort(), 1000)
 	try {

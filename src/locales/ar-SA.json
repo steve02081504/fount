@@ -301,6 +301,7 @@
 			"title": "المضيف غير متصل",
 			"message": "يبدو أن مضيف المصدر ${hostUrl} غير متصل. هل تريد إعادة المحاولة؟",
 			"buttons": {
+				"start": "بدء",
 				"retry": "حاول ثانية"
 			}
 		},
@@ -825,6 +826,10 @@
 		"templateSelect": {
 			"label": "اختر قالبًا"
 		},
+		"alerts": {
+			"success": "تم إنشاء المكون '${partName}' بنجاح!",
+			"error": "خطأ: ${message}"
+		},
 		"form": {
 			"partName": {
 				"label": "اسم المكون",
@@ -906,11 +911,7 @@
 				"label": "صفحة المشاكل",
 				"placeholder": "رابط صفحة مشاكل المكون"
 			},
-			"createButton": "إنشاء مكون",
-			"alerts": {
-				"success": "تم إنشاء المكون '${partName}' بنجاح!",
-				"error": "خطأ: ${message}"
-			}
+			"createButton": "إنشاء مكون"
 		},
 		"achievements": {
 			"create_part": {

@@ -301,6 +301,7 @@
 			"title": "Máy chủ ngoại tuyến",
 			"message": "Máy chủ fount ${hostUrl} dường như đang ngoại tuyến. Bạn có muốn thử lại không?",
 			"buttons": {
+				"start": "Khởi động",
 				"retry": "Thử lại"
 			}
 		},
@@ -825,6 +826,10 @@
 		"templateSelect": {
 			"label": "Chọn một mẫu"
 		},
+		"alerts": {
+			"success": "Thành phần '${partName}' đã được tạo thành công!",
+			"error": "Lỗi: ${message}"
+		},
 		"form": {
 			"partName": {
 				"label": "Tên thành phần",
@@ -906,11 +911,7 @@
 				"label": "Trang vấn đề",
 				"placeholder": "URL của trang vấn đề của phần"
 			},
-			"createButton": "Tạo thành phần",
-			"alerts": {
-				"success": "Thành phần '${partName}' đã được tạo thành công!",
-				"error": "Lỗi: ${message}"
-			}
+			"createButton": "Tạo thành phần"
 		},
 		"achievements": {
 			"create_part": {

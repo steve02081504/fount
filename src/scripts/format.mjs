@@ -23,7 +23,10 @@ export async function formatStr(str, data) {
 				result += eval_result.result
 				str = str.slice(end_index)
 				break find
-			} catch (error) { }
+			} catch (error) {
+				if (!(error instanceof SyntaxError))
+					console.error(error)
+			}
 		}
 	}
 	result += str

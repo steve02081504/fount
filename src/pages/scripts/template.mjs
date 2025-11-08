@@ -70,6 +70,7 @@ export function usingTemplates(path) {
  */
 export async function renderTemplate(template, data = {}) {
 	data.geti18n ??= geti18n
+	data.renderTemplate ??= renderTemplateAsHtmlString
 	template_cache[template] ??= fetch(templatePath + '/' + template + '.html').then(response => {
 		if (!response.ok) throw new Error(`HTTP error, status: ${response.status}`)
 		return response.text()
@@ -92,7 +93,10 @@ export async function renderTemplate(template, data = {}) {
 				result += eval_result.result
 				html = html.slice(end_index)
 				break find
-			} catch (error) { }
+			} catch (error) {
+				if (!(error instanceof SyntaxError))
+					console.error(error)
+			}
 		}
 	}
 	result += html

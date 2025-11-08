@@ -533,9 +533,9 @@ export async function handlePluginRemoved(pluginname) {
 }
 
 /**
- * Adds a part to the relevant select list in the sidebar.
- * @param {string} parttype - The type of the part (e.g., 'worlds', 'personas', 'chars').
- * @param {string} partname - The name of the part.
+ * 将部件添加到侧边栏的相关选择列表中。
+ * @param {string} parttype - 部件类型 (例如, 'worlds', 'personas', 'chars')。
+ * @param {string} partname - 部件名称。
  */
 export function addPartToSelect(parttype, partname) {
 	let selectElement
@@ -565,9 +565,9 @@ export function addPartToSelect(parttype, partname) {
 }
 
 /**
- * Removes a part from the relevant select list and active UI in the sidebar.
- * @param {string} parttype - The type of the part (e.g., 'worlds', 'personas', 'chars').
- * @param {string} partname - The name of the part.
+ * 从侧边栏的相关选择列表和活动用户界面中删除部件。
+ * @param {string} parttype - 部件类型 (例如, 'worlds', 'personas', 'chars')。
+ * @param {string} partname - 部件名称。
  */
 export function removePartFromSelect(parttype, partname) {
 	let selectElement

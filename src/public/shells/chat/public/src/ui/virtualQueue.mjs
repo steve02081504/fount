@@ -9,6 +9,22 @@ const chatMessagesContainer = document.getElementById('chat-messages')
 
 let virtualList = null
 let currentSwipableElement = null
+const deletionListeners = []
+
+/**
+ * 添加一个在从 UI 中删除消息后将被调用的监听器。
+ * @param {Function} callback - 要调用的函数。
+ */
+export function addDeletionListener(callback) {
+	deletionListeners.push(callback)
+}
+
+/**
+ * 通知所有已注册的删除监听器。
+ */
+function notifyDeletionListeners() {
+	while (deletionListeners.length) deletionListeners.pop()()
+}
 
 /**
  * 更新最后一个 'char' 消息的左右箭头和滑动功能。
@@ -183,6 +199,7 @@ export async function handleMessageReplaced(index, message) {
 export async function handleMessageDeleted(index) {
 	if (!virtualList) return
 	await virtualList.deleteItem(index)
+	notifyDeletionListeners()
 }
 
 /**

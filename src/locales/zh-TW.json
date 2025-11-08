@@ -301,6 +301,7 @@
 			"title": "主機離線",
 			"message": "fount 主機 ${hostUrl} 似乎已離線。您想重試嗎？",
 			"buttons": {
+				"start": "啟動",
 				"retry": "重試"
 			}
 		},
@@ -825,6 +826,10 @@
 		"templateSelect": {
 			"label": "選擇一個範本"
 		},
+		"alerts": {
+			"success": "組件 '${partName}' 建立成功！",
+			"error": "錯誤: ${message}"
+		},
 		"form": {
 			"partName": {
 				"label": "組件名稱",
@@ -906,11 +911,7 @@
 				"label": "問題頁面",
 				"placeholder": "組件問題頁面的URL"
 			},
-			"createButton": "建立組件",
-			"alerts": {
-				"success": "組件 '${partName}' 建立成功！",
-				"error": "錯誤: ${message}"
-			}
+			"createButton": "建立組件"
 		},
 		"achievements": {
 			"create_part": {

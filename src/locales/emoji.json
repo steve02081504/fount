@@ -301,6 +301,7 @@
 			"title": "🖥️🚫🌐",
 			"message": "${hostUrl} 😴... 🔄❓",
 			"buttons": {
+				"start": "🚀",
 				"retry": "🔄"
 			}
 		},
@@ -824,6 +825,10 @@
 		"templateSelect": {
 			"label": "🤔✨"
 		},
+		"alerts": {
+			"success": "🧩 '${partName}' ✨✅❗️",
+			"error": "❌: ${message}"
+		},
 		"form": {
 			"partName": {
 				"label": "🧩🏷️",
@@ -905,11 +910,7 @@
 				"label": "❓",
 				"placeholder": "🧩❓🌐"
 			},
-			"createButton": "✨🧩",
-			"alerts": {
-				"success": "🧩 '${partName}' ✨✅❗️",
-				"error": "❌: ${message}"
-			}
+			"createButton": "✨🧩"
 		},
 		"achievements": {
 			"create_part": {
