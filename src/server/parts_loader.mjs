@@ -14,7 +14,7 @@ import { getUserByUsername, getUserDictionary } from './auth.mjs'
 import { __dirname } from './base.mjs'
 import { events } from './events.mjs'
 import { getPartList, loadPart } from './managers/index.mjs'
-import { save_config, setDefaultStuff } from './server.mjs'
+import { save_config, setDefaultStuff, skip_report } from './server.mjs'
 import { loadData, saveData } from './setting_loader.mjs'
 import { sendEventToUser } from './web_server/event_dispatcher.mjs'
 import { getPartRouter, deletePartRouter } from './web_server/parts_router.mjs'
@@ -44,6 +44,8 @@ export function setDefaultPart(user, parttype, partname) {
  */
 export function unsetDefaultPart(user, parttype, partname) {
 	if (Object(user) instanceof String) user = getUserByUsername(user)
+	// TODO: remove this
+	if (!(Object(user.defaultParts[parttype]) instanceof Array)) user.defaultParts[parttype] = []
 	const defaultParts = (user.defaultParts ?? {})[parttype] ?? []
 	const index = defaultParts.indexOf(partname)
 	if (index == -1) return
@@ -174,8 +176,9 @@ export function GetPartPath(username, parttype, partname) {
  * @returns {Promise<Part>} 一个解析为加载的部件对象的承诺。
  */
 export async function baseMjsPartLoader(path) {
-	const part = (await import(url.pathToFileURL(path + '/main.mjs'))).default
-	return part
+	try {
+		return (await import(url.pathToFileURL(path + '/main.mjs'))).default
+	} catch(e) { throw skip_report(e) }
 }
 
 /**

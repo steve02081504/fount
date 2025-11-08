@@ -1077,7 +1077,13 @@ deno_upgrade() {
 		deno_upgrade_channel="rc"
 	fi
 
-	if ! run_deno upgrade -q "$deno_upgrade_channel"; then
+	local errorOut
+	errorOut=$(deno upgrade -q "$deno_upgrade_channel" 2> >(tee /dev/stderr))
+		if [[ $errorOut_output == *"USAGE"* ]]; then # wtf deno 1.0?
+		run_deno upgrade -q
+	fi
+	# shellcheck disable=SC2181
+	if [[ $? -ne 0 ]]; then
 		if [[ $IN_TERMUX -eq 1 ]]; then
 			get_i18n 'deno.upgradeFailedTermux'
 			rm -rf "$HOME/.deno"

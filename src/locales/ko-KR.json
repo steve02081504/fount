@@ -301,6 +301,7 @@
 			"title": "오프라인 호스트",
 			"message": "fount 호스트 ${hostUrl}이(가) 오프라인인 것 같습니다. 다시 시도하시겠습니까?",
 			"buttons": {
+				"start": "시작",
 				"retry": "다시 시도"
 			}
 		},
@@ -825,6 +826,10 @@
 		"templateSelect": {
 			"label": "템플릿 선택"
 		},
+		"alerts": {
+			"success": "컴포넌트 '${partName}'이(가) 성공적으로 생성되었습니다!",
+			"error": "오류: ${message}"
+		},
 		"form": {
 			"partName": {
 				"label": "컴포넌트 이름",
@@ -906,11 +911,7 @@
 				"label": "문제 신고 페이지",
 				"placeholder": "컴포넌트 문제 신고 페이지의 URL"
 			},
-			"createButton": "컴포넌트 만들기",
-			"alerts": {
-				"success": "컴포넌트 '${partName}'이(가) 성공적으로 생성되었습니다!",
-				"error": "오류: ${message}"
-			}
+			"createButton": "컴포넌트 만들기"
 		},
 		"achievements": {
 			"create_part": {

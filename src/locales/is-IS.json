@@ -301,6 +301,7 @@
 			"title": "Hýsill ótengdur",
 			"message": "fount hýsill ${hostUrl} virðist vera ótengdur. Viltu reyna aftur?",
 			"buttons": {
+				"start": "Ræsa",
 				"retry": "Reyndu aftur"
 			}
 		},
@@ -825,6 +826,10 @@
 		"templateSelect": {
 			"label": "Veldu sniðmát"
 		},
+		"alerts": {
+			"success": "Íhlutur '${partName}' búinn til!",
+			"error": "Villa: ${message}"
+		},
 		"form": {
 			"partName": {
 				"label": "Nafn íhlutar",
@@ -906,11 +911,7 @@
 				"label": "Villuskýrslusíða",
 				"placeholder": "URL á villuskýrslusíðu íhlutarins"
 			},
-			"createButton": "Búa til íhlut",
-			"alerts": {
-				"success": "Íhlutur '${partName}' búinn til!",
-				"error": "Villa: ${message}"
-			}
+			"createButton": "Búa til íhlut"
 		},
 		"achievements": {
 			"create_part": {

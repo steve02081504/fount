@@ -301,6 +301,7 @@
 			"title": "Хост не в сети",
 			"message": "Хост fount ${hostUrl}, похоже, отключен от сети. Хотите повторить попытку?",
 			"buttons": {
+				"start": "Запустить",
 				"retry": "Повторить"
 			}
 		},
@@ -825,6 +826,10 @@
 		"templateSelect": {
 			"label": "Выберите шаблон"
 		},
+		"alerts": {
+			"success": "Компонент '${partName}' был успешно создан!",
+			"error": "Ошибка: ${message}"
+		},
 		"form": {
 			"partName": {
 				"label": "Название компонента",
@@ -906,11 +911,7 @@
 				"label": "Страница проблем",
 				"placeholder": "URL страницы проблем части"
 			},
-			"createButton": "Создать компонент",
-			"alerts": {
-				"success": "Компонент '${partName}' был успешно создан!",
-				"error": "Ошибка: ${message}"
-			}
+			"createButton": "Создать компонент"
 		},
 		"achievements": {
 			"create_part": {
