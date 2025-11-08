@@ -807,7 +807,9 @@ if ($args.Count -gt 0 -and $args[0] -eq 'clean') {
 		run shutdown
 		Write-Host (Get-I18n -key 'clean.removingCaches')
 		Remove-Item -Force -Recurse -ErrorAction Ignore "$FOUNT_DIR/node_modules"
-		Get-ChildItem -Path "$FOUNT_DIR" -Filter "*_cache.json" -Recurse | Remove-Item -Force -ErrorAction Ignore
+		if ($args[1] -eq 'force') {
+			Get-ChildItem -Path "$FOUNT_DIR" -Filter "*_cache.json" -Recurse | Remove-Item -Force -ErrorAction Ignore
+		}
 	}
 	Write-Host (Get-I18n -key 'clean.reinstallingDependencies')
 	run shutdown
