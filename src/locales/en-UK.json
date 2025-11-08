@@ -462,6 +462,9 @@
 				"alt": "Function Menu"
 			}
 		},
+		"emptyList": {
+			"message": "Empty...<br/>Maybe you can [create a new part](${newpartLink}) or go to [fount's Discord server](${discordLink}) to have some fun?"
+		},
 		"part_types": {
 			"chars": "Role",
 			"worlds": "World",
@@ -783,7 +786,6 @@
 		"sortBy": {
 			"aria-label": "sort by"
 		},
-		"select_chat_with_chars": "Select chat with ${chars}",
 		"selectAll": "Select All",
 		"buttons": {
 			"reverseSelect": "Invert Selection",
@@ -804,6 +806,9 @@
 			"copyError": "Copy failed",
 			"deleteError": "Deletion failed",
 			"exportError": "Export failed"
+		},
+		"select_checkbox": {
+			"aria-label": "Select chat with ${chars}"
 		}
 	},
 	"easynew": {
@@ -1308,9 +1313,9 @@
 			"setDefault": {
 				"dataset": {
 					"tip": "Set as default"
-				}
-			},
-			"setDefaultForFile": "Set “${fileName}” as the default AI source"
+				},
+				"aria-label": "Set “${fileName}” as the default AI source"
+			}
 		},
 		"confirm": {
 			"unsavedChanges": "You have unsaved changes. Do you want to discard changes?",
@@ -1474,7 +1479,7 @@
 		"what_is_manager": "What is a userscript manager?",
 		"manager_explanation": "A userscript manager is a browser extension that allows you to install and run scripts that modify web pages. To use the fount integration script, you need one of the extensions.",
 		"popular_managers": "Popular Choices:",
-		"csp_warning": "You may need to install the plugin to turn off CSP to make the integration function work properly. For ${browser} you can use <a href=\"${link}\" target=\"_blank\" rel=\"noopener\" class=\"link\">this plugin</a>.",
+		"csp_warning": "You may need to install the plugin to turn off CSP to make the integration function work properly. For ${browser} you can use [this plugin](${link}).",
 		"connected_pages_title": "Connected page",
 		"fetch_pages_error": "Failed to load the linked page list.",
 		"page_title": "Page title",

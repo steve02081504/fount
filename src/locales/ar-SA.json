@@ -462,6 +462,9 @@
 				"alt": "قائمة الوظائف"
 			}
 		},
+		"emptyList": {
+			"message": "فارغ...<br/>ربما يمكنك [إنشاء جزء جديد](${newpartLink}) أو الانتقال إلى [خادم Fount's Discord](${discordLink}) للحصول على بعض المتعة؟"
+		},
 		"part_types": {
 			"chars": "دور",
 			"worlds": "عالم",
@@ -783,7 +786,6 @@
 		"sortBy": {
 			"aria-label": "فرز حسب"
 		},
-		"select_chat_with_chars": "حدد الدردشة مع ${chars}",
 		"selectAll": "تحديد الكل",
 		"buttons": {
 			"reverseSelect": "عكس التحديد",
@@ -804,6 +806,9 @@
 			"copyError": "فشل النسخ",
 			"deleteError": "فشل الحذف",
 			"exportError": "فشل التصدير"
+		},
+		"select_checkbox": {
+			"aria-label": "حدد الدردشة مع ${chars}"
 		}
 	},
 	"easynew": {
@@ -1308,9 +1313,9 @@
 			"setDefault": {
 				"dataset": {
 					"tip": "تعيين كافتراضي"
-				}
-			},
-			"setDefaultForFile": "قم بتعيين \"${fileName}\" كمصدر الذكاء الاصطناعي الافتراضي"
+				},
+				"aria-label": "قم بتعيين \"${fileName}\" كمصدر الذكاء الاصطناعي الافتراضي"
+			}
 		},
 		"confirm": {
 			"unsavedChanges": "لديك تغييرات غير محفوظة. هل تريد التخلص منها؟",
@@ -1474,7 +1479,7 @@
 		"what_is_manager": "ما هو مدير نصوص المستخدم (Userscript Manager)؟",
 		"manager_explanation": "Monkey Script Manager هو امتداد متصفح يتيح لك تثبيت البرامج النصية وتشغيلها تعدل صفحات الويب. لاستخدام البرنامج النصي لتكامل fount ، تحتاج إلى واحدة من الامتدادات.",
 		"popular_managers": "الخيارات الشعبية:",
-		"csp_warning": "قد تحتاج إلى تثبيت المكون الإضافي لإيقاف تشغيل CSP لجعل وظيفة التكامل تعمل بشكل صحيح. بالنسبة لـ ${browser} ، يمكنك استخدام <a href=\"${link}\" target=\"_blank\" rel=\"noopener\" class=\"link\">هذا المكون</a>.",
+		"csp_warning": "قد تحتاج إلى تثبيت المكون الإضافي لإيقاف تشغيل CSP لجعل وظيفة التكامل تعمل بشكل صحيح. بالنسبة لـ ${browser} ، يمكنك استخدام [هذا المكون](${link}).",
 		"connected_pages_title": "صفحة متصلة",
 		"fetch_pages_error": "فشل في تحميل قائمة الصفحة المرتبطة.",
 		"page_title": "عنوان الصفحة",
