@@ -301,6 +301,7 @@
 			"title": "Host offline",
 			"message": "fount-host ${hostUrl} lijkt offline te zijn. Wil je het opnieuw proberen?",
 			"buttons": {
+				"start": "Starten",
 				"retry": "Probeer het opnieuw"
 			}
 		},
@@ -821,6 +822,10 @@
 		"templateSelect": {
 			"label": "Kies een sjabloon"
 		},
+		"alerts": {
+			"success": "Component '${partName}' succesvol aangemaakt!",
+			"error": "Fout: ${message}"
+		},
 		"form": {
 			"partName": {
 				"label": "Componentnaam",
@@ -902,11 +907,7 @@
 				"label": "Problemenpagina",
 				"placeholder": "URL van de problemenpagina van het component"
 			},
-			"createButton": "Component aanmaken",
-			"alerts": {
-				"success": "Component '${partName}' succesvol aangemaakt!",
-				"error": "Fout: ${message}"
-			}
+			"createButton": "Component aanmaken"
 		},
 		"achievements": {
 			"create_part": {

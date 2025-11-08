@@ -301,6 +301,7 @@
 			"title": "Host offline",
 			"message": "O host fount ${hostUrl} parece estar offline. Quer tentar novamente?",
 			"buttons": {
+				"start": "Iniciar",
 				"retry": "Tente novamente"
 			}
 		},
@@ -821,6 +822,10 @@
 		"templateSelect": {
 			"label": "Selecione um modelo"
 		},
+		"alerts": {
+			"success": "O componente '${partName}' foi criado com sucesso!",
+			"error": "Erro: ${message}"
+		},
 		"form": {
 			"partName": {
 				"label": "Nome do Componente",
@@ -902,11 +907,7 @@
 				"label": "Página de Problemas",
 				"placeholder": "URL da página de problemas da peça"
 			},
-			"createButton": "Criar Componente",
-			"alerts": {
-				"success": "O componente '${partName}' foi criado com sucesso!",
-				"error": "Erro: ${message}"
-			}
+			"createButton": "Criar Componente"
 		},
 		"achievements": {
 			"create_part": {

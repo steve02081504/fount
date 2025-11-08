@@ -301,6 +301,7 @@
 			"title": "主機未繫",
 			"message": "fount主機 ${hostUrl} 未繫。欲復試乎？",
 			"buttons": {
+				"start": "啟動",
 				"retry": "復試"
 			}
 		},
@@ -820,6 +821,10 @@
 		"templateSelect": {
 			"label": "擇一範本"
 		},
+		"alerts": {
+			"success": "器 '${partName}' 創建功成，可喜可賀。",
+			"error": "有誤: ${message}"
+		},
 		"form": {
 			"partName": {
 				"label": "器名",
@@ -901,11 +906,7 @@
 				"label": "諫言頁面",
 				"placeholder": "器之諫言頁面URL"
 			},
-			"createButton": "創建",
-			"alerts": {
-				"success": "器 '${partName}' 創建功成，可喜可賀。",
-				"error": "有誤: ${message}"
-			}
+			"createButton": "創建"
 		},
 		"achievements": {
 			"create_part": {

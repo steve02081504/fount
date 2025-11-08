@@ -1,4 +1,5 @@
 import { loadPart } from '../../../../server/managers/index.mjs'
+import { skip_report } from '../../../../server/server.mjs'
 import { loadData, saveData } from '../../../../server/setting_loader.mjs'
 
 /**
@@ -36,7 +37,7 @@ export async function setPartData(username, parttype, partname, data) {
 		saveData(username, 'parts_config')
 	}
 	catch (error) {
-		throw new Error(`Failed to set data for part ${partname}: ${error.message}\n${error.stack}`)
+		throw skip_report(new Error(`Failed to set data for part ${partname}: ${error.message}\n${error.stack}`))
 	}
 }
 
