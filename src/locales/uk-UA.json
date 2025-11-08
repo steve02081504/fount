@@ -821,6 +821,10 @@
 		"templateSelect": {
 			"label": "Оберіть шаблон"
 		},
+		"alerts": {
+			"success": "Компонент '${partName}' створено успішно!",
+			"error": "Помилка: ${message}"
+		},
 		"form": {
 			"partName": {
 				"label": "Назва компонента",
@@ -902,11 +906,7 @@
 				"label": "Сторінка проблем",
 				"placeholder": "URL сторінки проблем компонента"
 			},
-			"createButton": "Створити компонент",
-			"alerts": {
-				"success": "Компонент '${partName}' створено успішно!",
-				"error": "Помилка: ${message}"
-			}
+			"createButton": "Створити компонент"
 		},
 		"achievements": {
 			"create_part": {

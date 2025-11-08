@@ -81,7 +81,7 @@ events.on('part-loaded', ({ username, parttype, partname }) => {
 	delete loadData(username, 'parts_locales_cache')?.[parttype]?.[partname]
 })
 events.on('part-uninstalled', ({ username, parttype, partname }) => {
-	delete loadData(username, 'parts_locales_cache')[parttype][partname]
+	delete loadData(username, 'parts_locales_cache')[parttype]?.[partname]
 	saveData(username, 'parts_locales_cache')
 	delete loadData(username, 'parts_locale_lists_cache')[parttype]?.[partname]
 	saveData(username, 'parts_locale_lists_cache')

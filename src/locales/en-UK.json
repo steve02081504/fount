@@ -821,6 +821,10 @@
 		"templateSelect": {
 			"label": "Select a template"
 		},
+		"alerts": {
+			"success": "Component '${partName}' was created successfully!",
+			"error": "Error: ${message}"
+		},
 		"form": {
 			"partName": {
 				"label": "Component Name",
@@ -902,11 +906,7 @@
 				"label": "Issue Page",
 				"placeholder": "URL of the component's issue page"
 			},
-			"createButton": "Create Component",
-			"alerts": {
-				"success": "Component '${partName}' was created successfully!",
-				"error": "Error: ${message}"
-			}
+			"createButton": "Create Component"
 		},
 		"achievements": {
 			"create_part": {

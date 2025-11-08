@@ -821,6 +821,10 @@
 		"templateSelect": {
 			"label": "Kies een sjabloon"
 		},
+		"alerts": {
+			"success": "Component '${partName}' succesvol aangemaakt!",
+			"error": "Fout: ${message}"
+		},
 		"form": {
 			"partName": {
 				"label": "Componentnaam",
@@ -902,11 +906,7 @@
 				"label": "Problemenpagina",
 				"placeholder": "URL van de problemenpagina van het component"
 			},
-			"createButton": "Component aanmaken",
-			"alerts": {
-				"success": "Component '${partName}' succesvol aangemaakt!",
-				"error": "Fout: ${message}"
-			}
+			"createButton": "Component aanmaken"
 		},
 		"achievements": {
 			"create_part": {

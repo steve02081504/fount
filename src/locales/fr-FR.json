@@ -821,6 +821,10 @@
 		"templateSelect": {
 			"label": "Sélectionnez un modèle"
 		},
+		"alerts": {
+			"success": "Le composant '${partName}' a été créé avec succès !",
+			"error": "Erreur : ${message}"
+		},
 		"form": {
 			"partName": {
 				"label": "Nom du composant",
@@ -902,11 +906,7 @@
 				"label": "Page des problèmes",
 				"placeholder": "URL de la page des problèmes du composant"
 			},
-			"createButton": "Créer le composant",
-			"alerts": {
-				"success": "Le composant '${partName}' a été créé avec succès !",
-				"error": "Erreur : ${message}"
-			}
+			"createButton": "Créer le composant"
 		},
 		"achievements": {
 			"create_part": {

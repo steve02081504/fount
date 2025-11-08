@@ -820,6 +820,10 @@
 		"templateSelect": {
 			"label": "擇一範本"
 		},
+		"alerts": {
+			"success": "器 '${partName}' 創建功成，可喜可賀。",
+			"error": "有誤: ${message}"
+		},
 		"form": {
 			"partName": {
 				"label": "器名",
@@ -901,11 +905,7 @@
 				"label": "諫言頁面",
 				"placeholder": "器之諫言頁面URL"
 			},
-			"createButton": "創建",
-			"alerts": {
-				"success": "器 '${partName}' 創建功成，可喜可賀。",
-				"error": "有誤: ${message}"
-			}
+			"createButton": "創建"
 		},
 		"achievements": {
 			"create_part": {

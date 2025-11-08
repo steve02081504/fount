@@ -821,6 +821,10 @@
 		"templateSelect": {
 			"label": "Vorlage auswählen"
 		},
+		"alerts": {
+			"success": "Komponente '${partName}' wurde erfolgreich erstellt!",
+			"error": "Fehler: ${message}"
+		},
 		"form": {
 			"partName": {
 				"label": "Komponentenname",
@@ -902,11 +906,7 @@
 				"label": "Problemseite",
 				"placeholder": "URL der Problemseite der Komponente"
 			},
-			"createButton": "Komponente erstellen",
-			"alerts": {
-				"success": "Komponente '${partName}' wurde erfolgreich erstellt!",
-				"error": "Fehler: ${message}"
-			}
+			"createButton": "Komponente erstellen"
 		},
 		"achievements": {
 			"create_part": {
