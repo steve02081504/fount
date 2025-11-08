@@ -504,6 +504,7 @@ export async function uninstallPartBase(username, parttype, partname, unLoadargs
 		fs.rmSync(path, { recursive: true, force: true })
 	}
 } = {}) {
+	parts_set[username][parttype] ??= {}
 	/** @type {T | undefined} */
 	let part = parts_set[username][parttype][partname]
 	if (getAllDefaultParts(username, parttype).includes(partname))

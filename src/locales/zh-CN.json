@@ -462,6 +462,9 @@
 				"alt": "功能菜单"
 			}
 		},
+		"emptyList": {
+			"message": "空空如也...<br/>或许你可以[新建一个部件](${newpartLink})或到[fount的Discord服务器](${discordLink})找点乐子？"
+		},
 		"part_types": {
 			"chars": "角色",
 			"worlds": "世界",
@@ -783,7 +786,6 @@
 		"sortBy": {
 			"aria-label": "排序方式"
 		},
-		"select_chat_with_chars": "选择与 ${chars} 的聊天",
 		"selectAll": "全选",
 		"buttons": {
 			"reverseSelect": "反选",
@@ -804,6 +806,9 @@
 			"copyError": "复制失败",
 			"deleteError": "删除失败",
 			"exportError": "导出失败"
+		},
+		"select_checkbox": {
+			"aria-label": "选择与 ${chars} 的聊天"
 		}
 	},
 	"easynew": {
@@ -1308,9 +1313,9 @@
 			"setDefault": {
 				"dataset": {
 					"tip": "设为默认"
-				}
-			},
-			"setDefaultForFile": "将“${fileName}”设为默认 AI 源"
+				},
+				"aria-label": "将“${fileName}”设为默认 AI 源"
+			}
 		},
 		"confirm": {
 			"unsavedChanges": "您有未保存的更改。是否要放弃更改？",
@@ -1474,7 +1479,7 @@
 		"what_is_manager": "什么是油猴脚本管理器？",
 		"manager_explanation": "油猴脚本管理器是一个浏览器扩展，允许您安装和运行修改网页的脚本。要使用 fount 集成脚本，您需要其中一个扩展。",
 		"popular_managers": "热门选择：",
-		"csp_warning": "您可能需要安装插件以停用 CSP，来确保集成功能正常运行，对于${browser}可以使用<a href=\"${link}\" target=\"_blank\" rel=\"noopener\" class=\"link\">这个插件</a>。",
+		"csp_warning": "您可能需要安装插件以停用 CSP，来确保集成功能正常运行，对于${browser}可以使用[这个插件](${link})。",
 		"connected_pages_title": "已连接的页面",
 		"fetch_pages_error": "加载已连接页面列表失败。",
 		"page_title": "页面标题",

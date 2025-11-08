@@ -462,6 +462,9 @@
 				"alt": "機能メニュー"
 			}
 		},
+		"emptyList": {
+			"message": "空です...<br/>[新しいパーツを作成](${newpartLink}) するか、[fount の Discord サーバー](${discordLink}) に行って楽しんでみてはいかがでしょうか?"
+		},
 		"part_types": {
 			"chars": "役割",
 			"worlds": "世界",
@@ -783,7 +786,6 @@
 		"sortBy": {
 			"aria-label": "並べ替え"
 		},
-		"select_chat_with_chars": "${chars} とのチャットを選択",
 		"selectAll": "すべて選択",
 		"buttons": {
 			"reverseSelect": "選択を反転",
@@ -804,6 +806,9 @@
 			"copyError": "コピーに失敗しました。",
 			"deleteError": "削除に失敗しました。",
 			"exportError": "エクスポートに失敗しました。"
+		},
+		"select_checkbox": {
+			"aria-label": "${chars} とのチャットを選択"
 		}
 	},
 	"easynew": {
@@ -1308,9 +1313,9 @@
 			"setDefault": {
 				"dataset": {
 					"tip": "デフォルトに設定"
-				}
-			},
-			"setDefaultForFile": "「${fileName}」をデフォルトの AI ソースとして設定します"
+				},
+				"aria-label": "「${fileName}」をデフォルトの AI ソースとして設定します"
+			}
 		},
 		"confirm": {
 			"unsavedChanges": "保存されていない変更があります。変更を破棄しますか？",
@@ -1474,7 +1479,7 @@
 		"what_is_manager": "ユーザースクリプトマネージャーとは何ですか？",
 		"manager_explanation": "ユーザースクリプトマネージャーは、Webページを変更するスクリプトをインストールおよび実行できるブラウザ拡張機能です。 fount Integration Scriptを使用するには、拡張機能の1つが必要です。",
 		"popular_managers": "人気のある選択肢：",
-		"csp_warning": "統合機能を適切に動作させるためにCSPを無効にするプラグインのインストールが必要になる場合があります。${browser}の場合は<a href=\"${link}\" target=\"_blank\" rel=\"noopener\" class=\"link\">こちらのプラグイン</a>をご利用いただけます。",
+		"csp_warning": "統合機能を適切に動作させるためにCSPを無効にするプラグインのインストールが必要になる場合があります。${browser}の場合は[こちらのプラグイン](${link})をご利用いただけます。",
 		"connected_pages_title": "接続されたページ",
 		"fetch_pages_error": "リンクされたページリストのロードに失敗しました。",
 		"page_title": "ページタイトル",

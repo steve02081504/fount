@@ -461,6 +461,9 @@
 				"alt": "⚙️"
 			}
 		},
+		"emptyList": {
+			"message": "💨...<br/>[✨📝](${newpartLink}) / [👨‍👩‍👧‍👦👋](${discordLink})"
+		},
 		"part_types": {
 			"chars": "🤖",
 			"worlds": "🌍",
@@ -802,6 +805,9 @@
 			"copyError": "📋❌",
 			"deleteError": "🗑️❌",
 			"exportError": "📤❌"
+		},
+		"select_checkbox": {
+			"aria-label": "💬 ${chars}"
 		}
 	},
 	"easynew": {
@@ -1471,7 +1477,7 @@
 		"what_is_manager": "❓🐒🔧",
 		"manager_explanation": "ℹ️🐒🔧",
 		"popular_managers": "⭐",
-		"csp_warning": "⚠️🛡️ ${browser} <a href=\"${link}\" target=\"_blank\" rel=\"noopener\" class=\"link\">🔌🔗</a>",
+		"csp_warning": "⚠️🛡️ ${browser} [🔌🔗](${link})",
 		"connected_pages_title": "🔗📄",
 		"fetch_pages_error": "❗️🔄",
 		"page_title": "📄🏷️",

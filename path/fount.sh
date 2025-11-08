@@ -1181,7 +1181,9 @@ clean)
 		run shutdown
 		get_i18n 'clean.removingCaches'
 		rm -rf "$FOUNT_DIR/node_modules"
-		find "$FOUNT_DIR" -name "*_cache.json" -type f -delete
+		if [ "$2" = 'force' ]; then
+			find "$FOUNT_DIR" -name "*_cache.json" -type f -delete
+		fi
 	fi
 	get_i18n 'clean.reinstallingDependencies'
 	run shutdown
