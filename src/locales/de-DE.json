@@ -1534,6 +1534,11 @@
 				"name": "Code-Gesang",
 				"description": "„In meinem Namen, kommandieren Sie den Browser…“",
 				"locked_description": "Führen Sie den JavaScript-Code einmal im Browser aus."
+			},
+			"star_fount": {
+				"name": "Open-Source-Star",
+				"description": "Gib fount einen Stern auf GitHub, danke für deine Unterstützung!",
+				"locked_description": "Besuchen Sie das GitHub-Repository von fount und geben Sie ihm einen Stern."
 			}
 		}
 	},
@@ -1655,6 +1660,11 @@
 				"name": "Schnapp sie dir alle!",
 				"description": "Habe die Erfolgsliste geöffnet und mich darauf vorbereitet, eine Briefmarkensammelreise zu beginnen.",
 				"locked_description": "Öffnen Sie die Erfolgsseite."
+			},
+			"relock_by_clicking": {
+				"name": "Dein Ernst?",
+				"description": "Durch wiederholtes Klicken auf einen freigeschalteten Erfolg können Sie ihn erfolgreich wieder sperren. Warum?",
+				"locked_description": "? ? ?"
 			}
 		}
 	},

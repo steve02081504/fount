@@ -1534,6 +1534,11 @@
 				"name": "コードチャント",
 				"description": "「私の名において、ブラウザに命令してください...」",
 				"locked_description": "ブラウザで JavaScript コードを 1 回実行します。"
+			},
+			"star_fount": {
+				"name": "オープンソースのスター",
+				"description": "GitHubでfountにスターを付けていただき、ありがとうございます！",
+				"locked_description": "fount の GitHub リポジトリにアクセスして、スターを付けてください。"
 			}
 		}
 	},
@@ -1655,6 +1660,11 @@
 				"name": "実績コンプを目指して",
 				"description": "実績リストを開き、スタンプ収集の旅を始める準備をしました。",
 				"locked_description": "実績ページを開きます。"
+			},
+			"relock_by_clicking": {
+				"name": "マジかよ？",
+				"description": "ロック解除された実績を繰り返しクリックすると、再度ロックされます。なぜ？",
+				"locked_description": "? ? ?"
 			}
 		}
 	},

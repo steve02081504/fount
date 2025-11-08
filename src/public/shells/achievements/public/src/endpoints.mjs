@@ -34,3 +34,15 @@ async function callApi(endpoint, method = 'GET', body) {
 export function getAllAchievements() {
 	return callApi('sources', 'GET')
 }
+
+/**
+ * 为指定用户锁定一个成就。
+ * @param {string} parttype - 成就所属部件的类型。
+ * @param {string} partname - 成就所属部件的名称。
+ * @param {string} id - 要锁定的成就的ID。
+ * @param {string} reason - 锁定成就的原因。
+ * @returns {Promise<any>} - 从 API 返回的 JSON 响应。
+ */
+export function lockAchievement(parttype, partname, id, reason) {
+	return callApi(`lock/${parttype}/${partname}/${id}`, 'POST', { reason })
+}

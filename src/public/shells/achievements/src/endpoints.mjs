@@ -22,7 +22,8 @@ export function setEndpoints(router) {
 	router.post('/api/shells/achievements/lock/:parttype/:partname/:id', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { parttype, partname, id } = req.params
-		const result = await lockAchievement(username, parttype, partname, id)
+		const { reason } = req.body
+		const result = await lockAchievement(username, parttype, partname, id, reason)
 		res.status(result.success ? 200 : 404).json(result)
 	})
 }

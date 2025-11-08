@@ -100,7 +100,7 @@ function renderFileList() {
 		checkbox.type = 'checkbox'
 		checkbox.classList.add('default-checkbox', 'checkbox', 'checkbox-primary')
 		Object.assign(checkbox.dataset, { fileName }) // for i18n
-		i18nElement(checkbox)
+		i18nElement(checkboxContainer)
 		checkboxContainer.appendChild(checkbox)
 		listItem.appendChild(checkboxContainer)
 

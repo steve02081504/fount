@@ -1,6 +1,7 @@
 // Handle WebSocket connections from userscripts
 import { randomUUID } from 'node:crypto'
 
+import { events } from '../../../../server/events.mjs'
 import { loadShellData, saveShellData } from '../../../../server/setting_loader.mjs'
 import { unlockAchievement } from '../../achievements/src/api.mjs'
 
@@ -82,6 +83,20 @@ class UserPageManager {
 				ws.send(message)
 
 
+	}
+
+	/**
+	 * 将消息广播到所有已连接的页面。
+	 * @param {object} message - 要发送的消息对象。
+	 */
+	broadcastToAllPages(message) {
+		const payload = JSON.stringify(message)
+		for (const page of this.pages)
+			if (page.ws && page.ws.readyState === page.ws.OPEN) try {
+				page.ws.send(payload)
+			} catch (e) {
+				console.error(`Failed to send message to page ${page.id}:`, e)
+			}
 	}
 
 	// --- Page Management ---
@@ -501,3 +516,31 @@ export function updateAutoRunScript(username, id, fields) {
 	saveShellData(username, 'browserIntegration', DATA_NAME)
 	return { success: true, message: 'Script updated.', script }
 }
+
+/**
+ * 发送弹幕到页面。
+ * @param {string} username - 用户名。
+ * @param {number} pageId - 页面ID。
+ * @param {object} danmakuOptions - 弹幕选项。
+ * @returns {Promise<any>} - 弹幕发送结果。
+ */
+export async function sendDanmakuToPage(username, pageId, danmakuOptions) {
+	const manager = getUserManager(username)
+	let targetPageId = pageId
+
+	if (targetPageId === undefined) {
+		const focusedPage = manager.getFocusedPageInfo()
+		if (!focusedPage)
+			throw new Error('No page specified and no page is currently focused.')
+
+		targetPageId = focusedPage.id
+	}
+
+	return await manager.sendRequest(targetPageId, { type: 'danmaku', payload: danmakuOptions })
+}
+
+events.on('send-event-to-user', ({ username, type, data }) => {
+	console.log('send-event-to-user', username, type, data)
+	const manager = userManagers.get(username)
+	if (manager) manager.broadcastToAllPages({ type: `page-event-${type}`, data })
+})

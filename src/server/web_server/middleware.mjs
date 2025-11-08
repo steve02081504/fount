@@ -32,7 +32,7 @@ export function registerMiddleware(router) {
 		if (!(req.path.endsWith('/heartbeat') || req.path.endsWith('/api/sentrytunnel')))
 			console.logI18n('fountConsole.web.requestReceived', {
 				method: req.method + ' '.repeat(Math.max(0, 8 - req.method.length)),
-				url: req.url
+				url: req.url.replace(/fount-apikey=[^&]*/, 'fount-apikey=45450721')
 			})
 		return next()
 	})
