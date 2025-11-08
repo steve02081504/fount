@@ -1534,6 +1534,11 @@
 				"name": "kóðasöngur",
 				"description": "\"Í mínu nafni, stjórnaðu vafranum...\"",
 				"locked_description": "Keyrðu JavaScript kóðann einu sinni í vafranum."
+			},
+			"star_fount": {
+				"name": "opinn uppspretta stjarna",
+				"description": "Gefðu fount stjörnu á GitHub, takk fyrir stuðninginn!",
+				"locked_description": "Heimsæktu GitHub geymslu fount og kveiktu á stjörnunni."
 			}
 		}
 	},
@@ -1551,7 +1556,7 @@
 	},
 	"terminal_assistant": {
 		"title": "Flugstöðvar-aðstoðarmaður",
-		"description": "Fyrir utan grafíska viðmótið, pláss fyrir beina stjórn. Samskipti við kjarna gosbrunnar í gegnum flugstöðvaraðstoðarmanninn, þar sem texti vefur sinn eigin kraftmikla töfra.",
+		"description": "Fyrir utan grafíska viðmótið, pláss fyrir beina stjórn. Samskipti við kjarna fount í gegnum flugstöðvaraðstoðarmanninn, þar sem texti vefur sinn eigin kraftmikla töfra.",
 		"initialMessage": "fount styður að setja uppáhalds persónuna þína í flugstöðina til að hjálpa þér við forritun!",
 		"initialMessageLink": "Smelltu hér til að fá frekari upplýsingar",
 		"achievements": {
@@ -1600,7 +1605,7 @@
 	},
 	"access": {
 		"title": "Aðgangur að fount á öðrum tækjum",
-		"description": "Lengdu útbreiðslu gosbrunnar út fyrir einn skjá. Hér liggur gáttin — slóð, QR kóða — til að tengjast félögum þínum úr öðrum tækjum, einföld brú yfir staðbundið eter.",
+		"description": "Lengdu útbreiðslu fount út fyrir einn skjá. Hér liggur gáttin — slóð, QR kóða — til að tengjast félögum þínum úr öðrum tækjum, einföld brú yfir staðbundið eter.",
 		"heading": "Viltu fá aðgang að fount á öðrum tækjum?",
 		"instruction": {
 			"sameLAN": "Gakktu úr skugga um að tækið og fount-vélin séu á sama staðarneti",
@@ -1655,6 +1660,11 @@
 				"name": "Bikar, hér kem ég!",
 				"description": "Opnaði afrekslistann og bjó sig undir að hefja frímerkjasöfnunarferð.",
 				"locked_description": "Opnaðu afrekssíðuna."
+			},
+			"relock_by_clicking": {
+				"name": "Í alvöru?",
+				"description": "Með því að smella ítrekað á ólæst afrek, læsirðu því aftur. Hvers vegna?",
+				"locked_description": "? ? ?"
 			}
 		}
 	},

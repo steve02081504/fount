@@ -1534,6 +1534,11 @@
 				"name": "canto de código",
 				"description": "\"Em meu nome, comande o navegador...\"",
 				"locked_description": "Execute o código JavaScript uma vez no navegador."
+			},
+			"star_fount": {
+				"name": "estrela de código aberto",
+				"description": "Dê uma estrela ao fount no GitHub, obrigado pelo seu apoio!",
+				"locked_description": "Visite o repositório GitHub de fount e dê uma estrela."
 			}
 		}
 	},
@@ -1655,6 +1660,11 @@
 				"name": "Troféu, aí vou eu!",
 				"description": "Abriu a lista de conquistas e preparou-se para iniciar uma jornada de coleta de selos.",
 				"locked_description": "Abra a página de conquistas."
+			},
+			"relock_by_clicking": {
+				"name": "A sério?",
+				"description": "Ao clicar repetidamente em uma conquista desbloqueada, você a bloqueia novamente. Por que?",
+				"locked_description": "? ? ?"
 			}
 		}
 	},

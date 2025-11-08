@@ -1534,6 +1534,11 @@
 				"name": "言出法随",
 				"description": "“以我之名，命令浏览器……”",
 				"locked_description": "在浏览器中运行一次JavaScript代码。"
+			},
+			"star_fount": {
+				"name": "开源之星",
+				"description": "在GitHub上为fount点亮星星（Star），感谢您的支持！",
+				"locked_description": "访问fount的GitHub仓库并点亮星星。"
 			}
 		}
 	},
@@ -1655,6 +1660,11 @@
 				"name": "成就，我全都要！",
 				"description": "打开了成就列表，准备开始一场集邮之旅。",
 				"locked_description": "打开成就页面。"
+			},
+			"relock_by_clicking": {
+				"name": "不是，哥们？",
+				"description": "通过反复点击一个已解锁的成就，你成功地把它给重新锁上了。为什么呢？",
+				"locked_description": "？？？"
 			}
 		}
 	},

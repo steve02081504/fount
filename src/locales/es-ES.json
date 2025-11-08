@@ -1534,6 +1534,11 @@
 				"name": "canto de código",
 				"description": "\"En mi nombre, ordena el navegador...\"",
 				"locked_description": "Ejecute el código JavaScript una vez en el navegador."
+			},
+			"star_fount": {
+				"name": "estrella de código abierto",
+				"description": "¡Dale una estrella a fount en GitHub, gracias por tu apoyo!",
+				"locked_description": "Visita el repositorio GitHub de fount y ponle una estrella."
 			}
 		}
 	},
@@ -1655,6 +1660,11 @@
 				"name": "¡Hazte con todos!",
 				"description": "Abrió la lista de logros y se preparó para comenzar un viaje de recolección de sellos.",
 				"locked_description": "Abre la página de logros."
+			},
+			"relock_by_clicking": {
+				"name": "¿En serio, tío?",
+				"description": "Al hacer clic repetidamente en un logro desbloqueado, lo volverás a bloquear con éxito. ¿Por qué?",
+				"locked_description": "? ? ?"
 			}
 		}
 	},

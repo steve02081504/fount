@@ -141,7 +141,7 @@ export function createMCPClient(config) {
 					// 返回客户端的根目录列表
 					result = {
 						roots: roots.map(root => {
-							if (typeof root === 'string') {
+							if (Object(root) instanceof String) {
 								// 字符串路径转换为标准格式
 								const uri = root.startsWith('file://')
 									? root
@@ -460,7 +460,7 @@ export function createMCPClient(config) {
 	 * @param {string|object} root - 要添加的根目录
 	 */
 	async function addRoot(root) {
-		if (!roots.find(r => (typeof r === 'string' ? r : r.uri) === (typeof root === 'string' ? root : root.uri))) {
+		if (!roots.find(r => (r.uri || r) === (root.uri || root))) {
 			roots.push(root)
 			if (mcp_process && status === 'connected')
 				await sendNotification('notifications/roots/list_changed')
@@ -472,8 +472,8 @@ export function createMCPClient(config) {
 	 * @param {string|object} root - 要删除的根目录
 	 */
 	async function removeRoot(root) {
-		const rootId = typeof root === 'string' ? root : root.uri
-		roots = roots.filter(r => (typeof r === 'string' ? r : r.uri) !== rootId)
+		const rootId = root.uri || root
+		roots = roots.filter(r => (r.uri || r) !== rootId)
 		if (mcp_process && status === 'connected')
 			await sendNotification('notifications/roots/list_changed')
 

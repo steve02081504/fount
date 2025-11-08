@@ -1,4 +1,5 @@
 import { console } from '../../scripts/i18n.mjs'
+import { events } from '../events.mjs'
 import { currentGitCommit } from '../server.mjs'
 
 /**
@@ -71,6 +72,7 @@ function sendMessageToConnections(connections, type, data) {
  */
 export function sendEventToUser(username, type, data) {
 	const connections = userConnections.get(username)
+	events.emit('send-event-to-user', { username, type, data })
 	return sendMessageToConnections(connections, type, data)
 }
 
@@ -84,7 +86,6 @@ export function sendEventToAll(type, data) {
 	for (const connections of userConnections.values())
 		sendMessageToConnections(connections, type, data)
 }
-
 
 /**
  * 向特定用户的所有连接客户端发送通知。

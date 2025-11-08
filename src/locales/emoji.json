@@ -1532,6 +1532,11 @@
 				"name": "🗣️📜",
 				"description": "⌨️➡️⚡️",
 				"locked_description": "🔒"
+			},
+			"star_fount": {
+				"name": "⭐💻",
+				"description": "🙏⭐",
+				"locked_description": "🖱️➡️⭐"
 			}
 		}
 	},
@@ -1653,6 +1658,11 @@
 				"name": "🏆🏃‍♂️",
 				"description": "🚪➡️📜",
 				"locked_description": "🔒"
+			},
+			"relock_by_clicking": {
+				"name": "🤨",
+				"description": "🏆🖱️🔒",
+				"locked_description": "❓❓❓"
 			}
 		}
 	},
