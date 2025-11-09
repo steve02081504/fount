@@ -123,7 +123,7 @@ async function createAutoPreview() {
  */
 async function renderThemePreviews() {
 	themeList.innerHTML = ''
-	const themes = await import('https://cdn.jsdelivr.net/npm/daisyui/functions/themeOrder.js').then(m => m.default)
+	const themes = await import('https://cdn.jsdelivr.net/npm/daisyui/functions/themeOrder.js').then(m => m.default).catch(() => ['dark', 'light'])
 
 	const allPreviews = []
 
