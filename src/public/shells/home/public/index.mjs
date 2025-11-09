@@ -27,6 +27,7 @@ const sfwToggle = document.getElementById('sfw-toggle')
 const pageTitle = document.getElementById('page-title')
 const instruction = document.getElementById('subtitle')
 const partTypesTabsContainer = document.getElementById('part-types-tabs')
+const partTypesTabsMobileContainer = document.getElementById('part-types-tabs-mobile')
 const partTypesContainers = document.getElementById('part-types-containers')
 
 let itemDetailsCache = {} // 所有部件类型的组合缓存
@@ -356,11 +357,14 @@ async function updateTabContent(partType) {
 	itemDescription.innerHTML = geti18n('home.itemDescription') // 重置侧边栏
 
 	// 设置活动选项卡的UI
-	if (partTypesTabsContainer.childNodes.length) {
-		partTypesTabsContainer.childNodes.forEach(tab => tab.classList.remove('tab-active'))
-		const currentTab = partTypesTabsContainer.querySelector(`[data-target="${itemType}-container"]`)
-		if (currentTab) currentTab.classList.add('tab-active')
+	const setActiveTab = (container) => {
+		if (!container || !container.childNodes.length) return
+		container.querySelectorAll('a').forEach(tab => tab.classList.remove('active'))
+		const currentTab = container.querySelector(`[data-target="${itemType}-container"]`)
+		if (currentTab) currentTab.classList.add('active')
 	}
+	setActiveTab(partTypesTabsContainer)
+	if (partTypesTabsMobileContainer) setActiveTab(partTypesTabsMobileContainer)
 }
 
 // --- 初始化 ---
@@ -371,21 +375,32 @@ async function updateTabContent(partType) {
  */
 function setupPartTypeUI(partTypes) {
 	partTypesTabsContainer.innerHTML = ''
+	if (partTypesTabsMobileContainer) partTypesTabsMobileContainer.innerHTML = ''
 	partTypesContainers.innerHTML = ''
 
-	partTypes.forEach(pt => {
+	const createMenuItem = (pt) => {
 		const itemType = pt.name
-		const tab = document.createElement('div')
-		tab.role = 'tab'
-		tab.className = 'tab'
-		tab.dataset.target = `${itemType}-container`
-		tab.dataset.i18n = `home.part_types.${itemType};'${itemType}'`
-		tab.addEventListener('click', e => {
+		const li = document.createElement('li')
+		const a = document.createElement('a')
+		a.dataset.target = `${itemType}-container`
+		a.dataset.i18n = `home.part_types.${itemType};'${itemType}'`
+		a.addEventListener('click', (e) => {
 			e.preventDefault()
 			updateTabContent(pt)
+			// For mobile dropdown, close it after click
+			if (document.activeElement instanceof HTMLElement)
+				document.activeElement.blur()
 		})
-		partTypesTabsContainer.appendChild(tab)
+		li.appendChild(a)
+		return li
+	}
 
+	partTypes.forEach((pt) => {
+		partTypesTabsContainer.appendChild(createMenuItem(pt))
+		if (partTypesTabsMobileContainer)
+			partTypesTabsMobileContainer.appendChild(createMenuItem(pt))
+
+		const itemType = pt.name
 		const container = document.createElement('div')
 		container.id = `${itemType}-container`
 		container.className = 'grid gap-4 hidden part-items-grid'
@@ -687,3 +702,4 @@ initializeApp().catch(error => {
 	showToast('error', error.message)
 	setTimeout(() => window.location.href = '/login', 5000)
 })
+
