@@ -1132,6 +1132,7 @@ export async function triggerCharReply(chatid, charname) {
 
 	const request = await getChatRequest(chatid, charname)
 
+	broadcastChatEvent(chatid, { type: 'char_typing_start', payload: { charname } })
 	try {
 		if (timeSlice?.world?.interfaces?.chat?.GetCharReply)
 			result = await timeSlice.world.interfaces.chat.GetCharReply(request, charname)
@@ -1142,6 +1143,9 @@ export async function triggerCharReply(chatid, charname) {
 		result = {
 			content: ['```', e.message, e.stack || '', '```'].filter(Boolean).join('\n'),
 		}
+	}
+	finally {
+		broadcastChatEvent(chatid, { type: 'char_typing_stop', payload: { charname } })
 	}
 
 	if (!result) return

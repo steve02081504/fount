@@ -559,6 +559,10 @@
 			"title": "🆕💬",
 			"description": "🤫⏳📖✍️..."
 		},
+		"typingIndicator": {
+			"isTyping": "${names} ✍️...",
+			"multipleMembers": "👥✍️..."
+		},
 		"sidebar": {
 			"noSelection": "🤷‍♂️",
 			"noDescription": "🤷‍♂️ℹ️",

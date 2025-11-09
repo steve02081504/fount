@@ -560,6 +560,10 @@
 			"title": "새 채팅",
 			"description": "아직 쓰여지지 않은 이야기에 대한 조용한 기대. 새로운 채팅이 시작됩니다. 선택한 동료와의 신선한 상호작용과 전개되는 이야기를 위한 깨끗한 상태입니다."
 		},
+		"typingIndicator": {
+			"isTyping": "${names}님이 입력 중입니다...",
+			"multipleMembers": "여러 회원이 입력 중입니다..."
+		},
 		"sidebar": {
 			"noSelection": "선택된 항목 없음",
 			"noDescription": "설명 없음",

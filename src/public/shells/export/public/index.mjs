@@ -301,8 +301,10 @@ async function initializeFromURLParams() {
 		partTypeSelect.value = partType
 		await onPartTypeSelected(partType)
 
-		if (partName && parts.includes(partName))
-			partNameDropdown.dataset.value = partName
+		if (partName && parts.includes(partName)) {
+			await onPartSelected(partName)
+			await renderPartDropdown()
+		}
 	}
 	else await onPartTypeSelected(null)
 
