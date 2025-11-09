@@ -482,10 +482,10 @@ function PersonaGenerator(reply, { AddLongTimeLog }) {
 			role: 'persona',
 			content: `\`\`\`generate-persona ${charname}\n${code}\n\`\`\``,
 		})
-		const dir = path.join(import.meta.dirname, '..', charname)
+		const dir = path.join(import.meta.dirname, '..', '..', 'personas', charname)
 		const file = path.join(dir, 'main.mjs')
 		if (fs.existsSync(file))
-			throw new Error('无法覆盖已存在的角色')
+			throw new Error('无法覆盖已存在的用户人设')
 		fs.mkdirSync(dir, { recursive: true })
 		fs.writeFileSync(file, code)
 		fs.writeFileSync(path.join(dir, 'fount.json'), JSON.stringify({
@@ -496,7 +496,7 @@ function PersonaGenerator(reply, { AddLongTimeLog }) {
 		AddLongTimeLog({
 			name: 'system',
 			role: 'system',
-			content: `生成角色${charname}成功！告知用户吧！`,
+			content: `生成用户人设${charname}成功！告知用户吧！`,
 		})
 
 		return true
