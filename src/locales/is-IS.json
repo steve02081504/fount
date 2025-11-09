@@ -301,6 +301,7 @@
 			"title": "Hýsill ótengdur",
 			"message": "fount hýsill ${hostUrl} virðist vera ótengdur. Viltu reyna aftur?",
 			"buttons": {
+				"start": "Ræsa",
 				"retry": "Reyndu aftur"
 			}
 		},
@@ -558,6 +559,10 @@
 		"new": {
 			"title": "Nýtt spjall",
 			"description": "Hljóðlát eftirvænting eftir sögu sem enn er óskrifuð. Nýtt spjall hefst, hreint borð fyrir ný samskipti og frásagnir sem þróast með þeim félögum sem þú hefur valið."
+		},
+		"typingIndicator": {
+			"isTyping": "${names} er að skrifa...",
+			"multipleMembers": "Margir meðlimir eru að skrifa..."
 		},
 		"sidebar": {
 			"noSelection": "Ekkert",

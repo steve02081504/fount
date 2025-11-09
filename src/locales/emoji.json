@@ -301,6 +301,7 @@
 			"title": "🖥️🚫🌐",
 			"message": "${hostUrl} 😴... 🔄❓",
 			"buttons": {
+				"start": "🚀",
 				"retry": "🔄"
 			}
 		},
@@ -557,6 +558,10 @@
 		"new": {
 			"title": "🆕💬",
 			"description": "🤫⏳📖✍️..."
+		},
+		"typingIndicator": {
+			"isTyping": "${names} ✍️...",
+			"multipleMembers": "👥✍️..."
 		},
 		"sidebar": {
 			"noSelection": "🤷‍♂️",

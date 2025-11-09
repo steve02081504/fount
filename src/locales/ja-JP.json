@@ -301,6 +301,7 @@
 			"title": "ホストがオフラインです",
 			"message": "fount ホスト ${hostUrl} はオフラインのようです。再試行しますか？",
 			"buttons": {
+				"start": "起動",
 				"retry": "再試行"
 			}
 		},
@@ -558,6 +559,10 @@
 		"new": {
 			"title": "新しいチャット",
 			"description": "まだ書かれていない物語への静かな期待。新しいチャットが始まり、白紙の状態で、選択した仲間との新鮮な対話と展​​開される物語が始まります。"
+		},
+		"typingIndicator": {
+			"isTyping": "${names} が入力中です...",
+			"multipleMembers": "複数のメンバーが入力しています..."
 		},
 		"sidebar": {
 			"noSelection": "未選択",

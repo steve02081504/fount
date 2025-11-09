@@ -301,6 +301,7 @@
 			"title": "主机离线",
 			"message": "fount 主机 ${hostUrl} 似乎已离线。您想重试吗？",
 			"buttons": {
+				"start": "启动",
 				"retry": "重试"
 			}
 		},
@@ -558,6 +559,10 @@
 		"new": {
 			"title": "新聊天",
 			"description": "静待一篇尚未写就的篇章。开启新的对话，与您选定的伙伴在一片空白之上，描绘全新的互动与叙事。"
+		},
+		"typingIndicator": {
+			"isTyping": "${names} 正在输入...",
+			"multipleMembers": "多个成员正在输入..."
 		},
 		"sidebar": {
 			"noSelection": "无",
