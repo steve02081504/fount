@@ -559,6 +559,10 @@
 			"title": "Neuer Chat",
 			"description": "Die stille Vorfreude auf eine noch ungeschriebene Geschichte. Ein neuer Chat beginnt, ein Neuanfang für neue Interaktionen und sich entfaltende Erzählungen mit Ihren ausgewählten Begleitern."
 		},
+		"typingIndicator": {
+			"isTyping": "${names} tippt...",
+			"multipleMembers": "Mehrere Mitglieder tippen..."
+		},
 		"sidebar": {
 			"noSelection": "Keine Auswahl",
 			"noDescription": "Keine Beschreibung verfügbar",

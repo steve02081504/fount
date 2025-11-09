@@ -12,6 +12,7 @@ import {
 	handlePluginAdded,
 	handlePluginRemoved,
 } from './ui/sidebar.mjs'
+import { handleCharTypingStart, handleCharTypingStop } from './ui/typingIndicator.mjs'
 import { handleMessageAdded, handleMessageDeleted, handleMessageReplaced } from './ui/virtualQueue.mjs'
 
 let ws = null
@@ -101,6 +102,12 @@ async function handleBroadcastEvent(event) {
 			break
 		case 'plugin_removed':
 			await handlePluginRemoved(payload.pluginname)
+			break
+		case 'char_typing_start':
+			await handleCharTypingStart(payload.charname)
+			break
+		case 'char_typing_stop':
+			await handleCharTypingStop(payload.charname)
 			break
 		default:
 			console.warn(`Unknown broadcast event type: ${type}`)

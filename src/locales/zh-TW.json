@@ -559,6 +559,10 @@
 			"title": "新聊天",
 			"description": "對一個尚未寫下的故事的安靜期待。新的聊天開始，與您選擇的同伴進行新的互動並展開敘述。"
 		},
+		"typingIndicator": {
+			"isTyping": "${names} 正在輸入...",
+			"multipleMembers": "多個成員正在輸入..."
+		},
 		"sidebar": {
 			"noSelection": "未選擇",
 			"noDescription": "無描述資訊",

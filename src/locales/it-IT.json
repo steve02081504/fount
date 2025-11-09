@@ -559,6 +559,10 @@
 			"title": "Nuova chat",
 			"description": "La silenziosa anticipazione di una storia ancora non scritta. Inizia una nuova chat, una tabula rasa per nuove interazioni e narrazioni in evoluzione con i tuoi compagni scelti."
 		},
+		"typingIndicator": {
+			"isTyping": "${names} sta scrivendo...",
+			"multipleMembers": "Più membri stanno scrivendo..."
+		},
 		"sidebar": {
 			"noSelection": "Nessuna selezione",
 			"noDescription": "Nessuna descrizione.",

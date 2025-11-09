@@ -559,6 +559,10 @@
 			"title": "Nova conversa",
 			"description": "A silenciosa antecipação de uma história ainda não escrita. Um novo bate-papo começa, uma lousa em branco para novas interações e desdobramento de narrativas com os companheiros escolhidos."
 		},
+		"typingIndicator": {
+			"isTyping": "${names} está a escrever...",
+			"multipleMembers": "Vários membros estão a escrever..."
+		},
 		"sidebar": {
 			"noSelection": "Não selecionado",
 			"noDescription": "Sem descrição.",
