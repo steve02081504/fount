@@ -249,7 +249,6 @@ async function saveConfig() {
 		console.warn('No part selected to save.')
 		return
 	}
-	const data = jsonEditor.get().json || JSON.parse(jsonEditor.get().text)
 
 	// Show loading icon and disable button
 	saveStatusIcon.src = 'https://api.iconify.design/line-md/loading-loop.svg'
@@ -257,6 +256,7 @@ async function saveConfig() {
 	saveButton.disabled = true
 
 	try {
+		const data = jsonEditor.get().json || JSON.parse(jsonEditor.get().text)
 		await saveConfigData(activePartType, activePart, data)
 		isDirty = false
 
