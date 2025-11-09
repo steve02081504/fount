@@ -12,6 +12,88 @@ import * as api from './src/endpoints.mjs'
 const achievementsContainer = document.getElementById('achievements-container')
 
 let render_lock
+
+const shakeStates = new Map()
+const MAX_CLICKS_TO_RELOCK = 13
+const SHAKE_DECAY_TIME = 2000 // ms before shake starts to decay
+
+/**
+ * 对元素应用摇晃效果。
+ * @param {HTMLElement} element - 要应用摇晃效果的元素。
+ * @param {number} intensity - 摇晃强度。
+ */
+function applyShake(element, intensity) {
+	if (intensity > 0) {
+		element.style.setProperty('--shake-intensity', intensity.toString())
+		element.classList.add('shaking')
+	} else {
+		element.style.setProperty('--shake-intensity', '0')
+		element.classList.remove('shaking')
+		element.style.transform = 'none' // Reset transform explicitly
+	}
+}
+
+/**
+ * 摇晃效果的衰减函数。
+ * @param {HTMLElement} element - 要应用摇晃效果的元素。
+ */
+function decayShake(element) {
+	const state = shakeStates.get(element)
+	if (!state) return
+
+	state.intensity *= 0.9 // Decay factor
+	if (state.intensity < 0.5) { // Stop shaking if intensity is too low
+		state.intensity = 0
+		state.clicks = 0
+		shakeStates.delete(element)
+		applyShake(element, 0)
+	} else {
+		applyShake(element, state.intensity)
+		state.timer = setTimeout(() => decayShake(element), 100)
+	}
+}
+
+achievementsContainer.addEventListener('click', async (event) => {
+	const card = event.target.closest('.achievement-card.unlocked')
+	if (!card) return
+
+	navigator?.vibrate?.(50)
+
+	const { parttype, partname, id } = card.dataset
+
+	let state = shakeStates.get(card)
+	if (!state) {
+		state = { clicks: 0, intensity: 0, timer: null }
+		shakeStates.set(card, state)
+	}
+
+	clearTimeout(state.timer) // Reset decay timer on new click
+
+	state.clicks++
+	state.intensity = Math.min(state.clicks * 0.5, 5) // Increase intensity, with a cap
+
+	applyShake(card, state.intensity)
+
+	if (state.clicks >= MAX_CLICKS_TO_RELOCK) {
+		card.style.pointerEvents = 'none' // Prevent further clicks
+		card.classList.add('opacity-50')
+		try {
+			const result = await api.lockAchievement(parttype, partname, id, 'relock_by_clicking')
+			if (result.success) // The server will send an event to reload, but we can do it faster
+				await renderAchievements()
+		} catch (e) {
+			console.error('Failed to relock achievement', e)
+			card.style.pointerEvents = 'auto'
+			card.classList.remove('opacity-50')
+		} finally {
+			shakeStates.delete(card) // Clear state after attempt to relock
+			applyShake(card, 0) // Ensure shake is removed
+		}
+	}
+	else
+		state.timer = setTimeout(() => decayShake(card), SHAKE_DECAY_TIME) // Start decay after a delay
+})
+
 /**
  * 从服务器获取所有成就数据并将其渲染到页面上。
  * 它会处理加载状态、错误，并根据需要异步加载 i18n 数据。
@@ -41,6 +123,8 @@ async function renderAchievements() {
 					const totalAchievements = Object.keys(achievements).length
 					const unlockedAchievements = Object.values(achievements).filter(a => a.unlocked_at).length
 					const section = await renderTemplate('source_section', {
+						parttype: source.parttype,
+						partname: source.partname,
 						source: info,
 						achievements,
 						totalAchievements,
@@ -55,6 +139,8 @@ async function renderAchievements() {
 				const totalAchievements = Object.keys(achievements).length
 				const unlockedAchievements = Object.values(achievements).filter(a => a.unlocked_at).length
 				const section = await renderTemplate('source_section', {
+					parttype: source.parttype,
+					partname: source.partname,
 					source: info,
 					achievements,
 					totalAchievements,

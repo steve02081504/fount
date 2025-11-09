@@ -821,6 +821,10 @@
 		"templateSelect": {
 			"label": "Kies een sjabloon"
 		},
+		"alerts": {
+			"success": "Component '${partName}' succesvol aangemaakt!",
+			"error": "Fout: ${message}"
+		},
 		"form": {
 			"partName": {
 				"label": "Componentnaam",
@@ -902,11 +906,7 @@
 				"label": "Problemenpagina",
 				"placeholder": "URL van de problemenpagina van het component"
 			},
-			"createButton": "Component aanmaken",
-			"alerts": {
-				"success": "Component '${partName}' succesvol aangemaakt!",
-				"error": "Fout: ${message}"
-			}
+			"createButton": "Component aanmaken"
 		},
 		"achievements": {
 			"create_part": {
@@ -1534,6 +1534,11 @@
 				"name": "code zingen",
 				"description": "\"In mijn naam, geef opdracht aan de browser...\"",
 				"locked_description": "Voer de JavaScript-code één keer uit in de browser."
+			},
+			"star_fount": {
+				"name": "open source-ster",
+				"description": "Geef fount een ster op GitHub, bedankt voor je steun!",
+				"locked_description": "Bezoek de GitHub-repository van fount en geef het een ster."
 			}
 		}
 	},
@@ -1655,6 +1660,11 @@
 				"name": "Trofee, hier kom ik!",
 				"description": "Opende de prestatielijst en bereidde zich voor op een postzegelverzamelreis.",
 				"locked_description": "Open de pagina Prestaties."
+			},
+			"relock_by_clicking": {
+				"name": "Serieus?",
+				"description": "Door herhaaldelijk op een ontgrendelde prestatie te klikken, vergrendelt u deze opnieuw. Waarom?",
+				"locked_description": "? ? ?"
 			}
 		}
 	},

@@ -821,6 +821,10 @@
 		"templateSelect": {
 			"label": "템플릿 선택"
 		},
+		"alerts": {
+			"success": "컴포넌트 '${partName}'이(가) 성공적으로 생성되었습니다!",
+			"error": "오류: ${message}"
+		},
 		"form": {
 			"partName": {
 				"label": "컴포넌트 이름",
@@ -902,11 +906,7 @@
 				"label": "문제 신고 페이지",
 				"placeholder": "컴포넌트 문제 신고 페이지의 URL"
 			},
-			"createButton": "컴포넌트 만들기",
-			"alerts": {
-				"success": "컴포넌트 '${partName}'이(가) 성공적으로 생성되었습니다!",
-				"error": "오류: ${message}"
-			}
+			"createButton": "컴포넌트 만들기"
 		},
 		"achievements": {
 			"create_part": {
@@ -1534,6 +1534,11 @@
 				"name": "코드 성가",
 				"description": "\"내 이름으로 브라우저에 명령을 내려라...\"",
 				"locked_description": "브라우저에서 JavaScript 코드를 한 번 실행하십시오."
+			},
+			"star_fount": {
+				"name": "오픈소스 스타",
+				"description": "GitHub에서 fount에 스타를 눌러주세요. 지원에 감사드립니다!",
+				"locked_description": "fount의 GitHub 저장소를 방문하여 별을 밝히세요."
 			}
 		}
 	},
@@ -1655,6 +1660,11 @@
 				"name": "도감 채우러 가자!",
 				"description": "성취 목록을 열고 우표 수집 여행을 시작할 준비를 했습니다.",
 				"locked_description": "업적 페이지를 엽니다."
+			},
+			"relock_by_clicking": {
+				"name": "실화냐?",
+				"description": "잠금 해제된 업적을 반복적으로 클릭하면 성공적으로 다시 잠길 수 있습니다. 왜?",
+				"locked_description": "? ? ?"
 			}
 		}
 	},

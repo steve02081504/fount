@@ -6,8 +6,11 @@
 		<progress class="progress progress-primary w-56" value="${unlockedAchievements}" max="${totalAchievements}"></progress>
 	</h2>
 	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-		${Object.values(achievements).map(achievement => `
-		<div class="card bg-base-100 shadow-md achievement-card ${achievement.unlocked_at ? 'unlocked' : ''}">
+		${Object.entries(achievements).map(([id, achievement]) => `
+		<div class="card bg-base-100 shadow-md achievement-card ${achievement.unlocked_at ? 'unlocked' : ''}"
+			data-parttype="${parttype}"
+			data-partname="${partname}"
+			data-id="${id}">
 			<div class="card-body">
 				<div class="flex items-center gap-4">
 					<div class="achievement-icon text-5xl">

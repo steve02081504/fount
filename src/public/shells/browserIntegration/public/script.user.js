@@ -2,11 +2,12 @@
 // @name         fount Browser Integration
 // @namespace    http://tampermonkey.net/
 // @version      0.0.0.0
-//  Allows fount characters to interact with the web page.
+// @description  Allows fount characters to interact with the web page.
 // @author       steve02081504
 // @icon         https://steve02081504.github.io/fount/imgs/icon.svg
 // @match        *://*/*
 // @connect      esm.sh
+// @connect      github.com
 // @connect      cdn.jsdelivr.net
 // @connect      steve02081504.github.io
 // @connect      *
@@ -21,9 +22,12 @@
  * fount 浏览器集成用户脚本。允许 fount 角色与网页交互。
  */
 
+/* eslint-disable curly */
+/* eslint-disable no-return-assign */
+// eslint-disable-next-line no-redeclare
 /* global GM, GM_info */
 
-// --- Helpers ---
+// --- 辅助函数 ---
 
 /**
  * GM.xmlHttpRequest 的一个包装器，模仿 fetch() API。
@@ -71,7 +75,7 @@ const getCircularReplacer = () => {
 
 // --- i18n ---
 const i18n = {
-	// Default fallback translations (English)
+	// 默认回退翻译 (英文)
 	_default: {
 		browser_integration_script: {
 			hostChange: {
@@ -94,9 +98,9 @@ Are you sure you want to allow this change?
 			},
 			csp_warning: 'fount Warning: The current page\'s Content Security Policy (CSP) may prevent fount scripts from running correctly. Some features might not work as expected.'
 		},
-		// This will be populated with fetched translations
-		loaded: {}
-	}
+	},
+	// 这部分将由获取到的翻译填充
+	loaded: {}
 }
 
 /**
@@ -124,18 +128,113 @@ let translationsInitialized = false
  * @returns {Promise<string>} - 翻译后的字符串。
  */
 async function geti18n(key, params = {}) {
+	const translation = await geti18n_nowarn(key, params)
+	if (translation !== undefined) return translation
+
+	console.warn(`fount userscript: Translation key "${key}" not found.`)
+	return key
+}
+
+/**
+ * 获取翻译字符串，不发出警告。
+ * @param {string} key - 翻译键。
+ * @param {object} [params={}] - 用于替换的参数。
+ * @returns {string|undefined} - 翻译后的字符串，如果未找到则为 undefined。
+ */
+async function geti18n_nowarn(key, params = {}) {
 	if (!translationsInitialized) {
 		await initTranslations()
 		translationsInitialized = true
 	}
 	let translation = getNestedValue(i18n.loaded, key) ?? getNestedValue(i18n._default, key)
-	if (translation === undefined) {
-		console.warn(`fount userscript: Translation key "${key}" not found.`)
-		return key
-	}
+	if (translation === undefined) return
+
+	// Interpolation for links and variables
 	for (const param in params)
-		translation = translation?.replaceAll?.(`\${${param}}`, params[param])
+		translation = translation?.replace?.(
+			new RegExp(`\\[(?<text>.+)\\]\\(\\$\\{${param}\\}\\)`, 'g'),
+			(m, text) => `<a href="${params[param]}" target="_blank" rel="noopener" class="link">${text}</a>`
+		)?.replaceAll?.(`\${${param}}`, params[param])
+
 	return translation
+}
+
+/**
+ * 翻译单个元素。
+ * @param {HTMLElement} element - 要翻译的元素。
+ * @returns {boolean} 如果元素已更新，则返回 true。
+ */
+async function translateSingularElement(element) {
+	let updated = false
+	/**
+	 * 更新元素属性的值。
+	 * @param {string} attr - 属性名。
+	 * @param {any} value - 新值。
+	 */
+	function updateValue(attr, value) {
+		if (element[attr] == value) return
+		element[attr] = value
+		updated = true
+	}
+	/**
+	 * 更新元素的属性。
+	 * @param {string} attr - 属性名。
+	 * @param {string} value - 新值。
+	 */
+	function updateAttribute(attr, value) {
+		if (element.getAttribute(attr) == value) return
+		element.setAttribute(attr, value)
+		updated = true
+	}
+	for (const key of element.dataset.i18n.split(';').map(k => k.trim())) {
+		if (key.startsWith('\'') && key.endsWith('\'')) {
+			const literal_value = key.slice(1, -1)
+			if (element.textContent !== literal_value) {
+				element.textContent = literal_value
+				updated = true
+			}
+		}
+		else if (getNestedValue(i18n.loaded, key) ?? getNestedValue(i18n._default, key) instanceof Object) {
+			const attributes = ['placeholder', 'title', 'label', 'value', 'alt', 'aria-label']
+			for (const attr of attributes) {
+				const specificKey = `${key}.${attr}`
+				const translation = await geti18n_nowarn(specificKey, element.dataset)
+				if (translation) updateAttribute(attr, translation)
+			}
+			const values = ['textContent', 'innerHTML']
+			for (const attr of values) {
+				const specificKey = `${key}.${attr}`
+				const translation = await geti18n_nowarn(specificKey, element.dataset)
+				if (translation) updateValue(attr, translation)
+			}
+			const dataset = await geti18n_nowarn(`${key}.dataset`)
+			if (dataset) Object.assign(element.dataset, dataset)
+			updated = true
+		}
+		else if (await geti18n_nowarn(key)) {
+			const translation = await geti18n_nowarn(key, element.dataset)
+			if (element.innerHTML !== translation) {
+				element.innerHTML = translation
+				updated = true
+			}
+		}
+		if (updated) break
+	}
+	return updated
+}
+
+/**
+ * 翻译元素及其子元素。
+ * @param {HTMLElement} element - 要翻译的元素。
+ * @returns {HTMLElement} 翻译后的元素。
+ */
+async function i18nElement(element) {
+	if (element.matches?.('[data-i18n]'))
+		await translateSingularElement(element)
+
+	const elements = element.querySelectorAll('[data-i18n]')
+	await Promise.all([...elements].map(el => translateSingularElement(el)))
+	return element
 }
 
 /**
@@ -144,9 +243,9 @@ async function geti18n(key, params = {}) {
  */
 async function initTranslations() {
 	const base_dir = 'https://steve02081504.github.io/fount'
-	const availableLocales = []
-	const userPreferredLangs = await GM.getValue('fount_user_preferred_locales', [])
 	try {
+		// Fetch available locales
+		const availableLocales = []
 		const listRes = await gmFetch(`${base_dir}/locales/list.csv`)
 		if (listRes.status === 200) {
 			const lines = listRes.responseText.split('\n').slice(1)
@@ -156,19 +255,32 @@ async function initTranslations() {
 			}
 		} else console.warn('fount userscript: Could not fetch locales list.csv.')
 
-		const preferredLocales = [...new Set([...userPreferredLangs, ...navigator.languages || [navigator.language]])].filter(Boolean)
+		// Determine best language
+		const userPreferredLangs = await GM.getValue('fount_user_preferred_locales', [])
+		const browserLangs = [...navigator.languages || [navigator.language]].filter(Boolean)
+		const combinedPrefs = [...new Set([...userPreferredLangs, ...browserLangs, 'en-UK'])].filter(Boolean)
+
 		let lang = 'en-UK'
-		for (const preferredLocale of preferredLocales) {
-			if (availableLocales.includes(preferredLocale)) { lang = preferredLocale; break }
-			const temp = availableLocales.find(name => name.startsWith(preferredLocale.split('-')[0]))
-			if (temp) { lang = temp; break }
+		for (const preferredLocale of combinedPrefs) {
+			if (availableLocales.includes(preferredLocale)) {
+				lang = preferredLocale
+				break
+			}
+			const baseLang = preferredLocale.split('-')[0]
+			const fallback = availableLocales.find(name => name.startsWith(baseLang))
+			if (fallback) {
+				lang = fallback
+				break
+			}
 		}
 
+		// Fetch translation file
 		if (lang !== 'en-UK') {
 			const translationResponse = await gmFetch(`${base_dir}/locales/${lang}.json`)
 			if (translationResponse.status === 200) i18n.loaded = JSON.parse(translationResponse.responseText)
 			else throw new Error(`Failed to fetch translations: ${translationResponse.status} ${translationResponse.statusText}`)
-		}
+		} else
+			i18n.loaded = {}
 	} catch (error) {
 		console.error('fount userscript: Error initializing translations:', error)
 	}
@@ -190,28 +302,85 @@ window.addEventListener('fount-autorun-script-update', async (e) => {
 	await GM.setValue(AUTORUN_SCRIPTS_KEY, updatedScripts)
 })
 
-// --- Globals & Constants ---
-let pageId = -1
-let ws = null
-let currentHost = null
-let connectionTimeoutId = null
-let apiKeyRefreshPromise = null
-const blockedHosts = new Map()
+const IconCache = {}
+
+/**
+ * 从 HTML 字符串安全地创建 DOM 元素（包括执行 <script> 标签和使得 <link> 标签生效），返回 DocumentFragment。
+ *
+ * @param {string} htmlString - 包含 HTML 代码的字符串。
+ * @returns {DocumentFragment} - 渲染好的 DocumentFragment。
+ */
+function createDocumentFragmentFromHtmlString(htmlString) {
+	if (!htmlString || !htmlString.trim()) return document.createDocumentFragment()
+
+	const template = document.createElement('template')
+	template.innerHTML = htmlString
+	const fragment = template.content
+
+	fragment.querySelectorAll('script[src^="/___"]').forEach(oldScript => {
+		oldScript.remove()
+	})
+	fragment.querySelectorAll('script').forEach(oldScript => {
+		const newScript = document.createElement('script')
+		for (const attr of oldScript.attributes)
+			newScript.setAttribute(attr.name, attr.value)
+		if (oldScript.textContent) newScript.text = oldScript.textContent
+		oldScript.parentNode.replaceChild(newScript, oldScript)
+	})
+	fragment.querySelectorAll('link').forEach(oldLink => {
+		const newLink = document.createElement('link')
+		for (const attr of oldLink.attributes)
+			newLink.setAttribute(attr.name, attr.value)
+		oldLink.parentNode.replaceChild(newLink, oldLink)
+	})
+
+	return fragment
+}
+
+/**
+ * currentColor在img的从url导入的svg中不起作用，此函数旨在解决这个问题。
+ * @param {DocumentFragmentOrElement} DOM - 要处理的 DOM。
+ * @returns {Promise<DocumentFragmentOrElement>} - 处理后的 DOM。
+ */
+async function svgInliner(DOM) {
+	const svgs = DOM.querySelectorAll('img[src$=".svg"]')
+	await Promise.all([...svgs].map(async svg => {
+		const url = svg.getAttribute('src')
+		IconCache[url] ??= fetch(url).then(response => response.text())
+		let data = IconCache[url] = await IconCache[url]
+		// 对于每个id="xx"的match，在id后追加uuid
+		const uuid = Math.random().toString(36).slice(2)
+		const matches = data.matchAll(/id="([^"]+)"/g)
+		for (const match of matches) data = data.replaceAll(match[1], `${match[1]}-${uuid}`)
+		const newSvg = createDocumentFragmentFromHtmlString(data)
+		for (const attr of svg.attributes)
+			newSvg.querySelector('svg').setAttribute(attr.name, attr.value)
+		svg.replaceWith(newSvg)
+	})).catch(console.error)
+	return DOM
+}
+
+// --- 全局变量与常量 ---
 const BLOCK_DURATION_MS = 3600000
 const INITIAL_RETRY_DELAY = 5000
 const MAX_RETRY_DELAY = 300000
 const RETRY_INCREMENT = 5000
+let pageId = -1
+let ws = null
 let currentRetryDelay = INITIAL_RETRY_DELAY
+let connectionTimeoutId = null
+let apiKeyRefreshPromise = null
+const blockedHosts = new Map()
 
-/** @type {number} Timestamp of the last successful API key refresh. */
+/** @type {number} 最后一次成功刷新 API 密钥的时间戳。 */
 let lastRefreshTimestamp = 0
-/** @constant {number} Grace period in milliseconds to ignore stale 401 errors after a refresh. */
+/** @constant {number} 忽略刷新后过时 401 错误的宽限期（毫秒）。 */
 const REFRESH_GRACE_PERIOD_MS = 5000
 
 let cspWarningShown = false
 
 
-// --- Host Management & State Caching ---
+// --- 主机管理与状态缓存 ---
 let fountDataCache = null
 /**
  * 获取存储的数据。
@@ -414,6 +583,390 @@ window.addEventListener('fount-host-info', async (e) => {
 	if (!ws || ws.readyState === WebSocket.CLOSED) findAndConnect()
 })
 
+// --- Toast Notifications ---
+
+let toastContainer = null
+
+const icons = {
+	info: 'https://api.iconify.design/line-md/alert-circle.svg',
+	success: 'https://api.iconify.design/line-md/confirm-circle.svg',
+	warning: 'https://api.iconify.design/line-md/alert.svg',
+	error: 'https://api.iconify.design/line-md/alert.svg',
+}
+
+/**
+ * 确保 toast 容器存在并返回它。
+ * @returns {HTMLElement} - toast 容器元素。
+ */
+function ensureToastContainer() {
+	if (!toastContainer)
+		toastContainer = document.querySelector('#fount-toast-container')
+
+	if (!toastContainer) {
+		toastContainer = document.createElement('div')
+		toastContainer.id = 'fount-toast-container'
+		toastContainer.className = 'fount-browserIntegration-toast fount-browserIntegration-toast-bottom fount-browserIntegration-toast-end'
+		document.body.appendChild(toastContainer)
+	}
+	return toastContainer
+}
+
+/**
+ * 支持的 toast 转义样式类。
+ * @type {string[]}
+ */
+const supportedClasses = [
+	'toast', 'toast-bottom', 'toast-end',
+	'animate-fade-in-up', 'animate-fade-out-down',
+	'alert', 'alert-info', 'alert-success', 'alert-warning', 'alert-error',
+	'shadow-lg', 'flex', 'items-end', 'opacity-80', 'flex-none', 'w-12', 'h-12', 'mr-2',
+	'h-full', 'w-full', 'aspect-square', 'flex-grow', 'text-xs', 'mb-1', 'font-bold', 'text-lg', 'text-sm',
+	'h-6', 'w-6', 'flex-shrink-0',
+]
+
+/**
+ * 添加 toast 样式。
+ * @returns {void}
+ */
+function addToastStyles() {
+	if (document.getElementById('fount-toast-styles')) return
+	const style = document.createElement('style')
+	style.id = 'fount-toast-styles'
+	style.textContent = `
+.fount-browserIntegration-toast {
+	position: fixed;
+	z-index: 2147483647;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	width: max-content;
+	max-width: 90vw;
+}
+.fount-browserIntegration-toast-bottom { bottom: 1rem; }
+.fount-browserIntegration-toast-end { right: 1rem; }
+.fount-browserIntegration-alert {
+	display: flex;
+	align-items: start;
+	padding: 1rem;
+	border-radius: 0.5rem;
+	background-color: #333;
+	color: white;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+	font-size: 0.875rem;
+	line-height: 1.25rem;
+	box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+.fount-browserIntegration-alert > :where(svg) {
+	color: currentColor;
+	width: 1.5rem;
+	height: 1.5rem;
+	flex-shrink: 0;
+	margin-right: 0.75rem;
+}
+.fount-browserIntegration-alert-info { background-color: #3B82F6; color: white; }
+.fount-browserIntegration-alert-success { background-color: #22C55E; color: white; }
+.fount-browserIntegration-alert-warning { background-color: #F59E0B; color: white; }
+.fount-browserIntegration-alert-error { background-color: #EF4444; color: white; }
+
+@keyframes fount-browserIntegration-animate-fade-in-up {
+	from { opacity: 0; transform: translateY(20px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+.fount-browserIntegration-animate-fade-in-up {
+	animation: fount-browserIntegration-animate-fade-in-up 0.3s ease-out forwards;
+}
+@keyframes fount-browserIntegration-animate-fade-out-down {
+	from { opacity: 1; transform: translateY(0); }
+	to { opacity: 0; transform: translateY(20px); }
+}
+.fount-browserIntegration-animate-fade-out-down {
+	animation: fount-browserIntegration-animate-fade-out-down 0.3s ease-in forwards;
+}
+.fount-browserIntegration-shadow-lg {
+	box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+.fount-browserIntegration-flex {
+	display: flex;
+}
+.fount-browserIntegration-items-end {
+	align-items: end;
+}
+.fount-browserIntegration-opacity-80 {
+	opacity: 0.8;
+}
+.fount-browserIntegration-flex-none {
+	flex: none;
+}
+.fount-browserIntegration-flex-shrink-0 {
+	flex-shrink: 0;
+}
+.fount-browserIntegration-w-6 {
+	width: 1.5rem;
+}
+.fount-browserIntegration-h-6 {
+	height: 1.5rem;
+}
+.fount-browserIntegration-w-12 {
+	width: 3rem;
+}
+.fount-browserIntegration-h-12 {
+	height: 3rem;
+}
+.fount-browserIntegration-mr-2 {
+	margin-right: 0.5rem;
+}
+.fount-browserIntegration-h-full {
+	height: 100%;
+}
+.fount-browserIntegration-w-full {
+	width: 100%;
+}
+.fount-browserIntegration-aspect-square {
+	aspect-ratio: 1 / 1;
+}
+.fount-browserIntegration-flex-grow {
+	flex-grow: 1;
+}
+.fount-browserIntegration-text-xs {
+	font-size: 0.75rem;
+	line-height: 1rem;
+}
+.fount-browserIntegration-mb-1 {
+	margin-bottom: 0.25rem;
+}
+.fount-browserIntegration-font-bold {
+	font-weight: 700;
+}
+.fount-browserIntegration-text-lg {
+	font-size: 1.125rem;
+	line-height: 1.75rem;
+}
+.fount-browserIntegration-text-sm {
+	font-size: 0.875rem;
+	line-height: 1.25rem;
+}
+`
+	document.head.appendChild(style)
+}
+
+/**
+ * 显示一个基础的 toast 通知。
+ * @param {string} type - toast 类型（例如 'info', 'success', 'warning', 'error'）。
+ * @param {string|HTMLElement} message - 要显示的消息。
+ * @param {number} [duration=4000] - toast 显示的持续时间（毫秒）。
+ * @returns {Promise<HTMLElement>} - 创建的 toast 元素。
+ */
+async function base_showToast(type, message, duration = 4000) {
+	addToastStyles()
+	if (!(message instanceof HTMLElement) && !(Object(message) instanceof String)) {
+		console.error(`fount userscript: showToast() called with non-string/non-HTMLElement message: ${message}`)
+		message = String(message)
+	}
+	const container = ensureToastContainer()
+	const alertId = `fount-browserIntegration-alert-${Date.now()}`
+	const alertDiv = document.createElement('div')
+	if (type == 'custom') {
+		if (Object(message) instanceof HTMLElement)
+			alertDiv.appendChild(message)
+		else
+			alertDiv.innerHTML = message
+		alertDiv.id = alertId
+	}
+	else {
+		alertDiv.id = alertId
+		alertDiv.className = `alert alert-${type}`
+
+		const iconUrl = icons[type] || icons.info
+		const iconElement = document.createElement('img')
+		iconElement.src = iconUrl
+		iconElement.className = 'h-6 w-6 flex-shrink-0'
+
+		const textElement = document.createElement('div')
+		if (message instanceof HTMLElement)
+			textElement.appendChild(message)
+		else
+			textElement.innerHTML = String(message).replace(/\n/g, '<br>')
+
+		alertDiv.appendChild(iconElement)
+		alertDiv.appendChild(textElement)
+	}
+	alertDiv.className += ' fade-in-up'
+	const { host, protocol } = await getStoredData()
+	alertDiv.innerHTML = alertDiv.innerHTML.replaceAll('href="/', `href="${protocol}//${host}/`)
+
+	// 遍历 alertDiv 中的所有元素及其子元素的class，若在 supportedClasses 中，添加 fount-browserIntegration- 前缀
+	for (const element of [alertDiv, ...alertDiv.querySelectorAll('*')])
+		[...element.classList].filter(className => supportedClasses.includes(className)).forEach(className => {
+			element.classList.remove(className)
+			element.classList.add(`fount-browserIntegration-${className}`)
+		})
+
+	let hideTimeout
+
+	/**
+	 * 启动 toast 隐藏计时器。
+	 * @returns {void}
+	 */
+	const startTimer = () => {
+		hideTimeout = setTimeout(() => {
+			alertDiv.classList.add('fount-browserIntegration-animate-fade-out-down')
+			alertDiv.addEventListener('animationend', () => {
+				alertDiv.remove()
+				if (container && !container.hasChildNodes()) {
+					container.remove()
+					toastContainer = null
+				}
+			})
+		}, duration)
+	}
+
+	/**
+	 * 重置 toast 隐藏计时器。
+	 * @returns {void}
+	 */
+	const resetTimer = () => {
+		clearTimeout(hideTimeout)
+		startTimer()
+	}
+
+	alertDiv.addEventListener('mouseenter', () => clearTimeout(hideTimeout))
+	alertDiv.addEventListener('mouseleave', resetTimer)
+
+	// Process i18n and SVGs within the message itself
+	await i18nElement(alertDiv)
+	await svgInliner(alertDiv)
+
+	container.appendChild(alertDiv)
+	startTimer()
+	return alertDiv
+}
+
+/**
+ * 以 fount 的原生样式和行为显示 Toast 通知。
+ * @param {string} [type='info'] - toast 类型。
+ * @param {string|HTMLElement} message - toast 消息。
+ * @param {number} [duration=4000] - toast 持续时间。
+ * @returns {Promise<void>}
+ */
+function showToast(type = 'info', message, duration = 4000) {
+	return base_showToast(type, message, duration)
+}
+
+/**
+ * 显示一个 i18n toast。
+ * @param {string} [type='info'] - toast 类型。
+ * @param {string} key - i18n 键。
+ * @param {object} [params={}] - i18n 参数。
+ * @param {number} [duration=4000] - toast 持续时间。
+ * @returns {Promise<void>}
+ */
+async function showToastI18n(type = 'info', key, params = {}, duration = 4000) {
+	const message = await geti18n(key, params)
+	base_showToast(type, message, duration)
+}
+
+/**
+ * 追加弹幕样式
+ * @returns {void}
+ */
+function addDanmakuStyles() {
+	if (document.getElementById('fount-danmaku-styles')) return
+	const style = document.createElement('style')
+	style.id = 'fount-danmaku-styles'
+	style.textContent = `
+.fount-danmaku-container {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	pointer-events: none;
+	overflow: hidden;
+	z-index: 2147483646; /* Just below toast notifications */
+}
+
+.fount-danmaku-item {
+	position: absolute;
+	white-space: nowrap;
+	font-size: 24px; /* Default font size */
+	font-weight: bold;
+	color: white; /* Default color */
+	text-shadow: 1px 1px 2px black, 0 0 1em black, 0 0 0.2em black; /* Outline for readability */
+	animation-timing-function: linear;
+	animation-fill-mode: forwards;
+	pointer-events: none;
+}
+
+@keyframes fount-danmaku-move {
+	from { transform: translateX(100vw); }
+	to { transform: translateX(-100%); }
+}
+`
+	document.head.appendChild(style)
+}
+
+let danmakuContainer = null
+
+/**
+ * 确保弹幕容器存在并返回它。
+ * @returns {HTMLElement} - 弹幕容器元素。
+ */
+function ensureDanmakuContainer() {
+	if (!danmakuContainer) {
+		danmakuContainer = document.querySelector('#fount-danmaku-container')
+	}
+	if (!danmakuContainer) {
+		danmakuContainer = document.createElement('div')
+		danmakuContainer.id = 'fount-danmaku-container'
+		danmakuContainer.className = 'fount-danmaku-container'
+		document.body.appendChild(danmakuContainer)
+	}
+	return danmakuContainer
+}
+
+/**
+ * 显示一个弹幕。
+ * @param {Object} options - 弹幕选项。
+ * @param {string} options.content - 弹幕内容。
+ * @param {number} [options.speed=10] - 弹幕速度（像素/秒）。
+ * @param {string} [options.color='white'] - 弹幕颜色。
+ * @param {number} [options.fontSize=24] - 弹幕字体大小。
+ * @param {number} [options.yPos] - 弹幕垂直位置（0-1）。
+ * @returns {HTMLElement} - 创建的弹幕元素。
+ */
+function showDanmaku({ content, speed = 10, color = 'white', fontSize = 24, yPos }) {
+	addDanmakuStyles()
+	const container = ensureDanmakuContainer()
+	const danmakuItem = document.createElement('div')
+	danmakuItem.className = 'fount-danmaku-item'
+	danmakuItem.innerHTML = content
+
+	danmakuItem.style.color = color
+	danmakuItem.style.fontSize = `${fontSize}px`
+
+	// Determine vertical position
+	let topPosition
+	if (yPos !== undefined && yPos >= 0 && yPos <= 1) {
+		topPosition = `${yPos * 100}vh`
+	} else {
+		// Random vertical position, avoiding overlap as much as possible (simple approach)
+		// This is a very basic random placement. More advanced would track occupied lanes.
+		const viewportHeight = window.innerHeight
+		const danmakuHeight = fontSize + 4 // Estimate height with some padding
+		const maxLanes = Math.floor(viewportHeight / danmakuHeight)
+		const lane = Math.floor(Math.random() * maxLanes)
+		topPosition = `${lane * danmakuHeight}px`
+	}
+	danmakuItem.style.top = topPosition
+
+	danmakuItem.style.animation = `fount-danmaku-move ${speed}s linear forwards`
+
+	danmakuItem.addEventListener('animationend', () => {
+		danmakuItem.remove()
+	})
+
+	container.appendChild(danmakuItem)
+}
 
 // --- WebSocket & Core Logic ---
 /**
@@ -434,14 +987,29 @@ async function findAndConnect() {
 		const { username } = await whoami(host, protocol)
 		const { apikey: storedApiKey, uuid: storedUuid } = await getStoredData()
 		if (host !== storedHost) await setStoredData(host, storedUuid, protocol, storedApiKey)
-		connect(host, protocol, username, storedApiKey)
+		await connect(host, protocol, username, storedApiKey)
+		await checkAndUnlockGitHubStarAchievement()
+		try {
+			const scriptUrl = `${protocol}//${host}/shells/browserIntegration/public/script.user.js`
+			const response = await gmFetch(scriptUrl, {
+				headers: {
+					Authorization: `Bearer ${await GM.getValue('fount_apikey', null)}`
+				}
+			})
+			if (response.status !== 200) return
+			const remoteVersion = response.responseText.match(/@version\s+(\S+)/)?.[1]
+			if (remoteVersion && remoteVersion !== GM_info.script.version)
+				if (window.confirm(await geti18n('browser_integration_script.update.prompt')))
+					window.open(scriptUrl, '_blank')
+		} catch (error) {
+			console.error('fount userscript: Failed to check for updates.', error)
+		}
 		return
 	} catch (error) {
 		console.warn(`fount userscript: Failed to connect to ${host}. Trying next...`, error.message)
 	}
 
 	console.error('fount userscript: All known hosts failed to connect. Retrying after backoff period.')
-	currentHost = null
 	connectionTimeoutId = setTimeout(findAndConnect, currentRetryDelay)
 	currentRetryDelay = Math.min(currentRetryDelay + RETRY_INCREMENT, MAX_RETRY_DELAY)
 }
@@ -455,64 +1023,61 @@ async function findAndConnect() {
  */
 function connect(host, protocol, username, apikey) {
 	if (ws) return
-	currentHost = host
-	const wsProtocol = protocol === 'https:' ? 'wss:' : 'ws:'
-	ws = new WebSocket(`${wsProtocol}//${host}/ws/shells/browserIntegration/page`, apikey)
-	/**
-	 * WebSocket 'open' 事件处理程序。
-	 */
-	ws.onopen = () => {
-		currentRetryDelay = INITIAL_RETRY_DELAY
-		ws.send(JSON.stringify({ type: 'init', payload: { url: window.location.href, title: document.title, username } }))
-		checkForUpdate()
-	}
-	/**
-	 * WebSocket 'message' 事件处理程序。
-	 * @param {MessageEvent} event - WebSocket 消息事件。
-	 */
-	ws.onmessage = (event) => {
-		const msg = JSON.parse(event.data)
-		if (msg.type === 'init_success') { pageId = msg.payload.pageId; return }
-		if (msg.requestId) handleCommand(msg)
-	}
-	/**
-	 * WebSocket 'close' 事件处理程序。
-	 */
-	ws.onclose = () => {
-		ws = null
-		pageId = null
-		connectionTimeoutId = setTimeout(findAndConnect, currentRetryDelay)
-		currentRetryDelay = Math.min(currentRetryDelay + RETRY_INCREMENT, MAX_RETRY_DELAY)
-	}
-	/**
-	 * WebSocket 'error' 事件处理程序。
-	 * @param {Event} err - WebSocket 错误事件。
-	 */
-	ws.onerror = (err) => { console.error('fount userscript: WebSocket error.', err) }
-}
-
-/**
- * 检查脚本更新。
- * @returns {Promise<void>}
- */
-async function checkForUpdate() {
-	if (!currentHost) return
-	const { protocol } = await getStoredData()
-	const scriptUrl = `${protocol}//${currentHost}/shells/browserIntegration/public/script.user.js`
-	try {
-		const response = await gmFetch(scriptUrl, {
-			headers: {
-				Authorization: `Bearer ${await GM.getValue('fount_apikey', null)}`
+	return new Promise((resolve, reject) => {
+		const wsProtocol = protocol === 'https:' ? 'wss:' : 'ws:'
+		ws = new WebSocket(`${wsProtocol}//${host}/ws/shells/browserIntegration/page`, apikey)
+		/**
+		 * WebSocket 'open' 事件处理程序。
+		 * @param {Event} event - WebSocket 打开事件。
+		 * @returns {void}
+		 */
+		ws.onopen = async () => {
+			currentRetryDelay = INITIAL_RETRY_DELAY
+			ws.send(JSON.stringify({ type: 'init', payload: { url: window.location.href, title: document.title, username } }))
+			resolve()
+		}
+		/**
+		 * WebSocket 'message' 事件处理程序。
+		 * @param {MessageEvent} event - WebSocket 消息事件。
+		 * @returns {Promise<void>}
+		 */
+		ws.onmessage = async (event) => {
+			resolve()
+			const msg = JSON.parse(event.data)
+			if (msg.type === 'init_success') {
+				pageId = msg.payload.pageId
+				return
 			}
-		})
-		if (response.status !== 200) return
-		const remoteVersion = response.responseText.match(/@version\s+(\S+)/)?.[1]
-		if (remoteVersion && remoteVersion !== GM_info.script.version)
-			if (window.confirm(await geti18n('browser_integration_script.update.prompt')))
-				window.open(scriptUrl, '_blank')
-	} catch (error) {
-		console.error('fount userscript: Failed to check for updates.', error)
-	}
+
+			if (msg.type === 'page-event-show-toast' && msg.data) {
+				const { host: fountHost } = await getStoredData()
+				if (window.location.host === fountHost) return sendResponse(msg.requestId, { success: true })
+
+				const { type, message, duration } = msg.data
+				showToast(type, message, duration)
+
+				return sendResponse(msg.requestId, { success: true })
+			}
+
+			if (msg.requestId) handleCommand(msg)
+		}
+		/**
+		 * WebSocket 'close' 事件处理程序。
+		 * @returns {void}
+		 */
+		ws.onclose = () => {
+			ws = null
+			pageId = null
+			connectionTimeoutId = setTimeout(findAndConnect, currentRetryDelay)
+			currentRetryDelay = Math.min(currentRetryDelay + RETRY_INCREMENT, MAX_RETRY_DELAY)
+		}
+		/**
+		 * WebSocket 'error' 事件处理程序。
+		 * @param {Event} err - WebSocket 错误事件。
+		 * @returns {void}
+		 */
+		ws.onerror = (err) => { console.error('fount userscript: WebSocket error.', err); reject(err) }
+	})
 }
 
 /**
@@ -525,18 +1090,19 @@ async function checkCspAndWarn() {
 	try {
 		const policy = window.trustedTypes?.createPolicy?.('fount-userscript-policy', {
 			/**
-				* @param {string} s - 要创建脚本的字符串。
-				* @returns {string} 创建的脚本字符串。
-				*/
+			* @param {string} s - 要创建脚本的字符串。
+			* @returns {string} 创建的脚本字符串。
+			*/
 			createScript: s => s
 		}) ?? {
 			/**
-				* @param {string} s - 要创建脚本的字符串。
-				* @returns {string} 创建的脚本字符串。
-				*/
+			* @param {string} s - 要创建脚本的字符串。
+			* @returns {string} 创建的脚本字符串。
+			*/
 			createScript: s => s
 		}
 
+		// eslint-disable-next-line no-eval
 		eval(policy.createScript('1'))
 	}
 	catch (e) {
@@ -580,6 +1146,11 @@ async function handleCommand(msg) {
 				const { async_eval } = await import('https://esm.sh/@steve02081504/async-eval')
 				const evalResult = await async_eval(script, { callback })
 				payload = { result: JSON.parse(JSON.stringify(evalResult.result, getCircularReplacer())) }
+				break
+			}
+			case 'danmaku': {
+				showDanmaku(msg.payload)
+				payload = { success: true }
 				break
 			}
 			default: throw new Error(`Unknown command type: ${msg.type}`)
@@ -650,6 +1221,7 @@ function getVisibleElementsHtml() {
 
 /**
  * 通知焦点。
+ * @returns {void}
  */
 function notifyFocus() {
 	if (!ws || ws.readyState !== WebSocket.OPEN || pageId === -1) return
@@ -686,16 +1258,40 @@ async function loadUserLocalesFromFount() {
 }
 
 // --- Initialization ---
+
+/**
+ * 检查用户是否在 GitHub 上为 fount 仓库点赞并解锁相应成就。
+ * @returns {Promise<boolean>} - 如果已处理（已解锁或无需再检查），则返回 true。
+ */
+async function checkAndUnlockGitHubStarAchievement() {
+	if (!window.location.href.startsWith('https://github.com/steve02081504/fount')) return false // Not on the right page
+
+	const starredButton = document.querySelector('.starred-button-icon')
+	if (starredButton) {
+		const { host, protocol } = await getStoredData()
+		if (host) try {
+			await makeApiRequest(host, protocol, '/api/shells/achievements/unlock/shells/browserIntegration/star_fount', { method: 'POST' })
+			console.log('fount userscript: "Star Fount" achievement unlocked or already unlocked.')
+
+			return true // Success
+		} catch (error) {
+			console.error('fount userscript: Failed to unlock "Star Fount" achievement. Will retry next time.', error)
+		}
+	}
+
+	return false // Not starred or no host
+}
+
 /**
  * 初始化脚本。
  * @returns {Promise<void>}
  */
 async function initialize() {
 	await loadUserLocalesFromFount()
-	await syncScriptsFromServer()
-	runMatchingScripts()
+	syncScriptsFromServer().then(runMatchingScripts)
 	findAndConnect()
 }
 initialize()
 window.addEventListener('focus', notifyFocus)
 window.addEventListener('blur', notifyFocus)
+window.addEventListener('languagechange', async () => { await initTranslations() })

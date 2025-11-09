@@ -820,6 +820,10 @@
 		"templateSelect": {
 			"label": "擇一範本"
 		},
+		"alerts": {
+			"success": "器 '${partName}' 創建功成，可喜可賀。",
+			"error": "有誤: ${message}"
+		},
 		"form": {
 			"partName": {
 				"label": "器名",
@@ -901,11 +905,7 @@
 				"label": "諫言頁面",
 				"placeholder": "器之諫言頁面URL"
 			},
-			"createButton": "創建",
-			"alerts": {
-				"success": "器 '${partName}' 創建功成，可喜可賀。",
-				"error": "有誤: ${message}"
-			}
+			"createButton": "創建"
 		},
 		"achievements": {
 			"create_part": {
@@ -1532,6 +1532,11 @@
 				"name": "念念有词",
 				"description": "奉吾之名，敕令天地。",
 				"locked_description": "宜以JS之术驱浏览器一次。"
+			},
+			"star_fount": {
+				"name": "源启之星",
+				"description": "于技府赞之，感君之助。",
+				"locked_description": "宜访技府之仓，以星耀之。"
 			}
 		}
 	},
@@ -1653,6 +1658,11 @@
 				"name": "登堂入室",
 				"description": "功过是非，皆在此中。",
 				"locked_description": "宜启功绩之页。"
+			},
+			"relock_by_clicking": {
+				"name": "岂有此理？",
+				"description": "已启之功，屡击而复锁之，何也？",
+				"locked_description": "？？？"
 			}
 		}
 	},

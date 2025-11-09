@@ -821,6 +821,10 @@
 		"templateSelect": {
 			"label": "Sélectionnez un modèle"
 		},
+		"alerts": {
+			"success": "Le composant '${partName}' a été créé avec succès !",
+			"error": "Erreur : ${message}"
+		},
 		"form": {
 			"partName": {
 				"label": "Nom du composant",
@@ -902,11 +906,7 @@
 				"label": "Page des problèmes",
 				"placeholder": "URL de la page des problèmes du composant"
 			},
-			"createButton": "Créer le composant",
-			"alerts": {
-				"success": "Le composant '${partName}' a été créé avec succès !",
-				"error": "Erreur : ${message}"
-			}
+			"createButton": "Créer le composant"
 		},
 		"achievements": {
 			"create_part": {
@@ -1534,6 +1534,11 @@
 				"name": "chant de code",
 				"description": "\"En mon nom, commandez le navigateur...\"",
 				"locked_description": "Exécutez le code JavaScript une fois dans le navigateur."
+			},
+			"star_fount": {
+				"name": "étoile open source",
+				"description": "Mettez une étoile à fount sur GitHub, merci pour votre soutien !",
+				"locked_description": "Visitez le référentiel GitHub de fount et mettez-lui une étoile."
 			}
 		}
 	},
@@ -1655,6 +1660,11 @@
 				"name": "Attrapez-les tous !",
 				"description": "J'ai ouvert la liste des réalisations et je me suis préparé à commencer un voyage de collection de timbres.",
 				"locked_description": "Ouvrez la page des réalisations."
+			},
+			"relock_by_clicking": {
+				"name": "Sérieux, mec ?",
+				"description": "En cliquant à plusieurs reprises sur un succès débloqué, vous réussissez à le reverrouiller. Pourquoi?",
+				"locked_description": "? ? ?"
 			}
 		}
 	},

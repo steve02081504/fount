@@ -821,6 +821,10 @@
 		"templateSelect": {
 			"label": "Select a template"
 		},
+		"alerts": {
+			"success": "Component '${partName}' was created successfully!",
+			"error": "Error: ${message}"
+		},
 		"form": {
 			"partName": {
 				"label": "Component Name",
@@ -902,11 +906,7 @@
 				"label": "Issue Page",
 				"placeholder": "URL of the component's issue page"
 			},
-			"createButton": "Create Component",
-			"alerts": {
-				"success": "Component '${partName}' was created successfully!",
-				"error": "Error: ${message}"
-			}
+			"createButton": "Create Component"
 		},
 		"achievements": {
 			"create_part": {
@@ -1534,6 +1534,11 @@
 				"name": "code chant",
 				"description": "\"In my name, command the browser...\"",
 				"locked_description": "Run the JavaScript code once in the browser."
+			},
+			"star_fount": {
+				"name": "open source star",
+				"description": "Star the fount on GitHub, thank you for your support!",
+				"locked_description": "Visit fount's GitHub repository and light the star."
 			}
 		}
 	},
@@ -1655,6 +1660,11 @@
 				"name": "Gotta Catch 'Em All!",
 				"description": "Opened the achievement list and prepared to start a stamp collecting journey.",
 				"locked_description": "Open the achievements page."
+			},
+			"relock_by_clicking": {
+				"name": "Seriously, mate??",
+				"description": "You successfully re-locked an unlocked achievement by repeatedly clicking it. Why?",
+				"locked_description": "???"
 			}
 		}
 	},

@@ -665,7 +665,7 @@ async function initializeApp() {
 	// 在初始数据获取后附加事件处理器
 	onLanguageChange(refreshCurrentTab)
 
-	functionMenuButton.addEventListener('click', () => {
+	functionMenuButton.addEventListener('focus', () => {
 		unlockAchievement('shells', 'home', 'open_function_list')
 	}, { once: true })
 

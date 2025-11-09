@@ -193,7 +193,7 @@ function convertParamType(value, schema) {
 		case 'object':
 			try {
 				const parsed = JSON.parse(trimmedValue)
-				return typeof parsed === 'object' ? parsed : trimmedValue
+				return Object.getPrototypeOf(parsed) === Object ? parsed : trimmedValue
 			} catch {
 				return trimmedValue
 			}

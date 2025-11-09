@@ -13,6 +13,13 @@
 			"icon": "https://api.iconify.design/line-md/document-code.svg",
 			"locked_description": "browser_integration.achievements.run_js.locked_description",
 			"locked_icon": "https://api.iconify.design/line-md/question-circle.svg"
+		},
+		"star_fount": {
+			"name": "browser_integration.achievements.star_fount.name",
+			"description": "browser_integration.achievements.star_fount.description",
+			"icon": "https://api.iconify.design/line-md/github-loop.svg",
+			"locked_description": "browser_integration.achievements.star_fount.locked_description",
+			"locked_icon": "https://api.iconify.design/line-md/question-circle.svg"
 		}
 	}
 }
