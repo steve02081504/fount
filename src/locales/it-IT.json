@@ -821,6 +821,10 @@
 		"templateSelect": {
 			"label": "Seleziona un modello"
 		},
+		"alerts": {
+			"success": "Il componente '${partName}' è stato creato con successo!",
+			"error": "Errore: ${message}"
+		},
 		"form": {
 			"partName": {
 				"label": "Nome del componente",
@@ -902,11 +906,7 @@
 				"label": "Pagina dei problemi",
 				"placeholder": "URL della pagina dei problemi della componente"
 			},
-			"createButton": "Crea componente",
-			"alerts": {
-				"success": "Il componente '${partName}' è stato creato con successo!",
-				"error": "Errore: ${message}"
-			}
+			"createButton": "Crea componente"
 		},
 		"achievements": {
 			"create_part": {
@@ -1534,6 +1534,11 @@
 				"name": "canto del codice",
 				"description": "\"A nome mio, comanda il browser...\"",
 				"locked_description": "Esegui il codice JavaScript una volta nel browser."
+			},
+			"star_fount": {
+				"name": "stella open source",
+				"description": "Dai una stella a fount su GitHub, grazie per il tuo supporto!",
+				"locked_description": "Visita il repository GitHub di fount e metti una stella."
 			}
 		}
 	},
@@ -1655,6 +1660,11 @@
 				"name": "Acchiappali tutti!",
 				"description": "Ho aperto l'elenco degli obiettivi e mi sono preparato per iniziare un viaggio di raccolta di francobolli.",
 				"locked_description": "Apri la pagina dei risultati."
+			},
+			"relock_by_clicking": {
+				"name": "Sul serio?",
+				"description": "Facendo clic ripetutamente su un obiettivo sbloccato, lo blocchi nuovamente con successo. Perché?",
+				"locked_description": "? ? ?"
 			}
 		}
 	},

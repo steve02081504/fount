@@ -182,12 +182,14 @@ async function loadEditor(partType, partName) {
 				onChange: (updatedContent, previousContent, { error, patchResult }) => {
 					if (error) return
 					isDirty = true
+					let data
+					try { data = jsonEditor.get() || JSON.parse(jsonEditor.get().text) } catch (e) { return }
 					onJsonUpdate({
 						info: {
 							partType,
 							partName
 						},
-						data: jsonEditor.get().json || JSON.parse(jsonEditor.get().text),
+						data,
 						containers: {
 							partDisplay: partDisplayContainer,
 							jsonEditor: jsonEditorContainer

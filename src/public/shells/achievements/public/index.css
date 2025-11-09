@@ -16,3 +16,23 @@
 	filter: none;
 	opacity: 1;
 }
+
+@keyframes shake {
+	0%, 100% { transform: translate(0, 0) rotate(0); }
+	10% { transform: translate(calc(var(--shake-intensity) * -1px), calc(var(--shake-intensity) * -2px)) rotate(calc(var(--shake-intensity) * -1deg)); }
+	20% { transform: translate(calc(var(--shake-intensity) * -3px), calc(var(--shake-intensity) * 0px)) rotate(calc(var(--shake-intensity) * 1deg)); }
+	30% { transform: translate(calc(var(--shake-intensity) * 3px), calc(var(--shake-intensity) * 2px)) rotate(calc(var(--shake-intensity) * 0deg)); }
+	40% { transform: translate(calc(var(--shake-intensity) * 1px), calc(var(--shake-intensity) * -1px)) rotate(calc(var(--shake-intensity) * 1deg)); }
+	50% { transform: translate(calc(var(--shake-intensity) * -1px), calc(var(--shake-intensity) * 2px)) rotate(calc(var(--shake-intensity) * -1deg)); }
+	60% { transform: translate(calc(var(--shake-intensity) * -3px), calc(var(--shake-intensity) * 1px)) rotate(calc(var(--shake-intensity) * 0deg)); }
+	70% { transform: translate(calc(var(--shake-intensity) * 3px), calc(var(--shake-intensity) * 1px)) rotate(calc(var(--shake-intensity) * -1deg)); }
+	80% { transform: translate(calc(var(--shake-intensity) * -1px), calc(var(--shake-intensity) * -1px)) rotate(calc(var(--shake-intensity) * 1deg)); }
+	90% { transform: translate(calc(var(--shake-intensity) * 1px), calc(var(--shake-intensity) * 2px)) rotate(calc(var(--shake-intensity) * 0deg)); }
+}
+
+.achievement-card.shaking {
+	animation-name: shake;
+	animation-duration: 0.5s;
+	animation-timing-function: ease-in-out;
+	animation-iteration-count: infinite;
+}

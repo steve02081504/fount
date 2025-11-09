@@ -121,7 +121,7 @@
 				"createDesktopAppFailed": "Lỗi: Không tạo được ứng dụng dành cho máy tính để bàn."
 			},
 			"git": {
-				"repoNotFound": "Không tìm thấy kho git của đài phun nước. Đang khởi tạo một cái mới...",
+				"repoNotFound": "Không tìm thấy kho git của fount. Đang khởi tạo một cái mới...",
 				"fetchingAndResetting": "Đang tìm nạp từ kho lưu trữ từ xa và đặt lại về kho chính...",
 				"localChangesDetected": "Những thay đổi cục bộ được phát hiện, những khác biệt sẽ được lưu trước khi ghi đè.",
 				"backupSavedTo": "Bản sao lưu các thay đổi cục bộ của bạn đã được lưu vào: ${path}",
@@ -314,7 +314,7 @@
 	},
 	"startPage": {
 		"title": "fount!",
-		"description": "Chào mừng đến với ngưỡng của đài phun nước. Một khoảnh khắc chuẩn bị ngắn ngủi, trước khi bước vào tâm điểm của những cuộc trò chuyện và những câu chuyện đang chờ được hé mở.",
+		"description": "Chào mừng đến với ngưỡng của fount. Một khoảnh khắc chuẩn bị ngắn ngủi, trước khi bước vào tâm điểm của những cuộc trò chuyện và những câu chuyện đang chờ được hé mở.",
 		"newTabFailed": {
 			"title": "Không thể mở tab mới",
 			"instruction": "Việc khởi động fount sẽ chậm hơn 1-2 giây mỗi lần nếu không có quyền mở cửa sổ pop-up.",
@@ -336,7 +336,7 @@
 	},
 	"tutorial": {
 		"title": "Thử hướng dẫn nhé?",
-		"description": "Hãy để chúng tôi cùng bạn dạo bước qua thế giới của đài phun nước. Hướng dẫn tương tác này sẽ soi sáng con đường, giúp bạn khám phá điều kỳ diệu được dệt nên từ cốt lõi của nó. Cuộc phiêu lưu của bạn bắt đầu bằng sự hiểu biết.",
+		"description": "Hãy để chúng tôi cùng bạn dạo bước qua thế giới của fount. Hướng dẫn tương tác này sẽ soi sáng con đường, giúp bạn khám phá điều kỳ diệu được dệt nên từ cốt lõi của nó. Cuộc phiêu lưu của bạn bắt đầu bằng sự hiểu biết.",
 		"modal": {
 			"title": "Chào mừng bạn đến với fount!",
 			"instruction": "Bạn có muốn xem hướng dẫn cho người mới bắt đầu không?",
@@ -554,7 +554,7 @@
 	},
 	"chat": {
 		"title": "Trò chuyện",
-		"description": "Nơi lời nói cất cánh và những câu chuyện mở ra. Tương tác với những người bạn đồng hành AI của bạn, định hình câu chuyện và hòa mình vào dòng chảy thăng trầm của cuộc đối thoại kỹ thuật số. Trái tim của đài phun nước đập ở đây.",
+		"description": "Nơi lời nói cất cánh và những câu chuyện mở ra. Tương tác với những người bạn đồng hành AI của bạn, định hình câu chuyện và hòa mình vào dòng chảy thăng trầm của cuộc đối thoại kỹ thuật số. Trái tim của fount đập ở đây.",
 		"new": {
 			"title": "Trò chuyện mới",
 			"description": "Sự chờ đợi thầm lặng của một câu chuyện chưa được viết ra. Một cuộc trò chuyện mới bắt đầu, một phương tiện rõ ràng cho những tương tác mới và những câu chuyện mở ra với những người bạn đồng hành mà bạn đã chọn."
@@ -821,6 +821,10 @@
 		"templateSelect": {
 			"label": "Chọn một mẫu"
 		},
+		"alerts": {
+			"success": "Thành phần '${partName}' đã được tạo thành công!",
+			"error": "Lỗi: ${message}"
+		},
 		"form": {
 			"partName": {
 				"label": "Tên thành phần",
@@ -902,11 +906,7 @@
 				"label": "Trang vấn đề",
 				"placeholder": "URL của trang vấn đề của phần"
 			},
-			"createButton": "Tạo thành phần",
-			"alerts": {
-				"success": "Thành phần '${partName}' đã được tạo thành công!",
-				"error": "Lỗi: ${message}"
-			}
+			"createButton": "Tạo thành phần"
 		},
 		"achievements": {
 			"create_part": {
@@ -918,7 +918,7 @@
 	},
 	"import": {
 		"title": "Nhập",
-		"description": "Đưa các nhân vật, thế giới và cấu hình yêu quý của bạn vào vòng tay của đài phun nước. Cho dù từ tệp hay văn bản được dán, đây là nơi các yếu tố mới được dệt vào tấm thảm cá nhân của bạn.",
+		"description": "Đưa các nhân vật, thế giới và cấu hình yêu quý của bạn vào vòng tay của fount. Cho dù từ tệp hay văn bản được dán, đây là nơi các yếu tố mới được dệt vào tấm thảm cá nhân của bạn.",
 		"tabs": {
 			"fileImport": "Nhập tệp",
 			"textImport": "Nhập văn bản"
@@ -1245,7 +1245,7 @@
 	"part_config": {
 		"title": "Cấu hình thành phần",
 		"pageTitle": "Cấu hình thành phần",
-		"description": "Nhìn vào trung tâm của đài phun nước. Tại đây, bạn có thể điều chỉnh cài đặt của các thành phần đa dạng, điều chỉnh công cụ thúc đẩy trải nghiệm của bạn.",
+		"description": "Nhìn vào trung tâm của fount. Tại đây, bạn có thể điều chỉnh cài đặt của các thành phần đa dạng, điều chỉnh công cụ thúc đẩy trải nghiệm của bạn.",
 		"labels": {
 			"partType": "Chọn loại thành phần",
 			"part": "Chọn thành phần"
@@ -1534,6 +1534,11 @@
 				"name": "mật mã",
 				"description": "\"Nhân danh tôi, ra lệnh cho trình duyệt...\"",
 				"locked_description": "Chạy mã JavaScript một lần trong trình duyệt."
+			},
+			"star_fount": {
+				"name": "ngôi sao nguồn mở",
+				"description": "Hãy gắn sao cho fount trên GitHub, cảm ơn sự hỗ trợ của bạn!",
+				"locked_description": "Truy cập kho lưu trữ GitHub của fount và thắp sáng ngôi sao."
 			}
 		}
 	},
@@ -1551,7 +1556,7 @@
 	},
 	"terminal_assistant": {
 		"title": "Trợ lý Terminal",
-		"description": "Ngoài giao diện đồ họa, còn có không gian cho lệnh trực tiếp. Tương tác với lõi của đài phun nước thông qua trợ lý đầu cuối, nơi văn bản dệt nên phép thuật mạnh mẽ của riêng nó.",
+		"description": "Ngoài giao diện đồ họa, còn có không gian cho lệnh trực tiếp. Tương tác với lõi của fount thông qua trợ lý đầu cuối, nơi văn bản dệt nên phép thuật mạnh mẽ của riêng nó.",
 		"initialMessage": "fount hỗ trợ triển khai các nhân vật yêu thích của bạn vào terminal để trợ giúp bạn trong quá trình lập trình!",
 		"initialMessageLink": "Nhấp vào đây để tìm hiểu thêm.",
 		"achievements": {
@@ -1600,7 +1605,7 @@
 	},
 	"access": {
 		"title": "Truy cập fount trên các thiết bị khác",
-		"description": "Mở rộng phạm vi tiếp cận của đài phun nước ngoài một màn hình. Đây là cổng—một URL, một mã QR—để kết nối với những người bạn đồng hành của bạn từ các thiết bị khác, một cầu nối đơn giản xuyên qua ether địa phương.",
+		"description": "Mở rộng phạm vi tiếp cận của fount ngoài một màn hình. Đây là cổng—một URL, một mã QR—để kết nối với những người bạn đồng hành của bạn từ các thiết bị khác, một cầu nối đơn giản xuyên qua ether địa phương.",
 		"heading": "Bạn muốn truy cập fount trên các thiết bị khác?",
 		"instruction": {
 			"sameLAN": "Đảm bảo thiết bị và máy chủ fount đang ở trên cùng một mạng LAN.",
@@ -1655,12 +1660,17 @@
 				"name": "Cúp, tôi tới đây!",
 				"description": "Mở danh sách thành tích và chuẩn bị bắt đầu hành trình sưu tập tem.",
 				"locked_description": "Mở trang thành tích."
+			},
+			"relock_by_clicking": {
+				"name": "Thiệt hả?",
+				"description": "Bằng cách nhấp liên tục vào một thành tích đã được mở khóa, bạn đã khóa lại thành công. Tại sao?",
+				"locked_description": "? ? ?"
 			}
 		}
 	},
 	"badges_maker": {
 		"title": "fount! Bộ chuyển đổi huy hiệu",
-		"description": "Vì khi dự án của bạn cần có nét đặc trưng của đài phun nước. Chuyển đổi huy hiệu Shields.io, cho chúng một danh tính mới, có tiếng vang.",
+		"description": "Vì khi dự án của bạn cần có nét đặc trưng của fount. Chuyển đổi huy hiệu Shields.io, cho chúng một danh tính mới, có tiếng vang.",
 		"card_title": "Bộ chuyển đổi liên kết huy hiệu fount",
 		"original_url_label": "Dán URL img.shields.io",
 		"original_url": {

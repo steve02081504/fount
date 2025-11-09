@@ -186,7 +186,7 @@ export async function unlockAchievement(username, parttype, partname, achievemen
 		<img src="${unlockedAchievement.icon}" class="h-full w-full aspect-square" />
 	</div>
 	<div class="flex-grow">
-		<div class="text-xs text-gray-500 mb-1" data-i18n="achievements.toast_title"></div>
+		<div class="text-xs mb-1" data-i18n="achievements.toast_title"></div>
 		<h3 class="font-bold text-lg" data-i18n="${unlockedAchievement.name}"></h3>
 		<p class="text-sm" data-i18n="${unlockedAchievement.description}"></p>
 	</div>
@@ -215,9 +215,10 @@ export async function unlockAchievement(username, parttype, partname, achievemen
  * @param {string} parttype - 成就所属部件的类型。
  * @param {string} partname - 成就所属部件的名称。
  * @param {string} achievementId - 要锁定的成就的ID。
+ * @param {string} [reason] - 锁定成就的原因。
  * @returns {Promise<object>} - 返回一个包含操作结果的对象。
  */
-export async function lockAchievement(username, parttype, partname, achievementId) {
+export async function lockAchievement(username, parttype, partname, achievementId, reason) {
 	const registry = await getAchievementsRegistry(username)
 	const achievement = registry[parttype]?.[partname]?.[achievementId]
 
@@ -237,6 +238,9 @@ export async function lockAchievement(username, parttype, partname, achievementI
 		delete data.unlocked[parttype]
 
 	saveShellData(username, 'achievements', 'data')
+
+	if (reason === 'relock_by_clicking')
+		unlockAchievement(username, 'shells', 'achievements', 'relock_by_clicking')
 
 	return { success: true }
 }

@@ -821,6 +821,10 @@
 		"templateSelect": {
 			"label": "اختر قالبًا"
 		},
+		"alerts": {
+			"success": "تم إنشاء المكون '${partName}' بنجاح!",
+			"error": "خطأ: ${message}"
+		},
 		"form": {
 			"partName": {
 				"label": "اسم المكون",
@@ -902,11 +906,7 @@
 				"label": "صفحة المشاكل",
 				"placeholder": "رابط صفحة مشاكل المكون"
 			},
-			"createButton": "إنشاء مكون",
-			"alerts": {
-				"success": "تم إنشاء المكون '${partName}' بنجاح!",
-				"error": "خطأ: ${message}"
-			}
+			"createButton": "إنشاء مكون"
 		},
 		"achievements": {
 			"create_part": {
@@ -1534,6 +1534,11 @@
 				"name": "ترنيمة الكود",
 				"description": "\"باسمي، قيادة المتصفح...\"",
 				"locked_description": "قم بتشغيل كود JavaScript مرة واحدة في المتصفح."
+			},
+			"star_fount": {
+				"name": "نجمة مفتوحة المصدر",
+				"description": "ضع نجمة لمشروع fount على GitHub، شكرًا لدعمكم!",
+				"locked_description": "قم بزيارة مستودع GitHub الخاص بـ fount وأضيئ النجمة."
 			}
 		}
 	},
@@ -1655,6 +1660,11 @@
 				"name": "الكأس، أنا هنا!",
 				"description": "فتحت قائمة الإنجازات واستعدت لبدء رحلة جمع الطوابع.",
 				"locked_description": "افتح صفحة الإنجازات."
+			},
+			"relock_by_clicking": {
+				"name": "أحقًا؟",
+				"description": "من خلال النقر بشكل متكرر على الإنجاز الذي تم إلغاء قفله، فإنك تعيد قفله بنجاح. لماذا؟",
+				"locked_description": "؟ ؟ ؟"
 			}
 		}
 	},

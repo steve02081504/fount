@@ -821,6 +821,10 @@
 		"templateSelect": {
 			"label": "選擇一個範本"
 		},
+		"alerts": {
+			"success": "組件 '${partName}' 建立成功！",
+			"error": "錯誤: ${message}"
+		},
 		"form": {
 			"partName": {
 				"label": "組件名稱",
@@ -902,11 +906,7 @@
 				"label": "問題頁面",
 				"placeholder": "組件問題頁面的URL"
 			},
-			"createButton": "建立組件",
-			"alerts": {
-				"success": "組件 '${partName}' 建立成功！",
-				"error": "錯誤: ${message}"
-			}
+			"createButton": "建立組件"
 		},
 		"achievements": {
 			"create_part": {
@@ -1534,6 +1534,11 @@
 				"name": "代碼詠唱",
 				"description": "“以我之名，命令瀏覽器……”",
 				"locked_description": "在瀏覽器中運行一次JavaScript代碼。"
+			},
+			"star_fount": {
+				"name": "開源之星",
+				"description": "為 fount 的 GitHub 專案點個星星 (Star)，感謝您的支持！",
+				"locked_description": "訪問fount的GitHub倉庫並點亮星星。"
 			}
 		}
 	},
@@ -1655,6 +1660,11 @@
 				"name": "把它們全部收服！",
 				"description": "打開了成就列表，準備開始一場集郵之旅。",
 				"locked_description": "打開成就頁面。"
+			},
+			"relock_by_clicking": {
+				"name": "不是吧，大哥？",
+				"description": "通過反复點擊一個已解鎖的成就，你成功地把它給重新鎖上了。為什麼呢？",
+				"locked_description": "？ ？ ？"
 			}
 		}
 	},

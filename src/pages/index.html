@@ -37,11 +37,13 @@
 		 * @returns {URLSearchParams} - URL 搜索参数。
 		 */
 		function getCommonUrlParams(params = {}) {
-			return new URLSearchParams(Object.assign(params, {
+			Object.assign(params, {
 				theme: localStorage.getItem('theme'),
 				hostUrl,
 				userPreferredLanguages: localStorage.getItem('userPreferredLanguages') || undefined
-			}))
+			})
+			for (const key in params) if (params[key] === undefined) delete params[key]
+			return new URLSearchParams(params)
 		}
 
 		document.getElementById('skipButton').addEventListener('click', () => {

@@ -44,6 +44,8 @@ export function setDefaultPart(user, parttype, partname) {
  */
 export function unsetDefaultPart(user, parttype, partname) {
 	if (Object(user) instanceof String) user = getUserByUsername(user)
+	// TODO: remove this
+	if (!(Object(user.defaultParts[parttype]) instanceof Array)) user.defaultParts[parttype] = []
 	const defaultParts = (user.defaultParts ?? {})[parttype] ?? []
 	const index = defaultParts.indexOf(partname)
 	if (index == -1) return
