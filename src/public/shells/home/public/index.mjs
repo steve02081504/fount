@@ -387,9 +387,7 @@ function setupPartTypeUI(partTypes) {
 		a.addEventListener('click', (e) => {
 			e.preventDefault()
 			updateTabContent(pt)
-			// For mobile dropdown, close it after click
-			if (document.activeElement instanceof HTMLElement)
-				document.activeElement.blur()
+			document.activeElement?.blur?.()
 		})
 		li.appendChild(a)
 		return li
