@@ -560,6 +560,10 @@
 			"title": "Nuevo chat",
 			"description": "La silenciosa anticipación de una historia aún no escrita. Comienza un nuevo chat, un borrón y cuenta nueva para nuevas interacciones y narrativas en desarrollo con tus compañeros elegidos."
 		},
+		"typingIndicator": {
+			"isTyping": "${names} está escribiendo...",
+			"multipleMembers": "Varios miembros están escribiendo..."
+		},
 		"sidebar": {
 			"noSelection": "Nada seleccionado",
 			"noDescription": "Sin descripción",

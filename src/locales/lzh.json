@@ -559,6 +559,10 @@
 			"title": "新啟清談",
 			"description": "靜待未書之篇，新言將啟。與君所擇之友，共譜新章。"
 		},
+		"typingIndicator": {
+			"isTyping": "${names} 書寫中...",
+			"multipleMembers": "眾人書寫中..."
+		},
 		"sidebar": {
 			"noSelection": "未選",
 			"noDescription": "無述",
