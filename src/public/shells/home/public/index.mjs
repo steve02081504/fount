@@ -381,8 +381,9 @@ function setupPartTypeUI(partTypes) {
 	const createMenuItem = (pt) => {
 		const itemType = pt.name
 		const li = document.createElement('li')
-		const a = document.createElement('a')
-		a.dataset.target = `${itemType}-container`
+		const a = document.createElement('a');
+		a.href = '#';
+		a.dataset.target = `${itemType}-container`;
 		a.dataset.i18n = `home.part_types.${itemType};'${itemType}'`
 		a.addEventListener('click', (e) => {
 			e.preventDefault()
