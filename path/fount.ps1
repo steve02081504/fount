@@ -67,7 +67,7 @@ function Import-LocaleData {
 	}
 
 	try {
-		Get-Content $localeFile -Raw | ConvertFrom-Json
+		Get-Content $localeFile -Raw -Encoding UTF8 | ConvertFrom-Json
 	} catch { $null }
 }
 
