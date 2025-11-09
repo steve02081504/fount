@@ -323,7 +323,15 @@ function deno_upgrade() {
 	elseif ($deno_ver.Contains("-rc")) {
 		$deno_update_channel = "rc"
 	}
-	deno upgrade -q $deno_update_channel
+	. { deno upgrade -q $deno_update_channel } -ErrorVariable errorOut
+	if ($LastExitCode) {
+		if ($errorOut.tostring().Contains("USAGE")) { # wtf deno 1.0?
+			deno upgrade -q
+		}
+	}
+	if ($LastExitCode) {
+		Write-Warning (Get-I18n -key 'deno.upgradeFailed')
+	}
 }
 
 function Update-FountAndDeno {
