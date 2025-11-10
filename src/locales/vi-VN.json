@@ -280,6 +280,7 @@
 		},
 		"error": {
 			"title": "Cài đặt thất bại!",
+			"description": "Dường như có sự cố với trình cài đặt fount.",
 			"connection_failed": "Kết nối thất bại!",
 			"description1": "Dường như có sự cố với trình cài đặt fount.",
 			"description2": "Vui lòng kiểm tra terminal của bạn và thử lại.",

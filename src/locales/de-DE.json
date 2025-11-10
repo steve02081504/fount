@@ -280,6 +280,7 @@
 		},
 		"error": {
 			"title": "Installation fehlgeschlagen!",
+			"description": "Mit dem fount-Installationsprogramm scheint etwas nicht zu stimmen.",
 			"connection_failed": "Verbindung fehlgeschlagen!",
 			"description1": "Mit dem fount-Installationsprogramm scheint etwas nicht zu stimmen.",
 			"description2": "Bitte überprüfen Sie Ihr Terminal und versuchen Sie es erneut.",

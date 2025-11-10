@@ -280,6 +280,7 @@
 		},
 		"error": {
 			"title": "インストールに失敗しました！",
+			"description": "fountインストーラーに問題が発生したようです。",
 			"connection_failed": "接続に失敗しました！",
 			"description1": "fountインストーラーに問題が発生したようです。",
 			"description2": "ターミナルを確認して、もう一度お試しください。",

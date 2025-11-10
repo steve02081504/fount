@@ -280,6 +280,7 @@
 		},
 		"error": {
 			"title": "Uppsetning mistókst!",
+			"description": "Svo virðist sem eitthvað hafi farið úrskeiðis í uppsetningarforriti fount.",
 			"connection_failed": "Tenging mistókst!",
 			"description1": "Svo virðist sem eitthvað hafi farið úrskeiðis í uppsetningarforriti fount.",
 			"description2": "Vinsamlegast athugaðu flugstöðina þína og reyndu aftur.",

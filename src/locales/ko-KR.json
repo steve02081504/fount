@@ -280,6 +280,7 @@
 		},
 		"error": {
 			"title": "설치 실패!",
+			"description": "fount 설치 프로그램에 문제가 발생한 것 같습니다.",
 			"connection_failed": "연결 실패!",
 			"description1": "fount 설치 프로그램에 문제가 발생한 것 같습니다.",
 			"description2": "터미널을 확인하고 다시 시도해주세요.",

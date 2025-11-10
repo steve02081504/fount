@@ -280,6 +280,7 @@
 		},
 		"error": {
 			"title": "Installazione non riuscita!",
+			"description": "Sembra esserci un problema con il programma di installazione di fount.",
 			"connection_failed": "Connessione non riuscita!",
 			"description1": "Sembra esserci un problema con il programma di installazione di fount.",
 			"description2": "Controlla il tuo terminale e riprova.",

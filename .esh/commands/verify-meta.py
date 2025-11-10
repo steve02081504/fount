@@ -60,29 +60,41 @@ def check_html_file(file_path: Path) -> list[str]:
 
 		for tag_name, attrs in REQUIRED_TAGS:
 			found = False
-			# 对于 title，我们单独处理，因为它没有属性需要匹配
-			if tag_name == "title":
-				if head.find(tag_name):
-					found = True
-			# 对于其他标签，检查是否存在具有指定属性的标签
-			else:
-				# 查找所有同名标签
-				tags = head.find_all(tag_name)
-				for tag in tags:
-					# 检查此标签是否匹配所有必需的属性和值
-					all_attrs_match = True
-					for key, value in attrs.items():
-						if not tag.has_attr(key):
-							all_attrs_match = False
-							break
-						# 如果要求的值不是 None，则检查值是否匹配
-						if value is not None and tag.get(key) != value:
-							all_attrs_match = False
-							break
-					
-					if all_attrs_match:
+			# Special case for the SVG icon to make the check more robust.
+			# It now accepts either type="image/svg+xml" OR an href ending in ".svg".
+			if tag_name == "link" and attrs.get("rel") == "icon" and attrs.get("type") == "image/svg+xml":
+				icon_links = head.find_all("link", rel="icon")
+				for link in icon_links:
+					href = link.get("href", "")
+					link_type = link.get("type", "")
+					if href.endswith(".svg") or link_type == "image/svg+xml":
 						found = True
 						break
+			# Generic check for all other tags.
+			else:
+				# 对于 title，我们单独处理，因为它没有属性需要匹配
+				if tag_name == "title":
+					if head.find(tag_name):
+						found = True
+				# 对于其他标签，检查是否存在具有指定属性的标签
+				else:
+					# 查找所有同名标签
+					tags = head.find_all(tag_name)
+					for tag in tags:
+						# 检查此标签是否匹配所有必需的属性和值
+						all_attrs_match = True
+						for key, value in attrs.items():
+							if not tag.has_attr(key):
+								all_attrs_match = False
+								break
+							# 如果要求的值不是 None，则检查值是否匹配
+							if value is not None and tag.get(key) != value:
+								all_attrs_match = False
+								break
+						
+						if all_attrs_match:
+							found = True
+							break
 
 			if not found:
 				attr_str = " ".join([f'{k}="{v}"' if v else k for k, v in attrs.items()])

@@ -280,6 +280,7 @@
 		},
 		"error": {
 			"title": "¡Error en la instalación!",
+			"description": "Parece que hay un problema con el instalador de fount.",
 			"connection_failed": "¡Error de conexión!",
 			"description1": "Parece que hay un problema con el instalador de fount.",
 			"description2": "Por favor, comprueba tu terminal e inténtalo de nuevo.",

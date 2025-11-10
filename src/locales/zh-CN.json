@@ -280,6 +280,7 @@
 		},
 		"error": {
 			"title": "安装失败！",
+			"description": "fount 安装程序似乎出了问题。",
 			"connection_failed": "连接失败！",
 			"description1": "fount 安装程序似乎出了问题。",
 			"description2": "请检查您的终端并重试。",
