@@ -65,17 +65,19 @@
 		catch (error) {
 			errorModal.showModal()
 			/**
-						 * 处理重试按钮点击事件。
-						 * @returns {void}
-						 */
-			retryBtn.onclick = () => {				errorModal.close()
+			 * 处理重试按钮点击事件。
+			 * @returns {void}
+			 */
+			retryBtn.onclick = () => {
+				errorModal.close()
 				window.location.reload()
 			}
 			/**
-						 * 处理忽略并继续按钮点击事件。
-						 * @returns {void}
-						 */
-			ignoreBtn.onclick = () => {				errorModal.close()
+			 * 处理忽略并继续按钮点击事件。
+			 * @returns {void}
+			 */
+			ignoreBtn.onclick = () => {
+				errorModal.close()
 				const targetUrl = new URL(decodeURIComponent(redirectUrl))
 				targetUrl.searchParams.set('login_status', 'failed')
 				targetUrl.searchParams.set('reason', error.message)

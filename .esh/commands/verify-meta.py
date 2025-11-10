@@ -91,7 +91,7 @@ def check_html_file(file_path: Path) -> list[str]:
 							if value is not None and tag.get(key) != value:
 								all_attrs_match = False
 								break
-						
+
 						if all_attrs_match:
 							found = True
 							break

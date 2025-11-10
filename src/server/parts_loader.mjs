@@ -178,7 +178,7 @@ export function GetPartPath(username, parttype, partname) {
 export async function baseMjsPartLoader(path) {
 	try {
 		return (await import(url.pathToFileURL(path + '/main.mjs'))).default
-	} catch(e) { throw skip_report(e) }
+	} catch (e) { throw skip_report(e) }
 }
 
 /**

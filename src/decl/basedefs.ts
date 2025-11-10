@@ -54,4 +54,4 @@ export type single_lang_info_t = {
 /**
  * 定义了包含详细信息的对象的类型。
  */
-export type info_t<T=Record<locale_t, never>> = Record<locale_t, single_lang_info_t & T>
+export type info_t<T = Record<locale_t, never>> = Record<locale_t, single_lang_info_t & T>
