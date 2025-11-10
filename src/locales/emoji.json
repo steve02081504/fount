@@ -448,7 +448,8 @@
 		"itemDescription": "👆➡️ℹ️",
 		"noDescription": "🤷‍♂️",
 		"filterInput": {
-			"placeholder": "🔎..."
+			"placeholder": "🔎...",
+			"aria-label": "🔎🧩"
 		},
 		"sfwToggle": "😇",
 		"functionMenu": {
@@ -1317,7 +1318,8 @@
 			"setDefault": {
 				"dataset": {
 					"tip": "❤️"
-				}
+				},
+				"aria-label": "❤️${fileName}"
 			}
 		},
 		"confirm": {
@@ -1702,7 +1704,8 @@
 		"copy": {
 			"dataset": {
 				"tip": "📋"
-			}
+			},
+			"aria-label": "📋"
 		},
 		"copied": {
 			"dataset": {
@@ -1712,12 +1715,14 @@
 		"download": {
 			"dataset": {
 				"tip": "⬇️"
-			}
+			},
+			"aria-label": "⬇️"
 		},
 		"execute": {
 			"dataset": {
 				"tip": "▶️"
-			}
+			},
+			"aria-label": "▶️"
 		},
 		"preview": {
 			"dataset": {
