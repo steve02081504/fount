@@ -448,7 +448,8 @@
 		"itemDescription": "請擇一物以觀其詳。",
 		"noDescription": "無述",
 		"filterInput": {
-			"placeholder": "尋覓..."
+			"placeholder": "尋覓...",
+			"aria-label": "尋一組件"
 		},
 		"sfwToggle": "淨域",
 		"functionMenu": {
@@ -1317,7 +1318,8 @@
 			"setDefault": {
 				"dataset": {
 					"tip": "設為預設"
-				}
+				},
+				"aria-label": "設${fileName}為預設智源"
 			}
 		},
 		"confirm": {
@@ -1702,7 +1704,8 @@
 		"copy": {
 			"dataset": {
 				"tip": "謄錄至簿"
-			}
+			},
+			"aria-label": "謄錄至簿"
 		},
 		"copied": {
 			"dataset": {
@@ -1712,12 +1715,14 @@
 		"download": {
 			"dataset": {
 				"tip": "取碼"
-			}
+			},
+			"aria-label": "取碼"
 		},
 		"execute": {
 			"dataset": {
 				"tip": "行碼"
-			}
+			},
+			"aria-label": "行碼"
 		},
 		"preview": {
 			"dataset": {
