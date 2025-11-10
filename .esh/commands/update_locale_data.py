@@ -82,9 +82,9 @@ def process_locale_files():
                 script_globals = {"get": get, "set": set}
                 exec(script_to_run, script_globals)
 
-                updated_content = json.dumps(data, indent='\t', ensure_ascii=False)  # Use indent=4 for tabs, ensure_ascii=False for non-ASCII chars
+                updated_content = json.dumps(data, indent="\t", ensure_ascii=False)  # Use indent=4 for tabs, ensure_ascii=False for non-ASCII chars
                 with open(file_path, "w", encoding="utf-8", newline="\n") as f:
-                    f.write(updated_content+"\n")
+                    f.write(updated_content + "\n")
                 print(f"Successfully updated {file_name}.")
 
             except Exception as err:
