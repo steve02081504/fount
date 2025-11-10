@@ -280,6 +280,7 @@
 		},
 		"error": {
 			"title": "安裝失敗！",
+			"description": "fount 安裝程式似乎出了問題。",
 			"connection_failed": "連線失敗！",
 			"description1": "fount 安裝程式似乎出了問題。",
 			"description2": "請檢查您的終端機並重試。",

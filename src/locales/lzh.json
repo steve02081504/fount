@@ -280,6 +280,7 @@
 		},
 		"error": {
 			"title": "安設失利。",
+			"description": "fount 安設似有不諧。",
 			"connection_failed": "連接之途，遇阻不通。",
 			"description1": "fount 安設似有不諧。",
 			"description2": "請察終端而後重試，或能力挽狂瀾。",

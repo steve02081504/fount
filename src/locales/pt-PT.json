@@ -280,6 +280,7 @@
 		},
 		"error": {
 			"title": "A instalação falhou!",
+			"description": "Parece haver algo de errado com o instalador do fount.",
 			"connection_failed": "A conexão falhou!",
 			"description1": "Parece haver algo de errado com o instalador do fount.",
 			"description2": "Verifique o seu terminal e tente novamente.",
