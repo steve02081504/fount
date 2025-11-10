@@ -332,6 +332,7 @@ export function createVirtualList({
 		 * @param {object} item - 新的项目。
 		 */
 	async function replaceItem(index, item) {
+		if (!item) throw new Error('item is required')
 		const queueIndex = index - state.startIndex
 		if (queueIndex < 0 || queueIndex >= state.queue.length) {
 			console.warn(`[virtualList] replaceItem called for index ${index} which is not in view.`)
