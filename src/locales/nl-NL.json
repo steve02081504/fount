@@ -301,6 +301,7 @@
 			"title": "Host offline",
 			"message": "fount-host ${hostUrl} lijkt offline te zijn. Wil je het opnieuw proberen?",
 			"buttons": {
+				"start": "Starten",
 				"retry": "Probeer het opnieuw"
 			}
 		},
@@ -558,6 +559,10 @@
 		"new": {
 			"title": "Nieuwe chat",
 			"description": "De stille verwachting van een nog ongeschreven verhaal. Er begint een nieuwe chat, een schone lei voor nieuwe interacties en zich ontvouwende verhalen met de door u gekozen metgezellen."
+		},
+		"typingIndicator": {
+			"isTyping": "${names} is aan het typen...",
+			"multipleMembers": "Meerdere leden zijn aan het typen..."
 		},
 		"sidebar": {
 			"noSelection": "Geen",

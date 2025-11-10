@@ -301,6 +301,7 @@
 			"title": "Hôte hors ligne",
 			"message": "L'hôte fount ${hostUrl} semble être hors ligne. Voulez-vous réessayer ?",
 			"buttons": {
+				"start": "Démarrer",
 				"retry": "Essayer à nouveau"
 			}
 		},
@@ -558,6 +559,10 @@
 		"new": {
 			"title": "Nouveau chat",
 			"description": "L'anticipation tranquille d'une histoire encore non écrite. Une nouvelle conversation commence, une table rase pour de nouvelles interactions et des récits qui se déroulent avec les compagnons que vous avez choisis."
+		},
+		"typingIndicator": {
+			"isTyping": "${names} écrit...",
+			"multipleMembers": "Plusieurs membres écrivent..."
 		},
 		"sidebar": {
 			"noSelection": "Rien de sélectionné",

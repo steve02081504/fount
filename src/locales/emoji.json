@@ -301,6 +301,7 @@
 			"title": "🖥️🚫🌐",
 			"message": "${hostUrl} 😴... 🔄❓",
 			"buttons": {
+				"start": "🚀",
 				"retry": "🔄"
 			}
 		},
@@ -447,7 +448,8 @@
 		"itemDescription": "👆➡️ℹ️",
 		"noDescription": "🤷‍♂️",
 		"filterInput": {
-			"placeholder": "🔎..."
+			"placeholder": "🔎...",
+			"aria-label": "🔎🧩"
 		},
 		"sfwToggle": "😇",
 		"functionMenu": {
@@ -557,6 +559,10 @@
 		"new": {
 			"title": "🆕💬",
 			"description": "🤫⏳📖✍️..."
+		},
+		"typingIndicator": {
+			"isTyping": "${names} ✍️...",
+			"multipleMembers": "👥✍️..."
 		},
 		"sidebar": {
 			"noSelection": "🤷‍♂️",
@@ -1312,7 +1318,8 @@
 			"setDefault": {
 				"dataset": {
 					"tip": "❤️"
-				}
+				},
+				"aria-label": "❤️${fileName}"
 			}
 		},
 		"confirm": {
@@ -1697,7 +1704,8 @@
 		"copy": {
 			"dataset": {
 				"tip": "📋"
-			}
+			},
+			"aria-label": "📋"
 		},
 		"copied": {
 			"dataset": {
@@ -1707,12 +1715,14 @@
 		"download": {
 			"dataset": {
 				"tip": "⬇️"
-			}
+			},
+			"aria-label": "⬇️"
 		},
 		"execute": {
 			"dataset": {
 				"tip": "▶️"
-			}
+			},
+			"aria-label": "▶️"
 		},
 		"preview": {
 			"dataset": {

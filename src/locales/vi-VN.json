@@ -301,6 +301,7 @@
 			"title": "Máy chủ ngoại tuyến",
 			"message": "Máy chủ fount ${hostUrl} dường như đang ngoại tuyến. Bạn có muốn thử lại không?",
 			"buttons": {
+				"start": "Khởi động",
 				"retry": "Thử lại"
 			}
 		},
@@ -558,6 +559,10 @@
 		"new": {
 			"title": "Trò chuyện mới",
 			"description": "Sự chờ đợi thầm lặng của một câu chuyện chưa được viết ra. Một cuộc trò chuyện mới bắt đầu, một phương tiện rõ ràng cho những tương tác mới và những câu chuyện mở ra với những người bạn đồng hành mà bạn đã chọn."
+		},
+		"typingIndicator": {
+			"isTyping": "${names} đang gõ...",
+			"multipleMembers": "Nhiều thành viên đang gõ..."
 		},
 		"sidebar": {
 			"noSelection": "Chưa chọn",

@@ -301,6 +301,7 @@
 			"title": "主機未繫",
 			"message": "fount主機 ${hostUrl} 未繫。欲復試乎？",
 			"buttons": {
+				"start": "啟動",
 				"retry": "復試"
 			}
 		},
@@ -447,7 +448,8 @@
 		"itemDescription": "請擇一物以觀其詳。",
 		"noDescription": "無述",
 		"filterInput": {
-			"placeholder": "尋覓..."
+			"placeholder": "尋覓...",
+			"aria-label": "尋一組件"
 		},
 		"sfwToggle": "淨域",
 		"functionMenu": {
@@ -557,6 +559,10 @@
 		"new": {
 			"title": "新啟清談",
 			"description": "靜待未書之篇，新言將啟。與君所擇之友，共譜新章。"
+		},
+		"typingIndicator": {
+			"isTyping": "${names} 書寫中...",
+			"multipleMembers": "眾人書寫中..."
 		},
 		"sidebar": {
 			"noSelection": "未選",
@@ -1312,7 +1318,8 @@
 			"setDefault": {
 				"dataset": {
 					"tip": "設為預設"
-				}
+				},
+				"aria-label": "設${fileName}為預設智源"
 			}
 		},
 		"confirm": {
@@ -1697,7 +1704,8 @@
 		"copy": {
 			"dataset": {
 				"tip": "謄錄至簿"
-			}
+			},
+			"aria-label": "謄錄至簿"
 		},
 		"copied": {
 			"dataset": {
@@ -1707,12 +1715,14 @@
 		"download": {
 			"dataset": {
 				"tip": "取碼"
-			}
+			},
+			"aria-label": "取碼"
 		},
 		"execute": {
 			"dataset": {
 				"tip": "行碼"
-			}
+			},
+			"aria-label": "行碼"
 		},
 		"preview": {
 			"dataset": {

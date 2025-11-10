@@ -221,7 +221,8 @@ try {
 		$Script:fountDir = (Get-Command fount.ps1).Path | Split-Path -Parent | Split-Path -Parent
 	}
 
-	Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -Force -ErrorAction Ignore
+	try { Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -Force -ErrorAction Ignore }
+	catch { <# ignore #> }
 	#_if PSEXE
 		#_!! if (Test-Path "${PSEXEpath}.old") {
 			#_!! Remove-Item "${PSEXEpath}.old"

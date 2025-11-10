@@ -301,6 +301,7 @@
 			"title": "Host offline",
 			"message": "fount host ${hostUrl} appears to be offline. Do you want to retry?",
 			"buttons": {
+				"start": "Start",
 				"retry": "Try again"
 			}
 		},
@@ -558,6 +559,10 @@
 		"new": {
 			"title": "New Chat",
 			"description": "The quiet anticipation of a story yet unwritten. A new chat begins, a clean slate for fresh interactions and unfolding narratives with your chosen companions."
+		},
+		"typingIndicator": {
+			"isTyping": "${names} is typing...",
+			"multipleMembers": "Multiple members are typing..."
 		},
 		"sidebar": {
 			"noSelection": "None selected",
