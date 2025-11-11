@@ -182,7 +182,7 @@ const charAPI_definition = {
 				].filter(g => g.trim())
 
 				if (!greetings.length) greetings.push(`Hello, I am ${chardata.name}.`) // 默认问候
-				if (index < 0 || index >= greetings.length) index = 0 // 安全索引
+				if (!greetings[index]) index = 0 // 安全索引
 
 				const selectedGreeting = greetings[index]
 				const env = getMacroEnv(args.UserCharname) // args.UserCharname 来自 fount 调用 GetGreeting 时的参数
@@ -207,7 +207,7 @@ const charAPI_definition = {
 				if (!groupGreetings.length)  // 如果没有专门的群组问候，可以使用常规问候
 					return charAPI_definition.interfaces.chat.GetGreeting(args, index) // 注意：这里要用 charAPI_definition 引用
 
-				if (index < 0 || index >= groupGreetings.length) index = 0
+				if (!groupGreetings[index]) index = 0
 
 				const selectedGreeting = groupGreetings[index]
 				const env = getMacroEnv(args.UserCharname)

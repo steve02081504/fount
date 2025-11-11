@@ -309,7 +309,7 @@ export function createVirtualList({
 	 */
 	async function deleteItem(index) {
 		const queueIndex = index - state.startIndex
-		if (queueIndex < 0 || queueIndex >= state.queue.length) {
+		if (!state.queue[queueIndex]) {
 			// Item is not in view, just refresh to get correct counts
 			await refresh()
 			return
@@ -334,7 +334,7 @@ export function createVirtualList({
 	async function replaceItem(index, item) {
 		if (!item) throw new Error('item is required')
 		const queueIndex = index - state.startIndex
-		if (queueIndex < 0 || queueIndex >= state.queue.length) {
+		if (!state.queue[queueIndex]) {
 			console.warn(`[virtualList] replaceItem called for index ${index} which is not in view.`)
 			await refresh()
 			return
@@ -399,7 +399,7 @@ export function createVirtualList({
 			 * @returns {number} - 在总数据集中的绝对索引，如果无效则返回 -1。
 			 */
 		getChatLogIndexByQueueIndex: (queueIndex) => {
-			if (queueIndex < 0 || queueIndex >= state.queue.length) return -1
+			if (!state.queue[queueIndex]) return -1
 			return state.startIndex + queueIndex
 		},
 	}

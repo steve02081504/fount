@@ -302,11 +302,7 @@ export class ClaudeAPI {
 		this.config.cookie_array = this.config.cookie_array.filter((_, index) => index !== this.currentIndex)
 		this.failedCookies.delete(currentCookie) // 从失败集合中移除
 
-		// 调整索引 移除
-		// this.config.cookie_index = Math.min(this.config.cookie_array.length - 1, this.currentIndex);
-		// if (this.config.cookie_index < 0) this.config.cookie_index = 0;
 		this.currentIndex = 0 //重置
-		// this.config.cookie_counter < 0 || (this.config.cookie_array.length <= 1 && (this.config.cookie_counter = 1)); //移除
 		this.SaveConfig()  // 保存更改
 
 		if (this.config.cookie_array.length) // 如果还有剩余的cookie

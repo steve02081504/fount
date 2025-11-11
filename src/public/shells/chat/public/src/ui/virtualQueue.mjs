@@ -139,7 +139,7 @@ export function getChatLogIndexByQueueIndex(queueIndex) {
  * @returns {Promise<HTMLElement|null>} 对应的消息 DOM 元素，如果不存在则为 null。
  */
 export async function getMessageElementByQueueIndex(queueIndex) {
-	if (!virtualList || queueIndex < 0 || queueIndex >= virtualList.getQueue().length) return null
+	if (!virtualList?.getQueue?.()?.[queueIndex]) return null
 	const elementIndexInDom = queueIndex + 1 // +1 for sentinel-top
 	const element = chatMessagesContainer.children[elementIndexInDom]
 	return element && !element.id.startsWith('sentinel') ? element : null

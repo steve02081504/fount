@@ -1313,7 +1313,7 @@ export async function exportChat(chatids) {
 export async function deleteMessage(chatid, index) {
 	const chatMetadata = await loadChat(chatid)
 	if (!chatMetadata) throw new Error('Chat not found')
-	if (index < 0 || index >= chatMetadata.chatLog.length) throw new Error('Invalid index')
+	if (!chatMetadata.chatLog[index]) throw new Error('Invalid index')
 
 	/**
 	 * 生成请求。
@@ -1341,7 +1341,7 @@ export async function deleteMessage(chatid, index) {
 	const last = chatMetadata.chatLog[chatMetadata.chatLog.length - 1]
 
 	if (index == chatMetadata.chatLog.length) {
-		chatMetadata.timeLines = [last]
+		chatMetadata.timeLines = [last].filter(Boolean)
 		chatMetadata.timeLineIndex = 0
 	}
 
@@ -1365,7 +1365,7 @@ export async function deleteMessage(chatid, index) {
 export async function editMessage(chatid, index, new_content) {
 	const chatMetadata = await loadChat(chatid)
 	if (!chatMetadata) throw new Error('Chat not found')
-	if (index < 0 || index >= chatMetadata.chatLog.length) throw new Error('Invalid index')
+	if (!chatMetadata.chatLog[index]) throw new Error('Invalid index')
 
 	/**
 	 * 生成请求。
