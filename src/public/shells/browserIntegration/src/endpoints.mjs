@@ -1,3 +1,8 @@
+import { promises as fs } from 'node:fs'
+import path from 'node:path'
+import { pathToFileURL } from 'node:url'
+
+import { is_local_ip_from_req } from '../../../../scripts/ratelimit.mjs'
 import { authenticate, getUserByReq } from '../../../../server/auth.mjs'
 import { loadPart } from '../../../../server/managers/index.mjs'
 
@@ -15,6 +20,26 @@ import {
  * @param {object} router - Express的路由实例。
  */
 export function setEndpoints(router) {
+	router.get('/virtual_files/shells/browserIntegration/script.user.js', async (req, res) => {
+		const scriptPublicPath = path.join(import.meta.dirname, '..', 'public')
+		const publicScriptPath = path.join(scriptPublicPath, 'script.user.js')
+
+		res.setHeader('Content-Type', 'application/x-userscript; charset=utf-8')
+
+		if (is_local_ip_from_req(req)) {
+			const localScriptTemplatePath = path.join(scriptPublicPath, 'local_script.user.js')
+			const mainScriptFileUrl = pathToFileURL(publicScriptPath).href
+
+			const template = await fs.readFile(localScriptTemplatePath, 'utf-8')
+			const content = template.replace('${file_protocol_url}', mainScriptFileUrl)
+			res.status(200).send(content)
+		}
+		else {
+			const content = await fs.readFile(publicScriptPath, 'utf-8')
+			res.status(200).send(content)
+		}
+	})
+
 	router.ws('/ws/shells/browserIntegration/page', authenticate, async (ws, req) => {
 		const { username } = await getUserByReq(req)
 		handleConnection(ws, username)

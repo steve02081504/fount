@@ -12,7 +12,7 @@ import { loadPart } from '../managers/index.mjs'
 export const PartsRouter = express.Router()
 
 const PartsRouters = {}
-const partsAPIregex = new RegExp(`^/(api|ws)/(${partTypeList.join('|')})/`)
+const partsAPIregex = new RegExp(`^/(api|ws|virtual_files)/(${partTypeList.join('|')})/`)
 PartsRouter.use(async (req, res, next) => {
 	if (!partsAPIregex.test(req.path)) return next()
 	if (!await auth_request(req, res)) {

@@ -254,7 +254,7 @@ async function main() {
 		})
 		i18nElement(CSPwarning)
 	}
-	scriptUrlInput.value = `${window.location.origin}/shells/browserIntegration/script.user.js`
+	scriptUrlInput.value = `${window.location.origin}/virtual_files/shells/browserIntegration/script.user.js`
 
 	copyScriptUrlButton.addEventListener('click', () => {
 		navigator.clipboard.writeText(scriptUrlInput.value)
