@@ -52,7 +52,8 @@
 			}
 		},
 		"web": {
-			"requestReceived": "تم استلام طلب: ${method} ${url}"
+			"requestReceived": "تم استلام طلب: ${method} ${url}",
+			"frontendFilesChanged": "تم تغيير ملف الواجهة الأمامية [${path}] ويتم إخطار العملاء بإعادة التحميل."
 		},
 		"route": {
 			"setLanguagePreference": "قام المستخدم ${username} بتعيين اللغة المفضلة: ${preferredLanguages}"

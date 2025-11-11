@@ -990,7 +990,7 @@ async function findAndConnect() {
 		await connect(host, protocol, username, storedApiKey)
 		await checkAndUnlockGitHubStarAchievement()
 		try {
-			const scriptUrl = `${protocol}//${host}/shells/browserIntegration/public/script.user.js`
+			const scriptUrl = `${protocol}//${host}/shells/browserIntegration/script.user.js`
 			const response = await gmFetch(scriptUrl, {
 				headers: {
 					Authorization: `Bearer ${await GM.getValue('fount_apikey', null)}`

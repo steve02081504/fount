@@ -2,6 +2,8 @@ import express from 'npm:express'
 
 import { __dirname } from '../base.mjs'
 
+import { watchFrontendChanges } from './watcher.mjs'
+
 /**
  * 为应用程序注册资源路由。
  * @param {import('npm:express').Router} router - 要在其上注册路由的 Express 路由器。
@@ -19,5 +21,6 @@ export function registerResources(router) {
 		}
 		return next()
 	})
+	watchFrontendChanges('/', __dirname + '/src/pages')
 	router.use(express.static(__dirname + '/src/pages'))
 }

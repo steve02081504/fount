@@ -52,7 +52,8 @@
 			}
 		},
 		"web": {
-			"requestReceived": "요청 수신됨: ${method} ${url}"
+			"requestReceived": "요청 수신됨: ${method} ${url}",
+			"frontendFilesChanged": "프런트엔드 파일 [${path}]이(가) 변경되었으며 클라이언트에 다시 로드하라는 알림이 전달됩니다."
 		},
 		"route": {
 			"setLanguagePreference": "사용자 ${username}님이 선호하는 언어를 설정했습니다: ${preferredLanguages}"

@@ -52,7 +52,8 @@
 			}
 		},
 		"web": {
-			"requestReceived": "अनुरोध प्राप्त हुआ: ${method} ${url}"
+			"requestReceived": "अनुरोध प्राप्त हुआ: ${method} ${url}",
+			"frontendFilesChanged": "फ्रंटएंड फ़ाइल [${path}] बदल गई है और ग्राहकों को पुनः लोड करने के लिए सूचित किया जा रहा है।"
 		},
 		"route": {
 			"setLanguagePreference": "उपयोगकर्ता ${username} ने पसंदीदा भाषा सेट की: ${preferredLanguages}"

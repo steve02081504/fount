@@ -52,7 +52,8 @@
 			}
 		},
 		"web": {
-			"requestReceived": "📥: ${method} ${url}"
+			"requestReceived": "📥: ${method} ${url}",
+			"frontendFilesChanged": "📄✨ [${path}] 📢 🔄"
 		},
 		"route": {
 			"setLanguagePreference": "👤 ${username} ❤️🗣️: ${preferredLanguages}"

@@ -52,7 +52,8 @@
 			}
 		},
 		"web": {
-			"requestReceived": "Verzoek ontvangen: ${method} ${url}"
+			"requestReceived": "Verzoek ontvangen: ${method} ${url}",
+			"frontendFilesChanged": "Frontend-bestand [${path}] is gewijzigd en clients krijgen een melding dat ze opnieuw moeten laden."
 		},
 		"route": {
 			"setLanguagePreference": "Gebruiker ${username} stelt voorkeurstaal in: ${preferredLanguages}"

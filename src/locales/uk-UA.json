@@ -52,7 +52,8 @@
 			}
 		},
 		"web": {
-			"requestReceived": "Отримано запит: ${method} ${url}"
+			"requestReceived": "Отримано запит: ${method} ${url}",
+			"frontendFilesChanged": "Файл фронтенду [${path}] було змінено, клієнти отримують сповіщення про перезавантаження."
 		},
 		"route": {
 			"setLanguagePreference": "Користувач ${username} встановив бажану мову: ${preferredLanguages}"
