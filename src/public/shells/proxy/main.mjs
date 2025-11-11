@@ -1,5 +1,3 @@
-import qrcode from 'npm:qrcode-terminal'
-
 import { actions } from './src/actions.mjs'
 import { setEndpoints } from './src/endpoints.mjs'
 
@@ -210,7 +208,8 @@ export default {
 				const webUI = new URL('/shells/proxy', url).href
 				console.log(`Your OpenAI-compatible API endpoint is: ${url}`)
 				console.log(`Please go to ${webUI} to generate an API key.`)
-				qrcode.generate(webUI, { small: true })
+				const qrcode = await import('npm:qrcode-terminal')
+				qrcode.generate(webUI, { small: true }, console.noBreadcrumb.log)
 				console.log(`You can use it with any OpenAI-compatible client, for example, to list models, run: curl ${url}/v1/models -H "Authorization: Bearer <your_fount_apikey>"`)
 			},
 			/**

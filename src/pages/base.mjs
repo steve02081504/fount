@@ -6,8 +6,13 @@ import * as Sentry from 'https://esm.sh/@sentry/browser'
 import { onServerEvent } from './scripts/server_events.mjs'
 import { showToast } from './scripts/toast.mjs'
 
+let skipBreadcrumb = false
 Sentry.init({
 	dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
+	beforeBreadcrumb: (breadcrumb, hint) => {
+		if (skipBreadcrumb) return null
+		return breadcrumb
+	},
 	sendDefaultPii: true,
 	tunnel: '/api/sentrytunnel',
 	integrations: [
@@ -17,6 +22,13 @@ Sentry.init({
 	tracesSampleRate: 1.0,
 	tracePropagationTargets: [window.location.origin || 'localhost'],
 })
+console.noBreadcrumb = {
+	log: (...args) => {
+		skipBreadcrumb = true
+		console.log(...args)
+		skipBreadcrumb = false
+	}
+}
 
 await import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill/index.mjs').catch(console.error)
 
@@ -104,7 +116,7 @@ onServerEvent('show-toast', ({ type, message, duration }) => {
 
 ; (f => document.readyState === 'complete' ? f() : window.addEventListener('load', f))(async () => {
 	try {
-		console.log(...await fetch('https://cdn.jsdelivr.net/gh/steve02081504/fount/imgs/icon.js').then(r => r.text()).then(eval))
+		console.noBreadcrumb.log(...await fetch('https://cdn.jsdelivr.net/gh/steve02081504/fount/imgs/icon.js').then(r => r.text()).then(eval))
 	} catch (error) { console.error(error) }
 	console.log('Curious? Join us and build future together: https://github.com/steve02081504/fount')
 	// Dispatch host info for browser integration script

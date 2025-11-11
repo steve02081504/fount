@@ -14,9 +14,21 @@ import { __dirname, set_start } from './base.mjs'
 import { init } from './server.mjs'
 
 // 初始化 Sentry 进行错误报告。
+let skipBreadcrumb = false
 Sentry.init({
 	dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
+	beforeBreadcrumb: (breadcrumb, hint) => {
+		if (skipBreadcrumb) return null
+		return breadcrumb
+	}
 })
+console.noBreadcrumb = {
+	log: (...args) => {
+		skipBreadcrumb = true
+		console.log(...args)
+		skipBreadcrumb = false
+	}
+}
 
 set_start()
 

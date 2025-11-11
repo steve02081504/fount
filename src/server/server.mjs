@@ -255,7 +255,7 @@ export async function init(start_config) {
 			const local_url = get_hosturl_in_local_ip()
 			console.logI18n('fountConsole.server.localUrl', { url: local_url })
 			const qrcode = await import('npm:qrcode-terminal')
-			qrcode.generate(local_url, { small: true })
+			qrcode.generate(local_url, { small: true }, console.noBreadcrumb.log)
 		} catch (e) { /* ignore */ }
 	}
 

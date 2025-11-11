@@ -233,7 +233,7 @@ export default {
 				const url = await handleAction(user, 'default', {})
 				console.log(`Access fount on other devices in the same network via: ${url}`)
 				const qrcode = await import('npm:qrcode-terminal')
-				qrcode.generate(url, { small: true })
+				qrcode.generate(url, { small: true }, console.noBreadcrumb.log)
 			},
 			/**
 			 * 处理IPC调用，返回用于在其他设备上访问的URL。
