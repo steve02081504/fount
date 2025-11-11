@@ -52,7 +52,8 @@
 			}
 		},
 		"web": {
-			"requestReceived": "تم استلام طلب: ${method} ${url}"
+			"requestReceived": "تم استلام طلب: ${method} ${url}",
+			"frontendFilesChanged": "تم تغيير ملف الواجهة الأمامية [${path}] ويتم إخطار العملاء بإعادة التحميل."
 		},
 		"route": {
 			"setLanguagePreference": "قام المستخدم ${username} بتعيين اللغة المفضلة: ${preferredLanguages}"
@@ -280,6 +281,7 @@
 		},
 		"error": {
 			"title": "فشل التثبيت!",
+			"description": "يبدو أن هناك خطأ ما في برنامج تثبيت fount.",
 			"connection_failed": "فشل الاتصال!",
 			"description1": "يبدو أن هناك خطأ ما في برنامج تثبيت fount.",
 			"description2": "يرجى التحقق من الطرفية الخاصة بك والمحاولة مرة أخرى.",

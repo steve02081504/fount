@@ -52,7 +52,8 @@
 			}
 		},
 		"web": {
-			"requestReceived": "Получен запрос: ${method} ${url}"
+			"requestReceived": "Получен запрос: ${method} ${url}",
+			"frontendFilesChanged": "Файл фронтенда [${path}] был изменён, клиенты уведомлены о необходимости перезагрузки."
 		},
 		"route": {
 			"setLanguagePreference": "Пользователь ${username} установил предпочитаемый язык: ${preferredLanguages}"
@@ -280,6 +281,7 @@
 		},
 		"error": {
 			"title": "Установка не удалась!",
+			"description": "Кажется, с установщиком fount что-то не так.",
 			"connection_failed": "Не удалось подключиться!",
 			"description1": "Кажется, с установщиком fount что-то не так.",
 			"description2": "Пожалуйста, проверьте свой терминал и попробуйте снова.",

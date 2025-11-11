@@ -990,8 +990,7 @@ async function findAndConnect() {
 		await connect(host, protocol, username, storedApiKey)
 		await checkAndUnlockGitHubStarAchievement()
 		try {
-			const scriptUrl = `${protocol}//${host}/shells/browserIntegration/public/script.user.js`
-			const response = await gmFetch(scriptUrl, {
+			const response = await gmFetch(`${protocol}//${host}/shells/browserIntegration/script.user.js`, {
 				headers: {
 					Authorization: `Bearer ${await GM.getValue('fount_apikey', null)}`
 				}
@@ -1000,7 +999,7 @@ async function findAndConnect() {
 			const remoteVersion = response.responseText.match(/@version\s+(\S+)/)?.[1]
 			if (remoteVersion && remoteVersion !== GM_info.script.version)
 				if (window.confirm(await geti18n('browser_integration_script.update.prompt')))
-					window.open(scriptUrl, '_blank')
+					window.open(`${protocol}//${host}/virtual_files/shells/browserIntegration/script.user.js`, '_blank')
 		} catch (error) {
 			console.error('fount userscript: Failed to check for updates.', error)
 		}

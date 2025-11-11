@@ -52,7 +52,8 @@
 			}
 		},
 		"web": {
-			"requestReceived": "Đã nhận được yêu cầu: ${method} ${url}"
+			"requestReceived": "Đã nhận được yêu cầu: ${method} ${url}",
+			"frontendFilesChanged": "Tệp frontend [${path}] đã thay đổi và các client đang được thông báo để tải lại."
 		},
 		"route": {
 			"setLanguagePreference": "Người dùng ${username} đã đặt ngôn ngữ ưu tiên: ${preferredLanguages}"
@@ -280,6 +281,7 @@
 		},
 		"error": {
 			"title": "Cài đặt thất bại!",
+			"description": "Dường như có sự cố với trình cài đặt fount.",
 			"connection_failed": "Kết nối thất bại!",
 			"description1": "Dường như có sự cố với trình cài đặt fount.",
 			"description2": "Vui lòng kiểm tra terminal của bạn và thử lại.",

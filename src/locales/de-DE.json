@@ -52,7 +52,8 @@
 			}
 		},
 		"web": {
-			"requestReceived": "Anfrage erhalten: ${method} ${url}"
+			"requestReceived": "Anfrage erhalten: ${method} ${url}",
+			"frontendFilesChanged": "Die Frontend-Datei [${path}] wurde geändert. Clients werden benachrichtigt, die Seite neu zu laden."
 		},
 		"route": {
 			"setLanguagePreference": "Benutzer ${username} hat die bevorzugte Sprache eingestellt: ${preferredLanguages}"
@@ -280,6 +281,7 @@
 		},
 		"error": {
 			"title": "Installation fehlgeschlagen!",
+			"description": "Mit dem fount-Installationsprogramm scheint etwas nicht zu stimmen.",
 			"connection_failed": "Verbindung fehlgeschlagen!",
 			"description1": "Mit dem fount-Installationsprogramm scheint etwas nicht zu stimmen.",
 			"description2": "Bitte überprüfen Sie Ihr Terminal und versuchen Sie es erneut.",

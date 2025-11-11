@@ -16,6 +16,7 @@ import { getDefaultParts, getPartDetails, setDefaultPart, unsetDefaultPart, getA
 import { skip_report, currentGitCommit, config, save_config } from '../server.mjs'
 
 import { register as registerNotifier } from './event_dispatcher.mjs'
+import { watchFrontendChanges } from './watcher.mjs'
 
 /**
  * 为应用程序注册所有 API 端点。
@@ -247,7 +248,7 @@ export function registerEndpoints(router) {
 			const patharr = oripath.split('/')
 			patharr[patharr.length - 1] ||= 'index.html'
 			const partName = patharr[2]
-			const realPath = part + '/' + partName + '/public/' + patharr.slice(3).join('/')
+			const realPath = part + '/' + partName + '/public'
 			const userPath = getUserDictionary(username) + '/' + realPath
 			const publicPath = __dirname + '/src/public/' + realPath
 			let path
@@ -255,6 +256,9 @@ export function registerEndpoints(router) {
 			else if (fs.existsSync(publicPath)) path = publicPath
 			else return next()
 
+			watchFrontendChanges(`/${part}/${partName}/`, path)
+			path += '/' + patharr.slice(3).join('/')
+			if (!fs.existsSync(path)) return next()
 			if (fs.statSync(path).isDirectory()) return res.status(301).redirect(req.originalUrl.replace(oripath, oripath + '/'))
 			else return res.status(200).sendFile(path)
 		})

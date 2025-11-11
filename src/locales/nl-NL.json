@@ -52,7 +52,8 @@
 			}
 		},
 		"web": {
-			"requestReceived": "Verzoek ontvangen: ${method} ${url}"
+			"requestReceived": "Verzoek ontvangen: ${method} ${url}",
+			"frontendFilesChanged": "Frontend-bestand [${path}] is gewijzigd en clients krijgen een melding dat ze opnieuw moeten laden."
 		},
 		"route": {
 			"setLanguagePreference": "Gebruiker ${username} stelt voorkeurstaal in: ${preferredLanguages}"
@@ -280,6 +281,7 @@
 		},
 		"error": {
 			"title": "Installatie mislukt!",
+			"description": "Er lijkt iets mis te zijn gegaan met het installatieprogramma van fount.",
 			"connection_failed": "Verbinding mislukt!",
 			"description1": "Er lijkt iets mis te zijn gegaan met het installatieprogramma van fount.",
 			"description2": "Controleer je terminal en probeer het opnieuw.",

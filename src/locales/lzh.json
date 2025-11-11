@@ -52,7 +52,8 @@
 			}
 		},
 		"web": {
-			"requestReceived": "承奉來使：${method} ${url}"
+			"requestReceived": "承奉來使：${method} ${url}",
+			"frontendFilesChanged": "前端卷宗 [${path}] 已異，諭客重載之。"
 		},
 		"route": {
 			"setLanguagePreference": "用者 ${username} 定其雅言為: ${preferredLanguages}"
@@ -280,6 +281,7 @@
 		},
 		"error": {
 			"title": "安設失利。",
+			"description": "fount 安設似有不諧。",
 			"connection_failed": "連接之途，遇阻不通。",
 			"description1": "fount 安設似有不諧。",
 			"description2": "請察終端而後重試，或能力挽狂瀾。",
@@ -448,7 +450,8 @@
 		"itemDescription": "請擇一物以觀其詳。",
 		"noDescription": "無述",
 		"filterInput": {
-			"placeholder": "尋覓..."
+			"placeholder": "尋覓...",
+			"aria-label": "尋一組件"
 		},
 		"sfwToggle": "淨域",
 		"functionMenu": {
@@ -1317,7 +1320,8 @@
 			"setDefault": {
 				"dataset": {
 					"tip": "設為預設"
-				}
+				},
+				"aria-label": "設${fileName}為預設智源"
 			}
 		},
 		"confirm": {
@@ -1702,7 +1706,8 @@
 		"copy": {
 			"dataset": {
 				"tip": "謄錄至簿"
-			}
+			},
+			"aria-label": "謄錄至簿"
 		},
 		"copied": {
 			"dataset": {
@@ -1712,12 +1717,14 @@
 		"download": {
 			"dataset": {
 				"tip": "取碼"
-			}
+			},
+			"aria-label": "取碼"
 		},
 		"execute": {
 			"dataset": {
 				"tip": "行碼"
-			}
+			},
+			"aria-label": "行碼"
 		},
 		"preview": {
 			"dataset": {

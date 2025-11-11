@@ -52,7 +52,8 @@
 			}
 		},
 		"web": {
-			"requestReceived": "Petición recibida: ${method} ${url}"
+			"requestReceived": "Petición recibida: ${method} ${url}",
+			"frontendFilesChanged": "El archivo frontend [${path}] ha cambiado y se notifica a los clientes que lo vuelvan a cargar."
 		},
 		"route": {
 			"setLanguagePreference": "El usuario ${username} ha establecido el idioma preferido: ${preferredLanguages}"
@@ -280,6 +281,7 @@
 		},
 		"error": {
 			"title": "¡Error en la instalación!",
+			"description": "Parece que hay un problema con el instalador de fount.",
 			"connection_failed": "¡Error de conexión!",
 			"description1": "Parece que hay un problema con el instalador de fount.",
 			"description2": "Por favor, comprueba tu terminal e inténtalo de nuevo.",

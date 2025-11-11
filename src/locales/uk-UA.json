@@ -52,7 +52,8 @@
 			}
 		},
 		"web": {
-			"requestReceived": "Отримано запит: ${method} ${url}"
+			"requestReceived": "Отримано запит: ${method} ${url}",
+			"frontendFilesChanged": "Файл фронтенду [${path}] було змінено, клієнти отримують сповіщення про перезавантаження."
 		},
 		"route": {
 			"setLanguagePreference": "Користувач ${username} встановив бажану мову: ${preferredLanguages}"
@@ -280,6 +281,7 @@
 		},
 		"error": {
 			"title": "Встановлення не вдалося!",
+			"description": "Здається, щось пішло не так із програмою встановлення fount.",
 			"connection_failed": "Не вдалося підключитися!",
 			"description1": "Здається, щось пішло не так із програмою встановлення fount.",
 			"description2": "Будь ласка, перевірте свій термінал і спробуйте ще раз.",

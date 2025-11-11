@@ -52,7 +52,8 @@
 			}
 		},
 		"web": {
-			"requestReceived": "Request received: ${method} ${url}"
+			"requestReceived": "Request received: ${method} ${url}",
+			"frontendFilesChanged": "Frontend file [${path}] has changed and clients are being notified to reload."
 		},
 		"route": {
 			"setLanguagePreference": "User ${username} set preferred language: ${preferredLanguages}"
@@ -280,6 +281,7 @@
 		},
 		"error": {
 			"title": "Installation failed!",
+			"description": "There seems to be something wrong with the fount installer.",
 			"connection_failed": "Connection failed!",
 			"description1": "There seems to be something wrong with the fount installer.",
 			"description2": "Please check your terminal and try again.",

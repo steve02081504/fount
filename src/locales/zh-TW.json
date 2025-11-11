@@ -52,7 +52,8 @@
 			}
 		},
 		"web": {
-			"requestReceived": "接收到請求：${method} ${url}"
+			"requestReceived": "接收到請求：${method} ${url}",
+			"frontendFilesChanged": "前端文件 [${path}] 已更改，正在通知客戶端重新加載。"
 		},
 		"route": {
 			"setLanguagePreference": "使用者 ${username} 設定偏好語言: ${preferredLanguages}"
@@ -280,6 +281,7 @@
 		},
 		"error": {
 			"title": "安裝失敗！",
+			"description": "fount 安裝程式似乎出了問題。",
 			"connection_failed": "連線失敗！",
 			"description1": "fount 安裝程式似乎出了問題。",
 			"description2": "請檢查您的終端機並重試。",
