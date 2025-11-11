@@ -52,7 +52,8 @@
 			}
 		},
 		"web": {
-			"requestReceived": "Tók á móti beiðni: ${method} ${url}"
+			"requestReceived": "Tók á móti beiðni: ${method} ${url}",
+			"frontendFilesChanged": "Framendaskráin [${path}] hefur breyst og biðlarar eru látnir vita að endurhlaða."
 		},
 		"route": {
 			"setLanguagePreference": "Notandi ${username} stillti valinn tungumál: ${preferredLanguages}"

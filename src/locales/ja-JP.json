@@ -52,7 +52,8 @@
 			}
 		},
 		"web": {
-			"requestReceived": "リクエストを受信しました：${method} ${url}"
+			"requestReceived": "リクエストを受信しました：${method} ${url}",
+			"frontendFilesChanged": "フロントエンド ファイル [${path}] が変更されたため、クライアントにリロードするように通知されています。"
 		},
 		"route": {
 			"setLanguagePreference": "ユーザー「${username}」が優先言語を設定しました：${preferredLanguages}"

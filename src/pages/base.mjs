@@ -61,6 +61,19 @@ document.addEventListener('keydown', event => {
 })
 
 let currentCommitId
+let updateTimeout
+/**
+ * 设置需要更新，这将在 5 秒后或窗口聚焦时刷新页面。
+ */
+function setUpdateNeeded() {
+	if (updateTimeout) clearTimeout(updateTimeout)
+	updateTimeout = setTimeout(() => {
+		window.location.reload(true)
+	}, 5000)
+}
+window.addEventListener('focus', () => {
+	if (updateTimeout) window.location.reload(true)
+})
 /**
  * 处理版本更新。
  * @param {object} param0 - 参数对象。
@@ -69,10 +82,13 @@ let currentCommitId
 function handleVersionUpdate({ commitId }) {
 	if (!commitId) return
 	currentCommitId ??= commitId
-	if (currentCommitId !== commitId) window.location.reload(true)
+	if (currentCommitId !== commitId) setUpdateNeeded()
 }
 onServerEvent('server-updated', handleVersionUpdate)
 onServerEvent('server-reconnected', handleVersionUpdate)
+onServerEvent('page-modified', ({ path }) => {
+	if (window.location.pathname.startsWith(path)) setUpdateNeeded()
+})
 
 /**
  * 显示一个 toast 通知。

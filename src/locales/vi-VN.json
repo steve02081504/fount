@@ -52,7 +52,8 @@
 			}
 		},
 		"web": {
-			"requestReceived": "Đã nhận được yêu cầu: ${method} ${url}"
+			"requestReceived": "Đã nhận được yêu cầu: ${method} ${url}",
+			"frontendFilesChanged": "Tệp frontend [${path}] đã thay đổi và các client đang được thông báo để tải lại."
 		},
 		"route": {
 			"setLanguagePreference": "Người dùng ${username} đã đặt ngôn ngữ ưu tiên: ${preferredLanguages}"

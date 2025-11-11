@@ -52,7 +52,8 @@
 			}
 		},
 		"web": {
-			"requestReceived": "接受到请求：${method} ${url}"
+			"requestReceived": "接受到请求：${method} ${url}",
+			"frontendFilesChanged": "前端文件 [${path}] 已更改，正在通知客户端重新加载。"
 		},
 		"route": {
 			"setLanguagePreference": "用户 ${username} 设置首选语言: ${preferredLanguages}"

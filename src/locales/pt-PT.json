@@ -52,7 +52,8 @@
 			}
 		},
 		"web": {
-			"requestReceived": "Pedido recebido: ${method} ${url}"
+			"requestReceived": "Pedido recebido: ${method} ${url}",
+			"frontendFilesChanged": "O ficheiro frontend [${path}] foi alterado e os clientes estão a ser notificados para recarregar."
 		},
 		"route": {
 			"setLanguagePreference": "O utilizador ${username} definiu o idioma preferencial: ${preferredLanguages}"

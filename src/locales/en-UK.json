@@ -52,7 +52,8 @@
 			}
 		},
 		"web": {
-			"requestReceived": "Request received: ${method} ${url}"
+			"requestReceived": "Request received: ${method} ${url}",
+			"frontendFilesChanged": "Frontend file [${path}] has changed and clients are being notified to reload."
 		},
 		"route": {
 			"setLanguagePreference": "User ${username} set preferred language: ${preferredLanguages}"
