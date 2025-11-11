@@ -418,7 +418,7 @@ async function GetSource(config) {
 		return file
 	}
 
-	const is_ImageGeneration = config.model_arguments?.responseModalities?.includes?.('Image') ?? config.model.includes('image-generation')
+	const is_ImageGeneration = config.model_arguments?.responseModalities?.includes?.('Image') ?? config.model?.includes?.('image-generation')
 
 	const default_config = {
 		responseMimeType: 'text/plain',

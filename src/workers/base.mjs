@@ -27,3 +27,14 @@ self.onmessage = async e => {
 		}
 	}
 }
+/**
+ * 捕获工作线程中的错误。
+ * @param {ErrorEvent} e - 错误事件。
+ * @returns {void}
+ */
+self.onerror = e => {
+	self.postMessage({
+		type: 'reject',
+		data: e.error?.stack || e.error?.message || e.error || e.message || e,
+	})
+}
