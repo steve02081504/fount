@@ -52,7 +52,8 @@
 			}
 		},
 		"web": {
-			"requestReceived": "Richiesta ricevuta: ${method} ${url}"
+			"requestReceived": "Richiesta ricevuta: ${method} ${url}",
+			"frontendFilesChanged": "Il file frontend [${path}] è cambiato e ai client viene inviata una notifica per ricaricarlo."
 		},
 		"route": {
 			"setLanguagePreference": "L'utente ${username} ha impostato la lingua preferita: ${preferredLanguages}"
@@ -280,6 +281,7 @@
 		},
 		"error": {
 			"title": "Installazione non riuscita!",
+			"description": "Sembra esserci un problema con il programma di installazione di fount.",
 			"connection_failed": "Connessione non riuscita!",
 			"description1": "Sembra esserci un problema con il programma di installazione di fount.",
 			"description2": "Controlla il tuo terminale e riprova.",

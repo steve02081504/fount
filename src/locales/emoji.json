@@ -52,7 +52,8 @@
 			}
 		},
 		"web": {
-			"requestReceived": "📥: ${method} ${url}"
+			"requestReceived": "📥: ${method} ${url}",
+			"frontendFilesChanged": "📄✨ [${path}] 📢 🔄"
 		},
 		"route": {
 			"setLanguagePreference": "👤 ${username} ❤️🗣️: ${preferredLanguages}"
@@ -280,6 +281,7 @@
 		},
 		"error": {
 			"title": "📥❌❗️",
+			"description": "⛲📥😵",
 			"connection_failed": "🔌❌❗️",
 			"description1": "⛲📥😵",
 			"description2": "💻👀 🔄",

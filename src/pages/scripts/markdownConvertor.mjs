@@ -144,7 +144,7 @@ const result = {
 Object.keys(result).forEach(key => !result[key] && delete result[key])
 return result
 `
-	return new (Object.getPrototypeOf(async function(){}).constructor)('code', functionBody)
+	return new (Object.getPrototypeOf(async function () { }).constructor)('code', functionBody)
 	return new (Object.getPrototypeOf(async () => { }).constructor)('code', functionBody)
 }
 

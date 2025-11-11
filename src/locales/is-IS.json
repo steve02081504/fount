@@ -52,7 +52,8 @@
 			}
 		},
 		"web": {
-			"requestReceived": "Tók á móti beiðni: ${method} ${url}"
+			"requestReceived": "Tók á móti beiðni: ${method} ${url}",
+			"frontendFilesChanged": "Framendaskráin [${path}] hefur breyst og biðlarar eru látnir vita að endurhlaða."
 		},
 		"route": {
 			"setLanguagePreference": "Notandi ${username} stillti valinn tungumál: ${preferredLanguages}"
@@ -280,6 +281,7 @@
 		},
 		"error": {
 			"title": "Uppsetning mistókst!",
+			"description": "Svo virðist sem eitthvað hafi farið úrskeiðis í uppsetningarforriti fount.",
 			"connection_failed": "Tenging mistókst!",
 			"description1": "Svo virðist sem eitthvað hafi farið úrskeiðis í uppsetningarforriti fount.",
 			"description2": "Vinsamlegast athugaðu flugstöðina þína og reyndu aftur.",

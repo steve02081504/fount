@@ -52,7 +52,8 @@
 			}
 		},
 		"web": {
-			"requestReceived": "承奉來使：${method} ${url}"
+			"requestReceived": "承奉來使：${method} ${url}",
+			"frontendFilesChanged": "前端卷宗 [${path}] 已異，諭客重載之。"
 		},
 		"route": {
 			"setLanguagePreference": "用者 ${username} 定其雅言為: ${preferredLanguages}"
@@ -280,6 +281,7 @@
 		},
 		"error": {
 			"title": "安設失利。",
+			"description": "fount 安設似有不諧。",
 			"connection_failed": "連接之途，遇阻不通。",
 			"description1": "fount 安設似有不諧。",
 			"description2": "請察終端而後重試，或能力挽狂瀾。",

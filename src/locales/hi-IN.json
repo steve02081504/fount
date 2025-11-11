@@ -52,7 +52,8 @@
 			}
 		},
 		"web": {
-			"requestReceived": "अनुरोध प्राप्त हुआ: ${method} ${url}"
+			"requestReceived": "अनुरोध प्राप्त हुआ: ${method} ${url}",
+			"frontendFilesChanged": "फ्रंटएंड फ़ाइल [${path}] बदल गई है और ग्राहकों को पुनः लोड करने के लिए सूचित किया जा रहा है।"
 		},
 		"route": {
 			"setLanguagePreference": "उपयोगकर्ता ${username} ने पसंदीदा भाषा सेट की: ${preferredLanguages}"
@@ -280,6 +281,7 @@
 		},
 		"error": {
 			"title": "इंस्टॉलेशन विफल!",
+			"description": "लगता है fount इंस्टॉलर में कुछ गड़बड़ है।",
 			"connection_failed": "कनेक्शन विफल!",
 			"description1": "लगता है fount इंस्टॉलर में कुछ गड़बड़ है।",
 			"description2": "कृपया अपना टर्मिनल देखें और पुनः प्रयास करें।",

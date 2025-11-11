@@ -52,7 +52,8 @@
 			}
 		},
 		"web": {
-			"requestReceived": "요청 수신됨: ${method} ${url}"
+			"requestReceived": "요청 수신됨: ${method} ${url}",
+			"frontendFilesChanged": "프런트엔드 파일 [${path}]이(가) 변경되었으며 클라이언트에 다시 로드하라는 알림이 전달됩니다."
 		},
 		"route": {
 			"setLanguagePreference": "사용자 ${username}님이 선호하는 언어를 설정했습니다: ${preferredLanguages}"
@@ -280,6 +281,7 @@
 		},
 		"error": {
 			"title": "설치 실패!",
+			"description": "fount 설치 프로그램에 문제가 발생한 것 같습니다.",
 			"connection_failed": "연결 실패!",
 			"description1": "fount 설치 프로그램에 문제가 발생한 것 같습니다.",
 			"description2": "터미널을 확인하고 다시 시도해주세요.",

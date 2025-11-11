@@ -52,7 +52,8 @@
 			}
 		},
 		"web": {
-			"requestReceived": "Requête reçue : ${method} ${url}"
+			"requestReceived": "Requête reçue : ${method} ${url}",
+			"frontendFilesChanged": "Le fichier frontal [${path}] a été modifié, les clients reçoivent une notification pour recharger."
 		},
 		"route": {
 			"setLanguagePreference": "L'utilisateur ${username} a défini sa langue préférée : ${preferredLanguages}"
@@ -280,6 +281,7 @@
 		},
 		"error": {
 			"title": "Échec de l'installation !",
+			"description": "Un problème semble être survenu avec le programme d'installation de fount.",
 			"connection_failed": "Échec de la connexion !",
 			"description1": "Un problème semble être survenu avec le programme d'installation de fount.",
 			"description2": "Veuillez vérifier votre terminal et réessayer.",

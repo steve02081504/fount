@@ -52,7 +52,8 @@
 			}
 		},
 		"web": {
-			"requestReceived": "Pedido recebido: ${method} ${url}"
+			"requestReceived": "Pedido recebido: ${method} ${url}",
+			"frontendFilesChanged": "O ficheiro frontend [${path}] foi alterado e os clientes estão a ser notificados para recarregar."
 		},
 		"route": {
 			"setLanguagePreference": "O utilizador ${username} definiu o idioma preferencial: ${preferredLanguages}"
@@ -280,6 +281,7 @@
 		},
 		"error": {
 			"title": "A instalação falhou!",
+			"description": "Parece haver algo de errado com o instalador do fount.",
 			"connection_failed": "A conexão falhou!",
 			"description1": "Parece haver algo de errado com o instalador do fount.",
 			"description2": "Verifique o seu terminal e tente novamente.",
