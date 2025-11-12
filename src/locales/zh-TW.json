@@ -454,6 +454,14 @@
 			"aria-label": "搜索部件"
 		},
 		"sfwToggle": "安全內容",
+		"partTypeDropdown": {
+			"button": {
+				"title": "部件類型菜單"
+			},
+			"icon": {
+				"alt": "部件類型菜單"
+			}
+		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "搜尋..."
@@ -553,6 +561,11 @@
 				"description": "為自己在這個世界的行動定下了一個身份。",
 				"locked_description": "設置一次默認人設。"
 			}
+		},
+		"dragAndDrop": {
+			"dropSuccess": "拖放成功！",
+			"dropError": "拖放處理出錯：${error}",
+			"noHandler": "沒有找到合適的拖放處理器。"
 		}
 	},
 	"chat": {
@@ -777,6 +790,15 @@
 				"description": "用圖片打破了次元壁。",
 				"locked_description": "在聊天中發送一張圖片。"
 			}
+		},
+		"dragAndDrop": {
+			"invalidPartData": "無效的部件數據。",
+			"charAdded": "角色 ${partName} 已添加到聊天。",
+			"personaSet": "人設 ${partName} 已設置為當前人設。",
+			"worldSet": "世界 ${partName} 已設置為當前世界。",
+			"pluginAdded": "插件 ${partName} 已添加到聊天。",
+			"unsupportedPartType": "不支持的部件類型：${partType}。",
+			"errorAddingPart": "添加部件 ${partName} 時出錯：${error}"
 		}
 	},
 	"chat_history": {
@@ -963,6 +985,10 @@
 			"handler": "處理器",
 			"error": "錯誤",
 			"unknownError": "未知錯誤"
+		},
+		"dragAndDrop": {
+			"fileDropDescription": "從文件安裝部件",
+			"textDropDescription": "從文本安裝部件"
 		}
 	},
 	"export": {
@@ -1038,6 +1064,9 @@
 				"description": "“吶，這個好東西也給你一份。”",
 				"locked_description": "分享一次部件。"
 			}
+		},
+		"dragAndDrop": {
+			"downloadPartDescription": "下載部件"
 		}
 	},
 	"uninstall": {

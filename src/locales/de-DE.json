@@ -454,6 +454,14 @@
 			"aria-label": "Such-Widgets"
 		},
 		"sfwToggle": "Sichere Inhalte",
+		"partTypeDropdown": {
+			"button": {
+				"title": "Menü „Teiletyp“."
+			},
+			"icon": {
+				"alt": "Menü „Teiletyp“."
+			}
+		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "Suchen..."
@@ -553,6 +561,11 @@
 				"description": "Legen Sie eine Identität für Ihr Handeln in dieser Welt fest.",
 				"locked_description": "Legen Sie ein Standardprofil fest."
 			}
+		},
+		"dragAndDrop": {
+			"dropSuccess": "Drag & Drop erfolgreich!",
+			"dropError": "Fehler bei der Drag-and-Drop-Verarbeitung: ${error}",
+			"noHandler": "Kein geeigneter Drag-and-Drop-Handler gefunden."
 		}
 	},
 	"chat": {
@@ -777,6 +790,15 @@
 				"description": "Verwenden Sie Bilder, um die Dimensionswand zu durchbrechen.",
 				"locked_description": "Senden Sie ein Bild im Chat."
 			}
+		},
+		"dragAndDrop": {
+			"invalidPartData": "Ungültige Teiledaten.",
+			"charAdded": "Die Rolle ${partName} wurde dem Chat hinzugefügt.",
+			"personaSet": "Persona ${partName} wurde als aktuelle Persona festgelegt.",
+			"worldSet": "Welt ${partName} ist auf die aktuelle Welt eingestellt.",
+			"pluginAdded": "Das Plugin ${partName} wurde dem Chat hinzugefügt.",
+			"unsupportedPartType": "Nicht unterstützter Teiletyp: ${partType}.",
+			"errorAddingPart": "Fehler beim Hinzufügen von Teil ${partName}: ${error}"
 		}
 	},
 	"chat_history": {
@@ -963,6 +985,10 @@
 			"handler": "Handler",
 			"error": "Fehler",
 			"unknownError": "Unbekannter Fehler"
+		},
+		"dragAndDrop": {
+			"fileDropDescription": "Komponenten aus Dateien installieren",
+			"textDropDescription": "Teile aus Text installieren"
 		}
 	},
 	"export": {
@@ -1038,6 +1064,9 @@
 				"description": "„Jetzt gebe ich dir ein Exemplar dieser guten Sache.“",
 				"locked_description": "Teilen Sie das Widget einmal."
 			}
+		},
+		"dragAndDrop": {
+			"downloadPartDescription": "Teile herunterladen"
 		}
 	},
 	"uninstall": {

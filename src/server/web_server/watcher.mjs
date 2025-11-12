@@ -15,6 +15,6 @@ export function watchFrontendChanges(url, dir) {
 		timeout = setTimeout(() => {
 			console.logI18n('fountConsole.web.frontendFilesChanged', { path: url })
 			sendEventToAll('page-modified', { path: url })
-		}, 100)
+		}, 666)
 	})
 }

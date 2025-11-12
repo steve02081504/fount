@@ -306,6 +306,7 @@ export async function baseMjsPartUnloader(path) {
 	)
 }
 
+const parts_load_results = {}
 /**
  * 加载和初始化部件的基础函数。处理初始化和加载生命周期。
  * 使用模板参数来指定部件类型和初始化参数，以获得更好的类型安全。
@@ -381,24 +382,27 @@ export async function loadPartBase(username, parttype, partname, Initargs, {
 			parts_init[parttype][partname] = await parts_init[parttype][partname]
 		if (!parts_set[username][parttype][partname]) {
 			const profile = await doProfile(async () => {
-				/** @type {T} */
-				parts_set[username][parttype][partname] = baseloadPart(username, parttype, partname, {
-					pathGetter,
-					/**
-					 * 异步加载器函数。
-					 * @param {string} path - 部件的路径。
-					 * @returns {Promise<T>} 解析为加载的部件的承诺。
-					 */
-					Loader: async path => await Loader(path, Initargs)
-				})
-				const part = parts_set[username][parttype][partname] = await parts_set[username][parttype][partname]
-				try {
-					await part.interfaces?.config?.SetData?.(parts_config[parttype]?.[partname] ?? {})
-				}
-				catch (error) {
-					console.error(`Failed to set data for part ${partname}: ${error.message}\n${error.stack}`)
-				}
-				await afterLoad(part)
+				parts_set[username][parttype][partname] = (async () => {
+					/** @type {T} */
+					const part = await baseloadPart(username, parttype, partname, {
+						pathGetter,
+						/**
+						 * 异步加载器函数。
+						 * @param {string} path - 部件的路径。
+						 * @returns {Promise<T>} 解析为加载的部件的承诺。
+						 */
+						Loader: async path => await Loader(path, Initargs)
+					})
+					try {
+						await part.interfaces?.config?.SetData?.(parts_config[parttype]?.[partname] ?? {})
+					}
+					catch (error) {
+						console.error(`Failed to set data for part ${partname}: ${error.message}\n${error.stack}`)
+					}
+					await afterLoad(part)
+					return part
+				})()
+				parts_set[username][parttype][partname] = await parts_set[username][parttype][partname]
 			})
 			console.logI18n('fountConsole.partManager.partLoaded', {
 				parttype,
@@ -413,7 +417,9 @@ export async function loadPartBase(username, parttype, partname, Initargs, {
 	finally {
 		setDefaultStuff()
 	}
-	return new FullProxy(() => parts_set[username][parttype][partname])
+	parts_load_results[username] ??= {}
+	parts_load_results[username][parttype] ??= {}
+	return parts_load_results[username][parttype][partname] ??= new FullProxy(() => parts_set[username][parttype][partname])
 }
 
 /**
@@ -477,6 +483,11 @@ export async function unloadPartBase(username, parttype, partname, unLoadargs, {
 	}
 	await afterUnload(pathGetter(), unLoadargs)
 	delete parts_set[username][parttype][partname]
+	if (!Object.keys(parts_set[username][parttype]).length) delete parts_set[username][parttype]
+	if (!Object.keys(parts_set[username]).length) delete parts_set[username]
+	delete parts_load_results[username][parttype][partname]
+	if (!Object.keys(parts_load_results[username][parttype]).length) delete parts_load_results[username][parttype]
+	if (!Object.keys(parts_load_results[username]).length) delete parts_load_results[username]
 }
 
 /**

@@ -13,5 +13,21 @@
 			"url": "/shells/${name}",
 			"button": "<img src=\"https://api.iconify.design/line-md/external-link.svg\" class=\"text-icon\"/>"
 		}
+	],
+	"home_drag_out_generators": [
+		{
+			"id": "generateXFountPart",
+			"level": 0,
+			"type": "x-fount-part",
+			"path": "/shells/home/drag_generators/x_fount_part.mjs",
+			"info": {
+				"zh-CN": {
+					"description": "生成 fount 部件类型/名称"
+				},
+				"en-UK": {
+					"description": "Generate fount part type/name"
+				}
+			}
+		}
 	]
 }

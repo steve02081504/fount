@@ -454,6 +454,14 @@
 			"aria-label": "尋一組件"
 		},
 		"sfwToggle": "淨域",
+		"partTypeDropdown": {
+			"button": {
+				"title": null
+			},
+			"icon": {
+				"alt": null
+			}
+		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "索功用..."
@@ -553,6 +561,11 @@
 				"description": "定此名分，以行天下。",
 				"locked_description": "宜定默认名号一次。"
 			}
+		},
+		"dragAndDrop": {
+			"dropSuccess": null,
+			"dropError": null,
+			"noHandler": null
 		}
 	},
 	"chat": {
@@ -777,6 +790,15 @@
 				"description": "一图胜千言，意境自现。",
 				"locked_description": "宜以图传情一次。"
 			}
+		},
+		"dragAndDrop": {
+			"invalidPartData": null,
+			"charAdded": null,
+			"personaSet": null,
+			"worldSet": null,
+			"pluginAdded": null,
+			"unsupportedPartType": null,
+			"errorAddingPart": null
 		}
 	},
 	"chat_history": {
@@ -963,6 +985,10 @@
 			"handler": "處者",
 			"error": "有誤",
 			"unknownError": "未知之禍"
+		},
+		"dragAndDrop": {
+			"fileDropDescription": null,
+			"textDropDescription": null
 		}
 	},
 	"export": {
@@ -1038,6 +1064,9 @@
 				"description": "奇货可居，亦可与人。",
 				"locked_description": "宜公诸同好一次。"
 			}
+		},
+		"dragAndDrop": {
+			"downloadPartDescription": null
 		}
 	},
 	"uninstall": {
