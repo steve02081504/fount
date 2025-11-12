@@ -1,11 +1,3 @@
-.tabs-viewport {
-	scrollbar-width: none;
-}
-
-#part-types-tabs .tab {
-	flex-shrink: 0;
-}
-
 body {
 	display: flex;
 	justify-content: center;
