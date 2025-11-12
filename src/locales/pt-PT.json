@@ -454,6 +454,14 @@
 			"aria-label": "Widgets de pesquisa"
 		},
 		"sfwToggle": "Conteúdo Seguro",
+		"partTypeDropdown": {
+			"button": {
+				"title": "Menu de tipo de peça"
+			},
+			"icon": {
+				"alt": "Menu de tipo de peça"
+			}
+		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "Pesquisar..."
@@ -553,6 +561,11 @@
 				"description": "Defina uma identidade para suas ações neste mundo.",
 				"locked_description": "Defina um perfil padrão."
 			}
+		},
+		"dragAndDrop": {
+			"dropSuccess": "Arraste e solte com sucesso!",
+			"dropError": "Erro no processamento de arrastar e soltar: ${error}",
+			"noHandler": "Nenhum manipulador de arrastar e soltar adequado foi encontrado."
 		}
 	},
 	"chat": {
@@ -777,6 +790,15 @@
 				"description": "Use imagens para quebrar a parede dimensional.",
 				"locked_description": "Envie uma foto no chat."
 			}
+		},
+		"dragAndDrop": {
+			"invalidPartData": "Dados de peça inválidos.",
+			"charAdded": "A função ${partName} foi adicionada ao chat.",
+			"personaSet": "A persona ${partName} foi definida como a persona atual.",
+			"worldSet": "O mundo ${partName} está definido para o mundo atual.",
+			"pluginAdded": "O plug-in ${partName} foi adicionado ao chat.",
+			"unsupportedPartType": "Tipo de peça não compatível: ${partType}.",
+			"errorAddingPart": "Erro ao adicionar a peça ${partName}: ${error}"
 		}
 	},
 	"chat_history": {
@@ -963,6 +985,10 @@
 			"handler": "Manipulador",
 			"error": "Erro",
 			"unknownError": "Erro desconhecido."
+		},
+		"dragAndDrop": {
+			"fileDropDescription": "Instale componentes de arquivos",
+			"textDropDescription": "Instale peças do texto"
 		}
 	},
 	"export": {
@@ -1038,6 +1064,9 @@
 				"description": "\"Agora, vou lhe dar uma cópia dessa coisa boa.\"",
 				"locked_description": "Compartilhe o widget uma vez."
 			}
+		},
+		"dragAndDrop": {
+			"downloadPartDescription": "Baixar peças"
 		}
 	},
 	"uninstall": {

@@ -196,5 +196,21 @@
 			"url": "/shells/export?type=${type}&name=${name}",
 			"button": "<img src=\"https://api.iconify.design/line-md/folder-arrow-right.svg\" class=\"text-icon\"/>"
 		}
+	],
+	"home_drag_out_generators": [
+		{
+			"id": "generateDownloadUrl",
+			"level": 0,
+			"type": "DownloadURL",
+			"path": "/shells/export/drag_generators/download_url.mjs",
+			"info": {
+				"zh-CN": {
+					"description": "下载部件"
+				},
+				"en-UK": {
+					"description": "Download part"
+				}
+			}
+		}
 	]
 }

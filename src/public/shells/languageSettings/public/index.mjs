@@ -120,7 +120,7 @@ function moveLocale(id, direction) {
 	if (index === -1) return
 
 	const newIndex = index + direction
-	if (newIndex >= 0 && newIndex < userPreferredLocales.length) {
+	if (userPreferredLocales[newIndex]) {
 		const [movedLocale] = userPreferredLocales.splice(index, 1)
 		userPreferredLocales.splice(newIndex, 0, movedLocale)
 		renderPreferredLanguages()

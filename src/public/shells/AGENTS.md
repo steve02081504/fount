@@ -164,7 +164,7 @@ Define the UI and connect it to the backend. For an interactive terminal, we use
       type="text/css"
     />
     <link href="/base.css" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.jsdelivr.net/npm/@unocss/runtime"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script blocking="render" type="module" src="/preload.mjs"></script>
     <script type="module" src="/base.mjs"></script>
     <!-- Xterm.js styles for the terminal -->

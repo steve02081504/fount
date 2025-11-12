@@ -8,6 +8,8 @@ import { getPartListBase, GetPartPath } from '../../../../server/parts_loader.mj
 import { loadTempData } from '../../../../server/setting_loader.mjs'
 import { sendEventToUser } from '../../../../server/web_server/event_dispatcher.mjs'
 
+import { processButtonList } from './registry_processor.mjs'
+
 // 遍历shell中的home_registry.json文件，获取home_function_buttons和home_char_interfaces
 /*
 例子：
@@ -52,7 +54,10 @@ const interfaceTypes = [
  * 可用的按钮类型
  */
 const buttonTypes = [
-	'home_function_buttons', ...interfaceTypes.map(type => `home_${type}_interfaces`),
+	'home_function_buttons',
+	...interfaceTypes.map(type => `home_${type}_interfaces`),
+	'home_drag_in_handlers',
+	'home_drag_out_generators',
 ]
 
 /**
@@ -117,98 +122,28 @@ export async function expandHomeRegistry(username) {
 	const { locales } = getUserByUsername(username)
 
 	/**
-	 * 递归地本地化一个项目数组及其所有子项目。
-	 * @param {Array<object>} items - 要本地化的项目数组。
-	 * @returns {Array<object>} 本地化后的项目数组。
-	 */
-	const localizeRecursively = (items) => {
-		if (!items) return []
-		return items.map(item => ({
-			...item,
-			info: getLocalizedInfo(item.info, locales),
-			sub_items: localizeRecursively(item.sub_items)
-		}))
-	}
-
-	/**
-	 * 预处理按钮列表：本地化、合并和排序。
-	 * @param {Array<object>} list - 从注册表中获取的原始按钮列表。
-	 * @returns {Array<object>} 经过处理和排序的按钮数组。
-	 */
-	const preprocess = list => {
-		const allButtons = localizeRecursively(Object.values(list).flat())
-
-		/**
-		 * 合并具有相同ID的按钮，并递归地合并它们的子项目。
-		 * @param {Array<object>} buttonList - 要合并的按钮数组。
-		 * @returns {Array<object>} 合并后的按钮数组。
-		 */
-		const mergeButtons = (buttonList) => {
-			if (!buttonList) return []
-			const buttonsById = new Map()
-			const otherButtons = []
-
-			for (const button of buttonList)
-				if (button.id) {
-					if (!buttonsById.has(button.id))
-						buttonsById.set(button.id, [])
-
-					buttonsById.get(button.id).push(button)
-				} else otherButtons.push(button)
-
-			const mergedList = []
-			for (const [id, buttonsToMerge] of buttonsById.entries()) {
-				const baseButton = JSON.parse(JSON.stringify(buttonsToMerge[0])) // Deep copy
-				let allSubItems = baseButton.sub_items || []
-
-				for (let i = 1; i < buttonsToMerge.length; i++) {
-					const nextButton = buttonsToMerge[i]
-					Object.assign(baseButton.info, nextButton.info) // Merge info
-					// Last one wins for other properties
-					Object.assign(baseButton, {
-						level: nextButton.level ?? baseButton.level,
-						button: nextButton.button ?? baseButton.button,
-						classes: nextButton.classes ?? baseButton.classes,
-						style: nextButton.style ?? baseButton.style,
-						action: nextButton.action ?? baseButton.action,
-						url: nextButton.url ?? baseButton.url,
-					})
-					if (nextButton.sub_items)
-						allSubItems = allSubItems.concat(nextButton.sub_items)
-				}
-
-				if (allSubItems.length)
-					baseButton.sub_items = mergeButtons(allSubItems)
-
-				mergedList.push(baseButton)
-			}
-
-			return [...mergedList, ...otherButtons]
-		}
-
-		const finalButtons = mergeButtons(allButtons)
-		finalButtons.sort((a, b) => (a.level ?? 0) - (b.level ?? 0))
-		return finalButtons
-	}
-
-	/**
-	 * 对接口列表进行基本预处理：扁平化、排序和本地化。
-	 * @param {Array<object>} list - 原始接口列表。
-	 * @returns {Array<object>} 经过处理的接口数组。
+	 * 预处理列表，本地化信息并按级别排序。
+	 * @param {Array<object>} list - 要处理的按钮列表。
+	 * @returns {Array<object>} 预处理后的按钮列表。
 	 */
 	const base_preprocess = list => list.flat().sort((a, b) => a.level - b.level).map(button => ({
 		...button,
 		info: getLocalizedInfo(button.info, locales)
 	}))
+
 	/**
-	 * 预处理特定部件类型的接口，包括通用接口。
-	 * @param {Array<object>} list - 特定于部件类型的接口列表。
-	 * @returns {Array<object>} 合并并处理过的接口数组。
+	 * 预处理接口列表，合并通用接口并本地化信息。
+	 * @param {object} list - 接口列表。
+	 * @returns {Array<object>} 预处理后的接口列表。
 	 */
-	const interface_preprocess = list => base_preprocess(Object.values(list).concat(Object.values(user_home_registry.home_common_interfaces)))
+	const interface_preprocess = list => base_preprocess(
+		Object.values(list).concat(Object.values(user_home_registry.home_common_interfaces))
+	)
 
 	return {
-		home_function_buttons: preprocess(user_home_registry.home_function_buttons),
+		home_function_buttons: processButtonList(user_home_registry.home_function_buttons, locales),
+		home_drag_in_handlers: processButtonList(user_home_registry.home_drag_in_handlers, locales),
+		home_drag_out_generators: processButtonList(user_home_registry.home_drag_out_generators, locales),
 		part_types: partTypeList.map(parttame => ({
 			name: parttame,
 			interfaces: interface_preprocess(user_home_registry[`home_${parttame.slice(0, -1)}_interfaces`] ?? {}),

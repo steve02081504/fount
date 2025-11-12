@@ -454,6 +454,14 @@
 			"aria-label": "尋一組件"
 		},
 		"sfwToggle": "淨域",
+		"partTypeDropdown": {
+			"button": {
+				"title": "择品类"
+			},
+			"icon": {
+				"alt": "组件品类"
+			}
+		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "索功用..."
@@ -553,6 +561,11 @@
 				"description": "定此名分，以行天下。",
 				"locked_description": "宜定默认名号一次。"
 			}
+		},
+		"dragAndDrop": {
+			"dropSuccess": "置之已妥。",
+			"dropError": "置之有误：${error}",
+			"noHandler": "无以应之。"
 		}
 	},
 	"chat": {
@@ -777,6 +790,15 @@
 				"description": "一图胜千言，意境自现。",
 				"locked_description": "宜以图传情一次。"
 			}
+		},
+		"dragAndDrop": {
+			"invalidPartData": "此组件无效。",
+			"charAdded": "角色 ${partName} 已入席。",
+			"personaSet": "名号已定为 ${partName}。",
+			"worldSet": "天下已定为 ${partName}。",
+			"pluginAdded": "机巧 ${partName} 已增补。",
+			"unsupportedPartType": "此品类 (${partType}) 未有所应。",
+			"errorAddingPart": "增补 ${partName} 有误：${error}"
 		}
 	},
 	"chat_history": {
@@ -963,6 +985,10 @@
 			"handler": "處者",
 			"error": "有誤",
 			"unknownError": "未知之禍"
+		},
+		"dragAndDrop": {
+			"fileDropDescription": "以卷装配",
+			"textDropDescription": "以文装配"
 		}
 	},
 	"export": {
@@ -1038,6 +1064,9 @@
 				"description": "奇货可居，亦可与人。",
 				"locked_description": "宜公诸同好一次。"
 			}
+		},
+		"dragAndDrop": {
+			"downloadPartDescription": "取组件"
 		}
 	},
 	"uninstall": {

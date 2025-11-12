@@ -454,6 +454,14 @@
 			"aria-label": "Widgets de recherche"
 		},
 		"sfwToggle": "Contenu sûr",
+		"partTypeDropdown": {
+			"button": {
+				"title": "Menu Type de pièce"
+			},
+			"icon": {
+				"alt": "Menu Type de pièce"
+			}
+		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "Rechercher..."
@@ -553,6 +561,11 @@
 				"description": "Définissez une identité pour vos actions dans ce monde.",
 				"locked_description": "Définissez un profil par défaut."
 			}
+		},
+		"dragAndDrop": {
+			"dropSuccess": "Glisser-déposer réussi !",
+			"dropError": "Erreur lors du traitement par glisser-déposer : ${error}",
+			"noHandler": "Aucun gestionnaire de glisser-déposer approprié n'a été trouvé."
 		}
 	},
 	"chat": {
@@ -777,6 +790,15 @@
 				"description": "Utilisez des images pour briser le mur dimensionnel.",
 				"locked_description": "Envoyez une photo dans le chat."
 			}
+		},
+		"dragAndDrop": {
+			"invalidPartData": "Données de pièce invalides.",
+			"charAdded": "Le rôle ${partName} a été ajouté au chat.",
+			"personaSet": "La persona ${partName} a été définie comme persona actuelle.",
+			"worldSet": "World ${partName} est défini sur le monde actuel.",
+			"pluginAdded": "Le plugin ${partName} a été ajouté au chat.",
+			"unsupportedPartType": "Type de pièce non pris en charge : ${partType}.",
+			"errorAddingPart": "Erreur lors de l'ajout de la pièce ${partName} : ${error}"
 		}
 	},
 	"chat_history": {
@@ -963,6 +985,10 @@
 			"handler": "Gestionnaire",
 			"error": "Erreur",
 			"unknownError": "Erreur inconnue"
+		},
+		"dragAndDrop": {
+			"fileDropDescription": "Installer des composants à partir de fichiers",
+			"textDropDescription": "Installer des pièces à partir du texte"
 		}
 	},
 	"export": {
@@ -1038,6 +1064,9 @@
 				"description": "\"Maintenant, je vais vous donner une copie de cette bonne chose.\"",
 				"locked_description": "Partagez le widget une fois."
 			}
+		},
+		"dragAndDrop": {
+			"downloadPartDescription": "Télécharger des pièces"
 		}
 	},
 	"uninstall": {

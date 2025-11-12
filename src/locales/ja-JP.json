@@ -454,6 +454,14 @@
 			"aria-label": "検索ウィジェット"
 		},
 		"sfwToggle": "一般コンテンツ",
+		"partTypeDropdown": {
+			"button": {
+				"title": "パーツタイプメニュー"
+			},
+			"icon": {
+				"alt": "パーツタイプメニュー"
+			}
+		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "検索..."
@@ -553,6 +561,11 @@
 				"description": "この世界での行動にアイデンティティを設定します。",
 				"locked_description": "デフォルトのプロファイルを設定します。"
 			}
+		},
+		"dragAndDrop": {
+			"dropSuccess": "ドラッグアンドドロップが成功しました！",
+			"dropError": "ドラッグ アンド ドロップ処理のエラー: ${error}",
+			"noHandler": "適切なドラッグ アンド ドロップ ハンドラーが見つかりません。"
 		}
 	},
 	"chat": {
@@ -777,6 +790,15 @@
 				"description": "絵を使って次元の壁を壊しましょう。",
 				"locked_description": "チャットで写真を送信します。"
 			}
+		},
+		"dragAndDrop": {
+			"invalidPartData": "部品データが無効です。",
+			"charAdded": "ロール ${partName} がチャットに追加されました。",
+			"personaSet": "ペルソナ ${partName} が現在のペルソナとして設定されました。",
+			"worldSet": "ワールド ${partName} は現在のワールドに設定されます。",
+			"pluginAdded": "プラグイン ${partName} がチャットに追加されました。",
+			"unsupportedPartType": "サポートされていないパーツ タイプ: ${partType}。",
+			"errorAddingPart": "パーツ ${partName} の追加中にエラーが発生しました: ${error}"
 		}
 	},
 	"chat_history": {
@@ -963,6 +985,10 @@
 			"handler": "ハンドラー",
 			"error": "エラー",
 			"unknownError": "不明なエラーが発生しました。"
+		},
+		"dragAndDrop": {
+			"fileDropDescription": "ファイルからコンポーネントをインストールする",
+			"textDropDescription": "テキストからパーツをインストールする"
 		}
 	},
 	"export": {
@@ -1038,6 +1064,9 @@
 				"description": "「それでは、この良いものをコピーしてあげましょう。」",
 				"locked_description": "ウィジェットを一度共有します。"
 			}
+		},
+		"dragAndDrop": {
+			"downloadPartDescription": "パーツをダウンロードする"
 		}
 	},
 	"uninstall": {
