@@ -561,6 +561,11 @@
 				"description": "为自己在这个世界的行动定下了一个身份。",
 				"locked_description": "设置一次默认人设。"
 			}
+		},
+		"dragAndDrop": {
+			"dropSuccess": "拖放成功！",
+			"dropError": "拖放处理出错：${error}",
+			"noHandler": "没有找到合适的拖放处理器。"
 		}
 	},
 	"chat": {
@@ -785,6 +790,15 @@
 				"description": "用图片打破了次元壁。",
 				"locked_description": "在聊天中发送一张图片。"
 			}
+		},
+		"dragAndDrop": {
+			"invalidPartData": "无效的部件数据。",
+			"charAdded": "角色 ${partName} 已添加到聊天。",
+			"personaSet": "人设 ${partName} 已设置为当前人设。",
+			"worldSet": "世界 ${partName} 已设置为当前世界。",
+			"pluginAdded": "插件 ${partName} 已添加到聊天。",
+			"unsupportedPartType": "不支持的部件类型：${partType}。",
+			"errorAddingPart": "添加部件 ${partName} 时出错：${error}"
 		}
 	},
 	"chat_history": {
@@ -971,6 +985,10 @@
 			"handler": "处理器",
 			"error": "错误",
 			"unknownError": "未知错误"
+		},
+		"dragAndDrop": {
+			"fileDropDescription": "从文件安装部件",
+			"textDropDescription": "从文本安装部件"
 		}
 	},
 	"export": {
@@ -1046,6 +1064,9 @@
 				"description": "“呐，这个好东西也给你一份。”",
 				"locked_description": "分享一次部件。"
 			}
+		},
+		"dragAndDrop": {
+			"downloadPartDescription": "下载部件"
 		}
 	},
 	"uninstall": {

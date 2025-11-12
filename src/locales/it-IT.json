@@ -561,6 +561,11 @@
 				"description": "Imposta un'identità per le tue azioni in questo mondo.",
 				"locked_description": "Imposta un profilo predefinito."
 			}
+		},
+		"dragAndDrop": {
+			"dropSuccess": "Trascina e rilascia con successo!",
+			"dropError": "Errore nell'elaborazione del trascinamento: ${error}",
+			"noHandler": "Nessun gestore drag and drop adatto trovato."
 		}
 	},
 	"chat": {
@@ -785,6 +790,15 @@
 				"description": "Usa le immagini per rompere il muro dimensionale.",
 				"locked_description": "Invia una foto in chat."
 			}
+		},
+		"dragAndDrop": {
+			"invalidPartData": "Dati della parte non validi.",
+			"charAdded": "Il ruolo ${partName} è stato aggiunto alla chat.",
+			"personaSet": "La persona ${partName} è stata impostata come persona attuale.",
+			"worldSet": "Mondo ${partName} è impostato sul mondo attuale.",
+			"pluginAdded": "Il plugin ${partName} è stato aggiunto alla chat.",
+			"unsupportedPartType": "Tipo di parte non supportato: ${partType}.",
+			"errorAddingPart": "Errore durante l'aggiunta della parte ${partName}: ${error}"
 		}
 	},
 	"chat_history": {
@@ -971,6 +985,10 @@
 			"handler": "Gestore",
 			"error": "Errore",
 			"unknownError": "Errore sconosciuto."
+		},
+		"dragAndDrop": {
+			"fileDropDescription": "Installa componenti da file",
+			"textDropDescription": "Installa parti dal testo"
 		}
 	},
 	"export": {
@@ -1046,6 +1064,9 @@
 				"description": "\"Ora ti darò una copia di questa bella cosa.\"",
 				"locked_description": "Condividi il widget una volta."
 			}
+		},
+		"dragAndDrop": {
+			"downloadPartDescription": "Scarica parti"
 		}
 	},
 	"uninstall": {

@@ -561,6 +561,11 @@
 				"description": "Set an identity for your actions in this world.",
 				"locked_description": "Set a default profile."
 			}
+		},
+		"dragAndDrop": {
+			"dropSuccess": "Drag and drop successful!",
+			"dropError": "Error in drag and drop processing: ${error}",
+			"noHandler": "No suitable drag and drop handler found."
 		}
 	},
 	"chat": {
@@ -785,6 +790,15 @@
 				"description": "Use pictures to break the dimensional wall.",
 				"locked_description": "Send a picture in chat."
 			}
+		},
+		"dragAndDrop": {
+			"invalidPartData": "Invalid part data.",
+			"charAdded": "Role ${partName} has been added to the chat.",
+			"personaSet": "Persona ${partName} has been set as the current persona.",
+			"worldSet": "World ${partName} is set to the current world.",
+			"pluginAdded": "Plugin ${partName} has been added to the chat.",
+			"unsupportedPartType": "Unsupported part type: ${partType}.",
+			"errorAddingPart": "Error adding part ${partName}: ${error}"
 		}
 	},
 	"chat_history": {
@@ -971,6 +985,10 @@
 			"handler": "Handler",
 			"error": "Error",
 			"unknownError": "Unknown error"
+		},
+		"dragAndDrop": {
+			"fileDropDescription": "Install components from files",
+			"textDropDescription": "Install parts from text"
 		}
 	},
 	"export": {
@@ -1046,6 +1064,9 @@
 				"description": "\"Now, I'll give you a copy of this good thing.\"",
 				"locked_description": "Share the widget once."
 			}
+		},
+		"dragAndDrop": {
+			"downloadPartDescription": "Download parts"
 		}
 	},
 	"uninstall": {

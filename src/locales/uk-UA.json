@@ -561,6 +561,11 @@
 				"description": "Визначте ідентичність для своїх дій у цьому світі.",
 				"locked_description": "Встановити профіль за умовчанням."
 			}
+		},
+		"dragAndDrop": {
+			"dropSuccess": "Удалося перетягнути!",
+			"dropError": "Помилка під час обробки перетягування: ${error}",
+			"noHandler": "Не знайдено відповідного обробника перетягування."
 		}
 	},
 	"chat": {
@@ -785,6 +790,15 @@
 				"description": "Використовуйте картинки, щоб розбити габаритну стіну.",
 				"locked_description": "Надішліть фото в чат."
 			}
+		},
+		"dragAndDrop": {
+			"invalidPartData": "Недійсні дані деталі.",
+			"charAdded": "Роль ${partName} додано до чату.",
+			"personaSet": "Персону ${partName} встановлено як поточну персону.",
+			"worldSet": "Світ ${partName} встановлено як поточний світ.",
+			"pluginAdded": "До чату додано плагін ${partName}.",
+			"unsupportedPartType": "Непідтримуваний тип частини: ${partType}.",
+			"errorAddingPart": "Помилка додавання частини ${partName}: ${error}"
 		}
 	},
 	"chat_history": {
@@ -971,6 +985,10 @@
 			"handler": "Обробник",
 			"error": "Помилка",
 			"unknownError": "Невідома помилка"
+		},
+		"dragAndDrop": {
+			"fileDropDescription": "Установка компонентів з файлів",
+			"textDropDescription": "Встановити частини з тексту"
 		}
 	},
 	"export": {
@@ -1046,6 +1064,9 @@
 				"description": "«А зараз я дам тобі копію цієї гарної речі».",
 				"locked_description": "Поділіться віджетом один раз."
 			}
+		},
+		"dragAndDrop": {
+			"downloadPartDescription": "Завантажити частини"
 		}
 	},
 	"uninstall": {

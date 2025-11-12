@@ -6,6 +6,11 @@ import { svgInliner } from './scripts/svgInliner.mjs'
 let skipBreadcrumb = false
 Sentry.init({
 	dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
+	/**
+	 * @param {object} breadcrumb - 面包屑对象。
+	 * @param {object} hint - 提示对象。
+	 * @returns {object | null} 修改后的面包屑，或返回 null 以丢弃它。
+	 */
 	beforeBreadcrumb: (breadcrumb, hint) => {
 		if (skipBreadcrumb) return null
 		return breadcrumb
@@ -19,6 +24,10 @@ Sentry.init({
 	tracePropagationTargets: [window.location.origin || 'https://steve02081504.github.io'],
 })
 console.noBreadcrumb = {
+	/**
+	 * 写入日志并跳过面包屑记录
+	 * @param {...any} args - 要记录的日志
+	 */
 	log: (...args) => {
 		skipBreadcrumb = true
 		console.log(...args)

@@ -561,6 +561,11 @@
 				"description": "Установите индивидуальность для своих действий в этом мире.",
 				"locked_description": "Установите профиль по умолчанию."
 			}
+		},
+		"dragAndDrop": {
+			"dropSuccess": "Перетащите успешно!",
+			"dropError": "Ошибка при обработке перетаскивания: ${error}",
+			"noHandler": "Подходящего обработчика перетаскивания не найдено."
 		}
 	},
 	"chat": {
@@ -785,6 +790,15 @@
 				"description": "Используйте картинки, чтобы сломать пространственную стену.",
 				"locked_description": "Отправьте фото в чат."
 			}
+		},
+		"dragAndDrop": {
+			"invalidPartData": "Неверные данные детали.",
+			"charAdded": "Роль ${partName} добавлена ​​в чат.",
+			"personaSet": "Персона ${partName} установлена ​​в качестве текущей персоны.",
+			"worldSet": "Мир ${partName} установлен на текущий мир.",
+			"pluginAdded": "Плагин ${partName} добавлен в чат.",
+			"unsupportedPartType": "Неподдерживаемый тип детали: ${partType}.",
+			"errorAddingPart": "Ошибка при добавлении детали ${partName}: ${error}."
 		}
 	},
 	"chat_history": {
@@ -971,6 +985,10 @@
 			"handler": "Обработчик",
 			"error": "Ошибка",
 			"unknownError": "Неизвестная ошибка."
+		},
+		"dragAndDrop": {
+			"fileDropDescription": "Установка компонентов из файлов",
+			"textDropDescription": "Установка частей из текста"
 		}
 	},
 	"export": {
@@ -1046,6 +1064,9 @@
 				"description": "«Теперь я дам тебе копию этой хорошей вещи».",
 				"locked_description": "Поделитесь виджетом один раз."
 			}
+		},
+		"dragAndDrop": {
+			"downloadPartDescription": "Скачать части"
 		}
 	},
 	"uninstall": {

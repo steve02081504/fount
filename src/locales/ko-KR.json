@@ -561,6 +561,11 @@
 				"description": "이 세상에서 당신의 행동에 대한 정체성을 설정하십시오.",
 				"locked_description": "기본 프로필을 설정합니다."
 			}
+		},
+		"dragAndDrop": {
+			"dropSuccess": "드래그 앤 드롭에 성공했습니다!",
+			"dropError": "드래그 앤 드롭 처리 중 오류: ${error}",
+			"noHandler": "적합한 드래그 앤 드롭 핸들러를 찾을 수 없습니다."
 		}
 	},
 	"chat": {
@@ -785,6 +790,15 @@
 				"description": "사진을 활용해 차원의 벽을 허무세요.",
 				"locked_description": "채팅으로 사진을 보내보세요."
 			}
+		},
+		"dragAndDrop": {
+			"invalidPartData": "부품 데이터가 잘못되었습니다.",
+			"charAdded": "${partName} 역할이 채팅에 추가되었습니다.",
+			"personaSet": "페르소나 ${partName}이(가) 현재 페르소나로 설정되었습니다.",
+			"worldSet": "${partName} 세계가 현재 세계로 설정되어 있습니다.",
+			"pluginAdded": "${partName} 플러그인이 채팅에 추가되었습니다.",
+			"unsupportedPartType": "지원되지 않는 부품 유형: ${partType}.",
+			"errorAddingPart": "${partName} 부품 추가 오류: ${error}"
 		}
 	},
 	"chat_history": {
@@ -971,6 +985,10 @@
 			"handler": "핸들러",
 			"error": "오류",
 			"unknownError": "알 수 없는 오류가 발생했습니다."
+		},
+		"dragAndDrop": {
+			"fileDropDescription": "파일에서 구성 요소 설치",
+			"textDropDescription": "텍스트에서 부품 설치"
 		}
 	},
 	"export": {
@@ -1046,6 +1064,9 @@
 				"description": "\"이제 이 좋은 것의 사본을 당신에게 주겠습니다.\"",
 				"locked_description": "위젯을 한 번 공유해 보세요."
 			}
+		},
+		"dragAndDrop": {
+			"downloadPartDescription": "부품 다운로드"
 		}
 	},
 	"uninstall": {

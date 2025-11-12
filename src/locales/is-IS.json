@@ -561,6 +561,11 @@
 				"description": "Settu sjálfsmynd fyrir gjörðir þínar í þessum heimi.",
 				"locked_description": "Stilltu sjálfgefið snið."
 			}
+		},
+		"dragAndDrop": {
+			"dropSuccess": "Draga og sleppa tókst!",
+			"dropError": "Villa í draga og sleppa vinnslu: ${error}",
+			"noHandler": "Enginn hentugur draga og sleppa meðhöndlun fannst."
 		}
 	},
 	"chat": {
@@ -785,6 +790,15 @@
 				"description": "Notaðu myndir til að brjóta víddarvegginn.",
 				"locked_description": "Sendu mynd í spjallinu."
 			}
+		},
+		"dragAndDrop": {
+			"invalidPartData": "Ógild hlutagögn.",
+			"charAdded": "Hlutverk ${partName} hefur verið bætt við spjallið.",
+			"personaSet": "Persóna ${partName} hefur verið stillt sem núverandi persónu.",
+			"worldSet": "Heimurinn ${partName} er stilltur á núverandi heim.",
+			"pluginAdded": "Viðbót ${partName} hefur verið bætt við spjallið.",
+			"unsupportedPartType": "Óstudd hlutategund: ${partType}.",
+			"errorAddingPart": "Villa við að bæta við hluta ${partName}: ${error}"
 		}
 	},
 	"chat_history": {
@@ -971,6 +985,10 @@
 			"handler": "Meðhöndlari",
 			"error": "Villa",
 			"unknownError": "Óþekkt villa"
+		},
+		"dragAndDrop": {
+			"fileDropDescription": "Settu upp íhluti úr skrám",
+			"textDropDescription": "Settu upp hluta úr texta"
 		}
 	},
 	"export": {
@@ -1046,6 +1064,9 @@
 				"description": "\"Nú skal ég gefa þér eintak af þessu góða.\"",
 				"locked_description": "Deildu græjunni einu sinni."
 			}
+		},
+		"dragAndDrop": {
+			"downloadPartDescription": "Sækja hluti"
 		}
 	},
 	"uninstall": {
