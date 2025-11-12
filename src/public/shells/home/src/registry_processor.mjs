@@ -1,4 +1,4 @@
-import { getLocalizedInfo } from '../../scripts/locale.mjs'
+import { getLocalizedInfo } from '../../../../scripts/locale.mjs'
 
 /**
  * 递归地本地化一个项目数组及其所有子项目。
