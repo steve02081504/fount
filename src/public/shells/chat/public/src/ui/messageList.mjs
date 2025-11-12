@@ -152,7 +152,6 @@ function openModal(src, type) {
 		}
 		@media (max-width: 767px) { .markdown-body { padding: 15px; } }
 
-		[un-cloak], .hidden { display: none; }
 		.text-icon { color: var(--color-base-content); }
 		/* Styles for rehype-pretty-code (Shiki) */
 		pre[style*="--shiki-light-bg"] {
