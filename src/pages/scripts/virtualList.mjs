@@ -49,34 +49,34 @@ export function createVirtualList({
 	replaceItemRenderer = (oldElement, newElement) => oldElement.replaceWith(newElement),
 }) {
 	const state = {
-		queue: [],
-		startIndex: 0,
-		totalCount: 0,
-		isLoading: false,
-		observer: null,
-		sentinelTop: null,
-		sentinelBottom: null,
-		renderedElements: new Map(),
-		bufferSize: 3,
-		maxQueueSize: 0,
+		queue: [], // 当前加载的数据项队列
+		startIndex: 0, // 队列在总数据集中的起始索引
+		totalCount: 0, // 总数据项数量
+		isLoading: false, // 是否正在加载数据
+		observer: null, // IntersectionObserver 实例
+		sentinelTop: null, // 上哨兵元素
+		sentinelBottom: null, // 下哨兵元素
+		renderedElements: new Map(), // 索引到 DOM 元素的映射
+		bufferSize: 10, // 初始缓冲大小
+		maxQueueSize: 0, // 最大队列大小，动态计算
+		avgItemHeight: 0, // 平均项高度，用于动态缓冲
+		resizeObserver: null, // ResizeObserver 用于容器大小变化
 	}
 
 	/**
-	 * 更新动态缓冲区大小，并设置最大队列大小。
+	 * 更新动态缓冲区大小和平均项高度。
 	 */
 	function updateDynamicBufferSize() {
-		if (state.renderedElements.size === 0) return
-
+		if (!state.renderedElements.size) return
 		let totalHeight = 0
 		for (const element of state.renderedElements.values())
-			totalHeight += element.clientHeight
+			totalHeight += element.getBoundingClientRect().height // 使用更准确的 getBoundingClientRect
 
-
-		const avgHeight = totalHeight / state.renderedElements.size
-		if (avgHeight > 0) {
-			const viewportItemCount = Math.ceil(container.clientHeight / avgHeight)
-			state.bufferSize = Math.max(3, viewportItemCount)
-			state.maxQueueSize = state.bufferSize * 3
+		state.avgItemHeight = totalHeight / state.renderedElements.size
+		if (state.avgItemHeight) {
+			const viewportItemCount = Math.ceil(container.clientHeight / state.avgItemHeight)
+			state.bufferSize = Math.max(5, viewportItemCount + 5) // 增加最小缓冲以提高鲁棒性
+			state.maxQueueSize = state.bufferSize * 3 // 保持3倍缓冲
 		}
 	}
 
@@ -86,15 +86,12 @@ export function createVirtualList({
 	async function renderQueue() {
 		const fragment = document.createDocumentFragment()
 		state.renderedElements.clear()
-
 		state.sentinelTop = createSentinel('sentinel-top')
 		fragment.appendChild(state.sentinelTop)
-
 		const renderPromises = state.queue.map((item, i) => {
 			const itemIndex = state.startIndex + i
 			return Promise.resolve(renderItem(item, itemIndex))
 		})
-
 		const elements = await Promise.all(renderPromises)
 		elements.forEach((element, i) => {
 			if (element) {
@@ -103,45 +100,44 @@ export function createVirtualList({
 				fragment.appendChild(element)
 			}
 		})
-
 		state.sentinelBottom = createSentinel('sentinel-bottom')
 		fragment.appendChild(state.sentinelBottom)
-
 		container.innerHTML = ''
 		container.appendChild(fragment)
-
 		updateDynamicBufferSize()
 		onRenderComplete()
 	}
 
 	/**
 	 * 修剪队列，移除离视口太远的 DOM 元素以防止 DOM 无限增长。
-	 * 该函数通过计算视口中心的元素，并保留其周围的元素，
-	 * 从而从队列的头部和尾部移除超出 `maxQueueSize` 限制的元素。
+	 * 如果队列长度未超过 maxQueueSize，则不进行修剪。
+	 * 否则，确定一个“可见元素及缓冲区”的范围，
+	 * 从而从队列的头部和尾部移除超出 maxQueueSize 限制的元素。
 	 * 它在每次增量加载（prependItems/appendItems）或追加新项目时被调用。
 	 */
 	function pruneQueue() {
-		if (state.queue.length <= state.maxQueueSize)
-			return
+		if (state.queue.length <= state.maxQueueSize) return
+		const viewportTop = container.scrollTop
+		const viewportBottom = viewportTop + container.clientHeight
+		let retainStart = state.startIndex
+		let retainEnd = state.startIndex + state.queue.length - 1
 
-
-		const midViewport = container.scrollTop + container.clientHeight / 2
-		let closestIndex = -1
-		let minDistance = Infinity
-
+		// 找到视口内的第一个和最后一个渲染元素
 		for (const [index, element] of state.renderedElements.entries()) {
-			const elementTop = element.offsetTop
-			const distance = Math.abs(elementTop - midViewport)
-			if (distance < minDistance) {
-				minDistance = distance
-				closestIndex = index
+			const rect = element.getBoundingClientRect()
+			const elementTop = rect.top + container.scrollTop // 绝对位置
+			const elementBottom = elementTop + rect.height
+			if (elementBottom > viewportTop && elementTop < viewportBottom) {
+				retainStart = Math.min(retainStart, index)
+				retainEnd = Math.max(retainEnd, index)
 			}
 		}
-		if (closestIndex === -1) return
 
-		const retainStart = Math.max(state.startIndex, closestIndex - Math.floor(state.maxQueueSize / 2))
-		const retainEnd = Math.min(state.startIndex + state.queue.length - 1, closestIndex + Math.floor(state.maxQueueSize / 2))
+		// 扩展保留范围以包括缓冲
+		retainStart = Math.max(state.startIndex, retainStart - state.bufferSize)
+		retainEnd = Math.min(state.startIndex + state.queue.length - 1, retainEnd + state.bufferSize)
 
+		// 移除头部多余元素
 		for (let i = state.startIndex; i < retainStart; i++) {
 			const element = state.renderedElements.get(i)
 			element?.remove()
@@ -153,6 +149,7 @@ export function createVirtualList({
 			state.startIndex = retainStart
 		}
 
+		// 移除尾部多余元素
 		const queueEndIndex = state.startIndex + state.queue.length - 1
 		for (let i = queueEndIndex; i > retainEnd; i--) {
 			const element = state.renderedElements.get(i)
@@ -162,65 +159,47 @@ export function createVirtualList({
 		const tailCutCount = queueEndIndex - retainEnd
 		if (tailCutCount > 0)
 			state.queue.splice(state.queue.length - tailCutCount, tailCutCount)
-
 	}
-
 
 	/**
 	 * 向上加载更多项目，并使用增量 DOM 更新。
 	 */
 	async function prependItems() {
+		if (state.startIndex <= 0) return
+		state.isLoading = true
 		try {
-			const firstItemIndex = state.startIndex
-			if (firstItemIndex <= 0) return
+			const itemsToFetch = Math.min(state.bufferSize, state.startIndex)
+			const newStartIndex = state.startIndex - itemsToFetch
+			const { items: newItems } = await fetchData(newStartIndex, itemsToFetch)
+			if (!newItems.length) return
 
-			const oldFirstElement = state.renderedElements.get(firstItemIndex)
-			const oldScrollTop = container.scrollTop
+			// 保存当前滚动锚点（第一个可见元素的相对位置）
+			const anchorElement = state.sentinelTop.nextSibling
+			const anchorTop = anchorElement?.getBoundingClientRect().top || 0
 
-			const itemsToFetch = state.bufferSize
-			const newStartIndex = Math.max(0, state.startIndex - itemsToFetch)
-			const numItemsActuallyFetched = state.startIndex - newStartIndex
-			if (numItemsActuallyFetched <= 0) return
-
-			const { items: newItems } = await fetchData(newStartIndex, numItemsActuallyFetched)
-			if (newItems?.length) {
-				state.startIndex = newStartIndex
-				state.queue = newItems.concat(state.queue)
-
-				const newElementsFragment = document.createDocumentFragment()
-				const renderPromises = newItems.map((item, i) => {
+			state.startIndex = newStartIndex
+			state.queue.unshift(...newItems)
+			const newElementsFragment = document.createDocumentFragment()
+			const renderPromises = newItems.map((item, i) => {
+				const itemIndex = state.startIndex + i
+				return Promise.resolve(renderItem(item, itemIndex))
+			})
+			const newElements = await Promise.all(renderPromises)
+			newElements.forEach((element, i) => {
+				if (element) {
 					const itemIndex = state.startIndex + i
-					return Promise.resolve(renderItem(item, itemIndex))
-				})
-				const newElements = await Promise.all(renderPromises)
-
-				newElements.forEach((element, i) => {
-					if (element) {
-						const itemIndex = state.startIndex + i
-						state.renderedElements.set(itemIndex, element)
-						newElementsFragment.appendChild(element)
-					}
-				})
-
-				container.insertBefore(newElementsFragment, state.sentinelTop.nextSibling)
-
-				if (oldFirstElement) {
-					// 计算滚动调整量：
-					// oldFirstElement.offsetTop 是旧的第一个元素相对于其 offsetParent 顶部的距离。
-					// (oldScrollTop - container.scrollTop) 是在添加新元素之前，由于 DOM 变化导致的容器滚动位置的瞬时变化。
-					// scrollAdjustment 旨在抵消这个瞬时变化，确保用户感知的滚动位置不变。
-					const scrollAdjustment = oldFirstElement.offsetTop - (oldScrollTop - container.scrollTop)
-					// 恢复滚动位置：
-					// oldScrollTop 是加载前容器的滚动位置。
-					// (oldFirstElement.offsetTop - container.scrollTop - scrollAdjustment) 是旧的第一个元素的新位置与容器当前滚动位置的差值，
-					// 减去 scrollAdjustment 以校正由于新内容插入导致的偏移。
-					// oldFirstElement.getBoundingClientRect().top 是旧的第一个元素相对于视口顶部的距离，用于微调。
-					// 综合这些，旨在精确地将滚动条设置回用户在加载新内容之前看到的位置。
-					container.scrollTop = oldScrollTop + (oldFirstElement.offsetTop - container.scrollTop - scrollAdjustment) + oldFirstElement.getBoundingClientRect().top
+					state.renderedElements.set(itemIndex, element)
+					newElementsFragment.appendChild(element)
 				}
+			})
+			container.insertBefore(newElementsFragment, state.sentinelTop.nextSibling)
 
-				pruneQueue()
-			}
+			// 恢复滚动位置
+			const newAnchorTop = anchorElement.getBoundingClientRect().top
+			container.scrollTop += newAnchorTop - anchorTop
+
+			pruneQueue()
+			updateDynamicBufferSize()
 		} finally {
 			state.isLoading = false
 			observeSentinels()
@@ -231,37 +210,33 @@ export function createVirtualList({
 	 * 向下加载更多项目，并使用增量 DOM 更新。
 	 */
 	async function appendItems() {
+		const currentCount = state.startIndex + state.queue.length
+		if (currentCount >= state.totalCount) return
+		state.isLoading = true
 		try {
-			const currentCount = state.startIndex + state.queue.length
-			if (currentCount >= state.totalCount) return
+			const itemsToFetch = Math.min(state.bufferSize, state.totalCount - currentCount)
+			const { items: newItems } = await fetchData(currentCount, itemsToFetch)
+			if (!newItems.length) return
 
-			const itemsToFetch = state.bufferSize
-			const numItemsToFetch = Math.min(itemsToFetch, state.totalCount - currentCount)
-
-			const { items: newItems } = await fetchData(currentCount, numItemsToFetch)
-			if (newItems?.length) {
-				const oldQueueLength = state.queue.length
-				state.queue = state.queue.concat(newItems)
-
-				const newElementsFragment = document.createDocumentFragment()
-				const renderPromises = newItems.map((item, i) => {
+			const oldQueueLength = state.queue.length
+			state.queue.push(...newItems)
+			const newElementsFragment = document.createDocumentFragment()
+			const renderPromises = newItems.map((item, i) => {
+				const itemIndex = state.startIndex + oldQueueLength + i
+				return Promise.resolve(renderItem(item, itemIndex))
+			})
+			const newElements = await Promise.all(renderPromises)
+			newElements.forEach((element, i) => {
+				if (element) {
 					const itemIndex = state.startIndex + oldQueueLength + i
-					return Promise.resolve(renderItem(item, itemIndex))
-				})
-				const newElements = await Promise.all(renderPromises)
+					state.renderedElements.set(itemIndex, element)
+					newElementsFragment.appendChild(element)
+				}
+			})
+			container.insertBefore(newElementsFragment, state.sentinelBottom)
 
-				newElements.forEach((element, i) => {
-					if (element) {
-						const itemIndex = state.startIndex + oldQueueLength + i
-						state.renderedElements.set(itemIndex, element)
-						newElementsFragment.appendChild(element)
-					}
-				})
-
-				container.insertBefore(newElementsFragment, state.sentinelBottom)
-
-				pruneQueue()
-			}
+			pruneQueue()
+			updateDynamicBufferSize()
 		} finally {
 			state.isLoading = false
 			observeSentinels()
@@ -272,19 +247,16 @@ export function createVirtualList({
 	 * 处理 IntersectionObserver 的回调。
 	 * @param {IntersectionObserverEntry[]} entries - 交叉观察器条目数组。
 	 */
-	async function handleIntersection(entries) {
-		if (state.isLoading) return
-		const entry = entries.find(e => e.isIntersecting)
-		if (!entry) return
-
-		state.isLoading = true
-		state.observer.disconnect()
-
-		if (entry.target.id === 'sentinel-top')
-			await prependItems()
-		else if (entry.target.id === 'sentinel-bottom')
-			await appendItems()
-
+	function handleIntersection(entries) {
+		entries.forEach((entry) => {
+			if (entry.isIntersecting && !state.isLoading) {
+				state.observer.disconnect()
+				if (entry.target.id === 'sentinel-top')
+					prependItems()
+				else if (entry.target.id === 'sentinel-bottom')
+					appendItems()
+			}
+		})
 	}
 
 	/**
@@ -294,7 +266,8 @@ export function createVirtualList({
 		if (!state.observer)
 			state.observer = new IntersectionObserver(handleIntersection, {
 				root: container,
-				rootMargin: '500px 0px',
+				rootMargin: `${container.clientHeight}px 0px`, // 动态 rootMargin 基于视口高度
+				threshold: 0,
 			})
 
 		state.observer.disconnect()
@@ -303,8 +276,6 @@ export function createVirtualList({
 
 		if (state.sentinelBottom && (state.startIndex + state.queue.length) < state.totalCount)
 			state.observer.observe(state.sentinelBottom)
-
-		state.isLoading = false
 	}
 
 	/**
@@ -314,30 +285,27 @@ export function createVirtualList({
 		state.isLoading = true
 		try {
 			const { total } = await fetchData(0, 0)
-			state.totalCount = total
-			if (!total) {
+			state.totalCount = total || 0
+			if (!state.totalCount) {
 				state.queue = []
 				state.startIndex = 0
 				await renderQueue()
 				return
 			}
-
-			const initialBufferSize = state.bufferSize || 10
 			const targetIndex = Math.max(0, Math.min(initialIndex, state.totalCount - 1))
-			const fetchStartIndex = Math.max(0, targetIndex - initialBufferSize)
-			const itemsToFetch = initialBufferSize * 2
-
+			const fetchStartIndex = Math.max(0, targetIndex - state.bufferSize)
+			const itemsToFetch = Math.min(state.bufferSize * 3, state.totalCount - fetchStartIndex) // 初始加载更多以填充视口
 			const { items } = await fetchData(fetchStartIndex, itemsToFetch)
 			state.queue = items
 			state.startIndex = fetchStartIndex
-
 			await renderQueue()
-
 			const targetElement = state.renderedElements.get(targetIndex)
-			if (targetElement) {
-				const scrollBlock = targetIndex > initialBufferSize ? 'center' : 'start'
-				targetElement.scrollIntoView({ block: scrollBlock, behavior: 'instant' })
-			} else if (initialIndex > 0)
+			if (targetElement)
+				targetElement.scrollIntoView({
+					block: targetIndex === 0 ? 'start' : 'nearest',
+					behavior: 'instant',
+				})
+			else
 				container.scrollTop = container.scrollHeight
 
 		} finally {
@@ -350,9 +318,8 @@ export function createVirtualList({
 	 * 销毁列表实例，清理 DOM 和事件监听器。
 	 */
 	function destroy() {
-		if (state.observer)
-			state.observer.disconnect()
-
+		if (state.observer) state.observer.disconnect()
+		if (state.resizeObserver) state.resizeObserver.disconnect()
 		container.innerHTML = ''
 		state.queue = []
 		state.renderedElements.clear()
@@ -369,18 +336,15 @@ export function createVirtualList({
 			state.totalCount++
 			const itemIndex = state.startIndex + state.queue.length
 			state.queue.push(item)
-
 			const newElement = await Promise.resolve(renderItem(item, itemIndex))
 			if (newElement) {
 				state.renderedElements.set(itemIndex, newElement)
 				container.insertBefore(newElement, state.sentinelBottom)
 			}
-
 			pruneQueue()
-
+			updateDynamicBufferSize()
 			if (scrollTo)
-				container.scrollTop = container.scrollHeight
-
+				newElement?.scrollIntoView({ behavior: 'smooth', block: 'end' }) // 平滑滚动
 		} finally {
 			state.isLoading = false
 			observeSentinels()
@@ -390,14 +354,15 @@ export function createVirtualList({
 	/**
 	 * 删除指定索引的项目。
 	 * @param {number} index - 要删除的项目的绝对索引。
+	 * 注意：如果项目不在当前队列中，仅减少 totalCount；否则，还会移除 DOM 并调整后续元素的索引映射。
 	 */
 	async function deleteItem(index) {
+		if (index < 0 || index >= state.totalCount) return
 		const queueIndex = index - state.startIndex
 		if (!state.queue[queueIndex]) {
 			state.totalCount = Math.max(0, state.totalCount - 1)
 			return
 		}
-
 		state.isLoading = true
 		try {
 			state.queue.splice(queueIndex, 1)
@@ -405,12 +370,20 @@ export function createVirtualList({
 			const element = state.renderedElements.get(index)
 			element?.remove()
 			state.renderedElements.delete(index)
+			// 调整后续元素的键
+			for (let i = index + 1; i < state.startIndex + state.queue.length + 1; i++) {
+				const elem = state.renderedElements.get(i)
+				if (elem) {
+					state.renderedElements.set(i - 1, elem)
+					state.renderedElements.delete(i)
+				}
+			}
+			updateDynamicBufferSize()
 		} finally {
 			state.isLoading = false
 			observeSentinels()
 		}
 	}
-
 
 	/**
 	 * 替换指定索引的项目。
@@ -420,28 +393,35 @@ export function createVirtualList({
 	 */
 	async function replaceItem(index, item) {
 		if (!item) throw new Error('item is required')
+		if (index < 0 || index >= state.totalCount) return
 		const queueIndex = index - state.startIndex
-		if (!state.queue[queueIndex])
-			return console.warn(`[virtualList] replaceItem called for index ${index} which is not in view.`)
-
+		if (!state.queue[queueIndex]) {
+			console.warn(`[virtualList] replaceItem called for index ${index} which is not in view.`)
+			return
+		}
 		state.isLoading = true
 		try {
 			const oldElement = state.renderedElements.get(index)
 			if (!oldElement) return
-
 			const newElement = await Promise.resolve(renderItem(item, index))
-
 			await Promise.resolve(replaceItemRenderer(oldElement, newElement, item))
-
 			state.queue[queueIndex] = item
 			state.renderedElements.set(index, newElement)
-		}
-		finally {
+			updateDynamicBufferSize()
+		} finally {
 			state.isLoading = false
+			observeSentinels()
 		}
 	}
 
-	// 初始化
+	// 初始化 ResizeObserver 以处理容器大小变化
+	state.resizeObserver = new ResizeObserver(() => {
+		updateDynamicBufferSize()
+		observeSentinels()
+	})
+	state.resizeObserver.observe(container)
+
+	// 初始刷新
 	refresh()
 	onElementRemoved(container, destroy)
 
@@ -471,12 +451,10 @@ export function createVirtualList({
 		 * @returns {number} - 元素在当前队列中的索引，如果未找到则返回 -1。
 		 */
 		getQueueIndex: (element) => {
-			const children = Array.from(container.children)
-			const elementIndexInDom = children.indexOf(element)
-			if (elementIndexInDom <= 0 || elementIndexInDom >= children.length - 1) return -1
-
-			const queueIndex = elementIndexInDom - 1
-			return state.queue[queueIndex] ? queueIndex : -1
+			for (const [index, el] of state.renderedElements.entries())
+				if (el === element)
+					return index - state.startIndex
+			return -1
 		},
 		/**
 		 * 根据队列索引获取总日志索引。
@@ -484,8 +462,7 @@ export function createVirtualList({
 		 * @returns {number} - 在总数据集中的绝对索引，如果无效则返回 -1。
 		 */
 		getChatLogIndexByQueueIndex: (queueIndex) => {
-			if (!state.queue[queueIndex]) return -1
-			return state.startIndex + queueIndex
+			return state.queue[queueIndex] ? state.startIndex + queueIndex : -1
 		},
 	}
 }
