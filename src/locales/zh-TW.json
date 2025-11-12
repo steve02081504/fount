@@ -454,6 +454,14 @@
 			"aria-label": "搜索部件"
 		},
 		"sfwToggle": "安全內容",
+		"partTypeDropdown": {
+			"button": {
+				"title": "部件類型菜單"
+			},
+			"icon": {
+				"alt": "部件類型菜單"
+			}
+		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "搜尋..."

@@ -454,6 +454,14 @@
 			"aria-label": "بحث الحاجيات"
 		},
 		"sfwToggle": "محتوى آمن",
+		"partTypeDropdown": {
+			"button": {
+				"title": "قائمة نوع الجزء"
+			},
+			"icon": {
+				"alt": "قائمة نوع الجزء"
+			}
+		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "بحث..."

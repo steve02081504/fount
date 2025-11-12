@@ -454,6 +454,14 @@
 			"aria-label": "Widgets de recherche"
 		},
 		"sfwToggle": "Contenu sûr",
+		"partTypeDropdown": {
+			"button": {
+				"title": "Menu Type de pièce"
+			},
+			"icon": {
+				"alt": "Menu Type de pièce"
+			}
+		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "Rechercher..."

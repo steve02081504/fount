@@ -454,6 +454,14 @@
 			"aria-label": "위젯 검색"
 		},
 		"sfwToggle": "일반 콘텐츠",
+		"partTypeDropdown": {
+			"button": {
+				"title": "부품 유형 메뉴"
+			},
+			"icon": {
+				"alt": "부품 유형 메뉴"
+			}
+		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "검색..."

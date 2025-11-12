@@ -454,6 +454,14 @@
 			"aria-label": "Leitaðu að græjum"
 		},
 		"sfwToggle": "Vinnustaðavænt",
+		"partTypeDropdown": {
+			"button": {
+				"title": "Hlutategundarvalmynd"
+			},
+			"icon": {
+				"alt": "Hlutategundarvalmynd"
+			}
+		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "Leita..."

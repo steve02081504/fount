@@ -454,6 +454,14 @@
 			"aria-label": "Tìm kiếm tiện ích"
 		},
 		"sfwToggle": "Nội dung an toàn",
+		"partTypeDropdown": {
+			"button": {
+				"title": "Menu loại bộ phận"
+			},
+			"icon": {
+				"alt": "Menu loại bộ phận"
+			}
+		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "Tìm kiếm..."

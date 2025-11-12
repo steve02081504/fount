@@ -454,6 +454,14 @@
 			"aria-label": "尋一組件"
 		},
 		"sfwToggle": "淨域",
+		"partTypeDropdown": {
+			"button": {
+				"title": null
+			},
+			"icon": {
+				"alt": null
+			}
+		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "索功用..."

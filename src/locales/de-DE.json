@@ -454,6 +454,14 @@
 			"aria-label": "Such-Widgets"
 		},
 		"sfwToggle": "Sichere Inhalte",
+		"partTypeDropdown": {
+			"button": {
+				"title": "Menü „Teiletyp“."
+			},
+			"icon": {
+				"alt": "Menü „Teiletyp“."
+			}
+		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "Suchen..."

@@ -454,6 +454,14 @@
 			"aria-label": "Search widgets"
 		},
 		"sfwToggle": "Safe for Work",
+		"partTypeDropdown": {
+			"button": {
+				"title": "Part type menu"
+			},
+			"icon": {
+				"alt": "Part type menu"
+			}
+		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "Search..."

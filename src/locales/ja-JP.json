@@ -454,6 +454,14 @@
 			"aria-label": "検索ウィジェット"
 		},
 		"sfwToggle": "一般コンテンツ",
+		"partTypeDropdown": {
+			"button": {
+				"title": "パーツタイプメニュー"
+			},
+			"icon": {
+				"alt": "パーツタイプメニュー"
+			}
+		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "検索..."

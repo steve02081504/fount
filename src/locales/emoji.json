@@ -454,6 +454,14 @@
 			"aria-label": "🔎🧩"
 		},
 		"sfwToggle": "😇",
+		"partTypeDropdown": {
+			"button": {
+				"title": null
+			},
+			"icon": {
+				"alt": null
+			}
+		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "🔎..."

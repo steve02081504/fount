@@ -454,6 +454,14 @@
 			"aria-label": "Widget di ricerca"
 		},
 		"sfwToggle": "Contenuto sicuro",
+		"partTypeDropdown": {
+			"button": {
+				"title": "Menù del tipo di parte"
+			},
+			"icon": {
+				"alt": "Menù del tipo di parte"
+			}
+		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "Cerca..."

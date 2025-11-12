@@ -454,6 +454,14 @@
 			"aria-label": "Виджеты поиска"
 		},
 		"sfwToggle": "Безопасный контент",
+		"partTypeDropdown": {
+			"button": {
+				"title": "Меню типа детали"
+			},
+			"icon": {
+				"alt": "Меню типа детали"
+			}
+		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "Поиск..."

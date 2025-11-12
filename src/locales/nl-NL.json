@@ -454,6 +454,14 @@
 			"aria-label": "Zoekwidgets"
 		},
 		"sfwToggle": "Veilige inhoud",
+		"partTypeDropdown": {
+			"button": {
+				"title": "Onderdeeltypemenu"
+			},
+			"icon": {
+				"alt": "Onderdeeltypemenu"
+			}
+		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "Zoeken..."
