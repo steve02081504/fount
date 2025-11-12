@@ -9,3 +9,4 @@ import { initializeApp } from './src/home.mjs'
 initializeApp().catch(error => {
 	showToast('error', error.message)
 })
+
