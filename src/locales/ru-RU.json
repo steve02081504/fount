@@ -563,7 +563,7 @@
 			}
 		},
 		"dragAndDrop": {
-			"dropSuccess": "Перетащите успешно!",
+			"dropSuccess": "Перетаскивание прошло успешно!",
 			"dropError": "Ошибка при обработке перетаскивания: ${error}",
 			"noHandler": "Подходящего обработчика перетаскивания не найдено."
 		}
@@ -794,7 +794,7 @@
 		"dragAndDrop": {
 			"invalidPartData": "Неверные данные детали.",
 			"charAdded": "Роль ${partName} добавлена ​​в чат.",
-			"personaSet": "Персона ${partName} установлена ​​в качестве текущей персоны.",
+			"personaSet": "Персона ${partName} установлена как текущая.",
 			"worldSet": "Мир ${partName} установлен на текущий мир.",
 			"pluginAdded": "Плагин ${partName} добавлен в чат.",
 			"unsupportedPartType": "Неподдерживаемый тип детали: ${partType}.",

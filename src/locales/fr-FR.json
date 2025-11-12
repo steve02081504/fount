@@ -794,7 +794,7 @@
 		"dragAndDrop": {
 			"invalidPartData": "Données de pièce invalides.",
 			"charAdded": "Le rôle ${partName} a été ajouté au chat.",
-			"personaSet": "Persona ${partName} a été défini comme personnage actuel.",
+			"personaSet": "La persona ${partName} a été définie comme persona actuelle.",
 			"worldSet": "World ${partName} est défini sur le monde actuel.",
 			"pluginAdded": "Le plugin ${partName} a été ajouté au chat.",
 			"unsupportedPartType": "Type de pièce non pris en charge : ${partType}.",

@@ -456,10 +456,10 @@
 		"sfwToggle": "😇",
 		"partTypeDropdown": {
 			"button": {
-				"title": null
+				"title": "🧩📜"
 			},
 			"icon": {
-				"alt": null
+				"alt": "🧩📜"
 			}
 		},
 		"functionMenu": {
@@ -563,9 +563,9 @@
 			}
 		},
 		"dragAndDrop": {
-			"dropSuccess": null,
-			"dropError": null,
-			"noHandler": null
+			"dropSuccess": "✅👍",
+			"dropError": "🚫👎: ${error}",
+			"noHandler": "🤷‍♀️🚫"
 		}
 	},
 	"chat": {
@@ -792,13 +792,13 @@
 			}
 		},
 		"dragAndDrop": {
-			"invalidPartData": null,
-			"charAdded": null,
-			"personaSet": null,
-			"worldSet": null,
-			"pluginAdded": null,
-			"unsupportedPartType": null,
-			"errorAddingPart": null
+			"invalidPartData": "💔🧩",
+			"charAdded": "💬➕👤 ${partName}",
+			"personaSet": "👑🎭 ${partName}",
+			"worldSet": "👑🌍 ${partName}",
+			"pluginAdded": "💬➕🔌 ${partName}",
+			"unsupportedPartType": "🚫🧩 ${partType}",
+			"errorAddingPart": "❌➕🧩 ${partName}: ${error}"
 		}
 	},
 	"chat_history": {
@@ -987,8 +987,8 @@
 			"unknownError": "❓🤷‍♂️❌"
 		},
 		"dragAndDrop": {
-			"fileDropDescription": null,
-			"textDropDescription": null
+			"fileDropDescription": "📂📥",
+			"textDropDescription": "📝📥"
 		}
 	},
 	"export": {
@@ -1066,7 +1066,7 @@
 			}
 		},
 		"dragAndDrop": {
-			"downloadPartDescription": null
+			"downloadPartDescription": "🧩⬇️"
 		}
 	},
 	"uninstall": {

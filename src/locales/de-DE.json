@@ -456,10 +456,10 @@
 		"sfwToggle": "Sichere Inhalte",
 		"partTypeDropdown": {
 			"button": {
-				"title": "Menü „Teiletyp“."
+				"title": "Teiletyp-Menü"
 			},
 			"icon": {
-				"alt": "Menü „Teiletyp“."
+				"alt": "Teiletyp-Menü"
 			}
 		},
 		"functionMenu": {

@@ -456,10 +456,10 @@
 		"sfwToggle": "安全內容",
 		"partTypeDropdown": {
 			"button": {
-				"title": "部件類型菜單"
+				"title": "部件類型選單"
 			},
 			"icon": {
-				"alt": "部件類型菜單"
+				"alt": "部件類型選單"
 			}
 		},
 		"functionMenu": {
@@ -794,7 +794,7 @@
 		"dragAndDrop": {
 			"invalidPartData": "無效的部件數據。",
 			"charAdded": "角色 ${partName} 已添加到聊天。",
-			"personaSet": "人設 ${partName} 已設置為當前人設。",
+			"personaSet": "已將 ${partName} 設為當前人設。",
 			"worldSet": "世界 ${partName} 已設置為當前世界。",
 			"pluginAdded": "插件 ${partName} 已添加到聊天。",
 			"unsupportedPartType": "不支持的部件類型：${partType}。",
@@ -987,8 +987,8 @@
 			"unknownError": "未知錯誤"
 		},
 		"dragAndDrop": {
-			"fileDropDescription": "從文件安裝部件",
-			"textDropDescription": "從文本安裝部件"
+			"fileDropDescription": "從檔案安裝部件",
+			"textDropDescription": "從文字安裝部件"
 		}
 	},
 	"export": {

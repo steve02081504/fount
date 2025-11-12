@@ -794,7 +794,7 @@
 		"dragAndDrop": {
 			"invalidPartData": "无效的部件数据。",
 			"charAdded": "角色 ${partName} 已添加到聊天。",
-			"personaSet": "人设 ${partName} 已设置为当前人设。",
+			"personaSet": "已将 ${partName} 设置为当前人设。",
 			"worldSet": "世界 ${partName} 已设置为当前世界。",
 			"pluginAdded": "插件 ${partName} 已添加到聊天。",
 			"unsupportedPartType": "不支持的部件类型：${partType}。",

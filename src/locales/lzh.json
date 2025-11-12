@@ -456,10 +456,10 @@
 		"sfwToggle": "淨域",
 		"partTypeDropdown": {
 			"button": {
-				"title": null
+				"title": "择品类"
 			},
 			"icon": {
-				"alt": null
+				"alt": "组件品类"
 			}
 		},
 		"functionMenu": {
@@ -563,9 +563,9 @@
 			}
 		},
 		"dragAndDrop": {
-			"dropSuccess": null,
-			"dropError": null,
-			"noHandler": null
+			"dropSuccess": "置之已妥。",
+			"dropError": "置之有误：${error}",
+			"noHandler": "无以应之。"
 		}
 	},
 	"chat": {
@@ -792,13 +792,13 @@
 			}
 		},
 		"dragAndDrop": {
-			"invalidPartData": null,
-			"charAdded": null,
-			"personaSet": null,
-			"worldSet": null,
-			"pluginAdded": null,
-			"unsupportedPartType": null,
-			"errorAddingPart": null
+			"invalidPartData": "此组件无效。",
+			"charAdded": "角色 ${partName} 已入席。",
+			"personaSet": "名号已定为 ${partName}。",
+			"worldSet": "天下已定为 ${partName}。",
+			"pluginAdded": "机巧 ${partName} 已增补。",
+			"unsupportedPartType": "此品类 (${partType}) 未有所应。",
+			"errorAddingPart": "增补 ${partName} 有误：${error}"
 		}
 	},
 	"chat_history": {
@@ -987,8 +987,8 @@
 			"unknownError": "未知之禍"
 		},
 		"dragAndDrop": {
-			"fileDropDescription": null,
-			"textDropDescription": null
+			"fileDropDescription": "以卷装配",
+			"textDropDescription": "以文装配"
 		}
 	},
 	"export": {
@@ -1066,7 +1066,7 @@
 			}
 		},
 		"dragAndDrop": {
-			"downloadPartDescription": null
+			"downloadPartDescription": "取组件"
 		}
 	},
 	"uninstall": {

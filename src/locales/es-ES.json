@@ -794,10 +794,10 @@
 		"dragAndDrop": {
 			"invalidPartData": "Datos de pieza no válidos.",
 			"charAdded": "Se agregó el rol ${partName} al chat.",
-			"personaSet": "La persona ${partName} se ha establecido como la persona actual.",
+			"personaSet": "Se ha establecido a ${partName} como la persona actual.",
 			"worldSet": "El mundo ${partName} está configurado en el mundo actual.",
 			"pluginAdded": "Se ha agregado el complemento ${partName} al chat.",
-			"unsupportedPartType": "Tipo de pieza no admitida: ${partType}.",
+			"unsupportedPartType": "Tipo de pieza no admitido: ${partType}.",
 			"errorAddingPart": "Error al agregar la pieza ${partName}: ${error}"
 		}
 	},
