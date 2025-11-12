@@ -197,5 +197,35 @@
 			"button": "<img src=\"https://api.iconify.design/line-md/close-circle.svg\" class=\"text-icon\"/>",
 			"type": "error"
 		}
+	],
+	"home_drag_in_handlers": [
+		{
+			"id": "handleFileDrop",
+			"level": 0,
+			"type": "file",
+			"path": "/shells/install/drag_handlers/file_drop_handler.mjs",
+			"info": {
+				"zh-CN": {
+					"description": "从文件安装部件"
+				},
+				"en-UK": {
+					"description": "Install part from file"
+				}
+			}
+		},
+		{
+			"id": "handleTextDrop",
+			"level": 0,
+			"type": "text/plain",
+			"path": "/shells/install/drag_handlers/text_drop_handler.mjs",
+			"info": {
+				"zh-CN": {
+					"description": "从文本安装部件"
+				},
+				"en-UK": {
+					"description": "Install part from text"
+				}
+			}
+		}
 	]
 }

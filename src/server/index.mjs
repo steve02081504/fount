@@ -17,12 +17,21 @@ import { init } from './server.mjs'
 let skipBreadcrumb = false
 Sentry.init({
 	dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
+	/**
+	 * @param {object} breadcrumb - Sentry捕获到的面包屑事件对象。
+	 * @param {object} hint - 包含原始事件等信息的辅助对象。
+	 * @returns {object | null} 返回修改后的面包屑对象，或 null 以忽略此面包屑。
+	 */
 	beforeBreadcrumb: (breadcrumb, hint) => {
 		if (skipBreadcrumb) return null
 		return breadcrumb
 	}
 })
 console.noBreadcrumb = {
+	/**
+	 * 写入日志并跳过面包屑记录
+	 * @param {...any} args - 要记录的日志
+	 */
 	log: (...args) => {
 		skipBreadcrumb = true
 		console.log(...args)

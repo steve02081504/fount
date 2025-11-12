@@ -454,6 +454,14 @@
 			"aria-label": "Widgets de búsqueda"
 		},
 		"sfwToggle": "Contenido seguro",
+		"partTypeDropdown": {
+			"button": {
+				"title": "Menú de tipo de pieza"
+			},
+			"icon": {
+				"alt": "Menú de tipo de pieza"
+			}
+		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "Buscar..."
@@ -553,6 +561,11 @@
 				"description": "Establece una identidad para tus acciones en este mundo.",
 				"locked_description": "Establece un perfil predeterminado."
 			}
+		},
+		"dragAndDrop": {
+			"dropSuccess": "¡Arrastra y suelta con éxito!",
+			"dropError": "Error en el procesamiento de arrastrar y soltar: ${error}",
+			"noHandler": "No se encontró ningún controlador de arrastrar y soltar adecuado."
 		}
 	},
 	"chat": {
@@ -777,6 +790,15 @@
 				"description": "Utilice imágenes para romper la pared dimensional.",
 				"locked_description": "Envía una foto en el chat."
 			}
+		},
+		"dragAndDrop": {
+			"invalidPartData": "Datos de pieza no válidos.",
+			"charAdded": "Se agregó el rol ${partName} al chat.",
+			"personaSet": "Se ha establecido a ${partName} como la persona actual.",
+			"worldSet": "El mundo ${partName} está configurado en el mundo actual.",
+			"pluginAdded": "Se ha agregado el complemento ${partName} al chat.",
+			"unsupportedPartType": "Tipo de pieza no admitido: ${partType}.",
+			"errorAddingPart": "Error al agregar la pieza ${partName}: ${error}"
 		}
 	},
 	"chat_history": {
@@ -963,6 +985,10 @@
 			"handler": "Manejador",
 			"error": "Error",
 			"unknownError": "Error desconocido"
+		},
+		"dragAndDrop": {
+			"fileDropDescription": "Instalar componentes desde archivos",
+			"textDropDescription": "Instalar partes del texto"
 		}
 	},
 	"export": {
@@ -1038,6 +1064,9 @@
 				"description": "\"Ahora te daré una copia de esto\".",
 				"locked_description": "Comparte el widget una vez."
 			}
+		},
+		"dragAndDrop": {
+			"downloadPartDescription": "Descargar piezas"
 		}
 	},
 	"uninstall": {

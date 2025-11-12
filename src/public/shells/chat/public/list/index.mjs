@@ -10,6 +10,7 @@ import { renderTemplate, usingTemplates } from '../../../scripts/template.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
 import { showToast, showToastI18n } from '../../../scripts/toast.mjs'
 import { createVirtualList } from '../../../scripts/virtualList.mjs'
+import { processTimeStampForId } from '../src/utils.mjs'
 
 import { getChatList, getCharDetails, copyChats, exportChats, deleteChats } from './endpoints.mjs'
 
@@ -109,6 +110,7 @@ async function renderChatListItem(chat) {
 	const lastMsgTime = new Date(chat.lastMessageTime).toLocaleString()
 	const data = {
 		...chat,
+		safeTimeStamp: processTimeStampForId(chat.lastMessageTime),
 		lastMessageTime: lastMsgTime,
 		lastMessageRowContent: chat.lastMessageContent,
 		lastMessageContent: await renderMarkdownAsString(chat.lastMessageContent),

@@ -454,6 +454,14 @@
 			"aria-label": "Zoekwidgets"
 		},
 		"sfwToggle": "Veilige inhoud",
+		"partTypeDropdown": {
+			"button": {
+				"title": "Onderdeeltypemenu"
+			},
+			"icon": {
+				"alt": "Onderdeeltypemenu"
+			}
+		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "Zoeken..."
@@ -553,6 +561,11 @@
 				"description": "Stel een identiteit in voor uw acties in deze wereld.",
 				"locked_description": "Stel een standaardprofiel in."
 			}
+		},
+		"dragAndDrop": {
+			"dropSuccess": "Slepen en neerzetten succesvol!",
+			"dropError": "Fout bij het slepen en neerzetten: ${error}",
+			"noHandler": "Er is geen geschikte drag-and-drop-handler gevonden."
 		}
 	},
 	"chat": {
@@ -777,6 +790,15 @@
 				"description": "Gebruik afbeeldingen om de dimensionale muur te doorbreken.",
 				"locked_description": "Stuur een foto in de chat."
 			}
+		},
+		"dragAndDrop": {
+			"invalidPartData": "Ongeldige onderdeelgegevens.",
+			"charAdded": "Rol ${partName} is toegevoegd aan de chat.",
+			"personaSet": "Persona ${partName} is ingesteld als de huidige persona.",
+			"worldSet": "Wereld ${partName} is ingesteld op de huidige wereld.",
+			"pluginAdded": "Plugin ${partName} is toegevoegd aan de chat.",
+			"unsupportedPartType": "Niet-ondersteund onderdeeltype: ${partType}.",
+			"errorAddingPart": "Fout bij toevoegen van onderdeel ${partName}: ${error}"
 		}
 	},
 	"chat_history": {
@@ -963,6 +985,10 @@
 			"handler": "Handler",
 			"error": "Fout",
 			"unknownError": "Onbekende fout"
+		},
+		"dragAndDrop": {
+			"fileDropDescription": "Componenten uit bestanden installeren",
+			"textDropDescription": "Installeer delen uit tekst"
 		}
 	},
 	"export": {
@@ -1038,6 +1064,9 @@
 				"description": "'Nu zal ik je een kopie geven van dit goede ding.'",
 				"locked_description": "Deel de widget één keer."
 			}
+		},
+		"dragAndDrop": {
+			"downloadPartDescription": "Onderdelen downloaden"
 		}
 	},
 	"uninstall": {

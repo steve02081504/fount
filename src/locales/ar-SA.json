@@ -454,6 +454,14 @@
 			"aria-label": "بحث الحاجيات"
 		},
 		"sfwToggle": "محتوى آمن",
+		"partTypeDropdown": {
+			"button": {
+				"title": "قائمة نوع الجزء"
+			},
+			"icon": {
+				"alt": "قائمة نوع الجزء"
+			}
+		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "بحث..."
@@ -553,6 +561,11 @@
 				"description": "حدد هوية لأفعالك في هذا العالم.",
 				"locked_description": "قم بتعيين ملف التعريف الافتراضي."
 			}
+		},
+		"dragAndDrop": {
+			"dropSuccess": "السحب والإسقاط ناجح!",
+			"dropError": "خطأ في معالجة السحب والإفلات: ${error}",
+			"noHandler": "لم يتم العثور على معالج سحب وإسقاط مناسب."
 		}
 	},
 	"chat": {
@@ -777,6 +790,15 @@
 				"description": "استخدم الصور لكسر جدار الأبعاد.",
 				"locked_description": "إرسال صورة في الدردشة."
 			}
+		},
+		"dragAndDrop": {
+			"invalidPartData": "بيانات الجزء غير صالحة.",
+			"charAdded": "تمت إضافة الدور ${partName} إلى الدردشة.",
+			"personaSet": "تم تعيين الشخصية ${partName} لتكون الشخصية الحالية.",
+			"worldSet": "تم ضبط العالم ${partName} على العالم الحالي.",
+			"pluginAdded": "تمت إضافة المكون الإضافي ${partName} إلى الدردشة.",
+			"unsupportedPartType": "نوع الجزء غير مدعوم: ${partType}.",
+			"errorAddingPart": "خطأ في إضافة الجزء ${partName}: ${error}"
 		}
 	},
 	"chat_history": {
@@ -963,6 +985,10 @@
 			"handler": "المعالج",
 			"error": "خطأ",
 			"unknownError": "خطأ غير معروف"
+		},
+		"dragAndDrop": {
+			"fileDropDescription": "تثبيت المكونات من الملفات",
+			"textDropDescription": "تثبيت أجزاء من النص"
 		}
 	},
 	"export": {
@@ -1038,6 +1064,9 @@
 				"description": "\"الآن، سأعطيك نسخة من هذا الشيء الجيد.\"",
 				"locked_description": "مشاركة القطعة مرة واحدة."
 			}
+		},
+		"dragAndDrop": {
+			"downloadPartDescription": "تنزيل الأجزاء"
 		}
 	},
 	"uninstall": {

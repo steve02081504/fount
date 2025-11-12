@@ -454,6 +454,14 @@
 			"aria-label": "🔎🧩"
 		},
 		"sfwToggle": "😇",
+		"partTypeDropdown": {
+			"button": {
+				"title": "🧩📜"
+			},
+			"icon": {
+				"alt": "🧩📜"
+			}
+		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "🔎..."
@@ -553,6 +561,11 @@
 				"description": "👤➡️👑",
 				"locked_description": "🔒"
 			}
+		},
+		"dragAndDrop": {
+			"dropSuccess": "✅👍",
+			"dropError": "🚫👎: ${error}",
+			"noHandler": "🤷‍♀️🚫"
 		}
 	},
 	"chat": {
@@ -777,6 +790,15 @@
 				"description": "💬➡️🏞️",
 				"locked_description": "🔒"
 			}
+		},
+		"dragAndDrop": {
+			"invalidPartData": "💔🧩",
+			"charAdded": "💬➕👤 ${partName}",
+			"personaSet": "👑🎭 ${partName}",
+			"worldSet": "👑🌍 ${partName}",
+			"pluginAdded": "💬➕🔌 ${partName}",
+			"unsupportedPartType": "🚫🧩 ${partType}",
+			"errorAddingPart": "❌➕🧩 ${partName}: ${error}"
 		}
 	},
 	"chat_history": {
@@ -963,6 +985,10 @@
 			"handler": "⚙️",
 			"error": "❌",
 			"unknownError": "❓🤷‍♂️❌"
+		},
+		"dragAndDrop": {
+			"fileDropDescription": "📂📥",
+			"textDropDescription": "📝📥"
 		}
 	},
 	"export": {
@@ -1038,6 +1064,9 @@
 				"description": "🧩➡️🧑‍🤝‍🧑",
 				"locked_description": "🔒"
 			}
+		},
+		"dragAndDrop": {
+			"downloadPartDescription": "🧩⬇️"
 		}
 	},
 	"uninstall": {

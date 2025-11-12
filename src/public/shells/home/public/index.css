@@ -1,11 +1,3 @@
-.tabs-viewport {
-	scrollbar-width: none;
-}
-
-#part-types-tabs .tab {
-	flex-shrink: 0;
-}
-
 body {
 	display: flex;
 	justify-content: center;
@@ -27,6 +19,10 @@ body {
 	max-height: 300px;
 	border: 2px solid transparent;
 	/*  for highlighting */
+}
+
+.card-container:hover {
+	z-index: 60;
 }
 
 .card-content {
@@ -135,6 +131,92 @@ body {
 
 .card-container:hover .refresh-button {
 	opacity: 1;
+}
+
+/* Modal Styles */
+.modal-box {
+	overflow: visible;
+	padding: 0;
+	background-color: transparent;
+	box-shadow: none;
+}
+
+.modal-content-container {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	/* Changed from min-height */
+	padding: 2rem;
+}
+
+.modal-image-wrapper {
+	transform-style: preserve-3d;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 1rem;
+	background-color: color-mix(in srgb, var(--color-base-200), transparent 20%);
+	border-radius: 1rem;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+	margin-bottom: 1rem;
+}
+
+.modal-image {
+	width: 300px;
+	height: 300px;
+	background-size: contain;
+	background-position: center;
+	background-repeat: no-repeat;
+	box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+	transform: translateZ(40px);
+}
+
+@keyframes float-btn {
+	0% {
+		transform: translate(-50%, -50%) translatey(0px);
+	}
+
+	50% {
+		transform: translate(-50%, -50%) translatey(-20px);
+	}
+
+	100% {
+		transform: translate(-50%, -50%) translatey(0px);
+	}
+}
+
+.modal-text-content {
+	text-align: center;
+	max-width: 80%;
+	transform: translateZ(0px);
+	/* Text should not have 3D transform */
+}
+
+.modal-actions-container {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+}
+
+.modal-actions-container>.btn {
+	position: absolute;
+	pointer-events: all;
+	transform: translate(-50%, -50%);
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+	animation: float-btn 6s ease-in-out infinite;
+}
+
+.modal-actions-container>.btn:hover {
+	transform: translate(-50%, -50%) scale(1.15);
+	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+	z-index: 10;
 }
 
 /* Highlighting Selected Item */

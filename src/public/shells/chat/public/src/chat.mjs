@@ -1,4 +1,6 @@
-import { getInitialData } from './endpoints.mjs'
+import { showToastI18n } from '../../../../../scripts/toast.mjs'
+
+import { addCharacter, setPersona, setWorld, addPlugin, getInitialData } from './endpoints.mjs'
 import { setupCss } from './ui/css.mjs'
 import { initializeMessageInput } from './ui/messageInput.mjs'
 import { setupSidebar, updateSidebar } from './ui/sidebar.mjs'
@@ -81,4 +83,44 @@ export async function initializeChat() {
 	setupSidebar()
 	// This was in index.mjs, but it makes more sense here as it's part of the chat UI
 	initializeMessageInput()
+
+	// Add global drag-and-drop support for x-fount-part
+	document.body.addEventListener('dragover', event => {
+		event.preventDefault() // Allow drop
+	})
+
+	document.body.addEventListener('drop', async event => {
+		event.preventDefault()
+		const partData = event?.dataTransfer?.getData?.('x-fount-part')
+		if (!partData) return
+		const [partType, partName] = partData.split('/')
+		if (!partType || !partName) return showToastI18n('error', 'chat.dragAndDrop.invalidPartData')
+
+		try {
+			switch (partType) {
+				case 'chars':
+					await addCharacter(partName)
+					showToastI18n('success', 'chat.dragAndDrop.charAdded', { partName })
+					break
+				case 'personas':
+					await setPersona(partName)
+					showToastI18n('success', 'chat.dragAndDrop.personaSet', { partName })
+					break
+				case 'worlds':
+					await setWorld(partName)
+					showToastI18n('success', 'chat.dragAndDrop.worldSet', { partName })
+					break
+				case 'plugins':
+					await addPlugin(partName)
+					showToastI18n('success', 'chat.dragAndDrop.pluginAdded', { partName })
+					break
+				default:
+					showToastI18n('warning', 'chat.dragAndDrop.unsupportedPartType', { partType })
+					return
+			}
+		} catch (error) {
+			console.error(`Error handling dropped part (${partType}/${partName}):`, error)
+			showToastI18n('error', 'chat.dragAndDrop.errorAddingPart', { partName, error: error.message })
+		}
+	})
 }

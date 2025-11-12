@@ -454,6 +454,14 @@
 			"aria-label": "विजेट खोजें"
 		},
 		"sfwToggle": "सुरक्षित सामग्री",
+		"partTypeDropdown": {
+			"button": {
+				"title": "भाग प्रकार मेनू"
+			},
+			"icon": {
+				"alt": "भाग प्रकार मेनू"
+			}
+		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "खोजें..."
@@ -553,6 +561,11 @@
 				"description": "इस दुनिया में अपने कर्मों की एक पहचान बनायें।",
 				"locked_description": "एक डिफ़ॉल्ट प्रोफ़ाइल सेट करें."
 			}
+		},
+		"dragAndDrop": {
+			"dropSuccess": "खींचें और छोड़ें सफल!",
+			"dropError": "ड्रैग और ड्रॉप प्रोसेसिंग में त्रुटि: ${error}",
+			"noHandler": "कोई उपयुक्त ड्रैग और ड्रॉप हैंडलर नहीं मिला."
 		}
 	},
 	"chat": {
@@ -777,6 +790,15 @@
 				"description": "आयामी दीवार को तोड़ने के लिए चित्रों का उपयोग करें।",
 				"locked_description": "चैट में एक तस्वीर भेजें."
 			}
+		},
+		"dragAndDrop": {
+			"invalidPartData": "अमान्य भाग डेटा.",
+			"charAdded": "भूमिका ${partName} को चैट में जोड़ा गया है।",
+			"personaSet": "पर्सोना ${partName} को वर्तमान पर्सोना के रूप में सेट किया गया है।",
+			"worldSet": "विश्व ${partName} वर्तमान विश्व पर सेट है।",
+			"pluginAdded": "प्लगइन ${partName} को चैट में जोड़ा गया है।",
+			"unsupportedPartType": "असमर्थित भाग प्रकार: ${partType}.",
+			"errorAddingPart": "भाग ${partName} जोड़ने में त्रुटि: ${error}"
 		}
 	},
 	"chat_history": {
@@ -963,6 +985,10 @@
 			"handler": "हैंडलर",
 			"error": "त्रुटि",
 			"unknownError": "अज्ञात त्रुटि।"
+		},
+		"dragAndDrop": {
+			"fileDropDescription": "फ़ाइलों से घटक स्थापित करें",
+			"textDropDescription": "पाठ से भाग स्थापित करें"
 		}
 	},
 	"export": {
@@ -1038,6 +1064,9 @@
 				"description": "\"अब, मैं तुम्हें इस अच्छी चीज़ की एक प्रति दूँगा।\"",
 				"locked_description": "विजेट को एक बार शेयर करें."
 			}
+		},
+		"dragAndDrop": {
+			"downloadPartDescription": "भाग डाउनलोड करें"
 		}
 	},
 	"uninstall": {

@@ -41,4 +41,18 @@ export function setEndpoints(router) {
 			res.status(500).json({ message: error.message })
 		}
 	})
+
+	router.get('/virtual_files/shells/export/download/:partType/:partName', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const { partType, partName } = req.params
+		const { withData } = req.query
+
+		const { buffer, format } = await exportPart(username, partType, partName, withData === 'true')
+		const contentType = format === '7z' ? 'application/x-7z-compressed' : 'application/zip'
+		const encodedFilename = encodeURIComponent(`${partName}.${format}`)
+
+		res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodedFilename}`)
+		res.setHeader('Content-Type', contentType)
+		res.send(buffer)
+	})
 }
