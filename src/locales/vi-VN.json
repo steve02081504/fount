@@ -454,6 +454,14 @@
 			"aria-label": "Tìm kiếm tiện ích"
 		},
 		"sfwToggle": "Nội dung an toàn",
+		"partTypeDropdown": {
+			"button": {
+				"title": "Menu loại bộ phận"
+			},
+			"icon": {
+				"alt": "Menu loại bộ phận"
+			}
+		},
 		"functionMenu": {
 			"search": {
 				"placeholder": "Tìm kiếm..."
@@ -553,6 +561,11 @@
 				"description": "Đặt danh tính cho hành động của bạn trong thế giới này.",
 				"locked_description": "Đặt hồ sơ mặc định."
 			}
+		},
+		"dragAndDrop": {
+			"dropSuccess": "Kéo và thả thành công!",
+			"dropError": "Lỗi khi xử lý kéo và thả: ${error}",
+			"noHandler": "Không tìm thấy trình xử lý kéo và thả thích hợp."
 		}
 	},
 	"chat": {
@@ -777,6 +790,15 @@
 				"description": "Sử dụng hình ảnh để phá vỡ bức tường chiều.",
 				"locked_description": "Gửi ảnh trong cuộc trò chuyện."
 			}
+		},
+		"dragAndDrop": {
+			"invalidPartData": "Dữ liệu phần không hợp lệ.",
+			"charAdded": "Vai trò ${partName} đã được thêm vào cuộc trò chuyện.",
+			"personaSet": "Persona ${partName} đã được đặt làm nhân vật hiện tại.",
+			"worldSet": "Thế giới ${partName} được đặt thành thế giới hiện tại.",
+			"pluginAdded": "Plugin ${partName} đã được thêm vào cuộc trò chuyện.",
+			"unsupportedPartType": "Loại bộ phận không được hỗ trợ: ${partType}.",
+			"errorAddingPart": "Lỗi khi thêm phần ${partName}: ${error}"
 		}
 	},
 	"chat_history": {
@@ -963,6 +985,10 @@
 			"handler": "Trình xử lý",
 			"error": "Lỗi",
 			"unknownError": "Lỗi không xác định."
+		},
+		"dragAndDrop": {
+			"fileDropDescription": "Cài đặt các thành phần từ tập tin",
+			"textDropDescription": "Cài đặt các phần từ văn bản"
 		}
 	},
 	"export": {
@@ -1038,6 +1064,9 @@
 				"description": "\"Bây giờ tôi sẽ đưa cho bạn một bản sao của thứ tốt này.\"",
 				"locked_description": "Chia sẻ tiện ích một lần."
 			}
+		},
+		"dragAndDrop": {
+			"downloadPartDescription": "Tải xuống các phần"
 		}
 	},
 	"uninstall": {
