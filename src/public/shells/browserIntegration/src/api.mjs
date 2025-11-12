@@ -40,6 +40,11 @@ class UserPageManager {
 		 */
 		this.focusedPageId = undefined
 		/**
+		 * 最后一个已知具有浏览器焦点的页面的ID。
+		 * @type {number | undefined}
+		 */
+		this.lastFocusedPageId = undefined
+		/**
 		 * 到Shell的UI的WebSocket连接集。
 		 * @type {Set<import('npm:ws').WebSocket>}
 		 */
@@ -190,6 +195,7 @@ class UserPageManager {
 			const currentPage = this.findPageById(pageId)
 			if (currentPage) currentPage.hasFocus = true
 			this.focusedPageId = pageId
+			this.lastFocusedPageId = pageId
 		}
 		else {
 			// If the page losing focus is the one we have on record, clear the record
@@ -237,6 +243,33 @@ class UserPageManager {
 	 */
 	getFocusedPageInfo() {
 		return this.getConnectedPages().find(p => p.hasFocus)
+	}
+
+	/**
+	 * 获取最新活动页面的信息，用于当没有明确指定页面时。
+	 * 优先顺序：当前焦点页 > 上一个焦点页（如果仍连接） > 最新连接的页面。
+	 * @returns {object | undefined} - 最新活动页面的信息对象，如果没有则为undefined。
+	 */
+	getMostRecentPageInfo() {
+		// 1. Try the currently focused page
+		const focusedPageInfo = this.getFocusedPageInfo()
+		if (focusedPageInfo) return focusedPageInfo
+
+		// 2. Try the last known focused page, if it's still connected
+		if (this.lastFocusedPageId !== undefined) {
+			const lastFocused = this.getConnectedPages().find(p => p.id === this.lastFocusedPageId)
+			if (lastFocused) return lastFocused
+		}
+
+		// 3. Fallback: most recently connected page
+		const connectedPages = this.pages.filter(p => p.ws !== null)
+		if (connectedPages.length > 0) {
+			connectedPages.sort((a, b) => b.connectedAt.getTime() - a.connectedAt.getTime())
+			const mostRecentPageId = connectedPages[0].id
+			return this.getConnectedPages().find(p => p.id === mostRecentPageId)
+		}
+
+		return undefined
 	}
 
 	// --- Userscript Communication ---
@@ -399,6 +432,15 @@ export function getFocusedPageInfo(username) {
 }
 
 /**
+ * 获取最新活动页面的信息。
+ * @param {string} username - 用户名。
+ * @returns {object | undefined} - 最新活动页面的信息。
+ */
+export function getMostRecentPageInfo(username) {
+	return getUserManager(username).getMostRecentPageInfo()
+}
+
+/**
  * 获取页面 HTML。
  * @param {string} username - 用户名。
  * @param {number} pageId - 页面ID。
@@ -534,11 +576,11 @@ export async function sendDanmakuToPage(username, pageId, danmakuOptions) {
 	let targetPageId = pageId
 
 	if (targetPageId === undefined) {
-		const focusedPage = manager.getFocusedPageInfo()
-		if (!focusedPage)
-			throw new Error('No page specified and no page is currently focused.')
+		const mostRecentPage = manager.getMostRecentPageInfo()
+		if (!mostRecentPage)
+			throw new Error('No page specified and no page is currently available.')
 
-		targetPageId = focusedPage.id
+		targetPageId = mostRecentPage.id
 	}
 
 	return await manager.sendRequest(targetPageId, { type: 'danmaku', payload: danmakuOptions })
