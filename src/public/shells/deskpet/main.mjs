@@ -26,7 +26,7 @@ export default {
 			description: 'Run your character as a desktop pet.',
 			description_markdown: 'Allows characters to be displayed as interactive desktop pets in a borderless, transparent window.',
 			version: '0.0.0',
-			author: 'Gemini',
+			author: 'steve02081504',
 			home_page: '',
 			tags: ['desktop', 'pet', 'webview']
 		},
@@ -36,7 +36,7 @@ export default {
 			description: '将您的角色作为桌面宠物运行。',
 			description_markdown: '允许角色在无边框、透明的窗口中显示为交互式桌面宠物。',
 			version: '0.0.0',
-			author: 'Gemini',
+			author: 'steve02081504',
 			home_page: '',
 			tags: ['桌面', '宠物', '网页视图']
 		},
@@ -46,7 +46,7 @@ export default {
 			description: 'قم بتشغيل شخصيتك كحيوان أليف لسطح المكتب.',
 			description_markdown: 'يسمح بعرض الأحرف كحيوانات أليفة تفاعلية لسطح المكتب في نافذة شفافة بلا حدود.',
 			version: '0.0.0',
-			author: 'Gemini',
+			author: 'steve02081504',
 			home_page: '',
 			tags: ['سطح المكتب', 'حيوان أليف', 'عرض ويب']
 		},
@@ -56,7 +56,7 @@ export default {
 			description: 'Führen Sie Ihren Charakter als Desktop-Haustier aus.',
 			description_markdown: 'Ermöglicht die Anzeige von Zeichen als interaktive Desktop-Haustiere in einem randlosen, transparenten Fenster.',
 			version: '0.0.0',
-			author: 'Gemini',
+			author: 'steve02081504',
 			home_page: '',
 			tags: ['Desktop', 'Haustier', 'Webansicht']
 		},
@@ -66,7 +66,7 @@ export default {
 			description: 'Run your character as a desktop pet.',
 			description_markdown: 'Allows characters to be displayed as interactive desktop pets in a borderless, transparent window.',
 			version: '0.0.0',
-			author: 'Gemini',
+			author: 'steve02081504',
 			home_page: '',
 			tags: ['desktop', 'pet', 'webview']
 		},
@@ -76,7 +76,7 @@ export default {
 			description: 'Ejecuta tu personaje como una mascota de escritorio.',
 			description_markdown: 'Permite que los personajes se muestren como mascotas de escritorio interactivas en una ventana transparente y sin bordes.',
 			version: '0.0.0',
-			author: 'Gemini',
+			author: 'steve02081504',
 			home_page: '',
 			tags: ['escritorio', 'mascota', 'vista web']
 		},
@@ -86,7 +86,7 @@ export default {
 			description: 'Exécutez votre personnage comme un animal de compagnie de bureau.',
 			description_markdown: 'Permet d\'afficher les personnages sous forme d\'animaux de bureau interactifs dans une fenêtre transparente sans bordure.',
 			version: '0.0.0',
-			author: 'Gemini',
+			author: 'steve02081504',
 			home_page: '',
 			tags: ['bureau', 'animal de compagnie', 'vue Web']
 		},
@@ -96,7 +96,7 @@ export default {
 			description: 'अपने चरित्र को डेस्कटॉप पालतू जानवर के रूप में चलाएं।',
 			description_markdown: 'पात्रों को एक सीमा रहित, पारदर्शी विंडो में इंटरैक्टिव डेस्कटॉप पालतू जानवरों के रूप में प्रदर्शित करने की अनुमति देता है।',
 			version: '0.0.0',
-			author: 'Gemini',
+			author: 'steve02081504',
 			home_page: '',
 			tags: ['डेस्कटॉप', 'पालतू जानवर', 'वेबव्यू']
 		},
@@ -106,7 +106,7 @@ export default {
 			description: 'Keyrðu karakterinn þinn sem skjáborðsgæludýr.',
 			description_markdown: 'Leyfir stöfum að birtast sem gagnvirk skjáborðsgæludýr í rammalausum, gagnsæjum glugga.',
 			version: '0.0.0',
-			author: 'Gemini',
+			author: 'steve02081504',
 			home_page: '',
 			tags: ['skrifborð', 'gæludýr', 'vefsýn']
 		},
@@ -116,7 +116,7 @@ export default {
 			description: 'Gestisci il tuo personaggio come un animale domestico da scrivania.',
 			description_markdown: 'Consente di visualizzare i personaggi come animali domestici interattivi sul desktop in una finestra trasparente e senza bordi.',
 			version: '0.0.0',
-			author: 'Gemini',
+			author: 'steve02081504',
 			home_page: '',
 			tags: ['desktop', 'animale domestico', 'vista web']
 		},
@@ -126,7 +126,7 @@ export default {
 			description: 'キャラクターをデスクトップペットとして実行します。',
 			description_markdown: 'キャラクターを、枠のない透明なウィンドウに対話型のデスクトップペットとして表示できます。',
 			version: '0.0.0',
-			author: 'Gemini',
+			author: 'steve02081504',
 			home_page: '',
 			tags: ['デスクトップ', 'ペット', 'ウェブビュー']
 		},
@@ -136,7 +136,7 @@ export default {
 			description: '캐릭터를 데스크톱 애완동물로 실행하세요.',
 			description_markdown: '테두리가 없고 투명한 창에 문자를 대화형 데스크톱 애완동물로 표시할 수 있습니다.',
 			version: '0.0.0',
-			author: 'Gemini',
+			author: 'steve02081504',
 			home_page: '',
 			tags: ['데스크톱', '애완동물', '웹뷰']
 		},
@@ -146,7 +146,7 @@ export default {
 			description: '將您的角色作為桌面寵物運行。',
 			description_markdown: '允許角色在無邊框、透明的窗口中顯示為交互式桌面寵物。',
 			version: '0.0.0',
-			author: 'Gemini',
+			author: 'steve02081504',
 			home_page: '',
 			tags: ['桌面', '寵物', '網頁視圖']
 		},
@@ -156,7 +156,7 @@ export default {
 			description: 'Voer je personage uit als een bureaubladhuisdier.',
 			description_markdown: 'Hiermee kunnen personages worden weergegeven als interactieve bureaubladhuisdieren in een randloos, transparant venster.',
 			version: '0.0.0',
-			author: 'Gemini',
+			author: 'steve02081504',
 			home_page: '',
 			tags: ['desktop', 'huisdier', 'webview']
 		},
@@ -166,7 +166,7 @@ export default {
 			description: 'Execute seu personagem como um animal de estimação de desktop.',
 			description_markdown: 'Permite que os personagens sejam exibidos como animais de estimação de desktop interativos em uma janela transparente e sem bordas.',
 			version: '0.0.0',
-			author: 'Gemini',
+			author: 'steve02081504',
 			home_page: '',
 			tags: ['desktop', 'animal de estimação', 'webview']
 		},
@@ -176,7 +176,7 @@ export default {
 			description: 'Запустите своего персонажа в качестве настольного питомца.',
 			description_markdown: 'Позволяет отображать персонажей в виде интерактивных настольных питомцев в прозрачном окне без полей.',
 			version: '0.0.0',
-			author: 'Gemini',
+			author: 'steve02081504',
 			home_page: '',
 			tags: ['рабочий стол', 'питомец', 'веб-просмотр']
 		},
@@ -186,7 +186,7 @@ export default {
 			description: 'Запустіть свого персонажа як настільного улюбленця.',
 			description_markdown: 'Дозволяє відображати персонажів у вигляді інтерактивних настільних улюбленців у прозорому вікні без полів.',
 			version: '0.0.0',
-			author: 'Gemini',
+			author: 'steve02081504',
 			home_page: '',
 			tags: ['робочий стіл', 'домашній улюбленець', 'веб-перегляд']
 		},
@@ -196,7 +196,7 @@ export default {
 			description: 'Chạy nhân vật của bạn như một con vật cưng trên máy tính để bàn.',
 			description_markdown: 'Cho phép các ký tự được hiển thị dưới dạng vật nuôi trên máy tính để bàn tương tác trong một cửa sổ trong suốt, không viền.',
 			version: '0.0.0',
-			author: 'Gemini',
+			author: 'steve02081504',
 			home_page: '',
 			tags: ['máy tính để bàn', 'thú cưng', 'chế độ xem web']
 		},
@@ -206,7 +206,7 @@ export default {
 			description: '將您的角色作為桌面寵物運行。',
 			description_markdown: '允許角色在無邊框、透明的窗口中顯示為交互式桌面寵物。',
 			version: '0.0.0',
-			author: 'Gemini',
+			author: 'steve02081504',
 			home_page: '',
 			tags: ['桌面', '寵物', '網頁視圖']
 		}
