@@ -38,12 +38,22 @@ async function attemptConnection() {
 		offlineMessageElement.textContent = geti18n('protocolhandler.offline_dialog.message', { hostUrl })
 		offlineDialog.showModal()
 
+		const checkInterval = setInterval(() => {
+			pingFount(hostUrl).then(isOnline => {
+				if (!isOnline) return
+				clearInterval(checkInterval)
+				offlineDialog.close()
+				useUrlProtocol(hostUrl)
+			})
+		}, 1000)
+
 		/**
 		 * 点击重试按钮时的处理函数。
 		 * @returns {void}
 		 */
 		retryBtn.onclick = () => {
 			offlineDialog.close()
+			clearInterval(checkInterval)
 			attemptConnection()
 		}
 		/**
@@ -53,6 +63,7 @@ async function attemptConnection() {
 		startBtn.onclick = () => {
 			offlineDialog.close()
 			window.location.href = fountProtocolUrl
+			setTimeout(() => window.location.href = 'https://github.com/steve02081504/fount', 10000)
 		}
 		return
 	}
