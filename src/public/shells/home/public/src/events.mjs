@@ -5,7 +5,7 @@ import { showToast } from '../../../scripts/toast.mjs'
 
 import { partDetailsCache, partListsCache } from './data.mjs'
 import { getHomeRegistry } from './endpoints.mjs'
-import { setHomeRegistry, setDefaultParts, setIsSfw, homeRegistry, defaultParts, isSfw, currentPartType } from './state.mjs'
+import { setHomeRegistry, setDefaultParts, setIsSfw, homeRegistry, defaultParts, isSfw, currentPartType, preloadDragGenerators } from './state.mjs'
 import {
 	functionMenuButton, sfwToggle,
 	setupPartTypeUI, displayFunctionButtons, updateTabContent, refreshCurrentTab, updateDefaultPartDisplay
@@ -19,6 +19,7 @@ import {
 export const handleHomeRegistryUpdate = async () => {
 	await getHomeRegistry().then(async data => {
 		setHomeRegistry(data)
+		await preloadDragGenerators(data)
 		setupPartTypeUI(homeRegistry.part_types)
 		await displayFunctionButtons()
 		await refreshCurrentTab()

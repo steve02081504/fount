@@ -54,3 +54,25 @@ export function setIsSfw(value) {
 export function setCurrentPartType(value) {
 	currentPartType = value
 }
+
+/**
+ * 预加载拖放生成器模块。
+ * 这个函数会遍历 homeRegistry 中的所有拖放生成器配置，
+ * 动态导入它们，并将导入的默认函数存储在配置对象的 `func` 属性中，
+ * 以便 `dragstart` 事件处理程序可以同步访问。
+ * @param {object} registry - 当前的 homeRegistry 对象。
+ * @returns {Promise<void>}
+ */
+export async function preloadDragGenerators(registry) {
+	if (!registry?.home_drag_out_generators) return
+
+	const loadPromises = registry.home_drag_out_generators.map(async (generatorConfig) => {
+		if (generatorConfig.path) try {
+			const module = await import(generatorConfig.path)
+			generatorConfig.func = module.default
+		} catch (error) {
+			console.error(`Failed to preload drag generator from ${generatorConfig.path}:`, error)
+		}
+	})
+	await Promise.all(loadPromises)
+}

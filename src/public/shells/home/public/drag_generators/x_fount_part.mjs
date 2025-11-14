@@ -7,6 +7,6 @@
  * @param {object} generatorConfig - 此生成器的配置。
  * @returns {string} 生成的拖出数据。
  */
-export default async function (parttype, partname, partdetails, generatorConfig) {
+export default function (parttype, partname, partdetails, generatorConfig) {
 	return `${parttype}/${partname}`
 }
