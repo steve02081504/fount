@@ -209,6 +209,57 @@
 				},
 				"en-UK": {
 					"description": "Download part"
+				},
+				"ar-SA": {
+					"description": "تنزيل الأجزاء"
+				},
+				"de-DE": {
+					"description": "Teile herunterladen"
+				},
+				"emoji": {
+					"description": "📥"
+				},
+				"es-ES": {
+					"description": "Descargar piezas"
+				},
+				"fr-FR": {
+					"description": "Télécharger des pièces"
+				},
+				"hi-IN": {
+					"description": "भाग डाउनलोड करें"
+				},
+				"is-IS": {
+					"description": "Sækja hluti"
+				},
+				"it-IT": {
+					"description": "Scarica parti"
+				},
+				"ja-JP": {
+					"description": "パーツをダウンロードする"
+				},
+				"ko-KR": {
+					"description": "부품 다운로드"
+				},
+				"lzh": {
+					"description": "載器"
+				},
+				"nl-NL": {
+					"description": "Onderdelen downloaden"
+				},
+				"pt-PT": {
+					"description": "Baixar peças"
+				},
+				"ru-RU": {
+					"description": "Скачать части"
+				},
+				"uk-UA": {
+					"description": "Завантажити частини"
+				},
+				"vi-VN": {
+					"description": "Tải về các phần"
+				},
+				"zh-TW": {
+					"description": "下載部件"
 				}
 			}
 		}
