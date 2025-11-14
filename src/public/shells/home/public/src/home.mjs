@@ -10,7 +10,7 @@ import { showToast } from '../../../scripts/toast.mjs'
 
 import { getHomeRegistry } from './endpoints.mjs'
 import { setupDOMEventListeners, setupServerEventListeners } from './events.mjs'
-import { setHomeRegistry, setDefaultParts, setIsSfw, setCurrentPartType, homeRegistry } from './state.mjs'
+import { setHomeRegistry, setDefaultParts, setIsSfw, setCurrentPartType, homeRegistry, preloadDragGenerators } from './state.mjs'
 import {
 	setupPartTypeUI,
 	displayFunctionButtons
@@ -30,6 +30,7 @@ export async function initializeApp() {
 	// 获取数据并设置UI
 	try {
 		setHomeRegistry(await getHomeRegistry())
+		await preloadDragGenerators(homeRegistry)
 		setDefaultParts(await getDefaultParts())
 	}
 	catch (error) {
