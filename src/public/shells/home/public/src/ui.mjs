@@ -261,6 +261,19 @@ export async function attachCardEventListeners(itemElement, part) {
 	itemElement.addEventListener('dragstart', event => {
 		event.dataTransfer.effectAllowed = 'copy'
 
+		// Set default text/plain data
+		const textDetails = [`${partname}`]
+		if (partdetails.info?.version) textDetails.push(`Version: ${partdetails.info.version}`)
+		if (partdetails.info?.author) textDetails.push(`Author: ${partdetails.info.author}`)
+		if (partdetails.info?.home_page) textDetails.push(`Homepage: ${partdetails.info.home_page}`)
+		event.dataTransfer.setData('text/plain', textDetails.join('\n'))
+
+		// Set default URL data
+		const partUrl = `fount://page/shells/home/?parttype=${parttype}&partname=${partname}`
+		const fountUrl = `https://steve02081504.github.io/fount/protocol?url=${encodeURIComponent(partUrl)}`
+		event.dataTransfer.setData('text/uri-list', fountUrl)
+		event.dataTransfer.setData('URL', fountUrl)
+
 		const generators = homeRegistry.home_drag_out_generators || []
 		for (const generatorConfig of generators) try {
 			const data = generatorConfig.func(parttype, partname, partdetails, generatorConfig)
