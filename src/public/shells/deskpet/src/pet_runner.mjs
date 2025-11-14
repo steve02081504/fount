@@ -44,7 +44,7 @@ export async function runPet(username, charname) {
 
 		const finalUrl = `${intermediatePageUrl}?apikey=${encodedApiKey}&redirect=${encodedOriginalPetUrl}`
 
-		const { WebUI } = await import('https://deno.land/x/webui/mod.ts')
+		const { WebUI } = await import('jsr:@webui/deno-webui')
 
 		const myWindow = new WebUI()
 

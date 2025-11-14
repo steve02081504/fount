@@ -619,7 +619,7 @@ def process_home_registries(map_lang_to_path, global_ref_lang_codes, gitignore_s
 
 	print(f"\n--- 开始处理 fount 目录 '{FOUNT_DIR}' 下的 home_registry.json 文件 ---")
 	print(f"可用的区域语言 (来自 locales): {', '.join(sorted(list(available_locale_langs)))}")
-	registry_keys_to_process = ["home_function_buttons", "home_char_interfaces", "home_world_interfaces", "home_persona_interfaces", "home_common_interfaces"]
+	registry_keys_to_process = ["home_function_buttons", "home_char_interfaces", "home_world_interfaces", "home_persona_interfaces", "home_common_interfaces", "home_drag_out_generators", "home_drag_in_handlers"]
 
 	for root, dirs, files in os.walk(FOUNT_DIR):
 		if gitignore_spec:
@@ -1086,6 +1086,123 @@ def generate_list_csv(all_data):
 		print(f"  - Error: Failed to write to {csv_path}: {e}")
 
 
+def generate_locale_data_ts(ref_data, output_path):
+	"""Generates the locale_data.ts file for i18n key type completion."""
+	print(f"\n--- Generating {os.path.basename(output_path)} for type safety ---")
+
+	def collect_placeholder_keys_recursive(data, prefix=""):
+		"""Recursively finds all keys that have string values with placeholders."""
+		keys = {}
+		for key, value in data.items():
+			path = f"{prefix}.{key}" if prefix else key
+			if isinstance(value, (OrderedDict, dict)):
+				keys.update(collect_placeholder_keys_recursive(value, path))
+			elif isinstance(value, str):
+				placeholders = extract_placeholders(value)
+				if placeholders:
+					keys[path] = sorted(list(set(placeholders)))
+		return keys
+
+	def sanitize_ts_key(key):
+		"""Sanitizes a key for use in TypeScript types. If not a valid identifier, wraps in single quotes."""
+		if re.match(r"^[a-zA-Z_$][a-zA-Z0-9_$]*$", key):
+			return key
+		return f"'{key}'"
+
+	def generate_ts_type_recursive(data, indent_level):
+		"""Recursively generates a TypeScript type string from a dictionary."""
+		parts = ["{"]
+		indent = "\t" * indent_level
+		for key, value in data.items():
+			ts_key = sanitize_ts_key(key)
+			if isinstance(value, (OrderedDict, dict)):
+				parts.append(f"{indent}{ts_key}: {generate_ts_type_recursive(value, indent_level + 1)}")
+			elif isinstance(value, str):
+				parts.append(f"{indent}{ts_key}: string")
+		parts.append("\t" * (indent_level - 1) + "}")
+		return "\n".join(parts)
+
+	locale_data_type_str = generate_ts_type_recursive(ref_data, indent_level=1)
+
+	placeholder_keys = collect_placeholder_keys_recursive(ref_data)
+	params_map_parts = ["{"]
+	for key, placeholders in sorted(placeholder_keys.items()):
+		param_types = "; ".join([f"{sanitize_ts_key(p.strip())}: string | number" for p in placeholders])
+		params_map_parts.append(f"\t'{key}': {{ {param_types} }}")
+	params_map_parts.append("}")
+	params_map_str = "\n".join(params_map_parts)
+
+	content = f"""\
+// 此文件由本地化文件自动生成。
+// 请勿手动编辑此文件，因为它将被覆盖。
+// 此文件为 i18n 键提供类型定义，实现自动补全。
+
+/**
+ * 表示所有可能的语言环境数据类型。
+ */
+export type LocaleData = {locale_data_type_str}
+// 用于从嵌套对象生成点表示法键的实用类型。
+type Prev = [never, 0, 1, 2, 3, 4, 5, ...0[]]
+
+type Paths<T, D extends number = 5> = [D] extends [never]
+	? never
+	: T extends object
+		? {{ [K in keyof T]-?: K extends string | number
+			? `${{K}}` | Join<K, Paths<T[K], Prev[D]>>
+			: never
+		}}[keyof T]
+		: ''
+
+type Join<K, P> = K extends string | number
+	? P extends string | number
+		? `${{K}}${{'' extends P ? '' : '.'}}${{P}}`
+		: never
+	: never
+
+/**
+ * 表示语言环境数据所有可能的点表示法键。
+ * 这为在 `geti18n` 中使用的键提供自动补全。
+ *
+ * @example
+ * 'home.title'
+ * 'login.errors.password_mismatch'
+ */
+export type LocaleKey = Paths<LocaleData>
+
+/**
+ * 将语言环境键映射到其预期参数对象的类型。
+ * 如果键不需要参数，则不包含在此类型中。
+ */
+export type LocaleKeyParams = {params_map_str}
+
+/**
+ * 表示所有需要参数的语言环境键的类型。
+ */
+export type LocaleKeyWithParams = keyof LocaleKeyParams
+
+/**
+ * 表示所有不需要参数的语言环境键的类型。
+ */
+export type LocaleKeyWithoutParams = Exclude<LocaleKey, LocaleKeyWithParams>
+"""
+
+	try:
+		existing_content = ""
+		if os.path.exists(output_path):
+			with open(output_path, "r", encoding="utf-8") as f:
+				existing_content = f.read()
+
+		if existing_content != content:
+			with open(output_path, "w", encoding="utf-8", newline="\n") as f:
+				f.write(content)
+			print(f"  - Successfully generated and updated {os.path.basename(output_path)}")
+		else:
+			print(f"  - {os.path.basename(output_path)} is already up-to-date.")
+
+	except Exception as e:
+		print(f"  - Error: Failed to write to {output_path}: {e}")
+
+
 # --- 主逻辑 (重构后) ---
 def main():
 	"""主执行函数"""
@@ -1107,6 +1224,9 @@ def main():
 		print("  占位符对齐过程检测到更改。如果翻译被清空，可能需要重新同步。")
 
 	save_locale_files(all_data, ref_path)
+
+	ts_decl_path = os.path.join(LOCALE_DIR, "../decl/locale_data.ts")
+	generate_locale_data_ts(all_data[ref_path], ts_decl_path)
 
 	if lang_to_path:
 		process_home_registries(lang_to_path, REFERENCE_LANG_CODES, gitignore_spec)

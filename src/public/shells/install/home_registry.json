@@ -210,6 +210,57 @@
 				},
 				"en-UK": {
 					"description": "Install part from file"
+				},
+				"ar-SA": {
+					"description": "تثبيت المكونات من الملفات"
+				},
+				"de-DE": {
+					"description": "Komponenten aus Dateien installieren"
+				},
+				"emoji": {
+					"description": "📦"
+				},
+				"es-ES": {
+					"description": "Instalar componentes desde archivos"
+				},
+				"fr-FR": {
+					"description": "Installer des composants à partir de fichiers"
+				},
+				"hi-IN": {
+					"description": "फ़ाइलों से घटक स्थापित करें"
+				},
+				"is-IS": {
+					"description": "Settu upp íhluti úr skrám"
+				},
+				"it-IT": {
+					"description": "Installa componenti da file"
+				},
+				"ja-JP": {
+					"description": "ファイルからコンポーネントをインストールする"
+				},
+				"ko-KR": {
+					"description": "파일에서 구성 요소 설치"
+				},
+				"lzh": {
+					"description": "自文案載器"
+				},
+				"nl-NL": {
+					"description": "Componenten uit bestanden installeren"
+				},
+				"pt-PT": {
+					"description": "Instale componentes de arquivos"
+				},
+				"ru-RU": {
+					"description": "Установка компонентов из файлов"
+				},
+				"uk-UA": {
+					"description": "Установка компонентів з файлів"
+				},
+				"vi-VN": {
+					"description": "Cài đặt các thành phần từ tập tin"
+				},
+				"zh-TW": {
+					"description": "從文件安裝部件"
 				}
 			}
 		},
@@ -224,6 +275,57 @@
 				},
 				"en-UK": {
 					"description": "Install part from text"
+				},
+				"ar-SA": {
+					"description": "تثبيت أجزاء من النص"
+				},
+				"de-DE": {
+					"description": "Teile aus Text installieren"
+				},
+				"emoji": {
+					"description": "📝"
+				},
+				"es-ES": {
+					"description": "Instalar partes del texto"
+				},
+				"fr-FR": {
+					"description": "Installer des pièces à partir du texte"
+				},
+				"hi-IN": {
+					"description": "पाठ से भाग स्थापित करें"
+				},
+				"is-IS": {
+					"description": "Settu upp hluta úr texta"
+				},
+				"it-IT": {
+					"description": "Installa parti dal testo"
+				},
+				"ja-JP": {
+					"description": "テキストからパーツをインストールする"
+				},
+				"ko-KR": {
+					"description": "텍스트에서 부품 설치"
+				},
+				"lzh": {
+					"description": "自文書載器"
+				},
+				"nl-NL": {
+					"description": "Installeer delen uit tekst"
+				},
+				"pt-PT": {
+					"description": "Instale peças do texto"
+				},
+				"ru-RU": {
+					"description": "Установка частей из текста"
+				},
+				"uk-UA": {
+					"description": "Встановити частини з тексту"
+				},
+				"vi-VN": {
+					"description": "Cài đặt các phần từ văn bản"
+				},
+				"zh-TW": {
+					"description": "從文本安裝部件"
 				}
 			}
 		}

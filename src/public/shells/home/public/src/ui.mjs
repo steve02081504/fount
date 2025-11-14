@@ -13,7 +13,7 @@ import { renderTemplate, usingTemplates } from '../../../scripts/template.mjs'
 import { defaultIcons, genericDefaultIcon } from './constants.mjs'
 import { partDetailsCache, getpartDetails, clearCache, getAllpartNames } from './data.mjs'
 import { getHomeRegistry } from './endpoints.mjs'
-import { setHomeRegistry, setDefaultParts, setCurrentPartType, homeRegistry, defaultParts, currentPartType } from './state.mjs'
+import { setHomeRegistry, setDefaultParts, setCurrentPartType, homeRegistry, defaultParts, currentPartType, preloadDragGenerators } from './state.mjs'
 import { createActionButtons, showItemModal } from './ui/itemModal.mjs'
 
 
@@ -258,21 +258,16 @@ export async function attachCardEventListeners(itemElement, part) {
 
 	// 拖出功能
 	itemElement.draggable = true
-	itemElement.addEventListener('dragstart', async event => {
+	itemElement.addEventListener('dragstart', event => {
+		event.dataTransfer.effectAllowed = 'copy'
+
 		const generators = homeRegistry.home_drag_out_generators || []
-		for (const generatorConfig of generators)
-			try {
-				const generatorModule = await import(generatorConfig.path)
-				if (generatorModule.default && typeof generatorModule.default === 'function') {
-					const data = await generatorModule.default(parttype, partname, partdetails, generatorConfig)
-					if (data)
-						event.dataTransfer.setData(generatorConfig.type, data)
-
-				}
-			} catch (error) {
-				console.error(`Error importing or executing drag-out generator from ${generatorConfig.path}:`, error)
-			}
-
+		for (const generatorConfig of generators) try {
+			const data = generatorConfig.func(parttype, partname, partdetails, generatorConfig)
+			if (data) event.dataTransfer.setData(generatorConfig.type, data)
+		} catch (error) {
+			console.error(`Error executing preloaded drag-out generator from path ${generatorConfig.path} for type ${generatorConfig.type}:`, error)
+		}
 	}, { signal })
 
 	onElementRemoved(itemElement, () => {
@@ -539,6 +534,7 @@ export async function refreshCurrentTab() {
 	await Promise.all([
 		getHomeRegistry().then(async data => {
 			setHomeRegistry(data)
+			await preloadDragGenerators(data)
 			await displayFunctionButtons()
 		}).catch(error => console.error('Failed to fetch home registry:', error)),
 		getDefaultParts().then(data => {
