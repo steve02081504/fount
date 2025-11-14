@@ -11,6 +11,14 @@ import { sendEventToAll } from '../server/web_server/event_dispatcher.mjs'
 import { exec } from './exec.mjs'
 import { loadJsonFile } from './json_loader.mjs'
 
+/**
+ * @typedef {import('../../decl/locale_data.ts').LocaleData} LocaleData
+ * @typedef {import('../../decl/locale_data.ts').LocaleKey} LocaleKey
+ * @typedef {import('../../decl/locale_data.ts').LocaleKeyWithoutParams} LocaleKeyWithoutParams
+ * @typedef {import('../../decl/locale_data.ts').LocaleKeyWithParams} LocaleKeyWithParams
+ * @typedef {import('../../decl/locale_data.ts').LocaleKeyParams} LocaleKeyParams
+ */
+
 const console = baseConsole
 /**
  * 所有可用区域设置的列表。
@@ -56,7 +64,7 @@ const fountLocaleCache = {}
  * 获取用户的区域设置数据。
  * @param {string} username - 用户的用户名。
  * @param {string[]} preferredlocaleList - 首选区域设置的列表。
- * @returns {Promise<object>} 一个解析为区域设置数据的承诺。
+ * @returns {Promise<LocaleData>} 一个解析为区域设置数据的承诺。
  */
 export async function getLocaleData(username, preferredlocaleList) {
 	const resultLocale = getbestlocale(preferredlocaleList, fountLocaleList)
@@ -104,7 +112,7 @@ export const localhostLocales = [...new Set([
 ].filter(Boolean))]
 /**
  * 本地主机的区域设置数据。
- * @type {object}
+ * @type {LocaleData}
  */
 export let localhostLocaleData = await getLocaleData(null, localhostLocales)
 
@@ -164,10 +172,24 @@ function getNestedValue(obj, key) {
 	return value
 }
 /**
+ * @overload
+ * @template {LocaleKeyWithoutParams} TKey
+ * @param {TKey} key
+ * @param {Record<string, any>} [params]
+ * @returns {string}
+ */
+/**
+ * @overload
+ * @template {LocaleKeyWithParams} TKey
+ * @param {TKey} key
+ * @param {LocaleKeyParams[TKey]} params
+ * @returns {string}
+ */
+/**
  * 根据提供的键（key）获取翻译后的文本。
- * @param {string} key - 翻译键。
+ * @param {LocaleKey} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值（例如 {name: "John"}）。
- * @returns {Promise<string>} - 翻译后的文本，如果未找到则返回键本身。
+ * @returns {string} - 翻译后的文本，如果未找到则返回键本身。
  */
 export function geti18n(key, params = {}) {
 	let translation = getNestedValue(localhostLocaleData, key)
@@ -182,44 +204,130 @@ export function geti18n(key, params = {}) {
 	return translation
 }
 /**
+ * @overload
+ * @template {LocaleKeyWithoutParams} TKey
+ * @param {TKey} key
+ * @param {Record<string, any>} [params]
+ * @returns {void}
+ */
+/**
+ * @overload
+ * @template {LocaleKeyWithParams} TKey
+ * @param {TKey} key
+ * @param {LocaleKeyParams[TKey]} params
+ * @returns {void}
+ */
+/**
  * 使用 i18n 打印参考消息。
- * @param {string} key - 翻译键。
+ * @param {LocaleKey} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
 console.infoI18n = (key, params = {}) => console.info(geti18n(key, params))
 /**
+ * @overload
+ * @template {LocaleKeyWithoutParams} TKey
+ * @param {TKey} key
+ * @param {Record<string, any>} [params]
+ * @returns {void}
+ */
+/**
+ * @overload
+ * @template {LocaleKeyWithParams} TKey
+ * @param {TKey} key
+ * @param {LocaleKeyParams[TKey]} params
+ * @returns {void}
+ */
+/**
  * 使用 i18n 打印日志消息。
- * @param {string} key - 翻译键。
+ * @param {LocaleKey} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
 console.logI18n = (key, params = {}) => console.log(geti18n(key, params))
 /**
+ * @overload
+ * @template {LocaleKeyWithoutParams} TKey
+ * @param {TKey} key
+ * @param {Record<string, any>} [params]
+ * @returns {void}
+ */
+/**
+ * @overload
+ * @template {LocaleKeyWithParams} TKey
+ * @param {TKey} key
+ * @param {LocaleKeyParams[TKey]} params
+ * @returns {void}
+ */
+/**
  * 使用 i18n 打印警告消息。
- * @param {string} key - 翻译键。
+ * @param {LocaleKey} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
 console.warnI18n = (key, params = {}) => console.warn(geti18n(key, params))
 /**
+ * @overload
+ * @template {LocaleKeyWithoutParams} TKey
+ * @param {TKey} key
+ * @param {Record<string, any>} [params]
+ * @returns {void}
+ */
+/**
+ * @overload
+ * @template {LocaleKeyWithParams} TKey
+ * @param {TKey} key
+ * @param {LocaleKeyParams[TKey]} params
+ * @returns {void}
+ */
+/**
  * 使用 i18n 打印错误消息。
- * @param {string} key - 翻译键。
+ * @param {LocaleKey} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
 console.errorI18n = (key, params = {}) => console.error(geti18n(key, params))
 /**
+ * @overload
+ * @template {LocaleKeyWithoutParams} TKey
+ * @param {string} id
+ * @param {TKey} key
+ * @param {Record<string, any>} [params]
+ * @returns {void}
+ */
+/**
+ * @overload
+ * @template {LocaleKeyWithParams} TKey
+ * @param {string} id
+ * @param {TKey} key
+ * @param {LocaleKeyParams[TKey]} params
+ * @returns {void}
+ */
+/**
  * 使用 i18n 在新行上打印消息。
  * @param {string} id - 新行的唯一标识符。
- * @param {string} key - 翻译键。
+ * @param {LocaleKey} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
 console.freshLineI18n = (id, key, params = {}) => console.freshLine(id, geti18n(key, params))
 /**
+ * @overload
+ * @template {LocaleKeyWithoutParams} TKey
+ * @param {TKey} key
+ * @param {Record<string, any>} [params]
+ * @returns {void}
+ */
+/**
+ * @overload
+ * @template {LocaleKeyWithParams} TKey
+ * @param {TKey} key
+ * @param {LocaleKeyParams[TKey]} params
+ * @returns {void}
+ */
+/**
  * 使用 i18n 显示警报。
- * @param {string} key - 翻译键。
+ * @param {LocaleKey} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void}
  */
@@ -227,8 +335,22 @@ export function alertI18n(key, params = {}) {
 	return alert(geti18n(key, params))
 }
 /**
+ * @overload
+ * @template {LocaleKeyWithoutParams} TKey
+ * @param {TKey} key
+ * @param {Record<string, any>} [params]
+ * @returns {string | null}
+ */
+/**
+ * @overload
+ * @template {LocaleKeyWithParams} TKey
+ * @param {TKey} key
+ * @param {LocaleKeyParams[TKey]} params
+ * @returns {string | null}
+ */
+/**
  * 使用 i18n 显示提示。
- * @param {string} key - 翻译键。
+ * @param {LocaleKey} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {string | null} 用户输入或null。
  */
@@ -236,8 +358,22 @@ export function promptI18n(key, params = {}) {
 	return prompt(geti18n(key, params))
 }
 /**
+ * @overload
+ * @template {LocaleKeyWithoutParams} TKey
+ * @param {TKey} key
+ * @param {Record<string, any>} [params]
+ * @returns {boolean}
+ */
+/**
+ * @overload
+ * @template {LocaleKeyWithParams} TKey
+ * @param {TKey} key
+ * @param {LocaleKeyParams[TKey]} params
+ * @returns {boolean}
+ */
+/**
  * 使用 i18n 显示确认。
- * @param {string} key - 翻译键。
+ * @param {LocaleKey} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值。
  * @returns {boolean} 如果用户点击确定则返回true，否则返回false。
  */
@@ -246,5 +382,6 @@ export function confirmI18n(key, params = {}) {
 }
 /**
  * 导出的控制台对象。
+ * @type {Console}
  */
 export { console }
