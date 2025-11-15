@@ -8,9 +8,11 @@ import { getDefaultParts } from '../../../scripts/parts.mjs'
 import { applyTheme } from '../../../scripts/theme.mjs'
 import { showToast } from '../../../scripts/toast.mjs'
 
+import { getpartDetails } from './data.mjs'
 import { getHomeRegistry } from './endpoints.mjs'
 import { setupDOMEventListeners, setupServerEventListeners } from './events.mjs'
 import { setHomeRegistry, setDefaultParts, setIsSfw, setCurrentPartType, homeRegistry, preloadDragGenerators } from './state.mjs'
+import { showItemModal } from './ui/itemModal.mjs'
 import {
 	setupPartTypeUI,
 	displayFunctionButtons
@@ -43,8 +45,26 @@ export async function initializeApp() {
 	displayFunctionButtons()
 
 	setIsSfw(await getUserSetting('sfw').catch(() => false))
-	const lastTab = sessionStorage.getItem('fount.home.lastTab')
-	setCurrentPartType(homeRegistry.part_types.find(pt => pt.name === lastTab) || homeRegistry.part_types[0])
+
+	const urlParams = new URLSearchParams(window.location.search)
+	const query = urlParams.get('search')
+	const paramPartType = urlParams.get('parttype') || sessionStorage.getItem('fount.home.lastTab')
+	const paramPartName = urlParams.get('partname')
+
+	const initialPartType = homeRegistry.part_types.find(pt => pt.name === paramPartType) || homeRegistry.part_types[0]
+	setCurrentPartType(initialPartType)
+	if (paramPartName) {
+		const partdetails = await getpartDetails(paramPartType, paramPartName, true)
+		if (partdetails) {
+			const part = { parttype: paramPartType, partname: paramPartName, partdetails, partTypeConfig: initialPartType }
+			showItemModal(part)
+		}
+	}
+
+	if (query) {
+		document.getElementById('filter-input').value = query
+		document.getElementById('filter-input').dispatchEvent(new Event('input'))
+	}
 
 	setupDOMEventListeners()
 	setupServerEventListeners()

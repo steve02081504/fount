@@ -409,11 +409,6 @@ export function promptI18n(key, params = {}) {
 export function confirmI18n(key, params = {}) {
 	return confirm(geti18n(key, params))
 }
-/**
- * 导出 console 对象
- * @type {Console}
- */
-export { console }
 
 /**
  * 翻译单个元素。
