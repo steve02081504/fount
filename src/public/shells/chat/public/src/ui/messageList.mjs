@@ -1,5 +1,5 @@
 import { confirmI18n, main_locale, geti18n } from '../../../../../scripts/i18n.mjs'
-import { renderMarkdownAsString, renderMarkdownAsStandAloneHtmlString } from '../../../../../scripts/markdown.mjs'
+import { renderMarkdownAsString, renderMarkdownAsStandAloneHtmlString, renderMarkdownAsStandAloneHtmlStringSync, getStandaloneConvertor } from '../../../../../scripts/markdown.mjs'
 import { renderTemplate, renderTemplateAsHtmlString } from '../../../../../scripts/template.mjs'
 import { showToast } from '../../../../../scripts/toast.mjs'
 import {
@@ -19,6 +19,8 @@ import {
 	getMessageElementByQueueIndex,
 	addDeletionListener,
 } from './virtualQueue.mjs'
+
+getStandaloneConvertor()
 
 // 用于存储滑动事件监听器的 Map
 const swipeListenersMap = new WeakMap()
@@ -204,7 +206,31 @@ export async function renderMessage(message) {
 	}
 
 	const messageElement = await renderTemplate('message_view', preprocessedMessage)
+	messageElement.draggable = true
+	messageElement.addEventListener('dragstart', event => {
+		try {
+			const queueIndex = getQueueIndex(messageElement)
+			if (queueIndex === -1) return
+			const chatLogIndex = getChatLogIndexByQueueIndex(queueIndex)
+			if (chatLogIndex === -1) return
 
+			// Set text and HTML data
+			const markdownContent = message.content_for_show || message.content
+			const htmlContent = renderMarkdownAsStandAloneHtmlStringSync(markdownContent)
+			event.dataTransfer.setData('text/plain', markdownContent)
+			event.dataTransfer.setData('text/html', htmlContent)
+
+			// Set DownloadURL
+			const chatId = window.location.hash.substring(1)
+			const downloadUrl = `/virtual_files/shells/chat/download/message/${chatId}/${chatLogIndex}`
+			const fullDownloadUrl = `${window.location.origin}${downloadUrl}`
+			const fileName = `message-${chatLogIndex}.md`
+			event.dataTransfer.setData('DownloadURL', `text/markdown:${fileName}:${fullDownloadUrl}`)
+		} catch (error) {
+			console.error('Error during dragstart:', error)
+			showToast('error', `Drag start failed: ${error.message}`)
+		}
+	})
 	// --- 删除按钮 ---
 	const deleteButton = messageElement.querySelector('.delete-button')
 	deleteButton.addEventListener('click', () => {
