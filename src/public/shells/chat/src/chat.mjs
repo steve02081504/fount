@@ -75,6 +75,32 @@ export function registerChatUiSocket(chatid, ws) {
 }
 
 /**
+ * 导入一个聊天记录。
+ * @param {object} chatData - 要导入的聊天数据。
+ * @param {string} username - 操作的用户名。
+ * @returns {Promise<{success: boolean, newChatId?: string, message: string}>} 操作结果。
+ */
+export async function importChat(chatData, username) {
+	try {
+		// Basic validation
+		if (!chatData || typeof chatData !== 'object' || !Array.isArray(chatData.chatLog))
+			return { success: false, message: 'Invalid chat data format' }
+
+
+		const newChatId = await newChat(username)
+		const importedMetadata = await chatMetadata_t.fromJSON({ ...chatData, username })
+
+		chatMetadatas.set(newChatId, { username, chatMetadata: importedMetadata })
+		await saveChat(newChatId)
+		return { success: true, newChatId, message: 'Chat imported successfully' }
+	}
+	catch (error) {
+		console.error('Error importing chat:', error)
+		return { success: false, message: 'Error importing chat', error: error.message }
+	}
+}
+
+/**
  * 广播聊天事件。
  * @param {string} chatid - 聊天ID。
  * @param {object} event - 要广播的事件。

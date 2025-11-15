@@ -35,6 +35,14 @@ ${content}
 let convertor, standaloneConvertor
 
 /**
+ * @returns {Promise<import('npm:unified').Processor>}
+ */
+export async function getStandaloneConvertor() {
+	standaloneConvertor ??= await GetMarkdownConvertor({ isStandalone: true })
+	return standaloneConvertor
+}
+
+/**
  * 将 Markdown 渲染为字符串。
  * @param {string} markdown - Markdown 文本。
  * @returns {Promise<string>} - 渲染后的 HTML 字符串。
@@ -62,5 +70,18 @@ export async function renderMarkdown(markdown) {
 export async function renderMarkdownAsStandAloneHtmlString(markdown) {
 	standaloneConvertor ??= await GetMarkdownConvertor({ isStandalone: true })
 	const file = await standaloneConvertor.process(markdown)
+	return String(file)
+}
+
+/**
+ * 将 Markdown 同步渲染为独立的 HTML 字符串。
+ * @param {string} markdown - Markdown 文本。
+ * @returns {string} - 渲染后的 HTML 字符串。
+ */
+export function renderMarkdownAsStandAloneHtmlStringSync(markdown) {
+	if (!standaloneConvertor)
+		throw new Error('Standalone markdown convertor not initialized')
+
+	const file = standaloneConvertor.processSync(markdown)
 	return String(file)
 }

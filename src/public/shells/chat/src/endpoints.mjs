@@ -8,6 +8,7 @@ import {
 	copyChat,
 	deleteChat,
 	exportChat,
+	importChat,
 	getCharListOfChat,
 	getPluginListOfChat,
 	GetChatLog,
@@ -183,6 +184,12 @@ export function setEndpoints(router) {
 		res.status(200).json(result)
 	})
 
+	router.post('/api/shells/chat/import', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const result = await importChat(req.body, username)
+		res.status(result.success ? 200 : 400).json(result)
+	})
+
 	router.post('/api/shells/chat/addfile', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const data = req.files
@@ -196,5 +203,48 @@ export function setEndpoints(router) {
 		const { hash } = req.query
 		const data = await getfile(username, hash)
 		res.status(200).send(data)
+	})
+
+	router.get('/virtual_files/shells/chat/download/message/:chatid/:index', authenticate, async (req, res) => {
+		const { chatid, index } = req.params
+		const { username } = await getUserByReq(req)
+		try {
+			const log = await GetChatLog(chatid, parseInt(index, 10), parseInt(index, 10) + 1)
+			if (!log || log.length === 0)
+				return res.status(404).send('Message not found')
+
+			const message = await log[0].toData(username)
+			const content = message.content.text
+			const filename = `message-${index}.md`
+			res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(filename)}`)
+			res.setHeader('Content-Type', 'text/markdown; charset=utf-8')
+			res.send(content)
+		}
+		catch (error) {
+			console.error(`Error downloading message ${index} from chat ${chatid}:`, error)
+			res.status(500).send('Error generating message file')
+		}
+	})
+
+	router.get('/virtual_files/shells/chat/download/log/:chatid', authenticate, async (req, res) => {
+		const { chatid } = req.params
+		try {
+			const exportResult = await exportChat([chatid])
+			if (!exportResult[0]?.success)
+				return res.status(500).json({ message: exportResult[0]?.message || 'Failed to export chat' })
+
+
+			const chatData = exportResult[0].data
+			const filename = `chat-${chatid}.json`
+			const fileContents = JSON.stringify(chatData, null, '\t')
+
+			res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(filename)}`)
+			res.setHeader('Content-Type', 'application/json; charset=utf-8')
+			res.send(fileContents)
+		}
+		catch (error) {
+			console.error(`Error downloading chat log ${chatid}:`, error)
+			res.status(500).send('Error generating chat log file')
+		}
 	})
 }
