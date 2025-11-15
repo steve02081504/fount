@@ -1,1 +1,2 @@
-const c=[''];' i@2:1,6,2; g:2@2:1,45,2; e@2:2@2:1,90,3; 9@3 2@2:2@2:1,360,8; g:2 2:1,45,1; 5@g,0,4'.split`;`.map(s=>{let[e,l,n]=s.split`,`,o=e.match(/.\w/g).map(c=>c[0].repeat(parseInt(c[1],36))),g=[...o,...o.reverse()],t=[...(2**g.length|2*l).toString(2).slice(2)].map(c=>'color:#0'+(+c?'ff':'00'));for(;n--;)c[0]+=g.join`%c`+'\n',c.push(...t)}),c
+s=`,color:#000,color:#0ff`.repeat`280`.split`,`;for(a of[25,133,2077,513835,109,9**8-1]){for(c=``,i=21;i--;)d=` :`[a%3|0]||`%c@%c`,c=d+c+d,a/=3;s[0]+=(c+`
+`).repeat(a*20e9%478%9)}s
