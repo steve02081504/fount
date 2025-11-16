@@ -361,7 +361,7 @@ export async function updateTabContent(partTypeObject) {
 	itemDescription.innerHTML = geti18n('home.itemDescription') // 重置侧边栏
 
 	// 设置活动选项卡的UI
-	; [partTypesTabsContainerDesktop, partTypesTabsContainerMobile].forEach(container => {
+	;[partTypesTabsContainerDesktop, partTypesTabsContainerMobile].forEach(container => {
 		if (container?.childNodes.length) {
 			container.querySelectorAll('div').forEach(tab => tab.classList.remove('active'))
 			const currentTab = container.querySelector(`[data-target="${partTypeName}-container"]`)
