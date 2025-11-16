@@ -819,7 +819,8 @@
 		"buttons": {
 			"reverseSelect": "Auswahl umkehren",
 			"deleteSelected": "Ausgewählte löschen",
-			"exportSelected": "Ausgewählte exportieren"
+			"exportSelected": "Ausgewählte exportieren",
+			"import": "Importieren"
 		},
 		"chatItemButtons": {
 			"continue": "Fortsetzen",
@@ -834,7 +835,11 @@
 			"noChatSelectedForExport": "Bitte wählen Sie Chatverläufe zum Exportieren aus.",
 			"copyError": "Kopieren fehlgeschlagen",
 			"deleteError": "Löschen fehlgeschlagen",
-			"exportError": "Export fehlgeschlagen"
+			"exportError": "Export fehlgeschlagen",
+			"dragExportError": "Fehler beim Drag-and-Drop-Export",
+			"importSuccess": "Import erfolgreich",
+			"importError": "Import fehlgeschlagen",
+			"invalidImportFile": "Ungültige Importdatei"
 		},
 		"select_checkbox": {
 			"aria-label": "Wählen Sie „Chat mit ${chars}“"

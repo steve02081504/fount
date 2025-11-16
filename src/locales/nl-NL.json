@@ -819,7 +819,8 @@
 		"buttons": {
 			"reverseSelect": "Selectie omkeren",
 			"deleteSelected": "Selectie verwijderen",
-			"exportSelected": "Selectie exporteren"
+			"exportSelected": "Selectie exporteren",
+			"import": "Importeren"
 		},
 		"chatItemButtons": {
 			"continue": "Doorgaan",
@@ -834,7 +835,11 @@
 			"noChatSelectedForExport": "Selecteer een chat om te exporteren",
 			"copyError": "Kopiëren mislukt",
 			"deleteError": "Verwijderen mislukt",
-			"exportError": "Exporteren mislukt"
+			"exportError": "Exporteren mislukt",
+			"dragExportError": "Fout tijdens het exporteren via slepen en neerzetten",
+			"importSuccess": "Importeren succesvol",
+			"importError": "Importeren is mislukt",
+			"invalidImportFile": "Ongeldig importbestand"
 		},
 		"select_checkbox": {
 			"aria-label": "Selecteer chatten met ${chars}"

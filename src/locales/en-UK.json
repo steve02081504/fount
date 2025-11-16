@@ -819,7 +819,8 @@
 		"buttons": {
 			"reverseSelect": "Invert Selection",
 			"deleteSelected": "Delete Selected",
-			"exportSelected": "Export Selected"
+			"exportSelected": "Export Selected",
+			"import": "Import"
 		},
 		"chatItemButtons": {
 			"continue": "Continue",
@@ -834,7 +835,11 @@
 			"noChatSelectedForExport": "Please select chat histories to export.",
 			"copyError": "Copy failed",
 			"deleteError": "Deletion failed",
-			"exportError": "Export failed"
+			"exportError": "Export failed",
+			"dragExportError": "Error during drag and drop export",
+			"importSuccess": "Import successful",
+			"importError": "Import failed",
+			"invalidImportFile": "Invalid import file"
 		},
 		"select_checkbox": {
 			"aria-label": "Select chat with ${chars}"

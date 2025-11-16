@@ -8,6 +8,7 @@ import {
 	copyChat,
 	deleteChat,
 	exportChat,
+	importChat,
 	getCharListOfChat,
 	getPluginListOfChat,
 	GetChatLog,
@@ -183,6 +184,12 @@ export function setEndpoints(router) {
 		res.status(200).json(result)
 	})
 
+	router.post('/api/shells/chat/import', authenticate, async (req, res) => {
+		const { username } = await getUserByReq(req)
+		const result = await importChat(req.body, username)
+		res.status(result.success ? 200 : 400).json(result)
+	})
+
 	router.post('/api/shells/chat/addfile', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const data = req.files
@@ -196,5 +203,20 @@ export function setEndpoints(router) {
 		const { hash } = req.query
 		const data = await getfile(username, hash)
 		res.status(200).send(data)
+	})
+
+	router.get('/virtual_files/shells/chat/:chatid', authenticate, async (req, res) => {
+		const { chatid } = req.params
+		const exportResult = await exportChat([chatid])
+		if (!exportResult[0]?.success)
+			return res.status(500).json({ message: exportResult[0]?.message || 'Failed to export chat' })
+
+		const chatData = exportResult[0].data
+		const filename = `chat-${chatid}.json`
+		const fileContents = JSON.stringify(chatData, null, '\t')
+
+		res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(filename)}`)
+		res.setHeader('Content-Type', 'application/json; charset=utf-8')
+		res.send(fileContents)
 	})
 }

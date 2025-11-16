@@ -819,7 +819,8 @@
 		"buttons": {
 			"reverseSelect": "Víxla vali",
 			"deleteSelected": "Eyða völdu",
-			"exportSelected": "Flytja út valið"
+			"exportSelected": "Flytja út valið",
+			"import": "Flytja inn"
 		},
 		"chatItemButtons": {
 			"continue": "Halda áfram",
@@ -834,7 +835,11 @@
 			"noChatSelectedForExport": "Vinsamlegast veldu spjallferla til að flytja út",
 			"copyError": "Afritun mistókst",
 			"deleteError": "Eyðing mistókst",
-			"exportError": "Útflutningur mistókst"
+			"exportError": "Útflutningur mistókst",
+			"dragExportError": "Villa við að draga og sleppa útflutningi",
+			"importSuccess": "Innflutningur tókst",
+			"importError": "Innflutningur mistókst",
+			"invalidImportFile": "Ógild innflutningsskrá"
 		},
 		"select_checkbox": {
 			"aria-label": "Veldu spjall við ${chars}"

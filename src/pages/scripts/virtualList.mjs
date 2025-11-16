@@ -28,6 +28,7 @@ function createSentinel(id) {
  * @param {number} [options.initialIndex=0] - 列表初始加载时要滚动到的项目索引。默认为 0 (列表开头)。
  * @param {function(): void} [options.onRenderComplete] - 每次队列渲染完成时调用的回调函数。
  * @param {function(HTMLElement, HTMLElement, object): (void|Promise<void>)} [options.replaceItemRenderer] - 一个可选的函数，用于自定义替换 DOM 元素的方式。接收 `oldElement`、`newElement` 和 `item`。默认为直接替换。
+ * @param {boolean} [options.setInitialScroll=true] - 是否在初始加载时滚动到 `initialIndex` 指定的项目。默认为 true。
  * @returns {{
  *   destroy: function(): void,
  *   refresh: function(): Promise<void>,
@@ -47,6 +48,7 @@ export function createVirtualList({
 	initialIndex = 0,
 	onRenderComplete = () => { },
 	replaceItemRenderer = (oldElement, newElement) => oldElement.replaceWith(newElement),
+	setInitialScroll = true,
 }) {
 	const state = {
 		queue: [], // 当前加载的数据项队列
@@ -299,6 +301,7 @@ export function createVirtualList({
 			state.queue = items
 			state.startIndex = fetchStartIndex
 			await renderQueue()
+			if (!setInitialScroll) return
 			const targetElement = state.renderedElements.get(targetIndex)
 			if (targetElement)
 				targetElement.scrollIntoView({
@@ -307,7 +310,6 @@ export function createVirtualList({
 				})
 			else
 				container.scrollTop = container.scrollHeight
-
 		} finally {
 			state.isLoading = false
 			observeSentinels()

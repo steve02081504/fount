@@ -819,7 +819,8 @@
 		"buttons": {
 			"reverseSelect": "선택 반전",
 			"deleteSelected": "선택 항목 삭제",
-			"exportSelected": "선택 항목 내보내기"
+			"exportSelected": "선택 항목 내보내기",
+			"import": "가져오기"
 		},
 		"chatItemButtons": {
 			"continue": "계속하기",
@@ -834,7 +835,11 @@
 			"noChatSelectedForExport": "내보낼 채팅 기록을 선택해주세요.",
 			"copyError": "복사에 실패했습니다.",
 			"deleteError": "삭제에 실패했습니다.",
-			"exportError": "내보내기에 실패했습니다."
+			"exportError": "내보내기에 실패했습니다.",
+			"dragExportError": "드래그 앤 드롭 내보내기 중 오류가 발생했습니다.",
+			"importSuccess": "가져오기 성공",
+			"importError": "가져오기 실패",
+			"invalidImportFile": "잘못된 가져오기 파일"
 		},
 		"select_checkbox": {
 			"aria-label": "${chars}님과의 채팅 선택"

@@ -819,7 +819,8 @@
 		"buttons": {
 			"reverseSelect": "Обратить выбор",
 			"deleteSelected": "Удалить выбранные",
-			"exportSelected": "Экспортировать выбранные"
+			"exportSelected": "Экспортировать выбранные",
+			"import": "Импортировать"
 		},
 		"chatItemButtons": {
 			"continue": "Продолжить",
@@ -834,7 +835,11 @@
 			"noChatSelectedForExport": "Пожалуйста, выберите чаты для экспорта.",
 			"copyError": "Копирование не удалось.",
 			"deleteError": "Удаление не удалось.",
-			"exportError": "Экспорт не удалось."
+			"exportError": "Экспорт не удалось.",
+			"dragExportError": "Ошибка экспорта при перетаскивании",
+			"importSuccess": "Импорт выполнен успешно.",
+			"importError": "Импорт не удался",
+			"invalidImportFile": "Неверный файл импорта"
 		},
 		"select_checkbox": {
 			"aria-label": "Выберите чат с ${chars}"

@@ -819,7 +819,8 @@
 		"buttons": {
 			"reverseSelect": "反選",
 			"deleteSelected": "刪除選取",
-			"exportSelected": "匯出選取"
+			"exportSelected": "匯出選取項目",
+			"import": "匯入"
 		},
 		"chatItemButtons": {
 			"continue": "繼續",
@@ -834,7 +835,11 @@
 			"noChatSelectedForExport": "請選擇要匯出的聊天記錄",
 			"copyError": "複製失敗",
 			"deleteError": "刪除失敗",
-			"exportError": "匯出失敗"
+			"exportError": "匯出失敗",
+			"dragExportError": "拖曳匯出時出錯",
+			"importSuccess": "匯入成功",
+			"importError": "匯入失敗",
+			"invalidImportFile": "無效的匯入檔案"
 		},
 		"select_checkbox": {
 			"aria-label": "選擇與 ${chars} 的聊天"
