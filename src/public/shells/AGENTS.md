@@ -1,16 +1,23 @@
 # AI Agent Guide: Shell Architecture & Creation
 
-**Objective**: This document provides AI agents with a clear, actionable guide to the architecture of fount Shells and the standard procedure for creating new ones.
+**Objective**: This document provides AI agents with a clear, actionable guide
+to the architecture of fount Shells and the standard procedure for creating new
+ones.
 
-**Instruction**: **You must follow this architecture strictly.** Adherence to this pattern ensures that new user interfaces (Shells) are modular, maintainable, and integrate correctly with the fount ecosystem.
+**Instruction**: **You must follow this architecture strictly.** Adherence to
+this pattern ensures that new user interfaces (Shells) are modular,
+maintainable, and integrate correctly with the fount ecosystem.
 
 ---
 
 ## 1. Standard Shell Architecture
 
-A fount Shell is a self-contained module that provides a user interface and corresponding backend logic. It consists of a frontend (served as static files) and a backend (integrated into the main fount server).
+A fount Shell is a self-contained module that provides a user interface and
+corresponding backend logic. It consists of a frontend (served as static files)
+and a backend (integrated into the main fount server).
 
-The standard file structure is as follows. Note the clear separation between the backend code (`src/`) and the frontend code (`public/`).
+The standard file structure is as follows. Note the clear separation between the
+backend code (`src/`) and the frontend code (`public/`).
 
 ```tree
 /src/public/shells/<your-shell-name>/
@@ -32,26 +39,45 @@ The standard file structure is as follows. Note the clear separation between the
 ### Key File & Directory Responsibilities
 
 1. **`main.mjs` (Backend Entry Point)**
-   - **Role**: The Shell's manifest and lifecycle manager. This is how the fount `parts_loader` interacts with your Shell.
+   - **Role**: The Shell's manifest and lifecycle manager. This is how the fount
+     `parts_loader` interacts with your Shell.
    - **`info`**: Metadata about the shell (name, description, author, etc.).
-   - **`Load({ router })`**: This function is **required**. It's called when the Shell is loaded. Its primary job is to receive an Express `router` instance and use it to register the Shell's backend routes (both HTTP and WebSocket).
-   - **`interfaces.invokes.IPCInvokeHandler`**: (Advanced) A powerful function that handles direct, non-HTTP server-side actions. It's ideal for complex operations that don't fit the simple request/response model, such as the AI-driven logic in `shellassist`.
+   - **`Load({ router })`**: This function is **required**. It's called when the
+     Shell is loaded. Its primary job is to receive an Express `router` instance
+     and use it to register the Shell's backend routes (both HTTP and
+     WebSocket).
+   - **`interfaces.invokes.IPCInvokeHandler`**: (Advanced) A powerful function
+     that handles direct, non-HTTP server-side actions. It's ideal for complex
+     operations that don't fit the simple request/response model, such as the
+     AI-driven logic in `shellassist`.
 
 2. **`public/` (Frontend Directory)**
-   - **Role**: Contains all static assets for the user interface. These files are served directly to the user's browser.
-   - **`index.html`**: The main page structure. It should include standard fount headers (`/base.css`, `/preload.mjs`, `/base.mjs`).
-   - **`index.mjs`**: The core frontend logic. It should import and use common scripts from `@src/pages/scripts/` for tasks like theming (`applyTheme`), translation (`initTranslations`), and using pre-built components (`setTerminal`).
+   - **Role**: Contains all static assets for the user interface. These files
+     are served directly to the user's browser.
+   - **`index.html`**: The main page structure. It should include standard fount
+     headers (`/base.css`, `/preload.mjs`, `/base.mjs`).
+   - **`index.mjs`**: The core frontend logic. It should import and use common
+     scripts from `@src/pages/scripts/` for tasks like theming (`applyTheme`),
+     translation (`initTranslations`), and using pre-built components
+     (`setTerminal`).
 
 3. **`src/` (Backend Directory)**
    - **Role**: Contains all the Node.js backend logic for the shell.
-   - **`endpoints.mjs`**: Exports a `setEndpoints(router)` function. This is where you define all your API endpoints (`router.get`, `router.post`) and WebSocket handlers (`router.ws`). This keeps all routing logic organized in one place.
+   - **`endpoints.mjs`**: Exports a `setEndpoints(router)` function. This is
+     where you define all your API endpoints (`router.get`, `router.post`) and
+     WebSocket handlers (`router.ws`). This keeps all routing logic organized in
+     one place.
 
 4. **`home_registry.json` (Home Shell Integration)**
-   - **Role**: Makes your Shell discoverable and accessible from the main fount `home` shell UI.
-   - `home_function_buttons`: Adds a button to the main menu on the `home` shell that links to your Shell's `index.html`.
+   - **Role**: Makes your Shell discoverable and accessible from the main fount
+     `home` shell UI.
+   - `home_function_buttons`: Adds a button to the main menu on the `home` shell
+     that links to your Shell's `index.html`.
 
 5. **`argument_completer.ps1` (CLI Integration)**
-   - **Role**: Provides context-aware command-line completion for users interacting with your shell via the fount CLI (`fount run shells ...`). This enhances usability for power users.
+   - **Role**: Provides context-aware command-line completion for users
+     interacting with your shell via the fount CLI (`fount run shells ...`).
+     This enhances usability for power users.
 
 ---
 
@@ -75,7 +101,8 @@ touch src/public/shells/my-new-shell/src/endpoints.mjs
 
 ### Step 2: Implement `main.mjs` (Backend Entry)
 
-This file registers the shell and its routes. For an interactive shell, you might also define an `IPCInvokeHandler`.
+This file registers the shell and its routes. For an interactive shell, you
+might also define an `IPCInvokeHandler`.
 
 ```javascript
 // src/public/shells/my-new-shell/main.mjs
@@ -114,7 +141,8 @@ export default {
 
 ### Step 3: Define Backend Endpoints (`src/endpoints.mjs`)
 
-Define the server-side logic, including WebSocket handlers for real-time communication.
+Define the server-side logic, including WebSocket handlers for real-time
+communication.
 
 ```javascript
 // src/public/shells/my-new-shell/src/endpoints.mjs
@@ -147,7 +175,8 @@ export function setEndpoints(router) {
 
 ### Step 4: Create Frontend (`public/index.html` & `public/index.mjs`)
 
-Define the UI and connect it to the backend. For an interactive terminal, we use `xterm.js` via the shared `terminal.mjs` script.
+Define the UI and connect it to the backend. For an interactive terminal, we use
+`xterm.js` via the shared `terminal.mjs` script.
 
 **`public/index.html`:**
 
@@ -189,7 +218,7 @@ Define the UI and connect it to the backend. For an interactive terminal, we use
 
 ```javascript
 import { applyTheme } from '../../scripts/theme.mjs';
-import { initTranslations, geti18n } from '../../scripts/i18n.mjs';
+import { geti18n, initTranslations } from '../../scripts/i18n.mjs';
 import { setTerminal } from '../../scripts/terminal.mjs'; // Shared terminal helper
 
 // Standard Initialization
@@ -224,4 +253,5 @@ terminal.onData((data) => {
 });
 ```
 
-After completing these steps, restart the fount server. The new shell will be available at `/shells/my-new-shell/`.
+After completing these steps, restart the fount server. The new shell will be
+available at `/shells/my-new-shell/`.
