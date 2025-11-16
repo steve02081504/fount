@@ -1034,9 +1034,6 @@
 			"component_related": {
 				"title": "घटक",
 				"sub_items": {
-					"0": {
-						"title": "आयात करें"
-					},
 					"import": {
 						"title": "आयात करें"
 					}
@@ -1433,9 +1430,6 @@
 			"component_related": {
 				"title": "घटक",
 				"sub_items": {
-					"0": {
-						"title": "घटक कॉन्फ़िगरेशन"
-					},
 					"componentConfigLink": {
 						"title": "घटक कॉन्फ़िगरेशन"
 					}
@@ -1785,9 +1779,6 @@
 			"integration_related": {
 				"title": "एकीकरण",
 				"sub_items": {
-					"0": {
-						"title": "टर्मिनल असिस्ट"
-					},
 					"terminalAssist": {
 						"title": "टर्मिनल असिस्ट"
 					}

@@ -1034,9 +1034,6 @@
 			"component_related": {
 				"title": "Componenti",
 				"sub_items": {
-					"0": {
-						"title": "Importa"
-					},
 					"import": {
 						"title": "Importa"
 					}
@@ -1433,9 +1430,6 @@
 			"component_related": {
 				"title": "Componenti",
 				"sub_items": {
-					"0": {
-						"title": "Configurazione Componente"
-					},
 					"componentConfigLink": {
 						"title": "Configurazione Componente"
 					}
@@ -1785,9 +1779,6 @@
 			"integration_related": {
 				"title": "Integrazioni",
 				"sub_items": {
-					"0": {
-						"title": "Assistenza Terminale"
-					},
 					"terminalAssist": {
 						"title": "Assistenza Terminale"
 					}

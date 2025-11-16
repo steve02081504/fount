@@ -1034,9 +1034,6 @@
 			"component_related": {
 				"title": "Liên quan đến thành phần",
 				"sub_items": {
-					"0": {
-						"title": "Nhập khẩu"
-					},
 					"import": {
 						"title": "Nhập khẩu"
 					}
@@ -1433,9 +1430,6 @@
 			"component_related": {
 				"title": "Liên quan đến thành phần",
 				"sub_items": {
-					"0": {
-						"title": "Cấu hình thành phần"
-					},
 					"componentConfigLink": {
 						"title": "Cấu hình thành phần"
 					}
@@ -1785,9 +1779,6 @@
 			"integration_related": {
 				"title": "Tích hợp liên quan",
 				"sub_items": {
-					"0": {
-						"title": "Hỗ trợ Terminal"
-					},
 					"terminalAssist": {
 						"title": "Hỗ trợ Terminal"
 					}

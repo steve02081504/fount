@@ -1034,9 +1034,6 @@
 			"component_related": {
 				"title": "Компонент",
 				"sub_items": {
-					"0": {
-						"title": "Імпорт"
-					},
 					"import": {
 						"title": "Імпорт"
 					}
@@ -1433,9 +1430,6 @@
 			"component_related": {
 				"title": "Компонент",
 				"sub_items": {
-					"0": {
-						"title": "Конфігурація компонентів"
-					},
 					"componentConfigLink": {
 						"title": "Конфігурація компонентів"
 					}
@@ -1785,9 +1779,6 @@
 			"integration_related": {
 				"title": "Інтеграція, пов’язана",
 				"sub_items": {
-					"0": {
-						"title": "Термінальна допомога"
-					},
 					"terminalAssist": {
 						"title": "Термінальна допомога"
 					}

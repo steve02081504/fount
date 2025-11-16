@@ -1034,9 +1034,6 @@
 			"component_related": {
 				"title": "Composants",
 				"sub_items": {
-					"0": {
-						"title": "Importer"
-					},
 					"import": {
 						"title": "Importer"
 					}
@@ -1433,9 +1430,6 @@
 			"component_related": {
 				"title": "Composants",
 				"sub_items": {
-					"0": {
-						"title": "Configuration des Composants"
-					},
 					"componentConfigLink": {
 						"title": "Configuration des Composants"
 					}
@@ -1785,9 +1779,6 @@
 			"integration_related": {
 				"title": "Intégrations",
 				"sub_items": {
-					"0": {
-						"title": "Assistant Terminal"
-					},
 					"terminalAssist": {
 						"title": "Assistant Terminal"
 					}

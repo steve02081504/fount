@@ -1034,9 +1034,6 @@
 			"component_related": {
 				"title": "Componenten",
 				"sub_items": {
-					"0": {
-						"title": "Importeren"
-					},
 					"import": {
 						"title": "Importeren"
 					}
@@ -1433,9 +1430,6 @@
 			"component_related": {
 				"title": "Componenten",
 				"sub_items": {
-					"0": {
-						"title": "Componentconfiguratie"
-					},
 					"componentConfigLink": {
 						"title": "Componentconfiguratie"
 					}
@@ -1785,9 +1779,6 @@
 			"integration_related": {
 				"title": "Integraties",
 				"sub_items": {
-					"0": {
-						"title": "Terminale hulp"
-					},
 					"terminalAssist": {
 						"title": "Terminale hulp"
 					}

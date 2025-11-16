@@ -1034,9 +1034,6 @@
 			"component_related": {
 				"title": "組件",
 				"sub_items": {
-					"0": {
-						"title": "引入"
-					},
 					"import": {
 						"title": "引入"
 					}
@@ -1433,9 +1430,6 @@
 			"component_related": {
 				"title": "組件",
 				"sub_items": {
-					"0": {
-						"title": "器之規度"
-					},
 					"componentConfigLink": {
 						"title": "器之規度"
 					}
@@ -1785,9 +1779,6 @@
 			"integration_related": {
 				"title": "關聯",
 				"sub_items": {
-					"0": {
-						"title": "終端輔佐"
-					},
 					"terminalAssist": {
 						"title": "終端輔佐"
 					}

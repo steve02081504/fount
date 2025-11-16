@@ -1034,9 +1034,6 @@
 			"component_related": {
 				"title": "🧩",
 				"sub_items": {
-					"0": {
-						"title": "📥"
-					},
 					"import": {
 						"title": "📥"
 					}
@@ -1433,9 +1430,6 @@
 			"component_related": {
 				"title": "🧩",
 				"sub_items": {
-					"0": {
-						"title": "🧩⚙️"
-					},
 					"componentConfigLink": {
 						"title": "🧩⚙️"
 					}
@@ -1785,9 +1779,6 @@
 			"integration_related": {
 				"title": "🔗",
 				"sub_items": {
-					"0": {
-						"title": "💻🦾"
-					},
 					"terminalAssist": {
 						"title": "💻🦾"
 					}

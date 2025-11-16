@@ -1034,9 +1034,6 @@
 			"component_related": {
 				"title": "コンポーネント",
 				"sub_items": {
-					"0": {
-						"title": "インポート"
-					},
 					"import": {
 						"title": "インポート"
 					}
@@ -1433,9 +1430,6 @@
 			"component_related": {
 				"title": "コンポーネント",
 				"sub_items": {
-					"0": {
-						"title": "コンポーネント設定"
-					},
 					"componentConfigLink": {
 						"title": "コンポーネント設定"
 					}
@@ -1785,9 +1779,6 @@
 			"integration_related": {
 				"title": "統合",
 				"sub_items": {
-					"0": {
-						"title": "ターミナルアシスト"
-					},
 					"terminalAssist": {
 						"title": "ターミナルアシスト"
 					}

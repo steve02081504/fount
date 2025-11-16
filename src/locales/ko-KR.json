@@ -1034,9 +1034,6 @@
 			"component_related": {
 				"title": "컴포넌트",
 				"sub_items": {
-					"0": {
-						"title": "가져오기"
-					},
 					"import": {
 						"title": "가져오기"
 					}
@@ -1433,9 +1430,6 @@
 			"component_related": {
 				"title": "컴포넌트",
 				"sub_items": {
-					"0": {
-						"title": "컴포넌트 설정"
-					},
 					"componentConfigLink": {
 						"title": "컴포넌트 설정"
 					}
@@ -1785,9 +1779,6 @@
 			"integration_related": {
 				"title": "통합",
 				"sub_items": {
-					"0": {
-						"title": "터미널 지원"
-					},
 					"terminalAssist": {
 						"title": "터미널 지원"
 					}

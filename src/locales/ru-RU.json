@@ -1034,9 +1034,6 @@
 			"component_related": {
 				"title": "Компоненты",
 				"sub_items": {
-					"0": {
-						"title": "Импорт"
-					},
 					"import": {
 						"title": "Импорт"
 					}
@@ -1433,9 +1430,6 @@
 			"component_related": {
 				"title": "Компоненты",
 				"sub_items": {
-					"0": {
-						"title": "Настройка компонента"
-					},
 					"componentConfigLink": {
 						"title": "Настройка компонента"
 					}
@@ -1785,9 +1779,6 @@
 			"integration_related": {
 				"title": "Интеграции",
 				"sub_items": {
-					"0": {
-						"title": "Терминал-Ассистент"
-					},
 					"terminalAssist": {
 						"title": "Терминал-Ассистент"
 					}

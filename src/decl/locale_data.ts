@@ -1023,7 +1023,7 @@ export type LocaleData = {
 			component_related: {
 				title: string
 				sub_items: {
-					'0': {
+					import: {
 						title: string
 					}
 				}
@@ -1419,7 +1419,7 @@ export type LocaleData = {
 			component_related: {
 				title: string
 				sub_items: {
-					'0': {
+					componentConfigLink: {
 						title: string
 					}
 				}
@@ -1768,7 +1768,7 @@ export type LocaleData = {
 			integration_related: {
 				title: string
 				sub_items: {
-					'0': {
+					terminalAssist: {
 						title: string
 					}
 				}

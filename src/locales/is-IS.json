@@ -1034,9 +1034,6 @@
 			"component_related": {
 				"title": "Íhlutir",
 				"sub_items": {
-					"0": {
-						"title": "Flytja inn"
-					},
 					"import": {
 						"title": "Flytja inn"
 					}
@@ -1433,9 +1430,6 @@
 			"component_related": {
 				"title": "Íhlutir",
 				"sub_items": {
-					"0": {
-						"title": "Stillingar íhluta"
-					},
 					"componentConfigLink": {
 						"title": "Stillingar íhluta"
 					}
@@ -1785,9 +1779,6 @@
 			"integration_related": {
 				"title": "Samþættingar",
 				"sub_items": {
-					"0": {
-						"title": "Terminal Assistance"
-					},
 					"terminalAssist": {
 						"title": "Terminal Assistance"
 					}

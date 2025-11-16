@@ -1430,9 +1430,6 @@
 			"component_related": {
 				"title": "組件",
 				"sub_items": {
-					"0": {
-						"title": "組件配置"
-					},
 					"componentConfigLink": {
 						"title": "組件配置"
 					}
@@ -1782,9 +1779,6 @@
 			"integration_related": {
 				"title": "整合",
 				"sub_items": {
-					"0": {
-						"title": "終端輔助"
-					},
 					"terminalAssist": {
 						"title": "終端輔助"
 					}

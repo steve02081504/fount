@@ -1034,9 +1034,6 @@
 			"component_related": {
 				"title": "مكونات",
 				"sub_items": {
-					"0": {
-						"title": "استيراد"
-					},
 					"import": {
 						"title": "استيراد"
 					}
@@ -1433,9 +1430,6 @@
 			"component_related": {
 				"title": "مكونات",
 				"sub_items": {
-					"0": {
-						"title": "تكوين المكون"
-					},
 					"componentConfigLink": {
 						"title": "تكوين المكون"
 					}
@@ -1785,9 +1779,6 @@
 			"integration_related": {
 				"title": "التكاملات",
 				"sub_items": {
-					"0": {
-						"title": "المساعدة الطرفية"
-					},
 					"terminalAssist": {
 						"title": "المساعدة الطرفية"
 					}
