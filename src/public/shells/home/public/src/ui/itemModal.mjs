@@ -26,7 +26,7 @@ export function createActionButtons(part) {
 			if (interfaceItem.style) button.style.cssText = interfaceItem.style
 
 			button.innerHTML = interfaceItem.button ?? /* html */ '<img src="https://api.iconify.design/line-md/question-circle.svg" />'
-			button.title = interfaceItem.info.title
+			button.title = geti18n(interfaceItem.info).title
 			svgInliner(button)
 
 			if (interfaceItem.onclick)

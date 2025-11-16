@@ -370,6 +370,16 @@
 				"description": "「チュートリアル？ あれは何？ 食べられるの？」",
 				"locked_description": "入門チュートリアルを一度スキップしてください。"
 			}
+		},
+		"home_function_buttons": {
+			"other": {
+				"title": "その他",
+				"sub_items": {
+					"replay": {
+						"title": "チュートリアルをリプレイ"
+					}
+				}
+			}
 		}
 	},
 	"auth": {
@@ -566,6 +576,16 @@
 			"dropSuccess": "ドラッグアンドドロップが成功しました！",
 			"dropError": "ドラッグ アンド ドロップ処理のエラー: ${error}",
 			"noHandler": "適切なドラッグ アンド ドロップ ハンドラーが見つかりません。"
+		},
+		"home_shell_interfaces": {
+			"open": {
+				"description": "アクセス"
+			}
+		},
+		"home_drag_out_generators": {
+			"generateXFountPart": {
+				"description": "カウントコンポーネント情報の生成"
+			}
 		}
 	},
 	"chat": {
@@ -799,6 +819,16 @@
 			"pluginAdded": "プラグイン ${partName} がチャットに追加されました。",
 			"unsupportedPartType": "サポートされていないパーツ タイプ: ${partType}。",
 			"errorAddingPart": "パーツ ${partName} の追加中にエラーが発生しました: ${error}"
+		},
+		"home_char_interfaces": {
+			"main": {
+				"title": "チャット"
+			}
+		},
+		"home_function_buttons": {
+			"viewHistory": {
+				"title": "履歴を見る"
+			}
 		}
 	},
 	"chat_history": {
@@ -948,6 +978,16 @@
 				"description": "ゼロから始めて、最初のコンポーネントを作成します。",
 				"locked_description": "クイック新規機能を使用してパーツを作成します。"
 			}
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "コンポーネント",
+				"sub_items": {
+					"quickCreate": {
+						"title": "クイック作成"
+					}
+				}
+			}
 		}
 	},
 	"import": {
@@ -994,6 +1034,24 @@
 		"dragAndDrop": {
 			"fileDropDescription": "ファイルからコンポーネントをインストールする",
 			"textDropDescription": "テキストからパーツをインストールする"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "コンポーネント",
+				"sub_items": {
+					"import": {
+						"title": "インポート"
+					}
+				}
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleTextDrop": {
+				"description": "テキストからパーツをインストールする"
+			},
+			"handleFileDrop": {
+				"description": "ファイルからコンポーネントをインストールする"
+			}
 		}
 	},
 	"export": {
@@ -1072,6 +1130,26 @@
 		},
 		"dragAndDrop": {
 			"downloadPartDescription": "パーツをダウンロードする"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "コンポーネント",
+				"sub_items": {
+					"exportPart": {
+						"title": "パートをエクスポート"
+					}
+				}
+			}
+		},
+		"home_drag_out_generators": {
+			"generateDownloadUrl": {
+				"description": "パーツをダウンロードする"
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "エクスポート"
+			}
 		}
 	},
 	"uninstall": {
@@ -1099,6 +1177,11 @@
 		"errorMessage": {
 			"icon": {
 				"alt": "エラーアイコン"
+			}
+		},
+		"home_common_interfaces": {
+			"delete": {
+				"title": "削除"
 			}
 		}
 	},
@@ -1207,7 +1290,17 @@
 			"cancelButton": "キャンセル"
 		},
 		"apiError": "APIリクエストに失敗しました：${message}",
-		"generalError": "エラーが発生しました：${message}"
+		"generalError": "エラーが発生しました：${message}",
+		"home_function_buttons": {
+			"settings": {
+				"title": "設定",
+				"sub_items": {
+					"main": {
+						"title": "ユーザー設定"
+					}
+				}
+			}
+		}
 	},
 	"languageSettings": {
 		"title": "言語設定",
@@ -1227,7 +1320,17 @@
 		"noPreferredLanguages": "優先言語が設定されていません。ブラウザのデフォルト設定が使用されます。",
 		"savedMessage": "言語設定が保存されます！",
 		"resetMessage": "言語設定がリセットされました！",
-		"fetchLocalesFailed": "利用可能な言語を取得できませんでした！"
+		"fetchLocalesFailed": "利用可能な言語を取得できませんでした！",
+		"home_function_buttons": {
+			"settings": {
+				"title": "設定",
+				"sub_items": {
+					"main": {
+						"title": "言語設定"
+					}
+				}
+			}
+		}
 	},
 	"themeManage": {
 		"title": "テーマ管理",
@@ -1281,6 +1384,16 @@
 				"description": "噴水は新しい外観とまったく新しい雰囲気を持っていました。",
 				"locked_description": "テーマを一度切り替えます。"
 			}
+		},
+		"home_function_buttons": {
+			"settings": {
+				"title": "設定",
+				"sub_items": {
+					"switchTheme": {
+						"title": "テーマ切り替え"
+					}
+				}
+			}
 		}
 	},
 	"part_config": {
@@ -1317,6 +1430,21 @@
 			"saveConfigFailed": "コンポーネント設定の保存に失敗しました。",
 			"unsavedChanges": "保存されていない変更があります。変更を破棄しますか？",
 			"beforeUnload": "保存されていない変更があります。このページから移動しますか？"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "コンポーネント",
+				"sub_items": {
+					"componentConfigLink": {
+						"title": "コンポーネント設定"
+					}
+				}
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "設定"
+			}
 		}
 	},
 	"aisource_editor": {
@@ -1384,6 +1512,11 @@
 				"description": "マナ供給源としてデフォルトAIが指定されています。",
 				"locked_description": "デフォルトの AI ソースを一度設定します。"
 			}
+		},
+		"home_function_buttons": {
+			"manage": {
+				"title": "AIソースを管理"
+			}
 		}
 	},
 	"discord_bots": {
@@ -1445,6 +1578,21 @@
 				"description": "あなたのキャラクターを Discord の世界に召喚します。",
 				"locked_description": "Discord Botを一度起動します。"
 			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "ボット関連",
+				"sub_items": {
+					"manage": {
+						"title": "Discord Botの設定"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Discord Botの設定"
+			}
 		}
 	},
 	"telegram_bots": {
@@ -1505,6 +1653,21 @@
 				"name": "テレグラムに来る",
 				"description": "あなたのキャラクターを Telegram の世界に召喚します。",
 				"locked_description": "Telegram Bot を一度起動します。"
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "ボット関連",
+				"sub_items": {
+					"manage": {
+						"title": "Telegram Botの設定"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Telegram Botの設定"
 			}
 		}
 	},
@@ -1581,6 +1744,16 @@
 				"description": "GitHubでfountにスターを付けていただき、ありがとうございます！",
 				"locked_description": "fount の GitHub リポジトリにアクセスして、スターを付けてください。"
 			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "統合",
+				"sub_items": {
+					"browserIntegrationLink": {
+						"title": "ブラウザ統合"
+					}
+				}
+			}
 		}
 	},
 	"browser_integration_script": {
@@ -1605,6 +1778,16 @@
 				"name": "「やあ、ファウント」",
 				"description": "暗いターミナルの中で、AIパートナーの名前が呼ばれた。",
 				"locked_description": "ターミナル アシスタンスに一度電話してください。"
+			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "統合",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "ターミナルアシスト"
+					}
+				}
 			}
 		}
 	},
@@ -1642,6 +1825,26 @@
 				"description": "野生のキャラクターが飛び出してきてデスクトップを占領します。",
 				"locked_description": "デスクトップペットを開始します。"
 			}
+		},
+		"home_char_interfaces": {
+			"launch": {
+				"title": "デスクトップペットとして起動"
+			}
+		},
+		"home_function_buttons": {
+			"in_dev": {
+				"title": "開発中",
+				"sub_items": {
+					"deskpet_related": {
+						"title": "デスクトップペット",
+						"sub_items": {
+							"main": {
+								"title": "デスクトップペットを管理する"
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"access": {
@@ -1659,7 +1862,12 @@
 			"aria-label": "URL"
 		},
 		"copyButton": "URLをコピー",
-		"copied": "URLをクリップボードにコピーしました！"
+		"copied": "URLをクリップボードにコピーしました！",
+		"home_function_buttons": {
+			"main": {
+				"title": "他のデバイスへのアクセス"
+			}
+		}
 	},
 	"proxy": {
 		"title": "APIプロキシ",
@@ -1683,7 +1891,17 @@
 		"apiKeyCopied": "APIキーをコピーしました！",
 		"queryStringSectionTitle": "リクエストヘッダーにAPIKeyを設定できませんか？ (非推奨)",
 		"queryStringWarning": "アプリケーションがリクエストヘッダー（Authorizationヘッダー）でのAPIキー送信をサポートしていない場合、この代替方法を使用してください。注意：APIキーを直接URLに含めることは、サーバーのログやブラウザの履歴に記録される可能性があるため、セキュリティ上のリスクを伴います。",
-		"copyQueryStringUrlButton": "APIキーを含むURL（クエリ文字列）"
+		"copyQueryStringUrlButton": "APIキーを含むURL（クエリ文字列）",
+		"home_function_buttons": {
+			"other": {
+				"title": "その他",
+				"sub_items": {
+					"asProxy": {
+						"title": "プロキシとして"
+					}
+				}
+			}
+		}
 	},
 	"achievements": {
 		"title": "成果",
@@ -1706,6 +1924,11 @@
 				"name": "マジかよ？",
 				"description": "ロック解除された実績を繰り返しクリックすると、再度ロックされます。なぜ？",
 				"locked_description": "? ? ?"
+			}
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "成果"
 			}
 		}
 	},

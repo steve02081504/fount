@@ -370,6 +370,16 @@
 				"description": "「训者何物？可为食乎？」",
 				"locked_description": "宜至少略启蒙之训一次。"
 			}
+		},
+		"home_function_buttons": {
+			"other": {
+				"title": "雜項",
+				"sub_items": {
+					"replay": {
+						"title": "再習儀軌"
+					}
+				}
+			}
 		}
 	},
 	"auth": {
@@ -566,6 +576,16 @@
 			"dropSuccess": "置之已妥。",
 			"dropError": "置之有误：${error}",
 			"noHandler": "无以应之。"
+		},
+		"home_shell_interfaces": {
+			"open": {
+				"description": "啟"
+			}
+		},
+		"home_drag_out_generators": {
+			"generateXFountPart": {
+				"description": "以器衍其標"
+			}
 		}
 	},
 	"chat": {
@@ -799,6 +819,16 @@
 			"pluginAdded": "机巧 ${partName} 已增补。",
 			"unsupportedPartType": "此品类 (${partType}) 未有所应。",
 			"errorAddingPart": "增补 ${partName} 有误：${error}"
+		},
+		"home_char_interfaces": {
+			"main": {
+				"title": "清談"
+			}
+		},
+		"home_function_buttons": {
+			"viewHistory": {
+				"title": "清談之跡"
+			}
 		}
 	},
 	"chat_history": {
@@ -948,6 +978,16 @@
 				"description": "混沌初开，万物自生。",
 				"locked_description": "宜以巧法创一部件。"
 			}
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "組件",
+				"sub_items": {
+					"quickCreate": {
+						"title": "速建"
+					}
+				}
+			}
 		}
 	},
 	"import": {
@@ -994,6 +1034,24 @@
 		"dragAndDrop": {
 			"fileDropDescription": "以卷装配",
 			"textDropDescription": "以文装配"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "組件",
+				"sub_items": {
+					"import": {
+						"title": "引入"
+					}
+				}
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleTextDrop": {
+				"description": "自文書載器"
+			},
+			"handleFileDrop": {
+				"description": "自文案載器"
+			}
 		}
 	},
 	"export": {
@@ -1072,6 +1130,26 @@
 		},
 		"dragAndDrop": {
 			"downloadPartDescription": "取组件"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "組件",
+				"sub_items": {
+					"exportPart": {
+						"title": "導出器"
+					}
+				}
+			}
+		},
+		"home_drag_out_generators": {
+			"generateDownloadUrl": {
+				"description": "載器"
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "導出"
+			}
 		}
 	},
 	"uninstall": {
@@ -1099,6 +1177,11 @@
 		"errorMessage": {
 			"icon": {
 				"alt": "誤"
+			}
+		},
+		"home_common_interfaces": {
+			"delete": {
+				"title": "卸"
 			}
 		}
 	},
@@ -1207,7 +1290,17 @@
 			"cancelButton": "否"
 		},
 		"apiError": "API 請求失利: ${message}",
-		"generalError": "有誤: ${message}"
+		"generalError": "有誤: ${message}",
+		"home_function_buttons": {
+			"settings": {
+				"title": "规度",
+				"sub_items": {
+					"main": {
+						"title": "用者規度"
+					}
+				}
+			}
+		}
 	},
 	"languageSettings": {
 		"title": "雅言規度",
@@ -1227,7 +1320,17 @@
 		"noPreferredLanguages": "尚無所尚雅言。將循觀器之常設。",
 		"savedMessage": "雅言之序已存！",
 		"resetMessage": "雅言之序已復初！",
-		"fetchLocalesFailed": "取諸雅言備選失利！"
+		"fetchLocalesFailed": "取諸雅言備選失利！",
+		"home_function_buttons": {
+			"settings": {
+				"title": "规度",
+				"sub_items": {
+					"main": {
+						"title": "雅言規度"
+					}
+				}
+			}
+		}
 	},
 	"themeManage": {
 		"title": "風貌",
@@ -1281,6 +1384,16 @@
 				"description": "改换门庭，气象万千。",
 				"locked_description": "宜更易面貌一次。"
 			}
+		},
+		"home_function_buttons": {
+			"settings": {
+				"title": "规度",
+				"sub_items": {
+					"switchTheme": {
+						"title": "風貌"
+					}
+				}
+			}
 		}
 	},
 	"part_config": {
@@ -1317,6 +1430,21 @@
 			"saveConfigFailed": "存規度失利",
 			"unsavedChanges": "尚有未存之變，欲棄之乎？",
 			"beforeUnload": "尚有未存之變，確欲離乎？"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "組件",
+				"sub_items": {
+					"componentConfigLink": {
+						"title": "器之規度"
+					}
+				}
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "規度"
+			}
 		}
 	},
 	"aisource_editor": {
@@ -1384,6 +1512,11 @@
 				"description": "定此源泉，以驭万法。",
 				"locked_description": "宜定AI之源一次。"
 			}
+		},
+		"home_function_buttons": {
+			"manage": {
+				"title": "掌理智源"
+			}
 		}
 	},
 	"discord_bots": {
@@ -1445,6 +1578,21 @@
 				"description": "召汝之化身于群议界。",
 				"locked_description": "宜启群议之仆一次。"
 			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "靈偶",
+				"sub_items": {
+					"manage": {
+						"title": "Discord 靈偶"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "遣Discord靈偶"
+			}
 		}
 	},
 	"telegram_bots": {
@@ -1505,6 +1653,21 @@
 				"name": "现身于群议之地",
 				"description": "召汝之化身于群议界。",
 				"locked_description": "宜启飞书之仆一次。"
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "靈偶",
+				"sub_items": {
+					"manage": {
+						"title": "Telegram 靈偶"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "遣Telegram靈偶"
 			}
 		}
 	},
@@ -1581,6 +1744,16 @@
 				"description": "于技府赞之，感君之助。",
 				"locked_description": "宜访技府之仓，以星耀之。"
 			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "關聯",
+				"sub_items": {
+					"browserIntegrationLink": {
+						"title": "覽器統合"
+					}
+				}
+			}
 		}
 	},
 	"browser_integration_script": {
@@ -1605,6 +1778,16 @@
 				"name": "虚室生白",
 				"description": "幽暗之中，一念通神。",
 				"locked_description": "宜于终端召唤辅佐一次。"
+			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "關聯",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "終端輔佐"
+					}
+				}
 			}
 		}
 	},
@@ -1642,6 +1825,26 @@
 				"description": "野有角色，忽现君之几案。",
 				"locked_description": "宜先启动一次案上之宠。"
 			}
+		},
+		"home_char_interfaces": {
+			"launch": {
+				"title": "作為桌面寵物啟動"
+			}
+		},
+		"home_function_buttons": {
+			"in_dev": {
+				"title": "開發中",
+				"sub_items": {
+					"deskpet_related": {
+						"title": "桌面宠物",
+						"sub_items": {
+							"main": {
+								"title": "管理桌面宠物"
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"access": {
@@ -1659,7 +1862,12 @@
 			"aria-label": "位址"
 		},
 		"copyButton": "謄錄此址",
-		"copied": "此址已錄！"
+		"copied": "此址已錄！",
+		"home_function_buttons": {
+			"main": {
+				"title": "從他器訪問"
+			}
+		}
 	},
 	"proxy": {
 		"title": "API中介",
@@ -1683,7 +1891,17 @@
 		"apiKeyCopied": "API密鑰已謄！",
 		"queryStringSectionTitle": "無法在請求頭中設置APIKey？(此法不甚安穩)",
 		"queryStringWarning": "當爾之應用不支持在請求頭（Authorization header）中發送API密鑰時，可用此備用之法。切記：徑以密鑰置於網址，恐錄於日誌史載，徒增其險。",
-		"copyQueryStringUrlButton": "包含API密鑰之URL（查詢字符串）"
+		"copyQueryStringUrlButton": "包含API密鑰之URL（查詢字符串）",
+		"home_function_buttons": {
+			"other": {
+				"title": "雜項",
+				"sub_items": {
+					"asProxy": {
+						"title": "API中介"
+					}
+				}
+			}
+		}
 	},
 	"achievements": {
 		"title": "成就",
@@ -1706,6 +1924,11 @@
 				"name": "岂有此理？",
 				"description": "已启之功，屡击而复锁之，何也？",
 				"locked_description": "？？？"
+			}
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "功绩"
 			}
 		}
 	},

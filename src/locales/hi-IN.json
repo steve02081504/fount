@@ -370,6 +370,16 @@
 				"description": "\"ट्यूटोरियल? वह क्या है? क्या इसे खाया जा सकता है?\"",
 				"locked_description": "एक बार परिचयात्मक ट्यूटोरियल छोड़ें।"
 			}
+		},
+		"home_function_buttons": {
+			"other": {
+				"title": "अन्य",
+				"sub_items": {
+					"replay": {
+						"title": "ट्यूटोरियल फिर से चलाएं"
+					}
+				}
+			}
 		}
 	},
 	"auth": {
@@ -566,6 +576,16 @@
 			"dropSuccess": "खींचें और छोड़ें सफल!",
 			"dropError": "ड्रैग और ड्रॉप प्रोसेसिंग में त्रुटि: ${error}",
 			"noHandler": "कोई उपयुक्त ड्रैग और ड्रॉप हैंडलर नहीं मिला."
+		},
+		"home_shell_interfaces": {
+			"open": {
+				"description": "पहुँच"
+			}
+		},
+		"home_drag_out_generators": {
+			"generateXFountPart": {
+				"description": "स्रोत घटक जानकारी उत्पन्न करें"
+			}
 		}
 	},
 	"chat": {
@@ -799,6 +819,16 @@
 			"pluginAdded": "प्लगइन ${partName} को चैट में जोड़ा गया है।",
 			"unsupportedPartType": "असमर्थित भाग प्रकार: ${partType}.",
 			"errorAddingPart": "भाग ${partName} जोड़ने में त्रुटि: ${error}"
+		},
+		"home_char_interfaces": {
+			"main": {
+				"title": "चैट"
+			}
+		},
+		"home_function_buttons": {
+			"viewHistory": {
+				"title": "इतिहास देखें"
+			}
 		}
 	},
 	"chat_history": {
@@ -948,6 +978,16 @@
 				"description": "शुरुआत से शुरू करें और अपना पहला घटक बनाएं।",
 				"locked_description": "त्वरित नई सुविधा का उपयोग करके एक भाग बनाएं।"
 			}
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "घटक",
+				"sub_items": {
+					"quickCreate": {
+						"title": "त्वरित निर्माण"
+					}
+				}
+			}
 		}
 	},
 	"import": {
@@ -994,6 +1034,24 @@
 		"dragAndDrop": {
 			"fileDropDescription": "फ़ाइलों से घटक स्थापित करें",
 			"textDropDescription": "पाठ से भाग स्थापित करें"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "घटक",
+				"sub_items": {
+					"import": {
+						"title": "आयात करें"
+					}
+				}
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleTextDrop": {
+				"description": "पाठ से भाग स्थापित करें"
+			},
+			"handleFileDrop": {
+				"description": "फ़ाइलों से घटक स्थापित करें"
+			}
 		}
 	},
 	"export": {
@@ -1072,6 +1130,26 @@
 		},
 		"dragAndDrop": {
 			"downloadPartDescription": "भाग डाउनलोड करें"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "घटक",
+				"sub_items": {
+					"exportPart": {
+						"title": "पार्ट निर्यात करें"
+					}
+				}
+			}
+		},
+		"home_drag_out_generators": {
+			"generateDownloadUrl": {
+				"description": "भाग डाउनलोड करें"
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "निर्यात"
+			}
 		}
 	},
 	"uninstall": {
@@ -1099,6 +1177,11 @@
 		"errorMessage": {
 			"icon": {
 				"alt": "त्रुटि आइकन"
+			}
+		},
+		"home_common_interfaces": {
+			"delete": {
+				"title": "हटाएं"
 			}
 		}
 	},
@@ -1207,7 +1290,17 @@
 			"cancelButton": "रद्द करें"
 		},
 		"apiError": "API अनुरोध विफल: ${message}",
-		"generalError": "एक त्रुटि हुई: ${message}"
+		"generalError": "एक त्रुटि हुई: ${message}",
+		"home_function_buttons": {
+			"settings": {
+				"title": "सेटिंग्स",
+				"sub_items": {
+					"main": {
+						"title": "उपयोगकर्ता सेटिंग्स"
+					}
+				}
+			}
+		}
 	},
 	"languageSettings": {
 		"title": "भाषा सेटिंग्स",
@@ -1227,7 +1320,17 @@
 		"noPreferredLanguages": "अभी तक कोई पूर्व भाषा नहीं है। ब्राउज़र डिफ़ॉल्ट सेटिंग्स का उपयोग किया जाएगा।",
 		"savedMessage": "भाषा सेटिंग्स बचाई जाती हैं!",
 		"resetMessage": "भाषा सेटिंग्स रीसेट हो गई हैं!",
-		"fetchLocalesFailed": "उपलब्ध भाषाओं को प्राप्त करने में विफल!"
+		"fetchLocalesFailed": "उपलब्ध भाषाओं को प्राप्त करने में विफल!",
+		"home_function_buttons": {
+			"settings": {
+				"title": "सेटिंग्स",
+				"sub_items": {
+					"main": {
+						"title": "भाषा सेटिंग्स"
+					}
+				}
+			}
+		}
 	},
 	"themeManage": {
 		"title": "थीम प्रबंधन",
@@ -1281,6 +1384,16 @@
 				"description": "फव्वारे का लुक नया और मिजाज बिल्कुल नया था।",
 				"locked_description": "एक बार थीम स्विच करें."
 			}
+		},
+		"home_function_buttons": {
+			"settings": {
+				"title": "सेटिंग्स",
+				"sub_items": {
+					"switchTheme": {
+						"title": "थीम बदलें"
+					}
+				}
+			}
 		}
 	},
 	"part_config": {
@@ -1317,6 +1430,21 @@
 			"saveConfigFailed": "घटक कॉन्फ़िगरेशन सहेजने में विफल।",
 			"unsavedChanges": "आपके पास बिना सहेजे बदलाव हैं। क्या आप बदलावों को छोड़ना चाहते हैं?",
 			"beforeUnload": "आपके पास बिना सहेजे बदलाव हैं। क्या आप वाकई यह पेज छोड़ना चाहते हैं?"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "घटक",
+				"sub_items": {
+					"componentConfigLink": {
+						"title": "घटक कॉन्फ़िगरेशन"
+					}
+				}
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "कॉन्फ़िग"
+			}
 		}
 	},
 	"aisource_editor": {
@@ -1384,6 +1512,11 @@
 				"description": "एक डिफ़ॉल्ट AI को मन आपूर्ति स्रोत के रूप में नामित किया गया है।",
 				"locked_description": "एक बार डिफ़ॉल्ट AI स्रोत सेट करें।"
 			}
+		},
+		"home_function_buttons": {
+			"manage": {
+				"title": "एआई स्रोत प्रबंधित करें"
+			}
 		}
 	},
 	"discord_bots": {
@@ -1445,6 +1578,21 @@
 				"description": "अपने चरित्र को कलह की दुनिया में बुलाएँ।",
 				"locked_description": "डिस्कॉर्ड बॉट को एक बार लॉन्च करें।"
 			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "बॉट",
+				"sub_items": {
+					"manage": {
+						"title": "डिस्कॉर्ड बॉट कॉन्फ़िगर करें"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "डिस्कॉर्ड बॉट कॉन्फ़िगर करें"
+			}
 		}
 	},
 	"telegram_bots": {
@@ -1505,6 +1653,21 @@
 				"name": "टेलीग्राम पर आ रहा हूं",
 				"description": "अपने चरित्र को टेलीग्राम की दुनिया में बुलाएँ।",
 				"locked_description": "एक बार टेलीग्राम बॉट शुरू करें."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "बॉट",
+				"sub_items": {
+					"manage": {
+						"title": "टेलीग्राम बॉट कॉन्फ़िगर करें"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "टेलीग्राम बॉट कॉन्फ़िगर करें"
 			}
 		}
 	},
@@ -1581,6 +1744,16 @@
 				"description": "GitHub पर fount को स्टार दें, आपके समर्थन के लिए धन्यवाद!",
 				"locked_description": "fount के GitHub रिपोजिटरी पर जाएँ और तारे को रोशन करें।"
 			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "एकीकरण",
+				"sub_items": {
+					"browserIntegrationLink": {
+						"title": "ब्राउज़र एकीकरण"
+					}
+				}
+			}
 		}
 	},
 	"browser_integration_script": {
@@ -1605,6 +1778,16 @@
 				"name": "\"अरे, फव्वारा।\"",
 				"description": "डार्क टर्मिनल में एआई पार्टनर का नाम पुकारा गया।",
 				"locked_description": "एक बार टर्मिनल सहायता को कॉल करें।"
+			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "एकीकरण",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "टर्मिनल असिस्ट"
+					}
+				}
 			}
 		}
 	},
@@ -1642,6 +1825,26 @@
 				"description": "एक जंगली पात्र बाहर निकलता है और आपके डेस्कटॉप पर कब्ज़ा कर लेता है।",
 				"locked_description": "एक डेस्कटॉप पालतू प्रारंभ करें."
 			}
+		},
+		"home_char_interfaces": {
+			"launch": {
+				"title": "डेस्कटॉप पेट के रूप में लॉन्च करें"
+			}
+		},
+		"home_function_buttons": {
+			"in_dev": {
+				"title": "अल्प विकास",
+				"sub_items": {
+					"deskpet_related": {
+						"title": "डेस्कटॉप पालतू जानवर",
+						"sub_items": {
+							"main": {
+								"title": "डेस्कटॉप पालतू जानवर प्रबंधित करें"
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"access": {
@@ -1659,7 +1862,12 @@
 			"aria-label": "यूआरएल"
 		},
 		"copyButton": "URL कॉपी करें",
-		"copied": "URL क्लिपबोर्ड पर कॉपी कर दिया गया है!"
+		"copied": "URL क्लिपबोर्ड पर कॉपी कर दिया गया है!",
+		"home_function_buttons": {
+			"main": {
+				"title": "अन्य डिवाइस पर पहुँचें"
+			}
+		}
 	},
 	"proxy": {
 		"title": "API प्रॉक्सी",
@@ -1683,7 +1891,17 @@
 		"apiKeyCopied": "API कुंजी कॉपी हो गई!",
 		"queryStringSectionTitle": "अनुरोध हेडर में APIKey सेट नहीं कर सकते? (असुरक्षित)",
 		"queryStringWarning": "इस वैकल्पिक विधि का उपयोग तब करें जब आपका एप्लिकेशन अनुरोध हेडर (Authorization header) में API कुंजी भेजने का समर्थन नहीं करता है। कृपया ध्यान दें: API कुंजी को सीधे URL में रखने से सुरक्षा जोखिम होता है क्योंकि यह सर्वर लॉग या ब्राउज़र इतिहास में दर्ज हो सकता है।",
-		"copyQueryStringUrlButton": "API कुंजी के साथ URL (क्वेरी स्ट्रिंग)"
+		"copyQueryStringUrlButton": "API कुंजी के साथ URL (क्वेरी स्ट्रिंग)",
+		"home_function_buttons": {
+			"other": {
+				"title": "अन्य",
+				"sub_items": {
+					"asProxy": {
+						"title": "प्रॉक्सी के रूप में"
+					}
+				}
+			}
+		}
 	},
 	"achievements": {
 		"title": "उपलब्धि",
@@ -1706,6 +1924,11 @@
 				"name": "सच में?",
 				"description": "किसी अनलॉक उपलब्धि पर बार-बार क्लिक करके, आप उसे सफलतापूर्वक पुनः लॉक कर देते हैं। क्यों?",
 				"locked_description": "? ? ?"
+			}
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "उपलब्धि"
 			}
 		}
 	},

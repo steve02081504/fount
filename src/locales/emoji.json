@@ -370,6 +370,16 @@
 				"description": "📖➡️🗑️",
 				"locked_description": "🔒"
 			}
+		},
+		"home_function_buttons": {
+			"other": {
+				"title": "📦",
+				"sub_items": {
+					"replay": {
+						"title": "🎓❓"
+					}
+				}
+			}
 		}
 	},
 	"auth": {
@@ -566,6 +576,16 @@
 			"dropSuccess": "✅👍",
 			"dropError": "🚫👎: ${error}",
 			"noHandler": "🤷‍♀️🚫"
+		},
+		"home_shell_interfaces": {
+			"open": {
+				"description": "↗️"
+			}
+		},
+		"home_drag_out_generators": {
+			"generateXFountPart": {
+				"description": "📥🧩📃"
+			}
 		}
 	},
 	"chat": {
@@ -799,6 +819,16 @@
 			"pluginAdded": "💬➕🔌 ${partName}",
 			"unsupportedPartType": "🚫🧩 ${partType}",
 			"errorAddingPart": "❌➕🧩 ${partName}: ${error}"
+		},
+		"home_char_interfaces": {
+			"main": {
+				"title": "💬"
+			}
+		},
+		"home_function_buttons": {
+			"viewHistory": {
+				"title": "📜"
+			}
 		}
 	},
 	"chat_history": {
@@ -948,6 +978,16 @@
 				"description": "⚪️➡️🧩",
 				"locked_description": "🔒"
 			}
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "🧩",
+				"sub_items": {
+					"quickCreate": {
+						"title": "✨🆕"
+					}
+				}
+			}
 		}
 	},
 	"import": {
@@ -994,6 +1034,24 @@
 		"dragAndDrop": {
 			"fileDropDescription": "📂📥",
 			"textDropDescription": "📝📥"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "🧩",
+				"sub_items": {
+					"import": {
+						"title": "📥"
+					}
+				}
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleTextDrop": {
+				"description": "📝"
+			},
+			"handleFileDrop": {
+				"description": "📦"
+			}
 		}
 	},
 	"export": {
@@ -1072,6 +1130,26 @@
 		},
 		"dragAndDrop": {
 			"downloadPartDescription": "🧩⬇️"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "🧩",
+				"sub_items": {
+					"exportPart": {
+						"title": "🧩📤"
+					}
+				}
+			}
+		},
+		"home_drag_out_generators": {
+			"generateDownloadUrl": {
+				"description": "📥"
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "📤"
+			}
 		}
 	},
 	"uninstall": {
@@ -1099,6 +1177,11 @@
 		"errorMessage": {
 			"icon": {
 				"alt": "❌"
+			}
+		},
+		"home_common_interfaces": {
+			"delete": {
+				"title": "🗑️"
 			}
 		}
 	},
@@ -1207,7 +1290,17 @@
 			"cancelButton": "❌"
 		},
 		"apiError": "🌐❌: ${message}",
-		"generalError": "❌: ${message}"
+		"generalError": "❌: ${message}",
+		"home_function_buttons": {
+			"settings": {
+				"title": "⚙️",
+				"sub_items": {
+					"main": {
+						"title": "👤⚙️"
+					}
+				}
+			}
+		}
 	},
 	"languageSettings": {
 		"title": "🗣️⚙️",
@@ -1227,7 +1320,17 @@
 		"noPreferredLanguages": "🤷‍♂️❤️🗣️, ➡️🌐",
 		"savedMessage": "🗣️⚙️💾✅❗️",
 		"resetMessage": "🗣️⚙️🔄✅❗️",
-		"fetchLocalesFailed": "🗣️📥❌❗️"
+		"fetchLocalesFailed": "🗣️📥❌❗️",
+		"home_function_buttons": {
+			"settings": {
+				"title": "⚙️",
+				"sub_items": {
+					"main": {
+						"title": "🗣️⚙️"
+					}
+				}
+			}
+		}
 	},
 	"themeManage": {
 		"title": "🎨",
@@ -1281,6 +1384,16 @@
 				"description": "😐➡️🤩",
 				"locked_description": "🔒"
 			}
+		},
+		"home_function_buttons": {
+			"settings": {
+				"title": "⚙️",
+				"sub_items": {
+					"switchTheme": {
+						"title": "🎨"
+					}
+				}
+			}
 		}
 	},
 	"part_config": {
@@ -1317,6 +1430,21 @@
 			"saveConfigFailed": "💾⚙️❌",
 			"unsavedChanges": "🤔💾❓",
 			"beforeUnload": "🤔💾➡️🚪❓"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "🧩",
+				"sub_items": {
+					"componentConfigLink": {
+						"title": "🧩⚙️"
+					}
+				}
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "⚙️"
+			}
 		}
 	},
 	"aisource_editor": {
@@ -1384,6 +1512,11 @@
 				"description": "🤖➡️🔮",
 				"locked_description": "🔒"
 			}
+		},
+		"home_function_buttons": {
+			"manage": {
+				"title": "🤖✍️"
+			}
 		}
 	},
 	"discord_bots": {
@@ -1445,6 +1578,21 @@
 				"description": "👤✨➡️🎮",
 				"locked_description": "🔒"
 			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "🤖",
+				"sub_items": {
+					"manage": {
+						"title": "🤖💬🎮"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "🤖💬🎮"
+			}
 		}
 	},
 	"telegram_bots": {
@@ -1505,6 +1653,21 @@
 				"name": "🤖✈️",
 				"description": "👤✨➡️✈️",
 				"locked_description": "🔒"
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "🤖",
+				"sub_items": {
+					"manage": {
+						"title": "🤖✈️"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "🤖✈️"
 			}
 		}
 	},
@@ -1581,6 +1744,16 @@
 				"description": "🙏⭐",
 				"locked_description": "🖱️➡️⭐"
 			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "🔗",
+				"sub_items": {
+					"browserIntegrationLink": {
+						"title": "🌀📍"
+					}
+				}
+			}
 		}
 	},
 	"browser_integration_script": {
@@ -1605,6 +1778,16 @@
 				"name": "👋💻",
 				"description": "⚫️➡️💡",
 				"locked_description": "🔒"
+			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "🔗",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "💻🦾"
+					}
+				}
 			}
 		}
 	},
@@ -1642,6 +1825,26 @@
 				"description": "💥➡️🐈",
 				"locked_description": "🔒"
 			}
+		},
+		"home_char_interfaces": {
+			"launch": {
+				"title": "🚀🐾"
+			}
+		},
+		"home_function_buttons": {
+			"in_dev": {
+				"title": "🚧",
+				"sub_items": {
+					"deskpet_related": {
+						"title": "🐾",
+						"sub_items": {
+							"main": {
+								"title": "⚙️🐾"
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"access": {
@@ -1659,7 +1862,12 @@
 			"aria-label": "🌐"
 		},
 		"copyButton": "📋🌐",
-		"copied": "📋✅❗️"
+		"copied": "📋✅❗️",
+		"home_function_buttons": {
+			"main": {
+				"title": "💻📱➡️⛲"
+			}
+		}
 	},
 	"proxy": {
 		"title": "🤖🔌",
@@ -1683,7 +1891,17 @@
 		"apiKeyCopied": "🔑📋✅",
 		"queryStringSectionTitle": "🚫👤🔑❓ (🔓💥)",
 		"queryStringWarning": "⚠️🔑➡️🌐 ➡️ 📜🕵️‍♂️",
-		"copyQueryStringUrlButton": "🌐?🔑=..."
+		"copyQueryStringUrlButton": "🌐?🔑=...",
+		"home_function_buttons": {
+			"other": {
+				"title": "📦",
+				"sub_items": {
+					"asProxy": {
+						"title": "🤖🔄"
+					}
+				}
+			}
+		}
 	},
 	"achievements": {
 		"title": "🖥️🐾",
@@ -1706,6 +1924,11 @@
 				"name": "🤨",
 				"description": "🏆🖱️🔒",
 				"locked_description": "❓❓❓"
+			}
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "🏆"
 			}
 		}
 	},
