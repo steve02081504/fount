@@ -819,7 +819,8 @@
 		"buttons": {
 			"reverseSelect": "🔄",
 			"deleteSelected": "🗑️✅",
-			"exportSelected": "📤✅"
+			"exportSelected": "📤✅",
+			"import": "📥"
 		},
 		"chatItemButtons": {
 			"continue": "▶️",
@@ -834,7 +835,11 @@
 			"noChatSelectedForExport": "👆📤💬",
 			"copyError": "📋❌",
 			"deleteError": "🗑️❌",
-			"exportError": "📤❌"
+			"exportError": "📤❌",
+			"dragExportError": "🖱️📤❌",
+			"importSuccess": "📥✅",
+			"importError": "📥❌",
+			"invalidImportFile": "📄❌"
 		},
 		"select_checkbox": {
 			"aria-label": "💬 ${chars}"

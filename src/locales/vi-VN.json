@@ -819,7 +819,8 @@
 		"buttons": {
 			"reverseSelect": "Đảo ngược lựa chọn",
 			"deleteSelected": "Xóa mục đã chọn",
-			"exportSelected": "Xuất mục đã chọn"
+			"exportSelected": "Xuất mục đã chọn",
+			"import": "Nhập"
 		},
 		"chatItemButtons": {
 			"continue": "Tiếp tục",
@@ -834,7 +835,11 @@
 			"noChatSelectedForExport": "Vui lòng chọn lịch sử trò chuyện cần xuất.",
 			"copyError": "Sao chép không thành công.",
 			"deleteError": "Xóa không thành công.",
-			"exportError": "Xuất không thành công."
+			"exportError": "Xuất không thành công.",
+			"dragExportError": "Lỗi khi xuất kéo và thả",
+			"importSuccess": "Nhập thành công",
+			"importError": "Nhập không thành công",
+			"invalidImportFile": "Tệp nhập không hợp lệ"
 		},
 		"select_checkbox": {
 			"aria-label": "Chọn trò chuyện với ${chars}"

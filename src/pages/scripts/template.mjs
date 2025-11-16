@@ -71,6 +71,13 @@ export function usingTemplates(path) {
 export async function renderTemplate(template, data = {}) {
 	data.geti18n ??= geti18n
 	data.renderTemplate ??= renderTemplateAsHtmlString
+	/**
+	 * 在模板渲染上下文中设置一个值。
+	 * @param {string} name - 要设置的变量名。
+	 * @param {*} value - 要设置的变量值。
+	 * @returns {void}
+	 */
+	data.setValue ??= (name, value) => data[name] = value
 	template_cache[template] ??= fetch(templatePath + '/' + template + '.html').then(response => {
 		if (!response.ok) throw new Error(`HTTP error, status: ${response.status}`)
 		return response.text()

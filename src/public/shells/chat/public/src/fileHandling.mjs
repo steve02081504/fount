@@ -78,6 +78,8 @@ export async function handlePaste(event, selectedFiles, attachmentPreviewContain
 		}
 }
 
+const PREVIEWABLE_MIME_TYPES = ['image/', 'video/', 'audio/']
+
 /**
  * 渲染附件预览。
  * @param {object} file - 文件。
@@ -93,7 +95,10 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 		showDownloadButton: !selectedFiles,
 		showDeleteButton: selectedFiles,
 	})
-	if (file.buffer.startsWith('file:')) {
+
+	const isPreviewable = PREVIEWABLE_MIME_TYPES.some(type => file.mime_type.startsWith(type))
+
+	if (file.buffer.startsWith('file:') && isPreviewable) {
 		file = { ...file }
 		file.buffer = arrayBufferToBase64(await getfile(file.buffer))
 	}
@@ -171,7 +176,11 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
  */
 export function downloadFile(file) {
 	const link = document.createElement('a')
-	link.href = `data:${file.mime_type};base64,${file.buffer}`
+	if (file.buffer.startsWith('file:'))
+		link.href = `/api/shells/chat/getfile?hash=${file.buffer.slice(5)}`
+	else
+		link.href = `data:${file.mime_type};base64,${file.buffer}`
+
 	link.download = file.name
 	link.click()
 }

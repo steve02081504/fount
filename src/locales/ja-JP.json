@@ -819,7 +819,8 @@
 		"buttons": {
 			"reverseSelect": "選択を反転",
 			"deleteSelected": "選択項目を削除",
-			"exportSelected": "選択項目をエクスポート"
+			"exportSelected": "選択項目をエクスポート",
+			"import": "インポート"
 		},
 		"chatItemButtons": {
 			"continue": "続行",
@@ -834,7 +835,11 @@
 			"noChatSelectedForExport": "エクスポートするチャット履歴を選択してください。",
 			"copyError": "コピーに失敗しました。",
 			"deleteError": "削除に失敗しました。",
-			"exportError": "エクスポートに失敗しました。"
+			"exportError": "エクスポートに失敗しました。",
+			"dragExportError": "ドラッグアンドドロップエクスポート中のエラー",
+			"importSuccess": "インポート成功",
+			"importError": "インポート失敗",
+			"invalidImportFile": "無効なインポートファイル"
 		},
 		"select_checkbox": {
 			"aria-label": "${chars} とのチャットを選択"

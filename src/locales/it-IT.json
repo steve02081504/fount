@@ -819,7 +819,8 @@
 		"buttons": {
 			"reverseSelect": "Inverti selezione",
 			"deleteSelected": "Elimina selezionati",
-			"exportSelected": "Esporta selezionati"
+			"exportSelected": "Esporta selezionati",
+			"import": "Importa"
 		},
 		"chatItemButtons": {
 			"continue": "Continua",
@@ -834,7 +835,11 @@
 			"noChatSelectedForExport": "Seleziona le cronologie chat da esportare.",
 			"copyError": "Copia non riuscita.",
 			"deleteError": "Eliminazione non riuscita.",
-			"exportError": "Esportazione non riuscita."
+			"exportError": "Esportazione non riuscita.",
+			"dragExportError": "Errore durante l'esportazione con drag-and-drop",
+			"importSuccess": "Importazione riuscita",
+			"importError": "Importazione non riuscita",
+			"invalidImportFile": "File di importazione non valido"
 		},
 		"select_checkbox": {
 			"aria-label": "Seleziona chatta con ${chars}"

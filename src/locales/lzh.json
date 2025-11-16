@@ -819,7 +819,8 @@
 		"buttons": {
 			"reverseSelect": "反選",
 			"deleteSelected": "刪所擇",
-			"exportSelected": "出所擇"
+			"exportSelected": "出所擇",
+			"import": "入"
 		},
 		"chatItemButtons": {
 			"continue": "續",
@@ -834,7 +835,11 @@
 			"noChatSelectedForExport": "請擇欲出之談跡",
 			"copyError": "謄錄失利",
 			"deleteError": "刪除失利",
-			"exportError": "導出失利"
+			"exportError": "導出失利",
+			"dragExportError": "曳而出则失利",
+			"importSuccess": "入功成",
+			"importError": "入失利",
+			"invalidImportFile": "無效之入卷"
 		},
 		"select_checkbox": {
 			"aria-label": "擇 ${chars} 之談跡"

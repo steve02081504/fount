@@ -819,7 +819,8 @@
 		"buttons": {
 			"reverseSelect": "Інвертувати вибір",
 			"deleteSelected": "Видалити вибране",
-			"exportSelected": "Експортувати вибране"
+			"exportSelected": "Експортувати вибране",
+			"import": "Імпортувати"
 		},
 		"chatItemButtons": {
 			"continue": "Продовжити",
@@ -834,7 +835,11 @@
 			"noChatSelectedForExport": "Будь ласка, виберіть історію чату для експорту",
 			"copyError": "Помилка копіювання",
 			"deleteError": "Помилка видалення",
-			"exportError": "Помилка експорту"
+			"exportError": "Помилка експорту",
+			"dragExportError": "Помилка під час експорту перетягуванням",
+			"importSuccess": "Імпорт успішний",
+			"importError": "Помилка імпорту",
+			"invalidImportFile": "Недійсний файл імпорту"
 		},
 		"select_checkbox": {
 			"aria-label": "Виберіть чат із ${chars}"
