@@ -370,6 +370,16 @@
 				"description": "„Anleitung? Was ist das? Kann man es essen?“",
 				"locked_description": "Überspringen Sie einmal das Einführungs-Tutorial."
 			}
+		},
+		"home_function_buttons": {
+			"other": {
+				"title": "Sonstiges",
+				"sub_items": {
+					"replay": {
+						"title": "Tutorial erneut spielen"
+					}
+				}
+			}
 		}
 	},
 	"auth": {
@@ -566,6 +576,11 @@
 			"dropSuccess": "Drag & Drop erfolgreich!",
 			"dropError": "Fehler bei der Drag-and-Drop-Verarbeitung: ${error}",
 			"noHandler": "Kein geeigneter Drag-and-Drop-Handler gefunden."
+		},
+		"home_drag_out_generators": {
+			"generateXFountPart": {
+				"description": "Informationen zur Quellkomponente generieren"
+			}
 		}
 	},
 	"chat": {
@@ -799,6 +814,16 @@
 			"pluginAdded": "Das Plugin ${partName} wurde dem Chat hinzugefügt.",
 			"unsupportedPartType": "Nicht unterstützter Teiletyp: ${partType}.",
 			"errorAddingPart": "Fehler beim Hinzufügen von Teil ${partName}: ${error}"
+		},
+		"home_char_interfaces": {
+			"main": {
+				"title": "Chat"
+			}
+		},
+		"home_function_buttons": {
+			"viewHistory": {
+				"title": "Verlauf anzeigen"
+			}
 		}
 	},
 	"chat_history": {
@@ -948,6 +973,16 @@
 				"description": "Beginnen Sie bei Null und erstellen Sie Ihre erste Komponente.",
 				"locked_description": "Erstellen Sie ein Teil mit der Quick New-Funktion."
 			}
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Komponenten",
+				"sub_items": {
+					"quickCreate": {
+						"title": "Schnellerstellung"
+					}
+				}
+			}
 		}
 	},
 	"import": {
@@ -994,6 +1029,27 @@
 		"dragAndDrop": {
 			"fileDropDescription": "Komponenten aus Dateien installieren",
 			"textDropDescription": "Teile aus Text installieren"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Komponenten",
+				"sub_items": {
+					"0": {
+						"title": "Importieren"
+					},
+					"import": {
+						"title": "Importieren"
+					}
+				}
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleTextDrop": {
+				"description": "Teile aus Text installieren"
+			},
+			"handleFileDrop": {
+				"description": "Komponenten aus Dateien installieren"
+			}
 		}
 	},
 	"export": {
@@ -1072,6 +1128,26 @@
 		},
 		"dragAndDrop": {
 			"downloadPartDescription": "Teile herunterladen"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Komponenten",
+				"sub_items": {
+					"exportPart": {
+						"title": "Part exportieren"
+					}
+				}
+			}
+		},
+		"home_drag_out_generators": {
+			"generateDownloadUrl": {
+				"description": "Teile herunterladen"
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "Exportieren"
+			}
 		}
 	},
 	"uninstall": {
@@ -1099,6 +1175,11 @@
 		"errorMessage": {
 			"icon": {
 				"alt": "Fehlersymbol"
+			}
+		},
+		"home_common_interfaces": {
+			"delete": {
+				"title": "Löschen"
 			}
 		}
 	},
@@ -1207,7 +1288,17 @@
 			"cancelButton": "Abbrechen"
 		},
 		"apiError": "API-Anfrage fehlgeschlagen: ${message}",
-		"generalError": "Es ist ein Fehler aufgetreten: ${message}"
+		"generalError": "Es ist ein Fehler aufgetreten: ${message}",
+		"home_function_buttons": {
+			"settings": {
+				"title": "Einstellungen",
+				"sub_items": {
+					"main": {
+						"title": "Benutzereinstellungen"
+					}
+				}
+			}
+		}
 	},
 	"languageSettings": {
 		"title": "Spracheinstellungen",
@@ -1227,7 +1318,17 @@
 		"noPreferredLanguages": "Noch keine bevorzugte Sprache festgelegt. Es werden die Standardeinstellungen des Browsers verwendet.",
 		"savedMessage": "Spracheinstellungen werden gespeichert!",
 		"resetMessage": "Spracheinstellungen wurden zurückgesetzt!",
-		"fetchLocalesFailed": "Versäumte, verfügbare Sprachen zu erhalten!"
+		"fetchLocalesFailed": "Versäumte, verfügbare Sprachen zu erhalten!",
+		"home_function_buttons": {
+			"settings": {
+				"title": "Einstellungen",
+				"sub_items": {
+					"main": {
+						"title": "Spracheinstellungen"
+					}
+				}
+			}
+		}
 	},
 	"themeManage": {
 		"title": "Design-Verwaltung",
@@ -1281,6 +1382,16 @@
 				"description": "fount hatte ein neues Aussehen und eine völlig neue Stimmung.",
 				"locked_description": "Wechseln Sie das Thema einmal."
 			}
+		},
+		"home_function_buttons": {
+			"settings": {
+				"title": "Einstellungen",
+				"sub_items": {
+					"switchTheme": {
+						"title": "Theme wechseln"
+					}
+				}
+			}
 		}
 	},
 	"part_config": {
@@ -1317,6 +1428,24 @@
 			"saveConfigFailed": "Fehler beim Speichern der Komponentenkonfiguration.",
 			"unsavedChanges": "Sie haben ungespeicherte Änderungen. Möchten Sie die Änderungen verwerfen?",
 			"beforeUnload": "Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie die Seite verlassen möchten?"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Komponenten",
+				"sub_items": {
+					"0": {
+						"title": "Komponentenkonfiguration"
+					},
+					"componentConfigLink": {
+						"title": "Komponentenkonfiguration"
+					}
+				}
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "Konfiguration"
+			}
 		}
 	},
 	"aisource_editor": {
@@ -1384,6 +1513,11 @@
 				"description": "Als Manaversorgungsquelle wird eine Standard-KI festgelegt.",
 				"locked_description": "Legen Sie einmalig eine Standard-KI-fount fest."
 			}
+		},
+		"home_function_buttons": {
+			"manage": {
+				"title": "KI-Quellen verwalten"
+			}
 		}
 	},
 	"discord_bots": {
@@ -1445,6 +1579,21 @@
 				"description": "Beschwöre deinen Charakter in die Welt von Discord.",
 				"locked_description": "Starten Sie den Discord Bot einmal."
 			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Bots",
+				"sub_items": {
+					"manage": {
+						"title": "Discord Bot konfigurieren"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Discord Bot konfigurieren"
+			}
 		}
 	},
 	"telegram_bots": {
@@ -1505,6 +1654,21 @@
 				"name": "Kommen wir zu Telegram",
 				"description": "Beschwöre deinen Charakter in die Welt von Telegram.",
 				"locked_description": "Telegram Bot einmal starten."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Bots",
+				"sub_items": {
+					"manage": {
+						"title": "Telegram Bot konfigurieren"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Telegram Bot konfigurieren"
 			}
 		}
 	},
@@ -1581,6 +1745,16 @@
 				"description": "Gib fount einen Stern auf GitHub, danke für deine Unterstützung!",
 				"locked_description": "Besuchen Sie das GitHub-Repository von fount und geben Sie ihm einen Stern."
 			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "Integrationen",
+				"sub_items": {
+					"browserIntegrationLink": {
+						"title": "Browser-Integration"
+					}
+				}
+			}
 		}
 	},
 	"browser_integration_script": {
@@ -1605,6 +1779,19 @@
 				"name": "„Hey, fount.“",
 				"description": "Im dunklen Terminal wurde der Name des KI-Partners aufgerufen.",
 				"locked_description": "Rufen Sie einmal die Terminalunterstützung an."
+			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "Integrationen",
+				"sub_items": {
+					"0": {
+						"title": "Terminal-Assistenz"
+					},
+					"terminalAssist": {
+						"title": "Terminal-Assistenz"
+					}
+				}
 			}
 		}
 	},
@@ -1642,6 +1829,26 @@
 				"description": "Ein wilder Charakter springt heraus und übernimmt Ihren Desktop.",
 				"locked_description": "Starten Sie ein Desktop-Haustier."
 			}
+		},
+		"home_char_interfaces": {
+			"launch": {
+				"title": "Als Desktop-Haustier starten"
+			}
+		},
+		"home_function_buttons": {
+			"in_dev": {
+				"title": "In Entwicklung",
+				"sub_items": {
+					"deskpet_related": {
+						"title": "Desktop-Haustiere",
+						"sub_items": {
+							"main": {
+								"title": "Desktop-Haustiere verwalten"
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"access": {
@@ -1659,7 +1866,12 @@
 			"aria-label": "URL"
 		},
 		"copyButton": "URL kopieren",
-		"copied": "URL in die Zwischenablage kopiert!"
+		"copied": "URL in die Zwischenablage kopiert!",
+		"home_function_buttons": {
+			"main": {
+				"title": "Zugriff auf anderen Geräten"
+			}
+		}
 	},
 	"proxy": {
 		"title": "API-Proxy",
@@ -1683,7 +1895,17 @@
 		"apiKeyCopied": "API-Schlüssel kopiert!",
 		"queryStringSectionTitle": "API-Schlüssel kann nicht im Anfrage-Header gesetzt werden? (Unsicher)",
 		"queryStringWarning": "Verwenden Sie diese alternative Methode, wenn Ihre Anwendung das Senden des API-Schlüssels im Anfrage-Header (Authorization-Header) nicht unterstützt. Bitte beachten Sie: Das direkte Platzieren des API-Schlüssels in der URL stellt ein Sicherheitsrisiko dar, da er in Serverprotokollen oder im Browserverlauf protokolliert werden könnte.",
-		"copyQueryStringUrlButton": "URL mit API-Schlüssel (Query-String)"
+		"copyQueryStringUrlButton": "URL mit API-Schlüssel (Query-String)",
+		"home_function_buttons": {
+			"other": {
+				"title": "Sonstiges",
+				"sub_items": {
+					"asProxy": {
+						"title": "Als Proxy"
+					}
+				}
+			}
+		}
 	},
 	"achievements": {
 		"title": "Leistung",
@@ -1706,6 +1928,11 @@
 				"name": "Dein Ernst?",
 				"description": "Durch wiederholtes Klicken auf einen freigeschalteten Erfolg können Sie ihn erfolgreich wieder sperren. Warum?",
 				"locked_description": "? ? ?"
+			}
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "Leistung"
 			}
 		}
 	},

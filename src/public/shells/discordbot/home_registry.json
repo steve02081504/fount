@@ -2,128 +2,12 @@
 	"home_function_buttons": [
 		{
 			"id": "bot_related",
-			"info": {
-				"zh-CN": {
-					"title": "bot"
-				},
-				"en-UK": {
-					"title": "Bots"
-				},
-				"ar-SA": {
-					"title": "الروبوتات"
-				},
-				"de-DE": {
-					"title": "Bots"
-				},
-				"emoji": {
-					"title": "🤖"
-				},
-				"es-ES": {
-					"title": "Bots"
-				},
-				"fr-FR": {
-					"title": "Bots"
-				},
-				"hi-IN": {
-					"title": "बॉट"
-				},
-				"is-IS": {
-					"title": "Bot tengt"
-				},
-				"it-IT": {
-					"title": "Bot"
-				},
-				"ja-JP": {
-					"title": "ボット関連"
-				},
-				"ko-KR": {
-					"title": "봇 관련"
-				},
-				"lzh": {
-					"title": "靈偶"
-				},
-				"nl-NL": {
-					"title": "Bots"
-				},
-				"pt-PT": {
-					"title": "Bots"
-				},
-				"ru-RU": {
-					"title": "Боты"
-				},
-				"uk-UA": {
-					"title": "Бот"
-				},
-				"vi-VN": {
-					"title": "Liên quan đến bot"
-				},
-				"zh-TW": {
-					"title": "bot"
-				}
-			},
+			"info": "discord_bots.home_function_buttons.bot_related",
 			"level": 2,
 			"button": "<img src=\"https://api.iconify.design/lucide/bot.svg\" class=\"text-icon\"/>",
 			"sub_items": [
 				{
-					"info": {
-						"zh-CN": {
-							"title": "管理Discord Bot"
-						},
-						"en-UK": {
-							"title": "Discord Bot Config"
-						},
-						"ar-SA": {
-							"title": "إدارة بوت ديسكورد"
-						},
-						"de-DE": {
-							"title": "Discord Bot konfigurieren"
-						},
-						"emoji": {
-							"title": "🤖💬🎮"
-						},
-						"es-ES": {
-							"title": "Configuración del Bot de Discord"
-						},
-						"fr-FR": {
-							"title": "Configuration du Bot Discord"
-						},
-						"hi-IN": {
-							"title": "डिस्कॉर्ड बॉट कॉन्फ़िगर करें"
-						},
-						"is-IS": {
-							"title": "Stjórna Discord Bot"
-						},
-						"it-IT": {
-							"title": "Configura Bot Discord"
-						},
-						"ja-JP": {
-							"title": "Discord Botの設定"
-						},
-						"ko-KR": {
-							"title": "Discord Bot 구성"
-						},
-						"lzh": {
-							"title": "Discord 靈偶"
-						},
-						"nl-NL": {
-							"title": "Beheer Discord Bot"
-						},
-						"pt-PT": {
-							"title": "Configuração do Bot Discord"
-						},
-						"ru-RU": {
-							"title": "Настройка Discord Bot"
-						},
-						"uk-UA": {
-							"title": "Керуйте розбратами бота"
-						},
-						"vi-VN": {
-							"title": "Cấu hình Discord Bot"
-						},
-						"zh-TW": {
-							"title": "管理Discord Bot"
-						}
-					},
+					"info": "discord_bots.home_function_buttons.bot_related.sub_items.manage",
 					"level": 1,
 					"url": "/shells/discordbot",
 					"button": "<img src=\"https://api.iconify.design/line-md/discord.svg\" class=\"text-icon\"/>"
@@ -133,65 +17,7 @@
 	],
 	"home_char_interfaces": [
 		{
-			"info": {
-				"zh-CN": {
-					"title": "配置Discord Bot"
-				},
-				"en-UK": {
-					"title": "Discord Bot Config"
-				},
-				"ar-SA": {
-					"title": "تكوين روبوت الخلاف"
-				},
-				"de-DE": {
-					"title": "Discord Bot konfigurieren"
-				},
-				"emoji": {
-					"title": "🤖💬🎮"
-				},
-				"es-ES": {
-					"title": "Configuración del Bot de Discord"
-				},
-				"fr-FR": {
-					"title": "Configuration du Bot Discord"
-				},
-				"hi-IN": {
-					"title": "डिस्कॉर्ड बॉट कॉन्फ़िगर करें"
-				},
-				"is-IS": {
-					"title": "Stilla Discord Bot"
-				},
-				"it-IT": {
-					"title": "Configura Bot Discord"
-				},
-				"ja-JP": {
-					"title": "Discord Botの設定"
-				},
-				"ko-KR": {
-					"title": "Discord Bot 구성"
-				},
-				"lzh": {
-					"title": "遣Discord靈偶"
-				},
-				"nl-NL": {
-					"title": "Discord Bot configureren"
-				},
-				"pt-PT": {
-					"title": "Configuração do Bot Discord"
-				},
-				"ru-RU": {
-					"title": "Настройка Discord Bot"
-				},
-				"uk-UA": {
-					"title": "Налаштування Discord Bot"
-				},
-				"vi-VN": {
-					"title": "Cấu hình Discord Bot"
-				},
-				"zh-TW": {
-					"title": "配置Discord Bot"
-				}
-			},
+			"info": "discord_bots.home_char_interfaces.configure",
 			"level": 1,
 			"interface": "discord",
 			"url": "/shells/discordbot?name=${name}&char=${name}",

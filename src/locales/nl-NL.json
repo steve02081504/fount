@@ -370,6 +370,16 @@
 				"description": "\"Tutorial? Wat is dat? Kan het gegeten worden?\"",
 				"locked_description": "Sla de inleidende tutorial een keer over."
 			}
+		},
+		"home_function_buttons": {
+			"other": {
+				"title": "Overig",
+				"sub_items": {
+					"replay": {
+						"title": "Herhaling van de tutorial"
+					}
+				}
+			}
 		}
 	},
 	"auth": {
@@ -566,6 +576,11 @@
 			"dropSuccess": "Slepen en neerzetten succesvol!",
 			"dropError": "Fout bij het slepen en neerzetten: ${error}",
 			"noHandler": "Er is geen geschikte drag-and-drop-handler gevonden."
+		},
+		"home_drag_out_generators": {
+			"generateXFountPart": {
+				"description": "Genereer informatie over lettertypecomponenten"
+			}
 		}
 	},
 	"chat": {
@@ -799,6 +814,16 @@
 			"pluginAdded": "Plugin ${partName} is toegevoegd aan de chat.",
 			"unsupportedPartType": "Niet-ondersteund onderdeeltype: ${partType}.",
 			"errorAddingPart": "Fout bij toevoegen van onderdeel ${partName}: ${error}"
+		},
+		"home_char_interfaces": {
+			"main": {
+				"title": "kletsen"
+			}
+		},
+		"home_function_buttons": {
+			"viewHistory": {
+				"title": "Geschiedenis bekijken"
+			}
 		}
 	},
 	"chat_history": {
@@ -948,6 +973,16 @@
 				"description": "Begin helemaal opnieuw en maak uw eerste component.",
 				"locked_description": "Maak een onderdeel met behulp van de functie Snel nieuw."
 			}
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Componenten",
+				"sub_items": {
+					"quickCreate": {
+						"title": "Bouw snel nieuw"
+					}
+				}
+			}
 		}
 	},
 	"import": {
@@ -994,6 +1029,27 @@
 		"dragAndDrop": {
 			"fileDropDescription": "Componenten uit bestanden installeren",
 			"textDropDescription": "Installeer delen uit tekst"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Componenten",
+				"sub_items": {
+					"0": {
+						"title": "Importeren"
+					},
+					"import": {
+						"title": "Importeren"
+					}
+				}
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleTextDrop": {
+				"description": "Installeer delen uit tekst"
+			},
+			"handleFileDrop": {
+				"description": "Componenten uit bestanden installeren"
+			}
 		}
 	},
 	"export": {
@@ -1072,6 +1128,26 @@
 		},
 		"dragAndDrop": {
 			"downloadPartDescription": "Onderdelen downloaden"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Componenten",
+				"sub_items": {
+					"exportPart": {
+						"title": "Exporteren componenten"
+					}
+				}
+			}
+		},
+		"home_drag_out_generators": {
+			"generateDownloadUrl": {
+				"description": "Onderdelen downloaden"
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "Exporteren"
+			}
 		}
 	},
 	"uninstall": {
@@ -1099,6 +1175,11 @@
 		"errorMessage": {
 			"icon": {
 				"alt": "Foutpictogram"
+			}
+		},
+		"home_common_interfaces": {
+			"delete": {
+				"title": "Verwijderen"
 			}
 		}
 	},
@@ -1207,7 +1288,17 @@
 			"cancelButton": "Annuleren"
 		},
 		"apiError": "API-verzoek mislukt: ${message}",
-		"generalError": "Er is een fout opgetreden: ${message}"
+		"generalError": "Er is een fout opgetreden: ${message}",
+		"home_function_buttons": {
+			"settings": {
+				"title": "Instellingen",
+				"sub_items": {
+					"main": {
+						"title": "Gebruikersinstellingen"
+					}
+				}
+			}
+		}
 	},
 	"languageSettings": {
 		"title": "Taalinstellingen",
@@ -1227,7 +1318,17 @@
 		"noPreferredLanguages": "Nog geen voorkeurstaal ingesteld. De standaardinstellingen van de browser worden gebruikt.",
 		"savedMessage": "Taalinstellingen worden opgeslagen!",
 		"resetMessage": "Taalinstellingen zijn gereset!",
-		"fetchLocalesFailed": "Kan niet beschikbare talen krijgen!"
+		"fetchLocalesFailed": "Kan niet beschikbare talen krijgen!",
+		"home_function_buttons": {
+			"settings": {
+				"title": "Instellingen",
+				"sub_items": {
+					"main": {
+						"title": "Taalinstellingen"
+					}
+				}
+			}
+		}
 	},
 	"themeManage": {
 		"title": "Themabeheer",
@@ -1281,6 +1382,16 @@
 				"description": "De fontein had een nieuwe look en een geheel nieuwe sfeer.",
 				"locked_description": "Wissel één keer van thema."
 			}
+		},
+		"home_function_buttons": {
+			"settings": {
+				"title": "Instellingen",
+				"sub_items": {
+					"switchTheme": {
+						"title": "Schakel thema"
+					}
+				}
+			}
 		}
 	},
 	"part_config": {
@@ -1317,6 +1428,24 @@
 			"saveConfigFailed": "Opslaan van componentconfiguratie mislukt",
 			"unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je de wijzigingen negeren?",
 			"beforeUnload": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je wilt vertrekken?"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Componenten",
+				"sub_items": {
+					"0": {
+						"title": "Componentconfiguratie"
+					},
+					"componentConfigLink": {
+						"title": "Componentconfiguratie"
+					}
+				}
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "Configuratie"
+			}
 		}
 	},
 	"aisource_editor": {
@@ -1384,6 +1513,11 @@
 				"description": "Een standaard AI wordt aangewezen als de mana-toevoerbron.",
 				"locked_description": "Stel één keer een standaard AI-bron in."
 			}
+		},
+		"home_function_buttons": {
+			"manage": {
+				"title": "Beheer AI -bronnen"
+			}
 		}
 	},
 	"discord_bots": {
@@ -1445,6 +1579,21 @@
 				"description": "Roep je personage op in de wereld van Discord.",
 				"locked_description": "Start de Discord Bot één keer."
 			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Bots",
+				"sub_items": {
+					"manage": {
+						"title": "Beheer Discord Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Discord Bot configureren"
+			}
 		}
 	},
 	"telegram_bots": {
@@ -1505,6 +1654,21 @@
 				"name": "Komt naar Telegram",
 				"description": "Roep je personage op in de wereld van Telegram.",
 				"locked_description": "Start Telegram Bot een keer."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Bots",
+				"sub_items": {
+					"manage": {
+						"title": "Beheer Telegram Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Configureer Telegram Bot"
 			}
 		}
 	},
@@ -1581,6 +1745,16 @@
 				"description": "Geef fount een ster op GitHub, bedankt voor je steun!",
 				"locked_description": "Bezoek de GitHub-repository van fount en geef het een ster."
 			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "Integraties",
+				"sub_items": {
+					"browserIntegrationLink": {
+						"title": "Browserintegratie"
+					}
+				}
+			}
 		}
 	},
 	"browser_integration_script": {
@@ -1605,6 +1779,19 @@
 				"name": "\"Hé, Fontein.\"",
 				"description": "In de donkere terminal werd de naam van de AI-partner afgeroepen.",
 				"locked_description": "Bel eenmalig de terminalassistentie."
+			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "Integraties",
+				"sub_items": {
+					"0": {
+						"title": "Terminale hulp"
+					},
+					"terminalAssist": {
+						"title": "Terminale hulp"
+					}
+				}
 			}
 		}
 	},
@@ -1642,6 +1829,26 @@
 				"description": "Een wild karakter springt eruit en neemt je bureaublad over.",
 				"locked_description": "Start een desktophuisdier."
 			}
+		},
+		"home_char_interfaces": {
+			"launch": {
+				"title": "Start als desktophuisdier"
+			}
+		},
+		"home_function_buttons": {
+			"in_dev": {
+				"title": "In ontwikkeling",
+				"sub_items": {
+					"deskpet_related": {
+						"title": "Desktop huisdieren",
+						"sub_items": {
+							"main": {
+								"title": "Beheer bureaubladdieren"
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"access": {
@@ -1659,7 +1866,12 @@
 			"aria-label": "URL"
 		},
 		"copyButton": "Adres kopiëren",
-		"copied": "Adres gekopieerd naar klembord!"
+		"copied": "Adres gekopieerd naar klembord!",
+		"home_function_buttons": {
+			"main": {
+				"title": "Toegang op andere apparaten"
+			}
+		}
 	},
 	"proxy": {
 		"title": "API Proxy",
@@ -1683,7 +1895,17 @@
 		"apiKeyCopied": "API-sleutel gekopieerd!",
 		"queryStringSectionTitle": "Kunt u de APIKey niet in de request header instellen? (Onveilig)",
 		"queryStringWarning": "Gebruik deze alternatieve methode wanneer uw applicatie het verzenden van de API-sleutel in de request header (Authorization header) niet ondersteunt. Let op: het rechtstreeks plaatsen van de API-sleutel in de URL brengt een veiligheidsrisico met zich mee, omdat deze kan worden vastgelegd in serverlogboeken of de browsergeschiedenis.",
-		"copyQueryStringUrlButton": "URL met API-sleutel (Query String)"
+		"copyQueryStringUrlButton": "URL met API-sleutel (Query String)",
+		"home_function_buttons": {
+			"other": {
+				"title": "Overig",
+				"sub_items": {
+					"asProxy": {
+						"title": "Als agent"
+					}
+				}
+			}
+		}
 	},
 	"achievements": {
 		"title": "Prestatie",
@@ -1706,6 +1928,11 @@
 				"name": "Serieus?",
 				"description": "Door herhaaldelijk op een ontgrendelde prestatie te klikken, vergrendelt u deze opnieuw. Waarom?",
 				"locked_description": "? ? ?"
+			}
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "Prestatie"
 			}
 		}
 	},

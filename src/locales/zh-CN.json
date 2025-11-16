@@ -370,6 +370,16 @@
 				"description": "“教程？那是什么，能吃吗？”",
 				"locked_description": "跳过一次入门教程。"
 			}
+		},
+		"home_function_buttons": {
+			"other": {
+				"title": "其他",
+				"sub_items": {
+					"replay": {
+						"title": "重玩教程"
+					}
+				}
+			}
 		}
 	},
 	"auth": {
@@ -566,6 +576,11 @@
 			"dropSuccess": "拖放成功！",
 			"dropError": "拖放处理出错：${error}",
 			"noHandler": "没有找到合适的拖放处理器。"
+		},
+		"home_drag_out_generators": {
+			"generateXFountPart": {
+				"description": "生成 fount 部件信息"
+			}
 		}
 	},
 	"chat": {
@@ -799,6 +814,16 @@
 			"pluginAdded": "插件 ${partName} 已添加到聊天。",
 			"unsupportedPartType": "不支持的部件类型：${partType}。",
 			"errorAddingPart": "添加部件 ${partName} 时出错：${error}"
+		},
+		"home_char_interfaces": {
+			"main": {
+				"title": "聊天"
+			}
+		},
+		"home_function_buttons": {
+			"viewHistory": {
+				"title": "浏览历史记录"
+			}
 		}
 	},
 	"chat_history": {
@@ -948,6 +973,16 @@
 				"description": "从零开始，创造属于自己的第一个组件。",
 				"locked_description": "使用快速新建功能创建一个部件。"
 			}
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "组件",
+				"sub_items": {
+					"quickCreate": {
+						"title": "快速新建"
+					}
+				}
+			}
 		}
 	},
 	"import": {
@@ -994,6 +1029,24 @@
 		"dragAndDrop": {
 			"fileDropDescription": "从文件安装部件",
 			"textDropDescription": "从文本安装部件"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "组件",
+				"sub_items": {
+					"import": {
+						"title": "导入"
+					}
+				}
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleTextDrop": {
+				"description": "从文本安装部件"
+			},
+			"handleFileDrop": {
+				"description": "从文件安装部件"
+			}
 		}
 	},
 	"export": {
@@ -1072,6 +1125,26 @@
 		},
 		"dragAndDrop": {
 			"downloadPartDescription": "下载部件"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "组件",
+				"sub_items": {
+					"exportPart": {
+						"title": "导出组件"
+					}
+				}
+			}
+		},
+		"home_drag_out_generators": {
+			"generateDownloadUrl": {
+				"description": "下载部件"
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "导出"
+			}
 		}
 	},
 	"uninstall": {
@@ -1099,6 +1172,11 @@
 		"errorMessage": {
 			"icon": {
 				"alt": "错误图标"
+			}
+		},
+		"home_common_interfaces": {
+			"delete": {
+				"title": "删除"
 			}
 		}
 	},
@@ -1207,7 +1285,17 @@
 			"cancelButton": "取消"
 		},
 		"apiError": "API 请求失败: ${message}",
-		"generalError": "发生错误: ${message}"
+		"generalError": "发生错误: ${message}",
+		"home_function_buttons": {
+			"settings": {
+				"title": "设置",
+				"sub_items": {
+					"main": {
+						"title": "用户设置"
+					}
+				}
+			}
+		}
 	},
 	"languageSettings": {
 		"title": "语言设置",
@@ -1227,7 +1315,17 @@
 		"noPreferredLanguages": "暂无优先语言。将使用浏览器默认设置。",
 		"savedMessage": "语言设置已保存！",
 		"resetMessage": "语言设置已重置！",
-		"fetchLocalesFailed": "获取可用语言失败！"
+		"fetchLocalesFailed": "获取可用语言失败！",
+		"home_function_buttons": {
+			"settings": {
+				"title": "设置",
+				"sub_items": {
+					"main": {
+						"title": "语言设置"
+					}
+				}
+			}
+		}
 	},
 	"themeManage": {
 		"title": "主题管理",
@@ -1281,6 +1379,16 @@
 				"description": "让fount换上了新的装扮，心情也焕然一新。",
 				"locked_description": "切换一次主题。"
 			}
+		},
+		"home_function_buttons": {
+			"settings": {
+				"title": "设置",
+				"sub_items": {
+					"switchTheme": {
+						"title": "切换主题"
+					}
+				}
+			}
 		}
 	},
 	"part_config": {
@@ -1317,6 +1425,21 @@
 			"saveConfigFailed": "保存组件配置失败",
 			"unsavedChanges": "您有未保存的更改。是否要放弃更改？",
 			"beforeUnload": "您有未保存的更改。确定要离开吗？"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "组件",
+				"sub_items": {
+					"componentConfigLink": {
+						"title": "组件配置"
+					}
+				}
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "配置"
+			}
 		}
 	},
 	"aisource_editor": {
@@ -1384,6 +1507,11 @@
 				"description": "指定了一个默认的AI作为魔力供应源。",
 				"locked_description": "设置一次默认的AI源。"
 			}
+		},
+		"home_function_buttons": {
+			"manage": {
+				"title": "管理AI源"
+			}
 		}
 	},
 	"discord_bots": {
@@ -1445,6 +1573,21 @@
 				"description": "将你的角色召唤到了Discord的世界。",
 				"locked_description": "启动一次Discord Bot。"
 			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "bot",
+				"sub_items": {
+					"manage": {
+						"title": "管理Discord Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "配置Discord Bot"
+			}
 		}
 	},
 	"telegram_bots": {
@@ -1505,6 +1648,21 @@
 				"name": "降临于 Telegram",
 				"description": "将你的角色召唤到了Telegram的世界。",
 				"locked_description": "启动一次Telegram Bot。"
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "bot",
+				"sub_items": {
+					"manage": {
+						"title": "管理Telegram Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "配置Telegram Bot"
 			}
 		}
 	},
@@ -1581,6 +1739,16 @@
 				"description": "在GitHub上为fount点亮星星（Star），感谢您的支持！",
 				"locked_description": "访问fount的GitHub仓库并点亮星星。"
 			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "集成",
+				"sub_items": {
+					"browserIntegrationLink": {
+						"title": "浏览器集成"
+					}
+				}
+			}
 		}
 	},
 	"browser_integration_script": {
@@ -1605,6 +1773,16 @@
 				"name": "“Hey, fount.”",
 				"description": "在黑漆漆的终端里，呼唤了AI伙伴的名字。",
 				"locked_description": "调用一次终端辅助。"
+			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "集成",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "终端辅助"
+					}
+				}
 			}
 		}
 	},
@@ -1642,6 +1820,26 @@
 				"description": "野生的角色出现了！它占领了你的桌面。",
 				"locked_description": "启动一次桌面宠物。"
 			}
+		},
+		"home_char_interfaces": {
+			"launch": {
+				"title": "作为桌面宠物启动"
+			}
+		},
+		"home_function_buttons": {
+			"in_dev": {
+				"title": "正在开发",
+				"sub_items": {
+					"deskpet_related": {
+						"title": "桌面宠物",
+						"sub_items": {
+							"main": {
+								"title": "管理桌面宠物"
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"access": {
@@ -1659,7 +1857,12 @@
 			"aria-label": "网址"
 		},
 		"copyButton": "复制网址",
-		"copied": "网址已复制到剪贴板！"
+		"copied": "网址已复制到剪贴板！",
+		"home_function_buttons": {
+			"main": {
+				"title": "在其他设备访问"
+			}
+		}
 	},
 	"proxy": {
 		"title": "API 代理",
@@ -1683,7 +1886,17 @@
 		"apiKeyCopied": "API 密钥已复制！",
 		"queryStringSectionTitle": "无法在请求头中设置 APIKey？(不安全)",
 		"queryStringWarning": "当您的应用程序不支持在请求头（Authorization header）中发送 API 密钥时，可以使用此备用方法。请注意：将 API 密钥直接放在 URL 中存在安全风险，因为它可能被记录在服务器日志或浏览器历史中。",
-		"copyQueryStringUrlButton": "包含 API 密钥的 URL (查询字符串)"
+		"copyQueryStringUrlButton": "包含 API 密钥的 URL (查询字符串)",
+		"home_function_buttons": {
+			"other": {
+				"title": "其他",
+				"sub_items": {
+					"asProxy": {
+						"title": "作为代理"
+					}
+				}
+			}
+		}
 	},
 	"achievements": {
 		"title": "成就",
@@ -1706,6 +1919,11 @@
 				"name": "不是，哥们？",
 				"description": "通过反复点击一个已解锁的成就，你成功地把它给重新锁上了。为什么呢？",
 				"locked_description": "？？？"
+			}
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "成就"
 			}
 		}
 	},

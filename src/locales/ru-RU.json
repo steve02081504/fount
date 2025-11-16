@@ -370,6 +370,16 @@
 				"description": "«Урок? Что это? Можно ли его есть?»",
 				"locked_description": "Пропустите вводное руководство один раз."
 			}
+		},
+		"home_function_buttons": {
+			"other": {
+				"title": "Прочее",
+				"sub_items": {
+					"replay": {
+						"title": "Повторить туториал"
+					}
+				}
+			}
 		}
 	},
 	"auth": {
@@ -566,6 +576,11 @@
 			"dropSuccess": "Перетаскивание прошло успешно!",
 			"dropError": "Ошибка при обработке перетаскивания: ${error}",
 			"noHandler": "Подходящего обработчика перетаскивания не найдено."
+		},
+		"home_drag_out_generators": {
+			"generateXFountPart": {
+				"description": "Создать информацию о компоненте фонда"
+			}
 		}
 	},
 	"chat": {
@@ -799,6 +814,16 @@
 			"pluginAdded": "Плагин ${partName} добавлен в чат.",
 			"unsupportedPartType": "Неподдерживаемый тип детали: ${partType}.",
 			"errorAddingPart": "Ошибка при добавлении детали ${partName}: ${error}."
+		},
+		"home_char_interfaces": {
+			"main": {
+				"title": "Чат"
+			}
+		},
+		"home_function_buttons": {
+			"viewHistory": {
+				"title": "Просмотреть историю"
+			}
 		}
 	},
 	"chat_history": {
@@ -948,6 +973,16 @@
 				"description": "Начните с нуля и создайте свой первый компонент.",
 				"locked_description": "Создайте деталь, используя функцию «Быстрое создание»."
 			}
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Компоненты",
+				"sub_items": {
+					"quickCreate": {
+						"title": "Быстрое создание"
+					}
+				}
+			}
 		}
 	},
 	"import": {
@@ -994,6 +1029,27 @@
 		"dragAndDrop": {
 			"fileDropDescription": "Установка компонентов из файлов",
 			"textDropDescription": "Установка частей из текста"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Компоненты",
+				"sub_items": {
+					"0": {
+						"title": "Импорт"
+					},
+					"import": {
+						"title": "Импорт"
+					}
+				}
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleTextDrop": {
+				"description": "Установка частей из текста"
+			},
+			"handleFileDrop": {
+				"description": "Установка компонентов из файлов"
+			}
 		}
 	},
 	"export": {
@@ -1072,6 +1128,26 @@
 		},
 		"dragAndDrop": {
 			"downloadPartDescription": "Скачать части"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Компоненты",
+				"sub_items": {
+					"exportPart": {
+						"title": "Экспортировать часть"
+					}
+				}
+			}
+		},
+		"home_drag_out_generators": {
+			"generateDownloadUrl": {
+				"description": "Скачать части"
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "Экспорт"
+			}
 		}
 	},
 	"uninstall": {
@@ -1099,6 +1175,11 @@
 		"errorMessage": {
 			"icon": {
 				"alt": "Значок ошибки"
+			}
+		},
+		"home_common_interfaces": {
+			"delete": {
+				"title": "Удалить"
 			}
 		}
 	},
@@ -1207,7 +1288,17 @@
 			"cancelButton": "Отмена"
 		},
 		"apiError": "Ошибка запроса API: ${message}",
-		"generalError": "Произошла ошибка: ${message}"
+		"generalError": "Произошла ошибка: ${message}",
+		"home_function_buttons": {
+			"settings": {
+				"title": "Настройки",
+				"sub_items": {
+					"main": {
+						"title": "Настройки пользователя"
+					}
+				}
+			}
+		}
 	},
 	"languageSettings": {
 		"title": "Языковые настройки",
@@ -1227,7 +1318,17 @@
 		"noPreferredLanguages": "Предпочитаемый язык еще не выбран. Будут использоваться настройки браузера по умолчанию.",
 		"savedMessage": "Настройки языка сохраняются!",
 		"resetMessage": "Настройки языка были сброшены!",
-		"fetchLocalesFailed": "Не удалось получить доступные языки!"
+		"fetchLocalesFailed": "Не удалось получить доступные языки!",
+		"home_function_buttons": {
+			"settings": {
+				"title": "Настройки",
+				"sub_items": {
+					"main": {
+						"title": "Языковые настройки"
+					}
+				}
+			}
+		}
 	},
 	"themeManage": {
 		"title": "Управление темами",
@@ -1281,6 +1382,16 @@
 				"description": "fount приобрел новый облик и совершенно новое настроение.",
 				"locked_description": "Переключите тему один раз."
 			}
+		},
+		"home_function_buttons": {
+			"settings": {
+				"title": "Настройки",
+				"sub_items": {
+					"switchTheme": {
+						"title": "Сменить тему"
+					}
+				}
+			}
 		}
 	},
 	"part_config": {
@@ -1317,6 +1428,24 @@
 			"saveConfigFailed": "Не удалось сохранить настройку компонента.",
 			"unsavedChanges": "У вас есть несохраненные изменения. Хотите их отменить?",
 			"beforeUnload": "У вас есть несохраненные изменения. Вы уверены, что хотите покинуть страницу?"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Компоненты",
+				"sub_items": {
+					"0": {
+						"title": "Настройка компонента"
+					},
+					"componentConfigLink": {
+						"title": "Настройка компонента"
+					}
+				}
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "Конфигурация"
+			}
 		}
 	},
 	"aisource_editor": {
@@ -1384,6 +1513,11 @@
 				"description": "ИИ по умолчанию назначен fount маны.",
 				"locked_description": "Установите источник AI по умолчанию один раз."
 			}
+		},
+		"home_function_buttons": {
+			"manage": {
+				"title": "Управление источниками ИИ"
+			}
 		}
 	},
 	"discord_bots": {
@@ -1445,6 +1579,21 @@
 				"description": "Призовите своего персонажа в мир Discord.",
 				"locked_description": "Запустите Discord Bot один раз."
 			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Боты",
+				"sub_items": {
+					"manage": {
+						"title": "Настройка Discord Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Настройка Discord Bot"
+			}
 		}
 	},
 	"telegram_bots": {
@@ -1505,6 +1654,21 @@
 				"name": "Переходим в Телеграм",
 				"description": "Призовите своего персонажа в мир Telegram.",
 				"locked_description": "Запустите Telegram Bot один раз."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Боты",
+				"sub_items": {
+					"manage": {
+						"title": "Настройка Telegram Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Настройка Telegram Bot"
 			}
 		}
 	},
@@ -1581,6 +1745,16 @@
 				"description": "Поставьте звезду fount на GitHub, спасибо за поддержку!",
 				"locked_description": "Посетите репозиторий fount на GitHub и зажгите звезду."
 			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "Интеграции",
+				"sub_items": {
+					"browserIntegrationLink": {
+						"title": "Интеграция с браузером"
+					}
+				}
+			}
 		}
 	},
 	"browser_integration_script": {
@@ -1605,6 +1779,19 @@
 				"name": "— Привет, fount.",
 				"description": "В темном терминале называлось имя ИИ-партнера.",
 				"locked_description": "Вызовите службу поддержки терминала один раз."
+			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "Интеграции",
+				"sub_items": {
+					"0": {
+						"title": "Терминал-Ассистент"
+					},
+					"terminalAssist": {
+						"title": "Терминал-Ассистент"
+					}
+				}
 			}
 		}
 	},
@@ -1642,6 +1829,26 @@
 				"description": "Дикий персонаж выпрыгивает и захватывает ваш рабочий стол.",
 				"locked_description": "Заведите настольного питомца."
 			}
+		},
+		"home_char_interfaces": {
+			"launch": {
+				"title": "Запустить как домашнее животное на рабочем столе"
+			}
+		},
+		"home_function_buttons": {
+			"in_dev": {
+				"title": "В разработке",
+				"sub_items": {
+					"deskpet_related": {
+						"title": "Настольные питомцы",
+						"sub_items": {
+							"main": {
+								"title": "Управление домашними животными на рабочем столе"
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"access": {
@@ -1659,7 +1866,12 @@
 			"aria-label": "URL-адрес"
 		},
 		"copyButton": "Копировать URL",
-		"copied": "URL скопирован в буфер обмена!"
+		"copied": "URL скопирован в буфер обмена!",
+		"home_function_buttons": {
+			"main": {
+				"title": "Доступ на других устройствах"
+			}
+		}
 	},
 	"proxy": {
 		"title": "API прокси",
@@ -1683,7 +1895,17 @@
 		"apiKeyCopied": "API-ключ скопирован!",
 		"queryStringSectionTitle": "Не удается установить APIKey в заголовке запроса? (Небезопасно)",
 		"queryStringWarning": "Используйте этот альтернативный метод, если ваше приложение не поддерживает отправку API-ключа в заголовке запроса (заголовок Authorization). Внимание: размещение API-ключа непосредственно в URL-адресе представляет угрозу безопасности, так как он может быть записан в журналах сервера или истории браузера.",
-		"copyQueryStringUrlButton": "URL с API-ключом (строка запроса)"
+		"copyQueryStringUrlButton": "URL с API-ключом (строка запроса)",
+		"home_function_buttons": {
+			"other": {
+				"title": "Прочее",
+				"sub_items": {
+					"asProxy": {
+						"title": "Как прокси"
+					}
+				}
+			}
+		}
 	},
 	"achievements": {
 		"title": "Достижение",
@@ -1706,6 +1928,11 @@
 				"name": "Серьёзно, чувак?",
 				"description": "Повторно нажимая на разблокированное достижение, вы успешно его повторно блокируете. Почему?",
 				"locked_description": "? ? ?"
+			}
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "Достижение"
 			}
 		}
 	},

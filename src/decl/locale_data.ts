@@ -360,6 +360,16 @@ export type LocaleData = {
 				locked_description: string
 			}
 		}
+		home_function_buttons: {
+			other: {
+				title: string
+				sub_items: {
+					replay: {
+						title: string
+					}
+				}
+			}
+		}
 	}
 	auth: {
 		title: string
@@ -555,6 +565,11 @@ export type LocaleData = {
 			dropSuccess: string
 			dropError: string
 			noHandler: string
+		}
+		home_drag_out_generators: {
+			generateXFountPart: {
+				description: string
+			}
 		}
 	}
 	chat: {
@@ -789,6 +804,16 @@ export type LocaleData = {
 			unsupportedPartType: string
 			errorAddingPart: string
 		}
+		home_char_interfaces: {
+			main: {
+				title: string
+			}
+		}
+		home_function_buttons: {
+			viewHistory: {
+				title: string
+			}
+		}
 	}
 	chat_history: {
 		title: string
@@ -938,6 +963,16 @@ export type LocaleData = {
 				locked_description: string
 			}
 		}
+		home_function_buttons: {
+			component_related: {
+				title: string
+				sub_items: {
+					quickCreate: {
+						title: string
+					}
+				}
+			}
+		}
 	}
 	import: {
 		title: string
@@ -983,6 +1018,24 @@ export type LocaleData = {
 		dragAndDrop: {
 			fileDropDescription: string
 			textDropDescription: string
+		}
+		home_function_buttons: {
+			component_related: {
+				title: string
+				sub_items: {
+					'0': {
+						title: string
+					}
+				}
+			}
+		}
+		home_drag_in_handlers: {
+			handleTextDrop: {
+				description: string
+			}
+			handleFileDrop: {
+				description: string
+			}
 		}
 	}
 	export: {
@@ -1062,6 +1115,26 @@ export type LocaleData = {
 		dragAndDrop: {
 			downloadPartDescription: string
 		}
+		home_function_buttons: {
+			component_related: {
+				title: string
+				sub_items: {
+					exportPart: {
+						title: string
+					}
+				}
+			}
+		}
+		home_drag_out_generators: {
+			generateDownloadUrl: {
+				description: string
+			}
+		}
+		home_common_interfaces: {
+			main: {
+				title: string
+			}
+		}
 	}
 	uninstall: {
 		title: string
@@ -1088,6 +1161,11 @@ export type LocaleData = {
 		errorMessage: {
 			icon: {
 				alt: string
+			}
+		}
+		home_common_interfaces: {
+			delete: {
+				title: string
 			}
 		}
 	}
@@ -1197,6 +1275,16 @@ export type LocaleData = {
 		}
 		apiError: string
 		generalError: string
+		home_function_buttons: {
+			settings: {
+				title: string
+				sub_items: {
+					main: {
+						title: string
+					}
+				}
+			}
+		}
 	}
 	languageSettings: {
 		title: string
@@ -1217,6 +1305,16 @@ export type LocaleData = {
 		savedMessage: string
 		resetMessage: string
 		fetchLocalesFailed: string
+		home_function_buttons: {
+			settings: {
+				title: string
+				sub_items: {
+					main: {
+						title: string
+					}
+				}
+			}
+		}
 	}
 	themeManage: {
 		title: string
@@ -1271,6 +1369,16 @@ export type LocaleData = {
 				locked_description: string
 			}
 		}
+		home_function_buttons: {
+			settings: {
+				title: string
+				sub_items: {
+					switchTheme: {
+						title: string
+					}
+				}
+			}
+		}
 	}
 	part_config: {
 		title: string
@@ -1306,6 +1414,21 @@ export type LocaleData = {
 			saveConfigFailed: string
 			unsavedChanges: string
 			beforeUnload: string
+		}
+		home_function_buttons: {
+			component_related: {
+				title: string
+				sub_items: {
+					'0': {
+						title: string
+					}
+				}
+			}
+		}
+		home_common_interfaces: {
+			main: {
+				title: string
+			}
 		}
 	}
 	aisource_editor: {
@@ -1374,6 +1497,11 @@ export type LocaleData = {
 				locked_description: string
 			}
 		}
+		home_function_buttons: {
+			manage: {
+				title: string
+			}
+		}
 	}
 	discord_bots: {
 		title: string
@@ -1435,6 +1563,21 @@ export type LocaleData = {
 				locked_description: string
 			}
 		}
+		home_function_buttons: {
+			bot_related: {
+				title: string
+				sub_items: {
+					manage: {
+						title: string
+					}
+				}
+			}
+		}
+		home_char_interfaces: {
+			configure: {
+				title: string
+			}
+		}
 	}
 	telegram_bots: {
 		title: string
@@ -1494,6 +1637,21 @@ export type LocaleData = {
 				name: string
 				description: string
 				locked_description: string
+			}
+		}
+		home_function_buttons: {
+			bot_related: {
+				title: string
+				sub_items: {
+					manage: {
+						title: string
+					}
+				}
+			}
+		}
+		home_char_interfaces: {
+			configure: {
+				title: string
 			}
 		}
 	}
@@ -1571,6 +1729,16 @@ export type LocaleData = {
 				locked_description: string
 			}
 		}
+		home_function_buttons: {
+			integration_related: {
+				title: string
+				sub_items: {
+					browserIntegrationLink: {
+						title: string
+					}
+				}
+			}
+		}
 	}
 	browser_integration_script: {
 		update: {
@@ -1594,6 +1762,16 @@ export type LocaleData = {
 				name: string
 				description: string
 				locked_description: string
+			}
+		}
+		home_function_buttons: {
+			integration_related: {
+				title: string
+				sub_items: {
+					'0': {
+						title: string
+					}
+				}
 			}
 		}
 	}
@@ -1632,6 +1810,26 @@ export type LocaleData = {
 				locked_description: string
 			}
 		}
+		home_char_interfaces: {
+			launch: {
+				title: string
+			}
+		}
+		home_function_buttons: {
+			in_dev: {
+				title: string
+				sub_items: {
+					deskpet_related: {
+						title: string
+						sub_items: {
+							main: {
+								title: string
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 	access: {
 		title: string
@@ -1649,6 +1847,11 @@ export type LocaleData = {
 		}
 		copyButton: string
 		copied: string
+		home_function_buttons: {
+			main: {
+				title: string
+			}
+		}
 	}
 	proxy: {
 		title: string
@@ -1673,6 +1876,16 @@ export type LocaleData = {
 		queryStringSectionTitle: string
 		queryStringWarning: string
 		copyQueryStringUrlButton: string
+		home_function_buttons: {
+			other: {
+				title: string
+				sub_items: {
+					asProxy: {
+						title: string
+					}
+				}
+			}
+		}
 	}
 	achievements: {
 		title: string
@@ -1695,6 +1908,11 @@ export type LocaleData = {
 				name: string
 				description: string
 				locked_description: string
+			}
+		}
+		home_function_buttons: {
+			main: {
+				title: string
 			}
 		}
 	}

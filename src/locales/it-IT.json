@@ -370,6 +370,16 @@
 				"description": "\"Tutorial? Che cos'è? Si può mangiare?\"",
 				"locked_description": "Salta il tutorial introduttivo una volta."
 			}
+		},
+		"home_function_buttons": {
+			"other": {
+				"title": "Altro",
+				"sub_items": {
+					"replay": {
+						"title": "Ripeti Tutorial"
+					}
+				}
+			}
 		}
 	},
 	"auth": {
@@ -566,6 +576,11 @@
 			"dropSuccess": "Trascina e rilascia con successo!",
 			"dropError": "Errore nell'elaborazione del trascinamento: ${error}",
 			"noHandler": "Nessun gestore drag and drop adatto trovato."
+		},
+		"home_drag_out_generators": {
+			"generateXFountPart": {
+				"description": "Genera informazioni sui componenti del carattere"
+			}
 		}
 	},
 	"chat": {
@@ -799,6 +814,16 @@
 			"pluginAdded": "Il plugin ${partName} è stato aggiunto alla chat.",
 			"unsupportedPartType": "Tipo di parte non supportato: ${partType}.",
 			"errorAddingPart": "Errore durante l'aggiunta della parte ${partName}: ${error}"
+		},
+		"home_char_interfaces": {
+			"main": {
+				"title": "Chat"
+			}
+		},
+		"home_function_buttons": {
+			"viewHistory": {
+				"title": "Visualizza cronologia"
+			}
 		}
 	},
 	"chat_history": {
@@ -948,6 +973,16 @@
 				"description": "Inizia da zero e crea il tuo primo componente.",
 				"locked_description": "Crea una parte utilizzando la funzione Nuovo rapido."
 			}
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Componenti",
+				"sub_items": {
+					"quickCreate": {
+						"title": "Creazione rapida"
+					}
+				}
+			}
 		}
 	},
 	"import": {
@@ -994,6 +1029,27 @@
 		"dragAndDrop": {
 			"fileDropDescription": "Installa componenti da file",
 			"textDropDescription": "Installa parti dal testo"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Componenti",
+				"sub_items": {
+					"0": {
+						"title": "Importa"
+					},
+					"import": {
+						"title": "Importa"
+					}
+				}
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleTextDrop": {
+				"description": "Installa parti dal testo"
+			},
+			"handleFileDrop": {
+				"description": "Installa componenti da file"
+			}
 		}
 	},
 	"export": {
@@ -1072,6 +1128,26 @@
 		},
 		"dragAndDrop": {
 			"downloadPartDescription": "Scarica parti"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Componenti",
+				"sub_items": {
+					"exportPart": {
+						"title": "Esporta Parte"
+					}
+				}
+			}
+		},
+		"home_drag_out_generators": {
+			"generateDownloadUrl": {
+				"description": "Scarica parti"
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "Esporta"
+			}
 		}
 	},
 	"uninstall": {
@@ -1099,6 +1175,11 @@
 		"errorMessage": {
 			"icon": {
 				"alt": "Icona errore"
+			}
+		},
+		"home_common_interfaces": {
+			"delete": {
+				"title": "Elimina"
 			}
 		}
 	},
@@ -1207,7 +1288,17 @@
 			"cancelButton": "Annulla"
 		},
 		"apiError": "Richiesta API non riuscita: ${message}",
-		"generalError": "Si è verificato un errore: ${message}"
+		"generalError": "Si è verificato un errore: ${message}",
+		"home_function_buttons": {
+			"settings": {
+				"title": "Impostazioni",
+				"sub_items": {
+					"main": {
+						"title": "Impostazioni Utente"
+					}
+				}
+			}
+		}
 	},
 	"languageSettings": {
 		"title": "Impostazioni linguistiche",
@@ -1227,7 +1318,17 @@
 		"noPreferredLanguages": "Nessuna lingua preferita impostata. Verranno utilizzate le impostazioni predefinite del browser.",
 		"savedMessage": "Le impostazioni della lingua vengono salvate!",
 		"resetMessage": "Le impostazioni della lingua sono state ripristinate!",
-		"fetchLocalesFailed": "Impossibile ottenere le lingue disponibili!"
+		"fetchLocalesFailed": "Impossibile ottenere le lingue disponibili!",
+		"home_function_buttons": {
+			"settings": {
+				"title": "Impostazioni",
+				"sub_items": {
+					"main": {
+						"title": "Impostazioni linguistiche"
+					}
+				}
+			}
+		}
 	},
 	"themeManage": {
 		"title": "Gestione temi",
@@ -1281,6 +1382,16 @@
 				"description": "La fontana aveva un nuovo aspetto e un'atmosfera completamente nuova.",
 				"locked_description": "Cambia il tema una volta."
 			}
+		},
+		"home_function_buttons": {
+			"settings": {
+				"title": "Impostazioni",
+				"sub_items": {
+					"switchTheme": {
+						"title": "Cambia Tema"
+					}
+				}
+			}
 		}
 	},
 	"part_config": {
@@ -1317,6 +1428,24 @@
 			"saveConfigFailed": "Impossibile salvare la configurazione del componente.",
 			"unsavedChanges": "Hai modifiche non salvate. Vuoi scartarle?",
 			"beforeUnload": "Hai modifiche non salvate. Sei sicuro di voler uscire?"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Componenti",
+				"sub_items": {
+					"0": {
+						"title": "Configurazione Componente"
+					},
+					"componentConfigLink": {
+						"title": "Configurazione Componente"
+					}
+				}
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "Configurazione"
+			}
 		}
 	},
 	"aisource_editor": {
@@ -1384,6 +1513,11 @@
 				"description": "Un'IA predefinita è designata come fonte di rifornimento di mana.",
 				"locked_description": "Imposta una sorgente AI predefinita una volta."
 			}
+		},
+		"home_function_buttons": {
+			"manage": {
+				"title": "Gestisci Fonti AI"
+			}
 		}
 	},
 	"discord_bots": {
@@ -1445,6 +1579,21 @@
 				"description": "Evoca il tuo personaggio nel mondo di Discord.",
 				"locked_description": "Avvia Discord Bot una volta."
 			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Bot",
+				"sub_items": {
+					"manage": {
+						"title": "Configura Bot Discord"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Configura Bot Discord"
+			}
 		}
 	},
 	"telegram_bots": {
@@ -1505,6 +1654,21 @@
 				"name": "Arrivo su Telegram",
 				"description": "Evoca il tuo personaggio nel mondo di Telegram.",
 				"locked_description": "Avvia Telegram Bot una volta."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Bot",
+				"sub_items": {
+					"manage": {
+						"title": "Configura Bot Telegram"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Configura Bot Telegram"
 			}
 		}
 	},
@@ -1581,6 +1745,16 @@
 				"description": "Dai una stella a fount su GitHub, grazie per il tuo supporto!",
 				"locked_description": "Visita il repository GitHub di fount e metti una stella."
 			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "Integrazioni",
+				"sub_items": {
+					"browserIntegrationLink": {
+						"title": "Integrazione del browser"
+					}
+				}
+			}
 		}
 	},
 	"browser_integration_script": {
@@ -1605,6 +1779,19 @@
 				"name": "\"Ehi, Fonte.\"",
 				"description": "Nel terminale buio è stato chiamato il nome del partner AI.",
 				"locked_description": "Chiama l'assistenza del terminale una volta."
+			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "Integrazioni",
+				"sub_items": {
+					"0": {
+						"title": "Assistenza Terminale"
+					},
+					"terminalAssist": {
+						"title": "Assistenza Terminale"
+					}
+				}
 			}
 		}
 	},
@@ -1642,6 +1829,26 @@
 				"description": "Un personaggio selvaggio salta fuori e prende il controllo del tuo desktop.",
 				"locked_description": "Avvia un animale domestico desktop."
 			}
+		},
+		"home_char_interfaces": {
+			"launch": {
+				"title": "Avvia come animale domestico desktop"
+			}
+		},
+		"home_function_buttons": {
+			"in_dev": {
+				"title": "In fase di sviluppo",
+				"sub_items": {
+					"deskpet_related": {
+						"title": "Animali domestici da scrivania",
+						"sub_items": {
+							"main": {
+								"title": "Gestisci gli animali domestici sul desktop"
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"access": {
@@ -1659,7 +1866,12 @@
 			"aria-label": "URL"
 		},
 		"copyButton": "Copia URL",
-		"copied": "URL copiato negli appunti!"
+		"copied": "URL copiato negli appunti!",
+		"home_function_buttons": {
+			"main": {
+				"title": "Accesso su altri dispositivi"
+			}
+		}
 	},
 	"proxy": {
 		"title": "Proxy API",
@@ -1683,7 +1895,17 @@
 		"apiKeyCopied": "Chiave API copiata!",
 		"queryStringSectionTitle": "Impossibile impostare la APIKey nell'header della richiesta? (Non sicuro)",
 		"queryStringWarning": "Utilizza questo metodo alternativo quando la tua applicazione non supporta l'invio della chiave API nell'header della richiesta (header Authorization). Nota bene: inserire la chiave API direttamente nell'URL comporta un rischio per la sicurezza in quanto potrebbe essere registrata nei log del server o nella cronologia del browser.",
-		"copyQueryStringUrlButton": "URL con Chiave API (Query String)"
+		"copyQueryStringUrlButton": "URL con Chiave API (Query String)",
+		"home_function_buttons": {
+			"other": {
+				"title": "Altro",
+				"sub_items": {
+					"asProxy": {
+						"title": "Come Proxy"
+					}
+				}
+			}
+		}
 	},
 	"achievements": {
 		"title": "Risultato",
@@ -1706,6 +1928,11 @@
 				"name": "Sul serio?",
 				"description": "Facendo clic ripetutamente su un obiettivo sbloccato, lo blocchi nuovamente con successo. Perché?",
 				"locked_description": "? ? ?"
+			}
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "Risultato"
 			}
 		}
 	},

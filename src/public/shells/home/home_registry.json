@@ -20,65 +20,7 @@
 			"level": 0,
 			"type": "x-fount-part",
 			"path": "/shells/home/drag_generators/x_fount_part.mjs",
-			"info": {
-				"zh-CN": {
-					"description": "生成 fount 部件信息"
-				},
-				"en-UK": {
-					"description": "Generate fount part info"
-				},
-				"ar-SA": {
-					"description": "توليد معلومات مكون ينبوع"
-				},
-				"de-DE": {
-					"description": "Informationen zur Quellkomponente generieren"
-				},
-				"emoji": {
-					"description": "📥🧩📃"
-				},
-				"es-ES": {
-					"description": "Generar información del componente fuente"
-				},
-				"fr-FR": {
-					"description": "Générer des informations sur les composants de police"
-				},
-				"hi-IN": {
-					"description": "स्रोत घटक जानकारी उत्पन्न करें"
-				},
-				"is-IS": {
-					"description": "Búðu til upplýsingar um leturíhluti"
-				},
-				"it-IT": {
-					"description": "Genera informazioni sui componenti del carattere"
-				},
-				"ja-JP": {
-					"description": "カウントコンポーネント情報の生成"
-				},
-				"ko-KR": {
-					"description": "샘물 구성요소 정보 생성"
-				},
-				"lzh": {
-					"description": "以器衍其標"
-				},
-				"nl-NL": {
-					"description": "Genereer informatie over lettertypecomponenten"
-				},
-				"pt-PT": {
-					"description": "Gerar informações do componente fonte"
-				},
-				"ru-RU": {
-					"description": "Создать информацию о компоненте фонда"
-				},
-				"uk-UA": {
-					"description": "Генерувати інформацію про компонент шрифту"
-				},
-				"vi-VN": {
-					"description": "Tạo thông tin thành phần nguồn"
-				},
-				"zh-TW": {
-					"description": "生成 fount 部件信息"
-				}
-			}
+			"info": "home.home_drag_out_generators.generateXFountPart"
 		}
 	]
 }
