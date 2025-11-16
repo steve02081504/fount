@@ -112,7 +112,7 @@
 			if (file.mime_type.startsWith('image/')) {
 				previewHtml = `<img src="${dataUrl}" alt="${file.name}" style="max-width: 100%; max-height: 100%; object-fit: contain; cursor: zoom-in;" onclick="openModal('${dataUrl}', 'image')">`
 			} else if (file.mime_type.startsWith('video/')) {
-                previewHtml = `<video src="${dataUrl}" controls style="max-width: 100%; max-height: 100%;"></video>`
+				previewHtml = `<video src="${dataUrl}" controls style="max-width: 100%; max-height: 100%;"></video>`
 			} else if (file.mime_type.startsWith('audio/')) {
 				previewHtml = `<audio src="${dataUrl}" controls></audio>`
 			} else {

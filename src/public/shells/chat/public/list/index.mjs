@@ -365,7 +365,7 @@ async function initializeApp() {
 
 		if (!event.dataTransfer.files.length) return
 		const file = event.dataTransfer.files[0]
-        if (file.type !== 'application/json') {
+		if (file.type !== 'application/json') {
 			showToastI18n('error', 'chat_history.alerts.invalidImportFile')
 			return
 		}
