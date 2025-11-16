@@ -370,6 +370,16 @@
 				"description": "\"Hướng dẫn? Đó là gì? Nó có thể ăn được không?\"",
 				"locked_description": "Bỏ qua phần hướng dẫn giới thiệu một lần."
 			}
+		},
+		"home_function_buttons": {
+			"other": {
+				"title": "khác",
+				"sub_items": {
+					"replay": {
+						"title": "Chơi lại hướng dẫn"
+					}
+				}
+			}
 		}
 	},
 	"auth": {
@@ -566,6 +576,16 @@
 			"dropSuccess": "Kéo và thả thành công!",
 			"dropError": "Lỗi khi xử lý kéo và thả: ${error}",
 			"noHandler": "Không tìm thấy trình xử lý kéo và thả thích hợp."
+		},
+		"home_shell_interfaces": {
+			"open": {
+				"description": "truy cập"
+			}
+		},
+		"home_drag_out_generators": {
+			"generateXFountPart": {
+				"description": "Tạo thông tin thành phần nguồn"
+			}
 		}
 	},
 	"chat": {
@@ -799,6 +819,16 @@
 			"pluginAdded": "Plugin ${partName} đã được thêm vào cuộc trò chuyện.",
 			"unsupportedPartType": "Loại bộ phận không được hỗ trợ: ${partType}.",
 			"errorAddingPart": "Lỗi khi thêm phần ${partName}: ${error}"
+		},
+		"home_char_interfaces": {
+			"main": {
+				"title": "Chat"
+			}
+		},
+		"home_function_buttons": {
+			"viewHistory": {
+				"title": "Xem lịch sử"
+			}
 		}
 	},
 	"chat_history": {
@@ -948,6 +978,16 @@
 				"description": "Bắt đầu lại từ đầu và tạo thành phần đầu tiên của bạn.",
 				"locked_description": "Tạo một phần bằng tính năng Quick New."
 			}
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Liên quan đến thành phần",
+				"sub_items": {
+					"quickCreate": {
+						"title": "Tạo nhanh"
+					}
+				}
+			}
 		}
 	},
 	"import": {
@@ -994,6 +1034,24 @@
 		"dragAndDrop": {
 			"fileDropDescription": "Cài đặt các thành phần từ tập tin",
 			"textDropDescription": "Cài đặt các phần từ văn bản"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Liên quan đến thành phần",
+				"sub_items": {
+					"import": {
+						"title": "Nhập khẩu"
+					}
+				}
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleTextDrop": {
+				"description": "Cài đặt các phần từ văn bản"
+			},
+			"handleFileDrop": {
+				"description": "Cài đặt các thành phần từ tập tin"
+			}
 		}
 	},
 	"export": {
@@ -1072,6 +1130,26 @@
 		},
 		"dragAndDrop": {
 			"downloadPartDescription": "Tải xuống các phần"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Liên quan đến thành phần",
+				"sub_items": {
+					"exportPart": {
+						"title": "Xuất bộ phận"
+					}
+				}
+			}
+		},
+		"home_drag_out_generators": {
+			"generateDownloadUrl": {
+				"description": "Tải về các phần"
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "Xuất"
+			}
 		}
 	},
 	"uninstall": {
@@ -1099,6 +1177,11 @@
 		"errorMessage": {
 			"icon": {
 				"alt": "Biểu tượng lỗi"
+			}
+		},
+		"home_common_interfaces": {
+			"delete": {
+				"title": "Xóa"
 			}
 		}
 	},
@@ -1207,7 +1290,17 @@
 			"cancelButton": "Hủy"
 		},
 		"apiError": "Yêu cầu API thất bại: ${message}",
-		"generalError": "Đã có lỗi xảy ra: ${message}"
+		"generalError": "Đã có lỗi xảy ra: ${message}",
+		"home_function_buttons": {
+			"settings": {
+				"title": "cài đặt",
+				"sub_items": {
+					"main": {
+						"title": "Cài đặt Người dùng"
+					}
+				}
+			}
+		}
 	},
 	"languageSettings": {
 		"title": "Cài đặt ngôn ngữ",
@@ -1227,7 +1320,17 @@
 		"noPreferredLanguages": "Chưa có ngôn ngữ trước. Các cài đặt mặc định của trình duyệt sẽ được sử dụng.",
 		"savedMessage": "Cài đặt ngôn ngữ được lưu!",
 		"resetMessage": "Cài đặt ngôn ngữ đã được đặt lại!",
-		"fetchLocalesFailed": "Không nhận được ngôn ngữ có sẵn!"
+		"fetchLocalesFailed": "Không nhận được ngôn ngữ có sẵn!",
+		"home_function_buttons": {
+			"settings": {
+				"title": "cài đặt",
+				"sub_items": {
+					"main": {
+						"title": "Cài đặt ngôn ngữ"
+					}
+				}
+			}
+		}
 	},
 	"themeManage": {
 		"title": "Quản lý chủ đề",
@@ -1281,6 +1384,16 @@
 				"description": "Đài phun nước đã có một diện mạo mới và một tâm trạng hoàn toàn mới.",
 				"locked_description": "Chuyển chủ đề một lần."
 			}
+		},
+		"home_function_buttons": {
+			"settings": {
+				"title": "cài đặt",
+				"sub_items": {
+					"switchTheme": {
+						"title": "Đổi chủ đề"
+					}
+				}
+			}
 		}
 	},
 	"part_config": {
@@ -1317,6 +1430,21 @@
 			"saveConfigFailed": "Lưu cấu hình thành phần thất bại.",
 			"unsavedChanges": "Bạn có những thay đổi chưa được lưu. Bạn có muốn hủy bỏ những thay đổi này không?",
 			"beforeUnload": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời đi không?"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Liên quan đến thành phần",
+				"sub_items": {
+					"componentConfigLink": {
+						"title": "Cấu hình thành phần"
+					}
+				}
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "Cấu hình"
+			}
 		}
 	},
 	"aisource_editor": {
@@ -1384,6 +1512,11 @@
 				"description": "AI mặc định được chỉ định làm nguồn cung cấp năng lượng.",
 				"locked_description": "Đặt nguồn AI mặc định một lần."
 			}
+		},
+		"home_function_buttons": {
+			"manage": {
+				"title": "Quản lý nguồn AI"
+			}
 		}
 	},
 	"discord_bots": {
@@ -1445,6 +1578,21 @@
 				"description": "Triệu hồi nhân vật của bạn vào thế giới Discord.",
 				"locked_description": "Khởi chạy Discord Bot một lần."
 			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Liên quan đến bot",
+				"sub_items": {
+					"manage": {
+						"title": "Cấu hình Discord Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Cấu hình Discord Bot"
+			}
 		}
 	},
 	"telegram_bots": {
@@ -1505,6 +1653,21 @@
 				"name": "Đến với Telegram",
 				"description": "Triệu hồi nhân vật của bạn vào thế giới Telegram.",
 				"locked_description": "Bắt đầu Telegram Bot một lần."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Liên quan đến bot",
+				"sub_items": {
+					"manage": {
+						"title": "Cấu hình Telegram Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Cấu hình Telegram Bot"
 			}
 		}
 	},
@@ -1581,6 +1744,16 @@
 				"description": "Hãy gắn sao cho fount trên GitHub, cảm ơn sự hỗ trợ của bạn!",
 				"locked_description": "Truy cập kho lưu trữ GitHub của fount và thắp sáng ngôi sao."
 			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "Tích hợp liên quan",
+				"sub_items": {
+					"browserIntegrationLink": {
+						"title": "Tích hợp trình duyệt"
+					}
+				}
+			}
 		}
 	},
 	"browser_integration_script": {
@@ -1605,6 +1778,16 @@
 				"name": "\"Này, fount.\"",
 				"description": "Trong thiết bị đầu cuối tối, tên của đối tác AI được gọi.",
 				"locked_description": "Gọi hỗ trợ thiết bị đầu cuối một lần."
+			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "Tích hợp liên quan",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "Hỗ trợ Terminal"
+					}
+				}
 			}
 		}
 	},
@@ -1642,6 +1825,26 @@
 				"description": "Một nhân vật hoang dã nhảy ra và chiếm lấy màn hình của bạn.",
 				"locked_description": "Bắt đầu một con vật cưng trên máy tính để bàn."
 			}
+		},
+		"home_char_interfaces": {
+			"launch": {
+				"title": "Khởi chạy dưới dạng thú cưng trên máy tính để bàn"
+			}
+		},
+		"home_function_buttons": {
+			"in_dev": {
+				"title": "Đang được phát triển",
+				"sub_items": {
+					"deskpet_related": {
+						"title": "Thú cưng để bàn",
+						"sub_items": {
+							"main": {
+								"title": "Quản lý thú cưng trên máy tính để bàn"
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"access": {
@@ -1659,7 +1862,12 @@
 			"aria-label": "URL"
 		},
 		"copyButton": "Sao chép địa chỉ",
-		"copied": "Địa chỉ đã được sao chép vào bộ nhớ tạm!"
+		"copied": "Địa chỉ đã được sao chép vào bộ nhớ tạm!",
+		"home_function_buttons": {
+			"main": {
+				"title": "Truy cập trên thiết bị khác"
+			}
+		}
 	},
 	"proxy": {
 		"title": "Proxy API",
@@ -1683,7 +1891,17 @@
 		"apiKeyCopied": "Đã sao chép khóa API!",
 		"queryStringSectionTitle": "Không thể đặt APIKey trong tiêu đề yêu cầu? (Không an toàn)",
 		"queryStringWarning": "Sử dụng phương pháp thay thế này khi ứng dụng của bạn không hỗ trợ gửi khóa API trong tiêu đề yêu cầu (tiêu đề Authorization). Xin lưu ý: Đặt khóa API trực tiếp vào URL có rủi ro bảo mật vì nó có thể được ghi lại trong nhật ký máy chủ hoặc lịch sử trình duyệt.",
-		"copyQueryStringUrlButton": "URL có khóa API (Chuỗi truy vấn)"
+		"copyQueryStringUrlButton": "URL có khóa API (Chuỗi truy vấn)",
+		"home_function_buttons": {
+			"other": {
+				"title": "khác",
+				"sub_items": {
+					"asProxy": {
+						"title": "Làm Proxy"
+					}
+				}
+			}
+		}
 	},
 	"achievements": {
 		"title": "Thành tích",
@@ -1706,6 +1924,11 @@
 				"name": "Thiệt hả?",
 				"description": "Bằng cách nhấp liên tục vào một thành tích đã được mở khóa, bạn đã khóa lại thành công. Tại sao?",
 				"locked_description": "? ? ?"
+			}
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "Thành tích"
 			}
 		}
 	},

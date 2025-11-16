@@ -370,6 +370,16 @@
 				"description": "\"Tutorial? What is that? Can it be eaten?\"",
 				"locked_description": "Skip the introductory tutorial once."
 			}
+		},
+		"home_function_buttons": {
+			"other": {
+				"title": "Other",
+				"sub_items": {
+					"replay": {
+						"title": "Replay Tutorial"
+					}
+				}
+			}
 		}
 	},
 	"auth": {
@@ -566,6 +576,16 @@
 			"dropSuccess": "Drag and drop successful!",
 			"dropError": "Error in drag and drop processing: ${error}",
 			"noHandler": "No suitable drag and drop handler found."
+		},
+		"home_shell_interfaces": {
+			"open": {
+				"description": "access"
+			}
+		},
+		"home_drag_out_generators": {
+			"generateXFountPart": {
+				"description": "Generate fount part info"
+			}
 		}
 	},
 	"chat": {
@@ -799,6 +819,16 @@
 			"pluginAdded": "Plugin ${partName} has been added to the chat.",
 			"unsupportedPartType": "Unsupported part type: ${partType}.",
 			"errorAddingPart": "Error adding part ${partName}: ${error}"
+		},
+		"home_char_interfaces": {
+			"main": {
+				"title": "Chat"
+			}
+		},
+		"home_function_buttons": {
+			"viewHistory": {
+				"title": "View History"
+			}
 		}
 	},
 	"chat_history": {
@@ -948,6 +978,16 @@
 				"description": "Start from scratch and create your first component.",
 				"locked_description": "Create a part using the Quick New feature."
 			}
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Components",
+				"sub_items": {
+					"quickCreate": {
+						"title": "Quick Create"
+					}
+				}
+			}
 		}
 	},
 	"import": {
@@ -994,6 +1034,24 @@
 		"dragAndDrop": {
 			"fileDropDescription": "Install components from files",
 			"textDropDescription": "Install parts from text"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Components",
+				"sub_items": {
+					"import": {
+						"title": "Import"
+					}
+				}
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleTextDrop": {
+				"description": "Install part from text"
+			},
+			"handleFileDrop": {
+				"description": "Install part from file"
+			}
 		}
 	},
 	"export": {
@@ -1072,6 +1130,26 @@
 		},
 		"dragAndDrop": {
 			"downloadPartDescription": "Download parts"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Components",
+				"sub_items": {
+					"exportPart": {
+						"title": "Export Part"
+					}
+				}
+			}
+		},
+		"home_drag_out_generators": {
+			"generateDownloadUrl": {
+				"description": "Download part"
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "Export"
+			}
 		}
 	},
 	"uninstall": {
@@ -1099,6 +1177,11 @@
 		"errorMessage": {
 			"icon": {
 				"alt": "Error Icon"
+			}
+		},
+		"home_common_interfaces": {
+			"delete": {
+				"title": "Delete"
 			}
 		}
 	},
@@ -1207,7 +1290,17 @@
 			"cancelButton": "Cancel"
 		},
 		"apiError": "API request failed: ${message}",
-		"generalError": "An error occurred: ${message}"
+		"generalError": "An error occurred: ${message}",
+		"home_function_buttons": {
+			"settings": {
+				"title": "Settings",
+				"sub_items": {
+					"main": {
+						"title": "User Settings"
+					}
+				}
+			}
+		}
 	},
 	"languageSettings": {
 		"title": "Language settings",
@@ -1227,7 +1320,17 @@
 		"noPreferredLanguages": "No preferred language has been set. Your browser's default settings will be used.",
 		"savedMessage": "Language settings are saved!",
 		"resetMessage": "Language settings have been reset!",
-		"fetchLocalesFailed": "Failed to get available languages!"
+		"fetchLocalesFailed": "Failed to get available languages!",
+		"home_function_buttons": {
+			"settings": {
+				"title": "Settings",
+				"sub_items": {
+					"main": {
+						"title": "Language Settings"
+					}
+				}
+			}
+		}
 	},
 	"themeManage": {
 		"title": "Theme Management",
@@ -1281,6 +1384,16 @@
 				"description": "The fount had a new look and a completely new mood.",
 				"locked_description": "Switch the theme once."
 			}
+		},
+		"home_function_buttons": {
+			"settings": {
+				"title": "Settings",
+				"sub_items": {
+					"switchTheme": {
+						"title": "Switch Theme"
+					}
+				}
+			}
 		}
 	},
 	"part_config": {
@@ -1317,6 +1430,21 @@
 			"saveConfigFailed": "Failed to save component configuration.",
 			"unsavedChanges": "You have unsaved changes. Do you want to discard changes?",
 			"beforeUnload": "You have unsaved changes. Are you sure you want to leave?"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Components",
+				"sub_items": {
+					"componentConfigLink": {
+						"title": "Component Configuration"
+					}
+				}
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "Config"
+			}
 		}
 	},
 	"aisource_editor": {
@@ -1384,6 +1512,11 @@
 				"description": "A default AI is designated as the mana supply source.",
 				"locked_description": "Set a default AI source once."
 			}
+		},
+		"home_function_buttons": {
+			"manage": {
+				"title": "Manage AI Sources"
+			}
 		}
 	},
 	"discord_bots": {
@@ -1445,6 +1578,21 @@
 				"description": "Summon your character into the world of Discord.",
 				"locked_description": "Launch the Discord Bot once."
 			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Bots",
+				"sub_items": {
+					"manage": {
+						"title": "Discord Bot Config"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Discord Bot Config"
+			}
 		}
 	},
 	"telegram_bots": {
@@ -1505,6 +1653,21 @@
 				"name": "Coming to Telegram",
 				"description": "Summon your character into the world of Telegram.",
 				"locked_description": "Start Telegram Bot once."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Bots",
+				"sub_items": {
+					"manage": {
+						"title": "Telegram Bot Config"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Telegram Bot Config"
 			}
 		}
 	},
@@ -1581,6 +1744,16 @@
 				"description": "Star the fount on GitHub, thank you for your support!",
 				"locked_description": "Visit fount's GitHub repository and light the star."
 			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "Integrations",
+				"sub_items": {
+					"browserIntegrationLink": {
+						"title": "Browser Integration"
+					}
+				}
+			}
 		}
 	},
 	"browser_integration_script": {
@@ -1605,6 +1778,16 @@
 				"name": "\"Hey, fount.\"",
 				"description": "In the dark terminal, the name of the AI ​​partner was called.",
 				"locked_description": "Call terminal assistance once."
+			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "Integrations",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "Terminal Assist"
+					}
+				}
 			}
 		}
 	},
@@ -1642,6 +1825,26 @@
 				"description": "It's dangerous to go alone! Take this.",
 				"locked_description": "Start a desktop pet."
 			}
+		},
+		"home_char_interfaces": {
+			"launch": {
+				"title": "Launch as Desktop Pet"
+			}
+		},
+		"home_function_buttons": {
+			"in_dev": {
+				"title": "under development",
+				"sub_items": {
+					"deskpet_related": {
+						"title": "Desktop Pets",
+						"sub_items": {
+							"main": {
+								"title": "Manage Desktop Pets"
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"access": {
@@ -1659,7 +1862,12 @@
 			"aria-label": "URL"
 		},
 		"copyButton": "Copy URL",
-		"copied": "URL copied to clipboard!"
+		"copied": "URL copied to clipboard!",
+		"home_function_buttons": {
+			"main": {
+				"title": "Access on other devices"
+			}
+		}
 	},
 	"proxy": {
 		"title": "API Proxy",
@@ -1683,7 +1891,17 @@
 		"apiKeyCopied": "API key copied!",
 		"queryStringSectionTitle": "Can't set APIKey in request header? (Insecure)",
 		"queryStringWarning": "Use this alternative method when your application does not support sending the API key in the request header (Authorization header). Please note: Placing the API key directly in the URL poses a security risk as it may be logged in server logs or browser history.",
-		"copyQueryStringUrlButton": "URL with API Key (Query String)"
+		"copyQueryStringUrlButton": "URL with API Key (Query String)",
+		"home_function_buttons": {
+			"other": {
+				"title": "Other",
+				"sub_items": {
+					"asProxy": {
+						"title": "As Proxy"
+					}
+				}
+			}
+		}
 	},
 	"achievements": {
 		"title": "Achievement",
@@ -1706,6 +1924,11 @@
 				"name": "Seriously, mate??",
 				"description": "You successfully re-locked an unlocked achievement by repeatedly clicking it. Why?",
 				"locked_description": "???"
+			}
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "Achievements"
 			}
 		}
 	},

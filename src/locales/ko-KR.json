@@ -370,6 +370,16 @@
 				"description": "\"튜토리얼? 그게 뭐야? 먹을 수 있는 거야?\"",
 				"locked_description": "소개 튜토리얼을 한 번 건너뛰세요."
 			}
+		},
+		"home_function_buttons": {
+			"other": {
+				"title": "기타",
+				"sub_items": {
+					"replay": {
+						"title": "튜토리얼 다시 재생"
+					}
+				}
+			}
 		}
 	},
 	"auth": {
@@ -566,6 +576,16 @@
 			"dropSuccess": "드래그 앤 드롭에 성공했습니다!",
 			"dropError": "드래그 앤 드롭 처리 중 오류: ${error}",
 			"noHandler": "적합한 드래그 앤 드롭 핸들러를 찾을 수 없습니다."
+		},
+		"home_shell_interfaces": {
+			"open": {
+				"description": "접근"
+			}
+		},
+		"home_drag_out_generators": {
+			"generateXFountPart": {
+				"description": "샘물 구성요소 정보 생성"
+			}
 		}
 	},
 	"chat": {
@@ -799,6 +819,16 @@
 			"pluginAdded": "${partName} 플러그인이 채팅에 추가되었습니다.",
 			"unsupportedPartType": "지원되지 않는 부품 유형: ${partType}.",
 			"errorAddingPart": "${partName} 부품 추가 오류: ${error}"
+		},
+		"home_char_interfaces": {
+			"main": {
+				"title": "채팅"
+			}
+		},
+		"home_function_buttons": {
+			"viewHistory": {
+				"title": "기록 보기"
+			}
 		}
 	},
 	"chat_history": {
@@ -948,6 +978,16 @@
 				"description": "처음부터 시작하여 첫 번째 구성 요소를 만듭니다.",
 				"locked_description": "Quick New 기능을 사용하여 부품을 생성합니다."
 			}
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "컴포넌트",
+				"sub_items": {
+					"quickCreate": {
+						"title": "빠른 생성"
+					}
+				}
+			}
 		}
 	},
 	"import": {
@@ -994,6 +1034,24 @@
 		"dragAndDrop": {
 			"fileDropDescription": "파일에서 구성 요소 설치",
 			"textDropDescription": "텍스트에서 부품 설치"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "컴포넌트",
+				"sub_items": {
+					"import": {
+						"title": "가져오기"
+					}
+				}
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleTextDrop": {
+				"description": "텍스트에서 부품 설치"
+			},
+			"handleFileDrop": {
+				"description": "파일에서 구성 요소 설치"
+			}
 		}
 	},
 	"export": {
@@ -1072,6 +1130,26 @@
 		},
 		"dragAndDrop": {
 			"downloadPartDescription": "부품 다운로드"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "컴포넌트",
+				"sub_items": {
+					"exportPart": {
+						"title": "파트 내보내기"
+					}
+				}
+			}
+		},
+		"home_drag_out_generators": {
+			"generateDownloadUrl": {
+				"description": "부품 다운로드"
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "내보내기"
+			}
 		}
 	},
 	"uninstall": {
@@ -1099,6 +1177,11 @@
 		"errorMessage": {
 			"icon": {
 				"alt": "오류 아이콘"
+			}
+		},
+		"home_common_interfaces": {
+			"delete": {
+				"title": "삭제"
 			}
 		}
 	},
@@ -1207,7 +1290,17 @@
 			"cancelButton": "취소"
 		},
 		"apiError": "API 요청에 실패했습니다: ${message}",
-		"generalError": "오류가 발생했습니다: ${message}"
+		"generalError": "오류가 발생했습니다: ${message}",
+		"home_function_buttons": {
+			"settings": {
+				"title": "설정",
+				"sub_items": {
+					"main": {
+						"title": "사용자 설정"
+					}
+				}
+			}
+		}
 	},
 	"languageSettings": {
 		"title": "언어 설정",
@@ -1227,7 +1320,17 @@
 		"noPreferredLanguages": "선호하는 언어가 설정되지 않았습니다. 브라우저 기본 설정이 사용됩니다.",
 		"savedMessage": "언어 설정이 저장됩니다!",
 		"resetMessage": "언어 설정이 재설정되었습니다!",
-		"fetchLocalesFailed": "사용 가능한 언어를 얻지 못했습니다!"
+		"fetchLocalesFailed": "사용 가능한 언어를 얻지 못했습니다!",
+		"home_function_buttons": {
+			"settings": {
+				"title": "설정",
+				"sub_items": {
+					"main": {
+						"title": "언어 설정"
+					}
+				}
+			}
+		}
 	},
 	"themeManage": {
 		"title": "테마 관리",
@@ -1281,6 +1384,16 @@
 				"description": "fount는 새로운 모습과 완전히 새로운 분위기를 가졌습니다.",
 				"locked_description": "테마를 한 번 전환해 보세요."
 			}
+		},
+		"home_function_buttons": {
+			"settings": {
+				"title": "설정",
+				"sub_items": {
+					"switchTheme": {
+						"title": "테마 변경"
+					}
+				}
+			}
 		}
 	},
 	"part_config": {
@@ -1317,6 +1430,21 @@
 			"saveConfigFailed": "컴포넌트 설정을 저장하는 데 실패했습니다.",
 			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까?",
 			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 나가시겠습니까?"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "컴포넌트",
+				"sub_items": {
+					"componentConfigLink": {
+						"title": "컴포넌트 설정"
+					}
+				}
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "구성"
+			}
 		}
 	},
 	"aisource_editor": {
@@ -1384,6 +1512,11 @@
 				"description": "기본 AI가 마나 공급원으로 지정됩니다.",
 				"locked_description": "기본 AI 소스를 한 번 설정합니다."
 			}
+		},
+		"home_function_buttons": {
+			"manage": {
+				"title": "AI 소스 관리"
+			}
 		}
 	},
 	"discord_bots": {
@@ -1445,6 +1578,21 @@
 				"description": "당신의 캐릭터를 Discord의 세계로 소환하세요.",
 				"locked_description": "Discord Bot을 한 번 실행하세요."
 			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "봇 관련",
+				"sub_items": {
+					"manage": {
+						"title": "Discord Bot 구성"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Discord Bot 구성"
+			}
 		}
 	},
 	"telegram_bots": {
@@ -1505,6 +1653,21 @@
 				"name": "텔레그램으로 오세요",
 				"description": "당신의 캐릭터를 텔레그램의 세계로 소환해보세요.",
 				"locked_description": "텔레그램 봇을 한 번 시작하세요."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "봇 관련",
+				"sub_items": {
+					"manage": {
+						"title": "Telegram Bot 구성"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Telegram Bot 구성"
 			}
 		}
 	},
@@ -1581,6 +1744,16 @@
 				"description": "GitHub에서 fount에 스타를 눌러주세요. 지원에 감사드립니다!",
 				"locked_description": "fount의 GitHub 저장소를 방문하여 별을 밝히세요."
 			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "통합",
+				"sub_items": {
+					"browserIntegrationLink": {
+						"title": "브라우저 통합"
+					}
+				}
+			}
 		}
 	},
 	"browser_integration_script": {
@@ -1605,6 +1778,16 @@
 				"name": "\"안녕하세요, 파운트.\"",
 				"description": "어두운 단말기에서는 AI 파트너의 이름이 호명됐다.",
 				"locked_description": "터미널 지원에 한 번 전화하십시오."
+			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "통합",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "터미널 지원"
+					}
+				}
 			}
 		}
 	},
@@ -1642,6 +1825,26 @@
 				"description": "야생의 캐릭터가 튀어나와 데스크탑을 점령합니다.",
 				"locked_description": "데스크톱 애완동물을 시작하세요."
 			}
+		},
+		"home_char_interfaces": {
+			"launch": {
+				"title": "데스크톱 애완동물로 출시"
+			}
+		},
+		"home_function_buttons": {
+			"in_dev": {
+				"title": "개발중",
+				"sub_items": {
+					"deskpet_related": {
+						"title": "데스크톱 애완동물",
+						"sub_items": {
+							"main": {
+								"title": "데스크톱 애완동물 관리"
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"access": {
@@ -1659,7 +1862,12 @@
 			"aria-label": "URL"
 		},
 		"copyButton": "URL 복사",
-		"copied": "URL이 클립보드에 복사되었습니다!"
+		"copied": "URL이 클립보드에 복사되었습니다!",
+		"home_function_buttons": {
+			"main": {
+				"title": "다른 디바이스에서 접속"
+			}
+		}
 	},
 	"proxy": {
 		"title": "API 프록시",
@@ -1683,7 +1891,17 @@
 		"apiKeyCopied": "API 키가 복사되었습니다!",
 		"queryStringSectionTitle": "요청 헤더에 APIKey를 설정할 수 없나요? (안전하지 않음)",
 		"queryStringWarning": "애플리케이션이 요청 헤더(Authorization 헤더)에서 API 키 전송을 지원하지 않는 경우 이 대체 방법을 사용하세요. 참고: API 키를 URL에 직접 넣는 것은 서버 로그나 브라우저 기록에 기록될 수 있으므로 보안 위험이 있습니다.",
-		"copyQueryStringUrlButton": "API 키가 포함된 URL (쿼리 문자열)"
+		"copyQueryStringUrlButton": "API 키가 포함된 URL (쿼리 문자열)",
+		"home_function_buttons": {
+			"other": {
+				"title": "기타",
+				"sub_items": {
+					"asProxy": {
+						"title": "프록시로"
+					}
+				}
+			}
+		}
 	},
 	"achievements": {
 		"title": "성취",
@@ -1706,6 +1924,11 @@
 				"name": "실화냐?",
 				"description": "잠금 해제된 업적을 반복적으로 클릭하면 성공적으로 다시 잠길 수 있습니다. 왜?",
 				"locked_description": "? ? ?"
+			}
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "성취"
 			}
 		}
 	},
