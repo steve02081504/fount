@@ -809,6 +809,7 @@ export type LocaleData = {
 			reverseSelect: string
 			deleteSelected: string
 			exportSelected: string
+			import: string
 		}
 		chatItemButtons: {
 			continue: string
@@ -824,6 +825,10 @@ export type LocaleData = {
 			copyError: string
 			deleteError: string
 			exportError: string
+			dragExportError: string
+			importSuccess: string
+			importError: string
+			invalidImportFile: string
 		}
 		select_checkbox: {
 			'aria-label': string

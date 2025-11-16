@@ -1,5 +1,6 @@
 import { confirmI18n, main_locale, geti18n } from '../../../../../scripts/i18n.mjs'
 import { renderMarkdownAsString, renderMarkdownAsStandAloneHtmlString } from '../../../../../scripts/markdown.mjs'
+import { onElementRemoved } from '../../../../../scripts/onElementRemoved.mjs'
 import { renderTemplate, renderTemplateAsHtmlString } from '../../../../../scripts/template.mjs'
 import { showToast } from '../../../../../scripts/toast.mjs'
 import {
@@ -65,128 +66,15 @@ function enqueueDeletion(messageElement) {
  * @returns {Promise<string>} 完整的 HTML 字符串。
  */
 async function generateFullHtmlForMessage(message) {
-	const messageContentHtml = await renderMarkdownAsStandAloneHtmlString(message.content_for_show || message.content)
-
-	// Find the first h1 tag and get its text content for the title
-	const tempDiv = document.createElement('div')
-	tempDiv.innerHTML = messageContentHtml
-	const h1 = tempDiv.querySelector('h1')
-	const title = h1 ? h1.textContent.trim() : 'Chat Message'
-
-	// --- Attachment processing ---
-	let attachmentsHtml = ''
-	if (message.files?.length) {
-		const downloadText = geti18n('chat.attachment.buttons.download.title') || 'Download'
-		const attachmentItems = await Promise.all(message.files.map(async (file) => {
-			let fileBuffer = file.buffer
-			if (fileBuffer.startsWith('file:')) {
-				const fileArrayBuffer = await getfile(fileBuffer)
-				fileBuffer = arrayBufferToBase64(fileArrayBuffer)
-			}
-			const dataUrl = `data:${file.mime_type};base64,${fileBuffer}`
-
-			let previewHtml = ''
-			if (file.mime_type.startsWith('image/'))
-				previewHtml = /* html */ `<img src="${dataUrl}" alt="${file.name}" style="max-width: 100%; max-height: 100%; object-fit: contain; cursor: zoom-in;" onclick="openModal('${dataUrl}', 'image')">`
-			else if (file.mime_type.startsWith('video/'))
-				previewHtml = /* html */ `<video src="${dataUrl}" controls style="max-width: 100%; max-height: 100%;"></video>`
-			else if (file.mime_type.startsWith('audio/'))
-				previewHtml = /* html */ `<audio src="${dataUrl}" controls></audio>`
-			else
-				previewHtml = /* html */ '<div class="file-placeholder" style="font-size: 40px; text-align: center;">📄</div>'
-
-			return /* html */ `\
-<div class="attachment" style="border: 1px solid #ccc; border-radius: 5px; padding: 10px; margin: 5px; display: inline-block; text-align: center; max-width: 200px;">
-	<div class="preview" style="min-height: 100px; display: flex; align-items: center; justify-content: center;">
-		${previewHtml}
-	</div>
-	<div class="file-name" style="font-size: 0.8em; margin-top: 5px; word-wrap: break-word;">${file.name}</div>
-	<a href="${dataUrl}" download="${file.name}" class="download-button" style="margin-top: 5px; display: inline-block; padding: 5px 10px; background-color: #007bff; color: white; text-decoration: none; border-radius: 3px;">${downloadText}</a>
-</div>
-`
-		}))
-		attachmentsHtml = /* html */ `<div class="attachments" style="margin-top: 10px; display: flex; flex-wrap: wrap;">${attachmentItems.join('')}</div>`
-	}
-
-	const modalScript = `\
-function openModal(src, type) {
-	const modal = document.createElement('div')
-	modal.style.position = 'fixed'
-	modal.style.top = '0'
-	modal.style.left = '0'
-	modal.style.width = '100%'
-	modal.style.height = '100%'
-	modal.style.backgroundColor = 'rgba(0,0,0,0.8)'
-	modal.style.display = 'flex'
-	modal.style.justifyContent = 'center'
-	modal.style.alignItems = 'center'
-	modal.style.zIndex = '1000'
-	modal.onclick = () => modal.remove()
-
-	if (type === 'image') {
-		const img = document.createElement('img')
-		img.src = src
-		img.style.maxWidth = '90%'
-		img.style.maxHeight = '90%'
-		modal.appendChild(img)
-	}
-	document.body.appendChild(modal)
-}
-`
-
-	return /* html */ `\
-<!DOCTYPE html>
-<html lang="${main_locale}">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>${title}</title>
-	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
-	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css" crossorigin="anonymous">
-	<style>
-		body { margin: 0; font-family: sans-serif; }
-		.markdown-body { box-sizing: border-box; padding: 45px; }
-		.markdown-body .join-item, .markdown-body figure, .markdown-code-block, .markdown-code-block pre {
-			margin: 0;
-		}
-		@media (max-width: 767px) { .markdown-body { padding: 15px; } }
-
-		.text-icon { color: var(--color-base-content); }
-		/* Styles for rehype-pretty-code (Shiki) */
-		pre[style*="--shiki-light-bg"] {
-			background-color: var(--shiki-light-bg);
-		}
-		[color-scheme="dark"] pre[style*="--shiki-dark-bg"] {
-			background-color: var(--shiki-dark-bg);
-		}
-		[style*="--shiki-light"][style*="--shiki-dark"] {
-			color: var(--shiki-light);
-		}
-		[color-scheme="dark"] [style*="--shiki-light"][style*="--shiki-dark"] {
-			color: var(--shiki-dark);
-		}
-	</style>
-</head>
-<body class="markdown-body">
-	<script>
-		const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-		const styleLink = document.createElement('link')
-		styleLink.rel = 'stylesheet'
-		styleLink.crossOrigin = 'anonymous'
-		document.documentElement.setAttribute('color-scheme', document.documentElement.dataset.theme = isDarkMode ? 'dark' : 'light')
-		styleLink.href = \`https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown-\${isDarkMode ? 'dark' : 'light'}.min.css\`
-		document.head.appendChild(styleLink)
-		${modalScript}
-	</script>
-	${messageContentHtml}
-	${attachmentsHtml}
-	<footer class="fixed bottom-4 w-full text-center text-xs text-gray-500">
-		<p>Generated by <a class="link" href="https://github.com/steve02081504/fount" target="_blank">fount</a></p>
-	</footer>
-</body>
-</html>
-`
+	return renderTemplateAsHtmlString('standalone_message', {
+		main_locale,
+		message,
+		// helper functions
+		renderMarkdownAsStandAloneHtmlString,
+		geti18n,
+		getfile,
+		arrayBufferToBase64,
+	})
 }
 
 /**
@@ -204,6 +92,26 @@ export async function renderMessage(message) {
 	}
 
 	const messageElement = await renderTemplate('message_view', preprocessedMessage)
+	const messageContentElement = messageElement.querySelector('.message-content')
+	const messageMarkdownContent = message.content_for_show || message.content
+
+	// --- 拖放下载功能 ---
+	const standaloneMessageUrl = URL.createObjectURL(new Blob([await generateFullHtmlForMessage(message)], { type: 'text/html' }))
+	onElementRemoved(messageElement, () => {
+		URL.revokeObjectURL(standaloneMessageUrl)
+	})
+
+	messageElement.draggable = true
+	messageElement.addEventListener('dragstart', event => {
+		const fileName = `message-${preprocessedMessage.safeTimeStamp}.html`
+
+		event.dataTransfer.setData('DownloadURL', `text/html:${fileName}:${standaloneMessageUrl}`)
+		event.dataTransfer.effectAllowed = 'copy'
+
+		event.dataTransfer.setData('text/plain', messageContentElement.textContent.trim())
+		event.dataTransfer.setData('text/markdown', message.content)
+		event.dataTransfer.setData('text/html', preprocessedMessage.content)
+	})
 
 	// --- 删除按钮 ---
 	const deleteButton = messageElement.querySelector('.delete-button')
@@ -217,9 +125,6 @@ export async function renderMessage(message) {
 	// 获取 dropdown 菜单元素
 	const dropdownMenu = messageElement.querySelector('.dropdown')
 	messageElement.addEventListener('mouseleave', () => dropdownMenu.hidePopover())
-	// 获取消息内容
-	const messageContentElement = messageElement.querySelector('.message-content')
-	const messageMarkdownContent = message.content_for_show || message.content
 
 	// 获取 dropdown items
 	dropdownMenu.querySelector('.copy-markdown-button').addEventListener('click', async () => {
@@ -246,16 +151,12 @@ export async function renderMessage(message) {
 	const downloadHtmlButton = dropdownMenu.querySelector('.download-html-button')
 	downloadHtmlButton.addEventListener('click', async () => {
 		try {
-			const fullHtml = await generateFullHtmlForMessage(message)
-			const blob = new Blob([fullHtml], { type: 'text/html' })
-			const url = URL.createObjectURL(blob)
 			const a = document.createElement('a')
-			a.href = url
+			a.href = standaloneMessageUrl
 			a.download = `message-${preprocessedMessage.safeTimeStamp}.html`
 			document.body.appendChild(a)
 			a.click()
 			document.body.removeChild(a)
-			URL.revokeObjectURL(url)
 		}
 		catch (error) {
 			showToast('error', error.stack || error.message || error)

@@ -12,7 +12,7 @@ import { showToast, showToastI18n } from '../../../scripts/toast.mjs'
 import { createVirtualList } from '../../../scripts/virtualList.mjs'
 import { processTimeStampForId } from '../src/utils.mjs'
 
-import { getChatList, getCharDetails, copyChats, exportChats, deleteChats } from './endpoints.mjs'
+import { getChatList, getCharDetails, copyChats, exportChats, deleteChats, importChat } from './endpoints.mjs'
 
 usingTemplates('/shells/chat/src/templates')
 
@@ -24,6 +24,8 @@ const selectAllCheckbox = document.getElementById('select-all-checkbox')
 const reverseSelectButton = document.getElementById('reverse-select-button')
 const deleteSelectedButton = document.getElementById('delete-selected-button')
 const exportSelectedButton = document.getElementById('export-selected-button')
+const importButton = document.getElementById('import-button')
+const importFileInput = document.getElementById('import-file-input')
 
 let fullChatList = []
 let currentFilteredList = []
@@ -64,7 +66,8 @@ async function renderUI() {
 			const items = fullSortedList.slice(offset, offset + limit)
 			return { items, total: fullSortedList.length }
 		},
-		renderItem: renderChatListItem
+		renderItem: renderChatListItem,
+		setInitialScroll: false
 	})
 }
 
@@ -122,6 +125,24 @@ async function renderChatListItem(chat) {
 	}
 	const chatElement = await renderTemplate('list/chat_list_view', data)
 	chatElement.setAttribute('data-chatid', chat.chatid)
+
+	// Drag-and-drop functionality
+	chatElement.draggable = true
+	chatElement.addEventListener('dragstart', event => {
+		try {
+			const downloadUrl = `/virtual_files/shells/chat/${chat.chatid}`
+			const fullDownloadUrl = `${window.location.origin}${downloadUrl}`
+			const fileName = `chat-${chat.chatid}.json`
+			event.dataTransfer.setData('DownloadURL', `application/json:${fileName}:${fullDownloadUrl}`)
+
+			const chatUrl = new URL(`/shells/chat#${chat.chatid}`, window.location.origin)
+			event.dataTransfer.setData('text/uri-list', chatUrl.href)
+		}
+		catch (error) {
+			console.error('Error setting drag data for chat list item:', error)
+			showToastI18n('error', 'chat_history.alerts.dragExportError')
+		}
+	})
 
 	// Checkbox logic
 	const selectCheckbox = chatElement.querySelector('.select-checkbox')
@@ -267,6 +288,37 @@ exportSelectedButton.addEventListener('click', async () => {
 	}
 })
 
+importButton.addEventListener('click', () => {
+	importFileInput.click()
+})
+
+importFileInput.addEventListener('change', async event => {
+	const file = event.target.files[0]
+	if (!file) return
+
+	try {
+		const fileContent = await file.text()
+		const chatData = JSON.parse(fileContent)
+		const result = await importChat(chatData)
+		if (result.success) {
+			showToastI18n('success', 'chat_history.alerts.importSuccess')
+			const newList = await getChatList()
+			fullChatList.splice(0, fullChatList.length, ...newList)
+			filterInput.dispatchEvent(new Event('input'))
+		}
+		else
+			showToast('error', result.message)
+	}
+	catch (error) {
+		console.error('Error importing chat:', error)
+		showToastI18n('error', 'chat_history.alerts.importError')
+	}
+	finally {
+		// Reset the input so the same file can be selected again
+		importFileInput.value = ''
+	}
+})
+
 /**
  * 初始化应用程序，设置主题、翻译、获取聊天列表、设置搜索功能和虚拟滚动。
  * @returns {Promise<void>}
@@ -295,6 +347,47 @@ async function initializeApp() {
 	await onLanguageChange(() => {
 		chatItemDOMCache.clear()
 		renderUI()
+	})
+
+	// Add drag-and-drop import listeners
+	chatListContainer.addEventListener('dragover', event => {
+		event.preventDefault()
+		chatListContainer.classList.add('drag-over')
+	})
+
+	chatListContainer.addEventListener('dragleave', () => {
+		chatListContainer.classList.remove('drag-over')
+	})
+
+	chatListContainer.addEventListener('drop', async event => {
+		event.preventDefault()
+		chatListContainer.classList.remove('drag-over')
+
+		if (!event.dataTransfer.files.length) return
+		const file = event.dataTransfer.files[0]
+		if (!file.type === 'application/json') {
+			showToastI18n('error', 'chat_history.alerts.invalidImportFile')
+			return
+		}
+
+
+		try {
+			const fileContent = await file.text()
+			const chatData = JSON.parse(fileContent)
+			const result = await importChat(chatData)
+			if (result.success) {
+				showToastI18n('success', 'chat_history.alerts.importSuccess')
+				const newList = await getChatList()
+				fullChatList.splice(0, fullChatList.length, ...newList)
+				filterInput.dispatchEvent(new Event('input'))
+			}
+			else
+				showToast('error', result.message)
+		}
+		catch (error) {
+			console.error('Error importing chat:', error)
+			showToastI18n('error', 'chat_history.alerts.importError')
+		}
 	})
 }
 

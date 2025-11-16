@@ -819,7 +819,8 @@
 		"buttons": {
 			"reverseSelect": "عكس التحديد",
 			"deleteSelected": "حذف المحدد",
-			"exportSelected": "تصدير المحدد"
+			"exportSelected": "تصدير المحدد",
+			"import": "استيراد"
 		},
 		"chatItemButtons": {
 			"continue": "متابعة",
@@ -834,7 +835,11 @@
 			"noChatSelectedForExport": "الرجاء تحديد سجلات المحادثات المراد تصديرها",
 			"copyError": "فشل النسخ",
 			"deleteError": "فشل الحذف",
-			"exportError": "فشل التصدير"
+			"exportError": "فشل التصدير",
+			"dragExportError": "حدث خطأ أثناء التصدير بالسحب والإفلات",
+			"importSuccess": "تم الاستيراد بنجاح",
+			"importError": "فشل الاستيراد",
+			"invalidImportFile": "ملف الاستيراد غير صالح"
 		},
 		"select_checkbox": {
 			"aria-label": "حدد الدردشة مع ${chars}"

@@ -819,7 +819,8 @@
 		"buttons": {
 			"reverseSelect": "Inverser la sélection",
 			"deleteSelected": "Supprimer la sélection",
-			"exportSelected": "Exporter la sélection"
+			"exportSelected": "Exporter la sélection",
+			"import": "Importer"
 		},
 		"chatItemButtons": {
 			"continue": "Continuer",
@@ -834,7 +835,11 @@
 			"noChatSelectedForExport": "Veuillez sélectionner les historiques de chats à exporter",
 			"copyError": "Échec de la copie",
 			"deleteError": "Échec de la suppression",
-			"exportError": "Échec de l'exportation"
+			"exportError": "Échec de l'exportation",
+			"dragExportError": "Erreur lors de l'exportation par glisser-déposer",
+			"importSuccess": "Importation réussie",
+			"importError": "Échec de l'importation",
+			"invalidImportFile": "Fichier d'importation invalide"
 		},
 		"select_checkbox": {
 			"aria-label": "Sélectionnez discuter avec ${chars}"

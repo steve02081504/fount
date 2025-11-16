@@ -819,7 +819,8 @@
 		"buttons": {
 			"reverseSelect": "चयन पलटें",
 			"deleteSelected": "चुने हुए हटाएँ",
-			"exportSelected": "चुने हुए निर्यात करें"
+			"exportSelected": "चुने हुए निर्यात करें",
+			"import": "आयात करें"
 		},
 		"chatItemButtons": {
 			"continue": "जारी रखें",
@@ -834,7 +835,11 @@
 			"noChatSelectedForExport": "कृपया निर्यात करने के लिए चैट इतिहास चुनें।",
 			"copyError": "कॉपी विफल।",
 			"deleteError": "हटाना विफल रहा।",
-			"exportError": "निर्यात विफल रहा।"
+			"exportError": "निर्यात विफल रहा।",
+			"dragExportError": "ड्रैग एंड ड्रॉप द्वारा निर्यात करते समय त्रुटि हुई",
+			"importSuccess": "आयात सफल",
+			"importError": "आयात विफल",
+			"invalidImportFile": "अमान्य आयात फ़ाइल"
 		},
 		"select_checkbox": {
 			"aria-label": "${chars} के साथ चैट का चयन करें"
