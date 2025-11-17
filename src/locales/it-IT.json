@@ -577,6 +577,11 @@
 			"dropError": "Errore nell'elaborazione del trascinamento: ${error}",
 			"noHandler": "Nessun gestore drag and drop adatto trovato."
 		},
+		"home_shell_interfaces": {
+			"open": {
+				"description": "accesso"
+			}
+		},
 		"home_drag_out_generators": {
 			"generateXFountPart": {
 				"description": "Genera informazioni sui componenti del carattere"

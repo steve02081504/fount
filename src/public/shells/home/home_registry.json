@@ -1,14 +1,7 @@
 {
 	"home_shell_interfaces": [
 		{
-			"info": {
-				"zh-CN": {
-					"title": "访问"
-				},
-				"en-UK": {
-					"title": "Access"
-				}
-			},
+			"info": "home.home_shell_interfaces.open",
 			"level": 0,
 			"url": "/shells/${name}",
 			"button": "<img src=\"https://api.iconify.design/line-md/external-link.svg\" class=\"text-icon\"/>"

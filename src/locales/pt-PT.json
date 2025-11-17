@@ -577,6 +577,11 @@
 			"dropError": "Erro no processamento de arrastar e soltar: ${error}",
 			"noHandler": "Nenhum manipulador de arrastar e soltar adequado foi encontrado."
 		},
+		"home_shell_interfaces": {
+			"open": {
+				"description": "acesso"
+			}
+		},
 		"home_drag_out_generators": {
 			"generateXFountPart": {
 				"description": "Gerar informações do componente fonte"

@@ -584,9 +584,14 @@ async function nocacheGetPartBaseDetails(username, parttype, partname) {
 		const part = await baseloadPart(username, parttype, partname).catch(() => loadPart(username, parttype, partname))
 		const info = await part?.interfaces?.info?.UpdateInfo?.() || part?.info
 		parts_details_cache[parttype] ??= {}
-		return parts_details_cache[parttype][partname] = {
-			info: JSON.parse(JSON.stringify(info)),
-			supportedInterfaces: Object.keys(part.interfaces || {}),
+		try {
+			return parts_details_cache[parttype][partname] = {
+				info: JSON.parse(JSON.stringify(info)),
+				supportedInterfaces: Object.keys(part.interfaces || {}),
+			}
+		}
+		finally {
+			saveData(username, 'parts_details_cache')
 		}
 	}
 	catch (error) {

@@ -1,7 +1,6 @@
 import fs from 'node:fs'
 
 import { loadJsonFile } from '../../../../scripts/json_loader.mjs'
-import { getUserByUsername } from '../../../../server/auth.mjs'
 import { partTypeList } from '../../../../server/managers/base.mjs'
 import { getPartListBase, GetPartPath } from '../../../../server/parts_loader.mjs'
 import { loadTempData } from '../../../../server/setting_loader.mjs'

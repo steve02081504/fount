@@ -566,6 +566,11 @@ export type LocaleData = {
 			dropError: string
 			noHandler: string
 		}
+		home_shell_interfaces: {
+			open: {
+				description: string
+			}
+		}
 		home_drag_out_generators: {
 			generateXFountPart: {
 				description: string

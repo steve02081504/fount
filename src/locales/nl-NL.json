@@ -577,6 +577,11 @@
 			"dropError": "Fout bij het slepen en neerzetten: ${error}",
 			"noHandler": "Er is geen geschikte drag-and-drop-handler gevonden."
 		},
+		"home_shell_interfaces": {
+			"open": {
+				"description": "toegang"
+			}
+		},
 		"home_drag_out_generators": {
 			"generateXFountPart": {
 				"description": "Genereer informatie over lettertypecomponenten"

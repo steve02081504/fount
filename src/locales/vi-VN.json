@@ -577,6 +577,11 @@
 			"dropError": "Lỗi khi xử lý kéo và thả: ${error}",
 			"noHandler": "Không tìm thấy trình xử lý kéo và thả thích hợp."
 		},
+		"home_shell_interfaces": {
+			"open": {
+				"description": "truy cập"
+			}
+		},
 		"home_drag_out_generators": {
 			"generateXFountPart": {
 				"description": "Tạo thông tin thành phần nguồn"

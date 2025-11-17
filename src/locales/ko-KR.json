@@ -577,6 +577,11 @@
 			"dropError": "드래그 앤 드롭 처리 중 오류: ${error}",
 			"noHandler": "적합한 드래그 앤 드롭 핸들러를 찾을 수 없습니다."
 		},
+		"home_shell_interfaces": {
+			"open": {
+				"description": "접근"
+			}
+		},
 		"home_drag_out_generators": {
 			"generateXFountPart": {
 				"description": "샘물 구성요소 정보 생성"

@@ -577,6 +577,11 @@
 			"dropError": "Erreur lors du traitement par glisser-déposer : ${error}",
 			"noHandler": "Aucun gestionnaire de glisser-déposer approprié n'a été trouvé."
 		},
+		"home_shell_interfaces": {
+			"open": {
+				"description": "Accès"
+			}
+		},
 		"home_drag_out_generators": {
 			"generateXFountPart": {
 				"description": "Générer des informations sur les composants de police"

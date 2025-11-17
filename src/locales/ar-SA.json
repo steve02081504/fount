@@ -577,6 +577,11 @@
 			"dropError": "خطأ في معالجة السحب والإفلات: ${error}",
 			"noHandler": "لم يتم العثور على معالج سحب وإسقاط مناسب."
 		},
+		"home_shell_interfaces": {
+			"open": {
+				"description": "وصول"
+			}
+		},
 		"home_drag_out_generators": {
 			"generateXFountPart": {
 				"description": "توليد معلومات مكون ينبوع"

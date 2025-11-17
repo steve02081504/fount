@@ -577,6 +577,11 @@
 			"dropError": "🚫👎: ${error}",
 			"noHandler": "🤷‍♀️🚫"
 		},
+		"home_shell_interfaces": {
+			"open": {
+				"description": "↗️"
+			}
+		},
 		"home_drag_out_generators": {
 			"generateXFountPart": {
 				"description": "📥🧩📃"

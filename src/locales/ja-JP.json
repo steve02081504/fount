@@ -577,6 +577,11 @@
 			"dropError": "ドラッグ アンド ドロップ処理のエラー: ${error}",
 			"noHandler": "適切なドラッグ アンド ドロップ ハンドラーが見つかりません。"
 		},
+		"home_shell_interfaces": {
+			"open": {
+				"description": "アクセス"
+			}
+		},
 		"home_drag_out_generators": {
 			"generateXFountPart": {
 				"description": "カウントコンポーネント情報の生成"

@@ -577,6 +577,11 @@
 			"dropError": "拖放處理出錯：${error}",
 			"noHandler": "沒有找到合適的拖放處理器。"
 		},
+		"home_shell_interfaces": {
+			"open": {
+				"description": "訪問"
+			}
+		},
 		"home_drag_out_generators": {
 			"generateXFountPart": {
 				"description": "生成 fount 部件信息"

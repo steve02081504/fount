@@ -577,6 +577,11 @@
 			"dropError": "Fehler bei der Drag-and-Drop-Verarbeitung: ${error}",
 			"noHandler": "Kein geeigneter Drag-and-Drop-Handler gefunden."
 		},
+		"home_shell_interfaces": {
+			"open": {
+				"description": "Zugang"
+			}
+		},
 		"home_drag_out_generators": {
 			"generateXFountPart": {
 				"description": "Informationen zur Quellkomponente generieren"

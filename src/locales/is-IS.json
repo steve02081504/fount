@@ -577,6 +577,11 @@
 			"dropError": "Villa í draga og sleppa vinnslu: ${error}",
 			"noHandler": "Enginn hentugur draga og sleppa meðhöndlun fannst."
 		},
+		"home_shell_interfaces": {
+			"open": {
+				"description": "aðgangur"
+			}
+		},
 		"home_drag_out_generators": {
 			"generateXFountPart": {
 				"description": "Búðu til upplýsingar um leturíhluti"

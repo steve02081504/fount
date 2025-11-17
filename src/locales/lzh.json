@@ -577,6 +577,11 @@
 			"dropError": "置之有误：${error}",
 			"noHandler": "无以应之。"
 		},
+		"home_shell_interfaces": {
+			"open": {
+				"description": "啟"
+			}
+		},
 		"home_drag_out_generators": {
 			"generateXFountPart": {
 				"description": "以器衍其標"
