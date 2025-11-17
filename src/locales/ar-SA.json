@@ -370,6 +370,16 @@
 				"description": "\"البرنامج التعليمي؟ ما هذا؟ هل يمكن تناوله؟\"",
 				"locked_description": "تخطي البرنامج التعليمي التمهيدي مرة واحدة."
 			}
+		},
+		"home_function_buttons": {
+			"other": {
+				"title": "أخرى",
+				"sub_items": {
+					"replay": {
+						"title": "إعادة تشغيل البرنامج التعليمي"
+					}
+				}
+			}
 		}
 	},
 	"auth": {
@@ -566,6 +576,11 @@
 			"dropSuccess": "السحب والإسقاط ناجح!",
 			"dropError": "خطأ في معالجة السحب والإفلات: ${error}",
 			"noHandler": "لم يتم العثور على معالج سحب وإسقاط مناسب."
+		},
+		"home_drag_out_generators": {
+			"generateXFountPart": {
+				"description": "توليد معلومات مكون ينبوع"
+			}
 		}
 	},
 	"chat": {
@@ -799,6 +814,16 @@
 			"pluginAdded": "تمت إضافة المكون الإضافي ${partName} إلى الدردشة.",
 			"unsupportedPartType": "نوع الجزء غير مدعوم: ${partType}.",
 			"errorAddingPart": "خطأ في إضافة الجزء ${partName}: ${error}"
+		},
+		"home_char_interfaces": {
+			"main": {
+				"title": "محادثة"
+			}
+		},
+		"home_function_buttons": {
+			"viewHistory": {
+				"title": "عرض السجل"
+			}
 		}
 	},
 	"chat_history": {
@@ -819,7 +844,8 @@
 		"buttons": {
 			"reverseSelect": "عكس التحديد",
 			"deleteSelected": "حذف المحدد",
-			"exportSelected": "تصدير المحدد"
+			"exportSelected": "تصدير المحدد",
+			"import": "استيراد"
 		},
 		"chatItemButtons": {
 			"continue": "متابعة",
@@ -834,7 +860,11 @@
 			"noChatSelectedForExport": "الرجاء تحديد سجلات المحادثات المراد تصديرها",
 			"copyError": "فشل النسخ",
 			"deleteError": "فشل الحذف",
-			"exportError": "فشل التصدير"
+			"exportError": "فشل التصدير",
+			"dragExportError": "حدث خطأ أثناء التصدير بالسحب والإفلات",
+			"importSuccess": "تم الاستيراد بنجاح",
+			"importError": "فشل الاستيراد",
+			"invalidImportFile": "ملف الاستيراد غير صالح"
 		},
 		"select_checkbox": {
 			"aria-label": "حدد الدردشة مع ${chars}"
@@ -943,6 +973,16 @@
 				"description": "ابدأ من الصفر وقم بإنشاء المكون الأول الخاص بك.",
 				"locked_description": "قم بإنشاء جزء باستخدام ميزة Quick New."
 			}
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "مكونات",
+				"sub_items": {
+					"quickCreate": {
+						"title": "إنشاء سريع"
+					}
+				}
+			}
 		}
 	},
 	"import": {
@@ -989,6 +1029,24 @@
 		"dragAndDrop": {
 			"fileDropDescription": "تثبيت المكونات من الملفات",
 			"textDropDescription": "تثبيت أجزاء من النص"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "مكونات",
+				"sub_items": {
+					"import": {
+						"title": "استيراد"
+					}
+				}
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleTextDrop": {
+				"description": "تثبيت أجزاء من النص"
+			},
+			"handleFileDrop": {
+				"description": "تثبيت المكونات من الملفات"
+			}
 		}
 	},
 	"export": {
@@ -1067,6 +1125,26 @@
 		},
 		"dragAndDrop": {
 			"downloadPartDescription": "تنزيل الأجزاء"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "مكونات",
+				"sub_items": {
+					"exportPart": {
+						"title": "مكونات التصدير"
+					}
+				}
+			}
+		},
+		"home_drag_out_generators": {
+			"generateDownloadUrl": {
+				"description": "تنزيل الأجزاء"
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "تصدير"
+			}
 		}
 	},
 	"uninstall": {
@@ -1094,6 +1172,11 @@
 		"errorMessage": {
 			"icon": {
 				"alt": "أيقونة الخطأ"
+			}
+		},
+		"home_common_interfaces": {
+			"delete": {
+				"title": "حذف"
 			}
 		}
 	},
@@ -1202,7 +1285,17 @@
 			"cancelButton": "إلغاء"
 		},
 		"apiError": "فشل طلب API: ‏${message}",
-		"generalError": "حدث خطأ: ${message}"
+		"generalError": "حدث خطأ: ${message}",
+		"home_function_buttons": {
+			"settings": {
+				"title": "الإعدادات",
+				"sub_items": {
+					"main": {
+						"title": "إعدادات المستخدم"
+					}
+				}
+			}
+		}
 	},
 	"languageSettings": {
 		"title": "إعدادات اللغة",
@@ -1222,7 +1315,17 @@
 		"noPreferredLanguages": "لم يتم تعيين لغة مفضلة بعد. سيتم استخدام الإعدادات الافتراضية للمتصفح.",
 		"savedMessage": "يتم حفظ إعدادات اللغة!",
 		"resetMessage": "تم إعادة تعيين إعدادات اللغة!",
-		"fetchLocalesFailed": "فشل في الحصول على اللغات المتاحة!"
+		"fetchLocalesFailed": "فشل في الحصول على اللغات المتاحة!",
+		"home_function_buttons": {
+			"settings": {
+				"title": "الإعدادات",
+				"sub_items": {
+					"main": {
+						"title": "إعدادات اللغة"
+					}
+				}
+			}
+		}
 	},
 	"themeManage": {
 		"title": "إدارة السمات",
@@ -1276,6 +1379,16 @@
 				"description": "كان للنافورة مظهر جديد ومزاج جديد تمامًا.",
 				"locked_description": "تبديل الموضوع مرة واحدة."
 			}
+		},
+		"home_function_buttons": {
+			"settings": {
+				"title": "الإعدادات",
+				"sub_items": {
+					"switchTheme": {
+						"title": "موضوع التبديل"
+					}
+				}
+			}
 		}
 	},
 	"part_config": {
@@ -1312,6 +1425,21 @@
 			"saveConfigFailed": "فشل حفظ تهيئة المكون",
 			"unsavedChanges": "لديك تغييرات غير محفوظة. هل تريد التخلص منها؟",
 			"beforeUnload": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد المغادرة؟"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "مكونات",
+				"sub_items": {
+					"componentConfigLink": {
+						"title": "تكوين المكون"
+					}
+				}
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "إعدادات"
+			}
 		}
 	},
 	"aisource_editor": {
@@ -1379,6 +1507,11 @@
 				"description": "يتم تعيين الذكاء الاصطناعي الافتراضي كمصدر إمداد المانا.",
 				"locked_description": "قم بتعيين مصدر AI افتراضي مرة واحدة."
 			}
+		},
+		"home_function_buttons": {
+			"manage": {
+				"title": "إدارة مصادر الذكاء الاصطناعي"
+			}
 		}
 	},
 	"discord_bots": {
@@ -1440,6 +1573,21 @@
 				"description": "قم باستدعاء شخصيتك إلى عالم Discord.",
 				"locked_description": "قم بتشغيل Discord Bot مرة واحدة."
 			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "الروبوتات",
+				"sub_items": {
+					"manage": {
+						"title": "إدارة بوت ديسكورد"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "تكوين روبوت الخلاف"
+			}
 		}
 	},
 	"telegram_bots": {
@@ -1500,6 +1648,21 @@
 				"name": "القادمة إلى برقية",
 				"description": "قم باستدعاء شخصيتك إلى عالم Telegram.",
 				"locked_description": "قم بتشغيل Telegram Bot مرة واحدة."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "الروبوتات",
+				"sub_items": {
+					"manage": {
+						"title": "إدارة برقية بوت"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "تكوين Telegram Bot"
 			}
 		}
 	},
@@ -1576,6 +1739,16 @@
 				"description": "ضع نجمة لمشروع fount على GitHub، شكرًا لدعمكم!",
 				"locked_description": "قم بزيارة مستودع GitHub الخاص بـ fount وأضيئ النجمة."
 			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "التكاملات",
+				"sub_items": {
+					"browserIntegrationLink": {
+						"title": "تكامل المتصفح"
+					}
+				}
+			}
 		}
 	},
 	"browser_integration_script": {
@@ -1600,6 +1773,16 @@
 				"name": "\"مرحبا، فاونت.\"",
 				"description": "في المحطة المظلمة، تم استدعاء اسم شريك الذكاء الاصطناعي.",
 				"locked_description": "اتصل بالمساعدة الطرفية مرة واحدة."
+			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "التكاملات",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "المساعدة الطرفية"
+					}
+				}
 			}
 		}
 	},
@@ -1637,6 +1820,26 @@
 				"description": "تقفز شخصية برية وتسيطر على سطح المكتب.",
 				"locked_description": "ابدأ بحيوان أليف على سطح المكتب."
 			}
+		},
+		"home_char_interfaces": {
+			"launch": {
+				"title": "إطلاق كحيوان أليف على سطح المكتب"
+			}
+		},
+		"home_function_buttons": {
+			"in_dev": {
+				"title": "قيد التطوير",
+				"sub_items": {
+					"deskpet_related": {
+						"title": "الحيوانات الأليفة سطح المكتب",
+						"sub_items": {
+							"main": {
+								"title": "إدارة الحيوانات الأليفة على سطح المكتب"
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"access": {
@@ -1654,7 +1857,12 @@
 			"aria-label": "عنوان URL"
 		},
 		"copyButton": "نسخ الرابط",
-		"copied": "تم نسخ الرابط إلى الحافظة!"
+		"copied": "تم نسخ الرابط إلى الحافظة!",
+		"home_function_buttons": {
+			"main": {
+				"title": "الوصول من أجهزة أخرى"
+			}
+		}
 	},
 	"proxy": {
 		"title": "وكيل API",
@@ -1678,7 +1886,17 @@
 		"apiKeyCopied": "تم نسخ مفتاح API!",
 		"queryStringSectionTitle": "لا يمكن تعيين مفتاح API في رأس الطلب؟ (غير آمن)",
 		"queryStringWarning": "استخدم هذه الطريقة البديلة عندما لا يدعم تطبيقك إرسال مفتاح API في رأس الطلب (Authorization header). يرجى ملاحظة: وضع مفتاح API مباشرة في عنوان URL يشكل خطرًا أمنيًا حيث يمكن تسجيله في سجلات الخادم أو سجل المتصفح.",
-		"copyQueryStringUrlButton": "عنوان URL مع مفتاح API (سلسلة استعلام)"
+		"copyQueryStringUrlButton": "عنوان URL مع مفتاح API (سلسلة استعلام)",
+		"home_function_buttons": {
+			"other": {
+				"title": "أخرى",
+				"sub_items": {
+					"asProxy": {
+						"title": "كوكيل"
+					}
+				}
+			}
+		}
 	},
 	"achievements": {
 		"title": "إنجاز",
@@ -1701,6 +1919,11 @@
 				"name": "أحقًا؟",
 				"description": "من خلال النقر بشكل متكرر على الإنجاز الذي تم إلغاء قفله، فإنك تعيد قفله بنجاح. لماذا؟",
 				"locked_description": "؟ ؟ ؟"
+			}
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "إنجاز"
 			}
 		}
 	},

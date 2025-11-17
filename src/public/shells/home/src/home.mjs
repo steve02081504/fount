@@ -1,7 +1,6 @@
 import fs from 'node:fs'
 
 import { loadJsonFile } from '../../../../scripts/json_loader.mjs'
-import { getLocalizedInfo } from '../../../../scripts/locale.mjs'
 import { getUserByUsername } from '../../../../server/auth.mjs'
 import { partTypeList } from '../../../../server/managers/base.mjs'
 import { getPartListBase, GetPartPath } from '../../../../server/parts_loader.mjs'
@@ -119,20 +118,15 @@ export async function loadHomeRegistry(username) {
 export async function expandHomeRegistry(username) {
 	const user_home_registry = loadTempData(username, 'home_registry')
 	if (!Object.keys(user_home_registry).length) await loadHomeRegistry(username)
-	const { locales } = getUserByUsername(username)
-
 	/**
-	 * 预处理列表，本地化信息并按级别排序。
+	 * 预处理列表，按级别排序。
 	 * @param {Array<object>} list - 要处理的按钮列表。
 	 * @returns {Array<object>} 预处理后的按钮列表。
 	 */
-	const base_preprocess = list => list.flat().sort((a, b) => a.level - b.level).map(button => ({
-		...button,
-		info: getLocalizedInfo(button.info, locales)
-	}))
+	const base_preprocess = list => list.flat().sort((a, b) => a.level - b.level)
 
 	/**
-	 * 预处理接口列表，合并通用接口并本地化信息。
+	 * 预处理接口列表，合并通用接口。
 	 * @param {object} list - 接口列表。
 	 * @returns {Array<object>} 预处理后的接口列表。
 	 */
@@ -141,9 +135,9 @@ export async function expandHomeRegistry(username) {
 	)
 
 	return {
-		home_function_buttons: processButtonList(user_home_registry.home_function_buttons, locales),
-		home_drag_in_handlers: processButtonList(user_home_registry.home_drag_in_handlers, locales),
-		home_drag_out_generators: processButtonList(user_home_registry.home_drag_out_generators, locales),
+		home_function_buttons: processButtonList(user_home_registry.home_function_buttons),
+		home_drag_in_handlers: processButtonList(user_home_registry.home_drag_in_handlers),
+		home_drag_out_generators: processButtonList(user_home_registry.home_drag_out_generators),
 		part_types: partTypeList.map(parttame => ({
 			name: parttame,
 			interfaces: interface_preprocess(user_home_registry[`home_${parttame.slice(0, -1)}_interfaces`] ?? {}),

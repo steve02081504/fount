@@ -370,6 +370,16 @@
 				"description": "\"Посібник? Що це? Чи можна це їсти?\"",
 				"locked_description": "Пропустіть вступний посібник один раз."
 			}
+		},
+		"home_function_buttons": {
+			"other": {
+				"title": "інший",
+				"sub_items": {
+					"replay": {
+						"title": "Підручник з повтору"
+					}
+				}
+			}
 		}
 	},
 	"auth": {
@@ -566,6 +576,11 @@
 			"dropSuccess": "Удалося перетягнути!",
 			"dropError": "Помилка під час обробки перетягування: ${error}",
 			"noHandler": "Не знайдено відповідного обробника перетягування."
+		},
+		"home_drag_out_generators": {
+			"generateXFountPart": {
+				"description": "Генерувати інформацію про компонент шрифту"
+			}
 		}
 	},
 	"chat": {
@@ -799,6 +814,16 @@
 			"pluginAdded": "До чату додано плагін ${partName}.",
 			"unsupportedPartType": "Непідтримуваний тип частини: ${partType}.",
 			"errorAddingPart": "Помилка додавання частини ${partName}: ${error}"
+		},
+		"home_char_interfaces": {
+			"main": {
+				"title": "чат"
+			}
+		},
+		"home_function_buttons": {
+			"viewHistory": {
+				"title": "Історія перегляду"
+			}
 		}
 	},
 	"chat_history": {
@@ -819,7 +844,8 @@
 		"buttons": {
 			"reverseSelect": "Інвертувати вибір",
 			"deleteSelected": "Видалити вибране",
-			"exportSelected": "Експортувати вибране"
+			"exportSelected": "Експортувати вибране",
+			"import": "Імпортувати"
 		},
 		"chatItemButtons": {
 			"continue": "Продовжити",
@@ -834,7 +860,11 @@
 			"noChatSelectedForExport": "Будь ласка, виберіть історію чату для експорту",
 			"copyError": "Помилка копіювання",
 			"deleteError": "Помилка видалення",
-			"exportError": "Помилка експорту"
+			"exportError": "Помилка експорту",
+			"dragExportError": "Помилка під час експорту перетягуванням",
+			"importSuccess": "Імпорт успішний",
+			"importError": "Помилка імпорту",
+			"invalidImportFile": "Недійсний файл імпорту"
 		},
 		"select_checkbox": {
 			"aria-label": "Виберіть чат із ${chars}"
@@ -943,6 +973,16 @@
 				"description": "Почніть з нуля та створіть свій перший компонент.",
 				"locked_description": "Створіть деталь за допомогою функції швидкого створення."
 			}
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Компонент",
+				"sub_items": {
+					"quickCreate": {
+						"title": "Швидко побудувати нове"
+					}
+				}
+			}
 		}
 	},
 	"import": {
@@ -989,6 +1029,24 @@
 		"dragAndDrop": {
 			"fileDropDescription": "Установка компонентів з файлів",
 			"textDropDescription": "Встановити частини з тексту"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Компонент",
+				"sub_items": {
+					"import": {
+						"title": "Імпорт"
+					}
+				}
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleTextDrop": {
+				"description": "Встановити частини з тексту"
+			},
+			"handleFileDrop": {
+				"description": "Установка компонентів з файлів"
+			}
 		}
 	},
 	"export": {
@@ -1067,6 +1125,26 @@
 		},
 		"dragAndDrop": {
 			"downloadPartDescription": "Завантажити частини"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Компонент",
+				"sub_items": {
+					"exportPart": {
+						"title": "Експортні компоненти"
+					}
+				}
+			}
+		},
+		"home_drag_out_generators": {
+			"generateDownloadUrl": {
+				"description": "Завантажити частини"
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "Експорт"
+			}
 		}
 	},
 	"uninstall": {
@@ -1094,6 +1172,11 @@
 		"errorMessage": {
 			"icon": {
 				"alt": "Іконка помилки"
+			}
+		},
+		"home_common_interfaces": {
+			"delete": {
+				"title": "видаляти"
 			}
 		}
 	},
@@ -1202,7 +1285,17 @@
 			"cancelButton": "Скасувати"
 		},
 		"apiError": "Помилка API запиту: ${message}",
-		"generalError": "Сталася помилка: ${message}"
+		"generalError": "Сталася помилка: ${message}",
+		"home_function_buttons": {
+			"settings": {
+				"title": "Налаштування",
+				"sub_items": {
+					"main": {
+						"title": "Налаштування користувача"
+					}
+				}
+			}
+		}
 	},
 	"languageSettings": {
 		"title": "Налаштування мови",
@@ -1222,7 +1315,17 @@
 		"noPreferredLanguages": "Бажану мову не вибрано. Буде використано налаштування браузера за замовчуванням.",
 		"savedMessage": "Налаштування мови зберігаються!",
 		"resetMessage": "Налаштування мови були скинуті!",
-		"fetchLocalesFailed": "Не вдалося отримати доступні мови!"
+		"fetchLocalesFailed": "Не вдалося отримати доступні мови!",
+		"home_function_buttons": {
+			"settings": {
+				"title": "Налаштування",
+				"sub_items": {
+					"main": {
+						"title": "Налаштування мови"
+					}
+				}
+			}
+		}
 	},
 	"themeManage": {
 		"title": "Керування темами",
@@ -1276,6 +1379,16 @@
 				"description": "Фонтан отримав новий вигляд і абсолютно новий настрій.",
 				"locked_description": "Перемкніть тему один раз."
 			}
+		},
+		"home_function_buttons": {
+			"settings": {
+				"title": "Налаштування",
+				"sub_items": {
+					"switchTheme": {
+						"title": "Тема перемикання"
+					}
+				}
+			}
 		}
 	},
 	"part_config": {
@@ -1312,6 +1425,21 @@
 			"saveConfigFailed": "Не вдалося зберегти налаштування компонента",
 			"unsavedChanges": "У вас є незбережені зміни. Ви хочете їх скасувати?",
 			"beforeUnload": "У вас є незбережені зміни. Ви впевнені, що хочете піти?"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Компонент",
+				"sub_items": {
+					"componentConfigLink": {
+						"title": "Конфігурація компонентів"
+					}
+				}
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "Конфігурація"
+			}
 		}
 	},
 	"aisource_editor": {
@@ -1379,6 +1507,11 @@
 				"description": "ШІ за замовчуванням призначено fount постачання мани.",
 				"locked_description": "Один раз установіть fount ШІ за замовчуванням."
 			}
+		},
+		"home_function_buttons": {
+			"manage": {
+				"title": "Керуйте джерелами AI"
+			}
 		}
 	},
 	"discord_bots": {
@@ -1440,6 +1573,21 @@
 				"description": "Викличте свого персонажа у світ Discord.",
 				"locked_description": "Запустіть Discord Bot один раз."
 			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Бот",
+				"sub_items": {
+					"manage": {
+						"title": "Керуйте розбратами бота"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Налаштування Discord Bot"
+			}
 		}
 	},
 	"telegram_bots": {
@@ -1500,6 +1648,21 @@
 				"name": "Заходимо в Telegram",
 				"description": "Викличте свого персонажа у світ Telegram.",
 				"locked_description": "Запустіть Telegram Bot один раз."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Бот",
+				"sub_items": {
+					"manage": {
+						"title": "Керуйте Telegram Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Налаштуйте Telegram Bot"
 			}
 		}
 	},
@@ -1576,6 +1739,16 @@
 				"description": "Поставте зірку fount на GitHub, дякуємо за підтримку!",
 				"locked_description": "Відвідайте репозиторій fount GitHub і запаліть зірку."
 			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "Інтеграція, пов’язана",
+				"sub_items": {
+					"browserIntegrationLink": {
+						"title": "Інтеграція з браузером"
+					}
+				}
+			}
 		}
 	},
 	"browser_integration_script": {
@@ -1600,6 +1773,16 @@
 				"name": "«Гей, Фонт».",
 				"description": "У темному терміналі назвали ім'я AI-партнера.",
 				"locked_description": "Викличте термінальну допомогу один раз."
+			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "Інтеграція, пов’язана",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "Термінальна допомога"
+					}
+				}
 			}
 		}
 	},
@@ -1637,6 +1820,26 @@
 				"description": "Дикий персонаж вистрибує і захоплює ваш робочий стіл.",
 				"locked_description": "Заведіть настільного улюбленця."
 			}
+		},
+		"home_char_interfaces": {
+			"launch": {
+				"title": "Запустіть як настільний домашній тварин"
+			}
+		},
+		"home_function_buttons": {
+			"in_dev": {
+				"title": "Розробляти",
+				"sub_items": {
+					"deskpet_related": {
+						"title": "Настільні домашні тварини",
+						"sub_items": {
+							"main": {
+								"title": "Керуйте настільними домашніми тваринами"
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"access": {
@@ -1654,7 +1857,12 @@
 			"aria-label": "URL"
 		},
 		"copyButton": "Копіювати адресу",
-		"copied": "Адресу скопійовано в буфер обміну!"
+		"copied": "Адресу скопійовано в буфер обміну!",
+		"home_function_buttons": {
+			"main": {
+				"title": "Доступ на інші пристрої"
+			}
+		}
 	},
 	"proxy": {
 		"title": "API проксі",
@@ -1678,7 +1886,17 @@
 		"apiKeyCopied": "API-ключ скопійовано!",
 		"queryStringSectionTitle": "Неможливо встановити APIKey у заголовку запиту? (Небезпечно)",
 		"queryStringWarning": "Використовуйте цей альтернативний метод, якщо ваша програма не підтримує надсилання ключа API в заголовку запиту (заголовок Authorization). Увага: розміщення ключа API безпосередньо в URL-адресі становить загрозу безпеці, оскільки він може бути записаний у журналах сервера або історії браузера.",
-		"copyQueryStringUrlButton": "URL з ключем API (рядок запиту)"
+		"copyQueryStringUrlButton": "URL з ключем API (рядок запиту)",
+		"home_function_buttons": {
+			"other": {
+				"title": "інший",
+				"sub_items": {
+					"asProxy": {
+						"title": "Як агент"
+					}
+				}
+			}
+		}
 	},
 	"achievements": {
 		"title": "досягнення",
@@ -1701,6 +1919,11 @@
 				"name": "Серйозно?",
 				"description": "Багаторазово натискаючи розблоковане досягнення, ви успішно заблокуєте його. Чому?",
 				"locked_description": "? ? ?"
+			}
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "досягнення"
 			}
 		}
 	},

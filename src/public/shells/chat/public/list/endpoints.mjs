@@ -63,6 +63,27 @@ export async function copyChats(chatids) {
 }
 
 /**
+ * 导入聊天。
+ * @param {object} chatData 要导入的聊天数据。
+ * @returns {Promise<object>} 解析为服务器响应的 Promise。
+ * @throws {Error} 如果 API 请求失败。
+ */
+export async function importChat(chatData) {
+	const response = await fetch('/api/shells/chat/import', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(chatData),
+	})
+
+	if (!response.ok)
+		throw Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => { }), { response })
+
+	return response.json()
+}
+
+/**
  * 删除聊天。
  * @param {Array<string>} chatids 要删除的聊天 ID 数组。
  * @returns {Promise<Object>} 一个解析为服务器响应的 Promise。

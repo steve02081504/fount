@@ -370,6 +370,16 @@
 				"description": "\"Kennsla? Hvað er það? Er hægt að borða það?\"",
 				"locked_description": "Slepptu kynningarkennslunni einu sinni."
 			}
+		},
+		"home_function_buttons": {
+			"other": {
+				"title": "Annað",
+				"sub_items": {
+					"replay": {
+						"title": "Endurspilunarleiðbeiningar"
+					}
+				}
+			}
 		}
 	},
 	"auth": {
@@ -566,6 +576,11 @@
 			"dropSuccess": "Draga og sleppa tókst!",
 			"dropError": "Villa í draga og sleppa vinnslu: ${error}",
 			"noHandler": "Enginn hentugur draga og sleppa meðhöndlun fannst."
+		},
+		"home_drag_out_generators": {
+			"generateXFountPart": {
+				"description": "Búðu til upplýsingar um leturíhluti"
+			}
 		}
 	},
 	"chat": {
@@ -799,6 +814,16 @@
 			"pluginAdded": "Viðbót ${partName} hefur verið bætt við spjallið.",
 			"unsupportedPartType": "Óstudd hlutategund: ${partType}.",
 			"errorAddingPart": "Villa við að bæta við hluta ${partName}: ${error}"
+		},
+		"home_char_interfaces": {
+			"main": {
+				"title": "Spjall"
+			}
+		},
+		"home_function_buttons": {
+			"viewHistory": {
+				"title": "Vafra sögu"
+			}
 		}
 	},
 	"chat_history": {
@@ -819,7 +844,8 @@
 		"buttons": {
 			"reverseSelect": "Víxla vali",
 			"deleteSelected": "Eyða völdu",
-			"exportSelected": "Flytja út valið"
+			"exportSelected": "Flytja út valið",
+			"import": "Flytja inn"
 		},
 		"chatItemButtons": {
 			"continue": "Halda áfram",
@@ -834,7 +860,11 @@
 			"noChatSelectedForExport": "Vinsamlegast veldu spjallferla til að flytja út",
 			"copyError": "Afritun mistókst",
 			"deleteError": "Eyðing mistókst",
-			"exportError": "Útflutningur mistókst"
+			"exportError": "Útflutningur mistókst",
+			"dragExportError": "Villa við að draga og sleppa útflutningi",
+			"importSuccess": "Innflutningur tókst",
+			"importError": "Innflutningur mistókst",
+			"invalidImportFile": "Ógild innflutningsskrá"
 		},
 		"select_checkbox": {
 			"aria-label": "Veldu spjall við ${chars}"
@@ -943,6 +973,16 @@
 				"description": "Byrjaðu frá grunni og búðu til fyrsta íhlutinn þinn.",
 				"locked_description": "Búðu til hluta með því að nota Quick New eiginleikann."
 			}
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Íhlutir",
+				"sub_items": {
+					"quickCreate": {
+						"title": "Flýtigerð"
+					}
+				}
+			}
 		}
 	},
 	"import": {
@@ -989,6 +1029,24 @@
 		"dragAndDrop": {
 			"fileDropDescription": "Settu upp íhluti úr skrám",
 			"textDropDescription": "Settu upp hluta úr texta"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Íhlutir",
+				"sub_items": {
+					"import": {
+						"title": "Flytja inn"
+					}
+				}
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleTextDrop": {
+				"description": "Settu upp hluta úr texta"
+			},
+			"handleFileDrop": {
+				"description": "Settu upp íhluti úr skrám"
+			}
 		}
 	},
 	"export": {
@@ -1067,6 +1125,26 @@
 		},
 		"dragAndDrop": {
 			"downloadPartDescription": "Sækja hluti"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Íhlutir",
+				"sub_items": {
+					"exportPart": {
+						"title": "Útflutningshluta"
+					}
+				}
+			}
+		},
+		"home_drag_out_generators": {
+			"generateDownloadUrl": {
+				"description": "Sækja hluti"
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "Flytja út"
+			}
 		}
 	},
 	"uninstall": {
@@ -1094,6 +1172,11 @@
 		"errorMessage": {
 			"icon": {
 				"alt": "Villutákn"
+			}
+		},
+		"home_common_interfaces": {
+			"delete": {
+				"title": "Eyða"
 			}
 		}
 	},
@@ -1202,7 +1285,17 @@
 			"cancelButton": "Hætta við"
 		},
 		"apiError": "API beiðni mistókst: ${message}",
-		"generalError": "Villa kom upp: ${message}"
+		"generalError": "Villa kom upp: ${message}",
+		"home_function_buttons": {
+			"settings": {
+				"title": "Stillingar",
+				"sub_items": {
+					"main": {
+						"title": "Notendastillingar"
+					}
+				}
+			}
+		}
 	},
 	"languageSettings": {
 		"title": "Tungumálastillingar",
@@ -1222,7 +1315,17 @@
 		"noPreferredLanguages": "Ekkert fyrri tungumál ennþá. Sjálfgefnar stillingar vafrans verða notaðar.",
 		"savedMessage": "Tungumálastillingar eru vistaðar!",
 		"resetMessage": "Tungumálastillingar hafa verið endurstilltar!",
-		"fetchLocalesFailed": "Ekki tókst að fá tiltæk tungumál!"
+		"fetchLocalesFailed": "Ekki tókst að fá tiltæk tungumál!",
+		"home_function_buttons": {
+			"settings": {
+				"title": "Stillingar",
+				"sub_items": {
+					"main": {
+						"title": "Tungumálastillingar"
+					}
+				}
+			}
+		}
 	},
 	"themeManage": {
 		"title": "Þemastjórnun",
@@ -1276,6 +1379,16 @@
 				"description": "Gosbrunnurinn fékk nýtt útlit og alveg nýja stemningu.",
 				"locked_description": "Skiptu um þema einu sinni."
 			}
+		},
+		"home_function_buttons": {
+			"settings": {
+				"title": "Stillingar",
+				"sub_items": {
+					"switchTheme": {
+						"title": "Skiptaþema"
+					}
+				}
+			}
 		}
 	},
 	"part_config": {
@@ -1312,6 +1425,21 @@
 			"saveConfigFailed": "Mistókst að vista stillingar íhlutar",
 			"unsavedChanges": "Þú hefur óvistaðar breytingar. Viltu henda þeim?",
 			"beforeUnload": "Þú hefur óvistaðar breytingar. Ertu viss um að þú viljir fara?"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Íhlutir",
+				"sub_items": {
+					"componentConfigLink": {
+						"title": "Stillingar íhluta"
+					}
+				}
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "Stillingar"
+			}
 		}
 	},
 	"aisource_editor": {
@@ -1379,6 +1507,11 @@
 				"description": "Sjálfgefin gervigreind er tilnefnd sem mana framboðsuppspretta.",
 				"locked_description": "Stilltu sjálfgefna gervigreindargjafa einu sinni."
 			}
+		},
+		"home_function_buttons": {
+			"manage": {
+				"title": "Stjórna AI heimildum"
+			}
 		}
 	},
 	"discord_bots": {
@@ -1440,6 +1573,21 @@
 				"description": "Kallaðu persónu þína inn í heim Discord.",
 				"locked_description": "Ræstu Discord Bot einu sinni."
 			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Bot tengt",
+				"sub_items": {
+					"manage": {
+						"title": "Stjórna Discord Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Stilla Discord Bot"
+			}
 		}
 	},
 	"telegram_bots": {
@@ -1500,6 +1648,21 @@
 				"name": "Kemur til Telegram",
 				"description": "Kallaðu persónu þína inn í heim Telegram.",
 				"locked_description": "Byrjaðu Telegram Bot einu sinni."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Bot tengt",
+				"sub_items": {
+					"manage": {
+						"title": "Stjórna Telegram Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Stilla Telegram Bot"
 			}
 		}
 	},
@@ -1576,6 +1739,16 @@
 				"description": "Gefðu fount stjörnu á GitHub, takk fyrir stuðninginn!",
 				"locked_description": "Heimsæktu GitHub geymslu fount og kveiktu á stjörnunni."
 			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "Samþættingar",
+				"sub_items": {
+					"browserIntegrationLink": {
+						"title": "Samþætting vafra"
+					}
+				}
+			}
 		}
 	},
 	"browser_integration_script": {
@@ -1600,6 +1773,16 @@
 				"name": "\"Hæ, fount.\"",
 				"description": "Í myrkri flugstöðinni var nafn AI félagans kallað.",
 				"locked_description": "Hringdu einu sinni í flugstöðvaraðstoð."
+			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "Samþættingar",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "Terminal Assistance"
+					}
+				}
 			}
 		}
 	},
@@ -1637,6 +1820,26 @@
 				"description": "Villtur karakter hoppar út og tekur yfir skjáborðið þitt.",
 				"locked_description": "Byrjaðu skrifborðsgæludýr."
 			}
+		},
+		"home_char_interfaces": {
+			"launch": {
+				"title": "Ræstu sem Desktop Pet"
+			}
+		},
+		"home_function_buttons": {
+			"in_dev": {
+				"title": "Undir þróun",
+				"sub_items": {
+					"deskpet_related": {
+						"title": "Gæludýr skrifborðs",
+						"sub_items": {
+							"main": {
+								"title": "Stjórna skrifborðs gæludýrum"
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"access": {
@@ -1654,7 +1857,12 @@
 			"aria-label": "URL"
 		},
 		"copyButton": "Afrita slóð",
-		"copied": "Slóð afrituð á klippiborð!"
+		"copied": "Slóð afrituð á klippiborð!",
+		"home_function_buttons": {
+			"main": {
+				"title": "Aðgangur að öðrum tækjum"
+			}
+		}
 	},
 	"proxy": {
 		"title": "API milliliður",
@@ -1678,7 +1886,17 @@
 		"apiKeyCopied": "API lykill afritaður!",
 		"queryStringSectionTitle": "Geturðu ekki stillt APIKey í haus beiðni? (Óöruggt)",
 		"queryStringWarning": "Notaðu þessa varaleið þegar forritið þitt styður ekki sendingu API lykilsins í haus beiðninnar (Authorization haus). Vinsamlegast athugið: Að setja API lykilinn beint í slóðina felur í sér öryggisáhættu þar sem hann gæti verið skráður í annálum netþjóna eða vafraferli.",
-		"copyQueryStringUrlButton": "Slóð með API lykli (Fyrirspurnarstrengur)"
+		"copyQueryStringUrlButton": "Slóð með API lykli (Fyrirspurnarstrengur)",
+		"home_function_buttons": {
+			"other": {
+				"title": "Annað",
+				"sub_items": {
+					"asProxy": {
+						"title": "Sem umboðsmaður"
+					}
+				}
+			}
+		}
 	},
 	"achievements": {
 		"title": "Afrek",
@@ -1701,6 +1919,11 @@
 				"name": "Í alvöru?",
 				"description": "Með því að smella ítrekað á ólæst afrek, læsirðu því aftur. Hvers vegna?",
 				"locked_description": "? ? ?"
+			}
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "Afrek"
 			}
 		}
 	},

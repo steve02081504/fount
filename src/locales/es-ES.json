@@ -370,6 +370,16 @@
 				"description": "\"¿Tutorial? ¿Qué es eso? ¿Se puede comer?\"",
 				"locked_description": "Omita el tutorial introductorio una vez."
 			}
+		},
+		"home_function_buttons": {
+			"other": {
+				"title": "Otros",
+				"sub_items": {
+					"replay": {
+						"title": "Repetir Tutorial"
+					}
+				}
+			}
 		}
 	},
 	"auth": {
@@ -566,6 +576,11 @@
 			"dropSuccess": "¡Arrastra y suelta con éxito!",
 			"dropError": "Error en el procesamiento de arrastrar y soltar: ${error}",
 			"noHandler": "No se encontró ningún controlador de arrastrar y soltar adecuado."
+		},
+		"home_drag_out_generators": {
+			"generateXFountPart": {
+				"description": "Generar información del componente fuente"
+			}
 		}
 	},
 	"chat": {
@@ -799,6 +814,16 @@
 			"pluginAdded": "Se ha agregado el complemento ${partName} al chat.",
 			"unsupportedPartType": "Tipo de pieza no admitido: ${partType}.",
 			"errorAddingPart": "Error al agregar la pieza ${partName}: ${error}"
+		},
+		"home_char_interfaces": {
+			"main": {
+				"title": "Chat"
+			}
+		},
+		"home_function_buttons": {
+			"viewHistory": {
+				"title": "Ver historial"
+			}
 		}
 	},
 	"chat_history": {
@@ -819,7 +844,8 @@
 		"buttons": {
 			"reverseSelect": "Invertir selección",
 			"deleteSelected": "Eliminar seleccionados",
-			"exportSelected": "Exportar seleccionados"
+			"exportSelected": "Exportar seleccionados",
+			"import": "Importar"
 		},
 		"chatItemButtons": {
 			"continue": "Continuar",
@@ -834,7 +860,11 @@
 			"noChatSelectedForExport": "Por favor, selecciona los historiales de chat que quieres exportar",
 			"copyError": "Error al copiar",
 			"deleteError": "Error al eliminar",
-			"exportError": "Error al exportar"
+			"exportError": "Error al exportar",
+			"dragExportError": "Error al exportar arrastrando y soltando",
+			"importSuccess": "Importación exitosa",
+			"importError": "Importación fallida",
+			"invalidImportFile": "Archivo de importación no válido"
 		},
 		"select_checkbox": {
 			"aria-label": "Seleccione chatear con ${chars}"
@@ -943,6 +973,16 @@
 				"description": "Comienza desde cero y crea tu primer componente.",
 				"locked_description": "Cree una pieza utilizando la función Nuevo rápido."
 			}
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Componentes",
+				"sub_items": {
+					"quickCreate": {
+						"title": "Creación rápida"
+					}
+				}
+			}
 		}
 	},
 	"import": {
@@ -989,6 +1029,24 @@
 		"dragAndDrop": {
 			"fileDropDescription": "Instalar componentes desde archivos",
 			"textDropDescription": "Instalar partes del texto"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Componentes",
+				"sub_items": {
+					"import": {
+						"title": "Importar"
+					}
+				}
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleTextDrop": {
+				"description": "Instalar partes del texto"
+			},
+			"handleFileDrop": {
+				"description": "Instalar componentes desde archivos"
+			}
 		}
 	},
 	"export": {
@@ -1067,6 +1125,26 @@
 		},
 		"dragAndDrop": {
 			"downloadPartDescription": "Descargar piezas"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Componentes",
+				"sub_items": {
+					"exportPart": {
+						"title": "Exportar Parte"
+					}
+				}
+			}
+		},
+		"home_drag_out_generators": {
+			"generateDownloadUrl": {
+				"description": "Descargar piezas"
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "Exportar"
+			}
 		}
 	},
 	"uninstall": {
@@ -1094,6 +1172,11 @@
 		"errorMessage": {
 			"icon": {
 				"alt": "Icono de error"
+			}
+		},
+		"home_common_interfaces": {
+			"delete": {
+				"title": "Eliminar"
 			}
 		}
 	},
@@ -1202,7 +1285,17 @@
 			"cancelButton": "Cancelar"
 		},
 		"apiError": "Error en la solicitud de API: ${message}",
-		"generalError": "Ha ocurrido un error: ${message}"
+		"generalError": "Ha ocurrido un error: ${message}",
+		"home_function_buttons": {
+			"settings": {
+				"title": "Ajustes",
+				"sub_items": {
+					"main": {
+						"title": "Configuración de Usuario"
+					}
+				}
+			}
+		}
 	},
 	"languageSettings": {
 		"title": "Configuración de idiomas",
@@ -1222,7 +1315,17 @@
 		"noPreferredLanguages": "No hay lenguaje previo todavía. Se utilizará la configuración predeterminada del navegador.",
 		"savedMessage": "¡La configuración de idioma se ha guardado!",
 		"resetMessage": "¡La configuración del idioma se ha restablecido!",
-		"fetchLocalesFailed": "¡No pudo obtener idiomas disponibles!"
+		"fetchLocalesFailed": "¡No pudo obtener idiomas disponibles!",
+		"home_function_buttons": {
+			"settings": {
+				"title": "Ajustes",
+				"sub_items": {
+					"main": {
+						"title": "Configuración de idiomas"
+					}
+				}
+			}
+		}
 	},
 	"themeManage": {
 		"title": "Gestión de temas",
@@ -1276,6 +1379,16 @@
 				"description": "La fount tenía un nuevo aspecto y un ambiente completamente nuevo.",
 				"locked_description": "Cambia el tema una vez."
 			}
+		},
+		"home_function_buttons": {
+			"settings": {
+				"title": "Ajustes",
+				"sub_items": {
+					"switchTheme": {
+						"title": "Cambiar Tema"
+					}
+				}
+			}
 		}
 	},
 	"part_config": {
@@ -1312,6 +1425,21 @@
 			"saveConfigFailed": "Error al guardar la configuración del componente.",
 			"unsavedChanges": "Tienes cambios sin guardar. ¿Quieres descartar estos cambios?",
 			"beforeUnload": "Tienes cambios sin guardar. ¿Seguro que quieres salir?"
+		},
+		"home_function_buttons": {
+			"component_related": {
+				"title": "Componentes",
+				"sub_items": {
+					"componentConfigLink": {
+						"title": "Configuración de Componente"
+					}
+				}
+			}
+		},
+		"home_common_interfaces": {
+			"main": {
+				"title": "Configuración"
+			}
 		}
 	},
 	"aisource_editor": {
@@ -1379,6 +1507,11 @@
 				"description": "Se designa una IA predeterminada como fount de suministro de maná.",
 				"locked_description": "Establece una fount de IA predeterminada una vez."
 			}
+		},
+		"home_function_buttons": {
+			"manage": {
+				"title": "Gestionar Fuentes de IA"
+			}
 		}
 	},
 	"discord_bots": {
@@ -1440,6 +1573,21 @@
 				"description": "Invoca a tu personaje al mundo de Discord.",
 				"locked_description": "Inicie Discord Bot una vez."
 			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Bots",
+				"sub_items": {
+					"manage": {
+						"title": "Configuración del Bot de Discord"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Configuración del Bot de Discord"
+			}
 		}
 	},
 	"telegram_bots": {
@@ -1500,6 +1648,21 @@
 				"name": "Llegando a Telegram",
 				"description": "Invoca a tu personaje al mundo de Telegram.",
 				"locked_description": "Inicie Telegram Bot una vez."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Bots",
+				"sub_items": {
+					"manage": {
+						"title": "Configuración del Bot de Telegram"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Configuración del Bot de Telegram"
 			}
 		}
 	},
@@ -1576,6 +1739,16 @@
 				"description": "¡Dale una estrella a fount en GitHub, gracias por tu apoyo!",
 				"locked_description": "Visita el repositorio GitHub de fount y ponle una estrella."
 			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "Integraciones",
+				"sub_items": {
+					"browserIntegrationLink": {
+						"title": "Integración del navegador"
+					}
+				}
+			}
 		}
 	},
 	"browser_integration_script": {
@@ -1600,6 +1773,16 @@
 				"name": "\"Hola, Fuente\".",
 				"description": "En la terminal oscura, se llamó el nombre del socio de IA.",
 				"locked_description": "Llame a asistencia del terminal una vez."
+			}
+		},
+		"home_function_buttons": {
+			"integration_related": {
+				"title": "Integraciones",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "Asistencia de Terminal"
+					}
+				}
 			}
 		}
 	},
@@ -1637,6 +1820,26 @@
 				"description": "Un personaje salvaje salta y se apodera de tu escritorio.",
 				"locked_description": "Inicie una mascota de escritorio."
 			}
+		},
+		"home_char_interfaces": {
+			"launch": {
+				"title": "Iniciar como mascota de escritorio"
+			}
+		},
+		"home_function_buttons": {
+			"in_dev": {
+				"title": "En desarrollo",
+				"sub_items": {
+					"deskpet_related": {
+						"title": "mascotas de escritorio",
+						"sub_items": {
+							"main": {
+								"title": "Administrar mascotas de escritorio"
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"access": {
@@ -1654,7 +1857,12 @@
 			"aria-label": "URL"
 		},
 		"copyButton": "Copiar URL",
-		"copied": "¡URL copiada al portapapeles!"
+		"copied": "¡URL copiada al portapapeles!",
+		"home_function_buttons": {
+			"main": {
+				"title": "Acceso en otros dispositivos"
+			}
+		}
 	},
 	"proxy": {
 		"title": "Proxy de API",
@@ -1678,7 +1886,17 @@
 		"apiKeyCopied": "¡Clave de API copiada!",
 		"queryStringSectionTitle": "¿No puede establecer la APIKey en la cabecera de la solicitud? (Inseguro)",
 		"queryStringWarning": "Utilice este método alternativo cuando su aplicación no admita el envío de la clave de API en la cabecera de la solicitud (Authorization header). Tenga en cuenta: Colocar la clave de API directamente en la URL presenta un riesgo de seguridad, ya que podría quedar registrada en los registros del servidor o en el historial del navegador.",
-		"copyQueryStringUrlButton": "URL con Clave de API (Query String)"
+		"copyQueryStringUrlButton": "URL con Clave de API (Query String)",
+		"home_function_buttons": {
+			"other": {
+				"title": "Otros",
+				"sub_items": {
+					"asProxy": {
+						"title": "Como Proxy"
+					}
+				}
+			}
+		}
 	},
 	"achievements": {
 		"title": "Logro",
@@ -1701,6 +1919,11 @@
 				"name": "¿En serio, tío?",
 				"description": "Al hacer clic repetidamente en un logro desbloqueado, lo volverás a bloquear con éxito. ¿Por qué?",
 				"locked_description": "? ? ?"
+			}
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "Logro"
 			}
 		}
 	},

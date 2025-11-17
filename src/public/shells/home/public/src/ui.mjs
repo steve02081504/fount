@@ -361,7 +361,7 @@ export async function updateTabContent(partTypeObject) {
 	itemDescription.innerHTML = geti18n('home.itemDescription') // 重置侧边栏
 
 	// 设置活动选项卡的UI
-	; [partTypesTabsContainerDesktop, partTypesTabsContainerMobile].forEach(container => {
+	;[partTypesTabsContainerDesktop, partTypesTabsContainerMobile].forEach(container => {
 		if (container?.childNodes.length) {
 			container.querySelectorAll('div').forEach(tab => tab.classList.remove('active'))
 			const currentTab = container.querySelector(`[data-target="${partTypeName}-container"]`)
@@ -424,6 +424,7 @@ export async function displayFunctionButtons() {
 	 */
 	const createMenuItem = (buttonItem) => {
 		const li = document.createElement('li')
+		const translatedInfo = geti18n(buttonItem.info)
 
 		// 如果按钮有子项目，则为子菜单
 		if (buttonItem.sub_items?.length) {
@@ -436,7 +437,7 @@ export async function displayFunctionButtons() {
 			svgInliner(iconSpan)
 
 			const titleSpan = document.createElement('span')
-			titleSpan.textContent = buttonItem.info.title
+			titleSpan.textContent = translatedInfo.title
 
 			summary.append(iconSpan, titleSpan)
 			details.appendChild(summary)
@@ -448,7 +449,9 @@ export async function displayFunctionButtons() {
 			const sortedChildren = buttonItem.sub_items.sort((a, b) => (a.level ?? 0) - (b.level ?? 0))
 
 			sortedChildren.forEach(child => {
-				ul.appendChild(createMenuItem(child))
+				try { ul.appendChild(createMenuItem(child)) } catch (error) {
+					console.error('Error creating menu item:', error)
+				}
 			})
 			details.appendChild(ul)
 			li.appendChild(details)
@@ -466,7 +469,7 @@ export async function displayFunctionButtons() {
 			svgInliner(iconSpan)
 
 			const titleSpan = document.createElement('span')
-			titleSpan.textContent = buttonItem.info.title
+			titleSpan.textContent = translatedInfo.title
 
 			button.append(iconSpan, titleSpan)
 			if (buttonItem.action)
@@ -499,7 +502,9 @@ export async function displayFunctionButtons() {
 	const renderMenu = (items) => {
 		menuItemsContainer.innerHTML = ''
 		items.forEach(buttonItem => {
-			menuItemsContainer.appendChild(createMenuItem(buttonItem))
+			try { menuItemsContainer.appendChild(createMenuItem(buttonItem)) } catch (error) {
+				console.error('Error creating menu item:', error)
+			}
 		})
 	}
 
@@ -529,7 +534,7 @@ export async function displayFunctionButtons() {
 		if (!filterValue) return renderMenu(originalItems)
 
 		const filterFn = compileFilter(filterValue)
-		const filteredButtons = leafButtons.filter(button => filterFn(button.info))
+		const filteredButtons = leafButtons.filter(button => filterFn(geti18n(button.info)))
 		renderMenu(filteredButtons)
 	}
 
