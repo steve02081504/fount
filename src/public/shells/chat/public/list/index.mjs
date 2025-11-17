@@ -350,18 +350,18 @@ async function initializeApp() {
 	})
 
 	// Add drag-and-drop import listeners
-	chatListContainer.addEventListener('dragover', event => {
+	document.body.addEventListener('dragover', event => {
 		event.preventDefault()
-		chatListContainer.classList.add('drag-over')
+		document.body.classList.add('drag-over')
 	})
 
-	chatListContainer.addEventListener('dragleave', () => {
-		chatListContainer.classList.remove('drag-over')
+	document.body.addEventListener('dragleave', () => {
+		document.body.classList.remove('drag-over')
 	})
 
-	chatListContainer.addEventListener('drop', async event => {
+	document.body.addEventListener('drop', async event => {
 		event.preventDefault()
-		chatListContainer.classList.remove('drag-over')
+		document.body.classList.remove('drag-over')
 
 		if (!event.dataTransfer.files.length) return
 		const file = event.dataTransfer.files[0]
@@ -369,7 +369,6 @@ async function initializeApp() {
 			showToastI18n('error', 'chat_history.alerts.invalidImportFile')
 			return
 		}
-
 
 		try {
 			const fileContent = await file.text()
