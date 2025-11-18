@@ -127,7 +127,22 @@ async function renderChatListItem(chat) {
 	chatElement.setAttribute('data-chatid', chat.chatid)
 
 	// Drag-and-drop functionality
-	chatElement.draggable = true
+	chatElement.addEventListener('mousedown', e => {
+		// If the mousedown is on an interactive part, don't make the chat element draggable.
+		// This allows text selection, button clicks, collapse/expand, etc.
+		if (e.target.closest('.message-content'))
+			chatElement.draggable = false
+		else
+			// Otherwise, allow dragging the whole chat element.
+			chatElement.draggable = true
+	})
+
+	// Clean up the draggable state to prevent unintended behavior.
+	const cleanupDraggable = () => { chatElement.draggable = false }
+	chatElement.addEventListener('mouseup', cleanupDraggable)
+	chatElement.addEventListener('mouseleave', cleanupDraggable)
+	chatElement.addEventListener('dragend', cleanupDraggable)
+
 	chatElement.addEventListener('dragstart', event => {
 		try {
 			const downloadUrl = `/virtual_files/shells/chat/${chat.chatid}`

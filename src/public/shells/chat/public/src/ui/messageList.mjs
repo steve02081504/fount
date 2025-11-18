@@ -101,7 +101,21 @@ export async function renderMessage(message) {
 		URL.revokeObjectURL(standaloneMessageUrl)
 	})
 
-	messageElement.draggable = true
+	messageElement.addEventListener('mousedown', e => {
+		// If the mousedown is on an interactive part, don't make the message draggable.
+		// This allows text selection, button clicks, etc.
+		if (e.target.closest('.message-content'))
+			messageElement.draggable = false
+		else // Otherwise, allow dragging the whole message.
+			messageElement.draggable = true
+	})
+
+	// Clean up the draggable state to prevent unintended behavior.
+	const cleanupDraggable = () => { messageElement.draggable = false }
+	messageElement.addEventListener('mouseup', cleanupDraggable)
+	messageElement.addEventListener('mouseleave', cleanupDraggable)
+	messageElement.addEventListener('dragend', cleanupDraggable)
+
 	messageElement.addEventListener('dragstart', event => {
 		const fileName = `message-${preprocessedMessage.safeTimeStamp}.html`
 
