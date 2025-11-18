@@ -1003,12 +1003,14 @@ async function findAndConnect() {
 		} catch (error) {
 			console.error('fount userscript: Failed to check for updates.', error)
 		}
+		connectionTimeoutId = null
+		currentRetryDelay = INITIAL_RETRY_DELAY
 		return
 	} catch (error) {
-		console.warn(`fount userscript: Failed to connect to ${host}. Trying next...`, error.message)
+		if (!connectionTimeoutId) console.warn(`fount userscript: Failed to connect to ${host}.`, error.message)
 	}
 
-	console.error('fount userscript: All known hosts failed to connect. Retrying after backoff period.')
+	if (!connectionTimeoutId) console.error('fount userscript: All known hosts failed to connect. Retrying after backoff period.')
 	connectionTimeoutId = setTimeout(findAndConnect, currentRetryDelay)
 	currentRetryDelay = Math.min(currentRetryDelay + RETRY_INCREMENT, MAX_RETRY_DELAY)
 }
