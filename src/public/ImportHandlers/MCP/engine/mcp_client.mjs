@@ -63,23 +63,27 @@ export function createMCPClient(config) {
 		if (!mcpClient) return
 
 		// 处理 roots/list 请求
-		mcpClient.setRequestHandler(ListRootsRequestSchema, async () => {
-			return {
-				roots: roots.map(root => {
-					if (typeof root === 'string') {
-						// 字符串路径转换为标准格式
-						const uri = root.startsWith('file://')
-							? root
-							: `file://${root.replace(/\\/g, '/')}`
-						return {
-							uri,
-							name: root.split(/[/\\]/).pop() || root
+		try{
+			mcpClient.setRequestHandler(ListRootsRequestSchema, () => {
+				return {
+					roots: roots.map(root => {
+						if (typeof root === 'string') {
+							// 字符串路径转换为标准格式
+							const uri = root.startsWith('file://')
+								? root
+								: `file://${root.replace(/\\/g, '/')}`
+							return {
+								uri,
+								name: root.split(/[/\\]/).pop() || root
+							}
 						}
-					}
-					return root
-				})
-			}
-		})
+						return root
+					})
+				}
+			})
+		}catch(e){
+			console.warn('mcp do not support root/list')
+		}
 
 		// 处理 sampling/createMessage 请求
 		mcpClient.setRequestHandler(CreateMessageRequestSchema, async (request) => {
@@ -159,9 +163,9 @@ export function createMCPClient(config) {
 			}
 		})
 
-		registerRequestHandlers()
 
 		await mcpClient.connect(transport)
+		registerRequestHandlers()
 		const result = await mcpClient.listTools()
 		tools = result.tools || []
 		status = 'connected'
