@@ -4,20 +4,24 @@ import process from 'node:process'
 /**
  * MCP 客户端 - 参考 mcp.el 实现
  * 支持 stdio 连接方式，通过 JSON-RPC 2.0 与 MCP 服务器通信
+ * 支持 SSE (Server-Sent Events) 连接方式，用于 HTTPS 连接
  */
 
 /**
  * 创建一个 MCP 客户端实例
  * @param {object} config - MCP 服务器配置
- * @param {string} config.command - 启动命令
- * @param {string[]} config.args - 命令参数
- * @param {Record<string, string>} [config.env] - 环境变量
+ * @param {string} [config.command] - 启动命令 (stdio 模式)
+ * @param {string[]} [config.args] - 命令参数 (stdio 模式)
+ * @param {Record<string, string>} [config.env] - 环境变量 (stdio 模式)
+ * @param {string} [config.url] - 服务器 URL (SSE 模式)
  * @param {Array<string|object>} [config.roots] - 根目录列表
  * @param {Function} [config.samplingHandler] - 采样处理器，接受 params 并返回生成的消息
  * @returns {object} MCP 客户端实例
  */
 export function createMCPClient(config) {
 	let mcp_process = null
+	let sse_client = null
+	let sse_post_url = null
 	let messageId = 0
 	const pendingRequests = new Map()
 
@@ -33,11 +37,78 @@ export function createMCPClient(config) {
 	let samplingHandler = config.samplingHandler || null
 
 	/**
-	 * 启动 MCP 服务器进程
+	 * 启动 MCP 服务器进程或连接
 	 */
 	async function start() {
-		if (mcp_process) return
+		if (mcp_process || sse_client) return
 
+		if (config.url) // SSE 模式
+			await startSSE()
+		else if (config.command) // Stdio 模式
+			await startStdio()
+		else
+			throw new Error('Invalid MCP config: missing command or url')
+
+		// 初始化连接
+		await initialize()
+	}
+
+	/**
+	 * 启动 SSE 连接
+	 */
+	async function startSSE() {
+		return new Promise((resolve, reject) => {
+			try {
+				sse_client = new EventSource(config.url)
+
+				sse_client.onopen = () => {
+					console.log(`[MCP] SSE connection opened to ${config.url}`)
+				}
+
+				sse_client.onerror = (err) => {
+					console.error('[MCP] SSE error:', err)
+					if (status === 'init') {
+						reject(new Error(`Failed to connect to SSE endpoint: ${config.url}`))
+					}
+				}
+
+				sse_client.addEventListener('endpoint', (event) => {
+					try {
+						// endpoint 事件包含用于 POST 请求的 URL
+						// 可能是相对路径或绝对路径
+						const endpointUrl = event.data
+						if (endpointUrl.startsWith('http'))
+							sse_post_url = endpointUrl
+						else {
+							// 拼接相对路径
+							const baseUrl = new URL(config.url)
+							sse_post_url = new URL(endpointUrl, baseUrl).toString()
+						}
+						console.log(`[MCP] SSE endpoint received: ${sse_post_url}`)
+						resolve()
+					} catch (err) {
+						reject(new Error(`Failed to parse endpoint URL: ${err.message}`))
+					}
+				})
+
+				sse_client.onmessage = (event) => {
+					try {
+						const message = JSON.parse(event.data)
+						handleMessage(message)
+					} catch (err) {
+						console.error('Failed to parse MCP message:', event.data, err)
+					}
+				}
+			} catch (err) {
+				reject(err)
+			}
+		})
+	}
+
+	/**
+	 * 启动 Stdio 进程
+	 */
+	async function startStdio() {
 		mcp_process = spawn(config.command, config.args || [], {
 			env: { ...process.env, ...config.env },
 			stdio: ['pipe', 'pipe', 'pipe'],
@@ -74,9 +145,6 @@ export function createMCPClient(config) {
 		mcp_process.stderr.on('error', (err) => {
 			console.error('MCP stderr read error:', err)
 		})
-
-		// 初始化连接
-		await initialize()
 	}
 
 	/**
@@ -187,21 +255,46 @@ export function createMCPClient(config) {
 	}
 
 	/**
+	 * 发送消息到 MCP 服务器
+	 * @param {object} message - JSON-RPC 消息
+	 */
+	async function sendMessage(message) {
+		if (mcp_process) {
+			// Stdio 模式
+			const messageText = JSON.stringify(message) + '\n'
+			mcp_process.stdin.write(messageText)
+		}
+		else if (sse_post_url) try { // SSE 模式
+			const response = await fetch(sse_post_url, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(message),
+			})
+			if (!response.ok) {
+				throw new Error(`SSE POST failed: ${response.status} ${response.statusText}`)
+			}
+		} catch (err) {
+			console.error('Failed to send SSE message:', err)
+			throw err
+		}
+		else {
+			console.warn('MCP client not connected, cannot send message')
+		}
+	}
+
+	/**
 	 * 发送成功响应
 	 * @param {number} id - 请求 ID
 	 * @param {any} result - 响应结果
 	 */
 	async function sendResponse(id, result) {
-		if (!mcp_process) return
-
-		const response = {
+		await sendMessage({
 			jsonrpc: '2.0',
 			id,
 			result,
-		}
-
-		const responseText = JSON.stringify(response) + '\n'
-		mcp_process.stdin.write(responseText)
+		})
 	}
 
 	/**
@@ -211,19 +304,14 @@ export function createMCPClient(config) {
 	 * @param {string} message - 错误消息
 	 */
 	async function sendErrorResponse(id, code, message) {
-		if (!mcp_process) return
-
-		const response = {
+		await sendMessage({
 			jsonrpc: '2.0',
 			id,
 			error: {
 				code,
 				message,
 			},
-		}
-
-		const responseText = JSON.stringify(response) + '\n'
-		mcp_process.stdin.write(responseText)
+		})
 	}
 
 	/**
@@ -233,7 +321,7 @@ export function createMCPClient(config) {
 	 * @returns {Promise<any>} 响应结果
 	 */
 	async function sendRequest(method, params = {}) {
-		if (!mcp_process) await start()
+		if (!mcp_process && !sse_client) await start()
 
 		const id = ++messageId
 		const request = {
@@ -255,8 +343,7 @@ export function createMCPClient(config) {
 			}, 60000) // 60 秒超时
 		})
 
-		const requestText = JSON.stringify(request) + '\n'
-		mcp_process.stdin.write(requestText)
+		await sendMessage(request)
 
 		return promise
 	}
@@ -267,16 +354,13 @@ export function createMCPClient(config) {
 	 * @param {object} [params] - 参数
 	 */
 	async function sendNotification(method, params = {}) {
-		if (!mcp_process) return
+		if (!mcp_process && !sse_client) return
 
-		const notification = {
+		await sendMessage({
 			jsonrpc: '2.0',
 			method,
 			params,
-		}
-
-		const notificationText = JSON.stringify(notification) + '\n'
-		mcp_process.stdin.write(notificationText)
+		})
 	}
 
 	/**
@@ -422,8 +506,17 @@ export function createMCPClient(config) {
 				console.error('Error stopping MCP process:', err)
 			}
 			mcp_process = null
-			status = 'stopped'
 		}
+		if (sse_client) {
+			try {
+				sse_client.close()
+			} catch (err) {
+				console.error('Error closing SSE connection:', err)
+			}
+			sse_client = null
+			sse_post_url = null
+		}
+		status = 'stopped'
 	}
 
 	/**
@@ -450,7 +543,7 @@ export function createMCPClient(config) {
 	async function setRoots(newRoots) {
 		roots = newRoots || []
 		// 通知服务器根目录已更改
-		if (mcp_process && status === 'connected')
+		if ((mcp_process || sse_client) && status === 'connected')
 			await sendNotification('notifications/roots/list_changed')
 
 	}
@@ -462,7 +555,7 @@ export function createMCPClient(config) {
 	async function addRoot(root) {
 		if (!roots.find(r => (r.uri || r) === (root.uri || root))) {
 			roots.push(root)
-			if (mcp_process && status === 'connected')
+			if ((mcp_process || sse_client) && status === 'connected')
 				await sendNotification('notifications/roots/list_changed')
 		}
 	}
@@ -474,7 +567,7 @@ export function createMCPClient(config) {
 	async function removeRoot(root) {
 		const rootId = root.uri || root
 		roots = roots.filter(r => (r.uri || r) !== rootId)
-		if (mcp_process && status === 'connected')
+		if ((mcp_process || sse_client) && status === 'connected')
 			await sendNotification('notifications/roots/list_changed')
 
 	}
