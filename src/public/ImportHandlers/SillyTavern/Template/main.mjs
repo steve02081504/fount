@@ -180,6 +180,7 @@ export default {
 					const requestResult = await AIsource.StructCall(prompt_struct)
 					result.content = requestResult.content
 					result.files = result.files.concat(requestResult.files || [])
+					result.extension = { ...result.extension, ...requestResult.extension }
 					for (const replyHandler of [
 						...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
 					].filter(Boolean))
