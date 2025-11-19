@@ -274,6 +274,7 @@ const configTemplate = {
 	system_prompt_at_depth: 10,
 	proxy_url: '',
 	use_stream: false,
+	keep_thought_signature: true,
 }
 
 /**
@@ -374,6 +375,7 @@ async function GetSource(config) {
 
 	config.system_prompt_at_depth ??= configTemplate.system_prompt_at_depth
 	config.max_input_tokens ??= configTemplate.max_input_tokens
+	config.keep_thought_signature ??= configTemplate.keep_thought_signature
 
 	const ai = new GoogleGenAI({
 		apiKey: config.apikey,
@@ -721,7 +723,6 @@ system:
 				const uid = Math.random().toString(36).slice(2, 10)
 
 				const fileParts = await Promise.all((chatLogEntry.files || []).map(async file => {
-					// ... (file processing logic remains the same)
 					const originalMimeType = file.mime_type || mime.lookup(file.name) || 'application/octet-stream'
 					let bufferToUpload = file.buffer
 					const detectedCharset = originalMimeType.match(/charset=([^;]+)/i)?.[1]?.trim?.()
@@ -792,7 +793,8 @@ system:
 ${chatLogEntry.content}
 </content>
 </message "${uid}">
-`
+`,
+							...chatLogEntry.extension?.gemini_API_data?.char_id == prompt_struct.char_id ? chatLogEntry.extension?.gemini_API_data?.text_part_overrides : {}
 						},
 						...fileParts
 					]
@@ -840,8 +842,6 @@ ${is_ImageGeneration
 					suffixMessages.push(systemPromptMessage)
 				else
 					prefixMessages.push(systemPromptMessage)
-
-
 
 			// --- 1. 本地估算与快速路径检查 ---
 			const overheadTextTokens = estimateTextTokens([...prefixMessages, ...suffixMessages])
@@ -924,6 +924,7 @@ ${is_ImageGeneration
 			}
 
 			let text = ''
+			let thoughtSignature = undefined
 			const files = []
 			/**
 			 * 处理部分。
@@ -931,7 +932,8 @@ ${is_ImageGeneration
 			 */
 			function handle_parts(parts) {
 				if (!parts) return
-				for (const part of parts)
+				for (const part of parts) {
+					if (config.keep_thought_signature && part.thoughtSignature) thoughtSignature = part.thoughtSignature
 					if (part.text) text += part.text
 					else if (part.inlineData) try {
 						const { mime_type, data } = part.inlineData
@@ -946,6 +948,7 @@ ${is_ImageGeneration
 					} catch (error) {
 						console.error('Error processing inline image data:', error)
 					}
+				}
 			}
 
 			if (config.use_stream) {
@@ -975,6 +978,12 @@ ${is_ImageGeneration
 			return {
 				content: text,
 				files,
+				extension: {
+					gemini_API_data: {
+						char_id: prompt_struct.char_id,
+						text_part_overrides: Object.fromEntries(Object.entries({ thoughtSignature }).filter(([_, v]) => v)),
+					}
+				}
 			}
 		},
 		tokenizer: {
