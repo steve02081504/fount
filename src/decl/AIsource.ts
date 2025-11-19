@@ -114,7 +114,7 @@ export class textAISource_t extends AIsource_t<string, Promise<string>> {
 	/**
 	 * 使用结构化的 prompt 调用 AI 数据源。
 	 * @param {prompt_struct_t} prompt_struct - 结构化的 prompt。
-	 * @returns {Promise<{content: string, files: {name: string, mime_type: string, buffer: Buffer, description: string}[]}>} - 包含内容和文件的响应。
+	 * @returns {Promise<{content: string, files: {name: string, mime_type: string, buffer: Buffer, description: string}[], extension?: object}>} - 包含内容和文件的响应。
 	 */
 	StructCall: (prompt_struct: prompt_struct_t) => Promise<{
 		content: string,
@@ -124,5 +124,6 @@ export class textAISource_t extends AIsource_t<string, Promise<string>> {
 			buffer: Buffer,
 			description: string
 		}[],
+		extension?: object
 	}>
 }
