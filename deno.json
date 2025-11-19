@@ -2,6 +2,7 @@
 	"nodeModulesDir": "auto",
 	"lock": false,
 	"imports": {
+		"@modelcontextprotocol/sdk": "npm:@modelcontextprotocol/sdk@^1.22.0",
 		"npm:express": "npm:express@^5.1.0",
 		"npm:express-fileupload": "npm:express-fileupload@^1.5.0",
 		"npm:cookie-parser": "npm:cookie-parser@^1.4.0",
