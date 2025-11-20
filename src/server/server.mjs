@@ -172,7 +172,7 @@ export async function init(start_config) {
 	if (starts.Tray || starts.Web || !fs.existsSync(__dirname + '/src/pages/favicon.ico'))
 		iconPromise = runSimpleWorker('icongener').catch(console.error)
 
-	let requesttedWeb = false
+	let requestedWeb = false
 	if (starts.Web) {
 		const { port, https: httpsConfig, trust_proxy, mdns: mdnsConfig } = config // 获取 HTTPS 配置
 		hosturl = (httpsConfig?.enabled ? 'https' : 'http') + '://localhost:' + port
@@ -201,7 +201,7 @@ export async function init(start_config) {
 			 * @returns {Promise<void>}
 			 */
 			const requestListener = async (req, res) => {
-				requesttedWeb = true
+				requestedWeb = true
 				try {
 					const app = await getApp()
 					return app(req, res)
@@ -276,7 +276,7 @@ export async function init(start_config) {
 		totalMemoryChangeInMB: getMemoryUsage() / 1024 / 1024
 	})
 	if (starts.Base) {
-		if (starts.Base.Jobs) setTimeout(() => setTimeout(ReStartJobs, requesttedWeb ? 13000 : 0), 2000)
+		if (starts.Base.Jobs) setTimeout(() => setTimeout(ReStartJobs, requestedWeb ? 13000 : 0), 2000)
 		if (starts.Base.Timers) startTimerHeartbeat()
 		if (starts.Base.Idle) idleManager.start()
 		if (starts.Base.AutoUpdate) idleManager.onIdle(checkUpstreamAndRestart)
