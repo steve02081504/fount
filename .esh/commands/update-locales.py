@@ -522,7 +522,7 @@ def check_used_keys_in_fount(fount_dir, reference_loc_data, reference_lang_code,
 	for key in sorted(list(found_keys_in_fount_code)):
 		_, found = get_value_at_path(reference_loc_data, key)
 		if not found:
-			print(f"  - 警告 (FOUNT): 代码中使用的键 '{key}' 在参考语言 '{reference_lang_code}' 的本地化数据中未找到。")
+			print(f"  - 警告: 代码中使用的键 '{key}' 在参考语言 '{reference_lang_code}' 的本地化数据中未找到。")
 			missing_keys_count += 1
 
 	if missing_keys_count == 0:
