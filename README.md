@@ -66,7 +66,7 @@ Lost characters, forgotten stories? Our [**vibrant and welcoming community**](ht
 
 fount is a bridge, connecting you to the characters of your imagination, allowing you to effortlessly converse with them, craft your own, and share them with the world. It is a path made surprisingly accessible.
 
-It is a wellspring (fount), where AI sources, characters, personas, worlds, and plugins flow together, allowing you to create and experience unique and compelling interactions.
+It is a wellspring, where AI sources, characters, personas, worlds, and plugins flow together, allowing you to create and experience unique and compelling interactions.
 
 fount is built for the future, ready to embrace new features born from its vibrant community. If you have a vision, a spark of an idea that belongs within fount's realm, we welcome your contribution.
 

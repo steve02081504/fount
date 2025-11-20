@@ -46,7 +46,7 @@ Als je je verloren voelt in een zee van personages, of op zoek bent naar vergete
 
 fount is een brug die je verbindt met de personages uit je verbeelding, waardoor je moeiteloos met hen kunt praten, je eigen personages kunt creëren en ze met de wereld kunt delen. Het is een verrassend toegankelijke weg.
 
-Het is ook een bron (fount), waar AI-bronnen, personages, persona's, werelden en plug-ins samenkomen, zodat je unieke en boeiende interacties kunt creëren en ervaren.
+Het is ook een bron, waar AI-bronnen, personages, persona's, werelden en plug-ins samenkomen, zodat je unieke en boeiende interacties kunt creëren en ervaren.
 
 fount is gebouwd voor de toekomst en omarmt graag nieuwe functies die voortkomen uit zijn levendige community. Als je een visie hebt, een vonk van inspiratie binnen het domein van fount, dan verwelkomen we je bijdrage van harte.
 

@@ -46,7 +46,7 @@ Verlorene Charaktere, vergessene Geschichten? Unsere [**lebendige und einladende
 
 fount ist eine Brücke, die dich mit den Charakteren deiner Fantasie verbindet und es dir ermöglicht, mühelos mit ihnen zu sprechen, deine eigenen zu erschaffen und sie mit der Welt zu teilen. Es ist ein Weg, der überraschend zugänglich gemacht wurde.
 
-Es ist eine Quelle (fount), in der KI-Quellen, Charaktere, Personas, Welten und Plugins zusammenfließen und es dir ermöglichen, einzigartige und fesselnde Interaktionen zu erschaffen und zu erleben.
+Es ist eine Quelle, in der KI-Quellen, Charaktere, Personas, Welten und Plugins zusammenfließen und es dir ermöglichen, einzigartige und fesselnde Interaktionen zu erschaffen und zu erleben.
 
 fount ist für die Zukunft gebaut und bereit, neue Funktionen anzunehmen, die aus seiner lebendigen Community hervorgehen. Wenn du eine Vision hast, einen Funken einer Idee, der in founts Reich gehört, begrüßen wir deinen Beitrag.
 

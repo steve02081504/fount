@@ -46,7 +46,7 @@ Con casi ![relative date](https://img.shields.io/date/1727107200?label=Tiempo%20
 
 fount es un puente que te conecta con los personajes de tu imaginación, permitiéndote conversar sin esfuerzo con ellos, crear los tuyos propios y compartirlos con el mundo. Es un camino sorprendentemente accesible.
 
-Es una fuente (fount), donde las fuentes de IA, los personajes, las personas, los mundos y los plugins fluyen juntos, permitiéndote crear y experimentar interacciones únicas y convincentes.
+Es una fuente, donde las fuentes de IA, los personajes, las personas, los mundos y los plugins fluyen juntos, permitiéndote crear y experimentar interacciones únicas y convincentes.
 
 fount está construido para el futuro, listo para abrazar nuevas características nacidas de su vibrante comunidad. Si tienes una visión, una chispa de una idea que pertenece al reino de fount, damos la bienvenida a tu contribución.
 

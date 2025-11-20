@@ -46,7 +46,7 @@ Personnages perdus, histoires oubliées ? Notre [**communauté dynamique et accu
 
 fount est un pont qui vous relie aux personnages de votre imagination, vous permettant de converser sans effort avec eux, de créer les vôtres et de les partager avec le monde. C'est un chemin rendu étonnamment accessible.
 
-C'est une source (fount), où les sources d'IA, les personnages, les personnalités, les mondes et les plugins convergent, vous permettant de créer et de vivre des interactions uniques et captivantes.
+C'est une source, où les sources d'IA, les personnages, les personnalités, les mondes et les plugins convergent, vous permettant de créer et de vivre des interactions uniques et captivantes.
 
 fount est conçu pour l'avenir, prêt à accueillir de nouvelles fonctionnalités nées de sa communauté dynamique. Si vous avez une vision, une étincelle d'idée qui appartient au royaume de fount, nous accueillons votre contribution.
 

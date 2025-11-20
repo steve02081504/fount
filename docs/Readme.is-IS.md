@@ -46,7 +46,7 @@ Ef þú finnur fyrir því að vera týnd/ur/t í hafsjó persóna, eða ert að
 
 fount er brú sem tengir þig við persónur úr ímyndunaraflinu, sem gerir þér kleift að spjalla við þær áreynslulaust, búa til þínar eigin persónur og deila þeim með heiminum. Það er ótrúlega auðveld leið.
 
-Það er einnig uppspretta (fount), þar sem gervigreindarheimildir, persónur, sjálfsmyndir, heimar og viðbætur mætast, sem gerir þér kleift að skapa og upplifa einstök og grípandi samskipti.
+Það er einnig uppspretta, þar sem gervigreindarheimildir, persónur, sjálfsmyndir, heimar og viðbætur mætast, sem gerir þér kleift að skapa og upplifa einstök og grípandi samskipti.
 
 fount er hannað fyrir framtíðina og tekur fagnandi við nýjum eiginleikum frá líflegu samfélagi sínu. Ef þú hefur framtíðarsýn, neista af innblæstri á sviði fount, þá fögnum við innilega framlagi þínu.
 

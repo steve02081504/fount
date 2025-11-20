@@ -46,7 +46,7 @@ Những nhân vật lạc lối, những câu chuyện bị lãng quên? [**Cộ
 
 fount là một cây cầu, kết nối bạn với các nhân vật trong trí tưởng tượng, cho phép bạn dễ dàng trò chuyện với họ, tạo ra nhân vật của riêng mình, và chia sẻ chúng với thế giới. Đó là một con đường dễ dàng đến bất ngờ.
 
-Đó là một mạch nguồn (fount), nơi các nguồn AI, nhân vật, nhân cách, thế giới và plugin hội tụ, cho phép bạn tạo ra và trải nghiệm những tương tác độc đáo và hấp dẫn.
+Đó là một mạch nguồn, nơi các nguồn AI, nhân vật, nhân cách, thế giới và plugin hội tụ, cho phép bạn tạo ra và trải nghiệm những tương tác độc đáo và hấp dẫn.
 
 fount được xây dựng cho tương lai, sẵn sàng đón nhận những tính năng mới từ cộng đồng sôi nổi của mình. Nếu bạn có một tầm nhìn, một tia sáng ý tưởng thuộc về thế giới fount, chúng tôi hoan nghênh sự đóng góp của bạn.
 

@@ -46,7 +46,7 @@ Personagens perdidos, histórias esquecidas? Nossa [**comunidade vibrante e acol
 
 fount é uma ponte que o conecta aos personagens de sua imaginação, permitindo que você converse com eles sem esforço, crie os seus próprios e os compartilhe com o mundo. É um caminho surpreendentemente acessível.
 
-É uma fonte (fount), onde fontes de IA, personagens, personas, mundos e plugins fluem juntos, permitindo que você crie e vivencie interações únicas e envolventes.
+É uma fonte, onde fontes de IA, personagens, personas, mundos e plugins fluem juntos, permitindo que você crie e vivencie interações únicas e envolventes.
 
 O fount foi construído para o futuro, pronto para abraçar novas funcionalidades nascidas de sua vibrante comunidade. Se você tem uma visão, uma centelha de ideia que pertence ao reino do fount, seu contributo é bem-vindo.
 
