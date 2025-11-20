@@ -3,7 +3,7 @@ import process from 'node:process'
 import { Client } from 'npm:@modelcontextprotocol/sdk/client/index.js'
 import { SSEClientTransport } from 'npm:@modelcontextprotocol/sdk/client/sse.js'
 import { StdioClientTransport } from 'npm:@modelcontextprotocol/sdk/client/stdio.js'
-import { StreamableHTTPClientTransport } from 'npm:@modelcontextprotocol/sdk/client/streamableHttp.js';
+import { StreamableHTTPClientTransport } from 'npm:@modelcontextprotocol/sdk/client/streamableHttp.js'
 import { WebSocketClientTransport } from 'npm:@modelcontextprotocol/sdk/client/websocket.js'
 import { ListRootsRequestSchema, CreateMessageRequestSchema } from 'npm:@modelcontextprotocol/sdk/types.js'
 
@@ -20,8 +20,8 @@ import { ListRootsRequestSchema, CreateMessageRequestSchema } from 'npm:@modelco
  */
 export async function createMCPClient(config) {
 	const transport = config.url
-		? (config.url.startsWith('ws') ? new WebSocketClientTransport(new URL(config.url))
-			: new StreamableHTTPClientTransport(new URL(config.url)))
+		? config.url.startsWith('ws') ? new WebSocketClientTransport(new URL(config.url))
+			: new StreamableHTTPClientTransport(new URL(config.url))
 		: new StdioClientTransport({
 			command: config.command,
 			args: config.args || [],
@@ -35,7 +35,7 @@ export async function createMCPClient(config) {
 
 	if (config.roots)
 		client.setRequestHandler(ListRootsRequestSchema, () => ({
-			roots: config.roots.map(r => typeof r === 'string' ? { uri: r.startsWith('file:') ? r : `file://${r}`, name: r.split(/[\/]/).pop() || r } : r)
+			roots: config.roots.map(r => typeof r === 'string' ? { uri: r.startsWith('file:') ? r : `file://${r}`, name: r.split(/[/]/).pop() || r } : r)
 		}))
 
 	if (config.samplingHandler)

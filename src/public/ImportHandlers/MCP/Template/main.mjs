@@ -101,7 +101,7 @@ async function parseCalls(content) {
 	 */
 	const parseParams = (body, schemaProps = {}) => {
 		const args = {}
-		const matches = [...body.matchAll(/<([a-zA-Z0-9_\-]+)(?:\s+[^>]*)?>([\s\S]*?)<\/\1>/g)]
+		const matches = [...body.matchAll(/<([a-zA-Z0-9_-]+)(?:\s+[^>]*)?>([\s\S]*?)<\/\1>/g)]
 		for (const [, key, val] of matches) args[key] = parseVal(val, schemaProps[key]?.type)
 		return args
 	}
