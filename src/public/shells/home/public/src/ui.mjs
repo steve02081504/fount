@@ -207,7 +207,7 @@ export async function attachCardEventListeners(itemElement, part) {
 
 	itemElement.addEventListener('click', event => {
 		// 如果点击在卡片上但不在交互元素上，则显示模态框。
-		if (!event.target.closest('a, .badge, .refresh-button, .default-checkbox')) {
+		if (!event.target.closest('a, button, .refresh-button, .default-checkbox, .details-container')) {
 			event.preventDefault()
 			event.stopPropagation()
 			showItemModal(part)
@@ -257,7 +257,25 @@ export async function attachCardEventListeners(itemElement, part) {
 	})
 
 	// 拖出功能
-	itemElement.draggable = true
+	itemElement.addEventListener('mousedown', e => {
+		// If the mousedown is on an interactive part, don't make the card element draggable.
+		// This allows text selection, button clicks, etc. to work as expected.
+		if (e.target.closest('a, button, input, .text-content, .details-container'))
+			itemElement.draggable = false
+		else
+			// Otherwise, allow dragging the whole card.
+			itemElement.draggable = true
+	}, { signal })
+
+	/**
+	 * Cleanup draggable state to prevent unintended behavior.
+	 * @returns {void}
+	 */
+	const cleanupDraggable = () => { itemElement.draggable = false }
+	itemElement.addEventListener('mouseup', cleanupDraggable, { signal })
+	itemElement.addEventListener('mouseleave', cleanupDraggable, { signal })
+	itemElement.addEventListener('dragend', cleanupDraggable, { signal })
+
 	itemElement.addEventListener('dragstart', event => {
 		event.dataTransfer.effectAllowed = 'copy'
 
