@@ -12,6 +12,7 @@ const dataPath = path.join(pluginDir, 'data.json')
 let data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'))
 
 let mcpClient = null
+let tools = null
 let samplingAIsource = null
 let username = null
 
@@ -58,6 +59,7 @@ async function initializeMCP() {
 		roots: data.roots || [],
 		samplingHandler: samplingAIsource ? handleSampling : null
 	})
+	tools = await mcpClient.listTools()
 }
 
 /**
@@ -89,7 +91,7 @@ const fmtRes = (res) => res?.content?.map(i =>
  * @param {string} content - 回复内容
  * @returns {Array<object>} 解析出的调用列表
  */
-function parseCalls(content) {
+async function parseCalls(content) {
 	const calls = []
 	/**
 	 * 解析参数
@@ -99,7 +101,7 @@ function parseCalls(content) {
 	 */
 	const parseParams = (body, schemaProps = {}) => {
 		const args = {}
-		const matches = [...body.matchAll(/<(\w+)>([\s\S]*?)<\/\1>/g)]
+		const matches = [...body.matchAll(/<([a-zA-Z0-9_\-]+)(?:\s+[^>]*)?>([\s\S]*?)<\/\1>/g)]
 		for (const [, key, val] of matches) args[key] = parseVal(val, schemaProps[key]?.type)
 		return args
 	}
@@ -107,9 +109,11 @@ function parseCalls(content) {
 	// 解析 Tool 和 Prompt
 	for (const type of ['tool', 'prompt']) {
 		const matches = [...content.matchAll(new RegExp(`<mcp-${type}\\s+name="([^"]+)">([\\s\\S]*?)<\\/mcp-${type}>`, 'g'))]
-		for (const [fullMatch, name, body] of matches)
-			// 此处不做严格 Schema 查找以保持无状态，运行时让 Server 校验
-			calls.push({ type, name, args: parseParams(body), fullMatch })
+		for (const [fullMatch, name, body] of matches) {
+			const toolDef = tools.find(t => t.name === name)
+			const schemaProps = toolDef?.inputSchema?.properties || {}
+			calls.push({ type, name, args: parseParams(body, schemaProps), fullMatch })
+		}
 	}
 	// 解析 Resource
 	for (const [fullMatch, uri] of content.matchAll(/<mcp-resource\s+uri="([^"]+)"\s*\/>/g))
@@ -219,29 +223,28 @@ export default {
 			 */
 			ReplyHandler: async (reply, args) => {
 				if (!reply.content || !reply.content.includes('<mcp-')) return false
-				const calls = parseCalls(reply.content)
+				const calls = await parseCalls(reply.content)
 				if (!calls.length) return false
 
-				for (const call of calls)
-					try {
-						let result
-						if (call.type === 'tool') result = await mcpClient.callTool(call.name, call.args)
-						else if (call.type === 'prompt') result = await mcpClient.getPrompt(call.name, call.args)
-						else result = await mcpClient.readResource(call.uri)
+				for (const call of calls) try {
+					let result
+					if (call.type === 'tool') result = await mcpClient.callTool(call.name, call.args)
+					else if (call.type === 'prompt') result = await mcpClient.getPrompt(call.name, call.args)
+					else result = await mcpClient.readResource(call.uri)
 
-						args.AddLongTimeLog({
-							role: 'tool',
-							name: call.name || call.uri,
-							content: `${call.type} result for ${call.name || call.uri}:\n\`\`\`\n${fmtRes(result)}\n\`\`\``
-						})
-					} catch (err) {
-						console.error('MCP call error:', err)
-						args.AddLongTimeLog({
-							role: 'system',
-							name: call.name || call.uri,
-							content: `Error calling ${call.type} "${call.name || call.uri}": ${err.message}`
-						})
-					}
+					args.AddLongTimeLog({
+						role: 'tool',
+						name: call.name || call.uri,
+						content: `${call.type} result for ${call.name || call.uri}:\n\`\`\`\n${fmtRes(result)}\n\`\`\``
+					})
+				} catch (err) {
+					console.error('MCP call error:', err)
+					args.AddLongTimeLog({
+						role: 'system',
+						name: call.name || call.uri,
+						content: `Error calling ${call.type} "${call.name || call.uri}": ${err.message}`
+					})
+				}
 
 				return true
 			}
