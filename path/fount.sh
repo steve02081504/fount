@@ -1135,7 +1135,7 @@ heap_size_mb=300 # Default to 300MB
 config_path="$FOUNT_DIR/data/config.json"
 if [ -f "$config_path" ] && command -v jq &>/dev/null; then
 	heap_size_bytes=$(jq -r '.prelaunch.heapSize // "0"' "$config_path")
-	calculated_mb=$(echo "$heap_size_bytes" | awk '{printf "%.0f\n", $1/1024/1024}')
+	calculated_mb=$(( (heap_size_bytes + 524288) / 1048576 ))
 	if [ "$calculated_mb" -gt 0 ]; then
 		heap_size_mb=$calculated_mb
 	fi
