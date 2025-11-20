@@ -150,7 +150,22 @@ const getDesc = async () => {
 		const example = type === 'resource'
 			? '<mcp-resource uri="..."/>'
 			: `<mcp-${type} name="...">\n\t<param>val</param>\n</mcp-${type}>`
-		return `## Available ${label}\n${list}\n**Usage:**\n\`\`\`xml\n${example}\n\`\`\`\n`
+		return `\
+## Available ${label}
+${list}
+Usage: To call a tool, use this XML format:
+${example}
+${type === 'tool' ? `
+Example:
+<mcp-tool name="echo">
+	<message>Hello World</message>
+</mcp-tool>
+` : type === 'prompt' ? `
+Example:
+<mcp-prompt name="get_user_info">
+	<user_id>12345</user_id>
+</mcp-prompt>
+` : ''}`.trim()
 	}
 
 	return [
@@ -158,8 +173,11 @@ const getDesc = async () => {
 		data.description || '',
 		fmtItem(tools, 'tool', 'Tools'),
 		fmtItem(prompts, 'prompt', 'Prompts'),
-		resources.length ? `## Resources\n${resources.map(r => `- ${r.name}: \`${r.uri}\``).join('\n')}\nUse <mcp-resource uri="..."/>` : ''
-	].join('\n\n')
+		resources.length ? `\
+## Resources
+${resources.map(r => `- ${r.name}: \`${r.uri}\``).join('\n')}
+Use <mcp-resource uri="..."/>
+` : ''].join('\n\n')
 }
 
 /** @type {pluginAPI_t} */
