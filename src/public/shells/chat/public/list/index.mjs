@@ -137,7 +137,10 @@ async function renderChatListItem(chat) {
 			chatElement.draggable = true
 	})
 
-	// Clean up the draggable state to prevent unintended behavior.
+	/**
+	 * 清理可拖拽状态以防止意外行为。
+	 * @returns {void}
+	 */
 	const cleanupDraggable = () => { chatElement.draggable = false }
 	chatElement.addEventListener('mouseup', cleanupDraggable)
 	chatElement.addEventListener('mouseleave', cleanupDraggable)
