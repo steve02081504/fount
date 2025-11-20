@@ -353,6 +353,17 @@ $stderr = StringIO.new
 	csharp: createGodboltExecutor('dotnettrunkcsharpcoreclr', 'csharp'),
 	go: createGodboltExecutor('gltip', 'go'),
 	rs: createGodboltExecutor('nightly', 'rust'),
+	/**
+	 * 执行 brainfuck 代码。
+	 */
+	brainfuck: async (code) => {
+		try {
+			const {default: Brainfuck } = await import('https://esm.sh/brainfuck-node')
+			const brainfuck = new Brainfuck()
+			const result = brainfuck.execute(code)
+			return { output: result.output }
+		} catch (error) { return { error } }
+	},
 }
 
 /**
