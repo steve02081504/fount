@@ -71,7 +71,7 @@ const parseVal = (val, type) => {
 	if (!type) return val
 	if (type === 'boolean') return val === 'true'
 	if (['integer', 'number'].includes(type)) { const num = Number(val); return !Number.isNaN(num) ? num : val }
-	if (['array', 'object'].includes(type))  try { return JSON.parse(val) } catch { return val }
+	if (['array', 'object'].includes(type)) try { return JSON.parse(val) } catch { return val }
 	return val
 }
 
@@ -110,7 +110,6 @@ function parseCalls(content) {
 		for (const [fullMatch, name, body] of matches)
 			// 此处不做严格 Schema 查找以保持无状态，运行时让 Server 校验
 			calls.push({ type, name, args: parseParams(body), fullMatch })
-
 	}
 	// 解析 Resource
 	for (const [fullMatch, uri] of content.matchAll(/<mcp-resource\s+uri="([^"]+)"\s*\/>/g))
@@ -146,7 +145,7 @@ const getDesc = async () => {
 		}).join('\n\n')
 		const example = type === 'resource'
 			? '<mcp-resource uri="..."/>'
-			: `<mcp-${type} name="...">\n  <param>val</param>\n</mcp-${type}>`
+			: `<mcp-${type} name="...">\n\t<param>val</param>\n</mcp-${type}>`
 		return `## Available ${label}\n${list}\n**Usage:**\n\`\`\`xml\n${example}\n\`\`\`\n`
 	}
 
