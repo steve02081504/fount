@@ -1,4 +1,4 @@
-import { Client, Events, GatewayIntentBits, Partials } from 'npm:discord.js@^14.21.0'
+import { Client, Events, GatewayIntentBits, Partials } from 'npm:discord.js@^14.25.0'
 import { on_shutdown } from 'npm:on-shutdown'
 
 import { console } from '../../../../scripts/i18n.mjs'
