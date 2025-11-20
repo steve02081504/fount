@@ -1,16 +1,18 @@
-# fount
+<h1 align="center">⛲fount💪</h1>
 
-> Votre Compagnon de Personnage IA Immersif
+> <p align="center">L'étincelle d'une Pensée, la Présence d'un Ami.</p>
 
-[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/steve02081504/fount)
-[![Docker Image Size](https://img.shields.io/docker/image-size/steve02081504/fount)](https://github.com/users/steve02081504/packages/container/package/fount)
-[![GitHub repo size](https://img.shields.io/github/repo-size/steve02081504/fount)](https://github.com/steve02081504/fount/archive/refs/heads/master.zip)
-[![Discord](https://img.shields.io/discord/1288934771153440768)](https://discord.gg/GtR9Quzq2v)
-[![CodeFactor](https://www.codefactor.io/repository/github/steve02081504/fount/badge)](https://www.codefactor.io/repository/github/steve02081504/fount)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/8615bc18e3fa4ff391f41e9dcadf93f7)](https://app.codacy.com/gh/steve02081504/fount/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+<p align="center">
+<a href="https://github.com/topics/fount-repo"><img src="https://steve02081504.github.io/fount/badges/fount_repo.svg" alt="fount repo"></a>
+<a href="https://deepwiki.com/steve02081504/fount"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
+<a href="https://github.com/users/steve02081504/packages/container/package/fount"><img src="https://img.shields.io/docker/image-size/steve02081504/fount" alt="Docker Image Size"></a>
+<a href="https://github.com/steve02081504/fount/archive/refs/heads/master.zip"><img src="https://img.shields.io/github/repo-size/steve02081504/fount" alt="GitHub repo size"></a>
+<a href="https://discord.gg/GtR9Quzq2v"><img src="https://img.shields.io/discord/1288934771153440768" alt="Discord"></a>
+<a href="https://www.codefactor.io/repository/github/steve02081504/fount"><img src="https://www.codefactor.io/repository/github/steve02081504/fount/badge" alt="CodeFactor"></a>
+<a href="https://app.codacy.com/gh/steve02081504/fount/dashboard?utm_source=gh&amp;utm_medium=referral&amp;utm_content=&amp;utm_campaign=Badge_grade"><img src="https://app.codacy.com/project/badge/Grade/8615bc18e3fa4ff391f41e9dcadf93f7" alt="Codacy Badge"></a>
+</p>
 
-<a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+<p align="center"><a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a></p>
 
 [Envie d'en savoir plus sur l'architecture du dépôt ? Consultez DeepWiki !](https://deepwiki.com/steve02081504/fount)
 
@@ -44,7 +46,7 @@ Personnages perdus, histoires oubliées ? Notre [**communauté dynamique et accu
 
 fount est un pont qui vous relie aux personnages de votre imagination, vous permettant de converser sans effort avec eux, de créer les vôtres et de les partager avec le monde. C'est un chemin rendu étonnamment accessible.
 
-C'est une source (fount), où les sources d'IA, les personnages, les personnalités, les mondes et les plugins convergent, vous permettant de créer et de vivre des interactions uniques et captivantes.
+C'est une source, où les sources d'IA, les personnages, les personnalités, les mondes et les plugins convergent, vous permettant de créer et de vivre des interactions uniques et captivantes.
 
 fount est conçu pour l'avenir, prêt à accueillir de nouvelles fonctionnalités nées de sa communauté dynamique. Si vous avez une vision, une étincelle d'idée qui appartient au royaume de fount, nous accueillons votre contribution.
 

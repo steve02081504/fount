@@ -1,16 +1,18 @@
-# fount
+<h1 align="center">⛲fount💪</h1>
 
-> 你的沉浸式 AI 角色夥伴
+> <p align="center">靈犀一點，應念而生</p>
 
-[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/steve02081504/fount)
-[![Docker Image Size](https://img.shields.io/docker/image-size/steve02081504/fount)](https://github.com/users/steve02081504/packages/container/package/fount)
-[![GitHub repo size](https://img.shields.io/github/repo-size/steve02081504/fount)](https://github.com/steve02081504/fount/archive/refs/heads/master.zip)
-[![Discord](https://img.shields.io/discord/1288934771153440768)](https://discord.gg/GtR9Quzq2v)
-[![CodeFactor](https://www.codefactor.io/repository/github/steve02081504/fount/badge)](https://www.codefactor.io/repository/github/steve02081504/fount)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/8615bc18e3fa4ff391f41e9dcadf93f7)](https://app.codacy.com/gh/steve02081504/fount/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+<p align="center">
+<a href="https://github.com/topics/fount-repo"><img src="https://steve02081504.github.io/fount/badges/fount_repo.svg" alt="fount repo"></a>
+<a href="https://deepwiki.com/steve02081504/fount"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
+<a href="https://github.com/users/steve02081504/packages/container/package/fount"><img src="https://img.shields.io/docker/image-size/steve02081504/fount" alt="Docker Image Size"></a>
+<a href="https://github.com/steve02081504/fount/archive/refs/heads/master.zip"><img src="https://img.shields.io/github/repo-size/steve02081504/fount" alt="GitHub repo size"></a>
+<a href="https://discord.gg/GtR9Quzq2v"><img src="https://img.shields.io/discord/1288934771153440768" alt="Discord"></a>
+<a href="https://www.codefactor.io/repository/github/steve02081504/fount"><img src="https://www.codefactor.io/repository/github/steve02081504/fount/badge" alt="CodeFactor"></a>
+<a href="https://app.codacy.com/gh/steve02081504/fount/dashboard?utm_source=gh&amp;utm_medium=referral&amp;utm_content=&amp;utm_campaign=Badge_grade"><img src="https://app.codacy.com/project/badge/Grade/8615bc18e3fa4ff391f41e9dcadf93f7" alt="Codacy Badge"></a>
+</p>
 
-<a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+<p align="center"><a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a></p>
 
 [想知道專案倉庫架構嗎？快來看看 DeepWiki！](https://deepwiki.com/steve02081504/fount)
 
@@ -44,7 +46,7 @@
 
 fount，是一座橋樑，將你與想像中的角色相連，讓你毫不費力地與他們交談、創造屬於自己的角色，並與世界分享。它是一條出乎意料地易於上手的道路。
 
-它亦是一個源泉 (fount)，AI 來源、角色、人設、世界與外掛在此交會，讓你得以創造並體驗獨特而引人入勝的互動。
+它亦是一個源泉，AI 來源、角色、人設、世界與外掛在此交會，讓你得以創造並體驗獨特而引人入勝的互動。
 
 fount 為未來而生，它樂於接納源自充滿活力社群的新功能。如果你有一個願景，一個屬於 fount 領域的靈感火花，我們由衷歡迎你的貢獻。
 
