@@ -1,5 +1,8 @@
 {
 	"port": 8931,
+	"prelaunch": {
+		"heapSize": 0
+	},
 	"listen": null,
 	"https": {
 		"enabled": false,

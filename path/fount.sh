@@ -1147,10 +1147,21 @@ run() {
 			run_sed_inplace '/proot-distro login ubuntu/d' "/data/data/com.termux/files/home/.bashrc"
 		fi
 	fi
+	v8_flags="--expose-gc"
+	heap_size_mb=100 # Default to 100MB
+	config_path="$FOUNT_DIR/data/config.json"
+	if [ -f "$config_path" ] && command -v jq &>/dev/null; then
+		heap_size_bytes=$(jq -r '.prelaunch.heapSize // "0"' "$config_path")
+		calculated_mb=$(( (heap_size_bytes + 524288) / 1048576 ))
+		if [ "$calculated_mb" -gt 0 ]; then
+			heap_size_mb=$calculated_mb
+		fi
+	fi
+	v8_flags="$v8_flags,--initial-heap-size=${heap_size_mb}"
 	if [[ $is_debug -eq 1 ]]; then
-		run_deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags=--expose-gc "$FOUNT_DIR/src/server/index.mjs" "$@"
+		run_deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags="$v8_flags" "$FOUNT_DIR/src/server/index.mjs" "$@"
 	else
-		run_deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --v8-flags=--expose-gc "$FOUNT_DIR/src/server/index.mjs" "$@"
+		run_deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --v8-flags="$v8_flags" "$FOUNT_DIR/src/server/index.mjs" "$@"
 	fi
 	local exit_code=$?
 	if [[ $IN_TERMUX -eq 1 ]]; then export LANG="$LANG_BACKUP"; fi
