@@ -1140,7 +1140,7 @@ if [ -f "$config_path" ] && command -v jq &>/dev/null; then
 		heap_size_mb=$calculated_mb
 	fi
 fi
-v8_flags="$v8_flags,--initial-heap-size=${heap_size_mb}m"
+v8_flags="$v8_flags,--initial-heap-size=${heap_size_mb}"
 run() {
 	if [[ $(id -u) -eq 0 ]]; then
 		echo -e "${C_YELLOW}$(get_i18n 'install.rootWarning1')${C_RESET}" >&2

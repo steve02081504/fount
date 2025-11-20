@@ -282,8 +282,8 @@ export async function init(start_config) {
 		idleManager.onIdle(() => {
 			config.prelaunch ??= {}
 			const currentHeap = getMemoryUsage()
-			const oldHeap = config.prelaunch.heapSize || currentHeap
-			config.prelaunch.heapSize = Math.round((oldHeap * 12 + currentHeap) / 13)
+			const oldHeap = config.prelaunch.heapSize / 1.5 || currentHeap
+			config.prelaunch.heapSize = Math.round((oldHeap * 12 + currentHeap) / 13 * 1.5)
 			save_config()
 		})
 	}

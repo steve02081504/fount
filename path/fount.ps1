@@ -715,7 +715,7 @@ if (Test-Path $configPath) {
 		# Could not read or parse, will use the default 300MB.
 	}
 }
-$v8Flags += ",--initial-heap-size=${heapSizeMB}m"
+$v8Flags += ",--initial-heap-size=${heapSizeMB}"
 function isRoot {
 	if ($IsWindows) {
 		([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
