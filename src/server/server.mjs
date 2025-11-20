@@ -279,6 +279,13 @@ export async function init(start_config) {
 		if (starts.Base.Idle) idleManager.start()
 		if (starts.Base.AutoUpdate) idleManager.onIdle(checkUpstreamAndRestart)
 		idleManager.onIdle(setDefaultStuff)
+		idleManager.onIdle(() => {
+			config.prelaunch ??= {}
+			const currentHeap = getMemoryUsage()
+			const oldHeap = config.prelaunch.heapSize || currentHeap
+			config.prelaunch.heapSize = Math.round((oldHeap * 12 + currentHeap) / 13)
+			save_config()
+		})
 	}
 	if (starts.DiscordRPC) StartRPC()
 	if (!fs.existsSync(__dirname + '/src/pages/favicon.ico')) await iconPromise

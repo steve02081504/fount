@@ -700,6 +700,22 @@ if ($args.Count -eq 0 -or ($args[0] -ne 'shutdown' -and $args[0] -ne 'geneexe'))
 }
 
 # 执行 fount
+$v8Flags = "--expose-gc"
+$heapSizeMB = 300 # Default to 300MB
+$configPath = Join-Path $FOUNT_DIR 'data/config.json'
+if (Test-Path $configPath) {
+	try {
+		$fountConfig = Get-Content $configPath -Raw -Encoding UTF8 | ConvertFrom-Json
+		$heapSizeBytes = $fountConfig.prelaunch.heapSize
+		$calculatedMB = [math]::Round($heapSizeBytes / 1024 / 1024)
+		if ($calculatedMB -gt 0) {
+			$heapSizeMB = $calculatedMB
+		}
+	} catch {
+		# Could not read or parse, will use the default 300MB.
+	}
+}
+$v8Flags += ",--initial-heap-size=${heapSizeMB}m"
 function isRoot {
 	if ($IsWindows) {
 		([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
@@ -732,10 +748,10 @@ function run {
 		Write-Warning "Unless you know what you are doing, it is recommended to run fount as a common user."
 	}
 	if ($Script:is_debug) {
-		deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags=--expose-gc "$FOUNT_DIR/src/server/index.mjs" @args
+		deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags="$v8Flags" "$FOUNT_DIR/src/server/index.mjs" @args
 	}
 	else {
-		deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --v8-flags=--expose-gc "$FOUNT_DIR/src/server/index.mjs" @args
+		deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --v8-flags="$v8Flags" "$FOUNT_DIR/src/server/index.mjs" @args
 	}
 }
 

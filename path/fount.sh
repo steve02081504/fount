@@ -1130,6 +1130,17 @@ debug_on() {
 	fi
 }
 # 函数: 运行 fount
+v8_flags="--expose-gc"
+heap_size_mb=300 # Default to 300MB
+config_path="$FOUNT_DIR/data/config.json"
+if [ -f "$config_path" ] && command -v jq &>/dev/null; then
+	heap_size_bytes=$(jq -r '.prelaunch.heapSize // "0"' "$config_path")
+	calculated_mb=$(echo "$heap_size_bytes" | awk '{printf "%.0f\n", $1/1024/1024}')
+	if [ "$calculated_mb" -gt 0 ]; then
+		heap_size_mb=$calculated_mb
+	fi
+fi
+v8_flags="$v8_flags,--initial-heap-size=${heap_size_mb}m"
 run() {
 	if [[ $(id -u) -eq 0 ]]; then
 		echo -e "${C_YELLOW}$(get_i18n 'install.rootWarning1')${C_RESET}" >&2
@@ -1148,9 +1159,9 @@ run() {
 		fi
 	fi
 	if [[ $is_debug -eq 1 ]]; then
-		run_deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags=--expose-gc "$FOUNT_DIR/src/server/index.mjs" "$@"
+		run_deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags="$v8_flags" "$FOUNT_DIR/src/server/index.mjs" "$@"
 	else
-		run_deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --v8-flags=--expose-gc "$FOUNT_DIR/src/server/index.mjs" "$@"
+		run_deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --v8-flags="$v8_flags" "$FOUNT_DIR/src/server/index.mjs" "$@"
 	fi
 	local exit_code=$?
 	if [[ $IN_TERMUX -eq 1 ]]; then export LANG="$LANG_BACKUP"; fi
