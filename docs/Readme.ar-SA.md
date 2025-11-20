@@ -1,16 +1,18 @@
-# fount
+<h1 align="center">⛲fount💪</h1>
 
-> شريكك الغامر في شخصيات الذكاء الاصطناعي
+> <p align="center">رفيقٌ من نسيج الخيال</p>
 
-[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/steve02081504/fount)
-[![Docker Image Size](https://img.shields.io/docker/image-size/steve02081504/fount)](https://github.com/users/steve02081504/packages/container/package/fount)
-[![GitHub repo size](https://img.shields.io/github/repo-size/steve02081504/fount)](https://github.com/steve02081504/fount/archive/refs/heads/master.zip)
-[![Discord](https://img.shields.io/discord/1288934771153440768)](https://discord.gg/GtR9Quzq2v)
-[![CodeFactor](https://www.codefactor.io/repository/github/steve02081504/fount/badge)](https://www.codefactor.io/repository/github/steve02081504/fount)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/8615bc18e3fa4ff391f41e9dcadf93f7)](https://app.codacy.com/gh/steve02081504/fount/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+<p align="center">
+<a href="https://github.com/topics/fount-repo"><img src="https://steve02081504.github.io/fount/badges/fount_repo.svg" alt="fount repo"></a>
+<a href="https://deepwiki.com/steve02081504/fount"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
+<a href="https://github.com/users/steve02081504/packages/container/package/fount"><img src="https://img.shields.io/docker/image-size/steve02081504/fount" alt="Docker Image Size"></a>
+<a href="https://github.com/steve02081504/fount/archive/refs/heads/master.zip"><img src="https://img.shields.io/github/repo-size/steve02081504/fount" alt="GitHub repo size"></a>
+<a href="https://discord.gg/GtR9Quzq2v"><img src="https://img.shields.io/discord/1288934771153440768" alt="Discord"></a>
+<a href="https://www.codefactor.io/repository/github/steve02081504/fount"><img src="https://www.codefactor.io/repository/github/steve02081504/fount/badge" alt="CodeFactor"></a>
+<a href="https://app.codacy.com/gh/steve02081504/fount/dashboard?utm_source=gh&amp;utm_medium=referral&amp;utm_content=&amp;utm_campaign=Badge_grade"><img src="https://app.codacy.com/project/badge/Grade/8615bc18e3fa4ff391f41e9dcadf93f7" alt="Codacy Badge"></a>
+</p>
 
-<a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+<p align="center"><a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a></p>
 
 [هل تريد معرفة بنية مستودع المشروع؟ تعال وألق نظرة على DeepWiki!](https://deepwiki.com/steve02081504/fount)
 
@@ -44,7 +46,7 @@
 
 fount، هو جسر يربطك بالشخصيات التي تتخيلها، مما يتيح لك التحدث معهم دون عناء، وإنشاء شخصياتك الخاصة، ومشاركتها مع العالم. إنه طريق سهل الاستخدام بشكل مدهش.
 
-إنه أيضًا نبع (fount)، حيث تلتقي مصادر الذكاء الاصطناعي والشخصيات والهويات والعوالم والإضافات، مما يتيح لك إنشاء وتجربة تفاعلات فريدة وجذابة.
+إنه أيضًا نبع، حيث تلتقي مصادر الذكاء الاصطناعي والشخصيات والهويات والعوالم والإضافات، مما يتيح لك إنشاء وتجربة تفاعلات فريدة وجذابة.
 
 fount مصمم للمستقبل، وهو يرحب بالميزات الجديدة من مجتمعه النابض بالحياة. إذا كانت لديك رؤية، شرارة إلهام في عالم fount، فنحن نرحب ترحيباً حاراً بمساهماتك.
 
