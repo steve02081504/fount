@@ -316,6 +316,7 @@ function deno_upgrade() {
 		Write-Error (Get-I18n -key 'deno.notWorking') -ErrorAction Ignore
 		exit 1
 	}
+
 	$deno_update_channel = "stable"
 	if ($deno_ver.Contains("+")) {
 		$deno_update_channel = "canary"
@@ -323,6 +324,21 @@ function deno_upgrade() {
 	elseif ($deno_ver.Contains("-rc")) {
 		$deno_update_channel = "rc"
 	}
+
+	$upgradedFlag = Join-Path $FOUNT_DIR 'data/installer/deno_upgraded'
+	if (Test-Path $upgradedFlag) {
+		Start-Job -ScriptBlock { # 因为需要兼容 windows powershell，所以不能像是sh中一样定义和复用base_deno_update
+			param($deno_update_channel)
+			. { deno upgrade -q $deno_update_channel } -ErrorVariable errorOut
+			if ($LastExitCode) {
+				if ($errorOut.tostring().Contains("USAGE")) { # wtf deno 1.0?
+					deno upgrade -q
+				}
+			}
+		} -ArgumentList $deno_update_channel | Out-Null
+		return
+	}
+
 	. { deno upgrade -q $deno_update_channel } -ErrorVariable errorOut
 	if ($LastExitCode) {
 		if ($errorOut.tostring().Contains("USAGE")) { # wtf deno 1.0?
@@ -331,6 +347,10 @@ function deno_upgrade() {
 	}
 	if ($LastExitCode) {
 		Write-Warning (Get-I18n -key 'deno.upgradeFailed')
+	}
+	else {
+		New-Item -Path (Split-Path $upgradedFlag) -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
+		Set-Content $upgradedFlag "1"
 	}
 }
 
