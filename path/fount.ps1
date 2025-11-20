@@ -731,11 +731,28 @@ function run {
 		Write-Warning "Not Recommended: Running fount as root grants full system access for all fount parts."
 		Write-Warning "Unless you know what you are doing, it is recommended to run fount as a common user."
 	}
+	$v8Flags = "--expose-gc"
+	$heapSizeMB = 100 # Default to 100MB
+	$configPath = Join-Path $FOUNT_DIR 'data/config.json'
+	if (Test-Path $configPath) {
+		try {
+			$fountConfig = Get-Content $configPath -Raw -Encoding UTF8 | ConvertFrom-Json
+			$heapSizeBytes = $fountConfig.prelaunch.heapSize
+			$calculatedMB = [math]::Round($heapSizeBytes / 1024 / 1024)
+			if ($calculatedMB -gt 0) {
+				$heapSizeMB = $calculatedMB
+			}
+		}
+		catch {
+			# Could not read or parse, will use the default 100MB.
+		}
+	}
+	$v8Flags += ",--initial-heap-size=${heapSizeMB}"
 	if ($Script:is_debug) {
-		deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags=--expose-gc "$FOUNT_DIR/src/server/index.mjs" @args
+		deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags="$v8Flags" "$FOUNT_DIR/src/server/index.mjs" @args
 	}
 	else {
-		deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --v8-flags=--expose-gc "$FOUNT_DIR/src/server/index.mjs" @args
+		deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --v8-flags="$v8Flags" "$FOUNT_DIR/src/server/index.mjs" @args
 	}
 }
 
