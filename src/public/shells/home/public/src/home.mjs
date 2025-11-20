@@ -27,8 +27,6 @@ export async function initializeApp() {
 	applyTheme()
 	await initTranslations('home')
 
-	unlockAchievement('shells', 'home', 'first_login')
-
 	// 获取数据并设置UI
 	try {
 		setHomeRegistry(await getHomeRegistry())
@@ -68,4 +66,6 @@ export async function initializeApp() {
 
 	setupDOMEventListeners()
 	setupServerEventListeners()
+
+	unlockAchievement('shells', 'home', 'first_login')
 }
