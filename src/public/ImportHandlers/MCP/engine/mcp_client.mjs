@@ -3,6 +3,8 @@ import process from 'node:process'
 import { Client } from 'npm:@modelcontextprotocol/sdk/client/index.js'
 import { SSEClientTransport } from 'npm:@modelcontextprotocol/sdk/client/sse.js'
 import { StdioClientTransport } from 'npm:@modelcontextprotocol/sdk/client/stdio.js'
+import { StreamableHTTPClientTransport } from 'npm:@modelcontextprotocol/sdk/client/streamableHttp.js';
+import { WebSocketClientTransport} from 'npm:@modelcontextprotocol/sdk/client/websocket.js'
 import { ListRootsRequestSchema, CreateMessageRequestSchema } from 'npm:@modelcontextprotocol/sdk/types.js'
 
 /**
@@ -18,7 +20,8 @@ import { ListRootsRequestSchema, CreateMessageRequestSchema } from 'npm:@modelco
  */
 export async function createMCPClient(config) {
 	const transport = config.url
-		? new SSEClientTransport(new URL(config.url))
+		? (config.url.startsWith('ws') ? new WebSocketClientTransport(new URL(config.url))
+		: new StreamableHTTPClientTransport(new URL(config.url)))
 		: new StdioClientTransport({
 			command: config.command,
 			args: config.args || [],
@@ -42,7 +45,15 @@ export async function createMCPClient(config) {
 			model: 'default', stopReason: 'endTurn'
 		}))
 
-	await client.connect(transport)
+	try{
+		await client.connect(transport)
+	}catch(_e){
+		if (config.url){
+			//may be using sse to connect
+			const sseTransport = new SSEClientTransport(new URL(config.url))
+			await client.connect(sseTransport)
+		}
+	}
 
 	return {
 		/**
