@@ -1,4 +1,4 @@
-# <p align="center">⛲fount💪</p>
+<h1 align="center">⛲fount💪</h1>
 
 > <p align="center">想いを形に、心を繋ぐ</p>
 

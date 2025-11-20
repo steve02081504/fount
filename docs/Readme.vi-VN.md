@@ -1,4 +1,4 @@
-# <p align="center">⛲fount💪</p>
+<h1 align="center">⛲fount💪</h1>
 
 > <p align="center">Từ Ý Niệm, đến Tri Kỷ</p>
 

@@ -1,6 +1,6 @@
-# <p align="center">⛲fount💪</p>
+<h1 align="center">⛲fount💪</h1>
 
-> <p align="center">Your Immersive AI Character Companion</p>
+> <p align="center">Onde a Imaginação Ganha Vida</p>
 
 <p align="center">
 <a href="https://github.com/topics/fount-repo"><img src="https://steve02081504.github.io/fount/badges/fount_repo.svg" alt="fount repo"></a>

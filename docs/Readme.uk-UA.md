@@ -1,4 +1,4 @@
-# <p align="center">⛲fount💪</p>
+<h1 align="center">⛲fount💪</h1>
 
 > <p align="center">Іскра думки, живий співрозмовник</p>
 

@@ -1,4 +1,4 @@
-# <p align="center">⛲fount💪</p>
+<h1 align="center">⛲fount💪</h1>
 
 > <p align="center">Een Vonk van de Geest, een Vriend voor het Leven</p>
 
