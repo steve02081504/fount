@@ -24,13 +24,13 @@ Add-Type -AssemblyName System.Windows.Forms
 `, { shell: 'powershell.exe' }).then(() => setDefaultStuff()).catch(console.error)
 		return
 	}
-	if (in_docker || in_termux) console.log(`[Notify] ${title}\n${message}`)
+	if (in_docker || in_termux) return console.log(`[Notify] ${title}\n${message}`)
 	// if linux, check notify-send for notifier workability
 	if (process.platform === 'linux') try {
 		const { stdout } = await exec('which notify-send')
-		if (!stdout.trim()) console.log(`[Notify] ${title}\n${message}`)
+		if (!stdout.trim()) return console.log(`[Notify] ${title}\n${message}`)
 	} catch (e) {
-		console.log(`[Notify] ${title}\n${message}`)
+		return console.log(`[Notify] ${title}\n${message}`)
 	}
 	return new Promise((resolve, reject) => notifier.notify({
 		title,
