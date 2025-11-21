@@ -840,7 +840,7 @@ if [[ $# -gt 0 ]]; then
 		# 若 $FOUNT_DIR/data 是目录
 		if [ -d "$FOUNT_DIR/data" ]; then
 			ensure_dependencies "open" || exit 1
-			TARGET_URL='https://steve02081504.github.io/fount/wait'
+			TARGET_URL='https://steve02081504.github.io/fount/wait?cold_bootting=true'
 			open_url_in_browser "$TARGET_URL"
 			"$0" "${@:2}"
 			exit $?

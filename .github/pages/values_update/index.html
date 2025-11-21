@@ -21,6 +21,7 @@
 	<script type="module">
 		/* global urlParams */
 		import '../base.mjs'
+		navigator.serviceWorker?.controller?.postMessage({ type: 'EXIT_COLD_BOOT' })
 		const redirectUrl = urlParams.get('redirect')
 		urlParams.delete('redirect')
 		for (const [key, value] of urlParams) if (value !== 'undefined')

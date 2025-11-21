@@ -11,13 +11,34 @@ import { showToast } from '../../../scripts/toast.mjs'
 import { getpartDetails } from './data.mjs'
 import { getHomeRegistry } from './endpoints.mjs'
 import { setupDOMEventListeners, setupServerEventListeners } from './events.mjs'
-import { setHomeRegistry, setDefaultParts, setIsSfw, setCurrentPartType, homeRegistry, preloadDragGenerators } from './state.mjs'
+import { setHomeRegistry, setDefaultParts, setIsSfw, setCurrentPartType, homeRegistry, preloadDragGenerators, currentPartType } from './state.mjs'
 import { showItemModal } from './ui/itemModal.mjs'
 import {
 	setupPartTypeUI,
-	displayFunctionButtons
+	displayFunctionButtons,
+	updateTabContent
 } from './ui.mjs'
 
+
+/**
+ * 加载数据并渲染UI。
+ * @returns {Promise<void>}
+ */
+export async function loadDataAndRender() {
+	try {
+		setHomeRegistry(await getHomeRegistry())
+		await preloadDragGenerators(homeRegistry)
+		setDefaultParts(await getDefaultParts())
+		setupPartTypeUI(homeRegistry.part_types)
+		displayFunctionButtons()
+		setIsSfw(await getUserSetting('sfw').catch(() => false))
+	}
+	catch (error) {
+		console.error('Failed to fetch initial data:', error)
+		showToast('error', 'Failed to load page data. Please try refreshing.')
+		throw error
+	}
+}
 
 /**
  * 初始化应用程序。
@@ -28,21 +49,10 @@ export async function initializeApp() {
 	await initTranslations('home')
 
 	// 获取数据并设置UI
-	try {
-		setHomeRegistry(await getHomeRegistry())
-		await preloadDragGenerators(homeRegistry)
-		setDefaultParts(await getDefaultParts())
-	}
+	try { await loadDataAndRender() }
 	catch (error) {
-		console.error('Failed to fetch initial data:', error)
-		showToast('error', 'Failed to load page data. Please try refreshing.')
 		return // Stop execution if essential data fails to load
 	}
-
-	setupPartTypeUI(homeRegistry.part_types)
-	displayFunctionButtons()
-
-	setIsSfw(await getUserSetting('sfw').catch(() => false))
 
 	const urlParams = new URLSearchParams(window.location.search)
 	const query = urlParams.get('search')
@@ -68,4 +78,14 @@ export async function initializeApp() {
 	setupServerEventListeners()
 
 	unlockAchievement('shells', 'home', 'first_login')
+}
+
+/**
+ * 重新加载应用程序数据并刷新UI。
+ * 用于从冷启动模式恢复。
+ * @returns {Promise<void>}
+ */
+export async function refreshApp() {
+	await loadDataAndRender()
+	updateTabContent(currentPartType)
 }

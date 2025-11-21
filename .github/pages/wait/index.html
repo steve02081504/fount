@@ -23,10 +23,18 @@
 		import { waitForFountService, saveFountHostUrl } from '../scripts/fountHostGetter.mjs'
 
 		const hostUrl = 'http://localhost:8931'
-		setPreRender(hostUrl)
+		const jumpTo = hostUrl + '?cold_bootting=true'
+
+		navigator.serviceWorker?.controller?.postMessage({ type: 'ENTER_COLD_BOOT' })
+
+		if (localStorage.getItem('fount_localhost_ping_passed') === 'true')
+			window.location.href = jumpTo
+
+		setPreRender(jumpTo)
 		await waitForFountService(hostUrl)
 		saveFountHostUrl(hostUrl)
-		window.location.href = hostUrl + '/shells/home'
+		localStorage.setItem('fount_localhost_ping_passed', true)
+		window.location.href = jumpTo
 	</script>
 </head>
 
