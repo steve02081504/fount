@@ -307,7 +307,7 @@ async function initializeApp() {
 
 // 执行初始化
 try {
-	initializeApp()
+	await initializeApp()
 	navigator.serviceWorker?.controller?.postMessage({ type: 'EXIT_COLD_BOOT' })
 }
 catch (error) {
