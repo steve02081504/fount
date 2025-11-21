@@ -13,7 +13,8 @@
 			},
 			"mdns": {
 				"description": "Neisti Hugans, Lifandi Félagi",
-				"failed": "mDNS skráning mistókst: ${error}"
+				"failed": "mDNS skráning mistókst: ${error}",
+				"bonjourFailed": "Ekki tókst að búa til Bonjour þjónustu: ${error}"
 			},
 			"localUrl": "Opnaðu fount á öðrum tækjum á sama neti: ${url}",
 			"update": {

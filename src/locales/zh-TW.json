@@ -13,7 +13,8 @@
 			},
 			"mdns": {
 				"description": "靈犀一點，應念而生",
-				"failed": "mDNS 註冊失敗：${error}"
+				"failed": "mDNS 註冊失敗：${error}",
+				"bonjourFailed": "Bonjour 服務建立失敗：${error}"
 			},
 			"localUrl": "透過同一網路下的其他裝置存取fount：${url}",
 			"update": {

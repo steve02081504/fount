@@ -13,7 +13,8 @@
 			},
 			"mdns": {
 				"description": "想いを形に、心を繋ぐ",
-				"failed": "mDNS 登録に失敗しました: ${error}"
+				"failed": "mDNS 登録に失敗しました: ${error}",
+				"bonjourFailed": "Bonjour サービスの作成に失敗しました: ${error}"
 			},
 			"localUrl": "同じネットワーク上の他のデバイスからのfountへのアクセス：${url}",
 			"update": {

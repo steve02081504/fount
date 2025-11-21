@@ -13,7 +13,8 @@
 			},
 			"mdns": {
 				"description": "✨🤖🤝",
-				"failed": "❌📶 ${error}"
+				"failed": "❌📶 ${error}",
+				"bonjourFailed": "❌🔍📶 ${error}"
 			},
 			"localUrl": "💻📱 ${url}",
 			"update": {

@@ -13,7 +13,8 @@
 			},
 			"mdns": {
 				"description": "L'étincelle d'une Pensée, la Présence d'un Ami.",
-				"failed": "Échec de l'enregistrement mDNS : ${error}"
+				"failed": "Échec de l'enregistrement mDNS : ${error}",
+				"bonjourFailed": "Échec de la création du service Bonjour : ${error}"
 			},
 			"localUrl": "Accès à fount depuis d'autres appareils sur le même réseau : ${url}",
 			"update": {

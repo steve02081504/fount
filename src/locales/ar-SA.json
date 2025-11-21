@@ -13,7 +13,8 @@
 			},
 			"mdns": {
 				"description": "رفيقٌ من نسيج الخيال",
-				"failed": "فشل تسجيل mDNS: ${error}"
+				"failed": "فشل تسجيل mDNS: ${error}",
+				"bonjourFailed": "فشل إنشاء خدمة Bonjour: ${error}"
 			},
 			"localUrl": "للوصول إلى fount من أجهزة أخرى على نفس الشبكة: ${url}",
 			"update": {

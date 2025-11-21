@@ -13,7 +13,8 @@
 			},
 			"mdns": {
 				"description": "상상이 생명을 얻는 순간",
-				"failed": "mDNS 등록 실패: ${error}"
+				"failed": "mDNS 등록 실패: ${error}",
+				"bonjourFailed": "Bonjour 서비스 생성 실패: ${error}"
 			},
 			"localUrl": "동일한 네트워크의 다른 장치에서 fount에 액세스: ${url}",
 			"update": {

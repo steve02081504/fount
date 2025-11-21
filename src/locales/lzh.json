@@ -13,7 +13,8 @@
 			},
 			"mdns": {
 				"description": "靈犀一點，應念而生",
-				"failed": "域名宣告不成：${error}"
+				"failed": "域名宣告不成：${error}",
+				"bonjourFailed": "Bonjour服務建置不成：${error}"
 			},
 			"localUrl": "欲攜他器同游，可循此徑：${url}",
 			"update": {
