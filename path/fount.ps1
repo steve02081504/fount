@@ -23,7 +23,7 @@ function Get-AvailableLocales {
 			return @('en-UK') # Fallback
 		}
 	}
- else {
+	else {
 		return @('en-UK') # Fallback
 	}
 }
@@ -371,7 +371,7 @@ elseif ($args.Count -gt 0 -and $args[0] -eq 'open') {
 	if (Test-Path -Path "$FOUNT_DIR/data") {
 		Invoke-DockerPassthrough -CurrentArgs $args
 		Test-Browser
-		Start-Process 'https://steve02081504.github.io/fount/wait'
+		Start-Process 'https://steve02081504.github.io/fount/wait?cold_bootting=true'
 		$runargs = $args[1..$args.Count]
 		fount.ps1 @runargs
 		exit $LastExitCode

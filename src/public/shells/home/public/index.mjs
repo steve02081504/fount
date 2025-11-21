@@ -4,8 +4,21 @@
  */
 import { showToast } from '../../scripts/toast.mjs'
 
-import { initializeApp } from './src/home.mjs'
+import { initializeApp, refreshApp } from './src/home.mjs'
 
-initializeApp().catch(error => {
+initializeApp().then(async () => {
+	if (navigator.serviceWorker.controller) {
+		const channel = new MessageChannel()
+		navigator.serviceWorker.controller.postMessage({ type: 'EXIT_COLD_BOOT' }, [channel.port2])
+		channel.port1.onmessage = async (event) => {
+			if (event.data.wasColdBoot) {
+				console.log('Exited cold boot mode, reloading data...')
+				try { await refreshApp() } catch (error) {
+					window.location = '/login'
+				}
+			}
+		}
+	}
+}).catch(error => {
 	showToast('error', error.message)
 })
