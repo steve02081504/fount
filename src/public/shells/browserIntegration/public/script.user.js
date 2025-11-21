@@ -1292,7 +1292,7 @@ async function initialize() {
 	syncScriptsFromServer().then(runMatchingScripts)
 	findAndConnect()
 }
-initialize()
+; (f => document.readyState === 'complete' ? f() : window.addEventListener('load', f))(initialize)
 window.addEventListener('focus', notifyFocus)
 window.addEventListener('blur', notifyFocus)
 window.addEventListener('languagechange', async () => { await initTranslations() })

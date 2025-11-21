@@ -13,7 +13,8 @@
 			},
 			"mdns": {
 				"description": "Искра мысли, живой собеседник",
-				"failed": "Регистрация mDNS не удалась: ${error}"
+				"failed": "Регистрация mDNS не удалась: ${error}",
+				"bonjourFailed": "Не удалось создать службу Bonjour: ${error}"
 			},
 			"localUrl": "Доступ к fount с других устройств в той же сети: ${url}",
 			"update": {

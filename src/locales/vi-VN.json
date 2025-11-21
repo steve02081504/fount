@@ -13,7 +13,8 @@
 			},
 			"mdns": {
 				"description": "Từ Ý Niệm, đến Tri Kỷ",
-				"failed": "Đăng ký mDNS không thành công: ${error}"
+				"failed": "Đăng ký mDNS không thành công: ${error}",
+				"bonjourFailed": "Tạo dịch vụ Bonjour không thành công: ${error}"
 			},
 			"localUrl": "Truy cập fount từ các thiết bị khác trên cùng mạng: ${url}",
 			"update": {
