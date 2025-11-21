@@ -13,7 +13,8 @@
 			},
 			"mdns": {
 				"description": "Een Vonk van de Geest, een Vriend voor het Leven",
-				"failed": "mDNS-registratie mislukt: ${error}"
+				"failed": "mDNS-registratie mislukt: ${error}",
+				"bonjourFailed": "Aanmaken van Bonjour-service mislukt: ${error}"
 			},
 			"localUrl": "Toegang tot fount vanaf andere apparaten op hetzelfde netwerk: ${url}",
 			"update": {

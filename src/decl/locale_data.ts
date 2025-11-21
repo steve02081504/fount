@@ -21,6 +21,7 @@ export type LocaleData = {
 			mdns: {
 				description: string
 				failed: string
+				bonjourFailed: string
 			}
 			localUrl: string
 			update: {
@@ -2141,6 +2142,7 @@ export type LocaleKeyParams = {
 	'fountConsole.path.shortcut.startMenuShortcutCreated': { path: string | number }
 	'fountConsole.route.setLanguagePreference': { preferredLanguages: string | number; username: string | number }
 	'fountConsole.server.localUrl': { url: string | number }
+	'fountConsole.server.mdns.bonjourFailed': { error: string | number }
 	'fountConsole.server.mdns.failed': { error: string | number }
 	'fountConsole.server.showUrl.http': { url: string | number }
 	'fountConsole.server.showUrl.https': { url: string | number }

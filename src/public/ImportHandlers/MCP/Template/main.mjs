@@ -4,329 +4,220 @@ import path from 'node:path'
 import { createMCPClient } from '../../../../../src/public/ImportHandlers/MCP/engine/mcp_client.mjs'
 import { saveJsonFile } from '../../../../../src/scripts/json_loader.mjs'
 import { loadAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
+
 /** @typedef {import('../../../../../src/decl/pluginAPI.ts').pluginAPI_t} pluginAPI_t */
+
 const pluginDir = import.meta.dirname
 const dataPath = path.join(pluginDir, 'data.json')
 let data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'))
 
 let mcpClient = null
-let serverInfo = null
+let tools = null
 let samplingAIsource = null
 let username = null
+
 /**
- * Sampling handler - 处理 MCP 服务器的 sampling 请求
- * @param {object} params - Sampling 参数
- * @returns {Promise<string>} 生成的文本
+ * Sampling 处理器
+ * @param {object} params - Sampling 参数对象
+ * @param {Array} params.messages - 消息历史
+ * @param {string} [params.systemPrompt] - 系统提示词
+ * @returns {Promise<string>} AI 生成的文本
  */
-async function handleSampling(params) {
-	if (!samplingAIsource)
-		throw new Error('Sampling AI source not configured')
-	// 温度和最大令牌数是由 AI 源自己配置，不被fount架构支持
-	const { messages, systemPrompt } = params
-
-	// fount 的 chat log 格式
-	const chat_log = messages.map(msg => ({
-		role: msg.role === 'user' ? 'user' : msg.role === 'assistant' ? 'char' : 'system',
-		content: msg.content?.text || msg.content || '',
-	}))
-
-	// fount 的 system prompt
-	if (systemPrompt)
-		chat_log.unshift({
-			role: 'system',
-			content: systemPrompt,
-		})
-
-	// 调用 AI 源
+const handleSampling = async ({ messages, systemPrompt }) => {
+	if (!samplingAIsource) throw new Error('Sampling source not configured')
+	const chat_log = [
+		...systemPrompt ? [{ role: 'system', content: systemPrompt }] : [],
+		...messages.map(m => ({
+			role: m.role === 'user' ? 'user' : m.role === 'assistant' ? 'char' : 'system',
+			content: m.content?.text || m.content || ''
+		}))
+	]
 	try {
-		const response = await samplingAIsource.StructCall({
-			chat_log,
-			user_prompt: { text: [] },
-			char_prompt: { text: [] },
-			world_prompt: { text: [] },
-			other_chars_prompt: {},
-			plugin_prompts: {},
+		const res = await samplingAIsource.StructCall({
+			chat_log, user_prompt: { text: [] }, char_prompt: { text: [] },
+			world_prompt: { text: [] }, other_chars_prompt: {}, plugin_prompts: {}
 		})
-		return response.content
+		return res.content
 	} catch (err) {
-		console.error('[MCP Sampling] AI call failed:', err)
-		throw new Error(`Sampling failed: ${err.message}`)
-	}
-}
-/**
- * 加载 MCP 配置并启动客户端
- */
-async function initializeMCP() {
-	try {
-		// 如果配置了 sampling AI 源，加载它
-		if (data.samplingAIsource && username)
-			try {
-				samplingAIsource = await loadAIsource(username, data.samplingAIsource)
-				console.log(`[MCP][${data.name}] Sampling enabled with AI source: ${data.samplingAIsource}`)
-			} catch (err) {
-				console.warn(`[MCP][${data.name}] Failed to load sampling AI source:`, err)
-			}
-		// 合并配置和 roots
-		const clientConfig = {
-			...data.config,
-			roots: data.roots || [],
-			samplingHandler: samplingAIsource ? handleSampling : null
-		}
-		mcpClient = createMCPClient(clientConfig)
-		await mcpClient.start()
-		serverInfo = mcpClient.getServerInfo()
-	} catch (err) {
-		console.error(`Failed to initialize MCP plugin ${data?.name}:`, err)
+		console.error('[MCP Sampling] Failed:', err)
 		throw err
 	}
 }
+
 /**
- * 格式化工具描述
- * @returns {string} 格式化的工具描述
+ * 初始化 MCP 客户端
+ * @returns {Promise<void>} 无返回值
  */
-function formatToolsDescription() {
-	if (!serverInfo?.tools?.length) return ''
-	const toolDescriptions = serverInfo.tools.map(tool => {
-		const params = tool.inputSchema?.properties
-			? Object.entries(tool.inputSchema.properties).map(([name, schema]) => {
-				const required = tool.inputSchema?.required?.includes(name) ? ' (required)' : ' (optional)'
-				const type = schema.type || 'any'
-				const desc = schema.description || 'No description'
-				return `  - ${name}${required}: [${type}] ${desc}`
-			}).join('\n')
-			: '  No parameters'
-		return `### ${tool.name}
-${tool.description || 'No description'}
-**Parameters:**
-${params}`
-	}).join('\n\n')
-	return `\
-## Available MCP Tools
-${toolDescriptions}
-**Usage:** To call a tool, use this XML format:
-<mcp-tool name="tool_name">
-  <param1>value1</param1>
-  <param2>value2</param2>
-</mcp-tool>
-**Example:**
-<mcp-tool name="echo">
-  <message>Hello World</message>
-</mcp-tool>
-`
+async function initializeMCP() {
+	if (data.samplingAIsource && username && !samplingAIsource)
+		try {
+			samplingAIsource = await loadAIsource(username, data.samplingAIsource)
+		} catch (e) { console.warn('[MCP] Sampling load failed:', e) }
+
+	mcpClient = await createMCPClient({
+		...data.config,
+		roots: data.roots || [],
+		samplingHandler: samplingAIsource ? handleSampling : null
+	})
+	tools = await mcpClient.listTools()
 }
+
 /**
- * 格式化 prompt 描述
- * @returns {string} 格式化的 prompt 描述
- */
-function formatPromptsDescription() {
-	if (!serverInfo?.prompts?.length) return ''
-	const promptDescriptions = serverInfo.prompts.map(prompt => {
-		const args = prompt.arguments?.length
-			? prompt.arguments.map(arg => {
-				const required = arg.required ? ' (required)' : ' (optional)'
-				return `  - ${arg.name}${required}: ${arg.description || 'No description'}`
-			}).join('\n')
-			: '  No arguments'
-		return `### ${prompt.name}
-${prompt.description || 'No description'}
-**Arguments:**
-${args}`
-	}).join('\n\n')
-	return `## Available MCP Prompts
-⚠️ **Important:** Prompts are NOT tools! They are templates that return pre-defined content.
-${promptDescriptions}
-**Usage:** To get a prompt template, use this XML format:
-<mcp-prompt name="prompt_name">
-  <arg1>value1</arg1>
-  <arg2>value2</arg2>
-</mcp-prompt>
-**Example:**
-<mcp-prompt name="simple_prompt"/>
-`
-}
-/**
- * 格式化资源描述
- * @returns {string} 格式化的资源描述
- */
-function formatResourcesDescription() {
-	if (!serverInfo?.resources?.length) return ''
-	const resourceDescriptions = serverInfo.resources.map(resource => {
-		return `### ${resource.name}
-URI: \`${resource.uri}\`
-${resource.description || 'No description'}
-MIME Type: ${resource.mimeType || 'unknown'}`
-	}).join('\n\n')
-	return `## Available MCP Resources
-${resourceDescriptions}
-**Usage:** To read a resource, use this XML format:
-<mcp-resource uri="resource_uri"/>
-**Example:**
-<mcp-resource uri="test://static/resource/1"/>
-`
-}
-/**
- * 根据 schema 转换参数类型
- * @param {string} value - 字符串值
- * @param {object} schema - 参数的 schema 定义
+ * 简易类型转换
+ * @param {string} val - 原始字符串值
+ * @param {string} [type] - 目标类型
  * @returns {any} 转换后的值
  */
-function convertParamType(value, schema) {
-	if (!schema || !schema.type) return value
-	const trimmedValue = value.trim()
-	switch (schema.type) {
-		case 'number':
-		case 'integer': {
-			const num = Number(trimmedValue)
-			return isNaN(num) ? trimmedValue : num
-		}
-		case 'boolean':
-			if (trimmedValue === 'true') return true
-			if (trimmedValue === 'false') return false
-			return trimmedValue
-		case 'array':
-			try {
-				const parsed = JSON.parse(trimmedValue)
-				return Array.isArray(parsed) ? parsed : trimmedValue
-			} catch {
-				return trimmedValue
-			}
-		case 'object':
-			try {
-				const parsed = JSON.parse(trimmedValue)
-				return Object.getPrototypeOf(parsed) === Object ? parsed : trimmedValue
-			} catch {
-				return trimmedValue
-			}
-		default:
-			return trimmedValue
-	}
+const parseVal = (val, type) => {
+	val = val.trim()
+	if (!type) return val
+	if (type === 'boolean') return val === 'true'
+	if (['integer', 'number'].includes(type)) { const num = Number(val); return !Number.isNaN(num) ? num : val }
+	if (['array', 'object'].includes(type)) try { return JSON.parse(val) } catch { return val }
+	return val
 }
+
 /**
- * 解析 XML 工具调用
- * @param {string} content - 消息内容
- * @returns {Array} 解析出的调用
+ * 格式化结果内容
+ * @param {object} res - MCP 响应结果
+ * @returns {string} 格式化后的字符串
  */
-function parseXMLCalls(content) {
+const fmtRes = (res) => res?.content?.map(i =>
+	i.type === 'text' ? i.text : `[${i.type}: ${i.mimeType || i.uri || ''}]`
+).join('\n') || JSON.stringify(res, null, 2)
+
+/**
+ * 解析 XML 调用
+ * @param {string} content - 回复内容
+ * @returns {Array<object>} 解析出的调用列表
+ */
+async function parseCalls(content) {
 	const calls = []
-	// 解析 <mcp-tool>
-	const toolRegex = /<mcp-tool\s+name="([^"]+)">([\s\S]*?)<\/mcp-tool>/g
-	let match
-	while ((match = toolRegex.exec(content)) !== null) {
-		const [, name, body] = match
-		const rawArgs = {}
-		const paramRegex = /<(\w+)>([\s\S]*?)<\/\1>/g
-		let paramMatch
-		while ((paramMatch = paramRegex.exec(body)) !== null)
-			rawArgs[paramMatch[1]] = paramMatch[2].trim()
-		// 根据工具的 schema 转换参数类型
+	/**
+	 * 解析参数
+	 * @param {string} body - XML 标签体
+	 * @param {object} [schemaProps] - 参数 Schema
+	 * @returns {object} 参数对象
+	 */
+	const parseParams = (body, schemaProps = {}) => {
 		const args = {}
-		const tool = serverInfo?.tools?.find(t => t.name === name)
-		if (tool?.inputSchema?.properties)
-			for (const [key, value] of Object.entries(rawArgs)) {
-				const schema = tool.inputSchema.properties[key]
-				args[key] = convertParamType(value, schema)
-			}
-		else
-			// 没有 schema，保持原样
-			Object.assign(args, rawArgs)
-		calls.push({ type: 'tool', name, args, fullMatch: match[0] })
+		const matches = [...body.matchAll(/<([a-zA-Z0-9_-]+)(?:\s+[^>]*)?>([\s\S]*?)<\/\1>/g)]
+		for (const [, key, val] of matches) args[key] = parseVal(val, schemaProps[key]?.type)
+		return args
 	}
-	// 解析 <mcp-prompt>
-	const promptRegex = /<mcp-prompt\s+name="([^"]+)">([\s\S]*?)<\/mcp-prompt>/g
-	while ((match = promptRegex.exec(content)) !== null) {
-		const [, name, body] = match
-		const rawArgs = {}
-		const paramRegex = /<(\w+)>([\s\S]*?)<\/\1>/g
-		let paramMatch
-		while ((paramMatch = paramRegex.exec(body)) !== null)
-			rawArgs[paramMatch[1]] = paramMatch[2].trim()
-		// 根据 prompt 的 schema 转换参数类型
-		const args = {}
-		const prompt = serverInfo?.prompts?.find(p => p.name === name)
-		if (prompt?.arguments)
-			for (const [key, value] of Object.entries(rawArgs)) {
-				const argDef = prompt.arguments.find(a => a.name === key)
-				// Prompt arguments 可能没有详细的 type schema，暂时保持字符串
-				args[key] = value
-			}
-		else
-			Object.assign(args, rawArgs)
-		calls.push({ type: 'prompt', name, args, fullMatch: match[0] })
+
+	// 解析 Tool 和 Prompt
+	for (const type of ['tool', 'prompt']) {
+		const matches = [...content.matchAll(new RegExp(`<mcp-${type}\\s+name="([^"]+)">([\\s\\S]*?)<\\/mcp-${type}>`, 'g'))]
+		for (const [fullMatch, name, body] of matches) {
+			const toolDef = tools.find(t => t.name === name)
+			const schemaProps = toolDef?.inputSchema?.properties || {}
+			calls.push({ type, name, args: parseParams(body, schemaProps), fullMatch })
+		}
 	}
-	// 解析 <mcp-resource>
-	const resourceRegex = /<mcp-resource\s+uri="([^"]+)"\s*\/>/g
-	while ((match = resourceRegex.exec(content)) !== null)
-		calls.push({ type: 'resource', uri: match[1], fullMatch: match[0] })
+	// 解析 Resource
+	for (const [fullMatch, uri] of content.matchAll(/<mcp-resource\s+uri="([^"]+)"\s*\/>/g))
+		calls.push({ type: 'resource', uri, fullMatch })
 	return calls
 }
+
 /**
- * 格式化工具调用结果
- * @param {any} result - MCP 返回结果
- * @returns {string} 格式化的结果
+ * 生成描述文本
+ * @returns {Promise<string>} 描述文本
  */
-function formatResult(result) {
-	if (!result.content) return JSON.stringify(result, null, 2)
-	return result.content.map(item => {
-		if (item.type === 'text')
-			return item.text
-		else if (item.type === 'image')
-			return `[Image: ${item.mimeType || 'image'}]`
-		else if (item.type === 'resource')
-			return `[Resource: ${item.uri}]`
-		return JSON.stringify(item, null, 2)
-	}).join('\n')
+const getDesc = async () => {
+	if (!mcpClient) return ''
+	const [tools, prompts, resources] = await Promise.all([
+		mcpClient.listTools().catch(() => []),
+		mcpClient.listPrompts().catch(() => []),
+		mcpClient.listResources().catch(() => [])
+	])
+
+	/**
+	 * 格式化项目列表
+	 * @param {Array} items - 项目数组
+	 * @param {string} type - 类型名称
+	 * @param {string} label - 显示标签
+	 * @returns {string} 格式化后的文本
+	 */
+	const fmtItem = (items, type, label) => {
+		if (!items?.length) return ''
+		const list = items.map(i => {
+			const args = (i.inputSchema?.properties ? Object.entries(i.inputSchema.properties) : i.arguments || [])
+				.map(([k, v]) => `  - ${k}: ${v.description || ''}`).join('\n') || '  No params'
+			return `### ${i.name}\n${i.description || ''}\n**Params:**\n${args}`
+		}).join('\n\n')
+		const example = type === 'resource'
+			? '<mcp-resource uri="..."/>'
+			: `<mcp-${type} name="...">\n\t<param>val</param>\n</mcp-${type}>`
+		return `\
+## Available ${label}
+${list}
+Usage: To call a tool, use this XML format:
+${example}
+${type === 'tool' ? `
+Example:
+<mcp-tool name="echo">
+	<message>Hello World</message>
+</mcp-tool>
+` : type === 'prompt' ? `
+Example:
+<mcp-prompt name="get_user_info">
+	<user_id>12345</user_id>
+</mcp-prompt>
+` : ''}`.trim()
+	}
+
+	return [
+		`# MCP Server: ${data.name}`,
+		data.description || '',
+		fmtItem(tools, 'tool', 'Tools'),
+		fmtItem(prompts, 'prompt', 'Prompts'),
+		resources.length ? `\
+## Resources
+${resources.map(r => `- ${r.name}: \`${r.uri}\``).join('\n')}
+Use <mcp-resource uri="..."/>
+` : ''].join('\n\n')
 }
-/**
- * @type {pluginAPI_t}
- */
+
+/** @type {pluginAPI_t} */
 export default {
 	info: {
 		'': {
 			name: data?.name || 'mcp_plugin',
 			avatar: data?.avatar || 'https://modelcontextprotocol.io/favicon.svg',
-			description: data?.description || 'MCP plugin',
-			description_markdown: data?.description_markdown || 'MCP (Model Context Protocol) plugin',
-			version: '0.0.0',
-			author: 'MCP Import Handler',
-			home_page: '',
-			tags: [...new Set(['mcp', 'tools', ...data?.tags || []])]
+			description: data?.description || 'MCP Client',
+			version: '1.0.0',
+			tags: ['mcp', ...data?.tags || []]
 		}
 	},
 	/**
 	 * 加载插件
-	 * @param {object} stat - 加载状态信息，包含用户名。
+	 * @param {object} stat - 状态对象
+	 * @returns {Promise<void>} Promise
 	 */
-	Load: async (stat) => {
-		username = stat?.username
-		await initializeMCP()
-	},
+	Load: async (stat) => { username = stat?.username; await initializeMCP() },
 	/**
 	 * 卸载插件
+	 * @returns {Promise<void>} Promise
 	 */
-	Unload: async () => {
-		if (mcpClient) {
-			await mcpClient.stop()
-			mcpClient = null
-		}
-	},
+	Unload: async () => { await mcpClient?.stop(); mcpClient = null },
 	interfaces: {
 		config: {
 			/**
-			 * 返回当前配置数据
-			 * @returns {object} 当前配置数据
+			 * 获取配置
+			 * @returns {object} 配置对象
 			 */
-			GetData: () => {
-				return data
-			},
+			GetData: () => data,
 			/**
-			 * 设置配置数据
-			 * @param {object} newData - 要设置的新配置数据
-			 * @returns {Promise<void>} 设置完成的承诺
+			 * 设置配置
+			 * @param {object} newData - 新配置
+			 * @returns {Promise<void>} Promise
 			 */
 			SetData: async (newData) => {
 				if (!Object.keys(newData).length) return
 				data = newData
-				await saveJsonFile(dataPath, data)
+				saveJsonFile(dataPath, data)
 				await mcpClient?.stop()
 				mcpClient = null
 				await initializeMCP()
@@ -334,95 +225,46 @@ export default {
 		},
 		chat: {
 			/**
-			 * 为角色提供 MCP 工具的上下文
-			 * @param {any} _arg - 聊天回复请求
-			 * @returns {import('../../../../../src/decl/prompt_struct.ts').single_part_prompt_t} 返回给AI的prompt对象。
+			 * 获取 Prompt
+			 * @param {object} _arg - 上下文参数
+			 * @returns {Promise<object>} Prompt 结构
 			 */
-			GetPrompt: (_arg) => {
-				if (!serverInfo)
-					return {
-						text: [],
-						additional_chat_log: [],
-						extension: {}
-					}
-				const sections = [
-					`# MCP Server: ${data.name}`,
-					data.description_markdown || data.description || '',
-				]
-				const toolsDesc = formatToolsDescription()
-				if (toolsDesc) sections.push(toolsDesc)
-				const promptsDesc = formatPromptsDescription()
-				if (promptsDesc) sections.push(promptsDesc)
-				const resourcesDesc = formatResourcesDescription()
-				if (resourcesDesc) sections.push(resourcesDesc)
-				return {
-					text: [{
-						content: sections.filter(s => s).join('\n\n'),
-						important: 0
-					}],
-					additional_chat_log: [],
-					extension: {}
-				}
-			},
+			GetPrompt: async (_arg) => ({
+				text: [{ content: await getDesc(), important: 0 }],
+				additional_chat_log: [], extension: {}
+			}),
 			/**
-			 * 处理角色的回复，检查是否有 MCP 调用
-			 * @param {import('../../../../../src/decl/prompt_struct.ts').chatLogEntry_t} reply - 聊天回复
-			 * @param {any} args - 参数
-			 * @returns {Promise<boolean>} true 表示需要重新生成回复
+			 * 处理回复
+			 * @param {object} reply - 回复对象
+			 * @param {object} args - 处理参数
+			 * @returns {Promise<boolean>} 是否产生变更
 			 */
 			ReplyHandler: async (reply, args) => {
-				if (!reply.content) return false
-				const calls = parseXMLCalls(reply.content)
+				if (!reply.content || !reply.content.includes('<mcp-')) return false
+				const calls = await parseCalls(reply.content)
 				if (!calls.length) return false
-				let hasChanges = false
-				for (const call of calls)
-					try {
-						let result
-						let resultText = ''
-						if (call.type === 'tool') {
-							result = await mcpClient.callTool(call.name, call.args)
-							resultText = `\
-Tool call result for \`${call.name}\`:
-\`\`\`
-${formatResult(result)}\`\`\`
-`
-						} else if (call.type === 'prompt') {
-							result = await mcpClient.getPrompt(call.name, call.args)
-							resultText = `\
-Prompt result for \`${call.name}\`:
-\`\`\`
-${formatResult(result)}
-\`\`\`
-`
-						} else if (call.type === 'resource') {
-							result = await mcpClient.readResource(call.uri)
-							resultText = `
-Resource content from \`${call.uri}\`:
-\`\`\`
-${formatResult(result)}
-\`\`\`
-`
-						}
-						const resultEntry = {
-							charname: 'system',
-							content: resultText,
-							timestamp: Date.now()
-						}
-						if (args.AddLongTimeLog)
-							args.AddLongTimeLog(resultEntry)
-						hasChanges = true
-					} catch (err) {
-						console.error(`MCP ${call.type} call failed:`, err)
-						const errorEntry = {
-							charname: 'system',
-							content: `Error calling ${call.type} "${call.name || call.uri}": ${err.message}`,
-							timestamp: Date.now()
-						}
-						if (args.AddLongTimeLog)
-							args.AddLongTimeLog(errorEntry)
-						hasChanges = true
-					}
-				return hasChanges
+
+				for (const call of calls) try {
+					let result
+					if (call.type === 'tool') result = await mcpClient.callTool(call.name, call.args)
+					else if (call.type === 'prompt') result = await mcpClient.getPrompt(call.name, call.args)
+					else result = await mcpClient.readResource(call.uri)
+
+					args.AddLongTimeLog({
+						role: 'tool',
+						name: call.name || call.uri,
+						content: `${call.type} result for ${call.name || call.uri}:\n\`\`\`\n${fmtRes(result)}\n\`\`\``
+					})
+				} catch (err) {
+					console.error('MCP call error:', err)
+					args.AddLongTimeLog({
+						role: 'system',
+						name: call.name || call.uri,
+						content: `Error calling ${call.type} "${call.name || call.uri}": ${err.message}`
+					})
+				}
+
+				return true
 			}
 		}
 	}

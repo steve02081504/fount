@@ -1062,12 +1062,12 @@ install_deno() {
 install_deno
 
 # 函数: 升级 Deno
-deno_upgrade() {
+base_deno_upgrade() {
 	local deno_version_before
 	deno_version_before=$(run_deno -V 2>&1)
 	if [[ -z "$deno_version_before" ]]; then
 		echo -e "${C_RED}$(get_i18n 'deno.notWorking')${C_RESET}" >&2
-		return
+		return 1
 	fi
 
 	local deno_upgrade_channel="stable"
@@ -1079,7 +1079,7 @@ deno_upgrade() {
 
 	local errorOut
 	errorOut=$(deno upgrade -q "$deno_upgrade_channel" 2> >(tee /dev/stderr))
-		if [[ $errorOut_output == *"USAGE"* ]]; then # wtf deno 1.0?
+	if [[ $errorOut == *"USAGE"* ]]; then # wtf deno 1.0?
 		run_deno upgrade -q
 	fi
 	# shellcheck disable=SC2181
@@ -1088,9 +1088,24 @@ deno_upgrade() {
 			get_i18n 'deno.upgradeFailedTermux'
 			rm -rf "$HOME/.deno"
 			install_deno
+			return $?
 		else
 			echo -e "${C_YELLOW}$(get_i18n 'deno.upgradeFailed')${C_RESET}" >&2
+			return 1
 		fi
+	fi
+}
+deno_upgrade() {
+	local upgraded_flag="$FOUNT_DIR/data/installer/deno_upgraded"
+	if [ -f "$upgraded_flag" ]; then
+		( base_deno_upgrade ) &
+		return
+	fi
+	if ! base_deno_upgrade; then
+		return
+	else
+		mkdir -p "$(dirname "$upgraded_flag")"
+		touch "$upgraded_flag"
 	fi
 }
 
@@ -1147,10 +1162,21 @@ run() {
 			run_sed_inplace '/proot-distro login ubuntu/d' "/data/data/com.termux/files/home/.bashrc"
 		fi
 	fi
+	v8_flags="--expose-gc"
+	heap_size_mb=100 # Default to 100MB
+	config_path="$FOUNT_DIR/data/config.json"
+	if [ -f "$config_path" ] && command -v jq &>/dev/null; then
+		heap_size_bytes=$(jq -r '.prelaunch.heapSize // "0"' "$config_path")
+		calculated_mb=$(( (heap_size_bytes + 524288) / 1048576 ))
+		if [ "$calculated_mb" -gt 0 ]; then
+			heap_size_mb=$calculated_mb
+		fi
+	fi
+	v8_flags="$v8_flags,--initial-heap-size=${heap_size_mb}"
 	if [[ $is_debug -eq 1 ]]; then
-		run_deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags=--expose-gc "$FOUNT_DIR/src/server/index.mjs" "$@"
+		run_deno run --allow-scripts --allow-all --inspect-brk -c "$FOUNT_DIR/deno.json" --v8-flags="$v8_flags" "$FOUNT_DIR/src/server/index.mjs" "$@"
 	else
-		run_deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --v8-flags=--expose-gc "$FOUNT_DIR/src/server/index.mjs" "$@"
+		run_deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --v8-flags="$v8_flags" "$FOUNT_DIR/src/server/index.mjs" "$@"
 	fi
 	local exit_code=$?
 	if [[ $IN_TERMUX -eq 1 ]]; then export LANG="$LANG_BACKUP"; fi
