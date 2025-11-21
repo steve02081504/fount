@@ -13,7 +13,8 @@
 			},
 			"mdns": {
 				"description": "灵犀一点，应念而生",
-				"failed": "mDNS 注册失败：${error}"
+				"failed": "mDNS 注册失败：${error}",
+				"bonjourFailed": "Bonjour 服务创建失败：${error}"
 			},
 			"localUrl": "通过同一网络下的其他设备访问fount：${url}",
 			"update": {

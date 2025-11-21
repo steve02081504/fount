@@ -13,7 +13,8 @@
 			},
 			"mdns": {
 				"description": "Donde la Imaginación Cobra Vida.",
-				"failed": "Error en el registro de mDNS: ${error}"
+				"failed": "Error en el registro de mDNS: ${error}",
+				"bonjourFailed": "Error al crear el servicio Bonjour: ${error}"
 			},
 			"localUrl": "Acceso a fount desde otros dispositivos en la misma red: ${url}",
 			"update": {

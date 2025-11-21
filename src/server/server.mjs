@@ -151,6 +151,7 @@ export async function init(start_config) {
 	data_path = start_config.data_path
 	const starts = start_config.starts ??= {}
 	for (const start of ['Base', 'IPC', 'Web', 'Tray', 'DiscordIPC']) starts[start] ??= true
+	if (starts.Web) starts.Web = Object.assign({ mDNS: true }, starts.Web)
 	let logoPromise
 	if (starts.Base) {
 		if (start_config.needs_output) logoPromise = runSimpleWorker('logogener')
@@ -239,13 +240,13 @@ export async function init(start_config) {
 					cert: fs.readFileSync(path.resolve(httpsConfig.certFile, __dirname)),
 				}, requestListener).listen(...listen, async () => {
 					console.logI18n('fountConsole.server.showUrl.https', { url: ansi_hosturl })
-					if (starts.Web?.mDNS) initMdns(port, 'https')
+					if (starts.Web?.mDNS) initMdns(port, 'https', mdnsConfig)
 					resolve()
 				})
 			else
 				server = http.createServer(requestListener).listen(...listen, async () => {
 					console.logI18n('fountConsole.server.showUrl.http', { url: ansi_hosturl })
-					if (starts.Web?.mDNS) initMdns(port, 'http')
+					if (starts.Web?.mDNS) initMdns(port, 'http', mdnsConfig)
 					resolve()
 				})
 

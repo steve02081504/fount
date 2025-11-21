@@ -13,7 +13,8 @@
 			},
 			"mdns": {
 				"description": "Ein Funke der Fantasie, zum Leben erweckt",
-				"failed": "mDNS-Registrierung fehlgeschlagen: ${error}"
+				"failed": "mDNS-Registrierung fehlgeschlagen: ${error}",
+				"bonjourFailed": "Erstellung des Bonjour-Dienstes fehlgeschlagen: ${error}"
 			},
 			"localUrl": "Zugriff auf fount von anderen Geräten im selben Netzwerk: ${url}",
 			"update": {

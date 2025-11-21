@@ -13,7 +13,8 @@
 			},
 			"mdns": {
 				"description": "Imagination, Given Voice.",
-				"failed": "mDNS registration failed: ${error}"
+				"failed": "mDNS registration failed: ${error}",
+				"bonjourFailed": "Bonjour service creation failed: ${error}"
 			},
 			"localUrl": "Accessing fount from other devices on the same network: ${url}",
 			"update": {
