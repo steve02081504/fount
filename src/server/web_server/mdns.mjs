@@ -31,10 +31,10 @@ export async function initMdns(port, protocol, config) {
 		console.errorI18n('fountConsole.server.mdns.failed', { error })
 		mdns.stop()
 	*/
-		const { Bonjour } = await import('npm:bonjour-service')
-		const instance = new Bonjour({}, error => {
-			console.errorI18n('fountConsole.server.mdns.bonjourFailed', { error })
-		})
-		mdns = instance.publish(mdns_config)
+	const { Bonjour } = await import('npm:bonjour-service')
+	const instance = new Bonjour({}, error => {
+		console.errorI18n('fountConsole.server.mdns.bonjourFailed', { error })
+	})
+	mdns = instance.publish(mdns_config)
 	// })
 }

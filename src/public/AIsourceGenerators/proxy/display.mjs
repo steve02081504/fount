@@ -29,10 +29,16 @@ const normalizeUrl = url => {
 	}
 	if (urlObj.pathname.includes('/chat/completions'))
 		urlObj.pathname = urlObj.pathname.replace(/\/chat\/completions.*$/, '/models')
-	else if (urlObj.pathname.endsWith('/'))
-		urlObj.pathname += 'v1/models'
-	else
-		urlObj.pathname += '/v1/models'
+	else {
+		let path = urlObj.pathname
+
+		if (path.endsWith('/')) path = path.slice(0, -1)
+
+		if (path.endsWith('/v1'))
+			urlObj.pathname = path + '/models'
+		else
+			urlObj.pathname = path + '/v1/models'
+	}
 
 	return urlObj.toString()
 }
