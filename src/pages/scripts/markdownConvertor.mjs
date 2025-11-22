@@ -357,7 +357,7 @@ $stderr = StringIO.new
 	/**
 	 * 执行 brainfuck 代码。
 	 */
-	brainfuck: async (code) => {
+	b: async (code) => {
 		try {
 			const { default: Brainfuck } = await import('https://esm.sh/brainfuck-node')
 			const brainfuck = new Brainfuck()
@@ -390,7 +390,7 @@ function createCodeBlockPlugin({ isStandalone = false } = {}) {
 			let uniqueId
 			do uniqueId = `markdown-code-block-${md5(rawCode)}-${Math.random().toString(36).slice(2, 9)}`
 			while (document.getElementById(uniqueId))
-			const executor = languageExecutors[ext]
+			const executor = languageExecutors[ext] || languageExecutors[lang]
 
 			/**
 			 * 创建工具提示。
@@ -662,7 +662,12 @@ ${diagram}`
 				...options,
 				langs: [
 					...options.langs,
-					() => fetch('https://cdn.jsdelivr.net/gh/Chris2011/netbeans-textmate-files@master/supported%20languages/brainfuck/brainfuck.tmLanguage.json').then(res => res.json())
+					async () => ({
+						...await fetch('https://cdn.jsdelivr.net/gh/Chris2011/netbeans-textmate-files@master/supported%20languages/brainfuck/brainfuck.tmLanguage.json').then(res => res.json()),
+						name: 'brainfuck',
+						displayName: 'Brainfuck',
+						aliases: ['bf'],
+					})
 				]
 			}),
 			transformers: [
