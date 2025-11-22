@@ -496,11 +496,45 @@ codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 	const { AnsiUp } = await import('https://esm.sh/ansi-up')
 	const ansi_up = new AnsiUp()
 	const escapeHtml = (str) => ansi_up.ansi_to_html(str)
+
+	// 图标与辅助函数准备
+	const copySvg = decodeURIComponent(${JSON.stringify(encodeURIComponent(copyIconSized))})
+	const successSvg = decodeURIComponent(${JSON.stringify(encodeURIComponent(successIconSized))})
+
+	const createCopyBtn = (text) => {
+		const encoded = encodeURIComponent(text)
+		const copyAction = \`\\
+event.stopPropagation()
+const btn = this
+navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
+	btn.innerHTML = \${JSON.stringify(successSvg)}
+	setTimeout(() => btn.innerHTML = \${JSON.stringify(copySvg)}, 2000)
+	${isStandalone
+			? `btn.parentElement.setAttribute('data-tip', decodeURIComponent(${JSON.stringify(encodeURIComponent(geti18n('code_block.copied.dataset.tip')))}))`
+			: 'btn.parentElement.setAttribute(\'data-i18n\', \'code_block.copied\')'
+	}
+}).catch(error => {
+	${isStandalone
+			? 'alert(\'Failed to copy: \' + error.message)'
+			: 'import(\'/scripts/toast.mjs\').then(({ showToastI18n }) => showToastI18n(\'error\', \'code_block.copy_failed\', { error: error.message }))'
+	}
+})
+\`
+
+		return /* html */ \`\\
+<button class="btn btn-ghost btn-square btn-xs absolute top-2 right-2 opacity-70 hover:opacity-100 z-10"
+		${isStandalone ? 'aria-label="Copy"' : 'data-i18n="code_block.copy"'}
+		onclick="\${copyAction.replace(/"/g, '&quot;')}" >
+	\${copySvg}
+</button>\`
+	}
+
 	let alerts = []
 
 	if (result.error)
 		alerts.push(/* html */ \`\\
-<div class="join-item alert alert-error bg-error/50 border-error/50">
+<div class="join-item alert alert-error bg-error/50 border-error/50 relative pr-10">
+	\${createCopyBtn(result.error)}
 	<div>
 		<div class="font-bold">Error</div>
 		<pre class="font-mono text-sm overflow-x-auto whitespace-pre-wrap"><code>\${result.errorHtml || escapeHtml(result.error)}</code></pre>
@@ -509,7 +543,8 @@ codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 \`)
 	if (result.output)
 		alerts.push(/* html */ \`\\
-<div class="join-item alert alert-info bg-info/40 border-info/40">
+<div class="join-item alert alert-info bg-info/40 border-info/40 relative pr-10">
+	\${createCopyBtn(result.output)}
 	<div>
 		<div class="font-bold">Output</div>
 		<pre class="font-mono text-sm overflow-x-auto whitespace-pre-wrap"><code>\${result.outputHtml || escapeHtml(result.output)}</code></pre>
@@ -520,14 +555,16 @@ codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 		alerts.push(/* html */ \`\\
 <details class="join-item collapse alert alert-warning bg-warning/40 border-warning/40">
 	<summary class="collapse-title font-bold text-sm">Assembly</summary>
-	<div class="collapse-content">
+	<div class="collapse-content relative pr-10">
+		\${createCopyBtn(result.asm)}
 		<pre class="font-mono text-xs overflow-x-auto"><code>\${escapeHtml(result.asm)}</code></pre>
 	</div>
 </details>
 \`)
 	if (result.result)
 		alerts.push(/* html */ \`\\
-<div class="join-item alert alert-success bg-success/40 border-success/40">
+<div class="join-item alert alert-success bg-success/40 border-success/40 relative pr-10">
+	\${createCopyBtn(result.result)}
 	<div>
 		<div class="font-bold">Result</div>
 		<pre class="font-mono text-sm font-bold overflow-x-auto whitespace-pre-wrap"><code>\${escapeHtml(result.result)}</code></pre>
