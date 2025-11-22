@@ -98,10 +98,10 @@ async function fetchSystemInfo() {
  */
 async function checkFrontendConnectivity() {
 	const checks = [
-		{ id: 'check-esm', name: 'esm.sh', url: 'https://esm.sh/' },
-		{ id: 'check-jsdelivr', name: 'jsDelivr', url: 'https://cdn.jsdelivr.net/' },
-		{ id: 'check-iconify', name: 'Iconify', url: 'https://api.iconify.design/' },
-		{ id: 'check-fount-public', name: 'fount Public', url: 'https://steve02081504.github.io/fount/' }
+		{ id: 'check-esm', name: 'esm.sh', url: 'https://esm.sh' },
+		{ id: 'check-jsdelivr', name: 'jsDelivr', url: 'https://cdn.jsdelivr.net' },
+		{ id: 'check-iconify', name: 'Iconify', url: 'https://api.iconify.design' },
+		{ id: 'check-fount-public', name: 'fount Public', url: 'https://steve02081504.github.io/fount' }
 	]
 
 	frontendChecks.innerHTML = ''
