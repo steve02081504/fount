@@ -1272,11 +1272,11 @@ async function checkAndUnlockGitHubStarAchievement() {
 		const { host, protocol } = await getStoredData()
 		if (host) try {
 			await makeApiRequest(host, protocol, '/api/shells/achievements/unlock/shells/browserIntegration/star_fount', { method: 'POST' })
-			console.log('fount userscript: "Star Fount" achievement unlocked or already unlocked.')
+			console.log('fount userscript: "Star fount" achievement unlocked or already unlocked.')
 
 			return true // Success
 		} catch (error) {
-			console.error('fount userscript: Failed to unlock "Star Fount" achievement. Will retry next time.', error)
+			console.error('fount userscript: Failed to unlock "Star fount" achievement. Will retry next time.', error)
 		}
 	}
 

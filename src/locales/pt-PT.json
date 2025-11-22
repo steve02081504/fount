@@ -1189,7 +1189,7 @@
 	"userSettings": {
 		"title": "Definições do Utilizador",
 		"PageTitle": "Definições do Utilizador",
-		"description": "Cuide dos detalhes da identidade da sua fonte. Gerencie seu perfil, proteja seu acesso e visualize os dispositivos conectados. Um santuário tranquilo para sua conta.",
+		"description": "Cuide dos detalhes da identidade da seu fount. Gerencie seu perfil, proteja seu acesso e visualize os dispositivos conectados. Um santuário tranquilo para sua conta.",
 		"userInfo": {
 			"title": "Informações do Utilizador",
 			"usernameLabel": "Nome de utilizador:",
@@ -1930,6 +1930,41 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Conquista"
+			}
+		}
+	},
+	"debug_info": {
+		"title": "Depuração e informações do sistema",
+		"description": "Obtenha depuração detalhada e informações do sistema sobre a instalação do seu fount. Isso é muito útil para solução de problemas e solicitações de suporte.",
+		"heading": "Depuração e informações do sistema",
+		"copyButton": "Copiar relatório",
+		"versionStatus": {
+			"title": "Estado da versão",
+			"checking": "Verificando...",
+			"local": "Local:",
+			"remote": "Remoto:",
+			"upToDate": "Já é o mais recente",
+			"outdated": "Há uma atualização",
+			"checkFailed": "Falha na verificação"
+		},
+		"systemInfo": {
+			"title": "Informações do sistema",
+			"failed": "Falha ao carregar informações do sistema"
+		},
+		"connectivity": {
+			"backend": "conectividade de back-end",
+			"frontend": "conectividade frontal"
+		},
+		"loading": "A carregar...",
+		"checking": "Verificando...",
+		"failed": "Falha",
+		"copySuccess": "Relatório de depuração copiado para a área de transferência",
+		"copyFailed": "Falha ao copiar relatório",
+		"home_function_buttons": {
+			"debug": {
+				"main": {
+					"title": "Abra o painel de depuração"
+				}
 			}
 		}
 	},

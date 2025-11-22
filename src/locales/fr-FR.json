@@ -485,7 +485,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "Vide...<br/>Peut-être pourriez-vous [créer une nouvelle partie](${newpartLink}) ou aller sur le [serveur Discord de Fount](${discordLink}) pour vous amuser ?"
+			"message": "Vide...<br/>Peut-être pourriez-vous [créer une nouvelle partie](${newpartLink}) ou aller sur le [serveur Discord de fount](${discordLink}) pour vous amuser ?"
 		},
 		"part_types": {
 			"chars": "Rôle",
@@ -1930,6 +1930,41 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Réalisation"
+			}
+		}
+	},
+	"debug_info": {
+		"title": "Débogage et informations système",
+		"description": "Obtenez des informations détaillées sur le débogage et le système sur votre installation de fount. Ceci est très utile pour le dépannage et les demandes d’assistance.",
+		"heading": "Débogage et informations système",
+		"copyButton": "Copier le rapport",
+		"versionStatus": {
+			"title": "État de la version",
+			"checking": "Vérification...",
+			"local": "Local :",
+			"remote": "Distant :",
+			"upToDate": "Déjà le dernier",
+			"outdated": "Il y a une mise à jour",
+			"checkFailed": "La vérification a échoué"
+		},
+		"systemInfo": {
+			"title": "Informations système",
+			"failed": "Échec du chargement des informations système"
+		},
+		"connectivity": {
+			"backend": "Connectivité back-end",
+			"frontend": "connectivité frontale"
+		},
+		"loading": "Chargement...",
+		"checking": "Vérification...",
+		"failed": "Échec",
+		"copySuccess": "Rapport de débogage copié dans le presse-papiers",
+		"copyFailed": "Échec de la copie du rapport",
+		"home_function_buttons": {
+			"debug": {
+				"main": {
+					"title": "Ouvrir le panneau de débogage"
+				}
 			}
 		}
 	},

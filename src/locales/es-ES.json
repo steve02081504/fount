@@ -1933,6 +1933,41 @@
 			}
 		}
 	},
+	"debug_info": {
+		"title": "Depuración e información del sistema",
+		"description": "Obtenga información detallada de depuración y del sistema sobre su instalación de fount. Esto es muy útil para la resolución de problemas y solicitudes de soporte.",
+		"heading": "Depuración e información del sistema",
+		"copyButton": "Copiar informe",
+		"versionStatus": {
+			"title": "Estado de la versión",
+			"checking": "Comprobando...",
+			"local": "Local:",
+			"remote": "Remoto:",
+			"upToDate": "Actualizado",
+			"outdated": "Hay una actualización",
+			"checkFailed": "Verificación fallida"
+		},
+		"systemInfo": {
+			"title": "Información del sistema",
+			"failed": "No se pudo cargar la información del sistema"
+		},
+		"connectivity": {
+			"backend": "Conectividad Backend",
+			"frontend": "Conectividad Frontend"
+		},
+		"loading": "Cargando...",
+		"checking": "Comprobando...",
+		"failed": "Fallido",
+		"copySuccess": "Informe de depuración copiado al portapapeles",
+		"copyFailed": "Error al copiar el informe",
+		"home_function_buttons": {
+			"debug": {
+				"main": {
+					"title": "Abrir panel de depuración"
+				}
+			}
+		}
+	},
 	"badges_maker": {
 		"title": "¡fount! Convertidor de Insignias",
 		"description": "Para cuando tu proyecto requiere un toque del carácter de fount. Convierta las insignias de Shields.io, otorgándoles una identidad nueva y resonante.",

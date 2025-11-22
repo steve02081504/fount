@@ -1933,6 +1933,41 @@
 			}
 		}
 	},
+	"debug_info": {
+		"title": "Villuleit og kerfisupplýsingar",
+		"description": "Fáðu nákvæmar villuleitar- og kerfisupplýsingar um uppsetningu fount. Þetta er mjög gagnlegt fyrir úrræðaleit og stuðningsbeiðnir.",
+		"heading": "Villuleit og kerfisupplýsingar",
+		"copyButton": "Afrita skýrslu",
+		"versionStatus": {
+			"title": "stöðu útgáfunnar",
+			"checking": "Athugar...",
+			"local": "Staðartölva:",
+			"remote": "Ský:",
+			"upToDate": "Nú þegar það nýjasta",
+			"outdated": "Það er uppfærsla",
+			"checkFailed": "Athugun mistókst"
+		},
+		"systemInfo": {
+			"title": "Kerfisupplýsingar",
+			"failed": "Mistókst að hlaða kerfisupplýsingum"
+		},
+		"connectivity": {
+			"backend": "bakenda tengingu",
+			"frontend": "tenging í framhlið"
+		},
+		"loading": "hleður...",
+		"checking": "Athugar...",
+		"failed": "Mistókst",
+		"copySuccess": "Villuleitarskýrsla afrituð á klippiborð",
+		"copyFailed": "Afritun skýrslu mistókst",
+		"home_function_buttons": {
+			"debug": {
+				"main": {
+					"title": "Opnaðu villuleitarspjaldið"
+				}
+			}
+		}
+	},
 	"badges_maker": {
 		"title": "fount! Merkja-breytir",
 		"description": "Fyrir þegar verkefnið þitt kallar á snert af karakter fontsins. Umbreyttu shields.io merkjum og ljáðu þeim nýja, hljómandi sjálfsmynd.",

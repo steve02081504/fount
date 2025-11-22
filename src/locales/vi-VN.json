@@ -107,7 +107,7 @@
 		},
 		"path": {
 			"protocol": {
-				"description": "URL: giao thức đài phun nước"
+				"description": "URL: giao thức fount"
 			},
 			"update": {
 				"skippingFountUpdate": "Vì tệp .noupdate tồn tại nên bản cập nhật foun bị bỏ qua",
@@ -163,22 +163,22 @@
 				"cleaningOldPwshModules": "Dọn dẹp các mô-đun pwsh cũ..."
 			},
 			"keepalive": {
-				"initComplete": "Quá trình khởi tạo lại đã hoàn tất. Đang cố gắng khởi động lại đài phun nước...",
-				"autoInitDisabled": "đài phun nước đã được khởi động lại nhiều lần trong khoảng thời gian ngắn vừa qua, nhưng quá trình khởi tạo lại tự động đã bị tắt do sự hiện diện của tệp .noautoinit. Đang thoát.",
-				"restartingTooFast": "đài phun nước đã được khởi động lại nhiều lần trong một khoảng thời gian ngắn. Buộc khởi động lại...",
-				"failedToStart": "Ngay cả sau khi cố gắng sửa chữa tự động, đài phun nước vẫn không khởi động được trong một khoảng thời gian ngắn. Vui lòng kiểm tra nhật ký để tìm lỗi.",
+				"initComplete": "Quá trình khởi tạo lại đã hoàn tất. Đang cố gắng khởi động lại fount...",
+				"autoInitDisabled": "fount đã được khởi động lại nhiều lần trong khoảng thời gian ngắn vừa qua, nhưng quá trình khởi tạo lại tự động đã bị tắt do sự hiện diện của tệp .noautoinit. Đang thoát.",
+				"restartingTooFast": "fount đã được khởi động lại nhiều lần trong một khoảng thời gian ngắn. Buộc khởi động lại...",
+				"failedToStart": "Ngay cả sau khi cố gắng sửa chữa tự động, fount vẫn không khởi động được trong một khoảng thời gian ngắn. Vui lòng kiểm tra nhật ký để tìm lỗi.",
 				"initFailed": "Khởi tạo phông chữ không thành công. Đang thoát."
 			},
 			"remove": {
-				"removingFount": "Đang xóa đài phun nước...",
-				"fountUninstallationComplete": "quá trình gỡ cài đặt đài phun nước đã hoàn tất.",
-				"removingFountInstallationDir": "Đang xóa thư mục cài đặt đài phun nước...",
-				"fountInstallationDirRemoved": "Thư mục cài đặt đài phun nước đã bị xóa.",
-				"removingFountFromPath": "Đang xóa đài phun nước khỏi PATH...",
+				"removingFount": "Đang xóa fount...",
+				"fountUninstallationComplete": "quá trình gỡ cài đặt fount đã hoàn tất.",
+				"removingFountInstallationDir": "Đang xóa thư mục cài đặt fount...",
+				"fountInstallationDirRemoved": "Thư mục cài đặt fount đã bị xóa.",
+				"removingFountFromPath": "Đang xóa fount khỏi PATH...",
 				"removingProtocolHandler": "Đang xóa trình xử lý giao thức fount://...",
 				"protocolHandlerRemoved": "Trình xử lý giao thức fount:// đã bị xóa.",
 				"removeProtocolHandlerFailed": "Không xóa được trình xử lý giao thức fount://: ${message}",
-				"removingFountFromGitSafeDir": "Xóa đài phun nước khỏi git safe.directory...",
+				"removingFountFromGitSafeDir": "Xóa fount khỏi git safe.directory...",
 				"removingInstalledSystemPackages": "Đang xóa các gói hệ thống đã cài đặt...",
 				"uninstallingDeno": "Đang gỡ cài đặt Deno...",
 				"removeDenoFailed": "Không xóa được Deno: ${message}",
@@ -208,7 +208,7 @@
 	},
 	"installer_wait_screen": {
 		"title": "Chào mừng đến với fount!",
-		"description": "Theo dõi tiến trình cài đặt và xem qua các tính năng bên trong. đài phun nước sẽ sẵn sàng khởi chạy sau giây lát.",
+		"description": "Theo dõi tiến trình cài đặt và xem qua các tính năng bên trong. fount sẽ sẵn sàng khởi chạy sau giây lát.",
 		"hero": {
 			"title": "Từ Ý Niệm, đến Tri Kỷ",
 			"description": "fount là một nền tảng tương tác nhân vật được hỗ trợ bởi AI, thiết kế để trao quyền cho <i>bạn</i>. Đây là cầu nối giúp bạn kết nối với các nhân vật trong tưởng tượng, cho phép bạn dễ dàng trò chuyện, tạo ra nhân vật của riêng mình và chia sẻ chúng với thế giới."
@@ -291,7 +291,7 @@
 	},
 	"protocolhandler": {
 		"title": "Xử lý giao thức fount",
-		"description": "Một cách âm thầm và hiệu quả, trang này chuyển ý định của bạn thành một quá trình chuyển đổi liền mạch trong đài phun nước. Hãy coi đó là phép thuật thầm lặng đằng sau bức màn.",
+		"description": "Một cách âm thầm và hiệu quả, trang này chuyển ý định của bạn thành một quá trình chuyển đổi liền mạch trong fount. Hãy coi đó là phép thuật thầm lặng đằng sau bức màn.",
 		"processing": "Đang xử lý giao thức...",
 		"shellCommandSent": "Lệnh Shell đã được gửi.",
 		"runPartConfirm": {
@@ -386,7 +386,7 @@
 	"auth": {
 		"title": "Xác thực",
 		"subtitle": "Dữ liệu người dùng được lưu trữ cục bộ.",
-		"description": "Ở đây, bạn xác định sự hiện diện của mình. Dù quay trở lại thiên đường quen thuộc hay định hình một không gian mới cho câu chuyện của mình, đây chính là nơi bắt đầu hành trình của bạn với đài phun nước.",
+		"description": "Ở đây, bạn xác định sự hiện diện của mình. Dù quay trở lại thiên đường quen thuộc hay định hình một không gian mới cho câu chuyện của mình, đây chính là nơi bắt đầu hành trình của bạn với fount.",
 		"usernameLabel": "Tên người dùng:",
 		"usernameInput": {
 			"placeholder": "Vui lòng nhập tên người dùng"
@@ -456,7 +456,7 @@
 	},
 	"home": {
 		"title": "Trang chủ",
-		"description": "Trung tâm của trải nghiệm đài phun nước của bạn. Tại đây, hãy quản lý những thành phần trong trí tưởng tượng của bạn—nhân vật, thế giới và cá tính. Câu chuyện của bạn bắt đầu và phân nhánh từ mối liên hệ trung tâm này.",
+		"description": "Trung tâm của trải nghiệm fount của bạn. Tại đây, hãy quản lý những thành phần trong trí tưởng tượng của bạn—nhân vật, thế giới và cá tính. Câu chuyện của bạn bắt đầu và phân nhánh từ mối liên hệ trung tâm này.",
 		"sidebarTitle": "Chi tiết",
 		"itemDescription": "Chọn một mục ở đây để xem chi tiết.",
 		"noDescription": "Không có mô tả.",
@@ -548,9 +548,9 @@
 		},
 		"achievements": {
 			"first_login": {
-				"name": "Xin chào, đài phun nước!",
+				"name": "Xin chào, fount!",
 				"description": "Hướng tới thế giới mới, đăng nhập lần đầu tiên!",
-				"locked_description": "Đăng nhập vào đài phun nước một lần."
+				"locked_description": "Đăng nhập vào fount một lần."
 			},
 			"sfw_mode_on": {
 				"name": "Có ai đó ở phía sau bạn!",
@@ -1059,7 +1059,7 @@
 		"title": "Trình xuất Thành phần",
 		"pageTitle": "Trình xuất Thành phần",
 		"pageSubtitle": "Xuất nội dung yêu thích của bạn",
-		"description": "Xuất các sáng tạo đài phun nước của bạn. Công cụ này tập hợp các phần đã chọn của bạn thành một tệp zip đơn giản để lưu giữ hoặc chia sẻ an toàn.",
+		"description": "Xuất các sáng tạo fount của bạn. Công cụ này tập hợp các phần đã chọn của bạn thành một tệp zip đơn giản để lưu giữ hoặc chia sẻ an toàn.",
 		"steps": {
 			"partType": "Chọn một loại",
 			"part": "Chọn các thành phần",
@@ -1674,7 +1674,7 @@
 	},
 	"browser_integration": {
 		"title": "Tích hợp trình duyệt",
-		"description": "Thu hẹp khoảng cách giữa đài phun nước và web. Trang này cung cấp mô tả người dùng để cho phép tích hợp liền mạch, đưa những người bạn đồng hành AI của bạn vào trải nghiệm duyệt web của bạn.",
+		"description": "Thu hẹp khoảng cách giữa fount và web. Trang này cung cấp mô tả người dùng để cho phép tích hợp liền mạch, đưa những người bạn đồng hành AI của bạn vào trải nghiệm duyệt web của bạn.",
 		"pageHeader": "Tích hợp trình duyệt",
 		"pageDescription": "Để vai trò fount của bạn tương tác với trang web, bạn cần cài đặt tập lệnh tích hợp trình duyệt này. Nó hoạt động như một cầu nối giữa ký tự và trình duyệt, cho phép họ xem nội dung trang và thực hiện các hành động.",
 		"install_script_title": "Tập lệnh cài đặt",
@@ -1906,7 +1906,7 @@
 	},
 	"achievements": {
 		"title": "Thành tích",
-		"description": "Khám phá các cột mốc quan trọng và thành tựu trong hành trình của bạn với đài phun nước. Mỗi thành tích đánh dấu một bước trong câu chuyện độc đáo của bạn.",
+		"description": "Khám phá các cột mốc quan trọng và thành tựu trong hành trình của bạn với fount. Mỗi thành tích đánh dấu một bước trong câu chuyện độc đáo của bạn.",
 		"pageHeader": "Hội trường thành tựu",
 		"pageDescription": "Kiểm tra những thành tựu và cột mốc đã mở khóa của bạn tại đây.",
 		"unlocked_on": "Đã mở khóa vào ${date}",
@@ -1930,6 +1930,41 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Thành tích"
+			}
+		}
+	},
+	"debug_info": {
+		"title": "Gỡ lỗi và thông tin hệ thống",
+		"description": "Nhận thông tin hệ thống và gỡ lỗi chi tiết về cài đặt fount của bạn. Điều này rất hữu ích cho việc khắc phục sự cố và yêu cầu hỗ trợ.",
+		"heading": "Gỡ lỗi và thông tin hệ thống",
+		"copyButton": "Sao chép báo cáo",
+		"versionStatus": {
+			"title": "Trạng thái phiên bản",
+			"checking": "Đang kiểm tra...",
+			"local": "Cục bộ:",
+			"remote": "Đám mây:",
+			"upToDate": "Đã là mới nhất",
+			"outdated": "Có một bản cập nhật",
+			"checkFailed": "Kiểm tra không thành công"
+		},
+		"systemInfo": {
+			"title": "Thông tin hệ thống",
+			"failed": "Không tải được thông tin hệ thống"
+		},
+		"connectivity": {
+			"backend": "Kết nối Backend",
+			"frontend": "kết nối mặt trước"
+		},
+		"loading": "đang tải...",
+		"checking": "Đang kiểm tra...",
+		"failed": "Thất bại",
+		"copySuccess": "Đã sao chép báo cáo gỡ lỗi vào bảng nhớ tạm",
+		"copyFailed": "Sao chép báo cáo không thành công",
+		"home_function_buttons": {
+			"debug": {
+				"main": {
+					"title": "Mở bảng gỡ lỗi"
+				}
 			}
 		}
 	},

@@ -171,9 +171,9 @@
 			},
 			"remove": {
 				"removingFount": "Rimozione di fount...",
-				"fountUninstallationComplete": "disinstallazione del font completata.",
-				"removingFountInstallationDir": "Rimozione della directory di installazione dei font in corso...",
-				"fountInstallationDirRemoved": "La directory di installazione dei font è stata rimossa.",
+				"fountUninstallationComplete": "disinstallazione di fount completata.",
+				"removingFountInstallationDir": "Rimozione della directory di installazione di fount in corso...",
+				"fountInstallationDirRemoved": "La directory di installazione di fount è stata rimossa.",
 				"removingFountFromPath": "Rimozione del fount dal PERCORSO...",
 				"removingProtocolHandler": "Rimozione del gestore del protocollo font:// in corso...",
 				"protocolHandlerRemoved": "Il gestore del protocollo font:// è stato rimosso.",
@@ -1930,6 +1930,41 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Risultato"
+			}
+		}
+	},
+	"debug_info": {
+		"title": "Debug e informazioni di sistema",
+		"description": "Ottieni informazioni dettagliate sul debug e sul sistema sull'installazione di fount. Questo è molto utile per la risoluzione dei problemi e le richieste di supporto.",
+		"heading": "Debug e informazioni di sistema",
+		"copyButton": "Copia rapporto",
+		"versionStatus": {
+			"title": "Stato della versione",
+			"checking": "Controllo...",
+			"local": "Locale:",
+			"remote": "Remoto:",
+			"upToDate": "Già aggiornato",
+			"outdated": "C'è un aggiornamento",
+			"checkFailed": "Controllo fallito"
+		},
+		"systemInfo": {
+			"title": "Informazioni di sistema",
+			"failed": "Impossibile caricare le informazioni di sistema"
+		},
+		"connectivity": {
+			"backend": "connettività di back-end",
+			"frontend": "connettività front-end"
+		},
+		"loading": "Caricamento...",
+		"checking": "Controllo...",
+		"failed": "Fallito",
+		"copySuccess": "Rapporto di debug copiato negli appunti",
+		"copyFailed": "Copia rapporto non riuscita",
+		"home_function_buttons": {
+			"debug": {
+				"main": {
+					"title": "Apri il pannello di debug"
+				}
 			}
 		}
 	},

@@ -1933,6 +1933,41 @@
 			}
 		}
 	},
+	"debug_info": {
+		"title": "🐞 & 🖥️ℹ️",
+		"description": "ℹ️ ➡️ 🐞 & 🖥️",
+		"heading": "🐞 & 🖥️ℹ️",
+		"copyButton": "📋",
+		"versionStatus": {
+			"title": "🆚",
+			"checking": "⏳...",
+			"local": "🏠:",
+			"remote": "☁️:",
+			"upToDate": "✅✨",
+			"outdated": "🆕📦",
+			"checkFailed": "❌🆚"
+		},
+		"systemInfo": {
+			"title": "🖥️ℹ️",
+			"failed": "❌🖥️ℹ️"
+		},
+		"connectivity": {
+			"backend": "🔌🔙",
+			"frontend": "🔌🔜"
+		},
+		"loading": "⏳...",
+		"checking": "🔎...",
+		"failed": "❌",
+		"copySuccess": "✅📋",
+		"copyFailed": "❌📋",
+		"home_function_buttons": {
+			"debug": {
+				"main": {
+					"title": "🐞🪟"
+				}
+			}
+		}
+	},
 	"badges_maker": {
 		"title": "⛲❗️ 🎖️✨",
 		"description": "🛡️🎭✨",
