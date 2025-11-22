@@ -1950,7 +1950,11 @@ export type LocaleData = {
 		copySuccess: string
 		copyFailed: string
 		home_function_buttons: {
-			debug: string
+			debug: {
+				main: {
+					title: string
+				}
+			}
 		}
 	}
 	badges_maker: {
