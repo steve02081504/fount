@@ -168,9 +168,8 @@ ${chatLog[0].extension.summary = newSummary}
 					text: [
 						{
 							content: `\
-你所发送的信息均会被fount的网页前端渲染，其允许你使用markdown语法（你需要双写波浪线来获得删除线效果，如~~删除线~~），包括内嵌html（无任何过滤）。
-也就是说，你可以使用任何css（可以使用最新版daisyui和tailwindcss库）或js代码来辅助消息渲染，但需要渲染的html代码不应放在代码块内。
-你还可以使用mermaid语法来渲染图表：
+当前环境为fount前端，支持*Markdown*、Mermaid图表
+
 \`\`\`mermaid
 graph TD;
     A-->B;
@@ -178,32 +177,39 @@ graph TD;
     B-->D;
     C-->D;
 \`\`\`
-同时，其还支持katex语法，但请注意\`$$\`和\`\\begin\`或\`\\end\`之间换行，否则无法识别：
-$$
-\\begin{cases}
-h(0) = 0 \\\\
-h'(0) = 1
-\\end{cases}
-$$
-最后，fount还支持一些特殊的代码块渲染：
-内联代码块的高亮：\`内联代码{:js}\`
-这会根据指定的语言（此处是js）高亮内联代码。
 
-特定行数的代码高亮：
+以及无过滤 HTML（可使用 <script>alert('JS Executed')</script>、<div class="bg-red-500">TailwindCSS</div>、<button class="button bg-primary" onclick="alert('daisyUI!')">daisyUI</button>）。
+
+**代码块增强特性：**
+- 内联高亮：用 \`代码{:js}\` 指定内联代码块的高亮语言。
+\`int a = 0; // 注释{:c}\`
+
+- 执行与预览：支持 C/Rust/JS/Python 等语言运行及 HTML 新开窗口渲染；输出支持 ANSI 颜色序列及 JS \`%c\` 输出符。
+\`\`\`js
+s=''
+for(a of[25,133,2077,513835,109,9**8-1]){c=''
+for(i=21;i--;a/=3)c=(d=' :'[0|a%3]??'[30m@[96m')+c+d
+s+=\`\${c}
+\`.repeat(2313/a%9.4)}
+console.log('%cCool ASCII fount Logo:','color:#f06; font-size:16px;')
+console.log(s)
+\`\`\`
+
+- 特定行数的代码高亮：
 \`\`\`js {1-3,6} {4-5}#id1 {7}#id2
 // codes
 \`\`\`
-这将高亮第1到第3行、第6行、第4到第5行和第7行
+将高亮第1到第3行、第6行、第4到第5行和第7行
 对应行的span会有\`data-highlighted-line\`属性，有id的行会有\`data-highlighted-line-id="<id>"\`属性
 
-字符高亮：
+- 字符高亮：
 \`\`\`js /console/3-5#console /log/#log /\\./
 console.log('Hello')
 \`\`\`
-这将高亮第3到第5个\`console\`、全部的\`log\`和\`.\`
+将高亮第3到第5个\`console\`、全部的\`log\`和\`.\`
 对应词的span会有\`data-highlighted-chars\`属性，有id的词会有\`data-chars-id="<id>"\`属性
 
-标题和字幕:
+- 标题和字幕:
 \`\`\`js title="My Code" caption="Example"
 // codes
 \`\`\`
@@ -215,6 +221,20 @@ console.log('Hello')
 \`\`\`js showLineNumbers{3}
 // codes start at line 3
 \`\`\`
+
+**通用渲染规范：**
+1. **HTML**：需渲染的 <i class="text-red-500">HTML/JS</i> 不要包裹在代码块中。
+2. **Markdown**：~~删除线~~必须使用双波浪线。
+3. **数学公式 (KaTeX)**：\`$$\` 与 \`\\begin\` 或 \`\\end\` 之间必须换行。
+
+$$
+\\begin{cases}
+h(0) = 0 \\\\
+h'(0) = 1
+\\end{cases}
+$$
+
+Markdown、代码块、图表、数学公式在html标签中会失效，所以请以Markdown为主，只在需要表现力时使用html语法。
 `,
 							important: 0
 						}
