@@ -585,7 +585,7 @@
 		},
 		"home_drag_out_generators": {
 			"generateXFountPart": {
-				"description": "生成 fount 部件信息"
+				"description": "生成 fount 部件資訊"
 			}
 		}
 	},
@@ -1189,7 +1189,7 @@
 	"userSettings": {
 		"title": "使用者設定",
 		"PageTitle": "使用者設定",
-		"description": "關注您的fount標識的詳細信息。管理您的個人資料、保護您的訪問權限並查看連接的設備。為您提供一個安靜的聖所。",
+		"description": "關注您的fount標識的詳細資訊。管理您的個人資料、保護您的訪問權限並查看連接的設備。為您提供一個安靜的聖所。",
 		"userInfo": {
 			"title": "使用者資訊",
 			"usernameLabel": "使用者名稱:",
@@ -1693,7 +1693,7 @@
 		"status_focused": "當前窗口",
 		"status_unfocused": "背景",
 		"copy_button": "複製",
-		"copied_message": "已復製到剪貼簿",
+		"copied_message": "已複製到剪貼簿",
 		"no_pages_connected": {
 			"title": "暫無連接",
 			"description": "請先安裝腳本，然後在其他瀏覽器標籤頁中訪問任意網站，這裡將自動顯示。"
@@ -1933,6 +1933,41 @@
 			}
 		}
 	},
+	"debug_info": {
+		"title": "除錯與系統資訊",
+		"description": "獲取有關您的 fount 安裝的詳細除錯和系統資訊。這對於故障排除和支持請求非常有幫助。",
+		"heading": "除錯與系統資訊",
+		"copyButton": "複製報告",
+		"versionStatus": {
+			"title": "版本狀態",
+			"checking": "檢查中...",
+			"local": "本地:",
+			"remote": "雲端:",
+			"upToDate": "已是最新",
+			"outdated": "有更新",
+			"checkFailed": "檢查失敗"
+		},
+		"systemInfo": {
+			"title": "系統資訊",
+			"failed": "加載系統資訊失敗"
+		},
+		"connectivity": {
+			"backend": "後端連線狀態",
+			"frontend": "前端連線狀態"
+		},
+		"loading": "載入中...",
+		"checking": "檢查中...",
+		"failed": "失敗",
+		"copySuccess": "除錯報告已複製到剪貼簿",
+		"copyFailed": "複製報告失敗",
+		"home_function_buttons": {
+			"debug": {
+				"main": {
+					"title": "打開除錯面板"
+				}
+			}
+		}
+	},
 	"badges_maker": {
 		"title": "fount! 徽章轉換器",
 		"description": "當您的項目需要一點fount的特色時。轉換shields.io徽章，賦予它們新的、引起共鳴的身份。",
@@ -1965,7 +2000,7 @@
 			"dataset": {
 				"tip": "複製到剪貼簿"
 			},
-			"aria-label": "複製到剪貼板"
+			"aria-label": "複製到剪貼簿"
 		},
 		"copied": {
 			"dataset": {

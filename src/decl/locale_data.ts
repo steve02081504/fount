@@ -1922,6 +1922,37 @@ export type LocaleData = {
 			}
 		}
 	}
+	debug_info: {
+		title: string
+		description: string
+		heading: string
+		copyButton: string
+		versionStatus: {
+			title: string
+			checking: string
+			local: string
+			remote: string
+			upToDate: string
+			outdated: string
+			checkFailed: string
+		}
+		systemInfo: {
+			title: string
+			failed: string
+		}
+		connectivity: {
+			backend: string
+			frontend: string
+		}
+		loading: string
+		checking: string
+		failed: string
+		copySuccess: string
+		copyFailed: string
+		home_function_buttons: {
+			debug: string
+		}
+	}
 	badges_maker: {
 		title: string
 		description: string

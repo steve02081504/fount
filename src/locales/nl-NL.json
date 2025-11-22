@@ -1933,6 +1933,41 @@
 			}
 		}
 	},
+	"debug_info": {
+		"title": "Foutopsporing en systeeminformatie",
+		"description": "Ontvang gedetailleerde foutopsporing en systeeminformatie over uw fount-installatie. Dit is erg handig bij het oplossen van problemen en ondersteuningsverzoeken.",
+		"heading": "Foutopsporing en systeeminformatie",
+		"copyButton": "Kopieer rapport",
+		"versionStatus": {
+			"title": "Versiestatus",
+			"checking": "Controleren...",
+			"local": "Lokaal:",
+			"remote": "Remote:",
+			"upToDate": "Is up-to-date",
+			"outdated": "Er is een update",
+			"checkFailed": "Controle mislukt"
+		},
+		"systemInfo": {
+			"title": "Systeeminformatie",
+			"failed": "Kan systeeminformatie niet laden"
+		},
+		"connectivity": {
+			"backend": "backend-connectiviteit",
+			"frontend": "front-end connectiviteit"
+		},
+		"loading": "Laden...",
+		"checking": "Controleren...",
+		"failed": "Mislukt",
+		"copySuccess": "Foutopsporingsrapport gekopieerd naar klembord",
+		"copyFailed": "Kopieer rapport mislukt",
+		"home_function_buttons": {
+			"debug": {
+				"main": {
+					"title": "Open het foutopsporingspaneel"
+				}
+			}
+		}
+	},
 	"badges_maker": {
 		"title": "fount! Badge-omzetter",
 		"description": "Voor als uw project om een ​​vleugje karakter vraagt. Converteer schilden.io-badges en geef ze een nieuwe, resonerende identiteit.",
