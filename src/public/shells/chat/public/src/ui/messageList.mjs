@@ -104,7 +104,7 @@ export async function renderMessage(message) {
 	messageElement.addEventListener('mousedown', e => {
 		// If the mousedown is on an interactive part, don't make the message draggable.
 		// This allows text selection, button clicks, etc.
-		if (e.target.closest('.message-content'))
+		if (e.target.closest('.message-content, textarea'))
 			messageElement.draggable = false
 		else // Otherwise, allow dragging the whole message.
 			messageElement.draggable = true
