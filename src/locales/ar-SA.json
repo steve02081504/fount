@@ -485,7 +485,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "فارغ...<br/>ربما يمكنك [إنشاء جزء جديد](${newpartLink}) أو الانتقال إلى [خادم Fount's Discord](${discordLink}) للحصول على بعض المتعة؟"
+			"message": "فارغ...<br/>ربما يمكنك [إنشاء جزء جديد](${newpartLink}) أو الانتقال إلى [خادم fount's Discord](${discordLink}) للحصول على بعض المتعة؟"
 		},
 		"part_types": {
 			"chars": "دور",
@@ -1930,6 +1930,41 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "إنجاز"
+			}
+		}
+	},
+	"debug_info": {
+		"title": "تصحيح الأخطاء ومعلومات النظام",
+		"description": "احصل على تصحيح الأخطاء ومعلومات النظام التفصيلية حول تثبيت fount لديك. يعد هذا مفيدًا جدًا لاستكشاف الأخطاء وإصلاحها وطلبات الدعم.",
+		"heading": "تصحيح الأخطاء ومعلومات النظام",
+		"copyButton": "نسخ التقرير",
+		"versionStatus": {
+			"title": "حالة الإصدار",
+			"checking": "جارٍ التحقق...",
+			"local": "محلي:",
+			"remote": "سحابي:",
+			"upToDate": "بالفعل الأحدث",
+			"outdated": "هناك تحديث",
+			"checkFailed": "فشل التحقق"
+		},
+		"systemInfo": {
+			"title": "معلومات النظام",
+			"failed": "فشل تحميل معلومات النظام"
+		},
+		"connectivity": {
+			"backend": "اتصال الواجهة الخلفية",
+			"frontend": "اتصال الواجهة الأمامية"
+		},
+		"loading": "تحميل...",
+		"checking": "جارٍ التحقق...",
+		"failed": "فشل",
+		"copySuccess": "تم نسخ تقرير التصحيح إلى الحافظة",
+		"copyFailed": "فشل نسخ التقرير",
+		"home_function_buttons": {
+			"debug": {
+				"main": {
+					"title": "افتح لوحة التصحيح"
+				}
 			}
 		}
 	},

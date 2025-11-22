@@ -172,8 +172,8 @@
 			"remove": {
 				"removingFount": "fount wird entfernt...",
 				"fountUninstallationComplete": "Font-Deinstallation abgeschlossen.",
-				"removingFountInstallationDir": "Font-Installationsverzeichnis wird entfernt...",
-				"fountInstallationDirRemoved": "Das Font-Installationsverzeichnis wurde entfernt.",
+				"removingFountInstallationDir": "fount-Installationsverzeichnis wird entfernt...",
+				"fountInstallationDirRemoved": "Das fount-Installationsverzeichnis wurde entfernt.",
 				"removingFountFromPath": "fount wird aus PATH entfernt...",
 				"removingProtocolHandler": "fount://-Protokollhandler wird entfernt...",
 				"protocolHandlerRemoved": "Der fount://-Protokollhandler wurde entfernt.",
@@ -1930,6 +1930,41 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Leistung"
+			}
+		}
+	},
+	"debug_info": {
+		"title": "Debugging und Systeminformationen",
+		"description": "Erhalten Sie detaillierte Debugging- und Systeminformationen zu Ihrer fount-Installation. Dies ist sehr hilfreich bei der Fehlerbehebung und bei Supportanfragen.",
+		"heading": "Debugging und Systeminformationen",
+		"copyButton": "Bericht kopieren",
+		"versionStatus": {
+			"title": "Versionsstand",
+			"checking": "Überprüfung...",
+			"local": "Lokal:",
+			"remote": "Remote:",
+			"upToDate": "Auf dem neuesten Stand",
+			"outdated": "Update verfügbar",
+			"checkFailed": "Prüfung fehlgeschlagen"
+		},
+		"systemInfo": {
+			"title": "Systeminformationen",
+			"failed": "Systeminformationen konnten nicht geladen werden"
+		},
+		"connectivity": {
+			"backend": "Backend-Konnektivität",
+			"frontend": "Front-End-Konnektivität"
+		},
+		"loading": "Laden...",
+		"checking": "Überprüfung...",
+		"failed": "Fehlgeschlagen",
+		"copySuccess": "Debug-Bericht in die Zwischenablage kopiert",
+		"copyFailed": "Fehler beim Kopieren des Berichts",
+		"home_function_buttons": {
+			"debug": {
+				"main": {
+					"title": "Debug-Panel öffnen"
+				}
 			}
 		}
 	},

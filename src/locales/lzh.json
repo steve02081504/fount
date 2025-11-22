@@ -1933,6 +1933,41 @@
 			}
 		}
 	},
+	"debug_info": {
+		"title": "糾錯與系統之情",
+		"description": "觀此 fount 系統之詳情，以備糾錯排難之用，甚爲有益。",
+		"heading": "糾錯與系統之情",
+		"copyButton": "謄錄報告",
+		"versionStatus": {
+			"title": "版本狀態",
+			"checking": "稽考中...",
+			"local": "本機：",
+			"remote": "雲端：",
+			"upToDate": "已呈最新",
+			"outdated": "尚有新版",
+			"checkFailed": "稽考未果"
+		},
+		"systemInfo": {
+			"title": "系統資訊",
+			"failed": "系統資訊載入未果"
+		},
+		"connectivity": {
+			"backend": "後端連通",
+			"frontend": "前端連通"
+		},
+		"loading": "載入中...",
+		"checking": "稽考中...",
+		"failed": "敗",
+		"copySuccess": "糾錯報告已謄於剪貼板",
+		"copyFailed": "謄錄未果",
+		"home_function_buttons": {
+			"debug": {
+				"main": {
+					"title": "開啟糾錯面板"
+				}
+			}
+		}
+	},
 	"badges_maker": {
 		"title": "fount 徽章轉換器",
 		"description": "若君之項目需泉源之風采，可轉換Shields.io之徽章，賦予其全新之共鳴身份。",

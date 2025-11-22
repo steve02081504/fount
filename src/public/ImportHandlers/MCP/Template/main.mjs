@@ -187,7 +187,7 @@ export default {
 			name: data?.name || 'mcp_plugin',
 			avatar: data?.avatar || 'https://modelcontextprotocol.io/favicon.svg',
 			description: data?.description || 'MCP Client',
-			version: '1.0.0',
+			version: data?.version || '0.0.0',
 			tags: ['mcp', ...data?.tags || []]
 		}
 	},

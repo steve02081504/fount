@@ -306,7 +306,11 @@ async function initializeApp() {
 }
 
 // 执行初始化
-initializeApp().catch(error => {
+try {
+	await initializeApp()
+	navigator.serviceWorker?.controller?.postMessage({ type: 'EXIT_COLD_BOOT' })
+}
+catch (error) {
 	showToast('error', error.message)
-	window.location.href = '/login'
-})
+	import('https://esm.sh/@sentry/browser').then(Sentry => Sentry.captureException(error))
+}

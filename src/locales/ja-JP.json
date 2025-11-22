@@ -1933,6 +1933,41 @@
 			}
 		}
 	},
+	"debug_info": {
+		"title": "デバッグとシステム情報",
+		"description": "fount のインストールに関する詳細なデバッグ情報とシステム情報を取得します。これは、トラブルシューティングやサポート リクエストに非常に役立ちます。",
+		"heading": "デバッグとシステム情報",
+		"copyButton": "レポートのコピー",
+		"versionStatus": {
+			"title": "バージョンステータス",
+			"checking": "チェック中...",
+			"local": "ローカル：",
+			"remote": "リモート：",
+			"upToDate": "最新です",
+			"outdated": "更新あり",
+			"checkFailed": "チェックに失敗しました"
+		},
+		"systemInfo": {
+			"title": "システム情報",
+			"failed": "システム情報のロードに失敗しました"
+		},
+		"connectivity": {
+			"backend": "バックエンド接続",
+			"frontend": "フロントエンド接続"
+		},
+		"loading": "読み込み中...",
+		"checking": "チェック中...",
+		"failed": "エラー",
+		"copySuccess": "デバッグ レポートがクリップボードにコピーされました",
+		"copyFailed": "レポートのコピーに失敗しました",
+		"home_function_buttons": {
+			"debug": {
+				"main": {
+					"title": "デバッグパネルを開く"
+				}
+			}
+		}
+	},
 	"badges_maker": {
 		"title": "fount! バッジコンバーター",
 		"description": "プロジェクトにFountのキャラクターのタッチが必要な場合に。 Shields.io バッジを変換して、新しく共鳴するアイデンティティを与えます。",

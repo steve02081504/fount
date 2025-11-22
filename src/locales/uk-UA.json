@@ -172,7 +172,7 @@
 			"remove": {
 				"removingFount": "Видалення fountу...",
 				"fountUninstallationComplete": "видалення fountу завершено.",
-				"removingFountInstallationDir": "Видалення каталогу встановлення шрифту...",
+				"removingFountInstallationDir": "Видалення каталогу встановлення fount...",
 				"fountInstallationDirRemoved": "Каталог встановлення fountу видалено.",
 				"removingFountFromPath": "Видалення шрифту зі ШЛЯХУ...",
 				"removingProtocolHandler": "Видалення обробника протоколу fount://...",
@@ -1930,6 +1930,41 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "досягнення"
+			}
+		}
+	},
+	"debug_info": {
+		"title": "Налагодження та інформація про систему",
+		"description": "Отримайте детальну інформацію про налагодження та системну інформацію про встановлення fount. Це дуже корисно для усунення несправностей і запитів на підтримку.",
+		"heading": "Налагодження та інформація про систему",
+		"copyButton": "Копіювати звіт",
+		"versionStatus": {
+			"title": "Статус версії",
+			"checking": "Перевірка...",
+			"local": "Локальний:",
+			"remote": "Хмара:",
+			"upToDate": "Вже останній",
+			"outdated": "Є оновлення",
+			"checkFailed": "Перевірити не вдалося"
+		},
+		"systemInfo": {
+			"title": "Інформація про систему",
+			"failed": "Не вдалося завантажити інформацію про систему"
+		},
+		"connectivity": {
+			"backend": "Серверне підключення",
+			"frontend": "інтерфейсне підключення"
+		},
+		"loading": "завантаження...",
+		"checking": "Перевірка...",
+		"failed": "Помилка",
+		"copySuccess": "Звіт про налагодження скопійовано в буфер обміну",
+		"copyFailed": "Не вдалося скопіювати звіт",
+		"home_function_buttons": {
+			"debug": {
+				"main": {
+					"title": "Відкрити панель налагодження"
+				}
 			}
 		}
 	},
