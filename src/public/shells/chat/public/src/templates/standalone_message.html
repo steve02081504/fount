@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="${main_locale}">
-
+${setValue('messageHtml', await renderMarkdownAsStandAloneHtmlString(message.content_for_show || message.content));''}
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	${setValue('messageHtml', await renderMarkdownAsStandAloneHtmlString(message.content_for_show || message.content));''}
 	<title>${
 		const tempDiv = document.createElement('div')
 		tempDiv.innerHTML = messageHtml
@@ -12,8 +11,8 @@
 		h1 ? h1.textContent.trim() : 'Chat Message'
 	}</title>
 	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
-	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css" crossorigin="anonymous">
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />${messageHtml.includes('katex-mathml') ? `
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css" crossorigin="anonymous">` : ''}
 	<style>
 		body {
 			margin: 0;
@@ -25,10 +24,10 @@
 			padding: 45px;
 		}
 
-		.markdown-body .join-item,
-		.markdown-body figure,
+		.markdown-body .join-item, ${ messageHtml.includes('figure') ? `
+		.markdown-body figure,` : '' }${messageHtml.includes('markdown-code-block') ? `
 		.markdown-code-block,
-		.markdown-code-block pre {
+		.markdown-code-block pre` : ''} {
 			margin: 0;
 		}
 
@@ -40,7 +39,7 @@
 
 		.text-icon {
 			color: var(--color-base-content);
-		}
+		}${messageHtml.includes('markdown-code-block') ? `\
 
 		/* Styles for rehype-pretty-code (Shiki) */
 		pre[style*="--shiki-light-bg"] {
@@ -57,7 +56,7 @@
 
 		[color-scheme="dark"] [style*="--shiki-light"][style*="--shiki-dark"] {
 			color: var(--shiki-dark);
-		}
+		}` : ''}
 	</style>
 </head>
 
@@ -70,7 +69,7 @@
 		document.documentElement.setAttribute('color-scheme', document.documentElement.dataset.theme = isDarkMode ? 'dark' : 'light')
 		styleLink.href = `https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown-${'${isDarkMode ? \'dark\' : \'light\'}'}.min.css`
 		document.head.appendChild(styleLink)
-
+${ message.files?.length ? `
 		/**
 		 * 打开一个模态框以显示图片或视频。
 		 * @param {string} src - 媒体文件的源 URL。
@@ -119,10 +118,9 @@
 
 			document.body.appendChild(modal)
 		}
-	</script>
+` : ''}	</script>
 	<main class="flex-grow markdown-body">
-		${messageHtml}
-		${
+		${messageHtml}${
 			if (!message.files?.length) return ''
 
 			const attachmentItems = await Promise.all(message.files.map(async (file) => {

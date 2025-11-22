@@ -20,9 +20,11 @@ export function createDocumentFragmentFromHtmlString(htmlString) {
 	template.innerHTML = htmlString
 	const fragment = template.content
 
+	// 移除开发服务器注入的脚本
 	fragment.querySelectorAll('script[src^="/___"]').forEach(oldScript => {
 		oldScript.remove()
 	})
+	// 激活 script 标签
 	fragment.querySelectorAll('script').forEach(oldScript => {
 		const newScript = document.createElement('script')
 		for (const attr of oldScript.attributes)
@@ -30,6 +32,7 @@ export function createDocumentFragmentFromHtmlString(htmlString) {
 		if (oldScript.textContent) newScript.text = oldScript.textContent
 		oldScript.parentNode.replaceChild(newScript, oldScript)
 	})
+	// 激活 link 标签
 	fragment.querySelectorAll('link').forEach(oldLink => {
 		const newLink = document.createElement('link')
 		for (const attr of oldLink.attributes)
@@ -43,9 +46,22 @@ export function createDocumentFragmentFromHtmlString(htmlString) {
 /**
  * 从 HTML 字符串创建 DOM 元素。
  * @param {string} htmlString - 包含 HTML 代码的字符串。
- * @returns {Element|DocumentFragment} - 创建的 DOM 元素。
+ * @returns {Element|DocumentFragment|Document} - 创建的 DOM 元素或文档对象。
  */
 export function createDOMFromHtmlString(htmlString) {
+	// 如果是完整文档，使用 DOMParser 以保留 html, head, body 结构
+	if (/^\s*<!DOCTYPE/i.test(htmlString) || /^\s*<html/i.test(htmlString)) {
+		const parser = new DOMParser()
+		const doc = parser.parseFromString(htmlString, 'text/html')
+
+		// 清理不需要的脚本
+		doc.querySelectorAll('script[src^="/___"]').forEach(oldScript => {
+			oldScript.remove()
+		})
+
+		return doc
+	}
+
 	const div = document.createElement('div')
 	div.appendChild(createDocumentFragmentFromHtmlString(htmlString))
 	return div.children.length == 1 ? div.children[0] : div
@@ -66,7 +82,7 @@ export function usingTemplates(path) {
  * 渲染模板。
  * @param {string} template - 模板名称。
  * @param {object} [data={}] - 模板数据。
- * @returns {Promise<Element|DocumentFragment>} - 渲染后的 DOM 元素。
+ * @returns {Promise<Element|DocumentFragment|Document>} - 渲染后的 DOM 元素。
  */
 export async function renderTemplate(template, data = {}) {
 	data.geti18n ??= geti18n
@@ -117,6 +133,13 @@ export async function renderTemplate(template, data = {}) {
  * @returns {Promise<string>} - 渲染后的 HTML 字符串。
  */
 export async function renderTemplateAsHtmlString(template, data = {}) {
-	const html = await renderTemplate(template, data)
-	return html.outerHTML
+	let node = await renderTemplate(template, data)
+	if (node.nodeType === Node.DOCUMENT_NODE) {
+		node = node.documentElement.outerHTML
+		node = node.replace(/[\s\n]*<\/body>[\s\n]*<\/html>$/i, '\n</body>\n\n</html>\n')
+		node = node.replace(/<html ([^>]*)>[\s\n]*<head>/i, '<html $1>\n\n<head>')
+		node = node.replace(/^[\s\n]*<html/i, '<!DOCTYPE html>\n<html')
+		return node
+	}
+	return node.outerHTML
 }
