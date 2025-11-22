@@ -1,5 +1,6 @@
 import { fromHtml } from 'https://esm.sh/hast-util-from-html'
 import { h } from 'https://esm.sh/hastscript'
+import { createHighlighter } from 'https://esm.sh/shiki'
 import languageMap from 'https://esm.sh/lang-map'
 import md5 from 'https://esm.sh/md5'
 import rehypeKatex from 'https://esm.sh/rehype-katex'
@@ -149,7 +150,7 @@ return result
 
 /**
  * 代码执行器集合
- * @type {Object.<string, (code: string) => Promise<{result?: string, output?: string, error?: string, exitcode?: number}>>}
+ * @type {Object.<string, (code: string) => Promise<{result?: string, output?: string, error?: string, exitcode?: number, outputHtml?: string, errorHtml?: string}>>}
  */
 const languageExecutors = {
 	/**
@@ -358,7 +359,7 @@ $stderr = StringIO.new
 	 */
 	brainfuck: async (code) => {
 		try {
-			const {default: Brainfuck } = await import('https://esm.sh/brainfuck-node')
+			const { default: Brainfuck } = await import('https://esm.sh/brainfuck-node')
 			const brainfuck = new Brainfuck()
 			const result = brainfuck.execute(code)
 			return { output: result.output }
@@ -490,9 +491,11 @@ outputContainer.innerHTML = /* html */ \`\\
 \`
 codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 
-;(${executor.toString()})(document.querySelector('#${uniqueId} pre').innerText).then(result => {
+;(${executor.toString()})(document.querySelector('#${uniqueId} pre').innerText).then(async result => {
 	result = result || {}
-	const escapeHtml = (unsafe) => String(unsafe).replace(/[&<>"']/g, (m) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'}[m]))
+	const { AnsiUp } = await import('https://esm.sh/ansi-up')
+	const ansi_up = new AnsiUp()
+	const escapeHtml = (str) => ansi_up.ansi_to_html(str)
 	let alerts = []
 
 	if (result.error)
@@ -500,7 +503,7 @@ codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 <div class="join-item alert alert-error bg-error/50 border-error/50">
 	<div>
 		<div class="font-bold">Error</div>
-		<pre class="font-mono text-sm overflow-x-auto whitespace-pre-wrap"><code>\${escapeHtml(result.error)}</code></pre>
+		<pre class="font-mono text-sm overflow-x-auto whitespace-pre-wrap"><code>\${result.errorHtml || escapeHtml(result.error)}</code></pre>
 	</div>
 </div>
 \`)
@@ -509,7 +512,7 @@ codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 <div class="join-item alert alert-info bg-info/40 border-info/40">
 	<div>
 		<div class="font-bold">Output</div>
-		<pre class="font-mono text-sm overflow-x-auto whitespace-pre-wrap"><code>\${escapeHtml(result.output)}</code></pre>
+		<pre class="font-mono text-sm overflow-x-auto whitespace-pre-wrap"><code>\${result.outputHtml || escapeHtml(result.output)}</code></pre>
 	</div>
 </div>
 \`)
@@ -654,6 +657,14 @@ ${diagram}`
 				dark: 'github-dark-dimmed',
 				light: 'github-light',
 			},
+			// 扩展默认的高亮器配置
+			getHighlighter: options => createHighlighter({
+				...options,
+				langs: [
+					...options.langs,
+					() => fetch('https://cdn.jsdelivr.net/gh/Chris2011/netbeans-textmate-files@master/supported%20languages/brainfuck/brainfuck.tmLanguage.json').then(res => res.json())
+				]
+			}),
 			transformers: [
 				await createCodeBlockPlugin({ isStandalone })
 			],
