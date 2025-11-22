@@ -9,16 +9,16 @@ import { authenticate } from '../../../../server/auth.mjs'
 export function setEndpoints(router) {
 	router.get('/api/shells/debug_info/system_info', authenticate, async (req, res) => {
 		const checks = [
-			{ name: 'npm Registry', url: 'https://registry.npmjs.org/' },
-			{ name: 'Deno Land', url: 'https://deno.land/' },
-			{ name: 'jsDelivr', url: 'https://cdn.jsdelivr.net/' },
-			{ name: 'JSR', url: 'https://jsr.io/' },
+			{ name: 'npm Registry', url: 'https://registry.npmjs.org' },
+			{ name: 'Deno Land', url: 'https://deno.land' },
+			{ name: 'jsDelivr', url: 'https://cdn.jsdelivr.net' },
+			{ name: 'JSR', url: 'https://jsr.io', method: 'GET' },
 		]
 
 		const checkResults = await Promise.all(checks.map(async (check) => {
 			try {
 				const start = Date.now()
-				const response = await fetch(check.url, { method: 'HEAD', signal: AbortSignal.timeout(5000) })
+				const response = await fetch(check.url, { method: check.method || 'HEAD', signal: AbortSignal.timeout(5000) })
 				const duration = Date.now() - start
 				return { ...check, status: response.ok ? 'ok' : 'error', duration, statusCode: response.status }
 			} catch (error) {
