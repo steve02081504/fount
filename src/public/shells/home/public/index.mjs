@@ -10,6 +10,11 @@ initializeApp().then(async () => {
 	if (navigator.serviceWorker.controller) {
 		const channel = new MessageChannel()
 		navigator.serviceWorker.controller.postMessage({ type: 'EXIT_COLD_BOOT' }, [channel.port2])
+		/**
+		 * 处理来自服务工作线程的消息。
+		 * @param {MessageEvent} event - 消息事件对象。
+		 * @returns {void}
+		 */
 		channel.port1.onmessage = async (event) => {
 			if (event.data.wasColdBoot) {
 				console.log('Exited cold boot mode, reloading data...')
