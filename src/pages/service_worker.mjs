@@ -447,6 +447,22 @@ async function handleNetworkFirst(request) {
 
 
 // --- 路由表 ---
+
+let coldBootMode = false
+
+self.addEventListener('message', event => {
+	if (event.data?.type === 'EXIT_COLD_BOOT') {
+		const wasColdBoot = coldBootMode
+		coldBootMode = false
+		console.log('[SW] Exited cold boot mode.')
+		if (event.ports[0]) event.ports[0].postMessage({ wasColdBoot })
+	}
+	else if (event.data?.type === 'ENTER_COLD_BOOT') {
+		coldBootMode = true
+		console.log('[SW] Entered cold boot mode.')
+	}
+})
+
 /**
  * 使用路由表来管理请求处理逻辑。
  * `fetch` 事件处理器会遍历此数组，并执行第一个匹配规则的处理器。
@@ -482,6 +498,22 @@ const routes = [
 		 * @returns {null} 返回 null 以跳过处理。
 		 */
 		handler: () => null,
+	},
+	// 冷启动模式：优先使用缓存
+	{
+		condition: ({ url }) => {
+			if (url.searchParams.get('cold_bootting') === 'true') coldBootMode = true
+			return coldBootMode
+		},
+		handler: ({ event, url }) => {
+			if (url.searchParams.has('cold_bootting')) {
+				const cleanUrl = new URL(url)
+				cleanUrl.searchParams.delete('cold_bootting')
+				const cleanRequest = new Request(cleanUrl, event.request)
+				return handleCacheFirst(cleanRequest)
+			}
+			return handleCacheFirst(event.request)
+		},
 	},
 	// 对所有跨域资源（通常是 CDN 上的静态文件）使用缓存优先策略。
 	{

@@ -160,6 +160,7 @@ export async function init(start_config) {
 		console.freshLineI18n('server start', 'fountConsole.server.start')
 		process.on('error', console.log)
 		process.on('unhandledRejection', console.log)
+		process.on('uncaughtException', console.log)
 	}
 
 	config = get_config()

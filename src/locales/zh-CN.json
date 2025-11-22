@@ -1933,6 +1933,41 @@
 			}
 		}
 	},
+	"debug_info": {
+		"title": "调试与系统信息",
+		"description": "获取有关您的 fount 安装的详细调试和系统信息。这对于故障排除和支持请求非常有帮助。",
+		"heading": "调试与系统信息",
+		"copyButton": "复制报告",
+		"versionStatus": {
+			"title": "版本状态",
+			"checking": "检查中...",
+			"local": "本地:",
+			"remote": "云端:",
+			"upToDate": "已是最新",
+			"outdated": "有更新",
+			"checkFailed": "检查失败"
+		},
+		"systemInfo": {
+			"title": "系统信息",
+			"failed": "加载系统信息失败"
+		},
+		"connectivity": {
+			"backend": "后端连通性",
+			"frontend": "前端连通性"
+		},
+		"loading": "加载中...",
+		"checking": "检查中...",
+		"failed": "失败",
+		"copySuccess": "调试报告已复制到剪贴板",
+		"copyFailed": "复制报告失败",
+		"home_function_buttons": {
+			"debug": {
+				"main": {
+					"title": "打开调试面板"
+				}
+			}
+		}
+	},
 	"badges_maker": {
 		"title": "fount! 徽章转换器",
 		"description": "当您的项目需要一点fount的特色时。转换shields.io徽章，赋予它们新的、引起共鸣的身份。",

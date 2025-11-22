@@ -1933,6 +1933,41 @@
 			}
 		}
 	},
+	"debug_info": {
+		"title": "Debug & System Info",
+		"description": "Get detailed debugging and system information about your fount installation. This is very helpful for troubleshooting and support requests.",
+		"heading": "Debug & System Info",
+		"copyButton": "Copy Report",
+		"versionStatus": {
+			"title": "Version Status",
+			"checking": "Checking...",
+			"local": "Local:",
+			"remote": "Remote:",
+			"upToDate": "Up to date",
+			"outdated": "Outdated",
+			"checkFailed": "Check Failed"
+		},
+		"systemInfo": {
+			"title": "System Information",
+			"failed": "Failed to load system info"
+		},
+		"connectivity": {
+			"backend": "Backend Connectivity",
+			"frontend": "Frontend Connectivity"
+		},
+		"loading": "Loading...",
+		"checking": "Checking...",
+		"failed": "Failed",
+		"copySuccess": "Debug report copied to clipboard",
+		"copyFailed": "Failed to copy report",
+		"home_function_buttons": {
+			"debug": {
+				"main": {
+					"title": "Open Debug Panel"
+				}
+			}
+		}
+	},
 	"badges_maker": {
 		"title": "fount! Badge Converter",
 		"description": "For when your project calls for a touch of fount's character. Convert shields.io badges, lending them a new, resonant identity.",

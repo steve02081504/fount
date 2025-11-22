@@ -1933,6 +1933,41 @@
 			}
 		}
 	},
+	"debug_info": {
+		"title": "디버깅 및 시스템 정보",
+		"description": "fount 설치에 대한 자세한 디버깅 및 시스템 정보를 얻으십시오. 이는 문제 해결 및 지원 요청에 매우 유용합니다.",
+		"heading": "디버깅 및 시스템 정보",
+		"copyButton": "보고서 복사",
+		"versionStatus": {
+			"title": "버전 상태",
+			"checking": "확인 중...",
+			"local": "로컬:",
+			"remote": "클라우드:",
+			"upToDate": "이미 최신",
+			"outdated": "업데이트가 있습니다",
+			"checkFailed": "확인 실패"
+		},
+		"systemInfo": {
+			"title": "시스템 정보",
+			"failed": "시스템 정보를 로드하지 못했습니다."
+		},
+		"connectivity": {
+			"backend": "백엔드 연결",
+			"frontend": "프런트엔드 연결"
+		},
+		"loading": "로드 중...",
+		"checking": "확인 중...",
+		"failed": "실패",
+		"copySuccess": "디버그 보고서가 클립보드에 복사되었습니다.",
+		"copyFailed": "보고서 복사 실패",
+		"home_function_buttons": {
+			"debug": {
+				"main": {
+					"title": "디버그 패널 열기"
+				}
+			}
+		}
+	},
 	"badges_maker": {
 		"title": "fount! 배지 변환기",
 		"description": "프로젝트에 분수의 특성이 더해져야 하는 경우에 적합합니다. Shields.io 배지를 변환하여 새롭고 공감되는 정체성을 부여하세요.",
