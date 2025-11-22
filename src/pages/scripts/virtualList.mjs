@@ -179,7 +179,7 @@ export function createVirtualList({
 			const anchorElement = state.sentinelTop.nextSibling
 			const anchorTop = anchorElement?.getBoundingClientRect().top || 0
 
-			state.startIndex = newStartIndex
+			state.startIndex = state.startIndex - newItems.length
 			state.queue.unshift(...newItems)
 			const newElementsFragment = document.createDocumentFragment()
 			const renderPromises = newItems.map((item, i) => {

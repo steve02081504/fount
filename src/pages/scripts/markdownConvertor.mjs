@@ -1,6 +1,5 @@
 import { fromHtml } from 'https://esm.sh/hast-util-from-html'
 import { h } from 'https://esm.sh/hastscript'
-import { createHighlighter } from 'https://esm.sh/shiki'
 import languageMap from 'https://esm.sh/lang-map'
 import md5 from 'https://esm.sh/md5'
 import rehypeKatex from 'https://esm.sh/rehype-katex'
@@ -12,6 +11,7 @@ import remarkGfm from 'https://esm.sh/remark-gfm'
 import remarkMath from 'https://esm.sh/remark-math'
 import remarkParse from 'https://esm.sh/remark-parse'
 import remarkRehype from 'https://esm.sh/remark-rehype'
+import { createHighlighter } from 'https://esm.sh/shiki'
 import { unified } from 'https://esm.sh/unified'
 import { visit } from 'https://esm.sh/unist-util-visit'
 
@@ -356,6 +356,8 @@ $stderr = StringIO.new
 	rs: createGodboltExecutor('nightly', 'rust'),
 	/**
 	 * 执行 brainfuck 代码。
+	 * @param {string} code - 要执行的代码。
+	 * @returns {Promise<{result?: string, output?: string, error?: string, exitcode?: number}>} - 执行结果。
 	 */
 	b: async (code) => {
 		try {
@@ -511,12 +513,12 @@ navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
 	${isStandalone
 			? `btn.parentElement.setAttribute('data-tip', decodeURIComponent(${JSON.stringify(encodeURIComponent(geti18n('code_block.copied.dataset.tip')))}))`
 			: 'btn.parentElement.setAttribute(\'data-i18n\', \'code_block.copied\')'
-	}
+}
 }).catch(error => {
 	${isStandalone
 			? 'alert(\'Failed to copy: \' + error.message)'
 			: 'import(\'/scripts/toast.mjs\').then(({ showToastI18n }) => showToastI18n(\'error\', \'code_block.copy_failed\', { error: error.message }))'
-	}
+}
 })
 \`
 
@@ -694,7 +696,11 @@ ${diagram}`
 				dark: 'github-dark-dimmed',
 				light: 'github-light',
 			},
-			// 扩展默认的高亮器配置
+			/**
+			 * 扩展默认的高亮器配置
+			 * @param {object} options - 选项。
+			 * @returns {Promise<import('npm:shiki').Highlighter>} - 高亮器。
+			 */
 			getHighlighter: options => createHighlighter({
 				...options,
 				langs: [
