@@ -95,21 +95,28 @@ export async function renderMarkdownPreview(markdown, significantNodeLimit) {
 }
 
 /**
- * 为单个聊天会话渲染 HTML 元素。
- * 它使用缓存来避免重新渲染未更改的项目。
- * @param {object} chat - 包含聊天详细信息的聊天对象。
- * @returns {Promise<HTMLElement>} - 渲染后的聊天列表项元素。
+ * 观察器用于懒加载聊天列表项。
  */
-async function renderChatListItem(chat) {
-	if (chatItemDOMCache.has(chat.chatid)) {
-		const cachedData = chatItemDOMCache.get(chat.chatid)
-		if (cachedData.lastMessageTime === chat.lastMessageTime) {
-			const chatElement = cachedData.element
-			const selectCheckbox = chatElement.querySelector('.select-checkbox')
-			selectCheckbox.checked = selectedChats.has(chat.chatid)
-			return chatElement
+const lazyLoadObserver = new IntersectionObserver((entries, observer) => {
+	entries.forEach(entry => {
+		if (entry.isIntersecting) {
+			const element = entry.target
+			const chat = element.chatData
+			if (chat) {
+				hydrateChatListItem(element, chat)
+				observer.unobserve(element)
+				delete element.chatData
+			}
 		}
-	}
+	})
+}, { rootMargin: '200px' })
+
+/**
+ * 激活聊天列表项，渲染真实内容并绑定事件。
+ * @param {HTMLElement} chatElement - 骨架屏元素。
+ * @param {object} chat - 聊天对象。
+ */
+async function hydrateChatListItem(chatElement, chat) {
 	const lastMsgTime = new Date(chat.lastMessageTime).toLocaleString()
 	const data = {
 		...chat,
@@ -123,7 +130,13 @@ async function renderChatListItem(chat) {
 		})),
 		renderMarkdownPreview
 	}
-	const chatElement = await renderTemplate('list/chat_list_view', data)
+
+	const realElement = await renderTemplate('list/chat_list_view', data)
+
+	// 替换内容
+	chatElement.innerHTML = realElement.innerHTML
+	chatElement.className = realElement.className
+	chatElement.removeAttribute('data-template-type')
 	chatElement.setAttribute('data-chatid', chat.chatid)
 
 	// Drag-and-drop functionality
@@ -230,6 +243,34 @@ async function renderChatListItem(chat) {
 		element: chatElement,
 		lastMessageTime: chat.lastMessageTime,
 	})
+}
+
+/**
+ * 为单个聊天会话渲染 HTML 元素（初始为骨架屏）。
+ * 它使用缓存来避免重新渲染未更改的项目。
+ * @param {object} chat - 包含聊天详细信息的聊天对象。
+ * @returns {Promise<HTMLElement>} - 渲染后的聊天列表项元素。
+ */
+async function renderChatListItem(chat) {
+	if (chatItemDOMCache.has(chat.chatid)) {
+		const cachedData = chatItemDOMCache.get(chat.chatid)
+		if (cachedData.lastMessageTime === chat.lastMessageTime) {
+			const chatElement = cachedData.element
+			const selectCheckbox = chatElement.querySelector('.select-checkbox')
+			// 检查 selectCheckbox 是否存在，因为骨架屏可能还没 hydrate
+			if (selectCheckbox) selectCheckbox.checked = selectedChats.has(chat.chatid)
+			return chatElement
+		}
+	}
+
+	const chatElement = await renderTemplate('list/chat_list_skeleton', { chatid: chat.chatid })
+
+	// 绑定数据以供 hydrate 使用
+	chatElement.chatData = chat
+
+	// 开始观察
+	lazyLoadObserver.observe(chatElement)
+
 	return chatElement
 }
 
