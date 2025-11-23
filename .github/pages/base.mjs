@@ -1,5 +1,6 @@
 /** @type {import('npm:@sentry/browser')} */
 import * as Sentry from 'https://esm.sh/@sentry/browser'
+import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
 import { svgInliner } from './scripts/svgInliner.mjs'
 
@@ -42,11 +43,104 @@ await import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill/index.mjs').
  * 当前应用程序的主题
  */
 export let theme_now
+
+/**
+ * 自定义样式标签的 ID
+ * @constant {string}
+ */
+const CUSTOM_STYLE_ID = 'custom-theme-style'
+
+/**
+ * 将自定义 CSS 注入到页面头部。
+ * @param {string} css - CSS 内容字符串。
+ * @returns {void}
+ */
+function injectCustomStyle(css) {
+	let styleEl = document.getElementById(CUSTOM_STYLE_ID)
+	if (!styleEl) {
+		styleEl = document.createElement('style')
+		styleEl.id = CUSTOM_STYLE_ID
+		document.head.appendChild(styleEl)
+	}
+	if (styleEl.textContent !== css)
+		styleEl.textContent = css
+}
+
+/**
+ * 从页面中移除自定义样式标签。
+ * @returns {void}
+ */
+function removeCustomStyle() {
+	const styleEl = document.getElementById(CUSTOM_STYLE_ID)
+	if (styleEl) styleEl.remove()
+}
+
+/**
+ * 当前加载的自定义主题 MJS 模块（包含 load 和 unload 函数）
+ * @type {Object|null}
+ */
+let currentCustomMjsModule = null
+
+/**
+ * 加载自定义主题的 MJS 脚本。
+ * @param {string} mjsCode - MJS 脚本代码字符串。
+ * @returns {Promise<void>}
+ */
+async function loadCustomMjs(mjsCode) {
+	if (!mjsCode) return
+
+	// 先卸载之前的模块
+	await unloadCustomMjs()
+
+	try {
+		// 使用 async_eval 执行 MJS 代码
+		const evalResult = await async_eval(mjsCode)
+		if (evalResult.error)
+			return console.error('Failed to evaluate custom theme MJS:', evalResult.error)
+
+		const module = evalResult.result
+
+		// 保存模块引用
+		currentCustomMjsModule = module
+
+		// 调用 load 函数（如果存在）
+		await module?.load?.()
+	} catch (error) {
+		console.error('Error loading custom theme MJS:', error)
+	}
+}
+
+/**
+ * 卸载当前加载的自定义主题 MJS 模块。
+ * @returns {Promise<void>}
+ */
+async function unloadCustomMjs() {
+	try {
+		// 调用 unload 函数（如果存在）
+		await currentCustomMjsModule?.unload?.()
+	} catch (error) {
+		console.error('Error unloading custom theme MJS:', error)
+	} finally {
+		currentCustomMjsModule = null
+	}
+}
+
 /**
  * 设置应用程序的主题。
  * @param {string} theme - 要设置的主题（例如 'dark', 'light', 'auto'）。
  */
 export function setTheme(theme) {
+	const cachedName = localStorage.getItem('fountCustomThemeName') // fount public中的存储key和fount实例中的不一样
+	const cachedCss = localStorage.getItem('fountCustomThemeCss')
+	const cachedMjs = localStorage.getItem('fountCustomThemeMjs')
+	if (theme_now === cachedName && cachedCss) {
+		injectCustomStyle(cachedCss)
+		if (cachedMjs) loadCustomMjs(cachedMjs)
+	}
+	else {
+		if (cachedCss) removeCustomStyle()
+		if (cachedMjs) unloadCustomMjs()
+	}
 	if (theme === theme_now) return
 	theme_now = theme
 	localStorage.setItem('fountTheme', theme)
@@ -54,10 +148,11 @@ export function setTheme(theme) {
 	theme ||= window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 	if (document.documentElement.dataset.theme !== theme) document.documentElement.setAttribute('data-theme', theme)
 }
-setTheme(urlParams.get('theme') ?? localStorage.getItem('fountTheme') ?? 'dark')
+setTheme(localStorage.getItem('fountTheme') ?? 'dark')
+
 svgInliner(document)
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-	setTheme(localStorage.getItem('theme'))
+	setTheme(localStorage.getItem('fountTheme'))
 })
 
 /**

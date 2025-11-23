@@ -1355,6 +1355,49 @@
 			"placeholder": "Rechercher un thème...",
 			"noResult": "Aucun thème correspondant trouvé."
 		},
+		"createButton": "+ Créer un nouveau thème",
+		"preview": {
+			"editButton": {
+				"title": "Modifier"
+			},
+			"editButtonIcon": {
+				"alt": "Icône de modification"
+			},
+			"deleteButton": {
+				"title": "Supprimer"
+			},
+			"deleteButtonIcon": {
+				"alt": "Icône de suppression"
+			},
+			"cloneButton": {
+				"title": "Dupliquer"
+			},
+			"cloneButtonIcon": {
+				"alt": "Icône de duplication"
+			}
+		},
+		"editor": {
+			"title": "Éditeur de thème",
+			"cancelButton": "Annuler",
+			"saveApplyButton": "Enregistrer et appliquer",
+			"themeName": "Nom du thème (ID)",
+			"autoPaletteTitle": "Correction automatique des couleurs à partir des images",
+			"autoPaletteInstruction": "Cliquez sur une couleur ci-dessus pour remplir automatiquement les couleurs primaires/secondaires/accentuées/neutres.",
+			"coreColors": "Couleurs de base",
+			"baseBackground": "Bases et arrière-plan",
+			"variables": "Variables",
+			"borderRadius": "Rayon de la bordure (--rounded-box)",
+			"borderWidth": "Largeur de la bordure (--border-btn)",
+			"advancedCustomization": "Personnalisation avancée",
+			"customCSS": "CSS personnalisé (surcharge)",
+			"customMjsScript": "Script MJS personnalisé (facultatif)",
+			"mjsSyntaxHint": "Utilisez la [syntaxe async-eval](${asyncDocLink}). Renvoie un objet contenant les fonctions <code>load()</code> et <code>unload()</code>.",
+			"themeIdRequired": "ID du thème requis",
+			"newThemeName": "Nouveau nom du thème :",
+			"deleteConfirm": "Êtes-vous sûr de vouloir supprimer le thème ${id} ?",
+			"saved": "Enregistré !",
+			"failedToSave": "Échec de l'enregistrement"
+		},
 		"themes": {
 			"auto": "Automatique",
 			"light": "Clair",

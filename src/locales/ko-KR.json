@@ -1355,6 +1355,49 @@
 			"placeholder": "테마 검색...",
 			"noResult": "일치하는 테마가 없습니다."
 		},
+		"createButton": "+ 새 테마 만들기",
+		"preview": {
+			"editButton": {
+				"title": "편집"
+			},
+			"editButtonIcon": {
+				"alt": "편집 아이콘"
+			},
+			"deleteButton": {
+				"title": "삭제"
+			},
+			"deleteButtonIcon": {
+				"alt": "삭제 아이콘"
+			},
+			"cloneButton": {
+				"title": "복제"
+			},
+			"cloneButtonIcon": {
+				"alt": "복제 아이콘"
+			}
+		},
+		"editor": {
+			"title": "테마 편집기",
+			"cancelButton": "취소",
+			"saveApplyButton": "저장 및 적용",
+			"themeName": "테마 이름 (ID)",
+			"autoPaletteTitle": "사진에서 자동 색상 보정",
+			"autoPaletteInstruction": "위의 색상을 클릭하면 기본/보조/강조/중성색이 자동으로 채워집니다.",
+			"coreColors": "핵심 색상",
+			"baseBackground": "기본 및 배경",
+			"variables": "변수",
+			"borderRadius": "테두리 반경 (--rounded-box)",
+			"borderWidth": "테두리 너비 (--border-btn)",
+			"advancedCustomization": "고급 사용자 정의",
+			"customCSS": "사용자 정의 CSS (재정의)",
+			"customMjsScript": "사용자 정의 MJS 스크립트 (선택 사항)",
+			"mjsSyntaxHint": "[async-eval 구문](${asyncDocLink})을 사용하세요. <code>load()</code> 및 <code>unload()</code> 함수가 포함된 객체를 반환합니다.",
+			"themeIdRequired": "테마 ID가 필요합니다.",
+			"newThemeName": "새 테마 이름:",
+			"deleteConfirm": "테마 ${id}를 삭제하시겠습니까?",
+			"saved": "저장되었습니다!",
+			"failedToSave": "저장 실패"
+		},
 		"themes": {
 			"auto": "자동",
 			"light": "라이트",

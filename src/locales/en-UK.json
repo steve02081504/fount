@@ -1355,6 +1355,49 @@
 			"placeholder": "Search themes...",
 			"noResult": "No matching themes found."
 		},
+		"createButton": "+ Create new theme",
+		"preview": {
+			"editButton": {
+				"title": "Edit"
+			},
+			"editButtonIcon": {
+				"alt": "Edit icon"
+			},
+			"deleteButton": {
+				"title": "Delete"
+			},
+			"deleteButtonIcon": {
+				"alt": "Delete icon"
+			},
+			"cloneButton": {
+				"title": "Copy"
+			},
+			"cloneButtonIcon": {
+				"alt": "Copy icon"
+			}
+		},
+		"editor": {
+			"title": "Theme editor",
+			"cancelButton": "Cancel",
+			"saveApplyButton": "Save and apply",
+			"themeName": "Theme name (ID)",
+			"autoPaletteTitle": "Automatic color correction from images",
+			"autoPaletteInstruction": "Click on a color above to automatically fill primary/secondary/accent/neutral colors.",
+			"coreColors": "Core colors",
+			"baseBackground": "Basics and Background",
+			"variables": "Variables",
+			"borderRadius": "Border radius (--rounded-box)",
+			"borderWidth": "Border width (--border-btn)",
+			"advancedCustomization": "Advanced customization",
+			"customCSS": "Custom CSS (override)",
+			"customMjsScript": "Custom MJS script (optional)",
+			"mjsSyntaxHint": "Use [async-eval syntax](${asyncDocLink}). Returns an object containing the <code>load()</code> and <code>unload()</code> functions.",
+			"themeIdRequired": "Theme ID required",
+			"newThemeName": "New theme name:",
+			"deleteConfirm": "Are you sure you want to delete the theme ${id}?",
+			"saved": "Saved!",
+			"failedToSave": "Save failed"
+		},
 		"themes": {
 			"auto": "Automatic",
 			"light": "Light",

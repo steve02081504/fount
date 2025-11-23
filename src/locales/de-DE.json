@@ -1355,6 +1355,49 @@
 			"placeholder": "Themen suchen...",
 			"noResult": "Keine passenden Themen gefunden."
 		},
+		"createButton": "+ Neues Thema erstellen",
+		"preview": {
+			"editButton": {
+				"title": "Bearbeiten"
+			},
+			"editButtonIcon": {
+				"alt": "Bearbeiten-Symbol"
+			},
+			"deleteButton": {
+				"title": "Löschen"
+			},
+			"deleteButtonIcon": {
+				"alt": "Löschen-Symbol"
+			},
+			"cloneButton": {
+				"title": "Kopieren"
+			},
+			"cloneButtonIcon": {
+				"alt": "Kopiersymbol"
+			}
+		},
+		"editor": {
+			"title": "Theme-Editor",
+			"cancelButton": "Abbrechen",
+			"saveApplyButton": "Speichern und anwenden",
+			"themeName": "Themenname (ID)",
+			"autoPaletteTitle": "Automatische Farbkorrektur aus Bildern",
+			"autoPaletteInstruction": "Klicken Sie oben auf eine Farbe, um Primär-/Sekundär-/Akzent-/Neutralfarben automatisch auszufüllen.",
+			"coreColors": "Kernfarbe",
+			"baseBackground": "Grundlagen und Hintergrund",
+			"variables": "Variablen",
+			"borderRadius": "Randradius (--rounded-box)",
+			"borderWidth": "Randbreite (--border-btn)",
+			"advancedCustomization": "Erweiterte Anpassung",
+			"customCSS": "Benutzerdefiniertes CSS (Überschreibung)",
+			"customMjsScript": "Benutzerdefiniertes MJS-Skript (optional)",
+			"mjsSyntaxHint": "Verwenden Sie [async-eval-Syntax](${asyncDocLink}). Gibt ein Objekt zurück, das die Funktionen <code>load()</code> und <code>unload()</code> enthält.",
+			"themeIdRequired": "Themen-ID erforderlich",
+			"newThemeName": "Name des neuen Themas:",
+			"deleteConfirm": "Sind Sie sicher, dass Sie das Thema ${id} löschen möchten?",
+			"saved": "Gespeichert!",
+			"failedToSave": "Speichern fehlgeschlagen"
+		},
 		"themes": {
 			"auto": "Automatisch",
 			"light": "Hell",

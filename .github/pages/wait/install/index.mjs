@@ -127,6 +127,21 @@ async function renderThemePreviews() {
 
 	const allPreviews = []
 
+	// Load custom theme from localStorage if available
+	const customThemeName = localStorage.getItem('custom_theme_name')
+	const customThemeCss = localStorage.getItem('custom_theme_css')
+
+	// Inject custom theme CSS for preview if available
+	if (customThemeName && customThemeCss) {
+		let customStyleTag = document.getElementById('custom-theme-preview-css')
+		if (!customStyleTag) {
+			customStyleTag = document.createElement('style')
+			customStyleTag.id = 'custom-theme-preview-css'
+			document.head.appendChild(customStyleTag)
+		}
+		customStyleTag.textContent = customThemeCss
+	}
+
 	const autoPreview = await createAutoPreview()
 	autoPreview.addEventListener('click', () => handleThemeClick(autoPreview, 'auto'))
 	if (!theme_now) autoPreview.classList.add('selected-theme')
@@ -145,6 +160,17 @@ async function renderThemePreviews() {
 
 	const renderedPreviews = (await Promise.all(previewPromises)).filter(Boolean)
 	allPreviews.push(...renderedPreviews)
+
+	// Add custom theme preview if available
+	if (customThemeName && customThemeCss) {
+		const customPreview = await renderTemplate('theme_preview', { theme: customThemeName, name: customThemeName })
+		if (customPreview) {
+			customPreview.addEventListener('click', () => handleThemeClick(customPreview, customThemeName))
+			if (theme_now === customThemeName) customPreview.classList.add('selected-theme')
+			allPreviews.push({ element: customPreview, name: customThemeName })
+		}
+	}
+
 	themeList.append(...allPreviews.map(p => p.element))
 
 	makeSearchable({

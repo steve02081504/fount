@@ -1355,6 +1355,49 @@
 			"placeholder": "搜索主题...",
 			"noResult": "未找到匹配的主题。"
 		},
+		"createButton": "+ 创建新主题",
+		"preview": {
+			"editButton": {
+				"title": "编辑"
+			},
+			"editButtonIcon": {
+				"alt": "编辑图标"
+			},
+			"deleteButton": {
+				"title": "删除"
+			},
+			"deleteButtonIcon": {
+				"alt": "删除图标"
+			},
+			"cloneButton": {
+				"title": "复制"
+			},
+			"cloneButtonIcon": {
+				"alt": "复制图标"
+			}
+		},
+		"editor": {
+			"title": "主题编辑器",
+			"cancelButton": "取消",
+			"saveApplyButton": "保存并应用",
+			"themeName": "主题名称 (ID)",
+			"autoPaletteTitle": "从图片自动调色",
+			"autoPaletteInstruction": "点击上方颜色以自动填充主色/辅助色/强调色/中性色。",
+			"coreColors": "核心颜色",
+			"baseBackground": "基础与背景",
+			"variables": "变量",
+			"borderRadius": "圆角半径 (--rounded-box)",
+			"borderWidth": "边框宽度 (--border-btn)",
+			"advancedCustomization": "高级自定义",
+			"customCSS": "自定义 CSS (覆盖)",
+			"customMjsScript": "自定义 MJS 脚本 (可选)",
+			"mjsSyntaxHint": "使用 [async-eval 语法](${asyncDocLink})。返回一个包含 <code>load()</code> 和 <code>unload()</code> 函数的对象。",
+			"themeIdRequired": "需要主题 ID",
+			"newThemeName": "新主题名称：",
+			"deleteConfirm": "确定要删除主题 ${id} 吗？",
+			"saved": "已保存！",
+			"failedToSave": "保存失败"
+		},
 		"themes": {
 			"auto": "自动",
 			"light": "亮色",
