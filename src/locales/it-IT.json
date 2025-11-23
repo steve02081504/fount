@@ -724,7 +724,21 @@
 				"downloadHtml": "Scarica come HTML",
 				"downloadHtmlIcon": {
 					"alt": "Icona download HTML"
+				},
+				"share": {
+					"textContent": "Condividi",
+					"1h": "1 ora",
+					"12h": "12 ore",
+					"24h": "24 ore",
+					"72h": "72 ore"
+				},
+				"shareIcon": {
+					"alt": "icona di condivisione"
 				}
+			},
+			"share": {
+				"uploading": "Creazione collegamento...",
+				"success": "Condivisione riuscita! Link copiato negli appunti. <br>Questa funzionalità è supportata da ${provider}. <br>[Sostienili. ](${sponsorLink})"
 			}
 		},
 		"messageEdit": {

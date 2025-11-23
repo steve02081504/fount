@@ -724,7 +724,21 @@
 				"downloadHtml": "下載為html",
 				"downloadHtmlIcon": {
 					"alt": "下載html圖示"
+				},
+				"share": {
+					"textContent": "分享",
+					"1h": "1 小時",
+					"12h": "12 小時",
+					"24h": "24 小時",
+					"72h": "72 小時"
+				},
+				"shareIcon": {
+					"alt": "分享圖標"
 				}
+			},
+			"share": {
+				"uploading": "正在建立連結...",
+				"success": "分享成功！連結已複製到剪貼板。<br>此功能由 ${provider} 提供支援。<br>[贊助他們。](${sponsorLink})"
 			}
 		},
 		"messageEdit": {

@@ -724,7 +724,21 @@
 				"downloadHtml": "Download als html",
 				"downloadHtmlIcon": {
 					"alt": "html-downloadpictogram"
+				},
+				"share": {
+					"textContent": "Delen",
+					"1h": "1 uur",
+					"12h": "12 uur",
+					"24h": "24 uur",
+					"72h": "72 uur"
+				},
+				"shareIcon": {
+					"alt": "pictogram delen"
 				}
+			},
+			"share": {
+				"uploading": "Link maken...",
+				"success": "Delen gelukt! Link gekopieerd naar klembord. <br>Deze functie wordt mogelijk gemaakt door ${provider}. <br>[Sponsor ze.](${sponsorLink})"
 			}
 		},
 		"messageEdit": {

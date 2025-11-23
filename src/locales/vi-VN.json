@@ -724,7 +724,21 @@
 				"downloadHtml": "Tải về HTML",
 				"downloadHtmlIcon": {
 					"alt": "Biểu tượng tải xuống HTML"
+				},
+				"share": {
+					"textContent": "Chia sẻ",
+					"1h": "1 giờ",
+					"12h": "12 giờ",
+					"24h": "24 giờ",
+					"72h": "72 giờ"
+				},
+				"shareIcon": {
+					"alt": "biểu tượng chia sẻ"
 				}
+			},
+			"share": {
+				"uploading": "Đang tạo liên kết...",
+				"success": "Chia sẻ thành công! Đã sao chép liên kết vào bảng nhớ tạm. <br>Tính năng này được hỗ trợ bởi ${provider}. <br>[Tài trợ cho họ.](${sponsorLink})"
 			}
 		},
 		"messageEdit": {

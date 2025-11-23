@@ -724,7 +724,21 @@
 				"downloadHtml": "تنزيل html",
 				"downloadHtmlIcon": {
 					"alt": "أيقونة تنزيل html"
+				},
+				"share": {
+					"textContent": "مشاركة",
+					"1h": "ساعة واحدة",
+					"12h": "12 ساعة",
+					"24h": "24 ساعة",
+					"72h": "72 ساعة"
+				},
+				"shareIcon": {
+					"alt": "رمز المشاركة"
 				}
+			},
+			"share": {
+				"uploading": "جارٍ إنشاء الرابط...",
+				"success": "تمت المشاركة بنجاح! تم نسخ الرابط إلى الحافظة. <br>هذه الميزة مدعومة من ${provider}. <br>[رعايتهم.](${sponsorLink})"
 			}
 		},
 		"messageEdit": {

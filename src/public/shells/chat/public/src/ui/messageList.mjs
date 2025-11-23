@@ -2,7 +2,7 @@ import { confirmI18n, main_locale, geti18n } from '../../../../../scripts/i18n.m
 import { renderMarkdownAsString, renderMarkdownAsStandAloneHtmlString } from '../../../../../scripts/markdown.mjs'
 import { onElementRemoved } from '../../../../../scripts/onElementRemoved.mjs'
 import { renderTemplate, renderTemplateAsHtmlString } from '../../../../../scripts/template.mjs'
-import { showToast } from '../../../../../scripts/toast.mjs'
+import { showToast, showToastI18n } from '../../../../../scripts/toast.mjs'
 import {
 	modifyTimeLine,
 	deleteMessage,
@@ -10,6 +10,7 @@ import {
 } from '../endpoints.mjs'
 import { handleFilesSelect, renderAttachmentPreview } from '../fileHandling.mjs'
 import { getfile } from '../files.mjs'
+import { createShareLink } from '../share.mjs'
 import { processTimeStampForId, SWIPE_THRESHOLD, DEFAULT_AVATAR, TRANSITION_DURATION, arrayBufferToBase64 } from '../utils.mjs'
 
 import { addDragAndDropSupport } from './dragAndDrop.mjs'
@@ -179,6 +180,29 @@ export async function renderMessage(message) {
 			showToast('error', error.stack || error.message || error)
 		}
 		dropdownMenu.hidePopover()
+	})
+
+	// --- Share buttons ---
+	const shareButtons = dropdownMenu.querySelectorAll('.share-button')
+	shareButtons.forEach(button => {
+		button.addEventListener('click', async () => {
+			try {
+				const time = button.dataset.time
+				showToast('info', geti18n('chat.messageView.share.uploading'))
+				const blob = new Blob([await generateFullHtmlForMessage(message)], { type: 'text/html' })
+				const link = await createShareLink(blob, `message-${preprocessedMessage.safeTimeStamp}.html`, time)
+
+				await navigator.clipboard.writeText(link)
+				showToastI18n('success', 'chat.messageView.share.success', {
+					provider: 'litterbox.moe',
+					sponsorLink: 'https://store.catbox.moe/'
+				})
+			}
+			catch (error) {
+				showToast('error', error.stack || error.message || error)
+			}
+			dropdownMenu.hidePopover()
+		})
 	})
 
 	// --- 编辑按钮 ---
