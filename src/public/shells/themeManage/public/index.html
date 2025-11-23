@@ -110,10 +110,15 @@
 
 			<!-- Theme List -->
 			<div class="lg:w-1/2 flex flex-col max-h-[80vh]">
-				<div class="w-full p-4">
+				<div class="w-full p-4 space-y-3">
 					<input id="theme-search-input" type="search" data-i18n="themeManage.search" class="input input-bordered w-full" />
+					<button id="create-theme-btn" class="btn btn-primary btn-block gap-2">
+						<span data-i18n="themeManage.createButton"></span>
+					</button>
 				</div>
-				<div id="theme-list" class="flex-1 grid gap-4 overflow-y-auto grid-cols-[repeat(auto-fit,minmax(160px,1fr))] p-4 lg:p-6 pt-0"></div>
+				<div id="theme-list" class="flex-1 overflow-y-auto px-4 lg:px-6 pb-4 pt-2">
+					<div id="theme-grid" class="grid gap-4 grid-cols-[repeat(auto-fill,minmax(200px,1fr))]"></div>
+				</div>
 			</div>
 		</div>
 	</div>

@@ -1355,6 +1355,49 @@
 			"placeholder": "搜尋主題...",
 			"noResult": "未找到相符的主題。"
 		},
+		"createButton": "+ 建立新主題",
+		"preview": {
+			"editButton": {
+				"title": "編輯"
+			},
+			"editButtonIcon": {
+				"alt": "編輯圖示"
+			},
+			"deleteButton": {
+				"title": "刪除"
+			},
+			"deleteButtonIcon": {
+				"alt": "刪除圖示"
+			},
+			"cloneButton": {
+				"title": "複製"
+			},
+			"cloneButtonIcon": {
+				"alt": "複製圖示"
+			}
+		},
+		"editor": {
+			"title": "主題編輯器",
+			"cancelButton": "取消",
+			"saveApplyButton": "儲存並套用",
+			"themeName": "主題名稱 (ID)",
+			"autoPaletteTitle": "從圖片自動調色",
+			"autoPaletteInstruction": "點擊上方顏色以自動填充主色/輔助色/強調色/中性色。",
+			"coreColors": "核心顏色",
+			"baseBackground": "基礎與背景",
+			"variables": "變數",
+			"borderRadius": "圓角半徑 (--rounded-box)",
+			"borderWidth": "邊框寬度 (--border-btn)",
+			"advancedCustomization": "進階自訂",
+			"customCSS": "自訂 CSS (覆蓋)",
+			"customMjsScript": "自訂 MJS 腳本 (選填)",
+			"mjsSyntaxHint": "使用 [async-eval 語法](${asyncDocLink})。返回一個包含 <code>load()</code> 和 <code>unload()</code> 函數的物件。",
+			"themeIdRequired": "需要主題 ID",
+			"newThemeName": "新主題名稱：",
+			"deleteConfirm": "確定要刪除主題 ${id} 嗎？",
+			"saved": "已儲存！",
+			"failedToSave": "儲存失敗"
+		},
 		"themes": {
 			"auto": "自動",
 			"light": "亮色",

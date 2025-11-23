@@ -1,0 +1,93 @@
+<div class="h-full flex flex-col bg-base-200 rounded-box p-4 gap-4 overflow-hidden">
+	<div class="flex justify-between items-center border-b border-base-content/10 pb-2">
+		<h2 class="text-xl font-bold" data-i18n="themeManage.editor.title"></h2>
+		<div class="flex gap-2">
+			<button id="editor-cancel" class="btn btn-sm btn-ghost" data-i18n="themeManage.editor.cancelButton"></button>
+			<button id="editor-save" class="btn btn-sm btn-primary" data-i18n="themeManage.editor.saveApplyButton"></button>
+		</div>
+	</div>
+
+	<div class="flex-1 overflow-y-auto pt-2 space-y-6">
+		<!-- Basic Info -->
+		<div class="form-control">
+			<label class="label"><span class="label-text" data-i18n="themeManage.editor.themeName"></span></label>
+			<input id="theme-name" type="text" class="input input-bordered" ${isNew ? '' : 'disabled' } value="${name}" />
+		</div>
+
+		<!-- Image Color Extraction -->
+		<div class="card bg-base-100 shadow-sm p-4">
+			<h3 class="font-bold mb-2 flex items-center gap-2">
+				<img src="https://api.iconify.design/line-md/image.svg" class="w-5 h-5" /> <span data-i18n="themeManage.editor.autoPaletteTitle"></span>
+			</h3>
+			<input type="file" id="img-upload" accept="image/*" class="file-input file-input-bordered file-input-sm w-full mb-2" />
+			<img id="img-preview" class="w-full max-h-48 object-contain rounded-md mb-2 hidden" />
+			<div id="palette-result" class="flex gap-2 min-h-[2rem] mb-2 hidden"></div>
+			<div id="auto-palette-instruction" class="text-xs opacity-70 hidden" data-i18n="themeManage.editor.autoPaletteInstruction"></div>
+		</div>
+
+		<!-- Colors -->
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+			<div class="card bg-base-100 p-3 shadow-sm">
+				<div class="text-sm font-bold mb-2" data-i18n="themeManage.editor.coreColors"></div>
+				<div id="color-inputs-core" class="space-y-2">
+					<!-- JS will inject color inputs here -->
+				</div>
+			</div>
+			<div class="card bg-base-100 p-3 shadow-sm">
+				<div class="text-sm font-bold mb-2" data-i18n="themeManage.editor.baseBackground"></div>
+				<div id="color-inputs-base" class="space-y-2"></div>
+			</div>
+		</div>
+
+		<!-- Sliders -->
+		<div class="card bg-base-100 p-4 shadow-sm">
+			<h3 class="font-bold mb-2" data-i18n="themeManage.editor.variables"></h3>
+			<div class="form-control">
+				<div class="flex items-center gap-3">
+					<span class="label-text whitespace-nowrap min-w-[200px]" data-i18n="themeManage.editor.borderRadius"></span>
+					<input type="range" min="0" max="2" step="0.1" data-var="--rounded-box" class="range range-xs css-slider flex-1" />
+				</div>
+			</div>
+			<div class="form-control">
+				<div class="flex items-center gap-3">
+					<span class="label-text whitespace-nowrap min-w-[200px]" data-i18n="themeManage.editor.borderWidth"></span>
+					<input type="range" min="0" max="8" step="1" data-var="--border-btn" class="range range-xs css-slider flex-1" />
+				</div>
+			</div>
+		</div>
+
+		<!-- Advanced Customization -->
+		<div class="card bg-base-100 p-4 shadow-sm">
+			<h3 class="font-bold mb-3 flex items-center gap-2">
+				<img src="https://api.iconify.design/line-md/document-code.svg" class="w-5 h-5" />
+				<span data-i18n="themeManage.editor.advancedCustomization"></span>
+			</h3>
+
+			<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 min-h-[300px]">
+				<!-- Custom CSS -->
+				<div class="form-control flex flex-col">
+					<label class="label pb-2">
+						<span class="label-text font-semibold" data-i18n="themeManage.editor.customCSS"></span>
+						<span class="label-text-alt text-xs opacity-60"></span>
+					</label>
+					<textarea id="custom-css-input" class="textarea textarea-bordered font-mono text-xs flex-1 min-h-[250px]" placeholder=".btn { ... }"></textarea>
+				</div>
+
+				<!-- Custom MJS -->
+				<div class="form-control flex flex-col">
+					<label class="label pb-2">
+						<span class="label-text font-semibold" data-i18n="themeManage.editor.customMjsScript"></span>
+						<span class="label-text-alt text-xs opacity-60"></span>
+					</label>
+					<textarea id="custom-mjs-input" class="textarea textarea-bordered font-mono text-xs flex-1 min-h-[250px]" placeholder="({
+	async load() { },
+	async unload() { }
+})"></textarea>
+					<div class="mt-2 space-y-1">
+						<div class="text-xs opacity-70" data-i18n="themeManage.editor.mjsSyntaxHint" data-async-doc-link="https://github.com/steve02081504/async-eval"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1355,6 +1355,49 @@
 			"placeholder": "Cerca temi...",
 			"noResult": "Nessun tema corrispondente trovato."
 		},
+		"createButton": "+ Crea un nuovo tema",
+		"preview": {
+			"editButton": {
+				"title": "Modifica"
+			},
+			"editButtonIcon": {
+				"alt": "Icona modifica"
+			},
+			"deleteButton": {
+				"title": "Elimina"
+			},
+			"deleteButtonIcon": {
+				"alt": "Icona elimina"
+			},
+			"cloneButton": {
+				"title": "Clona"
+			},
+			"cloneButtonIcon": {
+				"alt": "Icona clona"
+			}
+		},
+		"editor": {
+			"title": "Editor del tema",
+			"cancelButton": "Annulla",
+			"saveApplyButton": "Salva e applica",
+			"themeName": "Nome del tema (ID)",
+			"autoPaletteTitle": "Correzione automatica del colore dalle immagini",
+			"autoPaletteInstruction": "Fai clic su un colore sopra per riempire automaticamente i colori primari/secondari/accentati/neutri.",
+			"coreColors": "Colori principali",
+			"baseBackground": "Basi e sfondo",
+			"variables": "Variabili",
+			"borderRadius": "Raggio del bordo (--rounded-box)",
+			"borderWidth": "Larghezza del bordo (--border-btn)",
+			"advancedCustomization": "Personalizzazione avanzata",
+			"customCSS": "CSS personalizzato (override)",
+			"customMjsScript": "Script MJS personalizzato (opzionale)",
+			"mjsSyntaxHint": "Utilizza la [sintassi async-eval](${asyncDocLink}). Restituisce un oggetto contenente le funzioni <code>load()</code> e <code>unload()</code>.",
+			"themeIdRequired": "ID tema obbligatorio",
+			"newThemeName": "Nuovo nome del tema:",
+			"deleteConfirm": "Sei sicuro di voler eliminare il tema ${id}?",
+			"saved": "Salvato!",
+			"failedToSave": "Salvataggio non riuscito"
+		},
 		"themes": {
 			"auto": "Automatico",
 			"light": "Chiaro",

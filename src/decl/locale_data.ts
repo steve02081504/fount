@@ -1344,6 +1344,49 @@ export type LocaleData = {
 			placeholder: string
 			noResult: string
 		}
+		createButton: string
+		preview: {
+			editButton: {
+				title: string
+			}
+			editButtonIcon: {
+				alt: string
+			}
+			deleteButton: {
+				title: string
+			}
+			deleteButtonIcon: {
+				alt: string
+			}
+			cloneButton: {
+				title: string
+			}
+			cloneButtonIcon: {
+				alt: string
+			}
+		}
+		editor: {
+			title: string
+			cancelButton: string
+			saveApplyButton: string
+			themeName: string
+			autoPaletteTitle: string
+			autoPaletteInstruction: string
+			coreColors: string
+			baseBackground: string
+			variables: string
+			borderRadius: string
+			borderWidth: string
+			advancedCustomization: string
+			customCSS: string
+			customMjsScript: string
+			mjsSyntaxHint: string
+			themeIdRequired: string
+			newThemeName: string
+			deleteConfirm: string
+			saved: string
+			failedToSave: string
+		}
 		themes: {
 			auto: string
 			light: string
@@ -2216,6 +2259,8 @@ export type LocaleKeyParams = {
 	'protocolhandler.runPartConfirm.message': { partname: string | number; parttype: string | number }
 	'protocolhandler.unknownError': { error: string | number }
 	'telegram_bots.alerts.botExists': { botname: string | number }
+	'themeManage.editor.deleteConfirm': { id: string | number }
+	'themeManage.editor.mjsSyntaxHint': { asyncDocLink: string | number }
 	'tutorial.progressMessages.keyboardPress': { keyboardIcon: string | number }
 	'tutorial.progressMessages.mobileClick': { phoneIcon: string | number }
 	'tutorial.progressMessages.mobileTouchMove': { phoneIcon: string | number }

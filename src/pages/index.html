@@ -23,7 +23,8 @@
 		import { redirectToLoginInfo } from './scripts/credentialManager.mjs'
 		import { initTranslations } from './scripts/i18n.mjs'
 		import { getAnyDefaultPart } from './scripts/parts.mjs'
-		import { setTheme } from './scripts/theme.mjs'
+		import { setTheme, serializeCurrentTheme } from './scripts/theme.mjs'
+		import { applyUrlParamsTransferStrategy } from './scripts/urlDataTransfer.mjs'
 		initTranslations('startPage')
 		const hostUrl = window.location.origin
 		const urlParams = new URLSearchParams(window.location.search)
@@ -34,29 +35,38 @@
 		/**
 		 * 获取通用 URL 参数。
 		 * @param {object} params - 其他参数。
-		 * @returns {URLSearchParams} - URL 搜索参数。
+		 * @returns {Promise<string>} - URL 查询字符串。
 		 */
-		function getCommonUrlParams(params = {}) {
+		async function getCommonUrlParams(params = {}) {
+			const themeData = serializeCurrentTheme()
+
 			Object.assign(params, {
-				theme: localStorage.getItem('theme'),
+				themeData: JSON.stringify(themeData),
 				hostUrl,
 				userPreferredLanguages: localStorage.getItem('userPreferredLanguages') || undefined
 			})
+
 			for (const key in params) if (params[key] === undefined) delete params[key]
-			return new URLSearchParams(params)
+			const urlParams = new URLSearchParams(params)
+
+			// 使用传输策略处理所有 URL 参数
+			const targetUrl = new URL('https://steve02081504.github.io/fount/values_update')
+			await applyUrlParamsTransferStrategy(targetUrl, urlParams)
+
+			return targetUrl.search.substring(1) // 返回查询字符串（去掉开头的 ?）
 		}
 
-		document.getElementById('skipButton').addEventListener('click', () => {
-			window.location.href = 'https://steve02081504.github.io/fount/values_update?' + getCommonUrlParams({ redirect: hostUrl + '/shells/home' })
+		document.getElementById('skipButton').addEventListener('click', async () => {
+			window.location.href = 'https://steve02081504.github.io/fount/values_update?' + await getCommonUrlParams({ redirect: hostUrl + '/shells/home' })
 		})
 
 		let retry = 1
 		try {
 			const defaultShell = await getAnyDefaultPart('shells') || 'home'
-			setInterval(() => {
+			setInterval(async () => {
 				if (!retry) return
 				retry = 0
-				const newTab = window.open('https://steve02081504.github.io/fount/values_update?' + getCommonUrlParams(), '_blank')
+				const newTab = window.open('https://steve02081504.github.io/fount/values_update?' + await getCommonUrlParams(), '_blank')
 
 				if (newTab) {
 					newTab.blur()

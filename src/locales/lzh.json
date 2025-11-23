@@ -1355,6 +1355,49 @@
 			"placeholder": "觅风貌…",
 			"noResult": "遍寻无获。"
 		},
+		"createButton": "+ 制新風貌",
+		"preview": {
+			"editButton": {
+				"title": "修訂"
+			},
+			"editButtonIcon": {
+				"alt": "修訂之圖"
+			},
+			"deleteButton": {
+				"title": "刪削"
+			},
+			"deleteButtonIcon": {
+				"alt": "刪削之圖"
+			},
+			"cloneButton": {
+				"title": "臨摹"
+			},
+			"cloneButtonIcon": {
+				"alt": "臨摹之圖"
+			}
+		},
+		"editor": {
+			"title": "風貌修訂器",
+			"cancelButton": "罷",
+			"saveApplyButton": "存而用之",
+			"themeName": "風貌之名 (ID)",
+			"autoPaletteTitle": "以圖取色",
+			"autoPaletteInstruction": "點選上方顏色，以自動填補主色、輔色、強調色及中性色。",
+			"coreColors": "主色",
+			"baseBackground": "基調與背景",
+			"variables": "變數",
+			"borderRadius": "邊框半徑 (--rounded-box)",
+			"borderWidth": "邊框寬度 (--border-btn)",
+			"advancedCustomization": "深層定制",
+			"customCSS": "自定 CSS (覆蓋)",
+			"customMjsScript": "自定 MJS 腳本 (選填)",
+			"mjsSyntaxHint": "使用 [async-eval 語法](${asyncDocLink})。須傳回一含 <code>load()</code> 與 <code>unload()</code> 函數之物件。",
+			"themeIdRequired": "須有風貌 ID",
+			"newThemeName": "新風貌之名：",
+			"deleteConfirm": "欲刪風貌 ${id} 乎？",
+			"saved": "已存！",
+			"failedToSave": "存之未果"
+		},
 		"themes": {
 			"auto": "隨天時",
 			"light": "白晝",
