@@ -1355,6 +1355,47 @@
 			"placeholder": "थीम खोजें...",
 			"noResult": "कोई मिलता-जुलता विषय नहीं मिला।"
 		},
+		"createButton": "+ नई थीम बनाएं",
+		"preview": {
+			"editButton": {
+				"title": "संपादित करें"
+			},
+			"editButtonIcon": {
+				"alt": "संपादित करें आइकन"
+			},
+			"deleteButton": {
+				"title": "हटाएं"
+			},
+			"deleteButtonIcon": {
+				"alt": "हटाएं आइकन"
+			},
+			"cloneButton": {
+				"title": "कॉपी"
+			},
+			"cloneButtonIcon": {
+				"alt": "कॉपी आइकन"
+			}
+		},
+		"editor": {
+			"title": "थीम संपादक",
+			"cancelButton": "रद्द करें",
+			"saveApplyButton": "सहेजें और लागू करें",
+			"themeName": "थीम का नाम (आईडी)",
+			"autoPaletteTitle": "चित्रों से स्वचालित रंग सुधार",
+			"autoPaletteInstruction": "प्राथमिक/माध्यमिक/उच्चारण/तटस्थ रंगों को स्वचालित रूप से भरने के लिए ऊपर दिए गए रंग पर क्लिक करें।",
+			"coreColors": "मूल रंग",
+			"baseBackground": "मूल बातें और पृष्ठभूमि",
+			"variables": "चर (Variables)",
+			"borderRadius": "सीमा त्रिज्या (--rounded-box)",
+			"borderWidth": "सीमा चौड़ाई (--border-btn)",
+			"advancedCustomization": "उन्नत अनुकूलन",
+			"customCSS": "कस्टम CSS (ओवरराइड)",
+			"customMjsScript": "कस्टम MJS स्क्रिप्ट (वैकल्पिक)",
+			"mjsSyntaxHint": "[async-eval सिंटेक्स](${asyncDocLink}) का उपयोग करें। एक ऑब्जेक्ट लौटाता है जिसमें <code>load()</code> और <code>unload()</code> फ़ंक्शन होते हैं।",
+			"themeIdRequired": "थीम आईडी आवश्यक है",
+			"saved": "सहेजा गया!",
+			"failedToSave": "सहेजना विफल"
+		},
 		"themes": {
 			"auto": "स्वचालित",
 			"light": "हल्का",

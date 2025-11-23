@@ -1355,6 +1355,47 @@
 			"placeholder": "テーマを検索...",
 			"noResult": "一致するテーマが見つかりませんでした。"
 		},
+		"createButton": "+ 新しいテーマを作成",
+		"preview": {
+			"editButton": {
+				"title": "編集"
+			},
+			"editButtonIcon": {
+				"alt": "編集アイコン"
+			},
+			"deleteButton": {
+				"title": "削除"
+			},
+			"deleteButtonIcon": {
+				"alt": "削除アイコン"
+			},
+			"cloneButton": {
+				"title": "複製"
+			},
+			"cloneButtonIcon": {
+				"alt": "複製アイコン"
+			}
+		},
+		"editor": {
+			"title": "テーマエディター",
+			"cancelButton": "キャンセル",
+			"saveApplyButton": "保存して適用",
+			"themeName": "テーマ名 (ID)",
+			"autoPaletteTitle": "画像からの自動色補正",
+			"autoPaletteInstruction": "上の色をクリックすると、プライマリ/セカンダリ/アクセント/ニュートラルカラーが自動的に入力されます。",
+			"coreColors": "コアカラー",
+			"baseBackground": "基本と背景",
+			"variables": "変数",
+			"borderRadius": "角丸の半径 (--rounded-box)",
+			"borderWidth": "枠線の幅 (--border-btn)",
+			"advancedCustomization": "高度なカスタマイズ",
+			"customCSS": "カスタム CSS (上書き)",
+			"customMjsScript": "カスタム MJS スクリプト (任意)",
+			"mjsSyntaxHint": "[async-eval 構文](${asyncDocLink}) を使用します。 <code>load()</code> および <code>unload()</code> 関数を含むオブジェクトを返してください。",
+			"themeIdRequired": "テーマIDが必要です",
+			"saved": "保存しました！",
+			"failedToSave": "保存に失敗しました"
+		},
 		"themes": {
 			"auto": "自動",
 			"light": "ライト",

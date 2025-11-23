@@ -1355,6 +1355,47 @@
 			"placeholder": "Leita að þema...",
 			"noResult": "Engin samsvarandi þemu fundust."
 		},
+		"createButton": "+ Búðu til nýtt þema",
+		"preview": {
+			"editButton": {
+				"title": "Breyta"
+			},
+			"editButtonIcon": {
+				"alt": "Breyta tákni"
+			},
+			"deleteButton": {
+				"title": "Eyða"
+			},
+			"deleteButtonIcon": {
+				"alt": "Eyða tákni"
+			},
+			"cloneButton": {
+				"title": "Afrit"
+			},
+			"cloneButtonIcon": {
+				"alt": "Afrita táknið"
+			}
+		},
+		"editor": {
+			"title": "Þema ritstjóri",
+			"cancelButton": "Hætta við",
+			"saveApplyButton": "Vista og nota",
+			"themeName": "Heiti þema (auðkenni)",
+			"autoPaletteTitle": "Sjálfvirk litaleiðrétting úr myndum",
+			"autoPaletteInstruction": "Smelltu á lit hér að ofan til að fylla sjálfkrafa út aðal-/efri liti/hreim/hlutlausa liti.",
+			"coreColors": "Kjarnalitur",
+			"baseBackground": "Grunnatriði og bakgrunnur",
+			"variables": "Breytur",
+			"borderRadius": "Kantarradíus (--rounded-box)",
+			"borderWidth": "Rammabreidd (--border-btn)",
+			"advancedCustomization": "Ítarleg aðlögun",
+			"customCSS": "Sérsniðin CSS (yfirskrifa)",
+			"customMjsScript": "Sérsniðið MJS forskrift (valfrjálst)",
+			"mjsSyntaxHint": "Notaðu [async-eval setningafræði](${asyncDocLink}). Skilar hlut sem inniheldur <code>load()</code> og <code>unload()</code> föllin.",
+			"themeIdRequired": "Þemaauðkenni krafist",
+			"saved": "Vistað!",
+			"failedToSave": "Vistun mistókst"
+		},
 		"themes": {
 			"auto": "Sjálfvirkt",
 			"light": "Ljóst",

@@ -1355,6 +1355,47 @@
 			"placeholder": "Thema's zoeken...",
 			"noResult": "Geen overeenkomende thema's gevonden."
 		},
+		"createButton": "+ Maak een nieuw thema",
+		"preview": {
+			"editButton": {
+				"title": "Bewerken"
+			},
+			"editButtonIcon": {
+				"alt": "Pictogram bewerken"
+			},
+			"deleteButton": {
+				"title": "Verwijderen"
+			},
+			"deleteButtonIcon": {
+				"alt": "Pictogram verwijderen"
+			},
+			"cloneButton": {
+				"title": "Kopiëren"
+			},
+			"cloneButtonIcon": {
+				"alt": "Kopieer pictogram"
+			}
+		},
+		"editor": {
+			"title": "Thema-editor",
+			"cancelButton": "Annuleren",
+			"saveApplyButton": "Opslaan en toepassen",
+			"themeName": "Themanaam (ID)",
+			"autoPaletteTitle": "Automatische kleurcorrectie van afbeeldingen",
+			"autoPaletteInstruction": "Klik op een kleur hierboven om de primaire/secundaire/accent/neutrale kleuren automatisch te vullen.",
+			"coreColors": "Kernkleuren",
+			"baseBackground": "Basis en achtergrond",
+			"variables": "Variabelen",
+			"borderRadius": "Randradius (--rounded-box)",
+			"borderWidth": "Randbreedte (--border-btn)",
+			"advancedCustomization": "Geavanceerd aanpassen",
+			"customCSS": "Aangepaste CSS (overschrijven)",
+			"customMjsScript": "Aangepast MJS-script (optioneel)",
+			"mjsSyntaxHint": "Gebruik [async-eval syntaxis](${asyncDocLink}). Retourneert een object dat de functies <code>load()</code> en <code>unload()</code> bevat.",
+			"themeIdRequired": "Thema-ID vereist",
+			"saved": "Opgeslagen!",
+			"failedToSave": "Opslaan mislukt"
+		},
 		"themes": {
 			"auto": "Automatisch",
 			"light": "Licht",

@@ -1355,6 +1355,47 @@
 			"placeholder": "ابحث عن سمة...",
 			"noResult": "لم يتم العثور على مواضيع مطابقة."
 		},
+		"createButton": "+ إنشاء سمة جديدة",
+		"preview": {
+			"editButton": {
+				"title": "تحرير"
+			},
+			"editButtonIcon": {
+				"alt": "رمز التحرير"
+			},
+			"deleteButton": {
+				"title": "حذف"
+			},
+			"deleteButtonIcon": {
+				"alt": "رمز الحذف"
+			},
+			"cloneButton": {
+				"title": "نسخ"
+			},
+			"cloneButtonIcon": {
+				"alt": "أيقونة النسخ"
+			}
+		},
+		"editor": {
+			"title": "محرر الموضوع",
+			"cancelButton": "إلغاء",
+			"saveApplyButton": "حفظ وتطبيق",
+			"themeName": "اسم السمة (المعرف)",
+			"autoPaletteTitle": "تصحيح الألوان التلقائي من الصور",
+			"autoPaletteInstruction": "انقر على اللون أعلاه لملء الألوان الأساسية/الثانوية/التمييزية/المحايدة تلقائيًا.",
+			"coreColors": "اللون الأساسي",
+			"baseBackground": "الأساسيات والخلفية",
+			"variables": "المتغيرات",
+			"borderRadius": "نصف قطر الحدود (--rounded-box)",
+			"borderWidth": "عرض الحدود (--border-btn)",
+			"advancedCustomization": "التخصيص المتقدم",
+			"customCSS": "CSS مخصص (تجاوز)",
+			"customMjsScript": "برنامج نصي MJS مخصص (اختياري)",
+			"mjsSyntaxHint": "استخدم [بناء جملة التقييم غير المتزامن](${asyncDocLink}). تُرجع كائنًا يحتوي على الدالتين <code>load()</code> و<code>unload()</code>.",
+			"themeIdRequired": "معرف الموضوع مطلوب",
+			"saved": "تم الحفظ!",
+			"failedToSave": "فشل الحفظ"
+		},
 		"themes": {
 			"auto": "تلقائي",
 			"light": "فاتح",

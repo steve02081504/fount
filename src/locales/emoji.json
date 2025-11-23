@@ -1355,6 +1355,47 @@
 			"placeholder": "🔍🎨",
 			"noResult": "🤷‍♀️🚫"
 		},
+		"createButton": "+ 🆕🎨",
+		"preview": {
+			"editButton": {
+				"title": "✏️"
+			},
+			"editButtonIcon": {
+				"alt": "✏️"
+			},
+			"deleteButton": {
+				"title": "🗑️"
+			},
+			"deleteButtonIcon": {
+				"alt": "🗑️"
+			},
+			"cloneButton": {
+				"title": "📑"
+			},
+			"cloneButtonIcon": {
+				"alt": "📑"
+			}
+		},
+		"editor": {
+			"title": "🎨✏️",
+			"cancelButton": "🚫",
+			"saveApplyButton": "💾 & ▶️",
+			"themeName": "📛 (🆔)",
+			"autoPaletteTitle": "🖼️➡️🎨",
+			"autoPaletteInstruction": "👆🎨 ➡️ 🤖🎒",
+			"coreColors": "❤️💙💚",
+			"baseBackground": "🔤 & 🖼️",
+			"variables": "🧮",
+			"borderRadius": "📐🔵",
+			"borderWidth": "📐➖",
+			"advancedCustomization": "🛠️🔧",
+			"customCSS": "🎨📝 (CSS)",
+			"customMjsScript": "📜 (MJS)",
+			"mjsSyntaxHint": "⌨️ [async-eval](${asyncDocLink}). ↩️ 📦 { <code>load()</code>, <code>unload()</code> }.",
+			"themeIdRequired": "🆔❓",
+			"saved": "💾✅",
+			"failedToSave": "💾❌"
+		},
 		"themes": {
 			"auto": "⚙️",
 			"light": "☀️",

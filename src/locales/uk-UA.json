@@ -1355,6 +1355,47 @@
 			"placeholder": "Пошук тем...",
 			"noResult": "Відповідних тем не знайдено."
 		},
+		"createButton": "+ Створити нову тему",
+		"preview": {
+			"editButton": {
+				"title": "Редагувати"
+			},
+			"editButtonIcon": {
+				"alt": "Значок редагування"
+			},
+			"deleteButton": {
+				"title": "Видалити"
+			},
+			"deleteButtonIcon": {
+				"alt": "Видалити значок"
+			},
+			"cloneButton": {
+				"title": "Копіювати"
+			},
+			"cloneButtonIcon": {
+				"alt": "Значок копіювання"
+			}
+		},
+		"editor": {
+			"title": "Редактор тем",
+			"cancelButton": "Скасувати",
+			"saveApplyButton": "Зберегти та застосувати",
+			"themeName": "Назва теми (ID)",
+			"autoPaletteTitle": "Автоматична корекція кольору з зображень",
+			"autoPaletteInstruction": "Клацніть колір вище, щоб автоматично заповнити основні/допоміжні/акцентні/нейтральні кольори.",
+			"coreColors": "Основні кольори",
+			"baseBackground": "Основи та фон",
+			"variables": "Змінні",
+			"borderRadius": "Радіус межі (--rounded-box)",
+			"borderWidth": "Ширина межі (--border-btn)",
+			"advancedCustomization": "Розширене налаштування",
+			"customCSS": "Спеціальний CSS (перевизначення)",
+			"customMjsScript": "Спеціальний сценарій MJS (необов'язково)",
+			"mjsSyntaxHint": "Використовуйте [синтаксис async-eval](${asyncDocLink}). Повертає об’єкт, що містить функції <code>load()</code> і <code>unload()</code>.",
+			"themeIdRequired": "Потрібен ідентифікатор теми",
+			"saved": "Збережено!",
+			"failedToSave": "Не вдалося зберегти"
+		},
 		"themes": {
 			"auto": "Автоматична",
 			"light": "Світла",

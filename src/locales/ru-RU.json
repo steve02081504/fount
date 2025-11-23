@@ -1355,6 +1355,47 @@
 			"placeholder": "Поиск темы...",
 			"noResult": "Подходящих тем не найдено."
 		},
+		"createButton": "+ Создать новую тему",
+		"preview": {
+			"editButton": {
+				"title": "Редактировать"
+			},
+			"editButtonIcon": {
+				"alt": "Значок редактирования"
+			},
+			"deleteButton": {
+				"title": "Удалить"
+			},
+			"deleteButtonIcon": {
+				"alt": "Удалить значок"
+			},
+			"cloneButton": {
+				"title": "Копировать"
+			},
+			"cloneButtonIcon": {
+				"alt": "Копировать значок"
+			}
+		},
+		"editor": {
+			"title": "Редактор тем",
+			"cancelButton": "Отмена",
+			"saveApplyButton": "Сохранить и применить",
+			"themeName": "Название темы (ID)",
+			"autoPaletteTitle": "Автоматическая цветокоррекция по изображениям",
+			"autoPaletteInstruction": "Нажмите на цвет выше, чтобы автоматически заполнить основной/вторичный/акцентный/нейтральный цвета.",
+			"coreColors": "Основные цвета",
+			"baseBackground": "База и фон",
+			"variables": "Переменные",
+			"borderRadius": "Радиус скругления (--rounded-box)",
+			"borderWidth": "Ширина границы (--border-btn)",
+			"advancedCustomization": "Расширенная настройка",
+			"customCSS": "Пользовательский CSS (переопределение)",
+			"customMjsScript": "Пользовательский скрипт MJS (необязательно)",
+			"mjsSyntaxHint": "Используйте [синтаксис async-eval](${asyncDocLink}). Должен возвращать объект, содержащий функции <code>load()</code> и <code>unload()</code>.",
+			"themeIdRequired": "Требуется ID темы",
+			"saved": "Сохранено!",
+			"failedToSave": "Ошибка сохранения"
+		},
 		"themes": {
 			"auto": "Автоматически",
 			"light": "Светлая",

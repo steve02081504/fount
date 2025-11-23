@@ -439,7 +439,7 @@ function translateSingularElement(element) {
 		element.setAttribute(attr, value)
 		updated = true
 	}
-	for (const key of element.dataset.i18n.split(';').map(k => k.trim())) {
+	for (const key of element.dataset.i18n.split(';').reverse().map(k => k.trim())) {
 		if (key.startsWith('\'') && key.endsWith('\'')) {
 			const literal_value = key.slice(1, -1)
 			if (element.textContent !== literal_value) {
