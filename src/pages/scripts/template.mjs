@@ -126,9 +126,8 @@ export function createDOMFromHtmlString(htmlString) {
 		return doc
 	}
 
-	const div = document.createElement('div')
-	div.appendChild(createDocumentFragmentFromHtmlString(htmlString))
-	return div.children.length == 1 ? div.children[0] : div
+	const fragment = createDocumentFragmentFromHtmlString(htmlString)
+	return fragment.children.length == 1 ? fragment.children[0] : fragment
 }
 
 let templatePath
@@ -205,6 +204,11 @@ export async function renderTemplateAsHtmlString(template, data = {}) {
 		node = node.replace(/<html ([^>]*)>[\s\n]*<head>/i, '<html $1>\n\n<head>')
 		node = node.replace(/^[\s\n]*<html/i, '<!DOCTYPE html>\n<html')
 		return node
+	}
+	if (node.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
+		const div = document.createElement('div')
+		div.appendChild(node)
+		return div.innerHTML
 	}
 	return node.outerHTML
 }

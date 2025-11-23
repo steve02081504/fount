@@ -157,9 +157,11 @@ export async function renderFilteredItems(partTypeObject, filteredNames) {
  * @returns {Promise<void>}
  */
 export async function displayItemInfo(part) {
-	itemDescription.innerHTML = part.partdetails.info.description_markdown
-		? (await renderMarkdown(part.partdetails.info.description_markdown)).outerHTML
-		: geti18n('home.noDescription')
+	if (part.partdetails.info.description_markdown) {
+		const fragment = await renderMarkdown(part.partdetails.info.description_markdown)
+		itemDescription.innerHTML = ''
+		itemDescription.appendChild(fragment)
+	} else itemDescription.innerHTML = geti18n('home.noDescription')
 }
 
 /**
