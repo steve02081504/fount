@@ -501,10 +501,23 @@ const routes = [
 	},
 	// 冷启动模式：优先使用缓存
 	{
+		/**
+		 * 检查是否处于冷启动模式。
+		 * @param {object} root0 - 上下文对象。
+		 * @param {URL} root0.url - URL 对象。
+		 * @returns {boolean} 如果处于冷启动模式，则返回 true。
+		 */
 		condition: ({ url }) => {
 			if (url.searchParams.get('cold_bootting') === 'true') coldBootMode = true
 			return coldBootMode
 		},
+		/**
+		 * 处理冷启动请求。
+		 * @param {object} root0 - 上下文对象。
+		 * @param {FetchEvent} root0.event - Fetch 事件。
+		 * @param {URL} root0.url - URL 对象。
+		 * @returns {Promise<Response>} 返回一个解析为 Response 对象的 Promise。
+		 */
 		handler: ({ event, url }) => {
 			if (url.searchParams.has('cold_bootting')) {
 				const cleanUrl = new URL(url)

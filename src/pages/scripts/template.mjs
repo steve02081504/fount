@@ -7,6 +7,70 @@ import { svgInliner } from './svgInliner.mjs'
 
 const template_cache = {}
 
+// 不需要闭合的空元素 (Void Elements)
+const VOID_TAGS = new Set([
+	'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'
+])
+
+/**
+ * 修复未闭合的标签。
+ * @param {string} html - 待修复的 HTML 字符串。
+ * @returns {string} - 修复后的字符串。
+ */
+function escapeUnclosedTags(html) {
+	const stack = []
+	const indicesToEscape = new Set()
+
+	const tagRegex = /<(\/?)([a-zA-Z][a-zA-Z0-9-]*)\b((?:[^>"']|"[^"]*"|'[^']*')*?)\/?>/g
+
+	let match
+	while ((match = tagRegex.exec(html)) !== null) {
+		const isClosing = match[1] === '/'
+		const tagName = match[2].toLowerCase()
+		const index = match.index
+		const isSelfClosing = match[0].trim().endsWith('/>')
+
+		if (VOID_TAGS.has(tagName) || isSelfClosing) continue
+
+		if (isClosing) {
+			let matchIndex = -1
+			for (let i = stack.length - 1; i >= 0; i--)
+				if (stack[i].tagName === tagName) {
+					matchIndex = i
+					break
+				}
+
+
+			if (matchIndex !== -1) {
+				for (let i = matchIndex + 1; i < stack.length; i++)
+					indicesToEscape.add(stack[i].index)
+				stack.splice(matchIndex)
+			}
+			else
+				indicesToEscape.add(index)
+		}
+		else
+			stack.push({ tagName, index })
+	}
+
+	stack.forEach(item => indicesToEscape.add(item.index))
+
+	if (indicesToEscape.size === 0) return html
+
+	let result = ''
+	let lastCursor = 0
+	const sortedIndices = Array.from(indicesToEscape).sort((a, b) => a - b)
+
+	for (const idx of sortedIndices) {
+		result += html.slice(lastCursor, idx)
+		result += '&lt;'
+		lastCursor = idx + 1
+	}
+	result += html.slice(lastCursor)
+
+	return result
+}
+
 /**
  * 从 HTML 字符串安全地创建 DOM 元素（包括执行 <script> 标签和使得 <link> 标签生效），返回 DocumentFragment。
  *
@@ -20,9 +84,11 @@ export function createDocumentFragmentFromHtmlString(htmlString) {
 	template.innerHTML = htmlString
 	const fragment = template.content
 
+	// 移除开发服务器注入的脚本
 	fragment.querySelectorAll('script[src^="/___"]').forEach(oldScript => {
 		oldScript.remove()
 	})
+	// 激活 script 标签
 	fragment.querySelectorAll('script').forEach(oldScript => {
 		const newScript = document.createElement('script')
 		for (const attr of oldScript.attributes)
@@ -30,6 +96,7 @@ export function createDocumentFragmentFromHtmlString(htmlString) {
 		if (oldScript.textContent) newScript.text = oldScript.textContent
 		oldScript.parentNode.replaceChild(newScript, oldScript)
 	})
+	// 激活 link 标签
 	fragment.querySelectorAll('link').forEach(oldLink => {
 		const newLink = document.createElement('link')
 		for (const attr of oldLink.attributes)
@@ -43,9 +110,22 @@ export function createDocumentFragmentFromHtmlString(htmlString) {
 /**
  * 从 HTML 字符串创建 DOM 元素。
  * @param {string} htmlString - 包含 HTML 代码的字符串。
- * @returns {Element|DocumentFragment} - 创建的 DOM 元素。
+ * @returns {Element|DocumentFragment|Document} - 创建的 DOM 元素或文档对象。
  */
 export function createDOMFromHtmlString(htmlString) {
+	// 如果是完整文档，使用 DOMParser 以保留 html, head, body 结构
+	if (/^\s*<!DOCTYPE/i.test(htmlString) || /^\s*<html/i.test(htmlString)) {
+		const parser = new DOMParser()
+		const doc = parser.parseFromString(htmlString, 'text/html')
+
+		// 清理不需要的脚本
+		doc.querySelectorAll('script[src^="/___"]').forEach(oldScript => {
+			oldScript.remove()
+		})
+
+		return doc
+	}
+
 	const div = document.createElement('div')
 	div.appendChild(createDocumentFragmentFromHtmlString(htmlString))
 	return div.children.length == 1 ? div.children[0] : div
@@ -66,16 +146,17 @@ export function usingTemplates(path) {
  * 渲染模板。
  * @param {string} template - 模板名称。
  * @param {object} [data={}] - 模板数据。
- * @returns {Promise<Element|DocumentFragment>} - 渲染后的 DOM 元素。
+ * @returns {Promise<Element|DocumentFragment|Document>} - 渲染后的 DOM 元素。
  */
 export async function renderTemplate(template, data = {}) {
 	data.geti18n ??= geti18n
 	data.renderTemplate ??= renderTemplateAsHtmlString
 	/**
 	 * 在模板渲染上下文中设置一个值。
+	 * @template T - 要设置的变量类型。
 	 * @param {string} name - 要设置的变量名。
-	 * @param {*} value - 要设置的变量值。
-	 * @returns {void}
+	 * @param {T} value - 要设置的变量值。
+	 * @returns {T} - 设置的值。
 	 */
 	data.setValue ??= (name, value) => data[name] = value
 	template_cache[template] ??= fetch(templatePath + '/' + template + '.html').then(response => {
@@ -97,7 +178,7 @@ export async function renderTemplate(template, data = {}) {
 			try {
 				const eval_result = await async_eval(expression, data)
 				if (eval_result.error) throw eval_result.error
-				result += eval_result.result
+				result += escapeUnclosedTags(String(eval_result.result))
 				html = html.slice(end_index)
 				break find
 			} catch (error) {
@@ -117,6 +198,13 @@ export async function renderTemplate(template, data = {}) {
  * @returns {Promise<string>} - 渲染后的 HTML 字符串。
  */
 export async function renderTemplateAsHtmlString(template, data = {}) {
-	const html = await renderTemplate(template, data)
-	return html.outerHTML
+	let node = await renderTemplate(template, data)
+	if (node.nodeType === Node.DOCUMENT_NODE) {
+		node = node.documentElement.outerHTML
+		node = node.replace(/[\s\n]*<\/body>[\s\n]*<\/html>$/i, '\n</body>\n\n</html>\n')
+		node = node.replace(/<html ([^>]*)>[\s\n]*<head>/i, '<html $1>\n\n<head>')
+		node = node.replace(/^[\s\n]*<html/i, '<!DOCTYPE html>\n<html')
+		return node
+	}
+	return node.outerHTML
 }

@@ -724,7 +724,21 @@
 				"downloadHtml": "Télécharger en HTML",
 				"downloadHtmlIcon": {
 					"alt": "Icône de téléchargement HTML"
+				},
+				"share": {
+					"textContent": "Partager",
+					"1h": "1 heure",
+					"12h": "12 heures",
+					"24h": "24 heures",
+					"72h": "72 heures"
+				},
+				"shareIcon": {
+					"alt": "icône de partage"
 				}
+			},
+			"share": {
+				"uploading": "Création du lien...",
+				"success": "Partage réussi ! Lien copié dans le presse-papiers. <br>Cette fonctionnalité est prise en charge par ${provider}. <br>[Parrainez-les.](${sponsorLink})"
 			}
 		},
 		"messageEdit": {

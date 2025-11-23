@@ -724,7 +724,21 @@
 				"downloadHtml": "Als HTML herunterladen",
 				"downloadHtmlIcon": {
 					"alt": "HTML-Download-Symbol"
+				},
+				"share": {
+					"textContent": "Teilen",
+					"1h": "1 Stunde",
+					"12h": "12 Stunden",
+					"24h": "24 Stunden",
+					"72h": "72 Stunden"
+				},
+				"shareIcon": {
+					"alt": "Teilen-Symbol"
 				}
+			},
+			"share": {
+				"uploading": "Link wird erstellt...",
+				"success": "Erfolgreich geteilt! Link in die Zwischenablage kopiert. <br>Diese Funktion wird von ${provider} unterstützt. <br>[Unterstützen Sie sie.](${sponsorLink})"
 			}
 		},
 		"messageEdit": {

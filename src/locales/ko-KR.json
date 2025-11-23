@@ -724,7 +724,21 @@
 				"downloadHtml": "HTML로 다운로드",
 				"downloadHtmlIcon": {
 					"alt": "HTML 다운로드 아이콘"
+				},
+				"share": {
+					"textContent": "공유",
+					"1h": "1 시간",
+					"12h": "12 시간",
+					"24h": "24 시간",
+					"72h": "72 시간"
+				},
+				"shareIcon": {
+					"alt": "공유 아이콘"
 				}
+			},
+			"share": {
+				"uploading": "링크 생성 중...",
+				"success": "공유 완료! 링크가 클립보드에 복사되었습니다. <br>이 기능은 ${provider}에서 지원합니다. <br>[후원하기.](${sponsorLink})"
 			}
 		},
 		"messageEdit": {

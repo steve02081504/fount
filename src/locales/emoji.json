@@ -724,7 +724,21 @@
 				"downloadHtml": "💾🌐",
 				"downloadHtmlIcon": {
 					"alt": "💾🌐"
+				},
+				"share": {
+					"textContent": "🔗",
+					"1h": "1 ⏳",
+					"12h": "12 ⏳",
+					"24h": "24 ⏳",
+					"72h": "72 ⏳"
+				},
+				"shareIcon": {
+					"alt": "🔗"
 				}
+			},
+			"share": {
+				"uploading": "⏳🔗...",
+				"success": "✅🔗📋! <br>✨ ${provider} <br>[💖](${sponsorLink})"
 			}
 		},
 		"messageEdit": {

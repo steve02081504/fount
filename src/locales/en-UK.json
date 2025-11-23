@@ -724,7 +724,21 @@
 				"downloadHtml": "Download as HTML",
 				"downloadHtmlIcon": {
 					"alt": "Download HTML icon"
+				},
+				"share": {
+					"textContent": "Share",
+					"1h": "1 hour",
+					"12h": "12 hours",
+					"24h": "24 hours",
+					"72h": "72 hours"
+				},
+				"shareIcon": {
+					"alt": "share icon"
 				}
+			},
+			"share": {
+				"uploading": "Creating link...",
+				"success": "Link created successfully! Copied to clipboard. <br>This feature is supported by ${provider}. <br>[Sponsor them.](${sponsorLink})"
 			}
 		},
 		"messageEdit": {

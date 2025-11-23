@@ -11,6 +11,7 @@ import remarkGfm from 'https://esm.sh/remark-gfm'
 import remarkMath from 'https://esm.sh/remark-math'
 import remarkParse from 'https://esm.sh/remark-parse'
 import remarkRehype from 'https://esm.sh/remark-rehype'
+import { createHighlighter } from 'https://esm.sh/shiki'
 import { unified } from 'https://esm.sh/unified'
 import { visit } from 'https://esm.sh/unist-util-visit'
 
@@ -149,7 +150,7 @@ return result
 
 /**
  * 代码执行器集合
- * @type {Object.<string, (code: string) => Promise<{result?: string, output?: string, error?: string, exitcode?: number}>>}
+ * @type {Object.<string, (code: string) => Promise<{result?: string, output?: string, error?: string, exitcode?: number, outputHtml?: string, errorHtml?: string}>>}
  */
 const languageExecutors = {
 	/**
@@ -353,6 +354,19 @@ $stderr = StringIO.new
 	csharp: createGodboltExecutor('dotnettrunkcsharpcoreclr', 'csharp'),
 	go: createGodboltExecutor('gltip', 'go'),
 	rs: createGodboltExecutor('nightly', 'rust'),
+	/**
+	 * 执行 brainfuck 代码。
+	 * @param {string} code - 要执行的代码。
+	 * @returns {Promise<{result?: string, output?: string, error?: string, exitcode?: number}>} - 执行结果。
+	 */
+	b: async (code) => {
+		try {
+			const { default: Brainfuck } = await import('https://esm.sh/brainfuck-node')
+			const brainfuck = new Brainfuck()
+			const result = brainfuck.execute(code)
+			return { output: result.output }
+		} catch (error) { return { error } }
+	},
 }
 
 /**
@@ -378,7 +392,7 @@ function createCodeBlockPlugin({ isStandalone = false } = {}) {
 			let uniqueId
 			do uniqueId = `markdown-code-block-${md5(rawCode)}-${Math.random().toString(36).slice(2, 9)}`
 			while (document.getElementById(uniqueId))
-			const executor = languageExecutors[ext]
+			const executor = languageExecutors[ext] || languageExecutors[lang]
 
 			/**
 			 * 创建工具提示。
@@ -479,26 +493,62 @@ outputContainer.innerHTML = /* html */ \`\\
 \`
 codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 
-;(${executor.toString()})(document.querySelector('#${uniqueId} pre').innerText).then(result => {
+;(${executor.toString()})(document.querySelector('#${uniqueId} pre').innerText).then(async result => {
 	result = result || {}
-	const escapeHtml = (unsafe) => String(unsafe).replace(/[&<>"']/g, (m) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'}[m]))
+	const { AnsiUp } = await import('https://esm.sh/ansi-up')
+	const ansi_up = new AnsiUp()
+	const escapeHtml = (str) => ansi_up.ansi_to_html(str)
+
+	const copySvg = decodeURIComponent(${JSON.stringify(encodeURIComponent(copyIconSized))})
+	const successSvg = decodeURIComponent(${JSON.stringify(encodeURIComponent(successIconSized))})
+
+	const createCopyBtn = (text) => {
+		const encoded = encodeURIComponent(text).replace(/'/g, '%27')
+		const copyAction = \`\\
+event.stopPropagation()
+const btn = this
+navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
+	btn.innerHTML = \${JSON.stringify(successSvg)}
+	setTimeout(() => btn.innerHTML = \${JSON.stringify(copySvg)}, 2000)
+	${isStandalone
+			? `btn.parentElement.setAttribute('data-tip', decodeURIComponent(${JSON.stringify(encodeURIComponent(geti18n('code_block.copied.dataset.tip')))}))`
+			: 'btn.parentElement.setAttribute(\'data-i18n\', \'code_block.copied\')'
+}
+}).catch(error => {
+	${isStandalone
+			? 'alert(\'Failed to copy: \' + error.message)'
+			: 'import(\'/scripts/toast.mjs\').then(({ showToastI18n }) => showToastI18n(\'error\', \'code_block.copy_failed\', { error: error.message }))'
+}
+})
+\`
+
+		return /* html */ \`\\
+<button class="btn btn-ghost btn-square btn-xs absolute top-2 right-2 opacity-70 hover:opacity-100 z-10"
+		${isStandalone ? 'aria-label="Copy"' : 'data-i18n="code_block.copy"'}
+		onclick="\${copyAction.replace(/"/g, '&quot;')}" >
+	\${copySvg}
+</button>\`
+	}
+
 	let alerts = []
 
 	if (result.error)
 		alerts.push(/* html */ \`\\
-<div class="join-item alert alert-error bg-error/50 border-error/50">
+<div class="join-item alert alert-error bg-error/50 border-error/50 relative pr-10">
+	\${createCopyBtn(result.error)}
 	<div>
 		<div class="font-bold">Error</div>
-		<pre class="font-mono text-sm overflow-x-auto whitespace-pre-wrap"><code>\${escapeHtml(result.error)}</code></pre>
+		<pre class="font-mono text-sm overflow-x-auto whitespace-pre-wrap">\${result.errorHtml || '<code>'+escapeHtml(result.error)+'</code>'}</pre>
 	</div>
 </div>
 \`)
 	if (result.output)
 		alerts.push(/* html */ \`\\
-<div class="join-item alert alert-info bg-info/40 border-info/40">
+<div class="join-item alert alert-info bg-info/40 border-info/40 relative pr-10">
+	\${createCopyBtn(result.output)}
 	<div>
 		<div class="font-bold">Output</div>
-		<pre class="font-mono text-sm overflow-x-auto whitespace-pre-wrap"><code>\${escapeHtml(result.output)}</code></pre>
+		<pre class="font-mono text-sm overflow-x-auto whitespace-pre-wrap">\${result.outputHtml || '<code>'+escapeHtml(result.output)+'</code>'}</pre>
 	</div>
 </div>
 \`)
@@ -506,17 +556,19 @@ codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 		alerts.push(/* html */ \`\\
 <details class="join-item collapse alert alert-warning bg-warning/40 border-warning/40">
 	<summary class="collapse-title font-bold text-sm">Assembly</summary>
-	<div class="collapse-content">
-		<pre class="font-mono text-xs overflow-x-auto"><code>\${escapeHtml(result.asm)}</code></pre>
+	<div class="collapse-content relative pr-10">
+		\${createCopyBtn(result.asm)}
+		<pre class="font-mono text-xs overflow-x-auto">\${result.asmHtml || '<code>'+escapeHtml(result.asm)+'</code>'}</pre>
 	</div>
 </details>
 \`)
 	if (result.result)
 		alerts.push(/* html */ \`\\
-<div class="join-item alert alert-success bg-success/40 border-success/40">
+<div class="join-item alert alert-success bg-success/40 border-success/40 relative pr-10">
+	\${createCopyBtn(result.result)}
 	<div>
 		<div class="font-bold">Result</div>
-		<pre class="font-mono text-sm font-bold overflow-x-auto whitespace-pre-wrap"><code>\${escapeHtml(result.result)}</code></pre>
+		<pre class="font-mono text-sm font-bold overflow-x-auto whitespace-pre-wrap">\${result.resultHtml || '<code>'+escapeHtml(result.result)+'</code>'}</pre>
 	</div>
 </div>
 \`)
@@ -545,6 +597,7 @@ codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 }).catch(e => {
 	outputContainer.innerHTML = /* html */ \`\\
 <div class="join-item alert alert-error bg-error/70 border-error/70">
+	\${createCopyBtn(e.stack)}
 	<div>
 		<div class="font-bold">Execution Error</div>
 		<pre class="text-xs overflow-x-auto whitespace-pre-wrap"><code>\${e.stack}</code></pre>
@@ -643,6 +696,23 @@ ${diagram}`
 				dark: 'github-dark-dimmed',
 				light: 'github-light',
 			},
+			/**
+			 * 扩展默认的高亮器配置
+			 * @param {object} options - 选项。
+			 * @returns {Promise<import('npm:shiki').Highlighter>} - 高亮器。
+			 */
+			getHighlighter: options => createHighlighter({
+				...options,
+				langs: [
+					...options.langs,
+					async () => ({
+						...await fetch('https://cdn.jsdelivr.net/gh/Chris2011/netbeans-textmate-files@master/supported%20languages/brainfuck/brainfuck.tmLanguage.json').then(res => res.json()),
+						name: 'brainfuck',
+						displayName: 'Brainfuck',
+						aliases: ['bf'],
+					})
+				]
+			}),
 			transformers: [
 				await createCodeBlockPlugin({ isStandalone })
 			],
