@@ -724,7 +724,21 @@
 				"downloadHtml": "下載為織文",
 				"downloadHtmlIcon": {
 					"alt": "下載織文圖示"
+				},
+				"share": {
+					"textContent": "分享",
+					"1h": "半時辰",
+					"12h": "半日",
+					"24h": "一日",
+					"72h": "三日"
+				},
+				"shareIcon": {
+					"alt": "分享之標"
 				}
+			},
+			"share": {
+				"uploading": "鏈結正製...",
+				"success": "分享已成！鏈結已入剪貼板。<br>此功由 ${provider} 所助。<br>[資助之。](${sponsorLink})"
 			}
 		},
 		"messageEdit": {

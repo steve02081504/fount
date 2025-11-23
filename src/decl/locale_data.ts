@@ -714,6 +714,20 @@ export type LocaleData = {
 				downloadHtmlIcon: {
 					alt: string
 				}
+				share: {
+					textContent: string
+					'1h': string
+					'12h': string
+					'24h': string
+					'72h': string
+				}
+				shareIcon: {
+					alt: string
+				}
+			}
+			share: {
+				uploading: string
+				success: string
 			}
 		}
 		messageEdit: {
@@ -2136,6 +2150,7 @@ export type LocaleKeyParams = {
 	'chat.dragAndDrop.pluginAdded': { partName: string | number }
 	'chat.dragAndDrop.unsupportedPartType': { partType: string | number }
 	'chat.dragAndDrop.worldSet': { partName: string | number }
+	'chat.messageView.share.success': { provider: string | number; sponsorLink: string | number }
 	'chat.typingIndicator.isTyping': { names: string | number }
 	'chat_history.confirmDeleteChat': { chars: string | number }
 	'chat_history.confirmDeleteMultiChats': { count: string | number }

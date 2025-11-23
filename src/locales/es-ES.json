@@ -724,7 +724,21 @@
 				"downloadHtml": "Descargar como HTML",
 				"downloadHtmlIcon": {
 					"alt": "Icono de descarga HTML"
+				},
+				"share": {
+					"textContent": "Compartir",
+					"1h": "1 hora",
+					"12h": "12 horas",
+					"24h": "24 horas",
+					"72h": "72 horas"
+				},
+				"shareIcon": {
+					"alt": "icono de compartir"
 				}
+			},
+			"share": {
+				"uploading": "Creando enlace...",
+				"success": "¡Enlace creado con éxito! Copiado al portapapeles. <br>Esta función es compatible con ${provider}. <br>[Apóyalos.](${sponsorLink})"
 			}
 		},
 		"messageEdit": {

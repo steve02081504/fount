@@ -724,7 +724,21 @@
 				"downloadHtml": "HTMLとしてダウンロード",
 				"downloadHtmlIcon": {
 					"alt": "HTMLダウンロードアイコン"
+				},
+				"share": {
+					"textContent": "共有",
+					"1h": "1時間",
+					"12h": "12時間",
+					"24h": "24時間",
+					"72h": "72時間"
+				},
+				"shareIcon": {
+					"alt": "共有アイコン"
 				}
+			},
+			"share": {
+				"uploading": "リンクを作成中...",
+				"success": "共有に成功しました！リンクがクリップボードにコピーされました。<br>この機能は ${provider} によって提供されています。<br>[支援する](${sponsorLink})"
 			}
 		},
 		"messageEdit": {

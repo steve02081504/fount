@@ -724,7 +724,21 @@
 				"downloadHtml": "Sæktu sem HTML",
 				"downloadHtmlIcon": {
 					"alt": "Sæktu HTML táknmynd"
+				},
+				"share": {
+					"textContent": "Deila",
+					"1h": "1 klukkustund",
+					"12h": "12 klukkustundir",
+					"24h": "24 klukkustundir",
+					"72h": "72 klukkustundir"
+				},
+				"shareIcon": {
+					"alt": "deila táknið"
 				}
+			},
+			"share": {
+				"uploading": "Býr til tengil...",
+				"success": "Deiling tókst! Tengill afritaður á klippiborð. <br>Þessi eiginleiki er studdur af ${provider}. <br>[Styrktu þá. ](${sponsorLink})"
 			}
 		},
 		"messageEdit": {
