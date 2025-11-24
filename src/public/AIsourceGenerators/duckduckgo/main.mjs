@@ -54,13 +54,13 @@ export default {
 			home_page: 'https://duckduckgo.com/'
 		},
 		emoji: {
-			name: '🦆',
+			name: '🦆🔒',
 			avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-			description: 'DuckDuckGo AI Chat',
-			description_markdown: 'Privacy-focused AI chat from DuckDuckGo.',
+			description: '🦆💬🛡️',
+			description_markdown: '🦆🤐🛡️💬',
 			version: '0.1.0',
 			author: 'steve02081504',
-			tags: ['duckduckgo', 'ai', 'privacy'],
+			tags: ['🦆', '🛡️', '🤐'],
 			home_page: 'https://duckduckgo.com/'
 		},
 		'es-ES': {
@@ -283,13 +283,13 @@ async function GetSource(config) {
 				home_page: 'https://duckduckgo.com/'
 			},
 			emoji: {
-				name: '🦆',
+				name: '🦆🔒',
 				avatar: 'https://api.iconify.design/simple-icons/duckduckgo.svg',
-				description: 'DuckDuckGo AI Chat',
-				description_markdown: 'Privacy-focused AI chat from DuckDuckGo.',
+				description: '🦆💬🛡️',
+				description_markdown: '🦆🤐🛡️💬',
 				version: '0.1.0',
 				author: 'steve02081504',
-				tags: ['duckduckgo', 'ai', 'privacy'],
+				tags: ['🦆', '🛡️', '🤐'],
 				provider: 'duckduckgo',
 				home_page: 'https://duckduckgo.com/'
 			},

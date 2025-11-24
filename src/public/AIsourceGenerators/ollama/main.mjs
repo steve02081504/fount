@@ -54,14 +54,14 @@ export default {
 			home_page: 'https://ollama.com/',
 		},
 		emoji: {
-			name: '🦙',
+			name: '🦙🏠',
 			avatar: 'https://api.iconify.design/simple-icons/ollama.svg',
-			description: 'Ollama',
-			description_markdown: 'Run large language models locally.',
+			description: '🦙💻⚡',
+			description_markdown: '🏠💻🏃‍♂️🦙💨',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['ollama', 'local', 'llm'],
-			home_page: 'https://ollama.com/',
+			tags: ['🦙', '🏠', '🔓'],
+			home_page: 'https://ollama.com/'
 		},
 		'es-ES': {
 			name: 'Ollama',
@@ -140,7 +140,7 @@ export default {
 			description_markdown: '於本地運行大型語言模型。',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['ollama', '本地', 'llm'],
+			tags: ['ollama', '本地', '靈機'],
 			home_page: 'https://ollama.com/',
 		},
 		'nl-NL': {
@@ -294,13 +294,13 @@ async function GetSource(config) {
 				provider: 'Ollama'
 			},
 			emoji: {
-				name: '🦙',
+				name: '🦙🏠',
 				avatar: 'https://api.iconify.design/simple-icons/ollama.svg',
-				description: 'Ollama',
-				description_markdown: 'Run large language models locally.',
+				description: '🦙💻⚡',
+				description_markdown: '🏠💻🏃‍♂️🦙💨',
 				version: '0.0.0',
 				author: 'steve02081504',
-				tags: ['ollama', 'local', 'llm'],
+				tags: ['🦙', '🏠', '🔓'],
 				home_page: 'https://ollama.com/',
 				provider: 'Ollama'
 			},
@@ -388,7 +388,7 @@ async function GetSource(config) {
 				description_markdown: '於本地運行大型語言模型。',
 				version: '0.0.0',
 				author: 'steve02081504',
-				tags: ['ollama', '本地', 'llm'],
+				tags: ['ollama', '本地', '靈機'],
 				home_page: 'https://ollama.com/',
 				provider: 'Ollama'
 			},

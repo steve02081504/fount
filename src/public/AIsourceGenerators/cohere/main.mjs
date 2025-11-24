@@ -49,13 +49,13 @@ export default {
 			home_page: 'https://cohere.com/'
 		},
 		emoji: {
-			name: '🗣️',
+			name: '🗣️🔗',
 			avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-			description: 'Cohere',
-			description_markdown: 'Language models for developers and enterprises.',
+			description: '🗣️💼🚀',
+			description_markdown: '🏢🗣️🔗🚀',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['cohere', 'ai', 'language-model'],
+			tags: ['🗣️', '🔗', '🏢'],
 			home_page: 'https://cohere.com/'
 		},
 		'es-ES': {
@@ -278,13 +278,13 @@ async function GetSource(config) {
 				home_page: 'https://cohere.com/'
 			},
 			emoji: {
-				name: '🗣️',
+				name: '🗣️🔗',
 				avatar: 'https://cdn.brandfetch.io/idfDTLvPCK/theme/dark/symbol.svg?c=1bxid64Mup7aczewSAYMX',
-				description: 'Cohere',
-				description_markdown: 'Language models for developers and enterprises.',
+				description: '🗣️💼🚀',
+				description_markdown: '🏢🗣️🔗🚀',
 				version: '0.0.0',
 				author: 'steve02081504',
-				tags: ['cohere', 'ai', 'language-model'],
+				tags: ['🗣️', '🔗', '🏢'],
 				provider: 'cohere',
 				home_page: 'https://cohere.com/'
 			},

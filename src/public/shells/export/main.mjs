@@ -59,13 +59,13 @@ export default {
 			tags: ['exportieren', 'Sicherung', 'teilen']
 		},
 		emoji: {
-			name: '🧩📤',
+			name: '📤💾',
 			avatar: 'https://api.iconify.design/material-symbols/export-notes-outline.svg',
-			description: 'A shell to export parts.',
-			description_markdown: 'Allows you to export characters, personas, and worlds as files for backup or sharing.',
+			description: '🧩➡️📦',
+			description_markdown: '🧩➡️📤➡️💾',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['export', 'backup', 'sharing']
+			tags: ['📤', '💾', '📦']
 		},
 		'es-ES': {
 			name: 'Exportar Parte',
@@ -131,13 +131,13 @@ export default {
 			tags: ['내보내기', '백업', '공유']
 		},
 		lzh: {
-			name: '導出器',
+			name: '謄錄司',
 			avatar: 'https://api.iconify.design/material-symbols/export-notes-outline.svg',
-			description: '用於導出組件的shell。',
-			description_markdown: '允許您將角色、角色和世界導出為文件以進行備份或共享。',
+			description: '謄錄法寶，以備不虞。',
+			description_markdown: '許君謄錄化身、身分及世界為卷帙，或藏之名山，或傳之同好。',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['導出', '備份', '共享']
+			tags: ['謄錄', '封存', '傳世']
 		},
 		'nl-NL': {
 			name: 'Exporteren componenten',

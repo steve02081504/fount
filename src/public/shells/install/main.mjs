@@ -57,13 +57,13 @@ export default {
 			tags: ['installieren', 'hinzufügen', 'importieren', 'Komponente']
 		},
 		emoji: {
-			name: '📥',
+			name: '📥📦',
 			avatar: 'https://api.iconify.design/material-symbols/install-desktop.svg',
-			description: 'A shell to install parts.',
-			description_markdown: 'Install new characters, personas, worlds, and other components from files or URLs.',
+			description: '📦➡️🧩',
+			description_markdown: '☁️📥📦➡️🧩✅',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['install', 'add', 'import', 'component']
+			tags: ['📥', '📦', '🧩', '✨']
 		},
 		'es-ES': {
 			name: 'Instalar',
@@ -129,13 +129,13 @@ export default {
 			tags: ['설치', '추가', '가져오기', '구성 요소']
 		},
 		lzh: {
-			name: '安裝',
+			name: '納新',
 			avatar: 'https://api.iconify.design/material-symbols/install-desktop.svg',
-			description: '一個用於安裝部件的shell。',
-			description_markdown: '從文件或 URL 安裝新角色、角色、世界和其他組件。',
+			description: '納新器於泉源。',
+			description_markdown: '自卷帙或通衢，納新化身、身分、世界及諸般法寶。',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['安裝', '添加', '導入', '組件']
+			tags: ['納新', '增補', '引入', '法寶']
 		},
 		'nl-NL': {
 			name: 'Installeren',

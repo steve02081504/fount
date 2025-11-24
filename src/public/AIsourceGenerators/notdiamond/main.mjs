@@ -51,14 +51,14 @@ export default {
 			home_page: 'https://discord.gg/w86nertp',
 		},
 		emoji: {
-			name: '💎',
+			name: '💎🛤️',
 			avatar: 'https://cdn.prod.website-files.com/64b9c0f00a5b6bdf6393396c/6823997d4ea476ed4b47cab8_ND%20logo.svg',
-			description: 'NotDiamond',
-			description_markdown: 'Access various open-source and proprietary models through the NotDiamond API.',
+			description: '💎🛣️',
+			description_markdown: '💎🛣️🔀🤖',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['notdiamond', 'api', 'proxy'],
-			home_page: 'https://discord.gg/w86nertp',
+			tags: ['💎', '🔀', '🌐'],
+			home_page: 'https://discord.gg/w86nertp'
 		},
 		'es-ES': {
 			name: 'NotDiamond',
@@ -137,7 +137,7 @@ export default {
 			description_markdown: '經非鑽石接口，取諸開源、私有模型。',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['非鑽石', '接口', '代理'],
+			tags: ['非鑽石', '接口', '中介'],
 			home_page: 'https://discord.gg/w86nertp',
 		},
 		'nl-NL': {
@@ -295,13 +295,13 @@ async function GetSource(config) {
 				provider: 'NotDiamond'
 			},
 			emoji: {
-				name: '💎',
+				name: '💎🛤️',
 				avatar: 'https://cdn.prod.website-files.com/64b9c0f00a5b6bdf6393396c/6823997d4ea476ed4b47cab8_ND%20logo.svg',
-				description: 'NotDiamond',
-				description_markdown: 'Access various open-source and proprietary models through the NotDiamond API.',
+				description: '💎🛣️',
+				description_markdown: '💎🛣️🔀🤖',
 				version: '0.0.0',
 				author: 'steve02081504',
-				tags: ['notdiamond', 'api', 'proxy'],
+				tags: ['💎', '🔀', '🌐'],
 				home_page: 'https://discord.gg/w86nertp',
 				provider: 'NotDiamond'
 			},
@@ -389,7 +389,7 @@ async function GetSource(config) {
 				description_markdown: '經非鑽石接口，取諸開源、私有模型。',
 				version: '0.0.0',
 				author: 'steve02081504',
-				tags: ['非鑽石', '接口', '代理'],
+				tags: ['非鑽石', '接口', '中介'],
 				home_page: 'https://discord.gg/w86nertp',
 				provider: 'NotDiamond'
 			},

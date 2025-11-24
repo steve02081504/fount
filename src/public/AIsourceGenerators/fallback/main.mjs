@@ -49,13 +49,13 @@ export default {
 			home_page: ''
 		},
 		emoji: {
-			name: '🔄',
+			name: '🛡️🔄',
 			avatar: 'https://api.iconify.design/mdi/backup-restore.svg',
-			description: 'Fallback',
-			description_markdown: 'A source that tries a list of sources in order until one succeeds.',
+			description: '🛡️🆘',
+			description_markdown: '1️⃣❌➡️2️⃣✅🛡️',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['fallback', 'utility', 'meta'],
+			tags: ['🛡️', '🔄', '🆘'],
 			home_page: ''
 		},
 		'es-ES': {
@@ -135,7 +135,7 @@ export default {
 			description_markdown: '一源，循序試源列，至一得，乃止。',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['後備', '用', '元'],
+			tags: ['後備', '器用', '元'],
 			home_page: ''
 		},
 		'nl-NL': {
@@ -289,13 +289,13 @@ async function GetSource(config, { username, SaveConfig }) {
 				home_page: ''
 			},
 			emoji: {
-				name: '🔄',
+				name: '🛡️🔄',
 				avatar: 'https://api.iconify.design/mdi/backup-restore.svg',
-				description: 'Fallback',
-				description_markdown: 'A source that tries a list of sources in order until one succeeds.',
+				description: '🛡️🆘',
+				description_markdown: '1️⃣❌➡️2️⃣✅🛡️',
 				version: '0.0.0',
 				author: 'steve02081504',
-				tags: ['fallback', 'utility', 'meta'],
+				tags: ['🛡️', '🔄', '🆘'],
 				provider: config.provider || 'unknown',
 				home_page: ''
 			},
@@ -383,7 +383,7 @@ async function GetSource(config, { username, SaveConfig }) {
 				description_markdown: '一源，循序試源列，至一得，乃止。',
 				version: '0.0.0',
 				author: 'steve02081504',
-				tags: ['後備', '用', '元'],
+				tags: ['後備', '器用', '元'],
 				provider: config.provider || 'unknown',
 				home_page: ''
 			},

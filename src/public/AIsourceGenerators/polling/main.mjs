@@ -50,14 +50,14 @@ export default {
 			home_page: 'https://github.com/steve02081504/fount',
 		},
 		emoji: {
-			name: '🔄',
+			name: '🎡🔄',
 			avatar: 'https://api.iconify.design/mdi/format-list-numbered.svg',
-			description: 'Polling',
-			description_markdown: 'A source that cycles through a list of sources, using the next one for each request.',
+			description: '🔢🔄',
+			description_markdown: '1️⃣➡️2️⃣➡️3️⃣🔄',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['polling', 'utility', 'meta'],
-			home_page: 'https://github.com/steve02081504/fount',
+			tags: ['🎡', '🔢', '🔄'],
+			home_page: 'https://github.com/steve02081504/fount'
 		},
 		'es-ES': {
 			name: 'Sondeo',
@@ -130,13 +130,13 @@ export default {
 			home_page: 'https://github.com/steve02081504/fount',
 		},
 		lzh: {
-			name: '輪詢',
+			name: '輪番',
 			avatar: 'https://api.iconify.design/mdi/format-list-numbered.svg',
-			description: '輪詢',
-			description_markdown: '一源，輪巡源列，每求用其一。',
+			description: '輪番致用',
+			description_markdown: '諸源列隊，輪番致用，周而復始。',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['輪詢', '用', '元'],
+			tags: ['輪番', '器用', '元'],
 			home_page: 'https://github.com/steve02081504/fount',
 		},
 		'nl-NL': {
@@ -290,13 +290,13 @@ async function GetSource(config, { username, SaveConfig }) {
 				provider: 'fount'
 			},
 			emoji: {
-				name: '🔄',
+				name: '🎡🔄',
 				avatar: 'https://api.iconify.design/mdi/format-list-numbered.svg',
-				description: 'Polling',
-				description_markdown: 'A source that cycles through a list of sources, using the next one for each request.',
+				description: '🔢🔄',
+				description_markdown: '1️⃣➡️2️⃣➡️3️⃣🔄',
 				version: '0.0.0',
 				author: 'steve02081504',
-				tags: ['polling', 'utility', 'meta'],
+				tags: ['🎡', '🔢', '🔄'],
 				home_page: 'https://github.com/steve02081504/fount',
 				provider: 'fount'
 			},
@@ -380,11 +380,11 @@ async function GetSource(config, { username, SaveConfig }) {
 			lzh: {
 				name: config.name,
 				avatar: 'https://api.iconify.design/mdi/format-list-numbered.svg',
-				description: '輪詢',
-				description_markdown: '一源，輪巡源列，每求用其一。',
+				description: '輪番致用',
+				description_markdown: '諸源列隊，輪番致用，周而復始。',
 				version: '0.0.0',
 				author: 'steve02081504',
-				tags: ['輪詢', '用', '元'],
+				tags: ['輪番', '器用', '元'],
 				home_page: 'https://github.com/steve02081504/fount',
 				provider: 'fount'
 			},

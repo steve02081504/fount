@@ -52,14 +52,14 @@ export default {
 			home_page: 'https://github.com/steve02081504/fount',
 		},
 		emoji: {
-			name: '🔌',
+			name: '🔌🌐',
 			avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-			description: 'Proxy',
-			description_markdown: 'Access any OpenAI-compatible API endpoint.',
+			description: '🔗🌍🤖',
+			description_markdown: '🌍🔌➡️🤖✨',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['proxy', 'openai', 'api', 'utility'],
-			home_page: 'https://github.com/steve02081504/fount',
+			tags: ['🔌', '🌐', '🔗', '🛠️'],
+			home_page: 'https://github.com/steve02081504/fount'
 		},
 		'es-ES': {
 			name: 'Proxy',
@@ -132,13 +132,13 @@ export default {
 			home_page: 'https://github.com/steve02081504/fount',
 		},
 		lzh: {
-			name: '代理',
+			name: '通靈中介',
 			avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-			description: '代理',
-			description_markdown: '訪OpenAI兼容之接口端點。',
+			description: '通靈中介',
+			description_markdown: '通 OpenAI 兼容之靈脈，以達彼岸。',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['代理', 'openai', '接口', '用'],
+			tags: ['中介', 'openai', '靈脈', '器用'],
 			home_page: 'https://github.com/steve02081504/fount',
 		},
 		'nl-NL': {
@@ -374,13 +374,13 @@ async function GetSource(config, { SaveConfig }) {
 				provider: 'fount'
 			},
 			emoji: {
-				name: '🔌',
+				name: '🔌🌐',
 				avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-				description: 'Proxy',
-				description_markdown: 'Access any OpenAI-compatible API endpoint.',
+				description: '🔗🌍🤖',
+				description_markdown: '🌍🔌➡️🤖✨',
 				version: '0.0.0',
 				author: 'steve02081504',
-				tags: ['proxy', 'openai', 'api', 'utility'],
+				tags: ['🔌', '🌐', '🔗', '🛠️'],
 				home_page: 'https://github.com/steve02081504/fount',
 				provider: 'fount'
 			},
@@ -464,11 +464,11 @@ async function GetSource(config, { SaveConfig }) {
 			lzh: {
 				name: config.name || config.model,
 				avatar: 'https://api.iconify.design/mdi/earth-arrow-right.svg',
-				description: '代理',
-				description_markdown: '訪OpenAI兼容之接口端點。',
+				description: '通靈中介',
+				description_markdown: '通 OpenAI 兼容之靈脈，以達彼岸。',
 				version: '0.0.0',
 				author: 'steve02081504',
-				tags: ['代理', 'openai', '接口', '用'],
+				tags: ['中介', 'openai', '靈脈', '器用'],
 				home_page: 'https://github.com/steve02081504/fount',
 				provider: 'fount'
 			},

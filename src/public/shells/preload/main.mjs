@@ -55,13 +55,13 @@ export default {
 			tags: ['Vorladen', 'System', 'Leistung']
 		},
 		emoji: {
-			name: '⏩',
+			name: '⚡⏳',
 			avatar: 'https://api.iconify.design/material-symbols/play-for-work.svg',
-			description: 'A shell to preload parts.',
-			description_markdown: 'Preloads frequently used components to improve performance and reduce loading times.',
+			description: '⏩🧩🚀',
+			description_markdown: '⏳🛑➡️🚀',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['preload', 'system', 'performance']
+			tags: ['⏩', '⚡', '🚀']
 		},
 		'es-ES': {
 			name: 'Precargar',
@@ -127,13 +127,13 @@ export default {
 			tags: ['미리 로드', '시스템', '성능']
 		},
 		lzh: {
-			name: '預載',
+			name: '先行',
 			avatar: 'https://api.iconify.design/material-symbols/play-for-work.svg',
-			description: '一個用於預載部件的shell。',
-			description_markdown: '預載常用組件以提高性能並減少加載時間。',
+			description: '先行備妥，以待君命。',
+			description_markdown: '預先以此備妥常用之器，令君行事如風，無滯無礙。',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['預載', '系統', '性能']
+			tags: ['先行', '乾坤', '神速']
 		},
 		'nl-NL': {
 			name: 'Vooraf laden',

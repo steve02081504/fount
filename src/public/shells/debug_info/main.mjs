@@ -42,13 +42,13 @@ export default {
 			tags: ['Debug', 'Diagnose', 'Info', 'Version'],
 		},
 		emoji: {
-			name: '🐞',
+			name: '🐞🔍',
 			avatar: 'https://api.iconify.design/material-symbols/bug-report.svg',
-			description: 'A tool for system diagnostics and version checking.',
-			description_markdown: 'Provides detailed information about the system, part versions, and other diagnostic data to help with troubleshooting.',
+			description: '🩺💻📊',
+			description_markdown: '❌❓➡️🔍',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['debug', 'diagnostics', 'info', 'version'],
+			tags: ['🐞', '🩺', 'ℹ️', '🔢']
 		},
 		'es-ES': {
 			name: 'Información de depuración',
@@ -114,13 +114,13 @@ export default {
 			tags: ['디버그', '진단', '정보', '버전'],
 		},
 		lzh: {
-			name: '調試資訊',
+			name: '診脈',
 			avatar: 'https://api.iconify.design/material-symbols/bug-report.svg',
-			description: '系統診斷與版本查驗之器。',
-			description_markdown: '提供系統、部件版本及其他診斷數據之詳情，以助解惑。',
+			description: '察系統之疾，驗版本之真。',
+			description_markdown: '詳察經絡，細究病理，陳列數據，以解疑難雜症。',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['調試', '診斷', '資訊', '版本'],
+			tags: ['診脈', '醫理', '病歷', '考據'],
 		},
 		'nl-NL': {
 			name: 'Debuginformatie',

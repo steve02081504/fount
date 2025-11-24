@@ -40,13 +40,13 @@ export default {
 			tags: ['Einstellungen', 'Sprache', 'Internationalisierung']
 		},
 		emoji: {
-			name: '🗣️⚙️',
+			name: '🗣️🅰️',
 			avatar: 'https://api.iconify.design/heroicons/language.svg',
-			description: 'A shell to manage user language preferences.',
-			description_markdown: 'Allows users to select their preferred language for the interface.',
+			description: '🗣️🔄📝',
+			description_markdown: '🗣️➡️❤️',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['settings', 'language', 'internationalization']
+			tags: ['⚙️', '🗣️', '🌐']
 		},
 		'es-ES': {
 			name: 'Configuración de idioma',
@@ -112,13 +112,13 @@ export default {
 			tags: ['설정', '언어', '국제화']
 		},
 		lzh: {
-			name: '雅言規度',
+			name: '雅言儀軌',
 			avatar: 'https://api.iconify.design/heroicons/language.svg',
-			description: '用於管理用戶語言首選項的shell。',
-			description_markdown: '允許用戶為界面選擇其首選語言。',
+			description: '擇雅言以通意。',
+			description_markdown: '許君擇其所好之雅言，以觀界面之文。',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['規度', '雅言', '國際化']
+			tags: ['儀軌', '雅言', '通譯']
 		},
 		'nl-NL': {
 			name: 'Taalinstellingen',

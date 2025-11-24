@@ -50,13 +50,13 @@ export default {
 			home_page: 'https://claude.ai/'
 		},
 		emoji: {
-			name: '🤖',
+			name: '🤖🧠',
 			avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-			description: 'Claude by Anthropic',
-			description_markdown: 'A powerful AI assistant from Anthropic.',
+			description: '🧠💬✨',
+			description_markdown: '🧠🤝📜➡️🤖🎩',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['claude', 'anthropic', 'ai'],
+			tags: ['🤖', '🧠', '📜'],
 			home_page: 'https://claude.ai/'
 		},
 		'es-ES': {
@@ -283,13 +283,13 @@ async function GetSource(config, { SaveConfig }) { // 接收 SaveConfig
 				home_page: 'https://claude.ai/'
 			},
 			emoji: {
-				name: '🤖',
+				name: '🤖🧠',
 				avatar: 'https://api.iconify.design/simple-icons/anthropic.svg',
-				description: 'Claude by Anthropic',
-				description_markdown: 'A powerful AI assistant from Anthropic.',
+				description: '🧠💬✨',
+				description_markdown: '🧠🤝📜➡️🤖🎩',
 				version: '0.0.0',
 				author: 'steve02081504',
-				tags: ['claude', 'anthropic', 'ai'],
+				tags: ['🤖', '🧠', '📜'],
 				provider: 'anthropic',
 				home_page: 'https://claude.ai/'
 			},

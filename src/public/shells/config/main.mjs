@@ -61,14 +61,14 @@ export default {
 			tags: ['Konfiguration', 'Einstellungen', 'Verwaltung']
 		},
 		emoji: {
-			name: '🧩⚙️',
+			name: '⚙️🔧',
 			avatar: 'https://api.iconify.design/line-md/cog.svg',
-			description: 'Configure fount components.',
-			description_markdown: 'This shell allows you to get, set, and list configurations for various parts of fount, including characters, personas, and worlds.',
+			description: '🧩⚙️🛠️',
+			description_markdown: '⚙️🔧🧩🎛️',
 			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
-			tags: ['config', 'settings', 'management']
+			tags: ['⚙️', '🔧', '🎛️']
 		},
 		'es-ES': {
 			name: 'Configuración de Componente',
@@ -143,12 +143,12 @@ export default {
 		lzh: {
 			name: '器之規度',
 			avatar: 'https://api.iconify.design/line-md/cog.svg',
-			description: '規度fount組件。',
-			description_markdown: '此shell允許您獲取、規度並列出fount各部分的規度，包括角色、角色和世界。',
+			description: '規度萬物，定其法式。',
+			description_markdown: '掌管萬物之規度，無論化身、身分或世界，皆可在此定奪。',
 			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
-			tags: ['規度', '規度', '管理']
+			tags: ['規度', '法式', '掌管']
 		},
 		'nl-NL': {
 			name: 'Componentconfiguratie',

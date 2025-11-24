@@ -51,14 +51,14 @@ export default {
 			home_page: 'https://github.com/steve02081504/fount',
 		},
 		emoji: {
-			name: '🎲',
+			name: '🎲❓',
 			avatar: 'https://api.iconify.design/mdi/dice-multiple.svg',
-			description: 'Weighted Random',
-			description_markdown: 'Selects a source randomly based on configured weights.',
+			description: '🎲⚖️🤞',
+			description_markdown: '⚖️➡️🎲➡️🤖',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['random', 'utility', 'meta'],
-			home_page: 'https://github.com/steve02081504/fount',
+			tags: ['🎲', '⚖️', '❓'],
+			home_page: 'https://github.com/steve02081504/fount'
 		},
 		'es-ES': {
 			name: 'Aleatorio ponderado',
@@ -131,13 +131,13 @@ export default {
 			home_page: 'https://github.com/steve02081504/fount',
 		},
 		lzh: {
-			name: '加權隨機',
+			name: '權衡隨機',
 			avatar: 'https://api.iconify.design/mdi/dice-multiple.svg',
-			description: '加權隨機',
-			description_markdown: '依權重隨機擇源。',
+			description: '權衡隨機',
+			description_markdown: '依權重之差，隨機取源，如探囊取物。',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['隨機', '用', '元'],
+			tags: ['隨機', '器用', '元'],
 			home_page: 'https://github.com/steve02081504/fount',
 		},
 		'nl-NL': {
@@ -328,13 +328,13 @@ async function GetSource(config, { username, SaveConfig }) {
 				provider: 'fount'
 			},
 			emoji: {
-				name: '🎲',
+				name: '🎲❓',
 				avatar: 'https://api.iconify.design/mdi/dice-multiple.svg',
-				description: 'Weighted Random',
-				description_markdown: 'Selects a source randomly based on configured weights.',
+				description: '🎲⚖️🤞',
+				description_markdown: '⚖️➡️🎲➡️🤖',
 				version: '0.0.0',
 				author: 'steve02081504',
-				tags: ['random', 'utility', 'meta'],
+				tags: ['🎲', '⚖️', '❓'],
 				home_page: 'https://github.com/steve02081504/fount',
 				provider: 'fount'
 			},
@@ -418,11 +418,11 @@ async function GetSource(config, { username, SaveConfig }) {
 			lzh: {
 				name: config.name,
 				avatar: 'https://api.iconify.design/mdi/dice-multiple.svg',
-				description: '加權隨機',
-				description_markdown: '依權重隨機擇源。',
+				description: '權衡隨機',
+				description_markdown: '依權重之差，隨機取源，如探囊取物。',
 				version: '0.0.0',
 				author: 'steve02081504',
-				tags: ['隨機', '用', '元'],
+				tags: ['隨機', '器用', '元'],
 				home_page: 'https://github.com/steve02081504/fount',
 				provider: 'fount'
 			},

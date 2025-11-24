@@ -36,7 +36,7 @@
 			"sendCommandFailed": "傳令失機：${error}",
 			"socketError": "節點有誤：${error}",
 			"parseResponseFailed": "解復令失利：${error}",
-			"cannotParseResponse": "復令難解，如窺天書",
+			"cannotParseResponse": "復令難解，如讀天書",
 			"unknownError": "天有不測之禍"
 		},
 		"partManager": {
@@ -54,7 +54,7 @@
 		},
 		"web": {
 			"requestReceived": "承奉來使：${method} ${url}",
-			"frontendFilesChanged": "前端卷宗 [${path}] 已異，諭客重載之。"
+			"frontendFilesChanged": "臺前卷帙 [${path}] 有變，當令客重閱。"
 		},
 		"route": {
 			"setLanguagePreference": "用者 ${username} 定其雅言為: ${preferredLanguages}"
@@ -133,7 +133,7 @@
 				"branchesDiverged": "本地與遠端分支已分歧，強行更新之...",
 				"notOnBranch": "非在支上，今切至 'master'...",
 				"noUpstreamBranch": "警：'${branch}' 支未設上游，今設其上游為 'origin/master'",
-				"dirtyWorkingDirectory": "警：工作目錄不潔，敬請修訂後再更新",
+				"dirtyWorkingDirectory": "案牘勞形，未及整理。請先封存或呈貢，方可續行。",
 				"notInstalled": "Git 未裝，嘗試安裝之...",
 				"notInstalledSkippingPull": "Git 未裝，git pull 暫略",
 				"repoNotFoundSkippingPull": "倉庫未尋得，git pull 暫略",
@@ -211,7 +211,7 @@
 		"description": "觀其進度，覽其內秀。頃刻之間，活泉待發。",
 		"hero": {
 			"title": "靈犀一點，應念而生",
-			"description": "fount者，神思所驅，幻身之臺也。意在予<i>君</i>神便。其為津梁，繫君於遐思之靈，與之清談，創塑己身，公諸天下，皆易如反掌。"
+			"description": "fount者，靈臺也，神思驅之，幻身託焉。旨在通神，以便<i>君</i>行。為津梁，繫遐思，共清談，塑真身，佈天下，皆易如反掌。"
 		},
 		"feature1": {
 			"title": "雲程萬里，晤言無間",
@@ -246,7 +246,7 @@
 		},
 		"mini_game": {
 			"title": "聊以解憂",
-			"description1": "安設遲緩，可有煩憂？",
+			"description1": "佈設需時，可有煩憂？",
 			"description2": "此有小物可遣時日，聊博一粲。"
 		},
 		"data_showcase": {
@@ -422,10 +422,10 @@
 		},
 		"passwordStrength": {
 			"veryWeak": "不堪一擊",
-			"weak": "脆弱",
-			"normal": "尚可",
-			"strong": "堅固",
-			"veryStrong": "牢不可破"
+			"weak": "危如累卵",
+			"normal": "中規中矩",
+			"strong": "固若金湯",
+			"veryStrong": "堅不可摧"
 		},
 		"error": {
 			"passwordMismatch": "信物不合。",
@@ -493,9 +493,9 @@
 			"personas": "身分",
 			"plugins": "插件",
 			"AIsources": "智源",
-			"AIsourceGenerators": "智源生成器",
-			"ImportHandlers": "導入處理器",
-			"shells": "交互界面"
+			"AIsourceGenerators": "智源造化器",
+			"ImportHandlers": "納入司",
+			"shells": "通感之儀"
 		},
 		"default": {
 			"title": "擇選組件",
@@ -687,7 +687,7 @@
 			"confirmDeleteMessage": "覆水難收，真欲刪此一言乎？"
 		},
 		"voiceRecording": {
-			"errorAccessingMicrophone": "麥克風不可用"
+			"errorAccessingMicrophone": "耳目閉塞，難以傳聲"
 		},
 		"messageView": {
 			"buttons": {
@@ -1381,7 +1381,7 @@
 			"cancelButton": "罷",
 			"saveApplyButton": "存而用之",
 			"themeName": "風貌之名 (ID)",
-			"autoPaletteTitle": "以圖取色",
+			"autoPaletteTitle": "採擷丹青",
 			"autoPaletteInstruction": "點選上方顏色，以自動填補主色、輔色、強調色及中性色。",
 			"coreColors": "主色",
 			"baseBackground": "基調與背景",
@@ -1400,24 +1400,24 @@
 		},
 		"themes": {
 			"auto": "隨天時",
-			"light": "白晝",
-			"dark": "永夜",
+			"light": "晝白",
+			"dark": "玄夜",
 			"cupcake": "瓊漿",
 			"bumblebee": "蜜釀",
 			"emerald": "翡翠",
 			"corporate": "雅仕",
 			"synthwave": "幻波",
-			"retro": "懷舊",
+			"retro": "流金",
 			"cyberpunk": "詭械",
 			"valentine": "情人",
 			"halloween": "萬聖",
 			"garden": "庭院",
 			"forest": "森林",
 			"aqua": "滄海",
-			"lofi": "慢調",
+			"lofi": "清歡",
 			"pastel": "淡彩",
 			"fantasy": "奇幻",
-			"wireframe": "線框",
+			"wireframe": "經緯",
 			"black": "玄黑",
 			"luxury": "奢華",
 			"dracula": "魔裔",
@@ -1850,7 +1850,7 @@
 		}
 	},
 	"deskpet": {
-		"title": "案上宠",
+		"title": "案頭靈寵",
 		"description": "化君之泉源人物為桌面靈寵，與君互動，生趣盎然。",
 		"launcherCard": {
 			"title": "案上宠",
@@ -2125,7 +2125,7 @@
 			"anotherWord": "宜增僻字。",
 			"useWords": "宜用數詞，然避俗語。",
 			"noNeed": "強鑰何須符數大寫。",
-			"pwned": "此鑰已洩於網。"
+			"pwned": "此符節已洩於江湖，勿復用之。"
 		},
 		"timeEstimation": {
 			"ltSecond": "瞬息之內",

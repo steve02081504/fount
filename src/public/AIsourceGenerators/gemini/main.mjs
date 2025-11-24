@@ -92,13 +92,13 @@ export default {
 			home_page: 'https://gemini.google.com/'
 		},
 		emoji: {
-			name: '♊',
+			name: '♊✨',
 			avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-			description: 'Gemini by Google',
-			description_markdown: 'Google\'s powerful and multimodal AI model.',
+			description: '🧠👁️👂',
+			description_markdown: '🖼️🎤📄➡️🧠✨',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['google', 'gemini', 'ai', 'multimodal'],
+			tags: ['♊️', '🧠', '👁️', '🔗'],
 			home_page: 'https://gemini.google.com/'
 		},
 		'es-ES': {
@@ -175,10 +175,10 @@ export default {
 			name: 'Gemini',
 			avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
 			description: '谷歌之雙子',
-			description_markdown: '谷歌之強大多模態智械模型。',
+			description_markdown: '谷歌之強大多模態靈機。',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['谷歌', '雙子', '智械', '多模態'],
+			tags: ['谷歌', '雙子', '靈機', '多模態'],
 			home_page: 'https://gemini.google.com/'
 		},
 		'nl-NL': {
@@ -485,13 +485,13 @@ async function GetSource(config) {
 				home_page: 'https://gemini.google.com/'
 			},
 			emoji: {
-				name: '♊',
+				name: '♊✨',
 				avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
-				description: 'Gemini by Google',
-				description_markdown: 'Google\'s powerful and multimodal AI model.',
+				description: '🧠👁️👂',
+				description_markdown: '🖼️🎤📄➡️🧠✨',
 				version: '0.0.0',
 				author: 'steve02081504',
-				tags: ['google', 'gemini', 'ai', 'multimodal'],
+				tags: ['♊️', '🧠', '👁️', '🔗'],
 				provider: 'google',
 				home_page: 'https://gemini.google.com/'
 			},
@@ -576,10 +576,10 @@ async function GetSource(config) {
 				name: config.name || config.model,
 				avatar: 'https://api.iconify.design/simple-icons/googlebard.svg',
 				description: '谷歌之雙子',
-				description_markdown: '谷歌之強大多模態智械模型。',
+				description_markdown: '谷歌之強大多模態靈機。',
 				version: '0.0.0',
 				author: 'steve02081504',
-				tags: ['谷歌', '雙子', '智械', '多模態'],
+				tags: ['谷歌', '雙子', '靈機', '多模態'],
 				provider: 'google',
 				home_page: 'https://gemini.google.com/'
 			},
