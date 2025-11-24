@@ -61,14 +61,14 @@ export default {
 			tags: ['KI', 'Verwaltung', 'System']
 		},
 		emoji: {
-			name: '🤖✍️',
+			name: '🤖📝',
 			avatar: 'https://api.iconify.design/line-md/engine.svg',
-			description: 'Manage AI sources for characters.',
-			description_markdown: 'This shell allows you to add, remove, and configure AI sources, which characters use to connect to different AI models.',
+			description: '⚙️🤖⛲',
+			description_markdown: '➕➖📝🤖',
 			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
-			tags: ['AI', 'management', 'system']
+			tags: ['🤖', '⚙️', '📝']
 		},
 		'es-ES': {
 			name: 'Gestión de fuentes de IA',
@@ -141,14 +141,14 @@ export default {
 			tags: ['AI', '관리', '시스템']
 		},
 		lzh: {
-			name: '智源管理',
+			name: '靈源司',
 			avatar: 'https://api.iconify.design/line-md/engine.svg',
-			description: '管理角色的智源。',
-			description_markdown: '此shell允許您添加、刪除和配置智源，角色使用這些源連接到不同的智源模型。',
+			description: '掌管靈源，通達智慧。',
+			description_markdown: '在此司掌靈源之生滅，為化身接通智慧之泉，使其能通曉萬物。',
 			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
-			tags: ['智源', '管理', '系統']
+			tags: ['靈源', '智慧', '司掌']
 		},
 		'nl-NL': {
 			name: 'AI-bronbeheer',

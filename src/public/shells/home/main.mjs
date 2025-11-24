@@ -45,13 +45,13 @@ export default {
 			tags: ['Startseite', 'Dashboard', 'Haupt']
 		},
 		emoji: {
-			name: '🏠',
+			name: '🏠⛲',
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
-			description: 'The home page of fount.',
-			description_markdown: 'The central hub for navigating fount, providing access to all shells and features.',
+			description: '🏁🗺️',
+			description_markdown: '🏠🔗🌐🧩',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['home', 'dashboard', 'main']
+			tags: ['🏠', '⭐', '🗺️']
 		},
 		'es-ES': {
 			name: 'Página de inicio',
@@ -117,13 +117,13 @@ export default {
 			tags: ['홈페이지', '대시보드', '메인']
 		},
 		lzh: {
-			name: '主頁',
+			name: '門戶',
 			avatar: 'https://api.iconify.design/material-symbols/home.svg',
-			description: 'fount 的主頁。',
-			description_markdown: '用於導航 fount 的中央樞紐，提供對所有shell和功能的訪問。',
+			description: '泉源之門戶。',
+			description_markdown: '泉源之中樞，由此通達四方，盡覽諸般儀軌與法寶。',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['主頁', '儀表板', '主要']
+			tags: ['門戶', '中樞', '總綱']
 		},
 		'nl-NL': {
 			name: 'Startpagina',

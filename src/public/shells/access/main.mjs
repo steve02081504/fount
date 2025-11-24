@@ -59,14 +59,14 @@ export default {
 			tags: ['Netzwerk', 'Fernbedienung', 'Zugriff']
 		},
 		emoji: {
-			name: '💻📱➡️⛲',
+			name: '🔗📱',
 			avatar: 'https://api.iconify.design/line-md/cloud.svg',
-			description: 'Access fount from other devices on the same network.',
-			description_markdown: 'This shell provides a URL and QR code to access fount from other devices on the same local network.',
+			description: '📱🤝💻',
+			description_markdown: '📡➡️📱➡️⛲',
 			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
-			tags: ['network', 'remote', 'access']
+			tags: ['🌐', '📱', '🔑']
 		},
 		'es-ES': {
 			name: 'Acceso en otros dispositivos',
@@ -139,14 +139,14 @@ export default {
 			tags: ['네트워크', '원격', '액세스']
 		},
 		lzh: {
-			name: '從他器訪問',
+			name: '天涯比鄰',
 			avatar: 'https://api.iconify.design/line-md/cloud.svg',
-			description: '從同一網絡上的其他設備訪問fount。',
-			description_markdown: '此shell提供一個URL和二維碼，以便在同一本地網絡上的其他設備上訪問fount。',
+			description: '雖隔天涯，亦如比鄰。',
+			description_markdown: '以神符或真言為引，使他器亦能通達泉源，如在目前。',
 			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
-			tags: ['網絡', '遠程', '訪問']
+			tags: ['天涯', '比鄰', '通達']
 		},
 		'nl-NL': {
 			name: 'Toegang op andere apparaten',

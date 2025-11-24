@@ -46,14 +46,14 @@ export default {
 			tags: ['Userscript', 'Browser', 'Integration']
 		},
 		emoji: {
-			name: '🌀📍',
+			name: '🌐🧩',
 			avatar: 'https://api.iconify.design/line-md/cookie.svg',
-			description: 'Userscript for enhanced browser interaction.',
-			description_markdown: 'Provides a userscript to allow characters to interact with the browser page content more natively.',
+			description: '📜🤝🌐',
+			description_markdown: '📜🤖🌐✨',
 			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
-			tags: ['userscript', 'browser', 'integration']
+			tags: ['📜', '🌐', '🔗']
 		},
 		'es-ES': {
 			name: 'Integración del navegador',
@@ -126,14 +126,14 @@ export default {
 			tags: ['사용자 스크립트', '브라우저', '통합']
 		},
 		lzh: {
-			name: '覽器統合',
+			name: '網羅萬象',
 			avatar: 'https://api.iconify.design/line-md/cookie.svg',
-			description: '用於增強瀏覽器交互的用戶腳本。',
-			description_markdown: '提供一個用戶腳本，允許角色更自然地與瀏覽器頁面內容進行交互。',
+			description: '以神符之力，通達網羅。',
+			description_markdown: '賜予化身神符，使其能於網羅之中自由行走，與萬物互動。',
 			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
-			tags: ['用戶腳本', '瀏覽器', '集成']
+			tags: ['神符', '網羅', '通達']
 		},
 		'nl-NL': {
 			name: 'Browserintegratie',

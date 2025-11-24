@@ -309,14 +309,14 @@ export default {
 			tags: ['fount', '파트', '가져오기']
 		},
 		lzh: {
-			name: 'fount導入器',
+			name: 'fount 納入司',
 			avatar: '/favicon.svg',
-			description: '從封存檔案或git倉庫導入fount部件。',
-			description_markdown: '從封存檔案（如`.zip`、`.7z`）或git倉庫導入fount部件。',
+			description: '自封存檔或 git 倉庫納入 fount 部件。',
+			description_markdown: '自封存檔（如 `.zip`、`.7z`）或 git 倉庫納入 fount 部件。',
 			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://steve02081504.github.io/fount/',
-			tags: ['fount', '部件', '導入']
+			tags: ['fount', '部件', '納入']
 		},
 		'nl-NL': {
 			name: 'fount-importeur',

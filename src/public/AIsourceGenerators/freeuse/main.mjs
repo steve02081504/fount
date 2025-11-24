@@ -53,13 +53,13 @@ export default {
 			home_page: ''
 		},
 		emoji: {
-			name: '🤪',
+			name: '🤪🔗',
 			avatar: 'https://api.iconify.design/mdi/robot-happy.svg',
-			description: 'Freeuse',
-			description_markdown: 'A very simple Markov chain text generator. It produces nonsensical output.',
+			description: '🆓🤪🎲',
+			description_markdown: '🤪🔗🎲💬',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['free', 'local', 'toy'],
+			tags: ['🆓', '🎲', '🤪'],
 			home_page: ''
 		},
 		'es-ES': {
@@ -139,7 +139,7 @@ export default {
 			description_markdown: '一甚簡之馬爾可夫鏈文生器。其所出無義。',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['任', '本地', '玩物'],
+			tags: ['任用', '本地', '玩物'],
 			home_page: ''
 		},
 		'nl-NL': {
@@ -278,13 +278,13 @@ async function GetSource(config) {
 				home_page: ''
 			},
 			emoji: {
-				name: '🤪',
+				name: '🤪🔗',
 				avatar: 'https://api.iconify.design/mdi/robot-happy.svg',
-				description: 'Freeuse',
-				description_markdown: 'A very simple Markov chain text generator. It produces nonsensical output.',
+				description: '🆓🤪🎲',
+				description_markdown: '🤪🔗🎲💬',
 				version: '0.0.0',
 				author: 'steve02081504',
-				tags: ['free', 'local', 'toy'],
+				tags: ['🆓', '🎲', '🤪'],
 				provider: 'freeuse',
 				home_page: ''
 			},
@@ -372,7 +372,7 @@ async function GetSource(config) {
 				description_markdown: '一甚簡之馬爾可夫鏈文生器。其所出無義。',
 				version: '0.0.0',
 				author: 'steve02081504',
-				tags: ['任', '本地', '玩物'],
+				tags: ['任用', '本地', '玩物'],
 				provider: 'freeuse',
 				home_page: ''
 			},

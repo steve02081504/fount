@@ -68,13 +68,13 @@ export default {
 			tags: ['Telegram', 'Bot', 'Chat', 'Integration']
 		},
 		emoji: {
-			name: '🤖✈️',
+			name: '✈️🤖',
 			avatar: 'https://api.iconify.design/line-md/telegram.svg',
-			description: 'Run your character as a Telegram Bot.',
-			description_markdown: 'Integrate your fount character with Telegram to interact with users on the platform.',
+			description: '✈️💬🔗',
+			description_markdown: '🔗🤖✈️💬',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['telegram', 'bot', 'chat', 'integration']
+			tags: ['✈️', '🤖', '💬', '🔗']
 		},
 		'es-ES': {
 			name: 'Bot de Telegram',
@@ -142,11 +142,11 @@ export default {
 		lzh: {
 			name: 'Telegram 靈偶',
 			avatar: 'https://api.iconify.design/line-md/telegram.svg',
-			description: '將您的角色作為 Telegram Bot 運行。',
-			description_markdown: '將您的 fount 角色與 Telegram 集成，以便在該平台上與用戶互動。',
+			description: '化身託於 Telegram 靈偶而行。',
+			description_markdown: '融泉源化身於 Telegram，以於彼方與眾生結緣。',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['Telegram', '靈偶', '聊天', '集成']
+			tags: ['Telegram', '靈偶', '清談', '融通']
 		},
 		'nl-NL': {
 			name: 'Telegram Bot',

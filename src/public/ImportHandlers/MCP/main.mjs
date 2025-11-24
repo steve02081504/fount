@@ -214,14 +214,14 @@ export default {
 			tags: ['mcp', '도구', '플러그인 생성기']
 		},
 		lzh: {
-			name: 'MCP導入器',
+			name: 'MCP 納入司',
 			avatar: 'https://modelcontextprotocol.io/favicon.svg',
-			description: '導入MCP（模型上下文協議）伺服器配置為插件。',
-			description_markdown: '導入MCP（模型上下文協議）伺服器配置為獨立插件。各MCP伺服器皆成一獨立插件，可獨立啟用或禁用。',
+			description: '納 MCP（模型上下文協議）伺服器配置為插件。',
+			description_markdown: '納 MCP（模型上下文協議）伺服器配置為獨立插件。各 MCP 伺服器皆成一獨立插件，可獨立啟用或禁用。',
 			version: '0.0.0',
 			author: 'steve02081504 & ZINWIN10',
 			home_page: 'https://modelcontextprotocol.io/',
-			tags: ['mcp', '工具', '插件生成器']
+			tags: ['mcp', '器用', '插件生成器']
 		},
 		'nl-NL': {
 			name: 'MCP-importeur',

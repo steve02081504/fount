@@ -65,11 +65,11 @@ export default {
 		emoji: {
 			name: '🔄📝',
 			avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-			description: 'Change Prompt',
-			description_markdown: 'A source that allows you to modify the prompt before sending it to another source.',
+			description: '📝➡️✨',
+			description_markdown: '📝➡️🔄➡️🤖✨',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['prompt', 'modifier', 'utility'],
+			tags: ['📝', '🔄', '🎨'],
 			home_page: ''
 		},
 		'es-ES': {
@@ -325,11 +325,11 @@ async function GetSource(config, { username, SaveConfig }) {
 			emoji: {
 				name: '🔄📝',
 				avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-				description: 'Change Prompt',
-				description_markdown: 'A source that allows you to modify the prompt before sending it to another source.',
+				description: '📝➡️✨',
+				description_markdown: '📝➡️🔄➡️🤖✨',
 				version: '0.0.0',
 				author: 'steve02081504',
-				tags: ['prompt', 'modifier', 'utility'],
+				tags: ['📝', '🔄', '🎨'],
 				provider: config.provider || 'unknown',
 				home_page: ''
 			},

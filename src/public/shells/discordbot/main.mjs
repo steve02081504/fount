@@ -62,14 +62,14 @@ export default {
 			tags: ['Discord', 'Bot', 'Integration']
 		},
 		emoji: {
-			name: '🤖💬🎮',
+			name: '🎮🤖',
 			avatar: 'https://api.iconify.design/line-md/discord.svg',
-			description: 'Run your character as a Discord bot.',
-			description_markdown: 'Allows you to connect your character to Discord and interact with them as a bot.',
+			description: '🎮💬🔗',
+			description_markdown: '🔗🤖➡️🎮',
 			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
-			tags: ['discord', 'bot', 'integration']
+			tags: ['🎮', '🤖', '🔗']
 		},
 		'es-ES': {
 			name: 'Bot de Discord',
@@ -142,14 +142,14 @@ export default {
 			tags: ['디스코드', '봇', '통합']
 		},
 		lzh: {
-			name: 'Discord靈偶',
+			name: 'Discord 靈偶',
 			avatar: 'https://api.iconify.design/line-md/discord.svg',
-			description: '以Discord靈偶身份運行您的角色。',
-			description_markdown: '允許您將角色連接到Discord並作為靈偶與之互動。',
+			description: '化身託於 Discord 靈偶而行。',
+			description_markdown: '融泉源化身於 Discord，以於彼方與眾生結緣。',
 			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
-			tags: ['Discord', '靈偶', '集成']
+			tags: ['Discord', '靈偶', '融通']
 		},
 		'nl-NL': {
 			name: 'Discord-bot',

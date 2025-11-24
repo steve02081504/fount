@@ -61,14 +61,14 @@ export default {
 			tags: ['Desktop', 'Haustier', 'Webansicht']
 		},
 		emoji: {
-			name: '🐾',
+			name: '🐾🖥️',
 			avatar: 'https://api.iconify.design/material-symbols/pets.svg',
-			description: 'Run your character as a desktop pet.',
-			description_markdown: 'Allows characters to be displayed as interactive desktop pets in a borderless, transparent window.',
+			description: '🐾👻🖥️',
+			description_markdown: '🖼️👻➡️🖥️',
 			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
-			tags: ['desktop', 'pet', 'webview']
+			tags: ['🖥️', '🐾', '👻']
 		},
 		'es-ES': {
 			name: 'mascotas de escritorio',
@@ -141,14 +141,14 @@ export default {
 			tags: ['데스크톱', '애완동물', '웹뷰']
 		},
 		lzh: {
-			name: '桌面宠物',
+			name: '案頭靈寵',
 			avatar: 'https://api.iconify.design/material-symbols/pets.svg',
-			description: '將您的角色作為桌面寵物運行。',
-			description_markdown: '允許角色在無邊框、透明的窗口中顯示為交互式桌面寵物。',
+			description: '化身為靈寵，伴君案頭。',
+			description_markdown: '化身躍然屏上，無框無束，如影隨形，與君互動。',
 			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
-			tags: ['桌面', '寵物', '網頁視圖']
+			tags: ['案頭', '靈寵', '幻境']
 		},
 		'nl-NL': {
 			name: 'Desktop huisdieren',
