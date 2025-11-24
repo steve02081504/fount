@@ -170,11 +170,13 @@ export default {
 					result.content = requestResult.content
 					result.files = result.files.concat(requestResult.files || [])
 					result.extension = { ...result.extension, ...requestResult.extension }
+					let continue_regen = false
 					for (const replyHandler of [
 						...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
 					].filter(Boolean))
 						if (await replyHandler(result, { ...args, prompt_struct, AddLongTimeLog }))
-							continue regen
+							continue_regen = true
+					if (continue_regen) continue regen
 					break
 				}
 				// 返回构建好的回复
@@ -263,12 +265,14 @@ function CharGenerator(reply, { AddLongTimeLog }) {
 					result.content = requestResult.content
 					result.files = result.files.concat(requestResult.files || [])
 					result.extension = { ...result.extension, ...requestResult.extension }
+					let continue_regen = false
 					for (const replyHandler of [
 						CharGenerator,
 						...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
 					].filter(Boolean))
 						if (await replyHandler(result, { ...args, prompt_struct, AddLongTimeLog }))
-							continue regen
+							continue_regen = true
+					if (continue_regen) continue regen
 					break
 				}
 				// 返回构建好的回复
@@ -995,6 +999,7 @@ persona-generator
 					result.content = requestResult.content
 					result.files = result.files.concat(requestResult.files || [])
 					result.extension = { ...result.extension, ...requestResult.extension }
+					let continue_regen = false
 					for (const replyHandler of [
 						getToolInfo,
 						CharGenerator,
@@ -1002,7 +1007,8 @@ persona-generator
 						...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
 					].filter(Boolean))
 						if (await replyHandler(result, { ...args, prompt_struct, AddLongTimeLog }))
-							continue regen
+							continue_regen = true
+					if (continue_regen) continue regen
 					break
 				}
 				// 返回构建好的回复

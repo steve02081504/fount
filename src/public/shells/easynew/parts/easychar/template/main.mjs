@@ -190,11 +190,13 @@ export default {
 					result.content = requestResult.content
 					result.files = result.files.concat(requestResult.files || [])
 					result.extension = { ...result.extension, ...requestResult.extension }
+					let continue_regen = false
 					for (const replyHandler of [
 						...Object.values(arg.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
 					].filter(Boolean))
 						if (await replyHandler(result, { ...arg, prompt_struct, AddLongTimeLog }))
-							continue regen
+							continue_regen = true
+					if (continue_regen) continue regen
 					break
 				}
 				// 返回构建好的回复
