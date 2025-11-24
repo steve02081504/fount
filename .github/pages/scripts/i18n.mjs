@@ -233,6 +233,11 @@ export function geti18n(key, params = {}) {
 	Sentry.captureException(new Error(`Translation key "${key}" not found.`))
 }
 /**
+ * 重新导出 `console` 对象。
+ * @type {Console}
+ */
+export const console = globalThis.console
+/**
  * @overload
  * @template {LocaleKeyWithoutParams} TKey
  * @param {TKey} key
