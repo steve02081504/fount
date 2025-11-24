@@ -428,10 +428,8 @@ function translateSingularElement(element) {
 	for (const key of element.dataset.i18n.split(';').map(k => k.trim())) {
 		if (key.startsWith('\'') && key.endsWith('\'')) {
 			const literal_value = key.slice(1, -1)
-			if (element.textContent !== literal_value) {
-				element.textContent = literal_value
-				updated = true
-			}
+			// deno-lint-ignore no-cond-assign
+			if (element.textContent ||= literal_value) updated = true
 		}
 		else if (getNestedValue(i18n, key) instanceof Object) {
 			if (!Object.keys(getNestedValue(i18n, key)).length) break

@@ -66,14 +66,14 @@ export default {
 			tags: ['Chat', 'KI', 'Rollenspiel']
 		},
 		emoji: {
-			name: '💬',
+			name: '💬🗯️',
 			avatar: 'https://api.iconify.design/fluent/chat-16-regular.svg',
-			description: 'Create and manage chat sessions with AI characters.',
-			description_markdown: 'This shell allows you to start new chat sessions, load existing ones, and interact with AI characters in real-time.',
+			description: '💬🤖✨',
+			description_markdown: '🗣️💬📜✨',
 			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
-			tags: ['chat', 'AI', 'roleplay']
+			tags: ['💬', '🤖', '🎭']
 		},
 		'es-ES': {
 			name: 'Chat',
@@ -148,12 +148,12 @@ export default {
 		lzh: {
 			name: '清談',
 			avatar: 'https://api.iconify.design/fluent/chat-16-regular.svg',
-			description: '創建和管理與AI角色的清談會話。',
-			description_markdown: '此shell允許您開始新的清談會話，加載現有會話，並與AI角色進行實時互動。',
+			description: '與幻靈清談，共話桑麻。',
+			description_markdown: '開啟清談之門，續寫往日之約，與幻靈實時對話，共度良宵。',
 			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
-			tags: ['清談', 'AI', '角色扮演']
+			tags: ['清談', '幻靈', '演繹']
 		},
 		'nl-NL': {
 			name: 'kletsen',

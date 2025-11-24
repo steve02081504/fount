@@ -67,13 +67,13 @@ export default {
 			tags: ['Benutzer', 'Einstellungen', 'Konto', 'Profil']
 		},
 		emoji: {
-			name: '👤⚙️',
+			name: '👤🔑',
 			avatar: 'https://api.iconify.design/line-md/account.svg',
-			description: 'Manage user account settings, such as password, username, and API keys.',
-			description_markdown: 'Allows users to manage their account settings, including changing passwords, renaming their account, and managing API keys for integrations.',
+			description: '👤⚙️🔐',
+			description_markdown: '⚙️👤📝🔑',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['user', 'settings', 'account', 'profile']
+			tags: ['⚙️', '👤', '🔑', '📝']
 		},
 		'es-ES': {
 			name: 'Configuración de usuario',
@@ -139,13 +139,13 @@ export default {
 			tags: ['사용자', '설정', '계정', '프로필']
 		},
 		lzh: {
-			name: '用者規度',
+			name: '用者儀軌',
 			avatar: 'https://api.iconify.design/line-md/account.svg',
-			description: '管理用戶帳戶規度，例如密碼、用戶名和 API 密鑰。',
-			description_markdown: '允許用戶管理其帳戶規度，包括更改密碼、重命名帳戶以及管理用於集成的 API 密鑰。',
+			description: '掌用者之儀軌，如信物、名號及通靈符節。',
+			description_markdown: '許君掌其戶籍儀軌，或易信物，或更名號，或理通靈符節以備集成之用。',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['用者', '規度', '帳戶', '個人資料']
+			tags: ['用者', '儀軌', '戶籍', '履歷']
 		},
 		'nl-NL': {
 			name: 'Gebruikersinstellingen',

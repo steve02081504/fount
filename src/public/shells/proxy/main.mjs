@@ -53,13 +53,13 @@ export default {
 			tags: ['Proxy', 'API', 'OpenAI', 'Integration']
 		},
 		emoji: {
-			name: '🤖🔄',
+			name: '🔌🤖',
 			avatar: 'https://api.iconify.design/line-md/cloud-alt-braces.svg',
-			description: 'A shell to provide OpenAI-compatible API.',
-			description_markdown: 'Provides an OpenAI-compatible API endpoint, allowing you to use fount with third-party applications.',
+			description: '🔌API',
+			description_markdown: '🌍🔌➡️🤖✨',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['proxy', 'API', 'OpenAI', 'integration']
+			tags: ['🔌', '🌐', '🔗', '🤖']
 		},
 		'es-ES': {
 			name: 'Proxy',
@@ -125,13 +125,13 @@ export default {
 			tags: ['프록시', 'API', 'OpenAI', '통합']
 		},
 		lzh: {
-			name: 'API中介',
+			name: '通靈中介',
 			avatar: 'https://api.iconify.design/line-md/cloud-alt-braces.svg',
-			description: '一個提供 OpenAI 兼容 API 的 shell。',
-			description_markdown: '提供與 OpenAI 兼容的 API 端點，允許您將 fount 與第三方應用程序一起使用。',
+			description: '效法 OpenAI 之儀，以通他山之石。',
+			description_markdown: '設通靈之徑，仿 OpenAI 之法，許君以他山之器，運泉源之靈。',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['API中介', 'API', 'OpenAI', '集成']
+			tags: ['中介', '通靈', 'OpenAI', '融通']
 		},
 		'nl-NL': {
 			name: 'Proxy',

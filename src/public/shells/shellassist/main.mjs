@@ -51,13 +51,13 @@ export default {
 			tags: ['Terminal', 'Shell', 'Assistenz', 'Entwickler']
 		},
 		emoji: {
-			name: '💻🦾',
+			name: '🐚💻',
 			avatar: 'https://api.iconify.design/line-md/laptop.svg',
-			description: 'Interactive terminal access within fount.',
-			description_markdown: 'Provides an interactive terminal connected to the fount server environment, allowing for direct command-line operations.',
+			description: '💻⌨️⚡',
+			description_markdown: '🧑‍💻➡️⌨️➡️🐚',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['terminal', 'shell', 'assist', 'developer']
+			tags: ['💻', '🐚', '⚡', '👨‍💻']
 		},
 		'es-ES': {
 			name: 'Asistencia de Terminal',
@@ -123,13 +123,13 @@ export default {
 			tags: ['터미널', '셸', '지원', '개발자']
 		},
 		lzh: {
-			name: '終端輔佐',
+			name: '內令司輔佐',
 			avatar: 'https://api.iconify.design/line-md/laptop.svg',
-			description: '在 fount 內進行交互式終端訪問。',
-			description_markdown: '提供連接到 fount 服務器環境的交互式終端，允許直接進行命令行操作。',
+			description: '於泉源之內，通達內令，交互無礙。',
+			description_markdown: '連通泉源中樞之內令司，許君直以此令，號令乾坤。',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['終端', '命令行', '輔佐', '開發者']
+			tags: ['內令', '號令', '輔佐', '巧匠']
 		},
 		'nl-NL': {
 			name: 'Terminale assistentie',

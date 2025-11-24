@@ -199,14 +199,14 @@ export default {
 			tags: ['sillytavern', '캐릭터 카드', '가져오기']
 		},
 		lzh: {
-			name: 'SillyTavern導入器',
+			name: 'SillyTavern 納入司',
 			avatar: 'https://sillytavern.app/img/logo.png',
-			description: '從.png檔案或網址導入SillyTavern角色。',
-			description_markdown: '從`.png`檔案或角色分享網站之網址導入SillyTavern角色。',
+			description: '自 .png 畫卷或網羅之址，納 SillyTavern 角色於此。',
+			description_markdown: '自 `.png` 畫卷或諸方角色分享之網羅，納 SillyTavern 角色於此。',
 			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://sillytavern.app/',
-			tags: ['sillytavern', '角色卡', '導入']
+			tags: ['sillytavern', '角色符', '納入']
 		},
 		'nl-NL': {
 			name: 'SillyTavern-importeur',

@@ -51,13 +51,14 @@ export default {
 			home_page: ''
 		},
 		emoji: {
-			name: '🆚',
+			name: '⚖️🆚',
 			avatar: 'https://api.iconify.design/material-symbols/compare-arrows.svg',
-			description: 'Multi-Compare',
-			description_markdown: 'A source that sends the same prompt to multiple sources and returns all their outputs.',
+			description: '👀🆚👀',
+			description_markdown: '1️⃣📝➡️🤖🤖➡️⚖️',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['compare', 'utility', 'meta'],
+			tags: ['🆚', '⚖️', '🔎'],
+			provider: config.provider || 'unknown',
 			home_page: ''
 		},
 		'es-ES': {
@@ -131,13 +132,13 @@ export default {
 			home_page: ''
 		},
 		lzh: {
-			name: '多較',
+			name: '博採眾長',
 			avatar: 'https://api.iconify.design/material-symbols/compare-arrows.svg',
-			description: '多較',
-			description_markdown: '一源，送同提示至多源，盡還其出。',
+			description: '博採眾長',
+			description_markdown: '一念傳諸源，盡收其解，以資比較。',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['較', '用', '元'],
+			tags: ['比較', '器用', '元'],
 			home_page: ''
 		},
 		'nl-NL': {
@@ -291,13 +292,13 @@ async function GetSource(config, { username, SaveConfig }) {
 				home_page: ''
 			},
 			emoji: {
-				name: '🆚',
+				name: '⚖️🆚',
 				avatar: 'https://api.iconify.design/material-symbols/compare-arrows.svg',
-				description: 'Multi-Compare',
-				description_markdown: 'A source that sends the same prompt to multiple sources and returns all their outputs.',
+				description: '👀🆚👀',
+				description_markdown: '1️⃣📝➡️🤖🤖➡️⚖️',
 				version: '0.0.0',
 				author: 'steve02081504',
-				tags: ['compare', 'utility', 'meta'],
+				tags: ['🆚', '⚖️', '🔎'],
 				provider: config.provider || 'unknown',
 				home_page: ''
 			},
@@ -381,11 +382,11 @@ async function GetSource(config, { username, SaveConfig }) {
 			lzh: {
 				name: config.name,
 				avatar: 'https://api.iconify.design/material-symbols/compare-arrows.svg',
-				description: '多較',
-				description_markdown: '一源，送同提示至多源，盡還其出。',
+				description: '博採眾長',
+				description_markdown: '一念傳諸源，盡收其解，以資比較。',
 				version: '0.0.0',
 				author: 'steve02081504',
-				tags: ['較', '用', '元'],
+				tags: ['比較', '器用', '元'],
 				provider: config.provider || 'unknown',
 				home_page: ''
 			},

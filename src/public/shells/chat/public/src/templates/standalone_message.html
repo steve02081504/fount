@@ -1,15 +1,30 @@
 <!DOCTYPE html>
 <html lang="${main_locale}">
-${setValue('messageHtml', await renderMarkdownAsStandAloneHtmlString(message.content_for_show || message.content));''}
+${
+	let messageHtml = setValue('messageHtml', await renderMarkdownAsStandAloneHtmlString(message.content_for_show || message.content))
+	const tempDiv = document.createElement('div')
+	tempDiv.innerHTML = messageHtml
+
+	const rawText = tempDiv.textContent || tempDiv.innerText || ''
+	const cleanText = rawText.replace(/\s+/g, ' ').trim()
+
+	const h1 = tempDiv.querySelector('h1')
+	setValue('pageTitle', h1 ? h1.textContent.trim() : (cleanText.substring(0, 30) + (cleanText.length > 30 ? '...' : '') || 'Chat Message'))
+
+	setValue('pageDescription', cleanText.substring(0, 150) + (cleanText.length > 150 ? '...' : ''))
+	''
+}
 <head>
 	<meta charset="UTF-8">
+	<meta name="darkreader-lock" />
+	<meta property="og:title" content="${pageTitle.replace(/"/g, '&quot;')}" />
+	<meta property="og:url" content="https://steve02081504.github.io/fount/protocol?url=fount://page/shells/chat/" />
+	<meta property="og:type" content="website" />
+	<meta property="og:description" content="${pageDescription.replace(/"/g, '&quot;')}" />
+	<meta name="description" content="${pageDescription.replace(/"/g, '&quot;')}" />
+	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>${
-		const tempDiv = document.createElement('div')
-		tempDiv.innerHTML = messageHtml
-		const h1 = tempDiv.querySelector('h1')
-		h1 ? h1.textContent.trim() : 'Chat Message'
-	}</title>
+	<title>${pageTitle.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</title>
 	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
 	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />${messageHtml.includes('katex-mathml') ? `
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css" crossorigin="anonymous">` : ''}
@@ -28,7 +43,7 @@ ${setValue('messageHtml', await renderMarkdownAsStandAloneHtmlString(message.con
 		.markdown-body figure,` : '' }${messageHtml.includes('markdown-code-block') ? `
 		.markdown-code-block,
 		.markdown-code-block pre` : ''} {
-			margin: 0;
+			margin: 0 !important;
 		}
 
 		@media (max-width: 767px) {

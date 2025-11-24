@@ -49,14 +49,14 @@ export default {
 			tags: ['Erfolge', 'Gamification', 'Profil']
 		},
 		emoji: {
-			name: '🏆',
+			name: '🏆📊',
 			avatar: 'https://api.iconify.design/material-symbols/trophy.svg',
-			description: 'View and manage your achievements.',
-			description_markdown: 'A shell to track your progress and milestones within fount.',
+			description: '👀🏆✨',
+			description_markdown: '📈📍✅',
 			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
-			tags: ['achievements', 'gamification', 'profile']
+			tags: ['🏆', '🎮', '👤']
 		},
 		'es-ES': {
 			name: 'Logro',
@@ -129,14 +129,14 @@ export default {
 			tags: ['업적', '게임화', '프로필']
 		},
 		lzh: {
-			name: '功绩',
+			name: '功名錄',
 			avatar: 'https://api.iconify.design/material-symbols/trophy.svg',
-			description: '查看和管理您的功绩。',
-			description_markdown: '一个用于跟踪您在fount中的进度和里程碑的shell。',
+			description: '銘刻功名，以彰其德。',
+			description_markdown: '在此記錄修行之進展，銘刻里程之碑，以彰顯汝之功德。',
 			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: '',
-			tags: ['功绩', '游戏化', '个人资料']
+			tags: ['功名', '修行', '列傳']
 		},
 		'nl-NL': {
 			name: 'Prestatie',

@@ -46,13 +46,13 @@ export default {
 			tags: ['Tutorial', 'Anleitung', 'Hilfe', 'neuer Benutzer']
 		},
 		emoji: {
-			name: '🎓❓',
+			name: '🎓🧭',
 			avatar: 'https://api.iconify.design/line-md/backup-restore.svg',
-			description: 'A shell to guide users through the initial setup and basic features.',
-			description_markdown: 'Provides a step-by-step tutorial for new users to get acquainted with fount.',
+			description: '👶➡️🧑‍🎓',
+			description_markdown: '🧭1️⃣2️⃣✨',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['tutorial', 'guide', 'help', 'new user']
+			tags: ['📚', '🧭', '🎓', '🆕']
 		},
 		'es-ES': {
 			name: 'Tutorial',
@@ -118,13 +118,13 @@ export default {
 			tags: ['튜토리얼', '가이드', '도움말', '신규 사용자']
 		},
 		lzh: {
-			name: '儀軌',
+			name: '啟蒙儀軌',
 			avatar: 'https://api.iconify.design/line-md/backup-restore.svg',
-			description: '一個引導用戶完成初始設置和基本功能的shell。',
-			description_markdown: '為新用戶提供分步儀軌，以熟悉 fount。',
+			description: '引君初入玄境，以此儀軌，以此通神。',
+			description_markdown: '為新客呈分步之儀軌，以熟習泉源之妙。',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['儀軌', '指南', '幫助', '新用戶']
+			tags: ['儀軌', '指南', '解惑', '新客']
 		},
 		'nl-NL': {
 			name: 'Tutorial',

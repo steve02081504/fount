@@ -1,5 +1,7 @@
 /** @typedef {import('../../../decl/basedefs.ts').info_t} info_t */
 
+import { setEndpoints } from './src/endpoints.mjs'
+
 /**
  * 主题管理 shell 的入口点。
  */
@@ -46,13 +48,13 @@ export default {
 			tags: ['Theme', 'Stil', 'Aussehen', 'Einstellungen']
 		},
 		emoji: {
-			name: '🎨',
+			name: '🎨🖌️',
 			avatar: 'https://api.iconify.design/line-md/mushroom.svg',
-			description: 'A shell to manage themes.',
-			description_markdown: 'Allows users to switch between different visual themes for the interface.',
+			description: '🎨👀🔄',
+			description_markdown: '🎨🖌️🖼️✨',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['theme', 'style', 'appearance', 'settings']
+			tags: ['🎨', '💅', '🌈', '⚙️']
 		},
 		'es-ES': {
 			name: 'Gestión de Temas',
@@ -118,13 +120,13 @@ export default {
 			tags: ['테마', '스타일', '모양', '설정']
 		},
 		lzh: {
-			name: '風貌管理',
+			name: '風貌司',
 			avatar: 'https://api.iconify.design/line-md/mushroom.svg',
-			description: '用於管理風貌的shell。',
-			description_markdown: '允許用戶在界面的不同視覺風貌之間切換。',
+			description: '掌風貌之儀，變幻無窮。',
+			description_markdown: '許君於界面之萬千風貌間，隨心流轉。',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['風貌', '樣式', '外觀', '規度']
+			tags: ['風貌', '樣式', '外觀', '儀軌']
 		},
 		'nl-NL': {
 			name: 'Themabeheer',
@@ -186,7 +188,7 @@ export default {
 	 * @param {object} options - 选项。
 	 * @param {object} options.router - Express的路由实例。
 	 */
-	Load: async ({ router }) => { },
+	Load: async ({ router }) => { setEndpoints(router) },
 	/**
 	 * 卸载主题管理Shell。
 	 */

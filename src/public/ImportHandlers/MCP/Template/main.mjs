@@ -244,24 +244,40 @@ export default {
 				const calls = await parseCalls(reply.content)
 				if (!calls.length) return false
 
-				for (const call of calls) try {
-					let result
-					if (call.type === 'tool') result = await mcpClient.callTool(call.name, call.args)
-					else if (call.type === 'prompt') result = await mcpClient.getPrompt(call.name, call.args)
-					else result = await mcpClient.readResource(call.uri)
+				const tool_calling_log = {
+					name: reply.name,
+					role: 'char',
+					content: '',
+					files: []
+				}
+				let log_content_added = false
 
-					args.AddLongTimeLog({
-						role: 'tool',
-						name: call.name || call.uri,
-						content: `${call.type} result for ${call.name || call.uri}:\n\`\`\`\n${fmtRes(result)}\n\`\`\``
-					})
-				} catch (err) {
-					console.error('MCP call error:', err)
-					args.AddLongTimeLog({
-						role: 'system',
-						name: call.name || call.uri,
-						content: `Error calling ${call.type} "${call.name || call.uri}": ${err.message}`
-					})
+				for (const call of calls) {
+					tool_calling_log.content += call.fullMatch + '\n'
+					if (!log_content_added) args.AddLongTimeLog(tool_calling_log)
+					log_content_added = true
+
+					try {
+						let result
+						if (call.type === 'tool') result = await mcpClient.callTool(call.name, call.args)
+						else if (call.type === 'prompt') result = await mcpClient.getPrompt(call.name, call.args)
+						else result = await mcpClient.readResource(call.uri)
+
+						args.AddLongTimeLog({
+							role: 'tool',
+							name: call.name || call.uri,
+							content: `${call.type} result for ${call.name || call.uri}:\n\`\`\`\n${fmtRes(result)}\n\`\`\``,
+							files: []
+						})
+					} catch (err) {
+						console.error('MCP call error:', err)
+						args.AddLongTimeLog({
+							role: 'system',
+							name: call.name || call.uri,
+							content: `Error calling ${call.type} "${call.name || call.uri}": ${err.message}`,
+							files: []
+						})
+					}
 				}
 
 				return true

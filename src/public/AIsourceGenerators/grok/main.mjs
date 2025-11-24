@@ -56,13 +56,13 @@ export default {
 			home_page: 'https://grok.x.ai/'
 		},
 		emoji: {
-			name: '🤪',
+			name: '❌🤖',
 			avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-			description: 'Grok by xAI',
-			description_markdown: 'An AI chatbot developed by xAI, with a rebellious streak.',
+			description: '🌶️🤖🔥',
+			description_markdown: '🌶️😈🚀🌌',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['grok', 'xai', 'ai', 'chatbot'],
+			tags: ['❌', '🌶️', '🤣', '🤖'],
 			home_page: 'https://grok.x.ai/'
 		},
 		'es-ES': {
@@ -138,11 +138,11 @@ export default {
 		lzh: {
 			name: 'Grok',
 			avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-			description: 'xAI之洞察',
-			description_markdown: 'xAI所製之智械談者，具叛逆之性。',
+			description: 'xAI 之靈機',
+			description_markdown: 'xAI 所製之靈機，性帶叛逆，言辭犀利。',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['洞察', 'xai', '智械', '談者'],
+			tags: ['靈機', 'xai', '智械', '清談'],
 			home_page: 'https://grok.x.ai/'
 		},
 		'nl-NL': {
@@ -287,13 +287,13 @@ async function GetSource(config) {
 				home_page: 'https://grok.x.ai/'
 			},
 			emoji: {
-				name: '🤪',
+				name: '❌🤖',
 				avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-				description: 'Grok by xAI',
-				description_markdown: 'An AI chatbot developed by xAI, with a rebellious streak.',
+				description: '🌶️🤖🔥',
+				description_markdown: '🌶️😈🚀🌌',
 				version: '0.0.0',
 				author: 'steve02081504',
-				tags: ['grok', 'xai', 'ai', 'chatbot'],
+				tags: ['❌', '🌶️', '🤣', '🤖'],
 				provider: 'xai',
 				home_page: 'https://grok.x.ai/'
 			},
@@ -377,11 +377,11 @@ async function GetSource(config) {
 			lzh: {
 				name: config.name || config.model,
 				avatar: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grok.svg',
-				description: 'xAI之洞察',
-				description_markdown: 'xAI所製之智械談者，具叛逆之性。',
+				description: 'xAI 之靈機',
+				description_markdown: 'xAI 所製之靈機，性帶叛逆，言辭犀利。',
 				version: '0.0.0',
 				author: 'steve02081504',
-				tags: ['洞察', 'xai', '智械', '談者'],
+				tags: ['靈機', 'xai', '智械', '清談'],
 				provider: 'xai',
 				home_page: 'https://grok.x.ai/'
 			},

@@ -1355,6 +1355,49 @@
 			"placeholder": "Tìm kiếm chủ đề...",
 			"noResult": "Không tìm thấy chủ đề phù hợp."
 		},
+		"createButton": "+ Tạo chủ đề mới",
+		"preview": {
+			"editButton": {
+				"title": "Chỉnh sửa"
+			},
+			"editButtonIcon": {
+				"alt": "Biểu tượng chỉnh sửa"
+			},
+			"deleteButton": {
+				"title": "Xóa"
+			},
+			"deleteButtonIcon": {
+				"alt": "Biểu tượng xóa"
+			},
+			"cloneButton": {
+				"title": "Sao chép"
+			},
+			"cloneButtonIcon": {
+				"alt": "Biểu tượng sao chép"
+			}
+		},
+		"editor": {
+			"title": "Trình chỉnh sửa chủ đề",
+			"cancelButton": "Hủy bỏ",
+			"saveApplyButton": "Lưu và áp dụng",
+			"themeName": "Tên chủ đề (ID)",
+			"autoPaletteTitle": "Tự động sửa màu từ ảnh",
+			"autoPaletteInstruction": "Bấm vào một màu ở trên để tự động tô các màu chính/phụ/dấu/trung tính.",
+			"coreColors": "Màu cốt lõi",
+			"baseBackground": "Cơ bản và nền",
+			"variables": "Biến số",
+			"borderRadius": "Bán kính đường viền (--rounded-box)",
+			"borderWidth": "Độ rộng đường viền (--border-btn)",
+			"advancedCustomization": "Tùy chỉnh nâng cao",
+			"customCSS": "CSS tùy chỉnh (ghi đè)",
+			"customMjsScript": "Tập lệnh MJS tùy chỉnh (tùy chọn)",
+			"mjsSyntaxHint": "Sử dụng [cú pháp async-eval](${asyncDocLink}). Trả về một đối tượng chứa các hàm <code>load()</code> và <code>unload()</code>.",
+			"themeIdRequired": "Cần có ID chủ đề",
+			"newThemeName": "Tên chủ đề mới:",
+			"deleteConfirm": "Bạn có chắc chắn muốn xóa chủ đề ${id} không?",
+			"saved": "Đã lưu!",
+			"failedToSave": "Lưu không thành công"
+		},
 		"themes": {
 			"auto": "Tự động",
 			"light": "Sáng",

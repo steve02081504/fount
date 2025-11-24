@@ -57,11 +57,11 @@ export default {
 		emoji: {
 			name: '✨🆕',
 			avatar: 'https://api.iconify.design/material-symbols/add-circle-outline.svg',
-			description: 'Easily create new parts from templates.',
-			description_markdown: 'A streamlined tool for quickly generating new characters, personas, or worlds from predefined templates.',
+			description: '⚡🔨🧩',
+			description_markdown: '📑➡️✨➡️🆕',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['tool', 'creator', 'template']
+			tags: ['🛠️', '🎨', '⚡']
 		},
 		'es-ES': {
 			name: 'Creación rápida',
@@ -127,13 +127,13 @@ export default {
 			tags: ['도구', '작성자', '템플릿']
 		},
 		lzh: {
-			name: '速建',
+			name: '速成',
 			avatar: 'https://api.iconify.design/material-symbols/add-circle-outline.svg',
-			description: '從範本輕鬆建立新組件。',
-			description_markdown: '一種簡化的工具，可從預定義的範本快速生成新的角色、角色或世界。',
+			description: '依樣畫葫蘆，速成新器。',
+			description_markdown: '循前人之跡，以範本速成化身、身分及世界，省卻繁文縟節。',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['工具', '創建者', '範本']
+			tags: ['速成', '巧匠', '範本']
 		},
 		'nl-NL': {
 			name: 'Bouw snel nieuw',

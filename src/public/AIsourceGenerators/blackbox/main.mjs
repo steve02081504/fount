@@ -52,13 +52,13 @@ export default {
 			home_page: 'https://www.blackbox.ai/'
 		},
 		emoji: {
-			name: '⬛️',
+			name: '⬛️📦',
 			avatar: 'https://www.blackbox.ai/favicon.svg',
-			description: 'Blackbox AI',
-			description_markdown: 'An AI that can answer questions and write code.',
+			description: '⬛️🧠💻',
+			description_markdown: '❓➕💻➡️⬛️📦➡️✨',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['blackbox', 'ai', 'code'],
+			tags: ['⬛️', '📦', '🧠'],
 			home_page: 'https://www.blackbox.ai/'
 		},
 		'es-ES': {
@@ -278,14 +278,14 @@ async function GetSource(config) {
 				home_page: 'https://www.blackbox.ai/'
 			},
 			emoji: {
-				name: '⬛️',
+				name: '⬛️📦',
 				avatar: 'https://www.blackbox.ai/favicon.svg',
-				description: 'Blackbox AI',
-				description_markdown: 'An AI that can answer questions and write code.',
+				description: '⬛️🧠💻',
+				description_markdown: '❓➕💻➡️⬛️📦➡️✨',
 				version: '0.0.0',
 				author: 'steve02081504',
-				tags: ['blackbox', 'ai', 'code'],
 				provider: 'blackbox',
+				tags: ['⬛️', '📦', '🧠'],
 				home_page: 'https://www.blackbox.ai/'
 			},
 			'es-ES': {

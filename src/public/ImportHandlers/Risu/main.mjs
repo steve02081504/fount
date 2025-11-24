@@ -379,14 +379,14 @@ export default {
 			tags: ['risu', '캐릭터 카드', 'ccv3', '가져오기']
 		},
 		lzh: {
-			name: 'RisuAI導入器',
+			name: 'RisuAI 納入司',
 			avatar: 'https://risuai.net/favicon.png',
-			description: '導入Risu角色卡（V3），格式為.png、.charx或.json，亦可從realm.risuai.net網址導入。',
-			description_markdown: '導入Risu角色卡（V3），格式為`.png`、`.charx`或`.json`，亦可從`realm.risuai.net`網址導入。\n支援CCv3功能，包括內嵌資源與傳承錄。',
+			description: '納入 Risu 角色符（V3），式如 .png、.charx 或 .json，亦可自 realm.risuai.net 網址納入。',
+			description_markdown: '納入 Risu 角色符（V3），式如 `.png`、`.charx` 或 `.json`，亦可自 `realm.risuai.net` 網址納入。\n支援 CCv3 之能，含內嵌資源與傳承錄。',
 			version: '0.0.0',
 			author: 'steve02081504',
 			home_page: 'https://risuai.net/',
-			tags: ['risu', '角色卡', 'ccv3', '導入']
+			tags: ['risu', '角色符', 'ccv3', '納入']
 		},
 		'nl-NL': {
 			name: 'RisuAI-importeur',

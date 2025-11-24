@@ -46,13 +46,13 @@ export default {
 			home_page: ''
 		},
 		emoji: {
-			name: '🚫',
+			name: '🚫🕳️',
 			avatar: 'https://api.iconify.design/mdi/file-remove.svg',
-			description: 'Empty AI Source',
-			description_markdown: 'A placeholder for a missing AI source generator.',
+			description: '🕳️👻',
+			description_markdown: '🚫👻🕳️🤷‍♂️',
 			version: '0.0.0',
 			author: 'steve02081504',
-			tags: ['empty', 'placeholder', 'utility'],
+			tags: ['🚫', '🕳️', '👻'],
 			home_page: ''
 		},
 		'es-ES': {
@@ -273,13 +273,13 @@ async function GetSource(config) {
 				home_page: ''
 			},
 			emoji: {
-				name: '🚫',
+				name: '🚫🕳️',
 				avatar: 'https://api.iconify.design/mdi/file-remove.svg',
-				description: 'Empty AI Source',
-				description_markdown: 'A placeholder for a missing AI source generator.',
+				description: '🕳️👻',
+				description_markdown: '🚫👻🕳️🤷‍♂️',
 				version: '0.0.0',
 				author: 'steve02081504',
-				tags: ['empty', 'placeholder', 'utility'],
+				tags: ['🚫', '🕳️', '👻'],
 				provider: 'fount',
 				home_page: ''
 			},
