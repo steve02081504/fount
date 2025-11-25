@@ -30,7 +30,7 @@ async function handleCompletionsRequest(req, res, username, model) {
 
 	if (stream) {
 		res.setHeader('Content-Type', 'text/event-stream')
-		res.setHeader('Cache-Control', 'no-cache')
+		res.setHeader('Cache-Control', 'no-store')
 		res.setHeader('Connection', 'keep-alive')
 		res.flushHeaders() // Ensure headers are sent immediately
 
@@ -126,7 +126,7 @@ async function handleChatCompletionsRequest(req, res, username, model) {
 
 	if (stream) {
 		res.setHeader('Content-Type', 'text/event-stream')
-		res.setHeader('Cache-Control', 'no-cache')
+		res.setHeader('Cache-Control', 'no-store')
 		res.setHeader('Connection', 'keep-alive')
 		res.flushHeaders() // Ensure headers are sent immediately
 

@@ -233,6 +233,11 @@ export function geti18n(key, params = {}) {
 	Sentry.captureException(new Error(`Translation key "${key}" not found.`))
 }
 /**
+ * 重新导出 `console` 对象。
+ * @type {Console}
+ */
+export const console = globalThis.console
+/**
  * @overload
  * @template {LocaleKeyWithoutParams} TKey
  * @param {TKey} key
@@ -532,7 +537,6 @@ const i18nObserver = new MutationObserver((mutationsList) => {
 			translateSingularElement(mutation.target)
 })
 
-// Start observing the document body for configured mutations
 /**
  * 观察文档主体以进行配置的突变。
  * @returns {void}

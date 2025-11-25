@@ -3,7 +3,6 @@ import * as Sentry from 'https://esm.sh/@sentry/browser'
 /* global urlParams */
 const DEFAULT_FOUNT_PORT = 8931
 
-// 验证 IPv4 地址
 /**
  * 检查给定的字符串是否是有效的 IPv4 地址。
  * @param {string} ip - 要验证的 IP 地址字符串。
@@ -16,7 +15,6 @@ const isValidIPv4Address = ip => {
 	return isValid
 }
 
-// 从 URL 字符串中提取 IP 地址和端口号
 /**
  * 从 URL 字符串中提取 IP 地址和端口号。
  * @param {string} urlString - 包含 IP 地址和端口号的 URL 字符串。
@@ -39,7 +37,6 @@ function extractIpAndPortFromUrl(urlString) {
 	}
 }
 
-// 测试 fount 服务是否可用
 /**
  * 检查 fount 服务是否可用。
  * @param {string} host - fount 服务的主机 URL。
@@ -48,7 +45,7 @@ function extractIpAndPortFromUrl(urlString) {
 export async function isFountServiceAvailable(host) {
 	try {
 		const url = new URL('/api/ping', host)
-		const response = await fetch(url, { method: 'GET', mode: 'cors', credentials: 'omit', cache: 'no-cache', signal: AbortSignal.timeout(2000) })
+		const response = await fetch(url, { method: 'GET', mode: 'cors', credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout(2000) })
 		const data = await response.json()
 		if (data?.client_name != 'fount') return false
 		console.debug(`[isFountServiceAvailable] fount service at ${host} is available.`)
@@ -66,15 +63,14 @@ export async function isFountServiceAvailable(host) {
 export async function waitForFountService(host) {
 	while (true) try {
 		const url = new URL('/api/ping', host)
-		const response = await fetch(url, { method: 'GET', mode: 'cors', credentials: 'omit', cache: 'no-cache' })
+		const response = await fetch(url, { method: 'GET', mode: 'cors', credentials: 'omit', cache: 'no-store' })
 		const data = await response.json()
 		if (data?.client_name != 'fount') continue
 		return
 	}
-	catch { }
+		catch { }
 }
 
-// 扫描本地网络以查找 fount 服务
 /**
  * 扫描本地网络以查找 fount 服务。
  * @param {string} baseIP - 基础 IP 地址（例如 '192.168.1.0'）。
@@ -102,7 +98,6 @@ async function scanLocalNetworkForFount(baseIP, port) {
 	return null
 }
 
-// 在 IPv4 网络上映射 fount 主机
 /**
  * 在 IPv4 网络上映射 fount 主机。
  * @param {string} hostUrl - 包含 IP 地址和端口号的 URL 字符串。
@@ -124,7 +119,6 @@ async function mapFountHostOnIPv4(hostUrl) {
 	return null
 }
 
-// 从 WebRTC 获取本地 IP
 /**
  * 通过 WebRTC 获取本地 IP 地址。
  * @returns {Promise<string|null>} - 本地 IP 地址字符串，如果获取失败则返回 null。
@@ -151,7 +145,6 @@ function getLocalIPFromWebRTC() {
 	}).catch(() => null)
 }
 
-// 获取 fount 主机 URL
 /**
  * 映射 fount 主机 URL。
  * @param {string} hostUrl - 初始主机 URL。
@@ -171,7 +164,6 @@ async function mappingFountHostUrl(hostUrl) {
 			return host
 		}
 
-	// 如果 hostUrl 是一个有效的 IPv4 地址
 	if (isValidIPv4Address(hostUrl)) {
 		console.debug('[getFountHostUrl] hostUrl is a valid IPv4 address. Attempting to map.')
 		const result = await mapFountHostOnIPv4(hostUrl)
@@ -265,7 +257,7 @@ export async function pingFount(hostUrl) {
 		return (await fetch(new URL('/api/ping', hostUrl), {
 			signal: controller.signal,
 			credentials: 'omit',
-			cache: 'no-cache'
+			cache: 'no-store'
 		}).catch(() => 0))?.ok
 	}
 	catch (e) { Sentry.captureException(e, { extra: { hostUrl } }) }

@@ -9,6 +9,7 @@ import { initializeWebSocket } from './websocket.mjs'
 
 // These are shared state used by the sidebar.
 // They will be updated by events from the websocket.
+
 /**
  * 聊天角色列表。
  * @type {Array<string>}
