@@ -27,6 +27,7 @@ let currentEditId = null
 let previewStyleTag = null
 
 // --- API Calls ---
+
 /**
  * 获取自定义主题列表并将其CSS注入到页面中。
  * @returns {Promise<void>}
@@ -72,6 +73,10 @@ async function renderList() {
 	const createBtn = document.getElementById('create-theme-btn')
 	if (createBtn && !createBtn.hasAttribute('data-bound')) {
 		createBtn.setAttribute('data-bound', 'true')
+		/**
+		 * 创建一个新的主题。
+		 * @returns {void}
+		 */
 		createBtn.onclick = () => openEditor(null) // New theme
 	}
 
@@ -314,7 +319,6 @@ const CLASS_MAP = {
 	error: 'bg-error',
 }
 
-// Helper to get color from DOM (supports reading from a specific theme)
 /**
  * 获取指定主题下颜色变量的计算值 (十六进制格式)。
  * @param {string} colorName - 颜色变量的名称 (例如 'primary')。
@@ -352,7 +356,6 @@ const getComputedColor = (colorName, themeId) => {
 	return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
 }
 
-// Helper to get variables like --rounded-box
 /**
  * 获取指定主题下CSS变量的计算值。
  * @param {string} varName - CSS变量的名称 (例如 '--rounded-box')。
@@ -373,7 +376,6 @@ const getComputedVar = (varName, themeId) => {
 
 // --- Editor Logic ---
 
-// Helper to find the main theme block range
 /**
  * 在CSS字符串中查找主题块的范围 (例如 `[data-theme=\"...\"] { ... }`)。
  * @param {string} css - 包含主题块的CSS字符串。

@@ -243,6 +243,7 @@ class AuthManager {
 }
 
 // 辅助函数
+
 /**
  * 生成并返回唯一的系统指纹。
  * @returns {string} 唯一的系统指纹

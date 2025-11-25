@@ -1,6 +1,5 @@
 import { handleFilesSelect, handlePaste } from '../fileHandling.mjs'
 
-// 添加拖拽上传支持函数
 /**
  * 添加拖拽上传支持函数
  * @param {HTMLElement} element - 监听拖拽事件的 DOM 元素。

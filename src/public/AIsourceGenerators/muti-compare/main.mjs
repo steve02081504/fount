@@ -58,7 +58,6 @@ export default {
 			version: '0.0.0',
 			author: 'steve02081504',
 			tags: ['🆚', '⚖️', '🔎'],
-			provider: config.provider || 'unknown',
 			home_page: ''
 		},
 		'es-ES': {

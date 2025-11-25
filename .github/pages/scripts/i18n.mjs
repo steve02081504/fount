@@ -537,7 +537,6 @@ const i18nObserver = new MutationObserver((mutationsList) => {
 			translateSingularElement(mutation.target)
 })
 
-// Start observing the document body for configured mutations
 /**
  * 观察文档主体以进行配置的突变。
  * @returns {void}

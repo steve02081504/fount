@@ -493,18 +493,12 @@ outputContainer.innerHTML = /* html */ \`\\
 \`
 codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 
-;(${executor.toString()})(document.querySelector('#${uniqueId} pre').innerText).then(async result => {
-	result = result || {}
-	const { AnsiUp } = await import('https://esm.sh/ansi-up')
-	const ansi_up = new AnsiUp()
-	const escapeHtml = (str) => ansi_up.ansi_to_html(str)
+const copySvg = decodeURIComponent(${JSON.stringify(encodeURIComponent(copyIconSized))})
+const successSvg = decodeURIComponent(${JSON.stringify(encodeURIComponent(successIconSized))})
 
-	const copySvg = decodeURIComponent(${JSON.stringify(encodeURIComponent(copyIconSized))})
-	const successSvg = decodeURIComponent(${JSON.stringify(encodeURIComponent(successIconSized))})
-
-	const createCopyBtn = (text) => {
-		const encoded = encodeURIComponent(text).replace(/'/g, '%27')
-		const copyAction = \`\\
+const createCopyBtn = (text) => {
+	const encoded = encodeURIComponent(text).replace(/'/g, '%27')
+	const copyAction = \`\\
 event.stopPropagation()
 const btn = this
 navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
@@ -522,13 +516,19 @@ navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
 })
 \`
 
-		return /* html */ \`\\
+	return /* html */ \`\\
 <button class="btn btn-ghost btn-square btn-xs absolute top-2 right-2 opacity-70 hover:opacity-100 z-10"
 		${isStandalone ? 'aria-label="Copy"' : 'data-i18n="code_block.copy"'}
 		onclick="\${copyAction.replace(/"/g, '&quot;')}" >
 	\${copySvg}
 </button>\`
-	}
+}
+
+;(${executor.toString()})(document.querySelector('#${uniqueId} pre').innerText).then(async result => {
+	result = result || {}
+	const { AnsiUp } = await import('https://esm.sh/ansi-up')
+	const ansi_up = new AnsiUp()
+	const escapeHtml = (str) => ansi_up.ansi_to_html(str)
 
 	let alerts = []
 
@@ -594,6 +594,11 @@ navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
 \`)
 
 	outputContainer.innerHTML = alerts.join('')
+	window.dispatchEvent(new CustomEvent('markdown-codeblock-execution-result', { detail: {
+		lang: '${lang}',
+		code: document.querySelector('#${uniqueId} pre').innerText,
+		...result
+	}}))
 }).catch(e => {
 	outputContainer.innerHTML = /* html */ \`\\
 <div class="join-item alert alert-error bg-error/70 border-error/70">
@@ -604,6 +609,11 @@ navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
 	</div>
 </div>
 \`
+	window.dispatchEvent(new CustomEvent('markdown-codeblock-execution-error', { detail: {
+		lang: '${lang}',
+		code: document.querySelector('#${uniqueId} pre').innerText,
+		error: e
+	}}))
 }).then(() => {
 	for (const child of [...outputContainer.children].reverse()) {
 		child.classList.add('${uniqueId}-execution-output')

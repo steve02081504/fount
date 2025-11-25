@@ -967,6 +967,7 @@ function showDanmaku({ content, speed = 10, color = 'white', fontSize = 24, yPos
 }
 
 // --- WebSocket & Core Logic ---
+
 /**
  * 查找并连接到 fount 主机。
  * @returns {Promise<void>}

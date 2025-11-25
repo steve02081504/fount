@@ -8,8 +8,8 @@ import { sendEventToUser } from '../../../../server/web_server/event_dispatcher.
 
 import { processButtonList } from './registry_processor.mjs'
 
-// 遍历shell中的home_registry.json文件，获取home_function_buttons和home_char_interfaces
 /*
+遍历shell中的home_registry.json文件，获取home_function_buttons和home_char_interfaces
 例子：
 {
 	"home_function_buttons": [ // 这将显示在主页的功能按钮中

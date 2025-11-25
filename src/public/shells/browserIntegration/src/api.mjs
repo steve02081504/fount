@@ -342,6 +342,7 @@ setInterval(() => {
 }, CLEANUP_INTERVAL_MS)
 
 // --- Userscript WebSocket ---
+
 /**
  * 处理 WebSocket 连接。
  * @param {import('npm:ws').WebSocket} ws - WebSocket连接。
