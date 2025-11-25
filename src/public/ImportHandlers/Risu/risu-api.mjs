@@ -44,8 +44,6 @@ export async function downloadRisuCard(uuid) {
 	return { buffer: Buffer.from(arrayBuffer), filename, contentType }
 }
 
-// 你也可以添加从其他 Risu 相关 URL 下载的函数，如果需要
-// 例如，直接下载资源文件的函数
 /**
  * 从给定的 URL 下载资源
  * @param {string} url 网址

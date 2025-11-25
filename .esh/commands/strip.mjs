@@ -9,7 +9,6 @@ import createIgnore from 'npm:ignore'
 import { parseHTML } from 'npm:linkedom'
 import minimist from 'npm:minimist'
 
-// --- 1. Configuration ---
 /**
  * 项目配置
  */
@@ -29,7 +28,6 @@ class ProjectConfig {
 	static IGNORED_IMPORT_PREFIXES = ['node:', 'npm:', 'https:']
 }
 
-// --- 2. Data Model ---
 /**
  * 解析后的模块
  */
@@ -46,7 +44,6 @@ class ParsedModule {
 	}
 }
 
-// --- 3. FileScanner (Updated to use 'glob' and 'node:fs') ---
 /**
  * 文件扫描器
  */
@@ -95,7 +92,6 @@ class FileScanner {
 	}
 }
 
-// --- 4. PathResolver (Updated to use 'node:fs') ---
 /**
  * 路径解析器
  */
@@ -158,7 +154,6 @@ class PathResolver {
 	}
 }
 
-// --- 5. AstParser (Updated to use @babel/parser) ---
 /**
  * AST 解析器
  */
@@ -295,7 +290,6 @@ class AstParser {
 	}
 }
 
-// --- 6. DependencyAnalyzer (Updated to use 'glob') ---
 /**
  * 依赖分析器
  */
@@ -346,7 +340,6 @@ class DependencyAnalyzer {
 	}
 }
 
-// --- 7. ReportGenerator (Updated to use 'chalk') ---
 /**
  * 报告生成器
  */
@@ -414,7 +407,6 @@ class ReportGenerator {
 	}
 }
 
-// --- Main Execution (Updated to use 'minimist') ---
 /**
  * 主函数，执行文件分析和报告生成。
  * @returns {Promise<void>}
