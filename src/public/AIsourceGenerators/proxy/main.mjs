@@ -230,6 +230,7 @@ const configTemplate = {
 		temperature: 1,
 		n: 1
 	},
+	custom_headers: {},
 	convert_config: {
 		roleReminding: true
 	}
@@ -256,7 +257,10 @@ async function GetSource(config, { SaveConfig }) {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					Authorization: config.apikey ? 'Bearer ' + config.apikey : undefined
+					Authorization: config.apikey ? 'Bearer ' + config.apikey : undefined,
+					'HTTP-Referer': 'https://steve02081504.github.io/fount/',
+					'X-Title': 'fount',
+					...config?.custom_headers
 				},
 				body: JSON.stringify({
 					model: config.model,
