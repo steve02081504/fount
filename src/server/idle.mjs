@@ -113,7 +113,6 @@ export class IdleManager {
 	async #idleRunner() {
 		if (this.isIdle())
 			await this.#runIdleTasks()
-
 	}
 
 	/**

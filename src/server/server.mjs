@@ -142,6 +142,18 @@ async function checkUpstreamAndRestart() {
 }
 
 /**
+ * 上次 Web 请求的时间戳。
+ * @type {number}
+ */
+export let lastWebRequestTime = 0
+/**
+ * 标记上次 Web 请求的时间戳。
+ * @returns {void}
+ */
+export function webRequestHappend() {
+	lastWebRequestTime = Date.now()
+}
+/**
  * 初始化并启动应用程序服务器及其组件。
  * @param {object} start_config - 用于启动应用程序的配置对象。
  * @returns {Promise<boolean>} 如果初始化成功，则解析为 true，否则为 false。
@@ -174,7 +186,6 @@ export async function init(start_config) {
 	if (starts.Tray || starts.Web || !fs.existsSync(__dirname + '/src/pages/favicon.ico'))
 		iconPromise = runSimpleWorker('icongener').catch(console.error)
 
-	let requestedWeb = false
 	if (starts.Web) {
 		const { port, https: httpsConfig, trust_proxy, mdns: mdnsConfig } = config // 获取 HTTPS 配置
 		hosturl = (httpsConfig?.enabled ? 'https' : 'http') + '://localhost:' + port
@@ -203,7 +214,6 @@ export async function init(start_config) {
 			 * @returns {Promise<void>}
 			 */
 			const requestListener = async (req, res) => {
-				requestedWeb = true
 				try {
 					const app = await getApp()
 					return app(req, res)
@@ -278,7 +288,11 @@ export async function init(start_config) {
 		totalMemoryChangeInMB: getMemoryUsage() / 1024 / 1024
 	})
 	if (starts.Base) {
-		if (starts.Base.Jobs) setTimeout(() => setTimeout(ReStartJobs, requestedWeb ? 13000 : 0), 2000)
+		if (starts.Base.Jobs) setTimeout(() => { const Interval = setInterval(() => {
+			if (new Date() - startTime < 13000 && new Date() - lastWebRequestTime < 1000) return
+			clearInterval(Interval)
+			ReStartJobs()
+		}, 1000) }, 2000)
 		if (starts.Base.Timers) startTimerHeartbeat()
 		if (starts.Base.Idle) idleManager.start()
 		if (starts.Base.AutoUpdate) idleManager.onIdle(checkUpstreamAndRestart)
