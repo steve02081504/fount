@@ -814,6 +814,11 @@ export type LocaleData = {
 				description: string
 				locked_description: string
 			}
+			code_greeting: {
+				name: string
+				description: string
+				locked_description: string
+			}
 		}
 		dragAndDrop: {
 			invalidPartData: string

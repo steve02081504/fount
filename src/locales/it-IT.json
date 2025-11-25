@@ -824,6 +824,11 @@
 				"name": "Ci sono le immagini e la verità",
 				"description": "Usa le immagini per rompere il muro dimensionale.",
 				"locked_description": "Invia una foto in chat."
+			},
+			"code_greeting": {
+				"name": "Saluta con il codice",
+				"description": "\"Ciao, fount!\"",
+				"locked_description": "Esegui un blocco di codice che stampi 'hello fount!'."
 			}
 		},
 		"dragAndDrop": {

@@ -20,6 +20,13 @@
 			"icon": "https://api.iconify.design/line-md/image-twotone.svg",
 			"locked_description": "chat.achievements.photo_chat.locked_description",
 			"locked_icon": "https://api.iconify.design/line-md/question-circle.svg"
+		},
+		"code_greeting": {
+			"name": "chat.achievements.code_greeting.name",
+			"description": "chat.achievements.code_greeting.description",
+			"icon": "https://api.iconify.design/line-md/thumbs-up.svg",
+			"locked_description": "chat.achievements.code_greeting.locked_description",
+			"locked_icon": "https://api.iconify.design/line-md/question-circle.svg"
 		}
 	}
 }

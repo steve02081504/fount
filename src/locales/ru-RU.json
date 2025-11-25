@@ -824,6 +824,11 @@
 				"name": "Есть картинки и правда",
 				"description": "Используйте картинки, чтобы сломать пространственную стену.",
 				"locked_description": "Отправьте фото в чат."
+			},
+			"code_greeting": {
+				"name": "Поздоровайся кодом",
+				"description": "«Привет, fount!»",
+				"locked_description": "Выполните блок кода, который выведет 'hello fount!'."
 			}
 		},
 		"dragAndDrop": {

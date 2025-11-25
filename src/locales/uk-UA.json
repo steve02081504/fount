@@ -824,6 +824,11 @@
 				"name": "Є картинки і правда",
 				"description": "Використовуйте картинки, щоб розбити габаритну стіну.",
 				"locked_description": "Надішліть фото в чат."
+			},
+			"code_greeting": {
+				"name": "Привітайтеся за допомогою коду",
+				"description": "«Привіт, fount!»",
+				"locked_description": "Виконайте блок коду, який виведе \"hello fount!\"."
 			}
 		},
 		"dragAndDrop": {

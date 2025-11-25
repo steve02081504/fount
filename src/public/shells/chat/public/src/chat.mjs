@@ -1,5 +1,6 @@
 import { showToastI18n } from '../../../../../scripts/toast.mjs'
 
+import { initializeAchievements } from './achievements.mjs'
 import { addCharacter, setPersona, setWorld, addPlugin, getInitialData } from './endpoints.mjs'
 import { setupCss } from './ui/css.mjs'
 import { initializeMessageInput } from './ui/messageInput.mjs'
@@ -67,6 +68,7 @@ export function setPersonaName(name) {
 export async function initializeChat() {
 	setupCss()
 	initializeWebSocket()
+	initializeAchievements()
 
 	const initialData = await getInitialData()
 	initializeVirtualQueue(initialData)

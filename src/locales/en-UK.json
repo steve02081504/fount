@@ -824,6 +824,11 @@
 				"name": "There are pictures and the truth",
 				"description": "Use pictures to break the dimensional wall.",
 				"locked_description": "Send a picture in chat."
+			},
+			"code_greeting": {
+				"name": "Say hello with code",
+				"description": "\"Hello, fount!\"",
+				"locked_description": "By executing the code block, 'hello fount!' is successfully output."
 			}
 		},
 		"dragAndDrop": {

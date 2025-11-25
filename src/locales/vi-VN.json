@@ -824,6 +824,11 @@
 				"name": "Có hình ảnh và sự thật",
 				"description": "Sử dụng hình ảnh để phá vỡ bức tường chiều.",
 				"locked_description": "Gửi ảnh trong cuộc trò chuyện."
+			},
+			"code_greeting": {
+				"name": "Nói xin chào bằng mã",
+				"description": "\"Xin chào, fount!\"",
+				"locked_description": "Chạy một đoạn mã để xuất ra 'hello fount!'."
 			}
 		},
 		"dragAndDrop": {

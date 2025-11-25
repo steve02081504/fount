@@ -548,7 +548,7 @@
 		},
 		"achievements": {
 			"first_login": {
-				"name": "Hallo, fontein!",
+				"name": "Hallo, fount!",
 				"description": "Op weg naar de nieuwe wereld, voor de eerste keer inloggen!",
 				"locked_description": "Log eenmalig in bij de fontein."
 			},
@@ -824,6 +824,11 @@
 				"name": "Er zijn foto's en de waarheid",
 				"description": "Gebruik afbeeldingen om de dimensionale muur te doorbreken.",
 				"locked_description": "Stuur een foto in de chat."
+			},
+			"code_greeting": {
+				"name": "Zeg hallo met code",
+				"description": "\"Hallo, fount!\"",
+				"locked_description": "Voer een codeblok uit dat 'hello fount!' als uitvoer geeft."
 			}
 		},
 		"dragAndDrop": {

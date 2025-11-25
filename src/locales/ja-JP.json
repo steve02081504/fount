@@ -824,6 +824,11 @@
 				"name": "写真と真実があります",
 				"description": "絵を使って次元の壁を壊しましょう。",
 				"locked_description": "チャットで写真を送信します。"
+			},
+			"code_greeting": {
+				"name": "コードで挨拶",
+				"description": "「こんにちは、fount！」",
+				"locked_description": "コードブロックを実行して、'hello fount!' と出力する。"
 			}
 		},
 		"dragAndDrop": {

@@ -123,7 +123,7 @@ async function checkUpstreamAndRestart() {
 		const changedFiles = await git('diff', '--name-only', 'HEAD', '@{u}').then(out => out.replace(/\\/g, '/').split('\n').filter(Boolean))
 		const needsRestart = changedFiles.some(file =>
 			file.endsWith('.mjs') && file.startsWith('src/') &&
-			!file.startsWith('src/pages/') && !file.startsWith('src/locales/') &&
+			['decl', 'pages', 'locales'].every(dir => !file.startsWith(`src/${dir}/`)) &&
 			!/^src\/public(?:\/[^/]+){2}\/public\//.test(file)
 		)
 

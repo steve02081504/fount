@@ -824,6 +824,11 @@
 				"name": "तस्वीरें भी हैं और सच्चाई भी",
 				"description": "आयामी दीवार को तोड़ने के लिए चित्रों का उपयोग करें।",
 				"locked_description": "चैट में एक तस्वीर भेजें."
+			},
+			"code_greeting": {
+				"name": "कोड के साथ नमस्ते कहें",
+				"description": "\"नमस्ते, fount!\"",
+				"locked_description": "कोड ब्लॉक चलाकर 'hello fount!' आउटपुट प्राप्त करें।"
 			}
 		},
 		"dragAndDrop": {

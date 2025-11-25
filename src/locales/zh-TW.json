@@ -824,6 +824,11 @@
 				"name": "有圖有真相",
 				"description": "用圖片打破了次元壁。",
 				"locked_description": "在聊天中發送一張圖片。"
+			},
+			"code_greeting": {
+				"name": "用程式碼問好",
+				"description": "「你好，fount！」",
+				"locked_description": "通過執行程式碼區塊，成功輸出 'hello fount!'。"
 			}
 		},
 		"dragAndDrop": {

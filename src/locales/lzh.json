@@ -824,6 +824,11 @@
 				"name": "图以传意",
 				"description": "一图胜千言，意境自现。",
 				"locked_description": "宜以图传情一次。"
+			},
+			"code_greeting": {
+				"name": "以碼致候",
+				"description": "「泉君安否？」",
+				"locked_description": "令代碼塊出「hello fount!」字，功成。"
 			}
 		},
 		"dragAndDrop": {

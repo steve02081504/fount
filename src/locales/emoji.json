@@ -824,6 +824,11 @@
 				"name": "🖼️➡️✨",
 				"description": "💬➡️🏞️",
 				"locked_description": "🔒"
+			},
+			"code_greeting": {
+				"name": "👋💻",
+				"description": "💬💧",
+				"locked_description": "✅ 'hello fount!'"
 			}
 		},
 		"dragAndDrop": {
