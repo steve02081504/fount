@@ -824,6 +824,11 @@
 				"name": "Það eru myndir og sannleikurinn",
 				"description": "Notaðu myndir til að brjóta víddarvegginn.",
 				"locked_description": "Sendu mynd í spjallinu."
+			},
+			"code_greeting": {
+				"name": "Segðu halló með kóða",
+				"description": "\"Halló, fount!\"",
+				"locked_description": "Með því að keyra kóðablokkina, 'hello fount!' prentast út."
 			}
 		},
 		"dragAndDrop": {

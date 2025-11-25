@@ -824,6 +824,11 @@
 				"name": "사진도 있고 진실도 있다",
 				"description": "사진을 활용해 차원의 벽을 허무세요.",
 				"locked_description": "채팅으로 사진을 보내보세요."
+			},
+			"code_greeting": {
+				"name": "코드로 인사하기",
+				"description": "\"안녕하세요, fount!\"",
+				"locked_description": "코드 블록을 실행하여 'hello fount!'를 출력하세요."
 			}
 		},
 		"dragAndDrop": {

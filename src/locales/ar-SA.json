@@ -824,6 +824,11 @@
 				"name": "هناك صور والحقيقة",
 				"description": "استخدم الصور لكسر جدار الأبعاد.",
 				"locked_description": "إرسال صورة في الدردشة."
+			},
+			"code_greeting": {
+				"name": "قُل مرحبًا باستخدام الكود",
+				"description": "\"مرحبا يا fount!\"",
+				"locked_description": "قم بتنفيذ كود برمجي يطبع 'hello fount!'."
 			}
 		},
 		"dragAndDrop": {

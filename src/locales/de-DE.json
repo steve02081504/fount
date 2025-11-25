@@ -824,6 +824,11 @@
 				"name": "Es gibt Bilder und die Wahrheit",
 				"description": "Verwenden Sie Bilder, um die Dimensionswand zu durchbrechen.",
 				"locked_description": "Senden Sie ein Bild im Chat."
+			},
+			"code_greeting": {
+				"name": "Sag Hallo mit Code",
+				"description": "„Hallo, fount!“",
+				"locked_description": "Führe einen Codeblock aus, der 'hello fount!' ausgibt."
 			}
 		},
 		"dragAndDrop": {
