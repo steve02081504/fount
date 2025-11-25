@@ -33,7 +33,6 @@ const charjson = path.join(chardir, 'chardata.json')
 /** @type {chardata_t} */
 let chardata = JSON.parse(fs.readFileSync(charjson, 'utf-8'))
 
-// Helper for macro evaluation environment
 /**
  * 获取宏环境
  * @param {any} userCharName 用户角色名
@@ -49,7 +48,6 @@ function getMacroEnv(userCharName) {
 	}
 }
 
-// 函数：构建国际化的 info 对象
 /**
  * 构建角色信息
  * @param {any} charData 角色数据
@@ -61,9 +59,8 @@ function buildCharInfo(charData) {
 	// 我们将使用 CCv3 的语言代码作为键，并为 '' 设置一个后备。
 	const defaultLocaleKey = '' // fount 使用的默认/后备 locale key
 
-	// --- 辅助函数：为特定语言创建 info 对象 ---
 	/**
-	 * 为语言创建信息
+	 * 为语言创建info对象
 	 * @param {any} note 注释
 	 * @returns {{ name: any; avatar: string; description: any; description_markdown: any; version: any; author: any; home_page: any; tags: any; }} 包含角色信息的对象
 	 */

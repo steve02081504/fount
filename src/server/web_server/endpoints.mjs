@@ -4,7 +4,6 @@ import cors from 'npm:cors'
 
 import { console, getLocaleData, fountLocaleList } from '../../scripts/i18n.mjs'
 import { ms } from '../../scripts/ms.mjs'
-import { pow } from '../../scripts/pow.mjs'
 import { get_hosturl_in_local_ip, is_local_ip, is_local_ip_from_req, rateLimit } from '../../scripts/ratelimit.mjs'
 import { generateVerificationCode, verifyVerificationCode } from '../../scripts/verifycode.mjs'
 import { login, register, logout, authenticate, getUserByReq, getUserDictionary, getUserByUsername, auth_request, generateApiKey, revokeApiKey, verifyApiKey, setApiCookieResponse, ACCESS_TOKEN_EXPIRY_DURATION, REFRESH_TOKEN_EXPIRY_DURATION } from '../auth.mjs'
@@ -75,10 +74,12 @@ export function registerEndpoints(router) {
 	})
 
 	router.post('/api/pow/challenge', async (req, res) => {
+		const { pow } = await import('../../scripts/pow.mjs')
 		res.json(await pow.createChallenge())
 	})
 
 	router.post('/api/pow/redeem', async (req, res) => {
+		const { pow } = await import('../../scripts/pow.mjs')
 		const { token, solutions } = req.body
 		if (!token || !solutions) return res.status(400).json({ success: false })
 		res.json(await pow.redeemChallenge({ token, solutions }))

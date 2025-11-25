@@ -113,7 +113,7 @@ async function checkFrontendConnectivity() {
 		let duration = 0
 
 		try {
-			await fetch(check.url, { method: 'HEAD', mode: 'no-cors', cache: 'no-cache' }) // no-cors for opaque check
+			await fetch(check.url, { method: 'HEAD', mode: 'no-cors', cache: 'no-store' }) // no-cors for opaque check
 			status = 'ok'
 			duration = Date.now() - start
 		} catch (e) { status = 'error' }

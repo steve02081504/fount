@@ -102,7 +102,7 @@ function Get-I18n {
 	# Simple interpolation
 	foreach ($paramName in $params.Keys) {
 		$paramValue = $params[$paramName]
-		$translation = $translation.Replace("\${$paramName}", $paramValue)
+		$translation = $translation.Replace("`${$paramName}", $paramValue)
 	}
 
 	return $translation

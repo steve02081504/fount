@@ -10,8 +10,10 @@ import { __dirname } from '../../../../../src/server/base.mjs'
 import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
 import { loadPlugin } from '../../../../../src/server/managers/plugin_manager.mjs'
 
-// AI源的实例
-/** @type {import('../../../../../src/decl/AIsource.ts').AIsource_t} */
+/*
+ * AI源的实例
+ * @type {import('../../../../../src/decl/AIsource.ts').AIsource_t}
+ */
 let AIsource = null
 /** @type {Record<string, import("../../../../../src/decl/pluginAPI.ts").PluginAPI_t>} */
 let plugins = {}
@@ -51,8 +53,10 @@ import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/man
 import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/prompt_struct.mjs'
 import { loadPlugin } from '../../../../../src/server/managers/plugin_manager.mjs'
 
-// AI源的实例
-/** @type {import('../../../../../src/decl/AIsource.ts').AIsource_t} */
+/**
+ * AI源的实例
+ * @type {import('../../../../../src/decl/AIsource.ts').AIsource_t}
+ */
 let AIsource = null
 
 /** @type {Record<string, PluginAPI_t>} */

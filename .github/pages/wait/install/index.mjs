@@ -22,7 +22,6 @@ const themeSearch = document.getElementById('theme-search')
 const activeUsersCountEl = document.getElementById('active-users-count')
 const starsCountEl = document.getElementById('stars-count')
 
-// --- Helper Functions ---
 /**
  * 从指定 URL 获取 JSON 数据。
  * @param {string} url - 目标 URL。
@@ -41,7 +40,6 @@ const fetchJson = async (url, fallback = null) => {
 	}
 }
 
-// --- Initial Data Fetching ---
 const [initialUserData, initialRepoData] = await Promise.all([
 	fetchJson('https://data.jsdelivr.com/v1/stats/packages/gh/steve02081504/fount?period=year'),
 	fetchJson('https://api.github.com/repos/steve02081504/fount')
@@ -49,7 +47,6 @@ const [initialUserData, initialRepoData] = await Promise.all([
 const activeUserNum = initialUserData?.hits?.total ?? NaN
 const starNum = initialRepoData?.stargazers_count ?? NaN
 
-// --- Hero Intro Animation ---
 /**
  * 播放英雄动画。
  */
@@ -97,7 +94,6 @@ async function playHeroAnimation() {
 	}
 }
 
-// --- Theme Selection ---
 /**
  * 创建自动主题预览元素。
  * @returns {Promise<HTMLElement>} - 自动主题预览的 DOM 元素。
@@ -219,7 +215,6 @@ function handleThemeClick(previewElement, theme) {
 		document.startViewTransition(applyNewTheme)
 }
 
-// --- Data Showcase Animation ---
 /**
  * 动画计数器。
  * @param {HTMLElement} element - 要动画的 DOM 元素。
@@ -424,6 +419,7 @@ function updateRotatingSubtitles() {
 }
 
 // --- Language Selector ---
+
 /**
  * 填充语言选择器。
  */
@@ -481,13 +477,14 @@ function populateLanguageSelector() {
 }
 
 // --- fount Service Connection Logic ---
+
 /**
  * 检查 fount 安装程序是否存活。
  * @returns {Promise<boolean>} - 如果安装程序存活则返回 true，否则返回 false。
  */
 const checkFountInstallerAlive = async () => {
 	try {
-		return (await fetch('http://localhost:8930', { cache: 'no-cache' })).ok
+		return (await fetch('http://localhost:8930', { cache: 'no-store' })).ok
 	}
 	catch {
 		return false
@@ -571,7 +568,6 @@ async function handleStandaloneFlow() {
 	}
 }
 
-// --- Main Execution ---
 /**
  * 主函数，初始化翻译并启动流程。
  */

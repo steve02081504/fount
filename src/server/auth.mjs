@@ -35,6 +35,7 @@ const BRUTE_FORCE_FAKE_SUCCESS_RATE = 1 / 3
 const JWT_CACHE_SIZE = 32
 
 // --- 模块级变量 ---
+
 /** @type {jose.KeyLike} */
 let privateKey
 /** @type {jose.KeyLike} */
