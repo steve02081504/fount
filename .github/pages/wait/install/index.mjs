@@ -226,6 +226,12 @@ function handleThemeClick(previewElement, theme) {
  */
 function animateCounter(element, start, end, duration, easingPower = 5) {
 	return new Promise(resolve => {
+		// if active from start, just set and resolve
+		if (element.dataset.easterEggActive === 'true') {
+			element.textContent = end.toLocaleString()
+			return resolve()
+		}
+
 		if (start === end) {
 			element.textContent = end.toLocaleString()
 			return resolve()
@@ -237,6 +243,12 @@ function animateCounter(element, start, end, duration, easingPower = 5) {
 		 * @returns {void}
 		 */
 		const step = timestamp => {
+			// if activated during animation, set to end and resolve
+			if (element.dataset.easterEggActive === 'true') {
+				element.textContent = end.toLocaleString()
+				return resolve()
+			}
+
 			if (!startTime) startTime = timestamp
 			const progress = Math.min((timestamp - startTime) / duration, 1)
 			const easedProgress = 1 - (1 - progress) ** easingPower
@@ -584,6 +596,84 @@ async function main() {
 	onLanguageChange(updateRotatingSubtitles)
 	populateLanguageSelector()
 	renderThemePreviews()
+
+	// --- Easter Egg ---
+	const shakeStates = new Map()
+	const SHAKE_DECAY_TIME = 2000 // ms before shake starts to decay
+	const MAX_CLICKS_TO_ACTIVATE = 13
+	const MAX_SHAKE_INTENSITY = 5
+
+	/**
+	 * Gradually reduces the shake intensity until it stops.
+	 * @param {HTMLElement} element The element to decay shake for.
+	 * @returns {void}
+	 */
+	function decayShake(element) {
+		const state = shakeStates.get(element)
+		if (!state) return
+
+		state.intensity *= 0.9 // Decay factor
+
+		if (state.intensity < 0.5) { // Stop shaking if intensity is too low
+			state.intensity = 0
+			state.clicks = 0
+			element.classList.remove('shaking')
+			shakeStates.delete(element)
+		}
+		else {
+			element.style.setProperty('--shake-intensity', state.intensity.toString())
+			state.timer = setTimeout(() => decayShake(element), 100)
+		}
+	}
+
+	/**
+	 * Applies a decaying shake effect to an element on click.
+	 * @param {HTMLElement} element The element to make shakable.
+	 * @returns {void}
+	 */
+	function setupClickToShake(element) {
+		if (!element) return
+		element.style.cursor = 'pointer'
+
+		element.addEventListener('click', () => {
+			// If easter egg is fully active, do nothing.
+			if (element.dataset.easterEggActive === 'true') return
+
+			let state = shakeStates.get(element)
+			if (!state) {
+				state = { clicks: 0, intensity: 0, timer: null }
+				shakeStates.set(element, state)
+			}
+
+			clearTimeout(state.timer) // Reset decay timer on new click
+
+			state.clicks++
+			// Increase intensity with a cap.
+			state.intensity = Math.min(state.clicks * 0.5, MAX_SHAKE_INTENSITY)
+
+			// Apply shake
+			if (state.intensity > 0) {
+				element.style.setProperty('--shake-intensity', state.intensity.toString())
+				element.classList.add('shaking')
+			}
+
+			if (state.clicks >= MAX_CLICKS_TO_ACTIVATE) {
+				element.dataset.easterEggActive = 'true'
+				// Easter egg activated, let it shake for a bit then stop.
+				setTimeout(() => {
+					element.classList.remove('shaking')
+					shakeStates.delete(element)
+				}, SHAKE_DECAY_TIME)
+				return
+			}
+
+			// Start decay timer.
+			state.timer = setTimeout(() => decayShake(element), SHAKE_DECAY_TIME)
+		})
+	}
+
+	setupClickToShake(activeUsersCountEl)
+	setupClickToShake(starsCountEl)
 
 	// Set up Intersection Observers for animations
 	const observer = new IntersectionObserver(entries => {
