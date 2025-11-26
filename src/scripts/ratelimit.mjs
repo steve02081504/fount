@@ -7,7 +7,7 @@ import { ms } from './ms.mjs'
 
 const localIPs = [
 	'127.0.0.1', '::1',
-	in_docker ? await dns.promises.lookup('host.docker.internal').then(r => r.address) : null
+	in_docker ? await dns.promises.lookup('host.docker.internal').then(r => r.address).catch(() => null) : null
 ].filter(Boolean)
 
 export function is_local_ip(ip) {
