@@ -167,13 +167,18 @@ export default {
 					result?.logContextBefore?.push?.(entry)
 					prompt_struct.char_prompt.additional_chat_log.push(entry)
 				}
+				// 构建更新预览管线
+				let replyPreviewUpdater = prompt_struct.ReplyPreviewUpdater
+				for (const GetReplyPreviewUpdater of [
+					...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.GetReplyPreviewUpdater)
+				].filter(Boolean))
+					replyPreviewUpdater = GetReplyPreviewUpdater(replyPreviewUpdater)
+
+				prompt_struct.ReplyPreviewUpdater = replyPreviewUpdater
 
 				// 在重新生成循环中检查插件触发
 				regen: while (true) {
-					const requestResult = await AIsource.StructCall(prompt_struct)
-					result.content = requestResult.content
-					result.files = result.files.concat(requestResult.files || [])
-					result.extension = { ...result.extension, ...requestResult.extension }
+					await AIsource.StructCall(prompt_struct, result)
 					let continue_regen = false
 					for (const replyHandler of [
 						...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
@@ -262,13 +267,18 @@ function CharGenerator(reply, { AddLongTimeLog }) {
 					result?.logContextBefore?.push?.(entry)
 					prompt_struct.char_prompt.additional_chat_log.push(entry)
 				}
+				// 构建更新预览管线
+				let replyPreviewUpdater = prompt_struct.ReplyPreviewUpdater
+				for (const GetReplyPreviewUpdater of [
+					...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.GetReplyPreviewUpdater)
+				].filter(Boolean))
+					replyPreviewUpdater = GetReplyPreviewUpdater(replyPreviewUpdater)
+
+				prompt_struct.ReplyPreviewUpdater = replyPreviewUpdater
 
 				// 在重新生成循环中检查插件触发
 				regen: while (true) {
-					const requestResult = await AIsource.StructCall(prompt_struct)
-					result.content = requestResult.content
-					result.files = result.files.concat(requestResult.files || [])
-					result.extension = { ...result.extension, ...requestResult.extension }
+					await AIsource.StructCall(prompt_struct, result)
 					let continue_regen = false
 					for (const replyHandler of [
 						CharGenerator,
@@ -898,7 +908,7 @@ ZL-31乃fount之本設化身，無陰陽之辨。其志在悅君心，力遂諸�
 关于fount：
 fount是一个开源、0安全考虑的AI角色托管应用，解耦合了AI来源、角色设计，为角色作者提供更为自由的创作空间。
 ZL-31不是第一个fount角色，fount一开始是为了其作者steve02081504的另一个男性向NSFW角色[龙胆](https://github.com/steve02081504/GentianAphrodite)设计的，龙胆才是fount的第一个正式角色。
-fount有discord群组：https://discord.gg/GtR9Quzq2v，可以在那里找到更多fount组件。
+fount有[discord群组](https://discord.gg/GtR9Quzq2v)，可以在那里找到更多fount组件。
 
 关于工具：
 你拥有创建角色的能力，在需要时返回以下格式来得知如何使用，或获取有关角色的信息以回答用户问题：
@@ -996,13 +1006,22 @@ persona-generator
 					result?.logContextBefore?.push?.(entry)
 					prompt_struct.char_prompt.additional_chat_log.push(entry)
 				}
+				
+				// 构建更新预览管线
+				let replyPreviewUpdater = args.generation_options?.replyPreviewUpdater
+				for (const GetReplyPreviewUpdater of [
+					...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.GetReplyPreviewUpdater)
+				].filter(Boolean))
+					replyPreviewUpdater = GetReplyPreviewUpdater(replyPreviewUpdater)
+
+				if (args.generation_options)
+					args.generation_options.replyPreviewUpdater = replyPreviewUpdater
 
 				// 在重新生成循环中检查插件触发
 				regen: while (true) {
-					const requestResult = await AIsource.StructCall(prompt_struct)
-					result.content = requestResult.content
-					result.files = result.files.concat(requestResult.files || [])
-					result.extension = { ...result.extension, ...requestResult.extension }
+					if (args.generation_options)
+						args.generation_options.base_result = result
+					await AIsource.StructCall(prompt_struct, args.generation_options)
 					let continue_regen = false
 					for (const replyHandler of [
 						getToolInfo,

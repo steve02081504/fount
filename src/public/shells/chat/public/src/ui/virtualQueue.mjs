@@ -1,15 +1,20 @@
 import { createVirtualList } from '../../../../scripts/virtualList.mjs'
 import { getChatLog, getChatLogLength } from '../../src/endpoints.mjs'
 import { modifyTimeLine } from '../endpoints.mjs'
-import { processTimeStampForId } from '../utils.mjs'
+import { applySlice } from '../stream.mjs'
 
 import { renderMessage, enableSwipe, disableSwipe } from './messageList.mjs'
+import { streamRenderer } from './StreamRenderer.mjs'
 
 const chatMessagesContainer = document.getElementById('chat-messages')
-
 let virtualList = null
 let currentSwipableElement = null
 const deletionListeners = []
+
+// This map holds the full message object for streaming messages,
+// which is necessary for applying slices correctly.
+const streamingMessages = new Map()
+
 
 /**
  * 添加一个在从 UI 中删除消息后将被调用的监听器。
@@ -43,8 +48,9 @@ function updateLastCharMessageArrows() {
 	const lastMessageIndexInQueue = queue.length - 1
 	const lastMessage = queue[lastMessageIndexInQueue]
 
-	if (lastMessage && lastMessage.role === 'char') {
-		const lastMessageElement = document.getElementById(`message-${processTimeStampForId(lastMessage.time_stamp)}`)
+	if (lastMessage && lastMessage.role === 'char' && !lastMessage.is_generating) {
+		// Use the unique ID to find the element
+		const lastMessageElement = document.getElementById(lastMessage.id)
 
 		if (lastMessageElement) {
 			currentSwipableElement = lastMessageElement
@@ -77,30 +83,35 @@ function updateLastCharMessageArrows() {
 /**
  * 初始化虚拟队列。
  * @param {object} initialData - 初始数据 (不再使用，但保留函数签名以防万一).
+ * @returns {Promise<void>} - 无返回值。
  */
 export async function initializeVirtualQueue(initialData) {
 	if (virtualList)
 		virtualList.destroy()
+
+	streamingMessages.clear()
+	if (streamRenderer)
+		streamRenderer.streamingMessages.clear()
+
 
 	const total = await getChatLogLength()
 
 	virtualList = createVirtualList({
 		container: chatMessagesContainer,
 		/**
-		 * 从服务器获取聊天记录数据块。
-		 * @param {number} offset - 数据块的起始索引。
+		 * 异步函数，用于获取数据块。
+		 * @param {number} offset - 数据块的起始偏移量。
 		 * @param {number} limit - 数据块的大小。
-		 * @returns {Promise<{items: Array<object>, total: number}>} 包含项目和总数的对象。
+		 * @returns {Promise<{items: Array<object>, total: number}>} - 包含项目数组和总数的对象。
 		 */
 		fetchData: async (offset, limit) => {
-			// 直接使用已获取的总数，避免在每次请求时都重复获取
 			const items = await getChatLog(offset, offset + limit)
 			return { items, total }
 		},
 		renderItem: renderMessage,
-		// 从最后一个项目开始
 		initialIndex: total > 0 ? total - 1 : 0,
 		onRenderComplete: updateLastCharMessageArrows,
+		itemIdKey: 'id', // Use the unique 'id' property as the key
 	})
 }
 
@@ -136,13 +147,13 @@ export function getChatLogIndexByQueueIndex(queueIndex) {
 /**
  * 根据队列索引获取消息元素。
  * @param {number} queueIndex - 队列中的索引。
- * @returns {Promise<HTMLElement|null>} 对应的消息 DOM 元素，如果不存在则为 null。
+ * @returns {HTMLElement|null} 对应的消息 DOM 元素，如果不存在则为 null。
  */
-export async function getMessageElementByQueueIndex(queueIndex) {
-	if (!virtualList?.getQueue?.()?.[queueIndex]) return null
-	const elementIndexInDom = queueIndex + 1 // +1 for sentinel-top
-	const element = chatMessagesContainer.children[elementIndexInDom]
-	return element && !element.id.startsWith('sentinel') ? element : null
+export function getMessageElementByQueueIndex(queueIndex) {
+	if (!virtualList) return null
+	const item = virtualList.getQueue()[queueIndex]
+	if (!item) return null
+	return document.getElementById(item.id)
 }
 
 /**
@@ -157,19 +168,12 @@ export function cleanupVirtualQueueObserver() {
 		disableSwipe(currentSwipableElement)
 		currentSwipableElement = null
 	}
+	streamingMessages.clear()
+	if (streamRenderer)
+		streamRenderer.streamingMessages.clear()
 }
 
 // --- Handlers for websocket events ---
-
-/**
- * 触发虚拟列表的完全刷新。
- */
-async function triggerFullRefresh() {
-	if (virtualList) {
-		await virtualList.refresh()
-		chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight
-	}
-}
 
 /**
  * 处理消息添加事件。
@@ -180,6 +184,11 @@ export async function handleMessageAdded(message) {
 	// 仅当用户滚动到底部时才自动滚动到新消息
 	const shouldScroll = chatMessagesContainer.scrollTop >= chatMessagesContainer.scrollHeight - chatMessagesContainer.clientHeight - 20
 	await virtualList.appendItem(message, shouldScroll)
+
+	if (message.is_generating) {
+		streamingMessages.set(message.id, { messageData: message })
+		streamRenderer.register(message.id, message.content)
+	}
 }
 
 /**
@@ -189,7 +198,30 @@ export async function handleMessageAdded(message) {
  */
 export async function handleMessageReplaced(index, message) {
 	if (!virtualList) return
+
+	// Find the item in the queue by its log index before it gets replaced
+	const queue = virtualList.getQueue()
+	for (let i = 0; i < queue.length; i++) {
+		const logIndex = virtualList.getChatLogIndexByQueueIndex(i)
+		if (logIndex === index) {
+			const oldItem = queue[i]
+			if (oldItem && streamingMessages.has(oldItem.id)) {
+				streamRenderer.stop(oldItem.id)
+				streamingMessages.delete(oldItem.id)
+			}
+			break
+		}
+	}
+
 	await virtualList.replaceItem(index, message)
+
+	// If the newly replaced message is a generating one
+	if (message.is_generating) {
+		streamingMessages.set(message.id, { messageData: message })
+		streamRenderer.register(message.id, message.content)
+	}
+
+	updateLastCharMessageArrows()
 }
 
 /**
@@ -198,21 +230,52 @@ export async function handleMessageReplaced(index, message) {
  */
 export async function handleMessageDeleted(index) {
 	if (!virtualList) return
+
+	// Find the item in the queue by its log index before it gets deleted
+	const queue = virtualList.getQueue()
+	for (let i = 0; i < queue.length; i++) {
+		const logIndex = virtualList.getChatLogIndexByQueueIndex(i)
+		if (logIndex === index) {
+			const itemToDelete = queue[i]
+			if (itemToDelete && streamingMessages.has(itemToDelete.id)) {
+				streamRenderer.stop(itemToDelete.id)
+				streamingMessages.delete(itemToDelete.id)
+			}
+			break
+		}
+	}
+
+
 	await virtualList.deleteItem(index)
 	notifyDeletionListeners()
 }
 
-/**
- * 从队列中删除消息（通过刷新实现）。
- * @param {number} queueIndex - 要删除的消息的队列索引。
- */
-export async function deleteMessageInQueue(queueIndex) {
-	await handleMessageDeleted(virtualList.getChatLogIndexByQueueIndex(queueIndex))
-}
 /**
  * 获取当前渲染的消息队列。
  * @returns {Array<object>} 当前队列数组。
  */
 export function getQueue() {
 	return virtualList ? virtualList.getQueue() : []
+}
+
+/**
+ * 处理流式更新。
+ * @param {object} payload - 更新数据。
+ * @param {string} payload.messageId - 消息的唯一ID。
+ * @param {Array<object>} payload.slices - 要应用的切片数组。
+ */
+export async function handleStreamUpdate({ messageId, slices }) {
+	const itemState = streamingMessages.get(messageId)
+	if (!itemState) 
+		// This can happen if the message was deleted or replaced while a stream was in flight.
+		return
+	
+
+	// Apply patches to the data model
+	for (const slice of slices)
+		applySlice(itemState.messageData, slice)
+
+
+	// Notify the renderer of the new target content
+	streamRenderer.updateTarget(messageId, itemState.messageData.content)
 }

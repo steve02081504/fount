@@ -273,7 +273,7 @@ const configTemplate = {
 	disable_default_prompt: false,
 	system_prompt_at_depth: 10,
 	proxy_url: '',
-	use_stream: false,
+	use_stream: true,
 	keep_thought_signature: true,
 }
 
@@ -697,9 +697,12 @@ async function GetSource(config) {
 		/**
 		 * 使用结构化提示调用 AI 源。
 		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
-		 * @returns {Promise<{content: string, files: any[]}>} 来自 AI 的结果。
+		 * @param {import('../../../decl/AIsource.ts').GenerationOptions} [options] - 生成选项，包含基础结果、进度回调和中断信号。
+		 * @returns {Promise<{content: string, files: {name: string, mime_type: string, buffer: Buffer, description: string}[], extension?: object}>} - 包含内容和文件的响应。
 		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
+		StructCall: async (prompt_struct, options = {}) => {
+			const { base_result, replyPreviewUpdater, signal } = options
+
 			const baseMessages = [
 				{
 					role: 'user',
@@ -719,7 +722,12 @@ system:
 
 			let totalFileTokens = 0 // 单独跟踪文件 token
 
-			const chatHistory = await Promise.all(margeStructPromptChatLog(prompt_struct).map(async chatLogEntry => {
+			let chatHistory = margeStructPromptChatLog(prompt_struct)
+			if (chatHistory.length > 0) {
+				chatHistory[chatHistory.length - 1].extension ??= {}
+				chatHistory[chatHistory.length - 1].extension.gemini_API_data ??= base_result.extension.gemini_API_data
+			}
+			chatHistory = await Promise.all(chatHistory.map(async chatLogEntry => {
 				const uid = Math.random().toString(36).slice(2, 10)
 
 				const fileParts = await Promise.all((chatLogEntry.files || []).map(async file => {
@@ -923,9 +931,36 @@ ${is_ImageGeneration
 				},
 			}
 
-			let text = ''
 			let thoughtSignature = undefined
-			const files = []
+			/**
+			 * 清理 AI 响应的格式，移除 XML 标签和不完整的标记。
+			 * @param {object} res - 原始响应对象。
+			 * @param {string} res.content - 响应内容。
+			 * @returns {object} - 清理后的响应对象。
+			 */
+			function clearFormat(res) {
+				let text = res.content
+				if (text.match(/<\/sender>\s*<content>/))
+					text = (text.match(/<\/sender>\s*<content>([\S\s]*)/)?.[1] ?? text).split(new RegExp(
+						`(${(prompt_struct.alternative_charnames || []).map(Object).map(
+							s => s instanceof String ? escapeRegExp(s) : s.source
+						).join('|')})\\s*<\\/sender>\\s*<content>`
+					)).pop().split(/<\/content>\s*<\/message/).shift()
+				if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
+					text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
+				// 清理可能出现的不完整的结束标签
+				text = text.replace(/<\/content\s*$/, '').replace(/<\/message\s*$/, '').replace(/<\/\s*$/, '')
+				// 清理 declare 标签
+				text = text.replace(/<declare>[^]*?<\/declare>\s*$/, '').replace(/<declare>[^]*$/, '')
+				res.content = text
+				return res
+			}
+
+			const onProgressHandler = replyPreviewUpdater ? r => replyPreviewUpdater(clearFormat({ ...r })) : undefined
+			const result = {
+				content: '',
+				files: base_result?.files || [],
+			}
 			/**
 			 * 处理部分。
 			 * @param {Array<object>} parts - 部分数组。
@@ -934,13 +969,13 @@ ${is_ImageGeneration
 				if (!parts) return
 				for (const part of parts) {
 					if (config.keep_thought_signature && part.thoughtSignature) thoughtSignature = part.thoughtSignature
-					if (part.text) text += part.text
+					if (part.text) result.content += part.text
 					else if (part.inlineData) try {
 						const { mime_type, data } = part.inlineData
 						const fileExtension = mime.extension(mime_type) || 'png'
-						const fileName = `${files.length}.${fileExtension}`
+						const fileName = `${result.files.length}.${fileExtension}`
 						const dataBuffer = Buffer.from(data, 'base64')
-						files.push({
+						result.files.push({
 							name: fileName,
 							mime_type,
 							buffer: dataBuffer
@@ -948,43 +983,39 @@ ${is_ImageGeneration
 					} catch (error) {
 						console.error('Error processing inline image data:', error)
 					}
+					if (onProgressHandler) onProgressHandler(result)
 				}
 			}
 
 			if (config.use_stream) {
-				const result = await ai.models.generateContentStream(model_params)
-				for await (const chunk of result)
+				const resultStream = await ai.models.generateContentStream(model_params, { signal })
+				for await (const chunk of resultStream) {
+					if (signal?.aborted) {
+						const err = new Error('Aborted by user')
+						err.name = 'AbortError'
+						throw err
+					}
 					handle_parts(chunk.candidates?.[0]?.content?.parts)
+				}
 			}
 			else {
-				const response = await ai.models.generateContent(model_params)
+				if (signal?.aborted) {
+					const err = new Error('Aborted by user')
+					err.name = 'AbortError'
+					throw err
+				}
+				const response = await ai.models.generateContent(model_params, { signal })
 				handle_parts(response.candidates?.[0]?.content?.parts)
 			}
 
-			if (text.match(/<\/sender>\s*<content>/))
-				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1].split(new RegExp(
-					`(${(prompt_struct.alternative_charnames || []).map(Object).map(
-						stringOrReg => {
-							if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
-							return stringOrReg.source
-						}
-					).join('|')
-					})\\s*<\\/sender>\\s*<content>`
-				)).pop().split(/<\/content>\s*<\/message/).shift()
-			if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
-				text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
-			text = text.replace(/<declare>[^]*?<\/declare>\s*$/, '')
-
-			return {
-				content: text,
-				files,
+			return Object.assign(base_result, clearFormat(result), {
 				extension: {
 					gemini_API_data: {
 						char_id: prompt_struct.char_id,
 						text_part_overrides: Object.fromEntries(Object.entries({ thoughtSignature }).filter(([_, v]) => v)),
 					}
 				}
-			}
+			})
 		},
 		tokenizer: {
 			/**
