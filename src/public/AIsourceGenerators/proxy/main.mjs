@@ -275,7 +275,7 @@ async function GetSource(config, { SaveConfig }) {
 
 			text = await result.text()
 			if (text.startsWith('data:'))
-				text = text.split('\n').filter(line => line.startsWith('data:')).map(line => line.slice(5).trim()).map(JSON.parse).map(json => json.choices[0].delta.content).join('')
+				text = text.split('\n').filter(line => line.startsWith('data:')).map(line => line.slice(5).trim()).map(JSON.parse).map(json => json.choices[0].delta?.content || '').join('')
 			else {
 				let json
 				try { json = JSON.parse(text) }
