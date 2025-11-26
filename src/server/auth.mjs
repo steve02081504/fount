@@ -2,7 +2,7 @@ import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 
-import argon2 from 'npm:argon2'
+import { hash, verify, Algorithm } from 'npm:@node-rs/argon2'
 import fse from 'npm:fs-extra'
 import * as jose from 'npm:jose'
 
@@ -663,7 +663,7 @@ async function createUser(username, password) {
  * @returns {Promise<string>} 哈希后的密码。
  */
 export async function hashPassword(password) {
-	return await argon2.hash(password, { type: argon2.argon2id })
+	return await hash(password, { algorithm: Algorithm.Argon2id })
 }
 
 /**
@@ -674,7 +674,7 @@ export async function hashPassword(password) {
  */
 export async function verifyPassword(password, hashedPassword) {
 	if (!password || !hashedPassword) return false
-	return await argon2.verify(hashedPassword, password)
+	return await verify(hashedPassword, password)
 }
 
 /**
@@ -895,7 +895,7 @@ export function getUserDictionary(username) {
 let avgVerifyTime = 0
 {
 	const startTime = Date.now()
-	await argon2.verify('$argon2id$v=19$m=65536,t=3,p=4$ZHVtbXlkYXRh$ZHVtbXlkYXRhZGF0YQ', 'dummydata').catch(() => { })
+	await verify('$argon2id$v=19$m=65536,t=3,p=4$ZHVtbXlkYXRh$ZHVtbXlkYXRhZGF0YQ', 'dummydata').catch(() => { })
 	avgVerifyTime = Date.now() - startTime
 }
 
