@@ -1,218 +1,19 @@
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
+/** @typedef {import('../../../decl/prompt_struct.ts').prompt_text_t} prompt_text_t */
 
-import { formatStr } from '../../../scripts/format.mjs'
+import { formatStr } from '../../../scripts/formatStr.mjs'
 import { parseRegexFromString } from '../../../scripts/regex.mjs'
+import { getSinglePartPrompt } from '../../../scripts/prompt_parts.mjs'
 import { loadAIsourceFromNameOrConfigData } from '../../../server/managers/AIsource_manager.mjs'
-
-/**
- * 获取单一部分的提示对象。
- * @returns {{text: any[], additional_chat_log: any[], extension: {}}} 单一部分的提示对象。
- */
-function getSinglePartPrompt() {
-	return {
-		text: [],
-		additional_chat_log: [],
-		extension: {},
-	}
-}
+import info from './info.json' assert { type: 'json' }
+import info_dynamic from './info.dynamic.json' assert { type: 'json' }
 
 /**
  * @type {import('../../../decl/AIsource.ts').AIsource_interfaces_and_AIsource_t_getter}
  */
 export default {
-	info: {
-		'en-UK': {
-			name: 'Change Prompt',
-			avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-			description: 'Change Prompt',
-			description_markdown: 'A source that allows you to modify the prompt before sending it to another source.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['prompt', 'modifier', 'utility'],
-			home_page: ''
-		},
-		'zh-CN': {
-			name: '更改提示',
-			avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-			description: '更改提示',
-			description_markdown: '一个允许您在将提示发送到另一个源之前修改提示的源。',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['提示', '修改器', '实用工具'],
-			home_page: ''
-		},
-		'ar-SA': {
-			name: 'تغيير المطالبة',
-			avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-			description: 'تغيير المطالبة',
-			description_markdown: 'مصدر يسمح لك بتعديل المطالبة قبل إرسالها إلى مصدر آخر.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['موجه', 'معدل', 'أداة'],
-			home_page: ''
-		},
-		'de-DE': {
-			name: 'Eingabeaufforderung ändern',
-			avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-			description: 'Eingabeaufforderung ändern',
-			description_markdown: 'Eine Quelle, mit der Sie die Eingabeaufforderung ändern können, bevor Sie sie an eine andere Quelle senden.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['Eingabeaufforderung', 'Modifikator', 'Dienstprogramm'],
-			home_page: ''
-		},
-		emoji: {
-			name: '🔄📝',
-			avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-			description: '📝➡️✨',
-			description_markdown: '📝➡️🔄➡️🤖✨',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['📝', '🔄', '🎨'],
-			home_page: ''
-		},
-		'es-ES': {
-			name: 'Cambiar aviso',
-			avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-			description: 'Cambiar aviso',
-			description_markdown: 'Una fuente que le permite modificar el aviso antes de enviarlo a otra fuente.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['aviso', 'modificador', 'utilidad'],
-			home_page: ''
-		},
-		'fr-FR': {
-			name: 'Changer l\'invite',
-			avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-			description: 'Changer l\'invite',
-			description_markdown: 'Une source qui vous permet de modifier l\'invite avant de l\'envoyer à une autre source.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['invite', 'modificateur', 'utilitaire'],
-			home_page: ''
-		},
-		'hi-IN': {
-			name: 'प्रॉम्प्ट बदलें',
-			avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-			description: 'प्रॉम्प्ट बदलें',
-			description_markdown: 'एक स्रोत जो आपको दूसरे स्रोत पर भेजने से पहले प्रॉम्प्ट को संशोधित करने की अनुमति देता है।',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['प्रॉम्प्ट', 'संशोधक', 'उपयोगिता'],
-			home_page: ''
-		},
-		'is-IS': {
-			name: 'Breyta hvetningu',
-			avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-			description: 'Breyta hvetningu',
-			description_markdown: 'Heimild sem gerir þér kleift að breyta hvetningunni áður en þú sendir hana til annarrar heimildar.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['hvetja', 'breytir', 'gagnsemi'],
-			home_page: ''
-		},
-		'it-IT': {
-			name: 'Cambia prompt',
-			avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-			description: 'Cambia prompt',
-			description_markdown: 'Una fonte che consente di modificare il prompt prima di inviarlo a un\'altra fonte.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['prompt', 'modificatore', 'utilità'],
-			home_page: ''
-		},
-		'ja-JP': {
-			name: 'プロンプトの変更',
-			avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-			description: 'プロンプトの変更',
-			description_markdown: '別のソースに送信する前にプロンプトを変更できるソース。',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['プロンプト', '修飾子', 'ユーティリティ'],
-			home_page: ''
-		},
-		'ko-KR': {
-			name: '프롬프트 변경',
-			avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-			description: '프롬프트 변경',
-			description_markdown: '다른 소스로 보내기 전에 프롬프트를 수정할 수 있는 소스입니다.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['프롬프트', '수정자', '유틸리티'],
-			home_page: ''
-		},
-		lzh: {
-			name: '易提示',
-			avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-			description: '易提示',
-			description_markdown: '一源，可於送至他源前，易其提示。',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['提示', '易', '用'],
-			home_page: ''
-		},
-		'nl-NL': {
-			name: 'Prompt wijzigen',
-			avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-			description: 'Prompt wijzigen',
-			description_markdown: 'Een bron waarmee u de prompt kunt wijzigen voordat u deze naar een andere bron verzendt.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['prompt', 'wijziger', 'hulpprogramma'],
-			home_page: ''
-		},
-		'pt-PT': {
-			name: 'Alterar prompt',
-			avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-			description: 'Alterar prompt',
-			description_markdown: 'Uma fonte que permite modificar o prompt antes de enviá-lo para outra fonte.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['prompt', 'modificador', 'utilitário'],
-			home_page: ''
-		},
-		'ru-RU': {
-			name: 'Изменить подсказку',
-			avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-			description: 'Изменить подсказку',
-			description_markdown: 'Источник, который позволяет изменять подсказку перед отправкой в другой источник.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['подсказка', 'модификатор', 'утилита'],
-			home_page: ''
-		},
-		'uk-UA': {
-			name: 'Змінити підказку',
-			avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-			description: 'Змінити підказку',
-			description_markdown: 'Джерело, яке дозволяє змінювати підказку перед надсиланням до іншого джерела.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['підказка', 'модифікатор', 'утиліта'],
-			home_page: ''
-		},
-		'vi-VN': {
-			name: 'Thay đổi lời nhắc',
-			avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-			description: 'Thay đổi lời nhắc',
-			description_markdown: 'Một nguồn cho phép bạn sửa đổi lời nhắc trước khi gửi nó đến một nguồn khác.',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['lời nhắc', 'bộ sửa đổi', 'tiện ích'],
-			home_page: ''
-		},
-		'zh-TW': {
-			name: '變更提示',
-			avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-			description: '變更提示',
-			description_markdown: '一個允許您在將提示發送到另一個來源之前修改提示的來源。',
-			version: '0.0.0',
-			author: 'steve02081504',
-			tags: ['提示', '修改器', '實用程式'],
-			home_page: ''
-		}
-	},
+	info,
 	interfaces: {
 		AIsource: {
 			/**
@@ -226,37 +27,24 @@ export default {
 }
 
 const configTemplate = {
-	name: 'custom prompt',
+	name: 'change-prompt',
 	provider: 'unknown',
-	base_source: 'source name',
+	source: 'some source name',
 	build_prompt: true,
 	changes: [
 		{
-			name: 'base defs',
-			insert_depth: 7,
+			insert_depth: -1,
 			content: {
-				role: 'system',
 				name: 'system',
-				content: `\
-你需要扮演的角色\${Charname}的设定如下：
-\${char_prompt}
-用户\${UserCharname}的设定如下：
-\${user_prompt}
-当前环境的设定如下：
-\${world_prompt}
-其他角色的设定如下：
-\${other_chars_prompt}
-你可以使用以下插件，方法如下：
-\${plugin_prompts}
-`
+				content: 'new prompt content',
+				role: 'system'
 			}
 		}
 	],
 	replaces: [
 		{
-			name: 'example',
-			seek: '/<delete-me>/ig',
-			replace: '',
+			seek: '/old/g',
+			replace: 'new'
 		}
 	]
 }
@@ -271,223 +59,17 @@ const configTemplate = {
  */
 async function GetSource(config, { username, SaveConfig }) {
 	const unnamedSources = []
-	const base_source = await loadAIsourceFromNameOrConfigData(username, config.base_source, unnamedSources, {
+	const base_source = await loadAIsourceFromNameOrConfigData(username, config.source, unnamedSources, {
 		SaveConfig
 	})
 	/** @type {AIsource_t} */
 	const result = {
 		type: 'text-chat',
-		info: {
-			'en-UK': {
-				name: config.name,
-				avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-				description: 'Change Prompt',
-				description_markdown: 'A source that allows you to modify the prompt before sending it to another source.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['prompt', 'modifier', 'utility'],
-				provider: config.provider || 'unknown',
-				home_page: ''
-			},
-			'zh-CN': {
-				name: config.name,
-				avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-				description: '更改提示',
-				description_markdown: '一个允许您在将提示发送到另一个源之前修改提示的源。',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['提示', '修改器', '实用工具'],
-				provider: config.provider || 'unknown',
-				home_page: ''
-			},
-			'ar-SA': {
-				name: config.name,
-				avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-				description: 'تغيير المطالبة',
-				description_markdown: 'مصدر يسمح لك بتعديل المطالبة قبل إرسالها إلى مصدر آخر.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['موجه', 'معدل', 'أداة'],
-				provider: config.provider || 'unknown',
-				home_page: ''
-			},
-			'de-DE': {
-				name: config.name,
-				avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-				description: 'Eingabeaufforderung ändern',
-				description_markdown: 'Eine Quelle, mit der Sie die Eingabeaufforderung ändern können, bevor Sie sie an eine andere Quelle senden.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['Eingabeaufforderung', 'Modifikator', 'Dienstprogramm'],
-				provider: config.provider || 'unknown',
-				home_page: ''
-			},
-			emoji: {
-				name: '🔄📝',
-				avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-				description: '📝➡️✨',
-				description_markdown: '📝➡️🔄➡️🤖✨',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['📝', '🔄', '🎨'],
-				provider: config.provider || 'unknown',
-				home_page: ''
-			},
-			'es-ES': {
-				name: config.name,
-				avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-				description: 'Cambiar aviso',
-				description_markdown: 'Una fuente que le permite modificar el aviso antes de enviarlo a otra fuente.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['aviso', 'modificador', 'utilidad'],
-				provider: config.provider || 'unknown',
-				home_page: ''
-			},
-			'fr-FR': {
-				name: config.name,
-				avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-				description: 'Changer l\'invite',
-				description_markdown: 'Une source qui vous permet de modifier l\'invite avant de l\'envoyer à une autre source.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['invite', 'modificateur', 'utilitaire'],
-				provider: config.provider || 'unknown',
-				home_page: ''
-			},
-			'hi-IN': {
-				name: config.name,
-				avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-				description: 'प्रॉम्प्ट बदलें',
-				description_markdown: 'एक स्रोत जो आपको दूसरे स्रोत पर भेजने से पहले प्रॉम्प्ट को संशोधित करने की अनुमति देता है।',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['प्रॉम्प्ट', 'संशोधक', 'उपयोगिता'],
-				provider: config.provider || 'unknown',
-				home_page: ''
-			},
-			'is-IS': {
-				name: config.name,
-				avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-				description: 'Breyta hvetningu',
-				description_markdown: 'Heimild sem gerir þér kleift að breyta hvetningunni áður en þú sendir hana til annarrar heimildar.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['hvetja', 'breytir', 'gagnsemi'],
-				provider: config.provider || 'unknown',
-				home_page: ''
-			},
-			'it-IT': {
-				name: config.name,
-				avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-				description: 'Cambia prompt',
-				description_markdown: 'Una fonte che consente di modificare il prompt prima di inviarlo a un\'altra fonte.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['prompt', 'modificatore', 'utilità'],
-				provider: config.provider || 'unknown',
-				home_page: ''
-			},
-			'ja-JP': {
-				name: config.name,
-				avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-				description: 'プロンプトの変更',
-				description_markdown: '別のソースに送信する前にプロンプトを変更できるソース。',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['プロンプト', '修飾子', 'ユーティリティ'],
-				provider: config.provider || 'unknown',
-				home_page: ''
-			},
-			'ko-KR': {
-				name: config.name,
-				avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-				description: '프롬프트 변경',
-				description_markdown: '다른 소스로 보내기 전에 프롬프트를 수정할 수 있는 소스입니다.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['프롬프트', '수정자', '유틸리티'],
-				provider: config.provider || 'unknown',
-				home_page: ''
-			},
-			lzh: {
-				name: config.name,
-				avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-				description: '易提示',
-				description_markdown: '一源，可於送至他源前，易其提示。',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['提示', '易', '用'],
-				provider: config.provider || 'unknown',
-				home_page: ''
-			},
-			'nl-NL': {
-				name: config.name,
-				avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-				description: 'Prompt wijzigen',
-				description_markdown: 'Een bron waarmee u de prompt kunt wijzigen voordat u deze naar een andere bron verzendt.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['prompt', 'wijziger', 'hulpprogramma'],
-				provider: config.provider || 'unknown',
-				home_page: ''
-			},
-			'pt-PT': {
-				name: config.name,
-				avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-				description: 'Alterar prompt',
-				description_markdown: 'Uma fonte que permite modificar o prompt antes de enviá-lo para outra fonte.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['prompt', 'modificador', 'utilitário'],
-				provider: config.provider || 'unknown',
-				home_page: ''
-			},
-			'ru-RU': {
-				name: config.name,
-				avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-				description: 'Изменить подсказку',
-				description_markdown: 'Источник, который позволяет изменять подсказку перед отправкой в другой источник.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['подсказка', 'модификатор', 'утилита'],
-				provider: config.provider || 'unknown',
-				home_page: ''
-			},
-			'uk-UA': {
-				name: config.name,
-				avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-				description: 'Змінити підказку',
-				description_markdown: 'Джерело, яке дозволяє змінювати підказку перед надсиланням до іншого джерела.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['підказка', 'модифікатор', 'утиліта'],
-				provider: config.provider || 'unknown',
-				home_page: ''
-			},
-			'vi-VN': {
-				name: config.name,
-				avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-				description: 'Thay đổi lời nhắc',
-				description_markdown: 'Một nguồn cho phép bạn sửa đổi lời nhắc trước khi gửi nó đến một nguồn khác.',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['lời nhắc', 'bộ sửa đổi', 'tiện ích'],
-				provider: config.provider || 'unknown',
-				home_page: ''
-			},
-			'zh-TW': {
-				name: config.name,
-				avatar: 'https://api.iconify.design/fluent/text-change-case-24-filled.svg',
-				description: '變更提示',
-				description_markdown: '一個允許您在將提示發送到另一個來源之前修改提示的來源。',
-				version: '0.0.0',
-				author: 'steve02081504',
-				tags: ['提示', '修改器', '實用程式'],
-				provider: config.provider || 'unknown',
-				home_page: ''
-			}
-		},
+		info: Object.fromEntries(Object.entries(structuredClone(info_dynamic)).map(([k, v]) => {
+			v.name = config.name
+			v.provider = config.provider || 'unknown'
+			return [k, v]
+		})),
 		is_paid: false,
 		extension: {},
 
