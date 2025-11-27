@@ -1,3 +1,4 @@
+import info from './info.json' assert { type: 'json' };
 /** @typedef {import('../../../../../src/decl/worldAPI.ts').WorldAPI_t} WorldAPI_t */
 /** @typedef {import('../../../../../src/decl/AIsource.ts').AIsource_t} AIsource_t */
 
@@ -16,64 +17,7 @@ let username
 
 /** @type {WorldAPI_t} */
 export default {
-	info: {
-		'en-US': {
-			name: 'fount default world',
-			description: 'fount rendering support output guide for characters',
-		},
-		'zh-CN': {
-			name: 'fount默认世界',
-			description: '用于给角色关于fount渲染支持的输出指引',
-		},
-		'de-DE': {
-			name: 'fount Standardwelt',
-			description: 'Dient als Leitfaden für Charaktere zur fount Rendering-Unterstützung',
-		},
-		'es-ES': {
-			name: 'Mundo predeterminado de fount',
-			description: 'Utilizado para guiar a los personajes sobre la salida de soporte de renderizado de fount',
-		},
-		'fr-FR': {
-			name: 'Monde par défaut de fount',
-			description: 'Utilisé pour guider les personnages sur la sortie du support de rendu fount',
-		},
-		'hi-IN': {
-			name: 'फाउंट डिफ़ॉल्ट दुनिया',
-			description: 'पात्रों को फाउंट रेंडरिंग समर्थन आउटपुट मार्गदर्शन देने के लिए उपयोग किया जाता है',
-		},
-		'ja-JP': {
-			name: 'fountデフォルト世界',
-			description: 'キャラクターにfountレンダリングサポートの出力ガイダンスを提供するために使用されます',
-		},
-		'ko-KR': {
-			name: 'fount 기본 세계',
-			description: '캐릭터에 fount 렌더링 지원 출력 지침을 제공하는 데 사용됩니다',
-		},
-		'pt-PT': {
-			name: 'Mundo padrão fount',
-			description: 'Usado para orientar os personagens sobre a saída de suporte de renderização fount',
-		},
-		'ru-RU': {
-			name: 'Мир fount по умолчанию',
-			description: 'Используется для руководства персонажей по выводу поддержки рендеринга fount',
-		},
-		'it-IT': {
-			name: 'Mondo predefinito di fount',
-			description: 'Utilizzato per guidare i personaggi sulla uscita di supporto per il rendering di fount',
-		},
-		'vi-VN': {
-			name: 'Thế giới mặc định của fount',
-			description: 'Sử dụng để hướng dẫn các nhân vật về xuất hiện hỗ trợ cho việc render hoạt hình của fount',
-		},
-		lzh: {
-			name: 'fount 預設之世',
-			description: 'fount 繪呈之援，以導化身之儀觀',
-		},
-		emoji: {
-			name: '⛲🌐',
-			description: 'ℹ️👤🧑‍🎨🖼️➡️🧭',
-		},
-	},
+	info,
 	/**
 	 * 加载函数，在世界被加载时调用。
 	 * @param {object} stat - 统计信息。
