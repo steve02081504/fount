@@ -755,6 +755,9 @@ export type LocaleData = {
 				}
 			}
 		}
+		messageGenerating: {
+			stop: string
+		}
 		attachment: {
 			buttons: {
 				download: {

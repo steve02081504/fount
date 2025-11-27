@@ -766,6 +766,9 @@
 				}
 			}
 		},
+		"messageGenerating": {
+			"stop": null
+		},
 		"attachment": {
 			"buttons": {
 				"download": {

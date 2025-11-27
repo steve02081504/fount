@@ -766,6 +766,9 @@
 				}
 			}
 		},
+		"messageGenerating": {
+			"stop": "hætta"
+		},
 		"attachment": {
 			"buttons": {
 				"download": {

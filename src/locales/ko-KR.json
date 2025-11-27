@@ -766,6 +766,9 @@
 				}
 			}
 		},
+		"messageGenerating": {
+			"stop": "멈추다"
+		},
 		"attachment": {
 			"buttons": {
 				"download": {

@@ -766,6 +766,9 @@
 				}
 			}
 		},
+		"messageGenerating": {
+			"stop": "СТІЙ"
+		},
 		"attachment": {
 			"buttons": {
 				"download": {

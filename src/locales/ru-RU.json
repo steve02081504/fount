@@ -766,6 +766,9 @@
 				}
 			}
 		},
+		"messageGenerating": {
+			"stop": "останавливаться"
+		},
 		"attachment": {
 			"buttons": {
 				"download": {
