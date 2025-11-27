@@ -44,8 +44,7 @@ export function setEndpoints(router) {
 
 	router.get('/virtual_files/shells/export/download/:partType/:partName', authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
-		const { partType, partName } = req.params
-		const { withData } = req.query
+		const { params: { partType, partName }query: { withData } } = req
 
 		const { buffer, format } = await exportPart(username, partType, partName, withData === 'true')
 		const contentType = format === '7z' ? 'application/x-7z-compressed' : 'application/zip'

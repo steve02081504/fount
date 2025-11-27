@@ -354,9 +354,12 @@ export class ClaudeAPI {
 	 * 调用 Claude API。
 	 * @param {Array<object>} messages - 消息对象数组。
 	 * @param {string} model - 要使用的模型。
+	 * @param {boolean} use_stream - 是否使用流式传输。
+	 * @param {Function} [onProgress] - 进度回调函数。
+	 * @param {AbortSignal} [signal] - 中断信号。
 	 * @returns {Promise<string>} API 的响应。
 	 */
-	async callClaudeAPI(messages, model) {
+	async callClaudeAPI(messages, model, use_stream = false, onProgress, signal) {
 		if (!this.config.cookie_array?.length)
 			throw new Error('No cookies configured. Please add at least one Claude API cookie to the configuration.')
 
@@ -391,6 +394,7 @@ export class ClaudeAPI {
 		while (attempt < this.config.cookie_array.length + 1) try {
 			const headers = AI.hdr(this.conversationUuid) // 传入 conversationUuid
 			headers.Cookie = `sessionKey=${this.getCookies()}`
+			headers.Accept = 'text/event-stream, text/event-stream'
 			const rProxy = this.config.r_proxy || AI.end()
 
 			// 构建 prompt 字符串
@@ -407,30 +411,60 @@ export class ClaudeAPI {
 				text: prompt,  // 这里的 text 似乎和 prompt 重复，根据实际 API 调整
 				attachments: [], // 根据需要添加
 			}
+			if (use_stream) payload.stream = true
 
 
 			const response = await fetch(`${rProxy}/api/organizations/${this.uuidOrg}/chat_conversations/${this.conversationUuid}/completion`, {
 				method: 'POST',
 				headers,
 				body: JSON.stringify(payload),
+				signal,
 			})
 
 			const err = await checkResErr(response, false)
-			if (err)
-				throw err
+			if (err) throw err
 
-			let responseJSON = await response.json()
 
-			const claudeSim = new ClewdSimulation(this.config, model) // 传入配置
-			responseJSON = claudeSim.processResponse(responseJSON) // 处理响应
-			this.prevImpersonated = claudeSim.impersonated // 更新状态
+			if (use_stream) {
+				const reader = response.body.pipeThrough(new TextDecoderStream()).getReader()
+				let fullText = ''
+				while (true) {
+					if (signal?.aborted) {
+						reader.cancel('Aborted by user')
+						break
+					}
+					const { done, value } = await reader.read()
+					if (done) break
+					const lines = value.split('\n').filter(line => line.startsWith('data:'))
+					for (const line of lines) {
+						const data = line.slice('data: '.length)
+						try {
+							const json = JSON.parse(data)
+							if (onProgress) onProgress(json)
+							if (json.completion) fullText += json.completion
+						}
+						catch (e) { /* ignore */ }
+					}
+				}
+				const claudeSim = new ClewdSimulation(this.config, model)
+				const processedResponse = claudeSim.processResponse({ completion: fullText })
+				this.prevImpersonated = claudeSim.impersonated
+				return processedResponse.completion
+			}
+			else {
+				let responseJSON = await response.json()
+				const claudeSim = new ClewdSimulation(this.config, model) // 传入配置
+				responseJSON = claudeSim.processResponse(responseJSON) // 处理响应
+				this.prevImpersonated = claudeSim.impersonated // 更新状态
 
-			if (responseJSON.completion)
-				return responseJSON.completion
-			else
-				throw new Error('Claude API error: empty response')
+				if (responseJSON.completion)
+					return responseJSON.completion
+				else
+					throw new Error('Claude API error: empty response')
+			}
 		} catch (error) {
 			console.error('Claude API call failed:', error)
+			if (error.name === 'AbortError') throw error
 
 			if (this.shouldRotateCookie(error)) {
 				this.failedCookies.add(this.config.cookie_array[this.currentIndex])

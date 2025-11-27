@@ -236,7 +236,7 @@ export function geti18n(key, params = {}) {
  * 重新导出 `console` 对象。
  * @type {Console}
  */
-export const console = globalThis.console
+export const {console} = globalThis
 /**
  * @overload
  * @template {LocaleKeyWithoutParams} TKey

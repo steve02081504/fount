@@ -1204,7 +1204,7 @@ export async function modifyTimeLine(chatid, delta) {
 		const currentEntry = chatMetadata.chatLog[chatMetadata.chatLog.length - 1]
 		if (!currentEntry || !currentEntry.timeSlice.charname) return currentEntry // Can't regenerate user message
 
-		const charname = currentEntry.timeSlice.charname
+		const {charname} = currentEntry.timeSlice
 
 		// Reset the current entry to a generating state
 		currentEntry.is_generating = true

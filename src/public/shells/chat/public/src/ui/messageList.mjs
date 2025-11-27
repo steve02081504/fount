@@ -198,7 +198,7 @@ export async function renderMessage(message) {
 	shareButtons.forEach(button => {
 		button.addEventListener('click', async () => {
 			try {
-				const time = button.dataset.time
+				const {time} = button.dataset
 				showToast('info', geti18n('chat.messageView.share.uploading'))
 				const blob = new Blob([await generateFullHtmlForMessage(message)], { type: 'text/html' })
 				const link = await createShareLink(blob, `message-${message.id}.html`, time)

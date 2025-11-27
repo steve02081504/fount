@@ -348,8 +348,7 @@ export async function setCustomTheme(name, url) {
 		const res = await fetch(url)
 		if (!res.ok) throw new Error('Network response was not ok')
 		const data = await res.json()
-		const css = data.css
-		const mjs = data.mjs
+		const { css, mjs } = data
 
 		if (css) await setCustomThemeNoUpdateUrl(name, css, mjs)
 	} catch (e) {

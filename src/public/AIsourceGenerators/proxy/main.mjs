@@ -233,7 +233,8 @@ const configTemplate = {
 	custom_headers: {},
 	convert_config: {
 		roleReminding: true
-	}
+	},
+	use_stream: true
 }
 /**
  * 获取 AI 源。
@@ -247,59 +248,79 @@ async function GetSource(config, { SaveConfig }) {
 	 * 调用基础模型。
 	 * @param {Array<object>} messages - 消息数组。
 	 * @param {object} config - 配置对象。
+	 * @param {boolean} use_stream - 是否使用流式传输。
+	 * @param {Function} [onProgress] - 进度回调函数。
+	 * @param {AbortSignal} [signal] - 中断信号。
 	 * @returns {Promise<{content: string, files: any[]}>} 模型返回的内容。
 	 */
-	async function callBase(messages, config) {
-		let text
-		let files = []
-		while (!text && !files.length) {
-			const result = await fetch(config.url, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: config.apikey ? 'Bearer ' + config.apikey : undefined,
-					'HTTP-Referer': 'https://steve02081504.github.io/fount/',
-					'X-Title': 'fount',
-					...config?.custom_headers
-				},
-				body: JSON.stringify({
-					model: config.model,
-					messages,
-					stream: false,
-					...config.model_arguments,
-				})
-			})
+	async function callBase(messages, config, use_stream, onProgress, signal) {
+		const result = await fetch(config.url, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: config.apikey ? `Bearer ${config.apikey}` : undefined,
+				'HTTP-Referer': 'https://steve02081504.github.io/fount/',
+				'X-Title': 'fount',
+				...config?.custom_headers,
+			},
+			body: JSON.stringify({
+				model: config.model,
+				messages,
+				stream: use_stream,
+				...config.model_arguments,
+			}),
+			signal,
+		})
 
-			if (!result.ok)
-				throw result
+		if (!result.ok) throw new Error(`API request failed: ${result.statusText}`)
 
-			text = await result.text()
-			if (text.startsWith('data:'))
-				text = text.split('\n').filter(line => line.startsWith('data:')).map(line => line.slice(5).trim()).map(JSON.parse).map(json => json.choices[0].delta?.content || '').join('')
-			else {
-				let json
-				try { json = JSON.parse(text) }
-				catch { json = await result.json() }
-				text = json.choices[0].message.content
-				let imgindex = 0
-				files = (await Promise.all(json.choices[0].message?.images?.map?.(async imageurl => ({
-					name: `image${imgindex++}.png`,
-					buffer: await (await fetch(imageurl)).arrayBuffer(),
-					mimetype: 'image/png'
-				})) || [])).filter(Boolean)
+		if (use_stream) {
+			let fullText = ''
+			const reader = result.body.getReader()
+			const decoder = new TextDecoder()
+			while (true) {
+				const { done, value } = await reader.read()
+				if (done) break
+				const chunk = decoder.decode(value)
+				const lines = chunk.split('\n').filter(line => line.startsWith('data:'))
+				for (const line of lines) {
+					const data = line.slice(5).trim()
+					if (data === '[DONE]') break
+					try {
+						const json = JSON.parse(data)
+						const content = json.choices[0].delta?.content || ''
+						if (content) {
+							fullText += content
+							if (onProgress) onProgress(content)
+						}
+					}
+					catch (e) { /* ignore */ }
+				}
 			}
+			return { content: fullText, files: [] }
 		}
-		return {
-			content: text,
-			files,
+		else {
+			const json = await result.json()
+			const text = json.choices[0].message.content
+			let imgindex = 0
+			const files = (await Promise.all(json.choices[0].message?.images?.map?.(async imageurl => ({
+				name: `image${imgindex++}.png`,
+				buffer: await (await fetch(imageurl)).arrayBuffer(),
+				mimetype: 'image/png',
+			})) || [])).filter(Boolean)
+			return { content: text, files }
 		}
 	}
+
 	/**
 	 * 调用基础模型（带重试）。
 	 * @param {Array<object>} messages - 消息数组。
+	 * @param {boolean} use_stream - 是否使用流式传输。
+	 * @param {Function} [onProgress] - 进度回调函数。
+	 * @param {AbortSignal} [signal] - 中断信号。
 	 * @returns {Promise<{content: string, files: any[]}>} 模型返回的内容。
 	 */
-	async function callBaseEx(messages) {
+	async function callBaseEx(messages, use_stream, onProgress, signal) {
 		const errors = []
 		let retryConfigs = [
 			{}, // 第一次尝试，使用原始配置
@@ -310,24 +331,24 @@ async function GetSource(config, { SaveConfig }) {
 			retryConfigs = retryConfigs.filter(config => !config?.urlSuffix?.endsWith?.('/chat/completions'))
 
 		for (const retryConfig of retryConfigs) {
-			const currentConfig = { ...config } // 复制配置，避免修改原始配置
+			const currentConfig = { ...config }
 			if (retryConfig.urlSuffix) currentConfig.url += retryConfig.urlSuffix
 
 			try {
-				const result = await callBase(messages, currentConfig)
-
-				if (retryConfig.urlSuffix)
-					console.warn(`the api url of ${config.model} need to change from ${config.url} to ${currentConfig.url}`)
-
+				const result = await callBase(messages, currentConfig, use_stream, onProgress, signal)
 				if (retryConfig.urlSuffix) {
+					console.warn(`the api url of ${config.model} need to change from ${config.url} to ${currentConfig.url}`)
 					Object.assign(config, currentConfig)
 					SaveConfig()
 				}
-
 				return result
-			} catch (error) { errors.push(error) }
+			}
+			catch (error) {
+				if (error.name === 'AbortError') throw error
+				errors.push(error)
+			}
 		}
-		throw errors.length == 1 ? errors[0] : errors
+		throw errors.length === 1 ? errors[0] : new AggregateError(errors, 'All retry attempts failed')
 	}
 	/** @type {AIsource_t} */
 	const result = {
@@ -562,9 +583,35 @@ async function GetSource(config, { SaveConfig }) {
 		/**
 		 * 使用结构化提示调用 AI 源。
 		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+		 * @param {import('../../../decl/AIsource.ts').GenerationOptions} [options] - 生成选项，包含基础结果、进度回调和中断信号。
 		 * @returns {Promise<{content: string, files: any[]}>} 来自 AI 的结果。
 		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
+		StructCall: async (prompt_struct, options = {}) => {
+			const { base_result, replyPreviewUpdater, signal } = options
+			/**
+			 * 清理 AI 响应的格式，移除 XML 标签和不完整的标记。
+			 * @param {object} res - 原始响应对象。
+			 * @param {string} res.content - 响应内容。
+			 * @returns {object} - 清理后的响应对象。
+			 */
+			function clearFormat(res) {
+				let text = res.content
+				if (text.match(/<\/sender>\s*<content>/))
+					text = (text.match(/<\/sender>\s*<content>([\S\s]*)/)?.[1] ?? text).split(new RegExp(
+						`(${(prompt_struct.alternative_charnames || []).map(Object).map(
+							s => s instanceof String ? escapeRegExp(s) : s.source
+						).join('|')})\\s*<\\/sender>\\s*<content>`
+					)).pop().split(/<\/content>\s*<\/message/).shift()
+				if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
+					text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
+				// 清理可能出现的不完整的结束标签
+				text = text.replace(/<\/content\s*$/, '').replace(/<\/message\s*$/, '').replace(/<\/\s*$/, '')
+				// 清理 declare 标签
+				text = text.replace(/<declare>[^]*?<\/declare>\s*$/, '').replace(/<declare>[^]*$/, '')
+				res.content = text
+				return res
+			}
+
 			const messages = margeStructPromptChatLog(prompt_struct).map(chatLogEntry => {
 				const uid = Math.random().toString(36).slice(2, 10)
 				const textContent = `\
@@ -622,27 +669,22 @@ ${chatLogEntry.content}
 					})
 			}
 
-			const result = await callBaseEx(messages)
-
-			let text = result.content
-
-			if (text.match(/<\/sender>\s*<content>/))
-				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1].split(new RegExp(
-					`(${(prompt_struct.alternative_charnames || []).map(Object).map(
-						stringOrReg => {
-							if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
-							return stringOrReg.source
-						}
-					).join('|')
-					})\\s*<\\/sender>\\s*<content>`
-				)).pop().split(/<\/content>\s*<\/message/).shift()
-			if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
-				text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
-
-			return {
-				...result,
-				content: text
+			const result = {
+				content: '',
+				files: base_result?.files || [],
 			}
+			const onProgress = replyPreviewUpdater
+				? chunk => {
+					result.content += chunk
+					replyPreviewUpdater(clearFormat({ ...result }))
+				}
+				: undefined
+
+			const final_result = await callBaseEx(messages, config.use_stream, onProgress, signal)
+			result.content = final_result.content
+			result.files.push(...final_result.files)
+
+			return Object.assign(base_result, clearFormat(result))
 		},
 		tokenizer: {
 			/**

@@ -224,7 +224,8 @@ const configTemplate = {
 	cookies: [],
 	convert_config: {
 		roleReminding: true
-	}
+	},
+	use_stream: true
 }
 
 /**
@@ -480,9 +481,34 @@ async function GetSource(config) {
 		/**
 		 * 使用结构化提示调用 AI 源。
 		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+		 * @param {import('../../../decl/AIsource.ts').GenerationOptions} [options] - 生成选项，包含基础结果、进度回调和中断信号。
 		 * @returns {Promise<{content: string}>} 来自 AI 的结果。
 		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
+		StructCall: async (prompt_struct, options = {}) => {
+			const { base_result, replyPreviewUpdater, signal } = options
+			/**
+			 * 清理 AI 响应的格式，移除 XML 标签和不完整的标记。
+			 * @param {object} res - 原始响应对象。
+			 * @param {string} res.content - 响应内容。
+			 * @returns {object} - 清理后的响应对象。
+			 */
+			function clearFormat(res) {
+				let text = res.content
+				if (text.match(/<\/sender>\s*<content>/))
+					text = (text.match(/<\/sender>\s*<content>([\S\s]*)/)?.[1] ?? text).split(new RegExp(
+						`(${(prompt_struct.alternative_charnames || []).map(Object).map(
+							s => s instanceof String ? escapeRegExp(s) : s.source
+						).join('|')})\\s*<\\/sender>\\s*<content>`
+					)).pop().split(/<\/content>\s*<\/message/).shift()
+				if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
+					text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
+				// 清理可能出现的不完整的结束标签
+				text = text.replace(/<\/content\s*$/, '').replace(/<\/message\s*$/, '').replace(/<\/\s*$/, '')
+				// 清理 declare 标签
+				text = text.replace(/<declare>[^]*?<\/declare>\s*$/, '').replace(/<declare>[^]*$/, '')
+				res.content = text
+				return res
+			}
 
 			const messages = []
 			margeStructPromptChatLog(prompt_struct).forEach(chatLogEntry => {
@@ -523,24 +549,20 @@ ${chatLogEntry.content}
 			}
 
 			const model = config.model || 'grok-3'
-			let text = await grok.call(messages, model)
-
-			if (text.match(/<\/sender>\s*<content>/))
-				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1].split(new RegExp(
-					`(${(prompt_struct.alternative_charnames || []).map(Object).map(
-						stringOrReg => {
-							if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
-							return stringOrReg.source
-						}
-					).join('|')
-					})\\s*<\\/sender>\\s*<content>`
-				)).pop().split(/<\/content>\s*<\/message/).shift()
-			if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
-				text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
-
-			return {
-				content: text,
+			const result = {
+				content: '',
+				files: base_result?.files || [],
 			}
+			const onProgress = replyPreviewUpdater
+				? chunk => {
+					result.content += chunk
+					replyPreviewUpdater(clearFormat({ ...result }))
+				}
+				: undefined
+
+			result.content = await grok.call(messages, model, config.use_stream, onProgress, signal)
+
+			return Object.assign(base_result, clearFormat(result))
 		},
 
 		tokenizer: {

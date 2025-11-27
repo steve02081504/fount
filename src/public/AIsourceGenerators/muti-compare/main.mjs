@@ -491,14 +491,16 @@ ${err.stack || err}
 		/**
 		 * 使用结构化提示调用 AI 源。
 		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+		 * @param {import('../../../decl/AIsource.ts').GenerationOptions} [options] - 生成选项，包含基础结果、进度回调和中断信号。
 		 * @returns {Promise<{content: string, files: any[]}>} 来自 AI 的结果。
 		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
+		StructCall: async (prompt_struct, options = {}) => {
 			if (!sources.length) throw new Error('no source selected')
 			const files = []
 			const results = await Promise.all(sources.map(source => {
 				const info = getPartInfo(source, getUserByUsername(username).locales)
-				return source.StructCall(prompt_struct).then(
+				const cloned_options = structuredClone(options)
+				return source.StructCall(prompt_struct, cloned_options).then(
 					result => {
 						let res = `\
 **${info.name} from ${info.provider}:**

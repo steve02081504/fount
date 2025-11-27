@@ -21,13 +21,13 @@ function escapeUnclosedTags(html) {
 	const stack = []
 	const indicesToEscape = new Set()
 
-	const tagRegex = /<(\/?)([a-zA-Z][a-zA-Z0-9-]*)\b((?:[^>"']|"[^"]*"|'[^']*')*?)\/?>/g
+	const tagRegex = /<(\/?)([A-Za-z][\dA-Za-z-]*)\b((?:[^"'>]|"[^"]*"|'[^']*')*?)\/?>/g
 
 	let match
 	while ((match = tagRegex.exec(html)) !== null) {
 		const isClosing = match[1] === '/'
 		const tagName = match[2].toLowerCase()
-		const index = match.index
+		const {index} = match
 		const isSelfClosing = match[0].trim().endsWith('/>')
 
 		if (VOID_TAGS.has(tagName) || isSelfClosing) continue
@@ -136,7 +136,7 @@ export function createDocumentFragmentFromHtmlString(htmlString) {
  */
 export function createDOMFromHtmlStringNoScriptActivation(htmlString) {
 	// 如果是完整文档，使用 DOMParser 以保留 html, head, body 结构
-	if (/^\s*<!DOCTYPE/i.test(htmlString) || /^\s*<html/i.test(htmlString)) {
+	if (/^\s*<!doctype/i.test(htmlString) || /^\s*<html/i.test(htmlString)) {
 		const parser = new DOMParser()
 		return parser.parseFromString(htmlString, 'text/html')
 	}
@@ -152,7 +152,7 @@ export function createDOMFromHtmlStringNoScriptActivation(htmlString) {
  */
 export function createDOMFromHtmlString(htmlString) {
 	// 如果是完整文档，使用 DOMParser 以保留 html, head, body 结构
-	if (/^\s*<!DOCTYPE/i.test(htmlString) || /^\s*<html/i.test(htmlString)) {
+	if (/^\s*<!doctype/i.test(htmlString) || /^\s*<html/i.test(htmlString)) {
 		const doc = createDOMFromHtmlStringNoScriptActivation(htmlString)
 		// 清理不需要的脚本
 		doc.querySelectorAll('script[src^="/___"]').forEach(oldScript => {
@@ -247,9 +247,9 @@ export async function renderTemplateAsHtmlString(template, data = {}) {
 	let node = await renderTemplateNoScriptActivation(template, data)
 	if (node.nodeType === Node.DOCUMENT_NODE) {
 		node = node.documentElement.outerHTML
-		node = node.replace(/[\s\n]*<\/body>[\s\n]*<\/html>$/i, '\n</body>\n\n</html>\n')
-		node = node.replace(/<html ([^>]*)>[\s\n]*<head>/i, '<html $1>\n\n<head>')
-		node = node.replace(/^[\s\n]*<html/i, '<!DOCTYPE html>\n<html')
+		node = node.replace(/\s*<\/body>\s*<\/html>$/i, '\n</body>\n\n</html>\n')
+		node = node.replace(/<html ([^>]*)>\s*<head>/i, '<html $1>\n\n<head>')
+		node = node.replace(/^\s*<html/i, '<!DOCTYPE html>\n<html')
 		return node
 	}
 	if (node.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {

@@ -367,32 +367,43 @@ export class GrokAPI {
 	 * @param {Array<object>} messages - 消息数组。
 	 * @param {string} model - 模型名称。
 	 * @param {boolean} stream - 是否是流式请求。
+	 * @param {Function} [onProgress] - 进度回调函数。
+	 * @param {AbortSignal} [signal] - 中断信号。
 	 * @returns {Promise<string>} 响应文本。
 	 */
-	async call(messages, model, stream = false) {
+	async call(messages, model, stream = false, onProgress, signal) {
 		const isThinkModel = model === 'grok-3-think'
 		const openaiRequest = { messages, model, stream }
 		const grokPayload = await this.convertToGrokFormat(openaiRequest)
-		const response = await this.makeGrokRequest(grokPayload, stream, 0, isThinkModel)
+		const response = await this.makeGrokRequest(grokPayload, stream, 0, isThinkModel, signal)
 		if (stream)
-			return this.handleStreamResponse(response, model)
-
+			return this.handleStreamResponse(response, model, onProgress, signal)
 		else
-			return this.handleNonStreamResponse(response, isThinkModel)
+			return this.handleNonStreamResponse(response, isThinkModel, signal)
 	}
 	/**
 	 * 处理流式响应。
 	 * @param {import('axios').AxiosResponse} response - Axios 响应。
 	 * @param {string} model - 模型名称。
+	 * @param {Function} [onProgress] - 进度回调函数。
+	 * @param {AbortSignal} [signal] - 中断信号。
 	 * @returns {Promise<string>} 响应文本。
 	 */
-	async handleStreamResponse(response, model) {
+	async handleStreamResponse(response, model, onProgress, signal) {
 		return new Promise((resolve, reject) => {
 			let buffer = ''
 			let fullResponse = ''
 			let thinkingBlockActive = false
 
-			response.data.on('data', chunk => {
+			const stream = response.data
+			if (signal)
+				signal.addEventListener('abort', () => {
+					stream.destroy(new Error('Aborted by user'))
+					reject(new Error('Aborted by user'))
+				})
+
+
+			stream.on('data', chunk => {
 				buffer += chunk.toString()
 				while (true) {
 					const newlineIndex = buffer.indexOf('\n')
@@ -405,28 +416,28 @@ export class GrokAPI {
 						if (line.startsWith('{"result":')) {
 							const data = JSON.parse(line)
 							if (data.result?.response?.token !== undefined) {
-								const { token, isThinking } = data.result.response
+								let { token, isThinking } = data.result.response
 								if (model === 'grok-3-think') {
-									// 当 token 为 thinking 且尚未输出开始标记时，先输出 <think> 标签
 									if (isThinking && !thinkingBlockActive) {
 										thinkingBlockActive = true
-										fullResponse += '\n<think>\n'
+										token = '\n<think>\n' + token
 									}
-									// 当 token 不为 thinking 且正在处于 thinking 块内，则先输出 </think> 标签
 									if (!isThinking && thinkingBlockActive) {
-										fullResponse += '\n</think>\n'
+										token = '\n</think>\n' + token
 										thinkingBlockActive = false
 									}
 								}
 								if (token === '' && data.result.response.isSoftStop)
-									continue //跳过
+									continue
 
 								fullResponse += token
+								if (onProgress) onProgress(token)
 							}
 							if (data.result?.response?.finalMetadata)
-								// 如果收到 finalMetadata 前仍处于 thinking 块中，则先输出关闭标签
 								if (model === 'grok-3-think' && thinkingBlockActive) {
-									fullResponse += '\n</think>\n'
+									const endToken = '\n</think>\n'
+									fullResponse += endToken
+									if (onProgress) onProgress(endToken)
 									thinkingBlockActive = false
 								}
 						}
@@ -436,9 +447,11 @@ export class GrokAPI {
 					}
 				}
 			})
-			response.data.on('end', async () => {
+			stream.on('end', async () => {
 				if (thinkingBlockActive) {
-					fullResponse += '\n</think>\n'
+					const endToken = '\n</think>\n'
+					fullResponse += endToken
+					if (onProgress) onProgress(endToken)
 					thinkingBlockActive = false
 				}
 				const cookie = await this.getNextCookie(true, model === 'grok-3-think')
@@ -447,7 +460,12 @@ export class GrokAPI {
 				resolve(fullResponse)
 			})
 
-			response.data.on('error', reject)
+			stream.on('error', err => {
+				if (err.message === 'Aborted by user')
+					resolve(fullResponse)
+				else
+					reject(err)
+			})
 		})
 	}
 	/**

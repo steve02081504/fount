@@ -23,8 +23,8 @@
  */
 
 /* eslint-disable curly */
-/* eslint-disable no-return-assign */
-// eslint-disable-next-line no-redeclare
+
+
 /* global GM, GM_info */
 
 // --- 辅助函数 ---
@@ -1102,7 +1102,7 @@ async function checkCspAndWarn() {
 			createScript: s => s
 		}
 
-		// eslint-disable-next-line no-eval
+
 		eval(policy.createScript('1'))
 	}
 	catch (e) {
