@@ -172,13 +172,17 @@ export default {
 				}
 				// 构建更新预览管线
 				args.generation_options ??= {}
-				let replyPreviewUpdater = args.generation_options?.replyPreviewUpdater
+				/**
+				 * 聊天回复预览更新管道。
+				 * @type {import('../../../../../src/public/shells/chat/decl/chatLog.ts').CharReplyPreviewUpdater_t}
+				 */
+				let replyPreviewUpdater = (args, r) => args.generation_options?.replyPreviewUpdater?.(r)
 				for (const GetReplyPreviewUpdater of [
 					...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.GetReplyPreviewUpdater)
 				].filter(Boolean))
 					replyPreviewUpdater = GetReplyPreviewUpdater(replyPreviewUpdater)
 
-				args.generation_options.replyPreviewUpdater = replyPreviewUpdater
+				args.generation_options.replyPreviewUpdater = r => replyPreviewUpdater(args, r)
 
 				// 在重新生成循环中检查插件触发
 				regen: while (true) {
@@ -274,13 +278,17 @@ function CharGenerator(reply, { AddLongTimeLog }) {
 				}
 				// 构建更新预览管线
 				args.generation_options ??= {}
-				let replyPreviewUpdater = args.generation_options?.replyPreviewUpdater
+				/**
+				 * 聊天回复预览更新管道。
+				 * @type {import('../../../../../src/public/shells/chat/decl/chatLog.ts').CharReplyPreviewUpdater_t}
+				 */
+				let replyPreviewUpdater = (args, r) => args.generation_options?.replyPreviewUpdater?.(r)
 				for (const GetReplyPreviewUpdater of [
 					...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.GetReplyPreviewUpdater)
 				].filter(Boolean))
 					replyPreviewUpdater = GetReplyPreviewUpdater(replyPreviewUpdater)
 
-				args.generation_options.replyPreviewUpdater = replyPreviewUpdater
+				args.generation_options.replyPreviewUpdater = r => replyPreviewUpdater(args, r)
 
 				// 在重新生成循环中检查插件触发
 				regen: while (true) {
@@ -801,9 +809,13 @@ fount有[discord群组](https://discord.gg/GtR9Quzq2v)，可以在那里找到�
 
 				// 构建更新预览管线
 				args.generation_options ??= {}
-				let replyPreviewUpdater = args.generation_options?.replyPreviewUpdater
+				/**
+				 * 聊天回复预览更新管道。
+				 * @type {import('../../../../../src/public/shells/chat/decl/chatLog.ts').CharReplyPreviewUpdater_t}
+				 */
+				let replyPreviewUpdater = (args, r) => args.generation_options?.replyPreviewUpdater?.(r)
 				for (const GetReplyPreviewUpdater of [
-					defineToolCalls(args, [
+					defineToolCalls([
 						{ start: '<get-tool-info>', end: '</get-tool-info>' },
 						{ start: /<generate-char[^>]*>/, end: '</generate-char>' },
 						{ start: /<generate-persona[^>]*>/, end: '</generate-persona>' },
@@ -812,7 +824,12 @@ fount有[discord群组](https://discord.gg/GtR9Quzq2v)，可以在那里找到�
 				].filter(Boolean))
 					replyPreviewUpdater = GetReplyPreviewUpdater(replyPreviewUpdater)
 
-				args.generation_options.replyPreviewUpdater = replyPreviewUpdater
+				/**
+				 * 更新回复预览。
+				 * @param {reply_chunk_t} r - 来自 AI 的回复块。
+				 * @returns {void}
+				 */
+				args.generation_options.replyPreviewUpdater = r => replyPreviewUpdater(args, r)
 
 				// 在重新生成循环中检查插件触发
 				regen: while (true) {

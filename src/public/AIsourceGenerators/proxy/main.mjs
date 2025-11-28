@@ -354,7 +354,7 @@ ${chatLogEntry.content}
 
 			const result = {
 				content: '',
-				files: [...base_result?.files],
+				files: [...base_result?.files || []],
 			}
 
 			/**

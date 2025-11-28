@@ -65,17 +65,16 @@ export function generateDiff(oldMessage, newMessage) {
 
 /**
  * 定义工具调用隐藏器。
- * @param {import('../decl/chatLog.ts').chatReplyRequest_t} args - 参数。
  * @param {{start: string|RegExp, end: string|RegExp}[]} toolPairs - 工具对数组。
- * @returns {import('../decl/chatLog.ts').GetReplyPreviewUpdater_t} - 回复预览更新器获取器。
+ * @returns {import('../decl/chatLog.ts').CharReplyPreviewUpdater_t} - 回复预览更新器获取器。
  */
-export function defineToolCalls(args, toolPairs) {
+export function defineToolCalls(toolPairs) {
 	const pattern = new RegExp(`(${toolPairs.map(pair => {
 		const start = pair.start instanceof RegExp ? pair.start.source : escapeRegExp(pair.start)
 		const end = pair.end instanceof RegExp ? pair.end.source : escapeRegExp(pair.end)
 		return `(?:${start})[\\s\\S]*?(?:(?:${end})|$)`
 	}).join('|')})`, 'g')
-	return (next) => (reply) => {
+	return (next) => (args, reply) => {
 		let { content } = reply
 		content = content.replace(pattern,
 			args.supported_functions.html ? `\
@@ -94,6 +93,6 @@ export function defineToolCalls(args, toolPairs) {
 					`(${geti18n('chat.messageView.commonToolCalling')})`
 		)
 		pattern.lastIndex = 0
-		next?.({ ...reply, content })
+		next?.(args, { ...reply, content })
 	}
 }

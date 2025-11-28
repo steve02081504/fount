@@ -170,7 +170,13 @@ export class chatLogEntry_t {
 export type chatLog_t = chatLogEntry_t[];
 
 /**
- * 定义了回复预览更新器的类型。
+ * 定义了角色处理中回复预览更新器的标准类型。
+ * @param {chatReply_t} reply - 聊天回复。
+ * @returns {void}
+ */
+export type CharReplyPreviewUpdater_t = (args: chatReplyRequest_t, reply: chatReply_t) => void
+/**
+ * 定义了最终AI源处理的回复预览更新器的类型。
  * @param {chatReply_t} reply - 聊天回复。
  * @returns {void}
  */

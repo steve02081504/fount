@@ -1,4 +1,4 @@
-import { chatReplyRequest_t, ReplyPreviewUpdater_t } from '../public/shells/chat/decl/chatLog.ts'
+import { chatReplyRequest_t, CharReplyPreviewUpdater_t } from '../public/shells/chat/decl/chatLog.ts'
 
 import { locale_t, info_t } from './basedefs.ts'
 import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts'
@@ -121,10 +121,10 @@ export class PluginAPI_t {
 
 			/**
 			 * 获取回复预览更新器。
-			 * @param {ReplyPreviewUpdater_t} [updater] - 上一个更新器。
-			 * @returns {ReplyPreviewUpdater_t} - 新的更新器。
+			 * @param {CharReplyPreviewUpdater_t} [updater] - 上一个更新器。
+			 * @returns {CharReplyPreviewUpdater_t} - 新的更新器。
 			 */
-			GetReplyPreviewUpdater?: (updater?: ReplyPreviewUpdater_t) => ReplyPreviewUpdater_t
+			GetReplyPreviewUpdater?: (updater?: CharReplyPreviewUpdater_t) => CharReplyPreviewUpdater_t
 		}
 	}
 }

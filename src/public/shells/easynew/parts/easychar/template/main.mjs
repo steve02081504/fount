@@ -185,13 +185,22 @@ export default {
 
 				// 构建更新预览管线
 				args.generation_options ??= {}
-				let replyPreviewUpdater = args.generation_options?.replyPreviewUpdater
+				/**
+				 * 聊天回复预览更新管道。
+				 * @type {import('../../../../../../src/public/shells/chat/decl/chatLog.ts').CharReplyPreviewUpdater_t}
+				 */
+				let replyPreviewUpdater = (args, r) => args.generation_options?.replyPreviewUpdater?.(r)
 				for (const GetReplyPreviewUpdater of [
 					...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.GetReplyPreviewUpdater)
 				].filter(Boolean))
 					replyPreviewUpdater = GetReplyPreviewUpdater(replyPreviewUpdater)
 
-				args.generation_options.replyPreviewUpdater = replyPreviewUpdater
+				/**
+				 * 更新回复预览。
+				 * @param {import('../../../../../../src/public/shells/chat/decl/chatLog.ts').chatLogEntry_t} r - 来自 AI 的回复块。
+				 * @returns {void}
+				 */
+				args.generation_options.replyPreviewUpdater = r => replyPreviewUpdater(args, r)
 
 				// 在重新生成循环中检查插件触发
 				regen: while (true) {
