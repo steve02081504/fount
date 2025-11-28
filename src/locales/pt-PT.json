@@ -1821,7 +1821,7 @@
 	},
 	"browser_integration_script": {
 		"update": {
-			"prompt": "Uma nova versão do script de integração do navegador FOUNT está disponível. A página de atualização está agora aberta?"
+			"prompt": "Uma nova versão do script de integração do navegador fount está disponível. A página de atualização está agora aberta?"
 		},
 		"csp_warning": "O script de integração do navegador da fount detecta que a política do CSP existe na página, o que pode fazer com que o script de integração não funcione corretamente. Por favor, considere instalar o plug -in para fechar o CSP.",
 		"hostChange": {
