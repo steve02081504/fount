@@ -195,7 +195,6 @@ startTutorialBtn.addEventListener('click', () => {
 		startMobileTutorial()
 	else
 		startMouseTutorial()
-
 })
 
 // 获取 URLSearchParams

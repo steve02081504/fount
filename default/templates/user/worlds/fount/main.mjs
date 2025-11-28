@@ -179,7 +179,7 @@ h'(0) = 1
 \\end{cases}
 $$
 
-Markdown、代码块、图表、数学公式在html标签中会失效，所以请以Markdown为主，只在需要表现力时使用html语法。
+Markdown、代码块、内联代码块、图表、数学公式在html标签中会失效，所以请以Markdown为主，只在需要表现力时使用html语法。
 `,
 							important: 0
 						}

@@ -455,7 +455,6 @@ export async function importAndSetTheme(themeData) {
 		await setCustomThemeNoUpdateUrl(themeData.name, themeData.css, themeData.mjs)
 	} else
 		await setTheme(themeData.name)
-
 }
 
 /**
@@ -525,7 +524,6 @@ window.addEventListener('focus', async () => {
 	const currentTheme = localStorage.getItem(STORAGE_KEY_THEME)
 	if (currentTheme && currentTheme !== theme_now)
 		await setTheme(currentTheme)
-
 })
 
 // ----------------------------------------------------------------------

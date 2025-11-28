@@ -739,7 +739,8 @@
 			"share": {
 				"uploading": "Đang tạo liên kết...",
 				"success": "Chia sẻ thành công! Đã sao chép liên kết vào bảng nhớ tạm. <br>Tính năng này được hỗ trợ bởi ${provider}. <br>[Tài trợ cho họ.](${sponsorLink})"
-			}
+			},
+			"commonToolCalling": "Đang gọi công cụ"
 		},
 		"messageEdit": {
 			"input": {
@@ -765,6 +766,9 @@
 					"alt": "Biểu tượng tải lên"
 				}
 			}
+		},
+		"messageGenerating": {
+			"stop": "Dừng"
 		},
 		"attachment": {
 			"buttons": {
@@ -1873,7 +1877,7 @@
 			"title": "thú cưng đang chạy",
 			"noPets": "Hiện tại không có thú cưng nào chạy.",
 			"buttons": {
-				"stop": "dừng lại"
+				"stop": "Dừng"
 			}
 		},
 		"toasts": {

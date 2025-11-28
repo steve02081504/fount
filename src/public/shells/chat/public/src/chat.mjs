@@ -1,12 +1,13 @@
 import { showToastI18n } from '../../../../../scripts/toast.mjs'
 
+
 import { initializeAchievements } from './achievements.mjs'
 import { addCharacter, setPersona, setWorld, addPlugin, getInitialData } from './endpoints.mjs'
 import { setupCss } from './ui/css.mjs'
 import { initializeMessageInput } from './ui/messageInput.mjs'
 import { setupSidebar, updateSidebar } from './ui/sidebar.mjs'
 import { initializeVirtualQueue } from './ui/virtualQueue.mjs'
-import { initializeWebSocket } from './websocket.mjs'
+import { sendWebsocketMessage, initializeWebSocket } from './websocket.mjs'
 
 // These are shared state used by the sidebar.
 // They will be updated by events from the websocket.
@@ -127,3 +128,23 @@ export async function initializeChat() {
 		}
 	})
 }
+
+/**
+ * 停止生成。
+ * @param {string} id - 消息 ID。
+ */
+export function stopGeneration(id) {
+	console.log('Stop generation for', id)
+	sendWebsocketMessage({
+		type: 'stop_generation',
+		payload: { messageId: id },
+	})
+	// UI change is now optimistic, backend will confirm by replacing the message or just stopping the stream.
+	const element = document.getElementById(id)
+	if (element) {
+		const stopButton = element.querySelector('.stop-generating-button')
+		if (stopButton) stopButton.remove()
+	}
+}
+
+

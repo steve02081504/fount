@@ -739,7 +739,8 @@
 			"share": {
 				"uploading": "Creazione collegamento...",
 				"success": "Condivisione riuscita! Link copiato negli appunti. <br>Questa funzionalità è supportata da ${provider}. <br>[Sostienili. ](${sponsorLink})"
-			}
+			},
+			"commonToolCalling": "Esecuzione strumento"
 		},
 		"messageEdit": {
 			"input": {
@@ -765,6 +766,9 @@
 					"alt": "Icona Carica"
 				}
 			}
+		},
+		"messageGenerating": {
+			"stop": "Stop"
 		},
 		"attachment": {
 			"buttons": {
@@ -1873,7 +1877,7 @@
 			"title": "animale domestico che corre",
 			"noPets": "Al momento non ci sono animali domestici in circolazione.",
 			"buttons": {
-				"stop": "fermare"
+				"stop": "Stop"
 			}
 		},
 		"toasts": {

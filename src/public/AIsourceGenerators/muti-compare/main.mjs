@@ -95,39 +95,83 @@ ${err.stack || err}
 			return results.join('\n')
 		},
 		/**
-		 * 使用结构化提示调用 AI 源。
-		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
-		 * @returns {Promise<{content: string, files: any[]}>} 来自 AI 的结果。
-		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
+	 * 使用结构化提示调用 AI 源。
+	 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+	 * @param {import('../../../decl/AIsource.ts').GenerationOptions} [options] - 生成选项。
+	 * @returns {Promise<{content: string, files: any[]}>} 来自 AI 的结果。
+	 */
+		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct, options = {}) => {
+			const { base_result = {}, replyPreviewUpdater, signal } = options
+
 			if (!sources.length) throw new Error('no source selected')
-			const files = []
-			const results = await Promise.all(sources.map(source => {
+
+			const allFiles = [...base_result?.files || []]
+			const sourceResults = sources.map(() => ({ content: '', files: [] }))
+
+			// 为每个源创建子 updater
+			/**
+			 * 为每个源创建子 updater
+			 * @param {number} index - 源的索引
+			 * @returns {((subResult: {content: string, files: any[]}) => void) | undefined} - 子 updater 函数或 undefined
+			 */
+			const createSubUpdater = (index) => {
+				if (!replyPreviewUpdater) return undefined
+
+				return (subResult) => {
+					// 更新这个源的结果
+					sourceResults[index] = { ...subResult }
+
+					// 重新构建完整的比较字符串
+					const comparisonParts = sourceResults.map((result, i) => {
+						const info = getPartInfo(sources[i], getUserByUsername(username).locales)
+						if (!result.content) return ''
+
+						let part = `**${info.name} from ${info.provider}:**\n${result.content}\n`
+						if (result.files?.length) {
+							const fileStart = allFiles.length + sourceResults.slice(0, i).reduce((sum, r) => sum + (r.files?.length || 0), 0)
+							const fileEnd = fileStart + result.files.length
+							part += `\nfiles ${fileStart} - ${fileEnd}\n`
+						}
+						return part
+					}).filter(Boolean)
+
+					// 调用真正的 updater
+					replyPreviewUpdater({
+						content: comparisonParts.join('\n'),
+						files: [...allFiles, ...sourceResults.flatMap(r => r.files || [])]
+					})
+				}
+			}
+
+			// 并行调用所有源
+			const results = await Promise.all(sources.map((source, index) => {
 				const info = getPartInfo(source, getUserByUsername(username).locales)
-				return source.StructCall(prompt_struct).then(
+				const subBaseResult = { files: [] }
+				const subUpdater = createSubUpdater(index)
+
+				return source.StructCall(prompt_struct, {
+					base_result: subBaseResult,
+					replyPreviewUpdater: subUpdater,
+					signal
+				}).then(
 					result => {
-						let res = `\
-**${info.name} from ${info.provider}:**
-${result.content}
-`
-						if (result.files.length) {
-							res += `\nfiles ${files.length} - ${files.length + result.files.length}\n`
-							files.push(...result.files)
+						allFiles.push(...result.files || [])
+						let res = `**${info.name} from ${info.provider}:**\n${result.content}\n`
+						if (result.files?.length) {
+							const fileStart = allFiles.length - result.files.length
+							const fileEnd = allFiles.length
+							res += `\nfiles ${fileStart} - ${fileEnd}\n`
 						}
 						return res
 					},
-					err => `\
-**${info.name} from ${info.provider} error:**
-\`\`\`
-${err.stack || err}
-\`\`\`
-`
+					err => `**${info.name} from ${info.provider} error:**\n\`\`\`\n${err.stack || err}\n\`\`\`\n`
 				)
 			}))
-			return {
+
+			return Object.assign(base_result, {
 				content: results.join('\n'),
-				files
-			}
+				files: allFiles
+			})
 		},
 		tokenizer: {
 			/**

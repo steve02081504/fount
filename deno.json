@@ -8,5 +8,12 @@
 		"npm:@steve02081504/virtual-console": "npm:@steve02081504/virtual-console@^0.0.6",
 		"npm:on-shutdown": "npm:on-shutdown@^0.0.1",
 		"npm:fs-extra": "npm:fs-extra@^11.3.2"
+	},
+	"lint": {
+		"exclude": [
+			"src/pages/",
+			".github/pages/",
+			"src/public/shells/*/public/**"
+		]
 	}
 }

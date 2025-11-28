@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import { createMCPClient } from '../../../../../src/public/ImportHandlers/MCP/engine/mcp_client.mjs'
+import { defineToolUseBlocks } from '../../../../../src/public/shells/chat/src/stream.mjs'
 import { saveJsonFile } from '../../../../../src/scripts/json_loader.mjs'
 import { loadAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
 
@@ -226,13 +227,18 @@ export default {
 		chat: {
 			/**
 			 * 获取 Prompt
-			 * @param {object} _arg - 上下文参数
+			 * @param {object} args - 上下文参数
 			 * @returns {Promise<object>} Prompt 结构
 			 */
-			GetPrompt: async (_arg) => ({
-				text: [{ content: await getDesc(), important: 0 }],
+			GetPrompt: async (args) => ({
+				text: [{ content: await getDesc(args), important: 0 }],
 				additional_chat_log: [], extension: {}
 			}),
+			GetReplyPreviewUpdater: defineToolUseBlocks([
+				{ start: /<mcp-tool[^>]*>/, end: '</mcp-tool>' },
+				{ start: /<mcp-prompt[^>]*>/, end: '</mcp-prompt>' },
+				{ start: /<mcp-resource[^>]*/, end: '\\>' }
+			]),
 			/**
 			 * 处理回复
 			 * @param {object} reply - 回复对象

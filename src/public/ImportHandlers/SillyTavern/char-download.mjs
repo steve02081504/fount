@@ -188,7 +188,6 @@ async function downloadRisuCharacter(uuid) {
 	if (!result.ok)
 		throw new Error(`RisuAI download failed: ${result.status} ${await result.text()}`)
 
-
 	return result.arrayBuffer()
 }
 

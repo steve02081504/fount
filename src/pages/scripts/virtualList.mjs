@@ -67,7 +67,7 @@ export function createVirtualList({
 
 	/**
 	 * 获取加载锁，确保只有一个请求在进行中。
-	 * @returns {Promise<void>} 加载锁
+	 * @returns {Promise<void>} - 加载锁的 Promise。
 	 */
 	async function getMutex() {
 		while (state.isLoading) await new Promise((resolve) => setTimeout(resolve, 100))

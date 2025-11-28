@@ -739,7 +739,8 @@
 			"share": {
 				"uploading": "링크 생성 중...",
 				"success": "공유 완료! 링크가 클립보드에 복사되었습니다. <br>이 기능은 ${provider}에서 지원합니다. <br>[후원하기.](${sponsorLink})"
-			}
+			},
+			"commonToolCalling": "도구 호출 중"
 		},
 		"messageEdit": {
 			"input": {
@@ -765,6 +766,9 @@
 					"alt": "업로드 아이콘"
 				}
 			}
+		},
+		"messageGenerating": {
+			"stop": "중지"
 		},
 		"attachment": {
 			"buttons": {
@@ -1873,7 +1877,7 @@
 			"title": "달리는 애완동물",
 			"noPets": "현재 운영중인 애완동물이 없습니다.",
 			"buttons": {
-				"stop": "멈추다"
+				"stop": "중지"
 			}
 		},
 		"toasts": {

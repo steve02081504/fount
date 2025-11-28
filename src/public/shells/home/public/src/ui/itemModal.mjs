@@ -70,7 +70,6 @@ export async function showItemModal(part) {
 		const tiltEl = itemModalContent.querySelector('.modal-image-wrapper')
 		if (tiltEl && tiltEl.vanillaTilt)
 			tiltEl.vanillaTilt.destroy()
-
 	}, { once: true })
 
 	const actionsContainer = modalView.querySelector('.modal-actions-container')

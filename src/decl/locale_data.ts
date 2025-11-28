@@ -729,6 +729,7 @@ export type LocaleData = {
 				uploading: string
 				success: string
 			}
+			commonToolCalling: string
 		}
 		messageEdit: {
 			input: {
@@ -754,6 +755,9 @@ export type LocaleData = {
 					alt: string
 				}
 			}
+		}
+		messageGenerating: {
+			stop: string
 		}
 		attachment: {
 			buttons: {

@@ -42,6 +42,7 @@ const configTemplate = {
 		temperature: 1,
 		num_predict: -1, // -1 for infinite
 	},
+	use_stream: true,
 	system_prompt_at_depth: 10,
 	convert_config: {
 		roleReminding: true
@@ -83,11 +84,14 @@ async function GetSource(config) {
 			}
 		},
 		/**
-		 * 使用结构化提示调用 AI 源。
-		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
-		 * @returns {Promise<{content: string, files: any[]}>} 来自 AI 的结果。
-		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
+	 * 使用结构化提示调用 AI 源。
+	 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+	 * @param {import('../../../decl/AIsource.ts').GenerationOptions} [options] - 生成选项。
+	 * @returns {Promise<{content: string, files: any[]}>} 来自 AI 的结果。
+	 */
+		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct, options = {}) => {
+			const { base_result = {}, replyPreviewUpdater, signal } = options
+
 			const messages = margeStructPromptChatLog(prompt_struct).map(chatLogEntry => {
 				const images = (chatLogEntry.files || [])
 					.filter(file => file.mime_type && file.mime_type.startsWith('image/'))
@@ -113,7 +117,6 @@ async function GetSource(config) {
 					messages.splice(Math.max(messages.length - config.system_prompt_at_depth, 0), 0, systemMessage)
 				else
 					messages.unshift(systemMessage)
-
 			}
 
 
@@ -126,21 +129,62 @@ async function GetSource(config) {
 					})
 			}
 
-			let response_text = ''
-			const response_files = []
-
-			const response = await ollama.chat({
-				model: config.model,
-				messages,
-				stream: false,
-				options: config.model_arguments
-			})
-			response_text = response.message.content
-
-			return {
-				content: response_text,
-				files: response_files
+			const result = {
+				content: '',
+				files: [...base_result?.files || []],
 			}
+
+			/**
+			 * 预览更新器
+			 * @param {{content: string, files: any[]}} r - 结果对象
+			 * @returns {void}
+			 */
+			const previewUpdater = r => replyPreviewUpdater?.(r)
+
+			// Check for abort before starting
+			if (signal?.aborted) {
+				const err = new Error('Aborted by user')
+				err.name = 'AbortError'
+				throw err
+			}
+
+			// Use streaming based on config
+			const useStream = (config.use_stream ?? true) && !!replyPreviewUpdater
+
+			if (useStream) {
+				// Use ollama's streaming support
+				const stream = await ollama.chat({
+					model: config.model,
+					messages,
+					stream: true,
+					options: config.model_arguments
+				})
+
+				for await (const chunk of stream) {
+					if (signal?.aborted) {
+						const err = new Error('Aborted by user')
+						err.name = 'AbortError'
+						throw err
+					}
+
+					if (chunk.message?.content) {
+						result.content += chunk.message.content
+						previewUpdater(result)
+					}
+				}
+			} else {
+				// Use non-streaming mode
+				const response = await ollama.chat({
+					model: config.model,
+					messages,
+					stream: false,
+					options: config.model_arguments
+				})
+				result.content = response.message.content
+				previewUpdater(result)
+			}
+
+			return Object.assign(base_result, result)
 		},
 		tokenizer: {
 			/**

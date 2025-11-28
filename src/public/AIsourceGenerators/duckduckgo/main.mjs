@@ -30,6 +30,7 @@ export default {
 const configTemplate = {
 	name: 'DuckDuckGo',
 	model: 'gpt-4o-mini',
+	use_stream: true,
 	convert_config: {
 		roleReminding: true
 	}
@@ -80,9 +81,12 @@ async function GetSource(config) {
 		/**
 		 * 使用结构化提示调用 AI 源。
 		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+		 * @param {import('../../../decl/AIsource.ts').GenerationOptions} [options] - 生成选项。
 		 * @returns {Promise<{content: string}>} 来自 AI 的结果。
 		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
+		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct, options = {}) => {
+			const { base_result = {}, replyPreviewUpdater, signal } = options
+
 			const messages = []
 			margeStructPromptChatLog(prompt_struct).forEach(chatLogEntry => {
 				const uid = Math.random().toString(36).slice(2, 10)
@@ -120,25 +124,106 @@ ${chatLogEntry.content}
 					})
 			}
 
-			const model = config.model || 'gpt-4o-mini'
-			let text = await duckduckgo.call(messages, model)
-
-			if (text.match(/<\/sender>\s*<content>/))
-				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1].split(new RegExp(
-					`(${(prompt_struct.alternative_charnames || []).map(Object).map(
-						stringOrReg => {
-							if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
-							return stringOrReg.source
-						}
-					).join('|')
-					})\\s*<\\/sender>\\s*<content>`
-				)).pop().split(/<\/content>\s*<\/message/).shift()
-			if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
-				text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
-
-			return {
-				content: text,
+			/**
+			 * 清理 AI 响应的格式，移除 XML 标签和不完整的标记。
+			 * @param {object} res - 原始响应对象。
+			 * @param {string} res.content - 响应内容。
+			 * @returns {object} - 清理后的响应对象。
+			 */
+			function clearFormat(res) {
+				let text = res.content
+				if (text.match(/<\/sender>\s*<content>/))
+					text = (text.match(/<\/sender>\s*<content>([\S\s]*)/)?.[1] ?? text).split(new RegExp(
+						`(${(prompt_struct.alternative_charnames || []).map(Object).map(
+							s => s instanceof String ? escapeRegExp(s) : s.source
+						).join('|')})\\s*<\\/sender>\\s*<content>`
+					)).pop().split(/<\/content>\s*<\/message/).shift()
+				if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
+					text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
+				// 清理可能出现的不完整的结束标签
+				text = text.replace(/<\/content\s*$/, '').replace(/<\/message\s*$/, '').replace(/<\/\s*$/, '')
+				res.content = text
+				return res
 			}
+
+			const result = {
+				content: '',
+				files: [...base_result?.files || []],
+			}
+
+			/**
+			 * 预览更新器
+			 * @param {{content: string, files: any[]}} r - 结果对象
+			 * @returns {void}
+			 */
+			const previewUpdater = r => replyPreviewUpdater?.(clearFormat({ ...r }))
+
+			// Check for abort before starting
+			if (signal?.aborted) {
+				const err = new Error('Aborted by user')
+				err.name = 'AbortError'
+				throw err
+			}
+
+			const model = config.model || 'gpt-4o-mini'
+
+			// Use streaming based on config
+			const useStream = (config.use_stream ?? true) && !!replyPreviewUpdater
+			const response = await duckduckgo.call(messages, model, useStream, signal)
+
+			if (useStream) {
+				// Handle streaming response
+				const reader = response.body.getReader()
+				const decoder = new TextDecoder()
+
+				try {
+					while (true) {
+						if (signal?.aborted) {
+							reader.cancel()
+							const err = new Error('Aborted by user')
+							err.name = 'AbortError'
+							throw err
+						}
+
+						const { done, value } = await reader.read()
+						if (done) break
+
+						const chunk = decoder.decode(value, { stream: true })
+						const lines = chunk.split('\n')
+
+						for (const line of lines)
+							if (line.startsWith('data: ')) {
+								const data = line.slice(6)
+								if (data === '[DONE]') continue
+
+								try {
+									const json = JSON.parse(data)
+									const content = json.choices?.[0]?.delta?.content
+									if (content) {
+										result.content += content
+										previewUpdater(result)
+									}
+								} catch (e) {
+									// Skip invalid JSON
+								}
+							}
+					}
+				} finally {
+					reader.releaseLock()
+				}
+			} else {
+				// Handle non-streaming response
+				const text = await response.text()
+				try {
+					const json = JSON.parse(text)
+					result.content = json.choices?.[0]?.message?.content || text
+				} catch {
+					result.content = text
+				}
+				previewUpdater(result)
+			}
+
+			return Object.assign(base_result, clearFormat(result))
 		},
 
 		tokenizer: {

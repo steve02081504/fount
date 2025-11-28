@@ -739,7 +739,8 @@
 			"share": {
 				"uploading": "Création du lien...",
 				"success": "Partage réussi ! Lien copié dans le presse-papiers. <br>Cette fonctionnalité est prise en charge par ${provider}. <br>[Parrainez-les.](${sponsorLink})"
-			}
+			},
+			"commonToolCalling": "Appel de l'outil"
 		},
 		"messageEdit": {
 			"input": {
@@ -765,6 +766,9 @@
 					"alt": "Icône Importer"
 				}
 			}
+		},
+		"messageGenerating": {
+			"stop": "Arrêter"
 		},
 		"attachment": {
 			"buttons": {
@@ -1873,7 +1877,7 @@
 			"title": "animal de compagnie qui court",
 			"noPets": "Il n'y a actuellement aucun animal en cours d'exécution.",
 			"buttons": {
-				"stop": "arrêt"
+				"stop": "Arrêter"
 			}
 		},
 		"toasts": {

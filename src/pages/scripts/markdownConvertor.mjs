@@ -420,20 +420,20 @@ const button = this
 	try {
 		await navigator.clipboard.writeText(document.querySelector('#${uniqueId} pre').innerText)
 		${isStandalone
-			? `tooltip.setAttribute('data-tip', '${geti18n('code_block.copied.dataset.tip')}')`
-			: 'tooltip.setAttribute(\'data-i18n\', \'code_block.copied\')'
+						? `tooltip.setAttribute('data-tip', '${geti18n('code_block.copied.dataset.tip')}')`
+						: 'tooltip.setAttribute(\'data-i18n\', \'code_block.copied\')'
 }
 		button.innerHTML = ${JSON.stringify(successIconSized)}
 	} catch (e) {
 		${isStandalone
-			? 'alert(\'Failed to copy: \' + e.message)'
-			: 'const { showToastI18n } = await import(\'/scripts/toast.mjs\'); showToastI18n(\'error\', \'code_block.copy_failed\', { error: e.message })'
+						? 'alert(\'Failed to copy: \' + e.message)'
+						: 'const { showToastI18n } = await import(\'/scripts/toast.mjs\'); showToastI18n(\'error\', \'code_block.copy_failed\', { error: e.message })'
 }
 	}
 	setTimeout(() => {
 		${isStandalone
-			? `tooltip.setAttribute('data-tip', '${geti18n('code_block.copy.dataset.tip')}')`
-			: 'tooltip.setAttribute(\'data-i18n\', \'code_block.copy\')'
+						? `tooltip.setAttribute('data-tip', '${geti18n('code_block.copy.dataset.tip')}')`
+						: 'tooltip.setAttribute(\'data-i18n\', \'code_block.copy\')'
 }
 		button.innerHTML = ${JSON.stringify(copyIconSized)}
 	}, 2000)
@@ -505,13 +505,13 @@ navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
 	btn.innerHTML = \${JSON.stringify(successSvg)}
 	setTimeout(() => btn.innerHTML = \${JSON.stringify(copySvg)}, 2000)
 	${isStandalone
-			? `btn.parentElement.setAttribute('data-tip', decodeURIComponent(${JSON.stringify(encodeURIComponent(geti18n('code_block.copied.dataset.tip')))}))`
-			: 'btn.parentElement.setAttribute(\'data-i18n\', \'code_block.copied\')'
+							? `btn.parentElement.setAttribute('data-tip', decodeURIComponent(${JSON.stringify(encodeURIComponent(geti18n('code_block.copied.dataset.tip')))}))`
+							: 'btn.parentElement.setAttribute(\'data-i18n\', \'code_block.copied\')'
 }
 }).catch(error => {
 	${isStandalone
-			? 'alert(\'Failed to copy: \' + error.message)'
-			: 'import(\'/scripts/toast.mjs\').then(({ showToastI18n }) => showToastI18n(\'error\', \'code_block.copy_failed\', { error: error.message }))'
+							? 'alert(\'Failed to copy: \' + error.message)'
+							: 'import(\'/scripts/toast.mjs\').then(({ showToastI18n }) => showToastI18n(\'error\', \'code_block.copy_failed\', { error: error.message }))'
 }
 })
 \`

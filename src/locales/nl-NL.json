@@ -739,7 +739,8 @@
 			"share": {
 				"uploading": "Link maken...",
 				"success": "Delen gelukt! Link gekopieerd naar klembord. <br>Deze functie wordt mogelijk gemaakt door ${provider}. <br>[Sponsor ze.](${sponsorLink})"
-			}
+			},
+			"commonToolCalling": "Tool aanroepen"
 		},
 		"messageEdit": {
 			"input": {
@@ -765,6 +766,9 @@
 					"alt": "Uploadpictogram"
 				}
 			}
+		},
+		"messageGenerating": {
+			"stop": "Stop"
 		},
 		"attachment": {
 			"buttons": {
@@ -1873,7 +1877,7 @@
 			"title": "rennend huisdier",
 			"noPets": "Er lopen momenteel geen huisdieren.",
 			"buttons": {
-				"stop": "stop"
+				"stop": "Stop"
 			}
 		},
 		"toasts": {

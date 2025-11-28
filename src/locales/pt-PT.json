@@ -739,7 +739,8 @@
 			"share": {
 				"uploading": "A criar ligação...",
 				"success": "Partilhado com sucesso! Ligação copiada para a área de transferência. <br>Esta funcionalidade é suportada por ${provider}. <br>[Patrocine-os.](${sponsorLink})"
-			}
+			},
+			"commonToolCalling": "A chamar ferramenta"
 		},
 		"messageEdit": {
 			"input": {
@@ -765,6 +766,9 @@
 					"alt": "Ícone de Carregamento"
 				}
 			}
+		},
+		"messageGenerating": {
+			"stop": "Parar"
 		},
 		"attachment": {
 			"buttons": {
@@ -1873,7 +1877,7 @@
 			"title": "animal de estimação correndo",
 			"noPets": "Atualmente não há animais de estimação em execução.",
 			"buttons": {
-				"stop": "parar"
+				"stop": "Parar"
 			}
 		},
 		"toasts": {

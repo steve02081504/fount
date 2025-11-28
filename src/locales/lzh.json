@@ -739,7 +739,8 @@
 			"share": {
 				"uploading": "鏈結正製...",
 				"success": "分享已成！鏈結已入剪貼板。<br>此功由 ${provider} 所助。<br>[資助之。](${sponsorLink})"
-			}
+			},
+			"commonToolCalling": "方召工具"
 		},
 		"messageEdit": {
 			"input": {
@@ -765,6 +766,9 @@
 					"alt": "傳"
 				}
 			}
+		},
+		"messageGenerating": {
+			"stop": "止"
 		},
 		"attachment": {
 			"buttons": {

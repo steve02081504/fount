@@ -81,6 +81,8 @@ export class chatReplyRequest_t {
 		unsafe_html: boolean;
 		files: boolean;
 		add_message: boolean;
+		fount_i18nkeys: boolean;
+		fount_assets: boolean;
 	}
 	chat_name: string
 	char_id: string
@@ -101,11 +103,13 @@ export class chatReplyRequest_t {
 	chat_summary: string
 	chat_scoped_char_memory: object
 	extension: object
+	generation_options?: GenerationOptions_t
 }
 
 /**
  * @class chatLogEntry_t
  * 聊天日志条目的数据结构。
+ * @property {string} id - 永久唯一标识符 (UUID v4)。
  * @property {string} name - 名称。
  * @property {string} avatar - 头像 URL。
  * @property {timeStamp_t} time_stamp - 时间戳。
@@ -113,6 +117,7 @@ export class chatReplyRequest_t {
  * @property {string} content - 内容。
  * @property {string} [content_for_show] - 用于显示的内容。
  * @property {string} [content_for_edit] - 用于编辑的内容。
+ * @property {boolean} [is_generating] - 标记此消息是否仍在生成中。
  * @property {object[]} files - 文件。
  * @property {string} files[].name - 文件名。
  * @property {string} files[].mime_type - 文件的 MIME 类型。
@@ -130,6 +135,7 @@ export class chatReplyRequest_t {
  * @property {UserAPI_t} extension.timeSlice.player - 玩家。
  */
 export class chatLogEntry_t {
+	id: string
 	name: string
 	avatar: string
 	time_stamp: timeStamp_t
@@ -137,6 +143,7 @@ export class chatLogEntry_t {
 	content: string
 	content_for_show?: string
 	content_for_edit?: string
+	is_generating?: boolean
 	files: {
 		name: string;
 		mime_type: string;
@@ -161,3 +168,35 @@ export class chatLogEntry_t {
  * 聊天日志。
  */
 export type chatLog_t = chatLogEntry_t[];
+
+/**
+ * 定义了角色处理中回复预览更新器的标准类型。
+ * @param {chatReply_t} reply - 聊天回复。
+ * @returns {void}
+ */
+export type CharReplyPreviewUpdater_t = (args: chatReplyRequest_t, reply: chatReply_t) => void
+/**
+ * 定义了最终AI源处理的回复预览更新器的类型。
+ * @param {chatReply_t} reply - 聊天回复。
+ * @returns {void}
+ */
+export type ReplyPreviewUpdater_t = (reply: chatReply_t) => void
+
+/**
+ * @class GenerationOptions_t
+ * 定义了生成时可以传递的选项。
+ */
+export class GenerationOptions_t {
+	replyPreviewUpdater?: ReplyPreviewUpdater_t
+	signal?: AbortSignal
+	base_result?: {
+		content: string,
+		files: {
+			name: string
+			mime_type: string
+			buffer: Buffer,
+			description: string
+		}[],
+		extension?: object
+	}
+}

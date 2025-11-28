@@ -739,7 +739,8 @@
 			"share": {
 				"uploading": "正在创建链接...",
 				"success": "分享成功！链接已复制到剪贴板。<br>此功能由 ${provider} 提供支持。<br>[赞助他们。](${sponsorLink})"
-			}
+			},
+			"commonToolCalling": "正在调用工具"
 		},
 		"messageEdit": {
 			"input": {
@@ -765,6 +766,9 @@
 					"alt": "上传图标"
 				}
 			}
+		},
+		"messageGenerating": {
+			"stop": "停止"
 		},
 		"attachment": {
 			"buttons": {

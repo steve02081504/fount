@@ -739,7 +739,8 @@
 			"share": {
 				"uploading": "جارٍ إنشاء الرابط...",
 				"success": "تمت المشاركة بنجاح! تم نسخ الرابط إلى الحافظة. <br>هذه الميزة مدعومة من ${provider}. <br>[رعايتهم.](${sponsorLink})"
-			}
+			},
+			"commonToolCalling": "جارٍ استدعاء الأداة"
 		},
 		"messageEdit": {
 			"input": {
@@ -765,6 +766,9 @@
 					"alt": "أيقونة الرفع"
 				}
 			}
+		},
+		"messageGenerating": {
+			"stop": "إيقاف"
 		},
 		"attachment": {
 			"buttons": {
@@ -1873,7 +1877,7 @@
 			"title": "تشغيل الحيوانات الأليفة",
 			"noPets": "لا يوجد حاليا أي حيوانات أليفة تعمل.",
 			"buttons": {
-				"stop": "قف"
+				"stop": "إيقاف"
 			}
 		},
 		"toasts": {

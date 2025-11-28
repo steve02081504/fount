@@ -233,7 +233,6 @@ async function hydrateChatListItem(chatElement, chat) {
 				if (index > -1) fullChatList.splice(index, 1)
 				filterInput.dispatchEvent(new Event('input'))
 			} else showToast('error', data[0].message)
-
 		} catch (error) {
 			console.error('Error deleting chat:', error)
 			showToastI18n('error', 'chat_history.alerts.deleteError')

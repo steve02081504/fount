@@ -72,7 +72,6 @@ async function decrypt(encryptedJson, secret) {
 			throw new Error('Decryption resulted in empty or invalid plaintext.')
 
 		return plaintext
-
 	}
 	catch (e) {
 		console.error('Decryption failed:', e)
@@ -142,7 +141,6 @@ export async function receiveAndValidateEncryptedCredentials(fileId, from, hashP
 			const parsed = JSON.parse(encryptedData)
 			if (!parsed.iv || !parsed.content)
 				throw new Error('Invalid encrypted data format: missing iv or content fields.')
-
 		}
 		catch (e) {
 			throw new Error(`Invalid encrypted data format: not a valid JSON object. ${e.message}`)

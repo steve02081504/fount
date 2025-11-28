@@ -86,8 +86,6 @@ class UserPageManager {
 		for (const ws of this.uiSockets)
 			if (ws.readyState === ws.OPEN)
 				ws.send(message)
-
-
 	}
 
 	/**

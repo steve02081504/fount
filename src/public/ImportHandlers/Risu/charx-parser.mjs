@@ -76,6 +76,5 @@ export async function unzipCharx(zipBuffer) {
 		}
 	}
 
-
 	return { card, assets, moduleData, mainImage: mainImageBuffer }
 }

@@ -195,7 +195,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 				 * @returns {object} - 聊天回复请求。
 				 */
 				const generateChatReplyRequest = () => ({
-					supported_functions: { markdown: true, files: true, add_message: true, html: false, unsafe_html: false },
+					supported_functions: { markdown: true, files: true, add_message: true },
 					username: ownerUsername,
 					// chat_name 可以包含分区信息
 					chat_name: ctx.chat.type === 'private' ?

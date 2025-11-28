@@ -1,5 +1,7 @@
 import { Buffer } from 'node:buffer'
 
+import { ReplyPreviewUpdater_t } from '../public/shells/chat/decl/chatLog.ts'
+
 import { role_t, timeStamp_t } from './basedefs.ts'
 
 /**
@@ -152,4 +154,8 @@ export interface prompt_struct_t {
 	 * 扩展对象。
 	 */
 	extension?: object
+	/**
+	 * 回复预览更新器。
+	 */
+	ReplyPreviewUpdater?: ReplyPreviewUpdater_t
 }

@@ -123,8 +123,6 @@ class ClewdSimulation {
 				// 如果检测到 impersonation 且 PreventImperson 为 true, 截断
 				response.completion = response.completion.split(/Human:|Assistant:/)[0].trim()
 
-
-
 		return response
 	}
 }
