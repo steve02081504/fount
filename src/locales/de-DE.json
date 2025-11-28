@@ -1828,7 +1828,7 @@
 			"securityWarningTitle": "--- fount Sicherheitswarnung ---",
 			"message": "Die aktuelle Seite (\"${origin}\") versucht, Ihre fount -Host -Adresse in:\n\n\"${newHost}\"\n\nWARNUNG: Die Genehmigung dieser Aktion ermöglicht es dem neuen Host, Ihre Browser -Integrationsfunktionen vollständig zu steuern, was zu einem sensiblen Informationen oder dem Kontodiebstahl führen kann.\nDie Genehmigung sollte nur erfolgen, wenn Sie sicher sind, dass dies Ihr eigener Vorgang ist (z. B. migrieren Sie einen fount -Server).\n\nSind Sie sicher, dass Sie diese Änderung zulassen möchten?",
 			"uuidMismatchError": "fount -Sicherheitsfehler: Die Identität (UUID) von Host ${newHost} stimmt nicht mit Ihrem vorhandenen überein. Die Operation wurde storniert.",
-			"verificationError": "FOUNT -Sicherheitsfehler: Der neue Host \"${newHost}\" kann nicht verifiziert werden. Bitte überprüfen Sie, ob die Adresse korrekt ist und ob der Dienst ausgeführt wird."
+			"verificationError": "fount -Sicherheitsfehler: Der neue Host \"${newHost}\" kann nicht verifiziert werden. Bitte überprüfen Sie, ob die Adresse korrekt ist und ob der Dienst ausgeführt wird."
 		}
 	},
 	"terminal_assistant": {
