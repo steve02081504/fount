@@ -106,38 +106,55 @@ export function defineInlineToolUses(toolDefs) {
 	return (next) => async (args, reply) => {
 		args.extension ??= {}
 		args.extension.streamInlineToolsResults ??= {}
-
-		const { content } = reply
+		const cacheMap = args.extension.streamInlineToolsResults
 
 		for (const [id, start, end, exec] of toolDefs) {
-			args.extension.streamInlineToolsResults[id] ??= []
-			const cache = args.extension.streamInlineToolsResults[id]
+			cacheMap[id] ??= []
+			const cache = cacheMap[id]
 
-			const startPattern = start instanceof RegExp ? start.source : escapeRegExp(start)
-			const endPattern = end instanceof RegExp ? end.source : escapeRegExp(end)
-			const pattern = new RegExp(`(?:${startPattern})([\\s\\S]*?)(?:(?:${endPattern})|$)`, 'g')
+			const sPattern = start instanceof RegExp ? start.source : escapeRegExp(start)
+			const ePattern = end instanceof RegExp ? end.source : escapeRegExp(end)
 
-			let index = 0
-			const matches = [...content.matchAll(pattern)]
+			// 使用非贪婪匹配 (matchAll) 确保找到所有闭合的对
+			const completeRgx = new RegExp(`(?:${sPattern})([\\s\\S]*?)(?:${ePattern})`, 'g')
+			const matches = [...reply.content.matchAll(completeRgx)]
 
-			// 处理每个匹配
-			for (const match of matches) {
-				const matchedContent = match[1]
+			const promises = []
+			for (let i = 0; i < matches.length; i++) {
+				if (cache[i] === undefined)
+					try {
+						const matchedContent = matches[i][1]
+						cache[i] = exec(matchedContent)
+					} catch (error) {
+						cache[i] = error
+					}
 
-				// 检查缓存
-				if (!cache[index]) try { // 执行并缓存结果
-					cache[index] = await exec(matchedContent)
-				} catch (error) {
-					console.error(`Error executing inline tool ${id}:`, error)
-					cache[index] = `[Error: ${error.message}]`
-				}
-
-				index++
+				if (cache[i] instanceof Promise)
+					promises.push(
+						cache[i]
+							.then((res) => (cache[i] = res))
+							.catch((err) => (cache[i] = err))
+					)
 			}
 
-			// 清理多余的缓存：如果实际命中数少于已有缓存数，移除多余的
-			if (index < cache.length)
-				cache.splice(index)
+			// 等待当前工具的所有新执行完成，以便并在这一帧渲染结果
+			if (promises.length > 0) await Promise.all(promises)
+
+			// 清理多余缓存 (如果文本被截断或重新生成导致匹配减少)
+			if (matches.length < cache.length)
+				cache.splice(matches.length)
+
+			// 将已完成的工具调用替换为结果
+			let index = 0
+			reply.content = reply.content.replace(completeRgx, (match) => {
+				const item = cache[index++]
+				if (item instanceof Error) return `[Error: ${item.message}]`
+				return String(item)
+			})
+
+			// 隐藏未完成的工具调用
+			const pendingRgx = new RegExp(`(?:${sPattern})[\\s\\S]*$`)
+			reply.content = reply.content.replace(pendingRgx, '')
 		}
 
 		next?.(args, reply)

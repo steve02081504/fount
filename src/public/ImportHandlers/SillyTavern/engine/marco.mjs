@@ -130,8 +130,6 @@ function replaceVariableMacros(input, memory) {
 	}).join('\n')
 }
 
-
-
 /**
  * 获取自上次消息以来的时间
  * @param {any} chatLog 聊天记录
@@ -241,12 +239,9 @@ export function evaluateMacros(content, env, memory = {}, chatLog = []) {
 	content = content.replace(/\n*{{trim}}\n*/gi, '')
 	content = content.replace(/{{noop}}/gi, '')
 
-
 	for (const varName in env)
 		if (Object.hasOwn(env, varName))
 			content = content.replace(new RegExp(`{{${varName}}}`, 'gi'), env[varName])
-
-
 
 	content = content.replace(/{{\/\/([\S\s]*?)}}/gm, '')
 	content = content.replace(/{{lasttime}}/gi, () => {

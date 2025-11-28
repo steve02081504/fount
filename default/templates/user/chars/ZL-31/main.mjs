@@ -172,11 +172,12 @@ export default {
 				}
 				// 构建更新预览管线
 				args.generation_options ??= {}
+				const oriReplyPreviewUpdater = args.generation_options?.replyPreviewUpdater
 				/**
 				 * 聊天回复预览更新管道。
 				 * @type {import('../../../../../src/public/shells/chat/decl/chatLog.ts').CharReplyPreviewUpdater_t}
 				 */
-				let replyPreviewUpdater = (args, r) => args.generation_options?.replyPreviewUpdater?.(r)
+				let replyPreviewUpdater = (args, r) => oriReplyPreviewUpdater?.(r)
 				for (const GetReplyPreviewUpdater of [
 					...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.GetReplyPreviewUpdater)
 				].filter(Boolean))
@@ -278,11 +279,12 @@ function CharGenerator(reply, { AddLongTimeLog }) {
 				}
 				// 构建更新预览管线
 				args.generation_options ??= {}
+				const oriReplyPreviewUpdater = args.generation_options?.replyPreviewUpdater
 				/**
 				 * 聊天回复预览更新管道。
 				 * @type {import('../../../../../src/public/shells/chat/decl/chatLog.ts').CharReplyPreviewUpdater_t}
 				 */
-				let replyPreviewUpdater = (args, r) => args.generation_options?.replyPreviewUpdater?.(r)
+				let replyPreviewUpdater = (args, r) => oriReplyPreviewUpdater?.(r)
 				for (const GetReplyPreviewUpdater of [
 					...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.GetReplyPreviewUpdater)
 				].filter(Boolean))
@@ -809,11 +811,12 @@ fount有[discord群组](https://discord.gg/GtR9Quzq2v)，可以在那里找到�
 
 				// 构建更新预览管线
 				args.generation_options ??= {}
+				const oriReplyPreviewUpdater = args.generation_options?.replyPreviewUpdater
 				/**
 				 * 聊天回复预览更新管道。
 				 * @type {import('../../../../../src/public/shells/chat/decl/chatLog.ts').CharReplyPreviewUpdater_t}
 				 */
-				let replyPreviewUpdater = (args, r) => args.generation_options?.replyPreviewUpdater?.(r)
+				let replyPreviewUpdater = (args, r) => oriReplyPreviewUpdater?.(r)
 				for (const GetReplyPreviewUpdater of [
 					defineToolUseBlocks([
 						{ start: '<get-tool-info>', end: '</get-tool-info>' },

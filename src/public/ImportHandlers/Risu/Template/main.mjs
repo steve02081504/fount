@@ -236,11 +236,16 @@ const charAPI_definition = {
 			 * @returns {Promise<{ content: any; content_for_show: any; files: any; extension: any; }>} 包含回复内容的对象
 			 */
 			GetReply: async args => {
-				if (!AIsource)
-					return {
-						// 此处的提示可以考虑根据 args.locales 进行 i18n，但属于模板细节优化
-						content: 'This character does not have an AI source. Please [set the AI source](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage) first.'
-					}
+				if (!AIsource) return {
+					content: 'This character does not have an AI source. Please [set the AI source](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage) first.'
+				}
+				const env = getMacroEnv(args.UserCharname)
+				/**
+				 * 解析并替换宏
+				 * @param {string} str 要解析的字符串
+				 * @returns {string} 解析后的字符串
+				 */
+				const parseMacro = str => evaluateMacros(str, env, args.chat_scoped_char_memory, args.chat_log)
 
 				// 注入角色插件
 				args.plugins = Object.assign({}, plugins, args.plugins)
@@ -269,11 +274,15 @@ const charAPI_definition = {
 
 				// 构建更新预览管线
 				args.generation_options ??= {}
+				const oriReplyPreviewUpdater = args.generation_options?.replyPreviewUpdater
 				/**
 				 * 聊天回复预览更新管道。
 				 * @type {import('../../../../../src/public/shells/chat/decl/chatLog.ts').CharReplyPreviewUpdater_t}
 				 */
-				let replyPreviewUpdater = (args, r) => args.generation_options?.replyPreviewUpdater?.(r)
+				let replyPreviewUpdater = (args, r) => oriReplyPreviewUpdater?.({
+					...r,
+					content: runRegex(chardata, parseMacro(r.content), e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.promptOnly)
+				})
 				for (const GetReplyPreviewUpdater of [
 					...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.GetReplyPreviewUpdater)
 				].filter(Boolean))
@@ -300,12 +309,11 @@ const charAPI_definition = {
 					break
 				}
 
-				const env = getMacroEnv(args.UserCharname)
-				const finalContent = evaluateMacros(result.content, env, args.chat_scoped_char_memory, args.chat_log)
+				result.content = parseMacro(result.content)
 
 				return {
-					content: runRegex(chardata, finalContent, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.markdownOnly && !e.promptOnly),
-					content_for_show: formatRisuOutput(runRegex(chardata, finalContent, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.promptOnly)),
+					content: runRegex(chardata, result.content, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.markdownOnly && !e.promptOnly),
+					content_for_show: formatRisuOutput(runRegex(chardata, result.content, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.promptOnly)),
 					files: result.files,
 					extension: result.extension,
 				}
