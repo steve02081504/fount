@@ -184,12 +184,20 @@ export default {
 					prompt_struct.char_prompt.additional_chat_log.push(entry)
 				}
 
+				// 构建更新预览管线
+				args.generation_options ??= {}
+				let replyPreviewUpdater = args.generation_options?.replyPreviewUpdater
+				for (const GetReplyPreviewUpdater of [
+					...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.GetReplyPreviewUpdater)
+				].filter(Boolean))
+					replyPreviewUpdater = GetReplyPreviewUpdater(replyPreviewUpdater)
+
+				args.generation_options.replyPreviewUpdater = replyPreviewUpdater
+
 				// 在重新生成循环中检查插件触发
 				regen: while (true) {
-					const requestResult = await AIsource.StructCall(prompt_struct)
-					result.content = requestResult.content
-					result.files = result.files.concat(requestResult.files || [])
-					result.extension = { ...result.extension, ...requestResult.extension }
+					args.generation_options.base_result = result
+					await AIsource.StructCall(prompt_struct, args.generation_options)
 					let continue_regen = false
 					for (const replyHandler of [
 						...Object.values(arg.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)

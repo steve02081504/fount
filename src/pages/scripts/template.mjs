@@ -72,39 +72,77 @@ function escapeUnclosedTags(html) {
 }
 
 /**
- * 从 HTML 字符串安全地创建 DOM 元素（包括执行 <script> 标签和使得 <link> 标签生效），返回 DocumentFragment。
- *
- * @param {string} htmlString - 包含 HTML 代码的字符串。
- * @returns {DocumentFragment} - 渲染好的 DocumentFragment。
+ * 激活 DOM 节点中的脚本和链接标签（支持 Element、DocumentFragment、Document）。
+ * @param {Element|DocumentFragment|Document} node - 要激活的 DOM 节点。
+ * @returns {Element|DocumentFragment|Document} - 激活后的 DOM 节点。
  */
-export function createDocumentFragmentFromHtmlString(htmlString) {
-	if (!htmlString || !htmlString.trim()) return document.createDocumentFragment()
-
-	const template = document.createElement('template')
-	template.innerHTML = htmlString
-	const fragment = template.content
+export function activateScripts(node) {
+	// 对于 Document 或 Element，直接在其上查询并激活
+	const root = node.nodeType === Node.DOCUMENT_NODE ? node : node.ownerDocument || document
+	const container = node.nodeType === Node.DOCUMENT_NODE ? node.documentElement : node
 
 	// 移除开发服务器注入的脚本
-	fragment.querySelectorAll('script[src^="/___"]').forEach(oldScript => {
+	container.querySelectorAll('script[src^="/___"]').forEach(oldScript => {
 		oldScript.remove()
 	})
 	// 激活 script 标签
-	fragment.querySelectorAll('script').forEach(oldScript => {
-		const newScript = document.createElement('script')
+	container.querySelectorAll('script').forEach(oldScript => {
+		const newScript = root.createElement('script')
 		for (const attr of oldScript.attributes)
 			newScript.setAttribute(attr.name, attr.value)
 		if (oldScript.textContent) newScript.text = oldScript.textContent
 		oldScript.parentNode.replaceChild(newScript, oldScript)
 	})
 	// 激活 link 标签
-	fragment.querySelectorAll('link').forEach(oldLink => {
-		const newLink = document.createElement('link')
+	container.querySelectorAll('link').forEach(oldLink => {
+		const newLink = root.createElement('link')
 		for (const attr of oldLink.attributes)
 			newLink.setAttribute(attr.name, attr.value)
 		oldLink.parentNode.replaceChild(newLink, oldLink)
 	})
 
-	return fragment
+	return node
+}
+
+/**
+ * 从 HTML 字符串创建 DOM 元素（不激活脚本），返回 DocumentFragment。
+ *
+ * @param {string} htmlString - 包含 HTML 代码的字符串。
+ * @returns {DocumentFragment} - 渲染好的 DocumentFragment（脚本未激活）。
+ */
+export function createDocumentFragmentFromHtmlStringNoScriptActivation(htmlString) {
+	if (!htmlString || !htmlString.trim()) return document.createDocumentFragment()
+
+	const template = document.createElement('template')
+	template.innerHTML = htmlString
+	return template.content
+}
+
+/**
+ * 从 HTML 字符串安全地创建 DOM 元素（包括执行 <script> 标签和使得 <link> 标签生效），返回 DocumentFragment。
+ *
+ * @param {string} htmlString - 包含 HTML 代码的字符串。
+ * @returns {DocumentFragment} - 渲染好的 DocumentFragment。
+ */
+export function createDocumentFragmentFromHtmlString(htmlString) {
+	const fragment = createDocumentFragmentFromHtmlStringNoScriptActivation(htmlString)
+	return activateScripts(fragment)
+}
+
+/**
+ * 从 HTML 字符串创建 DOM 元素（不激活脚本）。
+ * @param {string} htmlString - 包含 HTML 代码的字符串。
+ * @returns {Element|DocumentFragment|Document} - 创建的 DOM 元素或文档对象（脚本未激活）。
+ */
+export function createDOMFromHtmlStringNoScriptActivation(htmlString) {
+	// 如果是完整文档，使用 DOMParser 以保留 html, head, body 结构
+	if (/^\s*<!DOCTYPE/i.test(htmlString) || /^\s*<html/i.test(htmlString)) {
+		const parser = new DOMParser()
+		return parser.parseFromString(htmlString, 'text/html')
+	}
+
+	const fragment = createDocumentFragmentFromHtmlStringNoScriptActivation(htmlString)
+	return fragment.children.length == 1 ? fragment.children[0] : fragment
 }
 
 /**
@@ -115,14 +153,11 @@ export function createDocumentFragmentFromHtmlString(htmlString) {
 export function createDOMFromHtmlString(htmlString) {
 	// 如果是完整文档，使用 DOMParser 以保留 html, head, body 结构
 	if (/^\s*<!DOCTYPE/i.test(htmlString) || /^\s*<html/i.test(htmlString)) {
-		const parser = new DOMParser()
-		const doc = parser.parseFromString(htmlString, 'text/html')
-
+		const doc = createDOMFromHtmlStringNoScriptActivation(htmlString)
 		// 清理不需要的脚本
 		doc.querySelectorAll('script[src^="/___"]').forEach(oldScript => {
 			oldScript.remove()
 		})
-
 		return doc
 	}
 
@@ -142,12 +177,12 @@ export function usingTemplates(path) {
 }
 
 /**
- * 渲染模板。
+ * 渲染模板(不激活脚本)。
  * @param {string} template - 模板名称。
  * @param {object} [data={}] - 模板数据。
- * @returns {Promise<Element|DocumentFragment|Document>} - 渲染后的 DOM 元素。
+ * @returns {Promise<Element|DocumentFragment|Document>} - 渲染后的 DOM 元素(脚本未激活)。
  */
-export async function renderTemplate(template, data = {}) {
+export async function renderTemplateNoScriptActivation(template, data = {}) {
 	data.geti18n ??= geti18n
 	data.renderTemplate ??= renderTemplateAsHtmlString
 	/**
@@ -187,7 +222,19 @@ export async function renderTemplate(template, data = {}) {
 		}
 	}
 	result += html
-	return i18nElement(await svgInliner(createDOMFromHtmlString(result)), { skip_report: true })
+	return i18nElement(await svgInliner(createDOMFromHtmlStringNoScriptActivation(result)), { skip_report: true })
+}
+
+/**
+ * 渲染模板。
+ * @param {string} template - 模板名称。
+ * @param {object} [data={}] - 模板数据。
+ * @returns {Promise<Element|DocumentFragment|Document>} - 渲染后的 DOM 元素。
+ */
+export async function renderTemplate(template, data = {}) {
+	data.renderTemplate ??= renderTemplateAsHtmlString
+	const node = await renderTemplateNoScriptActivation(template, data)
+	return activateScripts(node)
 }
 
 /**
@@ -197,7 +244,7 @@ export async function renderTemplate(template, data = {}) {
  * @returns {Promise<string>} - 渲染后的 HTML 字符串。
  */
 export async function renderTemplateAsHtmlString(template, data = {}) {
-	let node = await renderTemplate(template, data)
+	let node = await renderTemplateNoScriptActivation(template, data)
 	if (node.nodeType === Node.DOCUMENT_NODE) {
 		node = node.documentElement.outerHTML
 		node = node.replace(/[\s\n]*<\/body>[\s\n]*<\/html>$/i, '\n</body>\n\n</html>\n')

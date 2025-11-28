@@ -6,6 +6,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/prompt_struct.mjs'
+import { defineToolCalls } from '../../../../../src/public/shells/chat/src/stream.mjs'
 import { __dirname } from '../../../../../src/server/base.mjs'
 import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
 import { loadPlugin } from '../../../../../src/server/managers/plugin_manager.mjs'
@@ -26,26 +27,26 @@ let username = ''
 /** @type {import("../../../../../src/decl/pluginAPI.ts").ReplyHandler_t} */
 function getToolInfo(reply, args) {
 	const { AddLongTimeLog } = args
-	const match_get_tool_info = reply.content.match(/```get-tool-info\n(?<toolname>[^\n]+)\n```/)
+	const match_get_tool_info = reply.content.match(/<get-tool-info>(?<toolname>[^<]+)<\/get-tool-info>/)
 	if (match_get_tool_info) try {
 		let { toolname } = match_get_tool_info.groups
 		toolname = toolname.trim()
 		AddLongTimeLog({
 			name: 'ZL-31',
 			role: 'tool',
-			content: `\`\`\`get-tool-info\n${toolname}\n\`\`\``,
+			content: `<get-tool-info>${toolname}</get-tool-info>`,
 		})
 		let info_prompt = ''
 		switch (toolname) {
 			case 'character-generator':
 				info_prompt = `
 你可以输出以下格式生成新的单文件简易fount角色，之后用户会在主页看见它，无需安装：
-\`\`\`generate-char charname
+<generate-char name="charname">
 // js codes
-\`\`\`
+</generate-char>
 fount角色以mjs文件语法所书写，其可以自由导入任何npm或jsr包以及网络上的js文件，或\`node:fs\`等运行时自带模块。
 这是一个简单的fount角色模板：
-\`\`\`generate-char template
+<generate-char name="template">
 /**
  * @typedef {import('../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t
  * @typedef {import('../../../../../src/decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t
@@ -169,13 +170,20 @@ export default {
 					result?.logContextBefore?.push?.(entry)
 					prompt_struct.char_prompt.additional_chat_log.push(entry)
 				}
+				// 构建更新预览管线
+				args.generation_options ??= {}
+				let replyPreviewUpdater = args.generation_options?.replyPreviewUpdater
+				for (const GetReplyPreviewUpdater of [
+					...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.GetReplyPreviewUpdater)
+				].filter(Boolean))
+					replyPreviewUpdater = GetReplyPreviewUpdater(replyPreviewUpdater)
+
+				args.generation_options.replyPreviewUpdater = replyPreviewUpdater
 
 				// 在重新生成循环中检查插件触发
 				regen: while (true) {
-					const requestResult = await AIsource.StructCall(prompt_struct)
-					result.content = requestResult.content
-					result.files = result.files.concat(requestResult.files || [])
-					result.extension = { ...result.extension, ...requestResult.extension }
+					args.generation_options.base_result = result
+					await AIsource.StructCall(prompt_struct, args.generation_options)
 					let continue_regen = false
 					for (const replyHandler of [
 						...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
@@ -191,7 +199,7 @@ export default {
 		}
 	}
 }
-\`\`\`
+</generate-char>
 当然，如果你想，你也可以给生成的角色附加功能，就像你自己一样：
 \`\`\`\`js
 import fs from 'node:fs'
@@ -199,14 +207,14 @@ import path from 'node:path'
 
 /** @type {import("../../../../../src/decl/pluginAPI.ts").ReplyHandler_t} */
 function CharGenerator(reply, { AddLongTimeLog }) {
-	const match_generator_tool = reply.content.match(/\`\`\`generate-char(?<charname>[^\\n]+)\\n(?<code>[^]*)\`\`\`/)
+	const match_generator_tool = reply.content.match(/<generate-char\\s+name="(?<charname>[^"]+)">\\s*(?<code>[^]*?)\\s*<\\/generate-char>/)
 	if (match_generator_tool) try {
 		let { charname, code } = match_generator_tool.groups
 		charname = charname.trim()
 		AddLongTimeLog({
 			name: 'ZL-31',
 			role: 'char',
-			content: \`\\\`\\\`\\\`generate-char \${charname}\\n\${code}\\n\\\`\\\`\\\`\`,
+			content: \`<generate-char name="\${charname}">\\n\${code}\\n</generate-char>\`,
 		})
 		const dir = path.join(import.meta.dirname, '..', charname)
 		const file = path.join(dir, 'main.mjs')
@@ -264,13 +272,20 @@ function CharGenerator(reply, { AddLongTimeLog }) {
 					result?.logContextBefore?.push?.(entry)
 					prompt_struct.char_prompt.additional_chat_log.push(entry)
 				}
+				// 构建更新预览管线
+				args.generation_options ??= {}
+				let replyPreviewUpdater = args.generation_options?.replyPreviewUpdater
+				for (const GetReplyPreviewUpdater of [
+					...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.GetReplyPreviewUpdater)
+				].filter(Boolean))
+					replyPreviewUpdater = GetReplyPreviewUpdater(replyPreviewUpdater)
+
+				args.generation_options.replyPreviewUpdater = replyPreviewUpdater
 
 				// 在重新生成循环中检查插件触发
 				regen: while (true) {
-					const requestResult = await AIsource.StructCall(prompt_struct)
-					result.content = requestResult.content
-					result.files = result.files.concat(requestResult.files || [])
-					result.extension = { ...result.extension, ...requestResult.extension }
+					args.generation_options.base_result = result
+					await AIsource.StructCall(prompt_struct, args.generation_options)
 					let continue_regen = false
 					for (const replyHandler of [
 						CharGenerator,
@@ -291,7 +306,7 @@ function CharGenerator(reply, { AddLongTimeLog }) {
 你也可以灵活一些，假如用户要求的功能甚至用不上AI参与，你可以写的更简单！
 比如：
 ${args.UserCharname}: 帮我写一个复读角色，它总是复读上一句话。
-ZL-31: \`\`\`generate-char repeater
+ZL-31: <generate-char name="repeater">
 /**
  * @typedef {import('../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t
  */
@@ -348,7 +363,7 @@ export default {
 		}
 	}
 }
-\`\`\`
+</generate-char>
 
 最后，这里是一些API参考：
 \`\`\`ts
@@ -385,12 +400,12 @@ ${fs.readFileSync(path.join(__dirname, 'src/decl/charAPI.ts'), 'utf-8')}
 			case 'persona-generator':
 				info_prompt = `
 你可以输出以下格式生成新的单文件简易fount用户人设，之后用户会在主页的人设分页看见它，无需安装。
-\`\`\`generate-persona personaname
+<generate-persona name="personaname">
 // js codes
-\`\`\`
+</generate-persona>
 fount用户人设以mjs文件语法所书写，其可以自由导入任何npm或jsr包以及网络上的js文件，或\`node:fs\`等运行时自带模块。
 这是一个简单的fount人物模板：
-\`\`\`generate-persona template
+<generate-persona name="template">
 /** @typedef {import('../../../../../src/decl/userAPI.ts').UserAPI_t} UserAPI_t */
 
 /** @type {UserAPI_t} */
@@ -423,7 +438,7 @@ export default {
 		}
 	}
 }
-\`\`\`
+</generate-persona>
 `
 				break
 			default:
@@ -443,7 +458,7 @@ export default {
 
 /** @type {import("../../../../../src/decl/pluginAPI.ts").ReplyHandler_t} */
 function CharGenerator(reply, { AddLongTimeLog }) {
-	const match_generator_tool = reply.content.match(/```generate-char(?<charname>[^\n]+)\n(?<code>[^]*)```/)
+	const match_generator_tool = reply.content.match(/<generate-char\s+name="(?<charname>[^"]+)">\s*(?<code>[^]*?)\s*<\/generate-char>/)
 	if (match_generator_tool) try {
 		let { charname, code } = match_generator_tool.groups
 		charname = charname.trim()
@@ -485,7 +500,7 @@ function CharGenerator(reply, { AddLongTimeLog }) {
 
 /** @type {import("../../../../../src/decl/pluginAPI.ts").ReplyHandler_t} */
 function PersonaGenerator(reply, { AddLongTimeLog }) {
-	const match_generator_tool = reply.content.match(/```generate-persona(?<charname>[^\n]+)\n(?<code>[^]*)```/)
+	const match_generator_tool = reply.content.match(/<generate-persona\s+name="(?<charname>[^"]+)">\s*(?<code>[^]*?)\s*<\/generate-persona>/)
 	if (match_generator_tool) try {
 		let { charname, code } = match_generator_tool.groups
 		charname = charname.trim()
@@ -689,17 +704,13 @@ export default {
 关于fount：
 fount是一个开源、0安全考虑的AI角色托管应用，解耦合了AI来源、角色设计，为角色作者提供更为自由的创作空间。
 ZL-31不是第一个fount角色，fount一开始是为了其作者steve02081504的另一个男性向NSFW角色[龙胆](https://github.com/steve02081504/GentianAphrodite)设计的，龙胆才是fount的第一个正式角色。
-fount有discord群组：https://discord.gg/GtR9Quzq2v，可以在那里找到更多fount组件。
+fount有[discord群组](https://discord.gg/GtR9Quzq2v)，可以在那里找到更多fount组件。
 
 关于工具：
 你拥有创建角色的能力，在需要时返回以下格式来得知如何使用，或获取有关角色的信息以回答用户问题：
-\`\`\`get-tool-info
-character-generator
-\`\`\`
+<get-tool-info>character-generator</get-tool-info>
 你还可以帮助用户创建用户人设，返回以下格式来得知如何使用，或获取有关用户人设的信息以回答用户问题：
-\`\`\`get-tool-info
-persona-generator
-\`\`\`
+<get-tool-info>persona-generator</get-tool-info>
 `,
 						important: 0
 					}],
@@ -788,12 +799,25 @@ persona-generator
 					prompt_struct.char_prompt.additional_chat_log.push(entry)
 				}
 
+				// 构建更新预览管线
+				args.generation_options ??= {}
+				let replyPreviewUpdater = args.generation_options?.replyPreviewUpdater
+				for (const GetReplyPreviewUpdater of [
+					defineToolCalls(args, [
+						{ start: '<get-tool-info>', end: '</get-tool-info>' },
+						{ start: /<generate-char[^>]*>/, end: '</generate-char>' },
+						{ start: /<generate-persona[^>]*>/, end: '</generate-persona>' },
+					]),
+					...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.GetReplyPreviewUpdater)
+				].filter(Boolean))
+					replyPreviewUpdater = GetReplyPreviewUpdater(replyPreviewUpdater)
+
+				args.generation_options.replyPreviewUpdater = replyPreviewUpdater
+
 				// 在重新生成循环中检查插件触发
 				regen: while (true) {
-					const requestResult = await AIsource.StructCall(prompt_struct)
-					result.content = requestResult.content
-					result.files = result.files.concat(requestResult.files || [])
-					result.extension = { ...result.extension, ...requestResult.extension }
+					args.generation_options.base_result = result
+					await AIsource.StructCall(prompt_struct, args.generation_options)
 					let continue_regen = false
 					for (const replyHandler of [
 						getToolInfo,

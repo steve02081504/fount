@@ -13,9 +13,20 @@ import {
 	handlePluginRemoved,
 } from './ui/sidebar.mjs'
 import { handleCharTypingStart, handleCharTypingStop } from './ui/typingIndicator.mjs'
-import { handleMessageAdded, handleMessageDeleted, handleMessageReplaced } from './ui/virtualQueue.mjs'
+import { handleMessageAdded, handleMessageDeleted, handleMessageReplaced, handleStreamUpdate, initializeVirtualQueue } from './ui/virtualQueue.mjs'
 
 let ws = null
+
+/**
+ * Sends a message through the WebSocket.
+ * @param {object} message - The message object to send.
+ */
+export function sendWebsocketMessage(message) {
+	if (ws && ws.readyState === WebSocket.OPEN)
+		ws.send(JSON.stringify(message))
+	else
+		console.error('WebSocket is not connected.')
+}
 
 /**
  * 连接到WebSocket。
@@ -108,6 +119,12 @@ async function handleBroadcastEvent(event) {
 			break
 		case 'char_typing_stop':
 			await handleCharTypingStop(payload.charname)
+			break
+		case 'stream_start':
+			console.log('Stream started for message:', payload.messageId)
+			break
+		case 'stream_update':
+			await handleStreamUpdate(payload)
 			break
 		default:
 			console.warn(`Unknown broadcast event type: ${type}`)

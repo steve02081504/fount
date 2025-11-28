@@ -1,5 +1,7 @@
 import { Buffer } from 'node:buffer'
 
+import { chatReply_t } from '../public/shells/chat/decl/chatLog.ts'
+
 import { info_t, locale_t } from './basedefs.ts'
 import { prompt_struct_t } from './prompt_struct.ts'
 
@@ -106,6 +108,28 @@ export class AIsource_t<InputType, OutputType> {
 }
 
 /**
+ * @class GenerationOptions
+ * 定义了生成时可以传递的选项。
+ */
+export class GenerationOptions {
+	/** 基础结果对象，用于追加或合并 */
+	base_result?: {
+        content: string,
+        files: {
+            name: string
+            mime_type: string
+            buffer: Buffer,
+            description: string
+        }[],
+        extension?: object
+    }
+    /** 进度回调 */
+	replyPreviewUpdater?: (partial: chatReply_t) => void
+	/** 中断信号 (关键！) */
+	signal?: AbortSignal
+}
+
+/**
  * @class textAISource_t
  * @augments AIsource_t<string, Promise<string>>
  * 专用于处理文本输入的 AI 数据源。
@@ -114,9 +138,13 @@ export class textAISource_t extends AIsource_t<string, Promise<string>> {
 	/**
 	 * 使用结构化的 prompt 调用 AI 数据源。
 	 * @param {prompt_struct_t} prompt_struct - 结构化的 prompt。
+	 * @param {GenerationOptions} [options] - 包含 base_result, signal, onProgress 的选项对象
 	 * @returns {Promise<{content: string, files: {name: string, mime_type: string, buffer: Buffer, description: string}[], extension?: object}>} - 包含内容和文件的响应。
 	 */
-	StructCall: (prompt_struct: prompt_struct_t) => Promise<{
+	StructCall: (
+        prompt_struct: prompt_struct_t,
+        options?: GenerationOptions
+    ) => Promise<{
 		content: string,
 		files: {
 			name: string
