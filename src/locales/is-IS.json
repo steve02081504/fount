@@ -739,7 +739,8 @@
 			"share": {
 				"uploading": "Býr til tengil...",
 				"success": "Deiling tókst! Tengill afritaður á klippiborð. <br>Þessi eiginleiki er studdur af ${provider}. <br>[Styrktu þá. ](${sponsorLink})"
-			}
+			},
+			"commonToolCalling": "Kallar á tól"
 		},
 		"messageEdit": {
 			"input": {
@@ -765,6 +766,9 @@
 					"alt": "Upphalstákn"
 				}
 			}
+		},
+		"messageGenerating": {
+			"stop": "Hætta"
 		},
 		"attachment": {
 			"buttons": {

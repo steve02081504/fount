@@ -739,7 +739,8 @@
 			"share": {
 				"uploading": "Creando enlace...",
 				"success": "¡Enlace creado con éxito! Copiado al portapapeles. <br>Esta función es compatible con ${provider}. <br>[Apóyalos.](${sponsorLink})"
-			}
+			},
+			"commonToolCalling": "Llamando a la herramienta"
 		},
 		"messageEdit": {
 			"input": {
@@ -765,6 +766,9 @@
 					"alt": "Icono de subir"
 				}
 			}
+		},
+		"messageGenerating": {
+			"stop": "Detener"
 		},
 		"attachment": {
 			"buttons": {
@@ -1873,7 +1877,7 @@
 			"title": "mascota corriendo",
 			"noPets": "Actualmente no hay mascotas en funcionamiento.",
 			"buttons": {
-				"stop": "detener"
+				"stop": "Detener"
 			}
 		},
 		"toasts": {

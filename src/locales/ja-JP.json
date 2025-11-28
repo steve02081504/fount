@@ -739,7 +739,8 @@
 			"share": {
 				"uploading": "リンクを作成中...",
 				"success": "共有に成功しました！リンクがクリップボードにコピーされました。<br>この機能は ${provider} によって提供されています。<br>[支援する](${sponsorLink})"
-			}
+			},
+			"commonToolCalling": "ツールを呼び出し中"
 		},
 		"messageEdit": {
 			"input": {
@@ -765,6 +766,9 @@
 					"alt": "アップロードアイコン"
 				}
 			}
+		},
+		"messageGenerating": {
+			"stop": "停止"
 		},
 		"attachment": {
 			"buttons": {
