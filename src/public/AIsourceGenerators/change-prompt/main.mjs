@@ -1,4 +1,5 @@
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
+/** @typedef {import('../../../decl/AIsource.ts').AIsource_StructCall_options_t} AIsource_StructCall_options_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
 import { formatStr } from '../../../scripts/format.mjs'
@@ -110,9 +111,10 @@ async function GetSource(config, { username, SaveConfig }) {
 		/**
 		 * 使用结构化提示调用 AI 源。
 		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+		 * @param {AIsource_StructCall_options_t} options
 		 * @returns {Promise<{content: string}>} AI 的返回结果。
 		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
+		StructCall: async (prompt_struct, { base_result, replyPreviewUpdater, signal }) => {
 			const new_prompt_struct = {
 				char_id: prompt_struct.char_id,
 				UserCharname: prompt_struct.UserCharname,
@@ -196,12 +198,23 @@ async function GetSource(config, { username, SaveConfig }) {
 					else
 						chat_log.push(value)
 			}
-			const result = await base_source.StructCall(new_prompt_struct)
+			const result = await base_source.StructCall(new_prompt_struct, {
+				base_result,
+				signal,
+				replyPreviewUpdater: config.replaces?.length ? (result => {
+					const newResult = structuredClone(result)
+					for (const replace of config.replaces) {
+						const reg = parseRegexFromString(replace.seek)
+						newResult.content = newResult.content.replace(reg, replace.replace)
+					}
+					replyPreviewUpdater(newResult)
+				}) : replyPreviewUpdater,
+			})
 			for (const replace of config.replaces) {
 				const reg = parseRegexFromString(replace.seek)
 				result.content = result.content.replace(reg, replace.replace)
 			}
-			return result
+			return Object.assign(base_result, result)
 		},
 		tokenizer: {
 			/**

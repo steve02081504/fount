@@ -1,4 +1,5 @@
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
+/** @typedef {import('../../../decl/AIsource.ts').AIsource_StructCall_options_t} AIsource_StructCall_options_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
 import { loadAIsourceFromNameOrConfigData } from '../../../server/managers/AIsource_manager.mjs'
@@ -88,15 +89,17 @@ async function GetSource(config, { username, SaveConfig }) {
 		/**
 		 * 使用结构化提示调用 AI 源。
 		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+		 * @param {AIsource_StructCall_options_t} options
 		 * @returns {Promise<any>} 来自 AI 的结果。
 		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
+		StructCall: async (prompt_struct, { base_result, replyPreviewUpdater, signal }) => {
 			if (!sources.length) throw new Error('no source selected')
 			let error_num = 0
 			while (true) try {
 				index++
 				index %= config.sources.length
-				return await sources[index].StructCall(prompt_struct)
+				const result = await sources[index].StructCall(prompt_struct, { base_result, replyPreviewUpdater, signal })
+				return Object.assign(base_result, result)
 			} catch (e) {
 				console.error(e)
 				error_num++

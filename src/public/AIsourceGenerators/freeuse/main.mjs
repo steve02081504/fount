@@ -1,4 +1,5 @@
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
+/** @typedef {import('../../../decl/AIsource.ts').AIsource_StructCall_options_t} AIsource_StructCall_options_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
 import { structPromptToSingleNoChatLog } from '../../shells/chat/src/prompt_struct.mjs'
@@ -66,18 +67,41 @@ async function GetSource(config) {
 		/**
 		 * 使用结构化提示调用 AI 源。
 		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+		 * @param {AIsource_StructCall_options_t} options
 		 * @returns {Promise<{content: string}>} 来自 AI 的结果。
 		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
-			let prompt = structPromptToSingleNoChatLog(prompt_struct)
-			prompt += `\
+		StructCall: async (prompt_struct, { base_result, replyPreviewUpdater, signal }) => {
+			return new Promise(async (resolve, reject) => {
+				try {
+					signal?.addEventListener('abort', () => {
+						generator.abort()
+						reject(new DOMException('Aborted', 'AbortError'))
+					})
+
+					let prompt = structPromptToSingleNoChatLog(prompt_struct)
+					prompt += `\
 \n${prompt_struct.chat_log.map(item => `${item.name}: ${item.content}\n${endToken}`).join('\n')}
 ${prompt_struct.Charname}: `
-			return {
-				content: generator.generate({
-					prompt,
-				}),
-			}
+
+					let text = ''
+					if (config.use_stream) {
+						const stream = await generator.generateStream({ prompt })
+						for await (const chunk of stream) {
+							if (signal?.aborted) return reject(new DOMException('Aborted', 'AbortError'))
+							text += chunk
+							replyPreviewUpdater?.({ content: text })
+						}
+					} else {
+						text = generator.generate({ prompt })
+					}
+
+					resolve(Object.assign(base_result, {
+						content: text,
+					}))
+				} catch (e) {
+					reject(e)
+				}
+			})
 		},
 		tokenizer: {
 			/**

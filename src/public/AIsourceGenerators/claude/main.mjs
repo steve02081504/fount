@@ -5,6 +5,7 @@ import { ClaudeAPI } from './claude_api.mjs'
 import info_dynamic from './info.dynamic.json' with { type: 'json' }
 import info from './info.json' with { type: 'json' }
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
+/** @typedef {import('../../../decl/AIsource.ts').AIsource_StructCall_options_t} AIsource_StructCall_options_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
 /**
@@ -75,16 +76,24 @@ async function GetSource(config, { SaveConfig }) { // 接收 SaveConfig
 
 		/**
 		 * 使用结构化提示调用 AI 源。
-		 * @param {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+		 * @param {AIsource_StructCall_options_t} options
 		 * @returns {Promise<{content: string}>} 来自 AI 的结果。
 		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
-			const messages = []
-			prompt_struct.chat_log.forEach(chatLogEntry => {
-				const uid = Math.random().toString(36).slice(2, 10)
-				messages.push({
-					role: chatLogEntry.role === 'user' ? 'user' : chatLogEntry.role === 'system' ? 'system' : 'assistant',
-					content: `\
+		StructCall: async (prompt_struct, { base_result, replyPreviewUpdater, signal }) => {
+			return new Promise(async (resolve, reject) => {
+				try {
+					signal?.addEventListener('abort', () => {
+						claudeAPI.abort()
+						reject(new DOMException('Aborted', 'AbortError'))
+					})
+
+					const messages = []
+					prompt_struct.chat_log.forEach(chatLogEntry => {
+						const uid = Math.random().toString(36).slice(2, 10)
+						messages.push({
+							role: chatLogEntry.role === 'user' ? 'user' : chatLogEntry.role === 'system' ? 'system' : 'assistant',
+							content: `\
 <message "${uid}">
 <sender>${chatLogEntry.name}</sender>
 <content>
@@ -92,36 +101,51 @@ ${chatLogEntry.content}
 </content>
 </message "${uid}">
 `
-				})
-			})
+						})
+					})
 
-			// 系统 Prompt (如果需要的话)
-			const system_prompt = structPromptToSingleNoChatLog(prompt_struct)
-			if (system_prompt)
-				messages.unshift({
-					role: 'system',
-					content: system_prompt
-				})
+					// 系统 Prompt (如果需要的话)
+					const system_prompt = structPromptToSingleNoChatLog(prompt_struct)
+					if (system_prompt)
+						messages.unshift({
+							role: 'system',
+							content: system_prompt
+						})
 
 
-			let text = await claudeAPI.callClaudeAPI(messages, config.model)
-
-			if (text.match(/<\/sender>\s*<content>/))
-				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1].split(new RegExp(
-					`(${(prompt_struct.alternative_charnames || []).map(Object).map(
-						stringOrReg => {
-							if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
-							return stringOrReg.source
+					let text = ''
+					if (config.use_stream) {
+						const stream = await claudeAPI.streamClaudeAPI(messages, config.model)
+						for await (const chunk of stream) {
+							if (signal?.aborted) return reject(new DOMException('Aborted', 'AbortError'))
+							text += chunk
+							replyPreviewUpdater?.({ content: text })
 						}
-					).join('|')
-					})\\s*<\\/sender>\\s*<content>`
-				)).pop().split(/<\/content>\s*<\/message/).shift()
-			if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
-				text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
+					} else {
+						text = await claudeAPI.callClaudeAPI(messages, config.model)
+					}
 
-			return {
-				content: text,
-			}
+
+					if (text.match(/<\/sender>\s*<content>/))
+						text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1].split(new RegExp(
+							`(${(prompt_struct.alternative_charnames || []).map(Object).map(
+								stringOrReg => {
+									if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
+									return stringOrReg.source
+								}
+							).join('|')
+							})\\s*<\\/sender>\\s*<content>`
+						)).pop().split(/<\/content>\s*<\/message/).shift()
+					if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
+						text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
+
+					resolve(Object.assign(base_result, {
+						content: text,
+					}))
+				} catch (e) {
+					reject(e)
+				}
+			})
 		},
 
 		tokenizer: {

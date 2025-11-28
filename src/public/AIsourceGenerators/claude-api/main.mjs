@@ -7,6 +7,7 @@ import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../s
 import info_dynamic from './info.dynamic.json' with { type: 'json' }
 import info from './info.json' with { type: 'json' }
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
+/** @typedef {import('../../../decl/AIsource.ts').AIsource_StructCall_options_t} AIsource_StructCall_options_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
 // Claude 支持的图片 MIME 类型
@@ -111,25 +112,30 @@ async function GetSource(config) {
 		/**
 		 * 使用结构化提示调用 AI 源。
 		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+		 * @param {AIsource_StructCall_options_t} options
 		 * @returns {Promise<{content: string, files: any[]}>} 来自 AI 的结果。
 		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
-			// 使用 fount 工具函数获取独立的系统提示
-			const system_prompt = structPromptToSingleNoChatLog(prompt_struct)
+		StructCall: async (prompt_struct, { base_result, replyPreviewUpdater, signal }) => {
+			return new Promise(async (resolve, reject) => {
+				try {
+					signal?.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')))
 
-			// 使用 fount 工具函数合并聊天记录，并转换为 Claude 的格式
-			const messages = await Promise.all(margeStructPromptChatLog(prompt_struct).map(async chatLogEntry => {
-				const role = chatLogEntry.role === 'user' || chatLogEntry.role === 'system' ? 'user' : 'assistant'
+					// 使用 fount 工具函数获取独立的系统提示
+					const system_prompt = structPromptToSingleNoChatLog(prompt_struct)
 
-				// 内容可以是文本和图片的混合数组
-				const content = []
+					// 使用 fount 工具函数合并聊天记录，并转换为 Claude 的格式
+					const messages = await Promise.all(margeStructPromptChatLog(prompt_struct).map(async chatLogEntry => {
+						const role = chatLogEntry.role === 'user' || chatLogEntry.role === 'system' ? 'user' : 'assistant'
 
-				const uid = Math.random().toString(36).slice(2, 10)
+						// 内容可以是文本和图片的混合数组
+						const content = []
 
-				// 添加文本内容
-				content.push({
-					type: 'text',
-					text: `\
+						const uid = Math.random().toString(36).slice(2, 10)
+
+						// 添加文本内容
+						content.push({
+							type: 'text',
+							text: `\
 <message "${uid}">
 <sender>${chatLogEntry.name}</sender>
 <content>
@@ -137,83 +143,91 @@ ${chatLogEntry.content}
 </content>
 </message "${uid}">
 `,
-				})
+						})
 
-				// 处理并添加文件内容（仅限图片）
-				if (chatLogEntry.files)
-					for (const file of chatLogEntry.files) {
-						const mime_type = file.mime_type || mime.lookup(file.name) || 'application/octet-stream'
-						if (supportedImageTypes.includes(mime_type))
-							try {
-								content.push({
-									type: 'image',
-									source: {
-										type: 'base64',
-										media_type: mime_type,
-										data: file.buffer.toString('base64'),
+						// 处理并添加文件内容（仅限图片）
+						if (chatLogEntry.files)
+							for (const file of chatLogEntry.files) {
+								const mime_type = file.mime_type || mime.lookup(file.name) || 'application/octet-stream'
+								if (supportedImageTypes.includes(mime_type))
+									try {
+										content.push({
+											type: 'image',
+											source: {
+												type: 'base64',
+												media_type: mime_type,
+												data: file.buffer.toString('base64'),
+											}
+										})
 									}
-								})
+									catch (error) {
+										console.error(`Failed to process image file ${file.name}:`, error)
+										// 如果处理失败，可以添加一条错误信息文本
+										content.push({
+											type: 'text',
+											text: `[System Error: Failed to process image file ${file.name}]`,
+										})
+									}
+								else {
+									console.warn(`Unsupported file type for Claude: ${mime_type} for file ${file.name}. Skipping.`)
+									content.push({
+										type: 'text',
+										text: `[System Info: File ${file.name} with type ${mime_type} was skipped as it is not a supported image format.]`
+									})
+								}
 							}
-							catch (error) {
-								console.error(`Failed to process image file ${file.name}:`, error)
-								// 如果处理失败，可以添加一条错误信息文本
-								content.push({
-									type: 'text',
-									text: `[System Error: Failed to process image file ${file.name}]`,
-								})
-							}
-						else {
-							console.warn(`Unsupported file type for Claude: ${mime_type} for file ${file.name}. Skipping.`)
-							content.push({
-								type: 'text',
-								text: `[System Info: File ${file.name} with type ${mime_type} was skipped as it is not a supported image format.]`
-							})
-						}
+
+
+						return { role, content }
+					}))
+
+					// 构建最终的 API 请求参数
+					const params = {
+						model: config.model,
+						system: system_prompt,
+						messages,
+						...config.model_arguments,
 					}
 
+					let text = ''
+					const files = [] // 用于存放模型生成的图片（如果未来支持）
 
-				return { role, content }
-			}))
-
-			// 构建最终的 API 请求参数
-			const params = {
-				model: config.model,
-				system: system_prompt,
-				messages,
-				...config.model_arguments,
-			}
-
-			let text = ''
-			const files = [] // 用于存放模型生成的图片（如果未来支持）
-
-			if (config.use_stream) {
-				const stream = await client.messages.create({ ...params, stream: true })
-				for await (const event of stream)
-					if (event.type === 'content_block_delta' && event.delta.type === 'text_delta')
-						text += event.delta.text
-			}
-			else {
-				const message = await client.messages.create(params)
-				text = message.content.filter(block => block.type === 'text').map(block => block.text).join('')
-			}
-
-			if (text.match(/<\/sender>\s*<content>/))
-				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1].split(new RegExp(
-					`(${(prompt_struct.alternative_charnames || []).map(Object).map(
-						stringOrReg => {
-							if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
-							return stringOrReg.source
+					if (config.use_stream) {
+						const stream = await client.messages.create({ ...params, stream: true }, { signal })
+						for await (const event of stream) {
+							if (signal?.aborted) return reject(new DOMException('Aborted', 'AbortError'))
+							if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+								text += event.delta.text
+								replyPreviewUpdater?.({ content: text, files })
+							}
 						}
-					).join('|')
-					})\\s*<\\/sender>\\s*<content>`
-				)).pop().split(/<\/content>\s*<\/message/).shift()
-			if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
-				text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
+					}
+					else {
+						const message = await client.messages.create(params, { signal })
+						text = message.content.filter(block => block.type === 'text').map(block => block.text).join('')
+					}
 
-			return {
-				content: text,
-				files,
-			}
+					if (text.match(/<\/sender>\s*<content>/))
+						text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1].split(new RegExp(
+							`(${(prompt_struct.alternative_charnames || []).map(Object).map(
+								stringOrReg => {
+									if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
+									return stringOrReg.source
+								}
+							).join('|')
+							})\\s*<\\/sender>\\s*<content>`
+						)).pop().split(/<\/content>\s*<\/message/).shift()
+					if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
+						text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
+
+					resolve(Object.assign(base_result, {
+						content: text,
+						files,
+					}))
+				} catch (e) {
+					reject(e)
+				}
+			})
 		},
 		tokenizer: {
 			/**

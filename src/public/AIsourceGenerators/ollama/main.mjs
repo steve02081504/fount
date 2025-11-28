@@ -8,6 +8,7 @@ import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../s
 import info_dynamic from './info.dynamic.json' with { type: 'json' }
 import info from './info.json' with { type: 'json' }
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
+/** @typedef {import('../../../decl/AIsource.ts').AIsource_StructCall_options_t} AIsource_StructCall_options_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
 /**
@@ -85,62 +86,85 @@ async function GetSource(config) {
 		/**
 		 * 使用结构化提示调用 AI 源。
 		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+		 * @param {AIsource_StructCall_options_t} options
 		 * @returns {Promise<{content: string, files: any[]}>} 来自 AI 的结果。
 		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
-			const messages = margeStructPromptChatLog(prompt_struct).map(chatLogEntry => {
-				const images = (chatLogEntry.files || [])
-					.filter(file => file.mime_type && file.mime_type.startsWith('image/'))
-					.map(file => file.buffer.toString('base64'))
+		StructCall: async (prompt_struct, { base_result, replyPreviewUpdater, signal }) => {
+			return new Promise(async (resolve, reject) => {
+				try {
+					signal?.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')))
 
-				/** @type {{role: 'user'|'assistant'|'system', content: string, images?: string[]}} */
-				const message = {
-					role: chatLogEntry.role === 'user' ? 'user' : chatLogEntry.role === 'system' ? 'system' : 'assistant',
-					content: chatLogEntry.content,
-				}
-				if (images.length) message.images = images
+					const messages = margeStructPromptChatLog(prompt_struct).map(chatLogEntry => {
+						const images = (chatLogEntry.files || [])
+							.filter(file => file.mime_type && file.mime_type.startsWith('image/'))
+							.map(file => file.buffer.toString('base64'))
 
-				return message
-			})
+						/** @type {{role: 'user'|'assistant'|'system', content: string, images?: string[]}} */
+						const message = {
+							role: chatLogEntry.role === 'user' ? 'user' : chatLogEntry.role === 'system' ? 'system' : 'assistant',
+							content: chatLogEntry.content,
+						}
+						if (images.length) message.images = images
 
-			const system_prompt = structPromptToSingleNoChatLog(prompt_struct)
-			if (system_prompt) {
-				const systemMessage = {
-					role: 'system',
-					content: system_prompt
-				}
-				if (config.system_prompt_at_depth && config.system_prompt_at_depth < messages.length)
-					messages.splice(Math.max(messages.length - config.system_prompt_at_depth, 0), 0, systemMessage)
-				else
-					messages.unshift(systemMessage)
-
-			}
-
-
-			if (config.convert_config?.roleReminding ?? true) {
-				const isMutiChar = new Set(prompt_struct.chat_log.map(chatLogEntry => chatLogEntry.name).filter(Boolean)).size > 2
-				if (isMutiChar)
-					messages.push({
-						role: 'system',
-						content: `Now, please continue the conversation as ${prompt_struct.Charname}.`
+						return message
 					})
-			}
 
-			let response_text = ''
-			const response_files = []
+					const system_prompt = structPromptToSingleNoChatLog(prompt_struct)
+					if (system_prompt) {
+						const systemMessage = {
+							role: 'system',
+							content: system_prompt
+						}
+						if (config.system_prompt_at_depth && config.system_prompt_at_depth < messages.length)
+							messages.splice(Math.max(messages.length - config.system_prompt_at_depth, 0), 0, systemMessage)
+						else
+							messages.unshift(systemMessage)
 
-			const response = await ollama.chat({
-				model: config.model,
-				messages,
-				stream: false,
-				options: config.model_arguments
+					}
+
+
+					if (config.convert_config?.roleReminding ?? true) {
+						const isMutiChar = new Set(prompt_struct.chat_log.map(chatLogEntry => chatLogEntry.name).filter(Boolean)).size > 2
+						if (isMutiChar)
+							messages.push({
+								role: 'system',
+								content: `Now, please continue the conversation as ${prompt_struct.Charname}.`
+							})
+					}
+
+					let response_text = ''
+					const response_files = []
+
+
+					if (config.use_stream) {
+						const stream = await ollama.chat({
+							model: config.model,
+							messages,
+							stream: true,
+							options: config.model_arguments
+						}, { signal })
+						for await (const chunk of stream) {
+							if (signal?.aborted) return reject(new DOMException('Aborted', 'AbortError'))
+							response_text += chunk.message.content
+							replyPreviewUpdater?.({ content: response_text, files: response_files })
+						}
+					} else {
+						const response = await ollama.chat({
+							model: config.model,
+							messages,
+							stream: false,
+							options: config.model_arguments
+						}, { signal })
+						response_text = response.message.content
+					}
+					resolve(Object.assign(base_result, {
+						content: response_text,
+						files: response_files
+					}))
+				} catch (e) {
+					reject(e)
+				}
 			})
-			response_text = response.message.content
-
-			return {
-				content: response_text,
-				files: response_files
-			}
 		},
 		tokenizer: {
 			/**

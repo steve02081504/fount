@@ -1,4 +1,5 @@
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
+/** @typedef {import('../../../decl/AIsource.ts').AIsource_StructCall_options_t} AIsource_StructCall_options_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
 import { getPartInfo } from '../../../scripts/locale.mjs'
@@ -97,14 +98,39 @@ ${err.stack || err}
 		/**
 		 * 使用结构化提示调用 AI 源。
 		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+		 * @param {AIsource_StructCall_options_t} options
 		 * @returns {Promise<{content: string, files: any[]}>} 来自 AI 的结果。
 		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
+		StructCall: async (prompt_struct, { base_result, replyPreviewUpdater, signal }) => {
 			if (!sources.length) throw new Error('no source selected')
 			const files = []
-			const results = await Promise.all(sources.map(source => {
+			const subResults = sources.map(() => ({}))
+
+			const results = await Promise.all(sources.map((source, index) => {
 				const info = getPartInfo(source, getUserByUsername(username).locales)
-				return source.StructCall(prompt_struct).then(
+				return source.StructCall(prompt_struct, {
+					base_result,
+					signal,
+					replyPreviewUpdater: subResult => {
+						subResults[index] = subResult
+						const files = []
+						const result = {
+							content: subResults.map(result => {
+								let res = `\
+**${info.name} from ${info.provider}:**
+${result.content}
+`
+								if (result.files?.length) {
+									res += `\nfiles ${files.length} - ${files.length + result.files.length}\n`
+									files.push(...result.files)
+								}
+								return res
+							}).join('\n'),
+							files
+						}
+						replyPreviewUpdater(result)
+					}
+				}).then(
 					result => {
 						let res = `\
 **${info.name} from ${info.provider}:**
@@ -124,10 +150,10 @@ ${err.stack || err}
 `
 				)
 			}))
-			return {
+			return Object.assign(base_result, {
 				content: results.join('\n'),
 				files
-			}
+			})
 		},
 		tokenizer: {
 			/**
