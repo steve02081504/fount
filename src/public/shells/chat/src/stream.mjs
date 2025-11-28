@@ -96,3 +96,50 @@ export function defineToolUseBlocks(toolPairs) {
 		next?.(args, { ...reply, content })
 	}
 }
+
+/**
+ * 定义内联工具使用处理器，支持执行和缓存。
+ * @param {Array<[string, string|RegExp, string|RegExp, (content: string) => string|Promise<string>]>} toolDefs - 工具定义数组，每个元素为 [id, start, end, exec]。
+ * @returns {import('../decl/chatLog.ts').CharReplyPreviewUpdater_t} - 回复预览更新器。
+ */
+export function defineInlineToolUses(toolDefs) {
+	return (next) => async (args, reply) => {
+		args.extension ??= {}
+		args.extension.streamInlineToolsResults ??= {}
+
+		const { content } = reply
+
+		for (const [id, start, end, exec] of toolDefs) {
+			args.extension.streamInlineToolsResults[id] ??= []
+			const cache = args.extension.streamInlineToolsResults[id]
+
+			const startPattern = start instanceof RegExp ? start.source : escapeRegExp(start)
+			const endPattern = end instanceof RegExp ? end.source : escapeRegExp(end)
+			const pattern = new RegExp(`(?:${startPattern})([\\s\\S]*?)(?:(?:${endPattern})|$)`, 'g')
+
+			let index = 0
+			const matches = [...content.matchAll(pattern)]
+
+			// 处理每个匹配
+			for (const match of matches) {
+				const matchedContent = match[1]
+
+				// 检查缓存
+				if (!cache[index]) try { // 执行并缓存结果
+					cache[index] = await exec(matchedContent)
+				} catch (error) {
+					console.error(`Error executing inline tool ${id}:`, error)
+					cache[index] = `[Error: ${error.message}]`
+				}
+
+				index++
+			}
+
+			// 清理多余的缓存：如果实际命中数少于已有缓存数，移除多余的
+			if (index < cache.length)
+				cache.splice(index)
+		}
+
+		next?.(args, reply)
+	}
+}
