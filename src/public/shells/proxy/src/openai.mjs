@@ -111,16 +111,15 @@ async function handleChatCompletionsRequest(req, res, username, model) {
 		content: message.content
 	}))
 
-	const result = await AIsource.StructCall({
+	const promptStruct = {
 		chat_log: fountMessages,
 		char_prompt: { text: [] },
 		user_prompt: { text: [] },
 		world_prompt: { text: [] },
 		other_chars_prompt: {},
 		plugin_prompts: {},
-	})
+	}
 
-	const text_result = result.content
 	const chatId = `chatcmpl-${uuidv4()}`
 	const createdTimestamp = Math.floor(Date.now() / 1000)
 
@@ -128,63 +127,90 @@ async function handleChatCompletionsRequest(req, res, username, model) {
 		res.setHeader('Content-Type', 'text/event-stream')
 		res.setHeader('Cache-Control', 'no-store')
 		res.setHeader('Connection', 'keep-alive')
-		res.flushHeaders() // Ensure headers are sent immediately
+		res.flushHeaders()
 
-		// Send content chunk(s)
-		// Basic simulation: send the whole content in one chunk
-		const contentChunkData = {
+		let lastContent = ''
+		let sentRole = false
+		/**
+		 * 处理 AI 响应的进度更新。
+		 * @param {{content: string, files: any[]}} result - 包含内容和文件的结果对象。
+		 * @returns {void}
+		 */
+		const replyPreviewUpdater = (result) => {
+			const contentDelta = result.content.substring(lastContent.length)
+			lastContent = result.content
+
+			if (contentDelta) {
+				const delta = { content: contentDelta }
+				if (!sentRole) {
+					delta.role = 'assistant'
+					sentRole = true
+				}
+				const chunkData = {
+					id: chatId,
+					object: 'chat.completion.chunk',
+					created: createdTimestamp,
+					model,
+					choices: [{
+						index: 0,
+						delta,
+						finish_reason: null
+					}]
+				}
+				res.write(`data: ${JSON.stringify(chunkData)}\n\n`)
+			}
+		}
+
+		try {
+			await AIsource.StructCall(promptStruct, { replyPreviewUpdater, signal: req.signal })
+
+			// Send final chunk
+			const finalChunkData = {
+				id: chatId,
+				object: 'chat.completion.chunk',
+				created: createdTimestamp,
+				model,
+				choices: [{
+					index: 0,
+					delta: {},
+					finish_reason: 'stop'
+				}]
+			}
+			res.write(`data: ${JSON.stringify(finalChunkData)}\n\n`)
+			res.write('data: [DONE]\n\n')
+		} catch (error) {
+			if (error.name !== 'AbortError') 
+				console.error('Error during streaming StructCall:', error)
+				// It's hard to send an error once the stream has started.
+				// We can try to send an error in the stream format if possible, but for now, just closing is fine.
+			
+		} finally {
+			res.end()
+		}
+	}
+	else {
+		const result = await AIsource.StructCall(promptStruct)
+		const text_result = result.content
+		res.status(200).json({
 			id: chatId,
-			object: 'chat.completion.chunk',
+			object: 'chat.completion',
 			created: createdTimestamp,
 			model,
 			choices: [{
 				index: 0,
-				delta: {
+				message: {
 					role: 'assistant',
-					content: text_result
+					content: text_result,
 				},
-				finish_reason: null
-			}]
-		}
-		res.write(`data: ${JSON.stringify(contentChunkData)}\n\n`)
-
-		// Send final chunk with finish reason
-		const finalChunkData = {
-			id: chatId,
-			object: 'chat.completion.chunk',
-			created: createdTimestamp, // Can use the same or slightly later timestamp
-			model,
-			choices: [{
-				index: 0,
-				delta: {}, // Empty delta in the final chunk
-				finish_reason: 'stop' // Indicate completion
-			}]
-		}
-		res.write(`data: ${JSON.stringify(finalChunkData)}\n\n`)
-
-		// Send DONE signal
-		res.write('data: [DONE]\n\n')
-		res.end()
-	}
-	else res.status(200).json({
-		id: chatId,
-		object: 'chat.completion',
-		created: createdTimestamp,
-		model,
-		choices: [{
-			index: 0,
-			message: {
-				role: 'assistant',
-				content: text_result,
+				finish_reason: 'stop',
+			}],
+			usage: { // Note: Token counts are placeholders
+				prompt_tokens: 0,
+				completion_tokens: 0,
+				total_tokens: 0,
 			},
-			finish_reason: 'stop',
-		}],
-		usage: { // Note: Token counts are placeholders
-			prompt_tokens: 0,
-			completion_tokens: 0,
-			total_tokens: 0,
-		},
-	})
+		})
+	}
 }
 
 
