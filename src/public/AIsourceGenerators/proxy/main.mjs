@@ -56,23 +56,21 @@ const configTemplate = {
  * @returns {Promise<AIsource_t>} AI 源。
  */
 async function GetSource(config, { SaveConfig }) {
-	let imgIndex = 0 // 定义 imgIndex
-	const use_stream = config.use_stream ?? false // 定义 use_stream
-
+	config.use_stream ??= true
 	/**
 	 * 调用基础模型。
 	 * @param {Array<object>} messages - 消息数组。
 	 * @param {object} config - 配置对象。
 	 * @param {object} options - 选项对象。
 	 * @param {AbortSignal} options.signal - 用于中止请求的 AbortSignal。
-	 * @param {(result: {content: string, files: any[]}) => void} options.onPartialResult - 处理部分结果的回调函数。
+	 * @param {(result: {content: string, files: any[]}) => void} options.previewUpdater - 处理部分结果的回调函数。
 	 * @param {{content: string, files: any[]}} options.result - 包含内容和文件的结果对象。
 	 * @returns {Promise<{content: string, files: any[]}>} 模型返回的内容。
 	 */
 	async function fetchChatCompletion(messages, config, {
-		signal, onPartialResult, result
+		signal, previewUpdater, result
 	}) {
-
+		let imgIndex = 0
 		const response = await fetch(config.url, {
 			method: 'POST',
 			headers: {
@@ -85,7 +83,7 @@ async function GetSource(config, { SaveConfig }) {
 			body: JSON.stringify({
 				model: config.model,
 				messages,
-				stream: use_stream,
+				stream: config.use_stream,
 				...config.model_arguments,
 			}),
 			signal
@@ -127,7 +125,7 @@ async function GetSource(config, { SaveConfig }) {
 				const validFiles = newFiles.filter(Boolean)
 				if (validFiles.length > 0) {
 					result.files.push(...validFiles)
-					onPartialResult(result)
+					previewUpdater(result)
 				}
 			})()
 			imageProcessingPromises.push(promise)
@@ -164,7 +162,7 @@ async function GetSource(config, { SaveConfig }) {
 							const content = delta?.content || message?.content || ''
 							if (content) {
 								result.content += content
-								onPartialResult(result)
+								previewUpdater(result)
 							}
 
 							// Handle images if present in delta or message (Custom extension support)
