@@ -7,7 +7,12 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://risuai.net/",
-		"tags": ["risu", "character card", "ccv3", "import"]
+		"tags": [
+			"risu",
+			"character card",
+			"ccv3",
+			"import"
+		]
 	},
 	"zh-CN": {
 		"name": "RisuAI 导入器",
@@ -17,7 +22,12 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://risuai.net/",
-		"tags": ["risu", "角色卡", "ccv3", "导入"]
+		"tags": [
+			"risu",
+			"角色卡",
+			"ccv3",
+			"导入"
+		]
 	},
 	"ar-SA": {
 		"name": "مستورد RisuAI",
@@ -27,7 +37,12 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://risuai.net/",
-		"tags": ["risu", "بطاقة شخصية", "ccv3", "استيراد"]
+		"tags": [
+			"risu",
+			"بطاقة شخصية",
+			"ccv3",
+			"استيراد"
+		]
 	},
 	"de-DE": {
 		"name": "RisuAI-Importer",
@@ -37,7 +52,12 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://risuai.net/",
-		"tags": ["risu", "Charakterkarte", "ccv3", "Import"]
+		"tags": [
+			"risu",
+			"Charakterkarte",
+			"ccv3",
+			"Import"
+		]
 	},
 	"emoji": {
 		"name": "🐿️ RisuAI Importer",
@@ -47,7 +67,12 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://risuai.net/",
-		"tags": ["risu", "character card", "ccv3", "import"]
+		"tags": [
+			"risu",
+			"character card",
+			"ccv3",
+			"import"
+		]
 	},
 	"es-ES": {
 		"name": "Importador de RisuAI",
@@ -57,7 +82,12 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://risuai.net/",
-		"tags": ["risu", "tarjeta de personaje", "ccv3", "importar"]
+		"tags": [
+			"risu",
+			"tarjeta de personaje",
+			"ccv3",
+			"importar"
+		]
 	},
 	"fr-FR": {
 		"name": "Importateur RisuAI",
@@ -67,7 +97,12 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://risuai.net/",
-		"tags": ["risu", "carte de personnage", "ccv3", "importer"]
+		"tags": [
+			"risu",
+			"carte de personnage",
+			"ccv3",
+			"importer"
+		]
 	},
 	"hi-IN": {
 		"name": "RisuAI आयातक",
@@ -77,7 +112,12 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://risuai.net/",
-		"tags": ["risu", "कैरेक्टर कार्ड", "ccv3", "आयात"]
+		"tags": [
+			"risu",
+			"कैरेक्टर कार्ड",
+			"ccv3",
+			"आयात"
+		]
 	},
 	"is-IS": {
 		"name": "RisuAI innflytjandi",
@@ -87,7 +127,12 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://risuai.net/",
-		"tags": ["risu", "persónukort", "ccv3", "innflutningur"]
+		"tags": [
+			"risu",
+			"persónukort",
+			"ccv3",
+			"innflutningur"
+		]
 	},
 	"it-IT": {
 		"name": "Importatore RisuAI",
@@ -97,7 +142,12 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://risuai.net/",
-		"tags": ["risu", "carta personaggio", "ccv3", "importa"]
+		"tags": [
+			"risu",
+			"carta personaggio",
+			"ccv3",
+			"importa"
+		]
 	},
 	"ja-JP": {
 		"name": "RisuAI インポーター",
@@ -107,7 +157,12 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://risuai.net/",
-		"tags": ["risu", "キャラクターカード", "ccv3", "インポート"]
+		"tags": [
+			"risu",
+			"キャラクターカード",
+			"ccv3",
+			"インポート"
+		]
 	},
 	"ko-KR": {
 		"name": "RisuAI 가져오기",
@@ -117,7 +172,12 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://risuai.net/",
-		"tags": ["risu", "캐릭터 카드", "ccv3", "가져오기"]
+		"tags": [
+			"risu",
+			"캐릭터 카드",
+			"ccv3",
+			"가져오기"
+		]
 	},
 	"lzh": {
 		"name": "RisuAI 納入司",
@@ -127,7 +187,12 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://risuai.net/",
-		"tags": ["risu", "角色符", "ccv3", "納入"]
+		"tags": [
+			"risu",
+			"角色符",
+			"ccv3",
+			"納入"
+		]
 	},
 	"nl-NL": {
 		"name": "RisuAI-importeur",
@@ -137,7 +202,12 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://risuai.net/",
-		"tags": ["risu", "personagekaart", "ccv3", "importeren"]
+		"tags": [
+			"risu",
+			"personagekaart",
+			"ccv3",
+			"importeren"
+		]
 	},
 	"pt-PT": {
 		"name": "Importador RisuAI",
@@ -147,7 +217,12 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://risuai.net/",
-		"tags": ["risu", "cartão de personagem", "ccv3", "importar"]
+		"tags": [
+			"risu",
+			"cartão de personagem",
+			"ccv3",
+			"importar"
+		]
 	},
 	"ru-RU": {
 		"name": "Импортер RisuAI",
@@ -157,7 +232,12 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://risuai.net/",
-		"tags": ["risu", "карточка персонажа", "ccv3", "импорт"]
+		"tags": [
+			"risu",
+			"карточка персонажа",
+			"ccv3",
+			"импорт"
+		]
 	},
 	"uk-UA": {
 		"name": "Імпортер RisuAI",
@@ -167,7 +247,12 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://risuai.net/",
-		"tags": ["risu", "картка персонажа", "ccv3", "імпорт"]
+		"tags": [
+			"risu",
+			"картка персонажа",
+			"ccv3",
+			"імпорт"
+		]
 	},
 	"vi-VN": {
 		"name": "Trình nhập RisuAI",
@@ -177,7 +262,12 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://risuai.net/",
-		"tags": ["risu", "thẻ nhân vật", "ccv3", "nhập"]
+		"tags": [
+			"risu",
+			"thẻ nhân vật",
+			"ccv3",
+			"nhập"
+		]
 	},
 	"zh-TW": {
 		"name": "RisuAI 匯入器",
@@ -187,6 +277,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://risuai.net/",
-		"tags": ["risu", "角色卡", "ccv3", "匯入"]
+		"tags": [
+			"risu",
+			"角色卡",
+			"ccv3",
+			"匯入"
+		]
 	}
 }

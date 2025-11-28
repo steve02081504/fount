@@ -6,7 +6,11 @@
 		"description_markdown": "Selects a source randomly based on configured weights.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["random", "utility", "meta"],
+		"tags": [
+			"random",
+			"utility",
+			"meta"
+		],
 		"home_page": "https://github.com/steve02081504/fount"
 	},
 	"zh-CN": {
@@ -16,7 +20,11 @@
 		"description_markdown": "根据配置的权重随机选择一个源。",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["随机", "实用工具", "元"],
+		"tags": [
+			"随机",
+			"实用工具",
+			"元"
+		],
 		"home_page": "https://github.com/steve02081504/fount"
 	},
 	"ar-SA": {
@@ -26,7 +34,11 @@
 		"description_markdown": "يختار مصدرًا عشوائيًا بناءً على الأوزان المكونة.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["عشوائي", "أداة", "ميتا"],
+		"tags": [
+			"عشوائي",
+			"أداة",
+			"ميتا"
+		],
 		"home_page": "https://github.com/steve02081504/fount"
 	},
 	"de-DE": {
@@ -36,7 +48,11 @@
 		"description_markdown": "Wählt eine Quelle zufällig basierend auf konfigurierten Gewichten aus.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["Zufall", "Dienstprogramm", "Meta"],
+		"tags": [
+			"Zufall",
+			"Dienstprogramm",
+			"Meta"
+		],
 		"home_page": "https://github.com/steve02081504/fount"
 	},
 	"emoji": {
@@ -46,7 +62,11 @@
 		"description_markdown": "⚖️➡️🎲➡️🤖",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["🎲", "⚖️", "❓"],
+		"tags": [
+			"🎲",
+			"⚖️",
+			"❓"
+		],
 		"home_page": "https://github.com/steve02081504/fount"
 	},
 	"es-ES": {
@@ -56,7 +76,11 @@
 		"description_markdown": "Selecciona una fuente al azar en función de los pesos configurados.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["aleatorio", "utilidad", "meta"],
+		"tags": [
+			"aleatorio",
+			"utilidad",
+			"meta"
+		],
 		"home_page": "https://github.com/steve02081504/fount"
 	},
 	"fr-FR": {
@@ -66,7 +90,11 @@
 		"description_markdown": "Sélectionne une source au hasard en fonction des poids configurés.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["aléatoire", "utilitaire", "méta"],
+		"tags": [
+			"aléatoire",
+			"utilitaire",
+			"méta"
+		],
 		"home_page": "https://github.com/steve02081504/fount"
 	},
 	"hi-IN": {
@@ -76,7 +104,11 @@
 		"description_markdown": "कॉन्फ़िगर किए गए भार के आधार पर यादृच्छिक रूप से एक स्रोत का चयन करता है।",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["यादृच्छिक", "उपयोगिता", "मेटा"],
+		"tags": [
+			"यादृच्छिक",
+			"उपयोगिता",
+			"मेटा"
+		],
 		"home_page": "https://github.com/steve02081504/fount"
 	},
 	"is-IS": {
@@ -86,7 +118,11 @@
 		"description_markdown": "Velur heimild af handahófi miðað við stilltar þyngdir.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["slembiúrtak", "gagnsemi", "meta"],
+		"tags": [
+			"slembiúrtak",
+			"gagnsemi",
+			"meta"
+		],
 		"home_page": "https://github.com/steve02081504/fount"
 	},
 	"it-IT": {
@@ -96,7 +132,11 @@
 		"description_markdown": "Seleziona una fonte in modo casuale in base ai pesi configurati.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["casuale", "utilità", "meta"],
+		"tags": [
+			"casuale",
+			"utilità",
+			"meta"
+		],
 		"home_page": "https://github.com/steve02081504/fount"
 	},
 	"ja-JP": {
@@ -106,7 +146,11 @@
 		"description_markdown": "設定された重みに基づいてソースをランダムに選択します。",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["ランダム", "ユーティリティ", "メタ"],
+		"tags": [
+			"ランダム",
+			"ユーティリティ",
+			"メタ"
+		],
 		"home_page": "https://github.com/steve02081504/fount"
 	},
 	"ko-KR": {
@@ -116,7 +160,11 @@
 		"description_markdown": "구성된 가중치에 따라 무작위로 소스를 선택합니다.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["무작위", "유틸리티", "메타"],
+		"tags": [
+			"무작위",
+			"유틸리티",
+			"메타"
+		],
 		"home_page": "https://github.com/steve02081504/fount"
 	},
 	"lzh": {
@@ -126,7 +174,11 @@
 		"description_markdown": "依權重之差，隨機取源，如探囊取物。",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["隨機", "器用", "元"],
+		"tags": [
+			"隨機",
+			"器用",
+			"元"
+		],
 		"home_page": "https://github.com/steve02081504/fount"
 	},
 	"nl-NL": {
@@ -136,7 +188,11 @@
 		"description_markdown": "Selecteert willekeurig een bron op basis van geconfigureerde gewichten.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["willekeurig", "hulpprogramma", "meta"],
+		"tags": [
+			"willekeurig",
+			"hulpprogramma",
+			"meta"
+		],
 		"home_page": "https://github.com/steve02081504/fount"
 	},
 	"pt-PT": {
@@ -146,7 +202,11 @@
 		"description_markdown": "Seleciona uma fonte aleatoriamente com base nos pesos configurados.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["aleatório", "utilitário", "meta"],
+		"tags": [
+			"aleatório",
+			"utilitário",
+			"meta"
+		],
 		"home_page": "https://github.com/steve02081504/fount"
 	},
 	"ru-RU": {
@@ -156,7 +216,11 @@
 		"description_markdown": "Выбирает источник случайным образом на основе настроенных весов.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["случайный", "утилита", "мета"],
+		"tags": [
+			"случайный",
+			"утилита",
+			"мета"
+		],
 		"home_page": "https://github.com/steve02081504/fount"
 	},
 	"uk-UA": {
@@ -166,7 +230,11 @@
 		"description_markdown": "Вибирає джерело випадковим чином на основі налаштованих ваг.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["випадковий", "утиліта", "мета"],
+		"tags": [
+			"випадковий",
+			"утиліта",
+			"мета"
+		],
 		"home_page": "https://github.com/steve02081504/fount"
 	},
 	"vi-VN": {
@@ -176,7 +244,11 @@
 		"description_markdown": "Chọn một nguồn ngẫu nhiên dựa trên trọng số được định cấu hình.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["ngẫu nhiên", "tiện ích", "meta"],
+		"tags": [
+			"ngẫu nhiên",
+			"tiện ích",
+			"meta"
+		],
 		"home_page": "https://github.com/steve02081504/fount"
 	},
 	"zh-TW": {
@@ -186,7 +258,11 @@
 		"description_markdown": "根據配置的權重隨機選擇一個來源。",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["隨機", "實用程式", "元"],
+		"tags": [
+			"隨機",
+			"實用程式",
+			"元"
+		],
 		"home_page": "https://github.com/steve02081504/fount"
 	}
 }

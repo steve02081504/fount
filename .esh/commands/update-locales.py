@@ -493,6 +493,7 @@ def sync_info_content(info_data, available_lang_codes):
 def process_info_files(fount_dir, gitignore_spec, available_lang_codes):
 	"""
 	扫描并同步所有的 info.json / info.dynamic.json 文件
+	不仅同步内容，还会强制统一缩进格式（缩进使用 Tab，末尾有空行）。
 	"""
 	print(f"\n--- 开始扫描并同步 Info JSON 文件 ---")
 	print(f"目标文件名: {INFO_FILENAMES}")
@@ -513,20 +514,40 @@ def process_info_files(fount_dir, gitignore_spec, available_lang_codes):
 				continue
 
 			try:
-				# 读取
+				# 1. 读取原始文件内容（字符串）以便后续比较格式
 				with open(filepath, "r", encoding="utf-8") as f:
-					data = json5.load(f, object_pairs_hook=OrderedDict)
+					original_content_str = f.read()
+
+				# 2. 解析数据
+				# 使用 loads 而不是 load，因为我们已经读取了字符串
+				try:
+					data = json5.loads(original_content_str, object_pairs_hook=OrderedDict)
+				except Exception as e:
+					print(f"    ! 解析 JSON5 失败 {os.path.relpath(filepath, fount_dir)}: {e}")
+					continue
 
 				print(f"  正在处理: {os.path.relpath(filepath, fount_dir)}")
 
-				# 同步处理
-				if sync_info_content(data, available_lang_codes):
-					# 保存
+				# 3. 执行内容同步逻辑 (sync_info_content 会修改 data 对象)
+				content_has_logical_changes = sync_info_content(data, available_lang_codes)
+
+				# 4. 生成标准格式的新字符串
+				# 强制使用 Tab 缩进，且末尾附加一个换行符
+				new_content_str = json.dumps(data, ensure_ascii=False, indent="\t", default=str) + "\n"
+
+				# 5. 判定是否需要写入
+				# 条件：(内容逻辑有变化) 或者 (原始文本与标准格式文本不一致)
+				if content_has_logical_changes or original_content_str != new_content_str:
+					action = "更新内容" if content_has_logical_changes else "格式化"
+
 					with open(filepath, "w", encoding="utf-8", newline="\n") as f:
-						# 使用 json.dumps 而非 json5 以保持最大兼容性，但用 OrderedDict
-						f.write(json.dumps(data, ensure_ascii=False, indent="\t", default=str) + "\n")
-					print(f"    -> 已保存更新。")
+						f.write(new_content_str)
+
+					print(f"    -> 已保存 ({action})。")
 					count_changed += 1
+				else:
+					print("    -> 无需变更。")
+					pass
 
 				count_processed += 1
 
@@ -534,7 +555,6 @@ def process_info_files(fount_dir, gitignore_spec, available_lang_codes):
 				print(f"    ! 错误处理文件 {filepath}: {e}")
 
 	print(f"--- Info 文件处理完毕: 扫描 {count_processed} 个, 更新 {count_changed} 个 ---")
-
 
 def normalize_and_sync_dicts(
 	dict_a,

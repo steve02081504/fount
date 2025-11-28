@@ -5,7 +5,11 @@
 		"description_markdown": "Privacy-focused AI chat from DuckDuckGo.",
 		"version": "0.1.0",
 		"author": "steve02081504",
-		"tags": ["duckduckgo", "ai", "privacy"],
+		"tags": [
+			"duckduckgo",
+			"ai",
+			"privacy"
+		],
 		"provider": "duckduckgo",
 		"home_page": "https://duckduckgo.com/"
 	},
@@ -15,7 +19,11 @@
 		"description_markdown": "来自 DuckDuckGo 的注重隐私的 AI 聊天。",
 		"version": "0.1.0",
 		"author": "steve02081504",
-		"tags": ["duckduckgo", "ai", "隐私"],
+		"tags": [
+			"duckduckgo",
+			"ai",
+			"隐私"
+		],
 		"provider": "duckduckgo",
 		"home_page": "https://duckduckgo.com/"
 	},
@@ -25,7 +33,11 @@
 		"description_markdown": "دردشة ذكاء اصطناعي تركز على الخصوصية من DuckDuckGo.",
 		"version": "0.1.0",
 		"author": "steve02081504",
-		"tags": ["duckduckgo", "ai", "خصوصية"],
+		"tags": [
+			"duckduckgo",
+			"ai",
+			"خصوصية"
+		],
 		"provider": "duckduckgo",
 		"home_page": "https://duckduckgo.com/"
 	},
@@ -35,7 +47,11 @@
 		"description_markdown": "Datenschutzorientierter KI-Chat von DuckDuckGo.",
 		"version": "0.1.0",
 		"author": "steve02081504",
-		"tags": ["duckduckgo", "ki", "datenschutz"],
+		"tags": [
+			"duckduckgo",
+			"ki",
+			"datenschutz"
+		],
 		"provider": "duckduckgo",
 		"home_page": "https://duckduckgo.com/"
 	},
@@ -45,7 +61,11 @@
 		"description_markdown": "🦆🤐🛡️💬",
 		"version": "0.1.0",
 		"author": "steve02081504",
-		"tags": ["🦆", "🛡️", "🤐"],
+		"tags": [
+			"🦆",
+			"🛡️",
+			"🤐"
+		],
 		"provider": "duckduckgo",
 		"home_page": "https://duckduckgo.com/"
 	},
@@ -55,7 +75,11 @@
 		"description_markdown": "Chat de IA centrado en la privacidad de DuckDuckGo.",
 		"version": "0.1.0",
 		"author": "steve02081504",
-		"tags": ["duckduckgo", "ia", "privacidad"],
+		"tags": [
+			"duckduckgo",
+			"ia",
+			"privacidad"
+		],
 		"provider": "duckduckgo",
 		"home_page": "https://duckduckgo.com/"
 	},
@@ -65,7 +89,11 @@
 		"description_markdown": "Chat IA axé sur la confidentialité de DuckDuckGo.",
 		"version": "0.1.0",
 		"author": "steve02081504",
-		"tags": ["duckduckgo", "ia", "confidentialité"],
+		"tags": [
+			"duckduckgo",
+			"ia",
+			"confidentialité"
+		],
 		"provider": "duckduckgo",
 		"home_page": "https://duckduckgo.com/"
 	},
@@ -75,7 +103,11 @@
 		"description_markdown": "डकडकगो से गोपनीयता-केंद्रित एआई चैट।",
 		"version": "0.1.0",
 		"author": "steve02081504",
-		"tags": ["डकडकगो", "एआई", "गोपनीयता"],
+		"tags": [
+			"डकडकगो",
+			"एआई",
+			"गोपनीयता"
+		],
 		"provider": "duckduckgo",
 		"home_page": "https://duckduckgo.com/"
 	},
@@ -85,7 +117,11 @@
 		"description_markdown": "Persónuverndarmiðað gervigreindarspjall frá DuckDuckGo.",
 		"version": "0.1.0",
 		"author": "steve02081504",
-		"tags": ["duckduckgo", "gervigreind", "persónuvernd"],
+		"tags": [
+			"duckduckgo",
+			"gervigreind",
+			"persónuvernd"
+		],
 		"provider": "duckduckgo",
 		"home_page": "https://duckduckgo.com/"
 	},
@@ -95,7 +131,11 @@
 		"description_markdown": "Chat AI incentrata sulla privacy di DuckDuckGo.",
 		"version": "0.1.0",
 		"author": "steve02081504",
-		"tags": ["duckduckgo", "ia", "privacy"],
+		"tags": [
+			"duckduckgo",
+			"ia",
+			"privacy"
+		],
 		"provider": "duckduckgo",
 		"home_page": "https://duckduckgo.com/"
 	},
@@ -105,7 +145,11 @@
 		"description_markdown": "DuckDuckGo のプライバシーを重視した AI チャット。",
 		"version": "0.1.0",
 		"author": "steve02081504",
-		"tags": ["duckduckgo", "ai", "プライバシー"],
+		"tags": [
+			"duckduckgo",
+			"ai",
+			"プライバシー"
+		],
 		"provider": "duckduckgo",
 		"home_page": "https://duckduckgo.com/"
 	},
@@ -115,7 +159,11 @@
 		"description_markdown": "DuckDuckGo의 개인 정보 보호 중심 AI 채팅입니다.",
 		"version": "0.1.0",
 		"author": "steve02081504",
-		"tags": ["duckduckgo", "ai", "개인 정보 보호"],
+		"tags": [
+			"duckduckgo",
+			"ai",
+			"개인 정보 보호"
+		],
 		"provider": "duckduckgo",
 		"home_page": "https://duckduckgo.com/"
 	},
@@ -125,7 +173,11 @@
 		"description_markdown": "DuckDuckGo 之重隱私智械談。",
 		"version": "0.1.0",
 		"author": "steve02081504",
-		"tags": ["duckduckgo", "智械", "隱私"],
+		"tags": [
+			"duckduckgo",
+			"智械",
+			"隱私"
+		],
 		"provider": "duckduckgo",
 		"home_page": "https://duckduckgo.com/"
 	},
@@ -135,7 +187,11 @@
 		"description_markdown": "Privacygerichte AI-chat van DuckDuckGo.",
 		"version": "0.1.0",
 		"author": "steve02081504",
-		"tags": ["duckduckgo", "ai", "privacy"],
+		"tags": [
+			"duckduckgo",
+			"ai",
+			"privacy"
+		],
 		"provider": "duckduckgo",
 		"home_page": "https://duckduckgo.com/"
 	},
@@ -145,7 +201,11 @@
 		"description_markdown": "Chat de IA focado na privacidade do DuckDuckGo.",
 		"version": "0.1.0",
 		"author": "steve02081504",
-		"tags": ["duckduckgo", "ia", "privacidade"],
+		"tags": [
+			"duckduckgo",
+			"ia",
+			"privacidade"
+		],
 		"provider": "duckduckgo",
 		"home_page": "https://duckduckgo.com/"
 	},
@@ -155,7 +215,11 @@
 		"description_markdown": "Конфиденциальный AI-чат от DuckDuckGo.",
 		"version": "0.1.0",
 		"author": "steve02081504",
-		"tags": ["duckduckgo", "ии", "конфиденциальность"],
+		"tags": [
+			"duckduckgo",
+			"ии",
+			"конфиденциальность"
+		],
 		"provider": "duckduckgo",
 		"home_page": "https://duckduckgo.com/"
 	},
@@ -165,7 +229,11 @@
 		"description_markdown": "Конфіденційний AI-чат від DuckDuckGo.",
 		"version": "0.1.0",
 		"author": "steve02081504",
-		"tags": ["duckduckgo", "ші", "конфіденційність"],
+		"tags": [
+			"duckduckgo",
+			"ші",
+			"конфіденційність"
+		],
 		"provider": "duckduckgo",
 		"home_page": "https://duckduckgo.com/"
 	},
@@ -175,7 +243,11 @@
 		"description_markdown": "Trò chuyện AI tập trung vào quyền riêng tư của DuckDuckGo.",
 		"version": "0.1.0",
 		"author": "steve02081504",
-		"tags": ["duckduckgo", "ai", "quyền riêng tư"],
+		"tags": [
+			"duckduckgo",
+			"ai",
+			"quyền riêng tư"
+		],
 		"provider": "duckduckgo",
 		"home_page": "https://duckduckgo.com/"
 	},
@@ -185,7 +257,11 @@
 		"description_markdown": "來自 DuckDuckGo 的注重隱私的 AI 聊天。",
 		"version": "0.1.0",
 		"author": "steve02081504",
-		"tags": ["duckduckgo", "ai", "隱私"],
+		"tags": [
+			"duckduckgo",
+			"ai",
+			"隱私"
+		],
 		"provider": "duckduckgo",
 		"home_page": "https://duckduckgo.com/"
 	}

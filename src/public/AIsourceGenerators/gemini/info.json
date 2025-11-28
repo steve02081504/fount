@@ -6,7 +6,12 @@
 		"description_markdown": "Access Google's powerful Gemini models for multimodal chat and content generation.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["gemini", "google", "ai", "multimodal"],
+		"tags": [
+			"gemini",
+			"google",
+			"ai",
+			"multimodal"
+		],
 		"home_page": "https://gemini.google.com/"
 	},
 	"zh-CN": {
@@ -16,7 +21,12 @@
 		"description_markdown": "访问谷歌强大的 Gemini 模型，进行多模态聊天和内容生成。",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["gemini", "google", "ai", "多模态"],
+		"tags": [
+			"gemini",
+			"google",
+			"ai",
+			"多模态"
+		],
 		"home_page": "https://gemini.google.com/"
 	},
 	"ar-SA": {
@@ -26,7 +36,12 @@
 		"description_markdown": "الوصول إلى نماذج Gemini القوية من Google للدردشة متعددة الوسائط وإنشاء المحتوى.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["gemini", "google", "ai", "متعدد الوسائط"],
+		"tags": [
+			"gemini",
+			"google",
+			"ai",
+			"متعدد الوسائط"
+		],
 		"home_page": "https://gemini.google.com/"
 	},
 	"de-DE": {
@@ -36,7 +51,12 @@
 		"description_markdown": "Greifen Sie auf die leistungsstarken Gemini-Modelle von Google für multimodalen Chat und Inhaltserstellung zu.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["gemini", "google", "ki", "multimodal"],
+		"tags": [
+			"gemini",
+			"google",
+			"ki",
+			"multimodal"
+		],
 		"home_page": "https://gemini.google.com/"
 	},
 	"emoji": {
@@ -46,7 +66,12 @@
 		"description_markdown": "🖼️✍️🗣️➡️♊️✨",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["♊️", "✨", "🎨", "🗣️"],
+		"tags": [
+			"♊️",
+			"✨",
+			"🎨",
+			"🗣️"
+		],
 		"home_page": "https://gemini.google.com/"
 	},
 	"es-ES": {
@@ -56,7 +81,12 @@
 		"description_markdown": "Acceda a los potentes modelos Gemini de Google para chat multimodal y generación de contenido.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["gemini", "google", "ia", "multimodal"],
+		"tags": [
+			"gemini",
+			"google",
+			"ia",
+			"multimodal"
+		],
 		"home_page": "https://gemini.google.com/"
 	},
 	"fr-FR": {
@@ -66,7 +96,12 @@
 		"description_markdown": "Accédez aux puissants modèles Gemini de Google pour le chat multimodal et la génération de contenu.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["gemini", "google", "ia", "multimodal"],
+		"tags": [
+			"gemini",
+			"google",
+			"ia",
+			"multimodal"
+		],
 		"home_page": "https://gemini.google.com/"
 	},
 	"hi-IN": {
@@ -76,7 +111,12 @@
 		"description_markdown": "मल्टीमॉडल चैट और सामग्री निर्माण के लिए गूगल के शक्तिशाली जेमिनी मॉडल तक पहुँचें।",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["जेमिनी", "गूगल", "एआई", "मल्टीमॉडल"],
+		"tags": [
+			"जेमिनी",
+			"गूगल",
+			"एआई",
+			"मल्टीमॉडल"
+		],
 		"home_page": "https://gemini.google.com/"
 	},
 	"is-IS": {
@@ -86,7 +126,12 @@
 		"description_markdown": "Fáðu aðgang að öflugum Gemini-líkönum Google fyrir fjölþætt spjall og efnissköpun.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["gemini", "google", "gervigreind", "fjölþætt"],
+		"tags": [
+			"gemini",
+			"google",
+			"gervigreind",
+			"fjölþætt"
+		],
 		"home_page": "https://gemini.google.com/"
 	},
 	"it-IT": {
@@ -96,7 +141,12 @@
 		"description_markdown": "Accedi ai potenti modelli Gemini di Google per chat multimodale e generazione di contenuti.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["gemini", "google", "ia", "multimodale"],
+		"tags": [
+			"gemini",
+			"google",
+			"ia",
+			"multimodale"
+		],
 		"home_page": "https://gemini.google.com/"
 	},
 	"ja-JP": {
@@ -106,7 +156,12 @@
 		"description_markdown": "マルチモーダル チャットやコンテンツ生成のために、Google の強力な Gemini モデルにアクセスします。",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["gemini", "google", "ai", "マルチモーダル"],
+		"tags": [
+			"gemini",
+			"google",
+			"ai",
+			"マルチモーダル"
+		],
 		"home_page": "https://gemini.google.com/"
 	},
 	"ko-KR": {
@@ -116,7 +171,12 @@
 		"description_markdown": "멀티모달 채팅 및 콘텐츠 생성을 위해 구글의 강력한 제미니 모델에 액세스하세요.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["제미니", "구글", "ai", "멀티모달"],
+		"tags": [
+			"제미니",
+			"구글",
+			"ai",
+			"멀티모달"
+		],
 		"home_page": "https://gemini.google.com/"
 	},
 	"lzh": {
@@ -126,7 +186,12 @@
 		"description_markdown": "取用谷歌之強雙子模型，以作多態清談、內容生成。",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["雙子", "谷歌", "智械", "多態"],
+		"tags": [
+			"雙子",
+			"谷歌",
+			"智械",
+			"多態"
+		],
 		"home_page": "https://gemini.google.com/"
 	},
 	"nl-NL": {
@@ -136,7 +201,12 @@
 		"description_markdown": "Toegang tot de krachtige Gemini-modellen van Google voor multimodale chat en contentgeneratie.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["gemini", "google", "ai", "multimodaal"],
+		"tags": [
+			"gemini",
+			"google",
+			"ai",
+			"multimodaal"
+		],
 		"home_page": "https://gemini.google.com/"
 	},
 	"pt-PT": {
@@ -146,7 +216,12 @@
 		"description_markdown": "Aceda aos poderosos modelos Gemini da Google para chat multimodal e geração de conteúdo.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["gemini", "google", "ia", "multimodal"],
+		"tags": [
+			"gemini",
+			"google",
+			"ia",
+			"multimodal"
+		],
 		"home_page": "https://gemini.google.com/"
 	},
 	"ru-RU": {
@@ -156,7 +231,12 @@
 		"description_markdown": "Доступ к мощным моделям Gemini от Google для мультимодального чата и создания контента.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["gemini", "google", "ии", "мультимодальный"],
+		"tags": [
+			"gemini",
+			"google",
+			"ии",
+			"мультимодальный"
+		],
 		"home_page": "https://gemini.google.com/"
 	},
 	"uk-UA": {
@@ -166,7 +246,12 @@
 		"description_markdown": "Доступ до потужних моделей Gemini від Google для мультимодального чату та створення контенту.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["gemini", "google", "ші", "мультимодальний"],
+		"tags": [
+			"gemini",
+			"google",
+			"ші",
+			"мультимодальний"
+		],
 		"home_page": "https://gemini.google.com/"
 	},
 	"vi-VN": {
@@ -176,7 +261,12 @@
 		"description_markdown": "Truy cập các mô hình Gemini mạnh mẽ của Google để trò chuyện đa phương thức và tạo nội dung.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["gemini", "google", "ai", "đa phương thức"],
+		"tags": [
+			"gemini",
+			"google",
+			"ai",
+			"đa phương thức"
+		],
 		"home_page": "https://gemini.google.com/"
 	},
 	"zh-TW": {
@@ -186,7 +276,12 @@
 		"description_markdown": "存取 Google 強大的 Gemini 模型，進行多模態聊天和內容生成。",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["gemini", "google", "ai", "多模態"],
+		"tags": [
+			"gemini",
+			"google",
+			"ai",
+			"多模態"
+		],
 		"home_page": "https://gemini.google.com/"
 	}
 }

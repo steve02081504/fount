@@ -6,7 +6,11 @@
 		"description_markdown": "An AI that can answer questions and write code.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["blackbox", "ai", "code"],
+		"tags": [
+			"blackbox",
+			"ai",
+			"code"
+		],
 		"home_page": "https://www.blackbox.ai/"
 	},
 	"zh-CN": {
@@ -16,7 +20,11 @@
 		"description_markdown": "一个可以回答问题和编写代码的人工智能。",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["blackbox", "ai", "代码"],
+		"tags": [
+			"blackbox",
+			"ai",
+			"代码"
+		],
 		"home_page": "https://www.blackbox.ai/"
 	},
 	"ar-SA": {
@@ -26,7 +34,11 @@
 		"description_markdown": "ذكاء اصطناعي يمكنه الإجابة على الأسئلة وكتابة التعليمات البرمجية.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["blackbox", "ai", "كود"],
+		"tags": [
+			"blackbox",
+			"ai",
+			"كود"
+		],
 		"home_page": "https://www.blackbox.ai/"
 	},
 	"de-DE": {
@@ -36,7 +48,11 @@
 		"description_markdown": "Eine KI, die Fragen beantworten und Code schreiben kann.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["blackbox", "ki", "code"],
+		"tags": [
+			"blackbox",
+			"ki",
+			"code"
+		],
 		"home_page": "https://www.blackbox.ai/"
 	},
 	"emoji": {
@@ -46,7 +62,11 @@
 		"description_markdown": "❓➕💻➡️⬛️📦➡️✨",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["⬛️", "📦", "🧠"],
+		"tags": [
+			"⬛️",
+			"📦",
+			"🧠"
+		],
 		"home_page": "https://www.blackbox.ai/"
 	},
 	"es-ES": {
@@ -56,7 +76,11 @@
 		"description_markdown": "Una IA que puede responder preguntas y escribir código.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["blackbox", "ia", "código"],
+		"tags": [
+			"blackbox",
+			"ia",
+			"código"
+		],
 		"home_page": "https://www.blackbox.ai/"
 	},
 	"fr-FR": {
@@ -66,7 +90,11 @@
 		"description_markdown": "Une IA capable de répondre à des questions et d'écrire du code.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["blackbox", "ia", "code"],
+		"tags": [
+			"blackbox",
+			"ia",
+			"code"
+		],
 		"home_page": "https://www.blackbox.ai/"
 	},
 	"hi-IN": {
@@ -76,7 +104,11 @@
 		"description_markdown": "एक एआई जो सवालों के जवाब दे सकता है और कोड लिख सकता है।",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["ब्लैकबॉक्स", "एआई", "कोड"],
+		"tags": [
+			"ब्लैकबॉक्स",
+			"एआई",
+			"कोड"
+		],
 		"home_page": "https://www.blackbox.ai/"
 	},
 	"is-IS": {
@@ -86,7 +118,11 @@
 		"description_markdown": "Gervigreind sem getur svarað spurningum og skrifað kóða.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["blackbox", "gervigreind", "kóði"],
+		"tags": [
+			"blackbox",
+			"gervigreind",
+			"kóði"
+		],
 		"home_page": "https://www.blackbox.ai/"
 	},
 	"it-IT": {
@@ -96,7 +132,11 @@
 		"description_markdown": "Un'intelligenza artificiale in grado di rispondere a domande e scrivere codice.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["blackbox", "ia", "codice"],
+		"tags": [
+			"blackbox",
+			"ia",
+			"codice"
+		],
 		"home_page": "https://www.blackbox.ai/"
 	},
 	"ja-JP": {
@@ -106,7 +146,11 @@
 		"description_markdown": "質問に答えたり、コードを書いたりできる AI。",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["blackbox", "ai", "コード"],
+		"tags": [
+			"blackbox",
+			"ai",
+			"コード"
+		],
 		"home_page": "https://www.blackbox.ai/"
 	},
 	"ko-KR": {
@@ -116,7 +160,11 @@
 		"description_markdown": "질문에 답하고 코드를 작성할 수 있는 AI입니다.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["블랙박스", "ai", "코드"],
+		"tags": [
+			"블랙박스",
+			"ai",
+			"코드"
+		],
 		"home_page": "https://www.blackbox.ai/"
 	},
 	"lzh": {
@@ -126,7 +174,11 @@
 		"description_markdown": "能應問、作碼之智械。",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["黑箱", "智械", "碼"],
+		"tags": [
+			"黑箱",
+			"智械",
+			"碼"
+		],
 		"home_page": "https://www.blackbox.ai/"
 	},
 	"nl-NL": {
@@ -136,7 +188,11 @@
 		"description_markdown": "Een AI die vragen kan beantwoorden en code kan schrijven.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["blackbox", "ai", "code"],
+		"tags": [
+			"blackbox",
+			"ai",
+			"code"
+		],
 		"home_page": "https://www.blackbox.ai/"
 	},
 	"pt-PT": {
@@ -146,7 +202,11 @@
 		"description_markdown": "Uma IA que pode responder a perguntas e escrever código.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["blackbox", "ia", "código"],
+		"tags": [
+			"blackbox",
+			"ia",
+			"código"
+		],
 		"home_page": "https://www.blackbox.ai/"
 	},
 	"ru-RU": {
@@ -156,7 +216,11 @@
 		"description_markdown": "ИИ, который может отвечать на вопросы и писать код.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["blackbox", "ии", "код"],
+		"tags": [
+			"blackbox",
+			"ии",
+			"код"
+		],
 		"home_page": "https://www.blackbox.ai/"
 	},
 	"uk-UA": {
@@ -166,7 +230,11 @@
 		"description_markdown": "ШІ, який може відповідати на запитання та писати код.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["blackbox", "ші", "код"],
+		"tags": [
+			"blackbox",
+			"ші",
+			"код"
+		],
 		"home_page": "https://www.blackbox.ai/"
 	},
 	"vi-VN": {
@@ -176,7 +244,11 @@
 		"description_markdown": "Một AI có thể trả lời câu hỏi và viết mã.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["hộp đen", "ai", "mã"],
+		"tags": [
+			"hộp đen",
+			"ai",
+			"mã"
+		],
 		"home_page": "https://www.blackbox.ai/"
 	},
 	"zh-TW": {
@@ -186,7 +258,11 @@
 		"description_markdown": "一個可以回答問題和編寫程式碼的人工智慧。",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["黑盒子", "ai", "程式碼"],
+		"tags": [
+			"黑盒子",
+			"ai",
+			"程式碼"
+		],
 		"home_page": "https://www.blackbox.ai/"
 	}
 }

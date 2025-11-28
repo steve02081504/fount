@@ -5,7 +5,11 @@
 		"description_markdown": "Language models for developers and enterprises.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["cohere", "ai", "language-model"],
+		"tags": [
+			"cohere",
+			"ai",
+			"language-model"
+		],
 		"provider": "cohere",
 		"home_page": "https://cohere.com/"
 	},
@@ -15,7 +19,11 @@
 		"description_markdown": "为开发者和企业打造的语言模型。",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["cohere", "ai", "语言模型"],
+		"tags": [
+			"cohere",
+			"ai",
+			"语言模型"
+		],
 		"provider": "cohere",
 		"home_page": "https://cohere.com/"
 	},
@@ -25,7 +33,11 @@
 		"description_markdown": "نماذج لغوية للمطورين والشركات.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["كوهير", "الذكاء الاصطناعي", "نموذج-لغوي"],
+		"tags": [
+			"كوهير",
+			"الذكاء الاصطناعي",
+			"نموذج-لغوي"
+		],
 		"provider": "cohere",
 		"home_page": "https://cohere.com/"
 	},
@@ -35,7 +47,11 @@
 		"description_markdown": "Sprachmodelle für Entwickler und Unternehmen.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["cohere", "ki", "sprachmodell"],
+		"tags": [
+			"cohere",
+			"ki",
+			"sprachmodell"
+		],
 		"provider": "cohere",
 		"home_page": "https://cohere.com/"
 	},
@@ -45,7 +61,11 @@
 		"description_markdown": "🏢🗣️🔗🚀",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["🗣️", "🔗", "🏢"],
+		"tags": [
+			"🗣️",
+			"🔗",
+			"🏢"
+		],
 		"provider": "cohere",
 		"home_page": "https://cohere.com/"
 	},
@@ -55,7 +75,11 @@
 		"description_markdown": "Modelos de lenguaje para desarrolladores y empresas.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["cohere", "ia", "modelo-de-lenguaje"],
+		"tags": [
+			"cohere",
+			"ia",
+			"modelo-de-lenguaje"
+		],
 		"provider": "cohere",
 		"home_page": "https://cohere.com/"
 	},
@@ -65,7 +89,11 @@
 		"description_markdown": "Modèles de langage pour les développeurs et les entreprises.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["cohere", "ia", "modèle-de-langage"],
+		"tags": [
+			"cohere",
+			"ia",
+			"modèle-de-langage"
+		],
 		"provider": "cohere",
 		"home_page": "https://cohere.com/"
 	},
@@ -75,7 +103,11 @@
 		"description_markdown": "डेवलपर्स और उद्यमों के लिए भाषा मॉडल।",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["कोहेरे", "एआई", "भाषा-मॉडल"],
+		"tags": [
+			"कोहेरे",
+			"एआई",
+			"भाषा-मॉडल"
+		],
 		"provider": "cohere",
 		"home_page": "https://cohere.com/"
 	},
@@ -85,7 +117,11 @@
 		"description_markdown": "Tungumálalíkön fyrir forritara og fyrirtæki.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["cohere", "gervigreind", "tungumálalíkan"],
+		"tags": [
+			"cohere",
+			"gervigreind",
+			"tungumálalíkan"
+		],
 		"provider": "cohere",
 		"home_page": "https://cohere.com/"
 	},
@@ -95,7 +131,11 @@
 		"description_markdown": "Modelli linguistici per sviluppatori e aziende.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["cohere", "ia", "modello-linguistico"],
+		"tags": [
+			"cohere",
+			"ia",
+			"modello-linguistico"
+		],
 		"provider": "cohere",
 		"home_page": "https://cohere.com/"
 	},
@@ -105,7 +145,11 @@
 		"description_markdown": "開発者および企業向けの言語モデル。",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["cohere", "ai", "言語モデル"],
+		"tags": [
+			"cohere",
+			"ai",
+			"言語モデル"
+		],
 		"provider": "cohere",
 		"home_page": "https://cohere.com/"
 	},
@@ -115,7 +159,11 @@
 		"description_markdown": "개발자와 기업을 위한 언어 모델입니다.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["코히어", "ai", "언어-모델"],
+		"tags": [
+			"코히어",
+			"ai",
+			"언어-모델"
+		],
 		"provider": "cohere",
 		"home_page": "https://cohere.com/"
 	},
@@ -125,7 +173,11 @@
 		"description_markdown": "為開發者與商賈所製之語言模型。",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["合智", "智械", "語言模型"],
+		"tags": [
+			"合智",
+			"智械",
+			"語言模型"
+		],
 		"provider": "cohere",
 		"home_page": "https://cohere.com/"
 	},
@@ -135,7 +187,11 @@
 		"description_markdown": "Taalmodellen voor ontwikkelaars en ondernemingen.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["cohere", "ai", "taalmodel"],
+		"tags": [
+			"cohere",
+			"ai",
+			"taalmodel"
+		],
 		"provider": "cohere",
 		"home_page": "https://cohere.com/"
 	},
@@ -145,7 +201,11 @@
 		"description_markdown": "Modelos de linguagem para desenvolvedores e empresas.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["cohere", "ia", "modelo-de-linguagem"],
+		"tags": [
+			"cohere",
+			"ia",
+			"modelo-de-linguagem"
+		],
 		"provider": "cohere",
 		"home_page": "https://cohere.com/"
 	},
@@ -155,7 +215,11 @@
 		"description_markdown": "Языковые модели для разработчиков и предприятий.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["cohere", "ии", "языковая-модель"],
+		"tags": [
+			"cohere",
+			"ии",
+			"языковая-модель"
+		],
 		"provider": "cohere",
 		"home_page": "https://cohere.com/"
 	},
@@ -165,7 +229,11 @@
 		"description_markdown": "Мовні моделі для розробників та підприємств.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["cohere", "ші", "мовна-модель"],
+		"tags": [
+			"cohere",
+			"ші",
+			"мовна-модель"
+		],
 		"provider": "cohere",
 		"home_page": "https://cohere.com/"
 	},
@@ -175,7 +243,11 @@
 		"description_markdown": "Các mô hình ngôn ngữ dành cho nhà phát triển và doanh nghiệp.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["cohere", "ai", "mô-hình-ngôn-ngữ"],
+		"tags": [
+			"cohere",
+			"ai",
+			"mô-hình-ngôn-ngữ"
+		],
 		"provider": "cohere",
 		"home_page": "https://cohere.com/"
 	},
@@ -185,7 +257,11 @@
 		"description_markdown": "為開發者和企業打造的語言模型。",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["cohere", "ai", "語言模型"],
+		"tags": [
+			"cohere",
+			"ai",
+			"語言模型"
+		],
 		"provider": "cohere",
 		"home_page": "https://cohere.com/"
 	}

@@ -7,7 +7,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
-		"tags": ["desktop", "pet", "webview"]
+		"tags": [
+			"desktop",
+			"pet",
+			"webview"
+		]
 	},
 	"zh-CN": {
 		"name": "桌面宠物",
@@ -17,7 +21,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
-		"tags": ["桌面", "宠物", "网页视图"]
+		"tags": [
+			"桌面",
+			"宠物",
+			"网页视图"
+		]
 	},
 	"ar-SA": {
 		"name": "الحيوانات الأليفة سطح المكتب",
@@ -27,7 +35,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
-		"tags": ["سطح المكتب", "حيوان أليف", "عرض ويب"]
+		"tags": [
+			"سطح المكتب",
+			"حيوان أليف",
+			"عرض ويب"
+		]
 	},
 	"de-DE": {
 		"name": "Desktop-Haustiere",
@@ -37,7 +49,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
-		"tags": ["Desktop", "Haustier", "Webansicht"]
+		"tags": [
+			"Desktop",
+			"Haustier",
+			"Webansicht"
+		]
 	},
 	"emoji": {
 		"name": "🐾🖥️",
@@ -47,7 +63,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
-		"tags": ["🖥️", "🐾", "👻"]
+		"tags": [
+			"🖥️",
+			"🐾",
+			"👻"
+		]
 	},
 	"es-ES": {
 		"name": "mascotas de escritorio",
@@ -57,7 +77,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
-		"tags": ["escritorio", "mascota", "vista web"]
+		"tags": [
+			"escritorio",
+			"mascota",
+			"vista web"
+		]
 	},
 	"fr-FR": {
 		"name": "Animaux de bureau",
@@ -67,7 +91,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
-		"tags": ["bureau", "animal de compagnie", "vue Web"]
+		"tags": [
+			"bureau",
+			"animal de compagnie",
+			"vue Web"
+		]
 	},
 	"hi-IN": {
 		"name": "डेस्कटॉप पालतू जानवर",
@@ -77,7 +105,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
-		"tags": ["डेस्कटॉप", "पालतू जानवर", "वेबव्यू"]
+		"tags": [
+			"डेस्कटॉप",
+			"पालतू जानवर",
+			"वेबव्यू"
+		]
 	},
 	"is-IS": {
 		"name": "Gæludýr skrifborðs",
@@ -87,7 +119,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
-		"tags": ["skrifborð", "gæludýr", "vefsýn"]
+		"tags": [
+			"skrifborð",
+			"gæludýr",
+			"vefsýn"
+		]
 	},
 	"it-IT": {
 		"name": "Animali domestici da scrivania",
@@ -97,7 +133,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
-		"tags": ["desktop", "animale domestico", "vista web"]
+		"tags": [
+			"desktop",
+			"animale domestico",
+			"vista web"
+		]
 	},
 	"ja-JP": {
 		"name": "デスクトップペット",
@@ -107,7 +147,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
-		"tags": ["デスクトップ", "ペット", "ウェブビュー"]
+		"tags": [
+			"デスクトップ",
+			"ペット",
+			"ウェブビュー"
+		]
 	},
 	"ko-KR": {
 		"name": "데스크톱 애완동물",
@@ -117,7 +161,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
-		"tags": ["데스크톱", "애완동물", "웹뷰"]
+		"tags": [
+			"데스크톱",
+			"애완동물",
+			"웹뷰"
+		]
 	},
 	"lzh": {
 		"name": "案頭靈寵",
@@ -127,7 +175,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
-		"tags": ["案頭", "靈寵", "幻境"]
+		"tags": [
+			"案頭",
+			"靈寵",
+			"幻境"
+		]
 	},
 	"nl-NL": {
 		"name": "Desktop huisdieren",
@@ -137,7 +189,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
-		"tags": ["desktop", "huisdier", "webview"]
+		"tags": [
+			"desktop",
+			"huisdier",
+			"webview"
+		]
 	},
 	"pt-PT": {
 		"name": "Animais de estimação de mesa",
@@ -147,7 +203,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
-		"tags": ["desktop", "animal de estimação", "webview"]
+		"tags": [
+			"desktop",
+			"animal de estimação",
+			"webview"
+		]
 	},
 	"ru-RU": {
 		"name": "Настольные питомцы",
@@ -157,7 +217,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
-		"tags": ["рабочий стол", "питомец", "веб-просмотр"]
+		"tags": [
+			"рабочий стол",
+			"питомец",
+			"веб-просмотр"
+		]
 	},
 	"uk-UA": {
 		"name": "Настільні домашні тварини",
@@ -167,7 +231,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
-		"tags": ["робочий стіл", "домашній улюбленець", "веб-перегляд"]
+		"tags": [
+			"робочий стіл",
+			"домашній улюбленець",
+			"веб-перегляд"
+		]
 	},
 	"vi-VN": {
 		"name": "Thú cưng để bàn",
@@ -177,7 +245,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
-		"tags": ["máy tính để bàn", "thú cưng", "chế độ xem web"]
+		"tags": [
+			"máy tính để bàn",
+			"thú cưng",
+			"chế độ xem web"
+		]
 	},
 	"zh-TW": {
 		"name": "桌面寵物",
@@ -187,6 +259,10 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "",
-		"tags": ["桌面", "寵物", "網頁視圖"]
+		"tags": [
+			"桌面",
+			"寵物",
+			"網頁視圖"
+		]
 	}
 }

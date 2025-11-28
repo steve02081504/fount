@@ -5,7 +5,11 @@
 		"description_markdown": "A powerful AI assistant from Anthropic.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["claude", "anthropic", "ai"],
+		"tags": [
+			"claude",
+			"anthropic",
+			"ai"
+		],
 		"provider": "anthropic",
 		"home_page": "https://claude.ai/"
 	},
@@ -15,7 +19,11 @@
 		"description_markdown": "来自 Anthropic 的强大 AI 助手。",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["claude", "anthropic", "ai"],
+		"tags": [
+			"claude",
+			"anthropic",
+			"ai"
+		],
 		"provider": "anthropic",
 		"home_page": "https://claude.ai/"
 	},
@@ -25,7 +33,11 @@
 		"description_markdown": "مساعد ذكاء اصطناعي قوي من Anthropic.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["كلود", "أنثروبيك", "ذكاء اصطناعي"],
+		"tags": [
+			"كلود",
+			"أنثروبيك",
+			"ذكاء اصطناعي"
+		],
 		"provider": "anthropic",
 		"home_page": "https://claude.ai/"
 	},
@@ -35,7 +47,11 @@
 		"description_markdown": "Ein leistungsstarker KI-Assistent von Anthropic.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["claude", "anthropic", "ki"],
+		"tags": [
+			"claude",
+			"anthropic",
+			"ki"
+		],
 		"provider": "anthropic",
 		"home_page": "https://claude.ai/"
 	},
@@ -45,7 +61,11 @@
 		"description_markdown": "🧠🤝📜➡️🤖🎩",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["🤖", "🧠", "📜"],
+		"tags": [
+			"🤖",
+			"🧠",
+			"📜"
+		],
 		"provider": "anthropic",
 		"home_page": "https://claude.ai/"
 	},
@@ -55,7 +75,11 @@
 		"description_markdown": "Un potente asistente de IA de Anthropic.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["claude", "anthropic", "ia"],
+		"tags": [
+			"claude",
+			"anthropic",
+			"ia"
+		],
 		"provider": "anthropic",
 		"home_page": "https://claude.ai/"
 	},
@@ -65,7 +89,11 @@
 		"description_markdown": "Un puissant assistant IA d'Anthropic.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["claude", "anthropic", "ia"],
+		"tags": [
+			"claude",
+			"anthropic",
+			"ia"
+		],
 		"provider": "anthropic",
 		"home_page": "https://claude.ai/"
 	},
@@ -75,7 +103,11 @@
 		"description_markdown": "एंथ्रोपिक का एक शक्तिशाली एआई सहायक।",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["क्लाउड", "एंथ्रोपिक", "एआई"],
+		"tags": [
+			"क्लाउड",
+			"एंथ्रोपिक",
+			"एआई"
+		],
 		"provider": "anthropic",
 		"home_page": "https://claude.ai/"
 	},
@@ -85,7 +117,11 @@
 		"description_markdown": "Öflugur gervigreindaraðstoðarmaður frá Anthropic.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["claude", "anthropic", "gervigreind"],
+		"tags": [
+			"claude",
+			"anthropic",
+			"gervigreind"
+		],
 		"provider": "anthropic",
 		"home_page": "https://claude.ai/"
 	},
@@ -95,7 +131,11 @@
 		"description_markdown": "Un potente assistente AI di Anthropic.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["claude", "anthropic", "ia"],
+		"tags": [
+			"claude",
+			"anthropic",
+			"ia"
+		],
 		"provider": "anthropic",
 		"home_page": "https://claude.ai/"
 	},
@@ -105,7 +145,11 @@
 		"description_markdown": "アンソロピックの強力な AI アシスタント。",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["クロード", "アンソロピック", "ai"],
+		"tags": [
+			"クロード",
+			"アンソロピック",
+			"ai"
+		],
 		"provider": "anthropic",
 		"home_page": "https://claude.ai/"
 	},
@@ -115,7 +159,11 @@
 		"description_markdown": "앤트로픽의 강력한 AI 비서입니다.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["클로드", "앤트로픽", "ai"],
+		"tags": [
+			"클로드",
+			"앤트로픽",
+			"ai"
+		],
 		"provider": "anthropic",
 		"home_page": "https://claude.ai/"
 	},
@@ -125,7 +173,11 @@
 		"description_markdown": "人擇之強智械佐。",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["克勞德", "人擇", "智械"],
+		"tags": [
+			"克勞德",
+			"人擇",
+			"智械"
+		],
 		"provider": "anthropic",
 		"home_page": "https://claude.ai/"
 	},
@@ -135,7 +187,11 @@
 		"description_markdown": "Een krachtige AI-assistent van Anthropic.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["claude", "anthropic", "ai"],
+		"tags": [
+			"claude",
+			"anthropic",
+			"ai"
+		],
 		"provider": "anthropic",
 		"home_page": "https://claude.ai/"
 	},
@@ -145,7 +201,11 @@
 		"description_markdown": "Um poderoso assistente de IA da Anthropic.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["claude", "anthropic", "ia"],
+		"tags": [
+			"claude",
+			"anthropic",
+			"ia"
+		],
 		"provider": "anthropic",
 		"home_page": "https://claude.ai/"
 	},
@@ -155,7 +215,11 @@
 		"description_markdown": "Мощный помощник ИИ от Anthropic.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["клод", "anthropic", "ии"],
+		"tags": [
+			"клод",
+			"anthropic",
+			"ии"
+		],
 		"provider": "anthropic",
 		"home_page": "https://claude.ai/"
 	},
@@ -165,7 +229,11 @@
 		"description_markdown": "Потужний помічник ШІ від Anthropic.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["клод", "anthropic", "ші"],
+		"tags": [
+			"клод",
+			"anthropic",
+			"ші"
+		],
 		"provider": "anthropic",
 		"home_page": "https://claude.ai/"
 	},
@@ -175,7 +243,11 @@
 		"description_markdown": "Một trợ lý AI mạnh mẽ của Anthropic.",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["claude", "anthropic", "ai"],
+		"tags": [
+			"claude",
+			"anthropic",
+			"ai"
+		],
 		"provider": "anthropic",
 		"home_page": "https://claude.ai/"
 	},
@@ -185,7 +257,11 @@
 		"description_markdown": "來自 Anthropic 的強大 AI 助理。",
 		"version": "0.0.0",
 		"author": "steve02081504",
-		"tags": ["claude", "anthropic", "ai"],
+		"tags": [
+			"claude",
+			"anthropic",
+			"ai"
+		],
 		"provider": "anthropic",
 		"home_page": "https://claude.ai/"
 	}

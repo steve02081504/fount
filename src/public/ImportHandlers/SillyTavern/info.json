@@ -7,7 +7,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://sillytavern.app/",
-		"tags": ["sillytavern", "character card", "import"]
+		"tags": [
+			"sillytavern",
+			"character card",
+			"import"
+		]
 	},
 	"zh-CN": {
 		"name": "SillyTavern 导入器",
@@ -17,7 +21,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://sillytavern.app/",
-		"tags": ["sillytavern", "角色卡", "导入"]
+		"tags": [
+			"sillytavern",
+			"角色卡",
+			"导入"
+		]
 	},
 	"ar-SA": {
 		"name": "مستورد SillyTavern",
@@ -27,7 +35,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://sillytavern.app/",
-		"tags": ["sillytavern", "بطاقة شخصية", "استيراد"]
+		"tags": [
+			"sillytavern",
+			"بطاقة شخصية",
+			"استيراد"
+		]
 	},
 	"de-DE": {
 		"name": "SillyTavern-Importer",
@@ -37,7 +49,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://sillytavern.app/",
-		"tags": ["sillytavern", "Charakterkarte", "Import"]
+		"tags": [
+			"sillytavern",
+			"Charakterkarte",
+			"Import"
+		]
 	},
 	"emoji": {
 		"name": "🤪 SillyTavern Importer",
@@ -47,7 +63,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://sillytavern.app/",
-		"tags": ["sillytavern", "character card", "import"]
+		"tags": [
+			"sillytavern",
+			"character card",
+			"import"
+		]
 	},
 	"es-ES": {
 		"name": "Importador de SillyTavern",
@@ -57,7 +77,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://sillytavern.app/",
-		"tags": ["sillytavern", "tarjeta de personaje", "importar"]
+		"tags": [
+			"sillytavern",
+			"tarjeta de personaje",
+			"importar"
+		]
 	},
 	"fr-FR": {
 		"name": "Importateur SillyTavern",
@@ -67,7 +91,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://sillytavern.app/",
-		"tags": ["sillytavern", "carte de personnage", "importer"]
+		"tags": [
+			"sillytavern",
+			"carte de personnage",
+			"importer"
+		]
 	},
 	"hi-IN": {
 		"name": "SillyTavern आयातक",
@@ -77,7 +105,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://sillytavern.app/",
-		"tags": ["sillytavern", "कैरेक्टर कार्ड", "आयात"]
+		"tags": [
+			"sillytavern",
+			"कैरेक्टर कार्ड",
+			"आयात"
+		]
 	},
 	"is-IS": {
 		"name": "SillyTavern innflytjandi",
@@ -87,7 +119,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://sillytavern.app/",
-		"tags": ["sillytavern", "persónukort", "innflutningur"]
+		"tags": [
+			"sillytavern",
+			"persónukort",
+			"innflutningur"
+		]
 	},
 	"it-IT": {
 		"name": "Importatore di SillyTavern",
@@ -97,7 +133,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://sillytavern.app/",
-		"tags": ["sillytavern", "scheda personaggio", "importa"]
+		"tags": [
+			"sillytavern",
+			"scheda personaggio",
+			"importa"
+		]
 	},
 	"ja-JP": {
 		"name": "SillyTavern インポーター",
@@ -107,7 +147,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://sillytavern.app/",
-		"tags": ["sillytavern", "キャラクターカード", "インポート"]
+		"tags": [
+			"sillytavern",
+			"キャラクターカード",
+			"インポート"
+		]
 	},
 	"ko-KR": {
 		"name": "SillyTavern 가져오기",
@@ -117,7 +161,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://sillytavern.app/",
-		"tags": ["sillytavern", "캐릭터 카드", "가져오기"]
+		"tags": [
+			"sillytavern",
+			"캐릭터 카드",
+			"가져오기"
+		]
 	},
 	"lzh": {
 		"name": "SillyTavern 納入司",
@@ -127,7 +175,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://sillytavern.app/",
-		"tags": ["sillytavern", "角色符", "納入"]
+		"tags": [
+			"sillytavern",
+			"角色符",
+			"納入"
+		]
 	},
 	"nl-NL": {
 		"name": "SillyTavern-importeur",
@@ -137,7 +189,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://sillytavern.app/",
-		"tags": ["sillytavern", "personagekaart", "importeren"]
+		"tags": [
+			"sillytavern",
+			"personagekaart",
+			"importeren"
+		]
 	},
 	"pt-PT": {
 		"name": "Importador SillyTavern",
@@ -147,7 +203,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://sillytavern.app/",
-		"tags": ["sillytavern", "cartão de personagem", "importar"]
+		"tags": [
+			"sillytavern",
+			"cartão de personagem",
+			"importar"
+		]
 	},
 	"ru-RU": {
 		"name": "Импортер SillyTavern",
@@ -157,7 +217,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://sillytavern.app/",
-		"tags": ["sillytavern", "карточка персонажа", "импорт"]
+		"tags": [
+			"sillytavern",
+			"карточка персонажа",
+			"импорт"
+		]
 	},
 	"uk-UA": {
 		"name": "Імпортер SillyTavern",
@@ -167,7 +231,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://sillytavern.app/",
-		"tags": ["sillytavern", "картка персонажа", "імпорт"]
+		"tags": [
+			"sillytavern",
+			"картка персонажа",
+			"імпорт"
+		]
 	},
 	"vi-VN": {
 		"name": "Trình nhập SillyTavern",
@@ -177,7 +245,11 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://sillytavern.app/",
-		"tags": ["sillytavern", "thẻ nhân vật", "nhập"]
+		"tags": [
+			"sillytavern",
+			"thẻ nhân vật",
+			"nhập"
+		]
 	},
 	"zh-TW": {
 		"name": "SillyTavern 匯入器",
@@ -187,6 +259,10 @@
 		"version": "0.0.0",
 		"author": "steve02081504",
 		"home_page": "https://sillytavern.app/",
-		"tags": ["sillytavern", "角色卡", "匯入"]
+		"tags": [
+			"sillytavern",
+			"角色卡",
+			"匯入"
+		]
 	}
 }
