@@ -1,8 +1,8 @@
 import { LoadChar } from '../../../server/managers/char_manager.mjs'
 import { unlockAchievement } from '../achievements/src/api.mjs'
 
-import { setEndpoints } from './src/endpoints.mjs'
 import info from './info.json' with { type: 'json' }
+import { setEndpoints } from './src/endpoints.mjs'
 
 /** @typedef {import('../../../decl/basedefs.ts').info_t} info_t */
 

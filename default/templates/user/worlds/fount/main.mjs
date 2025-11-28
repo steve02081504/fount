@@ -1,8 +1,9 @@
-import info from './info.json' with { type: 'json' };
+import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
+
+import info from './info.json' with { type: 'json' }
 /** @typedef {import('../../../../../src/decl/worldAPI.ts').WorldAPI_t} WorldAPI_t */
 /** @typedef {import('../../../../../src/decl/AIsource.ts').AIsource_t} AIsource_t */
 
-import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
 
 const summary = {
 	/** @type {AIsource_t} */

@@ -1,6 +1,6 @@
-import info from './info.json' with { type: 'json' };
 import { events } from '../../../server/events.mjs'
 
+import info from './info.json' with { type: 'json' }
 import { onPartInstalled, onPartUninstalled } from './src/api.mjs'
 import { setEndpoints } from './src/endpoints.mjs'
 

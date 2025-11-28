@@ -1,6 +1,6 @@
-import info from './info.json' with { type: 'json' };
 import { hosturl } from '../../../server/server.mjs'
 
+import info from './info.json' with { type: 'json' }
 import { setEndpoints } from './src/endpoints.mjs'
 import { cleanFilesInterval } from './src/files.mjs'
 

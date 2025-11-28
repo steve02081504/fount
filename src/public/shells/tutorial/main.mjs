@@ -1,4 +1,4 @@
-import info from './info.json' with { type: 'json' };
+import info from './info.json' with { type: 'json' }
 /** @typedef {import('../../../decl/basedefs.ts').info_t} info_t */
 
 /**

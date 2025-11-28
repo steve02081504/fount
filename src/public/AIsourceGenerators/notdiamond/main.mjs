@@ -1,7 +1,8 @@
 import { escapeRegExp } from '../../../scripts/escape.mjs'
 import { margeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../shells/chat/src/prompt_struct.mjs'
-import info from './info.json' with { type: 'json' }
+
 import info_dynamic from './info.dynamic.json' with { type: 'json' }
+import info from './info.json' with { type: 'json' }
 import { NotDiamond } from './notdiamond.mjs'
 /** @typedef {import('../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */

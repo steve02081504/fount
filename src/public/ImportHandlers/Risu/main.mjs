@@ -14,12 +14,12 @@ import { isPartLoaded } from '../../../server/parts_loader.mjs'
 
 import { convertCCv3ToSTv2 } from './ccv3-converter.mjs'
 import { unzipCharx } from './charx-parser.mjs'
+import info from './info.json' with { type: 'json' }
 import { getAvailablePath } from './path.mjs'
 import { extractPngCardData } from './png-parser.mjs'
 import { downloadRisuCard, downloadAsset } from './risu-api.mjs'
 
 
-import info from './info.json' with { type: 'json' }
 
 /**
  * 保存资源并规范化 URI。

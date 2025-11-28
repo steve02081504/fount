@@ -2,8 +2,9 @@
 /** @typedef {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
 import { loadAIsourceFromNameOrConfigData } from '../../../server/managers/AIsource_manager.mjs'
-import info from './info.json' with { type: 'json' }
+
 import info_dynamic from './info.dynamic.json' with { type: 'json' }
+import info from './info.json' with { type: 'json' }
 
 /**
  * @type {import('../../../decl/AIsource.ts').AIsource_interfaces_and_AIsource_t_getter}

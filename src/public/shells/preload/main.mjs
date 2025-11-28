@@ -1,4 +1,4 @@
-import info from './info.json' with { type: 'json' };
+import info from './info.json' with { type: 'json' }
 /**
  * 处理传入的预加载动作请求。
  * @param {string} user - 用户名。

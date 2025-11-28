@@ -1,4 +1,4 @@
-import info from './info.json' with { type: 'json' };
+import info from './info.json' with { type: 'json' }
 import { setEndpoints } from './src/main.mjs'
 
 /**

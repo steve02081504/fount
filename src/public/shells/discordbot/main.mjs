@@ -1,4 +1,4 @@
-import info from './info.json' with { type: 'json' };
+import info from './info.json' with { type: 'json' }
 import { runBot } from './src/bot.mjs'
 import { setEndpoints } from './src/endpoints.mjs'
 

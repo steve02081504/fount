@@ -1,5 +1,5 @@
-import { setEndpoints } from './src/endpoints.mjs'
 import info from './info.json' with { type: 'json' }
+import { setEndpoints } from './src/endpoints.mjs'
 
 /**
  * 处理传入的桌面宠物动作请求。

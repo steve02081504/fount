@@ -9,6 +9,7 @@ import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/pro
 import { __dirname } from '../../../../../src/server/base.mjs'
 import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
 import { loadPlugin } from '../../../../../src/server/managers/plugin_manager.mjs'
+
 import info from './info.json' with { type: 'json' }
 
 /*

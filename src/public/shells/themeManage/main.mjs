@@ -1,7 +1,7 @@
-import info from './info.json' with { type: 'json' };
-/** @typedef {import('../../../decl/basedefs.ts').info_t} info_t */
-
+import info from './info.json' with { type: 'json' }
 import { setEndpoints } from './src/endpoints.mjs'
+
+/** @typedef {import('../../../decl/basedefs.ts').info_t} info_t */
 
 /**
  * 主题管理 shell 的入口点。

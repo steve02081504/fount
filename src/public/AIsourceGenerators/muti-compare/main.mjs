@@ -4,8 +4,9 @@
 import { getPartInfo } from '../../../scripts/locale.mjs'
 import { getUserByUsername } from '../../../server/auth.mjs'
 import { loadAIsourceFromNameOrConfigData } from '../../../server/managers/AIsource_manager.mjs'
-import info from './info.json' with { type: 'json' }
+
 import info_dynamic from './info.dynamic.json' with { type: 'json' }
+import info from './info.json' with { type: 'json' }
 
 /**
  * @type {import('../../../decl/AIsource.ts').AIsource_interfaces_and_AIsource_t_getter}

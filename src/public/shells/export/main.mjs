@@ -1,6 +1,6 @@
-import info from './info.json' with { type: 'json' };
 import fs from 'node:fs/promises'
 
+import info from './info.json' with { type: 'json' }
 import { setEndpoints } from './src/endpoints.mjs'
 
 /**

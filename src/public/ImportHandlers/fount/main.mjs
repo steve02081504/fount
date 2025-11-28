@@ -12,11 +12,11 @@ import { loadPart } from '../../../server/managers/index.mjs'
 import { isPartLoaded } from '../../../server/parts_loader.mjs'
 
 import { cloneRepo } from './git.mjs'
+import info from './info.json' with { type: 'json' }
 import { getAvailablePath } from './path.mjs'
 import { isFountPart, unzipDirectory } from './zip.mjs'
 
 
-import info from './info.json' with { type: 'json' }
 /**
  * 合并移动文件或目录。
  * @param {string} src - 源路径。
