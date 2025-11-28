@@ -6,7 +6,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import { buildPromptStruct } from '../../../../../src/public/shells/chat/src/prompt_struct.mjs'
-import { defineToolCalls } from '../../../../../src/public/shells/chat/src/stream.mjs'
+import { defineToolUseBlocks } from '../../../../../src/public/shells/chat/src/stream.mjs'
 import { __dirname } from '../../../../../src/server/base.mjs'
 import { loadAIsource, loadDefaultAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
 import { loadPlugin } from '../../../../../src/server/managers/plugin_manager.mjs'
@@ -815,7 +815,7 @@ fount有[discord群组](https://discord.gg/GtR9Quzq2v)，可以在那里找到�
 				 */
 				let replyPreviewUpdater = (args, r) => args.generation_options?.replyPreviewUpdater?.(r)
 				for (const GetReplyPreviewUpdater of [
-					defineToolCalls([
+					defineToolUseBlocks([
 						{ start: '<get-tool-info>', end: '</get-tool-info>' },
 						{ start: /<generate-char[^>]*>/, end: '</generate-char>' },
 						{ start: /<generate-persona[^>]*>/, end: '</generate-persona>' },

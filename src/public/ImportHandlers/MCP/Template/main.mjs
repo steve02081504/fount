@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import { createMCPClient } from '../../../../../src/public/ImportHandlers/MCP/engine/mcp_client.mjs'
-import { defineToolCalls } from '../../../../../src/public/shells/chat/src/stream.mjs'
+import { defineToolUseBlocks } from '../../../../../src/public/shells/chat/src/stream.mjs'
 import { saveJsonFile } from '../../../../../src/scripts/json_loader.mjs'
 import { loadAIsource } from '../../../../../src/server/managers/AIsource_manager.mjs'
 
@@ -234,7 +234,7 @@ export default {
 				text: [{ content: await getDesc(args), important: 0 }],
 				additional_chat_log: [], extension: {}
 			}),
-			GetReplyPreviewUpdater: defineToolCalls([
+			GetReplyPreviewUpdater: defineToolUseBlocks([
 				{ start: /<mcp-tool[^>]*>/, end: '</mcp-tool>' },
 				{ start: /<mcp-prompt[^>]*>/, end: '</mcp-prompt>' },
 				{ start: /<mcp-resource[^>]*/, end: '\\>' }

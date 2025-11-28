@@ -68,7 +68,7 @@ export function generateDiff(oldMessage, newMessage) {
  * @param {{start: string|RegExp, end: string|RegExp}[]} toolPairs - 工具对数组。
  * @returns {import('../decl/chatLog.ts').CharReplyPreviewUpdater_t} - 回复预览更新器获取器。
  */
-export function defineToolCalls(toolPairs) {
+export function defineToolUseBlocks(toolPairs) {
 	const pattern = new RegExp(`(${toolPairs.map(pair => {
 		const start = pair.start instanceof RegExp ? pair.start.source : escapeRegExp(pair.start)
 		const end = pair.end instanceof RegExp ? pair.end.source : escapeRegExp(pair.end)
