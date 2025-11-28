@@ -1,0 +1,192 @@
+{
+	"en-UK": {
+		"avatar": "https://api.iconify.design/devicon/googlecloud.svg",
+		"description": "Gemini by Google",
+		"description_markdown": "Access Google's powerful Gemini models for multimodal chat and content generation.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": ["gemini", "google", "ai", "multimodal"],
+		"provider": "google",
+		"home_page": "https://gemini.google.com/"
+	},
+	"zh-CN": {
+		"avatar": "https://api.iconify.design/devicon/googlecloud.svg",
+		"description": "谷歌 Gemini",
+		"description_markdown": "访问谷歌强大的 Gemini 模型，进行多模态聊天和内容生成。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": ["gemini", "google", "ai", "多模态"],
+		"provider": "google",
+		"home_page": "https://gemini.google.com/"
+	},
+	"ar-SA": {
+		"avatar": "https://api.iconify.design/devicon/googlecloud.svg",
+		"description": "Gemini من Google",
+		"description_markdown": "الوصول إلى نماذج Gemini القوية من Google للدردشة متعددة الوسائط وإنشاء المحتوى.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": ["gemini", "google", "ai", "متعدد الوسائط"],
+		"provider": "google",
+		"home_page": "https://gemini.google.com/"
+	},
+	"de-DE": {
+		"avatar": "https://api.iconify.design/devicon/googlecloud.svg",
+		"description": "Gemini von Google",
+		"description_markdown": "Greifen Sie auf die leistungsstarken Gemini-Modelle von Google für multimodalen Chat und Inhaltserstellung zu.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": ["gemini", "google", "ki", "multimodal"],
+		"provider": "google",
+		"home_page": "https://gemini.google.com/"
+	},
+	"emoji": {
+		"avatar": "https://api.iconify.design/devicon/googlecloud.svg",
+		"description": "🎨🗣️💡",
+		"description_markdown": "🖼️✍️🗣️➡️♊️✨",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": ["♊️", "✨", "🎨", "🗣️"],
+		"provider": "google",
+		"home_page": "https://gemini.google.com/"
+	},
+	"es-ES": {
+		"avatar": "https://api.iconify.design/devicon/googlecloud.svg",
+		"description": "Gemini de Google",
+		"description_markdown": "Acceda a los potentes modelos Gemini de Google para chat multimodal y generación de contenido.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": ["gemini", "google", "ia", "multimodal"],
+		"provider": "google",
+		"home_page": "https://gemini.google.com/"
+	},
+	"fr-FR": {
+		"avatar": "https://api.iconify.design/devicon/googlecloud.svg",
+		"description": "Gemini par Google",
+		"description_markdown": "Accédez aux puissants modèles Gemini de Google pour le chat multimodal et la génération de contenu.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": ["gemini", "google", "ia", "multimodal"],
+		"provider": "google",
+		"home_page": "https://gemini.google.com/"
+	},
+	"hi-IN": {
+		"avatar": "https://api.iconify.design/devicon/googlecloud.svg",
+		"description": "गूगल द्वारा जेमिनी",
+		"description_markdown": "मल्टीमॉडल चैट और सामग्री निर्माण के लिए गूगल के शक्तिशाली जेमिनी मॉडल तक पहुँचें।",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": ["जेमिनी", "गूगल", "एआई", "मल्टीमॉडल"],
+		"provider": "google",
+		"home_page": "https://gemini.google.com/"
+	},
+	"is-IS": {
+		"avatar": "https://api.iconify.design/devicon/googlecloud.svg",
+		"description": "Gemini frá Google",
+		"description_markdown": "Fáðu aðgang að öflugum Gemini-líkönum Google fyrir fjölþætt spjall og efnissköpun.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": ["gemini", "google", "gervigreind", "fjölþætt"],
+		"provider": "google",
+		"home_page": "https://gemini.google.com/"
+	},
+	"it-IT": {
+		"avatar": "https://api.iconify.design/devicon/googlecloud.svg",
+		"description": "Gemini di Google",
+		"description_markdown": "Accedi ai potenti modelli Gemini di Google per chat multimodale e generazione di contenuti.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": ["gemini", "google", "ia", "multimodale"],
+		"provider": "google",
+		"home_page": "https://gemini.google.com/"
+	},
+	"ja-JP": {
+		"avatar": "https://api.iconify.design/devicon/googlecloud.svg",
+		"description": "Google の Gemini",
+		"description_markdown": "マルチモーダル チャットやコンテンツ生成のために、Google の強力な Gemini モデルにアクセスします。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": ["gemini", "google", "ai", "マルチモーダル"],
+		"provider": "google",
+		"home_page": "https://gemini.google.com/"
+	},
+	"ko-KR": {
+		"avatar": "https://api.iconify.design/devicon/googlecloud.svg",
+		"description": "구글의 제미니",
+		"description_markdown": "멀티모달 채팅 및 콘텐츠 생성을 위해 구글의 강력한 제미니 모델에 액세스하세요.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": ["제미니", "구글", "ai", "멀티모달"],
+		"provider": "google",
+		"home_page": "https://gemini.google.com/"
+	},
+	"lzh": {
+		"avatar": "https://api.iconify.design/devicon/googlecloud.svg",
+		"description": "谷歌雙子",
+		"description_markdown": "取用谷歌之強雙子模型，以作多態清談、內容生成。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": ["雙子", "谷歌", "智械", "多態"],
+		"provider": "google",
+		"home_page": "https://gemini.google.com/"
+	},
+	"nl-NL": {
+		"avatar": "https://api.iconify.design/devicon/googlecloud.svg",
+		"description": "Gemini van Google",
+		"description_markdown": "Toegang tot de krachtige Gemini-modellen van Google voor multimodale chat en contentgeneratie.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": ["gemini", "google", "ai", "multimodaal"],
+		"provider": "google",
+		"home_page": "https://gemini.google.com/"
+	},
+	"pt-PT": {
+		"avatar": "https://api.iconify.design/devicon/googlecloud.svg",
+		"description": "Gemini da Google",
+		"description_markdown": "Aceda aos poderosos modelos Gemini da Google para chat multimodal e geração de conteúdo.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": ["gemini", "google", "ia", "multimodal"],
+		"provider": "google",
+		"home_page": "https://gemini.google.com/"
+	},
+	"ru-RU": {
+		"avatar": "https://api.iconify.design/devicon/googlecloud.svg",
+		"description": "Gemini от Google",
+		"description_markdown": "Доступ к мощным моделям Gemini от Google для мультимодального чата и создания контента.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": ["gemini", "google", "ии", "мультимодальный"],
+		"provider": "google",
+		"home_page": "https://gemini.google.com/"
+	},
+	"uk-UA": {
+		"avatar": "https://api.iconify.design/devicon/googlecloud.svg",
+		"description": "Gemini від Google",
+		"description_markdown": "Доступ до потужних моделей Gemini від Google для мультимодального чату та створення контенту.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": ["gemini", "google", "ші", "мультимодальний"],
+		"provider": "google",
+		"home_page": "https://gemini.google.com/"
+	},
+	"vi-VN": {
+		"avatar": "https://api.iconify.design/devicon/googlecloud.svg",
+		"description": "Gemini của Google",
+		"description_markdown": "Truy cập các mô hình Gemini mạnh mẽ của Google để trò chuyện đa phương thức và tạo nội dung.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": ["gemini", "google", "ai", "đa phương thức"],
+		"provider": "google",
+		"home_page": "https://gemini.google.com/"
+	},
+	"zh-TW": {
+		"avatar": "https://api.iconify.design/devicon/googlecloud.svg",
+		"description": "Google Gemini",
+		"description_markdown": "存取 Google 強大的 Gemini 模型，進行多模態聊天和內容生成。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": ["gemini", "google", "ai", "多模態"],
+		"provider": "google",
+		"home_page": "https://gemini.google.com/"
+	}
+}
