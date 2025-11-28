@@ -1,0 +1,286 @@
+{
+	"en-UK": {
+		"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+		"description": "Claude API by Anthropic",
+		"description_markdown": "Direct access to Anthropic's powerful Claude models via their official API.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"claude",
+			"anthropic",
+			"ai",
+			"api"
+		],
+		"provider": "anthropic",
+		"home_page": "https://www.anthropic.com/api"
+	},
+	"zh-CN": {
+		"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+		"description": "Anthropic 的 Claude API",
+		"description_markdown": "通过官方 API 直接访问 Anthropic 强大的 Claude 模型。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"claude",
+			"anthropic",
+			"ai",
+			"api"
+		],
+		"provider": "anthropic",
+		"home_page": "https://www.anthropic.com/api"
+	},
+	"ar-SA": {
+		"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+		"description": "Claude API من Anthropic",
+		"description_markdown": "الوصول المباشر إلى نماذج كلود القوية من Anthropic عبر واجهة برمجة التطبيقات الرسمية الخاصة بهم.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"كلود",
+			"anthropic",
+			"ai",
+			"api"
+		],
+		"provider": "anthropic",
+		"home_page": "https://www.anthropic.com/api"
+	},
+	"de-DE": {
+		"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+		"description": "Claude-API von Anthropic",
+		"description_markdown": "Direkter Zugriff auf die leistungsstarken Claude-Modelle von Anthropic über deren offizielle API.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"claude",
+			"anthropic",
+			"ki",
+			"api"
+		],
+		"provider": "anthropic",
+		"home_page": "https://www.anthropic.com/api"
+	},
+	"emoji": {
+		"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+		"description": "📜🤖💬",
+		"description_markdown": "📜🤖➡️📄",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"📜",
+			"🤖",
+			"💬"
+		],
+		"provider": "anthropic",
+		"home_page": "https://www.anthropic.com/api"
+	},
+	"es-ES": {
+		"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+		"description": "API de Claude de Anthropic",
+		"description_markdown": "Acceso directo a los potentes modelos Claude de Anthropic a través de su API oficial.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"claude",
+			"anthropic",
+			"ia",
+			"api"
+		],
+		"provider": "anthropic",
+		"home_page": "https://www.anthropic.com/api"
+	},
+	"fr-FR": {
+		"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+		"description": "API Claude par Anthropic",
+		"description_markdown": "Accès direct aux puissants modèles Claude d'Anthropic via leur API officielle.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"claude",
+			"anthropic",
+			"ia",
+			"api"
+		],
+		"provider": "anthropic",
+		"home_page": "https://www.anthropic.com/api"
+	},
+	"hi-IN": {
+		"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+		"description": "एंथ्रोपिक द्वारा क्लॉड एपीआई",
+		"description_markdown": "एंथ्रोपिक के शक्तिशाली क्लॉड मॉडल तक उनकी आधिकारिक एपीआई के माध्यम से सीधी पहुंच।",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"क्लॉड",
+			"एंथ्रोपिक",
+			"एआई",
+			"एपीआई"
+		],
+		"provider": "anthropic",
+		"home_page": "https://www.anthropic.com/api"
+	},
+	"is-IS": {
+		"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+		"description": "Claude API frá Anthropic",
+		"description_markdown": "Beinn aðgangur að öflugum Claude-líkönum Anthropic í gegnum opinbert API þeirra.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"claude",
+			"anthropic",
+			"gervigreind",
+			"api"
+		],
+		"provider": "anthropic",
+		"home_page": "https://www.anthropic.com/api"
+	},
+	"it-IT": {
+		"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+		"description": "API Claude di Anthropic",
+		"description_markdown": "Accesso diretto ai potenti modelli Claude di Anthropic tramite la loro API ufficiale.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"claude",
+			"anthropic",
+			"ia",
+			"api"
+		],
+		"provider": "anthropic",
+		"home_page": "https://www.anthropic.com/api"
+	},
+	"ja-JP": {
+		"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+		"description": "アンソロピックの Claude API",
+		"description_markdown": "公式 API を介したアンソロピックの強力な Claude モデルへの直接アクセス。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"クロード",
+			"アンソロピック",
+			"ai",
+			"api"
+		],
+		"provider": "anthropic",
+		"home_page": "https://www.anthropic.com/api"
+	},
+	"ko-KR": {
+		"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+		"description": "앤트로픽의 클로드 API",
+		"description_markdown": "공식 API를 통해 앤트로픽의 강력한 클로드 모델에 직접 액세스할 수 있습니다.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"클로드",
+			"앤트로픽",
+			"ai",
+			"api"
+		],
+		"provider": "anthropic",
+		"home_page": "https://www.anthropic.com/api"
+	},
+	"lzh": {
+		"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+		"description": "人擇之克勞德接口",
+		"description_markdown": "由官接口直取人擇之強克勞德模。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"克勞德",
+			"人擇",
+			"智械",
+			"接口"
+		],
+		"provider": "anthropic",
+		"home_page": "https://www.anthropic.com/api"
+	},
+	"nl-NL": {
+		"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+		"description": "Claude API van Anthropic",
+		"description_markdown": "Directe toegang tot de krachtige Claude-modellen van Anthropic via hun officiële API.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"claude",
+			"anthropic",
+			"ai",
+			"api"
+		],
+		"provider": "anthropic",
+		"home_page": "https://www.anthropic.com/api"
+	},
+	"pt-PT": {
+		"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+		"description": "API Claude da Anthropic",
+		"description_markdown": "Acesso direto aos poderosos modelos Claude da Anthropic através de sua API oficial.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"claude",
+			"anthropic",
+			"ia",
+			"api"
+		],
+		"provider": "anthropic",
+		"home_page": "https://www.anthropic.com/api"
+	},
+	"ru-RU": {
+		"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+		"description": "API Клода от Anthropic",
+		"description_markdown": "Прямой доступ к мощным моделям Клода от Anthropic через их официальный API.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"клод",
+			"anthropic",
+			"ии",
+			"api"
+		],
+		"provider": "anthropic",
+		"home_page": "https://www.anthropic.com/api"
+	},
+	"uk-UA": {
+		"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+		"description": "API Клода від Anthropic",
+		"description_markdown": "Прямий доступ до потужних моделей Клода від Anthropic через їхній офіційний API.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"клод",
+			"anthropic",
+			"ші",
+			"api"
+		],
+		"provider": "anthropic",
+		"home_page": "https://www.anthropic.com/api"
+	},
+	"vi-VN": {
+		"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+		"description": "API Claude của Anthropic",
+		"description_markdown": "Truy cập trực tiếp vào các mô hình Claude mạnh mẽ của Anthropic thông qua API chính thức của họ.",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"claude",
+			"anthropic",
+			"ai",
+			"api"
+		],
+		"provider": "anthropic",
+		"home_page": "https://www.anthropic.com/api"
+	},
+	"zh-TW": {
+		"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+		"description": "Anthropic 的 Claude API",
+		"description_markdown": "透過官方 API 直接存取 Anthropic 強大的 Claude 模型。",
+		"version": "0.0.0",
+		"author": "steve02081504",
+		"tags": [
+			"claude",
+			"anthropic",
+			"ai",
+			"api"
+		],
+		"provider": "anthropic",
+		"home_page": "https://www.anthropic.com/api"
+	}
+}

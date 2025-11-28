@@ -8,6 +8,8 @@ on:
     paths:
       - 'src/locales/**.json'
       - '**/home_registry.json'
+      - '**/info.json'
+      - '**/info.dynamic.json'
     tags-ignore:
       - '*'
     branches:

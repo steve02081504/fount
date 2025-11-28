@@ -41,10 +41,14 @@ REFERENCE_LANG_CODES = [
 TRANSLATION_DELAY = 0.6
 # 同步最大迭代次数
 MAX_SYNC_ITERATIONS = 10
-# 占位符名称相似度修复阈值 (0.0 到 1.0，越高越严格，这里指 Levenshtein 距离与长度的比值，1.0 - dist/len)
-# 或者使用绝对距离阈值，如下面的实现。
-PLACEHOLDER_SIMILARITY_THRESHOLD_FACTOR = 0.7  # 用于计算最大可接受距离
-PLACEHOLDER_ABSOLUTE_DISTANCE_THRESHOLD = 3  # 或者一个固定的最大编辑距离
+# 占位符名称相似度修复阈值
+PLACEHOLDER_SIMILARITY_THRESHOLD_FACTOR = 0.7
+PLACEHOLDER_ABSOLUTE_DISTANCE_THRESHOLD = 3
+
+# --- 新增配置: Info 文件处理 ---
+INFO_FILENAMES = {"info.json", "info.dynamic.json"}
+# 仅翻译这些字段，其他字段（如 version, author, home_page）直接复制
+TRANSLATABLE_INFO_FIELDS = {"name", "description", "description_markdown", "summary", "tags"}
 # ----------- 配置结束 -----------
 
 
@@ -413,6 +417,145 @@ def sync_unique_key(dict_has_key, dict_missing_key, lang_has_key, lang_missing_k
 		return handle_missing_key_translation(dict_missing_key, dict_has_key, key, lang_missing_key, lang_has_key, path)
 
 
+# --- Info File Sync Logic ---
+
+def sync_info_content(info_data, available_lang_codes):
+	"""
+	同步 info.json 类型的内容。
+	结构通常为: { "en-UK": {...}, "zh-CN": {...} }
+	"""
+	changed = False
+
+	# 1. 确定参考源 (Source of Truth)
+	source_lang = None
+	for ref in REFERENCE_LANG_CODES:
+		if ref in info_data:
+			source_lang = ref
+			break
+	if not source_lang:
+		# 如果找不到参考语言，尝试使用存在的第一个语言
+		available_in_file = [k for k in info_data.keys() if k in available_lang_codes]
+		if available_in_file:
+			source_lang = available_in_file[0]
+
+	if not source_lang:
+		print(f"    - 跳过: 无法在文件中找到任何有效的参考语言块。")
+		return False
+
+	source_obj = info_data[source_lang]
+	if not isinstance(source_obj, (dict, OrderedDict)):
+		return False
+
+	# 2. 遍历所有应该支持的语言
+	for target_lang in available_lang_codes:
+		if target_lang == source_lang:
+			continue
+
+		# 如果目标语言块不存在，创建它
+		if target_lang not in info_data:
+			print(f"    + 为 '{target_lang}' 创建新块 (基于 '{source_lang}')")
+			info_data[target_lang] = OrderedDict()
+			changed = True
+
+		target_obj = info_data[target_lang]
+
+		# 3. 同步字段
+		for key, val in source_obj.items():
+			if key not in target_obj:
+				# 缺失键：决定是翻译还是复制
+				if key in TRANSLATABLE_INFO_FIELDS:
+					# 翻译
+					print(f"      + 翻译缺失字段 '{key}': {source_lang} -> {target_lang}")
+					translated = translate_value(copy.deepcopy(val), source_lang, target_lang)
+					if translated is not None:
+						target_obj[key] = translated
+						changed = True
+				else:
+					# 直接复制 (例如 version, author, provider)
+					# print(f"      + 复制字段 '{key}'")
+					target_obj[key] = copy.deepcopy(val)
+					changed = True
+
+			# 如果键存在，暂时不做覆盖更新，假设已有的是手动修正过的
+			# 除非值为空字符串且源不为空？这里暂保持保守策略。
+
+	# 4. (可选) 排序：让 info.json 的语言顺序好看一点
+	# 这里简单对顶层 key (语言) 排序，把非语言的 key 留着
+	sorted_keys = sorted(info_data.keys(), key=lambda k: (0 if k in REFERENCE_LANG_CODES else 1, k))
+	if list(info_data.keys()) != sorted_keys:
+		new_ordered = OrderedDict((k, info_data[k]) for k in sorted_keys)
+		info_data.clear()
+		info_data.update(new_ordered)
+		changed = True
+
+	return changed
+
+def process_info_files(fount_dir, gitignore_spec, available_lang_codes):
+	"""
+	扫描并同步所有的 info.json / info.dynamic.json 文件
+	不仅同步内容，还会强制统一缩进格式（缩进使用 Tab，末尾有空行）。
+	"""
+	print(f"\n--- 开始扫描并同步 Info JSON 文件 ---")
+	print(f"目标文件名: {INFO_FILENAMES}")
+
+	count_processed = 0
+	count_changed = 0
+
+	for root, dirs, files in os.walk(fount_dir):
+		if gitignore_spec:
+			dirs[:] = [d for d in dirs if not gitignore_spec.match_file(os.path.relpath(os.path.join(root, d), fount_dir))]
+
+		for filename in files:
+			if filename not in INFO_FILENAMES:
+				continue
+
+			filepath = os.path.join(root, filename)
+			if gitignore_spec and gitignore_spec.match_file(os.path.relpath(filepath, fount_dir)):
+				continue
+
+			try:
+				# 1. 读取原始文件内容（字符串）以便后续比较格式
+				with open(filepath, "r", encoding="utf-8") as f:
+					original_content_str = f.read()
+
+				# 2. 解析数据
+				# 使用 loads 而不是 load，因为我们已经读取了字符串
+				try:
+					data = json5.loads(original_content_str, object_pairs_hook=OrderedDict)
+				except Exception as e:
+					print(f"    ! 解析 JSON5 失败 {os.path.relpath(filepath, fount_dir)}: {e}")
+					continue
+
+				print(f"  正在处理: {os.path.relpath(filepath, fount_dir)}")
+
+				# 3. 执行内容同步逻辑 (sync_info_content 会修改 data 对象)
+				content_has_logical_changes = sync_info_content(data, available_lang_codes)
+
+				# 4. 生成标准格式的新字符串
+				# 强制使用 Tab 缩进，且末尾附加一个换行符
+				new_content_str = json.dumps(data, ensure_ascii=False, indent="\t", default=str) + "\n"
+
+				# 5. 判定是否需要写入
+				# 条件：(内容逻辑有变化) 或者 (原始文本与标准格式文本不一致)
+				if content_has_logical_changes or original_content_str != new_content_str:
+					action = "更新内容" if content_has_logical_changes else "格式化"
+
+					with open(filepath, "w", encoding="utf-8", newline="\n") as f:
+						f.write(new_content_str)
+
+					print(f"    -> 已保存 ({action})。")
+					count_changed += 1
+				else:
+					print("    -> 无需变更。")
+					pass
+
+				count_processed += 1
+
+			except Exception as e:
+				print(f"    ! 错误处理文件 {filepath}: {e}")
+
+	print(f"--- Info 文件处理完毕: 扫描 {count_processed} 个, 更新 {count_changed} 个 ---")
+
 def normalize_and_sync_dicts(
 	dict_a,
 	dict_b,
@@ -486,7 +629,7 @@ def check_used_keys_in_fount(fount_dir, reference_loc_data, reference_lang_code,
 		print(f"警告: fount 目录 '{fount_dir}' 不存在，跳过i18n键使用情况检查。")
 		return
 
-	print(f"\n--- 开始在 FOUNT 目录 '{fount_dir}' 中检查 MJS/HTML 文件中的 i18n 键 ---")
+	print(f"\n--- 开始在 fount 目录 '{fount_dir}' 中检查 MJS/HTML 文件中的 i18n 键 ---")
 	regex_patterns = [re.compile(r"data-i18n=(?:\"([a-zA-Z0-9_.-]+)\"|'([a-zA-Z0-9_.-]+)')"), re.compile(r"(?:geti|I)18n\((?:\"([a-zA-Z0-9_.-]+)\"|'([a-zA-Z0-9_.-]+)')\)")]
 	found_keys_in_fount_code = set()
 
@@ -514,10 +657,10 @@ def check_used_keys_in_fount(fount_dir, reference_loc_data, reference_lang_code,
 					print(f"  警告: 读取或解析文件 {filepath} 失败: {e}")
 
 	if not found_keys_in_fount_code:
-		print("  在 FOUNT 目录的 MJS/HTML 文件中没有检测到任何 i18n 键的使用。")
+		print("  在 fount 目录的 MJS/HTML 文件中没有检测到任何 i18n 键的使用。")
 		return
 
-	print(f"  在 FOUNT 代码中检测到 {len(found_keys_in_fount_code)} 个唯一 i18n 键。正在与参考语言 '{reference_lang_code}' 数据比较...")
+	print(f"  在 fount 代码中检测到 {len(found_keys_in_fount_code)} 个唯一 i18n 键。正在与参考语言 '{reference_lang_code}' 数据比较...")
 	missing_keys_count = 0
 	for key in sorted(list(found_keys_in_fount_code)):
 		_, found = get_value_at_path(reference_loc_data, key)
@@ -526,10 +669,10 @@ def check_used_keys_in_fount(fount_dir, reference_loc_data, reference_lang_code,
 			missing_keys_count += 1
 
 	if missing_keys_count == 0:
-		print(f"  所有在 FOUNT 代码中使用的 {len(found_keys_in_fount_code)} 个 i18n 键均存在于参考语言 '{reference_lang_code}' 数据中。")
+		print(f"  所有在 fount 代码中使用的 {len(found_keys_in_fount_code)} 个 i18n 键均存在于参考语言 '{reference_lang_code}' 数据中。")
 	else:
-		print(f"  总计: {missing_keys_count} 个在 FOUNT 代码中使用的键在参考语言数据中缺失。")
-	print("--- FOUNT 目录i18n键检查完毕 ---")
+		print(f"  总计: {missing_keys_count} 个在 fount 代码中使用的键在参考语言数据中缺失。")
+	print("--- fount 目录i18n键检查完毕 ---")
 
 
 def extract_placeholders(text_string: str) -> list[str]:
@@ -1034,6 +1177,7 @@ def main():
 	gitignore_spec = load_gitignore_spec(FOUNT_DIR)
 
 	all_data, languages, lang_to_path = load_locale_files()
+	available_lang_codes = list(lang_to_path.keys()) # 收集所有可用语言代码
 
 	ref_path, ref_lang = find_reference_language(lang_to_path, all_data, languages)
 
@@ -1041,7 +1185,7 @@ def main():
 	if first_ref_lang:
 		check_used_keys_in_fount(FOUNT_DIR, all_data[lang_to_path[first_ref_lang]], first_ref_lang, gitignore_spec)
 	else:
-		print("\n警告: 未找到参考语言数据，跳过 FOUNT 目录i18n键检查。")
+		print("\n警告: 未找到参考语言数据，跳过 fount 目录i18n键检查。")
 
 	run_synchronization_loop(all_data, languages, ref_path)
 
@@ -1049,6 +1193,8 @@ def main():
 		print("  占位符对齐过程检测到更改。如果翻译被清空，可能需要重新同步。")
 
 	save_locale_files(all_data, ref_path)
+
+	process_info_files(FOUNT_DIR, gitignore_spec, available_lang_codes)
 
 	ts_decl_path = os.path.join(LOCALE_DIR, "../decl/locale_data.ts")
 	generate_locale_data_ts(all_data[ref_path], ts_decl_path)
