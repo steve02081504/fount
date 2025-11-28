@@ -75,7 +75,6 @@ export function setEndpoints(router) {
 			await findTemplates(userTemplatesPath)
 
 			res.json(allTemplates)
-
 		}
 		catch (error) {
 			console.error('Error getting templates:', error)

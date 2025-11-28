@@ -739,7 +739,8 @@
 			"share": {
 				"uploading": "Creating link...",
 				"success": "Link created successfully! Copied to clipboard. <br>This feature is supported by ${provider}. <br>[Sponsor them.](${sponsorLink})"
-			}
+			},
+			"commonToolCalling": "Calling tool"
 		},
 		"messageEdit": {
 			"input": {
@@ -765,6 +766,9 @@
 					"alt": "Upload Icon"
 				}
 			}
+		},
+		"messageGenerating": {
+			"stop": "stop"
 		},
 		"attachment": {
 			"buttons": {

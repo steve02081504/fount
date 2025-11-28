@@ -110,9 +110,10 @@ async function GetSource(config, { username, SaveConfig }) {
 		/**
 		 * 使用结构化提示调用 AI 源。
 		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+		 * @param {import('../../../decl/AIsource.ts').GenerationOptions} [options] - 生成选项。
 		 * @returns {Promise<{content: string}>} AI 的返回结果。
 		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
+		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct, options = {}) => {
 			const new_prompt_struct = {
 				char_id: prompt_struct.char_id,
 				UserCharname: prompt_struct.UserCharname,
@@ -196,7 +197,7 @@ async function GetSource(config, { username, SaveConfig }) {
 					else
 						chat_log.push(value)
 			}
-			const result = await base_source.StructCall(new_prompt_struct)
+			const result = await base_source.StructCall(new_prompt_struct, options)
 			for (const replace of config.replaces) {
 				const reg = parseRegexFromString(replace.seek)
 				result.content = result.content.replace(reg, replace.replace)

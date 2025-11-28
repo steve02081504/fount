@@ -28,6 +28,7 @@ const configTemplate = {
 	name: 'cohere-command-r-plus',
 	model: 'command-r-plus',
 	apikey: '',
+	use_stream: true,
 	convert_config: {
 		roleReminding: true
 	}
@@ -66,9 +67,12 @@ async function GetSource(config) {
 		/**
 		 * 使用结构化提示调用 AI 源。
 		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+		 * @param {import('../../../decl/AIsource.ts').GenerationOptions} [options] - 生成选项。
 		 * @returns {Promise<{content: string}>} 来自 AI 的结果。
 		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
+		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct, options = {}) => {
+			const { base_result = {}, replyPreviewUpdater, signal } = options
+
 			const system_prompt = structPromptToSingleNoChatLog(prompt_struct)
 			const request = {
 				model: config.model,
@@ -101,30 +105,80 @@ ${chatLogEntry.content}
 					})
 			}
 
-			const result = await cohere.chat(request)
-			let text = result?.message?.content?.map(message => message?.text)?.filter(text => text)?.join('\n')
-			if (!text) throw result
-
-			if (text.match(/<\/sender>\s*<content>/))
-				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1].split(new RegExp(
-					`(${(prompt_struct.alternative_charnames || []).map(Object).map(
-						stringOrReg => {
-							if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
-							return stringOrReg.source
-						}
-					).join('|')
-					})\\s*<\\/sender>\\s*<content>`
-				)).pop().split(/<\/content>\s*<\/message/).shift()
-			if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
-				text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
-
-			const removeduplicate = [...new Set(text.split('\n'))].join('\n')
-			if (removeduplicate.length / text.length < 0.3)
-				text = removeduplicate
-
-			return {
-				content: text
+			/**
+			 * 清理 AI 响应的格式，移除 XML 标签和不完整的标记。
+			 * @param {object} res - 原始响应对象。
+			 * @param {string} res.content - 响应内容。
+			 * @returns {object} - 清理后的响应对象。
+			 */
+			function clearFormat(res) {
+				let text = res.content
+				if (text.match(/<\/sender>\s*<content>/))
+					text = (text.match(/<\/sender>\s*<content>([\S\s]*)/)?.[1] ?? text).split(new RegExp(
+						`(${(prompt_struct.alternative_charnames || []).map(Object).map(
+							s => s instanceof String ? escapeRegExp(s) : s.source
+						).join('|')})\\s*<\\/sender>\\s*<content>`
+					)).pop().split(/<\/content>\s*<\/message/).shift()
+				if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
+					text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
+				// 清理可能出现的不完整的结束标签
+				text = text.replace(/<\/content\s*$/, '').replace(/<\/message\s*$/, '').replace(/<\/\s*$/, '')
+				res.content = text
+				return res
 			}
+
+			// Check for abort before starting
+			if (signal?.aborted) {
+				const err = new Error('Aborted by user')
+				err.name = 'AbortError'
+				throw err
+			}
+
+			const result = {
+				content: '',
+				files: [...base_result?.files || []],
+			}
+
+			/**
+			 * 预览更新器
+			 * @param {{content: string, files: any[]}} r - 结果对象
+			 * @returns {void}
+			 */
+			const previewUpdater = r => replyPreviewUpdater?.(clearFormat({ ...r }))
+
+			// Use streaming based on config
+			const useStream = (config.use_stream ?? true) && !!replyPreviewUpdater
+			if (useStream) {
+				// Use cohere's streaming support
+				const stream = await cohere.chatStream(request)
+
+				for await (const chunk of stream) {
+					if (signal?.aborted) {
+						const err = new Error('Aborted by user')
+						err.name = 'AbortError'
+						throw err
+					}
+
+					if (chunk.eventType === 'text-generation') {
+						result.content += chunk.text || ''
+						previewUpdater(result)
+					}
+				}
+			} else {
+				// Use non-streaming mode
+				const apiResult = await cohere.chat(request)
+				let text = apiResult?.message?.content?.map(message => message?.text)?.filter(text => text)?.join('\n')
+				if (!text) throw apiResult
+
+				const removeduplicate = [...new Set(text.split('\n'))].join('\n')
+				if (removeduplicate.length / text.length < 0.3)
+					text = removeduplicate
+
+				result.content = text
+				previewUpdater(result)
+			}
+
+			return Object.assign(base_result, clearFormat(result))
 		},
 		tokenizer: {
 			/**

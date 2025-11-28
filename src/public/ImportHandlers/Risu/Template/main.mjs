@@ -108,7 +108,6 @@ function buildCharInfo(charData) {
 		// 但更好的做法是让fount的locale匹配机制处理 '' 和 'en'
 	}
 
-
 	return info
 }
 
@@ -268,21 +267,37 @@ const charAPI_definition = {
 					prompt_struct.char_prompt.additional_chat_log.push(entry)
 				}
 
-				regen_loop: while (true) {
-					const requestResult = await AIsource.StructCall(prompt_struct)
-					result.content = requestResult.content
-					result.files = (result.files || []).concat(requestResult.files || [])
-					result.extension = { ...result.extension, ...requestResult.extension }
+				// 构建更新预览管线
+				args.generation_options ??= {}
+				/**
+				 * 聊天回复预览更新管道。
+				 * @type {import('../../../../../src/public/shells/chat/decl/chatLog.ts').CharReplyPreviewUpdater_t}
+				 */
+				let replyPreviewUpdater = (args, r) => args.generation_options?.replyPreviewUpdater?.(r)
+				for (const GetReplyPreviewUpdater of [
+					...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.GetReplyPreviewUpdater)
+				].filter(Boolean))
+					replyPreviewUpdater = GetReplyPreviewUpdater(replyPreviewUpdater)
 
-					// 插件处理逻辑 (如果你的fount系统有插件)
-					const plugins = args.plugins || {} // 从 fount 运行时获取
-					for (const plugin of Object.values(plugins))
-						if (plugin?.interfaces?.chat?.ReplyHandler) {
-							const handled = await plugin.interfaces.chat.ReplyHandler(result, { ...args, prompt_struct, AddLongTimeLog })
-							if (handled) continue regen_loop
-						}
+				/**
+				 * 更新回复预览。
+				 * @param {import('../../../../../src/public/shells/chat/decl/chatLog.ts').chatLogEntry_t} r - 来自 AI 的回复块。
+				 * @returns {void}
+				 */
+				args.generation_options.replyPreviewUpdater = r => replyPreviewUpdater(args, r)
 
-					break // 正常结束
+				// 在重新生成循环中检查插件触发
+				regen: while (true) {
+					args.generation_options.base_result = result
+					await AIsource.StructCall(prompt_struct, args.generation_options)
+					let continue_regen = false
+					for (const replyHandler of [
+						...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
+					].filter(Boolean))
+						if (await replyHandler(result, { ...args, prompt_struct, AddLongTimeLog }))
+							continue_regen = true
+					if (continue_regen) continue regen
+					break
 				}
 
 				const env = getMacroEnv(args.UserCharname)

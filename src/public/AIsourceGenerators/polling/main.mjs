@@ -88,15 +88,16 @@ async function GetSource(config, { username, SaveConfig }) {
 		/**
 		 * 使用结构化提示调用 AI 源。
 		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+		 * @param {import('../../../decl/AIsource.ts').GenerationOptions} [options] - 生成选项。
 		 * @returns {Promise<any>} 来自 AI 的结果。
 		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
+		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct, options = {}) => {
 			if (!sources.length) throw new Error('no source selected')
 			let error_num = 0
 			while (true) try {
 				index++
 				index %= config.sources.length
-				return await sources[index].StructCall(prompt_struct)
+				return await sources[index].StructCall(prompt_struct, options)
 			} catch (e) {
 				console.error(e)
 				error_num++

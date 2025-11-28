@@ -23,6 +23,104 @@ import { sendNotification } from '../../../../server/web_server/event_dispatcher
 import { unlockAchievement } from '../../achievements/src/api.mjs'
 
 import { addfile, getfile } from './files.mjs'
+import { generateDiff } from './stream.mjs'
+
+const activeStreams = new Map()
+const StreamManager = {
+	/**
+	 * 创建流式生成任务。
+	 * @param {string} chatId - 聊天ID。
+	 * @param {string} messageId - 消息的唯一ID，绑定到消息UUID。
+	 * @returns {{id: string, signal: AbortSignal, update: Function, done: Function, abort: Function}} - 流式生成任务的控制对象。
+	 */
+	create(chatId, messageId) {
+		const streamId = crypto.randomUUID()
+		const controller = new AbortController() // 创建控制器
+
+		const context = {
+			chatId,
+			messageId,
+			lastMessage: { content: '', files: [] }, // Initial empty message
+			controller, // 保存控制器
+		}
+
+		activeStreams.set(streamId, context)
+
+		return {
+			id: streamId,
+			signal: controller.signal, // 暴露 signal 给 CharAPI / AIsource
+
+			/**
+			 * CharAPI 调用此方法更新流式消息内容。
+			 * @param {object} newMessage - 新的消息内容，包含文本和文件。
+			 */
+			update(newMessage) {
+				if (context.controller.signal.aborted) return // 已中断就不再更新
+
+				const slices = generateDiff(context.lastMessage, newMessage)
+
+				if (slices.length > 0) {
+					context.lastMessage = structuredClone(newMessage)
+					broadcastChatEvent(chatId, {
+						type: 'stream_update',
+						payload: { messageId, slices },
+					})
+				}
+			},
+
+			/** 正常结束 */
+			done() {
+				activeStreams.delete(streamId)
+			},
+
+			/**
+			 * 触发中断
+			 * @param {string} reason - 中断原因，用于区分手动退出还是其他
+			 */
+			abort(reason = 'User Aborted') {
+				if (context.controller.signal.aborted) return
+				// 触发 signal，这会导致 fetch 抛出 AbortError
+				// 或者我们可以抛出一个自定义的 Error 对象让 catch 块更好识别
+				const error = new Error(reason)
+				error.name = 'AbortError' // 标准名称
+				context.controller.abort(error)
+
+				activeStreams.delete(streamId)
+			},
+		}
+	},
+
+	/**
+	 * 根据消息ID中止流式生成任务 (用于删除消息时)。
+	 * @param {string} messageId - 要中止流式生成任务的消息的唯一ID。
+	 */
+	abortByMessageId(messageId) {
+		for (const [id, ctx] of activeStreams)
+			if (ctx.messageId === messageId) {
+				if (ctx.controller.signal.aborted) continue
+				const error = new Error('User Aborted')
+				error.name = 'AbortError'
+				ctx.controller.abort(error)
+				activeStreams.delete(id)
+				break
+			}
+	},
+
+	/**
+	 * 中止某个聊天的所有流式生成任务 (用于切换 Timeline 或卸载)。
+	 * @param {string} chatId - 要中止流式生成任务的聊天ID。
+	 */
+	abortAll(chatId) {
+		for (const [id, ctx] of activeStreams)
+			if (ctx.chatId === chatId) {
+				if (ctx.controller.signal.aborted) continue
+				const error = new Error('User Aborted')
+				error.name = 'AbortError'
+				ctx.controller.abort(error)
+				activeStreams.delete(id)
+			}
+	},
+}
 
 /**
  * 聊天元数据映射表的结构。这是一个在内存中缓存聊天信息的Map。
@@ -52,10 +150,22 @@ export function registerChatUiSocket(chatid, ws) {
 	const socketSet = chatUiSockets.get(chatid)
 	socketSet.add(ws)
 
+	ws.on('message', (message) => {
+		try {
+			const msg = JSON.parse(message)
+			if (msg.type === 'stop_generation' && msg.payload?.messageId)
+				StreamManager.abortByMessageId(msg.payload.messageId)
+		}
+		catch (e) {
+			console.error('Error processing client websocket message:', e)
+		}
+	})
+
 	ws.on('close', () => {
 		socketSet.delete(ws)
 		const chatData = chatMetadatas.get(chatid)
 		if (!socketSet.size && chatUiSockets.delete(chatid)) {
+			StreamManager.abortAll(chatid) // Abort streams on final disconnect
 			clearTimeout(chatDeleteTimers.get(chatid))
 			chatDeleteTimers.set(chatid, setTimeout(async () => {
 				try {
@@ -265,6 +375,8 @@ class timeSlice_t {
  * 代表聊天记录中的单条消息条目。
  */
 class chatLogEntry_t {
+	/** @type {string} 永久唯一标识符 (UUID v4) */
+	id
 	/** 发言者显示的名称。 */
 	name
 	/** 发言者显示的头像URL或路径。 */
@@ -285,6 +397,15 @@ class chatLogEntry_t {
 	files = []
 	/** 扩展字段，用于存储插件或其他模块的附加信息。 */
 	extension = {}
+	/** @type {boolean} 标记此消息是否仍在生成中。 */
+	is_generating = false
+
+	/**
+	 * 创建一个新的聊天记录条目实例，并自动生成一个唯一的ID。
+	 */
+	constructor() {
+		this.id = crypto.randomUUID()
+	}
 
 	/**
 	 * 将聊天记录条目转换为可被JSON序列化的对象。
@@ -326,14 +447,19 @@ class chatLogEntry_t {
 	 * @returns {Promise<chatLogEntry_t>} 一个填充了完整数据的 chatLogEntry_t 实例。
 	 */
 	static async fromJSON(json, username) {
-		return Object.assign(new chatLogEntry_t(), {
+		const instance = Object.assign(new chatLogEntry_t(), {
 			...json,
 			timeSlice: await timeSlice_t.fromJSON(json.timeSlice, username),
-			files: await Promise.all(json.files.map(async file => ({
+			files: await Promise.all((json.files || []).map(async file => ({
 				...file,
 				buffer: file.buffer.startsWith('file:') ? await getfile(username, file.buffer.slice(5)) : Buffer.from(file.buffer, 'base64')
 			})))
 		})
+		// 兼容旧数据
+		if (!instance.id)
+			instance.id = crypto.randomUUID()
+
+		return instance
 	}
 }
 
@@ -430,6 +556,13 @@ class chatMetadata_t {
 	static async fromJSON(json) {
 		const chatLog = await Promise.all(json.chatLog.map(data => chatLogEntry_t.fromJSON(data, json.username)))
 		const timeLines = await Promise.all(json.timeLines.map(entry => chatLogEntry_t.fromJSON(entry, json.username)))
+
+		// Clean up any "stuck" generating messages from a previous crash
+		for (const entry of chatLog)
+			if (entry.is_generating) entry.is_generating = false
+
+		for (const entry of timeLines)
+			if (entry.is_generating) entry.is_generating = false
 
 		return Object.assign(new chatMetadata_t(), {
 			username: json.username,
@@ -589,6 +722,8 @@ async function getChatRequest(chatid, charname) {
 			unsafe_html: true,
 			files: true,
 			add_message: true,
+			fount_assets: true,
+			fount_i18nkeys: true,
 		},
 		chat_name: 'common_chat_' + chatid,
 		char_id: charname,
@@ -623,7 +758,7 @@ async function getChatRequest(chatid, charname) {
 		other_chars,
 		chat_scoped_char_memory: timeSlice.chars_memories[charname] ??= {},
 		plugins: timeSlice.plugins,
-		extension: {}
+		extension: {},
 	}
 
 	if (timeSlice.world?.interfaces?.chat?.GetChatLogForCharname)
@@ -943,6 +1078,117 @@ async function addChatLogEntry(chatid, entry) {
 
 	return entry
 }
+
+/**
+ * 执行角色回复生成任务。
+ * @param {string} chatid - 聊天ID。
+ * @param {import('../decl/chatLog.ts').chatReplyRequest_t} request - 聊天回复请求对象。
+ * @param {object} stream - 流式生成任务的控制对象。
+ * @param {chatLogEntry_t} placeholderEntry - 占位符消息条目。
+ * @param {chatMetadata_t} chatMetadata - 聊天元数据。
+ */
+async function executeGeneration(chatid, request, stream, placeholderEntry, chatMetadata) {
+	const entryId = placeholderEntry.id
+
+	/**
+	 * 完成流式生成任务，将最终消息保存到聊天记录并广播更新。
+	 * @param {object} finalEntry - 最终的消息条目。
+	 * @param {boolean} [isError=false] - 标记是否因错误而完成。
+	 * @returns {Promise<object>} - 完成后的消息条目。
+	 */
+	const finalizeEntry = async (finalEntry, isError = false) => {
+		stream.done()
+		finalEntry.id = entryId
+		finalEntry.is_generating = false
+
+		let idx = chatMetadata.chatLog.findIndex(e => e.id === entryId)
+		if (idx === -1) {
+			chatMetadata.chatLog.push(finalEntry)
+			idx = chatMetadata.chatLog.length - 1
+			if (!isError) {
+				chatMetadata.timeLines = [finalEntry]
+				chatMetadata.timeLineIndex = 0
+			}
+		}
+		else {
+			chatMetadata.chatLog[idx] = finalEntry
+			const timelineIdx = chatMetadata.timeLines.findIndex(e => e.id === entryId)
+			if (timelineIdx !== -1)
+				chatMetadata.timeLines[timelineIdx] = finalEntry
+		}
+
+		if (!isError) chatMetadata.LastTimeSlice = finalEntry.timeSlice
+
+		broadcastChatEvent(chatid, {
+			type: 'message_replaced',
+			payload: { index: idx, entry: await finalEntry.toData(chatMetadata.username) },
+		})
+
+		if (!isError && is_VividChat(chatMetadata)) saveChat(chatid)
+		return finalEntry
+	}
+
+	try {
+		broadcastChatEvent(chatid, {
+			type: 'stream_start',
+			payload: { messageId: entryId },
+		})
+
+		request.generation_options = {
+			/**
+			 * 预览更新器。
+			 * @param {import('../decl/chatLog.ts').chatReply_t} reply - 聊天回复对象。
+			 * @returns {void} 什么都没有。
+			 */
+			replyPreviewUpdater: reply => stream.update(reply),
+			signal: stream.signal,
+		}
+
+		const result = await request.char.interfaces.chat.GetReply(request)
+
+		if (result === null) {
+			stream.abort('Generation result was null.')
+			const idx = chatMetadata.chatLog.findIndex(e => e.id === entryId)
+			if (idx !== -1) await deleteMessage(chatid, idx)
+			return
+		}
+
+		const finalEntry = await BuildChatLogEntryFromCharReply(
+			result,
+			placeholderEntry.timeSlice,
+			request.char,
+			request.char_id,
+			chatMetadata.username,
+		)
+
+		const savedEntry = await finalizeEntry(finalEntry, false)
+
+		const freq_data = await getCharReplyFrequency(chatid)
+		if (savedEntry.timeSlice.world?.interfaces?.chat?.AfterAddChatLogEntry)
+			await savedEntry.timeSlice.world.interfaces.chat.AfterAddChatLogEntry(await getChatRequest(chatid, undefined), freq_data)
+		else
+			await handleAutoReply(chatid, freq_data, savedEntry.timeSlice.charname ?? null)
+	}
+	catch (e) {
+		if (e.name === 'AbortError') {
+			console.log(`Generation aborted for message ${entryId}: ${e.message}`)
+			placeholderEntry.is_generating = false
+			placeholderEntry.extension = { ...placeholderEntry.extension || {}, aborted: true }
+			await finalizeEntry(placeholderEntry, false)
+		}
+		else {
+			stream.abort(e.message)
+
+			placeholderEntry.content = `\`\`\`\nError:\n${e.stack || e.message}\n\`\`\``
+			await finalizeEntry(placeholderEntry, true)
+		}
+	}
+	finally {
+		broadcastChatEvent(chatid, { type: 'char_typing_stop', payload: { charname: request.char_id } })
+	}
+}
+
+
 /**
  * 修改当前消息的时间线（“重新生成”功能）。
  * @param {string} chatid - 聊天ID。
@@ -950,71 +1196,154 @@ async function addChatLogEntry(chatid, entry) {
  * @returns {Promise<chatLogEntry_t>} 新的当前消息条目。
  */
 export async function modifyTimeLine(chatid, delta) {
+	// 1. 中止当前可能正在进行的所有流式生成，防止串台
+	StreamManager.abortAll(chatid)
+
 	const chatMetadata = await loadChat(chatid)
 
+	// 2. 计算新的索引
 	let newTimeLineIndex = chatMetadata.timeLineIndex + delta
-	if (newTimeLineIndex < 0) newTimeLineIndex += chatMetadata.timeLines.length
+
+	// 3. 处理向左循环 (Timeline 0 -> Left -> Last)
+	// 之前的逻辑这里有Bug，导致可能算出一个触发生成的索引
+	if (newTimeLineIndex < 0)
+		newTimeLineIndex = chatMetadata.timeLines.length - 1
+
+
+	let entry
+
+	// 4. 判断是否需要生成新消息 (索引超出范围)
 	if (newTimeLineIndex >= chatMetadata.timeLines.length) {
-		const { charname } = chatMetadata.LastTimeSlice
-		const poped = chatMetadata.chatLog.pop()
-		try {
-			chatMetadata.LastTimeSlice = chatMetadata.chatLog[chatMetadata.chatLog.length - 1]?.timeSlice || chatMetadata.LastTimeSlice
-			const new_timeSlice = chatMetadata.LastTimeSlice.copy()
-			const char = new_timeSlice.chars[charname]
-			const { world } = new_timeSlice
-			let result
+		// === 重新生成逻辑 ===
+
+		const previousEntry = chatMetadata.chatLog[chatMetadata.chatLog.length - 1]
+		// 无法重新生成用户的消息，直接返回
+		if (!previousEntry || (!previousEntry.timeSlice.charname && !previousEntry.timeSlice.greeting_type))
+			return previousEntry
+
+		const timeSlice = previousEntry.timeSlice
+		const greeting_type = timeSlice.greeting_type
+
+		const newEntry = new chatLogEntry_t()
+		newEntry.id = crypto.randomUUID() // 必须生成新ID
+		newEntry.timeSlice = timeSlice.copy() // 复制上下文
+
+		// 继承视觉信息保持UI稳定
+		newEntry.role = previousEntry.role
+		newEntry.name = previousEntry.name
+		newEntry.avatar = previousEntry.avatar
+
+		// 标记为生成状态
+		newEntry.is_generating = true
+		newEntry.content = ''
+		newEntry.files = []
+		newEntry.time_stamp = new Date()
+
+		// 推入时间线
+		chatMetadata.timeLines.push(newEntry)
+		newTimeLineIndex = chatMetadata.timeLines.length - 1
+		chatMetadata.timeLineIndex = newTimeLineIndex
+
+		// 更新主聊天记录显示
+		chatMetadata.chatLog[chatMetadata.chatLog.length - 1] = newEntry
+		entry = newEntry
+
+		// 广播 UI 更新 (显示加载圈)
+		broadcastChatEvent(chatid, {
+			type: 'message_replaced',
+			payload: { index: chatMetadata.chatLog.length - 1, entry: await newEntry.toData(chatMetadata.username) },
+		})
+
+		// === 分支处理：开场白 vs 普通回复 ===
+		if (greeting_type)
+			// **恢复的开场白逻辑**
 			try {
-				switch (new_timeSlice.greeting_type = chatMetadata.LastTimeSlice.greeting_type) {
+				const charname = timeSlice.charname
+				// 获取合适的 request 对象
+				const request = await getChatRequest(chatid, charname || undefined)
+				let result
+
+				const { world, chars } = timeSlice
+				const char = charname ? chars[charname] : null
+
+				// 根据类型调用不同的接口
+				switch (greeting_type) {
 					case 'single':
-						result = await char.interfaces.chat.GetGreeting(await getChatRequest(chatid, charname), newTimeLineIndex)
+						result = await char.interfaces.chat.GetGreeting(request, newTimeLineIndex)
 						break
 					case 'group':
-						result = await char.interfaces.chat.GetGroupGreeting(await getChatRequest(chatid, charname), newTimeLineIndex)
+						result = await char.interfaces.chat.GetGroupGreeting(request, newTimeLineIndex)
 						break
 					case 'world_single':
-						result = await world.interfaces.chat.GetGreeting(await getChatRequest(chatid, undefined), newTimeLineIndex)
+						result = await world.interfaces.chat.GetGreeting(request, newTimeLineIndex)
 						break
 					case 'world_group':
-						result = await world.interfaces.chat.GetGroupGreeting(await getChatRequest(chatid, undefined), newTimeLineIndex)
+						result = await world.interfaces.chat.GetGroupGreeting(request, newTimeLineIndex)
 						break
 					default:
-						result = await char.interfaces.chat.GetReply(await getChatRequest(chatid, charname))
+						// 如果标记了 greeting_type 但不匹配已知类型，回退到普通回复
+						if (char) result = await char.interfaces.chat.GetReply(request)
+						break
 				}
-			}
-			catch (e) {
-				result = {
-					content: ['```', e.message, e.stack || '', '```'].filter(Boolean).join('\n'),
-				}
-			}
-			if (!result) throw new Error('No reply')
-			let entry
-			if (new_timeSlice.greeting_type?.startsWith?.('world_'))
-				entry = await BuildChatLogEntryFromCharReply(result, new_timeSlice, null, undefined, chatMetadata.username)
-			else
-				entry = await BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, chatMetadata.username)
 
-			if (entry.timeSlice.world?.interfaces?.chat?.AddChatLogEntry)
-				entry.timeSlice.world.interfaces.chat.AddChatLogEntry(await getChatRequest(chatid, undefined), entry)
-			else
-				chatMetadata.chatLog.push(entry)
+				if (!result) throw new Error('No greeting result')
 
-			// 更新时间线
-			chatMetadata.timeLines.push(entry)
-			newTimeLineIndex = chatMetadata.timeLines.length - 1
+				// 构建最终数据
+				let finalEntry
+				if (greeting_type.startsWith('world_'))
+					finalEntry = await BuildChatLogEntryFromCharReply(result, timeSlice.copy(), null, undefined, chatMetadata.username)
+				else
+					finalEntry = await BuildChatLogEntryFromCharReply(result, timeSlice.copy(), char, charname, chatMetadata.username)
+
+				// 填充并完成
+				Object.assign(newEntry, finalEntry)
+				newEntry.is_generating = false
+				newEntry.id = entry.id // 保持 ID 不变
+
+				// 保存
+				chatMetadata.timeLines[newTimeLineIndex] = newEntry
+				chatMetadata.chatLog[chatMetadata.chatLog.length - 1] = newEntry
+				chatMetadata.LastTimeSlice = newEntry.timeSlice
+
+				if (is_VividChat(chatMetadata)) saveChat(chatid)
+
+				// 再次广播以显示内容
+				broadcastChatEvent(chatid, {
+					type: 'message_replaced',
+					payload: { index: chatMetadata.chatLog.length - 1, entry: await newEntry.toData(chatMetadata.username) },
+				})
+			} catch (e) {
+				console.error('Greeting generation failed:', e)
+				newEntry.content = `\`\`\`\nError generating greeting:\n${e.message}\n\`\`\``
+				newEntry.is_generating = false
+				broadcastChatEvent(chatid, {
+					type: 'message_replaced',
+					payload: { index: chatMetadata.chatLog.length - 1, entry: await newEntry.toData(chatMetadata.username) },
+				})
+			}
+
+		else {
+			// **普通回复逻辑 (流式)**
+			const charname = timeSlice.charname
+			const request = await getChatRequest(chatid, charname)
+			const stream = StreamManager.create(chatid, newEntry.id)
+			// 在后台执行生成
+			executeGeneration(chatid, request, stream, newEntry, chatMetadata)
 		}
-		catch (e) {
-			console.error(e)
-			chatMetadata.chatLog.push(poped)
-			newTimeLineIndex %= chatMetadata.timeLines.length
-		}
+	} else {
+		// === 简单的切换逻辑 (无生成) ===
+		entry = chatMetadata.timeLines[newTimeLineIndex]
+		chatMetadata.timeLineIndex = newTimeLineIndex
+		chatMetadata.LastTimeSlice = entry.timeSlice
+		chatMetadata.chatLog[chatMetadata.chatLog.length - 1] = entry
+
+		if (is_VividChat(chatMetadata)) saveChat(chatid)
+
+		broadcastChatEvent(chatid, {
+			type: 'message_replaced',
+			payload: { index: chatMetadata.chatLog.length - 1, entry: await entry.toData(chatMetadata.username) }
+		})
 	}
-	const entry = chatMetadata.timeLines[newTimeLineIndex]
-	chatMetadata.timeLineIndex = newTimeLineIndex
-	chatMetadata.LastTimeSlice = entry.timeSlice
-
-	if (is_VividChat(chatMetadata)) saveChat(chatid)
-	chatMetadata.chatLog[chatMetadata.chatLog.length - 1] = entry
-	broadcastChatEvent(chatid, { type: 'message_replaced', payload: { index: chatMetadata.chatLog.length - 1, entry: await entry.toData(chatMetadata.username) } })
 
 	return entry
 }
@@ -1036,7 +1365,9 @@ async function BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charn
 	new_timeSlice.charname = charname
 	const { info } = await getPartDetails(username, 'chars', charname) || {}
 
-	return Object.assign(new chatLogEntry_t(), {
+	const entry = new chatLogEntry_t()
+
+	Object.assign(entry, {
 		name: result.name || info?.name || charname || 'Unknown',
 		avatar: result.avatar || info?.avatar,
 		content: result.content,
@@ -1050,6 +1381,7 @@ async function BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charn
 		logContextBefore: result.logContextBefore,
 		logContextAfter: result.logContextAfter
 	})
+	return entry
 }
 
 /**
@@ -1068,8 +1400,8 @@ async function BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charn
 async function BuildChatLogEntryFromUserMessage(result, new_timeSlice, user, personaname, username) {
 	new_timeSlice.playername = new_timeSlice.player_id
 	const { info } = (personaname ? await getPartDetails(username, 'personas', personaname) : undefined) || {}
-
-	return Object.assign(new chatLogEntry_t(), {
+	const entry = new chatLogEntry_t()
+	Object.assign(entry, {
 		name: result.name || info?.name || new_timeSlice.player_id || username,
 		avatar: result.avatar || info?.avatar,
 		content: result.content,
@@ -1079,6 +1411,7 @@ async function BuildChatLogEntryFromUserMessage(result, new_timeSlice, user, per
 		files: result.files || [],
 		extension: result.extension || {}
 	})
+	return entry
 }
 
 /**
@@ -1128,45 +1461,46 @@ async function getNextCharForReply(frequency_data) {
  * 触发一个角色进行回复。
  * @param {string} chatid - 聊天ID。
  * @param {string | null} charname - 要触发回复的角色ID。如果为 null，则会根据频率随机选择一个角色。
- * @returns {Promise<chatLogEntry_t | undefined>} 如果成功生成回复，则返回新的消息条目。
- * @throws {Error} 如果聊天或角色未找到。
  */
 export async function triggerCharReply(chatid, charname) {
 	const chatMetadata = await loadChat(chatid)
 	if (!chatMetadata) throw new Error('Chat not found')
 
-	const timeSlice = chatMetadata.LastTimeSlice
-	let result
 	if (!charname) {
 		const frequency_data = (await getCharReplyFrequency(chatid)).filter(x => x.charname !== null) // 过滤掉用户
 		charname = await getNextCharForReply(frequency_data)
 		if (!charname) return
 	}
-	const char = timeSlice.chars[charname]
+	const char = chatMetadata.LastTimeSlice.chars[charname]
 	if (!char) throw new Error('char not found')
 
+	// 1. Create placeholder
+	const placeholder = new chatLogEntry_t()
+	placeholder.role = 'char'
+	placeholder.is_generating = true
+	placeholder.timeSlice = chatMetadata.LastTimeSlice.copy()
+	placeholder.time_stamp = new Date()
+	const { info } = await getPartDetails(chatMetadata.username, 'chars', charname) || {}
+	placeholder.name = info?.name || charname
+	placeholder.avatar = info?.avatar
+	placeholder.timeSlice.charname = charname
+	placeholder.content = '' // Ensure it's initialized as an empty string
+
+	// Broadcast the placeholder to the frontend for immediate UI feedback,
+	// but DO NOT push it to the backend chatLog yet.
+	broadcastChatEvent(chatid, {
+		type: 'message_added',
+		payload: await placeholder.toData(chatMetadata.username),
+	})
+
+	// 3. Create request & stream
 	const request = await getChatRequest(chatid, charname)
+	const stream = StreamManager.create(chatid, placeholder.id)
 
 	broadcastChatEvent(chatid, { type: 'char_typing_start', payload: { charname } })
-	try {
-		if (timeSlice?.world?.interfaces?.chat?.GetCharReply)
-			result = await timeSlice.world.interfaces.chat.GetCharReply(request, charname)
-		else
-			result = await char.interfaces.chat.GetReply(request)
-	}
-	catch (e) {
-		result = {
-			content: ['```', e.message, e.stack || '', '```'].filter(Boolean).join('\n'),
-		}
-	}
-	finally {
-		broadcastChatEvent(chatid, { type: 'char_typing_stop', payload: { charname } })
-	}
 
-	if (!result) return
-	const new_timeSlice = timeSlice.copy()
-
-	return addChatLogEntry(chatid, await BuildChatLogEntryFromCharReply(result, new_timeSlice, char, charname, chatMetadata.username))
+	// 4. Execute (don't await, let it run in background)
+	executeGeneration(chatid, request, stream, placeholder, chatMetadata)
 }
 
 /**
@@ -1329,6 +1663,10 @@ export async function deleteMessage(chatid, index) {
 	const chatMetadata = await loadChat(chatid)
 	if (!chatMetadata) throw new Error('Chat not found')
 	if (!chatMetadata.chatLog[index]) throw new Error('Invalid index')
+
+	const entry = chatMetadata.chatLog[index]
+	if (entry)
+		StreamManager.abortByMessageId(entry.id)
 
 	/**
 	 * 生成请求。

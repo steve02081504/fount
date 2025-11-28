@@ -1,4 +1,4 @@
-import { createDOMFromHtmlString } from './template.mjs'
+import { createDocumentFragmentFromHtmlStringNoScriptActivation, activateScripts } from './template.mjs'
 
 const { GetMarkdownConvertor } = await import('./markdownConvertor.mjs').catch(error => {
 	/**
@@ -63,12 +63,22 @@ export async function renderMarkdownAsString(markdown) {
 }
 
 /**
- * 将 Markdown 渲染为 DOM 元素。
+ * 将 Markdown 渲染为 DOM 元素（不激活脚本）。
+ * @param {string} markdown - Markdown 文本。
+ * @returns {Promise<DocumentFragment>} - 渲染后的 DOM 片段（脚本未激活）。
+ */
+export async function renderMarkdownNoScriptActivation(markdown) {
+	return createDocumentFragmentFromHtmlStringNoScriptActivation(await renderMarkdownAsString(markdown))
+}
+
+/**
+ * 将 Markdown 渲染为 DOM 元素（并激活脚本）。
  * @param {string} markdown - Markdown 文本。
  * @returns {Promise<DocumentFragment>} - 渲染后的 DOM 片段。
  */
 export async function renderMarkdown(markdown) {
-	return createDOMFromHtmlString(await renderMarkdownAsString(markdown))
+	const fragment = await renderMarkdownNoScriptActivation(markdown)
+	return activateScripts(fragment)
 }
 
 /**

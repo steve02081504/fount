@@ -739,7 +739,8 @@
 			"share": {
 				"uploading": "Link wird erstellt...",
 				"success": "Erfolgreich geteilt! Link in die Zwischenablage kopiert. <br>Diese Funktion wird von ${provider} unterstützt. <br>[Unterstützen Sie sie.](${sponsorLink})"
-			}
+			},
+			"commonToolCalling": "Tool wird aufgerufen"
 		},
 		"messageEdit": {
 			"input": {
@@ -765,6 +766,9 @@
 					"alt": "Hochladen-Symbol"
 				}
 			}
+		},
+		"messageGenerating": {
+			"stop": "Stopp"
 		},
 		"attachment": {
 			"buttons": {
@@ -1873,7 +1877,7 @@
 			"title": "laufendes Haustier",
 			"noPets": "Derzeit sind keine Haustiere im Betrieb.",
 			"buttons": {
-				"stop": "stoppen"
+				"stop": "Stopp"
 			}
 		},
 		"toasts": {

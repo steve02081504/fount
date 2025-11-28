@@ -85,7 +85,6 @@ async function fetchSystemInfo() {
 		debugData.connectivity.backend = connectivity
 		backendChecks.innerHTML = ''
 		backendChecks.appendChild(await renderTemplate('connectivity_list', { checks: connectivity }))
-
 	} catch (error) {
 		console.error('System info fetch failed:', error)
 		systemInfoTable.innerHTML = '<tr><td colspan="2" class="text-error text-center" data-i18n="debug_info.systemInfo.failed"></td></tr>'
