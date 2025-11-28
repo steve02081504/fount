@@ -95,11 +95,11 @@ export async function renderMessage(message) {
 		const messageElement = await renderTemplateNoScriptActivation('message_generating_view', preprocessedMessage)
 		// Add stop button listener
 		const stopButton = messageElement.querySelector('.stop-generating-button')
-		if (stopButton) 
+		if (stopButton)
 			stopButton.addEventListener('click', () => {
 				import('../chat.mjs').then(({ stopGeneration }) => stopGeneration(message.id))
 			})
-		
+
 		return messageElement
 	}
 

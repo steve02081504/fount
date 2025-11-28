@@ -114,16 +114,16 @@ export class AIsource_t<InputType, OutputType> {
 export class GenerationOptions {
 	/** 基础结果对象，用于追加或合并 */
 	base_result?: {
-        content: string,
-        files: {
-            name: string
-            mime_type: string
-            buffer: Buffer,
-            description: string
-        }[],
-        extension?: object
-    }
-    /** 进度回调 */
+		content: string,
+		files: {
+			name: string
+			mime_type: string
+			buffer: Buffer,
+			description: string
+		}[],
+		extension?: object
+	}
+	/** 进度回调 */
 	replyPreviewUpdater?: (partial: chatReply_t) => void
 	/** 中断信号 (关键！) */
 	signal?: AbortSignal
@@ -142,9 +142,9 @@ export class textAISource_t extends AIsource_t<string, Promise<string>> {
 	 * @returns {Promise<{content: string, files: {name: string, mime_type: string, buffer: Buffer, description: string}[], extension?: object}>} - 包含内容和文件的响应。
 	 */
 	StructCall: (
-        prompt_struct: prompt_struct_t,
-        options?: GenerationOptions
-    ) => Promise<{
+		prompt_struct: prompt_struct_t,
+		options?: GenerationOptions
+	) => Promise<{
 		content: string,
 		files: {
 			name: string

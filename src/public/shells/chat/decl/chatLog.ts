@@ -184,13 +184,13 @@ export class GenerationOptions_t {
 	replyPreviewUpdater?: ReplyPreviewUpdater_t
 	signal?: AbortSignal
 	base_result?: {
-        content: string,
-        files: {
-            name: string
-            mime_type: string
-            buffer: Buffer,
-            description: string
-        }[],
-        extension?: object
-    }
+		content: string,
+		files: {
+			name: string
+			mime_type: string
+			buffer: Buffer,
+			description: string
+		}[],
+		extension?: object
+	}
 }

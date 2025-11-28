@@ -148,11 +148,11 @@ ${chatLogEntry.content}
 			}
 
 			// Handle abort during call
-			if (signal) 
+			if (signal)
 				signal.addEventListener('abort', () => {
 					// The claude call doesn't support abort, but we can at least stop waiting
 				})
-			
+
 
 			result.content = await claudeAPI.callClaudeAPI(messages, config.model)
 			previewUpdater(result)

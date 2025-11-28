@@ -6,7 +6,6 @@ import { in_docker, in_termux } from './env.mjs'
 
 const FountStartTimestamp = new Date()
 let _activity = {
-
 }
 /**
  * 设置 Discord RPC 活动。

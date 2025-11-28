@@ -108,7 +108,6 @@ function buildCharInfo(charData) {
 		// 但更好的做法是让fount的locale匹配机制处理 '' 和 'en'
 	}
 
-
 	return info
 }
 

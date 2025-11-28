@@ -191,7 +191,7 @@ ${chatLogEntry.content}
 						const chunk = decoder.decode(value, { stream: true })
 						const lines = chunk.split('\n')
 
-						for (const line of lines) 
+						for (const line of lines)
 							if (line.startsWith('data: ')) {
 								const data = line.slice(6)
 								if (data === '[DONE]') continue
@@ -207,7 +207,6 @@ ${chatLogEntry.content}
 									// Skip invalid JSON
 								}
 							}
-						
 					}
 				} finally {
 					reader.releaseLock()

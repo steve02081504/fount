@@ -168,7 +168,7 @@ ${chatLogEntry.content}
 			// Use streaming based on config
 			const useStream = (config.use_stream ?? true) && !!replyPreviewUpdater
 
-			if (useStream) 
+			if (useStream)
 				// 流式模式
 				await notDiamond.create({
 					model: config.model,
@@ -190,7 +190,7 @@ ${chatLogEntry.content}
 						previewUpdater(result)
 					}
 				})
-			 else {
+			else {
 				// 非流式模式
 				result.content = await callBase(messages)
 				previewUpdater(result)

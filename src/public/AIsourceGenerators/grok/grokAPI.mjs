@@ -436,21 +436,20 @@ export class GrokAPI {
 									}
 								}
 								if (token === '' && data.result.response.isSoftStop) continue
-								
+
 								delta += token
 								if (delta) {
 									fullContent += delta
 									if (onDelta) onDelta(delta)
 								}
 							}
-							if (data.result?.response?.finalMetadata) 
+							if (data.result?.response?.finalMetadata)
 								if (isThinkModel && thinkingBlockActive) {
 									const delta = '\n</think>\n'
 									fullContent += delta
 									if (onDelta) onDelta(delta)
 									thinkingBlockActive = false
 								}
-							
 						}
 					} catch (e) {
 						console.warn('Incomplete or invalid JSON, skipping chunk', e)
@@ -476,12 +475,11 @@ export class GrokAPI {
 			response.data.on('end', cleanup)
 			response.data.on('error', reject)
 
-			if (signal) 
+			if (signal)
 				signal.addEventListener('abort', () => {
 					response.data.destroy()
 					reject(new Error('Aborted by user'))
 				})
-			
 		})
 	}
 	/**

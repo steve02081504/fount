@@ -508,7 +508,6 @@ ${is_ImageGeneration
 						finalHistory.splice(insertIndex, 0, systemPromptMessage)
 					}
 					finalMessages = [...baseMessages, ...finalHistory, ...pauseDeclareMessages]
-
 				}
 				else
 					finalMessages = fullContents

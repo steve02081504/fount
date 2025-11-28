@@ -238,7 +238,6 @@ class AstParser {
 							for (const decl of node.declaration.declarations) module.exports.add(decl.id.name)
 						else if (node.declaration.id)  // export function a() {}
 							module.exports.add(node.declaration.id.name)
-
 					}
 					else if (node.specifiers)  // export { a, b as c };
 						for (const spec of node.specifiers) module.exports.add(spec.exported.name)

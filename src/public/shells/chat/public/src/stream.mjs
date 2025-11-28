@@ -12,7 +12,7 @@ export function applySlice(message, slice) {
 			message.content += slice.add.content
 			if (slice.add.files)
 				message.files = message.files.concat(slice.add.files)
-			
+
 			break
 		case 'rewrite_tail': {
 			// 健壮处理：如果 index 超出范围，回退到追加

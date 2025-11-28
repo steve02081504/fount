@@ -181,7 +181,6 @@ ${chatLogEntry.content}
 						}
 					}
 
-
 				return { role, content }
 			}))
 

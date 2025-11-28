@@ -143,7 +143,7 @@ async function GetSource(config, { SaveConfig }) {
 				// Detect SSE format
 				if (!isSSE && /^data:/m.test(buffer))
 					isSSE = true
-				
+
 
 				if (isSSE) {
 					const lines = buffer.split('\n')
@@ -178,7 +178,7 @@ async function GetSource(config, { SaveConfig }) {
 			}
 
 			// If not SSE, try parsing as standard JSON
-			if (!isSSE && buffer.trim()) 
+			if (!isSSE && buffer.trim())
 				try {
 					const json = JSON.parse(buffer)
 					const message = json.choices?.[0]?.message
@@ -189,8 +189,6 @@ async function GetSource(config, { SaveConfig }) {
 				} catch (e) {
 					if (!result.content) console.error('Failed to parse response as JSON:', e) // Fix: Use result.content instead of undefined 'text'
 				}
-			
-
 		} catch (e) {
 			if (e.name === 'AbortError') throw e
 			console.error('Stream reading error:', e)
@@ -200,9 +198,8 @@ async function GetSource(config, { SaveConfig }) {
 		}
 
 		// Wait for all image processing to complete
-		if (imageProcessingPromises.length > 0) 
+		if (imageProcessingPromises.length > 0)
 			await Promise.allSettled(imageProcessingPromises)
-		
 
 		return result
 	}

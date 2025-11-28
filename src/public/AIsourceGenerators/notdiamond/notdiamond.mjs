@@ -323,7 +323,6 @@ async function stream_notdiamond_response(response, model) {
 			return create_openai_chunk(buffer, model)
 		}
 
-
 	return create_openai_chunk('', model, 'stop')
 }
 
@@ -482,16 +481,15 @@ async function call_model(model_id, messages, temperature, auth_manager, stream 
 	if (stream && onChunk) {
 		// 流式模式
 		let buffer = ''
-		for await (const chunk of response.body) 
+		for await (const chunk of response.body)
 			if (chunk) {
 				buffer += chunk.toString()
 				const openaiChunk = create_openai_chunk(buffer, model_id)
 				const content = openaiChunk?.choices?.[0]?.delta?.content
-				if (content) 
+				if (content)
 					onChunk(content)
-				
 			}
-		
+
 		return '' // 流式模式下内容通过 onChunk 返回
 	} else {
 		// 非流式模式

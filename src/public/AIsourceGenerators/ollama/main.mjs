@@ -117,7 +117,6 @@ async function GetSource(config) {
 					messages.splice(Math.max(messages.length - config.system_prompt_at_depth, 0), 0, systemMessage)
 				else
 					messages.unshift(systemMessage)
-
 			}
 
 

@@ -51,7 +51,7 @@ class StreamRenderer {
 	 */
 	startLoop() {
 		if (this.animationFrameId || this.streamingMessages.size === 0) return
-        
+
 		/**
 		 *
 		 */
@@ -74,7 +74,7 @@ class StreamRenderer {
 			// 重新获取 DOM，防止虚拟列表滚动导致元素重建
 			if (!state.domElement || !state.domElement.isConnected) {
 				state.domElement = document.getElementById(id)
-				if (!state.domElement) continue 
+				if (!state.domElement) continue
 			}
 
 			// 平滑算法逻辑
@@ -83,16 +83,16 @@ class StreamRenderer {
 				const lag = targetContent.length - displayedContent.length
 				const step = Math.max(1, Math.ceil(lag / 5))
 				state.displayedContent = targetContent.substring(0, displayedContent.length + step)
-			} else 
+			} else
 				state.displayedContent = targetContent
-            
+
 
 			// 只有内容变化才操作 DOM
 			if (state.displayedContent !== state.lastRendered) {
 				const contentEl = state.domElement.querySelector('.message-content')
-				if (contentEl) 
+				if (contentEl)
 					contentEl.innerHTML = await renderMarkdownAsString(state.displayedContent)
-                
+
 				state.lastRendered = state.displayedContent
 			}
 		}

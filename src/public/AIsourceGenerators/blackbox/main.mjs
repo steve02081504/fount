@@ -151,11 +151,11 @@ ${chatLogEntry.content}
 			const timeoutPromise = with_timeout(config.timeout || 10000, callPromise)
 
 			// Handle abort during call
-			if (signal) 
+			if (signal)
 				signal.addEventListener('abort', () => {
 					// The blackbox call doesn't support abort, but we can at least stop waiting
 				})
-			
+
 
 			result.content = await timeoutPromise
 			previewUpdater(result)
