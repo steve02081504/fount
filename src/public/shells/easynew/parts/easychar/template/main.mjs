@@ -45,7 +45,6 @@ updateInfo()
 /** @type {CharAPI_t} */
 export default {
 	info,
-
 	/**
 	 * 初始化函数。
 	 * @param {import('../../../../../src/decl/part.ts').part_stat_t} stat - 部件状态对象。
@@ -154,15 +153,15 @@ export default {
 			},
 			/**
 			 * 获取回复。
-			 * @param {import('../../../../../src/public/shells/chat/decl/chat.ts').ChatRequest_t} arg - 聊天请求参数。
+			 * @param {import('../../../../../src/public/shells/chat/decl/chat.ts').ChatRequest_t} args - 聊天请求参数。
 			 * @returns {Promise<import("../../../../../src/public/shells/chat/decl/chatLog.ts").chatReply_t>} 返回一个包含聊天回复的 Promise。
 			 */
-			async GetReply(arg) {
+			async GetReply(args) {
 				if (!AIsource)
 					return { content: 'This character does not have an AI source, [set the AI source](https://steve02081504.github.io/fount/protocol?url=fount://page/shells/AIsourceManage) first' }
 
-				arg.plugins = Object.assign({}, plugins, arg.plugins)
-				const prompt_struct = await buildPromptStruct(arg)
+				args.plugins = Object.assign({}, plugins, args.plugins)
+				const prompt_struct = await buildPromptStruct(args)
 				// 创建回复容器
 				/** @type {import("../../../../../src/public/shells/chat/decl/chatLog.ts").chatReply_t} */
 				const result = {
@@ -179,7 +178,7 @@ export default {
 				 * @returns {void}
 				 */
 				function AddLongTimeLog(entry) {
-					entry.charVisibility = [arg.char_id]
+					entry.charVisibility = [args.char_id]
 					result?.logContextBefore?.push?.(entry)
 					prompt_struct.char_prompt.additional_chat_log.push(entry)
 				}
@@ -200,9 +199,9 @@ export default {
 					await AIsource.StructCall(prompt_struct, args.generation_options)
 					let continue_regen = false
 					for (const replyHandler of [
-						...Object.values(arg.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
+						...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
 					].filter(Boolean))
-						if (await replyHandler(result, { ...arg, prompt_struct, AddLongTimeLog }))
+						if (await replyHandler(result, { ...args, prompt_struct, AddLongTimeLog }))
 							continue_regen = true
 					if (continue_regen) continue regen
 					break

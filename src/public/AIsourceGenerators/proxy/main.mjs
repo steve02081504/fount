@@ -56,17 +56,22 @@ const configTemplate = {
  * @returns {Promise<AIsource_t>} AI 源。
  */
 async function GetSource(config, { SaveConfig }) {
+	let imgIndex = 0 // 定义 imgIndex
+	const use_stream = config.use_stream ?? false // 定义 use_stream
+
 	/**
 	 * 调用基础模型。
 	 * @param {Array<object>} messages - 消息数组。
 	 * @param {object} config - 配置对象。
+	 * @param {object} options - 选项对象。
+	 * @param {AbortSignal} options.signal - 用于中止请求的 AbortSignal。
+	 * @param {(result: {content: string, files: any[]}) => void} options.onPartialResult - 处理部分结果的回调函数。
+	 * @param {{content: string, files: any[]}} options.result - 包含内容和文件的结果对象。
 	 * @returns {Promise<{content: string, files: any[]}>} 模型返回的内容。
 	 */
 	async function fetchChatCompletion(messages, config, {
 		signal, onPartialResult, result
 	}) {
-		let imgIndex = 0
-		const use_stream = config.use_stream ?? false
 
 		const response = await fetch(config.url, {
 			method: 'POST',
@@ -98,7 +103,7 @@ async function GetSource(config, { SaveConfig }) {
 
 		/**
 		 * 处理图片 URL 数组
-		 * @param {string[]} imageUrls
+		 * @param {string[]} imageUrls - 图片 URL 数组。
 		 */
 		const processImages = (imageUrls) => {
 			if (!imageUrls || !Array.isArray(imageUrls)) return
@@ -136,9 +141,9 @@ async function GetSource(config, { SaveConfig }) {
 				buffer += decoder.decode(value, { stream: true })
 
 				// Detect SSE format
-				if (!isSSE && /^data:/m.test(buffer)) {
+				if (!isSSE && /^data:/m.test(buffer))
 					isSSE = true
-				}
+				
 
 				if (isSSE) {
 					const lines = buffer.split('\n')
@@ -173,7 +178,7 @@ async function GetSource(config, { SaveConfig }) {
 			}
 
 			// If not SSE, try parsing as standard JSON
-			if (!isSSE && buffer.trim()) {
+			if (!isSSE && buffer.trim()) 
 				try {
 					const json = JSON.parse(buffer)
 					const message = json.choices?.[0]?.message
@@ -182,9 +187,9 @@ async function GetSource(config, { SaveConfig }) {
 						if (message.images) processImages(message.images)
 					}
 				} catch (e) {
-					if (!text) console.error('Failed to parse response as JSON:', e)
+					if (!result.content) console.error('Failed to parse response as JSON:', e) // Fix: Use result.content instead of undefined 'text'
 				}
-			}
+			
 
 		} catch (e) {
 			if (e.name === 'AbortError') throw e
@@ -195,9 +200,9 @@ async function GetSource(config, { SaveConfig }) {
 		}
 
 		// Wait for all image processing to complete
-		if (imageProcessingPromises.length > 0) {
+		if (imageProcessingPromises.length > 0) 
 			await Promise.allSettled(imageProcessingPromises)
-		}
+		
 
 		return result
 	}
@@ -205,6 +210,7 @@ async function GetSource(config, { SaveConfig }) {
 	/**
 	 * 调用基础模型（带重试）。
 	 * @param {Array<object>} messages - 消息数组。
+	 * @param {{ signal?: AbortSignal, previewUpdater?: (result: {content: string, files: any[]}) => void, result: {content: string, files: any[]} }} options - 包含信号、预览更新器和结果的选项对象。
 	 * @returns {Promise<{content: string, files: any[]}>} 模型返回的内容。
 	 */
 	async function fetchChatCompletionWithRetry(messages, options) {
@@ -356,6 +362,11 @@ ${chatLogEntry.content}
 				files: [...base_result?.files],
 			}
 
+			/**
+			 * 预览更新器
+			 * @param {{content: string, files: any[]}} r - 结果对象
+			 * @returns {void}
+			 */
 			const previewUpdater = r => replyPreviewUpdater?.(clearFormat({ ...r }))
 
 			await fetchChatCompletionWithRetry(messages, {

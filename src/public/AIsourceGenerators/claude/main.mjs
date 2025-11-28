@@ -74,11 +74,14 @@ async function GetSource(config, { SaveConfig }) { // 接收 SaveConfig
 		},
 
 		/**
-		 * 使用结构化提示调用 AI 源。
-		 * @param {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
-		 * @returns {Promise<{content: string}>} 来自 AI 的结果。
-		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
+	 * 使用结构化提示调用 AI 源。
+	 * @param {import('../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+	 * @param {import('../../../decl/AIsource.ts').GenerationOptions} [options] - 生成选项。
+	 * @returns {Promise<{content: string}>} 来自 AI 的结果。
+	 */
+		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct, options = {}) => {
+			const { base_result = {}, replyPreviewUpdater, signal } = options
+
 			const messages = []
 			prompt_struct.chat_log.forEach(chatLogEntry => {
 				const uid = Math.random().toString(36).slice(2, 10)
@@ -103,25 +106,58 @@ ${chatLogEntry.content}
 					content: system_prompt
 				})
 
-
-			let text = await claudeAPI.callClaudeAPI(messages, config.model)
-
-			if (text.match(/<\/sender>\s*<content>/))
-				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1].split(new RegExp(
-					`(${(prompt_struct.alternative_charnames || []).map(Object).map(
-						stringOrReg => {
-							if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
-							return stringOrReg.source
-						}
-					).join('|')
-					})\\s*<\\/sender>\\s*<content>`
-				)).pop().split(/<\/content>\s*<\/message/).shift()
-			if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
-				text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
-
-			return {
-				content: text,
+			/**
+			 * 清理 AI 响应的格式，移除 XML 标签和不完整的标记。
+			 * @param {object} res - 原始响应对象。
+			 * @param {string} res.content - 响应内容。
+			 * @returns {object} - 清理后的响应对象。
+			 */
+			function clearFormat(res) {
+				let text = res.content
+				if (text.match(/<\/sender>\s*<content>/))
+					text = (text.match(/<\/sender>\s*<content>([\S\s]*)/)?.[1] ?? text).split(new RegExp(
+						`(${(prompt_struct.alternative_charnames || []).map(Object).map(
+							s => s instanceof String ? escapeRegExp(s) : s.source
+						).join('|')})\\s*<\\/sender>\\s*<content>`
+					)).pop().split(/<\/content>\s*<\/message/).shift()
+				if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
+					text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
+				// 清理可能出现的不完整的结束标签
+				text = text.replace(/<\/content\s*$/, '').replace(/<\/message\s*$/, '').replace(/<\/\s*$/, '')
+				res.content = text
+				return res
 			}
+
+			const result = {
+				content: '',
+				files: [...base_result?.files || []],
+			}
+
+			/**
+			 * 预览更新器
+			 * @param {{content: string, files: any[]}} r - 结果对象
+			 * @returns {void}
+			 */
+			const previewUpdater = r => replyPreviewUpdater?.(clearFormat({ ...r }))
+
+			// Check for abort before starting
+			if (signal?.aborted) {
+				const err = new Error('Aborted by user')
+				err.name = 'AbortError'
+				throw err
+			}
+
+			// Handle abort during call
+			if (signal) 
+				signal.addEventListener('abort', () => {
+					// The claude call doesn't support abort, but we can at least stop waiting
+				})
+			
+
+			result.content = await claudeAPI.callClaudeAPI(messages, config.model)
+			previewUpdater(result)
+
+			return Object.assign(base_result, clearFormat(result))
 		},
 
 		tokenizer: {

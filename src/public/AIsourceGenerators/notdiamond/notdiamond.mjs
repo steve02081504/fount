@@ -465,19 +465,39 @@ async function make_request(payload, auth_manager) {
  * @param {array} messages 消息列表
  * @param {number} temperature 温度参数
  * @param {AuthManager} auth_manager 用于管理身份验证的 AuthManager 实例
+ * @param {boolean} [stream=false] 是否以流式方式返回响应
+ * @param {function(string): void} [onChunk=null] 流式响应中每个块的回调函数
  * @returns {Promise<string>} 模型的字符串回答
  */
-async function call_model(model_id, messages, temperature, auth_manager) {
+async function call_model(model_id, messages, temperature, auth_manager, stream = false, onChunk = null) {
 	const request_data = {
 		model: model_id,
 		messages,
 		temperature,
-		stream: false
+		stream
 	}
 	const payload = await build_payload(request_data, model_id)
 	const response = await make_request(payload, auth_manager)
-	const result = await handle_non_stream_response(response, model_id, count_message_tokens(messages, model_id))
-	return result.choices[0].message.content
+
+	if (stream && onChunk) {
+		// 流式模式
+		let buffer = ''
+		for await (const chunk of response.body) 
+			if (chunk) {
+				buffer += chunk.toString()
+				const openaiChunk = create_openai_chunk(buffer, model_id)
+				const content = openaiChunk?.choices?.[0]?.delta?.content
+				if (content) 
+					onChunk(content)
+				
+			}
+		
+		return '' // 流式模式下内容通过 onChunk 返回
+	} else {
+		// 非流式模式
+		const result = await handle_non_stream_response(response, model_id, count_message_tokens(messages, model_id))
+		return result.choices[0].message.content
+	}
 }
 
 
@@ -496,7 +516,7 @@ export class NotDiamond {
 
 	/**
 	 * 创建一个新的回答
-	 * @param {object} options 包含模型、消息和温度的选项对象
+	 * @param {object} options 包含模型、消息、温度和流式选项的选项对象
 	 * @returns {Promise<string>} 一个解析为模型响应的 Promise
 	 */
 	async create(options = {}) {
@@ -504,8 +524,10 @@ export class NotDiamond {
 		if (!model) throw new Error('Please provide a model ID.')
 		const messages = options.messages || []
 		const temperature = options.temperature || 1
+		const stream = options.stream || false
+		const onChunk = options.onChunk || null
 
-		return await call_model(model, messages, temperature, this.AuthManager)
+		return await call_model(model, messages, temperature, this.AuthManager, stream, onChunk)
 	}
 
 	/**

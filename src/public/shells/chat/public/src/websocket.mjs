@@ -13,7 +13,7 @@ import {
 	handlePluginRemoved,
 } from './ui/sidebar.mjs'
 import { handleCharTypingStart, handleCharTypingStop } from './ui/typingIndicator.mjs'
-import { handleMessageAdded, handleMessageDeleted, handleMessageReplaced, handleStreamUpdate, initializeVirtualQueue } from './ui/virtualQueue.mjs'
+import { handleMessageAdded, handleMessageDeleted, handleMessageReplaced, handleStreamUpdate } from './ui/virtualQueue.mjs'
 
 let ws = null
 

@@ -1113,9 +1113,9 @@ async function executeGeneration(chatid, request, stream, placeholderEntry, chat
 		else {
 			chatMetadata.chatLog[idx] = finalEntry
 			const timelineIdx = chatMetadata.timeLines.findIndex(e => e.id === entryId)
-			if (timelineIdx !== -1) {
+			if (timelineIdx !== -1) 
 				chatMetadata.timeLines[timelineIdx] = finalEntry
-			}
+			
 		}
 
 		if (!isError) chatMetadata.LastTimeSlice = finalEntry.timeSlice
@@ -1207,9 +1207,9 @@ export async function modifyTimeLine(chatid, delta) {
 
 	// 3. 处理向左循环 (Timeline 0 -> Left -> Last)
 	// 之前的逻辑这里有Bug，导致可能算出一个触发生成的索引
-	if (newTimeLineIndex < 0) {
+	if (newTimeLineIndex < 0) 
 		newTimeLineIndex = chatMetadata.timeLines.length - 1
-	}
+	
 
 	let entry
 
@@ -1256,7 +1256,7 @@ export async function modifyTimeLine(chatid, delta) {
 		})
 
 		// === 分支处理：开场白 vs 普通回复 ===
-		if (greeting_type) {
+		if (greeting_type) 
 			// **恢复的开场白逻辑**
 			try {
 				const charname = timeSlice.charname
@@ -1315,7 +1315,7 @@ export async function modifyTimeLine(chatid, delta) {
 				})
 
 			} catch (e) {
-				console.error("Greeting generation failed:", e)
+				console.error('Greeting generation failed:', e)
 				newEntry.content = `\`\`\`\nError generating greeting:\n${e.message}\n\`\`\``
 				newEntry.is_generating = false
 				broadcastChatEvent(chatid, {
@@ -1324,7 +1324,7 @@ export async function modifyTimeLine(chatid, delta) {
 				})
 			}
 
-		} else {
+		 else {
 			// **普通回复逻辑 (流式)**
 			const charname = timeSlice.charname
 			const request = await getChatRequest(chatid, charname)

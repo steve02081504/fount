@@ -555,6 +555,7 @@ ${is_ImageGeneration
 			/**
 			 * 处理 AI 响应的进度更新
 			 * @param {object} r - 响应
+			 * @returns {void}
 			 */
 			const previewUpdater = r => replyPreviewUpdater?.(clearFormat({ ...r }))
 			const result = {

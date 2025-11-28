@@ -64,20 +64,30 @@ async function GetSource(config) {
 			}
 		},
 		/**
-		 * 使用结构化提示调用 AI 源。
-		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
-		 * @returns {Promise<{content: string}>} 来自 AI 的结果。
-		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
+	 * 使用结构化提示调用 AI 源。
+	 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+	 * @param {import('../../../decl/AIsource.ts').GenerationOptions} [options] - 生成选项。
+	 * @returns {Promise<{content: string}>} 来自 AI 的结果。
+	 */
+		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct, options = {}) => {
+			const { base_result = {}, replyPreviewUpdater, signal } = options
+
+			// Check for abort before starting
+			if (signal?.aborted) {
+				const err = new Error('Aborted by user')
+				err.name = 'AbortError'
+				throw err
+			}
+
 			let prompt = structPromptToSingleNoChatLog(prompt_struct)
 			prompt += `\
 \n${prompt_struct.chat_log.map(item => `${item.name}: ${item.content}\n${endToken}`).join('\n')}
 ${prompt_struct.Charname}: `
-			return {
-				content: generator.generate({
-					prompt,
-				}),
-			}
+
+			return Object.assign(base_result, {
+				content: generator.generate({ prompt }),
+				files: [...base_result?.files || []],
+			})
 		},
 		tokenizer: {
 			/**

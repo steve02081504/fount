@@ -111,9 +111,19 @@ async function GetSource(config) {
 		/**
 		 * 使用结构化提示调用 AI 源。
 		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
+		 * @param {import('../../../decl/AIsource.ts').GenerationOptions} [options] - 生成选项。
 		 * @returns {Promise<{content: string, files: any[]}>} 来自 AI 的结果。
 		 */
-		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct) => {
+		StructCall: async (/** @type {prompt_struct_t} */ prompt_struct, options = {}) => {
+			const { base_result = {}, replyPreviewUpdater, signal } = options
+
+			// Check for abort before starting
+			if (signal?.aborted) {
+				const err = new Error('Aborted by user')
+				err.name = 'AbortError'
+				throw err
+			}
+
 			// 使用 fount 工具函数获取独立的系统提示
 			const system_prompt = structPromptToSingleNoChatLog(prompt_struct)
 
@@ -183,37 +193,64 @@ ${chatLogEntry.content}
 				...config.model_arguments,
 			}
 
-			let text = ''
-			const files = [] // 用于存放模型生成的图片（如果未来支持）
+			/**
+			 * 清理 AI 响应的格式，移除 XML 标签和不完整的标记。
+			 * @param {object} res - 原始响应对象。
+			 * @param {string} res.content - 响应内容。
+			 * @returns {object} - 清理后的响应对象。
+			 */
+			function clearFormat(res) {
+				let text = res.content
+				if (text.match(/<\/sender>\s*<content>/))
+					text = (text.match(/<\/sender>\s*<content>([\S\s]*)/)?.[1] ?? text).split(new RegExp(
+						`(${(prompt_struct.alternative_charnames || []).map(Object).map(
+							s => s instanceof String ? escapeRegExp(s) : s.source
+						).join('|')})\\s*<\\/sender>\\s*<content>`
+					)).pop().split(/<\/content>\s*<\/message/).shift()
+				if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
+					text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
+				// 清理可能出现的不完整的结束标签
+				text = text.replace(/<\/content\s*$/, '').replace(/<\/message\s*$/, '').replace(/<\/\s*$/, '')
+				res.content = text
+				return res
+			}
 
-			if (config.use_stream) {
-				const stream = await client.messages.create({ ...params, stream: true })
-				for await (const event of stream)
-					if (event.type === 'content_block_delta' && event.delta.type === 'text_delta')
-						text += event.delta.text
+			const result = {
+				content: '',
+				files: [...base_result?.files || []],
+			}
+
+			/**
+			 * 预览更新器
+			 * @param {{content: string, files: any[]}} r - 结果对象
+			 * @returns {void}
+			 */
+			const previewUpdater = r => replyPreviewUpdater?.(clearFormat({ ...r }))
+
+			// Use streaming based on config
+			const useStream = (config.use_stream ?? true) && !!replyPreviewUpdater
+
+			if (useStream) {
+				const stream = await client.messages.create({ ...params, stream: true, signal })
+				for await (const event of stream) {
+					if (signal?.aborted) {
+						const err = new Error('Aborted by user')
+						err.name = 'AbortError'
+						throw err
+					}
+					if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+						result.content += event.delta.text
+						previewUpdater(result)
+					}
+				}
 			}
 			else {
-				const message = await client.messages.create(params)
-				text = message.content.filter(block => block.type === 'text').map(block => block.text).join('')
+				const message = await client.messages.create({ ...params, signal })
+				result.content = message.content.filter(block => block.type === 'text').map(block => block.text).join('')
+				previewUpdater(result)
 			}
 
-			if (text.match(/<\/sender>\s*<content>/))
-				text = text.match(/<\/sender>\s*<content>([\S\s]*)<\/content>/)[1].split(new RegExp(
-					`(${(prompt_struct.alternative_charnames || []).map(Object).map(
-						stringOrReg => {
-							if (stringOrReg instanceof String) return escapeRegExp(stringOrReg)
-							return stringOrReg.source
-						}
-					).join('|')
-					})\\s*<\\/sender>\\s*<content>`
-				)).pop().split(/<\/content>\s*<\/message/).shift()
-			if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
-				text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
-
-			return {
-				content: text,
-				files,
-			}
+			return Object.assign(base_result, clearFormat(result))
 		},
 		tokenizer: {
 			/**
