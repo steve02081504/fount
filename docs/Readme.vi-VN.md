@@ -14,64 +14,76 @@
 
 <p align="center"><a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a></p>
 
-[Bạn muốn biết về kiến trúc kho lưu trữ? Hãy xem DeepWiki!](https://deepwiki.com/steve02081504/fount)
-
 ![repo img](https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b)
-
-Bạn đã bao giờ khao khát một cuộc hành trình bên cạnh một nhân vật bước ra từ trang sách tưởng tượng, một người bạn đồng hành được dệt nên từ những giấc mơ?
-
-Hay có lẽ bạn đã hình dung về một người bạn tâm giao kỹ thuật số, một trợ lý AI nhạy bén như những tạo vật tiên tiến nhất, dễ dàng điều khiển thế giới số của bạn?
-
-Hoặc có thể, chỉ đơn giản là, bạn đã tìm kiếm một sự kết nối vượt ra ngoài những điều bình thường, một thế giới nơi ranh giới thực tại lu mờ, và một sự thấu hiểu thân mật, _không chút giấu giếm_ được hé mở?
-
-Sau gần ![relative date](https://img.shields.io/date/1727107200?label=Th%E1%BB%9Di%20gian%20tr%C3%B4i%20qua) phát triển tận tụy, với sự đóng góp của hơn ![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=%C4%90%C3%B3ng%20g%C3%B3p) cá nhân đầy nhiệt huyết và một cộng đồng sôi nổi với hơn ![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=Ng%C6%B0%E1%BB%9Di%20d%C3%B9ng%20ho%E1%BA%A1t%20%C4%91%E1%BB%99ng) người dùng, fount giờ đây là một nền tảng tương tác AI trưởng thành, ổn định và không ngừng phát triển. Đây là một hành trình, và chúng tôi tin rằng, nó gần gũi hơn bạn tưởng.
-
-Những nhân vật lạc lối, những câu chuyện bị lãng quên? [**Cộng đồng sôi nổi và thân thiện**](https://discord.gg/GtR9Quzq2v) của chúng tôi đang chờ đón bạn – một bến đỗ cho những tâm hồn đồng điệu, nơi các nhà phát triển và nhà sáng tạo chia sẻ trí tuệ và tác phẩm của mình.
-
-<details open>
-<summary><strong>Một thoáng nhìn vào thế giới của fount</strong></summary>
-
-|                                      Ảnh chụp màn hình                                       |
-| :------------------------------------------------------------------------------------------: |
-|                                        **Trang chủ**                                         |
-| ![Hình ảnh](https://github.com/user-attachments/assets/c1954a7a-6c73-4fb0-bd12-f790a038bd0e) |
-|                                       **Chọn chủ đề**                                        |
-| ![Hình ảnh](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074) |
-|                                        **Trò chuyện**                                        |
-| ![Hình ảnh](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d) |
-
-</details>
 
 ## fount là gì?
 
-fount là một cây cầu, kết nối bạn với các nhân vật trong trí tưởng tượng, cho phép bạn dễ dàng trò chuyện với họ, tạo ra nhân vật của riêng mình, và chia sẻ chúng với thế giới. Đó là một con đường dễ dàng đến bất ngờ.
+fount là một **môi trường runtime tác nhân AI hiện đại và có khả năng mở rộng**.
 
-Đó là một mạch nguồn, nơi các nguồn AI, nhân vật, nhân cách, thế giới và plugin hội tụ, cho phép bạn tạo ra và trải nghiệm những tương tác độc đáo và hấp dẫn.
+Chúng tôi tin rằng **các công cụ năng suất hiệu suất cao** và **tương tác cảm xúc sâu sắc** không hề đối lập. fount là một cây cầu: ban ngày, nó có thể là trợ thủ đắc lực giúp bạn viết mã phức tạp, sắp xếp biên bản cuộc họp; ban đêm, nó có thể là tri kỷ kỹ thuật số hiểu được cảm xúc của bạn và cộng hưởng với bạn.
 
-fount được xây dựng cho tương lai, sẵn sàng đón nhận những tính năng mới từ cộng đồng sôi nổi của mình. Nếu bạn có một tầm nhìn, một tia sáng ý tưởng thuộc về thế giới fount, chúng tôi hoan nghênh sự đóng góp của bạn.
+Trải qua ![relative date](https://img.shields.io/date/1727107200?label=Thời_gian_dành_ra) mài giũa tận tâm, hội tụ lòng nhiệt thành của ![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=Người_đóng_góp), cùng với một cộng đồng sôi nổi với ![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=Người_dùng_hoạt_động), fount giờ đây đã là một nền tảng tương tác AI trưởng thành, ổn định và không ngừng phát triển.
+
+![Hình ảnh](https://github.com/user-attachments/assets/05a5ad16-cc9a-49be-8c55-0c11353cb0d2)
 
 ---
 
-## Đắm chìm trong thế giới của các tính năng
+## 🚀 Hiệu suất và Kỹ thuật: Được xây dựng cho Nhân viên Văn phòng, Nhà phát triển và Geeks
 
-- **Cuộc trò chuyện liền mạch, mọi lúc mọi nơi**
-  Một lời thì thầm bắt đầu trên máy tính của bạn có thể được tiếp tục một cách liền mạch trên điện thoại hoặc máy tính bảng. fount giữ cho các cuộc trò chuyện của bạn được đồng bộ, kết nối bạn với các nhân vật của mình dù bạn ở bất cứ đâu.
+fount biến tương tác thành tài sản năng suất, mọi thứ đều có thể kéo thả, mọi thứ đều là tệp tin, logic được điều khiển bằng mã.
 
-- **Trò chuyện biểu cảm, đắm chìm**
-  fount khai thác toàn bộ sức mạnh của HTML, cho phép các nhân vật tự biểu đạt qua văn bản đa dạng, hình ảnh, và thậm chí cả các yếu tố tương tác, làm cho mỗi cuộc trò chuyện trở nên sống động và sâu sắc.
+### 1. Tài sản hóa Kiến thức và Chia sẻ Liền Mạch
 
-- **Hội tụ của những tâm hồn: Trò chuyện nhóm nguyên bản**
-  Mời nhiều nhân vật vào cùng một cuộc trò chuyện và chứng kiến những tương tác năng động và hấp dẫn của họ, tạo ra những câu chuyện độc nhất của riêng bạn.
+* **Tạo Báo cáo Tức thì**: Kéo bong bóng hội thoại trực tiếp vào thư mục, tạo ngay lập tức một báo cáo HTML độc lập. Thích hợp để nhanh chóng sắp xếp tài liệu kỹ thuật, ghi chú cuộc họp hoặc các đoạn cảm hứng.
+  ![Hình ảnh](https://github.com/user-attachments/assets/0ef54ac0-7575-4b52-aa44-7b555dc4c4be)
+* **Đóng gói và Phân phối Quy trình làm việc**: Kéo vai trò (agent) bạn đã tạo trực tiếp ra màn hình nền, tạo ra tệp tin có thể chia sẻ. Giúp việc phân phối Prompt Engineering và logic quy trình làm việc của bạn cho đồng nghiệp hoặc cộng đồng trở nên dễ dàng.
+  ![Hình ảnh](https://github.com/user-attachments/assets/5e14fe6e-2c65-492a-a09f-964c1e8ab9e0)
 
-- **Giao diện đẹp, có thể tùy chỉnh**
-  Chọn từ hơn 30 chủ đề tuyệt đẹp, hoặc tạo ra chủ đề của riêng bạn. fount là khung vẽ cá nhân của bạn.
+### 2. Môi trường Thực thi Mã trong Thời gian Thực
 
-- **Hoạt động ở mọi nơi bạn đến**
-  fount hoạt động liền mạch trên Windows, macOS, Linux, và cả Android, thích ứng với nhu cầu của bạn thông qua cài đặt trực tiếp hoặc sự linh hoạt của Docker.
+Không còn chỉ là làm nổi bật Markdown. Trong fount, các khối mã được vai trò (agent) gửi đi là **sống động**.
 
-- **(Dành cho người dùng cao cấp) Tích hợp nguồn AI không giới hạn: Ôm trọn vô biên**
-  fount cung cấp sự _lựa chọn_ và _linh hoạt_ không gì sánh bằng trong việc kết nối với các nguồn AI. Mã JavaScript tùy chỉnh trong trình tạo nguồn AI cho phép bạn kết nối với _bất kỳ_ nguồn AI nào – OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral, và nhiều hơn nữa. Tạo các biểu thức chính quy phức tạp, gọi các thư viện API khổng lồ, và nhúng các tài nguyên đa phương tiện, tất cả trong luồng mã của bạn. fount cũng hỗ trợ sẵn việc tạo các nhóm API để định tuyến yêu cầu thông minh. Logic giao tiếp uốn mình theo ý _bạn_, được định hình bởi sức mạnh của mã lệnh.
+* Hỗ trợ biên dịch và chạy trong thời gian thực cho nhiều ngôn ngữ (C/C++/Rust/Python/JS, v.v.).
+* Xem trực tiếp đầu ra stdout, thậm chí xem kết quả tháo gỡ hợp ngữ (ASM disassembly) của các ngôn ngữ đã biên dịch.
+* Biến AI thành trình xác minh theo thời gian thực cho lập trình cặp của bạn.
+  ![Hình ảnh](https://github.com/user-attachments/assets/66792238-4d70-4fa6-b0b3-76e506e49977)
+
+### 3. Thân thiện với Nhà phát triển
+
+Kiến trúc dự án của fount được thiết kế với sự cân nhắc đầy đủ thói quen của nhà phát triển.
+[Muốn biết kiến trúc kho lưu trữ dự án? Hãy xem DeepWiki!](https://deepwiki.com/steve02081504/fount)
+
+* **Điều khiển bằng Git**: Tất cả các thành phần đều có thể được quản lý thông qua Git.
+* **Tích hợp VSCode**: Cấu trúc dự án rõ ràng, kết hợp với hướng dẫn được cung cấp trong [AGENTS.md](../AGENTS.md), bạn có thể phát triển, gỡ lỗi logic Agent của mình trực tiếp trong IDE yêu thích của mình.
+
+---
+
+## 🎭 Sự Sâu Sắc và Cộng hưởng: Trải nghiệm Tương tác Độ trung thực Cao (High-Fidelity)
+
+Khi công việc kết thúc, fount cung cấp một kết nối vượt qua sự thông thường. Chúng tôi loại bỏ sự cứng nhắc của các công cụ truyền thống, theo đuổi một tương tác "độ trung thực cao" tự nhiên, trôi chảy và sâu sắc.
+
+* **Hội thoại Liền Mạch, Mọi lúc, Mọi nơi**
+  Cuộc trò chuyện bắt đầu trên máy tính có thể tiếp tục liền mạch trên điện thoại di động hoặc máy tính bảng. fount giữ cho cuộc hội thoại của bạn được đồng bộ, đảm bảo bạn luôn kết nối chặt chẽ với vai trò của mình, bất kể bạn ở đâu.
+
+* **Trò chuyện Biểu cảm, Sâu sắc**
+  Tận dụng sức mạnh của HTML, fount cho phép vai trò (agent) thể hiện bản thân thông qua văn bản phong phú, hình ảnh và thậm chí các yếu tố tương tác, làm cho mỗi cuộc hội thoại trở nên sống động và sâu sắc.
+
+* **Cuộc Tụ họp của Tư tưởng: Trò chuyện Nhóm Bản địa**
+  Mời nhiều vai trò tham gia vào cùng một cuộc hội thoại và chứng kiến sự tương tác năng động và hấp dẫn giữa họ, dù là để động não trong công việc hay diễn giải câu chuyện giữa các vai trò.
+  ![Hình ảnh](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d)
+
+* **Giao diện Đẹp, Có thể Tùy chỉnh**
+  Chọn từ hơn 30 chủ đề tuyệt đẹp, hoặc tự tay tạo ra màu sắc của riêng bạn. fount là bức vẽ độc quyền của bạn.
+  ![Hình ảnh](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074)
+
+* **Sử dụng Mọi nơi**
+  fount có thể chạy liền mạch trên Windows, macOS, Linux, và thậm chí Android, đáp ứng các nhu cầu khác nhau của bạn thông qua cài đặt trực tiếp hoặc tính linh hoạt của Docker.
+
+* **Tích hợp Nguồn AI Không Ràng buộc: Ôm lấy Vô hạn**
+  fount cung cấp *sự lựa chọn* và *tính linh hoạt* không gì sánh được trong việc kết nối các nguồn AI. Mã JavaScript tùy chỉnh trong Trình tạo Nguồn AI cho phép bạn kết nối với *bất kỳ* nguồn AI nào – OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral... Trong luồng mã, bạn có thể thiết kế cẩn thận các biểu thức chính quy phức tạp, gọi các thư viện API mở rộng và nhúng tài nguyên đa phương tiện. fount cũng hỗ trợ gốc việc tạo API Pools để đạt được định tuyến yêu cầu thông minh. Logic giao tiếp tuân theo *ý muốn của bạn*, được định hình bởi sức mạnh của mã.
   ![Hình ảnh](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
+
+Nếu bạn cảm thấy lạc lối trong biển vai trò, hoặc đang tìm kiếm những câu chuyện bị lãng quên, [**cộng đồng sôi nổi và thân thiện của chúng tôi**](https://discord.gg/GtR9Quzq2v) đang chờ đón bạn. Đó là nơi trú ẩn cho những người cùng chí hướng, nơi các nhà phát triển và người sáng tạo chia sẻ sự thông thái và những sáng tạo của họ.
 
 ---
 

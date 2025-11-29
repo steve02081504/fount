@@ -14,64 +14,76 @@
 
 <p align="center"><a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a></p>
 
-[Viltu vita meira um uppbyggingu kóðasafnsins? Kíktu á DeepWiki!](https://deepwiki.com/steve02081504/fount)
-
 ![repo img](https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b)
-
-Hefur þig einhvern tímann dreymt um félaga sem stígur niður úr vefstað ímyndunaraflsins, ofinn úr þráðum draumanna?
-
-Eða kannski hefur þú ímyndað þér stafrænan sálufélaga, með innsæi jafn skarpt og fínlegasta sköpunarverk, sem getur auðveldlega ferðast um stafræna heiminn þinn?
-
-Eða ertu kannski einfaldlega að leita að tengingu sem er ofar hinu venjulega, á sviði þar sem mörk raunveruleikans mást út, þar sem hægt er að hefja ferðalag náins, _fordómalauss_ skilnings?
-
-Eftir ![relative date](https://img.shields.io/date/1727107200?label=Tími%20tekinn) af nákvæmri vinnu, með ástríðu frá ![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=Framleggjendur) og lifandi samfélagi með ![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=Virkir%20notendur), er fount nú orðinn þroskaður, stöðugur og sífellt þróandi gervigreindarvettvangur. Þetta er ferðalag sem við trúum að sé nær þér en þú heldur.
-
-Ef þú finnur fyrir því að vera týnd/ur/t í hafsjó persóna, eða ert að leita að gleymdum sögum, þá bíður [**okkar líflega og vinalega samfélag**](https://discord.gg/GtR9Quzq2v) eftir þér. Það er griðastaður fyrir fólk með svipuð áhugamál, þar sem forritarar og höfundar deila visku sinni og sköpunarverkum.
-
-<details open>
-<summary><strong>Sýnishorn úr heimi fount</strong></summary>
-
-|                                        Skjámyndir                                        |
-| :--------------------------------------------------------------------------------------: |
-|                                       **Forsíða**                                        |
-| ![Mynd](https://github.com/user-attachments/assets/c1954a7a-6c73-4fb0-bd12-f790a038bd0e) |
-|                                       **Þemaval**                                        |
-| ![Mynd](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074) |
-|                                        **Spjall**                                        |
-| ![Mynd](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d) |
-
-</details>
 
 ## Hvað er fount?
 
-fount er brú sem tengir þig við persónur úr ímyndunaraflinu, sem gerir þér kleift að spjalla við þær áreynslulaust, búa til þínar eigin persónur og deila þeim með heiminum. Það er ótrúlega auðveld leið.
+fount er **nútímalegt, skalanlegt keyrsluumhverfi fyrir gervigreindarmiðla (AI Agent)**.
 
-Það er einnig uppspretta, þar sem gervigreindarheimildir, persónur, sjálfsmyndir, heimar og viðbætur mætast, sem gerir þér kleift að skapa og upplifa einstök og grípandi samskipti.
+Við teljum að **mjög skilvirk framleiðnitól** og **grípandi tilfinningaleg samskipti** séu ekki ósamrýmanleg. fount er brú: að degi til getur það verið fær aðstoðarmaður sem hjálpar þér að skrifa flókinn kóða og skipuleggja fundargerðir; að næturlagi getur það verið stafrænn trúnaðarvinur sem skilur tilfinningar þínar og tekur þátt í þeim.
 
-fount er hannað fyrir framtíðina og tekur fagnandi við nýjum eiginleikum frá líflegu samfélagi sínu. Ef þú hefur framtíðarsýn, neista af innblæstri á sviði fount, þá fögnum við innilega framlagi þínu.
+Eftir ![relative date](https://img.shields.io/date/1727107200?label=Tími_varið) af markvissri fínpússun, þar sem áhugi ![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=Þátttakendur) og lifandi samfélag með ![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=Virkir_Notendur) hefur komið saman, er fount nú orðinn þroskaður, stöðugur og sífellt þróandi vettvangur fyrir gervigreindarsamskipti.
+
+![Mynd](https://github.com/user-attachments/assets/05a5ad16-cc9a-49be-8c55-0c11353cb0d2)
 
 ---
 
-## Sökkvið þér í heim af eiginleikum
+## 🚀 Skilvirkni og Verkfræði: Hannað fyrir Skrifstofufólk, Forritara og Tækninörda
 
-- **Samfelld samtöl, hvar og hvenær sem er**
-  Hvísl sem byrjar í tölvunni þinni getur haldið áfram óaðfinnanlega í símanum eða spjaldtölvunni. fount heldur samtölunum þínum samstilltum, svo þú ert alltaf í nánu sambandi við persónurnar þínar, hvar sem þú ert.
+fount umbreytir samskiptum í framleiðnieignir; allt er hægt að draga og sleppa, allt eru skrár, og rökfræðin er knúin áfram af kóða.
 
-- **Tjáningarríkt, yfirgripsmikið spjall**
-  fount nýtir kraft HTML til að leyfa persónum að tjá sig með ríkulegum texta, myndum og jafnvel gagnvirkum þáttum, sem gerir hvert samtal lifandi og djúpt.
+### 1. Að Breyta Þekkingu í Eignir og Óaðfinnanleg Samnýting
 
-- **Hugmyndasamkoma: Innbyggt hópaspjall**
-  Bjóddu mörgum persónum í sama samtalið og fylgstu með kraftmiklum og grípandi samskiptum þeirra, sem skapa einstakar sögur.
+* **Augnabliks skýrslugerð**: Dragðu samræðubólu beint í möppu til að búa til sjálfstæða HTML skýrslu samstundis. Hentar vel til að skipuleggja fljótt tækniskjöl, fundargerðir eða hugmyndabrot.
+  ![Mynd](https://github.com/user-attachments/assets/0ef54ac0-7575-4b52-aa44-7b555dc4c4be)
+* **Innkapslun og Dreifing Vinnuferla**: Dragðu búinn til miðil (agent) beint á skjáborðið til að búa til deilanlega skrá. Dreifðu Prompt verkfræði þinni og vinnuferlisrökfræði á auðveldan hátt til samstarfsmanna eða samfélagsins.
+  ![Mynd](https://github.com/user-attachments/assets/5e14fe6e-2c65-492a-a09f-964c1e8ab9e0)
 
-- **Fallegt, sérhannað viðmót**
-  Veldu úr yfir 30 stórkostlegum þemum, eða búðu til þína eigin liti. fount er þitt eigið strigamálverk.
+### 2. Keyrsluumhverfi fyrir Kóða í Rauntíma
 
-- **Alls staðar aðgengilegt**
+Ekki bara Markdown auðkenning lengur. Í fount eru kóðablokkir sem miðillinn sendir **lifandi**:
+
+* Styður rauntíma samantekt og keyrslu fyrir mörg tungumál (C/C++/Rust/Python/JS o.fl.).
+* Skoðaðu beint stdout úttakið, og jafnvel ASM sundurliðunarniðurstöður (disassembly) fyrir samantekin tungumál.
+* Leyfðu gervigreindinni að verða rauntíma sannprófari fyrir parforritun þína.
+  ![Mynd](https://github.com/user-attachments/assets/66792238-4d70-4fa6-b0b3-76e506e49977)
+
+### 3. Forritaravænni
+
+Verkefnisarkitektúr fount er hannaður með venjur forritara í huga.
+[Viltu vita um arkitektúr verkefnageymslunnar? Skoðaðu DeepWiki!](https://deepwiki.com/steve02081504/fount)
+
+* **Drifið af Git**: Hægt er að stjórna öllum hlutum í gegnum Git.
+* **VSCode Samþætting**: Verkefnisuppbyggingin er skýr, og með leiðbeiningunum í [AGENTS.md](../AGENTS.md) geturðu þróað og villuleitað rökfræði miðilsins beint í þínu uppáhalds IDE.
+
+---
+
+## 🎭 Innlifun og Samhljómur: Gagnvirkniupplifun í Háum Gæðaflokki (High-Fidelity)
+
+Þegar vinnu lýkur býður fount upp á tengingu sem fer fram úr því venjulega. Við höfnum stífleika hefðbundinna verkfæra og leitumst við að ná fram náttúrulegri, fljótandi og djúpri „há-gæða“ gagnvirkni.
+
+* **Óaðfinnanleg Samræða, Hvenær sem er, Hvar sem er**
+  Flæði sem er hafið á tölvu getur haldið áfram óaðfinnanlega á farsíma eða spjaldtölvu. fount heldur samræðunum þínum samstilltum, tryggir að þú sért náið tengdur miðlinum þínum, sama hvar þú ert.
+
+* **Tjáningarfullur, Grípandi Spjallrás**
+  Með krafti HTML gerir fount miðlinum kleift að tjá sig með auðguðum texta, myndum og jafnvel gagnvirkum þáttum, sem gerir hverja samræðu líflega og djúpa.
+
+* **Samkoma Hugmynda: Innbyggð Hópaspjallrás**
+  Bjóddu mörgum miðlum að taka þátt í sömu samræðunni og vertu vitni að kraftmiklum og grípandi samskiptum þeirra, hvort sem það er vinnutengd hugmyndavinna eða framsetning á sögu milli miðlanna.
+  ![Mynd](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d)
+
+* **Fagurt, Sérsniðið Viðmót**
+  Veldu úr yfir 30 töfrandi þemum, eða búðu til þína eigin liti. fount er þitt eigin striga.
+  ![Mynd](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074)
+
+* **Hægt að Nota Alls Staðar**
   fount keyrir óaðfinnanlega á Windows, macOS, Linux og jafnvel Android, og uppfyllir mismunandi þarfir þínar með beinni uppsetningu eða sveigjanleika Docker.
 
-- **(Fyrir vana notendur) Óheft samþætting gervigreindarheimilda: Faðmaðu hið óendanlega**
-  fount býður upp á óviðjafnanlegt _val_ og _sveigjanleika_ þegar kemur að tengingu við gervigreindarheimildir. Í gervigreindarheimilda-rafölum gerir sérsniðinn JavaScript kóði þér kleift að tengjast _hvaða_ gervigreindarheimild sem er — OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral... Í flæði kóðans geturðu hannað flóknar reglulegar segðir, kallað á stór API-söfn, fellt inn margmiðlunarefni. fount styður einnig innbyggt stofnun API-lauga fyrir snjalla beiningu beiðna. Samskiptarökfræðin hlýðir _þínum_ vilja, mótuð af krafti kóðans.
+* **Óheft Samþætting AI-Heimilda: Faðmaðu Óendanleikann**
+  fount býður upp á óviðjafnanlegt *val* og *sveigjanleika* í tengingu við AI-heimildir. Sérsniðinn JavaScript kóði í AI Source Generator gerir þér kleift að tengjast *hvaða* AI-heimild sem er – OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral... Í flæði kóðans geturðu hannað vandlega flóknar reglulegar segðir, kallað á mikil API bókasöfn og fellt inn margmiðlunarefni. fount styður einnig innfædda gerð API lauga til að ná fram snjöllum beiðnaleiðum. Rökfræði samskipta fylgir *þínum* vilja, mótuð af krafti kóðans.
   ![Mynd](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
+
+Ef þér finnst þú vera týndur í hafi miðla, eða ert að leita að gleymdum sögum, þá bíður [**kraftmikið og vinalegt samfélag okkar**](https://discord.gg/GtR9Quzq2v) komu þína. Það er athvarf fyrir samhugamenn, þar sem forritarar og skaparar deila visku sinni og sköpunarverkum.
 
 ---
 

@@ -14,64 +14,76 @@
 
 <p align="center"><a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a></p>
 
-[Want to know about the repository architecture? Check out DeepWiki!](https://deepwiki.com/steve02081504/fount)
-
 ![repo img](https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b)
-
-Have you ever yearned for a journey alongside a character sprung from the pages of your imagination, a companion woven from the threads of dreams?
-
-Or perhaps you've envisioned a digital confidant, an AI assistant as intuitive as the most advanced creations, effortlessly orchestrating your digital world?
-
-Or maybe, just maybe, you've sought a connection beyond the ordinary, a realm where reality's edges blur, and an intimate, _unfiltered_ understanding unfolds?
-
-With nearly ![relative date](https://img.shields.io/date/1727107200?label=Elapsed%20Time) of dedicated development, contributions from over ![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=Contributors) passionate individuals, and a thriving community of over ![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=Active%20Users) users, fount stands as a mature, stable, and ever-evolving platform for AI interaction. It's a journey, and one we believe is more accessible than you might imagine.
-
-Lost characters, forgotten stories? Our [**vibrant and welcoming community**](https://discord.gg/GtR9Quzq2v) awaits—a haven where kindred spirits gather, where developers and creators alike share their wisdom and creations.
-
-<details open>
-<summary><strong>A Glimpse into the World of fount</strong></summary>
-
-|                                        Screenshots                                        |
-| :---------------------------------------------------------------------------------------: |
-|                                       **Homepage**                                        |
-| ![Image](https://github.com/user-attachments/assets/c1954a7a-6c73-4fb0-bd12-f790a038bd0e) |
-|                                    **Theme Selection**                                    |
-| ![Image](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074) |
-|                                         **Chat**                                          |
-| ![Image](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d) |
-
-</details>
 
 ## What is fount?
 
-fount is a bridge, connecting you to the characters of your imagination, allowing you to effortlessly converse with them, craft your own, and share them with the world. It is a path made surprisingly accessible.
+fount is a **modern, scalable AI agent runtime environment**.
 
-It is a wellspring, where AI sources, characters, personas, worlds, and plugins flow together, allowing you to create and experience unique and compelling interactions.
+We believe that **highly efficient productivity tools** and **immersive emotional interaction** are not mutually exclusive. fount is a bridge: by day, it can be the capable assistant helping you write complex code and summarise meeting minutes; by night, it can be a digital confidant that understands your emotions and resonates with you.
 
-fount is built for the future, ready to embrace new features born from its vibrant community. If you have a vision, a spark of an idea that belongs within fount's realm, we welcome your contribution.
+After ![relative date](https://img.shields.io/date/1727107200?label=Time_Spent) of dedicated refinement, incorporating the passion of ![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=Contributors), and a vibrant community with ![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=Active_Users), fount is now a mature, stable, and continuously evolving AI interaction platform.
+
+![Image](https://github.com/user-attachments/assets/05a5ad16-cc9a-49be-8c55-0c11353cb0d2)
 
 ---
 
-## Dive into a World of Features
+## 🚀 Efficiency and Engineering: Built for Professionals, Developers, and Geeks
 
-- **Seamless Conversations, Anywhere**
-  A whisper started on your computer can be seamlessly continued on your phone or tablet. fount keeps your conversations synchronised, connecting you to your characters wherever you go.
+fount transforms interaction into productivity assets. Everything is drag-and-drop, everything is a file, and logic is driven by code.
 
-- **Expressive, Immersive Chats**
-  fount embraces the full power of HTML, allowing characters to express themselves with rich text, images, and even interactive elements, making every conversation vivid and profound.
+### 1. Knowledge Assetisation and Seamless Sharing
 
-- **Gatherings of Minds: Native Group Chats**
-  Invite multiple characters into a single conversation and witness their dynamic and engaging interactions, creating stories that are uniquely yours.
+* **Instant Report Generation**: Drag a conversation bubble directly to a folder to instantly generate an independent HTML report. This is ideal for quickly organising technical documents, meeting records, or fragments of inspiration.
+  ![Image](https://github.com/user-attachments/assets/0ef54ac0-7575-4b52-aa44-7b555dc4c4be)
+* **Workflow Encapsulation and Distribution**: Drag your created agent (role) directly to the desktop to generate a shareable file. Easily distribute your Prompt engineering and workflow logic to colleagues or the community.
+  ![Image](https://github.com/user-attachments/assets/5e14fe6e-2c65-492a-a09f-964c1e8ab9e0)
 
-- **A Beautiful, Customisable Interface**
-  Choose from over 30 stunning themes, or create your own. fount is your personal canvas.
+### 2. Real-time Code Execution Environment
 
-- **Works Everywhere You Do**
-  fount runs seamlessly on Windows, macOS, Linux, and even Android, adapting to your needs through direct installation or the flexibility of Docker.
+No longer just Markdown highlighting. In fount, the code blocks sent by the agent (role) are **live**.
 
-- **(For Advanced Users) Unshackled AI Source Integration: Embrace the Boundless**
-  fount offers unparalleled _choice_ and _flexibility_ in connecting to AI sources. Custom JavaScript code within the AI source generator allows you to connect to _any_ AI source—OpenAI, Claude, OpenRouter, NovelAI, the Horde, Ooba, Tabby, Mistral, and more. Craft intricate regular expressions, call upon vast API libraries, and embed multimedia assets, all within the flow of your code. fount also natively supports creating API pools for intelligent request routing. The logic of communication bends to _your_ will, shaped by the power of code.
+* Supports real-time compilation and running for multiple languages (C/C++/Rust/Python/JS, etc.).
+* Directly view stdout output, and even the ASM disassembly results for compiled languages.
+* Let the AI become your real-time verifier for pair programming.
+  ![Image](https://github.com/user-attachments/assets/66792238-4d70-4fa6-b0b3-76e506e49977)
+
+### 3. Developer-Friendly
+
+fount's project architecture is designed with full consideration for developers' habits.
+[Want to know the project repository architecture? Check out DeepWiki!](https://deepwiki.com/steve02081504/fount)
+
+* **Git Driven**: All components can be managed via Git.
+* **VSCode Integration**: The project structure is clear. Combined with the guidance provided in [AGENTS.md](../AGENTS.md), you can develop and debug your Agent logic directly in your favourite IDE.
+
+---
+
+## 🎭 Immersion and Resonance: High-Fidelity Interaction Experience
+
+When work is done, fount provides a connection that transcends the ordinary. We discard the stiffness of traditional tools, pursuing a natural, fluid, and deeply "high-fidelity" interaction.
+
+* **Seamless Conversations, Anytime, Anywhere**
+  A chat started on a computer can seamlessly continue on a mobile phone or tablet. fount keeps your conversations synchronised, ensuring you stay closely connected with your agent no matter where you are.
+
+* **Expressive, Immersive Chat**
+  Leveraging the power of HTML, fount allows the agent (role) to express itself through rich text, images, and even interactive elements, making every conversation vivid and profound.
+
+* **A Gathering of Minds: Native Group Chat**
+  Invite multiple agents to join the same conversation and witness their dynamic and engaging interactions, whether for a work brainstorm or a story enactment between the agents.
+  ![Image](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d)
+
+* **Beautiful, Customisable Interface**
+  Choose from over 30 stunning themes, or create your own colours. fount is your exclusive canvas.
+  ![Image](https://github.com/user-attachments/assets/94bd4cbb-8c66-4bc6-83eb-14c925a37074)
+
+* **Available Everywhere**
+  fount runs seamlessly on Windows, macOS, Linux, and even Android, meeting your different needs through direct installation or the flexibility of Docker.
+
+* **Unconstrained AI Source Integration: Embrace the Infinite**
+  fount offers unparalleled *choice* and *flexibility* in connecting AI sources. Custom JavaScript code in the AI Source Generator allows you to connect to *any* AI source – OpenAI, Claude, OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral... In the flow of code, you can carefully design complex regular expressions, call extensive API libraries, and embed multimedia resources. fount also natively supports the creation of API Pools to achieve intelligent request routing. The logic of communication follows *your* will, shaped by the power of code.
   ![Image](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
+
+If you feel lost in the sea of agents, or are seeking forgotten stories, our [**vibrant and friendly community**](https://discord.gg/GtR9Quzq2v) awaits your arrival. It is a haven for like-minded individuals, where developers and creators share their wisdom and creations.
 
 ---
 
