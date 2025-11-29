@@ -28,6 +28,8 @@ import { getPartRouter, deletePartRouter } from './web_server/parts_router.mjs'
  */
 export function setDefaultPart(user, parttype, partname) {
 	if (Object(user) instanceof String) user = getUserByUsername(user)
+	// TODO: remove this
+	if (!(Object(user.defaultParts[parttype]) instanceof Array)) user.defaultParts[parttype] = []
 	const defaultParts = (user.defaultParts ??= {})[parttype] ??= []
 	if (defaultParts.includes(partname)) return
 	defaultParts.push(partname)
